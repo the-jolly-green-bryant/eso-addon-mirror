@@ -5,7 +5,7 @@ local SAVED_VARIABLES_NAME = "BureauOfAcceptableViews_SavedVariables"
 BureauOfAcceptableViews = {
     name = ADDON_NAME,
     savedVariablesName = SAVED_VARIABLES_NAME,
-    version = "3.8.145105",
+    version = "3.9.000146",
     -- 0=off, 1=errors, 2=warnings, 3=info, 4=verbose. Seeded silent here and
     -- overwritten from SavedVariables at load (see DEBUG_MODE_DEFAULT below, which
     -- must stay in sync -- this literal exists only because the addon table is
@@ -769,6 +769,11 @@ end
 local function OnPlayerActivated(event)
     LogDebug(SI_BAV_LOG_ONPLAYERACTIVATED_REAPPLY)
 
+    local cameraResponse = BureauOfAcceptableViews.CameraResponse
+    if cameraResponse and cameraResponse.AcquireSmoothing then
+        cameraResponse.AcquireSmoothing("PlayerActivation", true)
+    end
+
     -- Drop any reconcile that was pending when the load screen hit: the engine
     -- reset the camera across the zone change, so a stale deferred write must not
     -- fire after the saved-state restore below (which is authoritative here).
@@ -852,11 +857,19 @@ local function OnPlayerActivated(event)
         shoulder.ReassertActive()
     end
 
+    if cameraResponse and cameraResponse.ReleaseSmoothing then
+        cameraResponse.ReleaseSmoothing("PlayerActivation")
+    end
+
 end
 
 -- Event handler for EVENT_PLAYER_DEACTIVATED (logout/zone change)
 local function OnPlayerDeactivated(event)
     LogDebug(SI_BAV_LOG_ONPLAYERDEACTIVATED_SAVING)
+    local cameraResponse = BureauOfAcceptableViews.CameraResponse
+    if cameraResponse and cameraResponse.RestoreSmoothingNow then
+        cameraResponse.RestoreSmoothingNow()
+    end
     -- Drop any pending reconcile: we are leaving this world state (logout/zone
     -- change) and the engine will reset the camera, so a deferred write queued
     -- here would target a context that no longer exists.
@@ -1014,6 +1027,11 @@ local function ResetCameraState(suppressOutput)
     -- snapshot. Clear the shoulder swing first, then the preset hold/snapshot, so
     -- the zoom reset below lands on a neutral, un-held, un-swung camera. Each is
     -- a no-op when its feature is off or idle.
+    local CameraResponse = BureauOfAcceptableViews.CameraResponse
+    if CameraResponse and CameraResponse.AcquireSmoothing then
+        CameraResponse.AcquireSmoothing("EmergencyReset", true)
+    end
+
     local OffsetNudge = BureauOfAcceptableViews.OffsetNudge
     if OffsetNudge and OffsetNudge.StopAll then
         OffsetNudge.StopAll()
@@ -1032,6 +1050,10 @@ local function ResetCameraState(suppressOutput)
     local ContextPresets = BureauOfAcceptableViews.ContextPresets
     if ContextPresets and ContextPresets.EmergencyRestore then
         ContextPresets.EmergencyRestore()
+    end
+
+    if CameraResponse and CameraResponse.ForceReleaseSmoothing then
+        CameraResponse.ForceReleaseSmoothing()
     end
 
     -- Clear the oscillation backoff: /bav reset is the explicit recovery point, so

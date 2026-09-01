@@ -13,7 +13,7 @@ function GH.CreateSettingsWindow()
         name = panelName,
         displayName = "|cFF7F00[GH] Group|r |cFFFFFFHistory|r",
         author = "|cFF7F00" .. GH.AUTHOR .. "|r |cFFFFFF[EU]|r",
-        version = "|cFF7F00" .. GH.VERSION .. "|r",
+        version = string.format("%s-%04d", GH.VERSION, GH.ADDONVERSION), --"|cFF7F00" .. GH.VERSION .. "|r",
         registerForRefresh = true,
         registerForDefaults = true,
     }
@@ -143,6 +143,26 @@ function GH.CreateSettingsWindow()
                     end,
                     disabled = function() return not GH.SV.isEnabled end,
                     default = GH.Default.enableOffline,
+                    width = "full"
+                },
+            },
+        },
+        {
+            type = "submenu",
+            name = "|cFF9F3FAUTO RETURN CROWN|r",
+            controls = {
+                {
+                    type = "description",
+                    text = "Returns group leader crown to the previous leader upon reconnecting.\n|cFFFFFFNote: |rActive timeout is 10 minutes.",
+                    width = "full",
+                },
+                {
+                    type = "checkbox",
+                    name = "Enable Auto Return Crown",
+                    getFunc = function() return GH.SV.enableAutoPromote end,
+                    setFunc = function(value) GH.SV.enableAutoPromote = value end,
+                    disabled = function() return not GH.SV.isEnabled end,
+                    default = GH.Default.enableAutoPromote,
                     width = "full"
                 },
             },

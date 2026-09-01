@@ -92,7 +92,9 @@ function OBT.UpdateVisuals(state, remainingTime, isBoss)
     local remaining = math.max(0, remainingTime / 1000)
     local ColorArray = OBT.SV.ColorIdle
     local iconTex = OBT.ICON_OB
-    local isForce = nil
+
+    local currentTime = GetGameTimeMilliseconds()
+    local isForce = (currentTime < OBT.targetCountEndTime)
 
     if state == 1 then
         ColorArray = OBT.SV.ColorActive
@@ -122,13 +124,16 @@ function OBT.UpdateVisuals(state, remainingTime, isBoss)
 
     local bossColor = OBT.SV.isColoredBossLabel and ColorArray or OBT.SV.ColorTextBoss
 
-    if (OBT.stateCount > OBT.targetCount) and (OBT.stateCount < OBT.targetCount + 50) then isForce = true end
     local rawText = string.format("%s%s%s~", tostring(2^3), string.rep("=", 2), string.upper("d"))
     local bossText = isForce and rawText or "BOSS"
     OBT.BOSS_LABEL:SetText(bossText)
     OBT.BOSS_LABEL:SetColor(bossColor[1], bossColor[2], bossColor[3], bossColor[4] or 1)
 
-    OBT.BOSS_LABEL:SetHidden(isForce == nil and (OBT.SV.isHideBossLabel or not (isBoss or OBT.isForceShow or OBT.isMenuPreview or OBT.isHideDelayActive)))
+    if isForce then
+        OBT.BOSS_LABEL:SetHidden(false)
+    else
+        OBT.BOSS_LABEL:SetHidden(OBT.SV.isHideBossLabel or not (isBoss or OBT.isForceShow or OBT.isMenuPreview or OBT.isHideDelayActive))
+    end
 
     -- UPTIME LABEL
     if not OBT.SV.isHideUptime and (OBT.isCombat or OBT.isForceShow or OBT.isMenuPreview or OBT.isHideDelayActive) then

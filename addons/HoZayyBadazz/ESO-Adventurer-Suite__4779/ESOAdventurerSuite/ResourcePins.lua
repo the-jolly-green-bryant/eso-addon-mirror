@@ -13,7 +13,7 @@ EPC.ResourcePins = EPC.ResourcePins or {}
 local R = EPC.ResourcePins
 local wm = WINDOW_MANAGER
 
-local INTERACTION_UPDATE_MS = 100
+local INTERACTION_UPDATE_MS = 200
 local RENDER_UPDATE_MS = 450
 local DEFAULT_VISIBLE_MARKERS = 72
 local MIN_VISIBLE_MARKERS = 24
@@ -108,23 +108,23 @@ local GLOW_TIERS = {
 
 local ICON_TEXTURES = {
     SUITE_GLOW = GLOW_TEXTURE,
-    WORLD = "ESOAdventurerSuite/Art/ResourcePins/world_marker.dds",
-    MINING = "ESOAdventurerSuite/Art/ResourcePins/mining.dds",
-    WOOD = "ESOAdventurerSuite/Art/ResourcePins/wood.dds",
-    CLOTHING = "ESOAdventurerSuite/Art/ResourcePins/clothing.dds",
-    ALCHEMY = "ESOAdventurerSuite/Art/ResourcePins/alchemy.dds",
-    ENCHANTING = "ESOAdventurerSuite/Art/ResourcePins/enchanting.dds",
-    MUSHROOM = "ESOAdventurerSuite/Art/ResourcePins/mushroom.dds",
-    FLOWER = "ESOAdventurerSuite/Art/ResourcePins/flower.dds",
-    WATERPLANT = "ESOAdventurerSuite/Art/ResourcePins/waterplant.dds",
-    SOLVENT = "ESOAdventurerSuite/Art/ResourcePins/solvent.dds",
-    FISH = "ESOAdventurerSuite/Art/ResourcePins/fish.dds",
-    CHEST = "ESOAdventurerSuite/Art/ResourcePins/chest.dds",
-    HEAVYSACK = "ESOAdventurerSuite/Art/ResourcePins/heavysack.dds",
-    CLAM = "ESOAdventurerSuite/Art/ResourcePins/clam.dds",
-    TROVE = "ESOAdventurerSuite/Art/ResourcePins/trove.dds",
-    JUSTICE = "ESOAdventurerSuite/Art/ResourcePins/justice.dds",
-    STASH = "ESOAdventurerSuite/Art/ResourcePins/stash.dds",
+    WORLD = EPC:AssetPath("Art/ResourcePins/world_marker.dds"),
+    MINING = EPC:AssetPath("Art/ResourcePins/mining.dds"),
+    WOOD = EPC:AssetPath("Art/ResourcePins/wood.dds"),
+    CLOTHING = EPC:AssetPath("Art/ResourcePins/clothing.dds"),
+    ALCHEMY = EPC:AssetPath("Art/ResourcePins/alchemy.dds"),
+    ENCHANTING = EPC:AssetPath("Art/ResourcePins/enchanting.dds"),
+    MUSHROOM = EPC:AssetPath("Art/ResourcePins/mushroom.dds"),
+    FLOWER = EPC:AssetPath("Art/ResourcePins/flower.dds"),
+    WATERPLANT = EPC:AssetPath("Art/ResourcePins/waterplant.dds"),
+    SOLVENT = EPC:AssetPath("Art/ResourcePins/solvent.dds"),
+    FISH = EPC:AssetPath("Art/ResourcePins/fish.dds"),
+    CHEST = EPC:AssetPath("Art/ResourcePins/chest.dds"),
+    HEAVYSACK = EPC:AssetPath("Art/ResourcePins/heavysack.dds"),
+    CLAM = EPC:AssetPath("Art/ResourcePins/clam.dds"),
+    TROVE = EPC:AssetPath("Art/ResourcePins/trove.dds"),
+    JUSTICE = EPC:AssetPath("Art/ResourcePins/justice.dds"),
+    STASH = EPC:AssetPath("Art/ResourcePins/stash.dds"),
 }
 
 
@@ -235,6 +235,19 @@ end
 local function nowMs()
     if type(GetFrameTimeMilliseconds) == "function" then return tonumber(GetFrameTimeMilliseconds()) or 0 end
     return 0
+end
+
+local function currentSceneName()
+    if not SCENE_MANAGER or type(SCENE_MANAGER.GetCurrentScene) ~= "function" then return "" end
+    local scene = safe(function() return SCENE_MANAGER:GetCurrentScene() end, nil)
+    if scene and type(scene.GetName) == "function" then
+        return string.lower(tostring(safe(function() return scene:GetName() end, "") or ""))
+    end
+    return ""
+end
+
+local function diggingGameActive()
+    return type(IsDiggingGameActive) == "function" and safe(IsDiggingGameActive, false) == true
 end
 
 local function nowStamp()
@@ -700,6 +713,68 @@ function R:GetApproximateInteractablePosition()
         z = z + (math.cos(heading) * INTERACT_FORWARD_OFFSET_CM)
     end
     return zoneId, x, y, z
+end
+
+function R:IsNormalWorldSceneActive()
+    if diggingGameActive() then return false end
+    local name = currentSceneName()
+    if name == "hud" or name == "hudui" or name == "loot" then return true end
+    -- Some UI versions suffix/prefix the normal HUD scene names. Accept only
+    -- names that clearly identify HUD gameplay, never arbitrary menus.
+    if string.find(name, "hud", 1, true) and not string.find(name, "menu", 1, true) then return true end
+    return false
+end
+
+function R:RecoverWorldRenderer(reason)
+    if diggingGameActive() or not self:IsNormalWorldSceneActive() then return false end
+    self:EnsureWindow()
+    if self.window and type(self.window.SetHidden) == "function" then self.window:SetHidden(false) end
+    self.worldRenderOriginReady = false
+    self:UpdateWorldRenderOrigin()
+    self.lastRendererRecoveryAt = nowMs()
+    self.lastRendererRecoveryReason = tostring(reason or "automatic recovery")
+    return true
+end
+
+function R:RecoverSuite3DWorldPins(reason)
+    local tag = tostring(reason or "3D recovery")
+    self:RecoverWorldRenderer(tag)
+
+    -- Antiquity shovel pins use their own 3D root. Restore that root too so
+    -- leaving the excavation minigame cannot strand either marker system.
+    if EPC.AntiquityAssistant and type(EPC.AntiquityAssistant.RecoverWorldRenderer) == "function" then
+        pcall(EPC.AntiquityAssistant.RecoverWorldRenderer, EPC.AntiquityAssistant, tag)
+    end
+
+    -- Integrated LoreBooks uses the same HUD-fragment pattern. The scene can
+    -- occasionally leave its root hidden after Antiquity digging, so re-show
+    -- and refresh it only after normal HUD gameplay is active again.
+    if EASLL_WorldPins and type(EASLL_WorldPins.SetHidden) == "function" then
+        pcall(EASLL_WorldPins.SetHidden, EASLL_WorldPins, false)
+    end
+    if EASLoreLibrary and EASLoreLibrary.worldPins then
+        local lore = EASLoreLibrary.worldPins
+        if type(WorldPositionToGuiRender3DPosition) == "function" and EASLL_WorldPins then
+            local gx, gz, gy = safe(WorldPositionToGuiRender3DPosition, nil, 0, 0, 0)
+            if gx and gz and gy and type(EASLL_WorldPins.Set3DRenderSpaceOrigin) == "function" then
+                lore.renderOriginX, lore.renderOriginZ, lore.renderOriginY = gx, gz, gy
+                pcall(EASLL_WorldPins.Set3DRenderSpaceOrigin, EASLL_WorldPins, gx, gz, gy)
+            end
+        end
+        if type(lore.RefreshPins) == "function" then pcall(lore.RefreshPins, lore) end
+    end
+
+    -- These Suite 3D systems do not use the HUD fragment, but their render
+    -- spaces can also be invalidated by the excavation scene transition.
+    if EPC.TeamVisibility and type(EPC.TeamVisibility.ResetRenderSpaces) == "function" then
+        pcall(EPC.TeamVisibility.ResetRenderSpaces, EPC.TeamVisibility)
+        if type(EPC.TeamVisibility.RefreshParticles) == "function" then pcall(EPC.TeamVisibility.RefreshParticles, EPC.TeamVisibility) end
+    end
+    if EPC.DungeonChestFinder and type(EPC.DungeonChestFinder.ResetRenderSpace) == "function" then
+        pcall(EPC.DungeonChestFinder.ResetRenderSpace, EPC.DungeonChestFinder)
+        if type(EPC.DungeonChestFinder.RefreshMarkers) == "function" then pcall(EPC.DungeonChestFinder.RefreshMarkers, EPC.DungeonChestFinder) end
+    end
+    return true
 end
 
 function R:IsWorldGlowSuppressed()
@@ -1573,6 +1648,13 @@ function R:RefreshMarkers()
     end
 
     local hudFragmentHidden = self:IsWorldGlowSuppressed()
+    -- Excavation can occasionally leave the shared HUD fragment hidden after
+    -- returning to gameplay. If the active scene is unquestionably the normal
+    -- HUD, repair the parent 3D layer in-place instead of requiring /reloadui.
+    if hudFragmentHidden and self:IsNormalWorldSceneActive()
+        and (now - (tonumber(self.lastRendererRecoveryAt) or 0)) >= 1200 then
+        self:RecoverWorldRenderer("HUD fragment stuck hidden")
+    end
     if hudFragmentHidden and self.debugEntry then
         self.debugUntil = now + 10000
     end
@@ -1875,6 +1957,21 @@ function R:Initialize()
             self.liveCommunityVanishedAt = 0
             self:HideAll("zone change")
             zo_callLater(function() self:ResetRenderSpace() self:RefreshMarkers() end, 400)
+        end)
+    end
+
+    if EVENT_ANTIQUITY_DIGGING_GAME_OVER ~= nil then
+        EVENT_MANAGER:RegisterForEvent(prefix .. "_DiggingGameOver3DRecovery", EVENT_ANTIQUITY_DIGGING_GAME_OVER, function()
+            -- ESO transitions through several short scene states when closing the
+            -- excavation board. Retry after the HUD has had time to become active.
+            for _, delay in ipairs({ 150, 500, 1200 }) do
+                zo_callLater(function()
+                    if self:IsNormalWorldSceneActive() then
+                        self:RecoverSuite3DWorldPins("Antiquity excavation ended")
+                        self:RefreshMarkers()
+                    end
+                end, delay)
+            end
         end)
     end
 

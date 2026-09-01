@@ -18,7 +18,7 @@ EPC.DungeonChestFinder = EPC.DungeonChestFinder or {}
 local F = EPC.DungeonChestFinder
 local wm = WINDOW_MANAGER
 
-local UPDATE_MS = 100
+local UPDATE_MS = 200
 local MAX_MARKERS = 36
 local DEDUPE_DISTANCE_CM = 450
 local LOOT_MATCH_DISTANCE_CM = 700

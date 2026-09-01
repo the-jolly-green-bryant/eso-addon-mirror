@@ -83,6 +83,22 @@ RCR.RegisterContextMenuItem(function( data )
 	end
 end)
 
+RCR.RegisterContextMenuItem(function( data )
+	local raidId = RCR.GetRaidIdFromContentId(data.contentId)
+	if (raidId and not RCR.IsTimestampFromSoulReservoirScoringSystem(data.timestamp)) then
+		return SI_RCR_DISPLAY_SCORE_BANNER, function( )
+			RCR.DisplayScoreBanner(raidId, data.score, data.duration, unpack(data.extraRaw))
+		end
+	end
+end)
+
+RCR.RegisterContextMenuItem(function( data )
+	local raidId = RCR.GetRaidIdFromContentId(data.contentId)
+	if (raidId and not RCR.IsTimestampFromSoulReservoirScoringSystem(data.timestamp)) then
+		return SI_RCR_UNADJUSTED_SCORE, RCR.RemoveTimeAdjustmentFromScore(raidId, data.score, data.duration)
+	end
+end)
+
 
 --------------------------------------------------------------------------------
 -- Helpers

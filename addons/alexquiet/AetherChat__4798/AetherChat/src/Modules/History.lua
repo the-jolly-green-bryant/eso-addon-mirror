@@ -32,6 +32,18 @@ function History.PruneExpiredMessages()
         AetherChat.savedVars.historyRetention = retentionSeconds
     end
 
+    -- Clean any malformed loot lines that lost their item link in past sessions
+    for chKey, list in pairs(AetherChat.savedVars.history) do
+        if type(list) == 'table' and tostring(chKey):find('loot') then
+            for i = #list, 1, -1 do
+                local msg = list[i]
+                if msg.text and msg.text:find("%d+:%d+:%d+:%d+:%d+:%d+") and not msg.text:find("|H") then
+                    table.remove(list, i)
+                end
+            end
+        end
+    end
+
     if retentionSeconds <= 0 then return end -- 0 = Unlimited
 
     local now = GetTimeStamp()

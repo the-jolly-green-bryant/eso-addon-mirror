@@ -286,6 +286,6 @@ function R:Initialize()
     if EVENT_PLAYER_COMBAT_STATE then
         EVENT_MANAGER:RegisterForEvent(prefix .. "_Combat", EVENT_PLAYER_COMBAT_STATE, function() self:Refresh() end)
     end
-    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Tick", 50, function() self:Refresh() end)
+    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Tick", 100, function() self:Refresh() end)
     self:Refresh()
 end

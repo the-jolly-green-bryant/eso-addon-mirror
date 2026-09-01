@@ -1,11 +1,16 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/akamatsu02/Marker__3684",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "akamatsu02",
   "canonical_id": "esoui:3684",
   "category_id": "24",
   "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
     {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
@@ -69,7 +74,7 @@
     "Marker"
   ],
   "download_url": "https://www.esoui.com/downloads/dl3684/",
-  "fingerprint": "52689e5ce4199651535220d515ad0361745f419aa6ffd861e3c5e7732d796f59",
+  "fingerprint": "50f77f75bd09dc8f9b0cce9d380883793e97c148ec534eece2c02f2fcc50c6e7",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw12631.jpg",
     "https://cdn-eso.mmoui.com/preview/pvw12632.png",
@@ -85,11 +90,11 @@
   "source_id": "3684",
   "source_url": "https://www.esoui.com/downloads/info3684-Marker.html",
   "stats": {
-    "downloads": 30265,
-    "favorites": 15,
-    "monthly_downloads": 315
+    "downloads": 30675,
+    "favorites": 14,
+    "monthly_downloads": 267
   },
   "title": "Marker",
-  "updated_at": 1779027589000,
-  "version": "3.15"
+  "updated_at": 1788215202000,
+  "version": "3.16"
 }

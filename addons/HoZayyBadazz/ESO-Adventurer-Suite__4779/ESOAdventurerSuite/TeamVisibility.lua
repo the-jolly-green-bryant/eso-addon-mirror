@@ -18,7 +18,7 @@ local BEAM_SOURCE_TEXTURE = "EsoUI/Art/Miscellaneous/lensflare_star_256.dds"
 -- soft center glow while also fading at the top and bottom so the beam
 -- hugs the character instead of looking like a hard-capped rectangle.
 local MAX_GROUP_MEMBERS = 12
-local UPDATE_MS = 50
+local UPDATE_MS = 100
 local WORLD_REFRESH_MS = 500
 local POSITION_GRACE_MS = 2000
 local BEAM_CENTER_Y_CM = 170

@@ -1,0 +1,24 @@
+## Title: Flamechasers Spellcheck & Autocomplete
+## Description: Spellcheck and predictive text built directly into ESO chat, with ESO-aware vocabulary and context-aware SUPER suggestions.
+## Author: Flamechasers
+## APIVersion: 101050 101051
+## Version: 0.7.6
+## AddOnVersion: 706
+## SavedVariables: FlamechasersSpellcheckSavedVars
+## DependsOn: LibCustomMenu>=730 LibAddonMenu-2.0>=43
+
+Namespace.lua
+English/EnglishBuckets.lua
+English/FrequencyRanks.lua
+English/CorrectionDeletes.lua
+ESO/ESOSeed.lua
+ESO/RuntimeESOCollector.lua
+Common/ChatSeed.lua
+DictionaryRegistry.lua
+SafetyFilter.lua
+SpellEngine.lua
+AutocompleteEngine.lua
+UI.lua
+Settings.lua
+FlamechasersSpellcheck.lua
+Bindings.xml

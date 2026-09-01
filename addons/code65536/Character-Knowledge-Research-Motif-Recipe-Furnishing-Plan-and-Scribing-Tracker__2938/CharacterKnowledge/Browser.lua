@@ -110,10 +110,6 @@ local SPECIAL_RECIPES = {
 		LCCC.GetZoneName(41),
 		225208,
 	},
-	{	-- Solo Dungeons (TODO: Verify)
-		GetString("SI_ZONEDISPLAYTYPE", ZONE_DISPLAY_TYPE_SOLO_DUNGEON),
-		226963, 226964,
-	},
 }
 
 local QUEST_GRIMOIRES = { 2, 8 }
@@ -341,11 +337,6 @@ function CharacterKnowledgeList:BuildMasterList( )
 			local itemLink = LCK.GetItemLinkFromItemId(itemId)
 			local resultLink = GetItemLinkRecipeResultItemLink(itemLink)
 			local resultId = GetItemLinkItemId(resultLink)
-
-			-- TODO: Temporary workaround for PTS bug
-			if (itemId == 226964 and resultId == 153629) then
-				resultId = 226965
-			end
 
 			if (not unique[resultId]) then
 				unique[resultId] = true

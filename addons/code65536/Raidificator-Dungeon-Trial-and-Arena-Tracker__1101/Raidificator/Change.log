@@ -1,3 +1,10 @@
+Version 4.7.3 (2026/08/31)
+* Added a "Display Score Banner" command to the context menus of entries in the
+  History Browser to redisplay the base-game score banner shown at the end of
+  trials and arenas
+* Added an informational display to the context menus of entries in the History
+  Browser that shows the score before the scoring adjustments from time
+
 Version 4.7.2 (2026/08/17)
 * The accidental cast blocking feature now requires LibCombatAlerts 0.8.0 or
   newer

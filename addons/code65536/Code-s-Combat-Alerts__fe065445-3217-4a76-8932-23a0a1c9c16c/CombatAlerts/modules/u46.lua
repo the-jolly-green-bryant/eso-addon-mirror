@@ -45,6 +45,12 @@ Module.DATA = {
 		[233328] = true, -- Valneer
 	},
 	scalesNameId = 233321,
+	frenzy = {
+		232722, -- 630 cast time, safe
+		232725, -- 600 cast time, safe
+		232726, -- 1500 cast time, usafe
+		232723, -- 433 cast time, unsafe
+	},
 }
 local DATA = Module.DATA
 local Vars
@@ -197,7 +203,7 @@ function Module:ProcessCombatEvents( result, isError, abilityName, abilityGraphi
 	-- Boss 2
 	elseif (result == ACTION_RESULT_EFFECT_GAINED and targetType == COMBAT_UNIT_TYPE_PLAYER and hitValue > 100 and DATA.twinsHeavyProjectile[abilityId]) then
 		CA2.UpdateNightbladeCutthroatExclusionStopTime(GetGameTimeMilliseconds() + hitValue)
-	elseif (sourceType == COMBAT_UNIT_TYPE_PLAYER and LCA.DAMAGE_EVENTS[result] and Vars.scales[targetUnitId] and not (LCA.isTank and self:GetSetting("scalesNoTanks"))) then
+	elseif (sourceType == COMBAT_UNIT_TYPE_PLAYER and hitValue == 1 and LCA.DAMAGE_EVENTS[result] and Vars.scales[targetUnitId] and not (LCA.isTank and self:GetSetting("scalesNoTanks"))) then
 		if (self:GetSetting("scalesChat")) then
 			CA2.ChatMessage(zo_strformat("[<<1>>] <<2>>", LCA.GetAbilityName(DATA.scalesNameId), LCA.GetAbilityName(abilityId)))
 		end
@@ -207,6 +213,10 @@ function Module:ProcessCombatEvents( result, isError, abilityName, abilityGraphi
 	elseif (result == ACTION_RESULT_EFFECT_GAINED_DURATION and abilityId == DATA.stricken and (targetType == COMBAT_UNIT_TYPE_PLAYER or LCA.DoesPlayerHaveTauntSlotted())) then
 		local _, name = LCA.IdentifyGroupUnitIdWithRole(targetUnitId, true)
 		CA1.Alert(LCA.GetAbilityName(abilityId), name, 0xCC3399FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
+	elseif (result == ACTION_RESULT_BEGIN and abilityId == DATA.frenzy[3] and targetType == COMBAT_UNIT_TYPE_PLAYER) then
+		CA2.SetNightbladeCutthroatExclusion(GetGameTimeMilliseconds() + hitValue)
+	elseif (result == ACTION_RESULT_BEGIN and abilityId == DATA.frenzy[4] and targetType == COMBAT_UNIT_TYPE_PLAYER) then
+		CA2.UpdateNightbladeCutthroatExclusionStopTime(GetGameTimeMilliseconds() + hitValue)
 	end
 end
 

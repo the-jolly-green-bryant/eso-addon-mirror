@@ -67,16 +67,32 @@ end
 -- GET BACK AN COLORED STRING FOR CHAT OUTPUT
 ----------------------------------------------------------------------------------------------------
 function GH.ColorString(color, string)
-    if not GH.Col[color] then return string end
-    return GH.Col[color] .. string .. GH.Col.End
+    if not GH.ColMap[color] then return string end
+    return GH.ColMap[color] .. string .. GH.ColMap.End
 end
 
 ----------------------------------------------------------------------------------------------------
 -- GET THE STRING ROLE FROM THE ID MAP
 ----------------------------------------------------------------------------------------------------
 function GH.ColorRole(roleID)
-    if not GH.SV.RoleCol[roleID] then return GH.SV.RoleCol[0] .. GH.RoleMap[0] .. GH.Col.End .. " " end
-    return GH.SV.RoleCol[roleID] .. GH.RoleMap[roleID] .. GH.Col.End .. " "
+    if not GH.SV.RoleCol[roleID] then return GH.SV.RoleCol[0] .. GH.RoleMap[0] .. GH.ColMap.End .. " " end
+    return GH.SV.RoleCol[roleID] .. GH.RoleMap[roleID] .. GH.ColMap.End .. " "
+end
+
+----------------------------------------------------------------------------------------------------
+-- UPDATE TRACKED LEADER
+----------------------------------------------------------------------------------------------------
+function GH.UpdateTrackedLeader()
+    if IsUnitGrouped("player") then
+        local leaderTag = GetGroupLeaderUnitTag()
+        if leaderTag and leaderTag ~= "" then
+            GH.trackedLeaderName = GetUnitDisplayName(leaderTag)
+        end
+    else
+        GH.trackedLeaderName = nil
+        GH.offlineLeaderName = nil
+        GH.offlineLeaderTime = 0
+    end
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -161,6 +177,7 @@ end
 -- EVENT_GROUP_MEMBER_JOINED
 ----------------------------------------------------------------------------------------------------
 function GH.OnGroupMemberJoined(eventCode, memberCharacterName, memberDisplayName, isLocalPlayer)
+    GH.UpdateTrackedLeader()
     if not IsUnitGrouped("player") then return end
 
     GH.UpdateGroupMember()
@@ -206,6 +223,7 @@ end
 -- EVENT_GROUP_MEMBER_LEFT
 ----------------------------------------------------------------------------------------------------
 function GH.OnGroupMemberLeft(eventCode, memberCharacterName, reason, isLocalPlayer, isLeader, memberDisplayName, actionRequiredVote)
+    GH.UpdateTrackedLeader()
     if reason == GROUP_LEAVE_REASON_DESTROYED then return end
     local player = GetUnitName("player")
     if not player or player == "" then player = "GetUnitName" end
@@ -280,6 +298,26 @@ function GH.OnGroupMemberConnectedStateChanged(eventCode, unitTag, isOnline)
     local unitName = GetUnitName(unitTag)
     if not unitName or unitName == "" then return end
 
+    -- AUTO PROMOTE PREVIOUS OFFLINE LEADER
+    if isOnline and GH.SV.enableAutoPromote and GH.offlineLeaderName then
+        if unitDisplayName == GH.offlineLeaderName then
+            if IsUnitGroupLeader("player") then
+                local timePassed = GetGameTimeSeconds() - GH.offlineLeaderTime
+                if timePassed <= 600 then -- 10 MINUTES
+                    local playerLink = ZO_LinkHandler_CreatePlayerLink(unitDisplayName)
+                    zo_callLater(function()
+                        if IsUnitGroupLeader("player") and IsUnitOnline(unitTag) then
+                            GroupPromote(unitTag)
+                            GH.SendMessage(GH.ColorString('OG', GH.CHAT) .. GH.ColorString('GN', " Returned crown to: ") .. GH.ColorString('OG', playerLink))
+                        end
+                    end, 2500)
+                end
+            end
+            GH.offlineLeaderName = nil
+            GH.offlineLeaderTime = 0
+        end
+    end
+
     local isOffline = not IsUnitOnline(unitTag)
     if not GH.OfflineMember[unitName] then GH.OfflineMember[unitName] = { isOffline = isOffline } end
 
@@ -345,6 +383,29 @@ end
 ----------------------------------------------------------------------------------------------------
 function GH.OnGroupLeaderChanged(eventCode, leaderTag)
     if not IsUnitGrouped("player") then return end
+
+    local newLeaderName = GetUnitDisplayName(leaderTag)
+
+    if GH.SV.enableAutoPromote and AreUnitsEqual(leaderTag, "player") then
+        if GH.trackedLeaderName and GH.trackedLeaderName ~= newLeaderName then
+            local oldLeaderTag = nil
+            for i = 1, GetGroupSize() do
+                local groupTag = GetGroupUnitTagByIndex(i)
+                if GetUnitDisplayName(groupTag) == GH.trackedLeaderName then
+                    oldLeaderTag = groupTag
+                    break
+                end
+            end
+
+            if oldLeaderTag and not IsUnitOnline(oldLeaderTag) then
+                GH.offlineLeaderName = GH.trackedLeaderName
+                GH.offlineLeaderTime = GetGameTimeSeconds()
+            end
+        end
+    end
+
+    GH.trackedLeaderName = newLeaderName
+
     local unitName = GetUnitName(leaderTag) or "GetUnitName"
 
     if not GH.GroupMember[unitName] then return end
@@ -366,7 +427,7 @@ end
 -- EVENT_PLAYER_ACTIVATED (integer eventCode, boolean initial)
 ----------------------------------------------------------------------------------------------------
 function GH.OnPlayerActivated()
-    -- REBUILD AFTER RELOAD / TELEPORT
+    GH.UpdateTrackedLeader()
     GH.UpdateGroupMember()
     GH.UpdateDifficulty()
 end

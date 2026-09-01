@@ -3,114 +3,225 @@
 ---
 
 ```bbcode
-[SIZE="5"][COLOR="Gold"][B]AETHERCHAT (v1.2.2)[/B][/COLOR][/SIZE]
-[SIZE="3"][I]Modern, Immersive Chat & Messenger Interface for The Elder Scrolls Online[/I][/SIZE]
+[CENTER]
+[SIZE="6"][COLOR="Gold"][B]✦ AETHERCHAT ✦[/B][/COLOR][/SIZE]
+[SIZE="3"][COLOR="LightSteelBlue"][I]The Modern, Immersive Messenger & Complete Chat Suite for The Elder Scrolls Online[/I][/COLOR][/SIZE]
+[/CENTER]
 
 [HR][/HR]
 
-[SIZE="4"][COLOR="SkyBlue"][B]⚠️ MANDATORY DEPENDENCIES / DÉPENDANCES REQUISES[/B][/COLOR][/SIZE]
-Please ensure you have installed and updated the following libraries to run AetherChat:
+[SIZE="4"][COLOR="SkyBlue"][B]⚠️ MANDATORY DEPENDENCY / DÉPENDANCE REQUISE[/B][/COLOR][/SIZE]
 [LIST]
-[*][B][URL="https://www.esoui.com/downloads/info7-LibAddonMenu.html"]LibAddonMenu-2.0[/URL][/B] (Version >= 43) [I]— Required for settings and theme configuration[/I]
-[*][B][URL="https://www.esoui.com/downloads/info1455-LootLog.html"]LootLog[/URL][/B] (Version >= 4.9.6) [I]— Required for real-time group & personal loot feed and 1-click Need requests[/I]
+[*][B][URL="https://www.esoui.com/downloads/info7-LibAddonMenu.html"]LibAddonMenu-2.0[/URL][/B] (Version >= 43) [I]— Required for settings, themes, and customization menus.[/I]
+[/LIST]
+[I]Optional: [B][URL="https://www.esoui.com/downloads/info1455-LootLog.html"]LootLog[/URL][/B] for advanced group loot tracking & collection detection.[/I]
+
+[HR][/HR]
+
+[CENTER]
+[SIZE="5"][COLOR="Gold"][B]🇬🇧 ENGLISH PRESENTATION & OVERVIEW[/B][/COLOR][/SIZE]
+[/CENTER]
+
+[B]AetherChat[/B] completely revolutionizes the Elder Scrolls Online chat interface into a modern, sleek, and intuitive messenger inspired by contemporary communication apps and Nordic fantasy aesthetics. It enhances immersion, social connectivity, and convenience across every activity in Tamriel—from Trials and Dungeons to Guild Trading and Roleplay.
+
+[HR][/HR]
+
+[SIZE="4"][COLOR="Orange"][B]✨ KEY FEATURES[/B][/COLOR][/SIZE]
+
+[B]🌟 Modern Messenger Architecture & Design[/B]
+[LIST]
+[*][B]Nordic Sleek Interface:[/B] High-fidelity dark slate panels with refined metallic accents, smooth animations, and clean typography.
+[*][B]Collapsible Sidebar Rail:[/B] Switch seamlessly between an expanded sidebar with full channel labels and a minimalist compact icon dock to maximize screen real estate.
+[*][B]Native Chat Replacement & Smart Input Docking:[/B] Full two-way synchronization with default ESO chat. When AetherChat closes, text focus instantly restores to standard chat without friction.
+[*][B]Smart Escape Menu Auto-Hide:[/B] Automatically hides cleanly when opening the Escape Game Menu (Settings, Controls, Addons) and restores seamlessly upon returning to the game.
+[*][B]Combat Auto-Close:[/B] Optional automatic window hiding during combat to keep your battlefield view entirely clear.
 [/LIST]
 
-[HR][/HR]
-
-[SIZE="4"][COLOR="Goldenrod"][B]🤖 ARTIFICIAL INTELLIGENCE (AI) DISCLOSURE[/B][/COLOR][/SIZE]
-In compliance with ESOUI Community Rules & Guidelines:
-[I]AI assistance (Google Antigravity) was utilized during the development, refactoring, and bilingual localization of AetherChat. All code, event filters, XML UI templates, and SavedVariables structures have been thoroughly reviewed, tested in-game, and verified to ensure high performance, security, and full compliance with ESO UI standards.[/I]
-
-[HR][/HR]
-
-[SIZE="4"][COLOR="Orange"][B]✨ CREDITS & ATTRIBUTIONS[/B][/COLOR][/SIZE]
+[B]⚙️ Dedicated System Channel & Broadcast Scanner[/B]
 [LIST]
-[*][B]Author:[/B] @AlexQuiet (EU Megaserver)
-[*][B]Libraries & Tools:[/B]
+[*][B]Dedicated System Tab:[/B] Separate channel capturing 100% of game status messages, server broadcasts, queue alerts, and dungeon announcements.
+[*][B]Official ESO Gear Icon:[/B] Crisp native system texture with full drag-and-drop channel reordering support.
+[/LIST]
+
+[B]🔔 Moveable Floating HUD Dock & Status Badges[/B]
+[LIST]
+[*][B]Freely Moveable HUD Widget:[/B] A subtle, draggable floating icon that can be placed anywhere on your screen.
+[*][B]Rich Hover Tooltip:[/B] Instant summary showing total unread messages, online friends count, and unread mail.
+[*][B]Dynamic Tri-Color Notification Badges:[/B]
   [LIST]
-  [*][B]LibAddonMenu-2.0[/B] by [I]Seerah, sirinsidiator, votan, et al.[/I]
-  [*][B]LootLog Integration[/B] inspired by & compatible with [I]@code65536[/I]
-  [*][B]Textures & UI Art Assets[/B] courtesy of [I]ZeniMax Online Studios[/I]
+  [*]🔴 [COLOR="Red"][B]Red Badge:[/B][/COLOR] Unread messages counter (Whispers, Guilds, Party, Mentions).
+  [*]🟢 [COLOR="Lime"][B]Green Badge:[/B][/COLOR] Real-time online friends count.
+  [*]🔵 [COLOR="DeepSkyBlue"][B]Blue Badge:[/B][/COLOR] Unread mail indicator.
   [/LIST]
 [/LIST]
 
+[B]💬 Dedicated Channels, Guilds & Private Whispers (DMs)[/B]
+[LIST]
+[*][B]Organized Channels:[/B] Dedicated tabs for Zone, General/Say, Group/Party, System, and Loot.
+[*][B]Collapsible Guild Sections:[/B] Expand or collapse your 5 guilds with clean status indicators.
+[*][B]Private Messaging Suite (DMs):[/B] Individual whisper conversations featuring multi-source account resolution, online presence indicators, unread counters, and 1-click conversation closing.
+[/LIST]
+
+[B]🌍 Instant Multi-Zone Language Filters & Cyrillic Support[/B]
+[LIST]
+[*][B]Interactive Language Pills:[/B] Filter the Zone chat instantly right from the header: [B]ALL[/B], [B]FR[/B], [B]EN[/B], [B]DE[/B], [B]ES[/B], and [B]GLOBAL[/B].
+[*][B]Full Unicode & Cyrillic Support:[/B] Crystal-clear rendering of Russian, Cyrillic, and extended European alphabets without empty boxes ([ICODE][][][][/ICODE]).
+[/LIST]
+
+[B]🔤 Real-Time Typography Scaling[/B]
+[LIST]
+[*][B]Dynamic Font Size Slider:[/B] Adjust message font size smoothly from 12px to 24px with proportional scaling across the entire interface (messages, sidebar, header, search).
+[/LIST]
+
+[B]🔍 Live In-Chat Search[/B]
+[LIST]
+[*][B]Instant Live Filtering:[/B] Real-time search bar embedded directly in the header with magnifier icon and 1-click clear button.
+[*][B]Fast Search:[/B] Search messages across the active channel by sender name or message content in milliseconds.
+[/LIST]
+
+[B]🎯 Custom Keywords & Mention Alerts (Pings)[/B]
+[LIST]
+[*][B]Personalized Watchlist:[/B] Track any custom word or tag ([ICODE]@MyName, WTS, WTT, Tank, Heal, Motif, vCR, vSS, LF[/ICODE]).
+[*][B]Visual Highlight & Star Marker:[/B] Triggered lines display a colored [B]★ star marker[/B] beside the timestamp, with the keyword framed in a stylish [B][KEYWORD][/B] badge.
+[*][B]Audible Chime Alert:[/B] Crisp audio notification plays when a monitored keyword is detected.
+[*][B]7 Selectable Accent Colors:[/B] Customize your ping badge with Skyrim Gold, Neon Pink, Celestial Cyan, Emerald Green, Burnt Amber, Arcanist Purple, or Lightning Yellow.
+[/LIST]
+
+[B]💎 Smart Loot & Gear Feed with 1-Click "Need"[/B]
+[LIST]
+[*][B]Filtered Loot Feed:[/B] Dedicated loot log with customizable quality filters (White, Green, Blue, Purple, Gold) and an "Equipment Only" toggle.
+[*][B]Enhanced Item Display:[/B] Shows equipment traits (e.g. [I]Divines, Infused, Arcane[/I]), item icons, and an alert tag [B]|cFFCC00!!!|r[/B] on gear set pieces.
+[*][B]1-Click Need Whisper:[/B] Right-click any looted item to whisper a customizable template message directly to the looter or ask in party chat.
+[/LIST]
+
+[B]💰 Live Guild Store Sales Alerts (Combat & Dungeons)[/B]
+[LIST]
+[*][B]Real-Time History Scanner:[/B] Instantly detects sales anywhere in Tamriel (even inside trials, dungeons, and combat).
+[*][B]Center Screen Announcement (CSA):[/B] Gold banner notification, audio coin chime, and clean log in the General channel.
+[/LIST]
+
+[B]🎨 Visual Themes & Window Geometry[/B]
+[LIST]
+[*][B]5 Crafted Visual Themes:[/B] Skyrim Dragonborn, Dwemer Gold, Nordic Emerald, Crimson Brotherhood, and Dark Glass.
+[*][B]Multi-Edge Resizing:[/B] Resize the window freely using responsive edge handles with full persistence across sessions.
+[/LIST]
+
+[B]📜 Persistent Chat History[/B]
+[LIST]
+[*][B]Configurable Retention:[/B] Retain your conversations across reloadui, zone transitions, and logout (1 day, 3 days, 1 week, 1 month, or Unlimited).
+[/LIST]
+
 [HR][/HR]
 
-[SIZE="4"][COLOR="LightGreen"][B]📖 ENGLISH DESCRIPTION & FEATURES[/B][/COLOR][/SIZE]
-AetherChat completely transforms your in-game chat into a modern, responsive, Nordic-inspired messenger:
-
-[B]Key Features in v1.2:[/B]
+[SIZE="4"][COLOR="SkyBlue"][B]⌨️ SLASH COMMANDS & KEYBINDINGS[/B][/COLOR][/SIZE]
 [LIST]
-[*][B]Custom Keywords & Mention Alerts (Pings):[/B] Monitor custom words (e.g., [ICODE]@MyName, WTS, WTT, Tank, Heal, Motif, vSS[/ICODE]). When triggered, matching lines display a colored [B]★ star marker[/B] beside the timestamp, the keyword is framed in a clean [B][KEYWORD][/B] badge, and an audible chime plays. Features [B]7 accent colors[/B] (Skyrim Gold, Neon Pink, Celestial Cyan, Emerald Green, Burnt Amber, Arcanist Purple, Lightning Yellow) and retroactive real-time highlighting.
-[*][B]Live Chat Search (SearchBox):[/B] Instant live search filter in the header with a magnifier icon and one-click clear button. Filters active channel history by sender name or message content in real time.
-[*][B]Quick Copy Modal & Link Detection:[/B] Automatically detects Web URLs and Discord invites ([ICODE]discord.gg/...[/ICODE]), highlighting them in celestial sky-blue with a dedicated Nordic-styled Ctrl+C copy modal.
-[*][B]Enhanced Guild Store Sales Alerts:[/B] Automatically extracts the true sold item name or link ([ICODE]|H1:item:...|h[Item]|h[/ICODE]) from mail invoices, with clean formatting in chat and Center Screen Announcements (CSA).
-[*][B]Tri-Color Status Badges on Floating HUD Icon:[/B]
+[*][B]Esc -> Controls -> AetherChat:[/B] Bind any hotkey to toggle the messenger window.
+[*][B]/aetherchat[/B] or [B]/ac[/B] or [B]/aether[/B] — Toggle AetherChat window.
+[*][B]/aethericon[/B] — Show / hide the floating HUD dock widget.
+[*][B]/chathead[/B] — Test message and notification sounds.
+[/LIST]
+
+[HR][/HR]
+
+[CENTER]
+[SIZE="5"][COLOR="Gold"][B]🇫🇷 PRÉSENTATION & FONCTIONNALITÉS EN FRANÇAIS[/B][/COLOR][/SIZE]
+[/CENTER]
+
+[B]AetherChat[/B] transforme intégralement l'interface de discussion classique de The Elder Scrolls Online en une messagerie moderne, fluide et immersive, inspirée des meilleures applications contemporaines et de l'ambiance nordique des parchemins anciens.
+
+[HR][/HR]
+
+[SIZE="4"][COLOR="Orange"][B]✨ FONCTIONNALITÉS MAJEURES[/B][/COLOR][/SIZE]
+
+[B]🌟 Interface Moderne & Ergonomie Fluide[/B]
+[LIST]
+[*][B]Design Nordique Épuré :[/B] Panneaux ardoise sombres, bordures ouvragées et lisibilité optimale.
+[*][B]Volet Latéral Rétractable :[/B] Basculez en un clic du mode étendu (avec noms des canaux) au mode compact (avec icônes seules).
+[*][B]Remplacement Transparent du Chat Natif :[/B] Synchronisation totale avec le chat du jeu. Dès la fermeture d'AetherChat, la saisie clavier retourne immédiatement au chat par défaut.
+[*][B]Masquage Intelligent sur Menu Échap :[/B] Se masque automatiquement à la milliseconde près lors de l'ouverture du menu principal (Échap, Réglages, Extensions, Commandes) et se réaffiche dès le retour en jeu.
+[*][B]Masquage en Combat :[/B] Option de fermeture automatique lors de l'entrée en combat pour une visibilité totale.
+[/LIST]
+
+[B]⚙️ Canal « Système » Dédié & Capture des Annonces[/B]
+[LIST]
+[*][B]Onglet Système Dédié :[/B] Isole 100% des messages du moteur de jeu, alertes de zone, files d'attente et diffusions de serveur.
+[*][B]Icône Officielle d'Engrenage :[/B] Texture native d'ESO avec réorganisation par glisser-déposer.
+[/LIST]
+
+[B]🔔 Widget HUD Flottant & Badges Tri-Couleurs[/B]
+[LIST]
+[*][B]Icône HUD Déplaçable :[/B] Bouton discret positionnable librement sur votre écran avec mémorisation de l'emplacement.
+[*][B]Infobulle Complète au Survol :[/B] Récapitulatif instantané des messages non lus, amis en ligne et courriers en attente.
+[*][B]Badges Dynamiques :[/B]
   [LIST]
-  [*]🔴 [COLOR="Red"][B]Red Badge:[/B][/COLOR] Unread messages (whispers, guild, party).
-  [*]🟢 [COLOR="Lime"][B]Green Badge:[/B][/COLOR] Online friends count.
-  [*]🔵 [COLOR="DeepSkyBlue"][B]Blue Badge:[/B][/COLOR] Unread mail count.
+  [*]🔴 [COLOR="Red"][B]Pastille Rouge :[/B][/COLOR] Total des messages non lus (Chuchotements, Guildes, Groupe, Mentions).
+  [*]🟢 [COLOR="Lime"][B]Pastille Verte :[/B][/COLOR] Amis connectés en ligne.
+  [*]🔵 [COLOR="DeepSkyBlue"][B]Pastille Bleue :[/B][/COLOR] Courriers reçus non lus.
   [/LIST]
-[*][B]Multi-Resolution & UI Scaling:[/B] Auto-adapts to 720p, 1080p, 1440p (2K), and 2160p (4K) with a manual scale slider (60% to 150%).
-[*][B]Multi-Zone Language Filters:[/B] Instant language pill switcher (/frzone, /enzone, /dezone, /eszone, /global) directly within the zone header.
-[*][B]Collapsible Left Rail:[/B] Toggle between a full 216px channel sidebar and a sleek 62px compact icon dock with 1 click.
-[*][B]Loot Feed & 1-Click Need:[/B] Dedicated loot tab with uncollected set indicator and 1-click Need whisper to fellow group members.
-[*][B]Multi-Megaserver SavedVariables:[/B] Clean server separation ensuring EU, NA, and PTS profiles never overwrite each other.
-[*][B]Tamriel Visual Themes & Sounds:[/B] Choose between Skyrim Dragonborn, Dwemer Gold, Nordic Emerald, Crimson Sanctuary, or Dark Glass with high-audibility alerts.
 [/LIST]
 
-[B]Keybindings & Slash Commands:[/B]
+[B]💬 Canaux Organisés, Guildes & Chuchotements Privés (DMs)[/B]
 [LIST]
-[*][B]Esc -> Controls -> AetherChat:[/B] Bind any key to open / close the messenger.
-[*][B]/aetherc[/B] or [B]/aether[/B] — Toggle AetherChat Messenger window.
-[*][B]/aethericon[/B] — Show or hide the floating HUD dock icon.
-[*][B]/aethertest[/B] — Test notification sounds and layout.
+[*][B]Onglets Dédiés :[/B] Canaux séparés pour Zone, Général (/say), Groupe (/party), Système et Butin.
+[*][B]Sections de Guilde Repliables :[/B] Dépliez ou repliez vos 5 guildes avec indicateurs de présence.
+[*][B]Messagerie Privée Complète :[/B] Conversations individuelles avec résolution automatique des comptes (@AccountName), statut de présence, compteur non-lus et fermeture rapide.
+[/LIST]
+
+[B]🌍 Filtres de Zone Multilingues & Support Cyrillique[/B]
+[LIST]
+[*][B]Pastilles de Langue Interactives :[/B] Filtrez le canal Zone d'un simple clic : [B]ALL[/B], [B]FR[/B], [B]EN[/B], [B]DE[/B], [B]ES[/B], [B]GLOBAL[/B].
+[*][B]Support Intégral du Cyrillique :[/B] Rendu net des caractères russes, cyrilliques et internationaux sans boîte vide ([ICODE][][][][/ICODE]).
+[/LIST]
+
+[B]🔤 Curseur de Taille de Police en Temps Réel[/B]
+[LIST]
+[*][B]Typographie Dynamique :[/B] Ajustez précisément la taille de texte de 12px à 24px répercutée sur toute l'interface.
+[/LIST]
+
+[B]🔍 Recherche Textuelle en Direct (Live Search)[/B]
+[LIST]
+[*][B]Filtrage Instantané :[/B] Barre de recherche intégrée dans l'en-tête avec loupe et bouton d'effacement rapide.
+[/LIST]
+
+[B]🎯 Mots-Clés & Mentions Personnalisées (Pings)[/B]
+[LIST]
+[*][B]Surveillance Personnalisée :[/B] Suivez vos termes favoris ([ICODE]@MonPseudo, WTS, WTT, Tank, Heal, Motif, vCR, vSS, Cherche[/ICODE]).
+[*][B]Alerte Visuelle & Étoile ★ :[/B] Étoile dorée ★ et mot-clé encadré d'un badge coloré avec sonnerie claire.
+[*][B]7 Couleurs d'Accentuation au Choix :[/B] Or nordique, Rose Néon, Cyan Céleste, Vert Émeraude, Ambre, Violet Arcaniste ou Jaune Flash.
+[/LIST]
+
+[B]💎 Suivi du Butin & Demande de Set Rapide (Need 1-Clic)[/B]
+[LIST]
+[*][B]Journal de Butin Filtrable :[/B] Filtrez par qualité avec option "Équipement uniquement".
+[*][B]Détails Avancés des Objets :[/B] Traits d'armure, icônes d'objets et marqueur d'alerte [B]|cFFCC00!!!|r[/B] sur les sets.
+[*][B]Demande de Set d'un Clic :[/B] Clic droit sur un objet pour chuchoter directement au looteur.
+[/LIST]
+
+[B]💰 Alertes de Ventes en Boutique de Guilde (En Combat & Donjons)[/B]
+[LIST]
+[*][B]Scanner en Temps Réel :[/B] Détecte instantanément les ventes partout en jeu via l'historique de guilde.
+[*][B]Annonce CSA :[/B] Notification centrale dorée, tintement de pièces et archivage dans le canal Général.
+[/LIST]
+
+[B]🎨 Thèmes Visuels & Persistance Totale[/B]
+[LIST]
+[*][B]5 Thèmes Graphiques :[/B] Skyrim Dragonborn, Dwemer Gold, Nordic Emerald, Crimson Brotherhood et Dark Glass.
+[*][B]Sauvegarde Intégrale :[/B] Position, dimensions et taille de police conservées à chaque connexion.
 [/LIST]
 
 [HR][/HR]
 
-[SIZE="4"][COLOR="LightBlue"][B]🇫🇷 DESCRIPTION EN FRANÇAIS[/B][/COLOR][/SIZE]
-AetherChat remplace l'interface de discussion classique par une messagerie fluide, élégante et inspirée de Bordeciel :
-
-[B]Fonctionnalités Principales (v1.2) :[/B]
+[SIZE="4"][COLOR="SkyBlue"][B]⌨️ COMMANDES SLASH & RACCOURCIS[/B][/COLOR][/SIZE]
 [LIST]
-[*][B]Mots-Clés & Mentions Personnalisées (Pings) :[/B] Surveillez vos mots-clés favoris ([ICODE]@MonPseudo, WTS, WTT, Tank, Heal, Motif, vSS[/ICODE]). Lorsqu'un mot apparaît, la ligne affiche une [B]étoile d'alerte ★[/B] devant l'heure, le mot est mis en valeur dans un [B]badge stylisé [MOT][/B], et un son d'alerte retentit. Choix parmi [B]7 couleurs d'accentuation[/B] et rendu rétroactif instantané sur tout l'historique.
-[*][B]Recherche en Direct dans le Chat :[/B] Barre de recherche intégrée avec icône loupe pour filtrer instantanément les messages du canal actif par auteur ou mot-clé.
-[*][B]Copie Rapide de Message & Détection de Liens :[/B] Détection automatique des liens Web et Discord ([ICODE]discord.gg/...[/ICODE]) avec fenêtre de copie dédiée au style nordique (Ctrl+C).
-[*][B]Ventes de Boutique de Guilde Améliorées :[/B] Extraction automatique du véritable nom de l'objet vendu ([ICODE]|H1:item:...|h[Nom]|h[/ICODE]) depuis la facture, avec annonce au centre de l'écran (CSA) et log épuré dans le canal Général.
-[*][B]Pastilles Tri-Couleurs sur l'Icône HUD :[/B]
-  [LIST]
-  [*]🔴 [COLOR="Red"][B]Pastille Rouge :[/B][/COLOR] Messages non lus (chuchotements, guilde, groupe).
-  [*]🟢 [COLOR="Lime"][B]Pastille Verte :[/B][/COLOR] Nombre d'amis en ligne.
-  [*]🔵 [COLOR="DeepSkyBlue"][B]Pastille Bleue :[/B][/COLOR] Nombre de courriers reçus non lus.
-  [/LIST]
-[*][B]Adaptation Résolution & Échelle :[/B] Détection auto pour 720p, 1080p, 1440p (2K) et 2160p (4K), avec curseur manuel de 60% à 150%.
-[*][B]Filtres de Zone Multilingues :[/B] Basculez d'un clic entre les canaux (/frzone, /enzone, /dezone, /eszone, /global).
-[*][B]Panneau Latéral Rétractable :[/B] Passez du mode étendu (216px) au mode compact (62px) pour agrandir l'espace de lecture.
-[*][B]Canal Butin & Demande de Set (Need 1-Clic) :[/B] Suivez les loots du groupe et demandez les pièces manquantes d'un clic droit.
-[*][B]Support Multi-Serveurs (EU / NA / PTS) :[/B] Sauvegarde indépendante pour chaque mégaserveur.
+[*][B]Échap -> Commandes -> AetherChat :[/B] Attribuez un raccourci clavier pour ouvrir / fermer la messagerie.
+[*][B]/aetherchat[/B] ou [B]/ac[/B] ou [B]/aether[/B] — Ouvrir / Fermer AetherChat.
+[*][B]/aethericon[/B] — Afficher / Masquer l'icône HUD flottante.
+[*][B]/chathead[/B] — Tester les sons et l'interface.
 [/LIST]
 
 [HR][/HR]
 
-[SIZE="4"][COLOR="Yellow"][B]📋 CHANGELOG[/B][/COLOR][/SIZE]
-[B]Version 1.2.2[/B]
-[LIST]
-[*]Fixed native ESO chat text entry restoration: text input is immediately undocked back to native chat upon closing AetherChat, ensuring 100% full compatibility when typing in the default interface.
-[*]Re-enabled direct left-click toggle on the floating moveable HUD icon to open and close AetherChat.
-[*]Added dedicated official Skyrim close button (ZO_CloseButton) in the top-right window header.
-[/LIST]
-
-[B]Version 1.2.0[/B]
-[LIST]
-[*]Added Custom Keywords & Mention Alerts system with ★ star prefix, [KEYWORD] bracketed badges, and 7 selectable accent colors.
-[*]Added Live Chat Search bar with instant active-channel filtering and quick clear.
-[*]Added Dedicated Copy Modal with automatic Discord & Web URL detection.
-[*]Enhanced Guild Store Sales: auto-extracts true item name/link from mail invoices with refined CSA alerts.
-[*]Added Tri-Color Status Badges on floating HUD icon (🔴 Red for unread messages, 🟢 Green for online friends, 🔵 Blue for unread mail).
-[*]Added Screen Resolution auto-detection (720p to 4K) and manual window scaling slider (60% to 150%).
-[*]Streamlined guild member login/logout notifications to eliminate duplicate name prefixes.
-[*]Fixed history retention type conversion issue in History.PruneExpiredMessages.
-[*]Fixed SearchBox XML layout anchors for instant focus on click.
-[/LIST]
+[CENTER]
+[SIZE="2"][COLOR="Gray"]AetherChat — Conçu avec passion pour la communauté de The Elder Scrolls Online.[/COLOR][/SIZE]
+[/CENTER]
 ```

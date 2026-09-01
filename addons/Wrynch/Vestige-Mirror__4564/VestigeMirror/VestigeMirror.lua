@@ -12,6 +12,7 @@ function VestigeMirror:Initialize()
 
     self.Data:Initialize()
     self.Preview:Initialize()
+    self.Actions:Initialize()
     self.UI:Initialize(VestigeMirrorWindow)
     self.Scene:Initialize()
 

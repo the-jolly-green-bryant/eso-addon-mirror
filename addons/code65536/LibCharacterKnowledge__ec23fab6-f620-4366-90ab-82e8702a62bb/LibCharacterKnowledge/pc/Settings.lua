@@ -501,7 +501,6 @@ LCCC.RunAfterInitialLoadscreen(function( )
 		local importedCount, stringId, newCharacter = Internal.ProcessImportData(...)
 
 		if (importedCount > 0) then
-			Internal.caches = { }
 			Internal.NotifyRefresh(newCharacter)
 		end
 

@@ -74,7 +74,7 @@
     "LootLog"
   ],
   "download_url": "https://www.esoui.com/downloads/dl1455/",
-  "fingerprint": "79fe18eac55edc53df852e8ad3b8733ec102b6c9487701333f79e3e6541913a7",
+  "fingerprint": "75e3e1840b92d0c865dfe2df2cb75aace9479da0c18bbda5fb843233c0758b4f",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw9816.png",
     "https://cdn-eso.mmoui.com/preview/pvw9817.png",
@@ -92,11 +92,11 @@
   "source_id": "1455",
   "source_url": "https://www.esoui.com/downloads/info1455-LootLog.html",
   "stats": {
-    "downloads": 1629267,
-    "favorites": 501,
-    "monthly_downloads": 12493
+    "downloads": 1635544,
+    "favorites": 502,
+    "monthly_downloads": 16271
   },
   "title": "Loot Log",
-  "updated_at": 1785938220000,
-  "version": "4.9.6"
+  "updated_at": 1788193920000,
+  "version": "4.9.6.1"
 }

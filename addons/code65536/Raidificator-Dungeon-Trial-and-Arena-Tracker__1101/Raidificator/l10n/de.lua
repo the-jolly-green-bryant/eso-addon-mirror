@@ -19,6 +19,9 @@ Register("SI_RCR_HEADER_CLEAR"            , "Clear")
 Register("SI_RCR_COMPLETED_COUNT"         , "%d / %d abgeschlossen (%d%%)")
 Register("SI_RCR_LINK_INCOMPLETE"         , "Nicht abgeschlossene im Chat einfügen")
 
+Register("SI_RCR_DISPLAY_SCORE_BANNER"    , "Ergebnisbanner anzeigen")
+Register("SI_RCR_UNADJUSTED_SCORE"        , "Ergebnis ohne Zeitmodifikatoren")
+
 Register("SI_RCR_ALL_ACCOUNTS"            , "Alle Accounts")
 Register("SI_RCR_GROUP_MEMBERS"           , "Gruppenmitglieder")
 

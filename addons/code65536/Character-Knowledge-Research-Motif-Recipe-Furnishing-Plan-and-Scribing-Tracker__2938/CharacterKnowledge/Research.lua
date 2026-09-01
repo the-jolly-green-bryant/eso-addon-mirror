@@ -289,7 +289,12 @@ function ResearchLine:SetTrait( traitIndex, symbolState, multiRatio )
 	end
 
 	if (multiRatio < 1) then
-		grid:SetColor(indId, CharacterKnowledge.GetRatioColorUnpacked(multiRatio))
+		if (CharacterKnowledge.vars.showOthersInResearchGrid == true) then
+			grid:SetColor(indId, CharacterKnowledge.GetRatioColorUnpacked(multiRatio))
+		else
+			local satAlpha = (1 - multiRatio) * 0.8 + 0.2
+			grid:SetColor(indId, LCCC.HSLToRGB(0.5, satAlpha , 0.5, satAlpha))
+		end
 		grid:SetSurfaceHidden(indId, false)
 	else
 		grid:SetSurfaceHidden(indId, true)

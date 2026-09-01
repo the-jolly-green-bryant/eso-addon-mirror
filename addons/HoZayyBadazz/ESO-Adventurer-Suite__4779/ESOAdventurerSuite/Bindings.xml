@@ -10,16 +10,15 @@
             <Action name="ESO_PROGRESSION_COACH_TOGGLE">
                 <Down>ESOProgressionCoach_Toggle()</Down>
             </Action>
-            <Action name="ESO_PROGRESSION_COACH_INTERACT">
-                <Down>ESOProgressionCoach_Interact()</Down>
-            </Action>
-            <Action name="ESO_ADVENTURER_SUITE_GF_NEXT_CATEGORY">
-                <Down>ESOAdventurerSuite_GroupFinderNextCategory()</Down>
-            </Action>
-            <Action name="ESO_ADVENTURER_SUITE_GF_TOGGLE_DIFFICULTY">
-                <Down>ESOAdventurerSuite_GroupFinderToggleDifficulty()</Down>
+            <Action name="ESO_ADVENTURER_SUITE_GAME_MODE_REPORT">
+                <Down>ESOAdventurerSuite_ToggleGameModeReport()</Down>
             </Action>
 </Category>
+        <Category name="SI_BINDING_NAME_ESO_ADVENTURER_SUITE_ANTIQUITIES_CATEGORY">
+            <Action name="ESO_ADVENTURER_SUITE_ANTIQUITY_LEAD_FINDER">
+                <Down>ESOAdventurerSuite_ToggleAntiquityLeadFinder()</Down>
+            </Action>
+        </Category>
     </Layer>
 
     <!--
@@ -57,6 +56,24 @@
         <Category name="SI_KEYBINDINGS_CATEGORY_GENERAL">
             <Action name="ESO_PROGRESSION_COACH_TOGGLE_LOADOUTS" hideAction="true" inheritsBindFrom="ESO_PROGRESSION_COACH_TOGGLE">
                 <Down>ESOProgressionCoach_Toggle()</Down>
+            </Action>
+        </Category>
+    </Layer>
+
+    <!-- Keep the Antiquity Lead Finder hotkey active while it owns mouse/UI mode. -->
+    <Layer name="ESOAdventurerSuiteAntiquityLeadFinderLayer" allowFallthrough="true">
+        <Category name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+            <Action name="ESO_ADVENTURER_SUITE_ANTIQUITY_LEAD_FINDER_CLOSE" hideAction="true" inheritsBindFrom="ESO_ADVENTURER_SUITE_ANTIQUITY_LEAD_FINDER">
+                <Down>ESOAdventurerSuite_ToggleAntiquityLeadFinder()</Down>
+            </Action>
+        </Category>
+    </Layer>
+
+    <!-- Keep the report hotkey active while the report owns mouse/UI mode. -->
+    <Layer name="ESOAdventurerSuiteGameModeReportLayer" allowFallthrough="true">
+        <Category name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+            <Action name="ESO_ADVENTURER_SUITE_GAME_MODE_REPORT_CLOSE" hideAction="true" inheritsBindFrom="ESO_ADVENTURER_SUITE_GAME_MODE_REPORT">
+                <Down>ESOAdventurerSuite_ToggleGameModeReport()</Down>
             </Action>
         </Category>
     </Layer>

@@ -1,6 +1,6 @@
 local ADDON_NAME = "TamrielProgressMap"
 local DISPLAY_NAME = "Tamriel Progress Map"
-local VERSION = "2.6.30_Beta"
+local VERSION = "2.6.72_Beta"
 local AUTHOR = "Raccoonplayz"
 local PIN_TYPE_STRING = "TamrielProgressMap_ZoneProgressPin"
 
@@ -63,10 +63,23 @@ local DEFAULTS =
     skyshardGoalCustomWidth = false, -- 2.6.25: optional user-sized HUD width
     skyshardGoalCustomHeight = false, -- 2.6.25: optional user-sized HUD height
     progressGoalCategoryType = false, -- 2.6.26: currently selected progress-category HUD row
-    statisticsFocusZoneId = 0, -- 2.6.14: 0=all Tamriel, otherwise one supported progress zone
+    statisticsFocusZoneId = 0,
+    alliancePlannerMapZoom = 1.0,
+    alliancePlannerMapCenterX = 0.5,
+    alliancePlannerMapCenterY = 0.5,
+    alliancePlannerTerritoryColors = true,
+ -- 2.6.14: 0=all Tamriel, otherwise one supported progress zone
     combatStatsByCharacter = {},
     economyStats = { trackingVersion = "2.0.10", currencies = {} }, -- legacy account-wide ledger from 2.0.10-2.0.14
     economyStatsByCharacter = {},
+    economyZoneStatsByCharacter = {}, -- 2.6.32: zone-specific economy ledger; starts with this version
+    economyZoneTrackingStartedAt = 0,
+    economyDetailFocusZoneId = 0,
+    economyDetailView = "overview",
+    economyDetailX = false,
+    economyDetailY = false,
+    showAllianceTerritoryColors = false, -- 2.6.32 community: original alliance territory overlay
+    allianceNeutralWhite = true,
     historyByCharacter = {},
     milestoneStateByCharacter = {},
     historyEnabled = true,
@@ -810,6 +823,50 @@ function TPM:GetEconomyStats()
         self.saved.milestoneStateByCharacter = {}
     end
 
+
+    -- 2.6.46: preserve the oldest Economy cache if a previous build stored the
+    -- character under the fallback name/"player" key. Never add caches together:
+    -- pick the richest existing cache only when the current ID cache is missing
+    -- or contains less historical activity. This prevents duplicate totals.
+    local function EconomyCacheScore(cache)
+        if type(cache) ~= "table" or type(cache.currencies) ~= "table" then return 0 end
+        local score = 0
+        for _, e in pairs(cache.currencies) do
+            if type(e) == "table" then
+                score = score + math.max(0, tonumber(e.received) or 0)
+                score = score + math.max(0, tonumber(e.spent) or 0)
+                score = score + math.max(0, tonumber(e.fenceSales) or 0)
+                score = score + math.max(0, tonumber(e.stolenGold) or 0)
+                score = score + math.max(0, tonumber(e.bountyPaid) or 0)
+            end
+        end
+        return score
+    end
+
+    local currentKey = self:GetCurrentCharacterStatsKey()
+    local currentCache = self.saved.economyStatsByCharacter[currentKey]
+    local bestCache, bestScore = currentCache, EconomyCacheScore(currentCache)
+    local fallbackKeys = { "player" }
+    local rawName = type(GetUnitName) == "function" and (GetUnitName("player") or "") or ""
+    if rawName ~= "" then
+        fallbackKeys[#fallbackKeys + 1] = rawName
+        if type(zo_strformat) == "function" then
+            local formatted = zo_strformat("<<C:1>>", rawName)
+            if formatted and formatted ~= "" then fallbackKeys[#fallbackKeys + 1] = formatted end
+        end
+    end
+    for _, legacyKey in ipairs(fallbackKeys) do
+        if legacyKey ~= currentKey then
+            local candidate = self.saved.economyStatsByCharacter[legacyKey]
+            local score = EconomyCacheScore(candidate)
+            if score > bestScore then
+                bestCache, bestScore = candidate, score
+            end
+        end
+    end
+    if bestCache and bestCache ~= currentCache then
+        self.saved.economyStatsByCharacter[currentKey] = bestCache
+    end
     local key = self:GetCurrentCharacterStatsKey()
     local stats = self.saved.economyStatsByCharacter[key]
     if type(stats) ~= "table" then
@@ -846,6 +903,180 @@ function TPM:GetEconomyStats()
     return stats
 end
 
+
+-- v2.6.32 Zone Economy ---------------------------------------------------------
+-- Zone ledgers intentionally start with 2.6.32. Existing global Economy totals
+-- remain untouched because ESO cannot reconstruct historical transactions by zone.
+function TPM:GetEconomyTrackingZoneId()
+    if type(GetUnitZoneIndex) ~= "function" or type(GetZoneId) ~= "function" then return 0 end
+    local zoneIndex = GetUnitZoneIndex("player")
+    if not zoneIndex or zoneIndex <= 0 then return 0 end
+    local zoneId = tonumber(GetZoneId(zoneIndex)) or 0
+    if zoneId <= 0 then return 0 end
+    -- Prefer the stable parent zone for interiors/delves when ESO exposes it.
+    if type(GetParentZoneId) == "function" then
+        local parentId = tonumber(GetParentZoneId(zoneId)) or 0
+        if parentId > 0 then zoneId = parentId end
+    end
+    return zoneId
+end
+
+function TPM:GetEconomyZoneStore()
+    if not self.saved then return nil end
+    if type(self.saved.economyZoneStatsByCharacter) ~= "table" then
+        self.saved.economyZoneStatsByCharacter = {}
+    end
+    if not tonumber(self.saved.economyZoneTrackingStartedAt) or tonumber(self.saved.economyZoneTrackingStartedAt) <= 0 then
+        self.saved.economyZoneTrackingStartedAt = (type(GetTimeStamp) == "function" and GetTimeStamp()) or 0
+    end
+    local charKey = self:GetCurrentCharacterStatsKey()
+    local store = self.saved.economyZoneStatsByCharacter[charKey]
+    if type(store) ~= "table" then
+        store = { trackingVersion = "2.6.32", zones = {} }
+        self.saved.economyZoneStatsByCharacter[charKey] = store
+    end
+    if type(store.zones) ~= "table" then store.zones = {} end
+    return store
+end
+
+function TPM:GetEconomyZoneEntry(zoneId, create)
+    zoneId = tonumber(zoneId) or 0
+    if zoneId <= 0 then return nil end
+    local store = self:GetEconomyZoneStore()
+    if not store then return nil end
+    local key = tostring(zoneId)
+    local entry = store.zones[key]
+    if type(entry) ~= "table" and create then
+        entry = {
+            zoneId = zoneId, received = 0, spent = 0, bankDeposited = 0, bankWithdrawn = 0,
+            fenceSales = 0, stolenGold = 0, bountyPaid = 0, transactions = 0,
+        }
+        store.zones[key] = entry
+    end
+    if type(entry) == "table" then
+        for _, field in ipairs({"received","spent","bankDeposited","bankWithdrawn","fenceSales","stolenGold","bountyPaid","transactions"}) do
+            entry[field] = math.max(0, Round(tonumber(entry[field]) or 0))
+        end
+    end
+    return entry
+end
+
+function TPM:RecordEconomyZoneDelta(delta, reason)
+    delta = tonumber(delta) or 0
+    if delta == 0 then return end
+    local zoneId = self:GetEconomyTrackingZoneId()
+    local entry = self:GetEconomyZoneEntry(zoneId, true)
+    if not entry then return end
+    entry.transactions = (entry.transactions or 0) + 1
+    if delta > 0 then entry.received = (entry.received or 0) + delta
+    else entry.spent = (entry.spent or 0) + math.abs(delta) end
+    if delta > 0 then
+        if _G.CURRENCY_CHANGE_REASON_SELL_STOLEN and reason == _G.CURRENCY_CHANGE_REASON_SELL_STOLEN then
+            entry.fenceSales = (entry.fenceSales or 0) + delta
+        elseif (_G.CURRENCY_CHANGE_REASON_LOOT_STOLEN and reason == _G.CURRENCY_CHANGE_REASON_LOOT_STOLEN)
+            or (_G.CURRENCY_CHANGE_REASON_PICKPOCKET and reason == _G.CURRENCY_CHANGE_REASON_PICKPOCKET) then
+            entry.stolenGold = (entry.stolenGold or 0) + delta
+        end
+    end
+end
+
+function TPM:RecordEconomyZoneBankTransfer(amount, isDeposit)
+    amount = math.max(0, tonumber(amount) or 0)
+    if amount <= 0 then return end
+    local entry = self:GetEconomyZoneEntry(self:GetEconomyTrackingZoneId(), true)
+    if not entry then return end
+    if isDeposit then entry.bankDeposited = (entry.bankDeposited or 0) + amount
+    else entry.bankWithdrawn = (entry.bankWithdrawn or 0) + amount end
+end
+
+function TPM:GetEconomyZoneName(zoneId)
+    zoneId = tonumber(zoneId) or 0
+    if zoneId <= 0 then return self:L("ECON_DETAIL_ALL_TAMRIEL") end
+
+    -- Do not call the later local SafeZoneName() helper here: this Economy
+    -- function is defined earlier in the file, so that local is not in lexical
+    -- scope yet. Resolve the TPM-selected language directly through LibZone.
+    local lang = self.langCode or "en"
+    local libZone = _G.LibZone
+
+    if libZone then
+        local namesByLanguage = libZone.preloadedZoneNames
+        local languageNames = namesByLanguage and namesByLanguage[lang]
+        local localizedName = languageNames and languageNames[zoneId]
+        if type(localizedName) == "string" and localizedName ~= "" then
+            return localizedName
+        end
+
+        local savedLocalized = libZone.localizedZoneData and libZone.localizedZoneData[lang]
+        localizedName = savedLocalized and savedLocalized[zoneId]
+        if type(localizedName) == "string" and localizedName ~= "" then
+            return localizedName
+        end
+    end
+
+    -- Safe fallback for a new zone not yet known to LibZone.
+    local name = type(GetZoneNameById) == "function" and GetZoneNameById(zoneId) or ""
+    if name and name ~= "" then
+        if type(ZO_CachedStrFormat) == "function" and type(SI_ZONE_NAME) ~= "nil" then
+            local ok, formatted = pcall(ZO_CachedStrFormat, SI_ZONE_NAME, name)
+            if ok and formatted and formatted ~= "" then return formatted end
+        end
+        if type(zo_strformat) == "function" then
+            local ok, formatted = pcall(zo_strformat, "<<C:1>>", name)
+            if ok and formatted and formatted ~= "" then return formatted end
+        end
+        return name
+    end
+
+    return tostring(zoneId)
+end
+
+function TPM:GetEconomyZoneChoices()
+    local choices = { { zoneId = 0, name = self:L("ECON_DETAIL_ALL_TAMRIEL") } }
+    local seen = {}
+
+    -- Use TPM's already validated progress-zone catalogue so the selector is
+    -- useful immediately after installation instead of only after a purchase.
+    for zoneId in pairs(self:GetAllProgressZoneIds() or {}) do
+        zoneId = tonumber(zoneId) or 0
+        if zoneId > 0 and not seen[zoneId] then
+            seen[zoneId] = true
+            choices[#choices + 1] = { zoneId = zoneId, name = self:GetEconomyZoneName(zoneId) }
+        end
+    end
+
+    -- Keep recorded zones available even if an unusual zone is not part of the
+    -- normal completion catalogue.
+    local store = self:GetEconomyZoneStore()
+    for _, entry in pairs((store and store.zones) or {}) do
+        local zid = tonumber(entry.zoneId) or 0
+        if zid > 0 and not seen[zid] then
+            seen[zid] = true
+            choices[#choices + 1] = { zoneId = zid, name = self:GetEconomyZoneName(zid) }
+        end
+    end
+
+    table.sort(choices, function(a,b)
+        if a.zoneId == 0 then return true end
+        if b.zoneId == 0 then return false end
+        return string.lower(a.name or "") < string.lower(b.name or "")
+    end)
+    return choices
+end
+
+function TPM:GetEconomyDetailAggregate(zoneId)
+    local result = { received=0, spent=0, bankDeposited=0, bankWithdrawn=0, fenceSales=0, stolenGold=0, bountyPaid=0, transactions=0 }
+    local store = self:GetEconomyZoneStore()
+    if not store then return result end
+    for _, e in pairs(store.zones or {}) do
+        if (tonumber(zoneId) or 0) == 0 or tonumber(e.zoneId) == tonumber(zoneId) then
+            for k in pairs(result) do result[k] = result[k] + math.max(0, tonumber(e[k]) or 0) end
+        end
+    end
+    result.net = result.received - result.spent
+    return result
+end
+
 function TPM:IsEconomyBankTransferReason(reason)
     if _G.CURRENCY_CHANGE_REASON_BANK_DEPOSIT and reason == _G.CURRENCY_CHANGE_REASON_BANK_DEPOSIT then return true end
     if _G.CURRENCY_CHANGE_REASON_BANK_WITHDRAWAL and reason == _G.CURRENCY_CHANGE_REASON_BANK_WITHDRAWAL then return true end
@@ -870,8 +1101,10 @@ function TPM:RecordEconomyPersonalBankTransfer(definition, currencyLocation, new
     if not entry then return true end
     if isDeposit and delta < 0 then
         entry.bankDeposited = math.max(0, Round((tonumber(entry.bankDeposited) or 0) + math.abs(delta)))
+        self:RecordEconomyZoneBankTransfer(math.abs(delta), true)
     elseif isWithdrawal and delta > 0 then
         entry.bankWithdrawn = math.max(0, Round((tonumber(entry.bankWithdrawn) or 0) + delta))
+        self:RecordEconomyZoneBankTransfer(delta, false)
     end
     return true
 end
@@ -945,6 +1178,12 @@ function TPM:RecordEconomyCurrencyChange(currencyType, currencyLocation, newAmou
     else
         entry.spent = math.max(0, Round((tonumber(entry.spent) or 0) + math.abs(delta)))
     end
+    -- 2.6.32: only Gold gets the detailed zone ledger. Other currencies keep
+    -- their established global/character tracking to avoid implying a location
+    -- ESO does not reliably provide for every currency source.
+    if definition.key == "gold" then
+        self:RecordEconomyZoneDelta(delta, reason)
+    end
 
     if self.statisticsWindow and not self.statisticsWindow:IsHidden() and self.saved then
         if self.saved.statisticsPage == "economy" then
@@ -970,6 +1209,8 @@ function TPM:RecordEconomyBountyPayment(goldAmount)
     if not entry then return end
 
     entry.bountyPaid = math.max(0, Round((tonumber(entry.bountyPaid) or 0) + goldAmount))
+    local zoneEntry = self:GetEconomyZoneEntry(self:GetEconomyTrackingZoneId(), true)
+    if zoneEntry then zoneEntry.bountyPaid = math.max(0, Round((tonumber(zoneEntry.bountyPaid) or 0) + goldAmount)) end
     entry.bountyTrackingVersion = entry.bountyTrackingVersion or "2.6.22"
 
     if self.statisticsWindow and not self.statisticsWindow:IsHidden() and self.saved then
@@ -1549,6 +1790,7 @@ function TPM:ObserveWorldEventActivation(worldEventInstanceId, stepDefId)
             participating = false,
             activationCandidate = true,
             evidenceCount = 0,
+            explicitParticipation = false,
         }
         self.worldEventTrackers[id] = tracker
     end
@@ -1596,15 +1838,9 @@ function TPM:MarkNearbyWorldEventParticipationEvidence(evidenceKind)
 
     if marked then return true end
 
-    -- Dark Anchors normally have only one active World Event POI in a zone.
-    -- If ESO withholds the proximity flag but there is exactly one active event
-    -- in the player's zone, combat/XP/Gold is strong enough evidence to promote
-    -- that candidate. For zones with multiple simultaneous events we stay
-    -- conservative to avoid assigning activity to the wrong dragon/event.
-    if #sameZoneCandidates == 1 then
-        local candidate = sameZoneCandidates[1]
-        return MarkTracker(candidate.id, candidate.tracker)
-    end
+    -- Never infer participation merely because this is the only active World
+    -- Event in the zone. Generic quest reward XP can otherwise create a false
+    -- Dolmen entry while the player is doing an unrelated quest nearby.
     return false
 end
 
@@ -1637,6 +1873,7 @@ function TPM:BeginWorldEventParticipation(worldEventInstanceId, stepDefId)
     tracker.stepDefId = tonumber(stepDefId) or tracker.stepDefId or 0
     tracker.participating = true
     tracker.everParticipated = true
+    tracker.explicitParticipation = true
     tracker.activationCandidate = tracker.activationCandidate == true
     tracker.evidenceCount = math.max(1, tonumber(tracker.evidenceCount) or 0)
     tracker.lastSeenAt = now
@@ -1789,6 +2026,19 @@ function TPM:FinalizeWorldEventActivity(worldEventInstanceId)
     local metadata = tracker.metadata or self:GetWorldEventMetadata(id, tracker.stepDefId)
     local kind = tracker.kind or self:ClassifyWorldEvent(metadata)
     local name = tracker.name or self:GetWorldEventDisplayName(metadata, kind)
+
+    -- Evidence-only trackers must show actual encounter involvement. This
+    -- prevents ordinary quest XP (for example Bilsas Lieferung) from creating
+    -- a nearby Dolmen/World Event completion in Quests & Activities.
+    if tracker.explicitParticipation ~= true then
+        local encounterEvidence =
+            math.max(0, tonumber(tracker.observedNpcKills) or 0) +
+            math.max(0, tonumber(tracker.observedBossKills) or 0) +
+            math.max(0, tonumber(tracker.observedPveDeaths) or 0)
+        if encounterEvidence <= 0 and math.max(0, tonumber(tracker.goldEarned) or 0) <= 0 then
+            return
+        end
+    end
 
     self:AddActivityLogEntry({
         activityKind = kind,
@@ -2484,45 +2734,12 @@ function TPM:GetCachedQuestCompletionData(questName)
     return cached
 end
 
-local function TPM_GetLogDateText(timestamp)
+local function TPM_GetLocalTimestampParts(timestamp)
     timestamp = tonumber(timestamp) or TPM_Now()
-    if type(GetDateStringFromTimestamp) == "function" then
-        local ok, value = pcall(GetDateStringFromTimestamp, timestamp)
-        if ok and type(value) == "string" and value ~= "" then return value end
-    end
-    return ""
-end
+    if timestamp <= 0 then return nil end
 
-local function TPM_GetCurrentLogTimeText()
-    -- GetSecondsSinceMidnight is the most reliable ESO source for the local
-    -- player clock. Prefer it over GetTimeString, whose return format differs
-    -- between client locales and UI settings.
-    if type(GetSecondsSinceMidnight) == "function" then
-        local ok, seconds = pcall(GetSecondsSinceMidnight)
-        seconds = ok and tonumber(seconds) or nil
-        if seconds then
-            local hours = math.floor(seconds / 3600) % 24
-            local minutes = math.floor(seconds / 60) % 60
-            return string.format("%02d:%02d", hours, minutes)
-        end
-    end
-    if type(GetTimeString) == "function" then
-        local ok, value = pcall(GetTimeString)
-        if ok and type(value) == "string" and value ~= "" then
-            local hh, mm = value:match("(%d%d?)[:%.](%d%d)")
-            if hh and mm then return string.format("%02d:%02d", tonumber(hh) or 0, tonumber(mm) or 0) end
-        end
-    end
-    return ""
-end
-
-local function TPM_GetLogTimeTextFromTimestamp(timestamp)
-    timestamp = tonumber(timestamp) or 0
-    if timestamp <= 0 then return "" end
-
-    -- Recover local clock time for old entries too. GetTimeStamp is epoch based,
-    -- while GetSecondsSinceMidnight reflects the client's local clock. Their
-    -- difference gives us the current local offset without requiring os.date.
+    -- Derive the player's current local offset from ESO's own local clock.
+    local offset = 0
     if type(GetTimeStamp) == "function" and type(GetSecondsSinceMidnight) == "function" then
         local okStamp, nowStamp = pcall(GetTimeStamp)
         local okLocal, localSeconds = pcall(GetSecondsSinceMidnight)
@@ -2530,33 +2747,103 @@ local function TPM_GetLogTimeTextFromTimestamp(timestamp)
         localSeconds = okLocal and tonumber(localSeconds) or nil
         if nowStamp and localSeconds then
             local utcSeconds = nowStamp % 86400
-            local offset = localSeconds - utcSeconds
+            offset = localSeconds - utcSeconds
             if offset > 43200 then offset = offset - 86400 end
             if offset < -43200 then offset = offset + 86400 end
-            local seconds = (timestamp + offset) % 86400
-            local hours = math.floor(seconds / 3600) % 24
-            local minutes = math.floor(seconds / 60) % 60
-            return string.format("%02d:%02d", hours, minutes)
         end
+    end
+
+    local adjusted = timestamp + offset
+    if type(os) == "table" and type(os.date) == "function" then
+        local ok, parts = pcall(os.date, "!*t", adjusted)
+        if ok and type(parts) == "table" then return parts end
+    end
+
+    -- Fallback: time portion can still be reconstructed without os.date.
+    local seconds = adjusted % 86400
+    return {
+        hour = math.floor(seconds / 3600) % 24,
+        min = math.floor(seconds / 60) % 60,
+    }
+end
+
+local function TPM_GetLocalizedLogDateText(timestamp, lang)
+    local p = TPM_GetLocalTimestampParts(timestamp)
+    lang = tostring(lang or "en")
+
+    if p and p.year and p.month and p.day then
+        if lang == "en" then
+            return string.format("%02d/%02d/%04d", p.month, p.day, p.year)
+        elseif lang == "fr" then
+            return string.format("%02d/%02d/%04d", p.day, p.month, p.year)
+        elseif lang == "ru" then
+            return string.format("%02d.%02d.%04d", p.day, p.month, p.year)
+        end
+        return string.format("%02d.%02d.%04d", p.day, p.month, p.year)
+    end
+
+    -- Only as a last resort use ESO's client-locale string.
+    if type(GetDateStringFromTimestamp) == "function" then
+        local ok, value = pcall(GetDateStringFromTimestamp, tonumber(timestamp) or TPM_Now())
+        if ok and type(value) == "string" then return value end
     end
     return ""
 end
 
+local function TPM_GetLocalizedLogTimeText(timestamp, lang)
+    local p = TPM_GetLocalTimestampParts(timestamp)
+    if not p or p.hour == nil or p.min == nil then return "" end
+
+    local hour = tonumber(p.hour) or 0
+    local minute = tonumber(p.min) or 0
+    if tostring(lang or "en") == "en" then
+        local suffix = hour >= 12 and "PM" or "AM"
+        local displayHour = hour % 12
+        if displayHour == 0 then displayHour = 12 end
+        return string.format("%d:%02d %s", displayHour, minute, suffix)
+    end
+
+    -- DE / FR / RU use a 24-hour clock.
+    return string.format("%02d:%02d", hour, minute)
+end
+
+local function TPM_GetCurrentLogTimeText()
+    local now = type(GetTimeStamp) == "function" and GetTimeStamp() or 0
+    return TPM_GetLocalizedLogTimeText(now, TPM and TPM.langCode or "en")
+end
+
+local function TPM_GetLogTimeTextFromTimestamp(timestamp)
+    return TPM_GetLocalizedLogTimeText(timestamp, TPM and TPM.langCode or "en")
+end
+
 function TPM:FormatLogTimestamp(entry)
     if type(entry) ~= "table" then return "" end
+
+    local lang = self.langCode or "en"
+    local timestamp = tonumber(entry.timestamp) or 0
+
+    -- Always reformat from the stored timestamp. Older entries may contain
+    -- German-formatted cached strings, which must not leak into EN/RU/FR.
+    if timestamp > 0 then
+        local dateText = TPM_GetLocalizedLogDateText(timestamp, lang)
+        local timeText = TPM_GetLocalizedLogTimeText(timestamp, lang)
+        if dateText ~= "" and timeText ~= "" then return dateText .. " • " .. timeText end
+        return dateText ~= "" and dateText or timeText
+    end
+
+    -- Legacy fallback only for entries that predate timestamp storage.
     local dateText = tostring(entry.logDateText or "")
-    if dateText == "" then dateText = TPM_GetLogDateText(entry.timestamp) end
     local timeText = tostring(entry.logTimeText or "")
-    if timeText == "" then timeText = TPM_GetLogTimeTextFromTimestamp(entry.timestamp) end
     if dateText ~= "" and timeText ~= "" then return dateText .. " • " .. timeText end
     return dateText ~= "" and dateText or timeText
 end
+
 
 function TPM:AddActivityLogEntry(entry)
     if type(entry) ~= "table" then return end
     if not TPM_IsMeaningfulDynamicEncounter(entry) then return end
     entry.timestamp = tonumber(entry.timestamp) or TPM_Now()
-    if tostring(entry.logDateText or "") == "" then entry.logDateText = TPM_GetLogDateText(entry.timestamp) end
+    if tostring(entry.logDateText or "") == "" then entry.logDateText = TPM_GetLocalizedLogDateText(entry.timestamp, self.langCode or "en") end
     if tostring(entry.logTimeText or "") == "" then entry.logTimeText = TPM_GetCurrentLogTimeText() end
     local store = self:GetHistoryStore()
     if not store then return end
@@ -4273,6 +4560,76 @@ end
 -- HUD/HUD-UI scenes, but disappears when the world map (M), game menu (ESC) or
 -- another full-screen scene takes over. The Skyshard goal now follows exactly
 -- that scene rule instead of being an always-on top-level overlay.
+function TPM:IsStatisticsAllowedInCurrentScene()
+    local sceneManager = _G.SCENE_MANAGER
+    if not sceneManager or type(sceneManager.GetCurrentScene) ~= "function" then return true end
+    local ok, currentScene = pcall(sceneManager.GetCurrentScene, sceneManager)
+    if not ok or not currentScene then return true end
+    return currentScene == _G.HUD_SCENE
+        or currentScene == _G.HUD_UI_SCENE
+        or currentScene == _G.WORLD_MAP_SCENE
+        or currentScene == _G.GAMEPAD_WORLD_MAP_SCENE
+end
+
+function TPM:RefreshStandaloneStatisticsSceneVisibility()
+    local window = self.statisticsWindow
+    if not window or not self.statisticsOpenedStandalone then return end
+
+    -- 2.6.34: ESC should close a standalone journal instead of merely hiding it.
+    -- Compare both the scene object and its name for compatibility across UI revisions.
+    local sceneManager = _G.SCENE_MANAGER
+    local currentScene = nil
+    if sceneManager and type(sceneManager.GetCurrentScene) == "function" then
+        local ok, value = pcall(sceneManager.GetCurrentScene, sceneManager)
+        if ok then currentScene = value end
+    end
+    local currentSceneName = ""
+    if currentScene and type(currentScene.GetName) == "function" then
+        local ok, value = pcall(currentScene.GetName, currentScene)
+        if ok then currentSceneName = tostring(value or "") end
+    end
+    local lowerSceneName = zo_strlower(tostring(currentSceneName or ""))
+    if currentScene == _G.GAME_MENU_SCENE or string.find(lowerSceneName, "gamemenu", 1, true) then
+        self:HideStatisticsWindow()
+        return
+    end
+    -- When ESC exits camera UI mode directly (HUD-UI -> HUD), close TPM as well.
+    if self.statisticsOwnsUIMode and type(_G.IsGameCameraUIModeActive) == "function" then
+        local ok, active = pcall(_G.IsGameCameraUIModeActive)
+        local now = type(_G.GetFrameTimeMilliseconds) == "function" and (_G.GetFrameTimeMilliseconds() or 0) or 0
+        local openedAt = tonumber(self.statisticsUIModeOpenedAt) or 0
+        if ok and active == false and (openedAt <= 0 or now - openedAt > 200) then
+            self:HideStatisticsWindow()
+            return
+        end
+    end
+
+    local allowed = self:IsStatisticsAllowedInCurrentScene()
+    if allowed then
+        if self.statisticsTemporarilyHiddenForScene then
+            self.statisticsTemporarilyHiddenForScene = false
+            window:SetHidden(false)
+            self:RefreshStatisticsWindow()
+            if self.economyDetailTemporarilyHiddenForScene and self.economyDetailWindow then
+                self.economyDetailTemporarilyHiddenForScene = false
+                self.economyDetailWindow:SetHidden(false)
+                self:RefreshEconomyDetailWindow()
+            end
+        end
+    elseif not window:IsHidden() then
+        self.statisticsTemporarilyHiddenForScene = true
+        self:HideStatisticsHoverTooltips()
+        self:HideStatisticsFocusDropdown()
+        -- 2.6.34: HideStatisticsHoverTooltips already hides the achievement tooltip.
+        -- Do not call the later local TPM_HideAchievementTooltip here; it is nil at this point in Lua load order.
+        if self.economyDetailWindow and not self.economyDetailWindow:IsHidden() then
+            self.economyDetailTemporarilyHiddenForScene = true
+            self.economyDetailWindow:SetHidden(true)
+        end
+        window:SetHidden(true)
+    end
+end
+
 function TPM:IsSkyshardGoalHudSceneVisible()
     -- Use the scene manager's *current* scene first. A HUD scene can still be
     -- technically in a shown state while another full-screen scene is taking
@@ -5074,6 +5431,14 @@ function TPM:RefreshSkyshardGoalWidget()
     local widget = self.skyshardGoalWidget
     if not widget then return end
 
+    -- 2.6.31 hotfix: the progress HUD must never reappear behind the
+    -- Statistics journal. The 1.5 second safety refresh used to show it again
+    -- after ShowStatisticsWindow() had explicitly hidden it.
+    if self.statisticsWindow and not self.statisticsWindow:IsHidden() then
+        widget:SetHidden(true)
+        return
+    end
+
     local editingPosition = self.skyshardGoalEditMode == true
     if (not self.saved or self.saved.skyshardGoalEnabled ~= true) and not editingPosition then
         widget:SetHidden(true)
@@ -5460,6 +5825,165 @@ function TPM:ShouldDisplayOverviewZone(zoneId, x, y, isSymbolicPosition)
     return distance >= 0.34
 end
 
+
+-- 2.6.32 COMMUNITY ALLIANCE TERRITORY OVERLAY
+-- This is intentionally a subtle zone-center glow/border rather than a full
+-- recolor of ESO's map art. It keeps TPM completion percentages readable and
+-- avoids replacing or modifying ZOS map textures.
+local TPM_NEUTRAL_BASEGAME_NAMES =
+{
+    -- English
+    ["coldharbour"] = true,
+    ["craglorn"] = true,
+    ["cyrodiil"] = true,
+
+    -- German
+    ["kalthafen"] = true,
+    ["kargstein"] = true,
+    ["cyrodiil"] = true,
+
+    -- French
+    ["havreglace"] = true,
+    ["raidelorn"] = true,
+    ["cyrodiil"] = true,
+
+    -- Russian
+    ["хладная гавань"] = true,
+    ["креглорн"] = true,
+    ["сиродил"] = true,
+}
+
+function TPM:GetAllianceTerritoryGroup(zoneId)
+    zoneId = tonumber(zoneId) or 0
+    if zoneId <= 0 then return nil end
+
+    -- 2.6.38: Stable and language-independent original alliance territory map.
+    -- Do not use localized zone names here: changing TPM language must never
+    -- change alliance percentages, zone counts or objective totals.
+    local groups = {
+        -- Daggerfall Covenant (7)
+        [534] = "DC", -- Stros M'Kai
+        [535] = "DC", -- Betnikh
+        [3]   = "DC", -- Glenumbra
+        [19]  = "DC", -- Stormhaven
+        [20]  = "DC", -- Rivenspire
+        [104] = "DC", -- Alik'r Desert
+        [92]  = "DC", -- Bangkorai
+
+        -- Aldmeri Dominion (6)
+        [537] = "AD", -- Khenarthi's Roost
+        [381] = "AD", -- Auridon
+        [383] = "AD", -- Grahtwood
+        [108] = "AD", -- Greenshade
+        [58]  = "AD", -- Malabal Tor
+        [382] = "AD", -- Reaper's March
+
+        -- Ebonheart Pact (7)
+        [280] = "EP", -- Bleakrock Isle
+        [281] = "EP", -- Bal Foyen
+        [41]  = "EP", -- Stonefalls
+        [57]  = "EP", -- Deshaan
+        [117] = "EP", -- Shadowfen
+        [101] = "EP", -- Eastmarch
+        [103] = "EP", -- The Rift
+
+        -- Neutral base-game territories supported by the overlay
+        [181] = "NEUTRAL", -- Cyrodiil
+        [347] = "NEUTRAL", -- Coldharbour
+        [888] = "NEUTRAL", -- Craglorn
+    }
+    return groups[zoneId]
+end
+
+
+-- 2.6.41: Experimental world-map territory borders.
+-- ESO does not expose the drawn zone polygons as recolorable controls, so TPM
+-- draws an independent border layer inside ZO_WorldMapContainer. Because the
+-- controls are children of the map container they follow the map pan/zoom.
+
+-- 2.6.45: Alliance territory visualization moved into the Alliance Statistics page.
+-- The normal ESO World Map is deliberately left untouched.
+function TPM:HideAllianceTerritoryBorders() end
+function TPM:ReleaseAllianceTerritoryBorders() end
+function TPM:RefreshAllianceTerritoryBorders() end
+
+
+function TPM:GetAllianceTerritoryColor(zoneId)
+    local group = self:GetAllianceTerritoryGroup(zoneId)
+    if group == "DC" then
+        return 0.20, 0.48, 1.00, 0.90
+    elseif group == "AD" then
+        return 1.00, 0.76, 0.12, 0.90
+    elseif group == "EP" then
+        return 1.00, 0.20, 0.20, 0.90
+    elseif group == "NEUTRAL" and self.saved and self.saved.allianceNeutralWhite then
+        return 0.96, 0.96, 0.96, 0.78
+    end
+    return nil
+end
+
+function TPM:EnsureAllianceTerritoryBackdrop(label)
+    if not label then return nil end
+    if label.allianceTerritoryBackdrop then
+        return label.allianceTerritoryBackdrop
+    end
+
+    local backdrop = WINDOW_MANAGER:CreateControl(
+        label:GetName() .. "AllianceTerritoryBackdrop",
+        ZO_WorldMapContainer,
+        CT_BACKDROP
+    )
+    backdrop:SetAnchor(CENTER, label, CENTER, 0, 0)
+    backdrop:SetMouseEnabled(false)
+    backdrop:SetDrawTier(DT_HIGH)
+    backdrop:SetDrawLayer(DL_OVERLAY)
+    if backdrop.SetDrawLevel then backdrop:SetDrawLevel(1) end
+    backdrop:SetEdgeTexture("EsoUI/Art/Tooltips/UI-Border.dds", 128, 16, 3)
+    backdrop:SetHidden(true)
+
+    -- Make sure the actual percentage label stays in front of the glow.
+    if label.SetDrawLevel then label:SetDrawLevel(10) end
+
+    label.allianceTerritoryBackdrop = backdrop
+    return backdrop
+end
+
+function TPM:RefreshAllianceTerritoryBackdrop(label, zoneId)
+    if not label then return end
+
+    local backdrop = self:EnsureAllianceTerritoryBackdrop(label)
+    if not backdrop then return end
+
+    if not self.saved or not self.saved.showAllianceTerritoryColors then
+        backdrop:SetHidden(true)
+        return
+    end
+
+    local r, g, b, a = self:GetAllianceTerritoryColor(zoneId)
+    if not r then
+        backdrop:SetHidden(true)
+        return
+    end
+
+    -- Slightly wider than the progress text so it reads as a territory marker,
+    -- but remains subtle enough not to hide ESO's world-map art.
+    local labelWidth = tonumber(label:GetWidth()) or 84
+    local labelHeight = tonumber(label:GetHeight()) or 32
+    local width = math.max(154, labelWidth + 34)
+    local height = math.max(50, labelHeight + 16)
+
+    backdrop:SetDimensions(width, height)
+    backdrop:SetCenterColor(r, g, b, 0.14)
+    backdrop:SetEdgeColor(r, g, b, math.min(1, (a or 0.9) + 0.08))
+    backdrop:SetHidden(false)
+end
+
+function TPM:HideAllianceTerritoryBackdrop(label)
+    if label and label.allianceTerritoryBackdrop then
+        label.allianceTerritoryBackdrop:SetHidden(true)
+    end
+end
+
 function TPM:AcquireOverlayLabel()
     local label = table.remove(self.labelPool)
     if label then
@@ -5499,6 +6023,7 @@ end
 
 function TPM:ReleaseOverlayLabels()
     for _, label in ipairs(self.overlayLabels) do
+        self:HideAllianceTerritoryBackdrop(label)
         label:SetHidden(true)
         label:ClearAnchors()
         label.zoneId = nil
@@ -5702,6 +6227,8 @@ function TPM:CreateZoneNativePin(pinManager, zoneId)
         label:SetDimensions(math.max(84, fontSize * 3), math.max(32, fontSize + 10))
         label:SetText(string.format("|c%s%s|r", color, displayText))
     end
+
+    self:RefreshAllianceTerritoryBackdrop(label, zoneId)
 
     label.zoneId = zoneId
     label.progressZoneId = progressZoneId
@@ -7212,6 +7739,7 @@ function TPM:CreateProgressPlaytimeCard(parent, name, x, width)
     detail:SetColor(0.74, 0.70, 0.60, 1)
     detail:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     detail:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    detail:SetHidden(false)
 
     return { control = card, title = title, value = value, detail = detail, icon = icon, topGlow = topGlow }
 end
@@ -8238,9 +8766,8 @@ function TPM:CreateStatisticsZoneRow(parent, index)
     end)
     row:SetHandler("OnMouseUp", function(control, button, upInside)
         if not upInside or button ~= MOUSE_BUTTON_INDEX_LEFT then return end
-        if control.mapId and control.mapId > 0 and WORLD_MAP_MANAGER and WORLD_MAP_MANAGER.SetMapById then
-            TPM:HideStatisticsWindow()
-            WORLD_MAP_MANAGER:SetMapById(control.mapId)
+        if control.mapId and control.mapId > 0 then
+            TPM:OpenWorldMapFromStatistics(control.mapId)
         end
     end)
 
@@ -8703,7 +9230,7 @@ function TPM:CreateEconomyGoldCard(parent, name, x, y, width)
     card:SetCenterColor(0.060, 0.046, 0.018, 0.995)
     card:SetEdgeColor(0.82, 0.62, 0.14, 0.92)
     card:SetEdgeTexture(nil, 1, 1, 1)
-    card:SetMouseEnabled(false)
+    card:SetMouseEnabled(true)
 
     local topBand = WINDOW_MANAGER:CreateControl(nil, card, CT_BACKDROP)
     topBand:SetDimensions(width - 2, 2)
@@ -8712,14 +9239,14 @@ function TPM:CreateEconomyGoldCard(parent, name, x, y, width)
     topBand:SetEdgeColor(0, 0, 0, 0)
 
     local iconBack = WINDOW_MANAGER:CreateControl(nil, card, CT_BACKDROP)
-    iconBack:SetDimensions(104, 104)
-    iconBack:SetAnchor(LEFT, card, LEFT, 18, 0)
+    iconBack:SetDimensions(78, 78)
+    iconBack:SetAnchor(LEFT, card, LEFT, 28, 0)
     iconBack:SetCenterColor(0.095, 0.068, 0.018, 0.99)
     iconBack:SetEdgeColor(0.92, 0.72, 0.18, 0.88)
     iconBack:SetEdgeTexture(nil, 1, 1, 1)
 
     local icon = WINDOW_MANAGER:CreateControl(nil, iconBack, CT_TEXTURE)
-    icon:SetDimensions(94, 94)
+    icon:SetDimensions(70, 70)
     icon:SetAnchor(CENTER, iconBack, CENTER, 0, 0)
 
     local title = WINDOW_MANAGER:CreateControl(name .. "Title", card, CT_LABEL)
@@ -8766,6 +9293,7 @@ function TPM:CreateEconomyGoldCard(parent, name, x, y, width)
     midDivider:SetAnchor(TOPLEFT, card, TOPLEFT, 142, 84)
     midDivider:SetCenterColor(0.62, 0.46, 0.12, 0.72)
     midDivider:SetEdgeColor(0, 0, 0, 0)
+    midDivider:SetHidden(false)
 
     local function CreateBottomMetric(xPos, valueColor)
         local label = WINDOW_MANAGER:CreateControl(nil, card, CT_LABEL)
@@ -8793,6 +9321,10 @@ function TPM:CreateEconomyGoldCard(parent, name, x, y, width)
     local fence = CreateBottomMetric(442, { 0.86, 0.70, 0.30 })
     local stolen = CreateBottomMetric(592, { 0.96, 0.60, 0.32 })
     local bounty = CreateBottomMetric(742, { 0.94, 0.72, 0.28 })
+    for _, metric in ipairs({ received, spent, fence, stolen, bounty }) do
+        metric.label:SetHidden(false)
+        metric.value:SetHidden(false)
+    end
 
     return {
         control = card,
@@ -8809,6 +9341,367 @@ function TPM:CreateEconomyGoldCard(parent, name, x, y, width)
         bounty = bounty,
         isGoldCard = true,
     }
+end
+
+
+function TPM:CreateEconomyDetailWindow()
+    if self.economyDetailWindow then return end
+    local parent = self.statisticsWindow or GuiRoot
+    local w = WINDOW_MANAGER:CreateTopLevelWindow(ADDON_NAME .. "EconomyDetailWindow")
+    w:SetDimensions(760, 520)
+    local savedX=tonumber(self.saved and self.saved.economyDetailX)
+    local savedY=tonumber(self.saved and self.saved.economyDetailY)
+    if savedX and savedY then
+        w:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, savedX, savedY)
+    else
+        w:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
+    end
+    w:SetClampedToScreen(true)
+    w:SetMouseEnabled(true)
+    w:SetMovable(true)
+    w:SetHandler("OnMoveStop", function(control)
+        if TPM.saved then
+            TPM.saved.economyDetailX=Round(tonumber(control:GetLeft()) or 0)
+            TPM.saved.economyDetailY=Round(tonumber(control:GetTop()) or 0)
+        end
+    end)
+    w:SetHidden(true)
+    if w.SetDrawTier then w:SetDrawTier(DT_HIGH) end
+    if w.SetDrawLayer then w:SetDrawLayer(DL_OVERLAY) end
+
+    local bg = WINDOW_MANAGER:CreateControl(nil, w, CT_BACKDROP)
+    bg:SetAnchorFill(w)
+    bg:SetCenterColor(0.025,0.022,0.016,0.995)
+    bg:SetEdgeColor(0.78,0.61,0.18,0.95)
+    bg:SetEdgeTexture("EsoUI/Art/Tooltips/UI-Border.dds",128,16,2)
+    bg:SetInsets(4,4,-4,-4)
+
+    local title = WINDOW_MANAGER:CreateControl(nil,w,CT_LABEL)
+    title:SetAnchor(TOPLEFT,w,TOPLEFT,22,16); title:SetDimensions(600,30)
+    title:SetFont("ZoFontWinH2"); title:SetColor(0.95,0.79,0.28,1)
+    self.economyDetailTitle = title
+
+    local close = WINDOW_MANAGER:CreateControl(nil,w,CT_BUTTON)
+    close:SetDimensions(34,30); close:SetAnchor(TOPRIGHT,w,TOPRIGHT,-14,12)
+    close:SetFont("$(BOLD_FONT)|22"); close:SetText("×")
+    close:SetHandler("OnClicked", function() w:SetHidden(true) end)
+
+    local focusLabel = WINDOW_MANAGER:CreateControl(nil,w,CT_LABEL)
+    focusLabel:SetAnchor(TOPLEFT,w,TOPLEFT,24,62); focusLabel:SetDimensions(60,24)
+    focusLabel:SetFont("$(MEDIUM_FONT)|14"); focusLabel:SetColor(.75,.71,.62,1)
+    focusLabel:SetText(self:L("ECON_DETAIL_FOCUS"))
+
+    local function MakeSelector(name, x, width, click)
+        local c=WINDOW_MANAGER:CreateControl(name,w,CT_BUTTON)
+        c:SetDimensions(width,28); c:SetAnchor(TOPLEFT,w,TOPLEFT,x,60)
+        c:SetFont("$(MEDIUM_FONT)|15"); c:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+        c:SetNormalFontColor(.94,.90,.80,1); c:SetMouseOverFontColor(1,.84,.30,1)
+        c:SetHandler("OnClicked",click)
+        return c
+    end
+    self.economyDetailZoneButton=MakeSelector(ADDON_NAME.."EconomyDetailZone",84,260,function(button) TPM:ShowEconomyDetailZoneMenu(button) end)
+
+    local viewLabel=WINDOW_MANAGER:CreateControl(nil,w,CT_LABEL)
+    viewLabel:SetAnchor(TOPLEFT,w,TOPLEFT,370,62); viewLabel:SetDimensions(45,24)
+    viewLabel:SetFont("$(MEDIUM_FONT)|14"); viewLabel:SetColor(.75,.71,.62,1)
+    viewLabel:SetText(self:L("ECON_DETAIL_VIEW"))
+    self.economyDetailViewButton=MakeSelector(ADDON_NAME.."EconomyDetailView",415,210,function(button) TPM:ShowEconomyDetailViewMenu(button) end)
+
+    local info=WINDOW_MANAGER:CreateControl(nil,w,CT_BUTTON)
+    info:SetDimensions(30,28); info:SetAnchor(TOPLEFT,w,TOPLEFT,640,60)
+    info:SetFont("$(BOLD_FONT)|16"); info:SetText("(?)")
+    info:SetHandler("OnMouseEnter",function(c)
+        InitializeTooltip(InformationTooltip,c,TOPRIGHT,0,0,TOPLEFT)
+        SetTooltipText(InformationTooltip,TPM:GetEconomyTrackingTooltip())
+    end)
+    info:SetHandler("OnMouseExit",function() ClearTooltip(InformationTooltip) end)
+
+    self.economyDetailBody=WINDOW_MANAGER:CreateControl(nil,w,CT_LABEL)
+    self.economyDetailBody:SetAnchor(TOPLEFT,w,TOPLEFT,28,112)
+    self.economyDetailBody:SetDimensions(704,370)
+    self.economyDetailBody:SetFont("$(MEDIUM_FONT)|18")
+    self.economyDetailBody:SetColor(.91,.88,.79,1)
+    self.economyDetailBody:SetVerticalAlignment(TEXT_ALIGN_TOP)
+    self.economyDetailWindow=w
+end
+
+function TPM:GetEconomyTrackingTooltip()
+    local stamp=tonumber(self.saved and self.saved.economyZoneTrackingStartedAt) or 0
+    local dateText=self:L("ECON_DETAIL_UNKNOWN_DATE")
+    if stamp>0 and type(FormatShortDate)=="function" then
+        local ok,res=pcall(FormatShortDate,stamp)
+        if ok and res and res~="" then dateText=res end
+    elseif stamp>0 and type(os)=="table" and type(os.date)=="function" then
+        dateText=os.date("%d.%m.%Y",stamp)
+    end
+    return self:L("ECON_DETAIL_TRACKING_TT",dateText)
+end
+
+function TPM:SetEconomyDetailZone(zoneId)
+    if not self.saved then return end
+    zoneId=tonumber(zoneId) or 0
+    self.saved.economyDetailFocusZoneId=zoneId
+    self:HideEconomyFocusDropdown()
+    self:RefreshEconomyDetailWindow()
+    self:RefreshEconomyStatisticsPage()
+end
+
+function TPM:SetEconomyDetailView(view)
+    if not self.saved then return end
+    local valid={overview=true,records=true,crime=true,bank=true}
+    if not valid[view] then view="overview" end
+    self.saved.economyDetailView=view
+    self:RefreshEconomyDetailWindow()
+end
+
+function TPM:BringPopupMenuToFront()
+    local candidates = {
+        _G.ZO_Menu,
+        _G.ZO_MenuItems,
+        _G.ZO_ComboBox_Menu,
+        _G.ZO_ComboBoxDropdown,
+    }
+    for _, control in ipairs(candidates) do
+        if control then
+            if control.SetDrawTier then control:SetDrawTier(DT_HIGH) end
+            if control.SetDrawLayer then control:SetDrawLayer(DL_OVERLAY) end
+            if control.SetDrawLevel then control:SetDrawLevel(10000) end
+        end
+    end
+end
+
+
+function TPM:GetEconomyFocusDropdownChoices()
+    local result = {}
+    result[#result+1] = {zoneId=0, name=self:L("ECON_DETAIL_ALL_TAMRIEL")}
+    local currentId=self:GetEconomyTrackingZoneId()
+    if currentId and currentId>0 then
+        result[#result+1] = {
+            zoneId=currentId,
+            name=self:L("ECON_DETAIL_CURRENT_ZONE", self:GetEconomyZoneName(currentId))
+        }
+    end
+    for _,choice in ipairs(self:GetEconomyZoneChoices() or {}) do
+        if choice.zoneId and choice.zoneId>0 and choice.zoneId~=currentId then
+            result[#result+1] = {zoneId=choice.zoneId, name=choice.name}
+        end
+    end
+    return result
+end
+
+function TPM:RefreshEconomyFocusDropdown()
+    local dropdown=self.economyFocusDropdown
+    if not dropdown then return end
+    local choices=self:GetEconomyFocusDropdownChoices()
+    self.economyFocusDropdownChoices=choices
+
+    local visibleRows=9
+    local maxOffset=math.max(1,#choices-visibleRows+1)
+    self.economyFocusDropdownOffset=Clamp(tonumber(self.economyFocusDropdownOffset) or 1,1,maxOffset)
+    local selectedId=tonumber(self.saved and self.saved.economyDetailFocusZoneId) or 0
+
+    for i,row in ipairs(self.economyFocusDropdownRows or {}) do
+        local choice=choices[self.economyFocusDropdownOffset+i-1]
+        if choice then
+            row.zoneId=choice.zoneId
+            if row.rowText then row.rowText:SetText(tostring(choice.name or "")) end
+            row:SetHidden(false)
+            if row.rowBack then row.rowBack:SetHidden(false) end
+
+            local selected=tonumber(choice.zoneId) == selectedId
+            if row.rowBack then
+                if selected then
+                    row.rowBack:SetCenterColor(0.080,0.060,0.020,0.98)
+                    row.rowBack:SetEdgeColor(0.92,0.72,0.20,0.95)
+                else
+                    row.rowBack:SetCenterColor(0.018,0.016,0.012,0.94)
+                    row.rowBack:SetEdgeColor(0.18,0.15,0.09,0.75)
+                end
+            end
+            if row.rowText then row.rowText:SetColor(selected and 1.00 or 0.86, selected and 0.84 or 0.82, selected and 0.30 or 0.72, 1) end
+        else
+            row.zoneId=nil
+            if row.rowText then row.rowText:SetText("") end
+            row:SetHidden(true)
+            if row.rowBack then row.rowBack:SetHidden(true) end
+        end
+    end
+
+    -- Thumb size and position reflect the visible fraction/list offset.
+    if self.economyFocusScrollThumb and self.economyFocusScrollRail then
+        local railH=236
+        local fraction=math.min(1, visibleRows / math.max(visibleRows,#choices))
+        local thumbH=math.max(32, math.floor(railH*fraction))
+        self.economyFocusScrollThumb:SetHeight(thumbH)
+        local travel=math.max(0,railH-thumbH)
+        local ratio=(maxOffset<=1) and 0 or ((self.economyFocusDropdownOffset-1)/(maxOffset-1))
+        self.economyFocusScrollThumb:ClearAnchors()
+        self.economyFocusScrollThumb:SetAnchor(TOP, self.economyFocusScrollRail, TOP, 0, 1 + math.floor(travel*ratio))
+        self.economyFocusScrollRail:SetHidden(#choices<=visibleRows)
+        self.economyFocusScrollThumb:SetHidden(#choices<=visibleRows)
+    end
+end
+
+function TPM:HideEconomyFocusDropdown()
+    if self.economyFocusDropdown then self.economyFocusDropdown:SetHidden(true) end
+    if self.statisticsEconomyFocusArrow then self.statisticsEconomyFocusArrow:SetText("⌄") end
+end
+
+function TPM:ToggleEconomyFocusDropdown()
+    local dropdown=self.economyFocusDropdown
+    if not dropdown then return end
+    if dropdown:IsHidden() then
+        self.economyFocusDropdownOffset=1
+        self:RefreshEconomyFocusDropdown()
+        dropdown:SetDrawTier(DT_HIGH)
+        dropdown:SetDrawLayer(DL_OVERLAY)
+        if dropdown.SetDrawLevel then dropdown:SetDrawLevel(20000) end
+        if dropdown.BringWindowToTop then dropdown:BringWindowToTop() end
+        dropdown:SetHidden(false)
+        if self.statisticsEconomyFocusArrow then self.statisticsEconomyFocusArrow:SetText("⌃") end
+    else
+        self:HideEconomyFocusDropdown()
+    end
+end
+
+function TPM:ScrollEconomyFocusDropdown(delta)
+    if not self.economyFocusDropdown or self.economyFocusDropdown:IsHidden() then return end
+    local choices=self.economyFocusDropdownChoices or self:GetEconomyFocusDropdownChoices()
+    local visibleRows=9
+    local maxOffset=math.max(1,#choices-visibleRows+1)
+    local step=(tonumber(delta) or 0)>0 and -1 or 1
+    self.economyFocusDropdownOffset=Clamp((tonumber(self.economyFocusDropdownOffset) or 1)+step,1,maxOffset)
+    self:RefreshEconomyFocusDropdown()
+end
+
+function TPM:ShowEconomyDetailZoneMenu(anchor)
+    -- 2.6.47: Economy now uses TPM's own top-level dropdown. The standard ESO
+    -- menu could render behind the high-level Statistics journal.
+    if self.economyFocusDropdown then
+        self:ToggleEconomyFocusDropdown()
+        return
+    end
+end
+
+function TPM:ShowEconomyDetailViewMenu(anchor)
+    if _G.ClearMenu then ClearMenu() end
+    local views={
+        {"overview","ECON_DETAIL_OVERVIEW"},
+        {"records","ECON_DETAIL_RECORDS"},
+        {"crime","ECON_DETAIL_CRIME"},
+        {"bank","ECON_DETAIL_BANK"},
+    }
+    local canMenu=type(ClearMenu)=="function" and type(AddMenuItem)=="function" and type(ShowMenu)=="function"
+    if canMenu then
+        ClearMenu()
+        for _,item in ipairs(views) do
+            local view,key=item[1],item[2]
+            AddMenuItem(self:L(key), function() TPM:SetEconomyDetailView(view) end)
+        end
+        ShowMenu(anchor)
+        return
+    end
+
+    local current=self.saved.economyDetailView or "overview"
+    local idx=1
+    for i,item in ipairs(views) do if item[1]==current then idx=i break end end
+    self:SetEconomyDetailView(views[(idx % #views)+1][1])
+    self:BringPopupMenuToFront()
+end
+
+function TPM:GetEconomyZoneRanking(field)
+    local rows={}
+    local store=self:GetEconomyZoneStore()
+    for _,e in pairs((store and store.zones) or {}) do
+        local value = field=="net"
+            and ((tonumber(e.received) or 0)-(tonumber(e.spent) or 0))
+            or (tonumber(e[field]) or 0)
+        -- Empty zones make rankings noisy. "Most profitable" also only includes
+        -- genuinely profitable zones; losses remain visible in the overview.
+        if (field=="net" and value>0) or (field~="net" and value>0) then
+            rows[#rows+1]={zoneId=e.zoneId,name=self:GetEconomyZoneName(e.zoneId),value=value}
+        end
+    end
+    table.sort(rows,function(a,b)
+        if a.value == b.value then return string.lower(a.name or "") < string.lower(b.name or "") end
+        return a.value>b.value
+    end)
+    return rows
+end
+
+function TPM:GetEconomyZoneRank(zoneId, field)
+    zoneId=tonumber(zoneId) or 0
+    if zoneId<=0 then return nil end
+    for i,row in ipairs(self:GetEconomyZoneRanking(field)) do
+        if tonumber(row.zoneId)==zoneId then return i end
+    end
+    return nil
+end
+
+function TPM:RefreshEconomyDetailWindow()
+    local w=self.economyDetailWindow
+    if not w or w:IsHidden() then return end
+    self:GetEconomyZoneStore()
+    local zoneId=tonumber(self.saved.economyDetailFocusZoneId) or 0
+    local view=self.saved.economyDetailView or "overview"
+    self.economyDetailTitle:SetText(self:L("ECON_DETAIL_TITLE"))
+    self.economyDetailZoneButton:SetText(self:GetEconomyZoneName(zoneId).."  ▼")
+    local viewKeys={overview="ECON_DETAIL_OVERVIEW",records="ECON_DETAIL_RECORDS",crime="ECON_DETAIL_CRIME",bank="ECON_DETAIL_BANK"}
+    self.economyDetailViewButton:SetText(self:L(viewKeys[view] or "ECON_DETAIL_OVERVIEW").."  ▼")
+    local a=self:GetEconomyDetailAggregate(zoneId)
+    local body={}
+    if view=="overview" then
+        body[#body+1]=self:L("ECON_DETAIL_INCOME")..": |c70D060+"..FormatNumber(a.received).."|r"
+        body[#body+1]=self:L("ECON_DETAIL_EXPENSES")..": |cE07050-"..FormatNumber(a.spent).."|r"
+        local sign=a.net>=0 and "+" or "-"
+        body[#body+1]=self:L("ECON_DETAIL_NET")..": "..sign..FormatNumber(math.abs(a.net))
+        body[#body+1]=""
+        body[#body+1]=self:L("ECON_DETAIL_TRANSACTIONS")..": "..FormatNumber(a.transactions)
+        body[#body+1]=self:L("ECON_DETAIL_FENCE")..": +"..FormatNumber(a.fenceSales)
+        body[#body+1]=self:L("ECON_DETAIL_STOLEN")..": +"..FormatNumber(a.stolenGold)
+        body[#body+1]=self:L("ECON_DETAIL_BOUNTY")..": -"..FormatNumber(a.bountyPaid)
+    elseif view=="crime" then
+        body[#body+1]=self:L("ECON_DETAIL_FENCE")..": +"..FormatNumber(a.fenceSales)
+        body[#body+1]=self:L("ECON_DETAIL_STOLEN")..": +"..FormatNumber(a.stolenGold)
+        body[#body+1]=self:L("ECON_DETAIL_BOUNTY")..": -"..FormatNumber(a.bountyPaid)
+        body[#body+1]=""
+        local crimeNet=(a.fenceSales or 0)+(a.stolenGold or 0)-(a.bountyPaid or 0)
+        local crimeSign=crimeNet>=0 and "+" or "-"
+        body[#body+1]=self:L("ECON_DETAIL_CRIME_NET")..": "..crimeSign..FormatNumber(math.abs(crimeNet))
+    elseif view=="bank" then
+        body[#body+1]=self:L("ECON_DETAIL_DEPOSITS")..": "..FormatNumber(a.bankDeposited)
+        body[#body+1]=self:L("ECON_DETAIL_WITHDRAWALS")..": "..FormatNumber(a.bankWithdrawn)
+    else
+        local fields={{"net","ECON_DETAIL_PROFIT_RANK"},{"received","ECON_DETAIL_REVENUE_RANK"},{"spent","ECON_DETAIL_SPENDING_RANK"},
+                      {"fenceSales","ECON_DETAIL_FENCE_RANK"},{"stolenGold","ECON_DETAIL_THEFT_RANK"},{"bountyPaid","ECON_DETAIL_BOUNTY_RANK"}}
+        for _,f in ipairs(fields) do
+            body[#body+1]="|cE6C45C"..self:L(f[2]).."|r"
+            local rows=self:GetEconomyZoneRanking(f[1])
+            if #rows==0 then
+                body[#body+1]=self:L("ECON_DETAIL_NO_DATA")
+            else
+                for i=1,math.min(5,#rows) do
+                    local r=rows[i]
+                    body[#body+1]=string.format("%d. %s   %s",i,r.name,FormatNumber(r.value))
+                end
+                if zoneId>0 then
+                    local rank=self:GetEconomyZoneRank(zoneId,f[1])
+                    if rank and rank>5 then
+                        body[#body+1]=self:L("ECON_DETAIL_SELECTED_RANK", self:GetEconomyZoneName(zoneId), rank)
+                    end
+                end
+            end
+            body[#body+1]=""
+        end
+    end
+    self.economyDetailBody:SetText(table.concat(body,"\n"))
+end
+
+function TPM:ShowEconomyDetailWindow()
+    self:CreateEconomyDetailWindow()
+    self:GetEconomyZoneStore()
+    self.economyDetailWindow:SetHidden(false)
+    self:RefreshEconomyDetailWindow()
 end
 
 function TPM:CreateEconomyStatisticsPage(control)
@@ -8842,6 +9735,214 @@ function TPM:CreateEconomyStatisticsPage(control)
     subtitle:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
     subtitle:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     self.statisticsEconomyPageSubtitle = subtitle
+    subtitle:SetDimensions(505, 24)
+
+    -- Compact journal-style zone focus selector.
+    local focusGroup = WINDOW_MANAGER:CreateControl(ADDON_NAME.."EconomyFocusGroup", page, CT_CONTROL)
+    focusGroup:SetDimensions(300, 30)
+    focusGroup:SetAnchor(TOPRIGHT, page, TOPRIGHT, -18, 9)
+    focusGroup:SetMouseEnabled(false)
+
+    local focusLabel = WINDOW_MANAGER:CreateControl(nil, focusGroup, CT_LABEL)
+    focusLabel:SetDimensions(52, 28)
+    focusLabel:SetAnchor(LEFT, focusGroup, LEFT, 0, 0)
+    focusLabel:SetFont("$(MEDIUM_FONT)|12")
+    focusLabel:SetColor(0.76,0.72,0.64,1)
+    focusLabel:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+    focusLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    focusLabel:SetText(self:L("ECON_DETAIL_FOCUS"))
+    self.statisticsEconomyFocusLabel = focusLabel
+
+    local selector = WINDOW_MANAGER:CreateControl(ADDON_NAME.."EconomyFocusSelector", focusGroup, CT_CONTROL)
+    selector:SetDimensions(240, 26)
+    selector:SetAnchor(RIGHT, focusGroup, RIGHT, 0, 0)
+    selector:SetMouseEnabled(true)
+
+    local selectorBg = WINDOW_MANAGER:CreateControl(nil, selector, CT_BACKDROP)
+    selectorBg:SetAnchorFill(selector)
+    selectorBg:SetCenterColor(0.026,0.023,0.017,0.98)
+    selectorBg:SetEdgeColor(0.62,0.49,0.17,0.90)
+    selectorBg:SetEdgeTexture(nil,1,1,1)
+    selectorBg:SetMouseEnabled(false)
+
+    local selected = WINDOW_MANAGER:CreateControl(nil, selector, CT_LABEL)
+    selected:SetDimensions(204,24)
+    selected:SetAnchor(LEFT, selector, LEFT, 10, 0)
+    selected:SetFont("$(MEDIUM_FONT)|13")
+    selected:SetColor(0.92,0.87,0.73,1)
+    selected:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+    selected:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+
+    local arrowBack = WINDOW_MANAGER:CreateControl(nil, selector, CT_BACKDROP)
+    arrowBack:SetDimensions(24,22)
+    arrowBack:SetAnchor(RIGHT, selector, RIGHT, -3, 0)
+    arrowBack:SetCenterColor(0.045,0.036,0.018,0.96)
+    arrowBack:SetEdgeColor(0.50,0.38,0.12,0.80)
+    arrowBack:SetEdgeTexture(nil,1,1,1)
+    arrowBack:SetMouseEnabled(false)
+
+    local arrow = WINDOW_MANAGER:CreateControl(nil, arrowBack, CT_LABEL)
+    arrow:SetDimensions(20,20)
+    arrow:SetAnchor(CENTER, arrowBack, CENTER, 0, 0)
+    arrow:SetFont("$(BOLD_FONT)|14")
+    arrow:SetColor(0.96,0.79,0.24,1)
+    arrow:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    arrow:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    arrow:SetText("⌄")
+    selector:SetHandler("OnMouseEnter", function()
+        selectorBg:SetCenterColor(0.070,0.054,0.022,0.98)
+        selectorBg:SetEdgeColor(0.92,0.72,0.20,1)
+    end)
+    selector:SetHandler("OnMouseExit", function()
+        selectorBg:SetCenterColor(0.026,0.023,0.017,0.98)
+        selectorBg:SetEdgeColor(0.62,0.49,0.17,0.90)
+    end)
+    selector:SetHandler("OnMouseUp", function(_, button, upInside)
+        if upInside and button == MOUSE_BUTTON_INDEX_LEFT then
+            TPM:ToggleEconomyFocusDropdown()
+        end
+    end)
+    selector:SetHandler("OnMouseWheel", function(_, delta)
+        if TPM.economyFocusDropdown and not TPM.economyFocusDropdown:IsHidden() then
+            TPM:ScrollEconomyFocusDropdown(delta)
+        end
+    end)
+
+    self.statisticsEconomyFocusSelector = selector
+    self.statisticsEconomyFocusButton = selected
+    self.statisticsEconomyFocusArrow = arrow
+
+    -- Real top-level popup: this fixes ESO hit-testing where a visible child
+    -- control can still sit behind the Statistics journal for mouse input.
+    local dropdown = WINDOW_MANAGER:CreateTopLevelWindow(ADDON_NAME.."EconomyFocusDropdown")
+    dropdown:SetDimensions(260, 260)
+    dropdown:SetAnchor(TOPRIGHT, selector, BOTTOMRIGHT, 0, 3)
+    dropdown:SetMouseEnabled(true)
+    dropdown:SetClampedToScreen(true)
+    dropdown:SetHidden(true)
+    dropdown:SetDrawTier(DT_HIGH)
+    dropdown:SetDrawLayer(DL_OVERLAY)
+    if dropdown.SetDrawLevel then dropdown:SetDrawLevel(20000) end
+    dropdown:SetHandler("OnMouseWheel", function(_, delta) TPM:ScrollEconomyFocusDropdown(delta) end)
+
+    local dropBg = WINDOW_MANAGER:CreateControl(nil, dropdown, CT_BACKDROP)
+    dropBg:SetAnchorFill(dropdown)
+    dropBg:SetCenterColor(0.010,0.009,0.007,0.998)
+    dropBg:SetEdgeColor(0.88,0.69,0.19,1)
+    dropBg:SetEdgeTexture("EsoUI/Art/Tooltips/UI-Border.dds",128,16,2)
+    dropBg:SetInsets(2,2,-2,-2)
+    dropBg:SetMouseEnabled(false)
+
+    self.economyFocusDropdownRows = {}
+    for rowIndex=1,9 do
+        local row = WINDOW_MANAGER:CreateControl(ADDON_NAME.."EconomyFocusRow"..tostring(rowIndex), dropdown, CT_BUTTON)
+        row:SetDimensions(224,25)
+        row:SetAnchor(TOPLEFT, dropdown, TOPLEFT, 7, 6 + ((rowIndex-1)*27))
+        row:SetMouseEnabled(true)
+        row:SetClickSound(SOUNDS.DEFAULT_CLICK)
+
+        local rowBack = WINDOW_MANAGER:CreateControl(nil, row, CT_BACKDROP)
+        rowBack:SetAnchorFill(row)
+        rowBack:SetCenterColor(0.018,0.016,0.012,0.94)
+        rowBack:SetEdgeColor(0.18,0.15,0.09,0.75)
+        rowBack:SetEdgeTexture(nil,1,1,1)
+        rowBack:SetMouseEnabled(false)
+
+        local rowText = WINDOW_MANAGER:CreateControl(nil, row, CT_LABEL)
+        rowText:SetDimensions(204,25)
+        rowText:SetAnchor(LEFT, row, LEFT, 8, 0)
+        rowText:SetFont("$(MEDIUM_FONT)|13")
+        rowText:SetColor(0.86,0.82,0.72,1)
+        rowText:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+        rowText:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+        rowText:SetMouseEnabled(false)
+
+        row.rowBack = rowBack
+        row.rowText = rowText
+
+        row:SetHandler("OnMouseEnter", function(btn)
+            if btn.rowBack then
+                btn.rowBack:SetCenterColor(0.095,0.070,0.022,0.98)
+                btn.rowBack:SetEdgeColor(0.88,0.67,0.18,0.95)
+            end
+            if btn.rowText then btn.rowText:SetColor(1,0.88,0.38,1) end
+        end)
+        row:SetHandler("OnMouseExit", function(btn)
+            local selectedId = tonumber(TPM.saved and TPM.saved.economyDetailFocusZoneId) or 0
+            local selected = btn.zoneId ~= nil and tonumber(btn.zoneId) == selectedId
+            if btn.rowBack then
+                if selected then
+                    btn.rowBack:SetCenterColor(0.080,0.060,0.020,0.98)
+                    btn.rowBack:SetEdgeColor(0.92,0.72,0.20,0.95)
+                else
+                    btn.rowBack:SetCenterColor(0.018,0.016,0.012,0.94)
+                    btn.rowBack:SetEdgeColor(0.18,0.15,0.09,0.75)
+                end
+            end
+            if btn.rowText then
+                btn.rowText:SetColor(selected and 1.00 or 0.86, selected and 0.84 or 0.82, selected and 0.30 or 0.72, 1)
+            end
+        end)
+        row:SetHandler("OnMouseUp", function(btn, button, upInside)
+            if upInside and button == MOUSE_BUTTON_INDEX_LEFT and btn.zoneId ~= nil then
+                TPM:SetEconomyDetailZone(btn.zoneId)
+            end
+        end)
+        row:SetHandler("OnClicked", function(btn)
+            if btn.zoneId ~= nil then
+                TPM:SetEconomyDetailZone(btn.zoneId)
+            end
+        end)
+
+        self.economyFocusDropdownRows[rowIndex] = row
+    end
+
+    -- Visible scroll rail + thumb.
+    local scrollRail = WINDOW_MANAGER:CreateControl(nil, dropdown, CT_BACKDROP)
+    scrollRail:SetDimensions(10, 238)
+    scrollRail:SetAnchor(TOPRIGHT, dropdown, TOPRIGHT, -8, 8)
+    scrollRail:SetCenterColor(0.035,0.030,0.020,0.95)
+    scrollRail:SetEdgeColor(0.30,0.24,0.10,0.85)
+    scrollRail:SetEdgeTexture(nil,1,1,1)
+    scrollRail:SetMouseEnabled(false)
+
+    local scrollThumb = WINDOW_MANAGER:CreateControl(nil, scrollRail, CT_BACKDROP)
+    scrollThumb:SetDimensions(8, 48)
+    scrollThumb:SetAnchor(TOP, scrollRail, TOP, 0, 1)
+    scrollThumb:SetCenterColor(0.72,0.56,0.17,0.95)
+    scrollThumb:SetEdgeColor(0.95,0.77,0.25,1)
+    scrollThumb:SetEdgeTexture(nil,1,1,1)
+    scrollThumb:SetMouseEnabled(false)
+
+    local up = WINDOW_MANAGER:CreateControl(nil, dropdown, CT_LABEL)
+    up:SetDimensions(16,16)
+    up:SetAnchor(TOPRIGHT, dropdown, TOPRIGHT, -5, -1)
+    up:SetFont("$(BOLD_FONT)|12")
+    up:SetText("▲")
+    up:SetColor(0.82,0.67,0.22,1)
+    up:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    up:SetMouseEnabled(true)
+    up:SetHandler("OnMouseUp", function(_,button,inside)
+        if inside and button==MOUSE_BUTTON_INDEX_LEFT then TPM:ScrollEconomyFocusDropdown(1) end
+    end)
+
+    local down = WINDOW_MANAGER:CreateControl(nil, dropdown, CT_LABEL)
+    down:SetDimensions(16,16)
+    down:SetAnchor(BOTTOMRIGHT, dropdown, BOTTOMRIGHT, -5, 1)
+    down:SetFont("$(BOLD_FONT)|12")
+    down:SetText("▼")
+    down:SetColor(0.82,0.67,0.22,1)
+    down:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    down:SetMouseEnabled(true)
+    down:SetHandler("OnMouseUp", function(_,button,inside)
+        if inside and button==MOUSE_BUTTON_INDEX_LEFT then TPM:ScrollEconomyFocusDropdown(-1) end
+    end)
+
+    self.economyFocusDropdown = dropdown
+    self.economyFocusDropdownOffset = 1
+    self.economyFocusScrollRail = scrollRail
+    self.economyFocusScrollThumb = scrollThumb
+
 
     self.statisticsEconomyCards = {}
     self.statisticsEconomyCards[1] = self:CreateEconomyGoldCard(page, ADDON_NAME .. "EconomyCardGold", 20, 48, 914)
@@ -8875,7 +9976,7 @@ function TPM:CreateEconomyStatisticsPage(control)
 
     local note = WINDOW_MANAGER:CreateControl(nil, page, CT_BACKDROP)
     note:SetDimensions(856, 52)
-    note:SetAnchor(TOP, page, TOP, 0, 578)
+    note:SetAnchor(TOP, page, TOP, 0, 582)
     note:SetCenterColor(0.026, 0.024, 0.021, 0.97)
     note:SetEdgeColor(0.30, 0.25, 0.15, 0.62)
     note:SetEdgeTexture(nil, 1, 1, 1)
@@ -8917,6 +10018,7 @@ function TPM:CreateEconomyStatisticsPage(control)
 end
 
 function TPM:RefreshEconomyStatisticsPage()
+    if self.economyDetailWindow and not self.economyDetailWindow:IsHidden() then self:RefreshEconomyDetailWindow() end
     if not self.statisticsEconomyPage or self.statisticsEconomyPage:IsHidden() then return end
     local stats = self:GetEconomyStats()
     local definitions = self:GetEconomyCurrencyDefinitions()
@@ -8925,6 +10027,13 @@ function TPM:RefreshEconomyStatisticsPage()
     self.statisticsEconomyPageSubtitle:SetText(self:L("STAT_ECONOMY_PAGE_SUBTITLE_CHARACTER", stats.characterName or self:L("STAT_PLAYER_UNKNOWN")))
     self.statisticsEconomyTrackingTitle:SetText(self:L("STAT_ECONOMY_TRACKING"))
     self.statisticsEconomyTrackingText:SetText(self:L("STAT_ECONOMY_TRACKING_NOTE", stats.trackingVersion or "2.0.15"))
+
+    local focusZoneId = tonumber(self.saved and self.saved.economyDetailFocusZoneId) or 0
+    local zoneAggregate = self:GetEconomyDetailAggregate(focusZoneId)
+    if self.statisticsEconomyFocusButton then
+        self.statisticsEconomyFocusButton:SetText(self:GetEconomyZoneName(focusZoneId) .. "  ▼")
+    end
+
 
     for index, card in ipairs(self.statisticsEconomyCards or {}) do
         local definition = definitions[index]
@@ -8953,11 +10062,11 @@ function TPM:RefreshEconomyStatisticsPage()
                 card.fence.label:SetText(self:L("STAT_ECONOMY_FENCE_SHORT"))
                 card.stolen.label:SetText(self:L("STAT_ECONOMY_STOLEN_SHORT"))
                 if card.bounty then card.bounty.label:SetText(self:L("STAT_ECONOMY_BOUNTY_PAID_SHORT")) end
-                card.received.value:SetText("+" .. FormatNumber(entry.received or 0))
-                card.spent.value:SetText("-" .. FormatNumber(entry.spent or 0))
-                card.fence.value:SetText("+" .. FormatNumber(entry.fenceSales or 0))
-                card.stolen.value:SetText("+" .. FormatNumber(entry.stolenGold or 0))
-                if card.bounty then card.bounty.value:SetText("-" .. FormatNumber(entry.bountyPaid or 0)) end
+                card.received.value:SetText("+" .. FormatNumber((focusZoneId == 0 and entry.received or zoneAggregate.received) or 0))
+                card.spent.value:SetText("-" .. FormatNumber((focusZoneId == 0 and entry.spent or zoneAggregate.spent) or 0))
+                card.fence.value:SetText("+" .. FormatNumber((focusZoneId == 0 and entry.fenceSales or zoneAggregate.fenceSales) or 0))
+                card.stolen.value:SetText("+" .. FormatNumber((focusZoneId == 0 and entry.stolenGold or zoneAggregate.stolenGold) or 0))
+                if card.bounty then card.bounty.value:SetText("-" .. FormatNumber((focusZoneId == 0 and entry.bountyPaid or zoneAggregate.bountyPaid) or 0)) end
             else
                 local accent = visual.accent or { 0.86, 0.66, 0.18 }
                 local accentHex = RGBToHex(accent[1], accent[2], accent[3])
@@ -9023,8 +10132,1004 @@ function TPM:RefreshEconomyStatisticsPage()
     end
 end
 
+-- 2.6.34 Community: Alliance statistics page -----------------------------------
+function TPM:GetAllianceStatisticsData()
+    local result = {
+        DC = { completed = 0, total = 0, zonesCompleted = 0, zonesTotal = 0 },
+        AD = { completed = 0, total = 0, zonesCompleted = 0, zonesTotal = 0 },
+        EP = { completed = 0, total = 0, zonesCompleted = 0, zonesTotal = 0 },
+    }
+    local stats = self:GetStatisticsData(false, 0)
+    for _, zone in ipairs((stats and stats.zones) or {}) do
+        local group = self:GetAllianceTerritoryGroup(zone.zoneId)
+        local row = group and result[group] or nil
+        if row then
+            row.completed = row.completed + (tonumber(zone.completed) or 0)
+            row.total = row.total + (tonumber(zone.total) or 0)
+            row.zonesTotal = row.zonesTotal + 1
+            if (tonumber(zone.percent) or 0) >= 100 then row.zonesCompleted = row.zonesCompleted + 1 end
+        end
+    end
+    for _, row in pairs(result) do
+        row.percent = row.total > 0 and Clamp(Round((row.completed / row.total) * 100), 0, 100) or 0
+        if row.completed < row.total and row.percent >= 100 then row.percent = 99 end
+    end
+    return result
+end
+
+function TPM:GetPlayerAllianceDisplay()
+    local allianceId = 0
+    if type(_G.GetUnitAlliance) == "function" then
+        local ok, value = pcall(_G.GetUnitAlliance, "player")
+        if ok then allianceId = tonumber(value) or 0 end
+    end
+    local name = ""
+    if allianceId > 0 and type(_G.GetAllianceName) == "function" then
+        local ok, value = pcall(_G.GetAllianceName, allianceId)
+        if ok then name = tostring(value or "") end
+    end
+    if name == "" then
+        name = self:L("STAT_ALLIANCE_UNKNOWN")
+    else
+        -- ESO localized names can carry grammar metadata (for example "^n").
+        -- Those suffixes are useful to the formatter but should never be visible in TPM.
+        name = name:gsub("%^%a+", "")
+        if type(zo_strformat) == "function" then
+            local ok, formatted = pcall(zo_strformat, "<<C:1>>", name)
+            if ok and type(formatted) == "string" and formatted ~= "" then name = formatted end
+        end
+    end
+    local group = nil
+    if allianceId == _G.ALLIANCE_DAGGERFALL_COVENANT then group = "DC"
+    elseif allianceId == _G.ALLIANCE_ALDMERI_DOMINION then group = "AD"
+    elseif allianceId == _G.ALLIANCE_EBONHEART_PACT then group = "EP" end
+    return allianceId, name, group
+end
+
+
+function TPM:GetAllianceCategoryStatisticsData(group)
+    -- Some ESO clients/API revisions do not expose every completion-type
+    -- constant. Never use a nil completion type as a table key.
+    local defs = {
+        { key = "CAT_QUESTS", completionType = _G.ZONE_COMPLETION_TYPE_PRIORITY_QUESTS },
+        { key = "CAT_SIDE_QUESTS", completionType = _G.ZONE_COMPLETION_TYPE_SIDE_QUESTS },
+        { key = "CAT_SKYSHARDS", completionType = _G.ZONE_COMPLETION_TYPE_SKYSHARDS },
+        { key = "CAT_WAYSHRINES", completionType = _G.ZONE_COMPLETION_TYPE_WAYSHRINES },
+        { key = "CAT_DELVES", completionType = _G.ZONE_COMPLETION_TYPE_DELVES },
+        { key = "CAT_PUBLIC_DUNGEONS", completionType = _G.ZONE_COMPLETION_TYPE_PUBLIC_DUNGEONS },
+        { key = "CAT_WORLD_BOSSES", completionType = _G.ZONE_COMPLETION_TYPE_GROUP_BOSSES },
+        { key = "CAT_WORLD_EVENTS", completionType = _G.ZONE_COMPLETION_TYPE_WORLD_EVENTS },
+    }
+
+    local totals = {}
+    for _, def in ipairs(defs) do
+        if def.completionType ~= nil then
+            totals[def.completionType] = { completed = 0, total = 0 }
+        end
+    end
+
+    local progressZoneIds = self:GetAllProgressZoneIds() or {}
+    for zoneId in pairs(progressZoneIds) do
+        if self:GetAllianceTerritoryGroup(zoneId) == group then
+            local breakdown = self:GetCompletionBreakdown(zoneId)
+            for _, row in ipairs(breakdown or {}) do
+                local completionType = row and row.completionType
+                local dst = completionType ~= nil and totals[completionType] or nil
+                if dst then
+                    dst.completed = dst.completed + (tonumber(row.completed) or 0)
+                    dst.total = dst.total + (tonumber(row.total) or 0)
+                end
+            end
+        end
+    end
+
+    local rows = {}
+    for _, def in ipairs(defs) do
+        if def.completionType ~= nil then
+            local t = totals[def.completionType] or { completed = 0, total = 0 }
+            local percent = t.total > 0 and Clamp(Round((t.completed / t.total) * 100), 0, 100) or 0
+            rows[#rows + 1] = {
+                label = self:L(def.key),
+                completed = t.completed,
+                total = t.total,
+                percent = percent,
+            }
+        end
+    end
+    return rows
+end
+
+
+function TPM:GetAllianceZoneProgressData(group)
+    local zoneIdsByGroup = {
+        DC = {534,535,3,19,20,104,92},
+        AD = {537,381,383,108,58,382},
+        EP = {280,281,41,57,117,101,103},
+    }
+    local result = {}
+    for _, zoneId in ipairs(zoneIdsByGroup[group] or {}) do
+        local _, completed, total, percent = self:GetResolvedCompletion(zoneId)
+        local name = (type(SafeZoneName) == "function" and SafeZoneName(zoneId)) or self:GetEconomyZoneName(zoneId)
+        completed = tonumber(completed) or 0
+        total = tonumber(total) or 0
+        percent = Clamp(tonumber(percent) or 0, 0, 100)
+        result[#result+1] = {
+            zoneId = zoneId,
+            name = (name and name ~= "") and name or tostring(zoneId),
+            completed = completed,
+            total = total,
+            remaining = math.max(0, total - completed),
+            percent = percent,
+            complete = percent >= 100,
+        }
+    end
+
+    -- Community planner order: unfinished zones first, closest to 100% first.
+    -- Fully completed zones move to the bottom so the next useful target is
+    -- always immediately visible.
+    table.sort(result, function(a,b)
+        if a.complete ~= b.complete then return not a.complete end
+        if a.percent ~= b.percent then return a.percent > b.percent end
+        if a.remaining ~= b.remaining then return a.remaining < b.remaining end
+        return tostring(a.name) < tostring(b.name)
+    end)
+    return result
+end
+
+function TPM:GetAlliancePlannerRecommendations(group)
+    local zones = self:GetAllianceZoneProgressData(group)
+    local nextTarget, biggestGap = nil, nil
+    for _, zone in ipairs(zones) do
+        if not zone.complete then
+            if not nextTarget then nextTarget = zone end
+            if not biggestGap or zone.percent < biggestGap.percent
+                or (zone.percent == biggestGap.percent and zone.remaining > biggestGap.remaining) then
+                biggestGap = zone
+            end
+        end
+    end
+    return nextTarget, biggestGap, zones
+end
+
+function TPM:OpenAllianceZoneInProgress(zoneId)
+    zoneId = tonumber(zoneId) or 0
+    if zoneId <= 0 or not self.saved then return end
+    self.saved.statisticsFocusZoneId = zoneId
+    self.statisticsScrollOffset = 0
+    self:SetStatisticsPage("progress")
+    self:RefreshStatisticsFocusSelector()
+    self:RefreshStatisticsWindow()
+end
+
+
+function TPM:GetAlliancePlannerColor(group)
+    if group == "DC" then return 0.20, 0.48, 1.00 end
+    if group == "AD" then return 1.00, 0.76, 0.12 end
+    if group == "EP" then return 1.00, 0.20, 0.20 end
+    return 0.82, 0.76, 0.58
+end
+
+function TPM:RefreshAlliancePlannerMapView()
+    local texture = self.statisticsAllianceMapTexture
+    if not texture then return end
+
+    local zoom = tonumber(self.saved and self.saved.alliancePlannerMapZoom) or 1.0
+    zoom = Clamp(zoom, 1.0, 2.5)
+    if self.saved then self.saved.alliancePlannerMapZoom = zoom end
+
+    local span = 1 / zoom
+    local halfSpan = span * 0.5
+
+    local centerX = tonumber(self.saved and self.saved.alliancePlannerMapCenterX) or 0.5
+    local centerY = tonumber(self.saved and self.saved.alliancePlannerMapCenterY) or 0.5
+
+    if zoom <= 1.001 then
+        centerX, centerY = 0.5, 0.5
+    else
+        centerX = Clamp(centerX, halfSpan, 1 - halfSpan)
+        centerY = Clamp(centerY, halfSpan, 1 - halfSpan)
+    end
+
+    if self.saved then
+        self.saved.alliancePlannerMapCenterX = centerX
+        self.saved.alliancePlannerMapCenterY = centerY
+    end
+
+    texture:SetTextureCoords(
+        centerX - halfSpan,
+        centerX + halfSpan,
+        centerY - halfSpan,
+        centerY + halfSpan
+    )
+
+    if self.statisticsAllianceMapZoomLabel then
+        self.statisticsAllianceMapZoomLabel:SetText(string.format("%d%%", math.floor(zoom * 100 + 0.5)))
+    end
+
+    if self.statisticsAllianceMapDragHint then
+        self.statisticsAllianceMapDragHint:SetHidden(zoom <= 1.001)
+    end
+end
+
+function TPM:ZoomAlliancePlannerMapAtMouse(step)
+    if not self.saved or not self.statisticsAllianceMapTexture then return end
+
+    local texture = self.statisticsAllianceMapTexture
+    local oldZoom = Clamp(tonumber(self.saved.alliancePlannerMapZoom) or 1.0, 1.0, 2.5)
+    local newZoom = Clamp(oldZoom + (tonumber(step) or 0), 1.0, 2.5)
+    if math.abs(newZoom - oldZoom) < 0.001 then return end
+
+    local oldSpan = 1 / oldZoom
+    local newSpan = 1 / newZoom
+    local centerX = tonumber(self.saved.alliancePlannerMapCenterX) or 0.5
+    local centerY = tonumber(self.saved.alliancePlannerMapCenterY) or 0.5
+
+    if type(GetUIMousePosition) == "function" then
+        local mouseX, mouseY = GetUIMousePosition()
+        local left, top = texture:GetScreenRect()
+        local width, height = texture:GetDimensions()
+        width = math.max(1, tonumber(width) or 1)
+        height = math.max(1, tonumber(height) or 1)
+
+        local relX = Clamp(((tonumber(mouseX) or 0) - (tonumber(left) or 0)) / width, 0, 1)
+        local relY = Clamp(((tonumber(mouseY) or 0) - (tonumber(top) or 0)) / height, 0, 1)
+
+        local oldLeft = centerX - oldSpan * 0.5
+        local oldTop = centerY - oldSpan * 0.5
+        local anchorU = oldLeft + relX * oldSpan
+        local anchorV = oldTop + relY * oldSpan
+
+        centerX = anchorU - (relX - 0.5) * newSpan
+        centerY = anchorV - (relY - 0.5) * newSpan
+    end
+
+    local halfSpan = newSpan * 0.5
+    centerX = Clamp(centerX, halfSpan, 1 - halfSpan)
+    centerY = Clamp(centerY, halfSpan, 1 - halfSpan)
+
+    self.saved.alliancePlannerMapZoom = newZoom
+    self.saved.alliancePlannerMapCenterX = centerX
+    self.saved.alliancePlannerMapCenterY = centerY
+    self:RefreshAlliancePlannerMapView()
+end
+
+function TPM:SetAlliancePlannerMapZoom(value)
+    if not self.saved then return end
+    local zoom = Clamp(tonumber(value) or 1.0, 1.0, 2.5)
+    self.saved.alliancePlannerMapZoom = zoom
+    if zoom <= 1.001 then
+        self.saved.alliancePlannerMapCenterX = 0.5
+        self.saved.alliancePlannerMapCenterY = 0.5
+    end
+    self:RefreshAlliancePlannerMapView()
+end
+
+function TPM:StepAlliancePlannerMapZoom(delta)
+    self:ZoomAlliancePlannerMapAtMouse(tonumber(delta) or 0)
+end
+
+function TPM:BeginAlliancePlannerMapPan()
+    if not self.saved or not self.statisticsAllianceMapTexture then return end
+    local zoom = tonumber(self.saved.alliancePlannerMapZoom) or 1.0
+    if zoom <= 1.001 or type(GetUIMousePosition) ~= "function" then return end
+
+    local mouseX, mouseY = GetUIMousePosition()
+    self.alliancePlannerMapDragging = true
+    self.alliancePlannerMapDragStartX = tonumber(mouseX) or 0
+    self.alliancePlannerMapDragStartY = tonumber(mouseY) or 0
+    self.alliancePlannerMapDragCenterX = tonumber(self.saved.alliancePlannerMapCenterX) or 0.5
+    self.alliancePlannerMapDragCenterY = tonumber(self.saved.alliancePlannerMapCenterY) or 0.5
+end
+
+function TPM:UpdateAlliancePlannerMapPan()
+    if not self.alliancePlannerMapDragging or type(GetUIMousePosition) ~= "function" then return end
+    local texture = self.statisticsAllianceMapTexture
+    if not texture or not self.saved then return end
+
+    local zoom = tonumber(self.saved.alliancePlannerMapZoom) or 1.0
+    if zoom <= 1.001 then
+        self.alliancePlannerMapDragging = false
+        return
+    end
+
+    local mouseX, mouseY = GetUIMousePosition()
+    local width, height = texture:GetDimensions()
+    width = math.max(1, tonumber(width) or 1)
+    height = math.max(1, tonumber(height) or 1)
+
+    local span = 1 / zoom
+    local halfSpan = span * 0.5
+    local dx = (tonumber(mouseX) or 0) - (tonumber(self.alliancePlannerMapDragStartX) or 0)
+    local dy = (tonumber(mouseY) or 0) - (tonumber(self.alliancePlannerMapDragStartY) or 0)
+
+    -- Drag the map itself: pulling right/down moves the visible image in the
+    -- same direction, so the sampled texture center moves left/up.
+    local centerX = (tonumber(self.alliancePlannerMapDragCenterX) or 0.5) - (dx / width) * span
+    local centerY = (tonumber(self.alliancePlannerMapDragCenterY) or 0.5) - (dy / height) * span
+
+    self.saved.alliancePlannerMapCenterX = Clamp(centerX, halfSpan, 1 - halfSpan)
+    self.saved.alliancePlannerMapCenterY = Clamp(centerY, halfSpan, 1 - halfSpan)
+    self:RefreshAlliancePlannerMapView()
+end
+
+function TPM:EndAlliancePlannerMapPan()
+    self.alliancePlannerMapDragging = false
+end
+
+function TPM:ToggleAlliancePlannerTerritoryColors()
+    if not self.saved then return end
+    self.saved.alliancePlannerTerritoryColors = not (self.saved.alliancePlannerTerritoryColors == true)
+    self:RefreshAllianceStatisticsPage()
+end
+
+function TPM:CreateAllianceStatisticsPage(control)
+    if self.statisticsAlliancePage then return end
+
+    local page=WINDOW_MANAGER:CreateControl(ADDON_NAME.."StatisticsAlliancePage",control,CT_BACKDROP)
+    page:SetAnchor(TOPLEFT,control,TOPLEFT,14,60)
+    page:SetAnchor(BOTTOMRIGHT,control,BOTTOMRIGHT,-14,-55)
+    page:SetCenterColor(0.025,0.023,0.019,1.00)
+    page:SetEdgeColor(0.52,0.40,0.12,0.92)
+    page:SetEdgeTexture("EsoUI/Art/Tooltips/UI-Border.dds",128,16,2)
+    page:SetHidden(true)
+    self.statisticsAlliancePage=page
+
+    -- Own alliance ------------------------------------------------------------
+    local own=WINDOW_MANAGER:CreateControl(nil,page,CT_BACKDROP)
+    own:SetDimensions(914,76)
+    own:SetAnchor(TOPLEFT,page,TOPLEFT,20,12)
+    own:SetCenterColor(0.045,0.040,0.028,0.99)
+    own:SetEdgeColor(0.70,0.55,0.18,0.90)
+    own:SetEdgeTexture("EsoUI/Art/Tooltips/UI-Border.dds",128,16,2)
+
+    local ownTitle=WINDOW_MANAGER:CreateControl(nil,own,CT_LABEL)
+    ownTitle:SetDimensions(220,18)
+    ownTitle:SetAnchor(TOPLEFT,own,TOPLEFT,16,7)
+    ownTitle:SetFont("$(BOLD_FONT)|15")
+    ownTitle:SetColor(0.95,0.78,0.26,1)
+
+    local ownName=WINDOW_MANAGER:CreateControl(nil,own,CT_LABEL)
+    ownName:SetDimensions(560,24)
+    ownName:SetAnchor(TOPLEFT,own,TOPLEFT,16,25)
+    ownName:SetFont("$(BOLD_FONT)|20")
+    ownName:SetColor(0.96,0.91,0.78,1)
+
+    local ownPercent=WINDOW_MANAGER:CreateControl(nil,own,CT_LABEL)
+    ownPercent:SetDimensions(130,34)
+    ownPercent:SetAnchor(TOPRIGHT,own,TOPRIGHT,-16,13)
+    ownPercent:SetFont("$(ANTIQUE_FONT)|31")
+    ownPercent:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+    ownPercent:SetColor(0.95,0.82,0.32,1)
+
+    local ownBarBack=WINDOW_MANAGER:CreateControl(nil,own,CT_BACKDROP)
+    ownBarBack:SetDimensions(880,8)
+    ownBarBack:SetAnchor(BOTTOMLEFT,own,BOTTOMLEFT,16,-9)
+    ownBarBack:SetCenterColor(0.08,0.07,0.05,1)
+    ownBarBack:SetEdgeColor(0.40,0.33,0.18,0.9)
+    ownBarBack:SetEdgeTexture(nil,1,1,1)
+
+    local ownBar=WINDOW_MANAGER:CreateControl(nil,ownBarBack,CT_BACKDROP)
+    ownBar:SetDimensions(1,6)
+    ownBar:SetAnchor(LEFT,ownBarBack,LEFT,1,0)
+    ownBar:SetEdgeColor(0,0,0,0)
+
+    self.statisticsAllianceOwnTitle=ownTitle
+    self.statisticsAllianceOwnName=ownName
+    self.statisticsAllianceOwnPercent=ownPercent
+    self.statisticsAllianceOwnBarBack=ownBarBack
+    self.statisticsAllianceOwnBar=ownBar
+
+    -- Alliance selector -------------------------------------------------------
+    local defs={
+        {key="DC",label="STAT_ALLIANCE_DC",color={0.20,0.48,1.00}},
+        {key="AD",label="STAT_ALLIANCE_AD",color={1.00,0.76,0.12}},
+        {key="EP",label="STAT_ALLIANCE_EP",color={1.00,0.20,0.20}},
+    }
+    self.statisticsAllianceCards={}
+    for i,def in ipairs(defs) do
+        local card=WINDOW_MANAGER:CreateControl(nil,page,CT_BACKDROP)
+        card:SetDimensions(220,88)
+        card:SetAnchor(TOPLEFT,page,TOPLEFT,20,100+((i-1)*96))
+        card:SetCenterColor(0.018,0.018,0.017,0.99)
+        card:SetEdgeColor(def.color[1],def.color[2],def.color[3],0.82)
+        card:SetEdgeTexture("EsoUI/Art/Tooltips/UI-Border.dds",128,16,2)
+        card:SetMouseEnabled(true)
+        card.allianceGroup=def.key
+        card:SetHandler("OnMouseUp",function(c,button,inside)
+            if inside and button==MOUSE_BUTTON_INDEX_LEFT then
+                TPM.statisticsAllianceSelectedGroup=c.allianceGroup
+                TPM:RefreshAllianceStatisticsPage()
+            end
+        end)
+
+        local accent=WINDOW_MANAGER:CreateControl(nil,card,CT_BACKDROP)
+        accent:SetDimensions(216,4)
+        accent:SetAnchor(TOP,card,TOP,0,2)
+        accent:SetCenterColor(def.color[1],def.color[2],def.color[3],0.96)
+        accent:SetEdgeColor(0,0,0,0)
+
+        local title=WINDOW_MANAGER:CreateControl(nil,card,CT_LABEL)
+        title:SetDimensions(150,20)
+        title:SetAnchor(TOPLEFT,card,TOPLEFT,12,9)
+        title:SetFont("$(BOLD_FONT)|15")
+        title:SetColor(def.color[1],def.color[2],def.color[3],1)
+
+        local badge=WINDOW_MANAGER:CreateControl(nil,card,CT_LABEL)
+        badge:SetDimensions(115,15)
+        badge:SetAnchor(TOPLEFT,card,TOPLEFT,12,29)
+        badge:SetFont("$(BOLD_FONT)|10")
+        badge:SetColor(0.95,0.82,0.32,1)
+
+        local percent=WINDOW_MANAGER:CreateControl(nil,card,CT_LABEL)
+        percent:SetDimensions(62,28)
+        percent:SetAnchor(TOPRIGHT,card,TOPRIGHT,-10,10)
+        percent:SetFont("$(ANTIQUE_FONT)|26")
+        percent:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+        percent:SetColor(0.95,0.84,0.38,1)
+
+        local barBack=WINDOW_MANAGER:CreateControl(nil,card,CT_BACKDROP)
+        barBack:SetDimensions(194,7)
+        barBack:SetAnchor(TOPLEFT,card,TOPLEFT,12,47)
+        barBack:SetCenterColor(0.07,0.065,0.055,1)
+        barBack:SetEdgeColor(0.32,0.29,0.22,0.9)
+        barBack:SetEdgeTexture(nil,1,1,1)
+
+        local bar=WINDOW_MANAGER:CreateControl(nil,barBack,CT_BACKDROP)
+        bar:SetDimensions(1,5)
+        bar:SetAnchor(LEFT,barBack,LEFT,1,0)
+        bar:SetCenterColor(def.color[1],def.color[2],def.color[3],0.95)
+        bar:SetEdgeColor(0,0,0,0)
+
+        local zones=WINDOW_MANAGER:CreateControl(nil,card,CT_LABEL)
+        zones:SetDimensions(94,16)
+        zones:SetAnchor(TOPLEFT,card,TOPLEFT,12,61)
+        zones:SetFont("$(MEDIUM_FONT)|11")
+        zones:SetColor(0.83,0.79,0.69,1)
+
+        local objectives=WINDOW_MANAGER:CreateControl(nil,card,CT_LABEL)
+        objectives:SetDimensions(94,16)
+        objectives:SetAnchor(TOPRIGHT,card,TOPRIGHT,-12,61)
+        objectives:SetFont("$(MEDIUM_FONT)|11")
+        objectives:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+        objectives:SetColor(0.70,0.68,0.62,1)
+
+        self.statisticsAllianceCards[def.key]={
+            control=card,title=title,badge=badge,percent=percent,zones=zones,objectives=objectives,
+            barBack=barBack,bar=bar,label=def.label,color=def.color,
+        }
+    end
+
+    -- Selected alliance quick summary -----------------------------------------
+    local quick=WINDOW_MANAGER:CreateControl(nil,page,CT_BACKDROP)
+    quick:SetDimensions(220,112)
+    quick:SetAnchor(TOPLEFT,page,TOPLEFT,20,394)
+    quick:SetCenterColor(0.020,0.019,0.016,0.99)
+    quick:SetEdgeColor(0.42,0.34,0.15,0.90)
+    quick:SetEdgeTexture("EsoUI/Art/Tooltips/UI-Border.dds",128,16,2)
+
+    local quickTitle=WINDOW_MANAGER:CreateControl(nil,quick,CT_LABEL)
+    quickTitle:SetDimensions(194,18)
+    quickTitle:SetAnchor(TOPLEFT,quick,TOPLEFT,12,7)
+    quickTitle:SetFont("$(BOLD_FONT)|13")
+    quickTitle:SetColor(0.91,0.75,0.30,1)
+    quickTitle:SetText(self:L("STAT_ALLIANCE_OVERVIEW"))
+
+    local quickDone=WINDOW_MANAGER:CreateControl(nil,quick,CT_LABEL)
+    quickDone:SetDimensions(194,18)
+    quickDone:SetAnchor(TOPLEFT,quick,TOPLEFT,12,31)
+    quickDone:SetFont("$(MEDIUM_FONT)|11")
+    quickDone:SetColor(0.86,0.83,0.74,1)
+    self.statisticsAllianceQuickDone=quickDone
+
+    local quickOpen=WINDOW_MANAGER:CreateControl(nil,quick,CT_LABEL)
+    quickOpen:SetDimensions(194,18)
+    quickOpen:SetAnchor(TOPLEFT,quick,TOPLEFT,12,52)
+    quickOpen:SetFont("$(MEDIUM_FONT)|11")
+    quickOpen:SetColor(0.86,0.83,0.74,1)
+    self.statisticsAllianceQuickOpen=quickOpen
+
+    local quickNext=WINDOW_MANAGER:CreateControl(nil,quick,CT_LABEL)
+    quickNext:SetDimensions(194,28)
+    quickNext:SetAnchor(TOPLEFT,quick,TOPLEFT,12,73)
+    quickNext:SetFont("$(BOLD_FONT)|10")
+    quickNext:SetColor(0.95,0.82,0.32,1)
+    quickNext:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
+    self.statisticsAllianceQuickNext=quickNext
+
+    -- Large map ---------------------------------------------------------------
+    local planner=WINDOW_MANAGER:CreateControl(nil,page,CT_BACKDROP)
+    planner:SetDimensions(486,412)
+    planner:SetAnchor(TOPLEFT,page,TOPLEFT,252,100)
+    planner:SetCenterColor(0.012,0.012,0.011,0.99)
+    planner:SetEdgeColor(0.25,0.22,0.16,0.90)
+    planner:SetEdgeTexture("EsoUI/Art/Tooltips/UI-Border.dds",128,16,2)
+    self.statisticsAllianceMapPanel=planner
+
+    local mapTitle=WINDOW_MANAGER:CreateControl(nil,planner,CT_LABEL)
+    mapTitle:SetDimensions(448,22)
+    mapTitle:SetAnchor(TOPLEFT,planner,TOPLEFT,14,7)
+    mapTitle:SetFont("$(BOLD_FONT)|15")
+    mapTitle:SetColor(0.91,0.75,0.30,1)
+    self.statisticsAllianceMapTitle=mapTitle
+
+    -- Source map aspect is 916:663 (~1.3816). 468x339 preserves it.
+    local mapFrame=WINDOW_MANAGER:CreateControl(nil,planner,CT_BACKDROP)
+    mapFrame:SetDimensions(460,334)
+    mapFrame:SetAnchor(TOPLEFT,planner,TOPLEFT,13,31)
+    mapFrame:SetCenterColor(0.005,0.005,0.004,0.08)
+    mapFrame:SetEdgeColor(0.50,0.40,0.18,0.92)
+    mapFrame:SetEdgeTexture(nil,1,1,1)
+    mapFrame:SetMouseEnabled(false)
+    if mapFrame.SetDrawLevel then mapFrame:SetDrawLevel(2) end
+    self.statisticsAllianceMapFrame=mapFrame
+
+    local mapTexture=WINDOW_MANAGER:CreateControl(nil,mapFrame,CT_TEXTURE)
+    mapTexture:SetDimensions(454,328)
+    mapTexture:SetAnchor(CENTER,mapFrame,CENTER,0,0)
+    mapTexture:SetTexture("TamrielProgressMap/art/alliance_community_map.dds")
+    mapTexture:SetTextureCoords(0,1,0,1)
+    mapTexture:SetAlpha(1)
+    mapTexture:SetMouseEnabled(true)
+    if mapTexture.SetDrawLevel then mapTexture:SetDrawLevel(10) end
+    mapTexture:SetHandler("OnMouseWheel",function(_,delta)
+        TPM:ZoomAlliancePlannerMapAtMouse((tonumber(delta) or 0)>0 and 0.25 or -0.25)
+    end)
+    mapTexture:SetHandler("OnMouseDown",function(_,button)
+        if button==MOUSE_BUTTON_INDEX_LEFT then TPM:BeginAlliancePlannerMapPan() end
+    end)
+    mapTexture:SetHandler("OnMouseUp",function(_,button)
+        if button==MOUSE_BUTTON_INDEX_LEFT then TPM:EndAlliancePlannerMapPan() end
+    end)
+    mapTexture:SetHandler("OnUpdate",function() TPM:UpdateAlliancePlannerMapPan() end)
+    self.statisticsAllianceMapTexture=mapTexture
+
+    -- Recommendations below map, inside planner.
+    local nextBox=WINDOW_MANAGER:CreateControl(nil,planner,CT_BACKDROP)
+    nextBox:SetDimensions(216,32)
+    nextBox:SetAnchor(BOTTOMLEFT,planner,BOTTOMLEFT,13,-5)
+    nextBox:SetCenterColor(0.035,0.032,0.025,0.96)
+    nextBox:SetEdgeColor(0.35,0.29,0.14,0.85)
+    nextBox:SetEdgeTexture(nil,1,1,1)
+
+    local nextTitle=WINDOW_MANAGER:CreateControl(nil,nextBox,CT_LABEL)
+    nextTitle:SetDimensions(208,12)
+    nextTitle:SetAnchor(TOPLEFT,nextBox,TOPLEFT,7,2)
+    nextTitle:SetFont("$(BOLD_FONT)|9")
+    nextTitle:SetColor(0.87,0.72,0.26,1)
+    self.statisticsAllianceNextTitle=nextTitle
+
+    local nextValue=WINDOW_MANAGER:CreateControl(nil,nextBox,CT_LABEL)
+    nextValue:SetDimensions(208,13)
+    nextValue:SetAnchor(TOPLEFT,nextBox,TOPLEFT,7,14)
+    nextValue:SetFont("$(MEDIUM_FONT)|10")
+    nextValue:SetColor(0.90,0.86,0.75,1)
+    self.statisticsAllianceNextValue=nextValue
+
+    local gapBox=WINDOW_MANAGER:CreateControl(nil,planner,CT_BACKDROP)
+    gapBox:SetDimensions(216,32)
+    gapBox:SetAnchor(BOTTOMRIGHT,planner,BOTTOMRIGHT,-13,-5)
+    gapBox:SetCenterColor(0.035,0.032,0.025,0.96)
+    gapBox:SetEdgeColor(0.35,0.29,0.14,0.85)
+    gapBox:SetEdgeTexture(nil,1,1,1)
+
+    local gapTitle=WINDOW_MANAGER:CreateControl(nil,gapBox,CT_LABEL)
+    gapTitle:SetDimensions(208,12)
+    gapTitle:SetAnchor(TOPLEFT,gapBox,TOPLEFT,7,2)
+    gapTitle:SetFont("$(BOLD_FONT)|9")
+    gapTitle:SetColor(0.87,0.72,0.26,1)
+    self.statisticsAllianceGapTitle=gapTitle
+
+    local gapValue=WINDOW_MANAGER:CreateControl(nil,gapBox,CT_LABEL)
+    gapValue:SetDimensions(208,13)
+    gapValue:SetAnchor(TOPLEFT,gapBox,TOPLEFT,7,14)
+    gapValue:SetFont("$(MEDIUM_FONT)|10")
+    gapValue:SetColor(0.90,0.86,0.75,1)
+    self.statisticsAllianceGapValue=gapValue
+
+    -- Right: legend + zoom ----------------------------------------------------
+    local tools=WINDOW_MANAGER:CreateControl(nil,page,CT_BACKDROP)
+    tools:SetDimensions(190,180)
+    tools:SetAnchor(TOPLEFT,page,TOPLEFT,748,100)
+    tools:SetCenterColor(0.020,0.019,0.016,0.99)
+    tools:SetEdgeColor(0.42,0.34,0.15,0.90)
+    tools:SetEdgeTexture("EsoUI/Art/Tooltips/UI-Border.dds",128,16,2)
+
+    local toolsTitle=WINDOW_MANAGER:CreateControl(nil,tools,CT_LABEL)
+    toolsTitle:SetDimensions(164,20)
+    toolsTitle:SetAnchor(TOPLEFT,tools,TOPLEFT,12,7)
+    toolsTitle:SetFont("$(BOLD_FONT)|14")
+    toolsTitle:SetColor(0.91,0.75,0.30,1)
+    toolsTitle:SetText(self:L("STAT_ALLIANCE_TOOLS_TITLE"))
+
+    local legend=WINDOW_MANAGER:CreateControl(nil,tools,CT_LABEL)
+    legend:SetDimensions(166,78)
+    legend:SetAnchor(TOPLEFT,tools,TOPLEFT,12,27)
+    legend:SetFont("$(MEDIUM_FONT)|11")
+    legend:SetColor(0.88,0.85,0.78,1)
+    legend:SetText("|c4E9BFF■|r  "..self:L("STAT_ALLIANCE_DC")..
+        "\n|cFFD13C■|r  "..self:L("STAT_ALLIANCE_AD")..
+        "\n|cFF594A■|r  "..self:L("STAT_ALLIANCE_EP")..
+        "\n|cBDB8AA■|r  "..self:L("STAT_ALLIANCE_NEUTRAL"))
+    self.statisticsAllianceLegend=legend
+
+    local zoomTitle=WINDOW_MANAGER:CreateControl(nil,tools,CT_LABEL)
+    zoomTitle:SetDimensions(60,18)
+    zoomTitle:SetAnchor(TOPLEFT,tools,TOPLEFT,12,98)
+    zoomTitle:SetFont("$(BOLD_FONT)|12")
+    zoomTitle:SetColor(0.88,0.82,0.68,1)
+    zoomTitle:SetText(self:L("STAT_ALLIANCE_ZOOM"))
+
+    local zoomLabel=WINDOW_MANAGER:CreateControl(nil,tools,CT_LABEL)
+    zoomLabel:SetDimensions(70,18)
+    zoomLabel:SetAnchor(TOPRIGHT,tools,TOPRIGHT,-12,97)
+    zoomLabel:SetFont("$(ANTIQUE_FONT)|20")
+    zoomLabel:SetColor(0.95,0.82,0.32,1)
+    zoomLabel:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+    zoomLabel:SetText("100%")
+    self.statisticsAllianceMapZoomLabel=zoomLabel
+
+    local zoomMinus=WINDOW_MANAGER:CreateControl(nil,tools,CT_BUTTON)
+    zoomMinus:SetDimensions(32,22)
+    zoomMinus:SetAnchor(BOTTOMLEFT,tools,BOTTOMLEFT,12,-8)
+    zoomMinus:SetFont("$(BOLD_FONT)|15")
+    zoomMinus:SetNormalFontColor(0.95,0.85,0.55,1)
+    zoomMinus:SetMouseOverFontColor(1,1,0.80,1)
+    zoomMinus:SetText("−")
+    zoomMinus:SetHandler("OnClicked",function() TPM:ZoomAlliancePlannerMapAtMouse(-0.25) end)
+
+    local resetZoom=WINDOW_MANAGER:CreateControl(nil,tools,CT_BUTTON)
+    resetZoom:SetDimensions(64,22)
+    resetZoom:SetAnchor(BOTTOM,tools,BOTTOM,0,-8)
+    resetZoom:SetFont("$(BOLD_FONT)|10")
+    resetZoom:SetNormalFontColor(0.90,0.84,0.70,1)
+    resetZoom:SetMouseOverFontColor(1,0.88,0.36,1)
+    resetZoom:SetText("100%")
+    resetZoom:SetHandler("OnClicked",function() TPM:SetAlliancePlannerMapZoom(1.0) end)
+
+    local zoomPlus=WINDOW_MANAGER:CreateControl(nil,tools,CT_BUTTON)
+    zoomPlus:SetDimensions(32,22)
+    zoomPlus:SetAnchor(BOTTOMRIGHT,tools,BOTTOMRIGHT,-12,-8)
+    zoomPlus:SetFont("$(BOLD_FONT)|15")
+    zoomPlus:SetNormalFontColor(0.95,0.85,0.55,1)
+    zoomPlus:SetMouseOverFontColor(1,1,0.80,1)
+    zoomPlus:SetText("+")
+    zoomPlus:SetHandler("OnClicked",function() TPM:ZoomAlliancePlannerMapAtMouse(0.25) end)
+
+    -- Right: zone progress -----------------------------------------------------
+    local zonePanel=WINDOW_MANAGER:CreateControl(nil,page,CT_BACKDROP)
+    zonePanel:SetDimensions(190,232)
+    zonePanel:SetAnchor(TOPLEFT,page,TOPLEFT,748,288)
+    zonePanel:SetCenterColor(0.020,0.019,0.016,0.99)
+    zonePanel:SetEdgeColor(0.42,0.34,0.15,0.90)
+    zonePanel:SetEdgeTexture("EsoUI/Art/Tooltips/UI-Border.dds",128,16,2)
+
+    local zoneTitle=WINDOW_MANAGER:CreateControl(nil,zonePanel,CT_LABEL)
+    zoneTitle:SetDimensions(164,20)
+    zoneTitle:SetAnchor(TOPLEFT,zonePanel,TOPLEFT,12,7)
+    zoneTitle:SetFont("$(BOLD_FONT)|14")
+    zoneTitle:SetColor(0.91,0.75,0.30,1)
+    self.statisticsAllianceZoneTitle=zoneTitle
+
+    local zoneHint=WINDOW_MANAGER:CreateControl(nil,zonePanel,CT_LABEL)
+    zoneHint:SetDimensions(164,28)
+    zoneHint:SetAnchor(TOPLEFT,zonePanel,TOPLEFT,12,25)
+    zoneHint:SetFont("$(MEDIUM_FONT)|9")
+    zoneHint:SetColor(0.62,0.59,0.52,1)
+    zoneHint:SetVerticalAlignment(TEXT_ALIGN_TOP)
+    self.statisticsAllianceZoneHint=zoneHint
+
+    self.statisticsAllianceZoneRows={}
+    for i=1,7 do
+        local row=WINDOW_MANAGER:CreateControl(nil,zonePanel,CT_BUTTON)
+        row:SetDimensions(164,25)
+        row:SetAnchor(TOPLEFT,zonePanel,TOPLEFT,12,52+((i-1)*25))
+        row:SetMouseEnabled(true)
+
+        local hover=WINDOW_MANAGER:CreateControl(nil,row,CT_BACKDROP)
+        hover:SetAnchorFill(row)
+        hover:SetCenterColor(0.018,0.016,0.012,0)
+        hover:SetEdgeColor(0.22,0.18,0.10,0)
+        hover:SetEdgeTexture(nil,1,1,1)
+        hover:SetMouseEnabled(false)
+
+        local name=WINDOW_MANAGER:CreateControl(nil,row,CT_LABEL)
+        name:SetDimensions(118,13)
+        name:SetAnchor(TOPLEFT,row,TOPLEFT,0,0)
+        name:SetFont("$(MEDIUM_FONT)|10")
+        name:SetColor(0.87,0.83,0.74,1)
+        name:SetMouseEnabled(false)
+
+        local pct=WINDOW_MANAGER:CreateControl(nil,row,CT_LABEL)
+        pct:SetDimensions(44,13)
+        pct:SetAnchor(TOPRIGHT,row,TOPRIGHT,0,0)
+        pct:SetFont("$(BOLD_FONT)|10")
+        pct:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+        pct:SetMouseEnabled(false)
+
+        local barBack=WINDOW_MANAGER:CreateControl(nil,row,CT_BACKDROP)
+        barBack:SetDimensions(164,6)
+        barBack:SetAnchor(TOPLEFT,row,TOPLEFT,0,15)
+        barBack:SetCenterColor(0.060,0.055,0.045,1)
+        barBack:SetEdgeColor(0.25,0.22,0.16,0.9)
+        barBack:SetEdgeTexture(nil,1,1,1)
+        barBack:SetMouseEnabled(false)
+
+        local fill=WINDOW_MANAGER:CreateControl(nil,barBack,CT_BACKDROP)
+        fill:SetDimensions(1,4)
+        fill:SetAnchor(LEFT,barBack,LEFT,1,0)
+        fill:SetEdgeColor(0,0,0,0)
+
+        local count=WINDOW_MANAGER:CreateControl(nil,row,CT_LABEL)
+        count:SetDimensions(164,9)
+        count:SetAnchor(TOPLEFT,row,TOPLEFT,0,20)
+        count:SetFont("$(MEDIUM_FONT)|8")
+        count:SetColor(0.57,0.55,0.50,1)
+        count:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+        count:SetMouseEnabled(false)
+
+        row.hover=hover
+        row:SetHandler("OnMouseEnter",function(btn)
+            btn.hover:SetCenterColor(0.075,0.057,0.020,0.70)
+            btn.hover:SetEdgeColor(0.70,0.54,0.16,0.75)
+        end)
+        row:SetHandler("OnMouseExit",function(btn)
+            btn.hover:SetCenterColor(0.018,0.016,0.012,0)
+            btn.hover:SetEdgeColor(0.22,0.18,0.10,0)
+        end)
+        row:SetHandler("OnClicked",function(btn)
+            if btn.zoneId then TPM:OpenAllianceZoneInProgress(btn.zoneId) end
+        end)
+
+        self.statisticsAllianceZoneRows[i]={control=row,name=name,pct=pct,bar=fill,count=count}
+    end
+
+    -- Bottom details: fully above tab bar -------------------------------------
+    local details=WINDOW_MANAGER:CreateControl(nil,page,CT_BACKDROP)
+    details:SetDimensions(914,88)
+    details:SetAnchor(TOPLEFT,page,TOPLEFT,20,532)
+    details:SetCenterColor(0.020,0.019,0.016,0.99)
+    details:SetEdgeColor(0.45,0.36,0.16,0.92)
+    details:SetEdgeTexture("EsoUI/Art/Tooltips/UI-Border.dds",128,16,2)
+
+    local detailsTitle=WINDOW_MANAGER:CreateControl(nil,details,CT_LABEL)
+    detailsTitle:SetDimensions(860,18)
+    detailsTitle:SetAnchor(TOPLEFT,details,TOPLEFT,14,5)
+    detailsTitle:SetFont("$(BOLD_FONT)|14")
+    detailsTitle:SetColor(0.91,0.75,0.30,1)
+    self.statisticsAllianceDetailsTitle=detailsTitle
+
+    self.statisticsAllianceDetailRows={}
+    for i=1,8 do
+        local col=(i-1)%4
+        local rowIndex=math.floor((i-1)/4)
+        local cell=WINDOW_MANAGER:CreateControl(nil,details,CT_CONTROL)
+        cell:SetDimensions(215,30)
+        cell:SetAnchor(TOPLEFT,details,TOPLEFT,14+col*224,25+rowIndex*31)
+
+        local label=WINDOW_MANAGER:CreateControl(nil,cell,CT_LABEL)
+        label:SetDimensions(130,11)
+        label:SetAnchor(TOPLEFT,cell,TOPLEFT,0,0)
+        label:SetFont("$(MEDIUM_FONT)|8")
+        label:SetColor(0.80,0.77,0.69,1)
+
+        local value=WINDOW_MANAGER:CreateControl(nil,cell,CT_LABEL)
+        value:SetDimensions(78,11)
+        value:SetAnchor(TOPRIGHT,cell,TOPRIGHT,0,0)
+        value:SetFont("$(BOLD_FONT)|8")
+        value:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+        value:SetColor(0.93,0.82,0.42,1)
+
+        local back=WINDOW_MANAGER:CreateControl(nil,cell,CT_BACKDROP)
+        back:SetDimensions(215,5)
+        back:SetAnchor(TOPLEFT,cell,TOPLEFT,0,13)
+        back:SetCenterColor(0.055,0.050,0.040,1)
+        back:SetEdgeColor(0.22,0.19,0.13,0.85)
+        back:SetEdgeTexture(nil,1,1,1)
+
+        local fill=WINDOW_MANAGER:CreateControl(nil,back,CT_BACKDROP)
+        fill:SetDimensions(1,4)
+        fill:SetAnchor(LEFT,back,LEFT,1,0)
+        fill:SetEdgeColor(0,0,0,0)
+
+        local remain=WINDOW_MANAGER:CreateControl(nil,cell,CT_LABEL)
+        remain:SetDimensions(215,9)
+        remain:SetAnchor(TOPLEFT,cell,TOPLEFT,0,19)
+        remain:SetFont("$(MEDIUM_FONT)|7")
+        remain:SetColor(0.57,0.55,0.50,1)
+        remain:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+
+        self.statisticsAllianceDetailRows[i]={label=label,value=value,bar=fill,remain=remain}
+    end
+
+    self.statisticsAllianceNote=WINDOW_MANAGER:CreateControl(nil,page,CT_LABEL)
+    self.statisticsAllianceNote:SetDimensions(900,10)
+    self.statisticsAllianceNote:SetAnchor(BOTTOM,page,BOTTOM,0,1)
+    self.statisticsAllianceNote:SetFont("$(MEDIUM_FONT)|7")
+    self.statisticsAllianceNote:SetColor(0.48,0.46,0.42,1)
+    self.statisticsAllianceNote:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+end
+
+function TPM:RefreshAllianceStatisticsPage()
+    if not self.statisticsAlliancePage or self.statisticsAlliancePage:IsHidden() then return end
+
+    local _,allianceName,ownGroup=self:GetPlayerAllianceDisplay()
+    local data=self:GetAllianceStatisticsData()
+    local ownRow=ownGroup and data[ownGroup] or nil
+
+    self.statisticsAllianceOwnTitle:SetText(self:L("STAT_ALLIANCE_YOURS"))
+    self.statisticsAllianceOwnName:SetText(allianceName)
+    self.statisticsAllianceOwnPercent:SetText(string.format("%d%%",ownRow and ownRow.percent or 0))
+
+    local ownColor={0.78,0.62,0.22}
+    if ownGroup and self.statisticsAllianceCards and self.statisticsAllianceCards[ownGroup] then
+        ownColor=self.statisticsAllianceCards[ownGroup].color or ownColor
+    end
+    self.statisticsAllianceOwnBar:SetCenterColor(ownColor[1],ownColor[2],ownColor[3],0.95)
+    local ownPct=Clamp(tonumber(ownRow and ownRow.percent) or 0,0,100)
+    self.statisticsAllianceOwnBar:SetWidth(math.max(1,math.floor(878*ownPct/100)))
+
+    if not self.statisticsAllianceSelectedGroup then
+        self.statisticsAllianceSelectedGroup=ownGroup or "DC"
+    end
+
+    for group,card in pairs(self.statisticsAllianceCards or {}) do
+        local row=data[group] or {percent=0,zonesCompleted=0,zonesTotal=0,completed=0,total=0}
+        card.title:SetText(self:L(card.label))
+        card.badge:SetText(ownGroup==group and self:L("STAT_ALLIANCE_YOURS_SHORT") or "")
+        card.percent:SetText(string.format("%d%%",row.percent or 0))
+        card.zones:SetText(string.format("%d/%d %s",row.zonesCompleted or 0,row.zonesTotal or 0,self:L("STAT_ALLIANCE_ZONES_SHORT")))
+        card.objectives:SetText(string.format("%d/%d",row.completed or 0,row.total or 0))
+        local pct=Clamp(tonumber(row.percent) or 0,0,100)
+        card.bar:SetWidth(math.max(1,math.floor(192*pct/100)))
+
+        local selected=self.statisticsAllianceSelectedGroup==group
+        if selected then
+            card.control:SetCenterColor(math.min(0.12,card.color[1]*0.10),math.min(0.12,card.color[2]*0.10),math.min(0.12,card.color[3]*0.10),1)
+            card.control:SetEdgeColor(card.color[1],card.color[2],card.color[3],1)
+        else
+            card.control:SetCenterColor(0.022,0.021,0.018,0.99)
+            card.control:SetEdgeColor(card.color[1],card.color[2],card.color[3],0.68)
+        end
+    end
+
+    local selectedGroup=self.statisticsAllianceSelectedGroup or ownGroup or "DC"
+    if selectedGroup~="DC" and selectedGroup~="AD" and selectedGroup~="EP" then
+        selectedGroup=ownGroup or "DC"
+        self.statisticsAllianceSelectedGroup=selectedGroup
+    end
+
+    local selectedCard=self.statisticsAllianceCards and self.statisticsAllianceCards[selectedGroup]
+    local selectedName=selectedCard and self:L(selectedCard.label) or selectedGroup
+    local selectedColor=selectedCard and selectedCard.color or {0.78,0.62,0.22}
+    local territoryColors = true
+
+    if self.statisticsAllianceMapFrame then
+        if territoryColors then
+            self.statisticsAllianceMapFrame:SetEdgeColor(selectedColor[1],selectedColor[2],selectedColor[3],1)
+        else
+            self.statisticsAllianceMapFrame:SetEdgeColor(0.72,0.56,0.18,0.95)
+        end
+    end
+    if self.statisticsAllianceLegend then
+        self.statisticsAllianceLegend:SetHidden(false)
+    end
+    if self.statisticsAllianceMapPanel then
+        self.statisticsAllianceMapPanel:SetEdgeColor(selectedColor[1],selectedColor[2],selectedColor[3],0.82)
+    end
+    if self.statisticsAllianceMapTexture then
+        self.statisticsAllianceMapTexture:SetTexture("TamrielProgressMap/art/alliance_community_map.dds")
+    end
+    if self.statisticsAllianceMapTitle then
+        self.statisticsAllianceMapTitle:SetText(self:L("STAT_ALLIANCE_PLANNER_TITLE",selectedName))
+    end
+    local nextTarget,biggestGap,zoneRows=self:GetAlliancePlannerRecommendations(selectedGroup)
+
+    local selectedStats=data[selectedGroup] or {zonesCompleted=0,zonesTotal=0,completed=0,total=0}
+    local zoneOpen=math.max(0,(selectedStats.zonesTotal or 0)-(selectedStats.zonesCompleted or 0))
+    local objOpen=math.max(0,(selectedStats.total or 0)-(selectedStats.completed or 0))
+    if self.statisticsAllianceQuickDone then
+        self.statisticsAllianceQuickDone:SetText(self:L("STAT_ALLIANCE_QUICK_DONE",
+            selectedStats.zonesCompleted or 0, selectedStats.zonesTotal or 0))
+    end
+    if self.statisticsAllianceQuickOpen then
+        self.statisticsAllianceQuickOpen:SetText(self:L("STAT_ALLIANCE_QUICK_OPEN",
+            zoneOpen, objOpen))
+    end
+    if self.statisticsAllianceQuickNext then
+        if nextTarget then
+            self.statisticsAllianceQuickNext:SetText(self:L("STAT_ALLIANCE_QUICK_NEXT",
+                nextTarget.name, nextTarget.percent))
+        else
+            self.statisticsAllianceQuickNext:SetText(self:L("STAT_ALLIANCE_COMPLETE"))
+        end
+    end
+    if self.statisticsAllianceNextTitle then self.statisticsAllianceNextTitle:SetText(self:L("STAT_ALLIANCE_NEXT_TARGET")) end
+    if self.statisticsAllianceGapTitle then self.statisticsAllianceGapTitle:SetText(self:L("STAT_ALLIANCE_BIGGEST_GAP")) end
+    if self.statisticsAllianceNextValue then
+        if nextTarget then
+            self.statisticsAllianceNextValue:SetText(string.format("%s  %d%%  •  %d %s",
+                nextTarget.name,nextTarget.percent,nextTarget.remaining,self:L("STAT_ALLIANCE_REMAINING_SHORT")))
+        else
+            self.statisticsAllianceNextValue:SetText(self:L("STAT_ALLIANCE_COMPLETE"))
+        end
+    end
+    if self.statisticsAllianceGapValue then
+        if biggestGap then
+            self.statisticsAllianceGapValue:SetText(string.format("%s  %d%%  •  %d %s",
+                biggestGap.name,biggestGap.percent,biggestGap.remaining,self:L("STAT_ALLIANCE_REMAINING_SHORT")))
+        else
+            self.statisticsAllianceGapValue:SetText(self:L("STAT_ALLIANCE_COMPLETE"))
+        end
+    end
+
+    if self.statisticsAllianceZoneTitle then
+        self.statisticsAllianceZoneTitle:SetText(self:L("STAT_ALLIANCE_ZONE_PROGRESS"))
+    end
+    if self.statisticsAllianceZoneHint then
+        self.statisticsAllianceZoneHint:SetText(self:L("STAT_ALLIANCE_ZONE_CLICK_HINT"))
+    end
+
+    for i,controls in ipairs(self.statisticsAllianceZoneRows or {}) do
+        local z=zoneRows[i]
+        if z then
+            controls.control:SetHidden(false)
+            controls.control.zoneId=z.zoneId
+            controls.name:SetText(z.name)
+            controls.pct:SetText(string.format("%d%%",z.percent))
+            controls.count:SetText(string.format("%d/%d  •  %d %s",z.completed,z.total,z.remaining,self:L("STAT_ALLIANCE_REMAINING_SHORT")))
+            controls.bar:SetWidth(math.max(1,math.floor(162*z.percent/100)))
+            if z.complete then
+                controls.pct:SetColor(0.95,0.82,0.30,1)
+                controls.bar:SetCenterColor(0.90,0.72,0.20,0.98)
+            elseif z.percent>=75 then
+                controls.pct:SetColor(0.72,0.90,0.36,1)
+                controls.bar:SetCenterColor(0.58,0.80,0.24,0.95)
+            elseif z.percent>=40 then
+                controls.pct:SetColor(0.92,0.74,0.30,1)
+                if territoryColors then
+                    controls.bar:SetCenterColor(selectedColor[1],selectedColor[2],selectedColor[3],0.96)
+                else
+                    controls.bar:SetCenterColor(0.70,0.52,0.18,0.92)
+                end
+            else
+                controls.pct:SetColor(0.96,0.45,0.30,1)
+                controls.bar:SetCenterColor(0.82,0.28,0.16,0.92)
+            end
+        else
+            controls.control.zoneId=nil
+            controls.control:SetHidden(true)
+        end
+    end
+
+    self.statisticsAllianceDetailsTitle:SetText(selectedName.."  •  "..self:L("STAT_ALLIANCE_PROGRESS_DETAILS"))
+    local detailRows=self:GetAllianceCategoryStatisticsData(selectedGroup)
+    for i,controls in ipairs(self.statisticsAllianceDetailRows or {}) do
+        local row=detailRows[i]
+        if row then
+            local remaining=math.max(0,(row.total or 0)-(row.completed or 0))
+            controls.label:SetText(row.label)
+            controls.value:SetText(string.format("%d/%d  %d%%",row.completed or 0,row.total or 0,row.percent or 0))
+            controls.remain:SetText(string.format("%d %s",remaining,self:L("STAT_ALLIANCE_REMAINING_SHORT")))
+            controls.bar:SetWidth(math.max(1,math.floor(213*(row.percent or 0)/100)))
+            if (row.percent or 0)>=100 then
+                controls.bar:SetCenterColor(0.90,0.72,0.20,0.98)
+            else
+                controls.bar:SetCenterColor(selectedColor[1],selectedColor[2],selectedColor[3],0.92)
+            end
+        else
+            controls.label:SetText("")
+            controls.value:SetText("")
+            controls.remain:SetText("")
+            controls.bar:SetWidth(1)
+        end
+    end
+
+    self:RefreshAlliancePlannerMapView()
+    self.statisticsAllianceNote:SetText(self:L("STAT_ALLIANCE_PLANNER_NOTE"))
+end
+
 function TPM:IsValidStatisticsPage(page)
-    return page == "progress" or page == "economy" or page == "history"
+    return page == "progress" or page == "economy" or page == "history" or page == "alliance"
 end
 
 function TPM:UpdateStatisticsPageVisibility(page)
@@ -9033,6 +11138,7 @@ function TPM:UpdateStatisticsPageVisibility(page)
     if self.statisticsPlayerPage then self.statisticsPlayerPage:SetHidden(true) end
     if self.statisticsEconomyPage then self.statisticsEconomyPage:SetHidden(page ~= "economy") end
     if self.statisticsHistoryPage then self.statisticsHistoryPage:SetHidden(page ~= "history") end
+    if self.statisticsAlliancePage then self.statisticsAlliancePage:SetHidden(page ~= "alliance") end
     if self.statisticsListArea then self.statisticsListArea:SetMouseEnabled(page == "progress") end
     if self.statisticsScrollBar then self.statisticsScrollBar:SetMouseEnabled(page == "progress") end
 end
@@ -9044,6 +11150,7 @@ function TPM:RefreshStatisticsPageTabs()
         { self.statisticsProgressTab, "progress", "STAT_TAB_PROGRESS" },
         { self.statisticsEconomyTab, "economy", "STAT_TAB_ECONOMY" },
         { self.statisticsHistoryTab, "history", "STAT_TAB_HISTORY" },
+        { self.statisticsAllianceTab, "alliance", "STAT_TAB_ALLIANCE" },
     }
     for _, item in ipairs(tabs) do
         local control, key, labelKey = item[1], item[2], item[3]
@@ -9066,6 +11173,7 @@ function TPM:RefreshStatisticsPageTabs()
 end
 
 function TPM:SetStatisticsPage(page)
+    self:HideEconomyFocusDropdown()
     self:HideStatisticsHoverTooltips()
     self:HideStatisticsFocusDropdown()
     if not self:IsValidStatisticsPage(page) then page = "progress" end
@@ -9075,7 +11183,6 @@ function TPM:SetStatisticsPage(page)
     self:RefreshStatisticsLanguageBar()
     self:RefreshStatisticsWindow()
 end
-
 function TPM:SetProgressStatisticsControlsHidden(hidden)
     if self.statisticsProgressPage then self.statisticsProgressPage:SetHidden(hidden) end
     if self.statisticsListArea then self.statisticsListArea:SetMouseEnabled(not hidden) end
@@ -9202,9 +11309,8 @@ function TPM:CreateGoalCard(parent, name, y)
     end)
     card:SetHandler("OnMouseUp", function(c, button, upInside)
         if not upInside or button ~= MOUSE_BUTTON_INDEX_LEFT then return end
-        if c.mapId and c.mapId > 0 and WORLD_MAP_MANAGER and WORLD_MAP_MANAGER.SetMapById then
-            TPM:HideStatisticsWindow()
-            WORLD_MAP_MANAGER:SetMapById(c.mapId)
+        if c.mapId and c.mapId > 0 then
+            TPM:OpenWorldMapFromStatistics(c.mapId)
         end
     end)
     return card
@@ -10825,6 +12931,49 @@ function TPM:SetHistoryChartAreaVisible(visible)
     if self.statisticsHistoryEmpty then self.statisticsHistoryEmpty:SetHidden(not show) end
 end
 
+function TPM:GetTodayPlaySeconds()
+    local currentPlayed = math.max(0, tonumber(self:SyncCurrentEsoPlayedTime()) or 0)
+    local today = TPM_DayKey(TPM_Now())
+    local store = self:GetHistoryStore()
+    local latestBeforeToday, earliestToday = nil, nil
+
+    local function Inspect(snapshot)
+        if type(snapshot) ~= "table" then return end
+        local ts = tonumber(snapshot.timestamp) or 0
+        local played = tonumber(snapshot.esoPlayedSeconds or snapshot.playSeconds)
+        if ts <= 0 or played == nil then return end
+        local day = TPM_DayKey(ts)
+        local entry = { timestamp = ts, played = math.max(0, played) }
+        if day < today then
+            if not latestBeforeToday or ts > latestBeforeToday.timestamp then latestBeforeToday = entry end
+        elseif day == today then
+            if not earliestToday or ts < earliestToday.timestamp then earliestToday = entry end
+        end
+    end
+
+    for _, snapshot in pairs(store and store.daily or {}) do Inspect(snapshot) end
+    for _, snapshot in ipairs(store and store.samples or {}) do Inspect(snapshot) end
+    local active = store and store.activeSession
+    if type(active) == "table" then
+        Inspect(active.startSnapshot)
+        Inspect(active.lastSnapshot)
+    end
+
+    if latestBeforeToday and currentPlayed >= latestBeforeToday.played then
+        return math.max(0, Round(currentPlayed - latestBeforeToday.played))
+    end
+
+    local fallback = 0
+    if earliestToday and currentPlayed >= earliestToday.played then
+        fallback = math.max(0, Round(currentPlayed - earliestToday.played))
+    end
+    if type(active) == "table" then
+        local endAt = active.segmentStartedAt and TPM_Now() or active.lastSeenAt
+        fallback = math.max(fallback, self:GetHistoryActiveElapsed(active, endAt))
+    end
+    return math.max(0, Round(fallback))
+end
+
 function TPM:GetPlaytimePeriodTotal(days)
     local points = self:GetDailyPlaytimeHistorySeries(days)
     local total = 0
@@ -10929,7 +13078,7 @@ end
 
 function TPM:CreateStatisticsWindow()
     if self.statisticsWindow then return end
-    if not ZO_WorldMap or not ZO_WorldMapScroll then return end
+    if not WINDOW_MANAGER or not GuiRoot then return end
 
     local control = WINDOW_MANAGER:CreateTopLevelWindow(ADDON_NAME .. "StatisticsWindow")
     control:SetDimensions(1000, 750)
@@ -10945,7 +13094,10 @@ function TPM:CreateStatisticsWindow()
     if self.saved and type(self.saved.statisticsWindowX) == "number" and type(self.saved.statisticsWindowY) == "number" then
         control:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, self.saved.statisticsWindowX, self.saved.statisticsWindowY)
     else
-        control:SetAnchor(CENTER, ZO_WorldMapScroll, CENTER, 0, 8)
+        -- 2.6.31_Beta: Statistics is a real standalone journal now. Anchor to
+        -- GuiRoot instead of the world-map viewport so it can exist while the
+        -- map scene is completely closed.
+        control:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
     end
     self.statisticsWindow = control
 
@@ -10992,6 +13144,18 @@ function TPM:CreateStatisticsWindow()
     title:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
     title:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     self.statisticsTitle = title
+
+    local versionLabel = WINDOW_MANAGER:CreateControl(nil, control, CT_LABEL)
+    versionLabel:SetDimensions(126, 26)
+    -- Keep build information with the title, before the language selector.
+    versionLabel:SetAnchor(TOPLEFT, control, TOPLEFT, 212, 13)
+    versionLabel:SetFont("$(MEDIUM_FONT)|15")
+    versionLabel:SetColor(0.96, 0.96, 0.94, 1)
+    versionLabel:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    versionLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    versionLabel:SetText("")
+    versionLabel:SetHidden(true)
+    self.statisticsVersionLabel = versionLabel
 
     local dragHandle = WINDOW_MANAGER:CreateControl(ADDON_NAME .. "StatisticsDragHandle", control, CT_CONTROL)
     dragHandle:SetDimensions(720, 56)
@@ -11100,9 +13264,9 @@ function TPM:CreateStatisticsWindow()
     self.statisticsTamrielMedallion = medallion
 
     local overall = WINDOW_MANAGER:CreateControl(nil, progressPage, CT_LABEL)
-    overall:SetDimensions(118, 58)
-    overall:SetAnchor(TOPLEFT, control, TOPLEFT, 33, 107)
-    overall:SetFont("$(ANTIQUE_FONT)|42")
+    overall:SetDimensions(106, 44)
+    overall:SetAnchor(CENTER, medallion, CENTER, 0, 3)
+    overall:SetFont("$(ANTIQUE_FONT)|32")
     overall:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     overall:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     self.statisticsOverall = overall
@@ -11348,7 +13512,7 @@ function TPM:CreateStatisticsWindow()
 
     local categoryGearButton = WINDOW_MANAGER:CreateControl(nil, progressPage, CT_BUTTON)
     categoryGearButton:SetDimensions(18, 18)
-    categoryGearButton:SetAnchor(TOPLEFT, control, TOPLEFT, 200, 207)
+    categoryGearButton:SetAnchor(TOPLEFT, control, TOPLEFT, 472, 207)
     categoryGearButton:SetMouseEnabled(true)
     local categoryGearIcon = WINDOW_MANAGER:CreateControl(nil, categoryGearButton, CT_TEXTURE)
     categoryGearIcon:SetDimensions(16, 16)
@@ -11617,6 +13781,7 @@ function TPM:CreateStatisticsWindow()
     -- counters remain internal and feed the PvE / PvP page.
     self:CreateEconomyStatisticsPage(control)
     self:CreateHistoryStatisticsPage(control)
+    self:CreateAllianceStatisticsPage(control)
 
     local footerDivider = WINDOW_MANAGER:CreateControl(nil, control, CT_BACKDROP)
     footerDivider:SetDimensions(956, 1)
@@ -11658,10 +13823,11 @@ function TPM:CreateStatisticsWindow()
         return button
     end
 
-    self.statisticsProgressTab = CreatePageTab(ADDON_NAME .. "StatsTabProgress", 42, "progress", 292)
+    self.statisticsProgressTab = CreatePageTab(ADDON_NAME .. "StatsTabProgress", 42, "progress", 216)
     self.statisticsPlayerTab = nil
-    self.statisticsEconomyTab = CreatePageTab(ADDON_NAME .. "StatsTabEconomy", 354, "economy", 292)
-    self.statisticsHistoryTab = CreatePageTab(ADDON_NAME .. "StatsTabHistory", 666, "history", 292)
+    self.statisticsEconomyTab = CreatePageTab(ADDON_NAME .. "StatsTabEconomy", 278, "economy", 216)
+    self.statisticsHistoryTab = CreatePageTab(ADDON_NAME .. "StatsTabHistory", 514, "history", 216)
+    self.statisticsAllianceTab = CreatePageTab(ADDON_NAME .. "StatsTabAlliance", 750, "alliance", 216)
     self:RefreshStatisticsPageTabs()
 end
 
@@ -11708,11 +13874,7 @@ function TPM:ResetStatisticsWindowPosition()
     local control = self.statisticsWindow
     if not control then return end
     control:ClearAnchors()
-    if ZO_WorldMapScroll then
-        control:SetAnchor(CENTER, ZO_WorldMapScroll, CENTER, 0, 8)
-    else
-        control:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
-    end
+    control:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
     self:ClampStatisticsWindowToScreen()
 end
 
@@ -11826,11 +13988,6 @@ function TPM:RefreshStatisticsWindow()
     local control = self.statisticsWindow
     if not control or control:IsHidden() then return end
 
-    if not self:IsFullWorldMapSceneVisible() then
-        self:HideStatisticsWindow()
-        return
-    end
-
     local page = self.saved and self.saved.statisticsPage or "progress"
     if not self:IsValidStatisticsPage(page) then
         page = "progress"
@@ -11851,6 +14008,11 @@ function TPM:RefreshStatisticsWindow()
         self.statisticsMode:SetText(self:L("HISTORY_PAGE_MODE_CHARACTER", historyName))
         self:RefreshHistoryStatisticsPage()
         return
+    elseif page == "alliance" then
+        self.statisticsTitle:SetText(self:L("STAT_ALLIANCE_PAGE_TITLE"))
+        self.statisticsMode:SetText(self:L("STAT_ALLIANCE_ALPHA_TEST"))
+        self:RefreshAllianceStatisticsPage()
+        return
     end
 
     self:SetProgressStatisticsControlsHidden(false)
@@ -11858,7 +14020,7 @@ function TPM:RefreshStatisticsWindow()
     local stats = self:GetStatisticsData(false, focusZoneId)
     self.statisticsData = stats
 
-    self.statisticsTitle:SetText(self:L("STATISTICS_TITLE"))
+    self.statisticsTitle:SetText(string.format("%s-v2.6.72-Beta", self:L("STATISTICS_TITLE")))
     self.statisticsMode:SetText(self:L("STAT_MODE", self.saved.calculationMode == "categories" and self:L("MODE_CATEGORIES") or self:L("MODE_OBJECTIVES")))
     if self.statisticsFocusLabel then self.statisticsFocusLabel:SetText(self:L("STAT_FOCUS_LABEL")) end
     self:RefreshStatisticsFocusSelector()
@@ -11899,7 +14061,7 @@ function TPM:RefreshStatisticsWindow()
         -- Keep this live without bringing the old Development playtime page back.
         self:CheckpointHistory("progress_view", false)
         local totalPlayed = self:SyncCurrentEsoPlayedTime()
-        local todayPlayed = self:GetPlaytimePeriodTotal(1)
+        local todayPlayed = self:GetTodayPlaySeconds()
         self.statisticsPlaytimeCard.title:SetText(self:L("STAT_CHARACTER_PLAY_TIME"))
         self.statisticsPlaytimeCard.value:SetText(TPM_FormatDuration(totalPlayed or 0))
         self.statisticsPlaytimeCard.detail:SetText(self:L("STAT_CHARACTER_PLAY_TIME_TODAY", TPM_FormatDuration(todayPlayed or 0)))
@@ -12019,24 +14181,126 @@ function TPM:RefreshStatisticsWindow()
     end
     self:RefreshStatisticsZoneRows()
 end
+function TPM:OpenWorldMapFromStatistics(mapId)
+    mapId = tonumber(mapId) or 0
+    if mapId <= 0 then return false end
 
-function TPM:ShowStatisticsWindow()
-    if not self:IsFullWorldMapSceneVisible() then return false end
+    -- Clicking a zone is the one place where the standalone journal should
+    -- deliberately transition into ESO's map. Close the journal first, show
+    -- the correct keyboard/gamepad map scene, then select the requested map
+    -- after ESO has initialized the scene.
+    self.statisticsOpenedStandalone = false
+    self:HideStatisticsWindow()
+
+    local function SelectMap()
+        if TPM and WORLD_MAP_MANAGER and WORLD_MAP_MANAGER.SetMapById then
+            WORLD_MAP_MANAGER:SetMapById(mapId)
+            TPM:QueueRefresh(30)
+        end
+    end
+
+    if self:IsFullWorldMapSceneVisible() then
+        SelectMap()
+        return true
+    end
+
+    if SCENE_MANAGER and SCENE_MANAGER.Show then
+        local sceneName = "worldMap"
+        if type(IsInGamepadPreferredMode) == "function" and IsInGamepadPreferredMode() then
+            sceneName = "gamepad_worldMap"
+        end
+        SCENE_MANAGER:Show(sceneName)
+        if type(zo_callLater) == "function" then
+            zo_callLater(SelectMap, 120)
+        else
+            SelectMap()
+        end
+        return true
+    end
+    return false
+end
+
+-- 2.6.34: Standalone Statistics owns UI mouse mode only while opened by TPM.
+function TPM:SetStandaloneStatisticsUIMode(enabled)
+    enabled = enabled == true
+    if type(_G.SetGameCameraUIMode) ~= "function" then return end
+
+    if enabled then
+        local alreadyInUiMode = false
+        if type(_G.IsGameCameraUIModeActive) == "function" then
+            local ok, value = pcall(_G.IsGameCameraUIModeActive)
+            if ok then alreadyInUiMode = value == true end
+        end
+
+        self.statisticsUIModeWasAlreadyActive = alreadyInUiMode
+
+        -- Always request UI mode. A remapped key can share behavior with a
+        -- gameplay key and ESO may finish processing that key after the binding
+        -- callback, so one immediate request is not always enough.
+        local ok = pcall(_G.SetGameCameraUIMode, true)
+        self.statisticsOwnsUIMode = ok and not alreadyInUiMode
+        self.statisticsUIModeOpenedAt =
+            type(_G.GetFrameTimeMilliseconds) == "function"
+            and (_G.GetFrameTimeMilliseconds() or 0) or 0
+
+        -- Re-assert on the next UI ticks. This makes custom bindings such as
+        -- 9 behave exactly like the original NumPad5 standalone opener.
+        if type(zo_callLater) == "function" then
+            zo_callLater(function()
+                if TPM and TPM.statisticsOpenedStandalone
+                    and TPM.statisticsWindow and not TPM.statisticsWindow:IsHidden() then
+                    pcall(_G.SetGameCameraUIMode, true)
+                end
+            end, 0)
+            zo_callLater(function()
+                if TPM and TPM.statisticsOpenedStandalone
+                    and TPM.statisticsWindow and not TPM.statisticsWindow:IsHidden() then
+                    pcall(_G.SetGameCameraUIMode, true)
+                    TPM.statisticsUIModeOpenedAt =
+                        type(_G.GetFrameTimeMilliseconds) == "function"
+                        and (_G.GetFrameTimeMilliseconds() or 0) or TPM.statisticsUIModeOpenedAt
+                end
+            end, 80)
+        end
+    else
+        if self.statisticsOwnsUIMode then
+            pcall(_G.SetGameCameraUIMode, false)
+        end
+        self.statisticsOwnsUIMode = false
+        self.statisticsUIModeWasAlreadyActive = false
+        self.statisticsUIModeOpenedAt = 0
+    end
+end
+
+function TPM:ShowStatisticsWindow(openStandalone)
     self:CreateStatisticsWindow()
     if not self.statisticsWindow then return false end
+    if openStandalone == nil then
+        openStandalone = not self:IsFullWorldMapSceneVisible()
+    end
+    self.statisticsOpenedStandalone = openStandalone == true
+    self.statisticsTemporarilyHiddenForScene = false
     self.statisticsWindow:SetHidden(false)
+    if self.statisticsOpenedStandalone then
+        self:SetStandaloneStatisticsUIMode(true)
+    end
     self:ClampStatisticsWindowToScreen()
     self:HideQuestRewards()
+    if self.skyshardGoalWidget then self.skyshardGoalWidget:SetHidden(true) end
     -- Always take a fresh snapshot when the journal is opened. While it stays
     -- open, completion events invalidate the cache as needed.
     self:InvalidateStatisticsData(false)
     self:RefreshStatisticsWindow()
     self:RefreshQuickFilterBar()
     self:QueueRefresh(20)
+    if self.statisticsOpenedStandalone then
+        self:RefreshStandaloneStatisticsSceneVisibility()
+    end
     return true
 end
 
 function TPM:HideStatisticsWindow()
+    self:HideEconomyFocusDropdown()
     self:HideStatisticsHoverTooltips()
     self:HideStatisticsFocusDropdown()
     TPM_HideAchievementTooltip()
@@ -12049,40 +14313,56 @@ function TPM:HideStatisticsWindow()
     if self.statisticsWindow then
         self.statisticsWindow:SetHidden(true)
     end
+    if self.economyDetailWindow then
+        self.economyDetailWindow:SetHidden(true)
+    end
+    self.economyDetailTemporarilyHiddenForScene = false
+    self:SetStandaloneStatisticsUIMode(false)
+    self.statisticsOpenedStandalone = false
+    self.statisticsTemporarilyHiddenForScene = false
     self:RefreshQuickFilterBar()
+    if type(zo_callLater) == "function" then
+        zo_callLater(function() if TPM then TPM:RefreshSkyshardGoalWidget() end end, 30)
+    end
     if self:IsWorldMapVisible() then
         self:RefreshQuestRewards()
         self:QueueRefresh(20)
     end
 end
-
-function TPM:ToggleStatisticsWindow()
+function TPM:ToggleStatisticsWindow(openStandalone)
     self:CreateStatisticsWindow()
     if not self.statisticsWindow then return end
-    if self.statisticsWindow:IsHidden() then
-        self:ShowStatisticsWindow()
+    -- A standalone journal may be temporarily hidden while an ESO fullscreen
+    -- menu is active. Treat it as logically open so pressing the key again
+    -- actually closes it instead of reopening a hidden copy.
+    if self.statisticsOpenedStandalone and self.statisticsTemporarilyHiddenForScene then
+        self:HideStatisticsWindow()
+    elseif self.statisticsWindow:IsHidden() then
+        self:ShowStatisticsWindow(openStandalone)
     else
         self:HideStatisticsWindow()
     end
 end
 
 function TPM:ToggleStatisticsFromKeybind()
-    if self:IsFullWorldMapSceneVisible() then
-        self:ToggleStatisticsWindow()
+    -- Keybind/slash openings are always standalone. Handle the open path
+    -- explicitly so every remapped binding acquires mouse/UI mode reliably.
+    self:CreateStatisticsWindow()
+    if not self.statisticsWindow then return end
+
+    if self.statisticsOpenedStandalone and self.statisticsTemporarilyHiddenForScene then
+        self:HideStatisticsWindow()
         return
     end
 
-    if SCENE_MANAGER and SCENE_MANAGER.Show then
-        local sceneName = "worldMap"
-        if type(IsInGamepadPreferredMode) == "function" and IsInGamepadPreferredMode() then
-            sceneName = "gamepad_worldMap"
-        end
-        SCENE_MANAGER:Show(sceneName)
-        if type(zo_callLater) == "function" then
-            zo_callLater(function()
-                if TPM and TPM:IsFullWorldMapSceneVisible() then TPM:ShowStatisticsWindow() end
-            end, 120)
-        end
+    if self.statisticsWindow:IsHidden() then
+        self:ShowStatisticsWindow(true)
+        -- ShowStatisticsWindow already requests UI mode; explicitly request it
+        -- again here so a custom Controls binding cannot leave the journal open
+        -- in gameplay-camera mode with no mouse cursor.
+        self:SetStandaloneStatisticsUIMode(true)
+    else
+        self:HideStatisticsWindow()
     end
 end
 
@@ -12445,12 +14725,17 @@ end
 function TPM:Refresh()
     self.refreshQueued = false
 
-    -- Most TPM rendering belongs exclusively to the world map. Avoid rebuilding
-    -- pins/labels/journal controls for events that fire while the map is closed.
+    -- Most TPM rendering belongs exclusively to the world map. The Statistics
+    -- journal is the exception since 2.6.31: when opened standalone it must keep
+    -- receiving live completion updates even while the map is closed.
     if not self:IsWorldMapVisible() then
         self:ReleaseOverlayLabels()
+        self:HideAllianceTerritoryBorders()
         self:HideHeaderProgress()
         if self.questRewardControl then self:HideQuestRewards() end
+        if self.statisticsWindow and not self.statisticsWindow:IsHidden() then
+            self:RefreshStatisticsWindow()
+        end
         return
     end
 
@@ -12458,6 +14743,7 @@ function TPM:Refresh()
     self:RefreshHeaderProgress()
     self:RefreshQuestRewards()
     self:RefreshQuickFilterBar()
+    self:RefreshAllianceTerritoryBorders()
 
     if not self.pinRegistered then
         self:RegisterCustomPin()
@@ -12521,6 +14807,12 @@ function TPM:SetLanguage(value, silent)
         self.settingsPanel:RefreshPanel()
     end
     self:RefreshStatisticsWindow()
+    -- Rebuild Economy focus choices immediately so an already-open dropdown
+    -- changes its zone names together with DE/EN/FR/RU.
+    if self.economyFocusDropdown then
+        self.economyFocusDropdownChoices = nil
+        self:RefreshEconomyFocusDropdown()
+    end
     self:RefreshQuickFilterBar()
     self:RefreshQuestRewards()
     self:RefreshSkyshardGoalWidget()
@@ -12532,6 +14824,10 @@ function TPM:SetLanguage(value, silent)
             if TPM then
                 TPM:RefreshCustomSettingsControls()
                 TPM:RefreshStatisticsWindow()
+                if TPM.economyFocusDropdown then
+                    TPM.economyFocusDropdownChoices = nil
+                    TPM:RefreshEconomyFocusDropdown()
+                end
                 TPM:RefreshQuickFilterBar()
                 TPM:RefreshQuestRewards()
                 TPM:QueueRefresh(10)
@@ -13304,6 +15600,32 @@ function TPM:RegisterSettings()
             default = DEFAULTS.showZoneNames,
             width = "full",
         },
+
+        {
+            type = "checkbox",
+            name = function() return TPM:L("SETTINGS_ALLIANCE_TERRITORY") end,
+            tooltip = function() return TPM:L("SETTINGS_ALLIANCE_TERRITORY_TT") end,
+            getFunc = function() return TPM.saved.showAllianceTerritoryColors end,
+            setFunc = function(value)
+                TPM.saved.showAllianceTerritoryColors = value and true or false
+                TPM:QueueRefresh(10)
+            end,
+            default = DEFAULTS.showAllianceTerritoryColors,
+            width = "full",
+        },
+        {
+            type = "checkbox",
+            name = function() return TPM:L("SETTINGS_ALLIANCE_NEUTRAL_WHITE") end,
+            tooltip = function() return TPM:L("SETTINGS_ALLIANCE_NEUTRAL_WHITE_TT") end,
+            getFunc = function() return TPM.saved.allianceNeutralWhite end,
+            setFunc = function(value)
+                TPM.saved.allianceNeutralWhite = value and true or false
+                TPM:QueueRefresh(10)
+            end,
+            default = DEFAULTS.allianceNeutralWhite,
+            disabled = function() return not TPM.saved.showAllianceTerritoryColors end,
+            width = "full",
+        },
         {
             type = "checkbox",
             name = function() return TPM:L("SETTINGS_TOOLTIP") end,
@@ -13370,6 +15692,11 @@ function TPM:RegisterSettings()
             tooltip = function() return TPM:L("SETTINGS_STATISTICS_RESET_TT") end,
             func = function() TPM:ResetStatisticsWindowPosition() end,
             width = "half",
+        },
+        {
+            type = "description",
+            text = function() return TPM:L("SETTINGS_STATISTICS_KEYBIND_INFO") end,
+            width = "full",
         },
 
         { type = "header", name = function() return TPM:L("SETTINGS_SECTION_PROGRESS") end, width = "full" },
@@ -13555,6 +15882,14 @@ function TPM:QueueProgressHistoryCheckpoint()
 end
 
 function TPM:Initialize()
+    -- Define NumPad 5 as TPM's default binding without forcing it as a custom
+    -- bind. ESO will use this as the default and players can freely replace it
+    -- under Controls > Keybindings > Tamriel Progress Map.
+    if type(CreateDefaultActionBind) == "function" and _G.KEY_NUMPAD5 ~= nil then
+        local noModifier = _G.KEY_INVALID or 0
+        pcall(CreateDefaultActionBind, "TPM_TOGGLE_STATISTICS", _G.KEY_NUMPAD5, noModifier, noModifier, noModifier, noModifier)
+    end
+
     self.saved = ZO_SavedVars:NewAccountWide("TamrielProgressMap_SavedVariables", 1, nil, DEFAULTS)
     if not self.saved.percentColorModeMigrated then
         if self.saved.blackPercentText then
@@ -13717,6 +16052,13 @@ function TPM:Initialize()
     self.saved.fontStyle = self:NormalizeFontStyle(self.saved.fontStyle) or DEFAULTS.fontStyle
     self.saved.questFontStyle = self:NormalizeFontStyle(self.saved.questFontStyle) or DEFAULTS.questFontStyle
 
+    -- 2.6.46 migration: show the preserved historical Economy totals first.
+    -- Users can still select any zone afterwards for the zone ledger.
+    if self.saved and not self.saved.economyFocusCacheRestore2646 then
+        self.saved.economyDetailFocusZoneId = 0
+        self.saved.economyFocusCacheRestore2646 = true
+    end
+
     self:ResolveLanguage()
     self:RefreshBindingStrings()
     self:CreateHeaderProgressLabel()
@@ -13747,9 +16089,11 @@ function TPM:Initialize()
             if newState == SCENE_SHOWING then
                 TPM.worldMapSceneVisible = true
                 if TPM.skyshardGoalWidget then TPM.skyshardGoalWidget:SetHidden(true) end
+                TPM:RefreshAllianceTerritoryBorders()
                 TPM:QueueRefresh(40)
             elseif newState == SCENE_SHOWN then
                 TPM.worldMapSceneVisible = true
+                TPM:RefreshAllianceTerritoryBorders()
                 -- Do not let a refresh queued during SCENE_SHOWING suppress the
                 -- final refresh after ESO has finished showing the map.
                 TPM.refreshQueued = false
@@ -13758,9 +16102,15 @@ function TPM:Initialize()
                 TPM.worldMapSceneVisible = false
                 TPM.refreshQueued = false
                 TPM:ReleaseOverlayLabels()
+                TPM:HideAllianceTerritoryBorders()
                 TPM:HideHeaderProgress()
                 TPM:HideQuestRewards()
-                TPM:HideStatisticsWindow()
+                -- A journal opened from the world-map button belongs to that
+                -- scene and closes with it. A standalone journal opened by
+                -- keybind or /tpm stats remains visible when the map closes.
+                if not TPM.statisticsOpenedStandalone then
+                    TPM:HideStatisticsWindow()
+                end
                 zo_callLater(function() if TPM then TPM:RefreshSkyshardGoalWidget() end end, 50)
                 -- Minimap addons can reuse ZO_WorldMap after the real scene closes.
                 TPM:RefreshQuickFilterBar()
@@ -13779,18 +16129,26 @@ function TPM:Initialize()
             if newState == SCENE_SHOWING then
                 TPM.gamepadWorldMapSceneVisible = true
                 if TPM.skyshardGoalWidget then TPM.skyshardGoalWidget:SetHidden(true) end
+                TPM:RefreshAllianceTerritoryBorders()
                 TPM:QueueRefresh(40)
             elseif newState == SCENE_SHOWN then
                 TPM.gamepadWorldMapSceneVisible = true
+                TPM:RefreshAllianceTerritoryBorders()
                 TPM.refreshQueued = false
                 TPM:QueueRefresh(20)
             elseif newState == SCENE_HIDING or newState == SCENE_HIDDEN then
                 TPM.gamepadWorldMapSceneVisible = false
                 TPM.refreshQueued = false
                 TPM:ReleaseOverlayLabels()
+                TPM:HideAllianceTerritoryBorders()
                 TPM:HideHeaderProgress()
                 TPM:HideQuestRewards()
-                TPM:HideStatisticsWindow()
+                -- A journal opened from the world-map button belongs to that
+                -- scene and closes with it. A standalone journal opened by
+                -- keybind or /tpm stats remains visible when the map closes.
+                if not TPM.statisticsOpenedStandalone then
+                    TPM:HideStatisticsWindow()
+                end
                 zo_callLater(function() if TPM then TPM:RefreshSkyshardGoalWidget() end end, 50)
                 -- Minimap addons can reuse ZO_WorldMap after the real scene closes.
                 TPM:RefreshQuickFilterBar()
@@ -13832,7 +16190,12 @@ function TPM:Initialize()
             if TPM and TPM.skyshardGoalWidget and not TPM:IsSkyshardGoalHudSceneVisible() then
                 TPM.skyshardGoalWidget:SetHidden(true)
             end
-            zo_callLater(function() if TPM then TPM:RefreshSkyshardGoalWidget() end end, 0)
+            zo_callLater(function()
+                if TPM then
+                    TPM:RefreshStandaloneStatisticsSceneVisibility()
+                    TPM:RefreshSkyshardGoalWidget()
+                end
+            end, 0)
         end)
     end
 
@@ -13952,7 +16315,9 @@ function TPM:Initialize()
         local namespace = ADDON_NAME .. "Progress" .. suffix
         EVENT_MANAGER:RegisterForEvent(namespace, eventCode, function()
             TPM:InvalidateStatisticsData(false)
-            if TPM:IsWorldMapVisible() then TPM:QueueRefresh(60) end
+            if TPM:IsWorldMapVisible() or (TPM.statisticsWindow and not TPM.statisticsWindow:IsHidden()) then
+                TPM:QueueRefresh(60)
+            end
             TPM:QueueProgressHistoryCheckpoint()
         end)
     end

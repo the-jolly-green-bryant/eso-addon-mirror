@@ -3,7 +3,7 @@ ESO Adventurer Suite uses AI-assisted code generation and review. ESO Adventurer
 
 [B]ESO ADVENTURER SUITE[/B]
 Author: HoZayyBadazz
-Version: 0.28.85
+Version: 0.29.127
 Status: Public Beta
 
 ESO Adventurer Suite is an all-in-one Elder Scrolls Online dashboard and utility addon built around the Tamriel Codex. It includes quest and travel tools, Suite-native finders, combat statistics, HUD tools, minimap features, gear/build tools, companion tools, notes, checkpoints, Golden Pursuits integration, and configurable utility overlays.
@@ -25,7 +25,8 @@ Install required libraries separately through Minion/ESOUI.
 * Multiple saved notes and checkpoints
 * Mini Map and native ESO map integration
 * Companion, group, raid, combat, ability, XP, Champion Point, and utility HUD tools
-* Live Combat Stats
+* Live Combat Stats (PEN / PWR / SR / PR / CC / CD) linked to the shared fight recorder
+* Game Combat detailed fight reports with DPS/HPS, abilities, resources, effect uptime, incoming damage sources, and history
 * Gear, set, skill, Champion Point, and attribute optimization tools
 * RESPEC + BUILD workflow
 * Dungeon/activity history

@@ -299,13 +299,13 @@ local function onAddOnLoaded(event, name)
 	--notify that add-on has been loaded
 	zo_callLater(function() printMessageTest("add-on successfully loaded") end, 500)
 
+	--load saved variables
+    archdruidTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("adtAddonVars", 1, "Settings", archdruidTracker.defaults, GetUnitName("player"))
+
 	--notify if tracking is disabled
 	if not archdruidTracker.savedVariables.trackArch then
 		zo_callLater(function() printMessageTest("tracking disabled") end, 600)
 	end
-
-    --load saved variables
-    archdruidTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("adtAddonVars", 1, "Settings", archdruidTracker.defaults, GetUnitName("player"))
 
     --setup text field areas
     archAddonText:SetMovable(true)

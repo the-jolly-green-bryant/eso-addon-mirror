@@ -1,6 +1,6 @@
 ## Title: |c6FCB9FBureau|r of Acceptable Views
-## Version: 3.8.145105
-## AddOnVersion: 38
+## Version: 3.9.000146
+## AddOnVersion: 39
 ## Author: |c6FCB9Fmeshlg|r @ArtieFox
 ## APIVersion: 101050 101051
 ## Description: Free camera zoom in restricted states, with Dynamic FOV, adaptive PvP framing, context presets, and over-the-shoulder control.
@@ -18,6 +18,7 @@ Localization/$(language).lua
 BureauOfAcceptableViews.lua
 CameraSettings.lua
 Ease.lua
+CameraResponse.lua
 OptionsWatch.lua
 SprintWatch.lua
 ZoomReconciler.lua

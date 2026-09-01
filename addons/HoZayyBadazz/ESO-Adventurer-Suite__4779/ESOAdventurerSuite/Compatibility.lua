@@ -58,6 +58,7 @@ function C:Initialize()
         SOCIAL_TRAVEL = functionExists("JumpToFriend") or functionExists("JumpToGuildMember") or functionExists("JumpToGroupMember"),
         CHAMPION = allFunctions({"GetAssignableChampionBarStartAndEndSlots", "GetSlotBoundId"}),
         COMBAT = EVENT_COMBAT_EVENT ~= nil and EVENT_PLAYER_COMBAT_STATE ~= nil,
+        GAME_MODE_REPORT = allFunctions({"GetUnitPower", "GetPlayerStat", "GetNumBuffs", "GetUnitBuffInfo"}),
         ROLE_AUTO = functionExists("GetSelectedLFGRole"),
         UI_MODE = functionExists("SetGameCameraUIMode") or (SCENE_MANAGER and type(SCENE_MANAGER.SetInUIMode) == "function") or false,
         INVENTORY = allFunctions({"GetBagSize", "GetItemLink", "GetNumBagUsedSlots"}),
@@ -69,6 +70,7 @@ function C:Initialize()
         UNIT_FRAMES = allFunctions({"DoesUnitExist", "GetUnitName", "GetUnitPower", "GetNumBuffs", "GetUnitBuffInfo", "GetGroupSize"}),
         DUNGEON_CHEST_FINDER = allFunctions({"GetUnitRawWorldPosition", "WorldPositionToGuiRender3DPosition", "GetGameCameraInteractableActionInfo", "IsUnitInDungeon"}),
         RESOURCE_PINS = allFunctions({"GetUnitRawWorldPosition", "WorldPositionToGuiRender3DPosition", "GetGameCameraInteractableActionInfo", "GetInteractionType"}) and EVENT_LOOT_RECEIVED ~= nil,
+        ANTIQUITY_ASSISTANT = allFunctions({"GetNumInProgressAntiquities", "GetDigSiteNormalizedCenterPosition", "GetAntiquityScryingSkillLineId", "GetAntiquityDiggingSkillLineId"}),
         BUG_CATCHER = EVENT_LUA_ERROR ~= nil,
         ABILITY_OVERLAYS = allFunctions({"GetSlotTexture", "GetSlotName", "GetSlotCooldownInfo", "IsSlotUsed", "GetActiveHotbarCategory"}),
         REPAIR_COST_OVERLAY = allFunctions({"GetItemLink", "GetItemRepairCost", "GetItemCondition", "GetChargeInfoForItem"}),
@@ -166,8 +168,8 @@ function C:GetDiagnosticLines()
     local lines = { self:GetSummary() }
     local order = {
         "CORE", "GEAR", "ACTIVITIES", "QUEST_ROUTING", "QUEST_INDEX", "SHRINE_TRAVEL", "SOCIAL_TRAVEL",
-        "CHAMPION", "COMBAT", "ROLE_AUTO", "UI_MODE", "INVENTORY", "RESEARCH", "COLLECTIONS", "SET_JOURNAL",
-        "ZONE_COMPLETION", "SKYSHARDS", "UNIT_FRAMES", "DUNGEON_CHEST_FINDER", "RESOURCE_PINS", "BUG_CATCHER", "ABILITY_OVERLAYS", "REPAIR_COST_OVERLAY", "ADVANCED_STATS", "MINI_MAP", "STABLE_TIMER", "AUTO_MAINTENANCE",
+        "CHAMPION", "COMBAT", "GAME_MODE_REPORT", "ROLE_AUTO", "UI_MODE", "INVENTORY", "RESEARCH", "COLLECTIONS", "SET_JOURNAL",
+        "ZONE_COMPLETION", "SKYSHARDS", "UNIT_FRAMES", "DUNGEON_CHEST_FINDER", "RESOURCE_PINS", "ANTIQUITY_ASSISTANT", "BUG_CATCHER", "ABILITY_OVERLAYS", "REPAIR_COST_OVERLAY", "ADVANCED_STATS", "MINI_MAP", "STABLE_TIMER", "AUTO_MAINTENANCE",
         "ROLE", "TRAVEL", "QUEST_FINDER", "SET_JOURNAL", "ENDGAME", "TARGET_BUILD", "ADVISOR", "MAINTENANCE", "STABLE_TIMER", "UTILITY_SUITE", "ENGINE", "UI", "EVENTS"
     }
     local seen = {}

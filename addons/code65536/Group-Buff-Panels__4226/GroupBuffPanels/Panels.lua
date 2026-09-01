@@ -43,7 +43,9 @@ local function TogglePanel( panel, abilityId, enable )
 		panel:ToggleLock(GBP.GetPanelSetting("lock", abilityId))
 		panel:SetPositionSnap(GBP.GetPanelSetting("snap", abilityId) * GBP.GetPanelSetting("scale", abilityId))
 
-		local effects = { }
+		local effectEnds = { }
+		local effectTotals = { }
+		local effectIds = { }
 
 		local UpdatePanel = function( unitTag, remaining, totalTime )
 			if (totalTime == 0) then
@@ -57,46 +59,52 @@ local function TogglePanel( panel, abilityId, enable )
 
 		if (not altMode) then
 			-- Standard tracking
-			local callback = function( _, changeType, _, _, unitTag, beginTime, endTime )
+			local callback = function( _, changeType, _, _, unitTag, beginTime, endTime, _, _, _, _, _, _, _, _, abilityId )
 				if (changeType == EFFECT_RESULT_FADED) then
-					effects[unitTag] = nil
-					UpdatePanel(unitTag, -1)
+					if (effectIds[unitTag] == abilityId) then
+						effectEnds[unitTag] = nil
+						effectIds[unitTag] = nil
+						UpdatePanel(unitTag, -1)
+					end
 				else
 					endTime = endTime * 1000
 					local totalTime = endTime - beginTime * 1000
-					effects[unitTag] = { endTime, totalTime }
+					effectEnds[unitTag] = endTime
+					effectTotals[unitTag] = totalTime
+					effectIds[unitTag] = abilityId
 					UpdatePanel(unitTag, totalTime, totalTime)
 				end
 			end
 			for i = 1, #ids do
-				local name2 = name .. i
-				EVENT_MANAGER:RegisterForEvent(name2, EVENT_EFFECT_CHANGED, callback)
-				EVENT_MANAGER:AddFilterForEvent(name2, EVENT_EFFECT_CHANGED, REGISTER_FILTER_ABILITY_ID, ids[i])
-				EVENT_MANAGER:AddFilterForEvent(name2, EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG_PREFIX, "group")
+				LCA.RegisterForFilteredEvent(name .. i, EVENT_EFFECT_CHANGED, callback, REGISTER_FILTER_ABILITY_ID, ids[i], REGISTER_FILTER_UNIT_TAG_PREFIX, "group")
 			end
 		else
 			-- Special tracking for effects that don't trigger EVENT_EFFECT_CHANGED
-			local callback = function( _, result, _, _, _, _, _, _, _, _, hitValue, _, _, _, _, targetUnitId )
+			local callback = function( _, result, _, _, _, _, _, _, _, _, hitValue, _, _, _, _, targetUnitId, abilityId )
 				local unitTag = LCA.IdentifyGroupUnitId(targetUnitId)
-				if (unitTag and result == ACTION_RESULT_EFFECT_FADED) then
-					effects[unitTag] = nil
+				if (unitTag and result == ACTION_RESULT_EFFECT_FADED and effectIds[unitTag] == abilityId) then
+					effectEnds[unitTag] = nil
+					effectIds[unitTag] = nil
 					UpdatePanel(unitTag, -1)
 				elseif (unitTag and result == ACTION_RESULT_EFFECT_GAINED_DURATION) then
-					effects[unitTag] = { GetGameTimeMilliseconds() + hitValue, hitValue }
+					effectEnds[unitTag] = GetGameTimeMilliseconds() + hitValue
+					effectTotals[unitTag] = hitValue
+					effectIds[unitTag] = abilityId
 					UpdatePanel(unitTag, hitValue, hitValue)
+				elseif (unitTag and result == ACTION_RESULT_EFFECT_GAINED and hitValue == 1 and effectIds[unitTag] == abilityId) then
+					-- If an effect is refreshed before expiration
+					effectEnds[unitTag] = GetGameTimeMilliseconds() + effectTotals[unitTag]
 				end
 			end
 			for i = 1, #ids do
-				local name2 = name .. i
-				EVENT_MANAGER:RegisterForEvent(name2, EVENT_COMBAT_EVENT, callback)
-				EVENT_MANAGER:AddFilterForEvent(name2, EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, ids[i])
+				LCA.RegisterForFilteredEvent(name .. i, EVENT_COMBAT_EVENT, callback, REGISTER_FILTER_ABILITY_ID, ids[i])
 			end
 		end
 
 		EVENT_MANAGER:RegisterForUpdate(name, POLLING_INTERVAL, function( )
 			local currentTime = GetGameTimeMilliseconds()
-			for unitTag, times in pairs(effects) do
-				UpdatePanel(unitTag, times[1] - currentTime, times[2])
+			for unitTag, endTime in pairs(effectEnds) do
+				UpdatePanel(unitTag, endTime - currentTime, effectTotals[unitTag])
 			end
 		end)
 	else

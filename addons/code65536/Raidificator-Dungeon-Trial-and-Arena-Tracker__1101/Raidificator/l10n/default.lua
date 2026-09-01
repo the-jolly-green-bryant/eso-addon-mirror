@@ -22,6 +22,9 @@ Register("SI_RCR_HEADER_COMPLETED"        , GetString(SI_ZONECOMPLETIONTYPE_PROG
 Register("SI_RCR_COMPLETED_COUNT"         , "%d / %d completed (%d%%)")
 Register("SI_RCR_LINK_INCOMPLETE"         , "Link Incomplete in Chat")
 
+Register("SI_RCR_DISPLAY_SCORE_BANNER"    , "Display Score Banner")
+Register("SI_RCR_UNADJUSTED_SCORE"        , "Unadjusted Score")
+
 Register("SI_RCR_ALL_ACCOUNTS"            , "All Accounts")
 Register("SI_RCR_GROUP_MEMBERS"           , "Group Members")
 

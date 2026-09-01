@@ -41,7 +41,7 @@ function GBP.RegisterStockConditionalEnablements( )
 	GBP.RegisterConditionalEnablement(109966, SI_GBP_SETTING_CE_ABILITY_ITEMSET, function( )
 		return GBP.GetItemSetEquippedCount(185) >= 3 -- Spell Power Cure
 			or GBP.GetItemSetEquippedCount(391) >= 3 -- Olorime
-			or GBP.DoesPlayerHaveSkillSlotted(39113) -- Ferocious Roar
+			or GBP.AreSkillsSlotted(39113) -- Ferocious Roar
 	end)
 
 	-- Powerful Assault
@@ -68,27 +68,32 @@ function GBP.RegisterStockConditionalEnablements( )
 
 	-- Major Resolve
 	GBP.RegisterConditionalEnablement(61694, zo_strformat(SI_GBP_SETTING_CE_ABILITY, LCA.GetAbilityName(86122)), function( )
-		return GBP.DoesPlayerHaveSkillSlotted({ 86122, 86126, 86130 })
+		return GBP.AreSkillsSlotted(86122, 86126, 86130)
 	end)
 
 	-- Radiating Regeneration
 	GBP.RegisterConditionalEnablement(40079, zo_strformat(SI_GBP_SETTING_CE_ABILITY, LCA.GetAbilityName(40079)), function( )
-		return GBP.DoesPlayerHaveSkillSlotted(40079)
+		return GBP.AreSkillsSlotted(40079)
 	end)
 
 	-- Echoing Vigor
 	GBP.RegisterConditionalEnablement(61506, zo_strformat(SI_GBP_SETTING_CE_ABILITY, LCA.GetAbilityName(61505)), function( )
-		return GBP.DoesPlayerHaveSkillSlotted(61505)
+		return GBP.AreSkillsSlotted(61505)
 	end)
 
 	-- Aggressive Horn
 	GBP.RegisterConditionalEnablement(40224, zo_strformat(SI_GBP_SETTING_CE_ABILITY, LCA.GetAbilityName(40223)), function( )
-		return GBP.DoesPlayerHaveSkillSlotted(40223)
+		return GBP.AreSkillsSlotted(40223)
 	end)
 
 	-- Standard of Might
 	GBP.RegisterConditionalEnablement(32948, zo_strformat(SI_GBP_SETTING_CE_ABILITY, LCA.GetAbilityName(32947)), function( )
-		return GBP.DoesPlayerHaveSkillSlotted({ 32947, 28988 })
+		return GBP.AreSkillsSlotted(32947, 28988)
+	end)
+
+	-- Feeding Frenzy
+	GBP.RegisterConditionalEnablement(58813, zo_strformat(SI_GBP_SETTING_CE_ABILITY, LCA.GetAbilityName(32633)), function( )
+		return GBP.AreSkillsSlotted(32633, 39113, 39114)
 	end)
 
 	-- Update Monitoring -------------------------------------------------------

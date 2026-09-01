@@ -266,14 +266,15 @@ local function onAddOnLoadedWht(event, name)
 	--notify that add-on has been loaded
 	zo_callLater(function() printMessageTest("add-on successfully loaded") end, 500)
 
+	--load saved variables
+    warHornTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("whtAddonVars", 1, "Settings", warHornTracker.defaults, GetUnitName("player"))
+
+
 	--notify if tracking is disabled
 	if not warHornTracker.savedVariables.trackWh then
 		zo_callLater(function() printMessageTest("tracking disabled") end, 600)
 	end
 	
-    --load saved variables
-    warHornTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("whtAddonVars", 1, "Settings", warHornTracker.defaults, GetUnitName("player"))
-
     --setup text field areas
     whtAddonText:SetMovable(true)
     whtAddonTextIcon:SetFont("$(GAMEPAD_MEDIUM_FONT)|$(GP_54)|soft-shadow-thick")
@@ -285,9 +286,6 @@ local function onAddOnLoadedWht(event, name)
     --register for combat alerts if tracking is enabled
     if warHornTracker.savedVariables.trackWh then
         registerAlerts()
-        whtAddonText:SetHidden(false)
-    else
-        whtAddonText:SetHidden(true)
     end
 
     --register for notifications of menu or map opening

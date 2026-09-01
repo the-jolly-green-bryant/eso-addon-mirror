@@ -80,6 +80,34 @@ local function getProgressionText2515(level, championPoints, iconSize)
     return "LEVEL " .. tostring(level)
 end
 
+-- v0.29.64 - Character Level / XP progression before Champion unlock.
+-- The same frame automatically changes from LEVEL XP (1-49) to Champion
+-- progression at level 50, so there is never a dead progression HUD period.
+local function getPlayerXP2964()
+    local current = tonumber(safe(GetUnitXP, 0, "player")) or 0
+    local maximum = tonumber(safe(GetUnitXPMax, 0, "player")) or 0
+    if maximum < 0 then maximum = 0 end
+    if current < 0 then current = 0 end
+    if maximum > 0 and current > maximum then current = maximum end
+    return current, maximum
+end
+
+local function formatNumber2964(value)
+    value = math.floor((tonumber(value) or 0) + 0.5)
+    if type(ZO_CommaDelimitNumber) == "function" then
+        local ok, text = pcall(ZO_CommaDelimitNumber, value)
+        if ok and text then return tostring(text) end
+    end
+    local s = tostring(value)
+    local sign, body = s:match("^([%-]?)(%d+)$")
+    if not body then return s end
+    local changed
+    repeat
+        body, changed = body:gsub("^(%d+)(%d%d%d)", "%1,%2")
+    until changed == 0
+    return (sign or "") .. body
+end
+
 
 -- v0.25.18 - Champion overlay visibility modes.
 -- In gain-only mode, any newly earned Craft/Warfare/Fitness Champion Point
@@ -182,6 +210,21 @@ function C:Create()
     pools:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     pools:SetColor(0.92, 0.94, 0.97, 1)
 
+    local xpTrack = wm:CreateControl("EAS_LevelXPTrack2964", frame, CT_TEXTURE)
+    xpTrack:SetTexture("EsoUI/Art/Miscellaneous/progressbar_genericfill.dds")
+    xpTrack:SetColor(0.10, 0.12, 0.16, 0.92)
+    xpTrack:SetAnchor(BOTTOMLEFT, frame, BOTTOMLEFT, 10, -6)
+    xpTrack:SetAnchor(BOTTOMRIGHT, frame, BOTTOMRIGHT, -10, -6)
+    xpTrack:SetHeight(7)
+    xpTrack:SetHidden(true)
+
+    local xpFill = wm:CreateControl("EAS_LevelXPFill2964", xpTrack, CT_TEXTURE)
+    xpFill:SetTexture("EsoUI/Art/Miscellaneous/progressbar_genericfill.dds")
+    xpFill:SetAnchor(TOPLEFT, xpTrack, TOPLEFT, 0, 0)
+    xpFill:SetAnchor(BOTTOMLEFT, xpTrack, BOTTOMLEFT, 0, 0)
+    xpFill:SetWidth(1)
+    xpFill:SetColor(0.95, 0.80, 0.40, 1)
+
     local hint = wm:CreateControl("EAS_ChampionOverlay_Hint", frame, CT_LABEL)
     hint:SetAnchor(TOPRIGHT, frame, TOPRIGHT, -4, 1)
     hint:SetDimensions(45, 14)
@@ -198,26 +241,33 @@ function C:Create()
         end
     end)
 
-    self.frame, self.label, self.pools2515, self.hint = frame, label, pools, hint
+    self.frame, self.label, self.pools2515, self.xpTrack2964, self.xpFill2964, self.hint = frame, label, pools, xpTrack, xpFill, hint
     self:Anchor()
 end
 
 function C:Refresh()
     if not self.frame or not EPC.saved then return end
+
+    local level = tonumber(safe(GetUnitLevel, 0, "player")) or 0
+    local isChampionStage = level >= 50 or safe(IsUnitChampion, false, "player") == true
     local show = EPC.saved.showChampionOverlay ~= false
+
+    -- The pre-50 LEVEL / XP overlay is the primary progression overlay and is
+    -- intentionally independent from Champion Point Gain Only.  At level 50
+    -- the frame automatically becomes the Champion overlay and then obeys the
+    -- Champion visibility preference.
     if self.layoutMode then
         show = true
-    elseif show and self:GetVisibilityMode2518() == "GAIN" then
+    elseif show and isChampionStage and self:GetVisibilityMode2518() == "GAIN" then
         show = self:IsGainWindowActive2518()
     end
     if show and not self.layoutMode and EPC.IsGameplayHudSuppressed and EPC:IsGameplayHudSuppressed() then show = false end
+
     self.frame:SetHidden(not show)
     if not show then return end
-    local level = tonumber(safe(GetUnitLevel, 0, "player")) or 0
-    local cp = getEarnedChampionPoints2515()
-    local isChampion = safe(IsUnitChampion, false, "player") == true or level >= 50
 
-    if isChampion and cp > 0 then
+    if isChampionStage then
+        local cp = getEarnedChampionPoints2515()
         self.label:SetText("CHAMPION  " .. getProgressionText2515(level, cp, 22))
 
         local totals, names = getChampionPools2515()
@@ -233,15 +283,23 @@ function C:Refresh()
         end
         self.pools2515:SetText(table.concat(parts, "    "))
         self.pools2515:SetHidden(false)
+        if self.xpTrack2964 then self.xpTrack2964:SetHidden(true) end
     else
-        -- Before Champion progression, show the real character level only.
-        self.label:SetText(getProgressionText2515(level, 0, 22))
-        if cp > 0 then
-            self.pools2515:SetText(string.format("ACCOUNT CHAMPION POINTS  %d", cp))
-            self.pools2515:SetHidden(false)
+        local currentXP, maxXP = getPlayerXP2964()
+        local percent = (maxXP > 0) and math.max(0, math.min(1, currentXP / maxXP)) or 0
+        self.label:SetText(string.format("LEVEL %d", level))
+        if maxXP > 0 then
+            self.pools2515:SetText(string.format("XP  %s / %s    %d%%", formatNumber2964(currentXP), formatNumber2964(maxXP), math.floor(percent * 100 + 0.5)))
         else
-            self.pools2515:SetText("")
-            self.pools2515:SetHidden(true)
+            self.pools2515:SetText("CHARACTER EXPERIENCE")
+        end
+        self.pools2515:SetHidden(false)
+        if self.xpTrack2964 then
+            self.xpTrack2964:SetHidden(false)
+            if self.xpFill2964 then
+                local trackWidth = tonumber(self.xpTrack2964:GetWidth()) or 0
+                self.xpFill2964:SetWidth(math.max(1, math.floor(trackWidth * percent + 0.5)))
+            end
         end
     end
 end
@@ -279,6 +337,14 @@ function C:Initialize()
         EVENT_MANAGER:RegisterForEvent(prefix .. "_CPUnspent", EVENT_UNSPENT_CHAMPION_POINTS_CHANGED, function() self:HandleChampionPointEvent2518(false) end)
     end
     if EVENT_LEVEL_UPDATE then EVENT_MANAGER:RegisterForEvent(prefix .. "_Level", EVENT_LEVEL_UPDATE, function(_, unitTag) if not unitTag or unitTag == "player" then self:Refresh() end end) end
+    if EVENT_EXPERIENCE_UPDATE then
+        EVENT_MANAGER:RegisterForEvent(prefix .. "_XPUpdate2964", EVENT_EXPERIENCE_UPDATE, function(_, unitTag)
+            if not unitTag or unitTag == "player" then self:Refresh() end
+        end)
+    end
+    if EVENT_EXPERIENCE_GAIN then
+        EVENT_MANAGER:RegisterForEvent(prefix .. "_XPGain2964", EVENT_EXPERIENCE_GAIN, function() self:Refresh() end)
+    end
     if EVENT_PLAYER_ACTIVATED then
         EVENT_MANAGER:RegisterForEvent(prefix .. "_Activated", EVENT_PLAYER_ACTIVATED, function()
             self.lastEarnedChampionPoints2518 = getEarnedChampionPoints2515()

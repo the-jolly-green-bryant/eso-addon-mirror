@@ -384,6 +384,45 @@ function S:Initialize()
             default = math.floor((EPC.defaults.combatHudAlpha or 0.94) * 100),
         },
         {
+            type = "header", name = "Game Mode Combat Report",
+        },
+        {
+            type = "description",
+            title = "Hotkey-only detailed report",
+            text = "Assign Open / Close Game Mode Combat Report under Controls > Keybindings > ESO Adventurer Suite. The same key opens and closes the report; it never opens automatically after combat.",
+        },
+        {
+            type = "checkbox", name = "Enable Game Mode Combat Report",
+            tooltip = "Enables the hotkey-driven Game Mode Combat Report and keeps up to 30 recent reports. It shares the same fight recorder as Live Combat Stats, keeps player DPS/HPS separate from companions and damaging pets/summons, and records abilities, incoming damage, resources, effects, and effective PEN/PWR/SR/PR/CC/CD.",
+            getFunc = function() return EPC.saved.gameModeReportEnabled ~= false end,
+            setFunc = function(v)
+                EPC.saved.gameModeReportEnabled = v == true
+                if EPC.GameModeReport and EPC.GameModeReport.RefreshSettings then EPC.GameModeReport:RefreshSettings() end
+            end,
+            default = EPC.defaults.gameModeReportEnabled,
+        },
+        {
+            type = "slider", name = "Report opacity", min = 45, max = 100, step = 1,
+            getFunc = function() return math.floor((EPC.saved.gameModeReportAlpha or 0.96) * 100) end,
+            setFunc = function(v)
+                EPC.saved.gameModeReportAlpha = v / 100
+                if EPC.GameModeReport and EPC.GameModeReport.RefreshSettings then EPC.GameModeReport:RefreshSettings() end
+            end,
+            default = math.floor((EPC.defaults.gameModeReportAlpha or 0.96) * 100),
+        },
+        {
+            type = "button", name = "Reset report position and size",
+            tooltip = "Returns the report to its centered 1120 x 760 layout.",
+            func = function() if EPC.GameModeReport and EPC.GameModeReport.ResetPosition then EPC.GameModeReport:ResetPosition() end end,
+            width = "half",
+        },
+        {
+            type = "button", name = "Clear saved combat reports",
+            tooltip = "Clears the report history. This does not reset personal bests or the compact combat HUD.",
+            func = function() if EPC.GameModeReport and EPC.GameModeReport.ClearHistory then EPC.GameModeReport:ClearHistory() end end,
+            width = "half",
+        },
+        {
             type = "header", name = "Automatic Equipment Maintenance",
         },
         {
@@ -468,7 +507,7 @@ function S:Initialize()
         },
         {
             type = "dropdown", name = "Repair estimate visibility",
-            tooltip = "Inventory Only shows the estimate while your Inventory is open and hides it when Inventory closes. Always keeps the estimate visible whenever it is enabled.",
+            tooltip = "Inventory Only keeps the full Repair / Recharge Estimate card exactly as before. Always uses the compact Repair: <gold> gameplay HUD; it is attached to ESO's HUD-fade system, so it disappears and returns with the other HUD overlays without a separate Suite idle timer.",
             choices = { "Inventory Only", "Always" }, choicesValues = { "INVENTORY", "ALWAYS" },
             getFunc = function()
                 local mode = EPC.saved.repairCostVisibility
@@ -484,8 +523,39 @@ function S:Initialize()
             default = math.floor((EPC.defaults.repairCostScale or 1.0) * 100),
         },
         {
-            type = "button", name = "Reset repair estimate position", buttonText = "Reset Repair Estimate",
+            type = "button", name = "Reset repair overlay positions", buttonText = "Reset Repair Overlays",
             func = function() if EPC.RepairCostOverlay then EPC.RepairCostOverlay:ResetPosition() EPC.RepairCostOverlay:Refresh() end end,
+        },
+        {
+            type = "header", name = "Suite FPS / Latency Overlay",
+        },
+        {
+            type = "description",
+            title = "Suite replacement for ESO's performance meter",
+            text = "Shows FPS and network latency in a small movable Suite HUD. It is attached directly to ESO's HUD-fade fragment, so it fades with the normal gameplay HUD and does not use a separate Suite idle timer.",
+        },
+        {
+            type = "checkbox", name = "Show Suite FPS / Latency",
+            getFunc = function() return EPC.saved.showPerformanceOverlay ~= false end,
+            setFunc = function(v) EPC.saved.showPerformanceOverlay = v == true if EPC.PerformanceOverlay then EPC.PerformanceOverlay:Refresh(true) end end,
+            default = EPC.defaults.showPerformanceOverlay,
+        },
+        {
+            type = "checkbox", name = "Hide ESO built-in FPS / latency panel",
+            tooltip = "When the Suite meter is enabled, suppress ESO's stock performance panel so the two displays do not overlap.",
+            getFunc = function() return EPC.saved.suppressNativePerformanceMeters ~= false end,
+            setFunc = function(v) EPC.saved.suppressNativePerformanceMeters = v == true if EPC.PerformanceOverlay then EPC.PerformanceOverlay:Refresh(true) end end,
+            default = EPC.defaults.suppressNativePerformanceMeters,
+        },
+        {
+            type = "slider", name = "FPS / latency scale", min = 65, max = 180, step = 5,
+            getFunc = function() return math.floor((tonumber(EPC.saved.performanceOverlayScale) or 1.0) * 100) end,
+            setFunc = function(v) EPC.saved.performanceOverlayScale = v / 100 if EPC.PerformanceOverlay then EPC.PerformanceOverlay:Refresh(true) end end,
+            default = math.floor((EPC.defaults.performanceOverlayScale or 1.0) * 100),
+        },
+        {
+            type = "button", name = "Reset FPS / latency position", buttonText = "Reset Performance Overlay",
+            func = function() if EPC.PerformanceOverlay then EPC.PerformanceOverlay:ResetPosition() EPC.PerformanceOverlay:Refresh(true) end end,
         },
         {
             type = "header", name = "Pre-Encounter Reminders",
@@ -732,6 +802,165 @@ function S:Initialize()
             func = function() if EPC.DungeonChestFinder then EPC.DungeonChestFinder:ClearLearnedLocations() EPC:Print("Dungeon / Trial Chest Finder learned locations cleared.") end end,
             disabled = function() return not EPC.DungeonChestFinder end,
             width = "full",
+        },
+        {
+            type = "header", name = "Antiquity Assistant",
+        },
+        {
+            type = "description",
+            title = "Dig-site navigation + Augur + Bonus Loot helper",
+            text = "World-map and Suite-minimap pins show the active Antiquity search area. In the world, ESO's normal Antiquarian's Eye blue mist remains unchanged; once ESO exposes the real Excavate / Dig Site mound, the Suite learns a true 3D shovel position above that mound, saves the spawn, and reuses it the next time the same dig-site spawn becomes active. During Excavation, the Suite caches the Augur tile, recommends information-rich scan tiles, and only calls a main-loot tile guaranteed after ESO reports Green. After the main Antiquity is unearthed, Bonus Loot Search Mode tracks bonus finds separately and gives a best-effort board-coverage route using only information ESO exposes to addons.",
+        },
+        {
+            type = "checkbox", name = "Enable Antiquity Assistant",
+            tooltip = "Master switch for Antiquity shovel pins, excavation direction help, and skill-line recommendations.",
+            getFunc = function() return EPC.saved.antiquityAssistantEnabled ~= false end,
+            setFunc = function(v) EPC.saved.antiquityAssistantEnabled = v == true if EPC.AntiquityAssistant then EPC.AntiquityAssistant:RefreshSettings() end end,
+            default = EPC.defaults.antiquityAssistantEnabled,
+            width = "full",
+        },
+        {
+            type = "checkbox", name = "Shovel icons on world map",
+            tooltip = "Marks the center of every active Antiquity search area with the Heavy Shovel skill icon.",
+            getFunc = function() return EPC.saved.antiquityShowWorldMap ~= false end,
+            setFunc = function(v) EPC.saved.antiquityShowWorldMap = v == true if EPC.AntiquityAssistant then EPC.AntiquityAssistant:RefreshSettings() end end,
+            disabled = function() return EPC.saved.antiquityAssistantEnabled == false end,
+            default = EPC.defaults.antiquityShowWorldMap,
+            width = "half",
+        },
+        {
+            type = "checkbox", name = "Shovel icons on Suite minimap",
+            tooltip = "Shows active Antiquity dig-site centers on the Suite minimap, including edge guidance when the site is off-screen.",
+            getFunc = function() return EPC.saved.antiquityShowMiniMap ~= false end,
+            setFunc = function(v) EPC.saved.antiquityShowMiniMap = v == true if EPC.AntiquityAssistant then EPC.AntiquityAssistant:RefreshSettings() end end,
+            disabled = function() return EPC.saved.antiquityAssistantEnabled == false end,
+            default = EPC.defaults.antiquityShowMiniMap,
+            width = "half",
+        },
+        {
+            type = "checkbox", name = "Exact dig-spot shovel in the world",
+            tooltip = "Shows a true 3D Heavy Shovel marker above the learned excavation mound. The Suite learns the mound when ESO exposes the actual Excavate / Dig Site interaction target and can reuse that saved spawn later. The old approximate search-area-center 3D marker stays disabled.",
+            getFunc = function() return EPC.saved.antiquityShow3D ~= false end,
+            setFunc = function(v) EPC.saved.antiquityShow3D = v == true if EPC.AntiquityAssistant then EPC.AntiquityAssistant:RefreshSettings() end end,
+            disabled = function() return EPC.saved.antiquityAssistantEnabled == false end,
+            default = EPC.defaults.antiquityShow3D,
+            width = "half",
+        },
+        {
+            type = "checkbox", name = "Legacy 3D occlusion setting",
+            tooltip = "Kept for saved-variable compatibility. Exact mound markers use ESO's interaction target and do not use approximate through-terrain search-area markers.",
+            getFunc = function() return EPC.saved.antiquity3DThroughWalls ~= false end,
+            setFunc = function(v) EPC.saved.antiquity3DThroughWalls = v == true if EPC.AntiquityAssistant then EPC.AntiquityAssistant:RefreshSettings() end end,
+            disabled = function() return EPC.saved.antiquityAssistantEnabled == false or EPC.saved.antiquityShow3D == false end,
+            default = EPC.defaults.antiquity3DThroughWalls,
+            width = "half",
+        },
+        {
+            type = "slider", name = "Known spawn 3D range", min = 200, max = 3000, step = 100,
+            tooltip = "Maximum distance in meters for known dig-spawn candidate shovels. The confirmed exact mound still follows ESO's actual interaction target.",
+            getFunc = function() return math.floor(tonumber(EPC.saved.antiquity3DRange) or 1200) end,
+            setFunc = function(v) EPC.saved.antiquity3DRange = math.floor(tonumber(v) or 1200) if EPC.AntiquityAssistant then EPC.AntiquityAssistant:RefreshSettings() end end,
+            disabled = function() return EPC.saved.antiquityAssistantEnabled == false or EPC.saved.antiquityShow3D == false end,
+            default = EPC.defaults.antiquity3DRange,
+            width = "half",
+        },
+        {
+            type = "slider", name = "3D shovel size", min = 60, max = 200, step = 5,
+            getFunc = function() return math.floor((tonumber(EPC.saved.antiquity3DScale) or 1.0) * 100 + 0.5) end,
+            setFunc = function(v) EPC.saved.antiquity3DScale = (tonumber(v) or 100) / 100 if EPC.AntiquityAssistant then EPC.AntiquityAssistant:RefreshSettings() end end,
+            disabled = function() return EPC.saved.antiquityAssistantEnabled == false or EPC.saved.antiquityShow3D == false end,
+            default = math.floor((EPC.defaults.antiquity3DScale or 1.0) * 100),
+            width = "half",
+        },
+        {
+            type = "checkbox", name = "Learn & reuse exact dig-spot spawns",
+            tooltip = "When ESO exposes the real Excavate / Dig Site mound under your reticle, save that learned 3D spawn in SavedVariables. The next time the same dig-site spawn becomes active, the Suite restores the shovel automatically. Turning this off stops new learning; already learned spots remain available.",
+            getFunc = function() return EPC.saved.antiquityLearnExactDigSpots ~= false end,
+            setFunc = function(v) EPC.saved.antiquityLearnExactDigSpots = v == true end,
+            disabled = function() return EPC.saved.antiquityAssistantEnabled == false or EPC.saved.antiquityShow3D == false end,
+            default = EPC.defaults.antiquityLearnExactDigSpots,
+            width = "half",
+        },
+        {
+            type = "checkbox", name = "Known dig-spawn locator assist",
+            tooltip = "Uses the integrated known Antiquity dig-spawn reference library to filter possible mound spawns to ESO's active dig-site search area. Confirmed/learned spawns are gold; unconfirmed known possibilities are smaller cyan shovels until ESO exposes the real mound.",
+            getFunc = function() return EPC.saved.antiquityKnownSpawnAssist ~= false end,
+            setFunc = function(v) EPC.saved.antiquityKnownSpawnAssist = v == true if EPC.AntiquityAssistant then EPC.AntiquityAssistant:RefreshSettings() end end,
+            disabled = function() return EPC.saved.antiquityAssistantEnabled == false or EPC.saved.antiquityShow3D == false end,
+            default = EPC.defaults.antiquityKnownSpawnAssist,
+            width = "half",
+        },
+        {
+            type = "button", name = "Clear learned exact dig spots", buttonText = "Clear Learned Dig Spots",
+            tooltip = "Deletes only the saved exact Antiquity mound spawn locations learned by the Suite. Search-area map/minimap pins and other Suite data are not changed.",
+            func = function()
+                if EPC.AntiquityAssistant and EPC.AntiquityAssistant.ClearLearnedDigSpots then EPC.AntiquityAssistant:ClearLearnedDigSpots() end
+            end,
+            disabled = function() return EPC.saved.antiquityAssistantEnabled == false end,
+            width = "half",
+        },
+        {
+            type = "header", name = "Antiquity Lead Finder",
+        },
+        {
+            type = "description",
+            title = "Find the lead before you scry it",
+            text = "Combines ESO's live Antiquity state with integrated Display Leads source/location reference data. Use it to see leads you can still obtain, leads already in your journal, missing codex entries, recovery counts, expiration timers, find zones, and the best-known source description. Scrying and excavation remain handled by ESO and the Suite Antiquity Assistant.",
+        },
+        {
+            type = "checkbox", name = "Enable Antiquity Lead Finder",
+            tooltip = "Enables the Suite lead-source browser. The finder does not change ESO lead drops; it only organizes live lead state and source/location information.",
+            getFunc = function() return EPC.saved.antiquityLeadFinderEnabled ~= false end,
+            setFunc = function(v) EPC.saved.antiquityLeadFinderEnabled = v == true if EPC.AntiquityLeadFinder then EPC.AntiquityLeadFinder:RefreshSettings() end end,
+            default = EPC.defaults.antiquityLeadFinderEnabled,
+            width = "half",
+        },
+        {
+            type = "button", name = "Open Antiquity Lead Finder", buttonText = "Open Lead Finder",
+            tooltip = "Opens the lead browser. You can also assign its own key under Controls > Keybindings > ESO Adventurer Suite.",
+            func = function() if EPC.AntiquityLeadFinder then EPC.AntiquityLeadFinder:Show() end end,
+            disabled = function() return EPC.saved.antiquityLeadFinderEnabled == false or not EPC.AntiquityLeadFinder end,
+            width = "half",
+        },
+        {
+            type = "button", name = "Reset Lead Finder window", buttonText = "Reset Lead Finder",
+            tooltip = "Restores the Lead Finder to its default size and centered screen position.",
+            func = function() if EPC.AntiquityLeadFinder then EPC.AntiquityLeadFinder:ResetPosition() end end,
+            disabled = function() return not EPC.AntiquityLeadFinder end,
+            width = "half",
+        },
+        {
+            type = "description",
+            title = "Lead Finder filters",
+            text = "Inside the finder use CAN FIND, HAVE LEAD, MISSING CODEX, NEVER DUG, or ALL. CURRENT ZONE narrows source locations to the zone you are presently in. Click any lead row for the detailed source description and its separate find-zone / scry-zone information.",
+        },
+        {
+            type = "checkbox", name = "Excavation Augur direction overlay",
+            tooltip = "After each successful Augur use, tap Green, Yellow, Orange, or Red. The Suite caches the clicked board cell using multiple ESO UI fallbacks and recommends the strongest next scan. It never labels a non-green prediction as a guaranteed dig. Both Antiquity overlays can be moved in HUD Layout Mode.",
+            getFunc = function() return EPC.saved.antiquityExcavationGuide ~= false end,
+            setFunc = function(v) EPC.saved.antiquityExcavationGuide = v == true if EPC.AntiquityAssistant then EPC.AntiquityAssistant:RefreshSettings() end end,
+            disabled = function() return EPC.saved.antiquityAssistantEnabled == false end,
+            default = EPC.defaults.antiquityExcavationGuide,
+            width = "full",
+        },
+        {
+            type = "checkbox", name = "Bonus Loot Search predictions",
+            tooltip = "After ESO reports the main Antiquity unearthed, switches the Augur Guide into a bonus-loot coverage route. It tracks bonus loot separately, watches stability/time/dig power, and recommends the next area to work. Bonus coordinates are not exposed by ESO, so these are search-efficiency predictions rather than guaranteed locations.",
+            getFunc = function() return EPC.saved.antiquityBonusLootGuide ~= false end,
+            setFunc = function(v) EPC.saved.antiquityBonusLootGuide = v == true if EPC.AntiquityAssistant then EPC.AntiquityAssistant:RefreshSettings() end end,
+            disabled = function() return EPC.saved.antiquityAssistantEnabled == false or EPC.saved.antiquityExcavationGuide == false end,
+            default = EPC.defaults.antiquityBonusLootGuide,
+            width = "full",
+        },
+        {
+            type = "description",
+            title = "Movable Excavation overlays",
+            text = "Use HUD Layout Mode > Move Frames to drag both the Augur Guide and the 10x10 Augur Tile Selector away from the excavation board. Their positions are saved independently.",
+        },
+        {
+            type = "button", name = "Reset Antiquity overlay positions", buttonText = "Reset Antiquity Overlays",
+            tooltip = "Restores the Augur Guide to the top-center and the Augur Tile Selector to the center of the screen.",
+            func = function() if EPC.AntiquityAssistant and EPC.AntiquityAssistant.ResetPositions then EPC.AntiquityAssistant:ResetPositions() end end,
         },
         {
             type = "header", name = "Suite Resource Pins",
@@ -1575,10 +1804,26 @@ function S:Initialize()
         },
         {
             type = "dropdown", name = "Alliance Rank visibility",
-            choices = { "Always", "Combat Only" }, choicesValues = { "ALWAYS", "COMBAT" },
+            tooltip = "Always keeps the overlay visible during gameplay. Combat Only shows it only in combat. Alliance XP / AP Gain Only keeps it hidden until you earn Alliance Rank progress, then shows it for about 10 seconds.",
+            choices = { "Always", "Combat Only", "Alliance XP / AP Gain Only" }, choicesValues = { "ALWAYS", "COMBAT", "GAIN" },
             getFunc = function() return EPC.saved.allianceRankVisibility or "ALWAYS" end,
-            setFunc = function(v) EPC.saved.allianceRankVisibility = v if EPC.AllianceRank then EPC.AllianceRank:Refresh() end end,
+            setFunc = function(v)
+                EPC.saved.allianceRankVisibility = v
+                if EPC.AllianceRank then
+                    EPC.AllianceRank.gainVisibleUntilMs2960 = 0
+                    EPC.AllianceRank:Refresh()
+                end
+            end,
             default = EPC.defaults.allianceRankVisibility,
+        },
+        {
+            type = "button", name = "Test Alliance Rank gain popup", buttonText = "Test AP Gain Popup",
+            tooltip = "Shows the Alliance Rank overlay using the same 10-second popup used by Alliance XP / AP Gain Only mode. Use this to verify the overlay and its position without waiting to earn AP.",
+            func = function()
+                if EPC.AllianceRank and EPC.AllianceRank.ShowForAllianceGain2960 then
+                    EPC.AllianceRank:ShowForAllianceGain2960()
+                end
+            end,
         },
         {
             type = "slider", name = "Alliance Rank scale", min = 65, max = 180, step = 5,
@@ -1591,11 +1836,11 @@ function S:Initialize()
             func = function() if EPC.AllianceRank then EPC.AllianceRank:ResetPosition() EPC.AllianceRank:Refresh() end end,
         },
         {
-            type = "header", name = "Champion Level Overlay",
+            type = "header", name = "Character Level / Champion Progress Overlay",
         },
         {
-            type = "checkbox", name = "Show Champion overlay",
-            tooltip = "Shows the movable ESO-style Champion/level overlay with Craft, Warfare, and Fitness Champion Point symbols.",
+            type = "checkbox", name = "Show Level / Champion overlay",
+            tooltip = "Levels 1-49: shows character level and live XP progress. At level 50 it automatically switches to the Champion Point overlay with Craft, Warfare, and Fitness totals.",
             getFunc = function() return EPC.saved.showChampionOverlay ~= false end,
             setFunc = function(v)
                 EPC.saved.showChampionOverlay = v == true
@@ -1604,8 +1849,8 @@ function S:Initialize()
             default = EPC.defaults.showChampionOverlay,
         },
         {
-            type = "dropdown", name = "Champion overlay visibility",
-            tooltip = "Always On keeps the Champion overlay visible during gameplay. Champion Point Gain Only shows it for 10 seconds whenever any Craft, Warfare, or Fitness Champion Point is earned, then hides it again.",
+            type = "dropdown", name = "Champion-stage visibility",
+            tooltip = "The Level / XP overlay stays active from levels 1-49. After level 50, Always On keeps the Champion overlay visible; Champion Point Gain Only shows it for 10 seconds when a Champion Point is earned.",
             choices = { "Always On", "Champion Point Gain Only" },
             choicesValues = { "ALWAYS", "GAIN" },
             getFunc = function()
@@ -1621,7 +1866,7 @@ function S:Initialize()
             default = EPC.defaults.championOverlayVisibility or "ALWAYS",
         },
         {
-            type = "button", name = "Reset Champion overlay position", buttonText = "Reset Champion",
+            type = "button", name = "Reset progression overlay position", buttonText = "Reset Progress Overlay",
             func = function() if EPC.ChampionOverlay then EPC.ChampionOverlay:ResetPosition() EPC.ChampionOverlay:Refresh() end end,
         },
         {
@@ -1673,16 +1918,13 @@ function S:Initialize()
         },
         {
             type = "dropdown", name = "When quickslot overlay appears",
-            tooltip = "Before & During Combat = hidden while roaming, appears when you line up an attackable enemy, stays visible during combat, then hides again when combat ends. Before Combat Only = show only while an attackable enemy is targeted before combat. In Combat Only = show only while fighting.",
-            choices = { "Before & During Combat", "Before Combat Only", "In Combat Only" },
-            choicesValues = { "BEFORE_AND_DURING", "BEFORE_ONLY", "COMBAT" },
+            tooltip = "Always = keep the selected quickslot visible during normal gameplay. Before & During Combat = hidden while roaming, appears when you line up an attackable enemy, stays visible during combat, then hides again when combat ends. Before Combat Only = show only while an attackable enemy is targeted before combat. In Combat Only = show only while fighting.",
+            choices = { "Always", "Before & During Combat", "Before Combat Only", "In Combat Only" },
+            choicesValues = { "ALWAYS", "BEFORE_AND_DURING", "BEFORE_ONLY", "COMBAT" },
             getFunc = function()
                 local mode = EPC.saved.quickslotOverlayVisibility or "BEFORE_AND_DURING"
-                -- Migration: the previous version used ALWAYS/BEFORE_COMBAT.
-                -- The requested behavior is to keep the quickslot visible both
-                -- before combat and during combat, so migrate those values to
-                -- the explicit Before & During Combat option.
-                if mode == "ALWAYS" or mode == "BEFORE_COMBAT" then
+                -- Keep legacy values compatible without remapping the real ALWAYS mode.
+                if mode == "BEFORE_COMBAT" then
                     mode = "BEFORE_AND_DURING"
                     EPC.saved.quickslotOverlayVisibility = mode
                 elseif mode == "OUT_OF_COMBAT" then
@@ -1715,7 +1957,7 @@ function S:Initialize()
         },
         {
             type = "checkbox", name = "Show Infinite Archive overlay",
-            tooltip = "Lets ESO Adventurer Suite manage the real ESO Infinite Archive tracker. It keeps the native F5 button, localized Infinite Archive title, and Arc/Cycle/Stage icons, but its position and scale are controlled here.",
+            tooltip = "Shows the ESO Adventurer Suite Infinite Archive tracker. ESO's built-in Infinite Archive tracker is suppressed so only the Suite overlay can appear.",
             getFunc = function() return EPC.saved.showInfiniteArchiveOverlay ~= false end,
             setFunc = function(v)
                 EPC.saved.showInfiniteArchiveOverlay = v == true
@@ -1725,7 +1967,7 @@ function S:Initialize()
         },
         {
             type = "slider", name = "Infinite Archive overlay scale", min = 65, max = 180, step = 5,
-            tooltip = "Changes the size of the Infinite Archive tracker while preserving ESO's original layout and graphics.",
+            tooltip = "Changes the size of the Suite-owned Infinite Archive tracker.",
             getFunc = function() return math.floor((tonumber(EPC.saved.infiniteArchiveOverlayScale) or 1.0) * 100) end,
             setFunc = function(v)
                 EPC.saved.infiniteArchiveOverlayScale = v / 100
@@ -1735,7 +1977,7 @@ function S:Initialize()
         },
         {
             type = "description",
-            text = "Use HUD Layout Mode to drag the Infinite Archive tracker anywhere. While Settings are open, the Suite shows its own movable preview above the settings window; the live ESO tracker uses that saved position inside Infinite Archive.",
+            text = "Use HUD Layout Mode to drag the Suite Infinite Archive tracker anywhere. ESO's built-in Infinite Archive tracker stays hidden at all times, including menus and focus changes.",
         },
         {
             type = "button", name = "Move Infinite Archive overlay", buttonText = "Move Infinite Archive",
@@ -1817,11 +2059,44 @@ function S:Initialize()
             default = EPC.defaults.hudHideInMenus,
         },
         {
-            type = "checkbox", name = "Replace ESO default unit frames",
-            tooltip = "When enabled, The suite hides ESO's native player resource bars, target frame, group/raid frames, and local companion unit frame using reason-scoped UI hiding. Turn this off to restore the native frames while keeping the suite's frames available.",
+            type = "header", name = "Unit Frame Designs",
+        },
+        {
+            type = "description",
+            title = "Player / Target / Group / Raid designs",
+            text = "1 - ESO Classic: traditional ESO-shaped equal-width stacked resources.\n2 - Compact Stack: a tighter equal-width stacked layout.\n3 - Rect Stack: clean rectangular resources stacked vertically.\n4 - Triple Blocks: Health, Magicka, and Stamina arranged as three horizontal blocks.\n5 - Side Meters: wide Health with compact Magicka and Stamina meters at the side.\n6 - Center Core: centered Health with smaller centered Magicka and Stamina underneath.\n7 - Slim Lines: thin, compact resource lines for a minimal HUD.",
+        },
+        {
+            type = "checkbox", name = "Replace ALL ESO unit frames",
+            tooltip = "When enabled, the Suite replaces the keyboard player, target, local companion, group, and raid frames. ESO's native boss-health display is left alone. Turn this off to restore the other native ESO frames.",
             getFunc = function() return EPC.saved.replaceDefaultUnitFrames ~= false end,
             setFunc = function(v) EPC.saved.replaceDefaultUnitFrames = v == true if EPC.UnitFrames then EPC.UnitFrames:ApplyDefaultFrameReplacement() EPC.UnitFrames:RefreshAll(true) end end,
             default = EPC.defaults.replaceDefaultUnitFrames,
+        },
+        {
+            type = "dropdown", name = "Unit frame design",
+            tooltip = "Changes the actual layout shared by the Suite Player, Target, Group, and Raid frames. The seven distinct designs are numbered 1 through 7 in display order. Saved screen positions and scale are preserved.",
+            choices = { "1 - ESO Classic", "2 - Compact Stack", "3 - Rect Stack", "4 - Triple Blocks", "5 - Side Meters", "6 - Center Core", "7 - Slim Lines" },
+            choicesValues = { "ESO_CLASSIC", "COMPACT_STACK", "RECT_STACK", "TRIPLE_BLOCKS", "SIDE_METERS", "CENTER_CORE", "SLIM_LINES" },
+            getFunc = function()
+                local v = EPC.saved.unitFrameVisualStyle or "ESO_CLASSIC"
+                if v == "CLEAN_MINIMAL" then return "COMPACT_STACK" end
+                -- Removed/similar designs migrate to the closest retained centered style.
+                if v == "DARK_GOLD" or v == "ARCANE_BLUE" or v == "HIGH_CONTRAST"
+                    or v == "SPLIT_RESOURCES" or v == "WIDE_PLATE" or v == "TACTICAL_GRID" then
+                    EPC.saved.unitFrameVisualStyle = "CENTER_CORE"
+                    return "CENTER_CORE"
+                end
+                return v
+            end,
+            setFunc = function(v)
+                EPC.saved.unitFrameVisualStyle = v or "ESO_CLASSIC"
+                if EPC.UnitFrames then
+                    EPC.UnitFrames:ApplyVisualStyle()
+                    EPC.UnitFrames:RefreshAll(true)
+                end
+            end,
+            default = EPC.defaults.unitFrameVisualStyle,
         },
         {
             type = "checkbox", name = "Show player frame",
@@ -1879,7 +2154,7 @@ function S:Initialize()
         },
         {
             type = "checkbox", name = "Show live combat stat panel",
-            tooltip = "PEN, PWR, Spell Resistance, Physical Resistance, Critical Chance, and Critical Damage. Combat-only visibility is enabled by default so it stays off-screen while idle.",
+            tooltip = "PEN, PWR, Spell Resistance, Physical Resistance, Critical Chance, and Critical Damage. These exact live values now feed Game Combat, where fight-weighted effective values are saved with the same combat sample. Combat-only visibility is enabled by default.",
             getFunc = function() return EPC.saved.showCombatStatsFrame ~= false end,
             setFunc = function(v) EPC.saved.showCombatStatsFrame = v == true if EPC.UnitFrames then EPC.UnitFrames:RefreshStats() end end,
             default = EPC.defaults.showCombatStatsFrame,
@@ -1890,6 +2165,56 @@ function S:Initialize()
             getFunc = function() return EPC.saved.combatStatsVisibility or "COMBAT" end,
             setFunc = function(v) EPC.saved.combatStatsVisibility = v if EPC.UnitFrames then EPC.UnitFrames:RefreshStats() end end,
             default = EPC.defaults.combatStatsVisibility,
+        },
+        {
+            type = "header", name = "World Map Teleporter",
+        },
+        {
+            type = "description",
+            text = "Opens the Suite's full map-side teleporter whenever the World Map opens. Includes all travel views through a compact View menu: Zones, Current Map, Maps/Surveys, Delves, Quests, Group, Friends, Guilds, Wayshrines, Houses, Player Homes, Dungeons, Instances, Antiquity Leads, Favorites, and Blocked. Tools such as sorting, quick travel, discovery routing, favorites/blacklists, and right-click actions remain available without filling the map with buttons. ESO's normal access and travel restrictions still apply.",
+        },
+        {
+            type = "checkbox", name = "Show Map Teleporter with World Map",
+            tooltip = "Shows the Suite Map Teleporter automatically every time the full World Map opens.",
+            getFunc = function() return EPC.saved.mapTeleporterEnabled ~= false end,
+            setFunc = function(v) EPC.saved.mapTeleporterEnabled = v == true if EPC.Travel and EPC.Travel.RefreshMapTeleporterVisibility then EPC.Travel:RefreshMapTeleporterVisibility() end end,
+            default = EPC.defaults.mapTeleporterEnabled,
+        },
+        {
+            type = "checkbox", name = "Include owned houses",
+            tooltip = "Adds your owned houses and primary residence to All, Zones, Current Map, Houses, and Favorites views.",
+            getFunc = function() return EPC.saved.mapTeleporterIncludeHouses ~= false end,
+            setFunc = function(v) EPC.saved.mapTeleporterIncludeHouses = v == true if EPC.Travel then EPC.Travel:RefreshMapTeleporter() end end,
+            default = EPC.defaults.mapTeleporterIncludeHouses,
+        },
+        {
+            type = "checkbox", name = "Show zones without online players",
+            tooltip = "The Zones tab also lists zones reachable through a discovered wayshrine or owned house even when no Group/Friend/Guild member is there.",
+            getFunc = function() return EPC.saved.mapTeleporterShowAllZones ~= false end,
+            setFunc = function(v) EPC.saved.mapTeleporterShowAllZones = v == true if EPC.Travel then EPC.Travel:RefreshMapTeleporter() end end,
+            default = EPC.defaults.mapTeleporterShowAllZones,
+        },
+        {
+            type = "dropdown", name = "Teleporter sorting",
+            choices = { "Smart / Favorites First", "Zone", "Source", "Player Count", "Most Used", "Last Used" },
+            choicesValues = { "SMART", "ZONE", "SOURCE", "PLAYER_COUNT", "MOST_USED", "LAST_USED" },
+            getFunc = function() return EPC.saved.mapTeleporterSortMode or "SMART" end,
+            setFunc = function(v) EPC.saved.mapTeleporterSortMode = v if EPC.Travel then EPC.Travel:RefreshMapTeleporter() end end,
+            default = EPC.defaults.mapTeleporterSortMode,
+        },
+        {
+            type = "slider", name = "Visible teleporter rows", min = 8, max = 20, step = 1,
+            tooltip = "Controls how many destination rows are shown per page. The panel still fills the map's full height.",
+            getFunc = function() return EPC.saved.mapTeleporterVisibleRows or 15 end,
+            setFunc = function(v) EPC.saved.mapTeleporterVisibleRows = tonumber(v) or 15 if EPC.Travel then EPC.Travel:RefreshMapTeleporter() end end,
+            default = EPC.defaults.mapTeleporterVisibleRows,
+        },
+        {
+            type = "checkbox", name = "Show blacklisted destinations",
+            tooltip = "Normally blacklisted players/zones are hidden. Enable this to display them in red so they can be unblacklisted from the row context menu.",
+            getFunc = function() return EPC.saved.mapTeleporterShowBlacklisted == true end,
+            setFunc = function(v) EPC.saved.mapTeleporterShowBlacklisted = v == true if EPC.Travel then EPC.Travel:RefreshMapTeleporter() end end,
+            default = EPC.defaults.mapTeleporterShowBlacklisted,
         },
         {
             type = "header", name = "Mini Map",
@@ -2054,19 +2379,25 @@ function S:Initialize()
         },
         {
             type = "button", name = "HUD layout mode", buttonText = "Move Frames",
-            tooltip = "Releases the mouse and shows the movable HUD frames. ESO's native Use Synergy prompt can be dragged directly while a real synergy prompt is active; no custom synergy preview is drawn. Active Quest and Rotation Assistant can also be resized from their edges/corners.",
+            tooltip = "Closes Suite Settings, releases the mouse, and shows every movable HUD overlay. A small HUD Layout bar appears with Save & Exit and Reset Layout, so Settings never blocks the overlays while you position them.",
             func = function() if EPC.SetUnitFramesMoveMode then EPC:SetUnitFramesMoveMode(true) end end,
             width = "half",
         },
         {
-            type = "button", name = "Lock HUD frames", buttonText = "Lock Frames",
-            tooltip = "Ends HUD layout mode and returns all persistent frames to non-interactive gameplay behavior.",
-            func = function() if EPC.SetUnitFramesMoveMode then EPC:SetUnitFramesMoveMode(false) end end,
+            type = "button", name = "HUD layout exit", buttonText = "Use Save & Exit",
+            tooltip = "HUD Layout Mode can only be exited with the SAVE & EXIT button on the movable HUD Layout control bar. This prevents ESC, keybinds, or menu changes from accidentally closing layout mode.",
+            func = function()
+                if EPC.unitFramesMoveMode then
+                    if EPC.SetHUDLayoutControlBarVisible then EPC:SetHUDLayoutControlBarVisible(true) end
+                    if EPC.RaiseLayoutOverlays then EPC:RaiseLayoutOverlays() end
+                    EPC:Print("Use SAVE & EXIT on the HUD Layout bar to return to gameplay.")
+                end
+            end,
             width = "half",
         },
         {
             type = "button", name = "Reset HUD frame positions", buttonText = "Reset Frames",
-            tooltip = "Restores default positions for Player, Target, Group, Raid, Live Combat Stats, Mini Map, Stable, Clock, Active Quest, Alliance Rank, Repair Estimate, Use Synergy, Rotation Assistant, and every Ability icon.",
+            tooltip = "Restores default positions for Player, Target, Group, Raid, Live Combat Stats, Mini Map, Stable, Clock, Active Quest, Alliance Rank, Repair Estimate, Use Synergy, Rotation Assistant, Antiquity Augur Guide, Antiquity Tile Selector, and every Ability icon.",
             func = function() if EPC.ResetUnitFramePositions then EPC:ResetUnitFramePositions() end end,
         },
         {
@@ -2130,7 +2461,7 @@ function S:Initialize()
         },
         {
             type = "checkbox", name = "Auto-expand in interaction mode",
-            tooltip = "If the suite is minimized, the Interact with Suite hotkey expands it automatically.",
+            tooltip = "If the suite is minimized when Suite interaction mode is entered, expand it automatically.",
             getFunc = function() return EPC.saved.autoExpandInteract ~= false end,
             setFunc = function(v) EPC.saved.autoExpandInteract = v == true end,
             default = EPC.defaults.autoExpandInteract,
@@ -2368,6 +2699,7 @@ function S:Initialize()
         "MAP",
         "GEAR",
         "ACTIVITIES",
+        "ANTIQUITIES",
         "UTILITIES",
     }
 
@@ -2381,18 +2713,22 @@ function S:Initialize()
         MAP = { name = "Mini Map & Navigation", tooltip = "Mini Map visibility, layers, zoom, sizing, opacity, pins, and position controls." },
         GEAR = { name = "Gear, Maintenance & Loot", tooltip = "Automatic repair/recharge and gear-related maintenance behavior." },
         ACTIVITIES = { name = "Activities & Group Finder", tooltip = "Group Finder filtering, activity planning, and session goals." },
+        ANTIQUITIES = { name = "Antiquities & Lead Finder", tooltip = "Antiquity dig-site navigation, learned 3D shovel spawns, Augur/bonus-loot assistance, and the Lead Finder source browser." },
         UTILITIES = { name = "Utilities & Inventory", tooltip = "Utility Command Center, inventory snapshots, research/collection alerts, and search tools." },
     }
 
     local headerCategory = {
         ["Live Group Finder"] = "ACTIVITIES",
+        ["Game Mode Combat Report"] = "COMBAT",
         ["Automatic Equipment Maintenance"] = "GEAR",
         ["Repair / Recharge Estimate Overlay"] = "HUD",
         ["World Combat Visibility"] = "COMBAT",
         ["Dungeon / Trial Chest Finder"] = "HUD",
         ["Resource 3D Pins"] = "HUD",
+        ["Antiquity Assistant"] = "ANTIQUITIES",
         ["Team Visibility"] = "HUD",
         ["Persistent HUD & Unit Frames"] = "FRAMES",
+        ["Unit Frame Designs"] = "FRAMES",
         ["Stable Training Timer"] = "HUD",
         ["Clock"] = "HUD",
         ["Quest Tracking"] = "HUD",
@@ -2405,11 +2741,13 @@ function S:Initialize()
         ["Infinite Archive Overlay"] = "HUD",
         ["Custom ESO Reticle"] = "HUD",
         ["Tamriel Codex"] = "CODEX",
+        ["World Map Teleporter"] = "MAP",
         ["Mini Map"] = "MAP",
         ["Gameplay & Challenge Difficulty"] = "DIFFICULTY",
         ["Target Build"] = "COMBAT",
         ["Built-in Bug Catcher"] = "UTILITIES",
         ["Utility Command Center"] = "UTILITIES",
+        ["Antiquity Lead Finder"] = "ANTIQUITIES",
     }
 
     local nameCategory = {
@@ -2422,7 +2760,17 @@ function S:Initialize()
         ["Combat HUD scale"] = "HUD",
         ["Combat HUD opacity"] = "HUD",
 
+        ["Enable Game Mode Combat Report"] = "COMBAT",
+        ["Enable Antiquity Lead Finder"] = "ANTIQUITIES",
+        ["Open Antiquity Lead Finder"] = "ANTIQUITIES",
+        ["Reset Lead Finder window"] = "ANTIQUITIES",
+        ["Report opacity"] = "COMBAT",
+        ["Reset report position and size"] = "COMBAT",
+        ["Clear saved combat reports"] = "COMBAT",
+
         ["Replace ESO default unit frames"] = "FRAMES",
+        ["Replace ALL ESO unit frames"] = "FRAMES",
+        ["Unit frame design"] = "FRAMES",
         ["Show player frame"] = "FRAMES",
         ["Player frame visibility"] = "FRAMES",
         ["Show target frame"] = "FRAMES",

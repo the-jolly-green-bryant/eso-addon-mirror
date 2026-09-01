@@ -1,4 +1,5 @@
 -- ESO Adventurer Suite
+-- v0.29.81 - canonical runtime asset-root resolver for all custom DDS art
 -- v0.29.48 - direct ESO companion collectible portraits in the Companions gallery
 -- v0.29.39 - fixed Tribute requirement wrapping and clipping
 -- v0.29.33 - expanded Finder rail with ESO-style activity access (no Golden Pursuits)
@@ -25,27 +26,15 @@ local ROUND_RADIUS = 18
 -- Resolve Suite artwork from the exact folder ESO is executing this file from.
 -- A protected Lua error includes user:/AddOns/.../ModernAppUI.lua even on clients
 -- that do not expose the add-on manager/root-directory APIs.
-local function detectSuiteTextureRoot02927()
-    local fallback = "ESOAdventurerSuite"
-    if type(pcall) == "function" and type(error) == "function" then
-        local ok, err = pcall(function() error("EAS_UI_PATH_PROBE") end)
-        if not ok and err then
-            local normalized = tostring(err):gsub("\\", "/"):gsub("^@", "")
-            local sourcePath = normalized:match("(user:/AddOns/.-/ModernAppUI%%.lua):%%d+:")
-                or normalized:match("(user:/AddOns/.-/ModernAppUI%%.lua)")
-            if sourcePath and sourcePath ~= "" then
-                local addonDir = sourcePath:gsub("/ModernAppUI%%.lua$", "")
-                local relative = addonDir:match("^user:/AddOns/(.+)$")
-                if relative and relative ~= "" then return relative:gsub("/+$", "") end
-            end
-        end
-    end
-    return fallback
-end
-
-local EAS_TEXTURE_ROOT_02927 = detectSuiteTextureRoot02927()
 local function suiteAsset02926(relativePath)
-    return tostring(EAS_TEXTURE_ROOT_02927 or "ESOAdventurerSuite") .. "/" .. tostring(relativePath or "")
+    -- v0.29.125: keep the canonical addon root, but route custom artwork through
+    -- the versioned art directory so stale ESO shader-cache entries cannot make
+    -- an updated Suite texture render transparent.
+    local relative = tostring(relativePath or ""):gsub("^/+", "")
+    if string.sub(relative, 1, 4) == "Art/" then
+        relative = "Art029125/" .. string.sub(relative, 5)
+    end
+    return "ESOAdventurerSuite/" .. relative
 end
 
 local ROUND_SOLID = suiteAsset02926("Art/Modern/Rounded/solid.dds")
@@ -54,6 +43,23 @@ local ROUND_BORDER = suiteAsset02926("Art/Modern/Rounded/corner_border.dds")
 local ROUND_PANEL_ROOT = suiteAsset02926("Art/eas_round_panel.dds")
 local ROUND_SHELL_ROOT = suiteAsset02926("Art/eas_round_shell.dds")
 local ROUND_PILL_ROOT = suiteAsset02926("Art/eas_round_pill.dds")
+
+local function preloadSuiteUiArt029125()
+    if type(PreloadTexture) ~= "function" then return end
+    local paths = { ROUND_SOLID, ROUND_CORNER, ROUND_BORDER, ROUND_PANEL_ROOT, ROUND_SHELL_ROOT, ROUND_PILL_ROOT }
+    local classes = { "dragonknight","sorcerer","nightblade","warden","necromancer","templar","arcanist" }
+    local companions = { "azandar","bastian","ember","isobel","mirri","sharp","tanlorin","zerithvar" }
+    for i = 1, #classes do
+        paths[#paths + 1] = suiteAsset02926("Art/eas_class_" .. classes[i] .. ".dds")
+    end
+    for i = 1, #companions do
+        paths[#paths + 1] = suiteAsset02926("Art/eas_companion_" .. companions[i] .. ".dds")
+    end
+    for _, path in ipairs(paths) do
+        if path and path ~= "" then pcall(PreloadTexture, path) end
+    end
+end
+preloadSuiteUiArt029125()
 local ACCENT = {0.49, 0.36, 1.00, 1}
 local ACCENT_SOFT = {0.23, 0.16, 0.46, 0.94}
 -- v0.28.95: ESO-inspired high-contrast palette.  The shell stays nearly black,
@@ -241,6 +247,30 @@ local function tint(texture, color)
     texture:SetColor(color[1] or 1, color[2] or 1, color[3] or 1, color[4] == nil and 1 or color[4])
 end
 
+-- v0.29.123: label colors must always be numeric. ESO's LabelControlSetColorLua
+-- throws a protected Lua argument error when a stale/foreign UI value reaches
+-- SetColor. Keep the modern Suite UI defensive so hover/refresh paths can never
+-- spam the error handler or cost FPS.
+local function safeColorChannel029123(value, fallback)
+    local n = tonumber(value)
+    if n == nil then n = tonumber(fallback) or 1 end
+    if n < 0 then return 0 end
+    if n > 1 then return 1 end
+    return n
+end
+
+local function setLabelColor029123(control, color, fallback)
+    if not control or type(control.SetColor) ~= "function" then return end
+    color = type(color) == "table" and color or fallback
+    fallback = type(fallback) == "table" and fallback or TEXT
+    control:SetColor(
+        safeColorChannel029123(color and color[1], fallback[1]),
+        safeColorChannel029123(color and color[2], fallback[2]),
+        safeColorChannel029123(color and color[3], fallback[3]),
+        safeColorChannel029123(color and color[4], fallback[4] or 1)
+    )
+end
+
 local function setPanelVisual(c, center, edge)
     if not c then return end
     center = center or SURFACE
@@ -270,9 +300,16 @@ local function setPanelVisual(c, center, edge)
     c._roundEdgeColor = edge
 end
 
+local function keepTextureResident029116(textureControl)
+    if textureControl and type(textureControl.SetTextureReleaseOption) == "function" and KEEP_TEXTURE_AT_ZERO_REFERENCES ~= nil then
+        pcall(textureControl.SetTextureReleaseOption, textureControl, KEEP_TEXTURE_AT_ZERO_REFERENCES)
+    end
+end
+
 local function addRoundTexture(name, parent, texturePath, coords)
     local t = wm:CreateControl(name, parent, CT_TEXTURE)
     t:SetTexture(texturePath)
+    keepTextureResident029116(t)
     if coords then t:SetTextureCoords(coords[1],coords[2],coords[3],coords[4]) end
     t:SetDrawLevel(0)
     return t
@@ -331,9 +368,22 @@ local function panel(name, parent, x, y, w, h, color, radius)
     -- Only the true outside shell suppresses the native center fallback.
     -- Large content cards must not be mistaken for the shell.
     c._shellSurface02890 = isShell
+    if isShell then
+        local fallback = wm:CreateControl(name.."_NativeFallback029116", c, CT_BACKDROP)
+        fallback:SetAnchor(TOPLEFT, c, TOPLEFT, 14, 14)
+        fallback:SetAnchor(BOTTOMRIGHT, c, BOTTOMRIGHT, -14, -14)
+        fallback:SetCenterTexture("EsoUI/Art/Miscellaneous/centerscreen_floating_center.dds")
+        fallback:SetEdgeTexture("EsoUI/Art/Miscellaneous/centerscreen_floating_center.dds", 1, 1, 1)
+        if fallback.SetInsets then fallback:SetInsets(1,1,-1,-1) end
+        fallback:SetCenterColor(BG[1], BG[2], BG[3], 0.96)
+        fallback:SetEdgeColor(EDGE_SOFT[1], EDGE_SOFT[2], EDGE_SOFT[3], 0.42)
+        fallback:SetDrawLevel(0)
+        c.nativeFallback029116 = fallback
+    end
     local rt = wm:CreateControl(name.."_Rounded02890", c, CT_TEXTURE)
     rt:SetAnchorFill(c)
     rt:SetTexture(c._shellSurface02890 and ROUND_SHELL_ROOT or ROUND_PANEL_ROOT)
+    keepTextureResident029116(rt)
     rt:SetTextureCoords(0,1,0,1)
     if rt.SetDrawLayer and DL_BACKGROUND then rt:SetDrawLayer(DL_BACKGROUND) end
     rt:SetDrawLevel(0)
@@ -1615,7 +1665,7 @@ function M:CreateHome()
     setPanelVisual(hero,{0.018,0.032,0.048,0.998},{0.30,0.46,0.64,0.84})
 
     local art=wm:CreateControl("EAS_ModernHomeHeroArt02894",hero,CT_TEXTURE)
-    art:SetAnchor(TOPRIGHT,hero,TOPRIGHT,0,0); art:SetAnchor(BOTTOMRIGHT,hero,BOTTOMRIGHT,0,0); art:SetWidth(330); art:SetTextureCoords(0,1,0,1); art:SetAlpha(0.18); art:SetDrawLevel(8); p.heroArt=art
+    art:SetAnchor(TOPRIGHT,hero,TOPRIGHT,0,0); art:SetAnchor(BOTTOMRIGHT,hero,BOTTOMRIGHT,0,0); art:SetWidth(330); art:SetTextureCoords(0,1,0,1); art:SetAlpha(0.18); art:SetDrawLevel(8); keepTextureResident029116(art); p.heroArt=art
     local artShade=wm:CreateControl("EAS_ModernHomeHeroShade02894",hero,CT_TEXTURE)
     artShade:SetAnchor(TOPLEFT,hero,TOPLEFT,420,0); artShade:SetAnchor(BOTTOMRIGHT,hero,BOTTOMRIGHT,0,0); artShade:SetTexture("EsoUI/Art/Miscellaneous/centerscreen_floating_center.dds"); artShade:SetColor(0.004,0.008,0.014,0.62); artShade:SetDrawLevel(12)
     local artDivider=wm:CreateControl("EAS_ModernHomeHeroArtDivider02894",hero,CT_TEXTURE)
@@ -1720,7 +1770,20 @@ function M:CreateCardGallery(tab,cards,titleText,subText)
         if tab=="CHARACTER" then
             local fallbackPath=builtinClassIconForLabel(entry.label)
             if fallbackPath and fallbackPath~="" then
-                fallback=wm:CreateControl("EAS_ModernGalleryFallback02890_"..tab.."_"..i,c,CT_TEXTURE); fallback:SetAnchor(CENTER,c,CENTER,0,-18); fallback:SetDimensions(120,120); fallback:SetTexture(fallbackPath); fallback:SetAlpha(0.16); fallback:SetDrawLevel(5)
+                fallback=wm:CreateControl("EAS_ModernGalleryFallback02890_"..tab.."_"..i,c,CT_TEXTURE); fallback:SetAnchor(TOPLEFT,c,TOPLEFT,10,10); fallback:SetAnchor(BOTTOMRIGHT,c,BOTTOMRIGHT,-10,-50); fallback:SetTexture(fallbackPath); fallback:SetTextureCoords(0,1,0,1); fallback:SetAlpha(0.92); fallback:SetColor(1,1,1,1); fallback:SetDrawLevel(5)
+            end
+        end
+        local companionFallback=nil
+        if tab=="COMPANIONS" then
+            local nativeFallback = companionNativeArtForLabel(entry.label) or NATIVE_RAIL_ICONS.COMPANIONS
+            if nativeFallback and nativeFallback ~= "" then
+                companionFallback=wm:CreateControl("EAS_ModernGalleryFallback028113_"..tab.."_"..i,c,CT_TEXTURE)
+                companionFallback:SetAnchor(TOPLEFT,c,TOPLEFT,10,10)
+                companionFallback:SetAnchor(BOTTOMRIGHT,c,BOTTOMRIGHT,-10,-50)
+                companionFallback:SetTexture(nativeFallback)
+                companionFallback:SetTextureCoords(0,1,0,1)
+                companionFallback:SetAlpha(0.90)
+                companionFallback:SetDrawLevel(5)
             end
         end
         local tex=wm:CreateControl("EAS_ModernGalleryArt02890_"..tab.."_"..i,c,CT_TEXTURE)
@@ -1753,10 +1816,10 @@ function M:CreateCardGallery(tab,cards,titleText,subText)
             tex:SetTexture(entry.path)
             tex:SetAlpha(1)
         end
-        tex:SetTextureCoords(0,1,0,1); tex:SetDrawLevel(10)
+        tex:SetTextureCoords(0,1,0,1); tex:SetColor(1,1,1,1); keepTextureResident029116(tex); tex:SetDrawLevel(10)
         if tex.SetPixelRoundingEnabled then tex:SetPixelRoundingEnabled(tab=="COMPANIONS" or tab=="CHARACTER") end
         if tab=="CHARACTER" and fallback then
-            fallback:SetAlpha(0.05); fallback:SetDimensions(140,140); fallback:SetColor(unpack(ESO_GOLD)); fallback:SetDrawLevel(6)
+            fallback:SetAlpha(0.92); fallback:SetColor(1,1,1,1); fallback:SetDrawLevel(6)
         end
         local shade=wm:CreateControl("EAS_ModernGalleryShade02890_"..tab.."_"..i,c,CT_TEXTURE); shade:SetAnchor(BOTTOMLEFT,c,BOTTOMLEFT,4,-4); shade:SetAnchor(BOTTOMRIGHT,c,BOTTOMRIGHT,-4,-4); shade:SetHeight(42); shade:SetTexture("EsoUI/Art/Miscellaneous/centerscreen_floating_center.dds"); shade:SetColor(0.01,0.01,0.015,0.94); shade:SetDrawLevel(12)
         local n=label("EAS_ModernGalleryName02890_"..tab.."_"..i,c,entry.label,8,198,158,28,"ZoFontGameBold"); constrainLabel(n,1,true); n:SetHorizontalAlignment(TEXT_ALIGN_CENTER); n:SetDrawLevel(20)
@@ -1867,7 +1930,14 @@ function M:CreateInteractive(tab)
         row:SetHandler("OnMouseEnter",function(c)
             if c.bg then setPanelVisual(c.bg,{ACCENT[1]*0.18,ACCENT[2]*0.18,ACCENT[3]*0.18,0.98},{ACCENT[1],ACCENT[2],ACCENT[3],0.90}) end
         end)
-        row:SetHandler("OnMouseExit",function() self:RefreshInteractive(tab,p) end)
+        row:SetHandler("OnMouseExit",function(c)
+            -- Hover changes only the row background. Do not touch label colors
+            -- here: the extra SetColor calls were unnecessary and could spam
+            -- LabelControlSetColorLua while rapidly crossing NOT STARTED rows.
+            if c.bg and c._easBaseCenter029122 and c._easBaseEdge029122 then
+                setPanelVisual(c.bg,c._easBaseCenter029122,c._easBaseEdge029122)
+            end
+        end)
         p.rows[i]=row
     end
     p.pageLabel=label("EAS_ModernPageLabel02895_"..tab,p.listPanel,"",14,454,652,22,"ZoFontGameSmall",MUTED); p.pageLabel:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
@@ -2264,20 +2334,24 @@ function M:RefreshInteractive(tab,p)
             -- wayshrines remain cool neutral rows; a selected shrine still uses
             -- the normal alliance accent so the active destination is obvious.
             if isTravelZone then
-                setPanelVisual(rowControl.bg,{0.115,0.090,0.035,0.985},{0.82,0.64,0.24,0.82})
-                rowControl.title:SetColor(0.96,0.80,0.36,1)
-                rowControl.detail:SetColor(0.74,0.65,0.43,1)
+                rowControl._easBaseCenter029122={0.115,0.090,0.035,0.985}
+                rowControl._easBaseEdge029122={0.82,0.64,0.24,0.82}
+                rowControl._easBaseTitle029122={0.96,0.80,0.36,1}
+                rowControl._easBaseDetail029122={0.74,0.65,0.43,1}
             elseif isTravelShrine and not selected then
-                setPanelVisual(rowControl.bg,{0.050,0.057,0.073,0.985},{0.25,0.30,0.38,0.58})
-                rowControl.title:SetColor(0.93,0.95,0.98,1)
-                rowControl.detail:SetColor(0.57,0.66,0.76,1)
+                rowControl._easBaseCenter029122={0.050,0.057,0.073,0.985}
+                rowControl._easBaseEdge029122={0.25,0.30,0.38,0.58}
+                rowControl._easBaseTitle029122={0.93,0.95,0.98,1}
+                rowControl._easBaseDetail029122={0.57,0.66,0.76,1}
             else
-                setPanelVisual(rowControl.bg,
-                    selected and {ACCENT[1]*0.40,ACCENT[2]*0.40,ACCENT[3]*0.40,0.99} or {0.078,0.082,0.106,0.98},
-                    selected and {ACCENT[1],ACCENT[2],ACCENT[3],1} or {0.28,0.30,0.38,0.46})
-                rowControl.title:SetColor(selected and 1 or 0.95, selected and 1 or 0.96, selected and 1 or 0.99, 1)
-                if selected then rowControl.detail:SetColor(0.94,0.96,1,1) else rowControl.detail:SetColor(unpack(MUTED)) end
+                rowControl._easBaseCenter029122=selected and {ACCENT[1]*0.40,ACCENT[2]*0.40,ACCENT[3]*0.40,0.99} or {0.078,0.082,0.106,0.98}
+                rowControl._easBaseEdge029122=selected and {ACCENT[1],ACCENT[2],ACCENT[3],1} or {0.28,0.30,0.38,0.46}
+                rowControl._easBaseTitle029122={selected and 1 or 0.95,selected and 1 or 0.96,selected and 1 or 0.99,1}
+                rowControl._easBaseDetail029122=selected and {0.94,0.96,1,1} or {MUTED[1],MUTED[2],MUTED[3],MUTED[4] or 1}
             end
+            setPanelVisual(rowControl.bg,rowControl._easBaseCenter029122,rowControl._easBaseEdge029122)
+            setLabelColor029123(rowControl.title,rowControl._easBaseTitle029122,TEXT)
+            setLabelColor029123(rowControl.detail,rowControl._easBaseDetail029122,MUTED)
             if rowControl.accentRail then rowControl.accentRail:SetColor(0,0,0,0) end
         else rowControl:SetHidden(true) end
     end
@@ -2450,6 +2524,7 @@ function M:CreateTextPage(tab)
 end
 
 function M:TextActions(tab)
+    if tab=="COMBAT" then return {"FULL COMBAT REPORT","REFRESH"} end
     if tab=="SKILLS" then return {"RESPEC + BUILD","REDISTRIBUTE CP","BEST ATTRIBUTES","REFRESH"} end
     if tab=="TOOLS" then
         local mode=EPC.UtilitySuite and EPC.UtilitySuite:GetMode() or "OVERVIEW"
@@ -2461,8 +2536,19 @@ function M:TextActions(tab)
 end
 
 function M:RunTextAction(tab,index)
-    if tab=="TOOLS" and index==2 and EPC.UtilitySuite and EPC.UtilitySuite:GetMode()~="RETICLE" and EPC.UtilitySuite:GetMode()~="SELL" then if EPC.RefreshNow then EPC:RefreshNow("modern-tools") end
-    else J:RunSuiteAction(tab,index) end
+    if tab=="COMBAT" and index==1 then
+        if EPC.GameModeReport and type(EPC.GameModeReport.Show) == "function" then
+            self:Hide()
+            EPC.GameModeReport:Show()
+            return
+        end
+    elseif tab=="COMBAT" and index==2 then
+        if EPC.RefreshNow then EPC:RefreshNow("modern-combat") end
+    elseif tab=="TOOLS" and index==2 and EPC.UtilitySuite and EPC.UtilitySuite:GetMode()~="RETICLE" and EPC.UtilitySuite:GetMode()~="SELL" then
+        if EPC.RefreshNow then EPC:RefreshNow("modern-tools") end
+    else
+        J:RunSuiteAction(tab,index)
+    end
     self:RefreshCurrent()
 end
 
@@ -2470,8 +2556,8 @@ function M:RefreshSkillsStructured02916(p)
     local v = EPC.GearOptimizer and EPC.GearOptimizer.BuildBestAbilityView and EPC.GearOptimizer:BuildBestAbilityView() or {}
     local c = v.context or {}
     local meta = v.meta
-    local page = math.max(1, math.min(2, tonumber(p.textPage) or 1))
-    local pages = 2
+    local page = math.max(1, math.min(3, tonumber(p.textPage) or 1))
+    local pages = 3
 
     if p.cpRows then
         for _,l in ipairs(p.cpRows) do l:SetHidden(true) end
@@ -2517,7 +2603,7 @@ function M:RefreshSkillsStructured02916(p)
             {"PROFILE", backupProfile},
             {"SLOTS", backupSlots},
         }), 58))
-    else
+    elseif page == 2 then
         p.leftHead:SetText("CHAMPION POINTS")
         p.rightHead:SetText("ATTRIBUTES")
 
@@ -2591,6 +2677,18 @@ function M:RefreshSkillsStructured02916(p)
             p.leftText:SetText(wrapTextWords(infoSections(cpSections), 58))
         end
         p.rightText:SetText(wrapTextWords(infoSections(attrSections), 58))
+    else
+        p.leftHead:SetText("SCRYING OPTIMIZER")
+        p.rightHead:SetText("EXCAVATION OPTIMIZER")
+        local scryingText, excavationText
+        if EPC.AntiquityAssistant and type(EPC.AntiquityAssistant.BuildOptimizerView) == "function" then
+            scryingText, excavationText = EPC.AntiquityAssistant:BuildOptimizerView()
+        else
+            scryingText = "Antiquity optimizer unavailable."
+            excavationText = "Antiquity optimizer unavailable."
+        end
+        p.leftText:SetText(wrapTextWords(tostring(scryingText or ""), 56))
+        p.rightText:SetText(wrapTextWords(tostring(excavationText or ""), 56))
     end
 
     p.textPage = page

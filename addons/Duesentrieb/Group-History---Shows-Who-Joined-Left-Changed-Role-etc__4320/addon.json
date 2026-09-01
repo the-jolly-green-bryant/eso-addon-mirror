@@ -1,11 +1,16 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Duesentrieb/Group-History---Shows-Who-Joined-Left-Changed-Role-etc__4320",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Duesentrieb",
   "canonical_id": "esoui:4320",
   "category_id": "25",
   "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
     {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
@@ -49,7 +54,7 @@
     "GroupHistory"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4320/",
-  "fingerprint": "e9c871827373317b72ebd25ed97de2429468390d821aaa22dcf5648a12322ebb",
+  "fingerprint": "982eca6e91ae94147a1b0de7de8c77b238d778c10e47ac8e20bbd6a31c5b9933",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw15074.png",
     "https://cdn-eso.mmoui.com/preview/pvw16628.png",
@@ -61,11 +66,11 @@
   "source_id": "4320",
   "source_url": "https://www.esoui.com/downloads/info4320-GroupHistory-ShowsWhoJoinedLeftChangedRoleetc..html",
   "stats": {
-    "downloads": 478,
+    "downloads": 568,
     "favorites": 4,
-    "monthly_downloads": 103
+    "monthly_downloads": 82
   },
   "title": "Group History - Shows Who Joined, Left, Changed Role etc.",
-  "updated_at": 1783673999000,
-  "version": "20260710-0001"
+  "updated_at": 1788167069000,
+  "version": "20260831-0002"
 }

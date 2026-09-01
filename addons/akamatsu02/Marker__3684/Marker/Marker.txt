@@ -6,8 +6,8 @@
 
 ## Title: Marker
 ## Description: Add position markers and share them with your group!
-## Version: 3.15
-## AddOnVersion: 315
+## Version: 3.16
+## AddOnVersion: 316
 ## APIVersion: 101049
 ## Author: @akamatsu02
 ## SavedVariables: MARK_Data MARKDataNew MARKIconData

@@ -1,3 +1,524 @@
+0.29.127
+- Fixed live health depletion and regeneration for Suite player, companion, group, and raid unit frames.
+- Health bars now consume ESO EVENT_POWER_UPDATE health payloads directly instead of waiting for broader frame refreshes.
+- Corrected health event filtering to use REGISTER_FILTER_POWER_TYPE with POWERTYPE_HEALTH.
+- Added dedicated live companion-health handling and group-prefix health handling for the full group/raid roster, including group companion unit tags.
+- Kept the update path FPS-friendly by using native event filters instead of adding high-frequency polling.
+
+0.29.126
+- Ability overlays now display each player's actual ESO Controls binding for Skills 1-5 and Ultimate instead of hardcoded 1-5/U labels.
+- Ability binding labels refresh immediately when bindings are loaded, changed, cleared, or the preferred input mode changes; keyboard/gamepad rebinding is supported.
+- Fixed compact Repair: <gold> surviving Suite/window-overlay transitions by removing forced alpha resets that overrode ESO's HUD-fade fragment.
+
+0.29.125
+- Fixed 0.29.124 Repair and FPS/latency visibility regression by using ESO HUD fade scene fragments instead of action-bar alpha checks.
+- Removed repair HUD visibility polling; ESO now owns idle fade/show state for the compact readout.
+- Cache-busted packaged custom DDS resources through Art029125 and preloads primary UI art to address intermittent blank Suite images after updates.
+
+0.29.124
+- Compact Repair: <gold> HUD now follows ESO's actual automatic gameplay-HUD visibility rather than only menu suppression. There is no independent idle timeout; it watches the native action-bar visibility state and hides/returns with the gameplay HUD.
+- Added a Suite-owned FPS / Latency overlay using GetFramerate() and GetLatency(), updated at a lightweight 500ms cadence.
+- Suite performance overlay is movable in HUD Layout Mode, scalable in Settings, follows the same automatic HUD visibility as Repair: <gold>, and can suppress ESO's built-in performance meter to prevent duplicate displays.
+
+0.29.123
+- Fixed LabelControlSetColorLua error spam on interactive/Quest Finder row hover exit by removing unnecessary label recoloring from the hover path.
+- Added defensive numeric RGBA validation for dynamic modern-app row label colors.
+- Changed /easscan to report current-session runtime health separately from older stored Bug Catcher history.
+
+0.29.122
+- Full FPS/performance pass focused on eliminating work that was tied to mouse movement or high-frequency polling.
+- Fixed the severe NOT STARTED Quest Finder hover FPS drop: leaving a quest row no longer rebuilds/filter-sorts the entire quest data set. Row hover is now visual-only.
+- Quest Finder now keeps filtered lists cached across ordinary repaints, pre-normalizes search fields, uses O(1) selected-row lookup, uses lighter discovery chunks, and pauses background quest discovery during combat.
+- Mini Map native-pin mirroring no longer scans the complete World Map pin collection every 33ms while the map is open; capture is edge-triggered with a slow safety refresh.
+- Reduced non-critical high-frequency polling for LoreBooks map hover/world/compass pins, custom reticle, team visibility beams, resource interaction fallback, dungeon chest finder, Excavation cell capture, and live combat HUD repainting.
+- Retained ESO event filters for combat analytics so player/group/companion/pet tracking does not fall back to processing the full combat event stream.
+
+0.29.121
+- Removed the standalone 5-second idle timer from the compact Repair: <gold> HUD.
+- Repair: <gold> now hides only when the Suite/ESO gameplay HUD is suppressed and returns with the other overlays; HUD Layout Mode still previews it.
+
+0.29.120
+- Compact Repair: <gold> HUD now follows Suite gameplay visibility and hides after 5 seconds of player idle time; it returns immediately on movement/combat.
+- Game Combat minimum-size readability pass: detailed tables use responsive row heights instead of hiding recorded rows until the window is enlarged.
+- Damage abilities and Damage by Target are now separate DMG / TGT pages so both tables can use the full compact report height.
+- Fight Snapshot rows now use real label/value columns, preventing values from being clipped at narrow widths.
+- Preserved the 760x500 minimum and 860x560 default instead of making the report larger again.
+
+0.29.119
+- Redesigned Game Mode Combat Report into a compact analyzer layout.
+- Reduced minimum size to 760x500 and default/reset size to 860x560, with a one-time migration away from the old oversized saved dimensions.
+- Added a persistent Player DPS / All DPS / HPS / Incoming DPS / Time metric strip.
+- Slimmed the report header and side rail; reduced card padding and switched panel titles to a compact left-aligned section style.
+- Overview now uses Fight Snapshot, Top Damage, and Damage Share. Healing and Incoming use page-specific summaries.
+- Preserved responsive ellipsis/column layout at the new minimum size.
+
+0.29.118
+- Added Suite-native side navigation to the Game Mode Combat Report: Overview, Damage, Healing, Incoming, Group, Buffs, Resources, Graph, and Build.
+- Each combat page now gets its own enlarged layout instead of cramming every combat table into the minimum-size window.
+- Damage page separates ability breakdown from target damage; Healing, Incoming, and Group pages filter the actor table to the selected analysis.
+- Added a damage-distribution graph page based on recorded ability damage.
+- Removed the public Interact with Suite, Group Finder Next Category, and Group Finder Toggle Normal/Veteran keybindings from Controls > Keybindings.
+- The compact Always `Repair: <gold>` HUD now hides while ESO's pause/game menu is open and returns when gameplay resumes.
+
+0.29.117
+- Fixed Game Mode Combat Report overlap at its minimum size with strict single-line cells, compact header sizing, and responsive bottom-table widths.
+- Prevented header/title, table-column, and stats-section text from drawing into neighboring controls at larger UI scales.
+
+0.29.116
+- Split player, companion, pet/summon, and combined combat totals.
+- Added COMBAT_UNIT_TYPE_PLAYER_COMPANION collection and actor/owner attribution for local and observed group combat.
+- Personal DPS/HPS is now player-only; pets/companions are reported separately and in a combined total.
+- Added companion/pet/summon rows to the Game Mode Combat Report and combined ALL DPS to the live Combat HUD status.
+- Hardened Modern UI art with texture residency plus ESO-native fallbacks for the shell, class cards, and companion cards.
+
+0.29.115
+- Linked the Combat page, Live Combat Stats, and Game Mode Combat Report to one shared fight recorder.
+- Live Combat Stats keeps PEN / PWR / SR / PR / CC / CD; Game Combat records fight-weighted effective values from the same live-stat source.
+- Added a FULL COMBAT REPORT action from the Combat page to the detailed fight report/history.
+- Added Magicka/Stamina spent and regained tracking with per-second values.
+- Added player buff/debuff uptime and maximum stack tracking.
+- Added incoming damage source and ability breakdowns.
+- Preserved lightweight combat recording with native event filters and cached stat sampling.
+
+0.29.114
+- Removed the World Map opening hitch caused by synchronous scans of every guild roster member.
+- Guild teleporter destinations now refresh in small frame-sliced batches and use a short-lived cache.
+- Coalesced duplicate World Map scene callbacks so the teleporter is only shown/hidden once per actual transition.
+- Deferred the first destination refresh until after the map scene finishes opening and reduced the repeating full refresh from 1.6s to 3.5s.
+- Replaced the expensive full action-layer scan used by the map-close hotkey with ESO's direct binding lookup.
+
+0.29.113
+- Unit Frame Designs description now lists only designs 1-7 and explains each layout.
+- Removed the Suite Boss Health overlay; ESO's native boss-health display remains untouched.
+- Raised and strengthened the compact Always repair HUD so `Repair: <gold>` remains visible above gameplay UI.
+- Restored canonical ESOAdventurerSuite custom DDS paths and strengthened native class/companion fallback art so Modern UI images do not render blank.
+
+- 0.29.112: renumbered the seven retained Unit Frame designs sequentially from 1 through 7 in Settings; internal style keys remain unchanged for saved-setting compatibility.
+- 0.29.111: removed overlapping Unit Frame Styles 3-5 from the selector; retained 1, 2, and 6-10. Old 3-5 selections migrate safely to Style 9 Center Core.
+- 0.29.110: normalized Player Styles 1-5: Styles 1-2 now use equal-length stacked resources; Styles 3 and 5 use a Center-Core-style centered stack; Style 4 centers Magicka/Stamina under Health.
+- 0.29.109: audited Player frame Styles 1-10 for horizontal balance. Kept the tuned Style 3 Split Resources Health alignment, restored Style 5 Tactical Grid to its true center, and verified Styles 1-2, 4, and 6-10 remain centered as complete bar compositions without changing live refresh/target geometry.
+- 0.29.108: nudged the Player Health bar slightly farther left from +27 to +24 for finer centering above the Magicka/Stamina row.
+- 0.29.107: nudged the Player Health bar slightly left from +30 to +27 for finer centering above the Magicka/Stamina row.
+- 0.29.106: moved the Player Health bar slightly left to +30 so it sits closer to center over the Magicka/Stamina row.
+- 0.29.105: nudged the Player Health bar slightly farther right from the +35 midpoint so it sits a bit more centered over the Magicka/Stamina row.
+- 0.29.104: adjusted the Player Health bar to a middle horizontal offset (+35), between the prior +22 and +48 positions.
+- 0.29.102: moved the Player Health bar substantially farther right in split-layout styles for visual centering over Magicka/Stamina.
+- 0.29.101: moved the Player Health bar farther right in split-layout styles so it sits visually centered above the Magicka/Stamina pair.
+- 0.29.100: nudged the Player Health bar slightly right in split-layout styles so it sits centered over the Magicka/Stamina row, without changing the other Player bar anchors.
+0.29.99
+- Fixed Player Magicka/Stamina jumping when acquiring/changing a target.
+- Target, Group, and normal unit/power refreshes can no longer run the Player resource-spacing routine.
+- Player resource geometry is now recalculated only during Player layout/style work; centered text behavior is unchanged.
+
+0.29.98
+- Based directly on the stable 0.29.97 Player-frame geometry.
+- Centered Player Health/Magicka/Stamina text for Styles 1-10 without changing any bar/frame anchors or dimensions.
+- Narrow Player bars automatically use compact or percent-only text so values remain inside the bar.
+- No new Player layout, visibility, fill, aura, or refresh wrappers were added.
+
+0.29.97
+- Removed stray floating card/accent border lines from original unit-frame Styles 1-5.
+- Added safe spacing between Player Health/Magicka/Stamina bars so original-style resource artwork does not overlap.
+- Strengthened Styles 6-10 with vivid red Health, blue Magicka, and green Stamina live fills plus dark resource-tinted tracks.
+- Rectangle fills now repaint after every power update and the live resource sync, preserving visible depletion/regeneration.
+
+0.29.96
+- Unit Frames: Styles 1-5 keep their original layouts/artwork but no longer use large card/background panels.
+- Unit Frames: Styles 6-10 use vivid red Health, blue Magicka, and green Stamina rectangular fills.
+- Unit Frames: rectangular fills now repaint from live current/max power so depletion and regeneration remain visible.
+- Unit Frames: rectangle text automatically switches between full, compact, and percent-only formats to stay inside each bar; Slim Lines is percent-only.
+- Unit Frames: Player name, level, and Champion Points remain hidden from the Player frame.
+
+0.29.95
+- Split unit-frame designs cleanly: Styles 1-5 restore the original Suite/ESO-shaped frame artwork; Styles 6-10 use the rectangular renderer.
+- Fixed rectangular Health/Magicka/Stamina fills so the visible color depletes and regenerates live, including Group/Raid health bars.
+- Redesigned Slim Lines with taller bars and percentage-only text so values stay inside the frame.
+- Player frame now hides player name, level, and Champion Point text in every design.
+
+0.29.94
+- Repair / Recharge visibility split: Inventory Only keeps the full detailed estimate; Always now uses a separate movable text-only `Repair: <gold>` HUD overlay.
+- Restored visible hard-edged rectangular Health/Magicka/Stamina bars and thin frame structure for the 10 unit-frame designs without bringing back the large card backgrounds.
+- Challenge Difficulty overlay is forced above other Suite HUD icons during HUD Layout Mode for easier dragging.
+
+0.29.93
+- Expanded Suite unit-frame design selector from 5 to 10 actual layouts.
+- Removed card/panel backdrops from Player, Target, Group, and Raid frame designs.
+- Replaced ornate/tapered resource visuals with clean square/rectangular Health, Magicka, and Stamina bars across all designs.
+- Added Rect Stack, Triple Blocks, Side Meters, Center Core, and Slim Lines layouts.
+
+0.29.92
+- Fixed the five Unit Frame design selector being organized under the wrong settings submenu.
+- Added a dedicated Unit Frame Designs header under Unit Frames & HUD Layout.
+- Explicitly routes Replace ALL ESO unit frames and Unit frame design to the Unit Frames settings category.
+
+0.29.91
+- Replaced the four 0.29.90 color-only unit-frame themes with four genuinely different frame layouts.
+- Added Unit frame design choices: ESO Classic, Compact Stack, Split Resources, Wide Plate, and Tactical Grid.
+- Split Resources places Player Magicka/Stamina side-by-side; Wide Plate uses broader centered bars; Tactical Grid changes Group/Raid into multi-column cards.
+- Player identity becomes part of the non-classic Player frame designs while ESO Classic remains unchanged.
+- Existing 0.29.90 saved style selections migrate automatically to the corresponding new layout.
+
+0.29.90
+- Added five selectable visual styles shared by the Suite Player, Target, Group, and Raid frames.
+- ESO Classic preserves the existing unit-frame appearance exactly.
+- Added Clean Minimal, Dark Gold, Arcane Blue, and High Contrast frame treatments without changing saved positions, scales, or frame data.
+- Added a Unit frame visual style dropdown under Unit Frames & HUD Layout.
+
+0.29.89
+- Fixed Discover Wayshrines stopping on temporary destination-unavailable errors after a teleport.
+- Added post-zone travel settling time before the next automatic jump.
+- Generic/unknown jump failures are now retried on the same route before it is skipped.
+- Permanent destination failures still skip immediately, while exhausted routes continue to the next candidate.
+- Discovery retries no longer poison the entire queue; restarting discovery should no longer be required for transient travel-state failures.
+
+0.29.88
+- Wayshrine discovery no longer stops when a queued player becomes unavailable, leaves the group, goes offline, or cannot be jumped to.
+- Discovery refreshes each social destination immediately before travel and can fall back to another live social relationship for the same player.
+- Added a failed-route watchdog: if ESO never begins a queued jump, that route is skipped and discovery automatically advances.
+- Temporary global travel blockers pause/retry the current route instead of exhausting the entire discovery queue.
+
+0.29.87
+- Discover Wayshrines now skips zones that no longer contain any undiscovered wayshrines.
+- Learns which social travel route lands at which wayshrine and will not reuse a route that already lands at a discovered shrine.
+- Re-checks wayshrine discovery progress after every jump and automatically skips completed or exhausted discovery destinations.
+- Allows multiple useful player routes in a partially undiscovered zone instead of blindly repeating one known landing route across later sessions.
+
+0.29.86
+- Fixed the World Map Teleporter showing the correct Map key while the physical key still failed to close the map.
+- Added raw-key matching against the player's actual TOGGLE_MAP binding while the Teleporter is open.
+- Search fields keep exclusive keyboard ownership while focused, so typing never closes the map.
+- Added direct world-map scene/category close retries so ESO action-layer routing cannot leave the map stuck open.
+
+0.29.85
+- Replaced the World Map generic Not Bound Exit prompt while the Suite Teleporter is open with a keybind-strip entry tied directly to the player's real TOGGLE_MAP binding.
+- The Map close hint is hidden while either Teleporter search box has keyboard focus and automatically returns when search focus is released.
+- Restores ESO's normal default Exit descriptor when the Teleporter/map closes.
+
+0.29.84
+- Map Teleporter search boxes now keep keyboard ownership while actively focused.
+- Pressing the normal Map key while typing no longer closes the World Map.
+- Once either search box loses focus, ESO's native Map key resumes normal map open/close behavior.
+- Clicking Teleporter buttons or destination rows releases search focus automatically.
+
+0.29.83
+- Removed the two Suite-owned Close Map controls from the World Map Teleporter.
+- Restored the World Map to the player's normal TOGGLE_MAP open/close behavior.
+- When a Teleporter search field has focus, pressing the player's Map key now forwards to ESO's native map toggle instead of typing into the field.
+- Removed decorative Teleporter arrows/carets and replaced them with plain text labels.
+- Replaced favorite plus/star markers with ADD/FAV text and simplified page/menu labels.
+
+0.29.82
+- Fixed Map Teleporter View/Tools/Travel flyout text not rendering.
+- Flyout buttons are now input-only controls with dedicated top-layer label controls, avoiding ESO CT_BUTTON internal-text draw-order issues.
+- Flyout labels now follow hover, selected, disabled, open, and close states independently from row backdrops.
+
+0.29.81
+- Fixed Map Teleporter View/Tools/Travel flyout rows rendering as blank boxes by moving row surfaces behind, rather than inside, the button text layer.
+- Flyout row backgrounds now hide/show with their buttons so closed menus cannot leave an empty overlay over destinations.
+- Rebuilt Companion cards with the Suite full 512x512 portrait art and separate UI name strips, fixing blank portrait areas caused by cropped card DDS rendering.
+
+0.29.80
+- Fixed custom Suite DDS assets failing when the addon install folder is nested or renamed.
+- Added one runtime asset-root resolver in Core.lua and routed Modern UI, companion/class art, resource pins, Alliance Rank, minimap, dice/coin, and legacy card art through it.
+- Fixed the malformed ModernAppUI source-path probe that could never detect the real addon directory.
+
+0.29.79
+- Fixed ESO Change Quest cycling getting stuck on MAIN QUEST after a Main Story quest became assisted.
+- MAIN QUEST and ACTIVE QUEST now both follow ESO's currently assisted quest when using the native Change Quest keybind.
+- Added a later reconciliation pass for Main Story to normal quest transitions.
+
+0.29.78
+- Permanently suppressed ESO's built-in Infinite Archive HUD tracker while ESO Adventurer Suite is loaded.
+- Native Infinite Archive tracker no longer reappears when the game loses focus, menus/UI scenes open, or the Suite-owned Archive overlay hides.
+- Infinite Archive visibility setting now controls only the Suite-owned overlay; the native ESO tracker remains suppressed.
+
+0.29.77
+- Fixed ESO Change Quest keybind sync when cycling onto a Main Story quest.
+- Main Story quests selected by ESO now stay visible in the Suite Active Quest overlay with a MAIN QUEST header and live objectives.
+- Added a later native quest reconciliation pass so Main Quest metadata has time to settle after ESO cycles the assisted quest.
+
+0.29.76
+- Fixed Map Teleporter View/Tools/Travel flyout backgrounds rendering behind destination rows.
+- Flyouts now render as opaque top-layer panels so player/zone text cannot bleed through.
+- Increased flyout row height and spacing for easier reading and clicking.
+
+0.29.75
+- Infinite Archive overlay now hides automatically in Pause, Inventory, World Map, Settings, and other ESO UI/menu scenes.
+- Infinite Archive overlay remains visible during Suite HUD Layout Mode only while the normal gameplay HUD is active.
+- Increased the Archive visibility watchdog to 250 ms so menu transitions hide/restore the overlay quickly without requiring reloadui.
+
+0.29.74
+- Infinite Archive HUD Layout Mode now moves only the Suite-owned Archive overlay and never re-anchors ESO's native activity/objective tracker, preventing the native quest tracker from being displaced.
+- ESO's native Change Quest / assisted-quest cycling now updates the Suite Active Quest overlay to the same focused quest.
+- Active Quest synchronization is native-led while the ACTIVE QUEST source is selected, so the Suite no longer immediately forces the previous quest back after ESO's quest-cycle keybind is pressed.
+
+0.29.73
+- Fixed Quest Finder NOT STARTED performance spikes while browsing/hovering quest selections.
+- Reduced the background quest-index scan from 250 IDs per chunk to 60 IDs with a longer yield between chunks to avoid frame-time spikes.
+- Reused the already-resolved overland zone for unaccepted quests instead of re-running expensive journal/parent-zone resolution for every NOT STARTED row.
+- Added short-lived Quest Finder result and active-journal caches so mouse movement and repeated UI refreshes do not rebuild/sort thousands of quest records.
+
+0.29.72
+- Rebuilt World Map close handling around the current ESO binding API and added an always-visible in-Teleporter Map-key close control.
+- Map close now verifies the World Map scene actually closed and falls back through the scene manager if ESO ignores the first request.
+- Expanded unit-frame replacement to continuously suppress ESO player, target, companion, group, raid, and boss frames.
+- Added a Suite boss-health replacement frame so native boss health can be hidden without losing boss information.
+- Infinite Archive overlay is now Suite-owned during live Infinite Archive gameplay instead of depending on ESO's native HUD tracker fragment remaining visible.
+- Infinite Archive key display now reads the current TOGGLE_ACTIVITY_HUD_TRACKER binding through the current ESO binding API.
+
+0.29.71
+- Restored the World Map close keybind while the Map Teleporter is open.
+- Uses the player's existing TOGGLE_MAP binding (normally M) and exposes it as Close Map in ESO's keybind strip.
+- Added a clickable title-bar CLOSE MAP hint using the player's actual Map key as a fallback.
+
+0.29.70
+- Increased Map Teleporter View/Tools/Travel Options flyout contrast, width, row height, and font weight.
+- Selected View/Sort options now use a clear highlighted row instead of checkbox-like text markers.
+- Ultimate percentage display is capped at 100% again while ESO can continue storing Ultimate internally.
+- Rotation Assistant Ultimate-ready text is also capped at 100% for consistency.
+
+0.29.69
+- Fixed Map Teleporter menu input freezes and unclickable travel/options popups.
+- Replaced ESO global popup menus with input-safe menus rendered inside the Teleporter.
+- View, Tools, and right-click Travel Options now stay above destination rows and own mouse input correctly.
+- Suspends automatic Teleporter list refresh while an internal action menu is open to prevent controls changing under the cursor.
+- Removed the 0.29.68 global popup draw-tier watchdog that could interfere with ESO menu mouse handling.
+
+0.29.68
+- Fixed Map Teleporter symbols by replacing unsupported Unicode glyphs with ESO-safe ASCII text.
+- Fixed View, Tools, context-menu, and tooltip layering so popups render above the Teleporter panel.
+- Lowered the Teleporter panel draw layer without exposing the hidden Map Completion panel.
+- Added a lightweight popup-layer watchdog while the World Map Teleporter is visible.
+
+0.29.67
+- Redesigned the World Map Teleporter into a cleaner, less-clustered map-side panel.
+- Replaced the 18 always-visible destination tabs with one compact View menu while retaining every destination mode.
+- Moved Home, Home Outside, Group Leader, Quest, Wayshrine Discovery, dungeon difficulty, and sorting controls into a compact Tools menu.
+- Simplified destination rows and only shows the favorite star on rows already marked as favorites; right-click still provides Add Favorite and the full context actions.
+- Kept player/destination and zone searches, full-height map docking, map-completion suppression, favorites, blacklists, and all 0.29.66 travel sources.
+
+0.29.66
+- Expanded World Map Teleporter into a BeamMeUp-style standalone travel panel with 18 views: All, Zones, Current Map, Items/Maps/Surveys, Delves, Quests, Group, Friends, Guild, Guild summaries, Wayshrines, Own Houses, Player Homes, Dungeons, Instances, Antiquity Leads, Favorites, and Blocked.
+- Teleporter stretches from the left edge of the screen directly to the World Map and hides/covers ESO's stock map-completion side panel while open.
+- Added player/zone favorites and blacklists, full Favorites/Blocked browsers, smart sorting, usage tracking, configurable visible rows, and free-route preference.
+- Added quick Home, Home Outside, Group Leader, Quest, automatic unknown-wayshrine discovery, Normal/Veteran toggle, and sort controls.
+- Added right-click travel tools for whisper/group/friend actions, primary residences, house inside/outside + primary house, map navigation/waypoint, sharing a destination into chat, and Normal/Veteran instance switching.
+- Added inventory Maps/Surveys/Clues and active Antiquity Leads as travel views, plus Delve/Dungeon/Trial/Arena/Endless Archive classification where ESO exposes the required node data.
+- Ultimate charge display now keeps tracking ESO's real Ultimate resource above 100% and caps the displayed percentage at 200%.
+
+0.29.65
+- Fixed World Map Teleporter player/zone search fields so they explicitly take keyboard focus and accept typed input.
+- Docked the Map Teleporter flush to the stock World Map instead of displaying it as a separate floating window.
+- Teleporter now matches the World Map's full vertical height and reflows its destination rows to use the available space.
+- Re-docks after map scene/layout changes so UI scaling and map transitions keep the panel attached.
+
+0.29.64
+- Added automatic Character Level / XP progression overlay for levels 1-49.
+- Shows live XP current/max and percentage with a progress bar.
+- Automatically switches the same HUD position to the Champion Point overlay at level 50.
+- Pre-50 progression stays visible independently of Champion Point Gain Only mode; Champion visibility preferences begin at level 50.
+
+0.29.63
+- Added an automatic World Map Teleporter panel inspired by the requested map-side travel layout.
+- The panel appears whenever the keyboard World Map opens and hides when the map closes.
+- Added ALL / GROUP / FRIENDS / GUILD destination tabs, player search, zone search, live destination refresh, paging, and one-click free Travel-to-Player actions.
+- Added Mini Map & Navigation setting: Show Map Teleporter with World Map.
+
+0.29.62
+- Added a real Always visibility mode for the Quickslot Overlay.
+- Removed legacy migration that incorrectly converted ALWAYS back to Before & During Combat.
+- Always mode stays visible during normal gameplay while still respecting the master toggle, HUD suppression, and HUD Layout Mode.
+
+0.29.61
+- Fixed Alliance XP / AP Gain Only visibility not appearing when AP was earned.
+- Uses EVENT_ALLIANCE_POINT_UPDATE's positive AP difference directly instead of relying on a possibly stale rank-points getter.
+- Added cached Alliance Point reward fallback handling for additional PvP reward paths.
+- Added a Test AP Gain Popup button under Alliance Rank Overlay settings.
+
+0.29.60
+- Added Alliance Rank visibility mode: Alliance XP / AP Gain Only.
+- Gain-only mode keeps the Alliance Rank overlay hidden until Alliance Rank/AP progress increases, shows it for about 10 seconds, then hides it again.
+- HUD Layout Mode still forces the Alliance Rank overlay visible for positioning.
+
+0.29.59
+- Added a dedicated full-width drag handle to the HUD Layout Save/Reset overlay.
+- The title strip now always drags the Save & Exit overlay and saves its position.
+
+0.29.58
+- Made full HUD Layout Mode sticky: SAVE & EXIT is now the only in-addon way to leave it.
+- ESC/camera UI-mode changes now restore the layout cursor and overlays instead of closing layout mode.
+- Suite interaction key, minimap move requests, slash lock/done paths, and Settings no longer dismiss an active full HUD Layout session.
+- HUD Layout control bar remains visible and movable until SAVE & EXIT is pressed.
+
+0.29.57
+- HUD Layout Mode Save/Reset control strip is now movable.
+- Drag the HUD LAYOUT MODE / DRAG TO MOVE area to reposition the Save & Exit and Reset Layout buttons.
+- The control strip position is saved and restored the next time HUD Layout Mode opens.
+- Preserves the HUD Layout compass preview and automatic settings hiding behavior.
+
+0.29.56
+- Fixed HUD Layout Mode crash caused by an invalid 12x12 backdrop edge size; ESO requires power-of-two edge dimensions.
+- HUD Layout Save/Reset buttons now use a valid 16x16 edge texture size.
+- Updated Core.lua internal version and HUD Layout control/state names to 0.29.56.
+- Preserves the 0.29.55 forced-compass preview behavior in HUD Layout Mode.
+
+0.29.55
+- HUD Layout Mode now forces ESO's stock top compass visible while arranging overlays.
+- Added a layout-mode compass visibility guard so ESO camera UI-mode scene updates cannot hide it again.
+- Save & Exit immediately restores the compass to its normal gameplay/menu visibility rules.
+
+0.29.54
+- HUD Layout Mode now closes the Suite/LibAddonMenu settings scene before unlocking overlays, preventing Settings from covering movable frames.
+- Added an always-on-top HUD Layout control bar that appears only while layout mode is active.
+- Added Save & Exit to lock all frames, keep their saved positions, close layout mode, and return to normal gameplay.
+- Added Reset Layout to restore all Suite HUD positions while remaining in layout mode so the reset result can be adjusted immediately.
+- Added cleanup so the HUD Layout control bar disappears if ESO exits camera UI mode unexpectedly.
+
+0.29.53
+- Fixed Suite 3D world pins sometimes remaining hidden after Antiquity excavation until /reloadui.
+- Added automatic post-excavation 3D renderer recovery with delayed retries after the HUD returns.
+- Added a HUD watchdog that repairs a stuck-hidden Resource Pins or Antiquity 3D root during normal gameplay.
+- Recovery also refreshes integrated LoreBooks, Team Visibility, and Dungeon Chest 3D render spaces so the excavation scene cannot strand other Suite world markers.
+
+0.29.52
+- Added a dedicated Antiquities & Lead Finder settings submenu so Antiquity Assistant and Lead Finder controls are no longer buried/misfiled.
+- Added a dedicated ESO Adventurer Suite - Antiquities keybind category for Open / Close Antiquity Lead Finder.
+- Added /easleads and /esosuite leads as fallback commands to open the Lead Finder.
+- Kept the existing Lead Finder data, ScrySpy spawn assist, learned exact 3D dig pins, Augur helper, and bonus-loot prediction features.
+
+0.29.51
+- Added Antiquity Lead Finder using live ESO lead state plus integrated source/location reference data from the user-supplied Display Leads addon.
+- Added 668 lead-source descriptions and 106 find-zone overrides for leads whose acquisition zone differs from their scry zone.
+- Added finder filters for Can Find, Have Lead, Missing Codex, Never Dug, All, and Current Zone.
+- Added detailed lead view with source type, source description, find zone, scry zone, recovery count, codex progress, difficulty, set, and expiration.
+- Added a dedicated keybind and Suite settings controls for the Lead Finder.
+
+0.29.50
+- Integrated the user-provided ScrySpy dig-spawn reference dataset as a known Antiquity spawn locator layer.
+- Filters known mound spawn candidates to ESO's currently active Antiquity search-area blob.
+- Shows confirmed/learned exact mound pins in gold and unconfirmed known candidates as smaller cyan 3D shovel pins.
+- When ESO exposes the real Excavate / Dig Site interaction, binds the learned exact mound to the nearest known spawn identity and saves it for future visits.
+- Added interaction-result learning as a second confirmation path and kept the camera-based fallback for locations missing from the reference dataset.
+- Added a Known dig-spawn locator assist setting.
+
+0.29.49
+- Added persistent learned 3D Antiquity dig-spot spawns.
+- When ESO exposes the real Excavate / Dig Site mound under the reticle, the Suite estimates the mound world position, renders the Heavy Shovel in true 3D render space above it, and saves the spawn in SavedVariables.
+- Learned mound positions are associated with the active digSiteId (with zone/map-center fallback) and automatically restored when that spawn becomes active again.
+- Repeat sightings smooth/refine saved mound positions instead of replacing them with one sample.
+- Added Learn & reuse exact dig-spot spawns setting and Clear Learned Dig Spots control.
+- The old approximate search-area-center 3D marker remains disabled; ESO's Antiquarian's Eye blue mist remains unchanged.
+
+0.29.48
+- Centered Game Mode Combat Report card titles.
+- Re-aligned the bottom card header rows and data rows to use the same inset and width.
+- Centered bottom-table header labels over their matching data columns for Group / Raid MVP & Targets and Ability Breakdown.
+
+0.29.47
+- Added Bonus Loot Search Mode to the Antiquities Assistant.
+- Main Antiquity and bonus loot are tracked with separate ESO events, so bonus finds are counted independently.
+- After the main Antiquity is unearthed, the Augur Guide switches to a best-effort board-coverage route with relative movement instructions, stability, time, dig power, and bonus-found count.
+- Bonus predictions spread searches across untouched board areas, prefer efficient interior coverage, remember attempted/exhausted cells, and move on when ESO reports a tile at bottom.
+- Augur is explicitly disabled as a bonus locator when ESO returns CANNOT_RADAR_BONUS_LOOT; predictions are labeled as coverage predictions, never guaranteed hidden coordinates.
+
+0.29.46
+- Fixed Game Mode Report header centering/alignment using the exact same column grid as each data row.
+- Headers and stats now share identical X positions and widths at every report size.
+- Centered numeric column titles directly over DPS, HPS/DMG, Score, Share, Damage, Crit/Hits, and Max values.
+
+0.29.45
+- Fixed Game Mode Combat Report column headers so the titles line up with the actual stat columns in Group / Raid MVP & Targets and Ability Breakdown.
+- Replaced spaced text headers with anchored header controls that resize with the report.
+
+0.29.44
+- Fixed Game Mode Combat Report overlap at minimum size by raising the true minimum layout size and rebalancing the MVP/target and ability columns.
+- Tightened buff, MVP, and ability columns so values stay separated at the smallest supported report size.
+- Antiquity Augur Assistant now saves a confirmed scan tile together with its selected color.
+- After one tile+color pair is known, the Augur Guide remembers each recommended next tile; if ESO does not expose the coordinate, the player only needs to press the new color instead of reopening the 10x10 picker.
+- Simplified Augur movement instructions to direct relative steps such as 3 LEFT + 4 DOWN and shows the saved color/tile plus next tile.
+
+0.29.43
+- Reorganized Game Mode Combat Report layout for readability.
+- Added clearer column headers and multi-column rows for buffs, group/raid MVP, targets, and ability breakdown.
+- Converted Resources & Build Stats into fixed labeled rows instead of one dense text block.
+- Improved report panel spacing so combat, stats, buffs, MVP, and abilities are easier to scan.
+
+0.29.42
+- Removed ESO grammar suffix markers such as ^n/^m/^f from combat-report target, player, and group names, including previously saved reports.
+- Upgraded TARGETS & GROUP into GROUP / RAID MVP & TARGETS so observed group/raid contributors are ranked before enemy targets.
+- Added Observed Overall MVP, Damage MVP, and Healing MVP rows. Overall Impact averages each contributor's share of observed group damage and observed group healing; it does not pretend to score tank mitigation that ESO does not expose for other group members.
+- Group contributor rows now show both observed DPS and HPS plus an impact score, while the footer states that MVP ranking is based on observed damage/healing only.
+
+0.29.41
+- Fixed the PLAYER COMBAT Healing / Defense section so HPS, Healing, Incoming DPS, and Blocked hits always render on separate rows instead of overlapping at smaller report sizes/UI scales.
+- Replaced the combat summary multiline label with 18 fixed layout rows for stable spacing.
+
+0.29.40
+- Fixed Game Mode Combat Report target/group row rendering crash caused by passing an RGBA table directly to LabelControl:SetColor.
+- The selected TARGET/TEXT or GROUP/CYAN palette is now unpacked into four numeric color arguments before SetColor is called.
+- This is a UI-rendering hotfix; combat report calculations and saved report data are unchanged.
+
+0.29.39
+- Reworked the Excavation Augur helper around the strongest behavior ESO actually allows: Green is the only guaranteed shovel instruction; Yellow/Orange/Red are used only to choose the next scan.
+- Added additional live ESO digging-UI fallbacks to capture the clicked Augur row/column and increased tile caching to 40ms, reducing manual 10x10 tile selection.
+- Next-scan recommendations now come only from still-possible model cells, so the helper no longer wastes an Augur charge on a square its own model already eliminated.
+- Added an information-gain opening recommendation and clearer probability/model wording; the Suite no longer presents heuristic predictions as exact treasure locations.
+- If ESO reports Green, the overlay immediately switches to GUARANTEED GREEN - DIG HERE with the captured row/column when available.
+
+0.29.37
+- Added the Antiquity Excavation Augur Guide and 10x10 Tile Selector to HUD Layout Mode.
+- Both overlays now expose a full-window drag shield while arranging the HUD, save independent screen positions, and restore those positions during excavation.
+- HUD Layout Mode shows both Antiquity overlays even outside an active excavation so they can be positioned without blocking the dig board.
+- Reset Frames now also restores both Antiquity overlays; a dedicated Reset Antiquity Overlays button was added to Antiquity settings.
+
+0.29.36
+- Fixed the exact Antiquity dig-site marker displaying ESO's red question-mark placeholder.
+- The Suite now uses ESO's built-in Heavy Shovel icon (/esoui/art/icons/u26_ability_digging_02.dds) directly instead of the invalid digsite_unknown fallback.
+- Exact dig-spot detection and the Antiquarian's Eye blue-mist behavior are unchanged.
+
+0.29.35
+- Fixed Game Mode Report Refresh crash when a partially initialized report window existed but controls such as modeIcon were nil.
+- Added complete UI validation and automatic collision-safe rebuild before the report can open or refresh.
+- Refresh now has defensive control checks so an interrupted UI build cannot cascade into another nil-value error.
+
+0.29.34
+- Fixed Game Mode Combat Report hotkey crashes caused by a stale global `EAS_GameModeCombatReport` control.
+- The report now hides stale report roots, allocates a collision-safe top-level control name, and uses anonymous child controls so repeated initialization cannot trigger Duplicate name errors.
+- Added a guarded window-creation path so a UI creation failure no longer cascades into the nil-value error that previously followed the duplicate-name exception.
+
+0.29.33
+- Minimap remains fully dynamic: it follows the player's exact current zone, city, home, delve, interior, or linked sub-map instead of anchoring to a parent map.
+- Map/sub-map transitions now immediately clear the previous area's static pins before rebuilding, preventing old icons from bleeding into the new local map.
+- Added delayed live native-pin refreshes after local map transitions so the Suite can mirror the current ESO pin manager without requiring the minimap to stay on the previous area.
+- Hidden-map native snapshots are accepted only when ESO confirms the current map matches the player's location and the mapId matches the minimap, protecting against unrelated quest/wayshrine map scans.
+- Native pin caches are reset to schema 2933 so older parent/sub-map snapshot history cannot affect the dynamic current-area mirror.
+
+0.29.32
+- Rebuilt the Suite minimap static-pin mirror so an opened ESO full map becomes the authoritative source for that exact mapId. The minimap now reuses the same normalized positions and native textures instead of mixing projected/cached service pins with separate POI scans.
+- Native map-pin snapshots now replace the previous snapshot instead of accumulating forever, removing stale/duplicate icons that made the minimap show more locations than ESO's full map.
+- Removed Suite-only dungeon map labels such as "Map Location" so the minimap no longer adds information ESO is not showing.
+- Native mirrored pins are no longer clamped to the minimap edge; if a full-map pin is outside the current minimap viewport it stays off-screen, preserving its real position.
+- If no native snapshot exists yet for a map, the older API-based pin scan remains as a temporary fallback until the player opens ESO's full map once.
+
+0.29.31
+- Replaced the misleading approximate-center 3D Antiquity marker with an exact reticle-locked shovel that appears only on ESO's real Excavate / Dig Site interaction target. ESO's built-in Antiquarian's Eye blue mist is unchanged.
+- Fixed Excavation Augur tile capture: the Suite continuously caches the last valid grid cell so moving the mouse to Green / Yellow / Orange / Red no longer clears the selected tile.
+- Successful Augur results now show the captured row/column before you choose the color.
+- Added a 10x10 manual tile fallback when ESO does not expose excavation cell coordinates to addon code; Green works immediately even without coordinates and tells you to dig the same green tile.
+- World-map and Suite-minimap Antiquity search-area pins remain available; only the 3D world marker changed to exact-target behavior.
+
+0.29.30
+- Added a hotkey-only Game Mode Combat Report for overland, dungeons, trials, arenas, Infinite Archive, Battlegrounds, and Alliance War play.
+- Added panels for player damage and hit results, current resources and build stats, active buffs/debuffs, targets and group contributions, and ability-level DPS details.
+- The report records up to 30 recent fights, supports previous/next navigation, and can be moved, resized, and closed with its assigned hotkey or close button.
+- The report stays hidden unless opened manually and never pops up automatically after combat.
+
+0.29.29
+- Added Heavy Shovel icons for active Antiquity dig-site centers on the world map, Suite minimap, and in the 3D world.
+- Added an Excavation Augur helper: choose the result color after each probe and a large arrow recommends the best next grid cell.
+- Added a third Skills page with live Scrying and Excavation upgrade priorities, current/max rank, skill-point cost, and required skill-line rank.
+- Added Antiquity Assistant settings for each marker layer, 3D range/size/occlusion, and the Excavation overlay.
+
 0.29.28
 - Companion gallery now prefers the Suite's full portrait artwork instead of tiny collectible icons, making each companion card much easier to recognize.
 - Kept the full-card art layout, rounded UI shell, and runtime texture-root fix from 0.29.27.

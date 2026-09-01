@@ -20,6 +20,19 @@ local DEBUG_MODE_MAX = constants.DEBUG_MODE_MAX or 4
 local LEGACY_ZOOM_STEP_DEFAULT = 0.30
 local ZOOM_STEP_DEFAULT_REVISION = 1
 local PVP_ZOOM_STEP_DEFAULT = 0.5
+local CAMERA_RESPONSE_DEFAULT = "responsive"
+
+local CAMERA_RESPONSE_DEFINITIONS = {
+    { id = "native",     nameKey = SI_BAV_SETTING_CAMERA_RESPONSE_NATIVE },
+    { id = "instant",    nameKey = SI_BAV_SETTING_CAMERA_RESPONSE_INSTANT },
+    { id = "responsive", nameKey = SI_BAV_SETTING_CAMERA_RESPONSE_RESPONSIVE },
+    { id = "smooth",     nameKey = SI_BAV_SETTING_CAMERA_RESPONSE_SMOOTH },
+}
+
+local CAMERA_RESPONSE_IDS = {}
+for _, def in ipairs(CAMERA_RESPONSE_DEFINITIONS) do
+    CAMERA_RESPONSE_IDS[def.id] = true
+end
 
 -- Single source of truth for context-preset states: drives the SavedVariables
 -- defaults, the SetPresetState validity guard, and the settings-panel checkbox
@@ -103,6 +116,7 @@ end
 ---@field zoomMinMounted number
 ---@field preserveFpvBetweenZones boolean
 ---@field zoom number|nil
+---@field cameraResponseMode string|nil
 ---@field dynamicFovEnabled boolean
 ---@field dynamicFovNear number|nil
 ---@field dynamicFovFar number|nil
@@ -151,6 +165,10 @@ local DEFAULT_SAVED_VARS = {
     lastZoomThreshold = LASTZOOM_THRESHOLD,
     zoomMinMounted = ZOOM_MIN_MOUNTED,
     preserveFpvBetweenZones = PRESERVE_FPV_BETWEEN_ZONES,
+    -- cameraResponseMode is intentionally absent here. NormalizeSavedSettings
+    -- writes it once after migrating the two legacy smoothing flags; putting a
+    -- default value here could hide the difference between an old install and a
+    -- fresh explicit choice depending on how ZO_SavedVars materializes defaults.
     -- Optional camera features. Dynamic FOV ships ON by default (with smoothing)
     -- so a fresh install gets the eased zoom feel out of the box; it still does
     -- nothing on clients where the FOV property is unsupported. Context presets
@@ -356,6 +374,26 @@ end
 function Settings.ShouldPersistFPVBetweenZones()
     local vars = GetSavedVarsOrDefaults()
     return NormalizeBoolean(vars.preserveFpvBetweenZones, PRESERVE_FPV_BETWEEN_ZONES)
+end
+
+local function NormalizeCameraResponseMode(value)
+    if CAMERA_RESPONSE_IDS[value] then
+        return value
+    end
+    return CAMERA_RESPONSE_DEFAULT
+end
+
+function Settings.GetCameraResponseMode()
+    return NormalizeCameraResponseMode(GetSavedVarsOrDefaults().cameraResponseMode)
+end
+
+function Settings.SetCameraResponseMode(value)
+    local vars = Settings.GetSavedVars()
+    if not vars then
+        return
+    end
+    vars.cameraResponseMode = NormalizeCameraResponseMode(value)
+    Settings.ApplyOptionalFeatureConfig()
 end
 
 -- ---------------------------------------------------------------------------
@@ -932,11 +970,22 @@ function Settings.NormalizeSavedSettings()
         savedVars.zoomStepDefaultRevision = ZOOM_STEP_DEFAULT_REVISION
     end
 
+    -- Replace the two former smoothing checkboxes with one global response
+    -- profile. Existing users who explicitly disabled BOTH old glides keep
+    -- instant behavior; every other installation adopts the responsive mode.
+    if rawget(savedVars, "cameraResponseMode") == nil then
+        local dynamicSmooth = NormalizeBoolean(savedVars.dynamicFovSmooth, true)
+        local presetSmooth = NormalizeBoolean(savedVars.presetSmoothTransitions, true)
+        savedVars.cameraResponseMode = (not dynamicSmooth and not presetSmooth)
+            and "instant" or CAMERA_RESPONSE_DEFAULT
+    end
+
     savedVars.zoomStep = Settings.GetConfiguredZoomStep()
     savedVars.pvpZoomStep = Settings.GetPvpZoomStep()
     savedVars.lastZoomThreshold = Settings.GetConfiguredLastZoomThreshold()
     savedVars.zoomMinMounted = Settings.GetConfiguredMinMountedZoom()
     savedVars.preserveFpvBetweenZones = Settings.ShouldPersistFPVBetweenZones()
+    savedVars.cameraResponseMode = Settings.GetCameraResponseMode()
     savedVars.pvpModeEnabled = Settings.IsPvpModeEnabled()
     savedVars.pvpScouting = Settings.IsPvpScoutingEnabled()
     savedVars.pvpMountedScouting = Settings.IsPvpMountedScoutingEnabled()
@@ -1005,12 +1054,15 @@ end
 function Settings.ApplyOptionalFeatureConfig()
     local addon = BureauOfAcceptableViews
 
+    if addon.CameraResponse and addon.CameraResponse.Configure then
+        addon.CameraResponse.Configure({ mode = Settings.GetCameraResponseMode() })
+    end
+
     if addon.DynamicFov and addon.DynamicFov.Configure then
         addon.DynamicFov.Configure({
             enabled = Settings.IsDynamicFovEnabled(),
             nearFov = Settings.GetDynamicFovNear(),
             farFov  = Settings.GetDynamicFovFar(),
-            smooth  = Settings.IsDynamicFovSmooth(),
         })
     end
 
@@ -1024,6 +1076,7 @@ function Settings.ApplyOptionalFeatureConfig()
             autoSide   = Settings.GetShoulderAutoSide(),
             manualSide = Settings.GetShoulderManualSide(),
             autoStates = Settings.GetShoulderAutoStates(),
+            responseMode = Settings.GetCameraResponseMode(),
         })
     end
 
@@ -1031,7 +1084,6 @@ function Settings.ApplyOptionalFeatureConfig()
         addon.ContextPresets.Configure({
             enabled   = Settings.ArePresetsEnabled(),
             intensity = Settings.GetPresetIntensity(),
-            smooth    = Settings.ArePresetTransitionsSmooth(),
             states    = Settings.GetPresetStates(),
             stateIntensities = Settings.GetPresetStateIntensities(),
             stateCoalesce = Settings.GetPresetStateCoalesces(),
@@ -1087,6 +1139,7 @@ function Settings.ResetConfigurationToDefaults(suppressOutput)
     savedVars.lastZoomThreshold = LASTZOOM_THRESHOLD
     savedVars.zoomMinMounted = ZOOM_MIN_MOUNTED
     savedVars.preserveFpvBetweenZones = PRESERVE_FPV_BETWEEN_ZONES
+    savedVars.cameraResponseMode = CAMERA_RESPONSE_DEFAULT
     -- Reset deliberately switches the optional features OFF (an inert, neutral
     -- camera) rather than restoring the shipped "on" defaults: a reset is the
     -- user's escape hatch back to vanilla behavior. dynamicFovSmooth is left
@@ -1551,6 +1604,28 @@ end
             width = "full",
         },
         {
+            type = "dropdown",
+            name = GetString(SI_BAV_SETTING_CAMERA_RESPONSE_NAME),
+            tooltip = GetString(SI_BAV_SETTING_CAMERA_RESPONSE_TOOLTIP),
+            choices = {
+                GetString(CAMERA_RESPONSE_DEFINITIONS[1].nameKey),
+                GetString(CAMERA_RESPONSE_DEFINITIONS[2].nameKey),
+                GetString(CAMERA_RESPONSE_DEFINITIONS[3].nameKey),
+                GetString(CAMERA_RESPONSE_DEFINITIONS[4].nameKey),
+            },
+            choicesValues = {
+                CAMERA_RESPONSE_DEFINITIONS[1].id,
+                CAMERA_RESPONSE_DEFINITIONS[2].id,
+                CAMERA_RESPONSE_DEFINITIONS[3].id,
+                CAMERA_RESPONSE_DEFINITIONS[4].id,
+            },
+            getFunc = function() return Settings.GetCameraResponseMode() end,
+            setFunc = function(value) Settings.SetCameraResponseMode(value) end,
+            default = CAMERA_RESPONSE_DEFAULT,
+            width = "full",
+            reference = "BAVSettingsCameraResponse",
+        },
+        {
             type = "slider",
             name = GetString(SI_BAV_SETTING_ZOOM_STEP_NAME),
             tooltip = GetString(SI_BAV_SETTING_ZOOM_STEP_TOOLTIP),
@@ -1782,23 +1857,6 @@ end
             reference = "BAVSettingsDynamicFovEnabled",
         },
         {
-            -- Purely cosmetic glide between zoom steps. Greyed out unless the
-            -- feature itself is on, matching the near/far sliders below.
-            type = "checkbox",
-            name = GetString(SI_BAV_SETTING_DYNAMIC_FOV_SMOOTH_NAME),
-            tooltip = GetString(SI_BAV_SETTING_DYNAMIC_FOV_SMOOTH_TOOLTIP),
-            getFunc = function() return Settings.IsDynamicFovSmooth() end,
-            setFunc = function(value)
-                local vars = Settings.GetSavedVars()
-                if vars then vars.dynamicFovSmooth = value and true or false end
-                Settings.ApplyOptionalFeatureConfig()
-            end,
-            disabled = DynamicFovDisabled,
-            width = "full",
-            default = true,
-            reference = "BAVSettingsDynamicFovSmooth",
-        },
-        {
             -- FOV applied when zoomed all the way in. Bounds come from the
             -- engine FOV range, so the value can never leave acceptable limits.
             -- Disabled (greyed) unless the feature itself is on.
@@ -1906,24 +1964,6 @@ end
             default = 100,
             disabled = function() return not Settings.ArePresetsEnabled() end,
             reference = "BAVSettingsPresetIntensity",
-        },
-        {
-            -- Purely cosmetic: ease state changes (spatial framing + FOV) over a
-            -- short glide instead of snapping. Greyed out unless presets are on,
-            -- mirroring the Dynamic FOV smoothing toggle above.
-            type = "checkbox",
-            name = GetString(SI_BAV_SETTING_PRESET_SMOOTH_NAME),
-            tooltip = GetString(SI_BAV_SETTING_PRESET_SMOOTH_TOOLTIP),
-            getFunc = function() return Settings.ArePresetTransitionsSmooth() end,
-            setFunc = function(value)
-                local vars = Settings.GetSavedVars()
-                if vars then vars.presetSmoothTransitions = value and true or false end
-                Settings.ApplyOptionalFeatureConfig()
-            end,
-            disabled = function() return not Settings.ArePresetsEnabled() end,
-            width = "full",
-            default = true,
-            reference = "BAVSettingsPresetSmooth",
         },
             },
         },

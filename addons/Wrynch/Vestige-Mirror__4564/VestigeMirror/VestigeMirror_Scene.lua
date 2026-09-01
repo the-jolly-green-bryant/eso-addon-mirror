@@ -45,7 +45,10 @@ function VestigeMirror.Scene:OnSceneStateChanged(newState)
         if self.appearance then
             VestigeMirror.Preview:ShowAppearance(self.appearance)
         end
+        VestigeMirror.UI:ApplyFrame()
     elseif newState == SCENE_HIDDEN then
+        VestigeMirror.Actions:HideMementoPicker()
+        VestigeMirror.UI:RestoreFrame()
         VestigeMirror.UI:HideTextureKeybinds()
         VestigeMirror.Preview:Hide()
         self.appearance = nil
@@ -66,6 +69,7 @@ function VestigeMirror.Scene:ShowAppearance(appearance)
         VestigeMirror.UI:Refresh(appearance)
         VestigeMirror.Preview:Hide()
         VestigeMirror.Preview:ShowAppearance(appearance)
+        VestigeMirror.UI:ApplyFrame()
         return
     end
 

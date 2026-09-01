@@ -311,13 +311,13 @@ local function onAddOnLoaded(event, name)
 	--notify that add-on has been loaded
 	zo_callLater(function() printMessage("add-on successfully loaded") end, 500)
 
+	--load saved variables
+    turningTideTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("turnAddonVars", 1, "Settings", turningTideTracker.defaults, GetUnitName("player"))
+
 	--notify if tracking is disabled
 	if not turningTideTracker.savedVariables.trackTurn then
 		zo_callLater(function() printMessageTest("tracking disabled") end, 600)
 	end
-
-    --load saved variables
-    turningTideTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("turnAddonVars", 1, "Settings", turningTideTracker.defaults, GetUnitName("player"))
 
     --setup text field areas
     ttAddonText:SetMovable(true)

@@ -46,7 +46,7 @@
     "LibExtendedJournal"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4031/",
-  "fingerprint": "6bd6479bf23ea399a1ecc430557150b675ac7827b73d7a10ce23fbb11b409ba6",
+  "fingerprint": "f222b7b5dcaa7540eb8b3ac4fc341c2baf5a265553ae711217927952e77247c2",
   "images": [],
   "platform": "pc",
   "published": true,
@@ -54,11 +54,11 @@
   "source_id": "4031",
   "source_url": "https://www.esoui.com/downloads/info4031-LibExtendedJournal.html",
   "stats": {
-    "downloads": 39747,
-    "favorites": 15,
-    "monthly_downloads": 2655
+    "downloads": 40822,
+    "favorites": 16,
+    "monthly_downloads": 1893
   },
   "title": "LibExtendedJournal",
-  "updated_at": 1785258795000,
-  "version": "2.5.3"
+  "updated_at": 1788193793000,
+  "version": "2.5.3.1"
 }

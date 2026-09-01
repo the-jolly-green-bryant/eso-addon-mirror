@@ -10,7 +10,10 @@ local Q = EPC.QuestFinder
 
 Q.PAGE_SIZE = 10
 Q.SCAN_MAX_ID = 15000
-Q.SCAN_CHUNK = 250
+Q.SCAN_CHUNK = 30
+Q.SCAN_DELAY_MS = 60
+Q.ENTRIES_CACHE_MS = 5000
+Q.ACTIVE_CACHE_MS = 1000
 
 local function lower(v) return string.lower(tostring(v or "")) end
 local function trim(v)
@@ -343,6 +346,44 @@ function Q:Initialize()
     self.scanDone = false
     self.scanStarted = false
     self.mainQuestSelectedKey2737 = nil
+    -- Quest Finder can contain thousands of NOT STARTED records. Keep short-lived
+    -- caches so mouse movement / UI refreshes do not rebuild the full data set.
+    self.entriesCache2973 = nil
+    self.entriesCacheKey2973 = nil
+    self.entriesCacheAt2973 = 0
+    self.activeQuestCache2973 = nil
+    self.activeQuestCacheAt2973 = 0
+    self.entriesKeyMap2973 = nil
+
+    -- Keep the expensive NOT STARTED list cached until quest state actually
+    -- changes. Hovering and ordinary UI repainting must never invalidate it.
+    if EVENT_MANAGER and type(EVENT_MANAGER.RegisterForEvent) == "function" then
+        local prefix = (EPC.name or "ESOAdventurerSuite") .. "_QuestFinderCache"
+        local seen = {}
+        local function register(eventId)
+            if eventId and not seen[eventId] then
+                seen[eventId] = true
+                EVENT_MANAGER:RegisterForEvent(prefix .. "_" .. tostring(eventId), eventId, function()
+                    self:InvalidateRuntimeCaches2973()
+                end)
+            end
+        end
+        register(EVENT_QUEST_ADDED)
+        register(EVENT_QUEST_REMOVED)
+        register(EVENT_QUEST_COMPLETE)
+        register(EVENT_PLAYER_ACTIVATED)
+    end
+end
+
+function Q:InvalidateRuntimeCaches2973()
+    self.entriesCache2973 = nil
+    self.entriesCacheKey2973 = nil
+    self.entriesCacheAt2973 = 0
+    self.entriesKeyMap2973 = nil
+    self.activeQuestCache2973 = nil
+    self.activeQuestCacheAt2973 = 0
+    self.completedCache = nil
+    self.completedCacheAt = 0
 end
 
 function Q:StartScan()
@@ -354,6 +395,11 @@ end
 
 function Q:ScanChunk()
     if self.scanDone then return end
+    if type(IsUnitInCombat) == "function" and safe(IsUnitInCombat, false, "player") == true then
+        local function resume() self:ScanChunk() end
+        if type(zo_callLater) == "function" then zo_callLater(resume, 250) end
+        return
+    end
     if type(GetQuestName) ~= "function" or type(GetQuestZoneId) ~= "function" then
         self.scanDone = true
         return
@@ -371,18 +417,23 @@ function Q:ScanChunk()
             if zoneId > 0 and zone ~= "" then
                 local key = lower(name) .. "|" .. tostring(zoneId)
                 if not self.indexByKey[key] then
-                    local hint = self.curatedHints[lower(name)]
+                    local nameLower = lower(name)
+                    local hint = self.curatedHints[nameLower]
+                    local entryType = hint and hint.type or questTypeText(questId)
+                    local access = hint and hint.access or "GAME QUEST INDEX"
                     local entry = {
                         key = "QUEST:" .. tostring(questId),
                         questId = questId,
                         name = name,
+                        nameLower = nameLower,
                         zoneId = zoneId,
                         rawZoneId = rawZoneId,
                         zone = zone,
-                        type = hint and hint.type or questTypeText(questId),
+                        type = entryType,
                         starter = hint and hint.starter or "Exact unaccepted quest-giver position is not exposed; route to the zone and follow local quest markers.",
-                        access = hint and hint.access or "GAME QUEST INDEX",
+                        access = access,
                         dlc = hint and hint.access ~= "BASE GAME" or false,
+                        searchHay2973 = lower(name .. " " .. zone .. " " .. entryType .. " " .. access .. " " .. tostring(questId)),
                     }
                     self.indexByKey[key] = entry
                     self.index[#self.index + 1] = entry
@@ -399,13 +450,17 @@ function Q:ScanChunk()
             if an == bn then return lower(a.zone) < lower(b.zone) end
             return an < bn
         end)
+        self.entriesCache2973 = nil
+        self.entriesCacheKey2973 = nil
+        self.entriesCacheAt2973 = 0
+        self.entriesKeyMap2973 = nil
         if EPC.RequestRefresh then EPC:RequestRefresh("quest-index-ready") end
         return
     end
 
     if (lastId % 1000) == 0 and EPC.RequestRefresh then EPC:RequestRefresh("quest-index-scan") end
     local function again() self:ScanChunk() end
-    if type(zo_callLater) == "function" then zo_callLater(again, 20) else again() end
+    if type(zo_callLater) == "function" then zo_callLater(again, self.SCAN_DELAY_MS or 35) else again() end
 end
 
 -- v0.28.61: build one authoritative live-journal snapshot instead of assuming
@@ -447,18 +502,26 @@ function Q:GetLiveJournalEntries2861()
 end
 
 function Q:GetActiveQuestMap()
+    local now = tonumber(safe(GetFrameTimeMilliseconds, 0)) or 0
+    local cached = self.activeQuestCache2973
+    if cached and (now <= 0 or (now - (self.activeQuestCacheAt2973 or 0)) < (self.ACTIVE_CACHE_MS or 500)) then
+        return cached.byId, cached.byName, cached.entries
+    end
+
     local byId, byName = {}, {}
     local journalEntries = self:GetLiveJournalEntries2861()
     for _, entry in ipairs(journalEntries) do
         if (tonumber(entry.questId) or 0) > 0 then byId[entry.questId] = entry.questIndex end
         byName[lower(entry.name)] = entry.questIndex
     end
+    self.activeQuestCache2973 = {byId = byId, byName = byName, entries = journalEntries}
+    self.activeQuestCacheAt2973 = now
     return byId, byName, journalEntries
 end
 
 function Q:GetCompletedQuestSet()
     local now = tonumber(safe(GetFrameTimeMilliseconds, 0)) or 0
-    if self.completedCache and (now <= 0 or (now - (self.completedCacheAt or 0)) < 5000) then
+    if self.completedCache and (now <= 0 or (now - (self.completedCacheAt or 0)) < 30000) then
         return self.completedCache
     end
     local done = {}
@@ -626,7 +689,7 @@ function Q:BuildEntries()
 
     for i = 1, #self.index do
         local src = self.index[i]
-        local activeIndex = activeById[src.questId] or activeByName[lower(src.name)]
+        local activeIndex = activeById[src.questId] or activeByName[src.nameLower or lower(src.name)]
         if activeIndex then seenActive[activeIndex] = true end
         local isCompleted = completed[src.questId] == true
         local status = activeIndex and "ACTIVE" or (isCompleted and "COMPLETED" or "NOT STARTED")
@@ -634,11 +697,23 @@ function Q:BuildEntries()
             or (self.filter == "ACTIVE" and activeIndex ~= nil)
             or (self.filter == "NOT_STARTED" and activeIndex == nil and not isCompleted)
         if include then
-            local hay = lower(src.name .. " " .. src.zone .. " " .. src.type .. " " .. src.access .. " " .. tostring(src.questId))
+            local hay = src.searchHay2973 or lower(src.name .. " " .. src.zone .. " " .. src.type .. " " .. src.access .. " " .. tostring(src.questId))
             if query == "" or string.find(hay, query, 1, true) then
-                local resolvedZoneId, resolvedZone, resolvedRawZoneId = getJournalOverlandZone(
-                    activeIndex or 0, src.questId, src.rawZoneId or src.zoneId
-                )
+                -- NOT STARTED is by far the largest Quest Finder view. During the
+                -- initial index scan we already resolved every source quest to a stable
+                -- overland zone. Re-running the journal/parent-zone resolver for every
+                -- unaccepted row made simple UI refreshes very expensive. Only active
+                -- journal quests need the live journal resolver.
+                local resolvedZoneId, resolvedZone, resolvedRawZoneId
+                if activeIndex then
+                    resolvedZoneId, resolvedZone, resolvedRawZoneId = getJournalOverlandZone(
+                        activeIndex, src.questId, src.rawZoneId or src.zoneId
+                    )
+                else
+                    resolvedZoneId = tonumber(src.zoneId) or 0
+                    resolvedRawZoneId = tonumber(src.rawZoneId) or resolvedZoneId
+                    resolvedZone = tostring(src.zone or "")
+                end
                 entries[#entries + 1] = {
                     key = src.key, questId = src.questId, name = src.name,
                     zoneId = resolvedZoneId, rawZoneId = resolvedRawZoneId or src.rawZoneId or src.zoneId,
@@ -678,17 +753,40 @@ function Q:BuildEntries()
         end
     end
 
-    table.sort(entries, function(a, b)
-        local an, bn = lower(a.name), lower(b.name)
-        if an == bn then return lower(a.zone) < lower(b.zone) end
-        return an < bn
-    end)
+    if self.filter ~= "NOT_STARTED" or not self.scanDone then
+        table.sort(entries, function(a, b)
+            local an, bn = lower(a.name), lower(b.name)
+            if an == bn then return lower(a.zone) < lower(b.zone) end
+            return an < bn
+        end)
+    end
     return entries
 end
 
 function Q:BuildView()
     if not self.scanStarted then self:StartScan() end
-    local entries = self:BuildEntries()
+
+    -- The Codex can ask for a refresh several times while the mouse is moving.
+    -- Reuse the same filtered quest list for a fraction of a second rather than
+    -- rebuilding/sorting thousands of NOT STARTED rows for each UI refresh.
+    local now = tonumber(safe(GetFrameTimeMilliseconds, 0)) or 0
+    local cacheKey = tostring(self.filter or "NOT_STARTED") .. "|" .. lower(trim(self.searchText))
+    local entries = nil
+    if self.entriesCache2973 and self.entriesCacheKey2973 == cacheKey and
+       (now <= 0 or (now - (self.entriesCacheAt2973 or 0)) < (self.ENTRIES_CACHE_MS or 600)) then
+        entries = self.entriesCache2973
+    else
+        entries = self:BuildEntries()
+        self.entriesCache2973 = entries
+        self.entriesCacheKey2973 = cacheKey
+        self.entriesCacheAt2973 = now
+        local keyMap = {}
+        for i = 1, #entries do
+            local entry = entries[i]
+            if entry and entry.key then keyMap[entry.key] = entry end
+        end
+        self.entriesKeyMap2973 = keyMap
+    end
     local maxOffset = math.max(0, #entries - self.PAGE_SIZE)
     self.offset = math.max(0, math.min(self.offset or 0, maxOffset))
     local rows = {}
@@ -698,7 +796,12 @@ function Q:BuildView()
     end
     local selected = nil
     if self.selectedKey then
-        for i = 1, #entries do if entries[i].key == self.selectedKey then selected = entries[i] break end end
+        selected = self.entriesKeyMap2973 and self.entriesKeyMap2973[self.selectedKey] or nil
+        if not selected then
+            for i = 1, #entries do
+                if entries[i].key == self.selectedKey then selected = entries[i] break end
+            end
+        end
     end
     local progress = self.scanDone and "INDEX READY" or string.format("SCANNING %d/%d", math.min(self.scanNextId or 1, self.SCAN_MAX_ID), self.SCAN_MAX_ID)
     local pageSize = math.max(1, tonumber(self.PAGE_SIZE) or 8)
@@ -733,11 +836,19 @@ function Q:SetFilter(filter)
     if filter == "CADWELL'S ALMANAC" or filter == "CADWELL SILVER" then filter = "CADWELL" end
     if filter ~= "NOT_STARTED" and filter ~= "ACTIVE" and filter ~= "MAIN_QUEST" and filter ~= "CADWELL" and filter ~= "ALL" then return false end
     self.filter, self.offset, self.selectedKey = filter, 0, nil
+    self.entriesCache2973 = nil
+    self.entriesCacheKey2973 = nil
+    self.entriesCacheAt2973 = 0
+    self.entriesKeyMap2973 = nil
     return true
 end
 
 function Q:SetSearch(text)
     self.searchText, self.offset, self.selectedKey = tostring(text or ""), 0, nil
+    self.entriesCache2973 = nil
+    self.entriesCacheKey2973 = nil
+    self.entriesCacheAt2973 = 0
+    self.entriesKeyMap2973 = nil
 end
 
 function Q:Scroll(delta)

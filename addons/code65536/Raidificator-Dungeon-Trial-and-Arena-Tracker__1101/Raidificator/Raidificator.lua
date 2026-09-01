@@ -248,6 +248,10 @@ function RCR.MigrateData( )
 	end
 end
 
+function RCR.GetRaidIdFromContentId( contentId )
+	return tonumber(string.match(contentId, "(%d+)R"))
+end
+
 
 --------------------------------------------------------------------------------
 -- Utilities
@@ -322,7 +326,8 @@ end
 function RCR.GetClassSkillLineIds( )
 	local results = { }
 	for skillLineIndex = 1, GetNumSkillLines(SKILL_TYPE_CLASS) do
-		if (select(3, GetSkillLineDynamicInfo(SKILL_TYPE_CLASS, skillLineIndex))) then
+		local _, _, isActive, _, _, _, isClassMastery = GetSkillLineDynamicInfo(SKILL_TYPE_CLASS, skillLineIndex)
+		if (isActive and not isClassMastery) then
 			table.insert(results, GetSkillLineId(SKILL_TYPE_CLASS, skillLineIndex))
 		end
 	end
@@ -333,6 +338,39 @@ function RCR.GetClassSkillLineFormattedName( skillLineId )
 	local name = GetSkillLineNameById(skillLineId)
 	local icon = select(7, GetClassInfo(GetClassIndexById(GetSkillLineClassId(GetSkillLineIndicesFromSkillLineId(skillLineId)))))
 	return ZO_CachedStrFormat(SI_SKILLS_ENTRY_LINE_NAME_CLASS_FORMAT, name, zo_iconFormat(icon, "100%", "100%"))
+end
+
+
+--------------------------------------------------------------------------------
+-- Scoring
+--------------------------------------------------------------------------------
+
+function RCR.IsTimestampFromSoulReservoirScoringSystem( timestamp )
+	return timestamp < 1457341200 -- Update 9 launch
+end
+
+function RCR.GetRaidTargetTimeByRaidId( raidId )
+	return (GetCurrentParticipatingRaidId() == raidId) and GetRaidTargetTime() or 60000 * (RCR.TARGET_TIMES[raidId] or 0)
+end
+
+do	-- See /esoui/ingame/centerscreenannounce/centerscreenannouncehandlers.lua
+	local TRIAL_COMPLETE_LIFESPAN_MS = 10000
+	function RCR.DisplayScoreBanner( raidId, score, duration, vitality, vitalityMax )
+		local messageParams = CENTER_SCREEN_ANNOUNCE:CreateMessageParams(CSA_CATEGORY_RAID_COMPLETE_TEXT, SOUNDS.RAID_TRIAL_COMPLETED)
+		messageParams:SetEndOfRaidData({ score, ZO_FormatTimeMilliseconds(duration, TIME_FORMAT_STYLE_COLONS, TIME_FORMAT_PRECISION_SECONDS), duration < RCR.GetRaidTargetTimeByRaidId(raidId), vitality * 1000, zo_strformat(SI_REVIVE_COUNTER_REVIVES_USED, vitality, vitalityMax) })
+		messageParams:SetText(zo_strformat(SI_TRIAL_COMPLETED_LARGE, GetRaidName(raidId)))
+		messageParams:SetLifespanMS(TRIAL_COMPLETE_LIFESPAN_MS)
+		messageParams:SetCSAType(CENTER_SCREEN_ANNOUNCE_TYPE_RAID_TRIAL)
+		CENTER_SCREEN_ANNOUNCE:AddMessageWithParams(messageParams)
+	end
+end
+
+function RCR.RemoveTimeAdjustmentFromScore( raidId, score, duration )
+	local targetTime = RCR.GetRaidTargetTimeByRaidId(raidId)
+	if (targetTime > 0) then
+		local adjustment = zo_max((targetTime - duration) / 10000000 + 1, 0.001)
+		return zo_round(score / adjustment / 10) * 10
+	end
 end
 
 

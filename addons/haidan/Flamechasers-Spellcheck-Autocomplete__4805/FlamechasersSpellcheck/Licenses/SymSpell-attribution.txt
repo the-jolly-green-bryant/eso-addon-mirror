@@ -1,0 +1,7 @@
+SymSpell / Symmetric Delete algorithm inspiration
+
+Project: SymSpell by Wolf Garbe
+Repository: https://github.com/wolfgarbe/SymSpell
+License: MIT
+
+Flamechasers Spellcheck & Autocomplete does not bundle SymSpell source code. Its Lua correction index and ranking code are an original ESO-specific implementation inspired by the published Symmetric Delete candidate-retrieval technique.

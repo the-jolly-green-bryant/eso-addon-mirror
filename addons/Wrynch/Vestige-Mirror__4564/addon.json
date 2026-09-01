@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Wrynch/Vestige-Mirror__4564",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Wrynch",
   "canonical_id": "esoui:4564",
   "category_id": "27",
@@ -21,12 +22,14 @@
     "VestigeMirror"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4564/",
-  "fingerprint": "4637fc1766a19bef40fecb5712cc410db1b5bdc7885689ab774a285c5dbbea9d",
+  "fingerprint": "96b49b57bc8321b07de50c0bf501162fa4e9188b229faacef05b9f8d7bd3bc18",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw15993.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw17235.png",
     "https://cdn-eso.mmoui.com/preview/pvw15995.jpg",
     "https://cdn-eso.mmoui.com/preview/pvw15994.jpg",
-    "https://cdn-eso.mmoui.com/preview/pvw15996.jpg"
+    "https://cdn-eso.mmoui.com/preview/pvw15996.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw17218.png"
   ],
   "platform": "pc",
   "published": true,
@@ -34,11 +37,11 @@
   "source_id": "4564",
   "source_url": "https://www.esoui.com/downloads/info4564-VestigeMirror.html",
   "stats": {
-    "downloads": 1883,
-    "favorites": 5,
-    "monthly_downloads": 534
+    "downloads": 2654,
+    "favorites": 8,
+    "monthly_downloads": 672
   },
   "title": "Vestige Mirror",
-  "updated_at": 1780944773000,
-  "version": "v1.2.2"
+  "updated_at": 1788221351000,
+  "version": "1.4.0"
 }

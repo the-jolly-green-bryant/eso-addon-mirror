@@ -270,6 +270,7 @@ end
 
 --------------------------------------------------------------------------------
 -- Special Zones (e.g., Night Market)
+-- This is for auto-logging without the status bar
 --------------------------------------------------------------------------------
 
 function RCR.HandleSpecialZones( zoneId )
@@ -281,6 +282,9 @@ function RCR.HandleSpecialZones( zoneId )
 			A = RCR.MODE_TRIAL,
 		}
 		RCR.SwitchMode(modes[RCR.GetZoneClassification(zoneId)] or RCR.MODE_INACTIVE)
+	elseif (RCR.ZONES.S[zoneId]) then
+		RCR.specialZone = true
+		RCR.SwitchMode(RCR.MODE_DUNGEON)
 	else
 		RCR.specialZone = false
 	end

@@ -5,16 +5,34 @@ local defaultSettings = {
     hideCompass = true,
     hideQuests  = true,
     hideAlerts  = true,
+    hideCSA     = false,
+    hideWholeInstance = false,
+    dungeonPresets = {},
+}
+
+local DEFAULT_PRESET = "General"
+
+local defaultFilterSettings = {
     dungeonFilterEnabled = false,
     dungeonNeeded = {},
+    dungeonPresets = nil,
+    dungeonPresetCurrent = DEFAULT_PRESET,
     dungeonSnapshot = nil,
     dungeonProfileApplied = false,
     dungeonReloadPending = false,
 }
 
+local pendingPresetName = nil
+
 local isApplying = false
 local scenesHooked = false
+local lootHistoryHooked = false
+local xpBarHooked = false
+local suppressLootFeed = false
+local suppressXpBar = false
+local InPveInstance
 local APPLY_RETRY_MS = 150
+local FRAGMENT_REASON = "TetsuCFB"
 local FILTER_DELAY_MS = 4000
 local RELOAD_DELAY_MS = 1500
 local QUEUE_STEP_MS = 50
@@ -28,6 +46,32 @@ local PROTECTED = {
 local function L(key, fallback)
     local loc = CombatFPSBooster.L or {}
     return loc[key] or fallback
+end
+
+local function FilterVars()
+    return CombatFPSBooster.charVars or CombatFPSBooster.savedVars
+end
+
+local function AccountVars()
+    return CombatFPSBooster.savedVars or CombatFPSBooster.charVars
+end
+
+local function PresetTable()
+    local acc = AccountVars()
+    if acc then
+        if type(acc.dungeonPresets) ~= "table" then
+            acc.dungeonPresets = {}
+        end
+        return acc.dungeonPresets
+    end
+    local ch = FilterVars()
+    if ch then
+        if type(ch.dungeonPresets) ~= "table" then
+            ch.dungeonPresets = {}
+        end
+        return ch.dungeonPresets
+    end
+    return {}
 end
 
 local function SafeSetState(control, hide)
@@ -61,10 +105,184 @@ local function SetQuestTrackerHidden(hide)
     end
 end
 
-local function SetAlertsHidden(hide)
+local function SetFragmentHidden(fragment, hide)
+    if fragment and fragment.SetHiddenForReason then
+        pcall(function()
+            fragment:SetHiddenForReason(FRAGMENT_REASON, hide and true or false)
+        end)
+    end
+end
+
+local function EachLootHistory(fn)
+    if LOOT_HISTORY_GAMEPAD then
+        fn(LOOT_HISTORY_GAMEPAD)
+    end
+    if LOOT_HISTORY_KEYBOARD then
+        fn(LOOT_HISTORY_KEYBOARD)
+    end
+end
+
+local function ClearLootQueue(hist)
+    if not hist then return end
+    local queue = hist.lootQueue
+    if type(queue) == "table" then
+        for i = #queue, 1, -1 do
+            queue[i] = nil
+        end
+    end
+end
+
+local function HookLootHistoryObject(hist)
+    if not hist or hist._tetsuCfbHook then
+        return
+    end
+    hist._tetsuCfbHook = true
+
+    local origInsert = hist.InsertOrQueue
+    if type(origInsert) == "function" then
+        hist.InsertOrQueue = function(self, lootEntry)
+            if suppressLootFeed then
+                return
+            end
+            return origInsert(self, lootEntry)
+        end
+    end
+
+    local origAdd = hist.AddLootEntry
+    if type(origAdd) == "function" then
+        hist.AddLootEntry = function(self, lootEntry)
+            if suppressLootFeed then
+                return
+            end
+            return origAdd(self, lootEntry)
+        end
+    end
+
+    local origQueue = hist.QueueLootEntry
+    if type(origQueue) == "function" then
+        hist.QueueLootEntry = function(self, lootEntry)
+            if suppressLootFeed then
+                return
+            end
+            return origQueue(self, lootEntry)
+        end
+    end
+
+    local origCanShow = hist.CanShowItemsInHistory
+    if type(origCanShow) == "function" then
+        hist.CanShowItemsInHistory = function(self)
+            if suppressLootFeed then
+                return false
+            end
+            return origCanShow(self)
+        end
+    end
+end
+
+local function HookLootHistory()
+    EachLootHistory(HookLootHistoryObject)
+    lootHistoryHooked = LOOT_HISTORY_GAMEPAD ~= nil or LOOT_HISTORY_KEYBOARD ~= nil
+end
+
+local function SetLootFeedHidden(hide)
+    HookLootHistory()
+    suppressLootFeed = hide and true or false
+
+    -- Реальные контролы ленты. ZO_LootHistory_Gamepad — класс, не контрол.
+    SafeSetState(ZO_LootHistoryControl_Gamepad, hide)
+    SafeSetState(ZO_LootHistoryControl_Keyboard, hide)
+    SafeSetState(ZO_LootHistoryControl, hide)
+    SafeSetState(ZO_LootHistory, hide)
+
+    SetFragmentHidden(GAMEPAD_LOOT_HISTORY_FRAGMENT, hide)
+    SetFragmentHidden(LOOT_HISTORY_FRAGMENT, hide)
+
+    EachLootHistory(function(hist)
+        if hide then
+            if hist.HideLootQueue then
+                pcall(function() hist:HideLootQueue() end)
+            else
+                hist.hidden = true
+            end
+            ClearLootQueue(hist)
+            if hist.lootStream and hist.lootStream.Pause then
+                pcall(function() hist.lootStream:Pause() end)
+            end
+            if hist.lootStreamPersistent and hist.lootStreamPersistent.Pause then
+                pcall(function() hist.lootStreamPersistent:Pause() end)
+            end
+            if hist.control then
+                SafeSetState(hist.control, true)
+            end
+        else
+            ClearLootQueue(hist)
+            if hist.DisplayLootQueue then
+                pcall(function() hist:DisplayLootQueue() end)
+            else
+                hist.hidden = false
+                if hist.lootStream and hist.lootStream.Resume then
+                    pcall(function() hist.lootStream:Resume() end)
+                end
+                if hist.lootStreamPersistent and hist.lootStreamPersistent.Resume then
+                    pcall(function() hist.lootStreamPersistent:Resume() end)
+                end
+            end
+            if hist.control then
+                SafeSetState(hist.control, false)
+            end
+        end
+    end)
+end
+
+local function SetProgressBarHidden(hide)
+    suppressXpBar = hide and true or false
+    SetFragmentHidden(PLAYER_PROGRESS_BAR_FRAGMENT, hide)
+    SetFragmentHidden(PLAYER_PROGRESS_BAR_CURRENT_FRAGMENT, hide)
+    -- Только прячем сам бар. Не трогаем имя/локацию и не делаем SetHidden(false):
+    -- иначе после меню куски персонажного экрана остаются в HUD.
+    if hide and PLAYER_PROGRESS_BAR and PLAYER_PROGRESS_BAR.control then
+        SafeSetState(PLAYER_PROGRESS_BAR.control, true)
+    end
+end
+
+local function HookXpBar()
+    if xpBarHooked then
+        return
+    end
+    if not PLAYER_PROGRESS_BAR or not PLAYER_PROGRESS_BAR.RegisterCallback then
+        return
+    end
+    xpBarHooked = true
+    pcall(function()
+        PLAYER_PROGRESS_BAR:RegisterCallback("Show", function()
+            if suppressXpBar then
+                SetProgressBarHidden(true)
+            end
+        end)
+    end)
+end
+
+local function SetLootAlertsHidden(hide)
     if ZO_AlertTextNotification then
         SafeSetState(ZO_AlertTextNotification, hide)
     end
+    if ZO_AlertTextNotificationGamepad then
+        SafeSetState(ZO_AlertTextNotificationGamepad, hide)
+    end
+    if ALERT_MESSAGES_GAMEPAD and ALERT_MESSAGES_GAMEPAD.control then
+        SafeSetState(ALERT_MESSAGES_GAMEPAD.control, hide)
+    end
+    if ALERT_MESSAGES and ALERT_MESSAGES.control then
+        SafeSetState(ALERT_MESSAGES.control, hide)
+    end
+
+    SetLootFeedHidden(hide)
+    SetProgressBarHidden(hide)
+    HookXpBar()
+end
+
+
+local function SetDungeonAnnounceHidden(hide)
     if ZO_CenterScreenAnnounce then
         SafeSetState(ZO_CenterScreenAnnounce, hide)
     end
@@ -82,22 +300,32 @@ local function ApplyCombatVisualState(inCombat)
             inCombat = IsUnitInCombat("player")
         end
 
+        local instanceHide = vars.hideWholeInstance and InPveInstance and InPveInstance()
+        local hideHud = inCombat or instanceHide
+
         if vars.hideCompass then
-            SetCompassHidden(inCombat)
+            SetCompassHidden(hideHud)
         else
             SetCompassHidden(false)
         end
 
         if vars.hideQuests then
-            SetQuestTrackerHidden(inCombat)
+            SetQuestTrackerHidden(hideHud)
         else
             SetQuestTrackerHidden(false)
         end
 
+        -- XP, золото и лут — только в бою, как игровые анонсы. «Весь данж» их не трогает.
         if vars.hideAlerts then
-            SetAlertsHidden(inCombat)
+            SetLootAlertsHidden(inCombat)
         else
-            SetAlertsHidden(false)
+            SetLootAlertsHidden(false)
+        end
+
+        if vars.hideCSA then
+            SetDungeonAnnounceHidden(inCombat)
+        else
+            SetDungeonAnnounceHidden(false)
         end
 
         if not inCombat and collectgarbage then
@@ -305,7 +533,7 @@ end
 
 local lastZoneDisplayType = nil
 
-local function InPveInstance()
+InPveInstance = function()
     if GetCurrentHouseId then
         local ok, houseId = pcall(GetCurrentHouseId)
         if ok and houseId and houseId > 0 then
@@ -378,9 +606,8 @@ local function CountNeeded(vars, managed)
 end
 
 local function ScheduleReload(kind)
-    local vars = CombatFPSBooster.savedVars
+    local vars = FilterVars()
     if vars then
-        -- pending только после релога ЗА данжный набор. Релог выхода его не ставит.
         vars.dungeonReloadPending = (kind == "dungeon")
     end
     EVENT_MANAGER:UnregisterForUpdate(ADDON_NAME .. "_DungeonReload")
@@ -404,7 +631,7 @@ local function RunJobQueueTick()
     end
     if #pendingJobs == 0 then
         EVENT_MANAGER:UnregisterForUpdate(ADDON_NAME .. "_DungeonQueue")
-        local vars = CombatFPSBooster.savedVars
+        local vars = FilterVars()
         if vars and vars._filterNeedReload then
             local kind = vars._filterNeedReload
             vars._filterNeedReload = nil
@@ -436,7 +663,7 @@ local function DungeonLayoutMatches(needed, managed)
 end
 
 local function ApplyDungeonProfile()
-    local vars = CombatFPSBooster.savedVars
+    local vars = FilterVars()
     if not vars or not vars.dungeonFilterEnabled then
         return
     end
@@ -486,7 +713,7 @@ local function ApplyDungeonProfile()
 end
 
 local function RestoreWorldProfile()
-    local vars = CombatFPSBooster.savedVars
+    local vars = FilterVars()
     if not vars then return end
     local snapshot = vars.dungeonSnapshot
     if type(snapshot) ~= "table" then
@@ -520,7 +747,7 @@ local function RestoreWorldProfile()
 end
 
 local function EvaluateDungeonFilter()
-    local vars = CombatFPSBooster.savedVars
+    local vars = FilterVars()
     if not vars then return end
     if filterBusy then return end
     if IsUnitInCombat and IsUnitInCombat("player") then
@@ -555,10 +782,168 @@ local function RequestDungeonFilterCheck(delayMs)
     end)
 end
 
+local function OnExperienceUpdate(_, unitTag)
+    if unitTag and unitTag ~= "player" then
+        return
+    end
+    if suppressXpBar then
+        SetProgressBarHidden(true)
+    end
+end
+
 local function OnPlayerActivated(eventCode)
+    HookLootHistory()
+    HookXpBar()
     RequestApplyWithRetry(500)
     RequestDungeonFilterCheck(FILTER_DELAY_MS)
 end
+
+
+local function CopyBoolMap(src)
+    local out = {}
+    if type(src) ~= "table" then return out end
+    for k, v in pairs(src) do
+        if type(k) == "string" then
+            out[k] = v and true or false
+        end
+    end
+    return out
+end
+
+local function SanitizePresetName(name)
+    if type(name) ~= "string" then return DEFAULT_PRESET end
+    name = name:gsub("^%s+", ""):gsub("%s+$", "")
+    if name == "" then return DEFAULT_PRESET end
+    if #name > 24 then
+        name = name:sub(1, 24)
+    end
+    return name
+end
+
+local function EnsureVarsShape(vars)
+    vars = vars or FilterVars()
+    if not vars then return end
+    if type(vars.dungeonNeeded) ~= "table" then
+        vars.dungeonNeeded = {}
+    end
+    if vars.dungeonFilterEnabled == nil then
+        vars.dungeonFilterEnabled = false
+    end
+
+    local acc = AccountVars()
+    local presets = PresetTable()
+    -- Старые пресеты персонажа один раз переезжают на аккаунт.
+    if acc and vars ~= acc and type(vars.dungeonPresets) == "table" and next(vars.dungeonPresets) then
+        for name, map in pairs(vars.dungeonPresets) do
+            if presets[name] == nil then
+                presets[name] = CopyBoolMap(map)
+            end
+        end
+        vars.dungeonPresets = nil
+    end
+    if not next(presets) then
+        presets[DEFAULT_PRESET] = CopyBoolMap(vars.dungeonNeeded)
+    end
+    if type(vars.dungeonPresetCurrent) ~= "string" or presets[vars.dungeonPresetCurrent] == nil then
+        if presets[DEFAULT_PRESET] ~= nil then
+            vars.dungeonPresetCurrent = DEFAULT_PRESET
+        else
+            vars.dungeonPresetCurrent = next(presets) or DEFAULT_PRESET
+        end
+    end
+    if not next(vars.dungeonNeeded) and presets[vars.dungeonPresetCurrent] then
+        vars.dungeonNeeded = CopyBoolMap(presets[vars.dungeonPresetCurrent])
+    end
+    if type(vars.dungeonPresetDraft) ~= "string" or vars.dungeonPresetDraft == "" then
+        vars.dungeonPresetDraft = vars.dungeonPresetCurrent
+    end
+end
+
+local function PresetNameList()
+    EnsureVarsShape()
+    local names = {}
+    for name in pairs(PresetTable()) do
+        names[#names + 1] = name
+    end
+    table.sort(names, function(a, b)
+        if a == DEFAULT_PRESET then return true end
+        if b == DEFAULT_PRESET then return false end
+        return a < b
+    end)
+    return names
+end
+
+local function LoadPreset(name)
+    local vars = FilterVars()
+    EnsureVarsShape(vars)
+    local presets = PresetTable()
+    name = SanitizePresetName(name)
+    if presets[name] == nil then
+        name = vars.dungeonPresetCurrent or DEFAULT_PRESET
+    end
+    vars.dungeonPresetCurrent = name
+    vars.dungeonNeeded = CopyBoolMap(presets[name])
+    vars.dungeonPresetDraft = name
+    pendingPresetName = name
+end
+
+local function SaveCurrentPreset(name)
+    local vars = FilterVars()
+    EnsureVarsShape(vars)
+    local presets = PresetTable()
+    name = SanitizePresetName(name or pendingPresetName or vars.dungeonPresetCurrent)
+    local saved = CopyBoolMap(presets[name])
+    for addonName, state in pairs(vars.dungeonNeeded or {}) do
+        saved[addonName] = state and true or false
+    end
+    for _, entry in ipairs(ListManagedAddons()) do
+        saved[entry.name] = vars.dungeonNeeded[entry.name] == true
+    end
+    presets[name] = saved
+    vars.dungeonPresetCurrent = name
+    vars.dungeonNeeded = CopyBoolMap(saved)
+    vars.dungeonPresetDraft = name
+    pendingPresetName = name
+    ChatMsg(L("PRESET_SAVED", "Combat FPS Booster: preset saved: ") .. name)
+end
+
+local function DeleteCurrentPreset()
+    local vars = FilterVars()
+    if not vars then return end
+    EnsureVarsShape(vars)
+    local presets = PresetTable()
+    local count = 0
+    for _ in pairs(presets) do
+        count = count + 1
+    end
+    if count <= 1 then
+        ChatMsg(L("PRESET_LAST", "Combat FPS Booster: the last preset cannot be deleted."))
+        return
+    end
+    local current = vars.dungeonPresetCurrent
+    if type(current) ~= "string" or presets[current] == nil then
+        ChatMsg(L("PRESET_LAST", "Combat FPS Booster: the last preset cannot be deleted."))
+        return
+    end
+    presets[current] = nil
+    local nextName = nil
+    if presets[DEFAULT_PRESET] ~= nil then
+        nextName = DEFAULT_PRESET
+    else
+        nextName = next(presets)
+    end
+    if not nextName then
+        presets[DEFAULT_PRESET] = CopyBoolMap(vars.dungeonNeeded)
+        nextName = DEFAULT_PRESET
+    end
+    vars.dungeonPresetCurrent = nextName
+    vars.dungeonPresetDraft = nextName
+    vars.dungeonNeeded = CopyBoolMap(presets[nextName])
+    pendingPresetName = nextName
+    ChatMsg(L("PRESET_DELETED", "Combat FPS Booster: preset deleted: ") .. current)
+    ChatMsg(L("PRESET_NOW", "Combat FPS Booster: active preset: ") .. nextName)
+end
+
 
 local function RegisterSettingsMenu()
     local LibHarven = LibHarvensAddonSettings
@@ -575,8 +960,20 @@ local function RegisterSettingsMenu()
     end
     if not settings then return end
 
-    settings.version = "1.3.54"
+    settings.version = "1.4.14"
     settings.author = "Tetsurion"
+
+    settings:AddSetting({
+        type = LibHarvensAddonSettings.ST_CHECKBOX,
+        label = L("HIDE_INSTANCE", "Hide HUD for the whole dungeon"),
+        tooltip = L("HIDE_INSTANCE_TT", "When ON, compass and quest tracker stay hidden for the entire group dungeon, trial, arena or Infinite Archive — if those options are also on. XP, gold, loot and dungeon announcements still hide in combat only. Delves and public dungeons are ignored."),
+        default = false,
+        getFunction = function() return CombatFPSBooster.savedVars.hideWholeInstance == true end,
+        setFunction = function(val)
+            CombatFPSBooster.savedVars.hideWholeInstance = val and true or false
+            ApplyCombatVisualState(IsUnitInCombat("player"))
+        end,
+    })
 
     settings:AddSetting({
         type = LibHarvensAddonSettings.ST_CHECKBOX,
@@ -604,8 +1001,8 @@ local function RegisterSettingsMenu()
 
     settings:AddSetting({
         type = LibHarvensAddonSettings.ST_CHECKBOX,
-        label = L("HIDE_ALERTS", "Hide XP/Gold alerts in combat"),
-        tooltip = L("HIDE_ALERTS_TT", "Hides alerts during combat."),
+        label = L("HIDE_ALERTS", "Hide XP/loot alerts"),
+        tooltip = L("HIDE_ALERTS_TT", "Hides XP, gold and loot during combat only: console loot feed, gold/XP ticks, and the left XP bar. Whole-dungeon mode does not keep them hidden between fights."),
         default = true,
         getFunction = function() return CombatFPSBooster.savedVars.hideAlerts end,
         setFunction = function(val)
@@ -616,15 +1013,56 @@ local function RegisterSettingsMenu()
 
     settings:AddSetting({
         type = LibHarvensAddonSettings.ST_CHECKBOX,
+        label = L("HIDE_CSA", "Hide dungeon announcements in combat"),
+        tooltip = L("HIDE_CSA_TT", "Hides large center-screen game announcements during combat only. Never for the whole dungeon."),
+        default = false,
+        getFunction = function() return CombatFPSBooster.savedVars.hideCSA == true end,
+        setFunction = function(val)
+            CombatFPSBooster.savedVars.hideCSA = val and true or false
+            ApplyCombatVisualState(IsUnitInCombat("player"))
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarvensAddonSettings.ST_CHECKBOX,
         label = L("FILTER_MASTER", "Use dungeon-only addon set"),
         tooltip = L("FILTER_MASTER_TT", "When ON: entering a dungeon/trial snapshots your current addons, enables only those marked below, then reloads UI. Leaving restores the snapshot and reloads again. Libraries and this booster are never touched. If nothing is marked as needed, nothing is changed and a chat warning is shown."),
         default = false,
         getFunction = function()
-            return CombatFPSBooster.savedVars.dungeonFilterEnabled == true
+            return FilterVars().dungeonFilterEnabled == true
         end,
         setFunction = function(val)
-            CombatFPSBooster.savedVars.dungeonFilterEnabled = val and true or false
+            FilterVars().dungeonFilterEnabled = val and true or false
         end,
+    })
+
+    settings:AddSetting({
+        type = LibHarvensAddonSettings.ST_DROPDOWN,
+        label = L("PRESET_SELECT", "Preset"),
+        tooltip = L("PRESET_SELECT_TT", "Switch between saved dungeon addon sets for this character."),
+        items = function()
+            local items = {}
+            for _, name in ipairs(PresetNameList()) do
+                items[#items + 1] = { name = name, data = name }
+            end
+            if #items == 0 then
+                items[1] = { name = DEFAULT_PRESET, data = DEFAULT_PRESET }
+            end
+            return items
+        end,
+        getFunction = function()
+            local vars = FilterVars()
+            EnsureVarsShape(vars)
+            return vars.dungeonPresetCurrent or DEFAULT_PRESET
+        end,
+        setFunction = function(_, itemName, itemData)
+            local name = itemData or itemName
+            if type(name) == "table" then
+                name = name.data or name.name
+            end
+            LoadPreset(name)
+        end,
+        default = DEFAULT_PRESET,
     })
 
     settings:AddSetting({
@@ -632,6 +1070,72 @@ local function RegisterSettingsMenu()
         label = L("FILTER_SECTION", "Dungeon addons"),
         tooltip = L("FILTER_SECTION_TT", "Choose which installed addons stay enabled inside a dungeon or trial."),
     })
+
+    if LibHarvensAddonSettings.ST_EDIT then
+        settings:AddSetting({
+            type = LibHarvensAddonSettings.ST_EDIT,
+            label = L("PRESET_NAME", "Preset name"),
+            tooltip = L("PRESET_NAME_TT", "Name of the preset to save. Same name overwrites that preset."),
+            getFunction = function()
+                local vars = FilterVars()
+                EnsureVarsShape(vars)
+                return vars.dungeonPresetDraft or vars.dungeonPresetCurrent or DEFAULT_PRESET
+            end,
+            setFunction = function(a, b)
+                local val = a
+                if type(val) ~= "string" then
+                    val = b
+                end
+                if type(val) ~= "string" then
+                    return
+                end
+                val = val:gsub("^%s+", ""):gsub("%s+$", "")
+                if val == "" then
+                    return
+                end
+                if #val > 24 then
+                    val = val:sub(1, 24)
+                end
+                local vars = FilterVars()
+                EnsureVarsShape(vars)
+                vars.dungeonPresetDraft = val
+                pendingPresetName = val
+            end,
+            default = DEFAULT_PRESET,
+        })
+    end
+
+    if LibHarvensAddonSettings.ST_BUTTON then
+        settings:AddSetting({
+            type = LibHarvensAddonSettings.ST_BUTTON,
+            label = L("PRESET_SAVE", "Save preset"),
+            buttonText = L("PRESET_SAVE_BTN", "Save"),
+            tooltip = L("PRESET_SAVE_TT", "Save current on/off flags into this preset name. Missing addons stay remembered."),
+            clickHandler = function()
+                local vars = FilterVars()
+                SaveCurrentPreset((vars and vars.dungeonPresetDraft) or pendingPresetName)
+            end,
+        })
+        settings:AddSetting({
+            type = LibHarvensAddonSettings.ST_BUTTON,
+            label = L("PRESET_DELETE", "Delete preset"),
+            buttonText = L("PRESET_DELETE_BTN", "Delete"),
+            tooltip = L("PRESET_DELETE_TT", "Delete the selected preset. The last remaining preset cannot be deleted."),
+            disable = function()
+                return #PresetNameList() <= 1
+            end,
+            clickHandler = function()
+                DeleteCurrentPreset()
+            end,
+        })
+    end
+
+    if LibHarvensAddonSettings.ST_LABEL then
+        settings:AddSetting({
+            type = LibHarvensAddonSettings.ST_LABEL,
+            label = L("PRESET_DIVIDER", "──────── addons ────────"),
+        })
+    end
 
     local managed = ListManagedAddons()
     for i = 1, #managed do
@@ -643,16 +1147,16 @@ local function RegisterSettingsMenu()
             tooltip = L("FILTER_ITEM_TT", "ON = keep/enable this addon in dungeons. OFF = disable it in dungeons. Locked until the option above is enabled."),
             default = false,
             disable = function()
-                local vars = CombatFPSBooster.savedVars
+                local vars = FilterVars()
                 return not vars or vars.dungeonFilterEnabled ~= true
             end,
             getFunction = function()
-                local vars = CombatFPSBooster.savedVars
+                local vars = FilterVars()
                 if not vars.dungeonNeeded then vars.dungeonNeeded = {} end
                 return vars.dungeonNeeded[name] == true
             end,
             setFunction = function(val)
-                local vars = CombatFPSBooster.savedVars
+                local vars = FilterVars()
                 if not vars or vars.dungeonFilterEnabled ~= true then
                     return
                 end
@@ -663,14 +1167,6 @@ local function RegisterSettingsMenu()
     end
 end
 
-local function EnsureVarsShape(vars)
-    if type(vars.dungeonNeeded) ~= "table" then
-        vars.dungeonNeeded = {}
-    end
-    if vars.dungeonFilterEnabled == nil then
-        vars.dungeonFilterEnabled = false
-    end
-end
 
 local function OnAddOnLoaded(eventCode, addonName)
     if addonName ~= ADDON_NAME then return end
@@ -681,16 +1177,57 @@ local function OnAddOnLoaded(eventCode, addonName)
         nil,
         defaultSettings
     )
-    EnsureVarsShape(CombatFPSBooster.savedVars)
+    local okChar, charVars = pcall(function()
+        return ZO_SavedVars:NewCharacterIdSettings(
+            "CombatFPSBoosterCharVars",
+            1,
+            nil,
+            defaultFilterSettings
+        )
+    end)
+    if not okChar or not charVars then
+        charVars = ZO_SavedVars:New(
+            "CombatFPSBoosterCharVars",
+            1,
+            nil,
+            defaultFilterSettings
+        )
+    end
+    CombatFPSBooster.charVars = charVars
+    EnsureVarsShape(CombatFPSBooster.charVars)
+    -- Один раз перенести старый аккаунтный фильтр на этого перса, если у перса ещё пусто.
+    local acc = CombatFPSBooster.savedVars
+    local ch = CombatFPSBooster.charVars
+    if ch and acc and not ch.dungeonMigrated then
+        local accNeeded = acc.dungeonNeeded
+        local chNeeded = ch.dungeonNeeded
+        local charEmpty = type(chNeeded) ~= "table" or not next(chNeeded)
+        if charEmpty and type(accNeeded) == "table" and next(accNeeded) then
+            ch.dungeonNeeded = {}
+            for k, v in pairs(accNeeded) do
+                ch.dungeonNeeded[k] = v
+            end
+            ch.dungeonFilterEnabled = acc.dungeonFilterEnabled and true or false
+        end
+        ch.dungeonMigrated = true
+    end
 
     RegisterSettingsMenu()
     HookHudScenes()
+    HookLootHistory()
+    HookXpBar()
 
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_PLAYER_COMBAT_STATE, OnPlayerCombatState)
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_PLAYER_ACTIVATED, OnPlayerActivated)
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_PLAYER_ALIVE, OnPlayerAlive)
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_RESPAWN_RESULT, OnRespawnResult)
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_PLAYER_DEAD, OnPlayerDead)
+    if EVENT_EXPERIENCE_UPDATE then
+        EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_EXPERIENCE_UPDATE, OnExperienceUpdate)
+        pcall(function()
+            EVENT_MANAGER:AddFilterForEvent(ADDON_NAME, EVENT_EXPERIENCE_UPDATE, REGISTER_FILTER_UNIT_TAG, "player")
+        end)
+    end
     if EVENT_PREPARE_FOR_JUMP then
         EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_PREPARE_FOR_JUMP, OnPrepareForJump)
     end

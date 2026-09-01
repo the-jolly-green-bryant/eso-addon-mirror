@@ -2,6 +2,7 @@
 --todo
 --add map pins for doors at keeps in cyrodiil
 --maybe add shalks and other armour debuffs
+--shattered rocks, arcanist stun and maybe others
 
 appName = "CyroAlerts"
 
@@ -12,9 +13,11 @@ appStart.vampStage = 0
 appStart.loaded = false
 appStart.currentZone = 0
 appStart.corrosiveID = 17879
+appStart.onslaughtID = 83229
 appStart.wellPinsIcon = "CyroAlerts/pins.dds"
 appStart.wellPinsName = "CyroWellPins"
 appStart.LMP = LibMapPins
+appStart.isMenuOpen = false
 
 appStart.defaults = {
     alertsEnabled = true,
@@ -23,10 +26,13 @@ appStart.defaults = {
     showVampStage = true,
     trackVampireStage = true,
     trackCorrosive = true,
+    trackOnslaught = true,
     yAxisText = 0,
     xAxisText = 1380,
     yAxisTextCorro = 210,
     xAxisTextCorro = 640,
+    yAxisTextOnslaught = 270,
+    xAxisTextOnslaught = 640,
     showWellMapPins = false
 }
 
@@ -52,8 +58,10 @@ function appStart.OnAddOnLoaded(event, name)
     combatStateText:SetMovable(true)
     vampText:SetMovable(true)
     corrosiveText:SetMovable(true)
+    onslaughtText:SetMovable(true)
     functions.setAnchor(appStart.savedVariables.xAxisText, appStart.savedVariables.yAxisText)
     functions.setAnchorCorro(appStart.savedVariables.xAxisTextCorro, appStart.savedVariables.yAxisTextCorro)
+    functions.setAnchorOnslaught(appStart.savedVariables.xAxisTextOnslaught, appStart.savedVariables.yAxisTextOnslaught)
 
     --setup alerts active text
     cyroTextLabel:SetFont("$(GAMEPAD_MEDIUM_FONT)|$(GP_36)|soft-shadow-thick")
@@ -100,6 +108,19 @@ function appStart.OnAddOnLoaded(event, name)
     if appStart.savedVariables.trackCorrosive then
         EVENT_MANAGER:RegisterForEvent(appName, EVENT_COMBAT_EVENT, functions.combatAlert)
         EVENT_MANAGER:AddFilterForEvent(appName, EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, appStart.corrosiveID)
+    end
+
+    --setup onslaught alert text
+    onslaughtTextLabel:SetFont("$(GAMEPAD_MEDIUM_FONT)|$(GP_61)|soft-shadow-thick")
+    onslaughtTextLabel:SetHidden(true)
+    local preTextOn = "|cFF0000Alert |r "
+    local iconTextOn = zo_iconTextFormat("esoui/art/icons/ability_onslaught.dds", 60, 60, " ")
+    onslaughtTextLabel:SetText(iconTextOn .. preTextOn .. "Onslaught User Near")
+
+    --register for combat event alerts, for onslaught
+    if appStart.savedVariables.trackOnslaught then
+        EVENT_MANAGER:RegisterForEvent("onslaughtAlert", EVENT_COMBAT_EVENT, functions.combatAlertOn)
+        EVENT_MANAGER:AddFilterForEvent("onslaughtAlert", EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, appStart.onslaughtID)
     end
 
     --register for zone change notifications, leaving this always active

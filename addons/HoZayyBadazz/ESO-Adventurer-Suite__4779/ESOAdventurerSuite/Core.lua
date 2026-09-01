@@ -10,7 +10,7 @@ local EPC = ESOProgressionCoach
 EPC.name = "ESOAdventurerSuite"
 EPC.legacyName = "ESOProgressionCoach"
 EPC.displayName = "ESO Adventurer Suite"
-EPC.version = "0.28.74"
+EPC.version = "0.29.125"
 EPC.author = "HoZayyBadazz"
 EPC.savedVersion = 1
 EPC.interactionMode = false
@@ -22,13 +22,31 @@ EPC.unitFramesMoveOwned = false
 EPC.miniMapMoveMode = false
 EPC.miniMapMoveOwned = false
 
+
+-- v0.29.113: The distributed archive always contains one canonical
+-- ESOAdventurerSuite folder.  Use that known-good addon-relative texture root
+-- directly so UI DDS art does not disappear because a runtime source-path probe
+-- returned a temporary or nested extraction name.
+EPC.assetRoot = "ESOAdventurerSuite"
+EPC.assetArtRoot029125 = "Art029125"
+function EPC:AssetPath(relativePath)
+    local relative = tostring(relativePath or ""):gsub("^/+", "")
+    -- v0.29.125: use a versioned on-disk art folder. ESO can retain stale
+    -- addon DDS entries in shader_cache.cooked after an in-place update; a
+    -- new resource path forces the current packaged texture to be resolved.
+    if string.sub(relative, 1, 4) == "Art/" then
+        relative = (self.assetArtRoot029125 or "Art029125") .. "/" .. string.sub(relative, 5)
+    end
+    return "ESOAdventurerSuite/" .. relative
+end
+
 if type(ZO_CreateStringId) == "function" then
     ZO_CreateStringId("SI_BINDING_NAME_ESO_PROGRESSION_COACH_CATEGORY", EPC.displayName)
     ZO_CreateStringId("SI_BINDING_NAME_ESO_PROGRESSION_COACH_TOGGLE", "Open / Close Tamriel Codex")
-    ZO_CreateStringId("SI_BINDING_NAME_ESO_PROGRESSION_COACH_INTERACT", "Interact with Suite")
     ZO_CreateStringId("SI_BINDING_NAME_ESO_ADVENTURER_SUITE_JOURNAL", "Open / Close Tamriel Codex")
-    ZO_CreateStringId("SI_BINDING_NAME_ESO_ADVENTURER_SUITE_GF_NEXT_CATEGORY", "Group Finder: Next Category")
-    ZO_CreateStringId("SI_BINDING_NAME_ESO_ADVENTURER_SUITE_GF_TOGGLE_DIFFICULTY", "Group Finder: Toggle Normal / Veteran")
+    ZO_CreateStringId("SI_BINDING_NAME_ESO_ADVENTURER_SUITE_GAME_MODE_REPORT", "Open / Close Game Mode Combat Report")
+    ZO_CreateStringId("SI_BINDING_NAME_ESO_ADVENTURER_SUITE_ANTIQUITIES_CATEGORY", "ESO Adventurer Suite - Antiquities")
+    ZO_CreateStringId("SI_BINDING_NAME_ESO_ADVENTURER_SUITE_ANTIQUITY_LEAD_FINDER", "Open / Close Antiquity Lead Finder")
 end
 
 EPC.defaults = {
@@ -48,6 +66,18 @@ EPC.defaults = {
     travelMode = "SHRINES",
     travelPage = 1,
     travelBookPage = 1,
+    -- Automatically show the integrated travel browser with ESO's World Map.
+    mapTeleporterEnabled = true,
+    mapTeleporterIncludeHouses = true,
+    mapTeleporterShowAllZones = true,
+    mapTeleporterShowBlacklisted = false,
+    mapTeleporterSortMode = "SMART",
+    mapTeleporterVisibleRows = 15,
+    mapTeleporterFavorites = {},
+    mapTeleporterBlacklistPlayers = {},
+    mapTeleporterBlacklistZones = {},
+    mapTeleporterPortCount = {},
+    mapTeleporterLastUsed = {},
     activityGoal = "BALANCED",
     activityHistory = {},
     goldSpendingByCharacter = {},
@@ -70,6 +100,24 @@ EPC.defaults = {
     combatHudScale = 1.0,
     combatHudAlpha = 0.94,
     combatHudLocked = true,
+
+    -- Lightweight Suite replacement for ESO's built-in FPS/latency meter.
+    showPerformanceOverlay = true,
+    suppressNativePerformanceMeters = true,
+    performanceOverlayLeft = -1,
+    performanceOverlayTop = -1,
+    performanceOverlayScale = 1.0,
+
+    gameModeReportEnabled = true,
+    gameModeReportAlpha = 0.96,
+    gameModeReportLeft = -1,
+    gameModeReportTop = -1,
+    gameModeReportWidth = 1120,
+    gameModeReportHeight = 760,
+    gameModeReports = {},
+    -- Position of the temporary Save/Reset strip shown only in HUD Layout Mode.
+    hudLayoutBarLeft = -1,
+    hudLayoutBarTop = -1,
     combatRoleMode = "AUTO",
     rotationAssistantEnabled = true,
     rotationAssistantLeft = -1,
@@ -188,6 +236,34 @@ EPC.defaults = {
     resourcePinsFarmFishing = false,
     resourcePinsFarmSpecial = false,
     resourcePinsFarmOther = false,
+
+    -- Antiquities: shovel navigation pins, an in-game Augur direction helper,
+    -- and skill-line recommendations that account for rank and point costs.
+    antiquityAssistantEnabled = true,
+    antiquityShowWorldMap = true,
+    antiquityShowMiniMap = true,
+    antiquityShow3D = true,
+    antiquityLearnExactDigSpots = true,
+    antiquityKnownSpawnAssist = true,
+    antiquityLearnedDigSpots = {},
+    antiquity3DThroughWalls = true,
+    antiquity3DRange = 1200,
+    antiquity3DScale = 1.0,
+    antiquityExcavationGuide = true,
+    antiquityBonusLootGuide = true,
+    -- Lead Finder: live ESO lead state combined with integrated source/location descriptions.
+    antiquityLeadFinderEnabled = true,
+    antiquityLeadFinderFilter = "CAN_FIND",
+    antiquityLeadFinderCurrentZone = false,
+    antiquityLeadFinderLeft = -1,
+    antiquityLeadFinderTop = -1,
+    antiquityLeadFinderWidth = 1180,
+    antiquityLeadFinderHeight = 760,
+    -- Movable Excavation UI positions. -1 keeps the built-in default anchor.
+    antiquityGuideLeft = -1,
+    antiquityGuideTop = -1,
+    antiquityTilePickerLeft = -1,
+    antiquityTilePickerTop = -1,
     resourcePinsIconMode = "SUITE_GLOW",
     resourcePinsIconOre = "AUTO",
     resourcePinsIconWood = "AUTO",
@@ -219,6 +295,7 @@ EPC.defaults = {
     groupFrameScale = 1.0,
     combatStatsScale = 1.0,
     unitFrameAlpha = 0.94,
+    unitFrameVisualStyle = "ESO_CLASSIC",
     unitFrameBackgrounds = false,
     unitFrameSoftBackground = true,
     unitFrameBackgroundAlpha = 0.72,
@@ -230,6 +307,7 @@ EPC.defaults = {
     playerAuraCount = 4, -- legacy setting retained for saved-variable compatibility; Player now shows all effects.
     hudHideInMenus = true,
     replaceDefaultUnitFrames = true,
+    unitFrameReplacementMigrated02972 = false,
     playerFrameLeft = -1,
     playerFrameTop = -1,
     targetFrameLeft = -1,
@@ -295,7 +373,7 @@ EPC.defaults = {
     allianceRankTop = -1,
     allianceRankScale = 1.0,
 
-    -- Movable Champion Point overlay.
+    -- Movable Character Level / XP overlay that automatically becomes the Champion Point overlay at level 50.
     showChampionOverlay = true,
     championOverlayVisibility = "ALWAYS",
     championOverlayLeft = -1,
@@ -332,6 +410,8 @@ EPC.defaults = {
     repairCostScale = 1.0,
     repairCostLeft = -1,
     repairCostTop = -1,
+    repairCostCompactLeft = -1,
+    repairCostCompactTop = -1,
 
     -- Small text-only reminders shown before the next combat encounter.
     showEncounterReminders = true,
@@ -484,6 +564,36 @@ function EPC:IsGameplayHudSuppressed()
     return false
 end
 
+-- Returns whether persistent Suite HUD readouts may be visible in the current
+-- gameplay scene. Idle/automatic HUD fading is intentionally NOT inferred from
+-- action-bar alpha: that proved unreliable across UI modes. Readouts that must
+-- follow ESO's automatic HUD fade attach a ZO_HUDFadeSceneFragment instead.
+function EPC:IsPersistentGameplayHudVisible()
+    if self.unitFramesMoveMode or self.miniMapMoveMode or self.combatHudMoveMode then return true end
+    if self.IsGameplayHudSuppressed and self:IsGameplayHudSuppressed() == true then return false end
+    return true
+end
+
+function EPC:CreateHudFadeFragment(control)
+    if not control or not ZO_HUDFadeSceneFragment or type(ZO_HUDFadeSceneFragment.New) ~= "function" then return nil end
+    local ok, fragment = pcall(function()
+        -- The third parameter is explicitly 0; ESOUI's HUD-fade fragment expects
+        -- it and this avoids the UI fade errors seen with incomplete arguments.
+        return ZO_HUDFadeSceneFragment:New(control, nil, 0)
+    end)
+    if not ok or not fragment then return nil end
+    local added = false
+    if HUD_SCENE and type(HUD_SCENE.AddFragment) == "function" then
+        pcall(HUD_SCENE.AddFragment, HUD_SCENE, fragment)
+        added = true
+    end
+    if HUD_UI_SCENE and HUD_UI_SCENE ~= HUD_SCENE and type(HUD_UI_SCENE.AddFragment) == "function" then
+        pcall(HUD_UI_SCENE.AddFragment, HUD_UI_SCENE, fragment)
+        added = true
+    end
+    return added and fragment or nil
+end
+
 function EPC:OverlayModeAllows(modeKey)
     -- Layout modes always preview HUD elements so users can position them even
     -- when a Combat Only overlay would normally be hidden.
@@ -516,6 +626,7 @@ function EPC:RefreshGameplayOverlays()
     if self.QuickslotOverlay and self.QuickslotOverlay.Refresh then self.QuickslotOverlay:Refresh() end
     if self.InfiniteArchiveOverlay and self.InfiniteArchiveOverlay.Refresh then self.InfiniteArchiveOverlay:Refresh() end
     if self.RepairCostOverlay and self.RepairCostOverlay.Refresh then self.RepairCostOverlay:Refresh() end
+    if self.PerformanceOverlay and self.PerformanceOverlay.Refresh then self.PerformanceOverlay:Refresh(true) end
     if self.EncounterReminders and self.EncounterReminders.Refresh then self.EncounterReminders:Refresh() end
     if self.ChallengeDifficultyOverlay and self.ChallengeDifficultyOverlay.Refresh then self.ChallengeDifficultyOverlay:Refresh() end
     if self.UI and self.UI.UpdateCombatHUD and self.Combat then self.UI:UpdateCombatHUD(self.Combat:GetHUDSummary()) end
@@ -558,6 +669,7 @@ function EPC:SetInteractionMode(active, reason)
     if not self.saved or not self.UI then return end
     active = active == true
 
+
     if active then
         if not self.saved.enabled then
             self.saved.enabled = true
@@ -595,7 +707,12 @@ function EPC:ToggleInteractionMode()
         return
     end
     if self.unitFramesMoveMode then
-        self:SetUnitFramesMoveMode(false)
+        -- Full HUD Layout Mode is intentionally sticky.  The normal Suite
+        -- interaction key must never dismiss it; SAVE & EXIT is the sole
+        -- in-addon exit path so a stray key press cannot lose the layout.
+        self:SetHUDLayoutControlBarVisible(true)
+        self:RaiseLayoutOverlays()
+        self:Print("HUD Layout Mode is still active. Use SAVE & EXIT when you are finished.")
         return
     end
     self:SetInteractionMode(not self.interactionMode, "interact-keybind")
@@ -669,15 +786,194 @@ function EPC:RaiseLayoutOverlays()
         self.UnitFrames, self.MiniMap, self.StableTimer, self.Clock,
         self.ActiveQuest, self.GoldenPursuits, self.AllianceRank,
         self.ChampionOverlay, self.AbilityOverlays, self.QuickslotOverlay,
-        self.InfiniteArchiveOverlay, self.RepairCostOverlay, self.EncounterReminders,
+        self.InfiniteArchiveOverlay, self.RepairCostOverlay, self.PerformanceOverlay, self.EncounterReminders,
         self.ChallengeDifficultyOverlay, self.DungeonFinder,
-        self.SynergyOverlay, self.RotationAssistant
+        self.SynergyOverlay, self.RotationAssistant, self.AntiquityAssistant
     }) do
         if module then raiseLayoutControls(module, seen, 0) end
     end
+    if self.hudLayoutControlBar and not self.hudLayoutControlBar:IsHidden() then
+        self.hudLayoutControlBar:SetDrawTier(DT_HIGH)
+        self.hudLayoutControlBar:SetDrawLevel(2000)
+    end
 end
 
-function EPC:SetUnitFramesMoveMode(active)
+-- HUD Layout Mode control strip.  It intentionally lives outside LibAddonMenu
+-- so Settings can close completely while every movable Suite overlay remains
+-- visible and interactive.
+function EPC:EnsureHUDLayoutControlBar()
+    if self.hudLayoutControlBar then return self.hudLayoutControlBar end
+    if not WINDOW_MANAGER or not GuiRoot then return nil end
+
+    local wm = WINDOW_MANAGER
+    local bar = wm:CreateTopLevelWindow("EAS_HUDLayoutControlBar02959")
+    bar:SetDimensions(420, 82)
+    bar:SetDrawLayer(DL_OVERLAY)
+    bar:SetDrawTier(DT_HIGH)
+    bar:SetDrawLevel(2000)
+    bar:SetClampedToScreen(true)
+    bar:SetMouseEnabled(true)
+    bar:SetMovable(true)
+    bar:SetHidden(true)
+
+    -- Restore the user's preferred position.  A negative coordinate means the
+    -- strip has never been moved and should use the safe top-center default.
+    local savedLeft = self.saved and tonumber(self.saved.hudLayoutBarLeft) or -1
+    local savedTop = self.saved and tonumber(self.saved.hudLayoutBarTop) or -1
+    bar:ClearAnchors()
+    if savedLeft and savedTop and savedLeft >= 0 and savedTop >= 0 then
+        bar:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, savedLeft, savedTop)
+    else
+        bar:SetAnchor(TOP, GuiRoot, TOP, 0, 22)
+    end
+
+    -- The entire empty/title area can be dragged. Buttons remain normal click
+    -- targets because they sit above the parent and consume their own mouse input.
+    bar:SetHandler("OnMouseDown", function(control, button)
+        if button == MOUSE_BUTTON_INDEX_LEFT and control.StartMoving then
+            control:StartMoving()
+        end
+    end)
+    bar:SetHandler("OnMouseUp", function(control, button)
+        if button == MOUSE_BUTTON_INDEX_LEFT and control.StopMoving then
+            control:StopMoving()
+        end
+    end)
+    bar:SetHandler("OnMoveStop", function(control)
+        if control.StopMoving then control:StopMoving() end
+        if EPC and EPC.saved then
+            EPC.saved.hudLayoutBarLeft = control:GetLeft()
+            EPC.saved.hudLayoutBarTop = control:GetTop()
+        end
+    end)
+
+    local bg = wm:CreateControl(nil, bar, CT_BACKDROP)
+    bg:SetAnchorFill(bar)
+    bg:SetCenterColor(0.015, 0.020, 0.028, 0.97)
+    bg:SetEdgeColor(0.72, 0.52, 0.12, 0.95)
+    if bg.SetEdgeTexture then
+        bg:SetEdgeTexture("EsoUI/Art/Tooltips/UI-SliderBackdrop.dds", 16, 16, 1)
+    end
+
+    local title = wm:CreateControl(nil, bar, CT_LABEL)
+    title:SetFont("ZoFontGameBold")
+    title:SetText("HUD LAYOUT MODE  •  DRAG TO MOVE")
+    title:SetColor(1.0, 0.82, 0.28, 1.0)
+    title:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    title:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    title:SetAnchor(TOPLEFT, bar, TOPLEFT, 12, 7)
+    title:SetAnchor(TOPRIGHT, bar, TOPRIGHT, -12, 7)
+    title:SetHeight(22)
+
+    -- Dedicated full-width drag handle. The previous build relied on clicks
+    -- reaching the top-level parent; child controls could swallow those clicks,
+    -- making the Save/Reset overlay appear immovable. This invisible handle sits
+    -- over the entire title strip and always moves the parent bar.
+    local dragHandle = wm:CreateControl(nil, bar, CT_CONTROL)
+    dragHandle:SetAnchor(TOPLEFT, bar, TOPLEFT, 0, 0)
+    dragHandle:SetAnchor(TOPRIGHT, bar, TOPRIGHT, 0, 0)
+    dragHandle:SetHeight(34)
+    dragHandle:SetMouseEnabled(true)
+    dragHandle:SetHandler("OnMouseDown", function(_, button)
+        if button == MOUSE_BUTTON_INDEX_LEFT and bar.StartMoving then
+            bar:StartMoving()
+        end
+    end)
+    dragHandle:SetHandler("OnMouseUp", function(_, button)
+        if button == MOUSE_BUTTON_INDEX_LEFT and bar.StopMoving then
+            bar:StopMoving()
+            if EPC and EPC.saved then
+                EPC.saved.hudLayoutBarLeft = bar:GetLeft()
+                EPC.saved.hudLayoutBarTop = bar:GetTop()
+            end
+        end
+    end)
+    bar.dragHandle = dragHandle
+
+    local function makeButton(name, label, left, width, callback)
+        local button = wm:CreateControl(name, bar, CT_BUTTON)
+        button:SetDimensions(width, 36)
+        button:SetAnchor(BOTTOMLEFT, bar, BOTTOMLEFT, left, -10)
+        button:SetFont("ZoFontGameBold")
+        button:SetText(label)
+        button:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+        button:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+        button:SetNormalFontColor(0.93, 0.93, 0.93, 1.0)
+        button:SetMouseOverFontColor(1.0, 0.84, 0.32, 1.0)
+        button:SetPressedFontColor(0.78, 0.62, 0.22, 1.0)
+
+        local buttonBg = wm:CreateControl(nil, button, CT_BACKDROP)
+        buttonBg:SetAnchorFill(button)
+        buttonBg:SetCenterColor(0.045, 0.060, 0.080, 0.98)
+        buttonBg:SetEdgeColor(0.38, 0.48, 0.60, 0.90)
+        if buttonBg.SetEdgeTexture then
+            buttonBg:SetEdgeTexture("EsoUI/Art/Tooltips/UI-SliderBackdrop.dds", 16, 16, 1)
+        end
+        buttonBg:SetMouseEnabled(false)
+        button:SetHandler("OnClicked", callback)
+        return button
+    end
+
+    bar.saveButton = makeButton("EAS_HUDLayoutSaveExit02959", "SAVE & EXIT", 12, 190, function()
+        if EPC and EPC.SetUnitFramesMoveMode then EPC:SetUnitFramesMoveMode(false, "save-exit") end
+    end)
+    bar.resetButton = makeButton("EAS_HUDLayoutReset02959", "RESET LAYOUT", 218, 190, function()
+        if EPC and EPC.ResetUnitFramePositions then
+            EPC:ResetUnitFramePositions()
+            if EPC.RaiseLayoutOverlays then EPC:RaiseLayoutOverlays() end
+            if EPC.hudLayoutControlBar then
+                EPC.hudLayoutControlBar:SetHidden(false)
+                EPC.hudLayoutControlBar:SetDrawTier(DT_HIGH)
+                EPC.hudLayoutControlBar:SetDrawLevel(2000)
+            end
+        end
+    end)
+
+    self.hudLayoutControlBar = bar
+    return bar
+end
+
+function EPC:SetHUDLayoutControlBarVisible(visible)
+    local bar = self:EnsureHUDLayoutControlBar()
+    if not bar then return end
+    bar:SetHidden(visible ~= true)
+    if visible == true then
+        bar:SetDrawTier(DT_HIGH)
+        bar:SetDrawLevel(2000)
+    end
+end
+
+function EPC:IsSettingsSceneShowingForHUDLayout()
+    if not SCENE_MANAGER or type(SCENE_MANAGER.IsShowing) ~= "function" then return false end
+    local names = { "settings", "gameMenuInGame", "gameMenu" }
+    for i = 1, #names do
+        local ok, showing = pcall(SCENE_MANAGER.IsShowing, SCENE_MANAGER, names[i])
+        if ok and showing == true then return true end
+    end
+    return false
+end
+
+function EPC:CloseSettingsSceneForHUDLayout()
+    -- Prefer the Suite's existing LibAddonMenu bridge cleanup when available.
+    if self.ModernAppUI and self.ModernAppUI.CloseSettingsSceneForSuite02943 then
+        local ok, closed = pcall(self.ModernAppUI.CloseSettingsSceneForSuite02943, self.ModernAppUI)
+        if ok and closed == true then return true end
+    end
+    if not SCENE_MANAGER then return false end
+    if type(SCENE_MANAGER.HideCurrentScene) == "function" then
+        local ok = pcall(SCENE_MANAGER.HideCurrentScene, SCENE_MANAGER)
+        if ok then return true end
+    end
+    if type(SCENE_MANAGER.Hide) == "function" then
+        pcall(SCENE_MANAGER.Hide, SCENE_MANAGER, "settings")
+        pcall(SCENE_MANAGER.Hide, SCENE_MANAGER, "gameMenuInGame")
+        pcall(SCENE_MANAGER.Hide, SCENE_MANAGER, "gameMenu")
+        return true
+    end
+    return false
+end
+
+function EPC:SetUnitFramesMoveMode(active, exitReason)
     if not self.saved then return end
     local canFrames = self.UnitFrames and self.UnitFrames.SetLayoutMode
     local canMiniMap = self.MiniMap and self.MiniMap.SetLayoutMode
@@ -691,15 +987,59 @@ function EPC:SetUnitFramesMoveMode(active)
     local canQuickslot = self.QuickslotOverlay and self.QuickslotOverlay.SetLayoutMode
     local canInfiniteArchive = self.InfiniteArchiveOverlay and self.InfiniteArchiveOverlay.SetLayoutMode
     local canRepairCosts = self.RepairCostOverlay and self.RepairCostOverlay.SetLayoutMode
+    local canPerformanceOverlay = self.PerformanceOverlay and self.PerformanceOverlay.SetLayoutMode
     local canEncounterReminders = self.EncounterReminders and self.EncounterReminders.SetLayoutMode
     local canChallengeOverlay = self.ChallengeDifficultyOverlay and self.ChallengeDifficultyOverlay.SetLayoutMode
     local canDungeonQueue = self.DungeonFinder and self.DungeonFinder.SetLayoutMode
     local canSynergy = self.SynergyOverlay and self.SynergyOverlay.SetLayoutMode
     local canRotationAssistant = self.RotationAssistant and self.RotationAssistant.SetLayoutMode
-    if not canFrames and not canMiniMap and not canStableTimer and not canClock and not canActiveQuest and not canGoldenPursuits and not canAllianceRank and not canChampionOverlay and not canAbilities and not canQuickslot and not canInfiniteArchive and not canRepairCosts and not canEncounterReminders and not canChallengeOverlay and not canDungeonQueue and not canSynergy and not canRotationAssistant then return end
+    local canAntiquityAssistant = self.AntiquityAssistant and self.AntiquityAssistant.SetLayoutMode
+    if not canFrames and not canMiniMap and not canStableTimer and not canClock and not canActiveQuest and not canGoldenPursuits and not canAllianceRank and not canChampionOverlay and not canAbilities and not canQuickslot and not canInfiniteArchive and not canRepairCosts and not canPerformanceOverlay and not canEncounterReminders and not canChallengeOverlay and not canDungeonQueue and not canSynergy and not canRotationAssistant and not canAntiquityAssistant then return end
     active = active == true
 
+    -- Once full HUD Layout Mode is active, only its SAVE & EXIT button is
+    -- allowed to shut it down.  Slash commands, Settings buttons, ESC/UI-mode
+    -- changes, and other Suite interaction paths are deliberately ignored.
+    if not active and self.unitFramesMoveMode and exitReason ~= "save-exit" then
+        self:SetHUDLayoutControlBarVisible(true)
+        self:RaiseLayoutOverlays()
+        self:Print("HUD Layout Mode remains active. Press SAVE & EXIT to return to gameplay.")
+        return false
+    end
+
+    -- LibAddonMenu lives inside the game-menu scene. Closing that scene after
+    -- layout mode has already started makes ESO leave camera UI mode and can
+    -- instantly lock every overlay again. Close Settings first, then start
+    -- layout mode after the normal HUD has returned.
+    if active and not self.unitFramesMoveMode and not self.hudLayoutStartPending02959 and self:IsSettingsSceneShowingForHUDLayout() then
+        self.hudLayoutStartPending02959 = true
+        self.hudLayoutCloseAttempts02959 = (tonumber(self.hudLayoutCloseAttempts02959) or 0) + 1
+        self:CloseSettingsSceneForHUDLayout()
+        local function startAfterSettingsClose()
+            if not EPC then return end
+            EPC.hudLayoutStartPending02959 = false
+            if EPC:IsSettingsSceneShowingForHUDLayout() and (tonumber(EPC.hudLayoutCloseAttempts02959) or 0) < 4 then
+                EPC:SetUnitFramesMoveMode(true)
+                return
+            end
+            EPC.hudLayoutCloseAttempts02959 = 0
+            -- If ESO is still finishing its scene transition, forcing camera UI
+            -- mode here keeps the layout controls interactive.
+            EPC:SetUnitFramesMoveMode(true)
+        end
+        if type(zo_callLater) == "function" then zo_callLater(startAfterSettingsClose, 140) else startAfterSettingsClose() end
+        return
+    end
+    if not active then self.hudLayoutCloseAttempts02959 = 0 end
+
     if active then
+        -- If the Suite's modern settings/page shell is open, hide it as well.
+        -- HUD Layout Mode should leave only the movable overlays plus its own
+        -- compact Save/Reset control strip on screen.
+        if self.ModernAppUI and self.ModernAppUI.window and self.ModernAppUI.Hide then
+            local ok, hidden = pcall(self.ModernAppUI.window.IsHidden, self.ModernAppUI.window)
+            if ok and hidden == false then pcall(self.ModernAppUI.Hide, self.ModernAppUI) end
+        end
         if self.miniMapMoveMode then self:SetMiniMapMoveMode(false) end
         local alreadyInUIMode = self:Safe(IsGameCameraUIModeActive, false) == true
         self.unitFramesMoveOwned = not alreadyInUIMode
@@ -718,11 +1058,15 @@ function EPC:SetUnitFramesMoveMode(active)
         if canInfiniteArchive then self.InfiniteArchiveOverlay:SetLayoutMode(true) end
 
         if canRepairCosts then self.RepairCostOverlay:SetLayoutMode(true) end
+        if canPerformanceOverlay then self.PerformanceOverlay:SetLayoutMode(true) end
         if canEncounterReminders then self.EncounterReminders:SetLayoutMode(true) end
         if canChallengeOverlay then self.ChallengeDifficultyOverlay:SetLayoutMode(true) end
         if canDungeonQueue then self.DungeonFinder:SetLayoutMode(true) end
         if canSynergy then self.SynergyOverlay:SetLayoutMode(true) end
         if canRotationAssistant then self.RotationAssistant:SetLayoutMode(true) end
+        if canAntiquityAssistant then self.AntiquityAssistant:SetLayoutMode(true) end
+
+        self:SetHUDLayoutControlBarVisible(true)
 
         -- Raise only after every overlay has been unhidden.  LibAddonMenu can
         -- otherwise reclaim z-order when a hidden overlay becomes visible.
@@ -731,14 +1075,21 @@ function EPC:SetUnitFramesMoveMode(active)
         EVENT_MANAGER:RegisterForUpdate(self.name .. "_LayoutOverlayRaiseGuard", 250, function()
             if EPC.unitFramesMoveMode then
                 EPC:RaiseLayoutOverlays()
+                -- ESO can re-apply compass visibility during camera UI-mode scene
+                -- updates. Keep the stock compass exposed throughout layout mode.
+                if EPC.MiniMap and EPC.MiniMap.SyncESOCompassVisibility then
+                    EPC.MiniMap:SyncESOCompassVisibility()
+                end
             else
                 EVENT_MANAGER:UnregisterForUpdate(EPC.name .. "_LayoutOverlayRaiseGuard")
             end
         end)
 
-        self:Print("HUD layout mode enabled. Drag Player, Target, Group, Raid, Stats, Mini Map, Stable, Clock, Active Quest, Golden Pursuits, Alliance Rank, Champion, Repair Estimate, Encounter Reminders, Challenge Difficulty icon, Activity Finder Queue, Infinite Archive, Use Synergy, Rotation Assistant, and each Ability icon, then use /esosuite frames lock.")
+        self:Print("HUD layout mode enabled. Settings are hidden. Move/resize your overlays, then press SAVE & EXIT at the top of the screen. RESET LAYOUT restores the default HUD positions without leaving layout mode.")
     else
         self.unitFramesMoveMode = false
+        self.hudLayoutStartPending02959 = false
+        self:SetHUDLayoutControlBarVisible(false)
         EVENT_MANAGER:UnregisterForUpdate(self.name .. "_LayoutOverlayRaiseGuard")
         if canFrames then self.UnitFrames:SetLayoutMode(false) end
         if canMiniMap then self.MiniMap:SetLayoutMode(false) end
@@ -752,12 +1103,19 @@ function EPC:SetUnitFramesMoveMode(active)
         if canQuickslot then self.QuickslotOverlay:SetLayoutMode(false) end
         if canInfiniteArchive then self.InfiniteArchiveOverlay:SetLayoutMode(false) end
         if canRepairCosts then self.RepairCostOverlay:SetLayoutMode(false) end
+        if canPerformanceOverlay then self.PerformanceOverlay:SetLayoutMode(false) end
         if canEncounterReminders then self.EncounterReminders:SetLayoutMode(false) end
         if canChallengeOverlay then self.ChallengeDifficultyOverlay:SetLayoutMode(false) end
         if canDungeonQueue then self.DungeonFinder:SetLayoutMode(false) end
         if canRotationAssistant then self.RotationAssistant:SetLayoutMode(false) end
+        if canAntiquityAssistant then self.AntiquityAssistant:SetLayoutMode(false) end
         if self.unitFramesMoveOwned and not self.interactionMode and not self.combatHudMoveMode and not self.miniMapMoveMode then setCameraUIMode(false) end
         if canSynergy then self.SynergyOverlay:SetLayoutMode(false) end
+        -- Apply normal compass/menu visibility immediately after leaving layout
+        -- preview instead of waiting for the minimap's next periodic refresh.
+        if self.MiniMap and self.MiniMap.SyncESOCompassVisibility then
+            self.MiniMap:SyncESOCompassVisibility()
+        end
         self.unitFramesMoveOwned = false
         self:Print("HUD unit frames locked.")
     end
@@ -768,9 +1126,14 @@ function EPC:SetMiniMapMoveMode(active)
     active = active == true
 
     if active then
-        -- Dedicated Mini Map layout mode: only the map becomes interactive.
-        -- If the full HUD layout is active, end it first so the other frames stay locked.
-        if self.unitFramesMoveMode then self:SetUnitFramesMoveMode(false) end
+        -- Dedicated Mini Map layout mode is unnecessary while the full HUD
+        -- layout is active. Keep the sticky full-layout session instead of
+        -- allowing this path to end it.
+        if self.unitFramesMoveMode then
+            self:SetHUDLayoutControlBarVisible(true)
+            self:RaiseLayoutOverlays()
+            return
+        end
         local alreadyInUIMode = self:Safe(IsGameCameraUIModeActive, false) == true
         self.miniMapMoveOwned = not alreadyInUIMode
         if not alreadyInUIMode then setCameraUIMode(true) end
@@ -843,6 +1206,16 @@ function EPC:ResetUnitFramePositions()
         self.RepairCostOverlay:ResetPosition()
         self.RepairCostOverlay:Refresh()
     end
+    if self.PerformanceOverlay and self.PerformanceOverlay.ResetPosition then
+        self.PerformanceOverlay:ResetPosition()
+        self.PerformanceOverlay:Refresh(true)
+    end
+    if self.EncounterReminders and self.EncounterReminders.ResetPosition then
+        self.EncounterReminders:ResetPosition()
+    end
+    if self.ChallengeDifficultyOverlay and self.ChallengeDifficultyOverlay.ResetPosition then
+        self.ChallengeDifficultyOverlay:ResetPosition()
+    end
     if self.SynergyOverlay and self.SynergyOverlay.ResetPosition then
         self.SynergyOverlay:ResetPosition()
     end
@@ -850,7 +1223,10 @@ function EPC:ResetUnitFramePositions()
         self.RotationAssistant:ResetPosition()
         self.RotationAssistant:Refresh()
     end
-    self:Print("Player, Target, Group, Raid, Stats, Mini Map, Stable, Clock, Active Quest, Golden Pursuits, Alliance Rank, Infinite Archive, Repair Estimate, Use Synergy, Rotation Assistant, and Ability positions reset.")
+    if self.AntiquityAssistant and self.AntiquityAssistant.ResetPositions then
+        self.AntiquityAssistant:ResetPositions()
+    end
+    self:Print("HUD layout reset: Player, Target, Group, Raid, Stats, Mini Map, Stable, Clock, Active Quest, Golden Pursuits, Alliance Rank, Champion, Infinite Archive, Repair Estimate, FPS/Latency, Encounter Reminders, Challenge Difficulty, Use Synergy, Rotation Assistant, Augur Guide, Tile Selector, and Ability positions restored.")
 end
 
 function ESOProgressionCoach_Toggle()
@@ -1224,7 +1600,7 @@ function EPC:RegisterEvents()
 
         local function combatHandler(eventKind)
             return function(_, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, returnedSourceType, targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId, overflow)
-                self.Combat:OnCombatEvent(eventKind, result, abilityName, sourceName, returnedSourceType, targetName, targetType, hitValue, abilityId)
+                self.Combat:OnCombatEvent(eventKind, result, abilityName, sourceName, returnedSourceType, targetName, targetType, hitValue, abilityId, sourceUnitId)
             end
         end
 
@@ -1256,6 +1632,7 @@ function EPC:RegisterEvents()
         local sourceTypes = {
             { "Player", COMBAT_UNIT_TYPE_PLAYER },
             { "Pet", COMBAT_UNIT_TYPE_PLAYER_PET },
+            { "Companion", COMBAT_UNIT_TYPE_PLAYER_COMPANION },
             { "Group", COMBAT_UNIT_TYPE_GROUP },
         }
 
@@ -1281,6 +1658,17 @@ function EPC:RegisterEvents()
                 end
             end
         end
+    end
+
+    -- Combat-Metrics-style player effect uptime tracking. Keep the heavy
+    -- EVENT_EFFECT_CHANGED stream natively filtered to the local player.
+    if EVENT_EFFECT_CHANGED and self.Combat and REGISTER_FILTER_UNIT_TAG then
+        local registration = self.name .. "_Combat_PlayerEffects"
+        EVENT_MANAGER:RegisterForEvent(registration, EVENT_EFFECT_CHANGED,
+            function(_, changeType, effectSlot, effectName, unitTag, beginTime, endTime, stackCount, iconName, buffType, effectType, abilityType, statusEffectType, unitName, unitId, abilityId, sourceType)
+                self.Combat:OnEffectChanged(changeType, effectName, unitTag, beginTime, endTime, stackCount, iconName, effectType, abilityId)
+            end)
+        EVENT_MANAGER:AddFilterForEvent(registration, EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG, "player")
     end
 
     if EVENT_PLAYER_ACTIVATED and self.UtilitySuite and self.UtilitySuite.ScanInventory then
@@ -1333,19 +1721,27 @@ function EPC:RegisterEvents()
                 if self.UI and self.UI.SetCombatHUDMoveMode then self.UI:SetCombatHUDMoveMode(false) end
             end
             if self.unitFramesMoveMode and self:Safe(IsGameCameraUIModeActive, false) ~= true then
-                self.unitFramesMoveMode = false
-                self.unitFramesMoveOwned = false
-                if self.UnitFrames and self.UnitFrames.SetLayoutMode then self.UnitFrames:SetLayoutMode(false) end
-                if self.MiniMap and self.MiniMap.SetLayoutMode then self.MiniMap:SetLayoutMode(false) end
-                if self.StableTimer and self.StableTimer.SetLayoutMode then self.StableTimer:SetLayoutMode(false) end
-                if self.Clock and self.Clock.SetLayoutMode then self.Clock:SetLayoutMode(false) end
-                if self.ActiveQuest and self.ActiveQuest.SetLayoutMode then self.ActiveQuest:SetLayoutMode(false) end
-                if self.AllianceRank and self.AllianceRank.SetLayoutMode then self.AllianceRank:SetLayoutMode(false) end
-                if self.ChampionOverlay and self.ChampionOverlay.SetLayoutMode then self.ChampionOverlay:SetLayoutMode(false) end
-                if self.AbilityOverlays and self.AbilityOverlays.SetLayoutMode then self.AbilityOverlays:SetLayoutMode(false) end
-                if self.QuickslotOverlay and self.QuickslotOverlay.SetLayoutMode then self.QuickslotOverlay:SetLayoutMode(false) end
-                if self.InfiniteArchiveOverlay and self.InfiniteArchiveOverlay.SetLayoutMode then self.InfiniteArchiveOverlay:SetLayoutMode(false) end
-                if self.SynergyOverlay and self.SynergyOverlay.SetLayoutMode then self.SynergyOverlay:SetLayoutMode(false) end
+                -- ESC and scene transitions can make ESO drop camera UI mode.
+                -- Do not interpret that as leaving HUD Layout Mode. Restore the
+                -- cursor/UI state and keep every preview unlocked until the
+                -- user explicitly presses SAVE & EXIT.
+                local function restoreStickyHUDLayout()
+                    if not EPC or not EPC.unitFramesMoveMode then return end
+                    if EPC:Safe(IsGameCameraUIModeActive, false) ~= true then
+                        setCameraUIMode(true)
+                    end
+                    EPC.unitFramesMoveOwned = true
+                    EPC:SetHUDLayoutControlBarVisible(true)
+                    EPC:RaiseLayoutOverlays()
+                    if EPC.MiniMap and EPC.MiniMap.SyncESOCompassVisibility then
+                        EPC.MiniMap:SyncESOCompassVisibility()
+                    end
+                end
+                if type(zo_callLater) == "function" then
+                    zo_callLater(restoreStickyHUDLayout, 30)
+                else
+                    restoreStickyHUDLayout()
+                end
             end
             if self.miniMapMoveMode and self:Safe(IsGameCameraUIModeActive, false) ~= true then
                 self.miniMapMoveMode = false
@@ -1359,7 +1755,7 @@ function EPC:RegisterEvents()
         self:OnUpdate()
     end)
 
-    EVENT_MANAGER:RegisterForUpdate(self.name .. "_CombatHUDPulse", 200, function()
+    EVENT_MANAGER:RegisterForUpdate(self.name .. "_CombatHUDPulse", 250, function()
         if self.Combat and self.UI and self.UI.UpdateCombatHUD then
             self.UI:UpdateCombatHUD(self.Combat:GetHUDSummary())
         end
@@ -1499,12 +1895,15 @@ function EPC:Initialize()
     initModule("ADVISOR", self.Advisor)
     initModule("COMBAT_PRESENTATION", self.CombatPresentation)
     initModule("COMBAT", self.Combat)
+    initModule("GAME_MODE_REPORT", self.GameModeReport)
     initModule("ROTATION_ASSISTANT", self.RotationAssistant)
     initModule("MAINTENANCE", self.Maintenance)
     initModule("UNIT_FRAMES", self.UnitFrames)
     initModule("TEAM_VISIBILITY", self.TeamVisibility)
     initModule("DUNGEON_CHEST_FINDER", self.DungeonChestFinder)
     initModule("RESOURCE_PINS", self.ResourcePins)
+    initModule("ANTIQUITY_ASSISTANT", self.AntiquityAssistant)
+    initModule("ANTIQUITY_LEAD_FINDER", self.AntiquityLeadFinder)
     initModule("ALLIANCE_RANK", self.AllianceRank)
     initModule("CHAMPION_OVERLAY", self.ChampionOverlay)
     initModule("ABILITY_OVERLAYS", self.AbilityOverlays)
@@ -1513,6 +1912,7 @@ function EPC:Initialize()
     initModule("SYNERGY_OVERLAY", self.SynergyOverlay)
     initModule("CUSTOM_RETICLE", self.Reticle)
     initModule("REPAIR_COST_OVERLAY", self.RepairCostOverlay)
+    initModule("PERFORMANCE_OVERLAY", self.PerformanceOverlay)
     initModule("ENCOUNTER_REMINDERS", self.EncounterReminders)
     initModule("OVERLAND_DIFFICULTY", self.OverlandDifficulty)
     initModule("CHALLENGE_DIFFICULTY_OVERLAY", self.ChallengeDifficultyOverlay)
@@ -1826,6 +2226,12 @@ function EPC:Initialize()
             else
                 self:Print("Combat HUD: hud move, hud lock, hud reset")
             end
+        elseif arg == "leads" or arg == "leadfinder" or arg == "antiquities" then
+            if self.AntiquityLeadFinder then
+                self.AntiquityLeadFinder:Show()
+            else
+                self:Print("Antiquity Lead Finder is unavailable.")
+            end
         elseif arg == "compat" or arg == "compatibility" then
             if self.Compatibility then
                 local lines = self.Compatibility:GetDiagnosticLines()
@@ -1855,7 +2261,7 @@ function EPC:Initialize()
         elseif arg == "show" or arg == "" then
             if self.Journal then self.Journal:Show() end
         else
-            self:Print("Commands: show, hide, toggle, codex, groupfinder, checkpoint save/go/delete/list/open, clock show/hide/move/lock/reset, lock, unlock, reset, quest <name/zone>, maintain, hud move/lock/reset, frames move/lock/reset/show/hide, minimap show/hide/move/lock/reset/mode/zoom <0.70-2.00>, compat, tools overview/inventory/research/collections/dailies, scan, find <item>, set <name>, role auto/damage/healer/tank, focus auto/dps/gold/xp_cp/gear/dungeons/trials/solo/questing, goal xp/gold/balanced, session continuous/30/60/120/custom/<15-240>, target auto/damage/healer/tank/solo, targetset 1/2 <set name>")
+            self:Print("Commands: show, hide, toggle, codex, leads, groupfinder, checkpoint save/go/delete/list/open, clock show/hide/move/lock/reset, lock, unlock, reset, quest <name/zone>, maintain, hud move/lock/reset, frames move/lock/reset/show/hide, minimap show/hide/move/lock/reset/mode/zoom <0.70-2.00>, compat, tools overview/inventory/research/collections/dailies, scan, find <item>, set <name>, role auto/damage/healer/tank, focus auto/dps/gold/xp_cp/gear/dungeons/trials/solo/questing, goal xp/gold/balanced, session continuous/30/60/120/custom/<15-240>, target auto/damage/healer/tank/solo, targetset 1/2 <set name>")
         end
     end
     SLASH_COMMANDS["/esosuite"] = handleSlash

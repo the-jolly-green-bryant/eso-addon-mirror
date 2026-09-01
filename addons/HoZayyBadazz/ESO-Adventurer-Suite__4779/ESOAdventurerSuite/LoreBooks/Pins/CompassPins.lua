@@ -132,7 +132,7 @@ function CompassPins:Initialize()
 		spawnUpdateName = "EASLoreLibrary-CompassPinsSpawn",
 		tickUpdateName = "EASLoreLibrary-CompassPinsUpdate",
 		spawnIntervalMs = SPAWN_INTERVAL_MS,
-		tickIntervalMs = 30,
+		tickIntervalMs = 50,
 	})
 
 	EVENT_MANAGER:RegisterForEvent("EASLoreLibrary-CompassPins", EVENT_PLAYER_ACTIVATED, function()

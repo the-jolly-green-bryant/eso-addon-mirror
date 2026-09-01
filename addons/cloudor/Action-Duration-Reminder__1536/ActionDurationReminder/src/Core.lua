@@ -555,7 +555,7 @@ l.onActionSlotAbilityUsed -- #(#number:eventCode,#number:slotNum)->()
     addon.debug('[AN]%s', action:toLogString())
   end
   zo_callLater(function()
-    action.ability.icon = GetSlotTexture(slotNum, hotbar) 
+    action.ability.icon = GetSlotTexture(slotNum, hotbar)
   end, 500)
   if action.ability.icon:find('_curse',1,true) -- daedric curse, haunting curse, daedric prey
     or action.ability.icon:find('dark_haze',1,true) -- rune cage
@@ -750,7 +750,7 @@ l.onCombatEvent -- #(#number:eventCode,#number:result,#boolean:isError,
         local oldEffect = action:purgeEffect(effect)
         if oldEffect then l.timeActionMap[oldEffect.startTime] = nil end
       end
-      
+
     end
     action = l.findActionByTick(abilityId, targetUnitId)
     if action and action.duration==0 then
@@ -855,10 +855,10 @@ l.onCombatEventFromPlayer -- #(#number:eventCode,#number:result,#boolean:isError
         elseif hitValue > 1 and
           -- 递增
           (hitValue == (action.stackEffect and action.stackEffect.stackCount or 0) +1)
-        or
-        -- check if hitValue matches a descriptionNum (triggered bonus stacks)
-         (action.descriptionNums and action.descriptionNums[hitValue])
-          then 
+          or
+          -- check if hitValue matches a descriptionNum (triggered bonus stacks)
+          (action.descriptionNums and action.descriptionNums[hitValue])
+        then
           local effect = models.newEffect(abilityOnBar, 'player', sourceUnitId, now, now, hitValue, 0);
           effect.combatEventId = abilityId
           action:updateStackInfo(hitValue,effect)
@@ -1194,7 +1194,8 @@ l.onEffectChanged -- #(#number:eventCode,#number:changeType,#number:effectSlot,#
     if l.getSavedVars().coreIgnoreLongDebuff and action.duration and action.duration >0 and effect.duration>action.duration
       and effect.ability.icon:find('ability_debuff_',1,true)
       --        and not action.descriptionNums[effect.duration/1000] -- This line should be commented out because it conflicts with option *coreIgnoreLongDebuff*
-      and not action.ability.icon:find('ability_arcanist_011',1,true) -- some debuff is useful, i.e. Rune of Edric Horror has a useful vulnerability
+      and not action.ability.icon:find('ability_arcanist_011',1,true) -- some debuff is useful, i.e. Rune of Edric Horror has a useful debuff
+      and not action.ability.icon:find('ability_nightblade_016',1,true) -- some debuff is useful, i.e. Aspect of Terror has a useful debuff
     then
       if addon.debugEnabled(DSS_FILTER_REJECT,effect.ability.name) then
         addon.debug('[FRD]ignore longer debuff %s for %s',effect:toLogString(), action:toLogString())
@@ -1268,6 +1269,7 @@ l.onEffectChanged -- #(#number:eventCode,#number:changeType,#number:effectSlot,#
     if isNew and l.getSavedVars().coreIgnoreLongDebuff and action.duration and action.duration >0 and effect.duration>action.duration
       and effect.ability.icon:find('ability_debuff_',1,true)
       and not action.ability.icon:find('ability_arcanist_011',1,true) -- some debuff is useful, i.e. Rune of Edric Horror has a useful vulnerability
+      and not action.ability.icon:find('ability_nightblade_016',1,true) -- some debuff is useful, i.e. Aspect of Terror has a useful debuff
     then
       if addon.debugEnabled(DSS_FILTER_REJECT,effect.ability.name) then
         addon.debug('[FRD]ignore update long debuff %s for %s',effect:toLogString(), action:toLogString())
@@ -1590,7 +1592,7 @@ l.removeAction -- #(Models#Action:action)->(#boolean)
 end
 
 l.isPlayerDragonknight -- #()->(#boolean)Check if player is Dragonknight (cached)
- = function()
+= function()
   if l.powerLashGuideState.isDragonknight == nil then
     l.powerLashGuideState.isDragonknight = GetUnitClassId("player") == models.DRAGONKNIGHT_CLASS_ID
   end
@@ -1611,7 +1613,7 @@ l.targetHasOffBalance = function()
 end
 
 l.sendPowerLashGuide -- #(#string:show)->()
- = function(show)
+= function(show)
   -- Avoid sending same type repeatedly
   if l.powerLashGuideState.lastGuideType == (show and 'show' or 'hide') then
     return
@@ -1672,7 +1674,7 @@ l.sendPowerLashGuide -- #(#string:show)->()
   end
 end
 
-l.onUpdateForPowerLash -- #()->() 
+l.onUpdateForPowerLash -- #()->()
 = function()
   -- Check if player is Dragonknight
   if not l.isPlayerDragonknight() then

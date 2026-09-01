@@ -108,6 +108,12 @@ local DESCRIPTORS = {
 -- tolerance the core zoom logic has used successfully.
 local VERIFY_EPSILON = 0.05
 
+-- Per-setting telemetry for consumers that observe live camera changes. A
+-- revision advances only after a write is read back and verified, so callers
+-- can distinguish BAV's own changes from native input without timing guesses.
+local verifiedWriteRevisions = {}
+local verifiedWriteValues = {}
+
 -- ---------------------------------------------------------------------------
 -- Internal helpers
 -- ---------------------------------------------------------------------------
@@ -228,8 +234,19 @@ function CameraSettings.Set(key, value, epsilon)
         return false
     end
 
+    verifiedWriteRevisions[key] = (verifiedWriteRevisions[key] or 0) + 1
+    verifiedWriteValues[key] = appliedValue
     LogDebug("CameraSettings.Set('%s'): requested=%.2f, applied=%.2f", key, value, appliedValue)
     return true
+end
+
+-- Return the revision and applied value of BAV's latest verified write for a
+-- setting. Revision 0 means this session has not written that setting yet.
+function CameraSettings.GetLastVerifiedWrite(key)
+    if not DESCRIPTORS[key] then
+        return 0, nil
+    end
+    return verifiedWriteRevisions[key] or 0, verifiedWriteValues[key]
 end
 
 -- Expose the clamp range so UI/consumers can build sliders without duplicating

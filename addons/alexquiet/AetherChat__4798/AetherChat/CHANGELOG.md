@@ -1,60 +1,59 @@
-# AetherChat — Changelog
+# Journal des Modifications (Changelog) — AetherChat
 
-## [1.2.2] — 2026-08-30
-
-### 🇫🇷 Français
-- **Fix — Restitution Intégrale du Chat Officiel ESO (`UndockNativeChatEntry`) :**
-  - Correction d'un problème majeur où la boîte de texte officielle (`ZO_ChatWindowTextEntry`) restait emprisonnée dans la fenêtre AetherChat une fois celle-ci fermée.
-  - La boîte de saisie est désormais immédiatement détachée et restituée à sa place d'origine dans le chat de base d'ESO dès qu'AetherChat est masqué. Le chat classique fonctionne ainsi à 100% sans aucun conflit.
-- **Fix — Clic Gauche sur l'Icône HUD Flottante (`AetherChat_MinBar`) :**
-  - Réactivation du clic gauche direct sur l'icône flottante pour ouvrir et fermer AetherChat de manière fluide pour les joueurs n'utilisant pas de raccourci clavier.
-- **Nouveau — Bouton de Fermeture Officiel (`ZO_CloseButton`) :**
-  - Ajout d'une croix de fermeture dédiée en haut à droite de l'en-tête de la fenêtre AetherChat pour une fermeture rapide en 1 clic.
+Toutes les modifications notables apportées à l'addon **AetherChat** sont consignées dans ce document.
 
 ---
 
-### 🇬🇧 English
-- **Fix — Native ESO Chat Input Restoration (`UndockNativeChatEntry`):**
-  - Fixed a critical issue where the native ESO text entry box (`ZO_ChatWindowTextEntry`) remained attached inside the hidden AetherChat window when closed, preventing typing in the default chat.
-  - Text input is now instantly undocked and returned to its default location in the native chat window as soon as AetherChat is closed. Default chat now works seamlessly at 100%.
-- **Fix — Left-Click Toggle on Floating HUD Icon (`AetherChat_MinBar`):**
-  - Re-enabled direct left-click interaction on the moveable HUD icon to open and close AetherChat for players who prefer clicking over keybindings.
-- **New — Official Header Close Button (`ZO_CloseButton`):**
-  - Added an authentic Skyrim close button in the top-right header for quick 1-click window closing.
+## [1.2.3] - 2026-09-01
+
+### ✨ Nouvelles Fonctionnalités Majeures
+
+- **Canal Dédié « Système » (System) :**
+  - Ajout d'un nouvel onglet Système indépendant isolant l'ensemble des flux et notifications du moteur de jeu d'ESO (annonces de diffusion serveur, messages d'état, alertes de donjons, alertes de zone et confirmations de files d'attente).
+  - Capture automatique et transparente de 100% des messages émis via `CHAT_SYSTEM:AddMessage` et `EVENT_BROADCAST`.
+  - Intégration de l'icône officielle de rouage système d'ESO (`menubar_settings_up.dds`) avec support complet du glisser-déposer (drag-and-drop) pour réorganiser sa position dans la barre latérale.
+
+- **Masquage Intelligent sur Menu Échap & Réouverture Automatique :**
+  - Pré-hook direct sur le contrôle `ZO_GameMenu_InGame` et surveillance complète de la pile de scènes (`gameMenuInGame`, `settings`, `addons`, `keybindings`).
+  - La fenêtre de discussion se masque instantanément à la milliseconde près lorsque vous ouvrez le menu principal ou les réglages du jeu, et **se réouvre automatiquement** dès que vous revenez dans le monde de jeu (`hud`).
+  - Option configurable (Activer / Désactiver) directement accessible dans le panneau des réglages d'AetherChat.
+
+- **Curseur de Typographie Globale en Temps Réel :**
+  - Nouveau curseur précis permettant d'ajuster la taille de police de 12px à 24px avec rendu instantané.
+  - L'échelle typographique s'applique désormais proportionnellement à **toute l'interface** : messages du chat, liste des canaux, onglets de dossiers, barre de recherche et titres d'en-tête.
+
+- **Support Typographique Universel (Cyrillique & International) :**
+  - Migration vers les polices natives officielles `$(CHAT_FONT)` et `$(BOLD_FONT)` du moteur d'ESO.
+  - Affichage net et complet des caractères cyrilliques (russe / ukrainien) et des alphabets internationaux sur le mégaserveur européen, éliminant définitivement les boîtes vides (`[][][]`).
+
+- **Scanner de Ventes de Guilde en Direct (Partout en Tamriel) :**
+  - Intégration d'un écouteur en temps réel (`EVENT_GUILD_HISTORY_CATEGORY_UPDATED`, `EVENT_GUILD_HISTORY_REFRESHED`) permettant de notifier instantanément les ventes de boutique de guilde même en plein donjon, raid ou combat.
+  - Notification centrale à l'écran (CSA) avec bandeau doré, tintement de pièces d'or et archivage automatique dans le canal Général & Ventes.
 
 ---
 
-## [1.2.0] — 2026-08-30
+### 🛠️ Améliorations & Optimisations
 
-### 🇫🇷 Français
-- **Mots-Clés & Mentions Personnalisées (Pings) :**
-  - Surveillance en direct de vos mots-clés (`@Pseudo`, `WTS`, `WTT`, `Tank`, `Heal`, `Motif`, `vSS`...).
-  - Marqueur d'alerte `★` coloré devant l'horodatage (`★ [14:16]`) pour repérer instantanément les messages importants.
-  - Badge stylisé `[MOT]` encadrant les mots-clés pour une netteté visuelle parfaite.
-  - Palette de 7 couleurs d'accentuation au choix dans les paramètres LAM.
-  - Sons d'alerte haute audibilité personnalisables.
-- **Recherche en Direct dans le Chat (SearchBox) :**
-  - Filtrage instantané de l'historique du canal actif par auteur ou mot-clé.
-- **Copie Rapide & Détection d'URLs :**
-  - Détection automatique et coloration des liens Discord et Web avec modale de copie dédiée.
-- **Ventes de Boutique de Guilde Améliorées :**
-  - Extraction du nom ou lien réel de l'objet vendu (`|H1:item:...|h[Nom]|h`) depuis le corps de la facture.
-- **Statuts de Guilde Épurés :**
-  - Suppression des répétitions de noms de guilde et contraste vert/gris pour connexions/déconnexions.
-- **Support Multi-Résolutions :**
-  - Détection automatique pour écrans 720p, 1080p, 1440p (2K) et 2160p (4K) avec curseur d'échelle.
+- **Stabilité Totale du Curseur & Focus Caméra :**
+  - Suppression intégrale des forçages manuels de caméra (`SetGameCameraUIMode`) au profit d'une gestion fluide et native de la fenêtre flottante (`TopLevelControl`).
+  - Consommation stricte de l'événement clic de souris (`return true`) sur l'icône flottante HUD (MinBar) afin d'éviter tout ciblage ou attaque accidentelle dans le monde 3D.
+- **Persistance Renforcée des Données & Géométrie :**
+  - Mémorisation et restauration exacte de la position (`windowPos`), des dimensions de la fenêtre (`windowDimensions`), de la taille de police (`chatFontSize`) et du thème choisi à chaque connexion, téléportation ou `/reloadui`.
+  - Correction de la table de sélection de la durée de rétention de l'historique (24h, 3 jours, 1 semaine, 1 mois, Illimité) pour une persistance sans faille.
+- **Résolution Multi-Source des Pseudos & Whispers :**
+  - Résolution dynamique des comptes `@AccountName` à travers le groupe, la liste d'amis et les 5 guildes du joueur pour fiabiliser les messages privés.
+  - Mémorisation de l'état de fermeture des onglets de chuchotement pour empêcher leur réouverture involontaire lors des transitions de zone.
+- **Bilinguisme Intégral (FR / EN) :**
+  - Traduction exhaustive et vérifiée à 100% de toutes les nouvelles options, descriptions, infobulles et noms de canaux en français et en anglais.
+- **Épuration de l'Interface :**
+  - Suppression des options obsolètes (bouton de réduction docké superflu, paliers de résolution rigides) pour une expérience utilisateur plus propre, légère et moderne.
 
 ---
 
-### 🇬🇧 English
-- **Custom Keywords & Mention Alerts (Pings):**
-  - Real-time monitoring with `★` timestamp prefix and clean `[KEYWORD]` bracketed badges.
-  - 7 selectable accent colors and customizable audio chimes.
-- **Live Chat Search (SearchBox):**
-  - Real-time instant filtering of active channel history by author or keyword.
-- **Quick Copy Modal & Link Detection:**
-  - Automatic detection and highlighting for Web and Discord links with dedicated copy window.
-- **Enhanced Guild Store Sales:**
-  - True sold item name/link extraction from mail invoices with refined CSA alerts.
-- **Multi-Resolution UI Scaling:**
-  - Auto-detection for 720p to 4K displays and manual scale slider.
+## [1.2.2] - 2026-08-30
+
+- Refonte du système de nettoyage et de formatage des liens d'objets dans le canal Butin & Loots.
+- Synchronisation bidirectionnelle avec LootLog (capture des loots personnels et de groupe avec lien direct vers le joueur).
+- Ajout des pilules de filtrage linguistique pour le canal Zone (Toutes, FR, EN, DE, ES, Global).
+- Système de mots-clés et mentions personnalisées (Pings dorés et alertes sonores).
+- Système de réorganisation des onglets par glisser-déposer (Drag & Drop) avec sauvegarde automatique.

@@ -83,6 +83,27 @@ function R:Anchor()
     end
 end
 
+function R:AnchorCompact()
+    if not self.compactFrame then return end
+    self.compactFrame:ClearAnchors()
+    local left = tonumber(EPC.saved and EPC.saved.repairCostCompactLeft) or -1
+    local top = tonumber(EPC.saved and EPC.saved.repairCostCompactTop) or -1
+    local rootW = GuiRoot and tonumber(GuiRoot:GetWidth()) or 0
+    local rootH = GuiRoot and tonumber(GuiRoot:GetHeight()) or 0
+    local savedOnScreen = left >= 0 and top >= 0
+        and (rootW <= 0 or left <= rootW - 40)
+        and (rootH <= 0 or top <= rootH - 24)
+    if savedOnScreen then
+        self.compactFrame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, left, top)
+    else
+        if EPC.saved then
+            EPC.saved.repairCostCompactLeft = -1
+            EPC.saved.repairCostCompactTop = -1
+        end
+        self.compactFrame:SetAnchor(TOPRIGHT, GuiRoot, TOPRIGHT, -38, 92)
+    end
+end
+
 function R:Create()
     local frame = wm:CreateTopLevelWindow("EAS_RepairCostOverlay")
     frame:SetDimensions(410, 98)
@@ -161,9 +182,36 @@ function R:Create()
         end
     end)
 
+    -- The ALWAYS presentation is intentionally a separate, text-only HUD item.
+    -- The detailed repair/recharge card remains exclusive to Inventory Only.
+    local compactFrame = wm:CreateTopLevelWindow("EAS_RepairCostCompactOverlay")
+    compactFrame:SetDimensions(260, 34)
+    compactFrame:SetClampedToScreen(true)
+    compactFrame:SetMouseEnabled(false)
+    compactFrame:SetMovable(false)
+    compactFrame:SetHidden(true)
+
+    local compactLabel = wm:CreateControl("EAS_RepairCostCompactOverlay_Label", compactFrame, CT_LABEL)
+    compactLabel:SetAnchorFill(compactFrame)
+    compactLabel:SetFont("$(BOLD_FONT)|18|soft-shadow-thick")
+    compactLabel:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    compactLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    compactLabel:SetColor(0.94, 0.82, 0.44, 1)
+    compactLabel:SetText("Repair: 0g")
+
+    compactFrame:SetHandler("OnMoveStop", function(control)
+        if EPC.saved then
+            EPC.saved.repairCostCompactLeft = control:GetLeft()
+            EPC.saved.repairCostCompactTop = control:GetTop()
+        end
+    end)
+
+    self.compactFrame, self.compactLabel = compactFrame, compactLabel
+    self.compactHudFragment029125 = EPC.CreateHudFadeFragment and EPC:CreateHudFadeFragment(compactFrame) or nil
     self.frame, self.bg, self.title, self.subtitle = frame, bg, title, subtitle
     self.rows, self.total, self.wallet, self.hint = rows, total, wallet, hint
     self:Anchor()
+    self:AnchorCompact()
     self:ApplyNormalDrawOrder()
 end
 
@@ -224,21 +272,89 @@ function R:IsInventoryOpen()
     return false
 end
 
-function R:Refresh()
-    if not self.frame or not EPC.saved then return end
-    local show = EPC.saved.showRepairCostOverlay ~= false
-    if not self.layoutMode then
-        local mode = EPC.saved.repairCostVisibility or "INVENTORY"
-        if mode == "INVENTORY" then
-            show = show and self:IsInventoryOpen()
-        else
-            show = show
+function R:IsPauseMenuOpen()
+    if not SCENE_MANAGER or type(SCENE_MANAGER.IsShowing) ~= "function" then return false end
+    -- Keyboard Esc menu plus the equivalent gamepad/player menus.  The compact
+    -- Always HUD is gameplay information and should not sit on top of Pause.
+    local scenes = { "gameMenuInGame", "gameMenu", "gamepad_main_menu", "gamepad_player_menu", "gamepad_options_root" }
+    for i = 1, #scenes do
+        local ok, showing = pcall(SCENE_MANAGER.IsShowing, SCENE_MANAGER, scenes[i])
+        if ok and showing == true then return true end
+        if type(SCENE_MANAGER.GetScene) == "function" then
+            local okScene, scene = pcall(SCENE_MANAGER.GetScene, SCENE_MANAGER, scenes[i])
+            if okScene and scene and type(scene.GetState) == "function" then
+                local okState, state = pcall(scene.GetState, scene)
+                if okState and ((SCENE_SHOWING ~= nil and state == SCENE_SHOWING) or (SCENE_SHOWN ~= nil and state == SCENE_SHOWN)) then return true end
+            end
         end
     end
-    self.frame:SetHidden(not show)
-    if not show then return end
+    return false
+end
+
+
+
+function R:ShouldShowCompactHUD()
+    if not EPC.saved or EPC.saved.enabled == false or EPC.saved.showRepairCostOverlay == false then return false end
+    if (EPC.saved.repairCostVisibility or "INVENTORY") ~= "ALWAYS" then return false end
+    if self.layoutMode then return true end
+    return not (EPC.IsGameplayHudSuppressed and EPC:IsGameplayHudSuppressed() == true)
+end
+
+function R:ApplyCompactHudReason(showRequested)
+    showRequested = showRequested == true
+    if self.compactHudFragment029125 and type(self.compactHudFragment029125.SetHiddenForReason) == "function" then
+        pcall(self.compactHudFragment029125.SetHiddenForReason, self.compactHudFragment029125, "EAS_REPAIR_DISABLED", not showRequested)
+    elseif self.compactFrame then
+        self.compactFrame:SetHidden(not showRequested)
+    end
+end
+
+function R:Refresh()
+    if not self.frame or not self.compactFrame or not EPC.saved then return end
+
+    local enabled = EPC.saved.showRepairCostOverlay ~= false
+    local mode = EPC.saved.repairCostVisibility or "INVENTORY"
+    local showDetail = false
+    local showCompact = false
+
+    if enabled then
+        if mode == "ALWAYS" then
+            showCompact = self:ShouldShowCompactHUD()
+        else
+            showDetail = self:IsInventoryOpen()
+        end
+    end
+
+    -- HUD Layout Mode previews only the presentation selected by the user.
+    if self.layoutMode then
+        showDetail = enabled and mode ~= "ALWAYS"
+        showCompact = enabled and mode == "ALWAYS"
+    end
+
+    self.frame:SetHidden(not showDetail)
+    self:ApplyCompactHudReason(showCompact)
+    if showCompact then
+        -- Do not force alpha here. ZO_HUDFadeSceneFragment owns the compact
+        -- readout's fade while the player idles or switches UI/window states.
+        pcall(function()
+            if self.compactFrame.SetTopLevel then self.compactFrame:SetTopLevel(true) end
+            if self.compactFrame.SetDrawTier and DT_HIGH then self.compactFrame:SetDrawTier(DT_HIGH) end
+            if self.compactFrame.SetDrawLayer and DL_OVERLAY then self.compactFrame:SetDrawLayer(DL_OVERLAY) end
+            if self.compactFrame.SetDrawLevel then self.compactFrame:SetDrawLevel(940) end
+            if self.compactFrame.BringWindowToTop then self.compactFrame:BringWindowToTop() end
+        end)
+    end
+
+    if not showDetail and not showCompact then return end
 
     local data, totalCost = self:BuildRows()
+    if showCompact then
+        self.compactLabel:SetText("Repair: " .. moneyText(totalCost))
+        self.compactFrame:SetScale(tonumber(EPC.saved.repairCostScale) or 1.0)
+    end
+
+    if not showDetail then return end
+
     for i,row in ipairs(self.rows or {}) do
         local item = data[i]
         row:SetHidden(item == nil)
@@ -298,6 +414,16 @@ function R:ApplyNormalDrawOrder()
     setDrawOrder(self.total, tier, layer, 50)
     setDrawOrder(self.wallet, tier, layer, 50)
     setDrawOrder(self.hint, tier, layer, 50)
+    if self.compactFrame then
+        -- The compact Always HUD must sit above ordinary gameplay controls.
+        pcall(function()
+            if self.compactFrame.SetTopLevel then self.compactFrame:SetTopLevel(true) end
+            if self.compactFrame.SetDrawTier and DT_HIGH then self.compactFrame:SetDrawTier(DT_HIGH) end
+            if self.compactFrame.SetDrawLayer and DL_OVERLAY then self.compactFrame:SetDrawLayer(DL_OVERLAY) end
+            if self.compactFrame.SetDrawLevel then self.compactFrame:SetDrawLevel(940) end
+        end)
+        setDrawOrder(self.compactLabel, DT_HIGH or tier, DL_OVERLAY or layer, 950)
+    end
 end
 
 function R:RaiseForLayout()
@@ -327,18 +453,30 @@ function R:RaiseForLayout()
     setDrawOrder(self.total, tier, layer, 920)
     setDrawOrder(self.wallet, tier, layer, 920)
     setDrawOrder(self.hint, tier, layer, 925)
+    if self.compactFrame then
+        pcall(function()
+            if self.compactFrame.SetTopLevel then self.compactFrame:SetTopLevel(true) end
+            if self.compactFrame.SetDrawTier and DT_HIGH then self.compactFrame:SetDrawTier(DT_HIGH) end
+            if self.compactFrame.SetDrawLayer and DL_OVERLAY then self.compactFrame:SetDrawLayer(DL_OVERLAY) end
+            if self.compactFrame.SetDrawLevel then self.compactFrame:SetDrawLevel(940) end
+            if self.compactFrame.BringWindowToTop then self.compactFrame:BringWindowToTop() end
+        end)
+        setDrawOrder(self.compactLabel, tier, layer, 950)
+    end
 end
 
 function R:SetLayoutMode(active)
     self.layoutMode = active == true
-    if not self.frame then return end
-    self.frame:SetMouseEnabled(self.layoutMode)
-    self.frame:SetMovable(self.layoutMode)
-    if self.hint then self.hint:SetHidden(not self.layoutMode) end
+    if not self.frame or not self.compactFrame then return end
+    local mode = EPC.saved and EPC.saved.repairCostVisibility or "INVENTORY"
+    local detailMove = self.layoutMode and mode ~= "ALWAYS"
+    local compactMove = self.layoutMode and mode == "ALWAYS"
+    self.frame:SetMouseEnabled(detailMove)
+    self.frame:SetMovable(detailMove)
+    self.compactFrame:SetMouseEnabled(compactMove)
+    self.compactFrame:SetMovable(compactMove)
+    if self.hint then self.hint:SetHidden(not detailMove) end
     self:Refresh()
-    -- Refresh can unhide the window after LibAddonMenu has already taken the
-    -- top-level z-order. Raise it only after it is visible so it remains
-    -- draggable with Settings still open.
     if self.layoutMode then
         self:RaiseForLayout()
     else
@@ -349,7 +487,9 @@ end
 function R:ResetPosition()
     if not EPC.saved then return end
     EPC.saved.repairCostLeft, EPC.saved.repairCostTop = -1, -1
+    EPC.saved.repairCostCompactLeft, EPC.saved.repairCostCompactTop = -1, -1
     self:Anchor()
+    self:AnchorCompact()
 end
 
 function R:Initialize()
@@ -370,11 +510,12 @@ function R:Initialize()
     if EVENT_PLAYER_COMBAT_STATE then EVENT_MANAGER:RegisterForEvent(prefix .. "_Combat", EVENT_PLAYER_COMBAT_STATE, function() self:Refresh() end) end
     if EVENT_PLAYER_ACTIVATED then EVENT_MANAGER:RegisterForEvent(prefix .. "_Activated", EVENT_PLAYER_ACTIVATED, function() self:Refresh() end) end
 
+
     -- Inventory update events do not necessarily fire when the scene itself closes.
     -- Listen to the keyboard and gamepad inventory scene states so the estimate
     -- hides immediately when Inventory is dismissed.
     if SCENE_MANAGER and type(SCENE_MANAGER.GetScene) == "function" then
-        for _, sceneName in ipairs({"inventory", "gamepad_inventory_root"}) do
+        for _, sceneName in ipairs({"inventory", "gamepad_inventory_root", "gameMenuInGame", "gameMenu", "gamepad_main_menu", "gamepad_player_menu", "gamepad_options_root"}) do
             local ok, scene = pcall(SCENE_MANAGER.GetScene, SCENE_MANAGER, sceneName)
             if ok and scene and type(scene.RegisterCallback) == "function" then
                 scene:RegisterCallback("StateChange", function()

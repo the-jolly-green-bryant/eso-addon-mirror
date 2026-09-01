@@ -358,9 +358,17 @@ function U:UpdateCombatHUD(summary)
     if movePreview then
         self.combatHudStatus:SetText("DRAG TO MOVE  •  /esosuite hud lock")
     elseif summary.active then
-        self.combatHudStatus:SetText(string.format("LIVE  %.1fs", summary.duration or 0))
+        if (summary.petDamage or 0) > 0 or (summary.companionDamage or 0) > 0 then
+            self.combatHudStatus:SetText(string.format("LIVE  %.1fs  •  ALL %s DPS", summary.duration or 0, formatNumber(summary.combinedDps or summary.dps or 0)))
+        else
+            self.combatHudStatus:SetText(string.format("LIVE  %.1fs", summary.duration or 0))
+        end
     else
-        self.combatHudStatus:SetText(string.format("LAST FIGHT  %.1fs", summary.duration or 0))
+        if (summary.petDamage or 0) > 0 or (summary.companionDamage or 0) > 0 then
+            self.combatHudStatus:SetText(string.format("LAST %.1fs  •  ALL %s DPS", summary.duration or 0, formatNumber(summary.combinedDps or summary.dps or 0)))
+        else
+            self.combatHudStatus:SetText(string.format("LAST FIGHT  %.1fs", summary.duration or 0))
+        end
     end
 
     local m = self.combatHudMetrics
@@ -1026,14 +1034,14 @@ function U:ApplyInteractionMode(active)
         self.modePill:SetEdgeColor(unpack(C.gold))
         self.modePillText:SetColor(unpack(C.gold))
         self.modePillText:SetText("INTERACT")
-        self.footerHint:SetText("INTERACT MODE - click the suite now; press the same hotkey or Esc to return to camera control")
+        self.footerHint:SetText("INTERACT MODE - click the Suite now; press Esc to return to camera control")
     else
         self.background:SetEdgeColor(unpack(C.edge))
         self.modePill:SetCenterColor(0.04, 0.09, 0.12, 1)
         self.modePill:SetEdgeColor(unpack(C.blue))
         self.modePillText:SetColor(unpack(C.blue))
         self.modePillText:SetText("SUITE")
-        self.footerHint:SetText("Use 'Interact with Suite' to release the mouse and operate the UI during gameplay")
+        self.footerHint:SetText("Suite controls are available from the Codex and HUD layout tools")
     end
 end
 

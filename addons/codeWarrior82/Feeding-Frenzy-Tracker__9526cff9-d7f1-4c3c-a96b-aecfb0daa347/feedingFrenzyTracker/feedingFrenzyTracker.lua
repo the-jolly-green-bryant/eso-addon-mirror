@@ -269,13 +269,13 @@ local function onAddOnLoaded(event, name)
 	--notify that add-on has been loaded
 	zo_callLater(function() printMessage("add-on successfully loaded") end, 500)
 	
+	--load saved variables
+    feedingFrenzyTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("feedAddonVars", 1, "Settings", feedingFrenzyTracker.defaults, GetUnitName("player"))
+	
 	--notify if tracking is disabled
 	if not feedingFrenzyTracker.savedVariables.trackFF then
 		zo_callLater(function() printMessageTest("tracking disabled") end, 600)
 	end
-
-    --load saved variables
-    feedingFrenzyTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("feedAddonVars", 1, "Settings", feedingFrenzyTracker.defaults, GetUnitName("player"))
 
     --setup text field areas
     ffAddon:SetMovable(true)

@@ -14,7 +14,8 @@ local DEFAULTS = {
     hideOfficialChat = false,
     backdropAlpha = 95,
     sidebarCollapsed = false,
-    autoCollapseOnMenus = true,
+    autoHideOnGameMenu = true,
+    chatFontSize = 16,
     soundOnWhisper = true,
     whisperSound = 'champion',
     persistHistory = true,
@@ -42,9 +43,6 @@ local DEFAULTS = {
     keywordList = '',
     keywordSound = 'champion',
     keywordColor = 'FFD700',
-    -- Resolution & Scaling
-    scaleMode = 'auto',
-    windowScale = 1.0,
     floatingIconPos = { x = 60, y = 60 },
     windowPos = nil,
     windowDimensions = { width = 940, height = 520 },
@@ -138,7 +136,7 @@ function Settings.RegisterLAM()
         name = "AetherChat",
         displayName = "|cE5B558AETHER|r|cFFFFFFCHAT|r",
         author = "|cE5B558@AlexQuiet|r",
-        version = "1.2.2",
+        version = "1.2.3",
         registerForRefresh = true,
         registerForDefaults = true,
     }
@@ -199,6 +197,14 @@ function Settings.RegisterLAM()
         '1 semaine (7 jours) / 1 week',
         '1 mois (30 jours) / 1 month',
         'Illimité (Jamais) / Unlimited',
+    }
+
+    local retentionValues = {
+        86400,
+        259200,
+        604800,
+        2592000,
+        0,
     }
 
     local keywordColorChoices = {
@@ -563,48 +569,26 @@ function Settings.RegisterLAM()
             default = 'FFD700',
         },
 
-        -- ===================== RESOLUTION & SCALE =====================
+        -- ===================== TYPOGRAPHY & FONT SIZE =====================
         {
             type = "header",
-            name = L('SET_SCALE_HEADER'),
-        },
-        {
-            type = "dropdown",
-            name = L('SET_SCALE_MODE'),
-            tooltip = L('SET_SCALE_MODE_TT'),
-            choices = {
-                L('SET_SCALE_AUTO'),
-                L('SET_SCALE_720'),
-                L('SET_SCALE_1080'),
-                L('SET_SCALE_1440'),
-                L('SET_SCALE_2160'),
-            },
-            choicesValues = { 'auto', '720', '1080', '1440', '2160' },
-            getFunc = function() return Settings.Get('scaleMode', 'auto') end,
-            setFunc = function(value)
-                Settings.Set('scaleMode', value)
-                if AetherChat.Messenger and AetherChat.Messenger.ApplyResolutionScale then
-                    AetherChat.Messenger.ApplyResolutionScale()
-                end
-            end,
-            default = 'auto',
+            name = L('SET_FONT_HEADER'),
         },
         {
             type = "slider",
-            name = L('SET_SCALE_SLIDER'),
-            tooltip = L('SET_SCALE_SLIDER_TT'),
-            min = 60,
-            max = 150,
-            step = 5,
-            getFunc = function() return math.floor(Settings.Get('windowScale', 1.0) * 100) end,
+            name = L('SET_FONT_SIZE'),
+            tooltip = L('SET_FONT_SIZE_TT'),
+            min = 12,
+            max = 24,
+            step = 1,
+            getFunc = function() return Settings.Get('chatFontSize', 16) end,
             setFunc = function(value)
-                Settings.Set('windowScale', value / 100)
-                if AetherChat.Messenger and AetherChat.Messenger.ApplyResolutionScale then
-                    AetherChat.Messenger.ApplyResolutionScale()
+                Settings.Set('chatFontSize', value)
+                if AetherChat.Messenger and AetherChat.Messenger.ApplyChatFontSize then
+                    AetherChat.Messenger.ApplyChatFontSize(value)
                 end
             end,
-            disabled = function() return Settings.Get('scaleMode', 'auto') ~= 'manual' end,
-            default = 100,
+            default = 16,
         },
 
         -- ===================== LOOT HEADER =====================
@@ -669,25 +653,11 @@ function Settings.RegisterLAM()
         },
         {
             type = "checkbox",
-            name = L('SET_AUTO_COLLAPSE_MENUS'),
-            tooltip = L('SET_AUTO_COLLAPSE_MENUS_TT'),
-            getFunc = function() return Settings.Get('autoCollapseOnMenus', true) end,
+            name = L('SET_AUTO_HIDE_GAME_MENU'),
+            tooltip = L('SET_AUTO_HIDE_GAME_MENU_TT'),
+            getFunc = function() return Settings.Get('autoHideOnGameMenu', true) end,
             setFunc = function(value)
-                Settings.Set('autoCollapseOnMenus', value)
-            end,
-            default = true,
-        },
-        {
-            type = "checkbox",
-            name = L('SET_GEN_ICON'),
-            tooltip = L('SET_GEN_ICON_TT'),
-            getFunc = function() return Settings.Get('enableFloatingIcon', true) end,
-            setFunc = function(value)
-                Settings.Set('enableFloatingIcon', value)
-                if AetherChat_MinBar then
-                    local isWindowHidden = (not AetherChat_MessengerWindow) or AetherChat_MessengerWindow:IsHidden()
-                    AetherChat_MinBar:SetHidden(not (value and isWindowHidden))
-                end
+                Settings.Set('autoHideOnGameMenu', value)
             end,
             default = true,
         },

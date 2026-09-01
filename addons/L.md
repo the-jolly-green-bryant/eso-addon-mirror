@@ -80,7 +80,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [LibBSCWizardBridge](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BloodStainCHild/LibBSCWizardBridge__4644) | BloodStainCHild | PC / Mac | 1.0.1 |
 | [LibCharacter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/zelenin/LibCharacter__2806) | zelenin | PC / Mac | 0.0.8 |
 | [LibCharacterKnowledge](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/LibCharacterKnowledge__ec23fab6-f620-4366-90ab-82e8702a62bb) | code65536 | Console | — |
-| [LibCharacterKnowledge](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/LibCharacterKnowledge__3317) | code65536 | PC / Mac | 3.1.1 |
+| [LibCharacterKnowledge](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/LibCharacterKnowledge__3317) | code65536 | PC / Mac | 3.1.2 |
 | [LibChatMenuButton](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/akamatsu02/LibChatMenuButton__3805) | akamatsu02 | PC / Mac | 1.6 |
 | [LibChatMessage](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sirinsidiator/LibChatMessage__37466506-930a-44cb-864d-2bd760f24da7) | sirinsidiator | Console | — |
 | [LibChatMessage](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sirinsidiator/LibChatMessage__2382) | sirinsidiator | PC / Mac | 1.2.3 |
@@ -125,7 +125,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [LibEventHandler](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Justinon/LibEventHandler__1452) | Justinon | PC / Mac | 1.3.13 |
 | [LibExoYsUtilities](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ExoY/LibExoYsUtilities__3363) | ExoY | PC / Mac | 9 |
 | [LibExtendedInventory](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Xhrysanth/LibExtendedInventory__28dff940-503c-4c6c-8921-044ad6e35a86) | Xhrysanth | Console | — |
-| [LibExtendedJournal](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/LibExtendedJournal__4031) | code65536 | PC / Mac | 2.5.3 |
+| [LibExtendedJournal](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/LibExtendedJournal__4031) | code65536 | PC / Mac | 2.5.3.1 |
 | [LibExtendedSavedVars](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Phobus11/LibExtendedSavedVars__4755) | Phobus11 | PC / Mac | 104 |
 | [LibFBCommon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FlatBadger/LibFBCommon__3977) | FlatBadger | PC / Mac | 1.0.7 |
 | [LibFeedback](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Dolgubon/LibFeedback__2079) | Dolgubon | PC / Mac | 1.32 |
@@ -248,7 +248,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [LibServerResetTime](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/LibServerResetTime__4427) | code65536 | PC / Mac | 2.0.0 |
 | [LibSetDetection](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ExoY/LibSetDetection__3338) | ExoY | PC / Mac | 5.0 |
 | [LibSets (All set items ingame & preview. lua API + excel sheet)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Baertram/LibSets-All-set-items-ingame-preview.-lua-API-excel-sheet__2241) | Baertram | PC / Mac | 0.9.3 |
-| [LibSFUtils](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shadowfen/LibSFUtils__2231) | Shadowfen | PC / Mac | 76 |
+| [LibSFUtils](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shadowfen/LibSFUtils__2231) | Shadowfen | PC / Mac | 77 |
 | [LibShifterBox](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Klingo/LibShifterBox__2444) | Klingo | PC / Mac | 0.7.0 |
 | [LibSimpleArrow](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sshogrin/LibSimpleArrow__4251) | sshogrin | PC / Mac | 1.0.0 |
 | [LibSimpleSavedVars](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/zelenin/LibSimpleSavedVars__2805) | zelenin | PC / Mac | 0.0.3 |
@@ -320,7 +320,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [LongPressCtrlToInteract](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/LongPressCtrlToInteract__3273) | Masteroshi430 | PC / Mac | 2026.07.19 |
 | [Looping Emotes](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/YayRP/Looping-Emotes__973) | YayRP | PC / Mac | 1.0.1 |
 | [Loot Alert](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Thyreos/Loot-Alert__2059) | Thyreos | PC / Mac | 1.0.2 |
-| [Loot Log](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Loot-Log__1455) | code65536 | PC / Mac | 4.9.6 |
+| [Loot Log](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Loot-Log__1455) | code65536 | PC / Mac | 4.9.6.1 |
 | [Loot Log](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ReliktKoala/Loot-Log__d527acdc-07b2-453a-9519-d34261e02e5c) | ReliktKoala | Console | — |
 | [Loot Reader](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Saleand/Loot-Reader__4327) | Saleand | PC / Mac | 0.3 |
 | [Loot Sanitizer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/grin3671/Loot-Sanitizer__4189) | grin3671 | PC / Mac | 0.20.0 |

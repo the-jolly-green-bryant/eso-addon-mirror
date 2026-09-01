@@ -1,5 +1,5 @@
 local NAME = "AntiClankerAddonConsortiumUpdateChecker"
-local VERSION = 7
+local VERSION = 10
 
 if type(_G[NAME]) == "number" and _G[NAME] >= VERSION then return end
 _G[NAME] = VERSION
@@ -7,19 +7,19 @@ _G[NAME] = VERSION
 local KNOWN_VERSIONS = {
     -- Kyzeragon
     ["CrutchAlerts"]          = 22400,
-    ["KyzderpsDerps"]         = 1510,
+    ["KyzderpsDerps"]         = 1520,
 
     -- code65536
-    ["CharacterKnowledge"]    = 301010,
+    ["CharacterKnowledge"]    = 301020,
     ["CollectiblesTracker"]   = 306000,
-    ["CombatAlerts"]          = 206010,
-    ["GroupBuffPanels"]       = 203000,
-    ["ItemBrowser"]           = 407000,
+    ["CombatAlerts"]          = 206020,
+    ["GroupBuffPanels"]       = 203010,
+    ["ItemBrowser"]           = 407010,
     ["LootLog"]               = 409060,
-    ["Raidificator"]          = 407020,
+    ["Raidificator"]          = 407030,
 
     -- M0R_Gaming
-    ["M0RMarkers"]            = 210,
+    ["M0RMarkers"]            = 222,
 
     -- DakJaniels
     ["LuiExtended"]           = 7263,
@@ -33,9 +33,9 @@ local MESSAGE = {
     de = "[ACAC Update Checker] Du hast das Add-on „<<1>>“ installiert, aber es handelt sich dabei um eine veraltete Version. Deine Version ist <<2>>, während die erwartete Version <<3>> oder neuer ist.",
     es = "[ACAC Update Checker] Tienes una instalación antigua del addon “<<1>>”. Tu instalación es la versión <<2>> mientras que la versión esperada es <<3>> o más reciente.",
     -- fr = "",
-    -- jp = "",
+    jp = "[ACAC Update Checker] インストールされているアドオン「<<1>>」は古いバージョンです。現在のバージョンは <<2>> ですが、必要なバージョンは <<3>> 以上です。",
     ru = "[ACAC Update Checker] Установленная у вас версия дополнения “<<1>>” устарела. Текущая версия установленного дополнения <<2>>. Установите версию <<3>> или выше.",
-    -- zh = "",
+    zh = "[ACAC Update Checker] 你当前使用的<<1>>为旧版本。当前的版本为<<2>>，而推荐版本为<<3>>或者更新。",
 }
 MESSAGE = MESSAGE[GetCVar("Language.2")] or MESSAGE.default
 

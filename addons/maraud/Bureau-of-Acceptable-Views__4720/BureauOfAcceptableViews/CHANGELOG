@@ -3,6 +3,19 @@
 
 
 
+[color=#6FCB9F]Version: 3.9.000146[/color]
+
+Unified camera response, input reliability, and dependency clarity update.
+
+- Added one global Camera response profile shared by Dynamic FOV, context presets, Adaptive PvP framing, and over-the-shoulder movement.
+- Added As in ESO, Instant, Responsive (90 ms fast-settling), and Smooth (300 ms ease-in/out) response modes.
+- Added coordinated temporary suspension of ESO camera smoothing so overlapping BAV transitions cannot restore it early; emergency and load-screen recovery remain immediate.
+- Migrated existing smoothing preferences automatically and replaced the two separate smoothing checkboxes with one response dropdown.
+- Fixed live offset smoothing suspension, rejected fast writes, and false restore-success notices.
+- Adaptive PvP now recognizes native mouse-wheel and gamepad zoom as manual distance control.
+- Clarified that LibAddonMenu-2.0 is a required dependency.
+
+
 [color=#6FCB9F]Version: 3.8.145105[/color]
 
 Live camera-offset keybinds with a remembered home pose.

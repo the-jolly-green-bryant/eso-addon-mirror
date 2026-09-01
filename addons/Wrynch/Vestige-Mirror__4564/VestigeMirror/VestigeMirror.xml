@@ -62,6 +62,39 @@
             </Controls>
         </Control>
 
+        <Control name="VestigeMirrorMementoRow" virtual="true" mouseEnabled="true">
+            <Dimensions x="258" y="46"/>
+            <Controls>
+                <Backdrop name="$(parent)Backdrop" centerColor="090A0CCC" edgeColor="00000000" edgeSize="1" layer="BACKGROUND">
+                    <AnchorFill/>
+                </Backdrop>
+
+                <Backdrop name="$(parent)Highlight" hidden="true" centerColor="B9A87835" edgeColor="B9A87899" edgeSize="1" layer="OVERLAY">
+                    <AnchorFill/>
+                </Backdrop>
+
+                <Backdrop name="$(parent)IconFrame" centerColor="020304FF" edgeColor="6E6658AA" edgeSize="1" layer="OVERLAY">
+                    <Dimensions x="36" y="36"/>
+                    <Anchor point="LEFT" offsetX="6"/>
+                </Backdrop>
+
+                <Texture name="$(parent)Icon" layer="OVERLAY">
+                    <Dimensions x="30" y="30"/>
+                    <Anchor point="CENTER" relativeTo="$(parent)IconFrame"/>
+                </Texture>
+
+                <Label name="$(parent)Name" font="$(BOLD_FONT)|14|soft-shadow-thick" color="E8E2D5FF" verticalAlignment="CENTER" maxLineCount="1" wrapMode="ELLIPSIS">
+                    <Dimensions x="204" y="40"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)IconFrame" relativePoint="RIGHT" offsetX="9"/>
+                </Label>
+
+                <Texture name="$(parent)Divider" textureFile="EsoUI/Art/Miscellaneous/horizontalDivider.dds" color="81745F" alpha="0.18" layer="OVERLAY">
+                    <Dimensions x="248" y="2"/>
+                    <Anchor point="BOTTOM"/>
+                </Texture>
+            </Controls>
+        </Control>
+
         <TopLevelControl name="VestigeMirrorWindow" hidden="true" mouseEnabled="false" keyboardEnabled="true">
             <AnchorFill/>
             <OnInitialized>
@@ -132,7 +165,7 @@
         </TopLevelControl>
 
         <TopLevelControl name="VestigeMirrorTextureBar" hidden="true" mouseEnabled="true" layer="OVERLAY" tier="HIGH">
-            <Dimensions x="1020" y="26"/>
+            <Dimensions x="1445" y="26"/>
             <Anchor point="BOTTOM" offsetY="-2"/>
             <Controls>
                 <Control name="$(parent)TextureNext" mouseEnabled="true">
@@ -193,6 +226,63 @@
                             <AnchorFill/>
                         </Label>
                     </Controls>
+                </Control>
+
+                <Control name="$(parent)Mementos" mouseEnabled="true">
+                    <Dimensions x="180" y="24"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)ToggleCollectibles" relativePoint="RIGHT" offsetX="12"/>
+                    <Controls>
+                        <Label name="$(parent)Label" font="$(BOLD_FONT)|16|soft-shadow-thick" color="F6F0DEFF" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="Play Memento">
+                            <AnchorFill/>
+                        </Label>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)FramePreset" mouseEnabled="true">
+                    <Dimensions x="210" y="24"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)Mementos" relativePoint="RIGHT" offsetX="12"/>
+                    <Controls>
+                        <Label name="$(parent)Label" font="$(BOLD_FONT)|16|soft-shadow-thick" color="F6F0DEFF" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="Frame: Full Body">
+                            <AnchorFill/>
+                        </Label>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+
+        <TopLevelControl name="VestigeMirrorMementoPicker" hidden="true" mouseEnabled="true" layer="OVERLAY" tier="HIGH" level="100">
+            <Dimensions x="300" y="430"/>
+            <Anchor point="BOTTOMRIGHT" offsetX="-28" offsetY="-36"/>
+            <Controls>
+                <Texture name="$(parent)SolidBackground1" textureFile="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="000000" alpha="1" layer="BACKGROUND" level="0">
+                    <AnchorFill/>
+                </Texture>
+
+                <Texture name="$(parent)SolidBackground2" textureFile="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="000000" alpha="1" layer="BACKGROUND" level="1">
+                    <AnchorFill/>
+                </Texture>
+
+                <Backdrop name="$(parent)Backdrop" centerColor="030405FF" edgeColor="80745FCC" edgeSize="1" layer="BACKGROUND" level="2">
+                    <AnchorFill/>
+                </Backdrop>
+
+                <Label name="$(parent)Title" font="$(BOLD_FONT)|16|soft-shadow-thick" color="F4EBD6FF" text="Mementos" modifyTextType="UPPERCASE">
+                    <Anchor point="TOPLEFT" offsetX="15" offsetY="12"/>
+                </Label>
+
+                <Label name="$(parent)Count" font="$(BOLD_FONT)|13|soft-shadow-thick" color="AFA793FF" horizontalAlignment="RIGHT">
+                    <Dimensions x="46" y="20"/>
+                    <Anchor point="TOPRIGHT" offsetX="-15" offsetY="13"/>
+                </Label>
+
+                <Texture name="$(parent)HeaderDivider" textureFile="EsoUI/Art/Miscellaneous/horizontalDivider.dds" color="B3A27F" alpha="0.55">
+                    <Dimensions x="270" y="4"/>
+                    <Anchor point="TOP" offsetY="39"/>
+                </Texture>
+
+                <Control name="$(parent)List" inherits="ZO_ScrollList" mouseEnabled="true">
+                    <Dimensions x="274" y="378"/>
+                    <Anchor point="TOPLEFT" offsetX="13" offsetY="44"/>
                 </Control>
             </Controls>
         </TopLevelControl>

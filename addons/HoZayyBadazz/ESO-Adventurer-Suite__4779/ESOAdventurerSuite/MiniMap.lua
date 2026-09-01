@@ -15,7 +15,7 @@ local LMD = LibMapData
 local GPS = LibGPS3
 local LMP = LibMapPins
 
-local EPC_SQUARE_FRAME_TEXTURE = "ESOAdventurerSuite/Art/minimap_eso_square_frame.dds"
+local EPC_SQUARE_FRAME_TEXTURE = EPC:AssetPath("Art/minimap_eso_square_frame.dds")
 
 local wm = WINDOW_MANAGER
 
@@ -843,10 +843,10 @@ function M:IsPvPIconOnlyMode()
 end
 
 function M:IsLabeledMapMode()
-    -- PvP mirrors ESO's own Cyrodiil presentation: icons + alliance transit
-    -- connections, without map-object names cluttering the field.
-    if self:IsPvPIconOnlyMode() then return false end
-    if type(IsUnitInDungeon) == "function" and safe(IsUnitInDungeon, false, "player") == true then return true end
+    -- The Suite minimap mirrors ESO's map icon presentation. ESO's full map
+    -- does not print a text label under every dungeon/service pin, so keep
+    -- object labels disabled here too. This also removes the old generic
+    -- "Map Location" spam seen on dungeon minimaps.
     return false
 end
 
@@ -995,12 +995,16 @@ local function easLocalPointForMap(mapId, gx, gy)
     return nil, nil
 end
 
-function M:CaptureNativeTownPin(pinType, pinTag, x, y, textureOverride)
+function M:CaptureNativeTownPin(pinType, pinTag, x, y, textureOverride, sizeOverride)
     if not EPC.saved then return end
-    -- Only mirror pins produced by the World Map the player actually opened.
-    -- Background quest/wayshrine scans also rebuild the native pin manager and
-    -- must never be allowed to pollute this cache.
-    if not self:IsWorldMapShowing() then return end
+    -- Normally capture pins while ESO's World Map is visible. 0.29.33 also
+    -- allows a tightly-scoped gameplay capture immediately after the player's
+    -- current map/sub-map changes. The scoped flag is set only by
+    -- CaptureAllNativeMapPins(true), after it verifies that ESO's current map
+    -- really matches the player's location. This keeps quest/wayshrine scans
+    -- from polluting the minimap cache while still letting the minimap follow
+    -- cities, homes, delves, interiors, and zone maps automatically.
+    if not self:IsWorldMapShowing() and self.allowGameplayNativeCapture ~= true then return end
     x, y = tonumber(x), tonumber(y)
     if not x or not y or x < 0 or x > 1 or y < 0 or y > 1 then return end
 
@@ -1029,6 +1033,9 @@ function M:CaptureNativeTownPin(pinType, pinTag, x, y, textureOverride)
     end
     if type(texture) ~= "string" or texture == "" or easNativeTownPinIsDynamic(texture) then return end
 
+    local size = tonumber(sizeOverride)
+    if size then size = clamp(size, 12, 64) end
+
     local ux, uy = easUniversalPointForMap(mapId, x, y)
     local zoneIndex, zoneId, zoneName = 0, 0, ""
     if type(GetCurrentMapZoneIndex) == "function" then
@@ -1046,41 +1053,54 @@ function M:CaptureNativeTownPin(pinType, pinTag, x, y, textureOverride)
 
     EPC.saved.miniMapNativeTownPins = EPC.saved.miniMapNativeTownPins or {}
     local key = tostring(mapId)
-    local list = EPC.saved.miniMapNativeTownPins[key]
-    if type(list) ~= "table" then list = {}; EPC.saved.miniMapNativeTownPins[key] = list end
+    local scratch = self.nativeCaptureScratch
+    local list
+    if scratch and tonumber(scratch.mapId) == mapId and type(scratch.list) == "table" then
+        list = scratch.list
+    else
+        list = EPC.saved.miniMapNativeTownPins[key]
+        if type(list) ~= "table" then list = {}; EPC.saved.miniMapNativeTownPins[key] = list end
+    end
 
-    local name = "Map Location"
+    local name = ""
     if type(pinTag) == "table" then
         local zi = tonumber(pinTag.zoneIndex or pinTag.zone or 0) or 0
         local pi = tonumber(pinTag.poiIndex or pinTag.poi or 0) or 0
         if zi > 0 and pi > 0 and type(GetPOIInfo) == "function" then
             local n = select(1, safe(GetPOIInfo, "", zi, pi))
-            if type(n) == "string" and n ~= "" then name = clean(n, name) end
+            if type(n) == "string" and n ~= "" then name = clean(n, "") end
         elseif type(pinTag.name) == "string" and pinTag.name ~= "" then
-            name = clean(pinTag.name, name)
+            name = clean(pinTag.name, "")
         end
     end
 
     local rx, ry = math.floor(x * 100000 + 0.5), math.floor(y * 100000 + 0.5)
-    local id = tostring(pinType or "") .. ":" .. tostring(rx) .. ":" .. tostring(ry)
+    -- Texture is part of the identity because ESO can legitimately stack two
+    -- different native icons at the same normalized location.
+    local id = tostring(pinType or "") .. ":" .. tostring(rx) .. ":" .. tostring(ry) .. ":" .. tostring(texture)
     for i=1,#list do
         if list[i] and list[i].id == id then
             list[i].texture, list[i].name, list[i].x, list[i].y = texture, name, x, y
+            list[i].size = size or list[i].size
             list[i].sourceMapId, list[i].ux, list[i].uy = mapId, ux, uy
             list[i].zoneIndex, list[i].zoneId, list[i].zoneName = zoneIndex, zoneId, zoneName
-            self.staticPinsDirty = true
-            self.nativeTownPinsChanged = true
+            if not scratch then
+                self.staticPinsDirty = true
+                self.nativeTownPinsChanged = true
+            end
             return
         end
     end
     list[#list+1] = {
-        id=id, pinType=pinType, texture=texture, name=name, x=x, y=y,
+        id=id, pinType=pinType, texture=texture, name=name, x=x, y=y, size=size,
         sourceMapId=mapId, ux=ux, uy=uy,
         zoneIndex=zoneIndex, zoneId=zoneId, zoneName=zoneName,
     }
     while #list > 320 do table.remove(list, 1) end
-    self.staticPinsDirty = true
-    self.nativeTownPinsChanged = true
+    if not scratch then
+        self.staticPinsDirty = true
+        self.nativeTownPinsChanged = true
+    end
 end
 
 function M:HookNativeTownPins()
@@ -1102,10 +1122,14 @@ function M:HookNativeTownPins()
             end
             if not x or not y then return end
 
-            local texture
+            local texture, pinSize
             if type(pin.GetControl) == "function" then
                 local ok, control = pcall(pin.GetControl, pin)
                 if ok and control then
+                    if type(control.GetDimensions) == "function" then
+                        local okDim, width, height = pcall(control.GetDimensions, control)
+                        if okDim then pinSize = math.max(tonumber(width) or 0, tonumber(height) or 0) end
+                    end
                     if type(control.GetTextureFileName) == "function" then
                         local okTex, tex = pcall(control.GetTextureFileName, control)
                         if okTex and type(tex) == "string" and tex ~= "" then texture = tex end
@@ -1122,7 +1146,7 @@ function M:HookNativeTownPins()
                     end
                 end
             end
-            owner:CaptureNativeTownPin(pinType, pinTag, x, y, texture)
+            owner:CaptureNativeTownPin(pinType, pinTag, x, y, texture, pinSize)
         end)
     end
 
@@ -1140,19 +1164,44 @@ function M:HookNativeTownPins()
     self.nativeTownPinHooked = true
 end
 
-function M:CaptureAllNativeMapPins()
-    -- LibMapPins exposes ESO's live World Map pin manager. Snapshot every
-    -- finalized, non-dynamic native pin while the player is actually viewing
-    -- the map, then project it onto the independent minimap via LibGPS.
-    if not self:IsWorldMapShowing() or not LMP then return end
+function M:CaptureAllNativeMapPins(allowGameplayCapture)
+    -- Snapshot ESO's CURRENT live pin manager as one atomic set. 0.29.33 may
+    -- do this while the World Map is hidden, but only when the current mapId is
+    -- verified as the player's real current map/sub-map. This gives the
+    -- minimap a fresh pin set when crossing a city/home/interior boundary
+    -- without anchoring it to a parent map.
+    if not LMP then return false end
+
+    local worldMapShowing = self:IsWorldMapShowing()
+    local gameplayCapture = (not worldMapShowing) and allowGameplayCapture == true
+    if not worldMapShowing and not gameplayCapture then return false end
+
     local manager = LMP.pinManager
     if not manager and type(ZO_WorldMap_GetPinManager) == "function" then
         manager = ZO_WorldMap_GetPinManager()
     end
-    if not manager or type(manager.GetActiveObjects) ~= "function" then return end
+    if not manager or type(manager.GetActiveObjects) ~= "function" then return false end
+
+    local mapId = tonumber(safe(GetCurrentMapId, 0)) or 0
+    if mapId <= 0 then return false end
+
+    if gameplayCapture then
+        -- Do not snapshot a map that some unrelated addon/quest scan has made
+        -- current. It must be the exact map the Suite is rendering and ESO must
+        -- agree that it matches the player's location.
+        if mapId ~= (tonumber(self.mapId) or 0) then return false end
+        if type(DoesCurrentMapMatchMapForPlayerLocation) == "function"
+            and safe(DoesCurrentMapMatchMapForPlayerLocation, false) ~= true then
+            return false
+        end
+    end
 
     local ok, pins = pcall(manager.GetActiveObjects, manager)
-    if not ok or type(pins) ~= "table" then return end
+    if not ok or type(pins) ~= "table" then return false end
+
+    EPC.saved.miniMapNativeTownPins = EPC.saved.miniMapNativeTownPins or {}
+    self.nativeCaptureScratch = { mapId = mapId, list = {} }
+    self.allowGameplayNativeCapture = gameplayCapture
 
     for _, pin in pairs(pins) do
         if pin then
@@ -1171,10 +1220,14 @@ function M:CaptureAllNativeMapPins()
                 if okPos then x, y = tonumber(px), tonumber(py) end
             end
 
-            local texture
+            local texture, pinSize
             if type(pin.GetControl) == "function" then
                 local okControl, control = pcall(pin.GetControl, pin)
                 if okControl and control then
+                    if type(control.GetDimensions) == "function" then
+                        local okDim, width, height = pcall(control.GetDimensions, control)
+                        if okDim then pinSize = math.max(tonumber(width) or 0, tonumber(height) or 0) end
+                    end
                     local candidates = { control }
                     if type(GetControl) == "function" then
                         local okBg, bg = pcall(GetControl, control, "Background")
@@ -1200,10 +1253,25 @@ function M:CaptureAllNativeMapPins()
             end
 
             if x and y then
-                self:CaptureNativeTownPin(pinType, pinTag, x, y, texture)
+                self:CaptureNativeTownPin(pinType, pinTag, x, y, texture, pinSize)
             end
         end
     end
+
+    local snapshot = self.nativeCaptureScratch and self.nativeCaptureScratch.list or {}
+    self.nativeCaptureScratch = nil
+    self.allowGameplayNativeCapture = false
+
+    -- A hidden pin manager can briefly be empty while ESO is rebuilding a new
+    -- local map. Never replace a good snapshot with that transient empty set;
+    -- the scheduled retries below will capture again a few frames later.
+    if gameplayCapture and #snapshot == 0 then return false end
+
+    EPC.saved.miniMapNativeTownPins[tostring(mapId)] = snapshot
+    self.lastNativeSnapshotMapId = mapId
+    self.nativeTownPinsChanged = true
+    self.staticPinsDirty = true
+    return true
 end
 
 local function easUniversalMapRect(mapId)
@@ -1244,70 +1312,127 @@ local function easNativeTownPinAllowedOnMap(sourceMapId, currentMapId)
 end
 
 function M:AddCapturedNativeTownPins()
-    if not EPC.saved or type(EPC.saved.miniMapNativeTownPins) ~= "table" then return end
+    -- Exact native mirror: use ONLY the snapshot from the exact same mapId and
+    -- reuse ESO's normalized coordinates directly. Cross-map projection was the
+    -- source of shifted icons in interiors/town submaps and is intentionally not
+    -- used for this mirror layer.
+    self.nativeMirrorData = {}
+    self.useExactNativeStaticMirror = false
+    if not EPC.saved or type(EPC.saved.miniMapNativeTownPins) ~= "table" then return false end
     local currentMapId = tonumber(self.mapId) or 0
-    if currentMapId <= 0 then return end
+    if currentMapId <= 0 then return false end
 
-    local function alreadyNativeService(x, y, texture)
-        for i=1,#(self.serviceData or {}) do
-            local d=self.serviceData[i]
-            if d and d.nativeTown == true and mapPointNear(d.x,d.y,x,y,0.00012) and tostring(d.icon or "") == tostring(texture or "") then
-                return true
-            end
-        end
-        return false
-    end
+    local list = EPC.saved.miniMapNativeTownPins[tostring(currentMapId)]
+    if type(list) ~= "table" then return false end
 
-    -- Native town pins are rendered through the always-on service pool rather
-    -- than the optional POI layer.  This guarantees that the exact ESO icons
-    -- captured from an opened city/town map remain visible on the minimap even
-    -- when the user's generic POI layer is disabled or the normal POI scan does
-    -- not expose those services.
-    local caches = EPC.saved.miniMapNativeTownPins
-    for cacheKey, list in pairs(caches) do
-        if type(list) == "table" then
-            local sourceMapId = tonumber(cacheKey) or 0
-            local allowOnCurrentMap = easNativeTownPinAllowedOnMap(sourceMapId, currentMapId)
-            if allowOnCurrentMap then
-            for i=1,#list do
-                local row=list[i]
-                if type(row)=="table" and type(row.texture)=="string" and row.texture~="" then
-                    local x, y
-                    local ux, uy = tonumber(row.ux), tonumber(row.uy)
-                    if ux ~= nil and uy ~= nil then
-                        x, y = easLocalPointForMap(currentMapId, ux, uy)
-                    elseif sourceMapId == currentMapId then
-                        x, y = tonumber(row.x), tonumber(row.y)
-                        if x and y and (x < 0 or x > 1 or y < 0 or y > 1) then x, y = nil, nil end
-                    else
-                        local lx, ly = tonumber(row.x), tonumber(row.y)
-                        if sourceMapId > 0 and lx and ly then
-                            ux, uy = easUniversalPointForMap(sourceMapId, lx, ly)
-                            if ux and uy then
-                                row.sourceMapId, row.ux, row.uy = sourceMapId, ux, uy
-                                x, y = easLocalPointForMap(currentMapId, ux, uy)
-                            end
-                        end
-                    end
-
-                    if x and y and not alreadyNativeService(x,y,row.texture) then
-                        local data={
-                            x=x,y=y,icon=row.texture,name=clean(row.name,"Map Location"),
-                            discovered=true,nearby=true,nativeIcon=true,nativeTown=true,
-                            isService=true,kind="native_town",pinType=row.pinType,
-                        }
-                        if isStableMasterPOI(data.name,row.texture) then
-                            data.kind="stable"
-                            data.name=clean(data.name,"Stablemaster")
-                        elseif isSellMerchantPOI(data.name,row.texture) then
-                            data.kind="merchant"
-                        end
-                        self.serviceData[#self.serviceData+1]=data
-                    end
+    local seen = {}
+    for i=1,#list do
+        local row = list[i]
+        if type(row) == "table" and type(row.texture) == "string" and row.texture ~= "" then
+            local x, y = tonumber(row.x), tonumber(row.y)
+            if x and y and x >= 0 and x <= 1 and y >= 0 and y <= 1 and not easNativeTownPinIsDynamic(row.texture) then
+                local key = tostring(row.id or (tostring(row.pinType or "") .. ":" .. tostring(math.floor(x*100000+0.5)) .. ":" .. tostring(math.floor(y*100000+0.5)) .. ":" .. tostring(row.texture)))
+                if not seen[key] then
+                    seen[key] = true
+                    self.nativeMirrorData[#self.nativeMirrorData + 1] = {
+                        x=x, y=y, texture=row.texture, pinType=row.pinType,
+                        name=clean(row.name, ""), size=clamp(tonumber(row.size) or 24, 14, 42),
+                    }
                 end
             end
+        end
+    end
+
+    self.useExactNativeStaticMirror = #self.nativeMirrorData > 0
+    return self.useExactNativeStaticMirror
+end
+
+function M:EnsureNativeMirrorPins(count)
+    self.nativeMirrorPins = self.nativeMirrorPins or {}
+    for i = #self.nativeMirrorPins + 1, count do
+        local pin = self:CreatePin("EPC_MiniMap_NativeMirror_" .. tostring(i), 24, POI_FALLBACK_TEXTURE, COLORS.white)
+        pin:SetDrawLevel(84)
+        self.nativeMirrorPins[i] = pin
+    end
+end
+
+function M:RenderNativeMirrorPins()
+    local data = self.nativeMirrorData or {}
+    if self.useExactNativeStaticMirror ~= true or #data == 0 then
+        for i=1,#(self.nativeMirrorPins or {}) do self.nativeMirrorPins[i]:SetHidden(true) end
+        return
+    end
+    self:EnsureNativeMirrorPins(#data)
+    local used = 0
+    for i=1,#data do
+        local d = data[i]
+        if d and d.x and d.y and type(d.texture) == "string" and d.texture ~= "" then
+            local _, _, inside = self:MapToScreen(d.x, d.y)
+            if inside then
+                used = used + 1
+                local pin = self.nativeMirrorPins[used]
+                local size = clamp(tonumber(d.size) or 24, 14, 42)
+                pin:SetDimensions(size, size)
+                pin:SetTexture(d.texture)
+                if type(pin.SetTextureCoords) == "function" then pin:SetTextureCoords(0, 1, 0, 1) end
+                if type(pin.SetBlendMode) == "function" then pin:SetBlendMode(TEX_BLEND_MODE_ALPHA) end
+                pin:SetColor(1, 1, 1, 1)
+                -- Exact coordinates only. Never clamp native map pins to the
+                -- minimap edge because that changes their apparent position.
+                self:PlacePin(pin, d.x, d.y, size, false)
             end
         end
+    end
+    for i=used+1,#self.nativeMirrorPins do self.nativeMirrorPins[i]:SetHidden(true) end
+end
+
+function M:ClearStaticPinsForMapTransition()
+    -- Immediately remove the previous area's static data before the new map is
+    -- built. This prevents a city/home/delve transition from showing stale
+    -- icons for even a fraction of a second on the new local map.
+    self.nativeMirrorData = {}
+    self.useExactNativeStaticMirror = false
+    self.shrineData = {}
+    self.poiData = {}
+    self.merchantData = {}
+    self.serviceData = {}
+    self.pvpKeepData = {}
+    self.pvpTravelLinks = {}
+    self.nearestUndiscoveredPOI = nil
+
+    local pools = {
+        self.nativeMirrorPins, self.shrinePins, self.poiPins,
+        self.merchantPins, self.servicePins, self.pvpKeepPins,
+        self.pvpScrollPins,
+    }
+    for _, pool in ipairs(pools) do
+        if type(pool) == "table" then
+            for i = 1, #pool do
+                if pool[i] and type(pool[i].SetHidden) == "function" then pool[i]:SetHidden(true) end
+            end
+        end
+    end
+    self:HideMapObjectLabels()
+end
+
+function M:ScheduleLiveNativeMirrorRefresh(mapId)
+    mapId = tonumber(mapId) or 0
+    if mapId <= 0 or type(zo_callLater) ~= "function" then return end
+    self.nativeRefreshToken = (tonumber(self.nativeRefreshToken) or 0) + 1
+    local token = self.nativeRefreshToken
+    local delays = { 120, 350, 750 }
+
+    for i = 1, #delays do
+        zo_callLater(function()
+            if token ~= self.nativeRefreshToken then return end
+            if self:IsWorldMapShowing() then return end
+            if (tonumber(self.mapId) or 0) ~= mapId then return end
+
+            if self:CaptureAllNativeMapPins(true) then
+                self:RefreshStaticPins()
+                self:UpdatePanAndPins(true)
+            end
+        end, delays[i])
     end
 end
 
@@ -1499,6 +1624,40 @@ function M:EnsureTrailPins(count)
         local pin = self:CreatePin("EPC_MiniMap_Trail_" .. tostring(i), 6, PLAYER_TEXTURE, COLORS.muted)
         pin:SetDrawLevel(8)
         self.trailPins[i] = pin
+    end
+end
+
+function M:EnsureAntiquityPins(count)
+    self.antiquityPins = self.antiquityPins or {}
+    for i = #self.antiquityPins + 1, count do
+        local texture = EPC.AntiquityAssistant and EPC.AntiquityAssistant:GetShovelTexture() or POI_FALLBACK_TEXTURE
+        local pin = self:CreatePin("EPC_MiniMap_Antiquity_" .. tostring(i), 30, texture, COLORS.gold)
+        pin:SetDrawLevel(93)
+        self.antiquityPins[i] = pin
+    end
+end
+
+function M:RenderAntiquityPins()
+    local enabled = EPC.saved and EPC.saved.antiquityAssistantEnabled ~= false and EPC.saved.antiquityShowMiniMap ~= false
+    local assistant = EPC.AntiquityAssistant
+    if not enabled or not assistant or type(assistant.GetCurrentMapDigSites) ~= "function" then
+        for _, pin in ipairs(self.antiquityPins or {}) do pin:SetHidden(true) end
+        return
+    end
+    local sites = assistant:GetCurrentMapDigSites(false) or {}
+    self:EnsureAntiquityPins(#sites)
+    local pulse = 1.0 + (0.08 * ((math.sin(nowSeconds() * 4.5) + 1) * 0.5))
+    for index, pin in ipairs(self.antiquityPins or {}) do
+        local site = sites[index]
+        if site then
+            pin:SetTexture(assistant:GetShovelTexture())
+            pin:SetDimensions(30, 30)
+            pin:SetColor(1.00, 0.78, 0.24, 1.00)
+            if type(pin.SetScale) == "function" then pin:SetScale(pulse) end
+            self:PlacePin(pin, site.x, site.y, 30, true)
+        else
+            pin:SetHidden(true)
+        end
     end
 end
 
@@ -1849,6 +2008,14 @@ function M:SetLayoutMode(active)
     active = active == true
     if not active and self.dragging then self:EndDrag() end
     self.layoutMode = active
+
+    -- Full Suite HUD Layout Mode deliberately switches ESO into camera UI mode.
+    -- That normally looks like a menu to the compass visibility code, which made
+    -- the stock top compass disappear exactly when the user was arranging HUD
+    -- elements.  Layout mode always previews the compass; leaving layout mode
+    -- immediately returns it to the normal world-map/menu visibility rules.
+    self:SyncESOCompassVisibility()
+
     if not self.frame then return end
     self.frame:SetMouseEnabled(self:IsInteractive())
     self.frame:SetMovable(self.layoutMode)
@@ -1900,6 +2067,28 @@ function M:SetESOCompassHidden(hidden)
 end
 
 function M:SyncESOCompassVisibility()
+    -- HUD Layout Mode is a deliberate preview state. It activates camera UI mode,
+    -- but the ESO compass must remain visible so the player can see the complete
+    -- HUD while arranging Suite overlays. The minimap's own layoutMode is set by
+    -- the common HUD Layout Mode, while EPC.unitFramesMoveMode covers the brief
+    -- transition before/after all modules have finished updating.
+    if self.layoutMode == true or EPC.unitFramesMoveMode == true then
+        self:SetESOCompassHidden(false)
+
+        -- Compatibility safeguard: some ESO UI revisions hide the compass control
+        -- itself while camera UI mode is active even after our fragment reason is
+        -- cleared. Re-expose the stock controls during layout preview only.
+        local controls = { ZO_CompassFrame, ZO_Compass, ZO_CompassContainer }
+        for i = 1, #controls do
+            local control = controls[i]
+            if control then
+                if type(control.SetHidden) == "function" then pcall(control.SetHidden, control, false) end
+                if type(control.SetAlpha) == "function" then pcall(control.SetAlpha, control, 1) end
+            end
+        end
+        return
+    end
+
     -- Use the raw menu/UI detector here rather than M:IsMenuShowing(), because
     -- M:IsMenuShowing() intentionally ignores Suite interaction mode so the custom
     -- minimap can stay on screen and receive mouse input.
@@ -1971,9 +2160,13 @@ function M:SyncToPlayerMap(force)
             local _, _, _, zi = safe(GetMapInfoById, nil, mapId)
             self.zoneIndex = tonumber(zi)
         end
-        if changed then self.trailData = {} end
+        if changed then
+            self.trailData = {}
+            self:ClearStaticPinsForMapTransition()
+        end
         self:RebuildMap(true)
         self:RefreshStaticPins()
+        if changed then self:ScheduleLiveNativeMirrorRefresh(mapId) end
         self:UpdateContextText(true)
     end
     return true
@@ -2305,14 +2498,23 @@ function M:RefreshStaticPins()
         end
         self:UpdatePOIDistances()
     end
-    -- Add the complete native icon set ESO exposed for this exact town/location
-    -- map. This is intentionally after POI scanning so duplicates can be skipped.
-    self:AddCapturedNativeTownPins()
-    -- Persist POIs the player has actually reached/discovered, then merge all
-    -- learned merchants, crafting stations, stables, and other saved POIs.
-    self:RememberVisiblePOIs()
-    self:AddRememberedMerchants()
-    self:AddRememberedServices()
+    -- If ESO's full map has been opened for this exact mapId, its live pin
+    -- snapshot becomes authoritative. Clear the Suite's independently scanned
+    -- static layers so we do not add extra pins or slightly different positions.
+    local exactNativeMirror = self:AddCapturedNativeTownPins()
+    if exactNativeMirror then
+        self.shrineData = {}
+        self.poiData = {}
+        self.merchantData = {}
+        self.serviceData = {}
+        self.nearestUndiscoveredPOI = nil
+    else
+        -- No native snapshot yet: retain the existing API-based fallback until
+        -- the player opens ESO's full map once for this mapId.
+        self:RememberVisiblePOIs()
+        self:AddRememberedMerchants()
+        self:AddRememberedServices()
+    end
 
     local maxPins = math.max(24, math.min(220, tonumber(EPC.saved.miniMapPOIMax) or 160))
     self:EnsurePOIPins(maxPins)
@@ -2386,6 +2588,9 @@ function M:RefreshPvPKeepData()
 end
 
 function M:RenderModeLabels()
+    -- Exact native mirror is icon-for-icon with ESO's full map and therefore
+    -- never adds Suite-only text such as "Map Location".
+    if self.useExactNativeStaticMirror == true then self:HideMapObjectLabels(); return end
     -- PvP intentionally uses icons only, matching ESO's Cyrodiil map.
     if self:IsPvPIconOnlyMode() then self:HideMapObjectLabels(); return end
     if not self:IsLabeledMapMode() then self:HideMapObjectLabels(); return end
@@ -2897,9 +3102,11 @@ function M:UpdatePanAndPins(forceStatic)
         end
     end
 
+    self:RenderNativeMirrorPins()
     self:RenderMerchantPins()
     self:RenderServicePins()
     self:RenderPOIPins()
+    self:RenderAntiquityPins()
     -- Draw alliance-owned transitus connections beneath PvP objective icons.
     self:RenderPvPTransitLines()
     self:RenderPvPPins()
@@ -2955,6 +3162,7 @@ function M:RegisterEvents()
             if synced then
                 self:RefreshStaticPins()
                 self:UpdatePanAndPins(true)
+                self:ScheduleLiveNativeMirrorRefresh(self.mapId)
             end
         end
     end
@@ -3030,7 +3238,7 @@ function M:RegisterEvents()
     register(EVENT_QUEST_CONDITION_COUNTER_CHANGED, false)
 
     if not EVENT_MANAGER or type(EVENT_MANAGER.RegisterForUpdate) ~= "function" then return end
-    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Pulse", 33, function()
+    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Pulse", 50, function()
         if not self.frame or not EPC.saved then return end
         self:SyncESOCompassVisibility()
         local show = EPC.saved.showMiniMap ~= false or self.layoutMode == true
@@ -3042,10 +3250,17 @@ function M:RegisterEvents()
         if mapOpen or (menuOpen and not self.layoutMode) then
             self.frame:SetHidden(true)
             if mapOpen then
+                local captureNow = nowSeconds()
+                local openingEdge = self.mapWasOpen ~= true
                 self.mapWasOpen = true
-                -- Snapshot ESO's complete native pin set from the map the player
-                -- is viewing. This is the source for town/city service icons.
-                self:CaptureAllNativeMapPins()
+                -- Capture on the open edge, then only at a slow safety cadence.
+                -- The old 33ms pulse walked the complete native pin set every
+                -- frame while World Map was open, which was a major avoidable cost.
+                if openingEdge or not self.lastNativeMapCaptureAt029122
+                    or captureNow - self.lastNativeMapCaptureAt029122 >= 2.0 then
+                    self.lastNativeMapCaptureAt029122 = captureNow
+                    self:CaptureAllNativeMapPins()
+                end
             end
             self.menuWasOpen = menuOpen == true
             return
@@ -3150,6 +3365,13 @@ function M:Initialize()
     self.lastGameplayX = nil
     self.lastGameplayY = nil
     self.stableInteractionActive = false
+    -- 0.29.33 keeps snapshots separated by exact mapId and adds live current-area
+    -- refreshes. Invalidate older static snapshots once so no parent/sub-map
+    -- projection history can survive into the dynamic mirror.
+    if EPC.saved and tonumber(EPC.saved.miniMapNativeMirrorSchema) ~= 2933 then
+        EPC.saved.miniMapNativeTownPins = {}
+        EPC.saved.miniMapNativeMirrorSchema = 2933
+    end
     self:CleanupLearnedMapData()
     self.mapWasOpen = false
     self.needsSync = true

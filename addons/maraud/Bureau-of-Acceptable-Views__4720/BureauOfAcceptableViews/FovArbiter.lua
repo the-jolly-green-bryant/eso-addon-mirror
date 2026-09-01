@@ -41,6 +41,8 @@ local CameraSettings = addon.CameraSettings
 -- this module supplies only the payload (which FOV to write). Resolved eagerly
 -- because Ease loads before FovArbiter in the manifest (same as CameraSettings).
 local Ease = addon.Ease
+local CameraResponse = addon.CameraResponse
+local RESPONSE_OWNER = "FovArbiter"
 
 -- Hot-path / library globals bound to locals once at load.
 local tonumber = tonumber
@@ -177,13 +179,22 @@ function FovArbiter.BeginHold(source, fov, durationMs)
             -- Instant pin: cancel any in-flight glide so its updater cannot write
             -- a stale frame after this, then set the exact value.
             StopGlide()
+            if CameraResponse and CameraResponse.AcquireSmoothing then
+                CameraResponse.AcquireSmoothing(RESPONSE_OWNER)
+            end
             if not CameraSettings.Set(FOV_KEY, fov) then
+                if CameraResponse and CameraResponse.ReleaseSmoothing then
+                    CameraResponse.ReleaseSmoothing(RESPONSE_OWNER)
+                end
                 LogWarn("FovArbiter.BeginHold: failed to pin FOV=%s", tostring(fov))
                 if not alreadyHeldBySource then
                     holdSource = nil
                     Reassert()
                 end
                 return false
+            end
+            if CameraResponse and CameraResponse.ReleaseSmoothing then
+                CameraResponse.ReleaseSmoothing(RESPONSE_OWNER)
             end
         end
     end
@@ -313,6 +324,9 @@ end
 -- Assigned to the forward-declared local rather than declared fresh.
 function StopGlide()
     Ease.Stop(GLIDE_UPDATE_NAME)
+    if CameraResponse and CameraResponse.ReleaseSmoothing then
+        CameraResponse.ReleaseSmoothing(RESPONSE_OWNER)
+    end
 end
 
 -- Glide payload, allocated once and reused across retargets (StartGlide only
@@ -325,6 +339,9 @@ end
 
 local function OnGlideLand()
     CameraSettings.Set(FOV_KEY, glideTo)
+    if CameraResponse and CameraResponse.ReleaseSmoothing then
+        CameraResponse.ReleaseSmoothing(RESPONSE_OWNER)
+    end
 end
 
 -- A glide is only meaningful while its hold owns FOV. If the hold vanished, Ease
@@ -373,6 +390,10 @@ function StartGlide(targetFov, durationMs)
     glideFrom     = fromFov
     glideTo       = targetFov
     GLIDE_SPEC.durMs = durationMs
+    GLIDE_SPEC.curve = CameraResponse and CameraResponse.GetCurve() or nil
+    if CameraResponse and CameraResponse.AcquireSmoothing then
+        CameraResponse.AcquireSmoothing(RESPONSE_OWNER)
+    end
     Ease.Start(GLIDE_UPDATE_NAME, GLIDE_SPEC)
     return true
 end

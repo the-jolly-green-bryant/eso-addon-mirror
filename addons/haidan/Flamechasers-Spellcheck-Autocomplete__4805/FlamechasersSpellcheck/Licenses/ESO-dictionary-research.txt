@@ -1,0 +1,24 @@
+Flamechasers Spellcheck & Autocomplete - ESO dictionary research/reference notes
+
+The curated ESO seed and runtime vocabulary categories were checked against current Elder Scrolls Online reference material, including:
+
+- ESOUI live UI source / API documentation (API 101050) for current client-accessible names and enumeration APIs.
+  https://github.com/esoui/esoui
+
+- UESP Elder Scrolls Online reference pages for category coverage, especially Classes, Skills, Places/Cities, Trials, Buffs, and Wayshrines.
+  https://en.uesp.net/wiki/Online:Classes
+  https://en.uesp.net/wiki/Online:Skills
+  https://en.uesp.net/wiki/Online:Places
+  https://en.uesp.net/wiki/Online:Cities
+  https://en.uesp.net/wiki/Online:Trials
+  https://en.uesp.net/wiki/Online:Buffs
+  https://en.uesp.net/wiki/Online:Wayshrines
+
+- ESO-Hub current databases/pages for skills, buffs/debuffs, Mundus Stones, Scribing, zones/current content, and common game-system terminology.
+  https://eso-hub.com/en/skills
+  https://eso-hub.com/en/buffs-debuffs
+  https://eso-hub.com/en/mundus-stones
+  https://eso-hub.com/en/scribing
+  https://eso-hub.com/en/zones/solstice
+
+No wiki/database article text or third-party code is bundled. The addon ships a hand-curated list of names/terms and, when enabled, discovers additional display names directly from the user's installed ESO client at runtime.

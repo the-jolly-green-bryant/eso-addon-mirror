@@ -49,6 +49,27 @@ local GetGameTimeMilliseconds = GetGameTimeMilliseconds
 --   durMs  : total duration; startMs : GetGameTimeMilliseconds() at (re)start
 local active = {}
 
+Ease.Curves = Ease.Curves or {}
+
+function Ease.Curves.Linear(t)
+    return t
+end
+
+-- Fast initial response with a short settling tail.
+function Ease.Curves.Responsive(t)
+    local inverse = 1 - t
+    return 1 - inverse * inverse * inverse
+end
+
+-- Symmetric acceleration/deceleration for deliberate cinematic motion.
+function Ease.Curves.Smooth(t)
+    if t < 0.5 then
+        return 4 * t * t * t
+    end
+    local inverse = -2 * t + 2
+    return 1 - (inverse * inverse * inverse) / 2
+end
+
 -- Forward declaration so Start's registered closure can reach the stepper.
 local Tick
 
@@ -93,6 +114,7 @@ function Ease.Start(name, spec)
         e.onStep  = spec.onStep
         e.onLand  = spec.onLand
         e.isLive  = spec.isLive
+        e.curve   = spec.curve
         e.durMs   = durMs
         e.startMs = GetGameTimeMilliseconds()
         return true
@@ -102,6 +124,7 @@ function Ease.Start(name, spec)
         onStep  = spec.onStep,
         onLand  = spec.onLand,
         isLive  = spec.isLive,
+        curve   = spec.curve,
         durMs   = durMs,
         startMs = GetGameTimeMilliseconds(),
     }
@@ -142,5 +165,9 @@ function Tick(name)
         return
     end
 
-    if e.onStep then e.onStep(t) end
+    if e.onStep then
+        local progress = e.curve and e.curve(t) or t
+        if progress < 0 then progress = 0 elseif progress > 1 then progress = 1 end
+        e.onStep(progress)
+    end
 end

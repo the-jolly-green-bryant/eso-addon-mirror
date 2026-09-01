@@ -39,9 +39,11 @@ local EVENT_MANAGER = EVENT_MANAGER
 -- self-tear lifecycle. Resolved eagerly here because Ease loads before this file
 -- in the manifest (same as CameraSettings below).
 local Ease = addon.Ease
+local CameraResponse = addon.CameraResponse
 local ANIM_UPDATE_NAME = "BAV_DynamicFovSmoothing"
 local OBSERVER_UPDATE_NAME = "BAV_DynamicFovObserver"
 local OBSERVER_INTERVAL_MS = 100
+local RESPONSE_OWNER = "DynamicFov"
 
 -- Total time (ms) for a smoothed FOV transition. Short enough to feel immediate,
 -- long enough to read as a glide rather than a snap. Each zoom step restarts the
@@ -212,6 +214,9 @@ end
 -- is turned off or reconfigured.
 local function StopAnimation()
     Ease.Stop(ANIM_UPDATE_NAME)
+    if CameraResponse and CameraResponse.ReleaseSmoothing then
+        CameraResponse.ReleaseSmoothing(RESPONSE_OWNER)
+    end
 end
 
 -- Cancel a pending dynamic-FOV glide when a higher-priority owner takes FOV.
@@ -255,6 +260,9 @@ end
 
 local function OnSmoothLand()
     WriteFov(animTo)
+    if CameraResponse and CameraResponse.ReleaseSmoothing then
+        CameraResponse.ReleaseSmoothing(RESPONSE_OWNER)
+    end
 end
 
 local SMOOTH_SPEC = {
@@ -266,7 +274,7 @@ local SMOOTH_SPEC = {
 -- Begin (or retarget) a glide toward targetFov. The start point is the live FOV
 -- so an in-flight glide retargets smoothly from wherever it currently is rather
 -- than jumping back to a stale value. Returns true if a glide is now in progress.
-local function StartAnimation(targetFov)
+local function StartAnimation(targetFov, durationMs, curve)
     local startFov = lastAppliedFov
     if startFov == nil then
         local current, ok = CameraSettings.Get(FOV_KEY)
@@ -284,6 +292,11 @@ local function StartAnimation(targetFov)
     -- nothing on the per-frame ramp path (reuses SMOOTH_SPEC and its closures).
     animFrom = startFov
     animTo   = targetFov
+    SMOOTH_SPEC.durMs = durationMs or ANIM_DURATION_MS
+    SMOOTH_SPEC.curve = curve
+    if CameraResponse and CameraResponse.AcquireSmoothing then
+        CameraResponse.AcquireSmoothing(RESPONSE_OWNER)
+    end
     Ease.Start(ANIM_UPDATE_NAME, SMOOTH_SPEC)
     return true
 end
@@ -440,16 +453,30 @@ function DynamicFov.Apply(zoom)
         return false
     end
 
-    -- Smoothing on: glide toward the target over a few frames via the temporary
-    -- updater. Off: write immediately, preserving the original snap behavior and
-    -- the addon's event-only execution model when the option is not in use.
-    if config.smooth then
-        return StartAnimation(targetFov)
+    local durationMs = config.smooth and ANIM_DURATION_MS or 0
+    local curve = nil
+    if CameraResponse then
+        durationMs = CameraResponse.GetDurationMs()
+        curve = CameraResponse.GetCurve()
     end
 
+    if durationMs > 0 then
+        return StartAnimation(targetFov, durationMs, curve)
+    end
+
+    StopAnimation()
+    if CameraResponse and CameraResponse.AcquireSmoothing then
+        CameraResponse.AcquireSmoothing(RESPONSE_OWNER)
+    end
     if not WriteFov(targetFov) then
+        if CameraResponse and CameraResponse.ReleaseSmoothing then
+            CameraResponse.ReleaseSmoothing(RESPONSE_OWNER)
+        end
         LogWarn("DynamicFov.Apply: failed to set FOV=%.2f", targetFov)
         return false
+    end
+    if CameraResponse and CameraResponse.ReleaseSmoothing then
+        CameraResponse.ReleaseSmoothing(RESPONSE_OWNER)
     end
 
     LogDebug("DynamicFov.Apply: FOV=%.2f", targetFov)

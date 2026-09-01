@@ -2,7 +2,7 @@
 ## Description: Arabic localization for The Elder Scrolls Online: fonts, UI and game text.
 ## Version: 1.0.0
 ## APIVersion: 101050 101049
-## Author: (MATREX-X)
+## Author: Turki (MATREX-X) + Claude
 ## SavedVariables: EsoAR_Variables
 ## DependsOn: LibMediaProvider>=32
 ## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.

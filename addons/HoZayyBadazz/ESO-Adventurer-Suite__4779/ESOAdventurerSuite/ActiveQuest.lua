@@ -2946,3 +2946,175 @@ function Q:Refresh()
     end
     return easLegacyRefresh_2581(self)
 end
+
+-- ============================================================================
+-- v0.29.74 - follow ESO's native Change Quest / assisted-quest selection
+-- ESO's normal quest-cycle keybind changes the assisted quest and emits a
+-- tracking update. The Suite used to periodically force its prior selection
+-- back onto ESO. External native quest changes now become the Suite ACTIVE_QUEST
+-- selection instead, while Suite-originated assistance writes are guarded from
+-- feeding back into this adoption path.
+-- ============================================================================
+local function easQuestSyncNow2974()
+    if type(GetFrameTimeMilliseconds) == "function" then
+        local ok, value = pcall(GetFrameTimeMilliseconds)
+        if ok then return tonumber(value) or 0 end
+    end
+    if type(GetGameTimeMilliseconds) == "function" then
+        local ok, value = pcall(GetGameTimeMilliseconds)
+        if ok then return tonumber(value) or 0 end
+    end
+    return 0
+end
+
+function Q:GetESOAssistedQuestIndex2974()
+    if TRACK_TYPE_QUEST == nil or type(GetTrackedIsAssisted) ~= "function" then
+        return self:GetActiveQuestIndex()
+    end
+    local max = tonumber(MAX_JOURNAL_QUESTS) or 25
+    for index = 1, max do
+        local valid = type(IsValidQuestIndex) ~= "function" or safe(IsValidQuestIndex, false, index) == true
+        if valid then
+            local ok, assisted = pcall(GetTrackedIsAssisted, TRACK_TYPE_QUEST, index, 0)
+            if ok and assisted == true then return index end
+        end
+    end
+    return nil
+end
+
+function Q:AdoptESOFocusedQuest2974(force)
+    if not EPC.saved then return false end
+    if (tonumber(self.nativeTrackingWriteDepth2974) or 0) > 0 then return false end
+
+    local now = easQuestSyncNow2974()
+    local ignoreUntil = tonumber(self.nativeTrackingIgnoreUntil2974) or 0
+    if not force and now > 0 and ignoreUntil > now then return false end
+
+    local questIndex = self:GetESOAssistedQuestIndex2974()
+    if not questIndex or questIndex <= 0 then return false end
+
+    local questName = easQuestName2512(questIndex)
+    if questName == "" then return false end
+    local questId = easQuestId2512(questIndex)
+
+    -- v0.29.77: ESO's Change Quest keybind is allowed to cycle onto Main Story
+    -- quests. ACTIVE_QUEST intentionally excludes Main Story entries, so storing
+    -- every native selection there made the overlay disappear as soon as a Main
+    -- Quest became assisted. Mirror the native quest into the matching Suite
+    -- source instead.
+    local isMain = easIsMainQuest2514(questIndex) == true
+    local targetSource = isMain and "MAIN_QUEST" or "ACTIVE_QUEST"
+    local indexKey, idKey, nameKey = easSourceKeys2516(targetSource)
+
+    local changed = self:GetQuestTrackingSource2513() ~= targetSource
+        or (tonumber(EPC.saved[idKey]) or 0) ~= questId
+        or tonumber(EPC.saved[indexKey]) ~= questIndex
+
+    EPC.saved.questTrackingSource = targetSource
+    EPC.saved[indexKey] = questIndex
+    EPC.saved[idKey] = questId
+    EPC.saved[nameKey] = questName
+
+    -- Treat a Main Quest chosen through ESO's own quest-cycle keybind as an
+    -- explicit current Main Quest selection. This prevents an older Quest Finder
+    -- Main Quest choice from overriding the quest ESO just focused.
+    if isMain then
+        EPC.saved.mainQuestFinderSelected = true
+        EPC.saved.mainQuestDiscoveryTarget = nil
+    else
+        -- Native ESO quest cycling has left the Main Story quest. Do not leave
+        -- the Main Quest selector marked as the controlling native selection.
+        -- The remembered Main Quest is preserved for later; only ACTIVE_QUEST
+        -- becomes the current HUD source now.
+        EPC.saved.mainQuestDiscoveryTarget = nil
+    end
+
+    EPC.saved.selectedHudQuestIndex = questIndex
+    EPC.saved.selectedHudQuestId = questId
+    EPC.saved.selectedHudQuestName = questName
+    EPC.saved.selectedHudQuestSource = targetSource
+
+    if changed then
+        self.directionBoundSource2520 = targetSource
+        self.directionBoundQuestIndex2520 = questIndex
+        self.directionBoundQuestId2520 = questId
+        if EPC.Travel and EPC.Travel.InvalidateQuestPositionCache then
+            EPC.Travel:InvalidateQuestPositionCache()
+        end
+        self:Refresh()
+        self:UpdateDirectionArrow2512(true)
+        if EPC.MiniMap and EPC.MiniMap.RefreshQuestPin then
+            EPC.MiniMap:RefreshQuestPin()
+        end
+    end
+    return true
+end
+
+local easLegacyLockNativeCompass2974 = Q.LockNativeCompassToQuest2521
+function Q:LockNativeCompassToQuest2521(questIndex, force)
+    self.nativeTrackingWriteDepth2974 = (tonumber(self.nativeTrackingWriteDepth2974) or 0) + 1
+    local result
+    if easLegacyLockNativeCompass2974 then
+        result = easLegacyLockNativeCompass2974(self, questIndex, force)
+    end
+    self.nativeTrackingWriteDepth2974 = math.max(0, (tonumber(self.nativeTrackingWriteDepth2974) or 1) - 1)
+    local now = easQuestSyncNow2974()
+    if now > 0 then self.nativeTrackingIgnoreUntil2974 = now + 180 end
+    return result
+end
+
+local easLegacyRefreshNativeQuestTracking2974 = Q.RefreshNativeQuestTracking2522
+function Q:RefreshNativeQuestTracking2522(force)
+    if not EPC.saved then return end
+    -- v0.29.79: both ACTIVE QUEST and MAIN QUEST are native-led after ESO's
+    -- Change Quest keybind is used. Keeping MAIN_QUEST on the legacy path caused
+    -- the Suite to immediately re-assist the Main Story quest, preventing ESO's
+    -- next cycle from reaching a normal quest. Follow whichever quest ESO has
+    -- currently assisted, then AdoptESOFocusedQuest2974() switches the Suite
+    -- source between MAIN_QUEST and ACTIVE_QUEST as needed.
+    local nativeSource2979 = self:GetQuestTrackingSource2513()
+    if nativeSource2979 == "ACTIVE_QUEST" or nativeSource2979 == "MAIN_QUEST" then
+        if force == true then
+            -- Initialization/explicit Suite selection may have just written the
+            -- native assisted quest. Do not immediately reverse that write.
+            local now = easQuestSyncNow2974()
+            if (tonumber(self.nativeTrackingIgnoreUntil2974) or 0) <= now then
+                self:AdoptESOFocusedQuest2974(false)
+            end
+        else
+            self:AdoptESOFocusedQuest2974(false)
+        end
+        return
+    end
+    if easLegacyRefreshNativeQuestTracking2974 then
+        return easLegacyRefreshNativeQuestTracking2974(self, force)
+    end
+end
+
+local easLegacyInitialize2974 = Q.Initialize
+function Q:Initialize()
+    easLegacyInitialize2974(self)
+
+    if EVENT_MANAGER and EVENT_TRACKING_UPDATE then
+        local eventName = EPC.name .. "_NativeQuestCycle2974"
+        EVENT_MANAGER:UnregisterForEvent(eventName, EVENT_TRACKING_UPDATE)
+        EVENT_MANAGER:RegisterForEvent(eventName, EVENT_TRACKING_UPDATE, function()
+            if (tonumber(Q.nativeTrackingWriteDepth2974) or 0) > 0 then return end
+            local function adopt()
+                Q:AdoptESOFocusedQuest2974(false)
+            end
+            -- ESO can emit the tracking event between unassisting the old quest
+            -- and assisting the new one. Reconcile after the journal settles.
+            if type(zo_callLater) == "function" then
+                zo_callLater(adopt, 40)
+                zo_callLater(adopt, 160)
+                zo_callLater(adopt, 350)
+                -- Main Story <-> normal quest transitions can settle later than
+                -- ordinary journal tracking changes on some UI states.
+                zo_callLater(adopt, 700)
+            else
+                adopt()
+            end
+        end)
+    end
+end

@@ -29,18 +29,18 @@ local C = {
     stamina = {0.16, 0.58, 0.27, 1},
 }
 
--- GetUnitPower() and EVENT_POWER_UPDATE filters use different constant families.
--- GetUnitPower() must receive POWERTYPE_* constants.  REGISTER_FILTER_POWER_TYPE
--- receives COMBAT_MECHANIC_FLAGS_* on current ESO clients.  Keep them separate:
--- reusing the filter constants for GetUnitPower() can map a Health read to another
--- resource (observed as Stamina in the custom Group frame).
+-- GetUnitPower() and EVENT_POWER_UPDATE both use POWERTYPE_* values for the
+-- resource type. ESO's own unit-frame handlers register
+-- REGISTER_FILTER_POWER_TYPE with POWERTYPE_HEALTH/MAGICKA/STAMINA. Using the
+-- COMBAT_MECHANIC_FLAGS_* family here can silently filter out the live power
+-- events, leaving custom health bars stale until some unrelated refresh occurs.
 local POWER_HEALTH = POWERTYPE_HEALTH
 local POWER_MAGICKA = POWERTYPE_MAGICKA
 local POWER_STAMINA = POWERTYPE_STAMINA
 
-local FILTER_POWER_HEALTH = COMBAT_MECHANIC_FLAGS_HEALTH or POWERTYPE_HEALTH
-local FILTER_POWER_MAGICKA = COMBAT_MECHANIC_FLAGS_MAGICKA or POWERTYPE_MAGICKA
-local FILTER_POWER_STAMINA = COMBAT_MECHANIC_FLAGS_STAMINA or POWERTYPE_STAMINA
+local FILTER_POWER_HEALTH = POWERTYPE_HEALTH
+local FILTER_POWER_MAGICKA = POWERTYPE_MAGICKA
+local FILTER_POWER_STAMINA = POWERTYPE_STAMINA
 
 local function safe(fn, fallback, ...)
     if type(fn) ~= "function" then return fallback end
@@ -563,6 +563,7 @@ function F:CreateStatsFrame()
         { key = "CC", name = "CC", x = 12, y = 104 },
         { key = "CD", name = "CD", x = 207, y = 104 },
     }
+    frame.epcLive = live
     frame.epcStats = {}
     frame.epcCells = {}
     for i = 1, #defs do
@@ -1256,6 +1257,56 @@ local function readCriticalDamageFromAdvancedInfo()
     return nil
 end
 
+-- Shared source for the visible Live Combat Stats frame and the combat recorder.
+-- Keeping these reads in one function prevents the report and the overlay from
+-- disagreeing about PEN/PWR/SR/PR/CC/CD. A very short cache keeps high-frequency
+-- combat events from repeatedly querying ESO's Advanced Stats API in the same frame.
+function F:GetCombatStatsSnapshot(force)
+    local now = 0
+    if type(GetFrameTimeMilliseconds) == "function" then
+        local ok, value = pcall(GetFrameTimeMilliseconds)
+        if ok then now = tonumber(value) or 0 end
+    end
+    if force ~= true and type(self.combatStatsSnapshot) == "table"
+        and now > 0 and (now - (tonumber(self.combatStatsSnapshotAt) or 0)) < 125 then
+        return self.combatStatsSnapshot
+    end
+
+    local pen = math.max(
+        readPlayerStat(STAT_OFFENSIVE_PENETRATION),
+        readPlayerStat(STAT_PHYSICAL_PENETRATION),
+        readPlayerStat(STAT_SPELL_PENETRATION),
+        readAdvancedFlat(ADVANCED_STAT_DISPLAY_TYPE_PHYSICAL_PENETRATION),
+        readAdvancedFlat(ADVANCED_STAT_DISPLAY_TYPE_SPELL_PENETRATION)
+    )
+    local power = readPlayerStat(STAT_WEAPON_AND_SPELL_DAMAGE)
+    if power <= 0 then power = math.max(readPlayerStat(STAT_ATTACK_POWER), readPlayerStat(STAT_SPELL_POWER)) end
+    local sr = readPlayerStat(STAT_SPELL_RESIST)
+    local pr = readPlayerStat(STAT_PHYSICAL_RESIST)
+    local cc = readAdvancedPercent(ADVANCED_STAT_DISPLAY_TYPE_CRITICAL_CHANCE, false)
+
+    local cdBonus = readAdvancedPercent(ADVANCED_STAT_DISPLAY_TYPE_CRITICAL_DAMAGE, true)
+    if cdBonus == nil then
+        cdBonus = readAdvancedPercent(ADVANCED_STAT_DISPLAY_TYPE_CRITICAL_PERCENT, true)
+    end
+    if cdBonus == nil then
+        cdBonus = readCriticalDamageFromAdvancedInfo()
+    end
+    local cd = cdBonus ~= nil and (50 + cdBonus) or nil
+
+    local snapshot = {
+        penetration = tonumber(pen) or 0,
+        power = tonumber(power) or 0,
+        spellResistance = tonumber(sr) or 0,
+        physicalResistance = tonumber(pr) or 0,
+        criticalChance = tonumber(cc),
+        criticalDamage = tonumber(cd),
+    }
+    self.combatStatsSnapshot = snapshot
+    self.combatStatsSnapshotAt = now
+    return snapshot
+end
+
 function F:IsHudSuppressed()
     if self.layoutMode == true then return false end
     return EPC.IsGameplayHudSuppressed and EPC:IsGameplayHudSuppressed() == true
@@ -1372,43 +1423,27 @@ function F:RefreshStats()
     self.statsFrame:SetHidden(not show)
     if not show then return end
 
-    -- Penetration is a flat rating, not a percentage. Read every current ESO
-    -- representation and keep the strongest valid value so hybridized stats and
-    -- client-side advanced-stat representation changes cannot leave PEN at zero.
-    local pen = math.max(
-        readPlayerStat(STAT_OFFENSIVE_PENETRATION),
-        readPlayerStat(STAT_PHYSICAL_PENETRATION),
-        readPlayerStat(STAT_SPELL_PENETRATION),
-        readAdvancedFlat(ADVANCED_STAT_DISPLAY_TYPE_PHYSICAL_PENETRATION),
-        readAdvancedFlat(ADVANCED_STAT_DISPLAY_TYPE_SPELL_PENETRATION)
-    )
-    local power = readPlayerStat(STAT_WEAPON_AND_SPELL_DAMAGE)
-    if power <= 0 then power = math.max(readPlayerStat(STAT_ATTACK_POWER), readPlayerStat(STAT_SPELL_POWER)) end
-    local sr = readPlayerStat(STAT_SPELL_RESIST)
-    local pr = readPlayerStat(STAT_PHYSICAL_RESIST)
-    local cc = readAdvancedPercent(ADVANCED_STAT_DISPLAY_TYPE_CRITICAL_CHANCE, false)
-
-    -- ESO's Critical Damage advanced stat is the BONUS above the universal 50%
-    -- critical-hit base. A perfectly valid bonus of 0 therefore means 50% total,
-    -- not "stat unavailable". Current LibCombat uses the same 50 + ZOS bonus
-    -- calculation. Keep zero as a valid result and only fall back when the API
-    -- truly returns nil/unavailable.
-    local cdBonus = readAdvancedPercent(ADVANCED_STAT_DISPLAY_TYPE_CRITICAL_DAMAGE, true)
-    if cdBonus == nil then
-        cdBonus = readAdvancedPercent(ADVANCED_STAT_DISPLAY_TYPE_CRITICAL_PERCENT, true)
-    end
-    if cdBonus == nil then
-        cdBonus = readCriticalDamageFromAdvancedInfo()
-    end
-    local cd = cdBonus ~= nil and (50 + cdBonus) or nil
-
+    local snapshot = self:GetCombatStatsSnapshot(true) or {}
     local stats = self.statsFrame.epcStats
-    stats.PEN:SetText(compactNumber(pen))
-    stats.PWR:SetText(compactNumber(power))
-    stats.SR:SetText(compactNumber(sr))
-    stats.PR:SetText(compactNumber(pr))
-    stats.CC:SetText(cc and string.format("%.1f%%", cc) or "--")
-    stats.CD:SetText(cd and string.format("%.1f%%", cd) or "--")
+    stats.PEN:SetText(compactNumber(snapshot.penetration or 0))
+    stats.PWR:SetText(compactNumber(snapshot.power or 0))
+    stats.SR:SetText(compactNumber(snapshot.spellResistance or 0))
+    stats.PR:SetText(compactNumber(snapshot.physicalResistance or 0))
+    stats.CC:SetText(snapshot.criticalChance ~= nil and string.format("%.1f%%", snapshot.criticalChance) or "--")
+    stats.CD:SetText(snapshot.criticalDamage ~= nil and string.format("%.1f%%", snapshot.criticalDamage) or "--")
+
+    -- A small link back to the shared recorder makes it obvious that this frame
+    -- is the live side of Game Combat without changing the user's six stat cells.
+    if self.statsFrame.epcLive then
+        local live = EPC.Combat and type(EPC.Combat.GetLiveSummary) == "function" and EPC.Combat:GetLiveSummary() or nil
+        if self.layoutMode == true then
+            self.statsFrame.epcLive:SetText("LAYOUT")
+        elseif live and live.active == true then
+            self.statsFrame.epcLive:SetText("LIVE  " .. compactNumber(live.dps or 0) .. " DPS")
+        else
+            self.statsFrame.epcLive:SetText("PLAYER")
+        end
+    end
 end
 
 function F:RefreshPlayer()
@@ -1674,24 +1709,88 @@ function F:UpdateGroupHealthFromEvent(unitTag, powerValue, powerMax)
     return groupUpdated or raidUpdated
 end
 
+-- Apply the event payload directly to the local Player health bar. This avoids
+-- re-reading GetUnitPower() inside EVENT_POWER_UPDATE, which can be one update
+-- behind on some clients and makes damage/healing appear to stick or jump.
+function F:UpdatePlayerHealthFromEvent(unitTag, powerValue, powerMax)
+    if unitTag ~= "player" or not self.playerFrame or not self.playerFrame.epcBars then return false end
+    local current = tonumber(powerValue)
+    local maximum = tonumber(powerMax)
+    if current == nil or maximum == nil or maximum <= 0 then return false end
+    local bar = self.playerFrame.epcBars.health
+    if not bar then return false end
+    updateFillBar(bar, current, maximum, "")
+    return true
+end
+
+-- Companion health is a separate unit power stream. Match the event's companion
+-- unit tag against the companion attached to each visible Group row and push the
+-- fresh values straight into that companion bar. This works for the local
+-- "companion" tag and for group-member companion tags returned by ESO.
+function F:UpdateCompanionHealthFromEvent(unitTag, powerValue, powerMax)
+    if not unitTag or unitTag == "" then return false end
+    local current = tonumber(powerValue)
+    local maximum = tonumber(powerMax)
+    if current == nil or maximum == nil or maximum <= 0 then return false end
+
+    local function sameUnit(a, b)
+        if not a or not b or a == "" or b == "" then return false end
+        if a == b then return true end
+        if type(AreUnitsEqual) == "function" then
+            return safe(AreUnitsEqual, false, a, b) == true
+        end
+        return false
+    end
+
+    local function updateRows(frame)
+        if not frame or frame:IsHidden() or not frame.epcRows then return false end
+        local updated = false
+        for i = 1, #frame.epcRows do
+            local row = frame.epcRows[i]
+            if row and not row:IsHidden() and row.epcUnitTag and row.epcCompanionHealth and row.epcCompanionHealth ~= false then
+                local companionTag = self:GetCompanionForMember(row.epcUnitTag)
+                if sameUnit(companionTag, unitTag) then
+                    updateFillBar(row.epcCompanionHealth, current, maximum, "")
+                    row.epcHasCompanion = true
+                    updated = true
+                end
+            end
+        end
+        return updated
+    end
+
+    local groupUpdated = updateRows(self.groupFrame)
+    local raidUpdated = updateRows(self.raidFrame)
+    return groupUpdated or raidUpdated
+end
+
 function F:RegisterEvents()
     local prefix = EPC.name .. "_UnitFrames"
     if EVENT_POWER_UPDATE then
-        local function registerPower(suffix, unitFilterType, unitFilterValue, powerType, syncGroupHealth)
+        local function registerPower(suffix, unitFilterType, unitFilterValue, powerType, syncLiveHealth, combatResourceKey)
             local registration = prefix .. "_Power_" .. suffix
             EVENT_MANAGER:RegisterForEvent(registration, EVENT_POWER_UPDATE, function(_, unitTag, powerIndex, eventPowerType, powerValue, powerMax)
-                -- Feed group/raid rows the event payload immediately. For the local
-                -- player we must ALSO refresh the Player frame; the same "player"
-                -- event drives both displays.
-                -- Only HEALTH registrations may drive the group/raid health bars.
-                -- Player Magicka/Stamina events use the same callback shape, and feeding
-                -- those values into UpdateGroupHealthFromEvent would overwrite Health
-                -- with the wrong resource (most visibly Stamina).
-                local groupUpdated = false
-                if syncGroupHealth == true then
-                    groupUpdated = self:UpdateGroupHealthFromEvent(unitTag, powerValue, powerMax)
+                local handled = false
+
+                if combatResourceKey and unitTag == "player" and EPC.Combat and type(EPC.Combat.OnPowerUpdate) == "function" then
+                    EPC.Combat:OnPowerUpdate(combatResourceKey, powerValue, powerMax)
                 end
-                if unitTag == "player" or unitTag == "reticleover" or not groupUpdated then
+
+                -- Health bars use the event payload itself so Player, Group/Raid,
+                -- and Companion bars deplete/regenerate on the exact power event.
+                -- This also avoids expensive whole-frame/aura refreshes on every hit.
+                if syncLiveHealth == true then
+                    if unitTag == "player" then
+                        handled = self:UpdatePlayerHealthFromEvent(unitTag, powerValue, powerMax) or handled
+                    end
+                    handled = self:UpdateGroupHealthFromEvent(unitTag, powerValue, powerMax) or handled
+                    handled = self:UpdateCompanionHealthFromEvent(unitTag, powerValue, powerMax) or handled
+                end
+
+                -- Magicka/Stamina and any unmatched target health continue through
+                -- the mature unit refresh path. Health events already handled above
+                -- do not need a second GetUnitPower()/aura refresh.
+                if not handled then
                     self:RefreshUnitTag(unitTag)
                 end
             end)
@@ -1702,20 +1801,35 @@ function F:RegisterEvents()
                 EVENT_MANAGER:AddFilterForEvent(registration, EVENT_POWER_UPDATE, REGISTER_FILTER_POWER_TYPE, powerType)
             end
         end
+
         if REGISTER_FILTER_UNIT_TAG then
             registerPower("PlayerHealth", REGISTER_FILTER_UNIT_TAG, "player", FILTER_POWER_HEALTH, true)
-            registerPower("PlayerMagicka", REGISTER_FILTER_UNIT_TAG, "player", FILTER_POWER_MAGICKA, false)
-            registerPower("PlayerStamina", REGISTER_FILTER_UNIT_TAG, "player", FILTER_POWER_STAMINA, false)
+            registerPower("PlayerMagicka", REGISTER_FILTER_UNIT_TAG, "player", FILTER_POWER_MAGICKA, false, "MAGICKA")
+            registerPower("PlayerStamina", REGISTER_FILTER_UNIT_TAG, "player", FILTER_POWER_STAMINA, false, "STAMINA")
             registerPower("TargetHealth", REGISTER_FILTER_UNIT_TAG, "reticleover", FILTER_POWER_HEALTH, false)
-            -- Group health: register each concrete group unit tag separately.
-            -- This avoids relying on UNIT_TAG_PREFIX matching for EVENT_POWER_UPDATE,
-            -- while still keeping the high-volume event natively filtered before Lua.
-            for i = 1, 12 do
-                local groupTag = "group" .. tostring(i)
-                registerPower("GroupHealth" .. tostring(i), REGISTER_FILTER_UNIT_TAG, groupTag, FILTER_POWER_HEALTH, true)
+            registerPower("CompanionHealth", REGISTER_FILTER_UNIT_TAG, "companion", FILTER_POWER_HEALTH, true)
+
+            -- One native prefix filter covers the entire group/raid roster and ESO's
+            -- group-companion unit tags, including raid slots beyond group12. This is
+            -- both more complete and cheaper than dozens of separate Lua callbacks.
+            if REGISTER_FILTER_UNIT_TAG_PREFIX then
+                registerPower("GroupHealth", REGISTER_FILTER_UNIT_TAG_PREFIX, "group", FILTER_POWER_HEALTH, true)
+            else
+                local maxGroup = 24
+                if type(GetGroupMaxSize) == "function" then
+                    local ok, value = pcall(GetGroupMaxSize)
+                    if ok and tonumber(value) then maxGroup = math.max(12, math.min(24, tonumber(value))) end
+                end
+                for i = 1, maxGroup do
+                    local groupTag = "group" .. tostring(i)
+                    registerPower("GroupHealth" .. tostring(i), REGISTER_FILTER_UNIT_TAG, groupTag, FILTER_POWER_HEALTH, true)
+                end
             end
         else
-            registerPower("Fallback", nil, nil, nil, false)
+            -- Compatibility fallback for very old clients: still restrict to Health
+            -- where the power-type filter is available, then discard unrelated tags
+            -- in the lightweight callback above.
+            registerPower("FallbackHealth", nil, nil, FILTER_POWER_HEALTH, true)
         end
     end
     if EVENT_PLAYER_COMBAT_STATE then
@@ -3196,6 +3310,10 @@ local function EPC_CreateSymmetricESOBar(parent, name, width, height, color, tex
     bar.epcFillRight = fillRight
     bar.epcGlossLeft = glossLeft
     bar.epcGlossRight = glossRight
+    bar.epcBgPieces = { bgLeft, bgRight, bgCenter }
+    bar.epcFramePieces = { frameLeft, frameRight, frameCenter }
+    bar.epcGlossPieces = { glossLeft, glossRight }
+    bar.epcFillPieces = { fillLeft, fillRight }
     bar.epcLabel = label
     bar.epcTextMode = textMode or "FULL"
     return bar
@@ -3251,4 +3369,1975 @@ updateESOResourceBar = function(bar, current, maximum)
             bar.epcLabel:SetText(string.format("%s / %s  (%s)", compactNumber(current), compactNumber(maximum), percentText(current, maximum)))
         end
     end
+end
+
+-- ============================================================================
+-- v0.29.72 - Full Suite unit-frame ownership.
+-- Reassert replacement of ESO player/target/companion/group/raid frames.
+-- Boss health remains owned by ESO and is intentionally not replaced.
+-- ============================================================================
+function F:CreateBossFrame02972()
+    -- v0.29.113: The Suite no longer creates a Boss Health overlay. ESO's
+    -- native boss-health UI remains the single boss-health presentation.
+    if self.bossFrame then
+        self.bossFrame:SetHidden(true)
+    end
+    return nil
+end
+
+function F:RefreshBossFrame02972()
+    -- Boss health is owned by ESO. Keep any legacy Suite boss control hidden.
+    if self.bossFrame then self.bossFrame:SetHidden(true) end
+end
+
+function F:ApplyAllNativeFrameReplacement02972()
+    if not EPC.saved then return end
+    local replace = EPC.saved.replaceDefaultUnitFrames ~= false
+    local reason = "ESOAdventurerSuite_AllUnitFrames02972"
+
+    if UNIT_FRAMES then
+        if type(UNIT_FRAMES.SetFrameHiddenForReason) == "function" then
+            pcall(UNIT_FRAMES.SetFrameHiddenForReason, UNIT_FRAMES, "reticleover", reason, replace)
+            pcall(UNIT_FRAMES.SetFrameHiddenForReason, UNIT_FRAMES, "companion", reason, replace)
+        end
+        if type(UNIT_FRAMES.SetGroupAndRaidFramesHiddenForReason) == "function" then
+            pcall(UNIT_FRAMES.SetGroupAndRaidFramesHiddenForReason, UNIT_FRAMES, reason, replace)
+        end
+        local function applyReason(frames)
+            if type(frames) ~= "table" then return end
+            for _, nativeFrame in pairs(frames) do
+                if nativeFrame and type(nativeFrame.SetHiddenForReason) == "function" then
+                    pcall(nativeFrame.SetHiddenForReason, nativeFrame, reason, replace)
+                end
+            end
+        end
+        applyReason(UNIT_FRAMES.groupFrames)
+        applyReason(UNIT_FRAMES.raidFrames)
+        applyReason(UNIT_FRAMES.companionRaidFrames)
+    end
+
+    if PLAYER_ATTRIBUTE_BARS_FRAGMENT and type(PLAYER_ATTRIBUTE_BARS_FRAGMENT.SetHiddenForReason) == "function" then
+        pcall(PLAYER_ATTRIBUTE_BARS_FRAGMENT.SetHiddenForReason, PLAYER_ATTRIBUTE_BARS_FRAGMENT, reason, replace)
+    end
+
+    -- v0.29.113: Do not hide, force-show, or otherwise manage BOSS_BAR here.
+    -- ESO retains full ownership of its native boss-health display.
+
+end
+
+local EAS_ApplyDefaultFrameReplacementBase02972 = F.ApplyDefaultFrameReplacement
+function F:ApplyDefaultFrameReplacement()
+    if EAS_ApplyDefaultFrameReplacementBase02972 then EAS_ApplyDefaultFrameReplacementBase02972(self) end
+    self:ApplyAllNativeFrameReplacement02972()
+end
+
+local EAS_RefreshAllBase02972 = F.RefreshAll
+function F:RefreshAll(refreshAuras)
+    local result = EAS_RefreshAllBase02972(self, refreshAuras)
+    self:ApplyAllNativeFrameReplacement02972()
+    return result
+end
+
+local EAS_SetLayoutModeBase02972 = F.SetLayoutMode
+function F:SetLayoutMode(active)
+    EAS_SetLayoutModeBase02972(self, active)
+end
+
+local EAS_InitializeUnitFramesBase02972 = F.Initialize
+function F:Initialize()
+    if EPC.saved and EPC.saved.unitFrameReplacementMigrated02972 ~= true then
+        EPC.saved.replaceDefaultUnitFrames = true
+        EPC.saved.unitFrameReplacementMigrated02972 = true
+    end
+    EAS_InitializeUnitFramesBase02972(self)
+    self:ApplyAllNativeFrameReplacement02972()
+
+    -- Keep ownership of the non-boss native frames only. Boss health remains
+    -- entirely under ESO control and has no Suite event/update loop.
+    local prefix = (EPC.name or "ESOAdventurerSuite") .. "_NativeUnitFrameOwner02972"
+    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Guard", 500, function()
+        if EPC.UnitFrames then
+            EPC.UnitFrames:ApplyAllNativeFrameReplacement02972()
+        end
+    end)
+end
+
+-- Keep the new boss replacement consistent with the existing HUD lifecycle.
+local EAS_HideAllCustomFramesBase02972 = F.HideAllCustomFrames
+function F:HideAllCustomFrames()
+    EAS_HideAllCustomFramesBase02972(self)
+    if self.bossFrame then self.bossFrame:SetHidden(true) end
+end
+
+local EAS_ApplyScalesAndAlphaBase02972 = F.ApplyScalesAndAlpha
+function F:ApplyScalesAndAlpha()
+    EAS_ApplyScalesAndAlphaBase02972(self)
+    if self.bossFrame and EPC.saved then
+        local scale = tonumber(EPC.saved.targetFrameScale) or tonumber(EPC.saved.unitFrameScale) or 1.0
+        local alpha = tonumber(EPC.saved.unitFrameAlpha) or 0.94
+        self.bossFrame:SetScale(scale)
+        self.bossFrame:SetAlpha(alpha)
+    end
+end
+
+
+-- ============================================================================
+-- v0.29.90 - Five selectable Suite unit-frame visual styles.
+-- ESO Classic preserves the exact pre-0.29.90 appearance. Other themes only
+-- restyle existing controls; geometry, saved positions, scales, auras, and unit
+-- data are untouched. Player/Target/Group/Raid share one consistent selection.
+-- ============================================================================
+local EAS_UNIT_FRAME_THEMES_02990 = {
+    ESO_CLASSIC = {
+        name = "ESO Classic",
+        panel = false,
+        frame = {1.00, 1.00, 1.00, 1.00},
+        gloss = {1.00, 1.00, 1.00, 0.42},
+        label = {1.00, 1.00, 1.00, 1.00},
+        info = {0.70, 0.73, 0.78, 1.00},
+        groupPanel = {0.010, 0.012, 0.016, 0.58},
+        groupEdge = {0.55, 0.43, 0.20, 0.48},
+        groupRow = {0.012, 0.014, 0.018, 0.36},
+        groupRowEdge = {0.52, 0.41, 0.20, 0.24},
+        accent = {0.72, 0.57, 0.27, 1.00},
+    },
+    CLEAN_MINIMAL = {
+        name = "Clean Minimal",
+        panel = false,
+        frame = {0.84, 0.87, 0.91, 0.92},
+        gloss = {1.00, 1.00, 1.00, 0.18},
+        label = {0.96, 0.97, 0.99, 1.00},
+        info = {0.66, 0.70, 0.76, 1.00},
+        groupPanel = {0.010, 0.012, 0.016, 0.22},
+        groupEdge = {0.44, 0.48, 0.54, 0.34},
+        groupRow = {0.010, 0.012, 0.016, 0.18},
+        groupRowEdge = {0.44, 0.48, 0.54, 0.22},
+        accent = {0.76, 0.80, 0.86, 0.90},
+    },
+    DARK_GOLD = {
+        name = "Dark Gold",
+        panel = true,
+        panelCenter = {0.012, 0.010, 0.007, 0.70},
+        panelEdge = {0.74, 0.55, 0.20, 0.68},
+        frame = {0.94, 0.72, 0.31, 1.00},
+        gloss = {1.00, 0.86, 0.52, 0.26},
+        label = {1.00, 0.96, 0.84, 1.00},
+        info = {0.86, 0.72, 0.43, 1.00},
+        groupPanel = {0.012, 0.010, 0.007, 0.76},
+        groupEdge = {0.78, 0.58, 0.20, 0.74},
+        groupRow = {0.018, 0.014, 0.008, 0.58},
+        groupRowEdge = {0.72, 0.52, 0.18, 0.48},
+        accent = {0.96, 0.72, 0.24, 1.00},
+    },
+    ARCANE_BLUE = {
+        name = "Arcane Blue",
+        panel = true,
+        panelCenter = {0.006, 0.018, 0.030, 0.72},
+        panelEdge = {0.18, 0.68, 0.88, 0.68},
+        frame = {0.32, 0.82, 1.00, 1.00},
+        gloss = {0.56, 0.90, 1.00, 0.28},
+        label = {0.90, 0.98, 1.00, 1.00},
+        info = {0.48, 0.80, 0.94, 1.00},
+        groupPanel = {0.006, 0.018, 0.030, 0.78},
+        groupEdge = {0.18, 0.68, 0.88, 0.72},
+        groupRow = {0.008, 0.024, 0.038, 0.58},
+        groupRowEdge = {0.16, 0.60, 0.80, 0.48},
+        accent = {0.22, 0.78, 1.00, 1.00},
+    },
+    HIGH_CONTRAST = {
+        name = "High Contrast",
+        panel = true,
+        panelCenter = {0.000, 0.000, 0.000, 0.88},
+        panelEdge = {0.88, 0.90, 0.94, 0.82},
+        frame = {0.96, 0.97, 1.00, 1.00},
+        gloss = {1.00, 1.00, 1.00, 0.10},
+        label = {1.00, 1.00, 1.00, 1.00},
+        info = {0.86, 0.88, 0.92, 1.00},
+        groupPanel = {0.000, 0.000, 0.000, 0.90},
+        groupEdge = {0.88, 0.90, 0.94, 0.80},
+        groupRow = {0.000, 0.000, 0.000, 0.74},
+        groupRowEdge = {0.76, 0.79, 0.84, 0.58},
+        accent = {1.00, 1.00, 1.00, 0.96},
+    },
+}
+
+local function EAS_SetTextureTint02990(control, color)
+    if not control or type(control.SetColor) ~= "function" or not color then return end
+    control:SetColor(color[1] or 1, color[2] or 1, color[3] or 1, color[4] or 1)
+end
+
+local function EAS_SetLabelColor02990(control, color)
+    if not control or type(control.SetColor) ~= "function" or not color then return end
+    control:SetColor(color[1] or 1, color[2] or 1, color[3] or 1, color[4] or 1)
+end
+
+function F:GetVisualTheme02990()
+    local key = EPC.saved and tostring(EPC.saved.unitFrameVisualStyle or "ESO_CLASSIC") or "ESO_CLASSIC"
+    return EAS_UNIT_FRAME_THEMES_02990[key] or EAS_UNIT_FRAME_THEMES_02990.ESO_CLASSIC, key
+end
+
+function F:ApplyBarVisualTheme02990(bar, theme)
+    if not bar or not theme then return end
+    for _, piece in ipairs(bar.epcBgPieces or {}) do EAS_SetTextureTint02990(piece, {0.72, 0.74, 0.78, 1.00}) end
+    for _, piece in ipairs(bar.epcFramePieces or {}) do EAS_SetTextureTint02990(piece, theme.frame) end
+    for _, piece in ipairs(bar.epcGlossPieces or {}) do EAS_SetTextureTint02990(piece, theme.gloss) end
+    EAS_SetLabelColor02990(bar.epcLabel, theme.label)
+end
+
+function F:ApplyUnitFrameVisualTheme02990()
+    if not EPC.saved then return end
+    local theme, key = self:GetVisualTheme02990()
+    local classic = key == "ESO_CLASSIC"
+    local layout = self.layoutMode == true
+
+    local function styleShellTheme(frame, isPlayerTarget)
+        if not frame then return end
+
+        -- ESO Classic is intentionally the exact legacy/current appearance.
+        if classic then
+            if isPlayerTarget and frame.epcNoPanel then
+                if frame.epcShadow then frame.epcShadow:SetHidden(true) end
+                if frame.epcBackground then frame.epcBackground:SetHidden(true) end
+                if frame.epcAccent then frame.epcAccent:SetHidden(true) end
+            end
+            return
+        end
+
+        if isPlayerTarget then
+            if frame.epcShadow then frame.epcShadow:SetHidden(true) end
+            if frame.epcBackground then
+                if theme.panel or layout then
+                    frame.epcBackground:SetHidden(false)
+                    if layout then
+                        frame.epcBackground:SetCenterColor(0.018, 0.022, 0.030, 0.42)
+                        frame.epcBackground:SetEdgeColor(0.96, 0.72, 0.24, 0.90)
+                    else
+                        local center = theme.panelCenter or {0.010,0.014,0.020,0.60}
+                        local edge = theme.panelEdge or theme.groupEdge
+                        frame.epcBackground:SetCenterColor(unpack(center))
+                        frame.epcBackground:SetEdgeColor(unpack(edge))
+                    end
+                else
+                    frame.epcBackground:SetHidden(true)
+                end
+            end
+            if frame.epcAccent then
+                frame.epcAccent:SetHidden(not theme.panel)
+                if theme.panel then frame.epcAccent:SetCenterColor(unpack(theme.accent)) end
+            end
+        end
+    end
+
+    local function styleUnit(frame)
+        if not frame then return end
+        styleShellTheme(frame, true)
+        EAS_SetLabelColor02990(frame.epcTitle, theme.label)
+        EAS_SetLabelColor02990(frame.epcInfo, theme.info)
+        if frame.epcBars then
+            self:ApplyBarVisualTheme02990(frame.epcBars.health, theme)
+            self:ApplyBarVisualTheme02990(frame.epcBars.magicka, theme)
+            self:ApplyBarVisualTheme02990(frame.epcBars.stamina, theme)
+        end
+    end
+
+    local function styleRoster(frame)
+        if not frame then return end
+        if frame.epcBackground then
+            frame.epcBackground:SetHidden(false)
+            if layout then
+                frame.epcBackground:SetCenterColor(0.010, 0.012, 0.016, 0.35)
+                frame.epcBackground:SetEdgeColor(0.96, 0.72, 0.24, 0.86)
+            else
+                frame.epcBackground:SetCenterColor(unpack(theme.groupPanel))
+                frame.epcBackground:SetEdgeColor(unpack(theme.groupEdge))
+            end
+        end
+        if frame.epcAccent then
+            frame.epcAccent:SetHidden(not (theme.panel and not classic))
+            if theme.panel and not classic then frame.epcAccent:SetCenterColor(unpack(theme.accent)) end
+        end
+        EAS_SetLabelColor02990(frame.epcTitle, theme.label)
+        EAS_SetLabelColor02990(frame.epcStatus, theme.info)
+        for _, row in ipairs(frame.epcRows or {}) do
+            row:SetCenterColor(unpack(layout and {0.012,0.014,0.018,0.26} or theme.groupRow))
+            row:SetEdgeColor(unpack(layout and {0.96,0.72,0.24,0.42} or theme.groupRowEdge))
+            EAS_SetLabelColor02990(row.epcName, theme.label)
+            EAS_SetLabelColor02990(row.epcMeta, theme.info)
+            EAS_SetLabelColor02990(row.epcCompanion, theme.label)
+            EAS_SetLabelColor02990(row.epcCompanionMeta, theme.info)
+            if row.epcAccent and not classic then row.epcAccent:SetCenterColor(unpack(theme.accent)) end
+            if row.epcBars then self:ApplyBarVisualTheme02990(row.epcBars.health, theme) end
+            if row.epcCompanionHealth then self:ApplyBarVisualTheme02990(row.epcCompanionHealth, theme) end
+        end
+    end
+
+    styleUnit(self.playerFrame)
+    styleUnit(self.targetFrame)
+    styleRoster(self.groupFrame)
+    styleRoster(self.raidFrame)
+end
+
+local EAS_ApplyVisualStyleBase02990 = F.ApplyVisualStyle
+function F:ApplyVisualStyle()
+    EAS_ApplyVisualStyleBase02990(self)
+    self:ApplyUnitFrameVisualTheme02990()
+end
+
+-- ============================================================================
+-- v0.29.91 - Five genuinely different unit-frame designs.
+-- Unlike v0.29.90, these presets change geometry/layout as well as treatment.
+-- ESO Classic remains the exact legacy layout. The selected design is shared by
+-- Player, Target, Group, and Raid frames, while saved anchors/scales are kept.
+-- ============================================================================
+
+-- Give the new layout keys their own restrained visual treatments too. The main
+-- difference between these presets is geometry, not color.
+EAS_UNIT_FRAME_THEMES_02990.COMPACT_STACK = {
+    name = "Compact Stack", panel = false,
+    frame = {0.92,0.94,0.97,0.96}, gloss = {1,1,1,0.20},
+    label = {1,1,1,1}, info = {0.72,0.75,0.80,1},
+    groupPanel = {0.008,0.010,0.014,0.44}, groupEdge = {0.40,0.43,0.49,0.42},
+    groupRow = {0.008,0.010,0.014,0.30}, groupRowEdge = {0.40,0.43,0.49,0.26},
+    accent = {0.80,0.83,0.88,0.94},
+}
+EAS_UNIT_FRAME_THEMES_02990.SPLIT_RESOURCES = {
+    name = "Split Resources", panel = true,
+    panelCenter = {0.010,0.014,0.020,0.66}, panelEdge = {0.60,0.47,0.22,0.60},
+    frame = {0.96,0.78,0.42,1}, gloss = {1,0.90,0.66,0.24},
+    label = {1,0.98,0.92,1}, info = {0.82,0.72,0.54,1},
+    groupPanel = {0.010,0.014,0.020,0.68}, groupEdge = {0.60,0.47,0.22,0.58},
+    groupRow = {0.012,0.016,0.022,0.50}, groupRowEdge = {0.55,0.43,0.20,0.38},
+    accent = {0.96,0.72,0.24,1},
+}
+EAS_UNIT_FRAME_THEMES_02990.WIDE_PLATE = {
+    name = "Wide Plate", panel = true,
+    panelCenter = {0.006,0.012,0.020,0.78}, panelEdge = {0.24,0.58,0.78,0.68},
+    frame = {0.46,0.82,1.00,1}, gloss = {0.72,0.93,1.00,0.24},
+    label = {0.94,0.99,1.00,1}, info = {0.58,0.82,0.94,1},
+    groupPanel = {0.006,0.012,0.020,0.78}, groupEdge = {0.24,0.58,0.78,0.66},
+    groupRow = {0.008,0.018,0.030,0.58}, groupRowEdge = {0.20,0.52,0.72,0.46},
+    accent = {0.28,0.76,1.00,1},
+}
+EAS_UNIT_FRAME_THEMES_02990.TACTICAL_GRID = {
+    name = "Tactical Grid", panel = true,
+    panelCenter = {0.004,0.006,0.009,0.86}, panelEdge = {0.72,0.74,0.78,0.66},
+    frame = {0.92,0.94,0.98,1}, gloss = {1,1,1,0.12},
+    label = {1,1,1,1}, info = {0.72,0.76,0.82,1},
+    groupPanel = {0.004,0.006,0.009,0.88}, groupEdge = {0.72,0.74,0.78,0.62},
+    groupRow = {0.008,0.010,0.014,0.72}, groupRowEdge = {0.58,0.61,0.66,0.50},
+    accent = {0.96,0.72,0.24,1},
+}
+
+local EAS_LEGACY_STYLE_MAP_02991 = {
+    CLEAN_MINIMAL = "COMPACT_STACK",
+    -- Styles 3-5 were removed in 0.29.111 because they duplicated/simulated
+    -- layouts already covered by the retained Center Core design.
+    DARK_GOLD = "CENTER_CORE",
+    ARCANE_BLUE = "CENTER_CORE",
+    HIGH_CONTRAST = "CENTER_CORE",
+    SPLIT_RESOURCES = "CENTER_CORE",
+    WIDE_PLATE = "CENTER_CORE",
+    TACTICAL_GRID = "CENTER_CORE",
+}
+
+local function EAS_GetUnitFrameDesign02991()
+    local key = EPC.saved and tostring(EPC.saved.unitFrameVisualStyle or "ESO_CLASSIC") or "ESO_CLASSIC"
+    return EAS_LEGACY_STYLE_MAP_02991[key] or key
+end
+
+local function EAS_SetBarBox02991(bar, x, y, w)
+    if not bar then return end
+    bar:ClearAnchors()
+    bar:SetAnchor(TOPLEFT, bar:GetParent(), TOPLEFT, x, y)
+    bar:SetWidth(math.max(80, w))
+end
+
+local function EAS_SizeAuraSlots02991(frame, size, step)
+    if not frame then return end
+    frame.epcAuraSlotSize = size
+    frame.epcAuraSlotStep = step
+    local function resize(slots)
+        for _, slot in ipairs(slots or {}) do
+            if slot then
+                slot:SetDimensions(size, size)
+                if slot.epcTimerBack then
+                    slot.epcTimerBack:SetDimensions(math.max(18, size - 8), math.max(13, size - 14))
+                end
+            end
+        end
+    end
+    resize(frame.epcBuffSlots)
+    resize(frame.epcDebuffSlots)
+end
+
+local EAS_LayoutIntegratedUnitFrameBase02991 = F.LayoutIntegratedUnitFrame
+function F:LayoutIntegratedUnitFrame(frame, buffCount, debuffCount, preview)
+    if not frame then return end
+    local design = EAS_GetUnitFrameDesign02991()
+    local isPlayer = frame.epcKind == "player"
+    local isTarget = frame.epcKind == "target"
+
+    if design == "ESO_CLASSIC" then
+        frame:SetWidth(420)
+        EAS_SizeAuraSlots02991(frame, 30, 33)
+        if frame.epcTitle then
+            frame.epcTitle:ClearAnchors()
+            frame.epcTitle:SetAnchor(TOPLEFT, frame, TOPLEFT, 12, 0)
+            frame.epcTitle:SetDimensions(396, 22)
+            frame.epcTitle:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+        end
+        if frame.epcInfo then
+            frame.epcInfo:ClearAnchors()
+            frame.epcInfo:SetAnchor(TOPLEFT, frame, TOPLEFT, 12, 20)
+            frame.epcInfo:SetDimensions(396, 18)
+            frame.epcInfo:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+        end
+        for _, bar in pairs(frame.epcBars or {}) do if bar then bar:SetWidth(396) end end
+        return EAS_LayoutIntegratedUnitFrameBase02991(self, frame, buffCount, debuffCount, preview)
+    end
+
+    local cfg
+    if design == "COMPACT_STACK" then
+        cfg = { playerW=340, targetW=360, aura=24, step=27, pad=8, headerPlayer=0, headerTarget=34, mode="STACK" }
+    elseif design == "SPLIT_RESOURCES" then
+        cfg = { playerW=430, targetW=430, aura=28, step=31, pad=10, headerPlayer=38, headerTarget=38, mode="SPLIT" }
+    elseif design == "WIDE_PLATE" then
+        cfg = { playerW=520, targetW=520, aura=30, step=33, pad=14, headerPlayer=42, headerTarget=42, mode="PLATE" }
+    else -- TACTICAL_GRID
+        cfg = { playerW=390, targetW=430, aura=26, step=29, pad=8, headerPlayer=34, headerTarget=34, mode="TACTICAL" }
+    end
+
+    local width = isTarget and cfg.targetW or cfg.playerW
+    frame:SetWidth(width)
+    EAS_SizeAuraSlots02991(frame, cfg.aura, cfg.step)
+
+    local showPlayerHeader = isPlayer and design ~= "COMPACT_STACK"
+    local headerHeight = isTarget and cfg.headerTarget or (showPlayerHeader and cfg.headerPlayer or 0)
+
+    if frame.epcTitle then
+        frame.epcTitle:ClearAnchors()
+        frame.epcTitle:SetAnchor(TOPLEFT, frame, TOPLEFT, cfg.pad, 1)
+        frame.epcTitle:SetDimensions(width - (cfg.pad * 2), 20)
+    end
+    if frame.epcInfo then
+        frame.epcInfo:ClearAnchors()
+        frame.epcInfo:SetAnchor(TOPLEFT, frame, TOPLEFT, cfg.pad, 20)
+        frame.epcInfo:SetDimensions(width - (cfg.pad * 2), 16)
+    end
+
+    if design == "TACTICAL_GRID" then
+        if frame.epcTitle then frame.epcTitle:SetHorizontalAlignment(TEXT_ALIGN_LEFT) frame.epcTitle:SetWidth(math.floor(width * 0.62)) end
+        if frame.epcInfo then
+            frame.epcInfo:ClearAnchors()
+            frame.epcInfo:SetAnchor(TOPRIGHT, frame, TOPRIGHT, -cfg.pad, 3)
+            frame.epcInfo:SetDimensions(math.floor(width * 0.34), 18)
+            frame.epcInfo:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+        end
+    elseif design == "COMPACT_STACK" and isTarget then
+        if frame.epcTitle then frame.epcTitle:SetHorizontalAlignment(TEXT_ALIGN_LEFT) end
+        if frame.epcInfo then frame.epcInfo:SetHorizontalAlignment(TEXT_ALIGN_RIGHT) end
+    else
+        if frame.epcTitle then frame.epcTitle:SetHorizontalAlignment(TEXT_ALIGN_CENTER) end
+        if frame.epcInfo then frame.epcInfo:SetHorizontalAlignment(TEXT_ALIGN_CENTER) end
+    end
+
+    local displayBuffs = tonumber(buffCount) or 0
+    local displayDebuffs = tonumber(debuffCount) or 0
+    if preview then
+        displayBuffs = math.max(displayBuffs, 4)
+        displayDebuffs = math.max(displayDebuffs, 3)
+    end
+
+    local auraPad = cfg.pad
+    if design == "WIDE_PLATE" then auraPad = 40 end
+    local perRow = math.max(1, math.floor((width - auraPad * 2) / cfg.step))
+    local function position(slots, displayCount, startY)
+        for i=1,#(slots or {}) do
+            local slot = slots[i]
+            slot:ClearAnchors()
+            local rowIndex = math.floor((i - 1) / perRow)
+            local col = (i - 1) % perRow
+            slot:SetAnchor(TOPLEFT, frame, TOPLEFT, auraPad + (col * cfg.step), startY + (rowIndex * cfg.step))
+        end
+        return displayCount > 0 and math.ceil(displayCount / perRow) or 0
+    end
+
+    local buffRows = position(frame.epcBuffSlots, displayBuffs, headerHeight)
+    local healthY = headerHeight + (buffRows * cfg.step) + (buffRows > 0 and 4 or 0)
+
+    local healthX, healthW
+    if design == "WIDE_PLATE" then
+        healthX, healthW = 50, width - 100
+    else
+        healthX, healthW = cfg.pad, width - (cfg.pad * 2)
+    end
+    -- Player Styles 1-5 receive their final stable geometry in the mature
+    -- 0.29.97 policy below. Keep this base Health anchor mathematically centered
+    -- so there is no style-specific bias before that final geometry pass.
+    EAS_SetBarBox02991(frame.epcBars.health, healthX, healthY, healthW)
+
+    local healthBottom = healthY + 23
+    local debuffRows = 0
+    if displayDebuffs > 0 then
+        local debuffY = healthBottom + 4
+        debuffRows = position(frame.epcDebuffSlots, displayDebuffs, debuffY)
+        healthBottom = debuffY + (debuffRows * cfg.step)
+    else
+        position(frame.epcDebuffSlots, 0, healthBottom)
+    end
+
+    if isTarget then
+        if frame.epcBars.magicka then frame.epcBars.magicka:SetHidden(true) end
+        if frame.epcBars.stamina then frame.epcBars.stamina:SetHidden(true) end
+        frame:SetHeight(healthBottom + (debuffRows > 0 and 4 or 2))
+        return
+    end
+
+    frame.epcBars.magicka:SetHidden(false)
+    frame.epcBars.stamina:SetHidden(false)
+    local resourcesY = healthBottom + (debuffRows > 0 and 5 or 3)
+
+    if cfg.mode == "SPLIT" or cfg.mode == "TACTICAL" then
+        local gap = 8
+        local totalW = width - (cfg.pad * 2)
+        local half = math.floor((totalW - gap) / 2)
+        EAS_SetBarBox02991(frame.epcBars.magicka, cfg.pad, resourcesY, half)
+        EAS_SetBarBox02991(frame.epcBars.stamina, cfg.pad + half + gap, resourcesY, totalW - half - gap)
+        frame:SetHeight(resourcesY + 26)
+    elseif cfg.mode == "PLATE" then
+        local resourceW = width - 190
+        local resourceX = math.floor((width - resourceW) / 2)
+        EAS_SetBarBox02991(frame.epcBars.magicka, resourceX, resourcesY, resourceW)
+        EAS_SetBarBox02991(frame.epcBars.stamina, resourceX, resourcesY + 26, resourceW)
+        frame:SetHeight(resourcesY + 51)
+    else -- compact stack
+        local resourceW = width - (cfg.pad * 2)
+        EAS_SetBarBox02991(frame.epcBars.magicka, cfg.pad, resourcesY, resourceW)
+        EAS_SetBarBox02991(frame.epcBars.stamina, cfg.pad, resourcesY + 24, resourceW)
+        frame:SetHeight(resourcesY + 47)
+    end
+end
+
+local EAS_UpdateUnitFrameBase02991 = F.UpdateUnitFrame
+function F:UpdateUnitFrame(frame, unitTag, preview)
+    local ok = EAS_UpdateUnitFrameBase02991(self, frame, unitTag, preview)
+    if not ok or not frame then return ok end
+    local design = EAS_GetUnitFrameDesign02991()
+    local isPlayer = frame.epcKind == "player"
+    local isTarget = frame.epcKind == "target"
+
+    if isPlayer then
+        if design == "ESO_CLASSIC" or design == "COMPACT_STACK" then
+            frame.epcTitle:SetHidden(true)
+            frame.epcInfo:SetHidden(true)
+        else
+            local name, info = self:GetUnitMeta(unitTag)
+            if preview and safe(DoesUnitExist, false, unitTag) ~= true then
+                name, info = "PLAYER PREVIEW", "LAYOUT MODE"
+            end
+            frame.epcTitle:SetText(name ~= "" and name or "PLAYER")
+            frame.epcInfo:SetText(info or "")
+            frame.epcTitle:SetHidden(false)
+            frame.epcInfo:SetHidden(false)
+        end
+    elseif isTarget then
+        frame.epcTitle:SetHidden(false)
+        frame.epcInfo:SetHidden(false)
+    end
+    return ok
+end
+
+local function EAS_LayoutRosterRow02991(row, width, compactH, expandedH, design)
+    if not row then return end
+    row.epcCompactHeight = compactH
+    row.epcExpandedHeight = expandedH
+    row:SetWidth(width)
+    row:SetHeight(row.epcHasCompanion == true and expandedH or compactH)
+
+    local pad = design == "COMPACT_STACK" and 5 or 7
+    local nameY = design == "WIDE_PLATE" and 4 or 1
+    local healthY = design == "WIDE_PLATE" and 23 or 15
+    if design == "TACTICAL_GRID" then healthY = 17 end
+    if design == "SPLIT_RESOURCES" then healthY = 18 end
+    if design == "ESO_CLASSIC" then pad, nameY, healthY = 6, 0, 14 end
+
+    if row.epcAccent then
+        row.epcAccent:ClearAnchors()
+        if design == "WIDE_PLATE" then
+            row.epcAccent:SetAnchor(TOPLEFT, row, TOPLEFT, 1, 1)
+            row.epcAccent:SetAnchor(TOPRIGHT, row, TOPRIGHT, -1, 1)
+            row.epcAccent:SetHeight(2)
+        else
+            row.epcAccent:SetAnchor(TOPLEFT, row, TOPLEFT, 1, 1)
+            row.epcAccent:SetAnchor(BOTTOMLEFT, row, BOTTOMLEFT, 1, -1)
+            row.epcAccent:SetWidth(design == "TACTICAL_GRID" and 4 or 2)
+        end
+    end
+
+    if row.epcName then
+        row.epcName:ClearAnchors()
+        row.epcName:SetAnchor(TOPLEFT, row, TOPLEFT, pad, nameY)
+        row.epcName:SetDimensions(math.max(70, width - (design == "TACTICAL_GRID" and 82 or 150)), 16)
+        row.epcName:SetHorizontalAlignment(design == "WIDE_PLATE" and TEXT_ALIGN_CENTER or TEXT_ALIGN_LEFT)
+    end
+    if row.epcMeta then
+        row.epcMeta:ClearAnchors()
+        row.epcMeta:SetAnchor(TOPRIGHT, row, TOPRIGHT, -pad, nameY)
+        row.epcMeta:SetDimensions(design == "TACTICAL_GRID" and 72 or 136, 16)
+        row.epcMeta:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+    end
+    if row.epcBars and row.epcBars.health then
+        row.epcBars.health:ClearAnchors()
+        row.epcBars.health:SetAnchor(TOPLEFT, row, TOPLEFT, pad, healthY)
+        row.epcBars.health:SetWidth(width - (pad * 2))
+    end
+
+    local companionTop = design == "ESO_CLASSIC" and 32 or (healthY + 22)
+    if row.epcCompanionDivider and row.epcCompanionDivider ~= false then
+        row.epcCompanionDivider:ClearAnchors()
+        row.epcCompanionDivider:SetAnchor(TOPLEFT, row, TOPLEFT, pad, companionTop)
+        row.epcCompanionDivider:SetDimensions(width - (pad * 2), 1)
+    end
+    if row.epcCompanion and row.epcCompanion ~= false then
+        row.epcCompanion:ClearAnchors()
+        row.epcCompanion:SetAnchor(TOPLEFT, row, TOPLEFT, pad, companionTop + 3)
+        row.epcCompanion:SetDimensions(math.max(65, width - 110), 14)
+    end
+    if row.epcCompanionMeta and row.epcCompanionMeta ~= false then
+        row.epcCompanionMeta:ClearAnchors()
+        row.epcCompanionMeta:SetAnchor(TOPRIGHT, row, TOPRIGHT, -pad, companionTop + 3)
+        row.epcCompanionMeta:SetDimensions(96, 14)
+    end
+    if row.epcCompanionHealth and row.epcCompanionHealth ~= false then
+        row.epcCompanionHealth:ClearAnchors()
+        row.epcCompanionHealth:SetAnchor(TOPLEFT, row, TOPLEFT, pad, companionTop + 17)
+        row.epcCompanionHealth:SetWidth(width - (pad * 2))
+    end
+end
+
+local EAS_RefreshGroupFramesBase02991 = F.RefreshGroupFrames
+function F:RefreshGroupFrames()
+    local design = EAS_GetUnitFrameDesign02991()
+    -- Restore the exact legacy roster geometry before the mature refresh code
+    -- runs, so switching back from a custom design never keeps custom widths.
+    if design == "ESO_CLASSIC" then
+        if self.groupFrame then
+            self.groupFrame:SetWidth(330)
+            for _, row in ipairs(self.groupFrame.epcRows or {}) do
+                EAS_LayoutRosterRow02991(row, 306, 32, 63, "ESO_CLASSIC")
+            end
+        end
+        if self.raidFrame then
+            for _, row in ipairs(self.raidFrame.epcRows or {}) do
+                EAS_LayoutRosterRow02991(row, 270, 32, 32, "ESO_CLASSIC")
+            end
+        end
+    end
+
+    EAS_RefreshGroupFramesBase02991(self)
+    if design == "ESO_CLASSIC" then return end
+
+    -- Group: four visibly different arrangements across the new designs.
+    if self.groupFrame then
+        local visible = {}
+        for _, row in ipairs(self.groupFrame.epcRows or {}) do if row and not row:IsHidden() then visible[#visible+1] = row end end
+
+        local rowW, compactH, expandedH, gap
+        if design == "COMPACT_STACK" then rowW, compactH, expandedH, gap = 276, 32, 58, 3
+        elseif design == "SPLIT_RESOURCES" then rowW, compactH, expandedH, gap = 336, 38, 70, 5
+        elseif design == "WIDE_PLATE" then rowW, compactH, expandedH, gap = 366, 44, 78, 7
+        else rowW, compactH, expandedH, gap = 210, 38, 70, 6 end
+
+        for _, row in ipairs(self.groupFrame.epcRows or {}) do
+            EAS_LayoutRosterRow02991(row, rowW, compactH, expandedH, design)
+        end
+
+        if design == "TACTICAL_GRID" then
+            local stepY = expandedH + gap
+            for index, row in ipairs(visible) do
+                local col = (index - 1) % 2
+                local r = math.floor((index - 1) / 2)
+                row:ClearAnchors()
+                row:SetAnchor(TOPLEFT, self.groupFrame, TOPLEFT, 8 + col * (rowW + gap), 8 + r * stepY)
+            end
+            local rows = math.max(1, math.ceil(#visible / 2))
+            self.groupFrame:SetDimensions(16 + (rowW * 2) + gap, 16 + (rows * expandedH) + ((rows - 1) * gap))
+        else
+            local y = 8
+            for _, row in ipairs(visible) do
+                row:ClearAnchors()
+                row:SetAnchor(TOPLEFT, self.groupFrame, TOPLEFT, 8, y)
+                y = y + row:GetHeight() + gap
+            end
+            self.groupFrame:SetDimensions(rowW + 16, math.max(48, y + 5))
+        end
+    end
+
+    -- Raid: each design uses a different density/column layout.
+    if self.raidFrame then
+        local visible = {}
+        for _, row in ipairs(self.raidFrame.epcRows or {}) do if row and not row:IsHidden() then visible[#visible+1] = row end end
+        local rowW, rowH, columns, gap
+        if design == "COMPACT_STACK" then rowW, rowH, columns, gap = 220, 30, 3, 5
+        elseif design == "SPLIT_RESOURCES" then rowW, rowH, columns, gap = 286, 36, 2, 7
+        elseif design == "WIDE_PLATE" then rowW, rowH, columns, gap = 320, 42, 2, 9
+        else rowW, rowH, columns, gap = 205, 34, 4, 5 end
+        columns = math.max(1, math.min(columns, math.max(1, #visible)))
+        local rows = math.max(1, math.ceil(math.max(1, #visible) / columns))
+        local top = 29
+        for _, row in ipairs(self.raidFrame.epcRows or {}) do EAS_LayoutRosterRow02991(row, rowW, rowH, rowH, design) end
+        for index, row in ipairs(visible) do
+            local col = (index - 1) % columns
+            local r = math.floor((index - 1) / columns)
+            row:ClearAnchors()
+            row:SetAnchor(TOPLEFT, self.raidFrame, TOPLEFT, 10 + col * (rowW + gap), top + r * (rowH + gap))
+        end
+        self.raidFrame:SetDimensions(20 + columns * rowW + (columns - 1) * gap, top + rows * rowH + (rows - 1) * gap + 7)
+    end
+end
+
+-- Re-apply the layout-safe visual treatment after every design refresh.
+local EAS_ApplyVisualStyleBase02991 = F.ApplyVisualStyle
+function F:ApplyVisualStyle()
+    EAS_ApplyVisualStyleBase02991(self)
+    local design = EAS_GetUnitFrameDesign02991()
+    -- Old saved theme keys from 0.29.90 transparently migrate to the new designs.
+    if EPC.saved and EAS_LEGACY_STYLE_MAP_02991[EPC.saved.unitFrameVisualStyle] then
+        EPC.saved.unitFrameVisualStyle = design
+    end
+end
+
+-- ============================================================================
+-- v0.29.93 - Ten background-free rectangular unit-frame designs.
+-- All Suite Player/Target/Group/Raid designs now use clean square resource bars
+-- and no card/panel backdrop. Five additional geometry presets are provided.
+-- ============================================================================
+local EAS_RECT_DESIGNS_02993 = {
+    RECT_STACK = true,
+    TRIPLE_BLOCKS = true,
+    SIDE_METERS = true,
+    CENTER_CORE = true,
+    SLIM_LINES = true,
+}
+
+-- Register neutral visual entries so the older theme layer never falls back to
+-- a panel-oriented preset for the five new geometry keys.
+local function EAS_RegisterRectTheme02993(key, name)
+    EAS_UNIT_FRAME_THEMES_02990[key] = {
+        name = name, panel = false,
+        frame = {0.92,0.94,0.98,1.00}, gloss = {1,1,1,0},
+        label = {1,1,1,1}, info = {0.72,0.76,0.82,1},
+        groupPanel = {0,0,0,0}, groupEdge = {0,0,0,0},
+        groupRow = {0,0,0,0}, groupRowEdge = {0,0,0,0},
+        accent = {0.82,0.84,0.88,1},
+    }
+end
+EAS_RegisterRectTheme02993("RECT_STACK", "Rect Stack")
+EAS_RegisterRectTheme02993("TRIPLE_BLOCKS", "Triple Blocks")
+EAS_RegisterRectTheme02993("SIDE_METERS", "Side Meters")
+EAS_RegisterRectTheme02993("CENTER_CORE", "Center Core")
+EAS_RegisterRectTheme02993("SLIM_LINES", "Slim Lines")
+
+local EAS_WHITE_TEXTURE_02993 = "/esoui/art/miscellaneous/white.dds"
+
+local function EAS_RectColorForBar02993(bar)
+    local name = ""
+    if bar and type(bar.GetName) == "function" then name = string.lower(tostring(bar:GetName() or "")) end
+    if string.find(name, "magicka", 1, true) then return C.magicka end
+    if string.find(name, "stamina", 1, true) then return C.stamina end
+    return C.health
+end
+
+local function EAS_UpdateRectBarFill02993(bar, current, maximum)
+    if not bar or not bar.epcRectFill then return end
+    current, maximum = tonumber(current) or 0, tonumber(maximum) or 0
+    bar.epcRectCurrent, bar.epcRectMaximum = current, maximum
+    local ratio = maximum > 0 and math.max(0, math.min(1, current / maximum)) or 0
+    if ratio <= 0 then
+        bar.epcRectFill:SetHidden(true)
+        return
+    end
+    bar.epcRectFill:SetHidden(false)
+    local innerWidth = math.max(1, (tonumber(bar:GetWidth()) or 1) - 4)
+    bar.epcRectFill:SetWidth(math.max(1, math.floor(innerWidth * ratio + 0.5)))
+end
+
+local function EAS_SeedRectValues02994(bar)
+    if not bar then return end
+    if (tonumber(bar.epcRectMaximum) or 0) > 0 then return end
+    local fill = bar.epcFill or bar.epcFillLeft or bar.epcFillRight
+    if not fill then return end
+    local current, maximum = nil, nil
+    if type(fill.GetValue) == "function" then
+        local ok, value = pcall(fill.GetValue, fill)
+        if ok then current = tonumber(value) end
+    end
+    if type(fill.GetMinMax) == "function" then
+        local ok, minimum, maxValue = pcall(fill.GetMinMax, fill)
+        if ok then maximum = tonumber(maxValue) end
+    end
+    if maximum and maximum > 0 then
+        bar.epcRectCurrent = current or 0
+        bar.epcRectMaximum = maximum
+    end
+end
+
+local function EAS_EnsureRectBar02993(bar)
+    if not bar then return end
+
+    -- 0.29.94 restores a visible hard-edged resource shell. 0.29.93 removed
+    -- the large frame/card backdrops correctly, but on a freshly-created bar
+    -- the replacement textures could initialize before the current power value
+    -- was cached, leaving only the text visible. A dedicated backdrop makes the
+    -- resource rectangle and its border persistent while keeping the big panel
+    -- background removed.
+    if not bar.epcRectPanel02994 then
+        local panel = wm:CreateControl(nil, bar, CT_BACKDROP)
+        panel:SetAnchorFill(bar)
+        panel:SetCenterColor(0.018, 0.022, 0.030, 0.90)
+        panel:SetEdgeColor(0.62, 0.66, 0.74, 0.96)
+        panel:SetEdgeTexture(nil, 1, 1, 1)
+        panel:SetDrawLayer(DL_CONTROLS)
+        panel:SetDrawLevel(20)
+        bar.epcRectPanel02994 = panel
+    end
+
+    if not bar.epcRectFill then
+        local fill = wm:CreateControl(nil, bar, CT_TEXTURE)
+        fill:SetTexture(EAS_WHITE_TEXTURE_02993)
+        local c = EAS_RectColorForBar02993(bar)
+        fill:SetColor(c[1], c[2], c[3], c[4] or 1)
+        fill:SetAnchor(TOPLEFT, bar, TOPLEFT, 2, 2)
+        fill:SetAnchor(BOTTOMLEFT, bar, BOTTOMLEFT, 2, -2)
+        fill:SetWidth(1)
+        fill:SetDrawLayer(DL_CONTROLS)
+        fill:SetDrawLevel(45)
+        bar.epcRectFill = fill
+    end
+
+    -- Retire the old 0.29.93 texture shell if this SavedVariables session has
+    -- already created it; the new backdrop provides the visible rectangle.
+    if bar.epcRectBack then bar.epcRectBack:SetHidden(true) end
+    for _, control in ipairs(bar.epcRectEdges or {}) do control:SetHidden(true) end
+
+    -- Hide the ornate/tapered ESO pieces while preserving their status values.
+    for _, list in ipairs({bar.epcBgPieces, bar.epcFramePieces, bar.epcGlossPieces, bar.epcFillPieces}) do
+        for _, control in ipairs(list or {}) do if control then control:SetHidden(true) end end
+    end
+    if bar.epcFill then bar.epcFill:SetHidden(true) end
+    if bar.epcGloss then bar.epcGloss:SetHidden(true) end
+
+    bar.epcRectPanel02994:SetHidden(false)
+    bar.epcRectFill:SetHidden(false)
+    bar.epcRectFill:SetDrawLayer(DL_CONTROLS)
+    bar.epcRectFill:SetDrawLevel(45)
+    if bar.epcLabel then
+        bar.epcLabel:SetDrawLayer(DL_OVERLAY)
+        bar.epcLabel:SetDrawLevel(120)
+    end
+
+    EAS_SeedRectValues02994(bar)
+    EAS_UpdateRectBarFill02993(bar, bar.epcRectCurrent or 0, bar.epcRectMaximum or 0)
+end
+
+-- Keep the rectangular fill synchronized with the mature resource updater.
+local EAS_UpdateESOResourceBarBase02993 = updateESOResourceBar
+updateESOResourceBar = function(bar, current, maximum)
+    EAS_UpdateESOResourceBarBase02993(bar, current, maximum)
+    if bar and (bar.epcRectFill or bar.epcRectPanel02994 or bar.epcRectBack) then EAS_UpdateRectBarFill02993(bar, current, maximum) end
+end
+
+local function EAS_RemoveFrameBackdrops02993(self)
+    local function clearUnit(frame)
+        if not frame then return end
+        if frame.epcShadow then frame.epcShadow:SetHidden(true) end
+        if frame.epcBackground then frame.epcBackground:SetHidden(true) end
+        if frame.epcAccent then frame.epcAccent:SetHidden(true) end
+        -- Keep a thin frame line so the design still has structure without
+        -- restoring the large opaque card background.
+        if not frame.epcStructureRule02994 then
+            local rule = wm:CreateControl(nil, frame, CT_TEXTURE)
+            rule:SetTexture(EAS_WHITE_TEXTURE_02993)
+            rule:SetColor(0.62, 0.66, 0.74, 0.80)
+            rule:SetAnchor(TOPLEFT, frame, TOPLEFT, 8, 35)
+            rule:SetAnchor(TOPRIGHT, frame, TOPRIGHT, -8, 35)
+            rule:SetHeight(1)
+            rule:SetDrawLayer(DL_CONTROLS)
+            rule:SetDrawLevel(25)
+            frame.epcStructureRule02994 = rule
+        end
+        frame.epcStructureRule02994:SetHidden(false)
+        for _, bar in pairs(frame.epcBars or {}) do EAS_EnsureRectBar02993(bar) end
+    end
+    local function clearRoster(frame)
+        if not frame then return end
+        if frame.epcBackground then frame.epcBackground:SetHidden(true) end
+        if frame.epcAccent then frame.epcAccent:SetHidden(true) end
+        for _, row in ipairs(frame.epcRows or {}) do
+            -- Rows are parent controls, so make their backdrop transparent rather than hiding them.
+            if row.SetCenterColor then row:SetCenterColor(0,0,0,0) end
+            if row.SetEdgeColor then row:SetEdgeColor(0,0,0,0) end
+            if row.epcAccent then row.epcAccent:SetHidden(true) end
+            if row.epcBars then EAS_EnsureRectBar02993(row.epcBars.health) end
+            if row.epcCompanionHealth and row.epcCompanionHealth ~= false then EAS_EnsureRectBar02993(row.epcCompanionHealth) end
+        end
+    end
+    clearUnit(self.playerFrame)
+    clearUnit(self.targetFrame)
+    clearRoster(self.groupFrame)
+    clearRoster(self.raidFrame)
+end
+
+local function EAS_SetRectBox02993(bar, parent, x, y, w, h)
+    if not bar then return end
+    bar:ClearAnchors()
+    bar:SetAnchor(TOPLEFT, parent, TOPLEFT, x, y)
+    bar:SetDimensions(math.max(28, w), math.max(8, h))
+    EAS_EnsureRectBar02993(bar)
+    EAS_UpdateRectBarFill02993(bar, bar.epcRectCurrent or 0, bar.epcRectMaximum or 0)
+end
+
+local function EAS_LayoutRectUnit02993(frame, buffCount, debuffCount, preview, design)
+    if not frame then return end
+    local isTarget = frame.epcKind == "target"
+    -- Player Styles 6-10 are horizontally balanced as complete compositions:
+    -- Stack/Slim fill equal side margins, Triple/Side center their full multi-bar
+    -- group, and Center Core shares one center axis for all three resources.
+    local cfg = {
+        RECT_STACK =    {w=410, pad=10, aura=26, step=29, mode="STACK", header=38},
+        TRIPLE_BLOCKS = {w=530, pad=10, aura=28, step=31, mode="TRIPLE", header=38},
+        SIDE_METERS =   {w=500, pad=10, aura=28, step=31, mode="SIDE", header=38},
+        CENTER_CORE =   {w=480, pad=12, aura=28, step=31, mode="CENTER", header=40},
+        SLIM_LINES =    {w=470, pad=8,  aura=24, step=27, mode="SLIM", header=34},
+    }
+    cfg = cfg[design] or cfg.RECT_STACK
+    local width = cfg.w
+    if isTarget and design == "TRIPLE_BLOCKS" then width = 470 end
+    frame:SetWidth(width)
+    EAS_SizeAuraSlots02991(frame, cfg.aura, cfg.step)
+
+    if frame.epcTitle then
+        frame.epcTitle:ClearAnchors()
+        frame.epcTitle:SetAnchor(TOPLEFT, frame, TOPLEFT, cfg.pad, 0)
+        frame.epcTitle:SetDimensions(width - cfg.pad * 2, 20)
+        frame.epcTitle:SetHorizontalAlignment(design == "SIDE_METERS" and TEXT_ALIGN_LEFT or TEXT_ALIGN_CENTER)
+    end
+    if frame.epcInfo then
+        frame.epcInfo:ClearAnchors()
+        if design == "SIDE_METERS" then
+            frame.epcInfo:SetAnchor(TOPRIGHT, frame, TOPRIGHT, -cfg.pad, 0)
+            frame.epcInfo:SetDimensions(math.floor(width * 0.38), 20)
+            frame.epcInfo:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+        else
+            frame.epcInfo:SetAnchor(TOPLEFT, frame, TOPLEFT, cfg.pad, 19)
+            frame.epcInfo:SetDimensions(width - cfg.pad * 2, 17)
+            frame.epcInfo:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+        end
+    end
+
+    local displayBuffs = tonumber(buffCount) or 0
+    local displayDebuffs = tonumber(debuffCount) or 0
+    if preview then displayBuffs, displayDebuffs = math.max(displayBuffs, 4), math.max(displayDebuffs, 3) end
+    local perRow = math.max(1, math.floor((width - cfg.pad * 2) / cfg.step))
+    local function position(slots, count, startY)
+        for i, slot in ipairs(slots or {}) do
+            slot:ClearAnchors()
+            local r, c = math.floor((i - 1) / perRow), (i - 1) % perRow
+            slot:SetAnchor(TOPLEFT, frame, TOPLEFT, cfg.pad + c * cfg.step, startY + r * cfg.step)
+        end
+        return count > 0 and math.ceil(count / perRow) or 0
+    end
+
+    local buffRows = position(frame.epcBuffSlots, displayBuffs, cfg.header)
+    local y = cfg.header + buffRows * cfg.step + (buffRows > 0 and 4 or 0)
+    local inner = width - cfg.pad * 2
+    local health, magicka, stamina = frame.epcBars.health, frame.epcBars.magicka, frame.epcBars.stamina
+
+    if isTarget then
+        local healthW = design == "CENTER_CORE" and math.floor(inner * 0.78) or inner
+        local healthX = design == "CENTER_CORE" and cfg.pad + math.floor((inner - healthW) / 2) or cfg.pad
+        local healthH = design == "SLIM_LINES" and 20 or 22
+        EAS_SetRectBox02993(health, frame, healthX, y, healthW, healthH)
+        if magicka then magicka:SetHidden(true) end
+        if stamina then stamina:SetHidden(true) end
+        y = y + healthH + 4
+    else
+        magicka:SetHidden(false); stamina:SetHidden(false)
+        if cfg.mode == "TRIPLE" then
+            local gap = 6
+            local healthW = math.floor(inner * 0.50)
+            local rest = inner - healthW - gap * 2
+            local resourceW = math.floor(rest / 2)
+            EAS_SetRectBox02993(health, frame, cfg.pad, y, healthW, 24)
+            EAS_SetRectBox02993(magicka, frame, cfg.pad + healthW + gap, y, resourceW, 24)
+            EAS_SetRectBox02993(stamina, frame, cfg.pad + healthW + gap + resourceW + gap, y, rest - resourceW, 24)
+            y = y + 28
+        elseif cfg.mode == "SIDE" then
+            local gap = 8
+            local healthW = math.floor(inner * 0.66)
+            local sideW = inner - healthW - gap
+            EAS_SetRectBox02993(health, frame, cfg.pad, y, healthW, 28)
+            EAS_SetRectBox02993(magicka, frame, cfg.pad + healthW + gap, y, sideW, 12)
+            EAS_SetRectBox02993(stamina, frame, cfg.pad + healthW + gap, y + 16, sideW, 12)
+            y = y + 32
+        elseif cfg.mode == "CENTER" then
+            local healthW = math.floor(inner * 0.82)
+            local resourceW = math.floor(inner * 0.56)
+            EAS_SetRectBox02993(health, frame, cfg.pad + math.floor((inner - healthW) / 2), y, healthW, 24)
+            EAS_SetRectBox02993(magicka, frame, cfg.pad + math.floor((inner - resourceW) / 2), y + 28, resourceW, 14)
+            EAS_SetRectBox02993(stamina, frame, cfg.pad + math.floor((inner - resourceW) / 2), y + 46, resourceW, 14)
+            y = y + 64
+        elseif cfg.mode == "SLIM" then
+            -- Still compact, but tall enough for ESO's keyboard font so values
+            -- never spill outside the resource rectangles.
+            EAS_SetRectBox02993(health, frame, cfg.pad, y, inner, 20)
+            EAS_SetRectBox02993(magicka, frame, cfg.pad, y + 24, inner, 18)
+            EAS_SetRectBox02993(stamina, frame, cfg.pad, y + 46, inner, 18)
+            y = y + 68
+        else -- RECT_STACK
+            EAS_SetRectBox02993(health, frame, cfg.pad, y, inner, 24)
+            EAS_SetRectBox02993(magicka, frame, cfg.pad, y + 28, inner, 16)
+            EAS_SetRectBox02993(stamina, frame, cfg.pad, y + 48, inner, 16)
+            y = y + 68
+        end
+    end
+
+    local debuffRows = position(frame.epcDebuffSlots, displayDebuffs, y)
+    if debuffRows > 0 then y = y + debuffRows * cfg.step + 3 end
+    frame:SetHeight(math.max(30, y))
+end
+
+-- Intercept the five new designs before the 0.29.91 layout fallback can treat
+-- them as Tactical Grid. Existing five retain their geometry, but all ten get
+-- the new square resource-bar treatment and background-free shell.
+local EAS_LayoutIntegratedUnitFrameBase02993 = F.LayoutIntegratedUnitFrame
+function F:LayoutIntegratedUnitFrame(frame, buffCount, debuffCount, preview)
+    local design = EAS_GetUnitFrameDesign02991()
+    if EAS_RECT_DESIGNS_02993[design] then
+        EAS_LayoutRectUnit02993(frame, buffCount, debuffCount, preview, design)
+    else
+        EAS_LayoutIntegratedUnitFrameBase02993(self, frame, buffCount, debuffCount, preview)
+        if frame and frame.epcBars then
+            for _, bar in pairs(frame.epcBars) do EAS_EnsureRectBar02993(bar) end
+        end
+    end
+    EAS_RemoveFrameBackdrops02993(self)
+end
+
+local function EAS_LayoutNewRoster02993(self, frame, design, raid)
+    if not frame then return end
+    local visible = {}
+    for _, row in ipairs(frame.epcRows or {}) do if row and not row:IsHidden() then visible[#visible+1] = row end end
+
+    local rowW, rowH, expandedH, columns, gap, top
+    if design == "RECT_STACK" then
+        rowW, rowH, expandedH, columns, gap = raid and 230 or 300, raid and 30 or 34, raid and 30 or 68, raid and 3 or 1, 5
+    elseif design == "TRIPLE_BLOCKS" then
+        rowW, rowH, expandedH, columns, gap = raid and 235 or 250, raid and 32 or 38, raid and 32 or 72, raid and 3 or 2, 7
+    elseif design == "SIDE_METERS" then
+        rowW, rowH, expandedH, columns, gap = raid and 315 or 390, raid and 34 or 40, raid and 34 or 74, raid and 2 or 1, 7
+    elseif design == "CENTER_CORE" then
+        rowW, rowH, expandedH, columns, gap = raid and 270 or 280, raid and 34 or 38, raid and 34 or 72, raid and 3 or 2, 6
+    else -- SLIM_LINES
+        rowW, rowH, expandedH, columns, gap = raid and 235 or 300, raid and 34 or 36, raid and 34 or 70, raid and 4 or 1, 5
+    end
+    columns = math.max(1, math.min(columns, math.max(1, #visible)))
+    top = raid and 29 or 7
+
+    for _, row in ipairs(frame.epcRows or {}) do
+        EAS_LayoutRosterRow02991(row, rowW, rowH, expandedH, design)
+        if row.epcBars and row.epcBars.health then
+            local h = design == "SLIM_LINES" and 16 or (design == "SIDE_METERS" and 16 or 14)
+            row.epcBars.health:SetHeight(h)
+            EAS_EnsureRectBar02993(row.epcBars.health)
+        end
+        if row.epcCompanionHealth and row.epcCompanionHealth ~= false then EAS_EnsureRectBar02993(row.epcCompanionHealth) end
+    end
+
+    for i, row in ipairs(visible) do
+        local col, r = (i - 1) % columns, math.floor((i - 1) / columns)
+        row:ClearAnchors()
+        local stepH = raid and rowH or expandedH
+        row:SetAnchor(TOPLEFT, frame, TOPLEFT, 8 + col * (rowW + gap), top + r * (stepH + gap))
+    end
+    local rows = math.max(1, math.ceil(math.max(1, #visible) / columns))
+    local stepH = raid and rowH or expandedH
+    frame:SetDimensions(16 + columns * rowW + (columns - 1) * gap, top + rows * stepH + (rows - 1) * gap + 7)
+end
+
+local EAS_RefreshGroupFramesBase02993 = F.RefreshGroupFrames
+function F:RefreshGroupFrames()
+    EAS_RefreshGroupFramesBase02993(self)
+    local design = EAS_GetUnitFrameDesign02991()
+    if EAS_RECT_DESIGNS_02993[design] then
+        EAS_LayoutNewRoster02993(self, self.groupFrame, design, false)
+        EAS_LayoutNewRoster02993(self, self.raidFrame, design, true)
+    end
+    EAS_RemoveFrameBackdrops02993(self)
+end
+
+local EAS_ApplyVisualStyleBase02993 = F.ApplyVisualStyle
+function F:ApplyVisualStyle()
+    EAS_ApplyVisualStyleBase02993(self)
+    EAS_RemoveFrameBackdrops02993(self)
+end
+
+
+-- ============================================================================
+-- v0.29.95 - Strict 1-5 original / 6-10 rectangular design split.
+-- Styles 1-5 restore the original Suite/ESO-shaped resource artwork and frame
+-- treatment from v0.29.91. Styles 6-10 alone use the hard-edged rectangle
+-- renderer. Rectangle fills are synchronized from both resource-bar update
+-- paths and by a lightweight live resource tick. Player identity text is hidden
+-- for every design; the Player frame is resources/effects only.
+-- ============================================================================
+local function EAS_IsRectDesign02995(design)
+    return EAS_RECT_DESIGNS_02993[design] == true
+end
+
+local function EAS_RestoreOriginalBar02995(bar)
+    if not bar then return end
+
+    -- Hide the v0.29.93/94 replacement shell without destroying it. This lets
+    -- the user switch back to Styles 6-10 live without recreating controls.
+    if bar.epcRectPanel02994 then bar.epcRectPanel02994:SetHidden(true) end
+    if bar.epcRectFill then bar.epcRectFill:SetHidden(true) end
+    if bar.epcRectBack then bar.epcRectBack:SetHidden(true) end
+    for _, control in ipairs(bar.epcRectEdges or {}) do
+        if control then control:SetHidden(true) end
+    end
+
+    -- Restore the exact original shaped ESO bar pieces used by Styles 1-5.
+    for _, list in ipairs({bar.epcBgPieces, bar.epcFramePieces, bar.epcGlossPieces, bar.epcFillPieces}) do
+        for _, control in ipairs(list or {}) do
+            if control then control:SetHidden(false) end
+        end
+    end
+    if bar.epcFill then bar.epcFill:SetHidden(false) end
+    if bar.epcGloss then bar.epcGloss:SetHidden(false) end
+end
+
+local function EAS_RestoreOriginalDesignVisuals02995(self)
+    if not self then return end
+
+    local function restoreUnit(frame)
+        if not frame then return end
+        if frame.epcStructureRule02994 then frame.epcStructureRule02994:SetHidden(true) end
+        for _, bar in pairs(frame.epcBars or {}) do EAS_RestoreOriginalBar02995(bar) end
+    end
+
+    local function restoreRoster(frame)
+        if not frame then return end
+        if frame.epcStructureRule02994 then frame.epcStructureRule02994:SetHidden(true) end
+        for _, row in ipairs(frame.epcRows or {}) do
+            if row.epcAccent then row.epcAccent:SetHidden(false) end
+            if row.epcBars then EAS_RestoreOriginalBar02995(row.epcBars.health) end
+            if row.epcCompanionHealth and row.epcCompanionHealth ~= false then
+                EAS_RestoreOriginalBar02995(row.epcCompanionHealth)
+            end
+        end
+    end
+
+    restoreUnit(self.playerFrame)
+    restoreUnit(self.targetFrame)
+    restoreRoster(self.groupFrame)
+    restoreRoster(self.raidFrame)
+
+    -- Reapply the v0.29.90/91 original treatment after v0.29.93 temporarily
+    -- made the roster/backdrops transparent during its compatibility wrapper.
+    if type(self.ApplyUnitFrameVisualTheme02990) == "function" then
+        self:ApplyUnitFrameVisualTheme02990()
+    end
+end
+
+-- Record current values regardless of whether the rectangle controls happened
+-- to exist at the instant ESO delivered the resource event.
+local EAS_UpdateESOResourceBarBase02995 = updateESOResourceBar
+updateESOResourceBar = function(bar, current, maximum)
+    if bar then
+        bar.epcRectCurrent = tonumber(current) or 0
+        bar.epcRectMaximum = tonumber(maximum) or 0
+    end
+    EAS_UpdateESOResourceBarBase02995(bar, current, maximum)
+    if bar and bar.epcRectFill then
+        EAS_UpdateRectBarFill02993(bar, current, maximum)
+    end
+end
+
+-- Group/Raid bars use the legacy fill-bar updater rather than the Player/Target
+-- ESO resource updater. Hook it too so their visible rectangular health fills
+-- actually deplete and regenerate in Styles 6-10.
+local EAS_UpdateFillBarBase02995 = updateFillBar
+updateFillBar = function(bar, current, maximum, prefix)
+    EAS_UpdateFillBarBase02995(bar, current, maximum, prefix)
+    if bar then
+        bar.epcRectCurrent = tonumber(current) or 0
+        bar.epcRectMaximum = tonumber(maximum) or 0
+        if bar.epcRectFill then EAS_UpdateRectBarFill02993(bar, current, maximum) end
+    end
+end
+
+-- Restore original artwork after the v0.29.93 compatibility layer has run for
+-- Styles 1-5. Styles 6-10 intentionally retain the rectangle renderer.
+local EAS_LayoutIntegratedUnitFrameBase02995 = F.LayoutIntegratedUnitFrame
+function F:LayoutIntegratedUnitFrame(frame, buffCount, debuffCount, preview)
+    EAS_LayoutIntegratedUnitFrameBase02995(self, frame, buffCount, debuffCount, preview)
+    local design = EAS_GetUnitFrameDesign02991()
+    if not EAS_IsRectDesign02995(design) then
+        EAS_RestoreOriginalDesignVisuals02995(self)
+    end
+
+    if frame and frame.epcKind == "player" then
+        if frame.epcTitle then frame.epcTitle:SetHidden(true) end
+        if frame.epcInfo then frame.epcInfo:SetHidden(true) end
+    end
+
+    -- Slim Lines is percentage-only so the text fits comfortably inside its
+    -- compact rectangular bars. Other Player/Target designs keep full values.
+    if frame and frame.epcBars then
+        local slim = design == "SLIM_LINES"
+        for _, bar in pairs(frame.epcBars) do
+            if bar then bar.epcTextMode = slim and "PERCENT" or "FULL" end
+        end
+    end
+end
+
+local EAS_RefreshGroupFramesBase02995 = F.RefreshGroupFrames
+function F:RefreshGroupFrames()
+    EAS_RefreshGroupFramesBase02995(self)
+    local design = EAS_GetUnitFrameDesign02991()
+    if not EAS_IsRectDesign02995(design) then
+        EAS_RestoreOriginalDesignVisuals02995(self)
+    end
+end
+
+local EAS_ApplyVisualStyleBase02995 = F.ApplyVisualStyle
+function F:ApplyVisualStyle()
+    EAS_ApplyVisualStyleBase02995(self)
+    local design = EAS_GetUnitFrameDesign02991()
+    if EAS_IsRectDesign02995(design) then
+        EAS_RemoveFrameBackdrops02993(self)
+    else
+        EAS_RestoreOriginalDesignVisuals02995(self)
+    end
+end
+
+-- Player frame never needs character name, level, or CP. Keep only resources
+-- and effects no matter which of the ten visual designs is selected.
+local EAS_UpdateUnitFrameBase02995 = F.UpdateUnitFrame
+function F:UpdateUnitFrame(frame, unitTag, preview)
+    local ok = EAS_UpdateUnitFrameBase02995(self, frame, unitTag, preview)
+    if ok and frame and frame.epcKind == "player" then
+        if frame.epcTitle then frame.epcTitle:SetHidden(true) frame.epcTitle:SetText("") end
+        if frame.epcInfo then frame.epcInfo:SetHidden(true) frame.epcInfo:SetText("") end
+    end
+    return ok
+end
+
+-- Lightweight live sync makes the visible rectangle itself move with power,
+-- independently of ESO's original hidden bar artwork. This also covers cases
+-- where resource events are coalesced while the HUD is transitioning.
+function F:RefreshRectResourceFills02995()
+    local design = EAS_GetUnitFrameDesign02991()
+    if not EAS_IsRectDesign02995(design) then return end
+
+    local function syncUnit(frame, unitTag, includeResources)
+        if not frame or frame:IsHidden() then return end
+        if safe(DoesUnitExist, false, unitTag) ~= true and self.layoutMode ~= true then return end
+
+        local hp, hpMax = readPower(unitTag, POWER_HEALTH)
+        if self.layoutMode and hpMax <= 0 then hp, hpMax = 76000, 100000 end
+        if frame.epcBars and frame.epcBars.health then updateESOResourceBar(frame.epcBars.health, hp, hpMax) end
+
+        if includeResources and frame.epcBars then
+            local mag, magMax = readPower(unitTag, POWER_MAGICKA)
+            local stam, stamMax = readPower(unitTag, POWER_STAMINA)
+            if self.layoutMode then
+                if magMax <= 0 then mag, magMax = 28000, 40000 end
+                if stamMax <= 0 then stam, stamMax = 21000, 30000 end
+            end
+            if frame.epcBars.magicka then updateESOResourceBar(frame.epcBars.magicka, mag, magMax) end
+            if frame.epcBars.stamina then updateESOResourceBar(frame.epcBars.stamina, stam, stamMax) end
+        end
+    end
+
+    syncUnit(self.playerFrame, "player", true)
+    syncUnit(self.targetFrame, "reticleover", false)
+
+    local function syncRoster(frame)
+        if not frame or frame:IsHidden() then return end
+        for _, row in ipairs(frame.epcRows or {}) do
+            local unitTag = row and row.epcUnitTag
+            if row and not row:IsHidden() and unitTag and safe(DoesUnitExist, false, unitTag) == true then
+                local hp, hpMax = readPower(unitTag, POWER_HEALTH)
+                if row.epcBars and row.epcBars.health then
+                    updateFillBar(row.epcBars.health, hp, hpMax, "")
+                end
+            end
+        end
+    end
+
+    syncRoster(self.groupFrame)
+    syncRoster(self.raidFrame)
+end
+
+local EAS_InitializeBase02995 = F.Initialize
+function F:Initialize()
+    EAS_InitializeBase02995(self)
+    local key = (EPC.name or "ESOAdventurerSuite") .. "_RectResourceLive02995"
+    EVENT_MANAGER:UnregisterForUpdate(key)
+    EVENT_MANAGER:RegisterForUpdate(key, 150, function()
+        if EPC.UnitFrames then EPC.UnitFrames:RefreshRectResourceFills02995() end
+    end)
+
+    -- Ensure an old v0.29.93/94 session cannot leave Styles 1-5 in rectangle
+    -- mode after upgrading.
+    local design = EAS_GetUnitFrameDesign02991()
+    if not EAS_IsRectDesign02995(design) then EAS_RestoreOriginalDesignVisuals02995(self) end
+    self:RefreshAll(true)
+end
+
+-- ============================================================================
+-- v0.29.96 - Clean split: Styles 1-5 original geometry without card panels;
+-- Styles 6-10 vivid rectangular resources with fitted text and live fill.
+-- ============================================================================
+local EAS_RECT_COLORS_02996 = {
+    health  = {0.88, 0.10, 0.14, 1.00},
+    magicka = {0.10, 0.42, 0.96, 1.00},
+    stamina = {0.10, 0.72, 0.28, 1.00},
+}
+
+local function EAS_RectColor02996(bar)
+    local name = ""
+    if bar and type(bar.GetName) == "function" then name = string.lower(tostring(bar:GetName() or "")) end
+    if string.find(name, "magicka", 1, true) then return EAS_RECT_COLORS_02996.magicka end
+    if string.find(name, "stamina", 1, true) then return EAS_RECT_COLORS_02996.stamina end
+    return EAS_RECT_COLORS_02996.health
+end
+
+local function EAS_HideCardBackdrops02996(self)
+    if not self then return end
+    local function hideUnit(frame)
+        if not frame then return end
+        if frame.epcShadow then frame.epcShadow:SetHidden(true) end
+        if frame.epcBackground then frame.epcBackground:SetHidden(true) end
+        -- Keep the small accent/structure treatment from the original design,
+        -- but never restore the large opaque card panel.
+        if frame.epcStructureRule02994 then frame.epcStructureRule02994:SetHidden(true) end
+    end
+    local function hideRoster(frame)
+        if not frame then return end
+        if frame.epcBackground then frame.epcBackground:SetHidden(true) end
+        -- Group/Raid rows should not look like individual cards. Keep role/
+        -- leader accent strips, but make the row backdrop itself transparent.
+        for _, row in ipairs(frame.epcRows or {}) do
+            if row then
+                if row.SetCenterColor then row:SetCenterColor(0, 0, 0, 0) end
+                if row.SetEdgeColor then row:SetEdgeColor(0, 0, 0, 0) end
+            end
+        end
+    end
+    hideUnit(self.playerFrame)
+    hideUnit(self.targetFrame)
+    hideRoster(self.groupFrame)
+    hideRoster(self.raidFrame)
+end
+
+local function EAS_FitRectLabel02996(bar, current, maximum)
+    if not bar or not bar.epcLabel then return end
+    local label = bar.epcLabel
+    local w = math.max(1, tonumber(bar:GetWidth()) or 1)
+    local h = math.max(1, tonumber(bar:GetHeight()) or 1)
+
+    label:ClearAnchors()
+    label:SetAnchor(TOPLEFT, bar, TOPLEFT, 4, 1)
+    label:SetAnchor(BOTTOMRIGHT, bar, BOTTOMRIGHT, -4, -1)
+    if label.SetHorizontalAlignment then label:SetHorizontalAlignment(TEXT_ALIGN_CENTER) end
+    if label.SetVerticalAlignment then label:SetVerticalAlignment(TEXT_ALIGN_CENTER) end
+    if label.SetWrapMode and TEXT_WRAP_MODE_ELLIPSIS then label:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS) end
+    if label.SetMaxLineCount then label:SetMaxLineCount(1) end
+    if label.SetDrawTier then label:SetDrawTier(DT_HIGH) end
+    if label.SetDrawLayer then label:SetDrawLayer(DL_OVERLAY) end
+    if label.SetDrawLevel then label:SetDrawLevel(220) end
+
+    -- Use a smaller font for the short resource blocks. This is especially
+    -- important for Triple Blocks / Side Meters / Slim Lines.
+    if h <= 14 then
+        label:SetFont("$(BOLD_FONT)|13|soft-shadow-thin")
+    elseif h <= 18 then
+        label:SetFont("$(BOLD_FONT)|14|soft-shadow-thin")
+    else
+        label:SetFont("ZoFontGameSmall")
+    end
+
+    current, maximum = tonumber(current) or 0, tonumber(maximum) or 0
+    local design = EAS_GetUnitFrameDesign02991()
+    local text
+    if maximum <= 0 then
+        text = "--"
+    elseif design == "SLIM_LINES" or w < 165 or h <= 14 then
+        text = percentText(current, maximum)
+    elseif w < 245 then
+        text = compactNumber(current) .. "  " .. percentText(current, maximum)
+    else
+        text = compactNumber(current) .. " / " .. compactNumber(maximum) .. "  " .. percentText(current, maximum)
+    end
+    label:SetText(text)
+end
+
+local function EAS_UpdateRectVisual02996(bar, current, maximum)
+    if not bar then return end
+    local design = EAS_GetUnitFrameDesign02991()
+    if not EAS_IsRectDesign02995(design) then return end
+
+    EAS_EnsureRectBar02993(bar)
+    current, maximum = tonumber(current) or 0, tonumber(maximum) or 0
+    bar.epcRectCurrent, bar.epcRectMaximum = current, maximum
+
+    if bar.epcRectPanel02994 then
+        bar.epcRectPanel02994:SetHidden(false)
+        bar.epcRectPanel02994:SetCenterColor(0.012, 0.014, 0.020, 0.92)
+        bar.epcRectPanel02994:SetEdgeColor(0.72, 0.74, 0.80, 0.96)
+        bar.epcRectPanel02994:SetDrawLayer(DL_CONTROLS)
+        bar.epcRectPanel02994:SetDrawLevel(15)
+    end
+
+    if bar.epcRectFill then
+        local c = EAS_RectColor02996(bar)
+        bar.epcRectFill:SetTexture(EAS_WHITE_TEXTURE_02993)
+        bar.epcRectFill:SetColor(c[1], c[2], c[3], c[4])
+        bar.epcRectFill:SetDrawTier(DT_MEDIUM)
+        bar.epcRectFill:SetDrawLayer(DL_CONTROLS)
+        bar.epcRectFill:SetDrawLevel(70)
+
+        local ratio = maximum > 0 and math.max(0, math.min(1, current / maximum)) or 0
+        if ratio <= 0 then
+            bar.epcRectFill:SetHidden(true)
+        else
+            bar.epcRectFill:SetHidden(false)
+            bar.epcRectFill:ClearAnchors()
+            bar.epcRectFill:SetAnchor(TOPLEFT, bar, TOPLEFT, 2, 2)
+            bar.epcRectFill:SetAnchor(BOTTOMLEFT, bar, BOTTOMLEFT, 2, -2)
+            local innerWidth = math.max(1, (tonumber(bar:GetWidth()) or 1) - 4)
+            bar.epcRectFill:SetWidth(math.max(1, math.floor(innerWidth * ratio + 0.5)))
+        end
+    end
+
+    EAS_FitRectLabel02996(bar, current, maximum)
+end
+
+-- Final resource hooks: keep the visible rectangle synchronized with the actual
+-- current/max values after every native update. These wrappers sit after the
+-- older compatibility layers, so they drive the controls the player sees.
+local EAS_UpdateESOResourceBarBase02996 = updateESOResourceBar
+updateESOResourceBar = function(bar, current, maximum)
+    EAS_UpdateESOResourceBarBase02996(bar, current, maximum)
+    if bar then EAS_UpdateRectVisual02996(bar, current, maximum) end
+end
+
+local EAS_UpdateFillBarBase02996 = updateFillBar
+updateFillBar = function(bar, current, maximum, prefix)
+    EAS_UpdateFillBarBase02996(bar, current, maximum, prefix)
+    if bar then EAS_UpdateRectVisual02996(bar, current, maximum) end
+end
+
+local function EAS_ApplyDesignPolicy02996(self)
+    local design = EAS_GetUnitFrameDesign02991()
+    if EAS_IsRectDesign02995(design) then
+        -- Styles 6-10: no surrounding cards, but keep strong rectangular
+        -- resource shells/fills and fitted labels.
+        EAS_RemoveFrameBackdrops02993(self)
+        local function refreshBars(frame)
+            if not frame then return end
+            for _, bar in pairs(frame.epcBars or {}) do
+                EAS_UpdateRectVisual02996(bar, bar.epcRectCurrent or 0, bar.epcRectMaximum or 0)
+            end
+        end
+        refreshBars(self.playerFrame)
+        refreshBars(self.targetFrame)
+        for _, roster in ipairs({self.groupFrame, self.raidFrame}) do
+            if roster then
+                for _, row in ipairs(roster.epcRows or {}) do
+                    if row and row.epcBars and row.epcBars.health then
+                        local b = row.epcBars.health
+                        EAS_UpdateRectVisual02996(b, b.epcRectCurrent or 0, b.epcRectMaximum or 0)
+                    end
+                    if row and row.epcCompanionHealth and row.epcCompanionHealth ~= false then
+                        local b = row.epcCompanionHealth
+                        EAS_UpdateRectVisual02996(b, b.epcRectCurrent or 0, b.epcRectMaximum or 0)
+                    end
+                end
+            end
+        end
+    else
+        -- Styles 1-5: retain original Suite/ESO bar artwork and geometry, but
+        -- strip only the large card/backdrop surfaces.
+        EAS_RestoreOriginalDesignVisuals02995(self)
+        EAS_HideCardBackdrops02996(self)
+    end
+
+    -- Player identity is intentionally omitted in every design.
+    if self.playerFrame then
+        if self.playerFrame.epcTitle then self.playerFrame.epcTitle:SetHidden(true) self.playerFrame.epcTitle:SetText("") end
+        if self.playerFrame.epcInfo then self.playerFrame.epcInfo:SetHidden(true) self.playerFrame.epcInfo:SetText("") end
+    end
+end
+
+local EAS_LayoutIntegratedUnitFrameBase02996 = F.LayoutIntegratedUnitFrame
+function F:LayoutIntegratedUnitFrame(frame, buffCount, debuffCount, preview)
+    EAS_LayoutIntegratedUnitFrameBase02996(self, frame, buffCount, debuffCount, preview)
+    EAS_ApplyDesignPolicy02996(self)
+end
+
+local EAS_RefreshGroupFramesBase02996 = F.RefreshGroupFrames
+function F:RefreshGroupFrames()
+    EAS_RefreshGroupFramesBase02996(self)
+    EAS_ApplyDesignPolicy02996(self)
+end
+
+local EAS_ApplyVisualStyleBase02996 = F.ApplyVisualStyle
+function F:ApplyVisualStyle()
+    EAS_ApplyVisualStyleBase02996(self)
+    EAS_ApplyDesignPolicy02996(self)
+end
+
+local EAS_UpdateUnitFrameBase02996 = F.UpdateUnitFrame
+function F:UpdateUnitFrame(frame, unitTag, preview)
+    local ok = EAS_UpdateUnitFrameBase02996(self, frame, unitTag, preview)
+    EAS_ApplyDesignPolicy02996(self)
+    return ok
+end
+
+-- The 0.29.95 live tick already reads real Player/Target/Group/Raid power.
+-- Add a final visual pass so Styles 6-10 always repaint the currently-visible
+-- colored width/text after those values are refreshed.
+local EAS_RefreshRectResourceFillsBase02996 = F.RefreshRectResourceFills02995
+function F:RefreshRectResourceFills02995()
+    EAS_RefreshRectResourceFillsBase02996(self)
+    if not EAS_IsRectDesign02995(EAS_GetUnitFrameDesign02991()) then return end
+    local function repaint(frame)
+        if not frame then return end
+        for _, bar in pairs(frame.epcBars or {}) do
+            if bar then EAS_UpdateRectVisual02996(bar, bar.epcRectCurrent or 0, bar.epcRectMaximum or 0) end
+        end
+    end
+    repaint(self.playerFrame)
+    repaint(self.targetFrame)
+    for _, roster in ipairs({self.groupFrame, self.raidFrame}) do
+        if roster then
+            for _, row in ipairs(roster.epcRows or {}) do
+                if row and row.epcBars and row.epcBars.health then
+                    local b = row.epcBars.health
+                    EAS_UpdateRectVisual02996(b, b.epcRectCurrent or 0, b.epcRectMaximum or 0)
+                end
+            end
+        end
+    end
+end
+
+-- ============================================================================
+-- v0.29.97 - Unit-frame cleanup and reliable live rectangular color fills.
+-- Styles 1-5 keep their original resource artwork but remove all detached
+-- card/accent decoration and enforce safe gaps between Player resource bars.
+-- Styles 6-10 use a dark resource-tinted track plus a vivid live fill whose
+-- width follows current/max Health, Magicka and Stamina values.
+-- ============================================================================
+local EAS_RESOURCE_COLORS_02997 = {
+    health  = {0.92, 0.10, 0.13, 1.00},
+    magicka = {0.08, 0.42, 1.00, 1.00},
+    stamina = {0.08, 0.78, 0.25, 1.00},
+}
+
+local function EAS_TagBar02997(bar, kind)
+    if bar then bar.epcResourceKind02997 = kind end
+end
+
+local function EAS_TagFrameBars02997(self)
+    if not self then return end
+    local function tagUnit(frame)
+        if not frame or not frame.epcBars then return end
+        EAS_TagBar02997(frame.epcBars.health, "health")
+        EAS_TagBar02997(frame.epcBars.magicka, "magicka")
+        EAS_TagBar02997(frame.epcBars.stamina, "stamina")
+    end
+    tagUnit(self.playerFrame)
+    tagUnit(self.targetFrame)
+    for _, roster in ipairs({self.groupFrame, self.raidFrame}) do
+        if roster then
+            for _, row in ipairs(roster.epcRows or {}) do
+                if row and row.epcBars then EAS_TagBar02997(row.epcBars.health, "health") end
+                if row and row.epcCompanionHealth and row.epcCompanionHealth ~= false then
+                    EAS_TagBar02997(row.epcCompanionHealth, "health")
+                end
+            end
+        end
+    end
+end
+
+local function EAS_ColorForRectBar02997(bar)
+    local kind = bar and bar.epcResourceKind02997 or nil
+    if kind and EAS_RESOURCE_COLORS_02997[kind] then return EAS_RESOURCE_COLORS_02997[kind] end
+    local name = ""
+    if bar and type(bar.GetName) == "function" then name = string.lower(tostring(bar:GetName() or "")) end
+    if string.find(name, "magicka", 1, true) then return EAS_RESOURCE_COLORS_02997.magicka end
+    if string.find(name, "stamina", 1, true) then return EAS_RESOURCE_COLORS_02997.stamina end
+    return EAS_RESOURCE_COLORS_02997.health
+end
+
+local function EAS_ForceRectFill02997(bar, current, maximum)
+    if not bar or not EAS_IsRectDesign02995(EAS_GetUnitFrameDesign02991()) then return end
+    EAS_EnsureRectBar02993(bar)
+
+    current = tonumber(current)
+    maximum = tonumber(maximum)
+    if (not maximum or maximum <= 0) and bar.epcFill then
+        if type(bar.epcFill.GetValue) == "function" then
+            local ok, value = pcall(bar.epcFill.GetValue, bar.epcFill)
+            if ok and value ~= nil then current = tonumber(value) or current end
+        end
+        if type(bar.epcFill.GetMinMax) == "function" then
+            local ok, _, maxValue = pcall(bar.epcFill.GetMinMax, bar.epcFill)
+            if ok and maxValue ~= nil then maximum = tonumber(maxValue) or maximum end
+        end
+    end
+    current, maximum = tonumber(current) or 0, tonumber(maximum) or 0
+    bar.epcRectCurrent, bar.epcRectMaximum = current, maximum
+
+    local c = EAS_ColorForRectBar02997(bar)
+    if bar.epcRectPanel02994 then
+        bar.epcRectPanel02994:SetHidden(false)
+        if bar.epcRectPanel02994.SetDrawTier then bar.epcRectPanel02994:SetDrawTier(DT_MEDIUM) end
+        bar.epcRectPanel02994:SetDrawLayer(DL_CONTROLS)
+        bar.epcRectPanel02994:SetDrawLevel(10)
+        -- A very dark tint preserves the resource identity even when depleted,
+        -- while the bright child fill still makes depletion obvious.
+        bar.epcRectPanel02994:SetCenterColor(c[1] * 0.12, c[2] * 0.12, c[3] * 0.12, 0.96)
+        bar.epcRectPanel02994:SetEdgeColor(c[1] * 0.72 + 0.18, c[2] * 0.72 + 0.18, c[3] * 0.72 + 0.18, 1.00)
+    end
+
+    if bar.epcRectFill then
+        local ratio = maximum > 0 and math.max(0, math.min(1, current / maximum)) or 0
+        bar.epcRectFill:SetTexture(EAS_WHITE_TEXTURE_02993)
+        bar.epcRectFill:SetColor(c[1], c[2], c[3], 1.00)
+        bar.epcRectFill:SetAlpha(1.00)
+        if bar.epcRectFill.SetDrawTier then bar.epcRectFill:SetDrawTier(DT_HIGH) end
+        bar.epcRectFill:SetDrawLayer(DL_CONTROLS)
+        bar.epcRectFill:SetDrawLevel(95)
+        bar.epcRectFill:ClearAnchors()
+        bar.epcRectFill:SetAnchor(TOPLEFT, bar, TOPLEFT, 2, 2)
+        bar.epcRectFill:SetAnchor(BOTTOMLEFT, bar, BOTTOMLEFT, 2, -2)
+        local innerWidth = math.max(1, (tonumber(bar:GetWidth()) or 1) - 4)
+        bar.epcRectFill:SetWidth(math.max(1, math.floor(innerWidth * ratio + 0.5)))
+        bar.epcRectFill:SetHidden(ratio <= 0)
+    end
+
+    if bar.epcLabel then
+        bar.epcLabel:SetColor(1, 1, 1, 1)
+        if bar.epcLabel.SetDrawTier then bar.epcLabel:SetDrawTier(DT_HIGH) end
+        bar.epcLabel:SetDrawLayer(DL_OVERLAY)
+        bar.epcLabel:SetDrawLevel(230)
+        EAS_FitRectLabel02996(bar, current, maximum)
+    end
+end
+
+local function EAS_HideOriginalFloatingDecor02997(self)
+    if not self then return end
+    local function cleanUnit(frame)
+        if not frame then return end
+        if frame.epcShadow then frame.epcShadow:SetHidden(true) end
+        if frame.epcBackground then frame.epcBackground:SetHidden(true) end
+        if frame.epcAccent then frame.epcAccent:SetHidden(true) end
+        if frame.epcStructureRule02994 then frame.epcStructureRule02994:SetHidden(true) end
+    end
+    local function cleanRoster(frame)
+        if not frame then return end
+        if frame.epcBackground then frame.epcBackground:SetHidden(true) end
+        if frame.epcAccent then frame.epcAccent:SetHidden(true) end
+        if frame.epcStructureRule02994 then frame.epcStructureRule02994:SetHidden(true) end
+        for _, row in ipairs(frame.epcRows or {}) do
+            if row then
+                if row.SetCenterColor then row:SetCenterColor(0, 0, 0, 0) end
+                if row.SetEdgeColor then row:SetEdgeColor(0, 0, 0, 0) end
+                if row.epcAccent then row.epcAccent:SetHidden(true) end
+            end
+        end
+    end
+    cleanUnit(self.playerFrame)
+    cleanUnit(self.targetFrame)
+    cleanRoster(self.groupFrame)
+    cleanRoster(self.raidFrame)
+end
+
+local function EAS_LocalTop02997(control, parent, fallback)
+    if not control or not parent then return fallback or 0 end
+    local ok1, top = pcall(control.GetTop, control)
+    local ok2, parentTop = pcall(parent.GetTop, parent)
+    top, parentTop = tonumber(top), tonumber(parentTop)
+    if ok1 and ok2 and top and parentTop then return top - parentTop end
+    return fallback or 0
+end
+
+local function EAS_ReanchorOriginalBar02997(bar, parent, x, y, w)
+    if not bar or not parent then return end
+    bar:ClearAnchors()
+    bar:SetAnchor(TOPLEFT, parent, TOPLEFT, x, y)
+    bar:SetDimensions(math.max(80, w), 23)
+end
+
+local function EAS_SpaceOriginalPlayerBars02997(frame, design)
+    if not frame or frame.epcKind ~= "player" or not frame.epcBars then return end
+    local health, magicka, stamina = frame.epcBars.health, frame.epcBars.magicka, frame.epcBars.stamina
+    if not health or not magicka or not stamina then return end
+
+    local frameW = math.max(220, tonumber(frame:GetWidth()) or 420)
+    local healthY = EAS_LocalTop02997(health, frame, 0)
+    local magYNow = EAS_LocalTop02997(magicka, frame, healthY + 31)
+    local resourceY = math.max(magYNow, healthY + 31)
+
+    -- Native ESO resource artwork is 23px tall. Eight pixels of real space
+    -- prevents the left/right frame caps from visually colliding.
+    local verticalStep = 31
+
+    local function localLeft(control, fallback)
+        local okL, left = pcall(control.GetLeft, control)
+        local okPL, parentLeft = pcall(frame.GetLeft, frame)
+        if okL and okPL and tonumber(left) and tonumber(parentLeft) then
+            return tonumber(left) - tonumber(parentLeft)
+        end
+        return fallback or 0
+    end
+
+    local function controlWidth(control, fallback)
+        local okW, currentW = pcall(control.GetWidth, control)
+        if okW and tonumber(currentW) and tonumber(currentW) > 80 then
+            return tonumber(currentW)
+        end
+        return fallback or 80
+    end
+
+    local healthX = localLeft(health, 8)
+    local healthW = controlWidth(health, frameW - 16)
+
+    if design == "ESO_CLASSIC" or design == "COMPACT_STACK" then
+        -- Styles 1-2: all three native resource bars use the exact same left
+        -- edge and width, so the stack reads as one centered, even column.
+        EAS_ReanchorOriginalBar02997(health,  frame, healthX, healthY,   healthW)
+        EAS_ReanchorOriginalBar02997(magicka, frame, healthX, resourceY, healthW)
+        EAS_ReanchorOriginalBar02997(stamina, frame, healthX, resourceY + verticalStep, healthW)
+        frame:SetHeight(math.max(tonumber(frame:GetHeight()) or 0, resourceY + verticalStep + 25))
+
+    elseif design == "SPLIT_RESOURCES" or design == "TACTICAL_GRID" then
+        -- Styles 3 and 5: mirror Style 9 / Center Core. Health is the wider
+        -- centered bar; Magicka and Stamina are narrower centered bars stacked
+        -- beneath it on the same center axis.
+        local pad = design == "TACTICAL_GRID" and 8 or 10
+        local inner = math.max(180, frameW - (pad * 2))
+        local centeredHealthW = math.max(120, math.floor(inner * 0.82))
+        local centeredResourceW = math.max(100, math.floor(inner * 0.56))
+        local centeredHealthX = math.floor((frameW - centeredHealthW) / 2)
+        local centeredResourceX = math.floor((frameW - centeredResourceW) / 2)
+
+        EAS_ReanchorOriginalBar02997(health,  frame, centeredHealthX,   healthY, centeredHealthW)
+        EAS_ReanchorOriginalBar02997(magicka, frame, centeredResourceX, resourceY, centeredResourceW)
+        EAS_ReanchorOriginalBar02997(stamina, frame, centeredResourceX, resourceY + verticalStep, centeredResourceW)
+        frame:SetHeight(math.max(tonumber(frame:GetHeight()) or 0, resourceY + verticalStep + 25))
+
+    elseif design == "WIDE_PLATE" then
+        -- Style 4: preserve the Wide Plate sizes, but center both lower bars
+        -- directly beneath the actual Health bar instead of the frame bounds.
+        local resourceW = controlWidth(magicka, math.max(100, frameW - 190))
+        resourceW = math.min(resourceW, healthW)
+        local resourceX = math.floor(healthX + ((healthW - resourceW) / 2))
+
+        EAS_ReanchorOriginalBar02997(magicka, frame, resourceX, resourceY, resourceW)
+        EAS_ReanchorOriginalBar02997(stamina, frame, resourceX, resourceY + verticalStep, resourceW)
+        frame:SetHeight(math.max(tonumber(frame:GetHeight()) or 0, resourceY + verticalStep + 25))
+
+    else
+        -- Fallback for any legacy/custom native style not covered above.
+        local xMag = localLeft(magicka, 8)
+        local wMag = controlWidth(magicka, frameW - 16)
+        EAS_ReanchorOriginalBar02997(magicka, frame, xMag, resourceY, wMag)
+        EAS_ReanchorOriginalBar02997(stamina, frame, xMag, resourceY + verticalStep, wMag)
+        frame:SetHeight(math.max(tonumber(frame:GetHeight()) or 0, resourceY + verticalStep + 25))
+    end
+end
+
+local function EAS_FinalUnitFramePolicy02997(self, allowPlayerSpacing)
+    local design = EAS_GetUnitFrameDesign02991()
+    EAS_TagFrameBars02997(self)
+
+    if EAS_IsRectDesign02995(design) then
+        local function paintUnit(frame)
+            if not frame then return end
+            for kind, bar in pairs(frame.epcBars or {}) do
+                if bar then
+                    EAS_TagBar02997(bar, kind)
+                    EAS_ForceRectFill02997(bar, bar.epcRectCurrent or 0, bar.epcRectMaximum or 0)
+                end
+            end
+        end
+        paintUnit(self.playerFrame)
+        paintUnit(self.targetFrame)
+        for _, roster in ipairs({self.groupFrame, self.raidFrame}) do
+            if roster then
+                for _, row in ipairs(roster.epcRows or {}) do
+                    if row and row.epcBars and row.epcBars.health then
+                        EAS_TagBar02997(row.epcBars.health, "health")
+                        EAS_ForceRectFill02997(row.epcBars.health, row.epcBars.health.epcRectCurrent or 0, row.epcBars.health.epcRectMaximum or 0)
+                    end
+                    if row and row.epcCompanionHealth and row.epcCompanionHealth ~= false then
+                        EAS_TagBar02997(row.epcCompanionHealth, "health")
+                        EAS_ForceRectFill02997(row.epcCompanionHealth, row.epcCompanionHealth.epcRectCurrent or 0, row.epcCompanionHealth.epcRectMaximum or 0)
+                    end
+                end
+            end
+        end
+    else
+        EAS_HideOriginalFloatingDecor02997(self)
+        -- Player Magicka/Stamina geometry must never be recalculated as a side
+        -- effect of Target, Group, or power-value refreshes. Target acquisition
+        -- was repeatedly entering this shared final-policy path and re-anchoring
+        -- only these two bars, which made them jump while Health stayed stable.
+        if allowPlayerSpacing == true then
+            EAS_SpaceOriginalPlayerBars02997(self.playerFrame, design)
+        end
+    end
+
+    if self.playerFrame then
+        if self.playerFrame.epcTitle then self.playerFrame.epcTitle:SetHidden(true) self.playerFrame.epcTitle:SetText("") end
+        if self.playerFrame.epcInfo then self.playerFrame.epcInfo:SetHidden(true) self.playerFrame.epcInfo:SetText("") end
+    end
+end
+
+-- Final wrappers sit after every older compatibility layer so no earlier theme
+-- pass can re-enable the stray card/accent lines or cover the rectangle fill.
+local EAS_LayoutIntegratedUnitFrameBase02997 = F.LayoutIntegratedUnitFrame
+function F:LayoutIntegratedUnitFrame(frame, buffCount, debuffCount, preview)
+    EAS_LayoutIntegratedUnitFrameBase02997(self, frame, buffCount, debuffCount, preview)
+    -- Geometry is allowed only while laying out the Player frame itself.
+    local allowPlayerSpacing = frame ~= nil and frame.epcKind == "player"
+    EAS_FinalUnitFramePolicy02997(self, allowPlayerSpacing)
+end
+
+local EAS_RefreshGroupFramesBase02997 = F.RefreshGroupFrames
+function F:RefreshGroupFrames()
+    EAS_RefreshGroupFramesBase02997(self)
+    EAS_FinalUnitFramePolicy02997(self, false)
+end
+
+local EAS_ApplyVisualStyleBase02997 = F.ApplyVisualStyle
+function F:ApplyVisualStyle()
+    EAS_ApplyVisualStyleBase02997(self)
+    -- Explicit style/layout work may intentionally establish Player spacing.
+    EAS_FinalUnitFramePolicy02997(self, true)
+end
+
+local EAS_UpdateUnitFrameBase02997 = F.UpdateUnitFrame
+function F:UpdateUnitFrame(frame, unitTag, preview)
+    local ok = EAS_UpdateUnitFrameBase02997(self, frame, unitTag, preview)
+    -- Unit/power refreshes update values only; never mutate Player bar geometry.
+    EAS_FinalUnitFramePolicy02997(self, false)
+    return ok
+end
+
+local EAS_UpdateESOResourceBarBase02997 = updateESOResourceBar
+updateESOResourceBar = function(bar, current, maximum)
+    EAS_UpdateESOResourceBarBase02997(bar, current, maximum)
+    if bar then EAS_ForceRectFill02997(bar, current, maximum) end
+end
+
+local EAS_UpdateFillBarBase02997 = updateFillBar
+updateFillBar = function(bar, current, maximum, prefix)
+    EAS_UpdateFillBarBase02997(bar, current, maximum, prefix)
+    if bar then EAS_ForceRectFill02997(bar, current, maximum) end
+end
+
+local EAS_RefreshRectResourceFillsBase02997 = F.RefreshRectResourceFills02995
+function F:RefreshRectResourceFills02995()
+    EAS_RefreshRectResourceFillsBase02997(self)
+    if not EAS_IsRectDesign02995(EAS_GetUnitFrameDesign02991()) then return end
+    EAS_TagFrameBars02997(self)
+    local function repaint(frame)
+        if not frame then return end
+        for _, bar in pairs(frame.epcBars or {}) do
+            if bar then EAS_ForceRectFill02997(bar, bar.epcRectCurrent or 0, bar.epcRectMaximum or 0) end
+        end
+    end
+    repaint(self.playerFrame)
+    repaint(self.targetFrame)
+    for _, roster in ipairs({self.groupFrame, self.raidFrame}) do
+        if roster then
+            for _, row in ipairs(roster.epcRows or {}) do
+                if row and row.epcBars and row.epcBars.health then
+                    local b = row.epcBars.health
+                    EAS_ForceRectFill02997(b, b.epcRectCurrent or 0, b.epcRectMaximum or 0)
+                end
+                if row and row.epcCompanionHealth and row.epcCompanionHealth ~= false then
+                    local b = row.epcCompanionHealth
+                    EAS_ForceRectFill02997(b, b.epcRectCurrent or 0, b.epcRectMaximum or 0)
+                end
+            end
+        end
+    end
+end
+
+
+-- ============================================================================
+-- v0.29.98-stable - Player resource text centering only.
+-- IMPORTANT: this stability patch deliberately does NOT change Player frame/bar
+-- anchors, dimensions, visibility, fills, textures, or refresh/layout behavior.
+-- It only formats and centers the text inside the existing Health/Magicka/
+-- Stamina controls from the known-stable 0.29.97 geometry.
+-- ============================================================================
+local function EAS_IsStablePlayerResourceBar02998(bar)
+    if not bar or type(bar.GetParent) ~= "function" then return false end
+    local parent = bar:GetParent()
+    return parent ~= nil and parent.epcKind == "player"
+end
+
+local function EAS_CenterStablePlayerResourceText02998(bar, current, maximum)
+    if not EAS_IsStablePlayerResourceBar02998(bar) or not bar.epcLabel then return end
+
+    local label = bar.epcLabel
+    -- Alignment only. Do not clear/rebuild anchors here: the label already fills
+    -- its own bar, and preserving that anchor avoids introducing another live
+    -- geometry path into the stable 0.29.97 frame code.
+    if label.SetHorizontalAlignment then label:SetHorizontalAlignment(TEXT_ALIGN_CENTER) end
+    if label.SetVerticalAlignment then label:SetVerticalAlignment(TEXT_ALIGN_CENTER) end
+    if label.SetMaxLineCount then label:SetMaxLineCount(1) end
+    if label.SetWrapMode and TEXT_WRAP_MODE_ELLIPSIS then label:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS) end
+
+    local width = math.max(1, tonumber(bar:GetWidth()) or 1)
+    local height = math.max(1, tonumber(bar:GetHeight()) or 1)
+    if height <= 14 then
+        label:SetFont("$(BOLD_FONT)|13|soft-shadow-thin")
+    elseif height <= 18 then
+        label:SetFont("$(BOLD_FONT)|14|soft-shadow-thin")
+    else
+        label:SetFont("ZoFontGameSmall")
+    end
+
+    current, maximum = tonumber(current) or 0, tonumber(maximum) or 0
+    local design = EAS_GetUnitFrameDesign02991()
+    local text
+    if maximum <= 0 then
+        text = "--"
+    elseif design == "SLIM_LINES" or height <= 14 or width < 170 then
+        text = percentText(current, maximum)
+    elseif width < 250 then
+        text = compactNumber(current) .. "  " .. percentText(current, maximum)
+    else
+        text = compactNumber(current) .. " / " .. compactNumber(maximum) .. "  " .. percentText(current, maximum)
+    end
+    label:SetText(text)
+end
+
+-- Resource updates are the only hook needed. The mature 0.29.97 updater runs
+-- first and retains complete ownership of bar position/fill/visibility; this
+-- final step touches only the Player label text/alignment.
+local EAS_UpdateESOResourceBarBaseStable02998 = updateESOResourceBar
+updateESOResourceBar = function(bar, current, maximum)
+    EAS_UpdateESOResourceBarBaseStable02998(bar, current, maximum)
+    EAS_CenterStablePlayerResourceText02998(bar, current, maximum)
 end

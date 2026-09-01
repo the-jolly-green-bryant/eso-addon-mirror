@@ -63,19 +63,15 @@ do
 	local HOTBARS = { HOTBAR_CATEGORY_PRIMARY, HOTBAR_CATEGORY_BACKUP }
 	local WWBAR = { HOTBAR_CATEGORY_WEREWOLF }
 
-	function GBP.DoesPlayerHaveSkillSlotted( skills )
+	function GBP.AreSkillsSlotted( ... )
 		for _, hotbarCategory in ipairs(GBP.wwState and WWBAR or HOTBARS) do
 			for i = 3, 8 do
 				local actionType = GetSlotType(i, hotbarCategory)
 				if (actionType == ACTION_TYPE_ABILITY) then
 					local abilityId = GetSlotBoundId(i, hotbarCategory)
-					if (abilityId == skills) then
-						return true
-					elseif (type(skills) == "table") then
-						for _, skillId in ipairs(skills) do
-							if (abilityId == skillId) then
-								return true
-							end
+					for i = 1, select("#", ...) do
+						if (abilityId == select(i, ...)) then
+							return true
 						end
 					end
 				end
@@ -87,6 +83,7 @@ end
 
 do
 	local ICON_OVERRIDES = {
+		[ 58813] = 131353, -- Feeding Frenzy
 		[172056] = 172055, -- Pillager's Profit
 		[234295] = 160823, -- Arkay's Charity
 	}
@@ -112,7 +109,7 @@ do
 		if (abilityId) then
 			cache[abilityId] = nil
 		else
-			cache = { }
+			ZO_ClearTable(cache)
 		end
 	end
 

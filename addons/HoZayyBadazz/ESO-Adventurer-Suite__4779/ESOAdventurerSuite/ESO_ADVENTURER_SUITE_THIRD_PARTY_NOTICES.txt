@@ -19,3 +19,11 @@ RESOURCE COMMUNITY DATA
 The CommunityData/ files are the Suite-formatted resource-location dataset used
 by Suite Resource Pins. Any rights that apply to the source community dataset
 are not replaced by the ESO Adventurer Suite proprietary license.
+
+DISPLAY LEADS REFERENCE DATA
+AntiquityLeadData.lua incorporates lead source/location reference information
+from the user-supplied Display Leads addon by remosito (Display Leads 42.0).
+The Suite uses ESO's live API for current lead ownership/progress and uses the
+integrated reference table only for acquisition/source descriptions and
+find-zone overrides. Original authorship of that reference information remains
+with its source project/contributors.

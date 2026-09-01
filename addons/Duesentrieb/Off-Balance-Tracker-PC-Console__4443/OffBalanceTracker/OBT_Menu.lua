@@ -95,7 +95,7 @@ function OBT.CreateSettings()
         -- SUBMENU: TRACKING, VISIBILITY & ROLES
         {
             type = "submenu",
-            name = "|cFF7F00TRACKING, VISIBILITY & ROLES|r",
+            name = "|cFF7F00VISIBILITY & ROLES|r",
             controls = {
                 {
                     type = "checkbox",
@@ -189,86 +189,10 @@ function OBT.CreateSettings()
             },
         },
 
-        -- SUBMENU: AUDIO
-        {
-            type = "submenu",
-            name = "|cFF7F00AUDIO SETTINGS|r",
-            controls = {
-                {
-                    type = "dropdown",
-                    name = "Sound Trigger Mode",
-                    tooltip = "Select when the sound should be played.",
-                    choices = {"On Off Balance Proc", "On Immunity Fade"},
-                    choicesValues = {1, 2},
-                    getFunc = function() return OBT.SV.soundTriggerMode end,
-                    setFunc = function(value)
-                        OBT.SV.soundTriggerMode = value
-                        OBT.PlaySound(OBT.SV.volumeSound)
-                    end,
-                    default = OBT.Default.soundTriggerMode,
-                    disabled = function() return not OBT.SV.enableAddon end,
-                },
-                {
-                    type = "slider",
-                    name = "Sound Volume",
-                    min = 0, max = 5, step = 1,
-                    getFunc = function() return OBT.SV.volumeSound end,
-                    setFunc = function(value)
-                        OBT.SV.volumeSound = value
-                        OBT.PlaySound(OBT.SV.volumeSound)
-                    end,
-                    default = OBT.Default.volumeSound,
-                    disabled = function() return not OBT.SV.enableAddon end,
-                },
-                { type = "header", name = "|cFFBF7FAudio Roles|r" },
-                {
-                    type = "description",
-                    text = "Select roles for sound alert.",
-                    width = "full",
-                },
-                {
-                    type = "checkbox", name = "Play Sound as Tank " .. iconTank,
-                    getFunc = function() return OBT.SV.isSoundEnabledTank end,
-                    setFunc = function(value)
-                        OBT.SV.isSoundEnabledTank = value
-                    end,
-                    default = OBT.Default.isSoundEnabledTank,
-                    disabled = function() return not OBT.SV.enableAddon end,
-                },
-                {
-                    type = "checkbox", name = "Play Sound as Healer " .. iconHealer,
-                    getFunc = function() return OBT.SV.isSoundEnabledHeal end,
-                    setFunc = function(value)
-                        OBT.SV.isSoundEnabledHeal = value
-                    end,
-                    default = OBT.Default.isSoundEnabledHeal,
-                    disabled = function() return not OBT.SV.enableAddon end,
-                },
-                {
-                    type = "checkbox", name = "Play Sound as DPS " .. iconDPS,
-                    getFunc = function() return OBT.SV.isSoundEnabledDPS end,
-                    setFunc = function(value)
-                        OBT.SV.isSoundEnabledDPS = value
-                    end,
-                    default = OBT.Default.isSoundEnabledDPS,
-                    disabled = function() return not OBT.SV.enableAddon end,
-                },
-                {
-                    type = "checkbox", name = "Play Sound as Solo " .. iconScroll,
-                    getFunc = function() return OBT.SV.isSoundEnabledSolo end,
-                    setFunc = function(value)
-                        OBT.SV.isSoundEnabledSolo = value
-                    end,
-                    default = OBT.Default.isSoundEnabledSolo,
-                    disabled = function() return not OBT.SV.enableAddon end,
-                },
-            },
-        },
-
         -- SUBMENU: DESIGN, SCALING & COLORS
         {
             type = "submenu",
-            name = "|cFF7F00DESIGN, SCALING & COLORS|r",
+            name = "|cFF7F00DESIGN & COLORS|r",
             controls = {
                 {
                     type = "checkbox",
@@ -284,10 +208,10 @@ function OBT.CreateSettings()
                     default = OBT.Default.isLocked,
                 },
 
-                { type = "header", name = "|cFFBF7FUI Elements|r" },
+                { type = "header", name = "|cFFBF7FCHOOSE UI Elements|r" },
                 {
                     type = "checkbox",
-                    name = "Show Background & Border",
+                    name = "|c00BFFFShow Background & Border|r",
                     tooltip = "Disable to hide the background and display only the remaining time.",
                     getFunc = function() return OBT.SV.isShowBackground end,
                     setFunc = function(value)
@@ -298,7 +222,7 @@ function OBT.CreateSettings()
                     default = OBT.Default.isShowBackground,
                 },
                 {
-                    type = "checkbox", name = "Show BOSS Label",
+                    type = "checkbox", name = "|c00BFFFShow BOSS Label|r",
                     getFunc = function() return not OBT.SV.isHideBossLabel end,
                     setFunc = function(value)
                         OBT.SV.isHideBossLabel = not value
@@ -309,7 +233,7 @@ function OBT.CreateSettings()
                     disabled = function() return not OBT.SV.enableAddon end,
                 },
                 {
-                    type = "checkbox", name = "Show Uptime [%]",
+                    type = "checkbox", name = "|c00BFFFShow Uptime [%]|r",
                     getFunc = function() return not OBT.SV.isHideUptime end,
                     setFunc = function(value)
                         OBT.SV.isHideUptime = not value
@@ -542,6 +466,82 @@ function OBT.CreateSettings()
                     end,
                     default = OBT.Default.fontSizeUptime,
                     disabled = function() return not OBT.SV.enableAddon or OBT.SV.isHideUptime end,
+                },
+            },
+        },
+
+        -- SUBMENU: AUDIO
+        {
+            type = "submenu",
+            name = "|cFF7F00AUDIO SETTINGS|r",
+            controls = {
+                {
+                    type = "dropdown",
+                    name = "Sound Trigger Mode",
+                    tooltip = "Select when the sound should be played.",
+                    choices = {"On Off Balance Proc", "On Immunity Fade"},
+                    choicesValues = {1, 2},
+                    getFunc = function() return OBT.SV.soundTriggerMode end,
+                    setFunc = function(value)
+                        OBT.SV.soundTriggerMode = value
+                        OBT.PlaySound(OBT.SV.volumeSound)
+                    end,
+                    default = OBT.Default.soundTriggerMode,
+                    disabled = function() return not OBT.SV.enableAddon end,
+                },
+                {
+                    type = "slider",
+                    name = "Sound Volume",
+                    min = 0, max = 5, step = 1,
+                    getFunc = function() return OBT.SV.volumeSound end,
+                    setFunc = function(value)
+                        OBT.SV.volumeSound = value
+                        OBT.PlaySound(OBT.SV.volumeSound)
+                    end,
+                    default = OBT.Default.volumeSound,
+                    disabled = function() return not OBT.SV.enableAddon end,
+                },
+                { type = "header", name = "|cFFBF7FAudio Roles|r" },
+                {
+                    type = "description",
+                    text = "Select roles for sound alert.",
+                    width = "full",
+                },
+                {
+                    type = "checkbox", name = "Play Sound as Tank " .. iconTank,
+                    getFunc = function() return OBT.SV.isSoundEnabledTank end,
+                    setFunc = function(value)
+                        OBT.SV.isSoundEnabledTank = value
+                    end,
+                    default = OBT.Default.isSoundEnabledTank,
+                    disabled = function() return not OBT.SV.enableAddon end,
+                },
+                {
+                    type = "checkbox", name = "Play Sound as Healer " .. iconHealer,
+                    getFunc = function() return OBT.SV.isSoundEnabledHeal end,
+                    setFunc = function(value)
+                        OBT.SV.isSoundEnabledHeal = value
+                    end,
+                    default = OBT.Default.isSoundEnabledHeal,
+                    disabled = function() return not OBT.SV.enableAddon end,
+                },
+                {
+                    type = "checkbox", name = "Play Sound as DPS " .. iconDPS,
+                    getFunc = function() return OBT.SV.isSoundEnabledDPS end,
+                    setFunc = function(value)
+                        OBT.SV.isSoundEnabledDPS = value
+                    end,
+                    default = OBT.Default.isSoundEnabledDPS,
+                    disabled = function() return not OBT.SV.enableAddon end,
+                },
+                {
+                    type = "checkbox", name = "Play Sound as Solo " .. iconScroll,
+                    getFunc = function() return OBT.SV.isSoundEnabledSolo end,
+                    setFunc = function(value)
+                        OBT.SV.isSoundEnabledSolo = value
+                    end,
+                    default = OBT.Default.isSoundEnabledSolo,
+                    disabled = function() return not OBT.SV.enableAddon end,
                 },
             },
         },

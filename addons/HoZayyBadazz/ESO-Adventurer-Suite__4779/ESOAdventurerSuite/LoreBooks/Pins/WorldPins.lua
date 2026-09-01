@@ -68,7 +68,7 @@ function WorldPins:Initialize()
 		spawnUpdateName = "EASLoreLibrary-WorldPinsSpawn",
 		tickUpdateName = "EASLoreLibrary-WorldPinsUpdate",
 		spawnIntervalMs = SPAWN_INTERVAL_MS,
-		tickIntervalMs = 30,
+		tickIntervalMs = 50,
 	})
 
 	EVENT_MANAGER:RegisterForEvent("EASLoreLibrary-WorldPins", EVENT_PLAYER_ACTIVATED, function()

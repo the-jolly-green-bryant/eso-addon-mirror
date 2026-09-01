@@ -26,10 +26,16 @@ local function SkillBlockerCallback( actionId, slotIndex, hotbarCategory )
 	end
 end
 
-function CA2.SetNightbladeCutthroatExclusion( timeOfExpectedHit )
-	if (timeOfExpectedHit > 0 and CA2.sv.cutthroatProtection and IsNightbladeCutthroatPassiveActive()) then
-		start = timeOfExpectedHit - 500
-		stop = timeOfExpectedHit + 100
+-- By default, the first parameter is timeOfExpectedHit, but if stopTime is specified, then it's startTime
+function CA2.SetNightbladeCutthroatExclusion( timeOfExpectedHit_or_startTime, stopTime )
+	if (timeOfExpectedHit_or_startTime > 0 and CA2.sv.cutthroatProtection and IsNightbladeCutthroatPassiveActive()) then
+		if (stopTime) then
+			start = timeOfExpectedHit_or_startTime
+			stop = stopTime
+		else
+			start = timeOfExpectedHit_or_startTime - 500
+			stop = timeOfExpectedHit_or_startTime + 100
+		end
 		LCA.RegisterInCombatSkillBlock(NAME, SkillBlockerCallback)
 	else
 		LCA.RegisterInCombatSkillBlock(NAME)

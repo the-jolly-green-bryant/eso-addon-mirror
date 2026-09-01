@@ -55,6 +55,8 @@ local EVENT_MANAGER = EVENT_MANAGER
 -- (interpolate the glide keys, then defer to the authoritative Apply on land).
 -- Resolved eagerly because Ease loads before ContextPresets in the manifest.
 local Ease = addon.Ease
+local CameraResponse = addon.CameraResponse
+local RESPONSE_OWNER = "ContextPresets"
 
 -- The shared options-window watcher (OptionsWatch.lua): owns the fragment
 -- subscription and the canonical IsOpen() suspend-gate, replacing this module's
@@ -175,6 +177,9 @@ function ContextPresets.Apply(preset, isRestore)
     local arbiter = addon.FovArbiter
     local applied, failed = 0, 0
     local skipShoulder = ShoulderOwnedExternally()
+    if CameraResponse and CameraResponse.AcquireSmoothing then
+        CameraResponse.AcquireSmoothing(RESPONSE_OWNER)
+    end
 
     for _, key in ipairs(PRESET_KEYS) do
         local value = preset[key]
@@ -216,6 +221,10 @@ function ContextPresets.Apply(preset, isRestore)
         if preset[DISTANCE_KEY] ~= nil then
             arbiter.RequestDynamic(preset[DISTANCE_KEY])
         end
+    end
+
+    if CameraResponse and CameraResponse.ReleaseSmoothing then
+        CameraResponse.ReleaseSmoothing(RESPONSE_OWNER)
     end
 
     LogDebug("ContextPresets.Apply: applied=%d, failed=%d", applied, failed)
@@ -665,6 +674,9 @@ local transitionClearsRestoreSnapshot = false
 -- an in-flight one, and on disable / emergency restore.
 local function StopTransition()
     Ease.Stop(TRANSITION_UPDATE_NAME)
+    if CameraResponse and CameraResponse.ReleaseSmoothing then
+        CameraResponse.ReleaseSmoothing(RESPONSE_OWNER)
+    end
     transitionKeys      = nil
     transitionTarget    = nil
     transitionIsRestore = false
@@ -705,6 +717,9 @@ local function OnTransitionLand()
     local clearsRestoreSnapshot = transitionClearsRestoreSnapshot
     StopTransition()
     local _, failed = ContextPresets.Apply(target or {}, isRestore)
+    if controller.activeState == externalProfile.stateId then
+        externalProfile.failed = failed
+    end
     if clearsRestoreSnapshot and failed == 0 then
         ContextPresets.ClearCapture(RESTORE_SLOT)
         PersistRestoreSnapshot(nil)
@@ -732,11 +747,17 @@ local function StartTransition(target, isRestore, clearRestoreSnapshotOnLand)
     StopTransition()
 
     local arbiter = addon.FovArbiter
+    local durationMs = controller.smooth and TRANSITION_DURATION_MS or 0
+    local curve = nil
+    if CameraResponse then
+        durationMs = CameraResponse.GetDurationMs()
+        curve = CameraResponse.GetCurve()
+    end
 
     -- When smoothing is off, every transition snaps: no spatial glide and an
     -- instant FOV pin. Defer straight to the authoritative Apply so the camera
     -- lands in exactly one step, identical to the pre-glide behavior.
-    if not controller.smooth then
+    if durationMs <= 0 then
         local _, failed = ContextPresets.Apply(target or {}, isRestore)
         if clearRestoreSnapshotOnLand and failed == 0 then
             ContextPresets.ClearCapture(RESTORE_SLOT)
@@ -758,7 +779,7 @@ local function StartTransition(target, isRestore, clearRestoreSnapshotOnLand)
     --     owner -- just smoothly instead of snapping.
     if type(target) == "table" and target[FOV_KEY] ~= nil
         and arbiter and CameraSettings.IsSupported(FOV_KEY) then
-        arbiter.BeginHold("ContextPresets", target[FOV_KEY], TRANSITION_DURATION_MS)
+        arbiter.BeginHold("ContextPresets", target[FOV_KEY], durationMs)
     end
 
     local keys = {}
@@ -796,6 +817,11 @@ local function StartTransition(target, isRestore, clearRestoreSnapshotOnLand)
     transitionTarget    = target
     transitionIsRestore = isRestore
     transitionClearsRestoreSnapshot = clearRestoreSnapshotOnLand and true or false
+    TRANSITION_SPEC.durMs = durationMs
+    TRANSITION_SPEC.curve = curve
+    if CameraResponse and CameraResponse.AcquireSmoothing then
+        CameraResponse.AcquireSmoothing(RESPONSE_OWNER)
+    end
     Ease.Start(TRANSITION_UPDATE_NAME, TRANSITION_SPEC)
 end
 
@@ -1447,8 +1473,12 @@ function ContextPresets.SetExternalProfile(source, stateId, bundle, force)
         local preset = ResolveBundle(stateId, snapshot)
         if preset ~= nil then
             StopTransition()
-            local _, failed = ContextPresets.Apply(preset, false)
-            externalProfile.failed = failed
+            if rawget(bundle, "instant") then
+                local _, failed = ContextPresets.Apply(preset, false)
+                externalProfile.failed = failed
+            else
+                StartTransition(preset, false)
+            end
         end
     else
         Reevaluate()

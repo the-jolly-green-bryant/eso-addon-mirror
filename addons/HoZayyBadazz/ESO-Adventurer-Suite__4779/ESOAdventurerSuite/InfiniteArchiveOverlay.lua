@@ -359,17 +359,254 @@ function A:Initialize()
     -- ZO_Ingame can finish deferred initialization after this addon.  Keep the
     -- native position synchronized and keep the Suite preview above settings
     -- while layout mode is active.
-    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Guard", 500, function()
-        if A.layoutMode then
-            -- Keep the preview readable/above Settings without touching its
-            -- anchors while the player is dragging it.
-            A:RefreshPreviewText()
-            if A.previewFrame then A.previewFrame:SetScale(A:GetScale()) end
-            A:RaiseForLayout()
-        else
-            A:Refresh()
-        end
+    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Guard", 250, function()
+        -- Always refresh visibility. This is intentionally safe during HUD
+        -- Layout Mode because Refresh() never reapplies the saved anchors while
+        -- layoutMode is active; it only updates visibility/text/scale.
+        A:Refresh()
     end)
 
     self:Refresh()
+end
+
+-- ============================================================================
+-- v0.29.72 - Suite-owned live Infinite Archive overlay.
+-- ESO's native Endless Dungeon fragment may be hidden/reparented by its own HUD
+-- state. Keep a Suite-owned tracker visible whenever the player is actually in
+-- Infinite Archive, while retaining the same frame as the HUD-layout drag target.
+-- ============================================================================
+local REASON_SUITE_LIVE_02972 = "EAS_InfiniteArchiveSuiteLive02972"
+
+function A:IsPlayerInArchive02972()
+    local manager = rawget(_G, "ENDLESS_DUNGEON_MANAGER")
+    if manager and type(manager.IsPlayerInEndlessDungeon) == "function" then
+        if safe(manager.IsPlayerInEndlessDungeon, false, manager) == true then return true end
+    end
+    return self:IsArchiveStarted() == true
+end
+
+function A:GetKeybindText()
+    if type(GetHighestPriorityActionBindingInfoFromName) == "function" then
+        local keyCode = safe(GetHighestPriorityActionBindingInfoFromName, nil, "TOGGLE_ACTIVITY_HUD_TRACKER", false)
+        if keyCode and keyCode ~= KEY_INVALID and type(GetKeyName) == "function" then
+            local keyName = safe(GetKeyName, "", keyCode)
+            if keyName and keyName ~= "" then return keyName end
+        end
+    end
+    return "F5"
+end
+
+local EAS_InfiniteRefreshBase02972 = A.Refresh
+function A:Refresh()
+    EAS_InfiniteRefreshBase02972(self)
+
+    self:CreateLayoutPreview()
+    self:RefreshPreviewText()
+    local enabled = EPC.saved and EPC.saved.showInfiniteArchiveOverlay ~= false
+    local inArchive = self:IsPlayerInArchive02972()
+    local showLive = enabled and inArchive and self.layoutMode ~= true
+
+    self:SetNativeHiddenForReason(REASON_SUITE_LIVE_02972, showLive)
+
+    if self.previewFrame then
+        if self.layoutMode then
+            self.previewFrame:SetMouseEnabled(true)
+            self.previewFrame:SetMovable(true)
+            self.previewFrame:SetHidden(false)
+            if self.previewHint then self.previewHint:SetHidden(false) end
+            self:RaiseForLayout()
+        elseif showLive then
+            self.previewFrame:SetMouseEnabled(false)
+            self.previewFrame:SetMovable(false)
+            if self.previewHint then self.previewHint:SetHidden(true) end
+            self.previewFrame:SetHidden(false)
+            raiseControl(self.previewFrame)
+        else
+            self.previewFrame:SetMouseEnabled(false)
+            self.previewFrame:SetMovable(false)
+            if self.previewHint then self.previewHint:SetHidden(true) end
+            self.previewFrame:SetHidden(true)
+        end
+    end
+    return true
+end
+
+-- ============================================================================
+-- v0.29.74 - isolate Suite Archive HUD from ESO's native objective tracker
+-- The native Endless Dungeon tracker participates in ZOS' objective-tracker
+-- layout. Re-anchoring it from HUD Layout Mode can therefore disturb the native
+-- quest tracker. From this version onward the Suite never moves/re-anchors the
+-- native tracker; its own preview/live frame is the only movable Archive HUD.
+-- ============================================================================
+local REASON_NATIVE_ISOLATION_02974 = "EAS_InfiniteArchiveNativeIsolation02974"
+
+function A:ApplyPosition()
+    -- Compatibility no-op for the native tracker. Older callers still invoke
+    -- ApplyPosition(), but only the Suite-owned frame is allowed to move now.
+    if self.previewFrame and not self.previewDragging then
+        self:ApplyPreviewPosition()
+    end
+end
+
+function A:ResetPosition()
+    if EPC.saved then
+        EPC.saved.infiniteArchiveOverlayLeft = -1
+        EPC.saved.infiniteArchiveOverlayTop = -1
+    end
+    self:CreateLayoutPreview()
+    self:ApplyPreviewPosition()
+    self:Refresh()
+end
+
+function A:Refresh()
+    self:CreateLayoutPreview()
+
+    if self.layoutMode then
+        if self.previewFrame then self.previewFrame:SetScale(self:GetScale()) end
+    elseif not self.previewDragging then
+        self:ApplyPreviewPosition()
+    end
+    self:RefreshPreviewText()
+
+    local enabled = EPC.saved and EPC.saved.showInfiniteArchiveOverlay ~= false
+    local inArchive = self:IsPlayerInArchive02972()
+    local showLive = enabled and inArchive and self.layoutMode ~= true
+
+    -- The Suite owns the visible Archive HUD. The ZOS tracker remains hidden
+    -- while our live tracker is shown, but we never alter its anchors, scale,
+    -- mouse state, parent, or update layout.
+    self:SetNativeHiddenForReason(REASON_DISABLED, not enabled)
+    self:SetNativeHiddenForReason(REASON_LAYOUT, self.layoutMode == true)
+    self:SetNativeHiddenForReason(REASON_SUITE_LIVE_02972, showLive)
+    self:SetNativeHiddenForReason(REASON_NATIVE_ISOLATION_02974, enabled and (showLive or self.layoutMode == true))
+
+    if not self.previewFrame then return true end
+
+    if self.layoutMode then
+        self.previewFrame:SetMouseEnabled(true)
+        self.previewFrame:SetMovable(true)
+        self.previewFrame:SetHidden(false)
+        if self.previewHint then self.previewHint:SetHidden(false) end
+        self:RaiseForLayout()
+    elseif showLive then
+        self.previewFrame:SetMouseEnabled(false)
+        self.previewFrame:SetMovable(false)
+        self.previewFrame:SetHidden(false)
+        if self.previewHint then self.previewHint:SetHidden(true) end
+        raiseControl(self.previewFrame)
+    else
+        self.previewFrame:SetMouseEnabled(false)
+        self.previewFrame:SetMovable(false)
+        self.previewFrame:SetHidden(true)
+        if self.previewHint then self.previewHint:SetHidden(true) end
+    end
+    return true
+end
+
+-- ============================================================================
+-- v0.29.75 - gameplay-only Infinite Archive visibility.
+-- The Suite Archive tracker is a HUD element, not a menu element. Hide it as
+-- soon as ESO enters Pause, Map, Inventory, Settings, or another UI/menu scene.
+-- HUD Layout Mode remains a gameplay preview and is allowed only while no real
+-- ESO menu scene is suppressing the HUD.
+-- ============================================================================
+function A:IsArchiveHudVisible02975()
+    if EPC and type(EPC.IsGameplayHudSuppressed) == "function" then
+        local ok, suppressed = pcall(EPC.IsGameplayHudSuppressed, EPC)
+        if ok then return suppressed ~= true end
+    end
+
+    -- Conservative fallback for installations where Core's helper has not yet
+    -- initialized: ordinary camera UI mode means a menu/UI is owning the screen.
+    -- HUD Layout Mode is the one intentional exception.
+    if self.layoutMode ~= true and type(IsGameCameraUIModeActive) == "function" then
+        local ok, active = pcall(IsGameCameraUIModeActive)
+        if ok and active == true then return false end
+    end
+    return true
+end
+
+function A:Refresh()
+    self:CreateLayoutPreview()
+
+    if self.layoutMode then
+        if self.previewFrame then self.previewFrame:SetScale(self:GetScale()) end
+    elseif not self.previewDragging then
+        self:ApplyPreviewPosition()
+    end
+    self:RefreshPreviewText()
+
+    local enabled = EPC.saved and EPC.saved.showInfiniteArchiveOverlay ~= false
+    local inArchive = self:IsPlayerInArchive02972()
+    local hudVisible = self:IsArchiveHudVisible02975()
+    local showLive = enabled and inArchive and self.layoutMode ~= true and hudVisible
+    local showLayout = self.layoutMode == true and hudVisible
+
+    -- Keep the ZOS activity/objective tracker isolated while the Suite owns the
+    -- Archive display. Never alter the native tracker's anchors or position.
+    self:SetNativeHiddenForReason(REASON_DISABLED, not enabled)
+    self:SetNativeHiddenForReason(REASON_LAYOUT, self.layoutMode == true)
+    self:SetNativeHiddenForReason(REASON_SUITE_LIVE_02972, showLive)
+    self:SetNativeHiddenForReason(REASON_NATIVE_ISOLATION_02974, enabled and (showLive or showLayout))
+
+    if not self.previewFrame then return true end
+
+    if showLayout then
+        self.previewFrame:SetMouseEnabled(true)
+        self.previewFrame:SetMovable(true)
+        self.previewFrame:SetHidden(false)
+        if self.previewHint then self.previewHint:SetHidden(false) end
+        self:RaiseForLayout()
+    elseif showLive then
+        self.previewFrame:SetMouseEnabled(false)
+        self.previewFrame:SetMovable(false)
+        self.previewFrame:SetHidden(false)
+        if self.previewHint then self.previewHint:SetHidden(true) end
+        raiseControl(self.previewFrame)
+    else
+        self.previewFrame:SetMouseEnabled(false)
+        self.previewFrame:SetMovable(false)
+        self.previewFrame:SetHidden(true)
+        if self.previewHint then self.previewHint:SetHidden(true) end
+    end
+    return true
+end
+
+
+
+-- ============================================================================
+-- v0.29.78 - permanently suppress ESO's native Infinite Archive tracker.
+-- The Suite now owns the Archive HUD completely.  The ZOS Endless Dungeon HUD
+-- fragment must never become visible again during focus loss, menus, scene
+-- transitions, or while the Suite-owned Archive frame is intentionally hidden.
+-- ============================================================================
+local REASON_NATIVE_ALWAYS_02978 = "EAS_InfiniteArchiveNativeAlwaysHidden02978"
+
+function A:SuppressNativeTracker02978()
+    -- Prefer the fragment hidden-for-reason API because it survives normal
+    -- scene transitions without touching the native tracker's anchors.
+    self:SetNativeHiddenForReason(REASON_NATIVE_ALWAYS_02978, true)
+
+    -- Defensive fallback for clients/builds where the fragment has not been
+    -- initialized yet or is temporarily unavailable. The 250 ms guard calls
+    -- Refresh repeatedly, so this will be reasserted as soon as the control
+    -- exists. Do not change its anchors/scale/parent.
+    local _, control = self:GetNativeTracker()
+    local fragment = self:GetNativeFragment()
+    if control and not fragment and type(control.SetHidden) == "function" then
+        pcall(control.SetHidden, control, true)
+    end
+end
+
+local EAS_InfiniteRefreshBase02978 = A.Refresh
+function A:Refresh()
+    -- Suppress the native tracker before doing any Suite visibility work. This
+    -- remains true even if the Suite frame hides because the game loses focus,
+    -- a menu opens, or the user disables the Suite Archive overlay.
+    self:SuppressNativeTracker02978()
+    local result = EAS_InfiniteRefreshBase02978(self)
+    -- Reassert after the base refresh as older compatibility reasons may be
+    -- toggled there. The dedicated 0.29.78 reason is never released.
+    self:SuppressNativeTracker02978()
+    return result
 end

@@ -39,10 +39,9 @@ local PIN_LAYOUT = {
 }
 
 -------------------------------------------------------------------------------
--- Saved Variables & 20+ Toon Tracking Core
+-- Saved Variables & Character Tracking Core
 -------------------------------------------------------------------------------
 local cachedCharId = nil
-local selectedResetChar = nil
 
 local function GetCurrentCharKey()
     if not cachedCharId then
@@ -71,12 +70,14 @@ local function InitializeSavedVars()
     ZoneDailyTrackerSavedVars.charactersData[charKey] = ZoneDailyTrackerSavedVars.charactersData[charKey] or {
         name = charName,
         activeDailies = {},
+        completedDailies = {},
     }
     ZoneDailyTrackerSavedVars.charactersData[charKey].name = charName
+    ZoneDailyTrackerSavedVars.charactersData[charKey].completedDailies = ZoneDailyTrackerSavedVars.charactersData[charKey].completedDailies or {}
 end
 
 -------------------------------------------------------------------------------
--- Scan Journal on Login / Relog to Keep Memory Fresh
+-- Scan Journal on Login / Relog
 -------------------------------------------------------------------------------
 local function SyncJournalQuests()
     InitializeSavedVars()
@@ -99,23 +100,35 @@ local function SyncJournalQuests()
     end
 end
 
-local function GetActiveTrackedTable()
+local function GetActiveAndCompletedTrackedTable()
     InitializeSavedVars()
     
+    local combined = {}
+    
+    local function MergeTable(source)
+        if not source then return end
+        for k, v in pairs(source) do
+            if v then combined[k] = true end
+        end
+    end
+
     if ZoneDailyTrackerSavedVars.useAccountWide then
-        local aggregated = {}
         for _, charData in pairs(ZoneDailyTrackerSavedVars.charactersData) do
-            if charData and charData.activeDailies then
-                for questKey, isTracked in pairs(charData.activeDailies) do
-                    if isTracked then aggregated[questKey] = true end
-                end
+            if charData then
+                MergeTable(charData.activeDailies)
+                MergeTable(charData.completedDailies)
             end
         end
-        return aggregated
     else
         local charKey = GetCurrentCharKey()
-        return ZoneDailyTrackerSavedVars.charactersData[charKey].activeDailies
+        local charData = ZoneDailyTrackerSavedVars.charactersData[charKey]
+        if charData then
+            MergeTable(charData.activeDailies)
+            MergeTable(charData.completedDailies)
+        end
     end
+
+    return combined
 end
 
 -------------------------------------------------------------------------------
@@ -125,7 +138,7 @@ local function IsPinHidden(target)
     if not target or not ZoneDailyTrackerSavedVars then return false end
     if not ZoneDailyTrackerSavedVars.showPins then return true end
 
-    local tracked = GetActiveTrackedTable()
+    local tracked = GetActiveAndCompletedTrackedTable()
     if not tracked then return false end
 
     -- 1. Multiple Quest IDs Evaluation
@@ -218,7 +231,7 @@ local function UpdatePinLayout()
 end
 
 -------------------------------------------------------------------------------
--- Quest Pickup & Abandon Event Tracking
+-- Quest Pickup & Abandon/Completion Event Tracking
 -------------------------------------------------------------------------------
 local function OnQuestAdded(eventCode, journalIndex, questName, objectiveName)
     InitializeSavedVars()
@@ -243,16 +256,29 @@ local function OnQuestRemoved(eventCode, isCompleted, journalIndex, questName, z
     InitializeSavedVars()
 
     local charKey = GetCurrentCharKey()
-    local charDailies = ZoneDailyTrackerSavedVars.charactersData[charKey].activeDailies
+    local charData = ZoneDailyTrackerSavedVars.charactersData[charKey]
+    local activeDailies = charData.activeDailies
+    local completedDailies = charData.completedDailies
 
-    if questId and questId > 0 then
-        charDailies[tonumber(questId)] = nil
-        charDailies[tostring(questId)] = nil
+    local numId = questId and tonumber(questId)
+    local strId = questId and tostring(questId)
+
+    if isCompleted then
+        -- Mark as completed so the dot stays hidden
+        if numId and numId > 0 then completedDailies[numId] = true end
+        if strId and strId ~= "0" then completedDailies[strId] = true end
+        if questName and questName ~= "" then completedDailies[questName] = true end
+    else
+        -- Abandoned: Clear completion and active state so the dot reappears
+        if numId then completedDailies[numId] = nil end
+        if strId then completedDailies[strId] = nil end
+        if questName then completedDailies[questName] = nil end
     end
 
-    if questName and questName ~= "" then
-        charDailies[questName] = nil
-    end
+    -- Always remove from active journal records
+    if numId then activeDailies[numId] = nil end
+    if strId then activeDailies[strId] = nil end
+    if questName then activeDailies[questName] = nil end
 
     HardRefreshPins()
 end
@@ -282,30 +308,6 @@ local function PinTypeAddCallback(pinManager)
 end
 
 -------------------------------------------------------------------------------
--- Dynamic Roster Management
--------------------------------------------------------------------------------
-local function GetCharacterList()
-    InitializeSavedVars()
-    local names = {}
-    for _, charData in pairs(ZoneDailyTrackerSavedVars.charactersData) do
-        if charData and charData.name then
-            table.insert(names, charData.name)
-        end
-    end
-    table.sort(names)
-    return names
-end
-
-local function GetKeyFromCharName(targetName)
-    for key, charData in pairs(ZoneDailyTrackerSavedVars.charactersData) do
-        if charData and charData.name == targetName then
-            return key
-        end
-    end
-    return nil
-end
-
--------------------------------------------------------------------------------
 -- Settings Menu Construction (LibAddonMenu-2.0)
 -------------------------------------------------------------------------------
 local function BuildSettingsMenu()
@@ -317,7 +319,7 @@ local function BuildSettingsMenu()
         name = "ZoneDailyTracker_OptionsPanel",
         displayName = "|c00FF00Zone Daily Tracker|r",
         author = "wizadt",
-        version = "1.2.1",
+        version = "1.2.2",
         registerForRefresh = true,
     }
 
@@ -339,7 +341,6 @@ local function BuildSettingsMenu()
             end,
             default = true,
         },
-        
         {
             type = "dropdown",
             name = "Icon Texture Choice",
@@ -367,7 +368,6 @@ local function BuildSettingsMenu()
             end,
             default = 28,
         },
-        
     }
 
     local panelControl = LAM:RegisterAddonPanel("ZoneDailyTracker_OptionsPanel", panelData)

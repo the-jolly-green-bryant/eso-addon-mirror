@@ -250,13 +250,13 @@ local function onAddOnLoadedAdv(event, name)
 	--notify that add-on has been loaded
 	zo_callLater(function() printMessageTest("add-on successfully loaded") end, 500)
 
+	--load saved variables
+    advancingYokedaTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("aytAddonVars", 1, "Settings", advancingYokedaTracker.defaults, GetUnitName("player"))
+
 	--notify if tracking is disabled
 	if not advancingYokedaTracker.savedVariables.trackAdv then
 		zo_callLater(function() printMessageTest("tracking disabled") end, 600)
 	end
-
-    --load saved variables
-    advancingYokedaTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("aytAddonVars", 1, "Settings", advancingYokedaTracker.defaults, GetUnitName("player"))
 
     --setup text field areas
     advAddonText:SetMovable(true)

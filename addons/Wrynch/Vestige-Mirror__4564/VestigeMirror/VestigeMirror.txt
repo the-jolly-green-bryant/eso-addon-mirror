@@ -1,6 +1,6 @@
 ## Title: Vestige Mirror
 ## Author: |cFFFF00Wrynch|r
-## Version: 1.0.1
+## Version: 1.4.0
 ## APIVersion: 101050
 ## OptionalDependsOn: LibChatMessage>=113
 
@@ -8,6 +8,7 @@ VestigeMirror.lua
 Bindings.xml
 VestigeMirror_Data.lua
 VestigeMirror_Preview.lua
+VestigeMirror_Actions.lua
 VestigeMirror_Scene.lua
 VestigeMirror.xml
 VestigeMirror_UI.lua

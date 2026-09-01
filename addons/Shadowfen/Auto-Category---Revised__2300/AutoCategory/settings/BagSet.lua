@@ -5,6 +5,7 @@ local L = GetString
 local CVT = AutoCategory.CVT
 
 local logDebug = AutoCategory.logDebug
+local logWouldDebug = AutoCategory.logWouldDebug
 
 --cache data for dropdown: 
 AutoCategory.cache.bags_cvt.choices = {
@@ -311,7 +312,7 @@ function BagSet_SelectRule_LAM:setValue(val)
 		BagSet_ShowPriority_LAM:setValue(bagrule.showpriority)
 
 		AC_UI.RefreshControls()
-		AutoCategory.dspWin.SelectItem(AutoCategory.dspWin,getCurrentBagId(), bagrule.name)
+		AutoCategory.dspWin:SelectItem(AutoCategory.dspWin, getCurrentBagId(), bagrule.name)
 	end
 end
 
@@ -701,7 +702,10 @@ function AC_UI.AddCat_SelectRule_LAM.filterRules(bagId, tag)
 	end
 
 	local rbyt = AutoCategory.RulesW.tagGroups[tag]
-    logDebug("[BagSet] # entries for tag ", rbyt:size())
+	if logWouldDebug() then
+		-- protect :size execution
+    	logDebug("[BagSet] # entries for tag ", rbyt:size())
+	end
 	for i = 1, rbyt:size() do
 		local value = rbyt.choices[i]
 		if value and cache.entriesByName[bagId][value] == nil then
@@ -1075,11 +1079,13 @@ function AC_UI.BagSet_RefreshOrder()
 	local sbag = AutoCategory.cache.entriesByShowBag[bag]		-- CVT
 	if sbag and sbag.choices then
 		local win = AutoCategory.dspWin
-		win:ClearList()
-		for i = 1, #sbag.bagrules do
-			win:AddItem(sbag.bagrules[i])
-		end
-		win:UpdateScrollList()
+    if win and win.AddItem then
+      win:ClearList()
+      for i = 1, #sbag.bagrules do
+        win:AddItem(sbag.bagrules[i])
+      end
+      win:UpdateScrollList()
+    end
 	end
 end
 

@@ -555,6 +555,12 @@ function E:BuildTabViews(snapshot, gearScore, buildScore, recommendations, champ
     local combatRoleLabel = snapshot.roleLabel or "Damage"
     if lastFight then
         local combatItems = {}
+        local effectiveStats = type(lastFight.combatStats) == "table" and lastFight.combatStats or nil
+        if effectiveStats then
+            combatItems[#combatItems + 1] = string.format("Live Stats: PEN %s  -  PWR %s", formatNumber(effectiveStats.penetration or 0), formatNumber(effectiveStats.power or 0))
+            combatItems[#combatItems + 1] = string.format("Live Stats: CC %.1f%%  -  CD %.1f%%", tonumber(effectiveStats.criticalChance) or 0, tonumber(effectiveStats.criticalDamage) or 0)
+            combatItems[#combatItems + 1] = string.format("Live Stats: SR %s  -  PR %s", formatNumber(effectiveStats.spellResistance or 0), formatNumber(effectiveStats.physicalResistance or 0))
+        end
         local contributors = lastFight.contributors or {}
         if #contributors > 1 then
             local damageLeader = contributors[1]
@@ -629,9 +635,9 @@ function E:BuildTabViews(snapshot, gearScore, buildScore, recommendations, champ
         combatView = {
             header = "COMBAT ANALYSIS  /  " .. string.upper(combatRoleLabel),
             title = title,
-            description = string.format((lastFight.live and "Live sample: " or "Completed sample: ") .. "role-aware combat metrics over %.1f seconds.%s", lastFight.duration or 0, groupNote),
+            description = string.format((lastFight.live and "Live sample: " or "Completed sample: ") .. "role-aware combat metrics over %.1f seconds. Live Combat Stats are recorded into this same fight so PEN/PWR/SR/PR/CC/CD stay synchronized.%s", lastFight.duration or 0, groupNote),
             stats = stats,
-            listHeader = #contributors > 1 and "OBSERVED GROUP / RAID" or "ROLE PRIORITIES",
+            listHeader = effectiveStats and "LIVE COMBAT STATS + FIGHT DETAILS" or (#contributors > 1 and "OBSERVED GROUP / RAID" or "ROLE PRIORITIES"),
             items = combatItems,
         }
     else

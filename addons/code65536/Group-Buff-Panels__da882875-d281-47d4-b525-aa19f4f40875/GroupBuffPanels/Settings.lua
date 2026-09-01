@@ -6,7 +6,7 @@ local GBP = GroupBuffPanels
 -- Constants
 --------------------------------------------------------------------------------
 
-local DEFAULT_EFFECTS = "61747, 93109, 93123, 109966, 147417, 61745, 61744, 61694, 61693, 61665, 61662, 61687, 61685, 61709, 61708, 61716, 61715, 61736, 61735, 61666, 61691, 61704, 61706, 88490, 61771, 163401, -172056, 40079, 61506, 40224, 32948+29230, 61737, -234295"
+local DEFAULT_EFFECTS = "61747, 93109, 93123, 109966, 147417, 61745, 61744, 61694, 61693, 61665, 61662, 61687, 61685, 61709, 61708, 61716, 61715, 61736, 61735, 61666, 61691, 61704, 61706, 88490, 61771, 163401, -172056, 40079, 61506, 40224, 32948+29230, -58813, 61737, -234295"
 
 local DEFAULT_SETTINGS = {
 	profiles = { },
@@ -160,7 +160,10 @@ function GBP.LoadSettings( )
 		local realId = zo_abs(id)
 		GBP.EFFECTS[i] = realId
 		GBP.ALTMODE[realId] = id ~= realId
-		GBP.MULTIID[realId] = multi
+		if (multi) then
+			multi[1] = realId
+			GBP.MULTIID[realId] = multi
+		end
 	end
 
 	MigrateSettings()

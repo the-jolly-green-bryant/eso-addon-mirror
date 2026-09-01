@@ -74,7 +74,7 @@
     "LibSFUtils"
   ],
   "download_url": "https://www.esoui.com/downloads/dl2231/",
-  "fingerprint": "14905b6317eb7741aeb8573542e5198fd46e55be8cb6f4e6f58e6c30b27d5bfb",
+  "fingerprint": "944017f8cb800ce0d3f41cdebaa71cff1530558570593057d59944c5026b5081",
   "images": [],
   "platform": "pc",
   "published": true,
@@ -82,11 +82,11 @@
   "source_id": "2231",
   "source_url": "https://www.esoui.com/downloads/info2231-LibSFUtils.html",
   "stats": {
-    "downloads": 1705292,
-    "favorites": 328,
-    "monthly_downloads": 28146
+    "downloads": 1720988,
+    "favorites": 329,
+    "monthly_downloads": 36260
   },
   "title": "LibSFUtils",
-  "updated_at": 1787003220000,
-  "version": "76"
+  "updated_at": 1788222033000,
+  "version": "77"
 }

@@ -440,13 +440,14 @@ local function onAddOnLoaded(event, name)
 	--notify that add-on has been loaded
 	zo_callLater(function() printMessageTest("add-on successfully loaded") end, 500)
 
+	--load saved variables
+    warmaskTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("wmtAddonVars", 1, "Settings", warmaskTracker.defaults, GetUnitName("player"))
+
+
 	--notify if tracking is disabled
 	if not warmaskTracker.savedVariables.trackWarmask then
 		zo_callLater(function() printMessageTest("tracking disabled") end, 600)
 	end
-
-    --load saved variables
-    warmaskTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("wmtAddonVars", 1, "Settings", warmaskTracker.defaults, GetUnitName("player"))
 
     --organise on screen text
     wmtAddonText:SetMovable(true)

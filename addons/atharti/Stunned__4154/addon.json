@@ -1,0 +1,39 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/atharti/Stunned__4154",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "atharti",
+  "canonical_id": "esoui:4154",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    }
+  ],
+  "content_id": "esoui:4154",
+  "deleted": false,
+  "directories": [
+    "Stunned"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4154/",
+  "fingerprint": "f4554808430a85bc683b920897ce4065b75cc04f24ed76354f3ac7e49d8d77ee",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17240.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw17241.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4154",
+  "source_url": "https://www.esoui.com/downloads/info4154-Stunned.html",
+  "stats": {
+    "downloads": 2863,
+    "favorites": 6,
+    "monthly_downloads": 52
+  },
+  "title": "Stunned",
+  "updated_at": 1788249627000,
+  "version": "2.0"
+}

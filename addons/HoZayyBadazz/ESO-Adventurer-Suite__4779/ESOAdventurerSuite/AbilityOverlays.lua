@@ -30,6 +30,87 @@ local function formatMS(ms)
     return string.format("%.1f", s)
 end
 
+local function bindingKeyText(keyCode)
+    keyCode = tonumber(keyCode)
+    if not keyCode or (KEY_INVALID ~= nil and keyCode == KEY_INVALID) then return "" end
+    local text = ""
+    if type(ZO_Keybindings_GetKeyText) == "function" then
+        text = tostring(safe(ZO_Keybindings_GetKeyText, "", keyCode) or "")
+    end
+    if text == "" and type(GetKeyName) == "function" then
+        text = tostring(safe(GetKeyName, "", keyCode) or "")
+    end
+    return text
+end
+
+local function compactBindingText(text)
+    text = tostring(text or "")
+    if text == "" then return text end
+    -- Keep the overlay readable for uncommon mouse/numpad bindings without
+    -- changing what key the player actually configured.
+    text = text:gsub("MOUSE BUTTON ", "M")
+    text = text:gsub("MOUSEBUTTON", "M")
+    text = text:gsub("NUMPAD ", "N")
+    text = text:gsub("NUMPAD", "N")
+    text = text:gsub("CONTROL", "CTRL")
+    text = text:gsub("COMMAND", "CMD")
+    return text
+end
+
+function A:GetActionBindingName(slot)
+    slot = tonumber(slot)
+    if not slot then return nil end
+    if slot >= 3 and slot <= 8 then
+        return "ACTION_BUTTON_" .. tostring(slot)
+    end
+    return nil
+end
+
+function A:GetBindingTextForSlot(slot)
+    self.bindingTextCache = self.bindingTextCache or {}
+    local cached = self.bindingTextCache[slot]
+    if cached ~= nil then return cached end
+
+    local actionName = self:GetActionBindingName(slot)
+    if not actionName then return "" end
+    local preferGamepad = type(IsInGamepadPreferredMode) == "function" and safe(IsInGamepadPreferredMode, false) == true
+    local key, mod1, mod2, mod3, mod4
+    if type(GetHighestPriorityActionBindingInfoFromName) == "function" then
+        key, mod1, mod2, mod3, mod4 = safe(GetHighestPriorityActionBindingInfoFromName, nil, actionName, preferGamepad)
+    end
+
+    local parts = {}
+    local seen = {}
+    for _, code in ipairs({mod1, mod2, mod3, mod4}) do
+        local n = tonumber(code)
+        if n and (KEY_INVALID == nil or n ~= KEY_INVALID) and not seen[n] then
+            local t = compactBindingText(bindingKeyText(n))
+            if t ~= "" then parts[#parts + 1] = t; seen[n] = true end
+        end
+    end
+    local keyText = compactBindingText(bindingKeyText(key))
+    if keyText ~= "" then parts[#parts + 1] = keyText end
+
+    local result = table.concat(parts, "+")
+    -- Fallback to ZOS's formatter if the direct binding API did not produce text.
+    if result == "" and type(ZO_Keybindings_GetBindingStringFromAction) == "function" then
+        local textOptions = KEYBIND_TEXT_OPTIONS_ABBREVIATED_NAME or 1
+        local textureOptions = KEYBIND_TEXTURE_OPTIONS_NONE or 1
+        local maxBindings = tonumber(safe(GetMaxBindingsPerAction, 2)) or 2
+        for bindingIndex = 1, math.max(1, math.min(4, maxBindings)) do
+            local candidate = tostring(safe(ZO_Keybindings_GetBindingStringFromAction, "", actionName, textOptions, textureOptions, bindingIndex) or "")
+            if candidate ~= "" then result = compactBindingText(candidate); break end
+        end
+    end
+
+    self.bindingTextCache[slot] = result
+    return result
+end
+
+function A:InvalidateBindingText()
+    self.bindingTextCache = {}
+end
+
 function A:GetSlots()
     -- ESO's exported action-bar constants are base indices; the live ZOS
     -- action bar addresses the five normal ability buttons and Ultimate at
@@ -126,10 +207,13 @@ function A:CreateWidget(slot, ordinal)
 
     local slotLabel = wm:CreateControl(name .. "Slot", frame, CT_LABEL)
     slotLabel:SetAnchor(TOPLEFT, frame, TOPLEFT, 3,1)
-    slotLabel:SetDimensions(18,14)
-    slotLabel:SetFont("ZoFontGameSmall")
+    slotLabel:SetAnchor(TOPRIGHT, frame, TOPRIGHT, -3,1)
+    slotLabel:SetHeight(16)
+    slotLabel:SetFont("$(BOLD_FONT)|14|soft-shadow-thick")
+    slotLabel:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+    slotLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     slotLabel:SetColor(0.95,0.82,0.42,1)
-    slotLabel:SetText(tostring(ordinal))
+    slotLabel:SetText("")
 
     local ultimatePct = wm:CreateControl(name .. "UltimatePct", frame, CT_LABEL)
     -- Keep Ultimate charge readable without covering the ability artwork.
@@ -229,18 +313,29 @@ function A:RefreshWidget(widget)
     end
     widget:SetScale(tonumber(EPC.saved.abilityOverlayScale) or 1.0)
     local isUltimate = widget.epcOrdinal == #self.widgets
-    widget.epcSlotLabel:SetText(isUltimate and "U" or tostring(widget.epcOrdinal))
+    -- Display the player's real ESO Controls binding for this action slot.
+    -- Skills 1-5 are ACTION_BUTTON_3..7 and Ultimate is ACTION_BUTTON_8;
+    -- never hardcode 1-5/U because every player may rebind these controls.
+    local bindingText = self:GetBindingTextForSlot(slot)
+    if bindingText == "" then bindingText = "—" end
+    if widget.epcBindingText ~= bindingText then
+        widget.epcBindingText = bindingText
+        widget.epcSlotLabel:SetText(bindingText)
+        local chars = #bindingText
+        local fontSize = chars <= 4 and 14 or (chars <= 7 and 12 or 10)
+        widget.epcSlotLabel:SetFont("$(BOLD_FONT)|" .. tostring(fontSize) .. "|soft-shadow-thick")
+    end
     if widget.epcUltimatePct then
         if isUltimate and used and COMBAT_MECHANIC_FLAGS_ULTIMATE then
             local current, maximum = safe(GetUnitPower, 0, "player", COMBAT_MECHANIC_FLAGS_ULTIMATE)
             current, maximum = tonumber(current) or 0, tonumber(maximum) or 0
-            -- ESO's Ultimate resource is normally 0..500, but the
-            -- percentage shown here is relative to THIS slotted Ultimate's
-            -- actual cost. This intentionally allows values above 100%:
-            -- e.g. 375/250 = 150% and 500/250 = 200%.
+            -- Display Ultimate readiness relative to the slotted Ultimate's
+            -- real cost, but cap the visual percentage at 100%. ESO may keep
+            -- storing additional Ultimate points internally after the skill is ready.
             local cost = tonumber(safe(GetSlotAbilityCost, 0, slot)) or 0
             local target = cost > 0 and cost or maximum
             local pct = target > 0 and math.floor((current / target) * 100 + 0.5) or 0
+            pct = math.max(0, math.min(100, pct))
             widget.epcUltimatePct:SetText(tostring(pct) .. "%")
             widget.epcUltimatePct:SetColor(pct >= 100 and 1.00 or 0.93, pct >= 100 and 0.76 or 0.86, pct >= 100 and 0.18 or 0.36, 1)
             widget.epcUltimatePct:SetHidden(false)
@@ -289,7 +384,12 @@ function A:Initialize()
     if EVENT_ACTION_SLOTS_ACTIVE_HOTBAR_UPDATED then EVENT_MANAGER:RegisterForEvent(prefix .. "_Bar", EVENT_ACTION_SLOTS_ACTIVE_HOTBAR_UPDATED, function() self:Refresh() end) end
     if EVENT_ACTIVE_WEAPON_PAIR_CHANGED then EVENT_MANAGER:RegisterForEvent(prefix .. "_Weapon", EVENT_ACTIVE_WEAPON_PAIR_CHANGED, function() self:Refresh() end) end
     if EVENT_PLAYER_COMBAT_STATE then EVENT_MANAGER:RegisterForEvent(prefix .. "_Combat", EVENT_PLAYER_COMBAT_STATE, function() self:Refresh() end) end
-    if EVENT_PLAYER_ACTIVATED then EVENT_MANAGER:RegisterForEvent(prefix .. "_Activated", EVENT_PLAYER_ACTIVATED, function() self:Refresh() end) end
+    if EVENT_PLAYER_ACTIVATED then EVENT_MANAGER:RegisterForEvent(prefix .. "_Activated", EVENT_PLAYER_ACTIVATED, function() self:InvalidateBindingText() self:Refresh() end) end
+    if EVENT_KEYBINDINGS_LOADED then EVENT_MANAGER:RegisterForEvent(prefix .. "_BindingsLoaded", EVENT_KEYBINDINGS_LOADED, function() self:InvalidateBindingText() self:Refresh() end) end
+    if EVENT_KEYBINDING_SET then EVENT_MANAGER:RegisterForEvent(prefix .. "_BindingSet", EVENT_KEYBINDING_SET, function() self:InvalidateBindingText() self:Refresh() end) end
+    if EVENT_KEYBINDING_CLEARED then EVENT_MANAGER:RegisterForEvent(prefix .. "_BindingCleared", EVENT_KEYBINDING_CLEARED, function() self:InvalidateBindingText() self:Refresh() end) end
+    if EVENT_GAMEPAD_PREFERRED_MODE_CHANGED then EVENT_MANAGER:RegisterForEvent(prefix .. "_InputMode", EVENT_GAMEPAD_PREFERRED_MODE_CHANGED, function() self:InvalidateBindingText() self:Refresh() end) end
     EVENT_MANAGER:RegisterForUpdate(prefix .. "_Tick", 150, function() self:Refresh() end)
+    self:InvalidateBindingText()
     self:Refresh()
 end

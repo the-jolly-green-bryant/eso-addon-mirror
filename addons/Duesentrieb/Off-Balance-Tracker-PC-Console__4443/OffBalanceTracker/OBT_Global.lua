@@ -1,8 +1,8 @@
 OffBalanceTracker = {
     NAME = "OffBalanceTracker",
     AUTHOR = "@Duesentrieb",
-    VERSION = "20260828",
-    ADDONVERSION = 0002,
+    VERSION = "20260831",
+    ADDONVERSION = 0003,
     CHAT = "|cFF7F00[OBT]|r",
 
     -- UI ELEMENTS
@@ -54,6 +54,7 @@ OffBalanceTracker = {
     lastAnimatedataEndTime = 0,
     cooldownEndTime = 0,
     lastDataState = 0,
+    targetCountEndTime = 0,
 
     -- TRACKING VARIABLES
     BossTimers = {},
@@ -72,11 +73,11 @@ OffBalanceTracker = {
         combatHideDelay = 2.5,
 
         -- AUDIO
-        volumeSound = 2,
+        volumeSound = 1,
         isSoundEnabledTank = false,
         isSoundEnabledHeal = false,
-        isSoundEnabledDPS = true,
-        isSoundEnabledSolo = true,
+        isSoundEnabledDPS = false,
+        isSoundEnabledSolo = false,
         soundTriggerMode = 1,
 
         -- ROLES
@@ -107,7 +108,7 @@ OffBalanceTracker = {
         ColorTextBoss = { 1, 1, 1, 1 },
 
         -- UPTIME
-        isHideUptime = false,
+        isHideUptime = true,
         fontSizeUptime = 22,
         ColorTextUptime = { 1, 1, 1, 1 },
 

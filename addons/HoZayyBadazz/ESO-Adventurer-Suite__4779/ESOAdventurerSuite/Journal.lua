@@ -266,10 +266,10 @@ local function makePanel(name, parent, x, y, w, h)
 end
 
 local function getChanceTexture(kind, sides)
-    if tostring(kind) == "COIN" then return "ESOAdventurerSuite/Art/coin.dds" end
+    if tostring(kind) == "COIN" then return EPC:AssetPath("Art/coin.dds") end
     local die = tonumber(sides) or 20
     die = math.max(2, math.floor(die))
-    return string.format("ESOAdventurerSuite/Art/dice_d%d.dds", die)
+    return EPC:AssetPath(string.format("Art/dice_d%d.dds", die))
 end
 
 local function styleIconButton(button, theme)
@@ -8781,7 +8781,7 @@ local function easAppCurrentClassTexture02879()
     elseif string.find(name,"necro",1,true) then key="necromancer"
     elseif string.find(name,"templar",1,true) then key="templar"
     elseif string.find(name,"arcan",1,true) then key="arcanist" end
-    return "ESOAdventurerSuite/Art/Cards/class_"..key..".dds", key
+    return EPC:AssetPath("Art/Cards/class_"..key..".dds"), key
 end
 
 local function easAppTextureCard02879(name,parent,path,x,y,w,h,selected)
@@ -8836,7 +8836,7 @@ function J:CreateAppCharacterPage02879()
     self.appClassCards02879={}
     for i,d in ipairs(classes) do
         local col=(i-1)%4; local row=math.floor((i-1)/4); local x=22+col*254; local y=96+row*265
-        local card=easAppTextureCard02879("EAS_AppClassCard02879_"..i,p,"ESOAdventurerSuite/Art/Cards/class_"..d[1]..".dds",x,y,226,246,d[1]==current)
+        local card=easAppTextureCard02879("EAS_AppClassCard02879_"..i,p,EPC:AssetPath("Art/Cards/class_"..d[1]..".dds"),x,y,226,246,d[1]==current)
         self.appClassCards02879[i]=card
     end
     easAppButton02879("EAS_AppCharacterBuild02879",p,"OPEN CURRENT BUILD",786,621,250,36,function() self:SetTab("BUILD") end)
@@ -8851,8 +8851,37 @@ function J:CreateAppCompanionPage02879()
     self.appCompanionCards02879={}
     for i,d in ipairs(companions) do
         local col=(i-1)%4; local row=math.floor((i-1)/4); local x=22+col*254; local y=96+row*265
-        local card=easAppTextureCard02879("EAS_AppCompanionCard02879_"..i,p,"ESOAdventurerSuite/Art/Cards/companion_"..d[1]..".dds",x,y,226,246,false)
-        self.appCompanionCards02879[i]={control=card,key=d[1],label=d[2]}
+        local card=easAppPanel02879("EAS_AppCompanionCard02879_"..i,p,x,y,226,246,0.025,0.026,0.034,1)
+
+        -- v0.29.81: use the full 512x512 DXT5 portrait. The old 256x512
+        -- card asset included a baked-in name strip and relied on cropped UVs;
+        -- ESO could display only that lower strip while the portrait area looked
+        -- blank. A full square portrait plus a real UI label is reliable.
+        local art=wm:CreateControl("EAS_AppCompanionPortrait02981_"..i,card,CT_TEXTURE)
+        art:SetAnchor(TOPLEFT,card,TOPLEFT,3,3)
+        art:SetDimensions(220,211)
+        art:SetTexture(EPC:AssetPath("Art/eas_companion_"..d[1]..".dds"))
+        art:SetTextureCoords(0,1,0,1)
+        art:SetDrawLevel(8)
+
+        local nameBg=wm:CreateControl("EAS_AppCompanionNameBG02981_"..i,card,CT_BACKDROP)
+        nameBg:SetAnchor(BOTTOMLEFT,card,BOTTOMLEFT,3,-3)
+        nameBg:SetAnchor(BOTTOMRIGHT,card,BOTTOMRIGHT,-3,-3)
+        nameBg:SetHeight(27)
+        nameBg:SetCenterColor(0.018,0.020,0.028,0.96)
+        nameBg:SetEdgeColor(0.10,0.11,0.15,0.90)
+        nameBg:SetDrawLevel(10)
+
+        local nameLabel=wm:CreateControl("EAS_AppCompanionName02981_"..i,nameBg,CT_LABEL)
+        nameLabel:SetAnchorFill(nameBg)
+        nameLabel:SetFont("ZoFontGameBold")
+        nameLabel:SetText(d[2])
+        nameLabel:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+        nameLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+        nameLabel:SetColor(0.95,0.95,0.98,1)
+        nameLabel:SetDrawLevel(12)
+
+        self.appCompanionCards02879[i]={control=card,texture=art,key=d[1],label=d[2]}
     end
     return p
 end
@@ -8902,7 +8931,7 @@ function J:BuildAppRail02879()
         if not b then
             b=wm:CreateControl("EAS_AppRailButton02879_"..tab,self.appRail02879,CT_BUTTON); b:SetDimensions(50,50)
             local bg=easAppPanel02879("EAS_AppRailButtonBG02879_"..tab,b,0,0,50,50,0.03,0.03,0.042,0); bg:SetEdgeColor(0,0,0,0); b._bg02879=bg
-            local tex=wm:CreateControl("EAS_AppRailIcon02879_"..tab,b,CT_TEXTURE); tex:SetAnchor(CENTER,b,CENTER,0,0); tex:SetDimensions(25,25); tex:SetTexture("ESOAdventurerSuite/Art/AppIcons/"..(EAS_APP_ICONS_02879[tab] or "home")..".dds"); tex:SetColor(0.48,0.48,0.56,1); b._icon02879=tex
+            local tex=wm:CreateControl("EAS_AppRailIcon02879_"..tab,b,CT_TEXTURE); tex:SetAnchor(CENTER,b,CENTER,0,0); tex:SetDimensions(25,25); tex:SetTexture(EPC:AssetPath("Art/AppIcons/"..(EAS_APP_ICONS_02879[tab] or "home")..".dds")); tex:SetColor(0.48,0.48,0.56,1); b._icon02879=tex
             b:SetHandler("OnClicked",function() self:SetTab(tab) end)
             b:SetHandler("OnMouseEnter",function(c) c._icon02879:SetColor(0.75,0.65,1,1); self.appRailTip02879:SetText(TAB_LABELS[tab] or tab); self.appRailTip02879:SetHidden(false); self.appRailTip02879:ClearAnchors(); self.appRailTip02879:SetAnchor(LEFT,c,RIGHT,10,0) end)
             b:SetHandler("OnMouseExit",function(c) self.appRailTip02879:SetHidden(true); if self.activeTab~=tab then c._icon02879:SetColor(0.48,0.48,0.56,1) end end)

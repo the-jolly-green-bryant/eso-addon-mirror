@@ -29,6 +29,7 @@ addon.OffsetNudge = addon.OffsetNudge or {}
 local OffsetNudge = addon.OffsetNudge
 
 local CameraSettings = addon.CameraSettings
+local CameraResponse = addon.CameraResponse
 
 local EVENT_MANAGER = EVENT_MANAGER
 local GetGameTimeMilliseconds = GetGameTimeMilliseconds
@@ -44,6 +45,7 @@ local SetSetting = SetSetting
 
 local HORIZONTAL_KEY = "horizontalOffset"
 local VERTICAL_KEY = "verticalOffset"
+local RESPONSE_OWNER = "OffsetNudge"
 
 -- Engine units per second at 100% speed. Horizontal spans -1..1 (2.0);
 -- vertical only -0.3..0.5 (0.8), so its rate is higher so both axes cover
@@ -71,6 +73,7 @@ local OVERLAY_AXES_HEIGHT = 48
 local STATUS_COLOR = {
     live       = { 0.773, 0.761, 0.620, 1 },
     blocked    = { 0.910, 0.365, 0.365, 1 },
+    failed     = { 0.910, 0.365, 0.365, 1 },
     remembered = { 0.435, 0.796, 0.624, 1 },
     restored   = { 0.435, 0.796, 0.624, 1 },
     cleared    = { 0.816, 0.565, 0.369, 1 },
@@ -84,10 +87,6 @@ local moving = false
 local noticeKind = "live"
 local liveOffset = { horizontal = nil, vertical = nil }
 local holdStart = { horizontal = nil, vertical = nil }
-local smoothingSuspend = {
-    active = false,
-    previous = nil,
-}
 
 -- Setting ids cached once so the hold tick can write without CameraSettings.Set's
 -- verify/Get round-trip (that path is too heavy for a per-frame nudge).
@@ -193,32 +192,14 @@ end
 -- on the wide horizontal axis. Suspend smoothing for the hold, then put the
 -- player's original value back on release.
 local function SuspendSmoothing()
-    if smoothingSuspend.active then
-        return
-    end
-    if not CameraSettings.IsSupported("smoothing") then
-        return
-    end
-    local current, ok = CameraSettings.Get("smoothing")
-    if not ok then
-        return
-    end
-    smoothingSuspend.previous = current
-    smoothingSuspend.active = true
-    if current ~= 0 then
-        CameraSettings.Set("smoothing", 0)
+    if CameraResponse and CameraResponse.AcquireSmoothing then
+        CameraResponse.AcquireSmoothing(RESPONSE_OWNER, true)
     end
 end
 
 local function RestoreSmoothing()
-    if not smoothingSuspend.active then
-        return
-    end
-    local previous = smoothingSuspend.previous
-    smoothingSuspend.active = false
-    smoothingSuspend.previous = nil
-    if previous ~= nil and previous ~= 0 then
-        CameraSettings.Set("smoothing", previous)
+    if CameraResponse and CameraResponse.ReleaseSmoothing then
+        CameraResponse.ReleaseSmoothing(RESPONSE_OWNER)
     end
 end
 
@@ -253,8 +234,8 @@ local function FastWrite(key, value)
         return nil
     end
     local encoded = stringformat("%.2f", value)
-    local ok = pcall(SetSetting, SETTING_TYPE_CAMERA, meta.settingId, encoded)
-    if not ok then
+    local ok, setResult = pcall(SetSetting, SETTING_TYPE_CAMERA, meta.settingId, encoded)
+    if not ok or setResult == false then
         return nil
     end
     return tonumber(encoded) or value
@@ -299,19 +280,33 @@ local function NudgeKey(key, delta)
 end
 
 local function CommitHoldDeltas()
+    local restoreChanged = false
     for key, meta in pairs(axisMeta) do
         local startValue = holdStart[meta.liveKey]
         local endValue = liveOffset[meta.liveKey]
         if startValue ~= nil and endValue ~= nil then
-            local delta = endValue - startValue
-            if mathabs(delta) >= WRITE_EPSILON then
-                AdjustRestoreOffset(key, delta)
+            CameraSettings.Set(key, endValue, WRITE_EPSILON)
+            local appliedValue, hasApplied = CameraSettings.Get(key)
+            local committed = hasApplied
+                and mathabs(appliedValue - endValue) <= WRITE_EPSILON
+
+            if committed then
+                liveOffset[meta.liveKey] = appliedValue
+                local delta = appliedValue - startValue
+                if mathabs(delta) >= WRITE_EPSILON then
+                    AdjustRestoreOffset(key, delta)
+                    restoreChanged = true
+                end
+            else
+                liveOffset[meta.liveKey] = hasApplied and appliedValue or nil
+                LogDebug("OffsetNudge: release commit failed for %s", key)
             end
-            CameraSettings.Set(key, endValue)
         end
         holdStart[meta.liveKey] = nil
     end
-    FlushRestoreSnapshot()
+    if restoreChanged then
+        FlushRestoreSnapshot()
+    end
 end
 
 local function AxisPercentAndArrow(key, value)
@@ -419,6 +414,8 @@ local function RefreshOverlay()
     local title
     if noticeKind == "blocked" then
         title = GetString(SI_BAV_NUDGE_OVERLAY_BLOCKED)
+    elseif noticeKind == "failed" then
+        title = GetString(SI_BAV_NUDGE_OVERLAY_FAILED)
     elseif noticeKind == "remembered" then
         title = GetString(SI_BAV_NUDGE_OVERLAY_REMEMBERED)
     elseif noticeKind == "cleared" then
@@ -540,8 +537,8 @@ end
 local function StartMover()
     if moving or not HasHome() then
         return
-    SuspendSmoothing()
     end
+    SuspendSmoothing()
     InterruptPresetTransition()
     CaptureHoldStarts()
     lastMoveMs = GetGameTimeMilliseconds()
@@ -626,28 +623,43 @@ function OffsetNudge.Recenter()
         return
     end
 
-    InterruptPresetTransition()
-    if not (IsGameCameraSiegeControlled and IsGameCameraSiegeControlled()) then
-        SuspendSmoothing()
-        WriteAxis(HORIZONTAL_KEY, config.home.horizontal)
-        WriteAxis(VERTICAL_KEY, config.home.vertical)
-        FlushRestoreSnapshot()
-        RestoreSmoothing()
+    if IsGameCameraSiegeControlled and IsGameCameraSiegeControlled() then
+        ShowNotice("failed", NOTICE_HOLD_MS)
+        return false
     end
 
-    ShowNotice("restored", NOTICE_HOLD_MS)
-    LogDebug("OffsetNudge.Recenter: restored home H=%.2f V=%.2f",
-        config.home.horizontal, config.home.vertical)
+    InterruptPresetTransition()
+    SuspendSmoothing()
+    local horizontalWritten = WriteAxis(HORIZONTAL_KEY, config.home.horizontal)
+    local verticalWritten = WriteAxis(VERTICAL_KEY, config.home.vertical)
+    if horizontalWritten or verticalWritten then
+        FlushRestoreSnapshot()
+    end
+    RestoreSmoothing()
+
+    if horizontalWritten and verticalWritten then
+        ShowNotice("restored", NOTICE_HOLD_MS)
+        LogDebug("OffsetNudge.Recenter: restored home H=%.2f V=%.2f",
+            config.home.horizontal, config.home.vertical)
+        return true
+    end
+
+    ShowNotice("failed", NOTICE_HOLD_MS)
+    LogDebug("OffsetNudge.Recenter: restore incomplete H=%s V=%s",
+        tostring(horizontalWritten), tostring(verticalWritten))
+    return false
 end
 
 function OffsetNudge.RememberHome()
     if IsGameCameraSiegeControlled and IsGameCameraSiegeControlled() then
+        ShowNotice("failed", NOTICE_HOLD_MS)
         return false
     end
 
     local horizontal = ReadHomeAxis(HORIZONTAL_KEY)
     local vertical = ReadHomeAxis(VERTICAL_KEY)
     if horizontal == nil or vertical == nil then
+        ShowNotice("failed", NOTICE_HOLD_MS)
         return false
     end
 

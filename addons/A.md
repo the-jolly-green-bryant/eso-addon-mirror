@@ -32,7 +32,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [AchievementInfo](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Asto/AchievementInfo__350) | Asto | PC / Mac | 4.17 |
 | [Action Bar Labels](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/CMDRMitchcraft/Action-Bar-Labels__4348) | CMDRMitchcraft | PC / Mac | 1.0 |
 | [Action Bar Skill Styles](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Anthonysc/Action-Bar-Skill-Styles__3928) | Anthonysc | PC / Mac | 0.0.4 |
-| [Action Duration Reminder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/cloudor/Action-Duration-Reminder__1536) | cloudor | PC / Mac | 3.160 |
+| [Action Duration Reminder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/cloudor/Action-Duration-Reminder__1536) | cloudor | PC / Mac | 3.161 |
 | [Action Duration Reminder ES by Kroon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/KKroon/Action-Duration-Reminder-ES-by-Kroon__3706) | KKroon | PC / Mac | 3.96 |
 | [Activity Finder Plus](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FirewoodDoge/Activity-Finder-Plus__4676) | FirewoodDoge | PC / Mac | 1.0.2 |
 | [Acuity](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wheels/Acuity__1950) | Wheels | PC / Mac | 2.4 |
@@ -125,7 +125,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Aenathel's Lazy Antiquarian](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Aenathel/Aenathel-s-Lazy-Antiquarian__3084) | Aenathel | PC / Mac | 1.2.1 |
 | [Aenathel's Lazy Chat Linker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Aenathel/Aenathel-s-Lazy-Chat-Linker__3083) | Aenathel | PC / Mac | 1.1.0 |
 | [Aenathel's Lazy Riding Skill Trainer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Aenathel/Aenathel-s-Lazy-Riding-Skill-Trainer__2614) | Aenathel | PC / Mac | 1.4.0 |
-| [AetherChat](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/alexquiet/AetherChat__4798) | alexquiet | PC / Mac | 1.2.2 |
+| [AetherChat](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/alexquiet/AetherChat__4798) | alexquiet | PC / Mac | 1.2.3 |
 | [Aetherius Badge Filter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sirinsidiator/Aetherius-Badge-Filter__1354) | sirinsidiator | PC / Mac | 1.11.0 |
 | [Aetherius GuildHalls](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MecHaN1ck/Aetherius-GuildHalls__2813) | MecHaN1ck | PC / Mac | V0.0.6 |
 | [Aethluna Antiquarian's Eye Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/luocangli/Aethluna-Antiquarian-s-Eye-Helper__4646) | luocangli | PC / Mac | 1.1.1 |
@@ -291,7 +291,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Auto Abandon Not Killing Spree Contracts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Furious_Sniper/Auto-Abandon-Not-Killing-Spree-Contracts__4481) | Furious_Sniper | PC / Mac | 1.1 |
 | [Auto Accept Duel](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/GhostGat/Auto-Accept-Duel__3468) | GhostGat | PC / Mac | 1.0 |
 | [Auto Banish Pets/Assistants/Companions](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tdenc/Auto-Banish-Pets-Assistants-Companions__3099) | tdenc | PC / Mac | 0.8.0 |
-| [Auto Category - Revised](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shadowfen/Auto-Category---Revised__2300) | Shadowfen | PC / Mac | 4.6.13 |
+| [Auto Category - Revised](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shadowfen/Auto-Category---Revised__2300) | Shadowfen | PC / Mac | 4.6.14 |
 | [Auto Category - Revised plugin for CraftStore FoA](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/rufusredbeard/Auto-Category---Revised-plugin-for-CraftStore-FoA__2535) | rufusredbeard | PC / Mac | 2.17 |
 | [Auto Category - Revised plugin for Research Assistant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Saenic/Auto-Category---Revised-plugin-for-Research-Assistant__2742) | Saenic | PC / Mac | 1.0 |
 | [Auto Complete](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Dolgubon/Auto-Complete__e1ed5f61-10b6-43bf-baaf-3da81a8c26a3) | Dolgubon | Console | — |

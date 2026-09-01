@@ -12,31 +12,41 @@ local ChatEngine = AetherChat.ChatEngine
 local History = AetherChat.History
 local SoundManager = AetherChat.SoundManager
 
-local CHANNEL_KEYS = {
-    [CHAT_CHANNEL_ZONE]            = 'zone',
-    [CHAT_CHANNEL_ZONE_LANGUAGE_1] = 'zone',
-    [CHAT_CHANNEL_ZONE_LANGUAGE_2] = 'zone',
-    [CHAT_CHANNEL_ZONE_LANGUAGE_3] = 'zone',
-    [CHAT_CHANNEL_ZONE_LANGUAGE_4] = 'zone',
-    [CHAT_CHANNEL_ZONE_LANGUAGE_5] = 'zone',
-    [CHAT_CHANNEL_ZONE_LANGUAGE_6] = 'zone',
-    [CHAT_CHANNEL_SAY]             = 'general',
-    [CHAT_CHANNEL_YELL]            = 'general',
-    [CHAT_CHANNEL_MONSTER_SAY]     = 'general',
-    [CHAT_CHANNEL_MONSTER_YELL]    = 'general',
-    [CHAT_CHANNEL_SYSTEM]          = 'general',
-    [CHAT_CHANNEL_PARTY]           = 'party',
-    [CHAT_CHANNEL_GUILD_1]         = 'guild1',
-    [CHAT_CHANNEL_GUILD_2]         = 'guild2',
-    [CHAT_CHANNEL_GUILD_3]         = 'guild3',
-    [CHAT_CHANNEL_GUILD_4]         = 'guild4',
-    [CHAT_CHANNEL_GUILD_5]         = 'guild5',
-    [CHAT_CHANNEL_OFFICER_1]       = 'officer1',
-    [CHAT_CHANNEL_OFFICER_2]       = 'officer2',
-    [CHAT_CHANNEL_OFFICER_3]       = 'officer3',
-    [CHAT_CHANNEL_OFFICER_4]       = 'officer4',
-    [CHAT_CHANNEL_OFFICER_5]       = 'officer5',
-}
+local CHANNEL_KEYS = {}
+
+local function SetChannelKey(channelConst, key)
+    if channelConst ~= nil then
+        CHANNEL_KEYS[channelConst] = key
+    end
+end
+
+SetChannelKey(CHAT_CHANNEL_ZONE, 'zone')
+SetChannelKey(CHAT_CHANNEL_ZONE_LANGUAGE_1, 'zone')
+SetChannelKey(CHAT_CHANNEL_ZONE_LANGUAGE_2, 'zone')
+SetChannelKey(CHAT_CHANNEL_ZONE_LANGUAGE_3, 'zone')
+SetChannelKey(CHAT_CHANNEL_ZONE_LANGUAGE_4, 'zone')
+SetChannelKey(CHAT_CHANNEL_ZONE_LANGUAGE_5, 'zone')
+SetChannelKey(CHAT_CHANNEL_ZONE_LANGUAGE_6, 'zone')
+SetChannelKey(CHAT_CHANNEL_SAY, 'general')
+SetChannelKey(CHAT_CHANNEL_YELL, 'general')
+SetChannelKey(CHAT_CHANNEL_EMOTE, 'general')
+SetChannelKey(CHAT_CHANNEL_MONSTER_SAY, 'general')
+SetChannelKey(CHAT_CHANNEL_MONSTER_YELL, 'general')
+SetChannelKey(CHAT_CHANNEL_MONSTER_EMOTE, 'general')
+SetChannelKey(CHAT_CHANNEL_MONSTER_WHISPER, 'general')
+SetChannelKey(CHAT_CHANNEL_SYSTEM, 'system')
+SetChannelKey(CHAT_CHANNEL_PARTY, 'party')
+SetChannelKey(CHAT_CHANNEL_INSTANCE_POPULATION, 'party')
+SetChannelKey(CHAT_CHANNEL_GUILD_1, 'guild1')
+SetChannelKey(CHAT_CHANNEL_GUILD_2, 'guild2')
+SetChannelKey(CHAT_CHANNEL_GUILD_3, 'guild3')
+SetChannelKey(CHAT_CHANNEL_GUILD_4, 'guild4')
+SetChannelKey(CHAT_CHANNEL_GUILD_5, 'guild5')
+SetChannelKey(CHAT_CHANNEL_OFFICER_1, 'officer1')
+SetChannelKey(CHAT_CHANNEL_OFFICER_2, 'officer2')
+SetChannelKey(CHAT_CHANNEL_OFFICER_3, 'officer3')
+SetChannelKey(CHAT_CHANNEL_OFFICER_4, 'officer4')
+SetChannelKey(CHAT_CHANNEL_OFFICER_5, 'officer5')
 
 local function CleanName(rawName)
     if not rawName or rawName == '' then return '' end
@@ -90,15 +100,51 @@ function AetherChat.ResolveAccountName(rawName)
         return clean
     end
 
-    -- 2. Lookup in our dynamic character -> @account mapping
+    local cleanLower = clean:lower()
+
+    -- 2. Lookup in dynamic character -> @account mapping
     AetherChat.UpdateGroupPlayerMap()
-    local mapped = AetherChat.PlayerAccountMap[clean:lower()]
+    local mapped = AetherChat.PlayerAccountMap[cleanLower]
     if mapped and mapped ~= "" then
         return mapped
     end
 
-    -- 3. Fallback: prepend @ to ensure ESO whisper routes to the player
-    return '@' .. clean
+    -- 3. Lookup in Friends list
+    local numFriends = GetNumFriends and GetNumFriends() or 0
+    for i = 1, numFriends do
+        local displayName, _, _, _, _, _, _, _, _, hasCharacter, characterName = GetFriendInfo(i)
+        if hasCharacter and characterName and characterName ~= "" then
+            local cName = CleanName(characterName):lower()
+            if cName == cleanLower then
+                if displayName:sub(1, 1) ~= '@' then displayName = '@' .. displayName end
+                AetherChat.PlayerAccountMap[cleanLower] = displayName
+                return displayName
+            end
+        end
+    end
+
+    -- 4. Lookup across Player's Guilds
+    local numGuilds = GetNumGuilds and GetNumGuilds() or 0
+    for g = 1, numGuilds do
+        local guildId = GetGuildId(g)
+        if guildId and guildId > 0 then
+            local numMembers = GetNumGuildMembers(guildId) or 0
+            for m = 1, numMembers do
+                local name, _, _, _, _, _, _, _, hasCharacter, characterName = GetGuildMemberInfo(guildId, m)
+                if hasCharacter and characterName and characterName ~= "" then
+                    local cName = CleanName(characterName):lower()
+                    if cName == cleanLower then
+                        if name:sub(1, 1) ~= '@' then name = '@' .. name end
+                        AetherChat.PlayerAccountMap[cleanLower] = name
+                        return name
+                    end
+                end
+            end
+        end
+    end
+
+    -- 5. Return clean character name if no @AccountName is resolvable
+    return clean
 end
 
 function AetherChat.GetLooterForItem(itemLink)
@@ -329,6 +375,97 @@ local function InitProcessedSalesMails()
     end
 end
 
+local pendingSalesMails = {}
+
+local function ExtractSoldItemFromMail(body, subject)
+    if body and body ~= "" then
+        -- 1. Direct ItemLink (|H0:item:...|h[Nom]|h or |H1:item:...)
+        local link = body:match("(|H%d+:item:[^|]+|h[^|]*|h)")
+        if link then return link end
+
+        -- 2. Quotes [Nom] or « Nom » or "Nom"
+        local quoted = body:match("«%s*([^»]+)%s*»") or body:match('"([^"]+)"') or body:match("“([^”]+)”")
+        if quoted and quoted ~= "" and not quoted:find("^%d+$") then
+            return quoted
+        end
+
+        -- 3. Regex Patterns FR / EN / DE / ES
+        local name = body:match("vente%s+de%s+l'objet%s+([^\n\r,]+)")
+                  or body:match("objet%s+([^\n\r,]+)%s+a%s+été%s+vendu")
+                  or body:match("vendu%s+([^\n\r,]+)%s+pour")
+                  or body:match("sale%s+of%s+([^\n\r,]+)%s+to")
+                  or body:match("item%s+([^\n\r,]+)%s+was%s+sold")
+                  or body:match("sold%s+([^\n\r,]+)%s+for")
+                  or body:match("Gegenstand%s+([^\n\r,]+)%s+wurde")
+        if name and name ~= "" then
+            name = name:gsub("%s+à%s*$", ""):gsub("%s+to%s*$", ""):gsub("%s+für%s*$", ""):gsub("%s+pour%s*$", "")
+            return name:match("^%s*(.-)%s*$")
+        end
+    end
+
+    if subject and subject ~= "" then
+        local link = subject:match("(|H%d+:item:[^|]+|h[^|]*|h)")
+        if link then return link end
+        local quoted = subject:match("«%s*([^»]+)%s*»") or subject:match("%[([^%]]+)%]") or subject:match('"([^"]+)"')
+        if quoted and quoted ~= "" and not quoted:find("^%d+$") then
+            return quoted
+        end
+    end
+
+    return nil
+end
+
+local function FireGuildStoreSaleAlert(mailIdStr, attachedMoney, soldItem)
+    processedSalesMails[mailIdStr] = true
+    pendingSalesMails[mailIdStr] = nil
+
+    local notifySales = AetherChat.Settings and AetherChat.Settings.Get
+                        and AetherChat.Settings.Get('notifySales', true)
+    if notifySales == false then return end
+
+    local L = AetherChat.L
+    local goldFormatted = ZO_Currency_FormatPlatform(CURT_MONEY, attachedMoney, ZO_CURRENCY_FORMAT_AMOUNT_ICON)
+
+    local msgText = ""
+    local csaText = ""
+    if soldItem and soldItem ~= "" then
+        msgText = L('SALES_MSG_FORMAT', soldItem, goldFormatted)
+        csaText = string.format("%s (+%s)", soldItem, goldFormatted)
+    else
+        msgText = L('SALES_MSG_FORMAT_NO_ITEM', goldFormatted)
+        csaText = string.format("%s (+%s)", L('SALES_ALERT_TITLE'), goldFormatted)
+    end
+
+    -- 1. Center Screen Announcement (CSA) + Sound
+    if CENTER_SCREEN_ANNOUNCE then
+        local params = CENTER_SCREEN_ANNOUNCE:CreateMessageParams(CSA_CATEGORY_SMALL_TEXT, SOUNDS.TRADING_HOUSE_SEARCH_SUCCESS)
+        params:SetText('|c57F287[Vente] |r' .. csaText)
+        CENTER_SCREEN_ANNOUNCE:AddMessageWithParams(params)
+    else
+        ZO_Alert(UI_ALERT_CATEGORY_ALERT, SOUNDS.TRADING_HOUSE_SEARCH_SUCCESS, csaText)
+    end
+
+    -- 2. Post in General & Sales channel
+    local timeStr = GetTimeString():sub(1, 5)
+    local author = 'Boutique'
+    History.AddMessage('general', author, msgText, timeStr, 0, false, false, nil)
+
+    if AetherChat.Messenger and AetherChat.Messenger.OnMessageReceived then
+        AetherChat.Messenger.OnMessageReceived('general', author, msgText, false, false, nil)
+    end
+end
+
+function ChatEngine.OnMailReadable(eventCode, mailId)
+    if not mailId then return end
+    local mailIdStr = Id64ToString(mailId)
+    local pending = pendingSalesMails[mailIdStr]
+    if not pending or processedSalesMails[mailIdStr] then return end
+
+    local body = ReadMail and ReadMail(mailId)
+    local soldItem = ExtractSoldItemFromMail(body, pending.subject)
+    FireGuildStoreSaleAlert(mailIdStr, pending.attachedMoney, soldItem)
+end
+
 function ChatEngine.CheckGuildStoreSales()
     if not GetNextMailId or not GetMailItemInfo then return end
 
@@ -342,7 +479,7 @@ function ChatEngine.CheckGuildStoreSales()
     local mailId = GetNextMailId()
     while mailId do
         local mailIdStr = Id64ToString(mailId)
-        if not processedSalesMails[mailIdStr] then
+        if not processedSalesMails[mailIdStr] and not pendingSalesMails[mailIdStr] then
             local senderDisplayName, senderCharacterName, subject, icon, unread,
                   fromSystem, fromCS, returned, numAttachments, attachedMoney,
                   codAmount, numBodyCharacters, timeUntilExpiration, isInvoice = GetMailItemInfo(mailId)
@@ -352,72 +489,87 @@ function ChatEngine.CheckGuildStoreSales()
                                and attachedMoney and attachedMoney > 0
 
             if isSaleMail then
-                processedSalesMails[mailIdStr] = true
-
-                local notifySales = AetherChat.Settings and AetherChat.Settings.Get
-                                    and AetherChat.Settings.Get('notifySales', true)
-                if notifySales ~= false then
-                    local L = AetherChat.L
-                    local goldFormatted = ZO_Currency_FormatPlatform(CURT_MONEY, attachedMoney, ZO_CURRENCY_FORMAT_AMOUNT_ICON)
-
-                    -- Try to extract real sold item name or itemLink from mail body
-                    local soldItem = nil
-                    if ReadMail then
-                        local isReady = (not IsReadMailInfoReady) or IsReadMailInfoReady(mailId)
-                        if isReady then
-                            local body = ReadMail(mailId)
-                            if body and body ~= "" then
-                                -- Check for itemLink (|H1:item:...|h[...]|h)
-                                local link = body:match("(|H%d+:item:[^|]+|h[^|]*|h)")
-                                if link then
-                                    soldItem = link
-                                else
-                                    -- Check for item name pattern in ESO store invoices
-                                    local name = body:match("objet%s+([^\n\r,]+)%s+a%s+été%s+vendu")
-                                              or body:match("item%s+([^\n\r,]+)%s+was%s+sold")
-                                              or body:match("Gegenstand%s+([^\n\r,]+)%s+wurde")
-                                    if name and name ~= "" then
-                                        soldItem = name
-                                    end
-                                end
-                            end
-                        elseif RequestReadMail then
-                            RequestReadMail(mailId)
+                local isReady = (not IsReadMailInfoReady) or IsReadMailInfoReady(mailId)
+                if isReady and ReadMail then
+                    local body = ReadMail(mailId)
+                    local soldItem = ExtractSoldItemFromMail(body, subject)
+                    FireGuildStoreSaleAlert(mailIdStr, attachedMoney, soldItem)
+                else
+                    pendingSalesMails[mailIdStr] = {
+                        mailId = mailId,
+                        attachedMoney = attachedMoney,
+                        subject = subject,
+                    }
+                    if RequestReadMail then
+                        RequestReadMail(mailId)
+                    end
+                    -- Fallback timer in case EVENT_MAIL_READABLE doesn't fire
+                    zo_callLater(function()
+                        if pendingSalesMails[mailIdStr] and not processedSalesMails[mailIdStr] then
+                            local b = ReadMail and ReadMail(mailId)
+                            local it = ExtractSoldItemFromMail(b, subject)
+                            FireGuildStoreSaleAlert(mailIdStr, attachedMoney, it)
                         end
-                    end
-
-                    -- Format the message cleanly
-                    local msgText = ""
-                    local csaText = ""
-                    if soldItem and soldItem ~= "" then
-                        msgText = L('SALES_MSG_FORMAT', soldItem, goldFormatted)
-                        csaText = string.format("%s (+%s)", soldItem, goldFormatted)
-                    else
-                        msgText = L('SALES_MSG_FORMAT_NO_ITEM', goldFormatted)
-                        csaText = string.format("%s (+%s)", L('SALES_ALERT_TITLE'), goldFormatted)
-                    end
-
-                    -- 1. Center Screen Announcement (CSA) + Son
-                    if CENTER_SCREEN_ANNOUNCE then
-                        local params = CENTER_SCREEN_ANNOUNCE:CreateMessageParams(CSA_CATEGORY_SMALL_TEXT, SOUNDS.TRADING_HOUSE_SEARCH_SUCCESS)
-                        params:SetText('|c57F287[Vente] |r' .. csaText)
-                        CENTER_SCREEN_ANNOUNCE:AddMessageWithParams(params)
-                    else
-                        ZO_Alert(UI_ALERT_CATEGORY_ALERT, SOUNDS.TRADING_HOUSE_SEARCH_SUCCESS, csaText)
-                    end
-
-                    -- 2. Post dans le canal General & Ventes d'AetherChat
-                    local timeStr = GetTimeString():sub(1, 5)
-                    local author = 'Boutique'
-                    History.AddMessage('general', author, msgText, timeStr, 0, false, false, nil)
-
-                    if AetherChat.Messenger and AetherChat.Messenger.OnMessageReceived then
-                        AetherChat.Messenger.OnMessageReceived('general', author, msgText, false, false, nil)
-                    end
+                    end, 2000)
                 end
             end
         end
         mailId = GetNextMailId(mailId)
+    end
+end
+
+-- ============================================================================
+-- REAL-TIME GUILD HISTORY SALES SCANNER (Works anywhere: in combat & dungeons!)
+-- ============================================================================
+
+local processedHistorySales = {}
+
+local function InitProcessedHistorySales()
+    if AetherChat.savedVars and AetherChat.savedVars.processedHistorySales then
+        processedHistorySales = AetherChat.savedVars.processedHistorySales
+    else
+        if AetherChat.savedVars then
+            AetherChat.savedVars.processedHistorySales = processedHistorySales
+        end
+    end
+end
+
+function ChatEngine.ScanGuildHistorySales(targetGuildId)
+    if not GetDisplayName or not GetNumGuilds then return end
+    local myDisplayName = GetDisplayName()
+    if not myDisplayName or myDisplayName == '' then return end
+    myDisplayName = myDisplayName:lower()
+
+    local minGuild = targetGuildId or 1
+    local maxGuild = targetGuildId or GetNumGuilds()
+
+    for g = minGuild, maxGuild do
+        local guildId = targetGuildId or GetGuildId(g)
+        if guildId and guildId > 0 then
+            local category = GUILD_HISTORY_STORE or GUILD_HISTORY_EVENT_CATEGORY_TRADING or 3
+            local numEvents = GetNumGuildEvents and GetNumGuildEvents(guildId, category) or 0
+
+            -- Check the most recent 25 events
+            local checkCount = math.min(numEvents, 25)
+            for e = 1, checkCount do
+                local eventType, secsSinceEvent, seller, buyer, itemQuantity, itemLink, price, tax, eventId = GetGuildEventInfo(guildId, category, e)
+                if eventType == GUILD_EVENT_STORE_ITEM_SOLD or eventType == GUILD_HISTORY_EVENT_ITEM_SOLD or eventType == 14 then
+                    local eventKey = string.format("gh:%s:%s:%s", tostring(guildId), tostring(eventId or (tostring(secsSinceEvent) .. ":" .. tostring(price))), tostring(itemLink))
+                    if not processedHistorySales[eventKey] then
+                        processedHistorySales[eventKey] = true
+
+                        -- Check if seller is the player
+                        local sName = seller and seller:lower() or ''
+                        if sName == myDisplayName or sName == ('@' .. myDisplayName) or ('@' .. sName) == myDisplayName then
+                            -- Only notify if recent (within 10 minutes)
+                            if not secsSinceEvent or secsSinceEvent < 600 then
+                                FireGuildStoreSaleAlert(eventKey, price or 0, itemLink)
+                            end
+                        end
+                    end
+                end
+            end
+        end
     end
 end
 
@@ -545,10 +697,8 @@ function ChatEngine.Initialize()
         -- No guard on numUnread - scan always, processed table prevents double-fire
         ChatEngine.CheckGuildStoreSales()
     end)
-    -- EVENT_MAIL_READABLE : fires when a mail becomes readable/opened
-    EVENT_MANAGER:RegisterForEvent('AetherChat_Sales_Readable', EVENT_MAIL_READABLE, function()
-        ChatEngine.CheckGuildStoreSales()
-    end)
+    -- EVENT_MAIL_READABLE : fires when a mail becomes readable/opened with loaded body
+    EVENT_MANAGER:RegisterForEvent('AetherChat_Sales_Readable', EVENT_MAIL_READABLE, ChatEngine.OnMailReadable)
     -- EVENT_MAIL_INBOX_UPDATE : most reliable - fires when the inbox list changes
     if EVENT_MAIL_INBOX_UPDATE then
         EVENT_MANAGER:RegisterForEvent('AetherChat_Sales_Inbox', EVENT_MAIL_INBOX_UPDATE, function()
@@ -556,13 +706,33 @@ function ChatEngine.Initialize()
         end)
     end
 
-    -- Initialize processedSalesMails persistence so we don't double-fire after reloadui
+    -- Real-time Guild History sales events (Fires anywhere: in dungeons, trials, combat!)
+    if EVENT_GUILD_HISTORY_CATEGORY_UPDATED then
+        EVENT_MANAGER:RegisterForEvent('AetherChat_GuildHistCat', EVENT_GUILD_HISTORY_CATEGORY_UPDATED, function(_, guildId, category)
+            ChatEngine.ScanGuildHistorySales(guildId)
+        end)
+    end
+    if EVENT_GUILD_HISTORY_REFRESHED then
+        EVENT_MANAGER:RegisterForEvent('AetherChat_GuildHistRef', EVENT_GUILD_HISTORY_REFRESHED, function()
+            ChatEngine.ScanGuildHistorySales()
+        end)
+    end
+    if EVENT_GUILD_HISTORY_ENTRY_ADDED then
+        EVENT_MANAGER:RegisterForEvent('AetherChat_GuildHistEntry', EVENT_GUILD_HISTORY_ENTRY_ADDED, function(_, guildId, category, eventIndex)
+            ChatEngine.ScanGuildHistorySales(guildId)
+        end)
+    end
+
+    -- Initialize processedSalesMails & processedHistorySales persistence
     zo_callLater(function()
         InitProcessedSalesMails()
+        InitProcessedHistorySales()
+        ChatEngine.ScanGuildHistorySales()
     end, 500)
 
     AetherChat.UpdateGroupPlayerMap()
     ChatEngine.CheckGuildStoreSales()
+    ChatEngine.ScanGuildHistorySales()
 
     -- Hook directly into LootLog.LogItem so EVERY drop (personal/group) is captured cleanly
     if LootLog and LootLog.LogItem then
@@ -593,6 +763,39 @@ function ChatEngine.Initialize()
     zo_callLater(function()
         AetherChat.SyncFromLootLog()
     end, 1000)
+
+    -- Hook CHAT_SYSTEM:AddMessage to route native game system messages into 'system' channel
+    if CHAT_SYSTEM and CHAT_SYSTEM.AddMessage then
+        ZO_PreHook(CHAT_SYSTEM, "AddMessage", function(self, messageText)
+            if not messageText or messageText == "" then return end
+            -- Avoid capturing our own injected messages or duplicate lines
+            if messageText:find("AetherChat") and messageText:find("actif") then return end
+
+            local timeStr = GetTimeString():sub(1, 5)
+            local author = "|cE5B558" .. AetherChat.L('CH_SYSTEM') .. "|r"
+
+            History.AddMessage('system', author, messageText, timeStr, 0, false, false, nil)
+
+            if AetherChat.Messenger and AetherChat.Messenger.OnMessageReceived then
+                AetherChat.Messenger.OnMessageReceived('system', author, messageText, false, false, nil)
+            end
+        end)
+    end
+
+    -- Capture system broadcasts & server announcements
+    if EVENT_BROADCAST then
+        EVENT_MANAGER:RegisterForEvent('AetherChat_Broadcast', EVENT_BROADCAST, function(_, messageText)
+            if not messageText or messageText == "" then return end
+            local timeStr = GetTimeString():sub(1, 5)
+            local author = "|cFF5555[Annonce Serveur]|r"
+
+            History.AddMessage('system', author, messageText, timeStr, 0, false, false, nil)
+
+            if AetherChat.Messenger and AetherChat.Messenger.OnMessageReceived then
+                AetherChat.Messenger.OnMessageReceived('system', author, messageText, false, false, nil)
+            end
+        end)
+    end
 end
 
 function ChatEngine.OnLootReceived(eventCode, receivedBy, itemName, quantity, soundCategory, lootType, self, isPickpocketLoot, questItemIcon, itemId, isStolen)
@@ -650,13 +853,26 @@ function ChatEngine.OnChatMessage(eventCode, channelType, fromName, text, isCust
     local msgText = text
 
     if isWhisper then
-        local otherPlayer = (fromDisplayName and fromDisplayName ~= '') and fromDisplayName or CleanName(fromName)
+        local otherPlayer = nil
+        if fromDisplayName and fromDisplayName ~= "" then
+            otherPlayer = fromDisplayName
+            if otherPlayer:sub(1, 1) ~= '@' then otherPlayer = '@' .. otherPlayer end
+        else
+            local cleanChar = CleanName(fromName)
+            otherPlayer = AetherChat.ResolveAccountName(cleanChar) or cleanChar
+        end
+
         channelKey = 'dm:' .. otherPlayer
 
         if isSelf then
             author = (myAccount and myAccount ~= '') and myAccount or myCharName
         else
             author = otherPlayer
+        end
+
+        -- Auto-register whisper contact in sidebar
+        if AetherChat.Messenger and AetherChat.Messenger.RegisterWhisperContact then
+            AetherChat.Messenger.RegisterWhisperContact(otherPlayer)
         end
     else
         channelKey = CHANNEL_KEYS[channelType] or 'zone'

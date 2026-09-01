@@ -124,12 +124,18 @@ end
 -- player moves the reticle off the old target and lines up another enemy.
 function Q:VisibilityAllows()
     local mode = EPC.saved and EPC.saved.quickslotOverlayVisibility or "BEFORE_AND_DURING"
-    if mode == "ALWAYS" or mode == "BEFORE_COMBAT" then
+    if mode == "BEFORE_COMBAT" then
         mode = "BEFORE_AND_DURING"
         if EPC.saved then EPC.saved.quickslotOverlayVisibility = mode end
     elseif mode == "OUT_OF_COMBAT" then
         mode = "BEFORE_ONLY"
         if EPC.saved then EPC.saved.quickslotOverlayVisibility = mode end
+    end
+
+    -- ALWAYS is a true persistent gameplay mode. The master checkbox and
+    -- gameplay-HUD suppression are still respected by Refresh().
+    if mode == "ALWAYS" then
+        return true
     end
 
     local inCombat = safe(IsUnitInCombat, false, "player") == true

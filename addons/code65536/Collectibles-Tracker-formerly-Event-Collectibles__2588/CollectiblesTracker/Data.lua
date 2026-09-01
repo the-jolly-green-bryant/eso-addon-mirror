@@ -594,6 +594,7 @@ function DataGen.ec() return {
 			11588, -11594, -- Crowborne Hunter
 			12320, -12326, -- Eltheric Revenant
 			13380, -13386, -- Wickerchain Soul
+		--	14803, -14809, -- Zhekleg
 		},
 	},
 

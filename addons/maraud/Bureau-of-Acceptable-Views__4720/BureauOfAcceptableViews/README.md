@@ -6,8 +6,8 @@ takes it away, and layers a few optional cinematic touches on top. Dynamic FOV
 and Adaptive PvP are on out of the box; the PvP detector remains completely
 inert outside AvA worlds and Battlegrounds.
 
-> **Compatibility:** API: LIVE 101050 / PTS 101051 · Optional: LibAddonMenu-2.0
-> (>= 43) for the settings panel.
+> **Compatibility:** API: LIVE 101050 / PTS 101051 · Requires:
+> LibAddonMenu-2.0 (>= 43).
 
 ---
 
@@ -21,6 +21,8 @@ with optional persistence so your framing survives zone changes and relogs.
 On top of that, several **optional** systems can shape the camera further:
 
 - **Dynamic FOV** *(on by default)* - field of view follows your zoom distance.
+- **Camera response profiles** - ESO-native, instant, responsive, or smooth
+  transitions shared by every BAV-owned camera system.
 - **Context presets** *(off by default)* - cinematic framing per gameplay state.
 - **Over-the-shoulder swap** *(off by default)* - swing the camera to one side.
 - **Adaptive PvP mode** *(on by default)* - stable scouting, pursuit, combat,
@@ -52,6 +54,17 @@ combat, health, sprint, or safety observers outside PvP, even while enabled.
   synchronized too. FOV is recalculated only when the observed value changes.
 - Your manual FOV is snapshotted and persisted before the first dynamic override,
   then restored when the feature is disabled - including after a `/reloadui`.
+
+### Camera response
+- One global response setting controls Dynamic FOV, context presets, Adaptive
+  PvP framing, and over-the-shoulder movement.
+- **As in ESO** applies BAV values immediately and leaves the game's own camera
+  smoothing setting untouched.
+- **Instant** suppresses native smoothing and lands every BAV change in one frame.
+- **Responsive** uses a short 90 ms fast-settling transition.
+- **Smooth** uses a longer 300 ms cinematic ease-in/out transition.
+- Emergency reset, load-screen recovery, siege safety, manual zoom, and live
+  offset nudging remain immediate regardless of the selected profile.
 
 ### Live offset nudge
 - Offset binds stay locked until you **remember one home pose** from the
@@ -91,8 +104,8 @@ combat, health, sprint, or safety observers outside PvP, even while enabled.
 - Applies a fixed cinematic camera bundle for the state you are in - combat,
   werewolf, stealth, interaction (dialogue), mounted, swimming, or sprinting -
   and restores your own framing when you leave it.
-- State changes can glide over a short transition instead of snapping. Each
-  state also has an optional release delay; enabling one lets a rapid out-and-
+- State changes follow the global camera-response profile. Each state also has
+  an optional release delay; enabling one lets a rapid out-and-
   back collapse to a no-op instead of moving the camera twice.
 - The interaction state is the exception: entering it is briefly delayed, so
   flicking through a merchant or quick quest turn-in never pecks the camera -
@@ -130,8 +143,9 @@ combat, health, sprint, or safety observers outside PvP, even while enabled.
   cooldowns, and slow release prevent rapid combat events from oscillating zoom
   and FOV.
 - The default **outward-only zoom assist** may pull back for awareness but never
-  moves closer than the live camera. Your first manual zoom input cedes distance
-  for the rest of that PvP world, so the addon cannot fight the mouse wheel.
+  moves closer than the live camera. Your first manual zoom input, including
+  native mouse-wheel or gamepad zoom, cedes distance for the rest of that PvP
+  world so the addon cannot fight your chosen framing.
 - Camera shake is suppressed by default while a PvP profile is active. An
   explicit opt-in restores the profile's restrained shake values; leaving PvP
   always restores the player's original camera-shake setting.
@@ -189,7 +203,8 @@ combat, health, sprint, or safety observers outside PvP, even while enabled.
   stealth preset never write the same value out of turn.
 - **One implementation per repeated pattern.** Where several modules grew the same
   mechanism, it lives in one place: `Ease` owns the self-tearing glide lifecycle for
-  every animated value (FOV smoothing and preset transitions),
+  every animated value, `CameraResponse` owns duration, curve, and coordinated
+  native-smoothing suspension,
   `OptionsWatch` owns the single settings-window subscription every feature suspends
   on, and `SprintWatch` owns the event-driven sprint detector every feature that
   cares about sprinting subscribes to. Each caller supplies only its payload, so
@@ -270,6 +285,7 @@ is what keeps a fix or a client change a single edit.
 | `ZoomReconciler.lua` | Single owner of where the camera settles after a BAV-handled first-person toggle; defers one coalesced write so probe pairs cancel out. |
 | `SprintWatch.lua` | Shared event-driven sprint detector and the canonical is-sprinting sample every feature that needs sprinting subscribes to. |
 | `Ease.lua` | Shared time-based easing primitive: one self-tearing updater lifecycle behind every glide (FOV smoothing and preset transition). |
+| `CameraResponse.lua` | Global response profile: transition duration/curve plus shared ownership of ESO camera smoothing. |
 | `OptionsWatch.lua` | Shared watcher for the settings window: one fragment subscription and the canonical open/closed state every feature suspends on. |
 | `DynamicFov.lua` | Optional zoom-dependent field of view. |
 | `FovArbiter.lua` | Single owner of third-person FOV precedence (dynamic FOV vs. preset holds). |

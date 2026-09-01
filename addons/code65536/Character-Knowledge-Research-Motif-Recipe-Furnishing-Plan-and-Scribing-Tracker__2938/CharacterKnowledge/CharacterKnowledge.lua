@@ -270,11 +270,13 @@ function CharacterKnowledge.RegisterSettingsPanel( )
 			},
 			--------------------
 			{
-				type = "checkbox",
+				type = "dropdown",
 				name = SI_CK_SETTINGS_SETTING_RGRIDFL,
+				choices = { GetString(SI_CHECK_BUTTON_OFF), zo_strformat(SI_SKILL_STYLING_DIALOG_TITLE, 1), zo_strformat(SI_SKILL_STYLING_DIALOG_TITLE, 2) },
+				choicesValues = { false, true, 2 },
 				getFunc = function() return CharacterKnowledge.vars.showOthersInResearchGrid end,
-				setFunc = function( enabled )
-					CharacterKnowledge.vars.showOthersInResearchGrid = enabled
+				setFunc = function( mode )
+					CharacterKnowledge.vars.showOthersInResearchGrid = mode
 					CharacterKnowledge.RefreshBrowser(nil, true)
 				end,
 				tooltip = SI_CK_SETTINGS_TOOLTIP_RGRIDFL,

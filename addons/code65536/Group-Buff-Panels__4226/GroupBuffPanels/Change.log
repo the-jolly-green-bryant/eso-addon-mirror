@@ -1,3 +1,12 @@
+Version 2.3.2 (2026/08/31)
+* Improved the internal logic for tracking effects that use multiple ability IDs
+* Minor optimization of conditional enablement code
+
+Version 2.3.1 (2026/08/31)
+* Added support for Feeding Frenzy cooldown (-58813); this entails inclusion in
+  the default Supported Effects list, support for conditional enablement, and an
+  icon override
+
 Version 2.3.0 (2026/07/29)
 * Redesigned the PC settings panel to use a dropdown selector instead of
   individual collapsible control panels for each ability; this significantly

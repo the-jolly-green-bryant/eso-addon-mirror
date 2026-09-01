@@ -1,3 +1,135 @@
+0.29.127
+- Fixed live health depletion and regeneration for Suite player, companion, group, and raid unit frames.
+- Health bars now consume ESO EVENT_POWER_UPDATE health payloads directly instead of waiting for broader frame refreshes.
+- Corrected health event filtering to use REGISTER_FILTER_POWER_TYPE with POWERTYPE_HEALTH.
+- Added dedicated live companion-health handling and group-prefix health handling for the full group/raid roster, including group companion unit tags.
+- Kept the update path FPS-friendly by using native event filters instead of adding high-frequency polling.
+
+0.29.121
+- Removed the standalone 5-second idle timer from the compact Repair: <gold> HUD.
+- Repair: <gold> now hides only when the Suite/ESO gameplay HUD is suppressed and returns with the other overlays; HUD Layout Mode still previews it.
+
+0.29.120
+- Compact Repair: <gold> HUD now follows Suite gameplay visibility and hides after 5 seconds of player idle time; it returns immediately on movement/combat.
+- Game Combat minimum-size readability pass: detailed tables use responsive row heights instead of hiding recorded rows until the window is enlarged.
+- Damage abilities and Damage by Target are now separate DMG / TGT pages so both tables can use the full compact report height.
+- Fight Snapshot rows now use real label/value columns, preventing values from being clipped at narrow widths.
+- Preserved the 760x500 minimum and 860x560 default instead of making the report larger again.
+
+0.29.119
+- Compact Game Combat redesign: 760x500 minimum, 860x560 default.
+- Added an always-visible Player DPS / All DPS / HPS / Incoming DPS / Time strip.
+- Slimmer header/navigation and cleaner report panels use much less screen space.
+- Overview, Healing, and Incoming layouts were reorganized for focused page-specific information.
+- Existing saved oversized report dimensions migrate to the new compact default once.
+
+0.29.118
+- Added side-tab combat report pages: Overview, Damage, Healing, Incoming, Group, Buffs, Resources, Graph, and Build.
+- Enlarged the active report page so minimum-size layouts stay readable instead of displaying every table at once.
+- Removed Interact with Suite and both Group Finder helper keybindings from Controls > Keybindings.
+- Compact Always repair-gold HUD now hides on the ESO pause/game menu.
+
+0.29.117
+- Fixed Game Mode Combat Report overlap at its minimum size with strict single-line cells, compact header sizing, and responsive bottom-table widths.
+- Prevented header/title, table-column, and stats-section text from drawing into neighboring controls at larger UI scales.
+
+0.29.116
+- Added separate player, companion, pet/summon, and combined combat totals.
+- Player DPS/HPS no longer includes companion or pet damage/healing.
+- Added companion/pet/summon actor rows and owner attribution when ESO exposes it.
+- Added native UI-art fallbacks and custom DDS residency hardening.
+
+0.29.115
+- Linked the Combat page, Live Combat Stats, and Game Mode Combat Report to one shared fight recorder.
+- Live Combat Stats keeps PEN / PWR / SR / PR / CC / CD; Game Combat records fight-weighted effective values from the same live-stat source.
+- Added a FULL COMBAT REPORT action from the Combat page to the detailed fight report/history.
+- Added Magicka/Stamina spent and regained tracking with per-second values.
+- Added player buff/debuff uptime and maximum stack tracking.
+- Added incoming damage source and ability breakdowns.
+- Preserved lightweight combat recording with native event filters and cached stat sampling.
+
+0.29.47
+- Added Bonus Loot Search Mode to the Antiquities Assistant.
+- Tracks main Antiquity and bonus loot separately using ESO excavation events.
+- After the main Antiquity is unearthed, the guide switches to a best-effort board-coverage route with relative movement instructions, bonus count, stability, time, and dig power.
+- Search predictions remember attempted/exhausted cells and are explicitly labeled as predictions rather than guaranteed hidden coordinates.
+
+0.29.42
+- Removed ESO grammar suffix markers such as ^n/^m/^f from combat-report target, player, and group names, including previously saved reports.
+- Upgraded TARGETS & GROUP into GROUP / RAID MVP & TARGETS so observed group/raid contributors are ranked before enemy targets.
+- Added Observed Overall MVP, Damage MVP, and Healing MVP rows. Overall Impact averages each contributor's share of observed group damage and observed group healing; it does not pretend to score tank mitigation that ESO does not expose for other group members.
+- Group contributor rows now show both observed DPS and HPS plus an impact score, while the footer states that MVP ranking is based on observed damage/healing only.
+
+0.29.41
+- Fixed the PLAYER COMBAT Healing / Defense section so HPS, Healing, Incoming DPS, and Blocked hits always render on separate rows instead of overlapping at smaller report sizes/UI scales.
+- Replaced the combat summary multiline label with 18 fixed layout rows for stable spacing.
+
+0.29.40
+- Fixed Game Mode Combat Report target/group row rendering crash caused by passing an RGBA table directly to LabelControl:SetColor.
+- The selected TARGET/TEXT or GROUP/CYAN palette is now unpacked into four numeric color arguments before SetColor is called.
+- This is a UI-rendering hotfix; combat report calculations and saved report data are unchanged.
+
+0.29.39
+- Reworked the Excavation Augur helper around the strongest behavior ESO actually allows: Green is the only guaranteed shovel instruction; Yellow/Orange/Red are used only to choose the next scan.
+- Added additional live ESO digging-UI fallbacks to capture the clicked Augur row/column and increased tile caching to 40ms, reducing manual 10x10 tile selection.
+- Next-scan recommendations now come only from still-possible model cells, so the helper no longer wastes an Augur charge on a square its own model already eliminated.
+- Added an information-gain opening recommendation and clearer probability/model wording; the Suite no longer presents heuristic predictions as exact treasure locations.
+- If ESO reports Green, the overlay immediately switches to GUARANTEED GREEN - DIG HERE with the captured row/column when available.
+
+0.29.37
+- Added the Antiquity Excavation Augur Guide and 10x10 Tile Selector to HUD Layout Mode.
+- Both overlays now expose a full-window drag shield while arranging the HUD, save independent screen positions, and restore those positions during excavation.
+- HUD Layout Mode shows both Antiquity overlays even outside an active excavation so they can be positioned without blocking the dig board.
+- Reset Frames now also restores both Antiquity overlays; a dedicated Reset Antiquity Overlays button was added to Antiquity settings.
+
+0.29.36
+- Fixed the exact Antiquity dig-site marker displaying ESO's red question-mark placeholder.
+- The Suite now uses ESO's built-in Heavy Shovel icon (/esoui/art/icons/u26_ability_digging_02.dds) directly instead of the invalid digsite_unknown fallback.
+- Exact dig-spot detection and the Antiquarian's Eye blue-mist behavior are unchanged.
+
+0.29.35
+- Fixed Game Mode Report Refresh crash when a partially initialized report window existed but controls such as modeIcon were nil.
+- Added complete UI validation and automatic collision-safe rebuild before the report can open or refresh.
+- Refresh now has defensive control checks so an interrupted UI build cannot cascade into another nil-value error.
+
+0.29.34
+- Fixed Game Mode Combat Report hotkey crashes caused by a stale global `EAS_GameModeCombatReport` control.
+- The report now hides stale report roots, allocates a collision-safe top-level control name, and uses anonymous child controls so repeated initialization cannot trigger Duplicate name errors.
+- Added a guarded window-creation path so a UI creation failure no longer cascades into the nil-value error that previously followed the duplicate-name exception.
+
+0.29.33
+- Minimap remains fully dynamic: it follows the player's exact current zone, city, home, delve, interior, or linked sub-map instead of anchoring to a parent map.
+- Map/sub-map transitions now immediately clear the previous area's static pins before rebuilding, preventing old icons from bleeding into the new local map.
+- Added delayed live native-pin refreshes after local map transitions so the Suite can mirror the current ESO pin manager without requiring the minimap to stay on the previous area.
+- Hidden-map native snapshots are accepted only when ESO confirms the current map matches the player's location and the mapId matches the minimap, protecting against unrelated quest/wayshrine map scans.
+- Native pin caches are reset to schema 2933 so older parent/sub-map snapshot history cannot affect the dynamic current-area mirror.
+
+0.29.32
+- Rebuilt the Suite minimap static-pin mirror so an opened ESO full map becomes the authoritative source for that exact mapId. The minimap now reuses the same normalized positions and native textures instead of mixing projected/cached service pins with separate POI scans.
+- Native map-pin snapshots now replace the previous snapshot instead of accumulating forever, removing stale/duplicate icons that made the minimap show more locations than ESO's full map.
+- Removed Suite-only dungeon map labels such as "Map Location" so the minimap no longer adds information ESO is not showing.
+- Native mirrored pins are no longer clamped to the minimap edge; if a full-map pin is outside the current minimap viewport it stays off-screen, preserving its real position.
+- If no native snapshot exists yet for a map, the older API-based pin scan remains as a temporary fallback until the player opens ESO's full map once.
+
+0.29.31
+- Replaced the misleading approximate-center 3D Antiquity marker with an exact reticle-locked shovel that appears only on ESO's real Excavate / Dig Site interaction target. ESO's built-in Antiquarian's Eye blue mist is unchanged.
+- Fixed Excavation Augur tile capture: the Suite continuously caches the last valid grid cell so moving the mouse to Green / Yellow / Orange / Red no longer clears the selected tile.
+- Successful Augur results now show the captured row/column before you choose the color.
+- Added a 10x10 manual tile fallback when ESO does not expose excavation cell coordinates to addon code; Green works immediately even without coordinates and tells you to dig the same green tile.
+- World-map and Suite-minimap Antiquity search-area pins remain available; only the 3D world marker changed to exact-target behavior.
+
+0.29.30
+- Added a hotkey-only Game Mode Combat Report for overland, dungeons, trials, arenas, Infinite Archive, Battlegrounds, and Alliance War play.
+- Added panels for player damage and hit results, current resources and build stats, active buffs/debuffs, targets and group contributions, and ability-level DPS details.
+- The report records up to 30 recent fights, supports previous/next navigation, and can be moved, resized, and closed with its assigned hotkey or close button.
+- The report stays hidden unless opened manually and never pops up automatically after combat.
+
+0.29.29
+- Added Heavy Shovel icons for active Antiquity dig-site centers on the world map, Suite minimap, and in the 3D world.
+- Added an Excavation Augur helper: choose the result color after each probe and a large arrow recommends the best next grid cell.
+- Added a third Skills page with live Scrying and Excavation upgrade priorities, current/max rank, skill-point cost, and required skill-line rank.
+- Added Antiquity Assistant settings for each marker layer, 3D range/size/occlusion, and the Excavation overlay.
+
 0.29.28
 - Companion gallery now prefers the Suite's full portrait artwork instead of tiny collectible icons, making each companion card much easier to recognize.
 - Kept the full-card art layout, rounded UI shell, and runtime texture-root fix from 0.29.27.

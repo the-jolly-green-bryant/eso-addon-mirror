@@ -120,7 +120,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Item Quality as Text](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Cavalier07/Item-Quality-as-Text__745) | Cavalier07 | PC / Mac | 1.3.0 |
 | [Item Saver Lite](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/Item-Saver-Lite__4335) | atharti | PC / Mac | 1.7 |
 | [Item Scripting](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Amerlite/Item-Scripting__2089) | Amerlite | PC / Mac | 2.3 |
-| [Item Set Browser](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Item-Set-Browser__1480) | code65536 | PC / Mac | 4.7.1 |
+| [Item Set Browser](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Item-Set-Browser__1480) | code65536 | PC / Mac | 4.7.1.1 |
 | [Item Set Collection Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/zelenin/Item-Set-Collection-Tracker__2816) | zelenin | PC / Mac | 0.4.1 |
 | [Item Sets Summary Page Percentages](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tombaa/Item-Sets-Summary-Page-Percentages__2831) | tombaa | PC / Mac | 0.4.2 |
 | [Item Stack Splitter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Eldibabalo/Item-Stack-Splitter__fd260c09-574e-4494-9d13-dad835b05662) | Eldibabalo | Console | — |

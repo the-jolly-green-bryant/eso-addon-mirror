@@ -1,0 +1,12 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="Flamechasers">
+            <Action name="FLAMECHASERS_SPELLCHECK_ACCEPT_SUGGESTION">
+                <Down>return FlamechasersSpellcheck:HandleAcceptSuggestionKeybind()</Down>
+            </Action>
+            <Action name="FLAMECHASERS_SPELLCHECK_NAVIGATE_SUGGESTIONS">
+                <Down>return FlamechasersSpellcheck:HandleNavigateSuggestionKeybind()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

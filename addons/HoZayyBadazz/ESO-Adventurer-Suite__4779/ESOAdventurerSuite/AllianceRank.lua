@@ -13,11 +13,11 @@ local FRAME_TEX = "EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_frame.
 local BG_TEX = "EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_bg.dds"
 local FILL_TEX = "EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_fill.dds"
 local FILL_GLOSS_TEX = "EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_fill_gloss.dds"
-local ALLIANCE_MASK_LEFT = "ESOAdventurerSuite/Art/alliance_fill_mask_left.dds"
-local ALLIANCE_MASK_CENTER = "ESOAdventurerSuite/Art/alliance_fill_mask_center.dds"
-local ALLIANCE_MASK_RIGHT = "ESOAdventurerSuite/Art/alliance_fill_mask_right.dds"
-local ALLIANCE_FILL_LEFT = "ESOAdventurerSuite/Art/alliance_fill_left.dds"
-local ALLIANCE_FILL_RIGHT = "ESOAdventurerSuite/Art/alliance_fill_right.dds"
+local ALLIANCE_MASK_LEFT = EPC:AssetPath("Art/alliance_fill_mask_left.dds")
+local ALLIANCE_MASK_CENTER = EPC:AssetPath("Art/alliance_fill_mask_center.dds")
+local ALLIANCE_MASK_RIGHT = EPC:AssetPath("Art/alliance_fill_mask_right.dds")
+local ALLIANCE_FILL_LEFT = EPC:AssetPath("Art/alliance_fill_left.dds")
+local ALLIANCE_FILL_RIGHT = EPC:AssetPath("Art/alliance_fill_right.dds")
 
 local function safe(fn, fallback, ...)
     if type(fn) ~= "function" then return fallback end
@@ -49,7 +49,7 @@ local function allianceFillKey(alliance)
 end
 
 local function allianceFillTexture(alliance, piece)
-    return string.format("ESOAdventurerSuite/Art/alliance_fill_%s_%s.dds", allianceFillKey(alliance), piece)
+    return EPC:AssetPath(string.format("Art/alliance_fill_%s_%s.dds", allianceFillKey(alliance), piece))
 end
 
 local function allianceFallbackName(alliance)
@@ -210,6 +210,106 @@ local function createNativeBar(parent, name, width)
     return bar
 end
 
+
+-- v0.29.61 - Reliable Alliance Rank gain-only visibility.
+-- Alliance Rank progression is driven by Alliance Points/rank points rather than
+-- normal character XP. In GAIN mode the overlay stays hidden until ESO reports
+-- an increase to the player's Alliance Rank points, then remains visible briefly.
+local ALLIANCE_GAIN_DISPLAY_MS_2960 = 10000
+
+local function allianceNowMs2960()
+    if type(GetFrameTimeMilliseconds) == "function" then
+        local ok, value = pcall(GetFrameTimeMilliseconds)
+        if ok and value ~= nil then return tonumber(value) or 0 end
+    end
+    if type(GetGameTimeMilliseconds) == "function" then
+        local ok, value = pcall(GetGameTimeMilliseconds)
+        if ok and value ~= nil then return tonumber(value) or 0 end
+    end
+    if type(GetTimeStamp) == "function" then
+        local ok, value = pcall(GetTimeStamp)
+        if ok and value ~= nil then return (tonumber(value) or 0) * 1000 end
+    end
+    return 0
+end
+
+function A:GetVisibilityMode2960()
+    local mode = EPC.saved and tostring(EPC.saved.allianceRankVisibility or "ALWAYS") or "ALWAYS"
+    if mode == "GAIN" then return "GAIN" end
+    if mode == "COMBAT" then return "COMBAT" end
+    return "ALWAYS"
+end
+
+function A:IsGainWindowActive2960()
+    if self:GetVisibilityMode2960() ~= "GAIN" then return true end
+    local untilMs = tonumber(self.gainVisibleUntilMs2960) or 0
+    return untilMs > 0 and allianceNowMs2960() <= untilMs
+end
+
+function A:ShowForAllianceGain2960()
+    self.gainVisibleUntilMs2960 = allianceNowMs2960() + ALLIANCE_GAIN_DISPLAY_MS_2960
+    self:Refresh()
+end
+
+function A:HandleAllianceProgress2960(forceGain)
+    local points = safeNumber(GetUnitAvARankPoints, 0, "player")
+    local previous = tonumber(self.lastAllianceRankPoints2960)
+    local gained = forceGain == true or (previous ~= nil and points > previous)
+    self.lastAllianceRankPoints2960 = points
+    if gained then
+        self:ShowForAllianceGain2960()
+    else
+        self:Refresh()
+    end
+end
+
+-- EVENT_ALLIANCE_POINT_UPDATE already tells us exactly how much AP changed.
+-- Use its positive difference directly instead of waiting for
+-- GetUnitAvARankPoints() to catch up; on some clients the getter is still stale
+-- when the event fires, which made GAIN mode miss the popup entirely.
+function A:HandleAlliancePointEvent2961(alliancePoints, difference)
+    local newTotal = tonumber(alliancePoints)
+    local delta = tonumber(difference) or 0
+    if newTotal ~= nil then
+        self.lastAllianceRankPoints2960 = newTotal
+    end
+    if delta > 0 then
+        self.lastAllianceGainAmount2961 = delta
+        self:ShowForAllianceGain2960()
+    else
+        self:Refresh()
+    end
+end
+
+-- Some reward paths cache currency before the normal AP event propagates.
+-- We only use this as a visibility trigger; the normal refresh still reads the
+-- authoritative Alliance Rank values from ESO.
+function A:HandlePendingCurrencyReward2961(currencyType, amount)
+    if CURT_ALLIANCE_POINTS and currencyType == CURT_ALLIANCE_POINTS then
+        local delta = tonumber(amount) or 0
+        if delta > 0 then
+            self.lastAllianceGainAmount2961 = delta
+            self:ShowForAllianceGain2960()
+        end
+    end
+end
+
+function A:ShouldShow2960()
+    if not EPC.saved then return false end
+    local show = EPC.saved.showAllianceRank ~= false
+    if self.layoutMode then return show end
+    if show then
+        local mode = self:GetVisibilityMode2960()
+        if mode == "GAIN" then
+            show = self:IsGainWindowActive2960()
+        elseif mode == "COMBAT" and EPC.OverlayModeAllows then
+            show = EPC:OverlayModeAllows("allianceRankVisibility")
+        end
+    end
+    if show and EPC.IsGameplayHudSuppressed and EPC:IsGameplayHudSuppressed() then show = false end
+    return show
+end
+
 function A:Anchor()
     if not self.frame then return end
     self.frame:ClearAnchors()
@@ -294,9 +394,7 @@ end
 
 function A:Refresh()
     if not self.frame or not EPC.saved then return end
-    local show = EPC.saved.showAllianceRank ~= false
-    if not self.layoutMode and EPC.OverlayModeAllows then show = show and EPC:OverlayModeAllows("allianceRankVisibility") end
-    if EPC.IsGameplayHudSuppressed and EPC:IsGameplayHudSuppressed() and not self.layoutMode then show = false end
+    local show = self:ShouldShow2960()
     self.frame:SetHidden(not show)
     if not show then return end
 
@@ -408,17 +506,40 @@ end
 
 function A:Initialize()
     self.layoutMode = false
+    self.gainVisibleUntilMs2960 = 0
+    self.lastAllianceRankPoints2960 = safeNumber(GetUnitAvARankPoints, 0, "player")
     self:Create()
     local prefix = EPC.name .. "_AllianceRank"
-    if EVENT_RANK_POINT_UPDATE then EVENT_MANAGER:RegisterForEvent(prefix .. "_Rank", EVENT_RANK_POINT_UPDATE, function(_, unitTag) if not unitTag or unitTag == "player" then self:Refresh() end end) end
-    if EVENT_ALLIANCE_POINT_UPDATE then EVENT_MANAGER:RegisterForEvent(prefix .. "_AP", EVENT_ALLIANCE_POINT_UPDATE, function() self:Refresh() end) end
-    if EVENT_PLAYER_ACTIVATED then EVENT_MANAGER:RegisterForEvent(prefix .. "_Activated", EVENT_PLAYER_ACTIVATED, function() self:Refresh() end) end
+    if EVENT_RANK_POINT_UPDATE then
+        EVENT_MANAGER:RegisterForEvent(prefix .. "_Rank", EVENT_RANK_POINT_UPDATE, function(_, unitTag)
+            if not unitTag or unitTag == "player" then self:HandleAllianceProgress2960(false) end
+        end)
+    end
+    if EVENT_ALLIANCE_POINT_UPDATE then
+        EVENT_MANAGER:RegisterForEvent(prefix .. "_AP", EVENT_ALLIANCE_POINT_UPDATE, function(_, alliancePoints, playSound, difference, reason, locationId)
+            self:HandleAlliancePointEvent2961(alliancePoints, difference)
+            -- Refresh once more after ESO has propagated the new rank progress.
+            if type(zo_callLater) == "function" then
+                zo_callLater(function() self:Refresh() end, 75)
+            end
+        end)
+    end
+    if EVENT_PENDING_CURRENCY_REWARD_CACHED then
+        EVENT_MANAGER:RegisterForEvent(prefix .. "_PendingAP", EVENT_PENDING_CURRENCY_REWARD_CACHED, function(_, currencyType, amount, ...)
+            self:HandlePendingCurrencyReward2961(currencyType, amount)
+        end)
+    end
+    if EVENT_PLAYER_ACTIVATED then
+        EVENT_MANAGER:RegisterForEvent(prefix .. "_Activated", EVENT_PLAYER_ACTIVATED, function()
+            self.lastAllianceRankPoints2960 = safeNumber(GetUnitAvARankPoints, 0, "player")
+            self.gainVisibleUntilMs2960 = 0
+            self:Refresh()
+        end)
+    end
     if EVENT_PLAYER_COMBAT_STATE then EVENT_MANAGER:RegisterForEvent(prefix .. "_Combat", EVENT_PLAYER_COMBAT_STATE, function() self:Refresh() end) end
     EVENT_MANAGER:RegisterForUpdate(prefix .. "_Visibility", 250, function()
         if not self.frame or not EPC.saved then return end
-        local show = EPC.saved.showAllianceRank ~= false
-        if not self.layoutMode and EPC.OverlayModeAllows then show = show and EPC:OverlayModeAllows("allianceRankVisibility") end
-        if not self.layoutMode and EPC.IsGameplayHudSuppressed and EPC:IsGameplayHudSuppressed() then show = false end
+        local show = self:ShouldShow2960()
         if self.frame:IsHidden() == show then self:Refresh() end
     end)
     self:Refresh()

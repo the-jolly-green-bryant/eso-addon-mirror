@@ -84,6 +84,16 @@ local BASE_TEXTURE_HEIGHT = 1024
 local MIN_TEXTURE_SCALE = 0.25
 local MAX_TEXTURE_SCALE = 3
 
+local FRAME_PRESETS =
+{
+    { name = "Full Body", targetX = 0.50, targetY = 0.55, distanceFactor = nil },
+    { name = "Torso", targetX = 0.50, targetY = 0.58, distanceFactor = 0.72 },
+    { name = "Portrait", targetX = 0.50, targetY = 0.62, distanceFactor = 0.48 },
+    { name = "Detail", targetX = 0.50, targetY = 0.58, distanceFactor = 0.34 },
+    { name = "Left Composition", targetX = 0.35, targetY = 0.55, distanceFactor = 0.85, uiSide = "right" },
+    { name = "Right Composition", targetX = 0.65, targetY = 0.55, distanceFactor = 0.85, uiSide = "left" },
+}
+
 local function Clamp(value, minimum, maximum)
     if value < minimum then
         return minimum
@@ -303,7 +313,40 @@ local function SetupCollectibleRow(row, collectible)
     end
 end
 
-local function AcquireCollectibleRows(parent, rows, collectibles)
+local function ConfigureCollectibleRow(row, mirrored)
+    local readability = row:GetNamedChild("Readability")
+    local iconFrame = row:GetNamedChild("IconFrame")
+    local icon = row:GetNamedChild("Icon")
+    local label = row:GetNamedChild("Label")
+    local name = row:GetNamedChild("Name")
+
+    readability:ClearAnchors()
+    iconFrame:ClearAnchors()
+    icon:ClearAnchors()
+    label:ClearAnchors()
+    name:ClearAnchors()
+
+    readability:SetAnchor(TOPLEFT, row, TOPLEFT, 0, 3)
+    readability:SetAnchor(BOTTOMRIGHT, row, BOTTOMRIGHT, 0, 3)
+
+    if mirrored then
+        iconFrame:SetAnchor(RIGHT, row, RIGHT, -8, 0)
+        label:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+        name:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+        label:SetAnchor(TOPRIGHT, iconFrame, TOPLEFT, -7, 0)
+        name:SetAnchor(TOPRIGHT, label, BOTTOMRIGHT, 0, -1)
+    else
+        iconFrame:SetAnchor(LEFT, row, LEFT, 8, 0)
+        label:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+        name:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+        label:SetAnchor(TOPLEFT, iconFrame, TOPRIGHT, 7, 0)
+        name:SetAnchor(TOPLEFT, label, BOTTOMLEFT, 0, -1)
+    end
+
+    icon:SetAnchor(CENTER, iconFrame, CENTER, 0, 0)
+end
+
+local function AcquireCollectibleRows(parent, rows, collectibles, mirrored, compact)
     parent:SetHidden(#collectibles == 0)
 
     local rowWidth = 300
@@ -352,8 +395,23 @@ local function AcquireCollectibleRows(parent, rows, collectibles)
             rows[index] = row
         end
 
+        local offsetX
+        local offsetY
+        if compact then
+            offsetX = ((index - 1) % 2) * (rowWidth + 10)
+            offsetY = math.floor((index - 1) / 2) * (rowHeight + rowGap)
+        else
+            offsetX = rowOffsetX * (index - 1)
+            offsetY = (rowHeight + rowGap) * (index - 1)
+        end
+
+        ConfigureCollectibleRow(row, mirrored)
         row:ClearAnchors()
-        row:SetAnchor(TOPLEFT, parent, TOPLEFT, rowOffsetX * (index - 1), (rowHeight + rowGap) * (index - 1))
+        if mirrored then
+            row:SetAnchor(TOPRIGHT, parent, TOPRIGHT, -offsetX, offsetY)
+        else
+            row:SetAnchor(TOPLEFT, parent, TOPLEFT, offsetX, offsetY)
+        end
 
         SetupCollectibleRow(row, collectible)
         row:SetHidden(false)
@@ -383,6 +441,7 @@ function VestigeMirror.UI:Initialize(control)
     self.textureScale = 1
     self.textureOffsetX = 0
     self.textureOffsetY = 0
+    self.selectedFrameIndex = 1
     self.textureDragging = false
     self.textureMoveMode = false
     self.texture = VestigeMirrorWindowTexture
@@ -397,6 +456,9 @@ function VestigeMirror.UI:Initialize(control)
     self.moveTextureLabel = self.moveTexture:GetNamedChild("Label")
     self.toggleCollectibles = self.textureBar:GetNamedChild("ToggleCollectibles")
     self.toggleCollectiblesLabel = self.toggleCollectibles:GetNamedChild("Label")
+    self.mementosButton = self.textureBar:GetNamedChild("Mementos")
+    self.framePreset = self.textureBar:GetNamedChild("FramePreset")
+    self.framePresetLabel = self.framePreset:GetNamedChild("Label")
     self.collectiblesVisible = true
 
     SetTextButtonHandler(self.textureNext, function()
@@ -417,9 +479,20 @@ function VestigeMirror.UI:Initialize(control)
     SetTextButtonHandler(self.toggleCollectibles, function()
         self:ToggleCollectibles()
     end)
+    SetTextButtonHandler(self.mementosButton, function()
+        self:SetTextureMoveMode(false)
+        VestigeMirror.Actions:ToggleMementoPicker()
+    end)
+    SetTextButtonHandler(self.framePreset, function()
+        self:CycleFrame()
+    end)
 
     control:SetHandler("OnKeyDown", function(_, key)
         if key == KEY_ESCAPE then
+            if VestigeMirror.Actions:IsMementoPickerShowing() then
+                VestigeMirror.Actions:HideMementoPicker()
+                return
+            end
             if self.textureMoveMode then
                 self:SetTextureMoveMode(false)
                 return
@@ -480,6 +553,7 @@ end
 
 function VestigeMirror.UI:RefreshTextureControls()
     self.textureNextLabel:SetText(string.format("Texture: %s", self:GetSelectedTextureName()))
+    self.framePresetLabel:SetText(string.format("Frame: %s", FRAME_PRESETS[self.selectedFrameIndex].name))
     self.moveTextureLabel:SetText(self.textureMoveMode and "Done Moving Texture" or "Move Texture")
     self.toggleCollectiblesLabel:SetText(self.collectiblesVisible and "Hide Collectibles" or "Show Collectibles")
     self.moveTexture:SetMouseEnabled(self:IsTextureVisible())
@@ -570,14 +644,95 @@ function VestigeMirror.UI:AdjustTextureScale(delta)
     self:ApplyTextureState()
 end
 
-function VestigeMirror.UI:Refresh(appearance)
-    self.control:GetNamedChild("Subtitle"):SetText(appearance.outfitName)
+function VestigeMirror.UI:CycleFrame()
+    self.selectedFrameIndex = (self.selectedFrameIndex % #FRAME_PRESETS) + 1
+    self:RefreshTextureControls()
+    self:RefreshAppearanceLayout()
+    self:ApplyFrame()
+end
 
+function VestigeMirror.UI:ApplyFrame()
+    zo_callLater(function()
+        if not VestigeMirror.Scene:IsShowing() then
+            return
+        end
+
+        local frame = FRAME_PRESETS[self.selectedFrameIndex]
+        SetFramingScreenType(FRAMING_SCREEN_DEFAULT)
+        SetFrameLocalPlayerTarget(frame.targetX, frame.targetY)
+        SetFrameLocalPlayerLookAtDistanceFactor(frame.distanceFactor)
+        RequestReframeLocalPlayerInGameCamera()
+    end, 50)
+end
+
+function VestigeMirror.UI:RestoreFrame()
+    self.selectedFrameIndex = 1
+    self:RefreshTextureControls()
+    self:RefreshAppearanceLayout()
+    SetFrameLocalPlayerTarget(0.50, 0.55)
+    SetFrameLocalPlayerLookAtDistanceFactor(nil)
+    SetFramingScreenType(FRAMING_SCREEN_DEFAULT)
+    RequestReframeLocalPlayerInGameCamera()
+end
+
+function VestigeMirror.UI:AnchorAppearancePanel(control, width, height, offsetX, offsetY)
+    control:ClearAnchors()
+    control:SetDimensions(width, height)
+    control:SetAnchor(CENTER, self.control, CENTER, offsetX, offsetY)
+end
+
+function VestigeMirror.UI:RefreshAppearanceLayout()
+    local appearance = self.appearance
+    if not appearance then
+        return
+    end
+
+    local frame = FRAME_PRESETS[self.selectedFrameIndex]
+    local headPanel = self.control:GetNamedChild("HeadCallouts")
+    local leftPanel = self.control:GetNamedChild("LeftCallouts")
+    local rightPanel = self.control:GetNamedChild("RightCallouts")
+    local bottomPanel = self.control:GetNamedChild("BottomCallouts")
+    local collectiblesPanel = self.control:GetNamedChild("Collectibles")
+    local collectiblesRows = collectiblesPanel:GetNamedChild("Rows")
     local headSlots, leftArmorSlots, rightArmorSlots = SplitArmorSlots(appearance.armorSlots)
-    AcquireCallouts(self.control:GetNamedChild("HeadCallouts"), self.headCallouts, headSlots, nil, "left")
-    AcquireCallouts(self.control:GetNamedChild("LeftCallouts"), self.leftCallouts, leftArmorSlots, nil, "left")
-    AcquireCallouts(self.control:GetNamedChild("RightCallouts"), self.rightCallouts, rightArmorSlots, nil, "right")
-    AcquireCallouts(self.control:GetNamedChild("BottomCallouts"), self.weaponCallouts, appearance.weaponSlots, "split", "left")
-    AcquireCollectibleRows(self.control:GetNamedChild("Collectibles"):GetNamedChild("Rows"), self.collectibleRows, appearance.appearanceCollectibles or {})
-    self.control:GetNamedChild("Collectibles"):SetHidden(not self.collectiblesVisible)
+    local nearSide = "left"
+    local farSide = "right"
+    local mirroredCollectibles = false
+
+    if frame.uiSide then
+        local direction = frame.uiSide == "right" and 1 or -1
+        nearSide = frame.uiSide == "right" and "left" or "right"
+        farSide = frame.uiSide == "right" and "right" or "left"
+        mirroredCollectibles = frame.uiSide == "left"
+
+        self:AnchorAppearancePanel(headPanel, 384, 130, direction * 300, -255)
+        self:AnchorAppearancePanel(leftPanel, 384, 360, direction * 300, 10)
+        self:AnchorAppearancePanel(rightPanel, 384, 360, direction * 700, -115)
+        self:AnchorAppearancePanel(bottomPanel, 788, 102, direction * 500, 355)
+        self:AnchorAppearancePanel(collectiblesPanel, 620, 320, direction * 500, -360)
+    else
+        self:AnchorAppearancePanel(headPanel, 384, 130, -410, -298)
+        self:AnchorAppearancePanel(leftPanel, 384, 360, -570, -40)
+        self:AnchorAppearancePanel(rightPanel, 384, 360, 570, -40)
+        self:AnchorAppearancePanel(bottomPanel, 1140, 102, 0, 338)
+        self:AnchorAppearancePanel(collectiblesPanel, 620, 320, 470, -415)
+    end
+
+    AcquireCallouts(headPanel, self.headCallouts, headSlots, nil, nearSide)
+    AcquireCallouts(leftPanel, self.leftCallouts, leftArmorSlots, nil, nearSide)
+    AcquireCallouts(rightPanel, self.rightCallouts, rightArmorSlots, nil, farSide)
+    AcquireCallouts(bottomPanel, self.weaponCallouts, appearance.weaponSlots, "split", nearSide)
+    AcquireCollectibleRows(
+        collectiblesRows,
+        self.collectibleRows,
+        appearance.appearanceCollectibles or {},
+        mirroredCollectibles,
+        frame.uiSide ~= nil)
+    collectiblesPanel:SetHidden(not self.collectiblesVisible)
+end
+
+function VestigeMirror.UI:Refresh(appearance)
+    self.appearance = appearance
+    self.control:GetNamedChild("Subtitle"):SetText(appearance.outfitName)
+    self:RefreshAppearanceLayout()
 end

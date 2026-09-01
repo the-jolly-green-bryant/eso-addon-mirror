@@ -60,6 +60,20 @@ function O:Anchor()
     anchorWindow(self.frame, "overlandDifficultyOverlayLeft", "overlandDifficultyOverlayTop", 0, 205)
 end
 
+function O:ApplyDrawOrder()
+    if not self.frame then return end
+    local layout = self.layoutMode == true
+    pcall(function()
+        if self.frame.SetTopLevel then self.frame:SetTopLevel(layout) end
+        if self.frame.SetDrawTier then self.frame:SetDrawTier(layout and (DT_HIGH or DT_MEDIUM) or (DT_MEDIUM or DT_LOW)) end
+        if self.frame.SetDrawLayer then self.frame:SetDrawLayer(DL_OVERLAY or DL_CONTROLS) end
+        if self.frame.SetDrawLevel then self.frame:SetDrawLevel(layout and 5000 or 260) end
+        if self.icon and self.icon.SetDrawLayer then self.icon:SetDrawLayer(DL_OVERLAY or DL_CONTROLS) end
+        if self.icon and self.icon.SetDrawLevel then self.icon:SetDrawLevel(layout and 5010 or 270) end
+        if layout and self.frame.BringWindowToTop then self.frame:BringWindowToTop() end
+    end)
+end
+
 function O:Create()
     if self.frame then return end
     local frame = wm:CreateTopLevelWindow("EAS_ChallengeDifficultyOverlay")
@@ -83,6 +97,7 @@ function O:Create()
     self.frame = frame
     self.icon = icon
     self:Anchor()
+    self:ApplyDrawOrder()
 end
 
 function O:IsSuiteOpen()
@@ -133,6 +148,7 @@ function O:Refresh()
 
     self.frame:SetScale(tonumber(EPC.saved.overlandDifficultyOverlayScale) or 1.0)
     if texture then self.icon:SetTexture(texture) end
+    self:ApplyDrawOrder()
     self.frame:SetHidden(texture == nil)
 end
 
@@ -141,6 +157,7 @@ function O:SetLayoutMode(active)
     if self.frame then
         self.frame:SetMouseEnabled(self.layoutMode)
         self.frame:SetMovable(self.layoutMode)
+        self:ApplyDrawOrder()
     end
     self:Refresh()
 end

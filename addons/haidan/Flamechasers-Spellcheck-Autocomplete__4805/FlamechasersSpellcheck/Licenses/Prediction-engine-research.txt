@@ -1,0 +1,23 @@
+Flamechasers Spellcheck & Autocomplete v0.6 prediction-engine research notes
+
+The v0.6 Super Suggestions implementation is original Lua written for ESO. No source code from the projects below is copied into the addon. The projects were consulted for architecture/algorithm ideas:
+
+- Android Open Source Project LatinIME (Apache 2.0): multi-word n-gram context, adaptive/decaying user history, suggestion ranking architecture.
+  https://android.googlesource.com/platform/packages/inputmethods/LatinIME/
+
+- Presage predictive text platform (GPL-2.0): separate n-gram and recency predictors; recency promotion/decay concept.
+  https://presage.sourceforge.io/
+
+- KenLM (LGPL): higher-order n-gram language models, modified Kneser-Ney estimation and backoff/smoothing concepts. ESO does not embed KenLM or its model files.
+  https://github.com/kpu/kenlm
+
+- SymSpell by Wolf Garbe (MIT): Symmetric Delete candidate-recall concept already used by the spellcheck/autocomplete typo path.
+  https://github.com/wolfgarbe/SymSpell
+
+- FlorisBoard NLP (open-source): modern offline keyboard NLP separation between dictionary/model data and suggestion/spellcheck core. No FlorisBoard code or assets are shipped.
+  https://github.com/florisboard/nlp
+
+- Slide keyboard (Apache 2.0): current offline keyboard design using corpus bigram/trigram context plus local learned phrases, with strict separation of temporary/private learned data. Its generated corpus/model assets are NOT included or copied.
+  https://github.com/Robertg761/Slide
+
+The shipped Super cold-start phrase list is hand-authored for conversational English/ESO and is not extracted from any external corpus.

@@ -1,13 +1,18 @@
 GroupHistory = {
     NAME = "GroupHistory",
     AUTHOR = "@Duesentrieb",
-    VERSION = "20260710-0001",
+    VERSION = "20260831",
+    ADDONVERSION = 0002,
     CHAT = "[GH]",
     SLASH = "/grouphistory",
 
     GroupMember = {},
     groupSize = 1,
     OfflineMember = {},
+
+    trackedLeaderName = nil,
+    offlineLeaderName = nil,
+    offlineLeaderTime = 0,
 
     playSoundCounter = 0,
     wasSoundPlayed = false,
@@ -30,6 +35,8 @@ GroupHistory = {
         enableLeaderChange = true,
         enableOffline = true,
 
+        enableAutoPromote = true,
+
         enablePlaySound4 = false,
         enablePlaySound12 = true,
 
@@ -42,7 +49,7 @@ GroupHistory = {
         }
     },
 
-    Col = {
+    ColMap = {
         OG = "|cFF7F00",
         WH = "|cFFFFFF",
         GN = "|c00FF00",

@@ -74,7 +74,10 @@ end)
 -- Diagnostics
 --------------------------------------------------------------------------------
 
-local Diagnostics = { cg = LCCC.NOP }
+local Diagnostics = {
+	cg = LCCC.NOP,
+	times = { },
+}
 
 if (IsConsoleUI()) then
 	Internal.scanThrottle = 300
@@ -85,7 +88,7 @@ function Diagnostics.Stopwatch( start )
 	local tick = GetGameTimeMilliseconds()
 	if (start) then
 		Diagnostics.cg("stop")
-		Diagnostics.times = { }
+		ZO_ClearTable(Diagnostics.times)
 	else
 		table.insert(Diagnostics.times, tick - Diagnostics.tick)
 	end
@@ -465,7 +468,7 @@ end
 function Internal.NotifyRefresh( invalidateCharacterList )
 	if (invalidateCharacterList) then
 		Internal.cachedFilteredServerList = nil
-		Internal.cachedCharLists = { }
+		ZO_ClearTable(Internal.cachedCharLists)
 	end
 	Internal.FireCallbacks(Public.EVENT_UPDATE_REFRESH, invalidateCharacterList)
 end
@@ -475,6 +478,15 @@ function Internal.CheckVengeanceState( )
 	if (Internal.pendingVengeanceScan and not Internal.isInVengeance) then
 		Internal.pendingVengeanceScan = false
 		Internal.RefreshKnowledge()
+	end
+end
+
+do
+	local buffer = { }
+	function Internal.GetScratchBuffer( wantMerged )
+		local result = wantMerged and table.concat(buffer, "") or buffer
+		ZO_ClearTable(buffer)
+		return result
 	end
 end
 
@@ -822,11 +834,11 @@ function Internal.WriteMasterList( maxId )
 	}
 
 	for _, category in ipairs(Internal.ItemIdStores) do
-		local encoded = { }
+		local encoded = Internal.GetScratchBuffer()
 		for _, id in ipairs(Internal.ids[category]) do
 			table.insert(encoded, LCCC.Encode(id, fieldSize))
 		end
-		Internal.vars.masterList[category] = Internal.Chunk(table.concat(encoded, ""))
+		Internal.vars.masterList[category] = Internal.Chunk(Internal.GetScratchBuffer(true))
 	end
 
 	-- Save scribing max IDs
@@ -1033,7 +1045,7 @@ function Internal.IndexedScanAndEncode( category, server, charId, oldIndices )
 	end
 
 	local field = 0
-	local fields = { }
+	local fields = Internal.GetScratchBuffer()
 
 	for i, id in ipairs(Internal.ids[category]) do
 		field = field * 2
@@ -1056,7 +1068,7 @@ function Internal.IndexedScanAndEncode( category, server, charId, oldIndices )
 		table.insert(fields, LCCC.Encode(BitLShift(field, BLOCK_BITS - remainder), BLOCK_BYTES))
 	end
 
-	return Internal.Chunk(table.concat(fields, ""))
+	return Internal.Chunk(Internal.GetScratchBuffer(true))
 end
 
 function Internal.IndexedGetKnowledge( server, charId, category, itemId, itemIndex, decoderIndices )
@@ -1518,10 +1530,10 @@ do
 
 	do
 		local RESEARCH_PASSIVES = {
-			79, 5, -- Blacksmithing
-			80, 5, -- Woodworking
-			81, 5, -- Clothing
-			141, 4, -- Jewelry Crafting
+			48160, -- Metallurgy
+			48181, -- Carpentry
+			48190, -- Stitching
+			103640, -- Lapidary Research
 		}
 
 		local current = nil
@@ -1529,9 +1541,8 @@ do
 		function Internal.ResearchCheckPassives( )
 			local previous = current
 			current = 0
-			for i = 1, #RESEARCH_PASSIVES, 2 do
-				local skillType, skillLineIndex = GetSkillLineIndicesFromSkillLineId(RESEARCH_PASSIVES[i])
-				local _, _, _, _, _, purchased, _, rank = GetSkillAbilityInfo(skillType, skillLineIndex, RESEARCH_PASSIVES[i + 1])
+			for _, abilityId in ipairs(RESEARCH_PASSIVES) do
+				local _, _, _, _, _, purchased, _, rank = GetSkillAbilityInfo(GetSpecificSkillAbilityKeysByAbilityId(abilityId))
 				current = (current * 8) + (purchased and rank or 0)
 			end
 			return previous ~= current

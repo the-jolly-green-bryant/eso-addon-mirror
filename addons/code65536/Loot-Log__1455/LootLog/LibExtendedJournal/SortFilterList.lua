@@ -81,7 +81,7 @@ function ExtendedJournalSortFilterList:Row_OnMouseUp( control, button, upInside 
 				if (label and type(action) == "function") then
 					AddMenuItem(Internal.GetString(label), action)
 				elseif (type(action) == "number" or type(action) == "string") then
-					AddMenuItem(string.format((type(action) == "number") and "%s: %d" or "%s: %s", label, action), LCCC.NOP, nil, nil, ZO_DISABLED_TEXT, nil, nil, nil, nil, nil, nil, false)
+					AddMenuItem(string.format((type(action) == "number") and "%s: %d" or "%s: %s", Internal.GetString(label), action), LCCC.NOP, nil, nil, ZO_DISABLED_TEXT, nil, nil, nil, nil, nil, nil, false)
 				elseif (type(label) == "table") then
 					for _, item in ipairs(label) do
 						AddMenuItem(Internal.GetString(item.label), item.action)

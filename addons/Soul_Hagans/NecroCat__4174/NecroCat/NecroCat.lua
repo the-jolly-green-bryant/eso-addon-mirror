@@ -2,7 +2,7 @@
 NecroCat = NecroCat or {
     name    = "NecroCat",
     author  = "Soul_Hagans",
-    version = "1.9.6",
+    version = "1.9.7",
 }
 
 local NC = NecroCat
@@ -584,6 +584,212 @@ end
 ---------------------------------------------------------
 -- 4. РАБОТА С UI И МЕНЮ
 ---------------------------------------------------------
+
+---------------------------------------------------------
+-- МОДУЛЬ: СЧЕТЧИК СУНДУКОВ ЗОНЫ / ДАНЖА (УНИВЕРСАЛЬНЫЙ)
+---------------------------------------------------------
+
+NC.isLockpickingActive = false
+NC.lastLockpickEndTime = 0
+
+local function GetCurrentMainZoneId()
+    local zoneIndex = GetUnitZoneIndex("player")
+    local zoneId = GetZoneId(zoneIndex)
+    local parentZoneId = GetParentZoneId(zoneId)
+    return (parentZoneId and parentZoneId > 0) and parentZoneId or zoneId
+end
+
+function NC.UpdateChestCounterDisplay()
+    if not NC.ChestCounterLabel then return end
+    local count = (NC.savedVars and NC.savedVars.currentChestsCount) or 0
+    NC.ChestCounterLabel:SetText(tostring(count))
+end
+
+function NC.ResetChestCounter()
+    if not NC.savedVars then return end
+    NC.savedVars.currentChestsCount = 0
+    NC.savedVars.openedChestsCoords = {}
+    NC.UpdateChestCounterDisplay()
+end
+
+function NC.CheckZoneChangeForChestCounter()
+    if not NC.savedVars then return end
+
+    local currentZoneId = GetCurrentMainZoneId()
+    if not NC.savedVars.lastZoneId or NC.savedVars.lastZoneId ~= currentZoneId then
+        NC.savedVars.lastZoneId = currentZoneId
+        NC.ResetChestCounter()
+    else
+        NC.UpdateChestCounterDisplay()
+    end
+end
+
+function NC.UpdateChestCounterVisibility()
+    if not NC.ChestCounterFragment then return end
+
+    if NC.savedVars.showChestCounter then
+        HUD_SCENE:AddFragment(NC.ChestCounterFragment)
+        HUD_UI_SCENE:AddFragment(NC.ChestCounterFragment)
+    else
+        HUD_SCENE:RemoveFragment(NC.ChestCounterFragment)
+        HUD_UI_SCENE:RemoveFragment(NC.ChestCounterFragment)
+        if NC.ChestCounterFrame then NC.ChestCounterFrame:SetHidden(true) end
+    end
+end
+
+function NC.UpdateChestCounterSize()
+    if not NC.ChestCounterFrame then return end
+
+    local size = NC.savedVars.chestSize or 36
+    NC.ChestCounterFrame:SetDimensions(size + 50, size)
+    NC.ChestCounterIcon:SetDimensions(size, size)
+
+    if size >= 44 then
+        NC.ChestCounterLabel:SetFont("ZoFontWinH1")
+    elseif size >= 32 then
+        NC.ChestCounterLabel:SetFont("ZoFontWinH4")
+    else
+        NC.ChestCounterLabel:SetFont("ZoFontGameBold")
+    end
+end
+
+-- Отслеживаем сцену взлома
+local function HookLockpickScenes()
+    local scenes = { "lockpickKeyboard", "lockpickGamepad" }
+    for _, sceneName in ipairs(scenes) do
+        local scene = SCENE_MANAGER and SCENE_MANAGER:GetScene(sceneName)
+        if scene then
+            scene:RegisterCallback("StateChange", function(oldState, newState)
+                if newState == SCENE_SHOWING or newState == SCENE_SHOWN then
+                    NC.isLockpickingActive = true
+                elseif newState == SCENE_HIDING or newState == SCENE_HIDDEN then
+                    NC.lastLockpickEndTime = GetFrameTimeSeconds()
+                    NC.isLockpickingActive = false
+                end
+            end)
+        end
+    end
+end
+
+function NC.CreateChestCounterUI()
+    if NC.ChestCounterFrame then return end
+
+    local size = NC.savedVars.chestSize or 36
+
+    local frame = WINDOW_MANAGER:CreateTopLevelWindow("NecroCat_ChestFrame")
+    frame:SetDimensions(size + 50, size)
+    frame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, NC.savedVars.chestLeft or 500, NC.savedVars.chestTop or 300)
+    frame:SetMovable(true)
+    frame:SetMouseEnabled(true)
+    frame:SetClampedToScreen(true)
+    frame:SetHidden(true)
+
+    -- Иконка сундука
+    local icon = WINDOW_MANAGER:CreateControl("$(parent)Icon", frame, CT_TEXTURE)
+    icon:SetDimensions(size, size)
+    icon:SetAnchor(LEFT, frame, LEFT, 0, 0)
+    icon:SetTexture("NecroCat/imgs/chest.dds")
+
+    -- Текст счетчика справа
+    local label = WINDOW_MANAGER:CreateControl("$(parent)Label", frame, CT_LABEL)
+    label:SetColor(1, 1, 1, 1)
+    label:SetAnchor(LEFT, icon, RIGHT, 8, 0)
+    label:SetText(tostring(NC.savedVars.currentChestsCount or 0))
+
+    -- Сохранение позиции при перемещении
+    frame:SetHandler("OnMoveStop", function(self)
+        NC.savedVars.chestLeft = self:GetLeft()
+        NC.savedVars.chestTop = self:GetTop()
+    end)
+
+    -- Сброс по клику ПКМ
+    frame:SetHandler("OnMouseUp", function(self, button, upInside)
+        if upInside and button == MOUSE_BUTTON_INDEX_RIGHT then
+            NC.ResetChestCounter()
+            d("|c66f2ff[NecroCat]|r Счетчик сундуков сброшен на 0.")
+        end
+    end)
+
+    -- Подсказка
+    frame:SetHandler("OnMouseEnter", function(self)
+        InitializeTooltip(InformationTooltip, self, TOP, 0, 5)
+        InformationTooltip:AddLine("|c66f2ffNecroCat: Сундуки|r", "ZoFontWinH4")
+        InformationTooltip:AddLine(string.format("Открыто в текущей зоне: |c00FF00%d|r", NC.savedVars.currentChestsCount or 0), "ZoFontGame")
+        InformationTooltip:AddLine("|c00FF00ПКМ:|r Сбросить счетчик", "ZoFontGameSmall")
+        InformationTooltip:AddLine("|cFFFF22Зажать ЛКМ:|r Перетащить иконку", "ZoFontGameSmall")
+        InformationTooltip:AddLine("|cAAAAAAАвто-сброс при смене зоны/данжа|r", "ZoFontGameSmall")
+    end)
+    frame:SetHandler("OnMouseExit", function() ClearTooltip(InformationTooltip) end)
+
+    NC.ChestCounterFrame    = frame
+    NC.ChestCounterIcon     = icon
+    NC.ChestCounterLabel    = label
+    NC.ChestCounterFragment = ZO_SimpleSceneFragment:New(frame)
+
+    NC.UpdateChestCounterSize()
+    NC.UpdateChestCounterDisplay()
+    NC.UpdateChestCounterVisibility()
+
+    HookLockpickScenes()
+end
+
+-- Надежный подсчет по координатам
+function NC.CountChestAtPlayerPos()
+    local _, x, y, z = GetUnitWorldPosition("player")
+    NC.savedVars.openedChestsCoords = NC.savedVars.openedChestsCoords or {}
+
+    for _, coord in ipairs(NC.savedVars.openedChestsCoords) do
+        if (zo_distance3D(x, y, z, coord.x, coord.y, coord.z) / 100) < 6 then
+            return
+        end
+    end
+
+    table.insert(NC.savedVars.openedChestsCoords, { x = x, y = y, z = z })
+    NC.savedVars.currentChestsCount = (NC.savedVars.currentChestsCount or 0) + 1
+    NC.UpdateChestCounterDisplay()
+    d(string.format("|c66f2ff[NecroCat]|r Сундук учтен! (Всего: %d)", NC.savedVars.currentChestsCount))
+end
+
+-- 1. Срабатывает при успешном взломе замка своими руками
+function NC.OnLockpickSuccessForChestCounter()
+    if not NC.savedVars or not NC.savedVars.showChestCounter then return end
+    NC.CountChestAtPlayerPos()
+end
+
+-- 2. Срабатывает при открытии уже взломанного или незапертого сундука
+function NC.OnClientInteractResultForChestCounter(eventCode, result, interactTargetName)
+    if not NC.savedVars or not NC.savedVars.showChestCounter then return end
+    if result ~= 0 then return end
+    if not interactTargetName or interactTargetName == "" then return end
+
+    -- Если идет взлом (или взлом только что сорвался меньше 2 сек назад) — игнорируем!
+    local now = GetFrameTimeSeconds()
+    if NC.isLockpickingActive or (now - NC.lastLockpickEndTime < 2) then
+        return
+    end
+
+    local cleanName = zo_strformat("<<1>>", interactTargetName)
+    local lowerName = zo_strlower(cleanName)
+
+    if string.find(lowerName, "сундук") or string.find(lowerName, "chest") or string.find(lowerName, "coffre") or string.find(lowerName, "truhe") then
+        NC.CountChestAtPlayerPos()
+    end
+end
+
+-- 3. Дополнительная страховка через окно лута
+function NC.OnLootUpdatedForChestCounter()
+    if not NC.savedVars or not NC.savedVars.showChestCounter then return end
+
+    local targetName = GetLootTargetInfo()
+    if not targetName or targetName == "" then return end
+
+    local cleanName = zo_strformat("<<1>>", targetName)
+    local lowerName = zo_strlower(cleanName)
+
+    if string.find(lowerName, "сундук") or string.find(lowerName, "chest") or string.find(lowerName, "coffre") or string.find(lowerName, "truhe") then
+        NC.CountChestAtPlayerPos()
+    end
+end
 
 NC.GuildIcons = {
     [839248] = "NecroCat/imgs/CastleofNecroCat.dds",
@@ -1543,6 +1749,44 @@ local function InitializeMenu()
                     getFunc = function() return NC.savedVars.showAutoBindToast end,
                     setFunc = function(v) NC.savedVars.showAutoBindToast = v end,
                 },
+                { type = "header", name = "Счетчик сундуков" },
+                {
+                    type = "checkbox",
+                    name = "Отображать счетчик сундуков",
+                    tooltip = "Отображает плавающую иконку сундука со счетчиком открытых сундуков в текущей зоне",
+                    getFunc = function() return NC.savedVars.showChestCounter end,
+                    setFunc = function(v) 
+                        NC.savedVars.showChestCounter = v 
+                        if NC.UpdateChestCounterVisibility then 
+                            NC.UpdateChestCounterVisibility() 
+                        end
+                    end,
+                },
+                {
+                    type = "slider",
+                    name = "Размер иконки и шрифта",
+                    tooltip = "Настройте удобный размер отображения сундучка на экране",
+                    min = 20, max = 72, step = 2,
+                    getFunc = function() return NC.savedVars.chestSize or 36 end,
+                    setFunc = function(v) 
+                        NC.savedVars.chestSize = v 
+                        if NC.UpdateChestCounterSize then 
+                            NC.UpdateChestCounterSize() 
+                        end
+                    end,
+                },
+                {
+                    type = "button",
+                    name = "Сбросить позицию счетчика",
+                    func = function()
+                        NC.savedVars.chestLeft = 500
+                        NC.savedVars.chestTop = 300
+                        if NC.ChestCounterFrame then
+                            NC.ChestCounterFrame:ClearAnchors()
+                            NC.ChestCounterFrame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 500, 300)
+                        end
+                    end,
+                },
             },
         },
         -- =====================================================
@@ -1689,32 +1933,33 @@ local function HookChatContextMenu()
 end
 
 
--- Финальная функция меню NecroCat с каскадным меню первого уровня
+-- Финальная функция меню NecroCat с отдельными вкладками
 local function AddNecroMenuEntries(data)
     local displayName = data.displayName
     if not displayName then return end
 
-    -- 1. Пункт Копирования @ID (на главном уровне контекстного меню)
+    -- 1. Пункт Копирования @ID
     AddCustomMenuItem("|c22ff22Скопировать @ID|r", function()
         NC.ShowCopyDialog(displayName)
     end)
 
-    -- 2. Пункт Телепорта (на главном уровне контекстного меню)
+    -- 2. Пункт Телепорта к игроку
     AddCustomMenuItem("|cff6401Телепорт к игроку|r", function() 
         TryTeleportToPlayer(displayName)
     end)
     
-    -- 3. Пункт Инвайта (на главном уровне контекстного меню)
+    -- 3. Пункт Инвайта
     AddCustomMenuItem("|c66f2ffInvite to Party|r", function() 
         if GroupInviteByName then GroupInviteByName(displayName) end 
     end)
-    
-    -- СОБИРАЕМ ВЫЕЗЖАЮЩЕЕ ПОДМЕНЮ ДЛЯ ПУНКТА "NecroCat"
+
+    -- =========================================================
+    -- ВЫЕЗЖАЮЩАЯ ВКЛАДКА 1: "NecroCat" (Друзья, слежка, настройки)
+    -- =========================================================
     if not NecroCat.savedVars.trackedPlayers then NecroCat.savedVars.trackedPlayers = {} end
     local isTracked = NecroCat.savedVars.trackedPlayers[displayName]
 
     local necroCatSubMenu = {
-        -- Опция 1: Включение/выключение отслеживания (Tracking)
         {
             label = isTracked and "|cFF5555Disable Tracking|r" or "|c55FF55Enable Tracking|r",
             callback = function()
@@ -1727,49 +1972,107 @@ local function AddNecroMenuEntries(data)
                 end
             end
         },
-        -- Опция 2: Подготовка команды ЗАКРЕПЛЕНИЯ в чат
         {
             label = "|cffff22Закрепить друга (в чат)|r",
             callback = function()
-                -- Вычисляем следующий свободный номер приоритета
                 local nextNum = 1
                 if NC.savedVars and NC.savedVars.pinned then
                     for name, priority in pairs(NC.savedVars.pinned) do
-                        if priority >= nextNum then
-                            nextNum = priority + 1
-                        end
+                        if priority >= nextNum then nextNum = priority + 1 end
                     end
                 end
-                -- Пишем шаблон в чат
                 StartChatInput(string.format("/pinfriend %s %d", displayName, nextNum))
             end
         },
-        -- Опция 3: Подготовка команды ОТКРЕПЛЕНИЯ в чат
         {
             label = "|cff5555Открепить друга (в чат)|r",
             callback = function()
-                -- Пишем шаблон в чат
                 StartChatInput(string.format("/unpinfriend %s", displayName))
             end
         },
-        -- Опция 4: Показать текущий список закрепленных
         {
-            label = "Показать список",
+            label = "Показать список друзей",
             callback = function()
-                SLASH_COMMANDS["/listpinned"]() -- Напрямую запускаем показ списка в чат
+                SLASH_COMMANDS["/listpinned"]()
             end
         },
-        -- Опция 5: Очистить список закреплений
         {
-            label = "Очистить весь список",
+            label = "Очистить список друзей",
             callback = function()
-                SLASH_COMMANDS["/pinclear"]() -- Напрямую сбрасываем список
+                SLASH_COMMANDS["/pinclear"]()
             end
         }
     }
 
-    -- Добавляем красивую выезжающую строчку "NecroCat"
+    -- 1-я вкладка: NecroCat
     AddCustomSubMenuItem("|c66f2ffNecroCat|r", necroCatSubMenu)
+
+    
+    -- =========================================================
+    -- ВЫЕЗЖАЮЩАЯ ВКЛАДКА 2: "House" (Только дома этого игрока)
+    -- =========================================================
+    local playerHouseList = NC.savedVars.playerHouses and NC.savedVars.playerHouses[displayName]
+    local houseSubMenu = {}
+
+    -- А. Список домов для телепорта (с поддержкой истинного хозяина)
+    if playerHouseList and #playerHouseList > 0 then
+        for index, hData in ipairs(playerHouseList) do
+            local targetOwner = hData.owner or displayName
+            table.insert(houseSubMenu, {
+                label = string.format("|c00FF00|t18:18:EsoUI/Art/Icons/mapkey/mapkey_housing.dds|t %d. %s|r", index, hData.name),
+                callback = function()
+                    d(string.format("|c66f2ff[NecroCat]|r Телепортация в дом «%s» (%s)...", hData.name, targetOwner))
+                    if targetOwner == GetDisplayName() then
+                        RequestJumpToHouse(hData.houseId)
+                    else
+                        JumpToSpecificHouse(targetOwner, hData.houseId)
+                    end
+                end
+            })
+        end
+    else
+        table.insert(houseSubMenu, {
+            label = "|c888888(Нет привязанных домов)|r",
+            callback = function() end
+        })
+    end
+
+    -- Б. Кнопка привязки
+    table.insert(houseSubMenu, {
+        label = "|cffff22+ Привязать дом (в чат)|r",
+        callback = function()
+            local nextHousePos = (playerHouseList and #playerHouseList or 0) + 1
+            local curHouseId = GetCurrentZoneHouseId()
+            if curHouseId and curHouseId > 0 then
+                StartChatInput(string.format("/housepin %s %d %d", displayName, curHouseId, nextHousePos))
+            else
+                StartChatInput(string.format("/housepin %s ", displayName))
+            end
+        end
+    })
+
+    -- В. Удаление домов
+    if playerHouseList and #playerHouseList > 0 then
+        table.insert(houseSubMenu, {
+            label = "|cff5555- Отвязать дом (в чат)|r",
+            callback = function()
+                if #playerHouseList == 1 then
+                    StartChatInput(string.format("/unhousepin %s 1", displayName))
+                else
+                    StartChatInput(string.format("/unhousepin %s ", displayName))
+                end
+            end
+        })
+        table.insert(houseSubMenu, {
+            label = "Очистить все дома игрока",
+            callback = function()
+                SLASH_COMMANDS["/clearhouses"](displayName)
+            end
+        })
+    end
+
+    -- 2-я вкладка: House
+    AddCustomSubMenuItem("|c66f2ffHouse|r", houseSubMenu)
 end
 
 local function HookFriendsAndGuildMenu()
@@ -2027,6 +2330,15 @@ function NC.OnAddOnLoaded(eventCode, addOnName)
         -- Авто-привязка сетов (Stickerbook) и всплывающий тост
         autoBindSetItems        = false,
         showAutoBindToast       = true,
+        -- Счетчик сундуков
+        showChestCounter        = false,
+        chestSize               = 36,
+        chestLeft               = 500,
+        chestTop                = 300,
+        currentChestsCount      = 0,
+        lastZoneId              = 0,
+        openedChestsCoords      = {},
+        playerHouses            = {},
     }, GetWorldName())
     -- Бесшовная миграция старой настройки банка со слота на ID
     if (not NC.savedVars.guildBankDefaultGuildId or NC.savedVars.guildBankDefaultGuildId == 0) and NC.savedVars.guildBankDefaultIndex and NC.savedVars.guildBankDefaultIndex > 0 then
@@ -2103,6 +2415,10 @@ function NC.OnAddOnLoaded(eventCode, addOnName)
     NC.CreateGroupMenuAutoAcceptUI()
     NC.CreateSetToastUI()
     NC.UpdateAggroMarker()
+    NC.CreateChestCounterUI()
+    EVENT_MANAGER:RegisterForEvent(NC.name .. "_LockpickSuccess", EVENT_LOCKPICK_SUCCESS, NC.OnLockpickSuccessForChestCounter)
+    EVENT_MANAGER:RegisterForEvent(NC.name .. "_ClientInteract", EVENT_CLIENT_INTERACT_RESULT, NC.OnClientInteractResultForChestCounter)
+    EVENT_MANAGER:RegisterForEvent(NC.name .. "_LootUpdated", EVENT_LOOT_UPDATED, NC.OnLootUpdatedForChestCounter)
 
     -- Регистрация авто-привязки сетов со скоростным фильтром (только новые вещи в рюкзаке)
     EVENT_MANAGER:RegisterForEvent(NC.name .. "_AutoBind", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, NC.OnInventorySlotUpdateForAutoBind)
@@ -2145,6 +2461,7 @@ function NC.OnAddOnLoaded(eventCode, addOnName)
     EVENT_MANAGER:RegisterForEvent(NC.name, EVENT_PLAYER_ACTIVATED, function()
         NC.CheckTrialPets()
         NC.UpdateAggroMarker()
+        NC.CheckZoneChangeForChestCounter()
     end)
     EVENT_MANAGER:RegisterForEvent(NC.name, EVENT_GROUP_MEMBER_JOINED, function()
         NC.CheckAutoConvertToRaid()
@@ -2230,6 +2547,79 @@ function NC.SetDiffJourneyman() NC.SetDifficulty(OVERLAND_DIFFICULTY_TYPE_JOURNE
 function NC.SetDiffVeteran()    NC.SetDifficulty(OVERLAND_DIFFICULTY_TYPE_VETERAN) end
 
 EVENT_MANAGER:RegisterForEvent(NC.name, EVENT_ADD_ON_LOADED, NC.OnAddOnLoaded)
+
+
+-- =========================================================
+-- МОДУЛЬ: ПРИВЯЗКА ДОМОВ ИГРОКОВ (BOOKMARKS)
+-- =========================================================
+
+-- Получение красивого названия дома по его ID
+function NC.GetHouseNameById(houseId)
+    if not houseId or houseId <= 0 then return "Неизвестный дом" end
+    if GetCollectibleIdForHouse then
+        local collectibleId = GetCollectibleIdForHouse(houseId)
+        if collectibleId and collectibleId > 0 then
+            local name = GetCollectibleName(collectibleId)
+            if name and name ~= "" then
+                return zo_strformat("<<1>>", name)
+            end
+        end
+    end
+    return "Дом #" .. tostring(houseId)
+end
+
+-- Добавление / перемещение дома для конкретного игрока (с поддержкой истинного владельца)
+function NC.AddHouseToPlayer(displayName, houseId, houseName, targetPos, actualOwner)
+    if not displayName or displayName == "" or not houseId or houseId <= 0 then return end
+    
+    NC.savedVars.playerHouses = NC.savedVars.playerHouses or {}
+    NC.savedVars.playerHouses[displayName] = NC.savedVars.playerHouses[displayName] or {}
+    
+    local list = NC.savedVars.playerHouses[displayName]
+    local realOwner = (actualOwner and actualOwner ~= "") and actualOwner or displayName
+    local finalName = (houseName and houseName ~= "") and houseName or NC.GetHouseNameById(houseId)
+
+    -- Если дом чужой, а записывается в твой список - аккуратно помечаем ник владельца в названии
+    if realOwner ~= displayName and not string.find(finalName, "@") then
+        finalName = string.format("%s (%s)", finalName, realOwner)
+    end
+
+    -- Удаляем этот же дом у того же владельца, если он уже был записан ранее
+    for i = #list, 1, -1 do
+        if list[i].houseId == houseId and (list[i].owner == realOwner or list[i].owner == nil) then
+            table.remove(list, i)
+        end
+    end
+
+    local pos = tonumber(targetPos) or (#list + 1)
+    if pos < 1 then pos = 1 end
+    if pos > (#list + 1) then pos = #list + 1 end
+
+    table.insert(list, pos, { houseId = houseId, name = finalName, owner = realOwner })
+
+    d(string.format("|c66f2ff[NecroCat]|r Дом |c00FF00«%s»|r записан для |cFFFF22%s|r на позицию |c00FF00#%d|r!", finalName, displayName, pos))
+end
+
+-- Удаление дома по номеру позиции
+function NC.RemoveHouseFromPlayer(displayName, pos)
+    if not displayName or not NC.savedVars.playerHouses or not NC.savedVars.playerHouses[displayName] then
+        d("|cFF0000[NecroCat]|r У игрока " .. tostring(displayName) .. " нет сохраненных домов.")
+        return
+    end
+
+    local list = NC.savedVars.playerHouses[displayName]
+    local index = tonumber(pos)
+
+    if index and list[index] then
+        local removed = table.remove(list, index)
+        d(string.format("|c66f2ff[NecroCat]|r Дом «%s» (#%d) удален у %s.", removed.name, index, displayName))
+        if #list == 0 then
+            NC.savedVars.playerHouses[displayName] = nil
+        end
+    else
+        d("|cFF0000[NecroCat]|r Неверный номер позиции дома.")
+    end
+end
 
 -- =========================================================
 -- ЛОГИКА СОРТИРОВКИ ГИЛЬДИЙ
@@ -2384,40 +2774,54 @@ function NC.UnpinAndNormalize(targetName)
     end
 end
 
--- Функция сортировки в интерфейсе списка друзей
+-- Функция сортировки закреплений (Список друзей + Список гильдии)
 function NC.HookFriendsSorting()
-    if not FRIENDS_LIST then return end
+    -- 1. Сортировка списка друзей
+    if FRIENDS_LIST and FRIENDS_LIST.sortFunction then
+        local origFriendsSort = FRIENDS_LIST.sortFunction
+        FRIENDS_LIST.sortFunction = function(listEntry1, listEntry2)
+            if listEntry1 and listEntry2 and listEntry1.data and listEntry2.data then
+                local name1 = listEntry1.data.displayName
+                local name2 = listEntry2.data.displayName
 
-    local originalSortFunction = FRIENDS_LIST.sortFunction
-    if not originalSortFunction then return end
+                if name1 and name2 and NC.savedVars and NC.savedVars.pinned then
+                    local p1 = NC.savedVars.pinned[name1]
+                    local p2 = NC.savedVars.pinned[name2]
 
-    FRIENDS_LIST.sortFunction = function(listEntry1, listEntry2)
-        if listEntry1 and listEntry2 and listEntry1.data and listEntry2.data then
-            local data1 = listEntry1.data
-            local data2 = listEntry2.data
-
-            local name1 = data1.displayName
-            local name2 = data2.displayName
-
-            if name1 and name2 then
-                local priority1 = NC.savedVars.pinned[name1]
-                local priority2 = NC.savedVars.pinned[name2]
-
-                if priority1 and not priority2 then
-                    return true
-                elseif not priority1 and priority2 then
-                    return false
-                elseif priority1 and priority2 then
-                    if priority1 ~= priority2 then
-                        return priority1 < priority2
-                    else
+                    if p1 and not p2 then return true
+                    elseif not p1 and p2 then return false
+                    elseif p1 and p2 then
+                        if p1 ~= p2 then return p1 < p2 end
                         return name1 < name2
                     end
                 end
             end
+            return origFriendsSort(listEntry1, listEntry2)
         end
+    end
 
-        return originalSortFunction(listEntry1, listEntry2)
+    -- 2. Сортировка списка участников гильдии
+    if GUILD_ROSTER_KEYBOARD and GUILD_ROSTER_KEYBOARD.sortFunction then
+        local origGuildSort = GUILD_ROSTER_KEYBOARD.sortFunction
+        GUILD_ROSTER_KEYBOARD.sortFunction = function(listEntry1, listEntry2)
+            if listEntry1 and listEntry2 and listEntry1.data and listEntry2.data then
+                local name1 = listEntry1.data.displayName
+                local name2 = listEntry2.data.displayName
+
+                if name1 and name2 and NC.savedVars and NC.savedVars.pinned then
+                    local p1 = NC.savedVars.pinned[name1]
+                    local p2 = NC.savedVars.pinned[name2]
+
+                    if p1 and not p2 then return true
+                    elseif not p1 and p2 then return false
+                    elseif p1 and p2 then
+                        if p1 ~= p2 then return p1 < p2 end
+                        return name1 < name2
+                    end
+                end
+            end
+            return origGuildSort(listEntry1, listEntry2)
+        end
     end
 end
 
@@ -2437,10 +2841,12 @@ SLASH_COMMANDS["/pinfriend"] = function(argStr)
     NC.PinAndShift(displayName, priority)
     d(string.format("[NecroCat] %s теперь на позиции %d! Остальные сдвинулись.", displayName, priority))
 
-    FRIENDS_LIST:RefreshData()
+    if FRIENDS_LIST then FRIENDS_LIST:RefreshData() end
+    if GUILD_ROSTER_KEYBOARD then GUILD_ROSTER_KEYBOARD:RefreshData() end
 end
 
 SLASH_COMMANDS["/unpinfriend"] = function(displayName)
+    displayName = displayName and string.match(displayName, "(%S+)")
     if not displayName or displayName == "" then
         d("[NecroCat] Использование: /unpinfriend @ИмяДруга")
         return
@@ -2449,39 +2855,18 @@ SLASH_COMMANDS["/unpinfriend"] = function(displayName)
     if NC.savedVars.pinned[displayName] then
         NC.UnpinAndNormalize(displayName)
         d(string.format("[NecroCat] Друг %s удален, позиции остальных скорректированы.", displayName))
-        FRIENDS_LIST:RefreshData()
+        if FRIENDS_LIST then FRIENDS_LIST:RefreshData() end
+        if GUILD_ROSTER_KEYBOARD then GUILD_ROSTER_KEYBOARD:RefreshData() end
     else
         d(string.format("[NecroCat] Друг %s не найден в закрепленных.", displayName))
     end
 end
 
-SLASH_COMMANDS["/listpinned"] = function()
-    local sortedList = {}
-    for name, priority in pairs(NC.savedVars.pinned) do
-        table.insert(sortedList, { name = name, priority = priority })
-    end
-
-    if #sortedList == 0 then
-        d("[NecroCat] Список закрепленных пуст.")
-        return
-    end
-
-    table.sort(sortedList, function(a, b)
-        return a.priority < b.priority
-    end)
-
-    d("[NecroCat] Текущая очередь закреплений:")
-    for index, item in ipairs(sortedList) do
-        d(string.format(" %d. %s", index, item.name))
-    end
-end
-
 SLASH_COMMANDS["/pinclear"] = function()
-    for name in pairs(NC.savedVars.pinned) do
-        NC.savedVars.pinned[name] = nil
-    end
-    d("[NecroCat] Список друзей полностью очищен!")
+    NC.savedVars.pinned = {}
+    d("[NecroCat] Список закрепленных друзей полностью очищен!")
     if FRIENDS_LIST then FRIENDS_LIST:RefreshData() end
+    if GUILD_ROSTER_KEYBOARD then GUILD_ROSTER_KEYBOARD:RefreshData() end
 end
 
 SLASH_COMMANDS["/guildsclear"] = function()
@@ -2492,6 +2877,120 @@ SLASH_COMMANDS["/guildsclear"] = function()
     end
 end
 
+SLASH_COMMANDS["/housepin"] = function(argStr)
+    argStr = argStr or ""
+    local houseId, targetDisplayName, actualOwner, houseName, targetPos
+
+    -- 1. Проверяем, указан ли в начале целевой список (@Ник)
+    local leadingName = string.match(argStr, "^(@%S+)%s+")
+
+    -- 2. Ищем ссылку на дом любого вида: |H...:housing:ID:OWNER...|h
+    local linkId, linkOwner = string.match(argStr, "|H%d:housing:(%d+):(@?[^:|]+)")
+    if linkId and linkOwner then
+        houseId = tonumber(linkId)
+        actualOwner = linkOwner
+        targetDisplayName = leadingName or linkOwner -- Если указан @Ник в начале - пишем ему, иначе владельцу ссылки
+
+        local linkText = string.match(argStr, "|h%[?(.-)%]?|h")
+        if linkText and linkText ~= "" then
+            houseName = linkText
+        end
+
+        local afterLink = string.gsub(argStr, "|H.-|h", "")
+        if leadingName then
+            afterLink = string.gsub(afterLink, "^@%S+", "")
+        end
+        targetPos = tonumber(string.match(afterLink, "(%d+)"))
+    else
+        -- 3. Формат без ссылки: @Ник ID_дома [позиция]
+        local nameMatch, idMatch, posMatch = string.match(argStr, "^(@%S+)%s+(%d+)%s*(%d*)$")
+        if nameMatch and idMatch then
+            targetDisplayName = nameMatch
+            actualOwner = nameMatch
+            houseId = tonumber(idMatch)
+            targetPos = tonumber(posMatch)
+        end
+    end
+
+    if not targetDisplayName or not houseId or houseId <= 0 then
+        d("|c66f2ff[NecroCat]|r Использование /housepin:")
+        d("  1. Чужой дом себе: |c22ff22/housepin @ТвойНик [Ссылка] [Номер]|r")
+        d("  2. Дом в список друга: |c22ff22/housepin [Ссылка] [Номер]|r")
+        d("  3. По ID дома: |c22ff22/housepin @Ник ID_дома [Номер]|r")
+        return
+    end
+
+    if not string.find(targetDisplayName, "^@") then targetDisplayName = "@" .. targetDisplayName end
+    if actualOwner and not string.find(actualOwner, "^@") then actualOwner = "@" .. actualOwner end
+
+    NC.AddHouseToPlayer(targetDisplayName, houseId, houseName, targetPos, actualOwner)
+end
+
+SLASH_COMMANDS["/unhousepin"] = function(argStr)
+    local displayName, pos = string.match(argStr or "", "^(@?%S+)%s*(%d*)$")
+    if not displayName or displayName == "" then
+        d("[NecroCat] Использование: /unhousepin @Ник [Позиция]")
+        return
+    end
+    if not string.find(displayName, "^@") then displayName = "@" .. displayName end
+
+    local list = NC.savedVars.playerHouses and NC.savedVars.playerHouses[displayName]
+    if not list or #list == 0 then
+        d(string.format("[NecroCat] У %s нет сохраненных домов.", displayName))
+        return
+    end
+
+    local targetIndex = tonumber(pos)
+    -- Если номер не указан, но у человека всего 1 дом — удаляем его сразу
+    if not targetIndex and #list == 1 then
+        targetIndex = 1
+    end
+
+    if not targetIndex then
+        d(string.format("[NecroCat] У %s несколько домов. Укажите номер для удаления:", displayName))
+        for i, h in ipairs(list) do
+            d(string.format("  /unhousepin %s %d  (для «%s»)", displayName, i, h.name))
+        end
+        return
+    end
+
+    NC.RemoveHouseFromPlayer(displayName, targetIndex)
+end
+
+SLASH_COMMANDS["/listhouses"] = function(displayName)
+    displayName = displayName and string.match(displayName, "(%S+)")
+    if not displayName or displayName == "" then
+        d("[NecroCat] Использование: /listhouses @Ник")
+        return
+    end
+    if not string.find(displayName, "^@") then displayName = "@" .. displayName end
+
+    local list = NC.savedVars.playerHouses and NC.savedVars.playerHouses[displayName]
+    if not list or #list == 0 then
+        d(string.format("[NecroCat] У %s нет сохраненных домов.", displayName))
+        return
+    end
+
+    d(string.format("|c66f2ff[NecroCat]|r Дома игрока |cFFFF22%s|r:", displayName))
+    for i, hData in ipairs(list) do
+        d(string.format("  |c00FF00%d.|r %s (ID: %d)", i, hData.name, hData.houseId))
+    end
+end
+
+SLASH_COMMANDS["/clearhouses"] = function(displayName)
+    displayName = displayName and string.match(displayName, "(%S+)")
+    if not displayName or displayName == "" then
+        d("[NecroCat] Использование: /clearhouses @Ник")
+        return
+    end
+    if not string.find(displayName, "^@") then displayName = "@" .. displayName end
+
+    if NC.savedVars.playerHouses then
+        NC.savedVars.playerHouses[displayName] = nil
+    end
+    d(string.format("[NecroCat] Все сохраненные дома игрока %s удалены.", displayName))
+end
+
 SLASH_COMMANDS["/necrocat"] = function() NC.OpenSettings() end
 SLASH_COMMANDS["/nc"]       = function() NC.OpenSettings() end
 -- =========================================================
@@ -2499,13 +2998,21 @@ SLASH_COMMANDS["/nc"]       = function() NC.OpenSettings() end
 -- =========================================================
 
 SLASH_COMMANDS["/necrohelp"] = function()
-    d("|c66f2ff[NecroCat] Справка по командам аддона:|r")
-    d("|cffff22Друзья:|r")
-    d("  |c22ff22/pinfriend @Имя [Позиция]|r - Закрепить друга со сдвигом остальных.")
+    d("|c66f2ff================ [NecroCat Справка] ================|r")
+    d("|cffff22👑 Закрепление друзей (Друзья 'O' и Гильдии 'G'):|r")
+    d("  |c22ff22/pinfriend @Имя [Позиция]|r - Закрепить друга со сдвигом.")
     d("  |c22ff22/unpinfriend @Имя|r - Убрать друга из закрепленных.")
-    d("  |c22ff22/listpinned|r - Показать очередь друзей.")
-    d("  |c22ff22/pinclear|r - Сбросить закрепления друзей.")
-    d("|cffff22Гильдии:|r")
-    d("  Настройка порядка: |c22ff22Настройки -> Дополнения -> Castle of Necro cat|r")
-    d("  |c22ff22/guildsclear|r - Быстрый сброс порядка гильдий на стандартный.")
+    d("  |c22ff22/listpinned|r - Показать список закрепленных.")
+    d("  |c22ff22/pinclear|r - Сбросить все закрепления.")
+    d("|cffff22🏠 Дома игроков (Закладки и Телепорт):|r")
+    d("  |c22ff22/housepin [Ссылка] [Номер]|r - Записать дом в список хозяина.")
+    d("  |c22ff22/housepin @Кому [Ссылка] [Номер]|r - Записать чужой дом себе.")
+    d("  |c22ff22/housepin @Имя ID [Номер]|r - Записать дом по номеру ID.")
+    d("  |c22ff22/unhousepin @Имя [Номер]|r - Удалить дом из списка игрока.")
+    d("  |c22ff22/listhouses @Имя|r - Показать список домов игрока.")
+    d("  |c22ff22/clearhouses @Имя|r - Очистить все дома игрока.")
+    d("|cffff22⚙️ Настройки и Гильдии:|r")
+    d("  |c22ff22/necrocat|r или |c22ff22/nc|r - Меню настроек аддона.")
+    d("  |c22ff22/guildsclear|r - Сбросить порядок гильдий на стандартный.")
+    d("|c66f2ff====================================================|r")
 end

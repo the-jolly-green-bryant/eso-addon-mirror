@@ -22,10 +22,29 @@ end
 --notification for corrosive when setting x and y positions in options menu
 function functions.showCorrosiveSet()
     corrosiveTextLabel:SetHidden(false)
-    zo_callLater(function() functions.hideCorrosiveSet() end, 2500)
+    zo_callLater(function () functions.hideCorrosiveSet() end, 2000)
 end
 function functions.hideCorrosiveSet()
     corrosiveTextLabel:SetHidden(true)
+end
+
+--notification for onslaught
+function functions.showOnslaught()
+    PlaySound(SOUNDS.ANTIQUITIES_FANFARE_FAILURE)
+    onslaughtTextLabel:SetHidden(false)
+    zo_callLater(function() functions.hideOnslaught() end, 8000)
+end
+function functions.hideOnslaught()
+    onslaughtTextLabel:SetHidden(true)
+end
+
+--notification for onslaught when setting x and y positions in options menu
+function functions.showOnslaughtSet()
+    onslaughtTextLabel:SetHidden(false)
+    zo_callLater(function () functions.hideOnslaughtSet() end, 2000)
+end
+function functions.hideOnslaughtSet()
+    onslaughtTextLabel:SetHidden(true)
 end
 
 --post system message to middle of screen
@@ -301,6 +320,17 @@ function functions.startCorrosive()
     functions.printMessage("Corrosive Armour alerts enabled")
 end
 
+--start and stop tracking onslaught
+function functions.stopOnslaught()
+    EVENT_MANAGER:UnregisterForEvent("onslaughtAlert", EVENT_COMBAT_EVENT)
+    functions.printMessage("Onslaught alerts disabled")
+end
+function functions.startOnslaught()
+    EVENT_MANAGER:RegisterForEvent("onslaughtAlert", EVENT_COMBAT_EVENT, functions.combatAlertOn)
+    EVENT_MANAGER:AddFilterForEvent("onslaughtAlert", EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, appStart.onslaughtID)
+    functions.printMessage("Onslaught alerts enabled")
+end
+
 --handle combat alert
 function functions.combatAlert(eventCode, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, 
     sourceType, targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId, overflow)
@@ -310,12 +340,31 @@ function functions.combatAlert(eventCode, result, isError, abilityName, abilityG
     if isError then
         return
     end
+
     if abilityId ~= appStart.corrosiveID then
         return
     end
 
     if functions.cleanName(targetName) == nameTmp then 
         functions.showCorrosive()
+    end
+end
+
+--handle combat alert
+function functions.combatAlertOn(eventCode, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, 
+    sourceType, targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId, overflow)
+    
+    local nameTmp = GetUnitName("player")
+
+    if isError then
+        return
+    end
+    if abilityId ~= appStart.onslaughtID then
+        return
+    end
+
+    if functions.cleanName(sourceName) ~= nameTmp then
+        functions.showOnslaught()
     end
 end
 
@@ -332,11 +381,11 @@ function functions.setAnchor(x, y)
     vampText:ClearAnchors()
 
     cyroText:SetHidden(false)
-    zo_callLater(function () cyroText:SetHidden(true) end, 2000)
+    zo_callLater(function () if appStart.isMenuOpen == true then cyroText:SetHidden(true) end end, 2000)
     combatStateText:SetHidden(false)
-    zo_callLater(function () combatStateText:SetHidden(true) end, 2000)
+    zo_callLater(function () if appStart.isMenuOpen == true then combatStateText:SetHidden(true) end end, 2000)
     vampText:SetHidden(false)
-    zo_callLater(function () vampText:SetHidden(true) end, 2000)
+    zo_callLater(function () if appStart.isMenuOpen == true then vampText:SetHidden(true) end end, 2000)
 
     cyroText:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, x, y)
     combatStateText:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, x, y + 35)
@@ -347,6 +396,12 @@ end
 function functions.setAnchorCorro(x, y)
     corrosiveText:ClearAnchors()
     corrosiveText:SetAnchor(CENTERLEFT, GuiRoot, CENTERLEFT, x, y)
+end
+
+--move text anchors to move text around the screen
+function functions.setAnchorOnslaught(x, y)
+    onslaughtText:ClearAnchors()
+    onslaughtText:SetAnchor(CENTERLEFT, GuiRoot, CENTERLEFT, x, y)
 end
 
 --register map pins for ayleid wells
@@ -411,6 +466,7 @@ end
 
 --handle UI opened
 function functions.onMenuOpened()
+    appStart.isMenuOpen = true
     if appStart.savedVariables.alertStatusEnabled then
         cyroText:SetHidden(true)
     end
@@ -424,6 +480,7 @@ end
 
 --handle UI closed
 function functions.onMenuClosed()
+    appStart.isMenuOpen = false
     if appStart.savedVariables.alertStatusEnabled then
         cyroText:SetHidden(false)
     end
@@ -506,6 +563,23 @@ function functions.createOptions()
                 end
             end,
             default = appStart.defaults.trackCorrosive,
+        },
+        {
+            type = "checkbox",
+            name = "Track Onslaught",
+            tooltip = "Get alerts when someone is using onslaught near you.",
+            getFunc = function()
+                return appStart.savedVariables.trackOnslaught
+            end,
+            setFunc = function(value)
+                appStart.savedVariables.trackOnslaught = value
+                if not value then
+                    functions.stopOnslaught()
+                else
+                    functions.startOnslaught()
+                end
+            end,
+            default = appStart.defaults.trackOnslaught,
         },
         {
             type = "checkbox",
@@ -650,6 +724,36 @@ function functions.createOptions()
                 functions.showCorrosiveSet()
             end,
             default = appStart.defaults.yAxisTextCorro,
+        },
+        {
+            type = "slider",
+            name = "Onslaught Alert x Position",
+            tooltip = "Adjust the left and right position of the onslaught user alert text.",
+            min = 0, max = 1700, step = 10,
+            getFunc = function()
+                return appStart.savedVariables.xAxisTextOnslaught
+            end,
+            setFunc = function(value)
+                appStart.savedVariables.xAxisTextOnslaught = value
+                functions.setAnchorOnslaught(appStart.savedVariables.xAxisTextOnslaught, appStart.savedVariables.yAxisTextOnslaught)
+                functions.showOnslaughtSet()
+            end,
+            default = appStart.defaults.xAxisTextOnslaught,
+        },
+        {
+            type = "slider",
+            name = "Onslaught Alert y Position",
+            tooltip = "Adjust the up and down position of the onslaught user alert text.",
+            min = 0, max = 1000, step = 10,
+            getFunc = function()
+                return appStart.savedVariables.yAxisTextOnslaught
+            end,
+            setFunc = function(value)
+                appStart.savedVariables.yAxisTextOnslaught = value
+                functions.setAnchorOnslaught(appStart.savedVariables.xAxisTextOnslaught, appStart.savedVariables.yAxisTextOnslaught)
+                functions.showOnslaughtSet()
+            end,
+            default = appStart.defaults.yAxisTextOnslaught,
         },
         {
             type = "divider",

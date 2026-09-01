@@ -102,11 +102,13 @@ function B:Capture(kind, text, stamp, errorCode)
         maxErrors = math.max(10, math.min(100, maxErrors))
         local capturedAt = tonumber(stamp) or nowStamp()
         local source = sourceFromError(text)
+        local sessionId = tostring(self.sessionId029123 or "legacy")
 
         local found
         for i = #log, 1, -1 do
             local entry = log[i]
-            if type(entry) == "table" and entry.text == text and entry.kind == tostring(kind or "LUA") then
+            if type(entry) == "table" and entry.text == text and entry.kind == tostring(kind or "LUA")
+                and tostring(entry.sessionId029123 or "legacy") == sessionId then
                 found = entry
                 break
             end
@@ -124,6 +126,8 @@ function B:Capture(kind, text, stamp, errorCode)
                 firstAt = capturedAt,
                 lastAt = capturedAt,
                 count = 1,
+                sessionId029123 = sessionId,
+                addonVersion029123 = tostring(EPC.version or "0.29.125"),
             }
             while #log > maxErrors do table.remove(log, 1) end
         end
@@ -280,8 +284,10 @@ function B:RunScan()
     local log = self:GetLog()
     local grouped = {}
     local totalOccurrences = 0
+    local historicalOccurrences = 0
+    local currentSession = tostring(self.sessionId029123 or "")
     for _, entry in ipairs(log) do
-        if type(entry) == "table" then
+        if type(entry) == "table" and tostring(entry.sessionId029123 or "") == currentSession then
             local source = tostring(entry.source or "Unknown source")
             local count = math.max(1, tonumber(entry.count) or 1)
             totalOccurrences = totalOccurrences + count
@@ -294,6 +300,12 @@ function B:RunScan()
             g.total = g.total + count
             g.latest = math.max(g.latest, tonumber(entry.lastAt) or tonumber(entry.firstAt) or 0)
             if g.sample == "" then g.sample = firstLine(entry.text) end
+        end
+    end
+
+    for _, entry in ipairs(log) do
+        if type(entry) == "table" and tostring(entry.sessionId029123 or "") ~= currentSession then
+            historicalOccurrences = historicalOccurrences + math.max(1, tonumber(entry.count) or 1)
         end
     end
 
@@ -329,9 +341,12 @@ function B:RunScan()
 
     if EPC.Print then
         if #errorSources == 0 and #loadWarnings == 0 then
-            EPC:Print("EAS Scan: no captured runtime errors or addon load warnings found.")
+            EPC:Print("EAS Scan: current session is clean; no captured runtime errors or addon load warnings found.")
         else
-            EPC:Print(string.format("EAS Scan: %d addon source(s) with captured errors, %d total occurrence(s), %d addon load warning(s).", #errorSources, totalOccurrences, #loadWarnings))
+            EPC:Print(string.format("EAS Scan (current session): %d addon source(s) with captured errors, %d total occurrence(s), %d addon load warning(s).", #errorSources, totalOccurrences, #loadWarnings))
+        end
+        if historicalOccurrences > 0 then
+            EPC:Print(string.format("Bug Catcher history: %d older stored occurrence(s) are retained but are not treated as current errors. Use /easbugs to review them or /easbugs clear to erase history.", historicalOccurrences))
         end
 
         local maxSources = math.min(8, #errorSources)
@@ -383,6 +398,10 @@ end
 function B:Initialize()
     self.ready = true
     self.sessionCaught = 0
+    -- A scan should describe what is wrong NOW, not errors saved by older addon
+    -- builds. History is retained for troubleshooting, but /easscan filters to
+    -- this UI session.
+    self.sessionId029123 = tostring(nowStamp()) .. ":" .. tostring(nowMs())
     if EPC.saved then
         EPC.saved.bugCatcherLog = EPC.saved.bugCatcherLog or {}
         if EPC.saved.bugCatcherMaxErrors == nil then EPC.saved.bugCatcherMaxErrors = DEFAULT_MAX end

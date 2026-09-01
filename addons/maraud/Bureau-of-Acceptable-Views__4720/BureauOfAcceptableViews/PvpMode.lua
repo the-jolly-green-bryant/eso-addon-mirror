@@ -28,6 +28,9 @@ local GetZoneId = GetZoneId
 local tonumber = tonumber
 local type = type
 local pairs = pairs
+local mathabs = math.abs
+
+local CameraSettings = addon.CameraSettings
 
 local SOURCE = "PvpMode"
 local EVENT_NAMESPACE = "BAV_PvpMode"
@@ -38,6 +41,9 @@ local DAMAGE_WINDOW_MS = 1500
 local COMBAT_ACTIVITY_HOLD_MS = 2000
 local PRESSURE_HOLD_MS = 3000
 local PLAYER_UNIT = "player"
+local ZOOM_KEY = "distance"
+local ZOOM_OBSERVER_EPSILON = 0.005
+local AUTOMATIC_ZOOM_SETTLE_MS = 500
 
 local STATE_OFF = "off"
 local STATE_SCOUTING = "scouting"
@@ -49,14 +55,12 @@ local STATE_SUSPENDED = "suspended"
 
 local PROFILES = {
     [STATE_SCOUTING] = {
-        instant = true,
         freezeInMenus = true,
         fovTarget = 58,
         distanceOffset = 0.20,
         screenShakeTarget = 0.45,
     },
     [STATE_MOUNTED] = {
-        instant = true,
         freezeInMenus = true,
         fovTarget = 60,
         distanceOffset = 0.55,
@@ -64,14 +68,12 @@ local PROFILES = {
         screenShakeTarget = 0.35,
     },
     [STATE_PURSUIT] = {
-        instant = true,
         freezeInMenus = true,
         fovTarget = 60,
         distanceOffset = 0.15,
         screenShakeTarget = 0.35,
     },
     [STATE_ENGAGED] = {
-        instant = true,
         freezeInMenus = true,
         fovTarget = 61,
         distanceOffset = 0.45,
@@ -79,7 +81,6 @@ local PROFILES = {
         screenShakeTarget = 0.20,
     },
     [STATE_PRESSURE] = {
-        instant = true,
         freezeInMenus = true,
         fovTarget = 63,
         distanceOffset = 0.70,
@@ -160,6 +161,9 @@ local runtime = {
     combatBootstrapPending = false,
     eventsRegistered = false,
     manualZoomOverride = false,
+    observedZoom = nil,
+    observedZoomWriteRevision = 0,
+    externalZoomIgnoreUntil = 0,
 }
 
 local function LogDebug(...)
@@ -282,6 +286,87 @@ local function LoadManualZoomOverride()
         return settings.GetPvpManualZoomOverride()
     end
     return false
+end
+
+local function RecordManualZoom(distance)
+    distance = tonumber(distance)
+    if distance == nil or not config.enabled or not runtime.inPvp then
+        return false
+    end
+
+    runtime.manualZoomOverride = true
+    PersistManualZoomOverride(true)
+    local presets = addon.ContextPresets
+    if presets and presets.UpdateExternalBaseDistance then
+        presets.UpdateExternalBaseDistance(SOURCE, distance)
+    end
+    return true
+end
+
+local function ResetZoomObserver()
+    runtime.observedZoom = nil
+    runtime.observedZoomWriteRevision = 0
+    runtime.externalZoomIgnoreUntil = 0
+end
+
+local function SuppressAutomaticZoom()
+    runtime.externalZoomIgnoreUntil = Now() + AUTOMATIC_ZOOM_SETTLE_MS
+end
+
+local function SeedZoomObserver()
+    local revision = 0
+    if CameraSettings and CameraSettings.GetLastVerifiedWrite then
+        revision = CameraSettings.GetLastVerifiedWrite(ZOOM_KEY)
+    end
+    runtime.observedZoomWriteRevision = revision or 0
+
+    if CameraSettings and CameraSettings.Get then
+        local zoom, ok = CameraSettings.Get(ZOOM_KEY)
+        if ok then
+            runtime.observedZoom = zoom
+        end
+    end
+end
+
+-- Detect distance changes that did not land as BAV's own latest verified
+-- write. This covers native mouse-wheel handling, gamepad zoom, and other
+-- public-setting changes without relying on private gamepad functions.
+local function ObserveExternalZoom()
+    if not (CameraSettings and CameraSettings.Get) then
+        return
+    end
+
+    local zoom, ok = CameraSettings.Get(ZOOM_KEY)
+    if not ok or zoom == nil then
+        return
+    end
+
+    local revision, writtenValue = 0, nil
+    if CameraSettings.GetLastVerifiedWrite then
+        revision, writtenValue = CameraSettings.GetLastVerifiedWrite(ZOOM_KEY)
+    end
+
+    local previousZoom = runtime.observedZoom
+    local internalWriteObserved = revision ~= runtime.observedZoomWriteRevision
+    runtime.observedZoom = zoom
+    runtime.observedZoomWriteRevision = revision
+
+    if previousZoom == nil or mathabs(zoom - previousZoom) <= ZOOM_OBSERVER_EPSILON then
+        return
+    end
+    if internalWriteObserved and writtenValue ~= nil
+        and mathabs(zoom - writtenValue) <= ZOOM_OBSERVER_EPSILON then
+        return
+    end
+    if runtime.uiMode or runtime.dead or runtime.siege then
+        return
+    end
+    if Now() < runtime.externalZoomIgnoreUntil then
+        return
+    end
+
+    LogDebug("PvpMode: external zoom observed %.2f -> %.2f", previousZoom, zoom)
+    return RecordManualZoom(zoom)
 end
 
 local function ResetPvpWorldSession(releaseProfile)
@@ -457,6 +542,12 @@ function PvpMode.Refresh(force)
         and IsGameCameraSiegeControlled() or false
     runtime.health, runtime.healthMax = ReadHealth()
 
+    -- Observe native/gamepad zoom before resolving the next profile so a state
+    -- edge in the same interval cannot overwrite the player's new distance.
+    if ObserveExternalZoom() then
+        force = true
+    end
+
     local now = Now()
     if runtime.combatBootstrapPending then
         runtime.combatBootstrapPending = false
@@ -474,7 +565,12 @@ end
 
 local function OnMountedState(_, mounted)
     runtime.mounted = mounted and true or false
+    SuppressAutomaticZoom()
     PvpMode.Refresh()
+end
+
+local function OnAutomaticCameraStateChanged()
+    SuppressAutomaticZoom()
 end
 
 local function OnCombatState(_, inCombat)
@@ -593,14 +689,19 @@ local function OnSafetyUpdate()
         and IsUnitDeadOrReincarnating(PLAYER_UNIT) or false
     runtime.siege = IsGameCameraSiegeControlled
         and IsGameCameraSiegeControlled() or false
+    local externalZoomObserved = ObserveExternalZoom()
     local wasWriteFault = runtime.writeFault
     local failureCount = private.GetZoomWriteFailureCount
         and private.GetZoomWriteFailureCount() or 0
-    if failureCount >= 3 then
+    local presets = addon.ContextPresets
+    local profileFailureCount = presets and presets.GetExternalProfileFailureCount
+        and presets.GetExternalProfileFailureCount(SOURCE) or 0
+    if failureCount >= 3 or profileFailureCount > 0 then
         runtime.writeFault = true
     end
     if not runtime.uiMode and (
-        ResolveState(now) ~= runtime.currentState
+        externalZoomObserved
+        or ResolveState(now) ~= runtime.currentState
         or runtime.dead ~= wasDead or runtime.siege ~= wasSiege
         or runtime.writeFault ~= wasWriteFault) then
         PvpMode.Refresh(true)
@@ -618,6 +719,12 @@ RegisterEvents = function()
             EVENT_NAMESPACE, EVENT_PLAYER_ACTIVELY_ENGAGED_STATE, OnActivelyEngagedState)
     end
     EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_MOUNTED_STATE_CHANGED, OnMountedState)
+    EVENT_MANAGER:RegisterForEvent(
+        EVENT_NAMESPACE, EVENT_WEREWOLF_STATE_CHANGED, OnAutomaticCameraStateChanged)
+    EVENT_MANAGER:RegisterForEvent(
+        EVENT_NAMESPACE, EVENT_PLAYER_SWIMMING, OnAutomaticCameraStateChanged)
+    EVENT_MANAGER:RegisterForEvent(
+        EVENT_NAMESPACE, EVENT_PLAYER_NOT_SWIMMING, OnAutomaticCameraStateChanged)
     EVENT_MANAGER:RegisterForEvent(
         EVENT_NAMESPACE, EVENT_GAME_CAMERA_UI_MODE_CHANGED, OnGameCameraUIModeChanged)
     EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_POWER_UPDATE, OnPowerUpdate)
@@ -639,6 +746,7 @@ RegisterEvents = function()
     if sprintWatch and sprintWatch.Subscribe then
         sprintWatch.Subscribe(SOURCE, OnSprintChanged)
     end
+    SeedZoomObserver()
     EVENT_MANAGER:RegisterForUpdate(SAFETY_UPDATE_NAME, SAFETY_INTERVAL_MS, OnSafetyUpdate)
 end
 
@@ -649,6 +757,9 @@ UnregisterEvents = function()
         EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_PLAYER_ACTIVELY_ENGAGED_STATE)
     end
     EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_MOUNTED_STATE_CHANGED)
+    EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_WEREWOLF_STATE_CHANGED)
+    EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_PLAYER_SWIMMING)
+    EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_PLAYER_NOT_SWIMMING)
     EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_GAME_CAMERA_UI_MODE_CHANGED)
     EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_POWER_UPDATE)
     EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_COMBAT_EVENT)
@@ -658,6 +769,7 @@ UnregisterEvents = function()
     if sprintWatch and sprintWatch.Unsubscribe then
         sprintWatch.Unsubscribe(SOURCE)
     end
+    ResetZoomObserver()
     runtime.eventsRegistered = false
 end
 
@@ -756,15 +868,8 @@ end
 -- omit distance, and the restore snapshot adopts this distance so leaving PvP
 -- does not undo the player's choice.
 function PvpMode.OnManualZoom(distance)
-    if not config.enabled or not runtime.inPvp then
+    if not RecordManualZoom(distance) then
         return false
-    end
-
-    runtime.manualZoomOverride = true
-    PersistManualZoomOverride(true)
-    local presets = addon.ContextPresets
-    if presets and presets.UpdateExternalBaseDistance then
-        presets.UpdateExternalBaseDistance(SOURCE, distance)
     end
     PvpMode.Refresh(true)
     return true

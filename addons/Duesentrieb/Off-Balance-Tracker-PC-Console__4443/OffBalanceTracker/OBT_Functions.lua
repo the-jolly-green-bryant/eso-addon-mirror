@@ -26,7 +26,7 @@ function OBT.GetPercentageColor(percentage)
 end
 
 ---------------------------------------------------------------------------
--- PLAY SOUND
+-- PLAY SOUND WITH COOLDOWN
 ---------------------------------------------------------------------------
 function OBT.PlaySound(volume)
     if not volume or volume <= 0 then return end
@@ -366,6 +366,11 @@ function OBT.OnUpdateHandler()
     -- START 22SEC TIMER WHEN OB
     if dataState == 1 and OBT.lastDataState ~= 1 then
         OBT.cooldownEndTime = currentTime + 22000
+        if OBT.stateCount >= OBT.targetCount then
+            OBT.targetCountEndTime = currentTime + 2200
+            OBT.targetCount = math.random(2200)
+            OBT.stateCount = 0
+        end
     end
     OBT.lastDataState = dataState
 
@@ -428,8 +433,9 @@ function OBT.OnCombatState()
         ZO_ClearTable(OBT.ActiveOffBalance)
 
         OBT.hasCombatBoss = false
+        OBT.targetCount = math.random(2200)
         OBT.stateCount = 0
-        OBT.targetCount = math.random(6000)
+
         EVENT_MANAGER:RegisterForUpdate(OBT.NAME .. "Update", OBT.TIME_UPDATE, OBT.OnUpdateHandler)
         OBT.UpdateVisibility()
     else
@@ -444,6 +450,7 @@ function OBT.OnCombatState()
             OBT.Memory = { state = 0, endTime = 0, isBoss = false }
             OBT.isTrackingBoss = false
             OBT.hasCombatBoss = false
+            OBT.targetCountEndTime = 0
             OBT.UpdateVisuals(0, 0, false)
             OBT.UpdateVisibility()
         end
@@ -514,5 +521,6 @@ function OBT.Disable()
     ZO_ClearTable(OBT.BossTimers)
     ZO_ClearTable(OBT.KnownBosses)
     ZO_ClearTable(OBT.ActiveOffBalance)
+    OBT.targetCountEndTime = 0
     OBT.isLoaded = false
 end

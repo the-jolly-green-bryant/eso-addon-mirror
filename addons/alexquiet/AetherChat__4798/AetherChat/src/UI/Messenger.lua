@@ -37,6 +37,7 @@ local function GetFixedChannels()
         { id = 'zone',    name = L('CH_ZONE'),    prefix = '/zone', icon = '/esoui/art/chatwindow/chat_notification_echo.dds' },
         { id = 'general', name = L('CH_GENERAL'), prefix = '/say',  icon = '/esoui/art/tradinghouse/tradinghouse_listings_tabicon_up.dds' },
         { id = 'party',   name = L('CH_PARTY'),   prefix = '/party',icon = '/esoui/art/compass/groupleader.dds' },
+        { id = 'system',  name = L('CH_SYSTEM'),  prefix = '/zone', icon = '/esoui/art/chatwindow/chat_options_up.dds' },
     }
 end
 
@@ -134,10 +135,11 @@ function Messenger.Initialize()
         Messenger.minBar:SetHandler('OnMouseUp', function(self, button, upInside)
             if button == MOUSE_BUTTON_INDEX_LEFT and upInside then
                 Messenger.Toggle()
+                return true
             end
         end)
 
-        -- Register MinBar as official HUD Fragment so ESO never confuses it with modal UI
+        -- Register MinBar as official HUD Fragment
         if SCENE_MANAGER then
             local minBarFragment = ZO_HUDFadeSceneFragment:New(Messenger.minBar)
             SCENE_MANAGER:GetScene("hud"):AddFragment(minBarFragment)
@@ -201,17 +203,47 @@ function Messenger.Initialize()
     -- Apply Saved Backdrop Transparency
     Messenger.ApplyBackdropAlpha(Settings.Get('backdropAlpha', 95))
 
-    -- Auto-Collapse when Opening Game Menus (Inventory, Skills, Map, Champion Perks, etc.)
+    -- Auto-Hide on Escape Game Menu and Auto-Restore on Close
+    local wasOpenBeforeGameMenu = false
+
+    -- 1. Direct PreHook on ZO_GameMenu_InGame (fires immediately when Escape is pressed)
+    if ZO_GameMenu_InGame then
+        ZO_PreHook(ZO_GameMenu_InGame, "SetHidden", function(self, hidden)
+            local autoHide = Settings.Get('autoHideOnGameMenu', true)
+            if autoHide then
+                if not hidden then
+                    -- Escape menu is opening
+                    if Messenger.window and not Messenger.window:IsHidden() then
+                        wasOpenBeforeGameMenu = true
+                        Messenger.Hide()
+                    end
+                else
+                    -- Escape menu is closing
+                    if wasOpenBeforeGameMenu then
+                        wasOpenBeforeGameMenu = false
+                        Messenger.Show()
+                    end
+                end
+            end
+        end)
+    end
+
+    -- 2. SceneStateChange safeguard covering settings, addons, keybindings, and gameMenu scenes
     if SCENE_MANAGER then
         SCENE_MANAGER:RegisterCallback("SceneStateChange", function(scene, oldState, newState)
-            if newState == SCENE_SHOWING or newState == SCENE_SHOWN then
-                local autoCollapse = Settings.Get('autoCollapseOnMenus', true)
-                if autoCollapse then
-                    local sceneName = scene:GetName()
-                    if sceneName ~= "hud" and sceneName ~= "hudui" and sceneName ~= "" then
-                        if Messenger.window and not Messenger.window:IsHidden() then
-                            Messenger.Hide()
-                        end
+            local sceneName = scene and scene:GetName() or ""
+            local isGameMenuScene = (sceneName == "gameMenuInGame" or sceneName == "settings" or sceneName == "addons" or sceneName == "keybindings" or sceneName == "systemMenu")
+            local autoHide = Settings.Get('autoHideOnGameMenu', true)
+            if autoHide then
+                if isGameMenuScene and (newState == SCENE_SHOWING or newState == SCENE_SHOWN) then
+                    if Messenger.window and not Messenger.window:IsHidden() then
+                        wasOpenBeforeGameMenu = true
+                        Messenger.Hide()
+                    end
+                elseif (sceneName == "hud" or sceneName == "hudui") and newState == SCENE_SHOWN then
+                    if wasOpenBeforeGameMenu then
+                        wasOpenBeforeGameMenu = false
+                        Messenger.Show()
                     end
                 end
             end
@@ -316,8 +348,8 @@ function Messenger.Initialize()
     -- Setup Copy Modal Handlers
     Messenger.SetupCopyModal()
 
-    -- Apply Resolution Scale
-    Messenger.ApplyResolutionScale()
+    -- Apply Saved Chat Font Size
+    Messenger.ApplyChatFontSize(Settings.Get('chatFontSize', 16))
 
     -- Clear History Button
     local clearBtn = Messenger.window:GetNamedChild('ClearBtn')
@@ -570,6 +602,16 @@ function Messenger.Initialize()
     -- Guild Member Status Events (Login/Logout for Selected Guilds)
     EVENT_MANAGER:RegisterForEvent('AetherChat_GuildStatus', EVENT_GUILD_MEMBER_PLAYER_STATUS_CHANGED, Messenger.OnGuildMemberPlayerStatusChanged)
 
+    -- Refresh Whispers and Channel list upon Zone Transitions & Loading Screen completion
+    EVENT_MANAGER:RegisterForEvent('AetherChat_Messenger_PlayerAct', EVENT_PLAYER_ACTIVATED, function()
+        Messenger.LoadWhispersFromHistory()
+        Messenger.RefreshChannelList()
+        Messenger.ApplyChatFontSize(Settings.Get('chatFontSize', 16))
+        if activeChannelKey then
+            Messenger.LoadMessages(activeChannelKey)
+        end
+    end)
+
     -- Global mouse up for drag-and-drop channel order and edge resizing finalization
     EVENT_MANAGER:RegisterForEvent('AetherChat_GlobalMouseUp', EVENT_GLOBAL_MOUSE_UP, function()
         if dragState then
@@ -780,7 +822,6 @@ function Messenger.OpenDonationWindow()
 
     Messenger.SetupDonationWindow()
     win:SetHidden(false)
-    SetGameCameraUIMode(true)
 end
 
 function Messenger.DockNativeChatEntry()
@@ -1355,15 +1396,12 @@ function Messenger.Hide()
     if Messenger.donationWindow and not Messenger.donationWindow:IsHidden() then
         Messenger.donationWindow:SetHidden(true)
     end
-
-    SetGameCameraUIMode(false)
 end
 
 function Messenger.Show()
     if not Messenger.window then return end
     Messenger.window:SetHidden(false)
 
-    SetGameCameraUIMode(true)
     Messenger.DockNativeChatEntry()
 
     if activeChannelKey then
@@ -1602,6 +1640,8 @@ function Messenger.RefreshChannelList()
         if nameLabel then
             nameLabel:SetText(item.name)
             nameLabel:SetHidden(isCollapsed)
+            local currentFontSize = Settings.Get('chatFontSize', 16) or 16
+            nameLabel:SetFont(string.format("$(CHAT_FONT)|%d|soft-shadow-thin", math.max(13, currentFontSize - 1)))
         end
 
         local icon = btn:GetNamedChild('Icon')
@@ -2241,54 +2281,50 @@ function Messenger.OpenCopyModal(content)
 end
 
 -- ============================================================================
--- RESOLUTION & SCALE MANAGEMENT
+-- TYPOGRAPHY & CHAT FONT SIZE MANAGEMENT (FULL INTERFACE SCALING & CYRILLIC)
 -- ============================================================================
 
--- Coefficient table: base window dimensions reference is 940×520 (designed at 1440p)
-local SCALE_MAP = {
-    ['720']  = 0.72,
-    ['1080'] = 0.86,
-    ['1440'] = 1.00,
-    ['2160'] = 1.32,
-}
+function Messenger.ApplyChatFontSize(fontSize)
+    local size = tonumber(fontSize) or 16
+    if size < 12 then size = 12 end
+    if size > 24 then size = 24 end
 
-function Messenger.ApplyResolutionScale()
-    if not Messenger.window then return end
-
-    local mode = Settings.Get('scaleMode', 'auto')
-    local scale = 1.0
-
-    if mode == 'auto' then
-        -- Detect screen height via GuiRoot
-        local screenH = GuiRoot:GetHeight()
-        if screenH <= 768 then
-            scale = SCALE_MAP['720']
-        elseif screenH <= 1100 then
-            scale = SCALE_MAP['1080']
-        elseif screenH <= 1550 then
-            scale = SCALE_MAP['1440']
-        else
-            scale = SCALE_MAP['2160']
+    if Messenger.window then
+        -- 1. Main Messages TextBuffer with universal ESO font (supports Russian/Cyrillic & all unicode)
+        local buffer = Messenger.window:GetNamedChild('Messages')
+        if buffer then
+            local fontStr = string.format("$(CHAT_FONT)|%d|soft-shadow-thin", size)
+            buffer:SetFont(fontStr)
+            if activeChannelKey then
+                Messenger.LoadMessages(activeChannelKey)
+            end
         end
-    elseif SCALE_MAP[mode] then
-        scale = SCALE_MAP[mode]
-    else
-        -- manual mode: use slider value
-        scale = Settings.Get('windowScale', 1.0)
+
+        -- 2. Active Channel Header Title
+        local activeTitle = Messenger.window:GetNamedChild('ActiveChannelLabel')
+        if activeTitle then
+            activeTitle:SetFont(string.format("$(BOLD_FONT)|%d|soft-shadow-thin", math.min(24, size + 3)))
+        end
+
+        -- 3. Top Header Title
+        local winTitle = Messenger.window:GetNamedChild('Title')
+        if winTitle then
+            winTitle:SetFont(string.format("$(BOLD_FONT)|%d|soft-shadow-thin", math.min(22, size + 2)))
+        end
+
+        -- 4. Search Box Edit Field
+        local searchEdit = Messenger.window:GetNamedChild('SearchBoxEdit')
+        if searchEdit then
+            searchEdit:SetFont(string.format("$(CHAT_FONT)|%d|soft-shadow-thin", math.max(12, size - 2)))
+        end
+
+        -- 5. Left Sidebar Channel Buttons
+        for _, btn in pairs(channelButtons) do
+            local nameLabel = btn:GetNamedChild('Name')
+            if nameLabel then
+                nameLabel:SetFont(string.format("$(CHAT_FONT)|%d|soft-shadow-thin", math.max(13, size - 1)))
+            end
+        end
     end
-
-    -- Base dimensions: 940×520
-    local baseW, baseH = 940, 520
-    local newW = math.floor(baseW * scale)
-    local newH = math.floor(baseH * scale)
-
-    -- Clamp to safe limits
-    newW = math.max(560, math.min(1920, newW))
-    newH = math.max(320, math.min(1200, newH))
-
-    Messenger.window:SetDimensions(newW, newH)
-
-    -- Save new dimensions
-    Settings.Set('windowDimensions', { width = newW, height = newH })
 end
 

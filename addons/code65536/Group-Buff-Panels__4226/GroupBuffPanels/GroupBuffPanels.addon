@@ -7,11 +7,11 @@
 ## Title: Group Buff Panels
 ## Description: Status panels for tracking group buffs
 ## Author: @code65536
-## Version: 2.3.0
-## AddOnVersion: 203000
+## Version: 2.3.2.1
+## AddOnVersion: 203021
 ## APIVersion: 101050 101051
-## SavedVariables: GroupBuffPanelsSavedVariables
-## DependsOn: LibCombatAlerts>=7090
+## SavedVariables: GroupBuffPanelsSavedVariables ACACUpdateCheckDisabled ACACUC_GroupBuffPanels
+## DependsOn: LibCombatAlerts>=8010
 ## PCDependsOn: LibAddonMenu-2.0>=40
 ## ConsoleDependsOn: LibHarvensAddonSettings>=20107
 
@@ -25,3 +25,5 @@ ConditionalEnablement.lua
 Settings.lua
 pc/Settings.lua
 console/Settings.lua
+
+pc/AntiClankerAddonConsortiumUpdateChecker.lua

@@ -40,6 +40,8 @@ addon.ShoulderControl = addon.ShoulderControl or {}
 local ShoulderControl = addon.ShoulderControl
 
 local CameraSettings = addon.CameraSettings
+local Ease = addon.Ease
+local CameraResponse = addon.CameraResponse
 
 -- The shared options-window watcher (OptionsWatch.lua): owns the fragment
 -- subscription and the canonical IsOpen() suspend-gate, replacing this module's
@@ -87,6 +89,8 @@ local SIDE_RIGHT  = "right"
 local SIDE_CENTER = "center"
 
 local SHOULDER_KEY = "shoulder"
+local GLIDE_UPDATE_NAME = "BAV_ShoulderControl_Glide"
+local RESPONSE_OWNER = "ShoulderControl"
 
 -- The auto-trigger states ShoulderControl can react to. Reuses the same engine
 -- states the rest of the addon tracks; "any active trigger" swings the camera (a
@@ -112,9 +116,15 @@ local controller = {
     baseShoulder = nil,
     activeSide  = SIDE_CENTER,
     recovered   = false,
+    responseMode = nil,
 }
 
 local EVENT_NAMESPACE = "BAV_ShoulderControl"
+local glideFrom = nil
+local glideTo = nil
+local glideSide = nil
+local glideClearsBase = false
+local StopShoulderGlide
 
 -- ---------------------------------------------------------------------------
 -- Base capture / restore (persisted recovery)
@@ -154,10 +164,22 @@ end
 -- Write the captured base back and forget it everywhere (in-memory + persisted).
 -- Safe when nothing is captured (still clears any stale persisted copy).
 local function RestoreBase()
+    if StopShoulderGlide then
+        StopShoulderGlide()
+    end
     if controller.baseShoulder ~= nil then
+        if CameraResponse and CameraResponse.AcquireSmoothing then
+            CameraResponse.AcquireSmoothing(RESPONSE_OWNER, true)
+        end
         if not CameraSettings.Set(SHOULDER_KEY, controller.baseShoulder) then
+            if CameraResponse and CameraResponse.ReleaseSmoothing then
+                CameraResponse.ReleaseSmoothing(RESPONSE_OWNER)
+            end
             LogWarn("ShoulderControl.RestoreBase: restore failed; retaining base snapshot")
             return false
+        end
+        if CameraResponse and CameraResponse.ReleaseSmoothing then
+            CameraResponse.ReleaseSmoothing(RESPONSE_OWNER)
         end
         LogDebug("ShoulderControl.RestoreBase: restored=%.2f", controller.baseShoulder)
         controller.baseShoulder = nil
@@ -193,31 +215,136 @@ local function ShoulderValueForSide(side)
     return nil  -- center has no absolute value; it restores the base
 end
 
+local function ClearShoulderGlideState()
+    glideFrom = nil
+    glideTo = nil
+    glideSide = nil
+    glideClearsBase = false
+end
+
+StopShoulderGlide = function()
+    Ease.Stop(GLIDE_UPDATE_NAME)
+    if CameraResponse and CameraResponse.ReleaseSmoothing then
+        CameraResponse.ReleaseSmoothing(RESPONSE_OWNER)
+    end
+    ClearShoulderGlideState()
+end
+
+local function OnShoulderGlideStep(t)
+    CameraSettings.Set(SHOULDER_KEY, glideFrom + (glideTo - glideFrom) * t)
+end
+
+local function OnShoulderGlideLand()
+    local side = glideSide
+    local clearsBase = glideClearsBase
+    local target = glideTo
+    ClearShoulderGlideState()
+
+    local applied = CameraSettings.Set(SHOULDER_KEY, target)
+    if CameraResponse and CameraResponse.ReleaseSmoothing then
+        CameraResponse.ReleaseSmoothing(RESPONSE_OWNER)
+    end
+    if not applied then
+        LogWarn("ShoulderControl: failed to land side '%s'", tostring(side))
+        return
+    end
+
+    if clearsBase then
+        controller.baseShoulder = nil
+        PersistBase(nil)
+    end
+    controller.activeSide = side
+    LogDebug("ShoulderControl.ApplySide: %s", side)
+end
+
+local SHOULDER_GLIDE_SPEC = {
+    onStep = OnShoulderGlideStep,
+    onLand = OnShoulderGlideLand,
+}
+
 -- Apply a side to the camera. center restores (and clears) the base; left/right
 -- capture the base once, then write the absolute OTS value. No-op if the side is
 -- already active, so repeated evaluations do not re-write.
-local function ApplySide(side)
-    if side == controller.activeSide then
+local function ApplySide(side, safetyInstant, forceDirect)
+    if side == controller.activeSide and glideSide == nil then
         return true
     end
 
+    local target
+    local clearsBase = false
     if side == SIDE_CENTER then
-        if not RestoreBase() then
-            return false
+        if controller.baseShoulder == nil then
+            StopShoulderGlide()
+            controller.activeSide = SIDE_CENTER
+            PersistBase(nil)
+            return true
         end
+        target = controller.baseShoulder
+        clearsBase = true
     else
         if not CaptureBase() then
             return false
         end
-        local value = ShoulderValueForSide(side)
-        if value == nil or not CameraSettings.Set(SHOULDER_KEY, value) then
-            LogWarn("ShoulderControl.ApplySide: failed to apply side '%s'", tostring(side))
+        target = ShoulderValueForSide(side)
+        if target == nil then
             return false
         end
     end
 
-    controller.activeSide = side
-    LogDebug("ShoulderControl.ApplySide: %s", side)
+    if side == glideSide and target == glideTo then
+        return true
+    end
+
+    local durationMs = forceDirect and 0
+        or (CameraResponse and CameraResponse.GetDurationMs() or 0)
+    if safetyInstant or durationMs <= 0 then
+        StopShoulderGlide()
+        if CameraResponse and CameraResponse.AcquireSmoothing then
+            CameraResponse.AcquireSmoothing(RESPONSE_OWNER, safetyInstant and true or false)
+        end
+        if not CameraSettings.Set(SHOULDER_KEY, target) then
+            if CameraResponse and CameraResponse.ReleaseSmoothing then
+                CameraResponse.ReleaseSmoothing(RESPONSE_OWNER)
+            end
+            LogWarn("ShoulderControl.ApplySide: failed to apply side '%s'", tostring(side))
+            return false
+        end
+        if CameraResponse and CameraResponse.ReleaseSmoothing then
+            CameraResponse.ReleaseSmoothing(RESPONSE_OWNER)
+        end
+        if clearsBase then
+            controller.baseShoulder = nil
+            PersistBase(nil)
+        end
+        controller.activeSide = side
+        LogDebug("ShoulderControl.ApplySide: %s", side)
+        return true
+    end
+
+    StopShoulderGlide()
+    local from, ok = CameraSettings.Get(SHOULDER_KEY)
+    if not ok or from == nil then
+        return ApplySide(side, false, true)
+    end
+    if from == target then
+        if clearsBase then
+            controller.baseShoulder = nil
+            PersistBase(nil)
+        end
+        controller.activeSide = side
+        return true
+    end
+
+    glideFrom = from
+    glideTo = target
+    glideSide = side
+    glideClearsBase = clearsBase
+    SHOULDER_GLIDE_SPEC.durMs = durationMs
+    SHOULDER_GLIDE_SPEC.curve = CameraResponse and CameraResponse.GetCurve() or nil
+    if CameraResponse and CameraResponse.AcquireSmoothing then
+        CameraResponse.AcquireSmoothing(RESPONSE_OWNER)
+    end
+    Ease.Start(GLIDE_UPDATE_NAME, SHOULDER_GLIDE_SPEC)
     return true
 end
 
@@ -251,8 +378,8 @@ local function ResolveSide()
 end
 
 -- Recompute the desired side and apply it.
-local function Reevaluate()
-    ApplySide(ResolveSide())
+local function Reevaluate(instant)
+    ApplySide(ResolveSide(), instant)
 end
 
 -- ---------------------------------------------------------------------------
@@ -374,7 +501,7 @@ local function OnOptionsOpened()
         return
     end
     -- ResolveSide returns center while OptionsWatch.IsOpen(), so this restores the base.
-    Reevaluate()
+    Reevaluate(true)
 end
 
 local function OnOptionsClosed()
@@ -414,7 +541,7 @@ local function SetMode(newMode)
 
     -- Leaving an enabled mode entirely: hand the shoulder back to the player.
     if newMode == MODE_OFF then
-        local restored = ApplySide(SIDE_CENTER)  -- restores + clears the base
+        local restored = ApplySide(SIDE_CENTER, true)  -- restores + clears the base
         controller.physical = { combat = false, stealth = false, mounted = false, swimming = false, sprint = false }
         controller.mode = MODE_OFF
         -- Ownership goes back to ContextPresets: its base snapshot was captured
@@ -473,6 +600,12 @@ end
 function ShoulderControl.Configure(options)
     options = options or {}
 
+    local responseChanged = options.responseMode ~= nil
+        and options.responseMode ~= controller.responseMode
+    if options.responseMode ~= nil then
+        controller.responseMode = options.responseMode
+    end
+
     if options.offset ~= nil then
         local o = tonumber(options.offset) or controller.offset
         if o < 0 then o = 0 elseif o > 1 then o = 1 end
@@ -509,6 +642,9 @@ function ShoulderControl.Configure(options)
         -- effect now. To pick up a changed offset even when the active side is
         -- unchanged, force a re-write by dropping the cached active side first.
         SyncSprintPolling()
+        if responseChanged then
+            StopShoulderGlide()
+        end
         controller.activeSide = nil
         Reevaluate()
     end
@@ -609,6 +745,6 @@ function ShoulderControl.ReassertActive()
     -- The engine reset shoulder across the load screen, so force a re-write even if
     -- our cached activeSide matches.
     controller.activeSide = nil
-    Reevaluate()
+    Reevaluate(true)
     return true
 end
