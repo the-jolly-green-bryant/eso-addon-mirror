@@ -2,7 +2,7 @@ FlamechasersPledgeQueue = {}
 local FPQ = FlamechasersPledgeQueue
 local WM = WINDOW_MANAGER
 local ADDON_NAME = "FlamechasersPledgeQueue"
-FPQ.version = "0.7.18"
+FPQ.version = "0.8.1"
 local SAVED_VARIABLES_NAME = "FlamechasersPledgeQueueSavedVariables"
 -- Keep the wrapper version unchanged so existing data is never reset merely
 -- because the active namespace is now server-specific.
@@ -178,6 +178,36 @@ local function GetActivityArtwork(activity)
     return activity.artTexture or nil
 end
 
+local function IsTurnInCondition(conditionType)
+    return conditionType == QUEST_CONDITION_TYPE_GOTO_POINT
+        or conditionType == QUEST_CONDITION_TYPE_TALK_TO
+end
+
+-- GetJournalQuestIsComplete only becomes true at the final hand-in dialogue.
+-- A finished pledge normally sits one stage earlier on a locale-independent
+-- "go to" or "talk to" objective. Treat that stage as ready for delivery, but
+-- keep any mixed step with another unfinished objective visible.
+function FPQ.IsPledgeReadyToTurnIn(questIndex)
+    if GetJournalQuestIsComplete(questIndex) then return true end
+
+    local _, _, _, _, conditionCount =
+        GetJournalQuestStepInfo(questIndex, QUEST_MAIN_STEP_INDEX)
+    local hasTurnInCondition = false
+    for conditionIndex = 1, conditionCount do
+        local _, _, _, isFailCondition, isComplete, _, isVisible, conditionType =
+            GetJournalQuestConditionInfo(
+                questIndex, QUEST_MAIN_STEP_INDEX, conditionIndex)
+        if isVisible and not isFailCondition and not isComplete then
+            if IsTurnInCondition(conditionType) then
+                hasTurnInCondition = true
+            else
+                return false
+            end
+        end
+    end
+    return hasTurnInCondition
+end
+
 function FPQ.FindPledges()
     if not FPQ.activityList then FPQ.BuildActivityCatalog() end
     local pledges, used = {}, {}
@@ -204,6 +234,8 @@ function FPQ.FindPledges()
                             veteranId = activity.veteranId,
                             zoneId = activity.zoneId,
                             artTexture = GetActivityArtwork(activity),
+                            readyToTurnIn =
+                                FPQ.IsPledgeReadyToTurnIn(questIndex),
                         }
                         used[activity.key] = true
                         break
@@ -424,10 +456,38 @@ function FPQ.SetStatus(text, color)
     SetColor(FPQ.status, color or COLORS.muted)
 end
 
+function FPQ.UpdateCompletedFilter()
+    if not FPQ.completedFilter then return end
+    local enabled = SV.hideCompleted == true
+    FPQ.completedFilter.enabled = enabled
+    FPQ.completedFilter.indicator:SetTexture(enabled
+        and "EsoUI/Art/Buttons/checkbox_checked.dds"
+        or "EsoUI/Art/Buttons/checkbox_unchecked.dds")
+    FPQ.completedFilter.indicator:SetColor(
+        enabled and 0.60 or 0.46,
+        enabled and 0.48 or 0.42,
+        enabled and 0.70 or 0.51,
+        enabled and 0.96 or 0.70)
+    FPQ.completedFilter.indicator:SetAlpha(0.92)
+    FPQ.completedFilter.label:SetColor(0.46, 0.43, 0.51, 0.82)
+end
+
 function FPQ.Refresh()
-    FPQ.pledges = FPQ.FindPledges()
+    local detectedPledges = FPQ.FindPledges()
+    local visiblePledges = {}
+    local hiddenCompletedCount = 0
+    for _, pledge in ipairs(detectedPledges) do
+        if SV.hideCompleted and pledge.readyToTurnIn then
+            hiddenCompletedCount = hiddenCompletedCount + 1
+        else
+            visiblePledges[#visiblePledges + 1] = pledge
+        end
+    end
+
+    FPQ.allPledges = detectedPledges
+    FPQ.pledges = visiblePledges
     local active = {}
-    for _, pledge in ipairs(FPQ.pledges) do active[pledge.key] = true end
+    for _, pledge in ipairs(detectedPledges) do active[pledge.key] = true end
     for key in pairs(FPQ.selections or {}) do
         if not active[key] then FPQ.selections[key] = nil end
     end
@@ -440,10 +500,8 @@ function FPQ.Refresh()
             if pledge.artTexture then
                 row.art:SetTexture(pledge.artTexture)
                 row.art:SetHidden(false)
-                row.artShade:SetHidden(false)
             else
                 row.art:SetHidden(true)
-                row.artShade:SetHidden(true)
             end
             row.name:SetText(pledge.name)
             row.quest:SetText(pledge.questName)
@@ -453,18 +511,36 @@ function FPQ.Refresh()
             FPQ.UpdateCheck(row.normal, selection.normal, pledge.normalId ~= nil)
             FPQ.UpdateCheck(row.veteran, selection.veteran, pledge.veteranId ~= nil)
         else
+            row.pledge = nil
+            row.normal.pledge, row.normal.activityId = nil, nil
+            row.veteran.pledge, row.veteran.activityId = nil, nil
             row.art:SetHidden(true)
-            row.artShade:SetHidden(true)
         end
     end
-    FPQ.empty:SetHidden(#FPQ.pledges > 0)
+    FPQ.UpdateCompletedFilter()
+    local hasVisiblePledges = #FPQ.pledges > 0
+    FPQ.empty:SetHidden(hasVisiblePledges)
+    if not hasVisiblePledges and #detectedPledges > 0 then
+        FPQ.empty:SetText(
+            "All active pledges are complete and hidden.\n"
+            .. "Uncheck Hide Completed to show them.")
+    else
+        FPQ.empty:SetText(
+            "No active Undaunted pledges found.\n"
+            .. "Pick up a daily pledge, then reopen or refresh.")
+    end
     FPQ.RefreshRoles()
     FPQ.UpdateQueueButton()
-    if #FPQ.pledges == 0 then
+    if #detectedPledges == 0 then
         FPQ.SetStatus("No active Undaunted pledge quests detected.", COLORS.muted)
+    elseif hiddenCompletedCount > 0 then
+        FPQ.SetStatus(string.format(
+            "%d active pledge%s detected. %d completed hidden.",
+            #detectedPledges, #detectedPledges == 1 and "" or "s",
+            hiddenCompletedCount), COLORS.green)
     else
         FPQ.SetStatus(string.format("%d active pledge%s detected.",
-            #FPQ.pledges, #FPQ.pledges == 1 and "" or "s"), COLORS.green)
+            #detectedPledges, #detectedPledges == 1 and "" or "s"), COLORS.green)
     end
 end
 
@@ -784,6 +860,42 @@ function FPQ.CreateWindow()
     SetColor(pledgeHeading, COLORS.muted)
     pledgeHeading:SetAnchor(TOPLEFT, window, TOPLEFT, 25, 184)
 
+    local completedFilter = WM:CreateControl(
+        "FlamechasersPledgeCompletedFilter", window, CT_BUTTON)
+    completedFilter:SetDimensions(154, 24)
+    completedFilter:SetAnchor(LEFT, pledgeHeading, RIGHT, 16, 1)
+    completedFilter:SetDrawLayer(DL_OVERLAY)
+    completedFilter:SetDrawLevel(40)
+    local completedIndicator = WM:CreateControl(
+        "FlamechasersPledgeCompletedFilterIndicator", completedFilter, CT_TEXTURE)
+    completedIndicator:SetDimensions(16, 16)
+    completedIndicator:SetAnchor(LEFT, completedFilter, LEFT, 0, 0)
+    completedIndicator:SetDrawLayer(DL_OVERLAY)
+    completedIndicator:SetDrawLevel(41)
+    local completedLabel = Label(completedFilter,
+        "FlamechasersPledgeCompletedFilterLabel", "HIDE COMPLETED",
+        "ZoFontGameSmall")
+    completedLabel:SetDimensions(132, 22)
+    completedLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    completedLabel:SetAnchor(LEFT, completedIndicator, RIGHT, 5, 0)
+    completedLabel:SetDrawLayer(DL_OVERLAY)
+    completedLabel:SetDrawLevel(41)
+    completedFilter.indicator = completedIndicator
+    completedFilter.label = completedLabel
+    completedFilter:SetHandler("OnMouseEnter", function(control)
+        control.label:SetColor(0.68, 0.60, 0.75, 0.98)
+        control.indicator:SetAlpha(1)
+    end)
+    completedFilter:SetHandler("OnMouseExit", function()
+        FPQ.UpdateCompletedFilter()
+    end)
+    completedFilter:SetHandler("OnClicked", function()
+        SV.hideCompleted = not SV.hideCompleted
+        FPQ.Refresh()
+    end)
+    FPQ.completedFilter = completedFilter
+    FPQ.UpdateCompletedFilter()
+
     FPQ.rows = {}
     for index = 1, 3 do
         local row = Panel(window, "FlamechasersPledgeRow" .. index,
@@ -806,43 +918,42 @@ function FPQ.CreateWindow()
         art:SetDimensions(710, 86)
         art:SetAnchor(TOPLEFT, row, TOPLEFT, 0, 0)
         art:SetTextureCoords(0, 0.6836, 0.41, 0.575)
-        art:SetColor(0.62, 0.56, 0.68, 0.56)
+        -- Fade the artwork itself so the card stays vertically uniform. The
+        -- previous list-item tint texture had its own vertical shading, which
+        -- produced an unintended dark strip across the top of every card.
+        art:SetGradientColors(ORIENTATION_HORIZONTAL,
+            0.62, 0.56, 0.68, 0.56,
+            0.26, 0.20, 0.30, 0.14)
         art:SetDrawLayer(DL_BACKGROUND)
         art:SetDrawLevel(1)
         art:SetHidden(true)
 
-        -- A real colorable texture is required for the gradient to render.
-        -- Fade the full-width artwork into the card's near-black base while
-        -- keeping the entire overlay below labels and checkbox controls.
-        local artShade = WM:CreateControl(
-            "FlamechasersPledgeRowArtShade" .. index, row, CT_TEXTURE)
-        artShade:SetResizeToFitFile(false)
-        artShade:SetDimensions(710, 86)
-        artShade:SetAnchor(TOPLEFT, row, TOPLEFT, 0, 0)
-        artShade:SetTexture("EsoUI/Art/Miscellaneous/listItem_backdrop_white.dds")
-        artShade:SetTextureCoords(0, 1, 0, 1)
-        artShade:SetGradientColors(ORIENTATION_HORIZONTAL,
-            0.008, 0.005, 0.012, 0.20,
-            0.008, 0.005, 0.012, 0.92)
-        artShade:SetDrawLayer(DL_BACKGROUND)
-        artShade:SetDrawLevel(2)
-        artShade:SetHidden(true)
-
-        CreateOutline(row, "FlamechasersPledgeRowOutline" .. index,
+        local rowOutline = CreateOutline(row,
+            "FlamechasersPledgeRowOutline" .. index,
             710, 86, 1, { 0.18, 0.14, 0.22, 0.82 })
+        for _, line in ipairs(rowOutline) do
+            line:SetDrawLayer(DL_CONTROLS)
+            line:SetDrawLevel(5)
+        end
         local highlight = WM:CreateControl("FlamechasersPledgeRowHighlight" .. index,
             row, CT_TEXTURE)
         highlight:SetDimensions(699, 1)
         highlight:SetAnchor(TOPRIGHT, row, TOPRIGHT, -1, 1)
         highlight:SetColor(0.45, 0.35, 0.53, 0.26)
+        highlight:SetDrawLayer(DL_CONTROLS)
+        highlight:SetDrawLevel(6)
         local stripe = WM:CreateControl("FlamechasersPledgeRowStripe" .. index, row, CT_TEXTURE)
         stripe:SetDimensions(5, 86)
         stripe:SetAnchor(LEFT, row, LEFT, 0, 0)
         stripe:SetColor(unpack(COLORS.cyan))
+        stripe:SetDrawLayer(DL_CONTROLS)
+        stripe:SetDrawLevel(7)
         local numberPlate = Panel(row, "FlamechasersPledgeRowNumberPlate" .. index,
             { 0.060, 0.042, 0.073, 0.96 })
         numberPlate:SetDimensions(36, 24)
         numberPlate:SetAnchor(TOPRIGHT, row, TOPRIGHT, -8, 7)
+        numberPlate:SetDrawLayer(DL_CONTROLS)
+        numberPlate:SetDrawLevel(7)
         local number = Label(numberPlate, "FlamechasersPledgeRowNumber" .. index,
             string.format("%02d", index), "ZoFontGameBold")
         SetColor(number, COLORS.cyan)
@@ -851,6 +962,9 @@ function FPQ.CreateWindow()
         icon:SetDimensions(42, 42)
         icon:SetAnchor(LEFT, row, LEFT, 18, 0)
         icon:SetTexture("EsoUI/Art/Icons/mapKey/mapKey_groupInstance.dds")
+        icon:SetDrawLayer(DL_CONTROLS)
+        icon:SetDrawLevel(8)
+        icon:SetColor(0.72, 0.69, 0.76, 0.92)
         local name = Label(row, "FlamechasersPledgeRowName" .. index, "", "ZoFontWinH3")
         name:SetDimensions(280, 30)
         name:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
@@ -866,7 +980,7 @@ function FPQ.CreateWindow()
         local veteran = FPQ.CreateCheck(row,
             "FlamechasersPledgeVeteran" .. index, "VETERAN", "veteran")
         veteran:SetAnchor(RIGHT, row, RIGHT, -55, 0)
-        row.art, row.artShade = art, artShade
+        row.art = art
         row.name, row.quest = name, quest
         row.normal, row.veteran = normal, veteran
         FPQ.rows[index] = row
@@ -974,6 +1088,7 @@ local function InitializeSavedVariables()
     local defaults = {
         left = 430,
         top = 170,
+        hideCompleted = false,
         serverDataInitialized = false,
     }
     local worldName = GetWorldName()
@@ -1001,6 +1116,9 @@ function FPQ.Initialize()
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_QUEST_REMOVED,
         function() FPQ.OnQuestChanged() end)
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_QUEST_ADVANCED,
+        function() FPQ.OnQuestChanged() end)
+    EVENT_MANAGER:RegisterForEvent(
+        ADDON_NAME, EVENT_QUEST_CONDITION_COUNTER_CHANGED,
         function() FPQ.OnQuestChanged() end)
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_ACTIVITY_FINDER_STATUS_UPDATE,
         function() FPQ.OnActivityFinderStatusUpdate() end)

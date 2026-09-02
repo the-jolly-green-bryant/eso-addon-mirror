@@ -1000,7 +1000,7 @@ function PQ.OnAddOnLoaded(eventCode, addonName)
 		end
 	end)
 
-	LibDailyReset:RegisterCallback("OnDailyReset", function()
+	LibDailyReset.RegisterCallback("OnDailyReset", function()
 		PQ.ResetDaily()
 	end)
 

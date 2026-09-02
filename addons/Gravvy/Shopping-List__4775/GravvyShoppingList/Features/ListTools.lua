@@ -165,6 +165,12 @@ function ListTools:CreateBulkWindow()
             window:StopMovingOrResizing()
         end
     end)
+    ShoppingListControls:MakeWindowMovable(
+        window,
+        title,
+        self.owner.data,
+        "bulkAdd"
+    )
 
     local help = makeLabel(window, "ZoFontGame")
     help:SetText(GetString(SI_SHOPPING_LIST_BULK_HELP))
@@ -235,6 +241,12 @@ function ListTools:CreateTripWindow()
             window:StopMovingOrResizing()
         end
     end)
+    ShoppingListControls:MakeWindowMovable(
+        window,
+        title,
+        self.owner.data,
+        "shoppingTrip"
+    )
 
     local help = makeLabel(window, "ZoFontGame")
     help:SetText(GetString(SI_SHOPPING_LIST_TRIP_HELP))

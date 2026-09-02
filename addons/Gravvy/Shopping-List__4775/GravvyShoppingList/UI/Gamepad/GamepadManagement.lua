@@ -5,6 +5,8 @@ local EDIT_DIALOG = "SHOPPING_LIST_GAMEPAD_EDIT_ITEM"
 local ARCHIVES_DIALOG = "SHOPPING_LIST_GAMEPAD_ARCHIVES"
 local SHARE_DIALOG = "SHOPPING_LIST_GAMEPAD_SHARE"
 local IMPORT_DIALOG = "SHOPPING_LIST_GAMEPAD_IMPORT"
+local IMPORT_PREVIEW_DIALOG = "SHOPPING_LIST_GAMEPAD_IMPORT_PREVIEW"
+local OVERVIEW_DIALOG = "SHOPPING_LIST_GAMEPAD_LIST_OVERVIEW"
 local BACKUP_DIALOG = "SHOPPING_LIST_GAMEPAD_BACKUP"
 local BACKUP_RESTORE_DIALOG = "SHOPPING_LIST_GAMEPAD_BACKUP_RESTORE"
 local SAFETY_DIALOG = "SHOPPING_LIST_GAMEPAD_SAFETY_COPIES"
@@ -172,11 +174,13 @@ function Gamepad:InitializeManagementDialogs()
     self:InitializeFilterManagementDialog()
     self:InitializeSearchSortDialog()
     self:InitializeSessionSummaryDialog()
+    self:InitializeOverviewDialog()
     self:InitializePurchaseCorrectionDialogs()
     self:InitializeEditDialog()
     self:InitializeArchivesDialog()
     self:InitializeShareDialog()
     self:InitializeImportDialog()
+    self:InitializeImportPreviewDialog()
     self:InitializeBackupDialog()
     self:InitializeSafetyDialogs()
     self:InitializeHelpDialogs()
@@ -332,6 +336,30 @@ function Gamepad:InitializeManageDialog()
                 function() return not self.owner.data:GetCurrentList().locked end
             ),
             actionEntry(
+                function()
+                    local characterId, characterName =
+                        self.owner.data:GetCurrentCharacterIdentity()
+                    if not characterId then
+                        return GetString(SI_SHOPPING_LIST_CHARACTER_UNAVAILABLE)
+                    end
+                    return zo_strformat(
+                        GetString(self.owner.data:IsListAssignedToCharacter(
+                            self.owner.data:GetCurrentList(),
+                            characterId
+                        ) and SI_SHOPPING_LIST_UNASSIGN_CHARACTER
+                            or SI_SHOPPING_LIST_ASSIGN_CHARACTER),
+                        characterName
+                    )
+                end,
+                function() self:ToggleCharacterAssignmentFromManagement() end,
+                nil,
+                function()
+                    local characterId = self.owner.data:GetCurrentCharacterIdentity()
+                    return characterId ~= nil
+                        and not self.owner.data:GetCurrentList().locked
+                end
+            ),
+            actionEntry(
                 SI_SHOPPING_LIST_BUTTON_UNDO,
                 function() self:UndoFromManagement() end,
                 nil,
@@ -350,6 +378,10 @@ function Gamepad:InitializeManageDialog()
             actionEntry(
                 SI_SHOPPING_LIST_SESSION_TITLE,
                 function() self:OpenSessionSummaryFromManagement() end
+            ),
+            actionEntry(
+                SI_SHOPPING_LIST_OVERVIEW_TITLE,
+                function() self:OpenOverviewFromManagement() end
             ),
             actionEntry(
                 SI_SHOPPING_LIST_FIND_NEXT,
@@ -1036,6 +1068,32 @@ function Gamepad:InitializeSessionSummaryDialog()
     })
 end
 
+function Gamepad:InitializeOverviewDialog()
+    ZO_Dialogs_RegisterCustomDialog(OVERVIEW_DIALOG, {
+        blockDialogReleaseOnPress = true,
+        gamepadInfo = { dialogType = GAMEPAD_DIALOGS.PARAMETRIC },
+        setup = function(dialog)
+            dialog.info.parametricList = self:BuildOverviewEntries()
+            dialog:setupFunc()
+        end,
+        title = { text = SI_SHOPPING_LIST_OVERVIEW_TITLE },
+        mainText = { text = SI_SHOPPING_LIST_OVERVIEW_GAMEPAD_HELP },
+        parametricList = {},
+        buttons = {
+            {
+                keybind = "DIALOG_PRIMARY",
+                text = SI_SHOPPING_LIST_OVERVIEW_OPEN,
+                callback = selectDialogEntry,
+            },
+            {
+                keybind = "DIALOG_NEGATIVE",
+                text = SI_GAMEPAD_BACK_OPTION,
+                callback = cancelDialog(OVERVIEW_DIALOG),
+            },
+        },
+    })
+end
+
 function Gamepad:InitializeEditDialog()
     local qualityModes = {
         { label = GetString(SI_SHOPPING_LIST_CHOICE_ANY), value = "any" },
@@ -1303,7 +1361,9 @@ function Gamepad:InitializeImportDialog()
             dialogType = GAMEPAD_DIALOGS.PARAMETRIC,
         },
         setup = function(dialog)
-            self.gamepadImportCode = ""
+            if not dialog.data or dialog.data.keepCode ~= true then
+                self.gamepadImportCode = ""
+            end
             dialog:setupFunc()
         end,
         title = {
@@ -1330,6 +1390,56 @@ function Gamepad:InitializeImportDialog()
                 keybind = "DIALOG_NEGATIVE",
                 text = SI_DIALOG_CANCEL,
                 callback = cancelDialog(IMPORT_DIALOG),
+            },
+        },
+    })
+end
+
+function Gamepad:InitializeImportPreviewDialog()
+    ZO_Dialogs_RegisterCustomDialog(IMPORT_PREVIEW_DIALOG, {
+        blockDialogReleaseOnPress = true,
+        gamepadInfo = { dialogType = GAMEPAD_DIALOGS.BASIC },
+        title = { text = SI_SHOPPING_LIST_IMPORT_PREVIEW_TITLE },
+        mainText = {
+            text = function(dialog)
+                local preview = dialog.data.preview
+                return ShoppingListShare.GetImportPreviewText(preview)
+                    .. "\n\n" .. ShoppingListShare.GetImportPreviewHelp(preview)
+            end,
+        },
+        buttons = {
+            {
+                keybind = "DIALOG_PRIMARY",
+                text = SI_SHOPPING_LIST_IMPORT_MERGE,
+                visible = function(dialog)
+                    return dialog.data.preview.canMerge
+                end,
+                callback = function(dialog)
+                    self:CompleteGamepadImport(dialog.data.preview, "merge")
+                end,
+            },
+            {
+                keybind = "DIALOG_SECONDARY",
+                text = function(dialog)
+                    return GetString(dialog.data.preview.conflict
+                        and SI_SHOPPING_LIST_IMPORT_CREATE_COPY
+                        or SI_SHOPPING_LIST_IMPORT_CREATE_LIST)
+                end,
+                callback = function(dialog)
+                    self:CompleteGamepadImport(dialog.data.preview, "copy")
+                end,
+            },
+            {
+                keybind = "DIALOG_NEGATIVE",
+                text = SI_GAMEPAD_BACK_OPTION,
+                callback = function()
+                    releaseAndOpen(IMPORT_PREVIEW_DIALOG, function()
+                        ZO_Dialogs_ShowGamepadDialog(
+                            IMPORT_DIALOG,
+                            { keepCode = true }
+                        )
+                    end)
+                end,
             },
         },
     })
@@ -2102,10 +2212,78 @@ function Gamepad:BuildSessionSummaryEntries()
     return entries
 end
 
+function Gamepad:BuildOverviewEntries()
+    local entries = {}
+    for _, overview in ipairs(self.owner.data:GetListOverview()) do
+        local listId = overview.list.id
+        local archived = overview.archived
+        local entry = ZO_GamepadEntryData:New(overview.list.name)
+        entry.setup = ZO_SharedGamepadEntry_OnSetup
+        entry.enabled = not archived
+        entry.callback = function()
+            if archived then
+                return
+            end
+            ZO_Dialogs_ReleaseDialogOnButtonPress(OVERVIEW_DIALOG)
+            self.owner.ui.listSignature = nil
+            self.owner.ui:SelectList(listId)
+            self:Refresh(true)
+        end
+        entry:AddSubLabel(zo_strformat(
+            GetString(SI_SHOPPING_LIST_OVERVIEW_GAMEPAD_ROW),
+            overview.completedEntries,
+            overview.entryCount,
+            overview.remainingEntries,
+            overview.remainingQuantity,
+            formatGold(overview.spent),
+            overview.budget and formatGold(overview.budget)
+                or GetString(SI_SHOPPING_LIST_NO_BUDGET),
+            self.owner.overview:GetOrganizationText(overview)
+        ))
+        entries[#entries + 1] = {
+            template = "ZO_GamepadMenuEntryTemplate",
+            entryData = entry,
+        }
+    end
+    return entries
+end
+
 function Gamepad:OpenSessionSummaryFromManagement()
     releaseAndOpen(MANAGE_DIALOG, function()
         ZO_Dialogs_ShowGamepadDialog(SESSION_DIALOG)
     end)
+end
+
+function Gamepad:OpenOverviewFromManagement()
+    releaseAndOpen(MANAGE_DIALOG, function()
+        ZO_Dialogs_ShowGamepadDialog(OVERVIEW_DIALOG)
+    end)
+end
+
+function Gamepad:ToggleCharacterAssignmentFromManagement()
+    local list = self.owner.data:GetCurrentList()
+    local characterId, characterName = self.owner.data:GetCurrentCharacterIdentity()
+    local assigned = characterId
+        and self.owner.data:IsListAssignedToCharacter(list, characterId)
+    local ok, message = self.owner.data:SetListCharacterAssigned(
+        list.id,
+        not assigned,
+        characterId,
+        characterName
+    )
+    if not ok then
+        showError(message)
+        return
+    end
+    ZO_Dialogs_ReleaseDialogOnButtonPress(MANAGE_DIALOG)
+    self.owner.ui.listSignature = nil
+    self:RefreshAfterManagement(zo_strformat(
+        GetString(not assigned
+            and SI_SHOPPING_LIST_STATUS_CHARACTER_ASSIGNED
+            or SI_SHOPPING_LIST_STATUS_CHARACTER_UNASSIGNED),
+        characterName,
+        list.name
+    ))
 end
 
 function Gamepad:OpenEditDialogFromManagement()
@@ -2312,27 +2490,56 @@ function Gamepad:ImportGamepadCode()
         return
     end
 
-    local list, importMessage = self.owner.data:ImportList(
-        decoded.name,
-        decoded.items,
-        decoded.note,
-        decoded.recurring
+    local preview, previewMessage = ShoppingListShare.BuildImportPreview(
+        self.owner.data,
+        decoded
     )
+    if not preview then
+        showError(previewMessage)
+        return
+    end
+
+    releaseAndOpen(IMPORT_DIALOG, function()
+        ZO_Dialogs_ShowGamepadDialog(
+            IMPORT_PREVIEW_DIALOG,
+            { preview = preview }
+        )
+    end)
+end
+
+function Gamepad:CompleteGamepadImport(preview, mode)
+    local list, importMessage
+    if mode == "merge" then
+        list, importMessage = self.owner.data:MergeImportedList(
+            preview.conflict.id,
+            preview.decoded
+        )
+    else
+        list, importMessage = self.owner.data:ImportList(
+            preview.decoded.name,
+            preview.decoded.items,
+            preview.decoded.note,
+            preview.decoded.recurring
+        )
+    end
     if not list then
         showError(importMessage)
         return
     end
 
-    ZO_Dialogs_ReleaseDialogOnButtonPress(IMPORT_DIALOG)
+    ZO_Dialogs_ReleaseDialogOnButtonPress(IMPORT_PREVIEW_DIALOG)
     self.owner.ui.listSignature = nil
     self.owner.ui:Refresh()
     self:Refresh(true)
     self.owner:RefreshInventory()
+    local importedCount = #preview.decoded.items
     local status = zo_strformat(
-        GetString(SI_SHOPPING_LIST_STATUS_LIST_IMPORTED),
+        GetString(mode == "merge"
+            and SI_SHOPPING_LIST_STATUS_LIST_IMPORT_MERGED
+            or SI_SHOPPING_LIST_STATUS_LIST_IMPORTED),
         list.name,
-        #list.items,
-        GetString(#list.items == 1
+        importedCount,
+        GetString(importedCount == 1
             and SI_SHOPPING_LIST_NOUN_ITEM
             or SI_SHOPPING_LIST_NOUN_ITEMS)
     )

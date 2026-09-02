@@ -185,25 +185,39 @@ local dungeonThresholds = {
         [50] = "Werewolves", -- TODO
         [30] = "Werewolves", -- TODO
     },
-    [GetBossName(CRUTCH_BHB_MYLENNE_MOONCALLER)] = {
-        [80] = "Warden", -- TODO
-        [60] = "Warden", -- TODO
-        [40] = "Warden", -- TODO
-        [20] = "Warden", -- TODO
-    },
     [GetBossName(CRUTCH_BHB_HEDGE_MAZE_GUARDIAN)] = {
-        [75] = "2 Spriggans", -- TODO
-        [55] = "3 Spriggans", -- TODO
-        [35] = "5 Spriggans", -- TODO
+        [80] = "Spriggans",
+        [60] = "Spriggans",
+        [40] = "Spriggans",
+    },
+    [GetBossName(CRUTCH_BHB_MYLENNE_MOONCALLER)] = {
+        normHealth = 2210231,
+        ["Normal"] = {
+            [75] = "",
+            [50] = "",
+            [25] = "",
+        },
+        Veteran = {
+            [80] = "Warden", -- TODO
+            [60] = "Warden", -- TODO
+            [40] = "Warden", -- TODO
+            [20] = "Warden", -- TODO
+        },
     },
     [GetBossName(CRUTCH_BHB_ARCHIVIST_ERNARDE)] = {
-        -- how can the guides be so different??
-        -- xynode: 76, 56, 36
-        -- esoplanet: 80, 60, 40, 20
-        [80] = "Adds", -- TODO
-        [60] = "Adds", -- TODO
-        [40] = "Adds", -- TODO
-        [20] = "Adds", -- TODO
+        -- norm: colors on timer. adds 60 40 20
+        normHealth = 1683986,
+        ["Normal"] = {
+            [60] = "Adds",
+            [40] = "Adds",
+            [20] = "Adds",
+        },
+        Veteran = {
+            [80] = "Adds", -- TODO
+            [60] = "Adds", -- TODO
+            [40] = "Adds", -- TODO
+            [20] = "Adds", -- TODO
+        },
     },
     [GetBossName(CRUTCH_BHB_VYKOSA_THE_ASCENDANT)] = {
         normHealth = 1515587, -- TODO
@@ -246,15 +260,10 @@ local dungeonThresholds = {
     },
 
 -- March of Sacrifices (Bloodscent Pass)
-    [GetBossName(CRUTCH_BHB_AGHAEDH_OF_THE_SOLSTICE)] = {
-        [70] = "Lurcher", -- TODO
-        [55] = "Lurcher", -- TODO
-        [25] = "Lurcher", -- TODO
-    },
     [GetBossName(CRUTCH_BHB_TARCYR)] = {
-        [80] = "Hunt", -- TODO
-        [50] = "Hunt", -- TODO
-        [20] = "Hunt", -- TODO
+        [80] = "Hunt",
+        [55] = "Hunt",
+        [20] = "Hunt",
     },
     [GetBossName(CRUTCH_BHB_BALORGH)] = {
         [80] = "Hunt",
@@ -289,17 +298,39 @@ local dungeonThresholds = {
 
 -- Depths of Malatar
     [GetBossName(CRUTCH_BHB_THE_SCAVENGING_MAW)] = {
-        [80] = "Disappear", -- TODO guides 80 or 75
-        [50] = "Disappear", -- TODO
-        [25] = "Disappear", -- TODO
+        normHealth = 2189182,
+        Normal = {
+            [65] = "Hide",
+            [30] = "Hide",
+        },
+        Veteran = {
+            [80] = "Hide",
+            [50] = "Hide",
+            [25] = "Hide",
+        },
     },
     [GetBossName(CRUTCH_BHB_THE_WEEPING_WOMAN)] = {
-        [75] = "Watcher", -- TODO
-        [55] = "Watcher", -- TODO
-        [35] = "Watcher", -- TODO
+        normHealth = 1683986,
+        Normal = {
+            [75] = "",
+            [50] = "",
+            [25] = "",
+        },
+        Veteran = {
+            [75] = "Watcher",
+            [55] = "Watcher",
+            [35] = "Watcher",
+        },
+    },
+    [GetBossName(CRUTCH_BHB_DARK_ORB)] = {
+        [80] = "Off",
+        [60] = "Off",
+        [40] = "Off",
     },
     [GetBossName(CRUTCH_BHB_SYMPHONY_OF_BLADES)] = {
-        [10] = "Teleport", -- TODO
+        [60] = "Phalanx", -- TODO: is v/hm different?
+        [30] = "Phalanx", -- TODO: is v/hm different?
+        [10] = "Teleport",
     },
 
 -- Moongrave Fane

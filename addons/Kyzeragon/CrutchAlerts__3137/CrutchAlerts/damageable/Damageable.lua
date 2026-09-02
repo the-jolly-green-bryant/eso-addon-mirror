@@ -234,12 +234,12 @@ local SUBTITLE_TIMES = {
     },
 
 -- Depths of Malatar
-    ["The Weeping Woman"] = {
-        ["For her, we kept it hidden from our brethren and buried them with our tears. Here you too will drown."] = 11.1,
+    [GetNameStr(CRUTCH_BHB_THE_WEEPING_WOMAN)] = {
+        [GetSubtitleStr(CRUTCH_DMG_FOR_HER_WE_KEPT_IT_HIDDEN_FROM_OUR_BRETHREN_AND)] = 11.1,
     } ,
-    ["Tharayya"] = {
+    [GetNameStr(CRUTCH_DMG_THARAYYA)] = {
         -- King Narilmor
-        ["Feel that? A chill breeze. We must be nearing an exit!"] = 23,
+        [GetSubtitleStr(CRUTCH_DMG_FEEL_THAT_A_CHILL_BREEZE_WE_MUST_BE_NEARING_AN)] = 22.7,
     },
 
 -- Earthen Root Enclave
@@ -310,8 +310,8 @@ local SUBTITLE_TIMES = {
     },
 
 -- March of Sacrifices
-    ["Dagrund the Bulky"] = {
-        ["Troll's blood, it has to be here somewhere! Keep an eye out."] = 18.2,
+    [GetNameStr(CRUTCH_DMG_DAGRUND_THE_BULKY)] = {
+        [GetSubtitleStr(CRUTCH_DMG_TROLLS_BLOOD_IT_HAS_TO_BE_HERE_SOMEWHERE_KEEP)] = 18.2,
     },
 
 -- Moongrave Fane
@@ -326,9 +326,9 @@ local SUBTITLE_TIMES = {
     },
 
 -- Moon Hunter Keep
-    ["Vykosa the Ascendant"] = {
+    [GetNameStr(CRUTCH_BHB_VYKOSA_THE_ASCENDANT)] = {
         -- Mylenne Moon-Caller
-        ["Was Vykosa not told the intruders would be dealt with? Must she handle everything herself?"] = 14.7,
+        [GetSubtitleStr(CRUTCH_DMG_WAS_VYKOSA_NOT_TOLD_THE_INTRUDERS_WOULD_BE_DEALT)] = 14.7,
     },
 
 -- Oathsworn Pit

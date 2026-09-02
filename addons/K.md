@@ -41,6 +41,8 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Khrill Hero In Disguise](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Khrill/Khrill-Hero-In-Disguise__1085) | Khrill | PC / Mac | 1.4.0 |
 | [Khrill Language Selector](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Khrill/Khrill-Language-Selector__824) | Khrill | PC / Mac | 1.6.0 |
 | [KhrillCraftingPostit RU Patch (for v1.5.0)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ForgottenLight/KhrillCraftingPostit-RU-Patch-for-v1.5.0__1323) | ForgottenLight | PC / Mac | 1.5.0.2 |
+| [Kill Count](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Dreadazar/Kill-Count__29b689fc-d75c-432c-adfa-691d46ddf847) | Dreadazar | Console | — |
+| [Kill Count](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Dreadazar/Kill-Count__4806) | Dreadazar | PC / Mac | 1.0.0 |
 | [Kill Counter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/mikethecoder4/Kill-Counter__337) | mikethecoder4 | PC / Mac | 3.5.1 |
 | [Kill Sound](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BullsFuzz/Kill-Sound__4254) | BullsFuzz | PC / Mac | 1.5.2 |
 | [Killz - PvP stats right on screen and much more!](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Toirealach/Killz---PvP-stats-right-on-screen-and-much-more__3572) | Toirealach | PC / Mac | 1.10.7 |

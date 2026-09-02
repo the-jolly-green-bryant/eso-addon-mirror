@@ -1,3 +1,72 @@
+0.29.143
+- Optimized Teleporter opening to reuse cached destination rows immediately and defer at most one heavier refresh until after the panel is visible.
+- Cached owned-house destination data for one minute and prewarms the frame-sliced guild cache after login/activation.
+
+- Removed the VIEW prefix from all Map Teleporter destination labels and changed the flyout heading to DESTINATIONS.
+- Added adaptive active-label font sizing and slightly wider destination-button allocation so long labels stay inside the toolbar box.
+
+- Removed all Teleporter control over ESO map completion / zone-guide UI; stock ESO completion controls are left untouched.
+- Reorganized the Teleporter top toolbar with a wider View button and consistently spaced/aligned Favorites and Tools buttons.
+
+- World Map mode now docks the Teleporter completely outside the parchment, with its right edge attached to the map left edge.
+- Disabled map-docked screen clamping so ESO cannot pull the sidebar back on top of the map.
+- Rebounded PLAYER and ZONE search controls from the final panel width so the ZONE field cannot run outside the UI.
+
+
+0.29.138
+- In Open with World Map mode, the Teleporter now docks flush to the left side of the World Map instead of floating over the middle of it.
+- The collapsed Teleporter drawer is now tucked into the map's top-left corner.
+
+- Fixed Core.lua line 13 syntax error caused by accidental editor/Python text in the version assignment.
+- Ran a compile-only Lua syntax validation across every packaged .lua file before release.
+
+0.29.136
+- Rebuilt outside-map Teleporter interaction on ESO's native registered top-level window flow so close reliably releases gameplay movement/camera input and the hotkey can reopen the panel.
+- Same hotkey now toggles the active Teleporter session directly; click-away closes on global mouse-up after the click completes.
+- Open with World Map now anchors to the stable ZO_WorldMap top-level rather than the zoom/pan canvas, keeping it attached to the map without scaling during zoom.
+
+0.29.135
+- Fixed Teleporter hotkey/click-away close leaving character movement or camera input partially captured.
+- Teleporter now uses one ESO UI-mode ownership path and performs a short ownership-gated release verification after closing.
+
+0.29.134
+- Removed the permanent Teleporter drawer from normal gameplay. Hotkey / Outside Map is now hidden until invoked.
+- Fixed the Teleporter hotkey close path by using the interaction session as the source of truth and added a raw-key fallback/debounce for UI mode.
+- Added click-outside-to-close and automatic return to gameplay for the outside-map Teleporter.
+- Made compact Repair: <gold> mirror the actual HUD fade alpha of the working Suite FPS/Latency overlay, with ESO action-bar fallback.
+
+0.29.133
+- Fixed the compact Repair: <gold> and Always-mode Teleporter drawer remaining visible after the rest of the gameplay HUD faded.
+- Both now leave normal gameplay visibility to ESO's native HUD-fade fragment, matching the working Suite FPS overlay.
+- Teleporter is promoted to an interactive top-level window only while on the World Map, in HUD Layout Mode, or during an explicit Teleporter hotkey session.
+
+0.29.132
+- Added an Open / Close Map Teleporter keybinding for Always / HUD Overlay mode. The hotkey expands the Teleporter outside the World Map, enters UI mode for interaction, and the same key folds it back down to return to gameplay.
+- Clicking the Teleporter drawer while opened by the HUD hotkey now closes it back to gameplay outside the map.
+
+0.29.131
+- Fixed folded Teleporter content leaking into the 136x42 drawer: destination rows and expanded-only controls are now force-hidden whenever the drawer is closed.
+- Always / HUD Overlay now reliably reappears on the normal gameplay HUD outside the World Map while retaining ESO HUD-fade/menu behavior.
+- Added HUD-scene visibility refresh so returning from menus/maps restores the Always drawer correctly.
+- Map Teleporter settings now have their own dedicated Map Teleporter submenu instead of being buried inside Mini Map & Navigation.
+
+0.29.130
+- Added Settings visibility modes for the Map Teleporter: Open with World Map and Always / HUD Overlay.
+- Always mode exposes the collapsible Teleporter during gameplay and follows ESO HUD-fade visibility like the Suite's other persistent overlays.
+- Map Teleporter is now movable through HUD Layout Mode with a saved screen position and dedicated top drag strip.
+- Reset Layout now resets the Teleporter position.
+- World Map key ownership and zoom isolation remain native/fixed: ESC, Map, R/player-position, zoom and map panning are not captured by the Teleporter.
+
+0.29.129
+- Map Teleporter is now anchored to GuiRoot instead of World Map canvas geometry, so map zoom/pan no longer resizes or shifts the Teleporter.
+- Teleporter mouse-wheel pagination removed; zoom input affects only ESO's map when the cursor is over the map.
+
+0.29.128
+- Map Teleporter is now a collapsible drawer and starts folded when the World Map opens.
+- Restored native World Map keyboard handling: ESC, the normal Map toggle, R/player-position, zoom and other map bindings are no longer captured by the Teleporter.
+- Search fields only take keyboard focus when clicked; ESC from search closes the World Map normally.
+- Folded Teleporter skips destination refresh work until expanded.
+
 0.29.127
 - Fixed live health depletion and regeneration for Suite player, companion, group, and raid unit frames.
 - Health bars now consume ESO EVENT_POWER_UPDATE health payloads directly instead of waiting for broader frame refreshes.

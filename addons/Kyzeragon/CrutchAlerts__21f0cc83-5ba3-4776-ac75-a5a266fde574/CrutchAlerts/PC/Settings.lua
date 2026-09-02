@@ -139,6 +139,19 @@ function Crutch:CreateSettingsMenu()
             setFunc = UnlockUI,
             width = "full",
         },
+        {
+            type = "checkbox",
+            name = "Use installation-wide settings",
+            tooltip = "Use the same settings across all opted-in accounts and megaservers on this machine, instead of per-account. If this is the first time you turn it on, the settings from this account+server will be copied to the installation-wide settings. If you turn this back off, the settings will go back to your account settings before the switch to installation-wide",
+            default = false,
+            getFunc = function() return Crutch.accountSVs.installationWide end,
+            setFunc = function(value)
+                Crutch.accountSVs.installationWide = value
+            end,
+            width = "full",
+            requiresReload = true,
+            isDangerous = true,
+        },
 ---------------------------------------------------------------------
 -- general
         {
@@ -202,6 +215,19 @@ function Crutch:CreateSettingsMenu()
                         Crutch.savedOptions.general.showOthers = value
                         Crutch.RegisterOthers()
                     end,
+                    width = "full",
+                },
+                {
+                    type = "checkbox",
+                    name = "    Include True Shot on others",
+                    tooltip = "\"True Shot\" from archers in Sanity's Edge and Ossein Cage can appear spammy when targeted on other players, because they won't show as interrupted, so this is a convenience setting to ignore them",
+                    default = true,
+                    getFunc = function() return Crutch.savedOptions.general.showOthersTrueShot end,
+                    setFunc = function(value)
+                        Crutch.savedOptions.general.showOthersTrueShot = value
+                        Crutch.RegisterOthers()
+                    end,
+                    disabled = function() return not Crutch.savedOptions.general.showOthers end,
                     width = "full",
                 },
                 {
@@ -336,6 +362,19 @@ function Crutch:CreateSettingsMenu()
                     getFunc = function() return Crutch.savedOptions.general.showClawFury end,
                     setFunc = function(value)
                         Crutch.savedOptions.general.showClawFury = value
+                        Crutch.UnregisterChannels()
+                        Crutch.RegisterChannels()
+                    end,
+                    width = "full",
+                },
+                {
+                    type = "checkbox",
+                    name = "Show werewolf Insatiable Hunger",
+                    tooltip = "Show an \"alert\" timer when you devour a corpse",
+                    default = false,
+                    getFunc = function() return Crutch.savedOptions.general.showInsatiableHunger end,
+                    setFunc = function(value)
+                        Crutch.savedOptions.general.showInsatiableHunger = value
                         Crutch.UnregisterChannels()
                         Crutch.RegisterChannels()
                     end,
@@ -2304,7 +2343,7 @@ function Crutch:CreateSettingsMenu()
                     type = "checkbox",
                     name = "    Show middle icons",
                     tooltip = "Additionally shows a set of icons for positioning in the middle of the arena",
-                    default = true,
+                    default = Crutch.defaultOptions.osseincage.useMiddleIcons,
                     getFunc = function() return Crutch.savedOptions.osseincage.useMiddleIcons end,
                     setFunc = function(value)
                         Crutch.savedOptions.osseincage.useMiddleIcons = value
@@ -2347,7 +2386,7 @@ function Crutch:CreateSettingsMenu()
                 {
                     type = "checkbox",
                     name = "Print titan damage on HM",
-                    tooltip = "On hardmode, prints to chat when you damage a titan, which would proc Reflective Scales. For now, it doesn't print until the titan health bars appear",
+                    tooltip = "On hardmode, prints to chat when you damage a titan, which would proc Reflective Scales",
                     default = true,
                     getFunc = function() return Crutch.savedOptions.osseincage.printHMReflectiveScales end,
                     setFunc = function(value)
@@ -2409,6 +2448,17 @@ function Crutch:CreateSettingsMenu()
                     getFunc = function() return Crutch.savedOptions.osseincage.panel.showClash end,
                     setFunc = function(value)
                         Crutch.savedOptions.osseincage.panel.showClash = value
+                    end,
+                    width = "full",
+                },
+                {
+                    type = "checkbox",
+                    name = "Show target / portal on twins HM",
+                    tooltip = "On hardmode Jynorah + Skorkhif, shows text in the info panel indicating the side you should be on, as a non-tank. For example, if you got Sparking Enfeeblement on the first curse phase, it will display to target Skorkhif / go to orange portal, persisting through death, so you don't forget where you're going. This is based on the very first Enfeeblement you receive, alternating afterwards, so it could be incorrect if initial curses are assigned unusually",
+                    default = Crutch.defaultOptions.osseincage.panel.showTarget,
+                    getFunc = function() return Crutch.savedOptions.osseincage.panel.showTarget end,
+                    setFunc = function(value)
+                        Crutch.savedOptions.osseincage.panel.showTarget = value
                     end,
                     width = "full",
                 },

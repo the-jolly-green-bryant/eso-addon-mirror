@@ -1,6 +1,6 @@
 local ADDON_NAME = "TamrielProgressMap"
 local DISPLAY_NAME = "Tamriel Progress Map"
-local VERSION = "2.6.72_Beta"
+local VERSION = "2.6.84_Beta"
 local AUTHOR = "Raccoonplayz"
 local PIN_TYPE_STRING = "TamrielProgressMap_ZoneProgressPin"
 
@@ -2430,23 +2430,33 @@ function TPM:MarkPendingPveKillXpResult(targetName, targetUnitId)
 end
 
 function TPM:PromoteOrQueueBossKillActivity(name)
-    name = tostring(name or "")
+    name = select(1, self:NormalizeCombatUnitName(name))
     if name == "" then return end
 
     -- EVENT_UNIT_DEATH_STATE_CHANGED has the boss unit tag but no combat-event
     -- targetUnitId. If the matching DIED/DIED_XP row is already pending, promote
-    -- that same row instead of creating a second boss entry.
+    -- that same row instead of creating a second boss entry. DIED_XP can also
+    -- finalize the row immediately before the boss death-state callback arrives,
+    -- so a very recent finalized boss row must be treated as the same death too.
     local nowMs = TPM_KillLogNowMs()
     for i = #(self.pendingPveKillActivities or {}), 1, -1 do
         local pending = self.pendingPveKillActivities[i]
-        if type(pending) == "table" and not pending.finalized and pending.name == name
-            and (nowMs - (tonumber(pending.atMs) or 0)) >= 0
-            and (nowMs - (tonumber(pending.atMs) or 0)) <= 2400 then
-            pending.kind = "killBoss"
-            pending.difficulty = _G.MONSTER_DIFFICULTY_DEADLY
-            return pending
+        if type(pending) == "table" and pending.name == name then
+            local age = nowMs - (tonumber(pending.atMs) or 0)
+            if age >= 0 and age <= 4500 then
+                if pending.finalized then
+                    if pending.kind == "killBoss" then
+                        return pending
+                    end
+                else
+                    pending.kind = "killBoss"
+                    pending.difficulty = _G.MONSTER_DIFFICULTY_DEADLY
+                    return pending
+                end
+            end
         end
     end
+
     -- Boss identity alone does not prove that ESO granted XP. DIED_XP will
     -- promote the row when XP is actually awarded.
     return self:QueuePveKillActivity(name, "killBoss", false, 0, _G.MONSTER_DIFFICULTY_DEADLY, false)
@@ -4273,12 +4283,13 @@ function TPM:GetGameLanguage()
     if string.sub(language, 1, 2) == "de" then return "de" end
     if string.sub(language, 1, 2) == "ru" then return "ru" end
     if string.sub(language, 1, 2) == "fr" then return "fr" end
+    if string.sub(language, 1, 2) == "es" then return "es" end
     return "en"
 end
 
 function TPM:ResolveLanguage()
     local requested = self.saved and self.saved.language or "auto"
-    if requested ~= "de" and requested ~= "en" and requested ~= "ru" and requested ~= "fr" then
+    if requested ~= "de" and requested ~= "en" and requested ~= "ru" and requested ~= "fr" and requested ~= "es" then
         requested = self:GetGameLanguage()
     end
 
@@ -7912,7 +7923,7 @@ function TPM:GetCollectionStatisticData(definition)
 end
 
 -- 2.6.14: Achievement category names returned by ESO follow the GAME client
--- language, while TPM intentionally supports its own live DE/EN/RU/FR language
+-- language, while TPM intentionally supports its own live DE/EN/RU/FR/ES language
 -- switch. Normalize the known top-level category names from all four supported
 -- client languages and route them through TPM localization. Unknown/new ESO
 -- categories safely fall back to the API name instead of being hidden.
@@ -8393,7 +8404,7 @@ function TPM:ShowStatisticsHoverTooltip(titleText, bodyText, sourceControl)
     -- 2.6.24: Longer help text (especially the Skyshard positioning guide)
     -- gets a wider panel instead of being squeezed into the old 360 px box.
     -- Height is still calculated from the rendered text below, so translated
-    -- DE/EN/RU/FR instructions can grow naturally without clipping.
+    -- DE/EN/RU/FR/ES instructions can grow naturally without clipping.
     local lineBreaks = 0
     for _ in string.gmatch(bodyText, "\n") do lineBreaks = lineBreaks + 1 end
     local longHelp = #bodyText >= 170 or lineBreaks >= 3
@@ -10306,20 +10317,292 @@ function TPM:GetAlliancePlannerColor(group)
     if group == "DC" then return 0.20, 0.48, 1.00 end
     if group == "AD" then return 1.00, 0.76, 0.12 end
     if group == "EP" then return 1.00, 0.20, 0.20 end
-    return 0.82, 0.76, 0.58
+    return 0.92, 0.90, 0.84
 end
 
-function TPM:RefreshAlliancePlannerMapView()
-    local texture = self.statisticsAllianceMapTexture
-    if not texture then return end
+-- 2.6.74: Resolve the game's own Tamriel overview without changing the
+-- player's currently viewed world map. Map-list index 1 is Tamriel in ESO's
+-- map list; the fallback keeps this future-proof if that ordering changes.
 
+function TPM:GetAlliancePlannerTamrielMapId()
+    if self.alliancePlannerTamrielMapId and self.alliancePlannerTamrielMapId > 0 then
+        return self.alliancePlannerTamrielMapId
+    end
+
+    -- Do not assume map-list index 1 is Tamriel. The map list can change when
+    -- ZOS adds root/world maps. Pick the WORLD map with the largest normalized
+    -- footprint instead, without changing the player's active map.
+    local bestMapId, bestArea = nil, -1
+    if type(GetNumMaps) == "function" and type(GetMapInfoByIndex) == "function"
+        and type(GetMapIdByIndex) == "function"
+        and type(GetUniversallyNormalizedMapInfo) == "function" then
+
+        local okCount, count = pcall(GetNumMaps)
+        count = okCount and tonumber(count) or 0
+
+        for mapIndex = 1, math.max(0, count) do
+            local okInfo, _, mapType = pcall(GetMapInfoByIndex, mapIndex)
+            if okInfo and mapType == MAPTYPE_WORLD then
+                local okId, candidateId = pcall(GetMapIdByIndex, mapIndex)
+                candidateId = okId and tonumber(candidateId) or nil
+                if candidateId and candidateId > 0 then
+                    local okRect, _, _, w, h = pcall(GetUniversallyNormalizedMapInfo, candidateId)
+                    local area = okRect and math.max(0, tonumber(w) or 0) * math.max(0, tonumber(h) or 0) or 0
+                    if area > bestArea then
+                        bestArea = area
+                        bestMapId = candidateId
+                    end
+                end
+            end
+        end
+    end
+
+    self.alliancePlannerTamrielMapId = bestMapId or 0
+    return self.alliancePlannerTamrielMapId
+end
+
+
+function TPM:EnsureAlliancePlannerTamrielTiles()
+    local frame = self.statisticsAllianceMapFrame
+    if not frame then return false end
+
+    local mapId = self:GetAlliancePlannerTamrielMapId()
+    if not mapId or mapId <= 0 or type(GetMapNumTilesForMapId) ~= "function"
+        or type(GetMapTileTextureForMapId) ~= "function" then
+        return false
+    end
+
+    local ok, numX, numY = pcall(GetMapNumTilesForMapId, mapId)
+    numX, numY = tonumber(numX) or 0, tonumber(numY) or 0
+    if not ok or numX <= 0 or numY <= 0 then return false end
+
+    local required = numX * numY
+    self.statisticsAllianceMapTiles = self.statisticsAllianceMapTiles or {}
+
+    -- Texture filenames do not change while panning/zooming. Previously they
+    -- were reassigned on every frame during dragging.
+    local sourceChanged =
+        self.statisticsAllianceMapTileMapId ~= mapId
+        or self.statisticsAllianceMapTileColumns ~= numX
+        or self.statisticsAllianceMapTileRows ~= numY
+
+    for i = 1, required do
+        local tile = self.statisticsAllianceMapTiles[i]
+        if not tile then
+            tile = WINDOW_MANAGER:CreateControl(nil, frame, CT_TEXTURE)
+            tile:SetMouseEnabled(false)
+            if tile.SetDrawLevel then tile:SetDrawLevel(5) end
+            self.statisticsAllianceMapTiles[i] = tile
+            sourceChanged = true
+        end
+
+        if sourceChanged then
+            local okTex, texturePath = pcall(GetMapTileTextureForMapId, mapId, i)
+            if okTex and type(texturePath) == "string" and texturePath ~= "" then
+                tile:SetTexture(texturePath)
+                tile:SetAlpha(1)
+                tile.TPMHasValidSource = true
+            else
+                tile.TPMHasValidSource = false
+                tile:SetHidden(true)
+            end
+        end
+    end
+
+    for i = required + 1, #self.statisticsAllianceMapTiles do
+        self.statisticsAllianceMapTiles[i]:SetHidden(true)
+    end
+
+    self.statisticsAllianceMapTileColumns = numX
+    self.statisticsAllianceMapTileRows = numY
+    self.statisticsAllianceMapTileMapId = mapId
+    return true
+end
+
+function TPM:RefreshAlliancePlannerTamrielTiles(viewLeft, viewTop, span)
+    if not self:EnsureAlliancePlannerTamrielTiles() then return false end
+
+    local frame = self.statisticsAllianceMapFrame
+    local tiles = self.statisticsAllianceMapTiles or {}
+    local numX = tonumber(self.statisticsAllianceMapTileColumns) or 0
+    local numY = tonumber(self.statisticsAllianceMapTileRows) or 0
+    local frameW, frameH = frame:GetDimensions()
+    frameW, frameH = math.max(1, tonumber(frameW) or 1), math.max(1, tonumber(frameH) or 1)
+
+    local viewRight, viewBottom = viewLeft + span, viewTop + span
+    for row = 1, numY do
+        for col = 1, numX do
+            local index = (row - 1) * numX + col
+            local tile = tiles[index]
+            if tile then
+                local tileL, tileR = (col - 1) / numX, col / numX
+                local tileT, tileB = (row - 1) / numY, row / numY
+                local l, r = math.max(viewLeft, tileL), math.min(viewRight, tileR)
+                local t, b = math.max(viewTop, tileT), math.min(viewBottom, tileB)
+
+                if tile.TPMHasValidSource ~= false and r > l and b > t then
+                    local x = ((l - viewLeft) / span) * frameW
+                    local y = ((t - viewTop) / span) * frameH
+                    local w = ((r - l) / span) * frameW
+                    local h = ((b - t) / span) * frameH
+                    local u1 = (l - tileL) / (tileR - tileL)
+                    local u2 = (r - tileL) / (tileR - tileL)
+                    local v1 = (t - tileT) / (tileB - tileT)
+                    local v2 = (b - tileT) / (tileB - tileT)
+
+                    tile:ClearAnchors()
+                    tile:SetAnchor(TOPLEFT, frame, TOPLEFT, x, y)
+                    tile:SetDimensions(math.max(1, w + 0.5), math.max(1, h + 0.5))
+                    tile:SetTextureCoords(u1, u2, v1, v2)
+                    tile:SetHidden(false)
+                else
+                    tile:SetHidden(true)
+                end
+            end
+        end
+    end
+    return true
+end
+
+
+function TPM:GetAlliancePlannerZoneNormalizedPosition(zoneId)
+    local tamrielMapId = self:GetAlliancePlannerTamrielMapId()
+    if not tamrielMapId or tamrielMapId <= 0 or type(GetMapIdByZoneId) ~= "function"
+        or type(GetUniversallyNormalizedMapInfo) ~= "function" then return nil end
+
+    local okMap, zoneMapId = pcall(GetMapIdByZoneId, zoneId)
+    zoneMapId = okMap and tonumber(zoneMapId) or nil
+    if not zoneMapId or zoneMapId <= 0 then return nil end
+
+    local okT, tx, ty, tw, th = pcall(GetUniversallyNormalizedMapInfo, tamrielMapId)
+    local okZ, zx, zy, zw, zh = pcall(GetUniversallyNormalizedMapInfo, zoneMapId)
+    if not okT or not okZ then return nil end
+
+    tx, ty, tw, th = tonumber(tx), tonumber(ty), tonumber(tw), tonumber(th)
+    zx, zy, zw, zh = tonumber(zx), tonumber(zy), tonumber(zw), tonumber(zh)
+    if not tx or not ty or not tw or not th or not zx or not zy or not zw or not zh
+        or tw <= 0 or th <= 0 then
+        return nil
+    end
+
+    local x = ((zx + zw * 0.5) - tx) / tw
+    local y = ((zy + zh * 0.5) - ty) / th
+    if x < -0.05 or x > 1.05 or y < -0.05 or y > 1.05 then return nil end
+    return x, y
+end
+
+function TPM:GetAlliancePlannerMarkerColor(zoneId)
+    if tonumber(zoneId) == 181 then return 0.30, 0.78, 0.26, "CYRODIIL" end
+    local group = self:GetAllianceTerritoryGroup(zoneId)
+    if group == "DC" then return 0.20, 0.48, 1.00, group end
+    if group == "AD" then return 1.00, 0.76, 0.12, group end
+    if group == "EP" then return 1.00, 0.20, 0.20, group end
+    return 0.94, 0.93, 0.88, "NEUTRAL"
+end
+
+function TPM:EnsureAlliancePlannerZoneMarkers()
+    local frame = self.statisticsAllianceMapFrame
+    if not frame then return end
+    self.statisticsAllianceMapMarkers = self.statisticsAllianceMapMarkers or {}
+
+    local ids = {534,535,3,19,20,104,92,537,381,383,108,58,382,280,281,41,57,117,101,103,181,888,347}
+    for _, zoneId in ipairs(ids) do
+        if not self.statisticsAllianceMapMarkers[zoneId] then
+            local label = WINDOW_MANAGER:CreateControl(nil, frame, CT_LABEL)
+            label:SetDimensions(74,42)
+            label:SetFont("$(BOLD_FONT)|12")
+            label:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+            label:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+            label:SetMouseEnabled(true)
+            label:SetHandler("OnMouseDown", function(control, button)
+                if button == MOUSE_BUTTON_INDEX_LEFT then
+                    control.TPMAlliancePanStarted = TPM:BeginAlliancePlannerMapPan() == true
+                end
+            end)
+            label:SetHandler("OnMouseUp", function(control, button, inside)
+                if button ~= MOUSE_BUTTON_INDEX_LEFT then return end
+                local didMove = false
+                if control.TPMAlliancePanStarted then
+                    didMove = TPM:EndAlliancePlannerMapPan() == true
+                end
+                control.TPMAlliancePanStarted = false
+
+                -- Click still opens the zone. Drag only moves the Alliance map.
+                if inside and not didMove and control.zoneId then
+                    TPM:OpenAllianceZoneInProgress(control.zoneId)
+                end
+            end)
+            label:SetHandler("OnUpdate", function()
+                TPM:UpdateAlliancePlannerMapPan()
+            end)
+            label:SetHandler("OnMouseEnter", function(control)
+                if not control.zoneId then return end
+                InitializeTooltip(InformationTooltip, control, BOTTOM, 0, -4, TOP)
+                InformationTooltip:AddLine(SafeZoneName(control.zoneId), "ZoFontGameBold")
+                if control.percent then
+                    InformationTooltip:AddLine(string.format("%d%%", control.percent), "ZoFontGame")
+                end
+            end)
+            label:SetHandler("OnMouseExit", function() ClearTooltip(InformationTooltip) end)
+            if label.SetDrawLevel then label:SetDrawLevel(30) end
+            label.zoneId = zoneId
+            self.statisticsAllianceMapMarkers[zoneId] = label
+        end
+    end
+end
+
+
+function TPM:RefreshAlliancePlannerZoneMarkers(viewLeft, viewTop, span, reuseValues)
+    self:EnsureAlliancePlannerZoneMarkers()
+    local frame = self.statisticsAllianceMapFrame
+    if not frame then return end
+    local frameW, frameH = frame:GetDimensions()
+    frameW, frameH = math.max(1, tonumber(frameW) or 1), math.max(1, tonumber(frameH) or 1)
+
+    for zoneId, label in pairs(self.statisticsAllianceMapMarkers or {}) do
+        local x, y = self:GetAlliancePlannerZoneNormalizedPosition(zoneId)
+
+        local available, percent
+        if reuseValues and label.percent ~= nil and label.available ~= nil then
+            percent = label.percent
+            available = label.available
+        else
+            local _, _, resolvedAvailable, resolvedPercent = self:GetResolvedCompletion(zoneId)
+            available = tonumber(resolvedAvailable) or 0
+            percent = tonumber(resolvedPercent) or 0
+            label.available = available
+            label.percent = percent
+        end
+
+        if x and y and available > 0 and x >= viewLeft and x <= viewLeft + span
+            and y >= viewTop and y <= viewTop + span then
+            local screenX = ((x - viewLeft) / span) * frameW
+            local screenY = ((y - viewTop) / span) * frameH
+            local r,g,b = self:GetAlliancePlannerMarkerColor(zoneId)
+            local hex = string.format("%02X%02X%02X",
+                math.floor(r*255+0.5), math.floor(g*255+0.5), math.floor(b*255+0.5))
+
+            label:SetText(string.format("|cFFF2C9%d%%|r\n|c%s●|r", percent, hex))
+            label:ClearAnchors()
+            label:SetAnchor(CENTER, frame, TOPLEFT, screenX, screenY)
+            label:SetHidden(false)
+        else
+            label:SetHidden(true)
+        end
+    end
+end
+
+function TPM:RefreshAlliancePlannerMapView(reuseMarkerValues)
+    local surface = self.statisticsAllianceMapTexture
+    if not surface then return end
+
+    -- Internal factor 1.0 = 0% additional zoom (fit). 4.5 = +350%.
     local zoom = tonumber(self.saved and self.saved.alliancePlannerMapZoom) or 1.0
-    zoom = Clamp(zoom, 1.0, 2.5)
+    zoom = Clamp(zoom, 1.0, 4.5)
     if self.saved then self.saved.alliancePlannerMapZoom = zoom end
 
     local span = 1 / zoom
     local halfSpan = span * 0.5
-
     local centerX = tonumber(self.saved and self.saved.alliancePlannerMapCenterX) or 0.5
     local centerY = tonumber(self.saved and self.saved.alliancePlannerMapCenterY) or 0.5
 
@@ -10335,17 +10618,16 @@ function TPM:RefreshAlliancePlannerMapView()
         self.saved.alliancePlannerMapCenterY = centerY
     end
 
-    texture:SetTextureCoords(
-        centerX - halfSpan,
-        centerX + halfSpan,
-        centerY - halfSpan,
-        centerY + halfSpan
-    )
+    local viewLeft, viewTop = centerX - halfSpan, centerY - halfSpan
+    local originalMapVisible = self:RefreshAlliancePlannerTamrielTiles(viewLeft, viewTop, span)
+    if self.statisticsAllianceMapFallback then
+        self.statisticsAllianceMapFallback:SetHidden(originalMapVisible == true)
+    end
+    self:RefreshAlliancePlannerZoneMarkers(viewLeft, viewTop, span, reuseMarkerValues == true)
 
     if self.statisticsAllianceMapZoomLabel then
-        self.statisticsAllianceMapZoomLabel:SetText(string.format("%d%%", math.floor(zoom * 100 + 0.5)))
+        self.statisticsAllianceMapZoomLabel:SetText(string.format("%d%%", math.floor((zoom - 1) * 100 + 0.5)))
     end
-
     if self.statisticsAllianceMapDragHint then
         self.statisticsAllianceMapDragHint:SetHidden(zoom <= 1.001)
     end
@@ -10354,48 +10636,38 @@ end
 function TPM:ZoomAlliancePlannerMapAtMouse(step)
     if not self.saved or not self.statisticsAllianceMapTexture then return end
 
-    local texture = self.statisticsAllianceMapTexture
-    local oldZoom = Clamp(tonumber(self.saved.alliancePlannerMapZoom) or 1.0, 1.0, 2.5)
-    local newZoom = Clamp(oldZoom + (tonumber(step) or 0), 1.0, 2.5)
+    local surface = self.statisticsAllianceMapTexture
+    local oldZoom = Clamp(tonumber(self.saved.alliancePlannerMapZoom) or 1.0, 1.0, 4.5)
+    local newZoom = Clamp(oldZoom + (tonumber(step) or 0), 1.0, 4.5)
     if math.abs(newZoom - oldZoom) < 0.001 then return end
 
-    local oldSpan = 1 / oldZoom
-    local newSpan = 1 / newZoom
+    local oldSpan, newSpan = 1 / oldZoom, 1 / newZoom
     local centerX = tonumber(self.saved.alliancePlannerMapCenterX) or 0.5
     local centerY = tonumber(self.saved.alliancePlannerMapCenterY) or 0.5
 
     if type(GetUIMousePosition) == "function" then
         local mouseX, mouseY = GetUIMousePosition()
-        local left, top = texture:GetScreenRect()
-        local width, height = texture:GetDimensions()
-        width = math.max(1, tonumber(width) or 1)
-        height = math.max(1, tonumber(height) or 1)
-
+        local left, top = surface:GetScreenRect()
+        local width, height = surface:GetDimensions()
+        width, height = math.max(1, tonumber(width) or 1), math.max(1, tonumber(height) or 1)
         local relX = Clamp(((tonumber(mouseX) or 0) - (tonumber(left) or 0)) / width, 0, 1)
         local relY = Clamp(((tonumber(mouseY) or 0) - (tonumber(top) or 0)) / height, 0, 1)
-
-        local oldLeft = centerX - oldSpan * 0.5
-        local oldTop = centerY - oldSpan * 0.5
-        local anchorU = oldLeft + relX * oldSpan
-        local anchorV = oldTop + relY * oldSpan
-
+        local anchorU = (centerX - oldSpan * 0.5) + relX * oldSpan
+        local anchorV = (centerY - oldSpan * 0.5) + relY * oldSpan
         centerX = anchorU - (relX - 0.5) * newSpan
         centerY = anchorV - (relY - 0.5) * newSpan
     end
 
     local halfSpan = newSpan * 0.5
-    centerX = Clamp(centerX, halfSpan, 1 - halfSpan)
-    centerY = Clamp(centerY, halfSpan, 1 - halfSpan)
-
     self.saved.alliancePlannerMapZoom = newZoom
-    self.saved.alliancePlannerMapCenterX = centerX
-    self.saved.alliancePlannerMapCenterY = centerY
+    self.saved.alliancePlannerMapCenterX = Clamp(centerX, halfSpan, 1 - halfSpan)
+    self.saved.alliancePlannerMapCenterY = Clamp(centerY, halfSpan, 1 - halfSpan)
     self:RefreshAlliancePlannerMapView()
 end
 
 function TPM:SetAlliancePlannerMapZoom(value)
     if not self.saved then return end
-    local zoom = Clamp(tonumber(value) or 1.0, 1.0, 2.5)
+    local zoom = Clamp(tonumber(value) or 1.0, 1.0, 4.5)
     self.saved.alliancePlannerMapZoom = zoom
     if zoom <= 1.001 then
         self.saved.alliancePlannerMapCenterX = 0.5
@@ -10408,52 +10680,78 @@ function TPM:StepAlliancePlannerMapZoom(delta)
     self:ZoomAlliancePlannerMapAtMouse(tonumber(delta) or 0)
 end
 
+
 function TPM:BeginAlliancePlannerMapPan()
-    if not self.saved or not self.statisticsAllianceMapTexture then return end
+    if not self.saved or not self.statisticsAllianceMapTexture then return false end
     local zoom = tonumber(self.saved.alliancePlannerMapZoom) or 1.0
-    if zoom <= 1.001 or type(GetUIMousePosition) ~= "function" then return end
+    if zoom <= 1.001 or type(GetUIMousePosition) ~= "function" then
+        self.alliancePlannerMapDragging = false
+        self.alliancePlannerMapDidMove = false
+        return false
+    end
 
     local mouseX, mouseY = GetUIMousePosition()
     self.alliancePlannerMapDragging = true
+    self.alliancePlannerMapDidMove = false
     self.alliancePlannerMapDragStartX = tonumber(mouseX) or 0
     self.alliancePlannerMapDragStartY = tonumber(mouseY) or 0
     self.alliancePlannerMapDragCenterX = tonumber(self.saved.alliancePlannerMapCenterX) or 0.5
     self.alliancePlannerMapDragCenterY = tonumber(self.saved.alliancePlannerMapCenterY) or 0.5
+    return true
 end
+
 
 function TPM:UpdateAlliancePlannerMapPan()
     if not self.alliancePlannerMapDragging or type(GetUIMousePosition) ~= "function" then return end
-    local texture = self.statisticsAllianceMapTexture
-    if not texture or not self.saved then return end
+    local surface = self.statisticsAllianceMapTexture
+    if not surface or not self.saved then return end
 
-    local zoom = tonumber(self.saved.alliancePlannerMapZoom) or 1.0
+    local zoom = Clamp(tonumber(self.saved.alliancePlannerMapZoom) or 1.0, 1.0, 4.5)
     if zoom <= 1.001 then
         self.alliancePlannerMapDragging = false
+        self.alliancePlannerMapDidMove = false
         return
     end
 
-    local mouseX, mouseY = GetUIMousePosition()
-    local width, height = texture:GetDimensions()
-    width = math.max(1, tonumber(width) or 1)
-    height = math.max(1, tonumber(height) or 1)
+    -- If the user released the left button outside the map control, stop the
+    -- drag here as a safety net. ESO exposes IsMouseButtonDown on supported clients.
+    if type(IsMouseButtonDown) == "function" then
+        local ok, down = pcall(IsMouseButtonDown, MOUSE_BUTTON_INDEX_LEFT)
+        if ok and down == false then
+            self:EndAlliancePlannerMapPan()
+            return
+        end
+    end
 
-    local span = 1 / zoom
-    local halfSpan = span * 0.5
+    local mouseX, mouseY = GetUIMousePosition()
+    local dragSurface = self.statisticsAllianceMapFrame or surface
+    local width, height = dragSurface:GetDimensions()
+    width, height = math.max(1, tonumber(width) or 1), math.max(1, tonumber(height) or 1)
+
     local dx = (tonumber(mouseX) or 0) - (tonumber(self.alliancePlannerMapDragStartX) or 0)
     local dy = (tonumber(mouseY) or 0) - (tonumber(self.alliancePlannerMapDragStartY) or 0)
 
-    -- Drag the map itself: pulling right/down moves the visible image in the
-    -- same direction, so the sampled texture center moves left/up.
+    -- A tiny mouse wobble is still treated as a normal click. This lets zone
+    -- markers remain clickable while also allowing left-drag directly on them.
+    if not self.alliancePlannerMapDidMove and (math.abs(dx) >= 4 or math.abs(dy) >= 4) then
+        self.alliancePlannerMapDidMove = true
+        ClearTooltip(InformationTooltip)
+    end
+
+    local span, halfSpan = 1 / zoom, (1 / zoom) * 0.5
     local centerX = (tonumber(self.alliancePlannerMapDragCenterX) or 0.5) - (dx / width) * span
     local centerY = (tonumber(self.alliancePlannerMapDragCenterY) or 0.5) - (dy / height) * span
-
     self.saved.alliancePlannerMapCenterX = Clamp(centerX, halfSpan, 1 - halfSpan)
     self.saved.alliancePlannerMapCenterY = Clamp(centerY, halfSpan, 1 - halfSpan)
-    self:RefreshAlliancePlannerMapView()
+    self:RefreshAlliancePlannerMapView(true)
 end
 
+
 function TPM:EndAlliancePlannerMapPan()
+    local didMove = self.alliancePlannerMapDidMove == true
     self.alliancePlannerMapDragging = false
+    self.alliancePlannerMapDidMove = false
+    return didMove
 end
 
 function TPM:ToggleAlliancePlannerTerritoryColors()
@@ -10613,6 +10911,7 @@ function TPM:CreateAllianceStatisticsPage(control)
     quickTitle:SetFont("$(BOLD_FONT)|13")
     quickTitle:SetColor(0.91,0.75,0.30,1)
     quickTitle:SetText(self:L("STAT_ALLIANCE_OVERVIEW"))
+    self.statisticsAllianceQuickTitle=quickTitle
 
     local quickDone=WINDOW_MANAGER:CreateControl(nil,quick,CT_LABEL)
     quickDone:SetDimensions(194,18)
@@ -10663,25 +10962,53 @@ function TPM:CreateAllianceStatisticsPage(control)
     if mapFrame.SetDrawLevel then mapFrame:SetDrawLevel(2) end
     self.statisticsAllianceMapFrame=mapFrame
 
+    -- Invisible interaction surface. The visible map itself is assembled at
+    -- runtime from ESO's original Tamriel map tiles.
     local mapTexture=WINDOW_MANAGER:CreateControl(nil,mapFrame,CT_TEXTURE)
     mapTexture:SetDimensions(454,328)
     mapTexture:SetAnchor(CENTER,mapFrame,CENTER,0,0)
-    mapTexture:SetTexture("TamrielProgressMap/art/alliance_community_map.dds")
-    mapTexture:SetTextureCoords(0,1,0,1)
-    mapTexture:SetAlpha(1)
+    mapTexture:SetTexture(nil)
+    mapTexture:SetAlpha(0)
     mapTexture:SetMouseEnabled(true)
-    if mapTexture.SetDrawLevel then mapTexture:SetDrawLevel(10) end
-    mapTexture:SetHandler("OnMouseWheel",function(_,delta)
+    if mapTexture.SetDrawLevel then mapTexture:SetDrawLevel(20) end
+    -- mapTexture remains the geometry reference used for zoom/pan calculations.
+    -- Mouse input is handled by a dedicated transparent layer above the map
+    -- tiles. This avoids child/background controls swallowing left-clicks.
+    mapTexture:SetMouseEnabled(false)
+    self.statisticsAllianceMapTexture=mapTexture
+
+    local inputLayer=WINDOW_MANAGER:CreateControl(nil,mapFrame,CT_CONTROL)
+    inputLayer:SetAnchorFill(mapFrame)
+    inputLayer:SetMouseEnabled(true)
+    if inputLayer.SetDrawLevel then inputLayer:SetDrawLevel(20) end
+    inputLayer:SetHandler("OnMouseDown",function(_,button)
+        if button==MOUSE_BUTTON_INDEX_LEFT then
+            TPM:BeginAlliancePlannerMapPan()
+        end
+    end)
+    inputLayer:SetHandler("OnMouseUp",function(_,button)
+        if button==MOUSE_BUTTON_INDEX_LEFT then
+            TPM:EndAlliancePlannerMapPan()
+        end
+    end)
+    inputLayer:SetHandler("OnMouseWheel",function(_,delta)
         TPM:ZoomAlliancePlannerMapAtMouse((tonumber(delta) or 0)>0 and 0.25 or -0.25)
     end)
-    mapTexture:SetHandler("OnMouseDown",function(_,button)
-        if button==MOUSE_BUTTON_INDEX_LEFT then TPM:BeginAlliancePlannerMapPan() end
+    inputLayer:SetHandler("OnUpdate",function()
+        TPM:UpdateAlliancePlannerMapPan()
     end)
-    mapTexture:SetHandler("OnMouseUp",function(_,button)
-        if button==MOUSE_BUTTON_INDEX_LEFT then TPM:EndAlliancePlannerMapPan() end
-    end)
-    mapTexture:SetHandler("OnUpdate",function() TPM:UpdateAlliancePlannerMapPan() end)
-    self.statisticsAllianceMapTexture=mapTexture
+    self.statisticsAllianceMapInputLayer=inputLayer
+
+    -- Fallback is only shown if the ESO client cannot resolve the original
+    -- Tamriel tile source. This prevents a completely blank Alliance map.
+    local mapFallback=WINDOW_MANAGER:CreateControl(nil,mapFrame,CT_TEXTURE)
+    mapFallback:SetAnchorFill(mapFrame)
+    mapFallback:SetTexture("TamrielProgressMap/art/alliance_community_map.dds")
+    mapFallback:SetAlpha(0.90)
+    mapFallback:SetMouseEnabled(false)
+    if mapFallback.SetDrawLevel then mapFallback:SetDrawLevel(4) end
+    mapFallback:SetHidden(true)
+    self.statisticsAllianceMapFallback=mapFallback
 
     -- Recommendations below map, inside planner.
     local nextBox=WINDOW_MANAGER:CreateControl(nil,planner,CT_BACKDROP)
@@ -10740,33 +11067,44 @@ function TPM:CreateAllianceStatisticsPage(control)
     toolsTitle:SetFont("$(BOLD_FONT)|14")
     toolsTitle:SetColor(0.91,0.75,0.30,1)
     toolsTitle:SetText(self:L("STAT_ALLIANCE_TOOLS_TITLE"))
+    self.statisticsAllianceToolsTitle=toolsTitle
 
     local legend=WINDOW_MANAGER:CreateControl(nil,tools,CT_LABEL)
-    legend:SetDimensions(166,78)
+    legend:SetDimensions(166,90)
     legend:SetAnchor(TOPLEFT,tools,TOPLEFT,12,27)
     legend:SetFont("$(MEDIUM_FONT)|11")
     legend:SetColor(0.88,0.85,0.78,1)
     legend:SetText("|c4E9BFF■|r  "..self:L("STAT_ALLIANCE_DC")..
         "\n|cFFD13C■|r  "..self:L("STAT_ALLIANCE_AD")..
         "\n|cFF594A■|r  "..self:L("STAT_ALLIANCE_EP")..
-        "\n|cBDB8AA■|r  "..self:L("STAT_ALLIANCE_NEUTRAL"))
+        "\n|cF0EEE8■|r  "..self:L("STAT_ALLIANCE_NEUTRAL")..
+        "\n|c4CC744■|r  Cyrodiil (PvP)")
     self.statisticsAllianceLegend=legend
 
     local zoomTitle=WINDOW_MANAGER:CreateControl(nil,tools,CT_LABEL)
     zoomTitle:SetDimensions(60,18)
-    zoomTitle:SetAnchor(TOPLEFT,tools,TOPLEFT,12,98)
+    zoomTitle:SetAnchor(TOPLEFT,tools,TOPLEFT,12,108)
     zoomTitle:SetFont("$(BOLD_FONT)|12")
     zoomTitle:SetColor(0.88,0.82,0.68,1)
     zoomTitle:SetText(self:L("STAT_ALLIANCE_ZOOM"))
+    self.statisticsAllianceZoomTitle=zoomTitle
 
     local zoomLabel=WINDOW_MANAGER:CreateControl(nil,tools,CT_LABEL)
     zoomLabel:SetDimensions(70,18)
-    zoomLabel:SetAnchor(TOPRIGHT,tools,TOPRIGHT,-12,97)
+    zoomLabel:SetAnchor(TOPRIGHT,tools,TOPRIGHT,-12,107)
     zoomLabel:SetFont("$(ANTIQUE_FONT)|20")
     zoomLabel:SetColor(0.95,0.82,0.32,1)
     zoomLabel:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
     zoomLabel:SetText("100%")
     self.statisticsAllianceMapZoomLabel=zoomLabel
+
+    local zoomRange=WINDOW_MANAGER:CreateControl(nil,tools,CT_LABEL)
+    zoomRange:SetDimensions(166,14)
+    zoomRange:SetAnchor(TOPLEFT,tools,TOPLEFT,12,130)
+    zoomRange:SetFont("$(MEDIUM_FONT)|9")
+    zoomRange:SetColor(0.60,0.57,0.50,1)
+    zoomRange:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    zoomRange:SetText("0%  —  350%")
 
     local zoomMinus=WINDOW_MANAGER:CreateControl(nil,tools,CT_BUTTON)
     zoomMinus:SetDimensions(32,22)
@@ -10783,7 +11121,7 @@ function TPM:CreateAllianceStatisticsPage(control)
     resetZoom:SetFont("$(BOLD_FONT)|10")
     resetZoom:SetNormalFontColor(0.90,0.84,0.70,1)
     resetZoom:SetMouseOverFontColor(1,0.88,0.36,1)
-    resetZoom:SetText("100%")
+    resetZoom:SetText("0%")
     resetZoom:SetHandler("OnClicked",function() TPM:SetAlliancePlannerMapZoom(1.0) end)
 
     local zoomPlus=WINDOW_MANAGER:CreateControl(nil,tools,CT_BUTTON)
@@ -10957,6 +11295,16 @@ function TPM:RefreshAllianceStatisticsPage()
     local ownRow=ownGroup and data[ownGroup] or nil
 
     self.statisticsAllianceOwnTitle:SetText(self:L("STAT_ALLIANCE_YOURS"))
+    if self.statisticsAllianceQuickTitle then self.statisticsAllianceQuickTitle:SetText(self:L("STAT_ALLIANCE_OVERVIEW")) end
+    if self.statisticsAllianceToolsTitle then self.statisticsAllianceToolsTitle:SetText(self:L("STAT_ALLIANCE_TOOLS_TITLE")) end
+    if self.statisticsAllianceZoomTitle then self.statisticsAllianceZoomTitle:SetText(self:L("STAT_ALLIANCE_ZOOM")) end
+    if self.statisticsAllianceLegend then
+        self.statisticsAllianceLegend:SetText("|c4E9BFF■|r  "..self:L("STAT_ALLIANCE_DC")..
+            "\n|cFFD13C■|r  "..self:L("STAT_ALLIANCE_AD")..
+            "\n|cFF594A■|r  "..self:L("STAT_ALLIANCE_EP")..
+            "\n|cF0EEE8■|r  "..self:L("STAT_ALLIANCE_NEUTRAL")..
+            "\n|c4CC744■|r  Cyrodiil (PvP)")
+    end
     self.statisticsAllianceOwnName:SetText(allianceName)
     self.statisticsAllianceOwnPercent:SetText(string.format("%d%%",ownRow and ownRow.percent or 0))
 
@@ -11017,7 +11365,7 @@ function TPM:RefreshAllianceStatisticsPage()
         self.statisticsAllianceMapPanel:SetEdgeColor(selectedColor[1],selectedColor[2],selectedColor[3],0.82)
     end
     if self.statisticsAllianceMapTexture then
-        self.statisticsAllianceMapTexture:SetTexture("TamrielProgressMap/art/alliance_community_map.dds")
+        self:RefreshAlliancePlannerMapView()
     end
     if self.statisticsAllianceMapTitle then
         self.statisticsAllianceMapTitle:SetText(self:L("STAT_ALLIANCE_PLANNER_TITLE",selectedName))
@@ -13184,12 +13532,12 @@ function TPM:CreateStatisticsWindow()
     self.statisticsMode = mode
 
     local langBar = WINDOW_MANAGER:CreateControl(ADDON_NAME .. "StatisticsLanguageBar", control, CT_CONTROL)
-    langBar:SetDimensions(242, 28)
+    langBar:SetDimensions(290, 28)
     langBar:SetAnchor(TOP, control, TOP, 0, 17)
     langBar:SetMouseEnabled(false)
     self.statisticsLanguageBar = langBar
     self.statisticsLanguageButtons = {}
-    local langDefs = { {code="de",text="DE"}, {code="en",text="EN"}, {code="ru",text="RU"}, {code="fr",text="FR"} }
+    local langDefs = { {code="de",text="DE"}, {code="en",text="EN"}, {code="ru",text="RU"}, {code="fr",text="FR"}, {code="es",text="ES"} }
     for i, def in ipairs(langDefs) do
         local btn = WINDOW_MANAGER:CreateControl(nil, langBar, CT_LABEL)
         btn:SetDimensions(42, 24)
@@ -14020,7 +14368,7 @@ function TPM:RefreshStatisticsWindow()
     local stats = self:GetStatisticsData(false, focusZoneId)
     self.statisticsData = stats
 
-    self.statisticsTitle:SetText(string.format("%s-v2.6.72-Beta", self:L("STATISTICS_TITLE")))
+    self.statisticsTitle:SetText(string.format("%s-v2.6.84-Beta", self:L("STATISTICS_TITLE")))
     self.statisticsMode:SetText(self:L("STAT_MODE", self.saved.calculationMode == "categories" and self:L("MODE_CATEGORIES") or self:L("MODE_OBJECTIVES")))
     if self.statisticsFocusLabel then self.statisticsFocusLabel:SetText(self:L("STAT_FOCUS_LABEL")) end
     self:RefreshStatisticsFocusSelector()
@@ -14232,19 +14580,24 @@ function TPM:SetStandaloneStatisticsUIMode(enabled)
             if ok then alreadyInUiMode = value == true end
         end
 
-        self.statisticsUIModeWasAlreadyActive = alreadyInUiMode
+        -- Only establish ownership once. A later safety re-assert must never
+        -- overwrite statisticsOwnsUIMode=false merely because TPM itself
+        -- already enabled UI mode a few milliseconds earlier.
+        if not self.statisticsUIModeActiveForStandalone then
+            self.statisticsUIModeWasAlreadyActive = alreadyInUiMode
+            local ok = pcall(_G.SetGameCameraUIMode, true)
+            self.statisticsOwnsUIMode = ok and not alreadyInUiMode
+            self.statisticsUIModeActiveForStandalone = ok == true
+        else
+            pcall(_G.SetGameCameraUIMode, true)
+        end
 
-        -- Always request UI mode. A remapped key can share behavior with a
-        -- gameplay key and ESO may finish processing that key after the binding
-        -- callback, so one immediate request is not always enough.
-        local ok = pcall(_G.SetGameCameraUIMode, true)
-        self.statisticsOwnsUIMode = ok and not alreadyInUiMode
         self.statisticsUIModeOpenedAt =
             type(_G.GetFrameTimeMilliseconds) == "function"
             and (_G.GetFrameTimeMilliseconds() or 0) or 0
 
-        -- Re-assert on the next UI ticks. This makes custom bindings such as
-        -- 9 behave exactly like the original NumPad5 standalone opener.
+        -- A remapped gameplay key can be processed again by ESO after the
+        -- binding callback. Re-assert UI mode without changing TPM ownership.
         if type(zo_callLater) == "function" then
             zo_callLater(function()
                 if TPM and TPM.statisticsOpenedStandalone
@@ -14268,7 +14621,152 @@ function TPM:SetStandaloneStatisticsUIMode(enabled)
         end
         self.statisticsOwnsUIMode = false
         self.statisticsUIModeWasAlreadyActive = false
+        self.statisticsUIModeActiveForStandalone = false
         self.statisticsUIModeOpenedAt = 0
+    end
+end
+
+-- 2.6.83: Slightly slower ESO-style fade for both opening and closing.
+-- Only alpha is animated, so saved position, scale, anchors and dimensions stay untouched.
+local TPM_STATISTICS_FADE_MS = 250
+
+function TPM:PlayStatisticsOpenAnimation()
+    local window = self.statisticsWindow
+    if not window then return end
+
+    -- An immediate reopen while the close fade is still running must cancel the
+    -- pending hide instead of letting an old delayed callback hide the new window.
+    self.statisticsCloseAnimationToken = (tonumber(self.statisticsCloseAnimationToken) or 0) + 1
+    self.statisticsCloseAnimationPending = false
+    if self.statisticsCloseTimeline and type(self.statisticsCloseTimeline.Stop) == "function" then
+        pcall(self.statisticsCloseTimeline.Stop, self.statisticsCloseTimeline)
+    end
+
+    local manager = _G.ANIMATION_MANAGER
+    local animationType = _G.ANIMATION_ALPHA
+    if not manager or not animationType or type(manager.CreateTimeline) ~= "function" then
+        window:SetAlpha(1)
+        return
+    end
+
+    if not self.statisticsOpenTimeline then
+        local okTimeline, timeline = pcall(manager.CreateTimeline, manager)
+        if not okTimeline or not timeline or type(timeline.InsertAnimation) ~= "function" then
+            window:SetAlpha(1)
+            return
+        end
+
+        local okAnimation, alpha = pcall(timeline.InsertAnimation, timeline, animationType, window, 0)
+        if not okAnimation or not alpha then
+            window:SetAlpha(1)
+            return
+        end
+
+        if type(alpha.SetAlphaValues) == "function" then alpha:SetAlphaValues(0, 1) end
+        if type(alpha.SetDuration) == "function" then alpha:SetDuration(TPM_STATISTICS_FADE_MS) end
+        self.statisticsOpenTimeline = timeline
+    end
+
+    local timeline = self.statisticsOpenTimeline
+    if timeline and type(timeline.Stop) == "function" then
+        pcall(timeline.Stop, timeline)
+    end
+    window:SetAlpha(0)
+    if timeline and type(timeline.PlayFromStart) == "function" then
+        local ok = pcall(timeline.PlayFromStart, timeline)
+        if not ok then window:SetAlpha(1) end
+    else
+        window:SetAlpha(1)
+    end
+end
+
+function TPM:FinalizeStatisticsWindowHide(closeToken)
+    if closeToken ~= nil and closeToken ~= self.statisticsCloseAnimationToken then return end
+    self.statisticsCloseAnimationPending = false
+
+    if self.statisticsWindow then
+        self.statisticsWindow:SetAlpha(1)
+        self.statisticsWindow:SetHidden(true)
+    end
+    if self.economyDetailWindow then
+        self.economyDetailWindow:SetHidden(true)
+    end
+    self.economyDetailTemporarilyHiddenForScene = false
+    self:SetStandaloneStatisticsUIMode(false)
+    self.statisticsOpenedStandalone = false
+    self.statisticsTemporarilyHiddenForScene = false
+    self:RefreshQuickFilterBar()
+    if type(zo_callLater) == "function" then
+        zo_callLater(function() if TPM then TPM:RefreshSkyshardGoalWidget() end end, 30)
+    end
+    if self:IsWorldMapVisible() then
+        self:RefreshQuestRewards()
+        self:QueueRefresh(20)
+    end
+end
+
+function TPM:PlayStatisticsCloseAnimation()
+    local window = self.statisticsWindow
+    if not window or window:IsHidden() then
+        self:FinalizeStatisticsWindowHide()
+        return
+    end
+    if self.statisticsCloseAnimationPending then return end
+
+    if self.statisticsOpenTimeline and type(self.statisticsOpenTimeline.Stop) == "function" then
+        pcall(self.statisticsOpenTimeline.Stop, self.statisticsOpenTimeline)
+    end
+
+    self.statisticsCloseAnimationToken = (tonumber(self.statisticsCloseAnimationToken) or 0) + 1
+    local closeToken = self.statisticsCloseAnimationToken
+    self.statisticsCloseAnimationPending = true
+
+    local manager = _G.ANIMATION_MANAGER
+    local animationType = _G.ANIMATION_ALPHA
+    if not manager or not animationType or type(manager.CreateTimeline) ~= "function" then
+        self:FinalizeStatisticsWindowHide(closeToken)
+        return
+    end
+
+    if not self.statisticsCloseTimeline then
+        local okTimeline, timeline = pcall(manager.CreateTimeline, manager)
+        if not okTimeline or not timeline or type(timeline.InsertAnimation) ~= "function" then
+            self:FinalizeStatisticsWindowHide(closeToken)
+            return
+        end
+
+        local okAnimation, alpha = pcall(timeline.InsertAnimation, timeline, animationType, window, 0)
+        if not okAnimation or not alpha then
+            self:FinalizeStatisticsWindowHide(closeToken)
+            return
+        end
+        if type(alpha.SetAlphaValues) == "function" then alpha:SetAlphaValues(1, 0) end
+        if type(alpha.SetDuration) == "function" then alpha:SetDuration(TPM_STATISTICS_FADE_MS) end
+        self.statisticsCloseTimeline = timeline
+    end
+
+    window:SetAlpha(1)
+    local timeline = self.statisticsCloseTimeline
+    if timeline and type(timeline.Stop) == "function" then
+        pcall(timeline.Stop, timeline)
+    end
+    if timeline and type(timeline.PlayFromStart) == "function" then
+        local ok = pcall(timeline.PlayFromStart, timeline)
+        if not ok then
+            self:FinalizeStatisticsWindowHide(closeToken)
+            return
+        end
+    else
+        self:FinalizeStatisticsWindowHide(closeToken)
+        return
+    end
+
+    if type(zo_callLater) == "function" then
+        zo_callLater(function()
+            if TPM then TPM:FinalizeStatisticsWindowHide(closeToken) end
+        end, TPM_STATISTICS_FADE_MS + 20)
+    else
+        self:FinalizeStatisticsWindowHide(closeToken)
     end
 end
 
@@ -14281,6 +14779,7 @@ function TPM:ShowStatisticsWindow(openStandalone)
     self.statisticsOpenedStandalone = openStandalone == true
     self.statisticsTemporarilyHiddenForScene = false
     self.statisticsWindow:SetHidden(false)
+    self:PlayStatisticsOpenAnimation()
     if self.statisticsOpenedStandalone then
         self:SetStandaloneStatisticsUIMode(true)
     end
@@ -14310,24 +14809,7 @@ function TPM:HideStatisticsWindow()
     if self.statisticsWindowMoving then
         self:StopMovingStatisticsWindow()
     end
-    if self.statisticsWindow then
-        self.statisticsWindow:SetHidden(true)
-    end
-    if self.economyDetailWindow then
-        self.economyDetailWindow:SetHidden(true)
-    end
-    self.economyDetailTemporarilyHiddenForScene = false
-    self:SetStandaloneStatisticsUIMode(false)
-    self.statisticsOpenedStandalone = false
-    self.statisticsTemporarilyHiddenForScene = false
-    self:RefreshQuickFilterBar()
-    if type(zo_callLater) == "function" then
-        zo_callLater(function() if TPM then TPM:RefreshSkyshardGoalWidget() end end, 30)
-    end
-    if self:IsWorldMapVisible() then
-        self:RefreshQuestRewards()
-        self:QueueRefresh(20)
-    end
+    self:PlayStatisticsCloseAnimation()
 end
 function TPM:ToggleStatisticsWindow(openStandalone)
     self:CreateStatisticsWindow()
@@ -14356,11 +14838,10 @@ function TPM:ToggleStatisticsFromKeybind()
     end
 
     if self.statisticsWindow:IsHidden() then
+        -- ShowStatisticsWindow(true) owns the single activation path.
+        -- Its delayed safety re-asserts keep remapped keys reliable without
+        -- changing UI-mode ownership a second time.
         self:ShowStatisticsWindow(true)
-        -- ShowStatisticsWindow already requests UI mode; explicitly request it
-        -- again here so a custom Controls binding cannot leave the journal open
-        -- in gameplay-camera mode with no mouse cursor.
-        self:SetStandaloneStatisticsUIMode(true)
     else
         self:HideStatisticsWindow()
     end
@@ -14795,7 +15276,7 @@ function TPM:RefreshBindingStrings()
 end
 
 function TPM:SetLanguage(value, silent)
-    if value ~= "auto" and value ~= "de" and value ~= "en" and value ~= "ru" and value ~= "fr" then
+    if value ~= "auto" and value ~= "de" and value ~= "en" and value ~= "ru" and value ~= "fr" and value ~= "es" then
         return false
     end
     self.saved.language = value
@@ -14808,7 +15289,7 @@ function TPM:SetLanguage(value, silent)
     end
     self:RefreshStatisticsWindow()
     -- Rebuild Economy focus choices immediately so an already-open dropdown
-    -- changes its zone names together with DE/EN/FR/RU.
+    -- changes its zone names together with DE/EN/RU/FR/ES.
     if self.economyFocusDropdown then
         self.economyFocusDropdownChoices = nil
         self:RefreshEconomyFocusDropdown()
@@ -15016,7 +15497,7 @@ function TPM:SetupLanguageCustomControl(control)
             return button
         end
 
-        -- Five compact buttons: Auto / DE / EN / RU / FR.
+        -- Six compact buttons: Auto / DE / EN / RU / FR / ES.
         local function PlaceLanguageButton(key, x, width)
             local button = WINDOW_MANAGER:CreateControlFromVirtual(nil, control, "ZO_DefaultButton")
             button:SetDimensions(width or 110, 28)
@@ -15025,11 +15506,12 @@ function TPM:SetupLanguageCustomControl(control)
             button:SetHandler("OnClicked", function(btn) TPM:SetLanguage(btn.languageKey, true) end)
             return button
         end
-        control.TPMAutoButton = PlaceLanguageButton("auto", 0, 120)
-        control.TPMGermanButton = PlaceLanguageButton("de", 126, 86)
-        control.TPMEnglishButton = PlaceLanguageButton("en", 218, 86)
-        control.TPMRussianButton = PlaceLanguageButton("ru", 310, 86)
-        control.TPMFrenchButton = PlaceLanguageButton("fr", 402, 94)
+        control.TPMAutoButton = PlaceLanguageButton("auto", 0, 104)
+        control.TPMGermanButton = PlaceLanguageButton("de", 110, 74)
+        control.TPMEnglishButton = PlaceLanguageButton("en", 190, 74)
+        control.TPMRussianButton = PlaceLanguageButton("ru", 270, 74)
+        control.TPMFrenchButton = PlaceLanguageButton("fr", 350, 74)
+        control.TPMSpanishButton = PlaceLanguageButton("es", 430, 74)
     end
 
     self:UpdateLanguageCustomControl(control)
@@ -15048,8 +15530,9 @@ function TPM:UpdateLanguageCustomControl(control)
         en = self:L("SETTINGS_LANGUAGE_EN"),
         ru = self:L("SETTINGS_LANGUAGE_RU"),
         fr = self:L("SETTINGS_LANGUAGE_FR"),
+        es = self:L("SETTINGS_LANGUAGE_ES"),
     }
-    local buttons = { control.TPMAutoButton, control.TPMGermanButton, control.TPMEnglishButton, control.TPMRussianButton, control.TPMFrenchButton }
+    local buttons = { control.TPMAutoButton, control.TPMGermanButton, control.TPMEnglishButton, control.TPMRussianButton, control.TPMFrenchButton, control.TPMSpanishButton }
     for _, button in ipairs(buttons) do
         if button then
             local text = labels[button.languageKey] or button.languageKey
@@ -15888,6 +16371,26 @@ function TPM:Initialize()
     if type(CreateDefaultActionBind) == "function" and _G.KEY_NUMPAD5 ~= nil then
         local noModifier = _G.KEY_INVALID or 0
         pcall(CreateDefaultActionBind, "TPM_TOGGLE_STATISTICS", _G.KEY_NUMPAD5, noModifier, noModifier, noModifier, noModifier)
+    end
+
+    -- v2.6.81: When the standalone Statistics journal owns UI mode, the
+    -- normal ESO Toggle UI Mode action (Left Alt by default) closes TPM again
+    -- instead of leaving the journal open while only changing cursor mode.
+    -- Hooking the ESO action also respects players who remap that native bind.
+    if not self.statisticsToggleUIModeHookInstalled and type(ZO_PreHook) == "function"
+        and _G.SCENE_MANAGER and type(_G.SCENE_MANAGER.OnToggleUIModeBinding) == "function" then
+        ZO_PreHook(_G.SCENE_MANAGER, "OnToggleUIModeBinding", function()
+            if TPM and TPM.statisticsOpenedStandalone then
+                local logicallyOpen = TPM.statisticsTemporarilyHiddenForScene == true
+                    or (TPM.statisticsWindow and not TPM.statisticsWindow:IsHidden())
+                if logicallyOpen then
+                    TPM:HideStatisticsWindow()
+                    return true
+                end
+            end
+            return false
+        end)
+        self.statisticsToggleUIModeHookInstalled = true
     end
 
     self.saved = ZO_SavedVars:NewAccountWide("TamrielProgressMap_SavedVariables", 1, nil, DEFAULTS)

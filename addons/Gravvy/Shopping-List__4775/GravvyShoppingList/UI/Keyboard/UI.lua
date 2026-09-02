@@ -546,6 +546,12 @@ function UI:CreateListDialog()
     self.listDialogTitle = makeLabel(dialog, "ZoFontWinH2")
     self.listDialogTitle:SetAnchor(TOPLEFT, dialog, TOPLEFT, 18, 10)
     self.listDialogTitle:SetDimensions(384, 30)
+    ShoppingListControls:MakeWindowMovable(
+        dialog,
+        self.listDialogTitle,
+        self.owner.data,
+        "listManagement"
+    )
 
     self.listDialogMessage = makeLabel(dialog, "ZoFontGame")
     self.listDialogMessage:SetAnchor(TOPLEFT, dialog, TOPLEFT, 18, 48)
@@ -707,16 +713,37 @@ function UI:CreateListDialog()
     end)
     self.listDialogSession = session
 
+    local overview = makeButton(
+        dialog,
+        GetString(SI_SHOPPING_LIST_BUTTON_OVERVIEW),
+        180
+    )
+    overview:SetAnchor(TOPLEFT, dialog, TOPLEFT, 18, 474)
+    overview:SetHandler("OnClicked", function()
+        self:CloseListDialog()
+        if self.owner.overview then
+            self.owner.overview:Open()
+        end
+    end)
+    self.listDialogOverview = overview
+
     local locked = makeButton(
         dialog,
         GetString(SI_SHOPPING_LIST_LOCK_LIST),
         368
     )
-    locked:SetAnchor(TOPLEFT, dialog, TOPLEFT, 18, 474)
+    locked:SetAnchor(TOPLEFT, dialog, TOPLEFT, 18, 511)
     locked:SetHandler("OnClicked", function()
         self:ToggleCurrentListLocked()
     end)
     self.listDialogLocked = locked
+
+    local assignment = makeButton(dialog, "", 180)
+    assignment:SetAnchor(LEFT, overview, RIGHT, 8, 0)
+    assignment:SetHandler("OnClicked", function()
+        self:ToggleCurrentCharacterAssignment()
+    end)
+    self.listDialogAssignment = assignment
 
     local duplicate = makeButton(dialog, GetString(SI_SHOPPING_LIST_BUTTON_DUPLICATE), 90)
     duplicate:SetAnchor(BOTTOMLEFT, dialog, BOTTOMLEFT, 18, -16)
@@ -777,6 +804,16 @@ function UI:UpdateListArchiveButtons()
     self.listDialogFavorite:SetEnabled(unlocked)
     self.listDialogPinned:SetEnabled(unlocked)
     self.listDialogBulk:SetEnabled(unlocked)
+    local characterId, characterName = self.owner.data:GetCurrentCharacterIdentity()
+    local assigned = characterId
+        and self.owner.data:IsListAssignedToCharacter(list, characterId)
+    self.listDialogAssignment:SetText(characterId and zo_strformat(
+        GetString(assigned
+            and SI_SHOPPING_LIST_UNASSIGN_CHARACTER
+            or SI_SHOPPING_LIST_ASSIGN_CHARACTER),
+        characterName
+    ) or GetString(SI_SHOPPING_LIST_CHARACTER_UNAVAILABLE))
+    self.listDialogAssignment:SetEnabled(unlocked and characterId ~= nil)
     self.listDialogLocked:SetText(GetString(list.locked
         and SI_SHOPPING_LIST_UNLOCK_LIST
         or SI_SHOPPING_LIST_LOCK_LIST))
@@ -790,6 +827,34 @@ function UI:UpdateListArchiveButtons()
     self.listDialogArchived:SetText(zo_strformat(
         GetString(SI_SHOPPING_LIST_ARCHIVED_COUNT),
         #self.owner.data:GetArchivedLists()
+    ))
+end
+
+function UI:ToggleCurrentCharacterAssignment()
+    local list = self.owner.data:GetCurrentList()
+    local characterId, characterName = self.owner.data:GetCurrentCharacterIdentity()
+    local assigned = characterId
+        and self.owner.data:IsListAssignedToCharacter(list, characterId)
+    local ok, message = self.owner.data:SetListCharacterAssigned(
+        list.id,
+        not assigned,
+        characterId,
+        characterName
+    )
+    if not ok then
+        self:SetStatus(message, true)
+        return
+    end
+    self.listSignature = nil
+    self:UpdateListArchiveButtons()
+    self:Refresh()
+    self.owner.gamepad:Refresh()
+    self:SetStatus(zo_strformat(
+        GetString(not assigned
+            and SI_SHOPPING_LIST_STATUS_CHARACTER_ASSIGNED
+            or SI_SHOPPING_LIST_STATUS_CHARACTER_UNASSIGNED),
+        characterName,
+        list.name
     ))
 end
 
@@ -979,6 +1044,12 @@ function UI:CreateBudgetDialog()
     title:SetText(GetString(SI_SHOPPING_LIST_BUDGET_TITLE))
     title:SetAnchor(TOPLEFT, dialog, TOPLEFT, 18, 10)
     title:SetDimensions(354, 30)
+    ShoppingListControls:MakeWindowMovable(
+        dialog,
+        title,
+        self.owner.data,
+        "budget"
+    )
 
     self.budgetListName = makeLabel(dialog, "ZoFontGame")
     self.budgetListName:SetAnchor(TOPLEFT, dialog, TOPLEFT, 18, 45)
@@ -1071,6 +1142,7 @@ function UI:RefreshListSelector()
     local lists = self.owner.data:GetDisplayLists()
     local signature = {}
     local tripEnabled = self.owner.data:IsMultiListTripEnabled()
+    local currentCharacterId = self.owner.data:GetCurrentCharacterIdentity()
     for _, list in ipairs(lists) do
         signature[#signature + 1] = table.concat({
             tostring(list.id),
@@ -1082,6 +1154,10 @@ function UI:RefreshListSelector()
             tostring(list.pinned),
             tostring(list.locked),
             list.category or "",
+            tostring(self.owner.data:IsListAssignedToCharacter(
+                list,
+                currentCharacterId
+            )),
             tostring(tripEnabled),
         }, ":")
     end
@@ -1106,6 +1182,15 @@ function UI:RefreshListSelector()
             if list.favorite then
                 displayName = zo_strformat(
                     GetString(SI_SHOPPING_LIST_FAVORITE_MARKER),
+                    displayName
+                )
+            end
+            if self.owner.data:IsListAssignedToCharacter(
+                list,
+                currentCharacterId
+            ) then
+                displayName = zo_strformat(
+                    GetString(SI_SHOPPING_LIST_ASSIGNED_MARKER),
                     displayName
                 )
             end
@@ -1152,6 +1237,15 @@ function UI:RefreshListSelector()
     if current.favorite then
         currentName = zo_strformat(
             GetString(SI_SHOPPING_LIST_FAVORITE_MARKER),
+            currentName
+        )
+    end
+    if self.owner.data:IsListAssignedToCharacter(
+        current,
+        currentCharacterId
+    ) then
+        currentName = zo_strformat(
+            GetString(SI_SHOPPING_LIST_ASSIGNED_MARKER),
             currentName
         )
     end
@@ -1218,15 +1312,17 @@ function UI:OpenListDialog(mode)
     self.listDialogRecurring:SetHidden(mode ~= "rename")
     self.listDialogResetProgress:SetHidden(mode ~= "rename")
     self.listDialogSession:SetHidden(mode ~= "rename")
+    self.listDialogOverview:SetHidden(mode ~= "rename")
     self.listDialogFavorite:SetHidden(mode ~= "rename")
     self.listDialogPinned:SetHidden(mode ~= "rename")
     self.listDialogLocked:SetHidden(mode ~= "rename")
+    self.listDialogAssignment:SetHidden(mode ~= "rename")
     self.listDialogNoteLabel:SetHidden(mode == "delete")
     self.listDialogNoteBackdrop:SetHidden(mode == "delete")
     self.listDialogCategoryLabel:SetHidden(mode == "delete")
     self.listDialogCategoryBackdrop:SetHidden(mode == "delete")
     self.listDialog:SetHeight(mode == "delete" and 290
-        or (mode == "rename" and 565 or 450))
+        or (mode == "rename" and 602 or 450))
 
     if mode == "new" then
         self.listDialogTitle:SetText(GetString(SI_SHOPPING_LIST_NEW_LIST_TITLE))

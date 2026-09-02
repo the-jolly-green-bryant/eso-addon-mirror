@@ -82,7 +82,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Flagrick's durability](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ayantir/Flagrick-s-durability__419) | Ayantir | PC / Mac | 1.3 |
 | [Flamechasers Dungeon Codex](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Dungeon-Codex__4737) | haidan | PC / Mac | 0.2.58 |
 | [Flamechasers Outfit Profiles](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Outfit-Profiles__4736) | haidan | PC / Mac | 0.4.5 |
-| [Flamechasers Pledge Queue](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Pledge-Queue__4735) | haidan | PC / Mac | 0.7.18 |
+| [Flamechasers Pledge Queue](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Pledge-Queue__4735) | haidan | PC / Mac | 0.8.1 |
 | [Flamechasers Spellcheck & Autocomplete](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Spellcheck-Autocomplete__4805) | haidan | PC / Mac | 0.7.6 |
 | [Flamechasers Travel Slots](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Travel-Slots__4738) | haidan | PC / Mac | 0.8.6 |
 | [Flappy Nord – Mini Game](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Traybair/Flappy-Nord-Mini-Game__4492) | Traybair | PC / Mac | 1.0.5 |

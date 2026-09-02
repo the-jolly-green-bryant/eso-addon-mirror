@@ -1,7 +1,12 @@
 local releaseNotes = {
     en = [[
 
-Current release · 0.19.2
+Current release · 0.19.4
+• Added sharing code previews with duplicate and name conflict details plus merge and copy actions.
+• Added a complete list overview and optional character assignments for account wide lists.
+• Every keyboard window can now be moved and remembers its own position.
+
+0.19.2
 • Added cost projections with spending, remaining target cost, projected totals, budget balances, and entries without maximum prices.
 • Added optional local price suggestions from supported price addons with explicit keyboard and gamepad actions.
 • Prevented invalid recovery copies and copies made before legacy cleanup from retrying whenever the window opens.
@@ -44,7 +49,12 @@ Current release · 0.19.2
 • Added inventory-aware quantities, notes, full SLB1 backup, accessibility settings, chat-link actions, and Spanish and French translations.]],
     es = [[
 
-Versión actual · 0.19.2
+Versión actual · 0.19.4
+• Se añadieron vistas previas de códigos compartidos con detalles de duplicados y conflictos de nombre, además de acciones para combinar o copiar.
+• Se añadió un resumen completo de listas y asignaciones opcionales de personajes para las listas de toda la cuenta.
+• Ahora se pueden mover todas las ventanas de teclado y cada una recuerda su posición.
+
+0.19.2
 • Se añadieron previsiones de costes con gastos, coste objetivo restante, total previsto, saldos de presupuesto y entradas sin precio máximo.
 • Se añadieron sugerencias opcionales de precios locales con acciones explícitas para teclado y mando.
 • Se evitó que las copias de recuperación inválidas o creadas antes de la limpieza volvieran a intentarse cada vez que se abre la ventana.
@@ -87,7 +97,12 @@ Versión actual · 0.19.2
 • Se añadieron cantidades de inventario, notas, copia completa SLB1, accesibilidad, acciones de enlaces del chat y traducciones al español y francés.]],
     fr = [[
 
-Version actuelle · 0.19.2
+Version actuelle · 0.19.4
+• Ajout d'un aperçu des codes partagés avec les doublons, les conflits de nom et les actions de fusion ou de copie.
+• Ajout d'une vue d'ensemble complète et d'attributions facultatives de personnages aux listes du compte.
+• Toutes les fenêtres au clavier peuvent désormais être déplacées et mémorisent leur position.
+
+0.19.2
 • Ajout des projections de coûts avec dépenses, coût cible restant, total prévu, soldes du budget et entrées sans prix maximal.
 • Ajout de suggestions facultatives de prix locales avec des actions explicites au clavier et à la manette.
 • Les copies de récupération invalides ou créées avant le nettoyage ne sont plus retentées à chaque ouverture de la fenêtre.

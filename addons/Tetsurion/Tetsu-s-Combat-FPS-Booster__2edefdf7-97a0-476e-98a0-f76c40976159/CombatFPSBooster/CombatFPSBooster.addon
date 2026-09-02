@@ -1,8 +1,8 @@
 ## Title: |c00FF00Tetsu's Combat FPS Booster|r
 ## Author: Tetsurion
 ## Description: A lightweight performance booster designed to eliminate micro-stutters and boost FPS in heavy combat
-## Version: 1.4.14
-## AddOnVersion: 10414
+## Version: 1.5.5
+## AddOnVersion: 10505
 ## APIVersion: 101050 101051
 ## SavedVariables: CombatFPSBoosterSavedVars CombatFPSBoosterCharVars
 ## DependsOn: LibHarvensAddonSettings

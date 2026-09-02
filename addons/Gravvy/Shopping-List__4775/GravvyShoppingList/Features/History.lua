@@ -110,6 +110,12 @@ function History:Initialize()
             window:StopMovingOrResizing()
         end
     end)
+    ShoppingListControls:MakeWindowMovable(
+        window,
+        title,
+        self.owner.data,
+        "history"
+    )
 
     self.summary = makeLabel(window, "ZoFontGameSmall")
     self.summary:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
@@ -249,6 +255,12 @@ function History:CreateCorrectionDialog()
     self.correctionTitle = makeLabel(dialog, "ZoFontWinH2")
     self.correctionTitle:SetAnchor(TOPLEFT, dialog, TOPLEFT, 18, 10)
     self.correctionTitle:SetDimensions(364, 30)
+    ShoppingListControls:MakeWindowMovable(
+        dialog,
+        self.correctionTitle,
+        self.owner.data,
+        "purchaseCorrection"
+    )
 
     self.correctionHelp = makeLabel(dialog, "ZoFontGameSmall")
     self.correctionHelp:SetAnchor(TOPLEFT, dialog, TOPLEFT, 18, 44)

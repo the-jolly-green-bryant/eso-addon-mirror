@@ -18,6 +18,7 @@ TamrielProgressMap_Localization["ru"] =
     SETTINGS_LANGUAGE_DE = "Немецкий",
     SETTINGS_LANGUAGE_EN = "Английский",
     SETTINGS_LANGUAGE_RU = "Русский",
+    SETTINGS_LANGUAGE_ES = "Испанский",
     SETTINGS_LANGUAGE_FR = "Французский",
     SETTINGS_ENABLED = "Показывать прогресс зон",
     SETTINGS_ENABLED_TT = "Показывает процент выполнения на карте Тамриэля и обзоре мира.",

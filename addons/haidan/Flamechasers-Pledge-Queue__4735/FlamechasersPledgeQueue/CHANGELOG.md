@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.8.1
+- Restored dungeon icons and card accents above the artwork layer.
+- Refined `Hide Completed` into a compact, muted control beside the section heading.
+
+## 0.8.0
+- Added a saved `Hide Completed` checkbox for pledges that are ready to turn in.
+- Kept partially completed pledges visible and excluded hidden pledges from the queue selection.
+- Removed the uneven vertical shading from dungeon artwork while preserving its horizontal fade.
+
 ## 0.7.18
 - Moved the outer frame onto the visible window edge, removing the transparent gap.
 - Increased the signature-lavender frame thickness from one pixel to two pixels.

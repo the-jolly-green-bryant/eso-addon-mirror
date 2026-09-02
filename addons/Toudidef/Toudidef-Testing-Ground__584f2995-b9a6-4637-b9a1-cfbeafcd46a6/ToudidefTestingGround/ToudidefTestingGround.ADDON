@@ -1,0 +1,8 @@
+## Title: Toudidef Testing Ground
+## Author: |cff5900Toudidef|r
+## Version: 1.0.0
+## APIVersion: 101050
+## SavedVariables: ToudidefTestingGround_SavedVars
+## DependsOn: LibAddonMenu-2.0
+
+ToudidefTestingGround.lua

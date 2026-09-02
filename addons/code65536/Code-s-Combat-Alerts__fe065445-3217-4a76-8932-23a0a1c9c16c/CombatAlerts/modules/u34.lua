@@ -10,14 +10,21 @@ Module.ZONES = {
 	1344, -- Dreadsail Reef
 }
 
+local ID_FDM = 166210
+local ID_IDM = 166192
+local ID_FWP = 168817
+local ID_IWP = 168912
+
 Module.STRINGS = {
 	-- Extracted
 	["8290981-0-107014"] = { default = "Reef Guardian^n", de = "Riffwächter^m", es = "guardián del arrecife^m", fr = "gardien du récif^m", jp = "サンゴのガーディアン^n", ru = "Страж Рифа^n", zh = "礁石守护者^n" },
 	["8290981-0-107015"] = { default = "Tideborn Taleria^F", de = "Gezeitengeborene Taleria^F", es = "Taleria de la Marea^F", fr = "Taléria Née-des-Marées^F", jp = "タイドボーン・タレリア^F", ru = "Талерия Рожденная Приливом^F", zh = "泰德伯恩·塔勒里亚^F" },
 
-	-- Alternative dome names (fallback to in-game name if not specified)
-	[166210] = { en = "Fire Dome" },
-	[166192] = { en = "Ice Dome" },
+	-- Alternative dome/weapon names (fallback to in-game name if not specified)
+	[ID_FDM] = { en = "Fire Dome" },
+	[ID_IDM] = { en = "Ice Dome" },
+	[ID_FWP] = { en = "Axe", de = "Axt", es = "Hacha", fr = "Hache", ru = "Топор" },
+	[ID_IWP] = { en = "Sword", de = "Schwert", es = "Espada", fr = "Épée", ru = "Меч" },
 
 	-- Reef Guardian labels
 	boss1 = { default = "L", zh = "大" },
@@ -63,8 +70,8 @@ local COLOR_BR_P = 0xCC00CCFF
 
 Module.DATA = {
 	banners_begin = {
-		[168817] = COLOR_F_WP, -- Incendiary Axe
-		[168912] = COLOR_I_WP, -- Calamitous Sword
+		[ID_FWP] = COLOR_F_WP, -- Incendiary Axe
+		[ID_IWP] = COLOR_I_WP, -- Calamitous Sword
 		[166928] = 0x66CCFFFF, -- Summon Behemoth
 		[166929] = 0x9966FFFF, -- Summon Siren
 	},
@@ -77,8 +84,8 @@ Module.DATA = {
 
 	-- Boss 1
 	multi = {
-		[166745] = true, -- Turlassil MultiLoc
-		[166909] = true, -- Lylanar MultiLoc
+		[166745] = ID_IWP, -- Turlassil MultiLoc
+		[166909] = ID_FWP, -- Lylanar MultiLoc
 	},
 	imminent = {
 		[166522] = true, -- Imminent Blister
@@ -101,9 +108,10 @@ Module.DATA = {
 		[167900] = COLOR_ICE , -- Summon Frost Atronach
 	},
 	twinsColors = { COLOR_FIRE, COLOR_ICE },
+	weaponColors = { COLOR_F_WP, COLOR_I_WP },
 	dome = {
-		[166210] = COLOR_FIRE * 2 + 0, -- Destructive Ember
-		[166192] = COLOR_ICE  * 2 + 1, -- Piercing Hailstone
+		[ID_FDM] = COLOR_FIRE * 2 + 0, -- Destructive Ember
+		[ID_IDM] = COLOR_ICE  * 2 + 1, -- Piercing Hailstone
 	},
 	domeCooldown = {
 		[166208] = 1, -- Destructive Ember
@@ -117,6 +125,10 @@ Module.DATA = {
 	rescueEffect = {
 		[167491] = true, -- Charred Constriction
 		[167563] = true, -- Frigidarium
+	},
+	nextWeaponIds = {
+		[ID_FWP] = ID_IWP, -- Incendiary Axe
+		[ID_IWP] = ID_FWP, -- Calamitous Sword
 	},
 	brands = {
 		[166358] = COLOR_FIRE, -- Firebrand
@@ -224,6 +236,8 @@ function Module:Initialize( )
 	}
 
 	self.vars = {
+		twinsHM = false,
+		twinsSplit = false,
 		domeCooldown = { },
 		domeHolder = { },
 		rescueUnits = { },
@@ -231,6 +245,14 @@ function Module:Initialize( )
 			previous = 0,
 			count = 0,
 			id = -1,
+		},
+		nextWeaponId = nil,
+		prevWeaponTime = { },
+		numWeapons = { },
+		guardians = {
+			hearts = 0,
+			units = { },
+			statuses = { },
 		},
 		wave = {
 			stop = 0,
@@ -240,11 +262,6 @@ function Module:Initialize( )
 			type = SI_LCA_TARGET_OTHERS,
 			units = { },
 			eruptionTime = 0,
-		},
-		guardians = {
-			hearts = 0,
-			units = { },
-			statuses = { },
 		},
 		bridge = {
 			channels = { },
@@ -266,9 +283,10 @@ function Module:Initialize( )
 			local rowLabels = {
 				[3] = GetString("SI_ATTRIBUTES", ATTRIBUTE_HEALTH),
 				[4] = LCA.GetAbilityName(167637),
+				[5] = GetString("SI_GAMEPADITEMCATEGORY", GAMEPAD_ITEM_CATEGORY_WEAPONS),
 			}
 			for abilityId, data in pairs(DATA.dome) do
-				rowLabels[data % 2 + 1] = self:GetString(abilityId) or LCA.GetAbilityName(abilityId)
+				rowLabels[data % 2 + 1] = self:GetCustomizedAbilityName(abilityId)
 			end
 			CA2.StatusEnable({
 				ownerId = "u34b1",
@@ -280,9 +298,12 @@ function Module:Initialize( )
 	end
 
 	self.StatusInit_B1 = function( )
+		Vars.twinsHM = false
+		Vars.twinsSplit = false
 		ZO_ClearTable(Vars.domeCooldown)
 		ZO_ClearTable(Vars.domeHolder)
 		ZO_ClearTable(Vars.rescueUnits)
+		ZO_ClearTable(Vars.numWeapons)
 		for _, data in pairs(DATA.dome) do
 			local r = data % 2 + 1
 			CA2.StatusModifyCell(r, 0,
@@ -299,6 +320,7 @@ function Module:Initialize( )
 			)
 		end
 		CA2.StatusSetRowAlpha(4, 0)
+		CA2.StatusSetRowAlpha(5, 0)
 	end
 
 	self.StatusPoll_B1 = function( )
@@ -326,6 +348,36 @@ function Module:Initialize( )
 			CA2.StatusSetRowAlpha(4, 1)
 		else
 			CA2.StatusSetRowAlpha(4, 0)
+		end
+
+		-- Weapons
+		if (Vars.twinsHM and Vars.twinsSplit) then
+			ZO_ClearTable(results)
+			for i = 1, 2 do
+				local color = DATA.weaponColors[i]
+				table.insert(results, string.format("|c%06X%d×|r", LCA.RemoveAlpha(color), Vars.numWeapons[color] or 0))
+			end
+			if (Vars.nextWeaponId) then
+				local color = DATA.banners_begin[Vars.nextWeaponId]
+				table.insert(results, string.format("%s: |c%06X%s|r", GetString(SI_SCREEN_NARRATION_DIRECTIONAL_INPUT_NEXT), LCA.RemoveAlpha(color), self:GetCustomizedAbilityName(Vars.nextWeaponId)))
+				if (Vars.prevWeaponTime[Vars.nextWeaponId]) then
+					local time = currentTime - Vars.prevWeaponTime[Vars.nextWeaponId]
+					local thresholdStart, thresholdYellow, thresholdRed, color = 30000, 40000, 50000
+					if (time >= thresholdYellow) then
+						local ratio = 1 - zo_clamp((time - thresholdYellow) / (thresholdRed - thresholdYellow), 0, 1)
+						color = LCA.PackRGBA(LCA.HSLToRGB(ratio / 6, 1, 0.5, 1))
+					elseif (time >= thresholdStart) then
+						color = 0xFFFFFFFF
+					else
+						color = 0xFFFFFF99
+					end
+					CA2.StatusModifyCell(5, 0, "text", zo_strformat(SI_LCA_TIME_SINCE_PREVIOUS, LCA.FormatTime(time, LCA.TIME_FORMAT_SHORT)), "color", color)
+				else
+					CA2.StatusSetCellText(5, 0, "")
+				end
+			end
+			CA2.StatusSetCellText(5, 2, table.concat(results, " / "))
+			CA2.StatusSetRowAlpha(5, 1)
 		end
 	end
 
@@ -524,7 +576,13 @@ end
 function Module:ProcessCombatEvents( result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId, overflow )
 	-- General
 	if (result == ACTION_RESULT_BEGIN and DATA.banners_begin[abilityId]) then
-		CA1.Alert(nil, LCA.GetAbilityName(abilityId), DATA.banners_begin[abilityId], SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
+		local color = DATA.banners_begin[abilityId]
+		CA1.Alert(nil, LCA.GetAbilityName(abilityId), color, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
+		if (DATA.nextWeaponIds[abilityId]) then
+			Vars.nextWeaponId = DATA.nextWeaponIds[abilityId]
+			Vars.prevWeaponTime[abilityId] = GetGameTimeMilliseconds()
+			Vars.numWeapons[color] = (Vars.numWeapons[color] or 0) + 1
+		end
 	elseif (targetType == COMBAT_UNIT_TYPE_PLAYER and abilityId == DATA.targeted) then
 		if (result == ACTION_RESULT_EFFECT_GAINED_DURATION) then
 			CA2.ScreenBorderEnable(0xAA00FF77, hitValue, "u34target")
@@ -549,6 +607,11 @@ function Module:ProcessCombatEvents( result, isError, abilityName, abilityGraphi
 		if (currentTime - multi.previous > 10000) then
 			multi.previous = currentTime
 			multi.count = 0
+			if (not Vars.twinsSplit and LCA.GetUnitHealthPercent("boss1") < 100 and LCA.GetUnitHealthPercent("boss2") < 100) then
+				Vars.twinsSplit = true
+				Vars.nextWeaponId = DATA.multi[abilityId]
+				ZO_ClearTable(Vars.prevWeaponTime)
+			end
 		end
 		multi.count = multi.count + 1
 		local bannerText = zo_strformat(self:GetString("teleportCounter"), multi.count)
@@ -580,6 +643,7 @@ function Module:ProcessCombatEvents( result, isError, abilityName, abilityGraphi
 	elseif (result == ACTION_RESULT_EFFECT_GAINED and DATA.waves[abilityId]) then
 		local alertLevel = 1 -- Default alert level
 		local color = DATA.waves[abilityId]
+		Vars.numWeapons[color] = (Vars.numWeapons[color] or 0) - 1
 		if (Vars.currentFragility == color) then
 			alertLevel = 2
 		elseif (LCA.isTank) then
@@ -596,6 +660,7 @@ function Module:ProcessCombatEvents( result, isError, abilityName, abilityGraphi
 			end
 		end
 	elseif (result == ACTION_RESULT_EFFECT_GAINED and DATA.summon_atroEffect[abilityId] and LCA.DoesPlayerHaveTauntSlotted()) then
+		Vars.twinsHM = true
 		CA1.Alert(nil, LCA.GetAbilityName(abilityId), DATA.summon_atroEffect[abilityId], SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
 	elseif (result == ACTION_RESULT_BEGIN and DATA.summon_atroBegin[abilityId] and LCA.DoesPlayerHaveTauntSlotted()) then
 		CA1.Alert(nil, LCA.GetAbilityName(abilityId), DATA.summon_atroBegin[abilityId], SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
@@ -761,6 +826,10 @@ function Module:ProcessCombatEvents( result, isError, abilityName, abilityGraphi
 		bridgeChannel.time = nil
 		self:ToggleBridgeLocation(bridgeChannel.color, false)
 	end
+end
+
+function Module:GetCustomizedAbilityName( abilityId )
+	return self:GetString(abilityId) or LCA.GetAbilityName(abilityId)
 end
 
 function Module:GetSettingsControls( )

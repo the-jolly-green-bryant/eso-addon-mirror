@@ -94,7 +94,7 @@ function H.CreateSettingsMenu()
         },
         {
             type = "checkbox",
-            name = "Fight frame (ring / split / 30s path)",
+            name = "Fight frame (dots / split / 30s path)",
             tooltip = "After load: room-size ring, N/E/S/W, gold split line (Twins candles), first 30s of boss paths. Plant is the fight center.",
             getFunc = function() return sv.frameOn ~= false end,
             setFunc = function(v)

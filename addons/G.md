@@ -95,7 +95,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [GroundPaint](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/HeiKyoma/GroundPaint__4632) | HeiKyoma | PC / Mac | 1.2 |
 | [Group & Activity Finder Extensions](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Panicida/Group-Activity-Finder-Extensions__2800) | Panicida | PC / Mac | 6.2.0 |
 | [Group Buff Panels](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Group-Buff-Panels__da882875-d281-47d4-b525-aa19f4f40875) | code65536 | Console | — |
-| [Group Buff Panels](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Group-Buff-Panels__4226) | code65536 | PC / Mac | 2.3.2.1 |
+| [Group Buff Panels](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Group-Buff-Panels__4226) | code65536 | PC / Mac | 2.3.3 |
 | [Group Buffs](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Sordrak/Group-Buffs__1823) | Sordrak | PC / Mac | 1.5.22 |
 | [Group Circle](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/aldericon/Group-Circle__2032) | aldericon | PC / Mac | 10.0 |
 | [Group Damage Share](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Solinur/Group-Damage-Share__1578) | Solinur | PC / Mac | 0.3.4 |

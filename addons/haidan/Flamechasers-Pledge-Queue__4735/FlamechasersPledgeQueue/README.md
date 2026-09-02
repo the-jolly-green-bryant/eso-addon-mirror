@@ -10,6 +10,7 @@ visually grounded over the game world.
 ## Features
 
 - Detects up to three active pledge quests.
+- Optionally hides completed pledges that are still waiting to be turned in.
 - Displays ESO's own dungeon artwork as a subtle, darkened background for each
   detected pledge card, cropped from ESO's Activity Finder texture region and
   faded smoothly across the full card.

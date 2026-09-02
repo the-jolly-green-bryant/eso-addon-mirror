@@ -906,7 +906,7 @@ function Crutch.CreateConsoleContentSettingsMenu()
             type = LibHarvensAddonSettings.ST_CHECKBOX,
             label = "Show middle icons",
             tooltip = "Additionally shows a set of icons for positioning in the middle of the arena",
-            default = true,
+            default = Crutch.defaultOptions.osseincage.useMiddleIcons,
             getFunction = function() return Crutch.savedOptions.osseincage.useMiddleIcons end,
             setFunction = function(value)
                 Crutch.savedOptions.osseincage.useMiddleIcons = value
@@ -968,7 +968,7 @@ function Crutch.CreateConsoleContentSettingsMenu()
         {
             type = LibHarvensAddonSettings.ST_CHECKBOX,
             label = "Print titan damage on HM",
-            tooltip = "On hardmode, prints to chat when you damage a titan, which would proc Reflective Scales. For now, it doesn't print until the titan health bars appear",
+            tooltip = "On hardmode, prints to chat when you damage a titan, which would proc Reflective Scales",
             default = true,
             getFunction = function() return Crutch.savedOptions.osseincage.printHMReflectiveScales end,
             setFunction = function(value)
@@ -1042,6 +1042,16 @@ function Crutch.CreateConsoleContentSettingsMenu()
             getFunction = function() return Crutch.savedOptions.osseincage.panel.showClash end,
             setFunction = function(value)
                 Crutch.savedOptions.osseincage.panel.showClash = value
+            end,
+        },
+        {
+            type = LibHarvensAddonSettings.ST_CHECKBOX,
+            label = "Show target / portal on twins HM",
+            tooltip = "On hardmode Jynorah + Skorkhif, shows text in the info panel indicating the side you should be on, as a non-tank. For example, if you got Sparking Enfeeblement on the first curse phase, it will display to target Skorkhif / go to orange portal, persisting through death, so you don't forget where you're going. This is based on the very first Enfeeblement you receive, alternating afterwards, so it could be incorrect if initial curses are assigned unusually",
+            default = Crutch.defaultOptions.osseincage.panel.showTarget,
+            getFunction = function() return Crutch.savedOptions.osseincage.panel.showTarget end,
+            setFunction = function(value)
+                Crutch.savedOptions.osseincage.panel.showTarget = value
             end,
         },
     }))

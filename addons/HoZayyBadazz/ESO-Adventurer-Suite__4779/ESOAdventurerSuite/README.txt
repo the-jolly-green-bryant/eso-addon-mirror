@@ -1,5 +1,5 @@
 ESO ADVENTURER SUITE
-Version 0.29.127
+Version 0.29.143
 Author: HoZayyBadazz
 Status: Public Beta
 
@@ -25,7 +25,64 @@ REQUIRED LIBRARIES
 
 Install required libraries separately through Minion/ESOUI.
 
-RELEASE NOTES - 0.29.127
+RELEASE NOTES - 0.29.143
+
+- Optimized Teleporter opening so expanding the panel reuses the last destination list immediately instead of rebuilding travel data on the same input frame.
+- Coalesced opening into at most one deferred destination refresh after the panel is already visible.
+- Added a one-minute owned-house cache and background guild-cache prewarm to remove repeated collection/guild work from normal opens.
+
+- Removed the VIEW prefix from every Map Teleporter destination mode. The active button now reads ALL DESTINATIONS, ZONES, CURRENT MAP, WAYSHRINES, and so on.
+- Shortened the two longest destination labels and added adaptive font sizing so every destination mode remains inside the top button.
+
+- Removed all Teleporter control over ESO map completion / zone-guide UI. The stock map completion interface is now left entirely alone.
+- Reorganized the Teleporter top toolbar: View is wider, Favorites and Tools are aligned beside it, and all three buttons use consistent spacing and height.
+
+- World Map mode now docks the Teleporter completely OUTSIDE the parchment: the Teleporter right edge attaches to the map left edge.
+- Disabled screen clamping for the map-docked Teleporter so ESO cannot pull the outside sidebar back over the map.
+- PLAYER and ZONE search fields are recalculated from the final panel width after docking, preventing the ZONE box from running off the right edge.
+
+
+- In Open with World Map mode, the Teleporter now docks flush to the left side of the World Map instead of floating over the middle of it.
+- The collapsed Teleporter drawer is now tucked into the map's top-left corner.
+
+- Core.lua syntax correction: removed an accidental editor/Python expression from the version line that prevented the addon from loading.
+- Revalidated all Lua files in the packaged addon for syntax before release.
+
+- Rebuilt outside-map Teleporter interaction on ESO's native registered top-level UI path so closing reliably returns movement/camera control and the hotkey can reopen it.
+- Same Teleporter hotkey now uses session state only: press once to open, press again to close.
+- Click-outside now closes on the completed global mouse-up event, then returns directly to gameplay.
+- Open with World Map is explicitly map-attached: the drawer anchors to the stable ZO_WorldMap window, never the zoom/pan canvas, so it follows the map without zooming with it.
+
+- Teleporter hotkey close now fully releases ESO camera/UI input before returning to gameplay, preventing movement/camera controls from remaining stuck after the panel closes.
+- Teleporter now uses ESO's camera UI-mode API with the scene manager only as a fallback, matching the Suite's proven main interaction-mode behavior.
+
+- Retired the permanent TELEPORTER > gameplay drawer. Outside the World Map, Hotkey / Outside Map now stays completely hidden until the assigned Teleporter hotkey is pressed.
+- Fixed the Teleporter hotkey as a true open/close toggle even after ESO changes UI/window state.
+- Added click-outside-to-close for the outside-map Teleporter and reliable return to gameplay/UI mode.
+- Repair: <gold> now mirrors the actual rendered HUD fade alpha used by the Suite FPS/Latency overlay, with ESO action-bar alpha as a fallback, so it cannot remain visible after the rest of the HUD fades.
+
+- Repair: <gold> and the collapsed Teleporter drawer now use the exact same native HUD-fade ownership pattern as the working FPS overlay during normal gameplay.
+- Removed normal-gameplay top-level promotion/BringWindowToTop behavior that could keep those two overlays visible after the rest of the HUD faded.
+- Teleporter remains raised and fully interactive only on the World Map, in HUD Layout Mode, or while explicitly opened by its hotkey.
+
+- Added an Open / Close Map Teleporter keybinding for Always / HUD Overlay mode. The hotkey opens the Teleporter outside the World Map, puts you in UI mode so you can interact with it, and pressing the same key again closes it back to gameplay.
+- Clicking the Teleporter drawer while it is open from the HUD hotkey also closes it back to gameplay outside the map.
+- Folded Teleporter now shows only the TELEPORTER drawer tab; destination names and expanded controls can no longer leak into the closed 136x42 overlay.
+- Always / HUD Overlay reliably appears during normal gameplay outside the World Map and returns after leaving menus/maps while still following ESO HUD-fade behavior.
+- Teleporter options now appear in a dedicated Map Teleporter submenu in Suite Settings.
+- HUD Layout Mode positioning and native ESC/Map/R/zoom behavior remain unchanged.
+
+RELEASE NOTES - 0.29.130
+- Added Teleporter visibility modes: Open with World Map and Always / HUD Overlay.
+- Always mode makes the collapsible Teleporter drawer usable outside the map and attaches it to ESO's native HUD-fade behavior so it disappears/returns with normal gameplay overlays.
+- The Teleporter remains available on the World Map in either visibility mode without capturing ESC, Map, R/player-position, zoom, or other native map keys.
+- Added Map Teleporter support to the Suite HUD Layout Mode with a dedicated drag strip and saved screen position.
+- Reset Layout now restores the Teleporter position along with the other Suite HUD overlays.
+- Preserved the 0.29.129 zoom isolation: map zoom/pan never scales or shifts the Teleporter.
+
+RELEASE NOTES - 0.29.129
+- Map Teleporter zoom isolation: the drawer stays fixed while the World Map zooms or pans.
+- Removed Teleporter mouse-wheel page switching so map zoom gestures never alter the destination list.
 - Fixed live health depletion and regeneration for player, companion, group, and raid unit frames.
 - Health bars now use ESO's filtered live health events and update from the event values on damage and healing.
 - Expanded group/raid live-health handling to the complete roster and group companion unit tags without adding high-frequency polling.

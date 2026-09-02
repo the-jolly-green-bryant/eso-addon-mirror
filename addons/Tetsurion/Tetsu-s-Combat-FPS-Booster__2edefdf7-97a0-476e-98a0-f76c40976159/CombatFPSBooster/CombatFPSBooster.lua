@@ -7,6 +7,11 @@ local defaultSettings = {
     hideAlerts  = true,
     hideCSA     = false,
     hideWholeInstance = false,
+    wholeWhereDungeon = true,
+    wholeWhereArena = true,
+    wholeWhereArchive = true,
+    wholeWhereBG = false,
+    wholeWhereCyro = false,
     dungeonPresets = {},
 }
 
@@ -20,6 +25,7 @@ local defaultFilterSettings = {
     dungeonSnapshot = nil,
     dungeonProfileApplied = false,
     dungeonReloadPending = false,
+    dungeonAutoSwap = true,
 }
 
 local pendingPresetName = nil
@@ -300,17 +306,21 @@ local function ApplyCombatVisualState(inCombat)
             inCombat = IsUnitInCombat("player")
         end
 
-        local instanceHide = vars.hideWholeInstance and InPveInstance and InPveInstance()
-        local hideHud = inCombat or instanceHide
+        local zoneKind = DetectHudZoneKind()
+        local instanceHide = vars.hideWholeInstance == true and ZoneAllowsWholeHud(vars, zoneKind)
 
+        -- Компас/квесты прячутся только если их собственные галочки вкл.
+        -- «Весь данж» лишь удлиняет то же прятание на всю зону.
+        -- В Сиродиле компас режимом «весь данж» не трогаем — только боем.
         if vars.hideCompass then
-            SetCompassHidden(hideHud)
+            local hideCompassNow = inCombat or (instanceHide and zoneKind ~= "cyro")
+            SetCompassHidden(hideCompassNow)
         else
             SetCompassHidden(false)
         end
 
         if vars.hideQuests then
-            SetQuestTrackerHidden(hideHud)
+            SetQuestTrackerHidden(inCombat or instanceHide)
         else
             SetQuestTrackerHidden(false)
         end
@@ -533,14 +543,160 @@ end
 
 local lastZoneDisplayType = nil
 
-InPveInstance = function()
+local ARENA_ZONE_IDS = {
+    [635] = true,  -- Dragonstar Arena
+    [681] = true,  -- Maelstrom Arena
+    [1051] = true, -- Blackrose Prison
+    [1082] = true, -- Vateshran Hollows
+}
+
+local function CurrentZoneId()
+    if GetUnitWorldPosition then
+        local ok, z = pcall(GetUnitWorldPosition, "player")
+        if ok and type(z) == "number" and z > 0 then
+            return z
+        end
+    end
+    if GetZoneId and GetCurrentMapZoneIndex then
+        local ok, z = pcall(function()
+            return GetZoneId(GetCurrentMapZoneIndex())
+        end)
+        if ok and type(z) == "number" and z > 0 then
+            return z
+        end
+    end
+    return 0
+end
+
+local function IsHouseZone()
     if GetCurrentHouseId then
         local ok, houseId = pcall(GetCurrentHouseId)
         if ok and houseId and houseId > 0 then
-            return false
+            return true
         end
     end
+    return false
+end
+
+function IsBattlegroundZone()
     if IsActiveWorldBattleground and IsActiveWorldBattleground() then
+        return true
+    end
+    if lastZoneDisplayType and lastZoneDisplayType == ZONE_DISPLAY_TYPE_BATTLEGROUND then
+        return true
+    end
+    if GetMapContentType and MAP_CONTENT_BATTLEGROUND and GetMapContentType() == MAP_CONTENT_BATTLEGROUND then
+        return true
+    end
+    return false
+end
+
+function IsCyrodiilZone()
+    if IsBattlegroundZone() then
+        return false
+    end
+    if IsInImperialCity and IsInImperialCity() then
+        return true
+    end
+    if IsInCyrodiil and IsInCyrodiil() then
+        return true
+    end
+    if IsInAvAZone and IsInAvAZone() then
+        return true
+    end
+    return false
+end
+
+local function IsPvpRestrictedZone()
+    return IsBattlegroundZone() or IsCyrodiilZone()
+end
+
+function DetectHudZoneKind()
+    if IsHouseZone() then
+        return nil
+    end
+    if IsBattlegroundZone() then
+        return "bg"
+    end
+    if IsCyrodiilZone() then
+        return "cyro"
+    end
+    if IsInstanceEndlessDungeon then
+        local ok, endless = pcall(IsInstanceEndlessDungeon)
+        if ok and endless then
+            return "archive"
+        end
+    end
+    local t = lastZoneDisplayType
+    if t == ZONE_DISPLAY_TYPE_ENDLESS_DUNGEON then
+        return "archive"
+    end
+    if ZONE_DISPLAY_TYPE_ARENA and t == ZONE_DISPLAY_TYPE_ARENA then
+        return "arena"
+    end
+    local zid = CurrentZoneId()
+    if zid > 0 and ARENA_ZONE_IDS[zid] then
+        return "arena"
+    end
+    if t == ZONE_DISPLAY_TYPE_DELVE or t == ZONE_DISPLAY_TYPE_PUBLIC_DUNGEON or t == ZONE_DISPLAY_TYPE_GROUP_DELVE then
+        return nil
+    end
+    if t == ZONE_DISPLAY_TYPE_RAID or t == ZONE_DISPLAY_TYPE_DUNGEON then
+        return "dungeon"
+    end
+    if IsPlayerInRaid then
+        local ok, raid = pcall(IsPlayerInRaid)
+        if ok and raid then
+            return "dungeon"
+        end
+    end
+    local diff = 0
+    if GetCurrentZoneDungeonDifficulty then
+        local ok, d = pcall(GetCurrentZoneDungeonDifficulty)
+        if ok and type(d) == "number" then
+            diff = d
+        end
+    end
+    if IsUnitInDungeon and IsUnitInDungeon("player") and diff > 0 then
+        if ARENA_ZONE_IDS[zid] then
+            return "arena"
+        end
+        return "dungeon"
+    end
+    return nil
+end
+
+function ZoneAllowsWholeHud(vars, kind)
+    if not vars or not kind then
+        return false
+    end
+    if kind == "dungeon" then
+        return vars.wholeWhereDungeon ~= false
+    end
+    if kind == "arena" then
+        return vars.wholeWhereArena ~= false
+    end
+    if kind == "archive" then
+        return vars.wholeWhereArchive ~= false
+    end
+    if kind == "bg" then
+        return vars.wholeWhereBG == true
+    end
+    if kind == "cyro" then
+        return vars.wholeWhereCyro == true
+    end
+    return false
+end
+
+-- Фильтр аддонов: как раньше. Не БГ, не Сиродил, не логово/паб/дом.
+InPveInstance = function()
+    if IsHouseZone() then
+        return false
+    end
+    if IsBattlegroundZone() then
+        return false
+    end
+    if IsCyrodiilZone() then
         return false
     end
 
@@ -682,12 +838,16 @@ local function ApplyDungeonProfile()
         return
     end
 
-    if vars.dungeonReloadPending then
+    -- pending после успешного релога. Для авто — защита от вечного ReloadUI,
+    -- если SetAddOnEnabled не взялся. Для ручного Apply это ложная ошибка:
+    -- первый клик по другому пресету сбрасывал флаг и выходил.
+    if vars.dungeonReloadPending and vars.dungeonAutoSwap ~= false then
         vars.dungeonReloadPending = false
         vars.dungeonProfileApplied = true
         ChatMsg(L("FILTER_NOAPI", "Combat FPS Booster: could not change addon enabled state. UI will not reload again."))
         return
     end
+    vars.dungeonReloadPending = false
 
     local snapshot = {}
     pendingJobs = {}
@@ -699,15 +859,21 @@ local function ApplyDungeonProfile()
         end
     end
 
-    if type(vars.dungeonSnapshot) ~= "table" then
-        vars.dungeonSnapshot = snapshot
+    -- Ручной режим не держит мировой снимок: мир — отдельный пресет.
+    if vars.dungeonAutoSwap ~= false then
+        if type(vars.dungeonSnapshot) ~= "table" then
+            vars.dungeonSnapshot = snapshot
+        end
+    else
+        vars.dungeonSnapshot = nil
     end
     vars.dungeonProfileApplied = true
 
     if #pendingJobs > 0 then
         vars._filterNeedReload = "dungeon"
         filterBusy = true
-        ChatMsg(L("FILTER_APPLY", "Combat FPS Booster: applying dungeon addon set, reloading UI."))
+        local presetName = vars.dungeonPresetCurrent or DEFAULT_PRESET
+        ChatMsg(L("FILTER_APPLY", "Combat FPS Booster: enabling addon preset ") .. tostring(presetName) .. L("FILTER_APPLY_TAIL", ", reloading UI."))
         StartJobQueue()
     end
 end
@@ -741,7 +907,7 @@ local function RestoreWorldProfile()
     if #pendingJobs > 0 then
         vars._filterNeedReload = "world"
         filterBusy = true
-        ChatMsg(L("FILTER_RESTORE", "Combat FPS Booster: restoring world addon set, reloading UI."))
+        ChatMsg(L("FILTER_RESTORE", "Combat FPS Booster: restoring previous addon setup, reloading UI."))
         StartJobQueue()
     end
 end
@@ -754,12 +920,17 @@ local function EvaluateDungeonFilter()
         return
     end
 
+    if vars.dungeonFilterEnabled ~= true then
+        return
+    end
+    -- Ручной режим: зона не трогает набор. Только кнопка «Применить».
+    if vars.dungeonAutoSwap == false then
+        return
+    end
+
     local inInstance = InPveInstance()
 
     if inInstance then
-        if not vars.dungeonFilterEnabled then
-            return
-        end
         if vars.dungeonProfileApplied then
             vars.dungeonReloadPending = false
             return
@@ -832,14 +1003,19 @@ local function EnsureVarsShape(vars)
 
     local acc = AccountVars()
     local presets = PresetTable()
-    -- Старые пресеты персонажа один раз переезжают на аккаунт.
-    if acc and vars ~= acc and type(vars.dungeonPresets) == "table" and next(vars.dungeonPresets) then
-        for name, map in pairs(vars.dungeonPresets) do
-            if presets[name] == nil then
-                presets[name] = CopyBoolMap(map)
+    -- Старые пресеты персонажа переезжают на аккаунт ОДИН раз.
+    -- Повторный копир возвращал удалённый General после релога:
+    -- char.dungeonPresets = nil в SavedVars часто не сохраняется.
+    if acc and vars ~= acc and vars.dungeonPresetsMoved ~= true then
+        if not next(presets) and type(vars.dungeonPresets) == "table" and next(vars.dungeonPresets) then
+            for name, map in pairs(vars.dungeonPresets) do
+                if type(name) == "string" then
+                    presets[name] = CopyBoolMap(map)
+                end
             end
         end
-        vars.dungeonPresets = nil
+        vars.dungeonPresets = {}
+        vars.dungeonPresetsMoved = true
     end
     if not next(presets) then
         presets[DEFAULT_PRESET] = CopyBoolMap(vars.dungeonNeeded)
@@ -856,6 +1032,9 @@ local function EnsureVarsShape(vars)
     end
     if type(vars.dungeonPresetDraft) ~= "string" or vars.dungeonPresetDraft == "" then
         vars.dungeonPresetDraft = vars.dungeonPresetCurrent
+    end
+    if vars.dungeonAutoSwap == nil then
+        vars.dungeonAutoSwap = true
     end
 end
 
@@ -926,6 +1105,10 @@ local function DeleteCurrentPreset()
         return
     end
     presets[current] = nil
+    -- На всякий случай вычистить и персонажную копию, если она ещё жива.
+    if vars.dungeonPresets and type(vars.dungeonPresets) == "table" then
+        vars.dungeonPresets[current] = nil
+    end
     local nextName = nil
     if presets[DEFAULT_PRESET] ~= nil then
         nextName = DEFAULT_PRESET
@@ -945,6 +1128,80 @@ local function DeleteCurrentPreset()
 end
 
 
+local function FormatPresetAddonList(presetName)
+    EnsureVarsShape()
+    local presets = PresetTable()
+    local map = nil
+    if type(presetName) == "string" and presets[presetName] then
+        map = presets[presetName]
+    else
+        local vars = FilterVars()
+        map = (vars and vars.dungeonNeeded) or {}
+    end
+    local titles = {}
+    local seen = {}
+    for _, entry in ipairs(ListManagedAddons()) do
+        if map[entry.name] == true then
+            titles[#titles + 1] = entry.title or entry.name
+            seen[entry.name] = true
+        end
+    end
+    for name, on in pairs(map) do
+        if on == true and type(name) == "string" and not seen[name] then
+            titles[#titles + 1] = name
+        end
+    end
+    table.sort(titles, function(a, b)
+        return string.lower(a) < string.lower(b)
+    end)
+    if #titles == 0 then
+        return L("PRESET_PREVIEW_EMPTY", "(no addons marked on)")
+    end
+    return table.concat(titles, "\n")
+end
+
+local function PresetPreviewTooltip(baseKey, baseFallback)
+    local vars = FilterVars()
+    EnsureVarsShape(vars)
+    local name = (vars and vars.dungeonPresetCurrent) or DEFAULT_PRESET
+    local head = L("PRESET_PREVIEW_HEAD", "Enabled in this preset:")
+    return L(baseKey, baseFallback) .. "\n\n" .. head .. " " .. tostring(name) .. "\n" .. FormatPresetAddonList(name)
+end
+
+local function LayoutSettingsInfoText(text)
+    if not GAMEPAD_TOOLTIPS or not text then
+        return
+    end
+    local function apply(tipId)
+        if not tipId then
+            return
+        end
+        if GAMEPAD_TOOLTIPS.ClearTooltip then
+            GAMEPAD_TOOLTIPS:ClearTooltip(tipId)
+        end
+        if GAMEPAD_TOOLTIPS.LayoutSettingTooltip then
+            GAMEPAD_TOOLTIPS:LayoutSettingTooltip(tipId, text)
+            return
+        end
+        local tip = GAMEPAD_TOOLTIPS.GetTooltip and GAMEPAD_TOOLTIPS:GetTooltip(tipId)
+        if tip and tip.LayoutTextBlockTooltip then
+            tip:LayoutTextBlockTooltip(text)
+        end
+    end
+    apply(GAMEPAD_LEFT_TOOLTIP)
+end
+
+local function RefreshPresetDescriptionPanel()
+    local text = PresetPreviewTooltip("PRESET_SELECT_TT", "Switch between saved dungeon addon sets. Presets are account-wide.")
+    pcall(LayoutSettingsInfoText, text)
+    -- Закрытие дропдауна иногда перетирает панель старым текстом — повтор через кадр.
+    EVENT_MANAGER:UnregisterForUpdate(ADDON_NAME .. "_PresetTip")
+    EVENT_MANAGER:RegisterForUpdate(ADDON_NAME .. "_PresetTip", 50, function()
+        EVENT_MANAGER:UnregisterForUpdate(ADDON_NAME .. "_PresetTip")
+        pcall(LayoutSettingsInfoText, PresetPreviewTooltip("PRESET_SELECT_TT", "Switch between saved dungeon addon sets. Presets are account-wide."))
+    end)
+end
+
 local function RegisterSettingsMenu()
     local LibHarven = LibHarvensAddonSettings
     if not LibHarven then return end
@@ -960,20 +1217,8 @@ local function RegisterSettingsMenu()
     end
     if not settings then return end
 
-    settings.version = "1.4.14"
+    settings.version = "1.5.5"
     settings.author = "Tetsurion"
-
-    settings:AddSetting({
-        type = LibHarvensAddonSettings.ST_CHECKBOX,
-        label = L("HIDE_INSTANCE", "Hide HUD for the whole dungeon"),
-        tooltip = L("HIDE_INSTANCE_TT", "When ON, compass and quest tracker stay hidden for the entire group dungeon, trial, arena or Infinite Archive — if those options are also on. XP, gold, loot and dungeon announcements still hide in combat only. Delves and public dungeons are ignored."),
-        default = false,
-        getFunction = function() return CombatFPSBooster.savedVars.hideWholeInstance == true end,
-        setFunction = function(val)
-            CombatFPSBooster.savedVars.hideWholeInstance = val and true or false
-            ApplyCombatVisualState(IsUnitInCombat("player"))
-        end,
-    })
 
     settings:AddSetting({
         type = LibHarvensAddonSettings.ST_CHECKBOX,
@@ -1025,6 +1270,18 @@ local function RegisterSettingsMenu()
 
     settings:AddSetting({
         type = LibHarvensAddonSettings.ST_CHECKBOX,
+        label = L("HIDE_INSTANCE", "Hide HUD for the whole dungeon"),
+        tooltip = L("HIDE_INSTANCE_TT", "When ON, compass and quest tracker stay hidden for the entire group dungeon, trial, arena or Infinite Archive — if those options are also on. XP, gold, loot and dungeon announcements still hide in combat only. Delves and public dungeons are ignored."),
+        default = false,
+        getFunction = function() return CombatFPSBooster.savedVars.hideWholeInstance == true end,
+        setFunction = function(val)
+            CombatFPSBooster.savedVars.hideWholeInstance = val and true or false
+            ApplyCombatVisualState(IsUnitInCombat("player"))
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarvensAddonSettings.ST_CHECKBOX,
         label = L("FILTER_MASTER", "Use dungeon-only addon set"),
         tooltip = L("FILTER_MASTER_TT", "When ON: entering a dungeon/trial snapshots your current addons, enables only those marked below, then reloads UI. Leaving restores the snapshot and reloads again. Libraries and this booster are never touched. If nothing is marked as needed, nothing is changed and a chat warning is shown."),
         default = false,
@@ -1037,9 +1294,40 @@ local function RegisterSettingsMenu()
     })
 
     settings:AddSetting({
+        type = LibHarvensAddonSettings.ST_CHECKBOX,
+        label = L("FILTER_AUTO", "Auto-swap addons in dungeons"),
+        tooltip = L("FILTER_AUTO_TT", "ON: entering a dungeon snapshots the current addons, applies the selected preset, leaving restores that snapshot. OFF: manual mode. The world snapshot is erased. Save a world preset first if you want to switch back by hand. Apply in the preset list only works while this is OFF."),
+        default = true,
+        disable = function()
+            local vars = FilterVars()
+            return not vars or vars.dungeonFilterEnabled ~= true
+        end,
+        getFunction = function()
+            local vars = FilterVars()
+            return not vars or vars.dungeonAutoSwap ~= false
+        end,
+        setFunction = function(val)
+            local vars = FilterVars()
+            if not vars or vars.dungeonFilterEnabled ~= true then
+                return
+            end
+            local auto = val and true or false
+            vars.dungeonAutoSwap = auto
+            if not auto then
+                vars.dungeonSnapshot = nil
+                vars.dungeonProfileApplied = false
+                vars.dungeonReloadPending = false
+                ChatMsg(L("FILTER_AUTO_OFF", "Combat FPS Booster: manual addon presets. World snapshot cleared. Apply a preset from the list."))
+            end
+        end,
+    })
+
+    settings:AddSetting({
         type = LibHarvensAddonSettings.ST_DROPDOWN,
         label = L("PRESET_SELECT", "Preset"),
-        tooltip = L("PRESET_SELECT_TT", "Switch between saved dungeon addon sets for this character."),
+        tooltip = function()
+            return PresetPreviewTooltip("PRESET_SELECT_TT", "Switch between saved dungeon addon sets. Presets are account-wide.")
+        end,
         items = function()
             local items = {}
             for _, name in ipairs(PresetNameList()) do
@@ -1061,9 +1349,48 @@ local function RegisterSettingsMenu()
                 name = name.data or name.name
             end
             LoadPreset(name)
+            RefreshPresetDescriptionPanel()
         end,
         default = DEFAULT_PRESET,
     })
+
+    if LibHarvensAddonSettings.ST_BUTTON then
+        settings:AddSetting({
+            type = LibHarvensAddonSettings.ST_BUTTON,
+            label = L("PRESET_APPLY", "Apply preset"),
+            buttonText = L("PRESET_APPLY_BTN", "Apply"),
+            tooltip = function()
+                return PresetPreviewTooltip("PRESET_APPLY_TT", "Enable the selected preset now and reload UI. Only while auto-swap is OFF. Save a world preset first if you need to switch back later.")
+            end,
+            disable = function()
+                local vars = FilterVars()
+                if not vars or vars.dungeonFilterEnabled ~= true or vars.dungeonAutoSwap ~= false then
+                    return true
+                end
+                return IsPvpRestrictedZone()
+            end,
+            clickHandler = function()
+                local vars = FilterVars()
+                if not vars or vars.dungeonFilterEnabled ~= true then
+                    return
+                end
+                if vars.dungeonAutoSwap ~= false then
+                    ChatMsg(L("PRESET_APPLY_NEED_MANUAL", "Combat FPS Booster: turn off auto-swap to apply a preset by hand."))
+                    return
+                end
+                if IsUnitInCombat and IsUnitInCombat("player") then
+                    ChatMsg(L("PRESET_APPLY_COMBAT", "Combat FPS Booster: cannot apply a preset in combat."))
+                    return
+                end
+                if IsPvpRestrictedZone() then
+                    ChatMsg(L("PRESET_APPLY_PVP", "Combat FPS Booster: cannot apply a preset in Cyrodiil or battlegrounds."))
+                    return
+                end
+                vars.dungeonReloadPending = false
+                ApplyDungeonProfile()
+            end,
+        })
+    end
 
     settings:AddSetting({
         type = LibHarvensAddonSettings.ST_SECTION,
@@ -1165,6 +1492,66 @@ local function RegisterSettingsMenu()
             end,
         })
     end
+
+    settings:AddSetting({
+        type = LibHarvensAddonSettings.ST_SECTION,
+        label = L("WHOLE_WHERE", "Where whole-dungeon mode applies"),
+        tooltip = L("WHOLE_WHERE_TT", "Where compass and quest tracker stay hidden between fights, if those options are on. XP, gold, loot and CSA stay combat-only. Compass is never hidden by this mode in Cyrodiil."),
+    })
+
+    local function WholeWhereDisable()
+        return CombatFPSBooster.savedVars.hideWholeInstance ~= true
+    end
+    local function WholeWhereSet(key, val)
+        CombatFPSBooster.savedVars[key] = val and true or false
+        ApplyCombatVisualState(IsUnitInCombat("player"))
+    end
+
+    settings:AddSetting({
+        type = LibHarvensAddonSettings.ST_CHECKBOX,
+        label = L("WHOLE_DUNGEON", "Dungeons and trials"),
+        tooltip = L("WHOLE_DUNGEON_TT", "Group dungeons and trials."),
+        default = true,
+        disable = WholeWhereDisable,
+        getFunction = function() return CombatFPSBooster.savedVars.wholeWhereDungeon ~= false end,
+        setFunction = function(val) WholeWhereSet("wholeWhereDungeon", val) end,
+    })
+    settings:AddSetting({
+        type = LibHarvensAddonSettings.ST_CHECKBOX,
+        label = L("WHOLE_ARENA", "Arenas"),
+        tooltip = L("WHOLE_ARENA_TT", "Maelstrom, Dragonstar, Vateshran, Blackrose."),
+        default = true,
+        disable = WholeWhereDisable,
+        getFunction = function() return CombatFPSBooster.savedVars.wholeWhereArena ~= false end,
+        setFunction = function(val) WholeWhereSet("wholeWhereArena", val) end,
+    })
+    settings:AddSetting({
+        type = LibHarvensAddonSettings.ST_CHECKBOX,
+        label = L("WHOLE_ARCHIVE", "Infinite Archive"),
+        tooltip = L("WHOLE_ARCHIVE_TT", "Infinite Archive runs."),
+        default = true,
+        disable = WholeWhereDisable,
+        getFunction = function() return CombatFPSBooster.savedVars.wholeWhereArchive ~= false end,
+        setFunction = function(val) WholeWhereSet("wholeWhereArchive", val) end,
+    })
+    settings:AddSetting({
+        type = LibHarvensAddonSettings.ST_CHECKBOX,
+        label = L("WHOLE_BG", "Battlegrounds"),
+        tooltip = L("WHOLE_BG_TT", "Battleground matches. Addon presets are not auto-swapped here."),
+        default = false,
+        disable = WholeWhereDisable,
+        getFunction = function() return CombatFPSBooster.savedVars.wholeWhereBG == true end,
+        setFunction = function(val) WholeWhereSet("wholeWhereBG", val) end,
+    })
+    settings:AddSetting({
+        type = LibHarvensAddonSettings.ST_CHECKBOX,
+        label = L("WHOLE_CYRO", "Cyrodiil and Imperial City"),
+        tooltip = L("WHOLE_CYRO_TT", "Alliance War zones. Compass stays visible; only the quest tracker can stay hidden between fights."),
+        default = false,
+        disable = WholeWhereDisable,
+        getFunction = function() return CombatFPSBooster.savedVars.wholeWhereCyro == true end,
+        setFunction = function(val) WholeWhereSet("wholeWhereCyro", val) end,
+    })
 end
 
 

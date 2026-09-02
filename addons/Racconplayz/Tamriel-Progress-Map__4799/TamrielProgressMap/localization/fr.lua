@@ -19,6 +19,7 @@ TamrielProgressMap_Localization["fr"] =
     SETTINGS_LANGUAGE_EN = "Anglais",
     SETTINGS_LANGUAGE_RU = "Russe",
     SETTINGS_LANGUAGE_FR = "Français",
+    SETTINGS_LANGUAGE_ES = "Espagnol",
     SETTINGS_ENABLED = "Afficher la progression de zone",
     SETTINGS_ENABLED_TT = "Affiche les pourcentages d’achèvement sur la carte d’ensemble de Tamriel / du monde.",
     SETTINGS_QUICK_FILTERS = "Afficher les filtres rapides sur la carte du monde",

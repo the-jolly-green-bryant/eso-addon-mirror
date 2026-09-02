@@ -83,6 +83,12 @@ function Archive:Initialize()
             window:StopMovingOrResizing()
         end
     end)
+    ShoppingListControls:MakeWindowMovable(
+        window,
+        title,
+        self.owner.data,
+        "archive"
+    )
 
     self.summary = makeLabel(window, "ZoFontGameSmall")
     self.summary:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)

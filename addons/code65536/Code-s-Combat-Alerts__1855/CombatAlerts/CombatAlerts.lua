@@ -3,7 +3,7 @@ local LCA = LibCombatAlerts
 CombatAlerts2 = {
 	ID = "CombatAlerts2",
 	NAME = "CombatAlerts",
-	EXPECTED_VERSION = 206020,
+	EXPECTED_VERSION = 206030,
 	URL = "https://www.esoui.com/downloads/info1855.html",
 
 	registeredModules = { },

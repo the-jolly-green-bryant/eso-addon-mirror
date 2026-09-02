@@ -1,15 +1,32 @@
 ## Title: EsoAR - Arabic Translation
-## Description: Arabic localization for The Elder Scrolls Online: fonts, UI and game text.
-## Version: 1.0.0
+## Description: Arabic localization for The Elder Scrolls Online: fonts, UI and game text, with an in-game settings panel.
+## Version: 1.6.2
+## AddOnVersion: 162
 ## APIVersion: 101050 101049
-## Author: (MATREX-X)
+## Author: EsoAR
 ## SavedVariables: EsoAR_Variables
 ## DependsOn: LibMediaProvider>=32
+## PCDependsOn: LibAddonMenu-2.0>=43
+## ConsoleDependsOn: LibHarvensAddonSettings>=20108
+## OptionalDependsOn: LibAddonMenu-2.0>=43 LibHarvensAddonSettings>=20108
 ## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
 
 fontstrings_shared.xml
 backupfont_$(language).xml
+fontdefs.lua
+settings_strings.lua
+traits_en.lua
+sets_en.lua
+zones_en.lua
+names_toggle.lua
 EsoAR.lua
+gamepad_settings.lua
+gamepad_settings.xml
+settings_window.xml
+settings_window.lua
+esoar_menu.lua
+esoar_menu.xml
+settings.lua
 EsoAR.xml
 fontFace.lua
 bindings.xml

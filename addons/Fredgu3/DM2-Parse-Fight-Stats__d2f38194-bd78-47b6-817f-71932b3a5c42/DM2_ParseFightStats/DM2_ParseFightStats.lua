@@ -21,7 +21,7 @@ local R = DM2Stats
 
 R.name        = "DM2_ParseFightStats"
 R.displayName = "DM2 Parse & Fight Stats"
-R.version     = "3.17.19"
+R.version     = "3.18.0"
 
 -- User-facing debug log page (slash toggles still work; set true to restore in UI)
 local DEBUG_UI_ENABLED = false
@@ -446,8 +446,12 @@ R._announcements = {
     title = "FIX: top Warfare CP Eligible % visible",
     body = "The first Warfare star (Deadly Aim etc.) showed no Eligible % when it had A/B history.\n\nA color chip was truncated mid-code and console hid the whole line.\nRows 2–4 were fine. Any star in that #1/A/B slot went blank.\n\nReload UI, open Build & Sets — row 1 should read like the others (#1 Eligible …).",
   },
+  ["3.18.0"] = {
+    title = "NEW: Insights: Build is a real page",
+    body = "Insights: Build is no longer a thin clone of Damage / CP lists.\n\n• Mix · honest sets (buff sets are not 0 DPS) · what you brought\n• CP story vs this dummy’s Direct/DoT mix · Front/Back dwell + damage\n• Potions: uses + coverage (tri-stat / magicka / stamina) — no fake potion DPS\n  Pre-pot at pull counts as use #1. New dummy required for potion numbers.\n\nInsights: DPS still owns execution, weave, and the experiment (Y).",
+  },
 }
-R._latestAnnouncementVersion = "3.17.19"
+R._latestAnnouncementVersion = "3.18.0"
 
 R._pageIndex = 1
 R._lastBarSwapMs = 0          -- debounce EVENT_ACTIVE_WEAPON_PAIR_CHANGED (fires up to 3x per swap)
@@ -2892,6 +2896,22 @@ local function prepareSessionForHistory(session)
 
   if not (SV and SV.settings and SV.settings.debugRotation) then
     session.rotationDebug = nil
+  end
+
+  -- Potion summary is tiny; keep it. Drop live cluster clocks only.
+  if type(session.potion) == "table" then
+    local p = session.potion
+    p.uses = finiteNum(p.uses, 0)
+    p.firstUseMs = finiteNum(p.firstUseMs, nil)
+    p.coveredMs = finiteNum(p.coveredMs, 0)
+    p._clusterMs = nil
+    p._lastUseMs = nil
+    if type(p.stats) == "table" then
+      p.stats.intellect = finiteNum(p.stats.intellect, 0)
+      p.stats.endurance = finiteNum(p.stats.endurance, 0)
+      p.stats.fortitude = finiteNum(p.stats.fortitude, 0)
+      p.stats.expedition = finiteNum(p.stats.expedition, 0)
+    end
   end
   return session
 end
@@ -5880,6 +5900,133 @@ local function ensureSession()
   return R.session
 end
 
+-- Potion coverage (3.18.0): ride EFFECT_CHANGED + pull seed. No GetUnitPower.
+-- Dummy heuristic: Major Intellect / Endurance / Fortitude ≈ pot. Expedition
+-- alone is often a skill. Do not invent potion DPS.
+local POTION_CLUSTER_MS = 250
+local POTION_REUSE_MS = 20000
+
+local function potionStatKeyFromName(name)
+  local n = safeLower(name)
+  if n == "" then return nil end
+  if string.find(n, "major intellect", 1, true) then return "intellect" end
+  if string.find(n, "major endurance", 1, true) then return "endurance" end
+  if string.find(n, "major fortitude", 1, true) then return "fortitude" end
+  if string.find(n, "major expedition", 1, true) then return "expedition" end
+  return nil
+end
+
+local function potionIsCoreStat(key)
+  return key == "intellect" or key == "endurance" or key == "fortitude"
+end
+
+local function ensurePotion(session)
+  if type(session) ~= "table" then return nil end
+  local p = session.potion
+  if type(p) ~= "table" then
+    p = {
+      uses = 0,
+      kind = "unknown",
+      firstUseMs = nil,
+      prePot = false,
+      coveredMs = 0,
+      stats = { intellect = 0, endurance = 0, fortitude = 0, expedition = 0 },
+      estimated = false,
+    }
+    session.potion = p
+  end
+  p.stats = p.stats or { intellect = 0, endurance = 0, fortitude = 0, expedition = 0 }
+  return p
+end
+
+local function potionNoteUse(session, tMs, prePot)
+  local p = ensurePotion(session)
+  if not p then return end
+  tMs = tonumber(tMs) or 0
+  if p._clusterMs and (tMs - p._clusterMs) < POTION_CLUSTER_MS then
+    p._clusterMs = tMs
+    return
+  end
+  if p._lastUseMs and (tMs - p._lastUseMs) < POTION_REUSE_MS then
+    p._clusterMs = tMs
+    return
+  end
+  p.uses = (tonumber(p.uses) or 0) + 1
+  p._lastUseMs = tMs
+  p._clusterMs = tMs
+  if p.firstUseMs == nil then
+    local start = tonumber(session.startMs) or tMs
+    p.firstUseMs = prePot and 0 or math.max(0, tMs - start)
+    p.prePot = prePot and true or false
+  end
+end
+
+local function potionNoteFromBuff(session, buffName, abilityId, tMs, isGain)
+  if not isGain or type(session) ~= "table" then return end
+  local key = potionStatKeyFromName(buffName)
+  if not key then return end
+  abilityId = tonumber(abilityId) or 0
+  if abilityId > 0 and session.slottedAbilityIds and session.slottedAbilityIds[abilityId] then
+    return -- slotted skill (e.g. Rapid Maneuver Expedition)
+  end
+  if not potionIsCoreStat(key) then return end
+  potionNoteUse(session, tMs, false)
+end
+
+local function potionNotePrePotFromBuffs(session, tMs)
+  if type(session) ~= "table" or type(session.buffs) ~= "table" then return end
+  for _, b in pairs(session.buffs) do
+    if type(b) == "table" then
+      local key = potionStatKeyFromName(b.name)
+      if potionIsCoreStat(key) then
+        potionNoteUse(session, tMs or session.startMs or 0, true)
+        return
+      end
+    end
+  end
+end
+
+local function finalizePotion(session)
+  if type(session) ~= "table" then return end
+  local p = ensurePotion(session)
+  if not p then return end
+  local dur = tonumber(session.durationMs) or 0
+  local stats = { intellect = 0, endurance = 0, fortitude = 0, expedition = 0 }
+  if type(session.buffs) == "table" and dur > 0 then
+    for _, b in pairs(session.buffs) do
+      if type(b) == "table" then
+        local key = potionStatKeyFromName(b.name)
+        if key and stats[key] ~= nil then
+          local up = math.min(1, (tonumber(b.activeMs) or 0) / dur)
+          if up > stats[key] then stats[key] = up end
+        end
+      end
+    end
+  end
+  p.stats = stats
+  local coreMax = math.max(stats.intellect or 0, stats.endurance or 0, stats.fortitude or 0)
+  p.coveredMs = math.floor(coreMax * dur + 0.5)
+  if (tonumber(p.uses) or 0) <= 0 and coreMax >= 0.20 then
+    p.uses = 1
+    p.prePot = true
+    p.firstUseMs = 0
+  end
+  if stats.intellect >= 0.15 and stats.endurance >= 0.15 and stats.fortitude >= 0.15 then
+    p.kind = "tri-stat"
+  elseif stats.intellect >= 0.15 and stats.endurance < 0.15 then
+    p.kind = "magicka"
+  elseif stats.endurance >= 0.15 and stats.intellect < 0.15 then
+    p.kind = "stamina"
+  elseif coreMax >= 0.15 then
+    p.kind = "unknown"
+  else
+    p.kind = "unknown"
+  end
+  p.estimated = (session.isDummy ~= true)
+  p._clusterMs = nil
+  p._lastUseMs = nil
+end
+
 -- Seed buffs already active when the pull starts (Major Courage from dummy, food,
 -- always-on Major/Minor, etc.). EVENT_EFFECT_CHANGED only fires on change — without
 -- this, dummy-contributing buffs never appear on the Buffs page.
@@ -5926,6 +6073,7 @@ local function seedPlayerBuffsAtStart(session, tMs)
       end
     end
   end
+  pcall(potionNotePrePotFromBuffs, session, tMs)
 end
 
 -- Expensive gear/build/buff snapshots MUST NOT run inside EVENT_COMBAT_EVENT.
@@ -6075,6 +6223,7 @@ local function finalizeSession(session)
 
   session.isDummy = isDummyParseConfidence(session.lastTargetName)
   session.completedAt = safeWallClock()
+  pcall(finalizePotion, session)
 
   -- Snapshot character stats (Sheet vs Temp) at fight end for Dashboard / Build
   if DM2StatsMenuShell and type(DM2StatsMenuShell.CapturePlayerStats) == "function" then
@@ -6871,6 +7020,9 @@ function R:OnEffectChanged(_, changeType, effectSlot, effectName, unitTag, begin
     if not b.activeStartMs then b.activeStartMs = tMs end
     if isRefresh and b.activeStartMs then
       -- keep window open; count reapply
+    end
+    if isGain then
+      pcall(potionNoteFromBuff, session, b.name, abilityId, tMs, true)
     end
   elseif isFade then
     if b.activeStartMs then

@@ -1,3 +1,6 @@
+Version 2.3.3 (2026/09/01)
+* Improved the internal logic for tracking effects that use EVENT_COMBAT_EVENT
+
 Version 2.3.2 (2026/08/31)
 * Improved the internal logic for tracking effects that use multiple ability IDs
 * Minor optimization of conditional enablement code

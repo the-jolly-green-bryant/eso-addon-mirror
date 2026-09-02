@@ -3,6 +3,19 @@
 
 
 
+[color=#6FCB9F]Version: 4.4.135835[/color]
+[color=#8C8A82]Release date: 01.09.2026[/color]
+
+Focused quality-of-life release for price refreshes, snapshots, cumulative value, and price dynamics.
+
+- Price Refresh Feedback: Clicking Market prices now shows an in-progress state, blocks duplicate refreshes, reports delayed LibPrice retries honestly, and briefly confirms completion. The /bmw refresh messages now distinguish a started refresh from one already in progress.
+- Snapshot Safety: Remember now asks for confirmation before replacing an existing snapshot. Snapshot comparison controls and titles explicitly say that changes are measured from the saved snapshot.
+- Cumulative Value: Added a gold marker to the single material that reaches the cumulative 80% threshold, with a localized tooltip explaining the boundary.
+- Value Impact: Price dynamics now includes a sortable Value impact column showing how the net unit-price movement changed the value of the quantity currently held. Row and header tooltips explain the calculation.
+- Interface: Refined the material-table geometry for the new analytical column and added complete English and Russian localization for the release.
+
+
+
 [color=#6FCB9F]Version: 4.3.174707[/color]
 
 Session-based history sampling and an in-panel price refresh.

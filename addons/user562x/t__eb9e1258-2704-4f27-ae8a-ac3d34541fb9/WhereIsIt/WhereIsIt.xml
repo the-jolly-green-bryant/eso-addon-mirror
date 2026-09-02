@@ -1,0 +1,105 @@
+<GuiXml>
+    <Controls>
+        <Control name="WhereIsIt_ListRowIcon" layer="OVERLAY" virtual="true">
+            <Dimensions y="ZO_GAMEPAD_LIST_ICON_SIZE"/>
+            <Controls>
+                <Texture name="$(parent)Icon" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+                    <Dimensions x="ZO_GAMEPAD_LIST_ICON_SIZE" y="ZO_GAMEPAD_LIST_ICON_SIZE"/>
+                    <Anchor point="CENTER"/>
+                </Texture>
+            </Controls>
+        </Control>
+
+        <Control name="WhereIsIt_ListRow" inherits="ZO_GamepadInteractiveSortFilterListRow" virtual="true">
+            <Controls>
+                <Control name="$(parent)ItemIcon" inherits="WhereIsIt_ListRowIcon">
+                    <Dimensions x="WHEREISIT_ICON_WIDTH"/>
+                    <Anchor point="LEFT" offsetX="ZO_GAMEPAD_INTERACTIVE_FILTER_HIGHLIGHT_PADDING"/>
+                </Control>
+                <Label name="$(parent)Name" inherits="ZO_GamepadInteractiveSortFilterListRowLabel">
+                    <Dimensions x="WHEREISIT_NAME_WIDTH"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)ItemIcon" relativePoint="RIGHT" offsetX="ZO_GAMEPAD_INTERACTIVE_FILTER_LIST_HEADER_DOUBLE_PADDING_X"/>
+                </Label>
+                <Label name="$(parent)Category" inherits="ZO_GamepadInteractiveSortFilterListRowLabel">
+                    <Dimensions x="WHEREISIT_CATEGORY_WIDTH"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)Name" relativePoint="RIGHT" offsetX="ZO_GAMEPAD_INTERACTIVE_FILTER_LIST_HEADER_DOUBLE_PADDING_X"/>
+                </Label>
+                <Label name="$(parent)Location" inherits="ZO_GamepadInteractiveSortFilterListRowLabel">
+                    <Dimensions x="WHEREISIT_LOCATION_WIDTH"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)Category" relativePoint="RIGHT" offsetX="ZO_GAMEPAD_INTERACTIVE_FILTER_LIST_HEADER_DOUBLE_PADDING_X"/>
+                </Label>
+                <Label name="$(parent)Count" inherits="ZO_GamepadInteractiveSortFilterListRowLabel" horizontalAlignment="RIGHT">
+                    <Dimensions x="WHEREISIT_COUNT_WIDTH"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)Location" relativePoint="RIGHT" offsetX="ZO_GAMEPAD_INTERACTIVE_FILTER_LIST_HEADER_DOUBLE_PADDING_X"/>
+                </Label>
+            </Controls>
+        </Control>
+
+        <TopLevelControl name="WhereIsIt_Screen" inherits="ZO_AnchoredToQuadrant_1_2_3_Background ZO_GamepadInteractiveSortFilterListControl" hidden="true">
+            <OnInitialized>
+                WhereIsIt_Screen_OnInitialized(self)
+            </OnInitialized>
+            <Controls>
+                <Control name="$(parent)Container" override="true">
+                    <Controls>
+
+                        <Control name="$(parent)ContentHeader" override="true">
+                            <Controls>
+                                <Control name="$(parent)DropdownFilter" override="true" hidden="true"/>
+                                <Control name="$(parent)LocationFilter">
+                                    <Dimensions x="350" y="48"/>
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)TitleContainer"/>
+                                    <Controls>
+                                        <Backdrop name="$(parent)Highlight" inherits="ZO_GamepadInteractiveFilterHighlight" hidden="true"/>
+                                        <Control name="$(parent)Dropdown" inherits="ZO_MultiSelection_ComboBox_Gamepad">
+                                            <AnchorFill/>
+                                        </Control>
+                                    </Controls>
+                                </Control>
+                            </Controls>
+                        </Control>
+
+                        <Control name="$(parent)Headers" override="true">
+                            <Controls>
+                                <Control name="$(parent)ItemIcon" inherits="ZO_GamepadDisabledInteractiveFilterHeader" mouseEnabled="false">
+                                    <Dimensions x="WHEREISIT_ICON_WIDTH"/>
+                                    <Anchor point="TOPLEFT" offsetX="ZO_GAMEPAD_INTERACTIVE_FILTER_HIGHLIGHT_PADDING"/>
+                                </Control>
+                                <Control name="$(parent)Name" inherits="ZO_GamepadInteractiveFilterHeader">
+                                    <Dimensions x="WHEREISIT_NAME_WIDTH"/>
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)ItemIcon" relativePoint="TOPRIGHT" offsetX="ZO_GAMEPAD_INTERACTIVE_FILTER_LIST_HEADER_DOUBLE_PADDING_X"/>
+                                    <OnInitialized>
+                                        ZO_GamepadInteractiveSortFilterHeader_Initialize(self, "Name", "displayName", TEXT_ALIGN_LEFT)
+                                    </OnInitialized>
+                                </Control>
+                                <Control name="$(parent)Category" inherits="ZO_GamepadInteractiveFilterHeader">
+                                    <Dimensions x="WHEREISIT_CATEGORY_WIDTH"/>
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" offsetX="ZO_GAMEPAD_INTERACTIVE_FILTER_LIST_HEADER_DOUBLE_PADDING_X"/>
+                                    <OnInitialized>
+                                        ZO_GamepadInteractiveSortFilterHeader_Initialize(self, "Category", "categoryOrder", TEXT_ALIGN_LEFT)
+                                    </OnInitialized>
+                                </Control>
+                                <Control name="$(parent)Location" inherits="ZO_GamepadInteractiveFilterHeader">
+                                    <Dimensions x="WHEREISIT_LOCATION_WIDTH"/>
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Category" relativePoint="TOPRIGHT" offsetX="ZO_GAMEPAD_INTERACTIVE_FILTER_LIST_HEADER_DOUBLE_PADDING_X"/>
+                                    <OnInitialized>
+                                        ZO_GamepadInteractiveSortFilterHeader_Initialize(self, "Location", "sortLocation", TEXT_ALIGN_LEFT)
+                                    </OnInitialized>
+                                </Control>
+                                <Control name="$(parent)Count" inherits="ZO_GamepadInteractiveFilterHeader">
+                                    <Dimensions x="WHEREISIT_COUNT_WIDTH"/>
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Location" relativePoint="TOPRIGHT" offsetX="ZO_GAMEPAD_INTERACTIVE_FILTER_LIST_HEADER_DOUBLE_PADDING_X"/>
+                                    <OnInitialized>
+                                        ZO_GamepadInteractiveSortFilterHeader_Initialize(self, "Count", "count", TEXT_ALIGN_RIGHT)
+                                    </OnInitialized>
+                                </Control>
+                            </Controls>
+                        </Control>
+
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+
+    </Controls>
+</GuiXml>

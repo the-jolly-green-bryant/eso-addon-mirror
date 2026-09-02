@@ -26,6 +26,9 @@ local LOOT_ENTRY_SPACING_Y = -1
 local STOCK_CONTAINER_SHOW_TIME_MS = 3600
 local STOCK_PERSISTENT_CONTAINER_SHOW_TIME_MS = 7000
 local DEBUG_MIX_ITEM_COUNT = 7
+local DEFAULT_LOOT_HISTORY_SCALE = 100
+local MIN_LOOT_HISTORY_SCALE = 60
+local MAX_LOOT_HISTORY_SCALE = 180
 
 local QUALITY_STYLE =
 {
@@ -189,6 +192,23 @@ local function GetLootHistoryPosition()
     return { x = DEFAULT_LOOT_HISTORY_ANCHOR_OFFSET_X, y = DEFAULT_LOOT_HISTORY_ANCHOR_OFFSET_Y }
 end
 
+local function GetLootHistoryScaleMultiplier()
+    local scale = DEFAULT_LOOT_HISTORY_SCALE
+    if Nirnsteel_UI.Settings and Nirnsteel_UI.Settings.GetLootHistory then
+        scale = tonumber(Nirnsteel_UI.Settings:GetLootHistory().scale) or scale
+    end
+
+    return math.min(math.max(scale, MIN_LOOT_HISTORY_SCALE), MAX_LOOT_HISTORY_SCALE) / 100
+end
+
+local function GetBaseLootHistoryScale(lootHistory)
+    if lootHistory.nirnsteelBaseScale == nil then
+        lootHistory.nirnsteelBaseScale = lootHistory.control:GetScale()
+    end
+
+    return lootHistory.nirnsteelBaseScale
+end
+
 local function IsLootHistoryModuleEnabled()
     return not Nirnsteel_UI.Settings or Nirnsteel_UI.Settings:IsLootHistoryEnabled()
 end
@@ -319,6 +339,7 @@ local function ApplyLootHistoryAnchor(lootHistory)
     end
 
     local position = GetLootHistoryPosition()
+    control:SetScale(GetBaseLootHistoryScale(lootHistory) * GetLootHistoryScaleMultiplier())
     control:ClearAnchors()
     control:SetAnchor(BOTTOMRIGHT, GuiRoot, CENTER, position.x, position.y)
 end
@@ -455,6 +476,7 @@ local function ApplyMoverState()
     local unlocked = IsLootHistoryModuleEnabled() and Nirnsteel_UI.Settings and Nirnsteel_UI.Settings:IsLootHistoryUnlocked()
     local position = GetLootHistoryPosition()
 
+    mover:SetScale(GetLootHistoryScaleMultiplier())
     mover:ClearAnchors()
     mover:SetAnchor(BOTTOMRIGHT, GuiRoot, CENTER, position.x, position.y)
     mover:SetHidden(not unlocked)
@@ -467,6 +489,7 @@ local function RestoreStockHistory(lootHistory, descriptor)
 
     lootHistory.entryTemplate = descriptor.stockTemplateName
     if lootHistory.control then
+        lootHistory.control:SetScale(GetBaseLootHistoryScale(lootHistory))
         lootHistory.control:ClearAnchors()
         lootHistory.control:SetAnchor(descriptor.stockPoint, GuiRoot, descriptor.stockPoint, 0, descriptor.stockControlOffsetY)
     end

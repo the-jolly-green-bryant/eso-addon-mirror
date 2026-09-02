@@ -115,7 +115,7 @@ local ROW_TYPE_ID = 1
 -- markup declares their geometry only; this list is what SetupRow hands to
 -- UI.ApplyRowFonts so all five carry the shared body face. Adding a column means
 -- adding it in both places.
-local ROW_COLUMNS = { "Name", "Qty", "Value", "Cum", "Change" }
+local ROW_COLUMNS = { "Name", "Qty", "Value", "Cum", "Change", "Impact" }
 
 -- Search debounce. GetMaterialsMatching walks every occupied slot and filters by
 -- name, so running it on every keystroke micro-stutters on a large craft bag.
@@ -130,6 +130,7 @@ local SEARCH_TIMER_NAME = addon.name .. "_DetailSearchDebounce"
 -- Initialize. Clearing is destructive (one snapshot, no undo), so a stray click
 -- on the toolbar button must not wipe the baseline without a confirm.
 local CLEAR_SNAPSHOT_DIALOG = "BUREAU_OF_MATERIAL_WORTH_CLEAR_SNAPSHOT"
+local REPLACE_SNAPSHOT_DIALOG = "BUREAU_OF_MATERIAL_WORTH_REPLACE_SNAPSHOT"
 
 local Colorize = private.Colorize
 local FormatGold = private.FormatGold
@@ -185,7 +186,7 @@ local backdrop        -- background + border
 local headerBand      -- accent wash + underline behind the title and scope line
 local titleLabel      -- "<Category> - materials"
 local contextLabel    -- active category/search/diff scope beneath the title
-local headerName, headerQty, headerValue, headerCum, headerChange  -- column headers
+local headerName, headerQty, headerValue, headerCum, headerChange, headerImpact  -- column headers
 local divider
 local listControl     -- ZO_ScrollList
 local footerDivider   -- rule above the summary line
@@ -219,7 +220,7 @@ local diffSource = "snapshot"  -- "snapshot" | "visit"
 -- applies equally to a category view, the whole-bag search, and a live refresh.
 -- Default to value-descending: the practical "what to sell right now" order, so
 -- the stacks that make up most of the bag's worth sit at the top on open.
---   sortKey: "name" | "qty" | "value" | "change"
+--   sortKey: "name" | "qty" | "value" | "cum" | "change" | "impact"
 --   sortAsc: ascending when true. Numeric columns default to descending (biggest
 --            first); the name column defaults to ascending (A->Z).
 local sortKey = "value"
@@ -448,6 +449,18 @@ local function FormatTrendPercent(percent)
         stringformat("%.1f", mathabs(percent))))
 end
 
+local function FormatSignedGold(amount)
+    if amount == nil then
+        return Colorize(COLOR_MUTED, GetString(SI_BMW_DETAIL_GROWTH_NEW))
+    elseif amount == 0 then
+        return FormatGold(0, COLOR_MUTED)
+    end
+
+    local gain = amount > 0
+    local arrow = gain and ARROW_UP or ARROW_DOWN
+    return arrow .. " " .. FormatGold(mathabs(amount), gain and COLOR_GAIN or COLOR_LOSS)
+end
+
 -- Render the Qty / Value / Cumulative / Change columns for a normal material row
 -- (category view or whole-bag search). Split out of SetupRow so the diff view can
 -- repurpose the same four controls without threading a mode flag through each.
@@ -549,12 +562,14 @@ local function SetupDiffColumns(rowControl, data)
 end
 
 -- Trend rows repurpose the numeric columns as current unit price, net movement
--- from the oldest point in the window, maximum observed rise, and maximum fall.
+-- from the oldest point in the window, maximum observed rise, maximum fall, and
+-- the gold impact of the net unit-price movement on the quantity currently held.
 local function SetupTrendColumns(rowControl, data)
     rowControl:GetNamedChild("Qty"):SetText(FormatGold(data.unitPrice or 0))
     rowControl:GetNamedChild("Value"):SetText(FormatTrendPercent(data.trendOverallPercent))
     rowControl:GetNamedChild("Cum"):SetText(FormatTrendPercent(data.trendMaxGainPercent))
     rowControl:GetNamedChild("Change"):SetText(FormatTrendPercent(data.trendMaxLossPercent))
+    rowControl:GetNamedChild("Impact"):SetText(FormatSignedGold(data.trendValueImpact))
 end
 
 -- Populate one recycled row from its material record. Mirrors the column
@@ -569,6 +584,15 @@ local function SetupRow(rowControl, data)
     -- shared type scale, so a row of the table reads at the same size as a row of
     -- the summary panel. No-ops after the first time this control is used.
     UI.ApplyRowFonts(rowControl, ROW_COLUMNS)
+
+    local cumThresholdMarker = rowControl:GetNamedChild("CumThresholdMarker")
+    if not rowControl.bmwCumThresholdMarkerStyled then
+        rowControl.bmwCumThresholdMarkerStyled = true
+        local r, g, b = UI.Tone("gold")
+        cumThresholdMarker:SetColor(r, g, b, UI.CHROME.ACCENT_MARK)
+    end
+    cumThresholdMarker:SetHidden(not (UsesAnalyticsColumns()
+        and not data.trend and data.cumThresholdMarker == true))
 
     local icon = rowControl:GetNamedChild("Icon")
     icon:SetTexture(data.icon)
@@ -606,8 +630,22 @@ local function SetupRow(rowControl, data)
     -- the diff flag rather than threading mode through every column.
     local qtyLabel = rowControl:GetNamedChild("Qty")
     local valueLabel = rowControl:GetNamedChild("Value")
-    qtyLabel:SetWidth(data.trend and 100 or 70)
-    valueLabel:SetWidth(data.trend and 120 or 150)
+    local cumLabel = rowControl:GetNamedChild("Cum")
+    local changeLabel = rowControl:GetNamedChild("Change")
+    local impactLabel = rowControl:GetNamedChild("Impact")
+    qtyLabel:SetWidth(data.trend and 90 or 70)
+    valueLabel:SetWidth(data.trend and 86 or 150)
+    cumLabel:SetWidth(data.trend and 80 or 70)
+    changeLabel:SetWidth(data.trend and 80 or 90)
+    impactLabel:SetHidden(not data.trend)
+    changeLabel:ClearAnchors()
+    if data.trend then
+        impactLabel:ClearAnchors()
+        impactLabel:SetAnchor(RIGHT, rowControl, RIGHT, -2, 0)
+        changeLabel:SetAnchor(RIGHT, impactLabel, LEFT, -6, 0)
+    else
+        changeLabel:SetAnchor(RIGHT, rowControl:GetNamedChild("Queue"), LEFT, -6, 0)
+    end
 
     if data.trend then
         SetupTrendColumns(rowControl, data)
@@ -783,6 +821,11 @@ local function SetupRow(rowControl, data)
                 if statusStringId then
                     UI.TipCaption(InformationTooltip, GetString(statusStringId))
                 end
+                if rowData.cumThresholdMarker then
+                    UI.TipDivider(InformationTooltip)
+                    UI.TipCaption(InformationTooltip, stringformat(
+                        GetString(SI_BMW_DETAIL_CUM_THRESHOLD_HINT), CUM_CORE_THRESHOLD), "gold")
+                end
                 if HasItemLink(rowData) then
                     UI.TipDivider(InformationTooltip)
                     UI.TipCaption(InformationTooltip, GetString(SI_BMW_DETAIL_LINK_HINT), "accent")
@@ -810,12 +853,23 @@ local function SetupRow(rowControl, data)
                 UI.TipLine(InformationTooltip, stringformat(
                     GetString(SI_BMW_PRICE_TREND_TOOLTIP_MAX_LOSS),
                     FormatTrendPercent(rowData.trendMaxLossPercent)), "loss")
+                local impactTone = (rowData.trendValueImpact or 0) > 0 and "gain"
+                    or ((rowData.trendValueImpact or 0) < 0 and "loss" or "muted")
+                UI.TipLine(InformationTooltip, stringformat(
+                    GetString(SI_BMW_PRICE_TREND_TOOLTIP_IMPACT),
+                    FormatSignedGold(rowData.trendValueImpact)), impactTone)
                 UI.TipCaption(InformationTooltip, stringformat(
                     GetString(SI_BMW_PRICE_TREND_TOOLTIP_POINTS), rowData.trendPointCount or 0))
                 UI.TipDivider(InformationTooltip)
                 AppendValueTooltip(rowData)
             else
                 AppendValueTooltip(rowData)
+            end
+
+            if rowData.cumThresholdMarker then
+                UI.TipDivider(InformationTooltip)
+                UI.TipCaption(InformationTooltip, stringformat(
+                    GetString(SI_BMW_DETAIL_CUM_THRESHOLD_HINT), CUM_CORE_THRESHOLD), "gold")
             end
 
             if HasItemLink(rowData) then
@@ -877,6 +931,32 @@ function DetailWindow.Initialize()
         HideGameItemTooltip()
         ClearTooltip(InformationTooltip)
     end)
+
+    local function CaptureCurrentSnapshot()
+        local snapshot = addon.Valuation.CaptureSnapshot()
+        if snapshot then
+            private.ChatInfo(SI_BMW_MSG_SNAPSHOT_SAVED, snapshot.slots or 0,
+                FormatGold(snapshot.gold or 0))
+        end
+        UpdateSnapshotStatus()
+        if viewMode == "diff" then
+            Populate()
+        end
+    end
+
+    ZO_Dialogs_RegisterCustomDialog(REPLACE_SNAPSHOT_DIALOG, {
+        title = { text = GetString(SI_BMW_DETAIL_REPLACE_CONFIRM_TITLE) },
+        mainText = { text = GetString(SI_BMW_DETAIL_REPLACE_CONFIRM_BODY) },
+        buttons = {
+            {
+                text = GetString(SI_BMW_DETAIL_REPLACE_CONFIRM_ACCEPT),
+                callback = CaptureCurrentSnapshot,
+            },
+            {
+                text = GetString(SI_BMW_DETAIL_REPLACE_CONFIRM_CANCEL),
+            },
+        },
+    })
 
     -- Confirmation dialog for the destructive "Clear snapshot" action. Registered
     -- once; the accept callback does the actual clear so a stray button click only
@@ -1078,6 +1158,7 @@ function DetailWindow.Initialize()
     -- gets a title+body hover tooltip (the headerCum idiom) since the
     -- manual-snapshot model is not self-evident.
     local BUTTON_WIDTH = 100
+    local CHANGES_BUTTON_WIDTH = 140
     local GROUP_LABEL_WIDTH = 62
     local GROUP_LABEL_GAP = 8
 
@@ -1107,18 +1188,10 @@ function DetailWindow.Initialize()
     rememberButton:SetAnchor(LEFT, snapshotGroupLabel, RIGHT, GROUP_LABEL_GAP, 0)
     rememberButton:SetText(GetString(SI_BMW_DETAIL_BTN_REMEMBER))
     rememberButton:SetHandler("OnClicked", function()
-        local snapshot = addon.Valuation.CaptureSnapshot()
-        -- Confirm the save in chat with what was captured, so the action has
-        -- visible feedback even when the diff view isn't open to show the reset.
-        if snapshot then
-            private.ChatInfo(SI_BMW_MSG_SNAPSHOT_SAVED, snapshot.slots or 0,
-                FormatGold(snapshot.gold or 0))
-        end
-        UpdateSnapshotStatus()
-        -- If the diff view is open, refresh it so it reflects the new baseline
-        -- (it will now read "nothing changed"); otherwise just leave it.
-        if viewMode == "diff" then
-            Populate()
+        if addon.Valuation.HasSnapshot() then
+            ZO_Dialogs_ShowDialog(REPLACE_SNAPSHOT_DIALOG)
+        else
+            CaptureCurrentSnapshot()
         end
     end)
     WireButtonTooltip(rememberButton, SI_BMW_DETAIL_BTN_REMEMBER_TOOLTIP_TITLE,
@@ -1126,7 +1199,7 @@ function DetailWindow.Initialize()
 
     changesButton = WINDOW_MANAGER:CreateControlFromVirtual(
         addon.name .. "_DetailChanges", windowControl, "ZO_DefaultButton")
-    changesButton:SetDimensions(BUTTON_WIDTH, TITLE_HEIGHT)
+    changesButton:SetDimensions(CHANGES_BUTTON_WIDTH, TITLE_HEIGHT)
     changesButton:SetAnchor(TOPLEFT, rememberButton, TOPRIGHT, 8, 0)
     changesButton:SetText(GetString(SI_BMW_DETAIL_BTN_CHANGES))
     -- This button is a toggle: in the material views it opens the diff ("Changes");
@@ -1183,7 +1256,7 @@ function DetailWindow.Initialize()
     snapshotStatusLabel:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
     snapshotStatusLabel:SetAnchor(LEFT, clearButton, RIGHT, 10, 0)
     snapshotStatusLabel:SetDimensions(WINDOW_WIDTH - (PADDING * 2 + GROUP_LABEL_WIDTH
-        + GROUP_LABEL_GAP + BUTTON_WIDTH * 3 + 26), TITLE_HEIGHT)
+        + GROUP_LABEL_GAP + BUTTON_WIDTH * 2 + CHANGES_BUTTON_WIDTH + 26), TITLE_HEIGHT)
 
     -- Price coverage filters live on their own row beside the search box. They
     -- filter the current category/search view and are hidden for the snapshot
@@ -1281,6 +1354,14 @@ function DetailWindow.Initialize()
     -- sit below the toolbar row.
     local headerY = filterToolbarY + TITLE_HEIGHT + TOOLBAR_GAP
 
+    headerImpact = WINDOW_MANAGER:CreateControl(addon.name .. "_DetailHeaderImpact", windowControl, CT_LABEL)
+    headerImpact:SetFont(FONT.small)
+    headerImpact:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+    headerImpact:SetDimensions(130, HEADER_HEIGHT)
+    headerImpact:SetAnchor(TOPRIGHT, windowControl, TOPRIGHT, -PADDING - 2, headerY)
+    headerImpact:SetText(Colorize(COLOR_MUTED, GetString(SI_BMW_PRICE_TREND_COL_IMPACT)))
+    headerImpact:SetHidden(true)
+
     headerChange = WINDOW_MANAGER:CreateControl(addon.name .. "_DetailHeaderChange", windowControl, CT_LABEL)
     headerChange:SetFont(FONT.small)
     headerChange:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
@@ -1350,7 +1431,10 @@ function DetailWindow.Initialize()
         headerControl:SetHandler("OnMouseEnter", function(self)
             local titleId, bodyId
             if viewMode == "trend" then
-                if key == "value" then
+                if key == "impact" then
+                    titleId = SI_BMW_PRICE_TREND_IMPACT_TOOLTIP_TITLE
+                    bodyId = SI_BMW_PRICE_TREND_IMPACT_TOOLTIP_BODY
+                elseif key == "value" then
                     titleId = SI_BMW_PRICE_TREND_OVERALL_TOOLTIP_TITLE
                     bodyId = SI_BMW_PRICE_TREND_OVERALL_TOOLTIP_BODY
                 elseif key == "cum" then
@@ -1385,6 +1469,7 @@ function DetailWindow.Initialize()
     WireHeaderSort(headerValue, "value", false)
     WireHeaderSort(headerCum, "cum", false)
     WireHeaderSort(headerChange, "change", false)
+    WireHeaderSort(headerImpact, "impact", false)
     UpdateColumnLayout()
     UpdateHeaders()
 
@@ -1483,6 +1568,9 @@ end
 -- never buries a real figure beneath the priceless ones.
 local function SortValueOf(row)
     if viewMode == "trend" then
+        if sortKey == "impact" then
+            return row.trendValueImpact or 0
+        end
         if sortKey == "qty" then
             return row.unitPrice
         elseif sortKey == "value" then
@@ -1576,6 +1664,10 @@ end
 local function AssignCumulativeShare(materials)
     local weightOf = WeightOfRow
 
+    for i = 1, #materials do
+        materials[i].cumThresholdMarker = false
+    end
+
     local total = 0
     for i = 1, #materials do
         total = total + weightOf(materials[i])
@@ -1609,12 +1701,17 @@ local function AssignCumulativeShare(materials)
     end)
 
     local running = 0
+    local thresholdMarked = false
     for rank = 1, #order do
         local mat = materials[order[rank]]
         local weight = weightOf(mat)
         if weight > 0 then
             running = running + weight
             mat.cumPercent = zo_round(running / total * 100)
+            if not thresholdMarked and mat.cumPercent >= CUM_CORE_THRESHOLD then
+                mat.cumThresholdMarker = true
+                thresholdMarked = true
+            end
         else
             mat.cumPercent = nil
         end
@@ -1909,6 +2006,7 @@ function UpdateHeaders()
         apply(headerValue, GetString(SI_BMW_PRICE_TREND_COL_OVERALL), "value")
         apply(headerCum, GetString(SI_BMW_PRICE_TREND_COL_GAIN), "cum")
         apply(headerChange, GetString(SI_BMW_PRICE_TREND_COL_LOSS), "change")
+        apply(headerImpact, GetString(SI_BMW_PRICE_TREND_COL_IMPACT), "impact")
         return
     end
 
@@ -1933,9 +2031,20 @@ end
 -- SetupRow during the refresh initiated by ApplyColumnMode.
 UpdateColumnLayout = function()
     local useAnalytics = UsesAnalyticsColumns()
+    local trend = viewMode == "trend"
 
-    headerQty:SetWidth(viewMode == "trend" and 100 or 70)
-    headerValue:SetWidth(viewMode == "trend" and 120 or 150)
+    headerQty:SetWidth(trend and 90 or 70)
+    headerValue:SetWidth(trend and 86 or 150)
+    headerCum:SetWidth(trend and 80 or 70)
+    headerChange:SetWidth(trend and 80 or 90)
+    headerImpact:SetHidden(not trend)
+    headerChange:ClearAnchors()
+    if trend then
+        headerChange:SetAnchor(TOPRIGHT, headerImpact, TOPLEFT, -6, 0)
+    else
+        headerChange:SetAnchor(TOPRIGHT, headerImpact, TOPRIGHT,
+            -2 - ROW_ACTION_WIDTH, 0)
+    end
     headerCum:SetHidden(not useAnalytics)
     headerChange:SetHidden(not useAnalytics)
     headerValue:ClearAnchors()

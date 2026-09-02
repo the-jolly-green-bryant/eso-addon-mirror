@@ -47,13 +47,15 @@ local function TogglePanel( panel, abilityId, enable )
 		local effectTotals = { }
 		local effectIds = { }
 
-		local UpdatePanel = function( unitTag, remaining, totalTime )
+		local UpdatePanel = function( unitTagOrId, remaining, totalTime )
+			local unitTag = not altMode and unitTagOrId or nil
+			local unitId = altMode and unitTagOrId or nil
 			if (totalTime == 0) then
-				panel:UpdateUnitData(unitTag, nil, GBP.GetColor(abilityId, 1, 1))
+				panel:UpdateUnitData(unitTag, unitId, GBP.GetColor(abilityId, 1, 1))
 			elseif (remaining < 0) then
-				panel:UpdateUnitData(unitTag)
+				panel:UpdateUnitData(unitTag, unitId)
 			else
-				panel:UpdateUnitData(unitTag, nil, GBP.GetColor(abilityId, remaining, totalTime), LCA.FormatTime(remaining, LCA[(totalTime >= 60000) and "TIME_FORMAT_COMPACT" or "TIME_FORMAT_COUNTDOWN"]))
+				panel:UpdateUnitData(unitTag, unitId, GBP.GetColor(abilityId, remaining, totalTime), LCA.FormatTime(remaining, LCA[(totalTime >= 60000) and "TIME_FORMAT_COMPACT" or "TIME_FORMAT_COUNTDOWN"]))
 			end
 		end
 
@@ -81,19 +83,18 @@ local function TogglePanel( panel, abilityId, enable )
 		else
 			-- Special tracking for effects that don't trigger EVENT_EFFECT_CHANGED
 			local callback = function( _, result, _, _, _, _, _, _, _, _, hitValue, _, _, _, _, targetUnitId, abilityId )
-				local unitTag = LCA.IdentifyGroupUnitId(targetUnitId)
-				if (unitTag and result == ACTION_RESULT_EFFECT_FADED and effectIds[unitTag] == abilityId) then
-					effectEnds[unitTag] = nil
-					effectIds[unitTag] = nil
-					UpdatePanel(unitTag, -1)
-				elseif (unitTag and result == ACTION_RESULT_EFFECT_GAINED_DURATION) then
-					effectEnds[unitTag] = GetGameTimeMilliseconds() + hitValue
-					effectTotals[unitTag] = hitValue
-					effectIds[unitTag] = abilityId
-					UpdatePanel(unitTag, hitValue, hitValue)
-				elseif (unitTag and result == ACTION_RESULT_EFFECT_GAINED and hitValue == 1 and effectIds[unitTag] == abilityId) then
+				if (result == ACTION_RESULT_EFFECT_FADED and effectIds[targetUnitId] == abilityId) then
+					effectEnds[targetUnitId] = nil
+					effectIds[targetUnitId] = nil
+					UpdatePanel(targetUnitId, -1)
+				elseif (result == ACTION_RESULT_EFFECT_GAINED_DURATION) then
+					effectEnds[targetUnitId] = GetGameTimeMilliseconds() + hitValue
+					effectTotals[targetUnitId] = hitValue
+					effectIds[targetUnitId] = abilityId
+					UpdatePanel(targetUnitId, hitValue, hitValue)
+				elseif (result == ACTION_RESULT_EFFECT_GAINED and hitValue == 1 and effectIds[targetUnitId] == abilityId) then
 					-- If an effect is refreshed before expiration
-					effectEnds[unitTag] = GetGameTimeMilliseconds() + effectTotals[unitTag]
+					effectEnds[targetUnitId] = GetGameTimeMilliseconds() + effectTotals[targetUnitId]
 				end
 			end
 			for i = 1, #ids do
@@ -103,8 +104,8 @@ local function TogglePanel( panel, abilityId, enable )
 
 		EVENT_MANAGER:RegisterForUpdate(name, POLLING_INTERVAL, function( )
 			local currentTime = GetGameTimeMilliseconds()
-			for unitTag, endTime in pairs(effectEnds) do
-				UpdatePanel(unitTag, endTime - currentTime, effectTotals[unitTag])
+			for unitTagOrId, endTime in pairs(effectEnds) do
+				UpdatePanel(unitTagOrId, endTime - currentTime, effectTotals[unitTagOrId])
 			end
 		end)
 	else

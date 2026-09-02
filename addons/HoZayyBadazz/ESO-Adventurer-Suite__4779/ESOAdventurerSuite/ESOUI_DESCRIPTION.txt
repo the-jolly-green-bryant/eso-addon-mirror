@@ -3,7 +3,7 @@ ESO Adventurer Suite uses AI-assisted code generation and review. ESO Adventurer
 
 [B]ESO ADVENTURER SUITE[/B]
 Author: HoZayyBadazz
-Version: 0.29.127
+Version: 0.29.143
 Status: Public Beta
 
 ESO Adventurer Suite is an all-in-one Elder Scrolls Online dashboard and utility addon built around the Tamriel Codex. It includes quest and travel tools, Suite-native finders, combat statistics, HUD tools, minimap features, gear/build tools, companion tools, notes, checkpoints, Golden Pursuits integration, and configurable utility overlays.

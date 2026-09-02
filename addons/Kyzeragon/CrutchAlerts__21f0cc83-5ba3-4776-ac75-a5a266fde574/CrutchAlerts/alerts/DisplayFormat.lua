@@ -38,6 +38,7 @@ Crutch.format = {
 
 -- Werewolf
     [58864] = 300, -- Claw Fury
+    [33208] = 500, -- Insatiable Hunger
 
 ---------------------------------------------------------------------
 -- Trials
@@ -123,6 +124,11 @@ Crutch.format = {
     [238800] = 800, -- Phantasmal Barrage
     [234276] = 1105, -- Blazing Curse (Skorkhif)
     [234000] = 1405, -- Sparking Curse (Jynorah)
+    [234150] = 100, -- Blazing Heat Ray (Blazing Brimstone Aspect)
+    [234076] = 400, -- Sparking Heat Ray (Sparking Cold-Flame Aspect)
+    [233330] = 30500, -- Reflective Scales (Blazeforged Valneer)
+    [233321] = 30500, -- Reflective Scales (Sparkstorm Myrinax)
+    [236871] = 300, -- Heavy Strike (Enlightened Channeler)
     [236381] = 30500, -- True Shot (Coldharbour Sinewshot)
     [234704] = 300, -- Myr Leap Exit AL
     [233452] = 300, -- Myrinax Leap AL
@@ -192,6 +198,9 @@ Crutch.format = {
 -- Coral Aerie
     [163153] = 600, -- Coalescing Shadows
 
+-- Depths of Malatar
+    [113173] = 300, -- Smiting Dawn (King Narilmor)
+
 -- Earthen Root Enclave
     [172410] = 200003.3, -- Crumble (Archdruid Devyric rock pillar things)
     [171742] = 500, -- Boughroot Slash
@@ -215,6 +224,10 @@ Crutch.format = {
     [229247] = 800, -- Forbidden Knowledge (Orpheon the Tactician)
     [233821] = 100, -- Cyclone (Flame Gryphon)
     [224822] = 100, -- Blast Powder (Noriwen)
+
+-- Moon Hunter Keep (solo)
+    [265060] = 300, -- Shred (Mylenne Moon-Caller)
+    [267268] = 300, -- Assassinate (Moon Hunter Striker (Archivist))
 
 -- Naj-Caldeesh
     [242063] = 100, -- Ancient Blaze (Voskrona Stonehulk Poxito)

@@ -31,6 +31,7 @@
                            share of the list's total value, for the "what to
                            sell" Pareto read)
               Change 90px  right-aligned, left of the contextual actions
+              Impact 130px Price dynamics only; uses the hidden action strip
               Actions 48px two icon buttons revealed on hover: queue / withdraw
         -->
         <Control name="BureauOfMaterialWorth_DetailList" inherits="ZO_ScrollList" virtual="true" />
@@ -43,9 +44,14 @@
                     <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
                 </Backdrop>
 
+                <Texture name="$(parent)CumThresholdMarker" hidden="true">
+                    <Dimensions x="3" y="20" />
+                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" />
+                </Texture>
+
                 <Texture name="$(parent)Icon">
                     <Dimensions x="24" y="24" />
-                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="2" />
+                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="6" />
                 </Texture>
 
                 <Button name="$(parent)Withdraw" hidden="true">
@@ -57,6 +63,11 @@
                     <Dimensions x="22" y="22" />
                     <Anchor point="RIGHT" relativeTo="$(parent)Withdraw" relativePoint="LEFT" offsetX="-4" />
                 </Button>
+
+                <Label name="$(parent)Impact" hidden="true" horizontalAlignment="RIGHT" verticalAlignment="CENTER">
+                    <Dimensions x="130" />
+                    <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-2" />
+                </Label>
 
                 <Label name="$(parent)Change" horizontalAlignment="RIGHT" verticalAlignment="CENTER">
                     <Dimensions x="90" />

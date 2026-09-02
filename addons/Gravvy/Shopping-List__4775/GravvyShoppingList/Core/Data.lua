@@ -4,7 +4,7 @@ local Data = ShoppingListData
 local DEFAULT_LIST_NAME = GetString(SI_SHOPPING_LIST_DEFAULT_LIST_NAME)
 local MAX_DELETED_ACTIONS = 20
 local MAX_NOTE_LENGTH = ShoppingListModel.MAX_NOTE_LENGTH
-local CURRENT_SCHEMA_VERSION = 6
+local CURRENT_SCHEMA_VERSION = 7
 local MAX_RECOVERY_SNAPSHOTS = 5
 local MAX_EXTERNAL_SNAPSHOTS = 10
 local MAX_BACKUP_LISTS = ShoppingListModel.MAX_LISTS
@@ -16,6 +16,8 @@ local MAX_LINK_LENGTH = ShoppingListModel.MAX_LINK_LENGTH
 local MAX_QUANTITY = ShoppingListModel.MAX_QUANTITY
 local MAX_U32 = ShoppingListModel.MAX_SET_OR_ITEM_ID
 local MAX_SAFE_INTEGER = 9007199254740991
+local MAX_CHARACTER_ASSIGNMENTS = 100
+local MAX_WINDOW_POSITIONS = 32
 local VALID_FILTERS = {
     all = true,
     needed = true,
@@ -62,6 +64,7 @@ local defaults = {
             pinned = false,
             locked = false,
             category = "",
+            assignedCharacters = {},
             itemSearch = "",
             itemSort = DEFAULT_ITEM_SORT,
             itemSortAscending = true,
@@ -86,6 +89,7 @@ local defaults = {
             width = 350,
             height = 500,
         },
+        windowPositions = {},
     },
 }
 
@@ -363,6 +367,27 @@ function Data:Normalize()
     settings.window = window
     window.width = zo_clamp(tonumber(window.width) or 350, 350, 900)
     window.height = zo_clamp(tonumber(window.height) or 500, 400, 900)
+    local positions = type(settings.windowPositions) == "table"
+        and settings.windowPositions or {}
+    settings.windowPositions = {}
+    local positionCount = 0
+    for key, position in pairs(positions) do
+        if positionCount >= MAX_WINDOW_POSITIONS then
+            break
+        end
+        key = tostring(key or "")
+        if key ~= "" and #key <= 80 and type(position) == "table" then
+            local left = tonumber(position.left)
+            local top = tonumber(position.top)
+            if left and top and left == left and top == top
+                and left ~= math.huge and left ~= -math.huge
+                and top ~= math.huge and top ~= -math.huge
+            then
+                settings.windowPositions[key] = { left = left, top = top }
+                positionCount = positionCount + 1
+            end
+        end
+    end
 
     local highestListId = 0
     local highestItemId = 0
@@ -385,6 +410,23 @@ function Data:Normalize()
             list.pinned = list.pinned == true
             list.locked = list.locked == true
             list.category = normalizeCategory(list.category)
+            local assignments = type(list.assignedCharacters) == "table"
+                and list.assignedCharacters or {}
+            list.assignedCharacters = {}
+            local assignmentCount = 0
+            for characterId, characterName in pairs(assignments) do
+                if assignmentCount >= MAX_CHARACTER_ASSIGNMENTS then
+                    break
+                end
+                characterId = zo_strtrim(tostring(characterId or ""))
+                characterName = zo_strtrim(tostring(characterName or ""))
+                if characterId ~= "" and #characterId <= 64
+                    and characterName ~= "" and #characterName <= MAX_NAME_LENGTH
+                then
+                    list.assignedCharacters[characterId] = characterName
+                    assignmentCount = assignmentCount + 1
+                end
+            end
             list.itemSearch = zo_strtrim(tostring(list.itemSearch or ""))
             if #list.itemSearch > ShoppingListModel.MAX_NAME_LENGTH then
                 list.itemSearch = string.sub(
@@ -517,6 +559,10 @@ local migrations = {
         candidate:Normalize()
         candidate.saved.schemaVersion = 6
     end,
+    [6] = function(candidate)
+        candidate:Normalize()
+        candidate.saved.schemaVersion = 7
+    end,
 }
 
 local function isFiniteNumber(value, minimum, maximum)
@@ -638,6 +684,26 @@ local function validateItem(item, itemIds)
     return true
 end
 
+local function validateCharacterAssignments(assignments)
+    if assignments == nil then
+        return true
+    end
+    if type(assignments) ~= "table" then
+        return false
+    end
+    local count = 0
+    for characterId, characterName in pairs(assignments) do
+        count = count + 1
+        if count > MAX_CHARACTER_ASSIGNMENTS
+            or not isBoundedString(characterId, 64, false)
+            or not isBoundedString(characterName, MAX_NAME_LENGTH, false)
+        then
+            return false
+        end
+    end
+    return true
+end
+
 local function validateList(list, archived, listIds, itemIds, totals)
     if type(list) ~= "table"
         or not isWholeNumber(list.id, 1, MAX_U32)
@@ -654,6 +720,7 @@ local function validateList(list, archived, listIds, itemIds, totals)
         or not optionalBoolean(list.pinned)
         or not optionalBoolean(list.locked)
         or not optionalString(list.category, ShoppingListModel.MAX_CATEGORY_LENGTH)
+        or not validateCharacterAssignments(list.assignedCharacters)
         or not optionalString(list.itemSearch, MAX_NAME_LENGTH)
         or (list.itemSort ~= nil and not ShoppingListModel.ITEM_SORTS[list.itemSort])
         or not optionalBoolean(list.itemSortAscending)
@@ -886,6 +953,23 @@ function Data:ValidateBackupSnapshot(snapshot)
             or not optionalFiniteNumber(settings.window.top, -100000, 100000))
     then
         return false
+    end
+    if settings.windowPositions ~= nil then
+        if type(settings.windowPositions) ~= "table" then
+            return false
+        end
+        local count = 0
+        for key, position in pairs(settings.windowPositions) do
+            count = count + 1
+            if count > MAX_WINDOW_POSITIONS
+                or not isBoundedString(key, 80, false)
+                or type(position) ~= "table"
+                or not isFiniteNumber(position.left, -100000, 100000)
+                or not isFiniteNumber(position.top, -100000, 100000)
+            then
+                return false
+            end
+        end
     end
     return true
 end
@@ -1918,6 +2002,20 @@ function Data:ListNameExists(name, exceptId)
     return false
 end
 
+function Data:FindListByName(name)
+    local normalized = zo_strlower(zo_strtrim(name or ""))
+    for _, list in ipairs(self.saved.lists) do
+        if zo_strlower(list.name) == normalized then
+            return list, false
+        end
+    end
+    for _, list in ipairs(self.saved.archivedLists) do
+        if zo_strlower(list.name) == normalized then
+            return list, true
+        end
+    end
+end
+
 function Data:GetUniqueListName(baseName, exceptId)
     local name = baseName
     local suffix = 2
@@ -1984,6 +2082,7 @@ function Data:AddList(name, note, category, suppressUpdate)
         pinned = false,
         locked = false,
         category = normalizeCategory(category),
+        assignedCharacters = {},
         itemSearch = "",
         itemSort = DEFAULT_ITEM_SORT,
         itemSortAscending = true,
@@ -2106,6 +2205,33 @@ function Data:ImportList(name, items, note, recurring)
     return list
 end
 
+function Data:MergeImportedList(listId, decoded)
+    local list, message = self:RequireUnlockedList(listId)
+    if not list then
+        return nil, message
+    end
+    if type(decoded) ~= "table" or type(decoded.items) ~= "table" then
+        return nil, GetString(SI_SHOPPING_LIST_ERROR_SHARED_LIST_NO_ITEMS)
+    end
+
+    local snapshotted, snapshotMessage = self:CreateSafetySnapshot("pre_import")
+    if not snapshotted then
+        return nil, snapshotMessage
+    end
+    local items
+    items, message = self:AddItemsToList(list.id, decoded.items, "merge")
+    if not items then
+        return nil, message
+    end
+    self.saved.selectedListId = list.id
+    self:NotifyUpdate("list", {
+        action = "importMerged",
+        listId = list.id,
+        importedItemCount = #decoded.items,
+    })
+    return list, #items
+end
+
 function Data:DuplicateList(id, name, note, category, selectList)
     local source = self:FindList(id)
     if not source then
@@ -2153,6 +2279,7 @@ function Data:DuplicateList(id, name, note, category, selectList)
         pinned = false,
         locked = false,
         category = normalizeCategory(copiedCategory),
+        assignedCharacters = deepCopy(source.assignedCharacters or {}),
         itemSearch = "",
         itemSort = source.itemSort or DEFAULT_ITEM_SORT,
         itemSortAscending = source.itemSortAscending ~= false,
@@ -2529,6 +2656,152 @@ end
 
 function Data:GetSettings()
     return self.saved.settings
+end
+
+function Data:GetWindowPosition(key)
+    local positions = self.saved.settings.windowPositions
+    return type(positions) == "table" and positions[key] or nil
+end
+
+function Data:SetWindowPosition(key, left, top)
+    if type(key) ~= "string" or key == "" or #key > 80
+        or type(left) ~= "number" or left ~= left
+        or type(top) ~= "number" or top ~= top
+    then
+        return false
+    end
+    local positions = self.saved.settings.windowPositions
+    if type(positions) ~= "table" then
+        positions = {}
+        self.saved.settings.windowPositions = positions
+    end
+    positions[key] = { left = left, top = top }
+    return true
+end
+
+function Data:GetCurrentCharacterIdentity()
+    local id = GetCurrentCharacterId and GetCurrentCharacterId() or nil
+    local name = GetUnitName and GetUnitName("player") or ""
+    if name ~= "" and SI_UNIT_NAME then
+        name = zo_strformat(SI_UNIT_NAME, name)
+    end
+    name = zo_strtrim(name or "")
+    local idText = id ~= nil and Id64ToString
+        and Id64ToString(id) or tostring(id or "")
+    if idText == "" or idText == "0" then
+        idText = name ~= "" and ("name:" .. zo_strlower(name)) or nil
+    end
+    if not idText then
+        return nil
+    end
+    return idText, name ~= "" and name or idText
+end
+
+function Data:GetCharacterAssignments(listOrId)
+    local list = type(listOrId) == "table" and listOrId
+        or self:FindList(listOrId)
+        or self:FindArchivedList(listOrId)
+    if not list then
+        return {}
+    end
+    local assignments = {}
+    for characterId, characterName in pairs(list.assignedCharacters or {}) do
+        assignments[#assignments + 1] = {
+            id = characterId,
+            name = characterName,
+        }
+    end
+    table.sort(assignments, function(left, right)
+        return zo_strlower(left.name) < zo_strlower(right.name)
+    end)
+    return assignments
+end
+
+function Data:IsListAssignedToCharacter(listOrId, characterId)
+    local list = type(listOrId) == "table" and listOrId
+        or self:FindList(listOrId)
+        or self:FindArchivedList(listOrId)
+    characterId = characterId or self:GetCurrentCharacterIdentity()
+    return list ~= nil and characterId ~= nil
+        and type(list.assignedCharacters) == "table"
+        and list.assignedCharacters[tostring(characterId)] ~= nil
+end
+
+function Data:SetListCharacterAssigned(listId, assigned, characterId, characterName)
+    local list, message = self:RequireUnlockedList(listId)
+    if not list then
+        return false, message
+    end
+    if characterId == nil then
+        characterId, characterName = self:GetCurrentCharacterIdentity()
+    end
+    characterId = zo_strtrim(tostring(characterId or ""))
+    characterName = zo_strtrim(tostring(characterName or ""))
+    if characterId == "" or #characterId > 64
+        or characterName == "" or #characterName > MAX_NAME_LENGTH
+    then
+        return false, GetString(SI_SHOPPING_LIST_ERROR_CHARACTER_UNAVAILABLE)
+    end
+    list.assignedCharacters = type(list.assignedCharacters) == "table"
+        and list.assignedCharacters or {}
+    if assigned == true then
+        local count = 0
+        for id in pairs(list.assignedCharacters) do
+            if id ~= characterId then
+                count = count + 1
+            end
+        end
+        if count >= MAX_CHARACTER_ASSIGNMENTS then
+            return false, GetString(SI_SHOPPING_LIST_ERROR_TOO_MANY_CHARACTERS)
+        end
+        list.assignedCharacters[characterId] = characterName
+    else
+        list.assignedCharacters[characterId] = nil
+    end
+    self:NotifyUpdate("list", {
+        action = "updated",
+        listId = list.id,
+        field = "assignedCharacters",
+        characterId = characterId,
+        assigned = assigned == true,
+    })
+    return true, list, characterName
+end
+
+function Data:GetListOverview()
+    local overview = {}
+    local function append(list, archived)
+        local completedEntries = 0
+        local remainingQuantity = 0
+        for _, item in ipairs(list.items) do
+            local remaining = archived and item.completed and 0
+                or self:GetRemainingQuantity(item)
+            if remaining <= 0 then
+                completedEntries = completedEntries + 1
+            else
+                remainingQuantity = remainingQuantity + remaining
+            end
+        end
+        overview[#overview + 1] = {
+            list = list,
+            archived = archived == true,
+            entryCount = #list.items,
+            completedEntries = completedEntries,
+            remainingEntries = #list.items - completedEntries,
+            remainingQuantity = remainingQuantity,
+            spent = tonumber(list.transactionSpent)
+                or tonumber(list.totalSpent) or 0,
+            budget = tonumber(list.budget),
+            assignments = self:GetCharacterAssignments(list),
+        }
+    end
+    for _, list in ipairs(self:GetDisplayLists()) do
+        append(list, false)
+    end
+    for _, list in ipairs(self.saved.archivedLists) do
+        append(list, true)
+    end
+    return overview
 end
 
 function Data:GetBackupData()

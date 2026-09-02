@@ -11,7 +11,7 @@ DM2StatsMenuShell = DM2StatsMenuShell or {}
 local M = DM2StatsMenuShell
 
 M.name    = "DM2StatsMenuShell"
-M.version = "3.17.16"
+M.version = "3.18.0"
 
 local WM = WINDOW_MANAGER
 local SCENE_NAME = "dm2StatsMenuShellGamepad"
@@ -10299,6 +10299,11 @@ end
 local INSIGHT_DIAG_OPP = 3
 local INSIGHT_WASTE_LINES = 8
 local INSIGHT_BUILD_SRC = 6
+local IB_SET_ROWS = 6
+local IB_BROUGHT = 5
+local IB_CP_STORY = 3
+local IB_CP_ROWS = 4
+local IB_POT_LINES = 3
 local INSIGHT_BUILD_CP = 8 -- match Build & Sets so Soft stars like Backstabber stay visible
 local INSIGHT_EXEC_LINES = 5 -- Phase 3 P0: exception lines + More: Rotation
 
@@ -10317,7 +10322,7 @@ local function createInsightsUI(screen, mode)
   -- mode: "dps" | "build" — split for readability / room to grow
   mode = (mode == "build") and "build" or "dps"
   local storeKey = (mode == "build") and "insightsBuildUI" or "insightsDpsUI"
-  if screen[storeKey] and not screen[storeKey]._v3176 then screen[storeKey] = nil end
+  if screen[storeKey] and not screen[storeKey]._v3180 then screen[storeKey] = nil end
   if screen[storeKey] then
     local existing = screen[storeKey]
     -- Lazy-add Next Test action line (2.5.3) without full rebuild
@@ -10340,7 +10345,12 @@ local function createInsightsUI(screen, mode)
     buildSrcs = {},
     buildCps = {},
     execLines = {},
-    _v3176 = true,
+    ibSetRows = {},
+    ibBrought = {},
+    ibCpStory = {},
+    ibCpRows = {},
+    ibPot = {},
+    _v3180 = true,
   }
   local pfx = (mode == "build") and "DM2StatsMenuInBld" or "DM2StatsMenuInDps"
   local rootName = pfx .. "Root"
@@ -10393,7 +10403,7 @@ local function createInsightsUI(screen, mode)
   local bbg = makeSectionFrame(ui.buildPanel, pfx .. "BuildBGV6", true)
   bbg:SetAnchorFill(ui.buildPanel)
   ui.buildTitle = makeDashLabel(ui.buildPanel, pfx .. "BuildTitleV6", 14, THEME.titleR, THEME.titleG, THEME.titleB, 1)
-  ui.buildTitle:SetText("3  BUILD CONTRIBUTION")
+  ui.buildTitle:SetText(mode == "build" and "INSIGHTS: BUILD  ·  what you brought, and did it pay" or "3  BUILD CONTRIBUTION")
   ui.buildMix = makeDashLabel(ui.buildPanel, pfx .. "BuildMixV6", 12, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
   ui.buildFp = makeDashLabel(ui.buildPanel, pfx .. "BuildFpV6", 12, 0.85, 0.78, 0.45, 1)
   ui.buildSrcHdr = makeDashLabel(ui.buildPanel, pfx .. "BuildSrcHdrV6", 12, THEME.titleR, THEME.titleG, THEME.titleB, 1)
@@ -10419,6 +10429,49 @@ local function createInsightsUI(screen, mode)
     local name = makeDashLabel(row, pfx .. "BuildCpN7_" .. i, 13, THEME.textR, THEME.textG, THEME.textB, 1)
     local impact = makeDashLabel(row, pfx .. "BuildCpI7_" .. i, 12, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
     ui.buildCps[i] = { row = row, bg = bg, fit = fit, name = name, impact = impact }
+  end
+
+  -- 3.18.0 Insights: Build stacked sections (not the old two-column src/CP clone)
+  if mode == "build" then
+    ui.ibSetHdr = makeDashLabel(ui.buildPanel, pfx .. "IbSetHdr", 13, THEME.titleR, THEME.titleG, THEME.titleB, 1)
+    ui.ibSetHdr:SetText("B  SETS")
+    ui.ibSetNote = makeDashLabel(ui.buildPanel, pfx .. "IbSetNote", 11, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
+    ui.ibSetNote:SetMaxLineCount(2)
+    for i = 1, IB_SET_ROWS do
+      local line = makeDashLabel(ui.buildPanel, pfx .. "IbSet" .. i, 12, THEME.textR, THEME.textG, THEME.textB, 1)
+      ui.ibSetRows[i] = line
+    end
+    ui.ibBroughtHdr = makeDashLabel(ui.buildPanel, pfx .. "IbBrHdr", 13, THEME.titleR, THEME.titleG, THEME.titleB, 1)
+    ui.ibBroughtHdr:SetText("C  WHAT YOU BROUGHT")
+    for i = 1, IB_BROUGHT do
+      ui.ibBrought[i] = makeDashLabel(ui.buildPanel, pfx .. "IbBr" .. i, 12, THEME.textR, THEME.textG, THEME.textB, 1)
+    end
+    ui.ibCpHdr = makeDashLabel(ui.buildPanel, pfx .. "IbCpHdr", 13, THEME.titleR, THEME.titleG, THEME.titleB, 1)
+    ui.ibCpHdr:SetText("D  CHAMPION POINTS")
+    for i = 1, IB_CP_STORY do
+      ui.ibCpStory[i] = makeDashLabel(ui.buildPanel, pfx .. "IbCpS" .. i, 12, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
+    end
+    for i = 1, IB_CP_ROWS do
+      local row = WM:CreateControl(pfx .. "IbCpR" .. i, ui.buildPanel, CT_CONTROL)
+      local fit = makeDashLabel(row, pfx .. "IbCpF" .. i, 12, 0.45, 0.92, 0.55, 1)
+      local name = makeDashLabel(row, pfx .. "IbCpN" .. i, 12, THEME.textR, THEME.textG, THEME.textB, 1)
+      local impact = makeDashLabel(row, pfx .. "IbCpI" .. i, 12, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
+      ui.ibCpRows[i] = { row = row, fit = fit, name = name, impact = impact }
+    end
+    ui.ibBarHdr = makeDashLabel(ui.buildPanel, pfx .. "IbBarHdr", 13, THEME.titleR, THEME.titleG, THEME.titleB, 1)
+    ui.ibBarHdr:SetText("E  FRONT / BACK")
+    ui.ibBarLine = makeDashLabel(ui.buildPanel, pfx .. "IbBarL", 12, THEME.textR, THEME.textG, THEME.textB, 1)
+    ui.ibPotHdr = makeDashLabel(ui.buildPanel, pfx .. "IbPotHdr", 13, THEME.titleR, THEME.titleG, THEME.titleB, 1)
+    ui.ibPotHdr:SetText("F  POTIONS")
+    for i = 1, IB_POT_LINES do
+      ui.ibPot[i] = makeDashLabel(ui.buildPanel, pfx .. "IbPot" .. i, 12, THEME.textR, THEME.textG, THEME.textB, 1)
+    end
+    ui.ibNextHdr = makeDashLabel(ui.buildPanel, pfx .. "IbNxHdr", 13, THEME.titleR, THEME.titleG, THEME.titleB, 1)
+    ui.ibNextHdr:SetText("G  BUILD NEXT TEST")
+    ui.ibNextHead = makeDashLabel(ui.buildPanel, pfx .. "IbNxH", 13, 0.98, 0.84, 0.40, 1)
+    ui.ibNextBody = makeDashLabel(ui.buildPanel, pfx .. "IbNxB", 12, THEME.textR, THEME.textG, THEME.textB, 1)
+    ui.ibNextBody:SetMaxLineCount(3)
+    ui.ibFoot = makeDashLabel(ui.buildPanel, pfx .. "IbFoot", 11, 0.50, 0.50, 0.46, 1)
   end
 
   ui.execPanel = WM:CreateControl(pfx .. "ExecV6", ui.root, CT_CONTROL)
@@ -10594,58 +10647,146 @@ local function layoutInsightsUI(ui, hostW, hostH)
   ui.buildMix:ClearAnchors()
   ui.buildMix:SetAnchor(TOPLEFT, ui.buildPanel, TOPLEFT, 12, 40)
   ui.buildMix:SetWidth(W - 24)
-  local colGap = 12
-  local leftW = math.floor((W - 28 - colGap) * 0.48)
-  local rightX = 12 + leftW + colGap
-  local rightW = W - rightX - 10
-  ui.buildSrcHdr:ClearAnchors()
-  ui.buildSrcHdr:SetAnchor(TOPLEFT, ui.buildPanel, TOPLEFT, 12, 62)
-  ui.buildSrcHdr:SetWidth(leftW)
-  ui.buildCpHdr:ClearAnchors()
-  ui.buildCpHdr:SetAnchor(TOPLEFT, ui.buildPanel, TOPLEFT, rightX, 62)
-  ui.buildCpHdr:SetText("Champion Points  ·  id = skill id")
-  ui.buildCpHdr:SetWidth(rightW)
-  local srcTop = 78
-  local buildH = (mode == "build") and (H - y0 - 8) or (heights[3] or 200)
-  -- History-style compact rows (tighter than sprawled 4-item lists)
-  local srcH = math.max(28, math.min(40, math.floor((buildH - srcTop - 6) / INSIGHT_BUILD_SRC)))
-  local cpH = math.max(22, math.min(srcH, math.floor((buildH - srcTop - 6) / INSIGHT_BUILD_CP)))
-  for i = 1, INSIGHT_BUILD_SRC do
-    local r = ui.buildSrcs[i]
-    r.row:ClearAnchors()
-    r.row:SetAnchor(TOPLEFT, ui.buildPanel, TOPLEFT, 10, srcTop + (i - 1) * srcH)
-    r.row:SetDimensions(leftW - 4, srcH - 3)
-    r.rank:ClearAnchors()
-    r.rank:SetAnchor(LEFT, r.row, LEFT, 6, 0)
-    r.rank:SetWidth(16)
-    r.chip:ClearAnchors()
-    r.chip:SetAnchor(LEFT, r.row, LEFT, 22, 0)
-    r.chip:SetWidth(28)
-    r.name:ClearAnchors()
-    r.name:SetAnchor(LEFT, r.row, LEFT, 52, 0)
-    r.name:SetWidth(math.max(60, leftW - 130))
-    r.name:SetMaxLineCount(1)
-    r.share:ClearAnchors()
-    r.share:SetAnchor(RIGHT, r.row, RIGHT, -8, 0)
-    r.share:SetWidth(64)
-  end
-  for i = 1, INSIGHT_BUILD_CP do
-    local r = ui.buildCps[i]
-    r.row:ClearAnchors()
-    r.row:SetAnchor(TOPLEFT, ui.buildPanel, TOPLEFT, rightX, srcTop + (i - 1) * cpH)
-    r.row:SetDimensions(rightW - 4, cpH - 2)
-    r.fit:ClearAnchors()
-    r.fit:SetAnchor(LEFT, r.row, LEFT, 6, 0)
-    r.fit:SetWidth(48)
-    local nW = math.max(80, math.floor(rightW * 0.34))
-    r.name:ClearAnchors()
-    r.name:SetAnchor(LEFT, r.row, LEFT, 56, 0)
-    r.name:SetWidth(nW)
-    r.name:SetMaxLineCount(1)
-    r.impact:ClearAnchors()
-    r.impact:SetAnchor(LEFT, r.row, LEFT, 60 + nW, 0)
-    r.impact:SetWidth(math.max(100, rightW - 72 - nW))
-    r.impact:SetMaxLineCount(1)
+
+  if mode == "build" and ui.ibSetHdr then
+    -- Hide the old two-column clone (Damage / Build & Sets overlap)
+    if ui.buildSrcHdr then ui.buildSrcHdr:SetHidden(true) end
+    if ui.buildCpHdr then ui.buildCpHdr:SetHidden(true) end
+    for i = 1, INSIGHT_BUILD_SRC do
+      if ui.buildSrcs[i] then ui.buildSrcs[i].row:SetHidden(true) end
+    end
+    for i = 1, INSIGHT_BUILD_CP do
+      if ui.buildCps[i] then ui.buildCps[i].row:SetHidden(true) end
+    end
+    local y = 62
+    local innerW = W - 24
+    local function placeHdr(lbl, textY)
+      if not lbl then return textY end
+      lbl:ClearAnchors()
+      lbl:SetAnchor(TOPLEFT, ui.buildPanel, TOPLEFT, 12, textY)
+      lbl:SetWidth(innerW)
+      return textY + 16
+    end
+    local function placeLine(lbl, textY, h)
+      if not lbl then return textY end
+      lbl:ClearAnchors()
+      lbl:SetAnchor(TOPLEFT, ui.buildPanel, TOPLEFT, 14, textY)
+      lbl:SetWidth(innerW - 4)
+      lbl:SetMaxLineCount(1)
+      return textY + (h or 16)
+    end
+    y = placeHdr(ui.ibSetHdr, y)
+    y = placeLine(ui.ibSetNote, y, 28)
+    if ui.ibSetNote then ui.ibSetNote:SetMaxLineCount(2) end
+    for i = 1, IB_SET_ROWS do
+      y = placeLine(ui.ibSetRows[i], y, 16)
+    end
+    y = y + 4
+    y = placeHdr(ui.ibBroughtHdr, y)
+    for i = 1, IB_BROUGHT do
+      y = placeLine(ui.ibBrought[i], y, 16)
+    end
+    y = y + 4
+    y = placeHdr(ui.ibCpHdr, y)
+    for i = 1, IB_CP_STORY do
+      y = placeLine(ui.ibCpStory[i], y, 16)
+    end
+    for i = 1, IB_CP_ROWS do
+      local r = ui.ibCpRows[i]
+      if r then
+        r.row:ClearAnchors()
+        r.row:SetAnchor(TOPLEFT, ui.buildPanel, TOPLEFT, 12, y)
+        r.row:SetDimensions(innerW, 17)
+        r.fit:ClearAnchors()
+        r.fit:SetAnchor(LEFT, r.row, LEFT, 0, 0)
+        r.fit:SetWidth(48)
+        r.name:ClearAnchors()
+        r.name:SetAnchor(LEFT, r.row, LEFT, 52, 0)
+        r.name:SetWidth(math.max(80, math.floor(innerW * 0.32)))
+        r.name:SetMaxLineCount(1)
+        r.impact:ClearAnchors()
+        r.impact:SetAnchor(LEFT, r.row, LEFT, 56 + math.max(80, math.floor(innerW * 0.32)), 0)
+        r.impact:SetWidth(math.max(120, innerW - 140))
+        r.impact:SetMaxLineCount(1)
+        y = y + 18
+      end
+    end
+    y = y + 4
+    y = placeHdr(ui.ibBarHdr, y)
+    y = placeLine(ui.ibBarLine, y, 18)
+    y = y + 4
+    y = placeHdr(ui.ibPotHdr, y)
+    for i = 1, IB_POT_LINES do
+      y = placeLine(ui.ibPot[i], y, 16)
+    end
+    y = y + 4
+    y = placeHdr(ui.ibNextHdr, y)
+    y = placeLine(ui.ibNextHead, y, 18)
+    if ui.ibNextBody then
+      ui.ibNextBody:ClearAnchors()
+      ui.ibNextBody:SetAnchor(TOPLEFT, ui.buildPanel, TOPLEFT, 14, y)
+      ui.ibNextBody:SetWidth(innerW - 4)
+      ui.ibNextBody:SetMaxLineCount(3)
+      y = y + 48
+    end
+    if ui.ibFoot then
+      ui.ibFoot:ClearAnchors()
+      ui.ibFoot:SetAnchor(BOTTOMLEFT, ui.buildPanel, BOTTOMLEFT, 12, -4)
+      ui.ibFoot:SetWidth(innerW)
+    end
+  else
+    local colGap = 12
+    local leftW = math.floor((W - 28 - colGap) * 0.48)
+    local rightX = 12 + leftW + colGap
+    local rightW = W - rightX - 10
+    ui.buildSrcHdr:ClearAnchors()
+    ui.buildSrcHdr:SetAnchor(TOPLEFT, ui.buildPanel, TOPLEFT, 12, 62)
+    ui.buildSrcHdr:SetWidth(leftW)
+    ui.buildCpHdr:ClearAnchors()
+    ui.buildCpHdr:SetAnchor(TOPLEFT, ui.buildPanel, TOPLEFT, rightX, 62)
+    ui.buildCpHdr:SetText("Champion Points  ·  id = skill id")
+    ui.buildCpHdr:SetWidth(rightW)
+    local srcTop = 78
+    local buildH = heights[3] or 200
+    local srcH = math.max(28, math.min(40, math.floor((buildH - srcTop - 6) / INSIGHT_BUILD_SRC)))
+    local cpH = math.max(22, math.min(srcH, math.floor((buildH - srcTop - 6) / INSIGHT_BUILD_CP)))
+    for i = 1, INSIGHT_BUILD_SRC do
+      local r = ui.buildSrcs[i]
+      r.row:ClearAnchors()
+      r.row:SetAnchor(TOPLEFT, ui.buildPanel, TOPLEFT, 10, srcTop + (i - 1) * srcH)
+      r.row:SetDimensions(leftW - 4, srcH - 3)
+      r.rank:ClearAnchors()
+      r.rank:SetAnchor(LEFT, r.row, LEFT, 6, 0)
+      r.rank:SetWidth(16)
+      r.chip:ClearAnchors()
+      r.chip:SetAnchor(LEFT, r.row, LEFT, 22, 0)
+      r.chip:SetWidth(28)
+      r.name:ClearAnchors()
+      r.name:SetAnchor(LEFT, r.row, LEFT, 52, 0)
+      r.name:SetWidth(math.max(60, leftW - 130))
+      r.name:SetMaxLineCount(1)
+      r.share:ClearAnchors()
+      r.share:SetAnchor(RIGHT, r.row, RIGHT, -8, 0)
+      r.share:SetWidth(64)
+    end
+    for i = 1, INSIGHT_BUILD_CP do
+      local r = ui.buildCps[i]
+      r.row:ClearAnchors()
+      r.row:SetAnchor(TOPLEFT, ui.buildPanel, TOPLEFT, rightX, srcTop + (i - 1) * cpH)
+      r.row:SetDimensions(rightW - 4, cpH - 2)
+      r.fit:ClearAnchors()
+      r.fit:SetAnchor(LEFT, r.row, LEFT, 6, 0)
+      r.fit:SetWidth(48)
+      local nW = math.max(80, math.floor(rightW * 0.34))
+      r.name:ClearAnchors()
+      r.name:SetAnchor(LEFT, r.row, LEFT, 56, 0)
+      r.name:SetWidth(nW)
+      r.name:SetMaxLineCount(1)
+      r.impact:ClearAnchors()
+      r.impact:SetAnchor(LEFT, r.row, LEFT, 60 + nW, 0)
+      r.impact:SetWidth(math.max(100, rightW - 72 - nW))
+      r.impact:SetMaxLineCount(1)
+    end
   end
   end -- build panel layout
 
@@ -10686,6 +10827,291 @@ local function layoutInsightsUI(ui, hostW, hostH)
   ui.disclaimer:SetAnchor(BOTTOMLEFT, ui.nextPanel, BOTTOMLEFT, 12, -4)
   ui.disclaimer:SetWidth(W - 24)
   end -- exec/next layout
+end
+
+local function fillInsightsBuildPage(ui, session, syn, coach, profile)
+  if not ui or not ui.ibSetHdr then return end
+  syn = syn or {}
+  coach = coach or {}
+  local dur = tonumber(session.durationMs) or 0
+  local total = tonumber(session.totalDamage) or 0
+
+  -- Header: mix already on buildMix; fingerprint on buildFp. Cohort on mix suffix if needed.
+  local cohort = buildFingerprintCohort(session)
+  local thisDps = sessionAvgDps(session)
+  if cohort and (tonumber(cohort.n) or 0) >= 2 and ui.buildFp then
+    local delta = thisDps - (tonumber(cohort.medianDps) or thisDps)
+    ui.buildFp:SetText(string.format(
+      "Build ID %s  ·  cohort n=%d  median %s  best %s  this %s (%s vs median)",
+      string.sub(tostring(cohort.fingerprint or ""), 1, 8),
+      cohort.n,
+      fmtDps(cohort.medianDps),
+      fmtDps(cohort.bestDps),
+      fmtDps(thisDps),
+      fmtDpsDelta(delta)
+    ))
+  end
+  if ui.buildMix then
+    ui.buildMix:SetText("A  MIX  ·  " .. (syn.mixLine or "—"))
+  end
+
+  -- B. Sets (honest)
+  if ui.ibSetNote then
+    ui.ibSetNote:SetText(
+      "Proc rows show observed set/proc damage. Buff-mediated sets (Rallying Cry, Shacklebreaker, many 5pc) have no damage event — Damage will not grow a proc row."
+    )
+  end
+  local setRows = {}
+  local dmgByName = {}
+  if type(session.sets) == "table" then
+    for _, ps in pairs(session.sets) do
+      if type(ps) == "table" and ps.name then
+        dmgByName[string.lower(tostring(ps.name))] = ps
+      end
+    end
+  end
+  local names = {}
+  if type(session.equippedSets) == "table" then
+    for _, n in ipairs(session.equippedSets) do names[#names + 1] = tostring(n) end
+  end
+  if #names == 0 then
+    for _, si in ipairs(coach.setImpact or {}) do
+      names[#names + 1] = tostring(si.name or "?")
+    end
+  end
+  for _, name in ipairs(names) do
+    local low = string.lower(name)
+    local ps = dmgByName[low]
+    local dmg = (ps and tonumber(ps.dmg)) or 0
+    local hits = (ps and tonumber(ps.hits)) or 0
+    local share = total > 0 and (dmg / total) or 0
+    local dps = dur > 0 and (dmg / (dur / 1000)) or 0
+    local buffUp, buffName = 0, nil
+    if type(session.buffs) == "table" then
+      for _, b in pairs(session.buffs) do
+        if type(b) == "table" and b.name then
+          local blow = string.lower(tostring(b.name))
+          if low ~= "" and (string.find(blow, low, 1, true) or string.find(low, blow, 1, true)) then
+            local up = dur > 0 and ((tonumber(b.activeMs) or 0) / dur) or 0
+            if up > buffUp then buffUp, buffName = up, b.name end
+          end
+        end
+      end
+    end
+    local line
+    if dmg > 0 then
+      line = string.format("%s  ·  %s  %s DPS  %s share  %s",
+        displayName(name, 28), fmtInt(dmg), fmtDps(dps), fmtPct(share), "[Observed]")
+    elseif buffUp > 0.02 then
+      line = string.format("%s  ·  buff set / no damage event  ·  %s up %s  %s",
+        displayName(name, 28), displayName(buffName or "buff", 22), fmtPct(buffUp),
+        "[Observed uptime, no proc DPS]")
+    else
+      line = string.format("%s  ·  buff set / no damage event  %s",
+        displayName(name, 36), "[Observed]")
+    end
+    setRows[#setRows + 1] = line
+  end
+  for i = 1, IB_SET_ROWS do
+    if ui.ibSetRows[i] then
+      ui.ibSetRows[i]:SetText(displayNamePlain(setRows[i] or (i == 1 and "(no equipped sets captured)" or ""), 110))
+    end
+  end
+
+  -- C. What you brought
+  local snap = session.playerStatsEnd or session.playerStats or {}
+  local buffed = snap.buffed or {}
+  local mundus = canonicalMundusName(session.mundus)
+    or canonicalMundusName(snap.mundus)
+    or session.mundus or "—"
+  local food = (session.build and session.build.food) or session.food or "—"
+  local foodStart = session.playerStatsStart and session.playerStatsStart.food
+  local foodNote = ""
+  if foodStart and tostring(foodStart) ~= "" and tostring(food) ~= tostring(foodStart) then
+    foodNote = "  ·  food changed this pull"
+  end
+  local attrs = snap.attributes or (session.build and session.build.attributes) or {}
+  local brought = {
+    string.format("Mundus %s  ·  Food %s%s", tostring(mundus), displayName(tostring(food), 40), foodNote),
+    string.format("Sheet crit %0.1f%%  ·  Pen phys %s  ·  Pen spell %s",
+      (tonumber(buffed.critChance) or 0) * 100,
+      fmtInt(buffed.penPhysical or 0),
+      fmtInt(buffed.penSpell or 0)),
+    string.format("Attributes  Mag %s  HP %s  Stam %s",
+      tostring(attrs.magicka or "—"), tostring(attrs.health or "—"), tostring(attrs.stamina or "—")),
+  }
+  local support = nil
+  if type(coach.wasteLines) == "table" then
+    for _, ln in ipairs(coach.wasteLines) do
+      if type(ln) == "string" and string.find(string.lower(ln), "support you brought", 1, true) then
+        support = ln
+        break
+      end
+    end
+  end
+  brought[#brought + 1] = support or "Support you brought: see Buffs for the full list."
+  for i = 1, IB_BROUGHT do
+    if ui.ibBrought[i] then
+      ui.ibBrought[i]:SetText(displayNamePlain(brought[i] or "", 110))
+    end
+  end
+
+  -- D. CP story + warfare rows
+  local cps = syn.cps or {}
+  local war, strongN, softN = {}, 0, 0
+  local directPct = tonumber(syn.directPct) or 0
+  local dotPct = tonumber(syn.dotPct) or 0
+  for _, c in ipairs(cps) do
+    if c.constellation ~= "fitness" then
+      war[#war + 1] = c
+      if c.fitKey == "strong" then strongN = strongN + 1 end
+      if c.fitKey == "soft" then softN = softN + 1 end
+    end
+  end
+  local story = {}
+  story[1] = string.format(
+    "Parse mix Direct %s · DoT %s · %d Strong · %d Soft of %d Warfare  (Fitness N/A on dummy)",
+    fmtPct(directPct), fmtPct(dotPct), strongN, softN, #war
+  )
+  local pay, softNames = {}, {}
+  for _, c in ipairs(war) do
+    if c.fitKey == "strong" then pay[#pay + 1] = c.name end
+    if c.fitKey == "soft" then softNames[#softNames + 1] = c.name end
+  end
+  if #pay > 0 then
+    story[2] = string.format("Pays on this dummy: %s", table.concat(pay, ", "))
+  else
+    story[2] = "No Strong Warfare fit vs this parse mix."
+  end
+  if #softNames > 0 then
+    story[3] = string.format("Soft vs this mix: %s — swap toward Direct/DoT/crit shape, then three parses.",
+      table.concat(softNames, ", "))
+  else
+    story[3] = "No Soft Warfare star on this parse."
+  end
+  for i = 1, IB_CP_STORY do
+    if ui.ibCpStory[i] then ui.ibCpStory[i]:SetText(displayNamePlain(story[i] or "", 110)) end
+  end
+  for i = 1, IB_CP_ROWS do
+    local r = ui.ibCpRows[i]
+    local c = war[i]
+    if r then
+      if c then
+        r.row:SetHidden(false)
+        r.fit:SetText(c.fitLabel or "?")
+        local fr, fg, fb, fa = fitBadgeColor(c.fitKey)
+        r.fit:SetColor(fr, fg, fb, fa or 1)
+        r.name:SetText(displayName(c.name or "?", 28))
+        local impact
+        if c.marginalDps ~= nil then
+          impact = string.format("#%s Eligible %s · A/B %s",
+            c.rankTxt or tostring(i), fmtPct(c.eligiblePct or 0), fmtDpsDelta(c.marginalDps))
+        else
+          impact = string.format("#%s Eligible %s · %s",
+            c.rankTxt or tostring(i), fmtPct(c.eligiblePct or 0), c.eligibleNote or c.reason or "")
+        end
+        r.impact:SetText(displayNamePlain(impact, 72))
+      else
+        r.row:SetHidden(true)
+      end
+    end
+  end
+
+  -- E. Front / back
+  local frontDmg, backDmg = 0, 0
+  if type(session.skills) == "table" then
+    for id, sk in pairs(session.skills) do
+      if type(sk) == "table" then
+        local dmg = tonumber(sk.dmg) or 0
+        if dmg > 0 then
+          local bar = getSkillBar(session, tonumber(sk.id) or tonumber(id) or 0)
+          if bar == "Front" then frontDmg = frontDmg + dmg
+          elseif bar == "Back" then backDmg = backDmg + dmg end
+        end
+      end
+    end
+  end
+  local barSum = frontDmg + backDmg
+  local bs = session.barStats or {}
+  local fMs = tonumber(bs.frontMs) or 0
+  local bMs = tonumber(bs.backMs) or 0
+  local dwell = fMs + bMs
+  if ui.ibBarLine then
+    ui.ibBarLine:SetText(string.format(
+      "Dwell F %s / B %s   ·   Damage F %s / B %s",
+      dwell > 0 and fmtPct(fMs / dwell) or "—",
+      dwell > 0 and fmtPct(bMs / dwell) or "—",
+      barSum > 0 and fmtPct(frontDmg / barSum) or "—",
+      barSum > 0 and fmtPct(backDmg / barSum) or "—"
+    ))
+  end
+
+  -- F. Potions
+  local pot = session.potion
+  if type(pot) ~= "table" or (tonumber(pot.uses) or 0) <= 0 and (tonumber(pot.coveredMs) or 0) <= 0 then
+    if ui.ibPot[1] then
+      ui.ibPot[1]:SetText("Needs a new parse after 3.18.0 — potion uses/coverage were not stored on older fights.")
+    end
+    if ui.ibPot[2] then ui.ibPot[2]:SetText("") end
+    if ui.ibPot[3] then ui.ibPot[3]:SetText("") end
+  else
+    local cover = dur > 0 and math.min(1, (tonumber(pot.coveredMs) or 0) / dur) or 0
+    local first = tonumber(pot.firstUseMs)
+    local firstTxt = pot.prePot and "first use at pull (pre-pot)"
+      or (first and string.format("first use +%0.1fs", first / 1000) or "")
+    local conf = pot.estimated and "[Estimated — may be skill/set]" or "[Observed]"
+    if session.isDummy then conf = "[Observed]" end
+    if ui.ibPot[1] then
+      ui.ibPot[1]:SetText(string.format(
+        "%d use%s · %s · covered %s of the pull · %s  %s",
+        tonumber(pot.uses) or 0,
+        (tonumber(pot.uses) or 0) == 1 and "" or "s",
+        pot.kind or "unknown",
+        fmtPct(cover),
+        firstTxt,
+        conf
+      ))
+    end
+    local st = pot.stats or {}
+    if ui.ibPot[2] then
+      ui.ibPot[2]:SetText(string.format(
+        "Intellect %s · Endurance %s · Fortitude %s · Expedition %s",
+        fmtPct(st.intellect or 0), fmtPct(st.endurance or 0),
+        fmtPct(st.fortitude or 0), fmtPct(st.expedition or 0)
+      ))
+    end
+    local uses = tonumber(pot.uses) or 0
+    local expect = dur > 0 and math.floor(dur / 45000 + 0.15) or 0
+    if dur >= 90000 and uses > 0 and uses < expect then
+      local miss = math.max(0, (expect - uses) * 45)
+      if ui.ibPot[3] then
+        ui.ibPot[3]:SetText(string.format("possible missed window ~%ds  [Estimated]", miss))
+      end
+    elseif ui.ibPot[3] then
+      ui.ibPot[3]:SetText("No potion DPS is claimed — coverage only.")
+    end
+  end
+
+  -- G. Build next test (build-shaped rules only)
+  local nxt = coach.nextTest
+  local buildRules = {
+    soft_cp = true, pen_waste = true, crit_overcap_risk = true, sample_size = true,
+  }
+  if nxt and buildRules[nxt.ruleId or ""] then
+    if ui.ibNextHead then ui.ibNextHead:SetText(nxt.title or "") end
+    if ui.ibNextBody then ui.ibNextBody:SetText(displayNamePlain(nxt.body or "", 240)) end
+  elseif nxt then
+    if ui.ibNextHead then ui.ibNextHead:SetText("Hold build; execution lives on Insights: DPS") end
+    if ui.ibNextBody then
+      ui.ibNextBody:SetText("No high-confidence gear/CP swap on this parse. Use Insights: DPS for weave / DoT / next test. Y still starts experiments from that page.")
+    end
+  else
+    if ui.ibNextHead then ui.ibNextHead:SetText("") end
+    if ui.ibNextBody then ui.ibNextBody:SetText("") end
+  end
+  if ui.ibFoot then
+    ui.ibFoot:SetText("[Observed] measured this fight. [Estimated] heuristic. Outcome DPS is never changed by this page.")
+  end
 end
 
 local function refreshInsightsUI(screen, session, mode)
@@ -10824,6 +11250,9 @@ local function refreshInsightsUI(screen, session, mode)
       mix = mix .. "  ·  " .. coach.cpAbHint
     end
     ui.buildMix:SetText(mix)
+  end
+  if mode == "build" then
+    pcall(fillInsightsBuildPage, ui, session, syn, coach, profile)
   end
   local sources = syn.topSources or {}
   for i = 1, INSIGHT_BUILD_SRC do

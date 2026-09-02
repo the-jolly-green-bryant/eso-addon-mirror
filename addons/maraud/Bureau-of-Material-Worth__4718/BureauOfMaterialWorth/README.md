@@ -68,18 +68,20 @@ materials the total updates on its own.
   game's own item tooltip. **Shift-click** a row to insert the item link in chat;
   the table header keeps that reminder visible. **Click any column header** to
   sort by it (click again to flip direction), including Price dynamics and
-  Changes. A category list still opens on **value, highest first** - the "what
+  **Since snapshot**. A category list still opens on **value, highest first** - the "what
   to sell right now" order - so the stacks that make up most of the bag's worth
   sit at the top.
 - Choose a compact **Basic** table (material, quantity, value) for everyday
   scanning, or **Analytics** to additionally show cumulative share and price
   change. The switch sits on the table toolbar as well as in settings. The
-  snapshot Changes view always retains its delta, share, and status columns.
+  **Since snapshot** view always retains its delta, share, and status columns.
 - **Escape** closes the material table and the withdraw window. If the search box
   has text, the first Escape clears it.
 - A **cumulative-share column** ("Cum %") shows the running share of the list's
   total value read top-down, so you can see at a glance that "the top few stacks
-  are 80% of the worth" - haul those to the guild and skip the long tail.
+  are 80% of the worth" - haul those to the guild and skip the long tail. A
+  **gold marker** identifies the single material where that cumulative share
+  first reaches the 80% threshold.
 - A **price-change column** (▲/▼ with a percentage) shows how each material's
   price has moved since it was last refreshed from a price source. The addon keeps
   its own compact price history for this - a material shows "-" until a price
@@ -95,9 +97,12 @@ materials the total updates on its own.
   Its `up / down` counters and a compact threshold suffix (e.g. `20%`) show how
   many held materials crossed the configured significant-movement threshold.
 - Clicking it opens a whole-bag analysis with the current unit price, net movement
-  from the oldest observation in the trailing seven days, maximum rise, and
-  maximum fall. Every earlier/later pair is analyzed, so a sharp one- or two-day
-  move remains visible even if the price later returns near its starting point.
+  from the oldest observation in the trailing seven days, maximum rise, maximum
+  fall, and a sortable **Value impact** column. Value impact multiplies the net
+  unit-price movement by the quantity currently held, revealing which market
+  changes actually gained or lost meaningful Craft Bag value. Every earlier/later
+  pair is analyzed, so a sharp one- or two-day move remains visible even if the
+  price later returns near its starting point.
 - Price-source changes are treated as a new comparable series: an MM-to-TTC/ATT
   switch is not reported as a market move. Important and Detailed notification
   modes announce new significant signals, direction reversals, or materially
@@ -108,20 +113,22 @@ materials the total updates on its own.
 
 ### Search the current list
 - The material table has a **search box** that filters the rows already on
-  screen: the open category, the whole-bag list, Changes, or Price dynamics.
+  screen: the open category, the whole-bag list, **Since snapshot**, or Price dynamics.
   Type a name, a price source (`mm`, `ttc`), `unpriced`, or a quality word
   (`epic`, `gold`). Clearing the box (or pressing Escape) restores the current
   view. Withdraw and queue still work from the filtered rows.
 - Compact **All / Priced / No price** filters narrow the category or whole-bag
   list. Clicking the main panel's Coverage row opens the whole-bag **No price**
   view directly. Sort order and the price filter persist while you move between
-  categories, Changes, and Price dynamics in the same session.
+  categories, **Since snapshot**, and Price dynamics in the same session.
 
 ### Snapshot and changes
 
-- The material table has two buttons on its title bar. **Remember** saves a
-  snapshot of the Craft Bag's current composition; **Changes** shows a per-material
-  diff against that snapshot - what was added, removed, or changed in quantity since.
+- The material table has snapshot controls on its title bar. **Remember** saves a
+  snapshot of the Craft Bag's current composition; **Since snapshot** shows a
+  per-material diff against it - what was added, removed, or changed in quantity.
+  Replacing an existing snapshot requires confirmation, preventing an accidental
+  click from silently resetting the comparison baseline.
 - The diff list repurposes the columns: **Qty +/-** and **Value +/-** show the
   signed change (green for gains, red for losses), **Share** shows each move's
   portion of the total change, and **Status** reads "new", "gone", "added", or
@@ -129,10 +136,10 @@ materials the total updates on its own.
   Rows are sorted by the biggest gold movement first.
 - There is **one snapshot** and it persists across sessions. The addon creates a
   one-time automatic baseline when you first open a **non-empty** Craft Bag after
-  installing it and LibPrice has settled, so Changes starts collecting useful
+  installing it and LibPrice has settled, so **Since snapshot** starts collecting useful
   information immediately.
   Pressing Remember at any time replaces that baseline with a snapshot you chose.
-  Clearing the snapshot leaves Changes empty until you press Remember again.
+  Clearing the snapshot leaves **Since snapshot** empty until you press Remember again.
 - As with the footer's value-change line, the diff counts **only real stock
   changes**: a material whose quantity did not move is omitted, so a price-source
   reimport that merely re-values the same materials never shows a phantom change.
@@ -162,7 +169,9 @@ materials the total updates on its own.
 - The footer separates **Inventory** (when the bag valuation last changed) from
   **Prices** (when LibPrice was last queried), so a deposit never masquerades as
   fresh market data. Click **Market prices** to clear the session cache and
-  re-query LibPrice - the same action as `/bmw refresh`.
+  re-query LibPrice - the same action as `/bmw refresh`. The row shows when the
+  refresh is in progress, blocks duplicate clicks, and briefly confirms when the
+  current refresh cycle is complete.
 - **Coverage** reports how many slots are priced and the corresponding percentage
   (e.g. "468/469 priced · 99%"), plus the **price source** it drew from, shown
   compactly (MM / TTC / ATT, with a "+" when several contributed). When more than

@@ -507,7 +507,7 @@ function S:Initialize()
         },
         {
             type = "dropdown", name = "Repair estimate visibility",
-            tooltip = "Inventory Only keeps the full Repair / Recharge Estimate card exactly as before. Always uses the compact Repair: <gold> gameplay HUD; it is attached to ESO's HUD-fade system, so it disappears and returns with the other HUD overlays without a separate Suite idle timer.",
+            tooltip = "Inventory Only keeps the full Repair / Recharge Estimate card exactly as before. Always uses the compact Repair: <gold> gameplay HUD; it uses the same ESO HUD-fade ownership as the Suite FPS overlay, so it disappears and returns with the other gameplay HUD overlays without a separate Suite idle timer.",
             choices = { "Inventory Only", "Always" }, choicesValues = { "INVENTORY", "ALWAYS" },
             getFunc = function()
                 local mode = EPC.saved.repairCostVisibility
@@ -2171,14 +2171,27 @@ function S:Initialize()
         },
         {
             type = "description",
-            text = "Opens the Suite's full map-side teleporter whenever the World Map opens. Includes all travel views through a compact View menu: Zones, Current Map, Maps/Surveys, Delves, Quests, Group, Friends, Guilds, Wayshrines, Houses, Player Homes, Dungeons, Instances, Antiquity Leads, Favorites, and Blocked. Tools such as sorting, quick travel, discovery routing, favorites/blacklists, and right-click actions remain available without filling the map with buttons. ESO's normal access and travel restrictions still apply.",
+            text = "The Suite Teleporter can stay attached to the World Map window or be available by hotkey while you are running around. Hotkey / Outside Map has no permanent gameplay drawer: assign Open / Close Map Teleporter under Controls > Keybindings > General > ESO Adventurer Suite. The key opens the full Teleporter in UI mode so you can interact with it; press the same key again, press Escape from a Teleporter search box, or click anywhere outside the Teleporter to close it and return to gameplay. HUD Layout Mode still lets you position it.",
         },
         {
-            type = "checkbox", name = "Show Map Teleporter with World Map",
-            tooltip = "Shows the Suite Map Teleporter automatically every time the full World Map opens.",
+            type = "checkbox", name = "Enable Map Teleporter",
+            tooltip = "Master switch for the Suite Teleporter.",
             getFunc = function() return EPC.saved.mapTeleporterEnabled ~= false end,
             setFunc = function(v) EPC.saved.mapTeleporterEnabled = v == true if EPC.Travel and EPC.Travel.RefreshMapTeleporterVisibility then EPC.Travel:RefreshMapTeleporterVisibility() end end,
             default = EPC.defaults.mapTeleporterEnabled,
+        },
+        {
+            type = "dropdown", name = "Teleporter visibility",
+            choices = { "Open with World Map (Attached)", "Hotkey / Outside Map" },
+            choicesValues = { "MAP", "ALWAYS" },
+            tooltip = "Open with World Map (Attached) anchors the collapsible Teleporter to the stable World Map window (not the zooming map canvas) and shows it only with the map. Hotkey / Outside Map removes the permanent gameplay drawer; assign Open / Close Map Teleporter under Controls > Keybindings > General > ESO Adventurer Suite to summon it while adventuring. Press the same key again or click outside the Teleporter to close it and return to gameplay.",
+            getFunc = function() return EPC.saved.mapTeleporterDisplayMode or "MAP" end,
+            setFunc = function(v) EPC.saved.mapTeleporterDisplayMode = (v == "ALWAYS") and "ALWAYS" or "MAP" if EPC.Travel and EPC.Travel.RefreshMapTeleporterVisibility then EPC.Travel:RefreshMapTeleporterVisibility() end end,
+            default = EPC.defaults.mapTeleporterDisplayMode,
+        },
+        {
+            type = "description",
+            text = "Positioning: use HUD Layout Mode to drag the Teleporter. In layout mode it expands temporarily so the top drag strip is easy to grab; SAVE & EXIT keeps the position.",
         },
         {
             type = "checkbox", name = "Include owned houses",
@@ -2697,6 +2710,7 @@ function S:Initialize()
         "HUD",
         "FRAMES",
         "MAP",
+        "TELEPORTER",
         "GEAR",
         "ACTIVITIES",
         "ANTIQUITIES",
@@ -2711,6 +2725,7 @@ function S:Initialize()
         HUD = { name = "HUD & Gameplay Overlays", tooltip = "Combat HUD, quest, rank, Champion, ability, clock, stable, repair, and reticle overlays." },
         FRAMES = { name = "Unit Frames & HUD Layout", tooltip = "Player, target, group, raid, live-stat frames, scaling, backgrounds, and move/reset controls." },
         MAP = { name = "Mini Map & Navigation", tooltip = "Mini Map visibility, layers, zoom, sizing, opacity, pins, and position controls." },
+        TELEPORTER = { name = "Map Teleporter", tooltip = "Teleporter enablement, Open with Map / Always visibility, HUD behavior, sorting, destination rows, and travel filtering." },
         GEAR = { name = "Gear, Maintenance & Loot", tooltip = "Automatic repair/recharge and gear-related maintenance behavior." },
         ACTIVITIES = { name = "Activities & Group Finder", tooltip = "Group Finder filtering, activity planning, and session goals." },
         ANTIQUITIES = { name = "Antiquities & Lead Finder", tooltip = "Antiquity dig-site navigation, learned 3D shovel spawns, Augur/bonus-loot assistance, and the Lead Finder source browser." },
@@ -2741,7 +2756,7 @@ function S:Initialize()
         ["Infinite Archive Overlay"] = "HUD",
         ["Custom ESO Reticle"] = "HUD",
         ["Tamriel Codex"] = "CODEX",
-        ["World Map Teleporter"] = "MAP",
+        ["World Map Teleporter"] = "TELEPORTER",
         ["Mini Map"] = "MAP",
         ["Gameplay & Challenge Difficulty"] = "DIFFICULTY",
         ["Target Build"] = "COMBAT",

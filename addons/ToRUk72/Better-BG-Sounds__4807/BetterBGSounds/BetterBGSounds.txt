@@ -1,0 +1,9 @@
+## Title: BetterBGSounds
+## APIVersion: 101046
+## Description: Mutes annoying medal sounds in PvP.
+## Version: 1.0
+## Author: @ToRUk72
+## SavedVariables: BetterBGSoundsSV
+## DependsOn: LibAddonMenu-2.0
+
+BetterBGSounds.lua

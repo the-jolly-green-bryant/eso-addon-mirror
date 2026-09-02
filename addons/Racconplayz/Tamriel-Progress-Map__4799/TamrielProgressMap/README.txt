@@ -1,3 +1,11 @@
+2.6.83_Beta
+- Added a subtle 150 ms ESO-style fade-in when opening the Tamriel Statistics journal.
+- Animation changes opacity only; saved position, scale, anchors and window dimensions remain untouched.
+- Keeps the 2.6.81 Left Alt / Toggle UI Mode close behavior.
+
+2.6.81_Beta
+- Standalone Statistics opened via NumPad 5 can now be closed with ESO's Toggle UI Mode key (Left Alt by default).
+
 Tamriel Progress Map 2.6.34_Beta
 ===============================
 Author: Raccoonplayz
@@ -387,3 +395,82 @@ LibAddonMenu-2.0 and LibZone are required and are not bundled.
 - Restored the global TamrielProgressMap_KeybindToggleStatistics() function required by bindings.xml.
 - The remapped-key mouse/UI-mode fix from 2.6.71 remains active.
 - Progress title version advanced to v2.6.72-Beta.
+
+2.6.73_Beta - UI Mode Ownership Hotfix
+- Removed the redundant second standalone UI-mode activation from the Statistics keybind path.
+- UI-mode ownership is now established only once and preserved during delayed safety re-asserts.
+- Fixed a potential case where TPM could forget that it owned mouse/UI mode after opening Statistics.
+- Improves reliable cleanup when closing Statistics with ESC or the assigned key.
+- Custom/reassigned Statistics keys keep the 0 ms / 80 ms mouse-mode safety re-asserts.
+- Progress title version advanced to v2.6.73-Beta.
+
+
+2.6.74_Beta - Original Tamriel Alliance Map
+- Alliance Planner now renders ESO's original Tamriel map tiles directly from the game API.
+- Removed the packaged community-map image from the active Alliance Planner rendering path.
+- Added 0-350% additional zoom (0% = fit-to-frame, 350% = maximum zoom).
+- Retained mouse-wheel zoom and left-drag panning.
+- Added zone completion percentage markers with alliance colors: DC blue, AD yellow, EP red, neutral white, Cyrodiil green.
+- Zone markers use stable zone IDs and universally normalized map positions.
+- Clicking a marker opens the zone in TPM Progress.
+- Map rendering does not change the player's actual World Map scene.
+
+2.6.75_Beta - Alliance Map Stability / Performance Patch
+- Tamriel map detection no longer assumes map-list index 1.
+- Selects the largest WORLD map footprint without changing the player's active world map.
+- Original ESO tile texture paths are cached instead of reassigned every drag frame.
+- Failed tile textures stay hidden instead of being accidentally shown again.
+- Added safe pcall handling around zone/map coordinate API lookups.
+- Alliance completion percentages are cached while dragging; pan no longer recalculates every zone on every frame.
+- Added a bundled-map fallback if the ESO client cannot resolve the original Tamriel tile source.
+- Zoom remains 0-350%, with mouse-wheel zoom and drag-to-pan.
+- Alliance markers remain DC blue, AD yellow, EP red, neutral white and Cyrodiil green.
+
+2.6.76_Beta - Language Patch
+- Active TPM languages are now DE / EN / RU / ES.
+- Replaced the former FR selector with ES in Statistics and addon settings.
+- Added Spanish localization file with full 525-key structural parity.
+- Spanish translations added for the complete Alliance page, language controls, core Statistics tabs, filters and common map UI.
+- Automatic language detection now recognizes Spanish ESO clients.
+- Updated manifest language list and localization load order.
+- Removed French from the active/shipped language set.
+
+2.6.77_Beta - Five Language Patch
+- Active TPM languages: DE / EN / RU / FR / ES.
+- Restored French localization and kept Spanish support.
+- Language selectors show all five manual languages plus Automatic.
+- Automatic detection supports German, English, Russian, French and Spanish ESO clients.
+
+2.6.78_Beta - Alliance Map Left-Drag Patch
+- Left-click + drag now pans the Alliance Planner map directly.
+- Zone percentage/alliance markers no longer block map dragging.
+- A normal marker click still opens that zone.
+- 4 px movement threshold distinguishes click from drag.
+- The complete Alliance map frame also acts as a pan/zoom input surface.
+- Existing 0-350% zoom range retained.
+
+2.6.79_Beta - Alliance Map Input Layer Fix
+- Added a dedicated transparent mouse input layer over the full Alliance map.
+- Left mouse drag is now handled independently from map tiles/background textures.
+- Marker controls remain above the input layer and keep click-to-open behavior.
+- Pan calculations now use the visible map frame dimensions.
+- Added release safety when the left mouse button is released outside the map.
+- Existing 0-350% zoom and five-language support retained.
+
+
+2.6.80_Beta - Boss Combat Log Duplicate Hotfix
+- Fixed the same boss death being added twice to the PvE combat log when ESO reported DIED/DIED_XP and the boss death-state callback in quick succession.
+- Recent finalized boss rows are now reused instead of creating a second identical boss entry.
+
+
+2.6.83_Beta
+- Slower 250 ms Statistics fade-in.
+- Added matching 250 ms fade-out when closing Statistics.
+- Closing with NumPad 5, ESC, Left Alt/UI-mode toggle or the close button now uses the soft fade-out.
+- Fade animation changes alpha only; saved position, scale and dimensions are untouched.
+
+
+2.6.84_Beta
+- Completed the Spanish localization pass for previously untranslated UI strings.
+- Improved Spanish labels/tooltips across Progress, Economy, PvE/PvP, Goals, Collections, Achievements and settings.
+- Alliance page static labels now refresh correctly when changing TPM language.

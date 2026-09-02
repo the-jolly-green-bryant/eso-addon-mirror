@@ -1,8 +1,8 @@
 ## Title: |cB8860BESO |cFFD700Adventurer Suite|r
 ## Description: |cFFD700Modern adventure dashboard, HUD, minimap, quests, finders, combat, travel, gear, and build tools.|r
 ## Author: |c00FFFFHoZayyBadazz|r
-## Version: 0.29.127
-## AddOnVersion: 3027
+## Version: 0.29.143
+## AddOnVersion: 3043
 ## APIVersion: 101050 101051
 ## SavedVariables: ESOProgressionCoachSavedVars EASLoreLibrarySavedVariables
 ## DependsOn: LibAddonMenu-2.0>=43 LibMapData>=101 LibGPS>=73 LibMapPins-1.0>=47

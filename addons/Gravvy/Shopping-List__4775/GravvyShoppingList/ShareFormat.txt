@@ -2,10 +2,10 @@ Shopping List SL3 Format
 ========================
 
 SL3 is the lightweight single-list exchange format used by Shopping List
-0.18.5 and companion add-ons. It preserves enough information to create a
+0.18.5 and companion addons. It preserves enough information to create a
 fresh shopping list with linked items and matching rules. It does not contain
-purchase progress, history, archived lists, or settings; those belong to the
-SLB1 full-backup format.
+purchase progress, history, archived lists, character assignments, or settings;
+those belong to the SLB1 full backup format.
 
 Code envelope
 -------------
@@ -78,5 +78,5 @@ Compatibility
 
 Shopping List continues to import SL1 and SL2 codes. Imported SL1 and SL2
 quantities use Buy More behavior and import as non-recurring lists. New exports
-use SL3. Companion add-ons
+use SL3. Companion addons
 should generate SL3 and should not generate SLB1 backup data.

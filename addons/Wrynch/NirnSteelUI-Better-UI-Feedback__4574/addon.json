@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Wrynch/NirnSteelUI-Better-UI-Feedback__4574",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Wrynch",
   "canonical_id": "esoui:4574",
   "category_id": "17",
@@ -21,7 +22,7 @@
     "NirnsteelUI"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4574/",
-  "fingerprint": "5f58bfef4499b64c1a7228ac784d56ca98c75d4c4d1b53d3223c0bc87f166e2b",
+  "fingerprint": "759b3f4ef4066dbbb8f954dc96225aa7c7d876ec4bb5014906df918fc6e069ab",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16032.jpg",
     "https://cdn-eso.mmoui.com/preview/pvw16034.png",
@@ -35,11 +36,11 @@
   "source_id": "4574",
   "source_url": "https://www.esoui.com/downloads/info4574-NirnSteelUIBetterUIFeedback.html",
   "stats": {
-    "downloads": 2343,
-    "favorites": 6,
-    "monthly_downloads": 114
+    "downloads": 2440,
+    "favorites": 5,
+    "monthly_downloads": 70
   },
   "title": "NirnSteelUI \u00b7 Better UI Feedback",
-  "updated_at": 1780944094000,
-  "version": "1.1.1"
+  "updated_at": 1788307559000,
+  "version": "2.0.0"
 }

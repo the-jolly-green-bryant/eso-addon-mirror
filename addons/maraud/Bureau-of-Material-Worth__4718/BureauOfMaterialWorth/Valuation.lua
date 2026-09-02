@@ -549,9 +549,12 @@ local visitFinalizePending = false  -- an open is waiting to finalize its delta/
 local FinalizeVisit
 local UpdatePriceHistoryBaselines
 local NotifySignificantPriceTrends
+local CompleteManualPriceRefresh
 
 local lastInventoryUpdateMs = nil  -- GetGameTimeMilliseconds() of the last inventory valuation
 local lastPriceRefreshMs = nil     -- GetGameTimeMilliseconds() of the last LibPrice lookup
+local manualPriceRefreshPending = false
+local manualPriceRefreshCompletedMs = nil
 local priceHistoryUpdatePending = false
 local priceLookupItemIds = {}      -- itemIds queried from LibPrice in the current pass
 local valueHistoryRecordedThisSession = false
@@ -1125,6 +1128,16 @@ local function RefreshWindow()
     end
 end
 
+CompleteManualPriceRefresh = function()
+    if not manualPriceRefreshPending then
+        return false
+    end
+
+    manualPriceRefreshPending = false
+    manualPriceRefreshCompletedMs = GetGameTimeMilliseconds()
+    return true
+end
+
 -- Collapse a burst of slot updates into a single window refresh.
 local function QueueWindowRefresh()
     if refreshQueued then
@@ -1225,7 +1238,6 @@ local function StartPriceRetry()
         local healed = RepriceUnpricedSlots()
         if healed > 0 then
             RefreshLiveVisitDelta()
-            RefreshWindow()
         end
 
         if grandUnpricedSlots <= 0 and healed > 0
@@ -1236,6 +1248,10 @@ local function StartPriceRetry()
         -- The only retry has completed: capture the visit baseline and history
         -- point against this settled result. No-op if already finalized.
         FinalizeVisit(true)
+        local manualRefreshCompleted = CompleteManualPriceRefresh()
+        if healed > 0 or manualRefreshCompleted then
+            RefreshWindow()
+        end
     end)
     return true
 end
@@ -1554,6 +1570,9 @@ function Valuation.OnCraftBagHidden()
     isBagVisible = false
     -- No scanning work happens with the bag closed, so drop the retry timer too.
     StopPriceRetry()
+    -- Closing the bag cancels the delayed LibPrice retry. Clear the busy state
+    -- without recording a successful completion that the player never observed.
+    manualPriceRefreshPending = false
     -- Backstop: if the bag is closed before the self-heal finished (or was never
     -- fully priced), finalize now so the visit baseline still advances and the
     -- session's history point is recorded exactly once.
@@ -1563,6 +1582,10 @@ end
 -- Explicit user-driven refresh (/bmw refresh): drop the price cache so prices
 -- re-query (e.g. after MM/TTC finished importing) and rebuild from scratch.
 function Valuation.ForceRefresh()
+    if manualPriceRefreshPending then
+        return false
+    end
+
     ZO_ClearTable(priceCache)
     ZO_ClearTable(priceSource)
     priceRetryAttempted = false
@@ -1571,11 +1594,16 @@ function Valuation.ForceRefresh()
     StopPriceRetry()
     isDirty = true
     if isBagVisible then
+        manualPriceRefreshPending = true
         FullRescan()
         RefreshLiveVisitDelta()
+        local retryStarted = StartPriceRetry()
+        if not retryStarted then
+            CompleteManualPriceRefresh()
+        end
         RefreshWindow()
-        StartPriceRetry()
     end
+    return true
 end
 
 -- The price source covering the most priced slots, as a display name, plus a
@@ -1662,6 +1690,8 @@ function Valuation.GetSnapshot(sortByValue)
         sourceHasOthers = sourceHasOthers,
         lastInventoryUpdateMs = lastInventoryUpdateMs,
         lastPriceRefreshMs = lastPriceRefreshMs,
+        priceRefreshPending = manualPriceRefreshPending,
+        priceRefreshCompletedMs = manualPriceRefreshCompletedMs,
         categories = categories,
     }
 end
@@ -2074,6 +2104,7 @@ function Valuation.GetPriceTrendMaterials(thresholdPercent)
                     row.trendMaxGainPercent = maxGain
                     row.trendMaxLossPercent = maxLoss
                     row.trendStrongestPercent = strongest
+                    row.trendValueImpact = (points[#points].p - points[1].p) * info.stack
                     row.trendPointCount = #points
                     row.growthPercent = strongest
                     row.growthDir = strongest >= 0

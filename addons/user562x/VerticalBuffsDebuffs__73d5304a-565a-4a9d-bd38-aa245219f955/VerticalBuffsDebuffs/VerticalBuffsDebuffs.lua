@@ -11,8 +11,6 @@ VerticalBuffsDebuffs.defaults = {
     debuffPosY         = 600,
     buffSize           = 31,
     debuffSize         = 31,
-    buffScaleOverflow  = false,
-    debuffScaleOverflow = false,
     showBuffs          = true,
     showDebuffs        = true,
     showBuffText       = true,
@@ -139,13 +137,6 @@ function VerticalBuffsDebuffs:GetPanelSize(isDebuff)
         return self.savedVariables.debuffSize
     end
     return self.savedVariables.buffSize
-end
-
-function VerticalBuffsDebuffs:GetPanelOverflow(isDebuff)
-    if isDebuff then
-        return self.savedVariables.debuffScaleOverflow
-    end
-    return self.savedVariables.buffScaleOverflow
 end
 
 function VerticalBuffsDebuffs:GetPanelCap(isDebuff)
@@ -294,11 +285,8 @@ function VerticalBuffsDebuffs:RenderBoxes(boxPool, effectsList, isDebuff)
     local panelSize = self:GetPanelSize(isDebuff)
     local nameSize  = self:GetNameFontSize(panelSize)
     local fullFont  = self:GetFont(nameSize)
-    local smallFont = self:GetFont(math.max(10, math.floor(nameSize * 0.5)))
     local fullIcon  = self:GetIconSize(panelSize)
-    local smallIcon = math.max(12, math.floor(fullIcon * 0.5))
 
-    local scaleOverflow = self:GetPanelOverflow(isDebuff)
     local showText      = self:GetPanelShowText(isDebuff)
     local cap           = self:GetPanelCap(isDebuff)
 
@@ -311,11 +299,7 @@ function VerticalBuffsDebuffs:RenderBoxes(boxPool, effectsList, isDebuff)
             entry = nil
         end
         if entry then
-            local isSmall  = scaleOverflow and (i > 10)
-            local iconSize = isSmall and smallIcon or fullIcon
-            local nameFont = isSmall and smallFont or fullFont
-
-            local frameSize = self:SizeBox(box, iconSize, nameFont)
+            local frameSize = self:SizeBox(box, fullIcon, fullFont)
 
             box:ClearAnchors()
             box:SetAnchor(TOPLEFT, box:GetParent(), TOPLEFT, SIDE_MARGIN, yOffset)
@@ -594,11 +578,6 @@ function VerticalBuffsDebuffs:MigrateProfile(sv)
         sv.buffSize   = sv.fontSize
         sv.debuffSize = sv.fontSize
         sv.fontSize   = nil
-    end
-    if sv.scaleOverflow ~= nil then
-        sv.buffScaleOverflow   = sv.scaleOverflow
-        sv.debuffScaleOverflow = sv.scaleOverflow
-        sv.scaleOverflow       = nil
     end
 end
 
@@ -885,10 +864,11 @@ function VerticalBuffsDebuffs:CreateSettings()
     local menu = LCM:CreateAddonMenu("VerticalBuffsDebuffs", {
         title          = "Vertical Buffs Debuffs",
         author         = "user562",
-        version        = "1.5",
+        version        = "1.6",
         category       = MOD_BROWSER_CATEGORY_TYPE_BUFFS_AND_DEBUFFS,
         enableDefaults = true,
         enableReset    = true,
+        childrenAlign  = "center",
         resetFunc      = function() self:ResetSettings() end,
     })
 
@@ -907,16 +887,8 @@ function VerticalBuffsDebuffs:CreateSettings()
         },
 
         {
-            type    = "button",
-            name    = "Move |c33FF33Buffs|r / |cFF3333Debuffs|r",
-            func    = function() self:StartMove() end,
-        },
-
-        {
             type    = "submenu",
             name    = "|c33FF33Buffs|r",
-            align   = "left",
-            indent  = true,
             icon    = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_buffsAndDebuffs.dds",
             options = {
                 {
@@ -931,6 +903,7 @@ function VerticalBuffsDebuffs:CreateSettings()
                 {
                     type    = "toggle",
                     name    = "Enabled",
+                    preset  = "YES_NO",
                     default = self.defaults.showBuffs,
                     getFunc = function() return self.savedVariables.showBuffs end,
                     setFunc = function(val)
@@ -940,7 +913,8 @@ function VerticalBuffsDebuffs:CreateSettings()
                 },
                 {
                     type    = "toggle",
-                    name    = "Show Text",
+                    name    = "Text",
+                    preset  = "SHOW_HIDE",
                     default = self.defaults.showBuffText,
                     getFunc = function() return self.savedVariables.showBuffText end,
                     setFunc = function(val)
@@ -956,16 +930,6 @@ function VerticalBuffsDebuffs:CreateSettings()
                     getFunc = function() return self.savedVariables.buffSize end,
                     setFunc = function(val)
                         self.savedVariables.buffSize = val
-                        self:RefreshDisplay()
-                    end,
-                },
-                {
-                    type    = "toggle",
-                    name    = "1-10 ^ - 11+ 50% Smaller",
-                    default = self.defaults.buffScaleOverflow,
-                    getFunc = function() return self.savedVariables.buffScaleOverflow end,
-                    setFunc = function(val)
-                        self.savedVariables.buffScaleOverflow = val
                         self:RefreshDisplay()
                     end,
                 },
@@ -986,8 +950,6 @@ function VerticalBuffsDebuffs:CreateSettings()
         {
             type    = "submenu",
             name    = "|cFF3333Debuffs|r",
-            align   = "left",
-            indent  = true,
             icon    = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_buffsAndDebuffs.dds",
             options = {
                 {
@@ -1002,6 +964,7 @@ function VerticalBuffsDebuffs:CreateSettings()
                 {
                     type    = "toggle",
                     name    = "Enabled",
+                    preset  = "YES_NO",
                     default = self.defaults.showDebuffs,
                     getFunc = function() return self.savedVariables.showDebuffs end,
                     setFunc = function(val)
@@ -1011,7 +974,8 @@ function VerticalBuffsDebuffs:CreateSettings()
                 },
                 {
                     type    = "toggle",
-                    name    = "Show Text",
+                    name    = "Text",
+                    preset  = "SHOW_HIDE",
                     default = self.defaults.showDebuffText,
                     getFunc = function() return self.savedVariables.showDebuffText end,
                     setFunc = function(val)
@@ -1031,16 +995,6 @@ function VerticalBuffsDebuffs:CreateSettings()
                     end,
                 },
                 {
-                    type    = "toggle",
-                    name    = "1-10 ^ - 11+ 50% Smaller",
-                    default = self.defaults.debuffScaleOverflow,
-                    getFunc = function() return self.savedVariables.debuffScaleOverflow end,
-                    setFunc = function(val)
-                        self.savedVariables.debuffScaleOverflow = val
-                        self:RefreshDisplay()
-                    end,
-                },
-                {
                     type    = "dropdown",
                     name    = "Cap At",
                     choices = self.capChoices,
@@ -1052,6 +1006,12 @@ function VerticalBuffsDebuffs:CreateSettings()
                     end,
                 },
             },
+        },
+
+        {
+            type    = "button",
+            name    = "Move |c33FF33Buffs|r / |cFF3333Debuffs|r",
+            func    = function() self:StartMove() end,
         },
     }
 

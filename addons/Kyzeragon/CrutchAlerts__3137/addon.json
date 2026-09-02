@@ -8,6 +8,10 @@
   "category_id": "45",
   "compatibility": [
     {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
     }
@@ -18,7 +22,7 @@
     "CrutchAlerts"
   ],
   "download_url": "https://www.esoui.com/downloads/dl3137/",
-  "fingerprint": "bae1effc219b7ad705febfcd1c5ba96d1eacbfe3f09f8270f59fd6981078575a",
+  "fingerprint": "94e8d8836842e890b46caca86d38bbf1072d083b77b2f655790c3993946f798c",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw10631.png",
     "https://cdn-eso.mmoui.com/preview/pvw12589.png",
@@ -35,11 +39,11 @@
   "source_id": "3137",
   "source_url": "https://www.esoui.com/downloads/info3137-CrutchAlerts.html",
   "stats": {
-    "downloads": 959909,
-    "favorites": 157,
-    "monthly_downloads": 12609
+    "downloads": 967912,
+    "favorites": 158,
+    "monthly_downloads": 12893
   },
   "title": "CrutchAlerts",
-  "updated_at": 1786951955000,
-  "version": "2.24.0"
+  "updated_at": 1788320466000,
+  "version": "2.25.0"
 }

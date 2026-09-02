@@ -1,3 +1,9 @@
+0.19.4
+• Added an import preview for SL3, SL2, and SL1 codes with list details, duplicate counts, name conflicts, and merge or copy actions.
+• Added an active and archived list overview with completion, remaining quantities, spending, budgets, and organization details.
+• Added optional character assignments to account wide lists with keyboard and gamepad controls.
+• Made every keyboard window movable and saved each window position independently.
+
 0.19.3
 • Prevented invalid recovery copies and copies made before legacy cleanup from retrying whenever the Shopping List window opens.
 

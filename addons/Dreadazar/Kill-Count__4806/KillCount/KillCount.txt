@@ -1,0 +1,9 @@
+## Title: Kill Count
+## Description: Kill tracker. Counts Cyrodiil, Imperial City, Battlegrounds and Duels separately, and logs the names of players you kill.
+## Author: warne
+## Version: 1.0.0
+## AddOnVersion: 100
+## APIVersion: 101050 101051
+## SavedVariables: KillCountVars
+
+KillCount.lua

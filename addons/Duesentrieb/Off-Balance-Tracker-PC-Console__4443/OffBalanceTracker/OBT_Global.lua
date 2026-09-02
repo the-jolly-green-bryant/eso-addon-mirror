@@ -1,8 +1,8 @@
 OffBalanceTracker = {
     NAME = "OffBalanceTracker",
     AUTHOR = "@Duesentrieb",
-    VERSION = "20260831",
-    ADDONVERSION = 0003,
+    VERSION = "20260901",
+    ADDONVERSION = 0004,
     CHAT = "|cFF7F00[OBT]|r",
 
     -- UI ELEMENTS
@@ -105,6 +105,7 @@ OffBalanceTracker = {
         fontSizeBoss = 22,
         offsetYBoss = 12,
         isColoredBossLabel = true,
+        isHideExperimental = false,
         ColorTextBoss = { 1, 1, 1, 1 },
 
         -- UPTIME

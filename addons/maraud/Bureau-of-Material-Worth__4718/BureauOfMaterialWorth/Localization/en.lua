@@ -123,6 +123,9 @@ local strings = {
     SI_BMW_PRICE_TREND_COL_OVERALL = "7 days",
     SI_BMW_PRICE_TREND_COL_GAIN = "Max rise",
     SI_BMW_PRICE_TREND_COL_LOSS = "Max fall",
+    SI_BMW_PRICE_TREND_COL_IMPACT = "Value impact",
+    SI_BMW_PRICE_TREND_IMPACT_TOOLTIP_TITLE = "Value impact",
+    SI_BMW_PRICE_TREND_IMPACT_TOOLTIP_BODY = "Gold gained or lost on the quantity currently held because the current unit price differs from the oldest comparable observation in the trailing seven days: (current price - oldest price) x quantity. This is not the stack's total value.",
     SI_BMW_PRICE_TREND_OVERALL_TOOLTIP_TITLE = "Seven-day change",
     SI_BMW_PRICE_TREND_OVERALL_TOOLTIP_BODY = "The percentage difference between the oldest available recorded price within the trailing seven-day window and the current price. Before a full week is collected, it uses the oldest observation available.",
     SI_BMW_PRICE_TREND_GAIN_TOOLTIP_TITLE = "Maximum rise",
@@ -136,6 +139,7 @@ local strings = {
     SI_BMW_PRICE_TREND_TOOLTIP_OVERALL = "From oldest point: %s",
     SI_BMW_PRICE_TREND_TOOLTIP_MAX_GAIN = "Maximum rise: %s",
     SI_BMW_PRICE_TREND_TOOLTIP_MAX_LOSS = "Maximum fall: %s",
+    SI_BMW_PRICE_TREND_TOOLTIP_IMPACT = "Value impact: %s",
     SI_BMW_PRICE_TREND_TOOLTIP_POINTS = "Compared observations: %d",
 
     -- Detail window: per-category material table (opened by clicking a row)
@@ -153,6 +157,7 @@ local strings = {
     SI_BMW_DETAIL_CUM = "%d%%",
     SI_BMW_DETAIL_CUM_TOOLTIP_TITLE = "Cumulative share",
     SI_BMW_DETAIL_CUM_TOOLTIP_BODY = "Each material's share of this list's total value, added up from the most valuable downward - so it stays the same no matter how you sort the table. Read it on the default |cFFF897by value|r view: the rows down to roughly 80% are the few stacks that hold most of the worth, so sell those first and skip the long tail. The trailing 100% always lands on the cheapest material. Unpriced materials are left out and show a dash.",
+    SI_BMW_DETAIL_CUM_THRESHOLD_HINT = "Gold marker: this material reaches the cumulative %d%% threshold.",
     SI_BMW_DETAIL_COL_CHANGE = "Change",
     -- Price-change magnitude; the sign is carried by an up/down arrow + color.
     -- %s = the percentage (one decimal place).
@@ -221,7 +226,7 @@ local strings = {
     SI_BMW_DETAIL_BTN_REMEMBER = "Remember",
     SI_BMW_DETAIL_BTN_REMEMBER_TOOLTIP_TITLE = "Remember composition",
     SI_BMW_DETAIL_BTN_REMEMBER_TOOLTIP_BODY = "Save the Craft Bag's current contents as the snapshot. The addon creates one automatic baseline the first time a non-empty Craft Bag is opened; pressing this replaces it with a snapshot you chose.",
-    SI_BMW_DETAIL_BTN_CHANGES = "Changes",
+    SI_BMW_DETAIL_BTN_CHANGES = "Since snapshot",
     SI_BMW_DETAIL_BTN_CHANGES_TOOLTIP_TITLE = "Changes since snapshot",
     SI_BMW_DETAIL_BTN_CHANGES_TOOLTIP_BODY = "Show how the Craft Bag changed since its saved snapshot: which materials were added, removed, or changed in quantity, and the gold value of each move. A one-time baseline is created automatically when a non-empty Craft Bag is first opened; Remember replaces it at any time.",
     -- Clears the saved snapshot so "Changes" has nothing to diff against until the
@@ -237,13 +242,17 @@ local strings = {
     SI_BMW_DETAIL_CLEAR_CONFIRM_BODY = "This forgets the saved snapshot. The changes view will show nothing until you press \"Remember\" again. There is only one snapshot, so this cannot be undone.",
     SI_BMW_DETAIL_CLEAR_CONFIRM_ACCEPT = "Clear",
     SI_BMW_DETAIL_CLEAR_CONFIRM_CANCEL = "Cancel",
+    SI_BMW_DETAIL_REPLACE_CONFIRM_TITLE = "Replace snapshot?",
+    SI_BMW_DETAIL_REPLACE_CONFIRM_BODY = "A saved snapshot already exists. Replacing it resets the comparison baseline to the Craft Bag's current contents. Continue?",
+    SI_BMW_DETAIL_REPLACE_CONFIRM_ACCEPT = "Replace",
+    SI_BMW_DETAIL_REPLACE_CONFIRM_CANCEL = "Cancel",
     -- Outside the category view the "Changes" button becomes a "Back" toggle
     -- that returns to the material list from Changes or Price dynamics.
     SI_BMW_DETAIL_BTN_BACK = "Back",
     SI_BMW_DETAIL_BTN_BACK_TOOLTIP_TITLE = "Back to materials",
     SI_BMW_DETAIL_BTN_BACK_TOOLTIP_BODY = "Return to the material list.",
     -- Diff title; %s = relative time of the snapshot (e.g. "5m ago").
-    SI_BMW_DETAIL_DIFF_TITLE = "Changes since %s",
+    SI_BMW_DETAIL_DIFF_TITLE = "Changes since snapshot (%s)",
     SI_BMW_DETAIL_DIFF_EMPTY = "Nothing changed since the snapshot.",
     SI_BMW_DETAIL_VISIT_DIFF_TITLE = "Changes since last review",
     SI_BMW_DETAIL_VISIT_DIFF_EMPTY = "No material quantities changed since the last review.",
@@ -308,6 +317,9 @@ local strings = {
     SI_BMW_FOOTER_PRICES_TOOLTIP_TITLE = "Market prices",
     SI_BMW_FOOTER_PRICES_TOOLTIP_BODY = "Prices are cached for this login. Re-query them after Master Merchant or Tamriel Trade Centre finishes importing fresh data.",
     SI_BMW_FOOTER_PRICES_TOOLTIP_CLICK = "Click to refresh prices now.",
+    SI_BMW_FOOTER_PRICES_TOOLTIP_BUSY = "Price refresh is already in progress.",
+    SI_BMW_FOOTER_PRICES_REFRESHING = "Refreshing...",
+    SI_BMW_FOOTER_PRICES_REFRESHED = "Updated",
     SI_BMW_FOOTER_COVERAGE_LABEL = "Price coverage",
     SI_BMW_FOOTER_COVERAGE_VALUE = "%d/%d priced",
     SI_BMW_FOOTER_LOW_COVERAGE = "%d/%d unpriced!",
@@ -410,7 +422,8 @@ local strings = {
     SI_BMW_MSG_WITHDRAW_RESULT = "Withdrawn: %s/%s items, value: %s.",
     SI_BMW_MSG_WITHDRAW_PARTIAL = "Withdrawn: %s/%s items, value: %s. Backpack space or inventory changes prevented the rest.",
     SI_BMW_MSG_VALUE_UNKNOWN = "unknown",
-    SI_BMW_MSG_REFRESH_DONE = "Prices refreshed.",
+    SI_BMW_MSG_REFRESH_STARTED = "Price refresh started.",
+    SI_BMW_MSG_REFRESH_BUSY = "Price refresh is already in progress.",
     -- Chat confirmation when the snapshot is saved/cleared from the detail window.
     -- _SAVED: %d = slots (distinct materials), %s = grand-total gold.
     SI_BMW_MSG_SNAPSHOT_SAVED = "Snapshot saved: %d slots, %s.",

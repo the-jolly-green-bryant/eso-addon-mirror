@@ -1,4 +1,4 @@
-CURVED RESOURCE HUD 0.9.16 RELEASE CHECKLIST
+CURVED RESOURCE HUD 0.9.17 RELEASE CHECKLIST
 
 1. In Bethesda.net, set required dependencies to:
    - LibAddonMenu-2.0
@@ -8,7 +8,18 @@ CURVED RESOURCE HUD 0.9.16 RELEASE CHECKLIST
 2. Install/update, enable CurvedHUD, then reload the UI or relog.
 
 3. Confirm chat prints:
-   [CurvedHUD] Loaded 0.9.16; HUD, shield, and trackers created
+   [CurvedHUD] Loaded 0.9.17; HUD, shield, and trackers created
+
+0.9.17 rapid-character-swap checklist:
+- Log through at least 8-10 characters at normal crafting-writ speed and confirm
+  no add-on exceeds ESO's 1000 ms runtime watchdog during character activation.
+- Icons may resolve progressively during the first second; confirm every enabled
+  tracker settles on the correct icon without freezing the UI.
+- Change equipped gear and confirm set trackers update once the inventory burst
+  finishes. Bar swaps must continue preserving active one-bar set effects.
+- Confirm timer animation stays smooth and resources, mount stamina and Crux
+  update within about half a second.
+- Run /curvedhud report after the test and confirm the guarded error count is 0.
 
 0.9.16 combat-end cleanup checklist:
 - Build Carve to its 32-second tier, end combat early, and confirm its timer and

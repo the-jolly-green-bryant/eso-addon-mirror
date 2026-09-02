@@ -442,6 +442,16 @@ function OBT.CreateSettings()
                     default = OBT.Default.offsetYBoss,
                     disabled = function() return not OBT.SV.enableAddon end,
                 },
+                {
+                    type = "checkbox", name = "Disable Experimental",
+                    tooltip = "In some rare and uncertain cases, boss label might show weird text.",
+                    getFunc = function() return OBT.SV.isHideExperimental end,
+                    setFunc = function(value)
+                        OBT.SV.isHideExperimental = value
+                    end,
+                    default = OBT.Default.isHideExperimental,
+                    disabled = function() return not OBT.SV.enableAddon end,
+                },
 
                 -- UPTIME
                 { type = "header", name = "|cFFBF7FUptime|r" },

@@ -535,6 +535,138 @@ function Share.DecodeCode(code)
     return decoder(payload)
 end
 
+function Share.BuildImportPreview(data, decoded)
+    if type(data) ~= "table" or type(decoded) ~= "table"
+        or type(decoded.items) ~= "table"
+    then
+        return nil, GetString(SI_SHOPPING_LIST_SHARE_ERROR_LIST_DATA)
+    end
+
+    local conflict, archivedConflict = data:FindListByName(decoded.name)
+    local candidates = {}
+    local internalDuplicates = 0
+    local matchingEntries = 0
+    for _, source in ipairs(decoded.items) do
+        local candidate, message = data:BuildItemCandidate(source)
+        if not candidate then
+            return nil, message
+        end
+        for _, prior in ipairs(candidates) do
+            if ShoppingListModel:ItemsAreDuplicates(prior, candidate) then
+                internalDuplicates = internalDuplicates + 1
+                break
+            end
+        end
+        if conflict and not archivedConflict then
+            for _, existing in ipairs(conflict.items) do
+                if ShoppingListModel:ItemsAreDuplicates(existing, candidate) then
+                    matchingEntries = matchingEntries + 1
+                    break
+                end
+            end
+        end
+        candidates[#candidates + 1] = candidate
+    end
+
+    local sample = {}
+    for index = 1, math.min(4, #decoded.items) do
+        local item = decoded.items[index]
+        sample[#sample + 1] = zo_strformat(
+            GetString(SI_SHOPPING_LIST_IMPORT_PREVIEW_ITEM),
+            item.name,
+            item.desired
+        )
+    end
+    if #decoded.items > #sample then
+        sample[#sample + 1] = zo_strformat(
+            GetString(SI_SHOPPING_LIST_IMPORT_PREVIEW_MORE),
+            #decoded.items - #sample
+        )
+    end
+
+    return {
+        decoded = decoded,
+        conflict = conflict,
+        archivedConflict = archivedConflict == true,
+        copyName = data:GetUniqueListName(decoded.name),
+        internalDuplicates = internalDuplicates,
+        matchingEntries = matchingEntries,
+        sample = table.concat(sample, ", "),
+        canMerge = conflict ~= nil
+            and not archivedConflict
+            and conflict.locked ~= true,
+    }
+end
+
+function Share.GetImportPreviewText(preview)
+    local decoded = preview.decoded
+    local conflict
+    if preview.conflict then
+        conflict = zo_strformat(
+            GetString(preview.archivedConflict
+                and SI_SHOPPING_LIST_IMPORT_CONFLICT_ARCHIVED
+                or SI_SHOPPING_LIST_IMPORT_CONFLICT_ACTIVE),
+            preview.conflict.name
+        )
+    else
+        conflict = GetString(SI_SHOPPING_LIST_IMPORT_CONFLICT_NONE)
+    end
+    local lines = {
+        zo_strformat(
+            GetString(SI_SHOPPING_LIST_IMPORT_PREVIEW_NAME),
+            decoded.name
+        ),
+        zo_strformat(
+            GetString(SI_SHOPPING_LIST_IMPORT_PREVIEW_FORMAT),
+            decoded.formatVersion or 1
+        ),
+        zo_strformat(
+            GetString(SI_SHOPPING_LIST_IMPORT_PREVIEW_COUNT),
+            #decoded.items
+        ),
+        zo_strformat(
+            GetString(SI_SHOPPING_LIST_IMPORT_PREVIEW_NOTE),
+            decoded.note and decoded.note ~= ""
+                and GetString(SI_YES) or GetString(SI_NO)
+        ),
+        zo_strformat(
+            GetString(SI_SHOPPING_LIST_IMPORT_PREVIEW_RECURRING),
+            decoded.recurring and GetString(SI_YES) or GetString(SI_NO)
+        ),
+        zo_strformat(GetString(SI_SHOPPING_LIST_IMPORT_PREVIEW_CONFLICT), conflict),
+    }
+    if preview.conflict then
+        lines[#lines + 1] = zo_strformat(
+            GetString(SI_SHOPPING_LIST_IMPORT_PREVIEW_COPY_NAME),
+            preview.copyName
+        )
+    end
+    lines[#lines + 1] = zo_strformat(
+            GetString(SI_SHOPPING_LIST_IMPORT_PREVIEW_DUPLICATES),
+            preview.internalDuplicates,
+            preview.matchingEntries
+        )
+    lines[#lines + 1] = zo_strformat(
+            GetString(SI_SHOPPING_LIST_IMPORT_PREVIEW_ITEMS),
+            preview.sample ~= "" and preview.sample
+                or GetString(SI_SHOPPING_LIST_IMPORT_PREVIEW_EMPTY)
+        )
+    return table.concat(lines, "\n")
+end
+
+function Share.GetImportPreviewHelp(preview)
+    if preview.canMerge then
+        return GetString(SI_SHOPPING_LIST_IMPORT_PREVIEW_CHOOSE)
+    end
+    if preview.archivedConflict then
+        return GetString(SI_SHOPPING_LIST_IMPORT_PREVIEW_ARCHIVED_HELP)
+    end
+    if preview.conflict then
+        return GetString(SI_SHOPPING_LIST_IMPORT_PREVIEW_LOCKED_HELP)
+    end
+    return GetString(SI_SHOPPING_LIST_IMPORT_PREVIEW_NEW_HELP)
+end
+
 function Share:New(owner)
     return setmetatable({ owner = owner }, { __index = self })
 end
@@ -571,6 +703,12 @@ function Share:Initialize()
             window:StopMovingOrResizing()
         end
     end)
+    ShoppingListControls:MakeWindowMovable(
+        window,
+        title,
+        self.owner.data,
+        "share"
+    )
 
     local help = makeLabel(window, "ZoFontGame")
     help:SetText(GetString(SI_SHOPPING_LIST_SHARE_HELP))
@@ -623,6 +761,7 @@ function Share:Initialize()
     close:SetHandler("OnClicked", function() self:Hide() end)
 
     self:CreateImportDialog()
+    self:CreateImportPreviewDialog()
 end
 
 function Share:CreateImportDialog()
@@ -647,6 +786,12 @@ function Share:CreateImportDialog()
     title:SetText(GetString(SI_SHOPPING_LIST_IMPORT_TITLE))
     title:SetAnchor(TOPLEFT, dialog, TOPLEFT, 18, 10)
     title:SetDimensions(614, 30)
+    ShoppingListControls:MakeWindowMovable(
+        dialog,
+        title,
+        self.owner.data,
+        "import"
+    )
 
     local help = makeLabel(dialog, "ZoFontGame")
     help:SetText(GetString(SI_SHOPPING_LIST_IMPORT_HELP))
@@ -683,6 +828,74 @@ function Share:CreateImportDialog()
     cancel:SetHandler("OnClicked", function() self:CloseImportDialog() end)
 end
 
+function Share:CreateImportPreviewDialog()
+    local dialog = WINDOW_MANAGER:CreateTopLevelWindow(
+        "ShoppingListImportPreviewWindow"
+    )
+    dialog:SetDimensions(650, 390)
+    dialog:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
+    dialog:SetHidden(true)
+    dialog:SetDrawTier(DT_HIGH)
+    dialog:SetDrawLayer(DL_OVERLAY)
+    dialog:SetDrawLevel(20)
+    self.previewWindow = dialog
+
+    local backdrop = ShoppingListControls:CreateBackdrop(dialog)
+    backdrop:SetAnchorFill(dialog)
+    backdrop:SetCenterColor(0.035, 0.035, 0.045, 0.99)
+    backdrop:SetEdgeColor(0.5, 0.42, 0.28, 0.95)
+    ShoppingListAccessibility:RegisterBackdrop(backdrop)
+
+    local title = makeLabel(dialog, "ZoFontWinH2")
+    title:SetText(GetString(SI_SHOPPING_LIST_IMPORT_PREVIEW_TITLE))
+    title:SetAnchor(TOPLEFT, dialog, TOPLEFT, 18, 10)
+    title:SetDimensions(614, 30)
+    ShoppingListControls:MakeWindowMovable(
+        dialog,
+        title,
+        self.owner.data,
+        "importPreview"
+    )
+
+    self.previewDetails = makeLabel(dialog, "ZoFontGame")
+    self.previewDetails:SetAnchor(TOPLEFT, dialog, TOPLEFT, 18, 48)
+    self.previewDetails:SetDimensions(614, 250)
+    self.previewDetails:SetVerticalAlignment(TEXT_ALIGN_TOP)
+    self.previewDetails:SetWrapMode(TEXT_WRAP_MODE_TRUNCATE)
+
+    self.previewStatus = makeLabel(dialog, "ZoFontGameSmall")
+    self.previewStatus:SetAnchor(TOPLEFT, dialog, TOPLEFT, 18, 302)
+    self.previewStatus:SetDimensions(614, 32)
+
+    self.previewMerge = makeButton(
+        dialog,
+        GetString(SI_SHOPPING_LIST_IMPORT_MERGE),
+        140
+    )
+    self.previewMerge:SetAnchor(BOTTOMLEFT, dialog, BOTTOMLEFT, 18, -16)
+    self.previewMerge:SetHandler("OnClicked", function()
+        self:CompleteImport("merge")
+    end)
+
+    self.previewCopy = makeButton(
+        dialog,
+        GetString(SI_SHOPPING_LIST_IMPORT_CREATE_COPY),
+        140
+    )
+    self.previewCopy:SetAnchor(LEFT, self.previewMerge, RIGHT, 10, 0)
+    self.previewCopy:SetHandler("OnClicked", function()
+        self:CompleteImport("copy")
+    end)
+
+    local cancel = makeButton(
+        dialog,
+        GetString(SI_SHOPPING_LIST_BUTTON_CANCEL),
+        90
+    )
+    cancel:SetAnchor(BOTTOMRIGHT, dialog, BOTTOMRIGHT, -18, -16)
+    cancel:SetHandler("OnClicked", function() self:CloseImportPreview(true) end)
+end
+
 function Share:SetStatus(message, isError)
     if self.owner.accessibility then
         message = self.owner.accessibility:FormatStatus(message, isError)
@@ -703,6 +916,7 @@ function Share:Open()
 end
 
 function Share:Hide()
+    self:CloseImportPreview(false)
     self:CloseImportDialog()
     self.codeEdit:LoseFocus()
     self.window:SetHidden(true)
@@ -721,11 +935,42 @@ function Share:SetImportStatus(message, isError)
 end
 
 function Share:OpenImportDialog()
+    self:CloseImportPreview(false)
     self.importEdit:SetText("")
     self:SetImportStatus("")
     self.window:SetMouseEnabled(false)
     self.importWindow:SetHidden(false)
     self.importEdit:TakeFocus()
+end
+
+function Share:OpenImportPreview(preview)
+    self.pendingImport = preview
+    self.importEdit:LoseFocus()
+    self.importWindow:SetHidden(true)
+    self.window:SetMouseEnabled(false)
+    self.previewDetails:SetText(Share.GetImportPreviewText(preview))
+    self.previewStatus:SetText(Share.GetImportPreviewHelp(preview))
+    self.previewStatus:SetColor(0.75, 0.82, 0.65, 1)
+    self.previewMerge:SetEnabled(preview.canMerge)
+    self.previewCopy:SetText(GetString(preview.conflict
+        and SI_SHOPPING_LIST_IMPORT_CREATE_COPY
+        or SI_SHOPPING_LIST_IMPORT_CREATE_LIST))
+    self.previewWindow:SetHidden(false)
+end
+
+function Share:CloseImportPreview(returnToImport)
+    if not self.previewWindow then
+        return
+    end
+    self.previewWindow:SetHidden(true)
+    self.pendingImport = nil
+    if returnToImport then
+        self.window:SetMouseEnabled(false)
+        self.importWindow:SetHidden(false)
+        self.importEdit:TakeFocus()
+    else
+        self.window:SetMouseEnabled(true)
+    end
 end
 
 function Share:CloseImportDialog()
@@ -762,27 +1007,64 @@ function Share:ImportCode()
         return
     end
 
-    local list, importMessage = self.owner.data:ImportList(
-        decoded.name,
-        decoded.items,
-        decoded.note,
-        decoded.recurring
+    local preview, previewMessage = Share.BuildImportPreview(
+        self.owner.data,
+        decoded
     )
+    if not preview then
+        self:SetImportStatus(previewMessage, true)
+        return
+    end
+
+    self:OpenImportPreview(preview)
+end
+
+function Share:CompleteImport(mode)
+    local preview = self.pendingImport
+    if not preview then
+        return
+    end
+    local list, importMessage
+    if mode == "merge" then
+        if not preview.canMerge then
+            self.previewStatus:SetText(GetString(
+                SI_SHOPPING_LIST_IMPORT_PREVIEW_CANNOT_MERGE
+            ))
+            self.previewStatus:SetColor(1, 0.35, 0.35, 1)
+            return
+        end
+        list, importMessage = self.owner.data:MergeImportedList(
+            preview.conflict.id,
+            preview.decoded
+        )
+    else
+        list, importMessage = self.owner.data:ImportList(
+            preview.decoded.name,
+            preview.decoded.items,
+            preview.decoded.note,
+            preview.decoded.recurring
+        )
+    end
     if not list then
-        self:SetImportStatus(importMessage, true)
+        self.previewStatus:SetText(importMessage)
+        self.previewStatus:SetColor(1, 0.35, 0.35, 1)
         return
     end
 
     self.owner.ui.listSignature = nil
     self.owner.ui:SelectList(list.id)
     self.owner:RefreshInventory()
-    self:Hide()
-    self.owner.ui:SetStatus(zo_strformat(
-        GetString(SI_SHOPPING_LIST_STATUS_LIST_IMPORTED),
+    local importedCount = #preview.decoded.items
+    local status = zo_strformat(
+        GetString(mode == "merge"
+            and SI_SHOPPING_LIST_STATUS_LIST_IMPORT_MERGED
+            or SI_SHOPPING_LIST_STATUS_LIST_IMPORTED),
         list.name,
-        #list.items,
-        GetString(#list.items == 1
+        importedCount,
+        GetString(importedCount == 1
             and SI_SHOPPING_LIST_NOUN_ITEM
             or SI_SHOPPING_LIST_NOUN_ITEMS)
-    ))
+    )
+    self:Hide()
+    self.owner.ui:SetStatus(status)
 end

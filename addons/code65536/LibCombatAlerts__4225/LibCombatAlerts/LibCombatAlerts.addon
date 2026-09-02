@@ -8,8 +8,8 @@
 ## Description: Library for alerting players to combat mechanics
 ## Author: @code65536
 ## IsLibrary: true
-## Version: 0.8.1
-## AddOnVersion: 8010
+## Version: 0.8.2
+## AddOnVersion: 8020
 ## APIVersion: 101050 101051
 
 LibCodesCommonCode.lua

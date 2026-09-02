@@ -54,7 +54,7 @@
     "OffBalanceTracker"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4443/",
-  "fingerprint": "158bd1d99b4a4c3ea6cbd8486869685b26e4c99a2f421a600827bb70ac1fd89d",
+  "fingerprint": "8455ea23e9e4d4c68538b63dc86e07109575bb5ef26d9baf4b092519e4efe26d",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16130.png",
     "https://cdn-eso.mmoui.com/preview/pvw15467.png",
@@ -68,11 +68,11 @@
   "source_id": "4443",
   "source_url": "https://www.esoui.com/downloads/info4443-OffBalanceTrackerPCConsole.html",
   "stats": {
-    "downloads": 5854,
+    "downloads": 6138,
     "favorites": 7,
-    "monthly_downloads": 863
+    "monthly_downloads": 1136
   },
   "title": "Off Balance Tracker (PC & Console)",
-  "updated_at": 1788204170000,
-  "version": "20260831-0003"
+  "updated_at": 1788293394000,
+  "version": "20260901-0004"
 }

@@ -5,6 +5,9 @@
 --   AddOnVersion (manifest) = major*10000 + minor*100 + patch
 --   0.0.27 → 27
 --
+-- 0.0.43: Frame dots + filled dashes; flashlight facing; library # separator
+-- 0.0.42: Group-test freeze — simplified packs, vLC Count, HUD/frame/facing
+-- 0.0.41: Thicker frame dashes; boss facing from movement
 -- 0.0.40: Fight frame (center plant, ring, cardinals, split, 30s boss path)
 -- 0.0.39: Operator HUD (side legend + library); /hd play; compact on clear
 -- 0.0.38: Compact pack tracks until /hd load; recycle pins; idle tick
@@ -35,7 +38,7 @@
 local Holodeck = Holodeck or {}
 Holodeck.name        = "DeadMarker_Holodeck"
 Holodeck.displayName = "Holodeck"
-Holodeck.version     = "0.0.40"
+Holodeck.version     = "0.0.43"
 
 Holodeck.Fights = Holodeck.Fights or {}
 function Holodeck.RegisterFight(fight)
@@ -76,6 +79,8 @@ local TEX_PORTAL = PackTex("hd_portal.dds")
 local TEX_ORIGIN = PackTex("hd_origin.dds")
 local TEX_RING   = PackTex("hd_ring.dds")
 local TEX_DOT    = PackTex("hd_dot.dds")
+local TEX_DASH   = PackTex("hd_dash.dds")
+local TEX_FACE   = PackTex("hd_face.dds")
 local TEX_TANK   = PackTex("hd_tank.dds")
 local TEX_HEALER = PackTex("hd_healer.dds")
 local TEX_DPS    = PackTex("hd_dps.dds")
@@ -687,6 +692,13 @@ local function LocalToWorld(lx, ly, lz)
     return o.x + x * 100 * s, o.y + (ly or 0) * 100, o.z + z * 100 * s
 end
 
+local function WorldYawFromPack(x0, z0, x1, z1)
+    local ax, _, az = LocalToWorld(x0, PATH_Y_M, z0)
+    local bx, _, bz = LocalToWorld(x1, PATH_Y_M, z1)
+    if not ax or not bx then return 0 end
+    return math.atan2(bx - ax, bz - az)
+end
+
 local function PlayerLocalXZ()
     if not Holodeck.origin then return nil end
     local _, px, _, pz = GetUnitRawWorldPosition("player")
@@ -718,13 +730,22 @@ local function EnsureActor(name, kind)
         act.yOffM = def.yOffM
         _SetTextureSafe(act.ctl, tex, fb)
         act.ctl:SetColor(def.color[1], def.color[2], def.color[3], sv().opacity or 1)
+        if act.ctl.SetDimensions then act.ctl:SetDimensions(128, 128) end
         if act.ctl.SetTransformScale then act.ctl:SetTransformScale(SizeFor(kind)) end
+        -- Facing cones shift origin; recycled pins must sit on center again.
+        if act.ctl.SetTransformNormalizedOriginPoint then
+            act.ctl:SetTransformNormalizedOriginPoint(0.5, 0.5)
+        end
         return act
     end
     local ctl = PopPool(Holodeck.ctlPool)
     if ctl then
         _SetTextureSafe(ctl, tex, fb)
+        if ctl.SetDimensions then ctl:SetDimensions(128, 128) end
         if ctl.SetTransformScale then ctl:SetTransformScale(SizeFor(kind)) end
+        if ctl.SetTransformNormalizedOriginPoint then
+            ctl:SetTransformNormalizedOriginPoint(0.5, 0.5)
+        end
     else
         ctl = WS_CreateTexture(name, SizeFor(kind), tex, def.color, nil, fb)
     end
@@ -737,11 +758,65 @@ local function EnsureActor(name, kind)
     return act
 end
 
+local function HideFacing(act)
+    if act and act.faceCtl then act.faceCtl:SetHidden(true) end
+end
+
+local function PlaceFacing(act)
+    if not act or act.visible == false or act.guide then
+        HideFacing(act)
+        return
+    end
+    local k = act.kind
+    if k == "origin" or k == "stack" or k == "soak" or k == "safe" or k == "portal" then
+        HideFacing(act)
+        return
+    end
+    local fdx, fdz = act.fdx, act.fdz
+    if not fdx or not fdz then
+        HideFacing(act)
+        return
+    end
+    local len = math.sqrt(fdx * fdx + fdz * fdz)
+    if len < 0.08 then
+        HideFacing(act)
+        return
+    end
+    local ux, uz = fdx / len, fdz / len
+    -- Cone origin is the narrow end, planted at the actor's feet.
+    local size = (k == "boss") and 3.0 or 2.0
+    local lx, lz = act.x or 0, act.z or 0
+    local wx, wy, wz = LocalToWorld(lx, PATH_Y_M, lz)
+    if not wx then
+        HideFacing(act)
+        return
+    end
+    local ctl = act.faceCtl
+    if not ctl then
+        local col = ColorForActor(act)
+        ctl = WS_CreateTexture("face", size, TEX_FACE, col, { 168, 120 }, TEX_DOT_ESO)
+        if ctl and ctl.SetTransformNormalizedOriginPoint then
+            -- Left edge of hd_face.dds is the small end (near actor).
+            ctl:SetTransformNormalizedOriginPoint(0.08, 0.5)
+        end
+        act.faceCtl = ctl
+    end
+    if not ctl then return end
+    local col = ColorForActor(act)
+    ctl:SetColor(col[1] or 1, col[2] or 1, col[3] or 1, 1)
+    ctl:SetAlpha(0.88)
+    if ctl.SetDimensions then ctl:SetDimensions(168, 120) end
+    if ctl.SetTransformScale then ctl:SetTransformScale(size) end
+    local yaw = WorldYawFromPack(act.x or 0, act.z or 0, (act.x or 0) + ux, (act.z or 0) + uz)
+    WS_SetAtRaw(ctl, wx, wy, wz, math.pi / 2, yaw, 0)
+end
+
 local function PlaceActor(act)
     if not act or not act.ctl or not Holodeck.origin then return end
     if act.visible == false then
         act.ctl:SetHidden(true)
         HideNameplate(act)
+        HideFacing(act)
         return
     end
     local yOff = act.yOffM or (KIND[act.kind] and KIND[act.kind].yOffM) or 1.8
@@ -755,6 +830,7 @@ local function PlaceActor(act)
     act.ctl:SetHidden(false)
     act.ctl:SetAlpha(sv().opacity or 1)
     PlaceNameplate(act, wx, wy, wz, pitch, yaw)
+    PlaceFacing(act)
 end
 
 local function EnsureOriginMarker()
@@ -771,6 +847,7 @@ local function DestroyAllActors()
     for _, act in pairs(Holodeck.actors) do
         HideNameplate(act)
         RecycleControl(act.plate, Holodeck.platePool)
+        RecycleControl(act.faceCtl, Holodeck.ctlPool)
         RecycleControl(act.ctl, Holodeck.ctlPool)
     end
     Holodeck.actors = {}
@@ -794,16 +871,23 @@ local function AddPathControl(ctl)
     return ctl
 end
 
-local function PlaceFlatMarker(tag, lx, lz, texture, col, sizeM, alpha, dims)
+local function PlaceFlatMarker(tag, lx, lz, texture, col, sizeM, alpha, dims, yaw)
     local ctl = WS_CreateTexture(tag, sizeM or 0.55, texture, col, dims or { 96, 96 })
     if not ctl then return nil end
     ctl:SetAlpha(alpha or 0.85)
     local wx, wy, wz = LocalToWorld(lx, PATH_Y_M, lz)
     if wx then
-        -- Flat on ground (same as stop rings — reliable)
-        WS_SetAtRaw(ctl, wx, wy, wz, math.pi / 2, 0, 0)
+        -- Flat on ground. Optional yaw aligns a dash with a pack-space edge.
+        WS_SetAtRaw(ctl, wx, wy, wz, math.pi / 2, yaw or 0, 0)
     end
     return AddPathControl(ctl)
+end
+
+local function PlaceFlatDash(tag, x0, z0, x1, z1, col, sizeM, alpha)
+    local mx, mz = (x0 + x1) * 0.5, (z0 + z1) * 0.5
+    local yaw = WorldYawFromPack(x0, z0, x1, z1)
+    -- Filled rectangle (hd_dash), not a stretched hollow ring.
+    return PlaceFlatMarker(tag, mx, mz, TEX_DASH, col, sizeM or 1.8, alpha or 0.95, { 200, 44 }, yaw)
 end
 
 local function FirstTrackXZ(track)
@@ -949,24 +1033,29 @@ local function DrawLibraryFrame()
     local fr = fight._frame
     if not fr then return end
     local cx, cz, r = fr.cx or 0, fr.cz or 0, fr.r or 8
-    local ringCol = { 0.45, 0.72, 0.95 }
+    local ringCol = { 0.72, 0.92, 1.00 }
     local i = 1
+    local step = (math.pi * 2) / FRAME_RING_DOTS
     while i <= FRAME_RING_DOTS do
-        local a = (i - 1) / FRAME_RING_DOTS * math.pi * 2
-        local x = cx + math.cos(a) * r
-        local z = cz + math.sin(a) * r
-        PlaceFlatMarker("frame_ring_" .. i, x, z, TEX_DOT, ringCol, 0.42, 0.85, { 64, 64 })
+        local a = (i - 1) * step
+        PlaceFlatMarker(
+            "frame_ring_" .. i,
+            cx + math.cos(a) * r, cz + math.sin(a) * r,
+            TEX_DOT, ringCol, 0.48, 0.95, { 64, 64 })
         i = i + 1
     end
     if fr.splitPx then
-        local splitCol = { 1.00, 0.92, 0.38 }
-        local n = 18
+        local splitCol = { 1.00, 0.94, 0.40 }
+        local n = 8
         i = 0
-        while i <= n do
-            local u = (i / n) * 2 - 1
-            local x = cx + fr.splitPx * r * u
-            local z = cz + fr.splitPz * r * u
-            PlaceFlatMarker("frame_split_" .. i, x, z, TEX_DOT, splitCol, 0.48, 0.95, { 64, 64 })
+        while i < n do
+            local u0 = (i / n) * 2 - 1
+            local u1 = ((i + 0.55) / n) * 2 - 1
+            PlaceFlatDash(
+                "frame_split_" .. i,
+                cx + fr.splitPx * r * u0, cz + fr.splitPz * r * u0,
+                cx + fr.splitPx * r * u1, cz + fr.splitPz * r * u1,
+                splitCol, 1.7, 1.0)
             i = i + 1
         end
     end
@@ -1270,6 +1359,7 @@ local function SampleLibraryTrack(track, tSec)
     end
     local vis, seen = false, false
     local asp, dead = nil, false
+    local face = nil
     local x0, z0, t0 = nil, nil, nil
     local x1, z1, t1 = nil, nil, nil
     for i = 1, #track do
@@ -1289,6 +1379,7 @@ local function SampleLibraryTrack(track, tSec)
                 seen = true
             end
             if k.aspect ~= nil then asp = kfAspect(k) end
+            if k.facing ~= nil then face = k.facing end
             dead = kfDead(k)
             if k.x ~= nil or k.z ~= nil then
                 x0, z0, t0 = k.x or 0, k.z or 0, kt
@@ -1297,12 +1388,18 @@ local function SampleLibraryTrack(track, tSec)
     end
     if not seen then vis = false end
     if x0 == nil then return 0, 0, vis, asp, dead end
+    local fdx, fdz = nil, nil
+    if face ~= nil then
+        fdx, fdz = math.sin(face), math.cos(face)
+    elseif x1 ~= nil then
+        fdx, fdz = x1 - x0, (z1 or 0) - (z0 or 0)
+    end
     if x1 == nil or t1 == nil or tSec <= (t0 or 0) then
-        return x0, z0, vis, asp, dead
+        return x0, z0, vis, asp, dead, fdx, fdz
     end
     local span = t1 - t0
     local u = (span > 0) and ((tSec - t0) / span) or 0
-    return x0 + (x1 - x0) * u, z0 + (z1 - z0) * u, vis, asp, dead
+    return x0 + (x1 - x0) * u, z0 + (z1 - z0) * u, vis, asp, dead, fdx, fdz
 end
 
 local function ApplyTimeline(tSec, announce)
@@ -1353,10 +1450,13 @@ local function ApplyTimeline(tSec, announce)
                 local kind = NormalizeKind(def.kind) or InferType(def.id, def.kind) or "stack"
                 local act = EnsureActor(def.id, kind)
                 if act then
-                    local x, z, vis, asp, dead = SampleLibraryTrack(def.track, tSec)
+                    local x, z, vis, asp, dead, fdx, fdz = SampleLibraryTrack(def.track, tSec)
                     -- Bosses stay planted when dead (red tint). Minis/trash still despawn.
                     if kind == "boss" then vis = true end
                     act.x, act.z, act.visible, act.aspect = x, z, vis, asp
+                    if fdx and fdz and (fdx * fdx + fdz * fdz) > 0.01 then
+                        act.fdx, act.fdz = fdx, fdz
+                    end
                     act.dead = dead and true or false
                     act.label = def.label or def.id
                     local col = ResolveEntityColor(def)
@@ -1380,6 +1480,7 @@ local function ApplyTimeline(tSec, announce)
             act.visible = false
             if act.ctl then act.ctl:SetHidden(true) end
             HideNameplate(act)
+            HideFacing(act)
         end
     end
 
@@ -1670,7 +1771,8 @@ local function RefreshUI()
     UpdateSheet()
 end
 
--- Packed keyframes: "tcs xcs zcs flags;..."  flags: 1 vis, 2 dead, 4 lunar, 8 shadow.
+-- Packed keyframes: "tcs xcs zcs flags [facingCs];..."  flags: 1 vis, 2 dead, 4 lunar, 8 shadow.
+-- Optional 5th number is log facing in centi-radians. Old 4-field packs still decode.
 -- Resident packs keep this string; working tables exist only for the loaded fight.
 local function EncodeTrack(track)
     if type(track) ~= "table" or #track == 0 then return "" end
@@ -1686,11 +1788,16 @@ local function EncodeTrack(track)
         elseif asp == "shadow" or asp == "dark" then
             flags = flags + 8
         end
-        parts[i] = string.format("%d %d %d %d",
+        local core = string.format("%d %d %d %d",
             math.floor((k.t or 0) * 100 + 0.5),
             math.floor((k.x or 0) * 100 + 0.5),
             math.floor((k.z or 0) * 100 + 0.5),
             flags)
+        if k.facing ~= nil then
+            parts[i] = core .. " " .. tostring(math.floor((k.facing or 0) * 100 + 0.5))
+        else
+            parts[i] = core
+        end
     end
     return table.concat(parts, ";")
 end
@@ -1698,12 +1805,17 @@ end
 local function DecodeTrack(enc)
     if type(enc) ~= "string" or enc == "" then return {} end
     local track = {}
-    for a, b, c, d in string.gmatch(enc, "(-?%d+) (-?%d+) (-?%d+) (%d+)") do
-        local flags = tonumber(d) or 0
+    for seg in string.gmatch(enc, "[^;]+") do
+        local nums = {}
+        for n in string.gmatch(seg, "(-?%d+)") do
+            nums[#nums + 1] = tonumber(n)
+        end
+        if #nums >= 4 then
+        local flags = nums[4] or 0
         local kf = {
-            t = (tonumber(a) or 0) / 100,
-            x = (tonumber(b) or 0) / 100,
-            z = (tonumber(c) or 0) / 100,
+            t = (nums[1] or 0) / 100,
+            x = (nums[2] or 0) / 100,
+            z = (nums[3] or 0) / 100,
             visible = (flags % 2 == 1),
         }
         if math.floor(flags / 2) % 2 == 1 then kf.dead = true end
@@ -1712,7 +1824,9 @@ local function DecodeTrack(enc)
         elseif math.floor(flags / 8) % 2 == 1 then
             kf.aspect = "shadow"
         end
+        if nums[5] ~= nil then kf.facing = nums[5] / 100 end
         track[#track + 1] = kf
+        end
     end
     return track
 end
@@ -3220,6 +3334,19 @@ local function TrialKey(e)
     return t
 end
 
+local function FormatFightDur(sec)
+    sec = tonumber(sec) or 0
+    if sec <= 0 then return "" end
+    local m = math.floor(sec / 60)
+    local s = math.floor(sec % 60 + 0.5)
+    if s >= 60 then
+        m = m + 1
+        s = 0
+    end
+    if m <= 0 then return string.format("%ds", s) end
+    return string.format("%d:%02d", m, s)
+end
+
 local function PackMatchesFilter(e, filter)
     if type(filter) ~= "string" or filter == "" then return true end
     local q = string.lower(filter)
@@ -3300,13 +3427,14 @@ local function LibraryPanelText()
             end
             local mark = (e.id == loaded) and " |c55FF88[loaded]|r" or ""
             local ply = (e.nPlayer or 0) > 0 and " |cFFAA66players|r" or ""
-            local dur = (e.dur or 0) > 0 and string.format(" %3.0fs", e.dur) or ""
+            local dur = FormatFightDur(e.dur)
+            if dur ~= "" then dur = " |cC0E0FF" .. dur .. "|r" end
             local short = e.name or e.id
             if tk ~= "Demo" and type(short) == "string" then
                 local pfx = tk .. " · "
                 if short:sub(1, #pfx) == pfx then short = short:sub(#pfx + 1) end
             end
-            lines[#lines + 1] = string.format("|cFFFFFF%2d|r  %s%s%s%s", gi, short, dur, ply, mark)
+            lines[#lines + 1] = string.format("|cFFFFFF%2d|r  ·%s  %s%s%s", gi, dur, short, ply, mark)
         end
     end
     lines[#lines + 1] = ""
@@ -3680,7 +3808,7 @@ local function CmdHelp()
     dhd("v" .. Holodeck.version .. " — plant a library pack in the house.")
     d("|cAADDFFPLAY|r    plant · list · load N|<id> · play · pause · replay · halt")
     d("|cAADDFFLOOK|r    names on|off · scale N% · rot · flip z · frame · legend")
-    d("plant = fight CENTER, uses facing.  Gold dots = Twins split.  /hd rot = 90°.")
+    d("plant = fight CENTER, uses facing.  Gold dashes = dual-boss split.  /hd rot = 90°.")
 end
 
 local function OnSlash(args)

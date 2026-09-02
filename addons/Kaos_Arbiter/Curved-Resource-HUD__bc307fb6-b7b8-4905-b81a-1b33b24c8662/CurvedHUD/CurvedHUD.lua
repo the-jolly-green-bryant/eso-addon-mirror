@@ -1,6 +1,6 @@
 CurvedHUD = CurvedHUD or {}
 local CH = CurvedHUD
-CH.name, CH.version, CH.updateName, CH.dataVersion = "CurvedHUD", "0.9.16", "CurvedHUD_Update", 1
+CH.name, CH.version, CH.updateName, CH.dataVersion = "CurvedHUD", "0.9.17", "CurvedHUD_Update", 1
 CH.defaults = {enabled=true,preview=false,showDefaultResources=true,buffVerticalOffset=0,useOutOfCombatOpacity=false,outOfCombatOpacity=.45,scale=1.0,spacing=235,verticalOffset=35,resourceGap=7,barWidth=48,leftTimerOffset=-6,leftTimerSpacing=15,rightTimerOffset=3,rightTimerSpacing=3,fillAlpha=.85,frameAlpha=.48,backgroundAlpha=.24,shieldAlpha=.68,textAlpha=.95,timerFontSize=24,expirationAlerts=false,resourceValueFontSize=27,resourcePercentFontSize=20,majorBuffTracked="None",insideTimerStyle="Thin",outsideTimerStyle="Thick",majorBuffColor="Purple",balanceEnabled=false,balanceSlot="bottomLeftInside",balanceColor="Orange",aegisEnabled=false,aegisSlot="topLeftOutside",aegisColor="Pale Blue",armamentsEnabled=false,armamentsSlot="topRightInside",armamentsColor="Pale Blue",fragmentsEnabled=false,fragmentsPosition="Top",fragmentsScale=.75,surgeEnabled=false,surgeSlot="topRightOutside",surgeColor="Gold",shroudEnabled=false,shroudSlot="bottomRightOutside",shroudColor="Cyan",soulBurstEnabled=false,soulBurstSlot="topRightInside",soulBurstColor="Purple",soulBurstDuration=20,contingencyEnabled=false,contingencySlot="bottomRightInside",contingencyColor="Cyan",contingencyDuration=20,showRaw=true,showPercent=true,showMaximum=false,debug=false,layout="Parallel",staminaInside=true,iconCache={},abilityIdCache={}}
 CH.characterKeys = {majorBuffTracked=true,majorBuffColor=true,balanceEnabled=true,balanceSlot=true,balanceColor=true,aegisEnabled=true,aegisSlot=true,aegisColor=true,armamentsEnabled=true,armamentsSlot=true,armamentsColor=true,fragmentsEnabled=true,fragmentsPosition=true,surgeEnabled=true,surgeSlot=true,surgeColor=true,shroudEnabled=true,shroudSlot=true,shroudColor=true,soulBurstEnabled=true,soulBurstSlot=true,soulBurstColor=true,soulBurstDuration=true,contingencyEnabled=true,contingencySlot=true,contingencyColor=true,contingencyDuration=true}
 CH.characterDefaults = {majorBuffTracked="None",majorBuffColor="Purple",balanceEnabled=false,balanceSlot="bottomLeftInside",balanceColor="Orange",aegisEnabled=false,aegisSlot="topLeftOutside",aegisColor="Pale Blue",armamentsEnabled=false,armamentsSlot="topRightInside",armamentsColor="Pale Blue",fragmentsEnabled=false,fragmentsPosition="Top",surgeEnabled=false,surgeSlot="topRightOutside",surgeColor="Gold",shroudEnabled=false,shroudSlot="bottomRightOutside",shroudColor="Cyan",soulBurstEnabled=false,soulBurstSlot="topRightInside",soulBurstColor="Purple",soulBurstDuration=20,contingencyEnabled=false,contingencySlot="bottomRightInside",contingencyColor="Cyan",contingencyDuration=20,initialized=false}
@@ -1068,6 +1068,60 @@ function CH:RefreshAllTrackerIcons()
     self:RefreshLegacyIconFallbacks()
 end
 
+function CH:QueueTrackerIconRefresh(delayMs)
+    if not zo_callLater then self:RefreshAllTrackerIcons(); return end
+    self.iconRefreshGeneration=(self.iconRefreshGeneration or 0)+1
+    local generation=self.iconRefreshGeneration
+    zo_callLater(function()
+        if generation~=self.iconRefreshGeneration or not self.trackers then return end
+        self.scribingAbilityIds=self.scribingAbilityIds or {}
+        self.sorcererAbilityIds=self.sorcererAbilityIds or {}
+        self.wardenAbilityIds=self.wardenAbilityIds or {}
+        self.arcanistAbilityIds=self.arcanistAbilityIds or {}
+        self.nonClassAbilityIds=self.nonClassAbilityIds or {}
+        local queue={}
+        local function add(definitions,cache)
+            for _,definition in ipairs(definitions) do
+                if self.trackers[definition.key] then queue[#queue+1]={definition,cache} end
+            end
+        end
+        add(self.scribingTrackerDefinitions,self.scribingAbilityIds)
+        add(self.sorcererTrackerDefinitions,self.sorcererAbilityIds)
+        add(self.wardenTrackerDefinitions,self.wardenAbilityIds)
+        add(self.arcanistTrackerDefinitions,self.arcanistAbilityIds)
+        for _,group in ipairs(self.remainingClassDefinitionGroups) do
+            self[group.cache]=self[group.cache] or {}; add(group.definitions,self[group.cache])
+        end
+        add(self.nonClassTrackerDefinitions,self.nonClassAbilityIds)
+        local index=1
+        local function processNext()
+            if generation~=self.iconRefreshGeneration then return end
+            local item=queue[index]
+            if not item then
+                self:Guard("legacy icon refresh",function() self:RefreshLegacyIconFallbacks() end)
+                self.iconRefreshComplete=true
+                return
+            end
+            index=index+1
+            self:Guard("queued icon refresh",function() self:RefreshDefinitionBindings({item[1]},item[2]) end)
+            zo_callLater(processNext,25)
+        end
+        processNext()
+    end,delayMs or 350)
+end
+
+function CH:QueueWornSetRefresh(delayMs)
+    if not zo_callLater then self:RefreshEquippedSets(); return end
+    self.wornSetRefreshGeneration=(self.wornSetRefreshGeneration or 0)+1
+    local generation=self.wornSetRefreshGeneration
+    zo_callLater(function()
+        if generation~=self.wornSetRefreshGeneration or not self.trackers then return end
+        self:Guard("queued worn set refresh",function()
+            self:RefreshEquippedSets(); self:UpdateResources(); self:UpdateTrackers()
+        end)
+    end,delayMs or 250)
+end
+
 function CH:ApplyTrackerAppearance(t)
     local info=self.trackerSlots[t.slot]
     local base=self:GetTrackerAppearanceBase(t.slot,t.specialTexture)
@@ -1338,7 +1392,12 @@ function CH:ApplyLayout()
     for _,b in pairs(self.bars) do b.bg:SetAlpha(sv.backgroundAlpha); b.fill:SetAlpha(sv.fillAlpha); b.frame:SetAlpha(sv.frameAlpha); b.rawLabel:SetAlpha(sv.textAlpha); b.percentLabel:SetAlpha(sv.textAlpha) end
     self.mountBar.bg:SetAlpha(sv.backgroundAlpha); self.mountBar.fill:SetAlpha(sv.fillAlpha); self.mountBar.frame:SetAlpha(sv.frameAlpha)
     for _,t in pairs(self.trackers) do t.fill:SetAlpha(sv.fillAlpha); t.frame:SetAlpha(sv.frameAlpha); t.timer:SetAlpha(sv.textAlpha); t.icon:SetAlpha(sv.textAlpha) end
-    h.shield:SetAlpha(sv.shieldAlpha); self:UpdateDefaultUI(true); self:UpdateCombatOpacity(); self:UpdateExternalTrackerOpacity(); self:UpdateVisibility(); self:RefreshEquippedSets(); self:UpdateResources(); self:RefreshStandardBuffs(); self:RefreshSorcererTrackers(); self:RefreshWardenTrackers(); self:RefreshArcanistTrackers(); self:RefreshAllTrackerIcons(); self:UpdateProcAlert()
+    h.shield:SetAlpha(sv.shieldAlpha); self:UpdateDefaultUI(true); self:UpdateCombatOpacity(); self:UpdateExternalTrackerOpacity(); self:UpdateVisibility()
+    -- Character activation can produce a burst of inventory and skill-book events.
+    -- Coalesce the expensive scans instead of performing them repeatedly here.
+    self:QueueWornSetRefresh(100)
+    self:UpdateResources(); self:RefreshStandardBuffs(); self:RefreshSorcererTrackers(); self:RefreshWardenTrackers(); self:RefreshArcanistTrackers(); self:UpdateProcAlert()
+    self:QueueTrackerIconRefresh(350)
 end
 function CH:UpdateCombatOpacity(inCombat)
     if not self.root or not self.sv then return end
@@ -1539,9 +1598,6 @@ function CH:RefreshSorcererTrackers()
     local shroud=self.trackers and self.trackers.shroud
     if surge then surge.active,surge.stackCount=false,0 end
     if shroud then shroud.active,shroud.stackCount=false,0 end
-    if shroud then
-        self:RefreshShroudBinding()
-    end
     if self.sv.preview or not GetNumBuffs or not GetUnitBuffInfo then return end
     for index=1,GetNumBuffs("player") do
         local name,beginTime,endTime,_,stackCount,iconName,_,_,_,_,abilityId=GetUnitBuffInfo("player",index)
@@ -1559,7 +1615,6 @@ end
 function CH:RefreshWardenTrackers()
     local tracker=self.trackers and self.trackers.netch; if not tracker then return end
     tracker.active,tracker.stackCount=false,0
-    self:RefreshWardenBindings()
     if self.sv.preview or self.sv.netchEnabled==false or not GetNumBuffs or not GetUnitBuffInfo then return end
     local definition=self.wardenTrackerDefinitions[1]
     for index=1,GetNumBuffs("player") do
@@ -1596,7 +1651,6 @@ end
 
 function CH:RefreshArcanistTrackers()
     self:RefreshCrux()
-    self:RefreshArcanistBindings()
 end
 function CH:IsSoulBurstName(lowerName)
     if lowerName=="soul burst" then return true end
@@ -1859,7 +1913,36 @@ function CH:CreateHUD()
     self:EnsureOptionalCoreTrackers()
     -- Fixed ESO asset path for Vibrant Shroud; cast/slotted detection may replace
     -- it with Encase or Shattering Spines artwork when those variants are used.
-    self:EnsureEnabledDefinitionTrackers(); self:RefreshAllTrackerIcons(); self:ApplyLayout()
+    self:EnsureEnabledDefinitionTrackers(); self:ApplyLayout()
+end
+
+function CH:QueuePlayerActivationRefresh(delayMs)
+    self.activationRefreshGeneration=(self.activationRefreshGeneration or 0)+1
+    local generation=self.activationRefreshGeneration
+    local function refresh()
+        if generation~=self.activationRefreshGeneration then return end
+        self:Guard("player activation",function() self:ApplyLayout() end)
+    end
+    if zo_callLater then zo_callLater(refresh,delayMs or 350) else refresh() end
+end
+
+function CH:StartPeriodicUpdates()
+    EVENT_MANAGER:UnregisterForUpdate(self.updateName)
+    EVENT_MANAGER:UnregisterForUpdate(self.updateName.."Slow")
+    -- Keep animation/timer presentation responsive without repeating the more
+    -- expensive resource, buff and external-control queries ten times a second.
+    EVENT_MANAGER:RegisterForUpdate(self.updateName,100,function()
+        self:Guard("timer update",function()
+            if not self.sv.enabled then return end
+            self:UpdateTrackers(); self:UpdateProcAlert()
+        end)
+    end)
+    EVENT_MANAGER:RegisterForUpdate(self.updateName.."Slow",500,function()
+        self:Guard("state update",function()
+            if self.sv.enabled then self:UpdateResources(); self:RefreshCrux() end
+            self:UpdateDefaultUI(false); self:UpdateExternalTrackerOpacity()
+        end)
+    end)
 end
 function CH:ClearCombatBoundTrackers()
     if not self.trackers then return end
@@ -1897,7 +1980,7 @@ function CH:RegisterEvents()
     end)
     if EVENT_INVENTORY_SINGLE_SLOT_UPDATE then
         EVENT_MANAGER:RegisterForEvent(self.name.."WornSets",EVENT_INVENTORY_SINGLE_SLOT_UPDATE,function(_,bagId)
-            if bagId==BAG_WORN then self:Guard("worn set refresh",function() self:RefreshEquippedSets(); self:UpdateResources(); self:UpdateTrackers() end) end
+            if bagId==BAG_WORN then self:QueueWornSetRefresh(250) end
         end)
     end
     EVENT_MANAGER:RegisterForEvent(self.name.."TrackedCasts",EVENT_COMBAT_EVENT,function(_,result,_,abilityName,abilityGraphic,_,sourceName,sourceType,_,_,_,_,_,_,_,_,abilityId)
@@ -1924,7 +2007,7 @@ function CH:RegisterEvents()
             if not self:HandleScribingCast(abilityName,abilityGraphic,id,true) and not self:HandleSorcererCast(abilityName,abilityGraphic,id,true) and not self:HandleWardenCast(abilityName,abilityGraphic,id,true) and not self:HandleArcanistCast(abilityName,abilityGraphic,id,true) and not self:HandleRemainingClassCast(abilityName,abilityGraphic,id,true) then self:HandleNonClassCast(abilityName,abilityGraphic,id,true) end
         end)
     end
-    EVENT_MANAGER:RegisterForEvent(self.name.."Activated",EVENT_PLAYER_ACTIVATED,function() self:Guard("player activation",function() self:ApplyLayout() end) end)
+    EVENT_MANAGER:RegisterForEvent(self.name.."Activated",EVENT_PLAYER_ACTIVATED,function() self:QueuePlayerActivationRefresh(350) end)
     EVENT_MANAGER:RegisterForEvent(self.name.."Combat",EVENT_PLAYER_COMBAT_STATE,function(_,inCombat)
         self:Guard("combat state",function()
             self:UpdateCombatOpacity(inCombat); self:UpdateExternalTrackerOpacity()
@@ -1939,7 +2022,8 @@ function CH:RegisterEvents()
     EVENT_MANAGER:RegisterForEvent(self.name.."ShieldRemoved",EVENT_UNIT_ATTRIBUTE_VISUAL_REMOVED,shieldCallback)
     local callback=function(_,state) self:UpdateVisibility(state) end
     SCENE_MANAGER:GetScene("hud"):RegisterCallback("StateChange",callback); SCENE_MANAGER:GetScene("hudui"):RegisterCallback("StateChange",callback)
-    EVENT_MANAGER:RegisterForUpdate(self.updateName,100,function() self:Guard("periodic update",function() self:UpdateResources(); self:RefreshCrux(); self:UpdateTrackers(); self:UpdateProcAlert(); self:UpdateDefaultUI(false); self:UpdateExternalTrackerOpacity() end) end)
+    -- Let the login scene and other add-ons settle before starting recurring work.
+    if zo_callLater then zo_callLater(function() self:StartPeriodicUpdates() end,1000) else self:StartPeriodicUpdates() end
 end
 
 function CH:MigrateSavedVariables()

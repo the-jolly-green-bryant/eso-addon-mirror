@@ -1,10 +1,9 @@
 ## Title: |cFFD700CASE — Character Addon Settings Editor|r
 ## Description: Provides menu with list of characters and their ID. Memory tools. Application itself is in your AddOns inside CASE folder.
 ## Author: |cFFD700@Atharti|r
-## Version: 6.3
+## Version: 6.4
 ## APIVersion: 101050
 ## DependsOn: LibAddonMenu-2.0>=43
 ## SavedVariables: CASE_SavedVariables
-
 
 CASE.lua

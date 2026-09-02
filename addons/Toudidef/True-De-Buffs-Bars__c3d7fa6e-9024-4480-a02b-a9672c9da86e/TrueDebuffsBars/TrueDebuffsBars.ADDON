@@ -1,0 +1,9 @@
+## Title: True (De)Buffs Bars
+## Description: Two dinstincts bars. One for buffs, one for debuffs.
+## Author: |cff5900Toudidef|r
+## Version: 1.0
+## APIVersion: 101050
+## SavedVariables: TrueDebuffsBarsSavedVars
+## DependsOn: LibAddonMenu-2.0
+
+TrueDebuffsBars.lua

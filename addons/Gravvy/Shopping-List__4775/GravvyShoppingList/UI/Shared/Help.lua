@@ -61,6 +61,12 @@ function Help:Initialize()
             window:StopMovingOrResizing()
         end
     end)
+    ShoppingListControls:MakeWindowMovable(
+        window,
+        title,
+        self.owner.data,
+        "help"
+    )
 
     self.sectionTitle = makeLabel(window, "ZoFontWinH3")
     self.sectionTitle:SetColor(0.86, 0.78, 0.58, 1)

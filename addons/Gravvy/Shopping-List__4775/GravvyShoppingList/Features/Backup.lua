@@ -332,6 +332,12 @@ function Backup:Initialize()
             window:StopMovingOrResizing()
         end
     end)
+    ShoppingListControls:MakeWindowMovable(
+        window,
+        title,
+        self.owner.data,
+        "backup"
+    )
 
     local help = makeLabel(window, "ZoFontGame")
     help:SetText(GetString(SI_SHOPPING_LIST_BACKUP_HELP))

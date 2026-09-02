@@ -1,0 +1,10 @@
+## Title: Where Is It?
+## Author: user562
+## Version: 1.3
+## APIVersion: 101048 101049 101050 101051
+## SavedVariables: WhereIsIt_SavedVars
+## OptionalDependsOn: LibConsoleMenu
+
+WhereIsIt.lua
+WhereIsIt.xml
+WhereIsIt_Menu.lua

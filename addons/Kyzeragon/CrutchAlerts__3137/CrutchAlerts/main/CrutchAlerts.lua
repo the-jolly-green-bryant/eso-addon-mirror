@@ -11,7 +11,7 @@ CrutchAlerts = {
     InfoPanel = {},
 
     name = "CrutchAlerts",
-    version = "2.24.0",
+    version = "2.25.0",
 
     unlock = false,
 }
@@ -29,6 +29,7 @@ Crutch.registered = {
 
 -- Defaults
 local defaultOptions = {
+    installationWide = false,
     display = {
         x = 0,
         y = GuiRoot:GetHeight() / 3,
@@ -70,6 +71,7 @@ local defaultOptions = {
             beginHideSelf = false,
         showGained = true,
         showOthers = true,
+        showOthersTrueShot = true,
         showProminent = true,
         hitValueBelowThreshold = 75,
         hitValueAboveThreshold = 60000, -- nothing above 1 minute... right?
@@ -83,6 +85,7 @@ local defaultOptions = {
         showJBeam = true,
         showEngulfing = true,
         showClawFury = true,
+        showInsatiableHunger = false,
 
         showGeneralAlerts = true, -- extra manual toggle for people who don't like to see general alerts in overland etc
 
@@ -270,7 +273,7 @@ local defaultOptions = {
         showTitansHp = true,
         showTwinsIcons = false,
         useAOCHIcons = false,
-        useMiddleIcons = true,
+        useMiddleIcons = false,
         twinsIconsSize = 100,
         showEnfeeblementIcons = "HM", -- "NEVER", "VET", "HM", "ALWAYS"
         printHMReflectiveScales = true,
@@ -283,6 +286,7 @@ local defaultOptions = {
         panel = {
             showLeap = true,
             showClash = true,
+            showTarget = true,
         },
     },
     rockgrove = {
@@ -544,13 +548,49 @@ end
 ---------------------------------------------------------------------
 -- Initialize 
 ---------------------------------------------------------------------
+local function FillAllDefaults(tab, defaults)
+    for k, v in pairs(defaults) do
+        if (type(v) == "table") then
+            if (tab[k] == nil) then
+                tab[k] = ZO_DeepTableCopy(v)
+            else
+                FillAllDefaults(tab[k], v)
+            end
+        else
+            if (tab[k] == nil) then
+                tab[k] = v
+            end
+        end
+    end
+end
+
 local function Initialize()
     PrintTime("init")
     -- Settings and saved variables
     Crutch.AddProminentDefaults()
     Crutch.AddEffectDefaults()
     PrintTime("defaults done")
-    Crutch.savedOptions = ZO_SavedVars:NewAccountWide("CrutchAlertsSavedVariables", 1, "Options", defaultOptions)
+
+    Crutch.accountSVs = ZO_SavedVars:NewAccountWide("CrutchAlertsSavedVariables", 1, "Options", defaultOptions)
+    if (Crutch.accountSVs.installationWide) then
+        -- If it doesn't exist yet, copy the current one over
+        local isNew = false
+        if (not CrutchAlertsInstallationWide or ZO_IsTableEmpty(CrutchAlertsInstallationWide)) then
+            isNew = true
+            CrutchAlertsInstallationWide = ZO_DeepTableCopy(getmetatable(Crutch.accountSVs).__index)
+        end
+
+        -- Fill with defaults
+        FillAllDefaults(CrutchAlertsInstallationWide, defaultOptions)
+
+        Crutch.savedOptions = CrutchAlertsInstallationWide
+        if (isNew) then -- This has to go after savedOptions assignment because it uses that
+            Crutch.dbgOther("Copied settings from " .. GetUnitDisplayName("player") .. " to installation-wide")
+        end
+        Crutch.dbgOther("Using installation-wide settings")
+    else
+        Crutch.savedOptions = Crutch.accountSVs
+    end
 
     -- First time population of Bahsei portal abilities
     if (Crutch.savedOptions.rockgrove.spoofAbilitiesFirstTime) then

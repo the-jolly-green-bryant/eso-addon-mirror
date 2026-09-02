@@ -164,6 +164,11 @@ local function OnClashFaded()
         timer = 12500
     end
     CountDownLeap(timer, false)
+
+    if (Crutch.savedOptions.general.showDamageable) then
+        -- OCH shows it 2250 ms in, but they might be accounting for jump time. Carrion and Superheat VFX don't fade until 3s after clash fades
+        Crutch.DisplayDamageable(2.25, "Jump in ")
+    end
 end
 
 local function OnLeap()
@@ -206,16 +211,6 @@ local function OnCombatStart()
     CountDownLeap(timer, true)
 end
 
--- Cleanup
-local function CleanUp()
-    Crutch.InfoPanel.StopCount(PANEL_LEAP_INDEX)
-    Crutch.InfoPanel.StopCount(PANEL_CLASH_INDEX)
-    numClashes = 0
-    firstLeap = true
-    ZO_ClearTable(bossHealths)
-    UnspoofAllIcons()
-end
-
 local function RegisterPanelEvents()
     for _, id in ipairs(LEAP_IDS) do
         Crutch.RegisterForCombatEvent("Leap" .. id, OnLeap, ACTION_RESULT_BEGIN, id)
@@ -234,7 +229,7 @@ local function UnregisterPanelEvents()
     Crutch.UnregisterForCombatEvent("TitanicClashBegin")
     Crutch.UnregisterForCombatEvent("TitanicClashFaded")
 
-    CleanUp()
+    OC.CleanUp()
 end
 
 
@@ -289,14 +284,18 @@ local TITAN_MAX_HPS = {
 }
 
 local TITAN_ATTACKS = {
-    -- Myrinax -> Valneer
-    [232242] = "Myrinax", -- Monstrous Cleave
-    [232243] = "Myrinax", -- Sparking Bolt
-    [235806] = "Myrinax", -- Backhand
-    -- Valneer -> Myrinax
-    [232244] = "Valneer", -- Blazing Flame Bolt
-    [232254] = "Valneer", -- Monstrous Cleave
-    [235807] = "Valneer", -- Backhand
+    Valneer = {
+        -- Myrinax -> Valneer
+        [232242] = true, -- Monstrous Cleave
+        [232243] = true, -- Sparking Bolt
+        [235806] = true, -- Backhand
+    },
+    Myrinax = {
+        -- Valneer -> Myrinax
+        [232244] = true, -- Blazing Flame Bolt
+        [232254] = true, -- Monstrous Cleave
+        [235807] = true, -- Backhand
+    },
 }
 
 local TITANS = {
@@ -310,9 +309,7 @@ local TITANS = {
     }
 }
 
-local titanIds = {} -- { 12345 = {name = "Myrinax", hp = 3213544},}
-local myrinaxFound = false
-local valneerFound = false
+local titanIds = {} -- { 12345 = "Myrinax",} used for damage warning and cleanup
 
 local function UnspoofTitans()
     for id, _ in pairs(titanIds) do
@@ -321,37 +318,64 @@ local function UnspoofTitans()
     ZO_ClearTable(titanIds)
 end
 
--- TODO: change this to just first cast or buff or something
-local function OnTitanDamage(_, _, _, _, _, _, _, _, _, _, hitValue, _, _, _, sourceUnitId, targetUnitId, abilityId)
-    -- Source shows as 0, so we can't do both at once
-    if (not valneerFound) then
-        if (TITAN_ATTACKS[abilityId] == "Myrinax") then
-            titanIds[targetUnitId] = true
-            Crutch.dbgOther(string.format("Identified Valneer %d", targetUnitId))
-            valneerFound = true
+local function StartTrackingTitan(unitId, bossTag, name)
+    titanIds[unitId] = name
 
-            local _, powerMax = GetUnitPower("boss1", COMBAT_MECHANIC_FLAGS_HEALTH)
-            Crutch.TrackUnitForSpoofing(targetUnitId, "Valneer", "boss4", TITAN_MAX_HPS[powerMax], TITANS.Valneer.fgColor, TITANS.Valneer.bgColor)
+    if (Crutch.savedOptions.bossHealthBar.enabled and Crutch.savedOptions.osseincage.showTitansHp) then
+        local _, powerMax = GetUnitPower("boss1", COMBAT_MECHANIC_FLAGS_HEALTH)
+        Crutch.TrackUnitForSpoofing(unitId, name, bossTag, TITAN_MAX_HPS[powerMax], TITANS[name].fgColor, TITANS[name].bgColor)
+    end
+end
 
-            if (myrinaxFound) then
-                Crutch.UnregisterForCombatEvent("OCTitanDamage")
-            end
-        end
+local function UnregisterMyrinaxIdentification()
+    Crutch.UnregisterForCombatEvent("IdentifyMyrinaxStunSelf")
+    for abilityId, _ in pairs(TITAN_ATTACKS.Myrinax) do
+        Crutch.UnregisterForCombatEvent("IdentifyMyrinax" .. abilityId)
+    end
+end
+
+local function UnregisterValneerIdentification()
+    Crutch.UnregisterForCombatEvent("IdentifyValneerStunSelf")
+    for abilityId, _ in pairs(TITAN_ATTACKS.Valneer) do
+        Crutch.UnregisterForCombatEvent("IdentifyValneer" .. abilityId)
+    end
+end
+
+-- Earliest identifyable event on all(?) difficulties
+local function OnMyrinaxStunSelf(_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, targetUnitId)
+    Crutch.dbgOther(string.format("Identified Myrinax %d using Stun Self", targetUnitId))
+    StartTrackingTitan(targetUnitId, "boss3", "Myrinax")
+    UnregisterMyrinaxIdentification()
+end
+
+local function OnValneerStunSelf(_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, targetUnitId)
+    Crutch.dbgOther(string.format("Identified Valneer %d using Stun Self", targetUnitId))
+    StartTrackingTitan(targetUnitId, "boss4", "Valneer")
+    UnregisterValneerIdentification()
+end
+
+-- Backup in case player is pulled into encounter
+local function OnMyrinaxDamagedByValneer(_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, targetUnitId, abilityId)
+    Crutch.dbgOther(string.format("Identified Myrinax %d using %s", targetUnitId, GetAbilityName(abilityId)))
+    StartTrackingTitan(targetUnitId, "boss3", "Myrinax")
+    UnregisterMyrinaxIdentification()
+end
+
+local function OnValneerDamagedByMyrinax(_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, targetUnitId, abilityId)
+    Crutch.dbgOther(string.format("Identified Valneer %d using %s", targetUnitId, GetAbilityName(abilityId)))
+    StartTrackingTitan(targetUnitId, "boss4", "Valneer")
+    UnregisterValneerIdentification()
+end
+
+local function RegisterTitanIdentification()
+    Crutch.RegisterForCombatEvent("IdentifyMyrinaxStunSelf", OnMyrinaxStunSelf, ACTION_RESULT_EFFECT_GAINED, 233486)
+    for abilityId, _ in pairs(TITAN_ATTACKS.Myrinax) do
+        Crutch.RegisterForCombatEvent("IdentifyMyrinax" .. abilityId, OnMyrinaxDamagedByValneer, ACTION_RESULT_DAMAGE, abilityId)
     end
 
-    if (not myrinaxFound) then
-        if (TITAN_ATTACKS[abilityId] == "Valneer") then
-            titanIds[targetUnitId] = true
-            Crutch.dbgOther(string.format("Identified Myrinax %d", targetUnitId))
-            myrinaxFound = true
-
-            local _, powerMax = GetUnitPower("boss1", COMBAT_MECHANIC_FLAGS_HEALTH)
-            Crutch.TrackUnitForSpoofing(targetUnitId, "Myrinax", "boss3", TITAN_MAX_HPS[powerMax], TITANS.Myrinax.fgColor, TITANS.Myrinax.bgColor)
-
-            if (valneerFound) then
-                Crutch.UnregisterForCombatEvent("OCTitanDamage")
-            end
-        end
+    Crutch.RegisterForCombatEvent("IdentifyValneerStunSelf", OnValneerStunSelf, ACTION_RESULT_EFFECT_GAINED, 233497)
+    for abilityId, _ in pairs(TITAN_ATTACKS.Valneer) do
+        Crutch.RegisterForCombatEvent("IdentifyValneer" .. abilityId, OnValneerDamagedByMyrinax, ACTION_RESULT_DAMAGE, abilityId)
     end
 end
 
@@ -359,7 +383,9 @@ local exitKey
 
 local function UnregisterTwins()
     UnspoofTitans()
-    Crutch.UnregisterForCombatEvent("OCTitanDamage")
+
+    UnregisterMyrinaxIdentification()
+    UnregisterValneerIdentification()
 
     Crutch.DisableIconGroup("OCAOCH")
     Crutch.DisableIconGroup("OCAlt")
@@ -376,12 +402,9 @@ end
 local function RegisterTwins()
     UnregisterTwins()
 
-    -- Titans BHB
-    -- Event listening for all damage on enemies, registered only when Jynorah is active
-    if (Crutch.savedOptions.bossHealthBar.enabled and Crutch.savedOptions.osseincage.showTitansHp) then
-        -- Player damage ticks for only 1 each, so imo it's negligible enough to
-        -- not do that extra processing. So it should be fine to ignore crits
-        Crutch.RegisterForCombatEvent("OCTitanDamage", OnTitanDamage, ACTION_RESULT_DAMAGE, nil, nil,  COMBAT_UNIT_TYPE_NONE)
+    -- Titans BHB or reflective warning
+    if ((Crutch.savedOptions.bossHealthBar.enabled and Crutch.savedOptions.osseincage.showTitansHp) or Crutch.savedOptions.osseincage.printHMReflectiveScales) then
+        RegisterTitanIdentification()
     end
 
     -- Positioning icons
@@ -403,6 +426,55 @@ local function RegisterTwins()
 
     -- Info panel
     RegisterPanelEvents()
+end
+
+
+---------------------------------------------------------------------
+-- Which side player should be on
+-- Assume the player receives the correct curse in the beginning, and
+-- just flip it every time curse happens. Because prog groups would
+-- be more likely to call wipe if the initial curse messes up, as
+-- opposed to bad ones later. Also don't show it for tanks.
+---------------------------------------------------------------------
+local PANEL_ENFEEBLEMENT_INDEX = 7
+local BLAZING_MALEDICTION_ID = 234284
+local SPARKING_MALEDICTION_ID = 234011
+
+local shouldTargetJynorah = nil
+
+-- Initial curse
+local function OnMaledictionGainedSelf(_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, abilityId)
+    shouldTargetJynorah = (abilityId == SPARKING_MALEDICTION_ID) -- do the opposite here initially, because timeout will swap it
+    Crutch.dbgOther("initialized shouldTargetJynorah " .. tostring(shouldTargetJynorah))
+    Crutch.UnregisterForCombatEvent("SparkingMaledictionInfoPanelSelf")
+    Crutch.UnregisterForCombatEvent("BlazingMaledictionInfoPanelSelf")
+end
+
+-- The player may not be guaranteed to get a curse themselves, so listen for all and debounce
+local function OnMaledictionTimeout()
+    EVENT_MANAGER:UnregisterForUpdate(Crutch.name .. "MaledictionTimeout")
+
+    zo_callLater(function()
+        if (not Crutch.groupInCombat) then return end
+        if (shouldTargetJynorah == nil) then
+            Crutch.dbgOther("|cFF0000shouldTargetJynorah nil")
+            return
+        end
+
+        -- Always flip sides
+        shouldTargetJynorah = not shouldTargetJynorah
+        Crutch.dbgOther("flipped shouldTargetJynorah: " .. tostring(shouldTargetJynorah))
+
+        if (shouldTargetJynorah) then
+            Crutch.InfoPanel.SetLine(PANEL_ENFEEBLEMENT_INDEX, "|c8ef5f5Target Jynorah / blue portal|r", 0.8)
+        else
+            Crutch.InfoPanel.SetLine(PANEL_ENFEEBLEMENT_INDEX, "|cff6600Target Skorkhif / orange portal|r", 0.8)
+        end
+    end, 4500)
+end
+
+local function OnMaledictionGained(_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, abilityId)
+    EVENT_MANAGER:RegisterForUpdate(Crutch.name .. "MaledictionTimeout", 500, OnMaledictionTimeout)
 end
 
 
@@ -429,7 +501,7 @@ local function UpdateEnfeeblementIcon(atName, unitTag)
     if (sparking[atName] and blazing[atName]) then
         -- Purplish
         icon = "/esoui/art/ava/ava_rankicon64_grandoverlord.dds"
-        color = {183/255, 38/255, 1}
+        color = C.CURSEPURPLE
         callback = function(icon)
             DoubleCurseIconCallback(icon, atName)
         end
@@ -437,12 +509,12 @@ local function UpdateEnfeeblementIcon(atName, unitTag)
             label = {
                 text = "!",
                 size = 30,
-                color = {183/255, 38/255, 1},
+                color = C.CURSEPURPLE,
             },
             texture = {
                 path = "/esoui/art/ava/ava_rankicon64_grandoverlord.dds",
                 size = 0.8,
-                color = {183/255, 38/255, 1},
+                color = C.CURSEPURPLE,
             },
         }
     elseif (sparking[atName]) then
@@ -463,8 +535,10 @@ local function UpdateEnfeeblementIcon(atName, unitTag)
     Crutch.SetAttachedIconForUnit(unitTag, ENFEEBLEMENT_UNIQUE_NAME, C.PRIORITY.MECHANIC_1_PRIORITY, icon, 100, color, false, callback, spaceOptions)
 end
 
+local areIconsEnabled
 -- To be called when unit tags change
 local function RefreshAllEnfeeblementIcons()
+    if (not areIconsEnabled) then return end
     Crutch.dbgOther("|cFF0000REFRESHING ALL ENFEEBLEMENT ICONS!")
     Crutch.RemoveAllAttachedIcons(ENFEEBLEMENT_UNIQUE_NAME)
     for i = 1, GetGroupSize() do
@@ -493,6 +567,7 @@ local function UnregisterEnfeeblement()
     Crutch.dbgSpam("Unregistering Enfeeblement")
     Crutch.UnregisterForEffectChanged("SparkingEnfeeblement")
     Crutch.UnregisterForEffectChanged("BlazingEnfeeblement")
+    areIconsEnabled = false
 end
 
 local function RegisterEnfeeblement()
@@ -506,6 +581,8 @@ local function RegisterEnfeeblement()
     Crutch.RegisterForEffectChanged("BlazingEnfeeblement", function(_, changeType, _, _, unitTag, beginTime, endTime)
         OnEnfeeblement(blazing, changeType, unitTag, (endTime - beginTime) * 1000)
     end, 233692, "group")
+
+    areIconsEnabled = true
 end
 
 
@@ -557,13 +634,26 @@ local function MaybeRegisterTwins()
         UnregisterEnfeeblement()
     end
 
+    -- Info panel target / portal
+    if (Crutch.savedOptions.osseincage.panel.showTarget and IsHM() and GetSelectedLFGRole() ~= LFG_ROLE_TANK) then
+        Crutch.RegisterForCombatEvent("SparkingMaledictionInfoPanel", OnMaledictionGained, ACTION_RESULT_EFFECT_GAINED, SPARKING_MALEDICTION_ID)
+        Crutch.RegisterForCombatEvent("SparkingMaledictionInfoPanelSelf", OnMaledictionGainedSelf, ACTION_RESULT_EFFECT_GAINED, SPARKING_MALEDICTION_ID, nil, COMBAT_UNIT_TYPE_PLAYER)
+        Crutch.RegisterForCombatEvent("BlazingMaledictionInfoPanel", OnMaledictionGained, ACTION_RESULT_EFFECT_GAINED, BLAZING_MALEDICTION_ID)
+        Crutch.RegisterForCombatEvent("BlazingMaledictionInfoPanelSelf", OnMaledictionGainedSelf, ACTION_RESULT_EFFECT_GAINED, BLAZING_MALEDICTION_ID, nil, COMBAT_UNIT_TYPE_PLAYER)
+    else
+        Crutch.UnregisterForCombatEvent("SparkingMaledictionInfoPanel")
+        Crutch.UnregisterForCombatEvent("SparkingMaledictionInfoPanelSelf")
+        Crutch.UnregisterForCombatEvent("BlazingMaledictionInfoPanel")
+        Crutch.UnregisterForCombatEvent("BlazingMaledictionInfoPanelSelf")
+    end
+
     -- Reflective Scales
     for damageResult, str in pairs(damageTypes) do
         -- Only enable if on HM
         if (IsHM() and Crutch.savedOptions.osseincage.printHMReflectiveScales) then
             Crutch.RegisterForCombatEvent("OCTitanReflect" .. tostring(damageResult), function(_, _, _, _, _, _, _, sourceType, _, _, _, _, _, _, _, targetUnitId, abilityId)
                 if (sourceType == COMBAT_UNIT_TYPE_PLAYER and titanIds[targetUnitId]) then
-                    Crutch.msg(string.format("You hit a titan with |cFF00FF%s|r%s", GetAbilityName(abilityId), str))
+                    Crutch.msg(string.format("You hit %s with |cFF00FF%s|r%s", titanIds[targetUnitId], GetAbilityName(abilityId), str))
                 end
             end, damageResult, nil, nil, COMBAT_UNIT_TYPE_NONE)
         else
@@ -574,20 +664,32 @@ end
 
 
 ---------------------------------------------------------------------
+---------------------------------------------------------------------
+local function CleanUp()
+    Crutch.InfoPanel.StopCount(PANEL_LEAP_INDEX)
+    Crutch.InfoPanel.StopCount(PANEL_CLASH_INDEX)
+    numClashes = 0
+    firstLeap = true
+    ZO_ClearTable(bossHealths)
+    UnspoofAllIcons()
+
+    UnspoofTitans()
+    ZO_ClearTable(sparking)
+    ZO_ClearTable(blazing)
+
+    shouldTargetJynorah = nil
+
+    Crutch.InfoPanel.StopCount(PANEL_ENFEEBLEMENT_INDEX)
+end
+OC.CleanUp = CleanUp -- TODO: maybe rearrange stuff
+
+
+---------------------------------------------------------------------
 -- Register/Unregister
 ---------------------------------------------------------------------
 function OC.RegisterOCZoneTwins()
     Crutch.RegisterEnteredGroupCombatListener("CrutchOsseinCageJynorahEnteredCombat", OnCombatStart)
     Crutch.RegisterExitedGroupCombatListener("CrutchOsseinCageJynorahExitedCombat", CleanUp)
-
-    Crutch.RegisterExitedGroupCombatListener("ExitedCombatOsseinCageTwins", function()
-        myrinaxFound = false
-        valneerFound = false
-        UnspoofTitans()
-        ZO_ClearTable(titanIds)
-        ZO_ClearTable(sparking)
-        ZO_ClearTable(blazing)
-    end)
 
     -- Bosses changed, for titan spoofing and Enfeeblement markers
     -- This is delayed a bit because HM wipes respawn the boss at the nonHM health, and then increase max health.
@@ -613,8 +715,6 @@ end
 function OC.UnregisterOCZoneTwins()
     Crutch.UnregisterEnteredGroupCombatListener("CrutchOsseinCageJynorahEnteredCombat")
     Crutch.UnregisterExitedGroupCombatListener("CrutchOsseinCageJynorahExitedCombat")
-
-    Crutch.UnregisterExitedGroupCombatListener("ExitedCombatOsseinCageTwins")
 
     Crutch.UnregisterBossChangedListener("CrutchOsseinCage")
 

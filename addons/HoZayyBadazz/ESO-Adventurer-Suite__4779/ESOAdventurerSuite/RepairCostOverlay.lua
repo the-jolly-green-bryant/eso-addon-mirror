@@ -333,15 +333,14 @@ function R:Refresh()
 
     self.frame:SetHidden(not showDetail)
     self:ApplyCompactHudReason(showCompact)
-    if showCompact then
-        -- Do not force alpha here. ZO_HUDFadeSceneFragment owns the compact
-        -- readout's fade while the player idles or switches UI/window states.
+    if showCompact and not self.layoutMode then
+        -- Match the working Suite FPS overlay: do not re-promote or bring the
+        -- control to the top on every refresh. ESO's ZO_HUDFadeSceneFragment
+        -- must remain the sole owner of idle fade/show state during gameplay.
         pcall(function()
-            if self.compactFrame.SetTopLevel then self.compactFrame:SetTopLevel(true) end
             if self.compactFrame.SetDrawTier and DT_HIGH then self.compactFrame:SetDrawTier(DT_HIGH) end
             if self.compactFrame.SetDrawLayer and DL_OVERLAY then self.compactFrame:SetDrawLayer(DL_OVERLAY) end
             if self.compactFrame.SetDrawLevel then self.compactFrame:SetDrawLevel(940) end
-            if self.compactFrame.BringWindowToTop then self.compactFrame:BringWindowToTop() end
         end)
     end
 
@@ -415,9 +414,11 @@ function R:ApplyNormalDrawOrder()
     setDrawOrder(self.wallet, tier, layer, 50)
     setDrawOrder(self.hint, tier, layer, 50)
     if self.compactFrame then
-        -- The compact Always HUD must sit above ordinary gameplay controls.
+        -- Normal gameplay must stay under ESO's HUD-fade ownership. Promoting
+        -- this control to an always-on top-level window can keep it visible
+        -- after the rest of the gameplay HUD fades. Layout mode raises it only
+        -- while the user is actively positioning overlays.
         pcall(function()
-            if self.compactFrame.SetTopLevel then self.compactFrame:SetTopLevel(true) end
             if self.compactFrame.SetDrawTier and DT_HIGH then self.compactFrame:SetDrawTier(DT_HIGH) end
             if self.compactFrame.SetDrawLayer and DL_OVERLAY then self.compactFrame:SetDrawLayer(DL_OVERLAY) end
             if self.compactFrame.SetDrawLevel then self.compactFrame:SetDrawLevel(940) end
@@ -492,6 +493,56 @@ function R:ResetPosition()
     self:AnchorCompact()
 end
 
+function R:GetGameplayHudReferenceAlpha029134()
+    if self.layoutMode then return 1 end
+    if EPC.IsGameplayHudSuppressed and EPC:IsGameplayHudSuppressed() == true then return 0 end
+
+    -- The Suite FPS/Latency overlay is already proven to follow the exact HUD
+    -- fade state requested by the user. Mirror its real rendered alpha when it
+    -- exists, so Repair: <gold> can never remain visible after FPS has faded.
+    local perf = EPC.PerformanceOverlay and EPC.PerformanceOverlay.frame or nil
+    if perf and EPC.saved and EPC.saved.showPerformanceOverlay ~= false then
+        if type(perf.IsHidden) == "function" then
+            local okHidden, hidden = pcall(perf.IsHidden, perf)
+            if okHidden and hidden == true then return 0 end
+        end
+        if type(perf.GetAlpha) == "function" then
+            local okAlpha, alpha = pcall(perf.GetAlpha, perf)
+            if okAlpha and tonumber(alpha) then return math.max(0, math.min(1, tonumber(alpha))) end
+        end
+    end
+
+    -- Fallback to ESO's own action bar HUD fade if the Suite performance meter
+    -- is disabled. This is only an alpha read; no expensive scans or polling.
+    local candidates = { ZO_ActionBar1, ZO_PlayerAttributeHealth, ZO_PlayerAttributeMagicka, ZO_PlayerAttributeStamina }
+    for i = 1, #candidates do
+        local c = candidates[i]
+        if c and type(c.GetAlpha) == "function" then
+            local hidden = false
+            if type(c.IsHidden) == "function" then
+                local okHidden, value = pcall(c.IsHidden, c)
+                hidden = okHidden and value == true
+            end
+            if not hidden then
+                local okAlpha, alpha = pcall(c.GetAlpha, c)
+                if okAlpha and tonumber(alpha) then return math.max(0, math.min(1, tonumber(alpha))) end
+            end
+        end
+    end
+    return 1
+end
+
+function R:SyncCompactHudAlpha029134()
+    if not self.compactFrame or not EPC.saved then return end
+    local enabled = EPC.saved.showRepairCostOverlay ~= false
+        and (EPC.saved.repairCostVisibility or "INVENTORY") == "ALWAYS"
+    if not enabled then return end
+    local alpha = self:GetGameplayHudReferenceAlpha029134()
+    if type(self.compactFrame.SetAlpha) == "function" then
+        self.compactFrame:SetAlpha(self.layoutMode and 1 or alpha)
+    end
+end
+
 function R:Initialize()
     self.layoutMode = false
     self:Create()
@@ -524,5 +575,10 @@ function R:Initialize()
             end
         end
     end
+    EVENT_MANAGER:UnregisterForUpdate(prefix .. "_HudAlphaSync029134")
+    EVENT_MANAGER:RegisterForUpdate(prefix .. "_HudAlphaSync029134", 100, function()
+        if R and R.SyncCompactHudAlpha029134 then R:SyncCompactHudAlpha029134() end
+    end)
     self:Refresh()
+    self:SyncCompactHudAlpha029134()
 end

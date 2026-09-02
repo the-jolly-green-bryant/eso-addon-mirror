@@ -10,7 +10,7 @@ local EPC = ESOProgressionCoach
 EPC.name = "ESOAdventurerSuite"
 EPC.legacyName = "ESOProgressionCoach"
 EPC.displayName = "ESO Adventurer Suite"
-EPC.version = "0.29.125"
+EPC.version = "0.29.143"
 EPC.author = "HoZayyBadazz"
 EPC.savedVersion = 1
 EPC.interactionMode = false
@@ -47,6 +47,7 @@ if type(ZO_CreateStringId) == "function" then
     ZO_CreateStringId("SI_BINDING_NAME_ESO_ADVENTURER_SUITE_GAME_MODE_REPORT", "Open / Close Game Mode Combat Report")
     ZO_CreateStringId("SI_BINDING_NAME_ESO_ADVENTURER_SUITE_ANTIQUITIES_CATEGORY", "ESO Adventurer Suite - Antiquities")
     ZO_CreateStringId("SI_BINDING_NAME_ESO_ADVENTURER_SUITE_ANTIQUITY_LEAD_FINDER", "Open / Close Antiquity Lead Finder")
+    ZO_CreateStringId("SI_BINDING_NAME_ESO_ADVENTURER_SUITE_MAP_TELEPORTER_TOGGLE", "Open / Close Map Teleporter")
 end
 
 EPC.defaults = {
@@ -73,6 +74,11 @@ EPC.defaults = {
     mapTeleporterShowBlacklisted = false,
     mapTeleporterSortMode = "SMART",
     mapTeleporterVisibleRows = 15,
+    mapTeleporterExpanded = false,
+    -- Teleporter display mode: MAP = World Map only, ALWAYS = persistent HUD drawer.
+    mapTeleporterDisplayMode = "MAP",
+    mapTeleporterLeft = -1,
+    mapTeleporterTop = -1,
     mapTeleporterFavorites = {},
     mapTeleporterBlacklistPlayers = {},
     mapTeleporterBlacklistZones = {},
@@ -629,6 +635,7 @@ function EPC:RefreshGameplayOverlays()
     if self.PerformanceOverlay and self.PerformanceOverlay.Refresh then self.PerformanceOverlay:Refresh(true) end
     if self.EncounterReminders and self.EncounterReminders.Refresh then self.EncounterReminders:Refresh() end
     if self.ChallengeDifficultyOverlay and self.ChallengeDifficultyOverlay.Refresh then self.ChallengeDifficultyOverlay:Refresh() end
+    if self.Travel and self.Travel.RefreshMapTeleporterVisibility then self.Travel:RefreshMapTeleporterVisibility() end
     if self.UI and self.UI.UpdateCombatHUD and self.Combat then self.UI:UpdateCombatHUD(self.Combat:GetHUDSummary()) end
 end
 
@@ -792,6 +799,9 @@ function EPC:RaiseLayoutOverlays()
     }) do
         if module then raiseLayoutControls(module, seen, 0) end
     end
+    -- Travel is a large data/service table, so do not recursively scan it every
+    -- 250ms during layout mode. Raise only its Teleporter root explicitly.
+    if self.Travel and self.Travel.RaiseForLayout then pcall(self.Travel.RaiseForLayout, self.Travel) end
     if self.hudLayoutControlBar and not self.hudLayoutControlBar:IsHidden() then
         self.hudLayoutControlBar:SetDrawTier(DT_HIGH)
         self.hudLayoutControlBar:SetDrawLevel(2000)
@@ -994,7 +1004,8 @@ function EPC:SetUnitFramesMoveMode(active, exitReason)
     local canSynergy = self.SynergyOverlay and self.SynergyOverlay.SetLayoutMode
     local canRotationAssistant = self.RotationAssistant and self.RotationAssistant.SetLayoutMode
     local canAntiquityAssistant = self.AntiquityAssistant and self.AntiquityAssistant.SetLayoutMode
-    if not canFrames and not canMiniMap and not canStableTimer and not canClock and not canActiveQuest and not canGoldenPursuits and not canAllianceRank and not canChampionOverlay and not canAbilities and not canQuickslot and not canInfiniteArchive and not canRepairCosts and not canPerformanceOverlay and not canEncounterReminders and not canChallengeOverlay and not canDungeonQueue and not canSynergy and not canRotationAssistant and not canAntiquityAssistant then return end
+    local canMapTeleporter = self.Travel and self.Travel.SetLayoutMode
+    if not canFrames and not canMiniMap and not canStableTimer and not canClock and not canActiveQuest and not canGoldenPursuits and not canAllianceRank and not canChampionOverlay and not canAbilities and not canQuickslot and not canInfiniteArchive and not canRepairCosts and not canPerformanceOverlay and not canEncounterReminders and not canChallengeOverlay and not canDungeonQueue and not canSynergy and not canRotationAssistant and not canAntiquityAssistant and not canMapTeleporter then return end
     active = active == true
 
     -- Once full HUD Layout Mode is active, only its SAVE & EXIT button is
@@ -1065,6 +1076,7 @@ function EPC:SetUnitFramesMoveMode(active, exitReason)
         if canSynergy then self.SynergyOverlay:SetLayoutMode(true) end
         if canRotationAssistant then self.RotationAssistant:SetLayoutMode(true) end
         if canAntiquityAssistant then self.AntiquityAssistant:SetLayoutMode(true) end
+        if canMapTeleporter then self.Travel:SetLayoutMode(true) end
 
         self:SetHUDLayoutControlBarVisible(true)
 
@@ -1109,6 +1121,7 @@ function EPC:SetUnitFramesMoveMode(active, exitReason)
         if canDungeonQueue then self.DungeonFinder:SetLayoutMode(false) end
         if canRotationAssistant then self.RotationAssistant:SetLayoutMode(false) end
         if canAntiquityAssistant then self.AntiquityAssistant:SetLayoutMode(false) end
+        if canMapTeleporter then self.Travel:SetLayoutMode(false) end
         if self.unitFramesMoveOwned and not self.interactionMode and not self.combatHudMoveMode and not self.miniMapMoveMode then setCameraUIMode(false) end
         if canSynergy then self.SynergyOverlay:SetLayoutMode(false) end
         -- Apply normal compass/menu visibility immediately after leaving layout
@@ -1226,7 +1239,10 @@ function EPC:ResetUnitFramePositions()
     if self.AntiquityAssistant and self.AntiquityAssistant.ResetPositions then
         self.AntiquityAssistant:ResetPositions()
     end
-    self:Print("HUD layout reset: Player, Target, Group, Raid, Stats, Mini Map, Stable, Clock, Active Quest, Golden Pursuits, Alliance Rank, Champion, Infinite Archive, Repair Estimate, FPS/Latency, Encounter Reminders, Challenge Difficulty, Use Synergy, Rotation Assistant, Augur Guide, Tile Selector, and Ability positions restored.")
+    if self.Travel and self.Travel.ResetMapTeleporterPosition then
+        self.Travel:ResetMapTeleporterPosition()
+    end
+    self:Print("HUD layout reset: Player, Target, Group, Raid, Stats, Mini Map, Stable, Clock, Active Quest, Golden Pursuits, Alliance Rank, Champion, Infinite Archive, Repair Estimate, FPS/Latency, Encounter Reminders, Challenge Difficulty, Use Synergy, Rotation Assistant, Augur Guide, Tile Selector, Map Teleporter, and Ability positions restored.")
 end
 
 function ESOProgressionCoach_Toggle()

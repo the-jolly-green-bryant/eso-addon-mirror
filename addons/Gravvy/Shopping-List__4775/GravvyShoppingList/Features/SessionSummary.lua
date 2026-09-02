@@ -84,6 +84,12 @@ function Session:Initialize()
             window:StopMovingOrResizing()
         end
     end)
+    ShoppingListControls:MakeWindowMovable(
+        window,
+        title,
+        self.owner.data,
+        "sessionSummary"
+    )
 
     self.overview = makeLabel(window, "ZoFontGameSmall")
     self.overview:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)

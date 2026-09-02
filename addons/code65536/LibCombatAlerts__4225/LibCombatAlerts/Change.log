@@ -1,3 +1,6 @@
+Version 0.8.2 (2026/09/01)
+* Improved edge case handling with IdentifyGroupUnitTag and IdentifyGroupUnitId
+
 Version 0.8.1 (2026/08/24)
 * Fixed an issue where RegisterInCombatSkillBlock could sometimes be ineffective
   if it was called during combat

@@ -1,11 +1,13 @@
--- House demo fight pack (library entry).
--- Meters relative to origin. World-aligned XZ (no facing yet).
--- Shows: boss + LT + role ghosts (tank/healer) + stack spot.
--- Registered at load via Holodeck.RegisterFight.
+-- House demo (smoke pack). Short walk: boss, LT, roles, stack/soak spots.
+-- Facing is pack radians (0 = +Z). CompactFight encodes on register.
 
 local fight = {
     id = "house_demo",
-    name = "House Demo (boss + LT + roles)",
+    name = "Demo · walkthrough",
+    trial = "Demo",
+    boss = "Demo",
+    variant = "Basic",
+    outcome = "kill",
     durationSec = 22,
     phases = {
         { id = 1, name = "Opener",     t = 0 },
@@ -19,11 +21,11 @@ local fight = {
             kind = "boss",
             label = "Boss",
             track = {
-                { t = 0,  x = 0, z = 0, visible = true },
-                { t = 5,  x = 4, z = 0 },
-                { t = 10, x = 4, z = 4 },
-                { t = 15, x = 0, z = 4 },
-                { t = 22, x = 0, z = 0 },
+                { t = 0,  x = 0, z = 0, visible = true, facing = 1.57 },
+                { t = 5,  x = 4, z = 0, facing = 0 },
+                { t = 10, x = 4, z = 4, facing = -1.57 },
+                { t = 15, x = 0, z = 4, facing = 3.14 },
+                { t = 22, x = 0, z = 0, facing = 3.14 },
             },
         },
         {
@@ -32,25 +34,24 @@ local fight = {
             label = "Lieutenant",
             track = {
                 { t = 0,  visible = false },
-                { t = 5,  x = 8, z = 2, visible = true },
-                { t = 9,  x = 6, z = -2 },
-                { t = 12, x = 3, z = 1 },
+                { t = 5,  x = 8, z = 2, visible = true, facing = -1.89 },
+                { t = 9,  x = 6, z = -2, facing = -0.79 },
+                { t = 12, x = 3, z = 1, visible = true, facing = -2.09 },
                 { t = 14, visible = false },
-                { t = 17, x = -3, z = 3, visible = true },
-                { t = 22, x = -3, z = 5, visible = true },
+                { t = 17, x = -3, z = 3, visible = true, facing = 1.57 },
+                { t = 22, x = -3, z = 5, visible = true, facing = 0 },
             },
         },
-        -- Role ghosts: raid-lead demo / automated path when team can't record live
         {
             id = "tank_mt",
             kind = "tank",
             label = "Main tank",
             track = {
-                { t = 0,  x = -1.5, z = 2.5, visible = true },
-                { t = 5,  x = 2.5,  z = 1.0 },
-                { t = 10, x = 2.0,  z = 3.5 },
-                { t = 15, x = -0.5, z = 3.0 },
-                { t = 22, x = -1.0, z = 2.0 },
+                { t = 0,  x = -1.5, z = 2.5, visible = true, facing = 1.94 },
+                { t = 5,  x = 2.5,  z = 1.0, facing = 2.68 },
+                { t = 10, x = 2.0,  z = 3.5, facing = -1.77 },
+                { t = 15, x = -0.5, z = 3.0, facing = -2.03 },
+                { t = 22, x = -1.0, z = 2.0, facing = -2.03 },
             },
         },
         {
@@ -58,12 +59,12 @@ local fight = {
             kind = "healer",
             label = "Healer",
             track = {
-                { t = 0,  x = -4, z = 1, visible = true },
-                { t = 6,  x = -3, z = 0 },
-                { t = 10, x = -2, z = 2 },  -- toward stack
-                { t = 14, x = -2, z = 2 },
-                { t = 18, x = -3.5, z = 1.5 },
-                { t = 22, x = -4, z = 1 },
+                { t = 0,  x = -4, z = 1, visible = true, facing = 2.36 },
+                { t = 6,  x = -3, z = 0, facing = 0.46 },
+                { t = 10, x = -2, z = 2, facing = 1.57 },
+                { t = 14, x = -2, z = 2, facing = -2.03 },
+                { t = 18, x = -3.5, z = 1.5, facing = -2.36 },
+                { t = 22, x = -4, z = 1, facing = -2.36 },
             },
         },
         {
@@ -71,11 +72,11 @@ local fight = {
             kind = "dps",
             label = "Ranged DPS",
             track = {
-                { t = 0,  x = -5, z = -1, visible = true },
-                { t = 8,  x = -4, z = 0 },
-                { t = 10, x = -2.2, z = 1.8 }, -- stack with team
-                { t = 14, x = -2.2, z = 1.8 },
-                { t = 22, x = -5, z = -1 },
+                { t = 0,  x = -5, z = -1, visible = true, facing = 0.79 },
+                { t = 8,  x = -4, z = 0, facing = 0.73 },
+                { t = 10, x = -2.2, z = 1.8, facing = 1.57 },
+                { t = 14, x = -2.2, z = 1.8, facing = -2.53 },
+                { t = 22, x = -5, z = -1, facing = -2.53 },
             },
         },
         {

@@ -1,0 +1,33 @@
+<GuiXml>
+  <Controls>
+    <!-- Mouse-driven settings window (keyboard mode / anyone with a cursor).
+         Only the frame lives in XML; every row is built in settings_window.lua
+         from the game's own ZO_DefaultButton template. -->
+    <TopLevelControl name="EsoAR_SettingsWindow" hidden="true" movable="true" mouseEnabled="true" clampedToScreen="true">
+      <Dimensions x="640" y="540" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+        <Label name="$(parent)Title" font="ZoFontWinH2" color="C5C29E" horizontalAlignment="RIGHT">
+          <Anchor point="TOPRIGHT" offsetX="-24" offsetY="18" />
+        </Label>
+        <Label name="$(parent)Hint" font="ZoFontGameSmall" color="A0A0A0" horizontalAlignment="RIGHT" wrapMode="ELLIPSIS">
+          <Dimensions x="590" y="20" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)Title" relativePoint="BOTTOMRIGHT" offsetY="4" />
+        </Label>
+        <Control name="$(parent)Rows">
+          <Dimensions x="590" y="330" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)Hint" relativePoint="BOTTOMRIGHT" offsetY="14" />
+        </Control>
+        <Label name="$(parent)Cmds" font="ZoFontGameSmall" color="8F8F8F" horizontalAlignment="RIGHT" wrapMode="ELLIPSIS">
+          <Dimensions x="590" y="20" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)Rows" relativePoint="BOTTOMRIGHT" offsetY="8" />
+        </Label>
+        <Control name="$(parent)Buttons">
+          <Dimensions x="590" y="32" />
+          <Anchor point="BOTTOMRIGHT" offsetX="-24" offsetY="-18" />
+        </Control>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

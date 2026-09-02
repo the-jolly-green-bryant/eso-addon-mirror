@@ -94,7 +94,7 @@ function OBT.UpdateVisuals(state, remainingTime, isBoss)
     local iconTex = OBT.ICON_OB
 
     local currentTime = GetGameTimeMilliseconds()
-    local isForce = (currentTime < OBT.targetCountEndTime)
+    local isForce = (currentTime < OBT.targetCountEndTime and not OBT.SV.isHideExperimental)
 
     if state == 1 then
         ColorArray = OBT.SV.ColorActive

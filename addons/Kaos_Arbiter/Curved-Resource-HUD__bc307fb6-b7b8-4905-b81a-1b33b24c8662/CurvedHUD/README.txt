@@ -1,4 +1,4 @@
-Curved Resource HUD 0.9.16
+Curved Resource HUD 0.9.17
 
 Upload CurvedHUD as one folder with CurvedHUD.addon at its root.
 The package contains exactly one .addon manifest, as required by the console uploader.
@@ -18,7 +18,14 @@ If neither library loads, the HUD still renders. Chat commands:
 frame; while hidden, ESO's self-buff row moves down into the available space.
 
 Expected startup chat line:
-  [CurvedHUD] Loaded 0.9.16; HUD, shield, and trackers created
+  [CurvedHUD] Loaded 0.9.17; HUD, shield, and trackers created
+
+0.9.17 hardens repeated character loading against ESO's 1000 ms UI watchdog.
+Inventory event bursts are debounced, activation work is coalesced, and learned
+skill/icon discovery is processed in small delayed chunks. Fast timer animation
+is separated from slower resource and buff checks, and recurring work waits one
+second for the login scene and other add-ons to settle. No new textures or
+persistent runtime caches are introduced.
 
 0.9.16 clears enemy-bound timers when combat ends, matching ESO's removal of
 hostile DoTs, ground effects, target debuffs and combat-only stacks. Carve also

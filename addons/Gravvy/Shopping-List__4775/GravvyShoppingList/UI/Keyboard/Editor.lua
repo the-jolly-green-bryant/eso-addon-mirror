@@ -218,6 +218,12 @@ function Editor:Initialize()
         WINDOW_WIDTH - 36
     )
     ShoppingListAccessibility:SetFont(title, "ZoFontWinH2")
+    ShoppingListControls:MakeWindowMovable(
+        window,
+        title,
+        self.owner.data,
+        "itemEditor"
+    )
 
     self.itemName = makeLabel(window, "", 18, 44, WINDOW_WIDTH - 36)
     self.itemName:SetColor(1, 1, 1, 1)

@@ -2,183 +2,164 @@ LibDailyReset = {}
 LibDailyReset.name = "LibDailyReset"
 
 local LDR = LibDailyReset
+local EM = EVENT_MANAGER
+
 LDR.callbacks = {}
-LDR.initialized = false
-LDR.sv = nil
 
 local WORLD_NAME = GetWorldName()
 
 local SERVER_RESET_HOURS = {
-    ["EU Megaserver"] = 3,
-    ["NA Megaserver"] = 10,
-    ["PTS"] = 10,
+	["EU Megaserver"] = 3,
+	["NA Megaserver"] = 10,
+	["PTS"] = 10,
 }
 
-local RESET_TIMER_EVENT = LDR.name .. "_ResetTimer"
+local defaultSV = {
+	lastKnownDay = 0,
+}
 
---------------------------------------------------
--- Internal Helpers
---------------------------------------------------
-
+-- ================================
+-- Core
+-- ================================
 local function GetServerResetHourUTC()
-    return SERVER_RESET_HOURS[WORLD_NAME]
+	return SERVER_RESET_HOURS[WORLD_NAME]
 end
 
 local function GetServerDayNumber()
-    local now = GetTimeStamp()
-    local resetHour = GetServerResetHourUTC()
+	local now = GetTimeStamp()
+	local resetHour = GetServerResetHourUTC()
 
-    local dateTable = os.date("!*t", now)
+	local dateTable = os.date("!*t", now)
 
-    if dateTable.hour < resetHour then
-        now = now - 86400
-    end
+	if dateTable.hour < resetHour then
+		now = now - 86400
+	end
 
-    return math.floor(now / 86400)
+	return math.floor(now / 86400)
 end
 
---------------------------------------------------
--- Public API
---------------------------------------------------
-
 function LDR.IsNewDay()
-    local currentDay = GetServerDayNumber()
-    return currentDay ~= LDR.sv.lastKnownDay
+	local currentDay = GetServerDayNumber()
+	return currentDay ~= LDR.SV.lastKnownDay
 end
 
 function LDR.GetCurrentServerDay()
-    return GetServerDayNumber()
+	return GetServerDayNumber()
 end
 
 function LDR.GetSecondsUntilReset()
-    return GetTimeUntilNextDailyLoginRewardClaimS()
+	return GetTimeUntilNextDailyLoginRewardClaimS()
 end
 
---------------------------------------------------
--- Callback System
---------------------------------------------------
-
-function LDR:RegisterCallback(name, func)
-    LDR.callbacks[name] = LDR.callbacks[name] or {}
-    table.insert(LDR.callbacks[name], func)
+-- ================================
+-- Callbacks
+-- ================================
+function LDR.RegisterCallback(name, func)
+	LDR.callbacks[name] = LDR.callbacks[name] or {}
+	table.insert(LDR.callbacks[name], func)
 end
 
-function LDR:UnregisterCallback(name, func)
-    if not LDR.callbacks[name] then return end
+function LDR.UnregisterCallback(name, func)
+	if not LDR.callbacks[name] then return end
 
-    for i, f in ipairs(LDR.callbacks[name]) do
-        if f == func then
-            table.remove(LDR.callbacks[name], i)
-            return
-        end
-    end
+	for i, f in ipairs(LDR.callbacks[name]) do
+		if f == func then
+			table.remove(LDR.callbacks[name], i)
+			return
+		end
+	end
 end
 
 local function FireCallbacks(name)
-    if not LDR.callbacks[name] then return end
-    for _, func in ipairs(LDR.callbacks[name]) do
-        func()
-    end
+	if not LDR.callbacks[name] then return end
+	for _, func in ipairs(LDR.callbacks[name]) do
+		func()
+	end
 end
 
---------------------------------------------------
--- Reset Scheduler
---------------------------------------------------
-
+-- ================================
+-- Hot Reset Timer
+-- ================================
 local function ScheduleNextReset()
-    local secondsUntilReset = GetTimeUntilNextDailyLoginRewardClaimS()
+	local secondsUntilReset = GetTimeUntilNextDailyLoginRewardClaimS()
 
-    EVENT_MANAGER:UnregisterForUpdate(RESET_TIMER_EVENT)
+	EM:UnregisterForUpdate(LDR.name)
 
-    EVENT_MANAGER:RegisterForUpdate(
-        RESET_TIMER_EVENT,
-        secondsUntilReset * 1000,
-        function()
-            FireCallbacks("OnDailyReset")
+	EM:RegisterForUpdate(
+		LDR.name,
+		secondsUntilReset * 1000,
+		function()
+			FireCallbacks("OnDailyReset")
 
-            local currentDay = GetServerDayNumber()
-            if currentDay <= LDR.sv.lastKnownDay then
-                LDR.sv.lastKnownDay = LDR.sv.lastKnownDay + 1
-            else
-                LDR.sv.lastKnownDay = currentDay
-            end
+			local currentDay = GetServerDayNumber()
+			if currentDay <= LDR.SV.lastKnownDay then
+				LDR.SV.lastKnownDay = LDR.SV.lastKnownDay + 1
+			else
+				LDR.SV.lastKnownDay = currentDay
+			end
 
-            ScheduleNextReset()
-        end
-    )
+			ScheduleNextReset()
+		end
+	)
 end
 
---------------------------------------------------
--- Debug Slash Command
---------------------------------------------------
-
+-- ================================
+-- Commands
+-- ================================
 SLASH_COMMANDS["/ldrdebug"] = function()
-    local server = GetWorldName()
-    local now = GetTimeStamp()
-    local dateTableUTC = os.date("!*t", now)
-    local dateStr = string.format("%04d-%02d-%02d %02d:%02d:%02d UTC",
-        dateTableUTC.year, dateTableUTC.month, dateTableUTC.day,
-        dateTableUTC.hour, dateTableUTC.min, dateTableUTC.sec
-    )
+	local server = GetWorldName()
+	local now = GetTimeStamp()
+	local dateTableUTC = os.date("!*t", now)
+	local dateStr = string.format("%04d-%02d-%02d %02d:%02d:%02d UTC",
+		dateTableUTC.year, dateTableUTC.month, dateTableUTC.day,
+		dateTableUTC.hour, dateTableUTC.min, dateTableUTC.sec
+	)
 
-    local serverDay = LDR.GetCurrentServerDay()
-    local secondsUntilReset = LDR.GetSecondsUntilReset()
+	local serverDay = LDR.GetCurrentServerDay()
+	local secondsUntilReset = LDR.GetSecondsUntilReset()
 
-    d("=== LibDailyReset Debug ===")
-    d("Server: " .. server)
-    d("UTC Date/Time: " .. dateStr)
-    d("Server Day Number: " .. serverDay)
-    d("Saved Last Known Day: " .. tostring(LDR.sv.lastKnownDay))
-    d("Seconds Until Next Reset (API): " .. tostring(secondsUntilReset))
-    d("==========================")
+	d("=== LibDailyReset Debug ===")
+	d("Server: " .. server)
+	d("UTC Date/Time: " .. dateStr)
+	d("Server Day Number: " .. serverDay)
+	d("Saved Last Known Day: " .. tostring(LDR.SV.lastKnownDay))
+	d("Seconds Until Next Reset (API): " .. tostring(secondsUntilReset))
+	d("==========================")
 end
 
 SLASH_COMMANDS["/ldrtestreset"] = function()
-    LDR.sv.lastKnownDay = LDR.GetCurrentServerDay() - 1
-    if LDR.IsNewDay() then
-        LDR.sv.lastKnownDay = LDR.GetCurrentServerDay()
-        d("LibDailyReset: Forced reset triggered!")
-        FireCallbacks("OnDailyReset")
-    end
+	LDR.SV.lastKnownDay = LDR.GetCurrentServerDay() - 1
+	if LDR.IsNewDay() then
+		LDR.SV.lastKnownDay = LDR.GetCurrentServerDay()
+		d("LibDailyReset: Forced reset triggered!")
+		FireCallbacks("OnDailyReset")
+	end
 end
 
---------------------------------------------------
--- Initialization
---------------------------------------------------
-
+-- ================================
+-- Init
+-- ================================
 function LDR.Initialize()
-    if LDR.initialized then return end
-    LDR.initialized = true
+	EM:UnregisterForEvent(LDR.name, EVENT_ADD_ON_LOADED)
 
-    EVENT_MANAGER:UnregisterForEvent(LDR.name, EVENT_ADD_ON_LOADED)
+	LDR.SV = ZO_SavedVars:NewAccountWide("LibDailyReset_SavedVariables", 1, nil, defaultSV)
 
-    local currentDay = GetServerDayNumber()
+	EM:RegisterForEvent(LDR.name, EVENT_PLAYER_ACTIVATED, function()
+		EM:UnregisterForEvent(LDR.name, EVENT_PLAYER_ACTIVATED)
 
-    LDR.sv = ZO_SavedVars:NewAccountWide(
-        "LibDailyReset_SavedVariables",
-        1,
-        nil,
-        {
-            lastKnownDay = currentDay
-        }
-    )
+		local currentDay = GetServerDayNumber()
 
-    EVENT_MANAGER:RegisterForEvent(LDR.name, EVENT_PLAYER_ACTIVATED, function()
-        EVENT_MANAGER:UnregisterForEvent(LDR.name, EVENT_PLAYER_ACTIVATED)
+		if currentDay ~= LDR.SV.lastKnownDay then
+			LDR.SV.lastKnownDay = currentDay
+			FireCallbacks("OnDailyReset")
+		end
 
-        local currentDay = GetServerDayNumber()
-
-        if currentDay ~= LDR.sv.lastKnownDay then
-            LDR.sv.lastKnownDay = currentDay
-            FireCallbacks("OnDailyReset")
-        end
-
-        ScheduleNextReset()
-    end)
+		ScheduleNextReset()
+	end)
 end
 
-EVENT_MANAGER:RegisterForEvent(LDR.name, EVENT_ADD_ON_LOADED, function(_, addonName)
-    if addonName == LDR.name then
-        LDR.Initialize()
-    end
+EM:RegisterForEvent(LDR.name, EVENT_ADD_ON_LOADED, function(_, addonName)
+	if addonName == LDR.name then
+		LDR.Initialize()
+	end
 end)

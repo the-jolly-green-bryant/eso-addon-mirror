@@ -155,7 +155,7 @@ local function HasActiveBuff(nameList)
 end
 
 local function Notify(msg)
-    d("|cffffff AutoConsume:|r |cffff00" .. msg .. "|r")
+    d("|cFFFFFF AutoConsume:|r |cFFFF00" .. msg .. "|r")
 end
 
 local function GetItemNameByID(itemID)
@@ -386,11 +386,12 @@ function AC:CreateSettings()
     local menu = LCM:CreateAddonMenu("AutoConsume", {
         title          = "AutoConsume",
         author         = "user562",
-        version        = "3.3",
+        version        = "3.4",
         category       = MOD_BROWSER_CATEGORY_TYPE_BUFFS_AND_DEBUFFS,
         enableDefaults = true,
         enableReset    = true,
         resetFunc      = function() AC:ResetSettings() end,
+        childrenAlign  = "center",
     })
 
     if not menu then return end
@@ -400,13 +401,11 @@ function AC:CreateSettings()
         {
             type    = "submenu",
             name    = "Food/Drink",
-            align   = "left",
-            indent  = true,
             icon    = ICON_GENERIC,
             options = {
                 {
                     type    = "toggle",
-                    name    = "Auto-consume",
+                    name    = "Auto Consume",
                     default = DEFAULTS.autoFood,
                     getFunc = function() return AC.savedVariables.autoFood end,
                     setFunc = function(val)
@@ -416,7 +415,7 @@ function AC:CreateSettings()
                 },
                 {
                     type    = "slider",
-                    name    = "Minutes remaining before re-eating",
+                    name    = "Minutes Left",
                     min     = 1,
                     max     = 30,
                     step    = 1,
@@ -444,16 +443,16 @@ function AC:CreateSettings()
                 },
                 {
                     type    = "button",
-                    name    = "|c00ff00Confirm|r",
+                    name    = "|c00FF00Confirm|r",
                     func    = function()
                         AC.savedVariables.foodID = pending.foodID
-                        Notify("Food/Drink set to: |c00ff00" .. GetItemNameByID(pending.foodID))
+                        Notify("Food/Drink set to: |c00FF00" .. GetItemNameByID(pending.foodID))
                         AC:ForceCheckFood()
                     end,
                 },
                 {
                     type    = "button",
-                    name    = "|cff8800Scan Bag|r",
+                    name    = "|cFF8800Scan Bag|r",
                     tooltip = "Will ReloadUI",
                     func    = function() AC:ScanBagAndReload() end,
                 },
@@ -463,13 +462,11 @@ function AC:CreateSettings()
         {
             type    = "submenu",
             name    = "|cE6C800XP Bonus|r",
-            align   = "left",
-            indent  = true,
             icon    = ICON_GENERIC,
             options = {
                 {
                     type    = "toggle",
-                    name    = "Auto-Use",
+                    name    = "Auto Use",
                     default = DEFAULTS.autoXP,
                     getFunc = function() return AC.savedVariables.autoXP end,
                     setFunc = function(val)
@@ -490,16 +487,16 @@ function AC:CreateSettings()
                 },
                 {
                     type    = "button",
-                    name    = "|c00ff00Confirm|r",
+                    name    = "|c00FF00Confirm|r",
                     func    = function()
                         AC.savedVariables.xpItemID = pending.xpItemID
-                        Notify("XP Item set to: |c00ff00" .. GetItemNameByID(pending.xpItemID))
+                        Notify("XP Item set to: |c00FF00" .. GetItemNameByID(pending.xpItemID))
                         AC:CheckXP()
                     end,
                 },
                 {
                     type    = "button",
-                    name    = "|cff8800Scan Bag|r",
+                    name    = "|cFF8800Scan Bag|r",
                     tooltip = "Will ReloadUI",
                     func    = function() AC:ScanBagAndReload() end,
                 },
@@ -509,13 +506,11 @@ function AC:CreateSettings()
         {
             type    = "submenu",
             name    = "|c00FF00AP Bonus|r",
-            align   = "left",
-            indent  = true,
             icon    = ICON_GENERIC,
             options = {
                 {
                     type    = "toggle",
-                    name    = "Auto-Use",
+                    name    = "Auto Use",
                     default = DEFAULTS.autoAP,
                     getFunc = function() return AC.savedVariables.autoAP end,
                     setFunc = function(val)
@@ -536,16 +531,16 @@ function AC:CreateSettings()
                 },
                 {
                     type    = "button",
-                    name    = "|c00ff00Confirm|r",
+                    name    = "|c00FF00Confirm|r",
                     func    = function()
                         AC.savedVariables.apItemID = pending.apItemID
-                        Notify("AP Item set to: |c00ff00" .. GetItemNameByID(pending.apItemID))
+                        Notify("AP Item set to: |c00FF00" .. GetItemNameByID(pending.apItemID))
                         AC:CheckAP()
                     end,
                 },
                 {
                     type    = "button",
-                    name    = "|cff8800Scan Bag|r",
+                    name    = "|cFF8800Scan Bag|r",
                     tooltip = "Will ReloadUI",
                     func    = function() AC:ScanBagAndReload() end,
                 },
@@ -554,14 +549,13 @@ function AC:CreateSettings()
 
         {
             type    = "submenu",
-            name    = "Show Buffs",
-            align   = "left",
-            indent  = true,
+            name    = "Buff Icons",
             icon    = ICON_GENERIC,
             options = {
                 {
                     type    = "toggle",
                     name    = "Enabled",
+                    preset  = "YES_NO",
                     default = DEFAULTS.hudEnabled,
                     getFunc = function() return AC.savedVariables.hudEnabled end,
                     setFunc = function(val)

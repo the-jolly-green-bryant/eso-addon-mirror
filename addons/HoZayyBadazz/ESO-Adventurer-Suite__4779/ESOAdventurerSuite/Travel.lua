@@ -5189,10 +5189,10 @@ local MAP_TELEPORTER_VIEW_MENU_02967 = {
     {"GUILD", "Guild Members"},
     {"GUILDS", "Guilds"},
     {"QUESTS", "Quests"},
-    {"ITEMS", "Maps Surveys and Items"},
+    {"ITEMS", "Maps / Surveys / Items"},
     {"LEADS", "Antiquity Leads"},
     {"DELVES", "Delves"},
-    {"DUNGEONS", "Dungeons and Trials"},
+    {"DUNGEONS", "Dungeons / Trials"},
     {"INSTANCES", "All Instances"},
     {"HOUSES", "My Houses"},
     {"PLAYER_HOMES", "Player Homes"},
@@ -5355,7 +5355,7 @@ function T:CreateMapTeleporter()
     title:SetHeight(30)
     root.title = title
 
-    local viewButton = mtToolbarButton02967(wm, root, "VIEW ALL", 210)
+    local viewButton = mtToolbarButton02967(wm, root, "ALL DESTINATIONS", 210)
     viewButton:SetHandler("OnClicked", function(control) self:ShowMapTeleporterViewMenu02967(control) end)
     root.viewButton = viewButton
 
@@ -5515,7 +5515,7 @@ function T:RefreshMapTeleporter()
     local mode = self.mapTeleporterMode or "ALL"
     local viewLabel = self:GetMapTeleporterViewLabel02967(mode)
 
-    if root.viewButton then root.viewButton:SetText("VIEW " .. string.upper(viewLabel)) end
+    if root.viewButton then root.viewButton:SetText(string.upper(viewLabel)) end
     if root.favoriteButton then
         if mode == "FAVORITES" then root.favoriteButton:SetNormalFontColor(1.00, 0.78, 0.24, 1)
         else root.favoriteButton:SetNormalFontColor(0.86, 0.88, 0.90, 1) end
@@ -5826,7 +5826,7 @@ function T:ShowMapTeleporterViewMenu02967(owner)
             action = function() self:SetMapTeleporterMode(mode) end,
         }
     end
-    return self:ShowMapTeleporterFlyout02969("VIEW", items, owner, false)
+    return self:ShowMapTeleporterFlyout02969("DESTINATIONS", items, owner, false)
 end
 
 function T:ShowMapTeleporterToolsMenu02967(owner)
@@ -6325,7 +6325,7 @@ local function EAS_CleanTeleporterStaticText02983(self, root)
     end
 
     local viewLabel = self:GetMapTeleporterViewLabel02967(self.mapTeleporterMode or "ALL")
-    if root.viewButton then root.viewButton:SetText("VIEW " .. string.upper(viewLabel)) end
+    if root.viewButton then root.viewButton:SetText(string.upper(viewLabel)) end
     if root.toolsButton then root.toolsButton:SetText("TOOLS") end
     if root.favoriteButton then root.favoriteButton:SetText("FAVORITES") end
     if root.prev then root.prev:SetText("PREVIOUS") end
@@ -7116,4 +7116,2376 @@ function T:RawKeyMatchesAction02986(actionName, key, ctrl, alt, shift, command)
         end
     end
     return EAS_RawKeyMatchesActionBase029114(self, actionName, key, ctrl, alt, shift, command)
+end
+
+-- ============================================================================
+-- v0.29.128 - Native World Map keyboard + collapsible Teleporter drawer.
+-- The Teleporter must never own the World Map's keyboard layer.  ESO keeps
+-- handling Escape, TOGGLE_MAP, player-location (R by default), zoom and every
+-- other map action.  Only the two search edit boxes take keyboard focus when
+-- the user explicitly clicks them.
+-- ============================================================================
+local EAS_CreateMapTeleporterBase029128 = T.CreateMapTeleporter
+local EAS_LayoutMapTeleporterBase029128 = T.LayoutMapTeleporter
+local EAS_RefreshMapTeleporterBase029128 = T.RefreshMapTeleporter
+local EAS_SetMapTeleporterVisibleBase029128 = T.SetMapTeleporterVisible
+
+local function EAS_SetControlHidden029128(control, hidden)
+    if control and type(control.SetHidden) == "function" then
+        pcall(control.SetHidden, control, hidden == true)
+    end
+end
+
+function T:RestoreNativeWorldMapKeys029128(root)
+    if not root then return end
+
+    -- A top-level keyboard-enabled Teleporter consumes keys before the native
+    -- World Map can see them.  Remove the raw handler and keyboard ownership.
+    if root.SetHandler then root:SetHandler("OnKeyDown", nil) end
+    if root.SetKeyboardEnabled then root:SetKeyboardEnabled(false) end
+
+    -- Search fields are the only controls allowed to own keyboard focus.
+    local function fixSearch(edit)
+        if not edit then return end
+        if edit.SetKeyboardEnabled then edit:SetKeyboardEnabled(true) end
+        edit:SetHandler("OnEscape", function(c)
+            if c and c.LoseFocus then pcall(c.LoseFocus, c) end
+            self.mapTeleporterSearchFocused = false
+            -- Escape from a focused search should still behave like Escape on
+            -- the normal World Map instead of getting trapped in the edit box.
+            if SCENE_MANAGER and type(SCENE_MANAGER.Hide) == "function" then
+                pcall(SCENE_MANAGER.Hide, SCENE_MANAGER, "worldMap")
+            elseif SCENE_MANAGER and type(SCENE_MANAGER.HideCurrentScene) == "function" then
+                pcall(SCENE_MANAGER.HideCurrentScene, SCENE_MANAGER)
+            end
+        end)
+    end
+    fixSearch(root.playerSearch)
+    fixSearch(root.zoneSearch)
+end
+
+-- Disable the old Teleporter-owned TOGGLE_MAP interception.  Calls from older
+-- wrapper layers now simply restore native keyboard ownership.
+function T:ApplyRawMapToggleHandler02986(root)
+    self:RestoreNativeWorldMapKeys029128(root)
+end
+
+-- Do not replace ESO's standard Exit/map keybind strip.  Restore it if an older
+-- Suite version removed it during this session.
+function T:UpdateNativeMapToggleStrip02985()
+    local strip = KEYBIND_STRIP
+    if not strip then return end
+
+    if self.nativeMapToggleAdded02985 and self.nativeMapToggleDescriptor02985
+        and type(strip.RemoveKeybindButtonGroup) == "function" then
+        pcall(strip.RemoveKeybindButtonGroup, strip, self.nativeMapToggleDescriptor02985)
+    end
+    self.nativeMapToggleAdded02985 = false
+
+    if self.nativeDefaultExitRemoved02985 and type(strip.RestoreDefaultExit) == "function" then
+        pcall(strip.RestoreDefaultExit, strip)
+    end
+    self.nativeDefaultExitRemoved02985 = false
+end
+
+function T:SetMapTeleporterExpanded029128(expanded, saveState)
+    local root = self.mapTeleporter
+    if not root then return end
+    expanded = expanded == true
+    self.mapTeleporterExpanded029128 = expanded
+
+    if saveState ~= false and EPC.saved then
+        EPC.saved.mapTeleporterExpanded = expanded
+    end
+
+    if self.HideMapTeleporterFlyout02969 then self:HideMapTeleporterFlyout02969() end
+    if not expanded and self.ReleaseMapTeleporterSearchFocus02984 then
+        self:ReleaseMapTeleporterSearchFocus02984()
+    end
+
+    local normalControls = {
+        root.title, root.viewButton, root.toolsButton, root.favoriteButton,
+        root.playerSearchLabel, root.playerSearchBg, root.zoneSearchLabel, root.zoneSearchBg,
+        root.stats, root.sortInfo, root.prev, root.page, root.next, root.closeMapButton02971,
+    }
+    for _, control in ipairs(normalControls) do EAS_SetControlHidden029128(control, not expanded) end
+    for _, row in ipairs(root.rows or {}) do
+        -- RefreshMapTeleporter will decide which rows are visible when expanded.
+        EAS_SetControlHidden029128(row, not expanded or row.entry == nil)
+    end
+
+    if root.drawerButton029128 then
+        root.drawerButton029128:SetText(expanded and "<  TELEPORTER" or "TELEPORTER  >")
+        root.drawerButton029128:ClearAnchors()
+        if expanded then
+            root.drawerButton029128:SetAnchor(TOPRIGHT, root, TOPRIGHT, -5, 5)
+        else
+            root.drawerButton029128:SetAnchor(TOPLEFT, root, TOPLEFT, 5, 5)
+        end
+    end
+    -- The legacy in-panel close-map button is intentionally retired; ESO's
+    -- native Escape/Map bindings are the only map-close controls now.
+    EAS_SetControlHidden029128(root.closeMapButton02971, true)
+
+    root:ClearAnchors()
+    root:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 0, 8)
+    if expanded then
+        root:SetDimensions(500, math.max(560, safeNumber(GuiRoot:GetHeight(), 900) - 16))
+        if EAS_LayoutMapTeleporterBase029128 then EAS_LayoutMapTeleporterBase029128(self) end
+        if not root:IsHidden() and self:IsMapTeleporterMapShowing() then
+            EAS_RefreshMapTeleporterBase029128(self)
+            if EVENT_MANAGER then
+                EVENT_MANAGER:UnregisterForUpdate(MAP_TELEPORTER_REFRESH)
+                EVENT_MANAGER:RegisterForUpdate(MAP_TELEPORTER_REFRESH, 3500, function()
+                    local travel = EPC and EPC.Travel
+                    if travel and travel.mapTeleporter and not travel.mapTeleporter:IsHidden()
+                        and travel.mapTeleporterExpanded029128 == true and travel:IsMapTeleporterMapShowing() then
+                        travel:RefreshMapTeleporter()
+                    else
+                        EVENT_MANAGER:UnregisterForUpdate(MAP_TELEPORTER_REFRESH)
+                    end
+                end)
+            end
+        end
+    else
+        -- Compact drawer tab: the map remains unobstructed until requested.
+        root:SetDimensions(136, 42)
+        if EVENT_MANAGER then EVENT_MANAGER:UnregisterForUpdate(MAP_TELEPORTER_REFRESH) end
+    end
+
+    self:RestoreNativeWorldMapKeys029128(root)
+end
+
+function T:ToggleMapTeleporterDrawer029128()
+    self:SetMapTeleporterExpanded029128(not (self.mapTeleporterExpanded029128 == true), true)
+end
+
+function T:CreateMapTeleporter()
+    local root = EAS_CreateMapTeleporterBase029128(self)
+    if not root or not WINDOW_MANAGER then return root end
+
+    if not root.drawerButton029128 then
+        local button = WINDOW_MANAGER:CreateControl(nil, root, CT_BUTTON)
+        button:SetDimensions(126, 32)
+        button:SetAnchor(TOPLEFT, root, TOPLEFT, 5, 5)
+        button:SetFont("ZoFontGameBold")
+        button:SetNormalFontColor(0.94, 0.95, 0.96, 1)
+        button:SetMouseOverFontColor(1.00, 0.78, 0.24, 1)
+        button:SetPressedFontColor(1.00, 0.78, 0.24, 1)
+        button:SetHandler("OnClicked", function() self:ToggleMapTeleporterDrawer029128() end)
+        button:SetDrawLayer(DL_OVERLAY)
+        button:SetDrawLevel(980)
+        root.drawerButton029128 = button
+    end
+
+    -- The drawer starts folded whenever the map is first opened.  The saved
+    -- value only tracks an explicit user toggle during the current map session;
+    -- scene visibility below folds it again after closing the map.
+    if self.mapTeleporterExpanded029128 == nil then
+        self.mapTeleporterExpanded029128 = false
+    end
+    self:RestoreNativeWorldMapKeys029128(root)
+    return root
+end
+
+function T:LayoutMapTeleporter(...)
+    local root = self.mapTeleporter
+    if root and self.mapTeleporterExpanded029128 ~= true then
+        root:ClearAnchors()
+        root:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 0, 8)
+        root:SetDimensions(136, 42)
+        self:RestoreNativeWorldMapKeys029128(root)
+        return
+    end
+    local result = EAS_LayoutMapTeleporterBase029128(self, ...)
+    self:RestoreNativeWorldMapKeys029128(self.mapTeleporter)
+    return result
+end
+
+function T:RefreshMapTeleporter(...)
+    local root = self.mapTeleporter
+    if root and self.mapTeleporterExpanded029128 ~= true then
+        -- No roster/guild destination rebuild while the drawer is folded.
+        self:RestoreNativeWorldMapKeys029128(root)
+        return
+    end
+    return EAS_RefreshMapTeleporterBase029128(self, ...)
+end
+
+function T:SetMapTeleporterVisible(visible)
+    local result = EAS_SetMapTeleporterVisibleBase029128(self, visible)
+    local root = self.mapTeleporter
+    if not root then return result end
+
+    if visible == true and EPC.saved and EPC.saved.mapTeleporterEnabled ~= false then
+        -- Always open the World Map with a small folded tab so ESO's normal map
+        -- remains fully usable.  The user expands the Teleporter on demand.
+        self.mapTeleporterExpanded029128 = false
+        self:SetMapTeleporterExpanded029128(false, false)
+        root:SetHidden(false)
+    else
+        self.mapTeleporterExpanded029128 = false
+        self:ReleaseMapTeleporterSearchFocus02984()
+    end
+    self:RestoreNativeWorldMapKeys029128(root)
+    self:UpdateNativeMapToggleStrip02985()
+    return result
+end
+
+-- ============================================================================
+-- v0.29.129 - Keep the Map Teleporter independent from World Map zoom.
+-- The destination drawer is UI chrome, not map content.  Never size/anchor it
+-- from ZO_WorldMapContainer/scroll/map geometry because those controls change
+-- while ESO zooms/pans/animates the map.  Keeping the drawer on GuiRoot also
+-- prevents map zoom from visually scaling or shifting the Teleporter.
+-- ============================================================================
+function T:DockMapTeleporterToWorldMap()
+    local root = self.mapTeleporter
+    if not root or not GuiRoot then return end
+
+    root:ClearAnchors()
+    root:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 0, 8)
+    root:SetClampedToScreen(false)
+    if root.SetScale then root:SetScale(1) end
+
+    if self.mapTeleporterExpanded029128 == true then
+        root:SetDimensions(500, math.max(560, safeNumber(GuiRoot:GetHeight(), 900) - 16))
+    else
+        root:SetDimensions(136, 42)
+    end
+end
+
+-- Wrap creation once more so older creation layers cannot restore their
+-- mouse-wheel pagination handler.  Wheel input over the actual map remains
+-- native ESO zoom; wheel input over the Teleporter itself does nothing.
+local EAS_CreateMapTeleporterBase029129 = T.CreateMapTeleporter
+function T:CreateMapTeleporter()
+    local root = EAS_CreateMapTeleporterBase029129(self)
+    if not root then return root end
+
+    self:DockMapTeleporterToWorldMap()
+    if root.SetHandler then
+        root:SetHandler("OnMouseWheel", function() end)
+    end
+    self:RestoreNativeWorldMapKeys029128(root)
+    return root
+end
+
+
+-- ============================================================================
+-- v0.29.130 - Teleporter visibility modes + normal HUD overlay integration.
+-- MAP: collapsible drawer exists only while ESO's World Map is showing.
+-- ALWAYS: the same drawer is available during gameplay and uses ESO's native
+-- HUD-fade fragment behavior, while remaining available on the World Map.
+-- HUD Layout Mode temporarily expands/unlocks it and saves a screen position.
+-- ============================================================================
+local EAS_CreateMapTeleporterBase029130 = T.CreateMapTeleporter
+local EAS_LayoutMapTeleporterBase029130 = T.LayoutMapTeleporter
+local EAS_RefreshMapTeleporterBase029130 = T.RefreshMapTeleporter
+local EAS_SetMapTeleporterExpandedBase029130 = T.SetMapTeleporterExpanded029128
+
+local function EAS_MapTeleporterMode029130()
+    if not EPC or not EPC.saved then return "MAP" end
+    return EPC.saved.mapTeleporterDisplayMode == "ALWAYS" and "ALWAYS" or "MAP"
+end
+
+function T:GetMapTeleporterExpandedHeight029130()
+    local rootH = math.max(600, safeNumber(GuiRoot and GuiRoot:GetHeight(), 900))
+    return math.max(560, math.min(780, rootH - 40))
+end
+
+function T:AnchorMapTeleporter029130()
+    local root = self.mapTeleporter
+    if not root or not GuiRoot then return end
+    local left = safeNumber(EPC.saved and EPC.saved.mapTeleporterLeft, -1)
+    local top = safeNumber(EPC.saved and EPC.saved.mapTeleporterTop, -1)
+    local rootW = safeNumber(GuiRoot:GetWidth(), 0)
+    local rootH = safeNumber(GuiRoot:GetHeight(), 0)
+    local width = self.mapTeleporterExpanded029128 == true and 500 or 136
+    local height = self.mapTeleporterExpanded029128 == true and self:GetMapTeleporterExpandedHeight029130() or 42
+    local valid = left >= 0 and top >= 0
+        and (rootW <= 0 or left <= math.max(0, rootW - math.min(width, rootW)))
+        and (rootH <= 0 or top <= math.max(0, rootH - math.min(height, rootH)))
+
+    root:ClearAnchors()
+    if valid then
+        root:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, left, top)
+    else
+        root:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 12, 84)
+    end
+    root:SetClampedToScreen(true)
+    if root.SetScale then root:SetScale(1) end
+end
+
+function T:SaveMapTeleporterPosition029130()
+    local root = self.mapTeleporter
+    if not root or not EPC.saved then return end
+    EPC.saved.mapTeleporterLeft = math.max(0, safeNumber(root:GetLeft(), 0))
+    EPC.saved.mapTeleporterTop = math.max(0, safeNumber(root:GetTop(), 0))
+end
+
+function T:ResetMapTeleporterPosition()
+    if EPC.saved then
+        EPC.saved.mapTeleporterLeft = -1
+        EPC.saved.mapTeleporterTop = -1
+    end
+    self:AnchorMapTeleporter029130()
+end
+
+function T:EnsureMapTeleporterHudFragment029130()
+    if self.mapTeleporterHudFragment029130 or not self.mapTeleporter then
+        return self.mapTeleporterHudFragment029130
+    end
+    if EPC and EPC.CreateHudFadeFragment then
+        self.mapTeleporterHudFragment029130 = EPC:CreateHudFadeFragment(self.mapTeleporter)
+        self.mapTeleporterHudFragmentAttached029130 = self.mapTeleporterHudFragment029130 ~= nil
+    end
+    return self.mapTeleporterHudFragment029130
+end
+
+function T:SetMapTeleporterHudFragmentAttached029130(attached)
+    local fragment = self:EnsureMapTeleporterHudFragment029130()
+    if not fragment then return false end
+    attached = attached == true
+    if attached == (self.mapTeleporterHudFragmentAttached029130 == true) then return true end
+
+    local function add(scene)
+        if scene and type(scene.AddFragment) == "function" then pcall(scene.AddFragment, scene, fragment) end
+    end
+    local function remove(scene)
+        if scene and type(scene.RemoveFragment) == "function" then pcall(scene.RemoveFragment, scene, fragment) end
+    end
+    if attached then
+        add(HUD_SCENE)
+        if HUD_UI_SCENE and HUD_UI_SCENE ~= HUD_SCENE then add(HUD_UI_SCENE) end
+    else
+        remove(HUD_SCENE)
+        if HUD_UI_SCENE and HUD_UI_SCENE ~= HUD_SCENE then remove(HUD_UI_SCENE) end
+    end
+    self.mapTeleporterHudFragmentAttached029130 = attached
+    return true
+end
+
+function T:SetMapTeleporterHudReason029130(showRequested)
+    local fragment = self:EnsureMapTeleporterHudFragment029130()
+    if fragment and type(fragment.SetHiddenForReason) == "function" then
+        pcall(fragment.SetHiddenForReason, fragment, "EAS_TELEPORTER_DISABLED", showRequested ~= true)
+    elseif self.mapTeleporter then
+        self.mapTeleporter:SetHidden(showRequested ~= true)
+    end
+end
+
+function T:UpdateMapTeleporterRefreshPulse029130()
+    if not EVENT_MANAGER then return end
+    EVENT_MANAGER:UnregisterForUpdate(MAP_TELEPORTER_REFRESH)
+    local root = self.mapTeleporter
+    if not root or root:IsHidden() or self.mapTeleporterExpanded029128 ~= true then return end
+    if self.mapTeleporterLayoutMode029130 == true then return end
+    local mapShowing = self:IsMapTeleporterMapShowing()
+    if not mapShowing and EAS_MapTeleporterMode029130() ~= "ALWAYS" then return end
+
+    EVENT_MANAGER:RegisterForUpdate(MAP_TELEPORTER_REFRESH, 4500, function()
+        local travel = EPC and EPC.Travel
+        if not travel or not travel.mapTeleporter or travel.mapTeleporter:IsHidden()
+            or travel.mapTeleporterExpanded029128 ~= true then
+            EVENT_MANAGER:UnregisterForUpdate(MAP_TELEPORTER_REFRESH)
+            return
+        end
+        if not travel:IsMapTeleporterMapShowing() and EAS_MapTeleporterMode029130() ~= "ALWAYS" then
+            EVENT_MANAGER:UnregisterForUpdate(MAP_TELEPORTER_REFRESH)
+            return
+        end
+        travel:RefreshMapTeleporter(true)
+    end)
+end
+
+function T:CreateMapTeleporter()
+    local root = EAS_CreateMapTeleporterBase029130(self)
+    if not root or not WINDOW_MANAGER then return root end
+
+    root:SetClampedToScreen(true)
+    root:SetMovable(self.mapTeleporterLayoutMode029130 == true)
+    root:SetMouseEnabled(true)
+    root:SetHandler("OnMoveStop", function(control)
+        if control.StopMoving then pcall(control.StopMoving, control) end
+        self:SaveMapTeleporterPosition029130()
+    end)
+
+    if not root.layoutDragHandle029130 then
+        local handle = WINDOW_MANAGER:CreateControl(nil, root, CT_CONTROL)
+        handle:SetAnchor(TOPLEFT, root, TOPLEFT, 0, 0)
+        handle:SetAnchor(TOPRIGHT, root, TOPRIGHT, 0, 0)
+        handle:SetHeight(42)
+        handle:SetMouseEnabled(false)
+        if handle.SetDrawLayer and DL_OVERLAY then handle:SetDrawLayer(DL_OVERLAY) end
+        if handle.SetDrawLevel then handle:SetDrawLevel(1500) end
+        handle:SetHandler("OnMouseDown", function(_, button)
+            if self.mapTeleporterLayoutMode029130 == true and button == MOUSE_BUTTON_INDEX_LEFT and root.StartMoving then
+                root:StartMoving()
+            end
+        end)
+        handle:SetHandler("OnMouseUp", function(_, button)
+            if self.mapTeleporterLayoutMode029130 == true and button == MOUSE_BUTTON_INDEX_LEFT and root.StopMoving then
+                root:StopMoving()
+                self:SaveMapTeleporterPosition029130()
+            end
+        end)
+        root.layoutDragHandle029130 = handle
+    end
+
+    self:AnchorMapTeleporter029130()
+    self:RestoreNativeWorldMapKeys029128(root)
+    return root
+end
+
+function T:DockMapTeleporterToWorldMap()
+    local root = self.mapTeleporter
+    if not root then return end
+    if self.mapTeleporterExpanded029128 == true then
+        root:SetDimensions(500, self:GetMapTeleporterExpandedHeight029130())
+    else
+        root:SetDimensions(136, 42)
+    end
+    self:AnchorMapTeleporter029130()
+end
+
+function T:LayoutMapTeleporter(...)
+    local root = self.mapTeleporter
+    if root then
+        if self.mapTeleporterExpanded029128 == true then
+            root:SetDimensions(500, self:GetMapTeleporterExpandedHeight029130())
+        else
+            root:SetDimensions(136, 42)
+        end
+    end
+    local result = EAS_LayoutMapTeleporterBase029130(self, ...)
+    self:AnchorMapTeleporter029130()
+    return result
+end
+
+function T:RefreshMapTeleporter(force029130)
+    local root = self.mapTeleporter
+    if not root or root:IsHidden() or self.mapTeleporterExpanded029128 ~= true then return end
+    -- The older anti-hitch wrapper only schedules delayed retries while the map
+    -- is visible. Outside-map ALWAYS mode therefore requests a full refresh at
+    -- its intentionally slow 4.5 second cadence or on direct user interaction.
+    if not self:IsMapTeleporterMapShowing() and EAS_MapTeleporterMode029130() == "ALWAYS" then
+        self.mapTeleporterLastRefresh029114 = 0
+        force029130 = true
+    end
+    local result = EAS_RefreshMapTeleporterBase029130(self, force029130 == true)
+    self:AnchorMapTeleporter029130()
+    return result
+end
+
+function T:SetMapTeleporterExpanded029128(expanded, saveState)
+    local result = EAS_SetMapTeleporterExpandedBase029130(self, expanded, saveState)
+    local root = self.mapTeleporter
+    if not root then return result end
+    self:DockMapTeleporterToWorldMap()
+    if expanded == true and not root:IsHidden() then self:RefreshMapTeleporter(true) end
+    self:HideMapCompletionForTeleporter(self:IsMapTeleporterMapShowing() and expanded == true and not root:IsHidden())
+    self:UpdateMapTeleporterRefreshPulse029130()
+    return result
+end
+
+function T:RaiseForLayout()
+    if self.mapTeleporterLayoutMode029130 ~= true then return end
+    local root = self.mapTeleporter
+    if not root or root:IsHidden() then return end
+    if root.SetTopLevel then root:SetTopLevel(true) end
+    if root.SetDrawTier and DT_HIGH then root:SetDrawTier(DT_HIGH) end
+    if root.SetDrawLayer and DL_OVERLAY then root:SetDrawLayer(DL_OVERLAY) end
+    if root.SetDrawLevel then root:SetDrawLevel(970) end
+    if root.BringWindowToTop then root:BringWindowToTop() end
+end
+
+function T:SetLayoutMode(active)
+    active = active == true
+    local root = self:CreateMapTeleporter()
+    if not root then return end
+
+    if active and not self.mapTeleporterLayoutMode029130 then
+        self.mapTeleporterLayoutRestoreExpanded029130 = self.mapTeleporterExpanded029128 == true
+    end
+    self.mapTeleporterLayoutMode029130 = active
+    root:SetMovable(active)
+    root:SetMouseEnabled(true)
+    if root.layoutDragHandle029130 then root.layoutDragHandle029130:SetMouseEnabled(active) end
+    if root.drawerButton029128 and root.drawerButton029128.SetMouseEnabled then root.drawerButton029128:SetMouseEnabled(not active) end
+
+    if active then
+        self:SetMapTeleporterHudFragmentAttached029130(false)
+        self:SetMapTeleporterExpanded029128(true, false)
+        if root.title then root.title:SetText("MAP TELEPORTER  |  DRAG TOP BAR TO MOVE") end
+        root:SetHidden(false)
+        self:RefreshMapTeleporter(true)
+        if root.SetTopLevel then root:SetTopLevel(true) end
+        if root.SetDrawTier and DT_HIGH then root:SetDrawTier(DT_HIGH) end
+        if root.SetDrawLayer and DL_OVERLAY then root:SetDrawLayer(DL_OVERLAY) end
+        if root.SetDrawLevel then root:SetDrawLevel(970) end
+        if root.BringWindowToTop then root:BringWindowToTop() end
+    else
+        if root.title then root.title:SetText("MAP TELEPORTER") end
+        local restore = self.mapTeleporterLayoutRestoreExpanded029130 == true
+        self.mapTeleporterLayoutRestoreExpanded029130 = nil
+        self:SetMapTeleporterExpanded029128(restore, false)
+    end
+    self:RefreshMapTeleporterVisibility()
+end
+
+function T:RefreshMapTeleporterVisibility()
+    local root = self:CreateMapTeleporter()
+    if not root or not EPC.saved then return end
+    local enabled = EPC.saved.mapTeleporterEnabled ~= false
+    local mode = EAS_MapTeleporterMode029130()
+    local mapShowing = self:IsMapTeleporterMapShowing()
+    local layout = self.mapTeleporterLayoutMode029130 == true or EPC.unitFramesMoveMode == true
+
+    -- World Map and HUD Layout are explicit UI contexts, so detach the gameplay
+    -- fade fragment and control visibility directly. Gameplay ALWAYS mode uses
+    -- the same native HUD-fade fragment as the Suite FPS/Repair overlays.
+    if layout then
+        self:SetMapTeleporterHudFragmentAttached029130(false)
+        root:SetHidden(not enabled)
+    elseif mapShowing then
+        self:SetMapTeleporterHudFragmentAttached029130(false)
+        root:SetHidden(not enabled)
+    elseif enabled and mode == "ALWAYS" then
+        local fragmentAttached = self:SetMapTeleporterHudFragmentAttached029130(true)
+        self:SetMapTeleporterHudReason029130(true)
+        -- When the native HUD fragment exists it owns show/hide/fade state. Do
+        -- not force SetHidden(false) here or the Teleporter could appear over an
+        -- Inventory/Settings scene while the user changes this option.
+        if not fragmentAttached then root:SetHidden(false) end
+    else
+        self:SetMapTeleporterHudFragmentAttached029130(false)
+        root:SetHidden(true)
+    end
+
+    -- MAP mode folds again after leaving the map so every map opening starts as
+    -- the compact drawer requested in 0.29.128. ALWAYS mode preserves the user's
+    -- expanded/folded state while moving between gameplay and the map.
+    if mapShowing and not self.mapTeleporterWasMapShowing029130 then
+        if mode == "MAP" and not layout then self:SetMapTeleporterExpanded029128(false, false) end
+    elseif not mapShowing and self.mapTeleporterWasMapShowing029130 then
+        if mode == "MAP" and not layout then self:SetMapTeleporterExpanded029128(false, false) end
+    end
+    self.mapTeleporterWasMapShowing029130 = mapShowing
+
+    local actuallyVisible = enabled and (layout or mapShowing or mode == "ALWAYS") and not root:IsHidden()
+    self:HideMapCompletionForTeleporter(mapShowing and actuallyVisible and self.mapTeleporterExpanded029128 == true)
+    self:RestoreNativeWorldMapKeys029128(root)
+    self:UpdateNativeMapToggleStrip02985()
+    self:DockMapTeleporterToWorldMap()
+    self:UpdateMapTeleporterRefreshPulse029130()
+end
+
+-- Keep compatibility with older wrappers/callers that explicitly request a
+-- visibility change; the final policy is now determined by Settings + context.
+function T:SetMapTeleporterVisible(visible)
+    if visible == false and EAS_MapTeleporterMode029130() == "MAP" and not self:IsMapTeleporterMapShowing() then
+        local root = self.mapTeleporter
+        if root then root:SetHidden(true) end
+    end
+    return self:RefreshMapTeleporterVisibility()
+end
+
+-- ============================================================================
+-- v0.29.131 - Collapsed drawer hardening + reliable ALWAYS HUD visibility.
+-- A folded Teleporter must render only its drawer tab; no destination rows or
+-- expanded controls may be re-shown by legacy layout wrappers. ALWAYS mode is
+-- also refreshed when ESO returns to HUD gameplay so the drawer is genuinely
+-- usable outside the World Map while still following the native HUD fragment.
+-- ============================================================================
+local EAS_LayoutMapTeleporterBase029131 = T.LayoutMapTeleporter
+local EAS_SetMapTeleporterExpandedBase029131 = T.SetMapTeleporterExpanded029128
+local EAS_RefreshMapTeleporterVisibilityBase029131 = T.RefreshMapTeleporterVisibility
+local EAS_CreateMapTeleporterBase029131 = T.CreateMapTeleporter
+
+local function EAS_SetHiddenSafe029131(control, hidden)
+    if control and type(control.SetHidden) == "function" then
+        pcall(control.SetHidden, control, hidden == true)
+    end
+end
+
+function T:ApplyMapTeleporterCollapsedPresentation029131(collapsed)
+    local root = self.mapTeleporter
+    if not root then return end
+    collapsed = collapsed == true
+
+    -- These are all expanded-only surfaces used by every Teleporter generation.
+    -- Keeping legacy fields in the list makes the final layer safe even for a
+    -- SavedVariables/session upgrade from an older in-memory UI build.
+    local expandedFields = {
+        "title",
+        "viewButton", "toolsButton", "favoriteButton",
+        "playerSearchLabel", "playerSearchBg",
+        "zoneSearchLabel", "zoneSearchBg",
+        "stats", "sortInfo",
+        "prev", "page", "next",
+        "closeMapButton02971",
+        "home", "homeOut", "leader", "questQuick", "sort",
+    }
+    for i = 1, #expandedFields do
+        EAS_SetHiddenSafe029131(root[expandedFields[i]], collapsed)
+    end
+
+    for _, button in pairs(root.tabs or {}) do
+        EAS_SetHiddenSafe029131(button, collapsed)
+    end
+
+    for i, row in ipairs(root.rows or {}) do
+        if collapsed then
+            -- This is the important part: legacy LayoutMapTeleporter() code can
+            -- otherwise re-show rows after the panel has already shrunk to 136x42.
+            EAS_SetHiddenSafe029131(row, true)
+        else
+            local visibleRows = math.max(1, safeNumber(root.visibleRows, 15))
+            EAS_SetHiddenSafe029131(row, i > visibleRows or row.entry == nil)
+        end
+    end
+
+    if root.drawerButton029128 then
+        EAS_SetHiddenSafe029131(root.drawerButton029128, false)
+        root.drawerButton029128:SetText(collapsed and "TELEPORTER  >" or "<  TELEPORTER")
+        root.drawerButton029128:ClearAnchors()
+        if collapsed then
+            root.drawerButton029128:SetAnchor(TOPLEFT, root, TOPLEFT, 5, 5)
+        else
+            root.drawerButton029128:SetAnchor(TOPRIGHT, root, TOPRIGHT, -5, 5)
+        end
+    end
+
+    -- Never bring the retired close-map control back; native ESO ESC/Map owns it.
+    EAS_SetHiddenSafe029131(root.closeMapButton02971, true)
+end
+
+function T:LayoutMapTeleporter(...)
+    local root = self.mapTeleporter
+    if root and self.mapTeleporterExpanded029128 ~= true then
+        root:SetDimensions(136, 42)
+        self:ApplyMapTeleporterCollapsedPresentation029131(true)
+        if self.AnchorMapTeleporter029130 then self:AnchorMapTeleporter029130() end
+        if self.RestoreNativeWorldMapKeys029128 then self:RestoreNativeWorldMapKeys029128(root) end
+        return
+    end
+
+    local result = EAS_LayoutMapTeleporterBase029131(self, ...)
+    self:ApplyMapTeleporterCollapsedPresentation029131(false)
+    if self.AnchorMapTeleporter029130 then self:AnchorMapTeleporter029130() end
+    return result
+end
+
+function T:SetMapTeleporterExpanded029128(expanded, saveState)
+    expanded = expanded == true
+    local result = EAS_SetMapTeleporterExpandedBase029131(self, expanded, saveState)
+    local root = self.mapTeleporter
+    if root then
+        self:ApplyMapTeleporterCollapsedPresentation029131(not expanded)
+        if not expanded then root:SetDimensions(136, 42) end
+        if self.AnchorMapTeleporter029130 then self:AnchorMapTeleporter029130() end
+    end
+    return result
+end
+
+local function EAS_IsGameplayHudSceneShowing029131()
+    local function showing(scene)
+        if scene and type(scene.IsShowing) == "function" then
+            local ok, value = pcall(scene.IsShowing, scene)
+            return ok and value == true
+        end
+        return false
+    end
+    return showing(HUD_SCENE) or showing(HUD_UI_SCENE)
+end
+
+function T:RegisterMapTeleporterHudVisibility029131()
+    if self.mapTeleporterHudVisibilityRegistered029131 then return end
+    self.mapTeleporterHudVisibilityRegistered029131 = true
+    local function register(scene)
+        if scene and type(scene.RegisterCallback) == "function" then
+            scene:RegisterCallback("StateChange", function()
+                if type(zo_callLater) == "function" then
+                    zo_callLater(function()
+                        if EPC and EPC.Travel and EPC.Travel.RefreshMapTeleporterVisibility then
+                            EPC.Travel:RefreshMapTeleporterVisibility()
+                        end
+                    end, 0)
+                elseif EPC and EPC.Travel and EPC.Travel.RefreshMapTeleporterVisibility then
+                    EPC.Travel:RefreshMapTeleporterVisibility()
+                end
+            end)
+        end
+    end
+    register(HUD_SCENE)
+    if HUD_UI_SCENE ~= HUD_SCENE then register(HUD_UI_SCENE) end
+end
+
+function T:CreateMapTeleporter()
+    local root = EAS_CreateMapTeleporterBase029131(self)
+    if not root then return root end
+    self:RegisterMapTeleporterHudVisibility029131()
+    self:ApplyMapTeleporterCollapsedPresentation029131(self.mapTeleporterExpanded029128 ~= true)
+    return root
+end
+
+function T:RefreshMapTeleporterVisibility()
+    local root = self:CreateMapTeleporter()
+    if not root or not EPC.saved then return end
+
+    local enabled = EPC.saved.mapTeleporterEnabled ~= false
+    local mode = EPC.saved.mapTeleporterDisplayMode == "ALWAYS" and "ALWAYS" or "MAP"
+    local mapShowing = self:IsMapTeleporterMapShowing()
+    local layout = self.mapTeleporterLayoutMode029130 == true or EPC.unitFramesMoveMode == true
+
+    if layout then
+        if self.SetMapTeleporterHudFragmentAttached029130 then self:SetMapTeleporterHudFragmentAttached029130(false) end
+        root:SetHidden(not enabled)
+    elseif mapShowing then
+        if self.SetMapTeleporterHudFragmentAttached029130 then self:SetMapTeleporterHudFragmentAttached029130(false) end
+        root:SetHidden(not enabled)
+    elseif enabled and mode == "ALWAYS" then
+        -- Attach to the same native ESO HUD-fade system used by the Suite's FPS
+        -- and compact Repair overlays, but explicitly reveal it when the HUD
+        -- scene becomes active. This fixes the drawer remaining hidden after it
+        -- was previously hidden by MAP mode or a menu scene.
+        local fragmentAttached = self.SetMapTeleporterHudFragmentAttached029130
+            and self:SetMapTeleporterHudFragmentAttached029130(true) or false
+        if self.SetMapTeleporterHudReason029130 then self:SetMapTeleporterHudReason029130(true) end
+
+        local suppressed = EPC.IsGameplayHudSuppressed and EPC:IsGameplayHudSuppressed() == true
+        if not suppressed then
+            -- Explicitly reveal the top-level control when gameplay is active.
+            -- The attached HUD fragment still owns subsequent idle/menu fading.
+            root:SetHidden(false)
+        elseif not fragmentAttached then
+            root:SetHidden(true)
+        end
+    else
+        if self.SetMapTeleporterHudFragmentAttached029130 then self:SetMapTeleporterHudFragmentAttached029130(false) end
+        if self.SetMapTeleporterHudReason029130 then self:SetMapTeleporterHudReason029130(false) end
+        root:SetHidden(true)
+    end
+
+    if mapShowing and not self.mapTeleporterWasMapShowing029130 then
+        if mode == "MAP" and not layout then self:SetMapTeleporterExpanded029128(false, false) end
+    elseif not mapShowing and self.mapTeleporterWasMapShowing029130 then
+        if mode == "MAP" and not layout then self:SetMapTeleporterExpanded029128(false, false) end
+    end
+    self.mapTeleporterWasMapShowing029130 = mapShowing
+
+    self:ApplyMapTeleporterCollapsedPresentation029131(self.mapTeleporterExpanded029128 ~= true)
+
+    local actuallyVisible = enabled and (layout or mapShowing or mode == "ALWAYS") and not root:IsHidden()
+    self:HideMapCompletionForTeleporter(mapShowing and actuallyVisible and self.mapTeleporterExpanded029128 == true)
+    self:RestoreNativeWorldMapKeys029128(root)
+    self:UpdateNativeMapToggleStrip02985()
+    self:DockMapTeleporterToWorldMap()
+    self:UpdateMapTeleporterRefreshPulse029130()
+end
+
+-- Compatibility callers still funnel through the final policy above.
+function T:SetMapTeleporterVisible(visible)
+    if visible == false and EPC.saved and EPC.saved.mapTeleporterDisplayMode ~= "ALWAYS"
+        and not self:IsMapTeleporterMapShowing() then
+        local root = self.mapTeleporter
+        if root then root:SetHidden(true) end
+    end
+    return self:RefreshMapTeleporterVisibility()
+end
+
+
+
+-- ============================================================================
+-- v0.29.132 - Hotkey-driven HUD Teleporter interaction.
+-- In Always / HUD Overlay mode, the user can bind one key to open the
+-- Teleporter while adventuring, enter UI mode to interact with it, and press
+-- the same key again to fold it back down and return to gameplay.
+-- ============================================================================
+function T:SetMapTeleporterOverlayUIMode029132(active)
+    active = active == true
+    local changed = false
+    if type(SetGameCameraUIMode) == "function" then
+        local ok, result = pcall(SetGameCameraUIMode, active)
+        changed = (ok and result ~= false) or changed
+    end
+    if SCENE_MANAGER and type(SCENE_MANAGER.SetInUIMode) == "function" then
+        local ok = pcall(SCENE_MANAGER.SetInUIMode, SCENE_MANAGER, active)
+        changed = ok or changed
+    end
+    return changed
+end
+
+function T:PushMapTeleporterActionLayer029132()
+    if self.mapTeleporterActionLayerPushed029132 or type(PushActionLayerByName) ~= "function" then return end
+    local ok = pcall(PushActionLayerByName, "ESOAdventurerSuiteMapTeleporterLayer")
+    if ok then self.mapTeleporterActionLayerPushed029132 = true end
+end
+
+function T:PopMapTeleporterActionLayer029132()
+    if not self.mapTeleporterActionLayerPushed029132 or type(RemoveActionLayerByName) ~= "function" then return end
+    pcall(RemoveActionLayerByName, "ESOAdventurerSuiteMapTeleporterLayer")
+    self.mapTeleporterActionLayerPushed029132 = false
+end
+
+function T:OpenMapTeleporterOverlay029132()
+    if not EPC.saved or EPC.saved.mapTeleporterEnabled == false then
+        if EPC.Print then EPC:Print("Map Teleporter is disabled. Enable it in Suite Settings > Map Teleporter.") end
+        return false
+    end
+
+    local mode = (EPC.saved.mapTeleporterDisplayMode == "ALWAYS") and "ALWAYS" or "MAP"
+    if not self:IsMapTeleporterMapShowing() and mode ~= "ALWAYS" then
+        if EPC.Print then EPC:Print("Set Teleporter visibility to Always / HUD Overlay to open it outside the World Map.") end
+        return false
+    end
+
+    local root = self:CreateMapTeleporter()
+    if not root then return false end
+
+    local alreadyInUIMode = false
+    if type(IsGameCameraUIModeActive) == "function" then
+        local ok, value = pcall(IsGameCameraUIModeActive)
+        alreadyInUIMode = ok and value == true
+    end
+
+    self.mapTeleporterHotkeySession029132 = true
+    self.mapTeleporterOwnsUIMode029132 = not alreadyInUIMode
+    if self.mapTeleporterOwnsUIMode029132 then
+        self:SetMapTeleporterOverlayUIMode029132(true)
+    end
+
+    root:SetHidden(false)
+    root:SetMouseEnabled(true)
+    self:SetMapTeleporterExpanded029128(true, true)
+    self:RefreshMapTeleporter(true)
+    self:PushMapTeleporterActionLayer029132()
+
+    if root.SetTopLevel then root:SetTopLevel(true) end
+    if root.SetDrawTier and DT_HIGH then root:SetDrawTier(DT_HIGH) end
+    if root.SetDrawLayer and DL_OVERLAY then root:SetDrawLayer(DL_OVERLAY) end
+    if root.SetDrawLevel then root:SetDrawLevel(980) end
+    if root.BringWindowToTop then root:BringWindowToTop() end
+    return true
+end
+
+function T:CloseMapTeleporterOverlay029132(skipRefresh)
+    local root = self.mapTeleporter
+    self.mapTeleporterHotkeySession029132 = false
+
+    if self.HideMapTeleporterFlyout02969 then self:HideMapTeleporterFlyout02969() end
+    if self.ReleaseMapTeleporterSearchFocus02984 then self:ReleaseMapTeleporterSearchFocus02984() end
+
+    if not self:IsMapTeleporterMapShowing() and root and EPC.saved and EPC.saved.mapTeleporterDisplayMode == "ALWAYS" then
+        self:SetMapTeleporterExpanded029128(false, true)
+    end
+
+    self:PopMapTeleporterActionLayer029132()
+    if self.mapTeleporterOwnsUIMode029132 == true then
+        self:SetMapTeleporterOverlayUIMode029132(false)
+    end
+    self.mapTeleporterOwnsUIMode029132 = false
+
+    if skipRefresh ~= true then
+        self:RefreshMapTeleporterVisibility()
+    end
+    return true
+end
+
+function T:ToggleMapTeleporterOverlay029132()
+    if not EPC.saved or EPC.saved.mapTeleporterEnabled == false then
+        if EPC.Print then EPC:Print("Map Teleporter is disabled. Enable it in Suite Settings > Map Teleporter.") end
+        return
+    end
+
+    if self:IsMapTeleporterMapShowing() then
+        self:ToggleMapTeleporterDrawer029128()
+        return
+    end
+
+    if (EPC.saved.mapTeleporterDisplayMode == "ALWAYS") ~= true then
+        if EPC.Print then EPC:Print("Set Teleporter visibility to Always / HUD Overlay to use the Teleporter hotkey outside the World Map.") end
+        return
+    end
+
+    local root = self:CreateMapTeleporter()
+    local open = root and not root:IsHidden() and self.mapTeleporterExpanded029128 == true and self.mapTeleporterHotkeySession029132 == true
+    if open then
+        self:CloseMapTeleporterOverlay029132(false)
+    else
+        self:OpenMapTeleporterOverlay029132()
+    end
+end
+
+local EAS_CreateMapTeleporterBase029132 = T.CreateMapTeleporter
+local EAS_SetMapTeleporterExpandedBase029132 = T.SetMapTeleporterExpanded029128
+local EAS_RefreshMapTeleporterVisibilityBase029132 = T.RefreshMapTeleporterVisibility
+
+function T:CreateMapTeleporter()
+    local root = EAS_CreateMapTeleporterBase029132(self)
+    if not root then return root end
+
+    if root.drawerButton029128 and not root.drawerButton029128.easHotkeySession029132 then
+        root.drawerButton029128.easHotkeySession029132 = true
+        root.drawerButton029128:SetHandler("OnClicked", function()
+            local mode = EPC.saved and EPC.saved.mapTeleporterDisplayMode or "MAP"
+            if self:IsMapTeleporterMapShowing() then
+                self:ToggleMapTeleporterDrawer029128()
+            elseif mode == "ALWAYS" and self.mapTeleporterHotkeySession029132 == true and self.mapTeleporterExpanded029128 == true then
+                self:CloseMapTeleporterOverlay029132(false)
+            else
+                self:ToggleMapTeleporterDrawer029128()
+            end
+        end)
+    end
+    return root
+end
+
+function T:SetMapTeleporterExpanded029128(expanded, saveState)
+    local result = EAS_SetMapTeleporterExpandedBase029132(self, expanded, saveState)
+    if expanded ~= true and self.mapTeleporterHotkeySession029132 == true and not self:IsMapTeleporterMapShowing() then
+        self:CloseMapTeleporterOverlay029132(true)
+    end
+    return result
+end
+
+function T:RefreshMapTeleporterVisibility()
+    local result = EAS_RefreshMapTeleporterVisibilityBase029132(self)
+    local enabled = EPC.saved and EPC.saved.mapTeleporterEnabled ~= false
+    local mode = EPC.saved and EPC.saved.mapTeleporterDisplayMode or "MAP"
+    if self.mapTeleporterHotkeySession029132 == true and (not enabled or mode ~= "ALWAYS" or self:IsMapTeleporterMapShowing()) then
+        self:CloseMapTeleporterOverlay029132(true)
+    end
+    return result
+end
+
+function ESOAdventurerSuite_ToggleMapTeleporterOverlay()
+    if EPC and EPC.Travel and EPC.Travel.ToggleMapTeleporterOverlay029132 then
+        EPC.Travel:ToggleMapTeleporterOverlay029132()
+    end
+end
+
+
+-- ============================================================================
+-- v0.29.133 - Native HUD fade ownership for Repair/Teleporter parity.
+-- The collapsed ALWAYS drawer must fade exactly like the Suite's working FPS
+-- overlay. During ordinary gameplay it is controlled only by the native HUD
+-- fade fragment; direct SetHidden(false) and permanent top-level promotion are
+-- reserved for explicit interaction contexts (map, layout, hotkey UI session).
+-- ============================================================================
+function T:SetMapTeleporterNormalGameplayLayer029133(root)
+    if not root then return end
+    pcall(function()
+        if root.SetTopLevel then root:SetTopLevel(false) end
+        if root.SetDrawTier and DT_HIGH then root:SetDrawTier(DT_HIGH) end
+        if root.SetDrawLayer and DL_OVERLAY then root:SetDrawLayer(DL_OVERLAY) end
+        if root.SetDrawLevel then root:SetDrawLevel(970) end
+    end)
+end
+
+function T:SetMapTeleporterInteractiveLayer029133(root)
+    if not root then return end
+    pcall(function()
+        if root.SetTopLevel then root:SetTopLevel(true) end
+        if root.SetDrawTier and DT_HIGH then root:SetDrawTier(DT_HIGH) end
+        if root.SetDrawLayer and DL_OVERLAY then root:SetDrawLayer(DL_OVERLAY) end
+        if root.SetDrawLevel then root:SetDrawLevel(980) end
+        if root.BringWindowToTop then root:BringWindowToTop() end
+    end)
+end
+
+function T:RefreshMapTeleporterVisibility()
+    local root = self:CreateMapTeleporter()
+    if not root or not EPC.saved then return end
+
+    local enabled = EPC.saved.mapTeleporterEnabled ~= false
+    local mode = EPC.saved.mapTeleporterDisplayMode == "ALWAYS" and "ALWAYS" or "MAP"
+    local mapShowing = self:IsMapTeleporterMapShowing()
+    local layout = self.mapTeleporterLayoutMode029130 == true or EPC.unitFramesMoveMode == true
+    local hotkeySession = self.mapTeleporterHotkeySession029132 == true and not mapShowing
+
+    -- If settings/context invalidate an active hotkey interaction, end it first
+    -- so the mouse/UI mode is never stranded.
+    if hotkeySession and (not enabled or mode ~= "ALWAYS") then
+        self:CloseMapTeleporterOverlay029132(true)
+        hotkeySession = false
+    end
+
+    if layout or mapShowing or hotkeySession then
+        -- Explicit interaction contexts must remain fully visible and clickable.
+        if self.SetMapTeleporterHudFragmentAttached029130 then
+            self:SetMapTeleporterHudFragmentAttached029130(false)
+        end
+        if self.SetMapTeleporterHudReason029130 then
+            self:SetMapTeleporterHudReason029130(enabled)
+        end
+        root:SetHidden(not enabled)
+        if enabled then self:SetMapTeleporterInteractiveLayer029133(root) end
+    elseif enabled and mode == "ALWAYS" then
+        -- Ordinary gameplay: attach once and then leave visibility entirely to
+        -- ESO's HUD-fade fragment. Do NOT call root:SetHidden(false) here.
+        local fragmentAttached = self.SetMapTeleporterHudFragmentAttached029130
+            and self:SetMapTeleporterHudFragmentAttached029130(true) or false
+        if self.SetMapTeleporterHudReason029130 then
+            self:SetMapTeleporterHudReason029130(true)
+        end
+        self:SetMapTeleporterNormalGameplayLayer029133(root)
+
+        -- Fallback only for clients where the HUD fade fragment could not be
+        -- created. Normal supported clients never enter this branch.
+        if not fragmentAttached then
+            local suppressed = EPC.IsGameplayHudSuppressed and EPC:IsGameplayHudSuppressed() == true
+            root:SetHidden(suppressed)
+        end
+    else
+        if self.SetMapTeleporterHudReason029130 then
+            self:SetMapTeleporterHudReason029130(false)
+        end
+        if self.SetMapTeleporterHudFragmentAttached029130 then
+            self:SetMapTeleporterHudFragmentAttached029130(false)
+        end
+        root:SetHidden(true)
+        self:SetMapTeleporterNormalGameplayLayer029133(root)
+    end
+
+    -- MAP mode still starts folded each time the World Map is entered/exited.
+    if mapShowing and not self.mapTeleporterWasMapShowing029130 then
+        if mode == "MAP" and not layout then self:SetMapTeleporterExpanded029128(false, false) end
+    elseif not mapShowing and self.mapTeleporterWasMapShowing029130 then
+        if mode == "MAP" and not layout then self:SetMapTeleporterExpanded029128(false, false) end
+    end
+    self.mapTeleporterWasMapShowing029130 = mapShowing
+
+    self:ApplyMapTeleporterCollapsedPresentation029131(self.mapTeleporterExpanded029128 ~= true)
+    local actuallyVisible = enabled and (layout or mapShowing or hotkeySession or mode == "ALWAYS") and not root:IsHidden()
+    self:HideMapCompletionForTeleporter(mapShowing and actuallyVisible and self.mapTeleporterExpanded029128 == true)
+    self:RestoreNativeWorldMapKeys029128(root)
+    self:UpdateNativeMapToggleStrip02985()
+    self:DockMapTeleporterToWorldMap()
+    self:UpdateMapTeleporterRefreshPulse029130()
+end
+
+
+-- ============================================================================
+-- v0.29.134 - Hotkey-only gameplay Teleporter + reliable close/click-away.
+-- The permanent TELEPORTER > HUD drawer is retired outside the World Map.
+-- In the outside-map mode the assigned key is the launcher: it opens the full
+-- Teleporter in UI mode, the same key closes it, and clicking anywhere outside
+-- the Teleporter closes it and returns to gameplay.
+-- ============================================================================
+local EAS_RefreshMapTeleporterVisibilityBase029134 = T.RefreshMapTeleporterVisibility
+local EAS_CreateMapTeleporterBase029134 = T.CreateMapTeleporter
+
+function T:IsMapTeleporterToggleKey029134(key, ctrl, alt, shift, command)
+    if type(self.RawKeyMatchesAction02986) == "function" then
+        local ok, matches = pcall(self.RawKeyMatchesAction02986, self,
+            "ESO_ADVENTURER_SUITE_MAP_TELEPORTER_TOGGLE", key, ctrl, alt, shift, command)
+        if ok and matches == true then return true end
+    end
+    return false
+end
+
+function T:IsControlInsideMapTeleporter029134(control)
+    local root = self.mapTeleporter
+    if not root or not control then return false end
+    local current = control
+    for _ = 1, 32 do
+        if current == root then return true end
+        if not current or type(current.GetParent) ~= "function" then break end
+        local ok, parent = pcall(current.GetParent, current)
+        if not ok or not parent or parent == current then break end
+        current = parent
+    end
+    return false
+end
+
+function T:UnregisterMapTeleporterClickAway029134()
+    if EVENT_MANAGER and EVENT_GLOBAL_MOUSE_DOWN then
+        EVENT_MANAGER:UnregisterForEvent((EPC.name or "ESOAdventurerSuite") .. "_TeleporterClickAway029134", EVENT_GLOBAL_MOUSE_DOWN)
+    end
+    self.mapTeleporterClickAwayRegistered029134 = false
+end
+
+function T:RegisterMapTeleporterClickAway029134()
+    if self.mapTeleporterClickAwayRegistered029134 or not EVENT_MANAGER or not EVENT_GLOBAL_MOUSE_DOWN then return end
+    self.mapTeleporterClickAwayRegistered029134 = true
+    local eventName = (EPC.name or "ESOAdventurerSuite") .. "_TeleporterClickAway029134"
+    EVENT_MANAGER:RegisterForEvent(eventName, EVENT_GLOBAL_MOUSE_DOWN, function()
+        if not EPC or not EPC.Travel or EPC.Travel.mapTeleporterHotkeySession029132 ~= true then return end
+        local travel = EPC.Travel
+        local function checkClick()
+            if travel.mapTeleporterHotkeySession029132 ~= true or travel:IsMapTeleporterMapShowing() then return end
+            local control = nil
+            if WINDOW_MANAGER then
+                if type(WINDOW_MANAGER.GetMouseOverControl) == "function" then
+                    local ok, value = pcall(WINDOW_MANAGER.GetMouseOverControl, WINDOW_MANAGER)
+                    if ok then control = value end
+                end
+                if not control and type(WINDOW_MANAGER.GetMouseFocusControl) == "function" then
+                    local ok, value = pcall(WINDOW_MANAGER.GetMouseFocusControl, WINDOW_MANAGER)
+                    if ok then control = value end
+                end
+            end
+            if not travel:IsControlInsideMapTeleporter029134(control) then
+                travel:CloseMapTeleporterOverlay029134(false)
+            end
+        end
+        if type(zo_callLater) == "function" then zo_callLater(checkClick, 0) else checkClick() end
+    end)
+end
+
+function T:ApplyMapTeleporterHotkeyCapture029134(root)
+    root = root or self.mapTeleporter
+    if not root then return end
+    local active = self.mapTeleporterHotkeySession029132 == true and not self:IsMapTeleporterMapShowing()
+    if not active then
+        if self.RestoreNativeWorldMapKeys029128 then self:RestoreNativeWorldMapKeys029128(root) end
+        return
+    end
+
+    if root.SetKeyboardEnabled then root:SetKeyboardEnabled(true) end
+    root:SetHandler("OnKeyDown", function(_, key, ctrl, alt, shift, command)
+        if self.mapTeleporterHotkeySession029132 ~= true then return end
+        if (KEY_ESCAPE ~= nil and key == KEY_ESCAPE)
+            or self:IsMapTeleporterToggleKey029134(key, ctrl, alt, shift, command) then
+            self:CloseMapTeleporterOverlay029134(false)
+        end
+    end)
+
+    local function wireEdit(edit)
+        if not edit then return end
+        if edit.SetKeyboardEnabled then edit:SetKeyboardEnabled(true) end
+        edit:SetHandler("OnKeyDown", function(_, key, ctrl, alt, shift, command)
+            if self.mapTeleporterHotkeySession029132 == true
+                and self:IsMapTeleporterToggleKey029134(key, ctrl, alt, shift, command) then
+                self:CloseMapTeleporterOverlay029134(false)
+            end
+        end)
+        edit:SetHandler("OnEscape", function(c)
+            if c and c.LoseFocus then pcall(c.LoseFocus, c) end
+            self.mapTeleporterSearchFocused = false
+            if self.mapTeleporterHotkeySession029132 == true then
+                self:CloseMapTeleporterOverlay029134(false)
+            end
+        end)
+    end
+    wireEdit(root.playerSearch)
+    wireEdit(root.zoneSearch)
+end
+
+local function EAS_TeleporterNowMs029134()
+    if type(GetFrameTimeMilliseconds) == "function" then
+        local ok, value = pcall(GetFrameTimeMilliseconds)
+        if ok and tonumber(value) then return tonumber(value) end
+    end
+    if type(GetGameTimeMilliseconds) == "function" then
+        local ok, value = pcall(GetGameTimeMilliseconds)
+        if ok and tonumber(value) then return tonumber(value) end
+    end
+    return 0
+end
+
+function T:OpenMapTeleporterOverlay029134()
+    if not EPC.saved or EPC.saved.mapTeleporterEnabled == false then
+        if EPC.Print then EPC:Print("Map Teleporter is disabled. Enable it in Suite Settings > Map Teleporter.") end
+        return false
+    end
+    if self:IsMapTeleporterMapShowing() then
+        self:ToggleMapTeleporterDrawer029128()
+        return true
+    end
+    if EPC.saved.mapTeleporterDisplayMode ~= "ALWAYS" then
+        if EPC.Print then EPC:Print("Set Teleporter visibility to Hotkey / Outside Map to use it while adventuring.") end
+        return false
+    end
+
+    local root = self:CreateMapTeleporter()
+    if not root then return false end
+
+    local alreadyInUIMode = false
+    if type(IsGameCameraUIModeActive) == "function" then
+        local ok, value = pcall(IsGameCameraUIModeActive)
+        alreadyInUIMode = ok and value == true
+    end
+
+    self.mapTeleporterHotkeySession029132 = true
+    self.mapTeleporterOwnsUIMode029132 = not alreadyInUIMode
+
+    -- Push our inherited hotkey layer before entering UI mode. This keeps the
+    -- same binding alive even when ESO suspends the normal General layer.
+    self:PushMapTeleporterActionLayer029132()
+    if self.mapTeleporterOwnsUIMode029132 then self:SetMapTeleporterOverlayUIMode029132(true) end
+
+    if self.SetMapTeleporterHudFragmentAttached029130 then self:SetMapTeleporterHudFragmentAttached029130(false) end
+    root:SetHidden(false)
+    root:SetMouseEnabled(true)
+    self:SetMapTeleporterExpanded029128(true, true)
+    self:RefreshMapTeleporter(true)
+    if self.SetMapTeleporterInteractiveLayer029133 then self:SetMapTeleporterInteractiveLayer029133(root) end
+    self:ApplyMapTeleporterHotkeyCapture029134(root)
+    self:RegisterMapTeleporterClickAway029134()
+    return true
+end
+
+function T:CloseMapTeleporterOverlay029134(skipRefresh)
+    if self.mapTeleporterClosing029134 then return true end
+    self.mapTeleporterClosing029134 = true
+
+    local root = self.mapTeleporter
+    self:UnregisterMapTeleporterClickAway029134()
+    self.mapTeleporterHotkeySession029132 = false
+    self.mapTeleporterSuppressOpenUntil029134 = EAS_TeleporterNowMs029134() + 180
+
+    if self.HideMapTeleporterFlyout02969 then self:HideMapTeleporterFlyout02969() end
+    if self.ReleaseMapTeleporterSearchFocus02984 then self:ReleaseMapTeleporterSearchFocus02984() end
+
+    if root and not self:IsMapTeleporterMapShowing() then
+        self:SetMapTeleporterExpanded029128(false, true)
+        root:SetHidden(true)
+        if root.SetKeyboardEnabled then root:SetKeyboardEnabled(false) end
+        if root.SetHandler then root:SetHandler("OnKeyDown", nil) end
+    end
+
+    self:PopMapTeleporterActionLayer029132()
+    if self.mapTeleporterOwnsUIMode029132 == true then self:SetMapTeleporterOverlayUIMode029132(false) end
+    self.mapTeleporterOwnsUIMode029132 = false
+    self.mapTeleporterClosing029134 = false
+
+    if skipRefresh ~= true then self:RefreshMapTeleporterVisibility() end
+    return true
+end
+
+-- Redirect legacy 0.29.132 callers to the corrected implementation.
+function T:OpenMapTeleporterOverlay029132() return self:OpenMapTeleporterOverlay029134() end
+function T:CloseMapTeleporterOverlay029132(skipRefresh) return self:CloseMapTeleporterOverlay029134(skipRefresh) end
+
+function T:ToggleMapTeleporterOverlay029132()
+    if not EPC.saved or EPC.saved.mapTeleporterEnabled == false then
+        if EPC.Print then EPC:Print("Map Teleporter is disabled. Enable it in Suite Settings > Map Teleporter.") end
+        return
+    end
+    if self:IsMapTeleporterMapShowing() then
+        self:ToggleMapTeleporterDrawer029128()
+        return
+    end
+    if EPC.saved.mapTeleporterDisplayMode ~= "ALWAYS" then
+        if EPC.Print then EPC:Print("Set Teleporter visibility to Hotkey / Outside Map to use it while adventuring.") end
+        return
+    end
+
+    -- Session state is the source of truth. Do not rely on SetHidden/expanded,
+    -- because ESO scene/UI-mode changes can alter those controls independently.
+    if self.mapTeleporterHotkeySession029132 == true then
+        self:CloseMapTeleporterOverlay029134(false)
+    else
+        if EAS_TeleporterNowMs029134() < (self.mapTeleporterSuppressOpenUntil029134 or 0) then return end
+        self:OpenMapTeleporterOverlay029134()
+    end
+end
+
+function T:CreateMapTeleporter()
+    local root = EAS_CreateMapTeleporterBase029134(self)
+    if not root then return root end
+    if self.mapTeleporterHotkeySession029132 == true and not self:IsMapTeleporterMapShowing() then
+        self:ApplyMapTeleporterHotkeyCapture029134(root)
+    end
+    return root
+end
+
+function T:RefreshMapTeleporterVisibility()
+    local result = EAS_RefreshMapTeleporterVisibilityBase029134(self)
+    local root = self.mapTeleporter
+    if not root or not EPC.saved then return result end
+
+    local mapShowing = self:IsMapTeleporterMapShowing()
+    local layout = self.mapTeleporterLayoutMode029130 == true or EPC.unitFramesMoveMode == true
+    local hotkeySession = self.mapTeleporterHotkeySession029132 == true and not mapShowing
+
+    -- Outside the World Map there is no permanent Teleporter drawer anymore.
+    -- The only normal-gameplay visible state is an active hotkey interaction.
+    if not mapShowing and not layout and not hotkeySession then
+        if self.SetMapTeleporterHudFragmentAttached029130 then self:SetMapTeleporterHudFragmentAttached029130(false) end
+        if self.SetMapTeleporterHudReason029130 then self:SetMapTeleporterHudReason029130(false) end
+        root:SetHidden(true)
+        if self.SetMapTeleporterNormalGameplayLayer029133 then self:SetMapTeleporterNormalGameplayLayer029133(root) end
+    elseif hotkeySession then
+        root:SetHidden(false)
+        self:ApplyMapTeleporterHotkeyCapture029134(root)
+        self:RegisterMapTeleporterClickAway029134()
+    end
+    return result
+end
+
+
+-- ============================================================================
+-- v0.29.135 - Fully release gameplay input after Teleporter close.
+-- Do not drive both ESO UI-mode APIs at once. The Suite's main interaction
+-- system prefers SetGameCameraUIMode and uses SCENE_MANAGER only as a fallback;
+-- the Teleporter now follows that same ownership model. Closing also disables
+-- all Teleporter input before returning camera control, then verifies the owned
+-- UI mode was actually released on the next frames.
+-- ============================================================================
+function T:SetMapTeleporterOverlayUIMode029135(active)
+    active = active == true
+    if type(SetGameCameraUIMode) == "function" then
+        local ok = pcall(SetGameCameraUIMode, active)
+        if ok then return true end
+    end
+    if SCENE_MANAGER and type(SCENE_MANAGER.SetInUIMode) == "function" then
+        local ok = pcall(SCENE_MANAGER.SetInUIMode, SCENE_MANAGER, active)
+        return ok == true
+    end
+    return false
+end
+
+-- Redirect the older helper so every Teleporter path uses only one UI-mode API.
+function T:SetMapTeleporterOverlayUIMode029132(active)
+    return self:SetMapTeleporterOverlayUIMode029135(active)
+end
+
+function T:ForceReleaseMapTeleporterGameplayInput029135()
+    -- Only release camera UI mode that the Teleporter itself acquired. Never
+    -- tear down Inventory, Settings, a dialog, or another addon that already
+    -- owned UI mode before the Teleporter opened.
+    if self.mapTeleporterReleaseOwned029135 ~= true then return end
+    if self:IsMapTeleporterMapShowing() then
+        self.mapTeleporterReleaseOwned029135 = false
+        return
+    end
+
+    local stillActive = false
+    if type(IsGameCameraUIModeActive) == "function" then
+        local ok, value = pcall(IsGameCameraUIModeActive)
+        stillActive = ok and value == true
+    end
+    if stillActive then
+        self:SetMapTeleporterOverlayUIMode029135(false)
+    end
+
+    -- Once camera UI mode reports clear, stop the release guard. If the API is
+    -- unavailable, one fallback call is enough and we clear the flag here too.
+    local verifyActive = false
+    if type(IsGameCameraUIModeActive) == "function" then
+        local ok, value = pcall(IsGameCameraUIModeActive)
+        verifyActive = ok and value == true
+    end
+    if not verifyActive or type(IsGameCameraUIModeActive) ~= "function" then
+        self.mapTeleporterReleaseOwned029135 = false
+    end
+end
+
+local EAS_OpenMapTeleporterOverlayBase029135 = T.OpenMapTeleporterOverlay029134
+function T:OpenMapTeleporterOverlay029134()
+    local result = EAS_OpenMapTeleporterOverlayBase029135(self)
+    if result == true and self.mapTeleporterHotkeySession029132 == true then
+        -- Snapshot the ownership decided by the existing open routine. This is
+        -- what lets close distinguish Teleporter-owned UI mode from pre-existing UI.
+        self.mapTeleporterReleaseOwned029135 = self.mapTeleporterOwnsUIMode029132 == true
+    end
+    return result
+end
+
+function T:CloseMapTeleporterOverlay029134(skipRefresh)
+    if self.mapTeleporterClosing029135 then return true end
+    self.mapTeleporterClosing029135 = true
+
+    local root = self.mapTeleporter
+    local ownedUIMode = self.mapTeleporterOwnsUIMode029132 == true
+    self.mapTeleporterReleaseOwned029135 = ownedUIMode
+
+    self:UnregisterMapTeleporterClickAway029134()
+    self.mapTeleporterHotkeySession029132 = false
+    self.mapTeleporterSuppressOpenUntil029134 = EAS_TeleporterNowMs029134() + 220
+
+    -- Release every Teleporter input owner before changing camera UI mode.
+    if self.HideMapTeleporterFlyout02969 then self:HideMapTeleporterFlyout02969() end
+    if self.ReleaseMapTeleporterSearchFocus02984 then self:ReleaseMapTeleporterSearchFocus02984() end
+    self.mapTeleporterSearchFocused = false
+
+    if root and not self:IsMapTeleporterMapShowing() then
+        self:SetMapTeleporterExpanded029128(false, true)
+        root:SetHidden(true)
+        root:SetMouseEnabled(false)
+        if root.SetKeyboardEnabled then root:SetKeyboardEnabled(false) end
+        if root.SetHandler then
+            root:SetHandler("OnKeyDown", nil)
+            root:SetHandler("OnMouseDown", nil)
+            root:SetHandler("OnMouseUp", nil)
+        end
+        if root.playerSearch then
+            if root.playerSearch.LoseFocus then pcall(root.playerSearch.LoseFocus, root.playerSearch) end
+            if root.playerSearch.SetKeyboardEnabled then root.playerSearch:SetKeyboardEnabled(false) end
+        end
+        if root.zoneSearch then
+            if root.zoneSearch.LoseFocus then pcall(root.zoneSearch.LoseFocus, root.zoneSearch) end
+            if root.zoneSearch.SetKeyboardEnabled then root.zoneSearch:SetKeyboardEnabled(false) end
+        end
+    end
+
+    self:PopMapTeleporterActionLayer029132()
+    self.mapTeleporterActionLayerPushed029132 = false
+
+    if ownedUIMode then
+        self:SetMapTeleporterOverlayUIMode029135(false)
+    end
+    self.mapTeleporterOwnsUIMode029132 = false
+    self.mapTeleporterClosing029135 = false
+
+    -- ESO can finish the current mouse/key dispatch after our close callback.
+    -- Re-check on the next frames so that dispatch cannot leave the cursor/camera
+    -- in UI mode. These calls are gated by Teleporter ownership above.
+    local function releaseAgain()
+        if EPC and EPC.Travel then EPC.Travel:ForceReleaseMapTeleporterGameplayInput029135() end
+    end
+    if type(zo_callLater) == "function" and ownedUIMode then
+        zo_callLater(releaseAgain, 0)
+        zo_callLater(releaseAgain, 40)
+        zo_callLater(releaseAgain, 120)
+    elseif ownedUIMode then
+        releaseAgain()
+    end
+
+    if skipRefresh ~= true then self:RefreshMapTeleporterVisibility() end
+    return true
+end
+
+-- Keep the legacy aliases pointed at the final close/open implementation.
+function T:OpenMapTeleporterOverlay029132() return self:OpenMapTeleporterOverlay029134() end
+function T:CloseMapTeleporterOverlay029132(skipRefresh) return self:CloseMapTeleporterOverlay029134(skipRefresh) end
+
+-- Re-enable mouse interaction whenever the Teleporter is deliberately promoted
+-- again (World Map, HUD Layout, or a new hotkey session) after the hard close
+-- above disabled its top-level mouse input.
+local EAS_SetMapTeleporterInteractiveLayerBase029135 = T.SetMapTeleporterInteractiveLayer029133
+function T:SetMapTeleporterInteractiveLayer029133(root)
+    root = root or self.mapTeleporter
+    if root and root.SetMouseEnabled then root:SetMouseEnabled(true) end
+    if EAS_SetMapTeleporterInteractiveLayerBase029135 then
+        return EAS_SetMapTeleporterInteractiveLayerBase029135(self, root)
+    end
+end
+
+
+-- ============================================================================
+-- v0.29.136 - Native top-level interaction host + map-attached MAP mode.
+-- Outside-map hotkey interaction now lets ESO's own SCENE_MANAGER own UI-mode
+-- entry/exit through a tiny registered top-level host. The Teleporter window
+-- itself is NOT registered, so native Escape on the World Map still closes the
+-- map normally instead of consuming an extra Escape to hide the Teleporter.
+-- MAP mode anchors to the stable ZO_WorldMap top-level (never the zoom canvas),
+-- while hotkey/layout mode anchors to the saved HUD position on GuiRoot.
+-- ============================================================================
+local EAS_RefreshMapTeleporterVisibilityBase029136 = T.RefreshMapTeleporterVisibility
+local EAS_CreateMapTeleporterBase029136 = T.CreateMapTeleporter
+local EAS_RestoreNativeWorldMapKeysBase029136 = T.RestoreNativeWorldMapKeys029128
+local EAS_RefreshMapTeleporterBase029136 = T.RefreshMapTeleporter
+local EAS_LayoutMapTeleporterBase029136 = T.LayoutMapTeleporter
+local EAS_SetMapTeleporterExpandedBase029136 = T.SetMapTeleporterExpanded029128
+
+function T:EnsureMapTeleporterInteractionHost029136()
+    if self.mapTeleporterInteractionHost029136 then return self.mapTeleporterInteractionHost029136 end
+    if not WINDOW_MANAGER or not SCENE_MANAGER or type(SCENE_MANAGER.RegisterTopLevel) ~= "function" then return nil end
+
+    local host = WINDOW_MANAGER:CreateTopLevelWindow("EAS_MapTeleporterInteractionHost029136")
+    host:SetDimensions(1, 1)
+    host:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 0, 0)
+    host:SetMouseEnabled(false)
+    if host.SetKeyboardEnabled then host:SetKeyboardEnabled(false) end
+    host:SetHidden(true)
+
+    local locks = TOPLEVEL_LOCKS_UI_MODE
+    if locks == nil then locks = true end
+    SCENE_MANAGER:RegisterTopLevel(host, locks)
+    self.mapTeleporterInteractionHost029136 = host
+
+    host:SetHandler("OnHide", function()
+        local travel = EPC and EPC.Travel
+        if travel and travel.mapTeleporterHotkeySession029132 == true and travel.mapTeleporterClosing029136 ~= true then
+            -- Escape/system UI close can hide the registered host directly.
+            -- Finish Teleporter cleanup without asking SCENE_MANAGER to hide an
+            -- already-hidden host again.
+            travel:FinishMapTeleporterHotkeyClose029136(false, true)
+        end
+    end)
+    return host
+end
+
+function T:IsMapTeleporterMouseInside029136()
+    local root = self.mapTeleporter
+    if not root or root:IsHidden() then return false end
+
+    local control = nil
+    if WINDOW_MANAGER then
+        if type(WINDOW_MANAGER.GetMouseOverControl) == "function" then
+            local ok, value = pcall(WINDOW_MANAGER.GetMouseOverControl, WINDOW_MANAGER)
+            if ok then control = value end
+        end
+        if not control and type(WINDOW_MANAGER.GetMouseFocusControl) == "function" then
+            local ok, value = pcall(WINDOW_MANAGER.GetMouseFocusControl, WINDOW_MANAGER)
+            if ok then control = value end
+        end
+    end
+    if control and self:IsControlInsideMapTeleporter029134(control) then return true end
+
+    -- Coordinate fallback for blank/background areas that do not report a
+    -- specific child control as the current mouse-over control.
+    if type(GetUIMousePosition) == "function" and type(root.GetLeft) == "function" then
+        local ok, x, y = pcall(GetUIMousePosition)
+        if ok and x and y then
+            local left = safeNumber(root:GetLeft(), 0)
+            local top = safeNumber(root:GetTop(), 0)
+            local right = safeNumber(root:GetRight(), left)
+            local bottom = safeNumber(root:GetBottom(), top)
+            if x >= left and x <= right and y >= top and y <= bottom then return true end
+        end
+    end
+    return false
+end
+
+function T:UnregisterMapTeleporterClickAway029136()
+    -- Remove the older mouse-down watcher too, in case it was registered by an
+    -- earlier wrapper during the same UI session.
+    if self.UnregisterMapTeleporterClickAway029134 then self:UnregisterMapTeleporterClickAway029134() end
+    if EVENT_MANAGER and EVENT_GLOBAL_MOUSE_UP then
+        EVENT_MANAGER:UnregisterForEvent((EPC.name or "ESOAdventurerSuite") .. "_TeleporterClickAway029136", EVENT_GLOBAL_MOUSE_UP)
+    end
+    self.mapTeleporterClickAwayRegistered029136 = false
+end
+
+function T:RegisterMapTeleporterClickAway029136()
+    self:UnregisterMapTeleporterClickAway029136()
+    if not EVENT_MANAGER or not EVENT_GLOBAL_MOUSE_UP then return end
+    self.mapTeleporterClickAwayRegistered029136 = true
+    local eventName = (EPC.name or "ESOAdventurerSuite") .. "_TeleporterClickAway029136"
+    EVENT_MANAGER:RegisterForEvent(eventName, EVENT_GLOBAL_MOUSE_UP, function()
+        local travel = EPC and EPC.Travel
+        if not travel or travel.mapTeleporterHotkeySession029132 ~= true or travel:IsMapTeleporterMapShowing() then return end
+        -- Run after the completed mouse-up dispatch. This avoids tearing down UI
+        -- mode in the middle of the click that asked to close the Teleporter.
+        local function finishClick()
+            if not EPC or not EPC.Travel then return end
+            local activeTravel = EPC.Travel
+            if activeTravel.mapTeleporterHotkeySession029132 ~= true or activeTravel:IsMapTeleporterMapShowing() then return end
+            if not activeTravel:IsMapTeleporterMouseInside029136() then
+                activeTravel:CloseMapTeleporterOverlay029136(false)
+            end
+        end
+        if type(zo_callLater) == "function" then zo_callLater(finishClick, 0) else finishClick() end
+    end)
+end
+
+function T:ApplyMapTeleporterHotkeySearchKeys029136(root)
+    root = root or self.mapTeleporter
+    if not root then return end
+    local function wire(edit)
+        if not edit then return end
+        if edit.SetKeyboardEnabled then edit:SetKeyboardEnabled(true) end
+        edit:SetHandler("OnKeyDown", function(_, key, ctrl, alt, shift, command)
+            if self.mapTeleporterHotkeySession029132 == true
+                and self:IsMapTeleporterToggleKey029134(key, ctrl, alt, shift, command) then
+                self:CloseMapTeleporterOverlay029136(false)
+            end
+        end)
+        edit:SetHandler("OnEscape", function(c)
+            if c and c.LoseFocus then pcall(c.LoseFocus, c) end
+            self.mapTeleporterSearchFocused = false
+            if self.mapTeleporterHotkeySession029132 == true and not self:IsMapTeleporterMapShowing() then
+                self:CloseMapTeleporterOverlay029136(false)
+            elseif SCENE_MANAGER and type(SCENE_MANAGER.Hide) == "function" then
+                pcall(SCENE_MANAGER.Hide, SCENE_MANAGER, "worldMap")
+            end
+        end)
+    end
+    wire(root.playerSearch)
+    wire(root.zoneSearch)
+end
+
+function T:RestoreNativeWorldMapKeys029128(root)
+    if EAS_RestoreNativeWorldMapKeysBase029136 then
+        EAS_RestoreNativeWorldMapKeysBase029136(self, root)
+    end
+    if self.mapTeleporterHotkeySession029132 == true and not self:IsMapTeleporterMapShowing() then
+        self:ApplyMapTeleporterHotkeySearchKeys029136(root)
+    end
+end
+
+function T:DockMapTeleporterToWorldMap()
+    local root = self.mapTeleporter
+    if not root or not GuiRoot then return end
+
+    if self.mapTeleporterExpanded029128 == true then
+        root:SetDimensions(500, self:GetMapTeleporterExpandedHeight029130())
+    else
+        root:SetDimensions(136, 42)
+    end
+    root:SetClampedToScreen(true)
+    if root.SetScale then root:SetScale(1) end
+
+    local layout = self.mapTeleporterLayoutMode029130 == true or EPC.unitFramesMoveMode == true
+    local mapShowing = self:IsMapTeleporterMapShowing()
+    if mapShowing and not layout and ZO_WorldMap then
+        -- Attach to the stable World Map top-level. ZO_WorldMapContainer is the
+        -- zoom/pan canvas and is intentionally never used as an anchor.
+        root:ClearAnchors()
+        root:SetAnchor(TOPLEFT, ZO_WorldMap, TOPLEFT, 12, 84)
+    else
+        self:AnchorMapTeleporter029130()
+    end
+end
+
+function T:CreateMapTeleporter()
+    local root = EAS_CreateMapTeleporterBase029136(self)
+    if not root then return root end
+    self:EnsureMapTeleporterInteractionHost029136()
+    -- The Teleporter top-level never owns raw keyboard input. Normal keybind
+    -- layers stay in charge; search edit boxes are wired separately as needed.
+    if root.SetHandler then root:SetHandler("OnKeyDown", nil) end
+    if root.SetKeyboardEnabled then root:SetKeyboardEnabled(false) end
+    self:DockMapTeleporterToWorldMap()
+    return root
+end
+
+function T:FinishMapTeleporterHotkeyClose029136(skipRefresh, hostAlreadyHidden)
+    if self.mapTeleporterClosing029136 then return true end
+    self.mapTeleporterClosing029136 = true
+
+    local root = self.mapTeleporter
+    self:UnregisterMapTeleporterClickAway029136()
+    self.mapTeleporterHotkeySession029132 = false
+    self.mapTeleporterOwnsUIMode029132 = false
+    self.mapTeleporterReleaseOwned029135 = false
+    self.mapTeleporterSuppressOpenUntil029134 = 0
+    self.mapTeleporterSuppressOpenUntil029136 = EAS_TeleporterNowMs029134() + 140
+
+    if self.HideMapTeleporterFlyout02969 then self:HideMapTeleporterFlyout02969() end
+    if self.ReleaseMapTeleporterSearchFocus02984 then self:ReleaseMapTeleporterSearchFocus02984() end
+    self.mapTeleporterSearchFocused = false
+
+    if root and not self:IsMapTeleporterMapShowing() then
+        self:SetMapTeleporterExpanded029128(false, true)
+        root:SetHidden(true)
+        root:SetMouseEnabled(true) -- keep it ready for the next hotkey open
+        if root.SetHandler then root:SetHandler("OnKeyDown", nil) end
+        if root.SetKeyboardEnabled then root:SetKeyboardEnabled(false) end
+    end
+
+    self:PopMapTeleporterActionLayer029132()
+    self.mapTeleporterActionLayerPushed029132 = false
+
+    local host = self.mapTeleporterInteractionHost029136
+    if host and hostAlreadyHidden ~= true and SCENE_MANAGER and type(SCENE_MANAGER.HideTopLevel) == "function" then
+        pcall(SCENE_MANAGER.HideTopLevel, SCENE_MANAGER, host)
+    end
+
+    self.mapTeleporterClosing029136 = false
+    if skipRefresh ~= true then self:RefreshMapTeleporterVisibility() end
+    return true
+end
+
+function T:CloseMapTeleporterOverlay029136(skipRefresh)
+    return self:FinishMapTeleporterHotkeyClose029136(skipRefresh, false)
+end
+
+function T:OpenMapTeleporterOverlay029136()
+    if not EPC.saved or EPC.saved.mapTeleporterEnabled == false then
+        if EPC.Print then EPC:Print("Map Teleporter is disabled. Enable it in Suite Settings > Map Teleporter.") end
+        return false
+    end
+
+    if self:IsMapTeleporterMapShowing() then
+        self:ToggleMapTeleporterDrawer029128()
+        return true
+    end
+
+    if EPC.saved.mapTeleporterDisplayMode ~= "ALWAYS" then
+        if EPC.Print then EPC:Print("Set Teleporter visibility to Hotkey / Outside Map to use it while adventuring.") end
+        return false
+    end
+
+    local root = self:CreateMapTeleporter()
+    local host = self:EnsureMapTeleporterInteractionHost029136()
+    if not root or not host or not SCENE_MANAGER or type(SCENE_MANAGER.ShowTopLevel) ~= "function" then
+        if EPC.Print then EPC:Print("Map Teleporter could not enter ESO UI mode safely.") end
+        return false
+    end
+
+    -- Clear any stale state left by a prior build/session before opening.
+    self:UnregisterMapTeleporterClickAway029136()
+    self.mapTeleporterClosing029136 = false
+    self.mapTeleporterHotkeySession029132 = true
+    self.mapTeleporterOwnsUIMode029132 = false
+    self.mapTeleporterReleaseOwned029135 = false
+
+    if self.SetMapTeleporterHudFragmentAttached029130 then self:SetMapTeleporterHudFragmentAttached029130(false) end
+    if self.SetMapTeleporterHudReason029130 then self:SetMapTeleporterHudReason029130(false) end
+
+    self:PushMapTeleporterActionLayer029132()
+
+    -- SCENE_MANAGER owns UI-mode entry/exit through this registered host. This
+    -- is the same native mechanism ESO uses for top-level UI windows.
+    if not host:IsControlHidden() then
+        pcall(SCENE_MANAGER.HideTopLevel, SCENE_MANAGER, host)
+    end
+    pcall(SCENE_MANAGER.ShowTopLevel, SCENE_MANAGER, host)
+
+    root:SetMouseEnabled(true)
+    root:SetHidden(false)
+    self:SetMapTeleporterExpanded029128(true, true)
+    self:DockMapTeleporterToWorldMap()
+    self:RefreshMapTeleporter(true)
+    self:ApplyMapTeleporterHotkeySearchKeys029136(root)
+    self:RegisterMapTeleporterClickAway029136()
+
+    if root.SetTopLevel then root:SetTopLevel(true) end
+    if root.SetDrawTier and DT_HIGH then root:SetDrawTier(DT_HIGH) end
+    if root.SetDrawLayer and DL_OVERLAY then root:SetDrawLayer(DL_OVERLAY) end
+    if root.SetDrawLevel then root:SetDrawLevel(980) end
+    if root.BringWindowToTop then root:BringWindowToTop() end
+    return true
+end
+
+function T:ToggleMapTeleporterOverlay029136()
+    if not EPC.saved or EPC.saved.mapTeleporterEnabled == false then
+        if EPC.Print then EPC:Print("Map Teleporter is disabled. Enable it in Suite Settings > Map Teleporter.") end
+        return
+    end
+
+    if self:IsMapTeleporterMapShowing() then
+        self:ToggleMapTeleporterDrawer029128()
+        return
+    end
+
+    if EPC.saved.mapTeleporterDisplayMode ~= "ALWAYS" then
+        if EPC.Print then EPC:Print("Set Teleporter visibility to Hotkey / Outside Map to use it while adventuring.") end
+        return
+    end
+
+    if self.mapTeleporterHotkeySession029132 == true then
+        self:CloseMapTeleporterOverlay029136(false)
+    else
+        if EAS_TeleporterNowMs029134() < (self.mapTeleporterSuppressOpenUntil029136 or 0) then return end
+        self:OpenMapTeleporterOverlay029136()
+    end
+end
+
+function T:RefreshMapTeleporter(...)
+    local result = EAS_RefreshMapTeleporterBase029136(self, ...)
+    self:DockMapTeleporterToWorldMap()
+    if self.mapTeleporterHotkeySession029132 == true and not self:IsMapTeleporterMapShowing() then
+        self:ApplyMapTeleporterHotkeySearchKeys029136(self.mapTeleporter)
+    end
+    return result
+end
+
+function T:LayoutMapTeleporter(...)
+    local result = EAS_LayoutMapTeleporterBase029136(self, ...)
+    self:DockMapTeleporterToWorldMap()
+    return result
+end
+
+function T:SetMapTeleporterExpanded029128(expanded, saveState)
+    local result = EAS_SetMapTeleporterExpandedBase029136(self, expanded, saveState)
+    self:DockMapTeleporterToWorldMap()
+    return result
+end
+
+function T:RefreshMapTeleporterVisibility()
+    local mapShowing = self:IsMapTeleporterMapShowing()
+
+    -- If the player opens the actual World Map while the outside-map Teleporter
+    -- is active, end the hotkey UI session first, then let normal MAP behavior
+    -- take over. This prevents the interaction host from locking map controls.
+    if self.mapTeleporterHotkeySession029132 == true and mapShowing then
+        self:FinishMapTeleporterHotkeyClose029136(true, false)
+    end
+
+    -- During a live hotkey session, never call legacy visibility wrappers that
+    -- directly SetHidden() on the Teleporter. The native host must remain the
+    -- sole UI-mode owner until Close/Click-Away hides it through SCENE_MANAGER.
+    if self.mapTeleporterHotkeySession029132 == true and not mapShowing then
+        local root = self:CreateMapTeleporter()
+        if root then
+            root:SetHidden(false)
+            root:SetMouseEnabled(true)
+            self:SetMapTeleporterExpanded029128(true, false)
+            self:DockMapTeleporterToWorldMap()
+            self:ApplyMapTeleporterHotkeySearchKeys029136(root)
+        end
+        return
+    end
+
+    local result = EAS_RefreshMapTeleporterVisibilityBase029136(self)
+    local root = self.mapTeleporter
+    if not root or not EPC.saved then return result end
+
+    local enabled = EPC.saved.mapTeleporterEnabled ~= false
+    local layout = self.mapTeleporterLayoutMode029130 == true or EPC.unitFramesMoveMode == true
+
+    if mapShowing and enabled then
+        -- Open-with-map is truly map-attached. It follows the map window itself,
+        -- not the zoomable map canvas, and starts folded as before.
+        root:SetHidden(false)
+        root:SetMouseEnabled(true)
+        self:DockMapTeleporterToWorldMap()
+    elseif not layout then
+        -- No persistent gameplay drawer in Hotkey / Outside Map mode.
+        root:SetHidden(true)
+        self:DockMapTeleporterToWorldMap()
+    end
+    return result
+end
+
+-- Keep every older public/legacy entry point pointed at the final state machine.
+function T:OpenMapTeleporterOverlay029134() return self:OpenMapTeleporterOverlay029136() end
+function T:OpenMapTeleporterOverlay029132() return self:OpenMapTeleporterOverlay029136() end
+function T:CloseMapTeleporterOverlay029134(skipRefresh) return self:CloseMapTeleporterOverlay029136(skipRefresh) end
+function T:CloseMapTeleporterOverlay029132(skipRefresh) return self:CloseMapTeleporterOverlay029136(skipRefresh) end
+function T:ToggleMapTeleporterOverlay029132() return self:ToggleMapTeleporterOverlay029136() end
+
+function ESOAdventurerSuite_ToggleMapTeleporterOverlay()
+    if EPC and EPC.Travel and EPC.Travel.ToggleMapTeleporterOverlay029136 then
+        EPC.Travel:ToggleMapTeleporterOverlay029136()
+    end
+end
+
+
+-- ============================================================================
+-- v0.29.138 - True map-side attachment + persistent completion-pane hiding.
+-- In MAP mode, the Teleporter should look attached to the World Map itself,
+-- not like a floating overlay. Anchor the expanded panel flush to the map's
+-- left side with the map's full height, keep the compact drawer tucked into
+-- the map's top-left corner, and hide ESO's generic map-completion/zone-guide
+-- panes for the entire time the Teleporter feature is active on the map.
+-- ============================================================================
+local EAS_DockMapTeleporterBase029138 = T.DockMapTeleporterToWorldMap
+local EAS_RefreshMapTeleporterVisibilityBase029138 = T.RefreshMapTeleporterVisibility
+
+local function EAS_GetMapTeleporterMapHost029138()
+    if _G and _G["ZO_WorldMap"] then return _G["ZO_WorldMap"] end
+    return nil
+end
+
+function T:HideMapCompletionForTeleporter(hide)
+    self.mapTeleporterHiddenCompletion = self.mapTeleporterHiddenCompletion or {}
+    local candidates = {
+        "ZO_WorldMapZoneStoryTopLevel", "ZO_WorldMapZoneStory", "ZO_WorldMapZoneStoryKeyboard",
+        "ZO_WorldMapZoneStoryPane", "ZO_WorldMapZoneGuide", "ZO_WorldMapZoneGuideKeyboard",
+        "ZO_WorldMapInfo", "ZO_WorldMapInfoContainer", "ZO_WorldMapInfoContent",
+        "ZO_WorldMapFilters", "ZO_WorldMapKeyLegend",
+    }
+    for _, name in ipairs(candidates) do
+        local c = _G and _G[name] or nil
+        if c and type(c.SetHidden) == "function" then
+            if hide then
+                if self.mapTeleporterHiddenCompletion[name] == nil and type(c.IsHidden) == "function" then
+                    local ok, v = pcall(c.IsHidden, c)
+                    if ok then self.mapTeleporterHiddenCompletion[name] = (v == true) end
+                end
+                pcall(c.SetHidden, c, true)
+            elseif self.mapTeleporterHiddenCompletion[name] ~= nil then
+                pcall(c.SetHidden, c, self.mapTeleporterHiddenCompletion[name])
+                self.mapTeleporterHiddenCompletion[name] = nil
+            end
+        end
+    end
+end
+
+function T:DockMapTeleporterToWorldMap()
+    local root = self.mapTeleporter
+    if not root or not GuiRoot then return end
+
+    local layout = self.mapTeleporterLayoutMode029130 == true or (EPC and EPC.unitFramesMoveMode == true)
+    local mapShowing = self:IsMapTeleporterMapShowing()
+    local mapHost = EAS_GetMapTeleporterMapHost029138()
+
+    root:SetClampedToScreen(true)
+    if root.SetScale then root:SetScale(1) end
+
+    if self.mapTeleporterExpanded029128 == true then
+        root:SetWidth(430)
+        if mapShowing and not layout and mapHost then
+            root:ClearAnchors()
+            root:SetAnchor(TOPLEFT, mapHost, TOPLEFT, 6, 6)
+            root:SetAnchor(BOTTOMLEFT, mapHost, BOTTOMLEFT, 6, -6)
+        else
+            root:SetDimensions(430, self:GetMapTeleporterExpandedHeight029130())
+            self:AnchorMapTeleporter029130()
+        end
+    else
+        root:SetDimensions(136, 42)
+        if mapShowing and not layout and mapHost then
+            root:ClearAnchors()
+            root:SetAnchor(TOPLEFT, mapHost, TOPLEFT, 10, 10)
+        else
+            self:AnchorMapTeleporter029130()
+        end
+    end
+end
+
+
+-- v0.29.139: Map completion stats are hidden only while the Teleporter is expanded.
+-- Folding the Teleporter or closing the World Map restores ESO's completion UI.
+
+function T:RefreshMapTeleporterVisibility()
+    local result = EAS_RefreshMapTeleporterVisibilityBase029138(self)
+    local enabled = EPC and EPC.saved and EPC.saved.mapTeleporterEnabled ~= false
+    local mapShowing = self:IsMapTeleporterMapShowing()
+    local root = self.mapTeleporter
+    local teleporterOpen = enabled
+        and mapShowing
+        and root ~= nil
+        and not root:IsHidden()
+        and self.mapTeleporterExpanded029128 == true
+
+    -- ESO's normal map-completion / zone-guide stats stay visible while the
+    -- Teleporter is folded. Hide them only while the full Teleporter panel is
+    -- actually open, then restore them immediately when it folds or the map closes.
+    self:HideMapCompletionForTeleporter(teleporterOpen)
+
+    if enabled and mapShowing then
+        self:DockMapTeleporterToWorldMap()
+    end
+    return result
+end
+
+
+-- ============================================================================
+-- v0.29.140 - Outside-left map docking + final search-field bounds.
+-- The Teleporter must never sit on top of the parchment. Its RIGHT edge docks
+-- to the World Map's LEFT edge. The final layout pass also recalculates the
+-- PLAYER/ZONE search controls from the actual Teleporter width so the ZONE box
+-- cannot extend past the panel after docking/resizing.
+-- ============================================================================
+local EAS_RefreshMapTeleporterVisibilityBase029140 = T.RefreshMapTeleporterVisibility
+local EAS_SetMapTeleporterExpandedBase029140 = T.SetMapTeleporterExpanded029128
+local EAS_LayoutMapTeleporterBase029140 = T.LayoutMapTeleporter
+
+function T:ApplyMapTeleporterSearchBounds029140()
+    local root = self.mapTeleporter
+    if not root or self.mapTeleporterExpanded029128 ~= true then return end
+
+    local width = math.max(320, safeNumber(root:GetWidth(), 430))
+    local margin = 12
+    local gap = 10
+    local usable = math.max(280, width - (margin * 2) - gap)
+    local searchWidth = math.floor(usable / 2)
+
+    if root.playerSearchLabel then
+        root.playerSearchLabel:ClearAnchors()
+        root.playerSearchLabel:SetAnchor(TOPLEFT, root, TOPLEFT, margin, 84)
+        root.playerSearchLabel:SetWidth(searchWidth)
+    end
+    if root.zoneSearchLabel then
+        root.zoneSearchLabel:ClearAnchors()
+        root.zoneSearchLabel:SetAnchor(TOPLEFT, root, TOPLEFT, margin + searchWidth + gap, 84)
+        root.zoneSearchLabel:SetWidth(searchWidth)
+    end
+    if root.playerSearchBg then
+        root.playerSearchBg:ClearAnchors()
+        root.playerSearchBg:SetAnchor(TOPLEFT, root, TOPLEFT, margin, 101)
+        root.playerSearchBg:SetDimensions(searchWidth, 30)
+    end
+    if root.zoneSearchBg then
+        root.zoneSearchBg:ClearAnchors()
+        root.zoneSearchBg:SetAnchor(TOPLEFT, root, TOPLEFT, margin + searchWidth + gap, 101)
+        root.zoneSearchBg:SetDimensions(searchWidth, 30)
+    end
+end
+
+function T:DockMapTeleporterToWorldMap()
+    local root = self.mapTeleporter
+    if not root or not GuiRoot then return end
+
+    local layout = self.mapTeleporterLayoutMode029130 == true or (EPC and EPC.unitFramesMoveMode == true)
+    local mapShowing = self:IsMapTeleporterMapShowing()
+    local mapHost = _G and _G["ZO_WorldMap"] or nil
+
+    if root.SetScale then root:SetScale(1) end
+
+    if mapShowing and not layout and mapHost then
+        -- CRITICAL: do not clamp this window. Clamping can pull an outside-left
+        -- anchor back over the map parchment when ESO thinks it is off-screen.
+        root:SetClampedToScreen(false)
+        root:ClearAnchors()
+
+        if self.mapTeleporterExpanded029128 == true then
+            root:SetWidth(430)
+            -- Full-height sidebar OUTSIDE the parchment: root RIGHT -> map LEFT.
+            root:SetAnchor(TOPRIGHT, mapHost, TOPLEFT, -4, 6)
+            root:SetAnchor(BOTTOMRIGHT, mapHost, BOTTOMLEFT, -4, -6)
+        else
+            root:SetDimensions(136, 42)
+            -- Folded drawer also remains outside, immediately left of the map.
+            root:SetAnchor(TOPRIGHT, mapHost, TOPLEFT, -4, 10)
+        end
+    else
+        root:SetClampedToScreen(true)
+        if self.mapTeleporterExpanded029128 == true then
+            root:SetDimensions(430, self:GetMapTeleporterExpandedHeight029130())
+        else
+            root:SetDimensions(136, 42)
+        end
+        self:AnchorMapTeleporter029130()
+    end
+
+    self:ApplyMapTeleporterSearchBounds029140()
+end
+
+function T:UpdateMapCompletionForTeleporter029140()
+    local root = self.mapTeleporter
+    local hide = EPC and EPC.saved and EPC.saved.mapTeleporterEnabled ~= false
+        and self:IsMapTeleporterMapShowing()
+        and root ~= nil
+        and not root:IsHidden()
+        and self.mapTeleporterExpanded029128 == true
+    self:HideMapCompletionForTeleporter(hide)
+end
+
+function T:SetMapTeleporterExpanded029128(expanded, saveState)
+    local result = EAS_SetMapTeleporterExpandedBase029140(self, expanded, saveState)
+    self:DockMapTeleporterToWorldMap()
+    self:UpdateMapCompletionForTeleporter029140()
+    return result
+end
+
+function T:LayoutMapTeleporter(...)
+    local result = EAS_LayoutMapTeleporterBase029140(self, ...)
+    self:DockMapTeleporterToWorldMap()
+    self:ApplyMapTeleporterSearchBounds029140()
+    return result
+end
+
+function T:RefreshMapTeleporterVisibility()
+    local result = EAS_RefreshMapTeleporterVisibilityBase029140(self)
+    self:DockMapTeleporterToWorldMap()
+    self:ApplyMapTeleporterSearchBounds029140()
+    self:UpdateMapCompletionForTeleporter029140()
+    return result
+end
+
+
+-- ============================================================================
+-- v0.29.141 - Stop touching ESO map completion UI + organized toolbar.
+-- The Teleporter no longer hides/restores any stock ESO map completion, zone
+-- guide, info, filter, or legend controls. The three primary toolbar buttons
+-- use one deterministic left-to-right layout with consistent sizing/gaps.
+-- ============================================================================
+local EAS_LayoutMapTeleporterBase029141 = T.LayoutMapTeleporter
+local EAS_SetMapTeleporterExpandedBase029141 = T.SetMapTeleporterExpanded029128
+local EAS_RefreshMapTeleporterVisibilityBase029141 = T.RefreshMapTeleporterVisibility
+
+function T:RestoreMapCompletionState029141()
+    local saved = self.mapTeleporterHiddenCompletion
+    if type(saved) ~= "table" then return end
+    for name, wasHidden in pairs(saved) do
+        local control = _G and _G[name] or nil
+        if control and type(control.SetHidden) == "function" then
+            pcall(control.SetHidden, control, wasHidden == true)
+        end
+    end
+    self.mapTeleporterHiddenCompletion = {}
+end
+
+-- Final policy: Map Teleporter never owns ESO's completion/zone-guide UI.
+function T:HideMapCompletionForTeleporter(hide)
+    self:RestoreMapCompletionState029141()
+end
+
+function T:UpdateMapCompletionForTeleporter029140()
+    self:RestoreMapCompletionState029141()
+end
+
+function T:ApplyMapTeleporterToolbar029141()
+    local root = self.mapTeleporter
+    if not root or self.mapTeleporterExpanded029128 ~= true then return end
+
+    local width = math.max(360, safeNumber(root:GetWidth(), 430))
+    local margin = 12
+    local gap = 8
+    local top = 46
+    local height = 32
+    local usable = math.max(300, width - (margin * 2) - (gap * 2))
+
+    -- Destination mode gets the most room because labels such as
+    -- MAPS / SURVEYS / ITEMS are longer than FAVORITES and TOOLS.
+    local viewWidth = math.floor(usable * 0.55)
+    local remaining = usable - viewWidth
+    local favoriteWidth = math.floor(remaining * 0.56)
+    local toolsWidth = remaining - favoriteWidth
+
+    local x = margin
+    if root.viewButton then
+        root.viewButton:ClearAnchors()
+        root.viewButton:SetAnchor(TOPLEFT, root, TOPLEFT, x, top)
+        root.viewButton:SetDimensions(viewWidth, height)
+        if root.viewButton.SetHorizontalAlignment then root.viewButton:SetHorizontalAlignment(TEXT_ALIGN_CENTER) end
+        x = x + viewWidth + gap
+    end
+
+    if root.favoriteButton then
+        root.favoriteButton:ClearAnchors()
+        root.favoriteButton:SetAnchor(TOPLEFT, root, TOPLEFT, x, top)
+        root.favoriteButton:SetDimensions(favoriteWidth, height)
+        if root.favoriteButton.SetHorizontalAlignment then root.favoriteButton:SetHorizontalAlignment(TEXT_ALIGN_CENTER) end
+        x = x + favoriteWidth + gap
+    end
+
+    if root.toolsButton then
+        root.toolsButton:ClearAnchors()
+        root.toolsButton:SetAnchor(TOPLEFT, root, TOPLEFT, x, top)
+        root.toolsButton:SetDimensions(toolsWidth, height)
+        if root.toolsButton.SetHorizontalAlignment then root.toolsButton:SetHorizontalAlignment(TEXT_ALIGN_CENTER) end
+    end
+
+    -- Final active destination label: no VIEW prefix, and shrink only the
+    -- longest labels so every mode stays inside the button box.
+    if root.viewButton then
+        local label = string.upper(self:GetMapTeleporterViewLabel02967(self.mapTeleporterMode or "ALL"))
+        root.viewButton:SetText(label)
+        local length = string.len(label)
+        if length >= 20 then
+            root.viewButton:SetFont("ZoFontGameSmall")
+        elseif length >= 15 then
+            root.viewButton:SetFont("ZoFontGame")
+        else
+            root.viewButton:SetFont("ZoFontGameBold")
+        end
+    end
+    if root.favoriteButton then root.favoriteButton:SetFont("ZoFontGameBold") end
+    if root.toolsButton then root.toolsButton:SetFont("ZoFontGameBold") end
+end
+
+function T:LayoutMapTeleporter(...)
+    local result = EAS_LayoutMapTeleporterBase029141(self, ...)
+    self:ApplyMapTeleporterToolbar029141()
+    if self.ApplyMapTeleporterSearchBounds029140 then self:ApplyMapTeleporterSearchBounds029140() end
+    return result
+end
+
+function T:SetMapTeleporterExpanded029128(expanded, saveState)
+    local result = EAS_SetMapTeleporterExpandedBase029141(self, expanded, saveState)
+    self:RestoreMapCompletionState029141()
+    if expanded == true then self:ApplyMapTeleporterToolbar029141() end
+    return result
+end
+
+function T:RefreshMapTeleporterVisibility()
+    local result = EAS_RefreshMapTeleporterVisibilityBase029141(self)
+    self:RestoreMapCompletionState029141()
+    self:ApplyMapTeleporterToolbar029141()
+    return result
+end
+
+
+-- ============================================================================
+-- v0.29.142 - Destination labels without VIEW prefix + guaranteed text fit.
+-- ============================================================================
+local EAS_RefreshMapTeleporterBase029142 = T.RefreshMapTeleporter
+local EAS_LayoutMapTeleporterBase029142 = T.LayoutMapTeleporter
+local EAS_CreateMapTeleporterBase029142 = T.CreateMapTeleporter
+
+function T:ApplyMapTeleporterDestinationLabel029142()
+    local root = self.mapTeleporter
+    if not root or not root.viewButton then return end
+    local label = string.upper(self:GetMapTeleporterViewLabel02967(self.mapTeleporterMode or "ALL"))
+    root.viewButton:SetText(label)
+    local length = string.len(label)
+    if length >= 20 then
+        root.viewButton:SetFont("ZoFontGameSmall")
+    elseif length >= 15 then
+        root.viewButton:SetFont("ZoFontGame")
+    else
+        root.viewButton:SetFont("ZoFontGameBold")
+    end
+    if root.viewButton.SetHorizontalAlignment then root.viewButton:SetHorizontalAlignment(TEXT_ALIGN_CENTER) end
+end
+
+function T:CreateMapTeleporter()
+    local root = EAS_CreateMapTeleporterBase029142(self)
+    self:ApplyMapTeleporterDestinationLabel029142()
+    return root
+end
+
+function T:LayoutMapTeleporter(...)
+    local result = EAS_LayoutMapTeleporterBase029142(self, ...)
+    if self.ApplyMapTeleporterToolbar029141 then self:ApplyMapTeleporterToolbar029141() end
+    self:ApplyMapTeleporterDestinationLabel029142()
+    return result
+end
+
+function T:RefreshMapTeleporter(...)
+    local result = EAS_RefreshMapTeleporterBase029142(self, ...)
+    if self.ApplyMapTeleporterToolbar029141 then self:ApplyMapTeleporterToolbar029141() end
+    self:ApplyMapTeleporterDestinationLabel029142()
+    return result
+end
+
+
+-- ============================================================================
+-- v0.29.143 - Fast Teleporter open path.
+-- Opening/expanding must be a UI-only operation. Reuse the last rendered
+-- destination list immediately, then perform at most one deferred rebuild after
+-- the panel is already visible. Static owned-house data is cached separately so
+-- ESO's collection book is not rescanned on every open.
+-- ============================================================================
+local EAS_BuildMapTeleporterEntriesBase029143 = T.BuildMapTeleporterEntries
+local EAS_GetMapTeleporterHouseEntriesBase029143 = T.GetMapTeleporterHouseEntries
+local EAS_SetMapTeleporterExpandedBase029143 = T.SetMapTeleporterExpanded029128
+local EAS_InitializeTravelBase029143 = T.Initialize
+
+local function EAS_TeleporterNowMs029143()
+    if type(GetFrameTimeMilliseconds) == "function" then
+        local ok, value = pcall(GetFrameTimeMilliseconds)
+        if ok then return safeNumber(value, 0) end
+    end
+    if type(GetGameTimeMilliseconds) == "function" then
+        local ok, value = pcall(GetGameTimeMilliseconds)
+        if ok then return safeNumber(value, 0) end
+    end
+    return 0
+end
+
+function T:GetMapTeleporterBuildCacheKey029143()
+    local saved = EPC and EPC.saved or nil
+    return table.concat({
+        tostring(self.mapTeleporterMode or "ALL"),
+        lower(self.mapTeleporterPlayerSearch or ""),
+        lower(self.mapTeleporterZoneSearch or ""),
+        tostring(saved and saved.mapTeleporterSortMode or "SMART"),
+        tostring(saved and saved.mapTeleporterIncludeHouses ~= false),
+        tostring(saved and saved.mapTeleporterShowAllZones ~= false),
+        tostring(saved and saved.mapTeleporterShowBlacklisted == true),
+    }, "|")
+end
+
+function T:GetMapTeleporterHouseEntries()
+    local now = EAS_TeleporterNowMs029143()
+    local cache = self.mapTeleporterHouseCache029143
+    local expires = safeNumber(self.mapTeleporterHouseCacheExpires029143, 0)
+    if type(cache) == "table" and (now == 0 or now < expires) then
+        return cache
+    end
+
+    local rows = EAS_GetMapTeleporterHouseEntriesBase029143(self) or {}
+    self.mapTeleporterHouseCache029143 = rows
+    -- Housing ownership/nicknames change rarely. A one-minute cache removes a
+    -- relatively expensive collection-book scan from normal Teleporter opens.
+    self.mapTeleporterHouseCacheExpires029143 = now > 0 and (now + 60000) or 0
+    return rows
+end
+
+function T:BuildMapTeleporterEntries()
+    local key = self:GetMapTeleporterBuildCacheKey029143()
+    self.mapTeleporterBuildCache029143 = self.mapTeleporterBuildCache029143 or {}
+    local cached = self.mapTeleporterBuildCache029143[key]
+
+    if self.mapTeleporterFastOpen029143 == true then
+        if cached and type(cached.entries) == "table" then
+            return cached.entries
+        end
+        -- If the exact filter/mode has never been rendered, opening should still
+        -- be instant. The deferred pass below will populate it after the panel is
+        -- visible instead of blocking the click/key press.
+        return {}
+    end
+
+    local entries = EAS_BuildMapTeleporterEntriesBase029143(self) or {}
+    self.mapTeleporterBuildCache029143[key] = {
+        entries = entries,
+        builtAt = EAS_TeleporterNowMs029143(),
+    }
+    return entries
+end
+
+function T:ScheduleMapTeleporterDeferredRefresh029143()
+    self.mapTeleporterFastOpenGeneration029143 = safeNumber(self.mapTeleporterFastOpenGeneration029143, 0) + 1
+    local generation = self.mapTeleporterFastOpenGeneration029143
+    local key = self:GetMapTeleporterBuildCacheKey029143()
+    local cached = self.mapTeleporterBuildCache029143 and self.mapTeleporterBuildCache029143[key] or nil
+    local now = EAS_TeleporterNowMs029143()
+    local age = cached and now > 0 and math.max(0, now - safeNumber(cached.builtAt, 0)) or 999999
+    local needsRebuild = cached == nil or age > 5000
+
+    local function finishOpen()
+        if not EPC or not EPC.Travel then return end
+        local travel = EPC.Travel
+        if travel.mapTeleporterFastOpenGeneration029143 ~= generation then return end
+        travel.mapTeleporterFastOpen029143 = false
+
+        local root = travel.mapTeleporter
+        if not root or root:IsHidden() or travel.mapTeleporterExpanded029128 ~= true then return end
+        if needsRebuild then
+            -- Bypass the older 180ms coalescer only for this single deferred
+            -- post-open refresh. Guild enumeration itself remains frame-sliced.
+            travel.mapTeleporterLastRefresh029114 = 0
+            travel:RefreshMapTeleporter(true)
+        end
+    end
+
+    if type(zo_callLater) == "function" then
+        zo_callLater(finishOpen, 140)
+    else
+        finishOpen()
+    end
+end
+
+function T:SetMapTeleporterExpanded029128(expanded, saveState)
+    expanded = expanded == true
+    local wasExpanded = self.mapTeleporterExpanded029128 == true
+
+    if expanded and not wasExpanded then
+        self.mapTeleporterFastOpen029143 = true
+    elseif not expanded then
+        self.mapTeleporterFastOpenGeneration029143 = safeNumber(self.mapTeleporterFastOpenGeneration029143, 0) + 1
+        self.mapTeleporterFastOpen029143 = false
+    end
+
+    local result = EAS_SetMapTeleporterExpandedBase029143(self, expanded, saveState)
+
+    if expanded and not wasExpanded then
+        self:ScheduleMapTeleporterDeferredRefresh029143()
+    end
+    return result
+end
+
+function T:PrewarmMapTeleporterCaches029143()
+    if self.mapTeleporterPrewarmStarted029143 then return end
+    self.mapTeleporterPrewarmStarted029143 = true
+
+    -- Houses are static enough to prepare once after login/zone activation.
+    self:GetMapTeleporterHouseEntries()
+
+    -- Start the existing frame-sliced guild cache in the background as well.
+    -- This does not block the current frame.
+    if self.StartMapTeleporterGuildCacheBuild029114 then
+        self:StartMapTeleporterGuildCacheBuild029114(self:GetMapTeleporterSnapshot())
+    end
+end
+
+function T:Initialize()
+    local result = EAS_InitializeTravelBase029143(self)
+    local function schedulePrewarm()
+        if type(zo_callLater) == "function" then
+            zo_callLater(function()
+                if EPC and EPC.Travel and EPC.Travel.PrewarmMapTeleporterCaches029143 then
+                    EPC.Travel:PrewarmMapTeleporterCaches029143()
+                end
+            end, 1800)
+        elseif EPC and EPC.Travel and EPC.Travel.PrewarmMapTeleporterCaches029143 then
+            EPC.Travel:PrewarmMapTeleporterCaches029143()
+        end
+    end
+
+    -- Wait until the player is actually activated so collection/social data is
+    -- ready; otherwise an early empty housing result could be cached.
+    if EVENT_MANAGER and EVENT_PLAYER_ACTIVATED ~= nil then
+        EVENT_MANAGER:RegisterForEvent("ESOAdventurerSuite_TeleporterPrewarm029143", EVENT_PLAYER_ACTIVATED, function()
+            EVENT_MANAGER:UnregisterForEvent("ESOAdventurerSuite_TeleporterPrewarm029143", EVENT_PLAYER_ACTIVATED)
+            schedulePrewarm()
+        end)
+    else
+        schedulePrewarm()
+    end
+    return result
 end

@@ -7,11 +7,11 @@
 ## Title: Code's Combat Alerts
 ## Description: Combat alerts for select PvE mechanics
 ## Author: @code65536
-## Version: 2.6.2
-## AddOnVersion: 206020
+## Version: 2.6.3
+## AddOnVersion: 206030
 ## APIVersion: 101050 101051
 ## SavedVariables: CombatAlertsSavedVariables CombatAlertsSettings CombatAlertsModules ACACUpdateCheckDisabled ACACUC_CombatAlerts
-## DependsOn: LibCombatAlerts>=8010
+## DependsOn: LibCombatAlerts>=8020
 ## OptionalDependsOn: LibAddonMenu-2.0
 
 legacy/GetFormattedAbilityName.lua

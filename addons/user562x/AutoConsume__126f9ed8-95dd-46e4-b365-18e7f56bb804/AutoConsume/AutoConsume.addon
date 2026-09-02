@@ -1,6 +1,6 @@
 ## Title: AutoConsume
 ## Author: user562
-## Version: 3.3
+## Version: 3.4
 ## APIVersion: 101048 101049 101050 101051
 ## SavedVariables: AutoConsume_SavedVars
 ## DependsOn: LibConsoleMenu LibCombatAlerts AAAConsoleUIShim

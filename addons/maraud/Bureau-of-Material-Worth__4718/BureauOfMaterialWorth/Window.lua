@@ -259,9 +259,17 @@ local rowPool         -- reusable category rows { container, name, gold, data }
 -- and there is nothing on the per-frame path.
 local FOOTER_TICK_MS = 5000
 local FOOTER_TIMER_NAME = addon.name .. "_FooterTick"
+local PRICE_REFRESH_COMPLETE_HIGHLIGHT_MS = 5000
 local TOTAL_GLOW_TICK_MS = 50
 local TOTAL_GLOW_TIMER_NAME = addon.name .. "_TotalGlow"
 local lastSnapshot  -- cached snapshot so the footer tick can re-read counts/time
+local priceRefreshHovered = false
+
+local function IsPriceRefreshRecentlyCompleted(snapshot)
+    local completedMs = snapshot and snapshot.priceRefreshCompletedMs
+    return completedMs ~= nil
+        and GetGameTimeMilliseconds() - completedMs <= PRICE_REFRESH_COMPLETE_HIGHLIGHT_MS
+end
 
 local function GetSavedVars()
     return private.savedVars or {}
@@ -678,20 +686,30 @@ function Window.Initialize()
         if button ~= MOUSE_BUTTON_INDEX_LEFT or not upInside then
             return
         end
+        if lastSnapshot and lastSnapshot.priceRefreshPending then
+            return
+        end
         local valuation = addon.Valuation
         if valuation and valuation.ForceRefresh then
             valuation.ForceRefresh()
         end
     end)
     footerPriceRefreshRow.container:SetHandler("OnMouseEnter", function(self)
+        priceRefreshHovered = true
         footerPriceRefreshRow.container:SetAlpha(1)
         InitializeTooltip(InformationTooltip, self, TOPRIGHT, -6, 0, BOTTOMRIGHT)
         UI.TipTitle(InformationTooltip, GetString(SI_BMW_FOOTER_PRICES_TOOLTIP_TITLE))
         UI.TipLine(InformationTooltip, GetString(SI_BMW_FOOTER_PRICES_TOOLTIP_BODY), "soft")
-        UI.TipCaption(InformationTooltip, GetString(SI_BMW_FOOTER_PRICES_TOOLTIP_CLICK), "accent")
+        UI.TipCaption(InformationTooltip, GetString(
+            lastSnapshot and lastSnapshot.priceRefreshPending
+                and SI_BMW_FOOTER_PRICES_TOOLTIP_BUSY
+                or SI_BMW_FOOTER_PRICES_TOOLTIP_CLICK), "accent")
     end)
     footerPriceRefreshRow.container:SetHandler("OnMouseExit", function()
-        footerPriceRefreshRow.container:SetAlpha(FOOTER_ALPHA)
+        priceRefreshHovered = false
+        local highlighted = lastSnapshot and (lastSnapshot.priceRefreshPending
+            or IsPriceRefreshRecentlyCompleted(lastSnapshot))
+        footerPriceRefreshRow.container:SetAlpha(highlighted and 1 or FOOTER_ALPHA)
         ClearTooltip(InformationTooltip)
     end)
 
@@ -849,9 +867,25 @@ local function RenderFooter()
     footerInventoryRow.label:SetText(Colorize(COLOR_MUTED, GetString(SI_BMW_FOOTER_INVENTORY_LABEL)))
     footerInventoryRow.value:SetText(Colorize(COLOR_MUTED,
         FormatTimeAgo(lastSnapshot.lastInventoryUpdateMs)))
-    footerPriceRefreshRow.label:SetText(Colorize(COLOR_MUTED, GetString(SI_BMW_FOOTER_PRICES_LABEL)))
-    footerPriceRefreshRow.value:SetText(Colorize(COLOR_MUTED,
-        FormatTimeAgo(lastSnapshot.lastPriceRefreshMs)))
+    local priceRefreshPending = lastSnapshot.priceRefreshPending == true
+    local priceRefreshCompleted = not priceRefreshPending
+        and IsPriceRefreshRecentlyCompleted(lastSnapshot)
+    local priceRefreshHighlighted = priceRefreshPending or priceRefreshCompleted
+    footerPriceRefreshRow.label:SetText(Colorize(
+        priceRefreshHighlighted and COLOR_ACCENT or COLOR_MUTED,
+        GetString(SI_BMW_FOOTER_PRICES_LABEL)))
+    if priceRefreshPending then
+        footerPriceRefreshRow.value:SetText(Colorize(COLOR_ACCENT,
+            GetString(SI_BMW_FOOTER_PRICES_REFRESHING)))
+    elseif priceRefreshCompleted then
+        footerPriceRefreshRow.value:SetText(Colorize(COLOR_ACCENT,
+            GetString(SI_BMW_FOOTER_PRICES_REFRESHED)))
+    else
+        footerPriceRefreshRow.value:SetText(Colorize(COLOR_MUTED,
+            FormatTimeAgo(lastSnapshot.lastPriceRefreshMs)))
+    end
+    footerPriceRefreshRow.container:SetAlpha(
+        (priceRefreshHovered or priceRefreshHighlighted) and 1 or FOOTER_ALPHA)
 
     -- Coverage -> "<priced>/<slots> · <source>", or a warning when unpriced.
     -- The source is shown compactly (MM/TTC/ATT) to fit the value column; when

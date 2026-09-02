@@ -8,8 +8,54 @@ local Nirnsteel_UI = Nirnsteel_UI
 local Settings = {}
 Nirnsteel_UI.Settings = Settings
 
+local MODULE_MENU_ICONS =
+{
+    ["Action Bar"] = "EsoUI/Art/AddOns/Gamepad/gp_mod_listing_category_abilitybar.dds",
+    ["Adventure Camera"] = "EsoUI/Art/Options/Gamepad/gp_options_camera.dds",
+    ["Cast Bar"] = "EsoUI/Art/AddOns/Gamepad/gp_mod_listing_category_castbarsandcooldowns.dds",
+    ["Compass"] = "EsoUI/Art/AddOns/Gamepad/gp_mod_listing_category_mapandcompass.dds",
+    ["Damage Numbers"] = "EsoUI/Art/AddOns/Gamepad/gp_mod_listing_category_combat.dds",
+    ["Experience Tracker"] = "EsoUI/Art/AddOns/Gamepad/gp_mod_listing_category_characterprogression.dds",
+    ["Group Callouts"] = "EsoUI/Art/AddOns/Gamepad/gp_mod_listing_category_chat.dds",
+    ["Group Frames"] = "EsoUI/Art/AddOns/Gamepad/gp_mod_listing_category_unitframes.dds",
+    ["HARDCORE Support"] = "EsoUI/Art/Campaign/campaignbrowser_indexicon_hardcore_up.dds",
+    ["Kill Sound"] = "EsoUI/Art/Options/Gamepad/gp_options_audio.dds",
+    ["Loot History"] = "EsoUI/Art/AddOns/Gamepad/gp_mod_listing_category_bankandinventory.dds",
+    ["Resource Bars"] = "EsoUI/Art/AddOns/Gamepad/gp_mod_listing_category_uigraphics.dds",
+    ["Target Frame"] = "EsoUI/Art/AddOns/Gamepad/gp_mod_listing_category_unitframes.dds",
+}
+
+local function ConfigureModuleMenuOptions(options)
+    local moduleOptions = {}
+    local otherOptions = {}
+
+    for _, option in ipairs(options) do
+        if option.type == "submenu" then
+            option.icon = MODULE_MENU_ICONS[option.name]
+            moduleOptions[#moduleOptions + 1] = option
+        else
+            otherOptions[#otherOptions + 1] = option
+        end
+    end
+
+    table.sort(moduleOptions, function(left, right)
+        return string.lower(left.name) < string.lower(right.name)
+    end)
+
+    local orderedOptions = { otherOptions[1] }
+    for _, option in ipairs(moduleOptions) do
+        orderedOptions[#orderedOptions + 1] = option
+    end
+    for index = 2, #otherOptions do
+        orderedOptions[#orderedOptions + 1] = otherOptions[index]
+    end
+
+    return orderedOptions
+end
+
 local PROFILE_MIGRATION_VERSION = 1
 local GROUP_CALLOUTS_CHARACTER_MIGRATION_VERSION = 1
+local GROUP_FRAMES_DEFAULTS_MIGRATION_VERSION = 1
 
 local CAMERA_PROFILE_DEFAULTS =
 {
@@ -146,6 +192,12 @@ local GROUP_CALLOUTS_DEFAULTS =
     showAccent = true,
     durationMS = 4200,
     slideDistance = 14,
+    shimmerEnabled = false,
+    shimmerIntensity = 50,
+    shimmerTarget = "leaderOnly",
+    glowEnabled = false,
+    glowIntensity = 50,
+    glowTarget = "leaderOnly",
     nameFontKey = "gameSmall",
     messageFontKey = "chat",
     nameFontSize = 14,
@@ -167,6 +219,145 @@ local GROUP_CALLOUTS_DEFAULTS =
     position = { x = 0, y = -260 },
 }
 
+local GROUP_FRAMES_DEFAULTS =
+{
+    enabled = true,
+    unlocked = false,
+    scale = 100,
+    width = 270,
+    healthHeight = 24,
+    identityHeight = 20,
+    rowSpacing = 6,
+    columnSpacing = 14,
+    opacity = 100,
+    sortMode = "role",
+    displayNameMode = "displayName",
+    healthColorMode = "role",
+    healthTextMode = "number",
+    healthTextPosition = "left",
+    showClassIcon = true,
+    showRoleIcon = true,
+    showLeaderIcon = true,
+    showShields = true,
+    showDeathAnimation = true,
+    showFriendIcon = false,
+    showGuildIcon = false,
+    showLevel = true,
+    showLevelStyle = true,
+    showRecoveryRhythm = false,
+    glossEnabled = true,
+    patternEnabled = true,
+    patternKey = "ZigZag",
+    patternOpacity = 8,
+    patternScale = 220,
+    feedbackEnabled = true,
+    feedbackIntensity = 80,
+    lossTrailEnabled = false,
+    lowHealthGlowEnabled = true,
+    borderWidth = 1,
+    cornerSize = 2,
+    innerShadowAlpha = 55,
+    outerShadowAlpha = 75,
+    textFontKey = "gameSmall",
+    nameTextSize = 15,
+    healthTextSize = 16,
+    textOutline = "thick-outline",
+    textOpacity = 100,
+    textInset = 6,
+    staticColor = { r = 0.78, g = 0.10, b = 0.11 },
+    fullHealthColor = { r = 0.96, g = 0.96, b = 0.94 },
+    lowHealthColor = { r = 0.56, g = 0.035, b = 0.055 },
+    tankColor = { r = 0.23, g = 0.51, b = 0.88 },
+    healerColor = { r = 0.28, g = 0.72, b = 0.42 },
+    damageColor = { r = 0.84, g = 0.27, b = 0.25 },
+    otherColor = { r = 0.85, g = 0.60, b = 0.24 },
+    companionColor = { r = 0.24, g = 0.62, b = 0.62 },
+    shieldFillOpacity = 70,
+    shieldFillColor = { r = 0.95, g = 0.60, b = 0.33 },
+    shieldGlowEnabled = true,
+    shieldGlowOpacity = 58,
+    shieldGlowColor = { r = 0.95, g = 0.66, b = 0.56 },
+    classColors =
+    {
+        [1] = { r = 0.85, g = 0.47, b = 0.17 },
+        [2] = { r = 0.54, g = 0.39, b = 0.84 },
+        [3] = { r = 0.70, g = 0.23, b = 0.28 },
+        [4] = { r = 0.26, g = 0.66, b = 0.54 },
+        [5] = { r = 0.40, g = 0.54, b = 0.66 },
+        [6] = { r = 0.88, g = 0.75, b = 0.33 },
+        [117] = { r = 0.25, g = 0.72, b = 0.47 },
+    },
+    unknownClassColor = { r = 0.54, g = 0.59, b = 0.66 },
+}
+
+local TARGET_FRAME_DEFAULTS =
+{
+    enabled = true,
+    unlocked = false,
+    scale = 100,
+    width = 300,
+    barHeight = 25,
+    opacity = 100,
+    glossEnabled = true,
+    barPatternEnabled = true,
+    barPatternKey = "Molten",
+    barPatternOpacity = 6,
+    barPatternScale = 228,
+    feedbackEnabled = true,
+    feedbackIntensity = 95,
+    lossTrailEnabled = false,
+    gainPulseEnabled = true,
+    spendPulseEnabled = true,
+    fullResourcePulseEnabled = true,
+    shieldPulseEnabled = true,
+    lowResourceGlowEnabled = true,
+    borderWidth = 0,
+    cornerSize = 2,
+    innerShadowAlpha = 60,
+    outerShadowAlpha = 100,
+    textFontKey = "gameSmall",
+    nameTextSize = 20,
+    healthTextSize = 18,
+    textOutline = "thick-outline",
+    textOpacity = 100,
+    textInset = 6,
+    textVerticalOffset = 3,
+    textColor = { r = 0.96, g = 0.92, b = 0.82 },
+    healthTextFormat = "numberAndPercent",
+    healthTextPosition = "sides",
+    shieldOverlayEnabled = true,
+    shieldTextMode = "healthAndShield",
+    shieldFillOpacity = 70,
+    shieldFillColor = { r = 0.95, g = 0.60, b = 0.33 },
+    shieldGlowEnabled = true,
+    shieldGlowOpacity = 65,
+    shieldGlowColor = { r = 0.95, g = 0.66, b = 0.56 },
+    npcColorMode = "static",
+    playerColorMode = "static",
+    staticColor = { r = 0.78, g = 0.06, b = 0.08 },
+    fullHealthColor = { r = 1.00, g = 1.00, b = 1.00 },
+    lowHealthColor = { r = 0.58, g = 0.015, b = 0.025 },
+    showClass = true,
+    showLevel = true,
+    showLevelStyle = true,
+    showVeterancyIcon = false,
+    showExecuteIcon = true,
+    executeIconStyle = "crossedWeapons",
+    executeThreshold = 18,
+    executePosition = "center",
+    classColors =
+    {
+        [1] = { r = 0.85, g = 0.47, b = 0.17 },
+        [2] = { r = 0.54, g = 0.39, b = 0.84 },
+        [3] = { r = 0.70, g = 0.23, b = 0.28 },
+        [4] = { r = 0.26, g = 0.66, b = 0.54 },
+        [5] = { r = 0.40, g = 0.54, b = 0.66 },
+        [6] = { r = 0.88, g = 0.75, b = 0.33 },
+        [117] = { r = 0.25, g = 0.72, b = 0.47 },
+    },
+    unknownClassColor = { r = 0.54, g = 0.59, b = 0.66 },
+}
+
 local ACCOUNT_DEFAULTS =
 {
     debugMode = false,
@@ -176,6 +367,7 @@ local ACCOUNT_DEFAULTS =
         {
             enabled = true,
             unlocked = false,
+            scale = 100,
             soundsEnabled = true,
             regularSoundKey = "TRIBUTE_AGENT_HEALED",
             filterExperience = false,
@@ -198,6 +390,15 @@ local ACCOUNT_DEFAULTS =
             maxActive = 20,
             soundThrottleMS = 40,
             savedSctSettings = {},
+            damageDoneMinigame =
+            {
+                enabled = false,
+                unlocked = false,
+                scale = 100,
+                soundEnabled = true,
+                faceRight = false,
+                displayMode = "damageDone",
+            },
         },
         killSound =
         {
@@ -256,6 +457,8 @@ local ACCOUNT_DEFAULTS =
             hideBackground = false,
             hideStockProgressBar = true,
         },
+        groupFrames = GROUP_FRAMES_DEFAULTS,
+        targetFrame = TARGET_FRAME_DEFAULTS,
         resourceBars =
         {
             enabled = true,
@@ -288,6 +491,7 @@ local ACCOUNT_DEFAULTS =
             barPatternScale = 228,
             feedbackEnabled = true,
             feedbackIntensity = 100,
+            lossTrailEnabled = false,
             gainPulseEnabled = true,
             spendPulseEnabled = true,
             fullResourcePulseEnabled = true,
@@ -325,6 +529,11 @@ local SERVER_DEFAULTS =
                 {
                     x = 0,
                     y = -45,
+                    minigame =
+                    {
+                        x = 470,
+                        y = 250,
+                    },
                 },
                 experienceTracker =
                 {
@@ -335,6 +544,16 @@ local SERVER_DEFAULTS =
                 {
                     x = 0,
                     y = -120,
+                },
+                groupFrames =
+                {
+                    keyboard = { custom = false, x = 28, y = 100 },
+                    gamepad = { custom = false, x = 70, y = 55 },
+                },
+                targetFrame =
+                {
+                    x = 0,
+                    y = 88,
                 },
                 castBar =
                 {
@@ -558,6 +777,7 @@ local function UpgradeResourceBarDefaults(account)
 
     local textFormatAliases =
     {
+        None = "none",
         Number = "number",
         Percent = "percent",
         ["Number + Percent"] = "numberAndPercent",
@@ -617,6 +837,24 @@ local function UpgradeResourceBarDefaults(account)
     resourceBars.textFontKey = fontAliases[resourceBars.textFontKey] or resourceBars.textFontKey or ACCOUNT_DEFAULTS.modules.resourceBars.textFontKey
     resourceBars.textOutline = outlineAliases[resourceBars.textOutline] or resourceBars.textOutline or ACCOUNT_DEFAULTS.modules.resourceBars.textOutline
     resourceBars.barPatternKey = patternAliases[resourceBars.barPatternKey] or resourceBars.barPatternKey or ACCOUNT_DEFAULTS.modules.resourceBars.barPatternKey
+end
+
+local function UpgradeGroupFramesDefaults(account)
+    local groupFrames = account
+        and account.modules
+        and account.modules.groupFrames
+
+    if not groupFrames
+        or groupFrames.nirnsteelDefaultsMigration == GROUP_FRAMES_DEFAULTS_MIGRATION_VERSION then
+        return
+    end
+
+    -- Carry users who received the original Group Frames default forward without
+    -- overwriting any other pattern scale they may have selected themselves.
+    if groupFrames.patternScale == 96 then
+        groupFrames.patternScale = GROUP_FRAMES_DEFAULTS.patternScale
+    end
+    groupFrames.nirnsteelDefaultsMigration = GROUP_FRAMES_DEFAULTS_MIGRATION_VERSION
 end
 
 local function UpgradeSoundChoiceLabels(account)
@@ -702,6 +940,7 @@ function Settings:Initialize()
     UpgradeDamageNumberDefaults(self.account)
     UpgradeExperienceTrackerDefaults(self.account)
     UpgradeResourceBarDefaults(self.account)
+    UpgradeGroupFramesDefaults(self.account)
     UpgradeSoundChoiceLabels(self.account)
     UpgradeCastBarDefaults(self.account)
     self.servers = ZO_SavedVars:NewAccountWide("NirnsteelUI_Servers", SAVED_VARS_VERSION, nil, SERVER_PROFILE_DEFAULTS, self.serverKey)
@@ -731,6 +970,14 @@ end
 
 function Settings:GetDamageNumbersPosition()
     return self.server.modules.damageNumbers
+end
+
+function Settings:GetDamageDoneMinigame()
+    return self:GetDamageNumbers().damageDoneMinigame
+end
+
+function Settings:GetDamageDoneMinigamePosition()
+    return self:GetDamageNumbersPosition().minigame
 end
 
 function Settings:GetKillSound()
@@ -781,6 +1028,23 @@ function Settings:GetResourceBarsPosition()
     return self.server.modules.resourceBars
 end
 
+function Settings:GetGroupFrames()
+    return self.account.modules.groupFrames
+end
+
+function Settings:GetGroupFramesPosition(mode)
+    mode = mode or (IsInGamepadPreferredMode and IsInGamepadPreferredMode() and "gamepad" or "keyboard")
+    return self.server.modules.groupFrames[mode]
+end
+
+function Settings:GetTargetFrame()
+    return self.account.modules.targetFrame
+end
+
+function Settings:GetTargetFramePosition()
+    return self.server.modules.targetFrame
+end
+
 function Settings:GetHardcoreSupport()
     return self.character.hardcoreSupport
 end
@@ -798,6 +1062,8 @@ function Settings:SetDebugModeEnabled(value)
         Nirnsteel_UI.DamageNumbers,
         Nirnsteel_UI.ExperienceTracker,
         Nirnsteel_UI.ResourceBars,
+        Nirnsteel_UI.GroupFrames,
+        Nirnsteel_UI.TargetFrame,
         Nirnsteel_UI.CastBar,
         Nirnsteel_UI.GroupCallouts,
     }
@@ -849,6 +1115,9 @@ function Settings:SetLootHistoryValue(key, value)
     end
 
     self:GetLootHistory()[key] = value
+    if key == "scale" and Nirnsteel_UI.LootHistory then
+        Nirnsteel_UI.LootHistory:RefreshSettings()
+    end
 end
 
 function Settings:SetLootHistoryFilterExperience(value)
@@ -875,6 +1144,18 @@ end
 
 function Settings:AreDamageNumberCritSoundsEnabled()
     return self:GetDamageNumbers().critSoundEnabled
+end
+
+function Settings:IsDamageDoneMinigameEnabled()
+    return self:GetDamageDoneMinigame().enabled
+end
+
+function Settings:IsDamageDoneMinigameUnlocked()
+    return self:GetDamageDoneMinigame().unlocked
+end
+
+function Settings:AreDamageDoneMinigameSoundsEnabled()
+    return self:GetDamageDoneMinigame().soundEnabled
 end
 
 function Settings:SetDamageNumbersEnabled(value)
@@ -915,6 +1196,33 @@ end
 
 function Settings:SetDamageNumbersPosition(x, y)
     local position = self:GetDamageNumbersPosition()
+    position.x = x
+    position.y = y
+end
+
+function Settings:SetDamageDoneMinigameEnabled(value)
+    self:GetDamageDoneMinigame().enabled = value
+    if Nirnsteel_UI.DamageNumbers then
+        Nirnsteel_UI.DamageNumbers:RefreshSettings()
+    end
+end
+
+function Settings:SetDamageDoneMinigameUnlocked(value)
+    self:GetDamageDoneMinigame().unlocked = value
+    if Nirnsteel_UI.DamageNumbers then
+        Nirnsteel_UI.DamageNumbers:RefreshSettings()
+    end
+end
+
+function Settings:SetDamageDoneMinigameValue(key, value)
+    self:GetDamageDoneMinigame()[key] = value
+    if Nirnsteel_UI.DamageNumbers then
+        Nirnsteel_UI.DamageNumbers:RefreshSettings()
+    end
+end
+
+function Settings:SetDamageDoneMinigamePosition(x, y)
+    local position = self:GetDamageDoneMinigamePosition()
     position.x = x
     position.y = y
 end
@@ -989,6 +1297,12 @@ function Settings:SetGroupCalloutsValue(key, value)
         ["Soft Thick"] = "soft-shadow-thick",
         ["Thick Outline"] = "thick-outline",
     }
+    local targetAliases =
+    {
+        ["Leader Only"] = "leaderOnly",
+        ["All Callouts"] = "all",
+        All = "all",
+    }
 
     if key == "soundKey" then
         value = NormalizeSoundChoice(value)
@@ -1014,6 +1328,11 @@ function Settings:SetGroupCalloutsValue(key, value)
             and value ~= "soft-shadow-thick"
             and value ~= "thick-outline" then
             value = GROUP_CALLOUTS_DEFAULTS.textEffect
+        end
+    elseif key == "shimmerTarget" or key == "glowTarget" then
+        value = targetAliases[value] or value
+        if value ~= "leaderOnly" and value ~= "all" then
+            value = GROUP_CALLOUTS_DEFAULTS[key]
         end
     end
 
@@ -1083,6 +1402,12 @@ end
 function Settings:PreviewDamageNumberCritSound()
     if Nirnsteel_UI.DamageNumbers and Nirnsteel_UI.DamageNumbers.PreviewCriticalSound then
         Nirnsteel_UI.DamageNumbers:PreviewCriticalSound()
+    end
+end
+
+function Settings:PreviewDamageDoneMinigame()
+    if Nirnsteel_UI.DamageNumbers and Nirnsteel_UI.DamageNumbers.PreviewDamageDoneMinigame then
+        Nirnsteel_UI.DamageNumbers:PreviewDamageDoneMinigame()
     end
 end
 
@@ -1330,6 +1655,7 @@ end
 function Settings:SetResourceBarsValue(key, value)
     local textFormatAliases =
     {
+        None = "none",
         Number = "number",
         Percent = "percent",
         ["Number + Percent"] = "numberAndPercent",
@@ -1408,6 +1734,202 @@ end
 function Settings:SetResourceBarsSettingsPreviewActive(active)
     if Nirnsteel_UI.ResourceBars and Nirnsteel_UI.ResourceBars.SetSettingsPreviewActive then
         Nirnsteel_UI.ResourceBars:SetSettingsPreviewActive(active)
+    end
+end
+
+function Settings:IsGroupFramesEnabled()
+    return self:GetGroupFrames().enabled ~= false
+end
+
+function Settings:IsGroupFramesUnlocked()
+    return self:IsGroupFramesEnabled() and self:GetGroupFrames().unlocked == true
+end
+
+function Settings:SetGroupFramesEnabled(value)
+    self:GetGroupFrames().enabled = value == true
+    if Nirnsteel_UI.GroupFrames then
+        Nirnsteel_UI.GroupFrames:RefreshSettings()
+    end
+end
+
+function Settings:SetGroupFramesUnlocked(value)
+    self:GetGroupFrames().unlocked = value == true
+    if Nirnsteel_UI.GroupFrames then
+        Nirnsteel_UI.GroupFrames:RefreshSettings()
+    end
+end
+
+function Settings:SetGroupFramesValue(key, value)
+    self:GetGroupFrames()[key] = value
+    if Nirnsteel_UI.GroupFrames then
+        Nirnsteel_UI.GroupFrames:RefreshSettings()
+    end
+end
+
+function Settings:GetGroupFramesColor(key)
+    local color = self:GetGroupFrames()[key]
+    local fallback = GROUP_FRAMES_DEFAULTS[key]
+    return color or fallback
+end
+
+function Settings:SetGroupFramesColor(key, r, g, b)
+    local settings = self:GetGroupFrames()
+    settings[key] = settings[key] or {}
+    settings[key].r = r
+    settings[key].g = g
+    settings[key].b = b
+    if Nirnsteel_UI.GroupFrames then
+        Nirnsteel_UI.GroupFrames:RefreshSettings()
+    end
+end
+
+function Settings:GetGroupFramesClassColor(classId)
+    local settings = self:GetGroupFrames()
+    settings.classColors = settings.classColors or {}
+    return settings.classColors[classId] or GROUP_FRAMES_DEFAULTS.classColors[classId]
+end
+
+function Settings:SetGroupFramesClassColor(classId, r, g, b)
+    local settings = self:GetGroupFrames()
+    settings.classColors = settings.classColors or {}
+    settings.classColors[classId] = settings.classColors[classId] or {}
+    settings.classColors[classId].r = r
+    settings.classColors[classId].g = g
+    settings.classColors[classId].b = b
+    if Nirnsteel_UI.GroupFrames then
+        Nirnsteel_UI.GroupFrames:RefreshSettings()
+    end
+end
+
+function Settings:SetGroupFramesPosition(mode, x, y, custom)
+    local position = self:GetGroupFramesPosition(mode)
+    position.x = x
+    position.y = y
+    position.custom = custom == true
+end
+
+function Settings:ResetGroupFramesPosition(mode)
+    local position = self:GetGroupFramesPosition(mode)
+    local defaults = SERVER_PROFILE_DEFAULTS.modules.groupFrames[mode]
+    position.x = defaults.x
+    position.y = defaults.y
+    position.custom = false
+end
+
+function Settings:SetGroupFramesSettingsPreviewActive(active)
+    if Nirnsteel_UI.GroupFrames and Nirnsteel_UI.GroupFrames.SetSettingsPreviewActive then
+        Nirnsteel_UI.GroupFrames:SetSettingsPreviewActive(active)
+    end
+end
+
+function Settings:IsTargetFrameEnabled()
+    return self:GetTargetFrame().enabled ~= false
+end
+
+function Settings:IsTargetFrameUnlocked()
+    return self:IsTargetFrameEnabled() and self:GetTargetFrame().unlocked == true
+end
+
+function Settings:SetTargetFrameEnabled(value)
+    self:GetTargetFrame().enabled = value == true
+    if Nirnsteel_UI.TargetFrame then
+        Nirnsteel_UI.TargetFrame:RefreshSettings()
+    end
+end
+
+function Settings:SetTargetFrameUnlocked(value)
+    self:GetTargetFrame().unlocked = value == true
+    if Nirnsteel_UI.TargetFrame and Nirnsteel_UI.TargetFrame.SetUnlocked then
+        Nirnsteel_UI.TargetFrame:SetUnlocked(value)
+    elseif Nirnsteel_UI.TargetFrame then
+        Nirnsteel_UI.TargetFrame:RefreshSettings()
+    end
+end
+
+function Settings:SetTargetFrameValue(key, value)
+    self:GetTargetFrame()[key] = value
+    if Nirnsteel_UI.TargetFrame then
+        Nirnsteel_UI.TargetFrame:RefreshSettings()
+    end
+end
+
+function Settings:GetTargetFrameColor(key)
+    return self:GetTargetFrame()[key] or TARGET_FRAME_DEFAULTS[key]
+end
+
+function Settings:SetTargetFrameColor(key, r, g, b)
+    local settings = self:GetTargetFrame()
+    settings[key] = settings[key] or {}
+    settings[key].r = r
+    settings[key].g = g
+    settings[key].b = b
+    if Nirnsteel_UI.TargetFrame then
+        Nirnsteel_UI.TargetFrame:RefreshSettings()
+    end
+end
+
+function Settings:GetTargetFrameClassColor(classId)
+    local settings = self:GetTargetFrame()
+    settings.classColors = settings.classColors or {}
+    return settings.classColors[classId] or TARGET_FRAME_DEFAULTS.classColors[classId]
+end
+
+function Settings:SetTargetFrameClassColor(classId, r, g, b)
+    local settings = self:GetTargetFrame()
+    settings.classColors = settings.classColors or {}
+    settings.classColors[classId] = settings.classColors[classId] or {}
+    settings.classColors[classId].r = r
+    settings.classColors[classId].g = g
+    settings.classColors[classId].b = b
+    if Nirnsteel_UI.TargetFrame then
+        Nirnsteel_UI.TargetFrame:RefreshSettings()
+    end
+end
+
+function Settings:SetTargetFramePosition(x, y)
+    local position = self:GetTargetFramePosition()
+    position.x = x
+    position.y = y
+end
+
+function Settings:ResetTargetFramePosition()
+    local position = self:GetTargetFramePosition()
+    position.x = SERVER_PROFILE_DEFAULTS.modules.targetFrame.x
+    position.y = SERVER_PROFILE_DEFAULTS.modules.targetFrame.y
+end
+
+function Settings:ResetActiveTargetFramePosition()
+    if Nirnsteel_UI.TargetFrame and Nirnsteel_UI.TargetFrame.ResetPosition then
+        Nirnsteel_UI.TargetFrame:ResetPosition()
+    else
+        self:ResetTargetFramePosition()
+    end
+end
+
+function Settings:SetTargetFrameSettingsPreviewActive(active)
+    if Nirnsteel_UI.TargetFrame and Nirnsteel_UI.TargetFrame.SetSettingsPreviewActive then
+        Nirnsteel_UI.TargetFrame:SetSettingsPreviewActive(active)
+    end
+end
+
+function Settings:ReplayTargetFramePreviewEffects()
+    if Nirnsteel_UI.TargetFrame and Nirnsteel_UI.TargetFrame.ReplayPreviewEffects then
+        Nirnsteel_UI.TargetFrame:ReplayPreviewEffects()
+    end
+end
+
+function Settings:ReplayGroupFramesPreviewEffects()
+    if Nirnsteel_UI.GroupFrames and Nirnsteel_UI.GroupFrames.ReplayPreviewEffects then
+        Nirnsteel_UI.GroupFrames:ReplayPreviewEffects()
+    end
+end
+
+function Settings:ResetActiveGroupFramesPosition()
+    if Nirnsteel_UI.GroupFrames and Nirnsteel_UI.GroupFrames.ResetPosition then
+        Nirnsteel_UI.GroupFrames:ResetPosition()
+    else
+        local mode = IsInGamepadPreferredMode and IsInGamepadPreferredMode() and "gamepad" or "keyboard"
+        self:ResetGroupFramesPosition(mode)
     end
 end
 
@@ -1509,6 +2031,582 @@ function Settings:HookGroupCalloutsSubmenuPreview(panelName)
     end)
 end
 
+function Settings:HookGroupFramesSubmenuPreview(panelName)
+    if self.groupFramesPreviewHooked then
+        return
+    end
+
+    self.groupFramesPreviewHooked = true
+    CALLBACK_MANAGER:RegisterCallback("LAM-PanelControlsCreated", function(panel)
+        if not panel or panel:GetName() ~= panelName then
+            return
+        end
+
+        local submenu = Nirnsteel_UI_GroupFramesSubmenu
+        if not submenu or submenu.nirnsteelPreviewHooked then
+            return
+        end
+
+        local function UpdatePreview()
+            zo_callLater(function()
+                self:SetGroupFramesSettingsPreviewActive(submenu.open == true)
+            end, 50)
+        end
+
+        if ZO_PostHookHandler then
+            ZO_PostHookHandler(submenu.label, "OnMouseUp", UpdatePreview)
+            ZO_PostHookHandler(submenu.btmToggle, "OnMouseUp", UpdatePreview)
+        end
+
+        submenu.nirnsteelPreviewHooked = true
+        UpdatePreview()
+    end)
+
+    CALLBACK_MANAGER:RegisterCallback("LAM-PanelClosed", function(panel)
+        if panel and panel:GetName() == panelName then
+            self:SetGroupFramesSettingsPreviewActive(false)
+        end
+    end)
+end
+
+function Settings:HookTargetFrameSubmenuPreview(panelName)
+    if self.targetFramePreviewHooked then
+        return
+    end
+
+    self.targetFramePreviewHooked = true
+    CALLBACK_MANAGER:RegisterCallback("LAM-PanelControlsCreated", function(panel)
+        if not panel or panel:GetName() ~= panelName then
+            return
+        end
+
+        local submenu = Nirnsteel_UI_TargetFrameSubmenu
+        if not submenu or submenu.nirnsteelPreviewHooked then
+            return
+        end
+
+        local function UpdatePreview()
+            zo_callLater(function()
+                self:SetTargetFrameSettingsPreviewActive(submenu.open == true)
+            end, 50)
+        end
+
+        if ZO_PostHookHandler then
+            ZO_PostHookHandler(submenu.label, "OnMouseUp", UpdatePreview)
+            ZO_PostHookHandler(submenu.btmToggle, "OnMouseUp", UpdatePreview)
+        end
+
+        submenu.nirnsteelPreviewHooked = true
+        UpdatePreview()
+    end)
+
+    CALLBACK_MANAGER:RegisterCallback("LAM-PanelClosed", function(panel)
+        if panel and panel:GetName() == panelName then
+            self:SetTargetFrameSettingsPreviewActive(false)
+        end
+    end)
+end
+
+function Settings:BuildGroupFramesOptions()
+    local controls = {}
+    local function Add(control)
+        controls[#controls + 1] = control
+    end
+    local function Disabled()
+        return not self:IsGroupFramesEnabled()
+    end
+    local function Header(name)
+        Add({ type = "header", name = name })
+    end
+    local function Description(text)
+        Add({ type = "description", text = text })
+    end
+    local function Checkbox(name, key, tooltip, disabled)
+        Add(
+        {
+            type = "checkbox",
+            name = name,
+            tooltip = tooltip,
+            getFunc = function() return self:GetGroupFrames()[key] end,
+            setFunc = function(value) self:SetGroupFramesValue(key, value) end,
+            disabled = disabled or Disabled,
+            default = GROUP_FRAMES_DEFAULTS[key],
+        })
+    end
+    local function Dropdown(name, key, tooltip, choices, values, disabled)
+        Add(
+        {
+            type = "dropdown",
+            name = name,
+            tooltip = tooltip,
+            choices = choices,
+            choicesValues = values,
+            getFunc = function() return self:GetGroupFrames()[key] end,
+            setFunc = function(value) self:SetGroupFramesValue(key, value) end,
+            disabled = disabled or Disabled,
+            default = GROUP_FRAMES_DEFAULTS[key],
+        })
+    end
+    local function Slider(name, key, tooltip, minimum, maximum, step, disabled)
+        Add(
+        {
+            type = "slider",
+            name = name,
+            tooltip = tooltip,
+            min = minimum,
+            max = maximum,
+            step = step,
+            getFunc = function() return self:GetGroupFrames()[key] end,
+            setFunc = function(value) self:SetGroupFramesValue(key, value) end,
+            disabled = disabled or Disabled,
+            default = GROUP_FRAMES_DEFAULTS[key],
+        })
+    end
+    local function ColorPicker(name, key, tooltip, disabled)
+        Add(
+        {
+            type = "colorpicker",
+            name = name,
+            tooltip = tooltip,
+            getFunc = function()
+                local color = self:GetGroupFramesColor(key)
+                return color.r, color.g, color.b, 1
+            end,
+            setFunc = function(r, g, b) self:SetGroupFramesColor(key, r, g, b) end,
+            disabled = disabled or Disabled,
+            default = function()
+                local color = GROUP_FRAMES_DEFAULTS[key]
+                return color.r, color.g, color.b, 1
+            end,
+        })
+    end
+    local function ClassColorPicker(name, classId)
+        Add(
+        {
+            type = "colorpicker",
+            name = name,
+            getFunc = function()
+                local color = self:GetGroupFramesClassColor(classId)
+                return color.r, color.g, color.b, 1
+            end,
+            setFunc = function(r, g, b) self:SetGroupFramesClassColor(classId, r, g, b) end,
+            disabled = function()
+                return Disabled() or self:GetGroupFrames().healthColorMode ~= "class"
+            end,
+            default = function()
+                local color = GROUP_FRAMES_DEFAULTS.classColors[classId]
+                return color.r, color.g, color.b, 1
+            end,
+        })
+    end
+
+    Header("General & Position")
+    Add(
+    {
+        type = "checkbox",
+        name = "Enable Group Frames",
+        tooltip = "Swap ESO's group and raid frames for Nirnsteel's. Turn this off anytime to bring ESO's frames back.",
+        getFunc = function() return self:IsGroupFramesEnabled() end,
+        setFunc = function(value) self:SetGroupFramesEnabled(value) end,
+        default = GROUP_FRAMES_DEFAULTS.enabled,
+    })
+    Add(
+    {
+        type = "checkbox",
+        name = "Unlock Position",
+        tooltip = "Show a drag handle for the frames. Keyboard and gamepad positions are saved separately on this server.",
+        getFunc = function() return self:IsGroupFramesUnlocked() end,
+        setFunc = function(value) self:SetGroupFramesUnlocked(value) end,
+        disabled = Disabled,
+        default = GROUP_FRAMES_DEFAULTS.unlocked,
+    })
+    Add(
+    {
+        type = "button",
+        name = "Reset Position",
+        tooltip = "Move the frames back to ESO's default spot for your current input mode.",
+        func = function() self:ResetActiveGroupFramesPosition() end,
+        disabled = Disabled,
+        width = "half",
+    })
+    Slider("Scale", "scale", nil, 70, 160, 1)
+    Slider("Player Bar Width", "width", nil, 180, 420, 5)
+    Slider("Health Bar Height", "healthHeight", nil, 12, 42, 1)
+    Slider("Identity Line Height", "identityHeight", "Set how much room names, levels, and icons get above each bar.", 16, 32, 1)
+    Slider("Row Spacing", "rowSpacing", nil, 0, 24, 1)
+    Slider("Column Spacing", "columnSpacing", nil, 0, 40, 1)
+    Slider("Opacity", "opacity", nil, 10, 100, 1)
+
+    Header("Roster & Names")
+    Dropdown("Display Order", "sortMode", "Choose how players are sorted. Role goes Tank, Healer, Damage, then Other; Level puts the highest CP first.",
+        { "By Role", "By Name", "By Level", "By Class" }, { "role", "name", "level", "class" })
+    Dropdown("Display Name", "displayNameMode", "Choose which player name to show and use for name sorting.",
+        { "@ID", "Character Name" }, { "displayName", "characterName" })
+    Description("Companions remain attached beneath their owner and do not participate in player sorting.")
+
+    Header("Identity & Status Icons")
+    Checkbox("Show Class Icon", "showClassIcon", nil)
+    Checkbox("Show Role Icon", "showRoleIcon", "Show each player's chosen group role. It may not match their current build.")
+    Checkbox("Show Group Leader Icon", "showLeaderIcon", nil)
+    Checkbox("Show Friend Icon", "showFriendIcon", nil)
+    Checkbox("Show Shared Guild Icon", "showGuildIcon", nil)
+    Description("Ready-check votes and target markers are always retained as core group status information.")
+
+    Header("Health & Colors")
+    Dropdown("Health Display", "healthTextMode", nil,
+        { "Number Only", "Percent Only", "Number + Percent" }, { "number", "percent", "both" })
+    Dropdown("Health Text Position", "healthTextPosition", nil,
+        { "Left", "Center", "Right" }, { "left", "center", "right" })
+    Dropdown("Health Color", "healthColorMode", "Color bars by role, class, or health. Health colors fade from white at full to deep red at low.",
+        { "By Role", "Static Red", "Health Percentage", "By Class" }, { "role", "static", "percentage", "class" })
+
+    local function RoleColorsDisabled()
+        return Disabled() or self:GetGroupFrames().healthColorMode ~= "role"
+    end
+    local function StaticColorDisabled()
+        return Disabled() or self:GetGroupFrames().healthColorMode ~= "static"
+    end
+    local function PercentageColorsDisabled()
+        return Disabled() or self:GetGroupFrames().healthColorMode ~= "percentage"
+    end
+    ColorPicker("Tank Color", "tankColor", nil, RoleColorsDisabled)
+    ColorPicker("Healer Color", "healerColor", nil, RoleColorsDisabled)
+    ColorPicker("Damage Color", "damageColor", nil, RoleColorsDisabled)
+    ColorPicker("Other Role Color", "otherColor", nil, RoleColorsDisabled)
+    ColorPicker("Companion Color", "companionColor", nil)
+    ColorPicker("Static Health Color", "staticColor", nil, StaticColorDisabled)
+    ColorPicker("Full Health Color", "fullHealthColor", nil, PercentageColorsDisabled)
+    ColorPicker("Low Health Color", "lowHealthColor", nil, PercentageColorsDisabled)
+    ClassColorPicker("Dragonknight Color", 1)
+    ClassColorPicker("Sorcerer Color", 2)
+    ClassColorPicker("Nightblade Color", 3)
+    ClassColorPicker("Warden Color", 4)
+    ClassColorPicker("Necromancer Color", 5)
+    ClassColorPicker("Templar Color", 6)
+    ClassColorPicker("Arcanist Color", 117)
+    ColorPicker("Unknown Class Color", "unknownClassColor", nil, function()
+        return Disabled() or self:GetGroupFrames().healthColorMode ~= "class"
+    end)
+
+    Header("Bar Appearance")
+    Checkbox("Gloss", "glossEnabled", nil)
+    Checkbox("Bar Pattern", "patternEnabled", nil)
+    Dropdown("Pattern", "patternKey", nil,
+        { "ZigZag", "Smoke", "Still Water", "Stone", "Dirt", "Lava", "Rock Lava", "Lava Wave", "Molten" },
+        { "ZigZag", "smoke", "stillwater", "Stone", "Dirt", "Lava", "RockLava", "LavaWave", "Molten" },
+        function() return Disabled() or self:GetGroupFrames().patternEnabled ~= true end)
+    Slider("Pattern Opacity", "patternOpacity", nil, 0, 40, 1,
+        function() return Disabled() or self:GetGroupFrames().patternEnabled ~= true end)
+    Slider("Pattern Scale", "patternScale", nil, 24, 256, 4,
+        function() return Disabled() or self:GetGroupFrames().patternEnabled ~= true end)
+    Slider("Black Border Width", "borderWidth", nil, 0, 8, 1)
+    Slider("Corner Rounding", "cornerSize", "Round the frame corners. ESO's fills may still look square.", 0, 12, 1)
+    Slider("Inner Shadow", "innerShadowAlpha", nil, 0, 100, 1)
+    Slider("Outer Shadow", "outerShadowAlpha", nil, 0, 100, 1)
+    Dropdown("Text Font", "textFontKey", nil,
+        { "Game Small", "Game Medium", "Antique", "Trajan", "Univers", "Chat" },
+        { "gameSmall", "gameMedium", "antique", "trajan", "univers", "chat" })
+    Slider("Name Size", "nameTextSize", nil, 10, 26, 1)
+    Slider("Health Text Size", "healthTextSize", nil, 10, 26, 1)
+    Dropdown("Text Outline", "textOutline", nil,
+        { "None", "Soft Thin", "Soft Thick", "Thick Outline" },
+        { "none", "soft-shadow-thin", "soft-shadow-thick", "thick-outline" })
+    Slider("Text Opacity", "textOpacity", nil, 10, 100, 1)
+    Slider("Health Text Inset", "textInset", "Move side-aligned health text away from the bar edge.", 0, 24, 1)
+
+    Header("Effects & Shields")
+    Checkbox("Show Shields", "showShields", nil)
+    Slider("Shield Fill Opacity", "shieldFillOpacity", nil, 0, 100, 1,
+        function() return Disabled() or self:GetGroupFrames().showShields == false end)
+    ColorPicker("Shield Fill Color", "shieldFillColor", nil,
+        function() return Disabled() or self:GetGroupFrames().showShields == false end)
+    Checkbox("Shield Glow", "shieldGlowEnabled", nil,
+        function() return Disabled() or self:GetGroupFrames().showShields == false end)
+    Slider("Shield Glow Opacity", "shieldGlowOpacity", nil, 0, 100, 1,
+        function()
+            return Disabled() or self:GetGroupFrames().showShields == false or self:GetGroupFrames().shieldGlowEnabled == false
+        end)
+    ColorPicker("Shield Glow Color", "shieldGlowColor", nil,
+        function()
+            return Disabled() or self:GetGroupFrames().showShields == false or self:GetGroupFrames().shieldGlowEnabled == false
+        end)
+    Checkbox("Loss Trailing", "lossTrailEnabled", "Leave a short-lived highlight behind the health bar when health drops.")
+    Checkbox("Bar Feedback", "feedbackEnabled", "Show a low-health glow and shield pulses.")
+    Slider("Feedback Intensity", "feedbackIntensity", nil, 0, 140, 5,
+        function() return Disabled() or self:GetGroupFrames().feedbackEnabled ~= true end)
+    Checkbox("Low Health Glow", "lowHealthGlowEnabled", "Glow around the bar below 35% health.",
+        function() return Disabled() or self:GetGroupFrames().feedbackEnabled ~= true end)
+    Checkbox("Recovery Rhythm (Approx.)", "showRecoveryRhythm", "Sweep a faint glint across the bars every two seconds. It's only decorative because ESO doesn't share the exact server timing.")
+    Checkbox("Death Animation", "showDeathAnimation", "Flash and dip the bar when someone dies, then show a death icon.")
+    Add(
+    {
+        type = "button",
+        name = "Replay Preview Effects",
+        func = function() self:ReplayGroupFramesPreviewEffects() end,
+        disabled = Disabled,
+        width = "half",
+    })
+
+    Header("Level Text")
+    Checkbox("Show Level", "showLevel", "Show each character's level or earned Champion Points.")
+    Checkbox("Level Style", "showLevelStyle", "Add tier colors and special effects at CP 2000+. Turn it off for plain white level text.",
+        function() return Disabled() or self:GetGroupFrames().showLevel == false end)
+
+    return controls
+end
+
+function Settings:BuildTargetFrameOptions()
+    local controls = {}
+    local function Add(control) controls[#controls + 1] = control end
+    local function Disabled() return not self:IsTargetFrameEnabled() end
+    local function Header(name) Add({ type = "header", name = name }) end
+    local function Description(text) Add({ type = "description", text = text }) end
+    local function Checkbox(name, key, tooltip, disabled)
+        Add(
+        {
+            type = "checkbox",
+            name = name,
+            tooltip = tooltip,
+            getFunc = function() return self:GetTargetFrame()[key] end,
+            setFunc = function(value) self:SetTargetFrameValue(key, value) end,
+            disabled = disabled or Disabled,
+            default = TARGET_FRAME_DEFAULTS[key],
+        })
+    end
+    local function Slider(name, key, tooltip, minimum, maximum, step, disabled)
+        Add(
+        {
+            type = "slider",
+            name = name,
+            tooltip = tooltip,
+            min = minimum,
+            max = maximum,
+            step = step,
+            getFunc = function() return self:GetTargetFrame()[key] end,
+            setFunc = function(value) self:SetTargetFrameValue(key, value) end,
+            disabled = disabled or Disabled,
+            default = TARGET_FRAME_DEFAULTS[key],
+        })
+    end
+    local function Dropdown(name, key, tooltip, choices, values, disabled)
+        Add(
+        {
+            type = "dropdown",
+            name = name,
+            tooltip = tooltip,
+            choices = choices,
+            choicesValues = values,
+            getFunc = function() return self:GetTargetFrame()[key] end,
+            setFunc = function(value) self:SetTargetFrameValue(key, value) end,
+            disabled = disabled or Disabled,
+            default = TARGET_FRAME_DEFAULTS[key],
+        })
+    end
+    local function ColorPicker(name, key, tooltip, disabled)
+        Add(
+        {
+            type = "colorpicker",
+            name = name,
+            tooltip = tooltip,
+            getFunc = function()
+                local color = self:GetTargetFrameColor(key)
+                return color.r, color.g, color.b, 1
+            end,
+            setFunc = function(r, g, b) self:SetTargetFrameColor(key, r, g, b) end,
+            disabled = disabled or Disabled,
+            default = function()
+                local color = TARGET_FRAME_DEFAULTS[key]
+                return color.r, color.g, color.b, 1
+            end,
+        })
+    end
+    local function ClassColorPicker(name, classId)
+        Add(
+        {
+            type = "colorpicker",
+            name = name,
+            getFunc = function()
+                local color = self:GetTargetFrameClassColor(classId)
+                return color.r, color.g, color.b, 1
+            end,
+            setFunc = function(r, g, b) self:SetTargetFrameClassColor(classId, r, g, b) end,
+            disabled = function()
+                return Disabled() or self:GetTargetFrame().playerColorMode ~= "class"
+            end,
+            default = function()
+                local color = TARGET_FRAME_DEFAULTS.classColors[classId]
+                return color.r, color.g, color.b, 1
+            end,
+        })
+    end
+
+    Header("General & Position")
+    Add(
+    {
+        type = "checkbox",
+        name = "Enable Target Frame",
+        tooltip = "Replace ESO's reticle target frame with Nirnsteel's compact target frame.",
+        getFunc = function() return self:IsTargetFrameEnabled() end,
+        setFunc = function(value) self:SetTargetFrameEnabled(value) end,
+        default = TARGET_FRAME_DEFAULTS.enabled,
+    })
+    Add(
+    {
+        type = "checkbox",
+        name = "Unlock Position",
+        tooltip = "Show a drag handle. The position is saved for this server.",
+        getFunc = function() return self:IsTargetFrameUnlocked() end,
+        setFunc = function(value) self:SetTargetFrameUnlocked(value) end,
+        disabled = Disabled,
+        default = TARGET_FRAME_DEFAULTS.unlocked,
+    })
+    Add(
+    {
+        type = "button",
+        name = "Reset Position",
+        tooltip = "Move the Target Frame back to its default top-center position.",
+        func = function() self:ResetActiveTargetFramePosition() end,
+        disabled = Disabled,
+        width = "half",
+    })
+    Slider("Scale", "scale", nil, 70, 160, 1)
+    Slider("Bar Width", "width", nil, 180, 700, 5)
+    Slider("Bar Height", "barHeight", nil, 10, 48, 1)
+    Slider("Opacity", "opacity", nil, 10, 100, 1)
+
+    Header("Target Information")
+    Checkbox("Show Class Icon", "showClass", "Show the player's class icon beside their name.")
+    Checkbox("Show Level", "showLevel", "Show level or effective Champion Points beside the name.")
+    Checkbox("Player Level Styling", "showLevelStyle", "Use Group Frames tier colors, gradient, glow, and shimmer.",
+        function() return Disabled() or self:GetTargetFrame().showLevel == false end)
+    Checkbox("Show Veterancy Icon", "showVeterancyIcon",
+        "Show the active Veterancy rank icon for players, or their alliance-colored Alliance War rank when Veterancy is unavailable.")
+    Description("Class and Veterancy icons only appear for player targets. Target markers are always retained.")
+
+    Header("Execute Indicator")
+    Checkbox("Show Execute Icon", "showExecuteIcon", "Show a finisher indicator inside the bar for living, attackable targets at execute health.")
+    Dropdown("Execute Icon", "executeIconStyle", "Choose the symbol used for the execute indicator.",
+        { "Crossed Weapons", "Battlefield", "Group Boss", "Nightblade", "Dragonknight", "Target Marker" },
+        { "crossedWeapons", "battlefield", "groupBoss", "nightblade", "dragonknight", "targetMarker" },
+        function() return Disabled() or self:GetTargetFrame().showExecuteIcon == false end)
+    Slider("Execute Threshold", "executeThreshold", "Show the icon at or below this health percentage.", 18, 33, 1,
+        function() return Disabled() or self:GetTargetFrame().showExecuteIcon == false end)
+    Dropdown("Execute Position", "executePosition", "Left and right reserve room for the adjacent health label.",
+        { "Left", "Center", "Right" }, { "left", "center", "right" },
+        function() return Disabled() or self:GetTargetFrame().showExecuteIcon == false end)
+
+    Header("Target Colors")
+    Dropdown("Non-Player Target Color", "npcColorMode",
+        "Static Red uses your chosen color. Threat / Reaction uses ESO's civilian, allied, neutral, and hostile disposition colors.",
+        { "Static Red", "Threat / Reaction" }, { "static", "reaction" })
+    Dropdown("Player Target Color", "playerColorMode",
+        "Choose a static color, class color, or a health gradient from white to deep red.",
+        { "Static Red", "Class Color", "Health Percentage" }, { "static", "class", "health" })
+    ColorPicker("Static Target Color", "staticColor", nil, function()
+        local settings = self:GetTargetFrame()
+        return Disabled() or (settings.npcColorMode ~= "static" and settings.playerColorMode ~= "static")
+    end)
+    ColorPicker("Full Health Color", "fullHealthColor", nil, function()
+        return Disabled() or self:GetTargetFrame().playerColorMode ~= "health"
+    end)
+    ColorPicker("Low Health Color", "lowHealthColor", nil, function()
+        return Disabled() or self:GetTargetFrame().playerColorMode ~= "health"
+    end)
+    ClassColorPicker("Dragonknight Color", 1)
+    ClassColorPicker("Sorcerer Color", 2)
+    ClassColorPicker("Nightblade Color", 3)
+    ClassColorPicker("Warden Color", 4)
+    ClassColorPicker("Necromancer Color", 5)
+    ClassColorPicker("Templar Color", 6)
+    ClassColorPicker("Arcanist Color", 117)
+    ColorPicker("Unknown Class Color", "unknownClassColor", nil, function()
+        return Disabled() or self:GetTargetFrame().playerColorMode ~= "class"
+    end)
+
+    Header("Bar Appearance")
+    Checkbox("Gloss", "glossEnabled")
+    Checkbox("Fill Pattern", "barPatternEnabled")
+    Dropdown("Fill Pattern Type", "barPatternKey", nil,
+        { "ZigZag", "Smoke", "Still Water", "Stone", "Dirt", "Lava", "Rock Lava", "Lava Wave", "Molten" },
+        { "ZigZag", "smoke", "stillwater", "Stone", "Dirt", "Lava", "RockLava", "LavaWave", "Molten" },
+        function() return Disabled() or self:GetTargetFrame().barPatternEnabled ~= true end)
+    Slider("Fill Pattern Opacity", "barPatternOpacity", nil, 0, 40, 1,
+        function() return Disabled() or self:GetTargetFrame().barPatternEnabled ~= true end)
+    Slider("Fill Pattern Scale", "barPatternScale", nil, 24, 512, 4,
+        function() return Disabled() or self:GetTargetFrame().barPatternEnabled ~= true end)
+    Slider("Black Border Width", "borderWidth", nil, 0, 8, 1)
+    Slider("Corner Rounding", "cornerSize", "Round the frame corners. ESO's fills may still look square.", 0, 12, 1)
+    Slider("Inner Shadow", "innerShadowAlpha", nil, 0, 100, 1)
+    Slider("Outer Shadow", "outerShadowAlpha", nil, 0, 100, 1)
+
+    Header("Text")
+    Dropdown("Font", "textFontKey", nil,
+        { "Game Small", "Game Medium", "Antique", "Trajan", "Univers", "Chat" },
+        { "gameSmall", "gameMedium", "antique", "trajan", "univers", "chat" })
+    Slider("Name Size", "nameTextSize", nil, 10, 36, 1)
+    Slider("Health Text Size", "healthTextSize", nil, 8, 32, 1)
+    Dropdown("Outline", "textOutline", nil,
+        { "None", "Soft Thin", "Soft Thick", "Thick Outline" },
+        { "none", "soft-shadow-thin", "soft-shadow-thick", "thick-outline" })
+    Slider("Text Opacity", "textOpacity", nil, 10, 100, 1)
+    ColorPicker("Text Color", "textColor")
+    Slider("Health Text Inset", "textInset", "Move side labels away from the bar edge.", 0, 28, 1)
+    Slider("Health Text Vertical Offset", "textVerticalOffset", nil, -8, 8, 1)
+    Dropdown("Health Format", "healthTextFormat", nil,
+        { "None", "Number", "Percent", "Number + Percent" },
+        { "none", "number", "percent", "numberAndPercent" })
+    Dropdown("Health Text Position", "healthTextPosition",
+        "Applies to every health format. Opposite Sides places a number on the left and a percent on the right; single values use their natural side.",
+        { "Left", "Center", "Right", "Opposite Sides" }, { "left", "center", "right", "sides" }, Disabled)
+
+    Header("Shields")
+    Checkbox("Shield Overlay", "shieldOverlayEnabled")
+    Slider("Shield Fill Opacity", "shieldFillOpacity", nil, 0, 100, 1,
+        function() return Disabled() or self:GetTargetFrame().shieldOverlayEnabled == false end)
+    ColorPicker("Shield Fill Color", "shieldFillColor", nil,
+        function() return Disabled() or self:GetTargetFrame().shieldOverlayEnabled == false end)
+    Checkbox("Shield Glow", "shieldGlowEnabled", nil,
+        function() return Disabled() or self:GetTargetFrame().shieldOverlayEnabled == false end)
+    Slider("Shield Glow Opacity", "shieldGlowOpacity", nil, 0, 100, 1,
+        function()
+            return Disabled() or self:GetTargetFrame().shieldOverlayEnabled == false
+                or self:GetTargetFrame().shieldGlowEnabled == false
+        end)
+    ColorPicker("Shield Glow Color", "shieldGlowColor", nil,
+        function()
+            return Disabled() or self:GetTargetFrame().shieldOverlayEnabled == false
+                or self:GetTargetFrame().shieldGlowEnabled == false
+        end)
+    Dropdown("Shield Text Mode", "shieldTextMode", nil,
+        { "Off", "Shield Only", "Health + Shield" }, { "off", "shieldOnly", "healthAndShield" })
+
+    Header("Feedback Effects")
+    Checkbox("Bar Feedback", "feedbackEnabled")
+    Slider("Feedback Intensity", "feedbackIntensity", nil, 0, 140, 5,
+        function() return Disabled() or self:GetTargetFrame().feedbackEnabled ~= true end)
+    Checkbox("Damage Pulse", "spendPulseEnabled", nil,
+        function() return Disabled() or self:GetTargetFrame().feedbackEnabled ~= true end)
+    Checkbox("Heal Pulse", "gainPulseEnabled", nil,
+        function() return Disabled() or self:GetTargetFrame().feedbackEnabled ~= true end)
+    Checkbox("Full Health Pulse", "fullResourcePulseEnabled", nil,
+        function() return Disabled() or self:GetTargetFrame().feedbackEnabled ~= true end)
+    Checkbox("Shield Pulse", "shieldPulseEnabled", nil,
+        function() return Disabled() or self:GetTargetFrame().feedbackEnabled ~= true end)
+    Checkbox("Loss Trail", "lossTrailEnabled", "Leave a short-lived highlight behind the bar when health drops.")
+    Checkbox("Low Health Glow", "lowResourceGlowEnabled", "Glow around the target bar below 35% health.",
+        function() return Disabled() or self:GetTargetFrame().feedbackEnabled ~= true end)
+    Add(
+    {
+        type = "button",
+        name = "Replay Preview Effects",
+        func = function() self:ReplayTargetFramePreviewEffects() end,
+        disabled = Disabled,
+        width = "half",
+    })
+
+    return controls
+end
+
 function Settings:RegisterAddonMenu()
     local LAM = LibAddonMenu2
     if not LAM and LibStub then
@@ -1530,7 +2628,7 @@ function Settings:RegisterAddonMenu()
         name = ADDON_DISPLAY_NAME,
         displayName = ADDON_DISPLAY_NAME,
         author = "Wrynch",
-        version = "1.0.1",
+        version = "2.0.0",
         registerForRefresh = true,
         registerForDefaults = true,
     }
@@ -1544,13 +2642,12 @@ function Settings:RegisterAddonMenu()
         {
             type = "submenu",
             name = "Loot History",
-            tooltip = "Customize the loot messages and sounds shown on the HUD.",
             controls =
             {
                 {
                     type = "checkbox",
                     name = "Enable Loot History",
-                    tooltip = "Shows Nirnsteel's loot history frame instead of the default one.",
+                    tooltip = "Use Nirnsteel's loot history instead of ESO's.",
                     getFunc = function() return self:IsLootHistoryEnabled() end,
                     setFunc = function(value) self:SetLootHistoryEnabled(value) end,
                     default = ACCOUNT_DEFAULTS.modules.lootHistory.enabled,
@@ -1558,16 +2655,27 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "checkbox",
                     name = "Unlock Loot Frame",
-                    tooltip = "Shows a handle so you can drag the loot history frame. The position is saved for this server.",
+                    tooltip = "Show a drag handle for the loot frame. Its position is saved on this server.",
                     getFunc = function() return self:IsLootHistoryUnlocked() end,
                     setFunc = function(value) self:SetLootHistoryUnlocked(value) end,
                     disabled = function() return not self:IsLootHistoryEnabled() end,
                     default = ACCOUNT_DEFAULTS.modules.lootHistory.unlocked,
                 },
                 {
+                    type = "slider",
+                    name = "Scale",
+                    min = 60,
+                    max = 180,
+                    step = 1,
+                    getFunc = function() return self:GetLootHistory().scale end,
+                    setFunc = function(value) self:SetLootHistoryValue("scale", value) end,
+                    disabled = function() return not self:IsLootHistoryEnabled() end,
+                    default = ACCOUNT_DEFAULTS.modules.lootHistory.scale,
+                },
+                {
                     type = "checkbox",
                     name = "Enable Sounds",
-                    tooltip = "Plays loot feedback sounds, including the special legendary fanfare.",
+                    tooltip = "Play sounds for loot, plus a special fanfare for legendary drops.",
                     getFunc = function() return self:AreLootHistorySoundsEnabled() end,
                     setFunc = function(value) self:SetLootHistorySoundsEnabled(value) end,
                     disabled = function() return not self:IsLootHistoryEnabled() end,
@@ -1576,7 +2684,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "dropdown",
                     name = "Regular Loot Sound",
-                    tooltip = "Chooses the sound played for non-legendary loot.",
                     choices =
                     {
                         "Soft Chime",
@@ -1595,7 +2702,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "checkbox",
                     name = "Hide Experience Gains",
-                    tooltip = "Keeps XP gains out of the loot history feed.",
                     getFunc = function() return self:ShouldFilterLootHistoryExperience() end,
                     setFunc = function(value) self:SetLootHistoryFilterExperience(value) end,
                     disabled = function() return not self:IsLootHistoryEnabled() end,
@@ -1606,21 +2712,20 @@ function Settings:RegisterAddonMenu()
         {
             type = "submenu",
             name = "Damage Numbers",
-            tooltip = "Customize the combat numbers shown near the center of the screen.",
             controls =
             {
                 {
                     type = "checkbox",
-                    name = "Enable Damage Numbers",
-                    tooltip = "Shows Nirnsteel combat damage numbers near the center of the screen.",
+                    name = "Enable Floating Damage Numbers",
+                    tooltip = "Show Nirnsteel's damage numbers near the middle of your screen.",
                     getFunc = function() return self:IsDamageNumbersEnabled() end,
                     setFunc = function(value) self:SetDamageNumbersEnabled(value) end,
                     default = ACCOUNT_DEFAULTS.modules.damageNumbers.enabled,
                 },
                 {
                     type = "checkbox",
-                    name = "Unlock Damage Number Origin",
-                    tooltip = "Shows a handle for the point where damage numbers appear. The position is saved for this server.",
+                    name = "Unlock Floating Damage Origin",
+                    tooltip = "Show a drag handle for where damage numbers pop up. Its position is saved on this server.",
                     getFunc = function() return self:IsDamageNumbersUnlocked() end,
                     setFunc = function(value) self:SetDamageNumbersUnlocked(value) end,
                     disabled = function() return not self:IsDamageNumbersEnabled() end,
@@ -1629,7 +2734,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "checkbox",
                     name = "Hide Default Damage Numbers",
-                    tooltip = "Hides ESO's built-in damage numbers while Nirnsteel damage numbers are enabled.",
                     getFunc = function() return self:ShouldHideDefaultDamageNumbers() end,
                     setFunc = function(value) self:SetDamageNumbersHideDefault(value) end,
                     disabled = function() return not self:IsDamageNumbersEnabled() end,
@@ -1638,7 +2742,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "checkbox",
                     name = "Critical Hit Sound",
-                    tooltip = "Plays a short impact sound when you critically hit.",
                     getFunc = function() return self:AreDamageNumberCritSoundsEnabled() end,
                     setFunc = function(value) self:SetDamageNumberCritSoundsEnabled(value) end,
                     disabled = function() return not self:IsDamageNumbersEnabled() end,
@@ -1647,7 +2750,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "dropdown",
                     name = "Damage Number Font",
-                    tooltip = "Chooses the font family used by custom damage numbers.",
                     choices =
                     {
                         "Antique",
@@ -1706,7 +2808,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "dropdown",
                     name = "Text Effect",
-                    tooltip = "Applies an optional text effect to damage numbers.",
                     choices =
                     {
                         "None",
@@ -1727,7 +2828,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "dropdown",
                     name = "Critical Sound",
-                    tooltip = "Chooses the sound played for critical damage numbers.",
                     choices =
                     {
                         "Deep Hit",
@@ -1747,7 +2847,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Normal Font Size",
-                    tooltip = "Controls the font size for regular damage numbers.",
                     min = 12,
                     max = 96,
                     step = 1,
@@ -1759,7 +2858,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Critical Font Size",
-                    tooltip = "Controls the font size for critical damage numbers.",
                     min = 48,
                     max = 128,
                     step = 1,
@@ -1771,7 +2869,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Duration",
-                    tooltip = "Controls how long damage numbers remain visible.",
+                    tooltip = "Set how long damage numbers stay visible, in milliseconds.",
                     min = 450,
                     max = 1800,
                     step = 25,
@@ -1783,7 +2881,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Spread",
-                    tooltip = "Controls how far new damage numbers scatter around the combat center.",
+                    tooltip = "Set how far new damage numbers spread out.",
                     min = 40,
                     max = 280,
                     step = 5,
@@ -1795,7 +2893,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Drift",
-                    tooltip = "Controls how far damage numbers travel after the pop.",
+                    tooltip = "Set how far damage numbers drift after popping up.",
                     min = 0,
                     max = 160,
                     step = 5,
@@ -1807,7 +2905,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Big Hit Threshold",
-                    tooltip = "Hits at or above this value drift less so they feel heavier.",
+                    tooltip = "Hits this big or higher drift less, so they feel heavier.",
                     min = 1000,
                     max = 200000,
                     step = 1000,
@@ -1819,7 +2917,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Maximum Active Numbers",
-                    tooltip = "Caps the number of visible damage labels. The oldest label is reused when the cap is reached.",
+                    tooltip = "Limit how many damage numbers can be on screen. New hits replace the oldest ones.",
                     min = 8,
                     max = 80,
                     step = 1,
@@ -1831,7 +2929,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Critical Sound Throttle",
-                    tooltip = "Minimum milliseconds between critical-hit sounds.",
+                    tooltip = "Set the shortest gap between critical-hit sounds, in milliseconds.",
                     min = 0,
                     max = 800,
                     step = 10,
@@ -1840,22 +2938,89 @@ function Settings:RegisterAddonMenu()
                     disabled = function() return not self:IsDamageNumbersEnabled() or not self:AreDamageNumberCritSoundsEnabled() end,
                     default = ACCOUNT_DEFAULTS.modules.damageNumbers.soundThrottleMS,
                 },
+                {
+                    type = "header",
+                    name = "Damage Done Minigame",
+                },
+                {
+                    type = "description",
+                    text = "Chain player and pet damage into a fast draining arcade score.",
+                },
+                {
+                    type = "checkbox",
+                    name = "Enable Damage Done Minigame",
+                    tooltip = "Show a separate accumulated damage score. This can run without floating damage numbers.",
+                    getFunc = function() return self:IsDamageDoneMinigameEnabled() end,
+                    setFunc = function(value) self:SetDamageDoneMinigameEnabled(value) end,
+                    default = ACCOUNT_DEFAULTS.modules.damageNumbers.damageDoneMinigame.enabled,
+                },
+                {
+                    type = "checkbox",
+                    name = "Unlock Damage Done Minigame",
+                    tooltip = "Show a drag handle for the minigame. Its position is saved on this server.",
+                    getFunc = function() return self:IsDamageDoneMinigameUnlocked() end,
+                    setFunc = function(value) self:SetDamageDoneMinigameUnlocked(value) end,
+                    disabled = function() return not self:IsDamageDoneMinigameEnabled() end,
+                    default = ACCOUNT_DEFAULTS.modules.damageNumbers.damageDoneMinigame.unlocked,
+                },
+                {
+                    type = "checkbox",
+                    name = "Minigame Sounds",
+                    tooltip = "Play throttled rune ticks, heavier critical impacts, and milestone sounds.",
+                    getFunc = function() return self:AreDamageDoneMinigameSoundsEnabled() end,
+                    setFunc = function(value) self:SetDamageDoneMinigameValue("soundEnabled", value) end,
+                    disabled = function() return not self:IsDamageDoneMinigameEnabled() end,
+                    default = ACCOUNT_DEFAULTS.modules.damageNumbers.damageDoneMinigame.soundEnabled,
+                },
+                {
+                    type = "checkbox",
+                    name = "Face Right",
+                    tooltip = "Reverse the number's tilt, skew, and decorative accents so it faces right.",
+                    getFunc = function() return self:GetDamageDoneMinigame().faceRight end,
+                    setFunc = function(value) self:SetDamageDoneMinigameValue("faceRight", value) end,
+                    disabled = function() return not self:IsDamageDoneMinigameEnabled() end,
+                    default = ACCOUNT_DEFAULTS.modules.damageNumbers.damageDoneMinigame.faceRight,
+                },
+                {
+                    type = "dropdown",
+                    name = "Display Mode",
+                    tooltip = "Show the current fast-draining damage total, or average damage per second across the active combo streak.",
+                    choices = { "Damage Done", "DPS" },
+                    choicesValues = { "damageDone", "dps" },
+                    getFunc = function() return self:GetDamageDoneMinigame().displayMode end,
+                    setFunc = function(value) self:SetDamageDoneMinigameValue("displayMode", value) end,
+                    disabled = function() return not self:IsDamageDoneMinigameEnabled() end,
+                    default = ACCOUNT_DEFAULTS.modules.damageNumbers.damageDoneMinigame.displayMode,
+                },
+                {
+                    type = "slider",
+                    name = "Minigame Scale",
+                    min = 60,
+                    max = 180,
+                    step = 1,
+                    getFunc = function() return self:GetDamageDoneMinigame().scale end,
+                    setFunc = function(value) self:SetDamageDoneMinigameValue("scale", value) end,
+                    disabled = function() return not self:IsDamageDoneMinigameEnabled() end,
+                    default = ACCOUNT_DEFAULTS.modules.damageNumbers.damageDoneMinigame.scale,
+                },
+                {
+                    type = "button",
+                    name = "Preview Minigame",
+                    tooltip = "Play a short normal-hit, pet-hit, critical-hit, and drain sequence.",
+                    func = function() self:PreviewDamageDoneMinigame() end,
+                    disabled = function() return not self:IsDamageDoneMinigameEnabled() end,
+                },
             },
         },
         {
             type = "submenu",
             name = "Kill Sound",
-            tooltip = "Choose the sound played when you land the killing blow.",
+            tooltip = "Pick the sound you hear when you land the killing blow.",
             controls =
             {
                 {
-                    type = "description",
-                    text = "Kill sounds use your ESO SFX/UI volume. ESO does not let addons set a separate volume for one sound.",
-                },
-                {
                     type = "checkbox",
                     name = "Enable Kill Sound",
-                    tooltip = "Plays a configurable sound when your character lands the killing blow.",
                     getFunc = function() return self:IsKillSoundEnabled() end,
                     setFunc = function(value) self:SetKillSoundEnabled(value) end,
                     default = ACCOUNT_DEFAULTS.modules.killSound.enabled,
@@ -1863,7 +3028,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "dropdown",
                     name = "Killing Blow Sound",
-                    tooltip = "Chooses the sound played for your killing blows.",
                     choices =
                     {
                         "Victory Chime",
@@ -1884,7 +3048,7 @@ function Settings:RegisterAddonMenu()
         {
             type = "submenu",
             name = "Group Callouts",
-            tooltip = "Shows animated HUD callouts for ESO group chat messages.",
+            tooltip = "Show animated HUD callouts for group chat.",
             reference = "Nirnsteel_UI_GroupCalloutsSubmenu",
             controls =
             {
@@ -1895,7 +3059,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "checkbox",
                     name = "Enable Group Callouts",
-                    tooltip = "Shows animated callouts for group chat messages.",
                     getFunc = function() return self:IsGroupCalloutsEnabled() end,
                     setFunc = function(value) self:SetGroupCalloutsEnabled(value) end,
                     default = GROUP_CALLOUTS_DEFAULTS.enabled,
@@ -1903,7 +3066,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "checkbox",
                     name = "Unlock Group Callouts",
-                    tooltip = "Shows a handle so you can drag group callouts. The position is saved for this character on this server.",
+                    tooltip = "Show a drag handle for callouts. The position is saved for this character on this server.",
                     getFunc = function() return self:IsGroupCalloutsUnlocked() end,
                     setFunc = function(value) self:SetGroupCalloutsUnlocked(value) end,
                     disabled = function() return not self:IsGroupCalloutsEnabled() end,
@@ -1912,7 +3075,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "dropdown",
                     name = "Callout Sound Mode",
-                    tooltip = "Chooses when group callouts play a short UI sound.",
                     choices = { "Off", "Leader Only", "Every Message" },
                     choicesValues = { "off", "leaderOnly", "all" },
                     getFunc = function() return self:GetGroupCallouts().soundMode end,
@@ -1923,7 +3085,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "dropdown",
                     name = "Callout Sound",
-                    tooltip = "Chooses the short UI sound used by group callouts.",
                     choices =
                     {
                         "Muted Tick",
@@ -1952,7 +3113,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "button",
                     name = "Preview Sound",
-                    tooltip = "Plays the selected group callout sound.",
                     func = function() self:PreviewGroupCalloutsSound() end,
                     disabled = function()
                         return not self:IsGroupCalloutsEnabled()
@@ -1966,7 +3126,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Scale",
-                    tooltip = "Controls the overall size of group callouts.",
                     min = 60,
                     max = 180,
                     step = 1,
@@ -1978,7 +3137,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Maximum Visible",
-                    tooltip = "Controls how many group callouts can be visible at the same time.",
                     min = 3,
                     max = 6,
                     step = 1,
@@ -1990,7 +3148,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Width",
-                    tooltip = "Controls the width of each callout.",
                     min = 260,
                     max = 760,
                     step = 10,
@@ -2002,7 +3159,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Height",
-                    tooltip = "Controls the height of each callout.",
                     min = 42,
                     max = 110,
                     step = 1,
@@ -2014,7 +3170,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Row Spacing",
-                    tooltip = "Controls the gap between stacked callouts.",
                     min = 0,
                     max = 24,
                     step = 1,
@@ -2026,7 +3181,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "checkbox",
                     name = "Show Icon",
-                    tooltip = "Shows the member or leader icon on each callout.",
+                    tooltip = "Show a member or leader icon on each callout.",
                     getFunc = function() return self:GetGroupCallouts().showIcon end,
                     setFunc = function(value) self:SetGroupCalloutsValue("showIcon", value) end,
                     disabled = function() return not self:IsGroupCalloutsEnabled() end,
@@ -2035,7 +3190,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Icon Size",
-                    tooltip = "Controls the member and leader icon size.",
                     min = 0,
                     max = 48,
                     step = 1,
@@ -2047,7 +3201,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "checkbox",
                     name = "Show Accent Strip",
-                    tooltip = "Shows the small colored strip at the left edge.",
+                    tooltip = "Show the small color strip on the left.",
                     getFunc = function() return self:GetGroupCallouts().showAccent end,
                     setFunc = function(value) self:SetGroupCalloutsValue("showAccent", value) end,
                     disabled = function() return not self:IsGroupCalloutsEnabled() end,
@@ -2060,7 +3214,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Visible Duration",
-                    tooltip = "Milliseconds each callout remains visible.",
+                    tooltip = "Set how long each callout stays visible, in milliseconds.",
                     min = 1200,
                     max = 9000,
                     step = 100,
@@ -2072,7 +3226,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Slide Distance",
-                    tooltip = "Controls how far callouts slide during fade-in and fade-out.",
+                    tooltip = "Set how far callouts slide as they fade in and out.",
                     min = 0,
                     max = 40,
                     step = 1,
@@ -2080,6 +3234,78 @@ function Settings:RegisterAddonMenu()
                     setFunc = function(value) self:SetGroupCalloutsValue("slideDistance", value) end,
                     disabled = function() return not self:IsGroupCalloutsEnabled() end,
                     default = GROUP_CALLOUTS_DEFAULTS.slideDistance,
+                },
+                {
+                    type = "checkbox",
+                    name = "Shimmer",
+                    tooltip = "Sweep a soft highlight across matching callouts.",
+                    getFunc = function() return self:GetGroupCallouts().shimmerEnabled end,
+                    setFunc = function(value) self:SetGroupCalloutsValue("shimmerEnabled", value) end,
+                    disabled = function() return not self:IsGroupCalloutsEnabled() end,
+                    default = GROUP_CALLOUTS_DEFAULTS.shimmerEnabled,
+                },
+                {
+                    type = "slider",
+                    name = "Shimmer Intensity",
+                    min = 0,
+                    max = 100,
+                    step = 1,
+                    getFunc = function() return self:GetGroupCallouts().shimmerIntensity end,
+                    setFunc = function(value) self:SetGroupCalloutsValue("shimmerIntensity", value) end,
+                    disabled = function()
+                        return not self:IsGroupCalloutsEnabled()
+                            or not self:GetGroupCallouts().shimmerEnabled
+                    end,
+                    default = GROUP_CALLOUTS_DEFAULTS.shimmerIntensity,
+                },
+                {
+                    type = "dropdown",
+                    name = "Shimmer For",
+                    choices = { "Leader Only", "All Callouts" },
+                    choicesValues = { "leaderOnly", "all" },
+                    getFunc = function() return self:GetGroupCallouts().shimmerTarget end,
+                    setFunc = function(value) self:SetGroupCalloutsValue("shimmerTarget", value) end,
+                    disabled = function()
+                        return not self:IsGroupCalloutsEnabled()
+                            or not self:GetGroupCallouts().shimmerEnabled
+                    end,
+                    default = GROUP_CALLOUTS_DEFAULTS.shimmerTarget,
+                },
+                {
+                    type = "checkbox",
+                    name = "Glow",
+                    tooltip = "Pulse a colored glow around matching callouts.",
+                    getFunc = function() return self:GetGroupCallouts().glowEnabled end,
+                    setFunc = function(value) self:SetGroupCalloutsValue("glowEnabled", value) end,
+                    disabled = function() return not self:IsGroupCalloutsEnabled() end,
+                    default = GROUP_CALLOUTS_DEFAULTS.glowEnabled,
+                },
+                {
+                    type = "slider",
+                    name = "Glow Intensity",
+                    min = 0,
+                    max = 100,
+                    step = 1,
+                    getFunc = function() return self:GetGroupCallouts().glowIntensity end,
+                    setFunc = function(value) self:SetGroupCalloutsValue("glowIntensity", value) end,
+                    disabled = function()
+                        return not self:IsGroupCalloutsEnabled()
+                            or not self:GetGroupCallouts().glowEnabled
+                    end,
+                    default = GROUP_CALLOUTS_DEFAULTS.glowIntensity,
+                },
+                {
+                    type = "dropdown",
+                    name = "Glow For",
+                    choices = { "Leader Only", "All Callouts" },
+                    choicesValues = { "leaderOnly", "all" },
+                    getFunc = function() return self:GetGroupCallouts().glowTarget end,
+                    setFunc = function(value) self:SetGroupCalloutsValue("glowTarget", value) end,
+                    disabled = function()
+                        return not self:IsGroupCalloutsEnabled()
+                            or not self:GetGroupCallouts().glowEnabled
+                    end,
+                    default = GROUP_CALLOUTS_DEFAULTS.glowTarget,
                 },
                 {
                     type = "header",
@@ -2155,7 +3381,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "checkbox",
                     name = "Hide Background",
-                    tooltip = "Hides the callout panel and border while keeping text, icon, and accent visible.",
+                    tooltip = "Hide the panel and border, but keep the text, icon, and color strip.",
                     getFunc = function() return self:GetGroupCallouts().hideBackground end,
                     setFunc = function(value) self:SetGroupCalloutsValue("hideBackground", value) end,
                     disabled = function() return not self:IsGroupCalloutsEnabled() end,
@@ -2269,14 +3495,12 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "button",
                     name = "Preview Regular Callout",
-                    tooltip = "Shows a sample regular group member callout.",
                     func = function() self:PreviewGroupCallout() end,
                     disabled = function() return not self:IsGroupCalloutsEnabled() end,
                 },
                 {
                     type = "button",
                     name = "Preview Leader Callout",
-                    tooltip = "Shows a sample group leader callout.",
                     func = function() self:PreviewGroupCalloutLeader() end,
                     disabled = function() return not self:IsGroupCalloutsEnabled() end,
                 },
@@ -2285,13 +3509,12 @@ function Settings:RegisterAddonMenu()
         {
             type = "submenu",
             name = "Action Bar",
-            tooltip = "Settings for Nirnsteel action bar visuals and feedback.",
             controls =
             {
                 {
                     type = "checkbox",
                     name = "Enable Action Bar Frames",
-                    tooltip = "Replaces action bar button frames and highlights ready ultimate and quickslot cooldown states.",
+                    tooltip = "Restyle action bar buttons and highlight ready ultimates and quickslot cooldowns.",
                     getFunc = function() return self:IsActionBarFramesEnabled() end,
                     setFunc = function(value) self:SetActionBarFramesEnabled(value) end,
                     default = ACCOUNT_DEFAULTS.modules.actionBarFrames.enabled,
@@ -2299,7 +3522,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "checkbox",
                     name = "Shrink Used Skills",
-                    tooltip = "Briefly shrinks the action bar button when you use a slotted skill.",
                     getFunc = function() return self:IsActionBarSkillUseShrinkEnabled() end,
                     setFunc = function(value) self:SetActionBarSkillUseShrinkEnabled(value) end,
                     disabled = function() return not self:IsActionBarFramesEnabled() end,
@@ -2308,7 +3530,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "checkbox",
                     name = "Show Global Cooldown",
-                    tooltip = "Shows ESO's global cooldown overlay on skill buttons after using a slotted skill.",
+                    tooltip = "Show ESO's global cooldown sweep after you use a skill.",
                     getFunc = function() return self:IsActionBarGlobalCooldownEnabled() end,
                     setFunc = function(value) self:SetActionBarGlobalCooldownEnabled(value) end,
                     disabled = function() return not self:IsActionBarFramesEnabled() end,
@@ -2319,7 +3541,7 @@ function Settings:RegisterAddonMenu()
         {
             type = "submenu",
             name = "Adventure Camera",
-            tooltip = "Applies a separate third-person camera profile out of combat and restores your action camera in combat.",
+            tooltip = "Use a relaxed third-person camera out of combat, then switch back for combat.",
             controls =
             {
                 {
@@ -2329,7 +3551,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "checkbox",
                     name = "Enable Adventure Camera",
-                    tooltip = "Uses the Adventure Camera profile out of combat and the captured Action Camera profile in combat.",
                     getFunc = function() return self:IsAdventureCameraEnabled() end,
                     setFunc = function(value) self:SetAdventureCameraEnabled(value) end,
                     default = ACCOUNT_DEFAULTS.modules.adventureCamera.enabled,
@@ -2337,7 +3558,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Transition Duration",
-                    tooltip = "Milliseconds used to transition between Adventure Camera and Action Camera.",
+                    tooltip = "Set how long the camera switch takes, in milliseconds.",
                     min = 0,
                     max = 3000,
                     step = 50,
@@ -2349,7 +3570,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "button",
                     name = "Capture Current as Action Camera",
-                    tooltip = "Uses your current ESO third-person camera settings as the combat camera.",
+                    tooltip = "Save your current ESO third-person camera as the combat camera.",
                     func = function() self:CaptureAdventureCameraActionProfile() end,
                 },
                 {
@@ -2427,13 +3648,12 @@ function Settings:RegisterAddonMenu()
         {
             type = "submenu",
             name = "Cast Bar",
-            tooltip = "Customize the cast and channel progress bar.",
+            tooltip = "Tweak the progress bar for cast and channel abilities.",
             controls =
             {
                 {
                     type = "checkbox",
                     name = "Enable Cast Bar",
-                    tooltip = "Shows a custom progress bar for non-instant slotted abilities with cast or channel time.",
                     getFunc = function() return self:IsCastBarEnabled() end,
                     setFunc = function(value) self:SetCastBarEnabled(value) end,
                     default = ACCOUNT_DEFAULTS.modules.castBar.enabled,
@@ -2441,7 +3661,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "checkbox",
                     name = "Unlock Cast Bar",
-                    tooltip = "Shows a handle so you can drag the cast bar. The position is saved for this server.",
+                    tooltip = "Show a drag handle for the cast bar. Its position is saved on this server.",
                     getFunc = function() return self:IsCastBarUnlocked() end,
                     setFunc = function(value) self:SetCastBarUnlocked(value) end,
                     disabled = function() return not self:IsCastBarEnabled() end,
@@ -2450,7 +3670,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "checkbox",
                     name = "Show Ability Icon",
-                    tooltip = "Shows the ability icon at the left edge of the cast bar.",
                     getFunc = function() return self:GetCastBar().showIcon end,
                     setFunc = function(value) self:SetCastBarValue("showIcon", value) end,
                     disabled = function() return not self:IsCastBarEnabled() end,
@@ -2459,7 +3678,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "checkbox",
                     name = "Show Tick Flashes",
-                    tooltip = "Shows the short white flashes that mark cast progress chunks.",
+                    tooltip = "Show small white flashes as the cast moves along.",
                     getFunc = function() return self:GetCastBar().showTicks end,
                     setFunc = function(value) self:SetCastBarValue("showTicks", value) end,
                     disabled = function() return not self:IsCastBarEnabled() end,
@@ -2468,7 +3687,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "dropdown",
                     name = "Text Mode",
-                    tooltip = "Chooses the text shown while casting.",
                     choices = { "Name + Time", "Name Only", "Timer Only", "Off" },
                     choicesValues = { "nameAndTime", "nameOnly", "timerOnly", "off" },
                     getFunc = function() return self:GetCastBar().textMode end,
@@ -2479,7 +3697,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Scale",
-                    tooltip = "Controls the overall size of the cast bar.",
                     min = 70,
                     max = 160,
                     step = 1,
@@ -2491,7 +3708,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Width",
-                    tooltip = "Controls the cast bar width.",
                     min = 220,
                     max = 620,
                     step = 10,
@@ -2503,7 +3719,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Height",
-                    tooltip = "Controls the cast bar height.",
                     min = 18,
                     max = 48,
                     step = 1,
@@ -2515,7 +3730,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Opacity",
-                    tooltip = "Controls cast bar opacity while visible.",
                     min = 20,
                     max = 100,
                     step = 1,
@@ -2527,7 +3741,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Animation Intensity",
-                    tooltip = "Controls glow, start pulse, and completion flash strength.",
+                    tooltip = "Set the strength of the glow and flash effects.",
                     min = 0,
                     max = 160,
                     step = 5,
@@ -2539,7 +3753,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "button",
                     name = "Preview",
-                    tooltip = "Plays a sample cast bar animation.",
                     func = function() self:PreviewCastBar() end,
                     disabled = function() return not self:IsCastBarEnabled() end,
                 },
@@ -2548,13 +3761,12 @@ function Settings:RegisterAddonMenu()
         {
             type = "submenu",
             name = "Compass",
-            tooltip = "Settings for the Nirnsteel compass frame style.",
             controls =
             {
                 {
                     type = "checkbox",
                     name = "Enable Compass Frame",
-                    tooltip = "Restyles the stock compass frame with a darker Nirnsteel frame using ESO art.",
+                    tooltip = "Give ESO's compass a darker Nirnsteel frame.",
                     getFunc = function() return self:IsCompassEnabled() end,
                     setFunc = function(value) self:SetCompassEnabled(value) end,
                     default = ACCOUNT_DEFAULTS.modules.compass.enabled,
@@ -2564,13 +3776,12 @@ function Settings:RegisterAddonMenu()
         {
             type = "submenu",
             name = "HARDCORE Support",
-            tooltip = "Character-specific settings for HARDCORE addon support.",
+            tooltip = "Choose what HARDCORE hides for this character.",
             controls =
             {
                 {
                     type = "checkbox",
                     name = "Hide Compass",
-                    tooltip = "Character-specific flag for HARDCORE addon compass hiding.",
                     getFunc = function() return self:ShouldHardcoreHideCompass() end,
                     setFunc = function(value) self:SetHardcoreHideCompass(value) end,
                     default = CHARACTER_DEFAULTS.hardcoreSupport.hideCompass,
@@ -2578,7 +3789,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "checkbox",
                     name = "Hide Health Resource Bar",
-                    tooltip = "Character-specific flag for HARDCORE addon health resource bar hiding.",
                     getFunc = function() return self:ShouldHardcoreHideHealthResourceBar() end,
                     setFunc = function(value) self:SetHardcoreHideHealthResourceBar(value) end,
                     default = CHARACTER_DEFAULTS.hardcoreSupport.hideHealthResourceBar,
@@ -2588,13 +3798,12 @@ function Settings:RegisterAddonMenu()
         {
             type = "submenu",
             name = "Experience Tracker",
-            tooltip = "Customize the HUD XP and Champion Point gain tracker.",
             controls =
             {
                 {
                     type = "checkbox",
                     name = "Enable Experience Tracker",
-                    tooltip = "Shows a custom Nirnsteel XP or Champion Point gain animation on the HUD.",
+                    tooltip = "Show a Nirnsteel animation when you gain XP or Champion Points.",
                     getFunc = function() return self:IsExperienceTrackerEnabled() end,
                     setFunc = function(value) self:SetExperienceTrackerEnabled(value) end,
                     default = ACCOUNT_DEFAULTS.modules.experienceTracker.enabled,
@@ -2602,7 +3811,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "checkbox",
                     name = "Unlock Experience Tracker",
-                    tooltip = "Shows a handle so you can drag the tracker. The position is saved for this server.",
+                    tooltip = "Show a drag handle for the tracker. Its position is saved on this server.",
                     getFunc = function() return self:IsExperienceTrackerUnlocked() end,
                     setFunc = function(value) self:SetExperienceTrackerUnlocked(value) end,
                     disabled = function() return not self:IsExperienceTrackerEnabled() end,
@@ -2611,7 +3820,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "checkbox",
                     name = "Hide Stock Progress Bar",
-                    tooltip = "Suppresses ESO's default HUD XP progress bar while the custom tracker is enabled.",
+                    tooltip = "Hide ESO's XP bar while Nirnsteel's tracker is on.",
                     getFunc = function() return self:ShouldExperienceTrackerHideStockProgressBar() end,
                     setFunc = function(value) self:SetExperienceTrackerValue("hideStockProgressBar", value) end,
                     disabled = function() return not self:IsExperienceTrackerEnabled() end,
@@ -2620,7 +3829,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "checkbox",
                     name = "Show Gained XP Text",
-                    tooltip = "Shows the gained XP amount during the tracker animation.",
                     getFunc = function() return self:GetExperienceTracker().showGainText end,
                     setFunc = function(value) self:SetExperienceTrackerValue("showGainText", value) end,
                     disabled = function() return not self:IsExperienceTrackerEnabled() end,
@@ -2629,7 +3837,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "checkbox",
                     name = "Show Progress Text",
-                    tooltip = "Shows the current XP progress amount and percentage.",
+                    tooltip = "Show your current XP amount and percentage.",
                     getFunc = function() return self:GetExperienceTracker().showProgressText end,
                     setFunc = function(value) self:SetExperienceTrackerValue("showProgressText", value) end,
                     disabled = function() return not self:IsExperienceTrackerEnabled() end,
@@ -2638,7 +3846,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "checkbox",
                     name = "Show Champion Icon",
-                    tooltip = "Shows the Champion discipline icon inside the tracker badge.",
+                    tooltip = "Show the Champion discipline icon in the tracker badge.",
                     getFunc = function() return self:GetExperienceTracker().showChampionIcon end,
                     setFunc = function(value) self:SetExperienceTrackerValue("showChampionIcon", value) end,
                     disabled = function() return not self:IsExperienceTrackerEnabled() end,
@@ -2647,7 +3855,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "checkbox",
                     name = "Hide Background",
-                    tooltip = "Hides the tracker panel background while keeping the badge and progress bar visible.",
+                    tooltip = "Hide the panel background, but keep the badge and progress bar.",
                     getFunc = function() return self:GetExperienceTracker().hideBackground end,
                     setFunc = function(value) self:SetExperienceTrackerValue("hideBackground", value) end,
                     disabled = function() return not self:IsExperienceTrackerEnabled() end,
@@ -2656,7 +3864,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "dropdown",
                     name = "Visibility",
-                    tooltip = "Chooses whether the tracker fades after XP gains or stays visible on the HUD.",
                     choices = { "Fade After Gains", "Always Visible" },
                     choicesValues = { "fade", "always" },
                     getFunc = function() return self:GetExperienceTracker().visibilityMode end,
@@ -2667,7 +3874,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "dropdown",
                     name = "Chunk Sound",
-                    tooltip = "Chooses the sound played for each XP fill chunk.",
+                    tooltip = "Pick the sound for each XP bar chunk.",
                     choices =
                     {
                         "None",
@@ -2688,7 +3895,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "dropdown",
                     name = "Level Up Sound",
-                    tooltip = "Chooses the sound played when the tracker reaches a new level or Champion Point.",
+                    tooltip = "Pick the sound for a new level or Champion Point.",
                     choices =
                     {
                         "None",
@@ -2708,7 +3915,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "checkbox",
                     name = "Enable Level Up Animation",
-                    tooltip = "Plays the special burst animation when reaching a new level or Champion Point.",
+                    tooltip = "Play a special burst when you gain a level or Champion Point.",
                     getFunc = function() return self:GetExperienceTracker().levelUpAnimationEnabled end,
                     setFunc = function(value) self:SetExperienceTrackerValue("levelUpAnimationEnabled", value) end,
                     disabled = function() return not self:IsExperienceTrackerEnabled() end,
@@ -2717,7 +3924,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Scale",
-                    tooltip = "Controls the overall size of the experience tracker.",
                     min = 70,
                     max = 160,
                     step = 1,
@@ -2729,7 +3935,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Opacity",
-                    tooltip = "Controls the opacity of the tracker while visible.",
                     min = 20,
                     max = 100,
                     step = 1,
@@ -2741,7 +3946,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Width",
-                    tooltip = "Controls the tracker bar width.",
                     min = 360,
                     max = 680,
                     step = 10,
@@ -2753,7 +3957,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Height",
-                    tooltip = "Controls the tracker height.",
                     min = 54,
                     max = 76,
                     step = 1,
@@ -2765,7 +3968,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Visible Duration",
-                    tooltip = "Milliseconds the tracker remains visible after a gain animation starts.",
+                    tooltip = "Set how long the tracker stays visible after a gain starts, in milliseconds.",
                     min = 1800,
                     max = 7000,
                     step = 100,
@@ -2777,7 +3980,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Feedback Intensity",
-                    tooltip = "Controls glow, flash, and bulk-fill strength.",
+                    tooltip = "Set the strength of glow, flash, and fill effects.",
                     min = 0,
                     max = 140,
                     step = 5,
@@ -2789,7 +3992,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Level Up Animation Strength",
-                    tooltip = "Controls the strength of the special level-up burst animation.",
                     min = 0,
                     max = 160,
                     step = 5,
@@ -2804,7 +4006,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "button",
                     name = "Preview",
-                    tooltip = "Plays a sample experience gain animation.",
                     func = function() self:PreviewExperienceTracker() end,
                     disabled = function() return not self:IsExperienceTrackerEnabled() end,
                 },
@@ -2812,15 +4013,28 @@ function Settings:RegisterAddonMenu()
         },
         {
             type = "submenu",
+            name = "Group Frames",
+            tooltip = "Swap ESO's group and raid frames for compact, sortable Nirnsteel frames.",
+            reference = "Nirnsteel_UI_GroupFramesSubmenu",
+            controls = self:BuildGroupFramesOptions(),
+        },
+        {
+            type = "submenu",
+            name = "Target Frame",
+            tooltip = "Replace ESO's reticle target frame with a compact, customizable Nirnsteel frame.",
+            reference = "Nirnsteel_UI_TargetFrameSubmenu",
+            controls = self:BuildTargetFrameOptions(),
+        },
+        {
+            type = "submenu",
             name = "Resource Bars",
-            tooltip = "Customize the centered health, magicka, and stamina bars.",
             reference = "Nirnsteel_UI_ResourceBarsSubmenu",
             controls =
             {
                 {
                     type = "checkbox",
                     name = "Enable Resource Bars",
-                    tooltip = "Replaces the stock player health, magicka, and stamina bars with centered Nirnsteel bars.",
+                    tooltip = "Swap ESO's health, magicka, and stamina bars for Nirnsteel's centered bars.",
                     getFunc = function() return self:IsResourceBarsEnabled() end,
                     setFunc = function(value) self:SetResourceBarsEnabled(value) end,
                     default = ACCOUNT_DEFAULTS.modules.resourceBars.enabled,
@@ -2828,7 +4042,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "checkbox",
                     name = "Unlock Resource Bars",
-                    tooltip = "Shows a handle so you can drag the resource bars. The position is saved for this server.",
+                    tooltip = "Show a drag handle for the resource bars. Their position is saved on this server.",
                     getFunc = function() return self:IsResourceBarsUnlocked() end,
                     setFunc = function(value) self:SetResourceBarsUnlocked(value) end,
                     disabled = function() return not self:IsResourceBarsEnabled() end,
@@ -2837,7 +4051,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Scale",
-                    tooltip = "Controls the overall size of the Nirnsteel resource bars.",
                     min = 70,
                     max = 160,
                     step = 1,
@@ -2849,7 +4062,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Health Width",
-                    tooltip = "Health bar width.",
                     min = 96,
                     max = 620,
                     step = 8,
@@ -2861,7 +4073,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Magicka Width",
-                    tooltip = "Magicka bar width.",
                     min = 96,
                     max = 620,
                     step = 8,
@@ -2873,7 +4084,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Stamina Width",
-                    tooltip = "Stamina bar width.",
                     min = 96,
                     max = 620,
                     step = 8,
@@ -2885,7 +4095,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Bar Height",
-                    tooltip = "Shared height for all bars.",
                     min = 10,
                     max = 48,
                     step = 1,
@@ -2897,7 +4106,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Vertical Spacing",
-                    tooltip = "Spacing between health and the lower resource bars.",
                     min = 0,
                     max = 32,
                     step = 1,
@@ -2909,7 +4117,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Horizontal Spacing",
-                    tooltip = "Spacing between magicka and stamina.",
                     min = 0,
                     max = 32,
                     step = 1,
@@ -2921,7 +4128,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Bar Opacity",
-                    tooltip = "Controls fill opacity for all resource bars.",
                     min = 10,
                     max = 100,
                     step = 1,
@@ -2933,7 +4139,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "checkbox",
                     name = "Gloss Overlay",
-                    tooltip = "Adds a light gloss along the top of each bar.",
                     getFunc = function() return self:GetResourceBars().glossEnabled end,
                     setFunc = function(value) self:SetResourceBarsValue("glossEnabled", value) end,
                     disabled = function() return not self:IsResourceBarsEnabled() end,
@@ -2942,7 +4147,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "checkbox",
                     name = "Fill Pattern Overlay",
-                    tooltip = "Adds a low-opacity texture over the colored fill. The resource color is preserved.",
+                    tooltip = "Add a subtle texture without changing the resource color.",
                     getFunc = function() return self:GetResourceBars().barPatternEnabled end,
                     setFunc = function(value) self:SetResourceBarsValue("barPatternEnabled", value) end,
                     disabled = function() return not self:IsResourceBarsEnabled() end,
@@ -2951,7 +4156,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "dropdown",
                     name = "Fill Pattern",
-                    tooltip = "Pattern texture layered over the bar color.",
                     choices = { "Smoke", "Still Water", "Zigzag", "Stone", "Dirt", "Lava", "Rock Lava", "Lava Wave", "Molten" },
                     choicesValues = { "smoke", "stillwater", "ZigZag", "Stone", "Dirt", "Lava", "RockLava", "LavaWave", "Molten" },
                     getFunc = function() return self:GetResourceBars().barPatternKey end,
@@ -2962,7 +4166,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Fill Pattern Opacity",
-                    tooltip = "How strongly the pattern shows over the bar color.",
                     min = 0,
                     max = 60,
                     step = 1,
@@ -2974,7 +4177,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Fill Pattern Scale",
-                    tooltip = "Lower values repeat the pattern more often; higher values make it larger.",
+                    tooltip = "Use a lower value for smaller tiles or a higher one for larger tiles.",
                     min = 128,
                     max = 512,
                     step = 4,
@@ -2990,16 +4193,24 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "checkbox",
                     name = "Resource Feedback",
-                    tooltip = "Adds short gain, spend, full-resource, shield, and low-resource feedback effects.",
+                    tooltip = "Show quick effects when resources change, fill up, get low, or gain a shield.",
                     getFunc = function() return self:GetResourceBars().feedbackEnabled end,
                     setFunc = function(value) self:SetResourceBarsValue("feedbackEnabled", value) end,
                     disabled = function() return not self:IsResourceBarsEnabled() end,
                     default = ACCOUNT_DEFAULTS.modules.resourceBars.feedbackEnabled,
                 },
                 {
+                    type = "checkbox",
+                    name = "Loss Trailing",
+                    tooltip = "Leave a short-lived highlight behind a resource bar when its value drops.",
+                    getFunc = function() return self:GetResourceBars().lossTrailEnabled end,
+                    setFunc = function(value) self:SetResourceBarsValue("lossTrailEnabled", value) end,
+                    disabled = function() return not self:IsResourceBarsEnabled() end,
+                    default = ACCOUNT_DEFAULTS.modules.resourceBars.lossTrailEnabled,
+                },
+                {
                     type = "slider",
                     name = "Feedback Intensity",
-                    tooltip = "Controls the strength of resource feedback effects.",
                     min = 0,
                     max = 100,
                     step = 1,
@@ -3011,7 +4222,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "checkbox",
                     name = "Gain Pulse",
-                    tooltip = "Briefly brightens a bar after a meaningful resource gain.",
+                    tooltip = "Briefly brighten a bar after a noticeable resource gain.",
                     getFunc = function() return self:GetResourceBars().gainPulseEnabled end,
                     setFunc = function(value) self:SetResourceBarsValue("gainPulseEnabled", value) end,
                     disabled = function() return not self:IsResourceBarsEnabled() or not self:GetResourceBars().feedbackEnabled end,
@@ -3020,7 +4231,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "checkbox",
                     name = "Spend Pulse",
-                    tooltip = "Briefly brightens a bar after a meaningful resource spend or loss.",
+                    tooltip = "Briefly brighten a bar after a noticeable spend or loss.",
                     getFunc = function() return self:GetResourceBars().spendPulseEnabled end,
                     setFunc = function(value) self:SetResourceBarsValue("spendPulseEnabled", value) end,
                     disabled = function() return not self:IsResourceBarsEnabled() or not self:GetResourceBars().feedbackEnabled end,
@@ -3029,7 +4240,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "checkbox",
                     name = "Full Resource Pulse",
-                    tooltip = "Briefly highlights a bar when it refills to full.",
+                    tooltip = "Briefly highlight a bar when it fills up.",
                     getFunc = function() return self:GetResourceBars().fullResourcePulseEnabled end,
                     setFunc = function(value) self:SetResourceBarsValue("fullResourcePulseEnabled", value) end,
                     disabled = function() return not self:IsResourceBarsEnabled() or not self:GetResourceBars().feedbackEnabled end,
@@ -3038,7 +4249,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "checkbox",
                     name = "Shield Pulse",
-                    tooltip = "Briefly highlights health when a damage shield increases.",
+                    tooltip = "Briefly highlight health when your damage shield grows.",
                     getFunc = function() return self:GetResourceBars().shieldPulseEnabled end,
                     setFunc = function(value) self:SetResourceBarsValue("shieldPulseEnabled", value) end,
                     disabled = function() return not self:IsResourceBarsEnabled() or not self:GetResourceBars().feedbackEnabled end,
@@ -3047,7 +4258,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "checkbox",
                     name = "Low Resource Glow",
-                    tooltip = "Adds a static edge glow while a resource is low.",
+                    tooltip = "Glow around a bar while that resource is low.",
                     getFunc = function() return self:GetResourceBars().lowResourceGlowEnabled end,
                     setFunc = function(value) self:SetResourceBarsValue("lowResourceGlowEnabled", value) end,
                     disabled = function() return not self:IsResourceBarsEnabled() or not self:GetResourceBars().feedbackEnabled end,
@@ -3060,7 +4271,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Black Border Width",
-                    tooltip = "Width of the black border around each resource bar.",
                     min = 0,
                     max = 8,
                     step = 1,
@@ -3072,7 +4282,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Corner Rounding",
-                    tooltip = "Rounds the resource bar frame corners. ESO may still draw the fill with square edges.",
+                    tooltip = "Round the frame corners. ESO's fills may still look square.",
                     min = 0,
                     max = 12,
                     step = 1,
@@ -3084,7 +4294,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Inner Shadow",
-                    tooltip = "Darkens the inside edge of each bar.",
                     min = 0,
                     max = 100,
                     step = 1,
@@ -3096,7 +4305,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Outer Shadow",
-                    tooltip = "Adds a dark shadow outside each bar.",
                     min = 0,
                     max = 100,
                     step = 1,
@@ -3176,7 +4384,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Text Side Inset",
-                    tooltip = "Moves side text inward from the bar edges.",
+                    tooltip = "Move side text away from the bar edges.",
                     min = 0,
                     max = 24,
                     step = 1,
@@ -3188,7 +4396,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Text Vertical Offset",
-                    tooltip = "Moves bar text up or down.",
                     min = -8,
                     max = 8,
                     step = 1,
@@ -3200,8 +4407,8 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "dropdown",
                     name = "Health Text Format",
-                    choices = { "Number", "Percent", "Number + Percent" },
-                    choicesValues = { "number", "percent", "numberAndPercent" },
+                    choices = { "None", "Number", "Percent", "Number + Percent" },
+                    choicesValues = { "none", "number", "percent", "numberAndPercent" },
                     getFunc = function() return self:GetResourceBars().healthTextFormat end,
                     setFunc = function(value) self:SetResourceBarsValue("healthTextFormat", value) end,
                     disabled = function() return not self:IsResourceBarsEnabled() end,
@@ -3210,8 +4417,8 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "dropdown",
                     name = "Magicka Text Format",
-                    choices = { "Number", "Percent", "Number + Percent" },
-                    choicesValues = { "number", "percent", "numberAndPercent" },
+                    choices = { "None", "Number", "Percent", "Number + Percent" },
+                    choicesValues = { "none", "number", "percent", "numberAndPercent" },
                     getFunc = function() return self:GetResourceBars().magickaTextFormat end,
                     setFunc = function(value) self:SetResourceBarsValue("magickaTextFormat", value) end,
                     disabled = function() return not self:IsResourceBarsEnabled() end,
@@ -3220,8 +4427,8 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "dropdown",
                     name = "Stamina Text Format",
-                    choices = { "Number", "Percent", "Number + Percent" },
-                    choicesValues = { "number", "percent", "numberAndPercent" },
+                    choices = { "None", "Number", "Percent", "Number + Percent" },
+                    choicesValues = { "none", "number", "percent", "numberAndPercent" },
                     getFunc = function() return self:GetResourceBars().staminaTextFormat end,
                     setFunc = function(value) self:SetResourceBarsValue("staminaTextFormat", value) end,
                     disabled = function() return not self:IsResourceBarsEnabled() end,
@@ -3264,7 +4471,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "checkbox",
                     name = "Shield Overlay",
-                    tooltip = "Shows shield amount as a blue overlay on health bar.",
+                    tooltip = "Show your shield as an overlay on the health bar.",
                     getFunc = function() return self:GetResourceBars().shieldOverlayEnabled end,
                     setFunc = function(value) self:SetResourceBarsValue("shieldOverlayEnabled", value) end,
                     disabled = function() return not self:IsResourceBarsEnabled() end,
@@ -3273,7 +4480,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Shield Fill Opacity",
-                    tooltip = "Opacity of the shield fill overlay.",
                     min = 0,
                     max = 100,
                     step = 1,
@@ -3285,7 +4491,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "colorpicker",
                     name = "Shield Fill Color",
-                    tooltip = "Color tint of the shield fill.",
                     getFunc = function()
                         local color = self:GetResourceBars().shieldFillColor
                         return color.r, color.g, color.b, 1
@@ -3308,7 +4513,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "checkbox",
                     name = "Shield Glow",
-                    tooltip = "Shows a gloss/glow layer over the shield fill.",
                     getFunc = function() return self:GetResourceBars().shieldGlowEnabled end,
                     setFunc = function(value) self:SetResourceBarsValue("shieldGlowEnabled", value) end,
                     disabled = function() return not self:IsResourceBarsEnabled() or not self:GetResourceBars().shieldOverlayEnabled end,
@@ -3317,7 +4521,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Shield Glow Opacity",
-                    tooltip = "Opacity of the shield glow layer.",
                     min = 0,
                     max = 100,
                     step = 1,
@@ -3333,7 +4536,6 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "colorpicker",
                     name = "Shield Glow Color",
-                    tooltip = "Color tint of the shield glow.",
                     getFunc = function()
                         local color = self:GetResourceBars().shieldGlowColor
                         return color.r, color.g, color.b, 1
@@ -3372,12 +4574,13 @@ function Settings:RegisterAddonMenu()
         {
             type = "checkbox",
             name = "Debug Mode",
-            tooltip = "Registers slash commands for testing addon modules.",
+            tooltip = "Turn on slash commands for testing addon features.",
             getFunc = function() return self:IsDebugModeEnabled() end,
             setFunc = function(value) self:SetDebugModeEnabled(value) end,
             default = ACCOUNT_DEFAULTS.debugMode,
         },
     }
+    options = ConfigureModuleMenuOptions(options)
 
     local noMouseWheelSlider = Nirnsteel_UI.NoMouseWheelSlider
     if noMouseWheelSlider and noMouseWheelSlider:Register(LAM) then
@@ -3388,6 +4591,8 @@ function Settings:RegisterAddonMenu()
     LAM:RegisterOptionControls(panelName, options)
     self:HookResourceBarsSubmenuPreview(panelName)
     self:HookGroupCalloutsSubmenuPreview(panelName)
+    self:HookGroupFramesSubmenuPreview(panelName)
+    self:HookTargetFrameSubmenuPreview(panelName)
 end
 
 local function OnAddOnLoaded(_, addonName)

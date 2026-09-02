@@ -13,6 +13,7 @@ local DEFAULT_SETTINGS =
     soundMode = "leaderOnly",
     soundKey = "KEYBIND_BUTTON_DISABLED",
     scale = 100,
+    maxVisible = 3,
     width = 460,
     height = 56,
     rowSpacing = 6,
@@ -21,6 +22,12 @@ local DEFAULT_SETTINGS =
     showAccent = true,
     durationMS = 4200,
     slideDistance = 14,
+    shimmerEnabled = false,
+    shimmerIntensity = 50,
+    shimmerTarget = "leaderOnly",
+    glowEnabled = false,
+    glowIntensity = 50,
+    glowTarget = "leaderOnly",
     nameFontKey = "gameSmall",
     messageFontKey = "chat",
     nameFontSize = 14,
@@ -44,9 +51,13 @@ local DEFAULT_SETTINGS =
 local DEFAULT_POSITION = { x = 0, y = -260 }
 local MEMBER_ICON = "EsoUI/Art/Compass/groupmember.dds"
 local LEADER_ICON = "EsoUI/Art/Compass/groupLeader.dds"
+local EFFECT_HIGHLIGHT_TEXTURE = "EsoUI/Art/HUD/lootHistory_highlight.dds"
 local FADE_IN_MS = 180
 local FADE_OUT_MS = 380
 local SOUND_THROTTLE_MS = 250
+local SHIMMER_CYCLE_MS = 1900
+local SHIMMER_SWEEP_MS = 950
+local GLOW_CYCLE_MS = 1400
 
 local FONT_FACES =
 {
@@ -79,6 +90,13 @@ local SOUND_MODE_ALIASES =
     Off = "off",
     ["Leader Only"] = "leaderOnly",
     ["Every Message"] = "all",
+}
+
+local EFFECT_TARGET_ALIASES =
+{
+    ["Leader Only"] = "leaderOnly",
+    ["All Callouts"] = "all",
+    All = "all",
 }
 
 local function ClampNumber(value, minValue, maxValue)
@@ -221,6 +239,24 @@ local function GetTextOpacity()
     return ClampNumber(GetSettingValue("textOpacity"), 10, 100) / 100
 end
 
+local function NormalizeEffectTarget(value, defaultValue)
+    local normalized = EFFECT_TARGET_ALIASES[value] or value
+    if normalized == "leaderOnly" or normalized == "all" then
+        return normalized
+    end
+
+    return defaultValue
+end
+
+local function ShouldApplyEffect(enabledKey, targetKey, isLeader)
+    if GetSettingValue(enabledKey) ~= true then
+        return false
+    end
+
+    local target = NormalizeEffectTarget(GetSettingValue(targetKey), DEFAULT_SETTINGS[targetKey])
+    return target == "all" or isLeader == true
+end
+
 local function BuildFont(fontKey, fontSize)
     local face = FONT_FACES[fontKey] or FONT_FACES.chat
     local effect = TEXT_EFFECT_ALIASES[GetSettingValue("textEffect")] or GetSettingValue("textEffect")
@@ -334,25 +370,61 @@ end
 function GroupCallouts:CreateEntry()
     self.nextEntryId = (self.nextEntryId or 0) + 1
 
-    local entry = WINDOW_MANAGER:CreateControl("Nirnsteel_UI_GroupCallout" .. self.nextEntryId, self:GetRoot(), CT_BACKDROP)
+    local entry = WINDOW_MANAGER:CreateControl("Nirnsteel_UI_GroupCallout" .. self.nextEntryId, self:GetRoot(), CT_CONTROL)
     entry:SetDimensions(GetCalloutWidth(), GetCalloutHeight())
     entry:SetMouseEnabled(false)
-    entry:SetEdgeTexture("", 1, 1, 1)
     entry:SetHidden(true)
     entry:SetAlpha(0)
+
+    local glowLeft = WINDOW_MANAGER:CreateControl(nil, entry, CT_TEXTURE)
+    glowLeft:SetTexture(EFFECT_HIGHLIGHT_TEXTURE)
+    glowLeft:SetTextureCoords(0, 1, 0, 0.75)
+    glowLeft:SetBlendMode(TEX_BLEND_MODE_ADD)
+    glowLeft:SetDrawLayer(DL_BACKGROUND)
+    glowLeft:SetDrawLevel(0)
+    glowLeft:SetHidden(true)
+    entry.glowLeft = glowLeft
+
+    local glowRight = WINDOW_MANAGER:CreateControl(nil, entry, CT_TEXTURE)
+    glowRight:SetTexture(EFFECT_HIGHLIGHT_TEXTURE)
+    glowRight:SetTextureCoords(1, 0, 0, 0.75)
+    glowRight:SetBlendMode(TEX_BLEND_MODE_ADD)
+    glowRight:SetDrawLayer(DL_BACKGROUND)
+    glowRight:SetDrawLevel(0)
+    glowRight:SetHidden(true)
+    entry.glowRight = glowRight
+
+    local backdrop = WINDOW_MANAGER:CreateControl(nil, entry, CT_BACKDROP)
+    backdrop:SetAnchorFill(entry)
+    backdrop:SetEdgeTexture("", 1, 1, 1)
+    backdrop:SetDrawLayer(DL_BACKGROUND)
+    backdrop:SetDrawLevel(1)
+    entry.backdrop = backdrop
 
     local accent = WINDOW_MANAGER:CreateControl(nil, entry, CT_BACKDROP)
     accent:SetDimensions(3, math.max(GetCalloutHeight() - 16, 1))
     accent:SetAnchor(LEFT, entry, LEFT, 7, 0)
     accent:SetEdgeTexture("", 1, 1, 0)
     accent:SetEdgeColor(0, 0, 0, 0)
+    accent:SetDrawLayer(DL_OVERLAY)
+    accent:SetDrawLevel(5)
     entry.accent = accent
 
     local icon = WINDOW_MANAGER:CreateControl(nil, entry, CT_TEXTURE)
     icon:SetDimensions(GetIconSize(), GetIconSize())
     icon:SetAnchor(LEFT, entry, LEFT, 20, 0)
     icon:SetDrawLayer(DL_OVERLAY)
+    icon:SetDrawLevel(6)
     entry.icon = icon
+
+    local shimmer = WINDOW_MANAGER:CreateControl(nil, entry, CT_TEXTURE)
+    shimmer:SetTexture(EFFECT_HIGHLIGHT_TEXTURE)
+    shimmer:SetTextureCoords(0, 1, 0, 0.75)
+    shimmer:SetBlendMode(TEX_BLEND_MODE_ADD)
+    shimmer:SetDrawLayer(DL_OVERLAY)
+    shimmer:SetDrawLevel(4)
+    shimmer:SetHidden(true)
+    entry.shimmer = shimmer
 
     local nameLabel = WINDOW_MANAGER:CreateControl(nil, entry, CT_LABEL)
     nameLabel:SetDimensions(GetCalloutWidth() - 60, 18)
@@ -362,6 +434,8 @@ function GroupCallouts:CreateEntry()
     nameLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     nameLabel:SetMaxLineCount(1)
     nameLabel:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
+    nameLabel:SetDrawLayer(DL_OVERLAY)
+    nameLabel:SetDrawLevel(6)
     entry.nameLabel = nameLabel
 
     local textLabel = WINDOW_MANAGER:CreateControl(nil, entry, CT_LABEL)
@@ -372,6 +446,8 @@ function GroupCallouts:CreateEntry()
     textLabel:SetVerticalAlignment(TEXT_ALIGN_TOP)
     textLabel:SetMaxLineCount(2)
     textLabel:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
+    textLabel:SetDrawLayer(DL_OVERLAY)
+    textLabel:SetDrawLevel(6)
     entry.textLabel = textLabel
 
     return entry
@@ -402,6 +478,14 @@ function GroupCallouts:ReleaseEntry(index)
     entry:SetHidden(true)
     entry:SetAlpha(0)
     entry:SetScale(1)
+    entry.glowLeft:SetHidden(true)
+    entry.glowLeft:SetAlpha(0)
+    entry.glowRight:SetHidden(true)
+    entry.glowRight:SetAlpha(0)
+    entry.shimmer:SetHidden(true)
+    entry.shimmer:SetAlpha(0)
+    entry.shimmerEnabled = nil
+    entry.glowEnabled = nil
     entry.activeCallout = nil
     table.insert(self.pool, entry)
 end
@@ -421,6 +505,22 @@ function GroupCallouts:ApplyEntryLayout(entry)
     local contentWidth = math.max(width - contentLeft - 12, 60)
 
     entry:SetDimensions(width, height)
+
+    local glowWidth = ClampNumber(width * 0.46, 140, 320)
+    entry.glowLeft:ClearAnchors()
+    entry.glowLeft:SetDimensions(glowWidth, height + 14)
+    entry.glowLeft:SetAnchor(LEFT, entry, LEFT, -12, 0)
+
+    entry.glowRight:ClearAnchors()
+    entry.glowRight:SetDimensions(glowWidth, height + 14)
+    entry.glowRight:SetAnchor(RIGHT, entry, RIGHT, 12, 0)
+
+    entry.backdrop:ClearAnchors()
+    entry.backdrop:SetAnchorFill(entry)
+
+    entry.shimmer:ClearAnchors()
+    entry.shimmer:SetDimensions(ClampNumber(width * 0.28, 90, 160), height)
+    entry.shimmer:SetAnchor(LEFT, entry, LEFT, 0, 0)
 
     entry.accent:ClearAnchors()
     entry.accent:SetDimensions(3, math.max(height - 16, 1))
@@ -456,13 +556,78 @@ function GroupCallouts:ApplyEntryStyle(entry, isLeader)
     local borderAlpha = ShouldHideBackground() and 0 or ClampNumber(GetSettingValue("borderOpacity"), 0, 100) / 100
     local accentAlpha = ClampNumber(GetSettingValue("accentOpacity"), 0, 100) / 100
     local textAlpha = GetTextOpacity()
+    local shimmerIntensity = ClampNumber(GetSettingValue("shimmerIntensity"), 0, 100) / 100
+    local glowIntensity = ClampNumber(GetSettingValue("glowIntensity"), 0, 100) / 100
 
-    entry:SetCenterColor(backgroundR, backgroundG, backgroundB, backgroundAlpha)
-    entry:SetEdgeColor(accentR, accentG, accentB, borderAlpha)
+    entry.backdrop:SetCenterColor(backgroundR, backgroundG, backgroundB, backgroundAlpha)
+    entry.backdrop:SetEdgeColor(accentR, accentG, accentB, borderAlpha)
     entry.accent:SetCenterColor(accentR, accentG, accentB, accentAlpha)
     entry.icon:SetColor(accentR, accentG, accentB, math.max(textAlpha, accentAlpha))
     entry.nameLabel:SetColor(nameR, nameG, nameB, textAlpha)
     entry.textLabel:SetColor(textR, textG, textB, textAlpha)
+    entry.shimmerIntensity = shimmerIntensity
+    entry.glowIntensity = glowIntensity
+    entry.shimmerEnabled = shimmerIntensity > 0 and ShouldApplyEffect("shimmerEnabled", "shimmerTarget", isLeader)
+    entry.glowEnabled = glowIntensity > 0 and ShouldApplyEffect("glowEnabled", "glowTarget", isLeader)
+    entry.shimmer:SetColor(
+        0.70 + (accentR * 0.30),
+        0.70 + (accentG * 0.30),
+        0.70 + (accentB * 0.30),
+        1)
+    entry.shimmer:SetHidden(not entry.shimmerEnabled)
+    if not entry.shimmerEnabled then
+        entry.shimmer:SetAlpha(0)
+    end
+    entry.glowLeft:SetColor(accentR, accentG, accentB, 1)
+    entry.glowRight:SetColor(accentR, accentG, accentB, 1)
+    entry.glowLeft:SetHidden(not entry.glowEnabled)
+    entry.glowRight:SetHidden(not entry.glowEnabled)
+    if not entry.glowEnabled then
+        entry.glowLeft:SetAlpha(0)
+        entry.glowRight:SetAlpha(0)
+    end
+end
+
+function GroupCallouts:UpdateEntryEffects(entry, data, nowMS)
+    local elapsedMS = math.max(nowMS - (data.startMS or nowMS), 0)
+
+    if entry.shimmerEnabled then
+        local cyclePositionMS = elapsedMS % SHIMMER_CYCLE_MS
+        if cyclePositionMS <= SHIMMER_SWEEP_MS then
+            local progress = cyclePositionMS / SHIMMER_SWEEP_MS
+            local shimmerWidth = entry.shimmer:GetWidth()
+            local travelDistance = math.max(entry:GetWidth() - shimmerWidth, 0)
+            local x = (shimmerWidth * 0.5) + (travelDistance * progress)
+            local fadeIn = ClampNumber(progress / 0.10, 0, 1)
+            local fadeOut = ClampNumber((1 - progress) / 0.20, 0, 1)
+            local alpha = math.min(fadeIn, fadeOut) * entry.shimmerIntensity * 0.55
+            entry.shimmer:ClearAnchors()
+            entry.shimmer:SetAnchor(CENTER, entry, LEFT, x, 0)
+            entry.shimmer:SetAlpha(alpha)
+            entry.shimmer:SetHidden(false)
+        else
+            entry.shimmer:SetAlpha(0)
+            entry.shimmer:SetHidden(true)
+        end
+    else
+        entry.shimmer:SetAlpha(0)
+        entry.shimmer:SetHidden(true)
+    end
+
+    if entry.glowEnabled then
+        local progress = (elapsedMS % GLOW_CYCLE_MS) / GLOW_CYCLE_MS
+        local pulse = 0.5 - (0.5 * math.cos(progress * math.pi * 2))
+        local alpha = entry.glowIntensity * (0.10 + (0.28 * pulse))
+        entry.glowLeft:SetAlpha(alpha)
+        entry.glowRight:SetAlpha(alpha)
+        entry.glowLeft:SetHidden(false)
+        entry.glowRight:SetHidden(false)
+    else
+        entry.glowLeft:SetAlpha(0)
+        entry.glowRight:SetAlpha(0)
+        entry.glowLeft:SetHidden(true)
+        entry.glowRight:SetHidden(true)
+    end
 end
 
 function GroupCallouts:ConfigureEntry(entry, speakerName, text, isLeader)
@@ -622,6 +787,7 @@ function GroupCallouts:UpdateEntries()
         entry:SetAnchor(TOP, self:GetRoot(), TOP, 0, y)
         entry:SetAlpha(alpha)
         entry:SetScale(scale)
+        self:UpdateEntryEffects(entry, data, nowMS)
     end
 end
 

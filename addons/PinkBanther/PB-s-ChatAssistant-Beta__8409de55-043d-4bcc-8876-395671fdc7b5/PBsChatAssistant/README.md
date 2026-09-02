@@ -21,10 +21,10 @@ None. Install it, reload the UI. The controller behaves exactly as it always did
 screen is new. `/pbchat enter` is opt-in, and pauses the gamepad buttons while it is armed -- see
 Opening from Enter.
 
-Nothing is armed at install. Confirm the build with the line it prints on login:
+Nothing is armed at install. `/pbchat` reports the running version and settings:
 
 ```
-PB’s ChatAssistant: 1.0.2 loaded -- capture off, delay 100 ms, follow false, log false
+PB’s ChatAssistant: 1.0.3 -- on, capture off, delay 100 ms
 ```
 
 ## How it works
@@ -113,7 +113,7 @@ That second one is **not solved**. See Limitations.
 
 | Command | Effect |
 | --- | --- |
-| `/pbchat` | Status and the platform flags |
+| `/pbchat` | Version, settings and the platform flags |
 | `/pbchat delay <ms>` | The wait before opening, 0-5000, default 100 |
 | `/pbchat watch on\|off` | The focus watcher |
 | `/pbchat autosafe on\|off` | Drop the catcher once the input screen is up |
@@ -202,11 +202,11 @@ back.
 Console builds go through **Bethesda.net**, not ESOUI -- use the ZOS Console AddOn Uploader. The
 name shown in the in-game browser comes from the uploader entry, not from `## Title`. To cut a
 version, edit these two adjacent lines in `PBsChatAssistant.addon`, and `VERSION` in `Main.lua`,
-which is what the login banner prints:
+which is what `/pbchat` reports:
 
 ```
-## Title: PB’s ChatAssistant 1.0.2
-## Version: 1.0.2
+## Title: PB’s ChatAssistant 1.0.3
+## Version: 1.0.3
 ```
 
 ---

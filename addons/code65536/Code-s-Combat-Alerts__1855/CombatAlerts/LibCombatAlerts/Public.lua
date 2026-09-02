@@ -446,18 +446,18 @@ do
 
 	local function identify( unitType, unitTag, unitName, unitId )
 		if (unitType == 1) then
-			if (groupTags[unitTag] ~= unitId) then
-				if (groupTags[unitTag]) then
-					groupIds[groupTags[unitTag]] = nil
+			local oldUnitId = groupTags[unitTag]
+			local oldUnitInfo = groupIds[unitId]
+			if (oldUnitId ~= unitId or not oldUnitInfo) then
+				if (oldUnitId) then
+					groupIds[oldUnitId] = nil
 				end
-				groupTags[unitTag] = unitId
-			end
-			if (not groupIds[unitId]) then
 				local name = GetUnitDisplayName(unitTag)
-				groupIds[unitId] = {
-					tag = unitTag,
-					name = name ~= "" and name or unitName,
-				}
+				local unitInfo = oldUnitInfo or { }
+				unitInfo.tag = unitTag
+				unitInfo.name = name ~= "" and name or unitName
+				groupTags[unitTag] = unitId
+				groupIds[unitId] = unitInfo
 			end
 		elseif (unitType == 2 and not bossIds[unitId]) then
 			bossIds[unitId] = {
@@ -472,10 +472,9 @@ do
 	local function toggle( unitPrefix, enable, fullTag )
 		local data = unitPrefixes[unitPrefix]
 		if (enable) then
-			EVENT_MANAGER:RegisterForEvent(data[1], EVENT_EFFECT_CHANGED, function( _, _, _, _, unitTag, _, _, _, _, _, _, _, _, unitName, unitId )
+			Public.RegisterForFilteredEvent(data[1], EVENT_EFFECT_CHANGED, function( _, _, _, _, unitTag, _, _, _, _, _, _, _, _, unitName, unitId )
 				identify(data[2], unitTag, unitName, unitId)
-			end)
-			EVENT_MANAGER:AddFilterForEvent(data[1], EVENT_EFFECT_CHANGED, fullTag and REGISTER_FILTER_UNIT_TAG or REGISTER_FILTER_UNIT_TAG_PREFIX, unitPrefix)
+			end, fullTag and REGISTER_FILTER_UNIT_TAG or REGISTER_FILTER_UNIT_TAG_PREFIX, unitPrefix)
 		else
 			EVENT_MANAGER:UnregisterForEvent(data[1], EVENT_EFFECT_CHANGED)
 		end

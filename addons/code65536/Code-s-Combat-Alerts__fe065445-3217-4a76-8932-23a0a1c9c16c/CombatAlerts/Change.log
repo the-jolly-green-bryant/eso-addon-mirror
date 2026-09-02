@@ -1,5 +1,9 @@
+Version 2.6.3 (2026/09/01)
+* As requested by M0R, the status panel for the first boss encounter in
+  Dreadsail Reef will now track weapons during the second phase
+
 Version 2.6.2 (2026/08/31)
-* Added Frenzy in Ossein Cage to the Cutthroat's Focus protection 
+* Added Frenzy in Ossein Cage to the Cutthroat's Focus protection
 
 Version 2.6.1 (2026/08/26)
 * Fixed an issue with the option to disable the group panel in Ossein Cage

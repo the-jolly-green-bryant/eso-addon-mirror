@@ -97,7 +97,11 @@ local CATCHER_CONTROL_NAMES = {
 
 -- Bumped by hand with the manifest. The manifest version is not readable early enough to be
 -- worth chasing here, and a wrong number in one place is easier to spot than a missing one.
-local VERSION = "1.0.2"
+--
+-- Reported by /pbchat rather than announced at login. It was announced while the add-on was
+-- being built, because a build behaving unlike its code was the hardest thing to diagnose from
+-- inside the game. That is worth a command, not a line of chat on every login.
+local VERSION = "1.0.3"
 
 -- How long the catcher waits for the box to close before coming back anyway.
 local RESUME_DEADLINE_SECONDS = 120
@@ -752,7 +756,8 @@ function addon:ReportEntryState(label)
 end
 
 function addon:PrintStatus()
-	Print("%s, capture %s, delay %d ms", self.sv.enabled and "on" or "off", self:DescribeCaptureMode(), self.sv.delayMs)
+	Print("%s -- %s, capture %s, delay %d ms", VERSION, self.sv.enabled and "on" or "off",
+		self:DescribeCaptureMode(), self.sv.delayMs)
 	Print("chat available: %s", tostring(IsChatAvailable()))
 	Print("gamepad UI: %s", tostring(IsInGamepadPreferredMode()))
 	Print("binding route: %s", tostring(IsBindingRouteAvailable()))
@@ -923,19 +928,6 @@ local function OnAddOnLoaded(_, name)
 	addon:InitSlashCommand()
 	addon:ApplyCatcher()
 	addon:ApplyWatch()
-
-	-- Printed unconditionally, not behind the log setting, so there is never again any doubt
-	-- about which build is actually running.
-	--
-	-- On EVENT_PLAYER_ACTIVATED rather than at load: the chat system is not up yet when an
-	-- add-on loads, so anything printed there is simply discarded. A missing banner was taken as
-	-- evidence that the add-on had not installed, which it was not.
-	em:RegisterForEvent(addon.name, EVENT_PLAYER_ACTIVATED, function()
-		em:UnregisterForEvent(addon.name, EVENT_PLAYER_ACTIVATED)
-		Print("%s loaded -- capture %s, delay %d ms, follow %s, log %s", VERSION,
-			addon:DescribeCaptureMode(), addon.sv.delayMs, tostring(addon.sv.followInput),
-			tostring(addon.sv.log))
-	end)
 
 	-- Auto reads the binding route, which on PC depends on which UI is in front. Console never
 	-- fires this.

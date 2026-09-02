@@ -13,6 +13,9 @@
             <Action name="ESO_ADVENTURER_SUITE_GAME_MODE_REPORT">
                 <Down>ESOAdventurerSuite_ToggleGameModeReport()</Down>
             </Action>
+            <Action name="ESO_ADVENTURER_SUITE_MAP_TELEPORTER_TOGGLE">
+                <Down>ESOAdventurerSuite_ToggleMapTeleporterOverlay()</Down>
+            </Action>
 </Category>
         <Category name="SI_BINDING_NAME_ESO_ADVENTURER_SUITE_ANTIQUITIES_CATEGORY">
             <Action name="ESO_ADVENTURER_SUITE_ANTIQUITY_LEAD_FINDER">
@@ -74,6 +77,15 @@
         <Category name="SI_KEYBINDINGS_CATEGORY_GENERAL">
             <Action name="ESO_ADVENTURER_SUITE_GAME_MODE_REPORT_CLOSE" hideAction="true" inheritsBindFrom="ESO_ADVENTURER_SUITE_GAME_MODE_REPORT">
                 <Down>ESOAdventurerSuite_ToggleGameModeReport()</Down>
+            </Action>
+        </Category>
+    </Layer>
+
+    <!-- Keep the Teleporter hotkey active while the HUD overlay owns mouse/UI mode. -->
+    <Layer name="ESOAdventurerSuiteMapTeleporterLayer" allowFallthrough="true">
+        <Category name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+            <Action name="ESO_ADVENTURER_SUITE_MAP_TELEPORTER_TOGGLE_CLOSE" hideAction="true" inheritsBindFrom="ESO_ADVENTURER_SUITE_MAP_TELEPORTER_TOGGLE">
+                <Down>ESOAdventurerSuite_ToggleMapTeleporterOverlay()</Down>
             </Action>
         </Category>
     </Layer>

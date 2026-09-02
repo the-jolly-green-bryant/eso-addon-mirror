@@ -1,24 +1,25 @@
 local Register = LibCodesCommonCode.RegisterString
 local Localize = LibCodesCommonCode.GetLocalizedData
 
-Register("SI_LCA_INCOMING"				, zo_strformat("<<C:1>>", GetString(SI_INTERFACE_OPTIONS_COMBAT_SCT_INCOMING_ENABLED)))
-Register("SI_LCA_ACTIVE"				, zo_strformat("<<C:1>>", GetString(SI_MARKET_SUBSCRIPTION_PAGE_SUBSCRIPTION_STATUS_ACTIVE)))
-Register("SI_LCA_SUCCESS"				, zo_strformat("<<C:1>>", GetString("SI_UPDATEGUILDMETADATARESPONSE", UPDATE_GUILD_META_DATA_SUCCESS)))
-Register("SI_LCA_FAIL"					, zo_strformat("<<C:1>>", GetString("SI_UPDATEGUILDMETADATARESPONSE", UPDATE_GUILD_META_DATA_FAIL)))
-
 Register("SI_LCA_CW"					, "Clockwise")
 Register("SI_LCA_CCW"					, "Counter-Clockwise")
 
 Register("SI_LCA_TIME_REMAINING"		, "<<1>> remaining")
 Register("SI_LCA_TIME_SINCE_PREVIOUS"	, "<<1>> since previous")
-Register("SI_LCA_TARGET_YOU"		    , "<<1>> (On You)")
-Register("SI_LCA_TARGET_OTHERS"		    , "<<1>> (On Others)")
-Register("SI_LCA_TARGET_BOSS"		    , "<<1>> (On Boss)")
+Register("SI_LCA_TIME_UNTIL_NEXT"		, "<<1>> until next")
+Register("SI_LCA_TARGET_YOU"			, "<<1>> (On You)")
+Register("SI_LCA_TARGET_OTHERS"			, "<<1>> (On Others)")
+Register("SI_LCA_TARGET_BOSS"			, "<<1>> (On Boss)")
 
 Register("SI_LCA_COLOR_BG"				, "Background color")
 Register("SI_LCA_COLOR_FG"				, "Foreground color")
 Register("SI_LCA_LEFT"					, "Left")
 Register("SI_LCA_TOP"					, "Top")
+
+Register("SI_LCA_INCOMING"				, zo_strformat("<<C:1>>", GetString(SI_INTERFACE_OPTIONS_COMBAT_SCT_INCOMING_ENABLED)))
+Register("SI_LCA_ACTIVE"				, zo_strformat("<<C:1>>", GetString(SI_MARKET_SUBSCRIPTION_PAGE_SUBSCRIPTION_STATUS_ACTIVE)))
+Register("SI_LCA_SUCCESS"				, zo_strformat("<<C:1>>", GetString("SI_UPDATEGUILDMETADATARESPONSE", UPDATE_GUILD_META_DATA_SUCCESS)))
+Register("SI_LCA_FAIL"					, zo_strformat("<<C:1>>", GetString("SI_UPDATEGUILDMETADATARESPONSE", UPDATE_GUILD_META_DATA_FAIL)))
 
 SI_LCA_BLOCK							= SI_BINDING_NAME_SPECIAL_MOVE_BLOCK
 SI_LCA_INTERRUPT						= SI_BINDING_NAME_SPECIAL_MOVE_INTERRUPT

@@ -1,14 +1,15 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/atharti/LibDailyReset__4424",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "atharti",
   "canonical_id": "esoui:4424",
   "category_id": "53",
   "compatibility": [
     {
-      "name": "Season Zero Pt.2",
-      "version": "12.0.0"
+      "name": "Season One",
+      "version": "12.1.0"
     }
   ],
   "content_id": "esoui:4424",
@@ -17,7 +18,7 @@
     "LibDailyReset"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4424/",
-  "fingerprint": "a3b4ca5c380b313d750c6ba3a30d0a27a70c09a037e7bb2e6ad69ff0de002e1a",
+  "fingerprint": "ce0e9724a61642d2619080caf2836ea9eb095f1004b09130b71b7b108dfe4d2e",
   "images": [],
   "platform": "pc",
   "published": true,
@@ -25,11 +26,11 @@
   "source_id": "4424",
   "source_url": "https://www.esoui.com/downloads/info4424-LibDailyReset.html",
   "stats": {
-    "downloads": 6041,
+    "downloads": 6623,
     "favorites": 4,
-    "monthly_downloads": 607
+    "monthly_downloads": 446
   },
   "title": "LibDailyReset",
-  "updated_at": 1781252433000,
-  "version": "1.8"
+  "updated_at": 1788323421000,
+  "version": "1.9"
 }

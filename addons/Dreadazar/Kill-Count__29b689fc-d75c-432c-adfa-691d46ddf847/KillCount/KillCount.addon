@@ -1,0 +1,15 @@
+﻿; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: KillCount
+## APIVersion: 101049 101050
+## Version: 3.10.0
+## AddOnVersion: 3100
+## Author: Dreadazar
+## Description: Small pinned K/D box in the bottom-right for PvP. Overall daily K/D with your current zone underneath - Cyrodiil, Imperial City, Battlegrounds and Duels tracked separately. Shows the day's most-killed player. Resets every 24 hours.
+## SavedVariables: KillCountVars
+
+KillCount.lua
