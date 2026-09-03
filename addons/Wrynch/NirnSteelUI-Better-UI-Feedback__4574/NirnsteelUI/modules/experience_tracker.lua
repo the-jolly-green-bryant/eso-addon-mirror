@@ -13,7 +13,7 @@ local DEFAULT_SETTINGS =
     scale = 100,
     opacity = 100,
     width = 460,
-    height = 64,
+    height = 56,
     durationMS = 3600,
     intensity = 100,
     visibilityMode = "fade",
@@ -34,6 +34,7 @@ local BAR_GLOSS_TEXTURE = "EsoUI/Art/Miscellaneous/timerBar_genericFill_gloss.dd
 local BAR_LEADING_EDGE_TEXTURE = "EsoUI/Art/Miscellaneous/progressbar_genericFill_leadingEdge_blunt.dds"
 local EDGE_FRAME_TEXTURE = "EsoUI/Art/Miscellaneous/Gamepad/edgeframeGamepadBorder_thin.dds"
 local TRACK_TEXTURE = "EsoUI/Art/Miscellaneous/progressbar_genericFill_tall.dds"
+local ORNAMENT_TEXTURE = "EsoUI/Art/Miscellaneous/listItem_backdrop_white.dds"
 local CHAMPION_ICON = "EsoUI/Art/Champion/champion_icon.dds"
 local BAR_TEXTURE_COORDS = { 0, 1, 0, 0.8125 }
 local SEGMENT_DURATION_MS = 980
@@ -47,7 +48,8 @@ local MIN_CHUNKS = 3
 local MAX_CHUNKS = 9
 local CHUNK_PULSE_COUNT = 10
 local CHUNK_PULSE_MS = 380
-local IMPACT_FLASH_MS = 260
+local BRONZE_RIM = { 0.62, 0.43, 0.20, 0.78 }
+local BRONZE_HIGHLIGHT = { 0.92, 0.70, 0.34, 0.92 }
 
 local CP_ICONS =
 {
@@ -326,12 +328,47 @@ local function FormatNumber(value)
     return tostring(value)
 end
 
+local function FormatCompactNumber(value)
+    value = math.max(tonumber(value) or 0, 0)
+    local divisor
+    local suffix
+    if value >= 1000000 then
+        divisor, suffix = 1000000, "M"
+    elseif value >= 1000 then
+        divisor, suffix = 1000, "K"
+    else
+        return tostring(math.floor(value + 0.5))
+    end
+
+    local shortened = string.format("%.1f", value / divisor):gsub("%.0$", "")
+    return shortened .. suffix
+end
+
+local function FormatGainNumber(value)
+    if GetConfiguredWidth() < 420 then
+        return FormatCompactNumber(value)
+    end
+
+    return FormatNumber(value)
+end
+
 local function FormatProgressText(value, maxValue)
     maxValue = math.max(tonumber(maxValue) or 1, 1)
     value = zo_clamp(tonumber(value) or 0, 0, maxValue)
     value = math.floor(value + 0.5)
     local percent = math.floor((value / maxValue) * 100 + 0.5)
+    if GetConfiguredWidth() < 420 then
+        return string.format("%s / %s - %d%%", FormatCompactNumber(value), FormatCompactNumber(maxValue), percent)
+    end
     return string.format("%s / %s - %d%%", FormatNumber(value), FormatNumber(maxValue), percent)
+end
+
+local function GetModeLabel(mode)
+    if mode == "cp" then
+        return "CHAMPION"
+    end
+
+    return GetString(SI_EXPERIENCE_LEVEL_LABEL) or "LEVEL"
 end
 
 local function GetLevelTextWidthHint(level)
@@ -374,39 +411,60 @@ function ExperienceTracker:GetRoot()
     root:SetAlpha(0)
 
     local outerShadow = wm:CreateControl(nil, root, CT_BACKDROP)
-    outerShadow:SetCenterColor(0, 0, 0, 0.16)
-    outerShadow:SetEdgeColor(0, 0, 0, 0.82)
-    outerShadow:SetEdgeTexture(EDGE_FRAME_TEXTURE, 128, 16, 7, 0)
+    outerShadow:SetCenterColor(0, 0, 0, 0.12)
+    outerShadow:SetEdgeColor(0, 0, 0, 0.76)
+    outerShadow:SetEdgeTexture(EDGE_FRAME_TEXTURE, 128, 16, 5, 0)
     outerShadow:SetDrawLayer(DL_BACKGROUND)
     root.outerShadow = outerShadow
 
     local panel = wm:CreateControl(nil, root, CT_BACKDROP)
-    panel:SetCenterColor(0.015, 0.014, 0.012, 0.72)
-    panel:SetEdgeColor(0.72, 0.58, 0.32, 0.52)
-    panel:SetEdgeTexture(EDGE_FRAME_TEXTURE, 128, 16, 4, 0)
+    panel:SetCenterColor(0.012, 0.011, 0.010, 0.84)
+    panel:SetEdgeColor(BRONZE_RIM[1], BRONZE_RIM[2], BRONZE_RIM[3], BRONZE_RIM[4])
+    panel:SetEdgeTexture(EDGE_FRAME_TEXTURE, 128, 16, 3, 0)
     panel:SetDrawLayer(DL_BACKGROUND)
     root.panel = panel
 
     local panelInset = wm:CreateControl(nil, root, CT_BACKDROP)
     panelInset:SetCenterColor(0, 0, 0, 0)
-    panelInset:SetEdgeColor(0, 0, 0, 0.72)
-    panelInset:SetEdgeTexture(EDGE_FRAME_TEXTURE, 128, 16, 3, 0)
+    panelInset:SetEdgeColor(0.04, 0.035, 0.028, 0.92)
+    panelInset:SetEdgeTexture(EDGE_FRAME_TEXTURE, 128, 16, 2, 0)
     panelInset:SetDrawLayer(DL_OVERLAY)
     root.panelInset = panelInset
 
+    local topRail = wm:CreateControl(nil, root, CT_TEXTURE)
+    topRail:SetTexture(ORNAMENT_TEXTURE)
+    topRail:SetColor(BRONZE_HIGHLIGHT[1], BRONZE_HIGHLIGHT[2], BRONZE_HIGHLIGHT[3], 0.34)
+    topRail:SetDrawLayer(DL_OVERLAY)
+    topRail:SetAlpha(0.72)
+    root.topRail = topRail
+
+    local bottomRail = wm:CreateControl(nil, root, CT_TEXTURE)
+    bottomRail:SetTexture(ORNAMENT_TEXTURE)
+    bottomRail:SetColor(BRONZE_RIM[1], BRONZE_RIM[2], BRONZE_RIM[3], 0.26)
+    bottomRail:SetDrawLayer(DL_OVERLAY)
+    bottomRail:SetAlpha(0.60)
+    root.bottomRail = bottomRail
+
     local badgeGlow = wm:CreateControl(nil, root, CT_BACKDROP)
-    badgeGlow:SetCenterColor(0.70, 0.54, 0.24, 0.08)
-    badgeGlow:SetEdgeColor(0.95, 0.74, 0.28, 0.38)
-    badgeGlow:SetEdgeTexture(EDGE_FRAME_TEXTURE, 128, 16, 10, 0)
+    badgeGlow:SetCenterColor(0.70, 0.54, 0.24, 0.03)
+    badgeGlow:SetEdgeColor(0.95, 0.74, 0.28, 0.24)
+    badgeGlow:SetEdgeTexture(EDGE_FRAME_TEXTURE, 128, 16, 6, 0)
     badgeGlow:SetDrawLayer(DL_CONTROLS)
+    badgeGlow:SetAlpha(0.22)
     root.badgeGlow = badgeGlow
 
     local badge = wm:CreateControl(nil, root, CT_BACKDROP)
-    badge:SetCenterColor(0.015, 0.014, 0.012, 0.94)
-    badge:SetEdgeColor(0.86, 0.70, 0.36, 0.82)
-    badge:SetEdgeTexture(EDGE_FRAME_TEXTURE, 128, 16, 8, 0)
+    badge:SetCenterColor(0.010, 0.009, 0.008, 0.96)
+    badge:SetEdgeColor(BRONZE_HIGHLIGHT[1], BRONZE_HIGHLIGHT[2], BRONZE_HIGHLIGHT[3], 0.76)
+    badge:SetEdgeTexture(EDGE_FRAME_TEXTURE, 128, 16, 4, 0)
     badge:SetDrawLayer(DL_CONTROLS)
     root.badge = badge
+
+    local divider = wm:CreateControl(nil, root, CT_TEXTURE)
+    divider:SetTexture(ORNAMENT_TEXTURE)
+    divider:SetColor(BRONZE_HIGHLIGHT[1], BRONZE_HIGHLIGHT[2], BRONZE_HIGHLIGHT[3], 0.48)
+    divider:SetDrawLayer(DL_OVERLAY)
+    root.divider = divider
 
     local levelLabel = wm:CreateControl(nil, root, CT_LABEL)
     levelLabel:SetFont("$(BOLD_FONT)|36|thick-outline")
@@ -415,6 +473,15 @@ function ExperienceTracker:GetRoot()
     levelLabel:SetModifyTextType(MODIFY_TEXT_TYPE_UPPERCASE)
     levelLabel:SetText("45")
     root.levelLabel = levelLabel
+
+    local nextLevelLabel = wm:CreateControl(nil, root, CT_LABEL)
+    nextLevelLabel:SetFont("$(BOLD_FONT)|36|thick-outline")
+    nextLevelLabel:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    nextLevelLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    nextLevelLabel:SetModifyTextType(MODIFY_TEXT_TYPE_UPPERCASE)
+    nextLevelLabel:SetAlpha(0)
+    nextLevelLabel:SetHidden(true)
+    root.nextLevelLabel = nextLevelLabel
 
     local typeLabel = wm:CreateControl(nil, root, CT_LABEL)
     typeLabel:SetFont("$(BOLD_FONT)|14|soft-shadow-thin")
@@ -438,22 +505,22 @@ function ExperienceTracker:GetRoot()
     root.progressLabel = progressLabel
 
     local track = wm:CreateControl(nil, root, CT_BACKDROP)
-    track:SetCenterColor(0.004, 0.004, 0.004, 0.92)
-    track:SetEdgeColor(0, 0, 0, 0.92)
-    track:SetEdgeTexture(EDGE_FRAME_TEXTURE, 128, 16, 4, 0)
+    track:SetCenterColor(0.003, 0.004, 0.005, 0.94)
+    track:SetEdgeColor(0.20, 0.14, 0.07, 0.72)
+    track:SetEdgeTexture(EDGE_FRAME_TEXTURE, 128, 16, 2, 0)
     root.track = track
 
     local trackShade = wm:CreateControl(nil, root, CT_TEXTURE)
     trackShade:SetTexture(TRACK_TEXTURE)
     trackShade:SetTextureCoords(unpack(BAR_TEXTURE_COORDS))
-    trackShade:SetColor(1, 1, 1, 0.035)
+    trackShade:SetColor(1, 1, 1, 0.025)
     trackShade:SetDrawLayer(DL_CONTROLS)
     root.trackShade = trackShade
 
     local trackInnerShadow = wm:CreateControl(nil, root, CT_BACKDROP)
-    trackInnerShadow:SetCenterColor(0, 0, 0, 0.10)
-    trackInnerShadow:SetEdgeColor(0, 0, 0, 0.86)
-    trackInnerShadow:SetEdgeTexture(EDGE_FRAME_TEXTURE, 128, 16, 4, 0)
+    trackInnerShadow:SetCenterColor(0, 0, 0, 0.06)
+    trackInnerShadow:SetEdgeColor(0, 0, 0, 0.76)
+    trackInnerShadow:SetEdgeTexture(EDGE_FRAME_TEXTURE, 128, 16, 2, 0)
     trackInnerShadow:SetDrawLayer(DL_OVERLAY)
     root.trackInnerShadow = trackInnerShadow
 
@@ -550,7 +617,7 @@ function ExperienceTracker:GetRoot()
     end
 
     local gainLabel = wm:CreateControl(nil, root, CT_LABEL)
-    gainLabel:SetFont("$(BOLD_FONT)|17|thick-outline")
+    gainLabel:SetFont("$(BOLD_FONT)|14|soft-shadow-thin")
     gainLabel:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
     gainLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     gainLabel:SetAlpha(0)
@@ -616,6 +683,18 @@ function ExperienceTracker:GetMover()
     return mover
 end
 
+function ExperienceTracker:AnchorRankLabel(label, verticalOffset)
+    local root = self:GetRoot()
+    verticalOffset = verticalOffset or 0
+    label:ClearAnchors()
+    label:SetDimensions(root.rankLabelWidth or root.badge:GetWidth(), root.rankLabelHeight or root.badge:GetHeight())
+    if root.rankHasIcon then
+        label:SetAnchor(TOP, root.badge, TOP, 0, 1 + verticalOffset)
+    else
+        label:SetAnchor(CENTER, root.badge, CENTER, 0, verticalOffset)
+    end
+end
+
 function ExperienceTracker:ApplyLayout()
     local root = self:GetRoot()
     local mover = self:GetMover()
@@ -623,19 +702,20 @@ function ExperienceTracker:ApplyLayout()
     local scale = GetScale()
     local width = GetConfiguredWidth()
     local height = GetConfiguredHeight()
-    local pad = math.max(5, math.floor(height * 0.10))
+    local pad = math.max(4, math.floor(height * 0.075))
     local mode = self.currentMode or "xp"
     local levelText = self.currentLevelText or "45"
-    local badgeSize = math.max(42, height - pad * 2)
+    local badgeSize = math.max(40, height - 8)
     local badgeWidth = math.max(badgeSize, GetLevelTextWidthHint(levelText) + 16)
-    local contentX = pad + badgeWidth + math.max(12, math.floor(height * 0.20))
+    local contentX = pad + badgeWidth + math.max(11, math.floor(height * 0.18))
     local contentWidth = math.max(150, width - contentX - pad)
-    local headerHeight = math.max(15, math.floor(height * 0.26))
-    local barHeight = math.max(14, math.floor(height * 0.34))
-    local barTop = math.max(pad + headerHeight - 1, math.floor(height * 0.34))
-    local footerHeight = math.max(14, height - barTop - barHeight - pad)
+    local headerHeight = math.max(15, math.floor(height * 0.27))
+    local barHeight = math.max(16, math.floor(height * 0.32))
+    local contentTop = math.max(3, math.floor((height - headerHeight - barHeight - 2) * 0.5))
+    local barTop = contentTop + headerHeight + 2
     local iconSize = math.max(15, math.floor(badgeSize * 0.34))
     local hideBackground = ShouldHideBackground()
+    local rankHasIcon = mode == "cp" and ShouldShowChampionIcon()
 
     root:SetDimensions(width, height)
     root:SetScale(scale)
@@ -643,8 +723,8 @@ function ExperienceTracker:ApplyLayout()
     root:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, position.x, position.y)
 
     root.outerShadow:ClearAnchors()
-    root.outerShadow:SetAnchor(TOPLEFT, root, TOPLEFT, -5, -5)
-    root.outerShadow:SetAnchor(BOTTOMRIGHT, root, BOTTOMRIGHT, 5, 5)
+    root.outerShadow:SetAnchor(TOPLEFT, root, TOPLEFT, -4, -4)
+    root.outerShadow:SetAnchor(BOTTOMRIGHT, root, BOTTOMRIGHT, 4, 4)
     root.outerShadow:SetHidden(hideBackground)
 
     root.panel:ClearAnchors()
@@ -656,30 +736,48 @@ function ExperienceTracker:ApplyLayout()
     root.panelInset:SetAnchor(BOTTOMRIGHT, root, BOTTOMRIGHT, -2, -2)
     root.panelInset:SetHidden(hideBackground)
 
+    root.topRail:ClearAnchors()
+    root.topRail:SetDimensions(math.max(width - 14, 1), 1)
+    root.topRail:SetAnchor(TOP, root, TOP, 0, 3)
+    root.topRail:SetHidden(hideBackground)
+
+    root.bottomRail:ClearAnchors()
+    root.bottomRail:SetDimensions(math.max(width - 24, 1), 1)
+    root.bottomRail:SetAnchor(BOTTOM, root, BOTTOM, 0, -3)
+    root.bottomRail:SetHidden(hideBackground)
+
     root.badgeGlow:ClearAnchors()
-    root.badgeGlow:SetDimensions(badgeWidth + 10, badgeSize + 10)
-    root.badgeGlow:SetAnchor(LEFT, root, LEFT, pad - 5, 0)
+    root.badgeGlow:SetDimensions(badgeWidth + 4, badgeSize + 4)
+    root.badgeGlow:SetAnchor(LEFT, root, LEFT, pad - 2, 0)
 
     root.badge:ClearAnchors()
     root.badge:SetDimensions(badgeWidth, badgeSize)
     root.badge:SetAnchor(CENTER, root.badgeGlow, CENTER, 0, 0)
 
-    root.levelLabel:ClearAnchors()
-    root.levelLabel:SetDimensions(badgeWidth, math.max(24, badgeSize - iconSize + 1))
-    root.levelLabel:SetAnchor(TOP, root.badge, TOP, 0, 1)
+    root.divider:ClearAnchors()
+    root.divider:SetDimensions(1, math.max(height - 14, 1))
+    root.divider:SetAnchor(LEFT, root, LEFT, contentX - 6, 0)
+    root.divider:SetHidden(hideBackground)
+
+    root.rankLabelWidth = badgeWidth
+    root.rankLabelHeight = rankHasIcon and math.max(24, badgeSize - iconSize + 1) or badgeSize
+    root.rankHasIcon = rankHasIcon
+    self:AnchorRankLabel(root.levelLabel, 0)
     root.levelLabel:SetFont(string.format("$(BOLD_FONT)|%d|thick-outline", GetLevelFontSize(levelText, mode)))
+    self:AnchorRankLabel(root.nextLevelLabel, 0)
+    root.nextLevelLabel:SetFont(string.format("$(BOLD_FONT)|%d|thick-outline", GetLevelFontSize(root.nextLevelLabel:GetText(), mode)))
 
     root.typeLabel:ClearAnchors()
-    root.typeLabel:SetDimensions(math.floor(contentWidth * 0.40), headerHeight)
-    root.typeLabel:SetAnchor(TOPLEFT, root, TOPLEFT, contentX, pad - 1)
+    root.typeLabel:SetDimensions(math.floor(contentWidth * 0.50), headerHeight)
+    root.typeLabel:SetAnchor(TOPLEFT, root, TOPLEFT, contentX, contentTop)
 
     root.icon:ClearAnchors()
     root.icon:SetDimensions(iconSize, iconSize)
-    root.icon:SetAnchor(BOTTOM, root.badge, BOTTOM, 0, -4)
+    root.icon:SetAnchor(BOTTOM, root.badge, BOTTOM, 0, -3)
 
     root.progressLabel:ClearAnchors()
-    root.progressLabel:SetDimensions(math.floor(contentWidth * 0.58), headerHeight)
-    root.progressLabel:SetAnchor(TOPRIGHT, root, TOPRIGHT, -pad, pad - 1)
+    root.progressLabel:SetDimensions(math.floor(contentWidth * 0.48), headerHeight)
+    root.progressLabel:SetAnchor(TOPRIGHT, root, TOPRIGHT, -pad, contentTop)
     root.progressLabel:SetHidden(not ShouldShowProgressText())
 
     root.track:ClearAnchors()
@@ -713,12 +811,12 @@ function ExperienceTracker:ApplyLayout()
     root.gloss:SetAnchorFill(root.track)
 
     root.glow:ClearAnchors()
-    root.glow:SetAnchor(TOPLEFT, root.track, TOPLEFT, -7, -7)
-    root.glow:SetAnchor(BOTTOMRIGHT, root.track, BOTTOMRIGHT, 7, 7)
+    root.glow:SetAnchor(TOPLEFT, root.track, TOPLEFT, -4, -4)
+    root.glow:SetAnchor(BOTTOMRIGHT, root.track, BOTTOMRIGHT, 4, 4)
 
     root.shine:ClearAnchors()
-    root.shine:SetDimensions(math.max(38, contentWidth * 0.18), barHeight + 4)
-    root.shine:SetAnchor(LEFT, root.track, LEFT, 0, 0)
+    root.shine:SetDimensions(math.max(28, contentWidth * 0.12), barHeight + 2)
+    root.shine:SetAnchor(LEFT, root.track, LEFT, -root.shine:GetWidth(), 0)
 
     root.rewardShine:ClearAnchors()
     root.rewardShine:SetDimensions(math.max(76, contentWidth * 0.34), barHeight + 18)
@@ -739,8 +837,8 @@ function ExperienceTracker:ApplyLayout()
     end
 
     root.gainLabel:ClearAnchors()
-    root.gainLabel:SetDimensions(contentWidth, footerHeight)
-    root.gainLabel:SetAnchor(TOPLEFT, root.track, BOTTOMLEFT, 0, 1)
+    root.gainLabel:SetDimensions(math.floor(contentWidth * 0.50), headerHeight)
+    root.gainLabel:SetAnchor(TOPLEFT, root, TOPLEFT, contentX, contentTop)
 
     mover:SetDimensions(width * scale, height * scale)
     mover:ClearAnchors()
@@ -765,13 +863,14 @@ function ExperienceTracker:SetVisualMode(mode, level)
         root.enlightened:SetGradientColors(startR, startG, startB, 0.55, endR, endG, endB, 0.55)
     end
 
-    root.panel:SetEdgeColor(glowR, glowG, glowB, 0.30 + 0.16 * GetIntensity())
-    root.badge:SetEdgeColor(zo_clamp(endR + 0.08, 0, 1), zo_clamp(endG + 0.08, 0, 1), zo_clamp(endB + 0.08, 0, 1), 0.76)
-    root.badgeGlow:SetEdgeColor(glowR, glowG, glowB, 0.34 + 0.12 * GetIntensity())
-    root.badgeGlow:SetCenterColor(glowR, glowG, glowB, 0.04 + 0.04 * GetIntensity())
-    root.gloss:SetColor(1, 1, 1, 0.14 + (0.05 * GetIntensity()))
-    root.glow:SetEdgeColor(glowR, glowG, glowB, 0.66 * GetIntensity())
-    root.glow:SetCenterColor(glowR, glowG, glowB, 0.065 * GetIntensity())
+    root.panel:SetEdgeColor(BRONZE_RIM[1], BRONZE_RIM[2], BRONZE_RIM[3], BRONZE_RIM[4])
+    root.badge:SetEdgeColor(BRONZE_HIGHLIGHT[1], BRONZE_HIGHLIGHT[2], BRONZE_HIGHLIGHT[3], 0.76)
+    root.badgeGlow:SetEdgeColor(glowR, glowG, glowB, 0.28 + 0.08 * GetIntensity())
+    root.badgeGlow:SetCenterColor(glowR, glowG, glowB, 0.02 + 0.025 * GetIntensity())
+    root.track:SetEdgeColor(glowR, glowG, glowB, 0.14)
+    root.gloss:SetColor(1, 1, 1, 0.10 + (0.04 * GetIntensity()))
+    root.glow:SetEdgeColor(glowR, glowG, glowB, 0.48 * GetIntensity())
+    root.glow:SetCenterColor(glowR, glowG, glowB, 0.025 * GetIntensity())
     root.impactFlash:SetEdgeColor(glowR, glowG, glowB, 0.9)
     root.impactFlash:SetCenterColor(endR, endG, endB, 0.035)
     root.barShockwave:SetEdgeColor(glowR, glowG, glowB, 0.96)
@@ -782,6 +881,7 @@ function ExperienceTracker:SetVisualMode(mode, level)
     root.rewardShine:SetColor(zo_clamp(endR + 0.28, 0, 1), zo_clamp(endG + 0.28, 0, 1), zo_clamp(endB + 0.28, 0, 1), 1)
     root.gainLabel:SetColor(zo_clamp(endR + 0.16, 0, 1), zo_clamp(endG + 0.16, 0, 1), zo_clamp(endB + 0.16, 0, 1), 1)
     root.typeLabel:SetColor(zo_clamp(endR + 0.10, 0, 1), zo_clamp(endG + 0.10, 0, 1), zo_clamp(endB + 0.10, 0, 1), 0.98)
+    root.icon:SetColor(zo_clamp(endR + 0.12, 0, 1), zo_clamp(endG + 0.12, 0, 1), zo_clamp(endB + 0.12, 0, 1), 0.96)
     for _, chunkPulse in ipairs(root.chunkPulses) do
         chunkPulse:SetColor(zo_clamp(endR + 0.20, 0, 1), zo_clamp(endG + 0.20, 0, 1), zo_clamp(endB + 0.20, 0, 1), 1)
     end
@@ -793,10 +893,11 @@ function ExperienceTracker:SetVisualMode(mode, level)
         root.levelLabel:SetFont(string.format("$(BOLD_FONT)|%d|thick-outline", GetLevelFontSize(levelText, mode)))
         root.levelLabel:SetText(levelText)
         root.typeLabel:SetHidden(false)
-        root.typeLabel:SetText("CHAMPION")
+        root.typeLabel:SetText(GetModeLabel(mode))
         root.icon:SetHidden(not ShouldShowChampionIcon())
         root.icon:SetTexture(info.icon)
         root.levelLabel:SetColor(0.95, 0.92, 0.84, 1)
+        root.nextLevelLabel:SetColor(0.95, 0.92, 0.84, 1)
     else
         local levelText = tostring(level or GetUnitLevel("player"))
         self.currentMode = mode
@@ -804,12 +905,127 @@ function ExperienceTracker:SetVisualMode(mode, level)
         root.levelLabel:SetFont(string.format("$(BOLD_FONT)|%d|thick-outline", GetLevelFontSize(levelText, mode)))
         root.levelLabel:SetText(levelText)
         root.typeLabel:SetHidden(false)
-        root.typeLabel:SetText(GetString(SI_EXPERIENCE_LEVEL_LABEL) or "LEVEL")
+        root.typeLabel:SetText(GetModeLabel(mode))
         root.icon:SetHidden(true)
         root.levelLabel:SetColor(1, 1, 1, 1)
+        root.nextLevelLabel:SetColor(1, 1, 1, 1)
     end
 
+    self.currentTypeText = GetModeLabel(mode)
+    root.typeLabel:SetAlpha(1)
     self:ApplyLayout()
+end
+
+function ExperienceTracker:RestoreHeader()
+    local root = self:GetRoot()
+    root.typeLabel:SetText(self.currentTypeText or GetModeLabel(self.currentMode or "xp"))
+    root.typeLabel:SetHidden(false)
+    root.typeLabel:SetAlpha(1)
+    root.gainLabel:SetAlpha(0)
+    root.gainLabel:SetScale(1)
+    root.gainLabel:SetHidden(true)
+end
+
+function ExperienceTracker:SetGainHeader(text)
+    local root = self:GetRoot()
+    root.gainLabel:SetText(text or "")
+    root.gainLabel:SetScale(1)
+    root.gainLabel:SetAlpha(0)
+    root.gainLabel:SetHidden(not ShouldShowGainText())
+    root.typeLabel:SetAlpha(1)
+end
+
+function ExperienceTracker:ConfigureGainOverlay(segment)
+    local root = self:GetRoot()
+    local maximum = math.max(tonumber(segment and segment.maxValue) or 1, 1)
+    local startValue = zo_clamp(tonumber(segment and segment.startValue) or 0, 0, maximum)
+    local stopValue = zo_clamp(tonumber(segment and segment.stopValue) or startValue, startValue, maximum)
+    local delta = math.max(stopValue - startValue, 1)
+    local trackWidth = root.track:GetWidth()
+    local startX = (startValue / maximum) * trackWidth
+    local overlayWidth = math.max(((stopValue - startValue) / maximum) * trackWidth, 1)
+
+    root.bulk:ClearAnchors()
+    root.bulk:SetDimensions(overlayWidth, root.track:GetHeight())
+    root.bulk:SetAnchor(LEFT, root.track, LEFT, startX, 0)
+    root.bulk:SetMinMax(0, delta)
+    root.bulk:SetValue(0)
+end
+
+function ExperienceTracker:PrepareRankReveal(segment)
+    local root = self:GetRoot()
+    local mode = segment and segment.mode or self.currentMode or "xp"
+    local oldLevel = tonumber(segment and (segment.oldLevel or segment.level)) or tonumber(self.currentLevelText) or 0
+    local newLevel = tonumber(segment and segment.newLevel) or (oldLevel + 1)
+    local oldText = tostring(oldLevel)
+    local newText = tostring(newLevel)
+
+    root.levelLabel:SetText(oldText)
+    root.levelLabel:SetFont(string.format("$(BOLD_FONT)|%d|thick-outline", GetLevelFontSize(oldText, mode)))
+    root.levelLabel:SetAlpha(1)
+    root.nextLevelLabel:SetText(newText)
+    root.nextLevelLabel:SetFont(string.format("$(BOLD_FONT)|%d|thick-outline", GetLevelFontSize(newText, mode)))
+    root.nextLevelLabel:SetAlpha(0)
+    root.nextLevelLabel:SetHidden(false)
+
+    self.currentLevelText = newText
+    self.rankReveal = { mode = mode, oldText = oldText, newText = newText, committed = false }
+    self:ApplyLayout()
+    self:AnchorRankLabel(root.levelLabel, 0)
+    self:AnchorRankLabel(root.nextLevelLabel, 8)
+end
+
+function ExperienceTracker:CommitRankReveal()
+    local reveal = self.rankReveal
+    if not reveal or reveal.committed then
+        return
+    end
+
+    local root = self:GetRoot()
+    reveal.committed = true
+    root.levelLabel:SetText(reveal.newText)
+    root.levelLabel:SetFont(string.format("$(BOLD_FONT)|%d|thick-outline", GetLevelFontSize(reveal.newText, reveal.mode)))
+    root.levelLabel:SetAlpha(1)
+    root.levelLabel:SetScale(1)
+    root.nextLevelLabel:SetAlpha(0)
+    root.nextLevelLabel:SetScale(1)
+    root.nextLevelLabel:SetHidden(true)
+    self.currentLevelText = reveal.newText
+    self:AnchorRankLabel(root.levelLabel, 0)
+end
+
+function ExperienceTracker:ResetTransientEffects()
+    local root = self:GetRoot()
+    root.glow:SetAlpha(0)
+    root.impactFlash:SetAlpha(0)
+    root.barShockwave:SetAlpha(0)
+    root.barShockwave:SetScale(1)
+    root.barShockwave:SetHidden(true)
+    root.badgeGlow:SetAlpha(0.22)
+    root.topRail:SetAlpha(0.72)
+    root.bottomRail:SetAlpha(0.60)
+    root.badge:SetScale(1)
+    root.levelLabel:SetAlpha(1)
+    root.levelLabel:SetScale(1)
+    root.nextLevelLabel:SetAlpha(0)
+    root.nextLevelLabel:SetScale(1)
+    root.nextLevelLabel:SetHidden(true)
+    root.bulk:SetAlpha(0)
+    root.shine:SetAlpha(0)
+    root.rewardShine:SetAlpha(0)
+    root.rewardShine:SetHidden(true)
+    root.levelBurst:SetAlpha(0)
+    root.levelBurst:SetScale(1)
+    root.levelBurst:SetHidden(true)
+    root.badgeBurst:SetAlpha(0)
+    root.badgeBurst:SetScale(1)
+    root.badgeBurst:SetHidden(true)
+    for _, chunkPulse in ipairs(root.chunkPulses) do
+        chunkPulse.activeMS = nil
+        chunkPulse:SetAlpha(0)
+        chunkPulse:SetHidden(true)
+    end
+    self.rankReveal = nil
 end
 
 function ExperienceTracker:SetBarValue(value, maxValue)
@@ -865,9 +1081,15 @@ function ExperienceTracker:HideRoot()
     root.barShockwave:SetAlpha(0)
     root.barShockwave:SetScale(1)
     root.barShockwave:SetHidden(true)
-    root.badgeGlow:SetAlpha(1)
+    root.badgeGlow:SetAlpha(0.22)
+    root.topRail:SetAlpha(0.72)
+    root.bottomRail:SetAlpha(0.60)
     root.badge:SetScale(1)
     root.levelLabel:SetScale(1)
+    root.levelLabel:SetAlpha(1)
+    root.nextLevelLabel:SetAlpha(0)
+    root.nextLevelLabel:SetScale(1)
+    root.nextLevelLabel:SetHidden(true)
     root.bulk:SetAlpha(0)
     root.bulk:SetHidden(true)
     root.levelBurst:SetAlpha(0)
@@ -883,11 +1105,10 @@ function ExperienceTracker:HideRoot()
     root.shine:SetHidden(true)
     root.rewardShine:SetAlpha(0)
     root.rewardShine:SetHidden(true)
-    root.gainLabel:SetAlpha(0)
-    root.gainLabel:SetScale(1)
-    root.gainLabel:SetHidden(true)
+    self:RestoreHeader()
     self.animation = nil
     self.segmentQueue = nil
+    self.rankReveal = nil
 end
 
 function ExperienceTracker:BuildSegments(mode, level, previousXP, currentXP, maxValue)
@@ -977,10 +1198,10 @@ function ExperienceTracker:TriggerChunkPulse(segment, chunkIndex, chunkCount)
 
     pulse.activeMS = GetFrameTimeMilliseconds()
     pulse.baseX = x
-    pulse:SetDimensions(6 + (4 * GetIntensity()), root.track:GetHeight() + 14)
+    pulse:SetDimensions(3 + (2 * GetIntensity()), root.track:GetHeight() + 4)
     pulse:ClearAnchors()
     pulse:SetAnchor(CENTER, root.track, LEFT, x, 0)
-    pulse:SetAlpha(0.85)
+    pulse:SetAlpha(zo_clamp(0.48 + 0.16 * GetIntensity(), 0, 0.72))
     pulse:SetHidden(false)
 
     local sound = GetChunkSound()
@@ -1003,9 +1224,9 @@ function ExperienceTracker:UpdateChunkPulses(nowMS)
                 pulse:SetAlpha(0)
                 pulse:SetHidden(true)
             else
-                local alpha = zo_clamp((1 - progress) * (0.82 + 0.18 * GetIntensity()), 0, 1)
-                local width = 6 + progress * (16 + 8 * GetIntensity())
-                pulse:SetDimensions(width, root.track:GetHeight() + 14 + progress * 12)
+                local alpha = zo_clamp((1 - progress) * (0.50 + 0.16 * GetIntensity()), 0, 0.72)
+                local width = 3 + progress * (5 + 3 * GetIntensity())
+                pulse:SetDimensions(width, root.track:GetHeight() + 4 + progress * 4)
                 pulse:ClearAnchors()
                 pulse:SetAnchor(CENTER, root.track, LEFT, pulse.baseX or 0, 0)
                 pulse:SetAlpha(alpha)
@@ -1037,7 +1258,7 @@ function ExperienceTracker:TriggerLevelUpTicks()
         local pulse = pulses[self.nextChunkPulseIndex]
         pulse.activeMS = GetFrameTimeMilliseconds()
         pulse.baseX = trackWidth * zo_clamp(0.82 + index * 0.055, 0, 1)
-        pulse:SetDimensions(10 + (6 * intensity), root.track:GetHeight() + 20)
+        pulse:SetDimensions(8 + (4 * intensity), root.track:GetHeight() + 12)
         pulse:ClearAnchors()
         pulse:SetAnchor(CENTER, root.track, LEFT, pulse.baseX, 0)
         pulse:SetAlpha(1)
@@ -1053,21 +1274,21 @@ function ExperienceTracker:StartNextSegment()
     end
 
     local root = self:GetRoot()
+    self:ResetTransientEffects()
     self:SetVisualMode(segment.mode, segment.level)
     self:SetBarValue(segment.startValue, segment.maxValue)
     self:RefreshEnlightened(segment.mode, segment.level, segment.startValue, segment.maxValue)
 
     local gainLabelText = self.totalGainMode == "cp"
-        and string.format("+%s CP XP", FormatNumber(self.totalGainAmount or 0))
-        or string.format("+%s XP", FormatNumber(self.totalGainAmount or 0))
+        and string.format("+%s CP XP", FormatGainNumber(self.totalGainAmount or 0))
+        or string.format("+%s XP", FormatGainNumber(self.totalGainAmount or 0))
 
-    root.gainLabel:SetText(gainLabelText)
-    root.gainLabel:SetHidden(not ShouldShowGainText())
+    self:SetGainHeader(gainLabelText)
 
     root.bulk:SetHidden(false)
-    root.bulk:SetValue(segment.startValue)
+    self:ConfigureGainOverlay(segment)
     root.shine:SetHidden(false)
-    root.impactFlash:SetAlpha(0.82 * GetIntensity())
+    root.impactFlash:SetAlpha(0)
     root.levelBurst:SetHidden(true)
     root.levelBurst:SetAlpha(0)
 
@@ -1104,9 +1325,11 @@ end
 function ExperienceTracker:BeginLevelUpBurst(segment)
     local root = self:GetRoot()
     local intensity = GetIntensity() * GetLevelUpIntensity()
+    self:PrepareRankReveal(segment)
+    self:ConfigureGainOverlay(segment)
     root.bulk:SetHidden(false)
     if segment and segment.maxValue then
-        root.bulk:SetValue(segment.maxValue)
+        root.bulk:SetValue(math.max((segment.stopValue or segment.maxValue) - (segment.startValue or 0), 1))
         root.bar:SetValue(segment.maxValue)
         root.gloss:SetValue(segment.maxValue)
         root.progressLabel:SetText(FormatProgressText(segment.maxValue, segment.maxValue))
@@ -1119,7 +1342,7 @@ function ExperienceTracker:BeginLevelUpBurst(segment)
     root.barShockwave:SetHidden(false)
     root.impactFlash:SetAlpha(1 * intensity)
     root.barShockwave:SetAlpha(0.90 * intensity)
-    root.badgeGlow:SetAlpha(1)
+    root.badgeGlow:SetAlpha(intensity > 0 and 1 or 0.22)
     root.badge:SetScale(1)
     root.levelLabel:SetScale(1)
     self:TriggerLevelUpTicks()
@@ -1145,8 +1368,15 @@ function ExperienceTracker:SettleToCurrent()
     root.barShockwave:SetAlpha(0)
     root.barShockwave:SetScale(1)
     root.barShockwave:SetHidden(true)
+    root.badgeGlow:SetAlpha(0.22)
+    root.topRail:SetAlpha(0.72)
+    root.bottomRail:SetAlpha(0.60)
     root.badge:SetScale(1)
     root.levelLabel:SetScale(1)
+    root.levelLabel:SetAlpha(1)
+    root.nextLevelLabel:SetAlpha(0)
+    root.nextLevelLabel:SetScale(1)
+    root.nextLevelLabel:SetHidden(true)
     root.bulk:SetAlpha(0)
     root.bulk:SetHidden(true)
     root.shine:SetAlpha(0)
@@ -1159,9 +1389,8 @@ function ExperienceTracker:SettleToCurrent()
     root.badgeBurst:SetAlpha(0)
     root.badgeBurst:SetScale(1)
     root.badgeBurst:SetHidden(true)
-    root.gainLabel:SetAlpha(0)
-    root.gainLabel:SetScale(1)
-    root.gainLabel:SetHidden(true)
+    self:RestoreHeader()
+    self.rankReveal = nil
     self.animation = nil
     self:UpdateVisibility()
 end
@@ -1192,35 +1421,37 @@ function ExperienceTracker:OnUpdate()
         local chunkedProgress = zo_clamp((chunkIndex + easedLocal) / chunkCount, 0, 1)
         local eased = EaseOutQuart(chunkedProgress)
         local value = zo_lerp(segment.startValue, segment.stopValue, eased)
-        local pop = EaseOutBack(zo_clamp(progress / 0.24, 0, 1))
+        local pop = EaseOutCubic(zo_clamp(progress / 0.18, 0, 1))
         local chunkPulse = Pulse01(zo_clamp(chunkLocalProgress, 0, 1))
-        local glowAlpha = zo_clamp((0.24 + (1 - progress) * 0.48 + chunkPulse * 0.38) * GetIntensity(), 0, 1)
-        local bulkAlpha = zo_clamp((0.42 + chunkPulse * 0.38 - progress * 0.18) * GetIntensity(), 0, 0.92)
-        local impactAlpha = zo_clamp((1 - zo_clamp((nowMS - animation.startMS) / IMPACT_FLASH_MS, 0, 1)) * 0.74 * GetIntensity(), 0, 0.74)
-        local shineX = zo_lerp(0, root.track:GetWidth(), eased)
+        local glowAlpha = zo_clamp((0.045 + chunkPulse * 0.11) * GetIntensity(), 0, 0.20)
+        local bulkAlpha = zo_clamp((0.22 + chunkPulse * 0.16) * GetIntensity(), 0, 0.48)
+        local shineTravel = EaseOutCubic(zo_clamp(progress, 0, 1))
+        local shineX = zo_lerp(-root.shine:GetWidth(), root.track:GetWidth() + root.shine:GetWidth(), shineTravel)
+        local gainAlpha = ShouldShowGainText() and zo_clamp(pop, 0, 1) or 0
 
         if chunkIndex > (animation.lastChunkIndex or 0) and chunkIndex <= chunkCount then
             for index = (animation.lastChunkIndex or 0) + 1, chunkIndex do
                 self:TriggerChunkPulse(segment, index, chunkCount)
             end
             animation.lastChunkIndex = chunkIndex
-            root.impactFlash:SetAlpha(math.max(root.impactFlash:GetAlpha(), 0.42 * GetIntensity()))
+            root.impactFlash:SetAlpha(math.max(root.impactFlash:GetAlpha(), 0.12 * GetIntensity()))
         end
 
         root:SetAlpha(zo_min(alpha, progress < 0.16 and alpha * (progress / 0.16) or alpha))
         root.glow:SetAlpha(glowAlpha)
-        root.badgeGlow:SetAlpha(zo_clamp(0.78 + glowAlpha * 0.38 + chunkPulse * 0.18, 0, 1))
-        root.impactFlash:SetAlpha(math.max(root.impactFlash:GetAlpha() * 0.78, impactAlpha))
+        root.badgeGlow:SetAlpha(zo_clamp(0.22 + glowAlpha * 0.34 + chunkPulse * 0.07, 0.22, 0.42))
+        root.impactFlash:SetAlpha(root.impactFlash:GetAlpha() * 0.72)
         root.bulk:SetAlpha(bulkAlpha)
-        root.bulk:SetValue(value)
+        root.bulk:SetValue(math.max(value - segment.startValue, 0))
         root.bar:SetValue(value)
         root.gloss:SetValue(value)
         root.progressLabel:SetText(FormatProgressText(value, segment.maxValue))
-        root.gainLabel:SetAlpha(ShouldShowGainText() and zo_clamp(pop, 0, 1) or 0)
-        root.gainLabel:SetScale(zo_lerp(1.28, 1, zo_clamp(progress / 0.34, 0, 1)) + (chunkPulse * 0.06 * GetIntensity()))
+        root.typeLabel:SetAlpha(ShouldShowGainText() and (1 - gainAlpha) or 1)
+        root.gainLabel:SetAlpha(gainAlpha)
+        root.gainLabel:SetScale(1 + (1 - zo_clamp(pop, 0, 1)) * 0.04)
         root.shine:ClearAnchors()
-        root.shine:SetAnchor(LEFT, root.track, LEFT, shineX - (root.shine:GetWidth() * 0.5), 0)
-        root.shine:SetAlpha(zo_clamp((0.14 + chunkPulse * 0.42 + (1 - math.abs(progress - 0.52) / 0.36) * 0.36) * GetIntensity(), 0, 0.82))
+        root.shine:SetAnchor(LEFT, root.track, LEFT, shineX, 0)
+        root.shine:SetAlpha(zo_clamp(Pulse01(progress) * 0.36 * GetIntensity(), 0, 0.44))
 
         if progress >= 1 then
             if segment.wraps then
@@ -1243,19 +1474,43 @@ function ExperienceTracker:OnUpdate()
         local shineTravel = zo_clamp((progress - 0.08) / 0.62, 0, 1)
         local trackWidth = root.track:GetWidth()
         local rewardX = zo_lerp(-root.rewardShine:GetWidth(), trackWidth + root.rewardShine:GetWidth() * 0.35, EaseOutCubic(shineTravel))
+        local revealProgress = zo_clamp((progress - 0.12) / 0.30, 0, 1)
+        local revealEased = EaseOutCubic(revealProgress)
+
+        if self.rankReveal and not self.rankReveal.committed then
+            if intensity <= 0 then
+                if progress >= 0.12 then
+                    self:CommitRankReveal()
+                end
+            else
+                self:AnchorRankLabel(root.levelLabel, -math.floor(10 * revealEased + 0.5))
+                self:AnchorRankLabel(root.nextLevelLabel, math.floor(10 * (1 - revealEased) + 0.5))
+                root.levelLabel:SetAlpha(1 - revealEased)
+                root.nextLevelLabel:SetAlpha(revealEased)
+                root.nextLevelLabel:SetScale(1 + (1 - revealEased) * 0.04 * intensity)
+                if revealProgress >= 1 then
+                    self:CommitRankReveal()
+                end
+            end
+        end
 
         root:SetAlpha(alpha)
         root.glow:SetAlpha(zo_clamp((impact * 0.95 + sweep * 0.80 + afterglow * 0.35) * intensity, 0, 1))
-        root.badgeGlow:SetAlpha(zo_clamp((0.88 + impact * 0.30 + burst * 0.24) * intensity, 0, 1))
+        root.badgeGlow:SetAlpha(zo_clamp(0.22 + (0.64 + impact * 0.30 + burst * 0.20) * intensity, 0.22, 1))
+        root.topRail:SetAlpha(zo_clamp(0.72 + afterglow * 0.28 * intensity, 0.72, 1))
+        root.bottomRail:SetAlpha(zo_clamp(0.60 + afterglow * 0.34 * intensity, 0.60, 1))
         root.impactFlash:SetAlpha(zo_clamp(impact * 1.15 * intensity, 0, 1))
         root.barShockwave:SetHidden(false)
         root.barShockwave:SetAlpha(zo_clamp((impact * 0.86 + burst * 0.42) * intensity, 0, 0.92))
-        root.barShockwave:SetScale(1 + progress * 0.22)
+        root.barShockwave:SetScale(1 + progress * 0.18 * intensity)
         root.bulk:SetAlpha(zo_clamp((0.74 + sweep * 0.22) * afterglow * intensity, 0, 1))
-        root.gainLabel:SetAlpha(ShouldShowGainText() and zo_clamp((0.92 + impact * 0.30) * intensity, 0, 1) or 0)
-        root.gainLabel:SetScale(1 + (impact * 0.34 + burst * 0.18) * intensity)
-        root.badge:SetScale(1 + (impact * 0.18 + burst * 0.10) * intensity)
-        root.levelLabel:SetScale(1 + (impact * 0.14 + burst * 0.08) * intensity)
+        root.typeLabel:SetAlpha(ShouldShowGainText() and 0 or 1)
+        root.gainLabel:SetAlpha(ShouldShowGainText() and 1 or 0)
+        root.gainLabel:SetScale(1 + impact * 0.08 * intensity)
+        root.badge:SetScale(1 + (impact * 0.10 + burst * 0.05) * intensity)
+        if not self.rankReveal or self.rankReveal.committed then
+            root.levelLabel:SetScale(1 + (impact * 0.07 + burst * 0.04) * intensity)
+        end
         root.levelBurst:SetHidden(false)
         root.levelBurst:SetAlpha(zo_clamp((burst * 0.92 + impact * 0.18) * intensity, 0, 0.92))
         root.levelBurst:SetScale(1 + progress * 0.42)
@@ -1268,6 +1523,7 @@ function ExperienceTracker:OnUpdate()
         root.rewardShine:SetAnchor(LEFT, root.track, LEFT, rewardX, 0)
         root.rewardShine:SetAlpha(zo_clamp((sweep * 0.95 + impact * 0.20) * intensity, 0, 1))
         if progress >= 1 then
+            self:CommitRankReveal()
             root.barShockwave:SetAlpha(0)
             root.barShockwave:SetScale(1)
             root.barShockwave:SetHidden(true)
@@ -1278,19 +1534,28 @@ function ExperienceTracker:OnUpdate()
             root.badgeBurst:SetHidden(true)
             root.rewardShine:SetAlpha(0)
             root.rewardShine:SetHidden(true)
+            root.badgeGlow:SetAlpha(0.22)
+            root.topRail:SetAlpha(0.72)
+            root.bottomRail:SetAlpha(0.60)
             root.badge:SetScale(1)
             root.levelLabel:SetScale(1)
+            root.levelLabel:SetAlpha(1)
+            root.nextLevelLabel:SetAlpha(0)
+            root.nextLevelLabel:SetHidden(true)
             self:StartNextSegment()
         end
     elseif animation.type == "hold" then
+        local restoreProgress = zo_clamp(progress / 0.28, 0, 1)
         root:SetAlpha(alpha)
-        root.glow:SetAlpha(zo_clamp((1 - progress) * 0.28 * GetIntensity(), 0, 0.28))
-        root.badgeGlow:SetAlpha(1)
+        root.glow:SetAlpha(zo_clamp((1 - progress) * 0.08 * GetIntensity(), 0, 0.10))
+        root.badgeGlow:SetAlpha(zo_clamp(0.22 + (1 - progress) * 0.08 * GetIntensity(), 0.22, 0.34))
         root.impactFlash:SetAlpha(0)
         root.bulk:SetAlpha(0)
         root.shine:SetAlpha(0)
-        root.gainLabel:SetAlpha(ShouldShowGainText() and zo_clamp(1 - progress * 1.35, 0, 1) or 0)
+        root.typeLabel:SetAlpha(ShouldShowGainText() and restoreProgress or 1)
+        root.gainLabel:SetAlpha(ShouldShowGainText() and (1 - restoreProgress) or 0)
         if progress >= 1 then
+            self:RestoreHeader()
             if IsAlwaysVisible() then
                 self:SettleToCurrent()
             else
@@ -1305,6 +1570,7 @@ function ExperienceTracker:OnUpdate()
         root:SetAlpha(alpha * (1 - progress))
         root.glow:SetAlpha(0)
         root.gainLabel:SetAlpha(0)
+        root.typeLabel:SetAlpha(1)
         if progress >= 1 then
             self:HideRoot()
             self:UpdateVisibility()
@@ -1376,14 +1642,25 @@ end
 
 function ExperienceTracker:PreviewCPFlash(level, pointDelta)
     local root = self:GetRoot()
+    local endingLevel = tonumber(level) or GetPlayerChampionPointsEarned()
+    local delta = math.max(tonumber(pointDelta) or 1, 1)
+    local startingLevel = math.max(endingLevel - delta, 0)
+    local gainText = delta == 1
+        and "+1 Champion Point"
+        or string.format("+%s Champion Points", FormatNumber(delta))
+
     self:ShowRoot()
-    self:SetVisualMode("cp", level or GetPlayerChampionPointsEarned())
+    self:SetVisualMode("cp", startingLevel)
     self:SetBarValue(1, 1)
-    root.gainLabel:SetText(string.format("+%s Champion Point", FormatNumber(pointDelta or 1)))
-    root.gainLabel:SetHidden(not ShouldShowGainText())
-    root.gainLabel:SetAlpha(1)
+    self:SetGainHeader(gainText)
+    root.gainLabel:SetAlpha(ShouldShowGainText() and 1 or 0)
+    root.typeLabel:SetAlpha(ShouldShowGainText() and 0 or 1)
     if not ShouldPlayLevelUpAnimation() then
         PlayLevelUpSound()
+        self:SetVisualMode("cp", endingLevel)
+        self:SetGainHeader(gainText)
+        root.gainLabel:SetAlpha(ShouldShowGainText() and 1 or 0)
+        root.typeLabel:SetAlpha(ShouldShowGainText() and 0 or 1)
         self.animation =
         {
             type = "hold",
@@ -1398,7 +1675,9 @@ function ExperienceTracker:PreviewCPFlash(level, pointDelta)
 
     self:BeginLevelUpBurst({
         mode = "cp",
-        level = level or GetPlayerChampionPointsEarned(),
+        level = startingLevel,
+        oldLevel = startingLevel,
+        newLevel = endingLevel,
         startValue = 0,
         stopValue = 1,
         maxValue = 1,

@@ -13,23 +13,12 @@ end
 
 function History.PruneExpiredMessages()
     if not AetherChat.savedVars or not AetherChat.savedVars.history then return end
-    local rawRetention = AetherChat.savedVars.historyRetention
-    local retentionSeconds = tonumber(rawRetention) or 604800
-
-    -- Repair legacy string retention values if present in saved vars
-    if type(rawRetention) == 'string' then
-        if rawRetention:find('1 jour') or rawRetention:find('1 day') then
-            retentionSeconds = 86400
-        elseif rawRetention:find('3 jour') or rawRetention:find('3 day') then
-            retentionSeconds = 259200
-        elseif rawRetention:find('1 semaine') or rawRetention:find('1 week') then
-            retentionSeconds = 604800
-        elseif rawRetention:find('1 mois') or rawRetention:find('1 month') then
-            retentionSeconds = 2592000
-        elseif rawRetention:find('Illim') or rawRetention:find('Unlimit') then
-            retentionSeconds = 0
-        end
-        AetherChat.savedVars.historyRetention = retentionSeconds
+    
+    local retentionSeconds = 604800 -- 1 week default
+    if AetherChat.Settings and AetherChat.Settings.Get then
+        retentionSeconds = tonumber(AetherChat.Settings.Get('historyRetention', 604800)) or 604800
+    elseif AetherChat.savedVars.historyRetention then
+        retentionSeconds = tonumber(AetherChat.savedVars.historyRetention) or 604800
     end
 
     -- Clean any malformed loot lines that lost their item link in past sessions
@@ -37,22 +26,24 @@ function History.PruneExpiredMessages()
         if type(list) == 'table' and tostring(chKey):find('loot') then
             for i = #list, 1, -1 do
                 local msg = list[i]
-                if msg.text and msg.text:find("%d+:%d+:%d+:%d+:%d+:%d+") and not msg.text:find("|H") then
+                if msg and msg.text and msg.text:find("%d+:%d+:%d+:%d+:%d+:%d+") and not msg.text:find("|H") then
                     table.remove(list, i)
                 end
             end
         end
     end
 
-    if retentionSeconds <= 0 then return end -- 0 = Unlimited
+    if retentionSeconds <= 0 then return end -- 0 = Unlimited retention
 
     local now = GetTimeStamp()
     for chKey, list in pairs(AetherChat.savedVars.history) do
         if type(list) == 'table' then
             for i = #list, 1, -1 do
                 local msg = list[i]
-                if msg.timestamp and tonumber(msg.timestamp) and (now - msg.timestamp > retentionSeconds) then
-                    table.remove(list, i)
+                if msg and msg.timestamp and tonumber(msg.timestamp) then
+                    if (now - tonumber(msg.timestamp)) > retentionSeconds then
+                        table.remove(list, i)
+                    end
                 end
             end
         end
@@ -68,8 +59,12 @@ function History.CleanDuplicates(channelKey)
     while i < #list do
         local current = list[i]
         local nextMsg = list[i + 1]
-        if nextMsg and current.text == nextMsg.text and (not current.timestamp or not nextMsg.timestamp or math.abs(current.timestamp - nextMsg.timestamp) < 10) then
-            table.remove(list, i + 1)
+        if current and nextMsg and current.text == nextMsg.text then
+            if not current.timestamp or not nextMsg.timestamp or math.abs(current.timestamp - nextMsg.timestamp) < 5 then
+                table.remove(list, i + 1)
+            else
+                i = i + 1
+            end
         else
             i = i + 1
         end
@@ -84,14 +79,21 @@ function History.CleanAllDuplicates()
 end
 
 function History.AddMessage(channelKey, author, messageText, timestamp, role, isSelf, isWhisper, zoneLang)
-    if not AetherChat.savedVars or not AetherChat.savedVars.persistHistory then return end
-    
-    local historyStore = AetherChat.savedVars.history
-    if not historyStore then
+    -- Check if history persistence is explicitly disabled (defaults to true if nil)
+    local shouldPersist = true
+    if AetherChat.Settings and AetherChat.Settings.Get then
+        shouldPersist = AetherChat.Settings.Get('persistHistory', true)
+    elseif AetherChat.savedVars and AetherChat.savedVars.persistHistory ~= nil then
+        shouldPersist = AetherChat.savedVars.persistHistory
+    end
+    if shouldPersist == false then return end
+
+    if not AetherChat.savedVars then return end
+    if not AetherChat.savedVars.history then
         AetherChat.savedVars.history = {}
-        historyStore = AetherChat.savedVars.history
     end
     
+    local historyStore = AetherChat.savedVars.history
     if not historyStore[channelKey] then
         historyStore[channelKey] = {}
     end
@@ -101,13 +103,13 @@ function History.AddMessage(channelKey, author, messageText, timestamp, role, is
     local nowStamp = GetTimeStamp()
     local text = messageText or ''
 
-    -- Strict Deduplication check on recent messages in this channel
+    -- Deduplication check on recent messages in this channel
     if #list > 0 then
         for idx = #list, math.max(1, #list - 5), -1 do
             local prev = list[idx]
             if prev and prev.text == text then
-                if not prev.timestamp or math.abs(nowStamp - prev.timestamp) < 5 then
-                    return -- Exact duplicate within 5s, reject
+                if prev.timestamp and math.abs(nowStamp - prev.timestamp) < 3 then
+                    return -- Duplicate received within 3 seconds, reject
                 end
             end
         end

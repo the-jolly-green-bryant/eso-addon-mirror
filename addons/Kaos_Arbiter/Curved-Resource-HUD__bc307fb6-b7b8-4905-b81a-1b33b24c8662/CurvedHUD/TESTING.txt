@@ -1,4 +1,4 @@
-CURVED RESOURCE HUD 0.9.17 RELEASE CHECKLIST
+CURVED RESOURCE HUD 0.9.19 RELEASE CHECKLIST
 
 1. In Bethesda.net, set required dependencies to:
    - LibAddonMenu-2.0
@@ -8,7 +8,29 @@ CURVED RESOURCE HUD 0.9.17 RELEASE CHECKLIST
 2. Install/update, enable CurvedHUD, then reload the UI or relog.
 
 3. Confirm chat prints:
-   [CurvedHUD] Loaded 0.9.17; HUD, shield, and trackers created
+   [CurvedHUD] Loaded 0.9.19; HUD, shield, and trackers created
+
+0.9.19 Turning Tide and icon-row checklist:
+- Equip at least three Turning Tide pieces and confirm the tracker remains
+  visible in WAIT before Flowing Water is available.
+- Block to gain Flowing Water and confirm the tracker changes to green READY.
+- Bash while READY and confirm a 15-second cooldown immediately counts down;
+  it must not jump directly back to WAIT or READY.
+- Let Flowing Water expire without Bashing and confirm it returns to WAIT
+  without manufacturing a cooldown.
+- Populate all eight tracker positions in Preview mode. Confirm all four upper
+  icons/timer labels share one Y position and all four lower icons/timer labels
+  share another. Their existing horizontal positions must remain unchanged.
+
+0.9.18 deferred-settings checklist:
+- Log through at least 8-10 crafting characters at the same pace that previously
+  produced the 1000 ms CPU-budget error.
+- Confirm the HUD appears immediately after login and remains functional.
+- Wait at least 12 seconds, then open Add-ons settings and confirm CurvedHUD's
+  complete menu and submenus are present and functional.
+- Confirm no CPU-budget traceback appears in Fancy Action Bar+, LibAddonMenu,
+  LibVotans, Artaeum Group Tool, or another add-on during the login sequence.
+- Run /curvedhud report and confirm the guarded error count remains 0.
 
 0.9.17 rapid-character-swap checklist:
 - Log through at least 8-10 characters at normal crafting-writ speed and confirm

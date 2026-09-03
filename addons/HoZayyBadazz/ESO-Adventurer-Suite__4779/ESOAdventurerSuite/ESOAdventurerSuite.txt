@@ -1,11 +1,12 @@
 ## Title: |cB8860BESO |cFFD700Adventurer Suite|r
 ## Description: |cFFD700Modern adventure dashboard, HUD, minimap, quests, finders, combat, travel, gear, and build tools.|r
 ## Author: |c00FFFFHoZayyBadazz|r
-## Version: 0.29.143
-## AddOnVersion: 3043
+## Version: 0.29.160
+## AddOnVersion: 3060
 ## APIVersion: 101050 101051
 ## SavedVariables: ESOProgressionCoachSavedVars EASLoreLibrarySavedVariables
 ## DependsOn: LibAddonMenu-2.0>=43 LibMapData>=101 LibGPS>=73 LibMapPins-1.0>=47
+## OptionalDependsOn: LibTreasure>=24 CustomCompassPins>=138
 
 Core.lua
 Compatibility.lua
@@ -49,6 +50,9 @@ GearOptimizer.lua
 CompanionOptimizer.lua
 GearLoadoutOverlay.lua
 LoadoutManager.lua
+RecipeStyleLearner.lua
+AlchemyPotionMaker.lua
+WayshrineAutoMessage.lua
 Advisor.lua
 CombatPresentation.lua
 Combat.lua
@@ -65,6 +69,7 @@ CommunityData/SuiteCommunityEP.lua
 CommunityData/SuiteCommunityNF.lua
 ResourcePinsWorld.xml
 ResourcePins.lua
+TreasureLocator.lua
 AntiquityKnownDigSpawns.lua
 AntiquityLeadData.lua
 AntiquityAssistant.lua

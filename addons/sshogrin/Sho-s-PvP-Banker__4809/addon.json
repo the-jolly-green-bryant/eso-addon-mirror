@@ -1,0 +1,43 @@
+{
+  "archive_error": "ESOUI returned an empty response",
+  "archive_path": "addons/sshogrin/Sho-s-PvP-Banker__4809",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archive_status": "unavailable",
+  "archived": false,
+  "author": "sshogrin",
+  "canonical_id": "esoui:4809",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    }
+  ],
+  "content_id": "esoui:4809",
+  "deleted": false,
+  "directories": [
+    "ShosPvPBanker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4809/",
+  "fingerprint": "79382d01aa68fab33480f9d99bafdf51a99037ef823cee883a0e267494af0d8e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17251.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17252.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17253.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17254.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17255.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4809",
+  "source_url": "https://www.esoui.com/downloads/info4809-ShosPvPBanker.html",
+  "stats": {
+    "downloads": 0,
+    "favorites": 1,
+    "monthly_downloads": 0
+  },
+  "title": "Sho's PvP Banker",
+  "updated_at": 1788408895000,
+  "version": "1.0.0"
+}

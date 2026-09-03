@@ -1,0 +1,19 @@
+## Title: Housing Vote
+## Author: yodased-mods
+## Version: 0.5.2
+## AddOnVersion: 19
+## APIVersion: 101050 101051
+## SavedVariables: HousingVote_SavedVariables
+## ConsoleDependsOn: LibConsoleMenu
+
+Core/Constants.lua
+Core/SavedVariables.lua
+Core/Housing.lua
+Core/Mail.lua
+Core/GuildMotD.lua
+Core/Contest.lua
+UI/GamepadWindow.lua
+UI/ConsoleMenu.lua
+Core/Commands.lua
+Bootstrap.lua
+bindings.xml

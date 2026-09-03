@@ -16,7 +16,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Navigator - Fast Travel & Search](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SirNightstorm/Navigator---Fast-Travel-Search__4026) | SirNightstorm | PC / Mac | 1.3.0 |
 | [Near's Script Tooltips](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/notnear/Near-s-Script-Tooltips__3895) | notnear | PC / Mac | 1.0.1 |
 | [Neat Experience Info](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/qhil/Neat-Experience-Info__1581) | qhil | PC / Mac | 1.15.1 |
-| [NecroCat](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Soul_Hagans/NecroCat__4174) | Soul_Hagans | PC / Mac | 1.9.7 |
+| [NecroCat](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Soul_Hagans/NecroCat__4174) | Soul_Hagans | PC / Mac | 1.9.8 |
 | [NecromancerTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PersistentMemory/NecromancerTracker__2795) | PersistentMemory | PC / Mac | 1.3.3.1 |
 | [Ned's Group Manager](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ned919x/Ned-s-Group-Manager__4f86b7c8-8fb6-432c-a1b9-2004263244ab) | Ned919x | Console | — |
 | [Neli's Misfits Guild Hub](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kylecwhite1/Neli-s-Misfits-Guild-Hub__3215) | kylecwhite1 | PC / Mac | 9.0 |
@@ -46,7 +46,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Nirn Icons](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/KingBloodWings/Nirn-Icons__3621) | KingBloodWings | PC / Mac | 1.0.5 |
 | [Nirn Traveler Guild Hall](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Armodeniz/Nirn-Traveler-Guild-Hall__3019) | Armodeniz | PC / Mac | 0.4 |
 | [Nirncrux Miner](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/Nirncrux-Miner__4764) | atharti | PC / Mac | 1.2 |
-| [NirnSteelUI · Better UI Feedback](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wrynch/NirnSteelUI-Better-UI-Feedback__4574) | Wrynch | PC / Mac | 2.0.0 |
+| [NirnSteelUI · Better UI Feedback](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wrynch/NirnSteelUI-Better-UI-Feedback__4574) | Wrynch | PC / Mac | 2.0.2 |
 | [No Accidental Learning](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kawamonkey/No-Accidental-Learning__4017) | kawamonkey | PC / Mac | 1.0 |
 | [No Auto Pinned Golden Pursuits](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kawamonkey/No-Auto-Pinned-Golden-Pursuits__4033) | kawamonkey | PC / Mac | 1.0 |
 | [No compass](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/hatsune681/No-compass__1187) | hatsune681 | PC / Mac | 11.101034 |

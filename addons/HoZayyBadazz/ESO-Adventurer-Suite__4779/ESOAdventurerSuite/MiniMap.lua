@@ -997,6 +997,8 @@ end
 
 function M:CaptureNativeTownPin(pinType, pinTag, x, y, textureOverride, sizeOverride)
     if not EPC.saved then return end
+    if EPC.TreasureLocator and type(EPC.TreasureLocator.IsTreasurePinTag) == "function"
+        and EPC.TreasureLocator:IsTreasurePinTag(pinTag) then return end
     -- Normally capture pins while ESO's World Map is visible. 0.29.33 also
     -- allows a tightly-scoped gameplay capture immediately after the player's
     -- current map/sub-map changes. The scoped flag is set only by
@@ -1655,6 +1657,39 @@ function M:RenderAntiquityPins()
             pin:SetColor(1.00, 0.78, 0.24, 1.00)
             if type(pin.SetScale) == "function" then pin:SetScale(pulse) end
             self:PlacePin(pin, site.x, site.y, 30, true)
+        else
+            pin:SetHidden(true)
+        end
+    end
+end
+
+function M:EnsureTreasureLocatorPins(count)
+    self.treasureLocatorPins = self.treasureLocatorPins or {}
+    for i = #self.treasureLocatorPins + 1, count do
+        local pin = self:CreatePin("EPC_MiniMap_TreasureLocator_" .. tostring(i), 28, POI_FALLBACK_TEXTURE, COLORS.gold)
+        pin:SetDrawLevel(92)
+        self.treasureLocatorPins[i] = pin
+    end
+end
+
+function M:RenderTreasureLocatorPins()
+    local locator = EPC.TreasureLocator
+    local enabled = EPC.saved and EPC.saved.treasureLocatorEnabled ~= false and EPC.saved.treasureLocatorShowMap ~= false
+    if not enabled or not locator or type(locator.GetMiniMapPins) ~= "function" then
+        for _, pin in ipairs(self.treasureLocatorPins or {}) do pin:SetHidden(true) end
+        return
+    end
+    local entries = locator:GetMiniMapPins(self.mapId) or {}
+    self:EnsureTreasureLocatorPins(#entries)
+    local size = math.max(18, math.min(40, tonumber(EPC.saved.treasureLocatorPinSize) or 32))
+    for index, pin in ipairs(self.treasureLocatorPins or {}) do
+        local entry = entries[index]
+        if entry then
+            pin:SetTexture(entry.texture or POI_FALLBACK_TEXTURE)
+            pin:SetDimensions(size, size)
+            pin:SetColor(1, 1, 1, 1)
+            local edgeGuide = locator.GetScope and locator:GetScope() ~= "ALL"
+            self:PlacePin(pin, entry.x, entry.y, size, edgeGuide)
         else
             pin:SetHidden(true)
         end
@@ -3103,6 +3138,7 @@ function M:UpdatePanAndPins(forceStatic)
     end
 
     self:RenderNativeMirrorPins()
+    self:RenderTreasureLocatorPins()
     self:RenderMerchantPins()
     self:RenderServicePins()
     self:RenderPOIPins()

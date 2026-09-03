@@ -55,36 +55,76 @@ local function CleanName(rawName)
 end
 
 function AetherChat.UpdateGroupPlayerMap()
+    -- 1. Scan group by index and direct group tags 1..24
     local groupSize = GetGroupSize() or 0
-    if groupSize > 0 then
-        for i = 1, groupSize do
-            local unitTag = GetGroupUnitTagByIndex(i)
-            if unitTag and DoesUnitExist(unitTag) then
-                local charName = CleanName(GetUnitName(unitTag))
-                local dispName = GetUnitDisplayName(unitTag)
-                if charName and charName ~= "" and dispName and dispName ~= "" then
-                    if dispName:sub(1, 1) ~= '@' then dispName = '@' .. dispName end
+    local maxCheck = math.max(groupSize, 24)
+    for i = 1, maxCheck do
+        local unitTag = GetGroupUnitTagByIndex and GetGroupUnitTagByIndex(i) or ('group' .. i)
+        if not unitTag or not DoesUnitExist(unitTag) then
+            unitTag = 'group' .. i
+        end
+        if unitTag and DoesUnitExist(unitTag) then
+            local charName = CleanName(GetUnitName(unitTag))
+            local rawCharName = GetRawUnitName(unitTag)
+            local dispName = GetUnitDisplayName(unitTag)
+            if dispName and dispName ~= "" then
+                if dispName:sub(1, 1) ~= '@' then dispName = '@' .. dispName end
+                if charName and charName ~= "" then
                     AetherChat.PlayerAccountMap[charName:lower()] = dispName
-                    AetherChat.PlayerAccountMap[dispName:lower()] = dispName
+                    AetherChat.PlayerAccountMap[charName:gsub("%^%a+", ""):lower()] = dispName
                 end
+                if rawCharName and rawCharName ~= "" then
+                    local cleanRaw = CleanName(rawCharName)
+                    AetherChat.PlayerAccountMap[rawCharName:lower()] = dispName
+                    AetherChat.PlayerAccountMap[cleanRaw:lower()] = dispName
+                    AetherChat.PlayerAccountMap[cleanRaw:gsub("%^%a+", ""):lower()] = dispName
+                end
+                AetherChat.PlayerAccountMap[dispName:lower()] = dispName
+                AetherChat.PlayerAccountMap[dispName:gsub("^@", ""):lower()] = dispName
             end
         end
     end
 
-    -- Add local player
+    -- 2. Add local player
     local myChar = CleanName(GetRawUnitName('player'))
     local myDisp = GetDisplayName()
-    if myChar and myDisp then
+    if myDisp and myDisp ~= "" then
         if myDisp:sub(1, 1) ~= '@' then myDisp = '@' .. myDisp end
-        AetherChat.PlayerAccountMap[myChar:lower()] = myDisp
+        if myChar and myChar ~= "" then
+            AetherChat.PlayerAccountMap[myChar:lower()] = myDisp
+            AetherChat.PlayerAccountMap[myChar:gsub("%^%a+", ""):lower()] = myDisp
+        end
         AetherChat.PlayerAccountMap[myDisp:lower()] = myDisp
+        AetherChat.PlayerAccountMap[myDisp:gsub("^@", ""):lower()] = myDisp
+    end
+
+    -- 3. Scan LootLog history table if available to populate account mappings
+    if LootLog and LootLog.history then
+        for _, group in pairs(LootLog.history) do
+            if type(group) == 'table' then
+                for idx = 1, #group do
+                    local entry = LootLog.Unpack and LootLog.Unpack(group[idx])
+                    if entry then
+                        local userId = entry[4]
+                        local charName = entry[5]
+                        if userId and userId ~= "" and charName and charName ~= "" then
+                            local uDisp = (userId:sub(1, 1) == '@') and userId or ('@' .. userId)
+                            local cName = CleanName(charName)
+                            AetherChat.PlayerAccountMap[cName:lower()] = uDisp
+                            AetherChat.PlayerAccountMap[charName:lower()] = uDisp
+                            AetherChat.PlayerAccountMap[cName:gsub("%^%a+", ""):lower()] = uDisp
+                        end
+                    end
+                end
+            end
+        end
     end
 end
 
 function AetherChat.SanitizeTarget(rawTarget)
     if not rawTarget or rawTarget == '' then return nil end
     local clean = tostring(rawTarget):gsub("|c%x%x%x%x%x%x", ""):gsub("|r", ""):gsub("|H[^|]+|h", ""):gsub("|h", ""):gsub("%^%a+", ""):gsub("%s+", "")
-    if clean == "" or clean == "You" or clean == "@Moi" or clean == "Moi" then
+    if clean == "" or clean == "You" or clean == "@Moi" or clean == "Moi" or clean == "Vous" then
         return nil
     end
     return clean
@@ -101,21 +141,40 @@ function AetherChat.ResolveAccountName(rawName)
     end
 
     local cleanLower = clean:lower()
+    local cleanNoGender = clean:gsub("%^%a+", ""):lower()
 
     -- 2. Lookup in dynamic character -> @account mapping
     AetherChat.UpdateGroupPlayerMap()
-    local mapped = AetherChat.PlayerAccountMap[cleanLower]
+    local mapped = AetherChat.PlayerAccountMap[cleanLower] or AetherChat.PlayerAccountMap[cleanNoGender]
     if mapped and mapped ~= "" then
         return mapped
     end
 
-    -- 3. Lookup in Friends list
+    -- 3. Lookup across active Group unit tags
+    for i = 1, 24 do
+        local uTag = 'group' .. i
+        if DoesUnitExist(uTag) then
+            local uChar = CleanName(GetUnitName(uTag)):lower()
+            local uRaw = CleanName(GetRawUnitName(uTag)):lower()
+            local uDisp = GetUnitDisplayName(uTag)
+            if uDisp and uDisp ~= "" then
+                if uDisp:sub(1, 1) ~= '@' then uDisp = '@' .. uDisp end
+                if uChar == cleanLower or uChar == cleanNoGender or uRaw == cleanLower or uRaw == cleanNoGender then
+                    AetherChat.PlayerAccountMap[cleanLower] = uDisp
+                    AetherChat.PlayerAccountMap[cleanNoGender] = uDisp
+                    return uDisp
+                end
+            end
+        end
+    end
+
+    -- 4. Lookup in Friends list
     local numFriends = GetNumFriends and GetNumFriends() or 0
     for i = 1, numFriends do
         local displayName, _, _, _, _, _, _, _, _, hasCharacter, characterName = GetFriendInfo(i)
         if hasCharacter and characterName and characterName ~= "" then
             local cName = CleanName(characterName):lower()
-            if cName == cleanLower then
+            if cName == cleanLower or cName == cleanNoGender then
                 if displayName:sub(1, 1) ~= '@' then displayName = '@' .. displayName end
                 AetherChat.PlayerAccountMap[cleanLower] = displayName
                 return displayName
@@ -123,7 +182,7 @@ function AetherChat.ResolveAccountName(rawName)
         end
     end
 
-    -- 4. Lookup across Player's Guilds
+    -- 5. Lookup across Player's Guilds
     local numGuilds = GetNumGuilds and GetNumGuilds() or 0
     for g = 1, numGuilds do
         local guildId = GetGuildId(g)
@@ -133,7 +192,7 @@ function AetherChat.ResolveAccountName(rawName)
                 local name, _, _, _, _, _, _, _, hasCharacter, characterName = GetGuildMemberInfo(guildId, m)
                 if hasCharacter and characterName and characterName ~= "" then
                     local cName = CleanName(characterName):lower()
-                    if cName == cleanLower then
+                    if cName == cleanLower or cName == cleanNoGender then
                         if name:sub(1, 1) ~= '@' then name = '@' .. name end
                         AetherChat.PlayerAccountMap[cleanLower] = name
                         return name
@@ -143,7 +202,11 @@ function AetherChat.ResolveAccountName(rawName)
         end
     end
 
-    -- 5. Return clean character name if no @AccountName is resolvable
+    -- 6. Fallback: strictly enforce @DisplayName format for all player targets
+    if clean ~= "Groupe" and clean ~= "Vous" then
+        return '@' .. clean:gsub("^@", "")
+    end
+
     return clean
 end
 
@@ -154,14 +217,16 @@ function AetherChat.GetLooterForItem(itemLink)
     -- 1. Direct table lookup
     if AetherChat.ItemLooters[strLink] then
         local target = AetherChat.ResolveAccountName(AetherChat.ItemLooters[strLink])
-        if target then return target end
+        if target and target:sub(1, 1) == '@' then return target end
+        if target and target ~= "Groupe" and target ~= "Vous" then return '@' .. target:gsub("^@", "") end
     end
 
     -- 2. Lookup by item ID
     local itemId = strLink:match("item:(%d+)") or strLink:match("^(%d+)$")
     if itemId and AetherChat.ItemLooters[itemId] then
         local target = AetherChat.ResolveAccountName(AetherChat.ItemLooters[itemId])
-        if target then return target end
+        if target and target:sub(1, 1) == '@' then return target end
+        if target and target ~= "Groupe" and target ~= "Vous" then return '@' .. target:gsub("^@", "") end
     end
 
     -- 3. Search recent messages in Loot history
@@ -171,10 +236,15 @@ function AetherChat.GetLooterForItem(itemLink)
             local msg = messages[i]
             local text = msg.text or ''
             if (itemId and text:find("item:" .. itemId)) or (text:find(strLink, 1, true)) then
-                local rawLooter = text:match("%->|r%s+(.+)$") or text:match("%->%s+(.+)$")
+                local rawLooter = text:match("%->|r%s+(.+)$") or text:match("%->%s+(.+)$") or text:match("→%s+(.+)$")
                 if rawLooter then
                     local target = AetherChat.ResolveAccountName(rawLooter)
-                    if target then return target end
+                    if target then
+                        if target:sub(1, 1) ~= '@' and target ~= "Groupe" and target ~= "Vous" then
+                            target = '@' .. target:gsub("^@", "")
+                        end
+                        return target
+                    end
                 end
             end
         end
@@ -264,25 +334,30 @@ function AetherChat.FormatLootLogLine(itemLink, quantity, looterName, isSelf)
     end
     local formattedTrait = (traitName ~= "") and string.format(" |cC5C29E(%s)|r", traitName) or ""
 
-    -- 6. Recipient (LootLog exact method)
+    -- 6. Recipient (Strictly @DisplayName for 100% reliable 1-click Need and whispers)
     local recipient = ""
     if isPersonal then
         recipient = (LootLog and LootLog.self and LootLog.self.you) or "|c57F287Vous|r"
     else
-        local resolvedAccount = AetherChat.ResolveAccountName(looterName) or (looterName or "Groupe")
+        local resolvedAccount = AetherChat.ResolveAccountName(looterName) or looterName or "Groupe"
+        if resolvedAccount ~= "Groupe" and resolvedAccount:sub(1, 1) ~= '@' then
+            resolvedAccount = '@' .. resolvedAccount:gsub("^@", "")
+        end
+
         local cleanName = resolvedAccount
-        if cleanName:sub(1, 1) == '@' then
-            cleanName = ZO_LinkHandler_CreateDisplayNameLink(cleanName)
-        else
-            cleanName = ZO_LinkHandler_CreateCharacterLink(cleanName)
+        if resolvedAccount ~= "Groupe" then
+            cleanName = ZO_LinkHandler_CreateDisplayNameLink(resolvedAccount)
         end
         recipient = string.format("|c38BDF8%s|r", cleanName)
     end
     local formattedRecipient = string.format(" → %s", recipient)
 
-    -- Remember looter for 1-click Need
+    -- Remember looter for 1-click Need (guaranteed @DisplayName)
     if looterName then
         local resolved = AetherChat.ResolveAccountName(looterName) or looterName
+        if resolved and resolved ~= "Groupe" and resolved ~= "Vous" and resolved:sub(1, 1) ~= '@' then
+            resolved = '@' .. resolved:gsub("^@", "")
+        end
         AetherChat.ItemLooters[strLink] = resolved
         local itemId = strLink:match("item:(%d+)") or strLink:match("^(%d+)$")
         if itemId then AetherChat.ItemLooters[itemId] = resolved end
@@ -326,6 +401,9 @@ function AetherChat.SyncFromLootLog()
         return
     end
 
+    -- Populate PlayerAccountMap from group and LootLog
+    AetherChat.UpdateGroupPlayerMap()
+
     local sortedKeys = {}
     for k in pairs(LootLog.history) do
         table.insert(sortedKeys, k)
@@ -336,7 +414,7 @@ function AetherChat.SyncFromLootLog()
         local group = LootLog.history[key]
         if type(group) == 'table' then
             for i = 1, #group do
-                local entry = LootLog.Unpack(group[i])
+                local entry = LootLog.Unpack and LootLog.Unpack(group[i])
                 if entry and entry[2] then
                     local timestamp = entry[1]
                     local itemLink = entry[2]
@@ -344,6 +422,16 @@ function AetherChat.SyncFromLootLog()
                     local userId = entry[4]
                     local charName = entry[5]
                     local looter = (userId and userId ~= "") and userId or charName
+
+                    if looter and looter ~= "" then
+                        local resolved = AetherChat.ResolveAccountName(looter)
+                        if resolved then
+                            looter = resolved
+                        elseif looter:sub(1, 1) ~= '@' then
+                            looter = '@' .. looter
+                        end
+                    end
+
                     local isSelf = (LootLog.self and userId == LootLog.self.userId) or (LootLog.self and charName == LootLog.self.name)
 
                     if not AetherChat.IsLootDuplicate(itemLink, count, looter) then
@@ -378,18 +466,19 @@ end
 local pendingSalesMails = {}
 
 local function ExtractSoldItemFromMail(body, subject)
+    -- 1. Try from Mail Body if available
     if body and body ~= "" then
-        -- 1. Direct ItemLink (|H0:item:...|h[Nom]|h or |H1:item:...)
+        -- Direct ItemLink (|H0:item:...|h[Nom]|h or |H1:item:...)
         local link = body:match("(|H%d+:item:[^|]+|h[^|]*|h)")
         if link then return link end
 
-        -- 2. Quotes [Nom] or « Nom » or "Nom"
-        local quoted = body:match("«%s*([^»]+)%s*»") or body:match('"([^"]+)"') or body:match("“([^”]+)”")
+        -- Quotes [Nom] or « Nom » or "Nom"
+        local quoted = body:match("«%s*([^»]+)%s*»") or body:match("%[([^%]]+)%]") or body:match('"([^"]+)"') or body:match("“([^”]+)”")
         if quoted and quoted ~= "" and not quoted:find("^%d+$") then
             return quoted
         end
 
-        -- 3. Regex Patterns FR / EN / DE / ES
+        -- Regex Patterns FR / EN / DE / ES
         local name = body:match("vente%s+de%s+l'objet%s+([^\n\r,]+)")
                   or body:match("objet%s+([^\n\r,]+)%s+a%s+été%s+vendu")
                   or body:match("vendu%s+([^\n\r,]+)%s+pour")
@@ -403,12 +492,24 @@ local function ExtractSoldItemFromMail(body, subject)
         end
     end
 
+    -- 2. Extract from Mail Subject Header (Instantly available anywhere in Tamriel without opening mail!)
     if subject and subject ~= "" then
         local link = subject:match("(|H%d+:item:[^|]+|h[^|]*|h)")
         if link then return link end
-        local quoted = subject:match("«%s*([^»]+)%s*»") or subject:match("%[([^%]]+)%]") or subject:match('"([^"]+)"')
+
+        local quoted = subject:match("%[([^%]]+)%]") or subject:match("«%s*([^»]+)%s*»") or subject:match('"([^"]+)"')
         if quoted and quoted ~= "" and not quoted:find("^%d+$") then
             return quoted
+        end
+
+        local afterColon = subject:match(":%s*(.+)$")
+        if afterColon and afterColon ~= "" then
+            return afterColon:match("^%s*(.-)%s*$")
+        end
+
+        local afterDash = subject:match("%-%s*(.+)$")
+        if afterDash and afterDash ~= "" then
+            return afterDash:match("^%s*(.-)%s*$")
         end
     end
 
@@ -479,7 +580,7 @@ function ChatEngine.CheckGuildStoreSales()
     local mailId = GetNextMailId()
     while mailId do
         local mailIdStr = Id64ToString(mailId)
-        if not processedSalesMails[mailIdStr] and not pendingSalesMails[mailIdStr] then
+        if not processedSalesMails[mailIdStr] then
             local senderDisplayName, senderCharacterName, subject, icon, unread,
                   fromSystem, fromCS, returned, numAttachments, attachedMoney,
                   codAmount, numBodyCharacters, timeUntilExpiration, isInvoice = GetMailItemInfo(mailId)
@@ -489,29 +590,12 @@ function ChatEngine.CheckGuildStoreSales()
                                and attachedMoney and attachedMoney > 0
 
             if isSaleMail then
-                local isReady = (not IsReadMailInfoReady) or IsReadMailInfoReady(mailId)
-                if isReady and ReadMail then
-                    local body = ReadMail(mailId)
-                    local soldItem = ExtractSoldItemFromMail(body, subject)
-                    FireGuildStoreSaleAlert(mailIdStr, attachedMoney, soldItem)
-                else
-                    pendingSalesMails[mailIdStr] = {
-                        mailId = mailId,
-                        attachedMoney = attachedMoney,
-                        subject = subject,
-                    }
-                    if RequestReadMail then
-                        RequestReadMail(mailId)
-                    end
-                    -- Fallback timer in case EVENT_MAIL_READABLE doesn't fire
-                    zo_callLater(function()
-                        if pendingSalesMails[mailIdStr] and not processedSalesMails[mailIdStr] then
-                            local b = ReadMail and ReadMail(mailId)
-                            local it = ExtractSoldItemFromMail(b, subject)
-                            FireGuildStoreSaleAlert(mailIdStr, attachedMoney, it)
-                        end
-                    end, 2000)
+                local body = nil
+                if IsReadMailInfoReady and IsReadMailInfoReady(mailId) and ReadMail then
+                    body = ReadMail(mailId)
                 end
+                local soldItem = ExtractSoldItemFromMail(body, subject)
+                FireGuildStoreSaleAlert(mailIdStr, attachedMoney, soldItem)
             end
         end
         mailId = GetNextMailId(mailId)
@@ -743,7 +827,16 @@ function ChatEngine.Initialize()
             local isSelf = not receivedBy
             local looter = receivedBy
             if isSelf and LootLog.self then
-                looter = LootLog.self.name or GetDisplayName()
+                looter = LootLog.self.userId or LootLog.self.name or GetDisplayName()
+            end
+
+            if looter and looter ~= "" then
+                local resolved = AetherChat.ResolveAccountName(looter)
+                if resolved then
+                    looter = resolved
+                elseif looter:sub(1, 1) ~= '@' and not isSelf then
+                    looter = '@' .. looter
+                end
             end
 
             if not AetherChat.IsLootDuplicate(itemLink, quantity or 1, looter) then
@@ -768,16 +861,20 @@ function ChatEngine.Initialize()
     if CHAT_SYSTEM and CHAT_SYSTEM.AddMessage then
         ZO_PreHook(CHAT_SYSTEM, "AddMessage", function(self, messageText)
             if not messageText or messageText == "" then return end
-            -- Avoid capturing our own injected messages or duplicate lines
-            if messageText:find("AetherChat") and messageText:find("actif") then return end
+            -- Avoid capturing internal AetherChat messages or noisy library debug logs
+            if messageText:find("AetherChat") then return end
+            if messageText:find("^%[LibDebugLogger%]") or messageText:find("^%[DEBUG%]") then return end
+
+            local cleanMsg = messageText:gsub("[\r\n]+", " "):gsub("^%s+", ""):gsub("%s+$", "")
+            if cleanMsg == "" then return end
 
             local timeStr = GetTimeString():sub(1, 5)
-            local author = "|cE5B558" .. AetherChat.L('CH_SYSTEM') .. "|r"
+            local author = AetherChat.L('CH_SYSTEM') or "Système"
 
-            History.AddMessage('system', author, messageText, timeStr, 0, false, false, nil)
+            History.AddMessage('system', author, cleanMsg, timeStr, 0, false, false, nil)
 
             if AetherChat.Messenger and AetherChat.Messenger.OnMessageReceived then
-                AetherChat.Messenger.OnMessageReceived('system', author, messageText, false, false, nil)
+                AetherChat.Messenger.OnMessageReceived('system', author, cleanMsg, false, false, nil)
             end
         end)
     end
@@ -786,13 +883,16 @@ function ChatEngine.Initialize()
     if EVENT_BROADCAST then
         EVENT_MANAGER:RegisterForEvent('AetherChat_Broadcast', EVENT_BROADCAST, function(_, messageText)
             if not messageText or messageText == "" then return end
-            local timeStr = GetTimeString():sub(1, 5)
-            local author = "|cFF5555[Annonce Serveur]|r"
+            local cleanMsg = messageText:gsub("[\r\n]+", " "):gsub("^%s+", ""):gsub("%s+$", "")
+            if cleanMsg == "" then return end
 
-            History.AddMessage('system', author, messageText, timeStr, 0, false, false, nil)
+            local timeStr = GetTimeString():sub(1, 5)
+            local author = "Annonce"
+
+            History.AddMessage('system', author, cleanMsg, timeStr, 0, false, false, nil)
 
             if AetherChat.Messenger and AetherChat.Messenger.OnMessageReceived then
-                AetherChat.Messenger.OnMessageReceived('system', author, messageText, false, false, nil)
+                AetherChat.Messenger.OnMessageReceived('system', author, cleanMsg, false, false, nil)
             end
         end)
     end

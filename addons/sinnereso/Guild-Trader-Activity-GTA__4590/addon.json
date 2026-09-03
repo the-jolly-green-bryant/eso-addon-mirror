@@ -8,8 +8,8 @@
   "category_id": "94",
   "compatibility": [
     {
-      "name": "Season Zero Pt.2",
-      "version": "12.0.0"
+      "name": "Season One",
+      "version": "12.1.0"
     }
   ],
   "content_id": "esoui:4590",
@@ -18,7 +18,7 @@
     "GTA"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4590/",
-  "fingerprint": "54d11978beabf27473283c3380b0f0b4b0453f3ff30a8f3980ac52256acbfd1b",
+  "fingerprint": "8168be107e8c96f75962d34e632573c94b979e4d4077c0ebfb55e7b3ede393ea",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16309.jpg",
     "https://cdn-eso.mmoui.com/preview/pvw16319.jpg",
@@ -30,11 +30,11 @@
   "source_id": "4590",
   "source_url": "https://www.esoui.com/downloads/info4590-GuildTraderActivityGTA.html",
   "stats": {
-    "downloads": 848,
+    "downloads": 932,
     "favorites": 1,
-    "monthly_downloads": 277
+    "monthly_downloads": 155
   },
   "title": "Guild Trader Activity (GTA)",
-  "updated_at": 1787001292000,
-  "version": "2026.08.17"
+  "updated_at": 1788352935000,
+  "version": "2026.09.02"
 }

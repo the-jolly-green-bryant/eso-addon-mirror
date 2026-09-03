@@ -125,6 +125,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [HouseTravel](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ShadowMau/HouseTravel__2960) | ShadowMau | PC / Mac | 1.0.1 |
 | [HouseValue](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DeDumChee/HouseValue__3162) | DeDumChee | PC / Mac | 1.0.1 |
 | [Housing Hub](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Architectura/Housing-Hub__2923) | Architectura | PC / Mac | 1776 |
+| [HousingVote](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/yodased-mods/HousingVote__f78047ed-9eb4-471b-953c-3fdab2282231) | yodased-mods | Console | — |
 | [HoustonSkillPath](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/xhoustonx/HoustonSkillPath__4051) | xhoustonx | PC / Mac | 1.7 |
 | [How Many](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/flipswitchingmonkey/How-Many__2280) | flipswitchingmonkey | PC / Mac | 1.0.9 |
 | [How Many Fish](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/VisioTempus/How-Many-Fish__3861) | VisioTempus | PC / Mac | 1.4.2 |

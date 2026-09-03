@@ -3,27 +3,37 @@ ESO Adventurer Suite uses AI-assisted code generation and review. ESO Adventurer
 
 [B]ESO ADVENTURER SUITE[/B]
 Author: HoZayyBadazz
-Version: 0.29.143
+Version: 0.29.160
 Status: Public Beta
 
 ESO Adventurer Suite is an all-in-one Elder Scrolls Online dashboard and utility addon built around the Tamriel Codex. It includes quest and travel tools, Suite-native finders, combat statistics, HUD tools, minimap features, gear/build tools, companion tools, notes, checkpoints, Golden Pursuits integration, and configurable utility overlays.
 
-[B]REQUIRED LIBRARIES[/B]
+[B]FULL FUNCTIONALITY LIBRARY SET[/B]
+For full ESO Adventurer Suite functionality, install and enable all of the following libraries through Minion/ESOUI:
+
 * LibAddonMenu-2.0 >= 43
 * LibMapData >= 101
 * LibGPS >= 73
 * LibMapPins-1.0 >= 47
-
-Install required libraries separately through Minion/ESOUI.
+* LibMapPing - support dependency used by LibGPS
+* LibDebugLogger - support dependency used by LibGPS
+* LibChatMessage - support dependency used by LibGPS
+* LibTreasure >= 24 - Treasure Map, Crafting Survey, and Tales of Tribute clue location database
+* CustomCompassPins >= 138 - Treasure, Survey, and Clue compass markers
 
 [B]MAIN FEATURES[/B]
+* Floating Recipe & Style Learner
+* Floating Alchemy Potion & Poison Maker with CAN MAKE NOW, exact-effect planning, missing-material guidance, native ingredient auto-slotting, and optional Auto Craft (1 / X / Maximum)
+* Saved Builds workspace for gear, skill bars/allocation profile, Champion profile/slots, and attribute profile
 * Tamriel Codex interface
 * Quest Finder and active quest tracking
 * Suite-native Group Finder, Zone Guide, Dungeon Finder, Battlegrounds, Tales of Tribute, and Home Tours
 * Dynamic quest and wayshrine routing
+* Optional customizable Wayshrine Auto Message with clickable guild-recruitment link placeholder
 * Merchant, Guild Store, Stablemaster, Pledge Master, and guild-leader-home travel tools
 * Multiple saved notes and checkpoints
 * Mini Map and native ESO map integration
+* Treasure Map, Crafting Survey, and Tales of Tribute clue locator using optional LibTreasure data
 * Companion, group, raid, combat, ability, XP, Champion Point, and utility HUD tools
 * Live Combat Stats (PEN / PWR / SR / PR / CC / CD) linked to the shared fight recorder
 * Game Combat detailed fight reports with DPS/HPS, abilities, resources, effect uptime, incoming damage sources, and history

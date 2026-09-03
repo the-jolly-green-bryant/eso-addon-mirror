@@ -8,7 +8,7 @@ SmartLooter = {
 		CURT_WRIT_VOUCHERS,
 		CURT_UNDAUNTED_KEYS,
 		CURT_STYLE_STONES,
-		CURT_SEALS or CURT_ENDEAVOR_SEALS,
+		CURT_SEALS,
 		CURT_ARCHIVAL_FORTUNES,
 		CURT_IMPERIAL_FRAGMENTS,
 		CURT_TRADE_BARS,
@@ -31,11 +31,6 @@ SmartLooter = {
 		[STEALTH_STATE_STEALTH_ALMOST_DETECTED] = true,
 	},
 
-	unsafeTelvarZoneIds = {
-		[584] = true, -- Imperial City
-		[643] = true, -- Imperial Sewers
-	},
-
 	settingWarning = {
 		default = "|cFF9900Warning:|r The base game Auto Loot feature is enabled, which overrides Smart Looter.",
 	},
@@ -47,16 +42,12 @@ local function OnAddOnLoaded( eventCode, addonName )
 
 	EVENT_MANAGER:UnregisterForEvent(SmartLooter.name, EVENT_ADD_ON_LOADED)
 
-	EVENT_MANAGER:RegisterForEvent(SmartLooter.name, EVENT_PLAYER_ACTIVATED, SmartLooter.OnPlayerActivated)
 	EVENT_MANAGER:RegisterForEvent(SmartLooter.name, EVENT_LOOT_UPDATED, SmartLooter.OnLootUpdated)
-end
-
-function SmartLooter.OnPlayerActivated( eventCode, initial )
-	EVENT_MANAGER:UnregisterForEvent(SmartLooter.name, EVENT_PLAYER_ACTIVATED)
-
-	if (GetSetting(SETTING_TYPE_LOOT, LOOT_SETTING_AUTO_LOOT) == "1") then
-		CHAT_ROUTER:AddSystemMessage(SmartLooter.settingWarning[GetCVar("Language.2")] or SmartLooter.settingWarning.default)
-	end
+	EVENT_MANAGER:RegisterForEvent(SmartLooter.name, EVENT_PLAYER_ACTIVATED, function( )
+		if (GetSetting(SETTING_TYPE_LOOT, LOOT_SETTING_AUTO_LOOT) == "1") then
+			CHAT_ROUTER:AddSystemMessage(SmartLooter.settingWarning[GetCVar("Language.2")] or SmartLooter.settingWarning.default)
+		end
+	end, true)
 end
 
 function SmartLooter.OnLootUpdated( eventCode )
@@ -73,7 +64,7 @@ function SmartLooter.OnLootUpdated( eventCode )
 				local unownedCurrency, ownedCurrency = GetLootCurrency(currencyType)
 
 				if (unownedCurrency > 0) then
-					if (targetType == INTERACT_TARGET_TYPE_ITEM and currencyType == CURT_TELVAR_STONES and SmartLooter.unsafeTelvarZoneIds[GetZoneId(GetUnitZoneIndex("player"))]) then
+					if (targetType == INTERACT_TARGET_TYPE_ITEM and currencyType == CURT_TELVAR_STONES and DoesCurrentZoneHaveTelvarStoneBehavior()) then
 						-- Keep Tel Var safe inside coffers if the player is in IC
 						hasSkipped = true
 					else

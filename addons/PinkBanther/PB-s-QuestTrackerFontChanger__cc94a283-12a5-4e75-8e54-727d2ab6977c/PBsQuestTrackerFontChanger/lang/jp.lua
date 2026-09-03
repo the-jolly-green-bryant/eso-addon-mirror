@@ -1,0 +1,68 @@
+local strings = {
+	SI_PBSQTFC_EXPLANATION = "HUD右上の2つのトラッカーは通常のUIラベルで作られているため、フォントを直接変更できます（UIの再読み込みは発生せず、設定がセッションを越えて残ることもありません）。以下、それぞれ別々に設定します。",
+
+	-- ---- クエストトラッカー ------------------------------------------------------------
+	SI_PBSQTFC_SECTION_QUEST = "クエストトラッカー",
+	SI_PBSQTFC_SECTION_QUEST_NOTE = "画面右上に出る追跡中のクエスト（クエスト名・ステップ説明・目標行）です。ゲーム側でこの3つには別々のサイズが割り当てられているため、スライダーも分けてあります。",
+
+	SI_PBSQTFC_QUEST_ENABLED = "クエストトラッカーのフォントを変更",
+	SI_PBSQTFC_QUEST_ENABLED_TOOLTIP = "以下の設定をクエストトラッカーに適用します。オフにするとゲーム本来のフォントに戻ります。この欄の設定がすべてゲーム標準と同じ間は、そもそも何も書き込みません。",
+
+	SI_PBSQTFC_SIZE_QUEST_NAME = "クエスト名の大きさ",
+	SI_PBSQTFC_SIZE_QUEST_NAME_TOOLTIP = "トラッカー最上段のクエスト名の文字サイズです。初期値はゲームが実際に描画しているサイズを実測した値です。",
+	SI_PBSQTFC_SIZE_QUEST_STEP = "ステップ説明の大きさ",
+	SI_PBSQTFC_SIZE_QUEST_STEP_TOOLTIP = "クエスト名の下に出る、その段階の説明文の文字サイズです。すべてのクエストで表示されるわけではありません。",
+	SI_PBSQTFC_SIZE_QUEST_GOAL = "目標行の大きさ",
+	SI_PBSQTFC_SIZE_QUEST_GOAL_TOOLTIP = "実際にやるべきこと（および達成数）を示す行の文字サイズです。コンソール表示ではゲーム側がクエスト名より大きく描画しています。それがゲーム本来の設計で、変えたい場合はこのスライダーで調整します。",
+
+	SI_PBSQTFC_QUEST_FACE = "クエストトラッカーの書体",
+	SI_PBSQTFC_QUEST_STYLE = "クエストトラッカーの縁取り",
+
+	-- ---- ハウストラッカー --------------------------------------------------------------
+	SI_PBSQTFC_SECTION_HOUSE = "ハウス情報（ホームツアー）",
+	SI_PBSQTFC_SECTION_HOUSE_NOTE = "家の中にいる間、クエストトラッカーの下に出るパネルです（自分の家でも、ホームツアーで訪れた他人の家でも表示されます）。家の名前、愛称と所有者、中にいる人数、ホームツアーのタグが並びます。",
+
+	SI_PBSQTFC_HOUSE_ENABLED = "ハウス情報のフォントを変更",
+	SI_PBSQTFC_HOUSE_ENABLED_TOOLTIP = "以下の設定をハウス情報パネルに適用します。オフにするとゲーム本来のフォントに戻ります。この欄の設定がすべてゲーム標準と同じ間は、そもそも何も書き込みません。",
+
+	SI_PBSQTFC_SIZE_HOUSE_NAME = "家の名前の大きさ",
+	SI_PBSQTFC_SIZE_HOUSE_NAME_TOOLTIP = "パネル最上段の家の名前の文字サイズです。",
+	SI_PBSQTFC_SIZE_HOUSE_DETAIL = "詳細行の大きさ",
+	SI_PBSQTFC_SIZE_HOUSE_DETAIL_TOOLTIP = "家の名前の下に並ぶすべて（愛称と所有者・人数・ホームツアーのタグ）の文字サイズです。ゲーム側がこの3つを同じフォントで描画しているため、スライダーも1本にまとめてあります。",
+
+	SI_PBSQTFC_HOUSE_FACE = "ハウス情報の書体",
+	SI_PBSQTFC_HOUSE_STYLE = "ハウス情報の縁取り",
+
+	-- ---- 共通 --------------------------------------------------------------------------
+	SI_PBSQTFC_FACE_TOOLTIP_COMMON = "ゲームが持っている書体から選び、このトラッカーの全部分に適用します。「デフォルト」はゲームが各部分に割り当てた書体のまま（コンソール表示では最上段の名前は太字、その下は標準）で、どの言語でも一番安全です。選択肢はUIが既に読み込んでいる書体のみです。それ以外は設定時にクライアントが構築する必要があり、コンソールではアドオン共有メモリに計上されて落ちるため、石版・手書き・アンティーク・チャットは選択肢から外してあります。日本語版では一部が同じフォントに解決されます（UI標準／UI太字／コンソール細字＝同じゴシック）。コンソール標準・太字は英数字だけが専用書体になり、日本語部分はゴシックになります。",
+	SI_PBSQTFC_FACE_DEFAULT = "デフォルト",
+	SI_PBSQTFC_FACE_GAMEPAD_MEDIUM = "コンソール（標準）",
+	SI_PBSQTFC_FACE_GAMEPAD_BOLD = "コンソール（太字）",
+	SI_PBSQTFC_FACE_GAMEPAD_LIGHT = "コンソール（細字）",
+	SI_PBSQTFC_FACE_MEDIUM = "UI（標準）",
+	SI_PBSQTFC_FACE_BOLD = "UI（太字）",
+
+	SI_PBSQTFC_STYLE_TOOLTIP_COMMON = "背景から文字を浮き立たせる方法で、このトラッカーの全部分に適用します。明るい場所では縁を太くすると読みやすくなります。【注意】縁取り系を選ぶとクライアントが縁取り用の字形を生成します。ゲーム本体のソースによると日本語フォントではこれに約100MBかかり、コンソールのアドオン共有メモリ（100MB）と同規模です。動作が不安定になる場合は「デフォルト」のままにしてください。",
+	SI_PBSQTFC_STYLE_DEFAULT = "デフォルト",
+	SI_PBSQTFC_STYLE_NORMAL = "なし",
+	SI_PBSQTFC_STYLE_SHADOW = "影",
+	SI_PBSQTFC_STYLE_SOFT_SHADOW_THIN = "やわらかい影（細）",
+	SI_PBSQTFC_STYLE_SOFT_SHADOW_THICK = "やわらかい影（太）",
+	SI_PBSQTFC_STYLE_OUTLINE_THICK = "縁取り（太）",
+
+	SI_PBSQTFC_SECTION_GENERAL = "両方に共通",
+	SI_PBSQTFC_RESET = "初期設定に戻す",
+	SI_PBSQTFC_RESET_TOOLTIP = "上の2つの欄すべてを、ゲーム本来のフォントに戻します。",
+	SI_PBSQTFC_RESET_BUTTON = "戻す",
+
+	SI_PBSQTFC_GAME_SETTINGS_HINT = "各トラッカーを表示するかどうかはゲーム本体の設定です（設定 > インターフェース の「クエストトラッカーを表示」「ハウストラッカーを表示」）。アドオンからは変更できないため、そちらで設定してください。",
+}
+
+strings.SI_PBSQTFC_QUEST_FACE_TOOLTIP = strings.SI_PBSQTFC_FACE_TOOLTIP_COMMON
+strings.SI_PBSQTFC_HOUSE_FACE_TOOLTIP = strings.SI_PBSQTFC_FACE_TOOLTIP_COMMON
+strings.SI_PBSQTFC_QUEST_STYLE_TOOLTIP = strings.SI_PBSQTFC_STYLE_TOOLTIP_COMMON
+strings.SI_PBSQTFC_HOUSE_STYLE_TOOLTIP = strings.SI_PBSQTFC_STYLE_TOOLTIP_COMMON
+
+for stringId, stringValue in pairs(strings) do
+	SafeAddString(_G[stringId], stringValue, 2)
+end

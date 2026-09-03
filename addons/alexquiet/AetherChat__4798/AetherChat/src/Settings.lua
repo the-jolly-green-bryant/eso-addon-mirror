@@ -43,7 +43,7 @@ local DEFAULTS = {
     keywordList = '',
     keywordSound = 'champion',
     keywordColor = 'FFD700',
-    floatingIconPos = { x = 60, y = 60 },
+    floatingIconPos = nil,
     windowPos = nil,
     windowDimensions = { width = 940, height = 520 },
     history = {},
@@ -76,6 +76,17 @@ function Settings.Initialize()
     AetherChat.savedVars = ZO_SavedVars:NewAccountWide('AetherChat_SavedVariables', 2, nil, DEFAULTS, worldName)
     Settings.data = AetherChat.savedVars
 
+    -- Guarantee all missing keys from DEFAULTS are migrated into existing savedVars profile
+    for k, v in pairs(DEFAULTS) do
+        if Settings.data[k] == nil and v ~= nil then
+            if type(v) == "table" then
+                Settings.data[k] = ZO_DeepTableCopy(v)
+            else
+                Settings.data[k] = v
+            end
+        end
+    end
+
     if not Settings.data.history then
         Settings.data.history = {}
     end
@@ -107,6 +118,9 @@ function Settings.Set(key, value)
     if Settings.data then
         Settings.data[key] = value
     end
+    if AetherChat.savedVars then
+        AetherChat.savedVars[key] = value
+    end
 end
 
 function Settings.GetChannelOrder()
@@ -136,7 +150,7 @@ function Settings.RegisterLAM()
         name = "AetherChat",
         displayName = "|cE5B558AETHER|r|cFFFFFFCHAT|r",
         author = "|cE5B558@AlexQuiet|r",
-        version = "1.2.3",
+        version = "1.2.4",
         registerForRefresh = true,
         registerForDefaults = true,
     }

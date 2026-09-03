@@ -2117,7 +2117,7 @@ end
 function J:Toggle()
     if not self.window then return end
 
-    -- If the detached Saved Loadouts workspace is open, the suite key should
+    -- If the detached Saved Builds workspace is open, the suite key should
     -- switch back to the Tamriel Codex instead of leaving both workspaces open.
     local loadouts = EPC and EPC.LoadoutManager
     if loadouts and loadouts.window and not loadouts.window:IsHidden() then
@@ -3052,7 +3052,7 @@ function J:CreateInteractiveSuiteSpread(name)
                 end
             end)
         end
-        -- v0.27.10: Saved Loadouts must be directly discoverable from the
+        -- v0.27.10: Saved Builds must be directly discoverable from the
         -- Gear & Sets chapter. Do not depend on the optional Live Equipment
         -- floating panel to expose the Dressing-Room-style manager.
         spread.companionAbilitiesButton = makeButton("EAS_CodexBestCompanionAbilities", spread.right, "BEST COMPANION ABILITIES + ULT", 10, self.pageH-396, self.pageW-20, 28, function()
@@ -3062,7 +3062,7 @@ function J:CreateInteractiveSuiteSpread(name)
             self:RefreshSuitePage("GEAR")
         end)
 
-        spread.savedLoadoutsButton = makeButton("EAS_CodexSavedLoadouts", spread.right, "OPEN LOADOUTS", 10, self.pageH-362, self.pageW-20, 28, function()
+        spread.savedLoadoutsButton = makeButton("EAS_CodexSavedLoadouts", spread.right, "OPEN BUILDS", 10, self.pageH-362, self.pageW-20, 28, function()
             if EPC.LoadoutManager and type(EPC.LoadoutManager.Show) == "function" then
                 EPC.LoadoutManager:Show()
             end
@@ -4941,7 +4941,7 @@ function J:EnhanceGlassPremiumVisuals()
     footer:SetDimensions(932, 20)
     footer:SetEdgeTexture(nil, 1, 1, 1)
     self.glassFooterRail = footer
-    local footerText = makeLabel("EAS_GlassFooterText", self.glassCanvas, "MOVE  /  RESIZE  /  REVIEW BUILDS  /  EQUIP LOADOUTS  /  ROUTE CONTENT", 248, 739, 700, 14, "ZoFontGameSmall")
+    local footerText = makeLabel("EAS_GlassFooterText", self.glassCanvas, "MOVE  /  RESIZE  /  REVIEW BUILDS  /  APPLY BUILDS  /  ROUTE CONTENT", 248, 739, 700, 14, "ZoFontGameSmall")
     table.insert(self.themeLabels, footerText)
 
     self:ApplyTheme()
@@ -7335,8 +7335,8 @@ function J:ShowGuildLeaderHomeDropdown(page)
 end
 
 
--- v0.27.14 - Saved Loadouts / Tamriel Codex workspace exclusivity
--- Opening the Codex closes the detached Saved Loadouts workspace first.
+-- v0.27.14 - Saved Builds / Tamriel Codex workspace exclusivity
+-- Opening the Codex closes the detached Saved Builds workspace first.
 -- Hide it without dropping UI mode so the Codex can immediately take over.
 local easLoadoutWorkspaceShow02714 = J.Show
 function J:Show()
@@ -7353,7 +7353,7 @@ function J:Show()
     end
 
     local result = easLoadoutWorkspaceShow02714(self)
-    -- If Saved Loadouts owned the cursor because it came from normal gameplay,
+    -- If Saved Builds owned the cursor because it came from normal gameplay,
     -- the Codex now becomes responsible for releasing it when the Codex closes.
     if transferredUIMode then self.ownsUIMode = true end
     return result
@@ -7399,7 +7399,7 @@ function J:OrganizeDensePages02716()
         gear.detailBody:SetDimensions(self.pageW - 36, 108)
         gear.detailBody:SetFont("ZoFontGameSmall")
 
-        gear.sectionLoadouts02716 = easSectionLabel02716("EAS_GearSectionLoadouts02716", gear.right, "LOADOUTS", 207, self.pageW-36)
+        gear.sectionLoadouts02716 = easSectionLabel02716("EAS_GearSectionLoadouts02716", gear.right, "BUILDS", 207, self.pageW-36)
         gear.sectionBuild02716 = easSectionLabel02716("EAS_GearSectionBuild02716", gear.right, "BUILD TOOLS", 253, self.pageW-36)
         gear.sectionPreset02716 = easSectionLabel02716("EAS_GearSectionPreset02716", gear.right, "COMBAT PRESET", 362, self.pageW-36)
         gear.sectionArmor02716 = easSectionLabel02716("EAS_GearSectionArmor02716", gear.right, "ARMOR WEIGHT", 408, self.pageW-36)

@@ -18,6 +18,7 @@ local MIN_FEEDBACK_DELTA_RATIO = 0.015
 local MIN_FEEDBACK_INTERVAL_MS = 140
 local LOW_HEALTH_RATIO = 0.35
 local EXECUTE_ICON_SIZE = 18
+local EXECUTE_PULSE_DURATION_MS = 900
 local IDENTITY_ROW_MIN_HEIGHT = 24
 local IDENTITY_ICON_SIZE = 18
 local CLASS_ICON_SIZE = 18
@@ -29,7 +30,7 @@ local IDENTITY_ICON_VERTICAL_OFFSET = -2
 local LEVEL_BADGE_VERTICAL_OFFSET = -1
 local HEADER_BAR_GAP = 4
 local MARKER_BAR_GAP = 2
-local DEFAULT_EXECUTE_ICON_KEY = "crossedWeapons"
+local DEFAULT_EXECUTE_ICON_KEY = "deathDown"
 local TARGET_REFRESH_DELAYS_MS = { 40, 120, 250, 500 }
 local TARGET_RECONCILE_INTERVAL_MS = 100
 local TARGET_MISSING_GRACE_MS = 150
@@ -68,14 +69,15 @@ end
 
 local EXECUTE_ICON_TEXTURES =
 {
-    crossedWeapons = "EsoUI/Art/LFG/LFG_roleIcon_dps.dds",
-    battlefield = "EsoUI/Art/Icons/poi/poi_battlefield_incomplete.dds",
-    groupBoss = "EsoUI/Art/Icons/poi/poi_groupboss_incomplete.dds",
-    nightblade = function() return GetClassTexture(3) end,
-    dragonknight = function() return GetClassTexture(1) end,
-    targetMarker = function()
-        return ZO_GetPlatformTargetMarkerIcon and ZO_GetPlatformTargetMarkerIcon(1) or nil
-    end,
+    whiteSkull = "/esoui/art/compass/target_white_skull.dds",
+    champion = "/esoui/art/tutorial/gamepad/achievement_categoryicon_champion.dds",
+    darkAnchors = "/esoui/art/tutorial/gamepad/achievement_categoryicon_darkanchors.dds",
+    avaGeneral = "/esoui/art/ava/ava_rankicon64_general.dds",
+    avaLegate = "/esoui/art/ava/ava_rankicon64_legate.dds",
+    retrait = "/esoui/art/tutorial/gamepad/gp_inventory_trait_retrait_icon.dds",
+    scoring = "/esoui/art/tutorial/gamepad/gp_overview_menuicon_scoring.dds",
+    deathDown = "/esoui/art/tutorial/tutorial_idexicon_death_down.dds",
+    deathOver = "/esoui/art/tutorial/tutorial_idexicon_death_over.dds",
 }
 
 local DEFAULT_SETTINGS =
@@ -131,6 +133,8 @@ local DEFAULT_SETTINGS =
     showVeterancyIcon = false,
     showExecuteIcon = true,
     executeIconStyle = DEFAULT_EXECUTE_ICON_KEY,
+    executeIconScale = 100,
+    executeBlinkEnabled = false,
     executeThreshold = 18,
     executePosition = "center",
     classColors =
@@ -272,11 +276,20 @@ local function EstimateNameWidth(text)
 end
 
 local function GetIntrinsicNameWidth(label, text)
-    local width = label.GetStringWidth and tonumber(label:GetStringWidth(text or "")) or 0
+    -- ESO can keep the previous target's constrained/ellipsized label width when
+    -- measuring a newly assigned name. Remove that layout constraint first and
+    -- measure the text that is currently applied to the label.
+    if label.SetWrapMode then
+        label:SetWrapMode(TEXT_WRAP_MODE_NONE)
+    end
+    if label.SetWidth then
+        label:SetWidth(0)
+    end
+    local width = label.GetTextWidth and tonumber(label:GetTextWidth()) or 0
     if width <= 0 then
         width = EstimateNameWidth(text)
     end
-    return math.max(math.ceil(width) + 4, 40)
+    return math.max(math.ceil(width) + 12, 40)
 end
 
 local function FormatNumber(value)
@@ -609,12 +622,12 @@ local function GetAllianceIcon(data)
     return nil, nil
 end
 
-local function CreateCenteredLabel(parent)
+local function CreateCenteredLabel(parent, wrapMode)
     local label = WINDOW_MANAGER:CreateControl(nil, parent, CT_LABEL)
     label:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     label:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     label:SetModifyTextType(MODIFY_TEXT_TYPE_NONE)
-    label:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
+    label:SetWrapMode(wrapMode or TEXT_WRAP_MODE_ELLIPSIS)
     label:SetMaxLineCount(1)
     return label
 end
@@ -633,7 +646,7 @@ function TargetFrame:GetRoot()
 
     self.identity = self.identity or WINDOW_MANAGER:CreateControl(nil, root, CT_CONTROL)
     self.identityContent = self.identityContent or WINDOW_MANAGER:CreateControl(nil, self.identity, CT_CONTROL)
-    self.nameLabel = self.nameLabel or CreateCenteredLabel(self.identityContent)
+    self.nameLabel = self.nameLabel or CreateCenteredLabel(self.identityContent, TEXT_WRAP_MODE_NONE)
     if not self.levelBadge then
         self.levelBadge = LevelVisuals:Create(self.identityContent,
         {
@@ -850,7 +863,6 @@ function TargetFrame:UpdateIdentity(data)
         self.rankIcon:SetColor(iconColor.r, iconColor.g, iconColor.b, 1)
     end
 
-    local frameWidth = Clamp(GetSetting("width"), 180, 700)
     local levelVisible = levelWidth > 0
     local fixedWidth = (classVisible and CLASS_ICON_SIZE or 0)
         + (levelWidth > 0 and levelWidth or 0)
@@ -858,8 +870,7 @@ function TargetFrame:UpdateIdentity(data)
     local gapWidth = (classVisible and CLASS_NAME_GAP or 0)
         + (levelVisible and NAME_LEVEL_GAP or 0)
         + (icon and (levelVisible and LEVEL_RANK_GAP or NAME_LEVEL_GAP) or 0)
-    local availableNameWidth = math.max(frameWidth - fixedWidth - gapWidth, 1)
-    local nameWidth = math.min(GetIntrinsicNameWidth(self.nameLabel, data.name), availableNameWidth)
+    local nameWidth = GetIntrinsicNameWidth(self.nameLabel, data.name)
     local totalWidth = fixedWidth + nameWidth + gapWidth
     self.identityContent:ClearAnchors()
     self.identityContent:SetAnchor(CENTER, self.identity, CENTER, 0, 0)
@@ -941,14 +952,40 @@ function TargetFrame:UpdateText(data)
     label:SetHidden(text == "")
 end
 
+function TargetFrame:ResetExecuteIconPulse()
+    self.executePulseStartMS = nil
+    if self.executeIcon then
+        self.executeIcon:SetAlpha(1)
+        self.executeIcon:SetScale(1)
+    end
+end
+
+function TargetFrame:UpdateExecuteIconPulse(nowMS)
+    if not self.executeIcon then
+        return
+    end
+
+    self.executePulseStartMS = self.executePulseStartMS or nowMS
+    local progress = ((nowMS - self.executePulseStartMS) % EXECUTE_PULSE_DURATION_MS) / EXECUTE_PULSE_DURATION_MS
+    local pulse = 0.5 + (0.5 * math.cos(progress * math.pi * 2))
+    self.executeIcon:SetAlpha(0.35 + (pulse * 0.65))
+    self.executeIcon:SetScale(0.92 + (pulse * 0.16))
+end
+
 function TargetFrame:UpdateExecute(data)
     local ratio = data.maximum > 0 and data.current / data.maximum or 1
     local show = GetSetting("showExecuteIcon") ~= false and not data.dead and data.current > 0
         and data.attackable and ratio <= (Clamp(GetSetting("executeThreshold"), 18, 33) / 100)
+    local executeIconSize = EXECUTE_ICON_SIZE * (Clamp(GetSetting("executeIconScale"), 50, 200) / 100)
+    self.executeIcon:SetDimensions(executeIconSize, executeIconSize)
     self.executeIcon:SetTexture(GetExecuteIconTexture())
     self.executeIcon:SetHidden(not show)
     if not show then
+        self:ResetExecuteIconPulse()
         return
+    end
+    if GetSetting("executeBlinkEnabled") ~= true then
+        self:ResetExecuteIconPulse()
     end
     local position = GetSetting("executePosition") or "center"
     self.executeIcon:ClearAnchors()
@@ -956,14 +993,14 @@ function TargetFrame:UpdateExecute(data)
         self.executeIcon:SetAnchor(LEFT, self.health, LEFT, Clamp(GetSetting("textInset"), 0, 28), 0)
         if not self.health.leftLabel:IsHidden() then
             self.health.leftLabel:ClearAnchors()
-            self.health.leftLabel:SetAnchor(LEFT, self.health, LEFT, Clamp(GetSetting("textInset"), 0, 28) + EXECUTE_ICON_SIZE + 3,
+            self.health.leftLabel:SetAnchor(LEFT, self.health, LEFT, Clamp(GetSetting("textInset"), 0, 28) + executeIconSize + 3,
                 Clamp(GetSetting("textVerticalOffset"), -8, 8))
         end
     elseif position == "right" then
         self.executeIcon:SetAnchor(RIGHT, self.health, RIGHT, -Clamp(GetSetting("textInset"), 0, 28), 0)
         if not self.health.rightLabel:IsHidden() then
             self.health.rightLabel:ClearAnchors()
-            self.health.rightLabel:SetAnchor(RIGHT, self.health, RIGHT, -(Clamp(GetSetting("textInset"), 0, 28) + EXECUTE_ICON_SIZE + 3),
+            self.health.rightLabel:SetAnchor(RIGHT, self.health, RIGHT, -(Clamp(GetSetting("textInset"), 0, 28) + executeIconSize + 3),
                 Clamp(GetSetting("textVerticalOffset"), -8, 8))
         end
     else
@@ -974,9 +1011,9 @@ function TargetFrame:UpdateExecute(data)
                 or self.health.centerLabel:GetTextWidth()
             textWidth = math.max(tonumber(textWidth) or 0, 1)
             local gap = 4
-            local groupWidth = EXECUTE_ICON_SIZE + gap + textWidth
-            local iconOffset = (-groupWidth * 0.5) + (EXECUTE_ICON_SIZE * 0.5)
-            local textOffset = (-groupWidth * 0.5) + EXECUTE_ICON_SIZE + gap + (textWidth * 0.5)
+            local groupWidth = executeIconSize + gap + textWidth
+            local iconOffset = (-groupWidth * 0.5) + (executeIconSize * 0.5)
+            local textOffset = (-groupWidth * 0.5) + executeIconSize + gap + (textWidth * 0.5)
             self.executeIcon:SetAnchor(CENTER, self.health, CENTER, iconOffset, 0)
             self.health.centerLabel:ClearAnchors()
             self.health.centerLabel:SetAnchor(CENTER, self.health, CENTER, textOffset,
@@ -1002,6 +1039,7 @@ function TargetFrame:ResetTargetState()
         BarVisuals:SetShield(self.health, 0, 0, false)
     end
     if self.executeIcon then
+        self:ResetExecuteIconPulse()
         self.executeIcon:SetHidden(true)
     end
     if self.levelBadge then
@@ -1237,19 +1275,33 @@ end
 
 function TargetFrame:UpdateScheduler()
     local root = self:GetRoot()
-    local active = not root:IsHidden() and self.levelBadge and (self.levelBadge.shimmerIntensity or 0) > 0
+    local levelShimmerActive = not root:IsHidden() and self.levelBadge and (self.levelBadge.shimmerIntensity or 0) > 0
         and GetSetting("showLevelStyle") ~= false
-    if not active then
+    local executePulseActive = not root:IsHidden() and self.executeIcon and not self.executeIcon:IsHidden()
+        and GetSetting("executeBlinkEnabled") == true
+    if not executePulseActive then
+        self:ResetExecuteIconPulse()
+    end
+    if not levelShimmerActive and not executePulseActive then
         root:SetHandler("OnUpdate", nil)
         return
     end
-    self.lastLevelShimmerMS = self.lastLevelShimmerMS
-        or (GetFrameTimeMilliseconds() - LevelVisuals.SHIMMER_CADENCE_MS + 700)
+    local nowMS = GetFrameTimeMilliseconds()
+    if levelShimmerActive then
+        self.lastLevelShimmerMS = self.lastLevelShimmerMS
+            or (nowMS - LevelVisuals.SHIMMER_CADENCE_MS + 700)
+    end
+    if executePulseActive then
+        self:UpdateExecuteIconPulse(nowMS)
+    end
     root:SetHandler("OnUpdate", function()
         local now = GetFrameTimeMilliseconds()
-        if now - (self.lastLevelShimmerMS or 0) >= LevelVisuals.SHIMMER_CADENCE_MS then
+        if levelShimmerActive and now - (self.lastLevelShimmerMS or 0) >= LevelVisuals.SHIMMER_CADENCE_MS then
             self.lastLevelShimmerMS = now
             LevelVisuals:Play(self.levelBadge)
+        end
+        if executePulseActive then
+            self:UpdateExecuteIconPulse(now)
         end
     end)
 end
@@ -1454,6 +1506,7 @@ function TargetFrame:RefreshSettings()
     if not IsEnabled() then
         self.targetRefreshToken = (self.targetRefreshToken or 0) + 1
         self:SetReconciliationEnabled(false)
+        self:ResetExecuteIconPulse()
         if self.root then
             self.root:SetHidden(true)
             self.root:SetHandler("OnUpdate", nil)
@@ -1474,6 +1527,7 @@ function TargetFrame:RefreshSettings()
     else
         self.initialized = false
         self:SetReconciliationEnabled(false)
+        self:ResetExecuteIconPulse()
         self:SetStockFrameHidden(false)
         if self.root then self.root:SetHidden(true) end
         d(string.format("Nirnsteel UI Target Frame: %s", tostring(errorMessage)))

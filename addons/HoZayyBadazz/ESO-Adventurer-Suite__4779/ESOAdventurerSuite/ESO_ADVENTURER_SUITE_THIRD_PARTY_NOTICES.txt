@@ -27,3 +27,11 @@ The Suite uses ESO's live API for current lead ownership/progress and uses the
 integrated reference table only for acquisition/source descriptions and
 find-zone overrides. Original authorship of that reference information remains
 with its source project/contributors.
+
+LIBTREASURE INTEGRATION
+The Suite Treasure & Survey Locator uses the public runtime API/data provided by
+LibTreasure when that optional library is installed. LibTreasure remains a
+separate third-party library and is not redistributed as Suite-owned code.
+The user-supplied LostTreasure addon was used as a behavior/reference example;
+the Suite locator implementation is Suite-native and LostTreasure itself is not
+required.

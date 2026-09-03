@@ -125,7 +125,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Aenathel's Lazy Antiquarian](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Aenathel/Aenathel-s-Lazy-Antiquarian__3084) | Aenathel | PC / Mac | 1.2.1 |
 | [Aenathel's Lazy Chat Linker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Aenathel/Aenathel-s-Lazy-Chat-Linker__3083) | Aenathel | PC / Mac | 1.1.0 |
 | [Aenathel's Lazy Riding Skill Trainer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Aenathel/Aenathel-s-Lazy-Riding-Skill-Trainer__2614) | Aenathel | PC / Mac | 1.4.0 |
-| [AetherChat](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/alexquiet/AetherChat__4798) | alexquiet | PC / Mac | 1.2.3 |
+| [AetherChat](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/alexquiet/AetherChat__4798) | alexquiet | PC / Mac | 1.2.5 |
 | [Aetherius Badge Filter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sirinsidiator/Aetherius-Badge-Filter__1354) | sirinsidiator | PC / Mac | 1.11.0 |
 | [Aetherius GuildHalls](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MecHaN1ck/Aetherius-GuildHalls__2813) | MecHaN1ck | PC / Mac | V0.0.6 |
 | [Aethluna Antiquarian's Eye Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/luocangli/Aethluna-Antiquarian-s-Eye-Helper__4646) | luocangli | PC / Mac | 1.1.1 |

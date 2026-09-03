@@ -499,7 +499,7 @@ function G:Create()
     self.subtitle = subtitle
 
     -- Live Equipment is display-only. Loadout workspace controls live in
-    -- Gear & Sets (OPEN LOADOUTS) and on the Saved Loadouts overlay itself
+    -- Gear & Sets (OPEN BUILDS) and on the Saved Builds overlay itself
     -- (CLOSE LOADOUTS), so this panel stays focused on equipped gear.
     self.playerButton = nil
     self.companionButton = nil
@@ -628,7 +628,7 @@ function G:Create()
     keepInside(countLabel, 1, false)
     self.countLabel = countLabel
 
-    local footer = makeLabel("EAS_GearPreviewFooter", canvas, "Hover your Gear & Sets workspace while this panel tracks the equipped loadout.", "ZoFontGameSmall")
+    local footer = makeLabel("EAS_GearPreviewFooter", canvas, "Hover your Gear & Sets workspace while this panel tracks the equipped build.", "ZoFontGameSmall")
     footer:SetAnchor(BOTTOMLEFT, canvas, BOTTOMLEFT, 22, -12)
     footer:SetDimensions(BASE_W-44, 16)
     footer:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
@@ -1016,7 +1016,7 @@ function G:UpdateVisibility()
     if shouldShow then self:Refresh() end
 end
 
--- Saved Loadouts can detach from the Tamriel Codex.  While this mode is active,
+-- Saved Builds can detach from the Tamriel Codex.  While this mode is active,
 -- Live Equipment remains visible even though the Codex itself has been closed.
 function G:SetLoadoutMode(active)
     self.loadoutMode = active == true

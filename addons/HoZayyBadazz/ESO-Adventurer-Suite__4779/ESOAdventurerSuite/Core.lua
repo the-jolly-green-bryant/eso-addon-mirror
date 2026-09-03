@@ -10,7 +10,7 @@ local EPC = ESOProgressionCoach
 EPC.name = "ESOAdventurerSuite"
 EPC.legacyName = "ESOProgressionCoach"
 EPC.displayName = "ESO Adventurer Suite"
-EPC.version = "0.29.143"
+EPC.version = "0.29.160"
 EPC.author = "HoZayyBadazz"
 EPC.savedVersion = 1
 EPC.interactionMode = false
@@ -79,11 +79,49 @@ EPC.defaults = {
     mapTeleporterDisplayMode = "MAP",
     mapTeleporterLeft = -1,
     mapTeleporterTop = -1,
+    -- Suite-native Treasure & Survey Locator. LibTreasure supplies the location database.
+    treasureLocatorEnabled = true,
+    treasureLocatorScope = "INVENTORY",
+    treasureLocatorTreasure = true,
+    treasureLocatorSurvey = true,
+    treasureLocatorClue = true,
+    treasureLocatorShowMap = true,
+    treasureLocatorShowCompass = true,
+    treasureLocatorCompassRange = 10,
+    treasureLocatorPinSize = 32,
     mapTeleporterFavorites = {},
     mapTeleporterBlacklistPlayers = {},
     mapTeleporterBlacklistZones = {},
     mapTeleporterPortCount = {},
     mapTeleporterLastUsed = {},
+    -- Floating Recipe & Style Learner (Turbo Mode).
+    recipeStyleLearnerEnabled = true,
+    recipeStyleLearnerIncludeBank = true,
+    recipeStyleLearnerSuppressPopups = true,
+    recipeStyleLearnerLeft = -1,
+    recipeStyleLearnerTop = -1,
+    -- Floating Alchemy Potion & Poison Maker.
+    alchemyPotionMakerEnabled = true,
+    alchemyPotionMakerIncludeBank = true,
+    alchemyPotionMakerIncludeCraftBag = true,
+    alchemyPotionMakerUseThreeReagents = true,
+    alchemyPotionMakerMode = "POTION",
+    alchemyPotionMakerEffect1 = "Restore Health",
+    alchemyPotionMakerEffect2 = "",
+    alchemyPotionMakerEffect3 = "",
+    alchemyPotionMakerLeft = -1,
+    alchemyPotionMakerTop = -1,
+    alchemyPotionMakerPanelLeft = -1,
+    alchemyPotionMakerPanelTop = -1,
+    alchemyPotionMakerAutoCraft = false,
+    alchemyPotionMakerAutoCraftMode = "ONE",
+    alchemyPotionMakerAutoCraftQuantity = 1,
+    -- Wayshrine discovery chat helper. ESO still requires the player to press Enter.
+    wayshrineAutoMessageEnabled = false,
+    wayshrineAutoMessageTrigger = "FAST_TRAVEL",
+    wayshrineAutoMessageTemplate = "Now arriving at {wayshrine} in {zone}!",
+    wayshrineAutoMessageGuildLink = "",
+    wayshrineAutoMessageChannel = "ZONE",
     activityGoal = "BALANCED",
     activityHistory = {},
     goldSpendingByCharacter = {},
@@ -795,7 +833,8 @@ function EPC:RaiseLayoutOverlays()
         self.ChampionOverlay, self.AbilityOverlays, self.QuickslotOverlay,
         self.InfiniteArchiveOverlay, self.RepairCostOverlay, self.PerformanceOverlay, self.EncounterReminders,
         self.ChallengeDifficultyOverlay, self.DungeonFinder,
-        self.SynergyOverlay, self.RotationAssistant, self.AntiquityAssistant
+        self.SynergyOverlay, self.RotationAssistant, self.AntiquityAssistant,
+        self.RecipeStyleLearner, self.AlchemyPotionMaker
     }) do
         if module then raiseLayoutControls(module, seen, 0) end
     end
@@ -1005,7 +1044,9 @@ function EPC:SetUnitFramesMoveMode(active, exitReason)
     local canRotationAssistant = self.RotationAssistant and self.RotationAssistant.SetLayoutMode
     local canAntiquityAssistant = self.AntiquityAssistant and self.AntiquityAssistant.SetLayoutMode
     local canMapTeleporter = self.Travel and self.Travel.SetLayoutMode
-    if not canFrames and not canMiniMap and not canStableTimer and not canClock and not canActiveQuest and not canGoldenPursuits and not canAllianceRank and not canChampionOverlay and not canAbilities and not canQuickslot and not canInfiniteArchive and not canRepairCosts and not canPerformanceOverlay and not canEncounterReminders and not canChallengeOverlay and not canDungeonQueue and not canSynergy and not canRotationAssistant and not canAntiquityAssistant and not canMapTeleporter then return end
+    local canRecipeStyleLearner = self.RecipeStyleLearner and self.RecipeStyleLearner.SetLayoutMode
+    local canAlchemyPotionMaker = self.AlchemyPotionMaker and self.AlchemyPotionMaker.SetLayoutMode
+    if not canFrames and not canMiniMap and not canStableTimer and not canClock and not canActiveQuest and not canGoldenPursuits and not canAllianceRank and not canChampionOverlay and not canAbilities and not canQuickslot and not canInfiniteArchive and not canRepairCosts and not canPerformanceOverlay and not canEncounterReminders and not canChallengeOverlay and not canDungeonQueue and not canSynergy and not canRotationAssistant and not canAntiquityAssistant and not canMapTeleporter and not canRecipeStyleLearner and not canAlchemyPotionMaker then return end
     active = active == true
 
     -- Once full HUD Layout Mode is active, only its SAVE & EXIT button is
@@ -1077,6 +1118,8 @@ function EPC:SetUnitFramesMoveMode(active, exitReason)
         if canRotationAssistant then self.RotationAssistant:SetLayoutMode(true) end
         if canAntiquityAssistant then self.AntiquityAssistant:SetLayoutMode(true) end
         if canMapTeleporter then self.Travel:SetLayoutMode(true) end
+        if canRecipeStyleLearner then self.RecipeStyleLearner:SetLayoutMode(true) end
+        if canAlchemyPotionMaker then self.AlchemyPotionMaker:SetLayoutMode(true) end
 
         self:SetHUDLayoutControlBarVisible(true)
 
@@ -1122,6 +1165,8 @@ function EPC:SetUnitFramesMoveMode(active, exitReason)
         if canRotationAssistant then self.RotationAssistant:SetLayoutMode(false) end
         if canAntiquityAssistant then self.AntiquityAssistant:SetLayoutMode(false) end
         if canMapTeleporter then self.Travel:SetLayoutMode(false) end
+        if canRecipeStyleLearner then self.RecipeStyleLearner:SetLayoutMode(false) end
+        if canAlchemyPotionMaker then self.AlchemyPotionMaker:SetLayoutMode(false) end
         if self.unitFramesMoveOwned and not self.interactionMode and not self.combatHudMoveMode and not self.miniMapMoveMode then setCameraUIMode(false) end
         if canSynergy then self.SynergyOverlay:SetLayoutMode(false) end
         -- Apply normal compass/menu visibility immediately after leaving layout
@@ -1242,7 +1287,13 @@ function EPC:ResetUnitFramePositions()
     if self.Travel and self.Travel.ResetMapTeleporterPosition then
         self.Travel:ResetMapTeleporterPosition()
     end
-    self:Print("HUD layout reset: Player, Target, Group, Raid, Stats, Mini Map, Stable, Clock, Active Quest, Golden Pursuits, Alliance Rank, Champion, Infinite Archive, Repair Estimate, FPS/Latency, Encounter Reminders, Challenge Difficulty, Use Synergy, Rotation Assistant, Augur Guide, Tile Selector, Map Teleporter, and Ability positions restored.")
+    if self.RecipeStyleLearner and self.RecipeStyleLearner.ResetPosition then
+        self.RecipeStyleLearner:ResetPosition()
+    end
+    if self.AlchemyPotionMaker and self.AlchemyPotionMaker.ResetPosition then
+        self.AlchemyPotionMaker:ResetPosition()
+    end
+    self:Print("HUD layout reset: Player, Target, Group, Raid, Stats, Mini Map, Stable, Clock, Active Quest, Golden Pursuits, Alliance Rank, Champion, Infinite Archive, Repair Estimate, FPS/Latency, Encounter Reminders, Challenge Difficulty, Use Synergy, Rotation Assistant, Augur Guide, Tile Selector, Map Teleporter, Recipe Learner, Alchemy Maker, and Ability positions restored.")
 end
 
 function ESOProgressionCoach_Toggle()
@@ -1908,6 +1959,9 @@ function EPC:Initialize()
     initModule("COMPANION_OPTIMIZER", self.CompanionOptimizer)
     initModule("GEAR_LOADOUT_OVERLAY", self.GearLoadoutOverlay)
     initModule("LOADOUT_MANAGER", self.LoadoutManager)
+    initModule("RECIPE_STYLE_LEARNER", self.RecipeStyleLearner)
+    initModule("ALCHEMY_POTION_MAKER", self.AlchemyPotionMaker)
+    initModule("WAYSHRINE_AUTO_MESSAGE", self.WayshrineAutoMessage)
     initModule("ADVISOR", self.Advisor)
     initModule("COMBAT_PRESENTATION", self.CombatPresentation)
     initModule("COMBAT", self.Combat)
@@ -1918,6 +1972,7 @@ function EPC:Initialize()
     initModule("TEAM_VISIBILITY", self.TeamVisibility)
     initModule("DUNGEON_CHEST_FINDER", self.DungeonChestFinder)
     initModule("RESOURCE_PINS", self.ResourcePins)
+    initModule("TREASURE_LOCATOR", self.TreasureLocator)
     initModule("ANTIQUITY_ASSISTANT", self.AntiquityAssistant)
     initModule("ANTIQUITY_LEAD_FINDER", self.AntiquityLeadFinder)
     initModule("ALLIANCE_RANK", self.AllianceRank)

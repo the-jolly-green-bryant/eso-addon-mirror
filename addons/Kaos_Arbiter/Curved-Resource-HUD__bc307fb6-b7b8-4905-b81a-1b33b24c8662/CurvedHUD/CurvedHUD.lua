@@ -1,6 +1,6 @@
 CurvedHUD = CurvedHUD or {}
 local CH = CurvedHUD
-CH.name, CH.version, CH.updateName, CH.dataVersion = "CurvedHUD", "0.9.17", "CurvedHUD_Update", 1
+CH.name, CH.version, CH.updateName, CH.dataVersion = "CurvedHUD", "0.9.19", "CurvedHUD_Update", 1
 CH.defaults = {enabled=true,preview=false,showDefaultResources=true,buffVerticalOffset=0,useOutOfCombatOpacity=false,outOfCombatOpacity=.45,scale=1.0,spacing=235,verticalOffset=35,resourceGap=7,barWidth=48,leftTimerOffset=-6,leftTimerSpacing=15,rightTimerOffset=3,rightTimerSpacing=3,fillAlpha=.85,frameAlpha=.48,backgroundAlpha=.24,shieldAlpha=.68,textAlpha=.95,timerFontSize=24,expirationAlerts=false,resourceValueFontSize=27,resourcePercentFontSize=20,majorBuffTracked="None",insideTimerStyle="Thin",outsideTimerStyle="Thick",majorBuffColor="Purple",balanceEnabled=false,balanceSlot="bottomLeftInside",balanceColor="Orange",aegisEnabled=false,aegisSlot="topLeftOutside",aegisColor="Pale Blue",armamentsEnabled=false,armamentsSlot="topRightInside",armamentsColor="Pale Blue",fragmentsEnabled=false,fragmentsPosition="Top",fragmentsScale=.75,surgeEnabled=false,surgeSlot="topRightOutside",surgeColor="Gold",shroudEnabled=false,shroudSlot="bottomRightOutside",shroudColor="Cyan",soulBurstEnabled=false,soulBurstSlot="topRightInside",soulBurstColor="Purple",soulBurstDuration=20,contingencyEnabled=false,contingencySlot="bottomRightInside",contingencyColor="Cyan",contingencyDuration=20,showRaw=true,showPercent=true,showMaximum=false,debug=false,layout="Parallel",staminaInside=true,iconCache={},abilityIdCache={}}
 CH.characterKeys = {majorBuffTracked=true,majorBuffColor=true,balanceEnabled=true,balanceSlot=true,balanceColor=true,aegisEnabled=true,aegisSlot=true,aegisColor=true,armamentsEnabled=true,armamentsSlot=true,armamentsColor=true,fragmentsEnabled=true,fragmentsPosition=true,surgeEnabled=true,surgeSlot=true,surgeColor=true,shroudEnabled=true,shroudSlot=true,shroudColor=true,soulBurstEnabled=true,soulBurstSlot=true,soulBurstColor=true,soulBurstDuration=true,contingencyEnabled=true,contingencySlot=true,contingencyColor=true,contingencyDuration=true}
 CH.characterDefaults = {majorBuffTracked="None",majorBuffColor="Purple",balanceEnabled=false,balanceSlot="bottomLeftInside",balanceColor="Orange",aegisEnabled=false,aegisSlot="topLeftOutside",aegisColor="Pale Blue",armamentsEnabled=false,armamentsSlot="topRightInside",armamentsColor="Pale Blue",fragmentsEnabled=false,fragmentsPosition="Top",surgeEnabled=false,surgeSlot="topRightOutside",surgeColor="Gold",shroudEnabled=false,shroudSlot="bottomRightOutside",shroudColor="Cyan",soulBurstEnabled=false,soulBurstSlot="topRightInside",soulBurstColor="Purple",soulBurstDuration=20,contingencyEnabled=false,contingencySlot="bottomRightInside",contingencyColor="Cyan",contingencyDuration=20,initialized=false}
@@ -993,8 +993,22 @@ function CH:OnSetEffectChanged(changeType,effectName,unitTag,beginTime,endTime,s
             local conditionMatch=self:SetEffectMatches(definition.conditionNeedles,effectName)
             local effectMatch=self:SetEffectMatches(definition.needles,effectName)
             if conditionMatch then
-                t.conditionActive=changeType~=EFFECT_RESULT_FADED
-                t.conditionEndTime=endTime or 0
+                if changeType==EFFECT_RESULT_FADED then
+                    local wasArmed=t.conditionActive
+                    local expectedEnd=t.conditionEndTime or 0
+                    t.conditionActive=false
+                    -- Turning Tide's Flowing Water is consumed by the Bash that
+                    -- activates the set. An early fade is therefore the most
+                    -- reliable player-side activation signal; begin the full
+                    -- set cooldown instead of falling straight back to WAIT.
+                    if definition.key=="setTurningTide" and wasArmed and expectedEnd>now+.25 then
+                        t.cooldownEnd=now+(definition.cooldown or 15)
+                        t.active=true; t.beginTime=now; t.endTime=t.cooldownEnd; t.duration=definition.cooldown or 15
+                    end
+                else
+                    t.conditionActive=true
+                    t.conditionEndTime=endTime or 0
+                end
             end
             if effectMatch then
                 self:ResolveTrackerIcon(definition,effectName,abilityId,nil,iconName,t)
@@ -1241,7 +1255,18 @@ function CH:ApplyTrackerSlot(t,h,inner,outer,width,scale)
         else iconX=info.inside and -40 or 64 end
     elseif info.side=="left" then iconX=info.inside and 48 or -42
     else iconX=info.inside and -48 or 42 end
-    t.icon:ClearAnchors(); t.icon:SetAnchor(TOP,t,BOTTOM,iconX*scale,(legacyAegis and -58 or -40)*scale)
+    -- Use two shared icon rows. Timer controls retain their independently tuned
+    -- curves and horizontal offsets, while every upper icon and every lower icon
+    -- receives an identical absolute vertical position.
+    local trackerCenterX=t:GetCenter()
+    local rootCenterX=self.root and self.root:GetCenter()
+    t.icon:ClearAnchors()
+    if trackerCenterX and rootCenterX and self.root then
+        local rowY=info.vertical=="upper" and -55 or 193
+        t.icon:SetAnchor(CENTER,self.root,CENTER,(trackerCenterX-rootCenterX)+iconX*scale,rowY*scale)
+    else
+        t.icon:SetAnchor(TOP,t,BOTTOM,iconX*scale,(legacyAegis and -58 or -40)*scale)
+    end
     t.timer:SetFont(string.format("$(GAMEPAD_MEDIUM_FONT)|%d|soft-shadow-thick",math.floor(self.sv.timerFontSize or 24)))
     t.timer:ClearAnchors(); t.timer:SetAnchor(BOTTOM,t.icon,TOP,0,-2*scale)
 end
@@ -1926,6 +1951,25 @@ function CH:QueuePlayerActivationRefresh(delayMs)
     if zo_callLater then zo_callLater(refresh,delayMs or 350) else refresh() end
 end
 
+function CH:QueueSettingsRegistration(delayMs)
+    if self.settingsRegistered or self.settingsRegistrationQueued then return end
+    self.settingsRegistrationQueued=true
+    local function register()
+        self.settingsRegistrationQueued=false
+        if self.settingsRegistered then return end
+        self:Guard("deferred settings registration",function()
+            if self.RegisterSettings then
+                self:RegisterSettings()
+                self.settingsRegistered=true
+            end
+        end)
+    end
+    -- Console settings providers eagerly construct large option trees. Keeping
+    -- this work away from EVENT_ADD_ON_LOADED prevents CurvedHUD from adding to
+    -- the same 1000 ms frame used by Fancy Action Bar and other large add-ons.
+    if zo_callLater then zo_callLater(register,delayMs or 12000) else register() end
+end
+
 function CH:StartPeriodicUpdates()
     EVENT_MANAGER:UnregisterForUpdate(self.updateName)
     EVENT_MANAGER:UnregisterForUpdate(self.updateName.."Slow")
@@ -2007,7 +2051,10 @@ function CH:RegisterEvents()
             if not self:HandleScribingCast(abilityName,abilityGraphic,id,true) and not self:HandleSorcererCast(abilityName,abilityGraphic,id,true) and not self:HandleWardenCast(abilityName,abilityGraphic,id,true) and not self:HandleArcanistCast(abilityName,abilityGraphic,id,true) and not self:HandleRemainingClassCast(abilityName,abilityGraphic,id,true) then self:HandleNonClassCast(abilityName,abilityGraphic,id,true) end
         end)
     end
-    EVENT_MANAGER:RegisterForEvent(self.name.."Activated",EVENT_PLAYER_ACTIVATED,function() self:QueuePlayerActivationRefresh(350) end)
+    EVENT_MANAGER:RegisterForEvent(self.name.."Activated",EVENT_PLAYER_ACTIVATED,function()
+        self:QueuePlayerActivationRefresh(350)
+        self:QueueSettingsRegistration(12000)
+    end)
     EVENT_MANAGER:RegisterForEvent(self.name.."Combat",EVENT_PLAYER_COMBAT_STATE,function(_,inCombat)
         self:Guard("combat state",function()
             self:UpdateCombatOpacity(inCombat); self:UpdateExternalTrackerOpacity()
@@ -2092,7 +2139,11 @@ function CH:Initialize()
         __newindex=function(_,key,value) if self.characterKeys[key] then self.characterSV[key]=value else self.globalSV[key]=value end end,
     })
     self.power={health={0,0},stamina={0,0},magicka={0,0}}; self.shieldValue=0; self.hudVisible=true
-    self:Guard("HUD creation",function() self:CreateHUD() end); self:Guard("settings registration",function() if self.RegisterSettings then self:RegisterSettings() end end); self:Guard("event registration",function() self:RegisterEvents() end)
+    self:Guard("HUD creation",function() self:CreateHUD() end)
+    -- Settings are intentionally registered after EVENT_PLAYER_ACTIVATED. On
+    -- console, registering hundreds of controls here competes with every other
+    -- add-on's startup menu construction in the same CPU-budgeted frame.
+    self:Guard("event registration",function() self:RegisterEvents() end)
     SLASH_COMMANDS["/curvedhud"]=function(arg)
         arg=string.lower(arg or "")
         if arg=="preview" then self.sv.preview=not self.sv.preview; self:ApplyLayout()

@@ -141,6 +141,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Drake's Rush Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ownedbynico/Drake-s-Rush-Tracker__3002) | ownedbynico | PC / Mac | 1.2 |
 | [Drakhyr's Assistant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Drakhyr/Drakhyr-s-Assistant__2226) | Drakhyr | PC / Mac | 0.2 |
 | [Draw Weapon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Chivana/Draw-Weapon__2945) | Chivana | PC / Mac | 1.4.1 |
+| [Dread Vision](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Dreadazar/Dread-Vision__0db118b4-92d1-4b06-b81a-64a67e477e60) | Dreadazar | Console | — |
 | [Dressing Room 2018 \[code's branch\]](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Dressing-Room-2018-code-s-branch__1911) | code65536 | PC / Mac | 0.12.1 |
 | [Dressing Room CP 2.0 Extension](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ownedbynico/Dressing-Room-CP-2.0-Extension__2980) | ownedbynico | PC / Mac | 1.0.2 |
 | [Dressing Room for Stonethorn](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/WhoCares/Dressing-Room-for-Stonethorn__2138) | WhoCares | PC / Mac | 0.10.3b |

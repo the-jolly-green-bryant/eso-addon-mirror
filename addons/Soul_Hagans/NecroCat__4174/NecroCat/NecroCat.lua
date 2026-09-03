@@ -2,7 +2,7 @@
 NecroCat = NecroCat or {
     name    = "NecroCat",
     author  = "Soul_Hagans",
-    version = "1.9.7",
+    version = "1.9.8",
 }
 
 local NC = NecroCat
@@ -323,13 +323,17 @@ function NC.OnWornSlotUpdate(eventCode, bagId, slotIndex)
 
     -- 1. АВТО-ЗАРЯДКА ОРУЖИЯ
     if NC.savedVars.autoRechargeEnabled then
-        local charge, maxcharge = GetChargeInfoForItem(BAG_WORN, slotIndex)
-        if maxcharge and maxcharge > 0 then
-            local percent = (charge / maxcharge) * 100
-            if percent <= (NC.savedVars.autoRechargeThreshold or 20) then
-                local gemSlot = NC.FindSoulGem(NC.savedVars.autoRechargePriority or 2)
-                if gemSlot then
-                    ChargeItemWithSoulGem(BAG_WORN, slotIndex, BAG_BACKPACK, gemSlot)
+        local itemLink = GetItemLink(BAG_WORN, slotIndex)
+        if itemLink and itemLink ~= "" then
+            local maxcharge = GetItemLinkMaxEnchantCharges(itemLink)
+            if maxcharge and maxcharge > 0 then
+                local charge = GetItemLinkNumEnchantCharges(itemLink)
+                local percent = (charge / maxcharge) * 100
+                if percent <= (NC.savedVars.autoRechargeThreshold or 20) then
+                    local gemSlot = NC.FindSoulGem(NC.savedVars.autoRechargePriority or 2)
+                    if gemSlot then
+                        ChargeItemWithSoulGem(BAG_WORN, slotIndex, BAG_BACKPACK, gemSlot)
+                    end
                 end
             end
         end
@@ -337,26 +341,31 @@ function NC.OnWornSlotUpdate(eventCode, bagId, slotIndex)
 
     -- 2. АВТО-ПОЧИНКА РЕМНАБОРАМИ (доспехи)
     if NC.savedVars.autoRepairKitsEnabled then
-        local itemType = GetItemType(BAG_WORN, slotIndex)
-        if itemType == ITEMTYPE_ARMOR then
-            local condition = GetItemCondition(BAG_WORN, slotIndex)
-            if condition and condition <= (NC.savedVars.autoRepairKitsThreshold or 20) then
-                local kitSlot = NC.FindRepairKit(NC.savedVars.autoRepairKitsPriority or 2)
-                if kitSlot then
-                    local link = GetItemLink(BAG_BACKPACK, kitSlot)
-                    local itemId = GetItemLinkItemId(link)
+        local itemLink = GetItemLink(BAG_WORN, slotIndex)
+        if itemLink and itemLink ~= "" then
+            local itemType = GetItemType(BAG_WORN, slotIndex)
+            local hasDurability = (DoesItemHaveDurability and DoesItemHaveDurability(BAG_WORN, slotIndex)) or (itemType == ITEMTYPE_ARMOR)
+            
+            if hasDurability and (slotIndex ~= EQUIP_SLOT_NECK and slotIndex ~= EQUIP_SLOT_RING1 and slotIndex ~= EQUIP_SLOT_RING2) then
+                local condition = GetItemLinkCondition(itemLink)
+                if condition and condition <= (NC.savedVars.autoRepairKitsThreshold or 20) then
+                    local kitSlot = NC.FindRepairKit(NC.savedVars.autoRepairKitsPriority or 2)
+                    if kitSlot then
+                        local kitLink = GetItemLink(BAG_BACKPACK, kitSlot)
+                        local itemId = GetItemLinkItemId(kitLink)
 
-                    -- Если это кронный ремнабор (ID 61421), используем его только вне боя (в бою UseItem запрещен игрой)
-                    if itemId == 61421 then
-                        if not IsUnitInCombat("player") then
-                            if IsProtectedFunction("UseItem") then
-                                CallSecureProtected("UseItem", BAG_BACKPACK, kitSlot)
-                            else
-                                UseItem(BAG_BACKPACK, kitSlot)
+                        -- Если это кронный ремнабор (ID 61421), используем его только вне боя (в бою UseItem запрещен игрой)
+                        if itemId == 61421 then
+                            if not IsUnitInCombat("player") then
+                                if IsProtectedFunction("UseItem") then
+                                    CallSecureProtected("UseItem", BAG_BACKPACK, kitSlot)
+                                else
+                                    UseItem(BAG_BACKPACK, kitSlot)
+                                end
                             end
+                        else
+                            RepairItemWithRepairKit(BAG_WORN, slotIndex, BAG_BACKPACK, kitSlot)
                         end
-                    else
-                        RepairItemWithRepairKit(BAG_WORN, slotIndex, BAG_BACKPACK, kitSlot)
                     end
                 end
             end
@@ -366,6 +375,14 @@ function NC.OnWornSlotUpdate(eventCode, bagId, slotIndex)
     -- 3. ОБНОВЛЕНИЕ РАМОК И ЦИФР НА ЭКРАНЕ ПЕРСОНАЖА (C)
     if NC.UpdateCharacterSlotGear then
         NC.UpdateCharacterSlotGear(slotIndex)
+    end
+end
+
+-- Проверка и починка/зарядка всех надетых вещей сразу (включая вторую панель оружия)
+function NC.CheckAllWornGear()
+    if IsUnitDead("player") then return end
+    for slotIndex = 0, 16 do
+        NC.OnWornSlotUpdate(nil, BAG_WORN, slotIndex)
     end
 end
 
@@ -2462,6 +2479,17 @@ function NC.OnAddOnLoaded(eventCode, addOnName)
         NC.CheckTrialPets()
         NC.UpdateAggroMarker()
         NC.CheckZoneChangeForChestCounter()
+        NC.CheckAllWornGear()
+    end)
+
+    -- Авто-проверка починки и зарядки при выходе из боя и после воскрешения
+    EVENT_MANAGER:RegisterForEvent(NC.name .. "_CombatState", EVENT_PLAYER_COMBAT_STATE, function(eventCode, inCombat)
+        if not inCombat then
+            NC.CheckAllWornGear()
+        end
+    end)
+    EVENT_MANAGER:RegisterForEvent(NC.name .. "_PlayerAlive", EVENT_PLAYER_ALIVE, function()
+        NC.CheckAllWornGear()
     end)
     EVENT_MANAGER:RegisterForEvent(NC.name, EVENT_GROUP_MEMBER_JOINED, function()
         NC.CheckAutoConvertToRaid()

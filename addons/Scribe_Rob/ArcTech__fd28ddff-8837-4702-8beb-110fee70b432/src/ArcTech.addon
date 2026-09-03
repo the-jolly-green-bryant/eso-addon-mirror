@@ -1,0 +1,15 @@
+## Title: ArcTech
+## Author: Arcanist Rob
+## Version: 0.0.7a
+## APIVersion: 101050 101051
+## Description: A set of utility commands for the members of the Arcanists Guild
+## DependsOn: LibAddonMenu-2.0 LibQRCode LibAsync LibCustomMenu LibDebugLogger LibDateTime
+
+v2/ArcTech.lua
+v2/utils/Discord.lua
+##ArcTech_Data.lua
+##ArcTech_Guild.lua
+##ArcTech_Housing.lua
+##ArcTech_LAM.lua
+##ArcTech_QR.lua
+##ArcTech_History.lua

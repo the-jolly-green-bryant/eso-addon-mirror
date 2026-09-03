@@ -1,3 +1,86 @@
+0.29.160
+- Added optional Alchemy Auto Craft with Craft 1, Craft X, and Craft Maximum modes. Auto Craft is OFF by default and only starts after ESO accepts the slotted mixture.
+- Replaced the Potion Maker effect/options menu with a dedicated high-tier top-level selector, fixing options still appearing behind the maker.
+- Added an in-window Auto Craft toggle/status while preserving manual ingredient auto-slot behavior.
+
+0.29.159
+- Fixed Alchemy Potion Maker solvent selection so READY recipes only use solvent tiers permitted by the character's Solvent Proficiency and level/Champion requirements.
+- Added ESO controller fallback selection after clearing the Alchemy table, preventing repeated Lorkhan's Tears/Alkahest slot errors when higher-tier solvents are owned but unusable.
+- Fixed Potion Maker effect/options menus rendering behind the maker by lowering the maker to the controls layer and explicitly keeping popup menus on the overlay layer.
+
+0.29.158
+- Added Floating Alchemy Potion & Poison Maker with a 64x64 station icon that is movable through Suite HUD Layout Mode using the same one-click drag behavior as the Recipe Learner.
+- Added CAN MAKE NOW inventory/bank/Craft Bag scanning for craftable mixtures and MAKE EXACT effect selection with exact missing-material guidance.
+- READY mixtures use ESO's native Alchemy controller to clear and auto-slot the proper solvent/reagents; crafting remains on ESO's normal Craft button.
+- Added Potion/Poison mode, optional bank/Craft Bag materials, and third-reagent support when Laboratory Use is unlocked. No new library dependency is required.
+
+0.29.157
+- Updated public library documentation to list the complete nine-library setup recommended for full ESO Adventurer Suite functionality.
+- Documented LibMapPing, LibDebugLogger, and LibChatMessage as LibGPS support dependencies.
+- Clarified LibTreasure and CustomCompassPins roles for Treasure/Survey/Clue map, minimap, and compass support.
+
+0.29.156
+- Fixed Wayshrine Auto Message so successful travel started from the Suite Teleporter also arms the arrival message.
+- Added Suite Teleporter coverage for wayshrine/instance, friend, guild-member, group-member, and house travel paths.
+- Social and house Teleporter arrivals now resolve the player's actual destination zone after loading before preparing the message.
+
+0.29.155
+- Added a Guild Recruitment Link field to Wayshrine Auto Message.
+- Added {guildlink} placeholder support so recruitment messages can contain each user's own clickable ESO guild listing link.
+- Added Guild Link SET / NOT SET status and protected clickable link markup from message-length truncation.
+
+0.29.154
+- Added optional Wayshrine Auto Message with selectable triggers for successful wayshrine fast-travel arrivals, newly discovered wayshrines, or both.
+- Added a fully editable message template with {wayshrine}/{shrine}, {zone}, {character}, and {account} placeholders so every player can use their own wording.
+- Added Zone, Say, Group, Guild 1-5, and Local / Suite Chat destinations plus a settings test button. Public chat messages are prepared in ESO chat and still require Enter; Local / Suite Chat prints immediately only to the player.
+- Added stale-travel and duplicate-discovery protection so canceled travel or duplicate events cannot prepare unwanted messages.
+0.29.153
+- Fixed Recipe & Style Learner HUD movement so one left-click-and-hold starts dragging immediately instead of requiring a second click.
+- Removed the temporary oversized learner grab box; HUD Layout Mode now keeps the normal 64x64 book size.
+- Added a dedicated invisible drag handle above the learner artwork during HUD Layout Mode to guarantee first-click drag input.
+
+0.29.152
+- Enlarged the Recipe & Style Learner mouse target while Suite HUD Layout Mode is active.
+- Added a visible outlined drag box labeled DRAG ANYWHERE IN THIS BOX while positioning the learner.
+- The normal Inventory/Bank learner remains the same compact 64x64 book after leaving HUD Layout Mode.
+- Saved positioning now tracks the book itself rather than the temporary enlarged layout hitbox.
+
+0.29.151
+- Fixed Turbo Learner protected item use: removed the direct insecure UseItem() call and now uses CallSecureProtected only, with combat blocking instead of a private-function error.
+- Added the Floating Recipe & Style Learner book to Suite HUD Layout Mode with preview, movement, saved position, layout z-order, and Reset Layout support.
+
+0.29.150
+- Added Floating Recipe & Style Learner (Turbo Mode) with a movable Inventory/Bank book, rapid unknown recipe/furnishing-plan/motif/style-page learning, optional bank pickup, and popup suppression.
+- Upgraded Saved Loadouts into Saved Builds while preserving existing slots. Builds now capture gear, both skill bars, Champion allocation/slot profile, and attributes; APPLY restores gear/bars/Champion slots and verifies the full saved profile without automatically spending paid respec costs.
+- Added /easbuilds as a Saved Builds alias.
+
+0.29.149
+- Ultimate charge display now shows the stored ESO Ultimate pool from 0% through 500% instead of clamping at 100%.
+- Ultimate ability readiness still uses the real slotted Ultimate cost, so the meter continues charging after the ability becomes usable.
+
+0.29.148
+- Fixed Treasure & Survey Locator renderer registration so failed World Map/Compass pin types retry instead of being incorrectly marked ready.
+- Added parent-zone coordinate projection for World Map, Suite Mini Map, and compass locations using LibGPS/universal map coordinates.
+- Added renderer diagnostics and configurable compass locator range.
+
+0.29.147
+- Added a live Treasure & Survey Locator status line in Suite Settings showing LibTreasure state, current-map database counts, visible pins, and compass availability.
+- Added Show Pin Preview so players can see the exact Treasure Map, Crafting Survey, and Tribute Clue icons used by the Suite.
+- Added Print Status for quick locator diagnostics in chat.
+
+0.29.146
+- Added a Suite-native Treasure & Survey Locator using LibTreasure data for treasure maps, crafting surveys, and Tales of Tribute clues.
+- Added Backpack Items Only, Opened Item Only, and All Known Locations modes.
+- Added World Map / Suite Mini Map pins plus optional CustomCompassPins compass markers.
+- LostTreasure itself is not required; LibTreasure remains an optional external data library.
+
+0.29.145
+- Fixed ResourcePins 3D camera recovery error caused by an undefined safeNumber helper in 0.29.144.
+- 3D recovery timing/generation values now use local tonumber fallbacks with no cross-file helper dependency.
+
+- Rebuilds Suite 3D resource-pin render spaces after World Map/UI-camera transitions to prevent stale camera projection and badly zoomed/displaced world pins.
+- Runs shared 3D recovery after Teleporter close/return to gameplay and retires legacy direct Teleporter camera-UI toggles.
+
 0.29.143
 - Optimized Teleporter opening to reuse cached destination rows immediately and defer at most one heavier refresh until after the panel is visible.
 - Cached owned-house destination data for one minute and prewarms the frame-sliced guild cache after login/activation.

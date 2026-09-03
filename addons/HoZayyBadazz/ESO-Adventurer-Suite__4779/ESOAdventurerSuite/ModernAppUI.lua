@@ -979,7 +979,7 @@ local function gearSelectedSections(view,sel)
             "ZONE QUESTS: browse quests from the closest matching source zone.",
         }},
         {"OPTIMIZATION",{
-            "Use the buttons below for loadouts, weapons, jewelry, potions, Light/Medium/Heavy armor, companion tools, and the Endgame optimizer.",
+            "Use the buttons below for saved builds, weapons, jewelry, potions, Light/Medium/Heavy armor, companion tools, and the Endgame optimizer.",
             "Use RESPEC + BUILD on the Skills page for player abilities, morphs, passives, and both weapon bars.",
             "BEST ENDGAME uses the curated live meta snapshot when one exists for your class, role, resource, and selected preset.",
         }},
@@ -2075,7 +2075,7 @@ function M:ActionsFor(tab,view)
         {"FAST TRAVEL",function() J:RunInteractivePrimary("GEAR") end},
         {"ROUTE SOURCE",function() J:RunInteractiveSecondaryAction("GEAR") end},
         {"ZONE QUESTS",function() J:RunInteractiveTertiaryAction("GEAR") end},
-        {"OPEN LOADOUTS",function() if EPC.LoadoutManager then EPC.LoadoutManager:Show() end end},
+        {"OPEN BUILDS",function() if EPC.LoadoutManager then EPC.LoadoutManager:Show() end end},
         {"BEST COMPANION",function() if EPC.CompanionOptimizer then EPC.CompanionOptimizer:EquipBestAbilities() end end},
         {"BEST WEAPONS",function() if EPC.GearOptimizer then EPC.GearOptimizer:EquipBestWeapons() end end},
         {"BEST JEWELRY",function() if EPC.GearOptimizer then EPC.GearOptimizer:EquipBestJewelry() end end},

@@ -1,7 +1,7 @@
 GuildTraderActivity = {
 	name = "GTA",
 	author = "@sinnereso",
-	version = "2026.08.17",
+	version = "2026.09.02",
 	svName = "GTAVars",
 	svVersion = 1,
 }
@@ -305,7 +305,7 @@ GTASalesLabel:SetAnchor(BOTTOMRIGHT, GTASalesList, TOPRIGHT, -16, 0)
 GTASalesLabel:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
 GTASalesLabel:SetFont("ZoFontGameMedium")
 GTASalesLabel:SetColor(0.3, 0.3, 0.2, 0.9)
-GTASalesLabel:SetText ("|t20:20:/esoui/art/buttons/scrollbox_downarrow_up.dds|t SOLD")
+GTASalesLabel:SetText ("|t20:20:/esoui/art/buttons/scrollbox_downarrow_up.dds|t TRADED")
 GTASalesLabel:SetMouseEnabled(true)
 GTASalesLabel:SetHandler("OnMouseUp", function(self, button, upInside)
 	if button == 1 and upInside then
@@ -333,7 +333,7 @@ GTAPurchaseLabel:SetAnchor(BOTTOMRIGHT, GTAPurchaseList, TOPRIGHT, -16, 0)
 GTAPurchaseLabel:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
 GTAPurchaseLabel:SetFont("ZoFontGameMedium")
 GTAPurchaseLabel:SetColor(0.3, 0.3, 0.2, 0.9)
-GTAPurchaseLabel:SetText ("|t20:20:/esoui/art/buttons/scrollbox_downarrow_up.dds|t BUYS")
+GTAPurchaseLabel:SetText ("|t20:20:/esoui/art/buttons/scrollbox_downarrow_up.dds|t BOUGHT")
 GTAPurchaseLabel:SetMouseEnabled(true)
 GTAPurchaseLabel:SetHandler("OnMouseUp", function(self, button, upInside)
 	if button == 1 and upInside then
@@ -728,8 +728,8 @@ local CenterAlignedHeader = Label(combine(combine(defaultStyle, alignCenter), he
 local columnsForGuildList = {
 	Column('Rank',       30,  0, 		RankCell, '|t20:20:/esoui/art/buttons/scrollbox_downarrow_up.dds|t',   		   CenterAlignedHeader,  	SORTABLE),
 	Column('Name',      270,  0, LeftAlignedCell, 'Name |t20:20:/esoui/art/buttons/scrollbox_downarrow_up.dds|t',	 	 LeftAlignedHeader,  	SORTABLE),
-	Column('Sales',     140,  0,   	   SalesCell, '|t20:20:/esoui/art/buttons/scrollbox_downarrow_up.dds|t SOLD',			   SalesHeader, 	SORTABLE),
-	Column('Purch',     140,  0,  	   SalesCell, '|t20:20:/esoui/art/buttons/scrollbox_downarrow_up.dds|t BUYS', 			   SalesHeader,  	SORTABLE),
+	Column('Sales',     140,  0,   	   SalesCell, '|t20:20:/esoui/art/buttons/scrollbox_downarrow_up.dds|t TRADED',			   SalesHeader, 	SORTABLE),
+	Column('Purch',     140,  0,  	   SalesCell, '|t20:20:/esoui/art/buttons/scrollbox_downarrow_up.dds|t BOUGHT', 			   SalesHeader,  	SORTABLE),
 	Column('Activity',  140,  0, 	   SalesCell, '|t20:20:/esoui/art/buttons/scrollbox_downarrow_up.dds|t Activity',      	   SalesHeader,  	SORTABLE),
 	Column('Notes',      20, 10,        NoteCell, '|t20:20:/esoui/art/contacts/social_note_up.dds|t',                    CenterAlignedCell, NOT_SORTABLE),
 }
@@ -847,72 +847,74 @@ local function PopulateTraderActivity()
 					if DecorateDisplayName(sellerName) == GetUnitDisplayName("player") then prevSales = (prevSales + itemPrice) prevAllSales = (prevAllSales + itemPrice) prevAllActivity = (prevAllActivity + itemPrice) end
 				end
 			end
-			currentCounter = currentCounter + 1
-			namesList[currentCounter] = {
-				index = i,
-				name = guildName,
-				total = guildTotal,
-				sales = sales,
-				purchases = purchases,
-				activity = sales + purchases,
-			}
-			salesList[currentCounter] = {
-				index = i,
-				name = guildName,
-				total = guildTotal,
-				sales = sales,
-				purchases = purchases,
-				activity = sales + purchases,
-			}
-			purchaseList[currentCounter] = {
-				index = i,
-				name = guildName,
-				total = guildTotal,
-				sales = sales,
-				purchases = purchases,
-				activity = sales + purchases,
-			}
-			activityList[currentCounter] = {
-				index = i,
-				name = guildName,
-				total = guildTotal,
-				sales = sales,
-				purchases = purchases,
-				activity = sales + purchases,
-			}
-			previousCounter = previousCounter + 1
-			prevNamesList[previousCounter] = {
-				index = i,
-				name = guildName,
-				total = prevGuildTotal,
-				sales = prevSales,
-				purchases = prevPurchases,
-				activity = prevSales + prevPurchases,
-			}
-			prevSalesList[previousCounter] = {
-				index = i,
-				name = guildName,
-				total = prevGuildTotal,
-				sales = prevSales,
-				purchases = prevPurchases,
-				activity = prevSales + prevPurchases,
-			}
-			prevPurchaseList[previousCounter] = {
-				index = i,
-				name = guildName,
-				total = prevGuildTotal,
-				sales = prevSales,
-				purchases = prevPurchases,
-				activity = prevSales + prevPurchases,
-			}
-			prevActivityList[previousCounter] = {
-				index = i,
-				name = guildName,
-				total = prevGuildTotal,
-				sales = prevSales,
-				purchases = prevPurchases,
-				activity = prevSales + prevPurchases,
-			}
+			if guildTotal ~= 0 or prevGuildTotal ~= 0 then
+				currentCounter = currentCounter + 1
+				namesList[currentCounter] = {
+					index = i,
+					name = guildName,
+					total = guildTotal,
+					sales = sales,
+					purchases = purchases,
+					activity = sales + purchases,
+				}
+				salesList[currentCounter] = {
+					index = i,
+					name = guildName,
+					total = guildTotal,
+					sales = sales,
+					purchases = purchases,
+					activity = sales + purchases,
+				}
+				purchaseList[currentCounter] = {
+					index = i,
+					name = guildName,
+					total = guildTotal,
+					sales = sales,
+					purchases = purchases,
+					activity = sales + purchases,
+				}
+				activityList[currentCounter] = {
+					index = i,
+					name = guildName,
+					total = guildTotal,
+					sales = sales,
+					purchases = purchases,
+					activity = sales + purchases,
+				}
+				previousCounter = previousCounter + 1
+				prevNamesList[previousCounter] = {
+					index = i,
+					name = guildName,
+					total = prevGuildTotal,
+					sales = prevSales,
+					purchases = prevPurchases,
+					activity = prevSales + prevPurchases,
+				}
+				prevSalesList[previousCounter] = {
+					index = i,
+					name = guildName,
+					total = prevGuildTotal,
+					sales = prevSales,
+					purchases = prevPurchases,
+					activity = prevSales + prevPurchases,
+				}
+				prevPurchaseList[previousCounter] = {
+					index = i,
+					name = guildName,
+					total = prevGuildTotal,
+					sales = prevSales,
+					purchases = prevPurchases,
+					activity = prevSales + prevPurchases,
+				}
+				prevActivityList[previousCounter] = {
+					index = i,
+					name = guildName,
+					total = prevGuildTotal,
+					sales = prevSales,
+					purchases = prevPurchases,
+					activity = prevSales + prevPurchases,
+				}
+			end
 			guildTotal = 0
 			sales = 0
 			purchases = 0

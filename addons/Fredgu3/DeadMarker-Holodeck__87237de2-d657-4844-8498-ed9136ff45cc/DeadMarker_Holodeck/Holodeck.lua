@@ -5,6 +5,7 @@
 --   AddOnVersion (manifest) = major*10000 + minor*100 + patch
 --   0.0.27 → 27
 --
+-- 0.0.44: Facing cones were 180° off (dashes hid it); flashlight +π
 -- 0.0.43: Frame dots + filled dashes; flashlight facing; library # separator
 -- 0.0.42: Group-test freeze — simplified packs, vLC Count, HUD/frame/facing
 -- 0.0.41: Thicker frame dashes; boss facing from movement
@@ -38,7 +39,7 @@
 local Holodeck = Holodeck or {}
 Holodeck.name        = "DeadMarker_Holodeck"
 Holodeck.displayName = "Holodeck"
-Holodeck.version     = "0.0.43"
+Holodeck.version     = "0.0.44"
 
 Holodeck.Fights = Holodeck.Fights or {}
 function Holodeck.RegisterFight(fight)
@@ -807,7 +808,9 @@ local function PlaceFacing(act)
     ctl:SetAlpha(0.88)
     if ctl.SetDimensions then ctl:SetDimensions(168, 120) end
     if ctl.SetTransformScale then ctl:SetTransformScale(size) end
-    local yaw = WorldYawFromPack(act.x or 0, act.z or 0, (act.x or 0) + ux, (act.z or 0) + uz)
+    -- +π: pitch=π/2 lays the quad on XZ with texture +X opposite atan2(dx, dz).
+    -- Symmetric dashes hid this; the flashlight cone does not.
+    local yaw = WorldYawFromPack(act.x or 0, act.z or 0, (act.x or 0) + ux, (act.z or 0) + uz) + math.pi
     WS_SetAtRaw(ctl, wx, wy, wz, math.pi / 2, yaw, 0)
 end
 

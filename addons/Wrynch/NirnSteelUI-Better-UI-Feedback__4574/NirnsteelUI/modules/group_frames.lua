@@ -741,11 +741,13 @@ end
 local function AnchorIdentity(row, data, width, identityHeight)
     local leftOffset = 0
     local centerY = identityHeight * 0.5
-    local function AnchorLeft(control, visible, controlWidth)
+    local iconCenterY = centerY - 2
+    local levelCenterY = centerY + 1
+    local function AnchorLeft(control, visible, controlWidth, verticalPosition)
         control:SetHidden(not visible)
         if visible then
             control:ClearAnchors()
-            control:SetAnchor(LEFT, row.player, TOPLEFT, leftOffset, centerY)
+            control:SetAnchor(LEFT, row.player, TOPLEFT, leftOffset, verticalPosition or centerY)
             leftOffset = leftOffset + controlWidth + 3
         end
     end
@@ -754,15 +756,15 @@ local function AnchorIdentity(row, data, width, identityHeight)
     if roleVisible and ZO_GetRoleIcon then
         row.roleIcon:SetTexture(ZO_GetRoleIcon(data.role))
     end
-    AnchorLeft(row.roleIcon, roleVisible, STATUS_ICON_SIZE)
+    AnchorLeft(row.roleIcon, roleVisible, STATUS_ICON_SIZE, iconCenterY)
     local classVisible = GetSetting("showClassIcon") ~= false and data.classIcon ~= nil
     if classVisible then
         row.classIcon:SetTexture(data.classIcon)
     end
-    AnchorLeft(row.classIcon, classVisible, STATUS_ICON_SIZE)
+    AnchorLeft(row.classIcon, classVisible, STATUS_ICON_SIZE, iconCenterY)
 
     local levelWidth = ApplyLevelBadge(row, data)
-    AnchorLeft(row.levelControl, levelWidth > 0, levelWidth)
+    AnchorLeft(row.levelControl, levelWidth > 0, levelWidth, levelCenterY)
 
     local rightOffset = 0
     local function AnchorRight(control, visible)

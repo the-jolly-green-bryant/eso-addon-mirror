@@ -142,21 +142,21 @@ function Public.FormatTime( ms, format )
 	end
 
 	if (format == Public.TIME_FORMAT_COUNTDOWN and ms < 3000) then
-		return(string.format("%.1fs", ms / 1000))
+		return string.format("%.1fs", ms / 1000)
 	elseif (format ~= Public.TIME_FORMAT_LONG) then
 		if (ms > 5400000 and format == Public.TIME_FORMAT_COMPACT) then
-			return(string.format("%dh", zo_round(ms / 3600000)))
+			return string.format("%dh", zo_round(ms / 3600000))
 		elseif (ms > 90000 and format == Public.TIME_FORMAT_COMPACT) then
-			return(string.format("%dm", zo_round(ms / 60000)))
+			return string.format("%dm", zo_round(ms / 60000))
 		else
-			return(string.format("%ds", zo_floor(ms / 1000)))
+			return string.format("%ds", zo_floor(ms / 1000))
 		end
 	else
-		return(string.format(
+		return string.format(
 			"%d:%02d",
 			zo_floor(ms / 60000),
 			zo_floor(ms / 1000) % 60
-		))
+		)
 	end
 end
 
@@ -246,11 +246,11 @@ function Public.GetDistance( unitTag1, unitTag2, useHeight, validate, useMapPosi
 	end
 
 	if (validate and (zone1 == 0 or zone1 ~= zone2)) then
-		return(-1)
+		return -1
 	elseif (useHeight) then
-		return(zo_sqrt(Public.GetDistanceSquared(x1, y1, z1, x2, y2, z2)) / 100)
+		return zo_sqrt(Public.GetDistanceSquared(x1, y1, z1, x2, y2, z2)) / 100
 	else
-		return(zo_sqrt(Public.GetDistanceSquared(x1, 0, z1, x2, 0, z2)) / 100)
+		return zo_sqrt(Public.GetDistanceSquared(x1, 0, z1, x2, 0, z2)) / 100
 	end
 end
 

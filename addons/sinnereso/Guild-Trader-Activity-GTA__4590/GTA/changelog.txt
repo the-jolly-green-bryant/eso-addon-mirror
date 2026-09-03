@@ -1,4 +1,5 @@
-2026.08.17
+2026.09.02
+- Filtered out guilds that haven't had any sales in the past 2 weeks from being listed.
 - Minor cosmetic tweaks.
 
 ** POSSIBLE FUTURE OPTIONS **

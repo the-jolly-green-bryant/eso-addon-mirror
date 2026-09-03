@@ -79,7 +79,7 @@ local RESOURCE_DATA =
 {
     health = {
         powerType = COMBAT_MECHANIC_FLAGS_HEALTH,
-        color = { 0.72, 0.06, 0.08, 0.96 },
+        color = { 0.98, 0.18, 0.20, 0.98 },
         endColor = { 0.98, 0.18, 0.20, 0.98 },
         label = "Health",
     },

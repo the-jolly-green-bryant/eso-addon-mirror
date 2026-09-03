@@ -659,9 +659,11 @@ function Module:ProcessCombatEvents( result, isError, abilityName, abilityGraphi
 				LCA.PlaySounds("DUEL_BOUNDARY_WARNING", 3, 750, "DUEL_BOUNDARY_WARNING", 3, 750, "DUEL_BOUNDARY_WARNING", 3)
 			end
 		end
-	elseif (result == ACTION_RESULT_EFFECT_GAINED and DATA.summon_atroEffect[abilityId] and LCA.DoesPlayerHaveTauntSlotted()) then
+	elseif (result == ACTION_RESULT_EFFECT_GAINED and DATA.summon_atroEffect[abilityId]) then
 		Vars.twinsHM = true
-		CA1.Alert(nil, LCA.GetAbilityName(abilityId), DATA.summon_atroEffect[abilityId], SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
+		if (LCA.DoesPlayerHaveTauntSlotted()) then
+			CA1.Alert(nil, LCA.GetAbilityName(abilityId), DATA.summon_atroEffect[abilityId], SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
+		end
 	elseif (result == ACTION_RESULT_BEGIN and DATA.summon_atroBegin[abilityId] and LCA.DoesPlayerHaveTauntSlotted()) then
 		CA1.Alert(nil, LCA.GetAbilityName(abilityId), DATA.summon_atroBegin[abilityId], SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
 	elseif (result == ACTION_RESULT_EFFECT_GAINED and DATA.brands[abilityId] and targetType == COMBAT_UNIT_TYPE_PLAYER and hitValue == 1) then

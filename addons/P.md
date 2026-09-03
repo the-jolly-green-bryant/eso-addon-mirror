@@ -42,6 +42,10 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [PB's ChatAssistant(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PB-s-ChatAssistant-Beta__8409de55-043d-4bcc-8876-395671fdc7b5) | PinkBanther | Console | — |
 | [PB's MiniMap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PB-s-MiniMap__d636a31f-9393-47d7-b16f-8d932870cff3) | PinkBanther | Console | — |
 | [PB's MiniMap(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PB-s-MiniMap-Beta__d0219382-bec1-477e-bcc2-d2b0c7138a79) | PinkBanther | Console | — |
+| [PB's QuestTrackerFontChanger](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PB-s-QuestTrackerFontChanger__cc94a283-12a5-4e75-8e54-727d2ab6977c) | PinkBanther | Console | — |
+| [PB's QuestTrackerFontChanger(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PB-s-QuestTrackerFontChanger-Beta__35920898-3b27-4e32-9f59-c0d8fee0b3bb) | PinkBanther | Console | — |
+| [PBs' NamePlateFontChanger](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PBs-NamePlateFontChanger__c370eaba-64de-4a9b-9d9a-d6bd0c3db0aa) | PinkBanther | Console | — |
+| [PBs' NamePlateFontChanger(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PBs-NamePlateFontChanger-Beta__dda2c060-41fd-485e-b1f1-39c1b6f7ca6f) | PinkBanther | Console | — |
 | [pChat (Chat customization & help: look/notification/sound/automation/history)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Puddy/pChat-Chat-customization-help-look-notification-sound-automation-history__93) | Puddy | PC / Mac | 10.0.7.4 |
 | [pChat - jp Nickname Patch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Marify/pChat---jp-Nickname-Patch__2697) | Marify | PC / Mac | 1.3.12 |
 | [pChatZHPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FusRoDah/pChatZHPatch__3908) | FusRoDah | PC / Mac | 10.0.5.3 |

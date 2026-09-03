@@ -4878,6 +4878,13 @@ function T:TravelMapTeleporterEntry(entry)
     local ok
     if arg2 ~= nil then ok = pcall(fn, arg, arg2) else ok = pcall(fn, arg) end
     if not ok then EPC:Print("ESO rejected the travel request. The destination or access state may have changed.") return false end
+
+    -- v0.29.156: Suite Teleporter can use social/house jump APIs that bypass
+    -- the normal FastTravelToNode hook. Arm the arrival message only after ESO
+    -- accepted the travel request so every Teleporter travel path is covered.
+    if EPC.WayshrineAutoMessage and type(EPC.WayshrineAutoMessage.ArmSuiteTeleporterTravel) == "function" then
+        pcall(EPC.WayshrineAutoMessage.ArmSuiteTeleporterTravel, EPC.WayshrineAutoMessage, entry)
+    end
     return true
 end
 
@@ -9486,6 +9493,29 @@ function T:Initialize()
         end)
     else
         schedulePrewarm()
+    end
+    return result
+end
+
+
+-- ============================================================================
+-- v0.29.144 - Teleporter camera isolation + 3D recovery hook.
+-- The final Teleporter uses SCENE_MANAGER's registered top-level host. Retire
+-- the older direct camera-UI helpers so no legacy handler can change camera mode
+-- behind the native host, then refresh Suite 3D render spaces after close.
+-- ============================================================================
+function T:SetMapTeleporterOverlayUIMode029135(active)
+    return false
+end
+function T:SetMapTeleporterOverlayUIMode029132(active)
+    return false
+end
+
+local EAS_FinishMapTeleporterHotkeyCloseBase029144 = T.FinishMapTeleporterHotkeyClose029136
+function T:FinishMapTeleporterHotkeyClose029136(skipRefresh, hostAlreadyHidden)
+    local result = EAS_FinishMapTeleporterHotkeyCloseBase029144(self, skipRefresh, hostAlreadyHidden)
+    if EPC and EPC.ResourcePins and EPC.ResourcePins.ScheduleSuite3DRecovery029144 then
+        EPC.ResourcePins:ScheduleSuite3DRecovery029144("Teleporter closed", 220)
     end
     return result
 end

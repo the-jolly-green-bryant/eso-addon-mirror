@@ -85,6 +85,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Shissu's Guild Tools](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shissu/Shissu-s-Guild-Tools__910) | Shissu | PC / Mac | 3.5.19-2 |
 | [Shissu's LUA Memory](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shissu/Shissu-s-LUA-Memory__883) | Shissu | PC / Mac | 2.0.1.9 |
 | [Shissu's Teleporter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shissu/Shissu-s-Teleporter__2832) | Shissu | PC / Mac | 1.6.2 |
+| [Sho's PvP Banker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sshogrin/Sho-s-PvP-Banker__4809) | sshogrin | PC / Mac | 1.0.0 |
 | [ShogrinUI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sshogrin/ShogrinUI__8e6dc008-7b2f-4d55-8a1b-3ee825b1de0f) | sshogrin | Console | — |
 | [ShogrinUI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sshogrin/ShogrinUI__3527) | sshogrin | PC / Mac | 1.1.7 |
 | [Shopkeeper (Improved, Fixed and Updated)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/dopiate/Shopkeeper-Improved-Fixed-and-Updated__864) | dopiate | PC / Mac | 1.0 (dOpiate Fix).7b |
@@ -193,7 +194,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [SlowDialogs - Custom Control Patch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tyx/SlowDialogs---Custom-Control-Patch__1767) | Tyx | PC / Mac | 1.1.3 |
 | [Smart Chat Messages](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/evainefaye/Smart-Chat-Messages__4482) | evainefaye | PC / Mac | 1.9.1 |
 | [Smart Looter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Smart-Looter__09511722-e9f3-4e32-b5f9-d04c0cbee9c4) | code65536 | Console | — |
-| [Smart Looter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Smart-Looter__2303) | code65536 | PC / Mac | 1.1.0 |
+| [Smart Looter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Smart-Looter__2303) | code65536 | PC / Mac | 1.1.1 |
 | [Smart Node Radar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/rockintrumpet/Smart-Node-Radar__923318b4-3671-40d4-93f3-49d2f9203093) | rockintrumpet | Console | — |
 | [Smart Trader](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/clubwratt/Smart-Trader__d9742ac5-f315-4712-8383-b1a170801ba9) | clubwratt | Console | — |
 | [SmartBags Renascence](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Werewolf-Finds-Dragon/SmartBags-Renascence__1952) | Werewolf Finds Dragon | PC / Mac | 003-100022 |

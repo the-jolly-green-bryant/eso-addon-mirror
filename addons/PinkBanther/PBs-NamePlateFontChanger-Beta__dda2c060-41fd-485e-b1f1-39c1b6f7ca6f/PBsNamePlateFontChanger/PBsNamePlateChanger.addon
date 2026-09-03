@@ -1,0 +1,23 @@
+## To release a new version, edit the version in the two lines below and nothing else.
+## |cRRGGBB...|r in Title and Author colours them in the in-game add-on list; the version
+## is read back through that markup, so it can sit inside or outside the colour.
+## The settings panel takes its version from ## Title; the name itself is fixed in Main.lua.
+## Title: |cFF69B4PB’s NamePlateChanger|r 1.1.0
+## Author: |cFF69B4PinkBanther|r
+## Description: Adjusts the font of the names above characters' heads -- size, typeface and outline. The game draws those nametags itself, so their line order cannot be changed by an add-on; the font can.
+## Version: 1.1.0
+## APIVersion: 101050 101051
+## DependsOn: LibHarvensAddonSettings>=20106
+## Both previous names' saved variables are still declared so the untouched nameplate font
+## captured under them can be migrated. Without that the add-on captures the *modified* font
+## as the original and "reset" never gets back to stock -- which is exactly what happened on
+## the first rename. Safe to drop a few versions from now.
+## SavedVariables: PBsNamePlateChanger_Data PBsNamePlateFontChanger_Data PBsNameTagOptimizer_Data
+
+lang/strings.lua
+lang/$(language).lua
+
+Main.lua
+Settings.lua
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls© and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.

@@ -327,17 +327,20 @@ function A:RefreshWidget(widget)
     end
     if widget.epcUltimatePct then
         if isUltimate and used and COMBAT_MECHANIC_FLAGS_ULTIMATE then
-            local current, maximum = safe(GetUnitPower, 0, "player", COMBAT_MECHANIC_FLAGS_ULTIMATE)
-            current, maximum = tonumber(current) or 0, tonumber(maximum) or 0
-            -- Display Ultimate readiness relative to the slotted Ultimate's
-            -- real cost, but cap the visual percentage at 100%. ESO may keep
-            -- storing additional Ultimate points internally after the skill is ready.
+            local current = safe(GetUnitPower, 0, "player", COMBAT_MECHANIC_FLAGS_ULTIMATE)
+            current = tonumber(current) or 0
+            -- ESO stores Ultimate as a 0..500 point pool. Show that stored
+            -- pool directly as 0%..500% instead of converting the equipped
+            -- Ultimate's cost into a 0..100 readiness percentage. Readiness is
+            -- still determined from the real slotted Ultimate cost below, so
+            -- the meter can continue charging after the ability is usable.
             local cost = tonumber(safe(GetSlotAbilityCost, 0, slot)) or 0
-            local target = cost > 0 and cost or maximum
-            local pct = target > 0 and math.floor((current / target) * 100 + 0.5) or 0
-            pct = math.max(0, math.min(100, pct))
+            -- Current ESO Ultimate storage is capped at 500. Keep a defensive
+            -- upper bound here so a transient/bad API value cannot overflow UI.
+            local pct = math.max(0, math.min(500, math.floor(current + 0.5)))
+            local ready = cost > 0 and current >= cost
             widget.epcUltimatePct:SetText(tostring(pct) .. "%")
-            widget.epcUltimatePct:SetColor(pct >= 100 and 1.00 or 0.93, pct >= 100 and 0.76 or 0.86, pct >= 100 and 0.18 or 0.36, 1)
+            widget.epcUltimatePct:SetColor(ready and 1.00 or 0.93, ready and 0.76 or 0.86, ready and 0.18 or 0.36, 1)
             widget.epcUltimatePct:SetHidden(false)
         else
             widget.epcUltimatePct:SetHidden(true)

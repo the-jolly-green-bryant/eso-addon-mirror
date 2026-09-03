@@ -1,4 +1,4 @@
-Curved Resource HUD 0.9.17
+Curved Resource HUD 0.9.19
 
 Upload CurvedHUD as one folder with CurvedHUD.addon at its root.
 The package contains exactly one .addon manifest, as required by the console uploader.
@@ -18,7 +18,19 @@ If neither library loads, the HUD still renders. Chat commands:
 frame; while hidden, ESO's self-buff row moves down into the available space.
 
 Expected startup chat line:
-  [CurvedHUD] Loaded 0.9.17; HUD, shield, and trackers created
+  [CurvedHUD] Loaded 0.9.19; HUD, shield, and trackers created
+
+0.9.19 restores Turning Tide's complete state cycle. Flowing Water displays the
+green READY state, consuming it early with the activating Bash begins the full
+15-second cooldown countdown, and allowing it to expire unused returns to WAIT.
+All four upper tracker icons now share one vertical row and all four lower icons
+share another, without altering their calibrated horizontal positions.
+
+0.9.18 moves CurvedHUD's large console settings-tree construction out of the
+shared add-on-load frame. Settings register twelve seconds after the character
+becomes active, after Fancy Action Bar, LibAddonMenu/LibVotans and other large
+add-ons have normally completed initialization. The HUD remains available
+immediately; only opening CurvedHUD's settings is briefly delayed after login.
 
 0.9.17 hardens repeated character loading against ESO's 1000 ms UI watchdog.
 Inventory event bursts are debounced, activation work is coalesced, and learned

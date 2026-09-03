@@ -1,6 +1,6 @@
 -- ESO Adventurer Suite
--- Saved gear + dual action-bar loadouts inspired by the classic Dressing Room workflow.
--- Native implementation; no Dressing Room source code is included.
+-- Saved character builds: gear, dual action bars, Champion profile/slots, and attribute profile.
+-- Native implementation; no third-party loadout source code is included.
 
 local EPC = ESOProgressionCoach
 EPC.LoadoutManager = EPC.LoadoutManager or {}
@@ -44,11 +44,16 @@ end
 
 function L:EnsureSaved()
     EPC.saved = EPC.saved or {}
+    -- Keep the original SavedVariables key so every existing loadout survives
+    -- the upgrade from loadouts to full saved builds.
     EPC.saved.savedLoadouts = EPC.saved.savedLoadouts or {}
     for i=1,SLOT_COUNT do
-        EPC.saved.savedLoadouts[i] = EPC.saved.savedLoadouts[i] or { name = "Loadout " .. i }
-        if not EPC.saved.savedLoadouts[i].name or EPC.saved.savedLoadouts[i].name == "" then
-            EPC.saved.savedLoadouts[i].name = "Loadout " .. i
+        EPC.saved.savedLoadouts[i] = EPC.saved.savedLoadouts[i] or { name = "Build " .. i }
+        local d = EPC.saved.savedLoadouts[i]
+        if not d.name or d.name == "" then
+            d.name = "Build " .. i
+        elseif d.name == ("Loadout " .. i) then
+            d.name = "Build " .. i
         end
     end
     return EPC.saved.savedLoadouts
@@ -93,22 +98,191 @@ function L:CaptureGear()
     return gear
 end
 
+function L:CaptureAttributes()
+    local health = tonumber(safe(GetAttributeSpentPoints, 0, rawget(_G, "ATTRIBUTE_HEALTH") or 1)) or 0
+    local magicka = tonumber(safe(GetAttributeSpentPoints, 0, rawget(_G, "ATTRIBUTE_MAGICKA") or 2)) or 0
+    local stamina = tonumber(safe(GetAttributeSpentPoints, 0, rawget(_G, "ATTRIBUTE_STAMINA") or 3)) or 0
+    return { health = health, magicka = magicka, stamina = stamina, total = health + magicka + stamina }
+end
+
+function L:GetChampionSlots()
+    local first, last = 1, 12
+    if type(GetAssignableChampionBarStartAndEndSlots) == "function" then
+        local a,b = safe(GetAssignableChampionBarStartAndEndSlots, nil)
+        first = tonumber(a) or first
+        last = tonumber(b) or last
+    end
+    if last < first then first, last = 1, 12 end
+    return first, last
+end
+
+function L:CaptureChampion()
+    local champion = { allocations = {}, slots = {}, allocatedPoints = 0, allocationCount = 0, slottedCount = 0 }
+    if type(GetNumChampionDisciplines) == "function" and type(GetNumChampionDisciplineSkills) == "function"
+        and type(GetChampionSkillId) == "function" and type(GetNumPointsSpentOnChampionSkill) == "function" then
+        local disciplines = tonumber(safe(GetNumChampionDisciplines, 0)) or 0
+        for di=1,disciplines do
+            local skillCount = tonumber(safe(GetNumChampionDisciplineSkills, 0, di)) or 0
+            for si=1,skillCount do
+                local id = tonumber(safe(GetChampionSkillId, 0, di, si)) or 0
+                if id > 0 then
+                    local points = tonumber(safe(GetNumPointsSpentOnChampionSkill, 0, id)) or 0
+                    if points > 0 then
+                        champion.allocations[tostring(id)] = points
+                        champion.allocatedPoints = champion.allocatedPoints + points
+                        champion.allocationCount = champion.allocationCount + 1
+                    end
+                end
+            end
+        end
+    end
+    local category = rawget(_G, "HOTBAR_CATEGORY_CHAMPION")
+    if category ~= nil and type(GetSlotBoundId) == "function" then
+        local first,last = self:GetChampionSlots()
+        champion.firstSlot, champion.lastSlot = first,last
+        for slot=first,last do
+            local id = tonumber(safe(GetSlotBoundId, 0, slot, category)) or 0
+            champion.slots[tostring(slot)] = id
+            if id > 0 then champion.slottedCount = champion.slottedCount + 1 end
+        end
+    end
+    return champion
+end
+
+function L:CaptureSkillProfile()
+    local profile = { purchased = {}, purchasedCount = 0 }
+    if type(GetNumSkillTypes) ~= "function" or type(GetNumSkillLines) ~= "function"
+        or type(GetNumSkillAbilities) ~= "function" or type(GetSkillAbilityInfo) ~= "function" then return profile end
+    local typeCount = tonumber(safe(GetNumSkillTypes, 0)) or 0
+    for skillType=1,typeCount do
+        local lineCount = tonumber(safe(GetNumSkillLines, 0, skillType)) or 0
+        for skillLine=1,lineCount do
+            local abilityCount = tonumber(safe(GetNumSkillAbilities, 0, skillType, skillLine)) or 0
+            for abilityIndex=1,abilityCount do
+                local _,_,_,passive,ultimate,purchased,progressionIndex,rank = safe(GetSkillAbilityInfo, nil, skillType, skillLine, abilityIndex)
+                if purchased == true then
+                    local key = string.format("%d:%d:%d", skillType, skillLine, abilityIndex)
+                    local abilityId = type(GetSkillAbilityId) == "function" and (tonumber(safe(GetSkillAbilityId, 0, skillType, skillLine, abilityIndex, false)) or 0) or 0
+                    profile.purchased[key] = {
+                        abilityId = abilityId,
+                        passive = passive == true,
+                        ultimate = ultimate == true,
+                        progressionIndex = tonumber(progressionIndex) or 0,
+                        rank = tonumber(rank) or 0,
+                    }
+                    profile.purchasedCount = profile.purchasedCount + 1
+                end
+            end
+        end
+    end
+    return profile
+end
+
+function L:VerifySkillProfile(profile)
+    if type(profile) ~= "table" or type(profile.purchased) ~= "table" or type(GetSkillAbilityInfo) ~= "function" then return 0,0 end
+    local matched, expected = 0,0
+    for key,_ in pairs(profile.purchased) do
+        local a,b,c = string.match(key, "^(%d+):(%d+):(%d+)$")
+        a,b,c = tonumber(a),tonumber(b),tonumber(c)
+        if a and b and c then
+            expected = expected + 1
+            local _,_,_,_,_,purchased = safe(GetSkillAbilityInfo, nil, a,b,c)
+            if purchased == true then matched = matched + 1 end
+        end
+    end
+    return matched,expected
+end
+
+function L:CaptureBuildProfile()
+    return {
+        version = 2,
+        attributes = self:CaptureAttributes(),
+        champion = self:CaptureChampion(),
+        skills = self:CaptureSkillProfile(),
+    }
+end
+
+function L:ApplyChampionSlots(champion)
+    if type(champion) ~= "table" or type(champion.slots) ~= "table" then return 0,0 end
+    local category = rawget(_G, "HOTBAR_CATEGORY_CHAMPION")
+    if category == nil or type(GetSlotBoundId) ~= "function" then return 0,0 end
+    if type(PrepareChampionPurchaseRequest) ~= "function" or type(AddHotbarSlotToChampionPurchaseRequest) ~= "function"
+        or type(SendChampionPurchaseRequest) ~= "function" then return 0,1 end
+
+    local changed = 0
+    for slotText,wanted in pairs(champion.slots) do
+        local slot = tonumber(slotText)
+        if slot then
+            local current = tonumber(safe(GetSlotBoundId, 0, slot, category)) or 0
+            if current ~= (tonumber(wanted) or 0) then changed = changed + 1 end
+        end
+    end
+    if changed == 0 then return 0,0 end
+
+    local ok = pcall(PrepareChampionPurchaseRequest, false)
+    if not ok then return 0,changed end
+    local failed = 0
+    for slotText,wanted in pairs(champion.slots) do
+        local slot = tonumber(slotText)
+        if slot then
+            local addOk = pcall(AddHotbarSlotToChampionPurchaseRequest, slot, tonumber(wanted) or 0)
+            if not addOk then failed = failed + 1 end
+        end
+    end
+    local expected = type(GetExpectedResultForChampionPurchaseRequest) == "function" and safe(GetExpectedResultForChampionPurchaseRequest, nil) or nil
+    local successConst = rawget(_G, "CHAMPION_PURCHASE_SUCCESS")
+    if expected ~= nil and successConst ~= nil and expected ~= successConst then return 0,math.max(1,failed) end
+    local sent, result = pcall(SendChampionPurchaseRequest)
+    if not sent or result == false then return 0,math.max(1,failed) end
+    return changed,failed
+end
+
+function L:VerifyChampionProfile(champion)
+    if type(champion) ~= "table" then return 0,0,0,0 end
+    local slotMatched, slotExpected = 0,0
+    local category = rawget(_G, "HOTBAR_CATEGORY_CHAMPION")
+    if category ~= nil and type(GetSlotBoundId) == "function" then
+        for slotText,wanted in pairs(champion.slots or {}) do
+            local slot = tonumber(slotText)
+            if slot then
+                slotExpected = slotExpected + 1
+                local current = tonumber(safe(GetSlotBoundId, 0, slot, category)) or 0
+                if current == (tonumber(wanted) or 0) then slotMatched = slotMatched + 1 end
+            end
+        end
+    end
+    local pointMatched, pointExpected = 0,0
+    if type(GetNumPointsSpentOnChampionSkill) == "function" then
+        for idText,wanted in pairs(champion.allocations or {}) do
+            local id = tonumber(idText)
+            if id then
+                pointExpected = pointExpected + 1
+                if (tonumber(safe(GetNumPointsSpentOnChampionSkill, 0, id)) or 0) == (tonumber(wanted) or 0) then
+                    pointMatched = pointMatched + 1
+                end
+            end
+        end
+    end
+    return slotMatched,slotExpected,pointMatched,pointExpected
+end
+
 function L:Save(index)
     index = tonumber(index)
     if not index or index < 1 or index > SLOT_COUNT then return false end
     if safe(IsUnitInCombat, false, "player") == true then
-        notify("LOADOUT: leave combat before saving or changing equipment.", false)
+        notify("BUILD: leave combat before saving or changing equipment.", false)
         return false
     end
     local all = self:EnsureSaved()
-    local oldName = all[index].name or ("Loadout " .. index)
+    local oldName = all[index].name or ("Build " .. index)
     all[index] = {
         name = oldName,
         gear = self:CaptureGear(),
         bars = self:CaptureBars(),
+        build = self:CaptureBuildProfile(),
         savedAt = safe(GetTimeStamp, 0) or 0,
     }
-    notify(string.format("LOADOUT %d SAVED: %s", index, oldName), true)
+    notify(string.format("BUILD %d SAVED: %s", index, oldName), true)
     self:RefreshUI()
     return true
 end
@@ -354,10 +528,10 @@ function L:ApplyGearSequential(gear, callback)
 end
 
 function L:Verify(index)
-    local loadout = self:EnsureSaved()[index]
-    if not loadout or not loadout.gear then return end
+    local build = self:EnsureSaved()[index]
+    if not build or not build.gear then return end
     local gearMatched, gearExpected = 0, 0
-    for slotText,entry in pairs(loadout.gear) do
+    for slotText,entry in pairs(build.gear) do
         local slot = tonumber(slotText)
         if slot then
             gearExpected = gearExpected + 1
@@ -373,44 +547,64 @@ function L:Verify(index)
     local barsMatched, barsExpected = 0, 0
     local current = self:CaptureBars()
     for _,key in ipairs({"primary","backup"}) do
-        for i,wanted in ipairs((loadout.bars and loadout.bars[key]) or {}) do
+        for i,wanted in ipairs((build.bars and build.bars[key]) or {}) do
             barsExpected = barsExpected + 1
             if tonumber(current[key][i]) == tonumber(wanted) then barsMatched = barsMatched + 1 end
         end
     end
-    local complete = gearMatched == gearExpected and barsMatched == barsExpected
-    notify(string.format("LOADOUT %d %s: Gear %d/%d | Bars %d/%d", index, complete and "CONFIRMED" or "PARTIAL", gearMatched, gearExpected, barsMatched, barsExpected), complete)
+
+    local profile = build.build or {}
+    local cpSlotMatched,cpSlotExpected,cpPointMatched,cpPointExpected = self:VerifyChampionProfile(profile.champion)
+    local skillMatched,skillExpected = self:VerifySkillProfile(profile.skills)
+    local attrs = profile.attributes
+    local attrMatch = true
+    local attrText = ""
+    if type(attrs) == "table" then
+        local now = self:CaptureAttributes()
+        attrMatch = now.health == (tonumber(attrs.health) or 0) and now.magicka == (tonumber(attrs.magicka) or 0) and now.stamina == (tonumber(attrs.stamina) or 0)
+        attrText = string.format(" | Attr H%d/M%d/S%d%s", tonumber(attrs.health) or 0, tonumber(attrs.magicka) or 0, tonumber(attrs.stamina) or 0, attrMatch and "" or " (profile differs)")
+    end
+    local cpSlotsComplete = cpSlotExpected == 0 or cpSlotMatched == cpSlotExpected
+    local cpPointsComplete = cpPointExpected == 0 or cpPointMatched == cpPointExpected
+    local skillsComplete = skillExpected == 0 or skillMatched == skillExpected
+    local complete = gearMatched == gearExpected and barsMatched == barsExpected and cpSlotsComplete and cpPointsComplete and skillsComplete and attrMatch
+    notify(string.format("BUILD %d %s: Gear %d/%d | Bars %d/%d | Skills %d/%d | CP Slots %d/%d | CP Profile %d/%d%s",
+        index, complete and "CONFIRMED" or "PARTIAL", gearMatched, gearExpected, barsMatched, barsExpected, skillMatched, skillExpected,
+        cpSlotMatched, cpSlotExpected, cpPointMatched, cpPointExpected, attrText), complete)
 end
 
 function L:Equip(index)
     index = tonumber(index)
     if not index or index < 1 or index > SLOT_COUNT then return false end
     if self.equipInProgress then
-        notify("LOADOUT: another saved loadout is still being applied.", false)
+        notify("BUILD: another saved build is still being applied.", false)
         return false
     end
     if safe(IsUnitInCombat, false, "player") == true then
-        notify("LOADOUT: leave combat before equipping a saved loadout.", false)
+        notify("BUILD: leave combat before applying a saved build.", false)
         return false
     end
     local loadout = self:EnsureSaved()[index]
     if not loadout or not loadout.gear or not loadout.bars then
-        notify(string.format("LOADOUT %d is empty. Save your current build first.", index), false)
+        notify(string.format("BUILD %d is empty. Save your current build first.", index), false)
         return false
     end
 
     self.equipInProgress = true
-    notify(string.format("LOADOUT %d APPLYING: %s", index, tostring(loadout.name or ("Loadout "..index))), true)
+    notify(string.format("BUILD %d APPLYING: %s", index, tostring(loadout.name or ("Build "..index))), true)
 
     self:ApplyGearSequential(loadout.gear, function(gearRequested, missing)
         local function applyBarsAndVerify()
             local barChanged, barFailed = self:ApplyBars(loadout.bars)
-            notify(string.format("LOADOUT %d: %d gear request%s | %d bar change%s%s",
+            local cpChanged, cpFailed = self:ApplyChampionSlots(loadout.build and loadout.build.champion)
+            local unavailable = missing + barFailed + cpFailed
+            notify(string.format("BUILD %d: %d gear request%s | %d bar change%s | %d CP slot change%s%s",
                 index,
                 gearRequested, gearRequested==1 and "" or "s",
                 barChanged, barChanged==1 and "" or "s",
-                (missing+barFailed)>0 and string.format(" | %d unavailable", missing+barFailed) or ""),
-                (missing+barFailed)==0)
+                cpChanged, cpChanged==1 and "" or "s",
+                unavailable>0 and string.format(" | %d unavailable", unavailable) or ""),
+                unavailable==0)
 
             local function verifyDone()
                 self.equipInProgress = false
@@ -431,9 +625,9 @@ function L:Clear(index)
     index = tonumber(index)
     if not index or index < 1 or index > SLOT_COUNT then return false end
     local all = self:EnsureSaved()
-    local name = all[index].name or ("Loadout " .. index)
+    local name = all[index].name or ("Build " .. index)
     all[index] = { name = name }
-    notify(string.format("LOADOUT %d CLEARED: %s", index, name), true)
+    notify(string.format("BUILD %d CLEARED: %s", index, name), true)
     self:RefreshUI()
     return true
 end
@@ -442,12 +636,12 @@ function L:SetName(index, name, silent)
     index = tonumber(index)
     if not index or index < 1 or index > SLOT_COUNT then return false end
     name = tostring(name or ""):gsub("^%s+", ""):gsub("%s+$", "")
-    if name == "" then name = "Loadout " .. index end
+    if name == "" then name = "Build " .. index end
     name = string.sub(name, 1, 28)
     local all = self:EnsureSaved()
     all[index].name = name
     if silent ~= true then
-        notify(string.format("LOADOUT %d RENAMED: %s", index, name), true)
+        notify(string.format("BUILD %d RENAMED: %s", index, name), true)
     end
     self:RefreshUI()
     return true
@@ -622,26 +816,26 @@ function L:CreateUI()
 
     local title = wm:CreateControl("EAS_LoadoutManagerTitle", win, CT_LABEL)
     title:SetFont("ZoFontWinH2")
-    title:SetText("SAVED LOADOUTS")
+    title:SetText("SAVED BUILDS")
     title:SetAnchor(TOPLEFT, win, TOPLEFT, 18, 14)
     title:SetDimensions(420, 30)
     title:SetColor(0.94,0.97,1,1)
 
     local sub = wm:CreateControl("EAS_LoadoutManagerSub", win, CT_LABEL)
     sub:SetFont("ZoFontGameSmall")
-    sub:SetText("Resizable overlay. Save and equip gear + both action bars. Opens beside the Tamriel Codex.")
+    sub:SetText("Resizable build workspace. Save gear, both skill bars, Champion profile/slots, and attribute profile.")
     sub:SetAnchor(TOPLEFT, win, TOPLEFT, 19, 44)
     sub:SetDimensions(730, 20)
     sub:SetColor(0.58,0.68,0.80,1)
 
-    local close = makeButton("EAS_LoadoutManagerClose", win, "CLOSE LOADOUTS", function() self:Hide() end)
+    local close = makeButton("EAS_LoadoutManagerClose", win, "CLOSE BUILDS", function() self:Hide() end)
     close:SetAnchor(TOPRIGHT, win, TOPRIGHT, -14, 14)
     close:SetDimensions(150, 30)
     self.closeLoadoutsButton = close
 
     local helper = wm:CreateControl("EAS_LoadoutManagerHelper", win, CT_LABEL)
     helper:SetFont("ZoFontGameSmall")
-    helper:SetText("Each loadout shows both bars. Click NAME to rename a slot, then press Enter to keep it.")
+    helper:SetText("Each build shows both skill bars. APPLY restores gear, bars, and Champion slots; saved skill/CP/attribute profiles are verified too.")
     helper:SetAnchor(TOPLEFT, win, TOPLEFT, 19, 62)
     helper:SetDimensions(780, 18)
     helper:SetColor(0.48,0.58,0.70,1)
@@ -702,7 +896,7 @@ function L:CreateUI()
         end)
         edit:SetHandler("OnEscape", function(control)
             local all = self:EnsureSaved()
-            control:SetText((all[i] and all[i].name) or ("Loadout "..i))
+            control:SetText((all[i] and all[i].name) or ("Build "..i))
             if control.LoseFocus then control:LoseFocus() end
         end)
 
@@ -745,7 +939,7 @@ function L:CreateUI()
         local frontIcons = createIconRow("EAS_Loadout"..i.."Front", 49)
         local backIcons = createIconRow("EAS_Loadout"..i.."Back", 79)
 
-        local equip = makeButton("EAS_LoadoutEquip"..i, card, "EQUIP", function() self:Equip(i) end)
+        local equip = makeButton("EAS_LoadoutEquip"..i, card, "APPLY", function() self:Equip(i) end)
         equip:SetAnchor(BOTTOMLEFT, card, BOTTOMLEFT, 8, -8)
         equip:SetDimensions(55, 24)
         local save = makeButton("EAS_LoadoutSave"..i, card, "SAVE", function() self:Save(i) end)
@@ -770,7 +964,7 @@ function L:CreateUI()
 
     local footer = wm:CreateControl("EAS_LoadoutFooter", win, CT_LABEL)
     footer:SetFont("ZoFontGameSmall")
-    footer:SetText("Use EQUIP, SAVE, NAME, and CLEAR directly from this window.")
+    footer:SetText("Use APPLY, SAVE, NAME, and CLEAR. Skill, attribute, and full Champion respecs are saved as profiles and never paid automatically.")
     footer:SetAnchor(BOTTOMLEFT, win, BOTTOMLEFT, 18, -12)
     footer:SetDimensions(794, 18)
     footer:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
@@ -795,14 +989,17 @@ function L:RefreshUI()
         local c = self.cards[i]
         local d = all[i]
         if c and d then
-            if not c.edit:HasFocus() then c.edit:SetText(d.name or ("Loadout "..i)) end
+            if not c.edit:HasFocus() then c.edit:SetText(d.name or ("Build "..i)) end
             local gearCount = 0
             for _ in pairs(d.gear or {}) do gearCount = gearCount + 1 end
             local barCount = 0
             for _,key in ipairs({"primary","backup"}) do
                 for _,id in ipairs((d.bars and d.bars[key]) or {}) do if tonumber(id) and tonumber(id) > 0 then barCount = barCount + 1 end end
             end
-            c.status:SetText(d.gear and string.format("%d gear | %d skills", gearCount, barCount) or "EMPTY")
+            local cpSlots = d.build and d.build.champion and tonumber(d.build.champion.slottedCount) or 0
+            local attrs = d.build and d.build.attributes
+            local attrShort = attrs and string.format(" | H%d M%d S%d", tonumber(attrs.health) or 0, tonumber(attrs.magicka) or 0, tonumber(attrs.stamina) or 0) or ""
+            c.status:SetText(d.gear and string.format("G%d | S%d | CP%d%s", gearCount, barCount, cpSlots, attrShort) or "EMPTY")
             self:UpdateSkillIcons(c.frontIcons, d.bars and d.bars.primary)
             self:UpdateSkillIcons(c.backIcons, d.bars and d.bars.backup)
             if d.gear then
@@ -859,19 +1056,19 @@ function L:UpdateToggleLabels(isOpen)
     -- dismiss the loadout workspace.
     if EPC.Journal and EPC.Journal.suiteSpreads and EPC.Journal.suiteSpreads.GEAR then
         local b = EPC.Journal.suiteSpreads.GEAR.savedLoadoutsButton
-        if b and type(b.SetText) == "function" then b:SetText("OPEN LOADOUTS") end
+        if b and type(b.SetText) == "function" then b:SetText("OPEN BUILDS") end
     end
     if EPC.GearLoadoutOverlay and EPC.GearLoadoutOverlay.playerButton and type(EPC.GearLoadoutOverlay.playerButton.SetText) == "function" then
-        EPC.GearLoadoutOverlay.playerButton:SetText(isOpen and "LOADOUTS OPEN" or "OPEN LOADOUTS")
+        EPC.GearLoadoutOverlay.playerButton:SetText(isOpen and "BUILDS OPEN" or "OPEN BUILDS")
     end
     if self.closeLoadoutsButton and type(self.closeLoadoutsButton.SetText) == "function" then
-        self.closeLoadoutsButton:SetText("CLOSE LOADOUTS")
+        self.closeLoadoutsButton:SetText("CLOSE BUILDS")
     end
 end
 function L:Show()
     self:CreateUI()
 
-    -- Keep Live Equipment on screen while Saved Loadouts is open.
+    -- Keep Live Equipment on screen while Saved Builds is open.
     if EPC.GearLoadoutOverlay and type(EPC.GearLoadoutOverlay.SetLoadoutMode) == "function" then
         EPC.GearLoadoutOverlay:SetLoadoutMode(true)
     end
@@ -906,7 +1103,7 @@ function L:Show()
     self.window:SetHidden(false)
     self:UpdateToggleLabels(true)
 
-    -- While Saved Loadouts owns UI mode the normal general keybind can be
+    -- While Saved Builds owns UI mode the normal general keybind can be
     -- swallowed by ESO's UI. Push a dedicated layer that inherits the exact
     -- same Suite toggle binding so pressing that key returns to the Codex.
     if not self.loadoutActionLayerPushed and type(PushActionLayerByName) == "function" then
@@ -937,4 +1134,5 @@ function L:Initialize()
     self:EnsureWindowSaved()
     self:CreateUI()
     SLASH_COMMANDS["/easloadouts"] = function() self:Toggle() end
+    SLASH_COMMANDS["/easbuilds"] = function() self:Toggle() end
 end

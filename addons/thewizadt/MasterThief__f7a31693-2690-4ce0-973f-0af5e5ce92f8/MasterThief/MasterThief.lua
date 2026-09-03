@@ -1,128 +1,103 @@
-MasterThief = MasterThief or {}
+-----------------------------------------------------------
+-- MasterThief v2.15 - Pure Stealing & Treasure Value Estimator
+-----------------------------------------------------------
+local MasterThief = MasterThief or {}
 MasterThief.name = "MasterThief"
+
+local GetTimeStamp = GetTimeStamp
+local string_format = string.format
+local table_insert = table.insert
+local string_lower = string.lower
+local string_find = string.find
+local string_match = string.match
+local tonumber = tonumber
+local tostring = tostring
 
 MasterThief.defaultSettings = {
     showHUD = true,
-    showRouteInfo = true,
-    showSessionDrops = true,
+    showSessionStats = true,
     showTimer = true,
-    showMotifs = true,
-    showPlans = true,
+    announceInChat = true,
+    playLootSound = true,
     fontSize = 11,
     posX = 60,
     posY = 100,
-    bgColorR = 0,
-    bgColorG = 0,
-    bgColorB = 0,
-    bgColorA = 0.6,
-    debugMode = true,
-    autoDestroyWhiteJunk = true, -- Defaulted to true
+    bgColorR = 0.05,
+    bgColorG = 0.05,
+    bgColorB = 0.1,
+    bgColorA = 0.75,
+    debugMode = false,
+    lastResetDay = 0,
     charStats = {},
 }
 
-MasterThief.RoutesByID = {
-    ["vvardenfell"] = { zone = "Vvardenfell", spot = "Sadrith Mora", target = "Wealthy Targets", loot = "Triptych Paintings, Hlaalu/Redoran/Telvanni Motifs", method = "Safebox, Pickpocketing & Container", type = "motif" },
-    ["summerset"] = { zone = "Summerset", spot = "Alinor Academies", target = "Desks & Nightstands", loot = "Alinor Furnishing Plans", method = "Container Looting", type = "plan" },
-    ["northern elsweyr"] = { zone = "Northern Elsweyr", spot = "Rimmen Palaces", target = "Royal Containers", loot = "Elsweyr Furnishing Plans", method = "Pickpocketing and Container", type = "plan" },
-    ["western skyrim"] = { zone = "Western Skyrim", spot = "Solitude Manors", target = "High-Class Desks", loot = "Vampiric Furnishing Plans and Solitude Epic Plans", method = "Container, Pickpocketing & Safebox", type = "plan" },
-    ["high isle"] = { zone = "High Isle", spot = "Mandre Manor", target = "Estate Containers", loot = "Breton / High Isle Furnishing Plans", method = "Pickpocketing, Stealing & Container", type = "plan" },
-    ["galen"] = { zone = "Galen", spot = "Volcanic Vents", target = "House Mornard Homes", loot = "Druidic Furnishing Plans and Firesong Style Motif", method = "Pickpocketing, Safebox or Stealing", type = "plan" },
-    ["telvanni peninsula"] = { zone = "Telvanni Peninsula", spot = "Necrom Archives", target = "Magisters & Scholars", loot = "Necrom & Telvanni Furnishing Plans", method = "Pickpocketing, Safeboxes & Container", type = "motif" },
-    ["west weald"] = { zone = "West Weald", spot = "Skingrad Manors", target = "Colovian Nobles", loot = "Colovian / West Weald Furnishing Plans", method = "Container Looting", type = "plan" },
-    ["solstice"] = { zone = "Solstice", spot = "Sunport High-Rollers", target = "Luxury Coffers", loot = "Solstice Tide-Born Style and Stone-Nest", method = "Container and Safebox", type = "plan" },
-    ["hew's bane"] = { zone = "Hew's Bane", spot = "Abah's Landing Vaults", target = "Thief Lords", loot = "Redguard & Thieves Guild Furnishing Plans", method = "Pickpocketing & Safeboxes", type = "motif" },
-    ["gold coast"] = { zone = "Gold Coast", spot = "Kvatch / Anvil", target = "Gold Coast Citizens", loot = "Order of the Hour / Dark Brotherhood Motifs", method = "Pickpocketing & Safeboxes", type = "motif" },
-    ["wrothgar"] = { zone = "Wrothgar", spot = "Old Orsinium Stronghold", target = "Ancient Chests", loot = "Ancient Orc & Trinimac Epic Plans", method = "Container Looting", type = "plan" },
-    ["clockwork city"] = { zone = "Clockwork City", spot = "Brass Fortress Enclave", target = "Factotums & High Citizens", loot = "Clockwork Blueprint and Diagram Furnishing Plans", method = "Pickpocketing & Safeboxes", type = "plan" },
-    ["murkmire"] = { zone = "Murkmire", spot = "Lilmoth Trader Hubs", target = "Saxhleel Strongboxes", loot = "Murkmire Furnishing Plans", method = "Pickpocketing", type = "plan" },
-    ["southern elsweyr"] = { zone = "Southern Elsweyr", spot = "Senchal Vaults", target = "Dragonguard Quarters", loot = "Elsweyr Furnishing Plans", method = "Pickpocketing & Safeboxes", type = "plan" },
-    ["blackwood"] = { zone = "Blackwood", spot = "Leyawiin Castles", target = "Noble Quarters", loot = "Leyawiin Epic Blueprints & Diagrams", method = "Container and Safebox", type = "plan" },
-    ["the reach"] = { zone = "The Reach", spot = "Markarth Chieftain Quarters", target = "Reach Masters", loot = "Vampiric & Reach-Style Plans", method = "Pickpocketing & Safeboxes", type = "plan" },
-    ["arkthzand cavern"] = { zone = "Arkthzand Cavern", spot = "Dwarven Ruins", target = "Ancient Desks", loot = "Markarth / Dwarven Furnishing Plans", method = "Container Looting", type = "plan" },
-    ["the deadlands"] = { zone = "The Deadlands", spot = "Fargrave Faction Elite", target = "Dremora Lords", loot = "Deadlands Furnishing Plans", method = "Pickpocketing & Container", type = "plan" },
-    ["fargrave"] = { zone = "Fargrave", spot = "The Shambles", target = "Luxury Containers", loot = "Fargrave-themed Furnishing Plans", method = "Stealing from Containers", type = "plan" },
-    ["apocrypha"] = { zone = "Apocrypha", spot = "Fringe Archives Deep", target = "Seeker Tomes", loot = "Apocrypha Master Epic Plans", method = "Container Looting", type = "plan" },
-    ["imperial city"] = { zone = "Imperial City", spot = "Noble Districts", target = "Xivkyn Generals", loot = "Xivkyn Master Motifs", method = "Elite Vault Chests", type = "motif" },
-}
-
-MasterThief.ZoneAlias = {
-    ["vivec city"] = "vvardenfell", ["vardenfell"] = "vvardenfell", ["sadrith mora"] = "vvardenfell", ["gnisis"] = "vvardenfell", ["balmora"] = "vvardenfell",
-    ["summerset"] = "summerset", ["shimmerene"] = "summerset", ["artaeum"] = "summerset",
-    ["northern elsweyr"] = "northern elsweyr", ["rimmen"] = "northern elsweyr", ["southern elsweyr"] = "southern elsweyr", ["senchal"] = "southern elsweyr",
-    ["western skyrim"] = "western skyrim", ["solitude"] = "western skyrim", 
-    ["the reach"] = "the reach", ["markarth"] = "the reach",
-    ["arkthzand cavern"] = "arkthzand cavern", ["arkthzand"] = "arkthzand cavern",
-    ["high isle"] = "high isle", ["gonfalon bay"] = "high isle", ["amenos"] = "high isle",
-    ["galen"] = "galen", ["vastyr"] = "galen",
-    ["telvanni peninsula"] = "telvanni peninsula", ["necrom"] = "telvanni peninsula", 
-    ["apocrypha"] = "apocrypha", ["fringe archives"] = "apocrypha",
-    ["west weald"] = "west weald", ["skingrad"] = "west weald",
-    ["solstice"] = "solstice", ["sunport"] = "solstice",
-    ["hew's bane"] = "hew's bane", ["abah's landing"] = "hew's bane",
-    ["gold coast"] = "gold coast", ["anvil"] = "gold coast", ["kvatch"] = "gold coast",
-    ["wrothgar"] = "wrothgar", ["orsinium"] = "wrothgar",
-    ["clockwork city"] = "clockwork city", ["brass fortress"] = "clockwork city",
-    ["murkmire"] = "murkmire", ["lilmoth"] = "murkmire",
-    ["blackwood"] = "blackwood", ["leyawiin"] = "blackwood",
-    ["the deadlands"] = "the deadlands", ["deadlands"] = "deadlands", 
-    ["fargrave"] = "fargrave", ["the shambles"] = "fargrave",
-    ["imperial city"] = "imperial city",
-}
-
 -----------------------------------------------------------
--- 1. HELPERS & DEBUG LOGGER
+-- HELPERS & SAFE API WRAPPERS
 -----------------------------------------------------------
 function MasterThief.DebugLog(msg)
     if MasterThief.savedVars and MasterThief.savedVars.debugMode then
-        CHAT_ROUTER:AddSystemMessage(string.format("|cFFD700[MasterThief Debug]|r %s", tostring(msg)))
+        CHAT_ROUTER:AddSystemMessage(string_format("|cFFD700[MasterThief Debug]|r %s", tostring(msg)))
     end
 end
 
+function MasterThief.SafeGetDisplayQuality(link)
+    if type(GetItemLinkDisplayQuality) == "function" then
+        local ok, qual = pcall(GetItemLinkDisplayQuality, link)
+        if ok and qual then return tonumber(qual) or 1 end
+    end
+    -- Fallback: parse color/quality or default to standard
+    return 1
+end
+
+function MasterThief.SafeIsItemStolen(bagId, slotIndex)
+    if type(IsItemStolen) == "function" then
+        local ok, stolen = pcall(IsItemStolen, bagId, slotIndex)
+        if ok and stolen then return true end
+    end
+    return false
+end
+
 function MasterThief.GetCustomFont(size)
-    return string.format("$(CHAT_FONT)|%d|soft-shadow-thick", size or 11)
+    return string_format("$(CHAT_FONT)|%d|soft-shadow-thick", size or 11)
 end
 
 function MasterThief.GetFormattedSessionTime()
     if not MasterThief.sessionStartTime then
         return "00:00:00"
     end
-
     local elapsedSeconds = GetTimeStamp() - MasterThief.sessionStartTime
     local hours = math.floor(elapsedSeconds / 3600)
     local mins = math.floor((elapsedSeconds % 3600) / 60)
     local secs = elapsedSeconds % 60
-
-    return string.format("%02d:%02d:%02d", hours, mins, secs)
+    return string_format("%02d:%02d:%02d", hours, mins, secs)
 end
 
 function MasterThief.ResetSessionTimer()
-    MasterThief.sessionStartTime = nil
+    MasterThief.sessionStartTime = GetTimeStamp()
     local stats = MasterThief.GetActiveCharacterStats()
     if stats then
-        stats.totalPickpockets = 0
+        stats.totalStolen = 0
         stats.whiteJunkDestroyed = 0
         stats.greenLoot = 0
         stats.blueLoot = 0
         stats.purpleLoot = 0
+        stats.estimatedGold = 0
     end
     MasterThief.UpdateHUDContent()
-    MasterThief.DebugLog("Session timer and statistics reset.")
 end
 
-function MasterThief.GetCurrentZoneID()
-    local zoneIndex = GetUnitZoneIndex("player")
-    local zoneId = GetZoneId(zoneIndex)
-    local name = GetZoneNameById(zoneId)
-
-    if not name or name == "" then
-        name = GetZoneText()
-    end
-    if not name or name == "" or name == "Tamriel" then 
-        return "unknown", "Unknown" 
-    end
+function MasterThief.CheckDailyReset()
+    if not MasterThief.savedVars then return end
     
-    local cleanName = string.lower(name)
-    return MasterThief.ZoneAlias[cleanName] or cleanName, name
+    local currentTime = GetTimeStamp()
+    local dailyResetOffset = 36000 
+    local currentDayId = math.floor((currentTime - dailyResetOffset) / 86400)
+
+    if MasterThief.savedVars.lastResetDay ~= currentDayId then
+        MasterThief.savedVars.lastResetDay = currentDayId
+        MasterThief.ResetSessionTimer()
+        CHAT_ROUTER:AddSystemMessage("|c00FF00[MasterThief]|r NA Daily reset detected! Session stats refreshed.")
+    end
 end
 
 function MasterThief.GetActiveCharacterStats()
@@ -134,84 +109,156 @@ function MasterThief.GetActiveCharacterStats()
     
     if not MasterThief.savedVars.charStats[charName] then
         MasterThief.savedVars.charStats[charName] = {
-            totalPickpockets = 0,
+            totalStolen = 0,
             whiteJunkDestroyed = 0,
             greenLoot = 0,
             blueLoot = 0,
             purpleLoot = 0,
+            estimatedGold = 0,
         }
     end
-
-    if MasterThief.savedVars.charStats[charName].whiteJunkDestroyed == nil then
-        MasterThief.savedVars.charStats[charName].whiteJunkDestroyed = 0
-    end
-
     return MasterThief.savedVars.charStats[charName]
 end
 
 -----------------------------------------------------------
--- 2. EVENT TRACKERS & HOOKS
+-- VALIDATE TREASURE
 -----------------------------------------------------------
-function MasterThief.OnInventorySlotUpdate(eventCode, bagId, slotIndex, isNew, itemSoundCategory, inventoryUpdateReason, stackCountChange)
+local function IsValidTreasure(bagId, slotIndex, link)
+    if not link or link == "" then return false end
+    if not MasterThief.SafeIsItemStolen(bagId, slotIndex) then return false end
+
+    local quality = MasterThief.SafeGetDisplayQuality(link)
+    if quality >= 2 then
+        return true
+    end
+
+    return false
+end
+
+-----------------------------------------------------------
+-- SCAN EXISTING INVENTORY
+-----------------------------------------------------------
+function MasterThief.ScanExistingInventory()
     if not MasterThief.savedVars then return end
-    if type(bagId) ~= "number" or bagId ~= BAG_BACKPACK then return end
+    local stats = MasterThief.GetActiveCharacterStats()
+    
+    stats.greenLoot = 0
+    stats.blueLoot = 0
+    stats.purpleLoot = 0
+    stats.estimatedGold = 0
+
+    local treasureValues = {
+        [2] = 100,  -- Green = 100g
+        [3] = 250,  -- Blue = 250g
+        [4] = 500,  -- Purple = 500g
+    }
+
+    local bagSize = (type(GetBagSize) == "function" and GetBagSize(BAG_BACKPACK)) or 200
+    for slotIndex = 1, bagSize do
+        local link = (type(GetItemLink) == "function") and GetItemLink(BAG_BACKPACK, slotIndex) or ""
+        
+        if link and link ~= "" then
+            if IsValidTreasure(BAG_BACKPACK, slotIndex, link) then
+                local quality = MasterThief.SafeGetDisplayQuality(link)
+                local stackCount = (type(GetItemStackCount) == "function" and GetItemStackCount(BAG_BACKPACK, slotIndex)) or 1
+
+                if quality == 2 then
+                    stats.greenLoot = stats.greenLoot + stackCount
+                elseif quality == 3 then
+                    stats.blueLoot = stats.blueLoot + stackCount
+                elseif quality >= 4 then
+                    stats.purpleLoot = stats.purpleLoot + stackCount
+                end
+                
+                local treasureValue = treasureValues[quality] or 100
+                stats.estimatedGold = stats.estimatedGold + (treasureValue * stackCount)
+            end
+        end
+    end
+    MasterThief.UpdateHUDContent()
+end
+
+-----------------------------------------------------------
+-- INVENTORY EVENT TRACKER
+-----------------------------------------------------------
+function MasterThief.OnInventorySlotUpdate(eventCode, bagId, slotIndex, isNew, _, _, stackCountChange)
+    if not MasterThief.savedVars then return end
+    if bagId ~= BAG_BACKPACK then return end
+
+    MasterThief.CheckDailyReset()
 
     if isNew then
-        local link = GetItemLink(bagId, slotIndex)
-        local itemName = GetItemName(bagId, slotIndex) or ""
-        local isQuestItem = IsItemQuest and IsItemQuest(bagId, slotIndex) or false
-        local isStolen = IsItemStolen and IsItemStolen(bagId, slotIndex) or false
-        local quality = GetItemLinkDisplayQuality(link) or 1
+        local link = (type(GetItemLink) == "function") and GetItemLink(bagId, slotIndex) or ""
+        if link == "" then return end
+
+        local itemName = (type(GetItemLinkName) == "function") and GetItemLinkName(link) or ""
+        local isQuestItem = false
+        if type(IsItemQuest) == "function" then
+            pcall(function() isQuestItem = IsItemQuest(bagId, slotIndex) end)
+        end
         
-        local itemType = GetItemType(bagId, slotIndex)
-        local isLockpick = (itemType == ITEMTYPE_TOOL) or 
-                           (link and string.find(link, "item:44874")) or 
-                           (string.match(string.lower(itemName), "lockpick") ~= nil)
+        local isStolen = MasterThief.SafeIsItemStolen(bagId, slotIndex)
+        local quality = MasterThief.SafeGetDisplayQuality(link)
+        
+        local itemType = 0
+        if type(GetItemLinkItemType) == "function" then
+            pcall(function() itemType = GetItemLinkItemType(link) or 0 end)
+        end
+
+        local isLockpick = (itemType == ITEMTYPE_TOOL) or string_find(link, "item:44874") or string_match(string_lower(itemName), "lockpick")
         
         local isProtectedMaterial = (itemType == ITEMTYPE_CRAFTING_MAT_ADDITIVE or 
-                                     itemType == ITEMTYPE_WEAPON_TRAIT_MAT or 
-                                     itemType == ITEMTYPE_ARMOR_TRAIT_MAT or 
-                                     itemType == ITEMTYPE_ENCHANTING_RUNE or 
-                                     itemType == ITEMTYPE_BLACKSMITHING_BOOSTER or 
-                                     itemType == ITEMTYPE_CLOTHIER_BOOSTER or 
-                                     itemType == ITEMTYPE_WOODWORKING_BOOSTER or 
-                                     itemType == ITEMTYPE_JEWELRYCRAFTING_BOOSTER or 
-                                     itemType == ITEMTYPE_JEWELRYCRAFTING_MAT or 
-                                     itemType == ITEMTYPE_INGREDIENT or 
-                                     itemType == ITEMTYPE_POTION or 
-                                     itemType == ITEMTYPE_POISON or
-                                     itemType == ITEMTYPE_STYLE_MATERIAL or
-                                     itemType == ITEMTYPE_TOOL or
-                                     isLockpick)
+                                    itemType == ITEMTYPE_WEAPON_TRAIT_MAT or 
+                                    itemType == ITEMTYPE_ARMOR_TRAIT_MAT or 
+                                    itemType == ITEMTYPE_ENCHANTING_RUNE or 
+                                    itemType == ITEMTYPE_BLACKSMITHING_BOOSTER or 
+                                    itemType == ITEMTYPE_CLOTHIER_BOOSTER or 
+                                    itemType == ITEMTYPE_WOODWORKING_BOOSTER or 
+                                    itemType == ITEMTYPE_JEWELRYCRAFTING_BOOSTER or 
+                                    itemType == ITEMTYPE_JEWELRYCRAFTING_MAT or 
+                                    itemType == ITEMTYPE_INGREDIENT or 
+                                    itemType == ITEMTYPE_POTION or 
+                                    itemType == ITEMTYPE_POISON or
+                                    itemType == ITEMTYPE_STYLE_MATERIAL or
+                                    itemType == ITEMTYPE_TOOL or
+                                    isLockpick)
 
         local delta = (type(stackCountChange) == "number" and stackCountChange > 0) and stackCountChange or 1
 
         if isStolen and MasterThief.savedVars.showTimer and not MasterThief.sessionStartTime then
             MasterThief.sessionStartTime = GetTimeStamp()
-            MasterThief.DebugLog("First stolen item detected! Stealing session timer started.")
         end
 
-        -- Always executes because autoDestroyWhiteJunk is enforced true
+        -- Auto-destroy white quality stolen trash
         if not isQuestItem and not isProtectedMaterial and isStolen and quality <= 1 then
             local stats = MasterThief.GetActiveCharacterStats()
             stats.whiteJunkDestroyed = (tonumber(stats.whiteJunkDestroyed) or 0) + delta
             
-            MasterThief.DebugLog("Auto-destroying white stolen junk: " .. tostring(link))
-            DestroyItem(bagId, slotIndex)
+            if MasterThief.savedVars.announceInChat then
+                CHAT_ROUTER:AddSystemMessage(string_format("|cFF6666[MasterThief] Destroyed Stolen Junk:|r %s", link))
+            end
+            
+            if type(DestroyItem) == "function" then
+                DestroyItem(bagId, slotIndex)
+            end
             MasterThief.UpdateHUDContent()
             return
         end
 
-        if isStolen then
-            if quality <= 1 and link then
-                if string.find(link, "a335ee") then quality = 4
-                elseif string.find(link, "3a92ff") then quality = 3
-                elseif string.find(link, "2dc800") then quality = 2 end
-            end
-            quality = tonumber(quality) or 1
+        -- Track Treasures
+        if IsValidTreasure(bagId, slotIndex, link) then
+            quality = tonumber(quality) or 2
 
             local stats = MasterThief.GetActiveCharacterStats()
-            stats.totalPickpockets = (tonumber(stats.totalPickpockets) or 0) + 1
+            stats.totalStolen = (tonumber(stats.totalStolen) or 0) + 1
+
+            local treasureValues = {
+                [2] = 100,
+                [3] = 250,
+                [4] = 500,
+            }
+            local treasureValue = treasureValues[quality] or 100
+            stats.estimatedGold = (tonumber(stats.estimatedGold) or 0) + (treasureValue * delta)
 
             if quality == 2 then
                 stats.greenLoot = (tonumber(stats.greenLoot) or 0) + delta
@@ -221,13 +268,17 @@ function MasterThief.OnInventorySlotUpdate(eventCode, bagId, slotIndex, isNew, i
                 stats.purpleLoot = (tonumber(stats.purpleLoot) or 0) + delta
             end
 
+            if quality >= 2 and MasterThief.savedVars.playLootSound and type(PlaySound) == "function" then
+                PlaySound(SOUNDS.TELVAR_GAINED)
+            end
+
             MasterThief.UpdateHUDContent()
         end
     end
 end
 
 -----------------------------------------------------------
--- 3. HUD & DISPLAY LOGIC
+-- HUD DISPLAY & POSITIONS
 -----------------------------------------------------------
 function MasterThief.ApplyPosition()
     if not MasterThief.hudFrame then return end
@@ -237,11 +288,12 @@ end
 
 function MasterThief.ApplyBackgroundColor()
     if not MasterThief.hudBg then return end
-    local r = MasterThief.savedVars.bgColorR or 0
-    local g = MasterThief.savedVars.bgColorG or 0
-    local b = MasterThief.savedVars.bgColorB or 0
-    local a = MasterThief.savedVars.bgColorA or 0.6
-    MasterThief.hudBg:SetColor(r, g, b, a)
+    MasterThief.hudBg:SetColor(
+        MasterThief.savedVars.bgColorR or 0.05,
+        MasterThief.savedVars.bgColorG or 0.05,
+        MasterThief.savedVars.bgColorB or 0.1,
+        MasterThief.savedVars.bgColorA or 0.75
+    )
 end
 
 function MasterThief.CreateHUD()
@@ -252,10 +304,8 @@ function MasterThief.CreateHUD()
     mainFrame:SetMovable(true)
     mainFrame:SetMouseEnabled(true)
     mainFrame:SetClampedToScreen(true)
-
     MasterThief.hudFrame = mainFrame
 
-    -- Background texture control
     local bg = wm:CreateControl("$(parent)BG", mainFrame, CT_TEXTURE)
     bg:SetAnchorFill(mainFrame)
     MasterThief.hudBg = bg
@@ -273,75 +323,43 @@ function MasterThief.CreateHUD()
     content:SetAnchor(TOPLEFT, mainFrame, TOPLEFT, 12, 12)
     MasterThief.contentLabel = content
 
-    MasterThief.UpdateHUDContent()
     MasterThief.ApplyPosition()
+    MasterThief.UpdateHUDContent()
     MasterThief.hudFrame:SetHidden(not MasterThief.savedVars.showHUD)
 end
 
 function MasterThief.UpdateHUDContent()
     if not MasterThief.contentLabel or not MasterThief.hudFrame then return end
 
-    local fontSize = MasterThief.savedVars.fontSize or 11
-    MasterThief.contentLabel:SetFont(MasterThief.GetCustomFont(fontSize))
-
-    local routeID, rawZoneName = MasterThief.GetCurrentZoneID()
-    local route = MasterThief.RoutesByID[routeID]
-
+    MasterThief.contentLabel:SetFont(MasterThief.GetCustomFont(MasterThief.savedVars.fontSize or 11))
     local buffer = {}
 
-    if MasterThief.savedVars.showRouteInfo ~= false then
-        table.insert(buffer, "|cFFD700[ MASTER THIEF: ELITE ]|r")
-        
-        if route then
-            local showCategory = (route.type == "motif" and MasterThief.savedVars.showMotifs) or 
-                                 (route.type == "plan" and MasterThief.savedVars.showPlans)
-            
-            if showCategory then
-                table.insert(buffer, string.format("|c00BFFF%s|r |cAAAAAA(%s)|r", route.zone, route.spot))
-                table.insert(buffer, string.format("  |cFFD700->|r |cFFFFFF%s|r", route.loot))
-                table.insert(buffer, string.format("  |cFF99FF[Method: %s]|r", route.method))
-            else
-                table.insert(buffer, "|c888888Route hidden by active filter options.|r")
-            end
-        else
-            table.insert(buffer, string.format("|c888888No active route configured for: %s|r", rawZoneName))
-        end
-    end
-
-    if MasterThief.savedVars.showSessionDrops ~= false then
+    table_insert(buffer, "|cFFD700- MASTER THIEF : CRIME TRACKER -|r")
+    
+    if MasterThief.savedVars.showSessionStats ~= false then
         local stats = MasterThief.GetActiveCharacterStats()
-        
-        -- Add header on its own line
-        table.insert(buffer, "|cFFD700--- SESSION DROPS ---|r")
-
         local timerText = ""
         if MasterThief.savedVars.showTimer ~= false then
-            timerText = string.format("Time: |cFFD700%s|r  |  ", MasterThief.GetFormattedSessionTime())
+            timerText = string_format("Time: |cFFD700%s|r   ", MasterThief.GetFormattedSessionTime())
         end
 
-        -- Add drop metrics on the next line down
-        table.insert(buffer, string.format("%sJunk: |cFFFFFF%d|r  |  Green: |c2DC800%d|r  |  Blue: |c3A92FF%d|r  |  Purple: |cA335EE%d|r", 
+        table_insert(buffer, string_format("%sDestroyed: |cFF6666%d|r   Green: |c2DC800%d|r   Blue: |c3A92FF%d|r   Purple: |cA335EE%d|r", 
             timerText,
             stats.whiteJunkDestroyed or 0, 
             stats.greenLoot or 0, 
             stats.blueLoot or 0, 
             stats.purpleLoot or 0
         ))
+
+        table_insert(buffer, string_format("Est. Value: |cFFD700%d g|r", stats.estimatedGold or 0))
     end
 
-    local textOutput = table.concat(buffer, "\n")
-
-    -- Allow contentLabel to size naturally based on the font scale
-    MasterThief.contentLabel:SetText(textOutput)
-
-    local textWidth = MasterThief.contentLabel:GetTextWidth()
-    local textHeight = MasterThief.contentLabel:GetTextHeight()
-
-    MasterThief.hudFrame:SetDimensions(textWidth + 24, textHeight + 24)
+    MasterThief.contentLabel:SetText(table.concat(buffer, "\n"))
+    MasterThief.hudFrame:SetDimensions(MasterThief.contentLabel:GetTextWidth() + 24, MasterThief.contentLabel:GetTextHeight() + 24)
 end
 
 -----------------------------------------------------------
--- 4. SETTINGS PANEL (LibAddonMenu2)
+-- SETTINGS PANEL (LibAddonMenu2)
 -----------------------------------------------------------
 function MasterThief.CreateSettingsPanel()
     local LAM = LibAddonMenu2
@@ -350,10 +368,10 @@ function MasterThief.CreateSettingsPanel()
     local panelName = "MasterThief_OptionsPanel"
     local panelData = {
         type = "panel",
-        name = "Master Thief Elite",
-        displayName = "|cFFD700Master Thief Elite Settings|r",
-        author = "Thief",
-        version = "1.0",
+        name = "Master Thief",
+        displayName = "|cFFD700Master |c00BFFFThief |cFF69B4Settings|r",
+        author = "|c00FF00Thief|r",
+        version = "2.15",
         slashCommand = "/thiefsettings",
         registerForRefresh = true,
         registerForDefaults = true,
@@ -362,127 +380,67 @@ function MasterThief.CreateSettingsPanel()
     MasterThief.optionsPanel = LAM:RegisterAddonPanel(panelName, panelData)
 
     local optionsData = {
-        { type = "header", name = "About / Author" },
         {
             type = "description",
-            text = "Addon Author Contact Email:\n|c00BFFFwizadt@gmail.com|r",
+            text = "|cFFD700Track your stolen treasures, auto-destroy worthless white trash, and monitor your crime spree statistics!|r",
         },
-        { type = "header", name = "Display & Behavior" },
         {
-            type = "checkbox",
-            name = "Enable Debug Logging",
-            getFunc = function() return MasterThief.savedVars.debugMode end,
-            setFunc = function(value) MasterThief.savedVars.debugMode = value end,
-            default = true,
+            type = "header",
+            name = "|c00BFFFDisplay & Notifications|r",
         },
         {
             type = "checkbox",
-            name = "Auto-Destroy White Stolen Junk",
-            tooltip = "Automatically destroys white-quality stolen junk items upon pickup to keep your inventory clean (Locked Always On).",
-            getFunc = function() return true end,
-            setFunc = function(value) MasterThief.savedVars.autoDestroyWhiteJunk = true end,
-            disabled = function() return true end,
-            default = true,
-        },
-        {
-            type = "checkbox",
-            name = "Show Route Guide HUD",
+            name = "|cFFFFFFShow Stealing HUD|r",
+            tooltip = "Toggles the on-screen crime stats display.",
             getFunc = function() return MasterThief.savedVars.showHUD end,
             setFunc = function(value)
                 MasterThief.savedVars.showHUD = value
-                if MasterThief.hudFrame then 
-                    MasterThief.hudFrame:SetHidden(not value) 
-                end
+                if MasterThief.hudFrame then MasterThief.hudFrame:SetHidden(not value) end
             end,
             default = MasterThief.defaultSettings.showHUD,
         },
-        { type = "header", name = "HUD Display Filters" },
         {
             type = "checkbox",
-            name = "Show Title & Route Guide",
-            tooltip = "Toggles visibility of the addon title header and active route information block.",
-            getFunc = function() return MasterThief.savedVars.showRouteInfo end,
-            setFunc = function(value)
-                MasterThief.savedVars.showRouteInfo = value
-                MasterThief.UpdateHUDContent()
-            end,
-            default = true,
+            name = "|cFF6666Announce Destroyed Junk in Chat|r",
+            tooltip = "Prints a message in your chat window whenever a white stolen item is auto-destroyed.",
+            getFunc = function() return MasterThief.savedVars.announceInChat end,
+            setFunc = function(value) MasterThief.savedVars.announceInChat = value end,
+            default = MasterThief.defaultSettings.announceInChat,
         },
         {
             type = "checkbox",
-            name = "Show Session Drops Tracker",
-            tooltip = "Toggles visibility of the destroyed junk count and green/blue/purple stolen drop counters.",
-            getFunc = function() return MasterThief.savedVars.showSessionDrops end,
-            setFunc = function(value)
-                MasterThief.savedVars.showSessionDrops = value
-                MasterThief.UpdateHUDContent()
-            end,
-            default = true,
+            name = "|cA335EEPlay Audio on Valuable Loot|r",
+            tooltip = "Plays a subtle sound cue when you steal a Green, Blue, or Purple quality item.",
+            getFunc = function() return MasterThief.savedVars.playLootSound end,
+            setFunc = function(value) MasterThief.savedVars.playLootSound = value end,
+            default = MasterThief.defaultSettings.playLootSound,
         },
         {
             type = "checkbox",
-            name = "Show Session Timer",
-            tooltip = "Toggles visibility of the timer in HUD. Turning this off automatically resets the current timer and session drop stats.",
+            name = "|cFFD700Show Session Timer|r",
+            tooltip = "Tracks how long your current crime spree has lasted.",
             getFunc = function() return MasterThief.savedVars.showTimer end,
             setFunc = function(value)
                 MasterThief.savedVars.showTimer = value
-                if not value then
-                    MasterThief.ResetSessionTimer()
-                else
-                    MasterThief.UpdateHUDContent()
-                end
+                if not value then MasterThief.ResetSessionTimer() else MasterThief.UpdateHUDContent() end
             end,
-            default = true,
+            default = MasterThief.defaultSettings.showTimer,
         },
-        { type = "header", name = "HUD Background Settings" },
         {
-            type = "slider",
-            name = "Red Channel (R)",
-            min = 0, max = 1, step = 0.05,
-            decimals = 2,
-            getFunc = function() return MasterThief.savedVars.bgColorR end,
-            setFunc = function(value) MasterThief.savedVars.bgColorR = value; MasterThief.ApplyBackgroundColor() end,
-            default = MasterThief.defaultSettings.bgColorR,
+            type = "header",
+            name = "|c00BFFFHUD Customization|r",
         },
         {
             type = "slider",
-            name = "Green Channel (G)",
-            min = 0, max = 1, step = 0.05,
-            decimals = 2,
-            getFunc = function() return MasterThief.savedVars.bgColorG end,
-            setFunc = function(value) MasterThief.savedVars.bgColorG = value; MasterThief.ApplyBackgroundColor() end,
-            default = MasterThief.defaultSettings.bgColorG,
-        },
-        {
-            type = "slider",
-            name = "Blue Channel (B)",
-            min = 0, max = 1, step = 0.05,
-            decimals = 2,
-            getFunc = function() return MasterThief.savedVars.bgColorB end,
-            setFunc = function(value) MasterThief.savedVars.bgColorB = value; MasterThief.ApplyBackgroundColor() end,
-            default = MasterThief.defaultSettings.bgColorB,
-        },
-        {
-            type = "slider",
-            name = "Background Opacity / Alpha",
-            min = 0, max = 1, step = 0.05,
-            decimals = 2,
-            getFunc = function() return MasterThief.savedVars.bgColorA end,
-            setFunc = function(value) MasterThief.savedVars.bgColorA = value; MasterThief.ApplyBackgroundColor() end,
-            default = MasterThief.defaultSettings.bgColorA,
-        },
-        { type = "header", name = "Layout Controls" },
-        {
-            type = "slider",
-            name = "Text Size",
-            min = 9, max = 50, step = 3,
+            name = "|cFFFFFFFont Size|r",
+            min = 9, max = 50, step = 1,
             getFunc = function() return MasterThief.savedVars.fontSize end,
             setFunc = function(value) MasterThief.savedVars.fontSize = value; MasterThief.UpdateHUDContent() end,
             default = MasterThief.defaultSettings.fontSize,
         },
         {
             type = "slider",
-            name = "X Position",
+            name = "|cFFFFFFX Position|r",
             min = 0, max = 2000, step = 5,
             getFunc = function() return MasterThief.savedVars.posX end,
             setFunc = function(value) MasterThief.savedVars.posX = value; MasterThief.ApplyPosition() end,
@@ -490,7 +448,7 @@ function MasterThief.CreateSettingsPanel()
         },
         {
             type = "slider",
-            name = "Y Position",
+            name = "|cFFFFFFY Position|r",
             min = 0, max = 1200, step = 5,
             getFunc = function() return MasterThief.savedVars.posY end,
             setFunc = function(value) MasterThief.savedVars.posY = value; MasterThief.ApplyPosition() end,
@@ -502,30 +460,21 @@ function MasterThief.CreateSettingsPanel()
 end
 
 -----------------------------------------------------------
--- 5. INITIALIZATION & EVENT REGISTRATION
+-- INITIALIZATION
 -----------------------------------------------------------
 function MasterThief.Initialize()
     MasterThief.savedVars = ZO_SavedVars:NewAccountWide("MasterThief_SavedVars", 1, nil, MasterThief.defaultSettings)
     
-    -- Force auto-destroy state on startup regardless of saved file overrides
-    MasterThief.savedVars.autoDestroyWhiteJunk = true
-
-    MasterThief.sessionStartTime = nil
-
+    MasterThief.CheckDailyReset()
     MasterThief.CreateHUD()
     MasterThief.CreateSettingsPanel()
 
-    local function DelayedUpdate()
-        zo_callLater(MasterThief.UpdateHUDContent, 500)
-    end
+    MasterThief.ScanExistingInventory()
 
-    EVENT_MANAGER:RegisterForEvent(MasterThief.name, EVENT_PLAYER_ACTIVATED, DelayedUpdate)
-    EVENT_MANAGER:RegisterForEvent(MasterThief.name, EVENT_ZONE_CHANGED, DelayedUpdate)
     EVENT_MANAGER:RegisterForEvent(MasterThief.name, EVENT_INVENTORY_SINGLE_SLOT_UPDATE, MasterThief.OnInventorySlotUpdate)
-    EVENT_MANAGER:RegisterForEvent(MasterThief.name, EVENT_MONEY_UPDATE, DelayedUpdate)
 
     EVENT_MANAGER:RegisterForUpdate(MasterThief.name .. "_TimerLoop", 1000, function()
-        if MasterThief.savedVars and MasterThief.savedVars.showHUD and MasterThief.savedVars.showSessionDrops and MasterThief.savedVars.showTimer then
+        if MasterThief.savedVars and MasterThief.savedVars.showHUD and MasterThief.savedVars.showTimer then
             MasterThief.UpdateHUDContent()
         end
     end)
@@ -538,17 +487,12 @@ function MasterThief.Initialize()
         end
     end
 
-    SLASH_COMMANDS["/thiefdebug"] = function()
-        MasterThief.savedVars.debugMode = not MasterThief.savedVars.debugMode
-        CHAT_ROUTER:AddSystemMessage(string.format("|c00FF00[MasterThief]|r Debug Mode toggled: %s", tostring(MasterThief.savedVars.debugMode)))
-    end
-
-    SLASH_COMMANDS["/resetthiefstats"] = function()
+    SLASH_COMMANDS["/thiefreset"] = function()
         MasterThief.ResetSessionTimer()
-        CHAT_ROUTER:AddSystemMessage("|c00FF00[MasterThief]|r Character session statistics and timer resetted.")
+        CHAT_ROUTER:AddSystemMessage("|c00FF00[MasterThief]|r Manual session reset triggered!")
     end
 
-    CHAT_ROUTER:AddSystemMessage("|c00FF00[MasterThief]|r Addon active and unlocked!")
+    CHAT_ROUTER:AddSystemMessage("|c00FF00[MasterThief]|r Pure Stealing Mode v2.15 active!")
 end
 
 EVENT_MANAGER:RegisterForEvent(MasterThief.name, EVENT_ADD_ON_LOADED, function(_, addonName)

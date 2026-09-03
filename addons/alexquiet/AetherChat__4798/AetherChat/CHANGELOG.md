@@ -4,19 +4,19 @@ Toutes les modifications notables apportées à l'addon **AetherChat** sont cons
 
 ---
 
-## [1.2.3] - 2026-09-01
+## [1.2.4] - 2026-09-01
 
-### ✨ Nouvelles Fonctionnalités Majeures
+### ✨ Nouvelles Fonctionnalités & Conformité ESO UI (ZOS Standard)
 
+- **Architecture 100% Native ZO_HUDFadeSceneFragment :**
+  - Migration complète du cycle de vie de la fenêtre vers le système officiel de fragments ZOS (`ZO_HUDFadeSceneFragment` avec `SetConditional()`).
+  - Suppression de tous les workarounds et hooks artificiels pour un masquage/réouverture automatique instantané et fluide lors de l'ouverture des menus du jeu.
+- **Conformité des Dépendances du Manifest :**
+  - Passage de LootLog en directive `OptionallyDependsOn: LootLog>=409060` pour garantir un chargement propre avec ou sans LootLog.
 - **Canal Dédié « Système » (System) :**
   - Ajout d'un nouvel onglet Système indépendant isolant l'ensemble des flux et notifications du moteur de jeu d'ESO (annonces de diffusion serveur, messages d'état, alertes de donjons, alertes de zone et confirmations de files d'attente).
   - Capture automatique et transparente de 100% des messages émis via `CHAT_SYSTEM:AddMessage` et `EVENT_BROADCAST`.
-  - Intégration de l'icône officielle de rouage système d'ESO (`menubar_settings_up.dds`) avec support complet du glisser-déposer (drag-and-drop) pour réorganiser sa position dans la barre latérale.
-
-- **Masquage Intelligent sur Menu Échap & Réouverture Automatique :**
-  - Pré-hook direct sur le contrôle `ZO_GameMenu_InGame` et surveillance complète de la pile de scènes (`gameMenuInGame`, `settings`, `addons`, `keybindings`).
-  - La fenêtre de discussion se masque instantanément à la milliseconde près lorsque vous ouvrez le menu principal ou les réglages du jeu, et **se réouvre automatiquement** dès que vous revenez dans le monde de jeu (`hud`).
-  - Option configurable (Activer / Désactiver) directement accessible dans le panneau des réglages d'AetherChat.
+  - Intégration de l'icône officielle de rouage de chat d'ESO (`chat_options_up.dds`) avec support complet du glisser-déposer.
 
 - **Curseur de Typographie Globale en Temps Réel :**
   - Nouveau curseur précis permettant d'ajuster la taille de police de 12px à 24px avec rendu instantané.

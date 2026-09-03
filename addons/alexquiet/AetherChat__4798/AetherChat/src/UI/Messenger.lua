@@ -80,17 +80,6 @@ function Messenger.Initialize()
 
     -- 1. MinBar Moveable HUD Widget (Hover-Only Tooltip & Tri-Color Notification Badges)
     if Messenger.minBar then
-        local iconPos = Settings.Get('floatingIconPos')
-        if iconPos and iconPos.x and iconPos.y then
-            Messenger.minBar:ClearAnchors()
-            Messenger.minBar:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, iconPos.x, iconPos.y)
-        end
-
-        Messenger.minBar:SetHandler('OnMoveStop', function(self)
-            local pos = { x = self:GetLeft(), y = self:GetTop() }
-            Settings.Set('floatingIconPos', pos)
-        end)
-
         Messenger.minBar:SetHandler('OnMouseEnter', function(self)
             InitializeTooltip(InformationTooltip, self, BOTTOM, 0, 5)
             InformationTooltip:AddLine("|cE5B558AETHER|r|cFFFFFFCHAT|r", "ZoFontGameBold", 1, 1, 1, TOPLEFT, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_LEFT)
@@ -139,6 +128,17 @@ function Messenger.Initialize()
             end
         end)
 
+        -- Save MinBar position on drag stop with re-anchoring
+        Messenger.minBar:SetHandler('OnMoveStop', function(self)
+            local left = self:GetLeft()
+            local top = self:GetTop()
+            if left and top then
+                self:ClearAnchors()
+                self:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, left, top)
+                Settings.Set('floatingIconPos', { x = left, y = top })
+            end
+        end)
+
         -- Register MinBar as official HUD Fragment
         if SCENE_MANAGER then
             local minBarFragment = ZO_HUDFadeSceneFragment:New(Messenger.minBar)
@@ -159,23 +159,17 @@ function Messenger.Initialize()
         end)
     end
 
-    -- 2. Messenger Window Position & Saved Dimensions
-    local winPos = Settings.Get('windowPos')
-    if winPos and winPos.x and winPos.y then
-        Messenger.window:ClearAnchors()
-        Messenger.window:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, winPos.x, winPos.y)
-    end
-
-    local winDims = Settings.Get('windowDimensions')
-    if winDims and winDims.width and winDims.height then
-        Messenger.window:SetDimensions(winDims.width, winDims.height)
-    else
-        Messenger.window:SetDimensions(940, 520)
-    end
+    -- 2. Restore Saved Window & MinBar Positions
+    Messenger.RestoreSavedPositions()
 
     Messenger.window:SetHandler('OnMoveStop', function(self)
-        local pos = { x = self:GetLeft(), y = self:GetTop() }
-        Settings.Set('windowPos', pos)
+        local left = self:GetLeft()
+        local top = self:GetTop()
+        if left and top then
+            self:ClearAnchors()
+            self:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, left, top)
+            Settings.Set('windowPos', { x = left, y = top })
+        end
     end)
 
     -- Setup Edge Resizing with Visual Glow Affordance
@@ -203,49 +197,22 @@ function Messenger.Initialize()
     -- Apply Saved Backdrop Transparency
     Messenger.ApplyBackdropAlpha(Settings.Get('backdropAlpha', 95))
 
-    -- Auto-Hide on Escape Game Menu and Auto-Restore on Close
-    local wasOpenBeforeGameMenu = false
-
-    -- 1. Direct PreHook on ZO_GameMenu_InGame (fires immediately when Escape is pressed)
-    if ZO_GameMenu_InGame then
-        ZO_PreHook(ZO_GameMenu_InGame, "SetHidden", function(self, hidden)
-            local autoHide = Settings.Get('autoHideOnGameMenu', true)
-            if autoHide then
-                if not hidden then
-                    -- Escape menu is opening
-                    if Messenger.window and not Messenger.window:IsHidden() then
-                        wasOpenBeforeGameMenu = true
-                        Messenger.Hide()
-                    end
-                else
-                    -- Escape menu is closing
-                    if wasOpenBeforeGameMenu then
-                        wasOpenBeforeGameMenu = false
-                        Messenger.Show()
-                    end
-                end
-            end
-        end)
-    end
-
-    -- 2. SceneStateChange safeguard covering settings, addons, keybindings, and gameMenu scenes
+    -- Register Main Messenger Window as an official HUD Scene Fragment with Conditional Visibility
+    Messenger.isOpen = false
     if SCENE_MANAGER then
-        SCENE_MANAGER:RegisterCallback("SceneStateChange", function(scene, oldState, newState)
-            local sceneName = scene and scene:GetName() or ""
-            local isGameMenuScene = (sceneName == "gameMenuInGame" or sceneName == "settings" or sceneName == "addons" or sceneName == "keybindings" or sceneName == "systemMenu")
-            local autoHide = Settings.Get('autoHideOnGameMenu', true)
-            if autoHide then
-                if isGameMenuScene and (newState == SCENE_SHOWING or newState == SCENE_SHOWN) then
-                    if Messenger.window and not Messenger.window:IsHidden() then
-                        wasOpenBeforeGameMenu = true
-                        Messenger.Hide()
-                    end
-                elseif (sceneName == "hud" or sceneName == "hudui") and newState == SCENE_SHOWN then
-                    if wasOpenBeforeGameMenu then
-                        wasOpenBeforeGameMenu = false
-                        Messenger.Show()
-                    end
-                end
+        Messenger.fragment = ZO_HUDFadeSceneFragment:New(Messenger.window)
+        Messenger.fragment:SetConditional(function()
+            return Messenger.isOpen == true
+        end)
+
+        SCENE_MANAGER:GetScene("hud"):AddFragment(Messenger.fragment)
+        SCENE_MANAGER:GetScene("hudui"):AddFragment(Messenger.fragment)
+
+        Messenger.fragment:RegisterCallback("StateChange", function(oldState, newState)
+            if newState == SCENE_FRAGMENT_SHOWING then
+                Messenger.OnFragmentShowing()
+            elseif newState == SCENE_FRAGMENT_HIDING or newState == SCENE_FRAGMENT_HIDDEN then
+                Messenger.OnFragmentHidden()
             end
         end)
     end
@@ -577,8 +544,8 @@ function Messenger.Initialize()
     -- Auto-Close on combat start
     EVENT_MANAGER:RegisterForEvent('AetherChat_CombatClose', EVENT_PLAYER_COMBAT_STATE_CHANGED, function(_, inCombat)
         if inCombat then
-            if Messenger.window and not Messenger.window:IsHidden() then
-                Messenger.Toggle()
+            if Messenger.isOpen then
+                Messenger.Hide()
             end
             if Messenger.donationWindow and not Messenger.donationWindow:IsHidden() then
                 Messenger.donationWindow:SetHidden(true)
@@ -602,11 +569,15 @@ function Messenger.Initialize()
     -- Guild Member Status Events (Login/Logout for Selected Guilds)
     EVENT_MANAGER:RegisterForEvent('AetherChat_GuildStatus', EVENT_GUILD_MEMBER_PLAYER_STATUS_CHANGED, Messenger.OnGuildMemberPlayerStatusChanged)
 
-    -- Refresh Whispers and Channel list upon Zone Transitions & Loading Screen completion
+    -- Refresh Whispers, Channel list and Positions upon Zone Transitions & Loading Screen completion
     EVENT_MANAGER:RegisterForEvent('AetherChat_Messenger_PlayerAct', EVENT_PLAYER_ACTIVATED, function()
+        Messenger.RestoreSavedPositions()
+        zo_callLater(Messenger.RestoreSavedPositions, 150)
+        zo_callLater(Messenger.RestoreSavedPositions, 500)
+        Messenger.ApplyBackdropAlpha(Settings.Get('backdropAlpha', 95))
+        Messenger.ApplyChatFontSize(Settings.Get('chatFontSize', 16))
         Messenger.LoadWhispersFromHistory()
         Messenger.RefreshChannelList()
-        Messenger.ApplyChatFontSize(Settings.Get('chatFontSize', 16))
         if activeChannelKey then
             Messenger.LoadMessages(activeChannelKey)
         end
@@ -625,6 +596,9 @@ function Messenger.Initialize()
         end
     end)
 
+    Messenger.RestoreSavedPositions()
+    Messenger.ApplyBackdropAlpha(Settings.Get('backdropAlpha', 95))
+    Messenger.ApplyChatFontSize(Settings.Get('chatFontSize', 16))
     Messenger.LoadWhispersFromHistory()
     Messenger.RefreshChannelList()
     Messenger.UpdateMailBadge()
@@ -635,6 +609,33 @@ function Messenger.Initialize()
     Messenger.SetupHideHooks()
     if Settings.Get('hideOfficialChat', false) then
         Messenger.SetHideOfficialChat(true)
+    end
+end
+
+function Messenger.RestoreSavedPositions()
+    -- 1. Restore Main Messenger Window Position & Dimensions
+    if Messenger.window then
+        local winPos = Settings.Get('windowPos')
+        if winPos and winPos.x and winPos.y then
+            Messenger.window:ClearAnchors()
+            Messenger.window:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, winPos.x, winPos.y)
+        end
+
+        local winDims = Settings.Get('windowDimensions')
+        if winDims and winDims.width and winDims.height then
+            Messenger.window:SetDimensions(winDims.width, winDims.height)
+        else
+            Messenger.window:SetDimensions(940, 520)
+        end
+    end
+
+    -- 2. Restore Floating HUD Icon Position (MinBar)
+    if Messenger.minBar then
+        local iconPos = Settings.Get('floatingIconPos') or Settings.Get('minBarPos')
+        if iconPos and iconPos.x and iconPos.y then
+            Messenger.minBar:ClearAnchors()
+            Messenger.minBar:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, iconPos.x, iconPos.y)
+        end
     end
 end
 
@@ -1364,10 +1365,27 @@ function Messenger.ToggleSidebarCollapse()
     Messenger.SetSidebarCollapsed(not isCollapsed)
 end
 
-function Messenger.Hide()
-    if not Messenger.window or Messenger.window:IsHidden() then return end
-    Messenger.window:SetHidden(true)
+function Messenger.OnFragmentShowing()
+    Messenger.DockNativeChatEntry()
 
+    if activeChannelKey then
+        unreadCounts[activeChannelKey] = 0
+        Messenger.UpdateTotalBadge()
+    end
+
+    Messenger.RefreshChannelList()
+    Messenger.UpdateMailBadge()
+    Messenger.UpdateFriendsBadge()
+    Messenger.SelectChannel(activeChannelKey or 'zone', true, false)
+    if ZO_ChatWindowTextEntryEditBox then
+        ZO_ChatWindowTextEntryEditBox:LoseFocus()
+    end
+    if CHAT_SYSTEM and CHAT_SYSTEM.CloseTextEntry then
+        CHAT_SYSTEM:CloseTextEntry(true)
+    end
+end
+
+function Messenger.OnFragmentHidden()
     if CHAT_SYSTEM then
         CHAT_SYSTEM.isEnteringText = false
         if CHAT_SYSTEM.textEntry then
@@ -1399,31 +1417,34 @@ function Messenger.Hide()
 end
 
 function Messenger.Show()
-    if not Messenger.window then return end
-    Messenger.window:SetHidden(false)
-
-    Messenger.DockNativeChatEntry()
-
-    if activeChannelKey then
-        unreadCounts[activeChannelKey] = 0
-        Messenger.UpdateTotalBadge()
+    Messenger.isOpen = true
+    if Messenger.fragment then
+        Messenger.fragment:Refresh()
+    else
+        if Messenger.window then
+            Messenger.window:SetHidden(false)
+            Messenger.OnFragmentShowing()
+        end
     end
+end
 
-    Messenger.RefreshChannelList()
-    Messenger.UpdateMailBadge()
-    Messenger.UpdateFriendsBadge()
-    Messenger.SelectChannel(activeChannelKey or 'zone', true, false)
-    if ZO_ChatWindowTextEntryEditBox then
-        ZO_ChatWindowTextEntryEditBox:LoseFocus()
+function Messenger.Hide()
+    Messenger.isOpen = false
+    if Messenger.fragment then
+        Messenger.fragment:Refresh()
+    else
+        if Messenger.window then
+            Messenger.window:SetHidden(true)
+            Messenger.OnFragmentHidden()
+        end
     end
 end
 
 function Messenger.Toggle()
-    if not Messenger.window then return end
-    if Messenger.window:IsHidden() then
-        Messenger.Show()
-    else
+    if Messenger.isOpen then
         Messenger.Hide()
+    else
+        Messenger.Show()
     end
 end
 
@@ -1866,25 +1887,28 @@ function Messenger.SelectChannel(channelKey, updateEditBox, takeFocus)
     Messenger.DockNativeChatEntry()
 
     if updateEditBox and CHAT_SYSTEM then
+        local targetChannel = CHAT_CHANNEL_ZONE
+        local targetContact = nil
+
         if currentItem.isWhisper and currentItem.id:sub(1, 3) == 'dm:' then
-            local contact = currentItem.id:sub(4)
-            CHAT_SYSTEM:StartTextEntry(nil, CHAT_CHANNEL_WHISPER, contact)
+            targetChannel = CHAT_CHANNEL_WHISPER
+            targetContact = currentItem.id:sub(4)
         elseif currentItem.id == 'loot' or currentItem.id == 'party' then
-            CHAT_SYSTEM:StartTextEntry(nil, CHAT_CHANNEL_PARTY)
+            targetChannel = CHAT_CHANNEL_PARTY
         elseif currentItem.id == 'zone' then
             if currentZoneLang == 'fr' then
-                CHAT_SYSTEM:StartTextEntry(nil, CHAT_CHANNEL_ZONE_LANGUAGE_2)
+                targetChannel = CHAT_CHANNEL_ZONE_LANGUAGE_2
             elseif currentZoneLang == 'en' then
-                CHAT_SYSTEM:StartTextEntry(nil, CHAT_CHANNEL_ZONE_LANGUAGE_1)
+                targetChannel = CHAT_CHANNEL_ZONE_LANGUAGE_1
             elseif currentZoneLang == 'de' then
-                CHAT_SYSTEM:StartTextEntry(nil, CHAT_CHANNEL_ZONE_LANGUAGE_3)
+                targetChannel = CHAT_CHANNEL_ZONE_LANGUAGE_3
             elseif currentZoneLang == 'es' then
-                CHAT_SYSTEM:StartTextEntry(nil, CHAT_CHANNEL_ZONE_LANGUAGE_6)
+                targetChannel = CHAT_CHANNEL_ZONE_LANGUAGE_6
             else
-                CHAT_SYSTEM:StartTextEntry(nil, CHAT_CHANNEL_ZONE)
+                targetChannel = CHAT_CHANNEL_ZONE
             end
         elseif currentItem.id == 'general' or currentItem.id == 'say' then
-            CHAT_SYSTEM:StartTextEntry(nil, CHAT_CHANNEL_SAY)
+            targetChannel = CHAT_CHANNEL_SAY
         elseif currentItem.id:find('^guild') then
             local gIdx = tonumber(currentItem.id:sub(6)) or 1
             local guildChannels = {
@@ -1894,15 +1918,23 @@ function Messenger.SelectChannel(channelKey, updateEditBox, takeFocus)
                 [4] = CHAT_CHANNEL_GUILD_4,
                 [5] = CHAT_CHANNEL_GUILD_5,
             }
-            CHAT_SYSTEM:StartTextEntry(nil, guildChannels[gIdx] or CHAT_CHANNEL_GUILD_1)
-        else
-            CHAT_SYSTEM:StartTextEntry(currentItem.prefix .. ' ')
+            targetChannel = guildChannels[gIdx] or CHAT_CHANNEL_GUILD_1
+        elseif currentItem.id == 'system' then
+            targetChannel = CHAT_CHANNEL_ZONE
         end
 
-        if ZO_ChatWindowTextEntryEditBox then
-            if takeFocus then
+        if takeFocus then
+            CHAT_SYSTEM:StartTextEntry(nil, targetChannel, targetContact)
+            if ZO_ChatWindowTextEntryEditBox then
                 ZO_ChatWindowTextEntryEditBox:TakeFocus()
-            else
+            end
+        else
+            if CHAT_SYSTEM.SetChannel then
+                CHAT_SYSTEM:SetChannel(targetChannel, targetContact)
+            elseif CHAT_SYSTEM.textEntry and CHAT_SYSTEM.textEntry.SetChannel then
+                CHAT_SYSTEM.textEntry:SetChannel(targetChannel, targetContact)
+            end
+            if ZO_ChatWindowTextEntryEditBox then
                 ZO_ChatWindowTextEntryEditBox:LoseFocus()
             end
         end
@@ -1935,7 +1967,25 @@ function Messenger.LoadMessages(channelKey)
 end
 
 function Messenger.RenderMessageToBuffer(buffer, msg)
-    local timeTag = string.format('|c%s[%s]|r', Theme.Hex.MUTED, msg.time)
+    if not msg then return end
+    local mutedColor = (Theme and Theme.Hex and Theme.Hex.MUTED) or '888888'
+    local timeTag = string.format('|c%s[%s]|r', mutedColor, msg.time or '00:00')
+
+    -- Dedicated System Channel Message Rendering
+    if activeChannelKey == 'system' or (msg.channel and msg.channel == 'system') then
+        local rawText = msg.text or ""
+        rawText = rawText:gsub("[\r\n]+", " "):gsub("^%s+", ""):gsub("%s+$", "")
+        if rawText == "" then return end
+
+        local formattedText = FormatItemLinksInText(rawText)
+        local systemTag = "|cE5B558[" .. L('CH_SYSTEM') .. "]|r"
+        if msg.author and (msg.author:find("Annonce") or msg.author:find("Broadcast")) then
+            systemTag = "|cFF5555[Annonce]|r"
+        end
+
+        buffer:AddMessage(string.format('%s %s %s', timeTag, systemTag, formattedText))
+        return
+    end
 
     if activeChannelKey == 'loot' or msg.author == '|cFFFF00Loot|r' or msg.author == '|cFFFF00Loot Log|r' then
         local lineText = msg.text

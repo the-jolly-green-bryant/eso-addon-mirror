@@ -1977,3 +1977,105 @@ function R:Initialize()
 
     SLASH_COMMANDS["/easresources"] = function(text) self:HandleSlash(text) end
 end
+
+
+-- ============================================================================
+-- v0.29.144 - Camera-transition 3D render-space recovery.
+-- The resource renderer itself did not change during the Teleporter work, but
+-- ESO can leave an existing 3D render space with stale camera/projection state
+-- after World Map / top-level UI transitions. Rebuild the Suite resource-pin
+-- spaces once gameplay camera mode has settled, then refresh the other Suite 3D
+-- systems through their existing recovery paths.
+-- ============================================================================
+function R:HardResetResource3DRenderSpaces029144(reason)
+    self:EnsureWindow()
+    self:HideAll(reason or "camera transition")
+
+    local function rebuild(control)
+        if not control then return end
+        if type(control.Destroy3DRenderSpace) == "function" then
+            pcall(control.Destroy3DRenderSpace, control)
+        end
+        if type(control.Create3DRenderSpace) == "function" then
+            pcall(control.Create3DRenderSpace, control)
+        end
+        if type(control.SetMouseEnabled) == "function" then
+            pcall(control.SetMouseEnabled, control, false)
+        end
+    end
+
+    rebuild(self.window)
+    for _, pin in ipairs(self.markers or {}) do
+        rebuild(pin)
+        rebuild(pin and pin.beam)
+        rebuild(pin and pin.icon)
+    end
+
+    self.worldRenderOriginReady = false
+    self.renderOriginX, self.renderOriginZ, self.renderOriginY = nil, nil, nil
+    self:UpdateWorldRenderOrigin()
+    self.lastRendererRecoveryAt = nowMs()
+    self.lastRendererRecoveryReason = tostring(reason or "camera transition")
+    return true
+end
+
+local EAS_RecoverSuite3DWorldPinsBase029144 = R.RecoverSuite3DWorldPins
+function R:RecoverSuite3DWorldPins(reason)
+    local tag = tostring(reason or "3D camera recovery")
+    self:HardResetResource3DRenderSpaces029144(tag)
+    local result = EAS_RecoverSuite3DWorldPinsBase029144(self, tag)
+    self:RefreshMarkers()
+    return result
+end
+
+function R:ScheduleSuite3DRecovery029144(reason, delayMs)
+    local generationValue = tonumber(self.cameraRecoveryGeneration029144) or 0
+    self.cameraRecoveryGeneration029144 = generationValue + 1
+    local generation = self.cameraRecoveryGeneration029144
+    local tag = tostring(reason or "camera transition")
+    local delay = math.max(0, tonumber(delayMs) or 280)
+
+    local function run()
+        if not EPC or not EPC.ResourcePins then return end
+        local pins = EPC.ResourcePins
+        if pins.cameraRecoveryGeneration029144 ~= generation then return end
+        if type(IsGameCameraUIModeActive) == "function" then
+            local ok, active = pcall(IsGameCameraUIModeActive)
+            if ok and active == true then return end
+        end
+        if pins.IsNormalWorldSceneActive and not pins:IsNormalWorldSceneActive() then return end
+        pins:RecoverSuite3DWorldPins(tag)
+    end
+
+    if type(zo_callLater) == "function" then zo_callLater(run, delay) else run() end
+end
+
+function R:RegisterCameraRecovery029144()
+    if self.cameraRecoveryRegistered029144 or not EVENT_MANAGER then return end
+    self.cameraRecoveryRegistered029144 = true
+    local prefix = (EPC.name or "EAS") .. "_3DCameraRecovery029144"
+
+    if EVENT_GAME_CAMERA_UI_MODE_CHANGED ~= nil then
+        EVENT_MANAGER:RegisterForEvent(prefix .. "_UIMode", EVENT_GAME_CAMERA_UI_MODE_CHANGED, function()
+            local active = false
+            if type(IsGameCameraUIModeActive) == "function" then
+                local ok, value = pcall(IsGameCameraUIModeActive)
+                active = ok and value == true
+            end
+            if not active then self:ScheduleSuite3DRecovery029144("returned from UI/map", 280) end
+        end)
+    end
+
+    if EVENT_PLAYER_ACTIVATED ~= nil then
+        EVENT_MANAGER:RegisterForEvent(prefix .. "_Activated", EVENT_PLAYER_ACTIVATED, function()
+            self:ScheduleSuite3DRecovery029144("player activated", 650)
+        end)
+    end
+end
+
+local EAS_ResourcePinsInitializeBase029144 = R.Initialize
+function R:Initialize(...)
+    local result = EAS_ResourcePinsInitializeBase029144(self, ...)
+    self:RegisterCameraRecovery029144()
+    return result
+end

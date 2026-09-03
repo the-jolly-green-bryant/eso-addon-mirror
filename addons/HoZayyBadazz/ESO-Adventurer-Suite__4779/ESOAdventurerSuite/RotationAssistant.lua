@@ -127,7 +127,7 @@ function R:ScoreAbility(a, targetHP, proc)
             -- 2000/500 cap here: each Ultimate has its own cost.
             local ultCost = tonumber(safe(GetSlotAbilityCost,0,a.slot)) or 0
             if ultCost > 0 and ultCurrent >= ultCost and targetHP > 0 then
-                return 820, string.format("Ultimate ready (%d%%)", math.min(100, math.floor((ultCurrent / ultCost) * 100 + 0.5)))
+                return 820, string.format("Ultimate ready (%d%%)", math.max(0, math.min(500, math.floor(ultCurrent + 0.5))))
             end
             return 5, "Build ultimate"
         end

@@ -8,15 +8,15 @@
 [SIZE="3"][COLOR="LightSteelBlue"][I]The Modern, Immersive Messenger & Complete Chat Suite for The Elder Scrolls Online[/I][/COLOR][/SIZE]
 [/CENTER]
 
-[HR][/HR]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-[SIZE="4"][COLOR="SkyBlue"][B]⚠️ MANDATORY DEPENDENCY / DÉPENDANCE REQUISE[/B][/COLOR][/SIZE]
+[SIZE="4"][COLOR="SkyBlue"][B]📦 DEPENDENCIES / DÉPENDANCES[/B][/COLOR][/SIZE]
 [LIST]
-[*][B][URL="https://www.esoui.com/downloads/info7-LibAddonMenu.html"]LibAddonMenu-2.0[/URL][/B] (Version >= 43) [I]— Required for settings, themes, and customization menus.[/I]
+[*][B]Mandatory / Requis :[/B] [B][URL="https://www.esoui.com/downloads/info7-LibAddonMenu.html"]LibAddonMenu-2.0[/URL][/B] (Version >= 43) [I]— Required for settings, themes, and configuration menus.[/I]
+[*][B]Optional / Optionnel :[/B] [B][URL="https://www.esoui.com/downloads/info1455-LootLog.html"]LootLog[/URL][/B] (Version >= 409060) [I]— For advanced group drop tracking and collection detection.[/I]
 [/LIST]
-[I]Optional: [B][URL="https://www.esoui.com/downloads/info1455-LootLog.html"]LootLog[/URL][/B] for advanced group loot tracking & collection detection.[/I]
 
-[HR][/HR]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 [CENTER]
 [SIZE="5"][COLOR="Gold"][B]🇬🇧 ENGLISH PRESENTATION & OVERVIEW[/B][/COLOR][/SIZE]
@@ -24,16 +24,16 @@
 
 [B]AetherChat[/B] completely revolutionizes the Elder Scrolls Online chat interface into a modern, sleek, and intuitive messenger inspired by contemporary communication apps and Nordic fantasy aesthetics. It enhances immersion, social connectivity, and convenience across every activity in Tamriel—from Trials and Dungeons to Guild Trading and Roleplay.
 
-[HR][/HR]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 [SIZE="4"][COLOR="Orange"][B]✨ KEY FEATURES[/B][/COLOR][/SIZE]
 
-[B]🌟 Modern Messenger Architecture & Design[/B]
+[B]🌟 Modern Messenger Architecture & Native Scene Orchestration[/B]
 [LIST]
 [*][B]Nordic Sleek Interface:[/B] High-fidelity dark slate panels with refined metallic accents, smooth animations, and clean typography.
 [*][B]Collapsible Sidebar Rail:[/B] Switch seamlessly between an expanded sidebar with full channel labels and a minimalist compact icon dock to maximize screen real estate.
 [*][B]Native Chat Replacement & Smart Input Docking:[/B] Full two-way synchronization with default ESO chat. When AetherChat closes, text focus instantly restores to standard chat without friction.
-[*][B]Smart Escape Menu Auto-Hide:[/B] Automatically hides cleanly when opening the Escape Game Menu (Settings, Controls, Addons) and restores seamlessly upon returning to the game.
+[*][B]Native Scene Fragment Integration:[/B] Fully compliant with ZOS Scene Manager architecture ([ICODE]ZO_HUDFadeSceneFragment[/ICODE] with [ICODE]SetConditional[/ICODE]). Automatically hides when opening game menus (Escape, Inventory, Skills, Map) and restores seamlessly upon returning to the world.
 [*][B]Combat Auto-Close:[/B] Optional automatic window hiding during combat to keep your battlefield view entirely clear.
 [/LIST]
 
@@ -111,7 +111,7 @@
 [*][B]Configurable Retention:[/B] Retain your conversations across reloadui, zone transitions, and logout (1 day, 3 days, 1 week, 1 month, or Unlimited).
 [/LIST]
 
-[HR][/HR]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 [SIZE="4"][COLOR="SkyBlue"][B]⌨️ SLASH COMMANDS & KEYBINDINGS[/B][/COLOR][/SIZE]
 [LIST]
@@ -121,7 +121,16 @@
 [*][B]/chathead[/B] — Test message and notification sounds.
 [/LIST]
 
-[HR][/HR]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[SIZE="4"][COLOR="Gold"][B]👏 CREDITS & ACKNOWLEDGMENTS[/B][/COLOR][/SIZE]
+[LIST]
+[*][B]LibAddonMenu-2.0:[/B] Created by [I]sirinsidiator & Seerah[/I].
+[*][B]LootLog Integration:[/B] Inspired by and integrated with [I]LootLog by code65536[/I].
+[*][B]Community Inspiration:[/B] Special thanks to the ESO UI developer community, notably the creators of [I]pChat[/I] (Ayantir / Baertram) and [I]ArkadiusTradeTools[/I] (Arkadius) whose foundational work on chat ergonomics and guild history parsing paved the way for modern ESO UI development.
+[/LIST]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 [CENTER]
 [SIZE="5"][COLOR="Gold"][B]🇫🇷 PRÉSENTATION & FONCTIONNALITÉS EN FRANÇAIS[/B][/COLOR][/SIZE]
@@ -129,16 +138,16 @@
 
 [B]AetherChat[/B] transforme intégralement l'interface de discussion classique de The Elder Scrolls Online en une messagerie moderne, fluide et immersive, inspirée des meilleures applications contemporaines et de l'ambiance nordique des parchemins anciens.
 
-[HR][/HR]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 [SIZE="4"][COLOR="Orange"][B]✨ FONCTIONNALITÉS MAJEURES[/B][/COLOR][/SIZE]
 
-[B]🌟 Interface Moderne & Ergonomie Fluide[/B]
+[B]🌟 Interface Moderne & Intégration Native au Scene Manager[/B]
 [LIST]
 [*][B]Design Nordique Épuré :[/B] Panneaux ardoise sombres, bordures ouvragées et lisibilité optimale.
 [*][B]Volet Latéral Rétractable :[/B] Basculez en un clic du mode étendu (avec noms des canaux) au mode compact (avec icônes seules).
 [*][B]Remplacement Transparent du Chat Natif :[/B] Synchronisation totale avec le chat du jeu. Dès la fermeture d'AetherChat, la saisie clavier retourne immédiatement au chat par défaut.
-[*][B]Masquage Intelligent sur Menu Échap :[/B] Se masque automatiquement à la milliseconde près lors de l'ouverture du menu principal (Échap, Réglages, Extensions, Commandes) et se réaffiche dès le retour en jeu.
+[*][B]Intégration Standard par Fragments :[/B] Conforme aux normes ZOS ([ICODE]ZO_HUDFadeSceneFragment[/ICODE] avec [ICODE]SetConditional[/ICODE]). Se masque automatiquement lors de l'ouverture des menus du jeu (Échap, Réglages, Inventaire, Carte) et réapparaît à la fermeture.
 [*][B]Masquage en Combat :[/B] Option de fermeture automatique lors de l'entrée en combat pour une visibilité totale.
 [/LIST]
 
@@ -209,7 +218,7 @@
 [*][B]Sauvegarde Intégrale :[/B] Position, dimensions et taille de police conservées à chaque connexion.
 [/LIST]
 
-[HR][/HR]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 [SIZE="4"][COLOR="SkyBlue"][B]⌨️ COMMANDES SLASH & RACCOURCIS[/B][/COLOR][/SIZE]
 [LIST]
@@ -219,7 +228,16 @@
 [*][B]/chathead[/B] — Tester les sons et l'interface.
 [/LIST]
 
-[HR][/HR]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[SIZE="4"][COLOR="Gold"][B]👏 REMERCIEMENTS & CRÉDITS[/B][/COLOR][/SIZE]
+[LIST]
+[*][B]LibAddonMenu-2.0 :[/B] Développé par [I]sirinsidiator & Seerah[/I].
+[*][B]Intégration LootLog :[/B] Inspiré et intégré avec [I]LootLog par code65536[/I].
+[*][B]Inspiration Communautaire :[/B] Un grand merci à la communauté de développeurs d'ESO UI, notamment aux créateurs de [I]pChat[/I] (Ayantir / Baertram) et [I]ArkadiusTradeTools[/I] (Arkadius) pour leurs travaux pionniers sur l'ergonomie du chat et le suivi des ventes en jeu.
+[/LIST]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 [CENTER]
 [SIZE="2"][COLOR="Gray"]AetherChat — Conçu avec passion pour la communauté de The Elder Scrolls Online.[/COLOR][/SIZE]

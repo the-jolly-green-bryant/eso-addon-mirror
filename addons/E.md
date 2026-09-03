@@ -54,7 +54,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Equipment Level (for Update 6)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Garkin/Equipment-Level-for-Update-6__625) | Garkin | PC / Mac | 1.3 |
 | [Equipped Champion Stars - Equipped CP](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/notnear/Equipped-Champion-Stars---Equipped-CP__3691) | notnear | PC / Mac | 1.1.1 |
 | [ERA's Collection Book](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/WildEra/ERA-s-Collection-Book__2235) | WildEra | PC / Mac | 2.2.0 |
-| [ESO Adventurer Suite](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/HoZayyBadazz/ESO-Adventurer-Suite__4779) | HoZayyBadazz | PC / Mac | 0.29.143 |
+| [ESO Adventurer Suite](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/HoZayyBadazz/ESO-Adventurer-Suite__4779) | HoZayyBadazz | PC / Mac | 0.29.160 |
 | [ESO Arabic](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lofand/ESO-Arabic__3e5cdaca-d941-4fff-873b-7fd31d726a80) | Lofand | Console | — |
 | [ESO Arabic](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lofand/ESO-Arabic__a46a8bd0-fa70-4d6a-817e-5f69d01e04ec) | Lofand | Console | — |
 | [ESO Assistant by ESO-hub.com](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ESO-Hub/ESO-Assistant-by-ESO-hub.com__3b053cc9-5963-4eb9-96b7-de3d29a5fa8b) | ESO-Hub | Console | — |
