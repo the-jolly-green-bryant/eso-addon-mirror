@@ -1,6 +1,6 @@
 {
   "archive_format": "zip",
-  "archive_path": "addons/haidan/Flamechasers-Dungeon-Codex__4737",
+  "archive_path": "addons/haidan/Flamechasers-Dungeon-Trial-Arena-Codex__4737",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
   "archived": true,
   "author": "haidan",
@@ -18,21 +18,21 @@
     "DungeonMechsCodex"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4737/",
-  "fingerprint": "f4c2209cd8c95887493a221b0e5d0c0d472726087a9603224885ca754dc3153f",
+  "fingerprint": "6c0dc0f61a451dfd8a7b9b0565ef8a8d8b17bbf65ea5a0e75951ccabad241090",
   "images": [
-    "https://cdn-eso.mmoui.com/preview/pvw16857.png"
+    "https://cdn-eso.mmoui.com/preview/pvw17266.png"
   ],
   "platform": "pc",
   "published": true,
   "source": "esoui",
   "source_id": "4737",
-  "source_url": "https://www.esoui.com/downloads/info4737-FlamechasersDungeonCodex.html",
+  "source_url": "https://www.esoui.com/downloads/info4737-FlamechasersDungeonTrialArenaCodex.html",
   "stats": {
-    "downloads": 37,
+    "downloads": 94,
     "favorites": 0,
-    "monthly_downloads": 34
+    "monthly_downloads": 33
   },
-  "title": "Flamechasers Dungeon Codex",
-  "updated_at": 1785716818000,
-  "version": "0.2.58"
+  "title": "Flamechasers Dungeon, Trial & Arena Codex",
+  "updated_at": 1788475779000,
+  "version": "0.7.2"
 }

@@ -3,8 +3,8 @@
 A lightweight camera addon for *The Elder Scrolls Online*. It gives you back
 control over the third-person camera in situations where the game normally
 takes it away, and layers a few optional cinematic touches on top. Dynamic FOV
-and Adaptive PvP are on out of the box; the PvP detector remains completely
-inert outside AvA worlds and Battlegrounds.
+and PvP mode are on out of the box; PvP mode remains completely inert outside
+AvA worlds and Battlegrounds.
 
 > **Compatibility:** API: LIVE 101050 / PTS 101051 · Requires:
 > LibAddonMenu-2.0 (>= 43).
@@ -22,17 +22,16 @@ On top of that, several **optional** systems can shape the camera further:
 
 - **Dynamic FOV** *(on by default)* - field of view follows your zoom distance.
 - **Camera response profiles** - ESO-native, instant, responsive, or smooth
-  transitions shared by every BAV-owned camera system.
+  transitions for Dynamic FOV, context presets, and shoulder movement.
 - **Context presets** *(off by default)* - cinematic framing per gameplay state.
 - **Over-the-shoulder swap** *(off by default)* - swing the camera to one side.
-- **Adaptive PvP mode** *(on by default)* - stable scouting, pursuit, combat,
-  and pressure framing with critical-moment safety locks. This mode is currently
-  in testing and will continue to be improved and fixed based on test results.
+- **PvP mode** *(on by default)* - a dedicated manual zoom step and optional
+  camera-shake suppression, without automatic framing or cinematic profiles.
 - **Live offset nudge** - hold keybinds to slide the third-person camera
   horizontally or vertically, then recenter those two axes with one tap.
 
-Every disabled optional system is fully inert. Adaptive PvP also registers no
-combat, health, sprint, or safety observers outside PvP, even while enabled.
+Every disabled optional system is fully inert. PvP mode registers no combat,
+health, sprint, update, or profile observers at all.
 
 ---
 
@@ -56,15 +55,15 @@ combat, health, sprint, or safety observers outside PvP, even while enabled.
   then restored when the feature is disabled - including after a `/reloadui`.
 
 ### Camera response
-- One global response setting controls Dynamic FOV, context presets, Adaptive
-  PvP framing, and over-the-shoulder movement.
+- One global response setting controls Dynamic FOV, context presets, and
+  over-the-shoulder movement.
 - **As in ESO** applies BAV values immediately and leaves the game's own camera
   smoothing setting untouched.
 - **Instant** suppresses native smoothing and lands every BAV change in one frame.
 - **Responsive** uses a short 90 ms fast-settling transition.
 - **Smooth** uses a longer 300 ms cinematic ease-in/out transition.
-- Emergency reset, load-screen recovery, siege safety, manual zoom, and live
-  offset nudging remain immediate regardless of the selected profile.
+- Emergency reset, load-screen recovery, siege safety, and live offset nudging
+  remain immediate regardless of the selected profile.
 
 ### Live offset nudge
 - Offset binds stay locked until you **remember one home pose** from the
@@ -127,31 +126,19 @@ combat, health, sprint, or safety observers outside PvP, even while enabled.
 - An **emergency restore** button in the settings panel instantly returns the
   camera to your control if anything ever feels stuck.
 
-### Adaptive PvP mode *(optional, on by default)*
-- Runs only in AvA worlds and Battlegrounds. Outside PvP it unregisters its
-  combat, health, sprint, and safety observers and applies no profile.
-- Resolves every signal into one stable state: scouting, mounted scouting,
-  pursuit, engaged, pressure, or suspended. A single hit never applies its own
-  camera change.
-- Detects burst pressure through damage accumulated over a rolling 1.5 second
-  window and can also enter pressure below a configurable health threshold.
-- Holds an established combat frame at critical health instead of starting
-  another transition at the moment visual stability matters most.
-- Suspends its profile while dead, while the game owns a siege camera, or after
-  a sustained run of rejected camera-distance writes.
-- Threat entries are instant and conservative. Minimum state holds, pressure
-  cooldowns, and slow release prevent rapid combat events from oscillating zoom
-  and FOV.
-- The default **outward-only zoom assist** may pull back for awareness but never
-  moves closer than the live camera. Your first manual zoom input, including
-  native mouse-wheel or gamepad zoom, cedes distance for the rest of that PvP
-  world so the addon cannot fight your chosen framing.
-- Camera shake is suppressed by default while a PvP profile is active. An
-  explicit opt-in restores the profile's restrained shake values; leaving PvP
-  always restores the player's original camera-shake setting.
-- Never rotates the view and never writes camera settings directly. It requests
-  an external profile from `ContextPresets`, which remains the sole owner of the
-  snapshot/restore and FOV-arbitration path.
+### PvP mode *(optional, on by default)*
+- Runs only in AvA worlds and Battlegrounds and applies no automatic camera
+  profile.
+- Uses a dedicated step for player-controlled mouse-wheel and gamepad zoom.
+- Never changes zoom distance, FOV, shoulder position, or camera offsets on its
+  own, so entering combat, taking damage, sprinting, and mounting cannot move the
+  camera.
+- Camera shake is suppressed by default to reduce distraction and motion
+  discomfort. An opt-in leaves the player's shake setting unchanged.
+- The original camera-shake value is persisted before suppression and restored
+  when leaving PvP, disabling the mode, using `/bav reset`, or after `/reloadui`.
+- Other optional systems remain governed by their own toggles; PvP mode itself
+  does not enable, configure, or reapply them.
 
 ### Conflict resilience *(automatic safety net)*
 - Because BAV hooks the game's own first-person toggle, another addon that
@@ -187,9 +174,8 @@ combat, health, sprint, or safety observers outside PvP, even while enabled.
 ## Why it's built well
 
 - **No surprises.** Context presets and over-the-shoulder swap stay off until
-  you enable them. Dynamic FOV and Adaptive PvP ship on; PvP remains fully inert
-  outside AvA/Battlegrounds, and either toggle hands the affected camera values
-  back through the normal restore path.
+  you enable them. Dynamic FOV and PvP mode ship on; PvP mode applies no
+  automatic framing and remains fully inert outside AvA/Battlegrounds.
 - **One source of truth for engine I/O.** All camera reads and writes go
   through a single `CameraSettings` layer that handles the engine's value
   formatting and verifies every write by reading it back. A future client
@@ -219,8 +205,7 @@ combat, health, sprint, or safety observers outside PvP, even while enabled.
   like the world map or a transformed state.
 - **Nothing permanently on the per-frame path.** Work happens in response to
   state events, a coarse 100 ms distance observer while Dynamic FOV is enabled,
-  SprintWatch's event-driven settle confirmations, or a 250 ms safety sample
-  while Adaptive PvP is actively inside a PvP world. Only transient FOV and
+  or SprintWatch's event-driven settle confirmations. Only transient FOV and
   preset glides run every frame, and their updaters tear down when they land.
 - **Recovers gracefully.** The pre-preset camera snapshot and the pre-swing
   shoulder are persisted, so an interrupted session never leaves cinematic
@@ -291,7 +276,7 @@ is what keeps a fix or a client change a single edit.
 | `FovArbiter.lua` | Single owner of third-person FOV precedence (dynamic FOV vs. preset holds). |
 | `ContextPresets.lua` | State-driven cinematic bundles with snapshot/restore and persistence. |
 | `ShoulderControl.lua` | Optional over-the-shoulder swap (auto-by-state or manual); single owner of the shoulder offset. |
-| `PvpMode.lua` | Optional PvP situation state machine; requests one conservative external profile from ContextPresets and owns no camera setting directly. |
+| `PvpMode.lua` | Lightweight PvP world mode: selects a manual zoom step and safely suppresses/restores camera shake. |
 | `OffsetNudge.lua` | Hold-to-nudge for horizontal and vertical offsets, recenter bind, and the short-lived on-screen readout. |
 | `Settings.lua` | SavedVariables, defaults, and the LibAddonMenu panel. |
 

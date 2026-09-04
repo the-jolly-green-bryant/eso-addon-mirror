@@ -1,0 +1,10 @@
+## Title: True Corpse Alert
+## Description:|cff5900Description|r
+True Corpse Alert provides a clean, lightweight HUD widget that tracks available corpses in real time. Never waste a Siphon or Boneyard again and keep your rotation rolling at peak efficiency.
+## Author: |cff5900To|r|cb56648u|r|c906c6cd|r|c6a7391i|r|c1581fcef|r
+## Version: 1.0
+## APIVersion: 101050
+## SavedVariables: TrueCorpseAlertSavedVars
+## DependsOn: LibAddonMenu-2.0
+
+TrueCorpseAlert.lua

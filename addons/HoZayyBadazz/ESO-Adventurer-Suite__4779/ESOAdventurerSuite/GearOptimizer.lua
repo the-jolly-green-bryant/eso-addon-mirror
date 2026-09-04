@@ -2586,3 +2586,274 @@ function G:EquipBestPotions()
 end
 
 function G:Initialize() end
+
+-- v0.29.174 - MAX POWER build context and dynamic skill/passive scoring.
+-- The existing curated SkillMeta remains the high-confidence starting point. This
+-- layer adapts it to the current activity and scores unlocked fallbacks/morphs by
+-- their live descriptions so RESPEC + BUILD is not limited to fixed name lists.
+G.MAX_POWER_MODES_029174 = {
+    AUTO=true, TRIAL_BOSS=true, DUNGEON=true, INFINITE_ARCHIVE=true,
+    SOLO=true, AOE_TRASH=true, PVP=true,
+}
+G.MAX_POWER_MODE_LABELS_029174 = {
+    AUTO="AUTO / CURRENT CONTENT", TRIAL_BOSS="TRIAL / BOSS",
+    DUNGEON="DUNGEON / ARENA", INFINITE_ARCHIVE="INFINITE ARCHIVE",
+    SOLO="SOLO / OVERLAND", AOE_TRASH="AOE / TRASH", PVP="PVP",
+}
+
+function G:GetMaxPowerMode029174()
+    local key=string.upper(tostring(EPC.saved and EPC.saved.maxPowerContent or "AUTO"))
+    if not self.MAX_POWER_MODES_029174[key] then key="AUTO" end
+    return key
+end
+
+function G:SetMaxPowerMode029174(key)
+    key=string.upper(tostring(key or "AUTO"))
+    if not self.MAX_POWER_MODES_029174[key] or not EPC.saved then return false end
+    EPC.saved.maxPowerContent=key
+    if EPC.RequestRefresh then EPC:RequestRefresh("max-power-content") end
+    if EPC.Print then EPC:Print("MAX POWER content: "..tostring(self.MAX_POWER_MODE_LABELS_029174[key] or key)) end
+    return true
+end
+
+local function easIsInfiniteArchive029174()
+    local fn=rawget(_G,"IsInEndlessDungeon")
+    if type(fn)=="function" and safe(fn,false)==true then return true end
+    local prog=rawget(_G,"GetCurrentEndlessDungeonProgression")
+    if type(prog)=="function" then
+        local a,b,c=safe(prog,nil)
+        if tonumber(a) and tonumber(a)>0 then return true end
+        if tonumber(b) and tonumber(b)>0 then return true end
+        if tonumber(c) and tonumber(c)>0 then return true end
+    end
+    return false
+end
+
+function G:ResolveMaxPowerMode029174()
+    local configured=self:GetMaxPowerMode029174()
+    if configured~="AUTO" then return configured end
+    if easIsInfiniteArchive029174() then return "INFINITE_ARCHIVE" end
+    local bg=rawget(_G,"IsActiveWorldBattleground")
+    if type(bg)=="function" and safe(bg,false)==true then return "PVP" end
+    local focus=EPC.Endgame and type(EPC.Endgame.GetFocus)=="function" and tostring(EPC.Endgame:GetFocus() or "") or ""
+    if focus=="TRIALS" then return "TRIAL_BOSS" end
+    if focus=="DUNGEONS" then return "DUNGEON" end
+    if focus=="SOLO" or focus=="QUESTING" then return "SOLO" end
+    local groupSize=type(GetGroupSize)=="function" and safeNumber(GetGroupSize,0) or 0
+    if groupSize>=8 then return "TRIAL_BOSS" end
+    if groupSize>=2 then return "DUNGEON" end
+    return "SOLO"
+end
+
+local function easPlayerStat029174(globalName)
+    local statId=rawget(_G,globalName)
+    if statId==nil or type(GetPlayerStat)~="function" then return 0 end
+    return safeNumber(GetPlayerStat,0,statId)
+end
+
+function G:GetPowerSnapshot029174()
+    local mcur,mmax=safe(GetUnitPower,0,"player",POWERTYPE_MAGICKA)
+    local scur,smax=safe(GetUnitPower,0,"player",POWERTYPE_STAMINA)
+    local hcur,hmax=safe(GetUnitPower,0,"player",POWERTYPE_HEALTH)
+    mmax=tonumber(mmax) or tonumber(mcur) or 0
+    smax=tonumber(smax) or tonumber(scur) or 0
+    hmax=tonumber(hmax) or tonumber(hcur) or 0
+    local high=math.max(mmax,smax,1)
+    local low=math.min(mmax,smax)
+    local hybrid=(low/high)>=0.88
+    return {
+        maxHealth=hmax,maxMagicka=mmax,maxStamina=smax,
+        magickaPct=(mmax>0 and (tonumber(mcur) or mmax)/mmax or 1),
+        staminaPct=(smax>0 and (tonumber(scur) or smax)/smax or 1),
+        spellPower=easPlayerStat029174("STAT_SPELL_POWER"),
+        weaponPower=easPlayerStat029174("STAT_WEAPON_POWER"),
+        spellPen=easPlayerStat029174("STAT_SPELL_PENETRATION"),
+        physicalPen=easPlayerStat029174("STAT_PHYSICAL_PENETRATION"),
+        spellCrit=easPlayerStat029174("STAT_SPELL_CRITICAL"),
+        weaponCrit=easPlayerStat029174("STAT_CRITICAL_STRIKE"),
+        spellResist=easPlayerStat029174("STAT_SPELL_RESIST"),
+        physicalResist=easPlayerStat029174("STAT_PHYSICAL_RESIST"),
+        magRecovery=easPlayerStat029174("STAT_MAGICKA_REGEN_COMBAT"),
+        stamRecovery=easPlayerStat029174("STAT_STAMINA_REGEN_COMBAT"),
+        hybrid=hybrid,
+    }
+end
+
+function G:GetPersonalPenetrationTarget029174(mode,role)
+    role=string.upper(tostring(role or "DAMAGE"))
+    if role~="DAMAGE" and role~="DPS" then return 0 end
+    if mode=="TRIAL_BOSS" then return 3500 end
+    if mode=="DUNGEON" then return 7000 end
+    if mode=="AOE_TRASH" then return 9000 end
+    if mode=="PVP" then return 12000 end
+    return 18200
+end
+
+function G:GetSkillPresetForMaxPower029174(mode)
+    mode=mode or self:ResolveMaxPowerMode029174()
+    if mode=="AOE_TRASH" then return "AOE_TRASH" end
+    if mode=="SOLO" or mode=="INFINITE_ARCHIVE" or mode=="PVP" then return "SOLO" end
+    return "TRIAL"
+end
+
+local EAS_GetWornBuildContextBase029174=G.GetWornBuildContext
+function G:GetWornBuildContext()
+    local context=EAS_GetWornBuildContextBase029174(self) or {}
+    context.maxPowerMode=self:ResolveMaxPowerMode029174()
+    context.maxPowerLabel=self.MAX_POWER_MODE_LABELS_029174[context.maxPowerMode] or context.maxPowerMode
+    context.power=self:GetPowerSnapshot029174()
+    context.skillPresetKey=self:GetSkillPresetForMaxPower029174(context.maxPowerMode)
+    context.personalPenTarget=self:GetPersonalPenetrationTarget029174(context.maxPowerMode,context.role)
+    local p=context.power or {}
+    local currentPen=context.profile and context.profile.magicka and (p.spellPen or 0) or (p.physicalPen or 0)
+    if p.hybrid then currentPen=math.max(p.spellPen or 0,p.physicalPen or 0) end
+    context.personalPen=currentPen
+    context.penGap=math.max(0,(context.personalPenTarget or 0)-currentPen)
+    context.archetype=(context.role=="TANK" and "TANK") or (context.role=="HEALER" and "HEALER") or (p.hybrid and "HYBRID" or (context.profile and context.profile.magicka and "MAGICKA DPS" or "STAMINA DPS"))
+    return context
+end
+
+function G:GetSkillMetaForContext(context)
+    context=context or self:GetWornBuildContext()
+    local presetKey=context.skillPresetKey or self:GetSkillPresetForMaxPower029174(context.maxPowerMode)
+    if not EPC.SkillMeta or type(EPC.SkillMeta.GetProfile)~="function" then return nil,presetKey end
+    local profile=context.profile or self:GetProfile()
+    local meta=EPC.SkillMeta:GetProfile(profile.classId,context.role or profile.role,profile.magicka,presetKey)
+    context.skillMeta=meta
+    context.skillPreset=presetKey
+    return meta,presetKey
+end
+
+local function easAbilityDescription029174(a)
+    if not a then return "" end
+    local id=tonumber(a.abilityId) or tonumber(a.actionId) or 0
+    if id>0 and type(GetAbilityDescription)=="function" then
+        local d=safe(GetAbilityDescription,"",id)
+        if d and d~="" then return lower(d) end
+    end
+    local idx=tonumber(a.abilityIndex) or 0
+    if idx>0 and type(GetAbilityDescriptionByIndex)=="function" then
+        local d=safe(GetAbilityDescriptionByIndex,"",idx)
+        if d and d~="" then return lower(d) end
+    end
+    return ""
+end
+
+local EAS_ScoreAbilityForCurrentBuildBase029174=G.ScoreAbilityForCurrentBuild
+function G:ScoreAbilityForCurrentBuild(a,context)
+    context=context or self:GetWornBuildContext()
+    local score=EAS_ScoreAbilityForCurrentBuildBase029174(self,a,context)
+    local n=lower(a and a.name or "")
+    local d=easAbilityDescription029174(a)
+    local text=n.." "..d
+    local role=string.upper(tostring(context.role or "DAMAGE"))
+    local mode=context.maxPowerMode or self:ResolveMaxPowerMode029174()
+    local profile=context.profile or self:GetProfile()
+
+    -- Real tooltip semantics: morph/fallback choices gain value for what they do,
+    -- not just because their name happens to match a local list.
+    local deals=containsAny(text,{"deals ","damage every","damage over","magic damage","flame damage","frost damage","shock damage","physical damage","poison damage","disease damage","bleed damage"})
+    local dot=containsAny(text,{"over %d","every 1 second","every 2 seconds","damage over time","for 10 seconds","for 20 seconds"})
+    local aoe=containsAny(text,{"area","nearby enemies","enemies in","radius","ground","around you","cone"})
+    local execute=containsAny(text,{"less than 50%","below 50%","less than 25%","below 25%","missing health","up to 400%","execute"})
+    local buff=containsAny(text,{"major brutality","major sorcery","minor force","major savagery","major prophecy","increases your weapon and spell damage","increases your critical","empower","berserk"})
+    local debuff=containsAny(text,{"major breach","minor breach","vulnerability","brittle","off balance","reduces their","take %d%% more damage"})
+    local heal=containsAny(text,{"heals ","healing ","restore health","healing done","heal you","heal an ally"})
+    local shield=containsAny(text,{"damage shield","shield that absorbs","major resolve","minor resolve","damage taken"})
+    local sustain=containsAny(text,{"restore magicka","restore stamina","recovery","reduces the cost","resource"})
+    local taunt=containsAny(text,{"taunt","taunting"})
+    local pet=containsAny(text,{"summon","familiar","twilight","clannfear","bear","pet"})
+
+    if role=="TANK" then
+        if taunt then score=score+1200 end
+        if debuff then score=score+700 end
+        if shield then score=score+720 end
+        if heal then score=score+480 end
+        if sustain then score=score+430 end
+        if mode=="INFINITE_ARCHIVE" and deals then score=score+140 end
+    elseif role=="HEALER" then
+        if heal then score=score+980 end
+        if buff then score=score+720 end
+        if sustain then score=score+520 end
+        if debuff then score=score+400 end
+        if shield then score=score+330 end
+        if deals then score=score+(mode=="SOLO" and 220 or 40) end
+    else
+        if deals then score=score+520 end
+        if dot then score=score+330 end
+        if buff then score=score+560 end
+        if debuff then score=score+470 end
+        if execute then score=score+620 end
+        if pet then score=score+360 end
+        if sustain then score=score+100 end
+        if mode=="AOE_TRASH" and aoe then score=score+520 end
+        if mode=="TRIAL_BOSS" and aoe then score=score-80 end
+        if mode=="TRIAL_BOSS" and not aoe and deals then score=score+180 end
+        if mode=="INFINITE_ARCHIVE" then
+            if shield or heal then score=score+330 end
+            if sustain then score=score+220 end
+        elseif mode=="SOLO" or mode=="PVP" then
+            if shield or heal then score=score+260 end
+        end
+        -- Skills that provide penetration are only premium while the build still
+        -- has a meaningful personal penetration gap for this content.
+        if containsAny(text,{"penetration","major breach","minor breach"}) then
+            local gap=tonumber(context.penGap) or 0
+            score=score+math.min(420,math.floor(gap/25))
+        end
+        if profile and profile.magicka and containsAny(text,{"restore stamina only","costs stamina"}) then score=score-60 end
+        if profile and not profile.magicka and containsAny(text,{"restore magicka only","costs magicka"}) then score=score-40 end
+    end
+    return score
+end
+
+local EAS_ScorePassiveForCurrentBuildBase029174=G.ScorePassiveForCurrentBuild
+function G:ScorePassiveForCurrentBuild(entry,context)
+    context=context or self:GetWornBuildContext()
+    local score=EAS_ScorePassiveForCurrentBuildBase029174(self,entry,context)
+    local id=tonumber(entry and entry.abilityId) or 0
+    local d=""
+    if id>0 and type(GetAbilityDescription)=="function" then d=lower(safe(GetAbilityDescription,"",id) or "") end
+    local text=lower(entry and entry.name or "").." "..d
+    local role=string.upper(tostring(context.role or "DAMAGE"))
+    local mode=context.maxPowerMode or self:ResolveMaxPowerMode029174()
+    if role=="DAMAGE" or role=="DPS" then
+        if containsAny(text,{"damage done","weapon and spell damage","critical","penetration","max magicka","max stamina"}) then score=score+420 end
+        if containsAny(text,{"cost of your","recovery","restore magicka","restore stamina"}) then score=score+180 end
+        if mode=="INFINITE_ARCHIVE" and containsAny(text,{"health","damage taken","healing received","shield"}) then score=score+180 end
+    elseif role=="TANK" then
+        if containsAny(text,{"block","health","resistance","damage taken","healing received","stamina","magicka"}) then score=score+480 end
+    elseif role=="HEALER" then
+        if containsAny(text,{"healing done","magicka","recovery","critical","cost"}) then score=score+460 end
+    end
+    return score
+end
+
+function G:AnalyzeSkillPlan029174(plan)
+    plan=plan or self:BuildFullSkillPlan()
+    local counts={direct=0,dot=0,aoe=0,single=0,buff=0,heal=0,total=0}
+    local function scan(e)
+        if not e or e.ultimate then return end
+        local t=lower(e.name or "").." "..easAbilityDescription029174(e)
+        counts.total=counts.total+1
+        if containsAny(t,{"damage over time","every 1 second","every 2 seconds","over 10 seconds","over 20 seconds"}) then counts.dot=counts.dot+1 else counts.direct=counts.direct+1 end
+        if containsAny(t,{"area","nearby enemies","radius","ground","cone","enemies in"}) then counts.aoe=counts.aoe+1 else counts.single=counts.single+1 end
+        if containsAny(t,{"major brutality","major sorcery","minor force","major savagery","major prophecy","increases your","berserk","empower"}) then counts.buff=counts.buff+1 end
+        if containsAny(t,{"heal","restore health","healing"}) then counts.heal=counts.heal+1 end
+    end
+    for _,e in ipairs(plan.frontWanted or {}) do scan(e) end
+    for _,e in ipairs(plan.backWanted or {}) do scan(e) end
+    local total=math.max(1,counts.total)
+    counts.directShare=counts.direct/total; counts.dotShare=counts.dot/total
+    counts.aoeShare=counts.aoe/total; counts.singleShare=counts.single/total
+    return counts
+end
+
+local EAS_RespecAndApplyBestBuildBase029174=G.RespecAndApplyBestBuild
+function G:RespecAndApplyBestBuild()
+    local context=self:GetWornBuildContext()
+    local mode=context.maxPowerLabel or context.maxPowerMode or "AUTO"
+    local power=context.power or {}
+    self:NotifyResult(string.format("MAX POWER BUILD: %s | %s | Health %d | Magicka %d | Stamina %d | Pen %d/%d target",tostring(context.archetype or context.role or "BUILD"),tostring(mode),tonumber(power.maxHealth) or 0,tonumber(power.maxMagicka) or 0,tonumber(power.maxStamina) or 0,tonumber(context.personalPen) or 0,tonumber(context.personalPenTarget) or 0),true)
+    return EAS_RespecAndApplyBestBuildBase029174(self)
+end

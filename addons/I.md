@@ -26,6 +26,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Immersive Mount Camera](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Dimedius/Immersive-Mount-Camera__1071) | Dimedius | PC / Mac | 1.0.1 |
 | [Immersive Overlays](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Anumaril/Immersive-Overlays__3838) | Anumaril | PC / Mac | 1.1 |
 | [Immersive Quests](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/OneSkyGod/Immersive-Quests__3538) | OneSkyGod | PC / Mac | 0.0057 |
+| [Imperial City Boss Timers](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ParanoidGaming/Imperial-City-Boss-Timers__6684c311-afc5-48de-8ced-f86edbe863f1) | ParanoidGaming | Console | — |
 | [Imperial City Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kawamonkey/Imperial-City-Helper__3306) | kawamonkey | PC / Mac | 1.1.1 |
 | [Imperial City Hunter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Drako-Ei/Imperial-City-Hunter__2320) | Drako-Ei | PC / Mac | 1.4 |
 | [Imperial City Next Boss](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/laurj787/Imperial-City-Next-Boss__3641) | laurj787 | PC / Mac | 1.4 |

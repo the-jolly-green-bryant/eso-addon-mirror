@@ -1,8 +1,8 @@
 ## Title: Better Twins
 ## Description: Focused Twins callouts and diagnostics for Dreadsail Reef.
 ## Author: @BMGxSancho
-## Version: 0.0.01-dev2
-## AddOnVersion: 2
+## Version: 0.0.01-dev5
+## AddOnVersion: 5
 ## APIVersion: 101048 101049 101050
 ## SavedVariables: BetterTwinsSavedVariables
 ## ConsoleDependsOn: LibHarvensAddonSettings>=20007

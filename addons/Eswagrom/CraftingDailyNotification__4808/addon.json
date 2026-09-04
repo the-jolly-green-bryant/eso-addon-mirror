@@ -1,0 +1,41 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/Eswagrom/CraftingDailyNotification__4808",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Eswagrom",
+  "canonical_id": "esoui:4808",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4808",
+  "deleted": false,
+  "directories": [
+    "CraftingDailyNotification"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4808/",
+  "fingerprint": "dd1668043e5092242e44ee2e5e3ce9a3cb02cd632906d20bfb52f943f16d1dcf",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17247.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw17248.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw17249.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw17250.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4808",
+  "source_url": "https://www.esoui.com/downloads/info4808-CraftingDailyNotification.html",
+  "stats": {
+    "downloads": 6,
+    "favorites": 0,
+    "monthly_downloads": 5
+  },
+  "title": "CraftingDailyNotification",
+  "updated_at": 1788402991000,
+  "version": "1.0"
+}

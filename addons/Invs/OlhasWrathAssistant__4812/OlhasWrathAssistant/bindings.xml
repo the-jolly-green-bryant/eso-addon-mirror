@@ -1,0 +1,11 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="Olha's Wrath Assistant">
+            <Action name="OWA_DECONSTRUCT">
+                <Down>
+                    OWA_Deconstruct()
+                </Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

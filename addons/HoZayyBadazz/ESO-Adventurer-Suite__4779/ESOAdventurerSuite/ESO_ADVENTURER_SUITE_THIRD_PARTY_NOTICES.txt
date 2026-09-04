@@ -35,3 +35,19 @@ separate third-party library and is not redistributed as Suite-owned code.
 The user-supplied LostTreasure addon was used as a behavior/reference example;
 the Suite locator implementation is Suite-native and LostTreasure itself is not
 required.
+
+GAMEPAD GLYPH REDIRECTION REFERENCE
+The Suite-wide XInput-to-PlayStation glyph redirection behavior was implemented
+with reference to the open-source "Custom gamepad button glyphs" project by
+13xforever (teso-gamepad-glyphs), which demonstrates RedirectTexture-based
+remapping of ESO's built-in controller art. That project is MIT-licensed.
+
+
+
+ACTION BAR BEHAVIOR / SKILL STYLE REFERENCES
+The Dual Action Bar HUD is a Suite-native implementation. Its user-facing feature
+concept was requested by a player familiar with Fancy Action Bar+. Skill Style
+icon behavior was cross-checked against ESO's public progression/collectible APIs
+and the publicly documented Action Bar Skill Styles / Fancy Action Bar+ behavior.
+No Fancy Action Bar+ or Action Bar Skill Styles files, artwork, or bundled runtime
+dependency are redistributed by ESO Adventurer Suite.

@@ -80,7 +80,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Fix Visual Bugs](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Phinix/Fix-Visual-Bugs__2200) | Phinix | PC / Mac | 1.10 |
 | [FixedCombatString](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MelanAster/FixedCombatString__3831) | MelanAster | PC / Mac | 0.30 |
 | [Flagrick's durability](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ayantir/Flagrick-s-durability__419) | Ayantir | PC / Mac | 1.3 |
-| [Flamechasers Dungeon Codex](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Dungeon-Codex__4737) | haidan | PC / Mac | 0.2.58 |
+| [Flamechasers Dungeon, Trial & Arena Codex](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Dungeon-Trial-Arena-Codex__4737) | haidan | PC / Mac | 0.7.2 |
 | [Flamechasers Outfit Profiles](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Outfit-Profiles__4736) | haidan | PC / Mac | 0.4.5 |
 | [Flamechasers Pledge Queue](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Pledge-Queue__4735) | haidan | PC / Mac | 0.8.1 |
 | [Flamechasers Spellcheck & Autocomplete](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Spellcheck-Autocomplete__4805) | haidan | PC / Mac | 0.7.6 |
@@ -95,7 +95,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Flowers She Likes (Fixed & Modernized) - original by Ayantir](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Hyborem/Flowers-She-Likes-Fixed-Modernized---original-by-Ayantir__4398) | Hyborem | PC / Mac | v.14.2 |
 | [Fluffiels' Panic Beams](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Fluffiels/Fluffiels-Panic-Beams__4579) | Fluffiels | PC / Mac | 1.09 |
 | [FlysTimer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tim99/FlysTimer__4661) | tim99 | PC / Mac | 1.0 |
-| [FOB - Companion Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FlatBadger/FOB---Companion-Helper__3282) | FlatBadger | PC / Mac | 3.2.0 |
+| [FOB - Companion Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FlatBadger/FOB---Companion-Helper__3282) | FlatBadger | PC / Mac | 3.2.2 |
 | [FollowItem](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/IRo/FollowItem__1860) | IRo | PC / Mac | 2.2 |
 | [FollowMe](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Soul_Hagans/FollowMe__4255) | Soul_Hagans | PC / Mac | 2.0.1 |
 | [Font Accessibility - Font Changer based on Pawksicles](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lucifer1309/Font-Accessibility---Font-Changer-based-on-Pawksicles__4012) | Lucifer1309 | PC / Mac | 1.7.0 |

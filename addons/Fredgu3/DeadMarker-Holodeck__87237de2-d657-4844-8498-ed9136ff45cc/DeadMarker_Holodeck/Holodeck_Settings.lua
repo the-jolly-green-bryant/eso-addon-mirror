@@ -105,6 +105,17 @@ function H.CreateSettingsMenu()
         },
         {
             type = "checkbox",
+            name = "Portal! alert on pad windows",
+            tooltip = "Big center banner for the 12s vLC pad window, timed from this pack's teleports. Also: /hd alerts on|off",
+            getFunc = function() return sv.alertsOn ~= false end,
+            setFunc = function(v)
+                sv.alertsOn = (v == true)
+                if type(H.RefreshUI) == "function" then H.RefreshUI() end
+            end,
+            default = true,
+        },
+        {
+            type = "checkbox",
             name = "Debug chat",
             getFunc = function() return sv.debug == true end,
             setFunc = function(v) sv.debug = v end,

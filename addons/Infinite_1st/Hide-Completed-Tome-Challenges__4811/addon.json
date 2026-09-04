@@ -1,0 +1,39 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/Infinite_1st/Hide-Completed-Tome-Challenges__4811",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Infinite_1st",
+  "canonical_id": "esoui:4811",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4811",
+  "deleted": false,
+  "directories": [
+    "HideCompletedTomeChallenges"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4811/",
+  "fingerprint": "7904b618465a94c904b6e9f633f14d04337d6080d00007d599097468ca3a4893",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17258.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17260.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4811",
+  "source_url": "https://www.esoui.com/downloads/info4811-HideCompletedTomeChallenges.html",
+  "stats": {
+    "downloads": 6,
+    "favorites": 0,
+    "monthly_downloads": 6
+  },
+  "title": "Hide Completed Tome Challenges",
+  "updated_at": 1788452129000,
+  "version": "1.0"
+}

@@ -1,0 +1,7 @@
+## Title: Hide Completed Tome Challenges
+## Author: Infinite_1st
+## Version: 1.0.0
+## APIVersion: 101050
+## Description: Hides fully claimed Tome Challenges from the Tomes Challenges window.
+
+HideCompletedTomeChallenges.lua

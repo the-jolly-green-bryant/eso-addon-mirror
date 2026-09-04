@@ -980,7 +980,7 @@ local function gearSelectedSections(view,sel)
         }},
         {"OPTIMIZATION",{
             "Use the buttons below for saved builds, weapons, jewelry, potions, Light/Medium/Heavy armor, companion tools, and the Endgame optimizer.",
-            "Use RESPEC + BUILD on the Skills page for player abilities, morphs, passives, and both weapon bars.",
+            "Use MAX POWER BUILD on the Skills page for content-aware abilities, morphs, passives, and both weapon bars.",
             "BEST ENDGAME uses the curated live meta snapshot when one exists for your class, role, resource, and selected preset.",
         }},
     }
@@ -2525,7 +2525,7 @@ end
 
 function M:TextActions(tab)
     if tab=="COMBAT" then return {"FULL COMBAT REPORT","REFRESH"} end
-    if tab=="SKILLS" then return {"RESPEC + BUILD","REDISTRIBUTE CP","BEST ATTRIBUTES","REFRESH"} end
+    if tab=="SKILLS" then return {"MAX POWER BUILD","MAX POWER CP","MAX POWER ATTRIBUTES","REFRESH"} end
     if tab=="TOOLS" then
         local mode=EPC.UtilitySuite and EPC.UtilitySuite:GetMode() or "OVERVIEW"
         if mode=="RETICLE" then return {"MODE","ON / OFF","STYLE","COLOR","SIZE -","SIZE +","OPACITY -","OPACITY +"} end

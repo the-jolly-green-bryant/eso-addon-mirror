@@ -1,308 +1,85 @@
 ESO ADVENTURER SUITE
-Version 0.29.160
+Version 0.29.197
 Author: HoZayyBadazz
 Status: Public Beta
 
 AI DEVELOPMENT DISCLOSURE
-ESO Adventurer Suite uses AI-assisted code generation and review. ESO Adventurer Suite is responsible for testing, publishing, maintaining, and supporting the addon.
-
-0.29.160
-- Added optional Alchemy Auto Craft: Craft 1, Craft X, or Craft Maximum after a READY mixture is loaded. Auto Craft is OFF by default.
-- Replaced the Alchemy effect selector with a dedicated top-level popup so effect/options choices cannot render behind the Potion Maker.
-- Kept manual auto-slot mode available when Auto Craft is disabled.
+ESO Adventurer Suite uses AI-assisted code generation and review. HoZayyBadazz is responsible for testing, publishing, maintaining, and supporting the addon.
 
 OVERVIEW
-ESO Adventurer Suite is an all-in-one Elder Scrolls Online dashboard and utility addon built around the Tamriel Codex. It includes questing, travel, finders, combat statistics, HUD tools, minimap features, gear/build tools, companion tools, notes, checkpoints, Golden Pursuits integration, and configurable utility overlays.
+ESO Adventurer Suite is an all-in-one Elder Scrolls Online dashboard and utility addon. It combines the Tamriel Codex, quest/travel tools, combat guidance and reports, a Dual Action Bar HUD, minimap/navigation tools, build optimization, companion/group HUD tools, treasure/antiquity assistance, crafting helpers, notes/checkpoints, Golden Pursuits integration, and configurable overlays.
 
-CREATOR, SUPPORT & COMMUNITY
+REQUIRED LIBRARIES
+Install separately through Minion/ESOUI:
+- LibAddonMenu-2.0 >= 43
+- LibMapData >= 101
+- LibGPS >= 73
+- LibMapPins-1.0 >= 47
+
+LibGPS support libraries:
+- LibMapPing
+- LibDebugLogger
+- LibChatMessage
+
+OPTIONAL FEATURE LIBRARIES
+- LibTreasure >= 24: Treasure Map, Crafting Survey, and Tales of Tribute clue location data
+- CustomCompassPins >= 138: Treasure/Survey/Clue compass markers
+
+INSTALL / UPDATE
+1. Install the required libraries.
+2. For manual updates, delete the old ESOAdventurerSuite folder first. This avoids stale files from older builds.
+3. Extract the release so the manifest path is:
+   Documents/Elder Scrolls Online/live/AddOns/ESOAdventurerSuite/ESOAdventurerSuite.txt
+4. Enable ESO Adventurer Suite and the required libraries at character select.
+5. Log in. Settings are under Settings > Addons > ESO Adventurer Suite.
+6. /reloadui can be used after changing addon files or when troubleshooting UI state.
+
+0.29.197 RELEASE HIGHLIGHTS
+- Added Keep desktop UI while using controller: ESO Gamepad Mode can stay On/Automatic for controller input while the logged-in interface remains the normal desktop/keyboard layout.
+- Suite controller binding glyphs still follow the real native controller state while the desktop UI lock is active.
+- Smart Combat Advisor now uses Highlight Action Bar as the preferred normal-combat presentation; the large Full/Compact card is no longer forced on existing installs after the one-time display migration.
+- Full Overlay and Compact Next Skill remain available as optional Smart Advisor display choices.
+- Weapon-bar SWAP guidance is now its own movable overlay in HUD Layout Mode, saves its position, and resets with RESET LAYOUT.
+- Dual Action Bar continues to show both weapon bars, Skill Style art, timers/stacks, binding glyphs, Ultimate charge, inactive-bar emphasis, and Smart Advisor highlighting.
+- Default active-bar indicator remains a texture-only ESO weapons icon with a soft gold glow: no number, arrow, or keybind letter.
+- LibMapPing, LibDebugLogger, and LibChatMessage are declared required alongside the LibGPS stack.
+- Map Teleporter remains intentionally mouse/keyboard operated.
+
+KEY FEATURE AREAS
+- Tamriel Codex, notes, checkpoints, and journal tools
+- Quest Finder, active quest tracking, routing, map/minimap support
+- Map Teleporter and travel helpers
+- Smart Combat Advisor, Dual Action Bar HUD, ability overlays, combat stats, detailed fight reports
+- Group/raid/companion/player unit frames and HUD overlays
+- MAX POWER skills/morphs/passives/Champion/attribute planning
+- Saved Builds, gear optimization, companion optimization, gear/loadout tools
+- Infinite Archive Verse/Vision advisor
+- Treasure/Survey/Clue locator and resource pins
+- Antiquity lead/dig assistance
+- Recipe & Style Learner and Alchemy Potion/Poison Maker
+- Golden Pursuits, dungeon/activity history, stable/repair/performance/quickslot utilities
+
+CONTROLLER NOTES
+- Keep desktop UI while using controller prevents the logged-in interface from changing to ESO's console-style Gamepad UI while preserving the player's Gamepad Mode setting and controller input.
+- Character-select/login UI is loaded before addons and cannot be converted by the Suite.
+- Ability/Ultimate binding glyphs can follow ESO automatically.
+- Force PlayStation changes displayed in-game glyph art after addons load; it does not change actual bindings.
+- Login/character-select glyphs are outside addon control.
+- The Map Teleporter is mouse/keyboard operated.
+
+SAFETY / INPUT BOUNDARIES
+Smart Combat Advisor, Dual Action Bar, highlights, unit frames, minimap, combat reports, and most HUD systems are display/guidance systems. They do not cast abilities, block, dodge, target, move the character, or synthesize controller/keyboard/mouse gameplay input. Optional maintenance/crafting/learning features operate only through ESO-exposed APIs and are documented in SECURITY.txt.
+
+SUPPORT / COMMUNITY
 Creator: HoZayyBadazz
 In Game User ID: @ShadowOps187
 Discord Community: The Legends Den
 Discord Invite: discord.gg/Tj72TAEqat
 
-Optional gifts may be sent as in-game gold or Crown Store gifts. ESO Adventurer Suite and community support are free. No feature, update, access, Discord membership, or support is sold or required.
+Optional gifts: in-game gold or Crown Store gifts. ESO Adventurer Suite and community support are free. No feature, update, addon access, Discord membership, or support is sold, required, or exchanged for gold, Crowns, gifts, or real money.
 
-FULL FUNCTIONALITY LIBRARY SET
-For full ESO Adventurer Suite functionality, install and enable:
-- LibAddonMenu-2.0 >= 43
-- LibMapData >= 101
-- LibGPS >= 73
-- LibMapPins-1.0 >= 47
-- LibMapPing - support dependency used by LibGPS
-- LibDebugLogger - support dependency used by LibGPS
-- LibChatMessage - support dependency used by LibGPS
-- LibTreasure >= 24 - Treasure/Survey/Clue coordinate database
-- CustomCompassPins >= 138 - Treasure/Survey/Clue compass markers
-
-CORE SUITE DEPENDENCIES
-- LibAddonMenu-2.0 >= 43
-- LibMapData >= 101
-- LibGPS >= 73
-- LibMapPins-1.0 >= 47
-
-LIBGPS SUPPORT DEPENDENCIES
-- LibMapPing
-- LibDebugLogger
-- LibChatMessage
-
-TREASURE & COMPASS FEATURE DEPENDENCIES
-- LibTreasure >= 24
-- CustomCompassPins >= 138
-
-LostTreasure itself is not required for the Suite locator.
-
-
-RELEASE NOTES - 0.29.160
-- Added optional Alchemy Auto Craft with Craft 1, Craft X, and Craft Maximum modes; OFF by default.
-- Replaced the effect/options selector with a dedicated top-level popup so choices always render above the Potion Maker.
-- Manual READY clicks still only auto-slot ingredients when Auto Craft is disabled.
-
-RELEASE NOTES - 0.29.159
-- Added a floating Alchemy Potion & Poison Maker that appears at Alchemy Stations and moves through Suite HUD Layout Mode like the Recipe Learner.
-- CAN MAKE NOW scans backpack, bank, and Craft Bag materials and lists useful mixtures the player can craft with current reagents/solvent.
-- MAKE EXACT lets the player choose up to three desired effects, ranks exact/closest reagent combinations, and reports the exact missing reagent or solvent when materials are incomplete.
-- Clicking a READY mixture clears the current Alchemy selections and auto-slots the appropriate solvent and reagents through ESO's native Alchemy controller.
-- No additional addon library is required for the Alchemy Maker.
-
-RELEASE NOTES - 0.29.157
-- Updated ESOUI/README library documentation to clearly show the complete nine-library setup used for full Suite functionality.
-- Explicitly documented LibMapPing, LibDebugLogger, and LibChatMessage as LibGPS support dependencies.
-- Clarified that LibTreasure powers Treasure/Survey/Clue coordinates and CustomCompassPins powers the compass markers.
-
-RELEASE NOTES - 0.29.156
-- Fixed Wayshrine Auto Message so successful travel started from the Suite Teleporter also arms the arrival message.
-- Added Suite Teleporter coverage for wayshrine/instance, friend, guild-member, group-member, and house travel paths.
-- Social and house Teleporter arrivals now resolve the player's actual destination zone after loading before preparing the message.
-
-RELEASE NOTES - 0.29.155
-- Added a Guild Recruitment Link field and {guildlink} placeholder for clickable ESO guild-listing/apply links in Wayshrine Auto Message.
-- Added Guild Link SET / NOT SET status and preserves the complete clickable link when long messages are shortened.
-
-RELEASE NOTES - 0.29.154
-- Added an optional Wayshrine Auto Message with Fast Travel, New Discovery, or Both trigger modes.
-- Messages are fully editable and support {wayshrine}/{shrine}, {zone}, {character}, and {account} placeholders.
-- Choose Zone, Say, Group, Guild 1-5, or Local / Suite Chat. Public chat is prepared for confirmation with Enter; the addon does not silently submit messages.
-- Added a settings test button plus stale-travel and duplicate-discovery protection.
-RELEASE NOTES - 0.29.153
-- Fixed Recipe & Style Learner HUD movement so a single left-click-and-hold immediately starts dragging; double-click is no longer needed.
-- Removed the oversized HUD Layout drag box. The learner remains its normal 64x64 book while positioning.
-- Added a dedicated invisible drag surface over the book during HUD Layout Mode so child textures cannot swallow the first mouse-down.
-
-RELEASE NOTES - 0.29.152
-- Recipe & Style Learner now has a much larger drag target in HUD Layout Mode, with an outlined DRAG ANYWHERE box.
-- Normal learner size remains unchanged outside layout mode.
-
-RELEASE NOTES - 0.29.151
-
-- Fixed Turbo Learner private-function errors by removing the direct UseItem() call and using ESO's protected item-use path only; Turbo Learner now blocks while in combat instead of tainting the callstack.
-- Added the Floating Recipe & Style Learner book to Suite HUD Layout Mode. It previews as MOVE, can be repositioned with the other overlays, saves its position, and participates in Reset Layout.
-
-- Added Floating Recipe & Style Learner (Turbo Mode): a movable Inventory/Bank book that queues unknown recipes, furnishing plans/blueprints, motifs, and style pages for rapid learning, with optional bank pickup and popup suppression.
-- Upgraded Saved Loadouts into Saved Builds while preserving existing saved slots. Builds now save gear, both skill bars, skill allocation profile, Champion allocation/slot profile, and attribute profile; APPLY restores gear, bars, and Champion slots and verifies the saved build profile.
-- Added /easbuilds as an alias for the existing /easloadouts command.
-
-- Ultimate charge now displays the full stored 0%–500% pool instead of stopping at 100%. Ability-ready state still follows the actual slotted Ultimate cost.
-
-- Added live Treasure & Survey Locator status information plus Show Pin Preview and Print Status diagnostics.
-
-- Added a Suite-native Treasure & Survey Locator using LibTreasure data for treasure maps, crafting surveys, and Tales of Tribute clues.
-- Locator supports Backpack Items Only, Opened Item Only, or All Known Locations, with World Map / Suite Mini Map pins and optional CustomCompassPins compass markers.
-- LostTreasure itself is not required; LibTreasure is an optional dependency that supplies the coordinate database.
-
-- Fixed the ResourcePins 3D camera-recovery runtime error from 0.29.144.
-
-- Rebuilt Suite 3D resource-pin render spaces after World Map/UI-camera transitions to prevent stale camera projection that can make world pins appear badly zoomed or displaced.
-- Added shared 3D recovery after Teleporter close / return to gameplay, including existing LoreBooks, Antiquity, Team Visibility, and dungeon-chest recovery paths.
-- Retired legacy Teleporter direct camera-UI toggles; the native registered top-level host remains the only outside-map interaction owner.
-
-- Optimized Teleporter opening so expanding the panel reuses the last destination list immediately instead of rebuilding travel data on the same input frame.
-- Coalesced opening into at most one deferred destination refresh after the panel is already visible.
-- Added a one-minute owned-house cache and background guild-cache prewarm to remove repeated collection/guild work from normal opens.
-
-- Removed the VIEW prefix from every Map Teleporter destination mode. The active button now reads ALL DESTINATIONS, ZONES, CURRENT MAP, WAYSHRINES, and so on.
-- Shortened the two longest destination labels and added adaptive font sizing so every destination mode remains inside the top button.
-
-- Removed all Teleporter control over ESO map completion / zone-guide UI. The stock map completion interface is now left entirely alone.
-- Reorganized the Teleporter top toolbar: View is wider, Favorites and Tools are aligned beside it, and all three buttons use consistent spacing and height.
-
-- World Map mode now docks the Teleporter completely OUTSIDE the parchment: the Teleporter right edge attaches to the map left edge.
-- Disabled screen clamping for the map-docked Teleporter so ESO cannot pull the outside sidebar back over the map.
-- PLAYER and ZONE search fields are recalculated from the final panel width after docking, preventing the ZONE box from running off the right edge.
-
-
-- In Open with World Map mode, the Teleporter now docks flush to the left side of the World Map instead of floating over the middle of it.
-- The collapsed Teleporter drawer is now tucked into the map's top-left corner.
-
-- Core.lua syntax correction: removed an accidental editor/Python expression from the version line that prevented the addon from loading.
-- Revalidated all Lua files in the packaged addon for syntax before release.
-
-- Rebuilt outside-map Teleporter interaction on ESO's native registered top-level UI path so closing reliably returns movement/camera control and the hotkey can reopen it.
-- Same Teleporter hotkey now uses session state only: press once to open, press again to close.
-- Click-outside now closes on the completed global mouse-up event, then returns directly to gameplay.
-- Open with World Map is explicitly map-attached: the drawer anchors to the stable ZO_WorldMap window, never the zoom/pan canvas, so it follows the map without zooming with it.
-
-- Teleporter hotkey close now fully releases ESO camera/UI input before returning to gameplay, preventing movement/camera controls from remaining stuck after the panel closes.
-- Teleporter now uses ESO's camera UI-mode API with the scene manager only as a fallback, matching the Suite's proven main interaction-mode behavior.
-
-- Retired the permanent TELEPORTER > gameplay drawer. Outside the World Map, Hotkey / Outside Map now stays completely hidden until the assigned Teleporter hotkey is pressed.
-- Fixed the Teleporter hotkey as a true open/close toggle even after ESO changes UI/window state.
-- Added click-outside-to-close for the outside-map Teleporter and reliable return to gameplay/UI mode.
-- Repair: <gold> now mirrors the actual rendered HUD fade alpha used by the Suite FPS/Latency overlay, with ESO action-bar alpha as a fallback, so it cannot remain visible after the rest of the HUD fades.
-
-- Repair: <gold> and the collapsed Teleporter drawer now use the exact same native HUD-fade ownership pattern as the working FPS overlay during normal gameplay.
-- Removed normal-gameplay top-level promotion/BringWindowToTop behavior that could keep those two overlays visible after the rest of the HUD faded.
-- Teleporter remains raised and fully interactive only on the World Map, in HUD Layout Mode, or while explicitly opened by its hotkey.
-
-- Added an Open / Close Map Teleporter keybinding for Always / HUD Overlay mode. The hotkey opens the Teleporter outside the World Map, puts you in UI mode so you can interact with it, and pressing the same key again closes it back to gameplay.
-- Clicking the Teleporter drawer while it is open from the HUD hotkey also closes it back to gameplay outside the map.
-- Folded Teleporter now shows only the TELEPORTER drawer tab; destination names and expanded controls can no longer leak into the closed 136x42 overlay.
-- Always / HUD Overlay reliably appears during normal gameplay outside the World Map and returns after leaving menus/maps while still following ESO HUD-fade behavior.
-- Teleporter options now appear in a dedicated Map Teleporter submenu in Suite Settings.
-- HUD Layout Mode positioning and native ESC/Map/R/zoom behavior remain unchanged.
-
-RELEASE NOTES - 0.29.130
-- Added Teleporter visibility modes: Open with World Map and Always / HUD Overlay.
-- Always mode makes the collapsible Teleporter drawer usable outside the map and attaches it to ESO's native HUD-fade behavior so it disappears/returns with normal gameplay overlays.
-- The Teleporter remains available on the World Map in either visibility mode without capturing ESC, Map, R/player-position, zoom, or other native map keys.
-- Added Map Teleporter support to the Suite HUD Layout Mode with a dedicated drag strip and saved screen position.
-- Reset Layout now restores the Teleporter position along with the other Suite HUD overlays.
-- Preserved the 0.29.129 zoom isolation: map zoom/pan never scales or shifts the Teleporter.
-
-RELEASE NOTES - 0.29.129
-- Map Teleporter zoom isolation: the drawer stays fixed while the World Map zooms or pans.
-- Removed Teleporter mouse-wheel page switching so map zoom gestures never alter the destination list.
-- Fixed live health depletion and regeneration for player, companion, group, and raid unit frames.
-- Health bars now use ESO's filtered live health events and update from the event values on damage and healing.
-- Expanded group/raid live-health handling to the complete roster and group companion unit tags without adding high-frequency polling.
-
-RELEASE NOTES - 0.29.126
-- Ability overlays now use the player's real Controls > Keybindings assignments for every active-bar ability and Ultimate. A player who binds Ultimate to a key other than U sees that key on the Suite overlay automatically.
-- Binding text is cached for FPS safety and refreshed only when ESO reports a binding/input-mode change.
-- Removed Repair: <gold> forced-alpha refreshes so it fades/hides through the same ESO HUD fragment behavior already working correctly for Suite FPS / Latency.
-
-RELEASE NOTES - 0.29.125
-- Fixed Repair: <gold> and Suite FPS / Latency not appearing after the 0.29.124 HUD-idle change. Both now use ESO's native ZO_HUDFadeSceneFragment instead of inferring HUD visibility from action-bar alpha.
-- Removed the repair overlay's HUD visibility poll; idle fading is now owned by ESO's HUD fragment system.
-- Performance overlay continues its lightweight 500ms value refresh and only suppresses ESO's stock meter after the Suite replacement control exists.
-- Moved all packaged Suite DDS art to a versioned Art029125 resource path to bypass stale ESO shader-cache entries that can make updated addon images render blank/transparent.
-- Added proactive preload calls for the main Suite UI textures where ESO exposes PreloadTexture.
-
-RELEASE NOTES - 0.29.124
-- Repair: <gold> in Always mode now follows ESO's actual automatic gameplay-HUD visibility, with no separate Suite idle timer.
-- Added a Suite FPS / Latency overlay that follows the same gameplay-HUD visibility, is movable in HUD Layout Mode, and has an adjustable scale.
-- Added an option to suppress ESO's built-in FPS / latency display while the Suite replacement is enabled.
-- Performance values refresh at a lightweight 500 ms cadence; repair visibility checks do not rescan equipped gear.
-
-RELEASE NOTES - 0.29.123
-- Fixed Quest Finder hover LabelControlSetColorLua spam: mouse exit now restores only the background because hover never changes row text colors.
-- Hardened dynamic modern-UI label colors so invalid/stale values are converted to safe numeric RGBA channels before ESO receives them.
-- /easscan now reports errors from the current UI session instead of presenting historical saved errors as if they are still active. Older Bug Catcher history is retained separately until cleared.
-
-RELEASE NOTES - 0.29.122
-- Full FPS/performance pass: removed Quest Finder hover rebuilds and reduced unnecessary high-frequency map/marker/UI polling.
-
-RELEASE NOTES - 0.29.121
-- Removed the separate 5-second idle timeout from Repair: <gold>.
-- The compact repair HUD now follows normal Suite/ESO HUD suppression only; standing still by itself will not hide it.
-
-RELEASE NOTES - 0.29.120
-- Repair: <gold> now hides with idle gameplay HUD state and returns on movement/combat.
-- Game Combat compact pages now keep recorded text readable at minimum size instead of revealing rows only after enlargement.
-- Added a dedicated TGT page and structured Fight Snapshot label/value rows.
-
-RELEASE NOTES - 0.29.119
-- Redesigned Game Combat as a compact combat analyzer instead of an oversized dashboard.
-- Reduced report constraints from 1040x720 to 760x500 and changed the default/reset size to 860x560.
-- Existing installs receive the compact size once automatically; the report remains freely resizable afterward.
-- Added an always-visible KPI strip for Player DPS, All DPS, HPS, Incoming DPS, and fight time.
-- Slimmed the header and left navigation rail, tightened panel chrome/padding, and changed section headings to a cleaner left-aligned style.
-- Overview now focuses on Fight Snapshot + Top Damage + Damage Share instead of repeating build/resource cards.
-- Healing and Incoming pages now show page-specific summary data rather than the generic damage summary.
-- Side navigation buttons retain short labels at small size and show their full page name on hover.
-- Preserved single-line ellipsis and responsive table columns so the new 760x500 minimum does not reintroduce text overlap.
-
-RELEASE NOTES - 0.29.118
-- Added a Suite-native left-side navigation rail to Game Combat with Overview, Damage, Healing, Incoming, Group, Buffs, Resources, Graph, and Build pages.
-- The active page uses the report space instead of forcing all combat tables into one small layout.
-- Damage shows ability and target damage; Healing and Incoming filter to their own sources; Group focuses on players, companions, pets, and observed contribution; Resources and Build separate resource use from effective PEN/PWR/SR/PR/CC/CD.
-- Graph shows recorded damage distribution by ability.
-- Removed the Interact with Suite, Group Finder Next Category, and Group Finder Toggle Normal/Veteran public keybindings.
-- `Repair: <gold>` no longer appears over the ESO pause/game menu.
-
-RELEASE NOTES - 0.29.117
-- Fixed Game Mode Combat Report text/column collisions at the minimum 1040x720 size and at larger ESO UI scales.
-- Report labels now stay inside their cells with single-line ellipsis instead of wrapping or drawing into neighboring rows/columns.
-- Added a compact minimum-width header so mode/zone text no longer collides with the centered report title.
-- Rebalanced the minimum bottom layout to give Ability Breakdown more horizontal space while preserving Group / Companion / Pet / Target data.
-- Effective Combat Stats section headings now use the full stats row instead of sharing width with an empty value cell.
-
-RELEASE NOTES - 0.29.116
-- Game Combat now identifies local companions with ESO's COMBAT_UNIT_TYPE_PLAYER_COMPANION and keeps combat pets/summons separate from the player.
-- Personal DPS/HPS is player-only; pets and companions no longer inflate the player's DPS. The report also exposes a combined You + Pets + Companion DPS total.
-- Added actor rows for companions, pets, and observed group summons, with owner attribution when ESO exposes enough information to do so.
-- Group contributors roll owned companion/pet contribution into the correct player when ownership is known; unknown group summons are never guessed onto a teammate.
-- Live Combat HUD shows the combined ALL DPS in its status line whenever your pet or companion contributes while its main DPS value remains player-only.
-- Strengthened Modern UI image rendering with resident custom DDS textures, full-size ESO-native class/companion fallbacks, and a native shell fallback behind custom artwork.
-- Custom DDS files remain packaged in the canonical ESOAdventurerSuite/Art path. A full ESO client restart is still required when the game has not yet loaded newly replaced texture files.
-
-RELEASE NOTES - 0.29.115
-- Linked the Combat page, Live Combat Stats, and Game Mode Combat Report to one shared fight recorder.
-- Live Combat Stats keeps PEN / PWR / SR / PR / CC / CD and Game Combat now records fight-weighted effective values from that exact same source.
-- Added a FULL COMBAT REPORT action directly from the Combat page.
-- Added Magicka and Stamina use/regeneration tracking with per-second fight values.
-- Added buff/debuff uptime and max-stack tracking for the player during each fight.
-- Added incoming damage source and ability breakdowns to the detailed combat report.
-- Kept combat collection lightweight with native ESO event filters, cached live-stat sampling, and heavier report analysis outside the event path.
-
-RELEASE NOTES - 0.29.114
-- Fixed the World Map opening/closing hitch caused by the built-in teleporter.
-- Guild travel destinations are now gathered in small frame-sliced batches instead of scanning entire guild rosters on the map-open frame.
-- Added short-lived destination caching and coalesced duplicate World Map scene refreshes.
-- Deferred the first teleporter refresh until the map finishes opening and reduced repeated full refresh frequency.
-- Optimized the map-close hotkey lookup to avoid repeatedly walking ESO action layers.
-
-RELEASE NOTES - 0.29.40
-- Fixed Game Mode Combat Report target/group row crash in LabelControlSetColorLua.
-- Target rows and group/contributor rows now unpack their RGBA palette before calling SetColor, so Clannfear, enemies, group members, and other report entries render safely.
-- No combat-report data collection or minimap/Antiquity behavior was changed by this hotfix.
-
-RELEASE NOTES - 0.29.39
-- Rebuilt the Augur helper as a scan optimizer instead of a fake exact-location predictor. Only an ESO Green result is labeled as guaranteed DIG HERE.
-- Added more ESO digging-UI fallbacks plus faster live tile caching to capture the Augur row/column before the mouse leaves the board.
-- Recommended scans are chosen only from cells still considered possible by the helper model, maximizing the chance of hitting Green while narrowing the search.
-- The opening scan is now recommended automatically, and all Yellow / Orange / Red instructions are clearly labeled BEST NEXT AUGUR rather than a shovel location.
-
-RELEASE NOTES - 0.29.36
-- Fixed the exact Antiquity dig-site shovel marker texture by using ESO's built-in Heavy Shovel icon directly, preventing the red question-mark placeholder.
-- Fixed the Game Mode Combat Report duplicate-control crash when opening it from its hotkey.
-- Report UI controls now use a collision-safe root and anonymous children, preventing stale UI controls from breaking the overlay after an update/re-initialization.
-- Failed window creation is now handled safely instead of producing a second nil-value error.
-
-RELEASE NOTES - 0.29.33
-- The Suite minimap continues to change automatically as you travel between zones, cities, houses, delves, interiors, and other local maps. It is not anchored to the parent zone.
-- When the current mapId changes, old static pins are hidden immediately and only the new current area's data is rebuilt.
-- Added guarded live native-pin snapshots after map transitions so current-area icons can refresh without carrying positions from the previous map.
-- Live snapshots are only stored when ESO confirms the active map matches the player's location and the mapId matches the minimap.
-
-RELEASE NOTES - 0.29.32
-- The 3D Antiquity shovel no longer marks the approximate center of the search area. It now appears only when ESO exposes the exact excavation mound as the current Excavate / Dig Site target.
-- ESO's normal Antiquarian's Eye blue mist remains untouched and continues to guide you toward the mound.
-- Fixed the Excavation Augur helper losing its selected tile when you move the mouse from the grid to the Green / Yellow / Orange / Red buttons.
-- The Suite now caches the last valid Augur grid cell and confirms the captured row/column after a successful probe.
-- If ESO does not expose a cell coordinate, Green still resolves immediately; Yellow / Orange / Red open a small 10x10 Suite grid so you can identify the tile manually and continue the solver.
-- World-map and Suite-minimap Antiquity search-area pins remain available.
-
-RELEASE NOTES - 0.29.30
-- Added a detailed, hotkey-only Game Mode Combat Report covering overland, dungeons, trials, arenas, Infinite Archive, Battlegrounds, and Alliance War combat.
-- The report includes player damage, hit results, current resources/build stats, active buffs and debuffs, targets/group contributions, and ability breakdowns.
-- Assign Open / Close Game Mode Combat Report under Controls > Keybindings > ESO Adventurer Suite. The same key closes it, and the report never opens automatically.
-- Up to 30 recent fights can be reviewed with previous/next controls. The window is movable and resizable.
-- Active Antiquity search areas now have Heavy Shovel markers on the world map, Suite minimap, and in the 3D world.
-- Excavation now includes an Augur color helper that points to the best next grid cell.
-- The Augur Guide and Tile Selector can be repositioned from HUD Layout Mode so they do not cover the excavation board.
-- The Skills page includes Scrying and Excavation upgrade recommendations with rank requirements and skill-point costs.
+LICENSE / ATTRIBUTION
+See LICENSE.txt, NOTICE.txt, ESO_ADVENTURER_SUITE_THIRD_PARTY_NOTICES.txt, and LoreBooks/ESO_ADVENTURER_SUITE_LOREBOOKS_LICENSE_NOTICE.txt.
 
 DISCLAIMER
 This Add-on is not created by, affiliated with, or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls and related marks are property of their respective owners.
-
-Copyright (c) 2026 HoZayyBadazz. All Rights Reserved.

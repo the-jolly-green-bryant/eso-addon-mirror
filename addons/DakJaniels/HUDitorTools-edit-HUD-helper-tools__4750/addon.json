@@ -1,6 +1,6 @@
 {
   "archive_format": "zip",
-  "archive_path": "addons/DakJaniels/HUDitorTools__4750",
+  "archive_path": "addons/DakJaniels/HUDitorTools-edit-HUD-helper-tools__4750",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
   "archived": true,
   "author": "DakJaniels",
@@ -18,7 +18,7 @@
     "HUDitorTools"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4750/",
-  "fingerprint": "7553382813c54fafd9f8935eace947d13eeee90fa275ff77f7d769381e49a673",
+  "fingerprint": "8419b7d3e0206796e88e44140c2597e4f4f67071585dcb1c989778a90aebbe62",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16914.png",
     "https://cdn-eso.mmoui.com/preview/pvw16968.png",
@@ -30,13 +30,13 @@
   "published": true,
   "source": "esoui",
   "source_id": "4750",
-  "source_url": "https://www.esoui.com/downloads/info4750-HUDitorTools.html",
+  "source_url": "https://www.esoui.com/downloads/info4750-HUDitorToolseditHUDhelpertools.html",
   "stats": {
-    "downloads": 153,
+    "downloads": 187,
     "favorites": 2,
-    "monthly_downloads": 142
+    "monthly_downloads": 181
   },
-  "title": "HUDitorTools",
+  "title": "HUDitorTools (edit HUD helper tools)",
   "updated_at": 1787967494000,
   "version": "1.1.0"
 }

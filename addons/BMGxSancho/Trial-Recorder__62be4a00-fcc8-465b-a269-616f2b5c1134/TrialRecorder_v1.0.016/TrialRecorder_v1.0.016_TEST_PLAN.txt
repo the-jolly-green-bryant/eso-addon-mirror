@@ -1,0 +1,61 @@
+TRIAL RECORDER v1.0.016 - RUN REPORT API TEST PLAN
+
+A. REGRESSION / STARTUP
+1. Install v1.0.016 over v1.0.014.
+2. ReloadUI.
+3. Confirm no Lua errors.
+4. Confirm Trial Recorder menu still appears.
+5. Confirm existing trial records, leaderboard data, Live Stats position/scale, and settings are unchanged.
+
+B. LOCAL REPORT TEST
+1. Enable diagnostics only if needed.
+2. Run: /trialrecordertest ROCKGROVE VET 123456 1200
+3. Confirm the test clear is added exactly once.
+4. Confirm no UI error occurs.
+5. ReloadUI and confirm the test clear remains.
+
+C. LIVE VETERAN CLEAR
+1. Complete any veteran trial.
+2. Confirm normal Trial Recorder clear notification.
+3. Confirm trial record updates exactly as before.
+4. Confirm score, time, vitality, date, and character are unchanged from v1.0.014 behavior.
+5. ReloadUI and confirm records persist.
+
+D. LIVE HARD MODE CLEAR
+1. Complete a Hard Mode trial.
+2. Confirm HM classification remains correct.
+3. Confirm configuration fields (+2/+3 where applicable) remain correct.
+4. Confirm no duplicate clear is created.
+
+E. RUN REPORT API VALIDATION
+Developer/consumer inspection should confirm the latest report contains:
+- schema = BMG_TRIAL_RUN_REPORT
+- schemaVersion = 1
+- reportId matching the saved run ID
+- local account and character
+- trial key/name
+- score and duration
+- vitality values when available
+- death count when ESO exposes it
+- completion-time roster snapshot
+- provenance map
+- current weekly trial context when available
+
+F. ISOLATION TEST
+1. Run without Better Buffs or any future report provider installed.
+2. Confirm Trial Recorder works normally and generates a core report.
+3. A provider error must never prevent AddRun(), notification, or record persistence.
+
+G. RETENTION
+After more than 50 generated reports, only the most recent 50 structured reports should remain in runReports. Trial clear history must not be affected.
+
+
+ALL LIVE STATS EDGE POSITION TEST
+1. Enable All Live Stats and set Vertical Position to 0%.
+2. Trigger preview and confirm the visible text line can sit at the top edge without a large unused gap.
+3. Set Vertical Position to 100%.
+4. Trigger preview and confirm the visible text line can sit at the bottom edge without a large unused gap.
+5. Repeat at 75%, 100%, 125%, and 150% scale.
+6. ReloadUI and confirm the saved position is preserved.
+7. Verify Horizontal 0%/100% edge placement remains unchanged.
+8. During a scored trial, verify time, vitality, and score continue updating normally.

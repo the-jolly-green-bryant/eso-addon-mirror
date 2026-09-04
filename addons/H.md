@@ -75,6 +75,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Heroism Potions](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Saenic/Heroism-Potions__3568) | Saenic | PC / Mac | 1.0.1 |
 | [Hidden Rolls](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Akardra/Hidden-Rolls__3197) | Akardra | PC / Mac | 1.00 |
 | [Hide Action Bar Labels (Lost Depths)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/CodeStripper/Hide-Action-Bar-Labels-Lost-Depths__3475) | CodeStripper | PC / Mac | 1.0.1 |
+| [Hide Completed Tome Challenges](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Infinite_1st/Hide-Completed-Tome-Challenges__4811) | Infinite_1st | PC / Mac | 1.0 |
 | [Hide Group Frames](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/init3/Hide-Group-Frames__2159) | init3 | PC / Mac | 1.0 |
 | [Hide Performance Meter Background](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Zinival/Hide-Performance-Meter-Background__1567) | Zinival | PC / Mac | 1.1 |
 | [Hide Scrying Tooltips](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Beacze/Hide-Scrying-Tooltips__4782) | Beacze | PC / Mac | 1.0.0 |
@@ -137,7 +138,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [HowToKyne](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Floliroy/HowToKyne__3486) | Floliroy | PC / Mac | 1.1 |
 | [HowToSunspire](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Floliroy/HowToSunspire__2430) | Floliroy | PC / Mac | 1.3.10 |
 | [Huah's Add-on Lab](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/huahtu/Huah-s-Add-on-Lab__41cdae3a-ab73-4780-8ab7-c1e464ec55fe) | huahtu | Console | — |
-| [HUDitorTools](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DakJaniels/HUDitorTools__4750) | DakJaniels | PC / Mac | 1.1.0 |
+| [HUDitorTools (edit HUD helper tools)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DakJaniels/HUDitorTools-edit-HUD-helper-tools__4750) | DakJaniels | PC / Mac | 1.1.0 |
 | [Huntsman Warmask Reminder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/VollständigerName/Huntsman-Warmask-Reminder__4287) | VollständigerName | PC / Mac | 2.0.5 |
 | [Hyborem Assistant Rotation](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Hyborem/Hyborem-Assistant-Rotation__4410) | Hyborem | PC / Mac | v.1.6 |
 | [Hyborem's Bugs'n'Weeds (based on Flowers She Likes by Ayantir)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Hyborem/Hyborem-s-Bugs-n-Weeds-based-on-Flowers-She-Likes-by-Ayantir__4528) | Hyborem | PC / Mac | v.2.0.0 |

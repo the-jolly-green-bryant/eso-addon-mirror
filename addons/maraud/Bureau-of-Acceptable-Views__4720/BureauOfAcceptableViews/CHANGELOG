@@ -3,12 +3,26 @@
 
 
 
+[color=#6FCB9F]Version: 3.10.224232[/color]
+
+This release is focused specifically on making PvP camera control direct, predictable, and player-owned.
+
+- Replaced the Adaptive PvP situation-profile system with one lightweight PvP world mode.
+- Removed scouting, mounted, pursuit, engaged, pressure, low-health, burst-damage, stability-lock, and outward-only zoom-assist mechanics.
+- PvP mode no longer applies automatic distance, FOV, shoulder, or camera-offset changes and no longer uses ContextPresets, FovArbiter, Ease, or CameraResponse.
+- Removed all PvP combat, health, sprint, damage, and safety observers; the mode now samples the world only on player activation or configuration changes.
+- Kept the dedicated player-controlled PvP zoom step.
+- Kept optional camera-shake suppression with a persisted snapshot so the player's original value survives and restores after `/reloadui` or an interrupted session.
+- Simplified the settings panel to Enable PvP mode, PvP zoom step, and Allow camera shake in PvP.
+- Added a separate testing and feedback notice inviting players to share experience-based requests on the addon forum.
+
+
 [color=#6FCB9F]Version: 3.9.000146[/color]
 
 Unified camera response, input reliability, and dependency clarity update.
 
 - Added one global Camera response profile shared by Dynamic FOV, context presets, Adaptive PvP framing, and over-the-shoulder movement.
-- Added As in ESO, Instant, Responsive (90 ms fast-settling), and Smooth (300 ms ease-in/out) response modes.
+- Added As in ESO, Instant, Responsive and Smooth response modes.
 - Added coordinated temporary suspension of ESO camera smoothing so overlapping BAV transitions cannot restore it early; emergency and load-screen recovery remain immediate.
 - Migrated existing smoothing preferences automatically and replaced the two separate smoothing checkboxes with one response dropdown.
 - Fixed live offset smoothing suspension, rejected fast writes, and false restore-success notices.

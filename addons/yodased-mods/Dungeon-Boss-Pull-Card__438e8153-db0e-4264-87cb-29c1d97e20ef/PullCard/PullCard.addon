@@ -1,10 +1,11 @@
 ## Title: PullCard
 ## Author: yodased-mods
 ## Description: Controller-first dungeon boss mechanics cards with group-chat prefill.
-## Version: 0.3.0
-## AddOnVersion: 78
+## Version: 0.3.6
+## AddOnVersion: 10
 ## APIVersion: 101050 101051
-## OptionalDependsOn: LibAddonMenu-2.0 ConsoleMenu
+## OptionalDependsOn: LibAddonMenu-2.0 LibConsoleMenu
 
 Data.lua
 PullCard.lua
+ConsoleMenu.lua

@@ -12,7 +12,7 @@
 --     a nudge -- only by the Remember / Delete buttons.
 --   * Restore returns both axes to that home. Zoom, FOV, and shoulder are
 --     untouched.
---   * While a context preset (or PvP profile) has a restore snapshot, the same
+--   * While a context preset has a restore snapshot, the same
 --     delta is applied to that snapshot so leaving the state does not rewind
 --     the nudge. Snapshot persistence is flushed when the hold ends, not every
 --     frame.

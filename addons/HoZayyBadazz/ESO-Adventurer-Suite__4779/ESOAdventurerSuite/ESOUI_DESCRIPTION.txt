@@ -1,48 +1,71 @@
 [B]AI DEVELOPMENT DISCLOSURE[/B]
-ESO Adventurer Suite uses AI-assisted code generation and review. ESO Adventurer Suite is responsible for testing, publishing, maintaining, and supporting the addon.
+ESO Adventurer Suite uses AI-assisted code generation and review. HoZayyBadazz is responsible for testing, publishing, maintaining, and supporting the addon.
 
 [B]ESO ADVENTURER SUITE[/B]
 Author: HoZayyBadazz
-Version: 0.29.160
+Version: 0.29.197
 Status: Public Beta
 
-ESO Adventurer Suite is an all-in-one Elder Scrolls Online dashboard and utility addon built around the Tamriel Codex. It includes quest and travel tools, Suite-native finders, combat statistics, HUD tools, minimap features, gear/build tools, companion tools, notes, checkpoints, Golden Pursuits integration, and configurable utility overlays.
+ESO Adventurer Suite is an all-in-one Elder Scrolls Online dashboard and utility addon built around the Tamriel Codex. It combines questing, travel, exploration, combat guidance and statistics, action-bar/HUD customization, minimap tools, build optimization, companion utilities, activity tracking, treasure hunting, antiquities assistance, notes, checkpoints, Golden Pursuits integration, and configurable gameplay overlays in one Suite.
 
-[B]FULL FUNCTIONALITY LIBRARY SET[/B]
-For full ESO Adventurer Suite functionality, install and enable all of the following libraries through Minion/ESOUI:
+[B]REQUIRED LIBRARIES[/B]
+Install and enable these separately through Minion/ESOUI:
 
 * LibAddonMenu-2.0 >= 43
 * LibMapData >= 101
 * LibGPS >= 73
 * LibMapPins-1.0 >= 47
-* LibMapPing - support dependency used by LibGPS
-* LibDebugLogger - support dependency used by LibGPS
-* LibChatMessage - support dependency used by LibGPS
-* LibTreasure >= 24 - Treasure Map, Crafting Survey, and Tales of Tribute clue location database
-* CustomCompassPins >= 138 - Treasure, Survey, and Clue compass markers
+* LibMapPing
+* LibDebugLogger
+* LibChatMessage
+* LibTreasure >= 24 
+* CustomCompassPins >= 138
+
+
+[B]NEW / HIGHLIGHTED IN 0.29.197[/B]
+* New Keep desktop UI while using controller option keeps the normal PC/keyboard-style in-game UI while ESO Gamepad Mode remains On/Automatic for controller input
+* Controller-aware Suite overlays still show the actual controller bindings/glyphs while desktop UI lock is active
+* Smart Combat Advisor now prefers action-bar highlighting during normal combat instead of the large recommendation card
+* Existing Full/Compact display selections migrate once to Highlight Action Bar; Full Overlay and Compact remain optional if selected again
+* Weapon-bar SWAP guidance is independently movable in HUD Layout Mode, saves its position, and resets with RESET LAYOUT
+* Dual Action Bar HUD shows both weapon bars with Skill Style art, timers/stacks, binding glyphs, Ultimate charge, and Smart Advisor highlighting
+* Active bar uses a clean ESO weapons icon with a soft gold glow - no number, text arrow, or keybind letter
+* LibMapPing, LibDebugLogger, and LibChatMessage are declared required with the LibGPS support stack
+* Map Teleporter remains mouse/keyboard operated
 
 [B]MAIN FEATURES[/B]
-* Floating Recipe & Style Learner
+* Smart Combat Advisor with moment-to-moment best-next-button scoring for Magicka/Stamina/Hybrid DPS, Healer, and Tank; both-bar recommendations; Suite ability highlighting; swap prompts; and adaptive BLOCK NOW warnings
+* Dual Action Bar HUD with both weapon bars, Skill Style icons, stacks, timers, Ultimate charge, binding glyphs, and active-bar emphasis
+* Infinite Archive Verse / Vision Choice Advisor that highlights the best offered choice for the current build and run state
+* Floating Recipe & Style Learner (Turbo Mode)
 * Floating Alchemy Potion & Poison Maker with CAN MAKE NOW, exact-effect planning, missing-material guidance, native ingredient auto-slotting, and optional Auto Craft (1 / X / Maximum)
 * Saved Builds workspace for gear, skill bars/allocation profile, Champion profile/slots, and attribute profile
-* Tamriel Codex interface
+* MAX POWER build/respec optimizer with content-aware skills, morphs, passives, Champion Points, and attributes
+* Tamriel Codex interface with notes and checkpoints
 * Quest Finder and active quest tracking
 * Suite-native Group Finder, Zone Guide, Dungeon Finder, Battlegrounds, Tales of Tribute, and Home Tours
 * Dynamic quest and wayshrine routing
 * Optional customizable Wayshrine Auto Message with clickable guild-recruitment link placeholder
 * Merchant, Guild Store, Stablemaster, Pledge Master, and guild-leader-home travel tools
-* Multiple saved notes and checkpoints
 * Mini Map and native ESO map integration
 * Treasure Map, Crafting Survey, and Tales of Tribute clue locator using optional LibTreasure data
+* Antiquity lead/source assistance, known dig-spawn support, and excavation guidance
 * Companion, group, raid, combat, ability, XP, Champion Point, and utility HUD tools
 * Live Combat Stats (PEN / PWR / SR / PR / CC / CD) linked to the shared fight recorder
-* Game Combat detailed fight reports with DPS/HPS, abilities, resources, effect uptime, incoming damage sources, and history
-* Gear, set, skill, Champion Point, and attribute optimization tools
-* RESPEC + BUILD workflow
-* Dungeon/activity history
-* Golden Pursuits integration
-* Configurable difficulty, reticle, glow, repair, recharge, stable, and utility systems
+* Detailed Game Combat fight reports with DPS/HPS, abilities, resources, effect uptime, incoming damage sources, and history
+* Gear, set, skill, Champion Point, attribute, and companion optimization tools
+* Dungeon/activity history and Golden Pursuits integration
+* Configurable difficulty, reticle, glow, repair/recharge, stable, quickslot, FPS/latency, and utility overlays
 
+[B]INSTALL / UPDATE[/B]
+1. Install the required libraries listed above.
+2. When updating manually, remove the old ESOAdventurerSuite folder first so deleted/renamed files cannot remain behind.
+3. Extract the ZIP so the path is: Documents/Elder Scrolls Online/live/AddOns/ESOAdventurerSuite/ESOAdventurerSuite.txt
+4. Enable ESO Adventurer Suite and its required libraries at the character-select Add-Ons screen.
+5. Log in and use Settings > Addons > ESO Adventurer Suite.
+
+[B]CONTROLLER NOTE[/B]
+Keep desktop UI while using controller can prevent ESO from replacing the logged-in PC interface with its console-style Gamepad UI while retaining controller input. Controller glyph support remains binding-aware. Force PlayStation applies after addons load, so pre-login/character-select UI and glyphs are outside addon control. The Suite Map Teleporter is intentionally mouse/keyboard operated.
 
 [B]CREATOR, SUPPORT & COMMUNITY[/B]
 Creator: HoZayyBadazz

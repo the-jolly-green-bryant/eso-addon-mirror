@@ -57,23 +57,38 @@ local function compactBindingText(text)
     return text
 end
 
-function A:GetActionBindingName(slot)
+function A:GetActionBindingName(slot, preferGamepad)
     slot = tonumber(slot)
     if not slot then return nil end
     if slot >= 3 and slot <= 8 then
+        if preferGamepad == true then
+            return "GAMEPAD_ACTION_BUTTON_" .. tostring(slot)
+        end
         return "ACTION_BUTTON_" .. tostring(slot)
     end
     return nil
 end
 
-function A:GetBindingTextForSlot(slot)
-    self.bindingTextCache = self.bindingTextCache or {}
-    local cached = self.bindingTextCache[slot]
-    if cached ~= nil then return cached end
+function A:GetBindingTextForAction(actionName, preferGamepad)
+    if not actionName or actionName == "" then return "" end
 
-    local actionName = self:GetActionBindingName(slot)
-    if not actionName then return "" end
-    local preferGamepad = type(IsInGamepadPreferredMode) == "function" and safe(IsInGamepadPreferredMode, false) == true
+    if preferGamepad == true and EPC.GetForcedPlayStationActionMarkup029180 then
+        local forced = EPC:GetForcedPlayStationActionMarkup029180(actionName, 22)
+        if forced ~= "" then return forced end
+    end
+
+    -- In controller mode prefer ESO's embedded button-icon markup so the
+    -- overlay shows the real button art instead of a generic "Gamepad" label.
+    if preferGamepad == true and type(ZO_Keybindings_GetBindingStringFromAction) == "function" then
+        local textOptions = KEYBIND_TEXT_OPTIONS_NO_TEXT or KEYBIND_TEXT_OPTIONS_ABBREVIATED_NAME or 1
+        local textureOptions = KEYBIND_TEXTURE_OPTIONS_EMBED_MARKUP or KEYBIND_TEXTURE_OPTIONS_EMBEDDED_MARKUP or KEYBIND_TEXTURE_OPTIONS_NONE or 1
+        local maxBindings = tonumber(safe(GetMaxBindingsPerAction, 2)) or 2
+        for bindingIndex = 1, math.max(1, math.min(4, maxBindings)) do
+            local candidate = tostring(safe(ZO_Keybindings_GetBindingStringFromAction, "", actionName, textOptions, textureOptions, bindingIndex) or "")
+            if candidate ~= "" then return candidate end
+        end
+    end
+
     local key, mod1, mod2, mod3, mod4
     if type(GetHighestPriorityActionBindingInfoFromName) == "function" then
         key, mod1, mod2, mod3, mod4 = safe(GetHighestPriorityActionBindingInfoFromName, nil, actionName, preferGamepad)
@@ -92,7 +107,7 @@ function A:GetBindingTextForSlot(slot)
     if keyText ~= "" then parts[#parts + 1] = keyText end
 
     local result = table.concat(parts, "+")
-    -- Fallback to ZOS's formatter if the direct binding API did not produce text.
+    -- Fallback to ZOS's text formatter if the direct binding API did not produce text.
     if result == "" and type(ZO_Keybindings_GetBindingStringFromAction) == "function" then
         local textOptions = KEYBIND_TEXT_OPTIONS_ABBREVIATED_NAME or 1
         local textureOptions = KEYBIND_TEXTURE_OPTIONS_NONE or 1
@@ -102,7 +117,22 @@ function A:GetBindingTextForSlot(slot)
             if candidate ~= "" then result = compactBindingText(candidate); break end
         end
     end
+    return result
+end
 
+function A:GetBindingTextForSlot(slot)
+    self.bindingTextCache = self.bindingTextCache or {}
+    local cached = self.bindingTextCache[slot]
+    if cached ~= nil then return cached end
+
+    local preferGamepad = EPC.IsNativeGamepadPreferredMode029197 and EPC:IsNativeGamepadPreferredMode029197() or (type(IsInGamepadPreferredMode) == "function" and safe(IsInGamepadPreferredMode, false) == true)
+    local actionName = self:GetActionBindingName(slot, preferGamepad)
+    if not actionName and preferGamepad then
+        actionName = self:GetActionBindingName(slot, false)
+    end
+    if not actionName then return "" end
+
+    local result = self:GetBindingTextForAction(actionName, preferGamepad)
     self.bindingTextCache[slot] = result
     return result
 end
@@ -174,6 +204,42 @@ function A:CreateWidget(slot, ordinal)
     icon:SetAnchor(TOPLEFT, frame, TOPLEFT, 3,3)
     icon:SetAnchor(BOTTOMRIGHT, frame, BOTTOMRIGHT, -3,-3)
 
+    -- Smart Combat Advisor recommendation glow. Keep every layer parented to
+    -- the exact Suite ability frame so the glow can never drift away from the
+    -- visible ability box. v0.29.168 uses three layers for a much stronger,
+    -- unmistakable pulse during combat.
+    local smartGlowOuter = wm:CreateControl(name .. "SmartGlowOuter029168", frame, CT_BACKDROP)
+    smartGlowOuter:SetAnchor(TOPLEFT, frame, TOPLEFT, -8, -8)
+    smartGlowOuter:SetAnchor(BOTTOMRIGHT, frame, BOTTOMRIGHT, 8, 8)
+    smartGlowOuter:SetMouseEnabled(false)
+    smartGlowOuter:SetCenterColor(1.00, 0.62, 0.02, 0.035)
+    smartGlowOuter:SetEdgeColor(1.00, 0.55, 0.02, 0.72)
+    smartGlowOuter:SetEdgeTexture(nil, 8, 8, 8)
+    if smartGlowOuter.SetDrawLayer and DL_OVERLAY then smartGlowOuter:SetDrawLayer(DL_OVERLAY) end
+    if smartGlowOuter.SetDrawLevel then smartGlowOuter:SetDrawLevel(2498) end
+    smartGlowOuter:SetHidden(true)
+
+    local smartGlowMid = wm:CreateControl(name .. "SmartGlowMid029168", frame, CT_BACKDROP)
+    smartGlowMid:SetAnchor(TOPLEFT, frame, TOPLEFT, -4, -4)
+    smartGlowMid:SetAnchor(BOTTOMRIGHT, frame, BOTTOMRIGHT, 4, 4)
+    smartGlowMid:SetMouseEnabled(false)
+    smartGlowMid:SetCenterColor(1.00, 0.72, 0.05, 0.07)
+    smartGlowMid:SetEdgeColor(1.00, 0.76, 0.08, 0.95)
+    smartGlowMid:SetEdgeTexture(nil, 4, 4, 4)
+    if smartGlowMid.SetDrawLayer and DL_OVERLAY then smartGlowMid:SetDrawLayer(DL_OVERLAY) end
+    if smartGlowMid.SetDrawLevel then smartGlowMid:SetDrawLevel(2499) end
+    smartGlowMid:SetHidden(true)
+
+    local smartHighlight = wm:CreateControl(name .. "SmartHighlight029167", frame, CT_BACKDROP)
+    smartHighlight:SetAnchorFill(frame)
+    smartHighlight:SetMouseEnabled(false)
+    smartHighlight:SetCenterColor(1.00, 0.82, 0.10, 0.16)
+    smartHighlight:SetEdgeColor(1.00, 0.96, 0.32, 1.00)
+    smartHighlight:SetEdgeTexture(nil, 4, 4, 4)
+    if smartHighlight.SetDrawLayer and DL_OVERLAY then smartHighlight:SetDrawLayer(DL_OVERLAY) end
+    if smartHighlight.SetDrawLevel then smartHighlight:SetDrawLevel(2500) end
+    smartHighlight:SetHidden(true)
+
     local shade = wm:CreateControl(name .. "Shade", frame, CT_BACKDROP)
     shade:SetAnchorFill(icon)
     shade:SetCenterColor(0,0,0,0)
@@ -208,7 +274,7 @@ function A:CreateWidget(slot, ordinal)
     local slotLabel = wm:CreateControl(name .. "Slot", frame, CT_LABEL)
     slotLabel:SetAnchor(TOPLEFT, frame, TOPLEFT, 3,1)
     slotLabel:SetAnchor(TOPRIGHT, frame, TOPRIGHT, -3,1)
-    slotLabel:SetHeight(16)
+    slotLabel:SetHeight(24)
     slotLabel:SetFont("$(BOLD_FONT)|14|soft-shadow-thick")
     slotLabel:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
     slotLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
@@ -246,6 +312,9 @@ function A:CreateWidget(slot, ordinal)
 
     frame.epcBG,frame.epcIcon,frame.epcShade,frame.epcTimerBack = bg,icon,shade,timerBack
     frame.epcCooldown,frame.epcEffect,frame.epcSlotLabel,frame.epcHint,frame.epcUltimatePct = cooldown,effect,slotLabel,hint,ultimatePct
+    frame.epcSmartGlowOuter029168 = smartGlowOuter
+    frame.epcSmartGlowMid029168 = smartGlowMid
+    frame.epcSmartHighlight029167 = smartHighlight
     self:AnchorWidget(frame, ordinal)
     return frame
 end
@@ -318,11 +387,28 @@ function A:RefreshWidget(widget)
     -- never hardcode 1-5/U because every player may rebind these controls.
     local bindingText = self:GetBindingTextForSlot(slot)
     if bindingText == "" then bindingText = "—" end
-    if widget.epcBindingText ~= bindingText then
+    if widget.epcBindingText ~= bindingText or widget.epcBindingWasUltimate029182 ~= isUltimate then
         widget.epcBindingText = bindingText
+        widget.epcBindingWasUltimate029182 = isUltimate
+        widget.epcSlotLabel:ClearAnchors()
+        if isUltimate then
+            -- Ultimate commonly uses a two-button chord (L1+R1). Give that wide
+            -- glyph the full top edge and center it instead of squeezing it into
+            -- the single-button top-left treatment used by skills 1-5.
+            widget.epcSlotLabel:SetAnchor(TOPLEFT, widget, TOPLEFT, 2, 0)
+            widget.epcSlotLabel:SetAnchor(TOPRIGHT, widget, TOPRIGHT, -2, 0)
+            widget.epcSlotLabel:SetHeight(24)
+            widget.epcSlotLabel:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+        else
+            widget.epcSlotLabel:SetAnchor(TOPLEFT, widget, TOPLEFT, 3, 1)
+            widget.epcSlotLabel:SetAnchor(TOPRIGHT, widget, TOPRIGHT, -3, 1)
+            widget.epcSlotLabel:SetHeight(24)
+            widget.epcSlotLabel:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+        end
         widget.epcSlotLabel:SetText(bindingText)
+        local usesMarkup = bindingText:find("|t", 1, true) ~= nil
         local chars = #bindingText
-        local fontSize = chars <= 4 and 14 or (chars <= 7 and 12 or 10)
+        local fontSize = usesMarkup and 14 or (chars <= 4 and 14 or (chars <= 7 and 12 or 10))
         widget.epcSlotLabel:SetFont("$(BOLD_FONT)|" .. tostring(fontSize) .. "|soft-shadow-thick")
     end
     if widget.epcUltimatePct then
@@ -353,9 +439,62 @@ function A:RefreshWidget(widget)
     end
 end
 
+-- v0.29.167 - Smart Combat Advisor highlight on Suite ability overlays.
+function A:SetSmartRecommendation029167(slot, category, pulseAlpha)
+    self.smartRecommendedSlot029161 = tonumber(slot)
+    self.smartRecommendedCategory029161 = category
+    local activeCategory = safe(GetActiveHotbarCategory, nil)
+    local shown = false
+    local pulse = math.max(0, math.min(1, tonumber(pulseAlpha) or 1.0))
+    for _, widget in ipairs(self.widgets or {}) do
+        local highlight = widget and widget.epcSmartHighlight029167
+        local mid = widget and widget.epcSmartGlowMid029168
+        local outer = widget and widget.epcSmartGlowOuter029168
+        if highlight then
+            local match = self.smartRecommendedSlot029161 ~= nil
+                and tonumber(widget.epcSlot) == self.smartRecommendedSlot029161
+                and (category == nil or category == activeCategory)
+                and not widget:IsHidden()
+            highlight:SetHidden(not match)
+            if mid then mid:SetHidden(not match) end
+            if outer then outer:SetHidden(not match) end
+            if match then
+                -- Stronger pulse than the old single border. The inner frame
+                -- stays bright while the two halo layers breathe around it.
+                highlight:SetAlpha(0.88 + (0.12 * pulse))
+                if mid then mid:SetAlpha(0.52 + (0.48 * pulse)) end
+                if outer then outer:SetAlpha(0.24 + (0.70 * pulse)) end
+                shown = true
+            end
+        end
+    end
+    return shown
+end
+
+function A:ClearSmartRecommendation029167()
+    self.smartRecommendedSlot029161 = nil
+    self.smartRecommendedCategory029161 = nil
+    for _, widget in ipairs(self.widgets or {}) do
+        if widget and widget.epcSmartHighlight029167 then
+            widget.epcSmartHighlight029167:SetHidden(true)
+        end
+        if widget and widget.epcSmartGlowMid029168 then
+            widget.epcSmartGlowMid029168:SetHidden(true)
+        end
+        if widget and widget.epcSmartGlowOuter029168 then
+            widget.epcSmartGlowOuter029168:SetHidden(true)
+        end
+    end
+end
+
 function A:Refresh()
     self:ApplySize()
     for _,widget in ipairs(self.widgets or {}) do self:RefreshWidget(widget) end
+    if self.smartRecommendedSlot029161 then
+        self:SetSmartRecommendation029167(self.smartRecommendedSlot029161, self.smartRecommendedCategory029161, 1.0)
+    else
+        self:ClearSmartRecommendation029167()
+    end
 end
 
 function A:SetLayoutMode(active)
@@ -395,4 +534,56 @@ function A:Initialize()
     EVENT_MANAGER:RegisterForUpdate(prefix .. "_Tick", 150, function() self:Refresh() end)
     self:InvalidateBindingText()
     self:Refresh()
+end
+
+-- v0.29.171 - Make the moment-to-moment recommendation unmistakable on the
+-- Suite ability row. The existing three-layer glow remains unchanged; this
+-- adds a small NEXT badge above only the recommended visible slot.
+function A:EnsureSmartNextBadges029171()
+    for _, widget in ipairs(self.widgets or {}) do
+        if widget and not widget.epcSmartNext029171 then
+            local badge = wm:CreateControl(nil, widget, CT_LABEL)
+            badge:SetAnchor(BOTTOM, widget, TOP, 0, -5)
+            badge:SetDimensions(84, 20)
+            badge:SetFont("$(BOLD_FONT)|15|soft-shadow-thick")
+            badge:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+            badge:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+            badge:SetColor(1.00, 0.92, 0.30, 1.00)
+            badge:SetText("NEXT")
+            if badge.SetDrawLayer and DL_OVERLAY then badge:SetDrawLayer(DL_OVERLAY) end
+            if badge.SetDrawLevel then badge:SetDrawLevel(2600) end
+            badge:SetHidden(true)
+            widget.epcSmartNext029171 = badge
+        end
+    end
+end
+
+local EAS_SetSmartRecommendationBase029171 = A.SetSmartRecommendation029167
+function A:SetSmartRecommendation029167(slot, category, pulseAlpha)
+    self:EnsureSmartNextBadges029171()
+    local shown = EAS_SetSmartRecommendationBase029171(self, slot, category, pulseAlpha)
+    local activeCategory = safe(GetActiveHotbarCategory, nil)
+    for _, widget in ipairs(self.widgets or {}) do
+        local badge = widget and widget.epcSmartNext029171
+        if badge then
+            local match = shown
+                and tonumber(widget.epcSlot) == tonumber(slot)
+                and (category == nil or category == activeCategory)
+                and not widget:IsHidden()
+            badge:SetHidden(not match)
+            if match then
+                local pulse = math.max(0, math.min(1, tonumber(pulseAlpha) or 1))
+                badge:SetAlpha(0.72 + 0.28 * pulse)
+            end
+        end
+    end
+    return shown
+end
+
+local EAS_ClearSmartRecommendationBase029171 = A.ClearSmartRecommendation029167
+function A:ClearSmartRecommendation029167()
+    EAS_ClearSmartRecommendationBase029171(self)
+    for _, widget in ipairs(self.widgets or {}) do
+        if widget and widget.epcSmartNext029171 then widget.epcSmartNext029171:SetHidden(true) end
+    end
 end

@@ -1,0 +1,13 @@
+; Imperial City Boss Timers
+; Copyright (c) 2026 Paranoid Gaming
+
+## APIVersion: 101050 101051
+## Title: |cFFD34EImperial City Boss Timers|r
+## Description: Compact Imperial City district boss timers with sorted respawns, solid draining bars, and gamepad-friendly customization.
+## Author: Paranoid Gaming
+## Version: 1.4.0
+## AddOnVersion: 10400
+## DependsOn: LibAddonMenu-2.0>=43
+## SavedVariables: ImperialCityBossTimersSavedVariables
+
+ImperialCityBossTimers.lua

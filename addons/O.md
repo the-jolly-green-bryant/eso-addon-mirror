@@ -25,6 +25,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Oger's Mail Intricates](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Irniben/Oger-s-Mail-Intricates__3235) | Irniben | PC / Mac | 0.2.0 |
 | [Oh No My Menu](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BLKx777/Oh-No-My-Menu__30102403-93a7-4fd2-a08a-4b249f03e4d4) | BLKx777 | Console | — |
 | [Okies Custom Icons for OdySupportIcons](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/OkieRazorback/Okies-Custom-Icons-for-OdySupportIcons__4688) | OkieRazorback | PC / Mac | 1.0.2 |
+| [OlhasWrathAssistant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Invs/OlhasWrathAssistant__4812) | Invs | PC / Mac | 0.1.1 |
 | [Olorime](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tmbrinks/Olorime__2abdc7a0-d15d-42ae-aad7-bccf995da180) | tmbrinks | Console | — |
 | [Olorime](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wheels/Olorime__2006) | Wheels | PC / Mac | 2.3.0 |
 | [Omni Stats](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/RunningDuck/Omni-Stats__863) | RunningDuck | PC / Mac | 4.0.0 |

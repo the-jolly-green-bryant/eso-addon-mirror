@@ -1,11 +1,16 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/FlatBadger/Bar-Steward---Multi-Toolbar__3375",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "FlatBadger",
   "canonical_id": "esoui:3375",
   "category_id": "20",
   "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
     {
       "name": "Season Zero",
       "version": "11.3.0"
@@ -65,7 +70,7 @@
     "BarSteward"
   ],
   "download_url": "https://www.esoui.com/downloads/dl3375/",
-  "fingerprint": "d18415fd49591852310d766a03da16e4e7b787652a7165704a4b4278334ca002",
+  "fingerprint": "8f3b479dff9a7ca0e8d7a19a26383b4a99b10cd308f6608c4a5df6e5f273e624",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw11686.png",
     "https://cdn-eso.mmoui.com/preview/pvw11516.png",
@@ -83,11 +88,11 @@
   "source_id": "3375",
   "source_url": "https://www.esoui.com/downloads/info3375-BarSteward-MultiToolbar.html",
   "stats": {
-    "downloads": 205359,
+    "downloads": 206301,
     "favorites": 148,
-    "monthly_downloads": 582
+    "monthly_downloads": 704
   },
   "title": "Bar Steward - Multi Toolbar",
-  "updated_at": 1780237193000,
-  "version": "3.5.10"
+  "updated_at": 1788456475000,
+  "version": "3.5.11"
 }

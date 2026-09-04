@@ -1,0 +1,11 @@
+
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="EsoarUI">
+			<Dimensions x="0" y="0"/>
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+			<Controls>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

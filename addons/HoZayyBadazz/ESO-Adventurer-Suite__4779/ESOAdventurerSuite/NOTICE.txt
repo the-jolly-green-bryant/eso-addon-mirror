@@ -4,7 +4,7 @@ ESO ADVENTURER SUITE - OWNERSHIP NOTICE
 Project: ESO Adventurer Suite
 Author / Copyright Owner: HoZayyBadazz
 Copyright: (c) 2026 HoZayyBadazz. All Rights Reserved.
-Release: 0.29.50
+Release: 0.29.197
 
 This package is source-visible because ESO add-ons are installed locally for the game client to load them. Source visibility is not permission to copy, republish, redistribute, rebrand, sell, or claim authorship of this project.
 

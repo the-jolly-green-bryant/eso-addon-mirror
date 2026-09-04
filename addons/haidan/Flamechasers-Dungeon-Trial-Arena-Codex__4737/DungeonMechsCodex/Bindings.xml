@@ -1,0 +1,12 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="SI_BINDING_NAME_FLAMECHASERS_CATEGORY">
+            <Action name="DMC_TOGGLE_WINDOW">
+                <Down>DungeonMechsCodex.ToggleWindow()</Down>
+            </Action>
+            <Action name="DMC_PASTE_SELECTED">
+                <Down>DungeonMechsCodex.PasteSelectedChatLine()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

@@ -1,0 +1,8 @@
+<GuiXml>
+  <Controls>
+    <!-- Empty EsoAR menu (gamepad parametric list screen). Items are added step by step. -->
+    <TopLevelControl name="EsoAR_Menu" inherits="ZO_Gamepad_ParametricList_Screen" hidden="true">
+      <OnInitialized>EsoAR_Menu_OnInitialized(self)</OnInitialized>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

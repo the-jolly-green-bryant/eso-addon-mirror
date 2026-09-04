@@ -16,12 +16,12 @@ PC.detectedBossNames = {}
 PC.debugMode = false
 PC.settingsPanelRegistered = false
 PC.settingsPanelRetryCount = 0
-PC.hotkeyPollId = "PullCardHotkeyPoll"
-PC.leftShoulderDown = false
-PC.rightShoulderDown = false
-PC.hotkeyChordHandled = false
 PC.suppressedAutoBossName = nil
+PC.settingsReturnWindow = "live"
 PC.savedVars = nil
+PC.activeInputWindow = nil
+PC.lastAnnouncedBossName = nil
+PC.windowHideGeneration = 0
 PC.defaults = {
     debugMode = false,
     openOnStartup = true,
@@ -80,14 +80,6 @@ local function IsActivateKey(key)
         or key == KEY_SPACE
         or key == KEY_GAMEPAD_BUTTON_2
         or key == KEY_GAMEPAD_BUTTON_3
-end
-
-local function IsLeftToggleKey(key)
-    return key == KEY_GAMEPAD_LEFT_SHOULDER
-end
-
-local function IsRightToggleKey(key)
-    return key == KEY_GAMEPAD_BUTTON_1
 end
 
 local function SetReadableFont(control, size, isBold)
@@ -319,6 +311,12 @@ local function BuildDungeonCatalog(vanillaOnly)
     return order, byDungeon
 end
 
+-- Exposed so ConsoleMenu.lua can build the Tips Library submenu tree
+-- without duplicating the dungeon-grouping logic above.
+function PC:GetDungeonCatalog(vanillaOnly)
+    return BuildDungeonCatalog(vanillaOnly)
+end
+
 function PC:ResolveBossName(candidate, preferredDungeon)
     if not candidate then return nil end
     local key = NormalizeBossName(candidate)
@@ -457,60 +455,41 @@ function PC:GetOnOffText(value)
     return value and "ON" or "OFF"
 end
 
-function PC:IsAnyWindowVisible()
-    local liveVisible = self.window and not self.window:IsHidden()
-    local tipsVisible = self.tipsWindow and not self.tipsWindow:IsHidden()
-    local settingsVisible = self.settingsWindow and not self.settingsWindow:IsHidden()
-    return liveVisible or tipsVisible or settingsVisible
-end
-
-function PC:ToggleAnyWindow()
-    if self.settingsWindow and not self.settingsWindow:IsHidden() then
-        self:CloseSettingsWindow()
-        return
-    end
-    if self.tipsWindow and not self.tipsWindow:IsHidden() then
-        self:CloseTipsLibrary()
-        return
-    end
-    if self.window and not self.window:IsHidden() then
-        self:CloseWindow()
-        return
-    end
-    self:OpenWindow(true)
-end
-
-function PC:CreateGlobalHotkeyListener()
-    EVENT_MANAGER:RegisterForUpdate(self.hotkeyPollId, 80, function()
-        local leftDown = IsKeyDown and IsKeyDown(KEY_GAMEPAD_LEFT_SHOULDER)
-        local rightDown = IsKeyDown and IsKeyDown(KEY_GAMEPAD_BUTTON_1)
-
-        if leftDown and rightDown then
-            if not PC.hotkeyChordHandled then
-                PC.hotkeyChordHandled = true
-                PC:ToggleAnyWindow()
-            end
-        else
-            PC.hotkeyChordHandled = false
-        end
-    end)
-end
-
 function PC:ToggleOpenOnStartupSetting()
     if not self.savedVars then return end
     self.savedVars.openOnStartup = not self.savedVars.openOnStartup
     self:RenderSettingsWindow()
 end
 
+-- KEYBIND_STRIP was tried here and reverted: registering a button group
+-- with generic keybind names (UI_SHORTCUT_PRIMARY/NEGATIVE) is live
+-- globally, not scoped to our window, and is the prime suspect for a
+-- taint error ("private function... from insecure code") that started
+-- happening on an unrelated system dialog (Cyrodiil queue-ready accept)
+-- after this was added -- while providing no actual focus benefit when
+-- tested live. Do not re-add without scene-scoping it properly.
 function PC:SetActiveInputWindow(activeWindow)
+    if self.window then self.window:SetKeyboardEnabled(self.window == activeWindow) end
+    if self.tipsWindow then self.tipsWindow:SetKeyboardEnabled(self.tipsWindow == activeWindow) end
+    if self.settingsWindow then self.settingsWindow:SetKeyboardEnabled(self.settingsWindow == activeWindow) end
+    self.activeInputWindow = activeWindow
+end
+
+function PC:HideAllWindows()
     if self.window then
-        self.window:SetKeyboardEnabled(activeWindow == self.window)
+        self.window:SetHidden(true)
     end
     if self.tipsWindow then
-        self.tipsWindow:SetKeyboardEnabled(activeWindow == self.tipsWindow)
+        self.tipsWindow:SetHidden(true)
     end
     if self.settingsWindow then
-        self.settingsWindow:SetKeyboardEnabled(activeWindow == self.settingsWindow)
+        self.settingsWindow:SetHidden(true)
+    end
+
+    self:SetActiveInputWindow(nil)
+
+    if self.miniButton then
+        self.miniButton:SetHidden(not self:ShouldShowMiniButton())
     end
 end
 
@@ -528,6 +507,12 @@ end
 
 function PC:OpenSettingsWindow()
     if not self.settingsWindow then return end
+    if self.tipsWindow and not self.tipsWindow:IsHidden() then
+        self.settingsReturnWindow = "tips"
+    else
+        self.settingsReturnWindow = "live"
+    end
+
     if self.window then self.window:SetHidden(true) end
     if self.tipsWindow then self.tipsWindow:SetHidden(true) end
     if self.miniButton then self.miniButton:SetHidden(true) end
@@ -538,11 +523,20 @@ function PC:OpenSettingsWindow()
     self:RenderSettingsWindow()
 end
 
-function PC:CloseSettingsWindow()
+function PC:CloseSettingsWindow(returnToPreviousWindow)
     if not self.settingsWindow then return end
     self.settingsWindow:SetHidden(true)
-    self:SetActiveInputWindow(nil)
-    self:OpenWindow(true)
+
+    if returnToPreviousWindow then
+        if self.settingsReturnWindow == "tips" then
+            self:OpenTipsLibrary()
+        else
+            self:OpenWindow(true)
+        end
+        return
+    end
+
+    self:HideAllWindows()
 end
 
 function PC:RenderSettingsWindow()
@@ -734,6 +728,10 @@ end
 
 function PC:OpenWindow(preserveMiniButton)
     if not self.window then return end
+    -- Invalidates any pending ScheduleAutoHide timer from a previous open
+    -- (see RefreshAuto) so it can't hide a window the player just opened
+    -- or re-browsed to for a different reason.
+    self.windowHideGeneration = (self.windowHideGeneration or 0) + 1
     if self.tipsWindow then
         self.tipsWindow:SetHidden(true)
     end
@@ -760,11 +758,7 @@ function PC:CloseWindow()
     if self.currentSource == "auto" and self.currentBossName then
         self.suppressedAutoBossName = self.currentBossName
     end
-    self.window:SetHidden(true)
-    self:SetActiveInputWindow(nil)
-    if self.miniButton then
-        self.miniButton:SetHidden(not self:ShouldShowMiniButton())
-    end
+    self:HideAllWindows()
 end
 
 function PC:OpenTipsLibrary()
@@ -807,11 +801,46 @@ end
 
 function PC:CloseTipsLibrary()
     if not self.tipsWindow then return end
-    self.tipsWindow:SetHidden(true)
-    self:SetActiveInputWindow(nil)
-    if self.miniButton then
-        self.miniButton:SetHidden(not self:ShouldShowMiniButton())
+    self:HideAllWindows()
+end
+
+-- Chat needs no input focus to be seen, so this is the real "you walked
+-- up to a boss" notification -- the floating card is just a supplementary
+-- visual, see ScheduleAutoHide below for why it can't be the only one.
+function PC:AnnounceBossToChat(bossName, data)
+    if not bossName then return end
+
+    if not data then
+        d(string.format("|c00CCFF[PullCard]|r %s detected -- no strategy card exists yet.", bossName))
+        return
     end
+
+    local summary = data.summary or "Watch the encounter flow, protect your team, and execute one clean mechanic cycle."
+    d(string.format("|c00CCFF[PullCard]|r %s -- %s", data.dungeon or "Dungeon", data.title or bossName))
+    d(summary)
+
+    local roleText = self:GetPlayerRoleText(data)
+    if roleText ~= "" then
+        d("|cFFFFAAYour role:|r " .. roleText)
+    end
+end
+
+-- A card opened automatically on boss-detect can't be dismissed by the
+-- player at all on console (no input focus reaches a custom window there
+-- -- see ConsoleMenu.lua), so it self-hides after a delay instead of
+-- sitting on screen forever. Cards opened deliberately (Tips Library /
+-- "Current Boss" rows in the console Add-ons menu) skip this and stay up
+-- until "Hide Card" is pressed, since that's a real interaction.
+function PC:ScheduleAutoHide(delayMs)
+    self.windowHideGeneration = (self.windowHideGeneration or 0) + 1
+    local generation = self.windowHideGeneration
+
+    zo_callLater(function()
+        if PC.windowHideGeneration ~= generation then return end
+        if PC.window and not PC.window:IsHidden() then
+            PC:HideAllWindows()
+        end
+    end, delayMs or 30000)
 end
 
 function PC:RefreshAuto()
@@ -828,10 +857,16 @@ function PC:RefreshAuto()
 
         self:SetBoss(detected, "auto")
         if self.suppressedAutoBossName ~= detected then
+            if self.lastAnnouncedBossName ~= detected then
+                self.lastAnnouncedBossName = detected
+                self:AnnounceBossToChat(detected, self.currentBossData)
+            end
             self:OpenWindow()
+            self:ScheduleAutoHide()
         end
     else
         self.suppressedAutoBossName = nil
+        self.lastAnnouncedBossName = nil
         self.currentBossName = nil
         self.currentBossData = nil
         self.currentSource = "none"
@@ -1020,8 +1055,6 @@ function PC:CreateWindow()
     top:SetDimensions(600, 470)
     top:SetAnchor(CENTER, GuiRoot, CENTER, 0, 80)
     top:SetMovable(true)
-    top:SetMouseEnabled(true)
-    top:SetKeyboardEnabled(false)
     top:SetClampedToScreen(true)
     top:SetHidden(true)
     top:SetHandler("OnKeyDown", function(_, key)
@@ -1096,7 +1129,7 @@ function PC:CreateWindow()
     controlsHint:SetHeight(28)
     controlsHint:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     controlsHint:SetColor(0.84, 0.84, 0.84, 1)
-    controlsHint:SetText("Left/Right: focus   Activate: run action   Back: close   L1+O: toggle")
+    controlsHint:SetText("Left/Right: focus   Activate: run action   Back: close")
 
     local prev = wm:CreateControlFromVirtual("PullCardPrevButton", top, "ZO_DefaultButton")
     prev:SetDimensions(104, 38)
@@ -1147,16 +1180,36 @@ function PC:CreateWindow()
     SetButtonReadableFont(tips, 20, true)
     tips:SetHandler("OnClicked", tipsAction)
 
-    top.actionButtons = {
-        { control = prev, label = "< Prev", callback = prevAction },
-        { control = next, label = "Next >", callback = nextAction },
-        { control = chatButton, label = "Explain to Group", callback = chatAction },
-        { control = tips, label = "Tips", callback = tipsAction },
-        { control = settings, label = "Settings", callback = settingsAction },
-        { control = hide, label = "Hide", callback = hideAction },
-    }
-    top.focusedActionIndex = 1
-    SetWindowActionFocus(top, 1)
+    -- On console nothing on this card can ever be clicked (no cursor) --
+    -- see ConsoleMenu.lua, the real interactive surface there. The button
+    -- row would just be confusing dead weight, so it's hidden and the
+    -- card becomes a pure passive readout; the controls stay fully
+    -- functional for keyboard&mouse players, where clicking them works.
+    local isConsole = IsConsoleUI and IsConsoleUI()
+    if isConsole then
+        top:SetDimensions(600, 360)
+        notice:SetText("PullCard loaded. Manage this from Options > Add-Ons > PullCard.")
+        prev:SetHidden(true)
+        next:SetHidden(true)
+        chatButton:SetHidden(true)
+        hide:SetHidden(true)
+        settings:SetHidden(true)
+        tips:SetHidden(true)
+        controlsHint:SetHidden(true)
+        debug:SetAnchor(BOTTOMLEFT, top, BOTTOMLEFT, 18, -18)
+        debug:SetAnchor(BOTTOMRIGHT, top, BOTTOMRIGHT, -18, -18)
+    else
+        top.actionButtons = {
+            { control = prev, label = "< Prev", callback = prevAction },
+            { control = next, label = "Next >", callback = nextAction },
+            { control = chatButton, label = "Explain to Group", callback = chatAction },
+            { control = tips, label = "Tips", callback = tipsAction },
+            { control = settings, label = "Settings", callback = settingsAction },
+            { control = hide, label = "Hide", callback = hideAction },
+        }
+        top.focusedActionIndex = 1
+        SetWindowActionFocus(top, 1)
+    end
 end
 
 function PC:RenderTipsLibrary()
@@ -1205,8 +1258,6 @@ function PC:CreateTipsWindow()
     top:SetDimensions(620, 530)
     top:SetAnchor(CENTER, GuiRoot, CENTER, 0, 80)
     top:SetMovable(true)
-    top:SetMouseEnabled(true)
-    top:SetKeyboardEnabled(false)
     top:SetClampedToScreen(true)
     top:SetHidden(true)
     top:SetHandler("OnKeyDown", function(_, key)
@@ -1281,7 +1332,7 @@ function PC:CreateTipsWindow()
     controlsHint:SetHeight(28)
     controlsHint:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     controlsHint:SetColor(0.84, 0.84, 0.84, 1)
-    controlsHint:SetText("Left/Right: focus   Activate: run action   Back: close   L1+O: toggle")
+    controlsHint:SetText("Left/Right: focus   Activate: run action   Back: close")
 
     local prevDungeon = wm:CreateControlFromVirtual("PullCardTipsPrevDungeonButton", top, "ZO_DefaultButton")
     prevDungeon:SetDimensions(132, 38)
@@ -1373,13 +1424,11 @@ function PC:CreateSettingsWindow()
     top:SetDimensions(620, 350)
     top:SetAnchor(CENTER, GuiRoot, CENTER, 0, 80)
     top:SetMovable(true)
-    top:SetMouseEnabled(true)
-    top:SetKeyboardEnabled(false)
     top:SetClampedToScreen(true)
     top:SetHidden(true)
     top:SetHandler("OnKeyDown", function(_, key)
         if IsDismissKey(key) then
-            PC:CloseSettingsWindow()
+            PC:HideAllWindows()
             return true
         end
         if IsFocusPrevKey(key) then
@@ -1439,12 +1488,20 @@ function PC:CreateSettingsWindow()
     debug:SetHandler("OnClicked", debugAction)
 
     local back = wm:CreateControlFromVirtual("PullCardSettingsBackButton", top, "ZO_DefaultButton")
-    back:SetDimensions(120, 42)
+    back:SetDimensions(140, 42)
     back:SetAnchor(BOTTOMRIGHT, top, BOTTOMRIGHT, -18, -16)
-    local backAction = function() PC:CloseSettingsWindow() end
+    local backAction = function() PC:CloseSettingsWindow(true) end
     EnsureLargeButtonLabel(back, "Back", 20, true)
     SetButtonReadableFont(back, 20, true)
     back:SetHandler("OnClicked", backAction)
+
+    local hide = wm:CreateControlFromVirtual("PullCardSettingsHideButton", top, "ZO_DefaultButton")
+    hide:SetDimensions(120, 42)
+    hide:SetAnchor(RIGHT, back, LEFT, -10, 0)
+    local hideAction = function() PC:HideAllWindows() end
+    EnsureLargeButtonLabel(hide, "Hide", 20, true)
+    SetButtonReadableFont(hide, 20, true)
+    hide:SetHandler("OnClicked", hideAction)
 
     top.startupToggle = { control = startup, label = "Startup: ON", callback = startupAction }
     top.miniToggle = { control = mini, label = "Mini Button: ON", callback = miniAction }
@@ -1453,6 +1510,7 @@ function PC:CreateSettingsWindow()
         top.startupToggle,
         top.miniToggle,
         top.debugToggle,
+        { control = hide, label = "Hide", callback = hideAction },
         { control = back, label = "Back", callback = backAction },
     }
     top.focusedActionIndex = 1
@@ -1462,12 +1520,24 @@ end
 function PC:Initialize()
     self:LoadSettings()
     self:CreateWindow()
-    self:CreateTipsWindow()
-    self:CreateSettingsWindow()
-    self:CreateMiniButton()
-    self:CreateGlobalHotkeyListener()
+
+    -- Tips window, Settings window, and the mini button are nothing but
+    -- click targets -- on console there's no cursor to click them with,
+    -- and Options > Add-Ons > PullCard (ConsoleMenu.lua) already covers
+    -- everything they did. Every reference to self.tipsWindow/
+    -- self.settingsWindow/self.miniButton elsewhere already guards for
+    -- nil, so skipping creation here is enough; nothing else needs to
+    -- change.
+    local isConsole = IsConsoleUI and IsConsoleUI()
+    if not isConsole then
+        self:CreateTipsWindow()
+        self:CreateSettingsWindow()
+        self:CreateMiniButton()
+    end
+
     self:RegisterSlashCommands()
     self:RetrySettingsPanelRegistration()
+    self:InitConsoleMenu()
 
     EVENT_MANAGER:RegisterForEvent(self.name .. "_LAM", EVENT_ADD_ON_LOADED, function(_, addonName)
         if addonName == "LibAddonMenu-2.0" or addonName == "LibAddonMenu" then

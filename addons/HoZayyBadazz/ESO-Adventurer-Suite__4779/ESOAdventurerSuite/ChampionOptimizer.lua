@@ -307,3 +307,260 @@ function C:Initialize()
         if EPC.RequestRefresh then EPC:RequestRefresh("champion-purchase-result") end
     end)
 end
+
+-- v0.29.174 - MAX POWER Champion optimizer.
+-- Scores CP against the skill build RESPEC + BUILD actually plans, current role,
+-- current content, and personal penetration need. Allocation is incremental with
+-- diminishing returns instead of filling one high-keyword node to cap first.
+local EAS_ChampionGetContextBase029174=C.GetContext
+function C:GetContext()
+    local base=EAS_ChampionGetContextBase029174(self) or {}
+    local g=EPC.GearOptimizer
+    local buildContext=g and type(g.GetWornBuildContext)=="function" and g:GetWornBuildContext() or {}
+    local skillPlan=g and type(g.BuildFullSkillPlan)=="function" and g:BuildFullSkillPlan() or nil
+    local skillProfile=g and type(g.AnalyzeSkillPlan029174)=="function" and g:AnalyzeSkillPlan029174(skillPlan) or {directShare=.5,dotShare=.5,aoeShare=.35,singleShare=.65,total=0}
+    base.profile=buildContext.profile or base.profile or {}
+    base.role=tostring(buildContext.role or base.role or "DAMAGE")
+    base.mode=buildContext.maxPowerMode or (g and g.ResolveMaxPowerMode029174 and g:ResolveMaxPowerMode029174()) or "SOLO"
+    base.modeLabel=buildContext.maxPowerLabel or base.mode
+    base.archetype=buildContext.archetype or base.role
+    base.power=buildContext.power or {}
+    base.penGap=tonumber(buildContext.penGap) or 0
+    base.penTarget=tonumber(buildContext.personalPenTarget) or 0
+    base.personalPen=tonumber(buildContext.personalPen) or 0
+    base.skillProfile=skillProfile
+    return base
+end
+
+local EAS_ChampionScoreSkillBase029174=C.ScoreSkill
+function C:ScoreSkill(node,context)
+    context=context or self:GetContext()
+    local score=EAS_ChampionScoreSkillBase029174(self,node,context)
+    local text=lower(node.name).." "..lower(node.desc)
+    local label=disciplineLabel(node.disciplineType)
+    local role=lower(context.role)
+    local mode=tostring(context.mode or "SOLO")
+    local sp=context.skillProfile or {}
+
+    if label=="WARFARE" then
+        if role=="damage" or role=="dps" then
+            if has(text,{"direct damage"}) then score=score+math.floor(620*(tonumber(sp.directShare) or .5)) end
+            if has(text,{"damage over time"}) then score=score+math.floor(620*(tonumber(sp.dotShare) or .5)) end
+            if has(text,{"area of effect"}) then score=score+math.floor(620*(tonumber(sp.aoeShare) or .35)) end
+            if has(text,{"single target"}) then score=score+math.floor(620*(tonumber(sp.singleShare) or .65)) end
+            if has(text,{"weapon and spell damage","damage done"}) then score=score+410 end
+            if has(text,{"critical damage"}) then
+                score=score+(mode=="TRIAL_BOSS" and 250 or 430)
+            end
+            if has(text,{"offensive penetration","penetration"}) then
+                local gap=tonumber(context.penGap) or 0
+                if gap<=0 then score=score-500 else score=score+math.min(650,math.floor(gap/18)) end
+            end
+            if has(text,{"off balance"}) then score=score+(mode=="TRIAL_BOSS" and 310 or 180) end
+            if mode=="AOE_TRASH" and has(text,{"area of effect"}) then score=score+420 end
+            if mode=="TRIAL_BOSS" and has(text,{"single target","direct damage"}) then score=score+180 end
+            if mode=="INFINITE_ARCHIVE" and has(text,{"healing received","damage taken","shield"}) then score=score+120 end
+        elseif role=="healer" then
+            if has(text,{"healing done","heal over time","area of effect healing","single target healing","critical healing"}) then score=score+620 end
+            if has(text,{"damage shield","healing received"}) then score=score+240 end
+            if has(text,{"weapon and spell damage"}) then score=score+120 end
+        elseif role=="tank" then
+            if has(text,{"damage taken","direct damage taken","damage over time taken","area of effect damage taken","single target damage taken"}) then score=score+650 end
+            if has(text,{"block","armor","resistance","damage shield"}) then score=score+560 end
+            if has(text,{"healing received"}) then score=score+280 end
+        end
+    elseif label=="FITNESS" then
+        if role=="tank" then
+            if has(text,{"max health","armor","block","damage taken","healing received","shield"}) then score=score+560 end
+            if has(text,{"stamina recovery","magicka recovery","restore stamina","restore magicka"}) then score=score+330 end
+        elseif role=="healer" then
+            if has(text,{"max health","magicka recovery","recovery","movement speed","break free"}) then score=score+320 end
+        else
+            if mode=="INFINITE_ARCHIVE" then
+                if has(text,{"max health","armor","damage taken","healing received","recovery"}) then score=score+430 end
+            elseif mode=="PVP" then
+                if has(text,{"max health","armor","break free","roll dodge","sprint","movement speed","recovery"}) then score=score+430 end
+            else
+                if has(text,{"movement speed","recovery","restore magicka","restore stamina"}) then score=score+260 end
+                if has(text,{"max health","armor"}) then score=score+120 end
+            end
+        end
+    elseif label=="CRAFT" then
+        -- Combat power is unaffected by Craft CP, so optimize the run economy and
+        -- time saved: faster movement/gathering plus potion/food/treasure utility.
+        if has(text,{"food","drink","potion","treasure chest","movement speed","mount speed","harvest","gather"}) then score=score+330 end
+        if mode=="INFINITE_ARCHIVE" and has(text,{"potion","food","drink","movement speed"}) then score=score+180 end
+    end
+
+    -- Nodes that need a slot must justify one of only four active slots. Passive
+    -- nodes are always-on, so they get a small efficiency advantage when close.
+    if node.slottable then score=score+80 else score=score+55 end
+    return math.max(-10000,score)
+end
+
+local function easChampionCandidatePathCost029174(target,p,byId)
+    local path=pathToRoot(target,byId)
+    local cost=0
+    for _,n in ipairs(path or {}) do
+        local want=math.max(0,tonumber(n.minUnlock) or 0)
+        local old=tonumber(p.alloc[n.id]) or 0
+        if want>old then cost=cost+(want-old) end
+    end
+    if cost==0 and (tonumber(p.alloc[target.id]) or 0)<(tonumber(target.maxPoints) or 0) then cost=1 end
+    return cost,path
+end
+
+local function easChampionAllocateStep029174(target,p,byId)
+    local before=p.spent
+    local _,path=easChampionCandidatePathCost029174(target,p,byId)
+    for _,n in ipairs(path or {}) do
+        local want=math.max(0,tonumber(n.minUnlock) or 0)
+        local old=tonumber(p.alloc[n.id]) or 0
+        local add=math.min(math.max(0,p.budget-p.spent),math.max(0,want-old))
+        if add>0 then p.alloc[n.id]=old+add; p.spent=p.spent+add end
+    end
+    if p.spent<p.budget then
+        local cur=tonumber(p.alloc[target.id]) or 0
+        local maxp=tonumber(target.maxPoints) or 0
+        if cur<maxp and p.spent==before then
+            p.alloc[target.id]=cur+1
+            p.spent=p.spent+1
+        end
+    end
+    return p.spent-before
+end
+
+function C:BuildPlan()
+    local context=self:GetContext()
+    local nodes,byId=self:CollectNodes()
+    local plan={context=context,nodes=nodes,byId=byId,pools={},targets={},slotted={}}
+    for _,node in ipairs(nodes) do
+        local p=plan.pools[node.disciplineId]
+        if not p then
+            p={disciplineId=node.disciplineId,disciplineType=node.disciplineType,label=disciplineLabel(node.disciplineType),budget=num(GetNumSpentChampionPoints,0,node.disciplineId)+num(GetNumUnspentChampionPoints,0,node.disciplineId),spent=0,alloc={},ranked={},selectedSlottables={},candidateTargets={}}
+            plan.pools[node.disciplineId]=p
+        end
+        node.score=self:ScoreSkill(node,context)
+        p.ranked[#p.ranked+1]=node
+    end
+
+    for _,p in pairs(plan.pools) do
+        table.sort(p.ranked,function(a,b) if a.score==b.score then return a.name<b.name end return a.score>b.score end)
+
+        -- Pick only four slottable destinations. Spending deep into a fifth active
+        -- star is dead power because ESO cannot slot it at the same time.
+        for _,n in ipairs(p.ranked) do
+            if n.slottable and n.score>0 and #p.selectedSlottables<4 then
+                p.selectedSlottables[#p.selectedSlottables+1]=n
+                n._maxPowerSlot029174=true
+            end
+        end
+
+        -- All chosen slottables plus the strongest always-on passives compete for
+        -- points. Prerequisite nodes are paid automatically only when a target is
+        -- worth reaching.
+        local passiveCount=0
+        for _,n in ipairs(p.ranked) do
+            if n._maxPowerSlot029174 then
+                p.candidateTargets[#p.candidateTargets+1]=n
+            elseif not n.slottable and n.score>0 and passiveCount<18 then
+                passiveCount=passiveCount+1
+                p.candidateTargets[#p.candidateTargets+1]=n
+            end
+        end
+
+        local guard=0
+        while p.spent<p.budget and guard<5000 do
+            guard=guard+1
+            local best,bestEfficiency=nil,-1e30
+            for _,n in ipairs(p.candidateTargets) do
+                local cur=tonumber(p.alloc[n.id]) or 0
+                local maxp=tonumber(n.maxPoints) or 0
+                if cur<maxp then
+                    local cost=easChampionCandidatePathCost029174(n,p,byId)
+                    if cost>0 and p.spent+cost<=p.budget then
+                        local frac=maxp>0 and (cur/maxp) or 0
+                        local decay=n.slottable and (1-0.35*frac) or (1-0.58*frac)
+                        local slotBoost=n._maxPowerSlot029174 and 1.22 or 1.0
+                        local efficiency=(tonumber(n.score) or 0)*decay*slotBoost/math.max(1,cost)
+                        if efficiency>bestEfficiency then best,bestEfficiency=n,efficiency end
+                    end
+                end
+            end
+            if not best then break end
+            if easChampionAllocateStep029174(best,p,byId)<=0 then break end
+        end
+
+        -- v0.29.175 - Exhaust every legally spendable point.
+        -- The 0.29.174 remainder pass only searched candidateTargets. If those
+        -- stars were capped (or the next candidate path cost more than the small
+        -- remainder), legal points could be left unused. Search the whole tree
+        -- for the best legal next destination until the discipline pool is empty.
+        local function spendRemainder029175(allowUnselectedSlottable)
+            local guard=0
+            while p.spent<p.budget and guard<5000 do
+                guard=guard+1
+                local best,bestValue=nil,-1e30
+                for _,n in ipairs(p.ranked) do
+                    local cur=tonumber(p.alloc[n.id]) or 0
+                    local maxp=tonumber(n.maxPoints) or 0
+                    local selected=(n._maxPowerSlot029174==true)
+                    if cur<maxp and (allowUnselectedSlottable or not n.slottable or selected) then
+                        local cost=easChampionCandidatePathCost029174(n,p,byId)
+                        if cost>0 and p.spent+cost<=p.budget then
+                            local value=tonumber(n.score) or 0
+                            -- Prefer always-on passives and stars we are already
+                            -- investing in. Unselected slottables are a true last
+                            -- resort because points there provide no active power.
+                            if not n.slottable then value=value+1800 end
+                            if selected then value=value+1500 end
+                            if cur>0 then value=value+2600 end
+                            if n.isRoot then value=value+350 end
+                            value=value/math.max(1,cost)
+                            if value>bestValue then best,bestValue=n,value end
+                        end
+                    end
+                end
+                if not best then break end
+                if easChampionAllocateStep029174(best,p,byId)<=0 then break end
+            end
+        end
+
+        if p.spent<p.budget then spendRemainder029175(false) end
+        -- Absolute fallback: if ESO's tree topology leaves only an unselected
+        -- slottable able to accept the final few points, spend there rather than
+        -- silently leaving spendable CP unused. This does not slot that fifth star.
+        if p.spent<p.budget then spendRemainder029175(true) end
+        p.unspent=math.max(0,p.budget-p.spent)
+
+        p.slots={}
+        table.sort(p.selectedSlottables,function(a,b) return (tonumber(a.score) or 0)>(tonumber(b.score) or 0) end)
+        for _,n in ipairs(p.selectedSlottables) do
+            if (tonumber(p.alloc[n.id]) or 0)>0 and #p.slots<4 then p.slots[#p.slots+1]=n end
+        end
+    end
+    return plan
+end
+
+function C:BuildView()
+    local plan=self:BuildPlan()
+    local view={cost=num(GetChampionRespecCost,0),pools={},context=plan.context,mode=plan.context.modeLabel or plan.context.mode,archetype=plan.context.archetype,skillProfile=plan.context.skillProfile,penetration={current=plan.context.personalPen or 0,target=plan.context.penTarget or 0,gap=plan.context.penGap or 0}}
+    for _,p in pairs(plan.pools) do
+        local row={label=p.label,budget=p.budget,spent=p.spent,unspent=math.max(0,(tonumber(p.budget) or 0)-(tonumber(p.spent) or 0)),top={},slots={}}
+        for _,n in ipairs(p.ranked) do
+            if (p.alloc[n.id] or 0)>0 and #row.top<8 then row.top[#row.top+1]={name=n.name,points=p.alloc[n.id],slottable=n.slottable,score=n.score} end
+        end
+        for _,n in ipairs(p.slots or {}) do row.slots[#row.slots+1]={name=n.name,points=p.alloc[n.id] or 0,score=n.score} end
+        view.pools[#view.pools+1]=row
+    end
+    table.sort(view.pools,function(a,b) local o={CRAFT=1,WARFARE=2,FITNESS=3}; return (o[a.label] or 9)<(o[b.label] or 9) end)
+    return view
+end
+
+local EAS_ApplyBestChampionBuildBase029174=C.ApplyBestChampionBuild
+function C:ApplyBestChampionBuild()
+    local ctx=self:GetContext()
+    local sp=ctx.skillProfile or {}
+    self:Notify(string.format("MAX POWER CP: %s | %s | Direct %.0f%% / DoT %.0f%% | AoE %.0f%% / Single %.0f%% | Pen %d/%d",tostring(ctx.archetype or ctx.role or "BUILD"),tostring(ctx.modeLabel or ctx.mode or "AUTO"),(tonumber(sp.directShare) or 0)*100,(tonumber(sp.dotShare) or 0)*100,(tonumber(sp.aoeShare) or 0)*100,(tonumber(sp.singleShare) or 0)*100,tonumber(ctx.personalPen) or 0,tonumber(ctx.penTarget) or 0),true)
+    return EAS_ApplyBestChampionBuildBase029174(self)
+end

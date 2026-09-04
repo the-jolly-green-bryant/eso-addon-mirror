@@ -81,14 +81,67 @@ function S:Initialize()
             default = EPC.defaults.enabled,
         },
         {
-            type = "checkbox", name = "Combat Rotation Assistant",
-            tooltip = "Shows the safest next-ability recommendation during combat. It never casts abilities, presses keys, or automates gameplay.",
+            type = "checkbox", name = "Smart Combat Advisor",
+            tooltip = "Continuously evaluates every usable skill on both weapon bars and highlights the single best next button for your build at that exact moment: buffs, DoTs, debuffs, procs, stacks, executes, Ultimates, sustain, healing/defense, and bar swaps. It never casts abilities, blocks, swaps bars, presses keys, or automates combat input.",
             getFunc = function() return EPC.saved.rotationAssistantEnabled ~= false end,
             setFunc = function(v)
                 if EPC.RotationAssistant then EPC.RotationAssistant:SetEnabled(v)
                 else EPC.saved.rotationAssistantEnabled = v end
             end,
             default = EPC.defaults.rotationAssistantEnabled,
+        },
+        {
+            type = "dropdown", name = "Smart Advisor specialization",
+            tooltip = "Auto Detect follows Tank/Healer role selection first, then distinguishes Magicka, Stamina, or Hybrid DPS from your maximum resources. Override it here for unusual builds.",
+            choices = { "Auto Detect", "Magicka DPS", "Stamina DPS", "Hybrid DPS", "Healer", "Tank" },
+            choicesValues = { "AUTO", "MAGICKA_DPS", "STAMINA_DPS", "HYBRID", "HEALER", "TANK" },
+            getFunc = function() return EPC.saved.rotationAdvisorRoleMode or "AUTO" end,
+            setFunc = function(v) EPC.saved.rotationAdvisorRoleMode = v if EPC.RotationAssistant then EPC.RotationAssistant:Refresh() end end,
+            default = EPC.defaults.rotationAdvisorRoleMode,
+        },
+        {
+            type = "dropdown", name = "Smart Advisor display",
+            tooltip = "Highlight Action Bar is the default: it glows the best next ability and shows a movable weapon-bar swap cue when the recommendation is on the other bar. Full Overlay and Compact remain optional. Hidden keeps the advisor logic running without visual attack recommendations. Block warnings are controlled separately.",
+            choices = { "Full Overlay", "Compact Next Skill", "Highlight Action Bar", "Hidden / Background" },
+            choicesValues = { "FULL", "COMPACT", "HIGHLIGHT", "HIDDEN" },
+            getFunc = function() return EPC.saved.rotationAssistantDisplayMode029161 or "HIGHLIGHT" end,
+            setFunc = function(v) EPC.saved.rotationAssistantDisplayMode029161 = v if EPC.RotationAssistant then EPC.RotationAssistant:Refresh() end end,
+            default = EPC.defaults.rotationAssistantDisplayMode029161,
+        },
+        {
+            type = "button", name = "Test Action-Bar Highlight",
+            tooltip = "Highlights the first visible equipped ability for 3 seconds so you can verify the Smart Combat Advisor highlight without entering combat.",
+            func = function()
+                if EPC.RotationAssistant and EPC.RotationAssistant.TestActionHighlight029166 then
+                    EPC.RotationAssistant:TestActionHighlight029166()
+                end
+            end,
+            width = "half",
+        },
+        {
+            type = "checkbox", name = "Show BLOCK NOW warnings",
+            tooltip = "Shows a large warning when the Suite detects a likely incoming heavy/dangerous attack targeting you. The warning tells you to block; it never blocks automatically.",
+            getFunc = function() return EPC.saved.rotationBlockWarningEnabled029161 ~= false end,
+            setFunc = function(v) EPC.saved.rotationBlockWarningEnabled029161 = v == true if EPC.RotationAssistant then EPC.RotationAssistant:Refresh() end end,
+            default = EPC.defaults.rotationBlockWarningEnabled029161,
+        },
+        {
+            type = "dropdown", name = "Block warning sensitivity",
+            tooltip = "Conservative warns for obvious Heavy Attacks and learned attacks. Normal also recognizes common slam/smash/charge-style casts. Aggressive warns for any cast-time combat event that ESO reports as targeting you.",
+            choices = { "Conservative", "Normal", "Aggressive" },
+            choicesValues = { "CONSERVATIVE", "NORMAL", "AGGRESSIVE" },
+            getFunc = function() return EPC.saved.rotationBlockSensitivity029161 or "NORMAL" end,
+            setFunc = function(v) EPC.saved.rotationBlockSensitivity029161 = v end,
+            default = EPC.defaults.rotationBlockSensitivity029161,
+            disabled = function() return EPC.saved.rotationBlockWarningEnabled029161 == false end,
+        },
+        {
+            type = "checkbox", name = "Learn dangerous attacks",
+            tooltip = "Remembers ability IDs that you successfully block or that hit you for roughly a quarter of your maximum Health. If ESO later reports that ability beginning again, the Suite can warn you earlier.",
+            getFunc = function() return EPC.saved.rotationBlockLearning029161 ~= false end,
+            setFunc = function(v) EPC.saved.rotationBlockLearning029161 = v == true end,
+            default = EPC.defaults.rotationBlockLearning029161,
+            disabled = function() return EPC.saved.rotationBlockWarningEnabled029161 == false end,
         },
         {
             type = "dropdown", name = "Combat role awareness",
@@ -1870,6 +1923,141 @@ function S:Initialize()
             func = function() if EPC.ChampionOverlay then EPC.ChampionOverlay:ResetPosition() EPC.ChampionOverlay:Refresh() end end,
         },
         {
+            type = "header", name = "Dual Action Bar HUD",
+        },
+        {
+            type = "checkbox", name = "Show both weapon action bars",
+            tooltip = "Shows your front and back weapon bars at the same time. The active bar is marked clearly, while the inactive bar can be faded/desaturated. This is a Suite-owned display and does not cast skills or alter your controls.",
+            getFunc = function() return EPC.saved.showDualActionBar029189 == true end,
+            setFunc = function(v) EPC.saved.showDualActionBar029189 = v == true if EPC.DualActionBar then EPC.DualActionBar:Refresh() end end,
+            default = EPC.defaults.showDualActionBar029189,
+        },
+        {
+            type = "description",
+            text = "This is the Suite's dual-bar HUD inspired by the useful two-bar workflow seen in action-bar addons. It is independently implemented and works alongside ESO's normal action bar. If you already use the separate Ability Overlays, you may prefer to disable those to avoid duplicate skill icons.",
+        },
+        {
+            type = "button", name = "Use dual bar instead of separate ability overlays", buttonText = "Switch to Dual Bar HUD",
+            tooltip = "Turns on the Dual Action Bar HUD and turns off the six separate Ability Overlays so you do not see duplicate skill icons. You can re-enable the separate overlays at any time.",
+            func = function()
+                EPC.saved.showDualActionBar029189 = true
+                EPC.saved.showAbilityOverlays = false
+                if EPC.AbilityOverlays then EPC.AbilityOverlays:Refresh() end
+                if EPC.DualActionBar then EPC.DualActionBar:Refresh() end
+            end,
+        },
+        {
+            type = "dropdown", name = "Dual action bar visibility",
+            choices = { "Always", "Combat Only" }, choicesValues = { "ALWAYS", "COMBAT" },
+            getFunc = function() return EPC.saved.dualActionBarVisibility029189 or "ALWAYS" end,
+            setFunc = function(v) EPC.saved.dualActionBarVisibility029189 = v or "ALWAYS" if EPC.DualActionBar then EPC.DualActionBar:Refresh() end end,
+            default = EPC.defaults.dualActionBarVisibility029189,
+        },
+        {
+            type = "checkbox", name = "Use selected Skill Style icons",
+            tooltip = "When a slotted skill has an active Skill Style collectible, use that style's icon on the Suite action bar. Falls back to the normal slotted icon when no style override is available.",
+            getFunc = function() return EPC.saved.dualActionBarSkillStyles029189 ~= false end,
+            setFunc = function(v) EPC.saved.dualActionBarSkillStyles029189 = v == true if EPC.DualActionBar then EPC.DualActionBar:Refresh() end end,
+            default = EPC.defaults.dualActionBarSkillStyles029189,
+        },
+        {
+            type = "checkbox", name = "Show effect/cooldown timers",
+            getFunc = function() return EPC.saved.dualActionBarShowTimers029189 ~= false end,
+            setFunc = function(v) EPC.saved.dualActionBarShowTimers029189 = v == true if EPC.DualActionBar then EPC.DualActionBar:Refresh() end end,
+            default = EPC.defaults.dualActionBarShowTimers029189,
+        },
+        {
+            type = "checkbox", name = "Show stack counters",
+            tooltip = "Shows stack counts when the Suite can match an active stack effect to the slotted skill, including stack-builder/spender abilities already understood by the Smart Combat Advisor.",
+            getFunc = function() return EPC.saved.dualActionBarShowStacks029189 ~= false end,
+            setFunc = function(v) EPC.saved.dualActionBarShowStacks029189 = v == true if EPC.DualActionBar then EPC.DualActionBar:Refresh() end end,
+            default = EPC.defaults.dualActionBarShowStacks029189,
+        },
+        {
+            type = "checkbox", name = "Show ability hotkeys/controller glyphs",
+            getFunc = function() return EPC.saved.dualActionBarShowHotkeys029189 ~= false end,
+            setFunc = function(v) EPC.saved.dualActionBarShowHotkeys029189 = v == true if EPC.DualActionBar then EPC.DualActionBar:Refresh() end end,
+            default = EPC.defaults.dualActionBarShowHotkeys029189,
+        },
+        {
+            type = "dropdown", name = "Active bar marker",
+            choices = { "ESO Weapons Icon + Soft Gold Glow", "ESO Weapon Swap Icon Only", "Bar Number Only" },
+            choicesValues = { "ICON_GLOW", "ICON", "NUMBER" },
+            getFunc = function()
+                local v = EPC.saved.dualActionBarMarkerStyle029189 or "ICON_GLOW"
+                if v == "ARROW_NUMBER" or v == "ICON_NUMBER" then return "ICON_GLOW" end
+                if v == "ARROW" then return "ICON" end
+                return v
+            end,
+            setFunc = function(v) EPC.saved.dualActionBarMarkerStyle029189 = v or "ICON_GLOW" if EPC.DualActionBar then EPC.DualActionBar:Refresh() end end,
+            default = "ICON_GLOW",
+        },
+        {
+            type = "checkbox", name = "Put Bar 1 on top",
+            tooltip = "Off keeps Bar 1 on the bottom and Bar 2 on top. The rows stay in fixed positions when you weapon-swap; the active marker moves instead.",
+            getFunc = function() return EPC.saved.dualActionBarPrimaryOnTop029189 == true end,
+            setFunc = function(v) EPC.saved.dualActionBarPrimaryOnTop029189 = v == true if EPC.DualActionBar then EPC.DualActionBar:Refresh() end end,
+            default = EPC.defaults.dualActionBarPrimaryOnTop029189,
+        },
+        {
+            type = "slider", name = "Dual bar icon size", min = 42, max = 78, step = 2,
+            getFunc = function() return tonumber(EPC.saved.dualActionBarIconSize029189) or 54 end,
+            setFunc = function(v) EPC.saved.dualActionBarIconSize029189 = v if EPC.DualActionBar then EPC.DualActionBar:Refresh() end end,
+            default = EPC.defaults.dualActionBarIconSize029189,
+        },
+        {
+            type = "slider", name = "Dual bar scale", min = 65, max = 180, step = 5,
+            getFunc = function() return math.floor((tonumber(EPC.saved.dualActionBarScale029189) or 1.0) * 100) end,
+            setFunc = function(v) EPC.saved.dualActionBarScale029189 = v / 100 if EPC.DualActionBar then EPC.DualActionBar:Refresh() end end,
+            default = math.floor((EPC.defaults.dualActionBarScale029189 or 1.0) * 100),
+        },
+        {
+            type = "slider", name = "Button spacing", min = 0, max = 18, step = 1,
+            getFunc = function() return tonumber(EPC.saved.dualActionBarButtonGap029189) or 4 end,
+            setFunc = function(v) EPC.saved.dualActionBarButtonGap029189 = v if EPC.DualActionBar then EPC.DualActionBar:Refresh() end end,
+            default = EPC.defaults.dualActionBarButtonGap029189,
+        },
+        {
+            type = "slider", name = "Bar row spacing", min = 0, max = 24, step = 1,
+            getFunc = function() return tonumber(EPC.saved.dualActionBarRowGap029189) or 6 end,
+            setFunc = function(v) EPC.saved.dualActionBarRowGap029189 = v if EPC.DualActionBar then EPC.DualActionBar:Refresh() end end,
+            default = EPC.defaults.dualActionBarRowGap029189,
+        },
+        {
+            type = "slider", name = "Inactive bar opacity", min = 10, max = 100, step = 5,
+            getFunc = function() return tonumber(EPC.saved.dualActionBarInactiveAlpha029189) or 45 end,
+            setFunc = function(v) EPC.saved.dualActionBarInactiveAlpha029189 = v if EPC.DualActionBar then EPC.DualActionBar:Refresh() end end,
+            default = EPC.defaults.dualActionBarInactiveAlpha029189,
+        },
+        {
+            type = "slider", name = "Inactive bar desaturation", min = 0, max = 100, step = 5,
+            getFunc = function() return tonumber(EPC.saved.dualActionBarInactiveDesaturation029189) or 45 end,
+            setFunc = function(v) EPC.saved.dualActionBarInactiveDesaturation029189 = v if EPC.DualActionBar then EPC.DualActionBar:Refresh() end end,
+            default = EPC.defaults.dualActionBarInactiveDesaturation029189,
+        },
+        {
+            type = "button", name = "Reset dual action bar position", buttonText = "Reset Dual Action Bar",
+            func = function() if EPC.DualActionBar then EPC.DualActionBar:ResetPosition() EPC.DualActionBar:Refresh() end end,
+        },
+
+        {
+            type = "header", name = "Controller / Gamepad UI",
+        },
+        {
+            type = "checkbox", name = "Keep desktop UI while using controller",
+            tooltip = "Keeps ESO's normal keyboard/mouse desktop interface instead of switching the whole game to the console-style Gamepad UI. Controller movement, combat input, bindings, and Suite controller button glyphs remain available. Turn this off to restore ESO's native Gamepad UI. Because this intentionally changes what UI mode ESO's Lua interface sees, a gamepad-only addon may prefer the native mode.",
+            getFunc = function() return EPC.saved.keepDesktopUIWithGamepad029197 == true end,
+            setFunc = function(v)
+                EPC.saved.keepDesktopUIWithGamepad029197 = v == true
+                if EPC.ApplyDesktopGamepadUIBridge029197 then EPC:ApplyDesktopGamepadUIBridge029197(true) end
+            end,
+            default = EPC.defaults.keepDesktopUIWithGamepad029197,
+        },
+        {
+            type = "description",
+            text = "This affects the in-game interface after addons load. Character select/login screens are controlled by ESO before addons are available.",
+        },
+        {
             type = "header", name = "Ability Overlays",
         },
         {
@@ -1885,6 +2073,21 @@ function S:Initialize()
             getFunc = function() return EPC.saved.abilityOverlayVisibility or "ALWAYS" end,
             setFunc = function(v) EPC.saved.abilityOverlayVisibility = v if EPC.AbilityOverlays then EPC.AbilityOverlays:Refresh() end end,
             default = EPC.defaults.abilityOverlayVisibility,
+        },
+        {
+            type = "dropdown", name = "Controller button icon style (entire ESO UI)",
+            tooltip = "Automatic (ESO) follows the controller family ESO reports. Force PlayStation remaps Xbox/XInput glyphs to ESO's built-in DualSense/PlayStation art across the loaded ESO UI as well as Suite overlays. It changes artwork only, not your controls or bindings. Some already-cached controls may need /reloadui once.",
+            choices = { "Automatic (ESO)", "Force PlayStation" },
+            choicesValues = { "AUTO", "PLAYSTATION" },
+            getFunc = function() return EPC.saved.abilityOverlayControllerGlyphStyle029180 or "AUTO" end,
+            setFunc = function(v)
+                EPC.saved.abilityOverlayControllerGlyphStyle029180 = (v == "PLAYSTATION") and "PLAYSTATION" or "AUTO"
+                if EPC.ApplyGlobalControllerGlyphOverride029181 then EPC:ApplyGlobalControllerGlyphOverride029181() end
+                if EPC.AbilityOverlays then EPC.AbilityOverlays:InvalidateBindingText() EPC.AbilityOverlays:Refresh() end
+                if EPC.DualActionBar then EPC.DualActionBar:Refresh() end
+                if EPC.RotationAssistant and EPC.RotationAssistant.Refresh then EPC.RotationAssistant:Refresh() end
+            end,
+            default = EPC.defaults.abilityOverlayControllerGlyphStyle029180 or "AUTO",
         },
         {
             type = "slider", name = "Ability icon size", min = 40, max = 90, step = 2,
@@ -1964,6 +2167,22 @@ function S:Initialize()
                 if EPC.InfiniteArchiveOverlay then EPC.InfiniteArchiveOverlay:Refresh() end
             end,
             default = EPC.defaults.showInfiniteArchiveOverlay,
+        },
+        {
+            type = "checkbox", name = "Highlight best Infinite Archive Verse / Vision",
+            tooltip = "When the Infinite Archive offers Verse or Vision choices, the Suite scores every option against your Smart Advisor role/build, current Arc, remaining Threads, and Verses/Visions already collected in this run. The best choice gets a strong BEST FOR THIS RUN highlight. The Suite never selects or rerolls it for you.",
+            getFunc = function() return EPC.saved.infiniteArchiveChoiceAdvisor029171 ~= false end,
+            setFunc = function(v)
+                EPC.saved.infiniteArchiveChoiceAdvisor029171 = v == true
+                if EPC.InfiniteArchiveOverlay and EPC.InfiniteArchiveOverlay.UpdateArchiveChoiceAdvisor029171 then
+                    EPC.InfiniteArchiveOverlay:UpdateArchiveChoiceAdvisor029171()
+                end
+            end,
+            default = EPC.defaults.infiniteArchiveChoiceAdvisor029171,
+        },
+        {
+            type = "description",
+            text = "Archive choice scoring follows the Smart Advisor specialization above (Auto Detect, Magicka DPS, Stamina DPS, Hybrid, Healer, or Tank). It also increases survival value deeper into an Archive run and reinforces synergies you have already built with active Verses/Visions.",
         },
         {
             type = "slider", name = "Infinite Archive overlay scale", min = 65, max = 180, step = 5,
@@ -2679,6 +2898,28 @@ function S:Initialize()
             default = EPC.defaults.gearOptimizerPreset or "TRIAL",
         },
         {
+            type = "header", name = "MAX POWER Build / Champion Points",
+        },
+        {
+            type = "dropdown", name = "MAX POWER content target",
+            tooltip = "Used by MAX POWER BUILD, MAX POWER CP, and MAX POWER ATTRIBUTES. Auto detects Infinite Archive, group size, PvP, and the Suite endgame focus. Manual choices force the optimizer to build for that content instead of using one generic setup.",
+            choices = { "Auto / Current Content", "Trial / Boss", "Dungeon / Arena", "Infinite Archive", "Solo / Overland", "AoE / Trash", "PvP" },
+            choicesValues = { "AUTO", "TRIAL_BOSS", "DUNGEON", "INFINITE_ARCHIVE", "SOLO", "AOE_TRASH", "PVP" },
+            getFunc = function()
+                return EPC.GearOptimizer and EPC.GearOptimizer.GetMaxPowerMode029174 and EPC.GearOptimizer:GetMaxPowerMode029174() or (EPC.saved.maxPowerContent or "AUTO")
+            end,
+            setFunc = function(v)
+                if EPC.GearOptimizer and EPC.GearOptimizer.SetMaxPowerMode029174 then EPC.GearOptimizer:SetMaxPowerMode029174(v) else EPC.saved.maxPowerContent=v end
+                EPC:RequestRefresh("max-power-content")
+            end,
+            default = EPC.defaults.maxPowerContent or "AUTO",
+        },
+        {
+            type = "description",
+            title = "How MAX POWER works",
+            text = "The skill build starts from the Suite's curated class/role bars, then re-scores unlocked morphs, passives, and fallbacks from their live ESO descriptions for the selected content. Champion Points analyze that resulting bar (Direct / DoT / AoE / Single Target), role, content, and personal penetration need, then choose four slottables per discipline and spend points by marginal value instead of filling one generic star first.",
+        },
+        {
             type = "checkbox", name = "Intelligent Next Best Move",
             tooltip = "Combines role, build, gear, activities, combat history, and current context into one recommended next action on the BUILD tab.",
             getFunc = function() return EPC.saved.smartCoach ~= false end,
@@ -3067,6 +3308,7 @@ function S:Initialize()
         ["Golden Pursuits Overlay"] = "HUD",
         ["Alliance Rank Overlay"] = "HUD",
         ["Champion Level Overlay"] = "HUD",
+        ["Controller / Gamepad UI"] = "HUD",
         ["Ability Overlays"] = "HUD",
         ["Quickslot Overlay"] = "HUD",
         ["Infinite Archive Overlay"] = "HUD",
@@ -3078,6 +3320,7 @@ function S:Initialize()
         ["Mini Map"] = "MAP",
         ["Gameplay & Challenge Difficulty"] = "DIFFICULTY",
         ["Target Build"] = "COMBAT",
+        ["MAX POWER Build / Champion Points"] = "COMBAT",
         ["Built-in Bug Catcher"] = "UTILITIES",
         ["Recipe & Style Learner (Turbo Mode)"] = "UTILITIES",
         ["Alchemy Potion & Poison Maker"] = "UTILITIES",
@@ -3130,6 +3373,8 @@ function S:Initialize()
         ["Target aura icons per type"] = "FRAMES",
 
         ["Endgame suite focus"] = "COMBAT",
+        ["Endgame gear preset"] = "COMBAT",
+        ["MAX POWER content target"] = "COMBAT",
         ["Intelligent Next Best Move"] = "COMBAT",
         ["Clear last combat sample"] = "COMBAT",
 

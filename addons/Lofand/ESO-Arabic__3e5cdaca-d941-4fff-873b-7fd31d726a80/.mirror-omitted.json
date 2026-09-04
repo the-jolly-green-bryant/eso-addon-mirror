@@ -1,0 +1,11 @@
+{
+  "files": [
+    {
+      "bytes": 99666287,
+      "path": "gamedata/lang/ar.lang",
+      "reason": "exceeds the mirror's 95 MiB per-file Git limit",
+      "sha256": "0626d8af08b17fbc47239e7b0fc96eb3d7eaa28db35257af413705c6e8d61edd",
+      "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/3e5cdaca-d941-4fff-873b-7fd31d726a80"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/Krogdalo/Chorus---Minimal-Combat-Text__4810",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Krogdalo",
+  "canonical_id": "esoui:4810",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    }
+  ],
+  "content_id": "esoui:4810",
+  "deleted": false,
+  "directories": [
+    "Chorus"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4810/",
+  "fingerprint": "d20d101ccef6647b9cbf5ed00a6847f16abdd17c432d12d41906989ba512881a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17256.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4810",
+  "source_url": "https://www.esoui.com/downloads/info4810-Chorus-MinimalCombatText.html",
+  "stats": {
+    "downloads": 7,
+    "favorites": 1,
+    "monthly_downloads": 5
+  },
+  "title": "Chorus - Minimal Combat Text",
+  "updated_at": 1788418818000,
+  "version": "0.2.4"
+}

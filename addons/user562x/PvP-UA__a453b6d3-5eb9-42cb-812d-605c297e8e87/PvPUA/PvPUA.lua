@@ -91,7 +91,15 @@ PvPUA.constants.userIcons = {
     ["@sgt bear78fh"]    = { texture = "PvPUA/Textures/icon_bear.dds", heightOffset = 1.0 },
 }
 
-PvPUA.defaults = { posX = 100, posY = 450, timerColor = { r = 1, g = 1, b = 1, a = 1 }, enableAPChat = true, consolidateAPChat = false, consolidateRepairDelay = 5, consolidateCombatDelay = 10, alertsEnabled = false, alertLifespan = 10, font = "EsoUI/Common/Fonts/FTN57.otf", backdropStyle = "Alliance", backdropColor = { r = 0, g = 0, b = 0, a = 1 }, listSize = "Default", uiScale = 1.0, barMode = "AP", iconShowSelf = true, iconShowOthers = true, showMilegates = true, showBridges = true, showTowns = true, showResources = true, showScrollCarriers = true, showVolendrungRow = true }
+PvPUA.defaults = { posX = 100, posY = 450, timerColor = { r = 1, g = 1, b = 1, a = 1 }, enableAPChat = true, consolidateAPChat = false, consolidateRepairDelay = 5, consolidateCombatDelay = 10, alertsEnabled = false, alertLifespan = 10, font = "EsoUI/Common/Fonts/FTN57.otf", backdropStyle = "Alliance", backdropColor = { r = 0, g = 0, b = 0, a = 1 }, listSize = "Default", uiScale = 1.0, barMode = "AP", iconShowSelf = true, iconShowOthers = true, showMilegates = true, showBridges = true, showTowns = true, showResources = true, showScrollCarriers = true, showVolendrungRow = true, showListInMenus = false, showListWhileSieging = false, showListWhileDead = true, showListDeadRepair = false, listCap = 0 }
+
+PvPUA.capChoices = {
+    { name = "All", value = 0  },
+    { name = "5",   value = 5  },
+    { name = "10",  value = 10 },
+    { name = "15",  value = 15 },
+    { name = "30",  value = 30 },
+}
 
 PvPUA.charDefaults = { aiKeyword = "", aiEnabled = false, aiWhisper = true, aiSay = false, aiZone = false, aiGuild = false, aiGuildName = "", aiGuildToggles = {}, aiGuildMigrated = false, aiGuildMigrationRepair = false, aiKickOffline = false, aiKickMinutes = 5, aiPvP = true, aiPvE = true }
 
@@ -106,7 +114,6 @@ PvPUA.state.districts = {}
 
 PvPUA.controls = {}
 PvPUA.savedVariables = nil
-PvPUA.showInMenu = false
 PvPUA.cachedFont = nil
 PvPUA.volendrung = nil
 PvPUA.initializedItems = false
@@ -2127,6 +2134,15 @@ function PvPUA:CreateUI()
     self.controls.scoreTimer:SetColor(1, 1, 1, 1)
 
     self.controls.hudFragment = ZO_HUDFadeSceneFragment:New(self.controls.TLW)
+
+    if SCENE_MANAGER and not self.listSceneHooked then
+        self.listSceneHooked = true
+        SCENE_MANAGER:RegisterCallback("SceneStateChanged", function(_, _, newState)
+            if newState == SCENE_SHOWN or newState == SCENE_HIDDEN then
+                PvPUA:ApplyListVisibility()
+            end
+        end)
+    end
 end
 
 --------------------------------------------------
@@ -2348,28 +2364,90 @@ function PvPUA:ApplyHeaderLayout()
     place(c.infoKD, TOPRIGHT, TOPRIGHT)
 end
 
-function PvPUA:UpdateHUDScenes()
-    if not self.controls.hudFragment then return end
-    local scenes = { "hud", "hudui" }
-    local shouldShow = IsInCyrodiilOrIC() or self.showInMenu
-    for _, name in ipairs(scenes) do
-        local scene = SCENE_MANAGER:GetScene(name)
+function PvPUA:ShowListInMenus()
+    return self.savedVariables ~= nil and self.savedVariables.showListInMenus == true
+end
+
+function PvPUA:ShowListWhileDead()
+    return self.savedVariables ~= nil and self.savedVariables.showListWhileDead == true
+end
+
+function PvPUA:ShowListWhileSieging()
+    return self.savedVariables ~= nil and self.savedVariables.showListWhileSieging == true
+end
+
+--------------------------------------------------
+-- Scenes
+--------------------------------------------------
+local LIST_HUD_SCENES   = { "hud", "hudui" }
+local LIST_SIEGE_SCENES = { "siegeBar", "siegeBarUI" }
+
+local function IsSceneNamed(names, sceneName)
+    for i = 1, #names do
+        if names[i] == sceneName then return true end
+    end
+    return false
+end
+
+function PvPUA:CurrentSceneName()
+    return (SCENE_MANAGER and SCENE_MANAGER:GetCurrentSceneName()) or ""
+end
+
+function PvPUA:IsHudScene()
+    return IsSceneNamed(LIST_HUD_SCENES, self:CurrentSceneName())
+end
+
+function PvPUA:IsSiegeScene()
+    return IsSceneNamed(LIST_SIEGE_SCENES, self:CurrentSceneName())
+end
+
+--------------------------------------------------
+-- While Dead
+--------------------------------------------------
+function PvPUA:RefreshDeadHiddenReason()
+    local fragment = self.controls.hudFragment
+    if not (fragment and fragment.SetHiddenForReason) then return end
+    local hide = self:EAIsPlayerDead() and not self:ShowListWhileDead()
+    fragment:SetHiddenForReason("PvPUADead", hide)
+end
+
+function PvPUA:ApplyListVisibility()
+    local tlw = self.controls.TLW
+    if not tlw then return end
+
+    self:RefreshDeadHiddenReason()
+
+    if self:IsHudScene() or self:IsSiegeScene() then return end
+
+    if IsInCyrodiilOrIC() and self:ShowListInMenus() then
+        tlw:SetAlpha(1)
+        tlw:SetHidden(false)
+    else
+        tlw:SetHidden(true)
+    end
+end
+
+function PvPUA:ApplyFragmentToScenes(names, wanted)
+    local fragment = self.controls.hudFragment
+    for i = 1, #names do
+        local scene = SCENE_MANAGER:GetScene(names[i])
         if scene then
-            local has = scene:HasFragment(self.controls.hudFragment)
-            if shouldShow and not has then
-                scene:AddFragment(self.controls.hudFragment)
-            elseif not shouldShow and has then
-                scene:RemoveFragment(self.controls.hudFragment)
+            local has = scene:HasFragment(fragment)
+            if wanted and not has then
+                scene:AddFragment(fragment)
+            elseif not wanted and has then
+                scene:RemoveFragment(fragment)
             end
         end
     end
-    if self.showInMenu then
-        self.controls.TLW:SetHidden(false)
-    else
-        local cur = SCENE_MANAGER:GetCurrentScene()
-        local hasFragment = cur and cur:HasFragment(self.controls.hudFragment)
-        self.controls.TLW:SetHidden(not hasFragment)
-    end
+end
+
+function PvPUA:UpdateHUDScenes()
+    if not self.controls.hudFragment then return end
+    local inPvP = IsInCyrodiilOrIC()
+    self:ApplyFragmentToScenes(LIST_HUD_SCENES, inPvP)
+    self:ApplyFragmentToScenes(LIST_SIEGE_SCENES, inPvP and self:ShowListWhileSieging())
+    self:ApplyListVisibility()
 end
 
 --------------------------------------------------
@@ -2427,6 +2505,13 @@ end
 -- UpdateEntries
 --------------------------------------------------
 function PvPUA:UpdateEntries(itemsOfInterest)
+    local listCap = (self.savedVariables and self.savedVariables.listCap) or 0
+    if listCap > 0 then
+        for i = #itemsOfInterest, listCap + 1, -1 do
+            itemsOfInterest[i] = nil
+        end
+    end
+
     self.state.lastItems = itemsOfInterest
     local adColor = GetColorForAlliance(ALLIANCE_ALDMERI_DOMINION)
     local epColor = GetColorForAlliance(ALLIANCE_EBONHEART_PACT)
@@ -3011,6 +3096,7 @@ function PvPUA:CyroUpdateLoop()
             table.sort(itemsOfInterest, SortItemsOfInterest)
         end
         self:OnUiUpdate(itemsOfInterest)
+        self:ApplyListVisibility()
     end
 end
 
@@ -5321,7 +5407,7 @@ function PvPUA:CreateSettings()
     local menu = LibConsoleMenu:CreateAddonMenu("PvPUA", {
         title          = "PvP UA!",
         author         = "user562",
-        version        = "4.8",
+        version        = "4.9",
         category       = addonCategory,
         enableDefaults = true,
         enableReset    = true,
@@ -5337,13 +5423,33 @@ function PvPUA:CreateSettings()
           name = "|c" .. DC_HEX .. "Appearance|r",
           icon = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_uiGraphics.dds",
           options = {
-        { type = "toggle",
-          name = "Show List Now",
-          preset = "YES_NO",
-          getFunc = function() return self.showInMenu end,
-          setFunc = function(v)
-              self.showInMenu = v
-              self:UpdateHUDScenes()
+        { type = "checklist",
+          name = "Show List",
+          noSelectionText = "None",
+          choices = {
+              { name = "In Menus",      value = "showListInMenus" },
+              { name = "While Sieging", value = "showListWhileSieging" },
+              { name = "While Dead",    value = "showListWhileDead" },
+          },
+          default = { "showListWhileDead" },
+          getFunc = function()
+              local sv = PvPUA.savedVariables
+              local sel = {}
+              if sv.showListInMenus then sel[#sel + 1] = "showListInMenus" end
+              if sv.showListWhileSieging then sel[#sel + 1] = "showListWhileSieging" end
+              if sv.showListWhileDead then sel[#sel + 1] = "showListWhileDead" end
+              return sel
+          end,
+          setFunc = function(values)
+              local on = {}
+              if type(values) == "table" then
+                  for _, v in ipairs(values) do on[v] = true end
+              end
+              local sv = PvPUA.savedVariables
+              sv.showListInMenus = on.showListInMenus == true
+              sv.showListWhileSieging = on.showListWhileSieging == true
+              sv.showListWhileDead = on.showListWhileDead == true
+              PvPUA:UpdateHUDScenes()
           end },
         { type = "slider", name = "Size", min = 80, max = 150, step = 5,
           default = 100,
@@ -5393,6 +5499,11 @@ function PvPUA:CreateSettings()
               sv.showScrollCarriers = on.showScrollCarriers == true
               sv.showVolendrungRow = on.showVolendrungRow == true
           end },
+        { type = "dropdown", name = "Cap List At",
+          choices = PvPUA.capChoices,
+          default = 0,
+          getFunc = function() return self.savedVariables.listCap end,
+          setFunc = function(val) self.savedVariables.listCap = val end },
         { type = "dropdown", name = "Rank Display",
           choices = { "AP Progress Bar", "Veterancy Progress Bar" },
           getFunc = function()
@@ -5708,16 +5819,17 @@ local WHATS_NEW_DIALOG = "PVPUA_WHATS_NEW"
 local whatsNewRegistered = false
 
 PvPUA.whatsNew = {
-    version = "1.4",
+    version = "1.6",
     title = "PvP UA!",
     message = table.concat({
-        "Updated to version 4.8.",
+        "Updated to version 4.9.",
         "",
-        "- New PvP Ranks list.",
-        "- Settings moved to the main menu after Campaigns, no longer in Add-ons.",
-        "- Alliance colors now match the game's own.",
-        "- Emperor icon corners are easier to read.",
-        "- Fixed Defaults unchecking everything in the checklists.",
+        "- Show List Now is now a Show List checklist under Appearance.",
+        "- In Menus shows the list while you are in menus.",
+        "- While Sieging shows the list while you are on a siege weapon.",
+        "- While Dead shows the list while you are dead, on by default.",
+        "",
+        "- Cap List At limits how many rows the list shows, All by default.",
         "",
         "Any bugs, message me:",
         "Xbox: user562",
@@ -5814,6 +5926,11 @@ local function OnAddonLoaded(event, addonName)
         PvPUA.charVariables.aiGuildMigrationRepair = true
     end
 
+    if not PvPUA.savedVariables.showListDeadRepair then
+        PvPUA.savedVariables.showListWhileDead = true
+        PvPUA.savedVariables.showListDeadRepair = true
+    end
+
     PvPUA.savedVariables.listSize = "Default"
 
     if PvPUA.Potion then
@@ -5856,6 +5973,18 @@ local function OnAddonLoaded(event, addonName)
     EVENT_MANAGER:RegisterForEvent(PvPUA.name .. "_ZoneChanged", EVENT_ZONE_CHANGED,
         function() PvPUA:ZoneCheck() end)
 
+    local siegeEvents = {
+        { EVENT_BEGIN_SIEGE_CONTROL, "_SiegeBegin" },
+        { EVENT_END_SIEGE_CONTROL,   "_SiegeEnd" },
+    }
+    for i = 1, #siegeEvents do
+        local eventId, suffix = siegeEvents[i][1], siegeEvents[i][2]
+        if eventId ~= nil then
+            EVENT_MANAGER:RegisterForEvent(PvPUA.name .. suffix, eventId,
+                function() PvPUA:ApplyListVisibility() end)
+        end
+    end
+
     if not pvpIsCombatRegistered then
 
         if EVENT_PVP_KILL_FEED_DEATH ~= nil then
@@ -5867,6 +5996,7 @@ local function OnAddonLoaded(event, addonName)
             function()
                 RSOnDeathStateChanged()
                 PvPUA:EAClearAll()
+                PvPUA:ApplyListVisibility()
                 if not (IsPlayerInAvAWorld() or IsActiveWorldBattleground()) then return end
                 PvPUA.session.deaths = PvPUA.session.deaths + 1
                 UpdateKAD()
@@ -5876,6 +6006,7 @@ local function OnAddonLoaded(event, addonName)
             function()
                 RSOnDeathStateChanged()
                 PvPUA:EAClearAll()
+                PvPUA:ApplyListVisibility()
             end)
 
         pvpIsCombatRegistered = true

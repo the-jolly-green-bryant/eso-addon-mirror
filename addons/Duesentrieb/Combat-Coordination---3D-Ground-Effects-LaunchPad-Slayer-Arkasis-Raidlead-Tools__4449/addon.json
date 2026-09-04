@@ -54,7 +54,7 @@
     "CombatCoordination"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4449/",
-  "fingerprint": "a2120634917d27ab6264e5e39e24c6abd43abd31cd58f0398ead4e74c5195a06",
+  "fingerprint": "6973b7677faa256f22717d2d7791c2216bbf2aa6bff5703994e6b928e5453266",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16950.png",
     "https://cdn-eso.mmoui.com/preview/pvw16949.png",
@@ -68,11 +68,11 @@
   "source_id": "4449",
   "source_url": "https://www.esoui.com/downloads/info4449-CombatCoordination-3DGroundEffectsLaunchPadSlayerArkasisRaidleadTools.html",
   "stats": {
-    "downloads": 580,
-    "favorites": 4,
-    "monthly_downloads": 272
+    "downloads": 702,
+    "favorites": 7,
+    "monthly_downloads": 370
   },
   "title": "Combat Coordination - 3D Ground Effects, LaunchPad, Slayer & Arkasis, Raidlead Tools",
-  "updated_at": 1787142674000,
-  "version": "20260819-0006"
+  "updated_at": 1788450840000,
+  "version": "20260903-0007"
 }

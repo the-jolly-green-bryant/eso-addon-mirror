@@ -1,116 +1,68 @@
-SECURITY MODEL - ESO ADVENTURER SUITE 0.28.61
+SECURITY MODEL - ESO ADVENTURER SUITE 0.29.197
 ============================================
 
-ESO Adventurer Suite is a recommendation, analytics, inventory-information,
-collection-information, crafting-research-information, routing,
-and explicitly player-operated travel add-on. It does not automate movement,
-combat abilities, targeting, blocking, dodging, interrupts, or travel clicks. The custom ability overlays are display-only and read the active hotbar/cooldown state exposed by ESO.
-Version 0.17.1 can optionally automate equipped-gear maintenance by consuming
-filled soul gems and repair kits below user-configured thresholds.
+ESO Adventurer Suite is primarily a recommendation, analytics, HUD, inventory-information, collection-information, crafting-helper, routing, and player-operated travel addon. It does not automate movement, targeting, normal combat ability casts, blocking, dodging, interrupts, weapon swaps, or quickslot activation.
 
 READ-ONLY / LOCAL BEHAVIOR
 --------------------------
-The add-on may read ESO-exposed character, equipment, item, inventory, research,
-collection, zone-completion, skyshard, quest, reward, activity, group,
-guild, friend, travel-network, Champion, role, unit power, target buff/debuff,
-advanced-stat, current-map tile/position, and combat information.
+The Suite may read ESO-exposed character, equipment, item, inventory, research, collection, zone-completion, skyshard, quest, reward, activity, group, guild, friend, travel-network, Champion, role, unit power, target buff/debuff, advanced-stat, current-map tile/position, antiquity, and combat information.
 
-It may create UI controls, listen for ESO UI events, calculate local scores and
-distances, and store settings/local observations in ZO_SavedVars.
+It may create UI controls, listen for ESO UI events, calculate local scores/distances, and store settings/local observations in ZO_SavedVars.
 
-SMART LOOT / INVENTORY BOUNDARIES
----------------------------------
-Loot guidance is advisory only. The add-on does NOT automatically:
-- equip or unequip items
-- lock/unlock items
-- mark junk
-- sell/buy/trade/mail items
-- destroy/deconstruct items
-- deposit/withdraw/move inventory
-- learn/use items
-- begin or cancel trait research
+COMBAT / ACTION-BAR BOUNDARIES
+------------------------------
+Smart Combat Advisor, Dual Action Bar HUD, Ability Overlays, BLOCK NOW warnings, unit frames, combat reports, stack/timer displays, and recommendation glows are guidance/display systems. They do not cast abilities, block, dodge, interrupt, target, move, weave, weapon-swap, use quickslots, or synthesize keyboard/mouse/controller gameplay input.
 
-Research views only inspect status/timers/researchability. No call is made to
-start research.
+Controller glyph features only change displayed keybind/glyph art. Force PlayStation may redirect loaded Xbox/XInput UI texture paths to ESO's built-in PlayStation art; it does not alter controller bindings or input.
+
+PLAYER-OPERATED TRAVEL
+----------------------
+Opening the Map Teleporter, focusing/routing a quest, changing travel mode, or selecting a destination does not travel automatically. Travel occurs only from an explicit player-operated Suite travel action, after which the addon may call ESO's documented FastTravelToNode / JumpToFriend / JumpToGuildMember / JumpToGroupMember functions. ESO remains authoritative for costs, access, cooldowns, campaigns, instances, combat restrictions, and player status.
+
+The Map Teleporter is intentionally mouse/keyboard operated in the current public build.
 
 AUTOMATIC EQUIPMENT MAINTENANCE
 -------------------------------
-When enabled, the suite listens for ESO's player combat-state transition event. On
-combat entry and/or exit it may inspect equipped item charge/condition and use
-the documented ChargeItemWithSoulGem / RepairItemWithRepairKit APIs. It only
-acts on equipped items below the configured thresholds and only consumes items
-from the player's backpack. Users can disable the entire feature, disable
-recharge or repair separately, disable either combat-transition trigger, change
-thresholds, and never use Crown repair kits by default.
+When explicitly enabled, the Suite may inspect equipped item charge/condition on configured combat-state transitions and use ESO-exposed soul-gem/repair-kit APIs for equipped items below user-configured thresholds. Users can disable maintenance entirely, disable recharge/repair separately, change triggers/thresholds, and avoid Crown repair kits by default.
 
-This feature does not cast abilities, move the character, select targets, use
-quickslots, or synthesize keyboard/mouse/controller input.
+This feature does not cast abilities, move the character, select targets, use quickslots, or synthesize gameplay input.
 
+RECIPE / STYLE LEARNER
+----------------------
+Turbo Learner starts only from an explicit player click while the relevant inventory/bank UI is open. It builds a local queue of eligible unknown learnable items and uses ESO's protected item-use path (CallSecureProtected) one item at a time. It does not bypass protected APIs, and combat/protected-state restrictions remain authoritative.
+
+ALCHEMY POTION / POISON MAKER
+------------------------------
+The Alchemy helper analyzes owned materials and can auto-slot a player-selected valid recipe through ESO's crafting UI/controller. Optional Auto Craft is OFF by default and starts only after the player explicitly chooses a ready mixture/auto-craft action. ESO's crafting APIs and station state remain authoritative.
+
+INVENTORY / LOOT BOUNDARIES
+---------------------------
+Outside the explicitly documented maintenance, Turbo Learner, and Alchemy helper workflows, the Suite does not automatically equip/unequip items, lock/unlock items, mark junk, sell/buy/trade/mail items, destroy/deconstruct items, begin/cancel trait research, or perform arbitrary inventory transfers.
+
+WAYSHRINE AUTO MESSAGE
+-----------------------
+Optional arrival/discovery messaging is user-configurable. Public chat destinations are prepared in ESO chat and require the player's normal chat submission; Local/Suite Chat output is local to the player.
 
 NON-GROUPED PLAYER PRIVACY / DETECTION BOUNDARY
 ------------------------------------------------
-The public build does not maintain a Nearby/Seen Players roster and does not
-register reticle-target events to collect arbitrary non-grouped players. Guild
-member views use ESO's normal guild roster APIs; group/raid views use group APIs.
-
-COMBAT BOUNDARIES
------------------
-Combat analysis listens to ESO-provided combat events and calculates local
-metrics. It does not cast, block, dodge, interrupt, target, move, weave, use
-quickslots, or simulate input. Group/raid rankings are explicitly best-effort
-observations of events ESO exposes to the local client.
-
-HOTKEY BOUNDARIES
------------------
-Show/Hide only changes this add-on's visibility. Interact mode only opens/expands
-the add-on and enters/leaves ESO's UI cursor mode. HUD Layout Mode likewise only
-releases the mouse so Player/Target/Group/Raid/Stats/Mini Map/Stable Training frames and the Clock can be dragged.
-Neither mode injects, forwards, repeats, or synthesizes gameplay input.
+The public build does not maintain a Nearby/Seen Players roster and does not register reticle-target events to collect arbitrary non-grouped players. Guild member views use ESO's guild roster APIs; group/raid views use group APIs.
 
 TAMRIEL CODEX / CHECKPOINT BOUNDARIES
----------------------------------
-The Tamriel Codex stores user-authored notes, categories, theme choice, and
-personal pin records only in ESO SavedVariables. Notes auto-save locally when the
-user changes entries, changes Codex views, or closes the Tamriel Codex. The journal
-does not read or write arbitrary operating-system files.
+-------------------------------------
+The Tamriel Codex stores user-authored notes, categories, theme choice, and personal pin records only in ESO SavedVariables. It does not read or write arbitrary operating-system files.
 
-Personal map pins are created only from a player-requested Save Current Location
-action. Selecting GO TO PIN may place ESO's normal map waypoint only after an
-explicit player click. It does not move the character or initiate fast travel.
+Personal map pins are created only from a player-requested Save Current Location action. GO TO PIN may place ESO's normal map waypoint only after explicit player interaction. It does not move the character or initiate travel by itself.
 
-CLOCK BOUNDARIES
-----------------
-The optional Clock is a local display-only HUD element. It formats ESO's exposed
-local time string into a simple 12-hour AM/PM display and stores only its visible
-state and screen position.
-
-MINI MAP BOUNDARIES
--------------------
-The Mini Map reads ESO map tiles, normalized current-map positions, live POIs,
-rally/group positions, and enabled navigation markers. It may call SetMapToPlayerLocation while the full
-World Map is closed so the shared map context follows the player. The Mini Map
-hides while the full World Map is open and re-syncs afterward. It never places
-waypoints, initiates travel, selects targets, moves the character, or performs
-other gameplay actions.
-
-TRAVEL BOUNDARIES
------------------
-No travel occurs simply by opening MAP, focusing/routing a quest, changing travel
-mode, or selecting a row. The player must separately click TRAVEL. Only then may
-the add-on call ESO's documented FastTravelToNode / JumpToFriend /
-JumpToGuildMember / JumpToGroupMember functions. ESO remains authoritative for
-cost, access, cooldowns, campaigns, instances, combat, and player status.
+MINI MAP / MAP BOUNDARIES
+-------------------------
+The Mini Map reads ESO map tiles, normalized positions, POIs, group/rally positions, and enabled navigation markers. It may call SetMapToPlayerLocation while the full World Map is closed so shared map context follows the player. It does not initiate travel, select targets, move the character, or synthesize input.
 
 EXTERNAL ACCESS
 ---------------
-- No real-time web services or network calls.
+- No real-time web-service/network calls.
 - No external companion executable.
 - No arbitrary local-file access.
 - No self-modifying/downloader/updater code.
 - No private/protected API bypass.
 
-Compatibility.lua performs local API/capability checks only. Public updates are
-intended to be distributed through ESOUI/Minion after testing.
-
-No add-on author can guarantee future ZOS API/policy behavior. Disable the add-on
-if an ESO update causes errors until compatibility is verified.
+Compatibility.lua performs local API/capability checks only. Public updates are intended for ESOUI/Minion after testing. No addon author can guarantee future ZOS API/policy behavior; disable the addon if a game update causes errors until compatibility is verified.

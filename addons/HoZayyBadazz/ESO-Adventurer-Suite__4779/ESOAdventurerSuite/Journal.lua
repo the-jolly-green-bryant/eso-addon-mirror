@@ -1493,7 +1493,7 @@ function J:BuildSuiteText(tab)
                 lines[#lines+1] = string.format("%s  -  %d/%d points planned", tostring(pool.label), tonumber(pool.spent) or 0, tonumber(pool.budget) or 0)
                 for _,star in ipairs(pool.top or {}) do lines[#lines+1] = string.format("  - %s: %d%s", tostring(star.name), tonumber(star.points) or 0, star.slottable and " [SLOT]" or "") end
             end
-            lines[#lines+1] = "REDISTRIBUTE CP resets the current Champion allocation, reapplies the best detected Craft/Warfare/Fitness priorities for the current build, and slots the strongest purchased Champion stars. A paid respec requires a second confirmation click."
+            lines[#lines+1] = "MAX POWER CP rebuilds Craft/Warfare/Fitness from the MAX POWER skill plan, detected role/content, Direct/DoT/AoE/Single-Target mix, and penetration need. It selects up to four active stars per discipline and spends the rest by marginal value. A paid respec requires confirmation."
         end
         if EPC.AttributeOptimizer and EPC.AttributeOptimizer.BuildView then
             local av=EPC.AttributeOptimizer:BuildView()
@@ -1539,7 +1539,7 @@ function J:RefreshSuitePage(tab)
         else
             self:SetSuiteButtons(tab, {"MODE"})
         end
-    elseif tab == "SKILLS" then self:SetSuiteButtons(tab, {"RESPEC + BUILD","REDISTRIBUTE CP","BEST ATTRIBUTES"})
+    elseif tab == "SKILLS" then self:SetSuiteButtons(tab, {"MAX POWER BUILD","MAX POWER CP","MAX POWER ATTRIBUTES"})
     else self:SetSuiteButtons(tab, {"REFRESH"}) end
 end
 
@@ -2585,7 +2585,7 @@ function J:RefreshSuitePage(tab)
         else
             self:SetSuiteButtons(tab, {"MODE"})
         end
-    elseif tab == "SKILLS" then self:SetSuiteButtons(tab, {"RESPEC + BUILD","REDISTRIBUTE CP","BEST ATTRIBUTES"})
+    elseif tab == "SKILLS" then self:SetSuiteButtons(tab, {"MAX POWER BUILD","MAX POWER CP","MAX POWER ATTRIBUTES"})
     else self:SetSuiteButtons(tab, {"REFRESH"}) end
 end
 
@@ -7703,7 +7703,7 @@ function J:RefreshSkillsOrganized02716(page)
     syncLines("activeBarLine2845_", "EAS_SkillsActiveBarLine2845_", page.left, 20, activeTitleY + 26, activeLines, contentW, font)
 
     local respecTitleY = activeTitleY + 26 + (#activeLines * lineH) + 12
-    ensureLabel("respecTitle2845", "EAS_SkillsRespecTitle2845", page.left, 20, respecTitleY, contentW, 22, font):SetText("RESPEC + BUILD")
+    ensureLabel("respecTitle2845", "EAS_SkillsRespecTitle2845", page.left, 20, respecTitleY, contentW, 22, font):SetText("RESPEC + BUILD — MAX POWER")
     ensureLabel("respecLine12845", "EAS_SkillsRespecLine12845", page.left, 20, respecTitleY + 22, contentW, 22, respecDetailFont):SetText("Uses current class/role meta; falls back only when needed.")
     ensureLabel("respecLine22845", "EAS_SkillsRespecLine22845", page.left, 20, respecTitleY + 44, contentW, 22, respecDetailFont):SetText("Paid changes require confirmation.")
 
@@ -7742,7 +7742,7 @@ function J:RefreshSkillsOrganized02716(page)
     end
     syncLines("attrLine2845_", "EAS_SkillsAttrLine2845_", page.right, 20, attrTitleY + 26, attrLines, contentW, font)
 
-    self:SetSuiteButtons("SKILLS", {"RESPEC + BUILD", "REDISTRIBUTE CP", "BEST ATTRIBUTES"})
+    self:SetSuiteButtons("SKILLS", {"MAX POWER BUILD", "MAX POWER CP", "MAX POWER ATTRIBUTES"})
     local buttons = page.buttons or {}
     local gap = 8
     local halfW = math.floor((self.pageW - 40 - gap) / 2)

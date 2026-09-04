@@ -6,10 +6,10 @@
 
 ## Title: DreadVision
 ## APIVersion: 101049 101050
-## Version: 0.1.4
-## AddOnVersion: 104
+## Version: 0.6.2
+## AddOnVersion: 602
 ## Author: Dreadazar
-## Description: PvP threat readout. A ring on your reticle that tells you to block, how many roll dodges you can still afford, whether you can pay for a break free, and exactly when you become stunnable. Everything shown is read straight from the game - nothing is estimated or guessed.
+## Description: PvP threat readout for you and whoever you're looking at. Your own stun, off balance, roll dodges and break free are read straight from the game, exact. Your target's crowd control is read the same way, and their stamina and magicka are shown as a self-correcting percentage estimate, clearly marked as a guess. Everything exact stays exact; everything estimated is labelled as an estimate.
 ## SavedVariables: DreadVisionVars
 
 DreadVision.lua

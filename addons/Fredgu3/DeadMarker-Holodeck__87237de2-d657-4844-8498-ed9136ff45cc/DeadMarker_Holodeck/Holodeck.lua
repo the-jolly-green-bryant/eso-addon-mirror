@@ -5,6 +5,10 @@
 --   AddOnVersion (manifest) = major*10000 + minor*100 + patch
 --   0.0.27 → 27
 --
+-- 0.0.48: Portal! from pack hops (not a generic timer); NPC pack has no cue
+-- 0.0.47: SWAP! banner on vLC annihilation windows (held ~12s)
+-- 0.0.46: Fix vLC pack labels (broken quotes on Blackguard/Lightweaver)
+-- 0.0.45: Player facing vs NPC; vLC LTs as mini; Count/Zily tint by name
 -- 0.0.44: Facing cones were 180° off (dashes hid it); flashlight +π
 -- 0.0.43: Frame dots + filled dashes; flashlight facing; library # separator
 -- 0.0.42: Group-test freeze — simplified packs, vLC Count, HUD/frame/facing
@@ -39,7 +43,7 @@
 local Holodeck = Holodeck or {}
 Holodeck.name        = "DeadMarker_Holodeck"
 Holodeck.displayName = "Holodeck"
-Holodeck.version     = "0.0.44"
+Holodeck.version     = "0.0.48"
 
 Holodeck.Fights = Holodeck.Fights or {}
 function Holodeck.RegisterFight(fight)
@@ -195,10 +199,12 @@ local BOSS_PALETTE = {
 local function InferTintFromName(s)
     if type(s) ~= "string" or s == "" then return nil end
     s = string.lower(s)
-    if s:find("vashai", 1, true) or s:find("will of", 1, true) or s:find("lunar", 1, true) then
+    if s:find("vashai", 1, true) or s:find("will of", 1, true) or s:find("zilyesset", 1, true)
+        or s:find("lunar", 1, true) then
         return "lunar"
     end
-    if s:find("kinrai", 1, true) or s:find("rage of", 1, true) or s:find("shadow", 1, true) then
+    if s:find("kinrai", 1, true) or s:find("rage of", 1, true) or s:find("ryelaz", 1, true)
+        or s:find("shadow", 1, true) then
         return "shadow"
     end
     return nil
@@ -211,13 +217,13 @@ local function ParseColorTable(c)
     return { r, g, b }
 end
 
---- Pack tint / color, else lunar/shadow from the name, else nil (KIND default).
+--- Unique-name tint wins (Vashai/Zilyesset lunar, Kinrai/Ryelaz shadow), else pack tint.
 local function ResolveEntityColor(def)
     if type(def) ~= "table" then return nil end
-    local t = NormalizeAspect(def.tint)
-    if t and ASPECT_COLOR[t] then return ASPECT_COLOR[t] end
     local named = InferTintFromName(def.label) or InferTintFromName(def.id)
     if named and ASPECT_COLOR[named] then return ASPECT_COLOR[named] end
+    local t = NormalizeAspect(def.tint)
+    if t and ASPECT_COLOR[t] then return ASPECT_COLOR[t] end
     return ParseColorTable(def.color)
 end
 
@@ -301,6 +307,7 @@ local DEFAULTS = {
     bossSizeM = 1.6, minibossSizeM = 1.25, originSizeM = 0.7, roleSizeM = 1.1,
     yOffsetM = 1.8, opacity = 1.0, debug = false,
     legendOn = true, sheetOn = false, pathOn = true, frameOn = true, namesOn = true,
+    alertsOn = true,
     playScalePct = 100,
     flipXByPack = {},
     flipZByPack = {},
@@ -347,6 +354,7 @@ Holodeck.playT = 0
 Holodeck.playMode = "once"
 Holodeck._lastTickMs = nil
 Holodeck._lastPhaseAnnounced = nil
+Holodeck._lastCueAnnounced = nil
 Holodeck._tickName = "Holodeck_PinTick"
 Holodeck._tickMs = 50
 Holodeck._tickRunning = false
@@ -406,11 +414,26 @@ local function InferType(name, explicit)
     if key:find("stack", 1, true) then return "stack" end
     if key:find("boss", 1, true) and not key:find("mini", 1, true) then return "boss" end
     if key:find("lt", 1, true) or key:find("lieut", 1, true) or key:find("mini", 1, true)
-        or key:find("elite_", 1, true) or key:find("captain", 1, true) then
+        or key:find("elite_", 1, true) or key:find("captain", 1, true)
+        or key:find("blackguard", 1, true) or key:find("lightweaver", 1, true) then
         return "mini"
     end
     if key:find("player", 1, true) or key:find("group", 1, true) then return "dps" end
     return "stack"
+end
+
+-- Pack ids are prefixed trash_ even for LTs; promote known mini-boss names.
+local function RefineKind(kind, label, id)
+    kind = NormalizeKind(kind) or kind
+    if kind and kind ~= "trash" then return kind end
+    local blob = string.lower(tostring(label or "") .. " " .. tostring(id or ""))
+    if blob:find("blackguard", 1, true) or blob:find("lightweaver", 1, true)
+        or blob:find("lieutenant", 1, true) or blob:find("deadraiser", 1, true)
+        or blob:find("overseer", 1, true) or blob:find("colossus", 1, true)
+        or blob:find("miniboss", 1, true) then
+        return "mini"
+    end
+    return kind
 end
 
 -- ============================= Safe UI ==================================
@@ -809,8 +832,12 @@ local function PlaceFacing(act)
     if ctl.SetDimensions then ctl:SetDimensions(168, 120) end
     if ctl.SetTransformScale then ctl:SetTransformScale(size) end
     -- +π: pitch=π/2 lays the quad on XZ with texture +X opposite atan2(dx, dz).
-    -- Symmetric dashes hid this; the flashlight cone does not.
-    local yaw = WorldYawFromPack(act.x or 0, act.z or 0, (act.x or 0) + ux, (act.z or 0) + uz) + math.pi
+    -- NPC log heading needs that flip (bosses then face tanks). Player log
+    -- heading is already inverted vs NPC, so roles skip the extra π.
+    local yaw = WorldYawFromPack(act.x or 0, act.z or 0, (act.x or 0) + ux, (act.z or 0) + uz)
+    if k ~= "tank" and k ~= "healer" and k ~= "dps" then
+        yaw = yaw + math.pi
+    end
     WS_SetAtRaw(ctl, wx, wy, wz, math.pi / 2, yaw, 0)
 end
 
@@ -1405,6 +1432,123 @@ local function SampleLibraryTrack(track, tSec)
     return x0 + (x1 - x0) * u, z0 + (z1 - z0) * u, vis, asp, dead, fdx, fdz
 end
 
+-- ============================= Portal / cue banner ========================
+-- vLC annihilation is a ~12s pad window. Vet is mostly on a clock (~25s then
+-- ~60s); HM also forces at 80%/35% HP. Each take still differs, so cues come
+-- from this pack's player teleports (~20m hops), not a generic timer.
+local PORTAL_HOLD_SEC = 12
+
+local function AlertsOn()
+    local s = Holodeck.savedVars
+    if s and s.alertsOn ~= nil then return s.alertsOn == true end
+    return true
+end
+
+local function FightCues(fight)
+    if type(fight) ~= "table" then return nil end
+    -- Hop-derived (_cues) wins over authored; each take's teleports are ground truth.
+    if type(fight._cues) == "table" and #fight._cues > 0 then return fight._cues end
+    if type(fight.cues) == "table" and #fight.cues > 0 then return fight.cues end
+    return nil
+end
+
+local function CueAt(fight, tSec)
+    local cues = FightCues(fight)
+    if type(cues) ~= "table" then return nil end
+    tSec = tonumber(tSec) or 0
+    local i = 1
+    while i <= #cues do
+        local c = cues[i]
+        if type(c) == "table" then
+            local t0 = tonumber(c.t) or 0
+            local t1 = t0 + (tonumber(c.dur) or PORTAL_HOLD_SEC)
+            if tSec >= t0 and tSec < t1 then return c, t1 - tSec end
+        end
+        i = i + 1
+    end
+    return nil
+end
+
+local function HideSwapBanner()
+    if Holodeck.swapTLW then Holodeck.swapTLW:SetHidden(true) end
+    Holodeck._swapText = nil
+end
+
+local function EnsureSwapBanner()
+    if Holodeck.swapTLW and Holodeck.swapLabel then return end
+    local tlw = _SafeCreateTLW("HolodeckSwapBanner")
+    if not tlw then return end
+    tlw:SetMouseEnabled(false)
+    tlw:SetMovable(false)
+    tlw:SetClampedToScreen(true)
+    tlw:SetDrawLayer(DL_OVERLAY)
+    tlw:SetDrawTier(DT_HIGH)
+    tlw:SetDrawLevel(500000)
+    tlw:SetDimensions(720, 168)
+    tlw:ClearAnchors()
+    tlw:SetAnchor(CENTER, GuiRoot, CENTER, 0, -120)
+    tlw:SetHidden(true)
+
+    local back = _SafeCreateControl("HolodeckSwapBannerBack", tlw, CT_BACKDROP)
+    if back then
+        back:SetAnchorFill()
+        back:SetCenterColor(0.18, 0.04, 0.02, 0.88)
+        back:SetEdgeColor(1.00, 0.82, 0.22, 1)
+        if back.SetEdgeTexture then pcall(function() back:SetEdgeTexture(nil, 1, 1, 4) end) end
+    end
+
+    local lbl = _SafeCreateControl("HolodeckSwapBannerLabel", tlw, CT_LABEL)
+    if lbl then
+        lbl:ClearAnchors()
+        lbl:SetAnchor(TOPLEFT, tlw, TOPLEFT, 16, 10)
+        lbl:SetAnchor(BOTTOMRIGHT, tlw, BOTTOMRIGHT, -16, -10)
+        local n = 52
+        if type(IsConsoleUI) == "function" then
+            local ok, v = pcall(IsConsoleUI)
+            if ok and v then n = 58 end
+        end
+        lbl:SetFont("EsoUI/Common/Fonts/univers57.otf|" .. tostring(n) .. "|thick-outline")
+        lbl:SetColor(1, 0.92, 0.35, 1)
+        if TEXT_ALIGN_CENTER then lbl:SetHorizontalAlignment(TEXT_ALIGN_CENTER) end
+        if TEXT_ALIGN_CENTER then lbl:SetVerticalAlignment(TEXT_ALIGN_CENTER) end
+        lbl:SetText("")
+    end
+    Holodeck.swapTLW = tlw
+    Holodeck.swapLabel = lbl
+    Holodeck.swapBack = back
+end
+
+local function UpdateSwapBanner(tSec)
+    if not AlertsOn() or not Holodeck.origin or not Holodeck.fight then
+        HideSwapBanner()
+        return
+    end
+    local cue, remain = CueAt(Holodeck.fight, tSec)
+    if not cue then
+        HideSwapBanner()
+        return
+    end
+    EnsureSwapBanner()
+    if not Holodeck.swapTLW or not Holodeck.swapLabel then return end
+    local text = cue.text or "Portal!"
+    local line = string.format("|cFFEE55%s|r\n|cFFFFFF%.0f|r", text, remain or 0)
+    if Holodeck._swapText ~= line then
+        Holodeck.swapLabel:SetText(line)
+        Holodeck._swapText = line
+    end
+    local pulse = 0.78
+    if type(GetFrameTimeMilliseconds) == "function" then
+        pulse = 0.72 + 0.28 * math.sin((GetFrameTimeMilliseconds() or 0) / 180)
+    end
+    Holodeck.swapTLW:SetAlpha(pulse)
+    Holodeck.swapTLW:SetHidden(false)
+    local cid = (cue.kind or "portal") .. ":" .. tostring(cue.t or 0)
+    if Holodeck._lastCueAnnounced ~= cid then
+        Holodeck._lastCueAnnounced = cid
+        dhd(string.format("|cFFEE55%s|r  — glowing pad  %.0fs", text, cue.dur or PORTAL_HOLD_SEC))
+    end
+end
+
 local function ApplyTimeline(tSec, announce)
     local fight = Holodeck.fight
     if not fight then
@@ -1450,7 +1594,9 @@ local function ApplyTimeline(tSec, announce)
             local def = ents[i]
             if def and def.id then
                 live[def.id] = true
-                local kind = NormalizeKind(def.kind) or InferType(def.id, def.kind) or "stack"
+                local kind = RefineKind(
+                    NormalizeKind(def.kind) or InferType(def.id, def.kind) or "stack",
+                    def.label, def.id)
                 local act = EnsureActor(def.id, kind)
                 if act then
                     local x, z, vis, asp, dead, fdx, fdz = SampleLibraryTrack(def.track, tSec)
@@ -1499,6 +1645,7 @@ local function ApplyTimeline(tSec, announce)
             dhd(string.format("Phase %s — %s (t=%.1fs)", tostring(best.id), tostring(best.name), tSec))
         end
     end
+    UpdateSwapBanner(tSec)
 end
 
 -- ============================= Legend / Sheet ===========================
@@ -1526,7 +1673,10 @@ local function LegendText()
     end
 
     local nextLine
-    if not planted then
+    local cue, remain = CueAt(Holodeck.fight, t)
+    if cue then
+        nextLine = string.format("|cFFEE55%s|r  %.0fs  ·  glowing pad", cue.text or "Portal!", remain or 0)
+    elseif not planted then
         nextLine = "|cFFEE55Stand on the mark|r  →  |cC0E0FF/hd plant|r"
     elseif not pack then
         nextLine = "|cC0E0FF/hd list|r   then   |cC0E0FF/hd load 1|r"
@@ -1772,6 +1922,7 @@ end
 local function RefreshUI()
     UpdateLegend()
     UpdateSheet()
+    UpdateSwapBanner(Holodeck.playT or 0)
 end
 
 -- Packed keyframes: "tcs xcs zcs flags [facingCs];..."  flags: 1 vis, 2 dead, 4 lunar, 8 shadow.
@@ -1859,6 +2010,75 @@ local function ExpandFight(fight)
     fight._frame = ComputeFightFrame(fight)
 end
 
+-- Portal hops in player packs (~20m in <3.5s). Banner covers the 12s channel
+-- ending at the teleport. Authored fight.cues are fallback when no hops exist.
+local function BuildHopCues(fight)
+    if type(fight) ~= "table" then return end
+    local hops = {}
+    local ents = fight.entities
+    if type(ents) == "table" then
+        local i = 1
+        while i <= #ents do
+            local e = ents[i]
+            local kind = e and RefineKind(NormalizeKind(e.kind) or e.kind, e.label, e.id)
+            if kind == "tank" or kind == "healer" or kind == "dps" then
+                local tr = e.track
+                if type(tr) == "table" then
+                    local prev = nil
+                    local j = 1
+                    while j <= #tr do
+                        local kf = tr[j]
+                        if kf and kf.x ~= nil then
+                            if prev then
+                                local dx = (kf.x or 0) - (prev.x or 0)
+                                local dz = (kf.z or 0) - (prev.z or 0)
+                                local dist = math.sqrt(dx * dx + dz * dz)
+                                local dt = (kf.t or 0) - (prev.t or 0)
+                                if dist >= 14 and dt >= 0 and dt <= 3.5 then
+                                    hops[#hops + 1] = kf.t or 0
+                                end
+                            end
+                            prev = kf
+                        end
+                        j = j + 1
+                    end
+                end
+            end
+            i = i + 1
+        end
+    end
+    table.sort(hops)
+    local clusters = {}
+    local h = 1
+    while h <= #hops do
+        local ht = hops[h]
+        local cl = clusters[#clusters]
+        if not cl or ht - cl[1] >= 8 then
+            clusters[#clusters + 1] = { ht }
+        else
+            cl[#cl + 1] = ht
+        end
+        h = h + 1
+    end
+    local cues = {}
+    local c = 1
+    while c <= #clusters do
+        local cl = clusters[c]
+        local mid = cl[math.floor((#cl + 1) / 2)]
+        local t0 = mid - PORTAL_HOLD_SEC
+        if t0 < 1 then t0 = 1 end
+        cues[#cues + 1] = { t = t0, dur = PORTAL_HOLD_SEC, kind = "portal", text = "Portal!" }
+        c = c + 1
+    end
+    if #cues > 0 then
+        fight._cues = cues
+    elseif type(fight.cues) == "table" and #fight.cues > 0 then
+        fight._cues = fight.cues
+    else
+        fight._cues = {}
+    end
+end
+
 function Holodeck.RegisterFight(fight)
     if type(fight) == "table" and fight.id then
         CompactFight(fight)
@@ -1873,6 +2093,7 @@ local function LoadFightTable(fight, source, resetTime)
         CompactFight(Holodeck.fight)
     end
     ExpandFight(fight)
+    BuildHopCues(fight)
     DestroyAllActors()
     Holodeck.fight = fight
     Holodeck.fightSource = source
@@ -1881,6 +2102,7 @@ local function LoadFightTable(fight, source, resetTime)
         Holodeck.playT = 0
         Holodeck.playFinished = false
         Holodeck._lastPhaseAnnounced = nil
+        Holodeck._lastCueAnnounced = nil
     end
     ApplyTimeline(Holodeck.playT or 0, false)
     EnsureOriginMarker()
@@ -2025,6 +2247,7 @@ local function _StartTick()
                 if mode == "loop" then
                     Holodeck.playT = Holodeck.playT - dur
                     Holodeck._lastPhaseAnnounced = nil
+                    Holodeck._lastCueAnnounced = nil
                 else
                     -- once: park at end
                     Holodeck.playT = dur
@@ -2051,6 +2274,7 @@ local function _StartTick()
         if (Holodeck.playing or Holodeck.playFinished) and IsLegendOn() and Holodeck.legendLabel then
             Holodeck.legendLabel:SetText(LegendText())
         end
+        UpdateSwapBanner(Holodeck.playT or 0)
         UpdateMemMeter(now)
     end)
     Holodeck._tickRunning = true
@@ -2360,6 +2584,7 @@ local function CmdPlay(arg)
     Holodeck.playT = 0
     Holodeck.playFinished = false
     Holodeck._lastPhaseAnnounced = nil
+    Holodeck._lastCueAnnounced = nil
     Holodeck.playing = true
     Holodeck._memKbAtPlay = ReadLuaKb()
     Holodeck._memText = nil
@@ -2403,6 +2628,7 @@ local function CmdReplay()
     Holodeck.playT = 0
     Holodeck.playFinished = false
     Holodeck._lastPhaseAnnounced = nil
+    Holodeck._lastCueAnnounced = nil
     if PreferPlayFight() then ApplyTimeline(0, true) end
     dhd("Replay position t=0 (start). /hd play to run.")
     RefreshUI()
@@ -2440,6 +2666,21 @@ local function CmdFrame(arg)
     end
     RebuildPathGfx()
     dhd("Fight frame: |cC0E0FF" .. (FrameOn() and "ON" or "OFF") .. "|r  ·  ring / N-E-S-W / split / 30s boss path")
+end
+
+local function CmdAlerts(arg)
+    arg = (arg or ""):lower():match("^%s*(%S*)") or ""
+    local s = Holodeck.savedVars
+    if not s then return end
+    if arg == "on" then
+        s.alertsOn = true
+    elseif arg == "off" then
+        s.alertsOn = false
+    else
+        s.alertsOn = not AlertsOn()
+    end
+    UpdateSwapBanner(Holodeck.playT or 0)
+    dhd("Alerts: |cC0E0FF" .. (AlertsOn() and "ON" or "OFF") .. "|r  ·  Portal! on pad windows")
 end
 
 local function CmdSheet(arg)
@@ -3795,6 +4036,7 @@ local function CmdClear()
     ClearPathGfx()
     DestroyAllActors()
     HideMemMeter()
+    HideSwapBanner()
     _StopTick()
     dhd("Full clear.")
     RefreshUI()
@@ -3811,6 +4053,7 @@ local function CmdHelp()
     dhd("v" .. Holodeck.version .. " — plant a library pack in the house.")
     d("|cAADDFFPLAY|r    plant · list · load N|<id> · play · pause · replay · halt")
     d("|cAADDFFLOOK|r    names on|off · scale N% · rot · flip z · frame · legend")
+    d("|cAADDFFCUE|r     alerts on|off  ·  Portal! on vLC pad windows")
     d("plant = fight CENTER, uses facing.  Gold dashes = dual-boss split.  /hd rot = 90°.")
 end
 
@@ -3840,6 +4083,9 @@ local function OnSlash(args)
         rotate = function() CmdRot(rest) end,
         spin = function() CmdRot(rest) end,
         frame = function() CmdFrame(rest) end,
+        alerts = function() CmdAlerts(rest) end,
+        alert = function() CmdAlerts(rest) end,
+        swap = function() CmdAlerts(rest) end,
         path = function() CmdPath(rest) end,
         textures = function() CmdTextures(rest) end,
         texture = function() CmdTextures(rest) end,

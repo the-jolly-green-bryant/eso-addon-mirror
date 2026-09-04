@@ -1,3 +1,182 @@
+Version 0.29.197
+- Added Keep desktop UI while using controller. When enabled, ESO can remain in Gamepad Mode On/Automatic for controller input without replacing the logged-in desktop interface with the console-style Gamepad UI.
+- Suite action-bar/Advisor controller glyphs now read ESO's native controller state even while the visual interface is locked to desktop mode.
+- The setting applies live, preserves the player's ESO Gamepad Mode selection, and can be disabled to restore ESO's normal Gamepad UI. Character-select/login UI remains outside addon control.
+
+Version 0.29.196
+- Changed the Smart Combat Advisor out-of-box presentation to action-bar highlighting instead of the large recommendation card. Existing FULL/COMPACT display selections migrate once to HIGHLIGHT; Full Overlay and Compact remain available if selected again.
+- Made the Smart Combat Advisor weapon-bar SWAP cue independently movable in HUD Layout Mode. Its position is saved, clamped to the screen, and restored by RESET LAYOUT.
+- Added LibMapPing, LibDebugLogger, and LibChatMessage to the manifest required dependency line.
+
+Version 0.29.195
+- ESOUI upload-prep release: synchronized manifest version/description, README, ESOUI description, public changelog, ownership notice, security model, and third-party notices.
+- Verified one clean ESOAdventurerSuite package root, all 92 manifest Lua/XML entries exist, and no Lua/XML release files are left unreferenced.
+- Kept API compatibility at 101050/101051 with versioned required-library dependencies and preserved the 0.29.194 Dual Action Bar ESO weapons-icon + soft-gold-glow marker.
+
+Version 0.29.194
+- Replaced the Dual Action Bar active marker's weapon-swap button control with ESO's texture-only weapons-category icon.
+- The active marker no longer displays a weapon-swap keybind letter, number, or arrow; it uses only the ESO weapon icon with a soft gold glow.
+
+Version 0.29.193
+- Dual Action Bar HUD active-bar marker now supports an ESO icon + soft gold glow style with no arrow and no bar number.
+- Updated marker settings and defaults to prefer the cleaner icon-only active-bar indicator.
+
+Version 0.29.192
+- Fixed the Dual Action Bar native ESO active-bar marker displaying a duplicate bar number.
+- The active row now uses only ESO's native weapon-swap marker; the inactive row keeps one centered bar number.
+
+Version 0.29.191
+- Dual Action Bar active marker now uses ESO's native weapon-swap control art instead of text arrow symbols.
+- Marker choices are now ESO icon + bar number, bar number only, or ESO icon only; old arrow settings migrate automatically.
+
+Version 0.29.190
+- Fixed Dual Action Bar HUD active-bar markers rendering as square/box glyphs in ESO fonts.
+- Arrow + Bar Number now uses an ESO-safe > marker (for example > 1 / > 2); Arrow Only uses > and inactive rows show no stray symbol.
+
+Version 0.29.189
+- Added Dual Action Bar HUD: front and back weapon bars visible together with a clear active-bar arrow/number marker.
+- Added Skill Style icon support using ESO's active progression collectible override when available, with normal slotted artwork as fallback.
+- Added effect/cooldown timers, stack counters, hotkey/controller glyphs, Ultimate charge display, inactive-bar fade/desaturation, sizing/spacing/order controls, HUD Layout Mode movement, and Smart Combat Advisor highlighting on either bar.
+
+Version 0.29.188
+- Removed all controller/gamepad interaction support from the Map Teleporter.
+- Teleporter remains mouse/keyboard operated; PlayStation glyph overrides and ability/Ultimate controller icons are unchanged.
+
+Version 0.29.187
+- Teleporter PS Cross / Xbox A selection now uses ESO's native KEYBIND_STRIP UI_SHORTCUT_PRIMARY dispatch instead of a competing custom action layer.
+- Teleporter temporarily owns a dedicated keybind-strip state while expanded so Confirm, Back, and D-pad actions route to the focused Teleporter control.
+- L2/R2 direct trigger paging remains as a fallback and mouse support is unchanged.
+
+Version 0.29.186
+- Fixed PS Cross / Xbox A Teleporter activation at the ESO action-layer level.
+- Explicitly allows Teleporter controller actions through ESO GamepadUIMode and keeps the Suite controller layer above that blocking layer.
+- Controller actions are now allowed during input-mode transitions so the first gamepad press is not lost when ESO switches UI modes.
+
+Version 0.29.185
+- Teleporter Cross/A confirm now reads physical KEY_GAMEPAD_BUTTON_1 directly, independent of ESO keyboard/gamepad preferred UI mode.
+- Controller flyout selection now invokes the exact same OnClicked handler used by mouse selection.
+- Added direct physical D-pad/shoulder/trigger fallbacks while preserving existing controller paths.
+
+Version 0.29.184
+- Fixed Teleporter Confirm/Select for controllers presented through XInput: PS Cross / Xbox A now directly activates the focused control.
+- Added direct gamepad binding polling as a fallback when ESO does not dispatch UI_SHORTCUT_PRIMARY in the keyboard-style Teleporter.
+- Added edge/debounce protection so inherited keybinds and fallback polling cannot double-activate.
+- D-pad, shoulders, triggers, Back, and controller hints use the same reliable controller input path.
+
+Version 0.29.183
+- Rebuilt Map Teleporter controller input around a dedicated inherited action layer so controller navigation works even after mouse input switches ESO back to keyboard-preferred mode.
+- Added controller focus/navigation for All Destinations, Favorites, Tools, both search fields, destination rows, Previous, Next, and Teleporter flyout menus.
+- D-pad and left stick navigate; Confirm activates; Secondary favorites/clears; L1/R1 cycle destination filters; L2/R2 change pages; Back closes flyouts/search focus/Teleporter.
+
+Version 0.29.182
+- Fixed PlayStation Ultimate L1+R1 glyph compression: combined shoulder/trigger glyphs now preserve a wide aspect ratio instead of being forced into a square icon.
+- Ultimate ability overlay now reserves the full top edge for controller chord glyphs and centers them independently from single-button skill prompts.
+
+Version 0.29.181
+- Force PlayStation now applies across the loaded ESO UI by redirecting native Xbox/XInput glyph textures to ESO's built-in DualSense/PS5 glyph set; Suite ability prompts use the same family.
+- Ultimate shoulder-chord prompts collapse to the single L1+R1 PlayStation glyph so the Ultimate overlay no longer looks crammed.
+- Map Teleporter gains controller interaction: D-pad/keybind-strip and left-stick selection, Confirm to travel, Favorite, L1/R1 filter cycling, L2/R2 paging, and Back to collapse; mouse interaction remains unchanged.
+- Pre-login/character-select glyphs cannot be changed because addons are not loaded there.
+
+Version 0.29.180
+- Added Ability Overlays > Controller button icon style: Automatic (ESO) or Force PlayStation.
+- Force PlayStation renders Suite ability and Ultimate prompts with PlayStation face/shoulder/trigger glyphs even when Steam Input/XInput makes ESO report an Xbox controller.
+- This affects Suite display art only and never changes the player's actual controller bindings.
+
+Version 0.29.179
+- Ability overlays and Smart Combat Advisor now prefer ESO gamepad button icon markup for skill and Ultimate binds while controller mode is active.
+- Keyboard text bindings remain as the fallback outside controller mode or if icon markup is unavailable.
+
+0.29.177
+- Replaced unsupported Unicode star glyphs in the Infinite Archive Verse/Vision advisor with real ESO star textures, preventing square-box characters on clients/fonts that do not include the star glyph.
+- The BEST badge and SUITE RECOMMENDS banner now use texture-based stars while preserving the resize-loop-safe Archive selector layout.
+- Includes the 0.29.176 MAX POWER content-target visibility fix and the 0.29.175 Champion Point full-spend allocator fix.
+
+0.29.176
+- Fixed MAX POWER content target visibility in organized Settings. The MAX POWER Build / Champion Points section now appears under Combat, Role & Builds.
+- Explicitly routes Endgame gear preset and MAX POWER content target to the Combat/Build category so future neighboring sections cannot misplace them.
+- Includes the 0.29.175 CP full-spend fix: the final allocator searches the full discipline tree and spends every legally assignable Champion Point.
+
+0.29.175
+- Fixed MAX POWER CP leaving spendable Champion Points unused when the preferred candidate stars were capped or the next prerequisite path cost more than the remaining pool.
+- The final CP allocation pass now searches the entire discipline tree, prioritizes useful always-on/selected stars, and exhausts every legally spendable point before submitting the respec.
+- Added explicit per-discipline leftover tracking so the optimizer can report if ESO truly exposes a remainder that cannot be legally assigned.
+
+0.29.174
+- Added MAX POWER content-aware build/respec optimization for Trial/Boss, Dungeon/Arena, Infinite Archive, Solo, AoE/Trash, and PvP.
+- Upgraded Champion Point scoring to analyze the planned skill bar's Direct/DoT/AoE/Single-Target profile, role, content, and penetration need.
+- Replaced CP fill-first allocation with four-slottable selection and marginal-value spending with prerequisite-path costs and diminishing returns.
+- Upgraded attribute optimization to use role/content survival reserves instead of one fixed split.
+
+0.29.173
+- Fixed the Infinite Archive advisor being invisible after the resize-loop fix.
+- The recommended Verse/Vision now uses ESO's native selector highlight, a bright in-icon BEST frame/badge, and a high-layer SUITE RECOMMENDS banner.
+- Recommendation visuals stay within or outside ZOS resize-to-fit measurement extents, preventing the previous resize feedback warning.
+
+0.29.172
+- Fixed the Infinite Archive BEST FOR THIS RUN highlight causing ESO resize-to-fit feedback warnings.
+- Recommendation glow and labels are now parented to GuiRoot and only visually anchored to native Verse/Vision choices, so they cannot resize ZOS selector controls.
+
+0.29.171
+- Smart Combat Advisor upgraded to a moment-to-moment priority engine that chooses the single highest-value next button across both bars instead of broadly cycling categories.
+- Added action-use lockout/history so freshly pressed buffs, DoTs, debuffs, pets, and setup skills are not immediately recommended again while ESO is still reporting the new effect state.
+- Added dynamic urgency for expiring effects, execute scaling, boss-aware Ultimate timing, resource-pressure checks, emergency Tank/Healer overrides, and anti-ping-pong bar-swap weighting.
+- Added Infinite Archive Verse / Vision Choice Advisor. Offered choices are scored against the detected Smart Advisor role, current Arc, remaining Threads, and existing run Verses/Visions.
+- The best Archive choice receives a strong pulsing BEST FOR THIS RUN highlight and a short reason. The Suite never selects or rerolls a choice automatically.
+
+0.29.170
+- Smart Combat Advisor now uses ESO ability metadata (active/passive state, role, duration, target/cost data) so all real slotted active skills remain eligible.
+- Added generic stack-spender support plus explicit handling for Bound Armaments, Grim Focus morphs, Molten Whip, Daedric Prey/Curse families, reveal utilities, and damaging Ultimates.
+- Daedric Prey/Curse effects are treated as target-maintenance damage and refreshed when missing/ending.
+- Bound Armaments and other stack spenders are recommended when their tracked stacks reach the activation threshold.
+- Camouflaged Hunter/Expert Hunter and similar while-slotted reveal skills are no longer incorrectly marked passive-only; their active cast stays situational so it is not spammed in a DPS rotation.
+- Damaging Ultimates such as Flawless Dawnbreaker can now enter the rotation when ready, including inactive-bar cost fallback handling.
+- Active player effects now preserve stack counts for state-aware recommendations.
+
+0.29.169
+- Smart Combat Advisor now tracks real player buffs instead of relying only on action-slot timers.
+- Missing/expiring damage, defensive, and support buffs are prioritized before normal attack cycling.
+- Major/Minor buff-type matching handles buff effect IDs that differ from the slotted ability.
+- Passive while-slotted effects are no longer recommended as casts.
+
+0.29.168
+- Smart Combat Advisor recommendation highlight is now much more noticeable on Suite Ability overlays with a three-layer pulsing gold glow.
+- Added a bright inner frame, medium halo, and wider outer glow while preserving exact Suite-slot alignment.
+
+0.29.167
+- Smart Combat Advisor now highlights the Suite Ability Overlay frame itself, eliminating stock-action-bar coordinate offsets.
+- Native action-bar fallback now prefers the exact Icon texture.
+
+0.29.166
+- Smart Combat Advisor action highlight now anchors directly to ESO's visible action button.
+- Added a 3-second Test Action-Bar Highlight button in settings.
+
+0.29.165
+- Replaced the Smart Combat Advisor's screen-space action highlight with a native in-slot highlight parented to ESO's currently visible action button.
+- The recommendation border now anchors directly to the native Icon texture, preventing the offset/overlap seen between adjacent skill buttons.
+- Inactive-bar recommendations continue to show SWAP guidance only; the skill border appears after the requested bar is actually visible.
+
+0.29.164
+- Fixed Smart Combat Advisor action-bar highlight alignment by anchoring to ESO's actual clickable action button instead of the offset internal slot control.
+- Tightened the recommendation halo to a 2-pixel border so it no longer overlaps neighboring abilities or key labels.
+- Back-bar recommendations now show only the SWAP cue until that bar is active; the skill highlight appears after the weapon swap.
+
+0.29.163
+- Fixed Smart Combat Advisor Ultimate readiness crash caused by passing GetUnitPower's second return value into tonumber as a numeric base.
+- Ultimate readiness now safely reads only the current Ultimate value, including Power Overload and other Ultimate abilities.
+- Fixed Smart Combat Advisor ability classification so damaging Ultimates are no longer also classified as normal spammable attacks.
+
+0.29.162
+- Fixed Smart Combat Advisor BLOCK NOW startup error by replacing the invalid 3x3 backdrop edge texture with a valid 4x4 power-of-two edge size.
+- Smart Combat Advisor now marks its Smart UI initialized only after all controls are created successfully, preventing half-initialized state after UI construction failures.
+
+0.29.161
+- Upgraded Combat Rotation Assistant into Smart Combat Advisor with role-aware priorities for Magicka DPS, Stamina DPS, Hybrid DPS, Healer, and Tank.
+- Advisor now evaluates both weapon bars and can highlight the actual ESO action slot or prompt for a weapon swap when the best action is on the other bar.
+- Added Full Overlay, Compact Next Skill, Highlight Action Bar, and Hidden / Background display modes.
+- Added adaptive BLOCK NOW warnings with configurable sensitivity and learned dangerous-ability IDs from successful blocks and unusually hard incoming hits.
+- Smart Combat Advisor remains UI-only guidance and never casts, blocks, swaps bars, or presses combat inputs.
+
 0.29.160
 - Added optional Alchemy Auto Craft with Craft 1, Craft X, and Craft Maximum modes. Auto Craft is OFF by default and only starts after ESO accepts the slotted mixture.
 - Replaced the Potion Maker effect/options menu with a dedicated high-tier top-level selector, fixing options still appearing behind the maker.

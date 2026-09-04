@@ -1,0 +1,205 @@
+-- Craglorn trial data: Aetherian Archive, Hel Ra Citadel, Sanctum Ophidia.
+-- Verified against current UESP trial/boss pages and Xynode, Alcast, and
+-- ESO Mechanics veteran guides. Text is original raid-callout wording.
+
+local DMC = DungeonMechsCodex
+local S, B, M = DMC.TrialSummary, DMC.TrialBoss, DMC.TrialMechanic
+local ALL = {"tank", "healer", "dps"}
+
+DMC.RegisterTrial({
+    id = "aetherian_archive",
+    name = "Aetherian Archive",
+    aliases = {"AA", "vAA", "vAA HM"},
+    dlc = "Craglorn",
+    status = "complete",
+    mode = "hm",
+    zoneIds = {638},
+    source = {
+        verifiedDate = "2026-09-03",
+        primary = "UESP Aetherian Archive and Celestial Mage pages",
+        secondary = "Xynode and Alcast Aetherian Archive veteran guides",
+        notes = "All four bosses included. Hard Mode differences are isolated to the Celestial Mage encounter.",
+    },
+    summary = S(
+        "Four bosses. The first three use their Veteran mechanics unchanged; Hard Mode affects the Celestial Mage, adding persistent Storm Atronach pressure to Chain Lightning, axes, mines, reflections, and execute. Spread or control Chain Lightning, keep axes taunted, kill reflections and atronachs, and stack tightly for execute healing.",
+        "Four bosses. Control Lightning Storm Atronach shock pressure, Foundation Stone quake and boulders, Varlariel copies, then spread for the Celestial Mage's Chain Lightning, keep axes taunted, kill reflections, avoid mines/black holes, and stack tightly for execute healing."
+    ),
+    bosses = {
+        B("lightning_storm_atronach", "Lightning Storm Atronach", {"Main"},
+            "Spread enough that Chain Lightning does not cascade through the raid, step out of lightning AOEs, and kill summoned imps before their pressure overlaps the storm. This fight is the same in Veteran and Hard Mode.", nil, {
+                M("Chain Lightning", "Chain Lightning", {"SPREAD", "!"}, ALL,
+                    "Chain Lightning jumps between nearby players. Maintain a loose spread while staying in both healers' reach; do not run through the group with the effect."),
+                M("Lightning Storm / Call Lightning", "Lightning Storm", {"MOVE"}, ALL,
+                    "Ground lightning and targeted strikes build overlapping damage. Leave telegraphs promptly and keep rotating into clean space rather than trapping the stack."),
+                M("Summoned Imps", "Imps", {"ADD", "PRIORITY"}, ALL,
+                    "Imps join throughout the fight and add ranged pressure. Pull or stack them on the boss and cleave them down before the next lightning cycle."),
+            }),
+        B("foundation_stone_atronach", "Foundation Stone Atronach", {"Main"},
+            "Face the atronach away, block its heavy and frontal attacks, spread for thrown boulders, then group in healing for Big Quake while killing incoming adds. This fight is the same in Veteran and Hard Mode.", nil, {
+                M("Boulder Throw", "Boulders", {"SPREAD", "BLOCK"}, ALL,
+                    "The atronach throws boulders at ranged players. Keep a loose spread and block or dodge the impact so several players are not hit together."),
+                M("Big Quake", "Big Quake", {"HEAL", "!"}, ALL,
+                    "Repeated room-wide quake pulses require sustained healing. Group inside heals without overlapping avoidable boulder damage and use mitigation if low."),
+                M("Stone Atronachs / Adds", "Adds", {"ADD", "PRIORITY"}, ALL,
+                    "Adds enter during the encounter. The off tank collects them for cleave; DPS prevents them from accumulating through later quake cycles."),
+            }),
+        B("varlariel", "Varlariel", {"Main"},
+            "At health thresholds Varlariel splits into Celestial Images around the room. Assign lanes and kill every copy before they reach the center; each survivor makes the reform explosion more dangerous. Avoid the central blast and resume the stack after she reforms.", nil, {
+                M("Celestial Images", "Images", {"ADD", "PRIORITY", "!"}, ALL,
+                    "Varlariel splits into copies that walk inward. Divide the room, focus assigned images, and kill all of them before they reach the center."),
+                M("Reform Explosion", "Reform", {"BLOCK", "HEAL"}, ALL,
+                    "When Varlariel reforms she releases a raid-wide explosion, amplified by surviving images. Block and shield while healers pre-HoT the group."),
+                M("Ground AOEs", "Ground AOEs", {"MOVE"}, ALL,
+                    "Celestial ground effects fill parts of the arena between splits. Keep the group compact enough for healing but step into clear lanes early."),
+            }),
+        B("celestial_mage", "The Celestial Mage", {"Main", "Final", "Challenge"},
+            "Hard Mode adds frequent Storm Atronachs to the full Veteran fight. Keep Chain Lightning controlled, off-tank axes and atronachs away from the stack, kill reflections before they multiply pressure, avoid mines and black holes, then hard-stack behind the Mage below 20% and heal through Arcane Storm.",
+            "Spread or isolate the tank for Chain Lightning, off-tank summoned axes, kill reflections promptly, avoid mines and black holes, then hard-stack behind the Mage below 20% and heal through Arcane Storm.", {
+                M("Chain Lightning", "Chain Lightning", {"SPREAD", "!"}, ALL,
+                    "Chain Lightning can bounce through nearby players while Storm Atronachs add more lightning pressure. Use the raid's chosen spread or tank-isolation formation and never cross the stack while chained.",
+                    "Chain Lightning bounces through nearby players. Use the raid's chosen spread or tank-isolation formation and never cross the stack while chained."),
+                M("Conjured Axes", "Axes", {"ADD", "TANK"}, {"tank", "healer"},
+                    "Conjured axes persist and hit hard. The off tank gathers them away from the group, maintains block, and receives focused healing while the raid stays behind the Mage."),
+                M("Conjured Reflections", "Reflections", {"ADD", "PRIORITY"}, ALL,
+                    "Mage reflections spawn around the arena and cast their own attacks. Mark and burn them quickly; leaving several alive overwhelms the raid during later mechanics."),
+                M("Mines / Black Holes", "Mines", {"MOVE"}, ALL,
+                    "Avoid expanding mines and dark holes. Preserve a clean route to the execute stack and do not roll through another player's safe lane."),
+                M("Storm Atronachs", "Storm Atronachs", {"ADD", "PRIORITY", "HM"}, ALL,
+                    "[HM] Storm Atronachs spawn repeatedly and enter a lethal execute channel at low health. Taunt them, focus them fully, and finish each before returning to the Mage.", false),
+                M("Arcane Storm Execute", "Execute", {"HEAL", "!"}, ALL,
+                    "Below roughly 20%, stack tightly behind the Mage and commit to the burn while Arcane Storm ramps. Keep axes controlled, layer healing and mitigation, and do not scatter."),
+            }),
+    },
+})
+
+DMC.RegisterTrial({
+    id = "hel_ra_citadel",
+    name = "Hel Ra Citadel",
+    aliases = {"HRC", "vHRC", "vHRC HM"},
+    dlc = "Craglorn",
+    status = "complete",
+    mode = "hm",
+    zoneIds = {636},
+    source = {
+        verifiedDate = "2026-09-03",
+        primary = "UESP Hel Ra Citadel and Warrior pages",
+        secondary = "Xynode, Alcast, and Just Loot It veteran guides",
+        notes = "Both split routes and all four bosses included. Hard Mode mechanics apply to the Warrior only.",
+    },
+    summary = S(
+        "Four bosses across split left/right routes. Veteran mechanics are shared until the Warrior. In Hard Mode, line up Shield Throw through dormant gargoyles to destroy them before they awaken, never self-break Fossilize, survive Shehai Storm, then spread for execute Starfall.",
+        "Four bosses across split left/right routes. Interrupt Ra Kotu's Whirlwind, control Yokeda adds and fire, reunite for the Warrior, block his heavy and Shield Throw, leave Shehai Storm, then spread for execute Starfall."
+    ),
+    bosses = {
+        B("ra_kotu", "Ra Kotu", {"Main"},
+            "Keep Ra Kotu faced away, interrupt or escape Whirlwind, block cleaves and fire lines, and control his adds. This fight is unchanged between Veteran and Hard Mode.", nil, {
+                M("Whirlwind", "Whirlwind", {"INT", "MOVE", "!"}, ALL,
+                    "Ra Kotu spins for lethal close-range damage. Interrupt immediately when possible; otherwise sprint or roll clear and do not re-enter until the spin ends."),
+                M("Frontal Cleave / Fire Line", "Frontal", {"BLOCK", "MOVE"}, ALL,
+                    "The tank faces Ra Kotu away and blocks his heavy cleave. Everyone else stays behind and sidesteps the fire line projected across the floor."),
+                M("Welwa and Adds", "Adds", {"ADD"}, ALL,
+                    "Adds enter during the fight. Gather them on the boss for cleave while keeping their frontal attacks out of the group."),
+            }),
+        B("yokeda_rokdun", "Yokeda Rok'dun", {"Main"},
+            "Right-side boss. Hold Rok'dun still and faced away, kill summoned war dogs, avoid fire AOEs and charge paths, and block heavy attacks. This fight is unchanged between Veteran and Hard Mode.", nil, {
+                M("War Dogs", "War Dogs", {"ADD", "PRIORITY"}, ALL,
+                    "Rok'dun summons war dogs that pressure the group. Taunt or pull them in and kill them before another wave accumulates."),
+                M("Fire AOEs / Charge", "Fire and Charge", {"MOVE"}, ALL,
+                    "Leave persistent fire and move out of Rok'dun's charge lane. Regroup behind him after the tank restores position."),
+                M("Heavy Attacks", "Heavy", {"BLOCK"}, {"tank", "healer"},
+                    "Block the telegraphed heavy and keep Rok'dun faced away. Healers watch the tank while dogs and fire overlap."),
+            }),
+        B("yokeda_kai", "Yokeda Kai", {"Main"},
+            "Left-side boss. Interrupt fire channels, kill Flame Shapers and summoned atronachs, avoid expanding flame effects, and keep the boss controlled. This fight is unchanged between Veteran and Hard Mode.", nil, {
+                M("Fire Channel", "Fire Channel", {"INT", "!"}, ALL,
+                    "Interrupt Yokeda Kai's dangerous fire channel immediately. Assign backups so it is not missed while adds are active."),
+                M("Flame Shapers / Atronachs", "Fire Adds", {"ADD", "PRIORITY"}, ALL,
+                    "Kill Flame Shapers and atronachs before their ranged pressure stacks. Pull them into controlled cleave when possible."),
+                M("Expanding Fire", "Expanding Fire", {"MOVE"}, ALL,
+                    "Move out of expanding flame telegraphs and preserve a clean stack for healing. Do not drag fire through the tank's position."),
+            }),
+        B("the_warrior", "The Warrior", {"Main", "Final", "Challenge"},
+            "Hard Mode adds dormant gargoyles and Fossilize. Stack in a straight line so Shield Throw passes through statues, then dodge it; awakened gargoyles must be tanked and killed. Never use the Fossilize self-break synergy—free the player with a boss attack. Leave Shehai Storm and spread for execute Starfall.",
+            "Block heavy attacks, dodge Shield Throw, move away during Shehai Storm and the immediate 360-degree follow-up, sidestep frontal lines, then spread and keep moving through execute Starfall.", {
+                M("Shield Throw", "Shield Throw", {"MOVE", "!"}, ALL,
+                    "[HM] Line the raid and Warrior up with a dormant gargoyle so Shield Throw crosses the statue, then dodge the projectile. A clean line destroys statues before they awaken.",
+                    "The Warrior throws his shield through the group. Watch his aim and dodge or block the projectile without scattering into other attacks."),
+                M("Gargoyle Statues", "Gargoyles", {"ADD", "PRIORITY", "HM"}, ALL,
+                    "[HM] Undestroyed statues awaken as dangerous gargoyles. The off tank controls any that activate and the group kills them; prevent future spawns with correctly aimed Shield Throws.", false),
+                M("Fossilize", "Fossilize", {"!", "HM"}, ALL,
+                    "[HM] A fossilized player must not use the self-break synergy because it explodes around them. Position so Shield Throw or the Warrior's leap breaks the stone safely.", false),
+                M("Shehai Storm / 360 Cleave", "Shehai Storm", {"MOVE", "HEAL"}, ALL,
+                    "Move away while the Warrior channels Shehai Storm and heal through the pulses. Stay out for the immediate full-circle strike, then return after the tank turns him away."),
+                M("Frontal Line / Heavy", "Tank Attacks", {"BLOCK", "MOVE"}, {"tank", "healer"},
+                    "The tank blocks heavy attacks and keeps the Warrior aimed away. Everyone sidesteps his long frontal ground line instead of standing behind the tank."),
+                M("Starfall Execute", "Starfall", {"SPREAD", "HEAL", "!"}, ALL,
+                    "At low health, repeated Starfall AOEs target the raid. Spread loosely, keep moving only as needed, layer healing, and finish remaining gargoyles before they snowball.",
+                    "At low health, repeated Starfall AOEs target the raid. Spread loosely, keep moving only as needed, layer healing, and commit to a controlled execute."),
+            }),
+    },
+})
+
+DMC.RegisterTrial({
+    id = "sanctum_ophidia",
+    name = "Sanctum Ophidia",
+    aliases = {"SO", "vSO", "vSO HM"},
+    dlc = "Craglorn",
+    status = "complete",
+    mode = "hm",
+    zoneIds = {639},
+    source = {
+        verifiedDate = "2026-09-03",
+        primary = "UESP Sanctum Ophidia and Serpent pages",
+        secondary = "Xynode, Alcast, Just Loot It, and ESO Mechanics veteran guides",
+        notes = "All four bosses included. The Serpent's World Shaper is represented as Hard Mode-only.",
+    },
+    summary = S(
+        "Four bosses. Handle Mantikora spear portals, Stonebreaker's poison and enrages, and Ozara's pin/add control. On the Serpent Hard Mode, survive poison phases, manage magicka bombs and totems, keep Lamias alive and away, and move the World Shaper one-shot away from the group before it detonates.",
+        "Four bosses. Handle Mantikora spear portals, Stonebreaker's poison and enrages, and Ozara's pin/add control. On the Serpent, stack for poison healing, spend magicka before magicka bombs expire, manage pull/resource totems, and keep Lamias alive and away from the group."
+    ),
+    bosses = {
+        B("possessed_mantikora", "Possessed Mantikora", {"Main"},
+            "Spread around the Mantikora, block or dodge Quake and spear impacts, send the selected group into the spear portal, interrupt and kill the Shadow Mantikora below, and control snakes upstairs. This fight is unchanged between Veteran and Hard Mode.", nil, {
+                M("Quake / Stomp", "Quake", {"BLOCK", "HEAL"}, ALL,
+                    "The Mantikora releases heavy quake pulses. Block, maintain a loose spread, and heal through the unavoidable portion without standing in ground damage."),
+                M("Spear Portal", "Spear Portal", {"PORTAL", "!"}, ALL,
+                    "A spear marks a player and opens the lower arena. The assigned portal team enters together, interrupts the Shadow Mantikora, kills it before the timer, and returns promptly."),
+                M("Serpents / Enraged Adds", "Serpents", {"ADD", "PRIORITY"}, ALL,
+                    "Serpent adds pressure the upper group while the portal team is below. Off-tank and focus them; never leave enraged adds loose on healers."),
+            }),
+        B("stonebreaker", "Stonebreaker", {"Main"},
+            "Face Stonebreaker away, block heavy swipes, avoid poison pools and rock throws, and control troll adds. Enraged attacks punish missed blocks. This fight is unchanged between Veteran and Hard Mode.", nil, {
+                M("Heavy Swipe / Enrage", "Heavy Swipe", {"BLOCK", "!"}, {"tank", "healer"},
+                    "Stonebreaker's heavy swipe can kill through a missed block, especially while enraged. Keep taunt and mitigation ready; healers watch the impact."),
+                M("Poison Pools", "Poison", {"MOVE"}, ALL,
+                    "Move out of poison pools and keep the boss at the edge of contaminated space so the raid retains a clean stack."),
+                M("Rock Throws / Troll Adds", "Rocks and Adds", {"ADD", "BLOCK"}, ALL,
+                    "Block targeted rocks and kill or control added trolls. Do not let ranged adds free-cast while the boss is enraged."),
+            }),
+        B("ozara", "Ozara", {"Main"},
+            "Keep a disciplined formation, free pinned players immediately, interrupt dangerous channels, and isolate or control the recurring elite adds rather than repeatedly killing a bad wave. This fight is unchanged between Veteran and Hard Mode.", nil, {
+                M("Pinning Bolt", "Pins", {"ADD", "PRIORITY", "!"}, ALL,
+                    "Players pinned to the floor cannot free themselves. Assigned DPS immediately destroys each pin while the group maintains formation."),
+                M("Overcharger / Totem", "Overcharger", {"ADD", "PRIORITY"}, ALL,
+                    "Control the Overcharger and destroy its support totem. A designated player or off tank can isolate it so its lightning does not overlap the raid."),
+                M("Recurring Elite Adds", "Elite Adds", {"ADD", "TANK"}, ALL,
+                    "War Priest, Troll, Archer, and other elites can respawn if killed. Follow the raid plan: isolate selected adds or stack and burn them deliberately without turning frontals into the group."),
+            }),
+        B("the_serpent", "The Serpent", {"Main", "Final", "Challenge"},
+            "Hard Mode adds World Shaper around poison phases. Stack behind the boss for healing, move the growing World Shaper away before it explodes, spend magicka when Overwhelming Corruption is applied, manage pull/resource totems, and keep Lamias alive and isolated because their death explosion can wipe the stack.",
+            "Stack behind the boss for poison-phase healing, spend magicka when Overwhelming Corruption is applied, manage pull and resource totems, and keep Lamias alive and isolated because their death explosion can wipe the stack.", {
+                M("Poison Phase", "Poison Phase", {"HEAL", "!"}, ALL,
+                    "When the Serpent burrows to center, stack tightly and layer mitigation and sustained healing through the room-wide poison. Wait for the tank to turn him again before returning behind."),
+                M("World Shaper", "World Shaper", {"MOVE", "!", "HM"}, ALL,
+                    "[HM] A large growing poison circle targets a player around poison phases. Carry it away from the stack and leave the blast before detonation; nobody else should follow the carrier.", false),
+                M("Overwhelming Corruption", "Magicka Bomb", {"RESOURCE", "!"}, ALL,
+                    "A magicka bomb punishes remaining magicka when it expires. Spend magicka aggressively while marked, then recover after the explosion; do not sit at full resources."),
+                M("Pull and Resource Totems", "Totems", {"ADD", "PRIORITY"}, ALL,
+                    "Kill the green pull totem before it drags players through danger. Use the blue resource totem according to the raid plan and keep the stack clear of its hazards."),
+                M("Lamia / Mantikora Adds", "Adds", {"ADD", "TANK"}, ALL,
+                    "The off tank holds Lamias and Mantikoras away from the stack. Avoid killing Lamias in the group—their large death explosion can wipe nearby players."),
+                M("Frontal Cleave", "Cleave", {"BLOCK"}, {"tank", "healer"},
+                    "The main tank blocks the Serpent's cleave and faces it north/away. After each poison phase, wait for taunt and facing before the group restacks."),
+            }),
+    },
+})

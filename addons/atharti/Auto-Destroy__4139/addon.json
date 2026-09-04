@@ -1,14 +1,15 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/atharti/Auto-Destroy__4139",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "atharti",
   "canonical_id": "esoui:4139",
   "category_id": "20",
   "compatibility": [
     {
-      "name": "Season Zero Pt.2",
-      "version": "12.0.0"
+      "name": "Season One",
+      "version": "12.1.0"
     }
   ],
   "content_id": "esoui:4139",
@@ -17,12 +18,11 @@
     "AutoDestroy"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4139/",
-  "fingerprint": "2c557713f2889987d9ea512edee1518f4a6c6952e957234930165fa5933354a3",
+  "fingerprint": "585bfdfc59a6ad2ee73cb94330a4a8217dda2ad08deebc40d01adfa2f5d4e8fd",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw14131.png",
     "https://cdn-eso.mmoui.com/preview/pvw14129.png",
-    "https://cdn-eso.mmoui.com/preview/pvw14132.png",
-    "https://cdn-eso.mmoui.com/preview/pvw14133.png"
+    "https://cdn-eso.mmoui.com/preview/pvw17257.png"
   ],
   "platform": "pc",
   "published": true,
@@ -30,11 +30,11 @@
   "source_id": "4139",
   "source_url": "https://www.esoui.com/downloads/info4139-AutoDestroy.html",
   "stats": {
-    "downloads": 1879,
-    "favorites": 5,
-    "monthly_downloads": 69
+    "downloads": 1949,
+    "favorites": 6,
+    "monthly_downloads": 55
   },
   "title": "Auto Destroy",
-  "updated_at": 1781252549000,
-  "version": "2.1"
+  "updated_at": 1788432965000,
+  "version": "2.2"
 }

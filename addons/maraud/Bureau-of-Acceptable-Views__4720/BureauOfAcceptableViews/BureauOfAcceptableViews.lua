@@ -5,7 +5,7 @@ local SAVED_VARIABLES_NAME = "BureauOfAcceptableViews_SavedVariables"
 BureauOfAcceptableViews = {
     name = ADDON_NAME,
     savedVariablesName = SAVED_VARIABLES_NAME,
-    version = "3.9.000146",
+    version = "3.10.224232",
     -- 0=off, 1=errors, 2=warnings, 3=info, 4=verbose. Seeded silent here and
     -- overwritten from SavedVariables at load (see DEBUG_MODE_DEFAULT below, which
     -- must stay in sync -- this literal exists only because the addon table is
@@ -658,10 +658,6 @@ local function HandleZoomIn(sourceName)
         LogWarn(SI_BAV_LOG_SOURCE_SET_FAILED, localizedSourceName)
         return false  -- Let the original function handle the input if our set failed
     end
-    local pvpMode = BureauOfAcceptableViews.PvpMode
-    if pvpMode and pvpMode.OnManualZoom then
-        pvpMode.OnManualZoom(newZoom)
-    end
     
     -- Remember zoom for FPV toggle only if it's a "normal" zoom (> configured threshold)
     if newZoom > lastZoomThreshold then
@@ -705,10 +701,6 @@ local function HandleZoomOut(sourceName)
     if not SetCameraZoom(newZoom) then
         LogWarn(SI_BAV_LOG_SOURCE_SET_FAILED, localizedSourceName)
         return false  -- Let the original function handle the input if our set failed
-    end
-    local pvpMode = BureauOfAcceptableViews.PvpMode
-    if pvpMode and pvpMode.OnManualZoom then
-        pvpMode.OnManualZoom(newZoom)
     end
     
     -- Remember zoom for FPV toggle only if it's a "normal" zoom (> configured threshold)
@@ -832,19 +824,17 @@ local function OnPlayerActivated(event)
         presets.ActivateAfterRecovery()
     end
 
-    -- PvPMode is detector-only and may request an external ContextPresets
-    -- profile. Start it only after preset recovery and saved zoom restoration,
-    -- so its first profile snapshots the player's real camera.
+    -- PvPMode only selects the dedicated manual zoom step and optionally
+    -- suppresses camera shake. Start it after recovery so a persisted shake
+    -- snapshot is restored or renewed against the authoritative world state.
     local pvpMode = BureauOfAcceptableViews.PvpMode
     if pvpMode and pvpMode.ActivateAfterRecovery then
         pvpMode.ActivateAfterRecovery()
     end
 
     -- EVENT_PLAYER_ACTIVATED also fires on every zone change, and the engine
-    -- resets camera settings across the load screen. Reassert only AFTER PvPMode
-    -- sampled the new world above, so an old PvP profile cannot be re-pinned in
-    -- PvE and a new PvP state becomes the authoritative profile before the final
-    -- camera write. No-op when every profile owner is idle.
+    -- resets camera settings across the load screen. Reassert ordinary context
+    -- presets only after every world-scoped feature sampled the new world.
     if presets and presets.ReassertActive then
         presets.ReassertActive()
     end

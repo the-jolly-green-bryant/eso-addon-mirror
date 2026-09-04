@@ -608,7 +608,6 @@ local function ResolveBundle(stateId, snapshot)
         preset.headBob = snapshot.headBob
             + (bundle.headBobTarget - snapshot.headBob) * k
     end
-
     return preset
 end
 
@@ -1436,7 +1435,7 @@ end
 
 -- Request a temporary profile from a detector module while keeping camera
 -- ownership inside ContextPresets. `stateId` must be stable for one logical
--- profile (for example "pvp:engaged"); changing it triggers a normal state
+-- profile (for example "detector:engaged"); changing it triggers a normal state
 -- transition. The bundle uses the same offset/target fields as STATE_BUNDLES.
 function ContextPresets.SetExternalProfile(source, stateId, bundle, force)
     if type(source) ~= "string" or source == ""

@@ -298,7 +298,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Auto Complete](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Dolgubon/Auto-Complete__2026) | Dolgubon | PC / Mac | 1.0.2 |
 | [Auto Daily Rewards](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SDPhantom/Auto-Daily-Rewards__2041) | SDPhantom | PC / Mac | 1.2 |
 | [Auto Daily Rewards - Notifications](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SDPhantom/Auto-Daily-Rewards---Notifications__2051) | SDPhantom | PC / Mac | 1.0 |
-| [Auto Destroy](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/Auto-Destroy__4139) | atharti | PC / Mac | 2.1 |
+| [Auto Destroy](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/Auto-Destroy__4139) | atharti | PC / Mac | 2.2 |
 | [Auto Eat, Recharge, Repair](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Jodynn/Auto-Eat-Recharge-Repair__2198) | Jodynn | PC / Mac | 1.1 |
 | [Auto Extract](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/msetten/Auto-Extract__0763042f-816e-4f4f-baae-c50159fc5bd5) | msetten | Console | — |
 | [Auto Guild Welcome](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Phobus11/Auto-Guild-Welcome__2387) | Phobus11 | PC / Mac | 0.2.0 |

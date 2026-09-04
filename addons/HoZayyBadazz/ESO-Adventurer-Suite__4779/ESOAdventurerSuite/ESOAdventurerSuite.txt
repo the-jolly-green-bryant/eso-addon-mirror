@@ -1,11 +1,11 @@
 ## Title: |cB8860BESO |cFFD700Adventurer Suite|r
-## Description: |cFFD700Modern adventure dashboard, HUD, minimap, quests, finders, combat, travel, gear, and build tools.|r
+## Description: |cFFD700All-in-one quests, travel, minimap, combat, Dual Action Bar, builds, antiquities, and HUD tools.|r
 ## Author: |c00FFFFHoZayyBadazz|r
-## Version: 0.29.160
-## AddOnVersion: 3060
+## Version: 0.29.197
+## AddOnVersion: 3097
 ## APIVersion: 101050 101051
 ## SavedVariables: ESOProgressionCoachSavedVars EASLoreLibrarySavedVariables
-## DependsOn: LibAddonMenu-2.0>=43 LibMapData>=101 LibGPS>=73 LibMapPins-1.0>=47
+## DependsOn: LibAddonMenu-2.0>=43 LibMapData>=101 LibGPS>=73 LibMapPins-1.0>=47 LibMapPing LibDebugLogger LibChatMessage
 ## OptionalDependsOn: LibTreasure>=24 CustomCompassPins>=138
 
 Core.lua
@@ -79,6 +79,7 @@ ChampionOverlay.lua
 ChampionOptimizer.lua
 AttributeOptimizer.lua
 AbilityOverlays.lua
+DualActionBar.lua
 QuickslotOverlay.lua
 InfiniteArchiveOverlay.lua
 SynergyOverlay.lua

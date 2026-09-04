@@ -1,0 +1,40 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/linuxhell/Thief-Tools-Stolen-Item-Counter__4813",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "linuxhell",
+  "canonical_id": "esoui:4813",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4813",
+  "deleted": false,
+  "directories": [
+    "ThiefTools-counter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4813/",
+  "fingerprint": "1c554779551cb99abada9d7ed2eb023ce0b327b509c9156c5545a7062078d3db",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17263.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw17264.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw17265.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4813",
+  "source_url": "https://www.esoui.com/downloads/info4813-ThiefToolsStolenItemCounter.html",
+  "stats": {
+    "downloads": 2,
+    "favorites": 0,
+    "monthly_downloads": 1
+  },
+  "title": "Thief Tools Stolen Item Counter",
+  "updated_at": 1788469106000,
+  "version": "4.0.0"
+}

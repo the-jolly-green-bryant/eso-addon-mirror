@@ -158,3 +158,69 @@ function A:ApplyBestAttributes()
     end
     return tryApply()
 end
+-- v0.29.174 - MAX POWER attributes. Content-aware survival is kept only where
+-- losing all damage to deaths/blocks would be worse; organized PvE DPS remains
+-- fully stacked into its dominant offensive resource.
+function A:BuildPlan()
+    local current=self:GetCurrent()
+    local c=self:GetContext()
+    local total=current.total
+    local g=EPC.GearOptimizer
+    local gc=g and type(g.GetWornBuildContext)=="function" and g:GetWornBuildContext() or {}
+    local mode=gc.maxPowerMode or (g and g.ResolveMaxPowerMode029174 and g:ResolveMaxPowerMode029174()) or "SOLO"
+    local power=gc.power or {}
+    local role=string.upper(tostring(c.role or "DAMAGE"))
+    local magicka=c.magicka==true
+    if power.hybrid then
+        magicka=(tonumber(power.maxMagicka) or 0)>=(tonumber(power.maxStamina) or 0)
+    end
+    local h,m,s=0,0,0
+    local reason="Maximum offensive resource"
+
+    if role=="TANK" then
+        local hpPct=0.60
+        if mode=="TRIAL_BOSS" then hpPct=0.66
+        elseif mode=="INFINITE_ARCHIVE" then hpPct=0.64
+        elseif mode=="PVP" then hpPct=0.62
+        elseif mode=="SOLO" then hpPct=0.58 end
+        h=math.floor(total*hpPct+0.5)
+        -- Stamina remains slightly higher than Magicka so common tank resource
+        -- return mechanics restore the blocking pool. Keep some Magicka for class
+        -- utility instead of the old fixed Health/Stamina-only split.
+        local rem=math.max(0,total-h)
+        s=math.ceil(rem*0.58)
+        m=math.max(0,rem-s)
+        reason="Tank effective-health + block/sustain balance"
+    elseif role=="HEALER" then
+        local healthPct=(mode=="PVP" and 0.16) or (mode=="INFINITE_ARCHIVE" and 0.10) or 0
+        h=math.floor(total*healthPct+0.5)
+        if magicka then m=total-h else s=total-h end
+        reason=healthPct>0 and "Healing power with content survival floor" or "Maximum healing resource"
+    else
+        local healthPct=0
+        if mode=="INFINITE_ARCHIVE" then healthPct=0.16
+        elseif mode=="PVP" then healthPct=0.22
+        elseif mode=="SOLO" then healthPct=0.08 end
+        h=math.floor(total*healthPct+0.5)
+        if magicka then m=total-h else s=total-h end
+        reason=healthPct>0 and "Maximum damage after content survival reserve" or "Maximum damage resource"
+    end
+
+    return {
+        context=c,current=current,mode=mode,modeLabel=gc.maxPowerLabel or mode,reason=reason,
+        target={health=h,magicka=m,stamina=s,total=total},
+        delta={health=h-current.health,magicka=m-current.magicka,stamina=s-current.stamina},
+        cost=num(GetAttributeRespecGoldCost,0),
+    }
+end
+
+local EAS_AttributeBuildViewBase029174=A.BuildView
+function A:BuildView()
+    local p=self:BuildPlan()
+    return {
+        cost=p.cost,role=p.context.role,
+        build=p.context.profile and p.context.profile.label or (p.context.magicka and "Magicka" or "Stamina"),
+        current=p.current,target=p.target,mode=p.modeLabel,reason=p.reason,
+        changed=(p.delta.health~=0 or p.delta.magicka~=0 or p.delta.stamina~=0),
+    }
+end

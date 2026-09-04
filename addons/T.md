@@ -29,6 +29,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Tamriel Trade Centre jpPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Marify/Tamriel-Trade-Centre-jpPatch__2193) | Marify | PC / Mac | 0.11.0 |
 | [Tamriel Trade Centre Simple Price](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kriax/Tamriel-Trade-Centre-Simple-Price__3078) | _Kriax | PC / Mac | 1.1.3 |
 | [TamrielGuard - disable accidental stealing](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Schrodi/TamrielGuard---disable-accidental-stealing__2780) | Schrodi | PC / Mac | 1.0 |
+| [Tamrielic Languages](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/aausten/Tamrielic-Languages__4814) | aausten | PC / Mac | 1.0.0 |
 | [TamrielTime](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/NWDD/TamrielTime__232) | NWDD | PC / Mac | 0.9.9.3 |
 | [TamrielTradeCentre-KR](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ricci-Curvature/TamrielTradeCentre-KR__4505) | Ricci Curvature | PC / Mac | 1.0.0 |
 | [Tank](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Criscal/Tank__1192) | Criscal | PC / Mac | 1.1.42 |
@@ -99,6 +100,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [TheShining - AoE & Target Glow Brightness](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Odylon/TheShining---AoE-Target-Glow-Brightness__3081) | Odylon | PC / Mac | 1.0.1 |
 | [Thief Tools](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shadowfen/Thief-Tools__1721) | Shadowfen | PC / Mac | 3.4.3 |
 | [Thief Tools - Filtered AutoSteal](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shadowfen/Thief-Tools---Filtered-AutoSteal__3752) | Shadowfen | PC / Mac | 1.3.9 |
+| [Thief Tools Stolen Item Counter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/linuxhell/Thief-Tools-Stolen-Item-Counter__4813) | linuxhell | PC / Mac | 4.0.0 |
 | [ThiefHelper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Upyachka/ThiefHelper__1473) | Upyachka | PC / Mac | 1.1_1 |
 | [ThiefHelper: Version for testing](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Upyachka/ThiefHelper-Version-for-testing__1477) | Upyachka | PC / Mac | 1.1 |
 | [Thieves Guild - Covetous Countess](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Glement/Thieves-Guild---Covetous-Countess__4205) | Glement | PC / Mac | 1.0.1 |
@@ -180,6 +182,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Troublemaker (French version - Unofficial)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Provision/Troublemaker-French-version---Unofficial__1087) | Provision | PC / Mac | 0.3.3 |
 | [True (De)Buffs Bars](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Toudidef/True-De-Buffs-Bars__c3d7fa6e-9024-4480-a02b-a9672c9da86e) | Toudidef | Console | — |
 | [True Bounty](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kawamonkey/True-Bounty__3008) | kawamonkey | PC / Mac | 1.0 |
+| [True Corpse Alert](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Toudidef/True-Corpse-Alert__adbd69da-20f5-4260-8760-56cbb7eff9b2) | Toudidef | Console | — |
 | [True DarkConvergence timer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Toudidef/True-DarkConvergence-timer__b73a092a-bcf8-4b42-9833-97402a32ed87) | Toudidef | Console | — |
 | [True Exploration](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni42/True-Exploration__a095f0da-9f45-4dde-a150-2c9b09ba7317) | Shinni42 | Console | — |
 | [True Flag Capture Mover](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Toudidef/True-Flag-Capture-Mover__4c1cca0d-7e48-40ed-bd8f-1c87ac158341) | Toudidef | Console | — |

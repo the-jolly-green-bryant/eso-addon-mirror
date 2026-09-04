@@ -94,6 +94,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Chess multiplayer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Drako-Ei/Chess-multiplayer__2082) | Drako-Ei | PC / Mac | 5.0 |
 | [Chest Master 9000](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/CrazyDutchGuy/Chest-Master-9000__713) | CrazyDutchGuy | PC / Mac | 2.3 |
 | [ChestFarmer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/xgoku1/ChestFarmer__3045) | xgoku1 | PC / Mac | 1.22 |
+| [Chorus - Minimal Combat Text](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Krogdalo/Chorus---Minimal-Combat-Text__4810) | Krogdalo | PC / Mac | 0.2.4 |
 | [Christmas Bongo cat](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Emma/Christmas-Bongo-cat__2206) | Emma | PC / Mac | 1 |
 | [ChromaConfig](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/otac0n/ChromaConfig__3361) | otac0n | PC / Mac | 1.1 |
 | [Chronic Collector](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kyoma/Chronic-Collector__2178) | Kyoma | PC / Mac | 1.2 |
@@ -148,7 +149,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Combat Alerts Extended](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DrSova/Combat-Alerts-Extended__3439) | DrSova | PC / Mac | 1.0.5 |
 | [Combat Auras (Ability Timers)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Darianopolis/Combat-Auras-Ability-Timers__2408) | Darianopolis | PC / Mac | v1.5.2 |
 | [Combat Cloud Updated](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/2Weak2Live/Combat-Cloud-Updated__2568) | 2Weak2Live | PC / Mac | 0.96 |
-| [Combat Coordination - 3D Ground Effects, LaunchPad, Slayer & Arkasis, Raidlead Tools](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Duesentrieb/Combat-Coordination---3D-Ground-Effects-LaunchPad-Slayer-Arkasis-Raidlead-Tools__4449) | Duesentrieb | PC / Mac | 20260819-0006 |
+| [Combat Coordination - 3D Ground Effects, LaunchPad, Slayer & Arkasis, Raidlead Tools](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Duesentrieb/Combat-Coordination---3D-Ground-Effects-LaunchPad-Slayer-Arkasis-Raidlead-Tools__4449) | Duesentrieb | PC / Mac | 20260903-0007 |
 | [Combat Crosshair](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Turbo1/Combat-Crosshair__2760) | Turbo1 | PC / Mac | 1.5 |
 | [Combat FPS Booster](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tetsurion/Combat-FPS-Booster__3daa21d2-07bf-4ab5-bd84-fc58fb9dbdc7) | Tetsurion | Console | — |
 | [Combat Indicator](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Crabby654/Combat-Indicator__1543) | Crabby654 | PC / Mac | 1.8.7 |
@@ -250,6 +251,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Crafting Swit](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/AssemblerManiac/Crafting-Swit__825) | AssemblerManiac | PC / Mac | 1.07 |
 | [Crafting Tracker 2.0](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/JRCandeias/Crafting-Tracker-2.0__1577) | JRCandeias | PC / Mac | 2.0.0 |
 | [Crafting Writ Assistant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Argusus/Crafting-Writ-Assistant__1121) | Argusus | PC / Mac | .34b |
+| [CraftingDailyNotification](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Eswagrom/CraftingDailyNotification__4808) | Eswagrom | PC / Mac | 1.0 |
 | [CraftingHouse](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PrimeRibeye/CraftingHouse__3492) | PrimeRibeye | PC / Mac | 1.4 |
 | [CraftStore](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rhyono/CraftStore__1590) | Rhyono | PC / Mac | 3.05 |
 | [CRAFTY Stocklist - The craftbag stock watchlist for your crafting profession](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/rp12439_3/CRAFTY-Stocklist---The-craftbag-stock-watchlist-for-your-crafting-profession__3116) | rp12439_3 | PC / Mac | V2.65 |

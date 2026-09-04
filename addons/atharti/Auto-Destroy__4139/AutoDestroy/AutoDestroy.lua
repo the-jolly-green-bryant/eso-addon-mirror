@@ -1,34 +1,33 @@
 AutoDestroy = {}
-AutoDestroy.name = "AutoDestroy"
 
 local AD = AutoDestroy
 
-local defaultSavedVariables = {
-    autoDestroyEnabled = false,
-    destroyMaps = false,
-    itemsList = {}, 
+AD.name = "AutoDestroy"
+
+local EM = EVENT_MANAGER
+
+local defaultSV = {
+	autoDestroyEnabled = false,
+	destroyMaps = false,
+	itemsList = {},
 }
 
-local queuedEnvelopes = {}
-local queuedEnvelopeKeys = {}
+local queuedUnknownMaps = {}
+
 local isInCombat = false
 
+-- =========================
+-- Fake ItemLink For 224681
+-- =========================
+local unknownMapId = 224681
+local unknownMapName = GetItemLinkName(("|H1:item:%d:0:50:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:10000:0|h|h"):format(unknownMapId))
 
-local TREASURE_ENVELOPES = {
-    [224681] = true,
-}
-
-
-local NAMES = {}
-for boxId, _ in pairs(TREASURE_ENVELOPES) do
-    local itemLink = ("|H1:item:%d:0:50:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:10000:0|h|h"):format(boxId)
-    local name = GetItemLinkName(itemLink)
-    NAMES[name] = true
-end
-
+-- =========================
+-- TrashCollection
+-- =========================
 local TRASHURE = {
-       --Stonefalls
-       [43655] = true,
+	   --Stonefalls
+	   [43655] = true,
 	   [43656] = true,
 	   [43657] = true,
 	   [43658] = true,
@@ -238,7 +237,7 @@ local TRASHURE = {
 	   --Reach
 	   [171474] = true,
 	   --Blackwood
-	   -- [175547] = true,       
+	   -- [175547] = true,
 	   -- [175548] = true,
 	   -- [175549] = true,
 	   -- [175550] = true,
@@ -255,8 +254,8 @@ local TRASHURE = {
 	   -- [187675] = true,
 	   -- [187676] = true,
 	   --Galen
-	    [192370] = true,
-	    [192371] = true,
+		[192370] = true,
+		[192371] = true,
 	   --Telvanni Peninsula
 	   -- [198097] = true,
 	   -- [198098] = true,
@@ -279,43 +278,40 @@ local TRASHURE = {
 	   -- [223773] = true,
 	   -- [223774] = true,
 	   -- [223772] = true,
-	   
+
 }
 
-local BAG_IDS = {
-    [BAG_BACKPACK] = true,
-}
-
+-- =========================
+-- Core
+-- =========================
 function AD.OnLootUpdated()
-    local name, _, _, _ = GetLootTargetInfo()
-    if name == "" or not NAMES[name] then return end
-    LootAll()
+	if not AD.SV.destroyMaps then return end
+
+	local name = GetLootTargetInfo()
+	if name == "" or name ~= unknownMapName then return end
+	LootAll()
 end
 
-
 function AD.TryOpenOrQueueContainer(bagId, slotIndex)
+	if not AD.SV.destroyMaps then
+		return
+	end
 
-    if not AD.Settings.destroyMaps then
-        return
-    end
+	local itemLink = GetItemLink(bagId, slotIndex)
+	if itemLink == "" then return end
 
+	local itemId = GetItemLinkItemId(itemLink)
+	if itemId ~= unknownMapId then return end
 
-    local itemLink = GetItemLink(bagId, slotIndex)
-    if itemLink == "" then return end
+	if isInCombat then
+		local key = tostring(bagId) .. ":" .. tostring(slotIndex)
+		if not queuedUnknownMaps[key] then
+			queuedUnknownMaps[key] = {bagId = bagId, slotIndex = slotIndex}
+		end
+		return
+	end
 
-    local itemId = GetItemLinkItemId(itemLink)
-    if not TREASURE_ENVELOPES[itemId] then return end
-
-    if isInCombat then
-        local key = tostring(bagId) .. ":" .. tostring(slotIndex)
-        if not queuedEnvelopeKeys[key] then
-            table.insert(queuedEnvelopes, {bagId = bagId, slotIndex = slotIndex, key = key})
-            queuedEnvelopeKeys[key] = true
-        end
-        return
-    end
-
-    local remaining = GetItemCooldownInfo(bagId, slotIndex)
+	local remaining = GetItemCooldownInfo(bagId, slotIndex)
 	if remaining > 0 then
 		zo_callLater(function()
 			AD.TryOpenOrQueueContainer(bagId, slotIndex)
@@ -325,31 +321,38 @@ function AD.TryOpenOrQueueContainer(bagId, slotIndex)
 	end
 end
 
-function AD.ProcessQueuedEnvelopes()
-    for _, slot in ipairs(queuedEnvelopes) do
-        CallSecureProtected("UseItem", slot.bagId, slot.slotIndex)
-    end
-    queuedEnvelopes = {}
-    queuedEnvelopeKeys = {}
-	
-	EVENT_MANAGER:UnregisterForUpdate(AutoDestroy.name .. "FinalCheck")
-	EVENT_MANAGER:RegisterForUpdate(AutoDestroy.name .. "FinalCheck", 1000, function()
-		for slotIndex = 0, GetBagSize(BAG_BACKPACK) - 1 do
-			AD.TryOpenOrQueueContainer(BAG_BACKPACK, slotIndex)
-		end
-		EVENT_MANAGER:UnregisterForUpdate(AutoDestroy.name .. "FinalCheck")
+function AD.OpenUnknown()
+	if not AD.SV.destroyMaps then
+		return
+	end
+
+	for slotIndex = 0, GetBagSize(BAG_BACKPACK) - 1 do
+		AD.TryOpenOrQueueContainer(BAG_BACKPACK, slotIndex)
+	end
+end
+
+function AD.ProcessQueuedUnknownMaps()
+	for _, slot in pairs(queuedUnknownMaps) do
+		CallSecureProtected("UseItem", slot.bagId, slot.slotIndex)
+	end
+	ZO_ClearTable(queuedUnknownMaps)
+
+	EM:UnregisterForUpdate(AutoDestroy.name .. "FinalCheck")
+	EM:RegisterForUpdate(AutoDestroy.name .. "FinalCheck", 1000, function()
+		AD.OpenUnknown()
+		EM:UnregisterForUpdate(AutoDestroy.name .. "FinalCheck")
 	end)
 end
 
 function AD.OnCombatState(_, inCombat)
-    isInCombat = inCombat
-    if not inCombat then
-        AD.ProcessQueuedEnvelopes()
-    end
+	isInCombat = inCombat
+	if not inCombat then
+		AD.ProcessQueuedUnknownMaps()
+	end
 end
 
 function AD.DestroyItem(bagId, slotIndex)
-	if not AD.Settings.autoDestroyEnabled then
+	if not AD.SV.autoDestroyEnabled then
 		return
 	end
 
@@ -358,67 +361,78 @@ function AD.DestroyItem(bagId, slotIndex)
 		return
 	end
 
-	local itemId = GetItemLinkItemId(itemLink)
-	local stored = AD.Settings.itemsList[itemId]
-
-	if stored then
-		if stored == itemLink then
-			DestroyItem(bagId, slotIndex)
-			return
-		end
-	end
-
-		if AD.Settings.destroyMaps and TRASHURE[itemId] then
-			DestroyItem(bagId, slotIndex)
-		end
-	end
-
-function AD.ScanAndDestroy()
-
-    for bagId, _ in pairs(BAG_IDS) do
-        local numSlots = GetBagSize(bagId)
-        for slotIndex = 0, numSlots - 1 do
-            AD.DestroyItem(bagId, slotIndex)
-        end
-    end
-
-end
-
-function AD.OnInventoryUpdated()
-	if not AD.Settings.autoDestroyEnabled then
+	if AD.SV.itemsList[itemLink] then
+		DestroyItem(bagId, slotIndex)
 		return
 	end
 
-    AD.ScanAndDestroy()
+	local itemId = GetItemLinkItemId(itemLink)
+	if AD.SV.destroyMaps and TRASHURE[itemId] then
+		DestroyItem(bagId, slotIndex)
+	end
 end
 
-function AD.OnSingleSlotUpdated(_, bagId, slotIndex, isNewItem, itemSoundCategory, inventoryUpdateReason, stackCountChange, triggeredByCharacterName, triggeredByDisplayName, isLastUpdateForMessage, bonusDropSource)
-    if not BAG_IDS[bagId] then return end
-
-    AD.TryOpenOrQueueContainer(bagId, slotIndex)
-    AD.DestroyItem(bagId, slotIndex)
+function AD.ScanAndDestroy()
+	local numSlots = GetBagSize(BAG_BACKPACK)
+	for slotIndex = 0, numSlots - 1 do
+		AD.DestroyItem(BAG_BACKPACK, slotIndex)
+	end
 end
 
+function AD.OnInventoryUpdated()
+	if not AD.SV.autoDestroyEnabled then
+		return
+	end
+
+	AD.ScanAndDestroy()
+end
+
+function AD.OnSingleSlotUpdated(_, bagId, slotIndex)
+	if bagId ~= BAG_BACKPACK then return end
+
+	AD.TryOpenOrQueueContainer(bagId, slotIndex)
+	AD.DestroyItem(bagId, slotIndex)
+end
+
+function AD.RegisterContextMenu()
+	ZO_CreateStringId("SI_BINDING_NAME_AUTODESTROY", "Auto Destroy")
+
+		local function AddItem(inventorySlot, slotActions)
+			local bagId, slotIndex = ZO_Inventory_GetBagAndIndex(inventorySlot)
+			if not bagId then return end
+
+			slotActions:AddCustomSlotAction(SI_BINDING_NAME_AUTODESTROY, function()
+				local itemLink = GetItemLink(bagId, slotIndex)
+				if not itemLink then return end
+
+				AD.ShowConfirmationDialog(itemLink)
+			end , "")
+		end
+
+	LibCustomMenu:RegisterContextMenu(AddItem, LibCustomMenu.CATEGORY_LATE)
+end
+
+-- =========================
+-- Dialogs
+-- =========================
 function AD.ShowConfirmationDialog(itemLink)
-    if not itemLink or itemLink == "" then return end
+	if not itemLink or itemLink == "" then return end
 
-    local itemId = GetItemLinkItemId(itemLink)
-    local itemName = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
+	local itemName = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
 
-    local dialogParams = {
-        callback = function(...)
-            AD.Settings.itemsList[itemId] = itemLink
-            AD.ScanAndDestroy()
-        end,
-        mainText = ('You are about to |cFF0000DESTROY|r |cFFFFFF"%s"|r, it will be also marked for permanent destroy. You can remove it from the list in addon settings later. Are you sure?'):format(itemName)
-    }
+	local dialogParams = {
+		callback = function(...)
+			AD.SV.itemsList[itemLink] = true
+			AD.ScanAndDestroy()
+		end,
+		mainText = ('You are about to |cFF0000DESTROY|r |cFFFFFF"%s"|r, it will be also marked for permanent destroy. You can remove it from the list in addon settings later. Are you sure?'):format(itemName)
+	}
 
-    ZO_Dialogs_ShowDialog('AUTO_DESTROY_CONFIRMATION_DIALOG', dialogParams)
+	ZO_Dialogs_ShowDialog('AUTO_DESTROY_CONFIRMATION_DIALOG', dialogParams)
 end
 
 function AD.RegisterDialog()
 	ZO_CreateStringId("AUTO_DESTROY_DIALOG_HEADER", "Auto Destroy")
-
 
 	ESO_Dialogs["AUTO_DESTROY_CONFIRMATION_DIALOG"] =
 	{
@@ -459,54 +473,61 @@ function AD.RegisterDialog()
 	}
 end
 
-function AD.RegisterContextMenu()
-
-	ZO_CreateStringId("SI_BINDING_NAME_SOMETHING", "Auto Destroy")
-
-		local function AddItem(inventorySlot, slotActions)
-			local bagId, slotIndex = ZO_Inventory_GetBagAndIndex(inventorySlot)
-			if not bagId then return end
-
-			slotActions:AddCustomSlotAction(SI_BINDING_NAME_SOMETHING, function()
-				local itemLink = GetItemLink(bagId, slotIndex)
-				if not itemLink then return end
-
-				AD.ShowConfirmationDialog(itemLink)
-			end , "")
+function AD.DialogEnableAD()
+	local dialogParams = {
+		callback = function()
+			AD.SV.autoDestroyEnabled = true
+			AD.ScanAndDestroy()
+		end,
+		mainText = "Enabling this feature will instantly |cFF0000DESTROY|r items that you marked for Auto Destroy. And also will |cFF0000DESTROY|r these items as soon as they appear in your bag. Are you sure?",
+		finishingCallback = function()
+			AD_MAIN:UpdateValue(false)
 		end
+	}
 
-	LibCustomMenu:RegisterContextMenu(AddItem, LibCustomMenu.CATEGORY_LATE)
-
+	ZO_Dialogs_ShowDialog('AUTO_DESTROY_CONFIRMATION_DIALOG', dialogParams)
 end
 
+function AD.DialogEnableMaps()
+	local dialogParams = {
+		callback = function()
+			AD.SV.destroyMaps = true
+			AD.OpenUnknown()
+			AD.ScanAndDestroy()
+		end,
+		mainText = "Enabling this feature will |cFF0000DESTROY|r all treasure maps except: |c008000Blackwood|r, |c008000Deadlands|r, |c008000High Isle|r, |c008000Telvanni Peninsula|r, |c008000Apocrypha|r, |c008000West Weald|r and |c008000Solstice|r zones. Are you sure?",
+		finishingCallback = function()
+			AD_DESTROY_TRASHURE:UpdateValue(false)
+		end
+	}
 
+	ZO_Dialogs_ShowDialog('AUTO_DESTROY_CONFIRMATION_DIALOG', dialogParams)
+end
+
+-- =========================
+-- Init
+-- =========================
 function AD.OnAddonLoaded(event, addonName)
-    if addonName ~= AutoDestroy.name then return end
-	
-	AD.Settings = ZO_SavedVars:NewAccountWide("AutoDestroy_SV", 1, nil, defaultSavedVariables)
-	
-	EVENT_MANAGER:UnregisterForEvent(AD.name, EVENT_ADD_ON_LOADED)
-	
-	AD.RegisterDialog()	
+	if addonName ~= AutoDestroy.name then return end
+	EM:UnregisterForEvent(AD.name, EVENT_ADD_ON_LOADED)
+
+	AD.SV = ZO_SavedVars:NewAccountWide("AutoDestroy_SV", 2, nil, defaultSV)
+
+	AD.RegisterDialog()
 	AD.RegisterContextMenu()
 
-    -- Register for inventory update events
-    EVENT_MANAGER:RegisterForEvent(AD.name, EVENT_INVENTORY_SINGLE_SLOT_UPDATE, AD.OnSingleSlotUpdated)
-	EVENT_MANAGER:RegisterForEvent(AD.name, EVENT_INVENTORY_FULL_UPDATE, AD.OnInventoryUpdated)
-	EVENT_MANAGER:RegisterForEvent(AD.name, EVENT_PLAYER_COMBAT_STATE, AD.OnCombatState)
-	 
-    local myPanel = AD.SetupSettings()
+	EM:RegisterForEvent(AD.name, EVENT_INVENTORY_SINGLE_SLOT_UPDATE, AD.OnSingleSlotUpdated)
+	EM:RegisterForEvent(AD.name, EVENT_INVENTORY_FULL_UPDATE, AD.OnInventoryUpdated)
+	EM:RegisterForEvent(AD.name, EVENT_PLAYER_COMBAT_STATE, AD.OnCombatState)
 
-    CALLBACK_MANAGER:RegisterCallback("LAM-PanelOpened", function(panel)
-        if panel ~= myPanel then return end
-        AD.RefreshDropdown()
-    end)
+	local myPanel = AD.SetupSettings()
 
-    if AD.Settings.autoDestroyEnabled then
-        AD.ScanAndDestroy()
-    end
-	
+	CALLBACK_MANAGER:RegisterCallback("LAM-PanelOpened", function(panel)
+		if panel ~= myPanel then return end
+		AD.RefreshDropdown()
+	end)
+
 	ZO_PreHook(SYSTEMS:GetObject("loot"), "UpdateLootWindow", AD.OnLootUpdated)
 end
 
-EVENT_MANAGER:RegisterForEvent(AD.name, EVENT_ADD_ON_LOADED, AD.OnAddonLoaded)
+EM:RegisterForEvent(AD.name, EVENT_ADD_ON_LOADED, AD.OnAddonLoaded)
