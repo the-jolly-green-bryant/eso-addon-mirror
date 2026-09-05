@@ -355,8 +355,12 @@ end
 
 local rt_scratch = {}
 
+local sum_counts = { s = 0, s_star = 0, o = 0, l = 0, m = 0, x = 0, oneshot = 0 }
+local sum_scratch = { counts = sum_counts }
+
 function M.summary()
-  local c = { s = 0, s_star = 0, o = 0, l = 0, m = 0, x = 0, oneshot = 0 }
+  local c = sum_counts
+  c.s = 0; c.s_star = 0; c.o = 0; c.l = 0; c.m = 0; c.x = 0; c.oneshot = 0
   local rn = 0
   local resp = 0
   for i = 1, ep_log.n do
@@ -388,16 +392,15 @@ function M.summary()
     rt95 = rt_scratch[i95]
   end
   local denom = c.s + c.o + c.l + c.m
-  return {
-    episodes  = ep_log.n,
-    dropped   = ep_dropped,
-    counts    = c,
-    responded = resp,
-    rt_n      = rn,
-    rt50      = rt50,
-    rt95      = rt95,
-    coverage  = (denom > 0) and (c.s / denom) or -1,
-  }
+  local r = sum_scratch
+  r.episodes  = ep_log.n
+  r.dropped   = ep_dropped
+  r.responded = resp
+  r.rt_n      = rn
+  r.rt50      = rt50
+  r.rt95      = rt95
+  r.coverage  = (denom > 0) and (c.s / denom) or -1
+  return r
 end
 
 function M.episodes() return ep_log, ep_log.n end

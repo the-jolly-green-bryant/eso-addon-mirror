@@ -253,6 +253,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Crafting Writ Assistant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Argusus/Crafting-Writ-Assistant__1121) | Argusus | PC / Mac | .34b |
 | [CraftingDailyNotification](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Eswagrom/CraftingDailyNotification__4808) | Eswagrom | PC / Mac | 1.0 |
 | [CraftingHouse](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PrimeRibeye/CraftingHouse__3492) | PrimeRibeye | PC / Mac | 1.4 |
+| [CraftMaterialAssistant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/lesse83/CraftMaterialAssistant__96d1c172-661c-4739-960f-fcf660401298) | lesse83 | Console | — |
 | [CraftStore](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rhyono/CraftStore__1590) | Rhyono | PC / Mac | 3.05 |
 | [CRAFTY Stocklist - The craftbag stock watchlist for your crafting profession](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/rp12439_3/CRAFTY-Stocklist---The-craftbag-stock-watchlist-for-your-crafting-profession__3116) | rp12439_3 | PC / Mac | V2.65 |
 | [Criminal](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/napalmskull/Criminal__3765) | napalmskull | PC / Mac | 1.0.1 |

@@ -191,6 +191,7 @@ FOB.Functions[defId] = {
         LOOT_SHARED.GetSortedLootData = function()
             ---@diagnostic disable-next-line: redundant-parameter
             local lootData = origFunction(LOOT_SHARED)
+            FOB.ActiveCompanionDefId = GetActiveCompanionDefId()
 
             if (FOB.Vars.PreventTreasure and FOB.Enabled and (FOB.ActiveCompanionDefId == defId)) then
                 for idx, data in ipairs(lootData) do

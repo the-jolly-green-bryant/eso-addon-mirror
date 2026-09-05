@@ -1,11 +1,32 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/FlatBadger/Fish-Bar__3284",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "FlatBadger",
   "canonical_id": "esoui:3284",
   "category_id": "17",
   "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
     {
       "name": "Fallen Banners",
       "version": "10.3.5"
@@ -49,7 +70,7 @@
     "FishBar"
   ],
   "download_url": "https://www.esoui.com/downloads/dl3284/",
-  "fingerprint": "281ee006ad4c7801750a683c5a51f1f93c2a6068dc20bec6d927194fb56deb46",
+  "fingerprint": "985c39163efc949be3d4e38f9e8ba1ace681d79ccc0e3fd223148fab98794f07",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw11180.png"
   ],
@@ -59,11 +80,11 @@
   "source_id": "3284",
   "source_url": "https://www.esoui.com/downloads/info3284-FishBar.html",
   "stats": {
-    "downloads": 20941,
-    "favorites": 36,
-    "monthly_downloads": 236
+    "downloads": 21498,
+    "favorites": 37,
+    "monthly_downloads": 472
   },
   "title": "Fish Bar",
-  "updated_at": 1742033961000,
-  "version": "1.9.0"
+  "updated_at": 1788515237000,
+  "version": "1.10.0"
 }

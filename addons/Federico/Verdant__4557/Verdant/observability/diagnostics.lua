@@ -227,6 +227,7 @@ function M.full_report(include_gc)
   end
   if Verdant.SessionStore and Verdant.SessionStore.report_lines then
     section("session library", Verdant.SessionStore.report_lines())
+    section("hitch", Verdant.Hitch.lines())
   end
   section("diagnostics", build_diag_lines())
   if Verdant.Profiler and Verdant.Profiler.report_lines then

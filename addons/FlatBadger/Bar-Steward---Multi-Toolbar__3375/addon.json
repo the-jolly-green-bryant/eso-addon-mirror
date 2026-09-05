@@ -70,7 +70,7 @@
     "BarSteward"
   ],
   "download_url": "https://www.esoui.com/downloads/dl3375/",
-  "fingerprint": "8f3b479dff9a7ca0e8d7a19a26383b4a99b10cd308f6608c4a5df6e5f273e624",
+  "fingerprint": "2b51ffb887351d6738cf33635d3c4358490dc8b759ea92baede1edc6fb0d416a",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw11686.png",
     "https://cdn-eso.mmoui.com/preview/pvw11516.png",
@@ -88,11 +88,11 @@
   "source_id": "3375",
   "source_url": "https://www.esoui.com/downloads/info3375-BarSteward-MultiToolbar.html",
   "stats": {
-    "downloads": 206301,
+    "downloads": 206845,
     "favorites": 148,
-    "monthly_downloads": 704
+    "monthly_downloads": 1271
   },
   "title": "Bar Steward - Multi Toolbar",
-  "updated_at": 1788456475000,
-  "version": "3.5.11"
+  "updated_at": 1788514785000,
+  "version": "3.5.12"
 }

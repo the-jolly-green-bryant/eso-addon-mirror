@@ -6,7 +6,7 @@ In-game ESO dungeon, trial, and arena mechanics viewer with paste-ready notes.
 
 ## Current state
 
-Version: 0.7.2
+Version: 0.8.16
 
 Current complete modules:
 
@@ -80,9 +80,26 @@ All four finite ESO arenas include complete Veteran datasets:
 /dmech
 /dungeonmechs
 /flamecodex
+/dmcsettings
+/dmcs
 ```
 
 The addon also exposes keybinds under Controls for opening/closing the window and pasting the currently selected mechanic.
+
+## Appearance workshop
+
+Open the header cog, choose **Settings → Addons → Flamechasers Codex**, or use `/dmcsettings` or `/dmcs`.
+
+- All appearance changes update the Codex live without `/reloadui`.
+- The original v0.7.2 presentation is the exact default and is available as the **Flamechasers** preset.
+- Thirteen complete color presets are included: Flamechasers, Midnight Violet, Rose Velvet, Dusk Lilac, Classic ESO, Moonlit Sapphire, Tidal Teal, Blood Moon, Sunset Copper, Silver Mist, Ember, Verdant, and High Contrast. Every preset defines the full palette, including neutral text, status cues, disabled controls, and hover states.
+- Every meaningful color tier can be edited independently, including window surfaces, text, list states, buttons, selectors, mechanic cards, fields, dividers, hover hints, and splash-art tints.
+- Body, heading, and navigation font families can be selected independently from ten ESO client font choices, with six shadow and outline effects.
+- Body, navigation, boss-row, section, title, compact-label, and hint sizes have independent safe-range controls.
+- Text shadow/outline effects, overall window scale, position locking, activity-row density, mechanic-card spacing, and splash-art intensity are configurable.
+- Optional artwork, badges, hints, metadata, icons, counters, and header details can be hidden individually.
+- Typography, layout, colors, or the complete appearance can be reset independently.
+- Appearance migration and resets never modify personal boss notes, difficulty preference, or the saved window position.
 
 ## Design notes
 
@@ -105,6 +122,7 @@ The addon also exposes keybinds under Controls for opening/closing the window an
 - Every boss has an account-wide personal note field with Save, Revert, and numbered Paste controls.
 - Personal boss notes are kept separately for Veteran and Hard Mode, stored by difficulty plus stable activity/boss IDs, support up to 900 characters, and split automatically into safe chat-sized parts when needed.
 - Mechanics can include explicit boss attack / move labels through the `casts` field. These labels are used in both the UI title and paste prefix so players can match death recap/cast names more easily.
+- Appearance settings are account-wide, validated on load, and clamped to tested size and density ranges so a damaged SavedVariables entry cannot break the UI.
 
 ## Install
 
@@ -118,7 +136,7 @@ Then run `/reloadui` in game.
 
 ## Privacy and dependencies
 
-- No external libraries are required.
+- LibAddonMenu-2.0 is required for the appearance settings page.
 - The addon has no network access, telemetry, advertising, or external executable.
 - It stores only local UI settings and personal boss notes in ESO SavedVariables.
 

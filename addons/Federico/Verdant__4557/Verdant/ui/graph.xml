@@ -25,7 +25,10 @@
                      resizeHandleSize="8">
 
       <Dimensions x="420" y="312"/>
+      <OnMouseDoubleClick>Verdant.Graph.on_title_double_click()</OnMouseDoubleClick>
+      <OnMoveStart>Verdant.Graph.on_move_start()</OnMoveStart>
       <OnMoveStop>Verdant.Graph.on_move_stop()</OnMoveStop>
+      <OnResizeStart>Verdant.Graph.on_move_start()</OnResizeStart>
       <OnResizeStop>Verdant.Graph.on_resize_stop()</OnResizeStop>
 
       <Controls>
@@ -56,7 +59,7 @@
         <Texture name="$(parent)ChromeTop"
                  textureFile="EsoUI/Art/Tooltips/UI-TooltipCenter.dds">
           <Anchor point="TOPLEFT"     relativeTo="$(parent)" relativePoint="TOPLEFT"  offsetX="6"  offsetY="6"/>
-          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-6" offsetY="84"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-6" offsetY="100"/>
         </Texture>
 
         <Texture name="$(parent)ChromeBottom"
@@ -67,13 +70,13 @@
 
         <Texture name="$(parent)ChromeLeft"
                  textureFile="EsoUI/Art/Tooltips/UI-TooltipCenter.dds">
-          <Anchor point="TOPLEFT"     relativeTo="$(parent)" relativePoint="TOPLEFT"    offsetX="6"  offsetY="84"/>
+          <Anchor point="TOPLEFT"     relativeTo="$(parent)" relativePoint="TOPLEFT"    offsetX="6"  offsetY="100"/>
           <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="14" offsetY="-14"/>
         </Texture>
 
         <Texture name="$(parent)ChromeRight"
                  textureFile="EsoUI/Art/Tooltips/UI-TooltipCenter.dds">
-          <Anchor point="TOPLEFT"     relativeTo="$(parent)" relativePoint="TOPRIGHT"    offsetX="-14" offsetY="84"/>
+          <Anchor point="TOPLEFT"     relativeTo="$(parent)" relativePoint="TOPRIGHT"    offsetX="-14" offsetY="100"/>
           <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-6"  offsetY="-14"/>
         </Texture>
 
@@ -177,8 +180,6 @@
                     pressed="EsoUI/Art/Journal/journal_tabIcon_loreLibrary_down.dds"
                     mouseOver="EsoUI/Art/Journal/journal_tabIcon_loreLibrary_over.dds"/>
           <OnClicked>Verdant.Library.toggle()</OnClicked>
-          <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, BOTTOM, GetString(VERDANT_LIB_TITLE))</OnMouseEnter>
-          <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
         </Button>
 
         <!-- StatusLabel spans the gap between Lib and the view nav so it
@@ -188,16 +189,17 @@
                horizontalAlignment="LEFT"
                verticalAlignment="CENTER">
           <Anchor point="TOPLEFT"  offsetX="252"  offsetY="38"/>
-          <Anchor point="TOPRIGHT" offsetX="-104" offsetY="38"/>
+          <Anchor point="TOPRIGHT" offsetX="-14"  offsetY="38"/>
           <Dimensions y="14"/>
         </Label>
 
         <!-- View navigation: [<<] [EMS] [>] -->
         <Button name="$(parent)PrevViewBtn"
+                hidden="true"
                 mouseEnabled="true"
                 mouseOverBlendMode="ADD"
                 inherits="ZO_ButtonBehaviorClickSound">
-          <Anchor point="TOPRIGHT" offsetX="-72" offsetY="33"/>
+          <Anchor point="TOPRIGHT" offsetX="-76" offsetY="33"/>
           <Dimensions x="24" y="24"/>
           <Textures normal="EsoUI/Art/Buttons/large_leftdoublearrow_up.dds"
                     pressed="EsoUI/Art/Buttons/large_leftdoublearrow_down.dds"
@@ -206,14 +208,16 @@
         </Button>
 
         <Label name="$(parent)ViewLabel"
+               hidden="true"
                font="ZoFontGameSmall"
                horizontalAlignment="CENTER"
                verticalAlignment="CENTER">
-          <Anchor point="TOPRIGHT" offsetX="-40" offsetY="38"/>
-          <Dimensions x="30" y="14"/>
+          <Anchor point="TOPRIGHT" offsetX="-36" offsetY="38"/>
+          <Dimensions x="36" y="14"/>
         </Label>
 
         <Button name="$(parent)NextViewBtn"
+                hidden="true"
                 mouseEnabled="true"
                 mouseOverBlendMode="ADD"
                 inherits="ZO_ButtonBehaviorClickSound">
@@ -225,9 +229,15 @@
           <OnClicked>Verdant.Graph.next_view()</OnClicked>
         </Button>
 
+        <Control name="$(parent)Tabs" mouseEnabled="false">
+          <Anchor point="TOPLEFT"  offsetX="14"  offsetY="66"/>
+          <Anchor point="TOPRIGHT" offsetX="-14" offsetY="66"/>
+          <Dimensions y="20"/>
+        </Control>
+
         <!-- ── Inner viewport: tighter padding, less chrome presence ────── -->
         <Control name="$(parent)Viewport" mouseEnabled="false">
-          <Anchor point="TOPLEFT"     offsetX="14"  offsetY="84"/>
+          <Anchor point="TOPLEFT"     offsetX="14"  offsetY="100"/>
           <Anchor point="BOTTOMRIGHT" offsetX="-14" offsetY="-14"/>
 
           <Controls>
@@ -287,6 +297,53 @@
                    verticalAlignment="CENTER">
               <AnchorFill/>
             </Label>
+
+          </Controls>
+        </Control>
+
+        <Control name="$(parent)Welcome" hidden="true">
+          <Dimensions x="380" y="216"/>
+          <Anchor point="CENTER"/>
+          <Controls>
+
+            <Backdrop name="$(parent)Bg">
+              <AnchorFill/>
+              <Edge file="EsoUI/Art/Tooltips/UI-Border.dds"
+                    edgeFileWidth="128" edgeFileHeight="16" edgeSize="6"/>
+              <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds"/>
+              <Insets left="6" top="6" right="-6" bottom="-6"/>
+            </Backdrop>
+
+            <Texture name="$(parent)Logo" textureFile="Verdant/assets/logo.dds">
+              <Anchor point="TOP" offsetY="14"/>
+              <Dimensions x="32" y="32"/>
+            </Texture>
+
+            <Label name="$(parent)Title"
+                   font="ZoFontWindowTitle"
+                   horizontalAlignment="CENTER"
+                   verticalAlignment="CENTER">
+              <Anchor point="TOP" offsetY="48"/>
+              <Dimensions x="340" y="20"/>
+            </Label>
+
+            <Label name="$(parent)Body"
+                   font="ZoFontGameSmall"
+                   horizontalAlignment="CENTER"
+                   verticalAlignment="TOP">
+              <Anchor point="TOPLEFT"  offsetX="20"  offsetY="76"/>
+              <Anchor point="TOPRIGHT" offsetX="-20" offsetY="76"/>
+              <Dimensions y="96"/>
+            </Label>
+
+            <Button name="$(parent)OkBtn"
+                    mouseEnabled="true"
+                    font="ZoFontGameSmall"
+                    inherits="ZO_DefaultButton">
+              <Anchor point="BOTTOM" offsetY="-12"/>
+              <Dimensions x="140" y="24"/>
+              <OnClicked>Verdant.Graph.on_welcome_ok()</OnClicked>
+            </Button>
 
           </Controls>
         </Control>

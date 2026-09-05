@@ -1,6 +1,6 @@
-OWA_LANG_EN = {
+local strings = {
 
-    ADDON_NAME = "|c3399FFOlha's|r |cFFD700Wrath|r Assistant",
+    ADDON_NAME = "Olha's Wrath Assistant",
 
     SETTINGS = "Settings",
 
@@ -11,7 +11,10 @@ OWA_LANG_EN = {
     ACCOUNT_WIDE = "Account Wide",
 
     REPAIR = "Repair & Recharge",
-    DECONSTRUCT = "Auto Deconstruct",
+    REPAIR_TOOLTIP = "Enables automatic repair and weapon recharging.",
+    REPAIR_PANEL = "OWRepair & Recharge",
+    DECONSTRUCT = "Deconstructor",
+    DECONSTRUCTOR_PANEL = "OWDeconstructor",
     MERCHANT = "Merchant",
     BANKING = "Banking",
 
@@ -23,3 +26,16 @@ OWA_LANG_EN = {
     ACCOUNT_WIDE_IN_DEVELOPMENT = "In the test version, settings are always saved account-wide.",
 
 }
+
+local owa = OWAssistant
+owa.RegisterLanguage("en", "English", strings)
+
+ZO_CreateStringId(
+    "SI_OWA_ADDON_NAME",
+    strings.ADDON_NAME
+)
+
+ZO_CreateStringId(
+    "SI_BINDING_NAME_OWA_DECONSTRUCT",
+    strings.MASS_DECONSTRUCT
+)

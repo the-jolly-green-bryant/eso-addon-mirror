@@ -34,6 +34,14 @@ local DEFAULT_NEARBY_PIN_RADIUS_METERS = 120
 local MIN_NEARBY_PIN_RADIUS_METERS = 25
 local MAX_NEARBY_PIN_RADIUS_METERS = 300
 local NEARBY_PIN_RADIUS_STEP_METERS = 5
+local POI_DIAGNOSTIC_COMMAND = "/aodpoi"
+
+local POI_PIN_RADIUS_BYPASS_ACTIVITY_IDS =
+{
+    -- These POIs use ESO's current-area signal because their map pin does not mark the encounter.
+    -- See POI_EXCEPTIONS.md for the capture and verification procedure.
+    2292, -- Four Skull Lookout
+}
 
 local ANNOUNCEMENT_CHAT = "chat"
 
@@ -160,6 +168,7 @@ local NEARBY_PIN_SETTINGS =
 local SETTINGS_DEFAULTS =
 {
     enabled = true,
+    debugEnabled = false,
     levelingJourney =
     {
         enabled = false,
@@ -717,7 +726,199 @@ function Addon.GetPlayerRegionId()
     return regionId
 end
 
+function Addon.IsDebugEnabled()
+    return Addon.savedVars and Addon.savedVars.debugEnabled == true
+end
+
+function Addon.SetDebugEnabled(enabled)
+    enabled = enabled == true
+    if Addon.savedVars.debugEnabled ~= enabled then
+        Addon.savedVars.debugEnabled = enabled
+    end
+    Addon.RefreshPOIDiagnosticCommandRegistration()
+end
+
+function Addon.GetZoneStoryActivityIdForPOI(zoneIndex, poiIndex, zoneCompletionType)
+    local zoneId = GetZoneId(zoneIndex)
+    local zoneStoryZoneId = GetZoneStoryZoneIdForZoneId(zoneId)
+    if zoneStoryZoneId == 0 then
+        return nil, zoneId, nil
+    end
+
+    local numActivities = GetNumZoneActivitiesForZoneCompletionType(zoneStoryZoneId, zoneCompletionType)
+    for activityIndex = 1, numActivities do
+        local activityId = GetZoneActivityIdForZoneCompletionType(zoneStoryZoneId, zoneCompletionType, activityIndex)
+        local activityZoneIndex, activityPOIIndex = GetPOIIndices(activityId)
+        if activityZoneIndex == zoneIndex and activityPOIIndex == poiIndex then
+            return activityId, zoneId, zoneStoryZoneId
+        end
+    end
+
+    return nil, zoneId, zoneStoryZoneId
+end
+
+function Addon.BuildPOIDiagnosticData(zoneIndex, poiIndex, gps, playerX, playerY)
+    if not zoneIndex or not poiIndex then
+        return nil
+    end
+
+    local name = GetPOIInfo(zoneIndex, poiIndex)
+    local zoneCompletionType = GetPOIZoneCompletionType(zoneIndex, poiIndex)
+    local activityId, zoneId, zoneStoryZoneId = Addon.GetZoneStoryActivityIdForPOI(
+        zoneIndex,
+        poiIndex,
+        zoneCompletionType
+    )
+    local poiX, poiY, _, _, isShownInCurrentMap = GetPOIMapInfo(zoneIndex, poiIndex)
+    local distanceMeters
+    if gps and poiX and poiY and isShownInCurrentMap then
+        distanceMeters = gps:GetLocalDistanceInMeters(playerX, playerY, poiX, poiY)
+    end
+
+    return
+    {
+        zoneIndex = zoneIndex,
+        poiIndex = poiIndex,
+        zoneId = zoneId,
+        zoneStoryZoneId = zoneStoryZoneId,
+        activityId = activityId,
+        zoneCompletionType = zoneCompletionType,
+        name = name,
+        poiX = poiX,
+        poiY = poiY,
+        isShownInCurrentMap = isShownInCurrentMap,
+        distanceMeters = distanceMeters,
+    }
+end
+
+function Addon.GetNearestWorldBossPOIDiagnostic(gps, playerX, playerY)
+    if not gps then
+        return nil
+    end
+
+    local zoneIndex = GetCurrentMapZoneIndex()
+    if not zoneIndex then
+        return nil
+    end
+
+    local nearestData
+    local numPOIs = GetNumPOIs(zoneIndex)
+    for poiIndex = 1, numPOIs do
+        if GetPOIZoneCompletionType(zoneIndex, poiIndex) == ZONE_COMPLETION_TYPE_GROUP_BOSSES then
+            local data = Addon.BuildPOIDiagnosticData(zoneIndex, poiIndex, gps, playerX, playerY)
+            if data.distanceMeters
+                and (not nearestData or data.distanceMeters < nearestData.distanceMeters) then
+                nearestData = data
+            end
+        end
+    end
+
+    return nearestData
+end
+
+function Addon.OutputPOIDiagnosticData(label, data)
+    if not data then
+        CHAT_ROUTER:AddSystemMessage(string.format("AOD POI: %s=none", label))
+        return
+    end
+
+    CHAT_ROUTER:AddSystemMessage(string.format(
+        "AOD POI: %s name=%s zoneId=%s storyZoneId=%s zoneIndex=%s poiIndex=%s activityId=%s completionType=%s",
+        label,
+        tostring(data.name),
+        tostring(data.zoneId),
+        tostring(data.zoneStoryZoneId),
+        tostring(data.zoneIndex),
+        tostring(data.poiIndex),
+        tostring(data.activityId),
+        tostring(data.zoneCompletionType)
+    ))
+    CHAT_ROUTER:AddSystemMessage(string.format(
+        "AOD POI: %s pin=(%s,%s) shown=%s distanceMeters=%s",
+        label,
+        tostring(data.poiX),
+        tostring(data.poiY),
+        tostring(data.isShownInCurrentMap),
+        data.distanceMeters and string.format("%.2f", data.distanceMeters) or "nil"
+    ))
+end
+
+function Addon.ReportPOIDiagnostic()
+    local gps, playerX, playerY = Addon.GetPlayerPositionForNearbyCheck()
+    CHAT_ROUTER:AddSystemMessage(string.format(
+        "AOD POI: mapMatchesPlayer=%s player=(%s,%s) gpsMeasurement=%s configuredRadius=%s",
+        tostring(DoesCurrentMapMatchMapForPlayerLocation()),
+        tostring(playerX),
+        tostring(playerY),
+        tostring(gps ~= nil),
+        tostring(Addon.GetNearbyPinRadiusMeters())
+    ))
+
+    local currentZoneIndex, currentPOIIndex = GetCurrentSubZonePOIIndices()
+    local currentData = Addon.BuildPOIDiagnosticData(currentZoneIndex, currentPOIIndex, gps, playerX, playerY)
+    Addon.OutputPOIDiagnosticData("current", currentData)
+
+    local nearestWorldBossData = Addon.GetNearestWorldBossPOIDiagnostic(gps, playerX, playerY)
+    Addon.OutputPOIDiagnosticData("nearestWorldBoss", nearestWorldBossData)
+end
+
+function Addon.RefreshPOIDiagnosticCommandRegistration()
+    local shouldRegister = Addon.IsDebugEnabled()
+    if shouldRegister and not Addon.poiDiagnosticCommandRegistered then
+        if not Addon.poiDiagnosticCommandHandler then
+            Addon.poiDiagnosticCommandHandler = function()
+                Addon.ReportPOIDiagnostic()
+            end
+        end
+
+        local registeredHandler = SLASH_COMMANDS[POI_DIAGNOSTIC_COMMAND]
+        if registeredHandler and registeredHandler ~= Addon.poiDiagnosticCommandHandler then
+            if CHAT_ROUTER then
+                CHAT_ROUTER:AddSystemMessage(
+                    "AOD Debug: /aodpoi is already registered by another addon and was not replaced."
+                )
+            end
+            return
+        end
+
+        SLASH_COMMANDS[POI_DIAGNOSTIC_COMMAND] = Addon.poiDiagnosticCommandHandler
+        Addon.poiDiagnosticCommandRegistered = true
+    elseif not shouldRegister and Addon.poiDiagnosticCommandRegistered then
+        if SLASH_COMMANDS[POI_DIAGNOSTIC_COMMAND] == Addon.poiDiagnosticCommandHandler then
+            SLASH_COMMANDS[POI_DIAGNOSTIC_COMMAND] = nil
+        end
+        Addon.poiDiagnosticCommandRegistered = false
+    end
+end
+
+function Addon.BuildPOIPinRadiusBypassLookup()
+    local lookup = {}
+    for index = 1, #POI_PIN_RADIUS_BYPASS_ACTIVITY_IDS do
+        local zoneIndex, poiIndex = GetPOIIndices(POI_PIN_RADIUS_BYPASS_ACTIVITY_IDS[index])
+        if zoneIndex and poiIndex then
+            local zoneLookup = lookup[zoneIndex]
+            if not zoneLookup then
+                zoneLookup = {}
+                lookup[zoneIndex] = zoneLookup
+            end
+            zoneLookup[poiIndex] = true
+        end
+    end
+
+    Addon.poiPinRadiusBypassLookup = lookup
+end
+
+function Addon.ShouldBypassPOIPinRadius(zoneIndex, poiIndex)
+    local zoneLookup = Addon.poiPinRadiusBypassLookup
+        and Addon.poiPinRadiusBypassLookup[zoneIndex]
+    return zoneLookup and zoneLookup[poiIndex] == true
+end
+
 function Addon.IsCurrentPOIWithinRadius(zoneIndex, poiIndex)
+    if Addon.ShouldBypassPOIPinRadius(zoneIndex, poiIndex) then
+        return true
+    end
+
     local gps, playerX, playerY = Addon.GetPlayerPositionForNearbyCheck()
     if not gps then
         return false
@@ -727,6 +928,10 @@ function Addon.IsCurrentPOIWithinRadius(zoneIndex, poiIndex)
 end
 
 function Addon.IsPOIWithinRadius(zoneIndex, poiIndex, gps, playerX, playerY)
+    if Addon.ShouldBypassPOIPinRadius(zoneIndex, poiIndex) then
+        return false
+    end
+
     local poiX, poiY, _, _, isPOIShownInCurrentMap = GetPOIMapInfo(zoneIndex, poiIndex)
     if not poiX or not poiY or not isPOIShownInCurrentMap then
         return false
@@ -904,6 +1109,7 @@ function Addon.MigrateSavedVars()
         levelingJourney.showMapLevel = levelingJourney.showMapLevel == true
     end
 
+    savedVars.debugEnabled = savedVars.debugEnabled == true
     savedVars.historyBossesExperimentalEnabled = savedVars.historyBossesExperimentalEnabled == true
     savedVars.situations = savedVars.situations or {}
     if type(savedVars.regions) ~= "table" then
@@ -1577,6 +1783,22 @@ function Addon.CreateHistoryBossExperimentalCheckbox()
     }
 end
 
+function Addon.CreateDebugCheckbox()
+    return
+    {
+        type = "checkbox",
+        name = "Debug",
+        getFunc = function()
+            return Addon.IsDebugEnabled()
+        end,
+        setFunc = function(value)
+            Addon.SetDebugEnabled(value)
+        end,
+        default = SETTINGS_DEFAULTS.debugEnabled,
+        width = "full",
+    }
+end
+
 function Addon.CreateNearbyPinDropdown(nearbyPinSettings, choices, values)
     return
     {
@@ -1739,6 +1961,7 @@ function Addon.LoadActiveSettings()
     Addon.RefreshHistoryBossEventRegistration()
     Addon.RefreshLevelingJourneyEventRegistration()
     Addon.RefreshWorldMapLevelUpdateRegistration()
+    Addon.RefreshPOIDiagnosticCommandRegistration()
 end
 
 function Addon.LoadScopeSettings()
@@ -1875,6 +2098,12 @@ function Addon.RegisterSettings()
         },
         Addon.CreateHistoryBossExperimentalCheckbox(),
         Addon.CreateHistoryBossDropdown(choices, values),
+        {
+            type = "header",
+            name = "Diagnostics",
+            width = "full",
+        },
+        Addon.CreateDebugCheckbox(),
     }
 
     LAM:RegisterAddonPanel(LAM_PANEL_NAME, panelData)
@@ -1996,6 +2225,7 @@ end
 
 function Addon.Initialize()
     Addon.BuildLevelingJourneyZoneLevels()
+    Addon.BuildPOIPinRadiusBypassLookup()
     Addon.LoadScopeSettings()
     Addon.LoadActiveSettings()
     Addon.lastObservedDifficulty = GetOverlandDifficulty()

@@ -1,11 +1,14 @@
+local owa = OWAssistant
+local deconstruct = owa.Deconstruct
+
 local function IsClothingStation()
-    if OWDeconstruct.IsUniversalStation() then
+    if deconstruct.IsUniversalStation() then
         return true
     end
 
-    return OWDeconstruct.currentCraftingType
+    return deconstruct.currentCraftingType
         == CRAFTING_TYPE_BLACKSMITHING
-        or OWDeconstruct.currentCraftingType
+        or deconstruct.currentCraftingType
         == CRAFTING_TYPE_CLOTHIER
 end
 
@@ -83,7 +86,7 @@ local function CanExtractClothing(
     bagId,
     slotIndex
 )
-    if OWDeconstruct.IsUniversalStation() then
+    if deconstruct.IsUniversalStation() then
         -- Важка броня належить до ковальства.
         local canExtractBlacksmithing =
             CanItemBeSmithingExtractedOrRefined(
@@ -108,7 +111,7 @@ local function CanExtractClothing(
     return CanItemBeSmithingExtractedOrRefined(
         bagId,
         slotIndex,
-        OWDeconstruct.currentCraftingType
+        deconstruct.currentCraftingType
     )
 end
 
@@ -177,7 +180,7 @@ local function IsClothingAllowed(
         )
 
     local maxQuality =
-        OWDeconstruct.GetMaxQuality(profile)
+        deconstruct.GetMaxQuality(profile)
 
     if not quality
         or quality > maxQuality
@@ -239,7 +242,9 @@ local function IsClothingAllowed(
         matchesFilter = true
     end
 
-    if profile.research
+    if (profile.researchMode == "all"
+        or profile.researchMode
+        == "keep_lowest_unresearched")
         and IsResearchableClothingTrait(traitType)
     then
         matchesFilter = true
@@ -304,8 +309,7 @@ local function RemoveLowestResearchClothing(
     candidates,
     profile
 )
-    if not profile.research
-        or profile.researchMode
+    if profile.researchMode
         ~= "keep_lowest_unresearched"
     then
         return candidates
@@ -385,8 +389,8 @@ local function CollectClothingCandidates(
     end
 
     local profiles =
-        OWA_SavedVariables
-        and OWA_SavedVariables.deconstructProfiles
+        owa.savedVariables
+        and owa.savedVariables.deconstructProfiles
 
     local profile =
         profiles and profiles.clothing
@@ -435,7 +439,7 @@ local function CollectClothingCandidates(
     end
 end
 
-OWDeconstruct.RegisterCollector(
+deconstruct.RegisterCollector(
     "clothing",
     CollectClothingCandidates
 )

@@ -123,7 +123,7 @@ local function scan_slotted()
       end
     end
   end
-  log:info("slotted scan:", n, "ability names")
+  if n > 0 then log:info("slotted scan:", n, "ability names") end
 end
 
 local function resolve_desc(id, tag)
@@ -167,7 +167,7 @@ local function get_rec(id, tag)
     rec.n_ids = rec.n_ids + 1
     rec.ids[rec.n_ids] = id
     if rec.group == "other" then
-      local g = SC.group_of(id)
+      local g = SC.group_of_quiet(id)
       if g and g ~= "other" then rec.group = g end
     end
     if rec.desc == "" then
@@ -206,7 +206,7 @@ local function get_rec(id, tag)
     note_excluded(id, nil, nil, "passive skill")
     return nil
   end
-  local grp = SC.group_of(id) or "other"
+  local grp = SC.group_of_quiet(id) or "other"
   if grp ~= "other" and grp ~= "item" and not BUFF_VETO[id] then
     bump("buffs.skipped_skill_line_proc")
     note_excluded(id, nil, nil, "skill-line proc (" .. grp .. ")")

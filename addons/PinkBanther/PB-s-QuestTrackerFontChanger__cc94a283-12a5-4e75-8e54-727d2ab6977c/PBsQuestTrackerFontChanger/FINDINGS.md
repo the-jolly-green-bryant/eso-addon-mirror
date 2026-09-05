@@ -10,7 +10,7 @@ PS5 either. The distinction matters: on console a wrong guess costs a whole test
 
 ---
 
-## 1. Both trackers are Lua UI, not engine-drawn
+## 1. All three trackers are Lua UI, not engine-drawn
 
 **From source.** `esoui/ingame/zo_quest/questtracker.lua` builds the focused quest tracker out
 of three `ZO_ControlPool`s of `LabelControl`s:
@@ -25,20 +25,26 @@ self.stepDescriptionPool = ZO_ControlPool:New("ZO_QuestStepDescription", tracker
 `questtracker.xml`, and `LabelControl:SetFont(fontDescriptor)` is public in
 `ESOUIDocumentation.txt`.
 
-`esoui/ingame/housingeditor/houseinformationtracker.lua` is the panel under it — the one that
-appears in a house, yours or someone else's on a home tour. `ZO_HouseInformationTracker` is a
-`ZO_HUDTracker_Base` subclass, and its four labels are `<Label>`s in
-`houseinformationtracker.xml` and `hudtracker_base.xml`:
+Two more panels sit under it in the same column, and both are `ZO_HUDTracker_Base` subclasses
+whose labels are `<Label>`s in their own XML plus `hudtracker_base.xml`:
 
 ```lua
+-- promotionaleventtracker.lua   (Golden Pursuits, and Tamriel Tomes)
+self.progressLabel   = self.container:GetNamedChild("ProgressLabel")
+-- houseinformationtracker.lua
 self.populationLabel = control:GetNamedChild("ContainerPopulation")
 self.tagsLabel       = control:GetNamedChild("ContainerTags")
--- and from ZO_HUDTracker_Base:Initialize
+-- and from ZO_HUDTracker_Base:Initialize, for both
 self.headerLabel     = self.container:GetNamedChild("Header")
 self.subLabel        = self.container:GetNamedChild("SubLabel")
 ```
 
-Same conclusion for both, and it is the whole difference from PB's NamePlateChanger.
+The order down the screen comes from their anchors: the quest tracker panel is the top of the
+chain, `ZO_ZoneStoryTracker` anchors to `ZO_FocusedQuestTrackerPanelContainerQuestContainer`,
+`ZO_PromotionalEventTracker_TL` to `ZO_ZoneStoryTracker`, and
+`ZO_HouseInformationTrackerTopLevel` to `ZO_PromotionalEventTracker_TL`.
+
+Same conclusion for all three, and it is the whole difference from PB's NamePlateChanger.
 
 This is the whole difference from PB's NamePlateChanger. There the nameplate is drawn by the
 engine and the only surface is `SetNameplateGamepadFont`, a *client setting* — it outlives the
@@ -52,7 +58,7 @@ Consequences, all of them things the nameplate add-on needed and this one does n
 - no write budget or reload-loop defence,
 - uninstalling is a complete undo.
 
-## 2. There are five fonts across the two, not one
+## 2. There are seven fonts across the three, not one
 
 **From source.** Each file keeps a constants table per platform:
 
@@ -61,16 +67,26 @@ Consequences, all of them things the nameplate add-on needed and this one does n
 | quest | `questName` | `ZO_TrackedHeader` | `ZoFontGamepadBold27` | `ZoFontGameShadow` |
 | quest | `questStep` | `ZO_QuestStepDescription` | `ZoFontGamepadBold22` | `ZoFontGameShadow` |
 | quest | `questGoal` | `ZO_QuestCondition` | `ZoFontGamepad34` | `ZoFontGameShadow` |
+| pursuit | `pursuitName` | `...ContainerHeader` | `ZoFontGamepadBold27` | `ZoFontGameShadow` |
+| pursuit | `pursuitDetail` | `...SubLabel` / `...ProgressLabel` | `ZoFontGamepad34` | `ZoFontGameShadow` |
 | house | `houseName` | `...ContainerHeader` | `ZoFontGamepadBold27` | `ZoFontGameShadow` |
 | house | `houseDetail` | `...SubLabel` / `...Population` / `...Tags` | `ZoFontGamepad34` | `ZoFontGameShadow` |
 
 Note the gamepad objective lines are **34**, larger than the 27 quest name. That is
 deliberate, and it is why the quest size is three settings rather than one.
 
-`houseDetail` is one setting for three labels because the game gives all three the same font —
-`FONT_SUBLABEL`, `FONT_POPULATION` and `FONT_TAGS` are all `ZoFontGamepad34` in
-`ZO_HouseInformationTracker:InitializeStyles`. One slider per font the game actually uses, no
-more and no fewer.
+The two `...Detail` roles are one setting for several labels because the game gives those
+labels the same font: `FONT_SUBLABEL` and `FONT_PROGRESS_LABEL` are both `ZoFontGamepad34` in
+`ZO_PromotionalEventTracker:InitializeStyles`, and `FONT_SUBLABEL`, `FONT_POPULATION` and
+`FONT_TAGS` are all `ZoFontGamepad34` in `ZO_HouseInformationTracker:InitializeStyles`. One
+slider per font the game actually uses, no more and no fewer.
+
+**Golden Pursuits is also Tamriel Tomes.** `ZO_PromotionalEventTracker:Update` fills the same
+three controls from whichever system has something tracked, and the file opens with
+
+> `-- TODO Tamriel Tomes: Rename file to TimedActivityTracker.lua`
+
+so one section covers both, and there is no second panel to configure.
 
 Resolved in `esoui/fontdefs/`:
 
@@ -118,10 +134,11 @@ putting the platform's named fonts back on every active label. "Off" is that cal
 the first half of every settings change — without it, a label would keep the larger font it was
 just given and nothing would ever shrink.
 
-## 3b. The house tracker: one public method, and it is the only writer
+## 3b. The two HUD panels: one public method, and it is the only writer
 
-**From source.** Nothing in `houseinformationtracker.lua` is pooled. Four labels are created
-once with the control and live for the session, and exactly one thing ever sets their fonts:
+**From source.** Nothing in `promotionaleventtracker.lua` or `houseinformationtracker.lua` is
+pooled. Their labels are created once with the control and live for the session, and exactly
+one thing ever sets their fonts:
 
 ```lua
 function ZO_HouseInformationTracker:ApplyPlatformStyle(style)
@@ -132,9 +149,14 @@ function ZO_HouseInformationTracker:ApplyPlatformStyle(style)
 end
 ```
 
-`Refresh()` and `RefreshListingTags()` call `SetText`, never `SetFont`. So a font written here
-stays written until `ApplyPlatformStyle` runs again, which happens on a platform change and
-whenever we ask for it — nothing like the quest tracker's constant rebuilding.
+`ZO_PromotionalEventTracker:ApplyPlatformStyle` is the same shape, with `FONT_PROGRESS_LABEL`
+in place of the population and tags lines. In both classes `Update()`, `Refresh()` and
+`RefreshListingTags()` call `SetText`, never `SetFont`. So a font written here stays written
+until `ApplyPlatformStyle` runs again, which happens on a platform change and whenever we ask
+for it — nothing like the quest tracker's constant rebuilding.
+
+Because they are the same shape, one piece of code hooks both: a section carries the name of
+the global holding its singleton and the fields holding its labels, and nothing else differs.
 
 That makes the hook a straight wrapper on the instance's method. It is public, so unlike the
 quest tracker's file-locals there is no trick to it; assigning on the instance rather than the
@@ -148,8 +170,8 @@ on that method, one call does both halves.
 **Timing.** `ZO_HUDTracker_Base:Initialize` defers the rest to `ZO_Ingame`'s
 `EVENT_ADD_ON_LOADED`, and `InitializeStyles` ends by constructing a `ZO_PlatformStyle`, which
 applies immediately. `ZO_Ingame` is the game's own add-on and loads before ours, so by the time
-this add-on is loaded the labels are already styled — present, pristine, and ready to measure
-as the hook attaches. If a client ever ordered it the other way round, the labels would have no
+this add-on is loaded the labels of both panels are already styled — present, pristine, and
+ready to measure as the hook attaches. If a client ever ordered it the other way round, the labels would have no
 font yet, `GetFontSize()` would report nothing, and the measurement is simply not taken (and
 not marked as taken) until the platform style runs through our wrapper.
 
@@ -223,12 +245,59 @@ measurement, because at acquire time the label has no text yet and `GetTextDimen
 be meaningless. Only grown, never shrunk: 28 is already generous for the game's own size, and
 shrinking it would pull the whole tracker up into it.
 
-The house panel needs none of this. `ZO_HUDTracker_Base_Template` and its `Container` are both
-`resizeToFitDescendents="true"`, no label in `houseinformationtracker.xml` or
-`hudtracker_base.xml` carries a `<Dimensions>`, and every one is anchored to the bottom of the
-one above it. A larger font grows the panel. `RefreshAnchors()` is called after a restyle
+Neither HUD panel needs any of this. `ZO_HUDTracker_Base_Template` and its `Container` are both
+`resizeToFitDescendents="true"`, no label in `promotionaleventtracker.xml`,
+`houseinformationtracker.xml` or `hudtracker_base.xml` carries a `<Dimensions>`, and every one
+is anchored to the bottom of the one above it. A larger font grows the panel. `RefreshAnchors()` is called after a restyle
 anyway, because it is also what the tracker uses to re-place the population line when the owner
 line is hidden.
+
+## 6b. The gaps between the rows are separate numbers, in two different places
+
+**From source.** Nothing about the line spacing is part of the font, and the two kinds of
+tracker keep it in two different kinds of object.
+
+**The quest tracker** puts it on the tree node. `questtracker.lua` carries a per-platform table
+
+```lua
+QUEST_TRACKER_TREE_LINE_SPACING = {
+    [QUEST_TRACKER_TREE_HEADER] = 0,   -- 18 on keyboard
+    [QUEST_TRACKER_TREE_CONDITION] = 16,
+    [QUEST_TRACKER_TREE_SUBCATEGORY_TITLE] = 16,
+    [QUEST_TRACKER_TREE_SUBCATEGORY_CONDITION] = 6,
+}
+```
+
+and calls `treeNode:SetOffsetY(...)` from it immediately after every `AddChild`, and again in
+`ApplyPlatformStyleToCondition`. `ZO_TreeControl:Update` then does
+`anchor:SetOffsets(indent, node.m_OffsetY or self.m_OffsetY)`, anchoring each control's top to
+the previous control's bottom. So the offset is the gap, `ZO_TreeControlNode:SetOffsetY` is
+public, and `node.m_OffsetY` reads it back.
+
+**The two HUD panels** put it on `ZO_Anchor` objects in the platform style table --
+`SUBLABEL_PRIMARY_ANCHOR`, `PROGRESS_LABEL_PRIMARY_ANCHOR`, `POPULATION_*`, `TAGS_LABEL_*` --
+which `RefreshAnchors` re-applies to the labels through `RefreshAnchorSetOnControl`.
+`ZO_Anchor` has `GetOffsetX` / `GetOffsetY` / `SetOffsets`, all public.
+
+Three things follow from that, and they are what the implementation is shaped around:
+
+1. **A gap belongs to the row below it.** The offset positions the top of a control against the
+   bottom of the one before, so it is set on the *later* control. The gap under the quest name
+   is the step description's node, and scales with the step description's size. That is the
+   game's own attachment, not a choice made here.
+2. **The constants are unreachable but the values are not.** Both tables are file-local, so an
+   add-on cannot read `QUEST_TRACKER_TREE_LINE_SPACING` -- but by the time either hook runs the
+   number is sitting on the node or the anchor, which is a better source anyway: it survives a
+   ZOS change to the constants.
+3. **Both would compound.** The quest header's node offset is written once at creation and
+   never reset, and `UpdateTreeView` runs many times per quest; the style table's anchors live
+   for the whole session and `ApplyPlatformStyle` re-runs on every mode change. Rescaling
+   whatever is there each time would multiply the gap again and again. The guard is the same
+   shape as the font one: remember what was written, and treat any other value as the game's.
+
+Only the anchors that place one row against another are touched. `TOP_LEVEL_*`, `CONTAINER_*`
+and `HEADER_*` place the panel itself on the screen, and scaling those would move the panel
+rather than tighten it.
 
 ## 7. Cost on console
 
@@ -248,19 +317,24 @@ Two things keep it bounded:
 - **Nothing is written while the settings match the game.** `RoleDiffers` is false for a part
   whose size still equals the measured default with the face and outline on Default, and the
   add-on then never calls `SetFont` for it at all. An untouched install builds nothing.
-- **At most five descriptors** are ever in play, one per part across both trackers, and they
-  only differ from each other by size unless a face or outline is chosen. Two of the five are
-  identical to two others whenever the house panel and the quest tracker are left on the same
-  settings, because the game's own house name and quest name fonts are the same object.
+- **At most seven descriptors** are ever in play, one per part across the three trackers, and
+  they only differ from each other by size unless a face or outline is chosen. Several collapse
+  onto each other whenever the sections are left on the same settings: the game's own quest
+  name, pursuit heading and house name are all `ZoFontGamepadBold27`, and the quest objectives,
+  pursuit detail and house detail are all `ZoFontGamepad34`.
 
 ## 8. Not touched
 
 - **The quest timer.** `questtimer.xml` has its own labels with fonts baked into the XML
   (`ZoFontGamepadBold27`, `ZoFontGamepad42`). It only appears on timed quests and is a separate
   piece of UI; changing it is not what "the quest tracker font" means.
-- **The other HUD trackers.** `ZO_HUDTracker_Base` also has an endless dungeon tracker, an
-  adventure zone tracker and a promotional event tracker, all in the same column. They would
-  each hook the same way as the house panel, and none of them is what was asked for.
+- **The container padding.** `RESIZE_TO_FIT_PADDING_HEIGHT` (10 keyboard, 20 gamepad) is the
+  padding around a HUD panel's contents, not a gap between its rows, so it is left alone --
+  scaling it would grow the panel rather than tighten it.
+- **The other HUD trackers.** `ZO_HUDTracker_Base` also has a zone story tracker, an endless
+  dungeon tracker, an adventure zone tracker and a dynamic events tracker, all in the same
+  column. Each would hook exactly the way Golden Pursuits and the house panel do — adding one
+  is a section entry naming its global and its label fields — but none of them was asked for.
 - **The text and its order.** Built from journal data by the tracker.
 - **Whether the tracker is shown.** `GetSetting_Bool(SETTING_TYPE_UI, UI_SETTING_SHOW_QUEST_TRACKER)`
   is readable, but `SetSetting` is private — and per the nameplate work, a private function is
@@ -284,9 +358,18 @@ visible bug rather than a subtle one, so they are the things to look at first on
    description under it is not overlapped and the name is not clipped.
 4. **Is `thick-outline` survivable on the Japanese client?** This is the one setting with a
    measured precedent for crashing on console, from the nameplate work.
-5. **Does the house panel measure at all?** `status` reports `houseName` and `houseDetail`
-   defaults from anywhere, not just inside a house. If they are still the fallback 27 and 34
-   after a login, the hook attached before the client styled the labels and the measurement is
-   waiting for the platform style to run — visit a house and check again.
-6. **Does the house panel grow cleanly?** Set the house details to 45 on a home tour and check
-   the visitor count and the tags are not overlapping the owner line.
+5. **Do the two HUD panels measure at all?** `status` reports their defaults from anywhere, not
+   just while the panels are on screen. If they are still the fallback 27 and 34 after a login,
+   the hook attached before the client styled the labels and the measurement is waiting for the
+   platform style to run — go somewhere that shows them and check again.
+6. **Do they grow cleanly?** Set the house details to 45 on a home tour and check the visitor
+   count and the tags are not overlapping the owner line; set the pursuit detail to 45 and
+   check the progress line is not overlapping the pursuit name, or the house panel below it.
+7. **Do the gaps look right at the extremes?** Set the objectives to 12 and check the lines are
+   not touching; set them to 60 and check the gaps have not become a chasm. The scaling is
+   linear in the size ratio, which is the obvious rule but not necessarily the prettiest one at
+   the ends of the range.
+8. **Does the Golden Pursuits heading keep its icon aligned?** `ApplyPlatformStyle` anchors the
+   icon to the left of the header label with a fixed `HEADER_ICON_SIZE` / `HEADER_ICON_OFFSET`.
+   The icon is not resized here, so a much larger heading may sit taller than its 48-point
+   icon. That is cosmetic, but worth a look before deciding it is fine.

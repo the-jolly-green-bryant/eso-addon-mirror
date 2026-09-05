@@ -34,7 +34,7 @@ function M:render(area, segments, area_w, area_h, total_frac)
   self._pool:ReleaseAllObjects()
   local total_h = (total_frac > 0.005) and math_max(2, area_h * math_min(1, total_frac)) or 0
   local cum_h   = 0
-  for i = 1, #segments do
+  for i = 1, (segments.count or #segments) do
     local seg   = segments[i]
     local seg_h = math_max(1, math_floor(total_h * seg.share + 0.5))
     local t     = self._pool:AcquireObject()

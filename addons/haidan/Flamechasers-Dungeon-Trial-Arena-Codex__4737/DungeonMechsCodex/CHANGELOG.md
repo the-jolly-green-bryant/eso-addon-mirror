@@ -1,5 +1,133 @@
 # Changelog
 
+## 0.8.16
+- Removed the unused search-icon visibility and color options from the appearance workshop.
+- Removed the nonfunctional magnifying-glass control and reclaimed its reserved spacing so search text uses the full field cleanly.
+- Preserved every other setting, theme, font option, and mechanics entry unchanged.
+
+## 0.8.15
+- Shortened the settings action labels so they remain fully visible across ESO UI scales and resolutions.
+- Added five complete dark color presets: Dusk Lilac, Blood Moon, Tidal Teal, Silver Mist, and Sunset Copper.
+- Added Chat / Locale and Latin-only Futura Medium font choices plus Thin Outline and regular Outline text effects, using ESO's own current client font aliases.
+- Gave every new preset its own coordinated surfaces, text hierarchy, controls, fields, mechanic cards, borders, and artwork tint while retaining readable contrast.
+- Preserved all existing themes, settings, mechanics data, notes, and layout behavior unchanged.
+
+## 0.8.14
+- Completed a pre-release audit of addon lifecycle, SavedVariables migration, navigation state, notes, scrolling, artwork recovery, settings, manifests, bindings, and all 52 activity datasets.
+- Made every non-default preset define all 79 color roles explicitly, removing inherited blue-gray text and status colors from Midnight Violet, Moonlit Sapphire, Ember, and Verdant.
+- Rebuilt High Contrast as a fully explicit palette covering every surface and every idle, hover, pressed, selected, focused, and disabled state.
+- Kept Rose Velvet's approved neutral-charcoal, blush, dusty-rose, champagne, and sage balance unchanged.
+- Added an appearance schema migration that refreshes selected built-in presets with the polished palettes while preserving individually customized colors.
+- Made the settings preset selector switch to Custom immediately after any individual color edit.
+- Hardened byte-limited chat splitting and label shortening so accented names and multibyte punctuation can never be cut inside a UTF-8 character.
+- Updated the keybind label to the activity-neutral Flamechasers Codex name and synchronized all release version metadata.
+- Preserved the complete mechanics dataset unchanged.
+
+## 0.8.13
+- Rebalanced Rose Velvet around neutral charcoal and restrained plum surfaces so the full window is no longer washed in one pink hue.
+- Split the theme into blush major titles, soft mauve section headings, dusty-rose selections and borders, champagne mechanic emphasis, neutral reading text, and muted sage status cues.
+- Removed the remaining cool blue tint from Rose Velvet boss metadata, chevrons, and secondary controls.
+- Added an independent Section Headings color setting for Activities, Bosses, Personal Notes, Mechanics, and their glyphs.
+- Added a safe schema migration that refreshes the revised built-in Rose Velvet palette while preserving individually customized palettes; older custom palettes initially inherit their chosen title color for the new section-heading role.
+
+## 0.8.12
+- Rebuilt Midnight Violet as a complete palette: backgrounds, buttons, selectors, fields, rules, mechanic cards, and paste controls now follow the violet theme instead of retaining cyan and gold defaults.
+- Added Rose Velvet, a restrained dusty-pink and plum theme without neon tones.
+- Added Classic ESO, using warm charcoal, aged parchment, bronze, and gold colors while staying within the existing appearance system.
+- Added Moonlit Sapphire, a deep navy, muted blue, and soft silver-lavender theme.
+- Expanded Ember and Verdant so their interactive controls, mechanic accents, search/note fields, hint frames, and splash tints now match their palettes throughout.
+- Added a safe appearance migration that refreshes shipped presets to their complete v0.8.12 palettes while preserving every individually customized palette.
+- Renamed the mechanic color controls so non-gold theme accents are described accurately.
+
+## 0.8.11
+- Darkened the default splash artwork one final step for a more subdued header background.
+- Default artwork visibility is now approximately 14-34% from left to right.
+- Preserved the non-stacking independent shade layer, so repeated activity selection still cannot accumulate darkness.
+
+## 0.8.10
+- Darkened the default splash artwork again for a more subdued header image.
+- Default artwork visibility is now approximately 22-42% from left to right.
+- Preserved the non-stacking independent shade layer, so repeated activity selection still cannot accumulate darkness.
+
+## 0.8.9
+- Darkened the default splash artwork another step for stronger readability behind the summary text.
+- Default artwork visibility is now approximately 30-50% from left to right.
+- Preserved the non-stacking independent shade layer, so repeated activity selection still cannot accumulate darkness.
+
+## 0.8.8
+- Darkened the default splash artwork one more step while keeping the image clearly visible.
+- Default artwork visibility is now approximately 40-60% from left to right.
+- Preserved the non-stacking independent shade layer, so repeated activity selection still cannot accumulate darkness.
+
+## 0.8.7
+- Darkened the default splash artwork slightly for better text readability.
+- Default artwork visibility is now approximately 45-65% from left to right.
+- Preserved the non-stacking independent shade layer, so repeated activity selection cannot progressively darken the image.
+
+## 0.8.6
+- Reduced the default splash-art shade from near-black to a balanced readability veil.
+- Keeps approximately 48-68% of the image visible across the summary at the default intensity.
+- Preserved the independent shade layer so activity changes cannot accumulate darkness on reusable textures.
+- Retained live artwork intensity and left/right tint customization with clearer setting descriptions.
+- Added shade-strength and repeated-navigation regressions while preserving every mechanics dataset unchanged.
+
+## 0.8.5
+- Removed all gradient and tint operations from the reusable activity DDS controls.
+- Fixed artwork becoming black after returning to a previously viewed activity, including Bal Sunnar to Bedlam Veil to Bal Sunnar.
+- Rebuilt the readability tint as a permanent 32-segment shade layer that never changes during activity navigation.
+- Preserved the existing left/right tint, artwork intensity, and panel-color customization through the independent shade layer.
+- Added repeated same-row and 20-cycle round-trip regressions that verify activity textures remain neutral and shading is never reapplied.
+- Preserved all 52 artwork mappings, texture recovery, settings, notes, and mechanics datasets unchanged.
+
+## 0.8.4
+- Fixed splash artwork becoming progressively darker when the selected activity was clicked repeatedly.
+- Made artwork shading idempotent so ordinary selections and UI refreshes cannot reapply the same gradient.
+- Explicitly clears the previous ESO vertex gradient before applying a genuinely changed tint or intensity setting.
+- Added a 40-click regression for the exact reported selected-row reproduction.
+- Preserved the resilient texture loader, all 52 artwork mappings, settings, notes, and mechanics datasets unchanged.
+
+## 0.8.3
+- Replaced the splash-art control with a resilient two-buffer loader modeled on ESO's own dynamic background handling.
+- Fixed selected activity artwork disappearing when its list row was clicked again.
+- Made repeated selection a true no-op while the current texture is healthy.
+- Detects an evicted or stalled texture and reloads it into the spare buffer instead of trusting stale Lua state.
+- Keeps the current artwork available during ordinary texture transitions and never leaves unrelated artwork behind after a stalled request.
+- Added bounded recovery attempts for ESO's asynchronous large-texture loader.
+- Preserved all 52 verified artwork mappings, settings, notes, and mechanics datasets unchanged.
+
+## 0.8.2
+- Fixed activity splash artwork intermittently failing to appear or disappearing after extended browsing.
+- Added explicit verified ESO client artwork mappings for all 34 dungeons, 14 trials, and four arenas.
+- Removed the current activity catalog's dependency on Activity Finder initialization timing.
+- Prevented incomplete Finder lookups and missing artwork from being cached permanently.
+- Added explicit release handling for large loading-screen textures when switching activities, hiding artwork, or closing the Codex.
+- Kept runtime artwork discovery as a retryable fallback for future dungeon modules.
+- Preserved the settings cog, appearance workshop, personal notes, and all mechanics datasets unchanged.
+
+## 0.8.1
+- Added a settings cog immediately beside the close button in the Codex header.
+- Reused the proven Travel Slots header-action structure: matched transparent hit targets with independently centered icon textures.
+- Anchored the cog directly to the close control so both icons remain aligned at every supported UI scale.
+- Added a small Codex-owned Settings hover hint that stays above the addon window.
+- Safely closes the Codex before opening its LibAddonMenu panel without disrupting cursor ownership or unsaved boss notes.
+- Extended live header-icon color customization to the new cog.
+- Kept all dungeon, trial, and arena mechanics datasets unchanged.
+
+## 0.8.0
+- Added a full LibAddonMenu appearance workshop with live updates and no `/reloadui` requirement.
+- Preserved the complete v0.7.2 interface as the exact default Flamechasers theme.
+- Added Flamechasers, Midnight Violet, Ember, Verdant, and High Contrast color presets.
+- Added individual RGBA controls for every major surface, text tier, list state, button state, selector state, mechanic-card element, field, divider, hint, and splash-art tint.
+- Added independent Body, Heading, and Navigation font families using verified ESO client fonts.
+- Added safe-range controls for body, list, boss-row, section, activity-title, boss-title, compact-label, and hover-hint sizes.
+- Added configurable text effects, window scale, position locking, activity-row height, mechanic-card spacing, splash-art intensity, and optional UI-element visibility.
+- Added separate Restore Typography, Restore Layout, Restore Colors, Restore All, and Center Window actions.
+- Added `/dmcsettings` and `/dmcs` shortcuts to open the settings panel directly.
+- Added automatic migration and validation for appearance SavedVariables while preserving notes, difficulty, and window position.
+- Coalesced rapid setting changes into a single frame update to keep sliders and color pickers responsive.
+- Added LibAddonMenu-2.0 as the sole required library; it is referenced as an external dependency and is not bundled.
+- Kept all 34 dungeon, 14 trial, and four arena mechanics datasets unchanged.
+
 ## 0.7.2
 - Replaced shared Trial and Arena category backgrounds with the selected instance's own built-in Veteran loading-screen artwork.
 - Added explicit client texture mappings for all 14 trials and all four arenas in the Codex.

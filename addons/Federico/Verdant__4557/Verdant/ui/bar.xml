@@ -37,15 +37,11 @@
           <OnClicked>Verdant.Bar.on_close_click()</OnClicked>
         </Button>
 
-        <!-- Addon name — small, centered, top of window -->
-        <Label name="$(parent)TitleLabel"
-               font="ZoFontGameSmall"
-               horizontalAlignment="CENTER"
-               verticalAlignment="CENTER">
-          <Anchor point="TOPLEFT"  offsetX="8"  offsetY="8"/>
-          <Anchor point="TOPRIGHT" offsetX="-22" offsetY="8"/>
-          <Dimensions y="10"/>
-        </Label>
+        <!-- Brand mark — the logo says Verdant better than clipped text -->
+        <Texture name="$(parent)BrandLogo" textureFile="Verdant/assets/logo.dds">
+          <Anchor point="TOP" offsetX="-6" offsetY="3"/>
+          <Dimensions x="16" y="16"/>
+        </Texture>
 
         <!-- Prev arrow (icon Button) -->
         <Button name="$(parent)PrevBtn"
@@ -83,23 +79,22 @@
           <OnClicked>Verdant.Bar.next_metric()</OnClicked>
         </Button>
 
-        <!-- Value display (number or %) — leaves right margin for settings + graph btns -->
+        <!-- Value display (number or %) — full row, truly centered -->
         <Label name="$(parent)ValueLabel"
                font="ZoFontGameSmall"
                horizontalAlignment="CENTER"
                verticalAlignment="CENTER">
-          <Anchor point="TOPLEFT"  offsetX="8"   offsetY="36"/>
-          <Anchor point="TOPRIGHT" offsetX="-58" offsetY="36"/>
+          <Anchor point="TOPLEFT"  offsetX="8"  offsetY="36"/>
+          <Anchor point="TOPRIGHT" offsetX="-8" offsetY="36"/>
           <Dimensions y="14"/>
         </Label>
 
-        <!-- Graph window toggle — icon Button, same row as ValueLabel.
-             Moved further left to make room for the larger gear. -->
+        <!-- Icon row: graph toggle + settings gear, centered pair -->
         <Button name="$(parent)GraphBtn"
                 mouseEnabled="true"
                 mouseOverBlendMode="ADD"
                 inherits="ZO_ButtonBehaviorClickSound">
-          <Anchor point="TOPRIGHT" offsetX="-34" offsetY="35"/>
+          <Anchor point="TOP" offsetX="-14" offsetY="55"/>
           <Dimensions x="16" y="16"/>
           <Textures normal="EsoUI/Art/Buttons/pointsplus_up.dds"
                     pressed="EsoUI/Art/Buttons/pointsplus_down.dds"
@@ -107,15 +102,12 @@
           <OnClicked>Verdant.Graph.toggle()</OnClicked>
         </Button>
 
-        <!-- Settings toggle — gear icon. 26x26 with menubar texture for
-             prominence; the bar's narrowest size still fits this with
-             room for the +/value/gear chrome row. -->
         <Button name="$(parent)SettingsBtn"
                 mouseEnabled="true"
                 mouseOverBlendMode="ADD"
                 inherits="ZO_ButtonBehaviorClickSound">
-          <Anchor point="TOPRIGHT" offsetX="-4" offsetY="30"/>
-          <Dimensions x="26" y="26"/>
+          <Anchor point="TOP" offsetX="12" offsetY="52"/>
+          <Dimensions x="22" y="22"/>
           <!-- All three states use the _over texture: the menubar
                _up is a small inactive circle (designed for ESO's main
                menu where the icon is collapsed by default), not what
@@ -134,7 +126,7 @@
           Track and fill textures are created in Lua.
         -->
         <Control name="$(parent)BarArea" mouseEnabled="false">
-          <Anchor point="TOP"    offsetY="52"/>
+          <Anchor point="TOP"    offsetY="78"/>
           <Anchor point="BOTTOM" offsetY="-70"/>
           <Dimensions x="22"/>
         </Control>

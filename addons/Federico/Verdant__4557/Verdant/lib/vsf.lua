@@ -26,6 +26,11 @@ end
 
 local CHK_MOD = 64 ^ M.CHK_WIDTH
 
+local BYTE_OF = {}
+for d = 0, 63 do BYTE_OF[d] = string_byte(CHAR_OF[d]) end
+local MAX_OF = {}
+for w = 1, 8 do MAX_OF[w] = 64 ^ w - 1 end
+
 function M.encode_uint(v, w)
   if type(v) ~= "number" or v ~= v then v = 0 end
   v = math_floor(v + 0.5)
@@ -68,17 +73,27 @@ local function record_len(desc)
   return rlen
 end
 
-function M.pack(records, desc)
-  local n = #records
+local pack_buf = {}
+
+function M.pack(records, desc, count, yield_every)
+  local is_fn = (type(records) == "function")
+  local n = is_fn and (count or 0) or #records
   local rlen = record_len(desc)
+  local nd = #desc
   local parts = {}
+  local buf = pack_buf
   local prev = {}
   local warnings = 0
+  local sum = 0
+  local coroutine_yield = coroutine.yield
   for r = 1, n do
-    local rec = records[r]
-    for f = 1, #desc do
+    local np = 0
+    local rec = (not is_fn) and records[r] or nil
+    for f = 1, nd do
       local d = desc[f]
-      local v = rec[d.name] or 0
+      local v
+      if is_fn then v = records(r, d.name) else v = rec[d.name] end
+      if type(v) ~= "number" or v ~= v then v = 0 end
       if d.scale then v = v * d.scale end
       if d.delta then
         local raw = v
@@ -89,8 +104,23 @@ function M.pack(records, desc)
           warnings = warnings + 1
         end
       end
-      parts[#parts + 1] = M.encode_uint(v, d.width)
+      v = math_floor(v + 0.5)
+      if v < 0 then v = 0 end
+      local w = d.width
+      local max = MAX_OF[w] or (64 ^ w - 1)
+      if v > max then v = max end
+      for i = w, 1, -1 do
+        local dgt = v % 64
+        buf[np + i] = CHAR_OF[dgt]
+        v = math_floor(v / 64)
+      end
+      for i = 1, w do
+        sum = (sum * 67 + string_byte(buf[np + i])) % CHK_MOD
+      end
+      np = np + w
     end
+    parts[r] = table_concat(buf, "", 1, np)
+    if yield_every and r % yield_every == 0 then coroutine_yield() end
   end
   local blob = table_concat(parts)
   local data = {}
@@ -100,7 +130,7 @@ function M.pack(records, desc)
   return {
     n    = n,
     rlen = rlen,
-    chk  = checksum(blob),
+    chk  = M.encode_uint(sum, M.CHK_WIDTH),
     data = data,
   }, warnings
 end

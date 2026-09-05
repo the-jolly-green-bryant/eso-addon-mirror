@@ -1,0 +1,16 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax 
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are 
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United 
+; States and/or other countries. All rights reserved. 
+; You can read the full terms at https://elderscrollsonline.com 
+
+## Title: |c2046e5Sho's PvP Banker|r
+## Author: |c2046e5sshogrin|r
+## AddOnVersion: 100010 
+## APIVersion: 101050 101051 
+## Version: 1.0.1 
+## Description: Automatically deposits Sigils of Imperial Retreat, Keep Recall Stones, repair kits, and Siege weapons. Adds quick-withdrawal and deposit buttons to the bank footer.
+
+ShosPvPBanker_Deposit.lua
+ShosPvPBanker_UI.xml
+ShosPvPBanker_Withdraw.lua

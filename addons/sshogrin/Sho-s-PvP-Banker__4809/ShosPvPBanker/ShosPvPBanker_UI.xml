@@ -1,0 +1,54 @@
+<GuiXml>
+    <Controls>
+        <!-- TopLevelControl ensures button rendering priority over background textures -->
+        <!-- FIXED: Increased total width from 460 to 490 to prevent button crowding -->
+        <TopLevelControl name="ShosPvPBanker_UIFrame_Template" mouseEnabled="true" tier="MEDIUM" level="3" virtual="true">
+            <Dimensions x="490" y="30" />
+            <Controls>
+                
+                <!-- Button 1: Deposit PvP Gear -->
+                <Button name="ShosPvPBanker_BtnDeposit" inherits="ZO_DefaultButton">
+                    <!-- FIXED: Increased button width from 140 to 150 to prevent text clipping -->
+                    <Dimensions x="150" y="26" />
+                    <!-- Attaches directly to the start point of our footer row -->
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+                    <OnInitialized>
+                        self:SetText("Deposit PvP Gear")
+                    </OnInitialized>
+                    <OnClicked>
+                        ShosPvPBanker.DepositPvPItems()
+                    </OnClicked>
+                </Button>
+
+                <!-- Button 2: Withdraw IC Sigils -->
+                <Button name="ShosPvPBanker_BtnIC" inherits="ZO_DefaultButton">
+                    <!-- FIXED: Increased button width from 140 to 150 -->
+                    <Dimensions x="150" y="26" />
+                    <!-- Chains directly off the right side of the deposit button -->
+                    <Anchor point="TOPLEFT" relativeTo="ShosPvPBanker_BtnDeposit" relativePoint="TOPRIGHT" offsetX="10" offsetY="0" />
+                    <OnInitialized>
+                        self:SetText("Withdraw IC Sigils")
+                    </OnInitialized>
+                    <OnClicked>
+                        ShosPvPBanker.WithdrawPvPItems("IC")
+                    </OnClicked>
+                </Button>
+
+                <!-- Button 3: Withdraw Cyro Gear -->
+                <Button name="ShosPvPBanker_BtnCyro" inherits="ZO_DefaultButton">
+                    <!-- FIXED: Increased button width from 140 to 150 to give "Gear" plenty of room -->
+                    <Dimensions x="150" y="26" />
+                    <!-- Chains directly off the right side of the IC button -->
+                    <Anchor point="TOPLEFT" relativeTo="ShosPvPBanker_BtnIC" relativePoint="TOPRIGHT" offsetX="10" offsetY="0" />
+                    <OnInitialized>
+                        self:SetText("Withdraw Cyro Gear")
+                    </OnInitialized>
+                    <OnClicked>
+                        ShosPvPBanker.WithdrawPvPItems("CYRODIIL")
+                    </OnClicked>
+                </Button>
+                
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

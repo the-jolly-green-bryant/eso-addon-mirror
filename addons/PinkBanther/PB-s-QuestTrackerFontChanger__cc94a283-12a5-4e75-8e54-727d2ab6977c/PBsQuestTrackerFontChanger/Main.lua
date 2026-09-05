@@ -1,15 +1,19 @@
 -- PB's QuestTrackerFontChanger
 -- Author: PinkBanther
 --
--- Adjusts the font of the two HUD trackers in the top right of the screen:
+-- Adjusts the fonts of the HUD trackers stacked down the top right of the screen:
 --
 --   * the focused quest tracker -- quest name, step description, objectives
---   * the house information tracker -- the house name, owner and visitor count that appear
---     under the quest tracker while you are in a house, including on a home tour
+--   * the Golden Pursuits tracker -- the tracked pursuit and its progress (the same panel
+--     also carries Tamriel Tomes)
+--   * the house information tracker -- the house name, owner and visitor count shown while
+--     you are in a house, including on a home tour
 --
--- The two are kept as separate sections everywhere -- settings, saved variables, chat
--- commands -- because they are different pieces of UI that happen to sit next to each other,
--- and somebody who wants a bigger house name usually does not want a bigger quest tracker.
+-- On screen they run quest tracker -> zone story -> Golden Pursuits -> house information.
+--
+-- They are kept as separate sections everywhere -- settings, saved variables, chat commands --
+-- because they are different pieces of UI that happen to sit on top of each other, and
+-- somebody who wants a bigger house name usually does not want a bigger quest tracker.
 --
 -- Why this add-on can do more than PB's NamePlateChanger, and where the limits actually are
 -- (full evidence in FINDINGS.md):
@@ -22,26 +26,29 @@
 --
 -- Each tracker gives its text more than one font, and those are what the sliders map onto:
 --
---   section  role          control                     gamepad              keyboard
---   quest    questName     ZO_TrackedHeader            ZoFontGamepadBold27  ZoFontGameShadow
---   quest    questStep     ZO_QuestStepDescription     ZoFontGamepadBold22  ZoFontGameShadow
---   quest    questGoal     ZO_QuestCondition           ZoFontGamepad34      ZoFontGameShadow
---   house    houseName     ...ContainerHeader          ZoFontGamepadBold27  ZoFontGameShadow
---   house    houseDetail   ...SubLabel/Population/Tags ZoFontGamepad34      ZoFontGameShadow
+--   section  role           control                     gamepad              keyboard
+--   quest    questName      ZO_TrackedHeader            ZoFontGamepadBold27  ZoFontGameShadow
+--   quest    questStep      ZO_QuestStepDescription     ZoFontGamepadBold22  ZoFontGameShadow
+--   quest    questGoal      ZO_QuestCondition           ZoFontGamepad34      ZoFontGameShadow
+--   pursuit  pursuitName    ...ContainerHeader          ZoFontGamepadBold27  ZoFontGameShadow
+--   pursuit  pursuitDetail  ...SubLabel/ProgressLabel   ZoFontGamepad34      ZoFontGameShadow
+--   house    houseName      ...ContainerHeader          ZoFontGamepadBold27  ZoFontGameShadow
+--   house    houseDetail    ...SubLabel/Population/Tags ZoFontGamepad34      ZoFontGameShadow
 --
 -- One slider per font the game actually uses, no more and no fewer. Those named fonts resolve
 -- to "face|size|style" descriptors in esoui/fontdefs/, which is the form written back here.
 --
--- The two trackers need different hooks, because they are built differently:
+-- Two kinds of hook, because the trackers are built two ways:
 --
---   quest  Pooled labels, rebuilt whenever a step advances. ApplyPlatformStyleToHeader and
---          friends are file-local and cannot be hooked -- but they are installed on the pools
---          with SetCustomAcquireBehavior, and pool.customAcquireBehavior is a plain field.
---          Wrapping it styles every label the moment it is acquired, for the whole session.
---   house  Four fixed labels on a singleton. ZO_HouseInformationTracker:ApplyPlatformStyle is
---          a public method and the only thing that ever sets their fonts, so wrapping the
---          method on the instance is enough -- and calling it is also how the game's own font
---          is put back.
+--   pool       The quest tracker. Pooled labels, rebuilt whenever a step advances.
+--              ApplyPlatformStyleToHeader and friends are file-local and cannot be hooked --
+--              but they are installed on the pools with SetCustomAcquireBehavior, and
+--              pool.customAcquireBehavior is a plain field. Wrapping it styles every label the
+--              moment it is acquired, for the whole session.
+--   hudTracker Golden Pursuits and the house panel. Both are ZO_HUDTracker_Base subclasses: a
+--              handful of fixed labels on a singleton, whose fonts are only ever set by the
+--              public ApplyPlatformStyle. Wrapping that method on the instance is enough --
+--              and calling it is also how the game's own font is put back.
 --
 -- Both wrappers run after the game's own styling, which is what makes the label underneath
 -- pristine and safe to measure. control:GetFontSize() there is the client's real size for
@@ -120,18 +127,23 @@ addon.Line = Line
 -- ---------------------------------------------------------------------------------------
 -- The two trackers and the text in them
 --
--- poolName is the field on FOCUSED_QUEST_TRACKER; labels are the fields on
--- HOUSE_INFORMATION_TRACKER. Both are found by the name the game gives them rather than by
--- position, so a client that grows another label does not silently shift everything along.
+-- poolName is the field on FOCUSED_QUEST_TRACKER; labels are the fields on the singleton named
+-- by trackerGlobal. Both are found by the name the game gives them rather than by position, so
+-- a client that grows another label does not silently shift everything along.
 --
--- houseDetail covers three labels at once because the game gives all three the same font: the
--- owner line, the visitor count and the House Tours tags are one thing to look at, and three
--- identical sliders would be three ways to make them disagree.
+-- The two "detail" roles cover several labels at once because the game gives those labels the
+-- same font: the pursuit's name and its progress line are one font, and so are the house's
+-- owner line, visitor count and House Tours tags. Splitting them would only be more ways to
+-- make lines that belong together disagree.
+--
+-- The sections are in the order they appear down the screen, and the settings panel is built
+-- straight from this list, so the panel reads the same way as the HUD.
 -- ---------------------------------------------------------------------------------------
 
 addon.sections = {
 	{
 		key = "quest",
+		kind = "pool",
 		headingId = "SI_PBSQTFC_SECTION_QUEST",
 		noteId = "SI_PBSQTFC_SECTION_QUEST_NOTE",
 		enabledId = "SI_PBSQTFC_QUEST_ENABLED",
@@ -147,7 +159,31 @@ addon.sections = {
 		},
 	},
 	{
+		key = "pursuit",
+		kind = "hudTracker",
+		trackerGlobal = "PROMOTIONAL_EVENT_TRACKER",
+		headingId = "SI_PBSQTFC_SECTION_PURSUIT",
+		noteId = "SI_PBSQTFC_SECTION_PURSUIT_NOTE",
+		enabledId = "SI_PBSQTFC_PURSUIT_ENABLED",
+		enabledTooltipId = "SI_PBSQTFC_PURSUIT_ENABLED_TOOLTIP",
+		faceId = "SI_PBSQTFC_PURSUIT_FACE",
+		faceTooltipId = "SI_PBSQTFC_PURSUIT_FACE_TOOLTIP",
+		styleId = "SI_PBSQTFC_PURSUIT_STYLE",
+		styleTooltipId = "SI_PBSQTFC_PURSUIT_STYLE_TOOLTIP",
+		roles = {
+			{ key = "pursuitName", labels = { "headerLabel" }, command = "name", stringId = "SI_PBSQTFC_SIZE_PURSUIT_NAME", tooltipId = "SI_PBSQTFC_SIZE_PURSUIT_NAME_TOOLTIP" },
+			{ key = "pursuitDetail", labels = { "subLabel", "progressLabel" }, command = "detail", stringId = "SI_PBSQTFC_SIZE_PURSUIT_DETAIL", tooltipId = "SI_PBSQTFC_SIZE_PURSUIT_DETAIL_TOOLTIP" },
+		},
+		spacingRole = "pursuitDetail",
+		spacingAnchors = {
+			"SUBLABEL_PRIMARY_ANCHOR", "SUBLABEL_SECONDARY_ANCHOR",
+			"PROGRESS_LABEL_PRIMARY_ANCHOR", "PROGRESS_LABEL_SECONDARY_ANCHOR",
+		},
+	},
+	{
 		key = "house",
+		kind = "hudTracker",
+		trackerGlobal = "HOUSE_INFORMATION_TRACKER",
 		headingId = "SI_PBSQTFC_SECTION_HOUSE",
 		noteId = "SI_PBSQTFC_SECTION_HOUSE_NOTE",
 		enabledId = "SI_PBSQTFC_HOUSE_ENABLED",
@@ -159,6 +195,17 @@ addon.sections = {
 		roles = {
 			{ key = "houseName", labels = { "headerLabel" }, command = "name", stringId = "SI_PBSQTFC_SIZE_HOUSE_NAME", tooltipId = "SI_PBSQTFC_SIZE_HOUSE_NAME_TOOLTIP" },
 			{ key = "houseDetail", labels = { "subLabel", "populationLabel", "tagsLabel" }, command = "detail", stringId = "SI_PBSQTFC_SIZE_HOUSE_DETAIL", tooltipId = "SI_PBSQTFC_SIZE_HOUSE_DETAIL_TOOLTIP" },
+		},
+		-- Every gap in this panel sits above a "detail" label, so they all follow that role's
+		-- size. The gap above the header is the panel's own TOP_LEVEL anchor, which places the
+		-- whole thing on screen and is deliberately left alone -- as are CONTAINER_* and
+		-- HEADER_*, for the same reason.
+		spacingRole = "houseDetail",
+		spacingAnchors = {
+			"SUBLABEL_PRIMARY_ANCHOR", "SUBLABEL_SECONDARY_ANCHOR",
+			"POPULATION_HEADERLABEL_PRIMARY_ANCHOR", "POPULATION_HEADERLABEL_SECONDARY_ANCHOR",
+			"POPULATION_SUBLABEL_PRIMARY_ANCHOR", "POPULATION_SUBLABEL_SECONDARY_ANCHOR",
+			"TAGS_LABEL_PRIMARY_ANCHOR", "TAGS_LABEL_SECONDARY_ANCHOR",
 		},
 	},
 }
@@ -199,6 +246,8 @@ addon.platformDefaults = {
 		questName = { face = "$(GAMEPAD_BOLD_FONT)", size = 27, style = "soft-shadow-thick" },
 		questStep = { face = "$(GAMEPAD_BOLD_FONT)", size = 22, style = "soft-shadow-thick" },
 		questGoal = { face = "$(GAMEPAD_MEDIUM_FONT)", size = 34, style = "soft-shadow-thick" },
+		pursuitName = { face = "$(GAMEPAD_BOLD_FONT)", size = 27, style = "soft-shadow-thick" },
+		pursuitDetail = { face = "$(GAMEPAD_MEDIUM_FONT)", size = 34, style = "soft-shadow-thick" },
 		houseName = { face = "$(GAMEPAD_BOLD_FONT)", size = 27, style = "soft-shadow-thick" },
 		houseDetail = { face = "$(GAMEPAD_MEDIUM_FONT)", size = 34, style = "soft-shadow-thick" },
 	},
@@ -206,6 +255,8 @@ addon.platformDefaults = {
 		questName = { face = "$(BOLD_FONT)", size = 18, style = "soft-shadow-thin" },
 		questStep = { face = "$(BOLD_FONT)", size = 18, style = "soft-shadow-thin" },
 		questGoal = { face = "$(BOLD_FONT)", size = 18, style = "soft-shadow-thin" },
+		pursuitName = { face = "$(BOLD_FONT)", size = 18, style = "soft-shadow-thin" },
+		pursuitDetail = { face = "$(BOLD_FONT)", size = 18, style = "soft-shadow-thin" },
 		houseName = { face = "$(BOLD_FONT)", size = 18, style = "soft-shadow-thin" },
 		houseDetail = { face = "$(BOLD_FONT)", size = 18, style = "soft-shadow-thin" },
 	},
@@ -289,7 +340,7 @@ addon.MAX_SIZE = 72
 -- not chosen in. An empty table means "no part has been changed", which is what makes an
 -- untouched install cost nothing.
 --
--- The measurements are outside both sections because they are not a setting -- they are what
+-- The measurements are outside the sections because they are not a setting -- they are what
 -- the client draws, keyed by role, and they stay correct however the sections are configured.
 addon.sectionDefaults = {
 	enabled = true,
@@ -300,6 +351,7 @@ addon.sectionDefaults = {
 
 addon.accountDefaults = {
 	quest = { enabled = true, face = "", style = "", sizes = { Gamepad = {}, Keyboard = {} } },
+	pursuit = { enabled = true, face = "", style = "", sizes = { Gamepad = {}, Keyboard = {} } },
 	house = { enabled = true, face = "", style = "", sizes = { Gamepad = {}, Keyboard = {} } },
 	measured = { Gamepad = {}, Keyboard = {} },
 }
@@ -507,6 +559,127 @@ function addon:BuildDescriptor(roleKey)
 	return string.format("%s|%d|%s", face, size, style)
 end
 
+-- ---------------------------------------------------------------------------------------
+-- Line spacing
+--
+-- The gaps between the lines are not part of the font. They are separate numbers the game
+-- sets alongside it -- tree node offsets in the quest tracker, anchor offsets in the two HUD
+-- panels -- and they do not move when the font does, so shrinking the text just leaves the
+-- rows floating apart. Each gap is therefore scaled by the same ratio as the text below it.
+--
+-- Which text is "below it" is not a guess: an offset positions the top of a control against
+-- the bottom of the one before it, so the gap belongs to the control it places, and it scales
+-- with that control's role.
+--
+-- The numbers are read back from the game rather than hardcoded. QUEST_TRACKER_TREE_LINE_SPACING
+-- and the anchor offsets live in file-local constants tables an add-on cannot reach, but the
+-- values are on the node and on the anchor by the time we run.
+-- ---------------------------------------------------------------------------------------
+
+-- How much bigger this role is being drawn than the game draws it. 1 when nothing differs,
+-- which is what keeps an untouched section untouched.
+function addon:SizeRatio(roleKey)
+	if not self:RoleDiffers(roleKey) then
+		return 1
+	end
+	local defaultSize = self:DefaultSize(roleKey)
+	if type(defaultSize) ~= "number" or defaultSize <= 0 then
+		return 1
+	end
+	return self:SizeFor(roleKey) / defaultSize
+end
+
+-- Scales one offset, remembering the game's own value for it.
+--
+-- The same problem as measuring a font: read back naively, our own scaled offset becomes the
+-- next "base" and the game's number compounds away with every update. The test is the same
+-- shape as the one on fonts -- if the current value is not what we last wrote, the game wrote
+-- it and it is the base. A node the game re-creates on every rebuild re-bases on its own; a
+-- node the game writes once (the quest header) keeps the base captured the first time.
+local function ScaledOffset(store, key, current, ratio)
+	if type(current) ~= "number" then
+		return nil
+	end
+
+	local record = store[key]
+	if not record or record.written ~= current then
+		record = { base = current }
+		store[key] = record
+	end
+
+	local target = record.base
+	if ratio ~= 1 then
+		target = math.max(0, math.floor(record.base * ratio + 0.5))
+	end
+	record.written = target
+	return target
+end
+
+-- Keyed by the node or anchor object, with weak keys so a tracker rebuild does not pile up
+-- entries for controls that no longer exist.
+function addon:SpacingStore(name)
+	self.spacingStores = self.spacingStores or {}
+	if not self.spacingStores[name] then
+		self.spacingStores[name] = setmetatable({}, { __mode = "k" })
+	end
+	return self.spacingStores[name]
+end
+
+-- Scales the gaps in the quest tracker's tree.
+--
+-- Runs immediately before the tracker lays the tree out, which is the one moment every node's
+-- offset is guaranteed to be current: the game sets it from its constants right after every
+-- AddChild, and re-sets it in ApplyPlatformStyleToCondition.
+function addon:ScaleQuestSpacing(tracker)
+	local store = self:SpacingStore("node")
+
+	for _, role in ipairs(self.sectionByKey.quest.roles) do
+		local ratio = self:SizeRatio(role.key)
+		local pool = tracker[role.poolName]
+		if pool and type(pool.GetActiveObjects) == "function" then
+			for _, control in pairs(pool:GetActiveObjects()) do
+				local node = control.m_TreeNode
+				if node and type(node.SetOffsetY) == "function" then
+					local target = ScaledOffset(store, node, node.m_OffsetY, ratio)
+					if target and target ~= node.m_OffsetY then
+						pcall(node.SetOffsetY, node, target)
+					end
+				end
+			end
+		end
+	end
+end
+
+-- Scales the gaps in one of the two HUD panels.
+--
+-- These live on the ZO_Anchor objects in the platform style table, which the panel re-applies
+-- to its labels in RefreshAnchors. That table is the game's and it is shared for the session,
+-- so the base is captured before anything is written and an unchanged section writes nothing
+-- -- turning the section off puts the game's own numbers straight back.
+function addon:ScaleHudTrackerSpacing(section, tracker)
+	local style = tracker.currentStyle
+	if not style or not section.spacingAnchors then
+		return
+	end
+
+	local store = self:SpacingStore("anchor")
+	local ratio = self:SizeRatio(section.spacingRole)
+
+	for _, styleKey in ipairs(section.spacingAnchors) do
+		local anchor = style[styleKey]
+		if type(anchor) == "table" and type(anchor.GetOffsetY) == "function" and type(anchor.SetOffsets) == "function" then
+			local okY, currentY = pcall(anchor.GetOffsetY, anchor)
+			local okX, currentX = pcall(anchor.GetOffsetX, anchor)
+			if okY and okX then
+				local target = ScaledOffset(store, anchor, currentY, ratio)
+				if target and target ~= currentY then
+					pcall(anchor.SetOffsets, anchor, currentX, target)
+				end
+			end
+		end
+	end
+end
+
 -- Grows the quest-name box to match the quest-name font.
 --
 -- The gamepad quest tracker header is the one control in either tracker that is given a fixed
@@ -583,7 +756,8 @@ end
 --   * nothing has to poll, and the tracker's own UpdateTreeView still runs afterwards and
 --     lays out the new text heights.
 function addon:HookQuestTracker()
-	if self.questHooked then
+	self.hooked = self.hooked or {}
+	if self.hooked.quest then
 		return true
 	end
 
@@ -612,7 +786,20 @@ function addon:HookQuestTracker()
 		end)
 	end
 
-	self.questHooked = true
+	-- The gaps between the rows are set on the tree nodes, not on the labels, and the node
+	-- does not exist yet when a label is acquired -- the game creates it immediately
+	-- afterwards. UpdateTreeView is where those offsets are turned into anchors, so scaling
+	-- them on the way in is both the first moment they are all present and the last moment
+	-- before they are used.
+	if type(tracker.UpdateTreeView) == "function" then
+		local previousUpdate = tracker.UpdateTreeView
+		tracker.UpdateTreeView = function(trackerSelf)
+			addon:ScaleQuestSpacing(trackerSelf)
+			previousUpdate(trackerSelf)
+		end
+	end
+
+	self.hooked.quest = true
 	return true
 end
 
@@ -651,61 +838,63 @@ function addon:RefreshQuest()
 end
 
 -- ---------------------------------------------------------------------------------------
--- The house information tracker
+-- The ZO_HUDTracker_Base panels: Golden Pursuits and the house information
 --
--- The panel that appears under the quest tracker while you are in a house -- yours or someone
--- else's on a home tour. It carries the house name, the owner, the visitor count and the
--- House Tours tags.
+-- Golden Pursuits is the panel carrying the pursuit you are tracking and its progress; the
+-- same controls are reused for Tamriel Tomes, so one setting covers both. The house panel
+-- appears below it while you are in a house -- yours or someone else's on a home tour -- and
+-- carries the house name, the owner, the visitor count and the House Tours tags.
 --
--- Nothing here is pooled: it is a singleton with four fixed labels, and
--- ZO_HouseInformationTracker:ApplyPlatformStyle is the only thing that ever sets their fonts.
--- It is a public method on the instance, so it can be wrapped directly -- and because it is
--- the only writer, our font stays put until the next time it is called, which is a platform
--- change or one of our own refreshes.
+-- Nothing in either is pooled: each is a singleton with a handful of fixed labels, and
+-- ApplyPlatformStyle is the only thing that ever sets their fonts (Update and Refresh call
+-- SetText, never SetFont). It is a public method on the instance, so it can be wrapped
+-- directly -- and because it is the only writer, our font stays put until the next time it is
+-- called, which is a platform change or one of our own refreshes.
 --
--- Unlike the quest tracker's header, every label here is unconstrained and both containers
+-- Unlike the quest tracker's header, every label here is unconstrained and the containers are
 -- resizeToFitDescendents, so a larger font grows the panel instead of being clipped.
 -- ---------------------------------------------------------------------------------------
 
-function addon:HouseTracker()
-	return HOUSE_INFORMATION_TRACKER
+function addon:TrackerFor(section)
+	return section.trackerGlobal and _G[section.trackerGlobal] or nil
 end
 
-function addon:HookHouseTracker()
-	if self.houseHooked then
+function addon:HookHudTracker(section)
+	self.hooked = self.hooked or {}
+	if self.hooked[section.key] then
 		return true
 	end
 
-	local tracker = self:HouseTracker()
+	local tracker = self:TrackerFor(section)
 	if not tracker or type(tracker.ApplyPlatformStyle) ~= "function" then
 		return false
 	end
 
 	local previous = tracker.ApplyPlatformStyle
-	-- Assigned on the instance, so the class method is left alone for anything else that
-	-- inherits from ZO_HUDTracker_Base. ZO_PlatformStyle calls this through self:, so the
+	-- Assigned on the instance, so the class method is left alone for the other panels that
+	-- inherit from ZO_HUDTracker_Base. ZO_PlatformStyle calls this through self:, so the
 	-- instance field is what it finds.
 	tracker.ApplyPlatformStyle = function(trackerSelf, style)
 		previous(trackerSelf, style)
-		addon:StyleHouseLabels(trackerSelf)
+		addon:StyleHudTrackerLabels(section, trackerSelf)
 	end
 
-	self.houseHooked = true
+	self.hooked[section.key] = true
 	-- Its fonts were set when the client built the UI, before this hook existed, so the labels
 	-- on screen are still the game's own -- pristine, and the one moment to measure them.
-	self:StyleHouseLabels(tracker)
+	self:StyleHudTrackerLabels(section, tracker)
 	return true
 end
 
--- Measures then styles the four labels. Called from inside the wrapper, so the game's own
+-- Measures then styles the panel's labels. Called from inside the wrapper, so the game's own
 -- ApplyPlatformStyle has just run and every label is pristine.
-function addon:StyleHouseLabels(tracker)
-	tracker = tracker or self:HouseTracker()
+function addon:StyleHudTrackerLabels(section, tracker)
+	tracker = tracker or self:TrackerFor(section)
 	if not tracker then
 		return false
 	end
 
-	for _, role in ipairs(self.sectionByKey.house.roles) do
+	for _, role in ipairs(section.roles) do
 		for _, labelField in ipairs(role.labels) do
 			local control = tracker[labelField]
 			if control then
@@ -715,23 +904,27 @@ function addon:StyleHouseLabels(tracker)
 		end
 	end
 
-	-- The panel's labels are anchored to each other's bottoms, so a size change moves
-	-- everything under it. RefreshAnchors is the tracker's own way of settling that, and it
-	-- also handles the owner line being hidden when there is no owner to name.
+	-- The gaps between those labels live on the style table's anchors, so they are scaled
+	-- before RefreshAnchors puts the anchors back on the controls.
+	self:ScaleHudTrackerSpacing(section, tracker)
+
+	-- The labels are anchored to each other's bottoms, so a size change moves everything under
+	-- them. RefreshAnchors is the tracker's own way of settling that, and it is also what
+	-- re-places the lower lines when one above them is hidden.
 	if type(tracker.RefreshAnchors) == "function" then
 		pcall(tracker.RefreshAnchors, tracker)
 	end
 	return true
 end
 
--- Re-draws the house tracker with the current settings.
+-- Re-draws one of these panels with the current settings.
 --
 -- Going back through ApplyPlatformStyle is what restores the game's own fonts, exactly as with
 -- the quest tracker -- and since our wrapper is on that method, one call does both halves.
 -- currentStyle is the platform table the base class stored the last time it ran; without it
 -- the tracker has not been initialised yet and there is nothing to refresh.
-function addon:RefreshHouse()
-	local tracker = self:HouseTracker()
+function addon:RefreshHudTracker(section)
+	local tracker = self:TrackerFor(section)
 	if not tracker or type(tracker.ApplyPlatformStyle) ~= "function" then
 		return false
 	end
@@ -748,11 +941,14 @@ end
 -- ---------------------------------------------------------------------------------------
 
 function addon:Refresh(sectionKey)
-	if sectionKey == nil or sectionKey == "quest" then
-		self:RefreshQuest()
-	end
-	if sectionKey == nil or sectionKey == "house" then
-		self:RefreshHouse()
+	for _, section in ipairs(self.sections) do
+		if sectionKey == nil or sectionKey == section.key then
+			if section.kind == "pool" then
+				self:RefreshQuest()
+			else
+				self:RefreshHudTracker(section)
+			end
+		end
 	end
 end
 
@@ -802,7 +998,7 @@ function addon:SampleControl(roleKey)
 		return nil
 	end
 
-	local tracker = self:HouseTracker()
+	local tracker = self:TrackerFor(self.sectionOfRole[roleKey])
 	if not tracker then
 		return nil
 	end
@@ -812,18 +1008,21 @@ end
 function addon:PrintStatus()
 	local platform = self:Platform()
 
+	local hooked = self.hooked or {}
+
 	Line("|cFF69B4%s|r", self.title)
-	Line("  platform=%s quest=%s/%s house=%s/%s", platform,
-		self:QuestTracker() and "found" or "MISSING", tostring(self.questHooked),
-		self:HouseTracker() and "found" or "MISSING", tostring(self.houseHooked))
+	Line("  platform=%s", platform)
 
 	for _, section in ipairs(self.sections) do
 		local settings = self:Settings(section.key)
-		Line("  [%s] enabled=%s face=%q style=%q", section.key,
+		local found = (section.kind == "pool" and self:QuestTracker() or self:TrackerFor(section)) and "found" or "MISSING"
+		Line("  [%s] tracker=%s hooked=%s enabled=%s face=%q style=%q", section.key,
+			found, tostring(hooked[section.key] or false),
 			tostring(settings.enabled), tostring(settings.face), tostring(settings.style))
 		for _, role in ipairs(section.roles) do
-			Line("    %s: size=%s default=%s differs=%s", role.key,
-				tostring(self:SizeFor(role.key)), tostring(self:DefaultSize(role.key)), tostring(self:RoleDiffers(role.key)))
+			Line("    %s: size=%s default=%s ratio=%.2f differs=%s", role.key,
+				tostring(self:SizeFor(role.key)), tostring(self:DefaultSize(role.key)),
+				self:SizeRatio(role.key), tostring(self:RoleDiffers(role.key)))
 			Line("      written=%s", tostring(self.lastDescriptor and self.lastDescriptor[role.key]))
 			Line("      on screen=%s", DescribeControl(self:SampleControl(role.key)))
 		end
@@ -832,10 +1031,8 @@ function addon:PrintStatus()
 	if self:GetNumTracked() == 0 then
 		Line("  no quest is being tracked, so the quest tracker has no labels to read.")
 	end
-	if not self:HouseTracker() then
-		Line("  the house tracker was not found in this client.")
-	elseif not self:InHouse() then
-		Line("  you are not in a house, so its labels are there but not on screen.")
+	if self:TrackerFor(self.sectionByKey.house) and not self:InHouse() then
+		Line("  you are not in a house, so the house labels are there but not on screen.")
 	end
 end
 
@@ -867,12 +1064,13 @@ local function Usage()
 	Line("  %s status                 -- settings, and the font actually on screen", SLASH)
 	Line("  %s quest <n>              -- all three quest tracker sizes", SLASH)
 	Line("  %s quest <part> <n>       -- one part: name | step | goal", SLASH)
+	Line("  %s pursuit <n>            -- both Golden Pursuits sizes", SLASH)
+	Line("  %s pursuit <part> <n>     -- one part: name | detail", SLASH)
 	Line("  %s house <n>              -- both house tracker sizes", SLASH)
 	Line("  %s house <part> <n>       -- one part: name | detail", SLASH)
 	Line("  %s size <n>               -- every size in both", SLASH)
-	Line("  %s on | off               -- both sections", SLASH)
-	Line("  %s quest on | off         -- the quest tracker only", SLASH)
-	Line("  %s house on | off         -- the house tracker only", SLASH)
+	Line("  %s on | off               -- every section", SLASH)
+	Line("  %s <section> on | off     -- one section only: quest | pursuit | house", SLASH)
 	Line("  %s reset                  -- back to the game's own fonts", SLASH)
 	Line("  (%s is the same command)", SHORT_SLASH)
 end
@@ -976,10 +1174,10 @@ local function OnSlash(argumentString)
 		for _, eachSection in ipairs(addon.sections) do
 			SetSectionEnabled(eachSection.key, command == "on")
 		end
-		Line("custom fonts %s in both trackers", command)
+		Line("custom fonts %s in every tracker", command)
 	elseif command == "reset" then
 		addon:ResetToDefaults()
-		Line("reset -- every part of both trackers is back to the game's own font")
+		Line("reset -- every part of every tracker is back to the game's own font")
 	else
 		Usage()
 	end
@@ -994,22 +1192,29 @@ end
 -- UI is built -- before add-ons load. Hooking at EVENT_ADD_ON_LOADED is therefore the normal
 -- path; the retry at EVENT_PLAYER_ACTIVATED is only there so a client that ordered it the
 -- other way round is not left unhooked for the session.
-local function EnsureHooked()
-	local questOk = addon:HookQuestTracker()
-	local houseOk = addon:HookHouseTracker()
+local function HookAll()
+	local allOk = true
+	addon.reportedMissing = addon.reportedMissing or {}
 
-	if not questOk and not addon.reportedMissingQuest then
-		addon.reportedMissingQuest = true
-		Line("|cFF69B4%s|r: the quest tracker was not found, so it has not been changed.", addon.title)
-		Line("  Run '%s status' and send the lines it prints.", SLASH)
-	end
-	if not houseOk and not addon.reportedMissingHouse then
-		addon.reportedMissingHouse = true
-		Line("|cFF69B4%s|r: the house tracker was not found, so it has not been changed.", addon.title)
-		Line("  Run '%s status' and send the lines it prints.", SLASH)
+	for _, section in ipairs(addon.sections) do
+		local ok
+		if section.kind == "pool" then
+			ok = addon:HookQuestTracker()
+		else
+			ok = addon:HookHudTracker(section)
+		end
+
+		if not ok then
+			allOk = false
+			if not addon.reportedMissing[section.key] then
+				addon.reportedMissing[section.key] = true
+				Line("|cFF69B4%s|r: the %s panel was not found, so it has not been changed.", addon.title, section.key)
+				Line("  Run '%s status' and send the lines it prints.", SLASH)
+			end
+		end
 	end
 
-	return questOk, houseOk
+	return allOk
 end
 
 -- How long after the first zone load to wait before touching either tracker.
@@ -1018,15 +1223,15 @@ end
 -- after a loading screen is the worst time to ask for one: every add-on is initialising at
 -- once against the 100 MB pool console add-ons share. That is what was killing PB's
 -- NamePlateChanger, and a second's delay costs nothing here -- there is no per-zone re-apply
--- to lag behind, because the hooks keep both trackers styled by themselves.
+-- to lag behind, because the hooks keep every tracker styled by themselves.
 local FIRST_APPLY_DELAY_MS = 1000
 
 local function OnPlayerActivated()
-	EnsureHooked()
+	HookAll()
 
 	-- Only the first activation needs this. The quest labels for a quest that was already
 	-- being tracked were acquired before the hook existed; every acquire after this one goes
-	-- through the hook, and the house tracker is styled by HookHouseTracker as it attaches.
+	-- through the hook, and the HUD panels are styled by HookHudTracker as it attaches.
 	if addon.firstApplyDone then
 		return
 	end
@@ -1053,8 +1258,7 @@ local function OnAddOnLoaded(_, loadedName)
 	SLASH_COMMANDS[SLASH] = OnSlash
 	SLASH_COMMANDS[SHORT_SLASH] = OnSlash
 
-	addon:HookQuestTracker()
-	addon:HookHouseTracker()
+	HookAll()
 
 	if addon.InitSettings then
 		addon:InitSettings()
@@ -1062,7 +1266,7 @@ local function OnAddOnLoaded(_, loadedName)
 
 	EVENT_MANAGER:RegisterForEvent(addon.name, EVENT_PLAYER_ACTIVATED, OnPlayerActivated)
 
-	-- Switching between keyboard and gamepad mode makes both trackers re-apply their own
+	-- Switching between keyboard and gamepad mode makes every tracker re-apply its own
 	-- platform fonts, which wipes ours. Their handlers and this one are all on the same event
 	-- with no guaranteed order, so ours is deferred by a frame rather than racing them. On
 	-- console this never fires.

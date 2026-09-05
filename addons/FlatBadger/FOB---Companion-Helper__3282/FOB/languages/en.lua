@@ -36,6 +36,7 @@ L("USE", "Use")
 
 -- interactable names
 L("BOOKSHELF", "Bookshelf")
+L("CRIMSON_NIRNROOT", "Crimson Nirnroot")
 L("DARK_BROTHERHOOD", "Dark Brotherhood Sanctuary")
 L("MAGES_GUILD", "Mages Guild")
 L("MEDICAL", "Medical Supplies")

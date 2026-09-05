@@ -1,14 +1,21 @@
-function OWDeconstruct_GetLanguageStrings()
-    if OWA_SavedVariables.language == "ua" then
-        return OW_DECONSTRUCT_LANG_UA
-    end
+local owa = OWAssistant
+local deconstruct = owa.Deconstruct
 
-    return OW_DECONSTRUCT_LANG_EN
+local function L(key)
+    return owa.GetString("DECONSTRUCT_" .. key)
 end
 
-function OWDeconstruct_CreateSettings()
+local function CreateStringGroup(prefix)
+    return setmetatable({}, {
+        __index = function(_, key)
+            return L(prefix .. "_" .. key)
+        end,
+    })
+end
 
-    if not OWA_SavedVariables.deconstructEnabled then
+function deconstruct.CreateSettings()
+
+    if not owa.savedVariables.deconstructEnabled then
         return
     end
 
@@ -17,64 +24,65 @@ function OWDeconstruct_CreateSettings()
         return
     end
 
-    local D = OWDeconstruct_GetLanguageStrings()
+    local D = setmetatable({}, {
+        __index = function(_, key)
+            return L(key)
+        end,
+    })
+
+    D.WEAPON_SETTINGS = CreateStringGroup("WEAPON_SETTINGS")
+    D.CLOTHING_SETTINGS = CreateStringGroup("CLOTHING_SETTINGS")
+    D.JEWELRY_SETTINGS = CreateStringGroup("JEWELRY_SETTINGS")
+    D.ENCHANTING_SETTINGS = CreateStringGroup("ENCHANTING_SETTINGS")
+
     local panelId = "OWDeconstructSettings"
+
     local function NormalizeQualityValue(value)
-
-    if type(value) == "number" then
-        return value
-    end
-
-    local savedText = tostring(value)
-
-    local qualityValues = {
-        {
-            value = ITEM_QUALITY_NORMAL,
-            ua = OW_DECONSTRUCT_LANG_UA.QUALITY_NORMAL,
-            en = OW_DECONSTRUCT_LANG_EN.QUALITY_NORMAL,
-        },
-        {
-            value = ITEM_QUALITY_FINE,
-            ua = OW_DECONSTRUCT_LANG_UA.QUALITY_FINE,
-            en = OW_DECONSTRUCT_LANG_EN.QUALITY_FINE,
-        },
-        {
-            value = ITEM_QUALITY_SUPERIOR,
-            ua = OW_DECONSTRUCT_LANG_UA.QUALITY_SUPERIOR,
-            en = OW_DECONSTRUCT_LANG_EN.QUALITY_SUPERIOR,
-        },
-        {
-            value = ITEM_QUALITY_EPIC,
-            ua = OW_DECONSTRUCT_LANG_UA.QUALITY_EPIC,
-            en = OW_DECONSTRUCT_LANG_EN.QUALITY_EPIC,
-        },
-        {
-            value = ITEM_QUALITY_LEGENDARY,
-            ua = OW_DECONSTRUCT_LANG_UA.QUALITY_LEGENDARY,
-            en = OW_DECONSTRUCT_LANG_EN.QUALITY_LEGENDARY,
-        },
-    }
-
-    for _, qualityData in ipairs(qualityValues) do
-        if string.find(savedText, qualityData.ua, 1, true)
-            or string.find(savedText, qualityData.en, 1, true)
-        then
-            return qualityData.value
+        if type(value) == "number" then
+            return value
         end
-    end
 
-    return ITEM_QUALITY_NORMAL
+        local savedText = tostring(value)
+
+        local qualityValues = {
+            { value = ITEM_QUALITY_NORMAL, text = D.QUALITY_NORMAL },
+            { value = ITEM_QUALITY_MAGIC, text = D.QUALITY_FINE },
+            { value = ITEM_QUALITY_ARCANE, text = D.QUALITY_SUPERIOR },
+            { value = ITEM_QUALITY_ARTIFACT, text = D.QUALITY_EPIC },
+            { value = ITEM_QUALITY_LEGENDARY, text = D.QUALITY_LEGENDARY },
+        }
+
+        for _, qualityData in ipairs(qualityValues) do
+            if string.find(savedText, qualityData.text, 1, true) then
+                return qualityData.value
+            end
+        end
+
+        return ITEM_QUALITY_NORMAL
     end
 
     local function GetProfile(profileName)
-
-        local profiles = OWA_SavedVariables.deconstructProfiles
+        local profiles = owa.savedVariables.deconstructProfiles
 
         if not profiles[profileName] then
             profiles[profileName] = {}
         end
 
         local profile = profiles[profileName]
+
+        -- Versions before 0.1.3 used a separate research checkbox.
+        -- Preserve its effective state when migrating to one dropdown.
+        if profile.research ~= nil then
+            if profile.research == false then
+                profile.researchMode = "none"
+            elseif not profile.researchMode
+                or profile.researchMode == "none"
+            then
+                profile.researchMode = "all"
+            end
+
+            profile.research = nil
+        end
 
         local defaults = {
             enabled = false,
@@ -89,14 +97,27 @@ function OWDeconstruct_CreateSettings()
             fromBank = false,
             nirnhoned = false,
 
-            research = false,
-            researchMode = "all",
+            researchMode = "none",
         }
 
         for settingName, defaultValue in pairs(defaults) do
             if profile[settingName] == nil then
                 profile[settingName] = defaultValue
             end
+        end
+
+        local validResearchModes = {
+            none = true,
+            all = true,
+            keep_lowest_unresearched = true,
+        }
+
+        if profileName == "jewelry" then
+            validResearchModes.basic_traits = true
+        end
+
+        if not validResearchModes[profile.researchMode] then
+            profile.researchMode = "none"
         end
 
         return profile
@@ -135,20 +156,12 @@ function OWDeconstruct_CreateSettings()
             "|cCFAF37" .. D.QUALITY_LEGENDARY .. "|r",
         }
 
-        local qualityByChoice = {
-            [choices[1]] = ITEM_QUALITY_NORMAL,
-            [choices[2]] = ITEM_QUALITY_MAGIC,
-            [choices[3]] = ITEM_QUALITY_ARCANE,
-            [choices[4]] = ITEM_QUALITY_ARTIFACT,
-            [choices[5]] = ITEM_QUALITY_LEGENDARY,
-        }
-
-        local choiceByQuality = {
-            [ITEM_QUALITY_NORMAL] = choices[1],
-            [ITEM_QUALITY_MAGIC] = choices[2],
-            [ITEM_QUALITY_ARCANE] = choices[3],
-            [ITEM_QUALITY_ARTIFACT] = choices[4],
-            [ITEM_QUALITY_LEGENDARY] = choices[5],
+        local choiceValues = {
+            ITEM_QUALITY_NORMAL,
+            ITEM_QUALITY_MAGIC,
+            ITEM_QUALITY_ARCANE,
+            ITEM_QUALITY_ARTIFACT,
+            ITEM_QUALITY_LEGENDARY,
         }
 
         return {
@@ -157,18 +170,17 @@ function OWDeconstruct_CreateSettings()
             tooltip = T.MAX_QUALITY_TOOLTIP,
 
             choices = choices,
+            choicesValues = choiceValues,
 
             getFunc = function()
-                return choiceByQuality[profile.maxQuality]
-                    or choices[1]
+                return profile.maxQuality
             end,
 
-            setFunc = function(choice)
-                profile.maxQuality = qualityByChoice[choice]
-                    or NormalizeQualityValue(choice)
+            setFunc = function(value)
+                profile.maxQuality = NormalizeQualityValue(value)
             end,
 
-            default = choices[1],
+            default = ITEM_QUALITY_NORMAL,
 
             disabled = function()
                 return not profile.enabled
@@ -183,11 +195,13 @@ function OWDeconstruct_CreateSettings()
             tooltip = T.RESEARCH_MODE_TOOLTIP,
 
             choices = {
+                T.RESEARCH_NONE,
                 T.RESEARCH_ALL,
                 T.RESEARCH_KEEP_LOWEST,
             },
 
             choicesValues = {
+                "none",
                 "all",
                 "keep_lowest_unresearched",
             },
@@ -200,10 +214,10 @@ function OWDeconstruct_CreateSettings()
                 profile.researchMode = value
             end,
 
-            default = "all",
+            default = "none",
 
             disabled = function()
-                return not profile.enabled or not profile.research
+                return not profile.enabled
             end,
 
             warning = T.RESEARCH_KEEP_LOWEST_TOOLTIP,
@@ -220,12 +234,14 @@ function OWDeconstruct_CreateSettings()
             tooltip = T.RESEARCH_MODE_TOOLTIP,
 
             choices = {
+                T.RESEARCH_NONE,
                 T.RESEARCH_ALL,
                 T.RESEARCH_BASIC,
                 T.RESEARCH_KEEP_LOWEST,
             },
 
             choicesValues = {
+                "none",
                 "all",
                 "basic_traits",
                 "keep_lowest_unresearched",
@@ -239,11 +255,10 @@ function OWDeconstruct_CreateSettings()
                 profile.researchMode = value
             end,
 
-            default = "all",
+            default = "none",
 
             disabled = function()
                 return not profile.enabled
-                    or not profile.research
             end,
 
             warning =
@@ -266,7 +281,6 @@ function OWDeconstruct_CreateSettings()
             Checkbox(profile, "tradable", T.TRADABLE, T.TRADABLE_TOOLTIP),
             Checkbox(profile, "fromBank", T.FROM_BANK, T.FROM_BANK_TOOLTIP),
             Checkbox(profile, "nirnhoned", T.NIRNHONED, T.NIRNHONED_TOOLTIP),
-            Checkbox(profile, "research", T.RESEARCH, T.RESEARCH_TOOLTIP),
 
             ResearchDropdown(profile, T),
         }
@@ -335,13 +349,6 @@ function OWDeconstruct_CreateSettings()
                 T.FROM_BANK_TOOLTIP
             ),
 
-            Checkbox(
-                profile,
-                "research",
-                T.RESEARCH,
-                T.RESEARCH_TOOLTIP
-            ),
-
             JewelryResearchDropdown(
                 profile,
                 T
@@ -363,10 +370,10 @@ function OWDeconstruct_CreateSettings()
 
     local panelData = {
         type = "panel",
-        name = "OWDeconstruct",
-        displayName = OWA_GetLanguageStrings().DECONSTRUCT,
-        author = "|c57ff80@Invs|r",
-        version = "|c57ff800.1.1|r",
+        name = owa.GetString("DECONSTRUCTOR_PANEL"),
+        displayName = owa.GetString("DECONSTRUCTOR_PANEL"),
+        author = "@Invs",
+        version = owa.version,
 
         registerForRefresh = true,
     }
@@ -409,18 +416,25 @@ function OWDeconstruct_CreateSettings()
                 D.ENCHANTING_SETTINGS
             ),
         },
+        {
+            type = "checkbox",
+            name = D.CHAT_MESSAGES,
+            tooltip = D.CHAT_MESSAGES_TOOLTIP,
+
+            getFunc = function()
+                return owa.savedVariables.deconstructChatMessages
+                    ~= false
+            end,
+
+            setFunc = function(value)
+                owa.savedVariables.deconstructChatMessages = value
+            end,
+
+            default = true,
+        },
     }
 
-    local panel =
-        LAM:RegisterAddonPanel(
-            panelId,
-            panelData
-        )
-
-    OWA_AddGuildButton(
-        panel,
-        LAM
-    )
+    LAM:RegisterAddonPanel(panelId, panelData)
 
     LAM:RegisterOptionControls(
         panelId,

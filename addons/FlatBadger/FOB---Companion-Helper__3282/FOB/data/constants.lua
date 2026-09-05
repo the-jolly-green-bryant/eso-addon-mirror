@@ -104,7 +104,10 @@ FOB = {
         [GetString(FOB_WHITE_CAP)] = true
     },
     Name = "FOB",
-    Nirnroot = GetString(FOB_NIRNROOT),
+    Nirnroot = {
+        [GetString(FOB_NIRNROOT)] = true,
+        [GetString(FOB_CRIMSON_NIRNROOT)] = true
+    },
     NoPickPocketing = {},
     OutlawsRefuge = {
         [zo_strlower(GetString(FOB_OUTLAWS_REFUGE))] = true,

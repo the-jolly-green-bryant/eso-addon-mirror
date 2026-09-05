@@ -6,7 +6,9 @@ local M = Verdant.Settings
 
 local api = Verdant.zenimax.api
 local zui = Verdant.zenimax.ui
+local PlaySound = zui.PlaySound
 local zc  = Verdant.zenimax.constants
+local Scene = Verdant.zenimax.scene
 local GetUIMousePosition = api.GetUIMousePosition
 local GetString          = api.GetString
 local WINDOW_MANAGER     = zui.WINDOW_MANAGER
@@ -85,6 +87,14 @@ for pct = 0, 100, 5 do
   VPALPHA_LABELS[pct] = pct .. "%"
 end
 local VPALPHA_DEFAULT = 30
+
+local LIGHTA_PRESETS = {}
+local LIGHTA_LABELS  = {}
+for pct = 10, 90, 5 do
+  LIGHTA_PRESETS[#LIGHTA_PRESETS + 1] = pct
+  LIGHTA_LABELS[pct] = pct .. "%"
+end
+local LIGHTA_DEFAULT = 40
 
 local THETA_PRESETS = {}
 local THETA_LABELS  = {}
@@ -165,6 +175,7 @@ local current_sample  = SAMPLE_DEFAULT
 local current_twindow = TWINDOW_DEFAULT
 local current_vpalpha = VPALPHA_DEFAULT
 local current_theta   = THETA_DEFAULT
+local current_lighta  = LIGHTA_DEFAULT
 local current_profile = PROFILE_DEFAULT
 
 local function nearest_idx(presets, ms)
@@ -245,6 +256,58 @@ local function reinit_buffer()
   warn_if_heavy(capacity, current_twindow, hz)
 end
 
+local C_FILL_OK     = { 0.40, 0.82, 0.50, 0.92 }
+local C_FILL_HEAVY  = { 0.92, 0.30, 0.28, 0.92 }
+local C_LABEL_OK    = { 0.75, 0.75, 0.75, 1 }
+local C_LABEL_HEAVY = { 1.00, 0.45, 0.42, 1 }
+
+local function capacity_of(sample_ms, twindow_s)
+  return twindow_s * math_floor(1000 / sample_ms)
+end
+
+local function is_heavy(sample_ms, twindow_s)
+  return capacity_of(sample_ms, twindow_s) > CAPACITY_WARN_THRESHOLD
+end
+
+local function tint_temporal()
+  local heavy = is_heavy(current_sample, current_twindow)
+  local f = heavy and C_FILL_HEAVY or C_FILL_OK
+  local l = heavy and C_LABEL_HEAVY or C_LABEL_OK
+  for _, k in ipairs({ "sample", "twindow" }) do
+    local fill, label = controls["fill_" .. k], controls["label_" .. k]
+    if fill then fill:SetColor(f[1], f[2], f[3], f[4]) end
+    if label then label:SetColor(l[1], l[2], l[3], l[4]) end
+  end
+end
+
+function M.is_heavy_combo() return is_heavy(current_sample, current_twindow) end
+
+local confirm = { kind = nil }
+
+local function show_confirm(kind, title, msg, yes, no)
+  confirm.kind = kind
+  controls.confirm_title:SetText(GetString(title))
+  controls.confirm_msg:SetText(msg)
+  controls.confirm_yes:SetText(GetString(yes))
+  controls.confirm_no:SetText(GetString(no))
+  controls.confirm:SetHidden(false)
+  PlaySound(SOUNDS.NEGATIVE_CLICK)
+end
+
+local function ask_heavy(prev_sample, prev_twindow)
+  local was_heavy = is_heavy(prev_sample, prev_twindow)
+  local heavy = is_heavy(current_sample, current_twindow)
+  if not heavy then return end
+  if was_heavy and capacity_of(current_sample, current_twindow) <= capacity_of(prev_sample, prev_twindow) then return end
+  confirm.prev_sample  = prev_sample
+  confirm.prev_twindow = prev_twindow
+  local hz = math_floor(1000 / current_sample)
+  show_confirm("heavy", VERDANT_SETTINGS_HEAVY_TITLE,
+    string.format(GetString(VERDANT_SETTINGS_HEAVY_MSG), TWINDOW_LABELS[current_twindow] or (current_twindow .. "s"), hz,
+      capacity_of(current_sample, current_twindow)),
+    VERDANT_SETTINGS_HEAVY_YES, VERDANT_SETTINGS_HEAVY_NO)
+end
+
 local profile_combo
 
 local function persist_profile(id)
@@ -297,6 +360,8 @@ local function refresh_all_sliders()
   update_slider(c.track_twindow, c.fill_twindow, c.thumb_twindow, c.label_twindow, TWINDOW_PRESETS, TWINDOW_LABELS, current_twindow)
   update_slider(c.track_vpalpha, c.fill_vpalpha, c.thumb_vpalpha, c.label_vpalpha, VPALPHA_PRESETS, VPALPHA_LABELS, current_vpalpha)
   update_slider(c.track_triage,  c.fill_triage,  c.thumb_triage,  c.label_triage,  THETA_PRESETS,   THETA_LABELS,   current_theta)
+  update_slider(c.track_lighta,  c.fill_lighta,  c.thumb_lighta,  c.label_lighta,  LIGHTA_PRESETS,  LIGHTA_LABELS,  current_lighta)
+  tint_temporal()
 end
 
 function M.refresh_unknown_count()
@@ -327,11 +392,15 @@ function M.toggle()
   local hidden = win:IsHidden()
   if hidden then
     dock_window()
-    win:SetHidden(false)
+    Scene.show_top_level(win)
     refresh_all_sliders()
     M.refresh_unknown_count()
+    PlaySound(SOUNDS.ARMORY_OPEN)
   else
-    win:SetHidden(true)
+    Scene.hide_top_level(win)
+    controls.confirm:SetHidden(true)
+    confirm.kind = nil
+    PlaySound(SOUNDS.ADVENTURE_ZONE_OVERVIEW_CLOSED)
   end
 end
 
@@ -356,11 +425,51 @@ function M.on_logo_click()
   if not now then d("[V] " .. GetString(VERDANT_LOGO_HINT)) end
 end
 
+local function sounds_on()
+  local sv = Verdant.SavedVars
+  return not (sv and sv.settings and sv.settings.sounds == false)
+end
+
+function M.on_sounds_click()
+  local sv = Verdant.SavedVars
+  sv.settings = sv.settings or {}
+  local now = not sounds_on()
+  sv.settings.sounds = now
+  controls.sounds_btn:SetText(now and GetString(VERDANT_SETTINGS_SOUNDS_ON)
+                                   or GetString(VERDANT_SETTINGS_SOUNDS_OFF))
+  if now then PlaySound(SOUNDS.DIALOG_ACCEPT) end
+end
+
 function M.on_bars_click()
   local now = not Verdant.Visibility.is_bar_enabled()
   Verdant.Visibility.set_bar_enabled(now)
   controls.bars_btn:SetText(now and GetString(VERDANT_SETTINGS_BARS_ON)
                                  or GetString(VERDANT_SETTINGS_BARS_OFF))
+end
+
+function M.on_light_click()
+  local sv = Verdant.SavedVars
+  sv.settings = sv.settings or {}
+  local now = not (sv.settings.light_mode == true)
+  sv.settings.light_mode = now
+  controls.light_btn:SetText(now and GetString(VERDANT_SETTINGS_LIGHT_ON)
+                                 or GetString(VERDANT_SETTINGS_LIGHT_OFF))
+  Verdant.Graph.set_light_enabled(now)
+end
+
+function M.on_lightalpha_track_click(control)
+  local cx      = GetUIMousePosition()
+  local track_w = control:GetWidth()
+  if track_w <= 0 then return end
+  local pct = math_max(0, math_min(1, (cx - control:GetLeft()) / track_w))
+  local idx = math_max(1, math_min(#LIGHTA_PRESETS, math_floor(pct * (#LIGHTA_PRESETS - 1) + 0.5) + 1))
+  current_lighta = LIGHTA_PRESETS[idx]
+  log:info("light_alpha ->", current_lighta, "%")
+  local sv = Verdant.SavedVars
+  sv.settings = sv.settings or {}
+  sv.settings.light_alpha_pct = current_lighta
+  Verdant.Graph.set_light_alpha(current_lighta / 100)
+  update_slider(controls.track_lighta, controls.fill_lighta, controls.thumb_lighta, controls.label_lighta, LIGHTA_PRESETS, LIGHTA_LABELS, current_lighta)
 end
 
 function M.on_autosave_click()
@@ -475,6 +584,13 @@ function M.on_profile_delete_click()
     d("[V] " .. GetString(VERDANT_PROFILE_DELETE_HINT))
     return
   end
+  show_confirm("pdelete", VERDANT_SETTINGS_PDEL_TITLE,
+    string.format(GetString(VERDANT_SETTINGS_PDEL_MSG), user_profile_name(current_profile)),
+    VERDANT_SETTINGS_PDEL_YES, VERDANT_SETTINGS_PDEL_NO)
+end
+
+local function delete_profile_now()
+  if not is_user_profile(current_profile) then return end
   local up = user_profiles()
   if not up then return end
   local name = user_profile_name(current_profile)
@@ -534,12 +650,15 @@ function M.on_sample_track_click(control)
   if track_w <= 0 then return end
   local pct = math_max(0, math_min(1, (cx - control:GetLeft()) / track_w))
   local idx = math_max(1, math_min(#SAMPLE_PRESETS, math_floor(pct * (#SAMPLE_PRESETS - 1) + 0.5) + 1))
+  local prev_sample, prev_twindow = current_sample, current_twindow
   current_sample = SAMPLE_PRESETS[idx]
   log:info("sample_rate ->", current_sample, "ms")
   persist_temporal("sample_rate_ms", current_sample)
   reinit_buffer()
   mark_custom()
   update_slider(controls.track_sample, controls.fill_sample, controls.thumb_sample, controls.label_sample, SAMPLE_PRESETS, SAMPLE_LABELS, current_sample)
+  tint_temporal()
+  ask_heavy(prev_sample, prev_twindow)
 end
 
 function M.on_twindow_track_click(control)
@@ -548,12 +667,48 @@ function M.on_twindow_track_click(control)
   if track_w <= 0 then return end
   local pct = math_max(0, math_min(1, (cx - control:GetLeft()) / track_w))
   local idx = math_max(1, math_min(#TWINDOW_PRESETS, math_floor(pct * (#TWINDOW_PRESETS - 1) + 0.5) + 1))
+  local prev_sample, prev_twindow = current_sample, current_twindow
   current_twindow = TWINDOW_PRESETS[idx]
   log:info("time_window ->", current_twindow, "s")
   persist_temporal("time_window_s", current_twindow)
   reinit_buffer()
   mark_custom()
   update_slider(controls.track_twindow, controls.fill_twindow, controls.thumb_twindow, controls.label_twindow, TWINDOW_PRESETS, TWINDOW_LABELS, current_twindow)
+  tint_temporal()
+  ask_heavy(prev_sample, prev_twindow)
+end
+
+function M.on_confirm_yes()
+  local kind = confirm.kind
+  confirm.kind = nil
+  controls.confirm:SetHidden(true)
+  PlaySound(SOUNDS.DIALOG_ACCEPT)
+  if kind == "pdelete" then delete_profile_now() end
+end
+
+function M.on_confirm_no()
+  local kind = confirm.kind
+  confirm.kind = nil
+  controls.confirm:SetHidden(true)
+  PlaySound(SOUNDS.DIALOG_DECLINE)
+  if kind == "heavy" then
+    current_sample  = confirm.prev_sample
+    current_twindow = confirm.prev_twindow
+    persist_temporal("sample_rate_ms", current_sample)
+    persist_temporal("time_window_s", current_twindow)
+    reinit_buffer()
+    refresh_all_sliders()
+  end
+end
+
+function M.on_pname_focus(on)
+  local box = VerdantSettingsPanelPNameBox
+  if on then
+    box:SetEdgeColor(0.62, 1.00, 0.74, 0.95)
+    if controls.pname_edit.SelectAll then controls.pname_edit:SelectAll() end
+  else
+    box:SetEdgeColor(0.42, 1.00, 0.60, 0.45)
+  end
 end
 
 function M.on_vpalpha_track_click(control)
@@ -598,8 +753,13 @@ function M.on_reset_click()
     sv.settings.triage_theta = nil
     sv.settings.session_autosave = false
     controls.autosave_btn:SetText(GetString(VERDANT_SETTINGS_AUTOSAVE_OFF))
+    sv.settings.light_mode = false
+    sv.settings.light_alpha_pct = nil
+    controls.light_btn:SetText(GetString(VERDANT_SETTINGS_LIGHT_OFF))
+    Verdant.Graph.set_light_enabled(false)
   end
   current_theta = THETA_DEFAULT
+  current_lighta = LIGHTA_DEFAULT
 
   if profile_combo then
     profile_combo:SetSelectedItemText(profile_label_for(PROFILE_DEFAULT))
@@ -660,6 +820,17 @@ function M.init()
   reinit_buffer()
 
   controls.window         = VerdantSettingsPanel
+  Scene.register_top_level(controls.window)
+  controls.confirm        = VerdantSettingsConfirm
+  controls.confirm_title  = VerdantSettingsConfirmTitle
+  controls.confirm_msg    = VerdantSettingsConfirmMsg
+  controls.confirm_yes    = VerdantSettingsConfirmYesBtn
+  controls.confirm_no     = VerdantSettingsConfirmNoBtn
+  controls.confirm:SetDrawTier(DT_HIGH)
+  VerdantSettingsConfirmBg:SetCenterColor(0.62, 1.00, 0.74, 1.0)
+  VerdantSettingsConfirmBg:SetEdgeColor(0.42, 1.00, 0.60, 1.0)
+  controls.confirm_title:SetColor(0.55, 0.85, 0.55, 1)
+  controls.confirm_msg:SetColor(0.90, 0.90, 0.90, 1)
 
   VerdantSettingsPanelBg:SetCenterColor(0.62, 1.00, 0.74, 1.0)
   VerdantSettingsPanelBg:SetEdgeColor(0.42, 1.00, 0.60, 1.0)
@@ -685,6 +856,10 @@ function M.init()
   controls.title_triage   = VerdantSettingsPanelTriageTitle
   controls.label_triage   = VerdantSettingsPanelTriageLabel
   controls.track_triage   = VerdantSettingsPanelSliderTrackTriage
+  controls.title_lighta   = VerdantSettingsPanelLightAlphaTitle
+  controls.label_lighta   = VerdantSettingsPanelLightAlphaLabel
+  controls.track_lighta   = VerdantSettingsPanelSliderTrackLightAlpha
+  controls.light_btn      = VerdantSettingsPanelLightBtn
   controls.window_title   = VerdantSettingsPanelWindowTitle
   controls.reset_btn      = VerdantSettingsPanelResetBtn
   controls.profile_label  = VerdantSettingsPanelProfileLabel
@@ -700,9 +875,26 @@ function M.init()
   controls.pname_edit     = VerdantSettingsPanelPNameBoxEdit
   controls.psave_btn      = VerdantSettingsPanelPSaveBtn
   controls.pdelete_btn    = VerdantSettingsPanelPDeleteBtn
+  controls.sounds_btn     = VerdantSettingsPanelSoundsBtn
+  zui.tooltip(controls.psave_btn,     VERDANT_TIP_PSAVE)
+  zui.tooltip(controls.pdelete_btn,   VERDANT_TIP_PDELETE)
+  zui.tooltip(controls.autorec_btn,   VERDANT_TIP_AUTOREC)
+  zui.tooltip(controls.autosave_btn,  VERDANT_TIP_AUTOSAVE)
+  zui.tooltip(controls.light_btn,     VERDANT_TIP_LIGHT)
+  zui.tooltip(controls.shielddir_btn, VERDANT_TIP_SHIELDDIR)
+  zui.tooltip(controls.gdm_btn,       VERDANT_TIP_GDM)
+  zui.tooltip(controls.unknown_btn,   VERDANT_TIP_UNKNOWN)
+  zui.tooltip(controls.logo_btn,      VERDANT_TIP_LOGO)
+  zui.tooltip(controls.bars_btn,      VERDANT_TIP_BARS)
+  zui.tooltip(controls.reset_btn,     VERDANT_TIP_RESET)
+  zui.tooltip(controls.sounds_btn,    VERDANT_TIP_SOUNDS)
+  zui.tooltip(VerdantSettingsPanelCloseBtn, VERDANT_TIP_CLOSE)
   controls.psave_btn:SetText(GetString(VERDANT_SETTINGS_SAVE_PROFILE))
   controls.pdelete_btn:SetText(GetString(VERDANT_SETTINGS_DELETE_PROFILE))
   controls.pname_edit:SetDefaultText(GetString(VERDANT_PROFILE_NAME_DEFAULT))
+  controls.pname_edit:SetDefaultTextColor(0.62, 0.70, 0.64, 0.45)
+  VerdantSettingsPanelPNameBox:SetCenterColor(0, 0, 0, 0)
+  M.on_pname_focus(false)
 
   controls.window_title:SetText(GetString(VERDANT_SETTINGS_TITLE))
   VerdantSettingsPanelVersionLabel:SetText("v" .. Verdant.Constants.VERSION)
@@ -728,8 +920,13 @@ function M.init()
     sec[2]:SetTextureCoords(0, 1, 0, 0.05)
     sec[2]:SetColor(0.46, 0.86, 0.58, 0.22)
   end
+  VerdantSettingsPanelSepColumns:SetTexture(FILL_TEXTURE)
+  VerdantSettingsPanelSepColumns:SetTextureCoords(0, 0.05, 0, 1)
+  VerdantSettingsPanelSepColumns:SetColor(0.46, 0.86, 0.58, 0.12)
   controls.logo_btn:SetText(Verdant.Logo.is_enabled()
     and GetString(VERDANT_SETTINGS_LOGO_ON) or GetString(VERDANT_SETTINGS_LOGO_OFF))
+  controls.sounds_btn:SetText(sounds_on()
+    and GetString(VERDANT_SETTINGS_SOUNDS_ON) or GetString(VERDANT_SETTINGS_SOUNDS_OFF))
 
   local bars_on = not (Verdant.SavedVars and Verdant.SavedVars.bar
                        and Verdant.SavedVars.bar.enabled == false)
@@ -743,6 +940,9 @@ function M.init()
     and GetString(VERDANT_SETTINGS_GDM_ON) or GetString(VERDANT_SETTINGS_GDM_OFF))
   controls.autosave_btn:SetText((sv.settings.session_autosave == true)
     and GetString(VERDANT_SETTINGS_AUTOSAVE_ON) or GetString(VERDANT_SETTINGS_AUTOSAVE_OFF))
+  controls.light_btn:SetText((sv.settings.light_mode == true)
+    and GetString(VERDANT_SETTINGS_LIGHT_ON) or GetString(VERDANT_SETTINGS_LIGHT_OFF))
+  current_lighta = LIGHTA_PRESETS[nearest_idx(LIGHTA_PRESETS, sv.settings.light_alpha_pct or LIGHTA_DEFAULT)]
   Verdant.Graph.set_shield_down(shield_down)
 
   profile_combo = ZO_ComboBox_ObjectFromContainer(controls.profile_combo)
@@ -777,6 +977,10 @@ function M.init()
   controls.title_triage:SetColor(0.75, 0.75, 0.75, 1)
   controls.label_triage:SetColor(0.95, 0.80, 0.20, 1)
 
+  controls.title_lighta:SetText(GetString(VERDANT_SETTING_LIGHT_ALPHA))
+  controls.title_lighta:SetColor(0.75, 0.75, 0.75, 1)
+  controls.label_lighta:SetColor(0.95, 0.80, 0.20, 1)
+
   if sv.settings.triage_theta then
     current_theta = math_floor(sv.settings.triage_theta * 100 + 0.5)
   end
@@ -789,6 +993,7 @@ function M.init()
   c.fill_twindow, c.thumb_twindow = setup_slider_visuals(c.track_twindow, "VerdantSettingsTWindow")
   c.fill_vpalpha, c.thumb_vpalpha = setup_slider_visuals(c.track_vpalpha, "VerdantSettingsVPAlpha")
   c.fill_triage,  c.thumb_triage  = setup_slider_visuals(c.track_triage,  "VerdantSettingsTriage")
+  c.fill_lighta,  c.thumb_lighta  = setup_slider_visuals(c.track_lighta,  "VerdantSettingsLightA")
 
   if sv.settings.x and sv.settings.y then
     controls.window:ClearAnchors()

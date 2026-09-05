@@ -22,7 +22,7 @@
     "Verdant"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4557/",
-  "fingerprint": "e28d132bbb0e4250c351f6f035ab78837114a2e3c21e632cb977ac58ab8f8ed3",
+  "fingerprint": "0e0c10c883ef5248f5b82738ba9bebf726112c5daf5736544420f445217964cc",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16234.png",
     "https://cdn-eso.mmoui.com/preview/pvw16239.png",
@@ -30,13 +30,13 @@
     "https://cdn-eso.mmoui.com/preview/pvw16246.png",
     "https://cdn-eso.mmoui.com/preview/pvw16238.png",
     "https://cdn-eso.mmoui.com/preview/pvw16237.png",
-    "https://cdn-eso.mmoui.com/preview/pvw16240.png",
-    "https://cdn-eso.mmoui.com/preview/pvw16241.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17270.png",
     "https://cdn-eso.mmoui.com/preview/pvw16248.png",
     "https://cdn-eso.mmoui.com/preview/pvw16247.png",
     "https://cdn-eso.mmoui.com/preview/pvw17059.png",
-    "https://cdn-eso.mmoui.com/preview/pvw17089.png",
-    "https://cdn-eso.mmoui.com/preview/pvw17090.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17269.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17272.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17271.png",
     "https://cdn-eso.mmoui.com/preview/pvw15949.png"
   ],
   "platform": "pc",
@@ -45,11 +45,11 @@
   "source_id": "4557",
   "source_url": "https://www.esoui.com/downloads/info4557-Verdant.html",
   "stats": {
-    "downloads": 243,
+    "downloads": 263,
     "favorites": 3,
-    "monthly_downloads": 32
+    "monthly_downloads": 45
   },
   "title": "Verdant",
-  "updated_at": 1787496967000,
-  "version": "2.4.0"
+  "updated_at": 1788548055000,
+  "version": "2.5.0"
 }

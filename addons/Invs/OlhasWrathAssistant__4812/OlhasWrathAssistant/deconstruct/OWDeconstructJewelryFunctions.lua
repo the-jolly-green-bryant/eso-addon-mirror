@@ -1,9 +1,12 @@
+local owa = OWAssistant
+local deconstruct = owa.Deconstruct
+
 local function IsJewelryStation()
-    if OWDeconstruct.IsUniversalStation() then
+    if deconstruct.IsUniversalStation() then
         return true
     end
 
-    return OWDeconstruct.currentCraftingType
+    return deconstruct.currentCraftingType
         == CRAFTING_TYPE_JEWELRYCRAFTING
 end
 
@@ -111,10 +114,6 @@ local function MatchesJewelryResearchFilter(
     itemLink,
     traitType
 )
-    if not profile.research then
-        return false
-    end
-
     if profile.researchMode
         == "basic_traits"
     then
@@ -178,7 +177,7 @@ local function IsJewelryAllowed(
         )
 
     local maxQuality =
-        OWDeconstruct.GetMaxQuality(profile)
+        deconstruct.GetMaxQuality(profile)
 
     if not quality
         or quality > maxQuality
@@ -296,8 +295,7 @@ local function RemoveLowestResearchJewelry(
     candidates,
     profile
 )
-    if not profile.research
-        or profile.researchMode
+    if profile.researchMode
         ~= "keep_lowest_unresearched"
     then
         return candidates
@@ -382,8 +380,8 @@ local function CollectJewelryCandidates(
     end
 
     local profiles =
-        OWA_SavedVariables
-        and OWA_SavedVariables.deconstructProfiles
+        owa.savedVariables
+        and owa.savedVariables.deconstructProfiles
 
     local profile =
         profiles and profiles.jewelry
@@ -432,7 +430,7 @@ local function CollectJewelryCandidates(
     end
 end
 
-OWDeconstruct.RegisterCollector(
+deconstruct.RegisterCollector(
     "jewelry",
     CollectJewelryCandidates
 )

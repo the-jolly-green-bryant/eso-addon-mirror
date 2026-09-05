@@ -4,6 +4,12 @@
       <Action name="VERDANT_TOGGLE">
         <Down>Verdant.Visibility.master_toggle()</Down>
       </Action>
+      <Action name="VERDANT_GRAPH">
+        <Down>Verdant.Graph.toggle()</Down>
+      </Action>
+      <Action name="VERDANT_RECORD">
+        <Down>Verdant.Graph.toggle_record()</Down>
+      </Action>
     </Category>
   </Layer>
 </Bindings>

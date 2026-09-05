@@ -40,6 +40,8 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [PB](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/alexdragian/PB__2499) | alexdragian | PC / Mac | 0.0.23 |
 | [PB's ChatAssistant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PB-s-ChatAssistant__416eb892-aa32-4a10-8d1a-7ba7cf27cedf) | PinkBanther | Console | — |
 | [PB's ChatAssistant(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PB-s-ChatAssistant-Beta__8409de55-043d-4bcc-8876-395671fdc7b5) | PinkBanther | Console | — |
+| [PB's ChatFilter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PB-s-ChatFilter__f4b50a99-0e05-4748-95a8-d062f94401f3) | PinkBanther | Console | — |
+| [PB's ChatFilter(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PB-s-ChatFilter-Beta__f84f4752-ff0e-42c9-b73d-d5ea97508b03) | PinkBanther | Console | — |
 | [PB's MiniMap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PB-s-MiniMap__d636a31f-9393-47d7-b16f-8d932870cff3) | PinkBanther | Console | — |
 | [PB's MiniMap(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PB-s-MiniMap-Beta__d0219382-bec1-477e-bcc2-d2b0c7138a79) | PinkBanther | Console | — |
 | [PB's QuestTrackerFontChanger](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PB-s-QuestTrackerFontChanger__cc94a283-12a5-4e75-8e54-727d2ab6977c) | PinkBanther | Console | — |

@@ -1,5 +1,5 @@
 local strings = {
-	SI_PBSQTFC_EXPLANATION = "HUD右上の2つのトラッカーは通常のUIラベルで作られているため、フォントを直接変更できます（UIの再読み込みは発生せず、設定がセッションを越えて残ることもありません）。以下、それぞれ別々に設定します。",
+	SI_PBSQTFC_EXPLANATION = "HUD右上に縦に並ぶトラッカーは通常のUIラベルで作られているため、フォントを直接変更できます（UIの再読み込みは発生せず、設定がセッションを越えて残ることもありません）。以下、画面に出る順番で、それぞれ別々に設定します。",
 
 	-- ---- クエストトラッカー ------------------------------------------------------------
 	SI_PBSQTFC_SECTION_QUEST = "クエストトラッカー",
@@ -17,6 +17,21 @@ local strings = {
 
 	SI_PBSQTFC_QUEST_FACE = "クエストトラッカーの書体",
 	SI_PBSQTFC_QUEST_STYLE = "クエストトラッカーの縁取り",
+
+	-- ---- 黄金の追跡 --------------------------------------------------------------------
+	SI_PBSQTFC_SECTION_PURSUIT = "黄金の追跡",
+	SI_PBSQTFC_SECTION_PURSUIT_NOTE = "クエストトラッカーとハウス情報の間に出るパネルです。追跡中の「黄金の追跡」の課題と、その進行状況が表示されます。同じパネルが「タムリエルの書」にも使われるため、この設定は両方に適用されます。",
+
+	SI_PBSQTFC_PURSUIT_ENABLED = "黄金の追跡のフォントを変更",
+	SI_PBSQTFC_PURSUIT_ENABLED_TOOLTIP = "以下の設定を「黄金の追跡」パネルに適用します。オフにするとゲーム本来のフォントに戻ります。この欄の設定がすべてゲーム標準と同じ間は、そもそも何も書き込みません。",
+
+	SI_PBSQTFC_SIZE_PURSUIT_NAME = "見出しの大きさ",
+	SI_PBSQTFC_SIZE_PURSUIT_NAME_TOOLTIP = "アイコンの横に出る見出し行（「黄金の追跡」、追跡対象によっては「タムリエルの書」）の文字サイズです。",
+	SI_PBSQTFC_SIZE_PURSUIT_DETAIL = "課題と進行状況の大きさ",
+	SI_PBSQTFC_SIZE_PURSUIT_DETAIL_TOOLTIP = "見出しの下に出る2行（追跡中の課題名と「進行状況: n/m」）の文字サイズです。ゲーム側がこの2行を同じフォントで描画しているため、スライダーも1本にまとめてあります。",
+
+	SI_PBSQTFC_PURSUIT_FACE = "黄金の追跡の書体",
+	SI_PBSQTFC_PURSUIT_STYLE = "黄金の追跡の縁取り",
 
 	-- ---- ハウストラッカー --------------------------------------------------------------
 	SI_PBSQTFC_SECTION_HOUSE = "ハウス情報（ホームツアー）",
@@ -50,17 +65,19 @@ local strings = {
 	SI_PBSQTFC_STYLE_SOFT_SHADOW_THICK = "やわらかい影（太）",
 	SI_PBSQTFC_STYLE_OUTLINE_THICK = "縁取り（太）",
 
-	SI_PBSQTFC_SECTION_GENERAL = "両方に共通",
+	SI_PBSQTFC_SECTION_GENERAL = "すべてに共通",
 	SI_PBSQTFC_RESET = "初期設定に戻す",
-	SI_PBSQTFC_RESET_TOOLTIP = "上の2つの欄すべてを、ゲーム本来のフォントに戻します。",
+	SI_PBSQTFC_RESET_TOOLTIP = "上のすべての欄を、ゲーム本来のフォントに戻します。",
 	SI_PBSQTFC_RESET_BUTTON = "戻す",
 
-	SI_PBSQTFC_GAME_SETTINGS_HINT = "各トラッカーを表示するかどうかはゲーム本体の設定です（設定 > インターフェース の「クエストトラッカーを表示」「ハウストラッカーを表示」）。アドオンからは変更できないため、そちらで設定してください。",
+	SI_PBSQTFC_GAME_SETTINGS_HINT = "各トラッカーを表示するかどうかはゲーム本体の設定です（設定 > インターフェース）。アドオンからは変更できないため、そちらで設定してください。",
 }
 
 strings.SI_PBSQTFC_QUEST_FACE_TOOLTIP = strings.SI_PBSQTFC_FACE_TOOLTIP_COMMON
+strings.SI_PBSQTFC_PURSUIT_FACE_TOOLTIP = strings.SI_PBSQTFC_FACE_TOOLTIP_COMMON
 strings.SI_PBSQTFC_HOUSE_FACE_TOOLTIP = strings.SI_PBSQTFC_FACE_TOOLTIP_COMMON
 strings.SI_PBSQTFC_QUEST_STYLE_TOOLTIP = strings.SI_PBSQTFC_STYLE_TOOLTIP_COMMON
+strings.SI_PBSQTFC_PURSUIT_STYLE_TOOLTIP = strings.SI_PBSQTFC_STYLE_TOOLTIP_COMMON
 strings.SI_PBSQTFC_HOUSE_STYLE_TOOLTIP = strings.SI_PBSQTFC_STYLE_TOOLTIP_COMMON
 
 for stringId, stringValue in pairs(strings) do

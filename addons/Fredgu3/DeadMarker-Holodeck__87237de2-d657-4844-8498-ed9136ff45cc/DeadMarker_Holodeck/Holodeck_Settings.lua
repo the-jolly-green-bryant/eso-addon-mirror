@@ -106,7 +106,7 @@ function H.CreateSettingsMenu()
         {
             type = "checkbox",
             name = "Portal! alert on pad windows",
-            tooltip = "Big center banner for the 12s vLC pad window, timed from this pack's teleports. Also: /hd alerts on|off",
+            tooltip = "Banner + glowing floor pads for this pack's teleports, and two tag marks per side while adds are up. Also: /hd alerts on|off",
             getFunc = function() return sv.alertsOn ~= false end,
             setFunc = function(v)
                 sv.alertsOn = (v == true)

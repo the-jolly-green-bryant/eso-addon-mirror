@@ -1,4 +1,4 @@
--- Flamechasers Dungeon Codex UI
+-- Flamechasers Dungeon, Trial & Arena Codex UI
 -- Compact branded layout with native ESO scroll containers and per-boss notes.
 
 local DMC = DungeonMechsCodex
@@ -23,58 +23,16 @@ local UI = {
     noteLoadedDungeonId = nil,
     noteLoadedBossId = nil,
     noteLoadedMode = nil,
+    themeColorBindings = {},
+    themeFontControls = {},
+    themeIconParts = {},
+    themeButtons = {},
 }
 DMC.ui = UI
 
-local C = {
-    bg = {0.005, 0.009, 0.014, 1},
-    header = {0.014, 0.062, 0.094, 1},
-    panel = {0.010, 0.018, 0.026, 1},
-    panel2 = {0.014, 0.024, 0.034, 1},
-    section = {0.022, 0.052, 0.070, 1},
-    sectionAlt = {0.019, 0.042, 0.057, 1},
-    row = {0.024, 0.039, 0.052, 1},
-    rowHover = {0.038, 0.073, 0.096, 1},
-    rowSelected = {0.032, 0.104, 0.143, 1},
-    pill = {0.034, 0.078, 0.100, 1},
-    pillHover = {0.052, 0.122, 0.154, 1},
-    pillPressed = {0.030, 0.106, 0.142, 1},
-    pillSelected = {0.044, 0.158, 0.206, 1},
-    pillPrimaryHover = {0.060, 0.196, 0.248, 1},
-    pillDisabled = {0.018, 0.034, 0.044, 1},
-    segment = {0.017, 0.037, 0.049, 1},
-    segmentHover = {0.030, 0.075, 0.096, 1},
-    segmentPressed = {0.027, 0.094, 0.122, 1},
-    segmentSelected = {0.030, 0.112, 0.146, 1},
-    pillEdge = {0.18, 0.50, 0.61, 0.94},
-    pillHoverEdge = {0.31, 0.73, 0.87, 1},
-    pillSelectedEdge = {0.39, 0.87, 1.00, 1},
-    pillDisabledEdge = {0.11, 0.28, 0.34, 0.74},
-    buttonText = {0.84, 0.88, 0.91, 1},
-    buttonDisabledText = {0.43, 0.48, 0.52, 1},
-    bodyText = {0.82, 0.85, 0.88, 1},
-    bodyTextSoft = {0.76, 0.80, 0.83, 1},
-    iconPill = {0.018, 0.043, 0.056, 0.82},
-    iconPillHover = {0.035, 0.092, 0.116, 0.94},
-    iconPillEdge = {0.14, 0.39, 0.48, 0.82},
-    mechanic = {0.024, 0.048, 0.063, 1},
-    mechanicAlt = {0.014, 0.029, 0.041, 1},
-    mechanicHeader = {0.030, 0.064, 0.082, 1},
-    mechanicAction = {0.010, 0.023, 0.032, 0.96},
-    structuralRule = {0.12, 0.36, 0.45, 0.56},
-    passiveRule = {0.10, 0.29, 0.36, 0.42},
-    fieldEdge = {0.16, 0.45, 0.55, 0.88},
-    fieldFocus = {0.32, 0.76, 0.90, 1},
-    edge = {0.25, 0.72, 1.00, 0.92},
-    edgeDim = {0.13, 0.38, 0.48, 0.96},
-    title = {0.48, 0.90, 1.00, 1},
-    text = {0.92, 0.93, 0.94, 1},
-    muted = {0.52, 0.62, 0.70, 1},
-    quiet = {0.38, 0.46, 0.54, 1},
-    gold = {0.96, 0.75, 0.30, 1},
-    ok = {0.45, 0.94, 0.62, 1},
-    warning = {0.95, 0.72, 0.32, 1},
-}
+-- Settings.lua owns this palette and mutates each RGBA table in place. Keeping
+-- one shared reference lets all state renderers pick up a new theme immediately.
+local C = DMC.themeColors
 
 local WINDOW_WIDTH = 1260
 local WINDOW_HEIGHT = 860
@@ -85,28 +43,66 @@ local LEFT_WIDTH = 276
 local CONTENT_HEIGHT = 774
 local RIGHT_X = 306
 local RIGHT_WIDTH = 936
-local DUNGEON_ROW_HEIGHT = 30
 local DUNGEON_CONTENT_WIDTH = 232
 local DUNGEON_TITLE_X = 52
 local MECHANIC_CONTENT_WIDTH = 874
-local FONT_BODY = "$(MEDIUM_FONT)|15|soft-shadow-thin"
-local FONT_META = "$(MEDIUM_FONT)|13|soft-shadow-thin"
-local FONT_META_BOLD = "$(BOLD_FONT)|13|soft-shadow-thin"
-local FONT_BOSS_ROW = "$(BOLD_FONT)|14|soft-shadow-thin"
-local FONT_SECTION = "$(BOLD_FONT)|16|soft-shadow-thin"
-local FONT_SECTION_SMALL = "$(BOLD_FONT)|15|soft-shadow-thin"
+local FONT_BODY = "body"
+local FONT_META = "meta"
+local FONT_META_BOLD = "metaBold"
+local FONT_BOSS_ROW = "bossRow"
+local FONT_SECTION = "section"
+local FONT_SECTION_SMALL = "sectionSmall"
+local FONT_UI = "ui"
+local FONT_UI_BOLD = "uiBold"
+local FONT_UI_SMALL = "uiSmall"
+local FONT_H2 = "h2"
+local FONT_H3 = "h3"
+local FONT_HINT = "hint"
 
--- Activity Finder already ships artwork for supported instances. Resolve it
--- at runtime so the Codex gains activity identity without bundling duplicate
--- assets or relying on brittle hard-coded texture paths.
+-- Activity Finder remains a fallback for future dungeon modules. Every current
+-- supported activity uses an explicit, verified client loading-screen texture
+-- below so artwork never depends on Finder data being populated first.
 local activityArtworkCatalog
 local activityArtworkCache = {}
 
--- Activity Finder uses shared category artwork for Trials and Arenas. Point
--- those activities at their own Veteran loading screens instead, all of which
--- are shipped by the ESO client. Keeping this keyed by our stable activity ID
--- also makes the result independent of client language and queue categories.
-local VETERAN_INSTANCE_LOADSCREENS = {
+-- These are ESO-owned files, not bundled addon assets. Keeping the catalog
+-- keyed by our stable activity IDs makes it independent of client language,
+-- queue category enumeration, and Activity Finder initialization timing.
+local INSTANCE_LOADSCREENS = {
+    imperial_city_prison = "/esoui/art/loadingscreens/loadscreen_imperialcity_prison_veteran_01.dds",
+    white_gold_tower = "/esoui/art/loadingscreens/loadscreen_whitegoldtower_veteran_01.dds",
+    cradle_of_shadows = "/esoui/art/loadingscreens/loadscreen_cradleofshadows_veteran_01.dds",
+    ruins_of_mazzatun = "/esoui/art/loadingscreens/loadscreen_mazzatun_veteran_01.dds",
+    black_drake_villa = "/esoui/art/loadingscreens/loadscreen_blackdrake_veteran_01.dds",
+    black_gem_foundry = "/esoui/art/loadingscreens/loadscreen_black_gem_foundry_veteran_01.dds",
+    bloodroot_forge = "/esoui/art/loadingscreens/loadscreen_bloodrootforge_veteran_01.dds",
+    falkreath_hold = "/esoui/art/loadingscreens/loadscreen_falkreathsdemise_veteran_01.dds",
+    fang_lair = "/esoui/art/loadingscreens/loadscreen_fanglair_veteran_01.dds",
+    scalecaller_peak = "/esoui/art/loadingscreens/loadscreen_scalecaller_veteran_01.dds",
+    moon_hunter_keep = "/esoui/art/loadingscreens/loadscreen_moonhunterkeep_veteran_01.dds",
+    march_of_sacrifices = "/esoui/art/loadingscreens/loadscreen_marchofsacrifices_veteran_01.dds",
+    frostvault = "/esoui/art/loadingscreens/loadscreen_frostvault_01.dds",
+    depths_of_malatar = "/esoui/art/loadingscreens/loadscreen_depthsofmalatar_veteran_01.dds",
+    moongrave_fane = "/esoui/art/loadingscreens/loadscreen_moongravefane_veteran_01.dds",
+    lair_of_maarselok = "/esoui/art/loadingscreens/loadscreen_lairofmaarselok_veteran_01.dds",
+    icereach = "/esoui/art/loadingscreens/loadscreen_icereach_veteran_01.dds",
+    unhallowed_grave = "/esoui/art/loadingscreens/loadscreen_unhallowedgrave_veteran_01.dds",
+    stone_garden = "/esoui/art/loadingscreens/loadscreen_stonegarden_veteran_01.dds",
+    castle_thorn = "/esoui/art/loadingscreens/loadscreen_castlethorn_veteran_01.dds",
+    the_cauldron = "/esoui/art/loadingscreens/loadscreen_thecauldron_veteran_01.dds",
+    red_petal_bastion = "/esoui/art/loadingscreens/loadscreen_redpetalbastion_veteran_01.dds",
+    the_dread_cellar = "/esoui/art/loadingscreens/loadscreen_dreadcellar_veteran_01.dds",
+    coral_aerie = "/esoui/art/loadingscreens/loadscreen_coralaerie_veteran_01.dds",
+    shipwrights_regret = "/esoui/art/loadingscreens/loadscreen_shipwrights_regret_veteran_01.dds",
+    earthen_root_enclave = "/esoui/art/loadingscreens/loadscreen_earthenrootenclave_veteran_01.dds",
+    graven_deep = "/esoui/art/loadingscreens/loadscreen_gravendeep_veteran_01.dds",
+    bal_sunnar = "/esoui/art/loadingscreens/loadscreen_bal_sunnar_veteran.dds",
+    scriveners_hall = "/esoui/art/loadingscreens/loadscreen_scriveners_hall_veteran.dds",
+    oathsworn_pit = "/esoui/art/loadingscreens/loadscreen_oathswornpit_veteran_01.dds",
+    bedlam_veil = "/esoui/art/loadingscreens/loadscreen_bedlamveil_veteran_01.dds",
+    exiled_redoubt = "/esoui/art/loadingscreens/loadscreen_exiledredoubt_veteran_01.dds",
+    lep_seclusa = "/esoui/art/loadingscreens/loadscreen_lepseclusa_veteran_01.dds",
+    naj_caldeesh = "/esoui/art/loadingscreens/loadscreen_naj_caldeesh_veteran_01.dds",
     aetherian_archive = "/esoui/art/loadingscreens/loadscreen_aetherianarchive_veteran_01.dds",
     hel_ra_citadel = "/esoui/art/loadingscreens/loadscreen_helracitadel_veteran_01.dds",
     sanctum_ophidia = "/esoui/art/loadingscreens/loadscreen_serpenttrial_veteran_01.dds",
@@ -145,8 +141,8 @@ local function getFinderArtwork(activityId)
     return nil
 end
 
-local function buildActivityArtworkCatalog()
-    if activityArtworkCatalog then return activityArtworkCatalog end
+local function buildActivityArtworkCatalog(forceRefresh)
+    if activityArtworkCatalog and not forceRefresh then return activityArtworkCatalog end
     activityArtworkCatalog = {byName = {}, byZone = {}}
 
     if type(GetNumActivitiesByType) ~= "function"
@@ -246,12 +242,11 @@ end
 local function getActivityArtwork(activity)
     if not activity then return nil end
     local cached = activityArtworkCache[activity.id]
-    if cached ~= nil then
-        if cached == false then return nil end
+    if cached then
         return cached.texture, cached.isLoadscreen
     end
 
-    local instanceLoadscreen = VETERAN_INSTANCE_LOADSCREENS[activity.id]
+    local instanceLoadscreen = INSTANCE_LOADSCREENS[activity.id]
     if instanceLoadscreen then
         activityArtworkCache[activity.id] = {texture = instanceLoadscreen, isLoadscreen = true}
         return instanceLoadscreen, true
@@ -262,28 +257,308 @@ local function getActivityArtwork(activity)
     -- instance's splash image. A missing future mapping should stay blank until
     -- its real client texture is added, never silently show the wrong picture.
     if DMC.GetActivityKind(activity) ~= "dungeon" then
-        activityArtworkCache[activity.id] = false
         return nil
     end
 
-    local catalog = buildActivityArtworkCatalog()
-    local texture
-    for _, zoneId in ipairs(activity.zoneIds or {}) do
-        texture = catalog.byZone[zoneId]
-        if texture then break end
-    end
-    if not texture then
+    local function findInCatalog(catalog)
+        local texture
+        for _, zoneId in ipairs(activity.zoneIds or {}) do
+            texture = catalog.byZone[zoneId]
+            if texture then return texture end
+        end
         texture = catalog.byName[DMC.NormalizeText(activity.name or "")]
-    end
-    if not texture then
+        if texture then return texture end
         for _, alias in ipairs(activity.aliases or {}) do
             texture = catalog.byName[DMC.NormalizeText(alias)]
-            if texture then break end
+            if texture then return texture end
+        end
+        return nil
+    end
+
+    local texture = findInCatalog(buildActivityArtworkCatalog(false))
+    if not texture then
+        -- Finder tables can be empty during early addon initialization. Rebuild
+        -- rather than preserving an incomplete catalog or a permanent miss.
+        texture = findInCatalog(buildActivityArtworkCatalog(true))
+        if not texture then texture = getZoneStoryArtwork(activity) end
+    end
+    if texture then
+        activityArtworkCache[activity.id] = {texture = texture, isLoadscreen = false}
+        return texture, false
+    end
+    -- Never cache a miss: ESO may populate Finder/Zone Story data later.
+    return nil
+end
+
+local ARTWORK_RETRY_DELAYS_MS = {1200, 3600}
+local ARTWORK_HEALTH_UPDATE_NAME = DMC.name .. "ArtworkHealth"
+
+local function artworkClockMilliseconds()
+    if type(GetFrameTimeMilliseconds) == "function" then
+        return GetFrameTimeMilliseconds()
+    end
+    return 0
+end
+
+local function artworkShouldBeVisible()
+    local enabled = not DMC.ShouldShowAppearanceElement
+        or DMC.ShouldShowAppearanceElement("showArtwork")
+    return enabled and UI.currentArtwork ~= nil
+        and UI.window ~= nil and not UI.window:IsHidden()
+end
+
+local ARTWORK_SHADE_SEGMENT_COUNT = 32
+local ARTWORK_VISIBILITY_FLOOR = 0.00
+local ARTWORK_VISIBILITY_ALPHA_SCALE = 2.00
+local ARTWORK_SHADE_TINT_MIX = 0.18
+
+local function clampUnit(value)
+    return math.max(0, math.min(1, value or 0))
+end
+
+local function setArtworkShadeHidden(hidden)
+    for _, segment in ipairs(UI.dungeonArtShadeSegments or {}) do
+        segment:SetHidden(hidden)
+    end
+end
+
+local function applyArtworkShade()
+    if not UI.dungeonArtShadeSegments then return end
+    local intensity = DMC.GetArtworkIntensity and DMC.GetArtworkIntensity() or 1
+    local left = C.artworkLeft
+    local right = C.artworkRight
+    local panel = C.panel2
+    local signature = table.concat({
+        tostring(intensity),
+        tostring(left[1]), tostring(left[2]), tostring(left[3]), tostring(left[4]),
+        tostring(right[1]), tostring(right[2]), tostring(right[3]), tostring(right[4]),
+        tostring(panel[1]), tostring(panel[2]), tostring(panel[3]), tostring(panel[4]),
+    }, ":")
+    if UI.artworkShadeSignature == signature then return end
+
+    -- Never shade the DDS controls themselves. ESO retains vertex-gradient
+    -- state when a texture control is reused, which progressively darkens an
+    -- image after A -> B -> A navigation. These permanent solid-color strips
+    -- provide a light readability veil without touching either art buffer.
+    --
+    -- The old texture-gradient alpha values represented how much artwork was
+    -- visible over the panel. Applying their literal inverse as an overlay
+    -- made this independent layer 83-93% opaque before color luminance was
+    -- considered, and the prior midtone conversion pushed it to roughly 95%.
+    -- Remap those deliberately small alpha values into a useful visibility
+    -- range instead: at the default intensity, about 14% of the image remains
+    -- at the text-heavy left edge and 34% remains at the right edge.
+    for index, segment in ipairs(UI.dungeonArtShadeSegments) do
+        local amount = (index - 0.5) / ARTWORK_SHADE_SEGMENT_COUNT
+        local r = left[1] + (right[1] - left[1]) * amount
+        local g = left[2] + (right[2] - left[2]) * amount
+        local b = left[3] + (right[3] - left[3]) * amount
+        local alpha = left[4] + (right[4] - left[4]) * amount
+        local visibility = clampUnit((ARTWORK_VISIBILITY_FLOOR
+            + alpha * ARTWORK_VISIBILITY_ALPHA_SCALE) * intensity)
+        local shadeAlpha = 1 - visibility
+        local tintMix = ARTWORK_SHADE_TINT_MIX * clampUnit(intensity)
+        local shadeR = clampUnit(panel[1] + (r - panel[1]) * tintMix)
+        local shadeG = clampUnit(panel[2] + (g - panel[2]) * tintMix)
+        local shadeB = clampUnit(panel[3] + (b - panel[3]) * tintMix)
+        segment:SetColor(shadeR, shadeG, shadeB, shadeAlpha)
+    end
+    UI.artworkShadeSignature = signature
+end
+
+local function setArtworkTextureCoords(control, isLoadscreen)
+    if not control then return end
+    if isLoadscreen then
+        -- Loading screens are 16:9; crop a centered horizontal banner that
+        -- fills the 936x112 summary panel without stretching the artwork.
+        control:SetTextureCoords(0, 1, 0.394, 0.606)
+    else
+        -- Activity Finder keyboard artwork uses a larger atlas region.
+        control:SetTextureCoords(0, 0.6836, 0.41, 0.575)
+    end
+end
+
+local function artworkIsLoaded(control)
+    if not control or not control.dmcArtworkPath then return false end
+    if type(control.IsTextureLoaded) == "function" then
+        return control:IsTextureLoaded()
+    end
+    return true
+end
+
+local function clearArtworkBuffer(control)
+    if not control then return end
+    control.dmcArtworkPath = nil
+    control.dmcArtworkIsLoadscreen = nil
+    control.dmcArtworkRequestId = nil
+    control.dmcArtworkRetriesExhausted = nil
+    control:SetHidden(true)
+    control:SetTexture(nil)
+end
+
+local function releaseDisplayedArtwork()
+    UI.artworkRequestId = (UI.artworkRequestId or 0) + 1
+    for _, control in ipairs(UI.dungeonArtBuffers or {}) do
+        clearArtworkBuffer(control)
+    end
+    UI.dungeonArt = UI.dungeonArtBuffers and UI.dungeonArtBuffers[1] or UI.dungeonArt
+    UI.pendingArtwork = nil
+    UI.loadedArtwork = nil
+    setArtworkShadeHidden(true)
+end
+
+local function finishArtworkLoad(control)
+    if not control or control.dmcArtworkRequestId ~= UI.artworkRequestId
+        or control.dmcArtworkPath ~= UI.currentArtwork
+        or not artworkShouldBeVisible() or not artworkIsLoaded(control) then
+        return false
+    end
+
+    local previous = UI.dungeonArt
+    control:SetDrawLevel(4)
+    control:SetHidden(false)
+    UI.dungeonArt = control
+    UI.pendingArtwork = nil
+    UI.loadedArtwork = control.dmcArtworkPath
+    UI.artworkRetryAfter = nil
+    setArtworkShadeHidden(false)
+
+    if previous and previous ~= control then
+        previous:SetDrawLevel(3)
+        clearArtworkBuffer(previous)
+    end
+    return true
+end
+
+local function scheduleArtworkRetry(control, requestId, attempt)
+    local delay = ARTWORK_RETRY_DELAYS_MS[attempt]
+    if not delay then
+        if control and control.dmcArtworkRequestId == requestId
+            and requestId == UI.artworkRequestId then
+            control.dmcArtworkRetriesExhausted = true
+            UI.artworkRetryAfter = artworkClockMilliseconds() + 10000
+        end
+        return
+    end
+    zo_callLater(function()
+        if not control or control.dmcArtworkRequestId ~= requestId
+            or requestId ~= UI.artworkRequestId
+            or control.dmcArtworkPath ~= UI.currentArtwork
+            or not artworkShouldBeVisible() then
+            return
+        end
+        if finishArtworkLoad(control) then return end
+
+        -- Rebind the same verified client path if ESO's asynchronous texture
+        -- request stalled or was evicted before it reached the control.
+        local path = control.dmcArtworkPath
+        control:SetTexture(nil)
+        control:SetTexture(path)
+        if not finishArtworkLoad(control) then
+            scheduleArtworkRetry(control, requestId, attempt + 1)
+        end
+    end, delay)
+end
+
+local function requestCurrentArtwork()
+    local path = UI.currentArtwork
+    local isLoadscreen = UI.currentArtworkIsLoadscreen
+    local active = UI.dungeonArt
+
+    -- A repeated click on the selected activity is a true no-op while ESO
+    -- confirms that its texture is still resident. If it was evicted, fall
+    -- through and repair it using the second buffer.
+    if active and active.dmcArtworkPath == path
+        and not active:IsHidden() and artworkIsLoaded(active) then
+        UI.loadedArtwork = path
+        setArtworkShadeHidden(false)
+        return
+    end
+
+    local pending = UI.pendingArtwork
+    if pending and pending.dmcArtworkPath == path
+        and pending.dmcArtworkRequestId == UI.artworkRequestId then
+        if finishArtworkLoad(pending) then return end
+        -- A user selecting the same activity again after all bounded retries
+        -- have elapsed explicitly restarts the stalled request below.
+    end
+
+    UI.artworkRequestId = (UI.artworkRequestId or 0) + 1
+    UI.artworkRetryAfter = nil
+    local requestId = UI.artworkRequestId
+    local buffers = UI.dungeonArtBuffers or {}
+    local target
+    if active and not active.dmcArtworkPath then
+        target = active
+    else
+        for _, control in ipairs(buffers) do
+            if control ~= active then target = control break end
         end
     end
-    if not texture then texture = getZoneStoryArtwork(activity) end
-    activityArtworkCache[activity.id] = texture and {texture = texture, isLoadscreen = false} or false
-    return texture
+    target = target or buffers[1] or active
+    if not target then return end
+
+    clearArtworkBuffer(target)
+    target.dmcArtworkPath = path
+    target.dmcArtworkIsLoadscreen = isLoadscreen
+    target.dmcArtworkRequestId = requestId
+    target.dmcArtworkRetriesExhausted = false
+    setArtworkTextureCoords(target, isLoadscreen)
+    UI.pendingArtwork = target
+    target:SetTexture(path)
+
+    if finishArtworkLoad(target) then return end
+
+    -- Do not leave another activity's artwork under a stalled request. The
+    -- brief grace period prevents a black flash during ordinary cached loads.
+    zo_callLater(function()
+        if UI.pendingArtwork == target and target.dmcArtworkRequestId == requestId
+            and UI.dungeonArt and UI.dungeonArt ~= target then
+            UI.dungeonArt:SetHidden(true)
+        end
+    end, 250)
+    scheduleArtworkRetry(target, requestId, 1)
+end
+
+local function applyArtworkAppearance()
+    if not UI.dungeonArt and not UI.dungeonArtBuffers then return end
+    applyArtworkShade()
+    if not artworkShouldBeVisible() then
+        releaseDisplayedArtwork()
+        return
+    end
+
+    requestCurrentArtwork()
+end
+
+local function checkArtworkHealth()
+    if not artworkShouldBeVisible() then return end
+    local active = UI.dungeonArt
+    if active and active.dmcArtworkPath == UI.currentArtwork
+        and not active:IsHidden() and artworkIsLoaded(active) then
+        return
+    end
+    if UI.pendingArtwork then
+        if finishArtworkLoad(UI.pendingArtwork) then return end
+        if not UI.pendingArtwork.dmcArtworkRetriesExhausted then return end
+    end
+    if UI.artworkRetryAfter
+        and artworkClockMilliseconds() < UI.artworkRetryAfter then
+        return
+    end
+    requestCurrentArtwork()
+end
+
+local function startArtworkHealthMonitor()
+    if not EVENT_MANAGER or type(EVENT_MANAGER.RegisterForUpdate) ~= "function" then return end
+    EVENT_MANAGER:UnregisterForUpdate(ARTWORK_HEALTH_UPDATE_NAME)
+    EVENT_MANAGER:RegisterForUpdate(ARTWORK_HEALTH_UPDATE_NAME, 2000, checkArtworkHealth)
+end
+
+local function stopArtworkHealthMonitor()
+    if EVENT_MANAGER and type(EVENT_MANAGER.UnregisterForUpdate) == "function" then
+        EVENT_MANAGER:UnregisterForUpdate(ARTWORK_HEALTH_UPDATE_NAME)
+    end
 end
 
 local function getSessionState()
@@ -305,13 +580,21 @@ local function hideCompactHint()
     if UI.compactHint then UI.compactHint:SetHidden(true) end
 end
 
-local function showCompactHint(control, text)
+local function showCompactHint(control, text, belowControl)
     if not UI.compactHint or not UI.compactHintLabel then return end
+    if DMC.ShouldShowAppearanceElement and not DMC.ShouldShowAppearanceElement("showHoverHints") then
+        hideCompactHint()
+        return
+    end
     UI.compactHintLabel:SetText(text or "")
     local width = math.max(46, math.min(132, math.ceil(UI.compactHintLabel:GetTextWidth() + 16)))
     UI.compactHint:SetDimensions(width, 20)
     UI.compactHint:ClearAnchors()
-    UI.compactHint:SetAnchor(BOTTOM, control, TOP, 0, -4)
+    if belowControl then
+        UI.compactHint:SetAnchor(TOP, control, BOTTOM, 0, 4)
+    else
+        UI.compactHint:SetAnchor(BOTTOM, control, TOP, 0, -4)
+    end
     UI.compactHint:SetHidden(false)
 end
 
@@ -321,14 +604,65 @@ local function anchorFill(control, parent, inset)
     control:SetAnchor(BOTTOMRIGHT, parent, BOTTOMRIGHT, -inset, -inset)
 end
 
+local LEGACY_FONT_ROLES = {
+    ZoFontGame = FONT_UI,
+    ZoFontGameBold = FONT_UI_BOLD,
+    ZoFontGameSmall = FONT_UI_SMALL,
+    ZoFontWinH2 = FONT_H2,
+    ZoFontWinH3 = FONT_H3,
+}
+
+local function getFontRole(font)
+    if DMC.appearanceFontRoles and DMC.appearanceFontRoles[font] then return font end
+    return LEGACY_FONT_ROLES[font]
+end
+
+local function resolveFont(font)
+    local role = getFontRole(font)
+    return role and DMC.GetAppearanceFont(role) or (font or "ZoFontGame")
+end
+
+local function bindFont(control, font)
+    if not control then return end
+    local role = getFontRole(font)
+    control:SetFont(resolveFont(font))
+    if role then
+        control.dmcFontRole = role
+        UI.themeFontControls[#UI.themeFontControls + 1] = control
+    end
+end
+
+local function getColorKey(color)
+    if type(color) ~= "table" then return nil end
+    for key, value in pairs(C) do
+        if value == color then return key end
+    end
+    return nil
+end
+
+local function bindColor(control, method, color)
+    if not control or not method or type(control[method]) ~= "function" then return end
+    local key = type(color) == "string" and color or getColorKey(color)
+    local value = key and C[key] or color
+    if type(value) ~= "table" then return end
+    control[method](control, unpack(value))
+    if key then
+        UI.themeColorBindings[#UI.themeColorBindings + 1] = {
+            control = control,
+            method = method,
+            key = key,
+        }
+    end
+end
+
 local function makeBackdrop(parent, name, centerColor, edgeColor, inset)
     local backdrop = wm:CreateControl(name, parent, CT_BACKDROP)
     anchorFill(backdrop, parent, inset or 0)
     backdrop:SetCenterTexture("EsoUI/Art/Tooltips/UI-TooltipCenter.dds")
     backdrop:SetEdgeTexture("EsoUI/Art/Tooltips/UI-Tooltip-Border.dds", 128, 16)
     backdrop:SetInsets(7, 7, -7, -7)
-    backdrop:SetCenterColor(unpack(centerColor or C.panel))
-    backdrop:SetEdgeColor(unpack(edgeColor or C.edgeDim))
+    bindColor(backdrop, "SetCenterColor", centerColor or C.panel)
+    bindColor(backdrop, "SetEdgeColor", edgeColor or C.edgeDim)
     backdrop:SetMouseEnabled(false)
     backdrop:SetDrawLayer(DL_BACKGROUND)
     return backdrop
@@ -346,7 +680,7 @@ local function makeWindowStroke(parent, name, thickness, inset, color)
         line:SetHeight(thickness)
         line:SetAnchor(top and TOPLEFT or BOTTOMLEFT, frame, top and TOPLEFT or BOTTOMLEFT, 0, 0)
         line:SetAnchor(top and TOPRIGHT or BOTTOMRIGHT, frame, top and TOPRIGHT or BOTTOMRIGHT, 0, 0)
-        line:SetColor(unpack(color))
+        bindColor(line, "SetColor", color)
         line:SetDrawLayer(DL_OVERLAY)
         line:SetDrawLevel(250)
         table.insert(frame.lines, line)
@@ -357,7 +691,7 @@ local function makeWindowStroke(parent, name, thickness, inset, color)
         line:SetWidth(thickness)
         line:SetAnchor(left and TOPLEFT or TOPRIGHT, frame, left and TOPLEFT or TOPRIGHT, 0, 0)
         line:SetAnchor(left and BOTTOMLEFT or BOTTOMRIGHT, frame, left and BOTTOMLEFT or BOTTOMRIGHT, 0, 0)
-        line:SetColor(unpack(color))
+        bindColor(line, "SetColor", color)
         line:SetDrawLayer(DL_OVERLAY)
         line:SetDrawLevel(250)
         table.insert(frame.lines, line)
@@ -394,7 +728,7 @@ local function makeSectionBand(parent, name, height, x, width, color)
         band:SetAnchor(TOPRIGHT, parent, TOPRIGHT, -1, 1)
         band:SetHeight(height)
     end
-    band:SetCenterColor(unpack(color or C.section))
+    bindColor(band, "SetCenterColor", color or C.section)
     band:SetEdgeColor(0, 0, 0, 0)
     band:SetMouseEnabled(false)
     band:SetDrawLayer(DL_BACKGROUND)
@@ -404,15 +738,15 @@ local function makeSectionBand(parent, name, height, x, width, color)
     rule:SetAnchor(BOTTOMLEFT, band, BOTTOMLEFT, 0, 0)
     rule:SetAnchor(BOTTOMRIGHT, band, BOTTOMRIGHT, 0, 0)
     rule:SetHeight(1)
-    rule:SetColor(unpack(C.structuralRule))
+    bindColor(rule, "SetColor", C.structuralRule)
     return band
 end
 
 local function makeLabel(parent, name, text, font, color, oneLine)
     local label = wm:CreateControl(name, parent, CT_LABEL)
-    label:SetFont(font or "ZoFontGame")
+    bindFont(label, font or FONT_UI)
     label:SetText(text or "")
-    label:SetColor(unpack(color or C.text))
+    bindColor(label, "SetColor", color or C.text)
     if oneLine then label:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS) end
     return label
 end
@@ -428,7 +762,15 @@ local function createHeaderIcon(parent, name, kind, color)
         p:SetAnchor(TOPLEFT, icon, TOPLEFT, x, y)
         p:SetDimensions(w, h)
         local c = color or C.title
-        p:SetColor(c[1], c[2], c[3], alpha or c[4] or 1)
+        if alpha then
+            -- Preserve the deliberate relative opacity of multi-part glyphs.
+            p.dmcIconAlpha = alpha
+            p.dmcIconColorKey = getColorKey(c)
+            p:SetColor(c[1], c[2], c[3], alpha)
+            UI.themeIconParts[#UI.themeIconParts + 1] = p
+        else
+            bindColor(p, "SetColor", c)
+        end
         p:SetDrawLayer(DL_OVERLAY)
         p:SetDrawLevel(25)
         table.insert(icon.parts, p)
@@ -465,13 +807,23 @@ local function createHeaderIcon(parent, name, kind, color)
     return icon
 end
 
-local function makeButton(parent, name, text, callback, font)
+local function makeButton(parent, name, text, callback, font, suppressNativeText)
     local button = wm:CreateControl(name, parent, CT_BUTTON)
-    button:SetFont(font or "ZoFontGame")
+    bindFont(button, font or FONT_UI)
     button:SetText(text or "")
-    button:SetNormalFontColor(0.84, 0.88, 0.91, 1)
-    button:SetMouseOverFontColor(1, 1, 1, 1)
-    button:SetPressedFontColor(0.48, 0.91, 1, 1)
+    if suppressNativeText then
+        -- Pill and segment controls draw an optically-centered child caption.
+        -- Do not bind the native button label to the theme or it will become
+        -- visible again after a live palette refresh beneath that caption.
+        button:SetNormalFontColor(0, 0, 0, 0)
+        button:SetMouseOverFontColor(0, 0, 0, 0)
+        button:SetPressedFontColor(0, 0, 0, 0)
+        button:SetDisabledFontColor(0, 0, 0, 0)
+    else
+        bindColor(button, "SetNormalFontColor", C.buttonText)
+        bindColor(button, "SetMouseOverFontColor", C.buttonHoverText)
+        bindColor(button, "SetPressedFontColor", C.buttonPressedText)
+    end
     if callback then button:SetHandler("OnClicked", callback) end
     return button
 end
@@ -513,10 +865,10 @@ local function applyPillVisual(button)
 end
 
 local function makePill(parent, name, text, callback, font)
-    local button = makeButton(parent, name, text, callback, font or "ZoFontGameSmall")
+    local button = makeButton(parent, name, text, callback, font or "ZoFontGameSmall", true)
     button.bg = wm:CreateControl(name .. "Bg", button, CT_BACKDROP)
     button.bg:SetAnchorFill(button)
-    button.bg:SetCenterColor(unpack(C.pill))
+    bindColor(button.bg, "SetCenterColor", C.pill)
     button.bg:SetEdgeColor(0, 0, 0, 0)
     button.bg:SetMouseEnabled(false)
     button.bg:SetDrawLayer(DL_BACKGROUND)
@@ -553,6 +905,7 @@ local function makePill(parent, name, text, callback, font)
         applyPillVisual(control)
     end)
     applyPillVisual(button)
+    UI.themeButtons[#UI.themeButtons + 1] = button
     return button
 end
 
@@ -615,7 +968,7 @@ local function applySegmentVisual(button)
 end
 
 local function makeSegmentButton(parent, name, text, callback, font)
-    local button = makeButton(parent, name, text, callback, font or "ZoFontGameSmall")
+    local button = makeButton(parent, name, text, callback, font or "ZoFontGameSmall", true)
     button.bg = wm:CreateControl(name .. "Bg", button, CT_BACKDROP)
     button.bg:SetAnchorFill(button)
     button.bg:SetCenterColor(unpack(C.segment))
@@ -637,7 +990,7 @@ local function makeSegmentButton(parent, name, text, callback, font)
     button.activeBar:SetAnchor(BOTTOMLEFT, button, BOTTOMLEFT, 7, 0)
     button.activeBar:SetAnchor(BOTTOMRIGHT, button, BOTTOMRIGHT, -7, 0)
     button.activeBar:SetHeight(2)
-    button.activeBar:SetColor(unpack(C.edge))
+    bindColor(button.activeBar, "SetColor", C.edge)
     button.activeBar:SetDrawLayer(DL_OVERLAY)
     button.activeBar:SetDrawLevel(25)
     button.activeBar:SetHidden(true)
@@ -666,6 +1019,7 @@ local function makeSegmentButton(parent, name, text, callback, font)
         applySegmentVisual(control)
     end)
     applySegmentVisual(button)
+    UI.themeButtons[#UI.themeButtons + 1] = button
     return button
 end
 
@@ -687,6 +1041,14 @@ local function setButtonEnabled(button, enabled)
     end
 end
 
+local function colorMarkup(color, text)
+    color = color or C.text
+    local function channel(value)
+        return math.max(0, math.min(255, math.floor((tonumber(value) or 0) * 255 + 0.5)))
+    end
+    return string.format("|c%02X%02X%02X%s|r", channel(color[1]), channel(color[2]), channel(color[3]), tostring(text or ""))
+end
+
 local function shortFlags(boss)
     if not boss or not boss.flags then return "" end
     local out, seen = {}, {}
@@ -704,7 +1066,7 @@ local function shortFlags(boss)
         elseif normalized == "main" then add("Main")
         end
     end
-    return #out > 0 and ("  |c46545D" .. table.concat(out, " ") .. "|r") or ""
+    return #out > 0 and ("  " .. colorMarkup(C.bossFlagText, table.concat(out, " "))) or ""
 end
 
 local function plainFlags(boss)
@@ -848,7 +1210,7 @@ local function layoutDungeonTitle(dungeon)
     if not UI.dungeonTitle or not UI.dungeonDlc then return end
     local titleMax = UI.dungeonTitleAvailableWidth or 500
     local dlcText = tostring(dungeon and dungeon.dlc or "")
-    local hasDlc = dlcText ~= ""
+    local hasDlc = dlcText ~= "" and DMC.ShouldShowAppearanceElement("showDlcTags")
     local dungeonNameMax = math.max(180, titleMax - (hasDlc and 124 or 0))
 
     UI.dungeonTitle:SetText(dungeon and dungeon.name or "Select an activity")
@@ -1127,14 +1489,16 @@ local function setDungeonButtonState(button, selected, current)
     -- Auto-detection is indicated purely by typography now: green + bold.
     -- Keep that treatment even when the detected dungeon is also selected.
     if current then
-        button:SetFont("ZoFontGameBold")
-        button:SetNormalFontColor(0.48, 0.95, 0.65, 1)
+        button.dmcFontRole = FONT_UI_BOLD
+        button:SetFont(DMC.GetAppearanceFont(FONT_UI_BOLD))
+        button:SetNormalFontColor(unpack(C.currentText))
     else
-        button:SetFont("ZoFontGame")
+        button.dmcFontRole = FONT_UI
+        button:SetFont(DMC.GetAppearanceFont(FONT_UI))
         if selected then
-            button:SetNormalFontColor(0.52, 0.93, 1, 1)
+            button:SetNormalFontColor(unpack(C.rowSelectedText))
         else
-            button:SetNormalFontColor(0.76, 0.82, 0.86, 1)
+            button:SetNormalFontColor(unpack(C.rowText))
         end
     end
 
@@ -1143,9 +1507,12 @@ local function setDungeonButtonState(button, selected, current)
         button.accent:SetColor(unpack(C.edge))
         button.accent:SetHidden(false)
     elseif current then
-        button.bg:SetCenterColor(0.028, 0.068, 0.060, 0.97)
+        button.bg:SetCenterColor(unpack(C.currentRow))
         button.accent:SetColor(unpack(C.ok))
         button.accent:SetHidden(false)
+    elseif button.isHovered then
+        button.bg:SetCenterColor(unpack(C.rowHover))
+        button.accent:SetHidden(true)
     else
         button.bg:SetCenterColor(unpack(C.row))
         button.accent:SetHidden(true)
@@ -1155,9 +1522,16 @@ end
 local function ensureDungeonButton(index)
     if UI.dungeonButtons[index] then return UI.dungeonButtons[index] end
     local button = makeButton(UI.dungeonListChild, "DMC_DungeonButton" .. index, "", function(control)
-        if control.dungeonId then DMC.SelectDungeon(control.dungeonId) end
-    end, "ZoFontGame")
-    button:SetDimensions(DUNGEON_CONTENT_WIDTH, 29)
+        if not control.dungeonId then return end
+        if control.dungeonId == UI.selectedDungeonId then
+            -- Repeated selection has no content work to do, but it remains a
+            -- convenient manual health check if ESO evicted the active image.
+            applyArtworkAppearance()
+        else
+            DMC.SelectDungeon(control.dungeonId)
+        end
+    end, FONT_UI)
+    button:SetDimensions(DUNGEON_CONTENT_WIDTH, DMC.GetActivityRowHeight() - 1)
     button:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
     button:SetHandler("OnMouseWheel", forwardWheel(UI.dungeonListScroll))
 
@@ -1175,11 +1549,13 @@ local function ensureDungeonButton(index)
     button.accent:SetHidden(true)
 
     button:SetHandler("OnMouseEnter", function(control)
+        control.isHovered = true
         if not control.isSelected and not control.isCurrent then
             control.bg:SetCenterColor(unpack(C.rowHover))
         end
     end)
     button:SetHandler("OnMouseExit", function(control)
+        control.isHovered = false
         setDungeonButtonState(control, control.isSelected, control.isCurrent)
     end)
 
@@ -1189,7 +1565,7 @@ end
 
 local function updateBossButtonText(button, activeChevron)
     if not button or not button.bossName then return end
-    local chevron = activeChevron and "|c75E6FF›|r  " or "|c5B6D78›|r  "
+    local chevron = colorMarkup(activeChevron and C.bossChevronActive or C.bossChevron, "›") .. "  "
     button:SetText(chevron .. button.bossName .. (button.bossFlagsMarkup or ""))
 end
 
@@ -1197,12 +1573,16 @@ local function setBossButtonState(button, selected)
     if not button then return end
     button.isSelected = selected
     if selected then
-        button:SetNormalFontColor(0.52, 0.93, 1, 1)
+        button:SetNormalFontColor(unpack(C.rowSelectedText))
         button.bg:SetCenterColor(unpack(C.rowSelected))
         button.accent:SetHidden(false)
+    elseif button.isHovered then
+        button:SetNormalFontColor(unpack(C.bossHoverText))
+        button.bg:SetCenterColor(unpack(C.bossRowHover))
+        button.accent:SetHidden(true)
     else
-        button:SetNormalFontColor(0.78, 0.82, 0.85, 1)
-        button.bg:SetCenterColor(0.018, 0.032, 0.042, 0.72)
+        button:SetNormalFontColor(unpack(C.bossText))
+        button.bg:SetCenterColor(unpack(C.bossRow))
         button.accent:SetHidden(true)
     end
     updateBossButtonText(button, selected or button.isHovered)
@@ -1222,7 +1602,7 @@ local function ensureMechanicRow(index)
     row.header:SetAnchor(TOPLEFT, row, TOPLEFT, 1, 1)
     row.header:SetAnchor(TOPRIGHT, row, TOPRIGHT, -1, 1)
     row.header:SetHeight(34)
-    row.header:SetCenterColor(unpack(C.mechanicHeader))
+    bindColor(row.header, "SetCenterColor", C.mechanicHeader)
     row.header:SetEdgeColor(0, 0, 0, 0)
     row.header:SetMouseEnabled(false)
     row.header:SetDrawLayer(DL_BACKGROUND)
@@ -1232,13 +1612,13 @@ local function ensureMechanicRow(index)
     row.headerRule:SetAnchor(BOTTOMLEFT, row.header, BOTTOMLEFT, 0, 0)
     row.headerRule:SetAnchor(BOTTOMRIGHT, row.header, BOTTOMRIGHT, 0, 0)
     row.headerRule:SetHeight(1)
-    row.headerRule:SetColor(0.72, 0.51, 0.16, 0.48)
+    bindColor(row.headerRule, "SetColor", C.mechanicHeaderRule)
 
     row.bottomRule = wm:CreateControl("DMC_MechanicBottomRule" .. index, row, CT_TEXTURE)
     row.bottomRule:SetAnchor(BOTTOMLEFT, row, BOTTOMLEFT, 3, 0)
     row.bottomRule:SetAnchor(BOTTOMRIGHT, row, BOTTOMRIGHT, 0, 0)
     row.bottomRule:SetHeight(1)
-    row.bottomRule:SetColor(0.08, 0.22, 0.28, 0.24)
+    bindColor(row.bottomRule, "SetColor", C.mechanicBottomRule)
     row.bottomRule:SetDrawLayer(DL_OVERLAY)
     row.bottomRule:SetDrawLevel(20)
 
@@ -1246,7 +1626,7 @@ local function ensureMechanicRow(index)
     row.actionSurface:SetAnchor(TOPRIGHT, row, TOPRIGHT, -1, 35)
     row.actionSurface:SetAnchor(BOTTOMRIGHT, row, BOTTOMRIGHT, -1, -1)
     row.actionSurface:SetWidth(94)
-    row.actionSurface:SetCenterColor(unpack(C.mechanicAction))
+    bindColor(row.actionSurface, "SetCenterColor", C.mechanicAction)
     row.actionSurface:SetEdgeColor(0, 0, 0, 0)
     row.actionSurface:SetMouseEnabled(false)
     row.actionSurface:SetDrawLayer(DL_BACKGROUND)
@@ -1256,7 +1636,7 @@ local function ensureMechanicRow(index)
     row.actionDivider:SetAnchor(TOPLEFT, row.actionSurface, TOPLEFT, 0, 0)
     row.actionDivider:SetAnchor(BOTTOMLEFT, row.actionSurface, BOTTOMLEFT, 0, 0)
     row.actionDivider:SetWidth(1)
-    row.actionDivider:SetColor(unpack(C.passiveRule))
+    bindColor(row.actionDivider, "SetColor", C.passiveRule)
     row.actionDivider:SetDrawLayer(DL_OVERLAY)
     row.actionDivider:SetDrawLevel(20)
 
@@ -1264,15 +1644,15 @@ local function ensureMechanicRow(index)
     row.accent:SetAnchor(TOPLEFT, row, TOPLEFT, 1, 1)
     row.accent:SetAnchor(BOTTOMLEFT, row, BOTTOMLEFT, 1, -1)
     row.accent:SetWidth(3)
-    row.accent:SetColor(1.00, 0.72, 0.24, 0.82)
+    bindColor(row.accent, "SetColor", C.mechanicAccent)
     row.accent:SetDrawLayer(DL_OVERLAY)
     row.accent:SetDrawLevel(240)
 
-    row.title = makeLabel(row, "DMC_MechanicTitle" .. index, "", "ZoFontGameBold", C.gold, true)
+    row.title = makeLabel(row, "DMC_MechanicTitle" .. index, "", FONT_UI_BOLD, C.gold, true)
     row.title:SetAnchor(TOPLEFT, row, TOPLEFT, 14, 7)
     row.title:SetDimensions(MECHANIC_CONTENT_WIDTH - 128, 24)
 
-    row.number = makeLabel(row, "DMC_MechanicNumber" .. index, "", "ZoFontGameBold", C.quiet, true)
+    row.number = makeLabel(row, "DMC_MechanicNumber" .. index, "", FONT_UI_BOLD, C.quiet, true)
     row.number:SetAnchor(TOPRIGHT, row, TOPRIGHT, -14, 9)
     row.number:SetDimensions(44, 20)
     row.number:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
@@ -1335,6 +1715,109 @@ local function layoutMechanicRow(row, chatLines)
     return rowHeight
 end
 
+local function applyOptionalElementVisibility()
+    if not UI.window then return end
+    local showSectionIcons = DMC.ShouldShowAppearanceElement("showSectionIcons")
+    for _, icon in ipairs({UI.dungeonSectionIcon, UI.bossListIcon, UI.noteIcon, UI.mechanicsIcon}) do
+        if icon then icon:SetHidden(not showSectionIcons) end
+    end
+
+    if UI.tagline then UI.tagline:SetHidden(not DMC.ShouldShowAppearanceElement("showHeaderTagline")) end
+    local showCounters = DMC.ShouldShowAppearanceElement("showCounters")
+    if UI.dungeonCount then UI.dungeonCount:SetHidden(not showCounters) end
+    if UI.mechanicsCount then UI.mechanicsCount:SetHidden(not showCounters) end
+
+    if not DMC.ShouldShowAppearanceElement("showHoverHints") then hideCompactHint() end
+    for _, row in ipairs(UI.mechanicRows) do
+        if row.number and row.number:GetText() ~= "" then
+            row.number:SetHidden(not DMC.ShouldShowAppearanceElement("showMechanicNumbers"))
+        end
+    end
+end
+
+local function applySearchAppearance()
+    if not UI.searchBg then return end
+    if UI.searchFocused then
+        UI.searchBg:SetCenterColor(unpack(C.searchFocus))
+        UI.searchBg:SetEdgeColor(unpack(C.fieldFocus))
+    elseif UI.searchHovered then
+        UI.searchBg:SetCenterColor(unpack(C.searchHover))
+        UI.searchBg:SetEdgeColor(unpack(C.fieldEdge))
+    else
+        UI.searchBg:SetCenterColor(unpack(C.search))
+        UI.searchBg:SetEdgeColor(unpack(C.fieldEdge))
+    end
+end
+
+function DMC.ApplyAppearanceToUI(reflow)
+    if not UI.window then return end
+
+    for _, binding in ipairs(UI.themeColorBindings) do
+        local control = binding.control
+        local color = C[binding.key]
+        if control and color and type(control[binding.method]) == "function" then
+            control[binding.method](control, unpack(color))
+        end
+    end
+    for _, part in ipairs(UI.themeIconParts) do
+        local color = C[part.dmcIconColorKey]
+        if color then
+            part:SetColor(color[1], color[2], color[3], math.min(1, (part.dmcIconAlpha or 1) * (color[4] or 1)))
+        end
+    end
+    for _, control in ipairs(UI.themeFontControls) do
+        if control and control.dmcFontRole then
+            control:SetFont(DMC.GetAppearanceFont(control.dmcFontRole))
+        end
+    end
+
+    UI.window:SetScale(DMC.GetAppearanceValue("layout", "windowScale") / 100)
+    UI.window:SetMovable(not DMC.GetAppearanceValue("layout", "lockWindowPosition"))
+    if UI.closeIcon then UI.closeIcon:SetColor(unpack(UI.closeHovered and C.closeHover or C.close)) end
+    if UI.settingsIcon then UI.settingsIcon:SetColor(unpack(UI.settingsHovered and C.closeHover or C.close)) end
+    applySearchAppearance()
+    if UI.noteBackdrop then
+        UI.noteBackdrop:SetEdgeColor(unpack(UI.noteFocused and C.fieldFocus or C.fieldEdge))
+    end
+    applyArtworkAppearance()
+    applyOptionalElementVisibility()
+
+    for _, button in ipairs(UI.themeButtons) do
+        if button.isSegment then applySegmentVisual(button) else applyPillVisual(button) end
+    end
+    local current = findCurrentDungeon()
+    local currentDungeonId = current and current.id or false
+    for _, button in ipairs(UI.dungeonButtons) do
+        if button.dungeonId then
+            setDungeonButtonState(button, button.dungeonId == UI.selectedDungeonId, button.dungeonId == currentDungeonId)
+        end
+    end
+    for _, button in ipairs(UI.bossButtons) do
+        if button.bossId then
+            if button.bossData then button.bossFlagsMarkup = shortFlags(button.bossData) end
+            setBossButtonState(button, button.bossId == UI.selectedBossId)
+        end
+    end
+    refreshNoteControls()
+
+    if reflow then
+        DMC.RefreshDungeonList(false)
+        local dungeon, boss = getCurrentBoss()
+        if dungeon then
+            layoutDungeonTitle(dungeon)
+            local statusText = dungeon.status ~= "complete" and " Dataset stub: mechanics not written yet." or ""
+            setScrollableText(UI.dungeonSummaryView, getDungeonSummaryText(dungeon) .. statusText, false)
+            local bossCount = 0
+            for _, button in ipairs(UI.bossButtons) do
+                if button.bossId then bossCount = bossCount + 1 end
+            end
+            layoutBossListTable(bossCount)
+            if boss then layoutSelectedBossTitle(boss) end
+            DMC.RefreshBossDetails()
+        end
+    end
+end
+
 function DMC.InitializeUI()
     local session = getSessionState()
     UI.roleFilter = isValidRoleFilter(session.roleFilter) and session.roleFilter or "all"
@@ -1376,13 +1859,13 @@ function DMC.InitializeUI()
     UI.compactHint:SetCenterTexture("EsoUI/Art/Tooltips/UI-TooltipCenter.dds")
     UI.compactHint:SetEdgeTexture("EsoUI/Art/Tooltips/UI-Tooltip-Border.dds", 128, 16)
     UI.compactHint:SetInsets(5, 5, -5, -5)
-    UI.compactHint:SetCenterColor(0.008, 0.019, 0.026, 0.98)
-    UI.compactHint:SetEdgeColor(0.14, 0.38, 0.46, 0.88)
+    bindColor(UI.compactHint, "SetCenterColor", C.hintSurface)
+    bindColor(UI.compactHint, "SetEdgeColor", C.hintEdge)
     UI.compactHint:SetMouseEnabled(false)
     UI.compactHint:SetDrawLayer(DL_OVERLAY)
     UI.compactHint:SetDrawLevel(480)
     UI.compactHint:SetHidden(true)
-    UI.compactHintLabel = makeLabel(UI.compactHint, "DMC_CompactHintLabel", "", "$(MEDIUM_FONT)|11|soft-shadow-thin", C.muted, true)
+    UI.compactHintLabel = makeLabel(UI.compactHint, "DMC_CompactHintLabel", "", FONT_HINT, C.muted, true)
     UI.compactHintLabel:SetAnchorFill(UI.compactHint)
     UI.compactHintLabel:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     UI.compactHintLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
@@ -1395,7 +1878,7 @@ function DMC.InitializeUI()
     UI.bodySurface = wm:CreateControl("DMC_MainBodySurface", window, CT_BACKDROP)
     UI.bodySurface:SetAnchor(TOPLEFT, window, TOPLEFT, WINDOW_INSET, WINDOW_INSET + 52)
     UI.bodySurface:SetAnchor(BOTTOMRIGHT, window, BOTTOMRIGHT, -WINDOW_INSET, -WINDOW_INSET)
-    UI.bodySurface:SetCenterColor(0.003, 0.007, 0.011, 0.94)
+    bindColor(UI.bodySurface, "SetCenterColor", C.mainSurface)
     UI.bodySurface:SetEdgeColor(0, 0, 0, 0)
     UI.bodySurface:SetMouseEnabled(false)
     UI.bodySurface:SetDrawLayer(DL_BACKGROUND)
@@ -1407,7 +1890,7 @@ function DMC.InitializeUI()
     header:SetAnchor(TOPLEFT, window, TOPLEFT, WINDOW_INSET, WINDOW_INSET)
     header:SetAnchor(TOPRIGHT, window, TOPRIGHT, -WINDOW_INSET, WINDOW_INSET)
     header:SetHeight(52)
-    header:SetCenterColor(unpack(C.header))
+    bindColor(header, "SetCenterColor", C.header)
     header:SetEdgeColor(0, 0, 0, 0)
     header:SetDrawLayer(DL_BACKGROUND)
     header:SetDrawLevel(0)
@@ -1415,44 +1898,95 @@ function DMC.InitializeUI()
     headerGlow:SetAnchor(BOTTOMLEFT, header, BOTTOMLEFT, 0, 0)
     headerGlow:SetAnchor(BOTTOMRIGHT, header, BOTTOMRIGHT, 0, 0)
     headerGlow:SetHeight(2)
-    headerGlow:SetColor(unpack(C.edge))
+    bindColor(headerGlow, "SetColor", C.edge)
 
-    UI.brand = makeLabel(window, "DMC_Brand", "FLAMECHASERS", "ZoFontGameSmall", C.title, true)
+    UI.brand = makeLabel(window, "DMC_Brand", "FLAMECHASERS", FONT_UI_SMALL, C.title, true)
     UI.brand:SetAnchor(TOPLEFT, window, TOPLEFT, 20, 11)
     UI.brand:SetDimensions(170, 17)
-    UI.title = makeLabel(window, "DMC_Title", "DUNGEON, TRIAL & ARENA CODEX", "ZoFontGameBold", C.text, true)
+    UI.title = makeLabel(window, "DMC_Title", "DUNGEON, TRIAL & ARENA CODEX", FONT_UI_BOLD, C.text, true)
     UI.title:SetAnchor(TOPLEFT, window, TOPLEFT, 20, 27)
     UI.title:SetDimensions(350, 22)
-    UI.tagline = makeLabel(window, "DMC_Tagline", "Boss mechanics. Role-ready. Paste-ready.", "ZoFontGameSmall", C.muted, true)
+    UI.tagline = makeLabel(window, "DMC_Tagline", "Boss mechanics. Role-ready. Paste-ready.", FONT_UI_SMALL, C.muted, true)
     UI.tagline:SetAnchor(LEFT, UI.title, RIGHT, 14, 0)
     UI.tagline:SetDimensions(330, 22)
 
-    UI.close = makeButton(window, "DMC_Close", "", function() DMC.HideWindow() end)
+    -- Header actions use the same structure proven by Travel Slots' help icon:
+    -- a real transparent hit target with a separately centered texture. Keeping
+    -- both controls identical and anchoring one to the other avoids font-metric,
+    -- texture-padding, and scale-dependent alignment drift.
+    local function makeHeaderAction(name, texture, callback)
+        local button = wm:CreateControl(name, window, CT_BUTTON)
+        button:SetDimensions(32, 32)
+        button:SetText("")
+        button:SetNormalFontColor(0, 0, 0, 0)
+        button:SetMouseOverFontColor(0, 0, 0, 0)
+        button:SetPressedFontColor(0, 0, 0, 0)
+        button:SetDisabledFontColor(0, 0, 0, 0)
+        button:SetDrawLayer(DL_OVERLAY)
+        button:SetDrawLevel(200)
+        button:SetHandler("OnClicked", callback)
+
+        local icon = wm:CreateControl(name .. "Icon", button, CT_TEXTURE)
+        icon:SetAnchor(CENTER, button, CENTER, 0, 0)
+        icon:SetDimensions(20, 20)
+        icon:SetTexture(texture)
+        icon:SetMouseEnabled(false)
+        icon:SetDrawLayer(DL_OVERLAY)
+        icon:SetDrawLevel(210)
+        return button, icon
+    end
+
+    UI.close, UI.closeIcon = makeHeaderAction(
+        "DMC_Close", "DungeonMechsCodex/close_icon.dds", function() DMC.HideWindow() end)
     UI.close:SetAnchor(TOPRIGHT, window, TOPRIGHT, -16, 17)
-    UI.close:SetDimensions(32, 32)
-    UI.close:SetDrawLayer(DL_OVERLAY)
-    UI.close:SetDrawLevel(200)
-    UI.closeIcon = wm:CreateControl("DMC_CloseIcon", UI.close, CT_TEXTURE)
-    UI.closeIcon:SetAnchor(CENTER, UI.close, CENTER, 0, 0)
-    UI.closeIcon:SetDimensions(20, 20)
-    UI.closeIcon:SetTexture("DungeonMechsCodex/close_icon.dds")
-    UI.closeIcon:SetColor(0.90, 0.94, 1, 1)
-    UI.closeIcon:SetDrawLayer(DL_OVERLAY)
-    UI.closeIcon:SetDrawLevel(210)
-    UI.close:SetHandler("OnMouseEnter", function() UI.closeIcon:SetColor(0.48, 0.91, 1, 1) end)
-    UI.close:SetHandler("OnMouseExit", function() UI.closeIcon:SetColor(0.90, 0.94, 1, 1) end)
+    UI.closeHovered = false
+    UI.closeIcon:SetColor(unpack(C.close))
+    UI.close:SetHandler("OnMouseEnter", function()
+        UI.closeHovered = true
+        UI.closeIcon:SetColor(unpack(C.closeHover))
+    end)
+    UI.close:SetHandler("OnMouseExit", function()
+        UI.closeHovered = false
+        UI.closeIcon:SetColor(unpack(C.close))
+    end)
+
+    UI.settings, UI.settingsIcon = makeHeaderAction(
+        "DMC_Settings",
+        "EsoUI/Art/Housing/Keyboard/path_settings_icon_up.dds",
+        function()
+            hideCompactHint()
+            if not DMC.OpenSettings then return end
+            -- Finish the Codex cursor-mode release before the game-menu scene
+            -- takes ownership. This prevents the delayed close cleanup from
+            -- disabling the cursor after LibAddonMenu has opened.
+            DMC.HideWindow()
+            zo_callLater(function() DMC.OpenSettings() end, 75)
+        end)
+    UI.settings:SetAnchor(RIGHT, UI.close, LEFT, -2, 0)
+    UI.settingsHovered = false
+    UI.settingsIcon:SetColor(unpack(C.close))
+    UI.settings:SetHandler("OnMouseEnter", function(control)
+        UI.settingsHovered = true
+        UI.settingsIcon:SetColor(unpack(C.closeHover))
+        showCompactHint(control, "Settings", true)
+    end)
+    UI.settings:SetHandler("OnMouseExit", function()
+        UI.settingsHovered = false
+        UI.settingsIcon:SetColor(unpack(C.close))
+        hideCompactHint()
+    end)
 
     UI.leftPanel = makePanel(window, "DMC_LeftPanel", LEFT_X, CONTENT_Y, LEFT_WIDTH, CONTENT_HEIGHT, C.panel)
     UI.sidebarDivider = wm:CreateControl("DMC_SidebarDivider", UI.leftPanel, CT_TEXTURE)
     UI.sidebarDivider:SetAnchor(TOPRIGHT, UI.leftPanel, TOPRIGHT, 0, 0)
     UI.sidebarDivider:SetAnchor(BOTTOMRIGHT, UI.leftPanel, BOTTOMRIGHT, 0, 0)
     UI.sidebarDivider:SetWidth(1)
-    UI.sidebarDivider:SetColor(unpack(C.structuralRule))
+    bindColor(UI.sidebarDivider, "SetColor", C.structuralRule)
     UI.sidebarDivider:SetDrawLayer(DL_OVERLAY)
     UI.sidebarDivider:SetDrawLevel(20)
     makeSectionBand(UI.leftPanel, "DMC_LeftPanelHeader", 34)
-    UI.dungeonSectionTitle = makeLabel(UI.leftPanel, "DMC_DungeonSectionTitle", "ACTIVITIES", FONT_SECTION, C.title, true)
-    UI.dungeonSectionIcon = createHeaderIcon(UI.leftPanel, "DMC_DungeonSectionIcon", "list", C.title)
+    UI.dungeonSectionTitle = makeLabel(UI.leftPanel, "DMC_DungeonSectionTitle", "ACTIVITIES", FONT_SECTION, C.sectionTitle, true)
+    UI.dungeonSectionIcon = createHeaderIcon(UI.leftPanel, "DMC_DungeonSectionIcon", "list", C.sectionTitle)
     UI.dungeonSectionIcon:SetAnchor(TOPLEFT, UI.leftPanel, TOPLEFT, 14, 11)
     UI.dungeonSectionTitle:SetAnchor(LEFT, UI.dungeonSectionIcon, RIGHT, 7, 0)
     UI.dungeonSectionTitle:SetDimensions(140, 22)
@@ -1464,41 +1998,40 @@ function DMC.InitializeUI()
     UI.searchBg = wm:CreateControlFromVirtual("DMC_SearchBackdrop", UI.leftPanel, "ZO_SingleLineEditBackdrop_Keyboard")
     UI.searchBg:SetAnchor(TOPLEFT, UI.leftPanel, TOPLEFT, 14, 37)
     UI.searchBg:SetDimensions(248, 34)
-    UI.searchBg:SetCenterColor(0.008, 0.017, 0.024, 1)
-    UI.searchBg:SetEdgeColor(unpack(C.fieldEdge))
+    bindColor(UI.searchBg, "SetCenterColor", C.search)
+    bindColor(UI.searchBg, "SetEdgeColor", C.fieldEdge)
     UI.search = wm:CreateControlFromVirtual("DMC_SearchBox", UI.searchBg, "ZO_DefaultEditForBackdrop")
-    UI.search:SetAnchor(TOPLEFT, UI.searchBg, TOPLEFT, 22, 0)
+    UI.search:SetAnchor(TOPLEFT, UI.searchBg, TOPLEFT, 6, 0)
     UI.search:SetAnchor(BOTTOMRIGHT, UI.searchBg, BOTTOMRIGHT, 0, 0)
-    UI.search:SetColor(0.88, 0.92, 0.95, 1)
+    bindColor(UI.search, "SetColor", C.searchText)
     UI.search:SetMaxInputChars(50)
     UI.search:SetDefaultText("Search name, DLC, chapter...")
-    UI.searchIcon = wm:CreateControl("DMC_SearchIcon", UI.searchBg, CT_TEXTURE)
-    UI.searchIcon:SetAnchor(LEFT, UI.searchBg, LEFT, 6, 0)
-    UI.searchIcon:SetDimensions(14, 14)
-    UI.searchIcon:SetTexture("EsoUI/Art/TradingHouse/tradinghouse_searchicon_up.dds")
-    UI.searchIcon:SetColor(0.42, 0.52, 0.60, 0.82)
-    UI.searchIcon:SetMouseEnabled(false)
-    UI.searchIcon:SetDrawLayer(DL_OVERLAY)
-    UI.searchIcon:SetDrawLevel(22)
     UI.search:SetHandler("OnTextChanged", function(edit)
         UI.searchText = edit:GetText() or ""
         DMC.RefreshDungeonList(true)
     end)
     UI.searchFocused = false
+    UI.searchHovered = false
     ZO_PostHookHandler(UI.search, "OnMouseEnter", function()
-        if not UI.searchFocused then UI.searchBg:SetCenterColor(0.012, 0.026, 0.036, 1) end
+        UI.searchHovered = true
+        if not UI.searchFocused then UI.searchBg:SetCenterColor(unpack(C.searchHover)) end
     end)
     ZO_PostHookHandler(UI.search, "OnMouseExit", function()
-        if not UI.searchFocused then UI.searchBg:SetCenterColor(0.008, 0.017, 0.024, 1) end
+        UI.searchHovered = false
+        if not UI.searchFocused then UI.searchBg:SetCenterColor(unpack(C.search)) end
     end)
     ZO_PostHookHandler(UI.search, "OnFocusGained", function()
         UI.searchFocused = true
-        UI.searchBg:SetCenterColor(0.014, 0.032, 0.044, 1)
+        UI.searchBg:SetCenterColor(unpack(C.searchFocus))
         UI.searchBg:SetEdgeColor(unpack(C.fieldFocus))
     end)
     ZO_PostHookHandler(UI.search, "OnFocusLost", function()
         UI.searchFocused = false
-        UI.searchBg:SetCenterColor(0.008, 0.017, 0.024, 1)
+        if UI.searchHovered then
+            UI.searchBg:SetCenterColor(unpack(C.searchHover))
+        else
+            UI.searchBg:SetCenterColor(unpack(C.search))
+        end
         UI.searchBg:SetEdgeColor(unpack(C.fieldEdge))
     end)
 
@@ -1507,8 +2040,8 @@ function DMC.InitializeUI()
     UI.activityGroup:SetDimensions(248, 25)
     UI.activityGroupBg = wm:CreateControl("DMC_ActivityGroupBg", UI.activityGroup, CT_BACKDROP)
     UI.activityGroupBg:SetAnchorFill(UI.activityGroup)
-    UI.activityGroupBg:SetCenterColor(0.007, 0.016, 0.022, 1)
-    UI.activityGroupBg:SetEdgeColor(unpack(C.pillEdge))
+    bindColor(UI.activityGroupBg, "SetCenterColor", C.groupSurface)
+    bindColor(UI.activityGroupBg, "SetEdgeColor", C.pillEdge)
     UI.activityDungeon = makeSegmentButton(UI.activityGroup, "DMC_ActivityDungeon", "DUNGEONS", function()
         DMC.SetActivityType("dungeon")
     end, FONT_META_BOLD)
@@ -1529,7 +2062,7 @@ function DMC.InitializeUI()
         divider:SetAnchor(TOPLEFT, UI.activityGroup, TOPLEFT, x, 4)
         divider:SetAnchor(BOTTOMLEFT, UI.activityGroup, BOTTOMLEFT, x, -4)
         divider:SetWidth(1)
-        divider:SetColor(unpack(C.passiveRule))
+        bindColor(divider, "SetColor", C.passiveRule)
         divider:SetDrawLayer(DL_OVERLAY)
     end
     setSelectedButton(UI.activityDungeon, UI.activityType == "dungeon")
@@ -1544,34 +2077,61 @@ function DMC.InitializeUI()
 
     UI.dungeonPanel = makePanel(window, "DMC_DungeonPanel", RIGHT_X, CONTENT_Y, RIGHT_WIDTH, 112, C.panel2)
     makeSectionBand(UI.dungeonPanel, "DMC_DungeonPanelHeader", 38)
-    UI.dungeonArt = wm:CreateControl("DMC_DungeonArt", UI.dungeonPanel, CT_TEXTURE)
-    UI.dungeonArt:SetAnchor(TOPLEFT, UI.dungeonPanel, TOPLEFT, 1, 1)
-    UI.dungeonArt:SetAnchor(BOTTOMRIGHT, UI.dungeonPanel, BOTTOMRIGHT, -1, -1)
-    UI.dungeonArt:SetResizeToFitFile(false)
-    UI.dungeonArt:SetTextureCoords(0, 0.6836, 0.41, 0.575)
-    UI.dungeonArt:SetGradientColors(ORIENTATION_HORIZONTAL,
-        0.15, 0.27, 0.31, 0.07,
-        0.34, 0.54, 0.61, 0.17)
-    UI.dungeonArt:SetMouseEnabled(false)
-    UI.dungeonArt:SetDrawLayer(DL_BACKGROUND)
-    UI.dungeonArt:SetDrawLevel(3)
-    UI.dungeonArt:SetHidden(true)
+    UI.dungeonArtBuffers = {}
+    for index = 1, 2 do
+        local art = wm:CreateControl("DMC_DungeonArt" .. tostring(index), UI.dungeonPanel, CT_TEXTURE)
+        art:SetAnchor(TOPLEFT, UI.dungeonPanel, TOPLEFT, 1, 1)
+        art:SetAnchor(BOTTOMRIGHT, UI.dungeonPanel, BOTTOMRIGHT, -1, -1)
+        art:SetResizeToFitFile(false)
+        if art.SetPixelRoundingEnabled then art:SetPixelRoundingEnabled(false) end
+        if art.SetTextureReleaseOption and _G.RELEASE_TEXTURE_AT_ZERO_REFERENCES then
+            art:SetTextureReleaseOption(RELEASE_TEXTURE_AT_ZERO_REFERENCES)
+        end
+        if art.ClearGradientColors then art:ClearGradientColors() end
+        art:SetColor(1, 1, 1, 1)
+        art:SetAlpha(1)
+        art:SetTextureCoords(0, 0.6836, 0.41, 0.575)
+        art:SetMouseEnabled(false)
+        art:SetDrawLayer(DL_BACKGROUND)
+        art:SetDrawLevel(index == 1 and 3 or 2)
+        art:SetHidden(true)
+        art:SetHandler("OnTextureLoaded", function(control)
+            finishArtworkLoad(control)
+        end)
+        UI.dungeonArtBuffers[index] = art
+    end
+    UI.dungeonArt = UI.dungeonArtBuffers[1]
+    UI.dungeonArtShadeSegments = {}
+    local artworkInnerWidth = RIGHT_WIDTH - 2
+    for index = 1, ARTWORK_SHADE_SEGMENT_COUNT do
+        local leftX = math.floor((index - 1) * artworkInnerWidth / ARTWORK_SHADE_SEGMENT_COUNT)
+        local rightX = math.floor(index * artworkInnerWidth / ARTWORK_SHADE_SEGMENT_COUNT)
+        local segment = wm:CreateControl("DMC_DungeonArtShade" .. tostring(index), UI.dungeonPanel, CT_TEXTURE)
+        segment:SetAnchor(TOPLEFT, UI.dungeonPanel, TOPLEFT, 1 + leftX, 1)
+        segment:SetDimensions(math.max(1, rightX - leftX), 110)
+        segment:SetMouseEnabled(false)
+        segment:SetDrawLayer(DL_BACKGROUND)
+        segment:SetDrawLevel(5)
+        segment:SetHidden(true)
+        UI.dungeonArtShadeSegments[index] = segment
+    end
+    applyArtworkShade()
     UI.dungeonIcon = wm:CreateControl("DMC_DungeonIcon", UI.dungeonPanel, CT_TEXTURE)
     UI.dungeonIcon:SetAnchor(TOPLEFT, UI.dungeonPanel, TOPLEFT, 16, 6)
     UI.dungeonIcon:SetDimensions(28, 28)
     UI.dungeonIcon:SetTexture(ZO_GetZoneDisplayTypeIcon(ZONE_DISPLAY_TYPE_DUNGEON))
-    UI.dungeonIcon:SetColor(unpack(C.title))
+    bindColor(UI.dungeonIcon, "SetColor", C.title)
     UI.dungeonIcon:SetMouseEnabled(false)
     UI.dungeonIcon:SetDrawLayer(DL_OVERLAY)
     UI.dungeonIcon:SetDrawLevel(24)
     UI.dungeonIcon:SetHidden(true)
-    UI.dungeonTitle = makeLabel(UI.dungeonPanel, "DMC_DungeonTitle", "Select an activity", "ZoFontWinH2", C.title, true)
+    UI.dungeonTitle = makeLabel(UI.dungeonPanel, "DMC_DungeonTitle", "Select an activity", FONT_H2, C.title, true)
     UI.dungeonTitle:SetAnchor(TOPLEFT, UI.dungeonPanel, TOPLEFT, DUNGEON_TITLE_X, 10)
     UI.dungeonTitle:SetDimensions(500, 30)
     UI.dungeonDlc = makeLabel(UI.dungeonPanel, "DMC_DungeonDlc", "", FONT_META_BOLD, C.quiet, true)
     UI.dungeonDlc:SetAnchor(LEFT, UI.dungeonTitle, RIGHT, 10, 1)
     UI.dungeonDlc:SetDimensions(190, 20)
-    UI.statusLabel = makeLabel(UI.dungeonPanel, "DMC_StatusLabel", "HARD MODE", FONT_META_BOLD, C.ok, true)
+    UI.statusLabel = makeLabel(UI.dungeonPanel, "DMC_StatusLabel", "HARD MODE", FONT_META_BOLD, C.muted, true)
     UI.statusLabel:SetAnchor(TOPRIGHT, UI.dungeonPanel, TOPRIGHT, -14, 12)
     UI.statusLabel:SetDimensions(210, 20)
     UI.statusLabel:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
@@ -1583,7 +2143,7 @@ function DMC.InitializeUI()
     UI.modeGroup:SetHidden(true)
     UI.modeGroupBg = wm:CreateControl("DMC_ModeGroupBg", UI.modeGroup, CT_BACKDROP)
     UI.modeGroupBg:SetAnchorFill(UI.modeGroup)
-    UI.modeGroupBg:SetCenterColor(unpack(C.segment))
+    bindColor(UI.modeGroupBg, "SetCenterColor", C.segment)
     UI.modeGroupBg:SetEdgeColor(0, 0, 0, 0)
     UI.modeGroupBg:SetMouseEnabled(false)
     UI.modeGroupBg:SetDrawLayer(DL_BACKGROUND)
@@ -1604,7 +2164,7 @@ function DMC.InitializeUI()
     UI.modeSeparator:SetAnchor(TOPLEFT, UI.modeGroup, TOPLEFT, 46, 4)
     UI.modeSeparator:SetAnchor(BOTTOMLEFT, UI.modeGroup, BOTTOMLEFT, 46, -4)
     UI.modeSeparator:SetWidth(1)
-    UI.modeSeparator:SetColor(unpack(C.passiveRule))
+    bindColor(UI.modeSeparator, "SetColor", C.passiveRule)
     UI.modeSeparator:SetDrawLayer(DL_OVERLAY)
     UI.modeSeparator:SetDrawLevel(28)
     ZO_PostHookHandler(UI.modeVet, "OnMouseEnter", function(control)
@@ -1632,8 +2192,8 @@ function DMC.InitializeUI()
 
     UI.bossListPanel = makePanel(window, "DMC_BossListPanel", RIGHT_X, CONTENT_Y + 122, RIGHT_WIDTH, 120, C.panel2)
     makeSectionBand(UI.bossListPanel, "DMC_BossListPanelHeader", 35)
-    UI.bossListTitle = makeLabel(UI.bossListPanel, "DMC_BossListTitle", "BOSSES", FONT_SECTION_SMALL, C.title, true)
-    UI.bossListIcon = createHeaderIcon(UI.bossListPanel, "DMC_BossListIcon", "bosses", C.title)
+    UI.bossListTitle = makeLabel(UI.bossListPanel, "DMC_BossListTitle", "BOSSES", FONT_SECTION_SMALL, C.sectionTitle, true)
+    UI.bossListIcon = createHeaderIcon(UI.bossListPanel, "DMC_BossListIcon", "bosses", C.sectionTitle)
     UI.bossListIcon:SetAnchor(TOPLEFT, UI.bossListPanel, TOPLEFT, 16, 11)
     UI.bossListTitle:SetAnchor(LEFT, UI.bossListIcon, RIGHT, 7, 0)
     UI.bossListTitle:SetDimensions(120, 22)
@@ -1645,7 +2205,7 @@ function DMC.InitializeUI()
     UI.roleGroup:SetDimensions(325, 30)
     UI.roleGroupBg = wm:CreateControl("DMC_RoleGroupBg", UI.roleGroup, CT_BACKDROP)
     UI.roleGroupBg:SetAnchorFill(UI.roleGroup)
-    UI.roleGroupBg:SetCenterColor(unpack(C.segment))
+    bindColor(UI.roleGroupBg, "SetCenterColor", C.segment)
     UI.roleGroupBg:SetEdgeColor(0, 0, 0, 0)
     UI.roleGroupBg:SetMouseEnabled(false)
     UI.roleGroupBg:SetDrawLayer(DL_BACKGROUND)
@@ -1680,7 +2240,7 @@ function DMC.InitializeUI()
             separator:SetAnchor(TOPLEFT, UI.roleGroup, TOPLEFT, x, 5)
             separator:SetAnchor(BOTTOMLEFT, UI.roleGroup, BOTTOMLEFT, x, -5)
             separator:SetWidth(1)
-            separator:SetColor(unpack(C.passiveRule))
+            bindColor(separator, "SetColor", C.passiveRule)
             separator:SetDrawLayer(DL_OVERLAY)
             separator:SetDrawLevel(28)
             UI.roleSeparators[def.key] = separator
@@ -1701,7 +2261,7 @@ function DMC.InitializeUI()
         button:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
         button.bg = wm:CreateControl("DMC_BossButton" .. index .. "Bg", button, CT_BACKDROP)
         button.bg:SetAnchorFill(button)
-        button.bg:SetCenterColor(0.018, 0.032, 0.042, 0.78)
+        bindColor(button.bg, "SetCenterColor", C.bossRow)
         button.bg:SetEdgeColor(0, 0, 0, 0)
         button.bg:SetMouseEnabled(false)
         button.bg:SetDrawLayer(DL_BACKGROUND)
@@ -1709,14 +2269,14 @@ function DMC.InitializeUI()
         button.accent:SetAnchor(TOPLEFT, button, TOPLEFT, 0, 1)
         button.accent:SetAnchor(BOTTOMLEFT, button, BOTTOMLEFT, 0, -1)
         button.accent:SetWidth(2)
-        button.accent:SetColor(unpack(C.edge))
+        bindColor(button.accent, "SetColor", C.edge)
         button.accent:SetHidden(true)
 
         button:SetHandler("OnMouseEnter", function(control)
             control.isHovered = true
             if not control.isSelected then
-                control.bg:SetCenterColor(0.043, 0.079, 0.104, 0.96)
-                control:SetNormalFontColor(0.93, 0.95, 0.96, 1)
+                control.bg:SetCenterColor(unpack(C.bossRowHover))
+                control:SetNormalFontColor(unpack(C.bossHoverText))
             end
             updateBossButtonText(control, true)
         end)
@@ -1734,11 +2294,11 @@ function DMC.InitializeUI()
     bossDivider:SetAnchor(TOPLEFT, UI.bossPanel, TOPLEFT, 536, 1)
     bossDivider:SetAnchor(BOTTOMLEFT, UI.bossPanel, BOTTOMLEFT, 536, -1)
     bossDivider:SetWidth(1)
-    bossDivider:SetColor(unpack(C.passiveRule))
+    bindColor(bossDivider, "SetColor", C.passiveRule)
     bossDivider:SetDrawLayer(DL_OVERLAY)
     bossDivider:SetDrawLevel(20)
 
-    UI.bossTitle = makeLabel(UI.bossPanel, "DMC_BossTitle", "", "ZoFontWinH3", C.title, true)
+    UI.bossTitle = makeLabel(UI.bossPanel, "DMC_BossTitle", "", FONT_H3, C.title, true)
     UI.bossTitle:SetAnchor(TOPLEFT, UI.bossPanel, TOPLEFT, 16, 10)
     UI.bossTitle:SetDimensions(420, 28)
     UI.bossMeta = makeLabel(UI.bossPanel, "DMC_BossMeta", "", FONT_META_BOLD, C.quiet, true)
@@ -1752,8 +2312,8 @@ function DMC.InitializeUI()
     end
     UI.bossSummaryView = makeScrollableText(UI.bossPanel, "DMC_BossSummary", 16, 45, 504, 127, FONT_BODY, C.bodyText)
 
-    UI.noteTitle = makeLabel(UI.bossPanel, "DMC_NoteTitle", "PERSONAL NOTES", FONT_SECTION_SMALL, C.title, true)
-    UI.noteIcon = createHeaderIcon(UI.bossPanel, "DMC_NoteIcon", "notes", C.title)
+    UI.noteTitle = makeLabel(UI.bossPanel, "DMC_NoteTitle", "PERSONAL NOTES", FONT_SECTION_SMALL, C.sectionTitle, true)
+    UI.noteIcon = createHeaderIcon(UI.bossPanel, "DMC_NoteIcon", "notes", C.sectionTitle)
     UI.noteIcon:SetAnchor(TOPLEFT, UI.bossPanel, TOPLEFT, 554, 13)
     UI.noteTitle:SetAnchor(LEFT, UI.noteIcon, RIGHT, 7, -1)
     UI.noteTitle:SetDimensions(164, 22)
@@ -1769,18 +2329,25 @@ function DMC.InitializeUI()
     UI.noteBackdrop = wm:CreateControlFromVirtual("DMC_NoteBackdrop", UI.bossPanel, "ZO_MultiLineEditBackdrop_Keyboard")
     UI.noteBackdrop:SetAnchor(TOPLEFT, UI.bossPanel, TOPLEFT, 554, 43)
     UI.noteBackdrop:SetDimensions(366, 91)
-    UI.noteBackdrop:SetCenterColor(0.012, 0.024, 0.032, 1)
-    UI.noteBackdrop:SetEdgeColor(unpack(C.fieldEdge))
+    bindColor(UI.noteBackdrop, "SetCenterColor", C.noteSurface)
+    bindColor(UI.noteBackdrop, "SetEdgeColor", C.fieldEdge)
     UI.noteEdit = wm:CreateControlFromVirtual("DMC_NoteEdit", UI.noteBackdrop, "ZO_DefaultEditMultiLineForBackdrop")
     UI.noteEdit:SetMaxInputChars(DMC.personalNoteMaxChars or 900)
-    UI.noteEdit:SetColor(unpack(C.bodyTextSoft))
-    UI.noteEdit:SetFont(FONT_BODY)
+    bindColor(UI.noteEdit, "SetColor", C.bodyTextSoft)
+    bindFont(UI.noteEdit, FONT_BODY)
     UI.noteEdit:SetDefaultText("Write a boss note to keep and paste later...")
     UI.noteEdit:SetHandler("OnTextChanged", function()
         if not UI.noteLoading then refreshNoteControls() end
     end)
-    ZO_PostHookHandler(UI.noteEdit, "OnFocusGained", function() UI.noteBackdrop:SetEdgeColor(unpack(C.fieldFocus)) end)
-    ZO_PostHookHandler(UI.noteEdit, "OnFocusLost", function() UI.noteBackdrop:SetEdgeColor(unpack(C.fieldEdge)) end)
+    UI.noteFocused = false
+    ZO_PostHookHandler(UI.noteEdit, "OnFocusGained", function()
+        UI.noteFocused = true
+        UI.noteBackdrop:SetEdgeColor(unpack(C.fieldFocus))
+    end)
+    ZO_PostHookHandler(UI.noteEdit, "OnFocusLost", function()
+        UI.noteFocused = false
+        UI.noteBackdrop:SetEdgeColor(unpack(C.fieldEdge))
+    end)
 
     UI.noteRevert = makePill(UI.bossPanel, "DMC_NoteRevert", "REVERT", revertPersonalBossNote)
     UI.noteRevert:SetAnchor(TOPLEFT, UI.bossPanel, TOPLEFT, 554, 145)
@@ -1811,8 +2378,8 @@ function DMC.InitializeUI()
 
     UI.mechanicsPanel = makePanel(window, "DMC_MechanicsPanel", RIGHT_X, CONTENT_Y + 446, RIGHT_WIDTH, 328, C.panel2)
     makeSectionBand(UI.mechanicsPanel, "DMC_MechanicsPanelHeader", 37)
-    UI.mechanicsTitle = makeLabel(UI.mechanicsPanel, "DMC_MechanicsTitle", "MECHANICS", FONT_SECTION_SMALL, C.title, true)
-    UI.mechanicsIcon = createHeaderIcon(UI.mechanicsPanel, "DMC_MechanicsIcon", "mechanics", C.title)
+    UI.mechanicsTitle = makeLabel(UI.mechanicsPanel, "DMC_MechanicsTitle", "MECHANICS", FONT_SECTION_SMALL, C.sectionTitle, true)
+    UI.mechanicsIcon = createHeaderIcon(UI.mechanicsPanel, "DMC_MechanicsIcon", "mechanics", C.sectionTitle)
     UI.mechanicsIcon:SetAnchor(TOPLEFT, UI.mechanicsPanel, TOPLEFT, 16, 11)
     UI.mechanicsTitle:SetAnchor(LEFT, UI.mechanicsIcon, RIGHT, 7, 0)
     UI.mechanicsTitle:SetDimensions(180, 22)
@@ -1829,6 +2396,7 @@ function DMC.InitializeUI()
     setSelectedButton(UI.roledps, UI.roleFilter == "dps")
     DMC.RefreshDungeonList(true)
     loadCurrentBossNote()
+    DMC.ApplyAppearanceToUI(false)
 end
 
 local function enterCursorModeForCodex()
@@ -1870,6 +2438,7 @@ function DMC.ShowWindow()
         if dungeons[1] then DMC.SelectDungeon(dungeons[1].id) end
     end
     DMC.RefreshDungeonList(current ~= nil)
+    startArtworkHealthMonitor()
     enterCursorModeForCodex()
 end
 
@@ -1878,13 +2447,25 @@ function DMC.HideWindow()
     saveCurrentNoteIfDirty()
     if UI.noteEdit then UI.noteEdit:LoseFocus() end
     hideCompactHint()
+    stopArtworkHealthMonitor()
     UI.window:SetHidden(true)
+    applyArtworkAppearance()
     restoreCursorModeForCodex()
 end
 
 function DMC.ToggleWindow()
     if not UI.window then return end
     if UI.window:IsHidden() then DMC.ShowWindow() else DMC.HideWindow() end
+end
+
+function DMC.CenterWindow()
+    if not UI.window then return end
+    UI.window:ClearAnchors()
+    UI.window:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
+    if DMC.sv and DMC.sv.window then
+        DMC.sv.window.x = 0
+        DMC.sv.window.y = 0
+    end
 end
 
 function DMC.HandlePlayerActivated()
@@ -1977,12 +2558,14 @@ function DMC.RefreshDungeonList(resetScroll)
             or (UI.activityType == "arena" and "ARENAS" or "DUNGEONS")
         UI.dungeonCount:SetText(string.format("%d %s", #dungeons, collectionLabel))
     end
+    local rowHeight = DMC.GetActivityRowHeight()
     for index, dungeon in ipairs(dungeons) do
         local button = ensureDungeonButton(index)
         button:ClearAnchors()
-        button:SetAnchor(TOPLEFT, UI.dungeonListChild, TOPLEFT, 0, (index - 1) * DUNGEON_ROW_HEIGHT)
+        button:SetAnchor(TOPLEFT, UI.dungeonListChild, TOPLEFT, 0, (index - 1) * rowHeight)
+        button:SetDimensions(DUNGEON_CONTENT_WIDTH, rowHeight - 1)
         local isCurrent = dungeon.id == currentDungeonId
-        local status = dungeon.status == "complete" and "" or " |c68727A(stub)|r"
+        local status = dungeon.status == "complete" and "" or (" " .. colorMarkup(C.stubText, "(stub)"))
         button:SetText("   " .. dungeon.name .. status)
         button.dungeonId = dungeon.id
         button:SetHidden(false)
@@ -1994,7 +2577,7 @@ function DMC.RefreshDungeonList(resetScroll)
     end
 
     UI.noDungeons:SetHidden(#dungeons > 0)
-    local contentHeight = #dungeons > 0 and (#dungeons * DUNGEON_ROW_HEIGHT) or 40
+    local contentHeight = #dungeons > 0 and (#dungeons * rowHeight) or 40
     updateNativeScroll(UI.dungeonListScroll, UI.dungeonListChild, DUNGEON_CONTENT_WIDTH, contentHeight, resetScroll == true)
 end
 
@@ -2044,16 +2627,9 @@ function DMC.SelectDungeon(dungeonId, preferredBossId)
     UI.dungeonIcon:SetTexture(ZO_GetZoneDisplayTypeIcon(zoneDisplayType))
     UI.dungeonIcon:SetHidden(false)
     local artwork, isLoadscreen = getActivityArtwork(dungeon)
-    if isLoadscreen then
-        -- Loading screens are 16:9; crop a centered horizontal banner that
-        -- fills the 936x112 summary panel without stretching the artwork.
-        UI.dungeonArt:SetTextureCoords(0, 1, 0.394, 0.606)
-    else
-        -- Activity Finder keyboard artwork uses a larger atlas region.
-        UI.dungeonArt:SetTextureCoords(0, 0.6836, 0.41, 0.575)
-    end
-    if artwork then UI.dungeonArt:SetTexture(artwork) end
-    UI.dungeonArt:SetHidden(not artwork)
+    UI.currentArtwork = artwork
+    UI.currentArtworkIsLoadscreen = isLoadscreen
+    applyArtworkAppearance()
     layoutDungeonTitle(dungeon)
 
     local visibleBossCount = 0
@@ -2061,6 +2637,7 @@ function DMC.SelectDungeon(dungeonId, preferredBossId)
         local boss = dungeon.bosses and dungeon.bosses[index]
         if boss then
             button.bossId = boss.id
+            button.bossData = boss
             button.bossName = boss.name
             button.bossFlagsMarkup = shortFlags(boss)
             local flags = plainFlags(boss)
@@ -2072,6 +2649,7 @@ function DMC.SelectDungeon(dungeonId, preferredBossId)
         else
             button:SetText("")
             button.bossId = nil
+            button.bossData = nil
             button.bossName = nil
             button.bossFlagsMarkup = nil
             button.measureText = nil
@@ -2168,11 +2746,11 @@ function DMC.RefreshBossDetails()
             row:SetAnchor(TOPLEFT, UI.mechanicsChild, TOPLEFT, 0, y)
             row.title:SetText(DMC.GetMechanicLabel(mechanic, UI.mode))
             row.number:SetText(string.format("%02d", index))
-            row.number:SetHidden(false)
+            row.number:SetHidden(not DMC.ShouldShowAppearanceElement("showMechanicNumbers"))
             local lines = DMC.BuildMechanicChatLines(dungeon, boss, mechanic, UI.roleFilter, UI.mode)
             local rowHeight = layoutMechanicRow(row, lines)
             row:SetHidden(false)
-            y = y + rowHeight + 14
+            y = y + rowHeight + DMC.GetMechanicSpacing()
         end
         for index = #matching + 1, #UI.mechanicRows do UI.mechanicRows[index]:SetHidden(true) end
     end

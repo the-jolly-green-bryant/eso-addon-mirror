@@ -1,4 +1,4 @@
--- Flamechasers Dungeon Codex
+-- Flamechasers Dungeon, Trial & Arena Codex
 -- Main namespace + lifecycle + chat helpers.
 
 DungeonMechsCodex = DungeonMechsCodex or {}
@@ -6,7 +6,7 @@ local DMC = DungeonMechsCodex
 
 DMC.name = "DungeonMechsCodex"
 DMC.displayName = "Flamechasers Dungeon, Trial & Arena Codex"
-DMC.version = "0.7.2"
+DMC.version = "0.8.16"
 DMC.chatPrefix = "|c66ccffFDC|r "
 
 -- Bindings.xml is loaded after this file. Register these labels now so the
@@ -14,7 +14,7 @@ DMC.chatPrefix = "|c66ccffFDC|r "
 if _G["SI_BINDING_NAME_FLAMECHASERS_CATEGORY"] == nil then
     ZO_CreateStringId("SI_BINDING_NAME_FLAMECHASERS_CATEGORY", "Flamechasers")
 end
-ZO_CreateStringId("SI_BINDING_NAME_DMC_TOGGLE_WINDOW", "Open/Close Flamechasers Dungeon Codex")
+ZO_CreateStringId("SI_BINDING_NAME_DMC_TOGGLE_WINDOW", "Open/Close Flamechasers Codex")
 ZO_CreateStringId("SI_BINDING_NAME_DMC_PASTE_SELECTED", "Paste Selected Mechanic")
 
 DMC.defaultSavedVars = {
@@ -97,13 +97,28 @@ function DMC.GetChatPayloadBudget()
     return (DMC.maxChatPayloadChars or 313)
 end
 
+-- Chat budgets are byte-based, but ESO strings may contain curly punctuation,
+-- accented names, or player-authored Unicode. Never let a defensive byte trim
+-- end in the middle of a UTF-8 sequence.
+local function utf8SafeByteEnd(text, maxBytes)
+    text = tostring(text or "")
+    local cut = math.max(0, math.min(#text, math.floor(tonumber(maxBytes) or 0)))
+    if cut >= #text then return #text end
+    while cut > 0 do
+        local nextByte = text:byte(cut + 1)
+        if not nextByte or nextByte < 128 or nextByte >= 192 then break end
+        cut = cut - 1
+    end
+    return cut
+end
+
 local function trimPlainText(text, maxLen)
     text = zo_strtrim(tostring(text or ""))
     maxLen = tonumber(maxLen) or DMC.defaultPlainChatBudget
     if maxLen < 12 then maxLen = 12 end
     if #text <= maxLen then return text end
 
-    local cut = maxLen - 3
+    local cut = utf8SafeByteEnd(text, maxLen - 3)
     for i = cut, math.max(1, cut - 60), -1 do
         local ch = text:sub(i, i)
         if ch == "." or ch == ";" or ch == "," then
@@ -255,8 +270,8 @@ function DMC.GetShortChatLabel(label)
     if cut and cut > 5 then label = zo_strtrim(label:sub(1, cut - 1)) end
     if #label <= 42 then return label end
 
-    local short = label:sub(1, 42)
-    for i = 42, math.max(1, 42 - 12), -1 do
+    local short = label:sub(1, utf8SafeByteEnd(label, 42))
+    for i = #short, math.max(1, #short - 12), -1 do
         if short:sub(i, i) == " " then
             short = short:sub(1, i - 1)
             break
@@ -362,9 +377,10 @@ function DMC.SplitLongText(text, maxRaw)
 
     local lines = {}
     while #text > maxRaw do
-        local cut = maxRaw
+        local safeMax = utf8SafeByteEnd(text, maxRaw)
+        local cut = safeMax
         local foundPunctuation = false
-        for i = maxRaw, math.max(1, maxRaw - 80), -1 do
+        for i = safeMax, math.max(1, safeMax - 80), -1 do
             local ch = text:sub(i, i)
             if ch == "." or ch == ";" or ch == "," then
                 cut = i
@@ -373,7 +389,7 @@ function DMC.SplitLongText(text, maxRaw)
             end
         end
         if not foundPunctuation then
-            for i = maxRaw, math.max(1, maxRaw - 80), -1 do
+            for i = safeMax, math.max(1, safeMax - 80), -1 do
                 if text:sub(i, i) == " " then
                     cut = i
                     break
@@ -692,7 +708,9 @@ function DMC.OnAddOnLoaded(eventCode, addonName)
     if type(DMC.sv.bossNotes) ~= "table" then DMC.sv.bossNotes = {} end
     migrateLegacyBossNotes()
 
+    if DMC.InitializeAppearance then DMC.InitializeAppearance() end
     DMC.InitializeUI()
+    if DMC.RegisterSettings then DMC.RegisterSettings() end
 
     SLASH_COMMANDS["/dmc"] = function(arg)
         DMC.ToggleWindow()
@@ -706,6 +724,9 @@ function DMC.OnAddOnLoaded(eventCode, addonName)
     SLASH_COMMANDS["/flamecodex"] = function(arg)
         DMC.ToggleWindow()
     end
+    SLASH_COMMANDS["/dmcs"] = function(arg)
+        if DMC.OpenSettings then DMC.OpenSettings() end
+    end
 
     EVENT_MANAGER:RegisterForEvent(DMC.name, EVENT_PLAYER_ACTIVATED, function()
         zo_callLater(function()
@@ -713,7 +734,7 @@ function DMC.OnAddOnLoaded(eventCode, addonName)
         end, 200)
     end)
 
-    DMC.Print("loaded. Use /dmc, /dmech, /dungeonmechs, or /flamecodex.")
+    DMC.Print("loaded. Use /dmc to open or /dmcsettings to customize.")
 end
 
 EVENT_MANAGER:RegisterForEvent(DMC.name, EVENT_ADD_ON_LOADED, DMC.OnAddOnLoaded)

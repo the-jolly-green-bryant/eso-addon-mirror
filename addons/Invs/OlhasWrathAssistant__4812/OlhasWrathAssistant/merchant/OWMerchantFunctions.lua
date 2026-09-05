@@ -1,5 +1,7 @@
-OWMerchant = OWMerchant or {}
+local owa = OWAssistant
+owa.Merchant = owa.Merchant or {}
+local merchant = owa.Merchant
 
-function OWMerchant_Initialize()
+function merchant.Initialize()
     -- Логіка торговця буде тут.
 end

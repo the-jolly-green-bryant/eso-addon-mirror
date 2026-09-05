@@ -18,7 +18,7 @@
     "DungeonMechsCodex"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4737/",
-  "fingerprint": "6c0dc0f61a451dfd8a7b9b0565ef8a8d8b17bbf65ea5a0e75951ccabad241090",
+  "fingerprint": "b25e63a02e3cfc5f360fe4385fb3dfaafc134d3f0d255b68045e2cd5e62f03c0",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw17266.png"
   ],
@@ -28,11 +28,11 @@
   "source_id": "4737",
   "source_url": "https://www.esoui.com/downloads/info4737-FlamechasersDungeonTrialArenaCodex.html",
   "stats": {
-    "downloads": 94,
-    "favorites": 0,
-    "monthly_downloads": 33
+    "downloads": 113,
+    "favorites": 1,
+    "monthly_downloads": 52
   },
   "title": "Flamechasers Dungeon, Trial & Arena Codex",
-  "updated_at": 1788475779000,
-  "version": "0.7.2"
+  "updated_at": 1788562274000,
+  "version": "0.8.16"
 }

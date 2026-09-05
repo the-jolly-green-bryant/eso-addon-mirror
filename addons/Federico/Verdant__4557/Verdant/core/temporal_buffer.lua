@@ -21,7 +21,7 @@ function M.init(capacity)
   state.count    = 0
   state.data     = {}
   for i = 1, capacity do
-    state.data[i] = { t = 0, eHPS = 0, MPS = 0, crit = 0, noncrit = 0, d = 0,
+    state.data[i] = { t = 0, eHPS = 0, MPS = 0, crit = 0, noncrit = 0, d = 0, o = 0,
                       ehps_groups = { count = 0 }, mps_groups = { count = 0 },
                       ehps_abilities = { count = 0 }, mps_abilities = { count = 0 } }
   end
@@ -53,7 +53,7 @@ local function copy_abilities(dst, src)
 end
 
 
-function M.push(timestamp, eHPS, MPS, crit, noncrit, ehps_groups, mps_groups, ehps_abilities, mps_abilities, d_group)
+function M.push(timestamp, eHPS, MPS, crit, noncrit, ehps_groups, mps_groups, ehps_abilities, mps_abilities, d_group, ohps)
   local slot   = state.data[state.write]
   slot.t       = timestamp
   slot.eHPS    = eHPS
@@ -61,6 +61,7 @@ function M.push(timestamp, eHPS, MPS, crit, noncrit, ehps_groups, mps_groups, eh
   slot.crit    = crit or 0
   slot.noncrit = noncrit or 0
   slot.d       = d_group or 0
+  slot.o       = ohps or 0
   copy_groups(slot.ehps_groups, ehps_groups)
   copy_groups(slot.mps_groups,  mps_groups)
   copy_abilities(slot.ehps_abilities, ehps_abilities)
@@ -69,6 +70,14 @@ function M.push(timestamp, eHPS, MPS, crit, noncrit, ehps_groups, mps_groups, eh
   if state.count < state.capacity then
     state.count = state.count + 1
   end
+end
+
+function M.at(i)
+  local n = state.count
+  if i < 1 or i > n then return nil end
+  local cap = state.capacity
+  local oldest = (n >= cap) and state.write or 1
+  return state.data[((oldest - 1 + i - 1) % cap) + 1]
 end
 
 function M.iterate(fn)
@@ -130,6 +139,7 @@ function M.summary()
   s.count = state.count
   s.dur_ms = 0; s.avg_ems = 0; s.peak_ems = 0; s.peak_t_off = 0
   s.crit_pct = 0; s.active_pct = 0; s.total_heal = 0; s.total_shield = 0
+  s.total_overheal = 0; s.wasted_pct = 0
   if state.count == 0 then return s end
 
   local t0, t_prev = 0, 0
@@ -149,6 +159,7 @@ function M.summary()
       local dt = (sample.t - t_prev) / 1000
       s.total_heal   = s.total_heal   + sample.eHPS * dt
       s.total_shield = s.total_shield + sample.MPS  * dt
+      s.total_overheal = s.total_overheal + (sample.o or 0) * dt
     end
     t_prev = sample.t
   end)
@@ -160,6 +171,8 @@ function M.summary()
   s.active_pct = active_n / state.count
   local heal_total = sum_crit + sum_noncrit
   if heal_total > 0 then s.crit_pct = sum_crit / heal_total end
+  local raw_total = s.total_heal + s.total_overheal
+  if raw_total > 0 then s.wasted_pct = s.total_overheal / raw_total end
   return s
 end
 
@@ -171,7 +184,7 @@ function M.load_session(samples, marker_list)
     local s = samples[i]
     M.push(s.t, s.eHPS, s.MPS, s.crit, s.noncrit,
            s.eg or EMPTY_SHARES, s.mg or EMPTY_SHARES,
-           s.ea or EMPTY_SHARES, s.ma or EMPTY_SHARES, s.d)
+           s.ea or EMPTY_SHARES, s.ma or EMPTY_SHARES, s.d, s.o)
   end
   for i = 1, #marker_list do
     local m = marker_list[i]

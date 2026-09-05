@@ -1,11 +1,32 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/FlatBadger/FOB---Companion-Helper__3282",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "FlatBadger",
   "canonical_id": "esoui:3282",
   "category_id": "21",
   "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
     {
       "name": "Fallen Banners",
       "version": "10.3.5"
@@ -49,7 +70,7 @@
     "FOB"
   ],
   "download_url": "https://www.esoui.com/downloads/dl3282/",
-  "fingerprint": "be264d5acf00b9069a4ff9b4bc19954341d5956810d3a85139c9ecedc9f13b9e",
+  "fingerprint": "25cefc1748cdc48372ad88ba1d28e604d4f87700cae0cee936345ed805a45a5c",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw11174.png",
     "https://cdn-eso.mmoui.com/preview/pvw11247.png",
@@ -62,11 +83,11 @@
   "source_id": "3282",
   "source_url": "https://www.esoui.com/downloads/info3282-FOB-CompanionHelper.html",
   "stats": {
-    "downloads": 60412,
+    "downloads": 61266,
     "favorites": 63,
-    "monthly_downloads": 99
+    "monthly_downloads": 742
   },
   "title": "FOB - Companion Helper",
-  "updated_at": 1750595296000,
-  "version": "3.2.0"
+  "updated_at": 1788510509000,
+  "version": "3.2.2"
 }

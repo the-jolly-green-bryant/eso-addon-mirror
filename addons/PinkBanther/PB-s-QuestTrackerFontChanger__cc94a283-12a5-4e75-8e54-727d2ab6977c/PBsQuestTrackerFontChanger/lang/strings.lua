@@ -1,5 +1,5 @@
 local strings = {
-	SI_PBSQTFC_EXPLANATION = "Both trackers in the top right of the HUD are built out of ordinary UI labels, so their fonts can be changed directly -- no interface reload, and nothing that outlives the session. They are configured separately below.",
+	SI_PBSQTFC_EXPLANATION = "The trackers stacked down the top right of the HUD are built out of ordinary UI labels, so their fonts can be changed directly -- no interface reload, and nothing that outlives the session. Each is configured separately below, in the order they appear on screen.",
 
 	-- ---- Quest tracker ----------------------------------------------------------------
 	SI_PBSQTFC_SECTION_QUEST = "Quest tracker",
@@ -17,6 +17,21 @@ local strings = {
 
 	SI_PBSQTFC_QUEST_FACE = "Quest tracker typeface",
 	SI_PBSQTFC_QUEST_STYLE = "Quest tracker outline",
+
+	-- ---- Golden Pursuits --------------------------------------------------------------
+	SI_PBSQTFC_SECTION_PURSUIT = "Golden Pursuits",
+	SI_PBSQTFC_SECTION_PURSUIT_NOTE = "The panel between the quest tracker and the house information, showing the pursuit you are tracking and how far along it is. The same panel is reused for Tamriel Tomes, so these settings cover both.",
+
+	SI_PBSQTFC_PURSUIT_ENABLED = "Custom Golden Pursuits font",
+	SI_PBSQTFC_PURSUIT_ENABLED_TOOLTIP = "Apply the settings below to the Golden Pursuits panel. Turn this off to hand the game's own font straight back. While every setting here still matches the game's own, nothing is written at all.",
+
+	SI_PBSQTFC_SIZE_PURSUIT_NAME = "Heading size",
+	SI_PBSQTFC_SIZE_PURSUIT_NAME_TOOLTIP = "Size of the heading line next to the icon -- \"Golden Pursuits\", or \"Tamriel Tomes\" when that is what is being tracked.",
+	SI_PBSQTFC_SIZE_PURSUIT_DETAIL = "Pursuit and progress size",
+	SI_PBSQTFC_SIZE_PURSUIT_DETAIL_TOOLTIP = "Size of the two lines under the heading: what you are tracking, and how far along it is. The game draws both with one font, so they share one slider rather than being given two ways to disagree.",
+
+	SI_PBSQTFC_PURSUIT_FACE = "Golden Pursuits typeface",
+	SI_PBSQTFC_PURSUIT_STYLE = "Golden Pursuits outline",
 
 	-- ---- House tracker ----------------------------------------------------------------
 	SI_PBSQTFC_SECTION_HOUSE = "House tracker",
@@ -50,19 +65,21 @@ local strings = {
 	SI_PBSQTFC_STYLE_SOFT_SHADOW_THICK = "Soft shadow (thick)",
 	SI_PBSQTFC_STYLE_OUTLINE_THICK = "Outline (thick)",
 
-	SI_PBSQTFC_SECTION_GENERAL = "Both trackers",
+	SI_PBSQTFC_SECTION_GENERAL = "All trackers",
 	SI_PBSQTFC_RESET = "Reset",
-	SI_PBSQTFC_RESET_TOOLTIP = "Put every setting above, in both sections, back to the game's own font.",
+	SI_PBSQTFC_RESET_TOOLTIP = "Put every setting above, in every section, back to the game's own font.",
 	SI_PBSQTFC_RESET_BUTTON = "Reset",
 
-	SI_PBSQTFC_GAME_SETTINGS_HINT = "Whether either tracker is shown at all is the game's own setting, under Settings > Interface (Show Quest Tracker / Show House Tracker). An add-on cannot change those, so set them there.",
+	SI_PBSQTFC_GAME_SETTINGS_HINT = "Whether each tracker is shown at all is the game's own setting, under Settings > Interface. An add-on cannot change those, so set them there.",
 }
 
--- The typeface and outline tooltips say the same thing in both sections, so they are written
--- once and pointed at from both rather than kept in step by hand.
+-- The typeface and outline tooltips say the same thing in every section, so they are written
+-- once and pointed at from each rather than kept in step by hand.
 strings.SI_PBSQTFC_QUEST_FACE_TOOLTIP = strings.SI_PBSQTFC_FACE_TOOLTIP_COMMON
+strings.SI_PBSQTFC_PURSUIT_FACE_TOOLTIP = strings.SI_PBSQTFC_FACE_TOOLTIP_COMMON
 strings.SI_PBSQTFC_HOUSE_FACE_TOOLTIP = strings.SI_PBSQTFC_FACE_TOOLTIP_COMMON
 strings.SI_PBSQTFC_QUEST_STYLE_TOOLTIP = strings.SI_PBSQTFC_STYLE_TOOLTIP_COMMON
+strings.SI_PBSQTFC_PURSUIT_STYLE_TOOLTIP = strings.SI_PBSQTFC_STYLE_TOOLTIP_COMMON
 strings.SI_PBSQTFC_HOUSE_STYLE_TOOLTIP = strings.SI_PBSQTFC_STYLE_TOOLTIP_COMMON
 
 for stringId, stringValue in pairs(strings) do

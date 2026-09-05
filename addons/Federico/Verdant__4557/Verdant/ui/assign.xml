@@ -76,6 +76,43 @@
           <OnClicked>Verdant.Assign.on_assign_click()</OnClicked>
         </Button>
 
+        <Control name="$(parent)NewCat" hidden="true" mouseEnabled="true">
+          <Anchor point="BOTTOMLEFT"  offsetX="14"  offsetY="-44"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-14" offsetY="-44"/>
+          <Dimensions y="70"/>
+          <Controls>
+            <Backdrop name="$(parent)Bg">
+              <AnchorFill/>
+              <Edge file="EsoUI/Art/Tooltips/UI-Border.dds"
+                    edgeFileWidth="128" edgeFileHeight="16" edgeSize="6"/>
+              <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds"/>
+              <Insets left="4" top="4" right="-4" bottom="-4"/>
+            </Backdrop>
+            <Label name="$(parent)Title" font="ZoFontGameSmall"
+                   horizontalAlignment="LEFT" verticalAlignment="CENTER">
+              <Anchor point="TOPLEFT" offsetX="10" offsetY="8"/>
+              <Dimensions x="90" y="22"/>
+            </Label>
+            <Backdrop name="$(parent)NameBox" inherits="ZO_EditBackdrop">
+              <Anchor point="TOPLEFT" offsetX="100" offsetY="7"/>
+              <Dimensions x="118" y="24"/>
+              <Controls>
+                <EditBox name="$(parent)Edit" inherits="ZO_DefaultEditForBackdrop" maxInputCharacters="18"/>
+              </Controls>
+            </Backdrop>
+            <Button name="$(parent)CreateBtn" mouseEnabled="true" font="ZoFontGameSmall" inherits="ZO_DefaultButton">
+              <Anchor point="TOPRIGHT" offsetX="-72" offsetY="8"/>
+              <Dimensions x="58" y="22"/>
+              <OnClicked>Verdant.Assign.on_newcat_create()</OnClicked>
+            </Button>
+            <Button name="$(parent)CancelBtn" mouseEnabled="true" font="ZoFontGameSmall" inherits="ZO_DefaultButton">
+              <Anchor point="TOPRIGHT" offsetX="-10" offsetY="8"/>
+              <Dimensions x="58" y="22"/>
+              <OnClicked>Verdant.Assign.on_newcat_cancel()</OnClicked>
+            </Button>
+          </Controls>
+        </Control>
+
         <!-- ── category flyout (populated in Lua; LAST = draws on top) ──── -->
         <Control name="$(parent)Flyout" hidden="true" mouseEnabled="true">
           <Dimensions x="200" y="100"/>

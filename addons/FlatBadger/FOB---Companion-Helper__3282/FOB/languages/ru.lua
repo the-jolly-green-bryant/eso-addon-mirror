@@ -24,7 +24,9 @@ L("CATCH", "Поймать")
 L("LOOT", "Обыскать")
 L("OPEN", "Открыть")
 L("USE", "Использовать")
-L("COLLECT", "Взять")
+-- L("COLLECT", "Взять")
+L("COLLECT", "Собрать")
+
 
 -- settings / настройки
 L("IGNORE_INSECTS", "Игнорировать летающих насекомых")
@@ -35,8 +37,10 @@ L("PREVENT_DARK_BROTHERHOOD", "Запретить вход в Убежище Т�
 L("PREVENT_PSIJIC", "Предотвратить появление порталов Псиджиков")
 
 -- interactable names
+L("CRIMSON_NIRNROOT", "Алый корень Нирна")
 L("DARK_BROTHERHOOD", "Убежище Темного Братства")
 L("THIEVES_DEN", "Логово воров")
+L("NIRNROOT", "Корень Нирна")
 L("OUTLAWS_REFUGE", "Убежище")
 L("OUTFIT_STATION", "Мастерская нарядов")
 L("PSIJIC_PORTAL", "Портал Псиджиков")

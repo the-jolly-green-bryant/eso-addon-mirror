@@ -28,6 +28,7 @@ local GROUP_COLORS = {
   psijic      = { r = 0.86, g = 0.80, b = 0.52, a = 0.95 },  -- astral gold (Psijic Order)
   mages_guild = { r = 0.10, g = 0.45, b = 0.65, a = 0.95 },  -- celeste oscuro
   item        = { r = 0.95, g = 0.20, b = 0.80, a = 0.95 },  -- magenta
+  companion   = { r = 0.30, g = 0.85, b = 0.75, a = 0.95 },  -- teal
   other       = { r = 0.55, g = 0.55, b = 0.55, a = 0.80 },  -- unknown (grey)
 }
 
@@ -50,6 +51,7 @@ local GROUP_LABELS = {
   vampire        = "Vampire",
   werewolf       = "Werewolf",
   item           = "Item Set / Enchant",
+  companion      = "Companion",
   other          = "Unknown (grey)",
 }
 
@@ -59,7 +61,7 @@ local GROUP_ORDER = {
   "destru", "resto",
   "mages_guild", "undaunted", "support", "scribing", "psijic",
   "vampire", "werewolf",
-  "item",
+  "item", "companion",
   "other",
 }
 
@@ -83,6 +85,8 @@ local ICON_PATTERNS = {
   { "ability_u26_vampire_",      "vampire"     },
   { "ability_vampire_",          "vampire"     },
   { "ability_werewolf_",         "werewolf"    },
+  { "ability_companion",         "companion"   },
+  { "companion_",                "companion"   },
 }
 
 
@@ -176,7 +180,7 @@ local function classify_by_skill_tree_api(abilityId)
   return SKILL_LINE_TO_GROUP[skillLineId]
 end
 
-local function lookup_group(abilityId)
+local function lookup_group(abilityId, quiet)
   if not abilityId or abilityId <= 0 then return "other" end
 
   local g = ability_cache[abilityId]
@@ -213,6 +217,7 @@ local function lookup_group(abilityId)
 
   local name = GetAbilityName(abilityId) or "?"
   local icon = GetAbilityIcon(abilityId) or "?"
+  if quiet then return "other" end
   unknown_log[abilityId] = name .. "  | icon=" .. icon
   ability_cache[abilityId] = "other"
   return "other"
@@ -264,6 +269,10 @@ end
 
 function M.group_of(abilityId)
   return lookup_group(abilityId)
+end
+
+function M.group_of_quiet(abilityId)
+  return lookup_group(abilityId, true)
 end
 
 function M.group_color(group)
@@ -320,8 +329,39 @@ function M.set_override(abilityId, group)
 end
 
 
+local CUSTOM_MAX_KEY = 28
+
+function M.custom_key(label)
+  local key = "custom_" .. tostring(label or ""):lower():gsub("[^%w]+", "_"):gsub("^_+", ""):gsub("_+$", "")
+  if #key > CUSTOM_MAX_KEY then key = key:sub(1, CUSTOM_MAX_KEY) end
+  return key
+end
+
+function M.add_group(key, label, r, g, b)
+  if type(key) ~= "string" or key == "" or type(label) ~= "string" or label == "" then return nil end
+  if GROUP_COLORS[key] and not key:find("^custom_") then return nil end
+  local existed = GROUP_COLORS[key] ~= nil
+  GROUP_COLORS[key] = { r = r or 0.7, g = g or 0.7, b = b or 0.7, a = 0.95 }
+  GROUP_LABELS[key] = label
+  if not existed then
+    local n = #GROUP_ORDER
+    GROUP_ORDER[n + 1] = GROUP_ORDER[n]
+    GROUP_ORDER[n] = key
+  end
+  return key
+end
+
+function M.is_custom(key)
+  return type(key) == "string" and key:find("^custom_") ~= nil and GROUP_COLORS[key] ~= nil
+end
+
 function M.load_persisted(sv)
   if not sv then return end
+  if type(sv.custom_groups) == "table" then
+    for key, g in pairs(sv.custom_groups) do
+      if type(g) == "table" then M.add_group(key, g.label, g.r, g.g, g.b) end
+    end
+  end
   if type(sv.skill_overrides) == "table" then
     for id, group in pairs(sv.skill_overrides) do
       if type(id) == "number" then M.set_override(id, group) end

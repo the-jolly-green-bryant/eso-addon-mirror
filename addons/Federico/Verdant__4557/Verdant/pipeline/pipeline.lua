@@ -197,6 +197,7 @@ function M.dispatch_effect_player_src(changeType, _slot, _name, unitTag, _bt, en
   end
   Verdant.ShieldRegistry.on_effect(changeType, abilityId, unitId, sourceType, endTime)
   Verdant.BuffTracker.on_effect(changeType, abilityId, unitId, endTime, now(), unitTag, effectType, abilityType)
+  Verdant.BuffWatch.on_effect(changeType, abilityId, unitId, endTime, now(), unitTag)
   prof_exit("pipeline.effect")
 end
 

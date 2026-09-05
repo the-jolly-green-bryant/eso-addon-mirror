@@ -1,5 +1,7 @@
-OWBanking = OWBanking or {}
+local owa = OWAssistant
+owa.Banking = owa.Banking or {}
+local banking = owa.Banking
 
-function OWBanking_Initialize()
+function banking.Initialize()
     -- Логіка банкіра буде тут.
 end

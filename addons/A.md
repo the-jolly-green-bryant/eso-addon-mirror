@@ -347,7 +347,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [AutoLootKey](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Goemaat/AutoLootKey__1125) | Goemaat | PC / Mac | 0.1 |
 | [AutoLootToggler](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Konten/AutoLootToggler__4087) | Konten | PC / Mac | 1.0 |
 | [Automate](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/peniku8/Automate__2852) | peniku8 | PC / Mac | 1.2.22 |
-| [Automatic Overland Difficulty (AOD)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wrynch/Automatic-Overland-Difficulty-AOD__4622) | Wrynch | PC / Mac | 1.5.0 |
+| [Automatic Overland Difficulty (AOD)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wrynch/Automatic-Overland-Difficulty-AOD__4622) | Wrynch | PC / Mac | 1.5.1 |
 | [Automatically Accept Quests](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/marlonbrando/Automatically-Accept-Quests__1994) | marlonbrando | PC / Mac | 1.28 |
 | [AutoReadyCheck](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/L_cky/AutoReadyCheck__be99bdeb-a9e3-4b63-abe8-9aa886190e8e) | L_cky | Console | — |
 | [AutoReadyCheck](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SirWoach/AutoReadyCheck__3688) | SirWoach | PC / Mac | 2.4.1 |

@@ -1,9 +1,9 @@
 ## Title: Verdant
 ## Description: Real-time healer contribution tool — healing, shields and triage, with skill-colour breakdown
 ## Author: Federico Vergelli
-## Version: 2.4.0
-## AddOnVersion: 9
-## APIVersion: 101050 101051
+## Version: 2.5.0
+## AddOnVersion: 10
+## APIVersion: 101051
 ## SavedVariables: VerdantSavedVars
 
 # This Add-on is not created by, affiliated with, or sponsored by ZeniMax Media Inc. or its affiliates.
@@ -16,6 +16,7 @@ locales/default.lua
 locales/$(language).lua
 core/constants.lua
 core/gc.lua
+core/hitch.lua
 lib/mem/buffer_pool.lua
 lib/mem/ring_buffer.lua
 lib/mem/event.lua
@@ -29,6 +30,7 @@ zenimax/scene.lua
 lib/plot/style.lua
 lib/plot/primitives.lua
 lib/plot/pool.lua
+lib/plot/donut.lua
 lib/plot/plot_stacked_bar.lua
 observability/copybox.lua
 observability/log.lua
@@ -41,6 +43,7 @@ core/mode.lua
 core/skill_colors.lua
 core/metrics.lua
 core/buff_tracker.lua
+core/buff_watch.lua
 core/triage.lua
 core/session_store.lua
 observability/diagnostics.lua
@@ -52,6 +55,7 @@ pipeline/presentation.lua
 pipeline/pipeline.lua
 core/probe.lua
 core/temporal_buffer.lua
+core/ultimate.lua
 core/auto_record.lua
 core/visibility.lua
 ui/bar.xml
@@ -60,10 +64,13 @@ ui/settings.xml
 ui/settings.lua
 ui/graph.xml
 ui/graph.lua
+ui/watch.xml
+ui/watch.lua
 ui/library.xml
 ui/library.lua
 ui/assign.xml
 ui/assign.lua
+ui/donut_probe.lua
 ui/logo.xml
 ui/logo.lua
 Verdant.lua

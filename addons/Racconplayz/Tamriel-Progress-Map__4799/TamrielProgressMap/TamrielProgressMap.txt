@@ -1,8 +1,8 @@
 ## Title: |cE6C45CTamriel Progress Map|r
 ## Author: |c66CCFFRaccoonplayz|r
-## Description: Tamriel completion journal with world-map percentages, Progress, Economy and PvE/PvP activity statistics. DE/EN/RU/FR/ES. / Tamriel-Fortschrittsjournal mit Karte, Wirtschaft und PvE/PvP-Aktivitäten. DE/EN/RU/FR/ES. Requires LibAddonMenu-2.0 and LibZone.
-## Version: 2.6.84_Beta
-## AddOnVersion: 20684
+## Description: Tamriel completion journal with Progress (Alliance page 2), Economy and PvE/PvP (Character page 2). DE/EN/RU/FR/ES. / Tamriel-Fortschrittsjournal mit Fortschritt (Allianzen Seite 2), Wirtschaft und PvE/PvP (Charakter Seite 2). DE/EN/RU/FR/ES. Requires LibAddonMenu-2.0 and LibZone.
+## Version: 2.7.0
+## AddOnVersion: 20700
 ## APIVersion: 101050 101051
 ## SavedVariables: TamrielProgressMap_SavedVariables
 ## DependsOn: LibAddonMenu-2.0>=43 LibZone>=0899

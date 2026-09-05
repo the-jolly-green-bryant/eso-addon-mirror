@@ -313,7 +313,9 @@ do
 
     function fobInfo:OnSynergyAbilityChanged()
         if (FOB.Enabled) then
-            if (FOB.Vars.BoWCompanions[FOB.ActiveCompanionDefId]) then
+            local bc = FOB.Vars.BoWCompanions or {}
+
+            if (bc[FOB.ActiveCompanionDefId]) then
                 local hasSynergy, synergyName = GetCurrentSynergyInfo()
 
                 if (hasSynergy) then

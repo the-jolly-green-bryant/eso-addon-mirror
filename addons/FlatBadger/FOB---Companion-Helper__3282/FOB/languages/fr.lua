@@ -30,9 +30,11 @@ L("USE", "Utiliser")
 
 -- interactable names
 L("BOOKSHELF", "Bibliothèque")
+L("CRIMSON_NIRNROOT", "Nirnrave cramoisi")
 L("DARK_BROTHERHOOD", "Sanctuaire de la Confrérie noire")
 L("MAGES_GUILD", "guilde des mages")
 L("MEDICAL", "Fournitures médicales")
+L("NIRNROOT", "Nirnrave")
 L("OUTLAWS_REFUGE", "Refuge de hors-la-loi")
 L("OUTFIT_STATION", "Atelier de tenue")
 L("PSIJIC_PORTAL", "Portail psijique")

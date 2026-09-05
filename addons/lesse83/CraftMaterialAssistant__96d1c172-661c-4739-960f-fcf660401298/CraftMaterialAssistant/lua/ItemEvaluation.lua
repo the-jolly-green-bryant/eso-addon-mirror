@@ -1,0 +1,164 @@
+local CMA = CraftMaterialAssistant
+
+-- Evaluates if an item passes its specific material category filter and gets a target quality threshold
+function CMA:DetermineItemAction(bag, slotIndex)
+    local itemType, specializedItemType = GetItemType(bag, slotIndex)
+
+    -- TODO: Turn on for Item-Identification
+    -- local i = GetItemLink(bag, slotIndex)
+    -- local id = GetItemLinkItemId(itemLink)
+    -- self:SendChatMessage(i)
+    -- self:SendChatMessage("id: " .. id)
+    -- self:SendChatMessage("itemType: " .. itemType)
+    -- if specializedItemType ~= null then
+    --     self:SendChatMessage("specializedItemType: " .. specializedItemType)
+    -- end
+
+    -- handle the categories only having an on|off state
+    if itemType == ITEMTYPE_FURNISHING_MATERIAL then
+        return self.simpleMaterialDecisionMap[self.db.bankFurnishingMaterials]
+    elseif itemType == ITEMTYPE_BAIT then
+        return self.simpleMaterialDecisionMap[self.db.bankBait]
+    elseif itemType == ITEMTYPE_SCRIBING_INK then
+        return self.simpleMaterialDecisionMap[self.db.bankInk]
+    elseif itemType == ITEMTYPE_RAW_MATERIAL then
+        return self.simpleMaterialDecisionMap[self.db.bankRawMaterials]
+    elseif (specializedItemType == SPECIALIZED_ITEMTYPE_RECIPE_PROVISIONING_STANDARD_FOOD) or (specializedItemType == SPECIALIZED_ITEMTYPE_RECIPE_PROVISIONING_STANDARD_DRINK) then
+        local itemLink = GetItemLink(bag, slotIndex)
+        local quality = GetItemLinkFunctionalQuality(itemLink)
+        local known = IsItemLinkRecipeKnown(itemLink)
+        if (known == false) and (self.db.showBankAlerts) then
+            self:SendChatMessage("|cFFEE00Unknown Provisioning Recipe:|r " .. itemLink)
+        elseif self.db.bankProvisioningSellKnownRecipe and (quality < self.qualityMap[self.db.bankQualityThresholdProvisioningRecipe]) then
+            -- its known and below the quality threshold
+            return "junk"
+        end
+    elseif itemType == ITEMTYPE_REAGENT then
+        if not self.db.bankAlchemy then
+            return "ignore"
+        else 
+            return self.db.bankAlchemyReagents and "bank" or "junk"
+        end
+    elseif itemType == ITEMTYPE_JEWELRY_RAW_TRAIT then
+        if not self.db.bankJewelry then
+            return "ignore"
+        else
+            return self.db.bankRawJewelryTraits and "bank" or "junk"
+        end
+    elseif itemType == ITEMTYPE_ENCHANTING_RUNE_ESSENCE then
+        if not self.db.bankEnchanting then
+            return "ignore"
+        else
+            return self.db.bankEssenceRunes and "bank" or "junk"
+        end
+    elseif itemType == ITEMTYPE_STYLE_MATERIAL then
+        if (
+            (self.db.bankStyleMaterials == "Ignore") or (self.db.bankStyleMaterials == "Sell") or 
+            ((self.db.bankStyleMaterials == "Bank") and (not self.db.limitStyleMaterialByCount))
+        ) then
+            return self.simpleMaterialDecisionMap[self.db.bankStyleMaterials]
+        else
+            local itemLink = GetItemLink(bag, slotIndex)
+            local stackCountBackpack, stackCountBank, stackCountCraftBag, stackCountHouseBanks = GetItemLinkStacks(itemLink)
+            return ((stackCountBank + stackCountCraftBag + stackCountHouseBanks) < self.db.bankMinimumNumberStyleMaterial) and "bank" or "junk"
+        end
+    elseif itemType == ITEMTYPE_ARMOR_TRAIT or itemType == ITEMTYPE_JEWELRY_TRAIT or itemType == ITEMTYPE_WEAPON_TRAIT then
+        if (
+            (self.db.bankTraitMaterials == "Ignore") or (self.db.bankTraitMaterials == "Sell") or 
+            ((self.db.bankTraitMaterials == "Bank") and (not self.db.limitTraitMaterialByCount))
+        ) then
+            return self.simpleMaterialDecisionMap[self.db.bankTraitMaterials]
+        else
+            local itemLink = GetItemLink(bag, slotIndex)
+            local stackCountBackpack, stackCountBank, stackCountCraftBag, stackCountHouseBanks = GetItemLinkStacks(itemLink)
+            return ((stackCountBank + stackCountCraftBag + stackCountHouseBanks) < self.db.bankMinimumNumberTraitMaterial) and "bank" or "junk"
+        end
+    end
+
+    -- handle the categories also having a style criteria
+    local groupToggle = nil
+    local qualityThreshold = nil
+    local tierThreshold = nil
+    local materialMap = {}
+    if itemType == ITEMTYPE_BLACKSMITHING_MATERIAL or itemType == ITEMTYPE_BLACKSMITHING_RAW_MATERIAL then
+        groupToggle = self.db.bankBlacksmithing
+        tierThreshold = self.db.bankTierThresholdBlacksmithing
+        materialMap = self.blacksmithingMaterialMap
+    elseif itemType == ITEMTYPE_BLACKSMITHING_BOOSTER then
+        groupToggle = self.db.bankBlacksmithing
+        qualityThreshold = self.db.bankQualityThresholdBlacksmithing
+    elseif itemType == ITEMTYPE_CLOTHIER_MATERIAL or itemType == ITEMTYPE_CLOTHIER_RAW_MATERIAL then
+        groupToggle = self.db.bankClothing
+        tierThreshold = self.db.bankTierThresholdClothing
+        materialMap = self.clothingMaterialMap
+    elseif itemType == ITEMTYPE_CLOTHIER_BOOSTER then
+        groupToggle = self.db.bankClothing
+        qualityThreshold = self.db.bankQualityThresholdClothing
+    elseif itemType == ITEMTYPE_WOODWORKING_MATERIAL or itemType == ITEMTYPE_WOODWORKING_RAW_MATERIAL then
+        groupToggle = self.db.bankWoodworking
+        tierThreshold = self.db.bankTierThresholdWoodworking
+        materialMap = self.woodworkingMaterialMap
+    elseif itemType == ITEMTYPE_WOODWORKING_BOOSTER then
+        groupToggle = self.db.bankWoodworking
+        qualityThreshold = self.db.bankQualityThresholdWoodworking
+    elseif itemType == ITEMTYPE_JEWELRYCRAFTING_MATERIAL or itemType == ITEMTYPE_JEWELRYCRAFTING_RAW_MATERIAL then
+        groupToggle = self.db.bankJewelry
+        tierThreshold = self.db.bankTierThresholdJewelry
+        materialMap = self.jewelryMaterialMap
+    elseif itemType == ITEMTYPE_JEWELRYCRAFTING_BOOSTER then
+        groupToggle = self.db.bankJewelry
+        qualityThreshold = self.db.bankQualityThresholdJewelry
+    elseif itemType == ITEMTYPE_ENCHANTING_RUNE_POTENCY then
+        groupToggle = self.db.bankEnchanting
+        tierThreshold = self.db.bankImprovementThresholdPotencyRunes
+        materialMap = self.enchantingMaterialMap
+    elseif itemType == ITEMTYPE_ENCHANTING_RUNE_ASPECT then
+        groupToggle = self.db.bankEnchanting
+        qualityThreshold = self.db.bankQualityThresholdEnchanting
+    elseif itemType == ITEMTYPE_POTION_BASE or itemType == ITEMTYPE_POISON_BASE then
+        groupToggle = self.db.bankAlchemy
+        materialMap = self.alchemyMaterialMap
+        tierThreshold = self.db.bankProficiencyThresholdAlchemyBases
+    elseif itemType == ITEMTYPE_INGREDIENT then
+        groupToggle =  self.db.bankProvisioning
+        if specializedItemType == SPECIALIZED_ITEMTYPE_INGREDIENT_RARE then
+            qualityThreshold = self.db.bankQualityThresholdProvisioning
+        end
+    else
+        return "unknown"
+    end
+
+    local itemLink = GetItemLink(bag, slotIndex)
+    local quality = GetItemLinkFunctionalQuality(itemLink)
+    local itemId = GetItemLinkItemId(itemLink)
+    local materialTierInfo = materialMap[itemId]
+    local itemTier = nil
+
+    if materialTierInfo then
+        itemTier = materialTierInfo.tier
+    end
+    
+    if not groupToggle then
+        -- category turned off, ignore the item
+        return "ignore"
+    elseif (
+        self.db.bankProvisioningWritIngredientsOnly and
+        (itemType == ITEMTYPE_INGREDIENT) and
+        (specializedItemType ~= SPECIALIZED_ITEMTYPE_INGREDIENT_RARE)
+    ) then
+        -- handle the case of writ ingredients only
+        if (self.provisioningTopLevelWritIngredientsMap[itemId] ~= nil) then
+            return "bank"
+        else
+            return "junk"
+        end
+    elseif (
+        ((qualityThreshold == nil) or (quality >= self.qualityMap[qualityThreshold])) and
+        ((tierThreshold == nil) or (itemTier == nil) or (itemTier >= tierThreshold))
+    ) then
+        -- its a tier item and tier is met
+        return "bank"
+    else
+        return "junk"
+    end
+end

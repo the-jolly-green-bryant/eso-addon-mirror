@@ -164,7 +164,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Dungeon Boss Pull Cards](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/yodased/Dungeon-Boss-Pull-Cards__4793) | yodased | PC / Mac | 0.20.0 |
 | [Dungeon Champions](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Scott123/Dungeon-Champions__2023) | Scott123 | PC / Mac | 1.0.16 |
 | [Dungeon Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tomkolp/Dungeon-Helper__1956) | tomkolp | PC / Mac | 1.0.3 |
-| [Dungeon Quest Reminder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/Dungeon-Quest-Reminder__4346) | atharti | PC / Mac | 1.5 |
+| [Dungeon Quest Reminder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/Dungeon-Quest-Reminder__4346) | atharti | PC / Mac | 1.6 |
 | [Dungeon Queue 4 Stickerbook](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tim99/Dungeon-Queue-4-Stickerbook__3254) | tim99 | PC / Mac | 1.2.8 |
 | [Dungeon Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Eldibabalo/Dungeon-Tracker__75746296-2f24-4d95-8fb5-1954d00fc1d6) | Eldibabalo | Console | — |
 | [Dungeon Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Phinix/Dungeon-Tracker__1552) | Phinix | PC / Mac | 1.48 |

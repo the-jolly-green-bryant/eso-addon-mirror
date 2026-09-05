@@ -1,4 +1,4 @@
-OW_DECONSTRUCT_LANG_EN = {
+local strings = {
     WEAPON = "Weapons",
     WEAPON_TOOLTIP = "Weapon deconstruction settings.",
 
@@ -19,6 +19,11 @@ OW_DECONSTRUCT_LANG_EN = {
 
     CHAT_NO_ITEMS = "No items match the current filters.",
     CHAT_DECONSTRUCTED_ITEMS = "Items deconstructed: %d.",
+    CHAT_OPEN_STATION = "Open a deconstruction station first.",
+    CHAT_SLOT_OCCUPIED = "An item is already in the deconstruction slot.",
+
+    CHAT_MESSAGES = "Show chat messages",
+    CHAT_MESSAGES_TOOLTIP = "Shows OWDeconstructor results and status messages in chat.",
 
     WEAPON_SETTINGS = {
         ENABLE = "Allow weapon deconstruction",
@@ -42,8 +47,8 @@ OW_DECONSTRUCT_LANG_EN = {
         RECONSTRUCTED = "Deconstruct reconstructed weapons",
         RECONSTRUCTED_TOOLTIP = "Allows weapons reconstructed at a transmutation station to be deconstructed.",
 
-        TRADABLE = "Deconstruct tradable weapons",
-        TRADABLE_TOOLTIP = "Allows weapons that can be traded with other players to be deconstructed.",
+        TRADABLE = "Deconstruct temporarily tradable weapons",
+        TRADABLE_TOOLTIP = "Allows temporarily group-tradable weapons from dungeons and trials to be deconstructed (blue double-arrow icon).",
 
         FROM_BANK = "Deconstruct weapons from bank",
         FROM_BANK_TOOLTIP = "Allows deconstruct weapons from bank.",
@@ -51,14 +56,12 @@ OW_DECONSTRUCT_LANG_EN = {
         NIRNHONED = "Deconstruct Nirnhoned weapons",
         NIRNHONED_TOOLTIP = "Allows  weapons with the Nirnhoned trait to be deconstructed.",
 
-        RESEARCH = "Deconstruct weapons for research",
-        RESEARCH_TOOLTIP = "Allows weapons to be processed according to the selected research mode.",
+        RESEARCH_MODE = "Weapon research deconstruction mode",
+        RESEARCH_MODE_TOOLTIP = "Controls how weapons with researchable traits are handled.",
 
-        RESEARCH_MODE = "Weapon research mode",
-        RESEARCH_MODE_TOOLTIP = "Available only when weapon research deconstruction is enabled.",
-
-        RESEARCH_ALL = "All weapons with all traits",
-        RESEARCH_KEEP_LOWEST = "All weapons except unresearched traits",
+        RESEARCH_NONE = "Do not deconstruct",
+        RESEARCH_ALL = "Deconstruct all",
+        RESEARCH_KEEP_LOWEST = "Deconstruct except unresearched traits",
         RESEARCH_KEEP_LOWEST_TOOLTIP = "For identical unresearched traits, keeps the lowest-quality weapon and deconstructs higher-quality duplicates.",
     },
 
@@ -84,8 +87,8 @@ OW_DECONSTRUCT_LANG_EN = {
         RECONSTRUCTED = "Deconstruct reconstructed clothing",
         RECONSTRUCTED_TOOLTIP = "Allows clothing reconstructed at a transmutation station to be deconstructed.",
 
-        TRADABLE = "Deconstruct tradable clothing",
-        TRADABLE_TOOLTIP = "Allows clothing that can be traded with other players to be deconstructed.",
+        TRADABLE = "Deconstruct temporarily tradable clothing",
+        TRADABLE_TOOLTIP = "Allows temporarily group-tradable clothing from dungeons and trials to be deconstructed (blue double-arrow icon).",
 
         FROM_BANK = "Deconstruct clothing from bank",
         FROM_BANK_TOOLTIP = "Allows deconstruct clothing from the bank.",
@@ -93,14 +96,12 @@ OW_DECONSTRUCT_LANG_EN = {
         NIRNHONED = "Deconstruct Nirnhoned clothing",
         NIRNHONED_TOOLTIP = "Allows clothing with the Nirnhoned trait to be deconstructed.",
 
-        RESEARCH = "Deconstruct clothing for research",
-        RESEARCH_TOOLTIP = "Allows clothing to be processed according to the selected research mode.",
+        RESEARCH_MODE = "Clothing research deconstruction mode",
+        RESEARCH_MODE_TOOLTIP = "Controls how clothing with researchable traits is handled.",
 
-        RESEARCH_MODE = "Clothing research mode",
-        RESEARCH_MODE_TOOLTIP = "Available only when clothing research deconstruction is enabled.",
-
-        RESEARCH_ALL = "All clothing with all traits",
-        RESEARCH_KEEP_LOWEST = "All clothing except unresearched traits",
+        RESEARCH_NONE = "Do not deconstruct",
+        RESEARCH_ALL = "Deconstruct all",
+        RESEARCH_KEEP_LOWEST = "Deconstruct except unresearched traits",
         RESEARCH_KEEP_LOWEST_TOOLTIP = "For identical unresearched traits, keeps the lowest-quality item and deconstructs higher-quality duplicates.",
     },
 
@@ -126,21 +127,19 @@ OW_DECONSTRUCT_LANG_EN = {
         RECONSTRUCTED = "Deconstruct reconstructed jewelry",
         RECONSTRUCTED_TOOLTIP = "Allows jewelry reconstructed at a transmutation station to be deconstructed.",
 
-        TRADABLE = "Deconstruct tradable jewelry",
-        TRADABLE_TOOLTIP = "Allows jewelry that can be traded with other players to be deconstructed.",
+        TRADABLE = "Deconstruct temporarily tradable jewelry",
+        TRADABLE_TOOLTIP = "Allows temporarily group-tradable jewelry from dungeons and trials to be deconstructed (blue double-arrow icon).",
 
         FROM_BANK = "Deconstruct jewelry from bank",
         FROM_BANK_TOOLTIP = "Allows deconstruct jewelry from bank.",
 
-        RESEARCH = "Deconstruct jewelry for research",
-        RESEARCH_TOOLTIP = "Allows jewelry to be processed according to the selected research mode.",
+        RESEARCH_MODE = "Jewelry research deconstruction mode",
+        RESEARCH_MODE_TOOLTIP = "Controls how jewelry with researchable traits is handled.",
 
-        RESEARCH_MODE = "Jewelry research mode",
-        RESEARCH_MODE_TOOLTIP = "Available only when jewelry research deconstruction is enabled.",
-
-        RESEARCH_ALL = "All jewelry with all traits",
-        RESEARCH_BASIC = "Deconstruct jewelry with basic traits",
-        RESEARCH_KEEP_LOWEST = "All jewelry except unresearched traits",
+        RESEARCH_NONE = "Do not deconstruct",
+        RESEARCH_ALL = "Deconstruct all",
+        RESEARCH_BASIC = "Deconstruct items with basic traits",
+        RESEARCH_KEEP_LOWEST = "Deconstruct except unresearched traits",
         RESEARCH_KEEP_LOWEST_TOOLTIP = "For identical unresearched traits, keeps the lowest-quality item and deconstructs higher-quality duplicates.",
     },
 
@@ -158,3 +157,6 @@ OW_DECONSTRUCT_LANG_EN = {
         FROM_BANK_TOOLTIP = "Allows deconstruct glyphs from the bank.",
     },
 }
+
+local owa = OWAssistant
+owa.AddLanguageStrings("en", strings, "DECONSTRUCT")

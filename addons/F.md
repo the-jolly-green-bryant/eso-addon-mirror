@@ -63,7 +63,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [FineClubIcons - Kyne's Aegis icons](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/B7TxSpeed/FineClubIcons---Kyne-s-Aegis-icons__3937) | B7TxSpeed | PC / Mac | 1.0.1 |
 | [First Person Camera Lock](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sirinsidiator/First-Person-Camera-Lock__1271) | sirinsidiator | PC / Mac | 1.3 |
 | [First Person Riding (gamepad supported)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/crocodarrel/First-Person-Riding-gamepad-supported__2583) | crocodarrel | PC / Mac | 2.8 |
-| [Fish Bar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FlatBadger/Fish-Bar__3284) | FlatBadger | PC / Mac | 1.9.0 |
+| [Fish Bar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FlatBadger/Fish-Bar__3284) | FlatBadger | PC / Mac | 1.10.0 |
 | [Fish Breaker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Marify/Fish-Breaker__3188) | Marify | PC / Mac | 1.0.0 |
 | [FishBreak](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Solaris-Lorica/FishBreak__2597) | Solaris Lorica | PC / Mac | 1.2 |
 | [Fisherman's Friend](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Zention/Fisherman-s-Friend__2731) | Zention | PC / Mac | 1.1 |
@@ -80,7 +80,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Fix Visual Bugs](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Phinix/Fix-Visual-Bugs__2200) | Phinix | PC / Mac | 1.10 |
 | [FixedCombatString](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MelanAster/FixedCombatString__3831) | MelanAster | PC / Mac | 0.30 |
 | [Flagrick's durability](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ayantir/Flagrick-s-durability__419) | Ayantir | PC / Mac | 1.3 |
-| [Flamechasers Dungeon, Trial & Arena Codex](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Dungeon-Trial-Arena-Codex__4737) | haidan | PC / Mac | 0.7.2 |
+| [Flamechasers Dungeon, Trial & Arena Codex](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Dungeon-Trial-Arena-Codex__4737) | haidan | PC / Mac | 0.8.16 |
 | [Flamechasers Outfit Profiles](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Outfit-Profiles__4736) | haidan | PC / Mac | 0.4.5 |
 | [Flamechasers Pledge Queue](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Pledge-Queue__4735) | haidan | PC / Mac | 0.8.1 |
 | [Flamechasers Spellcheck & Autocomplete](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Spellcheck-Autocomplete__4805) | haidan | PC / Mac | 0.7.6 |

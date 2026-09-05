@@ -1,9 +1,12 @@
+local owa = OWAssistant
+local deconstruct = owa.Deconstruct
+
 local function IsEnchantingStation()
-    if OWDeconstruct.IsUniversalStation() then
+    if deconstruct.IsUniversalStation() then
         return true
     end
 
-    return OWDeconstruct.currentCraftingType
+    return deconstruct.currentCraftingType
         == CRAFTING_TYPE_ENCHANTING
 end
 
@@ -83,7 +86,7 @@ local function IsGlyphAllowed(
         )
 
     local maxQuality =
-        OWDeconstruct.GetMaxQuality(profile)
+        deconstruct.GetMaxQuality(profile)
 
     if not quality
         or quality > maxQuality
@@ -159,8 +162,8 @@ local function CollectEnchantingCandidates(
     end
 
     local profiles =
-        OWA_SavedVariables
-        and OWA_SavedVariables.deconstructProfiles
+        owa.savedVariables
+        and owa.savedVariables.deconstructProfiles
 
     local profile =
         profiles and profiles.enchanting
@@ -205,7 +208,7 @@ local function CollectEnchantingCandidates(
     end
 end
 
-OWDeconstruct.RegisterCollector(
+deconstruct.RegisterCollector(
     "enchanting",
     CollectEnchantingCandidates
 )

@@ -1,6 +1,6 @@
 local ADDON_NAME = "TamrielProgressMap"
 local DISPLAY_NAME = "Tamriel Progress Map"
-local VERSION = "2.6.84_Beta"
+local VERSION = "2.7.0"
 local AUTHOR = "Raccoonplayz"
 local PIN_TYPE_STRING = "TamrielProgressMap_ZoneProgressPin"
 
@@ -53,6 +53,8 @@ local DEFAULTS =
     statisticsWindowScale = 100,
     statisticsSortMode = "progress",
     statisticsPage = "progress",
+    statisticsProgressSubPage = 1, -- 2.7.31: 1=Completion, 2=Alliance progress
+    statisticsHistorySubPage = 1, -- 2.7.31: 1=PvE/PvP, 2=Character
     statisticsCompletionPage = 1, -- 2.6.0: 1=zone completion, 2=collections, 3=achievements
     statisticsCategorySortMode = "all", -- 2.6.8: all/name/asc/desc for the three completion sub-pages
     skyshardGoalEnabled = false, -- personal zone-aware Skyshard goal HUD
@@ -68,6 +70,18 @@ local DEFAULTS =
     alliancePlannerMapCenterX = 0.5,
     alliancePlannerMapCenterY = 0.5,
     alliancePlannerTerritoryColors = true,
+    -- 2.7.0: Statistics journal customization. Defaults reproduce the 2.6.84 look.
+    statisticsThemeDesign = "tpm", -- tpm | vanilla
+    statisticsThemeBackground = { r = 0.035, g = 0.031, b = 0.024, a = 1.00 },
+    statisticsThemeHeading = { r = 0.95, g = 0.82, b = 0.36 },
+    statisticsThemeAccent = { r = 0.95, g = 0.82, b = 0.36 },
+    statisticsThemeProgress = { r = 0.95, g = 0.82, b = 0.12 },
+    statisticsThemeText = { r = 0.88, g = 0.84, b = 0.74 },
+    statisticsThemeRGB = false, -- legacy compatibility flag; RGB UI removed
+    statisticsCharacterRangeDays = 7, -- 2.7.5: Character history selector: 7/30/90/365 days
+    statisticsCharacterRangeOffset = 0, -- 2.7.5: browsing offset inside the selected Character history range
+    schemaVersion = 0, -- centralized SavedVariables migration baseline
+
  -- 2.6.14: 0=all Tamriel, otherwise one supported progress zone
     combatStatsByCharacter = {},
     economyStats = { trackingVersion = "2.0.10", currencies = {} }, -- legacy account-wide ledger from 2.0.10-2.0.14
@@ -347,6 +361,8 @@ local HISTORY_MAX_SESSIONS = 80
 local HISTORY_MAX_CHART_POINTS = 60
 local HISTORY_SAMPLE_INTERVAL_SECONDS = 300 -- detailed recent chart cadence; large changes can create an earlier point.
 local HISTORY_SAMPLE_RETENTION_DAYS = 45 -- older history uses daily close + daily high/low.
+local CHARACTER_PLAYTIME_RETENTION_DAYS = 365 -- dedicated Character page date/time + playtime ledger.
+local CURRENT_SCHEMA_VERSION = 4 -- 2.7.11 expanded Statistics theme color channels.
 local HISTORY_MAX_SAMPLES = 1400
 local SESSION_CONTINUITY_SECONDS = 300
 
@@ -410,7 +426,14 @@ local function GetPercentColor(percent)
     return "FF6B6B"
 end
 
+function TPM:IsStatisticsDarkDesign()
+    return self and self.saved and self.saved.statisticsThemeDesign == "dark"
+end
+
 function TPM:GetDisplayPercentColor(percent)
+    if self:IsStatisticsDarkDesign() then
+        return "FFFFFF"
+    end
     local mode = self and self.saved and self.saved.percentColorMode or "black"
     if mode == "black" then
         return "000000"
@@ -426,12 +449,18 @@ function TPM:GetDisplayPercentColor(percent)
 end
 
 function TPM:GetStatisticsPercentTextColor(percent)
+    if self:IsStatisticsDarkDesign() then
+        return "FFFFFF"
+    end
     percent = Clamp(tonumber(percent) or 0, 0, 100)
     if percent >= 100 then return ESO_GOLD_HEX end
     return STATISTICS_PERCENT_GRAY_HEX
 end
 
 function TPM:GetStatisticsProgressColor(percent)
+    if self:IsStatisticsDarkDesign() then
+        return 1, 1, 1
+    end
     -- Deliberately darker than the map-marker palette. The journal uses one
     -- continuous red -> ESO-gold ramp so the bars remain readable on the dark
     -- background without becoming neon.
@@ -663,24 +692,84 @@ function TPM:QueueCombatHistoryCheckpoint()
             TPM.activeTrackedActivity.lastSnapshot = snapshot
             TPM.activeTrackedActivity.lastSeenAt = snapshot.timestamp or TPM_Now()
         end
+        -- IncrementPlayerCombatStat already refreshes Character page 2 immediately.
+        -- Only repaint the PvE/PvP dashboard here after the delayed history snapshot.
         if TPM.statisticsWindow and not TPM.statisticsWindow:IsHidden()
-            and TPM.saved.statisticsPage == "history" then
+            and TPM.saved.statisticsPage == "history"
+            and TPM:GetStatisticsHistorySubPage() == 1 then
             TPM:RefreshHistoryStatisticsPage()
         end
     end, 350)
 end
 
+-- 2.7.8: Preserve daily PvE kill/boss totals on the Character page.
+-- 2.7.9: Replace ambiguous daily relative bars with a clear Date / Playtime / Kills / Bosses table.
+-- 2.7.13: Keep the combat tracker self-contained here. The general character-history
+-- date helpers are declared later in this file, so calling them from this earlier
+-- section would resolve to nil at runtime in Lua.
+local function TPM_CombatLocalUtcOffsetSeconds()
+    if type(GetTimeStamp) == "function" and type(GetSecondsSinceMidnight) == "function" then
+        local okStamp, nowStamp = pcall(GetTimeStamp)
+        local okLocal, localSeconds = pcall(GetSecondsSinceMidnight)
+        nowStamp = okStamp and tonumber(nowStamp) or nil
+        localSeconds = okLocal and tonumber(localSeconds) or nil
+        if nowStamp and localSeconds then
+            local utcSeconds = nowStamp % 86400
+            local offset = localSeconds - utcSeconds
+            if offset > 43200 then offset = offset - 86400 end
+            if offset < -43200 then offset = offset + 86400 end
+            return offset
+        end
+    end
+    return 0
+end
+
+local function TPM_CombatCharacterDayKey(timestamp, utcOffset)
+    local adjusted = math.max(0, tonumber(timestamp) or 0) + (tonumber(utcOffset) or 0)
+    return math.floor(adjusted / 86400)
+end
+
+-- npcKills is the existing TPM PvE-kill counter; bossKills is shown separately.
+function TPM:RecordCharacterDailyCombat(field, amount)
+    if field ~= "npcKills" and field ~= "bossKills" then return end
+    local store = self:GetHistoryStore()
+    if not store then return end
+    if type(store.characterPlaytime365) ~= "table" then store.characterPlaytime365 = {} end
+    local now = TPM_Now()
+    local offset = TPM_CombatLocalUtcOffsetSeconds()
+    local dayKey = TPM_CombatCharacterDayKey(now, offset)
+    local key = tostring(dayKey)
+    local entry = store.characterPlaytime365[key]
+    if type(entry) ~= "table" then
+        entry = { dayKey=dayKey, seconds=0, utcOffset=offset, firstUtcOffset=offset, lastUtcOffset=offset, zones={} }
+        store.characterPlaytime365[key] = entry
+    end
+    local delta = math.max(0, Round(tonumber(amount) or 1))
+    if field == "npcKills" then
+        entry.npcKills = math.max(0, Round((tonumber(entry.npcKills) or 0) + delta))
+    else
+        entry.bossKills = math.max(0, Round((tonumber(entry.bossKills) or 0) + delta))
+    end
+    entry.combatDataReliable = true
+end
+
 function TPM:IncrementPlayerCombatStat(field, amount)
     local stats = self:GetPlayerCombatStats()
     if stats[field] == nil then return end
-    stats[field] = math.max(0, Round((tonumber(stats[field]) or 0) + (tonumber(amount) or 1)))
+    local delta = tonumber(amount) or 1
+    stats[field] = math.max(0, Round((tonumber(stats[field]) or 0) + delta))
+    if field == "npcKills" or field == "bossKills" then self:RecordCharacterDailyCombat(field, delta) end
     if field == "npcKills" or field == "pveDeaths" or field == "bossKills"
         or field == "pvpKills" or field == "pvpDeaths" then
         self:QueueCombatHistoryCheckpoint()
     end
     if self.statisticsWindow and not self.statisticsWindow:IsHidden() and self.saved then
         if self.saved.statisticsPage == "history" then
-            self:RefreshHistoryStatisticsPage()
+            if self:GetStatisticsHistorySubPage() == 2 then
+                self:RefreshPlayerStatisticsPage()
+            else
+                self:RefreshHistoryStatisticsPage()
+            end
         end
     end
 end
@@ -1229,8 +1318,49 @@ end
 -- memory and creates explicit checkpoints on player deactivation, activation
 -- transitions and periodically while playing so a normal logout/quit/reload has
 -- a complete final state ready for ESO to persist.
+local function TPM_GetLocalUtcOffsetSeconds()
+    -- ESO exposes the local clock separately from the Unix timestamp. Derive
+    -- the current local offset without relying on Lua's host timezone.
+    if type(GetTimeStamp) == "function" and type(GetSecondsSinceMidnight) == "function" then
+        local okStamp, nowStamp = pcall(GetTimeStamp)
+        local okLocal, localSeconds = pcall(GetSecondsSinceMidnight)
+        nowStamp = okStamp and tonumber(nowStamp) or nil
+        localSeconds = okLocal and tonumber(localSeconds) or nil
+        if nowStamp and localSeconds then
+            local utcSeconds = nowStamp % 86400
+            local offset = localSeconds - utcSeconds
+            if offset > 43200 then offset = offset - 86400 end
+            if offset < -43200 then offset = offset + 86400 end
+            return offset
+        end
+    end
+    return 0
+end
+
 local function TPM_DayKey(timestamp)
+    -- Generic history keeps its established UTC day-key semantics for backwards
+    -- compatibility with existing snapshots and graphs.
     return math.floor(math.max(0, tonumber(timestamp) or 0) / 86400)
+end
+
+local function TPM_CharacterDayKeyWithOffset(timestamp, utcOffset)
+    local adjusted = math.max(0, tonumber(timestamp) or 0) + (tonumber(utcOffset) or 0)
+    return math.floor(adjusted / 86400)
+end
+
+local function TPM_CharacterDayStartTimestampWithOffset(dayKey, utcOffset)
+    return (tonumber(dayKey) or 0) * 86400 - (tonumber(utcOffset) or 0)
+end
+
+local function TPM_CharacterDayKey(timestamp)
+    -- Character history follows ESO's local calendar. New observations persist
+    -- the UTC offset that was active at the time, so summer/winter-time history
+    -- can later be rendered without reinterpreting old entries with today's offset.
+    return TPM_CharacterDayKeyWithOffset(timestamp, TPM_GetLocalUtcOffsetSeconds())
+end
+
+local function TPM_CharacterDayStartTimestamp(dayKey)
+    return TPM_CharacterDayStartTimestampWithOffset(dayKey, TPM_GetLocalUtcOffsetSeconds())
 end
 
 local function TPM_FormatDuration(seconds)
@@ -1288,6 +1418,7 @@ function TPM:GetHistoryStore(characterKey)
     if type(store.dailyExtrema) ~= "table" then store.dailyExtrema = {} end
     if type(store.samples) ~= "table" then store.samples = {} end
     if type(store.sessions) ~= "table" then store.sessions = {} end
+    if type(store.characterPlaytime365) ~= "table" then store.characterPlaytime365 = {} end
     if type(store.activities) ~= "table" then store.activities = {} end
     if type(store.combatActivities) ~= "table" then
         store.combatActivities = {}
@@ -2749,21 +2880,7 @@ local function TPM_GetLocalTimestampParts(timestamp)
     if timestamp <= 0 then return nil end
 
     -- Derive the player's current local offset from ESO's own local clock.
-    local offset = 0
-    if type(GetTimeStamp) == "function" and type(GetSecondsSinceMidnight) == "function" then
-        local okStamp, nowStamp = pcall(GetTimeStamp)
-        local okLocal, localSeconds = pcall(GetSecondsSinceMidnight)
-        nowStamp = okStamp and tonumber(nowStamp) or nil
-        localSeconds = okLocal and tonumber(localSeconds) or nil
-        if nowStamp and localSeconds then
-            local utcSeconds = nowStamp % 86400
-            offset = localSeconds - utcSeconds
-            if offset > 43200 then offset = offset - 86400 end
-            if offset < -43200 then offset = offset + 86400 end
-        end
-    end
-
-    local adjusted = timestamp + offset
+    local adjusted = timestamp + TPM_GetLocalUtcOffsetSeconds()
     if type(os) == "table" and type(os.date) == "function" then
         local ok, parts = pcall(os.date, "!*t", adjusted)
         if ok and type(parts) == "table" then return parts end
@@ -2775,6 +2892,68 @@ local function TPM_GetLocalTimestampParts(timestamp)
         hour = math.floor(seconds / 3600) % 24,
         min = math.floor(seconds / 60) % 60,
     }
+end
+
+local function TPM_GetCharacterTimestampParts(timestamp, utcOffset)
+    timestamp = tonumber(timestamp) or TPM_Now()
+    if timestamp <= 0 then return nil end
+    local adjusted = timestamp + (tonumber(utcOffset) or TPM_GetLocalUtcOffsetSeconds())
+    if type(os) == "table" and type(os.date) == "function" then
+        local ok, parts = pcall(os.date, "!*t", adjusted)
+        if ok and type(parts) == "table" then return parts end
+    end
+
+    -- ESO builds do not have to expose Lua's os.date(). Convert Unix days to a
+    -- Gregorian calendar date directly so persisted historic UTC offsets remain
+    -- useful even on clients where only ESO's timestamp API is available.
+    local whole = math.floor(adjusted)
+    local days = math.floor(whole / 86400)
+    local seconds = whole - days * 86400
+    if seconds < 0 then seconds = seconds + 86400; days = days - 1 end
+    local z = days + 719468
+    local era = math.floor((z >= 0 and z or (z - 146096)) / 146097)
+    local doe = z - era * 146097
+    local yoe = math.floor((doe - math.floor(doe / 1460) + math.floor(doe / 36524) - math.floor(doe / 146096)) / 365)
+    local year = yoe + era * 400
+    local doy = doe - (365 * yoe + math.floor(yoe / 4) - math.floor(yoe / 100))
+    local mp = math.floor((5 * doy + 2) / 153)
+    local day = doy - math.floor((153 * mp + 2) / 5) + 1
+    local month = mp + (mp < 10 and 3 or -9)
+    if month <= 2 then year = year + 1 end
+    return {
+        year = year, month = month, day = day,
+        hour = math.floor(seconds / 3600) % 24,
+        min = math.floor(seconds / 60) % 60,
+        sec = seconds % 60,
+    }
+end
+
+local function TPM_GetLocalizedCharacterDateText(timestamp, lang, utcOffset)
+    local p = TPM_GetCharacterTimestampParts(timestamp, utcOffset)
+    lang = tostring(lang or "en")
+    if p and p.year and p.month and p.day then
+        if lang == "en" then return string.format("%02d/%02d/%04d", p.month, p.day, p.year) end
+        if lang == "fr" then return string.format("%02d/%02d/%04d", p.day, p.month, p.year) end
+        return string.format("%02d.%02d.%04d", p.day, p.month, p.year)
+    end
+    if type(GetDateStringFromTimestamp) == "function" then
+        local ok, value = pcall(GetDateStringFromTimestamp, tonumber(timestamp) or TPM_Now())
+        if ok and type(value) == "string" then return value end
+    end
+    return ""
+end
+
+local function TPM_GetLocalizedCharacterTimeText(timestamp, lang, utcOffset)
+    local p = TPM_GetCharacterTimestampParts(timestamp, utcOffset)
+    if not p or p.hour == nil or p.min == nil then return "" end
+    local hour, minute = tonumber(p.hour) or 0, tonumber(p.min) or 0
+    if tostring(lang or "en") == "en" then
+        local suffix = hour >= 12 and "PM" or "AM"
+        local displayHour = hour % 12
+        if displayHour == 0 then displayHour = 12 end
+        return string.format("%d:%02d %s", displayHour, minute, suffix)
+    end
+    return string.format("%02d:%02d", hour, minute)
 end
 
 local function TPM_GetLocalizedLogDateText(timestamp, lang)
@@ -2883,7 +3062,8 @@ function TPM:AddActivityLogEntry(entry)
     list[#list + 1] = entry
     while #list > 100 do table.remove(list, 1) end
     if self.statisticsWindow and not self.statisticsWindow:IsHidden()
-        and self.saved and self.saved.statisticsPage == "history" then
+        and self.saved and self.saved.statisticsPage == "history"
+        and self:GetStatisticsHistorySubPage() == 1 then
         self:RefreshCombatActivityPanel()
         local scroll = isCombat and self.statisticsCombatKillLogScroll or self.statisticsCombatActivityLogScroll
         if scroll and scroll.ResetToTop then scroll:ResetToTop() end
@@ -2966,7 +3146,8 @@ function TPM:FinalizeTrackedActivity(endSnapshot, endedAt)
     self.activeTrackedActivity = nil
     self.pendingTrackedActivitySnapshot = nil
     if self.statisticsWindow and not self.statisticsWindow:IsHidden()
-        and self.saved and self.saved.statisticsPage == "history" then
+        and self.saved and self.saved.statisticsPage == "history"
+        and self:GetStatisticsHistorySubPage() == 1 then
         self:RefreshCombatActivityPanel()
     end
 end
@@ -3125,6 +3306,14 @@ function TPM:PruneHistory(store, now)
     while #kept > HISTORY_MAX_SAMPLES do table.remove(kept, 1) end
     store.samples = kept
 
+    -- Character page keeps a compact date/time + played-seconds ledger for exactly
+    -- the most recent 365 days, independently of the longer generic history.
+    local characterCutoffDay = TPM_CharacterDayKey(now) - CHARACTER_PLAYTIME_RETENTION_DAYS + 1
+    for key, entry in pairs(store.characterPlaytime365 or {}) do
+        local day = tonumber(key) or tonumber(entry and entry.dayKey) or 0
+        if day < characterCutoffDay then store.characterPlaytime365[key] = nil end
+    end
+
     local sessions = store.sessions or {}
     while #sessions > HISTORY_MAX_SESSIONS do table.remove(sessions, 1) end
 end
@@ -3214,6 +3403,18 @@ function TPM:FinalizeHistorySession(characterKey, store, endedAt)
         end
     end
     self:CommitFinishedSessionPlaytime(store, characterKey, duration)
+    if duration > 0 then
+        if type(store.characterPlaytime365) ~= "table" then store.characterPlaytime365 = {} end
+        local utcOffset = TPM_GetLocalUtcOffsetSeconds()
+        local dayKey = TPM_CharacterDayKeyWithOffset(endTime, utcOffset)
+        local key = tostring(dayKey)
+        local entry = store.characterPlaytime365[key]
+        if type(entry) ~= "table" then
+            entry = { dayKey=dayKey, firstAt=endTime, lastAt=endTime, seconds=0, utcOffset=utcOffset, firstUtcOffset=utcOffset, lastUtcOffset=utcOffset, zones={} }
+            store.characterPlaytime365[key] = entry
+        end
+        entry.longestSessionSeconds = math.max(tonumber(entry.longestSessionSeconds) or 0, duration)
+    end
     store.activeSession = nil
     self:PruneHistory(store, endTime)
 end
@@ -3283,6 +3484,9 @@ function TPM:StartOrResumeHistorySession()
     if not store then return end
     self:FinalizeStaleHistorySession(store, now, currentKey)
     local snapshot = self:CaptureHistorySnapshot(true)
+    self:MigrateCharacterPlaytime365LocalDays(store)
+    self:MigrateCharacterPlaytime365OffsetsAndZones(store)
+    self:ResetCharacterPlaytimeObservation(store, snapshot)
     local active = store.activeSession
     if type(active) ~= "table" then
         active = {
@@ -3443,11 +3647,346 @@ function TPM:RecordHistorySample(store, snapshot, force)
     while #samples > HISTORY_MAX_SAMPLES do table.remove(samples, 1) end
 end
 
+-- 2.7.3: Dedicated 365-day Character playtime ledger. Generic history keeps
+-- snapshots for graphs, while this compact ledger preserves the calendar day,
+-- first/last observed time and played seconds needed by the Character page.
+function TPM:UpdateCharacterPlaytime365(store, snapshot)
+    if type(store) ~= "table" or type(snapshot) ~= "table" then return end
+    if type(store.characterPlaytime365) ~= "table" then store.characterPlaytime365 = {} end
+
+    local timestamp = tonumber(snapshot.timestamp) or 0
+    local played = tonumber(snapshot.esoPlayedSeconds or snapshot.playSeconds)
+    if timestamp <= 0 or played == nil then return end
+    played = math.max(0, played)
+    local currentOffset = TPM_GetLocalUtcOffsetSeconds()
+    local currentZoneId = math.max(0, tonumber(snapshot.zoneId) or 0)
+    local currentZoneName = tostring(snapshot.zoneName or "")
+
+    local function TouchDay(dayKey, firstAt, lastAt, addSeconds, utcOffset, zoneId, zoneName, timeReliable)
+        if not dayKey then return end
+        local key = tostring(dayKey)
+        local entry = store.characterPlaytime365[key]
+        if type(entry) ~= "table" then
+            entry = { dayKey = dayKey, firstAt = firstAt, lastAt = lastAt, seconds = 0, zones = {} }
+            store.characterPlaytime365[key] = entry
+        end
+        entry.dayKey = dayKey
+        if type(entry.zones) ~= "table" then entry.zones = {} end
+        if firstAt and firstAt > 0 then
+            if not entry.firstAt or firstAt < entry.firstAt then
+                entry.firstAt = firstAt
+                entry.firstUtcOffset = tonumber(utcOffset) or currentOffset
+            end
+        end
+        if lastAt and lastAt > 0 then
+            if not entry.lastAt or lastAt > entry.lastAt then
+                entry.lastAt = lastAt
+                entry.lastUtcOffset = tonumber(utcOffset) or currentOffset
+            end
+        end
+        entry.utcOffset = tonumber(utcOffset) or entry.utcOffset or currentOffset
+        if timeReliable == false then entry.timeReliable = false
+        elseif timeReliable == true and entry.timeReliable ~= false then entry.timeReliable = true end
+        local delta = math.max(0, tonumber(addSeconds) or 0)
+        entry.seconds = math.max(0, Round((tonumber(entry.seconds) or 0) + delta))
+        if delta > 0 and (tonumber(zoneId) or 0) > 0 then
+            local zoneKey = tostring(math.floor(tonumber(zoneId)))
+            local z = entry.zones[zoneKey]
+            if type(z) ~= "table" then z = { zoneId = tonumber(zoneId), zoneName = tostring(zoneName or ""), seconds = 0 }; entry.zones[zoneKey] = z end
+            if tostring(zoneName or "") ~= "" then z.zoneName = tostring(zoneName) end
+            z.seconds = math.max(0, Round((tonumber(z.seconds) or 0) + delta))
+        end
+        entry.lastPlayedSeconds = played
+    end
+
+    local dayKey = TPM_CharacterDayKeyWithOffset(timestamp, currentOffset)
+    TouchDay(dayKey, nil, nil, 0, currentOffset, currentZoneId, currentZoneName, nil)
+
+    local previous = store.characterPlaytimeLastObservation
+    local previousAt = type(previous) == "table" and tonumber(previous.timestamp) or nil
+    local previousPlayed = type(previous) == "table" and tonumber(previous.played) or nil
+    local previousOffset = type(previous) == "table" and tonumber(previous.utcOffset) or currentOffset
+    local previousZoneId = type(previous) == "table" and math.max(0, tonumber(previous.zoneId) or 0) or currentZoneId
+    local previousZoneName = type(previous) == "table" and tostring(previous.zoneName or "") or currentZoneName
+    if previousAt and previousPlayed and timestamp > previousAt and played >= previousPlayed then
+        local deltaPlayed = math.max(0, played - previousPlayed)
+        local wallSpan = timestamp - previousAt
+        if deltaPlayed > 0 and wallSpan > 0 then
+            local startDay = TPM_CharacterDayKeyWithOffset(previousAt, previousOffset)
+            local endDay = TPM_CharacterDayKeyWithOffset(timestamp, currentOffset)
+            if startDay == endDay then
+                local continuous = wallSpan <= (deltaPlayed + 300)
+                if continuous then
+                    TouchDay(endDay, previousAt, timestamp, deltaPlayed, currentOffset, previousZoneId, previousZoneName, true)
+                else
+                    -- /played advanced, but the wall-clock gap is much larger. This
+                    -- usually means TPM was offline between observations. Preserve the
+                    -- real played delta without inventing a fake start/end interval.
+                    TouchDay(endDay, nil, nil, deltaPlayed, currentOffset, previousZoneId, previousZoneName, false)
+                end
+            else
+                -- Split checkpoints that cross local midnight. The previous and
+                -- current observation each preserve their real UTC offset, so a
+                -- DST boundary no longer gets reconstructed using today's offset.
+                local remaining = deltaPlayed
+                for day = startDay, endDay do
+                    local segmentOffset = (day == startDay) and previousOffset or currentOffset
+                    local segmentStart = math.max(previousAt, TPM_CharacterDayStartTimestampWithOffset(day, segmentOffset))
+                    local segmentEnd = math.min(timestamp, TPM_CharacterDayStartTimestampWithOffset(day + 1, currentOffset))
+                    local segmentWall = math.max(0, segmentEnd - segmentStart)
+                    local share
+                    if day == endDay then
+                        share = remaining
+                    else
+                        share = math.max(0, Round(deltaPlayed * (segmentWall / wallSpan)))
+                        share = math.min(remaining, share)
+                    end
+                    TouchDay(day, segmentStart, segmentEnd, share, segmentOffset, previousZoneId, previousZoneName, segmentWall <= (share + 300))
+                    remaining = math.max(0, remaining - share)
+                end
+            end
+        end
+    end
+
+    store.characterPlaytimeLastObservation = {
+        timestamp = timestamp, played = played, utcOffset = currentOffset,
+        zoneId = currentZoneId, zoneName = currentZoneName,
+    }
+end
+
+function TPM:MigrateCharacterPlaytime365LocalDays(store)
+    if type(store) ~= "table" then return end
+    if type(store.characterPlaytime365) ~= "table" then store.characterPlaytime365 = {} end
+    if store.characterPlaytime365LocalDaysMigrated then return end
+
+    local migrated = {}
+    for rawKey, entry in pairs(store.characterPlaytime365) do
+        if type(entry) == "table" then
+            local stamp = tonumber(entry.firstAt) or tonumber(entry.lastAt)
+            local offset = tonumber(entry.utcOffset) or TPM_GetLocalUtcOffsetSeconds()
+            local day = stamp and TPM_CharacterDayKeyWithOffset(stamp, offset) or tonumber(entry.dayKey) or tonumber(rawKey)
+            if day then
+                local key = tostring(day)
+                local dst = migrated[key]
+                if type(dst) ~= "table" then dst = { dayKey = day, seconds = 0, zones = {} }; migrated[key] = dst end
+                local firstAt, lastAt = tonumber(entry.firstAt), tonumber(entry.lastAt)
+                if firstAt and firstAt > 0 and (not dst.firstAt or firstAt < dst.firstAt) then
+                    dst.firstAt, dst.firstUtcOffset = firstAt, tonumber(entry.firstUtcOffset) or offset
+                end
+                if lastAt and lastAt > 0 and (not dst.lastAt or lastAt > dst.lastAt) then
+                    dst.lastAt, dst.lastUtcOffset = lastAt, tonumber(entry.lastUtcOffset) or offset
+                end
+                dst.utcOffset = tonumber(entry.utcOffset) or dst.utcOffset or offset
+                dst.seconds = math.max(0, (tonumber(dst.seconds) or 0) + math.max(0, tonumber(entry.seconds) or 0))
+                dst.lastPlayedSeconds = math.max(tonumber(dst.lastPlayedSeconds) or 0, tonumber(entry.lastPlayedSeconds) or 0)
+                dst.longestSessionSeconds = math.max(tonumber(dst.longestSessionSeconds) or 0, tonumber(entry.longestSessionSeconds) or 0)
+                dst.npcKills = math.max(0, (tonumber(dst.npcKills) or 0) + math.max(0, tonumber(entry.npcKills) or 0))
+                dst.bossKills = math.max(0, (tonumber(dst.bossKills) or 0) + math.max(0, tonumber(entry.bossKills) or 0))
+                if entry.combatDataReliable == true then dst.combatDataReliable = true end
+                for zoneKey, zoneEntry in pairs(entry.zones or {}) do
+                    if type(zoneEntry) == "table" then
+                        local z = dst.zones[tostring(zoneKey)] or { zoneId = tonumber(zoneEntry.zoneId), zoneName = tostring(zoneEntry.zoneName or ""), seconds = 0 }
+                        z.seconds = math.max(0, (tonumber(z.seconds) or 0) + math.max(0, tonumber(zoneEntry.seconds) or 0))
+                        if tostring(zoneEntry.zoneName or "") ~= "" then z.zoneName = tostring(zoneEntry.zoneName) end
+                        dst.zones[tostring(zoneKey)] = z
+                    end
+                end
+            end
+        end
+    end
+    store.characterPlaytime365 = migrated
+    store.characterPlaytime365LocalDaysMigrated = true
+    store.characterPlaytimeLastObservation = nil
+end
+
+function TPM:MigrateCharacterPlaytime365OffsetsAndZones(store)
+    if type(store) ~= "table" or store.characterPlaytime365OffsetMigrated then return end
+    local fallbackOffset = TPM_GetLocalUtcOffsetSeconds()
+    for _, entry in pairs(store.characterPlaytime365 or {}) do
+        if type(entry) == "table" then
+            entry.utcOffset = tonumber(entry.utcOffset) or fallbackOffset
+            entry.firstUtcOffset = tonumber(entry.firstUtcOffset) or entry.utcOffset
+            entry.lastUtcOffset = tonumber(entry.lastUtcOffset) or entry.utcOffset
+            if type(entry.zones) ~= "table" then entry.zones = {} end
+        end
+    end
+    store.characterPlaytime365OffsetMigrated = true
+    store.characterPlaytimeLastObservation = nil
+end
+
+function TPM:ResetCharacterPlaytimeObservation(store, snapshot)
+    if type(store) ~= "table" then return end
+    local timestamp = type(snapshot) == "table" and tonumber(snapshot.timestamp) or TPM_Now()
+    local played = type(snapshot) == "table" and tonumber(snapshot.esoPlayedSeconds or snapshot.playSeconds) or nil
+    if not played then
+        local stats = self:GetPlayerCombatStats()
+        played = stats and tonumber(stats.esoPlayedSeconds or stats.playSeconds) or 0
+    end
+    timestamp = tonumber(timestamp) or TPM_Now()
+    played = math.max(0, tonumber(played) or 0)
+    local utcOffset = TPM_GetLocalUtcOffsetSeconds()
+    local zoneId = type(snapshot) == "table" and math.max(0, tonumber(snapshot.zoneId) or 0) or 0
+    local zoneName = type(snapshot) == "table" and tostring(snapshot.zoneName or "") or ""
+    store.characterPlaytimeLastObservation = { timestamp = timestamp, played = played, utcOffset = utcOffset, zoneId = zoneId, zoneName = zoneName }
+
+    if type(store.characterPlaytime365) ~= "table" then store.characterPlaytime365 = {} end
+    local day = TPM_CharacterDayKeyWithOffset(timestamp, utcOffset)
+    local key = tostring(day)
+    local entry = store.characterPlaytime365[key]
+    if type(entry) ~= "table" then
+        entry = { dayKey = day, seconds = 0, utcOffset = utcOffset, zones = {} }
+        store.characterPlaytime365[key] = entry
+    else
+        entry.dayKey = day
+        entry.utcOffset = tonumber(entry.utcOffset) or utcOffset
+        if type(entry.zones) ~= "table" then entry.zones = {} end
+    end
+    entry.lastPlayedSeconds = played
+end
+
+function TPM:MigrateCharacterPlaytime365ReliabilityAndSamples(store)
+    if type(store) ~= "table" then return end
+    if type(store.characterPlaytime365) ~= "table" then store.characterPlaytime365 = {} end
+    if store.characterPlaytime365ReliabilityMigrated then return end
+
+    -- Classify old 2.7.3-2.7.5 rows. A large played value with identical
+    -- first/last timestamps was reconstructed from cumulative /played data and
+    -- must never be presented as an exact clock interval.
+    for _, entry in pairs(store.characterPlaytime365) do
+        if type(entry) == "table" and entry.timeReliable == nil then
+            local firstAt, lastAt = tonumber(entry.firstAt), tonumber(entry.lastAt)
+            local seconds = math.max(0, tonumber(entry.seconds) or 0)
+            if seconds > 0 and firstAt and lastAt and math.abs(lastAt - firstAt) >= math.max(0, seconds - 300) and math.abs(lastAt - firstAt) <= seconds + 300 then
+                entry.timeReliable = true
+            elseif seconds > 0 then
+                entry.timeReliable = false
+                entry.reconstructed = true
+            end
+        end
+    end
+
+    -- Recover additional dates from TPM's older timestamped history samples.
+    -- Only consecutive calendar days are used for a full-day delta; otherwise
+    -- we keep the date as known but do not invent missing playtime.
+    local snapshots, seen = {}, {}
+    local function AddSnapshot(snap)
+        if type(snap) ~= "table" then return end
+        local ts = tonumber(snap.timestamp) or 0
+        local played = tonumber(snap.esoPlayedSeconds or snap.playSeconds)
+        if ts <= 0 or played == nil then return end
+        local key = tostring(math.floor(ts)) .. ":" .. tostring(math.floor(played))
+        if seen[key] then return end
+        seen[key] = true
+        snapshots[#snapshots + 1] = { timestamp=ts, played=math.max(0,played), dayKey=TPM_CharacterDayKey(ts) }
+    end
+    for _, snap in pairs(store.daily or {}) do AddSnapshot(snap) end
+    for _, snap in ipairs(store.samples or {}) do AddSnapshot(snap) end
+    table.sort(snapshots, function(a,b) return a.timestamp < b.timestamp end)
+
+    local lastByDay = {}
+    for _, snap in ipairs(snapshots) do lastByDay[snap.dayKey] = snap end
+    local dayKeys = {}; for dayKey in pairs(lastByDay) do dayKeys[#dayKeys+1] = tonumber(dayKey) end
+    table.sort(dayKeys)
+    for _, dayKey in ipairs(dayKeys) do
+        local snap = lastByDay[dayKey]
+        local key = tostring(dayKey)
+        local entry = store.characterPlaytime365[key]
+        if type(entry) ~= "table" then
+            entry = { dayKey=dayKey, seconds=0, utcOffset=TPM_GetLocalUtcOffsetSeconds(), zones={}, reconstructed=true, timeReliable=false }
+            store.characterPlaytime365[key] = entry
+        end
+        local previous = lastByDay[dayKey - 1]
+        if previous and snap.played >= previous.played and (tonumber(entry.seconds) or 0) <= 0 then
+            entry.seconds = math.max(0, Round(snap.played - previous.played))
+            entry.reconstructed = true
+            entry.timeReliable = false
+        end
+    end
+    store.characterPlaytime365ReliabilityMigrated = true
+end
+
+function TPM:MigrateCharacterDailyCombat365(store)
+    if type(store) ~= "table" or store.characterDailyCombat365Migrated then return end
+    if type(store.characterPlaytime365) ~= "table" then store.characterPlaytime365 = {} end
+    -- Generic daily history stores cumulative combat counters. Where two
+    -- consecutive daily closes exist, their delta is a reliable historic day.
+    local daily = store.daily or {}
+    local keys = {}
+    for rawKey, snapshot in pairs(daily) do
+        local day = tonumber(rawKey) or tonumber(snapshot and snapshot.dayKey)
+        if day then keys[#keys+1] = day end
+    end
+    table.sort(keys)
+    local previous = nil
+    for _, day in ipairs(keys) do
+        local snap = daily[tostring(day)] or daily[day]
+        if type(snap) == "table" and type(previous) == "table" and day == (tonumber(previous.day) or 0) + 1 then
+            local npcNow, npcPrev = tonumber(snap.npcKills), tonumber(previous.snap.npcKills)
+            local bossNow, bossPrev = tonumber(snap.bossKills), tonumber(previous.snap.bossKills)
+            if npcNow and npcPrev and bossNow and bossPrev and npcNow >= npcPrev and bossNow >= bossPrev then
+                local key = tostring(day)
+                local entry = store.characterPlaytime365[key]
+                if type(entry) ~= "table" then entry={dayKey=day,seconds=0,zones={}}; store.characterPlaytime365[key]=entry end
+                if entry.combatDataReliable ~= true then
+                    entry.npcKills = math.max(0, Round(npcNow - npcPrev))
+                    entry.bossKills = math.max(0, Round(bossNow - bossPrev))
+                    entry.combatDataReliable = true
+                end
+            end
+        end
+        previous = { day=day, snap=snap }
+    end
+    store.characterDailyCombat365Migrated = true
+end
+
+function TPM:MigrateCharacterPlaytime365(store)
+    if type(store) ~= "table" then return end
+    if type(store.characterPlaytime365) ~= "table" then store.characterPlaytime365 = {} end
+    self:MigrateCharacterPlaytime365LocalDays(store)
+    self:MigrateCharacterPlaytime365OffsetsAndZones(store)
+    self:MigrateCharacterPlaytime365ReliabilityAndSamples(store)
+    self:MigrateCharacterDailyCombat365(store)
+    if store.characterPlaytime365Migrated then return end
+
+    -- Seed older installations from existing daily /played closes. Exact old
+    -- first-login times cannot be reconstructed retroactively, but known dates
+    -- and daily play deltas are retained.
+    local snapshots = {}
+    for _, snap in pairs(store.daily or {}) do
+        if type(snap) == "table" then
+            local ts = tonumber(snap.timestamp) or 0
+            local pl = tonumber(snap.esoPlayedSeconds or snap.playSeconds)
+            if ts > 0 and pl ~= nil then
+                snapshots[#snapshots + 1] = { timestamp = ts, played = pl, dayKey = TPM_CharacterDayKey(ts) }
+            end
+        end
+    end
+    table.sort(snapshots, function(a, b) return a.timestamp < b.timestamp end)
+    local previousPlayed
+    for _, snap in ipairs(snapshots) do
+        local key = tostring(snap.dayKey)
+        local entry = store.characterPlaytime365[key]
+        if type(entry) ~= "table" then
+            entry = { dayKey = snap.dayKey, seconds = 0, utcOffset = TPM_GetLocalUtcOffsetSeconds(), zones = {}, timeReliable = false, reconstructed = true }
+            store.characterPlaytime365[key] = entry
+        end
+        entry.timeReliable = false
+        entry.reconstructed = true
+        if previousPlayed and snap.played >= previousPlayed then
+            entry.seconds = math.max(tonumber(entry.seconds) or 0, Round(snap.played - previousPlayed))
+        end
+        previousPlayed = snap.played
+    end
+    store.characterPlaytime365Migrated = true
+end
+
 function TPM:UpsertDailyHistorySnapshot(snapshot, forceSample)
     if not self.saved or self.saved.historyEnabled == false or not snapshot then return end
     local store = self:GetHistoryStore()
     if not store then return end
     self:MigrateHistoryExtrema(store)
+    self:MigrateCharacterPlaytime365(store)
+    self:UpdateCharacterPlaytime365(store, snapshot)
     local dayKey = snapshot.dayKey or TPM_DayKey(snapshot.timestamp)
     self:UpdateHistoryExtremaForSnapshot(store, snapshot)
     store.daily[tostring(dayKey)] = snapshot
@@ -3481,7 +4020,8 @@ function TPM:QueueEconomyHistoryCheckpoint()
         local snapshot = TPM:CaptureHistorySnapshot(false)
         TPM:CheckpointHistory("currency", false, snapshot)
         if TPM.statisticsWindow and not TPM.statisticsWindow:IsHidden()
-            and TPM.saved.statisticsPage == "history" then
+            and TPM.saved.statisticsPage == "history"
+            and TPM:GetStatisticsHistorySubPage() == 1 then
             TPM:RefreshHistoryStatisticsPage()
         end
     end, 250)
@@ -3500,6 +4040,7 @@ function TPM:CheckpointHistoryOnDeactivated()
     self:UpsertDailyHistorySnapshot(snapshot)
     self:HandleTrackedActivityDeactivated(snapshot)
     self:PauseHistorySession(store, now, snapshot)
+    store.characterPlaytimeLastObservation = nil
     store.lastCheckpointReason = "deactivated"
     store.lastCheckpointAt = now
 end
@@ -4137,6 +4678,43 @@ function TPM:IsDuplicateCombatCounterEvent(key, windowMs)
             end
         end
     end
+    return false
+end
+
+-- 2.7.29: Pair ACTION_RESULT_DIED and ACTION_RESULT_DIED_XP even when ESO
+-- does not provide targetUnitId. A queue is used instead of simple name-based
+-- throttling so two same-name enemies dying in the same AoE can still count twice.
+function TPM:IsDuplicatePveNpcDeathWithoutUnitId(targetName, result)
+    local cleanName, normalizedName = self:NormalizeCombatUnitName(targetName)
+    normalizedName = normalizedName ~= "" and normalizedName or string.lower(tostring(cleanName or targetName or "unknown"))
+    if normalizedName == "" then normalizedName = "unknown" end
+
+    local kind = (_G.ACTION_RESULT_DIED_XP ~= nil and result == _G.ACTION_RESULT_DIED_XP) and "xp" or "died"
+    local opposite = kind == "xp" and "died" or "xp"
+    local now = type(GetFrameTimeMilliseconds) == "function" and GetFrameTimeMilliseconds()
+        or ((type(GetTimeStamp) == "function" and GetTimeStamp() or 0) * 1000)
+
+    self.pveNoUnitDeathPairs = self.pveNoUnitDeathPairs or {}
+    local queue = self.pveNoUnitDeathPairs[normalizedName]
+    if type(queue) ~= "table" then queue = {}; self.pveNoUnitDeathPairs[normalizedName] = queue end
+
+    -- Remove stale signals first. DIED and DIED_XP for one death are normally
+    -- adjacent; 900 ms is deliberately narrow enough not to merge later kills.
+    for i = #queue, 1, -1 do
+        local age = now - (tonumber(queue[i].atMs) or 0)
+        if age < 0 or age > 900 then table.remove(queue, i) end
+    end
+
+    for i, entry in ipairs(queue) do
+        if entry.kind == opposite then
+            table.remove(queue, i)
+            if #queue == 0 then self.pveNoUnitDeathPairs[normalizedName] = nil end
+            return true
+        end
+    end
+
+    queue[#queue + 1] = { kind = kind, atMs = now }
+    while #queue > 8 do table.remove(queue, 1) end
     return false
 end
 
@@ -4986,10 +5564,6 @@ function TPM:FindTamrielTomesHudAnchor(force)
     end
 
     local nowMs = type(GetFrameTimeMilliseconds) == "function" and (tonumber(GetFrameTimeMilliseconds()) or 0) or 0
-    if not force and nowMs > 0 and (nowMs - (tonumber(self.skyshardGoalLastAnchorScan) or 0)) < 5000 then
-        return nil
-    end
-    self.skyshardGoalLastAnchorScan = nowMs
 
     -- Prefer ESO's native HUD tracker registry. This is more reliable than
     -- searching arbitrary globals and lets us anchor to the complete native
@@ -5014,8 +5588,13 @@ function TPM:FindTamrielTomesHudAnchor(force)
     -- registry above plus the visible control-tree scan below are safe discovery
     -- paths and are sufficient for locating the Tamriel Tomes HUD block.
 
-    -- Fallback: scan the visible UI tree. Keep the deeper 2.6.15 search, but do
-    -- than the old version and also checks each control's native tracker owner.
+    -- The full control-tree scan can visit thousands of controls. If it failed,
+    -- throttle only this expensive fallback for 60 seconds; the cheap native
+    -- tracker-registry lookup above still runs on every normal refresh.
+    if not force and nowMs > 0 and (nowMs - (tonumber(self.skyshardGoalLastAnchorScan) or 0)) < 60000 then return nil end
+    self.skyshardGoalLastAnchorScan = nowMs
+
+    -- Fallback: scan the visible UI tree and inspect native tracker owners.
     local queue = { { control = GuiRoot, depth = 0 } }
     local index, visited = 1, 0
     while index <= #queue and visited < 12000 do
@@ -6965,7 +7544,7 @@ function TPM:HideQuestRewards()
     end
 end
 
-function TPM:RefreshQuestRewards()
+function TPM:RefreshQuestRewards(forceRender)
     -- Full-map-only UI: minimap addons may keep ZO_WorldMap visible on the HUD.
     -- The reward window belongs to the actual world-map scene only.
     if not self:IsFullWorldMapSceneVisible() then
@@ -6996,6 +7575,12 @@ function TPM:RefreshQuestRewards()
     -- enabled. Missing focus/reward data should show a useful status message
     -- instead of making the entire window disappear.
     local questIndex = self:GetFocusedQuestIndex()
+    local questCacheKey = tostring(questIndex or 0) .. ":" .. tostring(self.langCode or "en")
+    if forceRender ~= true and self.questRewardDirty ~= true and self.questRewardLastQuestCacheKey == questCacheKey
+        and self.questRewardControl and not self.questRewardControl:IsHidden() then
+        self:UpdateQuestRewardLockState()
+        return
+    end
     local questName = ""
     local rewardText = ""
     local rewardDetails = {}
@@ -7019,6 +7604,8 @@ function TPM:RefreshQuestRewards()
     end
 
     self.currentQuestRewardDetails = rewardDetails
+    self.questRewardLastQuestCacheKey = questCacheKey
+    self.questRewardDirty = false
     if self.questRewardInfoButton then
         self.questRewardInfoButton:SetHidden(#rewardDetails == 0)
     end
@@ -7365,7 +7952,12 @@ function TPM:RefreshStatisticsFocusDropdownRows()
             row:SetHidden(false)
             row.label:SetText(choice.name or "")
             row.selected = tonumber(choice.zoneId) == tonumber(selectedZoneId)
-            if row.selected then
+            if self:IsStatisticsDarkDesign() then
+                row.bg:SetCenterColor(0,0,0,row.selected and .44 or .24)
+                row.bg:SetEdgeColor(1,1,1,row.selected and .40 or .18)
+                row.label:SetColor(1,1,1,1)
+                if row.selectedMark then row.selectedMark:SetText(row.selected and "X" or ""); row.selectedMark:SetColor(1,1,1,1) end
+            elseif row.selected then
                 row.bg:SetCenterColor(0.16, 0.125, 0.040, 0.98)
                 row.label:SetColor(1.00, 0.84, 0.26, 1)
                 if row.selectedMark then row.selectedMark:SetText("X") end
@@ -7433,6 +8025,7 @@ function TPM:ToggleStatisticsFocusDropdown()
     self.statisticsFocusDropdownOffset = Clamp(selectedIndex - math.ceil(visibleRows / 2), 0, maxOffset)
     self:RefreshStatisticsFocusDropdownRows()
     dropdown:SetHidden(false)
+    self:EnforceStatisticsDarkModeAfterRefresh()
 end
 
 function TPM:RefreshStatisticsFocusSelector()
@@ -8329,22 +8922,49 @@ end
 local function TPM_ArmStatisticsHoverTooltip(tip, sourceControl)
     if not tip then return end
     tip.TPMSourceControl = sourceControl
+    tip.TPMHoverLeaveAt = nil
+    -- 2.7.27: Help panels opened from tiny controls (especially the
+    -- Completion Categories gear) used to disappear on the very next frame
+    -- as soon as the cursor left the 18x18 button. Make the tooltip itself
+    -- hoverable and add a short grace period so the cursor can travel from
+    -- the gear to the help panel without flicker.
+    if tip.SetMouseEnabled then tip:SetMouseEnabled(true) end
     if tip.TPMAutoHideInstalled then return end
     tip.TPMAutoHideInstalled = true
     tip:SetHandler("OnUpdate", function(panel)
         if panel:IsHidden() then return end
         if not TPM.statisticsWindow or TPM.statisticsWindow:IsHidden() then
             panel.TPMSourceControl = nil
+            panel.TPMHoverLeaveAt = nil
             panel:SetHidden(true)
             return
         end
-        local source = panel.TPMSourceControl
-        if source and type(MouseIsOver) == "function" then
-            local ok, hovered = pcall(MouseIsOver, source)
-            if ok and not hovered then
-                panel.TPMSourceControl = nil
-                panel:SetHidden(true)
+
+        local overSource, overPanel = false, false
+        if type(MouseIsOver) == "function" then
+            local source = panel.TPMSourceControl
+            if source then
+                local ok, hovered = pcall(MouseIsOver, source)
+                overSource = ok and hovered == true
             end
+            local okPanel, hoveredPanel = pcall(MouseIsOver, panel)
+            overPanel = okPanel and hoveredPanel == true
+        end
+
+        if overSource or overPanel then
+            panel.TPMHoverLeaveAt = nil
+            return
+        end
+
+        local nowMs = type(GetFrameTimeMilliseconds) == "function" and (GetFrameTimeMilliseconds() or 0) or 0
+        if panel.TPMHoverLeaveAt == nil then
+            panel.TPMHoverLeaveAt = nowMs
+            return
+        end
+        if (nowMs - panel.TPMHoverLeaveAt) >= 650 then
+            panel.TPMSourceControl = nil
+            panel.TPMHoverLeaveAt = nil
+            panel:SetHidden(true)
         end
     end)
 end
@@ -8767,10 +9387,16 @@ function TPM:CreateStatisticsZoneRow(parent, index)
     row.openLabel = open
 
     row:SetHandler("OnMouseEnter", function(control)
-        if control.bg then control.bg:SetCenterColor(0.16, 0.125, 0.050, 0.86) end
+        if control.bg then
+            if TPM:IsStatisticsDarkDesign() then control.bg:SetCenterColor(0,0,0,0.44)
+            else control.bg:SetCenterColor(0.16, 0.125, 0.050, 0.86) end
+        end
     end)
     row:SetHandler("OnMouseExit", function(control)
-        if control.bg then control.bg:SetCenterColor(control.baseR or 0.035, control.baseG or 0.031, control.baseB or 0.024, control.baseAlpha or 0.34) end
+        if control.bg then
+            if TPM:IsStatisticsDarkDesign() then control.bg:SetCenterColor(0,0,0,0.18)
+            else control.bg:SetCenterColor(control.baseR or 0.035, control.baseG or 0.031, control.baseB or 0.024, control.baseAlpha or 0.34) end
+        end
     end)
     row:SetHandler("OnMouseWheel", function(_, delta)
         TPM:ScrollStatistics(delta)
@@ -8796,7 +9422,8 @@ function TPM:ApplyThemedValueCard(card, options)
     local edge = options.edgeColor or { math.min(1, accent[1] + 0.10), math.min(1, accent[2] + 0.10), math.min(1, accent[3] + 0.10), 0.88 }
     local iconSize = options.iconSize or math.min(height - 18, 48)
     local iconOffset = options.iconOffset or 10
-    local leftTextX = options.leftTextX or (iconOffset + iconSize + 12)
+    local hideIcon = options.hideIcon == true
+    local leftTextX = options.leftTextX or (hideIcon and 14 or (iconOffset + iconSize + 12))
     local titleWidth = math.max(10, width - leftTextX - 12)
     local valueWidth = math.max(10, width - leftTextX - 12)
 
@@ -8826,6 +9453,7 @@ function TPM:ApplyThemedValueCard(card, options)
     control.TPMIconBack:SetAnchor(LEFT, control, LEFT, iconOffset, 0)
     control.TPMIconBack:SetCenterColor(math.min(1, accent[1] * 0.28 + 0.05), math.min(1, accent[2] * 0.28 + 0.05), math.min(1, accent[3] * 0.28 + 0.05), 0.99)
     control.TPMIconBack:SetEdgeColor(accent[1], accent[2], accent[3], 0.96)
+    control.TPMIconBack:SetHidden(hideIcon)
 
     if not control.TPMIconFrame then
         local frame = WINDOW_MANAGER:CreateControl(nil, control, CT_BACKDROP)
@@ -8838,6 +9466,7 @@ function TPM:ApplyThemedValueCard(card, options)
     control.TPMIconFrame:SetAnchor(CENTER, control.TPMIconBack, CENTER, 0, 0)
     control.TPMIconFrame:SetCenterColor(accent[1] * 0.14, accent[2] * 0.14, accent[3] * 0.14, 0.30)
     control.TPMIconFrame:SetEdgeColor(accent[1], accent[2], accent[3], 0.66)
+    control.TPMIconFrame:SetHidden(hideIcon)
 
     if not control.TPMInnerTint then
         local tint = WINDOW_MANAGER:CreateControl(nil, control, CT_BACKDROP)
@@ -8880,7 +9509,10 @@ function TPM:ApplyThemedValueCard(card, options)
     control.TPMMonogram:SetColor(accent[1], math.min(1, accent[2] + 0.06), math.min(1, accent[3] + 0.10), 1)
     control.TPMMonogram:SetText(options.monogram or "")
 
-    if options.iconTexture and options.iconTexture ~= "" then
+    if hideIcon then
+        control.TPMIcon:SetHidden(true)
+        control.TPMMonogram:SetHidden(true)
+    elseif options.iconTexture and options.iconTexture ~= "" then
         control.TPMIcon:SetTexture(options.iconTexture)
         control.TPMIcon:SetColor(1, 1, 1, 1)
         if options.currencyIcon == true then
@@ -9016,6 +9648,34 @@ function TPM:CreatePlayerStatCard(parent, name, x, y, width)
     return { control = card, title = title, value = value }
 end
 
+function TPM:CreateCharacterMetricCard(parent, name, x, y, width)
+    local card = WINDOW_MANAGER:CreateControl(name, parent, CT_BACKDROP)
+    card:SetDimensions(width, 94)
+    card:SetAnchor(TOPLEFT, parent, TOPLEFT, x, y)
+    card:SetCenterColor(0.030, 0.027, 0.021, 0.985)
+    card:SetEdgeColor(0.42, 0.34, 0.17, 0.82)
+    card:SetEdgeTexture(nil, 1, 1, 1)
+    card:SetMouseEnabled(false)
+
+    local title = WINDOW_MANAGER:CreateControl(name .. "Title", card, CT_LABEL)
+    title:SetDimensions(width - 18, 26)
+    title:SetAnchor(TOPLEFT, card, TOPLEFT, 9, 8)
+    title:SetFont("$(BOLD_FONT)|15")
+    title:SetColor(0.78, 0.72, 0.58, 1)
+    title:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+    title:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+
+    local value = WINDOW_MANAGER:CreateControl(name .. "Value", card, CT_LABEL)
+    value:SetDimensions(width - 18, 48)
+    value:SetAnchor(TOPLEFT, card, TOPLEFT, 9, 34)
+    value:SetFont("$(ANTIQUE_FONT)|26")
+    value:SetColor(0.95, 0.82, 0.36, 1)
+    value:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+    value:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+
+    return { control = card, title = title, value = value }
+end
+
 function TPM:CreatePlayerStatisticsPage(control)
     if self.statisticsPlayerPage then return end
 
@@ -9029,147 +9689,339 @@ function TPM:CreatePlayerStatisticsPage(control)
     page:SetHidden(true)
     self.statisticsPlayerPage = page
 
-    local title = WINDOW_MANAGER:CreateControl(nil, page, CT_LABEL)
-    title:SetDimensions(920, 34)
-    title:SetAnchor(TOPLEFT, page, TOPLEFT, 20, 14)
-    title:SetFont("ZoFontWinH3")
-    title:SetColor(0.90, 0.77, 0.34, 1)
-    title:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
-    title:SetVerticalAlignment(TEXT_ALIGN_CENTER)
-    title:SetHidden(true) -- Main journal header already shows the active page title.
-    self.statisticsPlayerPageTitle = title
-
     local subtitle = WINDOW_MANAGER:CreateControl(nil, page, CT_LABEL)
-    subtitle:SetDimensions(920, 24)
-    subtitle:SetAnchor(TOPLEFT, page, TOPLEFT, 20, 16)
-    subtitle:SetFont("$(MEDIUM_FONT)|18")
-    subtitle:SetColor(0.70, 0.67, 0.60, 1)
-    subtitle:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
-    subtitle:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    subtitle:SetDimensions(920, 24); subtitle:SetAnchor(TOPLEFT, page, TOPLEFT, 20, 14)
+    subtitle:SetFont("$(MEDIUM_FONT)|18"); subtitle:SetColor(0.70, 0.67, 0.60, 1)
     self.statisticsPlayerPageSubtitle = subtitle
 
     local profile = WINDOW_MANAGER:CreateControl(nil, page, CT_BACKDROP)
-    profile:SetDimensions(932, 62)
-    profile:SetAnchor(TOPLEFT, page, TOPLEFT, 20, 50)
-    profile:SetCenterColor(0.045, 0.037, 0.026, 0.96)
-    profile:SetEdgeColor(0.42, 0.34, 0.17, 0.72)
-    profile:SetEdgeTexture(nil, 1, 1, 1)
-    profile:SetMouseEnabled(false)
+    profile:SetDimensions(932, 88); profile:SetAnchor(TOPLEFT, page, TOPLEFT, 20, 48)
+    profile:SetCenterColor(0.045, 0.037, 0.026, 0.96); profile:SetEdgeColor(0.42, 0.34, 0.17, 0.72); profile:SetEdgeTexture(nil, 1, 1, 1)
+    profile:SetMouseEnabled(false); self.statisticsPlayerProfileBox = profile
 
     local profileTitle = WINDOW_MANAGER:CreateControl(nil, profile, CT_LABEL)
-    profileTitle:SetDimensions(210, 58)
-    profileTitle:SetAnchor(LEFT, profile, LEFT, 14, 0)
-    profileTitle:SetFont("$(BOLD_FONT)|19")
-    profileTitle:SetColor(0.90, 0.77, 0.34, 1)
-    profileTitle:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
-    profileTitle:SetVerticalAlignment(TEXT_ALIGN_CENTER)
-    self.statisticsPlayerProfileTitle = profileTitle
+    profileTitle:SetDimensions(170, 54); profileTitle:SetAnchor(TOPLEFT, profile, TOPLEFT, 14, 0)
+    profileTitle:SetFont("$(BOLD_FONT)|18"); profileTitle:SetColor(0.90, 0.77, 0.34, 1)
+    profileTitle:SetVerticalAlignment(TEXT_ALIGN_CENTER); self.statisticsPlayerProfileTitle = profileTitle
 
     local profileText = WINDOW_MANAGER:CreateControl(nil, profile, CT_LABEL)
-    profileText:SetDimensions(680, 58)
-    profileText:SetAnchor(RIGHT, profile, RIGHT, -16, 0)
-    profileText:SetFont("$(MEDIUM_FONT)|20")
-    profileText:SetColor(0.88, 0.85, 0.77, 1)
-    profileText:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
-    profileText:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    profileText:SetDimensions(292, 54); profileText:SetAnchor(TOPLEFT, profile, TOPLEFT, 182, 0)
+    profileText:SetFont("$(MEDIUM_FONT)|17"); profileText:SetColor(0.88, 0.85, 0.77, 1)
+    profileText:SetHorizontalAlignment(TEXT_ALIGN_RIGHT); profileText:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     self.statisticsPlayerProfileText = profileText
 
-    local pvpTitle = WINDOW_MANAGER:CreateControl(nil, page, CT_LABEL)
-    pvpTitle:SetDimensions(920, 30)
-    pvpTitle:SetAnchor(TOPLEFT, page, TOPLEFT, 20, 126)
-    pvpTitle:SetFont("ZoFontWinH4")
-    pvpTitle:SetColor(0.90, 0.77, 0.34, 1)
-    pvpTitle:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
-    pvpTitle:SetVerticalAlignment(TEXT_ALIGN_CENTER)
-    self.statisticsPlayerPvpTitle = pvpTitle
+    local profileDivider = WINDOW_MANAGER:CreateControl(nil, profile, CT_TEXTURE)
+    profileDivider:SetDimensions(1, 40); profileDivider:SetAnchor(TOPLEFT, profile, TOPLEFT, 486, 7)
+    profileDivider:SetColor(0.42, 0.34, 0.17, 0.72)
+    self.statisticsPlayerProfileDivider = profileDivider
 
-    local pvpDivider = WINDOW_MANAGER:CreateControl(nil, page, CT_BACKDROP)
-    pvpDivider:SetDimensions(932, 1)
-    pvpDivider:SetAnchor(TOPLEFT, page, TOPLEFT, 20, 156)
-    pvpDivider:SetCenterColor(0.42, 0.34, 0.17, 0.56)
-    pvpDivider:SetEdgeColor(0, 0, 0, 0)
+    local mountTitle = WINDOW_MANAGER:CreateControl(nil, profile, CT_LABEL)
+    mountTitle:SetDimensions(158, 54); mountTitle:SetAnchor(TOPLEFT, profile, TOPLEFT, 500, 0)
+    mountTitle:SetFont("$(BOLD_FONT)|18"); mountTitle:SetColor(0.90, 0.77, 0.34, 1)
+    mountTitle:SetVerticalAlignment(TEXT_ALIGN_CENTER); self.statisticsPlayerMountTitle = mountTitle
 
-    self.statisticsPlayerCards = {
-        pvpKills = self:CreatePlayerStatCard(page, ADDON_NAME .. "PlayerPvpKills", 20, 170, 292),
-        pvpDeaths = self:CreatePlayerStatCard(page, ADDON_NAME .. "PlayerPvpDeaths", 330, 170, 292),
-        pvpKd = self:CreatePlayerStatCard(page, ADDON_NAME .. "PlayerPvpKd", 640, 170, 292),
-        npcKills = self:CreatePlayerStatCard(page, ADDON_NAME .. "PlayerNpcKills", 20, 354, 292),
-        bossKills = self:CreatePlayerStatCard(page, ADDON_NAME .. "PlayerBossKills", 330, 354, 292),
-        playTime = self:CreatePlayerStatCard(page, ADDON_NAME .. "PlayerPlayTime", 640, 354, 292),
+    local mountIconFrame = WINDOW_MANAGER:CreateControl(nil, profile, CT_BACKDROP)
+    mountIconFrame:SetDimensions(44, 44); mountIconFrame:SetAnchor(TOPLEFT, profile, TOPLEFT, 662, 5)
+    mountIconFrame:SetCenterColor(0.018, 0.016, 0.013, 0.92); mountIconFrame:SetEdgeColor(0.42, 0.34, 0.17, 0.82); mountIconFrame:SetEdgeTexture(nil, 1, 1, 1)
+    mountIconFrame:SetMouseEnabled(false); self.statisticsPlayerMountIconFrame = mountIconFrame
+
+    local mountIcon = WINDOW_MANAGER:CreateControl(nil, mountIconFrame, CT_TEXTURE)
+    mountIcon:SetDimensions(38, 38); mountIcon:SetAnchor(CENTER, mountIconFrame, CENTER, 0, 0)
+    mountIcon:SetTextureCoords(0, 1, 0, 1); mountIcon:SetHidden(true)
+    self.statisticsPlayerMountIcon = mountIcon
+
+    local mountText = WINDOW_MANAGER:CreateControl(nil, profile, CT_LABEL)
+    mountText:SetDimensions(196, 54); mountText:SetAnchor(TOPLEFT, profile, TOPLEFT, 716, 0)
+    mountText:SetFont("$(MEDIUM_FONT)|16"); mountText:SetColor(0.88, 0.85, 0.77, 1)
+    mountText:SetHorizontalAlignment(TEXT_ALIGN_RIGHT); mountText:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    mountText:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
+    self.statisticsPlayerMountText = mountText
+
+    -- Level/CP and active companion progression belong to Character, not the
+    -- Economy or PvE/PvP dashboards. They live inside the Character profile.
+    self:EnsureCombatProgressionControls()
+
+    self.statisticsCharacterCards = {
+        hours = self:CreateCharacterMetricCard(page, ADDON_NAME .. "CharacterHours", 20, 146, 218),
+        days = self:CreateCharacterMetricCard(page, ADDON_NAME .. "CharacterDays", 252, 146, 218),
+        today = self:CreateCharacterMetricCard(page, ADDON_NAME .. "CharacterToday", 484, 146, 218),
+        session = self:CreateCharacterMetricCard(page, ADDON_NAME .. "CharacterSession", 716, 146, 236),
+        week = self:CreateCharacterMetricCard(page, ADDON_NAME .. "CharacterRange", 20, 246, 218),
+        average = self:CreateCharacterMetricCard(page, ADDON_NAME .. "CharacterAverage", 252, 246, 218),
+        activeDays = self:CreateCharacterMetricCard(page, ADDON_NAME .. "CharacterActiveDays", 484, 246, 218),
+        location = self:CreateCharacterMetricCard(page, ADDON_NAME .. "CharacterLocation", 716, 246, 236),
     }
+    for _, card in pairs(self.statisticsCharacterCards) do
+        self:ApplyThemedValueCard(card, { accentColor={.90,.68,.18}, hideIcon=true, leftTextX=14 })
+    end
+    if self.statisticsCharacterCards.location then self.statisticsCharacterCards.location.value:SetFont("$(BOLD_FONT)|18") end
 
-    -- The play-time card shows ESO's lifetime /played value. A smaller second
-    -- line keeps the locally derived "since TPM" and known-account totals visible.
-    if self.statisticsPlayerCards.playTime then
-        local playCard = self.statisticsPlayerCards.playTime
-        playCard.value:SetDimensions(274, 34)
-        playCard.value:ClearAnchors()
-        playCard.value:SetAnchor(TOPLEFT, playCard.control, TOPLEFT, 9, 32)
-        playCard.value:SetFont("$(ANTIQUE_FONT)|27")
-        local detail = WINDOW_MANAGER:CreateControl(ADDON_NAME .. "PlayerPlayTimeDetail", playCard.control, CT_LABEL)
-        detail:SetDimensions(274, 24)
-        detail:SetAnchor(BOTTOMLEFT, playCard.control, BOTTOMLEFT, 9, -5)
-        detail:SetFont("$(MEDIUM_FONT)|13")
-        detail:SetColor(0.70, 0.67, 0.60, 1)
-        detail:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-        detail:SetVerticalAlignment(TEXT_ALIGN_CENTER)
-        playCard.detail = detail
+    local dailyTitle = WINDOW_MANAGER:CreateControl(nil, page, CT_LABEL)
+    dailyTitle:SetDimensions(220, 30); dailyTitle:SetAnchor(TOPLEFT, page, TOPLEFT, 20, 348)
+    dailyTitle:SetFont("ZoFontWinH4"); dailyTitle:SetColor(0.90, 0.77, 0.34, 1); self.statisticsCharacterDailyTitle = dailyTitle
+
+    self.statisticsCharacterRangeButtons = {}
+    self.statisticsCharacterRangeBackdrops = {}
+    local rangeValues = {7,30,90,365}
+    for i, days in ipairs(rangeValues) do
+        local bg = WINDOW_MANAGER:CreateControl(nil, page, CT_BACKDROP)
+        bg:SetDimensions(48, 24); bg:SetAnchor(TOPLEFT, page, TOPLEFT, 242 + (i-1)*52, 350)
+        bg:SetCenterColor(.026,.023,.018,.94); bg:SetEdgeColor(.35,.29,.14,.65); bg:SetEdgeTexture(nil,1,1,1)
+        local button = WINDOW_MANAGER:CreateControl(nil, bg, CT_BUTTON)
+        button:SetAnchorFill(bg); button:SetFont("$(BOLD_FONT)|14"); button:SetText(tostring(days))
+        button:SetHandler("OnClicked", function() TPM:SetCharacterStatisticsRange(days) end)
+        button.rangeDays = days; button.TPMBackdrop = bg
+        self.statisticsCharacterRangeButtons[#self.statisticsCharacterRangeButtons+1] = button
+        self.statisticsCharacterRangeBackdrops[#self.statisticsCharacterRangeBackdrops+1] = bg
     end
 
-    local playerCardStyles = {
-        pvpKills = { iconTexture = "TamrielProgressMap/art/pvp_kills.dds", accentColor = { 0.36, 0.66, 0.95 } },
-        pvpDeaths = { iconTexture = "TamrielProgressMap/art/pvp_deaths.dds", accentColor = { 0.92, 0.40, 0.24 } },
-        pvpKd = { iconTexture = "TamrielProgressMap/art/pvp_kills.dds", accentColor = { 0.42, 0.78, 0.96 } },
-        npcKills = { iconTexture = "TamrielProgressMap/art/pve_kills.dds", accentColor = { 0.54, 0.82, 0.24 } },
-        bossKills = { iconTexture = "TamrielProgressMap/art/cat_boss.dds", accentColor = { 0.96, 0.74, 0.24 } },
-        playTime = { iconTexture = "TamrielProgressMap/art/tamriel_wreath.dds", accentColor = { 0.68, 0.92, 0.38 }, valueFont = "$(ANTIQUE_FONT)|26", valueY = 29, detailFont = "$(MEDIUM_FONT)|12" },
+    local older = WINDOW_MANAGER:CreateControl(nil, page, CT_BUTTON)
+    older:SetDimensions(28,24); older:SetAnchor(TOPLEFT,page,TOPLEFT,458,350); older:SetFont("$(BOLD_FONT)|18"); older:SetText("<")
+    older:SetHandler("OnClicked",function() TPM:StepCharacterStatisticsRangePage(1) end); self.statisticsCharacterOlderButton=older
+    local newer = WINDOW_MANAGER:CreateControl(nil, page, CT_BUTTON)
+    newer:SetDimensions(28,24); newer:SetAnchor(TOPLEFT,page,TOPLEFT,490,350); newer:SetFont("$(BOLD_FONT)|18"); newer:SetText(">")
+    newer:SetHandler("OnClicked",function() TPM:StepCharacterStatisticsRangePage(-1) end); self.statisticsCharacterNewerButton=newer
+
+    local dailyHint = WINDOW_MANAGER:CreateControl(nil, page, CT_LABEL)
+    dailyHint:SetDimensions(420, 24); dailyHint:SetAnchor(TOPRIGHT, page, TOPRIGHT, -20, 352)
+    dailyHint:SetFont("$(MEDIUM_FONT)|14"); dailyHint:SetColor(0.67, 0.64, 0.57, 1); dailyHint:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+    self.statisticsCharacterDailyHint = dailyHint
+
+    local dailyBox = WINDOW_MANAGER:CreateControl(nil, page, CT_BACKDROP)
+    dailyBox:SetDimensions(932, 190); dailyBox:SetAnchor(TOPLEFT, page, TOPLEFT, 20, 382)
+    dailyBox:SetCenterColor(0.035, 0.030, 0.024, 0.94); dailyBox:SetEdgeColor(0.34, 0.29, 0.18, 0.64); dailyBox:SetEdgeTexture(nil,1,1,1)
+    self.statisticsCharacterDailyBox = dailyBox
+
+    -- Character daily history is a compact statistics table. The old relative
+    -- bars looked like completion/progress bars and did not communicate a clear
+    -- target, so use explicit columns instead: date, playtime, kills and bosses.
+    local header = WINDOW_MANAGER:CreateControl(nil, dailyBox, CT_CONTROL)
+    header:SetDimensions(900, 22); header:SetAnchor(TOPLEFT, dailyBox, TOPLEFT, 16, 5)
+    local function CreateDailyHeader(width, x, align)
+        local label = WINDOW_MANAGER:CreateControl(nil, header, CT_LABEL)
+        label:SetDimensions(width, 22); label:SetAnchor(TOPLEFT, header, TOPLEFT, x, 0)
+        label:SetFont("$(BOLD_FONT)|13"); label:SetColor(.72,.68,.59,1)
+        label:SetHorizontalAlignment(align or TEXT_ALIGN_LEFT); label:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+        return label
+    end
+    self.statisticsCharacterDailyHeaders = {
+        date = CreateDailyHeader(250, 0, TEXT_ALIGN_LEFT),
+        playtime = CreateDailyHeader(250, 254, TEXT_ALIGN_LEFT),
+        kills = CreateDailyHeader(170, 508, TEXT_ALIGN_CENTER),
+        bosses = CreateDailyHeader(170, 682, TEXT_ALIGN_CENTER),
     }
-    for key, style in pairs(playerCardStyles) do
-        if self.statisticsPlayerCards[key] then
-            self:ApplyThemedValueCard(self.statisticsPlayerCards[key], style)
+
+    self.statisticsCharacterDailyRows = {}
+    for i=1,7 do
+        local row = WINDOW_MANAGER:CreateControl(nil, dailyBox, CT_CONTROL)
+        row:SetDimensions(900,22); row:SetAnchor(TOPLEFT,dailyBox,TOPLEFT,16,28+(i-1)*22)
+        local date=WINDOW_MANAGER:CreateControl(nil,row,CT_LABEL); date:SetDimensions(250,22); date:SetAnchor(TOPLEFT,row,TOPLEFT,0,0); date:SetFont("$(BOLD_FONT)|15"); date:SetColor(.82,.78,.68,1); date:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+        local playtime=WINDOW_MANAGER:CreateControl(nil,row,CT_LABEL); playtime:SetDimensions(250,22); playtime:SetAnchor(TOPLEFT,row,TOPLEFT,254,0); playtime:SetFont("$(MEDIUM_FONT)|15"); playtime:SetColor(.93,.86,.70,1); playtime:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+        local kills=WINDOW_MANAGER:CreateControl(nil,row,CT_LABEL); kills:SetDimensions(170,22); kills:SetAnchor(TOPLEFT,row,TOPLEFT,508,0); kills:SetFont("$(MEDIUM_FONT)|15"); kills:SetColor(.93,.86,.70,1); kills:SetHorizontalAlignment(TEXT_ALIGN_CENTER); kills:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+        local bosses=WINDOW_MANAGER:CreateControl(nil,row,CT_LABEL); bosses:SetDimensions(170,22); bosses:SetAnchor(TOPLEFT,row,TOPLEFT,682,0); bosses:SetFont("$(MEDIUM_FONT)|15"); bosses:SetColor(.93,.86,.70,1); bosses:SetHorizontalAlignment(TEXT_ALIGN_CENTER); bosses:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+        self.statisticsCharacterDailyRows[i]={control=row,date=date,playtime=playtime,kills=kills,bosses=bosses}
+    end
+
+    local insightBox=WINDOW_MANAGER:CreateControl(nil,page,CT_BACKDROP)
+    insightBox:SetDimensions(932,52); insightBox:SetAnchor(TOPLEFT,page,TOPLEFT,20,574); insightBox:SetCenterColor(.035,.030,.024,.94); insightBox:SetEdgeColor(.34,.29,.18,.64); insightBox:SetEdgeTexture(nil,1,1,1)
+    self.statisticsCharacterInsightBox=insightBox; self.statisticsCharacterInsights={}
+    local keys={"bestDay","longest","streak","comparison","favoriteZone"}
+    local widths={178,178,154,190,204}; local x=8
+    for i,key in ipairs(keys) do
+        local label=WINDOW_MANAGER:CreateControl(nil,insightBox,CT_LABEL); label:SetDimensions(widths[i],46); label:SetAnchor(TOPLEFT,insightBox,TOPLEFT,x,3); label:SetFont("$(MEDIUM_FONT)|13"); label:SetColor(.86,.81,.70,1); label:SetVerticalAlignment(TEXT_ALIGN_CENTER); label:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+        self.statisticsCharacterInsights[key]=label; x=x+widths[i]+4
+    end
+end
+
+function TPM:SetCharacterStatisticsRange(days)
+    if not self.saved then return end
+    days = tonumber(days) or 7
+    if days ~= 7 and days ~= 30 and days ~= 90 and days ~= 365 then days = 7 end
+    self.saved.statisticsCharacterRangeDays = days
+    self.saved.statisticsCharacterRangeOffset = 0
+    self:RefreshPlayerStatisticsPage()
+end
+
+function TPM:StepCharacterStatisticsRangePage(direction)
+    if not self.saved then return end
+    local days = tonumber(self.saved.statisticsCharacterRangeDays) or 7
+    local maxOffset = math.max(0, math.floor((days - 1) / 7) * 7)
+    local offset = math.max(0, tonumber(self.saved.statisticsCharacterRangeOffset) or 0)
+    offset = Clamp(offset + ((tonumber(direction) or 0) * 7), 0, maxOffset)
+    self.saved.statisticsCharacterRangeOffset = offset
+    self:RefreshPlayerStatisticsPage()
+end
+
+function TPM:GetCharacterDailyPlaytimeRows(days, pageOffset, maxRows)
+    days = math.max(1, math.min(CHARACTER_PLAYTIME_RETENTION_DAYS, tonumber(days) or 7))
+    pageOffset = math.max(0, math.min(days - 1, tonumber(pageOffset) or 0))
+    maxRows = math.max(1, math.min(days - pageOffset, tonumber(maxRows) or days))
+    local now = TPM_Now(); local todayKey = TPM_CharacterDayKey(now)
+    local store = self:GetHistoryStore(); if store then self:MigrateCharacterPlaytime365(store) end
+    local ledger = store and store.characterPlaytime365 or {}; local rows={}
+    local firstOffset = pageOffset + maxRows - 1
+    for offset=firstOffset,pageOffset,-1 do
+        local dayKey=todayKey-offset; local entry=ledger[tostring(dayKey)]
+        local utcOffset=type(entry)=="table" and tonumber(entry.utcOffset) or TPM_GetLocalUtcOffsetSeconds()
+        local timestamp=TPM_CharacterDayStartTimestampWithOffset(dayKey,utcOffset)+43200
+        local seconds=type(entry)=="table" and math.max(0,tonumber(entry.seconds) or 0) or 0
+        if dayKey==todayKey then seconds=self:GetTodayPlaySeconds() end
+        rows[#rows+1]={dayKey=dayKey,timestamp=timestamp,seconds=seconds,today=(dayKey==todayKey),hasData=(type(entry)=="table" or dayKey==todayKey),timeReliable=(type(entry)=="table" and entry.timeReliable==true),reconstructed=(type(entry)=="table" and entry.reconstructed==true),firstAt=type(entry)=="table" and tonumber(entry.firstAt) or nil,lastAt=type(entry)=="table" and tonumber(entry.lastAt) or nil,firstUtcOffset=type(entry)=="table" and tonumber(entry.firstUtcOffset or entry.utcOffset) or utcOffset,lastUtcOffset=type(entry)=="table" and tonumber(entry.lastUtcOffset or entry.utcOffset) or utcOffset,utcOffset=utcOffset,zones=type(entry)=="table" and entry.zones or nil,longestSessionSeconds=type(entry)=="table" and math.max(0,tonumber(entry.longestSessionSeconds) or 0) or 0,npcKills=type(entry)=="table" and math.max(0,tonumber(entry.npcKills) or 0) or 0,bossKills=type(entry)=="table" and math.max(0,tonumber(entry.bossKills) or 0) or 0,combatDataReliable=type(entry)=="table" and entry.combatDataReliable==true}
+    end
+    return rows
+end
+
+function TPM:GetCharacterCurrentStreak(maxDays)
+    local days=math.max(1,math.min(CHARACTER_PLAYTIME_RETENTION_DAYS,tonumber(maxDays) or CHARACTER_PLAYTIME_RETENTION_DAYS))
+    local rows=self:GetCharacterDailyPlaytimeRows(days,0,days); local streak=0
+    for i=#rows,1,-1 do if (rows[i].seconds or 0)>0 then streak=streak+1 else break end end
+    return streak
+end
+
+function TPM:GetCharacterLongestSessionSince(cutoffTimestamp)
+    local store=self:GetHistoryStore(); local best=0
+    for _,session in ipairs(store and store.sessions or {}) do
+        if type(session)=="table" and (tonumber(session.endedAt) or 0)>=(tonumber(cutoffTimestamp) or 0) then best=math.max(best,tonumber(session.duration) or 0) end
+    end
+    local active=store and store.activeSession
+    if type(active)=="table" then local endAt=active.segmentStartedAt and TPM_Now() or active.lastSeenAt; best=math.max(best,self:GetHistoryActiveElapsed(active,endAt)) end
+    return math.max(0,Round(best))
+end
+
+function TPM:GetCurrentMountDisplayData()
+    local mountId = 0
+    local mountType = _G.COLLECTIBLE_CATEGORY_TYPE_MOUNT
+    if type(GetActiveCollectibleByType) == "function" and type(mountType) == "number" then
+        local ok, value = pcall(GetActiveCollectibleByType, mountType)
+        if ok then mountId = tonumber(value) or 0 end
+    end
+
+    if mountId <= 0 then
+        return 0, self:L("STAT_CHARACTER_MOUNT_NONE"), nil
+    end
+
+    local mountName, mountIcon = "", nil
+    if type(GetCollectibleInfo) == "function" then
+        local ok, name, _, icon = pcall(GetCollectibleInfo, mountId)
+        if ok then
+            mountName = tostring(name or "")
+            if type(icon) == "string" and icon ~= "" then mountIcon = icon end
+        end
+    end
+    if mountName == "" and type(GetCollectibleName) == "function" then
+        local ok, name = pcall(GetCollectibleName, mountId)
+        if ok then mountName = tostring(name or "") end
+    end
+    if mountName ~= "" and type(zo_strformat) == "function" then
+        mountName = zo_strformat("<<C:1>>", mountName)
+    end
+    if mountName == "" then mountName = self:L("STAT_CHARACTER_MOUNT_UNKNOWN") end
+    return mountId, mountName, mountIcon
+end
+
+function TPM:RefreshPlayerStatisticsPage()
+    if not self.statisticsPlayerPage or self.statisticsPlayerPage:IsHidden() then return end
+    self:CheckpointHistory("character_view", false)
+    self:RefreshCombatProgressionBars()
+
+    local progress=self:GetPlayerProgressData(); local characterName=type(GetUnitName)=="function" and (GetUnitName("player") or "") or ""
+    if type(zo_strformat)=="function" and characterName~="" then characterName=zo_strformat("<<C:1>>",characterName) end
+    if characterName=="" then characterName=self:L("STAT_PLAYER_UNKNOWN") end
+    local nowStamp=TPM_Now(); local updatedDate=TPM_GetLocalizedLogDateText(nowStamp,self.langCode); local updatedTime=TPM_GetLocalizedLogTimeText(nowStamp,self.langCode)
+    self.statisticsPlayerPageSubtitle:SetText(self:L("STAT_PLAYER_PAGE_SUBTITLE").."  •  "..self:L("STAT_CHARACTER_UPDATED",updatedDate,updatedTime))
+    self.statisticsPlayerProfileTitle:SetText(self:L("STAT_PLAYER_PROFILE")); self.statisticsPlayerProfileText:SetText(self:L("STAT_PLAYER_PROFILE_LINE",characterName,progress.level,progress.championPoints))
+    local _, mountName, mountIcon = self:GetCurrentMountDisplayData()
+    if self.statisticsPlayerMountTitle then self.statisticsPlayerMountTitle:SetText(self:L("STAT_CHARACTER_CURRENT_MOUNT")) end
+    if self.statisticsPlayerMountText then self.statisticsPlayerMountText:SetText(mountName or "—") end
+    if self.statisticsPlayerMountIcon then
+        if type(mountIcon) == "string" and mountIcon ~= "" then
+            self.statisticsPlayerMountIcon:SetTexture(mountIcon)
+            self.statisticsPlayerMountIcon:SetHidden(false)
+        else
+            self.statisticsPlayerMountIcon:SetTexture("")
+            self.statisticsPlayerMountIcon:SetHidden(true)
         end
     end
 
-    local pveTitle = WINDOW_MANAGER:CreateControl(nil, page, CT_LABEL)
-    pveTitle:SetDimensions(920, 30)
-    pveTitle:SetAnchor(TOPLEFT, page, TOPLEFT, 20, 310)
-    pveTitle:SetFont("ZoFontWinH4")
-    pveTitle:SetColor(0.90, 0.77, 0.34, 1)
-    pveTitle:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
-    pveTitle:SetVerticalAlignment(TEXT_ALIGN_CENTER)
-    self.statisticsPlayerPveTitle = pveTitle
+    local total=math.max(0,tonumber(self:SyncCurrentEsoPlayedTime()) or 0); local today=math.max(0,tonumber(self:GetTodayPlaySeconds()) or 0)
+    local store=self:GetHistoryStore(); local active=store and store.activeSession; local session=0
+    if type(active)=="table" then local endAt=active.segmentStartedAt and TPM_Now() or active.lastSeenAt; session=self:GetHistoryActiveElapsed(active,endAt) end
 
-    local pveDivider = WINDOW_MANAGER:CreateControl(nil, page, CT_BACKDROP)
-    pveDivider:SetDimensions(932, 1)
-    pveDivider:SetAnchor(TOPLEFT, page, TOPLEFT, 20, 340)
-    pveDivider:SetCenterColor(0.42, 0.34, 0.17, 0.56)
-    pveDivider:SetEdgeColor(0, 0, 0, 0)
+    local rangeDays=tonumber(self.saved and self.saved.statisticsCharacterRangeDays) or 7
+    if rangeDays~=7 and rangeDays~=30 and rangeDays~=90 and rangeDays~=365 then rangeDays=7 end
+    local maxOffset=math.max(0,math.floor((rangeDays-1)/7)*7); local pageOffset=Clamp(tonumber(self.saved.statisticsCharacterRangeOffset) or 0,0,maxOffset); self.saved.statisticsCharacterRangeOffset=pageOffset
+    local rangeRows=self:GetCharacterDailyPlaytimeRows(rangeDays,0,rangeDays); local visibleRows=self:GetCharacterDailyPlaytimeRows(rangeDays,pageOffset,math.min(7,rangeDays-pageOffset))
+    local rangeTotal,activeDays,maxDay,bestRow,dailyLongest=0,0,0,nil,0; local zones={}
+    for _,row in ipairs(rangeRows) do
+        rangeTotal=rangeTotal+(row.seconds or 0); if (row.seconds or 0)>0 then activeDays=activeDays+1 end
+        if (row.seconds or 0)>maxDay then maxDay=row.seconds or 0; bestRow=row end
+        dailyLongest=math.max(dailyLongest,tonumber(row.longestSessionSeconds) or 0)
+        for _,z in pairs(row.zones or {}) do if type(z)=="table" then local key=tostring(z.zoneId or z.zoneName or ""); local dst=zones[key] or {seconds=0,name=tostring(z.zoneName or "")}; dst.seconds=dst.seconds+math.max(0,tonumber(z.seconds) or 0); if tostring(z.zoneName or "")~="" then dst.name=tostring(z.zoneName) end; zones[key]=dst end end
+    end
+    local avg=activeDays>0 and rangeTotal/activeDays or 0; local zone=""; if type(GetUnitZone)=="function" then zone=GetUnitZone("player") or "" end
+    if zone~="" and type(zo_strformat)=="function" then zone=zo_strformat("<<C:1>>",zone) end
+    if zone=="" then zone="—" end
+    local favoriteName,favoriteSeconds="—",0; for _,z in pairs(zones) do if z.seconds>favoriteSeconds then favoriteSeconds=z.seconds; favoriteName=z.name~="" and z.name or "—" end end
+    local cutoff=TPM_CharacterDayStartTimestampWithOffset(TPM_CharacterDayKey(nowStamp)-rangeDays+1,TPM_GetLocalUtcOffsetSeconds())
+    local longest=math.max(dailyLongest,self:GetCharacterLongestSessionSince(cutoff)); local streak=self:GetCharacterCurrentStreak(CHARACTER_PLAYTIME_RETENTION_DAYS)
+    local compareRows=self:GetCharacterDailyPlaytimeRows(14,0,14); local currentWeek,previousWeek=0,0
+    for i,row in ipairs(compareRows) do if i<=7 then previousWeek=previousWeek+(row.seconds or 0) else currentWeek=currentWeek+(row.seconds or 0) end end
+    local comparison=currentWeek-previousWeek
 
-    local note = WINDOW_MANAGER:CreateControl(nil, page, CT_BACKDROP)
-    note:SetDimensions(932, 94)
-    note:SetAnchor(TOPLEFT, page, TOPLEFT, 20, 474)
-    note:SetCenterColor(0.035, 0.030, 0.024, 0.94)
-    note:SetEdgeColor(0.34, 0.29, 0.18, 0.64)
-    note:SetEdgeTexture(nil, 1, 1, 1)
-    note:SetMouseEnabled(false)
+    local cards=self.statisticsCharacterCards or {}; local function SetCard(key,title,value) local c=cards[key]; if c then c.title:SetText(title); c.value:SetText(value) end end
+    SetCard("hours",self:L("STAT_CHARACTER_LIFETIME_HOURS"),string.format("%.1f h",total/3600)); SetCard("days",self:L("STAT_CHARACTER_LIFETIME_DAYS"),string.format("%.2f",total/86400)); SetCard("today",self:L("STAT_CHARACTER_TODAY"),TPM_FormatDuration(today)); SetCard("session",self:L("STAT_CHARACTER_SESSION"),TPM_FormatDuration(session))
+    SetCard("week",self:L("STAT_CHARACTER_RANGE_TOTAL",rangeDays),TPM_FormatDuration(rangeTotal)); SetCard("average",self:L("STAT_CHARACTER_AVG_DAY"),TPM_FormatDuration(avg)); SetCard("activeDays",self:L("STAT_CHARACTER_ACTIVE_DAYS_RANGE",rangeDays),tostring(activeDays).." / "..tostring(rangeDays)); SetCard("location",self:L("STAT_CHARACTER_LOCATION"),zone)
 
-    local noteTitle = WINDOW_MANAGER:CreateControl(nil, note, CT_LABEL)
-    noteTitle:SetDimensions(900, 24)
-    noteTitle:SetAnchor(TOPLEFT, note, TOPLEFT, 14, 9)
-    noteTitle:SetFont("$(BOLD_FONT)|18")
-    noteTitle:SetColor(0.90, 0.77, 0.34, 1)
-    noteTitle:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
-    noteTitle:SetVerticalAlignment(TEXT_ALIGN_CENTER)
-    self.statisticsPlayerTrackingTitle = noteTitle
+    self.statisticsCharacterDailyTitle:SetText(self:L("STAT_CHARACTER_DAILY_TITLE"))
+    local headers=self.statisticsCharacterDailyHeaders or {}
+    if headers.date then headers.date:SetText(self:L("STAT_CHARACTER_COL_DATE")) end
+    if headers.playtime then headers.playtime:SetText(self:L("STAT_CHARACTER_COL_PLAYTIME")) end
+    if headers.kills then headers.kills:SetText(self:L("STAT_CHARACTER_COL_KILLS")) end
+    if headers.bosses then headers.bosses:SetText(self:L("STAT_CHARACTER_COL_BOSSES")) end
+    local oldestShown=math.min(rangeDays,pageOffset+#visibleRows); local newestShown=math.min(rangeDays,pageOffset+1)
+    self.statisticsCharacterDailyHint:SetText(self:L("STAT_CHARACTER_RANGE_HINT",newestShown,oldestShown,rangeDays))
+    local rangeAccentR,rangeAccentG,rangeAccentB=self:GetStatisticsThemeAccentColor()
+    for _,button in ipairs(self.statisticsCharacterRangeButtons or {}) do
+        local selected=tonumber(button.rangeDays)==rangeDays
+        if selected then button:SetNormalFontColor(rangeAccentR,rangeAccentG,rangeAccentB,1) else button:SetNormalFontColor(.75,.70,.60,1) end
+    end
+    if self.statisticsCharacterOlderButton then self.statisticsCharacterOlderButton:SetHidden(pageOffset>=maxOffset) end
+    if self.statisticsCharacterNewerButton then self.statisticsCharacterNewerButton:SetHidden(pageOffset<=0) end
 
-    local noteText = WINDOW_MANAGER:CreateControl(nil, note, CT_LABEL)
-    noteText:SetDimensions(900, 52)
-    noteText:SetAnchor(TOPLEFT, note, TOPLEFT, 14, 34)
-    noteText:SetFont("$(MEDIUM_FONT)|17")
-    noteText:SetColor(0.72, 0.69, 0.62, 1)
-    noteText:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
-    noteText:SetVerticalAlignment(TEXT_ALIGN_TOP)
-    self.statisticsPlayerTrackingText = noteText
+    for i,rowControl in ipairs(self.statisticsCharacterDailyRows or {}) do
+        local data=visibleRows[i]
+        if data then
+            rowControl.control:SetHidden(false)
+            local dateText=data.today and self:L("STAT_CHARACTER_TODAY_LABEL") or TPM_GetLocalizedCharacterDateText(data.timestamp,self.langCode,data.utcOffset)
+            rowControl.date:SetText(dateText)
+            if not data.hasData then
+                rowControl.playtime:SetText(self:L("STAT_CHARACTER_NO_HISTORY_SHORT"))
+                rowControl.kills:SetText("—")
+                rowControl.bosses:SetText("—")
+            else
+                rowControl.playtime:SetText(TPM_FormatDuration(data.seconds or 0))
+                if data.combatDataReliable then
+                    rowControl.kills:SetText(tostring(math.max(0, tonumber(data.npcKills) or 0)))
+                    rowControl.bosses:SetText(tostring(math.max(0, tonumber(data.bossKills) or 0)))
+                else
+                    rowControl.kills:SetText("—")
+                    rowControl.bosses:SetText("—")
+                end
+            end
+        else
+            rowControl.control:SetHidden(true)
+        end
+    end
+
+    local insights=self.statisticsCharacterInsights or {}; local bestDate=bestRow and TPM_GetLocalizedCharacterDateText(bestRow.timestamp,self.langCode,bestRow.utcOffset) or "—"
+    local vr,vg,vb=self:GetStatisticsThemeProgressColor(); local valueHex=string.format("%02X%02X%02X",math.floor(Clamp(vr,0,1)*255+.5),math.floor(Clamp(vg,0,1)*255+.5),math.floor(Clamp(vb,0,1)*255+.5))
+    local function InsightValue(value) return "|c"..valueHex..tostring(value or "").."|r" end
+    if insights.bestDay then insights.bestDay:SetText(self:L("STAT_CHARACTER_BEST_DAY").."\n"..InsightValue(bestDate.." • "..TPM_FormatDuration(bestRow and bestRow.seconds or 0))) end
+    if insights.longest then insights.longest:SetText(self:L("STAT_CHARACTER_LONGEST_SESSION").."\n"..InsightValue(TPM_FormatDuration(longest))) end
+    if insights.streak then insights.streak:SetText(self:L("STAT_CHARACTER_STREAK").."\n"..InsightValue(self:L("STAT_CHARACTER_STREAK_VALUE",streak))) end
+    if insights.comparison then insights.comparison:SetText(self:L("STAT_CHARACTER_WEEK_COMPARE").."\n"..InsightValue(TPM_SignedDuration(comparison))) end
+    if insights.favoriteZone then insights.favoriteZone:SetText(self:L("STAT_CHARACTER_FAVORITE_ZONE").."\n"..InsightValue(favoriteName.." • "..TPM_FormatDuration(favoriteSeconds))) end
+    self:EnforceStatisticsDarkModeAfterRefresh()
 end
 
 function TPM:CreateEconomyCurrencyCard(parent, name, x, y, width)
@@ -9520,16 +10372,21 @@ function TPM:RefreshEconomyFocusDropdown()
             if row.rowBack then row.rowBack:SetHidden(false) end
 
             local selected=tonumber(choice.zoneId) == selectedId
-            if row.rowBack then
-                if selected then
-                    row.rowBack:SetCenterColor(0.080,0.060,0.020,0.98)
-                    row.rowBack:SetEdgeColor(0.92,0.72,0.20,0.95)
-                else
-                    row.rowBack:SetCenterColor(0.018,0.016,0.012,0.94)
-                    row.rowBack:SetEdgeColor(0.18,0.15,0.09,0.75)
+            if self:IsStatisticsDarkDesign() then
+                if row.rowBack then row.rowBack:SetCenterColor(0,0,0,selected and .44 or .24); row.rowBack:SetEdgeColor(1,1,1,selected and .40 or .18) end
+                if row.rowText then row.rowText:SetColor(1,1,1,1) end
+            else
+                if row.rowBack then
+                    if selected then
+                        row.rowBack:SetCenterColor(0.080,0.060,0.020,0.98)
+                        row.rowBack:SetEdgeColor(0.92,0.72,0.20,0.95)
+                    else
+                        row.rowBack:SetCenterColor(0.018,0.016,0.012,0.94)
+                        row.rowBack:SetEdgeColor(0.18,0.15,0.09,0.75)
+                    end
                 end
+                if row.rowText then row.rowText:SetColor(selected and 1.00 or 0.86, selected and 0.84 or 0.82, selected and 0.30 or 0.72, 1) end
             end
-            if row.rowText then row.rowText:SetColor(selected and 1.00 or 0.86, selected and 0.84 or 0.82, selected and 0.30 or 0.72, 1) end
         else
             row.zoneId=nil
             if row.rowText then row.rowText:SetText("") end
@@ -9570,6 +10427,7 @@ function TPM:ToggleEconomyFocusDropdown()
         if dropdown.BringWindowToTop then dropdown:BringWindowToTop() end
         dropdown:SetHidden(false)
         if self.statisticsEconomyFocusArrow then self.statisticsEconomyFocusArrow:SetText("⌃") end
+        self:EnforceStatisticsDarkModeAfterRefresh()
     else
         self:HideEconomyFocusDropdown()
     end
@@ -9801,12 +10659,18 @@ function TPM:CreateEconomyStatisticsPage(control)
     arrow:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     arrow:SetText("⌄")
     selector:SetHandler("OnMouseEnter", function()
-        selectorBg:SetCenterColor(0.070,0.054,0.022,0.98)
-        selectorBg:SetEdgeColor(0.92,0.72,0.20,1)
+        if TPM:IsStatisticsDarkDesign() then
+            selectorBg:SetCenterColor(0,0,0,0.44); selectorBg:SetEdgeColor(1,1,1,0.46)
+        else
+            selectorBg:SetCenterColor(0.070,0.054,0.022,0.98); selectorBg:SetEdgeColor(0.92,0.72,0.20,1)
+        end
     end)
     selector:SetHandler("OnMouseExit", function()
-        selectorBg:SetCenterColor(0.026,0.023,0.017,0.98)
-        selectorBg:SetEdgeColor(0.62,0.49,0.17,0.90)
+        if TPM:IsStatisticsDarkDesign() then
+            selectorBg:SetCenterColor(0,0,0,0.30); selectorBg:SetEdgeColor(1,1,1,0.28)
+        else
+            selectorBg:SetCenterColor(0.026,0.023,0.017,0.98); selectorBg:SetEdgeColor(0.62,0.49,0.17,0.90)
+        end
     end)
     selector:SetHandler("OnMouseUp", function(_, button, upInside)
         if upInside and button == MOUSE_BUTTON_INDEX_LEFT then
@@ -9872,26 +10736,31 @@ function TPM:CreateEconomyStatisticsPage(control)
         row.rowText = rowText
 
         row:SetHandler("OnMouseEnter", function(btn)
-            if btn.rowBack then
-                btn.rowBack:SetCenterColor(0.095,0.070,0.022,0.98)
-                btn.rowBack:SetEdgeColor(0.88,0.67,0.18,0.95)
+            if TPM:IsStatisticsDarkDesign() then
+                if btn.rowBack then btn.rowBack:SetCenterColor(0,0,0,.48); btn.rowBack:SetEdgeColor(1,1,1,.42) end
+                if btn.rowText then btn.rowText:SetColor(1,1,1,1) end
+            else
+                if btn.rowBack then btn.rowBack:SetCenterColor(0.095,0.070,0.022,0.98); btn.rowBack:SetEdgeColor(0.88,0.67,0.18,0.95) end
+                if btn.rowText then btn.rowText:SetColor(1,0.88,0.38,1) end
             end
-            if btn.rowText then btn.rowText:SetColor(1,0.88,0.38,1) end
         end)
         row:SetHandler("OnMouseExit", function(btn)
             local selectedId = tonumber(TPM.saved and TPM.saved.economyDetailFocusZoneId) or 0
             local selected = btn.zoneId ~= nil and tonumber(btn.zoneId) == selectedId
-            if btn.rowBack then
-                if selected then
-                    btn.rowBack:SetCenterColor(0.080,0.060,0.020,0.98)
-                    btn.rowBack:SetEdgeColor(0.92,0.72,0.20,0.95)
-                else
-                    btn.rowBack:SetCenterColor(0.018,0.016,0.012,0.94)
-                    btn.rowBack:SetEdgeColor(0.18,0.15,0.09,0.75)
+            if TPM:IsStatisticsDarkDesign() then
+                if btn.rowBack then btn.rowBack:SetCenterColor(0,0,0,selected and .44 or .24); btn.rowBack:SetEdgeColor(1,1,1,selected and .40 or .18) end
+                if btn.rowText then btn.rowText:SetColor(1,1,1,1) end
+            else
+                if btn.rowBack then
+                    if selected then
+                        btn.rowBack:SetCenterColor(0.080,0.060,0.020,0.98)
+                        btn.rowBack:SetEdgeColor(0.92,0.72,0.20,0.95)
+                    else
+                        btn.rowBack:SetCenterColor(0.018,0.016,0.012,0.94)
+                        btn.rowBack:SetEdgeColor(0.18,0.15,0.09,0.75)
+                    end
                 end
-            end
-            if btn.rowText then
-                btn.rowText:SetColor(selected and 1.00 or 0.86, selected and 0.84 or 0.82, selected and 0.30 or 0.72, 1)
+                if btn.rowText then btn.rowText:SetColor(selected and 1.00 or 0.86, selected and 0.84 or 0.82, selected and 0.30 or 0.72, 1) end
             end
         end)
         row:SetHandler("OnMouseUp", function(btn, button, upInside)
@@ -10141,6 +11010,7 @@ function TPM:RefreshEconomyStatisticsPage()
             end
         end
     end
+    self:EnforceStatisticsDarkModeAfterRefresh()
 end
 
 -- 2.6.34 Community: Alliance statistics page -----------------------------------
@@ -10306,6 +11176,10 @@ function TPM:OpenAllianceZoneInProgress(zoneId)
     zoneId = tonumber(zoneId) or 0
     if zoneId <= 0 or not self.saved then return end
     self.saved.statisticsFocusZoneId = zoneId
+    self.saved.statisticsProgressSubPage = 1
+    -- A zone click from the Alliance planner promises to open the normal zone
+    -- completion view. Do not leave Collections/Achievements selected either.
+    self.saved.statisticsCompletionPage = 1
     self.statisticsScrollOffset = 0
     self:SetStatisticsPage("progress")
     self:RefreshStatisticsFocusSelector()
@@ -11207,12 +12081,12 @@ function TPM:CreateAllianceStatisticsPage(control)
 
         row.hover=hover
         row:SetHandler("OnMouseEnter",function(btn)
-            btn.hover:SetCenterColor(0.075,0.057,0.020,0.70)
-            btn.hover:SetEdgeColor(0.70,0.54,0.16,0.75)
+            if TPM:IsStatisticsDarkDesign() then btn.hover:SetCenterColor(0,0,0,.36); btn.hover:SetEdgeColor(1,1,1,.30)
+            else btn.hover:SetCenterColor(0.075,0.057,0.020,0.70); btn.hover:SetEdgeColor(0.70,0.54,0.16,0.75) end
         end)
         row:SetHandler("OnMouseExit",function(btn)
-            btn.hover:SetCenterColor(0.018,0.016,0.012,0)
-            btn.hover:SetEdgeColor(0.22,0.18,0.10,0)
+            if TPM:IsStatisticsDarkDesign() then btn.hover:SetCenterColor(0,0,0,0); btn.hover:SetEdgeColor(1,1,1,0)
+            else btn.hover:SetCenterColor(0.018,0.016,0.012,0); btn.hover:SetEdgeColor(0.22,0.18,0.10,0) end
         end)
         row:SetHandler("OnClicked",function(btn)
             if btn.zoneId then TPM:OpenAllianceZoneInProgress(btn.zoneId) end
@@ -11477,28 +12351,79 @@ function TPM:RefreshAllianceStatisticsPage()
 end
 
 function TPM:IsValidStatisticsPage(page)
-    return page == "progress" or page == "economy" or page == "history" or page == "alliance"
+    -- Keep the old page names as compatibility aliases for slash commands and
+    -- SavedVariables from 2.7.30 and older. They are no longer main tabs.
+    return page == "progress" or page == "economy" or page == "history"
+        or page == "player" or page == "alliance"
+end
+
+function TPM:GetStatisticsProgressSubPage()
+    return (self.saved and tonumber(self.saved.statisticsProgressSubPage) == 2) and 2 or 1
+end
+
+function TPM:GetStatisticsHistorySubPage()
+    return (self.saved and tonumber(self.saved.statisticsHistorySubPage) == 2) and 2 or 1
+end
+
+function TPM:SetStatisticsSubPage(pageNumber)
+    if not self.saved then return end
+    local page = self.saved.statisticsPage or "progress"
+    local nextPage = tonumber(pageNumber) == 2 and 2 or 1
+    if page == "progress" then
+        self.saved.statisticsProgressSubPage = nextPage
+    elseif page == "history" then
+        self.saved.statisticsHistorySubPage = nextPage
+    else
+        return
+    end
+    self:HideEconomyFocusDropdown()
+    self:HideStatisticsHoverTooltips()
+    self:HideStatisticsFocusDropdown()
+    self:UpdateStatisticsPageVisibility(page)
+    self:RefreshStatisticsPageTabs()
+    self:RefreshStatisticsSubPageNavigation()
+    local progressMainPage = page == "progress" and self:GetStatisticsProgressSubPage() == 1
+    if self.statisticsThemeGear then self.statisticsThemeGear:SetHidden(not progressMainPage) end
+    if not progressMainPage and self.statisticsThemeWindow and not self.statisticsThemeWindow:IsHidden() then self:SetStatisticsThemeWindowVisible(false) end
+    self:ApplyStatisticsTheme()
+    self:RefreshStatisticsWindow()
 end
 
 function TPM:UpdateStatisticsPageVisibility(page)
-    if not self:IsValidStatisticsPage(page) then page = "progress" end
-    if self.statisticsProgressPage then self.statisticsProgressPage:SetHidden(page ~= "progress") end
-    if self.statisticsPlayerPage then self.statisticsPlayerPage:SetHidden(true) end
+    if page == "player" then
+        page = "history"
+        if self.saved then self.saved.statisticsHistorySubPage = 2 end
+    elseif page == "alliance" then
+        page = "progress"
+        if self.saved then self.saved.statisticsProgressSubPage = 2 end
+    end
+    if page ~= "progress" and page ~= "economy" and page ~= "history" then page = "progress" end
+
+    local progressSubPage = self:GetStatisticsProgressSubPage()
+    local historySubPage = self:GetStatisticsHistorySubPage()
+    local showProgress = page == "progress" and progressSubPage == 1
+    local showAlliance = page == "progress" and progressSubPage == 2
+    local showHistory = page == "history" and historySubPage == 1
+    local showPlayer = page == "history" and historySubPage == 2
+
+    if self.statisticsProgressPage then self.statisticsProgressPage:SetHidden(not showProgress) end
+    if self.statisticsAlliancePage then self.statisticsAlliancePage:SetHidden(not showAlliance) end
+    if self.statisticsHistoryPage then self.statisticsHistoryPage:SetHidden(not showHistory) end
+    if self.statisticsPlayerPage then self.statisticsPlayerPage:SetHidden(not showPlayer) end
     if self.statisticsEconomyPage then self.statisticsEconomyPage:SetHidden(page ~= "economy") end
-    if self.statisticsHistoryPage then self.statisticsHistoryPage:SetHidden(page ~= "history") end
-    if self.statisticsAlliancePage then self.statisticsAlliancePage:SetHidden(page ~= "alliance") end
-    if self.statisticsListArea then self.statisticsListArea:SetMouseEnabled(page == "progress") end
-    if self.statisticsScrollBar then self.statisticsScrollBar:SetMouseEnabled(page == "progress") end
+    if self.statisticsListArea then self.statisticsListArea:SetMouseEnabled(showProgress) end
+    if self.statisticsScrollBar then self.statisticsScrollBar:SetMouseEnabled(showProgress) end
 end
 
 function TPM:RefreshStatisticsPageTabs()
     local page = self.saved and self.saved.statisticsPage or "progress"
-    if not self:IsValidStatisticsPage(page) then page = "progress" end
+    if page == "player" then page = "history" end
+    if page == "alliance" then page = "progress" end
+    if page ~= "progress" and page ~= "economy" and page ~= "history" then page = "progress" end
     local tabs = {
         { self.statisticsProgressTab, "progress", "STAT_TAB_PROGRESS" },
         { self.statisticsEconomyTab, "economy", "STAT_TAB_ECONOMY" },
         { self.statisticsHistoryTab, "history", "STAT_TAB_HISTORY" },
-        { self.statisticsAllianceTab, "alliance", "STAT_TAB_ALLIANCE" },
     }
     for _, item in ipairs(tabs) do
         local control, key, labelKey = item[1], item[2], item[3]
@@ -11520,14 +12445,52 @@ function TPM:RefreshStatisticsPageTabs()
     end
 end
 
+function TPM:RefreshStatisticsSubPageNavigation()
+    local nav = self.statisticsSubPageNavigation
+    if not nav then return end
+    local page = self.saved and self.saved.statisticsPage or "progress"
+    if page == "player" then page = "history" end
+    if page == "alliance" then page = "progress" end
+    local show = page == "progress" or page == "history"
+    nav:SetHidden(not show)
+    if self.statisticsMode then self.statisticsMode:SetHidden(show) end
+    if not show then return end
+
+    local subPage = page == "progress" and self:GetStatisticsProgressSubPage() or self:GetStatisticsHistorySubPage()
+    if self.statisticsSubPageCounter then self.statisticsSubPageCounter:SetText(tostring(subPage) .. " / 2") end
+    if self.statisticsSubPagePrev then
+        self.statisticsSubPagePrev:SetHidden(subPage <= 1)
+        self.statisticsSubPagePrev:SetMouseEnabled(subPage > 1)
+    end
+    if self.statisticsSubPageNext then
+        self.statisticsSubPageNext:SetHidden(subPage >= 2)
+        self.statisticsSubPageNext:SetMouseEnabled(subPage < 2)
+    end
+end
+
 function TPM:SetStatisticsPage(page)
     self:HideEconomyFocusDropdown()
     self:HideStatisticsHoverTooltips()
     self:HideStatisticsFocusDropdown()
-    if not self:IsValidStatisticsPage(page) then page = "progress" end
+
+    -- Compatibility: old Character/Alliance main-page requests now open the
+    -- matching second page of PvE/PvP or Progress.
+    if page == "player" then
+        page = "history"
+        if self.saved then self.saved.statisticsHistorySubPage = 2 end
+    elseif page == "alliance" then
+        page = "progress"
+        if self.saved then self.saved.statisticsProgressSubPage = 2 end
+    end
+    if page ~= "progress" and page ~= "economy" and page ~= "history" then page = "progress" end
     if self.saved then self.saved.statisticsPage = page end
     self:UpdateStatisticsPageVisibility(page)
     self:RefreshStatisticsPageTabs()
+    self:RefreshStatisticsSubPageNavigation()
+    local progressMainPage = page == "progress" and self:GetStatisticsProgressSubPage() == 1
+    if self.statisticsThemeGear then self.statisticsThemeGear:SetHidden(not progressMainPage) end
+    if not progressMainPage and self.statisticsThemeWindow and not self.statisticsThemeWindow:IsHidden() then self:SetStatisticsThemeWindowVisible(false) end
+    self:ApplyStatisticsTheme()
     self:RefreshStatisticsLanguageBar()
     self:RefreshStatisticsWindow()
 end
@@ -11536,65 +12499,6 @@ function TPM:SetProgressStatisticsControlsHidden(hidden)
     if self.statisticsListArea then self.statisticsListArea:SetMouseEnabled(not hidden) end
     if self.statisticsScrollBar then self.statisticsScrollBar:SetMouseEnabled(not hidden) end
 end
-
-function TPM:RefreshPlayerStatisticsPage()
-    if not self.statisticsPlayerPage or self.statisticsPlayerPage:IsHidden() then return end
-    local stats = self:GetPlayerCombatStatsView()
-    local progress = self:GetPlayerProgressData()
-    local characterName = type(GetUnitName) == "function" and (GetUnitName("player") or "") or ""
-    if type(zo_strformat) == "function" and characterName ~= "" then
-        characterName = zo_strformat("<<C:1>>", characterName)
-    end
-    if characterName == "" then characterName = self:L("STAT_PLAYER_UNKNOWN") end
-
-    self.statisticsPlayerPageTitle:SetText(self:L("STAT_PLAYER_PAGE_TITLE"))
-    self.statisticsPlayerPageSubtitle:SetText(self:L("STAT_PLAYER_PAGE_SUBTITLE"))
-    self.statisticsPlayerProfileTitle:SetText(self:L("STAT_PLAYER_PROFILE"))
-    self.statisticsPlayerProfileText:SetText(self:L("STAT_PLAYER_PROFILE_LINE", characterName, progress.level, progress.championPoints))
-    self.statisticsPlayerPvpTitle:SetText(self:L("STAT_PLAYER_PVP"))
-    self.statisticsPlayerPveTitle:SetText(self:L("STAT_PLAYER_PVE"))
-    self.statisticsPlayerTrackingTitle:SetText(self:L("STAT_PLAYER_TRACKING"))
-    self.statisticsPlayerTrackingText:SetText(self:L("STAT_PLAYER_TRACKING_NOTE", stats.trackingVersion))
-
-    local cards = self.statisticsPlayerCards or {}
-    if cards.pvpKills then
-        cards.pvpKills.title:SetText(self:L("STAT_PVP_KILLS"))
-        cards.pvpKills.value:SetText(FormatNumber(stats.pvpKills))
-    end
-    if cards.pvpDeaths then
-        cards.pvpDeaths.title:SetText(self:L("STAT_PVP_DEATHS"))
-        cards.pvpDeaths.value:SetText(FormatNumber(stats.pvpDeaths))
-    end
-    if cards.pvpKd then
-        cards.pvpKd.title:SetText(self:L("STAT_PVP_KD"))
-        local kdText
-        if stats.pvpDeaths <= 0 and stats.pvpKills > 0 then
-            kdText = "∞"
-        else
-            kdText = string.format("%.2f", stats.kd or 0)
-        end
-        cards.pvpKd.value:SetText(kdText)
-    end
-    if cards.npcKills then
-        cards.npcKills.title:SetText(self:L("STAT_NPC_KILLS"))
-        cards.npcKills.value:SetText(FormatNumber(stats.npcKills))
-    end
-    if cards.bossKills then
-        cards.bossKills.title:SetText(self:L("STAT_BOSS_KILLS"))
-        cards.bossKills.value:SetText(FormatNumber(stats.bossKills))
-    end
-    if cards.playTime then
-        local esoPlayed = self:GetEsoPlayedSeconds()
-        local sinceTpm = self:GetCurrentPlaySeconds()
-        local accountKnown = self:GetKnownAccountEsoPlayedSeconds()
-        cards.playTime.title:SetText(self:L("STAT_PLAY_TIME"))
-        cards.playTime.value:SetText(TPM_FormatDuration(esoPlayed))
-        if cards.playTime.detail then
-            cards.playTime.detail:SetText(self:L("STAT_PLAY_TIME_DETAIL", TPM_FormatDuration(sinceTpm), TPM_FormatDuration(accountKnown)))
-        end
-    end
-end
-
 
 function TPM:CreateGoalCard(parent, name, y)
     local card = WINDOW_MANAGER:CreateControl(name, parent, CT_BACKDROP)
@@ -11641,7 +12545,7 @@ function TPM:CreateGoalCard(parent, name, y)
     card.openLabel = open
 
     card:SetHandler("OnMouseEnter", function(c)
-        c:SetCenterColor(0.11, 0.085, 0.040, 0.98)
+        if TPM:IsStatisticsDarkDesign() then c:SetCenterColor(0,0,0,.46) else c:SetCenterColor(0.11, 0.085, 0.040, 0.98) end
         local data = c.goalData
         if data then
             local lines = { TPM:L("GOAL_TOOLTIP_HEADER", data.percent or 0, data.remaining or 0) }
@@ -11652,7 +12556,7 @@ function TPM:CreateGoalCard(parent, name, y)
         end
     end)
     card:SetHandler("OnMouseExit", function(c)
-        c:SetCenterColor(0.045, 0.037, 0.026, 0.96)
+        if TPM:IsStatisticsDarkDesign() then c:SetCenterColor(0,0,0,.34) else c:SetCenterColor(0.045, 0.037, 0.026, 0.96) end
         TPM:HideStatisticsHoverTooltips()
     end)
     card:SetHandler("OnMouseUp", function(c, button, upInside)
@@ -12213,12 +13117,6 @@ function TPM:SetCombatDashboardVisible(visible)
     if self.statisticsCombatActivityRightTitle then self.statisticsCombatActivityRightTitle:SetHidden(not show) end
     if self.statisticsCombatKillLogEmpty then self.statisticsCombatKillLogEmpty:SetHidden(not show) end
     if self.statisticsCombatActivityLogEmpty then self.statisticsCombatActivityLogEmpty:SetHidden(not show) end
-    if self.statisticsCombatPlayerProgressLabel then self.statisticsCombatPlayerProgressLabel:SetHidden(not show) end
-    if self.statisticsCombatPlayerProgressDetail then self.statisticsCombatPlayerProgressDetail:SetHidden(not show) end
-    if self.statisticsCombatPlayerProgressBack then self.statisticsCombatPlayerProgressBack:SetHidden(not show) end
-    if self.statisticsCombatCompanionProgressLabel then self.statisticsCombatCompanionProgressLabel:SetHidden(not show) end
-    if self.statisticsCombatCompanionProgressDetail then self.statisticsCombatCompanionProgressDetail:SetHidden(not show) end
-    if self.statisticsCombatCompanionProgressBack then self.statisticsCombatCompanionProgressBack:SetHidden(not show) end
     if self.statisticsCombatHint then self.statisticsCombatHint:SetHidden(true) end
     for _, row in ipairs(self.statisticsCombatRecentRows or {}) do row:SetHidden(true) end
     for _, extra in pairs(self.statisticsCombatCardExtras or {}) do
@@ -12284,36 +13182,39 @@ function TPM:GetActivityDisplayName(session)
 end
 
 function TPM:EnsureCombatProgressionControls()
-    if self.statisticsCombatPlayerProgressBack or not self.statisticsHistoryPage then return end
-    local page = self.statisticsHistoryPage
+    if self.statisticsCombatPlayerProgressBack or not self.statisticsPlayerProfileBox then return end
+    local profile = self.statisticsPlayerProfileBox
 
-    local function CreateProgressRow(prefix, y, accent)
-        local label = WINDOW_MANAGER:CreateControl(nil, page, CT_LABEL)
-        label:SetDimensions(440, 18)
-        label:SetAnchor(TOPLEFT, page, TOPLEFT, 20, y)
-        label:SetFont("$(BOLD_FONT)|14")
+    local function CreateProgressColumn(side, x, accent)
+        local label = WINDOW_MANAGER:CreateControl(nil, profile, CT_LABEL)
+        label:SetDimensions(172, 16)
+        label:SetAnchor(TOPLEFT, profile, TOPLEFT, x, 57)
+        label:SetFont("$(BOLD_FONT)|12")
         label:SetColor(0.92, 0.90, 0.84, 1)
         label:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+        label:SetVerticalAlignment(TEXT_ALIGN_CENTER)
 
-        local detail = WINDOW_MANAGER:CreateControl(nil, page, CT_LABEL)
-        detail:SetDimensions(470, 18)
-        detail:SetAnchor(TOPRIGHT, page, TOPRIGHT, -20, y)
-        detail:SetFont("$(MEDIUM_FONT)|13")
-        detail:SetColor(0.78, 0.76, 0.70, 1)
+        local detail = WINDOW_MANAGER:CreateControl(nil, profile, CT_LABEL)
+        detail:SetDimensions(256, 16)
+        detail:SetAnchor(TOPLEFT, profile, TOPLEFT, x + 174, 57)
+        detail:SetFont("$(MEDIUM_FONT)|11")
+        detail:SetColor(0.76, 0.74, 0.68, 1)
         detail:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+        detail:SetVerticalAlignment(TEXT_ALIGN_CENTER)
 
-        local back = WINDOW_MANAGER:CreateControl(nil, page, CT_BACKDROP)
-        back:SetDimensions(932, 7)
-        back:SetAnchor(TOPLEFT, page, TOPLEFT, 20, y + 19)
+        local back = WINDOW_MANAGER:CreateControl(nil, profile, CT_BACKDROP)
+        back:SetDimensions(430, 6)
+        back:SetAnchor(TOPLEFT, profile, TOPLEFT, x, 75)
         back:SetCenterColor(0.025, 0.024, 0.021, 0.98)
         back:SetEdgeColor(0.28, 0.25, 0.18, 0.85)
         back:SetEdgeTexture(nil, 1, 1, 1)
 
         local fill = WINDOW_MANAGER:CreateControl(nil, back, CT_BACKDROP)
-        fill:SetDimensions(1, 5)
+        fill:SetDimensions(1, 4)
         fill:SetAnchor(LEFT, back, LEFT, 1, 0)
         fill:SetCenterColor(accent[1], accent[2], accent[3], 0.94)
         fill:SetEdgeColor(0, 0, 0, 0)
+        fill.TPMMaxWidth = 428
 
         return label, detail, back, fill
     end
@@ -12321,12 +13222,12 @@ function TPM:EnsureCombatProgressionControls()
     self.statisticsCombatPlayerProgressLabel,
     self.statisticsCombatPlayerProgressDetail,
     self.statisticsCombatPlayerProgressBack,
-    self.statisticsCombatPlayerProgressFill = CreateProgressRow("player", 38, {0.90, 0.74, 0.22})
+    self.statisticsCombatPlayerProgressFill = CreateProgressColumn("player", 14, {0.90, 0.74, 0.22})
 
     self.statisticsCombatCompanionProgressLabel,
     self.statisticsCombatCompanionProgressDetail,
     self.statisticsCombatCompanionProgressBack,
-    self.statisticsCombatCompanionProgressFill = CreateProgressRow("companion", 66, {0.46, 0.80, 0.92})
+    self.statisticsCombatCompanionProgressFill = CreateProgressColumn("companion", 488, {0.46, 0.80, 0.92})
 end
 
 function TPM:SetCombatProgressBar(fill, current, maximum)
@@ -12339,7 +13240,8 @@ function TPM:SetCombatProgressBar(fill, current, maximum)
     end
     fill:SetHidden(false)
     local ratio = math.max(0, math.min(1, current / maximum))
-    fill:SetWidth(math.max(1, math.floor(930 * ratio)))
+    local maxWidth = math.max(1, tonumber(fill.TPMMaxWidth) or 930)
+    fill:SetWidth(math.max(1, math.floor(maxWidth * ratio)))
 end
 
 function TPM:RefreshCombatProgressionBars()
@@ -12540,7 +13442,8 @@ local function TPM_CreateHeaderIconButton(parent, width, height, iconKind)
 
     button:SetHandler("OnMouseEnter", function(selfButton)
         if selfButton.TPMIcon then
-            selfButton.TPMIcon:SetColor(1.00, 0.86, 0.30, 1)
+            if TPM:IsStatisticsDarkDesign() then selfButton.TPMIcon:SetColor(1,1,1,1)
+            else selfButton.TPMIcon:SetColor(1.00, 0.86, 0.30, 1) end
         end
         if selfButton.TPMHelpTitle and selfButton.TPMHelpText then
             TPM_ShowLogHelpTooltip(selfButton, selfButton.TPMHelpTitle, selfButton.TPMHelpText)
@@ -12548,7 +13451,8 @@ local function TPM_CreateHeaderIconButton(parent, width, height, iconKind)
     end)
     button:SetHandler("OnMouseExit", function(selfButton)
         if selfButton.TPMIcon then
-            selfButton.TPMIcon:SetColor(0.88, 0.82, 0.64, 0.92)
+            if TPM:IsStatisticsDarkDesign() then selfButton.TPMIcon:SetColor(.92,.92,.92,.92)
+            else selfButton.TPMIcon:SetColor(0.88, 0.82, 0.64, 0.92) end
         end
         TPM:HideStatisticsHoverTooltips()
     end)
@@ -13281,45 +14185,38 @@ end
 
 function TPM:GetTodayPlaySeconds()
     local currentPlayed = math.max(0, tonumber(self:SyncCurrentEsoPlayedTime()) or 0)
-    local today = TPM_DayKey(TPM_Now())
+    local now = TPM_Now()
+    local currentOffset = TPM_GetLocalUtcOffsetSeconds()
+    local today = TPM_CharacterDayKeyWithOffset(now, currentOffset)
     local store = self:GetHistoryStore()
-    local latestBeforeToday, earliestToday = nil, nil
+    if not store then return 0 end
+    self:MigrateCharacterPlaytime365(store)
+    local entry = store.characterPlaytime365 and store.characterPlaytime365[tostring(today)] or nil
+    local total = type(entry) == "table" and math.max(0, tonumber(entry.seconds) or 0) or 0
 
-    local function Inspect(snapshot)
-        if type(snapshot) ~= "table" then return end
-        local ts = tonumber(snapshot.timestamp) or 0
-        local played = tonumber(snapshot.esoPlayedSeconds or snapshot.playSeconds)
-        if ts <= 0 or played == nil then return end
-        local day = TPM_DayKey(ts)
-        local entry = { timestamp = ts, played = math.max(0, played) }
-        if day < today then
-            if not latestBeforeToday or ts > latestBeforeToday.timestamp then latestBeforeToday = entry end
-        elseif day == today then
-            if not earliestToday or ts < earliestToday.timestamp then earliestToday = entry end
+    -- Add only the still-uncheckpointed /played delta. This keeps the value live
+    -- without falling back to the older UTC-day history calculation.
+    local previous = store.characterPlaytimeLastObservation
+    if type(previous) == "table" then
+        local previousAt = tonumber(previous.timestamp) or 0
+        local previousPlayed = tonumber(previous.played)
+        local previousOffset = tonumber(previous.utcOffset) or currentOffset
+        if previousAt > 0 and previousPlayed and now > previousAt and currentPlayed >= previousPlayed then
+            local delta = math.max(0, currentPlayed - previousPlayed)
+            if delta > 0 then
+                local previousDay = TPM_CharacterDayKeyWithOffset(previousAt, previousOffset)
+                if previousDay == today then
+                    total = total + delta
+                else
+                    local wallSpan = now - previousAt
+                    local dayStart = TPM_CharacterDayStartTimestampWithOffset(today, currentOffset)
+                    local todayWall = math.max(0, now - math.max(previousAt, dayStart))
+                    if wallSpan > 0 then total = total + math.max(0, Round(delta * (todayWall / wallSpan))) end
+                end
+            end
         end
     end
-
-    for _, snapshot in pairs(store and store.daily or {}) do Inspect(snapshot) end
-    for _, snapshot in ipairs(store and store.samples or {}) do Inspect(snapshot) end
-    local active = store and store.activeSession
-    if type(active) == "table" then
-        Inspect(active.startSnapshot)
-        Inspect(active.lastSnapshot)
-    end
-
-    if latestBeforeToday and currentPlayed >= latestBeforeToday.played then
-        return math.max(0, Round(currentPlayed - latestBeforeToday.played))
-    end
-
-    local fallback = 0
-    if earliestToday and currentPlayed >= earliestToday.played then
-        fallback = math.max(0, Round(currentPlayed - earliestToday.played))
-    end
-    if type(active) == "table" then
-        local endAt = active.segmentStartedAt and TPM_Now() or active.lastSeenAt
-        fallback = math.max(fallback, self:GetHistoryActiveElapsed(active, endAt))
-    end
-    return math.max(0, Round(fallback))
+    return math.max(0, Round(total))
 end
 
 function TPM:GetPlaytimePeriodTotal(days)
@@ -13349,10 +14246,8 @@ function TPM:RefreshHistoryStatisticsPage()
     self.statisticsHistoryTitle:SetText(self:L("HISTORY_PAGE_TITLE"))
     self.statisticsHistoryMetricLabel:SetText(self:L("HISTORY_COMBAT"))
 
-    -- 3.4.34: these controls used to receive their text only once when the page
-    -- was created. Changing DE/EN/RU at runtime therefore left stale headings.
-    -- Re-localize every static combat label on every refresh.
-    self:RefreshCombatProgressionBars()
+    -- Character/companion Level and XP bars moved to Character (page 2).
+    -- PvE/PvP now refreshes only combat-specific labels and counters.
     if self.statisticsCombatPveHeading then
         self.statisticsCombatPveHeading:ClearAnchors()
         self.statisticsCombatPveHeading:SetAnchor(TOPLEFT, self.statisticsHistoryPage, TOPLEFT, 20, 94)
@@ -13422,6 +14317,1305 @@ function TPM:RefreshHistoryStatisticsPage()
         self.statisticsHistorySessionBox:SetAnchor(TOPLEFT, self.statisticsHistoryPage, TOPLEFT, 20, 232)
     end
     self:RefreshCombatActivityPanel()
+    self:EnforceStatisticsDarkModeAfterRefresh()
+end
+
+
+-- 2.7.0 ---------------------------------------------------------------------
+-- Statistics journal customization
+local TPM_THEME_TEXT = {
+    de={title="Anpassung",design="Design",designTpm="TPM Standard",designVanilla="Transparent TPM",dark="Clear Mode",colors="Farben",background="Hintergrund",heading="Überschriften",accent="Akzente & Rahmen",progress="Fortschritt & Werte",text="Normaler Text",effects="Effekte",rgb="Smooth RGB – Fortschritt & Werte",speed="RGB-Geschwindigkeit",brightness="RGB-Helligkeit",reset="Standard wiederherstellen",close="Schließen"},
+    en={title="Customization",design="Design",designTpm="TPM Standard",designVanilla="Transparent TPM",dark="Clear Mode",colors="Colors",background="Background",heading="Headings",accent="Accents & Borders",progress="Progress & Values",text="Normal Text",effects="Effects",rgb="Smooth RGB – Progress & Values",speed="RGB Speed",brightness="RGB Brightness",reset="Restore Defaults",close="Close"},
+    fr={title="Personnalisation",design="Design",designTpm="TPM Standard",designVanilla="Transparent TPM",dark="Clear Mode",colors="Couleurs",background="Arrière-plan",heading="Titres",accent="Accents & bordures",progress="Progression & valeurs",text="Texte normal",effects="Effets",rgb="RGB fluide – progression & valeurs",speed="Vitesse RGB",brightness="Luminosité RGB",reset="Valeurs par défaut",close="Fermer"},
+    es={title="Personalización",design="Diseño",designTpm="TPM Standard",designVanilla="Transparent TPM",dark="Clear Mode",colors="Colores",background="Fondo",heading="Títulos",accent="Acentos y bordes",progress="Progreso y valores",text="Texto normal",effects="Efectos",rgb="RGB suave – progreso y valores",speed="Velocidad RGB",brightness="Brillo RGB",reset="Restaurar valores",close="Cerrar"},
+    ru={title="Настройка",design="Дизайн",designTpm="TPM Standard",designVanilla="Transparent TPM",dark="Clear Mode",colors="Цвета",background="Фон",heading="Заголовки",accent="Акценты и рамки",progress="Прогресс и значения",text="Обычный текст",effects="Эффекты",rgb="Плавный RGB – прогресс и значения",speed="Скорость RGB",brightness="Яркость RGB",reset="По умолчанию",close="Закрыть"},
+}
+
+function TPM:GetStatisticsThemeText(key)
+    local lang = TPM_THEME_TEXT[self.langCode] or TPM_THEME_TEXT.en
+    return lang[key] or TPM_THEME_TEXT.en[key] or key
+end
+
+function TPM:GetStatisticsThemeHeadingColor()
+    local design=(self.saved and self.saved.statisticsThemeDesign) or "vanilla"
+    if design=="dark" then return 1,1,1,1 end
+    return .95,.82,.36,1
+end
+
+function TPM:GetStatisticsThemeAccentColor()
+    local design=(self.saved and self.saved.statisticsThemeDesign) or "vanilla"
+    if design=="dark" then return 1,1,1,1 end
+    return .95,.82,.36,1
+end
+
+function TPM:GetStatisticsThemeTextColor()
+    local design=(self.saved and self.saved.statisticsThemeDesign) or "vanilla"
+    if design=="dark" then return .94,.94,.94,1 end
+    return .88,.84,.74,1
+end
+
+function TPM:GetStatisticsThemeProgressColor()
+    local design=(self.saved and self.saved.statisticsThemeDesign) or "vanilla"
+    if design=="dark" then return 1,1,1,1 end
+    return .95,.82,.12,1
+end
+
+-- 2.7.0: Comprehensive accent recoloring for TPM Standard.
+-- Older TPM controls were created over many versions with hard-coded gold/yellow
+-- colors.  The customization accent now adopts those decorative colors too,
+-- while neutral text/backgrounds and semantic red/green/blue colors remain intact.
+local function TPM_IsThemeWarmAccent(r, g, b, a)
+    r, g, b, a = tonumber(r), tonumber(g), tonumber(b), tonumber(a) or 1
+    if not r or not g or not b or a < 0.12 then return false end
+    local mx, mn = math.max(r, g, b), math.min(r, g, b)
+    if (mx - mn) < 0.10 then return false end -- neutral grey/white
+    -- gold, yellow, amber and warm bronze UI accents
+    return r >= 0.48 and g >= 0.30 and b <= 0.52 and r >= (b * 1.18) and g >= (b * 1.08)
+end
+
+local function TPM_IsThemeNeutralText(r,g,b,a)
+    r,g,b,a=tonumber(r),tonumber(g),tonumber(b),tonumber(a) or 1
+    if not r or not g or not b or a<0.12 then return false end
+    local mx,mn=math.max(r,g,b),math.min(r,g,b)
+    return mx>=0.46 and (mx-mn)<=0.24
+end
+
+function TPM:ApplyStatisticsThemeToLegacyAccents(ar, ag, ab, pr, pg, pb, hr, hg, hb, tr, tg, tb)
+    hr,hg,hb=hr or ar,hg or ag,hb or ab
+    tr,tg,tb=tr or .88,tg or .84,tb or .74
+    if not self.statisticsWindow then return end
+    -- Headings, accents, text and Progress/Values are deliberately independent channels.
+    -- Smooth RGB is ONLY applied to progress bars and numeric values.
+    if not self.statisticsThemeLegacyAccentControls then
+        self.statisticsThemeLegacyAccentControls = setmetatable({}, { __mode = "k" })
+    end
+    local tagged = self.statisticsThemeLegacyAccentControls
+    -- Run explicit role tagging once per theme pass, not once for every control
+    -- visited by the recursive legacy scanner. This avoids repeated O(N*M)
+    -- work on the large Character/Alliance pages when switching themes.
+    local explicitRolesApplied = false
+
+    local function cleanText(text)
+        if type(text) ~= "string" then return "" end
+        text = text:gsub("|c%x%x%x%x%x%x", ""):gsub("|r", "")
+        return text:gsub("^%s+", ""):gsub("%s+$", "")
+    end
+
+    local function isValueText(text)
+        text = cleanText(text)
+        if text == "" then return false end
+        -- Never treat calendar dates as Progress & Values. The old 2.7.11
+        -- heuristic accepted strings such as 02.09.2026 as a plain number.
+        if text:match("^%d%d?[%.%/%-]%d%d?[%.%/%-]%d%d%d%d$")
+            or text:match("^%d%d%d%d[%.%/%-]%d%d?[%.%/%-]%d%d?$") then
+            return false
+        end
+        -- Percentages, counters, plain amounts and compact time/value strings.
+        if text:match("^[%+%-]?[%d%.,]+%s*%%$") then return true end
+        if text:match("^%d+%s*/%s*%d+$") then return true end
+        if text:match("^[%+%-]?[%d%.,]+$") then return true end
+        if text:match("^[%+%-]?[%d%.,]+%s*[hHdDmMsS]") then return true end
+        if text:match("^%d+:%d+") then return true end
+        if text:match("^[%+%-]?[%d%.,]+%s+[A-Za-z][A-Za-z]?$") then return true end
+        return false
+    end
+
+    local function nameSuggestsProgress(control)
+        if not control or not control.GetName then return false end
+        local ok, name = pcall(control.GetName, control)
+        if not ok or type(name) ~= "string" then return false end
+        name = name:lower()
+        return name:find("progress",1,true) ~= nil
+            or name:find("percent",1,true) ~= nil
+            or name:find("value",1,true) ~= nil
+            or name:find("fill",1,true) ~= nil
+            or name:find("count",1,true) ~= nil
+    end
+
+    local function isStrongProgressGold(r, g, b, a)
+        r, g, b, a = tonumber(r), tonumber(g), tonumber(b), tonumber(a) or 1
+        if not r or not g or not b or a < 0.12 then return false end
+        -- Bright TPM yellow/gold used by fills and completion values.
+        return r >= 0.68 and g >= 0.52 and b <= 0.34 and (r - b) >= 0.38
+    end
+
+    local function rememberAndApply(control)
+        if not control then return end
+        local role = tagged[control]
+        if role == nil then
+            role = {}
+            local text = ""
+            if control.GetText then
+                local ok, t = pcall(control.GetText, control)
+                if ok and type(t) == "string" then text = t end
+            end
+            local progressHint = nameSuggestsProgress(control) or isValueText(text)
+
+            -- Label / texture color. Numeric warm-gold labels are Progress & Values;
+            -- normal labels/icons/decorative textures remain Headings & Accents.
+            if control.GetColor and control.SetColor then
+                local ok, cr, cg, cb, ca = pcall(control.GetColor, control)
+                if ok then
+                    if progressHint and TPM_IsThemeWarmAccent(cr,cg,cb,ca) then
+                        role.colorAlpha=tonumber(ca) or 1; role.colorChannel="progress"
+                    elseif text~="" and TPM_IsThemeWarmAccent(cr,cg,cb,ca) then
+                        role.colorAlpha=tonumber(ca) or 1; role.colorChannel="heading"
+                    elseif text~="" and TPM_IsThemeNeutralText(cr,cg,cb,ca) then
+                        role.colorAlpha=tonumber(ca) or 1; role.colorChannel="text"
+                    elseif TPM_IsThemeWarmAccent(cr,cg,cb,ca) then
+                        role.colorAlpha=tonumber(ca) or 1; role.colorChannel="accent"
+                    end
+                end
+            end
+
+            -- Center fills are commonly progress bars / selected value surfaces.
+            if control.GetCenterColor and control.SetCenterColor then
+                local ok, cr, cg, cb, ca = pcall(control.GetCenterColor, control)
+                if ok and TPM_IsThemeWarmAccent(cr, cg, cb, ca) then
+                    role.centerAlpha = tonumber(ca) or 1
+                    role.centerChannel = (progressHint or isStrongProgressGold(cr,cg,cb,ca)) and "progress" or "accent"
+                end
+            end
+
+            -- Borders are decorative accents, never progress RGB/value color.
+            if control.GetEdgeColor and control.SetEdgeColor then
+                local ok, er, eg, eb, ea = pcall(control.GetEdgeColor, control)
+                if ok and TPM_IsThemeWarmAccent(er, eg, eb, ea) then
+                    role.edgeAlpha = tonumber(ea) or 1
+                    role.edgeChannel = "accent"
+                end
+            end
+
+            -- Inline legacy gold: numeric-only labels are values, prose/headings accents.
+            if text ~= "" and text:find("|cE6C45C", 1, true) then
+                role.inlineGold = true
+                role.inlineChannel = isValueText(text) and "progress" or "heading"
+            end
+
+            if role.colorAlpha or role.centerAlpha or role.edgeAlpha or role.inlineGold then
+                tagged[control] = role
+            else
+                -- Dynamic labels are often empty during page creation and only
+                -- receive their value later. Do not permanently blacklist them.
+                -- Continue this pass so the one-time explicit role tagging below
+                -- can still classify known controls before the recursive walk moves on.
+            end
+        end
+
+        if not explicitRolesApplied then
+        -- 2.7.12: Explicit role overrides for controls whose meaning is known.
+        -- This prevents the legacy color scanner from confusing yellow card titles,
+        -- dates or prose with actual numeric progress/value controls.
+        local function forceColor(control, channel)
+            if not control or not control.SetColor then return end
+            local role = tagged[control] or {}
+            if not role.colorAlpha then
+                local ok,_,_,_,a = pcall(control.GetColor, control)
+                role.colorAlpha = ok and (tonumber(a) or 1) or 1
+            end
+            role.colorChannel = channel
+            tagged[control] = role
+        end
+        local function forceEdge(control, channel)
+            if not control or not control.SetEdgeColor then return end
+            local role = tagged[control] or {}
+            if not role.edgeAlpha then
+                local ok,_,_,_,a = pcall(control.GetEdgeColor, control)
+                role.edgeAlpha = ok and (tonumber(a) or 1) or 1
+            end
+            role.edgeChannel = channel
+            tagged[control] = role
+        end
+        local function forceCenter(control, channel)
+            if not control or not control.SetCenterColor then return end
+            local role = tagged[control] or {}
+            if not role.centerAlpha then
+                local ok,_,_,_,a = pcall(control.GetCenterColor, control)
+                role.centerAlpha = ok and (tonumber(a) or 1) or 1
+            end
+            role.centerChannel = channel
+            tagged[control] = role
+        end
+
+        -- Character page: card captions are headings, card numbers are values,
+        -- dates/descriptions are normal text.
+        for _,card in pairs(self.statisticsCharacterCards or {}) do
+            forceColor(card.title, "heading")
+            forceColor(card.value, "progress")
+            forceColor(card.detail, "text")
+            if card.control then
+                forceEdge(card.control, "accent")
+                forceCenter(card.control.TPMAccent, "accent")
+                forceEdge(card.control.TPMIconBack, "accent")
+                forceEdge(card.control.TPMIconFrame, "accent")
+                forceCenter(card.control.TPMTopBand, "accent")
+            end
+        end
+        forceColor(self.statisticsPlayerProfileTitle, "heading")
+        forceColor(self.statisticsPlayerMountTitle, "heading")
+        forceColor(self.statisticsPlayerProfileText, "text")
+        forceColor(self.statisticsPlayerMountText, "text")
+        forceColor(self.statisticsPlayerPageSubtitle, "text")
+        forceColor(self.statisticsCharacterDailyHint, "text")
+        for _,h in pairs(self.statisticsCharacterDailyHeaders or {}) do forceColor(h, "heading") end
+        for _,row in ipairs(self.statisticsCharacterDailyRows or {}) do
+            forceColor(row.date, "text")
+            forceColor(row.playtime, "progress")
+            forceColor(row.kills, "progress")
+            forceColor(row.bosses, "progress")
+        end
+
+        -- Alliance tables: labels/count descriptions stay text, percentages and
+        -- progress fills are Progress & Values. Alliance semantic marker colors
+        -- themselves are intentionally not overridden.
+        for _,row in ipairs(self.statisticsAllianceZoneRows or {}) do
+            forceColor(row.name, "text"); forceColor(row.count, "text"); forceColor(row.pct, "progress")
+            forceCenter(row.bar, "progress")
+        end
+        for _,row in ipairs(self.statisticsAllianceDetailRows or {}) do
+            forceColor(row.label, "text"); forceColor(row.remain, "text"); forceColor(row.value, "progress")
+            forceCenter(row.bar, "progress")
+        end
+        explicitRolesApplied = true
+        end
+
+        -- Re-read the role because the one-time explicit pass may have tagged the
+        -- current control after its initial heuristic classification.
+        role = tagged[control] or role
+
+        local function channelColor(channel)
+            if channel=="progress" then return pr,pg,pb end
+            if channel=="heading" then return hr,hg,hb end
+            if channel=="text" then return tr,tg,tb end
+            return ar,ag,ab
+        end
+
+        if role.colorAlpha and control.SetColor then
+            local r,g,b = channelColor(role.colorChannel)
+            pcall(control.SetColor, control, r, g, b, role.colorAlpha)
+        end
+        if role.centerAlpha and control.SetCenterColor then
+            local r,g,b = channelColor(role.centerChannel)
+            pcall(control.SetCenterColor, control, r, g, b, role.centerAlpha)
+        end
+        if role.edgeAlpha and control.SetEdgeColor then
+            local r,g,b = channelColor(role.edgeChannel)
+            pcall(control.SetEdgeColor, control, r, g, b, role.edgeAlpha)
+        end
+        if role.inlineGold and control.GetText and control.SetText then
+            local ok, txt = pcall(control.GetText, control)
+            if ok and type(txt) == "string" then
+                local r,g,b = channelColor(role.inlineChannel)
+                local hex = string.format("%02X%02X%02X", math.floor(Clamp(r,0,1)*255+.5), math.floor(Clamp(g,0,1)*255+.5), math.floor(Clamp(b,0,1)*255+.5))
+                txt = txt:gsub("|cE6C45C", "|c"..hex)
+                if role.lastInlineHex then txt = txt:gsub("|c"..role.lastInlineHex, "|c"..hex) end
+                role.lastInlineHex = hex
+                pcall(control.SetText, control, txt)
+            end
+        end
+    end
+
+    local function walk(control, depth)
+        if not control or (depth or 0) > 18 then return end
+        rememberAndApply(control)
+        if control.GetNumChildren and control.GetChild then
+            local ok, count = pcall(control.GetNumChildren, control)
+            if ok then
+                count = tonumber(count) or 0
+                for i = 1, count do
+                    local okChild, child = pcall(control.GetChild, control, i)
+                    if okChild and child then walk(child, (depth or 0) + 1) end
+                end
+            end
+        end
+    end
+
+    walk(self.statisticsWindow, 0)
+end
+
+
+-- 2.7.22: Dark Mode is intentionally monochrome. Cache the original visual
+-- state before applying it so switching back to Transparent TPM restores the
+-- original ESO/TPM colors instead of leaving grayscale residues behind.
+function TPM:CacheStatisticsDarkVisualState()
+    if self.statisticsDarkVisualCache then return end
+    self.statisticsDarkVisualCache = setmetatable({}, { __mode = "k" })
+end
+
+function TPM:ApplyStatisticsDarkMonochrome()
+    if not self.statisticsWindow then return end
+    self:CacheStatisticsDarkVisualState()
+    local cache=self.statisticsDarkVisualCache
+
+    local function luminance(r,g,b)
+        r,g,b=tonumber(r) or 0,tonumber(g) or 0,tonumber(b) or 0
+        return Clamp(r*.299 + g*.587 + b*.114,0,1)
+    end
+
+    local function remember(control)
+        if not control then return end
+        local existing=cache[control]
+        if existing then
+            -- Refresh functions can replace a label's text while Clear Mode is
+            -- active. If they introduce fresh semantic inline colors, remember
+            -- that latest color sequence before converting it to white again.
+            if control.GetText and control.SetText then
+                local ok,t=pcall(control.GetText,control)
+                if ok and type(t)=="string" and t:find("|c",1,true) then
+                    local colors,hasNonWhite={},false
+                    for hex in t:gmatch("|c(%x%x%x%x%x%x)") do
+                        colors[#colors+1]=hex
+                        if string.upper(hex)~="FFFFFF" then hasNonWhite=true end
+                    end
+                    if hasNonWhite and #colors>0 then existing.inlineColors=colors end
+                end
+            end
+            return
+        end
+        local st={}
+        if control.GetColor and control.SetColor then
+            local ok,r,g,b,a=pcall(control.GetColor,control)
+            if ok then st.color={r,g,b,a} end
+        end
+        if control.GetCenterColor and control.SetCenterColor then
+            local ok,r,g,b,a=pcall(control.GetCenterColor,control)
+            if ok then st.center={r,g,b,a} end
+        end
+        if control.GetEdgeColor and control.SetEdgeColor then
+            local ok,r,g,b,a=pcall(control.GetEdgeColor,control)
+            if ok then st.edge={r,g,b,a} end
+        end
+        if control.GetDesaturation and control.SetDesaturation then
+            local ok,v=pcall(control.GetDesaturation,control)
+            if ok then st.desaturation=v end
+        end
+        -- Inline |cRRGGBB markup bypasses SetColor(). Cache only the color-code
+        -- sequence, not the complete text, so live values can keep updating while
+        -- Clear Mode is active without being rolled back to stale text later.
+        if control.GetText and control.SetText then
+            local ok,t=pcall(control.GetText,control)
+            if ok and type(t)=="string" and t:find("|c",1,true) then
+                local colors={}
+                for hex in t:gmatch("|c(%x%x%x%x%x%x)") do colors[#colors+1]=hex end
+                if #colors>0 then st.inlineColors=colors end
+            end
+        end
+        if next(st) then cache[control]=st end
+    end
+
+    local function apply(control,depth)
+        if not control or (depth or 0)>22 then return end
+        remember(control)
+        local st=cache[control]
+
+        -- STRICT DARK MODE: every tint becomes white. This catches labels,
+        -- icons, alliance markers, currency icons, bars and decorative textures.
+        -- Texture artwork keeps its alpha/detail but loses every hue.
+        if control.GetColor and control.SetColor then
+            local ok,_,_,_,a=pcall(control.GetColor,control)
+            if ok then pcall(control.SetColor,control,1,1,1,tonumber(a) or 1) end
+        end
+
+        -- Backdrops/panel fills are either transparent black surfaces or white
+        -- progress/value fills. Never leave yellow/orange/green/blue center colors.
+        if control.GetCenterColor and control.SetCenterColor then
+            local ok,r,g,b,a=pcall(control.GetCenterColor,control)
+            if ok then
+                local y=luminance(r,g,b)
+                a=tonumber(a) or 1
+                if y >= .48 then
+                    pcall(control.SetCenterColor,control,1,1,1,Clamp(a,.28,1))
+                else
+                    -- Keep the game world visible behind the journal.
+                    pcall(control.SetCenterColor,control,0,0,0,math.min(a,.52))
+                end
+            end
+        end
+
+        -- All outlines are white only; alpha provides visual hierarchy instead
+        -- of introducing gray/gold border colors.
+        if control.GetEdgeColor and control.SetEdgeColor then
+            local ok,_,_,_,a=pcall(control.GetEdgeColor,control)
+            if ok then pcall(control.SetEdgeColor,control,1,1,1,math.min(tonumber(a) or 1,.62)) end
+        end
+
+        if control.SetDesaturation then pcall(control.SetDesaturation,control,1) end
+
+        -- ESO inline |cRRGGBB markup bypasses SetColor(), so strip all colored
+        -- fragments to white while Dark Mode is active. Original text is cached
+        -- and restored when another theme is selected.
+        if control.GetText and control.SetText then
+            local ok,currentText=pcall(control.GetText,control)
+            if ok and type(currentText)=="string" and currentText:find("|c",1,true) then
+                local mono=currentText:gsub("|c%x%x%x%x%x%x","|cFFFFFF")
+                if mono ~= currentText then pcall(control.SetText,control,mono) end
+            end
+        end
+
+        if control.GetNumChildren and control.GetChild then
+            local ok,n=pcall(control.GetNumChildren,control)
+            if ok then
+                for i=1,(tonumber(n) or 0) do
+                    local okc,c=pcall(control.GetChild,control,i)
+                    if okc and c then apply(c,(depth or 0)+1) end
+                end
+            end
+        end
+    end
+
+    apply(self.statisticsWindow,0)
+    if self.statisticsThemeWindow and not self.statisticsThemeWindow:IsHidden() then apply(self.statisticsThemeWindow,0) end
+    if self.economyFocusDropdown and not self.economyFocusDropdown:IsHidden() then apply(self.economyFocusDropdown,0) end
+
+    -- Explicit root surfaces: black + transparent. These are applied after the
+    -- recursive pass so a page-specific color can never shine through.
+    local surfaces={
+        self.statisticsOuterBackdrop,self.statisticsInnerBackdrop,
+        self.statisticsEconomyPage,self.statisticsHistoryPage,self.statisticsPlayerPage,
+        self.statisticsHistoryChart,self.statisticsHistorySessionBox,
+        self.statisticsPlayerProfileBox,self.statisticsCharacterInsightBox,
+        self.statisticsCharacterDailyBox,self.statisticsThemeWindowShell,
+        self.statisticsThemeWindowInner,self.statisticsThemeColorShell,
+        self.statisticsThemeColorInnerShell,self.statisticsThemeResetFrame
+    }
+    for _,surface in ipairs(surfaces) do
+        if surface and surface.SetCenterColor then pcall(surface.SetCenterColor,surface,0,0,0,.42) end
+        if surface and surface.SetEdgeColor then pcall(surface.SetEdgeColor,surface,1,1,1,.34) end
+    end
+    for _,card in ipairs(self.statisticsEconomyCards or {}) do
+        if card and card.control then
+            pcall(card.control.SetCenterColor,card.control,0,0,0,.36)
+            pcall(card.control.SetEdgeColor,card.control,1,1,1,.28)
+        end
+    end
+    for _,card in pairs(self.statisticsCharacterCards or {}) do
+        if card and card.control then
+            pcall(card.control.SetCenterColor,card.control,0,0,0,.34)
+            pcall(card.control.SetEdgeColor,card.control,1,1,1,.30)
+        end
+    end
+
+    -- Force the most visible journal widgets into a strict black/white palette
+    -- even when their refresh routines later touch selection states or button
+    -- emphasis. This keeps Clear Mode visually consistent across Progress,
+    -- Economy, PvE/PvP, Character and the Customization window.
+    local function monoText(control, r, g, b, a)
+        if control and control.SetColor then pcall(control.SetColor, control, r or 1, g or 1, b or 1, a or 1) end
+    end
+    local function monoCenter(control, alpha)
+        if control and control.SetCenterColor then pcall(control.SetCenterColor, control, 0, 0, 0, alpha or .36) end
+    end
+    local function monoEdge(control, alpha)
+        if control and control.SetEdgeColor then pcall(control.SetEdgeColor, control, 1, 1, 1, alpha or .30) end
+    end
+
+    local whiteLabels = {
+        self.statisticsTitle,self.statisticsThemeWindowTitle,self.statisticsThemeColorTitle,
+        self.statisticsThemeDesignLabel,self.statisticsThemeWindowTitle,self.statisticsThemeColorTitle,
+        self.statisticsZoneSortLabel,self.statisticsZoneFocusLabel,self.statisticsEconomyFocusLabel,
+        self.statisticsPlayerPageSubtitle,self.statisticsCharacterDailyHint,
+        self.statisticsEconomyDetailBody,self.statisticsCombatLegendLeft,self.statisticsCombatLegendRight,
+        self.statisticsAllianceStatusLabel,self.statisticsAllianceMarkerLegendLabel
+    }
+    for _, control in ipairs(whiteLabels) do monoText(control, 1, 1, 1, 1) end
+
+    local mutedLabels = {
+        self.statisticsPlayerProfileText,self.statisticsPlayerMountText,
+        self.statisticsEconomyProfileText,self.statisticsAllianceSummaryText
+    }
+    for _, control in ipairs(mutedLabels) do monoText(control, .92, .92, .92, 1) end
+
+    local backdrops = {
+        self.statisticsCategoryPageFrame,self.statisticsGoalsFrame,self.statisticsZoneFrame,
+        self.statisticsThemeWindowShell,self.statisticsThemeWindowInner,
+        self.statisticsThemeColorShell,self.statisticsThemeColorInnerShell,
+        self.statisticsCustomizationWindow,self.statisticsCustomizationInner
+    }
+    for _, control in ipairs(backdrops) do monoCenter(control, .38); monoEdge(control, .30) end
+
+    for _, btn in ipairs(self.statisticsThemeTabs or {}) do
+        if btn.TPMBackdrop then monoCenter(btn.TPMBackdrop, .26); monoEdge(btn.TPMBackdrop, .34) end
+        if btn.TPMAccent and btn.TPMAccent.SetCenterColor then pcall(btn.TPMAccent.SetCenterColor, btn.TPMAccent, 1, 1, 1, .92) end
+        if btn.SetNormalFontColor then btn:SetNormalFontColor(1,1,1,1) end
+        if btn.SetMouseOverFontColor then btn:SetMouseOverFontColor(1,1,1,1); btn:SetPressedFontColor(.86,.86,.86,1) end
+        if btn.SetDisabledFontColor then btn:SetDisabledFontColor(.55,.55,.55,1) end
+    end
+
+    for _, btn in ipairs(self.statisticsCharacterRangeButtons or {}) do
+        if btn and btn.TPMBackdrop then monoCenter(btn.TPMBackdrop, .22); monoEdge(btn.TPMBackdrop, .30) end
+        if btn and btn.SetNormalFontColor then btn:SetNormalFontColor(1,1,1,1) end
+        if btn and btn.SetMouseOverFontColor then btn:SetMouseOverFontColor(1,1,1,1); btn:SetPressedFontColor(.85,.85,.85,1) end
+    end
+
+    for _, frame in ipairs(self.statisticsHistoryRangeBackdrops or {}) do monoCenter(frame, .22); monoEdge(frame, .28) end
+    for _, frame in ipairs(self.statisticsCharacterRangeBackdrops or {}) do monoCenter(frame, .22); monoEdge(frame, .28) end
+
+    -- Progress page category icons and values should never reintroduce warm hues.
+    for _, row in ipairs(self.statisticsCategoryRows or {}) do
+        if row.icon then monoText(row.icon, 1, 1, 1, .92) end
+        if row.label then monoText(row.label, 1, 1, 1, 1) end
+        if row.count then monoText(row.count, .92, .92, .92, 1) end
+        if row.percent then monoText(row.percent, 1, 1, 1, 1) end
+        if row.bg then monoCenter(row.bg, .24); monoEdge(row.bg, .18) end
+        if row.bar then monoCenter(row.bar, .22); monoEdge(row.bar, .18) end
+        if row.fill and row.fill.SetCenterColor then pcall(row.fill.SetCenterColor, row.fill, 1, 1, 1, .94) end
+        if row.fill and row.fill.SetEdgeColor then pcall(row.fill.SetEdgeColor, row.fill, 1, 1, 1, .10) end
+    end
+
+    for _, row in ipairs(self.statisticsZoneRows or {}) do
+        if row.completeIcon then monoText(row.completeIcon, 1, 1, 1, 1) end
+        if row.nameLabel then monoText(row.nameLabel, 1, 1, 1, 1) end
+        if row.percentLabel then monoText(row.percentLabel, 1, 1, 1, 1) end
+        if row.doneLabel then monoText(row.doneLabel, .92, .92, .92, 1) end
+        if row.openLabel then monoText(row.openLabel, 1, 1, 1, 1) end
+        if row.bg then monoCenter(row.bg, .18); monoEdge(row.bg, .14) end
+        if row.progressBg then monoCenter(row.progressBg, .20); monoEdge(row.progressBg, .12) end
+        if row.progressFill and row.progressFill.SetCenterColor then pcall(row.progressFill.SetCenterColor, row.progressFill, 1, 1, 1, .94) end
+    end
+
+    if self.statisticsThemeGear and self.statisticsThemeGear.TPMIcon then monoText(self.statisticsThemeGear.TPMIcon, 1, 1, 1, 1) end
+    for _, btn in ipairs({ self.statisticsSubPagePrev, self.statisticsSubPageNext, self.statisticsCategoryPrev, self.statisticsCategoryNext }) do
+        if btn and btn.SetNormalFontColor then
+            btn:SetNormalFontColor(1,1,1,1)
+            if btn.SetMouseOverFontColor then btn:SetMouseOverFontColor(1,1,1,1) end
+            if btn.SetPressedFontColor then btn:SetPressedFontColor(.82,.82,.82,1) end
+        end
+    end
+    for _, btn in pairs(self.statisticsCategorySortButtons or {}) do
+        if btn and btn.SetNormalFontColor then
+            btn:SetNormalFontColor(1,1,1,1)
+            if btn.SetMouseOverFontColor then btn:SetMouseOverFontColor(1,1,1,1) end
+            if btn.SetPressedFontColor then btn:SetPressedFontColor(.82,.82,.82,1) end
+        end
+        if btn and btn.TPMBackdrop then monoCenter(btn.TPMBackdrop,.22); monoEdge(btn.TPMBackdrop,.26) end
+    end
+    if self.statisticsTopDivider then pcall(self.statisticsTopDivider.SetCenterColor, self.statisticsTopDivider, 1, 1, 1, .34) end
+    if self.statisticsFooterDivider then pcall(self.statisticsFooterDivider.SetCenterColor, self.statisticsFooterDivider, 1, 1, 1, .30) end
+    if self.statisticsThemeWindowHeaderLine then pcall(self.statisticsThemeWindowHeaderLine.SetCenterColor, self.statisticsThemeWindowHeaderLine, 1, 1, 1, .30) end
+    if self.statisticsThemeColorHeaderLine then pcall(self.statisticsThemeColorHeaderLine.SetCenterColor, self.statisticsThemeColorHeaderLine, 1, 1, 1, .30) end
+end
+
+function TPM:RestoreStatisticsDarkVisualState()
+    local cache=self.statisticsDarkVisualCache
+    if not cache then return end
+    for control,st in pairs(cache) do
+        if control then
+            if st.color and control.SetColor then pcall(control.SetColor,control,unpack(st.color)) end
+            if st.center and control.SetCenterColor then pcall(control.SetCenterColor,control,unpack(st.center)) end
+            if st.edge and control.SetEdgeColor then pcall(control.SetEdgeColor,control,unpack(st.edge)) end
+            if st.desaturation~=nil and control.SetDesaturation then pcall(control.SetDesaturation,control,st.desaturation) end
+            -- Restore the original inline colors in-place while preserving the
+            -- CURRENT text/value content. This fixes white text fragments being
+            -- left behind after switching from Clear Mode to another theme.
+            if st.inlineColors and control.GetText and control.SetText then
+                local ok,txt=pcall(control.GetText,control)
+                if ok and type(txt)=="string" then
+                    local index=0
+                    local restored=txt:gsub("|cFFFFFF",function()
+                        index=index+1
+                        local hex=st.inlineColors[index]
+                        return hex and ("|c"..hex) or "|cFFFFFF"
+                    end)
+                    if restored~=txt then pcall(control.SetText,control,restored) end
+                end
+            end
+        end
+    end
+    self.statisticsDarkVisualCache=nil
+end
+
+-- 2.7.25: Page refresh functions in TPM still contain their original semantic
+-- colors (gold, alliance colors, combat colors, currency colors). Dark Mode is
+-- therefore re-enforced AFTER data refreshes, otherwise those refreshes paint
+-- the old colors back over the monochrome skin.
+function TPM:EnforceStatisticsDarkModeAfterRefresh()
+    if not self.saved or self.saved.statisticsThemeDesign ~= "dark" then return end
+    if not self.statisticsWindow or self.statisticsWindow:IsHidden() then return end
+    self:ApplyStatisticsDarkMonochrome()
+end
+
+-- 2.7.23: Fixed TPM Standard skin restored as a third stable theme.
+-- It intentionally uses the original warm journal palette and does not expose
+-- the removed RGB/custom-color editor.
+function TPM:ApplyStatisticsTpmStandardFixed()
+    local r,g,b=.95,.82,.36
+    if self.statisticsOuterBackdrop then self.statisticsOuterBackdrop:SetCenterColor(.012,.011,.008,1); self.statisticsOuterBackdrop:SetEdgeColor(r,g,b,1) end
+    if self.statisticsInnerBackdrop then self.statisticsInnerBackdrop:SetCenterColor(.035,.031,.024,1); self.statisticsInnerBackdrop:SetEdgeColor(r*.45,g*.45,b*.45,.78) end
+    if self.statisticsEconomyPage then self.statisticsEconomyPage:SetCenterColor(.036,.032,.025,1); self.statisticsEconomyPage:SetEdgeColor(.34,.28,.16,.55) end
+    for _,card in ipairs(self.statisticsEconomyCards or {}) do
+        if card and card.control then
+            if card.isGoldCard then card.control:SetCenterColor(.060,.046,.018,.995); card.control:SetEdgeColor(.82,.62,.14,.92)
+            else card.control:SetCenterColor(.022,.021,.019,.99); card.control:SetEdgeColor(.20,.18,.14,.72) end
+        end
+    end
+    if self.statisticsHistoryPage then self.statisticsHistoryPage:SetCenterColor(.040,.035,.026,1); self.statisticsHistoryPage:SetEdgeColor(.34,.28,.16,.55) end
+    if self.statisticsHistoryChart then self.statisticsHistoryChart:SetCenterColor(.014,.014,.013,.995); self.statisticsHistoryChart:SetEdgeColor(.30,.27,.22,.62) end
+    if self.statisticsHistorySessionBox then self.statisticsHistorySessionBox:SetCenterColor(.028,.026,.021,.98); self.statisticsHistorySessionBox:SetEdgeColor(.30,.27,.22,.62) end
+    for _,x in ipairs(self.statisticsHistoryRangeBackdrops or {}) do x:SetCenterColor(.035,.031,.025,.96); x:SetEdgeColor(.30,.27,.22,.60) end
+    if self.statisticsCombatBossBadge then self.statisticsCombatBossBadge:SetCenterColor(.045,.036,.020,.98); self.statisticsCombatBossBadge:SetEdgeColor(.45,.36,.18,.72) end
+    if self.statisticsPlayerPage then self.statisticsPlayerPage:SetCenterColor(.055,.046,.030,1); self.statisticsPlayerPage:SetEdgeColor(.34,.27,.12,.94) end
+    if self.statisticsPlayerProfileBox then self.statisticsPlayerProfileBox:SetCenterColor(.045,.037,.026,.96); self.statisticsPlayerProfileBox:SetEdgeColor(.42,.34,.17,.72) end
+    if self.statisticsPlayerMountIconFrame then self.statisticsPlayerMountIconFrame:SetCenterColor(.025,.022,.018,.94); self.statisticsPlayerMountIconFrame:SetEdgeColor(.34,.29,.18,.68) end
+    if self.statisticsPlayerProfileDivider then self.statisticsPlayerProfileDivider:SetColor(.34,.29,.18,.64) end
+    if self.statisticsCharacterInsightBox then self.statisticsCharacterInsightBox:SetCenterColor(.035,.030,.024,.94); self.statisticsCharacterInsightBox:SetEdgeColor(.34,.29,.18,.64) end
+    for _,x in ipairs(self.statisticsCharacterRangeBackdrops or {}) do x:SetCenterColor(.026,.023,.018,.94); x:SetEdgeColor(.35,.29,.14,.65) end
+    if self.statisticsCharacterDailyBox then self.statisticsCharacterDailyBox:SetCenterColor(.035,.030,.024,.94); self.statisticsCharacterDailyBox:SetEdgeColor(.34,.29,.18,.64) end
+    for _,card in pairs(self.statisticsCharacterCards or {}) do if card and card.control then card.control:SetCenterColor(.030,.027,.021,.985); card.control:SetEdgeColor(.42,.34,.17,.82) end end
+    for _,btn in ipairs(self.statisticsThemeTabs or {}) do if btn.TPMBackdrop then btn.TPMBackdrop:SetCenterColor(.026,.023,.018,.94); btn.TPMBackdrop:SetEdgeColor(r*.42,g*.42,b*.42,.70) end end
+    if self.statisticsThemeWindowShell then self.statisticsThemeWindowShell:SetCenterColor(.012,.011,.009,1); self.statisticsThemeWindowShell:SetEdgeColor(r,g,b,1) end
+    if self.statisticsThemeWindowInner then self.statisticsThemeWindowInner:SetCenterColor(.035,.031,.024,1); self.statisticsThemeWindowInner:SetEdgeColor(r*.48,g*.48,b*.48,.92) end
+end
+
+function TPM:ApplyStatisticsTheme()
+    if not self.saved then return end
+    local design=self.saved.statisticsThemeDesign or "vanilla"
+    if design ~= "dark" and self.statisticsDarkVisualCache then self:RestoreStatisticsDarkVisualState() end
+    if design~="tpm" and design~="vanilla" and design~="dark" then design="tpm" end
+    self.saved.statisticsThemeDesign=design
+    self.saved.statisticsThemeRGB=false
+    local bg=self.saved.statisticsThemeBackground or DEFAULTS.statisticsThemeBackground
+    local br,bgG,bb,ba=Clamp(tonumber(bg.r) or .035,0,1),Clamp(tonumber(bg.g) or .031,0,1),Clamp(tonumber(bg.b) or .024,0,1),Clamp(tonumber(bg.a) or 1,0.20,1)
+    if design == "vanilla" then
+        -- 2.7.14: Restore the original Transparent TPM midnight-blue journal skin.
+        -- User-selectable heading/accent/progress/text colors remain independent.
+        br,bgG,bb,ba = 0.002,0.012,0.022,0.76
+    end
+    local r,g,b,a=self:GetStatisticsThemeAccentColor()
+    local hr,hg,hb,ha=self:GetStatisticsThemeHeadingColor()
+    local tr,tg,tb,ta=self:GetStatisticsThemeTextColor()
+    local pr,pg,pb,pa=self:GetStatisticsThemeProgressColor()
+    if self.statisticsOuterBackdrop then
+        if design == "vanilla" then
+            self.statisticsOuterBackdrop:SetCenterColor(.002,.008,.014,.80)
+            self.statisticsOuterBackdrop:SetEdgeColor(r,g,b,.96)
+        else
+            self.statisticsOuterBackdrop:SetCenterColor(0,0,0,.66)
+            self.statisticsOuterBackdrop:SetEdgeColor(.62,.62,.62,.78)
+        end
+    end
+    if self.statisticsInnerBackdrop then
+        if design == "vanilla" then
+            self.statisticsInnerBackdrop:SetCenterColor(.004,.016,.028,.68)
+            self.statisticsInnerBackdrop:SetEdgeColor(r*.45,g*.45,b*.45,.64)
+        else
+            self.statisticsInnerBackdrop:SetCenterColor(0,0,0,.42)
+            self.statisticsInnerBackdrop:SetEdgeColor(.35,.35,.35,.58)
+        end
+    end
+    if self.statisticsVanillaThemeBands then
+        for _,band in ipairs(self.statisticsVanillaThemeBands) do band:SetHidden(design ~= "vanilla") end
+        if design == "vanilla" then
+            -- Three very soft translucent bands approximate ESO's blue-black menu vignette
+            -- without replacing any TPM panels or changing input behavior.
+            local b1,b2,b3=self.statisticsVanillaThemeBands[1],self.statisticsVanillaThemeBands[2],self.statisticsVanillaThemeBands[3]
+            if b1 then b1:SetCenterColor(.012,.035,.058,.13) end
+            if b2 then b2:SetCenterColor(.004,.018,.034,.09) end
+            if b3 then b3:SetCenterColor(.001,.009,.019,.15) end
+        end
+    end
+    -- Page-level Transparent TPM transparency. Progress already uses the shared journal
+    -- backdrop, while Economy and PvE/PvP have their own opaque page backdrops.
+    -- Theme those page surfaces explicitly so all Statistics tabs have the same
+    -- translucent blue-black Transparent TPM appearance.
+    if self.statisticsEconomyPage then
+        if design == "vanilla" then
+            self.statisticsEconomyPage:SetCenterColor(.004,.016,.028,.30)
+            self.statisticsEconomyPage:SetEdgeColor(r,g,b,.62)
+        else
+            self.statisticsEconomyPage:SetCenterColor(0,0,0,.26)
+            self.statisticsEconomyPage:SetEdgeColor(.38,.38,.38,.46)
+        end
+    end
+    for _,card in ipairs(self.statisticsEconomyCards or {}) do
+        if card and card.control and card.control.SetCenterColor then
+            if design == "vanilla" then
+                if card.isGoldCard then
+                    card.control:SetCenterColor(.018,.022,.024,.52)
+                    card.control:SetEdgeColor(r,g,b,.72)
+                else
+                    card.control:SetCenterColor(.006,.018,.030,.46)
+                    card.control:SetEdgeColor(.40,.34,.24,.54)
+                end
+            else
+                if card.isGoldCard then
+                    card.control:SetCenterColor(0,0,0,.38)
+                    card.control:SetEdgeColor(.46,.46,.46,.52)
+                else
+                    card.control:SetCenterColor(0,0,0,.32)
+                    card.control:SetEdgeColor(.36,.36,.36,.46)
+                end
+            end
+        end
+    end
+    if self.statisticsHistoryPage then
+        if design == "vanilla" then
+            self.statisticsHistoryPage:SetCenterColor(.004,.016,.028,.30)
+            self.statisticsHistoryPage:SetEdgeColor(r,g,b,.62)
+        else
+            self.statisticsHistoryPage:SetCenterColor(0,0,0,.26)
+            self.statisticsHistoryPage:SetEdgeColor(.38,.38,.38,.46)
+        end
+    end
+    if self.statisticsHistoryChart then
+        if design == "vanilla" then
+            self.statisticsHistoryChart:SetCenterColor(.003,.012,.022,.48)
+            self.statisticsHistoryChart:SetEdgeColor(.42,.35,.23,.48)
+        else
+            self.statisticsHistoryChart:SetCenterColor(0,0,0,.34)
+            self.statisticsHistoryChart:SetEdgeColor(.15,.15,.15,.60)
+        end
+    end
+    if self.statisticsHistorySessionBox then
+        if design == "vanilla" then
+            self.statisticsHistorySessionBox:SetCenterColor(.006,.017,.028,.46)
+            self.statisticsHistorySessionBox:SetEdgeColor(.42,.35,.23,.50)
+        else
+            self.statisticsHistorySessionBox:SetCenterColor(0,0,0,.34)
+            self.statisticsHistorySessionBox:SetEdgeColor(.16,.16,.16,.60)
+        end
+    end
+    for _,rangeBg in ipairs(self.statisticsHistoryRangeBackdrops or {}) do
+        if rangeBg and rangeBg.SetCenterColor then
+            if design == "vanilla" then
+                rangeBg:SetCenterColor(.006,.018,.030,.42)
+                rangeBg:SetEdgeColor(.42,.35,.23,.48)
+            else
+                rangeBg:SetCenterColor(0,0,0,.30)
+                rangeBg:SetEdgeColor(.16,.17,.18,.60)
+            end
+        end
+    end
+    if self.statisticsCombatBossBadge then
+        if design == "vanilla" then
+            self.statisticsCombatBossBadge:SetCenterColor(.010,.020,.030,.48)
+            self.statisticsCombatBossBadge:SetEdgeColor(r,g,b,.62)
+        else
+            self.statisticsCombatBossBadge:SetCenterColor(0,0,0,.32)
+            self.statisticsCombatBossBadge:SetEdgeColor(.22,.22,.20,.68)
+        end
+    end
+
+    if self.statisticsPlayerPage then
+        if design == "vanilla" then
+            self.statisticsPlayerPage:SetCenterColor(.004,.016,.028,.30)
+            self.statisticsPlayerPage:SetEdgeColor(r,g,b,.62)
+        else
+            self.statisticsPlayerPage:SetCenterColor(0,0,0,.26)
+            self.statisticsPlayerPage:SetEdgeColor(.38,.38,.38,.46)
+        end
+    end
+    if self.statisticsPlayerProfileBox then
+        if design == "vanilla" then
+            self.statisticsPlayerProfileBox:SetCenterColor(.006,.018,.030,.48)
+            self.statisticsPlayerProfileBox:SetEdgeColor(r,g,b,.58)
+        else
+            self.statisticsPlayerProfileBox:SetCenterColor(0,0,0,.34)
+            self.statisticsPlayerProfileBox:SetEdgeColor(.16,.17,.18,.66)
+        end
+    end
+    if self.statisticsPlayerMountIconFrame then
+        if design == "vanilla" then
+            self.statisticsPlayerMountIconFrame:SetCenterColor(.004,.015,.027,.52)
+            self.statisticsPlayerMountIconFrame:SetEdgeColor(.42,.35,.23,.56)
+        else
+            self.statisticsPlayerMountIconFrame:SetCenterColor(0,0,0,.34)
+            self.statisticsPlayerMountIconFrame:SetEdgeColor(.18,.18,.17,.64)
+        end
+    end
+    if self.statisticsPlayerProfileDivider then
+        if design == "vanilla" then self.statisticsPlayerProfileDivider:SetColor(.42,.35,.23,.52)
+        else self.statisticsPlayerProfileDivider:SetColor(.18,.18,.18,.58) end
+    end
+    if self.statisticsCharacterInsightBox then
+        if design == "vanilla" then
+            self.statisticsCharacterInsightBox:SetCenterColor(.004,.015,.027,.44)
+            self.statisticsCharacterInsightBox:SetEdgeColor(.42,.35,.23,.50)
+        else
+            self.statisticsCharacterInsightBox:SetCenterColor(0,0,0,.30)
+            self.statisticsCharacterInsightBox:SetEdgeColor(.15,.16,.17,.62)
+        end
+    end
+    for _,rangeBg in ipairs(self.statisticsCharacterRangeBackdrops or {}) do
+        if design == "vanilla" then rangeBg:SetCenterColor(.006,.018,.030,.42); rangeBg:SetEdgeColor(.42,.35,.23,.48)
+        else rangeBg:SetCenterColor(0,0,0,.28); rangeBg:SetEdgeColor(.16,.17,.18,.60) end
+    end
+    if self.statisticsCharacterDailyBox then
+        if design == "vanilla" then
+            self.statisticsCharacterDailyBox:SetCenterColor(.004,.015,.027,.44)
+            self.statisticsCharacterDailyBox:SetEdgeColor(.42,.35,.23,.50)
+        else
+            self.statisticsCharacterDailyBox:SetCenterColor(0,0,0,.30)
+            self.statisticsCharacterDailyBox:SetEdgeColor(.15,.16,.17,.62)
+        end
+    end
+    for _,card in pairs(self.statisticsCharacterCards or {}) do
+        if card and card.control then
+            if design == "vanilla" then
+                card.control:SetCenterColor(.006,.018,.030,.48)
+                card.control:SetEdgeColor(r,g,b,.58)
+            else
+                card.control:SetCenterColor(0,0,0,.32)
+                card.control:SetEdgeColor(.16,.17,.18,.66)
+            end
+        end
+    end
+
+    if self.statisticsTitle then self.statisticsTitle:SetColor(hr,hg,hb,ha) end
+    -- Theme journal section headings independently from decorative accents. Data,
+    -- status and Alliance marker colors stay untouched so they keep meaning.
+    local headingNames={
+        "statisticsCategoryTitle","statisticsGoalsTitle","statisticsZoneTitle",
+        "statisticsEconomyPageTitle","statisticsEconomyTrackingTitle",
+        "statisticsHistoryTitle","statisticsHistorySessionTitle","statisticsCombatChartTitle",
+        "statisticsCombatActivityRightTitle","statisticsCombatExamplesTitle",
+        "statisticsAllianceDetailsTitle","statisticsAllianceGapTitle","statisticsAllianceMapTitle",
+        "statisticsAllianceNextTitle","statisticsAllianceOwnTitle","statisticsAllianceQuickTitle",
+        "statisticsAllianceToolsTitle","statisticsAllianceZoneTitle","statisticsAllianceZoomTitle",
+        "statisticsPlayerProfileTitle","statisticsPlayerMountTitle","statisticsCharacterDailyTitle"
+    }
+    for _,name in ipairs(headingNames) do local h=self[name]; if h and h.SetColor then h:SetColor(hr,hg,hb,1) end end
+    if self.statisticsThemeGear and self.statisticsThemeGear.TPMIcon then self.statisticsThemeGear.TPMIcon:SetColor(r,g,b,1) end
+    if self.statisticsTopDivider then self.statisticsTopDivider:SetCenterColor(r,g,b,design=="dark" and .45 or .68) end
+    if self.statisticsFooterDivider then self.statisticsFooterDivider:SetCenterColor(r,g,b,design=="dark" and .42 or .62) end
+    for _,o in ipairs(self.statisticsCornerOrnaments or {}) do o:SetColor(r,g,b,design=="dark" and .58 or .88) end
+    local selectedRange=tonumber(self.saved.statisticsCharacterRangeDays) or 7
+    for _,btn in ipairs(self.statisticsCharacterRangeButtons or {}) do
+        if tonumber(btn.rangeDays)==selectedRange then btn:SetNormalFontColor(pr,pg,pb,1) end
+    end
+    for _,btn in ipairs(self.statisticsThemeTabs or {}) do
+        if btn.TPMBackdrop then
+            if design == "vanilla" then btn.TPMBackdrop:SetCenterColor(.004,.016,.027,.90) else btn.TPMBackdrop:SetCenterColor(.006,.007,.008,.98) end
+            if design == "vanilla" then
+                btn.TPMBackdrop:SetEdgeColor(r,g,b,.76)
+            else
+                btn.TPMBackdrop:SetEdgeColor(.16,.17,.18,.70)
+            end
+        end
+        if btn.TPMAccent then btn.TPMAccent:SetCenterColor(r,g,b,.88) end
+        if btn.SetNormalFontColor then
+            btn:SetNormalFontColor(tr,tg,tb,1)
+        end
+        if btn.SetMouseOverFontColor then btn:SetMouseOverFontColor(r,g,b,1); btn:SetPressedFontColor(r*.95,g*.95,b*.95,1) end
+    end
+    if self.statisticsThemeHeadingSwatch then self.statisticsThemeHeadingSwatch:SetCenterColor(hr,hg,hb,1); self.statisticsThemeHeadingSwatch:SetEdgeColor(hr*.75,hg*.75,hb*.75,1) end
+    if self.statisticsThemeAccentSwatch then self.statisticsThemeAccentSwatch:SetCenterColor(r,g,b,1); self.statisticsThemeAccentSwatch:SetEdgeColor(r*.75,g*.75,b*.75,1) end
+    if self.statisticsThemeTextSwatch then self.statisticsThemeTextSwatch:SetCenterColor(tr,tg,tb,1); self.statisticsThemeTextSwatch:SetEdgeColor(tr*.75,tg*.75,tb*.75,1) end
+    if self.statisticsThemeProgressSwatch then self.statisticsThemeProgressSwatch:SetCenterColor(pr,pg,pb,1); self.statisticsThemeProgressSwatch:SetEdgeColor(pr*.75,pg*.75,pb*.75,1) end
+    if self.statisticsThemeBackgroundSwatch then self.statisticsThemeBackgroundSwatch:SetCenterColor(br,bgG,bb,ba); self.statisticsThemeBackgroundSwatch:SetEdgeColor(r*.75,g*.75,b*.75,1) end
+    if self.statisticsThemeWindowShell then
+        if design=="vanilla" then
+            self.statisticsThemeWindowShell:SetCenterColor(.002,.009,.016,.82)
+            self.statisticsThemeWindowShell:SetEdgeColor(r,g,b,.96)
+        else
+            self.statisticsThemeWindowShell:SetCenterColor(0,0,0,.68)
+            self.statisticsThemeWindowShell:SetEdgeColor(.60,.60,.60,.72)
+        end
+    end
+    if self.statisticsThemeWindowInner then
+        if design=="vanilla" then
+            self.statisticsThemeWindowInner:SetCenterColor(.005,.018,.031,.70)
+            self.statisticsThemeWindowInner:SetEdgeColor(r*.48,g*.48,b*.48,.72)
+        else
+            self.statisticsThemeWindowInner:SetCenterColor(0,0,0,.42)
+            self.statisticsThemeWindowInner:SetEdgeColor(.36,.36,.36,.56)
+        end
+    end
+    if self.statisticsThemeWindowTitle then self.statisticsThemeWindowTitle:SetColor(hr,hg,hb,1) end
+    if self.statisticsThemeWindowHeaderLine then self.statisticsThemeWindowHeaderLine:SetCenterColor(r,g,b,.72) end
+    if self.statisticsThemeResetFrame then self.statisticsThemeResetFrame:SetEdgeColor(r*.48,g*.48,b*.48,.9) end
+    for _,o in ipairs(self.statisticsThemeWindowOrnaments or {}) do o:SetColor(r,g,b,.88) end
+    if self.statisticsThemeColorShell then
+        if design=="vanilla" then
+            self.statisticsThemeColorShell:SetCenterColor(.002,.009,.016,.82)
+            self.statisticsThemeColorShell:SetEdgeColor(r,g,b,.96)
+        else
+            self.statisticsThemeColorShell:SetCenterColor(.012,.011,.009,1)
+            self.statisticsThemeColorShell:SetEdgeColor(r,g,b,1)
+        end
+    end
+    if self.statisticsThemeColorInnerShell then
+        if design=="vanilla" then
+            self.statisticsThemeColorInnerShell:SetCenterColor(.005,.018,.031,.70)
+            self.statisticsThemeColorInnerShell:SetEdgeColor(r*.48,g*.48,b*.48,.66)
+        else
+            self.statisticsThemeColorInnerShell:SetCenterColor(.035,.031,.024,1)
+            self.statisticsThemeColorInnerShell:SetEdgeColor(r*.48,g*.48,b*.48,.78)
+        end
+    end
+    if self.statisticsThemeColorTitle then self.statisticsThemeColorTitle:SetColor(hr,hg,hb,1) end
+    if self.statisticsThemeColorHeaderLine then self.statisticsThemeColorHeaderLine:SetCenterColor(r,g,b,.78) end
+    if self.statisticsThemeColorCloseFrame then self.statisticsThemeColorCloseFrame:SetEdgeColor(r*.48,g*.48,b*.48,.9) end
+    for _,o in ipairs(self.statisticsThemeColorOrnaments or {}) do o:SetColor(r,g,b,.88) end
+
+    -- Recolor legacy hard-coded gold/yellow accents across the complete Statistics
+    -- window so the chosen Accent/RGB color is applied consistently.
+    self:ApplyStatisticsThemeToLegacyAccents(r,g,b,pr,pg,pb,hr,hg,hb,tr,tg,tb)
+    if design == "tpm" then self:ApplyStatisticsTpmStandardFixed() end
+    if design == "dark" then self:ApplyStatisticsDarkMonochrome() end
+end
+
+function TPM:ApplyStatisticsThemeProgressFast()
+    if not self.saved or not self.statisticsWindow then return end
+    local pr,pg,pb=self:GetStatisticsThemeProgressColor()
+    local tagged=self.statisticsThemeLegacyAccentControls or {}
+    local function apply(control,role)
+        if not control or type(role)~="table" then return end
+        if role.colorAlpha and role.colorChannel=="progress" and control.SetColor then pcall(control.SetColor,control,pr,pg,pb,role.colorAlpha) end
+        if role.centerAlpha and role.centerChannel=="progress" and control.SetCenterColor then pcall(control.SetCenterColor,control,pr,pg,pb,role.centerAlpha) end
+        if role.inlineGold and role.inlineChannel=="progress" and control.GetText and control.SetText then
+            local ok,txt=pcall(control.GetText,control)
+            if ok and type(txt)=="string" then
+                local hex=string.format("%02X%02X%02X",math.floor(Clamp(pr,0,1)*255+.5),math.floor(Clamp(pg,0,1)*255+.5),math.floor(Clamp(pb,0,1)*255+.5))
+                if role.lastInlineHex then txt=txt:gsub("|c"..role.lastInlineHex,"|c"..hex) else txt=txt:gsub("|cE6C45C","|c"..hex) end
+                role.lastInlineHex=hex; pcall(control.SetText,control,txt)
+            end
+        end
+    end
+    for control,role in pairs(tagged) do apply(control,role) end
+    if self.statisticsThemeProgressSwatch then self.statisticsThemeProgressSwatch:SetCenterColor(pr,pg,pb,1); self.statisticsThemeProgressSwatch:SetEdgeColor(pr*.75,pg*.75,pb*.75,1) end
+    local selectedRange=tonumber(self.saved.statisticsCharacterRangeDays) or 7
+    for _,btn in ipairs(self.statisticsCharacterRangeButtons or {}) do if tonumber(btn.rangeDays)==selectedRange then btn:SetNormalFontColor(pr,pg,pb,1) end end
+end
+
+function TPM:StartStatisticsThemeRGBUpdate()
+    if EVENT_MANAGER then EVENT_MANAGER:UnregisterForUpdate(ADDON_NAME.."ThemeRGB") end
+    if self.saved then self.saved.statisticsThemeRGB=false end
+end
+
+function TPM:GetStatisticsThemeColorPickerText(key)
+    local texts = {
+        de={title="Farbauswahl",red="Rot",green="Grün",blue="Blau",close="Schließen"},
+        en={title="Color Selection",red="Red",green="Green",blue="Blue",close="Close"},
+        fr={title="Sélection de couleur",red="Rouge",green="Vert",blue="Bleu",close="Fermer"},
+        es={title="Selección de color",red="Rojo",green="Verde",blue="Azul",close="Cerrar"},
+        ru={title="Выбор цвета",red="Красный",green="Зелёный",blue="Синий",close="Закрыть"},
+    }
+    local lang=texts[self.langCode] or texts.en
+    return lang[key] or texts.en[key] or key
+end
+
+local function TPM_ThemeColorKey(which)
+    if which=="background" then return "statisticsThemeBackground",DEFAULTS.statisticsThemeBackground end
+    if which=="heading" then return "statisticsThemeHeading",DEFAULTS.statisticsThemeHeading end
+    if which=="progress" then return "statisticsThemeProgress",DEFAULTS.statisticsThemeProgress end
+    if which=="text" then return "statisticsThemeText",DEFAULTS.statisticsThemeText end
+    return "statisticsThemeAccent",DEFAULTS.statisticsThemeAccent
+end
+
+function TPM:RefreshStatisticsThemeColorPicker()
+    local w=self.statisticsThemeColorWindow
+    if not w or not self.statisticsThemeColorWhich then return end
+    local which=self.statisticsThemeColorWhich
+    local key,d=TPM_ThemeColorKey(which)
+    local c=(self.saved and self.saved[key]) or d
+    if self.statisticsThemeColorTitle then self.statisticsThemeColorTitle:SetText(self:GetStatisticsThemeColorPickerText("title")) end
+    if self.statisticsThemeColorRedLabel then self.statisticsThemeColorRedLabel:SetText(self:GetStatisticsThemeColorPickerText("red")..": "..tostring(math.floor((tonumber(c.r) or 0)*255+.5))) end
+    if self.statisticsThemeColorGreenLabel then self.statisticsThemeColorGreenLabel:SetText(self:GetStatisticsThemeColorPickerText("green")..": "..tostring(math.floor((tonumber(c.g) or 0)*255+.5))) end
+    if self.statisticsThemeColorBlueLabel then self.statisticsThemeColorBlueLabel:SetText(self:GetStatisticsThemeColorPickerText("blue")..": "..tostring(math.floor((tonumber(c.b) or 0)*255+.5))) end
+    if self.statisticsThemeColorCloseButton then self.statisticsThemeColorCloseButton:SetText(self:GetStatisticsThemeColorPickerText("close")) end
+    if self.statisticsThemeColorPreview then self.statisticsThemeColorPreview:SetCenterColor(tonumber(c.r) or 0,tonumber(c.g) or 0,tonumber(c.b) or 0,1) end
+end
+
+function TPM:CreateStatisticsThemeColorPicker()
+    if self.statisticsThemeColorWindow or not WINDOW_MANAGER or not GuiRoot then return end
+    local w=WINDOW_MANAGER:CreateTopLevelWindow(ADDON_NAME.."StatisticsThemeColorWindow")
+    w:SetDimensions(430,355)
+    w:SetAnchor(CENTER,GuiRoot,CENTER,0,0)
+    w:SetDrawLayer(DL_OVERLAY)
+    w:SetDrawTier(DT_HIGH)
+    if w.SetDrawLevel then w:SetDrawLevel(20000) end
+    w:SetMouseEnabled(true)
+    w:SetMovable(true)
+    w:SetClampedToScreen(true)
+    w:SetHidden(true)
+    self.statisticsThemeColorWindow=w
+
+    -- Match the main Statistics journal visually without changing picker behavior.
+    self.statisticsThemeColorOrnaments = {}
+
+    local shell=WINDOW_MANAGER:CreateControl(nil,w,CT_BACKDROP)
+    shell:SetAnchorFill(w)
+    shell:SetCenterColor(.012,.011,.009,1)
+    shell:SetEdgeColor(.82,.67,.28,1)
+    shell:SetEdgeTexture("EsoUI/Art/Tooltips/UI-Border.dds",128,16,2)
+    shell:SetInsets(8,8,-8,-8)
+    shell:SetMouseEnabled(true)
+    self.statisticsThemeColorShell=shell
+
+    local innerShell=WINDOW_MANAGER:CreateControl(nil,w,CT_BACKDROP)
+    innerShell:SetAnchor(TOPLEFT,w,TOPLEFT,5,5)
+    innerShell:SetAnchor(BOTTOMRIGHT,w,BOTTOMRIGHT,-5,-5)
+    innerShell:SetCenterColor(.035,.031,.024,1)
+    innerShell:SetEdgeColor(.38,.29,.12,.78)
+    innerShell:SetEdgeTexture(nil,1,1,1)
+    innerShell:SetMouseEnabled(false)
+    self.statisticsThemeColorInnerShell=innerShell
+
+    local cornerDefs={
+        {TOPLEFT,TOPLEFT,7,7,"TamrielProgressMap/art/journal_corner_tl.dds"},
+        {TOPRIGHT,TOPRIGHT,-7,7,"TamrielProgressMap/art/journal_corner_tr.dds"},
+        {BOTTOMLEFT,BOTTOMLEFT,7,-7,"TamrielProgressMap/art/journal_corner_bl.dds"},
+        {BOTTOMRIGHT,BOTTOMRIGHT,-7,-7,"TamrielProgressMap/art/journal_corner_br.dds"},
+    }
+    for _,d in ipairs(cornerDefs) do
+        local o=WINDOW_MANAGER:CreateControl(nil,w,CT_TEXTURE)
+        o:SetDimensions(24,24); o:SetAnchor(d[1],w,d[2],d[3],d[4]); o:SetTexture(d[5])
+        o:SetColor(.96,.78,.30,.88); o:SetMouseEnabled(false)
+        if o.SetDrawLevel then o:SetDrawLevel(40) end
+        self.statisticsThemeColorOrnaments[#self.statisticsThemeColorOrnaments+1]=o
+    end
+
+    local header=WINDOW_MANAGER:CreateControl(nil,w,CT_BACKDROP)
+    header:SetAnchor(TOPLEFT,w,TOPLEFT,8,8)
+    header:SetAnchor(TOPRIGHT,w,TOPRIGHT,-8,8)
+    header:SetHeight(48)
+    header:SetCenterColor(.022,.020,.015,1)
+    header:SetEdgeColor(.28,.23,.12,1)
+    header:SetMouseEnabled(true)
+    self.statisticsThemeColorHeader=header
+
+    local headerLine=WINDOW_MANAGER:CreateControl(nil,w,CT_BACKDROP)
+    headerLine:SetDimensions(388,2); headerLine:SetAnchor(TOP,w,TOP,0,58)
+    headerLine:SetCenterColor(.95,.82,.36,.78); headerLine:SetEdgeColor(0,0,0,0)
+    self.statisticsThemeColorHeaderLine=headerLine
+    header:SetHandler("OnMouseDown",function(_,button)
+        if button==MOUSE_BUTTON_INDEX_LEFT and w.StartMoving then w:StartMoving() end
+    end)
+    header:SetHandler("OnMouseUp",function(_,button)
+        if button==MOUSE_BUTTON_INDEX_LEFT and w.StopMovingOrResizing then w:StopMovingOrResizing() end
+    end)
+
+    local title=WINDOW_MANAGER:CreateControl(nil,w,CT_LABEL)
+    title:SetDimensions(330,42)
+    title:SetAnchor(TOPLEFT,w,TOPLEFT,20,12)
+    title:SetFont("ZoFontWinH2")
+    title:SetColor(.96,.82,.36,1)
+    title:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    self.statisticsThemeColorTitle=title
+
+    local x=WINDOW_MANAGER:CreateControl(nil,w,CT_BUTTON)
+    x:SetDimensions(42,42)
+    x:SetAnchor(TOPRIGHT,w,TOPRIGHT,-14,12)
+    x:SetFont("ZoFontWinH3")
+    x:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    x:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    x:SetText("X")
+    x:SetNormalFontColor(.82,.76,.62,1)
+    x:SetMouseOverFontColor(1,.86,.38,1)
+    x:SetHandler("OnClicked",function() w:SetHidden(true) end)
+
+    local preview=WINDOW_MANAGER:CreateControl(nil,w,CT_BACKDROP)
+    preview:SetDimensions(388,56)
+    preview:SetAnchor(TOP,w,TOP,0,78)
+    preview:SetCenterColor(1,1,1,1)
+    preview:SetEdgeColor(.72,.59,.25,1)
+    preview:SetEdgeTexture(nil,1,1,1)
+    self.statisticsThemeColorPreview=preview
+
+    local function makeSlider(y,channel)
+        local lab=WINDOW_MANAGER:CreateControl(nil,w,CT_LABEL)
+        lab:SetDimensions(380,24)
+        lab:SetAnchor(TOPLEFT,w,TOPLEFT,24,y)
+        lab:SetFont("$(MEDIUM_FONT)|17")
+        lab:SetColor(.88,.84,.74,1)
+        local sl=WINDOW_MANAGER:CreateControl(nil,w,CT_SLIDER)
+        sl:SetDimensions(380,20)
+        sl:SetAnchor(TOPLEFT,w,TOPLEFT,24,y+28)
+        sl:SetOrientation(ORIENTATION_HORIZONTAL)
+        sl:SetMouseEnabled(true)
+        local elev="/esoui/art/miscellaneous/scrollbox_elevator.dds"
+        sl:SetThumbTexture(elev,elev,elev,22,22,0,0,1,1)
+        if sl.SetBackgroundMiddleTexture then sl:SetBackgroundMiddleTexture("/esoui/art/chatwindow/chat_scrollbar_track.dds",0,0,1,1) end
+        sl:SetMinMax(0,255)
+        sl:SetValueStep(1)
+        sl:SetHandler("OnValueChanged",function(_,v)
+            if TPM.statisticsThemeColorPickerUpdating then return end
+            local which=TPM.statisticsThemeColorWhich
+            if not which or not TPM.saved then return end
+            local key,d=TPM_ThemeColorKey(which)
+            local c=TPM.saved[key] or d
+            local n={r=tonumber(c.r) or 0,g=tonumber(c.g) or 0,b=tonumber(c.b) or 0,a=tonumber(c.a) or tonumber(d.a) or 1}
+            n[channel]=Clamp((tonumber(v) or 0)/255,0,1)
+            TPM.saved[key]=n
+            TPM:ApplyStatisticsTheme()
+            TPM:RefreshStatisticsThemeColorPicker()
+        end)
+        return lab,sl
+    end
+    self.statisticsThemeColorRedLabel,self.statisticsThemeColorRedSlider=makeSlider(145,"r")
+    self.statisticsThemeColorGreenLabel,self.statisticsThemeColorGreenSlider=makeSlider(205,"g")
+    self.statisticsThemeColorBlueLabel,self.statisticsThemeColorBlueSlider=makeSlider(265,"b")
+
+    local closeFrame=WINDOW_MANAGER:CreateControl(nil,w,CT_BACKDROP)
+    closeFrame:SetDimensions(180,32); closeFrame:SetAnchor(BOTTOM,w,BOTTOM,0,-10)
+    closeFrame:SetCenterColor(.055,.047,.030,1); closeFrame:SetEdgeColor(.46,.36,.16,.9); closeFrame:SetEdgeTexture(nil,1,1,1)
+    self.statisticsThemeColorCloseFrame=closeFrame
+
+    local close=WINDOW_MANAGER:CreateControl(nil,w,CT_BUTTON)
+    close:SetDimensions(180,32)
+    close:SetAnchor(BOTTOM,w,BOTTOM,0,-10)
+    close:SetFont("$(BOLD_FONT)|16")
+    close:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    close:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    close:SetNormalFontColor(.90,.84,.67,1)
+    close:SetMouseOverFontColor(1,.88,.38,1)
+    close:SetHandler("OnClicked",function() w:SetHidden(true) end)
+    self.statisticsThemeColorCloseButton=close
+end
+
+function TPM:OpenStatisticsThemeColorPicker(which)
+    if not self.saved then return end
+    self:CreateStatisticsThemeColorPicker()
+    if not self.statisticsThemeColorWindow then return end
+    self.statisticsThemeColorWhich=which
+    local key,d=TPM_ThemeColorKey(which)
+    local c=self.saved[key] or d
+    self.statisticsThemeColorPickerUpdating=true
+    if self.statisticsThemeColorRedSlider then self.statisticsThemeColorRedSlider:SetValue(math.floor((tonumber(c.r) or 0)*255+.5)) end
+    if self.statisticsThemeColorGreenSlider then self.statisticsThemeColorGreenSlider:SetValue(math.floor((tonumber(c.g) or 0)*255+.5)) end
+    if self.statisticsThemeColorBlueSlider then self.statisticsThemeColorBlueSlider:SetValue(math.floor((tonumber(c.b) or 0)*255+.5)) end
+    self.statisticsThemeColorPickerUpdating=false
+    self:RefreshStatisticsThemeColorPicker()
+    self.statisticsThemeColorWindow:ClearAnchors()
+    self.statisticsThemeColorWindow:SetAnchor(CENTER,GuiRoot,CENTER,0,0)
+    if self.statisticsThemeColorWindow.BringWindowToTop then self.statisticsThemeColorWindow:BringWindowToTop() end
+    self.statisticsThemeColorWindow:SetHidden(false)
+end
+
+function TPM:ResetStatisticsTheme()
+    if not self.saved then return end
+    self.saved.statisticsThemeDesign="tpm"
+    self.saved.statisticsThemeRGB=false
+    self:StartStatisticsThemeRGBUpdate()
+    self:RefreshStatisticsThemeWindow()
+    self:ApplyStatisticsTheme()
+end
+
+function TPM:RefreshStatisticsThemeWindow()
+    if not self.statisticsThemeWindow or not self.saved then return end
+    local design=self.saved.statisticsThemeDesign or "vanilla"
+    if design~="tpm" and design~="vanilla" and design~="dark" then design="tpm"; self.saved.statisticsThemeDesign=design end
+    self.saved.statisticsThemeRGB=false
+    if self.statisticsThemeWindowTitle then self.statisticsThemeWindowTitle:SetText(self:GetStatisticsThemeText("title")) end
+    if self.statisticsThemeDesignLabel then self.statisticsThemeDesignLabel:SetText(self:GetStatisticsThemeText("design")) end
+    if self.statisticsThemeDesignTpmButton then
+        self.statisticsThemeDesignTpmButton:SetText(self:GetStatisticsThemeText("designTpm"))
+        self.statisticsThemeDesignTpmButton:SetNormalFontColor(design=="tpm" and 1 or .86,design=="tpm" and 1 or .86,design=="tpm" and 1 or .86,1)
+        if self.statisticsThemeDesignTpmFrame then
+            if design=="tpm" then self.statisticsThemeDesignTpmFrame:SetCenterColor(.12,.085,.025,.98); self.statisticsThemeDesignTpmFrame:SetEdgeColor(.78,.66,.26,.96)
+            else self.statisticsThemeDesignTpmFrame:SetCenterColor(.020,.020,.020,.86); self.statisticsThemeDesignTpmFrame:SetEdgeColor(1,1,1,.28) end
+        end
+    end
+    if self.statisticsThemeDesignVanillaButton then
+        self.statisticsThemeDesignVanillaButton:SetText(self:GetStatisticsThemeText("designVanilla"))
+        self.statisticsThemeDesignVanillaButton:SetNormalFontColor(design=="vanilla" and 1 or .86,design=="vanilla" and 1 or .86,design=="vanilla" and 1 or .86,1)
+        if self.statisticsThemeDesignVanillaFrame then
+            if design=="vanilla" then self.statisticsThemeDesignVanillaFrame:SetCenterColor(.06,.085,.105,.96); self.statisticsThemeDesignVanillaFrame:SetEdgeColor(.78,.66,.26,.92)
+            else self.statisticsThemeDesignVanillaFrame:SetCenterColor(.020,.020,.020,.86); self.statisticsThemeDesignVanillaFrame:SetEdgeColor(1,1,1,.28) end
+        end
+    end
+    if self.statisticsThemeDesignDarkButton then
+        self.statisticsThemeDesignDarkButton:SetText(self:GetStatisticsThemeText("dark"))
+        self.statisticsThemeDesignDarkButton:SetNormalFontColor(1,1,1,1)
+        if self.statisticsThemeDesignDarkFrame then
+            if design=="dark" then self.statisticsThemeDesignDarkFrame:SetCenterColor(.008,.008,.008,.94); self.statisticsThemeDesignDarkFrame:SetEdgeColor(1,1,1,.62)
+            else self.statisticsThemeDesignDarkFrame:SetCenterColor(.020,.020,.020,.86); self.statisticsThemeDesignDarkFrame:SetEdgeColor(1,1,1,.28) end
+        end
+    end
+    self:ApplyStatisticsTheme()
+end
+
+-- 2.7.20: Custom color/RGB editor removed. The panel now intentionally offers
+-- three stable fixed skins: TPM Standard, Transparent TPM and Dark Mode.
+function TPM:CreateStatisticsThemeWindow()
+    if self.statisticsThemeWindow or not self.statisticsWindow then return end
+    local parent=self.statisticsWindow
+    local w=WINDOW_MANAGER:CreateTopLevelWindow(ADDON_NAME.."StatisticsThemeWindow")
+    w:SetDimensions(360,210); w:SetAnchor(TOPLEFT,parent,TOPRIGHT,8,0)
+    w:SetDrawLayer(DL_OVERLAY); w:SetDrawTier(DT_HIGH); if w.SetDrawLevel then w:SetDrawLevel(12000) end
+    w:SetMouseEnabled(true); w:SetMovable(false); w:SetClampedToScreen(false); w:SetHidden(true)
+    self.statisticsThemeWindow=w
+
+    local shell=WINDOW_MANAGER:CreateControl(nil,w,CT_BACKDROP)
+    shell:SetAnchorFill(w); shell:SetCenterColor(.006,.010,.014,.94); shell:SetEdgeColor(.58,.50,.22,.95)
+    shell:SetEdgeTexture('EsoUI/Art/Tooltips/UI-Border.dds',128,16,2); shell:SetInsets(8,8,-8,-8); shell:SetMouseEnabled(true)
+    self.statisticsThemeWindowShell=shell
+
+    self.statisticsThemeWindowOrnaments={}
+    local defs={{TOPLEFT,TOPLEFT,7,7,"TamrielProgressMap/art/journal_corner_tl.dds"},{TOPRIGHT,TOPRIGHT,-7,7,"TamrielProgressMap/art/journal_corner_tr.dds"},{BOTTOMLEFT,BOTTOMLEFT,7,-7,"TamrielProgressMap/art/journal_corner_bl.dds"},{BOTTOMRIGHT,BOTTOMRIGHT,-7,-7,"TamrielProgressMap/art/journal_corner_br.dds"}}
+    for _,d in ipairs(defs) do local o=WINDOW_MANAGER:CreateControl(nil,w,CT_TEXTURE); o:SetDimensions(24,24); o:SetAnchor(d[1],w,d[2],d[3],d[4]); o:SetTexture(d[5]); o:SetColor(.78,.68,.30,.88); self.statisticsThemeWindowOrnaments[#self.statisticsThemeWindowOrnaments+1]=o end
+
+    local inner=WINDOW_MANAGER:CreateControl(nil,w,CT_BACKDROP)
+    inner:SetAnchor(TOPLEFT,w,TOPLEFT,12,56); inner:SetAnchor(BOTTOMRIGHT,w,BOTTOMRIGHT,-12,-12)
+    inner:SetCenterColor(.012,.018,.024,.92); inner:SetEdgeColor(.28,.30,.32,.82); inner:SetEdgeTexture(nil,1,1,1); inner:SetMouseEnabled(true)
+    self.statisticsThemeWindowInner=inner
+
+    local title=WINDOW_MANAGER:CreateControl(nil,w,CT_LABEL); title:SetDimensions(270,38); title:SetAnchor(TOPLEFT,w,TOPLEFT,20,13); title:SetFont('ZoFontWinH2'); title:SetHorizontalAlignment(TEXT_ALIGN_LEFT); title:SetVerticalAlignment(TEXT_ALIGN_CENTER); self.statisticsThemeWindowTitle=title
+    local x=WINDOW_MANAGER:CreateControl(nil,w,CT_LABEL); x:SetDimensions(34,34); x:SetAnchor(TOPRIGHT,w,TOPRIGHT,-12,12); x:SetFont('ZoFontWinH3'); x:SetText('X'); x:SetColor(.82,.82,.80,1); x:SetHorizontalAlignment(TEXT_ALIGN_CENTER); x:SetVerticalAlignment(TEXT_ALIGN_CENTER); x:SetMouseEnabled(true)
+    x:SetHandler('OnMouseEnter',function(btn) btn:SetColor(1,1,1,1) end); x:SetHandler('OnMouseExit',function(btn) btn:SetColor(.82,.82,.80,1) end); x:SetHandler('OnMouseUp',function(_,button,upInside) if upInside and button==MOUSE_BUTTON_INDEX_LEFT then TPM:SetStatisticsThemeWindowVisible(false) end end)
+    local divider=WINDOW_MANAGER:CreateControl(nil,w,CT_BACKDROP); divider:SetDimensions(320,2); divider:SetAnchor(TOP,w,TOP,0,56); divider:SetCenterColor(.42,.42,.38,.65); divider:SetEdgeColor(0,0,0,0); self.statisticsThemeWindowHeaderLine=divider
+
+    local designLabel=WINDOW_MANAGER:CreateControl(nil,inner,CT_LABEL); designLabel:SetDimensions(308,24); designLabel:SetAnchor(TOPLEFT,inner,TOPLEFT,16,12); designLabel:SetFont('$(BOLD_FONT)|16'); designLabel:SetColor(.90,.90,.88,1); self.statisticsThemeDesignLabel=designLabel
+
+    local function designButton(xp,value)
+        local frame=WINDOW_MANAGER:CreateControl(nil,inner,CT_BACKDROP); frame:SetDimensions(98,42); frame:SetAnchor(TOPLEFT,inner,TOPLEFT,xp,48); frame:SetCenterColor(.025,.027,.029,.96); frame:SetEdgeColor(.28,.30,.32,.85); frame:SetEdgeTexture(nil,1,1,1)
+        local b=WINDOW_MANAGER:CreateControl(nil,frame,CT_BUTTON); b:SetAnchorFill(frame); b:SetFont('$(BOLD_FONT)|15'); b:SetHorizontalAlignment(TEXT_ALIGN_CENTER); b:SetVerticalAlignment(TEXT_ALIGN_CENTER); b:SetNormalFontColor(.80,.80,.80,1); b:SetMouseOverFontColor(1,1,1,1)
+        b:SetHandler('OnClicked',function() TPM.saved.statisticsThemeDesign=value; TPM.saved.statisticsThemeRGB=false; TPM:StartStatisticsThemeRGBUpdate(); TPM:RefreshStatisticsThemeWindow() end)
+        if value=='tpm' then self.statisticsThemeDesignTpmButton=b; self.statisticsThemeDesignTpmFrame=frame
+        elseif value=='vanilla' then self.statisticsThemeDesignVanillaButton=b; self.statisticsThemeDesignVanillaFrame=frame
+        else self.statisticsThemeDesignDarkButton=b; self.statisticsThemeDesignDarkFrame=frame end
+    end
+    designButton(12,'tpm'); designButton(112,'vanilla'); designButton(212,'dark')
+    self:RefreshStatisticsThemeWindow()
+end
+
+function TPM:SetStatisticsThemeWindowVisible(show)
+    if not self.statisticsThemeWindow then return end
+    if show then
+        -- Match the journal scale and dock TOP-to-TOP on the right.
+        if self.statisticsWindow and self.statisticsThemeWindow.SetScale then
+            self.statisticsThemeWindow:SetScale(self.statisticsWindow:GetScale() or 1)
+        end
+        self.statisticsThemeWindow:ClearAnchors()
+        self.statisticsThemeWindow:SetAnchor(TOPLEFT,self.statisticsWindow,TOPRIGHT,8,0)
+
+        -- If journal + side panel do not fit, temporarily move the journal left.
+        -- We keep the original top-left so closing the panel restores it exactly.
+        if not self.statisticsThemeDockRestore and self.statisticsWindow and GuiRoot then
+            local left,top=self.statisticsWindow:GetLeft(),self.statisticsWindow:GetTop()
+            local right=self.statisticsWindow:GetRight()
+            local rootW=select(1,GuiRoot:GetDimensions()) or 0
+            local scale=self.statisticsWindow:GetScale() or 1
+            local panelW=360*scale
+            local desiredRight=(right or 0)+8+panelW
+            if rootW>0 and desiredRight>rootW-8 and left and top then
+                local shift=desiredRight-(rootW-8)
+                local newLeft=math.max(8,left-shift)
+                self.statisticsThemeDockRestore={left=left,top=top}
+                self.statisticsWindow:ClearAnchors()
+                self.statisticsWindow:SetAnchor(TOPLEFT,GuiRoot,TOPLEFT,newLeft,top)
+            end
+        end
+
+        if self.statisticsThemeWindow.BringWindowToTop then self.statisticsThemeWindow:BringWindowToTop() end
+        self.statisticsThemeWindow:SetHidden(false)
+        self:RefreshStatisticsThemeWindow()
+    else
+        self.statisticsThemeWindow:SetHidden(true)
+        if self.statisticsThemeColorWindow then self.statisticsThemeColorWindow:SetHidden(true) end
+        if self.statisticsThemeDockRestore and self.statisticsWindow and GuiRoot then
+            local p=self.statisticsThemeDockRestore
+            self.statisticsThemeDockRestore=nil
+            self.statisticsWindow:ClearAnchors()
+            self.statisticsWindow:SetAnchor(TOPLEFT,GuiRoot,TOPLEFT,p.left,p.top)
+        end
+    end
+end
+
+function TPM:ToggleStatisticsThemeWindow()
+    if not self.statisticsWindow then return end
+    self:CreateStatisticsThemeWindow()
+    self:SetStatisticsThemeWindowVisible(self.statisticsThemeWindow:IsHidden())
 end
 
 function TPM:CreateStatisticsWindow()
@@ -13457,6 +15651,7 @@ function TPM:CreateStatisticsWindow()
     backdrop:SetEdgeTexture("EsoUI/Art/Tooltips/UI-Border.dds", 128, 16, 2)
     backdrop:SetInsets(8, 8, -8, -8)
     backdrop:SetMouseEnabled(false)
+    self.statisticsOuterBackdrop = backdrop
 
     local inner = WINDOW_MANAGER:CreateControl(nil, control, CT_BACKDROP)
     inner:SetAnchor(TOPLEFT, control, TOPLEFT, 5, 5)
@@ -13465,6 +15660,30 @@ function TPM:CreateStatisticsWindow()
     inner:SetEdgeColor(0.38, 0.29, 0.12, 0.78)
     inner:SetEdgeTexture(nil, 1, 1, 1)
     inner:SetMouseEnabled(false)
+    self.statisticsInnerBackdrop = inner
+
+    -- Decorative Transparent TPM skin layers. They stay hidden in TPM Standard and
+    -- sit behind every existing Statistics control, so the addon layout is untouched.
+    self.statisticsVanillaThemeBands = {}
+    local vanillaBandDefs = {
+        { top = 8, height = 245 },
+        { top = 220, height = 320 },
+        { top = 500, height = 242 },
+    }
+    for _,def in ipairs(vanillaBandDefs) do
+        local band = WINDOW_MANAGER:CreateControl(nil, control, CT_BACKDROP)
+        band:SetAnchor(TOPLEFT, control, TOPLEFT, 8, def.top)
+        band:SetAnchor(TOPRIGHT, control, TOPRIGHT, -8, def.top)
+        band:SetHeight(def.height)
+        band:SetDrawLayer(DL_BACKGROUND)
+        band:SetDrawTier(DT_LOW)
+        if band.SetDrawLevel then band:SetDrawLevel(2) end
+        band:SetCenterColor(.008,.025,.045,.20)
+        band:SetEdgeColor(0,0,0,0)
+        band:SetMouseEnabled(false)
+        band:SetHidden(true)
+        self.statisticsVanillaThemeBands[#self.statisticsVanillaThemeBands + 1] = band
+    end
 
     self.statisticsCornerOrnaments = {}
     local cornerDefs = {
@@ -13531,6 +15750,45 @@ function TPM:CreateStatisticsWindow()
     mode:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     self.statisticsMode = mode
 
+    -- 2.7.31: Progress and PvE/PvP each use two journal pages. The compact
+    -- < 1 / 2 > navigator occupies the old mode-text position only on those
+    -- sections; Economy stays a single page and keeps its mode text.
+    local subNav = WINDOW_MANAGER:CreateControl(ADDON_NAME .. "StatisticsSubPageNavigation", control, CT_CONTROL)
+    subNav:SetDimensions(170, 30)
+    subNav:SetAnchor(TOPRIGHT, control, TOPRIGHT, -58, 18)
+    subNav:SetMouseEnabled(false)
+    subNav:SetHidden(true)
+    self.statisticsSubPageNavigation = subNav
+
+    local subPrev = WINDOW_MANAGER:CreateControl(nil, subNav, CT_BUTTON)
+    subPrev:SetDimensions(42, 28)
+    subPrev:SetAnchor(LEFT, subNav, LEFT, 0, 0)
+    subPrev:SetFont("$(BOLD_FONT)|22")
+    subPrev:SetText("<")
+    subPrev:SetNormalFontColor(0.90, 0.77, 0.34, 1)
+    subPrev:SetMouseOverFontColor(1.00, 0.90, 0.50, 1)
+    subPrev:SetHandler("OnClicked", function() TPM:SetStatisticsSubPage(1) end)
+    self.statisticsSubPagePrev = subPrev
+
+    local subCounter = WINDOW_MANAGER:CreateControl(nil, subNav, CT_LABEL)
+    subCounter:SetDimensions(84, 28)
+    subCounter:SetAnchor(CENTER, subNav, CENTER, 0, 0)
+    subCounter:SetFont("$(BOLD_FONT)|17")
+    subCounter:SetColor(0.86, 0.82, 0.72, 1)
+    subCounter:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    subCounter:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    self.statisticsSubPageCounter = subCounter
+
+    local subNext = WINDOW_MANAGER:CreateControl(nil, subNav, CT_BUTTON)
+    subNext:SetDimensions(42, 28)
+    subNext:SetAnchor(RIGHT, subNav, RIGHT, 0, 0)
+    subNext:SetFont("$(BOLD_FONT)|22")
+    subNext:SetText(">")
+    subNext:SetNormalFontColor(0.90, 0.77, 0.34, 1)
+    subNext:SetMouseOverFontColor(1.00, 0.90, 0.50, 1)
+    subNext:SetHandler("OnClicked", function() TPM:SetStatisticsSubPage(2) end)
+    self.statisticsSubPageNext = subNext
+
     local langBar = WINDOW_MANAGER:CreateControl(ADDON_NAME .. "StatisticsLanguageBar", control, CT_CONTROL)
     langBar:SetDimensions(290, 28)
     langBar:SetAnchor(TOP, control, TOP, 0, 17)
@@ -13548,7 +15806,7 @@ function TPM:CreateStatisticsWindow()
         btn:SetMouseEnabled(true)
         btn.langCode = def.code
         btn:SetText(def.text)
-        btn:SetHandler("OnMouseEnter", function(b) b:SetColor(1, 0.88, 0.38, 1) end)
+        btn:SetHandler("OnMouseEnter", function(b) if TPM:IsStatisticsDarkDesign() then b:SetColor(1,1,1,1) else b:SetColor(1, 0.88, 0.38, 1) end end)
         btn:SetHandler("OnMouseExit", function() TPM:RefreshStatisticsLanguageBar() end)
         btn:SetHandler("OnMouseUp", function(b, button, upInside)
             if upInside and button == MOUSE_BUTTON_INDEX_LEFT then
@@ -13569,17 +15827,36 @@ function TPM:CreateStatisticsWindow()
     close:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     close:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     close:SetMouseEnabled(true)
-    close:SetHandler("OnMouseEnter", function(btn) btn:SetColor(1, 0.84, 0.38, 1) end)
-    close:SetHandler("OnMouseExit", function(btn) btn:SetColor(0.78, 0.72, 0.58, 1) end)
+    close:SetHandler("OnMouseEnter", function(btn) if TPM:IsStatisticsDarkDesign() then btn:SetColor(1,1,1,1) else btn:SetColor(1, 0.84, 0.38, 1) end end)
+    close:SetHandler("OnMouseExit", function(btn) if TPM:IsStatisticsDarkDesign() then btn:SetColor(.92,.92,.92,1) else btn:SetColor(0.78, 0.72, 0.58, 1) end end)
     close:SetHandler("OnMouseUp", function(_, button, upInside)
         if upInside and button == MOUSE_BUTTON_INDEX_LEFT then TPM:HideStatisticsWindow() end
     end)
+
+    -- 2.7.0: Real texture gear placed directly after DE / EN / RU / FR / ES.
+    -- Using the bundled DDS avoids unsupported Unicode glyphs rendering as [].
+    local gear = WINDOW_MANAGER:CreateControl(ADDON_NAME .. "StatisticsThemeGear", control, CT_BUTTON)
+    gear:SetDimensions(26, 26)
+    gear:SetAnchor(LEFT, langBar, RIGHT, 2, 0)
+    gear:SetMouseEnabled(true)
+    local gearIcon = WINDOW_MANAGER:CreateControl(nil, gear, CT_TEXTURE)
+    gearIcon:SetDimensions(20, 20)
+    gearIcon:SetAnchor(CENTER, gear, CENTER, 0, 0)
+    gearIcon:SetTexture("TamrielProgressMap/art/settings_gear.dds")
+    gearIcon:SetColor(0.96, 0.78, 0.30, 1)
+    gearIcon:SetMouseEnabled(false)
+    gear.TPMIcon = gearIcon
+    gear:SetHandler("OnMouseEnter", function(g) if g.TPMIcon then if TPM:IsStatisticsDarkDesign() then g.TPMIcon:SetColor(1,1,1,1) else g.TPMIcon:SetColor(1, 0.90, 0.45, 1) end end end)
+    gear:SetHandler("OnMouseExit", function() TPM:ApplyStatisticsTheme() end)
+    gear:SetHandler("OnClicked", function() TPM:ToggleStatisticsThemeWindow() end)
+    self.statisticsThemeGear = gear
 
     local topDivider = WINDOW_MANAGER:CreateControl(nil, control, CT_BACKDROP)
     topDivider:SetDimensions(956, 1)
     topDivider:SetAnchor(TOPLEFT, control, TOPLEFT, 22, 56)
     topDivider:SetCenterColor(0.68, 0.56, 0.27, 0.68)
     topDivider:SetEdgeColor(0, 0, 0, 0)
+    self.statisticsTopDivider = topDivider
 
     -- Dedicated container for the complete Progress page.  All progress-only
     -- controls are children of this control, so hiding the page hides every
@@ -13709,12 +15986,18 @@ function TPM:CreateStatisticsWindow()
     focusArrow:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     focusArrow:SetText("▼")
     focusSelector:SetHandler("OnMouseEnter", function()
-        focusSelectorBg:SetCenterColor(0.085, 0.066, 0.025, 0.98)
-        focusSelectorBg:SetEdgeColor(0.95, 0.76, 0.20, 1)
+        if TPM:IsStatisticsDarkDesign() then
+            focusSelectorBg:SetCenterColor(0,0,0,.44); focusSelectorBg:SetEdgeColor(1,1,1,.46)
+        else
+            focusSelectorBg:SetCenterColor(0.085, 0.066, 0.025, 0.98); focusSelectorBg:SetEdgeColor(0.95, 0.76, 0.20, 1)
+        end
     end)
     focusSelector:SetHandler("OnMouseExit", function()
-        focusSelectorBg:SetCenterColor(0.022, 0.020, 0.016, 0.98)
-        focusSelectorBg:SetEdgeColor(0.72, 0.58, 0.17, 0.95)
+        if TPM:IsStatisticsDarkDesign() then
+            focusSelectorBg:SetCenterColor(0,0,0,.30); focusSelectorBg:SetEdgeColor(1,1,1,.28)
+        else
+            focusSelectorBg:SetCenterColor(0.022, 0.020, 0.016, 0.98); focusSelectorBg:SetEdgeColor(0.72, 0.58, 0.17, 0.95)
+        end
     end)
     focusSelector:SetHandler("OnMouseUp", function(_, button, upInside)
         if upInside and button == MOUSE_BUTTON_INDEX_LEFT then TPM:ToggleStatisticsFocusDropdown() end
@@ -13776,16 +16059,19 @@ function TPM:CreateStatisticsWindow()
         selectedMark:SetText("")
         row.bg, row.label, row.selectedMark = rowBg, rowLabel, selectedMark
         row:SetHandler("OnMouseEnter", function(r)
-            r.bg:SetCenterColor(0.13, 0.10, 0.035, 0.99)
-            r.label:SetColor(1.00, 0.84, 0.26, 1)
+            if TPM:IsStatisticsDarkDesign() then
+                r.bg:SetCenterColor(0,0,0,.48); r.bg:SetEdgeColor(1,1,1,.42); r.label:SetColor(1,1,1,1)
+            else
+                r.bg:SetCenterColor(0.13, 0.10, 0.035, 0.99); r.label:SetColor(1.00, 0.84, 0.26, 1)
+            end
         end)
         row:SetHandler("OnMouseExit", function(r)
-            if r.selected then
-                r.bg:SetCenterColor(0.16, 0.125, 0.040, 0.98)
-                r.label:SetColor(1.00, 0.84, 0.26, 1)
+            if TPM:IsStatisticsDarkDesign() then
+                r.bg:SetCenterColor(0,0,0,r.selected and .44 or .24); r.bg:SetEdgeColor(1,1,1,r.selected and .40 or .18); r.label:SetColor(1,1,1,1)
+            elseif r.selected then
+                r.bg:SetCenterColor(0.16, 0.125, 0.040, 0.98); r.label:SetColor(1.00, 0.84, 0.26, 1)
             else
-                r.bg:SetCenterColor(0.025, 0.022, 0.017, 0.98)
-                r.label:SetColor(0.91, 0.88, 0.78, 1)
+                r.bg:SetCenterColor(0.025, 0.022, 0.017, 0.98); r.label:SetColor(0.91, 0.88, 0.78, 1)
             end
         end)
         row:SetHandler("OnMouseWheel", function(_, delta) TPM:ScrollStatisticsFocusDropdown(delta) end)
@@ -13846,8 +16132,8 @@ function TPM:CreateStatisticsWindow()
     }
     self.statisticsPlaytimeCard = self:CreateProgressPlaytimeCard(progressPage, ADDON_NAME .. "StatsCardPlaytime", 820, 146)
 
-    -- Level / CP remains on Player. ESO play time is now part of the main
-    -- Progress overview so Development can stay focused on Gold and PvE/PvP.
+    -- Character Level/CP and Companion progression live on PvE/PvP page 2.
+    -- ESO play time remains a compact summary on Progress and a detailed ledger on Character.
 
     local categoryTitle = WINDOW_MANAGER:CreateControl(nil, progressPage, CT_LABEL)
     categoryTitle:SetDimensions(450, 28)
@@ -14125,8 +16411,9 @@ function TPM:CreateStatisticsWindow()
     -- Every journal section is a real, independent page container in 3.0.
     -- Only one page is visible at a time, preventing refreshes from bleeding
     -- controls into another section.
-    -- 3.4.6: Player is no longer a separate statistics page. Its combat
-    -- counters remain internal and feed the PvE / PvP page.
+    -- 2.7.2: Character returns as a dedicated journal page focused on
+    -- play time and character activity. PvE/PvP remains a separate combat page.
+    self:CreatePlayerStatisticsPage(control)
     self:CreateEconomyStatisticsPage(control)
     self:CreateHistoryStatisticsPage(control)
     self:CreateAllianceStatisticsPage(control)
@@ -14138,6 +16425,7 @@ function TPM:CreateStatisticsWindow()
     footerDivider:SetEdgeColor(0, 0, 0, 0)
     self.statisticsFooterDivider = footerDivider
 
+    self.statisticsThemeTabs = {}
     local function CreatePageTab(name, x, pageName, width)
         width = tonumber(width) or 292
         local tabBg = WINDOW_MANAGER:CreateControl(name .. "Bg", control, CT_BACKDROP)
@@ -14168,15 +16456,16 @@ function TPM:CreateStatisticsWindow()
         button.TPMBackdrop = tabBg
         button.TPMAccent = accent
         button.TPMPageName = pageName
+        self.statisticsThemeTabs[#self.statisticsThemeTabs + 1] = button
         return button
     end
 
-    self.statisticsProgressTab = CreatePageTab(ADDON_NAME .. "StatsTabProgress", 42, "progress", 216)
-    self.statisticsPlayerTab = nil
-    self.statisticsEconomyTab = CreatePageTab(ADDON_NAME .. "StatsTabEconomy", 278, "economy", 216)
-    self.statisticsHistoryTab = CreatePageTab(ADDON_NAME .. "StatsTabHistory", 514, "history", 216)
-    self.statisticsAllianceTab = CreatePageTab(ADDON_NAME .. "StatsTabAlliance", 750, "alliance", 216)
+    self.statisticsProgressTab = CreatePageTab(ADDON_NAME .. "StatsTabProgress", 22, "progress", 302)
+    self.statisticsEconomyTab = CreatePageTab(ADDON_NAME .. "StatsTabEconomy", 338, "economy", 302)
+    self.statisticsHistoryTab = CreatePageTab(ADDON_NAME .. "StatsTabHistory", 654, "history", 302)
     self:RefreshStatisticsPageTabs()
+    self:RefreshStatisticsSubPageNavigation()
+    self:ApplyStatisticsTheme()
 end
 
 function TPM:GetStatisticsViewportBounds()
@@ -14245,7 +16534,7 @@ function TPM:GetStatisticsMaxScrollOffset()
 end
 
 function TPM:RefreshStatisticsZoneRows()
-    if self.saved and self.saved.statisticsPage ~= "progress" then return end
+    if not self.saved or self.saved.statisticsPage ~= "progress" or self:GetStatisticsProgressSubPage() ~= 1 then return end
     local stats = self.statisticsData
     if not stats then return end
     local maxOffset = self:GetStatisticsMaxScrollOffset()
@@ -14297,10 +16586,11 @@ function TPM:RefreshStatisticsZoneRows()
             end
         end
     end
+    self:EnforceStatisticsDarkModeAfterRefresh()
 end
 
 function TPM:ScrollStatistics(delta)
-    if self.saved and self.saved.statisticsPage ~= "progress" then return end
+    if not self.saved or self.saved.statisticsPage ~= "progress" or self:GetStatisticsProgressSubPage() ~= 1 then return end
     local maxOffset = self:GetStatisticsMaxScrollOffset()
     local current = Clamp(Round(self.statisticsScrollOffset or 0), 0, maxOffset)
     -- ESO sends positive delta when scrolling up.
@@ -14314,9 +16604,8 @@ end
 
 function TPM:RefreshStatisticsPlayerProgress()
     if not self.statisticsWindow or self.statisticsWindow:IsHidden() then return end
-    -- Player progression is shown only on the dedicated Player page.
-    -- The Progress page intentionally contains world-completion data only.
-    if self.saved and self.saved.statisticsPage == "player" then
+    -- Character progression is page 2 of PvE/PvP.
+    if self.saved and self.saved.statisticsPage == "history" and self:GetStatisticsHistorySubPage() == 2 then
         self:RefreshPlayerStatisticsPage()
     end
 end
@@ -14327,6 +16616,7 @@ function TPM:RefreshStatisticsLanguageBar()
         if btn.langCode == active then btn:SetColor(1.00, 0.84, 0.20, 1)
         else btn:SetColor(0.72, 0.69, 0.62, 1) end
     end
+    self:EnforceStatisticsDarkModeAfterRefresh()
 end
 
 function TPM:RefreshStatisticsWindow()
@@ -14337,29 +16627,51 @@ function TPM:RefreshStatisticsWindow()
     if not control or control:IsHidden() then return end
 
     local page = self.saved and self.saved.statisticsPage or "progress"
-    if not self:IsValidStatisticsPage(page) then
+    -- Normalize legacy direct Character/Alliance page requests before painting
+    -- anything. This avoids a one-frame flash of the wrong subpage.
+    if page == "player" then
+        page = "history"
+        if self.saved then
+            self.saved.statisticsPage = page
+            self.saved.statisticsHistorySubPage = 2
+        end
+    elseif page == "alliance" then
+        page = "progress"
+        if self.saved then
+            self.saved.statisticsPage = page
+            self.saved.statisticsProgressSubPage = 2
+        end
+    elseif not self:IsValidStatisticsPage(page) then
         page = "progress"
         if self.saved then self.saved.statisticsPage = page end
     end
     self:UpdateStatisticsPageVisibility(page)
     self:RefreshStatisticsPageTabs()
 
+    self:RefreshStatisticsSubPageNavigation()
+    local progressMainPage = page == "progress" and self:GetStatisticsProgressSubPage() == 1
+    if self.statisticsThemeGear then self.statisticsThemeGear:SetHidden(not progressMainPage) end
+
     if page == "economy" then
         self.statisticsTitle:SetText(self:L("STAT_ECONOMY_PAGE_TITLE"))
         self.statisticsMode:SetText(self:L("STAT_ECONOMY_PAGE_MODE"))
         self:RefreshEconomyStatisticsPage()
+        self:EnforceStatisticsDarkModeAfterRefresh()
         return
     elseif page == "history" then
-        self.statisticsTitle:SetText(self:L("HISTORY_PAGE_TITLE"))
-        local historyStore = self:GetHistoryStore()
-        local historyName = historyStore and historyStore.characterName or self:L("STAT_PLAYER_UNKNOWN")
-        self.statisticsMode:SetText(self:L("HISTORY_PAGE_MODE_CHARACTER", historyName))
-        self:RefreshHistoryStatisticsPage()
+        if self:GetStatisticsHistorySubPage() == 2 then
+            self.statisticsTitle:SetText(self:L("STAT_PLAYER_PAGE_TITLE"))
+            self:RefreshPlayerStatisticsPage()
+        else
+            self.statisticsTitle:SetText(self:L("HISTORY_PAGE_TITLE"))
+            self:RefreshHistoryStatisticsPage()
+        end
+        self:EnforceStatisticsDarkModeAfterRefresh()
         return
-    elseif page == "alliance" then
+    elseif page == "progress" and self:GetStatisticsProgressSubPage() == 2 then
         self.statisticsTitle:SetText(self:L("STAT_ALLIANCE_PAGE_TITLE"))
-        self.statisticsMode:SetText(self:L("STAT_ALLIANCE_ALPHA_TEST"))
         self:RefreshAllianceStatisticsPage()
+        self:EnforceStatisticsDarkModeAfterRefresh()
         return
     end
 
@@ -14368,7 +16680,7 @@ function TPM:RefreshStatisticsWindow()
     local stats = self:GetStatisticsData(false, focusZoneId)
     self.statisticsData = stats
 
-    self.statisticsTitle:SetText(string.format("%s-v2.6.84-Beta", self:L("STATISTICS_TITLE")))
+    self.statisticsTitle:SetText(string.format("%s-v%s", self:L("STATISTICS_TITLE"), (VERSION:gsub("_", "-"))))
     self.statisticsMode:SetText(self:L("STAT_MODE", self.saved.calculationMode == "categories" and self:L("MODE_CATEGORIES") or self:L("MODE_OBJECTIVES")))
     if self.statisticsFocusLabel then self.statisticsFocusLabel:SetText(self:L("STAT_FOCUS_LABEL")) end
     self:RefreshStatisticsFocusSelector()
@@ -14482,7 +16794,7 @@ function TPM:RefreshStatisticsWindow()
             self.statisticsCategoryGearIcon:SetColor(showGear and (editing and 1.00 or 0.88) or 0.55, showGear and (editing and 0.82 or 0.82) or 0.52, showGear and (editing and 0.24 or 0.64) or 0.46, showGear and (editing and 1.00 or 0.92) or 0.80)
         end
         self.statisticsCategoryGearButton:SetHandler("OnMouseEnter", showGear and function(button)
-            if button.TPMIcon then button.TPMIcon:SetColor(1.00, 0.86, 0.30, 1) end
+            if button.TPMIcon then if TPM:IsStatisticsDarkDesign() then button.TPMIcon:SetColor(1,1,1,1) else button.TPMIcon:SetColor(1.00, 0.86, 0.30, 1) end end
             local completionType = TPM:GetActiveProgressGoalCategoryType()
             local title = TPM:L("STAT_GOAL_HUD_GEAR_TITLE", TPM:GetProgressGoalCategoryDisplayName(completionType))
             local body = TPM:L("STAT_GOAL_HUD_GEAR_TT")
@@ -14491,7 +16803,8 @@ function TPM:RefreshStatisticsWindow()
         self.statisticsCategoryGearButton:SetHandler("OnMouseExit", showGear and function(button)
             local activeEditor = TPM.skyshardGoalEditMode == true
             if button.TPMIcon then
-                button.TPMIcon:SetColor(activeEditor and 1.00 or 0.88, activeEditor and 0.82 or 0.82, activeEditor and 0.24 or 0.64, activeEditor and 1.00 or 0.92)
+                if TPM:IsStatisticsDarkDesign() then button.TPMIcon:SetColor(1,1,1,activeEditor and 1 or .92)
+                else button.TPMIcon:SetColor(activeEditor and 1.00 or 0.88, activeEditor and 0.82 or 0.82, activeEditor and 0.24 or 0.64, activeEditor and 1.00 or 0.92) end
             end
             TPM:HideStatisticsHoverTooltips()
         end or nil)
@@ -14528,6 +16841,7 @@ function TPM:RefreshStatisticsWindow()
         self.statisticsScrollBar:SetHidden(maxOffset <= 0)
     end
     self:RefreshStatisticsZoneRows()
+    self:EnforceStatisticsDarkModeAfterRefresh()
 end
 function TPM:OpenWorldMapFromStatistics(mapId)
     mapId = tonumber(mapId) or 0
@@ -14683,6 +16997,7 @@ end
 function TPM:FinalizeStatisticsWindowHide(closeToken)
     if closeToken ~= nil and closeToken ~= self.statisticsCloseAnimationToken then return end
     self.statisticsCloseAnimationPending = false
+    if self.alliancePlannerMapDragging then self:EndAlliancePlannerMapPan() end
 
     if self.statisticsWindow then
         self.statisticsWindow:SetAlpha(1)
@@ -14799,6 +17114,7 @@ function TPM:ShowStatisticsWindow(openStandalone)
 end
 
 function TPM:HideStatisticsWindow()
+    if self.statisticsThemeWindow and not self.statisticsThemeWindow:IsHidden() then self:SetStatisticsThemeWindowVisible(false) end
     self:HideEconomyFocusDropdown()
     self:HideStatisticsHoverTooltips()
     self:HideStatisticsFocusDropdown()
@@ -16013,6 +18329,9 @@ function TPM:ResetCurrentCharacterEconomyStats()
     if not self.saved then return end
     local key = self:GetCurrentCharacterStatsKey()
     self.saved.economyStatsByCharacter[key] = { trackingVersion = VERSION, currencies = {} }
+    if type(self.saved.economyZoneStatsByCharacter) ~= "table" then self.saved.economyZoneStatsByCharacter = {} end
+    self.saved.economyZoneStatsByCharacter[key] = {}
+    self.economyCurrencyPrevious = nil
     self:RefreshEconomyStatisticsPage()
 end
 
@@ -16358,10 +18677,44 @@ function TPM:QueueProgressHistoryCheckpoint()
         TPM:CheckMilestones(snapshot)
         TPM:CheckpointHistory("progress", false, snapshot)
         if TPM.statisticsWindow and not TPM.statisticsWindow:IsHidden()
-            and TPM.saved and TPM.saved.statisticsPage == "history" then
+            and TPM.saved and TPM.saved.statisticsPage == "history"
+            and TPM:GetStatisticsHistorySubPage() == 1 then
             TPM:RefreshHistoryStatisticsPage()
         end
     end, 250)
+end
+
+function TPM:RunSavedVariableMigrations()
+    if not self.saved then return end
+    local schema = math.max(0, tonumber(self.saved.schemaVersion) or 0)
+    if schema < 1 then
+        if type(self.saved.economyZoneStatsByCharacter) ~= "table" then self.saved.economyZoneStatsByCharacter = {} end
+        schema = 1
+    end
+    if schema < 2 then
+        local days = tonumber(self.saved.statisticsCharacterRangeDays) or 7
+        if days~=7 and days~=30 and days~=90 and days~=365 then days=7 end
+        self.saved.statisticsCharacterRangeDays=days; self.saved.statisticsCharacterRangeOffset=math.max(0,tonumber(self.saved.statisticsCharacterRangeOffset) or 0)
+        schema = 2
+    end
+    if schema < 3 then
+        -- Existing 2.7.3/2.7.4 ledgers cannot reveal historic DST offsets or
+        -- per-zone time retroactively. Marking happens lazily per character and
+        -- all new observations store both values accurately from this version.
+        for _,store in pairs(self.saved.historyByCharacter or {}) do if type(store)=="table" then store.characterPlaytime365OffsetMigrated=false end end
+        schema = 3
+    end
+    if schema < 4 then
+        -- 2.7.11 splits the old combined accent channel into headings, accents,
+        -- normal text and progress/value colors. Preserve the user's previous
+        -- accent choice for headings when upgrading instead of silently losing it.
+        local old=self.saved.statisticsThemeAccent
+        if type(old)=="table" then self.saved.statisticsThemeHeading={r=old.r,g=old.g,b=old.b} end
+        if type(self.saved.statisticsThemeText)~="table" then self.saved.statisticsThemeText={r=.88,g=.84,b=.74} end
+        schema=4
+    end
+    -- Never downgrade a SavedVariables file written by a newer TPM build.
+    self.saved.schemaVersion = math.max(tonumber(self.saved.schemaVersion) or 0, CURRENT_SCHEMA_VERSION, schema)
 end
 
 function TPM:Initialize()
@@ -16394,6 +18747,14 @@ function TPM:Initialize()
     end
 
     self.saved = ZO_SavedVars:NewAccountWide("TamrielProgressMap_SavedVariables", 1, nil, DEFAULTS)
+    self:RunSavedVariableMigrations()
+    if self.saved.statisticsThemeDesign ~= "tpm" and self.saved.statisticsThemeDesign ~= "vanilla" and self.saved.statisticsThemeDesign ~= "dark" then
+        self.saved.statisticsThemeDesign = DEFAULTS.statisticsThemeDesign
+    end
+    if type(self.saved.statisticsThemeProgress) ~= "table" then
+        self.saved.statisticsThemeProgress = { r = DEFAULTS.statisticsThemeProgress.r, g = DEFAULTS.statisticsThemeProgress.g, b = DEFAULTS.statisticsThemeProgress.b }
+    end
+    self:StartStatisticsThemeRGBUpdate()
     if not self.saved.percentColorModeMigrated then
         if self.saved.blackPercentText then
             self.saved.percentColorMode = "black"
@@ -16438,6 +18799,10 @@ function TPM:Initialize()
     self.saved.mapPercentScale = Clamp(Round(tonumber(self.saved.mapPercentScale) or DEFAULTS.mapPercentScale), 70, 160)
     self.saved.headerPercentScale = Clamp(Round(tonumber(self.saved.headerPercentScale) or DEFAULTS.headerPercentScale), 70, 160)
     self.saved.statisticsWindowScale = Clamp(Round(tonumber(self.saved.statisticsWindowScale) or DEFAULTS.statisticsWindowScale), 80, 120)
+    local characterRange=tonumber(self.saved.statisticsCharacterRangeDays) or 7
+    if characterRange~=7 and characterRange~=30 and characterRange~=90 and characterRange~=365 then characterRange=7 end
+    self.saved.statisticsCharacterRangeDays=characterRange
+    self.saved.statisticsCharacterRangeOffset=Clamp(tonumber(self.saved.statisticsCharacterRangeOffset) or 0,0,math.max(0,math.floor((characterRange-1)/7)*7))
 
     if not self.saved.hundredDisplayMigrated then
         self.saved.hundredDisplayMode = self.saved.hideCompletedZones and "hidden" or "percent"
@@ -16456,9 +18821,20 @@ function TPM:Initialize()
     if self.saved.statisticsSortMode ~= "progress" and self.saved.statisticsSortMode ~= "name" then
         self.saved.statisticsSortMode = DEFAULTS.statisticsSortMode
     end
-    if not self:IsValidStatisticsPage(self.saved.statisticsPage) then
+    -- 2.7.31 journal restructure: Character and Alliance became page 2 of
+    -- PvE/PvP and Progress. Preserve exactly what older users had open.
+    if self.saved.statisticsPage == "player" then
+        self.saved.statisticsPage = "history"
+        self.saved.statisticsHistorySubPage = 2
+    elseif self.saved.statisticsPage == "alliance" then
+        self.saved.statisticsPage = "progress"
+        self.saved.statisticsProgressSubPage = 2
+    end
+    if self.saved.statisticsPage ~= "progress" and self.saved.statisticsPage ~= "economy" and self.saved.statisticsPage ~= "history" then
         self.saved.statisticsPage = DEFAULTS.statisticsPage
     end
+    self.saved.statisticsProgressSubPage = tonumber(self.saved.statisticsProgressSubPage) == 2 and 2 or 1
+    self.saved.statisticsHistorySubPage = tonumber(self.saved.statisticsHistorySubPage) == 2 and 2 or 1
     if tonumber(self.saved.statisticsCompletionPage) ~= 1 and tonumber(self.saved.statisticsCompletionPage) ~= 2 and tonumber(self.saved.statisticsCompletionPage) ~= 3 then
         self.saved.statisticsCompletionPage = DEFAULTS.statisticsCompletionPage
     else
@@ -16707,6 +19083,8 @@ function TPM:Initialize()
         -- Economy tracking is character-scoped from 2.0.15 onward, so this also
         -- ensures the active character ledger is selected immediately after login.
         TPM:InvalidateStatisticsData(true)
+        TPM.alliancePlannerZonePositionCache = {}
+        TPM.alliancePlannerZonePositionCacheMapId = nil
         TPM:GetEconomyStats()
         TPM:SyncCurrentEsoPlayedTime()
         TPM:StartOrResumeHistorySession()
@@ -16715,7 +19093,7 @@ function TPM:Initialize()
         TPM:DiscoverCurrentZoneWorldEventCandidates(true)
         zo_callLater(function() if TPM then TPM:HandleTrackedActivityActivated() end end, 350)
         zo_callLater(function() if TPM then TPM:ResumeParticipatingWorldEvent(); TPM:DiscoverCurrentZoneWorldEventCandidates(true) end end, 500)
-        zo_callLater(function() if TPM then TPM:RefreshQuestRewards() end end, 250)
+        zo_callLater(function() if TPM then TPM.questRewardDirty=true; TPM:RefreshQuestRewards(true) end end, 250)
         zo_callLater(function() if TPM then TPM:RefreshSkyshardGoalWidget() end end, 450)
         if TPM.statisticsWindow and not TPM.statisticsWindow:IsHidden()
             and TPM.saved and TPM.saved.statisticsPage == "economy" then
@@ -16733,6 +19111,11 @@ function TPM:Initialize()
     EVENT_MANAGER:RegisterForUpdate(ADDON_NAME .. "HistoryCheckpoint", HISTORY_CHECKPOINT_MS, function()
         if TPM.saved and TPM.saved.historyEnabled ~= false then
             TPM:CheckpointHistory("periodic", false)
+        end
+        if TPM.statisticsWindow and not TPM.statisticsWindow:IsHidden()
+            and TPM.saved and TPM.saved.statisticsPage == "history"
+            and TPM:GetStatisticsHistorySubPage() == 2 then
+            TPM:RefreshPlayerStatisticsPage()
         end
     end)
 
@@ -16754,6 +19137,10 @@ function TPM:Initialize()
 
     if _G.EVENT_ZONE_CHANGED then
         EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "SkyshardGoalZoneChanged", _G.EVENT_ZONE_CHANGED, function()
+            -- Checkpoint immediately after a zone transition. The previous /played
+            -- interval is attributed to the previous observed zone, then the new
+            -- observation becomes the start of the next zone segment.
+            if TPM.saved and TPM.saved.historyEnabled ~= false then TPM:CheckpointHistory("zone_changed", false) end
             zo_callLater(function() if TPM then TPM:RefreshSkyshardGoalWidget() end end, 100)
         end)
     end
@@ -16787,24 +19174,25 @@ function TPM:Initialize()
 
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "QuestFocus", EVENT_QUEST_SHOW_JOURNAL_ENTRY, function()
         TPM:QueueRefresh(30)
-        zo_callLater(function() if TPM then TPM:RefreshQuestRewards() end end, 30)
+        zo_callLater(function() if TPM then TPM.questRewardDirty=true; TPM:RefreshQuestRewards(true) end end, 30)
     end)
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "QuestList", EVENT_QUEST_LIST_UPDATED, function()
+        TPM.questRewardDirty = true
         TPM:InvalidateStatisticsData(false)
         TPM:QueueRefresh(50)
         zo_callLater(function() if TPM then TPM:RefreshVanillaQuestRewardColors() end end, 20)
+        zo_callLater(function() if TPM and TPM:IsFullWorldMapSceneVisible() then TPM:RefreshQuestRewards(true) end end, 50)
     end)
     if FOCUSED_QUEST_TRACKER and FOCUSED_QUEST_TRACKER.RegisterCallback then
         FOCUSED_QUEST_TRACKER:RegisterCallback("QuestTrackerAssistStateChanged", function()
             TPM:QueueRefresh(30)
-            zo_callLater(function() if TPM then TPM:RefreshQuestRewards() end end, 30)
+            zo_callLater(function() if TPM then TPM.questRewardDirty=true; TPM:RefreshQuestRewards(true) end end, 30)
         end)
     end
 
-    -- Keep the embedded reward block synchronized with ESO's tracker layout.
-    -- 500 ms is intentionally lightweight and also covers UI rebuilds where no
-    -- assist-state callback fires (reloadui, tracker collapse/expand, zone load).
-    EVENT_MANAGER:RegisterForUpdate(ADDON_NAME .. "FocusedRewardPanel", 500, function()
+    -- Event callbacks handle normal changes. A 2-second safety poll covers rare tracker rebuilds
+    -- without rebuilding text/layout twice per second while the map is idle.
+    EVENT_MANAGER:RegisterForUpdate(ADDON_NAME .. "FocusedRewardPanel", 2000, function()
         if TPM and TPM.saved and TPM.saved.showQuestRewards
             and TPM:IsFullWorldMapSceneVisible() then
             TPM:RefreshQuestRewards()
@@ -16831,7 +19219,7 @@ function TPM:Initialize()
         if not eventCode then return end
         EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "Collections" .. suffix, eventCode, function()
             if TPM.statisticsWindow and not TPM.statisticsWindow:IsHidden()
-                and TPM.saved and TPM.saved.statisticsPage == "progress"
+                and TPM.saved and TPM.saved.statisticsPage == "progress" and TPM:GetStatisticsProgressSubPage() == 1
                 and tonumber(TPM.saved.statisticsCompletionPage) == 2 then
                 TPM:RefreshStatisticsWindow()
             end
@@ -16877,7 +19265,17 @@ function TPM:Initialize()
             end
             if TPM.statisticsWindow and not TPM.statisticsWindow:IsHidden() then
                 if TPM.saved and TPM.saved.statisticsPage == "history" then
-                    TPM:RefreshHistoryStatisticsPage()
+                    if TPM:GetStatisticsHistorySubPage() == 2 then
+                        -- XP changes only need the lightweight bars; a Level/CP change
+                        -- also updates the Character profile line immediately.
+                        if suffix == "Level" or suffix == "CP" or suffix == "CPGain" then
+                            TPM:RefreshPlayerStatisticsPage()
+                        else
+                            TPM:RefreshCombatProgressionBars()
+                        end
+                    else
+                        TPM:RefreshHistoryStatisticsPage()
+                    end
                 else
                     TPM:RefreshStatisticsPlayerProgress()
                 end
@@ -17013,6 +19411,8 @@ function TPM:Initialize()
             if numericTargetId > 0 then
                 local deathKey = "pve_npc_death|" .. tostring(numericTargetId)
                 if TPM:IsDuplicateCombatCounterEvent(deathKey, 1800) then return end
+            elseif TPM:IsDuplicatePveNpcDeathWithoutUnitId(cleanTargetName, result) then
+                return
             end
             TPM:IncrementPlayerCombatStat("npcKills", 1)
             TPM:RecordWorldEventPveKill(kind)
@@ -17168,7 +19568,7 @@ function TPM:Initialize()
                 -- matched from EVENT_EXPERIENCE_UPDATE below, which reflects
                 -- every actual player XP-state change more reliably.
                 TPM:RecordTrackedActivityExperienceGain(reason, level, previousExperience, currentExperience)
-                if TPM.saved and TPM.saved.statisticsPage == "history" then TPM:RefreshCombatProgressionBars() end
+                if TPM.saved and TPM.saved.statisticsPage == "history" and TPM:GetStatisticsHistorySubPage() == 2 then TPM:RefreshCombatProgressionBars() end
             end)
     end
 
@@ -17192,7 +19592,7 @@ function TPM:Initialize()
             function(_, unitTag, currentExp, maxExp, reason)
                 if unitTag ~= "player" then return end
                 TPM:HandlePlayerExperienceUpdate(currentExp, maxExp, reason)
-                if TPM.saved and TPM.saved.statisticsPage == "history" then TPM:RefreshCombatProgressionBars() end
+                if TPM.saved and TPM.saved.statisticsPage == "history" and TPM:GetStatisticsHistorySubPage() == 2 then TPM:RefreshCombatProgressionBars() end
             end)
         if EVENT_MANAGER.AddFilterForEvent and _G.REGISTER_FILTER_UNIT_TAG then
             EVENT_MANAGER:AddFilterForEvent(ADDON_NAME .. "CombatProgressXP", EVENT_EXPERIENCE_UPDATE, REGISTER_FILTER_UNIT_TAG, "player")
@@ -17200,27 +19600,27 @@ function TPM:Initialize()
     end
     if _G.EVENT_LEVEL_UPDATE then
         EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "CombatProgressLevel", EVENT_LEVEL_UPDATE, function(_, unitTag)
-            if unitTag == "player" and TPM.saved and TPM.saved.statisticsPage == "history" then TPM:RefreshCombatProgressionBars() end
+            if unitTag == "player" and TPM.saved and TPM.saved.statisticsPage == "history" and TPM:GetStatisticsHistorySubPage() == 2 then TPM:RefreshCombatProgressionBars() end
         end)
     end
     if _G.EVENT_CHAMPION_POINT_UPDATE then
         EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "CombatProgressCP", EVENT_CHAMPION_POINT_UPDATE, function(_, unitTag)
-            if unitTag == "player" and TPM.saved and TPM.saved.statisticsPage == "history" then TPM:RefreshCombatProgressionBars() end
+            if unitTag == "player" and TPM.saved and TPM.saved.statisticsPage == "history" and TPM:GetStatisticsHistorySubPage() == 2 then TPM:RefreshCombatProgressionBars() end
         end)
     end
     if _G.EVENT_COMPANION_EXPERIENCE_GAIN then
         EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "CombatProgressCompanionXP", EVENT_COMPANION_EXPERIENCE_GAIN, function()
-            if TPM.saved and TPM.saved.statisticsPage == "history" then TPM:RefreshCombatProgressionBars() end
+            if TPM.saved and TPM.saved.statisticsPage == "history" and TPM:GetStatisticsHistorySubPage() == 2 then TPM:RefreshCombatProgressionBars() end
         end)
     end
     if _G.EVENT_COMPANION_ACTIVATED then
         EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "CombatProgressCompanionOn", EVENT_COMPANION_ACTIVATED, function()
-            if TPM.saved and TPM.saved.statisticsPage == "history" then TPM:RefreshCombatProgressionBars() end
+            if TPM.saved and TPM.saved.statisticsPage == "history" and TPM:GetStatisticsHistorySubPage() == 2 then TPM:RefreshCombatProgressionBars() end
         end)
     end
     if _G.EVENT_COMPANION_DEACTIVATED then
         EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "CombatProgressCompanionOff", EVENT_COMPANION_DEACTIVATED, function()
-            if TPM.saved and TPM.saved.statisticsPage == "history" then TPM:RefreshCombatProgressionBars() end
+            if TPM.saved and TPM.saved.statisticsPage == "history" and TPM:GetStatisticsHistorySubPage() == 2 then TPM:RefreshCombatProgressionBars() end
         end)
     end
 

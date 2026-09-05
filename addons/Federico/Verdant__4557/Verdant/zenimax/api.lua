@@ -22,6 +22,9 @@ M.GetUnitClassId          = GetUnitClassId
 M.ZO_GetClassIcon         = ZO_GetClassIcon
 M.GetUnitZone             = GetUnitZone
 M.GetTimeStamp            = GetTimeStamp
+M.GetUIGlobalScale        = GetUIGlobalScale
+M.GetDateStringFromTimestamp = GetDateStringFromTimestamp
+M.GetCurrentZoneDungeonDifficulty = GetCurrentZoneDungeonDifficulty
 M.GetLatency              = GetLatency
 M.GetUnitDisplayName      = GetUnitDisplayName
 M.GetUnitClass            = GetUnitClass
@@ -35,6 +38,10 @@ M.GetZoneNameByIndex      = GetZoneNameByIndex
 
 M.GetSlotName                            = GetSlotName
 M.GetSlotBoundId                         = GetSlotBoundId
+M.GetSlotAbilityCost                     = GetSlotAbilityCost
+M.GetActiveHotbarCategory                = GetActiveHotbarCategory
+M.GetActiveHotbarCategory                = GetActiveHotbarCategory
+M.GetUnitPower                           = GetUnitPower
 M.GetAbilityName                         = GetAbilityName
 M.GetAbilityIcon                         = GetAbilityIcon
 M.GetAbilityDescription                  = GetAbilityDescription
@@ -46,3 +53,4 @@ M.GetSpecificSkillAbilityKeysByAbilityId = GetSpecificSkillAbilityKeysByAbilityI
 M.GetSkillLineId                         = GetSkillLineId
 
 M.GetUIMousePosition = GetUIMousePosition
+M.MouseIsOver        = MouseIsOver

@@ -1,11 +1,24 @@
+local owa = OWAssistant
+local deconstruct = owa.Deconstruct
+
+local function IsShield(itemLink)
+    return GetItemLinkItemType(itemLink) == ITEMTYPE_ARMOR
+        and GetItemLinkEquipType(itemLink) == EQUIP_TYPE_OFF_HAND
+end
+
+local function IsWeaponOrShield(itemLink)
+    return GetItemLinkItemType(itemLink) == ITEMTYPE_WEAPON
+        or IsShield(itemLink)
+end
+
 local function IsWeaponStation()
-    if OWDeconstruct.IsUniversalStation() then
+    if deconstruct.IsUniversalStation() then
         return true
     end
 
-    return OWDeconstruct.currentCraftingType
+    return deconstruct.currentCraftingType
         == CRAFTING_TYPE_BLACKSMITHING
-        or OWDeconstruct.currentCraftingType
+        or deconstruct.currentCraftingType
         == CRAFTING_TYPE_WOODWORKING
 end
 
@@ -30,6 +43,8 @@ local function IsOrnateWeapon(
         == ITEM_TRAIT_INFORMATION_ORNATE
         or traitType
         == ITEM_TRAIT_TYPE_WEAPON_ORNATE
+        or traitType
+        == ITEM_TRAIT_TYPE_ARMOR_ORNATE
 end
 
 local function IsIntricateWeapon(
@@ -43,18 +58,22 @@ local function IsIntricateWeapon(
         == ITEM_TRAIT_INFORMATION_INTRICATE
         or traitType
         == ITEM_TRAIT_TYPE_WEAPON_INTRICATE
+        or traitType
+        == ITEM_TRAIT_TYPE_ARMOR_INTRICATE
 end
 
 local function IsNirnhonedWeapon(itemLink)
-    return GetItemLinkTraitType(itemLink)
-        == ITEM_TRAIT_TYPE_WEAPON_NIRNHONED
+    local traitType = GetItemLinkTraitType(itemLink)
+
+    return traitType == ITEM_TRAIT_TYPE_WEAPON_NIRNHONED
+        or traitType == ITEM_TRAIT_TYPE_ARMOR_NIRNHONED
 end
 
 local function CanExtractWeapon(
     bagId,
     slotIndex
 )
-    if OWDeconstruct.IsUniversalStation() then
+    if deconstruct.IsUniversalStation() then
         return CanItemBeSmithingExtractedOrRefined(
             bagId,
             slotIndex,
@@ -70,7 +89,7 @@ local function CanExtractWeapon(
     return CanItemBeSmithingExtractedOrRefined(
         bagId,
         slotIndex,
-        OWDeconstruct.currentCraftingType
+        deconstruct.currentCraftingType
     )
 end
 
@@ -94,6 +113,15 @@ local function IsResearchableWeaponTrait(traitType)
         or traitType == ITEM_TRAIT_TYPE_WEAPON_SHARPENED
         or traitType == ITEM_TRAIT_TYPE_WEAPON_DECISIVE
         or traitType == ITEM_TRAIT_TYPE_WEAPON_NIRNHONED
+        or traitType == ITEM_TRAIT_TYPE_ARMOR_STURDY
+        or traitType == ITEM_TRAIT_TYPE_ARMOR_IMPENETRABLE
+        or traitType == ITEM_TRAIT_TYPE_ARMOR_REINFORCED
+        or traitType == ITEM_TRAIT_TYPE_ARMOR_WELL_FITTED
+        or traitType == ITEM_TRAIT_TYPE_ARMOR_TRAINING
+        or traitType == ITEM_TRAIT_TYPE_ARMOR_INFUSED
+        or traitType == ITEM_TRAIT_TYPE_ARMOR_PROSPEROUS
+        or traitType == ITEM_TRAIT_TYPE_ARMOR_DIVINES
+        or traitType == ITEM_TRAIT_TYPE_ARMOR_NIRNHONED
 end
 
 local function IsWeaponAllowed(
@@ -108,9 +136,7 @@ local function IsWeaponAllowed(
         return false
     end
 
-    if GetItemLinkItemType(itemLink)
-        ~= ITEMTYPE_WEAPON
-    then
+    if not IsWeaponOrShield(itemLink) then
         return false
     end
 
@@ -140,7 +166,7 @@ local function IsWeaponAllowed(
     )
 
     local maxQuality =
-        OWDeconstruct.GetMaxQuality(profile)
+        deconstruct.GetMaxQuality(profile)
 
     if not quality
         or quality > maxQuality
@@ -202,7 +228,9 @@ local function IsWeaponAllowed(
         matchesFilter = true
     end
 
-    if profile.research
+    if (profile.researchMode == "all"
+        or profile.researchMode
+        == "keep_lowest_unresearched")
         and IsResearchableWeaponTrait(traitType)
     then
         matchesFilter = true
@@ -240,8 +268,9 @@ local function CreateWeaponCandidate(
         traitType =
             GetItemLinkTraitType(itemLink),
 
-        weaponType =
-            GetItemLinkWeaponType(itemLink),
+        weaponType = IsShield(itemLink)
+            and "shield"
+            or GetItemLinkWeaponType(itemLink),
 
         researchable =
             CanItemLinkBeTraitResearched(
@@ -260,8 +289,7 @@ local function RemoveLowestResearchWeapons(
     candidates,
     profile
 )
-    if not profile.research
-        or profile.researchMode
+    if profile.researchMode
         ~= "keep_lowest_unresearched"
     then
         return candidates
@@ -339,8 +367,8 @@ local function CollectWeaponCandidates(
     end
 
     local profiles =
-        OWA_SavedVariables
-        and OWA_SavedVariables.deconstructProfiles
+        owa.savedVariables
+        and owa.savedVariables.deconstructProfiles
 
     local profile =
         profiles and profiles.weapon
@@ -389,7 +417,7 @@ local function CollectWeaponCandidates(
     end
 end
 
-OWDeconstruct.RegisterCollector(
+deconstruct.RegisterCollector(
     "weapon",
     CollectWeaponCandidates
 )

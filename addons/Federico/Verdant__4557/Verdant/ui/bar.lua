@@ -49,7 +49,7 @@ local BORDER_SIZE  = 2
 
 local MIN_W_SINGLE, MAX_W_SINGLE = 60,  140
 local MIN_W_ALL,    MAX_W_ALL    = 110, 200
-local MIN_H,        MAX_H        = 180, 440
+local MIN_H,        MAX_H        = 200, 440
 
 
 local TRI_COL_W   = 26
@@ -92,6 +92,9 @@ end
 
 
 local metric_idx  = 1
+local segs_ehps   = { count = 0 }
+local segs_mps    = { count = 0 }
+local ALL_VALS    = { EMS = { frac = 0, raw = 0 }, eHPS = { frac = 0, raw = 0 }, MPS = { frac = 0, raw = 0 } }
 local display_pct = false
 local controls    = {}
 
@@ -112,7 +115,6 @@ local function save_state()
   local b = sv.bar
   b.metric_idx  = metric_idx
   b.display_pct = display_pct
-  b.visible     = not controls.window:IsHidden()
 end
 
 local function apply_size_constraints()
@@ -207,7 +209,7 @@ local function setup_triple_view()
 
   local container = WM:CreateControl("VerdantBarTriContainer", win, CT_CONTROL)
   container:ClearAnchors()
-  container:SetAnchor(TOP,    win, TOP,    0, 52)
+  container:SetAnchor(TOP,    win, TOP,    0, 78)
   container:SetAnchor(BOTTOM, win, BOTTOM, 0, -70)
   container:SetWidth(TRI_TOTAL_W)
   container:SetHidden(true)
@@ -319,11 +321,10 @@ local function refresh()
     controls.value_label:SetHidden(true)
     controls.tri_container:SetHidden(false)
 
-    local vals = {
-      EMS  = { frac = r.C_self   or 0, raw = r.EMS  or 0 },
-      eHPS = { frac = r.C_heal   or 0, raw = r.eHPS or 0 },
-      MPS  = { frac = r.C_shield or 0, raw = r.MPS  or 0 },
-    }
+    local vals = ALL_VALS
+    vals.EMS.frac,  vals.EMS.raw  = r.C_self   or 0, r.EMS  or 0
+    vals.eHPS.frac, vals.eHPS.raw = r.C_heal   or 0, r.eHPS or 0
+    vals.MPS.frac,  vals.MPS.raw  = r.C_shield or 0, r.MPS  or 0
 
     for _, cm in ipairs(TRI_COLS) do
       local col   = controls.tri[cm]
@@ -348,11 +349,11 @@ local function refresh()
       if area_h > 4 then
         if cm == "eHPS" then
           col.fill:SetHidden(true)
-          local segs = Verdant.Metrics.eHPS_by_group(now)
+          local segs = Verdant.Metrics.eHPS_by_group_into(segs_ehps, now)
           col.bar:render(col.area, segs, area_w, area_h, frac)
         elseif cm == "MPS" then
           col.fill:SetHidden(true)
-          local segs = Verdant.Metrics.MPS_by_group(now)
+          local segs = Verdant.Metrics.MPS_by_group_into(segs_mps, now)
           col.bar:render(col.area, segs, area_w, area_h, frac)
         else
           col.fill:SetHidden(true)
@@ -431,7 +432,7 @@ local function refresh()
       controls.fill_heal:SetHidden(true)
       controls.fill_shield:SetHidden(true)
       controls.bar_mps:release()
-      local segs = Verdant.Metrics.eHPS_by_group(now)
+      local segs = Verdant.Metrics.eHPS_by_group_into(segs_ehps, now)
       controls.bar_ehps:render(controls.bar_area, segs, area_w, area_h, frac)
 
     elseif m == "MPS" then
@@ -439,11 +440,14 @@ local function refresh()
       controls.fill_heal:SetHidden(true)
       controls.fill_shield:SetHidden(true)
       controls.bar_ehps:release()
-      local segs = Verdant.Metrics.MPS_by_group(now)
+      local segs = Verdant.Metrics.MPS_by_group_into(segs_mps, now)
       controls.bar_mps:render(controls.bar_area, segs, area_w, area_h, frac)
     end
 
     render_peak_line(controls.peak_line, controls.bar_area, area_w, area_h, peaks[m].frac)
+  end
+  if controls.rec_dot then
+    controls.rec_dot:SetHidden(not Verdant.TemporalBuffer.is_recording())
   end
   prof_exit("bar.refresh")
 end
@@ -479,20 +483,9 @@ function M.toggle()
   PlaySound(now_visible and SOUNDS.ARMORY_OPEN or SOUNDS.ADVENTURE_ZONE_OVERVIEW_CLOSED)
 end
 
-function M.show()
-  controls.window:SetHidden(false)
-  PlaySound(SOUNDS.ARMORY_OPEN)
-  save_state()
-end
-
 function M.on_close_click()
-  M.hide()
-end
-
-function M.hide()
-  controls.window:SetHidden(true)
+  Verdant.Visibility.set("bar", false)
   PlaySound(SOUNDS.ADVENTURE_ZONE_OVERVIEW_CLOSED)
-  save_state()
 end
 
 function M.set_rate(ms)
@@ -537,7 +530,6 @@ function M.init()
   VerdantBarWindowBg:SetCenterColor(0.62, 1.00, 0.74, 1.0)
   VerdantBarWindowBg:SetEdgeColor(0.42, 1.00, 0.60, 1.0)
 
-  controls.title_label   = VerdantBarWindowTitleLabel
   controls.metric_label  = VerdantBarWindowMetricLabel
   controls.value_label   = VerdantBarWindowValueLabel
   controls.bar_area      = VerdantBarWindowBarArea
@@ -547,13 +539,31 @@ function M.init()
   controls.prev_btn      = VerdantBarWindowPrevBtn
   controls.next_btn      = VerdantBarWindowNextBtn
   controls.settings_btn  = VerdantBarWindowSettingsBtn
-
-  controls.title_label:SetText("Verdant")
-  controls.title_label:SetColor(0.55, 0.55, 0.55, 0.70)
-
+  controls.metric_label:SetMouseEnabled(true)
+  controls.metric_label:SetHandler("OnMouseUp", function(_, _, upInside)
+    if upInside ~= false then M.next_metric() end
+  end)
+  zui.tooltip(controls.metric_label, VERDANT_TIP_BAR_METRIC)
+  local rec_dot = zui.WINDOW_MANAGER:CreateControl("VerdantBarWindowRecDot", VerdantBarWindow, CT_TEXTURE)
+  rec_dot:SetTexture("Verdant/assets/rec.dds")
+  rec_dot:SetDimensions(8, 8)
+  rec_dot:SetAnchor(TOPRIGHT, VerdantBarWindow, TOPRIGHT, -6, 6)
+  rec_dot:SetDrawLevel(6)
+  rec_dot:SetHidden(true)
+  controls.rec_dot = rec_dot
+  zui.tooltip(controls.prev_btn,     VERDANT_TIP_BAR_PREV)
+  zui.tooltip(controls.next_btn,     VERDANT_TIP_BAR_NEXT)
+  zui.tooltip(controls.mode_btn,     VERDANT_TIP_BAR_MODE)
+  zui.tooltip(controls.settings_btn, VERDANT_TIP_SETTINGS)
+  zui.tooltip(VerdantBarWindowGraphBtn, VERDANT_TIP_GRAPH)
+  zui.tooltip(VerdantBarWindowCloseBtn, VERDANT_TIP_CLOSE)
 
   controls.api_label:SetHidden(true)
-  controls.version_label:SetText(string_format("v%s  API %d", C.VERSION, GetAPIVersion()))
+  if C.DEBUG then
+    controls.version_label:SetText(string_format("v%s  API %d", C.VERSION, GetAPIVersion()))
+  else
+    controls.version_label:SetText("v" .. C.VERSION)
+  end
   controls.version_label:SetColor(0.40, 0.40, 0.40, 1)
 
   local is_all = (DISPLAY_METRICS[metric_idx] == "ALL")

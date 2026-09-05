@@ -9,7 +9,7 @@ local in_hud = true
 local user_visible = { bar = false, graph = false }
 local bar_enabled = true
 local restore = {}
-local AUX_WINDOWS = { "VerdantSettingsPanel", "VerdantLibrary", "VerdantAssignPanel" }
+local AUX_WINDOWS = { "VerdantSettingsPanel", "VerdantLibrary", "VerdantAssignPanel", "VerdantWatchOverlay" }
 
 
 local function apply()

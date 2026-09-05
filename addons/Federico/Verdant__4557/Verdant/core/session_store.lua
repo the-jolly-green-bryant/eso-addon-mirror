@@ -17,6 +17,7 @@ local DESC = {
     { name = "crit",    width = 4, scale = 10 },
     { name = "noncrit", width = 4, scale = 10 },
     { name = "d",       width = 4, scale = 10 },
+    { name = "o",       width = 4, scale = 10 },
   },
   steps = {
     { name = "b", width = 1 },
@@ -50,6 +51,20 @@ local DESC = {
     { name = "id", width = 4 },
     { name = "sh", width = 2, scale = 1000 },
   },
+  ult = {
+    { name = "t", width = 4 },
+    { name = "v", width = 2 },
+  },
+  ultu = {
+    { name = "t",   width = 4 },
+    { name = "bar", width = 1 },
+  },
+  ulta = {
+    { name = "t",    width = 4 },
+    { name = "bar",  width = 1 },
+    { name = "id",   width = 4 },
+    { name = "cost", width = 2 },
+  },
 }
 
 M.DESC = DESC
@@ -58,10 +73,12 @@ local log
 local api
 local start_zone  = ""
 local start_group = 0
+local start_diff  = 0
 
 function M.on_session_start()
   start_zone  = api.GetUnitZone("player") or ""
   start_group = api.GetGroupSize() or 0
+  start_diff  = api.GetCurrentZoneDungeonDifficulty and api.GetCurrentZoneDungeonDifficulty() or 0
 end
 
 local function lib_root()
@@ -72,7 +89,11 @@ local function lib_root()
   return sv.library
 end
 
-function M.capture()
+local YIELD_EVERY = 40
+
+function M.capture(cooperative)
+  local ye = cooperative and YIELD_EVERY or nil
+  local coroutine_yield = coroutine.yield
   local TB = Verdant.TemporalBuffer
   local BT = Verdant.BuffTracker
   local T  = Verdant.Triage
@@ -83,8 +104,8 @@ function M.capture()
   local t_end = BT.session_end()
   local tb_sum = TB.summary()
   local tri = T.summary()
+  local oh_hot, oh_direct = Verdant.Metrics.overheal_split()
 
-  local series = {}
   local share_recs = {}
   local gkeys = {}
   local gkey_idx = {}
@@ -118,16 +139,21 @@ function M.capture()
       }
     end
   end
-  TB.iterate(function(i, s)
-    series[#series + 1] = {
-      t = s.t - t0, eHPS = s.eHPS, MPS = s.MPS,
-      crit = s.crit, noncrit = s.noncrit, d = s.d,
-    }
-    harvest(#series, 0, s.ehps_groups)
-    harvest(#series, 1, s.mps_groups)
-    harvest_abilities(#series, 0, s.ehps_abilities)
-    harvest_abilities(#series, 1, s.mps_abilities)
-  end)
+  local n_series = TB.count()
+  for i = 1, n_series do
+    local s = TB.at(i)
+    harvest(i, 0, s.ehps_groups)
+    harvest(i, 1, s.mps_groups)
+    harvest_abilities(i, 0, s.ehps_abilities)
+    harvest_abilities(i, 1, s.mps_abilities)
+    if ye and i % ye == 0 then coroutine_yield() end
+  end
+  local function series_get(r, name)
+    local s = TB.at(r)
+    if name == "t" then return s.t - t0 end
+    if name == "o" then return s.o or 0 end
+    return s[name]
+  end
 
   local buffs_meta = {}
   local steps = {}
@@ -170,6 +196,29 @@ function M.capture()
     }
   end
 
+  local ust, usv, usn = Verdant.Ultimate.steps()
+  local ult_recs = {}
+  for i = 1, usn do
+    local v = math_floor(usv[i] + 0.5)
+    if v < 0 then v = 0 end
+    if v > 65535 then v = 65535 end
+    ult_recs[i] = { t = ust[i] - t0, v = v }
+  end
+  local uut, uub, uun = Verdant.Ultimate.used()
+  local ultu_recs = {}
+  for i = 1, uun do
+    ultu_recs[i] = { t = uut[i] - t0, bar = uub[i] or 1 }
+  end
+  local uat, uab, uai, uac, uan = Verdant.Ultimate.abilities()
+  local ulta_recs = {}
+  for i = 1, uan do
+    local rel = uat[i] - t0
+    if rel < 0 then rel = 0 end
+    local cost = uac[i] or 0
+    if cost > 65535 then cost = 65535 end
+    ulta_recs[i] = { t = rel, bar = uab[i] or 1, id = uai[i], cost = cost }
+  end
+
   local ms, mn = TB.markers()
   local mk_recs = {}
   for i = 1, mn do
@@ -202,6 +251,7 @@ function M.capture()
       build = Verdant.Constants.BUILD,
       api = api.GetAPIVersion(),
       locked = false,
+      difficulty = start_diff or 0,
       player_slot = T.player_slot(),
       sum = {
         avg = math_floor(tb_sum.avg_ems + 0.5),
@@ -210,6 +260,8 @@ function M.capture()
         active_pct = tb_sum.active_pct,
         total_heal = tb_sum.total_heal,
         total_shield = tb_sum.total_shield,
+        total_overheal = tb_sum.total_overheal,
+        oh_hot = oh_hot, oh_direct = oh_direct,
         saves = tri.counts.s, s_star = tri.counts.s_star,
         o = tri.counts.o, l = tri.counts.l, m = tri.counts.m,
         oneshot = tri.counts.oneshot, x = tri.counts.x,
@@ -222,12 +274,15 @@ function M.capture()
     gkeys = gkeys,
     desc = DESC,
     streams = {
-      series    = vsf.pack(series, DESC.series),
-      steps     = vsf.pack(steps, DESC.steps),
-      episodes  = vsf.pack(ep_recs, DESC.episodes),
-      markers   = vsf.pack(mk_recs, DESC.markers),
-      shares    = vsf.pack(share_recs, DESC.shares),
-      abilities = vsf.pack(ability_recs, DESC.abilities),
+      series    = vsf.pack(series_get, DESC.series, n_series, ye),
+      steps     = vsf.pack(steps, DESC.steps, nil, ye),
+      episodes  = vsf.pack(ep_recs, DESC.episodes, nil, ye),
+      markers   = vsf.pack(mk_recs, DESC.markers, nil, ye),
+      shares    = vsf.pack(share_recs, DESC.shares, nil, ye),
+      abilities = vsf.pack(ability_recs, DESC.abilities, nil, ye),
+      ult       = vsf.pack(ult_recs, DESC.ult, nil, ye),
+      ultu      = vsf.pack(ultu_recs, DESC.ultu, nil, ye),
+      ulta      = vsf.pack(ulta_recs, DESC.ulta, nil, ye),
     },
   }
   return session
@@ -250,23 +305,73 @@ function M.store(session)
   return true
 end
 
-function M.on_session_stop()
-  local sv = Verdant.SavedVars
-  if not (sv and sv.settings and sv.settings.session_autosave) then return end
-  local session = M.capture()
+local autosave_co = nil
+local autosave_frames = 0
+
+local function autosave_finish(session)
+  Verdant.zenimax.events.unregister_update("VerdantAutosave")
+  autosave_co = nil
   if session then
     M.store(session)
     if log then
       log:info("session autosaved: zone=", session.head.zone,
-               "dur=", session.head.dur_ms, "ms")
+               "dur=", session.head.dur_ms, "ms", "frames=", autosave_frames)
     end
+    if M.on_saved then M.on_saved(session) end
   end
+end
+
+local function autosave_step()
+  if not autosave_co then return end
+  if Verdant.Hitch then Verdant.Hitch.mark("stop") end
+  autosave_frames = autosave_frames + 1
+  local ok, res = coroutine.resume(autosave_co)
+  if not ok then
+    if log then log:warn("autosave failed:", tostring(res)) end
+    autosave_finish(nil)
+    return
+  end
+  if coroutine.status(autosave_co) == "dead" then
+    autosave_finish(res)
+  end
+end
+
+function M.on_session_stop()
+  local sv = Verdant.SavedVars
+  if not (sv and sv.settings and sv.settings.session_autosave) then return end
+  M.finish_autosave()
+  autosave_frames = 0
+  autosave_co = coroutine.create(function() return M.capture(true) end)
+  Verdant.zenimax.events.register_update("VerdantAutosave", 1, autosave_step)
+end
+
+function M.autosave_pending()
+  return autosave_co ~= nil
+end
+
+function M.finish_autosave()
+  local guard = 0
+  while autosave_co and guard < 10000 do
+    autosave_step()
+    guard = guard + 1
+  end
+end
+
+function M.set_label(idx, text)
+  local lib = lib_root()
+  local s = lib and lib.sessions[idx]
+  if not s or not s.head then return false end
+  text = tostring(text or ""):gsub("^%s+", ""):gsub("%s+$", "")
+  if text == "" then s.head.label = nil else s.head.label = text end
+  return true
 end
 
 function M.count()
   local lib = lib_root()
   return lib and #lib.sessions or 0
 end
+
+function M.cap() return CAP end
 
 function M.get(i)
   local lib = lib_root()

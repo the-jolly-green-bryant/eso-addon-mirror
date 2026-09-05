@@ -20,7 +20,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Tamriel Chronos - Clock](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Gandalf/Tamriel-Chronos---Clock__3348) | Gandalf | PC / Mac | 20101 |
 | [Tamriel Master Ledger](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/xPricee/Tamriel-Master-Ledger__1e746db5-8418-4a6f-9f17-4449e0d7e3f0) | xPricee | Console | — |
 | [Tamriel Master Ledger - DEV](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/xPricee/Tamriel-Master-Ledger---DEV__89ecfc27-e76b-48ae-8d40-e76bbf0c5c13) | xPricee | Console | — |
-| [Tamriel Progress Map](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Racconplayz/Tamriel-Progress-Map__4799) | Racconplayz | PC / Mac | 2.6.84 Hotfix |
+| [Tamriel Progress Map](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Racconplayz/Tamriel-Progress-Map__4799) | Racconplayz | PC / Mac | 2.7.0 Beta |
 | [Tamriel Races](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/Tamriel-Races__167ff6ab-0d5c-4582-83cc-0ec8ced35cc1) | SugaComa | Console | — |
 | [Tamriel Tomes Map Pins](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/runcarsnowpen/Tamriel-Tomes-Map-Pins__4591) | runcarsnowpen | PC / Mac | 1.2.1 |
 | [Tamriel Trade Centre](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/cyxui/Tamriel-Trade-Centre__1245) | cyxui | PC / Mac | 4.27.281.39281 |
@@ -77,6 +77,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [TESTUPDATE2112](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/rob82668/TESTUPDATE2112__4435) | rob82668 | PC / Mac | 1.0.0 |
 | [Tetris for Fishing](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Sem/Tetris-for-Fishing__3314) | Sem | PC / Mac | 1.7 |
 | [Tetsu's Combat FPS Booster](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tetsurion/Tetsu-s-Combat-FPS-Booster__2edefdf7-97a0-476e-98a0-f76c40976159) | Tetsurion | Console | — |
+| [Tetsu's Combat Tools](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tetsurion/Tetsu-s-Combat-Tools__37406588-1b71-4a42-b9f0-6d106aa0b987) | Tetsurion | Console | — |
 | [Tetsu's Daily Writ Precrafter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tetsurion/Tetsu-s-Daily-Writ-Precrafter__c68e0837-b325-48b9-94fd-702d8071849f) | Tetsurion | Console | — |
 | [Tetsu's Housing FPS Booster](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tetsurion/Tetsu-s-Housing-FPS-Booster__febdb84e-a3d4-46d5-b70c-e9b1e491be5f) | Tetsurion | Console | — |
 | [Tetsu's Raid Lead Assistant(dev)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tetsurion/Tetsu-s-Raid-Lead-Assistant-dev__a9073aea-3308-48be-91d6-ecdc650b851e) | Tetsurion | Console | — |

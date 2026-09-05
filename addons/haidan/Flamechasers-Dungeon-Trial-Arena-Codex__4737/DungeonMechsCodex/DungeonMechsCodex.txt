@@ -1,12 +1,14 @@
 ## Title: Flamechasers Dungeon, Trial & Arena Codex
 ## APIVersion: 101050
 ## Author: Flamechasers
-## Version: 0.7.2
-## AddOnVersion: 702
-## Description: In-game DLC dungeon, trial, and arena Veteran/Hard Mode mechanics viewer with adaptive role views, automatic activity selection, personal boss notes, and paste-ready chat snippets.
+## Version: 0.8.16
+## AddOnVersion: 816
+## Description: In-game dungeon, trial, and arena Veteran/Hard Mode mechanics viewer with adaptive role views, automatic activity selection, personal boss notes, paste-ready chat snippets, and fully customizable presentation.
 ## SavedVariables: DungeonMechsCodex_SavedVars
+## DependsOn: LibAddonMenu-2.0
 
 Core.lua
+Settings.lua
 Data/00_DataRegistry.lua
 Data/01_DLC_Index.lua
 Data/02_ImperialCityPrison.lua

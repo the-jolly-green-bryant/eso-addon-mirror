@@ -17,8 +17,10 @@ local EFFECT_RESULT_FULL_REFRESH = C.EFFECT_RESULT_FULL_REFRESH
 local EFFECT_RESULT_TRANSFER     = C.EFFECT_RESULT_TRANSFER
 local EFFECT_RESULT_FADED        = C.EFFECT_RESULT_FADED
 
+local KEY_SPAN = 16777216
+
 local function key(abilityId, targetUnitId)
-  return tostring(abilityId or 0) .. ":" .. tostring(targetUnitId or 0)
+  return (abilityId or 0) * KEY_SPAN + ((targetUnitId or 0) % KEY_SPAN)
 end
 
 local active = {}
@@ -34,7 +36,12 @@ function M.on_effect(changeType, abilityId, targetUnitId, sourceType, endTime)
      or changeType == EFFECT_RESULT_UPDATED
      or changeType == EFFECT_RESULT_FULL_REFRESH
      or changeType == EFFECT_RESULT_TRANSFER then
-    active[k] = { abilityId = abilityId, targetUnitId = targetUnitId, endTime = endTime }
+    local rec = active[k]
+    if rec then
+      rec.endTime = endTime
+    else
+      active[k] = { abilityId = abilityId, targetUnitId = targetUnitId, endTime = endTime }
+    end
     stats.gained = stats.gained + 1
   elseif changeType == EFFECT_RESULT_FADED then
     active[k] = nil

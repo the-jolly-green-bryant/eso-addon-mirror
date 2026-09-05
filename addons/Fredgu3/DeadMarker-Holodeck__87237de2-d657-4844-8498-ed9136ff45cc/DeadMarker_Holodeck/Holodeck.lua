@@ -5,6 +5,13 @@
 --   AddOnVersion (manifest) = major*10000 + minor*100 + patch
 --   0.0.27 → 27
 --
+-- Local budget: this file's main chunk shares Lua 5.1's 200-local cap.
+-- Count: python .../eso-lua-qa/scripts/local_count_scan.py Holodeck.lua
+-- New trial recipes belong in a sibling manifest .lua (new 200), not more
+-- `local function` here. Fold tunables into CFG / TEX, not new locals.
+--
+-- 0.0.50: Two tag marks per side (lusterbeam)
+-- 0.0.49: Portal pads + glow from hops; DPS tag marks; smaller Portal! banner
 -- 0.0.48: Portal! from pack hops (not a generic timer); NPC pack has no cue
 -- 0.0.47: SWAP! banner on vLC annihilation windows (held ~12s)
 -- 0.0.46: Fix vLC pack labels (broken quotes on Blackguard/Lightweaver)
@@ -43,7 +50,7 @@
 local Holodeck = Holodeck or {}
 Holodeck.name        = "DeadMarker_Holodeck"
 Holodeck.displayName = "Holodeck"
-Holodeck.version     = "0.0.48"
+Holodeck.version     = "0.0.50"
 
 Holodeck.Fights = Holodeck.Fights or {}
 function Holodeck.RegisterFight(fight)
@@ -56,49 +63,59 @@ end
 -- SPACE_WORLD: pack DXT5 256² with mips (same format as DM2 roles ~87KB).
 -- Prefer pack; stock ESO = fallback only. No DeadMarker2 install dependency.
 -- Leading slash required (same as DeadMarker2) or some clients fail to resolve pack DDS.
+-- One table each for paths + tunables so they do not eat the 200-local chunk budget.
 local PACK = "/DeadMarker_Holodeck/textures/"
 local function PackTex(name) return PACK .. name end
-
-local TEX_FALLBACK   = "/esoui/art/icons/poi/poi_areaofinterest_complete.dds"
-local TEX_BOSS_ESO   = "/esoui/art/icons/poi/poi_groupboss_complete.dds"
-local TEX_MINI_ESO   = "/esoui/art/icons/poi/poi_groupinstance_complete.dds"
-local TEX_TRASH_ESO  = "/esoui/art/icons/poi/poi_delve_complete.dds"
-local TEX_STACK_ESO  = "/esoui/art/icons/poi/poi_areaofinterest_complete.dds"
-local TEX_SOAK_ESO   = "/esoui/art/icons/poi/poi_publicdungeon_complete.dds"
-local TEX_SAFE_ESO   = "/esoui/art/icons/poi/poi_wayshrine_complete.dds"
-local TEX_PORTAL_ESO = "/esoui/art/icons/poi/poi_portal_complete.dds"
-local TEX_ORIGIN_ESO = "/esoui/art/icons/mapkey/mapkey_wayshrine.dds"
-local TEX_RING_ESO   = "/esoui/art/icons/poi/poi_areaofinterest_incomplete.dds"
-local TEX_DOT_ESO    = "/esoui/art/buttons/radiobuttonup.dds"
-local TEX_TANK_ESO   = "/esoui/art/icons/poi/poi_groupboss_complete.dds"
-local TEX_HEALER_ESO = "/esoui/art/icons/poi/poi_wayshrine_complete.dds"
-local TEX_DPS_ESO    = "/esoui/art/icons/quest_book_001.dds"
-
-local TEX_BOSS   = PackTex("hd_boss.dds")
-local TEX_MINI   = PackTex("hd_mini.dds")
-local TEX_TRASH  = PackTex("hd_trash.dds")
-local TEX_STACK  = PackTex("hd_stack.dds")
-local TEX_SOAK   = PackTex("hd_soak.dds")
-local TEX_SAFE   = PackTex("hd_safe.dds")
-local TEX_PORTAL = PackTex("hd_portal.dds")
-local TEX_ORIGIN = PackTex("hd_origin.dds")
-local TEX_RING   = PackTex("hd_ring.dds")
-local TEX_DOT    = PackTex("hd_dot.dds")
-local TEX_DASH   = PackTex("hd_dash.dds")
-local TEX_FACE   = PackTex("hd_face.dds")
-local TEX_TANK   = PackTex("hd_tank.dds")
-local TEX_HEALER = PackTex("hd_healer.dds")
-local TEX_DPS    = PackTex("hd_dps.dds")
-
-local ORIGIN_PIN_LOCAL_X = -1.5
-local ORIGIN_PIN_LOCAL_Z = -1.5
-local MIN_TRAVEL_SEC     = 0.35
-local PATH_SPEED_M_S     = 5.0
-local PATH_Y_M           = 0.12
-local PATH_DOT_SPACING   = 1.1
-local SNAP_TRAVEL_EPS    = 0.05
-local FRAME_LOOKAHEAD_SEC = 30
-local FRAME_RING_DOTS     = 28
+local TEX = {
+    FALLBACK   = "/esoui/art/icons/poi/poi_areaofinterest_complete.dds",
+    BOSS_ESO   = "/esoui/art/icons/poi/poi_groupboss_complete.dds",
+    MINI_ESO   = "/esoui/art/icons/poi/poi_groupinstance_complete.dds",
+    TRASH_ESO  = "/esoui/art/icons/poi/poi_delve_complete.dds",
+    STACK_ESO  = "/esoui/art/icons/poi/poi_areaofinterest_complete.dds",
+    SOAK_ESO   = "/esoui/art/icons/poi/poi_publicdungeon_complete.dds",
+    SAFE_ESO   = "/esoui/art/icons/poi/poi_wayshrine_complete.dds",
+    PORTAL_ESO = "/esoui/art/icons/poi/poi_portal_complete.dds",
+    ORIGIN_ESO = "/esoui/art/icons/mapkey/mapkey_wayshrine.dds",
+    RING_ESO   = "/esoui/art/icons/poi/poi_areaofinterest_incomplete.dds",
+    DOT_ESO    = "/esoui/art/buttons/radiobuttonup.dds",
+    TANK_ESO   = "/esoui/art/icons/poi/poi_groupboss_complete.dds",
+    HEALER_ESO = "/esoui/art/icons/poi/poi_wayshrine_complete.dds",
+    DPS_ESO    = "/esoui/art/icons/quest_book_001.dds",
+    BOSS   = PackTex("hd_boss.dds"),
+    MINI   = PackTex("hd_mini.dds"),
+    TRASH  = PackTex("hd_trash.dds"),
+    STACK  = PackTex("hd_stack.dds"),
+    SOAK   = PackTex("hd_soak.dds"),
+    SAFE   = PackTex("hd_safe.dds"),
+    PORTAL = PackTex("hd_portal.dds"),
+    ORIGIN = PackTex("hd_origin.dds"),
+    RING   = PackTex("hd_ring.dds"),
+    DOT    = PackTex("hd_dot.dds"),
+    DASH   = PackTex("hd_dash.dds"),
+    FACE   = PackTex("hd_face.dds"),
+    TANK   = PackTex("hd_tank.dds"),
+    HEALER = PackTex("hd_healer.dds"),
+    DPS    = PackTex("hd_dps.dds"),
+}
+local CFG = {
+    ORIGIN_PIN_LOCAL_X = -1.5,
+    ORIGIN_PIN_LOCAL_Z = -1.5,
+    MIN_TRAVEL_SEC = 0.35,
+    PATH_SPEED_M_S = 5.0,
+    PATH_Y_M = 0.12,
+    PATH_DOT_SPACING = 1.1,
+    SNAP_TRAVEL_EPS = 0.05,
+    FRAME_LOOKAHEAD_SEC = 30,
+    FRAME_RING_DOTS = 28,
+    PORTAL_HOLD_SEC = 12,
+    SHEET_ROWS = 12,
+    HOUSE_OK_DIAMETER_M = 70,
+    HOUSE_TARGET_DIAMETER_M = 50,
+    HOUSE_ENTITY_PATH_MAX_M = 40,
+    HOUSE_RING_RADIUS_M = 22,
+    LIBS_PER_PAGE = 12,
+    TRIAL_INDEX_AT = 12,
+}
 
 -- Public kind set for markers / fight packs / future team roles.
 -- group: enemy | role | spot | system
@@ -107,60 +124,60 @@ local KIND = {
     -- Enemies (recording + packs)
     boss = {
         label = "Boss", group = "enemy",
-        texture = TEX_BOSS, fallback = TEX_BOSS_ESO,
+        texture = TEX.BOSS, fallback = TEX.BOSS_ESO,
         sizeM = 1.8, color = { 1.00, 0.78, 0.18 }, yOffM = 2.2,
     },
     mini = {
         label = "Mini / LT", group = "enemy",
-        texture = TEX_MINI, fallback = TEX_MINI_ESO,
+        texture = TEX.MINI, fallback = TEX.MINI_ESO,
         sizeM = 1.45, color = { 1.00, 0.55, 0.12 }, yOffM = 2.0,
     },
     trash = {
         label = "Trash / add", group = "enemy",
-        texture = TEX_TRASH, fallback = TEX_TRASH_ESO,
+        texture = TEX.TRASH, fallback = TEX.TRASH_ESO,
         sizeM = 1.15, color = { 0.75, 0.55, 0.35 }, yOffM = 1.6,
     },
     -- Roles (shipped copies of DM2-style icons — no DM2 install required)
     tank = {
         label = "Tank", group = "role",
-        texture = TEX_TANK, fallback = TEX_TANK_ESO,
+        texture = TEX.TANK, fallback = TEX.TANK_ESO,
         sizeM = 1.25, color = { 0.35, 0.55, 1.00 }, yOffM = 1.9,
     },
     healer = {
         label = "Healer", group = "role",
-        texture = TEX_HEALER, fallback = TEX_HEALER_ESO,
+        texture = TEX.HEALER, fallback = TEX.HEALER_ESO,
         sizeM = 1.20, color = { 0.35, 0.95, 0.45 }, yOffM = 1.85,
     },
     dps = {
         label = "DPS", group = "role",
-        texture = TEX_DPS, fallback = TEX_DPS_ESO,
+        texture = TEX.DPS, fallback = TEX.DPS_ESO,
         sizeM = 1.15, color = { 0.95, 0.35, 0.55 }, yOffM = 1.8,
     },
     -- Spots (author drops for team walkthrough)
     stack = {
         label = "Stack", group = "spot",
-        texture = TEX_STACK, fallback = TEX_STACK_ESO,
+        texture = TEX.STACK, fallback = TEX.STACK_ESO,
         sizeM = 1.15, color = { 0.40, 0.85, 1.00 }, yOffM = 1.4,
     },
     soak = {
         label = "Soak", group = "spot",
-        texture = TEX_SOAK, fallback = TEX_SOAK_ESO,
+        texture = TEX.SOAK, fallback = TEX.SOAK_ESO,
         sizeM = 1.20, color = { 0.85, 0.35, 0.95 }, yOffM = 1.45,
     },
     safe = {
         label = "Safe / out", group = "spot",
-        texture = TEX_SAFE, fallback = TEX_SAFE_ESO,
+        texture = TEX.SAFE, fallback = TEX.SAFE_ESO,
         sizeM = 1.10, color = { 0.55, 1.00, 0.70 }, yOffM = 1.35,
     },
     portal = {
         label = "Portal / door", group = "spot",
-        texture = TEX_PORTAL, fallback = TEX_PORTAL_ESO,
+        texture = TEX.PORTAL, fallback = TEX.PORTAL_ESO,
         sizeM = 1.25, color = { 0.70, 0.50, 1.00 }, yOffM = 1.55,
     },
     -- System
     origin = {
         label = "Origin (plant)", group = "system",
-        texture = TEX_ORIGIN, fallback = TEX_ORIGIN_ESO,
+        texture = TEX.ORIGIN, fallback = TEX.ORIGIN_ESO,
         sizeM = 0.95, color = { 1.0, 1.0, 0.35 }, yOffM = 0.9,
     },
 }
@@ -479,18 +496,18 @@ local function _SetTextureSafe(ctrl, path, fallback)
     if path and path:sub(1, 1) ~= "/" then add("/" .. path) end
     if path and path:sub(1, 1) == "/" then add(path:sub(2)) end
     add(fallback)
-    add(TEX_FALLBACK)
+    add(TEX.FALLBACK)
     for i = 1, #candidates do
         local ok, loaded = attempt(candidates[i])
         if ok then return loaded end
     end
-    ctrl:SetTexture(TEX_FALLBACK)
-    return TEX_FALLBACK
+    ctrl:SetTexture(TEX.FALLBACK)
+    return TEX.FALLBACK
 end
 
 local function TextureForKind(kind)
     local def = KIND[kind] or KIND.stack
-    return def.texture, def.fallback or TEX_FALLBACK
+    return def.texture, def.fallback or TEX.FALLBACK
 end
 
 -- ============================= HUD host =================================
@@ -570,7 +587,7 @@ local function WS_CreateTexture(tag, sizeM, texturePath, color, dims, fallback)
         ctl:SetDrawLayer(DL_OVERLAY)
         ctl:SetDrawTier(DT_HIGH)
         ctl:SetDrawLevel(360000)
-        _SetTextureSafe(ctl, texturePath or TEX_BOSS, fallback or TEX_FALLBACK)
+        _SetTextureSafe(ctl, texturePath or TEX.BOSS, fallback or TEX.FALLBACK)
         local r, g, b = 1, 1, 1
         if color then r, g, b = color[1] or 1, color[2] or 1, color[3] or 1 end
         local a = sv().opacity or 1
@@ -717,8 +734,8 @@ local function LocalToWorld(lx, ly, lz)
 end
 
 local function WorldYawFromPack(x0, z0, x1, z1)
-    local ax, _, az = LocalToWorld(x0, PATH_Y_M, z0)
-    local bx, _, bz = LocalToWorld(x1, PATH_Y_M, z1)
+    local ax, _, az = LocalToWorld(x0, CFG.PATH_Y_M, z0)
+    local bx, _, bz = LocalToWorld(x1, CFG.PATH_Y_M, z1)
     if not ax or not bx then return 0 end
     return math.atan2(bx - ax, bz - az)
 end
@@ -747,7 +764,7 @@ local function EnsureActor(name, kind)
     kind = NormalizeKind(kind) or InferType(name)
     local act = Holodeck.actors[name]
     local def = KIND[kind] or KIND.stack
-    local tex, fb = def.texture, def.fallback or TEX_FALLBACK
+    local tex, fb = def.texture, def.fallback or TEX.FALLBACK
     if act and act.ctl then
         -- Always refresh height/size from KIND (defaults change across versions)
         act.kind = kind
@@ -786,6 +803,56 @@ local function HideFacing(act)
     if act and act.faceCtl then act.faceCtl:SetHidden(true) end
 end
 
+local function HideTag(act)
+    if act and act.tagCtl then act.tagCtl:SetHidden(true) end
+end
+
+local function HidePadRing(act)
+    if act and act.ringCtl then act.ringCtl:SetHidden(true) end
+end
+
+local function ActorTagged(id, tSec)
+    local tags = Holodeck.fight and Holodeck.fight._tags
+    if type(tags) ~= "table" or not id then return false end
+    tSec = tonumber(tSec) or 0
+    local i = 1
+    while i <= #tags do
+        local g = tags[i]
+        if g and tSec >= (g.t0 or 0) and tSec < (g.t1 or 0) then
+            local ids = g.ids
+            if type(ids) == "table" then
+                local j = 1
+                while j <= #ids do
+                    if id == ids[j] then return true end
+                    j = j + 1
+                end
+            elseif id == g.a or id == g.b then
+                return true
+            end
+        end
+        i = i + 1
+    end
+    return false
+end
+
+local function PlaceTag(act, wx, wy, wz, pitch, yaw)
+    if not act or not act.tagged then
+        HideTag(act)
+        return
+    end
+    local ctl = act.tagCtl
+    if not ctl then
+        ctl = WS_CreateTexture("tag", 1.05, TEX.SOAK, { 1.00, 0.28, 0.82 }, { 96, 96 }, TEX.SOAK_ESO)
+        act.tagCtl = ctl
+    end
+    if not ctl then return end
+    ctl:SetColor(1.00, 0.28, 0.82, 1)
+    ctl:SetAlpha(0.95)
+    if ctl.SetTransformScale then ctl:SetTransformScale(1.05) end
+    WS_SetAtRaw(ctl, wx, wy + 38, wz, pitch or 0, yaw or 0, 0)
+    ctl:SetHidden(false)
+end
+
 local function PlaceFacing(act)
     if not act or act.visible == false or act.guide then
         HideFacing(act)
@@ -810,7 +877,7 @@ local function PlaceFacing(act)
     -- Cone origin is the narrow end, planted at the actor's feet.
     local size = (k == "boss") and 3.0 or 2.0
     local lx, lz = act.x or 0, act.z or 0
-    local wx, wy, wz = LocalToWorld(lx, PATH_Y_M, lz)
+    local wx, wy, wz = LocalToWorld(lx, CFG.PATH_Y_M, lz)
     if not wx then
         HideFacing(act)
         return
@@ -818,7 +885,7 @@ local function PlaceFacing(act)
     local ctl = act.faceCtl
     if not ctl then
         local col = ColorForActor(act)
-        ctl = WS_CreateTexture("face", size, TEX_FACE, col, { 168, 120 }, TEX_DOT_ESO)
+        ctl = WS_CreateTexture("face", size, TEX.FACE, col, { 168, 120 }, TEX.DOT_ESO)
         if ctl and ctl.SetTransformNormalizedOriginPoint then
             -- Left edge of hd_face.dds is the small end (near actor).
             ctl:SetTransformNormalizedOriginPoint(0.08, 0.5)
@@ -847,6 +914,8 @@ local function PlaceActor(act)
         act.ctl:SetHidden(true)
         HideNameplate(act)
         HideFacing(act)
+        HideTag(act)
+        HidePadRing(act)
         return
     end
     local yOff = act.yOffM or (KIND[act.kind] and KIND[act.kind].yOffM) or 1.8
@@ -854,13 +923,45 @@ local function PlaceActor(act)
     if not wx then return end
     local col = ColorForActor(act)
     local a = sv().opacity or 1
+    local glow = act.padSlot and Holodeck._activeCue and Holodeck._activeCue.slot == act.padSlot
+    if glow then
+        col = { 1.00, 0.88, 0.22 }
+        a = 0.72
+        if type(GetFrameTimeMilliseconds) == "function" then
+            a = 0.62 + 0.38 * math.sin((GetFrameTimeMilliseconds() or 0) / 180)
+        end
+        if act.ctl.SetTransformScale then act.ctl:SetTransformScale(1.65) end
+    elseif act.padSlot then
+        if act.ctl.SetTransformScale then act.ctl:SetTransformScale(1.15) end
+        a = 0.55
+    end
     act.ctl:SetColor(col[1] or 1, col[2] or 1, col[3] or 1, a)
     local yaw, pitch = BillboardYawPitch()
     WS_SetAtRaw(act.ctl, wx, wy, wz, pitch, yaw, 0)
     act.ctl:SetHidden(false)
-    act.ctl:SetAlpha(sv().opacity or 1)
+    act.ctl:SetAlpha(a)
+    if glow then
+        local ring = act.ringCtl
+        if not ring then
+            ring = WS_CreateTexture("pring", 3.1, TEX.RING, { 1.00, 0.90, 0.30 }, { 220, 220 }, TEX.RING_ESO)
+            act.ringCtl = ring
+        end
+        if ring then
+            local rx, ry, rz = LocalToWorld(act.x or 0, CFG.PATH_Y_M, act.z or 0)
+            if rx then
+                ring:SetColor(1.00, 0.90, 0.28, 1)
+                ring:SetAlpha(a)
+                if ring.SetTransformScale then ring:SetTransformScale(3.1) end
+                WS_SetAtRaw(ring, rx, ry, rz, math.pi / 2, 0, 0)
+                ring:SetHidden(false)
+            end
+        end
+    else
+        HidePadRing(act)
+    end
     PlaceNameplate(act, wx, wy, wz, pitch, yaw)
     PlaceFacing(act)
+    PlaceTag(act, wx, wy, wz, pitch, yaw)
 end
 
 local function EnsureOriginMarker()
@@ -878,6 +979,8 @@ local function DestroyAllActors()
         HideNameplate(act)
         RecycleControl(act.plate, Holodeck.platePool)
         RecycleControl(act.faceCtl, Holodeck.ctlPool)
+        RecycleControl(act.tagCtl, Holodeck.ctlPool)
+        RecycleControl(act.ringCtl, Holodeck.ctlPool)
         RecycleControl(act.ctl, Holodeck.ctlPool)
     end
     Holodeck.actors = {}
@@ -905,7 +1008,7 @@ local function PlaceFlatMarker(tag, lx, lz, texture, col, sizeM, alpha, dims, ya
     local ctl = WS_CreateTexture(tag, sizeM or 0.55, texture, col, dims or { 96, 96 })
     if not ctl then return nil end
     ctl:SetAlpha(alpha or 0.85)
-    local wx, wy, wz = LocalToWorld(lx, PATH_Y_M, lz)
+    local wx, wy, wz = LocalToWorld(lx, CFG.PATH_Y_M, lz)
     if wx then
         -- Flat on ground. Optional yaw aligns a dash with a pack-space edge.
         WS_SetAtRaw(ctl, wx, wy, wz, math.pi / 2, yaw or 0, 0)
@@ -917,7 +1020,7 @@ local function PlaceFlatDash(tag, x0, z0, x1, z1, col, sizeM, alpha)
     local mx, mz = (x0 + x1) * 0.5, (z0 + z1) * 0.5
     local yaw = WorldYawFromPack(x0, z0, x1, z1)
     -- Filled rectangle (hd_dash), not a stretched hollow ring.
-    return PlaceFlatMarker(tag, mx, mz, TEX_DASH, col, sizeM or 1.8, alpha or 0.95, { 200, 44 }, yaw)
+    return PlaceFlatMarker(tag, mx, mz, TEX.DASH, col, sizeM or 1.8, alpha or 0.95, { 200, 44 }, yaw)
 end
 
 local function FirstTrackXZ(track)
@@ -1065,13 +1168,13 @@ local function DrawLibraryFrame()
     local cx, cz, r = fr.cx or 0, fr.cz or 0, fr.r or 8
     local ringCol = { 0.72, 0.92, 1.00 }
     local i = 1
-    local step = (math.pi * 2) / FRAME_RING_DOTS
-    while i <= FRAME_RING_DOTS do
+    local step = (math.pi * 2) / CFG.FRAME_RING_DOTS
+    while i <= CFG.FRAME_RING_DOTS do
         local a = (i - 1) * step
         PlaceFlatMarker(
             "frame_ring_" .. i,
             cx + math.cos(a) * r, cz + math.sin(a) * r,
-            TEX_DOT, ringCol, 0.48, 0.95, { 64, 64 })
+            TEX.DOT, ringCol, 0.48, 0.95, { 64, 64 })
         i = i + 1
     end
     if fr.splitPx then
@@ -1101,7 +1204,7 @@ local function DrawLibraryFrame()
                 local di = 0
                 while j <= #e.track do
                     local k = e.track[j]
-                    if k and k.x ~= nil and (k.t or 0) <= FRAME_LOOKAHEAD_SEC then
+                    if k and k.x ~= nil and (k.t or 0) <= CFG.FRAME_LOOKAHEAD_SEC then
                         if prev then
                             local dx, dz = k.x - prev.x, (k.z or 0) - (prev.z or 0)
                             local len = math.sqrt(dx * dx + dz * dz)
@@ -1114,13 +1217,13 @@ local function DrawLibraryFrame()
                                     PlaceFlatMarker(
                                         "frame_look_" .. i .. "_" .. di,
                                         prev.x + dx * u, (prev.z or 0) + dz * u,
-                                        TEX_DOT, col, 0.38, 0.8, { 64, 64 })
+                                        TEX.DOT, col, 0.38, 0.8, { 64, 64 })
                                     s = s + 1
                                 end
                             end
                         end
                         prev = k
-                    elseif k and (k.t or 0) > FRAME_LOOKAHEAD_SEC then
+                    elseif k and (k.t or 0) > CFG.FRAME_LOOKAHEAD_SEC then
                         break
                     end
                     j = j + 1
@@ -1149,7 +1252,7 @@ local function RebuildPathGfx()
             for i = 1, #list do
                 local s = list[i]
                 if s.visible ~= false and s.x ~= nil then
-                    PlaceFlatMarker("ring_" .. name .. "_" .. i, s.x, s.z, TEX_RING, col, 1.15, 0.6, { 200, 200 })
+                    PlaceFlatMarker("ring_" .. name .. "_" .. i, s.x, s.z, TEX.RING, col, 1.15, 0.6, { 200, 200 })
                 end
             end
             -- path "lines" = dots every ~1.1m (stretched UI textures often fail in SPACE_WORLD)
@@ -1162,14 +1265,14 @@ local function RebuildPathGfx()
                         local dx, dz = x2 - x1, z2 - z1
                         local len = math.sqrt(dx * dx + dz * dz)
                         if len > 0.15 then
-                            local steps = math.max(1, math.floor(len / PATH_DOT_SPACING))
+                            local steps = math.max(1, math.floor(len / CFG.PATH_DOT_SPACING))
                             for step = 1, steps do
                                 local u = step / (steps + 1)
                                 local px = x1 + dx * u
                                 local pz = z1 + dz * u
                                 PlaceFlatMarker(
                                     "dot_" .. name .. "_" .. i .. "_" .. step,
-                                    px, pz, TEX_DOT, col, 0.35, 0.9, { 64, 64 })
+                                    px, pz, TEX.DOT, col, 0.35, 0.9, { 64, 64 })
                             end
                         end
                     end
@@ -1275,7 +1378,7 @@ local function SampleStopsAt(list, t)
             end
 
             local span = tNext - tLeave
-            local isSnap = (nxt.snap == true) or (span <= SNAP_TRAVEL_EPS)
+            local isSnap = (nxt.snap == true) or (span <= CFG.SNAP_TRAVEL_EPS)
 
             if isSnap then
                 -- Instant travel: do NOT return nxt forever — that stuck playback on stop 2.
@@ -1436,12 +1539,18 @@ end
 -- vLC annihilation is a ~12s pad window. Vet is mostly on a clock (~25s then
 -- ~60s); HM also forces at 80%/35% HP. Each take still differs, so cues come
 -- from this pack's player teleports (~20m hops), not a generic timer.
-local PORTAL_HOLD_SEC = 12
 
 local function AlertsOn()
     local s = Holodeck.savedVars
     if s and s.alertsOn ~= nil then return s.alertsOn == true end
     return true
+end
+
+local function IsCountFight(fight)
+    if type(fight) ~= "table" then return false end
+    local s = string.lower(tostring(fight.id or "") .. " " .. tostring(fight.boss or "")
+        .. " " .. tostring(fight.name or ""))
+    return s:find("count", 1, true) or s:find("zily", 1, true)
 end
 
 local function FightCues(fight)
@@ -1461,7 +1570,7 @@ local function CueAt(fight, tSec)
         local c = cues[i]
         if type(c) == "table" then
             local t0 = tonumber(c.t) or 0
-            local t1 = t0 + (tonumber(c.dur) or PORTAL_HOLD_SEC)
+            local t1 = t0 + (tonumber(c.dur) or CFG.PORTAL_HOLD_SEC)
             if tSec >= t0 and tSec < t1 then return c, t1 - tSec end
         end
         i = i + 1
@@ -1484,9 +1593,9 @@ local function EnsureSwapBanner()
     tlw:SetDrawLayer(DL_OVERLAY)
     tlw:SetDrawTier(DT_HIGH)
     tlw:SetDrawLevel(500000)
-    tlw:SetDimensions(720, 168)
+    tlw:SetDimensions(576, 134)
     tlw:ClearAnchors()
-    tlw:SetAnchor(CENTER, GuiRoot, CENTER, 0, -120)
+    tlw:SetAnchor(CENTER, GuiRoot, CENTER, 0, -96)
     tlw:SetHidden(true)
 
     local back = _SafeCreateControl("HolodeckSwapBannerBack", tlw, CT_BACKDROP)
@@ -1502,10 +1611,10 @@ local function EnsureSwapBanner()
         lbl:ClearAnchors()
         lbl:SetAnchor(TOPLEFT, tlw, TOPLEFT, 16, 10)
         lbl:SetAnchor(BOTTOMRIGHT, tlw, BOTTOMRIGHT, -16, -10)
-        local n = 52
+        local n = 42
         if type(IsConsoleUI) == "function" then
             local ok, v = pcall(IsConsoleUI)
-            if ok and v then n = 58 end
+            if ok and v then n = 46 end
         end
         lbl:SetFont("EsoUI/Common/Fonts/univers57.otf|" .. tostring(n) .. "|thick-outline")
         lbl:SetColor(1, 0.92, 0.35, 1)
@@ -1545,7 +1654,32 @@ local function UpdateSwapBanner(tSec)
     local cid = (cue.kind or "portal") .. ":" .. tostring(cue.t or 0)
     if Holodeck._lastCueAnnounced ~= cid then
         Holodeck._lastCueAnnounced = cid
-        dhd(string.format("|cFFEE55%s|r  — glowing pad  %.0fs", text, cue.dur or PORTAL_HOLD_SEC))
+        dhd(string.format("|cFFEE55%s|r  — glowing pad  %.0fs", text, cue.dur or CFG.PORTAL_HOLD_SEC))
+    end
+end
+
+local function EnsurePads()
+    local fight = Holodeck.fight
+    local pads = fight and fight._pads
+    if type(pads) ~= "table" or not Holodeck.origin then return end
+    local i = 1
+    while i <= #pads do
+        local p = pads[i]
+        if p then
+            local act = EnsureActor(p.id, "portal")
+            if act then
+                act.guide = true
+                act.label = p.label or tostring(p.slot or i)
+                act.x, act.z = p.x or 0, p.z or 0
+                act.visible = true
+                act.padSlot = p.slot
+                act.dead = false
+                act.aspect = nil
+                act.baseColor = KIND.portal.color
+                PlaceActor(act)
+            end
+        end
+        i = i + 1
     end
 end
 
@@ -1560,6 +1694,7 @@ local function ApplyTimeline(tSec, announce)
     end
 
     local live = { origin = true }
+    Holodeck._activeCue = CueAt(fight, tSec)
 
     -- Prefer live Holodeck.stops when present (opened saves / authoring)
     if HasSandboxStops() then
@@ -1607,6 +1742,7 @@ local function ApplyTimeline(tSec, announce)
                         act.fdx, act.fdz = fdx, fdz
                     end
                     act.dead = dead and true or false
+                    act.tagged = ActorTagged(def.id, tSec)
                     act.label = def.label or def.id
                     local col = ResolveEntityColor(def)
                     if not col and kind == "boss" and uncoloredBosses >= 2 then
@@ -1619,6 +1755,8 @@ local function ApplyTimeline(tSec, announce)
             end
         end
     end
+
+    EnsurePads()
 
     -- Hide leftover actors from a previous pack/save (keep plant-frame guides)
     for name, act in pairs(Holodeck.actors) do
@@ -1787,7 +1925,6 @@ local function UpdateLegend()
     end
 end
 
-local SHEET_ROWS = 12 -- body rows per page (header separate)
 
 local function BuildSheetRows()
     local rows = {}
@@ -1811,7 +1948,7 @@ end
 
 local function SheetText()
     local rows = BuildSheetRows()
-    local pages = math.max(1, math.ceil(#rows / SHEET_ROWS))
+    local pages = math.max(1, math.ceil(#rows / CFG.SHEET_ROWS))
     local page = tonumber(Holodeck.sheetPage) or 1
     if page < 1 then page = 1 end
     if page > pages then page = pages end
@@ -1827,8 +1964,8 @@ local function SheetText()
     if #rows == 0 then
         lines[#lines + 1] = "(no stops — /hd stopadd or /hd open N)"
     else
-        local i0 = (page - 1) * SHEET_ROWS + 1
-        local i1 = math.min(#rows, page * SHEET_ROWS)
+        local i0 = (page - 1) * CFG.SHEET_ROWS + 1
+        local i1 = math.min(#rows, page * CFG.SHEET_ROWS)
         for i = i0, i1 do
             lines[#lines + 1] = rows[i]
         end
@@ -2010,10 +2147,12 @@ local function ExpandFight(fight)
     fight._frame = ComputeFightFrame(fight)
 end
 
--- Portal hops in player packs (~20m in <3.5s). Banner covers the 12s channel
--- ending at the teleport. Authored fight.cues are fallback when no hops exist.
-local function BuildHopCues(fight)
+-- Portal hops (~20m in <3.5s). Banner = 12s channel ending at the teleport.
+-- Floor pads: 3 per side from landing clusters (o^o). Glow the pair this hop used.
+-- Authored fight.cues are fallback when no player hops exist.
+local function BuildPortalLayout(fight)
     if type(fight) ~= "table" then return end
+    fight._pads = nil
     local hops = {}
     local ents = fight.entities
     if type(ents) == "table" then
@@ -2035,7 +2174,7 @@ local function BuildHopCues(fight)
                                 local dist = math.sqrt(dx * dx + dz * dz)
                                 local dt = (kf.t or 0) - (prev.t or 0)
                                 if dist >= 14 and dt >= 0 and dt <= 3.5 then
-                                    hops[#hops + 1] = kf.t or 0
+                                    hops[#hops + 1] = { t = kf.t or 0, x = kf.x or 0, z = kf.z or 0 }
                                 end
                             end
                             prev = kf
@@ -2047,27 +2186,64 @@ local function BuildHopCues(fight)
             i = i + 1
         end
     end
-    table.sort(hops)
+    table.sort(hops, function(a, b) return (a.t or 0) < (b.t or 0) end)
     local clusters = {}
     local h = 1
     while h <= #hops do
-        local ht = hops[h]
+        local hp = hops[h]
         local cl = clusters[#clusters]
-        if not cl or ht - cl[1] >= 8 then
-            clusters[#clusters + 1] = { ht }
+        if not cl or hp.t - cl[1].t >= 8 then
+            clusters[#clusters + 1] = { hp }
         else
-            cl[#cl + 1] = ht
+            cl[#cl + 1] = hp
         end
         h = h + 1
     end
     local cues = {}
+    local slotXs, zHi, zLo, nHi, nLo = {}, nil, nil, 0, 0
     local c = 1
     while c <= #clusters do
         local cl = clusters[c]
         local mid = cl[math.floor((#cl + 1) / 2)]
-        local t0 = mid - PORTAL_HOLD_SEC
+        local tHop = mid.t or 0
+        local t0 = tHop - CFG.PORTAL_HOLD_SEC
         if t0 < 1 then t0 = 1 end
-        cues[#cues + 1] = { t = t0, dur = PORTAL_HOLD_SEC, kind = "portal", text = "Portal!" }
+        local sx, sz, n = 0, 0, #cl
+        local zs = {}
+        local k = 1
+        while k <= n do
+            sx = sx + (cl[k].x or 0)
+            sz = sz + (cl[k].z or 0)
+            zs[k] = cl[k].z or 0
+            k = k + 1
+        end
+        sx, sz = sx / n, sz / n
+        local zmid = sz
+        local zA, zB, nA, nB = 0, 0, 0, 0
+        k = 1
+        while k <= n do
+            if (zs[k] or 0) >= zmid then
+                zA = zA + zs[k]
+                nA = nA + 1
+            else
+                zB = zB + zs[k]
+                nB = nB + 1
+            end
+            k = k + 1
+        end
+        if nA > 0 then
+            zHi = ((zHi or 0) * nHi + zA) / (nHi + nA)
+            nHi = nHi + nA
+        end
+        if nB > 0 then
+            zLo = ((zLo or 0) * nLo + zB) / (nLo + nB)
+            nLo = nLo + nB
+        end
+        slotXs[#slotXs + 1] = sx
+        cues[#cues + 1] = {
+            t = t0, dur = CFG.PORTAL_HOLD_SEC, kind = "portal", text = "Portal!",
+            slotX = sx, hopT = tHop,
+        }
         c = c + 1
     end
     if #cues > 0 then
@@ -2076,6 +2252,168 @@ local function BuildHopCues(fight)
         fight._cues = fight.cues
     else
         fight._cues = {}
+    end
+
+    if not IsCountFight(fight) then return end
+    local xs = {}
+    local u = 1
+    while u <= #slotXs do
+        local x = slotXs[u]
+        local seen = false
+        local v = 1
+        while v <= #xs do
+            if math.abs(xs[v] - x) < 6 then seen = true end
+            v = v + 1
+        end
+        if not seen then xs[#xs + 1] = x end
+        u = u + 1
+    end
+    table.sort(xs)
+    if #xs == 2 then
+        xs = { xs[1], (xs[1] + xs[2]) * 0.5, xs[2] }
+    elseif #xs == 1 then
+        local x0 = xs[1]
+        xs = { x0 - 11, x0, x0 + 11 }
+    elseif #xs == 0 then
+        local fr = fight._frame
+        if type(fr) ~= "table" or not fr.splitPx then return end
+        local half = 11
+        xs = { (fr.cx or 0) - half, fr.cx or 0, (fr.cx or 0) + half }
+        zHi = (fr.cz or 0) + 10
+        zLo = (fr.cz or 0) - 10
+        if fr.bosses and fr.bosses[1] and fr.bosses[2] then
+            local b1, b2 = fr.bosses[1], fr.bosses[2]
+            zHi = math.max(b1.z, b2.z)
+            zLo = math.min(b1.z, b2.z)
+        end
+    end
+    if not zHi or not zLo then return end
+    -- Shallow o^o: middle pad a bit farther from the mirror (mid-z).
+    local zMirr = (zHi + zLo) * 0.5
+    local bow = 1.8
+    local zHiM = zHi + ((zHi >= zMirr) and bow or -bow)
+    local zLoM = zLo + ((zLo < zMirr) and -bow or bow)
+    local pads = {}
+    local s = 1
+    while s <= #xs do
+        local zH = (s == 2) and zHiM or zHi
+        local zL = (s == 2) and zLoM or zLo
+        pads[#pads + 1] = { id = "_pad_" .. s .. "A", x = xs[s], z = zH, slot = s, label = tostring(s) }
+        pads[#pads + 1] = { id = "_pad_" .. s .. "B", x = xs[s], z = zL, slot = s, label = tostring(s) }
+        s = s + 1
+    end
+    fight._pads = pads
+    local q = 1
+    while q <= #cues do
+        local cx = cues[q].slotX
+        if cx then
+            local best, bi, d = 1e9, 1, 0
+            s = 1
+            while s <= #xs do
+                d = math.abs(xs[s] - cx)
+                if d < best then best, bi = d, s end
+                s = s + 1
+            end
+            cues[q].slot = bi
+        end
+        q = q + 1
+    end
+end
+
+-- Random DPS "tag" marks while adds are up (lusterbeam / make-vulnerable practice).
+local function BuildTagAssign(fight)
+    if type(fight) ~= "table" then return end
+    fight._tags = {}
+    if not IsCountFight(fight) then return end
+    if type(math.randomseed) == "function" then
+        local seed = 1
+        if type(GetFrameTimeMilliseconds) == "function" then
+            seed = (GetFrameTimeMilliseconds() or 1)
+        end
+        math.randomseed(math.floor(seed % 2147483646) + 1)
+    end
+    local ents = fight.entities
+    if type(ents) ~= "table" then return end
+    local dps, spans = {}, {}
+    local i = 1
+    while i <= #ents do
+        local e = ents[i]
+        local kind = e and RefineKind(NormalizeKind(e.kind) or e.kind, e.label, e.id)
+        -- Lusterbeam hits two players per side (usually DPS; healers can get it).
+        if (kind == "dps" or kind == "healer") and e.id then
+            dps[#dps + 1] = e
+        elseif (kind == "trash" or kind == "mini") and type(e.track) == "table" then
+            local tOn, tOff = nil, nil
+            local j = 1
+            while j <= #e.track do
+                local kf = e.track[j]
+                local vis = kf and kf.visible ~= false and not kf.dead and kf.x ~= nil
+                if vis then
+                    if not tOn then tOn = kf.t or 0 end
+                    tOff = kf.t or 0
+                elseif tOn then
+                    spans[#spans + 1] = { t0 = tOn, t1 = (kf and kf.t) or tOff }
+                    tOn = nil
+                end
+                j = j + 1
+            end
+            if tOn then spans[#spans + 1] = { t0 = tOn, t1 = (tOff or tOn) + 8 } end
+        end
+        i = i + 1
+    end
+    if #dps < 1 or #spans < 1 then return end
+    table.sort(spans, function(a, b) return a.t0 < b.t0 end)
+    local waves = {}
+    i = 1
+    while i <= #spans do
+        local sp = spans[i]
+        local w = waves[#waves]
+        if not w or sp.t0 > (w.t1 + 8) then
+            waves[#waves + 1] = { t0 = sp.t0, t1 = sp.t1 }
+        else
+            if sp.t1 > w.t1 then w.t1 = sp.t1 end
+        end
+        i = i + 1
+    end
+    local fr = fight._frame
+    local cz = (fr and fr.cz) or 0
+    local w = 1
+    while w <= #waves do
+        local wv = waves[w]
+        local sideA, sideB = {}, {}
+        i = 1
+        while i <= #dps do
+            local e = dps[i]
+            local x, z, vis = SampleLibraryTrack(e.track, wv.t0 + 0.5)
+            if vis ~= false then
+                if (z or 0) >= cz then
+                    sideA[#sideA + 1] = e.id
+                else
+                    sideB[#sideB + 1] = e.id
+                end
+            end
+            i = i + 1
+        end
+        local ids = {}
+        local s = 1
+        while s <= 2 do
+            local side = (s == 1) and sideA or sideB
+            local taken1, taken2 = nil, nil
+            if #side >= 1 then
+                taken1 = math.random(1, #side)
+                ids[#ids + 1] = side[taken1]
+            end
+            if #side >= 2 then
+                taken2 = math.random(1, #side - 1)
+                if taken1 and taken2 >= taken1 then taken2 = taken2 + 1 end
+                ids[#ids + 1] = side[taken2]
+            end
+            s = s + 1
+        end
+        if #ids > 0 then
+            fight._tags[#fight._tags + 1] = { t0 = wv.t0, t1 = wv.t1 + 6, ids = ids }
+        end
+        w = w + 1
     end
 end
 
@@ -2093,7 +2431,8 @@ local function LoadFightTable(fight, source, resetTime)
         CompactFight(Holodeck.fight)
     end
     ExpandFight(fight)
-    BuildHopCues(fight)
+    BuildPortalLayout(fight)
+    BuildTagAssign(fight)
     DestroyAllActors()
     Holodeck.fight = fight
     Holodeck.fightSource = source
@@ -2386,15 +2725,15 @@ local function CmdStopAdd(arg, mode)
         end
     else
         -- Hybrid: default travel = distance / PATH_SPEED
-        travelSec = MIN_TRAVEL_SEC
+        travelSec = CFG.MIN_TRAVEL_SEC
         if prev and prev.x ~= nil then
             local dx = lx - (prev.x or 0)
             local dz = lz - (prev.z or 0)
             local dist = math.sqrt(dx * dx + dz * dz)
-            travelSec = math.max(MIN_TRAVEL_SEC, dist / PATH_SPEED_M_S)
+            travelSec = math.max(CFG.MIN_TRAVEL_SEC, dist / CFG.PATH_SPEED_M_S)
         end
         if prev then
-            local minNext = (prev.t or 0) + (prev.hold or 0) + MIN_TRAVEL_SEC
+            local minNext = (prev.t or 0) + (prev.hold or 0) + CFG.MIN_TRAVEL_SEC
             local autoT = (prev.t or 0) + (prev.hold or 0) + travelSec
             if (Holodeck.clock or 0) > minNext + 0.05 then
                 t = Holodeck.clock
@@ -2585,6 +2924,7 @@ local function CmdPlay(arg)
     Holodeck.playFinished = false
     Holodeck._lastPhaseAnnounced = nil
     Holodeck._lastCueAnnounced = nil
+    if Holodeck.fight then BuildTagAssign(Holodeck.fight) end
     Holodeck.playing = true
     Holodeck._memKbAtPlay = ReadLuaKb()
     Holodeck._memText = nil
@@ -3112,10 +3452,6 @@ end
 
 -- House layout scale (meters). Trial boss rooms are often 40–60m+;
 -- melee ~7m, ranged often 28–40m — 6m was far too tight for review.
-local HOUSE_OK_DIAMETER_M = 70      -- if path already fits, keep relative layout
-local HOUSE_TARGET_DIAMETER_M = 50  -- when we must rebuild/scale, aim for this
-local HOUSE_ENTITY_PATH_MAX_M = 40  -- max extent of one entity's motion after fit
-local HOUSE_RING_RADIUS_M = 22      -- non-player bases (past melee, into mid-range)
 
 -- Make loaded paths visible near plant without crushing to "living room only".
 -- Good takes (sane relative meters): translate so player@t0 is plant, keep spacing.
@@ -3174,7 +3510,7 @@ local function FitStopsForHouseDisplay()
     local diam = diameterOf(Holodeck.stops)
     local fitted = false
 
-    if diam > HOUSE_OK_DIAMETER_M then
+    if diam > CFG.HOUSE_OK_DIAMETER_M then
         -- Garbage / wrong-origin take: rebuild at trial-like scale
         fitted = true
         local ring = {}
@@ -3199,8 +3535,8 @@ local function FitStopsForHouseDisplay()
                 local e = math.sqrt((list[i].x or 0)^2 + (list[i].z or 0)^2)
                 if e > entExt then entExt = e end
             end
-            if entExt > HOUSE_ENTITY_PATH_MAX_M then
-                local sc = HOUSE_ENTITY_PATH_MAX_M / entExt
+            if entExt > CFG.HOUSE_ENTITY_PATH_MAX_M then
+                local sc = CFG.HOUSE_ENTITY_PATH_MAX_M / entExt
                 for i = 1, #list do
                     list[i].x = (list[i].x or 0) * sc
                     list[i].z = (list[i].z or 0) * sc
@@ -3209,18 +3545,18 @@ local function FitStopsForHouseDisplay()
             local bx, bz = 0, 0
             if name ~= "player" and ring[name] then
                 local ang = (ring[name] - 1) / nRing * math.pi * 2
-                bx = HOUSE_RING_RADIUS_M * math.cos(ang)
-                bz = HOUSE_RING_RADIUS_M * math.sin(ang)
+                bx = CFG.HOUSE_RING_RADIUS_M * math.cos(ang)
+                bz = CFG.HOUSE_RING_RADIUS_M * math.sin(ang)
             end
             for i = 1, #list do
                 list[i].x = (list[i].x or 0) + bx
                 list[i].z = (list[i].z or 0) + bz
             end
         end
-    elseif diam > HOUSE_TARGET_DIAMETER_M then
+    elseif diam > CFG.HOUSE_TARGET_DIAMETER_M then
         -- Large but plausible room: scale whole formation to ~50m diameter
         fitted = true
-        local sc = HOUSE_TARGET_DIAMETER_M / diam
+        local sc = CFG.HOUSE_TARGET_DIAMETER_M / diam
         for _, name in ipairs(names) do
             local list = Holodeck.stops[name]
             for i = 1, #list do
@@ -3569,8 +3905,6 @@ local function RefreshLibraryList()
     return arr
 end
 
-local LIBS_PER_PAGE = 12
-local TRIAL_INDEX_AT = 12
 
 local function TrialKey(e)
     local t = e and e.trial
@@ -3622,7 +3956,7 @@ local function LibraryPanelText()
         trials[k] = trials[k] + 1
     end
 
-    local showTrials = (not filter or filter == "") and #trialOrder >= 2 and #arr > TRIAL_INDEX_AT
+    local showTrials = (not filter or filter == "") and #trialOrder >= 2 and #arr > CFG.TRIAL_INDEX_AT
     if showTrials then
         local lines = {
             "|cAADDFFFIGHT LIBRARY|r",
@@ -3638,7 +3972,7 @@ local function LibraryPanelText()
         return table.concat(lines, "\n")
     end
 
-    local pages = math.max(1, math.ceil(#filtered / LIBS_PER_PAGE))
+    local pages = math.max(1, math.ceil(#filtered / CFG.LIBS_PER_PAGE))
     local page = tonumber(Holodeck.savesPage) or 1
     if page < 1 then page = 1 end
     if page > pages then page = pages end
@@ -3658,8 +3992,8 @@ local function LibraryPanelText()
     if #filtered == 0 then
         lines[#lines + 1] = "(no packs — check fights/*.lua in the manifest)"
     else
-        local i0 = (page - 1) * LIBS_PER_PAGE + 1
-        local i1 = math.min(#filtered, page * LIBS_PER_PAGE)
+        local i0 = (page - 1) * CFG.LIBS_PER_PAGE + 1
+        local i1 = math.min(#filtered, page * CFG.LIBS_PER_PAGE)
         local lastTrial = nil
         for n = i0, i1 do
             local gi = filtered[n]
@@ -4053,7 +4387,7 @@ local function CmdHelp()
     dhd("v" .. Holodeck.version .. " — plant a library pack in the house.")
     d("|cAADDFFPLAY|r    plant · list · load N|<id> · play · pause · replay · halt")
     d("|cAADDFFLOOK|r    names on|off · scale N% · rot · flip z · frame · legend")
-    d("|cAADDFFCUE|r     alerts on|off  ·  Portal! on vLC pad windows")
+    d("|cAADDFFCUE|r     alerts on|off  ·  Portal! / pad glow / add-tag")
     d("plant = fight CENTER, uses facing.  Gold dashes = dual-boss split.  /hd rot = 90°.")
 end
 

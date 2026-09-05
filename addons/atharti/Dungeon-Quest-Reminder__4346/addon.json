@@ -1,14 +1,15 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/atharti/Dungeon-Quest-Reminder__4346",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "atharti",
   "canonical_id": "esoui:4346",
   "category_id": "45",
   "compatibility": [
     {
-      "name": "Season Zero Pt.2",
-      "version": "12.0.0"
+      "name": "Season One",
+      "version": "12.1.0"
     }
   ],
   "content_id": "esoui:4346",
@@ -17,7 +18,7 @@
     "DungeonQuestReminder"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4346/",
-  "fingerprint": "b8e1757754a2e93d9782a206b3b56ee191327b7cde09aa0a7ac1207e201dcc95",
+  "fingerprint": "e7f9624189d900b8039839f9b8f278f23e1e0e567656b23a4c4458b98dc0ba24",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw15041.png"
   ],
@@ -27,11 +28,11 @@
   "source_id": "4346",
   "source_url": "https://www.esoui.com/downloads/info4346-DungeonQuestReminder.html",
   "stats": {
-    "downloads": 742,
+    "downloads": 801,
     "favorites": 1,
-    "monthly_downloads": 46
+    "monthly_downloads": 43
   },
   "title": "Dungeon Quest Reminder",
-  "updated_at": 1781252658000,
-  "version": "1.5"
+  "updated_at": 1788538667000,
+  "version": "1.6"
 }

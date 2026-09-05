@@ -18,10 +18,11 @@
     "OlhasWrathAssistant"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4812/",
-  "fingerprint": "2225aee487a3cd26e38c7ffca4e59d82e65f52abc0d8486e9436be98eb413220",
+  "fingerprint": "e651b9ea5d09fbc29835f385a0b33bee6ab4732d76221ae5dc7ed89054184611",
   "images": [
-    "https://cdn-eso.mmoui.com/preview/pvw17261.png",
-    "https://cdn-eso.mmoui.com/preview/pvw17262.png"
+    "https://cdn-eso.mmoui.com/preview/pvw17285.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17284.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17286.png"
   ],
   "platform": "pc",
   "published": true,
@@ -29,11 +30,11 @@
   "source_id": "4812",
   "source_url": "https://www.esoui.com/downloads/info4812-OlhasWrathAssistant.html",
   "stats": {
-    "downloads": 13,
+    "downloads": 21,
     "favorites": 0,
-    "monthly_downloads": 9
+    "monthly_downloads": 18
   },
   "title": "OlhasWrathAssistant",
-  "updated_at": 1788499328000,
-  "version": "0.1.1"
+  "updated_at": 1788596862000,
+  "version": "0.1.2"
 }

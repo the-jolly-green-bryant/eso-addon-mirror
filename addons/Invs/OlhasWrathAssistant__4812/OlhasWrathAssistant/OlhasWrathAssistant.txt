@@ -1,40 +1,32 @@
 ## APIVersion: 101050
 ## Title: Olha's Wrath Assistant
-## Author: |c57ff80@Invs|r
-## Version: |c57ff800.1.1|r
+## Author: @Invs
+## Version: 0.1.2
 ## SavedVariables: OWAssistantSavedVariables
 
-## DependsOn: LibAddonMenu-2.0
+## DependsOn: LibAddonMenu-2.0>=43
 
+OWAssistant.lua
+
+; Both catalogs are loaded because the add-on language can differ from the ESO client language.
 lang/en.lua
 lang/ua.lua
+deconstruct/lang/en.lua
+deconstruct/lang/ua.lua
+repairAndRecharge/lang/en.lua
+repairAndRecharge/lang/ua.lua
 
 OWAssistantFunctions.lua
 OWAssistantMenu.lua
-OWAssistant.lua
 
-repairAndRecharge/lang/en.lua
-repairAndRecharge/lang/ua.lua
 repairAndRecharge/OWRepairFunctions.lua
 repairAndRecharge/OWRepairMenu.lua
 
-deconstruct/lang/en.lua
-deconstruct/lang/ua.lua
 deconstruct/OWDeconstructFunctions.lua
 deconstruct/OWDeconstructWeaponFunctions.lua
 deconstruct/OWDeconstructClothingFunctions.lua
 deconstruct/OWDeconstructJewelryFunctions.lua
 deconstruct/OWDeconstructEnchantingFunctions.lua
 deconstruct/OWDeconstructMenu.lua
-
-merchant/lang/en.lua
-merchant/lang/ua.lua
-merchant/OWMerchantFunctions.lua
-merchant/OWMerchantMenu.lua
-
-banking/lang/en.lua
-banking/lang/ua.lua
-banking/OWBankingFunctions.lua
-banking/OWBankingMenu.lua
 
 bindings.xml

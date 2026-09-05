@@ -36,9 +36,11 @@ L("USE", "Benutzen")
 
 -- interactable names
 L("BOOKSHELF", "Bücherregal")
+L("CRIMSON_NIRNROOT", "Purpurner Nirnwurz")
 L("DARK_BROTHERHOOD", "Freistatt der Dunklen Bruderschaft")
 L("MAGES_GUILD", "Magiergilde")
 L("MEDICAL", "Medizinische Versorgung")
+L("NIRNROOT", "Nirnwurz")
 L("OUTFIT_STATION", "Monturtisch")
 L("OUTLAWS_REFUGE", "Unterschlupf")
 L("PSIJIC_PORTAL", "Psijik-Portal")

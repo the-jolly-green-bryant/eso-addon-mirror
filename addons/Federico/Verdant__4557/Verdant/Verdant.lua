@@ -136,6 +136,8 @@ local function on_slash(input)
       return
     elseif cmd == "skills" then
       Verdant.SkillColors.print_unknown() ; return
+    elseif cmd == "donut" then
+      Verdant.DonutProbe.toggle() ; return
     elseif cmd == "clear" then
       Verdant.Probe.clear()
       Verdant.Metrics.reset()
@@ -157,11 +159,33 @@ local function on_slash(input)
     Verdant.Library.toggle() ; return
   end
 
+  if cmd == "card" then
+    d("[V] card " .. Verdant.Graph.card_state())
+    return
+  end
+  if cmd == "grid" then
+    local on = not Verdant.Graph.pixel_grid()
+    Verdant.Graph.set_pixel_grid(on)
+    d("[V] pixel grid: " .. (on and "on" or "off"))
+    return
+  end
+  if cmd == "hitch" then
+    local sub = string_match(string_lower(input), "^%s*%S+%s+(%S+)") or ""
+    if sub == "reset" then Verdant.Hitch.reset(); d("[V] hitch log cleared") return end
+    local lines = Verdant.Hitch.lines()
+    for _, line in ipairs(lines) do d("[V] " .. line) end
+    Verdant.CopyBox.show("Verdant hitch", table.concat(lines, "\n"))
+    return
+  end
+
   if cmd == "help" then
     d(GetString(VERDANT_HELP_HEADER))
     d(GetString(VERDANT_HELP_TOGGLE))
     d(GetString(VERDANT_HELP_GRAPH))
     d(GetString(VERDANT_HELP_LIB))
+    d(GetString(VERDANT_HELP_HITCH))
+    d(GetString(VERDANT_HELP_GRID))
+    d(GetString(VERDANT_HELP_CARD))
     d(GetString(VERDANT_HELP_HELP))
     return
   end
@@ -176,7 +200,7 @@ local function on_addon_loaded()
   local world = GetWorldName()
   Verdant.SavedVars = Verdant.zenimax.savedvars.new_account_wide(
     C.SV_TABLE, C.SV_VERSION, world,
-    { probe = {}, bar = {}, temporal = {}, copybox = {}, settings = {}, skill_overrides = {}, logo = {}, assign = {}, library = {} })
+    { probe = {}, bar = {}, temporal = {}, copybox = {}, settings = {}, skill_overrides = {}, custom_groups = {}, logo = {}, assign = {}, library = {} })
 
   Verdant.SkillColors.load_persisted(Verdant.SavedVars)
 
@@ -190,11 +214,15 @@ local function on_addon_loaded()
   Verdant.Triage.init()
   Verdant.SessionStore.init()
   Verdant.GC.init()            -- GC pacing (ported): smooth the incremental collector
+  Verdant.Hitch.init()
   Verdant.Pipeline.init()
+  Verdant.Ultimate.init()
   Verdant.Bar.init()
   Verdant.Logo.init()
   Verdant.Settings.init()
   Verdant.Graph.init()
+  Verdant.Watch.init()
+  Verdant.BuffWatch.init()
   Verdant.AutoRecord.init()
   Verdant.Assign.init()
   Verdant.Library.init()

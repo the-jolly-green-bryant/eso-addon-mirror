@@ -12,8 +12,6 @@ M.clear      = NOOP
 M.hide       = NOOP
 M.is_visible = function() return false end
 
-if not Verdant.Constants.DEBUG then return end
-
 local zui = Verdant.zenimax.ui
 local zc  = Verdant.zenimax.constants
 local WINDOW_MANAGER         = zui.WINDOW_MANAGER

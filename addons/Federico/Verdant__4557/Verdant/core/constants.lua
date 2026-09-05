@@ -3,11 +3,14 @@ local Verdant = Verdant
 
 Verdant.Constants = {
   ADDON_NAME    = "Verdant",
-  VERSION       = "2.4.0",
+  VERSION       = "2.5.0",
   BUILD         = "2.4.0",
   SLASH_COMMAND = "/verdant",
 
   DEBUG         = false,
+  PIXEL_GRID    = true,
+  GRAPH_DEFAULT_W = 420,
+  GRAPH_DEFAULT_H = 312,
 
   SV_TABLE   = "VerdantSavedVars",
   SV_VERSION = 1,

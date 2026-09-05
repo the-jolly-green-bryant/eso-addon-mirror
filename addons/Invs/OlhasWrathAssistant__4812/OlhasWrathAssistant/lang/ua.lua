@@ -1,6 +1,6 @@
-OWA_LANG_UA = {
+local strings = {
 
-    ADDON_NAME = "|c3399FFOlha's|r |cFFD700Wrath|r Assistant",
+    ADDON_NAME = "Olha's Wrath Assistant",
 
     SETTINGS = "Налаштування",
 
@@ -11,7 +11,10 @@ OWA_LANG_UA = {
     ACCOUNT_WIDE = "Налаштування на весь аккаунт",
 
     REPAIR = "Ремонт і заряджання",
-    DECONSTRUCT = "Розборщик",
+    REPAIR_TOOLTIP = "Вмикає автоматичний ремонт екіпіровки та заряджання зброї.",
+    REPAIR_PANEL = "OWRepair & Recharge",
+    DECONSTRUCT = "Розбірник",
+    DECONSTRUCTOR_PANEL = "OWDeconstructor",
     MERCHANT = "Торговець",
     BANKING = "Банкір",
 
@@ -23,3 +26,6 @@ OWA_LANG_UA = {
     ACCOUNT_WIDE_IN_DEVELOPMENT = "У тестовій версії налаштування завжди зберігаються для всього облікового запису.",
 
 }
+
+local owa = OWAssistant
+owa.RegisterLanguage("ua", "Українська", strings)

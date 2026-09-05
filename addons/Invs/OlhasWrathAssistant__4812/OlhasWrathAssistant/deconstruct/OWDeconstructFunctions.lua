@@ -1,13 +1,15 @@
-OWDeconstruct = OWDeconstruct or {}
+local owa = OWAssistant
+owa.Deconstruct = owa.Deconstruct or {}
+local deconstruct = owa.Deconstruct
 
-OWDeconstruct.active = false
-OWDeconstruct.currentCraftingType = nil
+deconstruct.active = false
+deconstruct.currentCraftingType = nil
 
-OWDeconstruct.collectors = {}
-OWDeconstruct.collectorOrder = {}
+deconstruct.collectors = {}
+deconstruct.collectorOrder = {}
 
-OWDeconstruct.itemQueue = {}
-OWDeconstruct.deconstructedCount = 0
+deconstruct.itemQueue = {}
+deconstruct.deconstructedCount = 0
 
 local QUEUE_EVENT_NAME = "OWDeconstructQueue"
 
@@ -16,19 +18,18 @@ local keybindStripDescriptor = {
         alignment = KEYBIND_STRIP_ALIGN_CENTER,
 
         name = function()
-            local L = OWA_GetLanguageStrings()
-            return L.MASS_DECONSTRUCT
+            return owa.GetString("MASS_DECONSTRUCT")
         end,
 
         keybind = "OWA_DECONSTRUCT",
 
         callback = function()
-            OWA_Deconstruct()
+            deconstruct.Run()
         end,
     },
 }
 
-function OWDeconstruct_ShowKeybind()
+function deconstruct.ShowKeybind()
     if not KEYBIND_STRIP then
         return
     end
@@ -42,7 +43,7 @@ function OWDeconstruct_ShowKeybind()
     end
 end
 
-function OWDeconstruct_HideKeybind()
+function deconstruct.HideKeybind()
     if not KEYBIND_STRIP then
         return
     end
@@ -56,47 +57,47 @@ function OWDeconstruct_HideKeybind()
     end
 end
 
-function OWDeconstruct_OnStationInteract(
+function deconstruct.OnStationInteract(
     eventCode,
     craftingType,
     sameStation,
     craftingMode
 )
-    OWDeconstruct.active = true
-    OWDeconstruct.currentCraftingType = craftingType
+    deconstruct.active = true
+    deconstruct.currentCraftingType = craftingType
 
-    OWDeconstruct_ShowKeybind()
+    deconstruct.ShowKeybind()
 end
 
-function OWDeconstruct_OnStationExit()
-    OWDeconstruct.active = false
-    OWDeconstruct.currentCraftingType = nil
+function deconstruct.OnStationExit()
+    deconstruct.active = false
+    deconstruct.currentCraftingType = nil
 
     EVENT_MANAGER:UnregisterForEvent(
         QUEUE_EVENT_NAME,
         EVENT_CRAFT_COMPLETED
     )
 
-    OWDeconstruct.itemQueue = {}
-    OWDeconstruct.deconstructedCount = 0
+    deconstruct.itemQueue = {}
+    deconstruct.deconstructedCount = 0
 
-    OWDeconstruct_HideKeybind()
+    deconstruct.HideKeybind()
 end
 
-function OWDeconstruct.IsUniversalStation()
+function deconstruct.IsUniversalStation()
     return GetCraftingInteractionMode()
         == CRAFTING_INTERACTION_MODE_UNIVERSAL_DECONSTRUCTION
 end
 
-function OWDeconstruct.IsEnchantingStation()
-    return not OWDeconstruct.IsUniversalStation()
-        and OWDeconstruct.currentCraftingType
+function deconstruct.IsEnchantingStation()
+    return not deconstruct.IsUniversalStation()
+        and deconstruct.currentCraftingType
         == CRAFTING_TYPE_ENCHANTING
 end
 
-function OWDeconstruct.GetSmithingObject()
+function deconstruct.GetSmithingObject()
     local isUniversal =
-        OWDeconstruct.IsUniversalStation()
+        deconstruct.IsUniversalStation()
 
     if IsInGamepadPreferredMode() then
         if isUniversal then
@@ -113,7 +114,7 @@ function OWDeconstruct.GetSmithingObject()
     return SMITHING
 end
 
-function OWDeconstruct.GetMaxQuality(profile)
+function deconstruct.GetMaxQuality(profile)
     local savedQuality = tonumber(profile.maxQuality)
 
     if savedQuality
@@ -149,33 +150,18 @@ function OWDeconstruct.GetMaxQuality(profile)
         },
     }
 
-    local languageTables = {
-        OW_DECONSTRUCT_LANG_UA or {},
-        OW_DECONSTRUCT_LANG_EN or {},
-    }
-
     for _, qualityDefinition in ipairs(
         qualityDefinitions
     ) do
-        for _, languageTable in ipairs(
-            languageTables
-        ) do
-            local qualityName =
-                languageTable[qualityDefinition.key]
+        local qualityName = owa.GetString(
+            "DECONSTRUCT_" .. qualityDefinition.key
+        )
 
-            if qualityName
-                and string.find(
-                    savedText,
-                    qualityName,
-                    1,
-                    true
-                )
-            then
-                profile.maxQuality =
-                    qualityDefinition.value
-
-                return qualityDefinition.value
-            end
+        if qualityName
+            and string.find(savedText, qualityName, 1, true)
+        then
+            profile.maxQuality = qualityDefinition.value
+            return qualityDefinition.value
         end
     end
 
@@ -183,15 +169,21 @@ function OWDeconstruct.GetMaxQuality(profile)
     return ITEM_QUALITY_NORMAL
 end
 
-function OWDeconstruct.Chat(message)
+function deconstruct.Chat(message)
     if not message then
         return
     end
 
-    d("|c3A92FF[OWDeconstruct]|r " .. message)
+    if owa.savedVariables
+        and owa.savedVariables.deconstructChatMessages == false
+    then
+        return
+    end
+
+    d("[OWDeconstructor] " .. message)
 end
 
-function OWDeconstruct.RegisterCollector(
+function deconstruct.RegisterCollector(
     collectorName,
     callback
 )
@@ -201,14 +193,14 @@ function OWDeconstruct.RegisterCollector(
         return
     end
 
-    if not OWDeconstruct.collectors[collectorName] then
+    if not deconstruct.collectors[collectorName] then
         table.insert(
-            OWDeconstruct.collectorOrder,
+            deconstruct.collectorOrder,
             collectorName
         )
     end
 
-    OWDeconstruct.collectors[collectorName] =
+    deconstruct.collectors[collectorName] =
         callback
 end
 
@@ -219,21 +211,21 @@ local function FinishDeconstruction()
     )
 
     local count =
-        OWDeconstruct.deconstructedCount or 0
+        deconstruct.deconstructedCount or 0
 
-    OWDeconstruct.itemQueue = {}
-    OWDeconstruct.deconstructedCount = 0
+    deconstruct.itemQueue = {}
+    deconstruct.deconstructedCount = 0
 
     if count <= 0 then
         return
     end
 
-    local D = OWDeconstruct_GetLanguageStrings()
-    local message =
-        D and D.CHAT_DECONSTRUCTED_ITEMS
+    local message = owa.GetString(
+        "DECONSTRUCT_CHAT_DECONSTRUCTED_ITEMS"
+    )
 
     if message then
-        OWDeconstruct.Chat(
+        deconstruct.Chat(
             string.format(message, count)
         )
     end
@@ -257,10 +249,10 @@ StartNextBatch = function()
     -- гліфи розбираються по одному,
     -- оскільки ESO використовує окремий
     -- виклик ExtractEnchantingItem.
-    if OWDeconstruct.IsEnchantingStation() then
-        while #OWDeconstruct.itemQueue > 0 do
+    if deconstruct.IsEnchantingStation() then
+        while #deconstruct.itemQueue > 0 do
             local item = table.remove(
-                OWDeconstruct.itemQueue,
+                deconstruct.itemQueue,
                 1
             )
 
@@ -278,8 +270,8 @@ StartNextBatch = function()
                     ContinueDeconstruction
                 )
 
-                OWDeconstruct.deconstructedCount =
-                    OWDeconstruct.deconstructedCount + 1
+                deconstruct.deconstructedCount =
+                    deconstruct.deconstructedCount + 1
 
                 ExtractEnchantingItem(
                     item.bagId,
@@ -297,7 +289,7 @@ StartNextBatch = function()
     -- Ковальська, швейна, деревообробна,
     -- ювелірна та універсальна станції.
     local smithingObject =
-        OWDeconstruct.GetSmithingObject()
+        deconstruct.GetSmithingObject()
 
     local deconstructionPanel =
         smithingObject
@@ -311,8 +303,8 @@ StartNextBatch = function()
     end
 
     if deconstructionPanel.extractionSlot:HasItems() then
-        OWDeconstruct.Chat(
-            "An item is already in the deconstruction slot."
+        deconstruct.Chat(
+            owa.GetString("DECONSTRUCT_CHAT_SLOT_OCCUPIED")
         )
 
         FinishDeconstruction()
@@ -325,11 +317,11 @@ StartNextBatch = function()
         MAX_ITERATIONS_PER_DECONSTRUCTION
         or 100
 
-    while #OWDeconstruct.itemQueue > 0
+    while #deconstruct.itemQueue > 0
         and addedItems < maximumItems
     do
         local item = table.remove(
-            OWDeconstruct.itemQueue,
+            deconstruct.itemQueue,
             1
         )
 
@@ -351,8 +343,8 @@ StartNextBatch = function()
 
             addedItems = addedItems + 1
 
-            OWDeconstruct.deconstructedCount =
-                OWDeconstruct.deconstructedCount + 1
+            deconstruct.deconstructedCount =
+                deconstruct.deconstructedCount + 1
         end
     end
 
@@ -374,19 +366,16 @@ StartNextBatch = function()
     end
 end
 
-function OWDeconstruct.StartQueue(candidates)
+function deconstruct.StartQueue(candidates)
     if not candidates or #candidates == 0 then
-        local D =
-            OWDeconstruct_GetLanguageStrings()
-
-        OWDeconstruct.Chat(
-            D and D.CHAT_NO_ITEMS
+        deconstruct.Chat(
+            owa.GetString("DECONSTRUCT_CHAT_NO_ITEMS")
         )
 
         return
     end
 
-    if OWDeconstruct.IsEnchantingStation() then
+    if deconstruct.IsEnchantingStation() then
         if not ENCHANTING then
             return
         end
@@ -401,7 +390,7 @@ function OWDeconstruct.StartQueue(candidates)
         end
     else
         local smithingObject =
-            OWDeconstruct.GetSmithingObject()
+            deconstruct.GetSmithingObject()
 
         if not smithingObject then
             return
@@ -417,18 +406,18 @@ function OWDeconstruct.StartQueue(candidates)
         end
     end
 
-    OWDeconstruct.itemQueue = candidates
-    OWDeconstruct.deconstructedCount = 0
+    deconstruct.itemQueue = candidates
+    deconstruct.deconstructedCount = 0
 
     zo_callLater(function()
         StartNextBatch()
     end, 50)
 end
 
-function OWA_Deconstruct()
-    if not OWDeconstruct.active then
-        OWDeconstruct.Chat(
-            "Open a deconstruction station first."
+function deconstruct.Run()
+    if not deconstruct.active then
+        deconstruct.Chat(
+            owa.GetString("DECONSTRUCT_CHAT_OPEN_STATION")
         )
 
         return
@@ -437,29 +426,29 @@ function OWA_Deconstruct()
     local candidates = {}
 
     for _, collectorName in ipairs(
-        OWDeconstruct.collectorOrder
+        deconstruct.collectorOrder
     ) do
         local collector =
-            OWDeconstruct.collectors[collectorName]
+            deconstruct.collectors[collectorName]
 
         if collector then
             collector(candidates)
         end
     end
 
-    OWDeconstruct.StartQueue(candidates)
+    deconstruct.StartQueue(candidates)
 end
 
-function OWDeconstruct_Initialize()
+function deconstruct.Initialize()
     EVENT_MANAGER:RegisterForEvent(
         "OWDeconstruct_StationStart",
         EVENT_CRAFTING_STATION_INTERACT,
-        OWDeconstruct_OnStationInteract
+        deconstruct.OnStationInteract
     )
 
     EVENT_MANAGER:RegisterForEvent(
         "OWDeconstruct_StationEnd",
         EVENT_END_CRAFTING_STATION_INTERACT,
-        OWDeconstruct_OnStationExit
+        deconstruct.OnStationExit
     )
 end

@@ -1,5 +1,4 @@
-OWAssistant = OWAssistant or {}
-OWAssistant.name = "OWAssistant"
+local owa = OWAssistant
 
 local function CreateDeconstructProfile()
     return {
@@ -15,49 +14,95 @@ local function CreateDeconstructProfile()
         fromBank = false,
         nirnhoned = false,
 
-        research = false,
-        researchMode = "all",
+        researchMode = "none",
     }
 end
 
-OWAssistant.defaults = {
-    language = "en",
-    accountWide = true,
+local function GetSavedVariableDefaults()
+    local defaults = owa.GetAccountDefaults()
+    local savedRoot = _G["OWAssistantSavedVariables"]
 
-    repairEnabled = true,
-    deconstructEnabled = true,
-    merchantEnabled = true,
-    bankingEnabled = true,
+    if not savedRoot then
+        return defaults
+    end
 
-    deconstructProfiles = {
-        weapon = CreateDeconstructProfile(),
-        clothing = CreateDeconstructProfile(),
-        jewelry = CreateDeconstructProfile(),
-        enchanting = CreateDeconstructProfile(),
-    },
-}
+    local displayName = GetDisplayName()
+    local worldName = GetWorldName()
+    local worldData = savedRoot[worldName]
+    local currentSettings = worldData
+        and worldData[displayName]
+        and worldData[displayName]["$AccountWide"]
 
-function OWA_Assistant_Initialize()
-    OWA_SavedVariables = ZO_SavedVars:NewAccountWide(
-        "OWAssistantSavedVariables",
-        1,
-        nil,
-        OWA_AccountDefaults()
-    )
+    if currentSettings then
+        return defaults
+    end
 
-    OWA_LoadModules()
-    OWA_CreateSettings()
+    local oldData = savedRoot["Default"]
+    local oldSettings = oldData
+        and oldData[displayName]
+        and oldData[displayName]["$AccountWide"]
+
+    if not oldSettings then
+        return defaults
+    end
+
+    local migratedDefaults = ZO_ShallowTableCopy(oldSettings)
+    return migratedDefaults
 end
 
-function OWA_AccountDefaults()
+function owa.Initialize()
+    owa.savedVariables = ZO_SavedVars:NewAccountWide(
+        "OWAssistantSavedVariables",
+        1,
+        GetWorldName(),
+        GetSavedVariableDefaults()
+    )
+
+    if not owa.savedVariables.language then
+        owa.savedVariables.language = owa.GetLanguageCode()
+    end
+
+    SafeAddString(
+        SI_OWA_ADDON_NAME,
+        owa.GetString("ADDON_NAME"),
+        1
+    )
+    SafeAddString(
+        SI_BINDING_NAME_OWA_DECONSTRUCT,
+        owa.GetString("MASS_DECONSTRUCT"),
+        1
+    )
+
+    owa.LoadModules()
+    owa.CreateSettings()
+end
+
+function owa.GetAccountDefaults()
     return {
-        language = "en",
+        language = owa.GetLanguageCode(),
         accountWide = true,
 
         repairEnabled = false,
         deconstructEnabled = true,
-        merchantEnabled = false,
-        bankingEnabled = false,
+        deconstructChatMessages = true,
+
+        repairAndRecharge = {
+            autoRepair = false,
+            repairThreshold = 10,
+            useCrownRepairKitsFirst = false,
+            repairInCombat = false,
+            repairResourceTracking = true,
+            repairResourceThreshold = 10,
+            repairChatMessages = true,
+
+            autoRecharge = false,
+            rechargeThreshold = 10,
+            useCrownSoulGemsFirst = false,
+            rechargeInCombat = false,
+            rechargeResourceTracking = true,
+            rechargeResourceThreshold = 10,
+            rechargeChatMessages = true,
+        },
 
         deconstructProfiles = {
             weapon = CreateDeconstructProfile(),
@@ -68,29 +113,16 @@ function OWA_AccountDefaults()
     }
 end
 
-function OWA_LoadModules()
+function owa.LoadModules()
+    local savedVariables = owa.savedVariables
 
-    if OWA_SavedVariables.deconstructEnabled then
-        OWDeconstruct_Initialize()
-        OWDeconstruct_CreateSettings()
+    if savedVariables.repairEnabled then
+        owa.Repair.Initialize()
+        owa.Repair.CreateSettings()
     end
 
-    OWA_SavedVariables.repairEnabled = false
-    OWA_SavedVariables.merchantEnabled = false
-    OWA_SavedVariables.bankingEnabled = false
-
-    -- if OWA_SavedVariables.repairEnabled then
-    --     OWRepair_Initialize()
-    --     OWRepair_CreateSettings()
-    -- end
-
-    -- if OWA_SavedVariables.merchantEnabled then
-    --     OWMerchant_Initialize()
-    --     OWMerchant_CreateSettings()
-    -- end
-
-    -- if OWA_SavedVariables.bankingEnabled then
-    --     OWBanking_Initialize()
-    --     OWBanking_CreateSettings()
-    -- end
+    if savedVariables.deconstructEnabled then
+        owa.Deconstruct.Initialize()
+        owa.Deconstruct.CreateSettings()
+    end
 end
