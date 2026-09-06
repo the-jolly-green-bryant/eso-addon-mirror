@@ -263,12 +263,6 @@ local COMMANDS = {
         UseCollectible(6932)
     end,
 
-    -- Invite jwpd2
-    kjwpd2 = function(fromName)
-        if (not NameIsPlayer(fromName)) then return end
-        KJWPD2()
-    end,
-
     -- Invite all (CURRENT PLAYER ONLY)
     kinvite = function(fromName)
         if (not NameIsPlayer(fromName)) then return end
@@ -388,6 +382,7 @@ local function OnChatMessage(_, channelType, fromName, text)
     -- jwpd2 autoinvite
     if (attnChannel == channelType and text == "jwpd2") then
         if (NameIsPlayer(fromName)) then return end
+        if (not KYZ[GetUnitDisplayName("player")]) then return end
         -- Only invite if jwpd2 and self available
         if (IsJWPD2FromGuild(fromName) and GetPlayerStatus() == PLAYER_STATUS_ONLINE) then
             -- and is group leader or not in group
@@ -434,7 +429,7 @@ local function OnQuestShared(_, questId)
     local questName, _, _, displayName = GetOfferedQuestShareInfo(questId)
     KD:msg(displayName .. " shared " .. questName .. " (" .. questId .. ")")
 
-    if (IsSelfOrKyzer(displayName)) then
+    if (IsSelfOrJWPD2(displayName)) then
         AcceptSharedQuest(questId)
         KD:msg("Accepting quest " .. questName .. " (" .. questId .. ") from " .. displayName)
     end

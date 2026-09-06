@@ -18,7 +18,7 @@
     "M0RMarkers"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4266/",
-  "fingerprint": "9b2945b07637dc4c93de67a6de321299ec3dfd96db569a897192398474f1f0e3",
+  "fingerprint": "83b991cf8dc1a6492f40148b7db9dc1a097d409cc4422bbfe66251180b6dc5dc",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw14650.png",
     "https://cdn-eso.mmoui.com/preview/pvw14651.png",
@@ -35,11 +35,11 @@
   "source_id": "4266",
   "source_url": "https://www.esoui.com/downloads/info4266-MoreMarkers.html",
   "stats": {
-    "downloads": 17621,
-    "favorites": 24,
-    "monthly_downloads": 1098
+    "downloads": 20085,
+    "favorites": 25,
+    "monthly_downloads": 3285
   },
   "title": "More Markers",
-  "updated_at": 1787921226000,
-  "version": "2.2.2"
+  "updated_at": 1788628055000,
+  "version": "2.2.3"
 }

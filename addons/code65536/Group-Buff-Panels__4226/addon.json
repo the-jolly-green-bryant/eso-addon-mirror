@@ -34,7 +34,7 @@
     "GroupBuffPanels"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4226/",
-  "fingerprint": "f0b76af71415cf7bda0c722a5d91394d913e13a2e6e158dce65c70dc7e18d361",
+  "fingerprint": "27feb0cd1319f5d0cf9d5073da4c6e72fa55e62c292b54883a40a942407a88f7",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw14434.png",
     "https://cdn-eso.mmoui.com/preview/pvw14535.png",
@@ -50,11 +50,11 @@
   "source_id": "4226",
   "source_url": "https://www.esoui.com/downloads/info4226-GroupBuffPanels.html",
   "stats": {
-    "downloads": 6211,
+    "downloads": 6603,
     "favorites": 19,
-    "monthly_downloads": 558
+    "monthly_downloads": 885
   },
   "title": "Group Buff Panels",
-  "updated_at": 1788320599000,
-  "version": "2.3.3"
+  "updated_at": 1788610048000,
+  "version": "2.3.3.1"
 }

@@ -67,7 +67,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Chaotic Tools](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kanori/Chaotic-Tools__3686) | kanori | PC / Mac | 2.171 |
 | [Character Achievements](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/silvereyes/Character-Achievements__3322) | silvereyes | PC / Mac | 1.0.2 |
 | [Character Homes](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/g0thicicecream/Character-Homes__4654) | g0thicicecream | PC / Mac | 1.3.0 |
-| [Character Knowledge (Research, Motif, Recipe, Furnishing Plan and Scribing Tracker)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Character-Knowledge-Research-Motif-Recipe-Furnishing-Plan-and-Scribing-Tracker__2938) | code65536 | PC / Mac | 3.1.2 |
+| [Character Knowledge (Research, Motif, Recipe, Furnishing Plan and Scribing Tracker)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Character-Knowledge-Research-Motif-Recipe-Furnishing-Plan-and-Scribing-Tracker__2938) | code65536 | PC / Mac | 3.1.2.1 |
 | [Character Zone Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/silvereyes/Character-Zone-Tracker__3323) | silvereyes | PC / Mac | 1.3.0 |
 | [CharacterGearUI (for alone or PerfectPixel)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Trobo/CharacterGearUI-for-alone-or-PerfectPixel__4743) | Trobo | PC / Mac | 0.4.6 |
 | [CharacterMarkdown](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/solaegis/CharacterMarkdown__4279) | solaegis | PC / Mac | 2.3.0 |
@@ -136,12 +136,12 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Clutch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Apogee/Clutch__2302) | Apogee | PC / Mac | 0.9.1 |
 | [CobbDialogueLogger](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DavidJCobb/CobbDialogueLogger__2560) | DavidJCobb | PC / Mac | 1 |
 | [Code's Combat Alerts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Code-s-Combat-Alerts__fe065445-3217-4a76-8932-23a0a1c9c16c) | code65536 | Console | — |
-| [Code's Combat Alerts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Code-s-Combat-Alerts__1855) | code65536 | PC / Mac | 2.6.3.1 |
+| [Code's Combat Alerts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Code-s-Combat-Alerts__1855) | code65536 | PC / Mac | 2.6.4 |
 | [Cogs Assistants](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/coginthemachine/Cogs-Assistants__4687) | coginthemachine | PC / Mac | 0.1.5 |
 | [Collect Them All](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Springpeace2575/Collect-Them-All__75167780-fb8c-479c-86be-c0a208443b97) | Springpeace2575 | Console | — |
 | [CollectablesTesting](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/brossin13/CollectablesTesting__9cb042d4-e427-4f0c-9c9c-48e1a355c970) | brossin13 | Console | — |
 | [Collectible Toggler](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MrPikPik/Collectible-Toggler__2699) | MrPikPik | PC / Mac | 1.2 |
-| [Collectibles Tracker (formerly Event Collectibles)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Collectibles-Tracker-formerly-Event-Collectibles__2588) | code65536 | PC / Mac | 3.6.0.1 |
+| [Collectibles Tracker (formerly Event Collectibles)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Collectibles-Tracker-formerly-Event-Collectibles__2588) | code65536 | PC / Mac | 3.6.0.2 |
 | [Collection bars](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Jarth/Collection-bars__2339) | Jarth | PC / Mac | 1.1.14 |
 | [Color Blind Mode](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/attriel/Color-Blind-Mode__2981) | attriel | PC / Mac | 1.0.12 |
 | [Colorful Map Areas - Quests, Forward Camps, Dig Sites!](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Valve/Colorful-Map-Areas---Quests-Forward-Camps-Dig-Sites__3393) | Valve | PC / Mac | 1.2.0 |
@@ -179,7 +179,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Companion Rapport](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ParanoidGaming/Companion-Rapport__1d8faf08-ce78-4d71-8e33-81d704e62fc5) | ParanoidGaming | Console | — |
 | [Companion Rapport Numbers](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Smaxx/Companion-Rapport-Numbers__3128) | Smaxx | PC / Mac | 1.2 |
 | [Companion Stuff Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/VisioTempus/Companion-Stuff-Tracker__3986) | VisioTempus | PC / Mac | 1.2.3 |
-| [Companion's Containers](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/Companion-s-Containers__4143) | atharti | PC / Mac | 1.7 |
+| [Companion's Containers](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/Companion-s-Containers__4143) | atharti | PC / Mac | 1.8 |
 | [CompanionFix](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sinnereso/CompanionFix__3677) | sinnereso | PC / Mac | 2026.03.10 |
 | [CompanionInfo](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SkOODaT/CompanionInfo__3093) | SkOODaT | PC / Mac | 101032.1 |
 | [CompanionRapportToChat](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tim99/CompanionRapportToChat__3113) | tim99 | PC / Mac | 5 |
@@ -271,13 +271,14 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [CrownCustomizer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/triase/CrownCustomizer__1548) | triase | PC / Mac | 1.0.5 |
 | [CroZone](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Obijovi/CroZone__4641) | Obijovi | PC / Mac | 1.1.0 |
 | [CrutchAlerts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kyzeragon/CrutchAlerts__21f0cc83-5ba3-4776-ac75-a5a266fde574) | Kyzeragon | Console | — |
-| [CrutchAlerts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kyzeragon/CrutchAlerts__3137) | Kyzeragon | PC / Mac | 2.25.0 |
+| [CrutchAlerts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kyzeragon/CrutchAlerts__3137) | Kyzeragon | PC / Mac | 2.25.1 |
 | [CrutchAlerts Extensions](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kyzeragon/CrutchAlerts-Extensions__4693) | Kyzeragon | PC / Mac | 0.3.0 |
 | [CrutchAlerts-KR](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ricci-Curvature/CrutchAlerts-KR__4517) | Ricci Curvature | PC / Mac | 1.0.0 |
 | [Crux Counter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/g4rr3t/Crux-Counter__3639) | g4rr3t | PC / Mac | 1.3.0 |
 | [CruxTracker-2.0](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/akbosser/CruxTracker-2.0__aef7e9f0-ed11-4b67-99f7-c500cdc0b343) | akbosser | Console | — |
 | [Cruxweaver](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/helixanon/Cruxweaver__3781) | helixanon | PC / Mac | 1.0.2 |
 | [Crystal Fragments Proc](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Supplier/Crystal-Fragments-Proc__2441) | Supplier | PC / Mac | 1.5 |
+| [CrystalFragmentsLogger](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Unfounded_Puppy3/CrystalFragmentsLogger__9dcae2b7-95da-4e83-b22d-7bf517847c92) | Unfounded_Puppy3 | Console | — |
 | [CShortcutPieMenu](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Calamath/CShortcutPieMenu__3088) | Calamath | PC / Mac | 1.5.3 |
 | [CSimpleJukebox - a tiny orchestrion](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Calamath/CSimpleJukebox---a-tiny-orchestrion__3406) | Calamath | PC / Mac | 1.5.4 |
 | [Currency Balancer (Manager)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Mladen90/Currency-Balancer-Manager__3196) | Mladen90 | PC / Mac | 1.0.2 |

@@ -4,7 +4,7 @@ TetsuCombatTools.L = {
     TITLE = "|cFFD700Tetsu's|r Combat Tools",
 
     INFO_LABEL = "Info",
-    INFO_TT = "Gamepad combat HUD. Skill history + GCD + combat status lamp.\nGold / bugs: mail @Tetsurion.",
+    INFO_TT = "Gamepad combat HUD. Skills, combat lamp, food and potion timers.\nGold / bugs: mail @Tetsurion.",
 
     SKILL_ENABLE = "Skill Tracking",
     SKILL_ENABLE_TT = "Show the last pressed bar skills and a GCD bar. Ultimate is always included.",
@@ -35,7 +35,10 @@ TetsuCombatTools.L = {
     SKILL_HIDE_TT = "Used after combat ends (combat mode) and after the last press (after-press mode). Default 8.",
 
     SKILL_GCD = "GCD bar",
-    SKILL_GCD_TT = "Yellow/red bar under the icons. Off = icons only, weave frames stay.",
+    SKILL_GCD_TT = "Yellow/red bar under the icons. Off = icons only.",
+
+    SKILL_WEAVE = "Weave frames",
+    SKILL_WEAVE_TT = "Green frame if a light attack was pressed before the skill, red if not. Off = plain frames. Light-attack icons stay separate.",
 
     SKILL_LA = "Show light attacks",
     SKILL_LA_TT = "Off by default. When on, weapon light attacks also appear as their own icons. Weave mark (green/red frame) works even if this is off. Heavy attacks, block, dodge and synergies stay out.",
@@ -51,7 +54,9 @@ TetsuCombatTools.L = {
     STATUS_ICON_Y = "Icon offset Y",
     STATUS_ICON_Y_TT = "0 = reticle / screen center. Negative up, positive down.",
     STATUS_ICON_SCALE = "Icon scale %",
-    STATUS_ICON_SCALE_TT = "Size of the combat lamp.",
+    STATUS_ICON_SCALE_TT = "Size of the combat lamp. Minimum 30.",
+    STATUS_ICON_ALPHA = "Icon opacity %",
+    STATUS_ICON_ALPHA_TT = "How solid the lamp is. Default 50.",
     STATUS_TEXT = "Text",
     STATUS_TEXT_TT = "Off by default. Writes IN COMBAT / OUT OF COMBAT in the same red/green colors.",
     STATUS_TEXT_X = "Text offset X",
@@ -71,4 +76,23 @@ TetsuCombatTools.L = {
     SOUND_QUEST = "Quest tick",
     SOUND_NOTIFY = "Notification",
     SOUND_DISCOVER = "Objective found",
+
+    CONS_ENABLE = "Consumables",
+    CONS_ENABLE_TT = "Two slots: food and potion. Icon + time left. Grey dash if missing.",
+    CONS_SECTION = "Consumables",
+    CONS_SECTION_TT = "Food and potion timers.",
+    CONS_X = "Offset X",
+    CONS_X_TT = "0 = screen center.",
+    CONS_Y = "Offset Y",
+    CONS_Y_TT = "0 = reticle. Default 220 sits above the skill strip.",
+    CONS_SCALE = "Scale %",
+    CONS_SCALE_TT = "Size of both slots.",
+    CONS_FOOD_WARN = "Food warn (min)",
+    CONS_FOOD_WARN_TT = "Timer turns yellow when food has this many minutes left. Default 5.",
+    CONS_POT_WARN = "Potion warn (sec)",
+    CONS_POT_WARN_TT = "Timer turns yellow when the potion buff has this many seconds left. Default 10.",
+    CONS_POT_COMBAT = "Potion only in combat",
+    CONS_POT_COMBAT_TT = "Hide the potion slot out of combat. Food stays.",
+    CONS_FOOD_SOUND = "Sound when food ends",
+    CONS_FOOD_SOUND_TT = "Off by default. Plays once when the food buff disappears.",
 }

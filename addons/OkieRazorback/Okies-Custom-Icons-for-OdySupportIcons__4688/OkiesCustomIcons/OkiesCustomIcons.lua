@@ -24,6 +24,7 @@ local MY_TEXTURES = {
     "OkiesCustomIcons/icons/ostrich.dds",
     "OkiesCustomIcons/icons/porcupine.dds",
     "OkiesCustomIcons/icons/raccoon.dds",
+    "OkiesCustomIcons/icons/glove.dds",
 }
 
 EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_ADD_ON_LOADED, function(_, addonName)

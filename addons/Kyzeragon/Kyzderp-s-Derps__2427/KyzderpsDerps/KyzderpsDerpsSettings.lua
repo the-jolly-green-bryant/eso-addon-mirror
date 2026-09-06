@@ -1226,12 +1226,6 @@ function KyzderpsDerps:CreateSettingsMenu()
         -------------------------------------------------------------------------------
         {
             type = "submenu",
-            name = "Dialogue Chatter",
-            controls = KyzderpsDerps.Chatter.GetSettings(),
-        },
-        -------------------------------------------------------------------------------
-        {
-            type = "submenu",
             name = "Dynamic Encounters",
             controls = KyzderpsDerps.WorldEvent.GetSettings(),
         },
@@ -1297,6 +1291,12 @@ function KyzderpsDerps:CreateSettingsMenu()
             type = "submenu",
             name = "Pre-Logout",
             controls = KyzderpsDerps.PreLogout.GetSettings(),
+        },
+        -------------------------------------------------------------------------------
+        {
+            type = "submenu",
+            name = "Quests",
+            controls = KyzderpsDerps.Quests.GetSettings(),
         },
         -------------------------------------------------------------------------------
         {

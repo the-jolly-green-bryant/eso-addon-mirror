@@ -74,7 +74,11 @@ function G:Create2505()
 
     local left = savedNumber("goldenPursuitsLeft", -1)
     local top = savedNumber("goldenPursuitsTop", -1)
-    if left >= 0 and top >= 0 then
+    local side = EPC.saved and EPC.saved.goldenPursuitsAnchorSide339 or nil
+    local rightMargin = tonumber(EPC.saved and EPC.saved.goldenPursuitsRightMargin339)
+    if side == "RIGHT" and rightMargin and rightMargin >= 0 and top >= 0 then
+        frame:SetAnchor(TOPRIGHT, GuiRoot, TOPRIGHT, -rightMargin, top)
+    elseif left >= 0 and top >= 0 then
         frame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, left, top)
     else
         frame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 34, 360)
@@ -143,14 +147,40 @@ function G:Create2505()
 
     frame:SetHandler("OnMoveStop", function(control)
         if not EPC.saved then return end
-        EPC.saved.goldenPursuitsLeft = math.max(0, tonumber(control:GetLeft()) or 0)
-        EPC.saved.goldenPursuitsTop = math.max(0, tonumber(control:GetTop()) or 0)
+        local left = math.max(0, tonumber(control:GetLeft()) or 0)
+        local top = math.max(0, tonumber(control:GetTop()) or 0)
+        local right = tonumber(control:GetRight()) or (left + (tonumber(control:GetWidth()) or DEFAULT_WIDTH))
+        local guiWidth = GuiRoot and type(GuiRoot.GetWidth) == "function" and tonumber(GuiRoot:GetWidth()) or 1920
+        EPC.saved.goldenPursuitsLeft = left
+        EPC.saved.goldenPursuitsTop = top
+        if ((left + right) * 0.5) >= guiWidth * 0.5 then
+            EPC.saved.goldenPursuitsAnchorSide339 = "RIGHT"
+            EPC.saved.goldenPursuitsRightMargin339 = math.max(0, guiWidth - right)
+        else
+            EPC.saved.goldenPursuitsAnchorSide339 = "LEFT"
+            EPC.saved.goldenPursuitsRightMargin339 = nil
+        end
+        local w, h = control:GetDimensions()
+        EPC.saved.goldenPursuitsPositionWidth338 = tonumber(w) or DEFAULT_WIDTH
+        EPC.saved.goldenPursuitsPositionHeight338 = tonumber(h) or DEFAULT_HEIGHT
     end)
     frame:SetHandler("OnResizeStop", function(control)
         if not EPC.saved then return end
         local w, h = control:GetDimensions()
         EPC.saved.goldenPursuitsWidth = math.floor((tonumber(w) or DEFAULT_WIDTH) + 0.5)
         EPC.saved.goldenPursuitsHeight = math.floor((tonumber(h) or DEFAULT_HEIGHT) + 0.5)
+        EPC.saved.goldenPursuitsPositionWidth338 = tonumber(w) or DEFAULT_WIDTH
+        EPC.saved.goldenPursuitsPositionHeight338 = tonumber(h) or DEFAULT_HEIGHT
+        local left = tonumber(control:GetLeft()) or 0
+        local right = tonumber(control:GetRight()) or (left + (tonumber(w) or DEFAULT_WIDTH))
+        local guiWidth = GuiRoot and type(GuiRoot.GetWidth) == "function" and tonumber(GuiRoot:GetWidth()) or 1920
+        if ((left + right) * 0.5) >= guiWidth * 0.5 then
+            EPC.saved.goldenPursuitsAnchorSide339 = "RIGHT"
+            EPC.saved.goldenPursuitsRightMargin339 = math.max(0, guiWidth - right)
+        else
+            EPC.saved.goldenPursuitsAnchorSide339 = "LEFT"
+            EPC.saved.goldenPursuitsRightMargin339 = nil
+        end
         EPC.saved.goldenPursuitsManualSize2875 = true
         if self.ApplyCompactLayout2875 then self:ApplyCompactLayout2875() end
     end)
@@ -261,6 +291,50 @@ function G:GetSelectedProgress2871()
     }
 end
 
+-- v0.29.337: if the selected Golden Pursuit is linked to a journal quest,
+-- mirror every visible incomplete quest objective under the pursuit progress.
+-- This uses the same objective builder as the Active Quest overlay so both HUDs
+-- stay consistent and no objective is arbitrarily dropped.
+function G:FindLinkedQuestIndex337()
+    local wanted = easLower2871(self.selectedQuestName2504 or "")
+    if wanted == "" then return nil end
+    local max = tonumber(MAX_JOURNAL_QUESTS) or 25
+    for index = 1, max do
+        local valid = type(IsValidQuestIndex) ~= "function" or IsValidQuestIndex(index) == true
+        if valid then
+            local name = ""
+            if type(GetJournalQuestName) == "function" then
+                local ok, value = pcall(GetJournalQuestName, index)
+                if ok then name = tostring(value or "") end
+            elseif type(GetJournalQuestInfo) == "function" then
+                local ok, value = pcall(GetJournalQuestInfo, index)
+                if ok then name = tostring(value or "") end
+            end
+            if name ~= "" and easLower2871(name) == wanted then return index end
+        end
+    end
+    return nil
+end
+
+function G:GetLinkedQuestObjectives337()
+    local index = self:FindLinkedQuestIndex337()
+    local active = EPC.ActiveQuest
+    if not index or not active or type(active.BuildObjectiveText) ~= "function" then return "" end
+    local ok, text = pcall(active.BuildObjectiveText, active, index)
+    if not ok then return "" end
+    text = tostring(text or "")
+    if text == "Follow the quest marker." or text == "Quest ready to complete." then return text end
+    return text
+end
+
+local function easCountLinesGP337(text)
+    text = tostring(text or "")
+    if text == "" then return 0 end
+    local count = 1
+    for _ in string.gmatch(text, "\n") do count = count + 1 end
+    return count
+end
+
 function G:RefreshSelectedQuestPanel2504()
     local frame = self:Create2505()
     if not frame then return end
@@ -314,12 +388,25 @@ function G:RefreshSelectedQuestPanel2504()
         end
     end
 
+    if not self.layoutMode and hasSelection then
+        local questObjectives337 = self:GetLinkedQuestObjectives337()
+        if questObjectives337 ~= "" then
+            local existing337 = tostring(self.status2505:GetText() or "")
+            if existing337 ~= "" then
+                self.status2505:SetText(existing337 .. "\n" .. questObjectives337)
+            else
+                self.status2505:SetText(questObjectives337)
+            end
+            self.status2505:SetColor(1, 1, 1, 1)
+        end
+    end
+
     local hasPursuitLine = self.pursuit2505:GetText() ~= ""
     self.pursuit2505:SetHidden(not hasPursuitLine)
 
-    -- v0.28.75: reflow all rows into the user's current viewport instead of
-    -- reserving a tall fixed layout that prevents compact sizing.
-    self:ApplyCompactLayout2875()
+    -- v0.29.337: gameplay height follows the actual linked quest/objective
+    -- content, then shrinks again when a shorter pursuit/quest is selected.
+    self:AutoFitHeight337()
     self:RefreshVisibility2496()
 end
 
@@ -346,7 +433,7 @@ function G:ApplyCompactLayout2875()
         local ok, value = pcall(self.title2505.GetTextHeight, self.title2505)
         if ok and tonumber(value) then titleDesired = math.max(18, math.ceil(tonumber(value)) + 2) end
     end
-    local titleHeight = math.max(18, math.min(38, titleDesired))
+    local titleHeight = math.max(18, math.min(64, titleDesired))
     self.title2505:ClearAnchors()
     self.title2505:SetAnchor(TOPLEFT, frame, TOPLEFT, pad, titleTop)
     self.title2505:SetAnchor(TOPRIGHT, frame, TOPRIGHT, -pad, titleTop)
@@ -356,6 +443,10 @@ function G:ApplyCompactLayout2875()
     local hasPursuitLine = not self.pursuit2505:IsHidden() and tostring(self.pursuit2505:GetText() or "") ~= ""
     if hasPursuitLine then
         local pursuitHeight = 20
+        if type(self.pursuit2505.GetTextHeight) == "function" then
+            local ok, value = pcall(self.pursuit2505.GetTextHeight, self.pursuit2505)
+            if ok and tonumber(value) then pursuitHeight = math.max(20, math.min(46, math.ceil(tonumber(value)) + 2)) end
+        end
         self.pursuit2505:ClearAnchors()
         self.pursuit2505:SetAnchor(TOPLEFT, frame, TOPLEFT, pad, cursorY)
         self.pursuit2505:SetAnchor(TOPRIGHT, frame, TOPRIGHT, -pad, cursorY)
@@ -369,6 +460,96 @@ function G:ApplyCompactLayout2875()
     local statusHeight = math.max(0, frameHeight - cursorY - 6)
     self.status2505:SetHeight(statusHeight)
     self.status2505:SetHidden(tostring(self.status2505:GetText() or "") == "" or statusHeight < 6)
+end
+
+function G:AutoFitHeight337()
+    local frame = self.frame2505 or self:Create2505()
+    if not frame or not self.title2505 or not self.pursuit2505 or not self.status2505 then return end
+    if self.layoutMode then
+        self:ApplyCompactLayout2875()
+        return
+    end
+
+    local guiWidth = GuiRoot and type(GuiRoot.GetWidth) == "function" and tonumber(GuiRoot:GetWidth()) or 1920
+    local guiHeight = GuiRoot and type(GuiRoot.GetHeight) == "function" and tonumber(GuiRoot:GetHeight()) or 1080
+    local baseWidth = math.max(MIN_WIDTH, math.min(MAX_WIDTH, tonumber(EPC.saved and EPC.saved.goldenPursuitsWidth) or DEFAULT_WIDTH))
+    local rows = easCountLinesGP337(self.status2505:GetText())
+    local extraWidth = rows > 4 and math.min(140, (rows - 4) * 28) or 0
+    local widthCap = math.max(baseWidth, math.min(MAX_WIDTH, math.floor(guiWidth * 0.48)))
+    local targetWidth = math.min(widthCap, baseWidth + extraWidth)
+    frame:SetWidth(targetWidth)
+
+    if self.status2505.SetLineSpacing then
+        if rows >= 8 then
+            self.status2505:SetLineSpacing(0)
+        elseif rows >= 5 then
+            self.status2505:SetLineSpacing(1)
+        else
+            self.status2505:SetLineSpacing(2)
+        end
+    end
+
+    -- Give the labels enough room to report their true wrapped text height,
+    -- then size the card from those measurements.
+    self:ApplyCompactLayout2875()
+    local titleHeight = 38
+    if type(self.title2505.GetTextHeight) == "function" then
+        local ok, value = pcall(self.title2505.GetTextHeight, self.title2505)
+        if ok and tonumber(value) then titleHeight = math.max(18, math.min(64, math.ceil(tonumber(value)) + 2)) end
+    end
+    local pursuitHeight = 0
+    if not self.pursuit2505:IsHidden() and tostring(self.pursuit2505:GetText() or "") ~= "" then
+        pursuitHeight = 20
+        if type(self.pursuit2505.GetTextHeight) == "function" then
+            local ok, value = pcall(self.pursuit2505.GetTextHeight, self.pursuit2505)
+            if ok and tonumber(value) then pursuitHeight = math.max(20, math.min(46, math.ceil(tonumber(value)) + 2)) end
+        end
+    end
+    local statusHeight = 0
+    if tostring(self.status2505:GetText() or "") ~= "" then
+        statusHeight = math.max(20, rows * 18)
+        if type(self.status2505.GetTextHeight) == "function" then
+            local ok, value = pcall(self.status2505.GetTextHeight, self.status2505)
+            if ok and tonumber(value) then statusHeight = math.max(20, math.ceil(tonumber(value)) + 2) end
+        end
+    end
+
+    local desired = 6 + 18 + 2 + titleHeight + 2 + (pursuitHeight > 0 and pursuitHeight + 2 or 0) + statusHeight + 8
+    local userMax = tonumber(EPC.saved and EPC.saved.goldenPursuitsAutoMaxHeight337) or MAX_HEIGHT
+    userMax = math.max(180, math.min(MAX_HEIGHT, userMax))
+    local screenMax = math.max(180, math.floor(guiHeight * 0.42))
+    local finalHeight = math.max(MIN_HEIGHT, math.min(userMax, screenMax, desired))
+    frame:SetHeight(finalHeight)
+    if EPC.saved then EPC.saved.goldenPursuitsHeight = math.floor(finalHeight + 0.5) end
+    self:ApplyCompactLayout2875()
+
+    -- v0.29.339: preserve the edge the player chose in HUD Layout. A card
+    -- dropped on the right side uses a real TOPRIGHT anchor, so adaptive width
+    -- grows leftward while the right edge stays exactly where the player put it.
+    local savedLeft = tonumber(EPC.saved and EPC.saved.goldenPursuitsLeft)
+    local savedTop = tonumber(EPC.saved and EPC.saved.goldenPursuitsTop)
+    if savedLeft == nil or savedLeft < 0 then savedLeft = tonumber(frame:GetLeft()) or 34 end
+    if savedTop == nil or savedTop < 0 then savedTop = tonumber(frame:GetTop()) or 360 end
+
+    local positionedWidth = tonumber(EPC.saved and EPC.saved.goldenPursuitsPositionWidth338) or baseWidth
+    local side = EPC.saved and EPC.saved.goldenPursuitsAnchorSide339 or nil
+    if side ~= "LEFT" and side ~= "RIGHT" then
+        side = (savedLeft + positionedWidth * 0.5 >= guiWidth * 0.5) and "RIGHT" or "LEFT"
+    end
+
+    local renderTop = math.max(8, math.min(math.max(8, guiHeight - finalHeight - 8), savedTop))
+    frame:ClearAnchors()
+    if side == "RIGHT" then
+        local rightMargin = tonumber(EPC.saved and EPC.saved.goldenPursuitsRightMargin339)
+        if rightMargin == nil then
+            rightMargin = math.max(8, guiWidth - (savedLeft + positionedWidth))
+        end
+        rightMargin = math.max(8, math.min(math.max(8, guiWidth - targetWidth - 8), rightMargin))
+        frame:SetAnchor(TOPRIGHT, GuiRoot, TOPRIGHT, -rightMargin, renderTop)
+    else
+        local renderLeft = math.max(8, math.min(math.max(8, guiWidth - targetWidth - 8), savedLeft))
+        frame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, renderLeft, renderTop)
+    end
 end
 
 function G:RefreshVisibility2496()
@@ -417,8 +598,8 @@ function G:SetSize(width, height)
     frame:SetDimensions(width, height)
     EPC.saved.goldenPursuitsWidth = math.floor(width + 0.5)
     EPC.saved.goldenPursuitsHeight = math.floor(height + 0.5)
-    EPC.saved.goldenPursuitsManualSize2875 = true
-    self:ApplyCompactLayout2875()
+    EPC.saved.goldenPursuitsManualSize2875 = false
+    self:RefreshSelectedQuestPanel2504()
 end
 
 function G:ResetSize()
@@ -436,11 +617,20 @@ function G:ResetPosition()
     if not frame or not EPC.saved then return end
     EPC.saved.goldenPursuitsLeft = -1
     EPC.saved.goldenPursuitsTop = -1
+    EPC.saved.goldenPursuitsPositionWidth338 = nil
+    EPC.saved.goldenPursuitsPositionHeight338 = nil
+    EPC.saved.goldenPursuitsAnchorSide339 = nil
+    EPC.saved.goldenPursuitsRightMargin339 = nil
     frame:ClearAnchors()
     frame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 34, 360)
 end
 
 function G:Initialize()
+    if EPC.saved and EPC.saved.goldenPursuitsAutoFitVersion337 ~= 337 then
+        EPC.saved.goldenPursuitsManualSize2875 = false
+        EPC.saved.goldenPursuitsAutoMaxHeight337 = tonumber(EPC.saved.goldenPursuitsAutoMaxHeight337) or MAX_HEIGHT
+        EPC.saved.goldenPursuitsAutoFitVersion337 = 337
+    end
     self.layoutMode = false
     self.selectedPursuitName2504 = tostring(EPC.saved and EPC.saved.goldenPursuitName or "")
     self.selectedQuestName2504 = tostring(EPC.saved and EPC.saved.goldenPursuitQuestName or "")
@@ -480,12 +670,14 @@ function G:Initialize()
             self:RefreshSelectedQuestPanel2504()
         end)
     end
-    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Visibility", 200, function()
+    -- v0.29.341: one safety pulse replaces the two 750 ms legacy pollers.
+    -- Promotional-event callbacks still refresh progress immediately.
+    EVENT_MANAGER:UnregisterForUpdate(prefix .. "_Visibility")
+    EVENT_MANAGER:UnregisterForUpdate(prefix .. "_Progress2871")
+    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Safety029341", 1200, function()
         self:SuppressNativeTracker2505()
         self:RefreshVisibility2496()
-    end)
-    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Progress2871", 750, function()
-        if self.selectedPursuitName2504 ~= "" then
+        if self.selectedPursuitName2504 ~= "" and self.frame and not self.frame:IsHidden() then
             self:RefreshSelectedQuestPanel2504()
         end
     end)

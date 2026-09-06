@@ -564,8 +564,7 @@ function D:RefreshRow(row, activeCategory)
         frame.epcSmart:SetHidden(not smartMatch)
         frame.epcSwap:SetHidden(not (smartMatch and self.smartNeedsSwap029189 == true))
         if smartMatch then
-            local pulse = tonumber(self.smartPulse029189) or (0.72 + 0.28 * math.abs(math.sin(nowMS() / 150)))
-            frame.epcSmart:SetAlpha(0.62 + 0.38 * pulse)
+            frame.epcSmart:SetAlpha(0.92)
         end
 
         if self.layoutMode and not used then
@@ -577,27 +576,7 @@ function D:RefreshRow(row, activeCategory)
     end
 end
 
-function D:Refresh()
-    self:CreateUI()
-    if not self.window then return end
-    self:ApplyDimensions()
-
-    local show = EPC.saved and EPC.saved.showDualActionBar029189 == true
-    if self.layoutMode then show = true end
-    if show and not self.layoutMode and EPC.OverlayModeAllows then
-        show = EPC:OverlayModeAllows(EPC.saved.dualActionBarVisibility029189 or "ALWAYS")
-    end
-    if show and not self.layoutMode and EPC.IsGameplayHudSuppressed and EPC:IsGameplayHudSuppressed() then
-        show = false
-    end
-    self.window:SetHidden(not show)
-    if not show then return end
-
-    local activeCategory = safe(GetActiveHotbarCategory, nil)
-    for _, row in ipairs(self.rows or {}) do
-        self:RefreshRow(row, activeCategory)
-    end
-end
+-- v0.29.341: obsolete pre-0.29.311 full Refresh implementation removed.
 
 function D:SetSmartRecommendation029189(slot, category, pulse, needsSwap)
     self.smartSlot029189 = tonumber(slot)
@@ -640,6 +619,329 @@ function D:ResetPosition()
     self:AnchorWindow()
 end
 
+-- v0.29.341: obsolete 200 ms Dual Action Bar initializer removed; the optimized initializer below is authoritative.
+
+-- ============================================================================
+-- v0.29.311 - Dual Action Bar frame-time hotfix
+-- The previous 200 ms tick called the Rotation Assistant's full two-bar ability
+-- model, which resolves descriptions, runtime metadata, buff types, effective
+-- ids, effect classification and tracked-state matching for every slot. That is
+-- appropriate for recommendation scoring, not for a HUD renderer. Keep stable
+-- slot presentation event-driven and restrict the gameplay tick to cheap live
+-- values only.
+-- ============================================================================
+
+local function EAS_DAB_Normalize029311(value)
+    local text = string.lower(tostring(value or ""))
+    text = text:gsub("|c%x%x%x%x%x%x", ""):gsub("|r", "")
+    text = text:gsub("[^%w%s%%'%-]", " ")
+    text = text:gsub("%s+", " ")
+    text = text:gsub("^%s+", ""):gsub("%s+$", "")
+    return text
+end
+
+local function EAS_DAB_SetText029311(control, owner, key, value)
+    if not control or not owner then return end
+    value = tostring(value or "")
+    if owner[key] ~= value then
+        owner[key] = value
+        control:SetText(value)
+    end
+end
+
+local function EAS_DAB_SetHidden029311(control, owner, key, hidden)
+    if not control or not owner then return end
+    hidden = hidden == true
+    if owner[key] ~= hidden then
+        owner[key] = hidden
+        control:SetHidden(hidden)
+    end
+end
+
+local function EAS_DAB_SetTexture029311(control, owner, key, texture)
+    if not control or not owner then return end
+    texture = tostring(texture or "")
+    if owner[key] ~= texture then
+        owner[key] = texture
+        control:SetTexture(texture)
+    end
+end
+
+function D:GetLightAbilityData029311(category)
+    local out = {}
+    local slots = self.slots or getSlots()
+    for ordinal, slot in ipairs(slots) do
+        local used = safe(IsSlotUsed, false, slot, category) == true
+        local abilityId = self:GetBoundAbilityId(slot, category)
+        local effectiveId = 0
+        if abilityId > 0 and type(GetEffectiveAbilityIdForAbilityOnHotbar) == "function" then
+            effectiveId = tonumber(safe(GetEffectiveAbilityIdForAbilityOnHotbar, 0, abilityId, category)) or 0
+        end
+        out[#out + 1] = {
+            slot = slot,
+            ordinal = ordinal,
+            category = category,
+            abilityId = abilityId,
+            effectiveAbilityId029311 = effectiveId,
+            name = tostring(safe(GetSlotName, "", slot, category) or ""),
+            icon = tostring(safe(GetSlotTexture, "", slot, category) or ""),
+            used = used,
+            isUltimate = ordinal == #slots,
+        }
+    end
+    return out
+end
+
+function D:BuildLightEffectIndex029311()
+    local rotation = EPC.RotationAssistant
+    local snapshot = rotation and rotation.smartEffects029169
+    if type(snapshot) ~= "table" then return nil end
+    local age = math.max(0, nowMS() - (tonumber(snapshot.at) or 0))
+    if age > 900 then return nil end
+
+    local index = { byId = {}, byName = {} }
+    local function absorb(list)
+        for _, effect in ipairs(list or {}) do
+            local state = {
+                remaining = math.max(0, (tonumber(effect.remaining) or 0) - age),
+                stacks = math.max(0, tonumber(effect.stacks) or 0),
+            }
+            local effectId = tonumber(effect.abilityId) or 0
+            if effectId > 0 then
+                local previous = index.byId[effectId]
+                if not previous or state.remaining > previous.remaining or state.stacks > previous.stacks then
+                    index.byId[effectId] = state
+                end
+            end
+            local effectName = tostring(effect.normalizedName or "")
+            if effectName == "" then effectName = EAS_DAB_Normalize029311(effect.name) end
+            if effectName ~= "" then
+                local previous = index.byName[effectName]
+                if not previous or state.remaining > previous.remaining or state.stacks > previous.stacks then
+                    index.byName[effectName] = state
+                end
+            end
+        end
+    end
+    absorb(snapshot.player)
+    absorb(snapshot.target)
+    return index
+end
+
+function D:GetLightTrackedState029311(ability, slotEffect, effectIndex)
+    local remaining = math.max(0, tonumber(slotEffect) or 0)
+    local stacks, threshold = 0, 0
+    local name = EAS_DAB_Normalize029311(ability and ability.name or "")
+    if name:find("bound armaments", 1, true) then threshold = 4
+    elseif name:find("merciless resolve", 1, true) or name:find("relentless focus", 1, true) or name:find("grim focus", 1, true) then threshold = 5
+    elseif name:find("molten whip", 1, true) then threshold = 3 end
+    if type(effectIndex) ~= "table" then return remaining, stacks, threshold end
+
+    local abilityId = tonumber(ability and ability.abilityId) or 0
+    local effectiveId = tonumber(ability and ability.effectiveAbilityId029311) or 0
+    local function consider(state)
+        if state then
+            remaining = math.max(remaining, tonumber(state.remaining) or 0)
+            stacks = math.max(stacks, tonumber(state.stacks) or 0)
+        end
+    end
+    if abilityId > 0 then consider(effectIndex.byId[abilityId]) end
+    if effectiveId > 0 then consider(effectIndex.byId[effectiveId]) end
+    if name ~= "" then consider(effectIndex.byName[name]) end
+    return remaining, stacks, threshold
+end
+
+function D:IsVisibleNow029311()
+    self:CreateUI()
+    if not self.window or not EPC.saved then return false end
+    local show = EPC.saved.showDualActionBar029189 == true
+    if self.layoutMode then show = true end
+    if show and not self.layoutMode and EPC.OverlayModeAllows then
+        show = EPC:OverlayModeAllows(EPC.saved.dualActionBarVisibility029189 or "ALWAYS")
+    end
+    if show and not self.layoutMode and EPC.IsGameplayHudSuppressed and EPC:IsGameplayHudSuppressed() then
+        show = false
+    end
+    EAS_DAB_SetHidden029311(self.window, self, "windowHidden029311", not show)
+    return show
+end
+
+function D:RefreshStatic029311()
+    self:CreateUI()
+    if not self.window then return end
+    self:ApplyDimensions()
+    -- Keep the event-driven slot cache current even while a visibility mode has
+    -- the bar hidden, so entering combat never needs a surprise metadata rebuild.
+    self:IsVisibleNow029311()
+
+    self.staticAbilityData029311 = self.staticAbilityData029311 or {}
+    local activeCategory = safe(GetActiveHotbarCategory, nil)
+    self.lastActiveCategory029311 = activeCategory
+    local inactiveAlpha = clamp((EPC.saved and EPC.saved.dualActionBarInactiveAlpha029189 or 45) / 100, 0.10, 1.0)
+    local inactiveDesaturation = clamp((EPC.saved and EPC.saved.dualActionBarInactiveDesaturation029189 or 45) / 100, 0, 1)
+
+    for _, row in ipairs(self.rows or {}) do
+        local category = row.epcCategory
+        local active = category == activeCategory
+        local recommendedOnRow = self.smartCategory029189 == category and self.smartSlot029189 ~= nil
+        row:SetAlpha(active and 1.0 or (recommendedOnRow and math.max(inactiveAlpha, 0.78) or inactiveAlpha))
+        self:RefreshMarker029191(row, active)
+        local markerMode = self:GetMarkerMode029191()
+        if active then
+            if markerMode == "ICON_GLOW" then
+                row.marker:SetCenterColor(0.20, 0.14, 0.03, 0.20)
+                row.marker:SetEdgeColor(1.00, 0.74, 0.18, 0.72)
+            else
+                row.marker:SetCenterColor(0.05, 0.055, 0.08, 0.16)
+                row.marker:SetEdgeColor(0.86, 0.72, 0.30, 0.46)
+            end
+            row.markerText:SetColor(1.00, 0.86, 0.36, 1)
+        else
+            if markerMode == "NUMBER" then
+                row.marker:SetCenterColor(0.02, 0.025, 0.04, 0.88)
+                row.marker:SetEdgeColor(0.30, 0.32, 0.38, 0.90)
+            else
+                row.marker:SetCenterColor(0, 0, 0, 0)
+                row.marker:SetEdgeColor(0, 0, 0, 0)
+            end
+            row.markerText:SetColor(0.72, 0.74, 0.80, 1)
+        end
+
+        local data = self:GetLightAbilityData029311(category)
+        self.staticAbilityData029311[category] = data
+        for ordinal, frame in ipairs(row.slots or {}) do
+            local ability = data[ordinal]
+            frame.epcAbility029311 = ability
+            local used = ability and ability.used == true
+            local fallbackIcon = ability and ability.icon or ""
+            local icon = used and self:GetSkillStyleIcon(ability.abilityId, fallbackIcon) or ""
+            EAS_DAB_SetTexture029311(frame.epcIcon, frame, "iconTexture029311", icon)
+            EAS_DAB_SetHidden029311(frame.epcIcon, frame, "iconHidden029311", not used or icon == "")
+            EAS_DAB_SetHidden029311(frame.epcShade, frame, "shadeHidden029311", not used)
+            if frame.epcIcon.SetDesaturation then frame.epcIcon:SetDesaturation(active and 0 or inactiveDesaturation) end
+            if active then frame.epcBG:SetEdgeColor(0.38, 0.30, 0.12, 0.98)
+            else frame.epcBG:SetEdgeColor(0.16, 0.18, 0.22, 0.90) end
+
+            local bind = used and self:GetBindingMarkup(ability.slot) or ""
+            EAS_DAB_SetText029311(frame.epcHotkey, frame, "hotkeyText029311", bind)
+            local usesMarkup = bind:find("|t", 1, true) ~= nil
+            local fontKey = usesMarkup and "markup" or "text"
+            if frame.hotkeyFont029311 ~= fontKey then
+                frame.hotkeyFont029311 = fontKey
+                frame.epcHotkey:SetFont(usesMarkup and "$(BOLD_FONT)|14|soft-shadow-thick" or "$(BOLD_FONT)|13|soft-shadow-thick")
+            end
+
+            if self.layoutMode and not used then
+                EAS_DAB_SetHidden029311(frame.epcIcon, frame, "iconHidden029311", true)
+                EAS_DAB_SetText029311(frame.epcTimer, frame, "timerText029311", ability and ability.isUltimate and "ULT" or tostring(ordinal))
+                EAS_DAB_SetText029311(frame.epcHotkey, frame, "hotkeyText029311", "")
+                frame.epcBG:SetCenterColor(0.02, 0.025, 0.04, 0.88)
+            end
+        end
+    end
+end
+
+function D:RefreshDynamic029311(force)
+    if not self:IsVisibleNow029311() then return end
+    local nowValue = nowMS()
+    local inCombat = type(IsUnitInCombat) == "function" and safe(IsUnitInCombat, false, "player") == true
+    local minGap = (inCombat or self.layoutMode or self.smartSlot029189 ~= nil) and 250 or 1250
+    if force ~= true and self.lastDynamicAt029311 and nowValue - self.lastDynamicAt029311 < minGap then return end
+    self.lastDynamicAt029311 = nowValue
+
+    local activeCategory = safe(GetActiveHotbarCategory, nil)
+    if activeCategory ~= self.lastActiveCategory029311 then
+        self:RefreshStatic029311()
+        activeCategory = safe(GetActiveHotbarCategory, nil)
+    end
+
+    local ultimatePower = 0
+    if COMBAT_MECHANIC_FLAGS_ULTIMATE then
+        ultimatePower = tonumber((safe(GetUnitPower, 0, "player", COMBAT_MECHANIC_FLAGS_ULTIMATE))) or 0
+    end
+    local effectIndex = self:BuildLightEffectIndex029311()
+
+    for _, row in ipairs(self.rows or {}) do
+        local category = row.epcCategory
+        local active = category == activeCategory
+        local recommendedOnRow = self.smartCategory029189 == category and self.smartSlot029189 ~= nil
+        local inactiveAlpha = clamp((EPC.saved and EPC.saved.dualActionBarInactiveAlpha029189 or 45) / 100, 0.10, 1.0)
+        row:SetAlpha(active and 1.0 or (recommendedOnRow and math.max(inactiveAlpha, 0.78) or inactiveAlpha))
+
+        for ordinal, frame in ipairs(row.slots or {}) do
+            local ability = frame.epcAbility029311
+            local used = ability and ability.used == true
+            if used then
+                local remain, duration, global = safe(GetSlotCooldownInfo, 0, ability.slot, category)
+                local slotEffect = tonumber(safe(GetActionSlotEffectTimeRemaining, 0, ability.slot, category)) or 0
+                local remaining, stacks, threshold = self:GetLightTrackedState029311(ability, slotEffect, effectIndex)
+                local timerText = ""
+                if EPC.saved.dualActionBarShowTimers029189 ~= false then
+                    if remaining > 0 then
+                        timerText = formatMS(remaining)
+                    else
+                        remain, duration = tonumber(remain) or 0, tonumber(duration) or 0
+                        if remain > 0 and duration > 0 and global ~= true then timerText = formatMS(remain) end
+                    end
+                end
+                EAS_DAB_SetText029311(frame.epcTimer, frame, "timerText029311", timerText)
+
+                local stackText = ""
+                if EPC.saved.dualActionBarShowStacks029189 ~= false and stacks > 0 then
+                    if threshold > 0 then stackText = tostring(math.floor(stacks + 0.5)) .. "/" .. tostring(math.floor(threshold + 0.5))
+                    else stackText = tostring(math.floor(stacks + 0.5)) end
+                end
+                EAS_DAB_SetText029311(frame.epcStack, frame, "stackText029311", stackText)
+
+                if ability.isUltimate and COMBAT_MECHANIC_FLAGS_ULTIMATE then
+                    EAS_DAB_SetText029311(frame.epcUltimate, frame, "ultimateText029311", tostring(math.max(0, math.floor(ultimatePower + 0.5))) .. "%")
+                else
+                    EAS_DAB_SetText029311(frame.epcUltimate, frame, "ultimateText029311", "")
+                end
+            elseif not self.layoutMode then
+                EAS_DAB_SetText029311(frame.epcTimer, frame, "timerText029311", "")
+                EAS_DAB_SetText029311(frame.epcStack, frame, "stackText029311", "")
+                EAS_DAB_SetText029311(frame.epcUltimate, frame, "ultimateText029311", "")
+            end
+
+            local smartMatch = self.smartSlot029189 ~= nil
+                and ability ~= nil
+                and tonumber(self.smartSlot029189) == tonumber(ability.slot)
+                and self.smartCategory029189 == category
+            EAS_DAB_SetHidden029311(frame.epcSmart, frame, "smartHidden029311", not smartMatch)
+            EAS_DAB_SetHidden029311(frame.epcSwap, frame, "swapHidden029311", not (smartMatch and self.smartNeedsSwap029189 == true))
+            if smartMatch then
+                frame.epcSmart:SetAlpha(0.92)
+            end
+        end
+    end
+end
+
+function D:Refresh()
+    self:RefreshStatic029311()
+    self:RefreshDynamic029311(true)
+end
+
+local EAS_DAB_SetSmartBase029311 = D.SetSmartRecommendation029189
+function D:SetSmartRecommendation029189(slot, category, pulse, needsSwap)
+    local result = EAS_DAB_SetSmartBase029311(self, slot, category, pulse, needsSwap)
+    return result
+end
+
+local EAS_DAB_ClearSmartBase029311 = D.ClearSmartRecommendation029189
+function D:ClearSmartRecommendation029189()
+    EAS_DAB_ClearSmartBase029311(self)
+    -- Clear stale glow immediately without rebuilding any ability data.
+    if self.rows then
+        for _, row in ipairs(self.rows) do
+            for _, frame in ipairs(row.slots or {}) do
+                EAS_DAB_SetHidden029311(frame.epcSmart, frame, "smartHidden029311", true)
+                EAS_DAB_SetHidden029311(frame.epcSwap, frame, "swapHidden029311", true)
+            end
+        end
+    end
+end
+
 function D:Initialize()
     self:CreateUI()
     local prefix = EPC.name .. "_DualActionBar029189"
@@ -667,6 +969,122 @@ function D:Initialize()
             self:Refresh()
         end)
     end
-    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Tick", 125, function() self:Refresh() end)
+    if EVENT_PLAYER_COMBAT_STATE then
+        EVENT_MANAGER:RegisterForEvent(prefix .. "_Combat", EVENT_PLAYER_COMBAT_STATE, function()
+            self:RefreshDynamic029311(true)
+        end)
+    end
+    if EVENT_POWER_UPDATE then
+        local powerRegistration = prefix .. "_Power"
+        EVENT_MANAGER:RegisterForEvent(powerRegistration, EVENT_POWER_UPDATE, function(_, unitTag, powerIndex, powerType)
+            if unitTag == "player" and (powerType == COMBAT_MECHANIC_FLAGS_ULTIMATE or powerType == POWERTYPE_ULTIMATE) then
+                self:RefreshDynamic029311(false)
+            end
+        end)
+        -- v0.29.341: without native filters this callback received every Player,
+        -- target, group and companion power change even though the Dual Bar only
+        -- cares about Player Ultimate. Let ESO discard unrelated power events
+        -- before they enter Lua.
+        if REGISTER_FILTER_UNIT_TAG then
+            EVENT_MANAGER:AddFilterForEvent(powerRegistration, EVENT_POWER_UPDATE, REGISTER_FILTER_UNIT_TAG, "player")
+        end
+        if REGISTER_FILTER_POWER_TYPE and POWERTYPE_ULTIMATE ~= nil then
+            EVENT_MANAGER:AddFilterForEvent(powerRegistration, EVENT_POWER_UPDATE, REGISTER_FILTER_POWER_TYPE, POWERTYPE_ULTIMATE)
+        end
+    end
+
+    EVENT_MANAGER:UnregisterForUpdate(prefix .. "_Tick")
+    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Tick", 125, function()
+        if not EPC.saved or EPC.saved.showDualActionBar029189 ~= true then return end
+        local nowValue = type(GetFrameTimeMilliseconds) == "function" and (tonumber(GetFrameTimeMilliseconds()) or 0) or 0
+        local inCombat = type(IsUnitInCombat) == "function" and safe(IsUnitInCombat, false, "player") == true
+        local gap = inCombat and 125 or 1000
+        if not self.lastDynamicTick029315 or (nowValue - self.lastDynamicTick029315) >= gap then
+            self.lastDynamicTick029315 = nowValue
+            self:RefreshDynamic029311(false)
+        end
+    end)
     self:Refresh()
+end
+
+
+-- v0.29.321 - Keep the Dual Weapon Bar recommendation visually stable.
+-- RotationAssistant intentionally clears generic guidance before selecting the
+-- current render target.  Because the Dual Bar is then selected again in the
+-- same recommendation pass, the old immediate clear caused the gold border to
+-- be hidden and re-shown every scoring refresh.  That looks like a flash even
+-- though the highlight alpha itself is no longer animated.
+--
+-- Defer a real clear for a very short grace window. A same-pass Set cancels the
+-- pending clear, so an unchanged recommendation remains continuously visible.
+-- A genuine HideActionGuidance still clears normally after the grace window.
+local EAS_DAB_ClearSmartImmediate029321 = D.ClearSmartRecommendation029189
+local EAS_DAB_SetSmartImmediate029321 = D.SetSmartRecommendation029189
+
+function D:ApplySmartHighlightOnly029321()
+    if not self.rows then return end
+    local activeCategory = safe(GetActiveHotbarCategory, nil)
+    local inactiveAlpha = clamp((EPC.saved and EPC.saved.dualActionBarInactiveAlpha029189 or 45) / 100, 0.10, 1.0)
+
+    for _, row in ipairs(self.rows) do
+        local category = row.epcCategory
+        local recommendedOnRow = self.smartCategory029189 == category and self.smartSlot029189 ~= nil
+        local active = category == activeCategory
+        row:SetAlpha(active and 1.0 or (recommendedOnRow and math.max(inactiveAlpha, 0.78) or inactiveAlpha))
+
+        for ordinal, frame in ipairs(row.slots or {}) do
+            local ability = frame.epcAbility029311
+            local slot = ability and ability.slot or self.slots[ordinal]
+            local smartMatch = self.smartSlot029189 ~= nil
+                and tonumber(self.smartSlot029189) == tonumber(slot)
+                and self.smartCategory029189 == category
+
+            if EAS_DAB_SetHidden029311 then
+                EAS_DAB_SetHidden029311(frame.epcSmart, frame, "smartHidden029311", not smartMatch)
+                EAS_DAB_SetHidden029311(frame.epcSwap, frame, "swapHidden029311", not (smartMatch and self.smartNeedsSwap029189 == true))
+            else
+                frame.epcSmart:SetHidden(not smartMatch)
+                frame.epcSwap:SetHidden(not (smartMatch and self.smartNeedsSwap029189 == true))
+            end
+            if smartMatch then frame.epcSmart:SetAlpha(0.92) end
+        end
+    end
+end
+
+function D:SetSmartRecommendation029189(slot, category, pulse, needsSwap)
+    -- Cancel any clear queued by the beginning of this same advisor pass.
+    self.smartClearGeneration029321 = (tonumber(self.smartClearGeneration029321) or 0) + 1
+
+    local newSlot = tonumber(slot)
+    local newNeedsSwap = needsSwap == true
+    local unchanged = self.smartSlot029189 == newSlot
+        and self.smartCategory029189 == category
+        and self.smartNeedsSwap029189 == newNeedsSwap
+
+    local result = EAS_DAB_SetSmartImmediate029321(self, slot, category, 1.00, needsSwap)
+
+    -- No animation and no metadata rebuild: just keep the 12 lightweight visual
+    -- states correct. Reapplying an unchanged recommendation does not hide it.
+    self:ApplySmartHighlightOnly029321()
+    if unchanged then return result end
+    return result
+end
+
+function D:ClearSmartRecommendation029189()
+    self.smartClearGeneration029321 = (tonumber(self.smartClearGeneration029321) or 0) + 1
+    local generation = self.smartClearGeneration029321
+
+    local function reallyClear()
+        if self.smartClearGeneration029321 ~= generation then return end
+        EAS_DAB_ClearSmartImmediate029321(self)
+        self:ApplySmartHighlightOnly029321()
+    end
+
+    -- The advisor's ShowActionHighlight clears then sets synchronously. A small
+    -- deferred clear prevents that internal handoff from becoming visible.
+    if type(zo_callLater) == "function" then
+        zo_callLater(reallyClear, 90)
+    else
+        reallyClear()
+    end
 end

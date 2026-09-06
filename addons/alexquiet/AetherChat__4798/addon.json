@@ -18,7 +18,7 @@
     "AetherChat"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4798/",
-  "fingerprint": "6adeb8dd39ab24f312276e063e74baaad582adc7ba47848e1e2ccc18622479b4",
+  "fingerprint": "8db757c4603b275dfde21b9b9a842620853d3c026f9105c541d9180a3987b642",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw17171.jpg"
   ],
@@ -28,11 +28,11 @@
   "source_id": "4798",
   "source_url": "https://www.esoui.com/downloads/info4798-AetherChat.html",
   "stats": {
-    "downloads": 8561,
+    "downloads": 8579,
     "favorites": 1,
-    "monthly_downloads": 8557
+    "monthly_downloads": 8575
   },
   "title": "AetherChat",
-  "updated_at": 1788363913000,
-  "version": "1.2.5"
+  "updated_at": 1788636441000,
+  "version": "1.2.6"
 }

@@ -81,7 +81,7 @@ local function TogglePanel( panel, abilityId, enable )
 				LCA.RegisterForFilteredEvent(name .. i, EVENT_EFFECT_CHANGED, callback, REGISTER_FILTER_ABILITY_ID, ids[i], REGISTER_FILTER_UNIT_TAG_PREFIX, "group")
 			end
 		else
-			-- Special tracking for effects that don't trigger EVENT_EFFECT_CHANGED
+			-- Alternate tracking for effects that don't trigger EVENT_EFFECT_CHANGED
 			local callback = function( _, result, _, _, _, _, _, _, _, _, hitValue, _, _, _, _, targetUnitId, abilityId )
 				if (result == ACTION_RESULT_EFFECT_FADED and effectIds[targetUnitId] == abilityId) then
 					effectEnds[targetUnitId] = nil
@@ -111,12 +111,7 @@ local function TogglePanel( panel, abilityId, enable )
 	else
 		EVENT_MANAGER:UnregisterForUpdate(name)
 		for i = 1, #ids do
-			local name2 = name .. i
-			if (not altMode) then
-				EVENT_MANAGER:UnregisterForEvent(name2, EVENT_EFFECT_CHANGED)
-			else
-				EVENT_MANAGER:UnregisterForEvent(name2, EVENT_COMBAT_EVENT)
-			end
+			EVENT_MANAGER:UnregisterForEvent(name .. i, not altMode and EVENT_EFFECT_CHANGED or EVENT_COMBAT_EVENT)
 		end
 		panel:SetRepositionCallback(nil)
 		panel:Disable()

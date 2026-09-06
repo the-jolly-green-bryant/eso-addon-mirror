@@ -35,6 +35,11 @@ local function StatusSoundOff()
     return StatusOff() or not (v and v.statusSound ~= false)
 end
 
+local function ConsOff()
+    local v = Vars()
+    return not (v and v.consEnabled ~= false)
+end
+
 local function SoundItems()
     return {
         { name = L("SOUND_DUEL", "Duel start"), data = "duel" },
@@ -76,7 +81,7 @@ function T.RegisterSettings()
         allowDefaults = true,
     })
     if not settings then return end
-    settings.version = "1.1.1"
+    settings.version = "1.2.4"
     settings.author = "Tetsurion"
 
     settings:AddSetting({
@@ -111,6 +116,20 @@ function T.RegisterSettings()
         setFunction = function(val)
             vars.statusEnabled = val and true or false
             if T.StatusRefresh then T.StatusRefresh() end
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarven.ST_CHECKBOX,
+        label = L("CONS_ENABLE", "Consumables"),
+        tooltip = L("CONS_ENABLE_TT", ""),
+        default = true,
+        getFunction = function()
+            return vars.consEnabled ~= false
+        end,
+        setFunction = function(val)
+            vars.consEnabled = val and true or false
+            if T.ConsRefresh then T.ConsRefresh() end
         end,
     })
 
@@ -245,6 +264,21 @@ function T.RegisterSettings()
 
     settings:AddSetting({
         type = LibHarven.ST_CHECKBOX,
+        label = L("SKILL_WEAVE", "Weave frames"),
+        tooltip = L("SKILL_WEAVE_TT", ""),
+        default = true,
+        disable = SkillOff,
+        getFunction = function()
+            return vars.skillShowWeave ~= false
+        end,
+        setFunction = function(val)
+            vars.skillShowWeave = val and true or false
+            if T.SkillRefresh then T.SkillRefresh() end
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarven.ST_CHECKBOX,
         label = L("SKILL_LA", "Show light attacks"),
         tooltip = L("SKILL_LA_TT", ""),
         default = false,
@@ -319,7 +353,7 @@ function T.RegisterSettings()
         type = LibHarven.ST_SLIDER,
         label = L("STATUS_ICON_SCALE", "Icon scale %"),
         tooltip = L("STATUS_ICON_SCALE_TT", ""),
-        min = 50,
+        min = 30,
         max = 180,
         step = 5,
         default = 50,
@@ -329,6 +363,24 @@ function T.RegisterSettings()
         end,
         setFunction = function(val)
             vars.statusIconScale = tonumber(val) or 50
+            if T.StatusRefresh then T.StatusRefresh() end
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarven.ST_SLIDER,
+        label = L("STATUS_ICON_ALPHA", "Icon opacity %"),
+        tooltip = L("STATUS_ICON_ALPHA_TT", ""),
+        min = 10,
+        max = 100,
+        step = 5,
+        default = 50,
+        disable = StatusIconOff,
+        getFunction = function()
+            return vars.statusIconAlpha or 50
+        end,
+        setFunction = function(val)
+            vars.statusIconAlpha = tonumber(val) or 50
             if T.StatusRefresh then T.StatusRefresh() end
         end,
     })
@@ -430,6 +482,133 @@ function T.RegisterSettings()
         end,
         setFunction = function(control, itemName, itemData)
             vars.statusSoundId = (itemData and itemData.data) or "duel"
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarven.ST_SECTION,
+        label = L("CONS_SECTION", "Consumables"),
+        tooltip = L("CONS_SECTION_TT", ""),
+    })
+
+    settings:AddSetting({
+        type = LibHarven.ST_SLIDER,
+        label = L("CONS_X", "Offset X"),
+        tooltip = L("CONS_X_TT", ""),
+        min = -500,
+        max = 500,
+        step = 10,
+        default = 0,
+        disable = ConsOff,
+        getFunction = function()
+            return vars.consOffsetX or 0
+        end,
+        setFunction = function(val)
+            vars.consOffsetX = tonumber(val) or 0
+            if T.ConsRefresh then T.ConsRefresh() end
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarven.ST_SLIDER,
+        label = L("CONS_Y", "Offset Y"),
+        tooltip = L("CONS_Y_TT", ""),
+        min = -500,
+        max = 500,
+        step = 10,
+        default = 220,
+        disable = ConsOff,
+        getFunction = function()
+            local y = tonumber(vars.consOffsetY)
+            if y == nil then return 220 end
+            return y
+        end,
+        setFunction = function(val)
+            vars.consOffsetY = tonumber(val) or 220
+            if T.ConsRefresh then T.ConsRefresh() end
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarven.ST_SLIDER,
+        label = L("CONS_SCALE", "Scale %"),
+        tooltip = L("CONS_SCALE_TT", ""),
+        min = 50,
+        max = 180,
+        step = 5,
+        default = 100,
+        disable = ConsOff,
+        getFunction = function()
+            return vars.consScale or 100
+        end,
+        setFunction = function(val)
+            vars.consScale = tonumber(val) or 100
+            if T.ConsRefresh then T.ConsRefresh() end
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarven.ST_SLIDER,
+        label = L("CONS_FOOD_WARN", "Food warn (min)"),
+        tooltip = L("CONS_FOOD_WARN_TT", ""),
+        min = 1,
+        max = 15,
+        step = 1,
+        default = 5,
+        disable = ConsOff,
+        getFunction = function()
+            return vars.consFoodWarn or 5
+        end,
+        setFunction = function(val)
+            vars.consFoodWarn = tonumber(val) or 5
+            if T.ConsRefresh then T.ConsRefresh() end
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarven.ST_SLIDER,
+        label = L("CONS_POT_WARN", "Potion warn (sec)"),
+        tooltip = L("CONS_POT_WARN_TT", ""),
+        min = 5,
+        max = 20,
+        step = 1,
+        default = 10,
+        disable = ConsOff,
+        getFunction = function()
+            return vars.consPotWarn or 10
+        end,
+        setFunction = function(val)
+            vars.consPotWarn = tonumber(val) or 10
+            if T.ConsRefresh then T.ConsRefresh() end
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarven.ST_CHECKBOX,
+        label = L("CONS_POT_COMBAT", "Potion only in combat"),
+        tooltip = L("CONS_POT_COMBAT_TT", ""),
+        default = false,
+        disable = ConsOff,
+        getFunction = function()
+            return vars.consPotCombat == true
+        end,
+        setFunction = function(val)
+            vars.consPotCombat = val and true or false
+            if T.ConsRefresh then T.ConsRefresh() end
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarven.ST_CHECKBOX,
+        label = L("CONS_FOOD_SOUND", "Sound when food ends"),
+        tooltip = L("CONS_FOOD_SOUND_TT", ""),
+        default = false,
+        disable = ConsOff,
+        getFunction = function()
+            return vars.consFoodSound == true
+        end,
+        setFunction = function(val)
+            vars.consFoodSound = val and true or false
         end,
     })
 end

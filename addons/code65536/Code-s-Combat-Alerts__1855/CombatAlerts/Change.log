@@ -1,3 +1,7 @@
+Version 2.6.4 (2026/09/05)
+* Restored a heavy attack notification in Dreadsail Reef that was
+  unintentionally lost during the 2.5.0 overhaul
+
 Version 2.6.3 (2026/09/01)
 * As requested by M0R, the status panel for the first boss encounter in
   Dreadsail Reef will now track weapons during the second phase

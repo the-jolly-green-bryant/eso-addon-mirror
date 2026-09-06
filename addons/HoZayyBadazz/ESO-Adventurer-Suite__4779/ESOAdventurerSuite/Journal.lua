@@ -2860,17 +2860,11 @@ function J:RefreshInteractiveDungeons(page)
                 easSetInk(rowControl.titleLabel, isSelected, false)
                 easSetInk(rowControl.detailLabel, isSelected, true)
                 if row.lastBoss and EPC.saved.groupFinderWidgetLastBossHighlight == true and not isSelected then
-                    rowControl._easLastBossPulse = 0
-                    rowControl:SetHandler("OnUpdate", function(control, timeMs)
-                        local now = tonumber(timeMs) or (type(GetFrameTimeMilliseconds) == "function" and GetFrameTimeMilliseconds()) or 0
-                        if now - (control._easLastBossPulse or 0) < 90 then return end
-                        control._easLastBossPulse = now
-                        local phase = (now % 4200) / 4200 * 6.283185307
-                        local r = 0.55 + 0.45 * math.sin(phase)
-                        local g = 0.55 + 0.45 * math.sin(phase + 2.094395102)
-                        local b = 0.55 + 0.45 * math.sin(phase + 4.188790205)
-                        control.titleLabel:SetColor(r, g, b, 1)
-                    end)
+                    -- v0.29.341: steady high-contrast emphasis replaces the old
+                    -- per-row rainbow OnUpdate pulse. This keeps LAST BOSS obvious
+                    -- without attaching frame callbacks to visible Codex rows.
+                    rowControl:SetHandler("OnUpdate", nil)
+                    rowControl.titleLabel:SetColor(1.00, 0.78, 0.24, 1)
                 else
                     rowControl:SetHandler("OnUpdate", nil)
                 end
@@ -3380,17 +3374,9 @@ function J:RefreshInteractiveGroupFinder(page)
             rowControl.detailLabel:SetText(detail)
             easSetInk(rowControl.titleLabel, isSelected, false); easSetInk(rowControl.detailLabel, isSelected, true)
             if row.lastBoss and EPC.saved.groupFinderWidgetLastBossHighlight == true and not isSelected then
-                rowControl._easLastBossPulse = 0
-                rowControl:SetHandler("OnUpdate", function(control, timeMs)
-                    local now = tonumber(timeMs) or (type(GetFrameTimeMilliseconds) == "function" and GetFrameTimeMilliseconds()) or 0
-                    if now - (control._easLastBossPulse or 0) < 90 then return end
-                    control._easLastBossPulse = now
-                    local phase = (now % 4200) / 4200 * 6.283185307
-                    local r = 0.55 + 0.45 * math.sin(phase)
-                    local g = 0.55 + 0.45 * math.sin(phase + 2.094395102)
-                    local b = 0.55 + 0.45 * math.sin(phase + 4.188790205)
-                    control.titleLabel:SetColor(r, g, b, 1)
-                end)
+                -- v0.29.341: steady emphasis; no per-frame row animation.
+                rowControl:SetHandler("OnUpdate", nil)
+                rowControl.titleLabel:SetColor(1.00, 0.78, 0.24, 1)
             else
                 rowControl:SetHandler("OnUpdate", nil)
             end
@@ -5586,17 +5572,9 @@ function J:RefreshInteractiveGroupFinder(page)
             rowControl.detailLabel:SetText(detail)
             easSetInk(rowControl.titleLabel, isSelected, false); easSetInk(rowControl.detailLabel, isSelected, true)
             if row.lastBoss and EPC.saved.groupFinderWidgetLastBossHighlight == true and not isSelected then
-                rowControl._easLastBossPulse = 0
-                rowControl:SetHandler("OnUpdate", function(control, timeMs)
-                    local now = tonumber(timeMs) or (type(GetFrameTimeMilliseconds) == "function" and GetFrameTimeMilliseconds()) or 0
-                    if now - (control._easLastBossPulse or 0) < 90 then return end
-                    control._easLastBossPulse = now
-                    local phase = (now % 4200) / 4200 * 6.283185307
-                    local r = 0.55 + 0.45 * math.sin(phase)
-                    local g = 0.55 + 0.45 * math.sin(phase + 2.094395102)
-                    local b = 0.55 + 0.45 * math.sin(phase + 4.188790205)
-                    control.titleLabel:SetColor(r, g, b, 1)
-                end)
+                -- v0.29.341: steady emphasis; no per-frame row animation.
+                rowControl:SetHandler("OnUpdate", nil)
+                rowControl.titleLabel:SetColor(1.00, 0.78, 0.24, 1)
             else
                 rowControl:SetHandler("OnUpdate", nil)
             end

@@ -23,7 +23,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Raid Auto Skeleton](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ownedbynico/Raid-Auto-Skeleton__2537) | ownedbynico | PC / Mac | 1.3.1 |
 | [Raid Reset](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Eymix/Raid-Reset__2850) | Eymix | PC / Mac | 1.8 |
 | [RaidBuffs](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wheels/RaidBuffs__1939) | Wheels | PC / Mac | 0.17.0 |
-| [Raidificator (Dungeon, Trial, and Arena Tracker)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Raidificator-Dungeon-Trial-and-Arena-Tracker__1101) | code65536 | PC / Mac | 4.7.3 |
+| [Raidificator (Dungeon, Trial, and Arena Tracker)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Raidificator-Dungeon-Trial-and-Arena-Tracker__1101) | code65536 | PC / Mac | 4.7.3.1 |
 | [RaidManager](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/blackmetallive/RaidManager__3436) | blackmetallive | PC / Mac | 1.0 |
 | [RaidNotifier - Traduzione Italiana](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Dusty82/RaidNotifier---Traduzione-Italiana__2991) | Dusty82 | PC / Mac | 2.18 |
 | [RaidNotifier Updated](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kyoma/RaidNotifier-Updated__1355) | Kyoma | PC / Mac | 2.30 |
@@ -99,7 +99,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [ResearchTimer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/hisdad/ResearchTimer__974) | hisdad | PC / Mac | 1.98 |
 | [ResearchTimer - Unofficial Update](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Fennek/ResearchTimer---Unofficial-Update__3063) | Fennek | PC / Mac | 2.1.8 |
 | [Reset Markers (Survey & Treasure Map)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tmbrinks/Reset-Markers-Survey-Treasure-Map__6a2d5726-84d1-4db6-adba-e378e2005067) | tmbrinks | Console | — |
-| [Reset Markers (Survey & Treasure Map)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tmbrinks/Reset-Markers-Survey-Treasure-Map__4237) | tmbrinks | PC / Mac | 2.2.6 |
+| [Reset Markers (Survey & Treasure Map)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tmbrinks/Reset-Markers-Survey-Treasure-Map__4237) | tmbrinks | PC / Mac | 2.2.7 |
 | [Reset Tp](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Eymix/Reset-Tp__3310) | Eymix | PC / Mac | 1.1 |
 | [Resist-O-Meter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Complicative/Resist-O-Meter__3537) | Complicative | PC / Mac | 1.2.0 |
 | [Resource Dump](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Flamindemigod/Resource-Dump__3104) | Flamindemigod | PC / Mac | 1.1.0 |

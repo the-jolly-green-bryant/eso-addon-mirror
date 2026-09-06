@@ -69,6 +69,17 @@ function CMA:CreateSettingsMenu()
                     getFunc = function() return self.db.showVendorAlerts end,
                     setFunc = function(v) self.db.showVendorAlerts = v end,
                     disabled = function() return (not self.db.enableAddon) or (not self.db.autoSellJunk) end
+                },
+                                {
+                    type = "editbox",
+                    name = "Delay before start (Milliseconds)",
+                    tooltip = "To not conflict with other addons doing banking processes the start of the operations can be delayed by the given amount of milliseconds (seconds * 1000).",
+                    textType = TEXT_TYPE_NUMERIC_UNSIGNED_INT,
+                    maxChars = 5,
+                    getFunc = function() return self.db.initialDelayInMs end,
+                    setFunc = function(v) self.db.initialDelayInMs = v end,
+                    disabled = function() return (not self.db.enableAddon) end,
+                    width = "half"
                 }
             }
         },
@@ -356,6 +367,50 @@ function CMA:CreateSettingsMenu()
         },
         {
             type = "submenu",
+            name = "Scribing",
+            controls = {
+                {
+                    type = "checkbox",
+                    name = "Enable banking",
+                    tooltip = "Enable banking of Blacksmithing materials.",
+                    getFunc = function() return self.db.bankScribingMaterials end,
+                    setFunc = function(v) self.db.bankScribingMaterials = v end,
+                    disabled = function() return not self.db.enableAddon end,
+                    width = "half"
+                },
+                {
+                    type = "dropdown",
+                    name = "Banking of Ink",
+                    tooltip = "Bank: Move to the bank.\nSell: Mark as junk to be sold at the vendor.\nIgnore: Don't do anything.",
+                    choices = self.simpleMaterialChoices,
+                    getFunc = function() return self.db.bankInk end,
+                    setFunc = function(v) self.db.bankInk = v end,
+                    disabled = function() return (not self.db.enableAddon) or not(self.db.bankScribingMaterials) end,
+                    width = "half"
+                },
+                {
+                    type = "checkbox",
+                    name = "Bank unknown Scripts",
+                    tooltip = "REQUIRES LibCharacterKnowledge!\n\nBanks Scripts as long as they are learnable and there are not enough copies for all characters.\n\nOtherwise markes the script as trash to be auto vendored.\n\nAlso writes a chat message who is able to learn it.",
+                    getFunc = function() return self.db.bankUnknownScripts end,
+                    setFunc = function(v) self.db.bankUnknownScripts = v end,
+                    disabled = function() return not (self.db.enableAddon) or not(self.db.bankScribingMaterials) end,
+                    width = "half"
+                },
+                 {
+                    type = "dropdown",
+                    name = "Banking of Unbound Scripts",
+                    tooltip = "Bank: Move to the bank.\nSell: Mark as junk to be sold at the vendor.\nIgnore: Don't do anything.",
+                    choices = self.simpleMaterialChoices,
+                    getFunc = function() return self.db.bankUnboundScripts end,
+                    setFunc = function(v) self.db.bankUnboundScripts = v end,
+                    disabled = function() return (not self.db.enableAddon) or not(self.db.bankScribingMaterials) end,
+                    width = "half"
+                },
+            }
+        },
+        {
+            type = "submenu",
             name = "Style Materials",
             controls = {
                 {
@@ -447,16 +502,6 @@ function CMA:CreateSettingsMenu()
                     choices = self.simpleMaterialChoices,
                     getFunc = function() return self.db.bankBait end,
                     setFunc = function(v) self.db.bankBait = v end,
-                    disabled = function() return (not self.db.enableAddon) end,
-                    width = "half"
-                },
-                {
-                    type = "dropdown",
-                    name = "Banking of Ink",
-                    tooltip = "Bank: Move to the bank.\nSell: Mark as junk to be sold at the vendor.\nIgnore: Don't do anything.",
-                    choices = self.simpleMaterialChoices,
-                    getFunc = function() return self.db.bankInk end,
-                    setFunc = function(v) self.db.bankInk = v end,
                     disabled = function() return (not self.db.enableAddon) end,
                     width = "half"
                 },

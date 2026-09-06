@@ -48,6 +48,7 @@ BattleScrolls = BattleScrolls or {}
 ---@class MemDiag
 ---@field lastReport MemDiagReport|nil Result of the latest measure run
 ---@field probeRows MemDiagProbeRow[]|nil Result of the latest size-class probe
+---@field retentionReport MemDiagRetentionReport|nil Latest slash-command test; never persisted
 ---@field busyText string|nil Localized status while an async op runs; nil when idle
 ---@field _held (string|number[])[]|nil Calibration allocations currently pinned
 ---@field _heldModelBytes number Model cost of the pinned allocations
@@ -416,4 +417,236 @@ end
 ---@param onDone fun()
 function memDiag.runFullGC(onDone)
     runOp(GetString(BATTLESCROLLS_MEMDIAG_BUSY), BattleScrolls.gc:CollectFullAsync(), onDone)
+end
+
+-- Repeated table allocation / release test ---------------------------------
+-- Keep the settings UI and chat out of the measurement loop. The two idle
+-- controls reveal ambient drift; fixed repeated peaks test whether freed
+-- allocator space can be reused. Both counters below use binary MiB.
+
+---@class MemDiagMemorySample
+---@field gaugeMiB number|nil Nil until sampled (including on early exit)
+---@field heapMiB number|nil
+
+---@class MemDiagRetentionCycle
+---@field before MemDiagMemorySample
+---@field held MemDiagMemorySample
+---@field freed MemDiagMemorySample
+
+---@class MemDiagRetentionReport
+---@field idleStartBefore MemDiagMemorySample
+---@field idleStartAfter MemDiagMemorySample
+---@field idleEndBefore MemDiagMemorySample
+---@field idleEndAfter MemDiagMemorySample
+---@field cycles MemDiagRetentionCycle[]
+---@field completedCycles number
+---@field maxGaugeMiB number|nil Maximum observed at samples and yield boundaries
+---@field statusId integer Localized status; RUNNING also identifies the active test
+---@field elapsedSeconds number
+---@field error string|nil Failure detail for inspection, not printed in the compact report
+
+local RETENTION_CYCLES = 5
+local RETENTION_IDLE_MS = 10000
+local RETENTION_SETTLE_MS = 1000
+local RETENTION_GAUGE_LIMIT_MIB = 75
+local RETENTION_POLL_EFFECT = LibEffect.Sleep(100)
+-- Exactly two presses of the existing table calibration, without treating
+-- its model cost as a claim about the actual heap or pool allocation size.
+local RETENTION_TABLE_MODEL_BYTES = 72 + 8 * 16 + 16
+local RETENTION_TABLE_COUNT = 2 * math.floor(CALIBRATION_BYTES / RETENTION_TABLE_MODEL_BYTES)
+
+---Keep allocation temporaries off the suspended coroutine's stack. Once
+---this non-yielding helper returns, _held is the only owner of the batch.
+---@param first number
+---@param last number
+local function allocateRetentionBatch(first, last)
+    local held = memDiag._held or {}
+    memDiag._held = held
+    for i = first, last do
+        held[i] = { i, i + 1, i + 2, i + 3, i + 4, i + 5, i + 6, i + 7 }
+    end
+    memDiag._heldModelBytes = last * RETENTION_TABLE_MODEL_BYTES
+end
+
+---@param report MemDiagRetentionReport
+---@return boolean
+local function retentionCanContinue(report)
+    local gaugeMiB = memDiag.gaugeBytes() / MB_BYTES
+    report.maxGaugeMiB = math.max(report.maxGaugeMiB or gaugeMiB, gaugeMiB)
+    if gaugeMiB >= RETENTION_GAUGE_LIMIT_MIB then
+        report.statusId = BATTLESCROLLS_MEMDIAG_TEST_LIMIT
+        return false
+    end
+    if IsUnitInCombat("player") then
+        report.statusId = BATTLESCROLLS_MEMDIAG_TEST_COMBAT
+        return false
+    end
+    return true
+end
+
+---Runs only inside the test fiber; polls the cutoff on a timer. Yield alone
+---can resume repeatedly within one LibAsync frame, churning fibers and
+---callbacks throughout what is supposed to be an idle control window.
+---@param report MemDiagRetentionReport
+---@param durationMs number
+---@return boolean
+local function retentionWait(report, durationMs)
+    local deadline = GetGameTimeMilliseconds() + durationMs
+    repeat
+        if not retentionCanContinue(report) then return false end
+        RETENTION_POLL_EFFECT:Await()
+    until GetGameTimeMilliseconds() >= deadline
+    return retentionCanContinue(report)
+end
+
+---@param report MemDiagRetentionReport
+---@param sample MemDiagMemorySample
+---@return boolean
+local function retentionSample(report, sample)
+    if not retentionWait(report, RETENTION_SETTLE_MS) then return false end
+    for _ = 1, 2 do
+        -- Use the collector's own completion check. A separate weak
+        -- sentinel disagreed with it on Xbox and falsely reported timeout.
+        local collected = BattleScrolls.gc:CollectFullAsync():Await()
+        if not retentionCanContinue(report) then return false end
+        if not collected then
+            report.statusId = BATTLESCROLLS_MEMDIAG_TEST_GC_TIMEOUT
+            return false
+        end
+    end
+    sample.gaugeMiB = memDiag.gaugeBytes() / MB_BYTES
+    sample.heapMiB = memDiag.luaHeapBytes() / MB_BYTES
+    report.maxGaugeMiB = math.max(report.maxGaugeMiB or sample.gaugeMiB, sample.gaugeMiB)
+    return true
+end
+
+---@param value number|nil
+---@return string
+local function retentionNumber(value)
+    return value and string.format("%.2f", value) or "--"
+end
+
+---No formatting or chat calls until all measurements have finished.
+---@param report MemDiagRetentionReport
+local function printRetentionReport(report)
+    d(GetString(BATTLESCROLLS_MEMDIAG_TEST_HEADER))
+    d(string.format(GetString(BATTLESCROLLS_MEMDIAG_TEST_IDLE),
+        GetString(BATTLESCROLLS_MEMDIAG_TEST_IDLE_START),
+        retentionNumber(report.idleStartBefore.gaugeMiB), retentionNumber(report.idleStartAfter.gaugeMiB),
+        retentionNumber(report.idleStartBefore.heapMiB), retentionNumber(report.idleStartAfter.heapMiB)))
+    for i, cycle in ipairs(report.cycles) do
+        if cycle.before.gaugeMiB then
+            d(string.format(GetString(BATTLESCROLLS_MEMDIAG_TEST_ROW), i,
+                retentionNumber(cycle.before.gaugeMiB), retentionNumber(cycle.held.gaugeMiB),
+                retentionNumber(cycle.freed.gaugeMiB), retentionNumber(cycle.before.heapMiB),
+                retentionNumber(cycle.held.heapMiB), retentionNumber(cycle.freed.heapMiB)))
+        end
+    end
+    d(string.format(GetString(BATTLESCROLLS_MEMDIAG_TEST_IDLE),
+        GetString(BATTLESCROLLS_MEMDIAG_TEST_IDLE_END),
+        retentionNumber(report.idleEndBefore.gaugeMiB), retentionNumber(report.idleEndAfter.gaugeMiB),
+        retentionNumber(report.idleEndBefore.heapMiB), retentionNumber(report.idleEndAfter.heapMiB)))
+    d(string.format(GetString(BATTLESCROLLS_MEMDIAG_TEST_SUMMARY),
+        GetString(report.statusId), report.completedCycles, RETENTION_CYCLES,
+        retentionNumber(report.maxGaugeMiB), report.elapsedSeconds))
+end
+
+local function startRetentionTest()
+    if memDiag.isBusy() then
+        d(GetString(BATTLESCROLLS_MEMDIAG_BUSY))
+        return
+    end
+    if memDiag._held then
+        d(GetString(BATTLESCROLLS_MEMDIAG_TEST_HELD))
+        return
+    end
+
+    -- Allocate the report and its slots before the first baseline. Nothing
+    -- here references encounter history or SavedVariables.
+    ---@type MemDiagRetentionReport
+    local report = {
+        idleStartBefore = {}, idleStartAfter = {},
+        idleEndBefore = {}, idleEndAfter = {},
+        cycles = {}, completedCycles = 0,
+        statusId = BATTLESCROLLS_MEMDIAG_TEST_RUNNING, elapsedSeconds = 0,
+    }
+    for i = 1, RETENTION_CYCLES do
+        report.cycles[i] = { before = {}, held = {}, freed = {} }
+    end
+    local startedMs = GetGameTimeMilliseconds()
+    memDiag.retentionReport = report
+    memDiag.busyText = GetString(BATTLESCROLLS_MEMDIAG_BUSY)
+    d(GetString(BATTLESCROLLS_MEMDIAG_TEST_STARTED))
+
+    memDiag._fiber = LibEffect.Async(function()
+        if not retentionSample(report, report.idleStartBefore) then return end
+        if not retentionWait(report, RETENTION_IDLE_MS) then return end
+        if not retentionSample(report, report.idleStartAfter) then return end
+
+        for _, cycle in ipairs(report.cycles) do
+            if not retentionSample(report, cycle.before) then return end
+            for first = 1, RETENTION_TABLE_COUNT, TABLES_PER_YIELD do
+                if not retentionCanContinue(report) then return end
+                allocateRetentionBatch(first, math.min(first + TABLES_PER_YIELD - 1, RETENTION_TABLE_COUNT))
+                if not retentionCanContinue(report) then return end
+                LibEffect.Yield():Await()
+            end
+            if not retentionSample(report, cycle.held) then return end
+            memDiag._held = nil
+            memDiag._heldModelBytes = 0
+            if not retentionSample(report, cycle.freed) then return end
+            report.completedCycles = report.completedCycles + 1
+        end
+
+        if not retentionSample(report, report.idleEndBefore) then return end
+        if not retentionWait(report, RETENTION_IDLE_MS) then return end
+        if not retentionSample(report, report.idleEndAfter) then return end
+        report.statusId = BATTLESCROLLS_MEMDIAG_TEST_DONE
+    end):Recover(function(err)
+        if LibEffect.IsCancelledError(err) then
+            report.statusId = BATTLESCROLLS_MEMDIAG_TEST_CANCELLED
+        else
+            report.statusId = BATTLESCROLLS_MEMDIAG_TEST_ERROR
+            report.error = tostring(err)
+        end
+        return nil
+    end):Ensure(function()
+        memDiag._held = nil
+        memDiag._heldModelBytes = 0
+        memDiag._fiber = nil
+        memDiag.busyText = nil
+        if report.statusId == BATTLESCROLLS_MEMDIAG_TEST_RUNNING then
+            report.statusId = BATTLESCROLLS_MEMDIAG_TEST_CANCELLED
+        end
+        report.elapsedSeconds = math.floor((GetGameTimeMilliseconds() - startedMs) / 1000)
+        -- Cleanup also runs when cancelled before the first frame or while
+        -- holding a partial batch. GC is paced by the existing GC module.
+        BattleScrolls.gc:RequestGC(2)
+        printRetentionReport(report)
+    end):Run()
+end
+
+SLASH_COMMANDS["/bsmemtest"] = function(args)
+    local command = args:match("^%s*(.-)%s*$"):lower()
+    local report = memDiag.retentionReport
+    if command == "" then
+        startRetentionTest()
+    elseif command == "cancel" then
+        if report and report.statusId == BATTLESCROLLS_MEMDIAG_TEST_RUNNING and memDiag._fiber then
+            report.statusId = BATTLESCROLLS_MEMDIAG_TEST_CANCELLED
+            memDiag._fiber:Cancel()
+        else
+            d(GetString(BATTLESCROLLS_MEMDIAG_TEST_NOT_RUNNING))
+        end
+    elseif command == "report" then
+        if memDiag.isBusy() then
+            d(GetString(BATTLESCROLLS_MEMDIAG_BUSY))
+        elseif report then
+            printRetentionReport(report)
+        else
+            d(GetString(BATTLESCROLLS_MEMDIAG_TEST_NO_REPORT))
+        end
+    else
+        d(GetString(BATTLESCROLLS_MEMDIAG_TEST_USAGE))
+    end
 end

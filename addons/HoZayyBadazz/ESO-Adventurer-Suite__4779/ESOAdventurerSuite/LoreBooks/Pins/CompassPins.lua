@@ -24,7 +24,7 @@ local atan2 = math.atan2
 local zo_abs = zo_abs
 
 local FOV = pi * 0.6
-local SPAWN_INTERVAL_MS = 3000
+local SPAWN_INTERVAL_MS = 6000
 
 -----------------------------------------------------------
 -- CompassPinManager: one CT_TEXTURECOMPOSITE per pin type
@@ -85,6 +85,7 @@ end
 -- hides the surface and returns its index to the free-list
 function CompassPinManager:ReleaseNode(pinIndex)
 	self.composite:SetSurfaceHidden(pinIndex, true)
+	if self.lastState029315 then self.lastState029315[pinIndex] = nil end
 	local label = self.distanceLabels[pinIndex]
 	if label then label:SetHidden(true) end
 	table.insert(self.freeIndices, pinIndex)
@@ -96,21 +97,37 @@ function CompassPinManager:ReleaseAllNodes()
 		label:SetHidden(true)
 	end
 	ZO_ClearTable(self.freeIndices)
+	if self.lastState029315 then ZO_ClearTable(self.lastState029315) end
 end
 
 function CompassPinManager:UpdateNode(pinIndex, offsetX, alpha, distanceMeters)
-	self.composite:SetInsets(pinIndex, offsetX, offsetX, 0, 0)
-	self.composite:SetColor(pinIndex, self.r, self.g, self.b, alpha)
+	self.lastState029315 = self.lastState029315 or {}
+	local state = self.lastState029315[pinIndex]
+	if not state then state = {}; self.lastState029315[pinIndex] = state end
+	offsetX, alpha = tonumber(offsetX) or 0, tonumber(alpha) or 0
+	if state.offsetX == nil or math.abs(offsetX - state.offsetX) >= 0.5 then
+		state.offsetX = offsetX
+		self.composite:SetInsets(pinIndex, offsetX, offsetX, 0, 0)
+	end
+	if state.alpha == nil or math.abs(alpha - state.alpha) >= 0.02 then
+		state.alpha = alpha
+		self.composite:SetColor(pinIndex, self.r, self.g, self.b, alpha)
+	end
 	local label = self.distanceLabels[pinIndex]
 	if label then
-		if alpha <= 0 or not distanceMeters then
-			label:SetHidden(true)
+		local hidden = alpha <= 0 or not distanceMeters
+		if hidden then
+			if state.labelHidden ~= true then label:SetHidden(true); state.labelHidden = true end
 		else
-			label:ClearAnchors()
-			label:SetAnchor(CENTER, PARENT, CENTER, offsetX, 18)
-			label:SetText(string.format("%dm", zo_round(distanceMeters)))
-			label:SetAlpha(alpha)
-			label:SetHidden(false)
+			local rounded = zo_round(distanceMeters)
+			if state.labelOffsetX == nil or math.abs(offsetX - state.labelOffsetX) >= 0.5 then
+				state.labelOffsetX = offsetX
+				label:ClearAnchors()
+				label:SetAnchor(CENTER, PARENT, CENTER, offsetX, 18)
+			end
+			if state.distance ~= rounded then state.distance = rounded; label:SetText(string.format("%dm", rounded)) end
+			if state.labelAlpha == nil or math.abs(alpha - state.labelAlpha) >= 0.02 then state.labelAlpha = alpha; label:SetAlpha(alpha) end
+			if state.labelHidden ~= false then label:SetHidden(false); state.labelHidden = false end
 		end
 	end
 end
@@ -132,7 +149,7 @@ function CompassPins:Initialize()
 		spawnUpdateName = "EASLoreLibrary-CompassPinsSpawn",
 		tickUpdateName = "EASLoreLibrary-CompassPinsUpdate",
 		spawnIntervalMs = SPAWN_INTERVAL_MS,
-		tickIntervalMs = 50,
+		tickIntervalMs = 750,
 	})
 
 	EVENT_MANAGER:RegisterForEvent("EASLoreLibrary-CompassPins", EVENT_PLAYER_ACTIVATED, function()
@@ -204,6 +221,9 @@ end
 
 -- repositions only the surfaces that are currently acquired
 function CompassPins:Tick()
+	-- v0.29.341: no visible/acquired compass lore markers means there is no
+	-- reason to sample player world position and heading on the fast tick.
+	if next(self.acquired) == nil and (not self.markerEnabled or #self.markerLocations == 0) then return end
 	local playerX, playerY, playerZ = EASLoreLibrary.GetPlayer3DPosition()
 	local heading = GetPlayerCameraHeading()
 	if heading > pi then

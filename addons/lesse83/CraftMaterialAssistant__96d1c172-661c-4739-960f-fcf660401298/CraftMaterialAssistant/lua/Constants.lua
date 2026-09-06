@@ -48,6 +48,9 @@ CMA.savedVarsDefaults = {
     bankProvisioning = true,
     bankProvisioningWritIngredientsOnly = false,
     bankProvisioningSellKnownRecipe = false,
+    bankScribingMaterials = true,
+    bankUnknownScripts = true,
+    bankUnboundScripts = "Bank",
     bankFurnishingMaterials = "Bank",
     bankBait = "Bank",
     bankInk = "Bank",
@@ -58,6 +61,7 @@ CMA.savedVarsDefaults = {
     bankTraitMaterials = "Bank",
     limitTraitMaterialByCount = false,
     bankMinimumNumberTraitMaterial = 190,
+    initialDelayInMs = 3000,
     autoSellJunk = true,
     -- quality thresholds
     bankQualityThresholdBlacksmithing = "Grey",
@@ -96,11 +100,14 @@ CMA.junkedItems = {}
 CMA.ignoredItems = {}
 CMA.failedItems = {}
 
+-- name of the timeout event which is used during a move process to react to failed and delayed transfers
+CMA.initialTimeoutName = "CraftMaterialAssistant.InitialDelayTimeout"
+
 -- max number of items used in a single chat message
 CMA.maxChatMessageItems = 20
 
 -- array holdng the slots which have been junked - they are filled during banking and used when vendoring
-CMA.junkedSlots = {}
+CMA.junkedIds = {}
 
 -- the item evaluation of the banking routine filtered those items to be moved to the bank
 CMA.itemsToMove = {}

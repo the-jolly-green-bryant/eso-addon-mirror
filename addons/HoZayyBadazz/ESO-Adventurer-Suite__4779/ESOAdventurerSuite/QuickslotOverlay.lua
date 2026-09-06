@@ -12,6 +12,17 @@ local function safe(fn, fallback, ...)
     return a,b,c
 end
 
+function Q:InvalidateBinding029199()
+    self.bindingText029199 = nil
+end
+
+function Q:GetUseBinding029199()
+    if self.bindingText029199 == nil then
+        self.bindingText029199 = EPC.GetActionBindingMarkup029199 and EPC:GetActionBindingMarkup029199("ACTION_BUTTON_9", 19) or ""
+    end
+    return self.bindingText029199 or ""
+end
+
 function Q:GetPosition()
     local left = tonumber(EPC.saved and EPC.saved.quickslotOverlayLeft) or -1
     local top = tonumber(EPC.saved and EPC.saved.quickslotOverlayTop) or -1
@@ -32,7 +43,7 @@ end
 function Q:Create()
     if self.frame then return self.frame end
     local frame = wm:CreateTopLevelWindow("EAS_QuickslotOverlay")
-    frame:SetDimensions(76, 96)
+    frame:SetDimensions(76, 112)
     frame:SetClampedToScreen(true)
     frame:SetMouseEnabled(false)
     frame:SetMovable(false)
@@ -66,6 +77,14 @@ function Q:Create()
     name:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     name:SetColor(0.95,0.82,0.42,1)
 
+    local binding = wm:CreateControl("EAS_QuickslotOverlayBinding029199", frame, CT_LABEL)
+    binding:SetAnchor(TOPLEFT, frame, TOPLEFT, 3, 91)
+    binding:SetAnchor(TOPRIGHT, frame, TOPRIGHT, -3, 91)
+    binding:SetDimensions(70,18)
+    binding:SetFont("ZoFontGameSmall")
+    binding:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    binding:SetColor(0.90,0.92,0.97,1)
+
     local hint = wm:CreateControl("EAS_QuickslotOverlayHint", frame, CT_LABEL)
     hint:SetAnchor(TOP, frame, BOTTOM, 0, 2)
     hint:SetDimensions(100,18)
@@ -81,7 +100,7 @@ function Q:Create()
             EPC.saved.quickslotOverlayTop = control:GetTop()
         end
     end)
-    self.frame,self.icon,self.count,self.name,self.hint = frame,icon,count,name,hint
+    self.frame,self.icon,self.count,self.name,self.binding,self.hint = frame,icon,count,name,binding,hint
     self:Anchor()
     return frame
 end
@@ -107,7 +126,21 @@ function Q:GetSelectedQuickslotData()
         used = safe(IsSlotUsed, false, slot) == true
     end
 
-    return slot, texture or "", itemName or "", count, used
+    -- Some ESO versions briefly report IsSlotUsed=false for the selected
+    -- quickslot even though the icon/name are valid. Treat real slot content
+    -- as authoritative so the Quick Potion / Quickslot overlay does not vanish.
+    texture = texture or ""
+    itemName = itemName or ""
+    if texture == "" and HOTBAR_CATEGORY_QUICKSLOT_WHEEL ~= nil then
+        local fallbackTexture = safe(GetSlotTexture, "", slot, HOTBAR_CATEGORY_QUICKSLOT_WHEEL)
+        local fallbackName = safe(GetSlotName, "", slot, HOTBAR_CATEGORY_QUICKSLOT_WHEEL)
+        local fallbackCount = tonumber(safe(GetSlotItemCount, 0, slot, HOTBAR_CATEGORY_QUICKSLOT_WHEEL)) or 0
+        if fallbackTexture ~= "" or fallbackName ~= "" then
+            texture, itemName, count = fallbackTexture or "", fallbackName or "", fallbackCount
+        end
+    end
+    used = used == true or texture ~= "" or itemName ~= ""
+    return slot, texture, itemName, count, used
 end
 
 function Q:HasAttackableReticleTarget()
@@ -180,13 +213,16 @@ function Q:Refresh()
     end
 
     local slot, texture, itemName, count, used = self:GetSelectedQuickslotData()
-    show = show and used and texture ~= ""
+    show = show and (used or itemName ~= "" or texture ~= "") and texture ~= ""
     self.frame:SetHidden(not show)
     if not show then return end
 
     self.icon:SetTexture(texture)
     self.name:SetText(itemName ~= "" and itemName or ("Quickslot " .. tostring(slot)))
     self.count:SetText(count > 0 and tostring(count) or "")
+    if self.binding then
+        self.binding:SetText(self:GetUseBinding029199())
+    end
 end
 
 function Q:SetLayoutMode(active)
@@ -240,9 +276,23 @@ function Q:Initialize()
     if EVENT_ACTIVE_QUICKSLOT_CHANGED then
         EVENT_MANAGER:RegisterForEvent(prefix.."_ActiveQuickslot", EVENT_ACTIVE_QUICKSLOT_CHANGED, function() self:Refresh() end)
     end
+    if EVENT_KEYBINDINGS_LOADED then
+        EVENT_MANAGER:RegisterForEvent(prefix.."_BindingsLoaded", EVENT_KEYBINDINGS_LOADED, function() self:InvalidateBinding029199() self:Refresh() end)
+    end
+    if EVENT_KEYBINDING_SET then
+        EVENT_MANAGER:RegisterForEvent(prefix.."_BindingSet", EVENT_KEYBINDING_SET, function() self:InvalidateBinding029199() self:Refresh() end)
+    end
+    if EVENT_KEYBINDING_CLEARED then
+        EVENT_MANAGER:RegisterForEvent(prefix.."_BindingCleared", EVENT_KEYBINDING_CLEARED, function() self:InvalidateBinding029199() self:Refresh() end)
+    end
+    if EVENT_GAMEPAD_PREFERRED_MODE_CHANGED then
+        EVENT_MANAGER:RegisterForEvent(prefix.."_InputMode", EVENT_GAMEPAD_PREFERRED_MODE_CHANGED, function() self:InvalidateBinding029199() self:Refresh() end)
+    end
     if EVENT_HOTBAR_SLOT_UPDATED then
         EVENT_MANAGER:RegisterForEvent(prefix.."_HotbarSlot", EVENT_HOTBAR_SLOT_UPDATED, function() self:Refresh() end)
     end
-    EVENT_MANAGER:RegisterForUpdate(prefix.."_Tick", 250, function() self:Refresh() end)
+    EVENT_MANAGER:RegisterForUpdate(prefix.."_Tick", 650, function()
+        if self.layoutMode == true or (self.frame and not self.frame:IsHidden()) then self:Refresh() end
+    end)
     self:Refresh()
 end

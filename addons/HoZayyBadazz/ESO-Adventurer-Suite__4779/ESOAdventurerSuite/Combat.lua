@@ -795,6 +795,9 @@ function C:EndFight()
         incomingSources = self:BuildIncomingSourceList(fight, duration),
     }
     self:UpdatePersonalBest(self.lastFight)
+    if EPC.BossMechanicsAssistant and type(EPC.BossMechanicsAssistant.AttachFightData) == "function" then
+        pcall(EPC.BossMechanicsAssistant.AttachFightData, EPC.BossMechanicsAssistant, self.lastFight)
+    end
     if EPC.GameModeReport and type(EPC.GameModeReport.OnFightEnded) == "function" then
         pcall(EPC.GameModeReport.OnFightEnded, EPC.GameModeReport, self.lastFight)
     end

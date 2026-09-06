@@ -4,7 +4,7 @@
 -----------------------------------------------------------
 KyzderpsDerps = {
     name = "KyzderpsDerps",
-    version = "1.52.0",
+    version = "1.53.0",
 }
 local KD = KyzderpsDerps
 
@@ -209,6 +209,11 @@ local defaultOptions = {
         usePriority = false,
         priorityDoneToday = false,
     },
+    writs = {
+        warnEssenceOfHealth = false,
+        depositEssenceOfHealth = false,
+        numEssenceOfHealthEffects = 2,
+    },
     tomes = {
         enableTotals = false,
     },
@@ -405,7 +410,8 @@ local function Initialize()
     KyzderpsDerps.Tribute.Initialize()
     KyzderpsDerps.PreLogout.Initialize()
     KyzderpsDerps.InitializeAOE()
-    KyzderpsDerps.Chatter.Initialize()
+    KD.Quests.Chatter.Initialize()
+    KD.Quests.Writs.Initialize()
     KyzderpsDerps.Combat.Initialize()
     KD.InitializeVibrations()
     KD.Gamepad.Initialize()

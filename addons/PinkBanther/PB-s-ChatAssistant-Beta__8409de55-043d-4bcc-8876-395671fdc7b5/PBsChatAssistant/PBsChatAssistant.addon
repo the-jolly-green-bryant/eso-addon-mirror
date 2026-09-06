@@ -1,11 +1,12 @@
 ## To release a new version, edit the version in the two lines below and nothing else.
 ## |cRRGGBB...|r in Title and Author colours them in the in-game add-on list; the version
 ## is read back through that markup, so it can sit inside or outside the colour.
-## Title: |cFF69B4PB’s ChatAssistant|r 1.0.3
+## Title: |cFF69B4PB’s ChatAssistant|r 1.7.2
 ## Author: |cFF69B4PinkBanther|r
 ## Description: Opens the console chat entry box from the keyboard. Press Enter and the box opens on its own, so there is no reaching for the controller combo (Options + touchpad) between messages. Run /pbchat to set it up.
-## Version: 1.0.3
+## Version: 1.7.2
 ## APIVersion: 101050 101051
+## DependsOn: LibHarvensAddonSettings>=20106
 ## SavedVariables: PBsChatAssistant_Data
 
 lang/strings.lua
@@ -13,6 +14,7 @@ lang/$(language).lua
 
 Controls.xml
 Main.lua
+Settings.lua
 
 Bindings.xml
 

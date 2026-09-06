@@ -137,8 +137,7 @@ function LIS.GetItemSetCollectionSlotsMask( itemSetId )
 			result = result + Id64ToNumber(slot)
 		end
 	end
-	result = NumberToId64(result)
-	return result
+	return (NumberToId64(result))
 end
 
 do

@@ -1,6 +1,6 @@
-TamrielProgressMap_Localization = TamrielProgressMap_Localization or {}
-TamrielProgressMap_Localization["es"] =
-{
+-- Tamriel Progress Map localization (ES)
+-- English ids are created first by localization/en.lua.
+local strings = {
     LANGUAGE_NAME = "Español",
     SETTINGS_PANEL = "Tamriel Progress Map",
     SETTINGS_SECTION_LANGUAGE = "Idioma",
@@ -13,7 +13,7 @@ TamrielProgressMap_Localization["es"] =
     SETTINGS_SECTION_JOURNAL = "Diario e historial",
     SETTINGS_SECTION_ADVANCED = "Avanzado",
     SETTINGS_LANGUAGE = "Idioma",
-    SETTINGS_LANGUAGE_TT = "Elige el idioma del addon. Automático sigue el idioma del cliente de ESO.",
+    SETTINGS_LANGUAGE_TT = "TPM sigue automáticamente el idioma del cliente de ESO. Solo se carga el idioma activo para reducir el uso de memoria.",
     SETTINGS_LANGUAGE_AUTO = "Automático (ESO)",
     SETTINGS_LANGUAGE_DE = "Alemán",
     SETTINGS_LANGUAGE_EN = "Inglés",
@@ -70,7 +70,7 @@ TamrielProgressMap_Localization["es"] =
     SETTINGS_QUEST_RESET_TT = "Restablece la posición y el tamaño de la ventana de recompensas y vuelve a activar el ajuste automático.",
     SETTINGS_DEBUG = "Mostrar información de depuración",
     SETTINGS_DEBUG_TT = "Muestra datos técnicos de MapID, ZoneID y ProgressZoneID al pasar sobre un marcador de zona. Pensado para solucionar problemas.",
-    SETTINGS_RELOAD_NOTE = "El addon puede cambiarse completamente a alemán, inglés, ruso, francés o español. Los cambios se aplican inmediatamente a las interfaces visibles de TPM. Mediante LibZone, los nombres de zonas compatibles también siguen el idioma seleccionado en TPM.",
+    SETTINGS_RELOAD_NOTE = "El idioma se selecciona automáticamente desde el cliente de ESO. El inglés se carga como idioma de reserva y el idioma activo se carga dinámicamente.",
     SETTINGS_STATISTICS_SCALE = "Escala de la ventana de estadísticas",
     SETTINGS_STATISTICS_SCALE_TT = "Escala el diario completo de Tamriel entre 80% y 120%.",
     SETTINGS_STATISTICS_RESET = "Restablecer ventana de estadísticas",
@@ -86,7 +86,7 @@ TamrielProgressMap_Localization["es"] =
     SETTINGS_RESET_ECONOMY_TT = "Restablece ingresos/gastos y los contadores de depósitos/retiros del banco personal del personaje actual. Los saldos actuales de ESO nunca se modifican.",
     SETTINGS_RESET_HISTORY = "Restablecer historial",
     SETTINGS_RESET_HISTORY_TT = "Elimina el historial diario/de sesión y los hitos del personaje actual y vuelve a iniciar el seguimiento.",
-    SETTINGS_CHANGELOG = "v2.7.7_Beta: corregida la personalización de color: Progreso y valores ahora guarda y usa correctamente su propio canal de color y también funciona con Transparent TPM. RGB suave sigue limitado a Títulos y acentos.",
+    SETTINGS_CHANGELOG = "v2.7.1: limpieza según las buenas prácticas de ESOUI: carga dinámica del idioma, una única tabla global de TPM, SavedVariables separadas por servidor y filtros adicionales de eventos de combate.",
     KEYBIND_TOGGLE_STATS = "Abrir / cerrar estadísticas de Tamriel",
     OVERALL_PROGRESS = "Progreso total: %d%%",
     TAMRIEL_TOTAL = "Tamriel",
@@ -373,7 +373,7 @@ TamrielProgressMap_Localization["es"] =
     HELP_TOGGLE = "/tpm toggle - activar/desactivar porcentajes",
     HELP_NAMES = "/tpm names - activar/desactivar nombres de zonas",
     HELP_REFRESH = "/tpm refresh - recalcular visualización",
-    HELP_LANG = "/tpm lang auto|de|en|ru|fr|es - establecer idioma del addon",
+    HELP_LANG = "/tpm lang - mostrar/usar automáticamente el idioma del cliente de ESO",
     HELP_MODE = "/tpm mode objectives|categories - establecer cálculo del progreso",
     HELP_COMPLETED = "/tpm completed - activar/desactivar ocultar zonas al 100%",
     HELP_FONT = "/tpm font <style> - establecer estilo de fuente del porcentaje",
@@ -574,3 +574,19 @@ TamrielProgressMap_Localization["es"] =
     STAT_ALLIANCE_QUICK_NEXT = "Siguiente objetivo: %s (%d%%)",
     STAT_ALLIANCE_ALPHA_TEST = "Alianzas - Prueba alfa",
 }
+
+for key, value in pairs(strings) do
+    local stringId = _G["SI_TPM_" .. key]
+    if stringId then
+        SafeAddString(stringId, value, 2)
+    end
+end
+
+local bindingStrings = {
+    SI_KEYBINDINGS_CATEGORY_TAMRIEL_PROGRESS_MAP = "Tamriel Progress Map",
+    SI_BINDING_NAME_TPM_TOGGLE_STATISTICS = "Abrir / cerrar las estadísticas de Tamriel",
+}
+for idName, value in pairs(bindingStrings) do
+    local stringId = _G[idName]
+    if stringId then SafeAddString(stringId, value, 2) end
+end

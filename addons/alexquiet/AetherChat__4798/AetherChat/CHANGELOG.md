@@ -4,6 +4,31 @@ Toutes les modifications notables apportées à l'addon **AetherChat** sont cons
 
 ---
 
+## [1.2.6] - 2026-09-05
+
+### ✨ Interface & Expérience Utilisateur
+
+- **Refonte et Harmonisation de la Barre Latérale Réduite (Mini-Dock) :**
+  - Géométrie carrée symétrique nordique (`38x38 px`) avec espacement vertical aéré (`strideY = 44`).
+  - Dégagement parfait de 10px entre les tuiles et la barre de défilement (largeur de rail calibrée à 60px avec ascenseur moderne de 8px).
+  - Ancrage des badges de notifications non lues (`TOPRIGHT`) avec dimensionnement adaptatif (18px pour 1 chiffre, 22px pour 2+ chiffres) éliminant tout chevauchement et tout problème de rognage par le rectangle de découpe (scissor rect).
+  - Remplacement de l'icône de dossier de guildes par le blason officiel d'héraldique d'ESO (`/esoui/art/guild/tabicon_heraldry_up.dds`) pour une cohérence visuelle parfaite.
+
+### 🛡️ Butin & Social
+
+- **Fiabilisation Totale du Butin & Chuchotement Rapide (« Need » 1-Clic) :**
+  - Résolution forcée et prioritaire des identifiants de compte (`@DisplayName`) pour l'ensemble des membres de groupe, amis, guildes et historique LootLog.
+  - Affichage systématique du looteur sous la forme de son `@Compte` dans le flux de butin, garantissant le bon fonctionnement à 100% du chuchotement automatique en 1 clic pour demander une pièce de set.
+
+### ⚡ Architecture & Standards ZOS
+
+- **Conformité & Nettoyage Architectural :**
+  - Épuration des modules expérimentaux externes.
+  - Respect strict de l'ordre de chargement des manifestes XML avant l'exécution du code Lua.
+  - Namespace global unifié `AetherChat` et synchronisation sans faille des variables sauvegardées.
+
+---
+
 ## [1.2.4] - 2026-09-01
 
 ### ✨ Nouvelles Fonctionnalités & Conformité ESO UI (ZOS Standard)

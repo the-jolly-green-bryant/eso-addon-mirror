@@ -1,0 +1,7 @@
+## Title: MyCrystalFragmentsProcUI
+## Description: 水晶の断片が発動したことを検知したら、画面に表示する。
+## Author: Unfounded Puppy3
+## Version: 0.1
+## APIVersion: 101050
+
+MyCrystalFragmentsProcUI.lua

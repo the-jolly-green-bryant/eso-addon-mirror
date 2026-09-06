@@ -20,14 +20,28 @@ local lastPress = 0
 local combatLeftAt = 0
 local lastLightAt = 0
 local lastSkillAt = 0
+local lastSlot12At = 0
 local ticking = false
 local built = false
 local lightOn = false
+local bashOn = false
+local lastUsedId = 0
+local lastUsedAt = 0
 
 local COL_EMPTY = { 0.18, 0.18, 0.18, 0.85 }
+local COL_NEUTRAL = { 0.22, 0.22, 0.22, 0.90 }
 local COL_WOVEN = { 0.25, 0.85, 0.35, 1 }
 local COL_BARE = { 0.90, 0.28, 0.22, 1 }
 local COL_LIGHT = { 0.85, 0.75, 0.25, 0.95 }
+local COL_BASH = { 0.55, 0.75, 1.00, 1 }
+
+local BASH_IDS = {
+    [21970] = true,
+    [26792] = true,
+}
+local BASH_ICON = "/esoui/art/icons/ability_warrior_012.dds"
+local SLOT_USED_DEDUP_MS = 380
+local BASH_DEDUP_MS = 280
 
 local function Vars()
     return T.savedVars
@@ -49,6 +63,11 @@ end
 local function SkillOn()
     local v = Vars()
     return v and v.skillEnabled ~= false
+end
+
+local function WeaveOn()
+    local v = Vars()
+    return not (v and v.skillShowWeave == false)
 end
 
 local function SlotCount()
@@ -82,17 +101,52 @@ local function HideAfterMs()
     return s * 1000
 end
 
-local function FirstSkillSlot()
-    return ACTION_BAR_FIRST_NORMAL_SLOT_INDEX or 3
-end
-
-local function UltSlot()
-    return (ACTION_BAR_ULTIMATE_SLOT_INDEX or 7) + 1
-end
-
+-- Bar skills live in physical slots 3–7, ultimate is 8.
+-- Slots 1–2 are weapon attacks; including them made hold-R2 spam the tracker.
 local function IsBarSkillSlot(slot)
     slot = tonumber(slot) or 0
-    return slot >= FirstSkillSlot() and slot <= UltSlot()
+    return slot >= 3 and slot <= 8
+end
+
+local function SlotActionType(slot)
+    if not GetSlotType then return nil end
+    local ok, st = pcall(GetSlotType, slot)
+    if ok then return st end
+    return nil
+end
+
+-- Scribing (Ulfsild, banners, vault, …) is ACTION_TYPE_CRAFTED_ABILITY,
+-- not ACTION_TYPE_ABILITY. Bound id on that type is craftedAbilityId.
+local function IsAbilitySlot(slot)
+    local st = SlotActionType(slot)
+    if st == nil then return true end
+    if ACTION_TYPE_ABILITY and st == ACTION_TYPE_ABILITY then return true end
+    if ACTION_TYPE_CRAFTED_ABILITY and st == ACTION_TYPE_CRAFTED_ABILITY then return true end
+    return false
+end
+
+local function ResolveAbilityId(slot)
+    local bound = 0
+    if GetSlotBoundId then
+        local ok, id = pcall(GetSlotBoundId, slot)
+        if ok then bound = tonumber(id) or 0 end
+    end
+    local st = SlotActionType(slot)
+    if bound ~= 0 and ACTION_TYPE_CRAFTED_ABILITY and st == ACTION_TYPE_CRAFTED_ABILITY then
+        if GetAbilityIdForCraftedAbilityId then
+            local ok, real = pcall(GetAbilityIdForCraftedAbilityId, bound)
+            if ok and tonumber(real) and tonumber(real) > 0 then
+                return tonumber(real), bound
+            end
+        end
+        if GetCraftedAbilityRepresentativeAbilityId then
+            local ok, real = pcall(GetCraftedAbilityRepresentativeAbilityId, bound)
+            if ok and tonumber(real) and tonumber(real) > 0 then
+                return tonumber(real), bound
+            end
+        end
+    end
+    return bound, bound
 end
 
 local function AbilityIcon(abilityId)
@@ -225,6 +279,10 @@ local function PaintHistory()
                 ic:SetHidden(false)
                 if src.kind == "light" then
                     PaintFrame(fr, COL_LIGHT)
+                elseif src.kind == "bash" then
+                    PaintFrame(fr, COL_BASH)
+                elseif not WeaveOn() then
+                    PaintFrame(fr, COL_NEUTRAL)
                 elseif src.woven then
                     PaintFrame(fr, COL_WOVEN)
                 else
@@ -302,7 +360,7 @@ local function Push(abilityId, icon, kind)
     if abilityId == 0 and (not icon or icon == "") then return end
     local t = Now()
     local woven = false
-    if kind ~= "light" then
+    if kind ~= "light" and kind ~= "bash" then
         woven = lastLightAt > lastSkillAt and lastLightAt > 0
         lastSkillAt = t
     end
@@ -331,18 +389,35 @@ end
 
 local function OnSlotUsed(_, actionSlotIndex)
     if not SkillOn() then return end
-    if not IsBarSkillSlot(actionSlotIndex) then return end
-    local abilityId = 0
-    if GetSlotBoundId then
-        local ok, id = pcall(GetSlotBoundId, actionSlotIndex)
-        if ok then abilityId = tonumber(id) or 0 end
+    actionSlotIndex = tonumber(actionSlotIndex) or 0
+    -- Slots 1–2 are weapon attacks. A single tap is a light (even OOC, no combat log).
+    -- Repeats inside ~520ms are a held heavy: do not count as a weave.
+    if actionSlotIndex == 1 or actionSlotIndex == 2 then
+        local t = Now()
+        if lastSlot12At > 0 and (t - lastSlot12At) < 520 then
+            lastLightAt = 0
+        else
+            lastLightAt = t
+        end
+        lastSlot12At = t
+        return
     end
+    if not IsBarSkillSlot(actionSlotIndex) then return end
+    if not IsAbilitySlot(actionSlotIndex) then return end
+    local abilityId = ResolveAbilityId(actionSlotIndex)
     if abilityId == 0 then return end
+    if BASH_IDS[abilityId] then return end
+    local t = Now()
+    if abilityId == lastUsedId and (t - lastUsedAt) < SLOT_USED_DEDUP_MS then
+        return
+    end
+    lastUsedId = abilityId
+    lastUsedAt = t
     local tex
     if GetSlotTexture then
-        local ok, t = pcall(GetSlotTexture, actionSlotIndex)
-        if ok and type(t) == "string" and t ~= "" then
-            tex = t
+        local ok, texOk = pcall(GetSlotTexture, actionSlotIndex)
+        if ok and type(texOk) == "string" and texOk ~= "" then
+            tex = texOk
         end
     end
     Push(abilityId, tex or AbilityIcon(abilityId), "skill")
@@ -350,14 +425,15 @@ local function OnSlotUsed(_, actionSlotIndex)
 end
 
 local SLOT_LA = ACTION_SLOT_TYPE_LIGHT_ATTACK or 5
+local SLOT_WEAP = ACTION_SLOT_TYPE_WEAPON_ATTACK or 1
 
 local function OnLightFull(_, result, isError, _name, _graphic, slotType, _sName, sourceType, _tName, _tType, _hit, _power, _dmg, _log, _sid, _tid, abilityId)
     if not SkillOn() then return end
-    if isError then return end
+    -- Miss / swing into air often arrives as isError. Still counts as a weave.
     if sourceType and COMBAT_UNIT_TYPE_PLAYER and sourceType ~= COMBAT_UNIT_TYPE_PLAYER then
         return
     end
-    if slotType and slotType ~= SLOT_LA then
+    if slotType ~= SLOT_LA and slotType ~= SLOT_WEAP then
         return
     end
     local t = Now()
@@ -369,7 +445,23 @@ local function OnLightFull(_, result, isError, _name, _graphic, slotType, _sName
     end
 end
 
-local LA_NS = { ADDON .. "LA1", ADDON .. "LA2", ADDON .. "LA3" }
+local LA_RESULTS = {
+    ACTION_RESULT_DAMAGE or 1,
+    ACTION_RESULT_CRITICAL_DAMAGE or 2,
+    ACTION_RESULT_BEGIN or 2200,
+    ACTION_RESULT_DODGED or 21,
+    ACTION_RESULT_MISS or 4,
+    ACTION_RESULT_IMMUNE or 2000,
+    ACTION_RESULT_REFLECTED or 9,
+    ACTION_RESULT_DAMAGE_SHIELDED or 10,
+    ACTION_RESULT_BLOCKED_DAMAGE or 8,
+    ACTION_RESULT_BLOCKED or 8,
+}
+
+local LA_NS = {}
+for i = 1, #LA_RESULTS do
+    LA_NS[i] = ADDON .. "LA" .. i
+end
 
 local function UnregisterLight()
     if not lightOn then return end
@@ -386,19 +478,63 @@ local function RegisterLight()
         UnregisterLight()
         return
     end
-    local results = {
-        ACTION_RESULT_DAMAGE or 1,
-        ACTION_RESULT_CRITICAL_DAMAGE or 2,
-        ACTION_RESULT_BEGIN or 2200,
-    }
-    for i = 1, #LA_NS do
+    for i = 1, #LA_RESULTS do
         EVENT_MANAGER:RegisterForEvent(LA_NS[i], EVENT_COMBAT_EVENT, OnLightFull)
         EVENT_MANAGER:AddFilterForEvent(LA_NS[i], EVENT_COMBAT_EVENT,
-            REGISTER_FILTER_IS_ERROR, false,
             REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER,
-            REGISTER_FILTER_COMBAT_RESULT, results[i])
+            REGISTER_FILTER_COMBAT_RESULT, LA_RESULTS[i])
     end
     lightOn = true
+end
+
+local lastBashAt = 0
+
+local function OnBash(_, result, isError, _name, _graphic, slotType, _sName, sourceType, _tName, _tType, _hit, _power, _dmg, _log, _sid, _tid, abilityId)
+    if not SkillOn() then return end
+    if isError then return end
+    if sourceType and COMBAT_UNIT_TYPE_PLAYER and sourceType ~= COMBAT_UNIT_TYPE_PLAYER then
+        return
+    end
+    abilityId = tonumber(abilityId) or 0
+    if abilityId ~= 0 and not BASH_IDS[abilityId] then
+        return
+    end
+    local t = Now()
+    if t - lastBashAt < BASH_DEDUP_MS then return end
+    lastBashAt = t
+    local icon = AbilityIcon(abilityId)
+    if not icon or icon == EMPTY_ICON then
+        icon = BASH_ICON
+    end
+    Push(abilityId ~= 0 and abilityId or 21970, icon, "bash")
+end
+
+local BASH_NS = { ADDON .. "Bash1", ADDON .. "Bash2" }
+local BASH_LIST = { 21970, 26792 }
+
+local function UnregisterBash()
+    if not bashOn then return end
+    for i = 1, #BASH_NS do
+        EVENT_MANAGER:UnregisterForEvent(BASH_NS[i], EVENT_COMBAT_EVENT)
+    end
+    bashOn = false
+end
+
+local function RegisterBash()
+    local want = SkillOn()
+    if want and bashOn then return end
+    if not want then
+        UnregisterBash()
+        return
+    end
+    for i = 1, #BASH_LIST do
+        EVENT_MANAGER:RegisterForEvent(BASH_NS[i], EVENT_COMBAT_EVENT, OnBash)
+        EVENT_MANAGER:AddFilterForEvent(BASH_NS[i], EVENT_COMBAT_EVENT,
+            REGISTER_FILTER_IS_ERROR, false,
+            REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER,
+            REGISTER_FILTER_ABILITY_ID, BASH_LIST[i])
+    end
+    bashOn = true
 end
 
 local function OnCombat(_, inCombat)
@@ -483,6 +619,7 @@ end
 
 function T.SkillRefresh()
     RegisterLight()
+    RegisterBash()
     if not SkillOn() then
         StopTick()
         if root then root:SetHidden(true) end

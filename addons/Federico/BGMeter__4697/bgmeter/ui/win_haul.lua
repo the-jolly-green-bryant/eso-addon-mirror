@@ -17,6 +17,16 @@ local Icons = BGMeter.Icons
 local Prefs = BGMeter.Prefs
 
 local MEDAL_PERROW, MEDAL_STEP, MEDAL_CAP = 7, 24, 14
+local SHARE_SIZE = 26
+local SHARE_COLS = 3
+local SHARE_ROW_GAP = 4
+local SHARE_MIN_FREE = 60
+local EFF_BOTTOM = 369
+local STAND_H = 90
+local SHARE_KEYS = { "dmg", "heal", "kills", "taken", "obj", "medals" }
+local flag_col_spec, caps_count = U.flag_col_spec, U.caps_count
+local Donut = BGMeter.Plot.donut
+local SHARE_TRACK = { 0.50, 0.50, 0.56, 0.28 }
 
 local medal_card = nil
 
@@ -117,7 +127,7 @@ local function build_haul(win)
     p.heading:SetAnchor(TOP, p.container, TOP, 0, 14)
 
     p.vetIcon = P.icon(p.container)
-    p.vetIcon:SetDimensions(52, 52)
+    p.vetIcon:SetDimensions(46, 46)
     p.vetIcon:SetAnchor(TOPLEFT, p.container, TOPLEFT, PAD, 44)
 
     p.vetTitle = P.label(p.container, S.FONT.row, K.COLOR.veterancy)
@@ -132,7 +142,7 @@ local function build_haul(win)
     p.vetTier:SetDimensions(INNER - 64, 18)
 
     p.track = Bar.create(p.container)
-    p.track.container:SetAnchor(TOPLEFT, p.vetIcon, BOTTOMLEFT, 0, 14)
+    p.track.container:SetAnchor(TOPLEFT, p.vetIcon, BOTTOMLEFT, 0, 10)
     p.track.container:SetDimensions(INNER, 12)
 
     p.vetDelta = P.label(p.container, S.FONT.small, K.COLOR.veterancy)
@@ -146,7 +156,7 @@ local function build_haul(win)
     p.season:SetDimensions(INNER, 16)
 
     p.div1 = P.rect(p.container, { 1, 1, 1, 0.10 })
-    p.div1:SetAnchor(TOPLEFT, p.season, BOTTOMLEFT, 0, 12)
+    p.div1:SetAnchor(TOPLEFT, p.season, BOTTOMLEFT, 0, 8)
     p.div1:SetDimensions(INNER, 1)
 
     local VAL_W = 74
@@ -166,14 +176,14 @@ local function build_haul(win)
         val:SetVerticalAlignment(TEXT_ALIGN_CENTER)
         return { icon = icon, name = name, val = val }
     end
-    p.ap = receipt_line(p.div1, 12, Icons.ap()); p.ap.name:SetText("Alliance Pts")
-    p.xp = receipt_line(p.ap.icon, 10, Icons.XP); p.xp.name:SetText("Experience")
-    p.cp = receipt_line(p.xp.icon, 10, Icons.CP); p.cp.name:SetText("Champion Pts")
+    p.ap = receipt_line(p.div1, 8, Icons.ap()); p.ap.name:SetText("Alliance Pts")
+    p.xp = receipt_line(p.ap.icon, 8, Icons.XP); p.xp.name:SetText("Experience")
+    p.cp = receipt_line(p.xp.icon, 8, Icons.CP); p.cp.name:SetText("Champion Pts")
 
     p.medalLabel = P.label(p.container, S.FONT.row, K.COLOR.text_dim)
     U.clamp_line(p.medalLabel)
     p.medalLabel:SetText("Medals")
-    p.medalLabel:SetAnchor(TOPLEFT, p.cp.icon, BOTTOMLEFT, 0, 12)
+    p.medalLabel:SetAnchor(TOPLEFT, p.cp.icon, BOTTOMLEFT, 0, 8)
     p.medalLabel:SetDimensions(INNER, 18)
     p.medalIcons = {}
     p.medalBadges = {}
@@ -199,12 +209,33 @@ local function build_haul(win)
 
     p.eff = P.label(p.container, S.FONT.small, K.COLOR.accent)
     U.clamp_line(p.eff)
-    p.eff:SetAnchor(TOPLEFT, p.medalLabel, BOTTOMLEFT, 0, 30 + 2 * MEDAL_STEP)
+    p.eff:SetAnchor(TOPLEFT, p.medalLabel, BOTTOMLEFT, 0, 24 + 2 * MEDAL_STEP)
     p.eff:SetDimensions(INNER, 16)
     p.eff:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
 
+    p.share = {}
+    local cellW = math.floor(INNER / SHARE_COLS)
+    for i, key in ipairs(SHARE_KEYS) do
+        local s = {}
+        local col = (i - 1) % SHARE_COLS
+        local row = math.floor((i - 1) / SHARE_COLS)
+        s.donut = Donut.new("BGMeterShare" .. key, p.container, SHARE_SIZE, { track = SHARE_TRACK })
+        s.donut:control():SetAnchor(TOPLEFT, p.eff, BOTTOMLEFT, col * cellW, SHARE_ROW_GAP + row * (SHARE_SIZE + SHARE_ROW_GAP))
+        s.pct = P.label(p.container, S.FONT.small, K.COLOR.text)
+        U.clamp_line(s.pct)
+        s.pct:SetAnchor(TOPLEFT, s.donut:control(), TOPRIGHT, 4, 0)
+        s.pct:SetDimensions(cellW - SHARE_SIZE - 6, 13)
+        s.name = P.label(p.container, S.FONT.small, K.COLOR.text_dim)
+        U.clamp_line(s.name)
+        s.name:SetAnchor(TOPLEFT, s.donut:control(), TOPRIGHT, 4, 13)
+        s.name:SetDimensions(cellW - SHARE_SIZE - 6, 12)
+        s.hit = hit_proxy(s.donut:control())
+        W.tip_dynamic(s.hit)
+        p.share[key] = s
+    end
+
     p.sep = P.rect(p.container, { 1, 1, 1, 0.10 })
-    p.sep:SetAnchor(BOTTOMLEFT, p.container, BOTTOMLEFT, PAD, -96)
+    p.sep:SetAnchor(BOTTOMLEFT, p.container, BOTTOMLEFT, PAD, -STAND_H)
     p.sep:SetDimensions(INNER, 1)
 
     p.standHeading = P.label(p.container, S.FONT.small, K.COLOR.text_dim)
@@ -241,6 +272,62 @@ local function build_haul(win)
         p.medalHits[i] = hit
     end
     return p
+end
+
+local SHARE_COLORS = { K.COLOR.you }
+
+function SEC.haul_share_free()
+    return (W.cur_h or L.window_h) - L.header_h - L.footer_h - STAND_H - EFF_BOTTOM
+end
+
+local function share_hide(s)
+    s.donut:set_hidden(true); s.pct:SetHidden(true); s.name:SetHidden(true); s.hit:SetHidden(true)
+end
+
+local function share_set(s, mine, team, name, what, fmt)
+    if not team or team <= 0 then share_hide(s) return end
+    mine = math.min(mine, team)
+    s.donut:set({ mine }, SHARE_COLORS, team)
+    set_text(s.pct, string.format("%d%%", math.floor(mine / team * 100 + 0.5)))
+    set_text(s.name, name)
+    W.tips[s.hit] = what .. "\n" .. fmt(mine) .. " of " .. fmt(team)
+    s.donut:set_hidden(false); s.pct:SetHidden(false); s.name:SetHidden(false); s.hit:SetHidden(false)
+end
+
+local function count_fmt(v) return F.commas(math.floor(v + 0.5)) end
+local function time_fmt(v) return F.duration(v * 1000) end
+
+function SEC.haul_share(m, lr)
+    local p = W.haul
+    local show = lr ~= nil and SEC.haul_share_free() >= SHARE_MIN_FREE
+    if not show then
+        for _, s in pairs(p.share) do share_hide(s) end
+        return false
+    end
+    local t = { dmg = 0, heal = 0, kills = 0, taken = 0, caps = 0, carried = 0, medals = 0 }
+    for _, row in ipairs(m.battle) do
+        if row.team == lr.team then
+            t.dmg = t.dmg + (row.damage or 0)
+            t.heal = t.heal + (row.healing or 0)
+            t.kills = t.kills + (row.kills or 0)
+            t.taken = t.taken + (row.taken or 0)
+            t.caps = t.caps + (row.caps or 0)
+            t.carried = t.carried + (row.carried or 0)
+            t.medals = t.medals + (row.medals or 0)
+        end
+    end
+    share_set(p.share.dmg, lr.damage or 0, t.dmg, "dmg", "Your share of your team's damage", F.abbrev)
+    share_set(p.share.heal, lr.healing or 0, t.heal, "heal", "Your share of your team's healing", F.abbrev)
+    share_set(p.share.kills, (lr.kills or 0) + (lr.assists or 0), t.kills, "kills",
+        "Your part in your team's kills\nkills + assists over team kills", count_fmt)
+    share_set(p.share.taken, lr.taken or 0, t.taken, "taken", "Your share of the damage your team took", F.abbrev)
+    if flag_col_spec(m) == "carried" then
+        share_set(p.share.obj, lr.carried or 0, t.carried, "held", "Your share of your team's ball time", time_fmt)
+    else
+        share_set(p.share.obj, caps_count(m, lr.caps or 0), caps_count(m, t.caps), "caps", "Your share of your team's captures", count_fmt)
+    end
+    share_set(p.share.medals, lr.medals or 0, t.medals, "medals", "Your share of your team's medals", count_fmt)
+    return true
 end
 
 function SEC.haul(m, animate)
@@ -323,6 +410,7 @@ function SEC.haul(m, animate)
     set_text(p.medalMore, (#ids > #p.medalIcons) and ("+" .. (#ids - #p.medalIcons)) or "")
 
     set_text(p.eff, string.format("%s AP/min  ·  %s AP/kill", F.commas(h.apPerMin), F.commas(h.apPerKill)))
+    SEC.haul_share(m, lr)
 
     local standControls = { p.sep, p.standHeading, p.standRank, p.standSub }
     local casual = (m.competitive == false)

@@ -205,10 +205,11 @@ function Module:Initialize( )
 
 	self.TIMER_ALERTS_LEGACY = {
 		[150308] = { -2, 2 }, -- Power Bash (Daihjara-la; same as Rockgrove's Havocrel Goliath)
+		[159864] = { -2, 2 }, -- Monstrous Claw (Spirit Crab Broodmother)
 		[163987] = { -2, 2 }, -- Coral Slam
 		[166019] = { -2, 2 }, -- Crush
 		[166020] = { -2, 2 }, -- Claw
-		[166582] = { -2, 2 }, -- Monstrous Claw
+		[166582] = { -2, 2 }, -- Monstrous Claw (Reef Guardian)
 		[166586] = { -2, 2 }, -- Crackdown
 		[167273] = { -2, 0, false, { 1, 0, 0.6, 0.8 }, offset = -875 }, -- Broiling Hew
 		[167280] = { -2, 0, false, { 1, 0, 0.6, 0.8 }, offset = -875 }, -- Stinging Shear
@@ -439,12 +440,21 @@ function Module:Initialize( )
 		)
 	end
 
+	local reefs -- Scratch table
+	local defaultReefStatus = string.format("|c00FFFF%s|r", GetString(SI_LCA_ACTIVE))
 	self.StatusPoll_B2 = function( )
 		local currentTime = GetGameTimeMilliseconds()
-		local defaultStatus = string.format("|c00FFFF%s|r", GetString(SI_LCA_ACTIVE))
+
+		if (reefs) then
+			for _, tbl in pairs(reefs) do
+				ZO_ClearTable(tbl)
+			end
+		else
+			reefs = { { }, { }, { }, hearts = { }, statuses = { } }
+		end
 
 		-- Heartburn status
-		local hearts = { }
+		local hearts = reefs.hearts
 		for unitId, heart in pairs(Vars.guardians.units) do
 			local unitTag = LCA.IdentifyBossUnitId(unitId)
 			if (unitTag) then
@@ -461,7 +471,7 @@ function Module:Initialize( )
 		end
 
 		-- General status
-		local statuses = { }
+		local statuses = reefs.statuses
 		for unitId, status in pairs(Vars.guardians.statuses) do
 			local unitTag = LCA.IdentifyBossUnitId(unitId)
 			if (unitTag) then
@@ -470,17 +480,22 @@ function Module:Initialize( )
 		end
 
 		-- Boss status
-		local cols = { { }, { }, { } }
+		local valid = false
 		for _, unitTag in ipairs(DATA.reefTags) do
 			local health = LCA.GetUnitHealthPercent(unitTag)
 			if (health > 0) then
-				table.insert(cols[1], self:GetString(unitTag))
-				table.insert(cols[2], string.format("%d%%", zo_floor(health)))
-				table.insert(cols[3], string.format("%s%s", hearts[unitTag] or defaultStatus, statuses[unitTag] or ""))
+				valid = true
+				table.insert(reefs[1], self:GetString(unitTag))
+				table.insert(reefs[2], string.format("%d%%", zo_floor(health)))
+				table.insert(reefs[3], string.format("%s%s", hearts[unitTag] or defaultReefStatus, statuses[unitTag] or ""))
 			end
 		end
-		for i, col in ipairs(cols) do
-			CA2.StatusSetCellText(1, i + 1, table.concat(col, "\n"))
+		if (valid) then
+			for i = 1, 3 do
+				CA2.StatusSetCellText(1, i + 1, table.concat(reefs[i], "\n"))
+			end
+		else
+			CA2.StatusDisable()
 		end
 	end
 
@@ -507,7 +522,7 @@ function Module:Initialize( )
 			CA2.StatusSetRowColor(1, 0xFF6666FF)
 		else
 			CA2.StatusSetCellText(1, 2, zo_strformat(SI_LCA_TIME_SINCE_PREVIOUS, LCA.FormatTime(time, LCA.TIME_FORMAT_SHORT)))
-			CA2.StatusSetRowColor(1, (time <= 29000) and 0xFFFFFFFF or 0xFF9900FF)
+			CA2.StatusSetRowColor(1, time <= 29000 and 0xFFFFFFFF or 0xFF9900FF)
 		end
 
 		-- Winter Storm
@@ -556,7 +571,7 @@ function Module:PreUnload( )
 end
 
 function Module:OnBossesChanged( )
-	if (LCA.MatchStrings(GetUnitName("boss1"), self:GetString("8290981-0-107014")) and LCA.GetUnitHealthPercent("boss1") == 100) then
+	if (LCA.MatchStrings(GetUnitName("boss1"), self:GetString("8290981-0-107014")) and LCA.GetUnitHealthPercent("boss1") > 0) then
 		self.StartBoss2Panel()
 	end
 	self:ToggleTaleriaClockLabels(LCA.isVet and self:GetSetting("clockLabels") and LCA.MatchStrings(GetUnitName("boss1"), self:GetString("8290981-0-107015")))
@@ -643,7 +658,7 @@ function Module:ProcessCombatEvents( result, isError, abilityName, abilityGraphi
 	elseif (result == ACTION_RESULT_EFFECT_GAINED and DATA.waves[abilityId]) then
 		local alertLevel = 1 -- Default alert level
 		local color = DATA.waves[abilityId]
-		Vars.numWeapons[color] = (Vars.numWeapons[color] or 0) - 1
+		Vars.numWeapons[color] = zo_max((Vars.numWeapons[color] or 0) - 1, 0)
 		if (Vars.currentFragility == color) then
 			alertLevel = 2
 		elseif (LCA.isTank) then

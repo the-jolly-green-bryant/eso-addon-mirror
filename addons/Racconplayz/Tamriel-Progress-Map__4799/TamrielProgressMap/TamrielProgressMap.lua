@@ -1,8 +1,9 @@
 local ADDON_NAME = "TamrielProgressMap"
 local DISPLAY_NAME = "Tamriel Progress Map"
-local VERSION = "2.7.0"
+local VERSION = "2.7.2"
 local AUTHOR = "Raccoonplayz"
 local PIN_TYPE_STRING = "TamrielProgressMap_ZoneProgressPin"
+local SUPPORTED_LANGUAGES = { de = true, en = true, ru = true, fr = true, es = true }
 
 TamrielProgressMap = TamrielProgressMap or {}
 local TPM = TamrielProgressMap
@@ -15,6 +16,7 @@ TPM.pinRegistered = false
 TPM.symbolicZonePositions = TPM.symbolicZonePositions or {}
 TPM.symbolicZonePositionsMapId = TPM.symbolicZonePositionsMapId or 0
 TPM.nextLabelId = TPM.nextLabelId or 0
+TPM.settingsControls = TPM.settingsControls or {}
 
 local DEFAULTS =
 {
@@ -22,7 +24,7 @@ local DEFAULTS =
     showZoneNames = false,
     showTooltip = true,
     showHeader = true,
-    language = "auto",
+    language = "auto", -- 2.7.1: follows ESO client language; kept for SV compatibility
     hideCompletedZones = false,
     calculationMode = "objectives",
     showCategoryPercentages = false,
@@ -81,6 +83,8 @@ local DEFAULTS =
     statisticsCharacterRangeDays = 7, -- 2.7.5: Character history selector: 7/30/90/365 days
     statisticsCharacterRangeOffset = 0, -- 2.7.5: browsing offset inside the selected Character history range
     schemaVersion = 0, -- centralized SavedVariables migration baseline
+    serverScopeMigrated = false, -- migrated into the GetWorldName() namespace
+    serverScopeMigrationWorld = "",
 
  -- 2.6.14: 0=all Tamriel, otherwise one supported progress zone
     combatStatsByCharacter = {},
@@ -386,6 +390,21 @@ local function Clamp(value, minimum, maximum)
     return value
 end
 
+-- Detach legacy SavedVariables from ZO_SavedVars metatables before migration.
+local function TPM_DeepCopyPlain(value, seen)
+    if type(value) ~= "table" then return value end
+    seen = seen or {}
+    if seen[value] then return seen[value] end
+    local copy = {}
+    seen[value] = copy
+    for key, child in pairs(value) do
+        if type(key) ~= "function" and type(child) ~= "function" then
+            copy[TPM_DeepCopyPlain(key, seen)] = TPM_DeepCopyPlain(child, seen)
+        end
+    end
+    return copy
+end
+
 local function RGBToHex(r, g, b)
     local function Byte(value)
         return Clamp(math.floor(((tonumber(value) or 0) * 255) + 0.5), 0, 255)
@@ -475,48 +494,25 @@ end
 
 local function FormatNumber(value)
     value = math.max(0, Round(tonumber(value) or 0))
-    if type(ZO_CommaDelimitNumber) == "function" then
-        return ZO_CommaDelimitNumber(value)
-    end
-    return tostring(value)
+    return ZO_CommaDelimitNumber(value)
 end
 
 function TPM:GetPlayerProgressData()
-    local level = type(GetUnitLevel) == "function" and (GetUnitLevel("player") or 0) or 0
-    local cp = 0
-    if type(GetPlayerChampionPointsEarned) == "function" then
-        cp = GetPlayerChampionPointsEarned() or 0
-    elseif type(GetUnitChampionPoints) == "function" then
-        cp = GetUnitChampionPoints("player") or 0
-    end
-
-    local canGainCP = false
-    if type(CanUnitGainChampionPoints) == "function" then
-        canGainCP = CanUnitGainChampionPoints("player") == true
-    elseif level >= 50 then
-        canGainCP = true
-    end
-
-    local maxChampionPoints = 0
-    if type(GetMaxSpendableChampionPointsInAttribute) == "function" then
-        local perAttribute = GetMaxSpendableChampionPointsInAttribute() or 0
-        if perAttribute > 0 then maxChampionPoints = perAttribute * 3 end
-    end
+    local level = GetUnitLevel("player") or 0
+    local cp = GetPlayerChampionPointsEarned() or 0
+    local canGainCP = CanUnitGainChampionPoints("player") == true
+    local maxChampionPoints = (GetMaxSpendableChampionPointsInAttribute() or 0) * GetNumChampionDisciplines()
 
     local atChampionCap = canGainCP and maxChampionPoints > 0 and cp >= maxChampionPoints
     local current, maximum = 0, 0
     if atChampionCap then
         current, maximum = 1, 1
-    elseif canGainCP and type(GetPlayerChampionXP) == "function" then
+    elseif canGainCP then
         current = GetPlayerChampionXP() or 0
-        if type(GetNumChampionXPInChampionPoint) == "function" then
-            maximum = GetNumChampionXPInChampionPoint(math.max(cp, 1)) or 0
-        elseif type(GetChampionXPInRank) == "function" then
-            maximum = GetChampionXPInRank(math.max(cp, 1)) or 0
-        end
+        maximum = GetNumChampionXPInChampionPoint(math.max(cp, 1)) or 0
     else
-        if type(GetUnitXP) == "function" then current = GetUnitXP("player") or 0 end
-        if type(GetUnitXPMax) == "function" then maximum = GetUnitXPMax("player") or 0 end
+        current = GetUnitXP("player") or 0
+        maximum = GetUnitXPMax("player") or 0
     end
 
     local percent = atChampionCap and 100 or 0
@@ -537,22 +533,17 @@ function TPM:GetPlayerProgressData()
 end
 
 function TPM:GetCurrentCharacterStatsKey()
-    if type(GetCurrentCharacterId) == "function" then
-        local characterId = GetCurrentCharacterId()
-        if characterId and characterId ~= 0 then
-            return tostring(characterId)
-        end
+    local characterId = GetCurrentCharacterId()
+    if characterId and characterId ~= 0 then
+        return tostring(characterId)
     end
-    local name = type(GetUnitName) == "function" and (GetUnitName("player") or "") or ""
+    local name = GetUnitName("player") or ""
     if name ~= "" then return name end
     return "player"
 end
 
 local function TPM_Now()
-    if type(GetTimeStamp) == "function" then
-        return math.max(0, tonumber(GetTimeStamp()) or 0)
-    end
-    return 0
+    return math.max(0, tonumber(GetTimeStamp()) or 0)
 end
 
 function TPM:GetPlayerCombatStats(characterKey)
@@ -572,14 +563,8 @@ function TPM:GetPlayerCombatStats(characterKey)
     local key = characterKey or self:GetCurrentCharacterStatsKey()
     local stats = self.saved.combatStatsByCharacter[key]
     if type(stats) ~= "table" then
-        local startedAt = 0
-        if type(GetTimeStamp) == "function" then
-            startedAt = tonumber(GetTimeStamp()) or 0
-        end
-        local startLevel = 1
-        if type(GetUnitLevel) == "function" then
-            startLevel = tonumber(GetUnitLevel("player")) or 1
-        end
+        local startedAt = tonumber(GetTimeStamp()) or 0
+        local startLevel = tonumber(GetUnitLevel("player")) or 1
         stats = {
             pvpKills = 0,
             pvpDeaths = 0,
@@ -611,15 +596,11 @@ function TPM:GetPlayerCombatStats(characterKey)
     stats.trackingVersion = stats.trackingVersion or VERSION
 
     if tonumber(stats.trackingStartedAt) == nil then
-        if type(GetTimeStamp) == "function" then
-            stats.trackingStartedAt = math.max(0, tonumber(GetTimeStamp()) or 0)
-        else
-            stats.trackingStartedAt = 0
-        end
+        stats.trackingStartedAt = math.max(0, tonumber(GetTimeStamp()) or 0)
     end
     local startLevel = tonumber(stats.trackingStartLevel)
     if startLevel == nil then
-        startLevel = (type(GetUnitLevel) == "function" and tonumber(GetUnitLevel("player"))) or 1
+        startLevel = tonumber(GetUnitLevel("player")) or 1
     end
     stats.trackingStartLevel = math.max(1, math.floor((startLevel or 1) + 0.5))
     return stats
@@ -628,16 +609,14 @@ end
 function TPM:SyncCurrentEsoPlayedTime()
     local key = self:GetCurrentCharacterStatsKey()
     local stats = self:GetPlayerCombatStats(key)
-    if type(GetSecondsPlayed) == "function" then
-        local ok, value = pcall(GetSecondsPlayed)
-        if ok and type(value) == "number" and value >= 0 then
-            local seconds = math.max(0, Round(value))
-            stats.esoPlayedSeconds = math.max(stats.esoPlayedSeconds or 0, seconds)
-            -- Preserve the locally tracked 3.0.0 time when migrating: derive a
-            -- baseline from ESO's lifetime value instead of resetting the counter.
-            if stats.esoPlayedBaselineSeconds == nil then
-                stats.esoPlayedBaselineSeconds = math.max(0, seconds - (stats.playSeconds or 0))
-            end
+    local value = GetSecondsPlayed()
+    if type(value) == "number" and value >= 0 then
+        local seconds = math.max(0, Round(value))
+        stats.esoPlayedSeconds = math.max(stats.esoPlayedSeconds or 0, seconds)
+        -- Preserve the locally tracked 3.0.0 time when migrating: derive a
+        -- baseline from ESO's lifetime value instead of resetting the counter.
+        if stats.esoPlayedBaselineSeconds == nil then
+            stats.esoPlayedBaselineSeconds = math.max(0, seconds - (stats.playSeconds or 0))
         end
     end
     return stats.esoPlayedSeconds or 0
@@ -708,18 +687,14 @@ end
 -- date helpers are declared later in this file, so calling them from this earlier
 -- section would resolve to nil at runtime in Lua.
 local function TPM_CombatLocalUtcOffsetSeconds()
-    if type(GetTimeStamp) == "function" and type(GetSecondsSinceMidnight) == "function" then
-        local okStamp, nowStamp = pcall(GetTimeStamp)
-        local okLocal, localSeconds = pcall(GetSecondsSinceMidnight)
-        nowStamp = okStamp and tonumber(nowStamp) or nil
-        localSeconds = okLocal and tonumber(localSeconds) or nil
-        if nowStamp and localSeconds then
-            local utcSeconds = nowStamp % 86400
-            local offset = localSeconds - utcSeconds
-            if offset > 43200 then offset = offset - 86400 end
-            if offset < -43200 then offset = offset + 86400 end
-            return offset
-        end
+    local nowStamp = tonumber(GetTimeStamp())
+    local localSeconds = tonumber(GetSecondsSinceMidnight())
+    if nowStamp and localSeconds then
+        local utcSeconds = nowStamp % 86400
+        local offset = localSeconds - utcSeconds
+        if offset > 43200 then offset = offset - 86400 end
+        if offset < -43200 then offset = offset + 86400 end
+        return offset
     end
     return 0
 end
@@ -820,20 +795,14 @@ function TPM:GetEconomyCurrencyName(definition)
     -- the ESO client language. All supported definitions have localized names.
     local localized = definition.fallbackKey and self:L(definition.fallbackKey) or ""
     if localized ~= "" and localized ~= definition.fallbackKey then return localized end
-    if type(GetCurrencyName) == "function" then
-        local ok, name = pcall(GetCurrencyName, definition.currencyType, false, false)
-        if ok and type(name) == "string" and name ~= "" then return name end
-    end
+    local name = GetCurrencyName(definition.currencyType, false, false)
+    if type(name) == "string" and name ~= "" then return name end
     return tostring(definition.key or "")
 end
 
 local function SafeCurrencyAmount(currencyType, location)
-    if type(GetCurrencyAmount) ~= "function" or type(currencyType) ~= "number" or type(location) ~= "number" then
-        return 0
-    end
-    local ok, amount = pcall(GetCurrencyAmount, currencyType, location)
-    if not ok then return 0 end
-    return math.max(0, Round(tonumber(amount) or 0))
+    if type(currencyType) ~= "number" or type(location) ~= "number" then return 0 end
+    return math.max(0, Round(tonumber(GetCurrencyAmount(currencyType, location)) or 0))
 end
 
 function TPM:GetEconomyPrimaryLocation(definition)
@@ -842,12 +811,8 @@ function TPM:GetEconomyPrimaryLocation(definition)
     -- ESO's own wallet asks the API where a currency is stored instead of
     -- hard-coding every account/character currency. Keep a fallback for older
     -- API versions and compatibility aliases.
-    if type(GetCurrencyPlayerStoredLocation) == "function" then
-        local ok, location = pcall(GetCurrencyPlayerStoredLocation, definition.currencyType)
-        if ok and type(location) == "number" then
-            return location
-        end
-    end
+    local location = GetCurrencyPlayerStoredLocation(definition.currencyType)
+    if type(location) == "number" then return location end
 
     if definition.locationMode == "walletBank" then
         return _G.CURRENCY_LOCATION_CHARACTER
@@ -859,9 +824,8 @@ end
 function TPM:IsEconomyCurrencyBankable(definition)
     if not definition or type(definition.currencyType) ~= "number" then return false end
     local bankLocation = _G.CURRENCY_LOCATION_BANK
-    if type(bankLocation) == "number" and type(CanCurrencyBeStoredInLocation) == "function" then
-        local ok, canStore = pcall(CanCurrencyBeStoredInLocation, definition.currencyType, bankLocation)
-        if ok then return canStore == true end
+    if type(bankLocation) == "number" then
+        return CanCurrencyBeStoredInLocation(definition.currencyType, bankLocation) == true
     end
     -- Fallback for API variants where CanCurrencyBeStoredInLocation is not exposed.
     return definition.locationMode == "walletBank"
@@ -1082,39 +1046,14 @@ function TPM:GetEconomyZoneName(zoneId)
     zoneId = tonumber(zoneId) or 0
     if zoneId <= 0 then return self:L("ECON_DETAIL_ALL_TAMRIEL") end
 
-    -- Do not call the later local SafeZoneName() helper here: this Economy
-    -- function is defined earlier in the file, so that local is not in lexical
-    -- scope yet. Resolve the TPM-selected language directly through LibZone.
-    local lang = self.langCode or "en"
-    local libZone = _G.LibZone
-
-    if libZone then
-        local namesByLanguage = libZone.preloadedZoneNames
-        local languageNames = namesByLanguage and namesByLanguage[lang]
-        local localizedName = languageNames and languageNames[zoneId]
-        if type(localizedName) == "string" and localizedName ~= "" then
-            return localizedName
-        end
-
-        local savedLocalized = libZone.localizedZoneData and libZone.localizedZoneData[lang]
-        localizedName = savedLocalized and savedLocalized[zoneId]
-        if type(localizedName) == "string" and localizedName ~= "" then
-            return localizedName
-        end
-    end
-
-    -- Safe fallback for a new zone not yet known to LibZone.
-    local name = type(GetZoneNameById) == "function" and GetZoneNameById(zoneId) or ""
-    if name and name ~= "" then
-        if type(ZO_CachedStrFormat) == "function" and type(SI_ZONE_NAME) ~= "nil" then
-            local ok, formatted = pcall(ZO_CachedStrFormat, SI_ZONE_NAME, name)
-            if ok and formatted and formatted ~= "" then return formatted end
-        end
-        if type(zo_strformat) == "function" then
-            local ok, formatted = pcall(zo_strformat, "<<C:1>>", name)
-            if ok and formatted and formatted ~= "" then return formatted end
-        end
-        return name
+    -- Since 2.7.1 TPM follows the ESO client language. ESO's own zone-name API
+    -- therefore already returns the language we need and no localization library
+    -- lookup is required here.
+    local name = GetZoneNameById(zoneId) or ""
+    if name ~= "" then
+        local formatted = ZO_CachedStrFormat(SI_ZONE_NAME, name)
+        if formatted and formatted ~= "" then return formatted end
+        return zo_strformat("<<C:1>>", name)
     end
 
     return tostring(zoneId)
@@ -1321,18 +1260,14 @@ end
 local function TPM_GetLocalUtcOffsetSeconds()
     -- ESO exposes the local clock separately from the Unix timestamp. Derive
     -- the current local offset without relying on Lua's host timezone.
-    if type(GetTimeStamp) == "function" and type(GetSecondsSinceMidnight) == "function" then
-        local okStamp, nowStamp = pcall(GetTimeStamp)
-        local okLocal, localSeconds = pcall(GetSecondsSinceMidnight)
-        nowStamp = okStamp and tonumber(nowStamp) or nil
-        localSeconds = okLocal and tonumber(localSeconds) or nil
-        if nowStamp and localSeconds then
-            local utcSeconds = nowStamp % 86400
-            local offset = localSeconds - utcSeconds
-            if offset > 43200 then offset = offset - 86400 end
-            if offset < -43200 then offset = offset + 86400 end
-            return offset
-        end
+    local nowStamp = tonumber(GetTimeStamp())
+    local localSeconds = tonumber(GetSecondsSinceMidnight())
+    if nowStamp and localSeconds then
+        local utcSeconds = nowStamp % 86400
+        local offset = localSeconds - utcSeconds
+        if offset > 43200 then offset = offset - 86400 end
+        if offset < -43200 then offset = offset + 86400 end
+        return offset
     end
     return 0
 end
@@ -1499,31 +1434,12 @@ end
 
 
 function TPM:GetCurrentPlayerZoneIdentity()
-    local zoneIndex = nil
-    if type(GetUnitZoneIndex) == "function" then
-        local ok, value = pcall(GetUnitZoneIndex, "player")
-        if ok and type(value) == "number" and value > 0 then zoneIndex = value end
-    end
+    local zoneIndex = tonumber(GetUnitZoneIndex("player"))
+    if not zoneIndex or zoneIndex <= 0 then return 0, nil, tostring(GetUnitZone("player") or "") end
 
-    local zoneId = 0
-    if zoneIndex and type(GetZoneId) == "function" then
-        local ok, value = pcall(GetZoneId, zoneIndex)
-        if ok and type(value) == "number" then zoneId = value end
-    end
-
-    local zoneName = ""
-    if zoneIndex and type(GetZoneNameByIndex) == "function" then
-        local ok, value = pcall(GetZoneNameByIndex, zoneIndex)
-        if ok and type(value) == "string" then zoneName = value end
-    end
-    if zoneName == "" and type(GetUnitZone) == "function" then
-        local ok, value = pcall(GetUnitZone, "player")
-        if ok and type(value) == "string" then zoneName = value end
-    end
-    if zoneName ~= "" and type(ZO_CachedStrFormat) == "function" and _G.SI_ZONE_NAME then
-        local ok, formatted = pcall(ZO_CachedStrFormat, SI_ZONE_NAME, zoneName)
-        if ok and type(formatted) == "string" and formatted ~= "" then zoneName = formatted end
-    end
+    local zoneId = tonumber(GetZoneId(zoneIndex)) or 0
+    local zoneName = tostring(GetZoneNameByIndex(zoneIndex) or GetUnitZone("player") or "")
+    if zoneName ~= "" then zoneName = ZO_CachedStrFormat(SI_ZONE_NAME, zoneName) end
     return zoneId, zoneIndex, zoneName
 end
 
@@ -1556,10 +1472,7 @@ end
 function TPM:RememberJumpDestination(zoneName, zoneDisplayType, loadingTexture)
     local kind = self:GetJumpActivityKind(zoneDisplayType)
     local formattedName = tostring(zoneName or "")
-    if formattedName ~= "" and type(ZO_CachedStrFormat) == "function" and _G.SI_ZONE_NAME then
-        local ok, formatted = pcall(ZO_CachedStrFormat, SI_ZONE_NAME, formattedName)
-        if ok and type(formatted) == "string" and formatted ~= "" then formattedName = formatted end
-    end
+    if formattedName ~= "" then formattedName = ZO_CachedStrFormat(SI_ZONE_NAME, formattedName) end
 
     local now = TPM_Now()
     local active = self.activeTrackedActivity
@@ -1594,20 +1507,15 @@ end
 function TPM:GetCurrentTrackedActivityKind()
     if self:IsCurrentBattlegroundActive() then return "battleground" end
 
-    if type(IsPlayerInRaid) == "function" then
-        local ok, inRaid = pcall(IsPlayerInRaid)
-        if ok and inRaid then return "trial" end
-    end
+    if IsPlayerInRaid() then return "trial" end
 
     -- Group dungeons are best identified by the current dungeon difficulty.
     -- IsUnitInDungeon() also returns true in delves/public dungeons, while
     -- NORMAL/VETERAN difficulty identifies a real group dungeon.
-    if type(GetCurrentZoneDungeonDifficulty) == "function" then
-        local ok, difficulty = pcall(GetCurrentZoneDungeonDifficulty)
-        if ok and type(difficulty) == "number" then
-            local none = tonumber(_G.DUNGEON_DIFFICULTY_NONE) or 0
-            if difficulty > none then return "dungeon" end
-        end
+    local difficulty = GetCurrentZoneDungeonDifficulty()
+    if type(difficulty) == "number" then
+        local none = tonumber(_G.DUNGEON_DIFFICULTY_NONE) or 0
+        if difficulty > none then return "dungeon" end
     end
 
     if self:IsInPvPEnvironment() then return "pvp" end
@@ -1637,13 +1545,8 @@ end
 -- entries while still recording Dolmens, Geysers, Harrowstorms, Volcanic Vents
 -- and other current/future ESO world events.
 local function TPM_WorldEventNormalizeText(value)
-    local text = tostring(value or "")
-    text = text:gsub("%^%a+", "")
-    if type(zo_strlower) == "function" then
-        local ok, lowered = pcall(zo_strlower, text)
-        if ok and type(lowered) == "string" then return lowered end
-    end
-    return string.lower(text)
+    local text = tostring(value or ""):gsub("%^%a+", "")
+    return zo_strlower(text)
 end
 
 local function TPM_WorldEventContains(text, ...)
@@ -1674,71 +1577,47 @@ function TPM:GetWorldEventMetadata(worldEventInstanceId, stepDefId)
 
     if metadata.instanceId <= 0 then return metadata end
 
-    if type(GetWorldEventId) == "function" then
-        local ok, value = pcall(GetWorldEventId, metadata.instanceId)
-        if ok and type(value) == "number" then metadata.worldEventId = value end
+    metadata.worldEventId = tonumber(GetWorldEventId(metadata.instanceId)) or 0
+    if metadata.worldEventId > 0 then
+        metadata.worldEventType = GetWorldEventType(metadata.worldEventId)
     end
-    if metadata.worldEventId > 0 and type(GetWorldEventType) == "function" then
-        local ok, value = pcall(GetWorldEventType, metadata.worldEventId)
-        if ok then metadata.worldEventType = value end
-    end
-
-    if type(GetWorldEventLocationContext) == "function" then
-        local ok, value = pcall(GetWorldEventLocationContext, metadata.instanceId)
-        if ok then metadata.locationContext = value end
-    end
+    metadata.locationContext = GetWorldEventLocationContext(metadata.instanceId)
 
     local canUsePoi = metadata.locationContext == nil
-        or _G.WORLD_EVENT_LOCATION_CONTEXT_POINT_OF_INTEREST == nil
-        or metadata.locationContext == _G.WORLD_EVENT_LOCATION_CONTEXT_POINT_OF_INTEREST
-    if canUsePoi and type(GetWorldEventPOIInfo) == "function" then
-        local ok, zoneIndex, poiIndex = pcall(GetWorldEventPOIInfo, metadata.instanceId)
-        if ok then
-            metadata.zoneIndex = tonumber(zoneIndex) or 0
-            metadata.poiIndex = tonumber(poiIndex) or 0
-            -- Update 50 dynamic world-event locations can report 1/1 when the
-            -- event is a location rather than a real POI. Treat that sentinel
-            -- as invalid instead of accidentally reading Stonefalls as a name.
-            if metadata.zoneIndex == 1 and metadata.poiIndex == 1 then
-                metadata.zoneIndex, metadata.poiIndex = 0, 0
-            end
+        or WORLD_EVENT_LOCATION_CONTEXT_POINT_OF_INTEREST == nil
+        or metadata.locationContext == WORLD_EVENT_LOCATION_CONTEXT_POINT_OF_INTEREST
+    if canUsePoi then
+        local zoneIndex, poiIndex = GetWorldEventPOIInfo(metadata.instanceId)
+        metadata.zoneIndex = tonumber(zoneIndex) or 0
+        metadata.poiIndex = tonumber(poiIndex) or 0
+        -- Update 50 dynamic world-event locations can report 1/1 when the
+        -- event is a location rather than a real POI. Treat that sentinel
+        -- as invalid instead of accidentally reading Stonefalls as a name.
+        if metadata.zoneIndex == 1 and metadata.poiIndex == 1 then
+            metadata.zoneIndex, metadata.poiIndex = 0, 0
         end
     end
 
-    if metadata.zoneIndex > 0 and metadata.poiIndex > 0 and type(GetPOIInfo) == "function" then
-        local ok, poiName, _, startDescription, finishedDescription = pcall(GetPOIInfo, metadata.zoneIndex, metadata.poiIndex)
-        if ok then
-            metadata.poiName = tostring(poiName or "")
-            metadata.startDescription = tostring(startDescription or "")
-            metadata.finishedDescription = tostring(finishedDescription or "")
-        end
-    end
-    if metadata.zoneIndex > 0 and metadata.poiIndex > 0 and type(GetPOIMapInfo) == "function" then
-        local ok, _, _, _, icon = pcall(GetPOIMapInfo, metadata.zoneIndex, metadata.poiIndex)
-        if ok then metadata.icon = tostring(icon or "") end
+    if metadata.zoneIndex > 0 and metadata.poiIndex > 0 then
+        local poiName, _, startDescription, finishedDescription = GetPOIInfo(metadata.zoneIndex, metadata.poiIndex)
+        metadata.poiName = tostring(poiName or "")
+        metadata.startDescription = tostring(startDescription or "")
+        metadata.finishedDescription = tostring(finishedDescription or "")
+        local _, _, _, icon = GetPOIMapInfo(metadata.zoneIndex, metadata.poiIndex)
+        metadata.icon = tostring(icon or "")
     end
 
-    if metadata.stepDefId > 0 and type(GetWorldEventStepName) == "function" then
-        local ok, value = pcall(GetWorldEventStepName, metadata.instanceId, metadata.stepDefId)
-        if ok then metadata.stepName = tostring(value or "") end
+    if metadata.stepDefId > 0 then
+        metadata.stepName = tostring(GetWorldEventStepName(metadata.instanceId, metadata.stepDefId) or "")
     end
-    if type(GetPlayerLocationName) == "function" then
-        local ok, value = pcall(GetPlayerLocationName)
-        if ok then metadata.playerLocation = tostring(value or "") end
-    end
-    if type(GetUnitZone) == "function" then
-        local ok, value = pcall(GetUnitZone, "player")
-        if ok then metadata.zoneName = tostring(value or "") end
-    end
+    metadata.playerLocation = tostring(GetPlayerLocationName() or "")
+    metadata.zoneName = tostring(GetUnitZone("player") or "")
 
     local function FormatName(value)
         value = tostring(value or "")
         if value == "" then return "" end
-        if type(ZO_CachedStrFormat) == "function" then
-            local ok, formatted = pcall(ZO_CachedStrFormat, "<<C:1>>", value)
-            if ok and type(formatted) == "string" and formatted ~= "" then return formatted end
-        end
-        return value:gsub("%^%a+", "")
+        local formatted = ZO_CachedStrFormat("<<C:1>>", value)
+        return (formatted and formatted ~= "") and formatted or value:gsub("%^%a+", "")
     end
     metadata.poiName = FormatName(metadata.poiName)
     metadata.stepName = FormatName(metadata.stepName)
@@ -1842,16 +1721,15 @@ function TPM:DiscoverCurrentZoneWorldEventCandidates(force)
         return 0
     end
 
-    local okCount, poiCount = pcall(GetNumPOIs, playerZoneIndex)
-    if not okCount or type(poiCount) ~= "number" or poiCount <= 0 then
+    local poiCount = GetNumPOIs(playerZoneIndex)
+    if type(poiCount) ~= "number" or poiCount <= 0 then
         self.lastWorldEventPoiScanCount = 0
         return 0
     end
 
     local found = 0
     for poiIndex = 1, poiCount do
-        local ok, instanceId = pcall(GetPOIWorldEventInstanceId, playerZoneIndex, poiIndex)
-        instanceId = ok and (tonumber(instanceId) or 0) or 0
+        local instanceId = tonumber(GetPOIWorldEventInstanceId(playerZoneIndex, poiIndex)) or 0
         if instanceId > 0 then
             found = found + 1
             self:ObserveWorldEventActivation(instanceId)
@@ -1875,19 +1753,15 @@ function TPM:IsPlayerNearWorldEvent(metadata)
     local poiIndex = tonumber(metadata.poiIndex) or 0
     if zoneIndex <= 0 or poiIndex <= 0 then return false end
 
-    if type(GetCurrentSubZonePOIIndices) == "function" then
-        local ok, currentZoneIndex, currentPoiIndex = pcall(GetCurrentSubZonePOIIndices)
-        if ok and tonumber(currentZoneIndex) == zoneIndex and tonumber(currentPoiIndex) == poiIndex then
-            return true
-        end
+    local currentZoneIndex, currentPoiIndex = GetCurrentSubZonePOIIndices()
+    if tonumber(currentZoneIndex) == zoneIndex and tonumber(currentPoiIndex) == poiIndex then
+        return true
     end
 
     -- isNearby is independent of the player's discovery state and is a useful
     -- fallback when ESO does not expose the current sub-zone POI directly.
-    if type(GetPOIMapInfo) == "function" then
-        local ok, _, _, _, _, _, _, _, isNearby = pcall(GetPOIMapInfo, zoneIndex, poiIndex)
-        if ok and isNearby == true then return true end
-    end
+    local _, _, _, _, _, _, _, isNearby = GetPOIMapInfo(zoneIndex, poiIndex)
+    if isNearby == true then return true end
 
     -- Some POIs (notably active Dark Anchors) do not always report isNearby at
     -- the exact moment combat/XP arrives. Matching ESO's current location name
@@ -2241,19 +2115,14 @@ function TPM:DeactivateWorldEvent(worldEventInstanceId)
     self:UpdateWorldEventTrackerMetadata(id, tracker.stepDefId)
 
     local finalize = function()
-        if TPM then TPM:FinalizeWorldEventActivity(id) end
+        TPM:FinalizeWorldEventActivity(id)
     end
-    if type(zo_callLater) == "function" then
-        zo_callLater(finalize, 1600)
-    else
-        finalize()
-    end
+    zo_callLater(finalize, 1600)
 end
 
 function TPM:ResumeParticipatingWorldEvent()
-    if type(GetParticipatingWorldEventStep) ~= "function" then return end
-    local ok, instanceId, stepDefId = pcall(GetParticipatingWorldEventStep)
-    if ok and tonumber(instanceId) and tonumber(instanceId) > 0 then
+    local instanceId, stepDefId = GetParticipatingWorldEventStep()
+    if tonumber(instanceId) and tonumber(instanceId) > 0 then
         self:BeginWorldEventParticipation(instanceId, stepDefId)
     end
 end
@@ -2265,18 +2134,15 @@ end
 -- paired and the row displayed EP +0. Keep a short unit-id based pending queue
 -- and only finalize after the XP event had enough time to arrive.
 local function TPM_KillLogNowMs()
-    if type(GetFrameTimeMilliseconds) == "function" then return GetFrameTimeMilliseconds() end
-    return (type(GetTimeStamp) == "function" and GetTimeStamp() or 0) * 1000
+    return GetFrameTimeMilliseconds()
 end
 
 function TPM:NormalizeCombatUnitName(name)
     local raw = tostring(name or "")
     if raw == "" then return "", "" end
     local clean = raw
-    if type(ZO_CachedStrFormat) == "function" then
-        local ok, value = pcall(ZO_CachedStrFormat, "<<C:1>>", raw)
-        if ok and type(value) == "string" and value ~= "" then clean = value end
-    end
+    local value = ZO_CachedStrFormat("<<C:1>>", raw)
+    if type(value) == "string" and value ~= "" then clean = value end
     -- Combat events frequently expose ESO grammar suffixes (^m/^f/^n) while
     -- reticle names may already be formatted. Strip any marker that remains so
     -- both sources can be matched and the marker never leaks into the UI.
@@ -2304,21 +2170,14 @@ function TPM:CaptureReticlePveTarget()
         difficulty = nil,
         reaction = nil,
     }
-    if type(IsUnitLivestock) == "function" then
-        local ok, value = pcall(IsUnitLivestock, "reticleover")
-        snapshot.livestock = ok and value == true
+    snapshot.livestock = IsUnitLivestock("reticleover") == true
+    local difficulty = GetUnitDifficulty("reticleover")
+    if type(difficulty) == "number" then
+        snapshot.difficulty = difficulty
+        snapshot.critter = difficulty == MONSTER_DIFFICULTY_NONE
     end
-    if type(GetUnitDifficulty) == "function" then
-        local ok, difficulty = pcall(GetUnitDifficulty, "reticleover")
-        if ok and type(difficulty) == "number" then
-            snapshot.difficulty = difficulty
-            snapshot.critter = _G.MONSTER_DIFFICULTY_NONE ~= nil and difficulty == _G.MONSTER_DIFFICULTY_NONE
-        end
-    end
-    if type(GetUnitReaction) == "function" then
-        local ok, reaction = pcall(GetUnitReaction, "reticleover")
-        if ok and type(reaction) == "number" then snapshot.reaction = reaction end
-    end
+    local reaction = GetUnitReaction("reticleover")
+    if type(reaction) == "number" then snapshot.reaction = reaction end
     self.lastReticlePveTarget = snapshot
     self.recentReticlePveTargets = self.recentReticlePveTargets or {}
     table.insert(self.recentReticlePveTargets, 1, snapshot)
@@ -2333,7 +2192,7 @@ end
 
 function TPM:IsKnownBossName(name)
     local _, normalizedName = self:NormalizeCombatUnitName(name)
-    if normalizedName == "" or type(GetUnitName) ~= "function" then return false end
+    if normalizedName == "" then return false end
     for i = 1, 6 do
         local bossName = tostring(GetUnitName("boss" .. tostring(i)) or "")
         local _, normalizedBoss = self:NormalizeCombatUnitName(bossName)
@@ -2668,7 +2527,7 @@ function TPM:HandlePlayerExperienceUpdate(currentExp, maxExp, reason)
     maxExp = tonumber(maxExp)
     if not currentExp then return false end
 
-    local level = type(GetUnitLevel) == "function" and (tonumber(GetUnitLevel("player")) or 1) or 1
+    local level = tonumber(GetUnitLevel("player")) or 1
     local previousExp = tonumber(self.killLogLastPlayerExperience)
     local previousLevel = tonumber(self.killLogLastPlayerLevel) or level
     local previousMax = tonumber(self.killLogLastPlayerExperienceMax) or maxExp
@@ -2684,9 +2543,8 @@ function TPM:HandlePlayerExperienceUpdate(currentExp, maxExp, reason)
         if currentExp >= previousExp then gained = currentExp - previousExp end
     elseif level > previousLevel then
         local levelMax = previousMax
-        if (not levelMax or levelMax <= 0) and type(GetNumExperiencePointsInLevel) == "function" then
-            local ok, value = pcall(GetNumExperiencePointsInLevel, previousLevel)
-            if ok and type(value) == "number" then levelMax = value end
+        if not levelMax or levelMax <= 0 then
+            levelMax = tonumber(GetNumExperiencePointsInLevel(previousLevel)) or levelMax
         end
         if levelMax and levelMax > previousExp then
             gained = (levelMax - previousExp) + currentExp
@@ -2798,29 +2656,19 @@ function TPM:CalculateExperienceGain(level, previousExperience, currentExperienc
     if current >= previous then return math.max(0, current - previous) end
 
     local gained = current
-    if type(GetNumExperiencePointsInLevel) == "function" then
-        local previousLevel = math.max(1, (tonumber(level) or 1) - 1)
-        local ok, levelMax = pcall(GetNumExperiencePointsInLevel, previousLevel)
-        if ok and type(levelMax) == "number" and levelMax > previous then
-            gained = (levelMax - previous) + current
-        end
+    local previousLevel = math.max(1, (tonumber(level) or 1) - 1)
+    local levelMax = tonumber(GetNumExperiencePointsInLevel(previousLevel)) or 0
+    if levelMax > previous then
+        gained = (levelMax - previous) + current
     end
     return math.max(0, tonumber(gained) or 0)
 end
 
 function TPM:CacheQuestCompletionData(journalIndex, fallbackQuestName)
     journalIndex = tonumber(journalIndex)
-    if not journalIndex or type(IsValidQuestIndex) ~= "function" or not IsValidQuestIndex(journalIndex) then return end
-    if type(GetJournalQuestRewardInfo) ~= "function" or type(GetJournalQuestNumRewards) ~= "function" then return end
+    if not journalIndex or not IsValidQuestIndex(journalIndex) then return end
 
-    local questName = tostring(fallbackQuestName or "")
-    if type(GetJournalQuestName) == "function" then
-        local ok, value = pcall(GetJournalQuestName, journalIndex)
-        if ok and type(value) == "string" and value ~= "" then questName = value end
-    elseif type(GetJournalQuestInfo) == "function" then
-        local ok, value = pcall(GetJournalQuestInfo, journalIndex)
-        if ok and type(value) == "string" and value ~= "" then questName = value end
-    end
+    local questName = tostring(GetJournalQuestName(journalIndex) or fallbackQuestName or "")
     if questName == "" then return end
 
     self.questCompletionCache = self.questCompletionCache or {}
@@ -2835,13 +2683,7 @@ function TPM:CacheQuestCompletionData(journalIndex, fallbackQuestName)
     for rewardIndex = 1, count do
         local rewardType, rewardName, amount, _, meetsUsageRequirement, _, itemType = GetJournalQuestRewardInfo(journalIndex, rewardIndex)
         amount = tonumber(amount) or 0
-        local currencyType = nil
-        if type(GetCurrencyTypeFromRewardType) == "function" then
-            local ok, value = pcall(GetCurrencyTypeFromRewardType, rewardType)
-            if ok then currencyType = value end
-        elseif _G.REWARD_TYPE_MONEY and rewardType == _G.REWARD_TYPE_MONEY then
-            currencyType = _G.CURT_MONEY
-        end
+        local currencyType = GetCurrencyTypeFromRewardType(rewardType)
 
         if currencyType and _G.CURT_MONEY and currencyType == _G.CURT_MONEY then
             cached.gold = cached.gold + math.max(0, amount)
@@ -2850,11 +2692,7 @@ function TPM:CacheQuestCompletionData(journalIndex, fallbackQuestName)
                 and rewardType == _G.REWARD_TYPE_AUTO_ITEM and itemType == _G.REWARD_ITEM_TYPE_COLLECTIBLE
                 and meetsUsageRequirement == false
             if not ownedCollectible and type(rewardName) == "string" and rewardName ~= "" then
-                local formatted = rewardName
-                if type(zo_strformat) == "function" and _G.SI_TOOLTIP_ITEM_NAME then
-                    local ok, value = pcall(zo_strformat, SI_TOOLTIP_ITEM_NAME, rewardName)
-                    if ok and type(value) == "string" and value ~= "" then formatted = value end
-                end
+                local formatted = zo_strformat(SI_TOOLTIP_ITEM_NAME, rewardName)
                 cached.rewards[#cached.rewards + 1] = formatted
             end
         end
@@ -2881,9 +2719,9 @@ local function TPM_GetLocalTimestampParts(timestamp)
 
     -- Derive the player's current local offset from ESO's own local clock.
     local adjusted = timestamp + TPM_GetLocalUtcOffsetSeconds()
-    if type(os) == "table" and type(os.date) == "function" then
-        local ok, parts = pcall(os.date, "!*t", adjusted)
-        if ok and type(parts) == "table" then return parts end
+    if os and os.date then
+        local parts = os.date("!*t", adjusted)
+        if type(parts) == "table" then return parts end
     end
 
     -- Fallback: time portion can still be reconstructed without os.date.
@@ -2898,9 +2736,9 @@ local function TPM_GetCharacterTimestampParts(timestamp, utcOffset)
     timestamp = tonumber(timestamp) or TPM_Now()
     if timestamp <= 0 then return nil end
     local adjusted = timestamp + (tonumber(utcOffset) or TPM_GetLocalUtcOffsetSeconds())
-    if type(os) == "table" and type(os.date) == "function" then
-        local ok, parts = pcall(os.date, "!*t", adjusted)
-        if ok and type(parts) == "table" then return parts end
+    if os and os.date then
+        local parts = os.date("!*t", adjusted)
+        if type(parts) == "table" then return parts end
     end
 
     -- ESO builds do not have to expose Lua's os.date(). Convert Unix days to a
@@ -2936,10 +2774,8 @@ local function TPM_GetLocalizedCharacterDateText(timestamp, lang, utcOffset)
         if lang == "fr" then return string.format("%02d/%02d/%04d", p.day, p.month, p.year) end
         return string.format("%02d.%02d.%04d", p.day, p.month, p.year)
     end
-    if type(GetDateStringFromTimestamp) == "function" then
-        local ok, value = pcall(GetDateStringFromTimestamp, tonumber(timestamp) or TPM_Now())
-        if ok and type(value) == "string" then return value end
-    end
+    local value = GetDateStringFromTimestamp(tonumber(timestamp) or TPM_Now())
+    if type(value) == "string" then return value end
     return ""
 end
 
@@ -2972,10 +2808,8 @@ local function TPM_GetLocalizedLogDateText(timestamp, lang)
     end
 
     -- Only as a last resort use ESO's client-locale string.
-    if type(GetDateStringFromTimestamp) == "function" then
-        local ok, value = pcall(GetDateStringFromTimestamp, tonumber(timestamp) or TPM_Now())
-        if ok and type(value) == "string" then return value end
-    end
+    local value = GetDateStringFromTimestamp(tonumber(timestamp) or TPM_Now())
+    if type(value) == "string" then return value end
     return ""
 end
 
@@ -2998,11 +2832,11 @@ end
 
 local function TPM_GetCurrentLogTimeText()
     local now = type(GetTimeStamp) == "function" and GetTimeStamp() or 0
-    return TPM_GetLocalizedLogTimeText(now, TPM and TPM.langCode or "en")
+    return TPM_GetLocalizedLogTimeText(now, TPM.langCode or "en")
 end
 
 local function TPM_GetLogTimeTextFromTimestamp(timestamp)
-    return TPM_GetLocalizedLogTimeText(timestamp, TPM and TPM.langCode or "en")
+    return TPM_GetLocalizedLogTimeText(timestamp, TPM.langCode or "en")
 end
 
 function TPM:FormatLogTimestamp(entry)
@@ -4801,35 +4635,10 @@ function TPM:MatchesQuickFilter(percent)
 end
 
 local function SafeZoneName(zoneId)
-    -- ESO's native GetZoneNameById() always follows the game-client language.
-    -- TPM can be switched independently between DE/EN/RU, so use LibZone's
-    -- preloaded localized zone-name data first. This keeps the statistics list,
-    -- map labels and tooltips in the language selected inside TPM.
-    local lang = TPM and TPM.langCode or nil
-    local libZone = _G.LibZone
-    if libZone and lang then
-        local namesByLanguage = libZone.preloadedZoneNames
-        local languageNames = namesByLanguage and namesByLanguage[lang]
-        local localizedName = languageNames and languageNames[zoneId]
-        if type(localizedName) == "string" and localizedName ~= "" then
-            return localizedName
-        end
-
-        -- LibZone may have learned a newly added zone in SavedVariables before
-        -- its bundled table is updated. Use that as a second source when present.
-        local savedLocalized = libZone.localizedZoneData and libZone.localizedZoneData[lang]
-        localizedName = savedLocalized and savedLocalized[zoneId]
-        if type(localizedName) == "string" and localizedName ~= "" then
-            return localizedName
-        end
-    end
-
-    -- Safe fallback for a brand-new zone not yet present in LibZone. In this
-    -- case ESO can still show the zone, but it will use the client language.
+    -- TPM follows the ESO client language, so the native zone-name API is the
+    -- authoritative and resource-light source for map labels and Statistics.
     local name = GetZoneNameById(zoneId)
-    if not name or name == "" then
-        return tostring(zoneId)
-    end
+    if not name or name == "" then return tostring(zoneId) end
     return ZO_CachedStrFormat(SI_ZONE_NAME, name)
 end
 
@@ -4854,42 +4663,28 @@ function TPM:IsProgressZoneAvailable(zoneId)
 end
 
 function TPM:GetGameLanguage()
-    local language = "en"
-    if type(GetCVar) == "function" then
-        language = zo_strlower(GetCVar("language.2") or "en")
-    end
-    if string.sub(language, 1, 2) == "de" then return "de" end
-    if string.sub(language, 1, 2) == "ru" then return "ru" end
-    if string.sub(language, 1, 2) == "fr" then return "fr" end
-    if string.sub(language, 1, 2) == "es" then return "es" end
-    return "en"
+    local language = zo_strlower(GetCVar("language.2") or "en")
+    language = string.sub(tostring(language), 1, 2)
+    return SUPPORTED_LANGUAGES[language] and language or "en"
 end
 
 function TPM:ResolveLanguage()
-    local requested = self.saved and self.saved.language or "auto"
-    if requested ~= "de" and requested ~= "en" and requested ~= "ru" and requested ~= "fr" and requested ~= "es" then
-        requested = self:GetGameLanguage()
-    end
-
-    local translations = TamrielProgressMap_Localization or {}
-    if not translations[requested] then
-        requested = "en"
-    end
-
-    self.langCode = requested
-    self.locale = translations[requested] or translations["en"] or {}
+    -- localization/en.lua creates the fallback SI_TPM_* ids. The manifest then
+    -- loads only the active ESO client language through $(language).
+    self.langCode = self:GetGameLanguage()
+    self.stringIdCache = self.stringIdCache or {}
+    if self.saved then self.saved.language = "auto" end
 end
 
 function TPM:L(key, ...)
-    local locale = self.locale or (TamrielProgressMap_Localization and TamrielProgressMap_Localization["en"]) or {}
-    local value = locale[key]
-    if value == nil then
-        local english = TamrielProgressMap_Localization and TamrielProgressMap_Localization["en"]
-        value = english and english[key] or key
+    self.stringIdCache = self.stringIdCache or {}
+    local stringId = self.stringIdCache[key]
+    if stringId == nil then
+        stringId = _G["SI_TPM_" .. tostring(key)] or false
+        self.stringIdCache[key] = stringId
     end
-    if select("#", ...) > 0 then
-        return string.format(value, ...)
-    end
+    local value = stringId and GetString(stringId) or tostring(key)
+    if select("#", ...) > 0 then return string.format(value, ...) end
     return value
 end
 
@@ -5038,31 +4833,14 @@ function TPM:GetCompletionTypeName(completionType)
     return tostring(completionType)
 end
 
--- Update 50/51 Zone Guide compatibility. Update 51 exposes the ...AndIndex
--- variants; Update 50 uses the older two-argument names. Passing nil for the
--- optional index asks for the category total, matching the old behavior.
+-- Zone Guide completion helpers use the current public ESO API directly.
+-- ESO's own live Zone Stories code uses these functions for category totals.
 function TPM:GetZoneCompletionActivityTotal(zoneId, completionType)
-    if type(_G.GetNumZoneActivitiesForZoneCompletionTypeAndIndex) == "function" then
-        local ok, value = pcall(_G.GetNumZoneActivitiesForZoneCompletionTypeAndIndex, zoneId, completionType, nil)
-        if ok and tonumber(value) then return math.max(0, tonumber(value) or 0) end
-    end
-    if type(_G.GetNumZoneActivitiesForZoneCompletionType) == "function" then
-        local ok, value = pcall(_G.GetNumZoneActivitiesForZoneCompletionType, zoneId, completionType)
-        if ok and tonumber(value) then return math.max(0, tonumber(value) or 0) end
-    end
-    return 0
+    return math.max(0, tonumber(GetNumZoneActivitiesForZoneCompletionType(zoneId, completionType)) or 0)
 end
 
 function TPM:GetZoneCompletionActivityCompleted(zoneId, completionType)
-    if type(_G.GetNumCompletedZoneActivitiesForZoneCompletionTypeAndIndex) == "function" then
-        local ok, value = pcall(_G.GetNumCompletedZoneActivitiesForZoneCompletionTypeAndIndex, zoneId, completionType, nil)
-        if ok and tonumber(value) then return math.max(0, tonumber(value) or 0) end
-    end
-    if type(_G.GetNumCompletedZoneActivitiesForZoneCompletionType) == "function" then
-        local ok, value = pcall(_G.GetNumCompletedZoneActivitiesForZoneCompletionType, zoneId, completionType)
-        if ok and tonumber(value) then return math.max(0, tonumber(value) or 0) end
-    end
-    return 0
+    return math.max(0, tonumber(GetNumCompletedZoneActivitiesForZoneCompletionType(zoneId, completionType)) or 0)
 end
 
 function TPM:GetCompletionBreakdown(zoneId)
@@ -5150,10 +4928,8 @@ end
 -- another full-screen scene takes over. The Skyshard goal now follows exactly
 -- that scene rule instead of being an always-on top-level overlay.
 function TPM:IsStatisticsAllowedInCurrentScene()
-    local sceneManager = _G.SCENE_MANAGER
-    if not sceneManager or type(sceneManager.GetCurrentScene) ~= "function" then return true end
-    local ok, currentScene = pcall(sceneManager.GetCurrentScene, sceneManager)
-    if not ok or not currentScene then return true end
+    local currentScene = SCENE_MANAGER:GetCurrentScene()
+    if not currentScene then return true end
     return currentScene == _G.HUD_SCENE
         or currentScene == _G.HUD_UI_SCENE
         or currentScene == _G.WORLD_MAP_SCENE
@@ -5166,28 +4942,19 @@ function TPM:RefreshStandaloneStatisticsSceneVisibility()
 
     -- 2.6.34: ESC should close a standalone journal instead of merely hiding it.
     -- Compare both the scene object and its name for compatibility across UI revisions.
-    local sceneManager = _G.SCENE_MANAGER
-    local currentScene = nil
-    if sceneManager and type(sceneManager.GetCurrentScene) == "function" then
-        local ok, value = pcall(sceneManager.GetCurrentScene, sceneManager)
-        if ok then currentScene = value end
-    end
-    local currentSceneName = ""
-    if currentScene and type(currentScene.GetName) == "function" then
-        local ok, value = pcall(currentScene.GetName, currentScene)
-        if ok then currentSceneName = tostring(value or "") end
-    end
+    local currentScene = SCENE_MANAGER:GetCurrentScene()
+    local currentSceneName = currentScene and tostring(currentScene:GetName() or "") or ""
     local lowerSceneName = zo_strlower(tostring(currentSceneName or ""))
     if currentScene == _G.GAME_MENU_SCENE or string.find(lowerSceneName, "gamemenu", 1, true) then
         self:HideStatisticsWindow()
         return
     end
     -- When ESC exits camera UI mode directly (HUD-UI -> HUD), close TPM as well.
-    if self.statisticsOwnsUIMode and type(_G.IsGameCameraUIModeActive) == "function" then
-        local ok, active = pcall(_G.IsGameCameraUIModeActive)
-        local now = type(_G.GetFrameTimeMilliseconds) == "function" and (_G.GetFrameTimeMilliseconds() or 0) or 0
+    if self.statisticsOwnsUIMode then
+        local active = IsGameCameraUIModeActive()
+        local now = GetFrameTimeMilliseconds() or 0
         local openedAt = tonumber(self.statisticsUIModeOpenedAt) or 0
-        if ok and active == false and (openedAt <= 0 or now - openedAt > 200) then
+        if active == false and (openedAt <= 0 or now - openedAt > 200) then
             self:HideStatisticsWindow()
             return
         end
@@ -5220,37 +4987,9 @@ function TPM:RefreshStandaloneStatisticsSceneVisibility()
 end
 
 function TPM:IsSkyshardGoalHudSceneVisible()
-    -- Use the scene manager's *current* scene first. A HUD scene can still be
-    -- technically in a shown state while another full-screen scene is taking
-    -- over. Requiring HUD/HUD-UI to be the current scene makes the TPM block
-    -- disappear on M, ESC, inventory and other full-screen menus exactly like
-    -- ESO's native tracker instead of behaving like an always-on overlay.
-    local sceneManager = _G.SCENE_MANAGER
-    if sceneManager and type(sceneManager.GetCurrentScene) == "function" then
-        local ok, currentScene = pcall(sceneManager.GetCurrentScene, sceneManager)
-        if ok and currentScene then
-            if currentScene == _G.HUD_SCENE or currentScene == _G.HUD_UI_SCENE then
-                return true
-            end
-            return false
-        end
-    end
-
-    -- Compatibility fallback for clients where the scene manager is not yet
-    -- fully initialized during addon startup.
-    local function SceneVisible(scene)
-        if not scene then return false end
-        if type(scene.IsShowing) == "function" then
-            local ok, visible = pcall(scene.IsShowing, scene)
-            if ok and visible then return true end
-        end
-        if type(scene.GetState) == "function" then
-            local ok, state = pcall(scene.GetState, scene)
-            if ok and (state == _G.SCENE_SHOWING or state == _G.SCENE_SHOWN) then return true end
-        end
-        return false
-    end
-    return SceneVisible(_G.HUD_SCENE) or SceneVisible(_G.HUD_UI_SCENE)
+    -- HUD elements are visible only while HUD/HUD-UI is the current scene.
+    local currentScene = SCENE_MANAGER:GetCurrentScene()
+    return currentScene == HUD_SCENE or currentScene == HUD_UI_SCENE
 end
 
 -- 2.6.13: Personal Skyshard HUD renderer rebuilt around a true top-level
@@ -5261,19 +5000,8 @@ end
 -- uses an independently resolved HUD anchor.
 function TPM:CreateSkyshardGoalWidget()
     if self.skyshardGoalWidget then return end
-    if not WINDOW_MANAGER or not GuiRoot then return end
-
     local widgetName = ADDON_NAME .. "SkyshardGoalHUD"
-    local widget = nil
-    if type(WINDOW_MANAGER.CreateTopLevelWindow) == "function" then
-        local ok, control = pcall(WINDOW_MANAGER.CreateTopLevelWindow, WINDOW_MANAGER, widgetName)
-        if ok then widget = control end
-    end
-    if not widget then
-        local ok, control = pcall(WINDOW_MANAGER.CreateControl, WINDOW_MANAGER, widgetName, GuiRoot, CT_CONTROL)
-        if ok then widget = control end
-    end
-    if not widget then return end
+    local widget = WINDOW_MANAGER:CreateTopLevelWindow(widgetName)
 
     local savedWidth = self.saved and tonumber(self.saved.skyshardGoalCustomWidth) or nil
     local savedHeight = self.saved and tonumber(self.saved.skyshardGoalCustomHeight) or nil
@@ -5471,9 +5199,8 @@ local function TPM_IsUsableHudAnchorControl(control)
     if not control or not GuiRoot or control == GuiRoot then return false end
     if type(control.GetTop) ~= "function" or type(control.GetRight) ~= "function" then return false end
 
-    local okTop, top = pcall(control.GetTop, control)
-    local okRight, right = pcall(control.GetRight, control)
-    top, right = okTop and tonumber(top) or nil, okRight and tonumber(right) or nil
+    local top = tonumber(control:GetTop())
+    local right = tonumber(control:GetRight())
     if not top or not right then return false end
 
     local rootWidth = type(GuiRoot.GetWidth) == "function" and tonumber(GuiRoot:GetWidth()) or 0
@@ -5487,13 +5214,10 @@ local function TPM_IsUsableHudAnchorControl(control)
     -- can never be selected as the anchor for the Skyshard HUD.
     local current = control
     for _ = 1, 12 do
-        if type(current.IsHidden) == "function" then
-            local okHidden, hidden = pcall(current.IsHidden, current)
-            if okHidden and hidden == true then return false end
-        end
+        if type(current.IsHidden) == "function" and current:IsHidden() then return false end
         if type(current.GetParent) ~= "function" then break end
-        local okParent, parent = pcall(current.GetParent, current)
-        if not okParent or not parent or parent == current then break end
+        local parent = current:GetParent()
+        if not parent or parent == current then break end
         if parent == GuiRoot then break end
         current = parent
     end
@@ -5514,8 +5238,7 @@ end
 local function TPM_GetControlText(control)
     local controlType = type(control)
     if (controlType ~= "table" and controlType ~= "userdata") or type(control.GetText) ~= "function" then return "" end
-    local ok, value = pcall(control.GetText, control)
-    return ok and tostring(value or "") or ""
+    return tostring(control:GetText() or "")
 end
 
 local function TPM_GetNativeHudTrackerContainer(value)
@@ -5525,14 +5248,12 @@ local function TPM_GetNativeHudTrackerContainer(value)
     -- Native ZO_HUDTracker_Base objects expose owner.container/headerLabel.
     -- Resolve either an owner object or a control whose owner points at one.
     local objects = { value }
-    local okOwner, owner = pcall(function() return value.owner end)
-    if okOwner and owner and owner ~= value then objects[#objects + 1] = owner end
+    local owner = value.owner
+    if owner and owner ~= value then objects[#objects + 1] = owner end
 
     for _, object in ipairs(objects) do
-        local okContainer, container = pcall(function() return object.container end)
-        local okHeader, header = pcall(function() return object.headerLabel end)
-        container = okContainer and container or nil
-        header = okHeader and header or nil
+        local container = object.container
+        local header = object.headerLabel
         if header and TPM_IsTamrielTomesHudText(TPM_GetControlText(header)) then
             -- 2.6.17: Return the actual visible title label first. The native
             -- tracker container can span the complete right-hand tracker column
@@ -5548,10 +5269,7 @@ local function TPM_GetNativeHudTrackerContainer(value)
         -- keep that exact control as the anchor instead of climbing to a large
         -- shared tracker container.
         if TPM_IsUsableHudAnchorControl(value) then return value end
-        if okOwner and owner then
-            local okContainer, container = pcall(function() return owner.container end)
-            if okContainer and TPM_IsUsableHudAnchorControl(container) then return container end
-        end
+        if owner and TPM_IsUsableHudAnchorControl(owner.container) then return owner.container end
     end
     return nil
 end
@@ -5563,14 +5281,14 @@ function TPM:FindTamrielTomesHudAnchor(force)
         return self.skyshardGoalTomesAnchor
     end
 
-    local nowMs = type(GetFrameTimeMilliseconds) == "function" and (tonumber(GetFrameTimeMilliseconds()) or 0) or 0
+    local nowMs = tonumber(GetFrameTimeMilliseconds()) or 0
 
     -- Prefer ESO's native HUD tracker registry. This is more reliable than
     -- searching arbitrary globals and lets us anchor to the complete native
     -- Tamriel Tomes tracker container when it is registered there.
     if HUD_TRACKER_MANAGER and type(HUD_TRACKER_MANAGER.GetTrackers) == "function" then
-        local okTrackers, trackers = pcall(HUD_TRACKER_MANAGER.GetTrackers, HUD_TRACKER_MANAGER)
-        if okTrackers and type(trackers) == "table" then
+        local trackers = HUD_TRACKER_MANAGER:GetTrackers()
+        if type(trackers) == "table" then
             for tracker in pairs(trackers) do
                 local anchor = TPM_GetNativeHudTrackerContainer(tracker)
                 if TPM_IsUsableHudAnchorControl(anchor) then
@@ -5613,8 +5331,7 @@ function TPM:FindTamrielTomesHudAnchor(force)
             if TPM_IsUsableHudAnchorControl(control) then
                 local name = ""
                 if type(control.GetName) == "function" then
-                    local ok, value = pcall(control.GetName, control)
-                    if ok then name = zo_strlower(tostring(value or "")) end
+                    name = zo_strlower(tostring(control:GetName() or ""))
                 end
                 local textLooksLikeTomes = TPM_IsTamrielTomesHudText(TPM_GetControlText(control))
                 local nameLooksLikeTomes = string.find(name, "tamrieltome", 1, true) ~= nil
@@ -5627,11 +5344,10 @@ function TPM:FindTamrielTomesHudAnchor(force)
         end
 
         if depth < 14 and control and type(control.GetNumChildren) == "function" and type(control.GetChild) == "function" then
-            local okCount, count = pcall(control.GetNumChildren, control)
-            count = okCount and math.min(tonumber(count) or 0, 900) or 0
+            local count = math.min(tonumber(control:GetNumChildren()) or 0, 900)
             for childIndex = 1, count do
-                local okChild, child = pcall(control.GetChild, control, childIndex)
-                if okChild and child then queue[#queue + 1] = { control = child, depth = depth + 1 } end
+                local child = control:GetChild(childIndex)
+                if child then queue[#queue + 1] = { control = child, depth = depth + 1 } end
             end
         end
     end
@@ -5646,19 +5362,16 @@ local function TPM_GetTamrielTomesBlockAnchor(titleControl)
     -- If this is already a native HUD tracker container, do not climb into the
     -- shared tracker column. That is what caused Position 1 to land far above
     -- or around the middle of the screen in earlier builds.
-    local okOwner, owner = pcall(function() return titleControl.owner end)
-    if okOwner and owner then
-        local okContainer, container = pcall(function() return owner.container end)
-        if okContainer and container == titleControl then return titleControl end
-    end
+    local owner = titleControl.owner
+    if owner and owner.container == titleControl then return titleControl end
 
     local current = titleControl
     -- Pick the FIRST compact parent large enough to contain title + objective,
     -- instead of the highest matching parent in the whole HUD hierarchy.
     for _ = 1, 8 do
         if type(current.GetParent) ~= "function" then break end
-        local ok, parent = pcall(current.GetParent, current)
-        if not ok or not parent or parent == GuiRoot then break end
+        local parent = current:GetParent()
+        if not parent or parent == GuiRoot then break end
         if TPM_IsUsableHudAnchorControl(parent) then
             local width = type(parent.GetWidth) == "function" and tonumber(parent:GetWidth()) or 0
             local height = type(parent.GetHeight) == "function" and tonumber(parent:GetHeight()) or 0
@@ -5673,16 +5386,13 @@ end
 
 local function TPM_GetRenderedLabelBounds(control)
     if not TPM_IsUsableHudAnchorControl(control) then return nil, nil end
-    local okLeft, left = pcall(control.GetLeft, control)
-    local okWidth, width = pcall(control.GetWidth, control)
-    left = okLeft and tonumber(left) or nil
-    width = okWidth and tonumber(width) or nil
+    local left = tonumber(control:GetLeft())
+    local width = tonumber(control:GetWidth())
     if not left then return nil, nil end
 
     local textWidth = nil
     if type(control.GetTextWidth) == "function" then
-        local okTextWidth, value = pcall(control.GetTextWidth, control)
-        textWidth = okTextWidth and tonumber(value) or nil
+        textWidth = tonumber(control:GetTextWidth())
     end
     if not textWidth or textWidth <= 0 or not width or width <= 0 then
         local right = type(control.GetRight) == "function" and tonumber(control:GetRight()) or nil
@@ -5691,8 +5401,7 @@ local function TPM_GetRenderedLabelBounds(control)
 
     local alignment = nil
     if type(control.GetHorizontalAlignment) == "function" then
-        local okAlignment, value = pcall(control.GetHorizontalAlignment, control)
-        if okAlignment then alignment = value end
+        alignment = control:GetHorizontalAlignment()
     end
 
     local renderedLeft = left
@@ -5751,14 +5460,12 @@ function TPM:UpdateSkyshardGoalAnchor(forceScan)
         -- text share the same right edge as Tamriel Tomes regardless of the
         -- hidden label-control width.
         local visualRight = tonumber(TPM_GetRenderedLabelRight(tomeTitle))
-        local okTop, tomeTop = pcall(tomeTitle.GetTop, tomeTitle)
-        tomeTop = okTop and tonumber(tomeTop) or nil
+        local tomeTop = tonumber(tomeTitle:GetTop())
         if self.skyshardGoalZoneLabel then self.skyshardGoalZoneLabel:SetHorizontalAlignment(TEXT_ALIGN_RIGHT) end
         if self.skyshardGoalProgressLabel then self.skyshardGoalProgressLabel:SetHorizontalAlignment(TEXT_ALIGN_RIGHT) end
         if position == 2 then
             local tomeBlock = TPM_GetTamrielTomesBlockAnchor(tomeTitle)
-            local okBottom, blockBottom = pcall(tomeBlock.GetBottom, tomeBlock)
-            blockBottom = okBottom and tonumber(blockBottom) or nil
+            local blockBottom = tonumber(tomeBlock:GetBottom())
             if visualRight and blockBottom then
                 widget:SetAnchor(TOPRIGHT, GuiRoot, TOPLEFT, visualRight, blockBottom + 8)
             else
@@ -5816,10 +5523,8 @@ function TPM:GetProgressGoalCategoryIconTexture(completionType)
     -- used by the game's Zone Guide / Zone Stories activity-completion tiles.
     local manager = _G.ZO_ZoneStories_Manager
     if type(completionType) == "number" and type(manager) == "table" and type(manager.GetCompletionTypeIcon) == "function" then
-        local ok, texture = pcall(manager.GetCompletionTypeIcon, completionType)
-        if ok and type(texture) == "string" and texture ~= "" then
-            return texture
-        end
+        local texture = manager.GetCompletionTypeIcon(completionType)
+        if type(texture) == "string" and texture ~= "" then return texture end
     end
 
     -- Safe direct native fallbacks in case the manager has not initialized yet.
@@ -5872,51 +5577,13 @@ end
 
 local function TPM_TryZoneStoriesSkyshardProgress(zoneId)
     zoneId = tonumber(zoneId) or 0
-    if zoneId <= 0 or not _G.ZONE_STORIES_MANAGER then return nil end
+    if zoneId <= 0 then return nil end
 
-    local manager = _G.ZONE_STORIES_MANAGER
-    local completionType = _G.ZONE_COMPLETION_TYPE_SKYSHARDS
-    if completionType == nil then return nil end
-
-    local function Accept(a, b)
-        a, b = tonumber(a), tonumber(b)
-        if a ~= nil and b ~= nil and b > 0 then
-            return math.max(0, a), math.max(0, b)
-        end
-        return nil
+    local completed, total = ZONE_STORIES_MANAGER.GetActivityCompletionProgressValues(zoneId, ZONE_COMPLETION_TYPE_SKYSHARDS)
+    completed, total = tonumber(completed), tonumber(total)
+    if completed ~= nil and total ~= nil and total > 0 then
+        return math.max(0, completed), math.max(0, total)
     end
-
-    -- ESO's own zone-story scoreboard uses these manager functions. Depending
-    -- on client revision they can be exposed in dot-style or method-style, so
-    -- safely support both call forms.
-    local fn = manager.GetActivityCompletionProgressValues
-    if type(fn) == "function" then
-        local ok, a, b = pcall(fn, zoneId, completionType)
-        if ok then
-            local completed, total = Accept(a, b)
-            if completed then return completed, total end
-        end
-        ok, a, b = pcall(fn, manager, zoneId, completionType)
-        if ok then
-            local completed, total = Accept(a, b)
-            if completed then return completed, total end
-        end
-    end
-
-    fn = manager.GetActivityCompletionProgressValuesAndText
-    if type(fn) == "function" then
-        local ok, a, b = pcall(fn, zoneId, completionType)
-        if ok then
-            local completed, total = Accept(a, b)
-            if completed then return completed, total end
-        end
-        ok, a, b = pcall(fn, manager, zoneId, completionType)
-        if ok then
-            local completed, total = Accept(a, b)
-            if completed then return completed, total end
-        end
-    end
-
     return nil
 end
 
@@ -5947,18 +5614,11 @@ function TPM:GetCurrentSkyshardGoalData()
         sourceZoneIds[#sourceZoneIds + 1] = zoneId
     end
 
-    if type(_G.ZO_ExplorationUtils_GetPlayerCurrentZoneId) == "function" then
-        local ok, zoneId = pcall(_G.ZO_ExplorationUtils_GetPlayerCurrentZoneId)
-        if ok then AddSource(zoneId) end
-    end
-    if type(GetUnitWorldPosition) == "function" then
-        local ok, zoneId = pcall(GetUnitWorldPosition, "player")
-        if ok then AddSource(zoneId) end
-    end
-    if type(GetUnitRawWorldPosition) == "function" then
-        local ok, zoneId = pcall(GetUnitRawWorldPosition, "player")
-        if ok then AddSource(zoneId) end
-    end
+    AddSource(ZO_ExplorationUtils_GetPlayerCurrentZoneId())
+    local worldZoneId = GetUnitWorldPosition("player")
+    AddSource(worldZoneId)
+    local rawWorldZoneId = GetUnitRawWorldPosition("player")
+    AddSource(rawWorldZoneId)
 
     local currentZoneId = self:GetCurrentPlayerZoneIdentity()
     AddSource(currentZoneId)
@@ -5978,14 +5638,9 @@ function TPM:GetCurrentSkyshardGoalData()
         local current = zoneId
         for _ = 1, 8 do
             if current <= 0 then break end
-            if type(GetZoneStoryZoneIdForZoneId) == "function" then
-                local ok, storyZoneId = pcall(GetZoneStoryZoneIdForZoneId, current)
-                if ok then AddCandidate(storyZoneId) end
-            end
+            AddCandidate(GetZoneStoryZoneIdForZoneId(current))
             AddCandidate(current)
-            if type(GetParentZoneId) ~= "function" then break end
-            local ok, parentZoneId = pcall(GetParentZoneId, current)
-            parentZoneId = ok and (tonumber(parentZoneId) or 0) or 0
+            local parentZoneId = tonumber(GetParentZoneId(current)) or 0
             if parentZoneId <= 0 or parentZoneId == current then break end
             current = parentZoneId
         end
@@ -6054,14 +5709,8 @@ function TPM:RefreshSkyshardGoalWidget()
     end
     widget:SetHidden(false)
 
-    -- Data collection is isolated behind pcall. A bad/new API signature can no
-    -- longer abort the refresh after the control was made visible.
-    local okData, dataOrError = pcall(function()
-        return self:GetCurrentSkyshardGoalData()
-    end)
-    self.skyshardGoalLastDataError = okData and nil or tostring(dataOrError or "unknown")
-
-    local data = okData and dataOrError or nil
+    local data = self:GetCurrentSkyshardGoalData()
+    self.skyshardGoalLastDataError = nil
     if type(data) == "table" then
         local zoneName = tostring(data.name or fallbackZoneName or "—")
         if data.informational and data.countText and data.countText ~= "" then
@@ -6187,15 +5836,10 @@ function TPM:PrintSkyshardGoalDebug()
     local function SafeControlNumber(methodName)
         local fn = widget[methodName]
         if type(fn) ~= "function" then return nil end
-        local ok, value = pcall(fn, widget)
-        return ok and tonumber(value) or nil
+        return tonumber(fn(widget))
     end
 
-    local hidden = nil
-    if type(widget.IsHidden) == "function" then
-        local ok, value = pcall(widget.IsHidden, widget)
-        if ok then hidden = value end
-    end
+    local hidden = type(widget.IsHidden) == "function" and widget:IsHidden() or nil
     local alpha = SafeControlNumber("GetAlpha")
     local left, top = SafeControlNumber("GetLeft"), SafeControlNumber("GetTop")
     local right, bottom = SafeControlNumber("GetRight"), SafeControlNumber("GetBottom")
@@ -7631,7 +7275,7 @@ function TPM:RefreshQuestRewards(forceRender)
 
     if self.saved.questRewardAutoSize then
         local function RecheckQuestRewardAutoSize()
-            if TPM and TPM.questRewardControl and not TPM.questRewardControl:IsHidden() then
+            if TPM.questRewardControl and not TPM.questRewardControl:IsHidden() then
                 TPM:AutoSizeQuestRewardWindow()
             end
         end
@@ -7905,7 +7549,7 @@ function TPM:SetStatisticsFocusZone(zoneId)
         -- handler before the progress data and zone rows are rebuilt.
         if type(zo_callLater) == "function" then
             zo_callLater(function()
-                if TPM and TPM.statisticsWindow and not TPM.statisticsWindow:IsHidden() then
+                if TPM.statisticsWindow and not TPM.statisticsWindow:IsHidden() then
                     TPM:RefreshStatisticsWindow()
                 end
             end, 0)
@@ -8039,7 +7683,7 @@ function TPM:RefreshStatisticsFocusSelector()
         selectedLabel:SetText(self:L("STAT_FOCUS_TAMRIEL"))
     end
 
-    -- Rebuild names whenever the statistics window refreshes so client/LibZone
+    -- Rebuild names whenever the Statistics window refreshes so client-language
     -- localization changes are reflected immediately without reopening TPM.
     self.statisticsFocusChoices = { { zoneId = 0, name = self:L("STAT_FOCUS_TAMRIEL") } }
     for _, zone in ipairs(self:GetStatisticsFocusZoneChoices()) do
@@ -8941,15 +8585,9 @@ local function TPM_ArmStatisticsHoverTooltip(tip, sourceControl)
         end
 
         local overSource, overPanel = false, false
-        if type(MouseIsOver) == "function" then
-            local source = panel.TPMSourceControl
-            if source then
-                local ok, hovered = pcall(MouseIsOver, source)
-                overSource = ok and hovered == true
-            end
-            local okPanel, hoveredPanel = pcall(MouseIsOver, panel)
-            overPanel = okPanel and hoveredPanel == true
-        end
+        local source = panel.TPMSourceControl
+        if source then overSource = MouseIsOver(source) == true end
+        overPanel = MouseIsOver(panel) == true
 
         if overSource or overPanel then
             panel.TPMHoverLeaveAt = nil
@@ -9572,17 +9210,13 @@ function TPM:GetEconomyCardVisual(definition)
 
     -- Prefer ESO's own platform/keyboard currency artwork. This keeps TPM in
     -- sync with the live client instead of shipping look-alike currency icons.
-    if type(ZO_Currency_GetPlatformCurrencyIcon) == "function" and type(currencyType) == "number" then
-        local ok, path = pcall(ZO_Currency_GetPlatformCurrencyIcon, currencyType)
-        if ok and type(path) == "string" and path ~= "" then
-            iconPath = path
-        end
+    if type(currencyType) == "number" then
+        local path = ZO_Currency_GetPlatformCurrencyIcon(currencyType)
+        if type(path) == "string" and path ~= "" then iconPath = path end
     end
-    if not iconPath and type(GetCurrencyKeyboardIcon) == "function" and type(currencyType) == "number" then
-        local ok, path = pcall(GetCurrencyKeyboardIcon, currencyType)
-        if ok and type(path) == "string" and path ~= "" then
-            iconPath = path
-        end
+    if not iconPath and type(currencyType) == "number" then
+        local path = GetCurrencyKeyboardIcon(currencyType)
+        if type(path) == "string" and path ~= "" then iconPath = path end
     end
 
     -- Use a curated color palette per currency instead of relying on ESO's
@@ -9892,8 +9526,7 @@ function TPM:GetCurrentMountDisplayData()
     local mountId = 0
     local mountType = _G.COLLECTIBLE_CATEGORY_TYPE_MOUNT
     if type(GetActiveCollectibleByType) == "function" and type(mountType) == "number" then
-        local ok, value = pcall(GetActiveCollectibleByType, mountType)
-        if ok then mountId = tonumber(value) or 0 end
+        mountId = tonumber(GetActiveCollectibleByType(mountType)) or 0
     end
 
     if mountId <= 0 then
@@ -9901,16 +9534,11 @@ function TPM:GetCurrentMountDisplayData()
     end
 
     local mountName, mountIcon = "", nil
-    if type(GetCollectibleInfo) == "function" then
-        local ok, name, _, icon = pcall(GetCollectibleInfo, mountId)
-        if ok then
-            mountName = tostring(name or "")
-            if type(icon) == "string" and icon ~= "" then mountIcon = icon end
-        end
-    end
+    local name, _, icon = GetCollectibleInfo(mountId)
+    mountName = tostring(name or "")
+    if type(icon) == "string" and icon ~= "" then mountIcon = icon end
     if mountName == "" and type(GetCollectibleName) == "function" then
-        local ok, name = pcall(GetCollectibleName, mountId)
-        if ok then mountName = tostring(name or "") end
+        mountName = tostring(GetCollectibleName(mountId) or "")
     end
     if mountName ~= "" and type(zo_strformat) == "function" then
         mountName = zo_strformat("<<C:1>>", mountName)
@@ -10291,9 +9919,9 @@ end
 function TPM:GetEconomyTrackingTooltip()
     local stamp=tonumber(self.saved and self.saved.economyZoneTrackingStartedAt) or 0
     local dateText=self:L("ECON_DETAIL_UNKNOWN_DATE")
-    if stamp>0 and type(FormatShortDate)=="function" then
-        local ok,res=pcall(FormatShortDate,stamp)
-        if ok and res and res~="" then dateText=res end
+    if stamp>0 then
+        local res=FormatShortDate(stamp)
+        if res and res~="" then dateText=res end
     elseif stamp>0 and type(os)=="table" and type(os.date)=="function" then
         dateText=os.date("%d.%m.%Y",stamp)
     end
@@ -11041,13 +10669,11 @@ end
 function TPM:GetPlayerAllianceDisplay()
     local allianceId = 0
     if type(_G.GetUnitAlliance) == "function" then
-        local ok, value = pcall(_G.GetUnitAlliance, "player")
-        if ok then allianceId = tonumber(value) or 0 end
+        allianceId = tonumber(GetUnitAlliance("player")) or 0
     end
     local name = ""
     if allianceId > 0 and type(_G.GetAllianceName) == "function" then
-        local ok, value = pcall(_G.GetAllianceName, allianceId)
-        if ok then name = tostring(value or "") end
+        name = tostring(GetAllianceName(allianceId) or "")
     end
     if name == "" then
         name = self:L("STAT_ALLIANCE_UNKNOWN")
@@ -11055,10 +10681,8 @@ function TPM:GetPlayerAllianceDisplay()
         -- ESO localized names can carry grammar metadata (for example "^n").
         -- Those suffixes are useful to the formatter but should never be visible in TPM.
         name = name:gsub("%^%a+", "")
-        if type(zo_strformat) == "function" then
-            local ok, formatted = pcall(zo_strformat, "<<C:1>>", name)
-            if ok and type(formatted) == "string" and formatted ~= "" then name = formatted end
-        end
+        local formatted = zo_strformat("<<C:1>>", name)
+        if type(formatted) == "string" and formatted ~= "" then name = formatted end
     end
     local group = nil
     if allianceId == _G.ALLIANCE_DAGGERFALL_COVENANT then group = "DC"
@@ -11207,25 +10831,17 @@ function TPM:GetAlliancePlannerTamrielMapId()
     -- ZOS adds root/world maps. Pick the WORLD map with the largest normalized
     -- footprint instead, without changing the player's active map.
     local bestMapId, bestArea = nil, -1
-    if type(GetNumMaps) == "function" and type(GetMapInfoByIndex) == "function"
-        and type(GetMapIdByIndex) == "function"
-        and type(GetUniversallyNormalizedMapInfo) == "function" then
-
-        local okCount, count = pcall(GetNumMaps)
-        count = okCount and tonumber(count) or 0
-
-        for mapIndex = 1, math.max(0, count) do
-            local okInfo, _, mapType = pcall(GetMapInfoByIndex, mapIndex)
-            if okInfo and mapType == MAPTYPE_WORLD then
-                local okId, candidateId = pcall(GetMapIdByIndex, mapIndex)
-                candidateId = okId and tonumber(candidateId) or nil
-                if candidateId and candidateId > 0 then
-                    local okRect, _, _, w, h = pcall(GetUniversallyNormalizedMapInfo, candidateId)
-                    local area = okRect and math.max(0, tonumber(w) or 0) * math.max(0, tonumber(h) or 0) or 0
-                    if area > bestArea then
-                        bestArea = area
-                        bestMapId = candidateId
-                    end
+    local count = tonumber(GetNumMaps()) or 0
+    for mapIndex = 1, math.max(0, count) do
+        local _, mapType = GetMapInfoByIndex(mapIndex)
+        if mapType == MAPTYPE_WORLD then
+            local candidateId = tonumber(GetMapIdByIndex(mapIndex))
+            if candidateId and candidateId > 0 then
+                local _, _, w, h = GetUniversallyNormalizedMapInfo(candidateId)
+                local area = math.max(0, tonumber(w) or 0) * math.max(0, tonumber(h) or 0)
+                if area > bestArea then
+                    bestArea = area
+                    bestMapId = candidateId
                 end
             end
         end
@@ -11241,14 +10857,11 @@ function TPM:EnsureAlliancePlannerTamrielTiles()
     if not frame then return false end
 
     local mapId = self:GetAlliancePlannerTamrielMapId()
-    if not mapId or mapId <= 0 or type(GetMapNumTilesForMapId) ~= "function"
-        or type(GetMapTileTextureForMapId) ~= "function" then
-        return false
-    end
+    if not mapId or mapId <= 0 then return false end
 
-    local ok, numX, numY = pcall(GetMapNumTilesForMapId, mapId)
+    local numX, numY = GetMapNumTilesForMapId(mapId)
     numX, numY = tonumber(numX) or 0, tonumber(numY) or 0
-    if not ok or numX <= 0 or numY <= 0 then return false end
+    if numX <= 0 or numY <= 0 then return false end
 
     local required = numX * numY
     self.statisticsAllianceMapTiles = self.statisticsAllianceMapTiles or {}
@@ -11271,8 +10884,8 @@ function TPM:EnsureAlliancePlannerTamrielTiles()
         end
 
         if sourceChanged then
-            local okTex, texturePath = pcall(GetMapTileTextureForMapId, mapId, i)
-            if okTex and type(texturePath) == "string" and texturePath ~= "" then
+            local texturePath = GetMapTileTextureForMapId(mapId, i)
+            if type(texturePath) == "string" and texturePath ~= "" then
                 tile:SetTexture(texturePath)
                 tile:SetAlpha(1)
                 tile.TPMHasValidSource = true
@@ -11341,16 +10954,13 @@ end
 
 function TPM:GetAlliancePlannerZoneNormalizedPosition(zoneId)
     local tamrielMapId = self:GetAlliancePlannerTamrielMapId()
-    if not tamrielMapId or tamrielMapId <= 0 or type(GetMapIdByZoneId) ~= "function"
-        or type(GetUniversallyNormalizedMapInfo) ~= "function" then return nil end
+    if not tamrielMapId or tamrielMapId <= 0 then return nil end
 
-    local okMap, zoneMapId = pcall(GetMapIdByZoneId, zoneId)
-    zoneMapId = okMap and tonumber(zoneMapId) or nil
+    local zoneMapId = tonumber(GetMapIdByZoneId(zoneId))
     if not zoneMapId or zoneMapId <= 0 then return nil end
 
-    local okT, tx, ty, tw, th = pcall(GetUniversallyNormalizedMapInfo, tamrielMapId)
-    local okZ, zx, zy, zw, zh = pcall(GetUniversallyNormalizedMapInfo, zoneMapId)
-    if not okT or not okZ then return nil end
+    local tx, ty, tw, th = GetUniversallyNormalizedMapInfo(tamrielMapId)
+    local zx, zy, zw, zh = GetUniversallyNormalizedMapInfo(zoneMapId)
 
     tx, ty, tw, th = tonumber(tx), tonumber(ty), tonumber(tw), tonumber(th)
     zx, zy, zw, zh = tonumber(zx), tonumber(zy), tonumber(zw), tonumber(zh)
@@ -11589,12 +11199,9 @@ function TPM:UpdateAlliancePlannerMapPan()
 
     -- If the user released the left button outside the map control, stop the
     -- drag here as a safety net. ESO exposes IsMouseButtonDown on supported clients.
-    if type(IsMouseButtonDown) == "function" then
-        local ok, down = pcall(IsMouseButtonDown, MOUSE_BUTTON_INDEX_LEFT)
-        if ok and down == false then
-            self:EndAlliancePlannerMapPan()
-            return
-        end
+    if not IsMouseButtonDown(MOUSE_BUTTON_INDEX_LEFT) then
+        self:EndAlliancePlannerMapPan()
+        return
     end
 
     local mouseX, mouseY = GetUIMousePosition()
@@ -12491,7 +12098,6 @@ function TPM:SetStatisticsPage(page)
     if self.statisticsThemeGear then self.statisticsThemeGear:SetHidden(not progressMainPage) end
     if not progressMainPage and self.statisticsThemeWindow and not self.statisticsThemeWindow:IsHidden() then self:SetStatisticsThemeWindowVisible(false) end
     self:ApplyStatisticsTheme()
-    self:RefreshStatisticsLanguageBar()
     self:RefreshStatisticsWindow()
 end
 function TPM:SetProgressStatisticsControlsHidden(hidden)
@@ -13768,9 +13374,9 @@ local function TPM_FormatChartDate(timestamp, rangeDays)
     timestamp = tonumber(timestamp) or 0
     if timestamp <= 0 then return "" end
     -- ESO's formatter is locale-aware and safe in the addon sandbox.
-    if type(GetDateStringFromTimestamp) == "function" then
-        local ok, value = pcall(GetDateStringFromTimestamp, timestamp)
-        if ok and type(value) == "string" and value ~= "" then
+    do
+        local value = GetDateStringFromTimestamp(timestamp)
+        if type(value) == "string" and value ~= "" then
             local d, m, y = value:match("(%d+)[%.%/%-](%d+)[%.%/%-](%d+)")
             if d and m and y then
                 y = tonumber(y) or 0
@@ -13968,10 +13574,8 @@ end
 function TPM:FormatHistoryAxisLabel(timestamp)
     timestamp = tonumber(timestamp) or 0
     if timestamp <= 0 then return "" end
-    if type(GetDateStringFromTimestamp) == "function" then
-        local ok, value = pcall(GetDateStringFromTimestamp, timestamp)
-        if ok and type(value) == "string" and value ~= "" then return value end
-    end
+    local value = GetDateStringFromTimestamp(timestamp)
+    if type(value) == "string" and value ~= "" then return value end
     return tostring(TPM_DayKey(timestamp))
 end
 
@@ -14422,8 +14026,8 @@ function TPM:ApplyStatisticsThemeToLegacyAccents(ar, ag, ab, pr, pg, pb, hr, hg,
 
     local function nameSuggestsProgress(control)
         if not control or not control.GetName then return false end
-        local ok, name = pcall(control.GetName, control)
-        if not ok or type(name) ~= "string" then return false end
+        local name = control:GetName()
+        if type(name) ~= "string" then return false end
         name = name:lower()
         return name:find("progress",1,true) ~= nil
             or name:find("percent",1,true) ~= nil
@@ -14446,32 +14050,30 @@ function TPM:ApplyStatisticsThemeToLegacyAccents(ar, ag, ab, pr, pg, pb, hr, hg,
             role = {}
             local text = ""
             if control.GetText then
-                local ok, t = pcall(control.GetText, control)
-                if ok and type(t) == "string" then text = t end
+                local t = control:GetText()
+                if type(t) == "string" then text = t end
             end
             local progressHint = nameSuggestsProgress(control) or isValueText(text)
 
             -- Label / texture color. Numeric warm-gold labels are Progress & Values;
             -- normal labels/icons/decorative textures remain Headings & Accents.
             if control.GetColor and control.SetColor then
-                local ok, cr, cg, cb, ca = pcall(control.GetColor, control)
-                if ok then
-                    if progressHint and TPM_IsThemeWarmAccent(cr,cg,cb,ca) then
-                        role.colorAlpha=tonumber(ca) or 1; role.colorChannel="progress"
-                    elseif text~="" and TPM_IsThemeWarmAccent(cr,cg,cb,ca) then
-                        role.colorAlpha=tonumber(ca) or 1; role.colorChannel="heading"
-                    elseif text~="" and TPM_IsThemeNeutralText(cr,cg,cb,ca) then
-                        role.colorAlpha=tonumber(ca) or 1; role.colorChannel="text"
-                    elseif TPM_IsThemeWarmAccent(cr,cg,cb,ca) then
-                        role.colorAlpha=tonumber(ca) or 1; role.colorChannel="accent"
-                    end
+                local cr, cg, cb, ca = control:GetColor()
+                if progressHint and TPM_IsThemeWarmAccent(cr,cg,cb,ca) then
+                    role.colorAlpha=tonumber(ca) or 1; role.colorChannel="progress"
+                elseif text~="" and TPM_IsThemeWarmAccent(cr,cg,cb,ca) then
+                    role.colorAlpha=tonumber(ca) or 1; role.colorChannel="heading"
+                elseif text~="" and TPM_IsThemeNeutralText(cr,cg,cb,ca) then
+                    role.colorAlpha=tonumber(ca) or 1; role.colorChannel="text"
+                elseif TPM_IsThemeWarmAccent(cr,cg,cb,ca) then
+                    role.colorAlpha=tonumber(ca) or 1; role.colorChannel="accent"
                 end
             end
 
             -- Center fills are commonly progress bars / selected value surfaces.
             if control.GetCenterColor and control.SetCenterColor then
-                local ok, cr, cg, cb, ca = pcall(control.GetCenterColor, control)
-                if ok and TPM_IsThemeWarmAccent(cr, cg, cb, ca) then
+                local cr, cg, cb, ca = control:GetCenterColor()
+                if TPM_IsThemeWarmAccent(cr, cg, cb, ca) then
                     role.centerAlpha = tonumber(ca) or 1
                     role.centerChannel = (progressHint or isStrongProgressGold(cr,cg,cb,ca)) and "progress" or "accent"
                 end
@@ -14479,8 +14081,8 @@ function TPM:ApplyStatisticsThemeToLegacyAccents(ar, ag, ab, pr, pg, pb, hr, hg,
 
             -- Borders are decorative accents, never progress RGB/value color.
             if control.GetEdgeColor and control.SetEdgeColor then
-                local ok, er, eg, eb, ea = pcall(control.GetEdgeColor, control)
-                if ok and TPM_IsThemeWarmAccent(er, eg, eb, ea) then
+                local er, eg, eb, ea = control:GetEdgeColor()
+                if TPM_IsThemeWarmAccent(er, eg, eb, ea) then
                     role.edgeAlpha = tonumber(ea) or 1
                     role.edgeChannel = "accent"
                 end
@@ -14510,8 +14112,8 @@ function TPM:ApplyStatisticsThemeToLegacyAccents(ar, ag, ab, pr, pg, pb, hr, hg,
             if not control or not control.SetColor then return end
             local role = tagged[control] or {}
             if not role.colorAlpha then
-                local ok,_,_,_,a = pcall(control.GetColor, control)
-                role.colorAlpha = ok and (tonumber(a) or 1) or 1
+                local _,_,_,a = control:GetColor()
+                role.colorAlpha = tonumber(a) or 1
             end
             role.colorChannel = channel
             tagged[control] = role
@@ -14520,8 +14122,8 @@ function TPM:ApplyStatisticsThemeToLegacyAccents(ar, ag, ab, pr, pg, pb, hr, hg,
             if not control or not control.SetEdgeColor then return end
             local role = tagged[control] or {}
             if not role.edgeAlpha then
-                local ok,_,_,_,a = pcall(control.GetEdgeColor, control)
-                role.edgeAlpha = ok and (tonumber(a) or 1) or 1
+                local _,_,_,a = control:GetEdgeColor()
+                role.edgeAlpha = tonumber(a) or 1
             end
             role.edgeChannel = channel
             tagged[control] = role
@@ -14530,8 +14132,8 @@ function TPM:ApplyStatisticsThemeToLegacyAccents(ar, ag, ab, pr, pg, pb, hr, hg,
             if not control or not control.SetCenterColor then return end
             local role = tagged[control] or {}
             if not role.centerAlpha then
-                local ok,_,_,_,a = pcall(control.GetCenterColor, control)
-                role.centerAlpha = ok and (tonumber(a) or 1) or 1
+                local _,_,_,a = control:GetCenterColor()
+                role.centerAlpha = tonumber(a) or 1
             end
             role.centerChannel = channel
             tagged[control] = role
@@ -14592,25 +14194,25 @@ function TPM:ApplyStatisticsThemeToLegacyAccents(ar, ag, ab, pr, pg, pb, hr, hg,
 
         if role.colorAlpha and control.SetColor then
             local r,g,b = channelColor(role.colorChannel)
-            pcall(control.SetColor, control, r, g, b, role.colorAlpha)
+            control:SetColor(r, g, b, role.colorAlpha)
         end
         if role.centerAlpha and control.SetCenterColor then
             local r,g,b = channelColor(role.centerChannel)
-            pcall(control.SetCenterColor, control, r, g, b, role.centerAlpha)
+            control:SetCenterColor(r, g, b, role.centerAlpha)
         end
         if role.edgeAlpha and control.SetEdgeColor then
             local r,g,b = channelColor(role.edgeChannel)
-            pcall(control.SetEdgeColor, control, r, g, b, role.edgeAlpha)
+            control:SetEdgeColor(r, g, b, role.edgeAlpha)
         end
         if role.inlineGold and control.GetText and control.SetText then
-            local ok, txt = pcall(control.GetText, control)
-            if ok and type(txt) == "string" then
+            local txt = control:GetText()
+            if type(txt) == "string" then
                 local r,g,b = channelColor(role.inlineChannel)
                 local hex = string.format("%02X%02X%02X", math.floor(Clamp(r,0,1)*255+.5), math.floor(Clamp(g,0,1)*255+.5), math.floor(Clamp(b,0,1)*255+.5))
                 txt = txt:gsub("|cE6C45C", "|c"..hex)
                 if role.lastInlineHex then txt = txt:gsub("|c"..role.lastInlineHex, "|c"..hex) end
                 role.lastInlineHex = hex
-                pcall(control.SetText, control, txt)
+                control:SetText(txt)
             end
         end
     end
@@ -14619,13 +14221,10 @@ function TPM:ApplyStatisticsThemeToLegacyAccents(ar, ag, ab, pr, pg, pb, hr, hg,
         if not control or (depth or 0) > 18 then return end
         rememberAndApply(control)
         if control.GetNumChildren and control.GetChild then
-            local ok, count = pcall(control.GetNumChildren, control)
-            if ok then
-                count = tonumber(count) or 0
-                for i = 1, count do
-                    local okChild, child = pcall(control.GetChild, control, i)
-                    if okChild and child then walk(child, (depth or 0) + 1) end
-                end
+            local count = tonumber(control:GetNumChildren()) or 0
+            for i = 1, count do
+                local child = control:GetChild(i)
+                if child then walk(child, (depth or 0) + 1) end
             end
         end
     end
@@ -14660,8 +14259,8 @@ function TPM:ApplyStatisticsDarkMonochrome()
             -- active. If they introduce fresh semantic inline colors, remember
             -- that latest color sequence before converting it to white again.
             if control.GetText and control.SetText then
-                local ok,t=pcall(control.GetText,control)
-                if ok and type(t)=="string" and t:find("|c",1,true) then
+                local t=control:GetText()
+                if type(t)=="string" and t:find("|c",1,true) then
                     local colors,hasNonWhite={},false
                     for hex in t:gmatch("|c(%x%x%x%x%x%x)") do
                         colors[#colors+1]=hex
@@ -14674,27 +14273,26 @@ function TPM:ApplyStatisticsDarkMonochrome()
         end
         local st={}
         if control.GetColor and control.SetColor then
-            local ok,r,g,b,a=pcall(control.GetColor,control)
-            if ok then st.color={r,g,b,a} end
+            local r,g,b,a=control:GetColor()
+            st.color={r,g,b,a}
         end
         if control.GetCenterColor and control.SetCenterColor then
-            local ok,r,g,b,a=pcall(control.GetCenterColor,control)
-            if ok then st.center={r,g,b,a} end
+            local r,g,b,a=control:GetCenterColor()
+            st.center={r,g,b,a}
         end
         if control.GetEdgeColor and control.SetEdgeColor then
-            local ok,r,g,b,a=pcall(control.GetEdgeColor,control)
-            if ok then st.edge={r,g,b,a} end
+            local r,g,b,a=control:GetEdgeColor()
+            st.edge={r,g,b,a}
         end
         if control.GetDesaturation and control.SetDesaturation then
-            local ok,v=pcall(control.GetDesaturation,control)
-            if ok then st.desaturation=v end
+            st.desaturation=control:GetDesaturation()
         end
         -- Inline |cRRGGBB markup bypasses SetColor(). Cache only the color-code
         -- sequence, not the complete text, so live values can keep updating while
         -- Clear Mode is active without being rolled back to stale text later.
         if control.GetText and control.SetText then
-            local ok,t=pcall(control.GetText,control)
-            if ok and type(t)=="string" and t:find("|c",1,true) then
+            local t=control:GetText()
+            if type(t)=="string" and t:find("|c",1,true) then
                 local colors={}
                 for hex in t:gmatch("|c(%x%x%x%x%x%x)") do colors[#colors+1]=hex end
                 if #colors>0 then st.inlineColors=colors end
@@ -14712,53 +14310,49 @@ function TPM:ApplyStatisticsDarkMonochrome()
         -- icons, alliance markers, currency icons, bars and decorative textures.
         -- Texture artwork keeps its alpha/detail but loses every hue.
         if control.GetColor and control.SetColor then
-            local ok,_,_,_,a=pcall(control.GetColor,control)
-            if ok then pcall(control.SetColor,control,1,1,1,tonumber(a) or 1) end
+            local _,_,_,a=control:GetColor()
+            control:SetColor(1,1,1,tonumber(a) or 1)
         end
 
         -- Backdrops/panel fills are either transparent black surfaces or white
         -- progress/value fills. Never leave yellow/orange/green/blue center colors.
         if control.GetCenterColor and control.SetCenterColor then
-            local ok,r,g,b,a=pcall(control.GetCenterColor,control)
-            if ok then
-                local y=luminance(r,g,b)
-                a=tonumber(a) or 1
-                if y >= .48 then
-                    pcall(control.SetCenterColor,control,1,1,1,Clamp(a,.28,1))
-                else
-                    -- Keep the game world visible behind the journal.
-                    pcall(control.SetCenterColor,control,0,0,0,math.min(a,.52))
-                end
+            local r,g,b,a=control:GetCenterColor()
+            local y=luminance(r,g,b)
+            a=tonumber(a) or 1
+            if y >= .48 then
+                control:SetCenterColor(1,1,1,Clamp(a,.28,1))
+            else
+                -- Keep the game world visible behind the journal.
+                control:SetCenterColor(0,0,0,math.min(a,.52))
             end
         end
 
         -- All outlines are white only; alpha provides visual hierarchy instead
         -- of introducing gray/gold border colors.
         if control.GetEdgeColor and control.SetEdgeColor then
-            local ok,_,_,_,a=pcall(control.GetEdgeColor,control)
-            if ok then pcall(control.SetEdgeColor,control,1,1,1,math.min(tonumber(a) or 1,.62)) end
+            local _,_,_,a=control:GetEdgeColor()
+            control:SetEdgeColor(1,1,1,math.min(tonumber(a) or 1,.62))
         end
 
-        if control.SetDesaturation then pcall(control.SetDesaturation,control,1) end
+        if control.SetDesaturation then control:SetDesaturation(1) end
 
         -- ESO inline |cRRGGBB markup bypasses SetColor(), so strip all colored
         -- fragments to white while Dark Mode is active. Original text is cached
         -- and restored when another theme is selected.
         if control.GetText and control.SetText then
-            local ok,currentText=pcall(control.GetText,control)
-            if ok and type(currentText)=="string" and currentText:find("|c",1,true) then
+            local currentText=control:GetText()
+            if type(currentText)=="string" and currentText:find("|c",1,true) then
                 local mono=currentText:gsub("|c%x%x%x%x%x%x","|cFFFFFF")
-                if mono ~= currentText then pcall(control.SetText,control,mono) end
+                if mono ~= currentText then control:SetText(mono) end
             end
         end
 
         if control.GetNumChildren and control.GetChild then
-            local ok,n=pcall(control.GetNumChildren,control)
-            if ok then
-                for i=1,(tonumber(n) or 0) do
-                    local okc,c=pcall(control.GetChild,control,i)
-                    if okc and c then apply(c,(depth or 0)+1) end
-                end
+            local n=tonumber(control:GetNumChildren()) or 0
+            for i=1,n do
+                local c=control:GetChild(i)
+                if c then apply(c,(depth or 0)+1) end
             end
         end
     end
@@ -14779,19 +14373,19 @@ function TPM:ApplyStatisticsDarkMonochrome()
         self.statisticsThemeColorInnerShell,self.statisticsThemeResetFrame
     }
     for _,surface in ipairs(surfaces) do
-        if surface and surface.SetCenterColor then pcall(surface.SetCenterColor,surface,0,0,0,.42) end
-        if surface and surface.SetEdgeColor then pcall(surface.SetEdgeColor,surface,1,1,1,.34) end
+        if surface and surface.SetCenterColor then surface:SetCenterColor(0,0,0,.42) end
+        if surface and surface.SetEdgeColor then surface:SetEdgeColor(1,1,1,.34) end
     end
     for _,card in ipairs(self.statisticsEconomyCards or {}) do
         if card and card.control then
-            pcall(card.control.SetCenterColor,card.control,0,0,0,.36)
-            pcall(card.control.SetEdgeColor,card.control,1,1,1,.28)
+            card.control:SetCenterColor(0,0,0,.36)
+            card.control:SetEdgeColor(1,1,1,.28)
         end
     end
     for _,card in pairs(self.statisticsCharacterCards or {}) do
         if card and card.control then
-            pcall(card.control.SetCenterColor,card.control,0,0,0,.34)
-            pcall(card.control.SetEdgeColor,card.control,1,1,1,.30)
+            card.control:SetCenterColor(0,0,0,.34)
+            card.control:SetEdgeColor(1,1,1,.30)
         end
     end
 
@@ -14800,13 +14394,13 @@ function TPM:ApplyStatisticsDarkMonochrome()
     -- emphasis. This keeps Clear Mode visually consistent across Progress,
     -- Economy, PvE/PvP, Character and the Customization window.
     local function monoText(control, r, g, b, a)
-        if control and control.SetColor then pcall(control.SetColor, control, r or 1, g or 1, b or 1, a or 1) end
+        if control and control.SetColor then control:SetColor(r or 1, g or 1, b or 1, a or 1) end
     end
     local function monoCenter(control, alpha)
-        if control and control.SetCenterColor then pcall(control.SetCenterColor, control, 0, 0, 0, alpha or .36) end
+        if control and control.SetCenterColor then control:SetCenterColor(0, 0, 0, alpha or .36) end
     end
     local function monoEdge(control, alpha)
-        if control and control.SetEdgeColor then pcall(control.SetEdgeColor, control, 1, 1, 1, alpha or .30) end
+        if control and control.SetEdgeColor then control:SetEdgeColor(1, 1, 1, alpha or .30) end
     end
 
     local whiteLabels = {
@@ -14835,7 +14429,7 @@ function TPM:ApplyStatisticsDarkMonochrome()
 
     for _, btn in ipairs(self.statisticsThemeTabs or {}) do
         if btn.TPMBackdrop then monoCenter(btn.TPMBackdrop, .26); monoEdge(btn.TPMBackdrop, .34) end
-        if btn.TPMAccent and btn.TPMAccent.SetCenterColor then pcall(btn.TPMAccent.SetCenterColor, btn.TPMAccent, 1, 1, 1, .92) end
+        if btn.TPMAccent and btn.TPMAccent.SetCenterColor then btn.TPMAccent:SetCenterColor(1, 1, 1, .92) end
         if btn.SetNormalFontColor then btn:SetNormalFontColor(1,1,1,1) end
         if btn.SetMouseOverFontColor then btn:SetMouseOverFontColor(1,1,1,1); btn:SetPressedFontColor(.86,.86,.86,1) end
         if btn.SetDisabledFontColor then btn:SetDisabledFontColor(.55,.55,.55,1) end
@@ -14858,8 +14452,8 @@ function TPM:ApplyStatisticsDarkMonochrome()
         if row.percent then monoText(row.percent, 1, 1, 1, 1) end
         if row.bg then monoCenter(row.bg, .24); monoEdge(row.bg, .18) end
         if row.bar then monoCenter(row.bar, .22); monoEdge(row.bar, .18) end
-        if row.fill and row.fill.SetCenterColor then pcall(row.fill.SetCenterColor, row.fill, 1, 1, 1, .94) end
-        if row.fill and row.fill.SetEdgeColor then pcall(row.fill.SetEdgeColor, row.fill, 1, 1, 1, .10) end
+        if row.fill and row.fill.SetCenterColor then row.fill:SetCenterColor(1, 1, 1, .94) end
+        if row.fill and row.fill.SetEdgeColor then row.fill:SetEdgeColor(1, 1, 1, .10) end
     end
 
     for _, row in ipairs(self.statisticsZoneRows or {}) do
@@ -14870,7 +14464,7 @@ function TPM:ApplyStatisticsDarkMonochrome()
         if row.openLabel then monoText(row.openLabel, 1, 1, 1, 1) end
         if row.bg then monoCenter(row.bg, .18); monoEdge(row.bg, .14) end
         if row.progressBg then monoCenter(row.progressBg, .20); monoEdge(row.progressBg, .12) end
-        if row.progressFill and row.progressFill.SetCenterColor then pcall(row.progressFill.SetCenterColor, row.progressFill, 1, 1, 1, .94) end
+        if row.progressFill and row.progressFill.SetCenterColor then row.progressFill:SetCenterColor(1, 1, 1, .94) end
     end
 
     if self.statisticsThemeGear and self.statisticsThemeGear.TPMIcon then monoText(self.statisticsThemeGear.TPMIcon, 1, 1, 1, 1) end
@@ -14889,10 +14483,10 @@ function TPM:ApplyStatisticsDarkMonochrome()
         end
         if btn and btn.TPMBackdrop then monoCenter(btn.TPMBackdrop,.22); monoEdge(btn.TPMBackdrop,.26) end
     end
-    if self.statisticsTopDivider then pcall(self.statisticsTopDivider.SetCenterColor, self.statisticsTopDivider, 1, 1, 1, .34) end
-    if self.statisticsFooterDivider then pcall(self.statisticsFooterDivider.SetCenterColor, self.statisticsFooterDivider, 1, 1, 1, .30) end
-    if self.statisticsThemeWindowHeaderLine then pcall(self.statisticsThemeWindowHeaderLine.SetCenterColor, self.statisticsThemeWindowHeaderLine, 1, 1, 1, .30) end
-    if self.statisticsThemeColorHeaderLine then pcall(self.statisticsThemeColorHeaderLine.SetCenterColor, self.statisticsThemeColorHeaderLine, 1, 1, 1, .30) end
+    if self.statisticsTopDivider then self.statisticsTopDivider:SetCenterColor(1, 1, 1, .34) end
+    if self.statisticsFooterDivider then self.statisticsFooterDivider:SetCenterColor(1, 1, 1, .30) end
+    if self.statisticsThemeWindowHeaderLine then self.statisticsThemeWindowHeaderLine:SetCenterColor(1, 1, 1, .30) end
+    if self.statisticsThemeColorHeaderLine then self.statisticsThemeColorHeaderLine:SetCenterColor(1, 1, 1, .30) end
 end
 
 function TPM:RestoreStatisticsDarkVisualState()
@@ -14900,23 +14494,23 @@ function TPM:RestoreStatisticsDarkVisualState()
     if not cache then return end
     for control,st in pairs(cache) do
         if control then
-            if st.color and control.SetColor then pcall(control.SetColor,control,unpack(st.color)) end
-            if st.center and control.SetCenterColor then pcall(control.SetCenterColor,control,unpack(st.center)) end
-            if st.edge and control.SetEdgeColor then pcall(control.SetEdgeColor,control,unpack(st.edge)) end
-            if st.desaturation~=nil and control.SetDesaturation then pcall(control.SetDesaturation,control,st.desaturation) end
+            if st.color and control.SetColor then control:SetColor(unpack(st.color)) end
+            if st.center and control.SetCenterColor then control:SetCenterColor(unpack(st.center)) end
+            if st.edge and control.SetEdgeColor then control:SetEdgeColor(unpack(st.edge)) end
+            if st.desaturation~=nil and control.SetDesaturation then control:SetDesaturation(st.desaturation) end
             -- Restore the original inline colors in-place while preserving the
             -- CURRENT text/value content. This fixes white text fragments being
             -- left behind after switching from Clear Mode to another theme.
             if st.inlineColors and control.GetText and control.SetText then
-                local ok,txt=pcall(control.GetText,control)
-                if ok and type(txt)=="string" then
+                local txt=control:GetText()
+                if type(txt)=="string" then
                     local index=0
                     local restored=txt:gsub("|cFFFFFF",function()
                         index=index+1
                         local hex=st.inlineColors[index]
                         return hex and ("|c"..hex) or "|cFFFFFF"
                     end)
-                    if restored~=txt then pcall(control.SetText,control,restored) end
+                    if restored~=txt then control:SetText(restored) end
                 end
             end
         end
@@ -15260,14 +14854,14 @@ function TPM:ApplyStatisticsThemeProgressFast()
     local tagged=self.statisticsThemeLegacyAccentControls or {}
     local function apply(control,role)
         if not control or type(role)~="table" then return end
-        if role.colorAlpha and role.colorChannel=="progress" and control.SetColor then pcall(control.SetColor,control,pr,pg,pb,role.colorAlpha) end
-        if role.centerAlpha and role.centerChannel=="progress" and control.SetCenterColor then pcall(control.SetCenterColor,control,pr,pg,pb,role.centerAlpha) end
+        if role.colorAlpha and role.colorChannel=="progress" and control.SetColor then control:SetColor(pr,pg,pb,role.colorAlpha) end
+        if role.centerAlpha and role.centerChannel=="progress" and control.SetCenterColor then control:SetCenterColor(pr,pg,pb,role.centerAlpha) end
         if role.inlineGold and role.inlineChannel=="progress" and control.GetText and control.SetText then
-            local ok,txt=pcall(control.GetText,control)
-            if ok and type(txt)=="string" then
+            local txt=control:GetText()
+            if type(txt)=="string" then
                 local hex=string.format("%02X%02X%02X",math.floor(Clamp(pr,0,1)*255+.5),math.floor(Clamp(pg,0,1)*255+.5),math.floor(Clamp(pb,0,1)*255+.5))
                 if role.lastInlineHex then txt=txt:gsub("|c"..role.lastInlineHex,"|c"..hex) else txt=txt:gsub("|cE6C45C","|c"..hex) end
-                role.lastInlineHex=hex; pcall(control.SetText,control,txt)
+                role.lastInlineHex=hex; control:SetText(txt)
             end
         end
     end
@@ -15278,7 +14872,7 @@ function TPM:ApplyStatisticsThemeProgressFast()
 end
 
 function TPM:StartStatisticsThemeRGBUpdate()
-    if EVENT_MANAGER then EVENT_MANAGER:UnregisterForUpdate(ADDON_NAME.."ThemeRGB") end
+    EVENT_MANAGER:UnregisterForUpdate(ADDON_NAME.."ThemeRGB")
     if self.saved then self.saved.statisticsThemeRGB=false end
 end
 
@@ -15789,35 +15383,6 @@ function TPM:CreateStatisticsWindow()
     subNext:SetHandler("OnClicked", function() TPM:SetStatisticsSubPage(2) end)
     self.statisticsSubPageNext = subNext
 
-    local langBar = WINDOW_MANAGER:CreateControl(ADDON_NAME .. "StatisticsLanguageBar", control, CT_CONTROL)
-    langBar:SetDimensions(290, 28)
-    langBar:SetAnchor(TOP, control, TOP, 0, 17)
-    langBar:SetMouseEnabled(false)
-    self.statisticsLanguageBar = langBar
-    self.statisticsLanguageButtons = {}
-    local langDefs = { {code="de",text="DE"}, {code="en",text="EN"}, {code="ru",text="RU"}, {code="fr",text="FR"}, {code="es",text="ES"} }
-    for i, def in ipairs(langDefs) do
-        local btn = WINDOW_MANAGER:CreateControl(nil, langBar, CT_LABEL)
-        btn:SetDimensions(42, 24)
-        btn:SetAnchor(LEFT, langBar, LEFT, (i - 1) * 48 + 4, 0)
-        btn:SetFont("$(BOLD_FONT)|15")
-        btn:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-        btn:SetVerticalAlignment(TEXT_ALIGN_CENTER)
-        btn:SetMouseEnabled(true)
-        btn.langCode = def.code
-        btn:SetText(def.text)
-        btn:SetHandler("OnMouseEnter", function(b) if TPM:IsStatisticsDarkDesign() then b:SetColor(1,1,1,1) else b:SetColor(1, 0.88, 0.38, 1) end end)
-        btn:SetHandler("OnMouseExit", function() TPM:RefreshStatisticsLanguageBar() end)
-        btn:SetHandler("OnMouseUp", function(b, button, upInside)
-            if upInside and button == MOUSE_BUTTON_INDEX_LEFT then
-                TPM:SetLanguage(b.langCode, true)
-                TPM:RefreshStatisticsLanguageBar()
-            end
-        end)
-        self.statisticsLanguageButtons[#self.statisticsLanguageButtons + 1] = btn
-    end
-    self:RefreshStatisticsLanguageBar()
-
     local close = WINDOW_MANAGER:CreateControl(nil, control, CT_LABEL)
     close:SetDimensions(34, 34)
     close:SetAnchor(TOPRIGHT, control, TOPRIGHT, -12, 12)
@@ -15833,11 +15398,12 @@ function TPM:CreateStatisticsWindow()
         if upInside and button == MOUSE_BUTTON_INDEX_LEFT then TPM:HideStatisticsWindow() end
     end)
 
-    -- 2.7.0: Real texture gear placed directly after DE / EN / RU / FR / ES.
+    -- Theme gear in the Statistics header. The addon follows ESO's client
+    -- language automatically, so no separate language indicator is needed.
     -- Using the bundled DDS avoids unsupported Unicode glyphs rendering as [].
     local gear = WINDOW_MANAGER:CreateControl(ADDON_NAME .. "StatisticsThemeGear", control, CT_BUTTON)
     gear:SetDimensions(26, 26)
-    gear:SetAnchor(LEFT, langBar, RIGHT, 2, 0)
+    gear:SetAnchor(TOP, control, TOP, 0, 18)
     gear:SetMouseEnabled(true)
     local gearIcon = WINDOW_MANAGER:CreateControl(nil, gear, CT_TEXTURE)
     gearIcon:SetDimensions(20, 20)
@@ -16610,15 +16176,6 @@ function TPM:RefreshStatisticsPlayerProgress()
     end
 end
 
-function TPM:RefreshStatisticsLanguageBar()
-    local active = self.langCode
-    for _, btn in ipairs(self.statisticsLanguageButtons or {}) do
-        if btn.langCode == active then btn:SetColor(1.00, 0.84, 0.20, 1)
-        else btn:SetColor(0.72, 0.69, 0.62, 1) end
-    end
-    self:EnforceStatisticsDarkModeAfterRefresh()
-end
-
 function TPM:RefreshStatisticsWindow()
     if self.statisticsHint then self.statisticsHint:SetHidden(true) end
     -- Keep the large journal lazy. ShowStatisticsWindow/ToggleStatisticsWindow
@@ -16885,60 +16442,46 @@ end
 -- 2.6.34: Standalone Statistics owns UI mouse mode only while opened by TPM.
 function TPM:SetStandaloneStatisticsUIMode(enabled)
     enabled = enabled == true
-    if type(_G.SetGameCameraUIMode) ~= "function" then return end
 
     if enabled then
-        local alreadyInUiMode = false
-        if type(_G.IsGameCameraUIModeActive) == "function" then
-            local ok, value = pcall(_G.IsGameCameraUIModeActive)
-            if ok then alreadyInUiMode = value == true end
-        end
+        local alreadyInUiMode = IsGameCameraUIModeActive() == true
 
         -- Only establish ownership once. A later safety re-assert must never
         -- overwrite statisticsOwnsUIMode=false merely because TPM itself
         -- already enabled UI mode a few milliseconds earlier.
         if not self.statisticsUIModeActiveForStandalone then
             self.statisticsUIModeWasAlreadyActive = alreadyInUiMode
-            local ok = pcall(_G.SetGameCameraUIMode, true)
-            self.statisticsOwnsUIMode = ok and not alreadyInUiMode
-            self.statisticsUIModeActiveForStandalone = ok == true
+            SetGameCameraUIMode(true)
+            self.statisticsOwnsUIMode = not alreadyInUiMode
+            self.statisticsUIModeActiveForStandalone = true
         else
-            pcall(_G.SetGameCameraUIMode, true)
+            SetGameCameraUIMode(true)
         end
 
-        self.statisticsUIModeOpenedAt =
-            type(_G.GetFrameTimeMilliseconds) == "function"
-            and (_G.GetFrameTimeMilliseconds() or 0) or 0
+        self.statisticsUIModeOpenedAt = GetFrameTimeMilliseconds() or 0
 
         -- A remapped gameplay key can be processed again by ESO after the
         -- binding callback. Re-assert UI mode without changing TPM ownership.
-        if type(zo_callLater) == "function" then
-            zo_callLater(function()
-                if TPM and TPM.statisticsOpenedStandalone
-                    and TPM.statisticsWindow and not TPM.statisticsWindow:IsHidden() then
-                    pcall(_G.SetGameCameraUIMode, true)
-                end
-            end, 0)
-            zo_callLater(function()
-                if TPM and TPM.statisticsOpenedStandalone
-                    and TPM.statisticsWindow and not TPM.statisticsWindow:IsHidden() then
-                    pcall(_G.SetGameCameraUIMode, true)
-                    TPM.statisticsUIModeOpenedAt =
-                        type(_G.GetFrameTimeMilliseconds) == "function"
-                        and (_G.GetFrameTimeMilliseconds() or 0) or TPM.statisticsUIModeOpenedAt
-                end
-            end, 80)
-        end
+        zo_callLater(function()
+            if TPM.statisticsOpenedStandalone and TPM.statisticsWindow and not TPM.statisticsWindow:IsHidden() then
+                SetGameCameraUIMode(true)
+            end
+        end, 0)
+        zo_callLater(function()
+            if TPM.statisticsOpenedStandalone and TPM.statisticsWindow and not TPM.statisticsWindow:IsHidden() then
+                SetGameCameraUIMode(true)
+                TPM.statisticsUIModeOpenedAt = GetFrameTimeMilliseconds() or TPM.statisticsUIModeOpenedAt
+            end
+        end, 80)
     else
-        if self.statisticsOwnsUIMode then
-            pcall(_G.SetGameCameraUIMode, false)
-        end
+        if self.statisticsOwnsUIMode then SetGameCameraUIMode(false) end
         self.statisticsOwnsUIMode = false
         self.statisticsUIModeWasAlreadyActive = false
         self.statisticsUIModeActiveForStandalone = false
         self.statisticsUIModeOpenedAt = 0
     end
 end
+
 
 -- 2.6.83: Slightly slower ESO-style fade for both opening and closing.
 -- Only alpha is animated, so saved position, scale, anchors and dimensions stay untouched.
@@ -16948,51 +16491,24 @@ function TPM:PlayStatisticsOpenAnimation()
     local window = self.statisticsWindow
     if not window then return end
 
-    -- An immediate reopen while the close fade is still running must cancel the
-    -- pending hide instead of letting an old delayed callback hide the new window.
     self.statisticsCloseAnimationToken = (tonumber(self.statisticsCloseAnimationToken) or 0) + 1
     self.statisticsCloseAnimationPending = false
-    if self.statisticsCloseTimeline and type(self.statisticsCloseTimeline.Stop) == "function" then
-        pcall(self.statisticsCloseTimeline.Stop, self.statisticsCloseTimeline)
-    end
-
-    local manager = _G.ANIMATION_MANAGER
-    local animationType = _G.ANIMATION_ALPHA
-    if not manager or not animationType or type(manager.CreateTimeline) ~= "function" then
-        window:SetAlpha(1)
-        return
-    end
+    if self.statisticsCloseTimeline then self.statisticsCloseTimeline:Stop() end
 
     if not self.statisticsOpenTimeline then
-        local okTimeline, timeline = pcall(manager.CreateTimeline, manager)
-        if not okTimeline or not timeline or type(timeline.InsertAnimation) ~= "function" then
-            window:SetAlpha(1)
-            return
-        end
-
-        local okAnimation, alpha = pcall(timeline.InsertAnimation, timeline, animationType, window, 0)
-        if not okAnimation or not alpha then
-            window:SetAlpha(1)
-            return
-        end
-
-        if type(alpha.SetAlphaValues) == "function" then alpha:SetAlphaValues(0, 1) end
-        if type(alpha.SetDuration) == "function" then alpha:SetDuration(TPM_STATISTICS_FADE_MS) end
+        local timeline = ANIMATION_MANAGER:CreateTimeline()
+        local alpha = timeline:InsertAnimation(ANIMATION_ALPHA, window, 0)
+        alpha:SetAlphaValues(0, 1)
+        alpha:SetDuration(TPM_STATISTICS_FADE_MS)
         self.statisticsOpenTimeline = timeline
     end
 
     local timeline = self.statisticsOpenTimeline
-    if timeline and type(timeline.Stop) == "function" then
-        pcall(timeline.Stop, timeline)
-    end
+    timeline:Stop()
     window:SetAlpha(0)
-    if timeline and type(timeline.PlayFromStart) == "function" then
-        local ok = pcall(timeline.PlayFromStart, timeline)
-        if not ok then window:SetAlpha(1) end
-    else
-        window:SetAlpha(1)
-    end
+    timeline:PlayFromStart()
 end
+
 
 function TPM:FinalizeStatisticsWindowHide(closeToken)
     if closeToken ~= nil and closeToken ~= self.statisticsCloseAnimationToken then return end
@@ -17012,7 +16528,7 @@ function TPM:FinalizeStatisticsWindowHide(closeToken)
     self.statisticsTemporarilyHiddenForScene = false
     self:RefreshQuickFilterBar()
     if type(zo_callLater) == "function" then
-        zo_callLater(function() if TPM then TPM:RefreshSkyshardGoalWidget() end end, 30)
+        zo_callLater(function() TPM:RefreshSkyshardGoalWidget() end, 30)
     end
     if self:IsWorldMapVisible() then
         self:RefreshQuestRewards()
@@ -17028,62 +16544,30 @@ function TPM:PlayStatisticsCloseAnimation()
     end
     if self.statisticsCloseAnimationPending then return end
 
-    if self.statisticsOpenTimeline and type(self.statisticsOpenTimeline.Stop) == "function" then
-        pcall(self.statisticsOpenTimeline.Stop, self.statisticsOpenTimeline)
-    end
+    if self.statisticsOpenTimeline then self.statisticsOpenTimeline:Stop() end
 
     self.statisticsCloseAnimationToken = (tonumber(self.statisticsCloseAnimationToken) or 0) + 1
     local closeToken = self.statisticsCloseAnimationToken
     self.statisticsCloseAnimationPending = true
 
-    local manager = _G.ANIMATION_MANAGER
-    local animationType = _G.ANIMATION_ALPHA
-    if not manager or not animationType or type(manager.CreateTimeline) ~= "function" then
-        self:FinalizeStatisticsWindowHide(closeToken)
-        return
-    end
-
     if not self.statisticsCloseTimeline then
-        local okTimeline, timeline = pcall(manager.CreateTimeline, manager)
-        if not okTimeline or not timeline or type(timeline.InsertAnimation) ~= "function" then
-            self:FinalizeStatisticsWindowHide(closeToken)
-            return
-        end
-
-        local okAnimation, alpha = pcall(timeline.InsertAnimation, timeline, animationType, window, 0)
-        if not okAnimation or not alpha then
-            self:FinalizeStatisticsWindowHide(closeToken)
-            return
-        end
-        if type(alpha.SetAlphaValues) == "function" then alpha:SetAlphaValues(1, 0) end
-        if type(alpha.SetDuration) == "function" then alpha:SetDuration(TPM_STATISTICS_FADE_MS) end
+        local timeline = ANIMATION_MANAGER:CreateTimeline()
+        local alpha = timeline:InsertAnimation(ANIMATION_ALPHA, window, 0)
+        alpha:SetAlphaValues(1, 0)
+        alpha:SetDuration(TPM_STATISTICS_FADE_MS)
         self.statisticsCloseTimeline = timeline
     end
 
     window:SetAlpha(1)
     local timeline = self.statisticsCloseTimeline
-    if timeline and type(timeline.Stop) == "function" then
-        pcall(timeline.Stop, timeline)
-    end
-    if timeline and type(timeline.PlayFromStart) == "function" then
-        local ok = pcall(timeline.PlayFromStart, timeline)
-        if not ok then
-            self:FinalizeStatisticsWindowHide(closeToken)
-            return
-        end
-    else
-        self:FinalizeStatisticsWindowHide(closeToken)
-        return
-    end
+    timeline:Stop()
+    timeline:PlayFromStart()
 
-    if type(zo_callLater) == "function" then
-        zo_callLater(function()
-            if TPM then TPM:FinalizeStatisticsWindowHide(closeToken) end
-        end, TPM_STATISTICS_FADE_MS + 20)
-    else
-        self:FinalizeStatisticsWindowHide(closeToken)
-    end
+    zo_callLater(function()
+        TPM:FinalizeStatisticsWindowHide(closeToken)
+    end, TPM_STATISTICS_FADE_MS + 20)
 end
+
 
 function TPM:ShowStatisticsWindow(openStandalone)
     self:CreateStatisticsWindow()
@@ -17163,8 +16647,8 @@ function TPM:ToggleStatisticsFromKeybind()
     end
 end
 
-function TamrielProgressMap_KeybindToggleStatistics()
-    if TPM then TPM:ToggleStatisticsFromKeybind() end
+function TPM.KeybindToggleStatistics()
+    TPM:ToggleStatisticsFromKeybind()
 end
 
 function TPM:GetQuestBestRewardDisplayQuality(questIndex)
@@ -17176,14 +16660,12 @@ function TPM:GetQuestBestRewardDisplayQuality(questIndex)
         local rewardType, _, _, _, _, itemDisplayQuality = GetJournalQuestRewardInfo(questIndex, rewardIndex)
         local currencyType = nil
         if type(GetCurrencyTypeFromRewardType) == "function" then
-            local ok, value = pcall(GetCurrencyTypeFromRewardType, rewardType)
-            if ok then currencyType = value end
+            currencyType = GetCurrencyTypeFromRewardType(rewardType)
             if CURT_NONE and currencyType == CURT_NONE then currencyType = nil end
         end
         local itemId = 0
         if type(GetJournalQuestRewardItemId) == "function" then
-            local ok, value = pcall(GetJournalQuestRewardItemId, questIndex, rewardIndex)
-            if ok then itemId = tonumber(value) or 0 end
+            itemId = tonumber(GetJournalQuestRewardItemId(questIndex, rewardIndex)) or 0
         end
         -- Only actual item rewards determine the quest color. Gold, XP,
         -- currencies, skill points and other non-item rewards therefore remain
@@ -17201,9 +16683,9 @@ end
 function TPM:GetQuestRewardColorDef(questIndex)
     if not self.saved or self.saved.colorVanillaQuestsByReward == false then return nil end
     local quality = self:GetQuestBestRewardDisplayQuality(questIndex)
-    if quality ~= nil and type(GetItemQualityColor) == "function" then
-        local ok, color = pcall(GetItemQualityColor, quality)
-        if ok and color then return color end
+    if quality ~= nil then
+        local color = GetItemQualityColor(quality)
+        if color then return color end
     end
     -- Currency-only/no-item quests stay white as requested instead of inheriting
     -- ESO's level/con difficulty color.
@@ -17280,7 +16762,7 @@ function TPM:RegisterVanillaQuestRewardColorHooks()
         self:RefreshVanillaQuestRewardColors()
     end
     if not self.questRewardColorHooksRegistered and type(zo_callLater) == "function" then
-        zo_callLater(function() if TPM then TPM:RegisterVanillaQuestRewardColorHooks() end end, 1000)
+        zo_callLater(function() TPM:RegisterVanillaQuestRewardColorHooks() end, 1000)
     end
 end
 
@@ -17564,7 +17046,7 @@ function TPM:QueueRefresh(delayMs)
     if self.refreshQueued then return end
     self.refreshQueued = true
     zo_callLater(function()
-        if TPM then TPM:Refresh() end
+        TPM:Refresh()
     end, delayMs or 80)
 end
 
@@ -17592,48 +17074,14 @@ function TPM:RefreshBindingStrings()
 end
 
 function TPM:SetLanguage(value, silent)
-    if value ~= "auto" and value ~= "de" and value ~= "en" and value ~= "ru" and value ~= "fr" and value ~= "es" then
-        return false
-    end
-    self.saved.language = value
+    -- Compatibility shim: TPM follows the ESO client language automatically.
+    if value ~= nil and value ~= "auto" then return false end
+    if self.saved then self.saved.language = "auto" end
     self:ResolveLanguage()
     self:RefreshBindingStrings()
-    self:InvalidateStatisticsData(false)
     self:RefreshCustomSettingsControls()
-    if self.settingsPanel and self.settingsPanel.RefreshPanel then
-        self.settingsPanel:RefreshPanel()
-    end
     self:RefreshStatisticsWindow()
-    -- Rebuild Economy focus choices immediately so an already-open dropdown
-    -- changes its zone names together with DE/EN/RU/FR/ES.
-    if self.economyFocusDropdown then
-        self.economyFocusDropdownChoices = nil
-        self:RefreshEconomyFocusDropdown()
-    end
-    self:RefreshQuickFilterBar()
-    self:RefreshQuestRewards()
-    self:RefreshSkyshardGoalWidget()
-    self:QueueRefresh(10)
-    -- LAM/map controls can settle a frame after switching language. Refresh a
-    -- second time so no stale labels remain.
-    if type(zo_callLater) == "function" then
-        zo_callLater(function()
-            if TPM then
-                TPM:RefreshCustomSettingsControls()
-                TPM:RefreshStatisticsWindow()
-                if TPM.economyFocusDropdown then
-                    TPM.economyFocusDropdownChoices = nil
-                    TPM:RefreshEconomyFocusDropdown()
-                end
-                TPM:RefreshQuickFilterBar()
-                TPM:RefreshQuestRewards()
-                TPM:QueueRefresh(10)
-            end
-        end, 60)
-    end
-    if not silent then
-        d(self:L("LANGUAGE_SET", self.locale.LANGUAGE_NAME or self.langCode))
-    end
+    if not silent then d(self:L("LANGUAGE_SET", self:L("LANGUAGE_NAME") or self.langCode)) end
     return true
 end
 
@@ -17699,8 +17147,9 @@ function TPM:HandleSlashCommand(text)
             d(self:L("QUEST_FONT_STYLE_SET", self:GetFontStyleName(questFontStyle)))
             return
         end
-        local lang = string.match(text, "^lang%s+(%S+)$")
-        if lang and self:SetLanguage(lang) then
+        local lang = string.match(text, "^lang%s*(%S*)$")
+        if lang ~= nil and (lang == "" or lang == "auto") then
+            self:SetLanguage("auto")
             return
         end
         self:PrintHelp()
@@ -17718,10 +17167,7 @@ function TPM:RefreshLAMSettingsLocalization()
         if util and util.GetStringFromValue then
             return util.GetStringFromValue(value)
         end
-        if type(value) == "function" then
-            local ok, result = pcall(value)
-            return ok and result or ""
-        end
+        if type(value) == "function" then return value() end
         if type(value) == "number" and type(GetString) == "function" then
             return GetString(value)
         end
@@ -17761,75 +17207,53 @@ function TPM:RefreshLAMSettingsLocalization()
 end
 
 function TPM:RefreshCustomSettingsControls()
-    if TamrielProgressMapLanguageControl then
-        self:UpdateLanguageCustomControl(TamrielProgressMapLanguageControl)
+    if self.settingsControls.language then
+        self:UpdateLanguageCustomControl(self.settingsControls.language)
     end
-    if TamrielProgressMapCalculationControl then
-        self:UpdateCalculationCustomControl(TamrielProgressMapCalculationControl)
+    if self.settingsControls.calculation then
+        self:UpdateCalculationCustomControl(self.settingsControls.calculation)
     end
-    if TamrielProgressMapFontStyleControl then
-        self:UpdateFontStyleCustomControl(TamrielProgressMapFontStyleControl)
+    if self.settingsControls.fontStyle then
+        self:UpdateFontStyleCustomControl(self.settingsControls.fontStyle)
     end
-    if TamrielProgressMapQuestFontStyleControl then
-        self:UpdateQuestFontStyleCustomControl(TamrielProgressMapQuestFontStyleControl)
+    if self.settingsControls.questFontStyle then
+        self:UpdateQuestFontStyleCustomControl(self.settingsControls.questFontStyle)
     end
-    if TamrielProgressMapPercentColorControl then
-        self:UpdatePercentColorCustomControl(TamrielProgressMapPercentColorControl)
+    if self.settingsControls.percentColor then
+        self:UpdatePercentColorCustomControl(self.settingsControls.percentColor)
     end
-    if TamrielProgressMapPercentSizeControl then
-        self:UpdatePercentSizeCustomControl(TamrielProgressMapPercentSizeControl)
+    if self.settingsControls.percentSize then
+        self:UpdatePercentSizeCustomControl(self.settingsControls.percentSize)
     end
-    if TamrielProgressMapHundredDisplayControl then
-        self:UpdateHundredDisplayCustomControl(TamrielProgressMapHundredDisplayControl)
+    if self.settingsControls.hundredDisplay then
+        self:UpdateHundredDisplayCustomControl(self.settingsControls.hundredDisplay)
     end
     self:RefreshLAMSettingsLocalization()
 end
 
 function TPM:SetupLanguageCustomControl(control)
     if not control then return end
-    control:SetHeight(72)
-
+    control:SetHeight(58)
+    self.settingsControls.language = control
     if not control.TPMLanguageTitle then
         local title = WINDOW_MANAGER:CreateControl(nil, control, CT_LABEL)
         title:SetAnchor(TOPLEFT, control, TOPLEFT, 0, 0)
         title:SetFont("ZoFontWinH4")
-        title:SetColor(1, 1, 1, 1)
+        title:SetColor(1,1,1,1)
         control.TPMLanguageTitle = title
-
         local tip = WINDOW_MANAGER:CreateControl(nil, control, CT_LABEL)
         tip:SetAnchor(TOPLEFT, title, BOTTOMLEFT, 0, 2)
         tip:SetFont("ZoFontGameSmall")
-        tip:SetColor(0.75, 0.75, 0.75, 1)
+        tip:SetColor(.75,.75,.75,1)
         control.TPMLanguageTooltip = tip
-
-        local function CreateLanguageButton(key, x)
-            local button = WINDOW_MANAGER:CreateControlFromVirtual(nil, control, "ZO_DefaultButton")
-            button:SetDimensions(145, 28)
-            button:SetAnchor(TOPLEFT, control, TOPLEFT, x, 40)
-            button.languageKey = key
-            button:SetHandler("OnClicked", function(btn)
-                TPM:SetLanguage(btn.languageKey, true)
-            end)
-            return button
-        end
-
-        -- Six compact buttons: Auto / DE / EN / RU / FR / ES.
-        local function PlaceLanguageButton(key, x, width)
-            local button = WINDOW_MANAGER:CreateControlFromVirtual(nil, control, "ZO_DefaultButton")
-            button:SetDimensions(width or 110, 28)
-            button:SetAnchor(TOPLEFT, control, TOPLEFT, x, 40)
-            button.languageKey = key
-            button:SetHandler("OnClicked", function(btn) TPM:SetLanguage(btn.languageKey, true) end)
-            return button
-        end
-        control.TPMAutoButton = PlaceLanguageButton("auto", 0, 104)
-        control.TPMGermanButton = PlaceLanguageButton("de", 110, 74)
-        control.TPMEnglishButton = PlaceLanguageButton("en", 190, 74)
-        control.TPMRussianButton = PlaceLanguageButton("ru", 270, 74)
-        control.TPMFrenchButton = PlaceLanguageButton("fr", 350, 74)
-        control.TPMSpanishButton = PlaceLanguageButton("es", 430, 74)
+        local current = WINDOW_MANAGER:CreateControl(nil, control, CT_LABEL)
+        current:SetDimensions(220,26)
+        current:SetAnchor(TOPRIGHT, control, TOPRIGHT, 0, 4)
+        current:SetFont("$(BOLD_FONT)|15")
+        current:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+        current:SetColor(.90,.77,.36,1)
+        control.TPMLanguageCurrent = current
     end
-
     self:UpdateLanguageCustomControl(control)
 end
 
@@ -17837,24 +17261,9 @@ function TPM:UpdateLanguageCustomControl(control)
     if not control then return end
     if control.TPMLanguageTitle then control.TPMLanguageTitle:SetText(self:L("SETTINGS_LANGUAGE")) end
     if control.TPMLanguageTooltip then control.TPMLanguageTooltip:SetText(self:L("SETTINGS_LANGUAGE_TT")) end
-
-    local current = self.saved and self.saved.language or "auto"
-    local labels =
-    {
-        auto = self:L("SETTINGS_LANGUAGE_AUTO"),
-        de = self:L("SETTINGS_LANGUAGE_DE"),
-        en = self:L("SETTINGS_LANGUAGE_EN"),
-        ru = self:L("SETTINGS_LANGUAGE_RU"),
-        fr = self:L("SETTINGS_LANGUAGE_FR"),
-        es = self:L("SETTINGS_LANGUAGE_ES"),
-    }
-    local buttons = { control.TPMAutoButton, control.TPMGermanButton, control.TPMEnglishButton, control.TPMRussianButton, control.TPMFrenchButton, control.TPMSpanishButton }
-    for _, button in ipairs(buttons) do
-        if button then
-            local text = labels[button.languageKey] or button.languageKey
-            local selected = button.languageKey == current
-            button:SetText(selected and ("|cE6C45C" .. text .. "|r") or text)
-        end
+    if control.TPMLanguageCurrent then
+        local name = self:L("LANGUAGE_NAME") or string.upper(self.langCode or "en")
+        control.TPMLanguageCurrent:SetText(name .. " (ESO)")
     end
 end
 
@@ -17862,8 +17271,8 @@ function TPM:SetCalculationMode(value)
     if value ~= "objectives" and value ~= "categories" then return false end
     self.saved.calculationMode = value
     self:InvalidateStatisticsData(false)
-    if TamrielProgressMapCalculationControl then
-        self:UpdateCalculationCustomControl(TamrielProgressMapCalculationControl)
+    if self.settingsControls.calculation then
+        self:UpdateCalculationCustomControl(self.settingsControls.calculation)
     end
     self:QueueRefresh(10)
     return true
@@ -17933,8 +17342,8 @@ function TPM:SetFontStyle(value)
 
     self.saved.fontStyle = value
     self:ApplyProgressFonts()
-    if TamrielProgressMapFontStyleControl then
-        self:UpdateFontStyleCustomControl(TamrielProgressMapFontStyleControl)
+    if self.settingsControls.fontStyle then
+        self:UpdateFontStyleCustomControl(self.settingsControls.fontStyle)
     end
     self:QueueRefresh(10)
     return true
@@ -17948,8 +17357,8 @@ function TPM:SetQuestFontStyle(value)
 
     self.saved.questFontStyle = value
     self:ApplyQuestRewardFonts()
-    if TamrielProgressMapQuestFontStyleControl then
-        self:UpdateQuestFontStyleCustomControl(TamrielProgressMapQuestFontStyleControl)
+    if self.settingsControls.questFontStyle then
+        self:UpdateQuestFontStyleCustomControl(self.settingsControls.questFontStyle)
     end
     self:QueueRefresh(10)
     return true
@@ -18050,8 +17459,8 @@ function TPM:SetPercentColorMode(value)
     end
     self.saved.percentColorMode = value
     self.saved.blackPercentText = value == "black" -- keep old SavedVariables meaningful
-    if TamrielProgressMapPercentColorControl then
-        self:UpdatePercentColorCustomControl(TamrielProgressMapPercentColorControl)
+    if self.settingsControls.percentColor then
+        self:UpdatePercentColorCustomControl(self.settingsControls.percentColor)
     end
     self:QueueRefresh(10)
     return true
@@ -18083,8 +17492,8 @@ function TPM:OpenCustomPercentColorPicker()
             b = Clamp(newB or b, 0, 1),
         }
         TPM:SetPercentColorMode("custom")
-        if TamrielProgressMapPercentColorControl then
-            TPM:UpdatePercentColorCustomControl(TamrielProgressMapPercentColorControl)
+        if self.settingsControls.percentColor then
+            TPM:UpdatePercentColorCustomControl(TPM.settingsControls.percentColor)
         end
     end, r, g, b)
     return true
@@ -18180,8 +17589,8 @@ function TPM:SetPercentScale(kind, value)
         self.saved.mapPercentScale = value
     end
     self:ApplyProgressFonts()
-    if TamrielProgressMapPercentSizeControl then
-        self:UpdatePercentSizeCustomControl(TamrielProgressMapPercentSizeControl)
+    if self.settingsControls.percentSize then
+        self:UpdatePercentSizeCustomControl(self.settingsControls.percentSize)
     end
     self:QueueRefresh(10)
 end
@@ -18253,8 +17662,8 @@ function TPM:SetHundredDisplayMode(value)
     if value ~= "percent" and value ~= "check" and value ~= "hidden" then return false end
     self.saved.hundredDisplayMode = value
     self.saved.hideCompletedZones = value == "hidden" -- legacy SavedVariable compatibility
-    if TamrielProgressMapHundredDisplayControl then
-        self:UpdateHundredDisplayCustomControl(TamrielProgressMapHundredDisplayControl)
+    if self.settingsControls.hundredDisplay then
+        self:UpdateHundredDisplayCustomControl(self.settingsControls.hundredDisplay)
     end
     self:QueueRefresh(10)
     return true
@@ -18368,8 +17777,7 @@ function TPM:RegisterSettings()
         { type = "header", name = function() return TPM:L("SETTINGS_SECTION_LANGUAGE") end, width = "full" },
         {
             type = "custom",
-            reference = "TamrielProgressMapLanguageControl",
-            refreshFunc = function(control) TPM:SetupLanguageCustomControl(control) end,
+            refreshFunc = function(control) TPM.settingsControls.language=control; TPM:SetupLanguageCustomControl(control) end,
             width = "full",
         },
         { type = "description", text = function() return TPM:L("SETTINGS_RELOAD_NOTE") end, width = "full" },
@@ -18450,26 +17858,22 @@ function TPM:RegisterSettings()
         { type = "header", name = function() return TPM:L("SETTINGS_SECTION_DISPLAY") end, width = "full" },
         {
             type = "custom",
-            reference = "TamrielProgressMapFontStyleControl",
-            refreshFunc = function(control) TPM:SetupFontStyleCustomControl(control) end,
+            refreshFunc = function(control) TPM.settingsControls.fontStyle=control; TPM:SetupFontStyleCustomControl(control) end,
             width = "full",
         },
         {
             type = "custom",
-            reference = "TamrielProgressMapPercentSizeControl",
-            refreshFunc = function(control) TPM:SetupPercentSizeCustomControl(control) end,
+            refreshFunc = function(control) TPM.settingsControls.percentSize=control; TPM:SetupPercentSizeCustomControl(control) end,
             width = "full",
         },
         {
             type = "custom",
-            reference = "TamrielProgressMapPercentColorControl",
-            refreshFunc = function(control) TPM:SetupPercentColorCustomControl(control) end,
+            refreshFunc = function(control) TPM.settingsControls.percentColor=control; TPM:SetupPercentColorCustomControl(control) end,
             width = "full",
         },
         {
             type = "custom",
-            reference = "TamrielProgressMapHundredDisplayControl",
-            refreshFunc = function(control) TPM:SetupHundredDisplayCustomControl(control) end,
+            refreshFunc = function(control) TPM.settingsControls.hundredDisplay=control; TPM:SetupHundredDisplayCustomControl(control) end,
             width = "full",
         },
         {
@@ -18504,8 +17908,7 @@ function TPM:RegisterSettings()
         { type = "header", name = function() return TPM:L("SETTINGS_SECTION_PROGRESS") end, width = "full" },
         {
             type = "custom",
-            reference = "TamrielProgressMapCalculationControl",
-            refreshFunc = function(control) TPM:SetupCalculationCustomControl(control) end,
+            refreshFunc = function(control) TPM.settingsControls.calculation=control; TPM:SetupCalculationCustomControl(control) end,
             width = "full",
         },
         {
@@ -18523,8 +17926,7 @@ function TPM:RegisterSettings()
         { type = "header", name = function() return TPM:L("SETTINGS_SECTION_QUEST") end, width = "full" },
         {
             type = "custom",
-            reference = "TamrielProgressMapQuestFontStyleControl",
-            refreshFunc = function(control) TPM:SetupQuestFontStyleCustomControl(control) end,
+            refreshFunc = function(control) TPM.settingsControls.questFontStyle=control; TPM:SetupQuestFontStyleCustomControl(control) end,
             width = "full",
         },
         {
@@ -18640,26 +18042,26 @@ function TPM:RegisterSettings()
             if panel ~= TPM.settingsPanel then return end
 
             -- Build the direct ESO button controls on first panel creation.
-            if TamrielProgressMapLanguageControl then
-                TPM:SetupLanguageCustomControl(TamrielProgressMapLanguageControl)
+            if self.settingsControls.language then
+                TPM:SetupLanguageCustomControl(TPM.settingsControls.language)
             end
-            if TamrielProgressMapCalculationControl then
-                TPM:SetupCalculationCustomControl(TamrielProgressMapCalculationControl)
+            if self.settingsControls.calculation then
+                TPM:SetupCalculationCustomControl(TPM.settingsControls.calculation)
             end
-            if TamrielProgressMapFontStyleControl then
-                TPM:SetupFontStyleCustomControl(TamrielProgressMapFontStyleControl)
+            if self.settingsControls.fontStyle then
+                TPM:SetupFontStyleCustomControl(TPM.settingsControls.fontStyle)
             end
-            if TamrielProgressMapQuestFontStyleControl then
-                TPM:SetupQuestFontStyleCustomControl(TamrielProgressMapQuestFontStyleControl)
+            if self.settingsControls.questFontStyle then
+                TPM:SetupQuestFontStyleCustomControl(TPM.settingsControls.questFontStyle)
             end
-            if TamrielProgressMapPercentColorControl then
-                TPM:SetupPercentColorCustomControl(TamrielProgressMapPercentColorControl)
+            if self.settingsControls.percentColor then
+                TPM:SetupPercentColorCustomControl(TPM.settingsControls.percentColor)
             end
-            if TamrielProgressMapPercentSizeControl then
-                TPM:SetupPercentSizeCustomControl(TamrielProgressMapPercentSizeControl)
+            if self.settingsControls.percentSize then
+                TPM:SetupPercentSizeCustomControl(TPM.settingsControls.percentSize)
             end
-            if TamrielProgressMapHundredDisplayControl then
-                TPM:SetupHundredDisplayCustomControl(TamrielProgressMapHundredDisplayControl)
+            if self.settingsControls.hundredDisplay then
+                TPM:SetupHundredDisplayCustomControl(TPM.settingsControls.hundredDisplay)
             end
             TPM:RefreshLAMSettingsLocalization()
         end)
@@ -18671,7 +18073,6 @@ function TPM:QueueProgressHistoryCheckpoint()
     if self.progressHistoryCheckpointQueued then return end
     self.progressHistoryCheckpointQueued = true
     zo_callLater(function()
-        if not TPM then return end
         TPM.progressHistoryCheckpointQueued = false
         local snapshot = TPM:CaptureHistorySnapshot(false)
         TPM:CheckMilestones(snapshot)
@@ -18721,10 +18122,8 @@ function TPM:Initialize()
     -- Define NumPad 5 as TPM's default binding without forcing it as a custom
     -- bind. ESO will use this as the default and players can freely replace it
     -- under Controls > Keybindings > Tamriel Progress Map.
-    if type(CreateDefaultActionBind) == "function" and _G.KEY_NUMPAD5 ~= nil then
-        local noModifier = _G.KEY_INVALID or 0
-        pcall(CreateDefaultActionBind, "TPM_TOGGLE_STATISTICS", _G.KEY_NUMPAD5, noModifier, noModifier, noModifier, noModifier)
-    end
+    local noModifier = KEY_INVALID or 0
+    CreateDefaultActionBind("TPM_TOGGLE_STATISTICS", KEY_NUMPAD5, noModifier, noModifier, noModifier, noModifier)
 
     -- v2.6.81: When the standalone Statistics journal owns UI mode, the
     -- normal ESO Toggle UI Mode action (Left Alt by default) closes TPM again
@@ -18733,7 +18132,7 @@ function TPM:Initialize()
     if not self.statisticsToggleUIModeHookInstalled and type(ZO_PreHook) == "function"
         and _G.SCENE_MANAGER and type(_G.SCENE_MANAGER.OnToggleUIModeBinding) == "function" then
         ZO_PreHook(_G.SCENE_MANAGER, "OnToggleUIModeBinding", function()
-            if TPM and TPM.statisticsOpenedStandalone then
+            if TPM.statisticsOpenedStandalone then
                 local logicallyOpen = TPM.statisticsTemporarilyHiddenForScene == true
                     or (TPM.statisticsWindow and not TPM.statisticsWindow:IsHidden())
                 if logicallyOpen then
@@ -18746,7 +18145,58 @@ function TPM:Initialize()
         self.statisticsToggleUIModeHookInstalled = true
     end
 
-    self.saved = ZO_SavedVars:NewAccountWide("TamrielProgressMap_SavedVariables", 1, nil, DEFAULTS)
+    -- Server-dependent progression/economy/history data is isolated by world.
+    -- Read the pre-2.7.1 non-server AccountWide table directly, before creating
+    -- the new GetWorldName() namespace. This avoids creating another legacy
+    -- ZO_SavedVars wrapper and lets us mark the migration source exactly once.
+    local worldName = GetWorldName()
+    local legacySaved
+    local rawSavedRoot = _G["TamrielProgressMap_SavedVariables"]
+    if type(rawSavedRoot) == "table" then
+        local defaultNamespace = rawSavedRoot["Default"]
+        local accountTable = type(defaultNamespace) == "table" and defaultNamespace[GetDisplayName()] or nil
+        if type(accountTable) == "table" then
+            legacySaved = accountTable["$AccountWide"]
+        end
+    end
+
+    self.saved = ZO_SavedVars:NewAccountWide("TamrielProgressMap_SavedVariables", 1, worldName, DEFAULTS)
+    local migratedLegacyThisLoad = false
+    if not self.saved.serverScopeMigrated then
+        local isPts = string.find(string.lower(worldName), "pts", 1, true) ~= nil
+        local canMigrateLegacy = not isPts
+            and type(legacySaved) == "table"
+            and legacySaved.serverScopeMigrationCompleted ~= true
+
+        if canMigrateLegacy then
+            local legacyCopy = TPM_DeepCopyPlain(legacySaved)
+            for key, value in pairs(legacyCopy) do
+                if key ~= "serverScopeMigrated"
+                    and key ~= "serverScopeMigrationWorld"
+                    and key ~= "serverScopeMigrationCompleted" then
+                    self.saved[key] = value
+                end
+            end
+            -- Mark the old non-server namespace so it can never be copied a
+            -- second time to another live megaserver.
+            legacySaved.serverScopeMigrationCompleted = true
+            legacySaved.serverScopeMigrationWorld = worldName
+            migratedLegacyThisLoad = true
+        end
+
+        self.saved.serverScopeMigrated = true
+        self.saved.serverScopeMigrationWorld = worldName
+    end
+
+    -- ESOUI's SavedVariables migration guidance recommends persisting both the
+    -- copied destination and the migration marker immediately. Reload only once,
+    -- and only for users who actually had legacy non-server data to migrate.
+    if migratedLegacyThisLoad then
+        ReloadUI()
+        return
+    end
+
+    self.saved.language = "auto"
     self:RunSavedVariableMigrations()
     if self.saved.statisticsThemeDesign ~= "tpm" and self.saved.statisticsThemeDesign ~= "vanilla" and self.saved.statisticsThemeDesign ~= "dark" then
         self.saved.statisticsThemeDesign = DEFAULTS.statisticsThemeDesign
@@ -18990,7 +18440,7 @@ function TPM:Initialize()
                 if not TPM.statisticsOpenedStandalone then
                     TPM:HideStatisticsWindow()
                 end
-                zo_callLater(function() if TPM then TPM:RefreshSkyshardGoalWidget() end end, 50)
+                zo_callLater(function() TPM:RefreshSkyshardGoalWidget() end, 50)
                 -- Minimap addons can reuse ZO_WorldMap after the real scene closes.
                 TPM:RefreshQuickFilterBar()
             end
@@ -19028,7 +18478,7 @@ function TPM:Initialize()
                 if not TPM.statisticsOpenedStandalone then
                     TPM:HideStatisticsWindow()
                 end
-                zo_callLater(function() if TPM then TPM:RefreshSkyshardGoalWidget() end end, 50)
+                zo_callLater(function() TPM:RefreshSkyshardGoalWidget() end, 50)
                 -- Minimap addons can reuse ZO_WorldMap after the real scene closes.
                 TPM:RefreshQuickFilterBar()
             end
@@ -19041,12 +18491,10 @@ function TPM:Initialize()
         end
     end
 
-    if _G.EVENT_PREPARE_FOR_JUMP then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "ActivityPrepareForJump", EVENT_PREPARE_FOR_JUMP,
-            function(_, zoneName, zoneDescription, loadingTexture, zoneDisplayType)
-                TPM:RememberJumpDestination(zoneName, zoneDisplayType, loadingTexture)
-            end)
-    end
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "ActivityPrepareForJump", EVENT_PREPARE_FOR_JUMP,
+        function(_, zoneName, zoneDescription, loadingTexture, zoneDisplayType)
+            TPM:RememberJumpDestination(zoneName, zoneDisplayType, loadingTexture)
+        end)
 
     -- Keep the Skyshard goal synchronized with the same HUD scene lifecycle
     -- used by native trackers. This makes M/ESC hiding immediate, not dependent
@@ -19054,7 +18502,7 @@ function TPM:Initialize()
     local function RegisterSkyshardHudScene(scene)
         if scene and type(scene.RegisterCallback) == "function" then
             scene:RegisterCallback("StateChange", function()
-                zo_callLater(function() if TPM then TPM:RefreshSkyshardGoalWidget() end end, 0)
+                zo_callLater(function() TPM:RefreshSkyshardGoalWidget() end, 0)
             end)
         end
     end
@@ -19066,14 +18514,12 @@ function TPM:Initialize()
     -- HUD-UI, the Skyshard block is hidden. Returning to the HUD restores it.
     if _G.SCENE_MANAGER and type(_G.SCENE_MANAGER.RegisterCallback) == "function" then
         _G.SCENE_MANAGER:RegisterCallback("SceneStateChanged", function()
-            if TPM and TPM.skyshardGoalWidget and not TPM:IsSkyshardGoalHudSceneVisible() then
+            if TPM.skyshardGoalWidget and not TPM:IsSkyshardGoalHudSceneVisible() then
                 TPM.skyshardGoalWidget:SetHidden(true)
             end
             zo_callLater(function()
-                if TPM then
-                    TPM:RefreshStandaloneStatisticsSceneVisibility()
-                    TPM:RefreshSkyshardGoalWidget()
-                end
+                TPM:RefreshStandaloneStatisticsSceneVisibility()
+                TPM:RefreshSkyshardGoalWidget()
             end, 0)
         end)
     end
@@ -19091,10 +18537,10 @@ function TPM:Initialize()
         TPM:HandleTrackedActivityActivated()
         TPM:ResumeParticipatingWorldEvent()
         TPM:DiscoverCurrentZoneWorldEventCandidates(true)
-        zo_callLater(function() if TPM then TPM:HandleTrackedActivityActivated() end end, 350)
-        zo_callLater(function() if TPM then TPM:ResumeParticipatingWorldEvent(); TPM:DiscoverCurrentZoneWorldEventCandidates(true) end end, 500)
-        zo_callLater(function() if TPM then TPM.questRewardDirty=true; TPM:RefreshQuestRewards(true) end end, 250)
-        zo_callLater(function() if TPM then TPM:RefreshSkyshardGoalWidget() end end, 450)
+        zo_callLater(function() TPM:HandleTrackedActivityActivated() end, 350)
+        zo_callLater(function() TPM:ResumeParticipatingWorldEvent(); TPM:DiscoverCurrentZoneWorldEventCandidates(true) end, 500)
+        zo_callLater(function() TPM.questRewardDirty=true; TPM:RefreshQuestRewards(true) end, 250)
+        zo_callLater(function() TPM:RefreshSkyshardGoalWidget() end, 450)
         if TPM.statisticsWindow and not TPM.statisticsWindow:IsHidden()
             and TPM.saved and TPM.saved.statisticsPage == "economy" then
             TPM:RefreshEconomyStatisticsPage()
@@ -19102,11 +18548,9 @@ function TPM:Initialize()
         TPM:QueueRefresh(100)
     end)
 
-    if _G.EVENT_PLAYER_DEACTIVATED then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "HistoryPlayerDeactivated", EVENT_PLAYER_DEACTIVATED, function()
-            TPM:CheckpointHistoryOnDeactivated()
-        end)
-    end
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "HistoryPlayerDeactivated", EVENT_PLAYER_DEACTIVATED, function()
+        TPM:CheckpointHistoryOnDeactivated()
+    end)
 
     EVENT_MANAGER:RegisterForUpdate(ADDON_NAME .. "HistoryCheckpoint", HISTORY_CHECKPOINT_MS, function()
         if TPM.saved and TPM.saved.historyEnabled ~= false then
@@ -19119,90 +18563,81 @@ function TPM:Initialize()
         end
     end)
 
-    if _G.EVENT_TIMED_ACTIVITY_TRACKING_UPDATED then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "SkyshardTomeTracking", _G.EVENT_TIMED_ACTIVITY_TRACKING_UPDATED, function()
-            -- ESO rebuilds/reanchors the native Tome HUD when the tracked Tome
-            -- changes. Throw away our cached control and resolve the new native
-            -- tracker twice: once immediately, once after its layout settles.
-            TPM.skyshardGoalTomesAnchor = nil
-            TPM.skyshardGoalLastAnchorScan = 0
-            zo_callLater(function()
-                if TPM then TPM:UpdateSkyshardGoalAnchor(true); TPM:RefreshSkyshardGoalWidget() end
-            end, 50)
-            zo_callLater(function()
-                if TPM then TPM:UpdateSkyshardGoalAnchor(true); TPM:RefreshSkyshardGoalWidget() end
-            end, 450)
-        end)
-    end
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "SkyshardTomeTracking", EVENT_TIMED_ACTIVITY_TRACKING_UPDATED, function()
+        -- ESO rebuilds/reanchors the native Tome HUD when the tracked Tome
+        -- changes. Throw away our cached control and resolve the new native
+        -- tracker twice: once immediately, once after its layout settles.
+        TPM.skyshardGoalTomesAnchor = nil
+        TPM.skyshardGoalLastAnchorScan = 0
+        zo_callLater(function()
+            TPM:UpdateSkyshardGoalAnchor(true); TPM:RefreshSkyshardGoalWidget()
+        end, 50)
+        zo_callLater(function()
+            TPM:UpdateSkyshardGoalAnchor(true); TPM:RefreshSkyshardGoalWidget()
+        end, 450)
+    end)
 
-    if _G.EVENT_ZONE_CHANGED then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "SkyshardGoalZoneChanged", _G.EVENT_ZONE_CHANGED, function()
-            -- Checkpoint immediately after a zone transition. The previous /played
-            -- interval is attributed to the previous observed zone, then the new
-            -- observation becomes the start of the next zone segment.
-            if TPM.saved and TPM.saved.historyEnabled ~= false then TPM:CheckpointHistory("zone_changed", false) end
-            zo_callLater(function() if TPM then TPM:RefreshSkyshardGoalWidget() end end, 100)
-        end)
-    end
-    if _G.EVENT_SKYSHARD_GAINED then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "SkyshardGoalGained", _G.EVENT_SKYSHARD_GAINED, function()
-            TPM:InvalidateStatisticsData(false)
-            zo_callLater(function() if TPM then TPM:RefreshSkyshardGoalWidget() end end, 100)
-        end)
-    end
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "SkyshardGoalZoneChanged", EVENT_ZONE_CHANGED, function()
+        -- Checkpoint immediately after a zone transition. The previous /played
+        -- interval is attributed to the previous observed zone, then the new
+        -- observation becomes the start of the next zone segment.
+        if TPM.saved and TPM.saved.historyEnabled ~= false then TPM:CheckpointHistory("zone_changed", false) end
+        zo_callLater(function() TPM:RefreshSkyshardGoalWidget() end, 100)
+    end)
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "SkyshardGoalGained", EVENT_SKYSHARD_GAINED, function()
+        TPM:InvalidateStatisticsData(false)
+        zo_callLater(function() TPM:RefreshSkyshardGoalWidget() end, 100)
+    end)
     EVENT_MANAGER:RegisterForUpdate(ADDON_NAME .. "SkyshardGoalHudRefresh", 1500, function()
-        if TPM and TPM.saved and TPM.saved.skyshardGoalEnabled == true then
+        if TPM.saved and TPM.saved.skyshardGoalEnabled == true then
             TPM:RefreshSkyshardGoalWidget()
         end
     end)
 
-    if EVENT_GLOBAL_MOUSE_UP then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "GlobalMouseUp", EVENT_GLOBAL_MOUSE_UP, function(_, button)
-            if button == MOUSE_BUTTON_INDEX_LEFT then
-                if TPM.questRewardResizing then
-                    TPM:StopResizingQuestRewardWindow()
-                end
-                if TPM.questRewardMoving then
-                    TPM:StopMovingQuestRewardWindow()
-                end
-                if TPM.statisticsWindowMoving then
-                    TPM:StopMovingStatisticsWindow()
-                end
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "GlobalMouseUp", EVENT_GLOBAL_MOUSE_UP, function(_, button)
+        if button == MOUSE_BUTTON_INDEX_LEFT then
+            if TPM.questRewardResizing then
+                TPM:StopResizingQuestRewardWindow()
             end
-        end)
-    end
+            if TPM.questRewardMoving then
+                TPM:StopMovingQuestRewardWindow()
+            end
+            if TPM.statisticsWindowMoving then
+                TPM:StopMovingStatisticsWindow()
+            end
+        end
+    end)
 
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "QuestFocus", EVENT_QUEST_SHOW_JOURNAL_ENTRY, function()
         TPM:QueueRefresh(30)
-        zo_callLater(function() if TPM then TPM.questRewardDirty=true; TPM:RefreshQuestRewards(true) end end, 30)
+        zo_callLater(function() TPM.questRewardDirty=true; TPM:RefreshQuestRewards(true) end, 30)
     end)
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "QuestList", EVENT_QUEST_LIST_UPDATED, function()
         TPM.questRewardDirty = true
         TPM:InvalidateStatisticsData(false)
         TPM:QueueRefresh(50)
-        zo_callLater(function() if TPM then TPM:RefreshVanillaQuestRewardColors() end end, 20)
+        zo_callLater(function() TPM:RefreshVanillaQuestRewardColors() end, 20)
         zo_callLater(function() if TPM and TPM:IsFullWorldMapSceneVisible() then TPM:RefreshQuestRewards(true) end end, 50)
     end)
     if FOCUSED_QUEST_TRACKER and FOCUSED_QUEST_TRACKER.RegisterCallback then
         FOCUSED_QUEST_TRACKER:RegisterCallback("QuestTrackerAssistStateChanged", function()
             TPM:QueueRefresh(30)
-            zo_callLater(function() if TPM then TPM.questRewardDirty=true; TPM:RefreshQuestRewards(true) end end, 30)
+            zo_callLater(function() TPM.questRewardDirty=true; TPM:RefreshQuestRewards(true) end, 30)
         end)
     end
 
     -- Event callbacks handle normal changes. A 2-second safety poll covers rare tracker rebuilds
     -- without rebuilding text/layout twice per second while the map is idle.
     EVENT_MANAGER:RegisterForUpdate(ADDON_NAME .. "FocusedRewardPanel", 2000, function()
-        if TPM and TPM.saved and TPM.saved.showQuestRewards
+        if TPM.saved and TPM.saved.showQuestRewards
             and TPM:IsFullWorldMapSceneVisible() then
             TPM:RefreshQuestRewards()
         end
     end)
 
-    -- Lightweight live updates for the v2 statistics journal. Event names are
-    -- guarded so the same build stays compatible across API 101050/101051.
+    -- Lightweight live updates for the Statistics journal. The manifest targets
+    -- the current live APIs, so register the documented events directly.
     local function RegisterCompletionRefreshEvent(suffix, eventCode)
-        if not eventCode then return end
         local namespace = ADDON_NAME .. "Progress" .. suffix
         EVENT_MANAGER:RegisterForEvent(namespace, eventCode, function()
             TPM:InvalidateStatisticsData(false)
@@ -19216,7 +18651,6 @@ function TPM:Initialize()
     -- Collection unlocks are rare events. Refresh page 2 immediately when
     -- ESO changes the account Collections data; no polling is required.
     local function RegisterCollectionRefreshEvent(suffix, eventCode)
-        if not eventCode then return end
         EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "Collections" .. suffix, eventCode, function()
             if TPM.statisticsWindow and not TPM.statisticsWindow:IsHidden()
                 and TPM.saved and TPM.saved.statisticsPage == "progress" and TPM:GetStatisticsProgressSubPage() == 1
@@ -19225,39 +18659,32 @@ function TPM:Initialize()
             end
         end)
     end
-    RegisterCollectionRefreshEvent("Collection", _G.EVENT_COLLECTION_UPDATED)
-    RegisterCollectionRefreshEvent("Collectible", _G.EVENT_COLLECTIBLE_UPDATED)
-    RegisterCollectionRefreshEvent("Collectibles", _G.EVENT_COLLECTIBLES_UPDATED)
+    RegisterCollectionRefreshEvent("Collection", EVENT_COLLECTION_UPDATED)
+    RegisterCollectionRefreshEvent("Collectible", EVENT_COLLECTIBLE_UPDATED)
+    RegisterCollectionRefreshEvent("Collectibles", EVENT_COLLECTIBLES_UPDATED)
 
-    if _G.EVENT_QUEST_COMPLETE_DIALOG then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "ActivityQuestRewardCacheDialog", EVENT_QUEST_COMPLETE_DIALOG,
-            function(_, journalIndex)
-                TPM:CacheQuestCompletionData(journalIndex)
-            end)
-    end
-    if _G.EVENT_QUEST_ADVANCED then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "ActivityQuestRewardCacheAdvanced", EVENT_QUEST_ADVANCED,
-            function(_, journalIndex, questName, isPushed, isComplete)
-                if isComplete then TPM:CacheQuestCompletionData(journalIndex, questName) end
-            end)
-    end
-    if _G.EVENT_QUEST_COMPLETE then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "ActivityQuestComplete", EVENT_QUEST_COMPLETE,
-            function(_, questName, level, previousExperience, currentExperience, championPoints, questType, zoneDisplayType)
-                TPM:RecordQuestActivity(questName, level, previousExperience, currentExperience, championPoints, questType, zoneDisplayType)
-            end)
-    end
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "ActivityQuestRewardCacheDialog", EVENT_QUEST_COMPLETE_DIALOG,
+        function(_, journalIndex)
+            TPM:CacheQuestCompletionData(journalIndex)
+        end)
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "ActivityQuestRewardCacheAdvanced", EVENT_QUEST_ADVANCED,
+        function(_, journalIndex, questName, isPushed, isComplete)
+            if isComplete then TPM:CacheQuestCompletionData(journalIndex, questName) end
+        end)
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "ActivityQuestComplete", EVENT_QUEST_COMPLETE,
+        function(_, questName, level, previousExperience, currentExperience, championPoints, questType, zoneDisplayType)
+            TPM:RecordQuestActivity(questName, level, previousExperience, currentExperience, championPoints, questType, zoneDisplayType)
+        end)
 
-    RegisterCompletionRefreshEvent("QuestComplete", _G.EVENT_QUEST_COMPLETE)
-    RegisterCompletionRefreshEvent("ObjectiveComplete", _G.EVENT_OBJECTIVE_COMPLETED)
-    RegisterCompletionRefreshEvent("PoiUpdated", _G.EVENT_POI_UPDATED)
-    RegisterCompletionRefreshEvent("LoreBook", _G.EVENT_LORE_BOOK_LEARNED)
-    RegisterCompletionRefreshEvent("Achievement", _G.EVENT_ACHIEVEMENT_UPDATED)
-    RegisterCompletionRefreshEvent("ZoneStory", _G.EVENT_ZONE_STORY_ACTIVITY_COMPLETED)
-    RegisterCompletionRefreshEvent("Skyshard", _G.EVENT_SKYSHARD_GAINED)
+    RegisterCompletionRefreshEvent("QuestComplete", EVENT_QUEST_COMPLETE)
+    RegisterCompletionRefreshEvent("ObjectiveComplete", EVENT_OBJECTIVE_COMPLETED)
+    RegisterCompletionRefreshEvent("PoiUpdated", EVENT_POI_UPDATED)
+    RegisterCompletionRefreshEvent("LoreBook", EVENT_LORE_BOOK_LEARNED)
+    RegisterCompletionRefreshEvent("Achievement", EVENT_ACHIEVEMENT_UPDATED)
+    RegisterCompletionRefreshEvent("ZoneStory", EVENT_ZONE_STORY_ACTIVITY_COMPLETED)
+    RegisterCompletionRefreshEvent("Skyshard", EVENT_SKYSHARD_GAINED)
 
     local function RegisterPlayerProgressEvent(suffix, eventCode, filterPlayer)
-        if not eventCode then return end
         local namespace = ADDON_NAME .. "PlayerProgress" .. suffix
         EVENT_MANAGER:RegisterForEvent(namespace, eventCode, function()
             if TPM.saved and TPM.saved.historyEnabled ~= false then
@@ -19281,68 +18708,57 @@ function TPM:Initialize()
                 end
             end
         end)
-        if filterPlayer and REGISTER_FILTER_UNIT_TAG and EVENT_MANAGER.AddFilterForEvent then
+        if filterPlayer then
             EVENT_MANAGER:AddFilterForEvent(namespace, eventCode, REGISTER_FILTER_UNIT_TAG, "player")
         end
     end
 
-    RegisterPlayerProgressEvent("XP", _G.EVENT_EXPERIENCE_UPDATE, true)
-    RegisterPlayerProgressEvent("Level", _G.EVENT_LEVEL_UPDATE, true)
-    RegisterPlayerProgressEvent("CP", _G.EVENT_UNSPENT_CHAMPION_POINTS_CHANGED, false)
-    RegisterPlayerProgressEvent("CPGain", _G.EVENT_CHAMPION_POINT_GAINED, false)
+    RegisterPlayerProgressEvent("XP", EVENT_EXPERIENCE_UPDATE, true)
+    RegisterPlayerProgressEvent("Level", EVENT_LEVEL_UPDATE, true)
+    RegisterPlayerProgressEvent("CP", EVENT_UNSPENT_CHAMPION_POINTS_CHANGED, false)
+    RegisterPlayerProgressEvent("CPGain", EVENT_CHAMPION_POINT_GAINED, false)
 
     -- Finalize queued dungeons/trials as soon as ESO reports the activity complete.
     -- Manual dungeon entries still use the existing leave-instance fallback.
-    if _G.EVENT_ACTIVITY_FINDER_ACTIVITY_COMPLETE then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "ActivityFinderCompleted", EVENT_ACTIVITY_FINDER_ACTIVITY_COMPLETE,
-            function()
-                if TPM.activeTrackedActivity and TPM:IsPersistentTrackedActivityKind(TPM.activeTrackedActivity.kind) then
-                    local snapshot = TPM:CaptureHistorySnapshot(false)
-                    TPM:FinalizeTrackedActivity(snapshot, TPM_Now())
-                end
-            end)
-    end
-    if _G.EVENT_BATTLEGROUND_STATE_CHANGED then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "ActivityBattlegroundCompleted", EVENT_BATTLEGROUND_STATE_CHANGED,
-            function(_, previousState, currentState)
-                if _G.BATTLEGROUND_STATE_FINISHED and currentState == _G.BATTLEGROUND_STATE_FINISHED
-                    and TPM.activeTrackedActivity and TPM.activeTrackedActivity.kind == "battleground" then
-                    local snapshot = TPM:CaptureHistorySnapshot(false)
-                    TPM:FinalizeTrackedActivity(snapshot, TPM_Now())
-                end
-            end)
-    end
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "ActivityFinderCompleted", EVENT_ACTIVITY_FINDER_ACTIVITY_COMPLETE,
+        function()
+            if TPM.activeTrackedActivity and TPM:IsPersistentTrackedActivityKind(TPM.activeTrackedActivity.kind) then
+                local snapshot = TPM:CaptureHistorySnapshot(false)
+                TPM:FinalizeTrackedActivity(snapshot, TPM_Now())
+            end
+        end)
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "ActivityBattlegroundCompleted", EVENT_BATTLEGROUND_STATE_CHANGED,
+        function(_, previousState, currentState)
+            if currentState == BATTLEGROUND_STATE_FINISHED
+                and TPM.activeTrackedActivity and TPM.activeTrackedActivity.kind == "battleground" then
+                local snapshot = TPM:CaptureHistorySnapshot(false)
+                TPM:FinalizeTrackedActivity(snapshot, TPM_Now())
+            end
+        end)
 
     -- v2.0.7 personal combat statistics. ESO does not expose complete lifetime
     -- kill/death totals to addons, so these counters are accumulated locally
     -- from this version onward and stored per character.
-    if _G.EVENT_BATTLEGROUND_KILL then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "CombatStatsBG", EVENT_BATTLEGROUND_KILL,
-            function(_, killedCharacterName, killedDisplayName, killedAlliance, killingCharacterName, killingDisplayName)
-                TPM:RecordPvPResult(killingDisplayName, killedDisplayName, "bg", killingCharacterName, killedCharacterName)
-            end)
-    end
-
-    if _G.EVENT_PVP_KILL_FEED_DEATH then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "CombatStatsPvPFeed", EVENT_PVP_KILL_FEED_DEATH,
-            function(_, killLocation, killerDisplayName, killerCharacterName, killerAlliance, killerRank,
-                victimDisplayName, victimCharacterName, victimAlliance, victimRank, isKillLocation)
-                -- Battlegrounds have their own server-backed kill event and should
-                -- not be counted a second time through the generic PvP feed.
-                if TPM:IsCurrentBattlegroundActive() then return end
-                if TPM:IsDuplicatePvPKillFeed(killerDisplayName, victimDisplayName, isKillLocation) then return end
-                TPM:RecordPvPResult(killerDisplayName, victimDisplayName, "pvp", killerCharacterName, victimCharacterName)
-            end)
-    end
-
-    if _G.EVENT_RETICLE_TARGET_CHANGED then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "KillLogReticle", EVENT_RETICLE_TARGET_CHANGED, function()
-            TPM:CaptureReticlePveTarget()
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "CombatStatsBG", EVENT_BATTLEGROUND_KILL,
+        function(_, killedCharacterName, killedDisplayName, killedAlliance, killingCharacterName, killingDisplayName)
+            TPM:RecordPvPResult(killingDisplayName, killedDisplayName, "bg", killingCharacterName, killedCharacterName)
         end)
-        TPM:CaptureReticlePveTarget()
-    end
 
-    if _G.EVENT_COMBAT_EVENT then
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "CombatStatsPvPFeed", EVENT_PVP_KILL_FEED_DEATH,
+        function(_, killLocation, killerDisplayName, killerCharacterName, killerAlliance, killerRank,
+            victimDisplayName, victimCharacterName, victimAlliance, victimRank, isKillLocation)
+            -- Battlegrounds have their own server-backed kill event and should
+            -- not be counted a second time through the generic PvP feed.
+            if TPM:IsCurrentBattlegroundActive() then return end
+            if TPM:IsDuplicatePvPKillFeed(killerDisplayName, victimDisplayName, isKillLocation) then return end
+            TPM:RecordPvPResult(killerDisplayName, victimDisplayName, "pvp", killerCharacterName, victimCharacterName)
+        end)
+
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "KillLogReticle", EVENT_RETICLE_TARGET_CHANGED, function()
+        TPM:CaptureReticlePveTarget()
+    end)
+    TPM:CaptureReticlePveTarget()
+
         -- 3.4.7 PvE kill tracking:
         -- Count NPC deaths caused by the player, their pet/companion OR a group
         -- member. This makes group dungeons reflect the enemies the party actually
@@ -19352,7 +18768,7 @@ function TPM:Initialize()
             sourceUnitId, targetUnitId)
             if TPM:IsInPvPEnvironment() then return end
 
-            local isXpDeathResult = _G.ACTION_RESULT_DIED_XP ~= nil and result == _G.ACTION_RESULT_DIED_XP
+            local isXpDeathResult = result == ACTION_RESULT_DIED_XP
             local numericTargetId = tonumber(targetUnitId) or 0
             local recentTarget = TPM:GetRecentPlayerPveCombatTarget(numericTargetId, targetName)
 
@@ -19376,19 +18792,10 @@ function TPM:Initialize()
             end
             if cleanTargetName == "" then return end
 
-            -- NPC/mob/animal targets normally use COMBAT_UNIT_TYPE_NONE. On
-            -- privacy-limited death events ESO can blank unit metadata; DIED_XP
-            -- plus a recently player-hit target is still valid PvE evidence.
-            local targetLooksPve = _G.COMBAT_UNIT_TYPE_NONE == nil
-                or targetType == _G.COMBAT_UNIT_TYPE_NONE
-                or isXpDeathResult
-                or recentTarget ~= nil
-            if not targetLooksPve then return end
-
-            local personalSource = sourceType == _G.COMBAT_UNIT_TYPE_PLAYER
-                or sourceType == _G.COMBAT_UNIT_TYPE_PLAYER_PET
-                or (_G.COMBAT_UNIT_TYPE_PLAYER_COMPANION ~= nil and sourceType == _G.COMBAT_UNIT_TYPE_PLAYER_COMPANION)
-            local groupSource = sourceType == _G.COMBAT_UNIT_TYPE_GROUP
+            local personalSource = sourceType == COMBAT_UNIT_TYPE_PLAYER
+                or sourceType == COMBAT_UNIT_TYPE_PLAYER_PET
+                or sourceType == COMBAT_UNIT_TYPE_PLAYER_COMPANION
+            local groupSource = sourceType == COMBAT_UNIT_TYPE_GROUP
             local participated = personalSource or groupSource or isXpDeathResult or recentTarget ~= nil
             if not participated then return end
 
@@ -19403,7 +18810,7 @@ function TPM:Initialize()
             local kind = TPM:GetPveKillActivityKind(cleanTargetName)
             if type(recentTarget) == "table" then
                 if recentTarget.livestock or recentTarget.critter then kind = "killAnimal" end
-                if _G.MONSTER_DIFFICULTY_DEADLY ~= nil and recentTarget.difficulty == _G.MONSTER_DIFFICULTY_DEADLY then kind = "killBoss" end
+                if recentTarget.difficulty == MONSTER_DIFFICULTY_DEADLY then kind = "killBoss" end
             end
             local difficulty = (type(recentTarget) == "table" and recentTarget.difficulty) or TPM:GetPveKillDifficulty(cleanTargetName, kind)
             TPM:QueuePveKillActivity(cleanTargetName, kind, isXpDeathResult, numericTargetId, difficulty, isXpDeathResult)
@@ -19426,211 +18833,150 @@ function TPM:Initialize()
             sourceUnitId, targetUnitId)
             if TPM:IsInPvPEnvironment() then return end
             if not targetName or targetName == "" then return end
-            if _G.COMBAT_UNIT_TYPE_NONE ~= nil and targetType ~= _G.COMBAT_UNIT_TYPE_NONE then return end
             TPM:RememberPlayerPveCombatTarget(targetName, targetUnitId, targetType)
         end
 
         local function RegisterPlayerTargetSource(suffix, combatUnitType)
-            if type(combatUnitType) ~= "number" then return end
             local namespace = ADDON_NAME .. "CombatTargetCache" .. suffix
             EVENT_MANAGER:RegisterForEvent(namespace, EVENT_COMBAT_EVENT, OnPlayerPveCombatTarget)
-            if EVENT_MANAGER.AddFilterForEvent and _G.REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE then
-                EVENT_MANAGER:AddFilterForEvent(namespace, EVENT_COMBAT_EVENT, REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, combatUnitType)
-            end
+            EVENT_MANAGER:AddFilterForEvent(namespace, EVENT_COMBAT_EVENT, REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, combatUnitType)
+            EVENT_MANAGER:AddFilterForEvent(namespace, EVENT_COMBAT_EVENT, REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_NONE)
+            EVENT_MANAGER:AddFilterForEvent(namespace, EVENT_COMBAT_EVENT, REGISTER_FILTER_IS_ERROR, false)
         end
-        RegisterPlayerTargetSource("Player", _G.COMBAT_UNIT_TYPE_PLAYER)
-        RegisterPlayerTargetSource("Pet", _G.COMBAT_UNIT_TYPE_PLAYER_PET)
-        RegisterPlayerTargetSource("Companion", _G.COMBAT_UNIT_TYPE_PLAYER_COMPANION)
+        RegisterPlayerTargetSource("Player", COMBAT_UNIT_TYPE_PLAYER)
+        RegisterPlayerTargetSource("Pet", COMBAT_UNIT_TYPE_PLAYER_PET)
+        RegisterPlayerTargetSource("Companion", COMBAT_UNIT_TYPE_PLAYER_COMPANION)
 
-        local registeredDeathResult = false
         local function RegisterPveDeathResult(suffix, resultCode)
-            if type(resultCode) ~= "number" then return end
             local namespace = ADDON_NAME .. "CombatStatsPvE" .. suffix
             EVENT_MANAGER:RegisterForEvent(namespace, EVENT_COMBAT_EVENT, OnPveNpcDeath)
-            if EVENT_MANAGER.AddFilterForEvent and _G.REGISTER_FILTER_COMBAT_RESULT then
-                EVENT_MANAGER:AddFilterForEvent(namespace, EVENT_COMBAT_EVENT, REGISTER_FILTER_COMBAT_RESULT, resultCode)
-            end
-            registeredDeathResult = true
+            EVENT_MANAGER:AddFilterForEvent(namespace, EVENT_COMBAT_EVENT, REGISTER_FILTER_COMBAT_RESULT, resultCode)
+            EVENT_MANAGER:AddFilterForEvent(namespace, EVENT_COMBAT_EVENT, REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_NONE)
+            EVENT_MANAGER:AddFilterForEvent(namespace, EVENT_COMBAT_EVENT, REGISTER_FILTER_IS_ERROR, false)
         end
 
         -- DIED / DIED_XP represent the actual NPC death and are much more useful
         -- in group content than ACTION_RESULT_KILLING_BLOW.
-        RegisterPveDeathResult("Died", _G.ACTION_RESULT_DIED)
-        RegisterPveDeathResult("DiedXP", _G.ACTION_RESULT_DIED_XP)
-
-        -- Compatibility fallback for an API variant without the death results.
-        if not registeredDeathResult then
-            RegisterPveDeathResult("KillingBlow", _G.ACTION_RESULT_KILLING_BLOW)
-        end
-    end
+        RegisterPveDeathResult("Died", ACTION_RESULT_DIED)
+        RegisterPveDeathResult("DiedXP", ACTION_RESULT_DIED_XP)
 
 
     -- 2.6.2 World Events. PARTICIPATION_BEGIN remains the strongest signal,
     -- but activation is now kept as a candidate so classic Dark Anchors can be
     -- promoted by local combat/XP/Gold evidence when that callback is missing.
-    if _G.EVENT_WORLD_EVENT_ACTIVATED then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "WorldEventActivated", EVENT_WORLD_EVENT_ACTIVATED,
-            function(_, worldEventInstanceId)
-                TPM:ObserveWorldEventActivation(worldEventInstanceId)
-            end)
-    end
-    if _G.EVENT_WORLD_EVENT_PARTICIPATION_BEGIN then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "WorldEventParticipationBegin", EVENT_WORLD_EVENT_PARTICIPATION_BEGIN,
-            function(_, worldEventInstanceId, stepDefId)
-                TPM:BeginWorldEventParticipation(worldEventInstanceId, stepDefId)
-            end)
-    end
-    if _G.EVENT_WORLD_EVENT_PARTICIPATION_END then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "WorldEventParticipationEnd", EVENT_WORLD_EVENT_PARTICIPATION_END,
-            function(_, worldEventInstanceId)
-                TPM:EndWorldEventParticipation(worldEventInstanceId)
-            end)
-    end
-    if _G.EVENT_WORLD_EVENT_STEP_CHANGED then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "WorldEventStepChanged", EVENT_WORLD_EVENT_STEP_CHANGED,
-            function(_, worldEventInstanceId, newStepDefId)
-                TPM:UpdateWorldEventTrackerMetadata(worldEventInstanceId, newStepDefId)
-            end)
-    end
-    if _G.EVENT_WORLD_EVENT_ACTIVE_LOCATION_CHANGED then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "WorldEventLocationChanged", EVENT_WORLD_EVENT_ACTIVE_LOCATION_CHANGED,
-            function(_, worldEventInstanceId)
-                TPM:ObserveWorldEventActivation(worldEventInstanceId)
-                TPM:UpdateWorldEventTrackerMetadata(worldEventInstanceId)
-            end)
-    end
-    if _G.EVENT_WORLD_EVENT_DEACTIVATED then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "WorldEventDeactivated", EVENT_WORLD_EVENT_DEACTIVATED,
-            function(_, worldEventInstanceId)
-                TPM:DeactivateWorldEvent(worldEventInstanceId)
-            end)
-    end
-
-    if _G.EVENT_UNIT_DEATH_STATE_CHANGED then
-        local namespace = ADDON_NAME .. "CombatStatsPlayerDeath"
-        EVENT_MANAGER:RegisterForEvent(namespace, EVENT_UNIT_DEATH_STATE_CHANGED, function(_, unitTag, isDead)
-            if unitTag == "player" and isDead and not TPM:IsInPvPEnvironment() and not TPM:IsDuplicateCombatCounterEvent("pve_player_death", 2500) then
-                TPM:MarkNearbyWorldEventParticipationEvidence("player_death")
-                TPM:IncrementPlayerCombatStat("pveDeaths", 1)
-                TPM:RecordWorldEventPveDeath()
-            end
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "WorldEventActivated", EVENT_WORLD_EVENT_ACTIVATED,
+        function(_, worldEventInstanceId)
+            TPM:ObserveWorldEventActivation(worldEventInstanceId)
         end)
-        if EVENT_MANAGER.AddFilterForEvent and _G.REGISTER_FILTER_UNIT_TAG then EVENT_MANAGER:AddFilterForEvent(namespace, EVENT_UNIT_DEATH_STATE_CHANGED, REGISTER_FILTER_UNIT_TAG, "player") end
-    end
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "WorldEventParticipationBegin", EVENT_WORLD_EVENT_PARTICIPATION_BEGIN,
+        function(_, worldEventInstanceId, stepDefId)
+            TPM:BeginWorldEventParticipation(worldEventInstanceId, stepDefId)
+        end)
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "WorldEventParticipationEnd", EVENT_WORLD_EVENT_PARTICIPATION_END,
+        function(_, worldEventInstanceId)
+            TPM:EndWorldEventParticipation(worldEventInstanceId)
+        end)
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "WorldEventStepChanged", EVENT_WORLD_EVENT_STEP_CHANGED,
+        function(_, worldEventInstanceId, newStepDefId)
+            TPM:UpdateWorldEventTrackerMetadata(worldEventInstanceId, newStepDefId)
+        end)
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "WorldEventLocationChanged", EVENT_WORLD_EVENT_ACTIVE_LOCATION_CHANGED,
+        function(_, worldEventInstanceId)
+            TPM:ObserveWorldEventActivation(worldEventInstanceId)
+            TPM:UpdateWorldEventTrackerMetadata(worldEventInstanceId)
+        end)
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "WorldEventDeactivated", EVENT_WORLD_EVENT_DEACTIVATED,
+        function(_, worldEventInstanceId)
+            TPM:DeactivateWorldEvent(worldEventInstanceId)
+        end)
 
-    if _G.EVENT_UNIT_DEATH_STATE_CHANGED then
-        local function OnBossDeath(_, unitTag, isDead)
-            if isDead then TPM:RecordBossDefeat(unitTag) end
+    local playerDeathNamespace = ADDON_NAME .. "CombatStatsPlayerDeath"
+    EVENT_MANAGER:RegisterForEvent(playerDeathNamespace, EVENT_UNIT_DEATH_STATE_CHANGED, function(_, unitTag, isDead)
+        if isDead and not TPM:IsInPvPEnvironment() and not TPM:IsDuplicateCombatCounterEvent("pve_player_death", 2500) then
+            TPM:MarkNearbyWorldEventParticipationEvidence("player_death")
+            TPM:IncrementPlayerCombatStat("pveDeaths", 1)
+            TPM:RecordWorldEventPveDeath()
         end
-        if EVENT_MANAGER.AddFilterForEvent and _G.REGISTER_FILTER_UNIT_TAG then
-            for bossIndex = 1, 6 do
-                local unitTag = "boss" .. tostring(bossIndex)
-                local namespace = ADDON_NAME .. "CombatStatsBoss" .. tostring(bossIndex)
-                EVENT_MANAGER:RegisterForEvent(namespace, EVENT_UNIT_DEATH_STATE_CHANGED, OnBossDeath)
-                EVENT_MANAGER:AddFilterForEvent(namespace, EVENT_UNIT_DEATH_STATE_CHANGED, REGISTER_FILTER_UNIT_TAG, unitTag)
-            end
-        else
-            EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "CombatStatsBoss", EVENT_UNIT_DEATH_STATE_CHANGED, OnBossDeath)
-        end
+    end)
+    EVENT_MANAGER:AddFilterForEvent(playerDeathNamespace, EVENT_UNIT_DEATH_STATE_CHANGED, REGISTER_FILTER_UNIT_TAG, "player")
+
+    local function OnBossDeath(_, unitTag, isDead)
+        if isDead then TPM:RecordBossDefeat(unitTag) end
+    end
+    for bossIndex = 1, 6 do
+        local unitTag = "boss" .. tostring(bossIndex)
+        local namespace = ADDON_NAME .. "CombatStatsBoss" .. tostring(bossIndex)
+        EVENT_MANAGER:RegisterForEvent(namespace, EVENT_UNIT_DEATH_STATE_CHANGED, OnBossDeath)
+        EVENT_MANAGER:AddFilterForEvent(namespace, EVENT_UNIT_DEATH_STATE_CHANGED, REGISTER_FILTER_UNIT_TAG, unitTag)
     end
 
     -- v2.0.15 per-character economy tracker. EVENT_CURRENCY_UPDATE provides the
     -- old/new balance and reason. Player initialization and bank transfers are ignored so
     -- moving gold/AP/Tel Var/vouchers between wallet and bank does not inflate
     -- received/spent totals.
-    if _G.EVENT_CURRENCY_UPDATE then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "EconomyCurrency", EVENT_CURRENCY_UPDATE,
-            function(_, currencyType, currencyLocation, newAmount, oldAmount, reason, reasonSupplementaryInfo)
-                TPM:RecordTrackedActivityGoldGain(currencyType, currencyLocation, newAmount, oldAmount, reason)
-                TPM:RecordEconomyCurrencyChange(currencyType, currencyLocation, newAmount, oldAmount, reason)
-                TPM:GetEconomyCurrencyDefinitions()
-                if TPM.economyCurrencyByType and TPM.economyCurrencyByType[currencyType]
-                    and (not _G.CURRENCY_CHANGE_REASON_PLAYER_INIT or reason ~= _G.CURRENCY_CHANGE_REASON_PLAYER_INIT) then
-                    TPM:QueueEconomyHistoryCheckpoint()
-                end
-            end)
-    end
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "EconomyCurrency", EVENT_CURRENCY_UPDATE,
+        function(_, currencyType, currencyLocation, newAmount, oldAmount, reason, reasonSupplementaryInfo)
+            TPM:RecordTrackedActivityGoldGain(currencyType, currencyLocation, newAmount, oldAmount, reason)
+            TPM:RecordEconomyCurrencyChange(currencyType, currencyLocation, newAmount, oldAmount, reason)
+            TPM:GetEconomyCurrencyDefinitions()
+            if TPM.economyCurrencyByType and TPM.economyCurrencyByType[currencyType]
+                and reason ~= CURRENCY_CHANGE_REASON_PLAYER_INIT then
+                TPM:QueueEconomyHistoryCheckpoint()
+            end
+        end)
 
     -- v2.6.22: track how much gold this character has actually lost to the
     -- Justice system (bounty payoff). This event does not represent passive
     -- bounty decay, and the amount is stored only as a Gold spending sub-total.
-    if _G.EVENT_JUSTICE_GOLD_REMOVED then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "EconomyBountyPaid", EVENT_JUSTICE_GOLD_REMOVED,
-            function(_, goldAmount)
-                TPM:RecordEconomyBountyPayment(goldAmount)
-            end)
-    end
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "EconomyBountyPaid", EVENT_JUSTICE_GOLD_REMOVED,
+        function(_, goldAmount)
+            TPM:RecordEconomyBountyPayment(goldAmount)
+        end)
 
-    if _G.EVENT_EXPERIENCE_GAIN then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "ActivityExperienceGain", EVENT_EXPERIENCE_GAIN,
-            function(_, reason, level, previousExperience, currentExperience)
-                -- Keep this event for activity totals. Individual kill XP is
-                -- matched from EVENT_EXPERIENCE_UPDATE below, which reflects
-                -- every actual player XP-state change more reliably.
-                TPM:RecordTrackedActivityExperienceGain(reason, level, previousExperience, currentExperience)
-                if TPM.saved and TPM.saved.statisticsPage == "history" and TPM:GetStatisticsHistorySubPage() == 2 then TPM:RefreshCombatProgressionBars() end
-            end)
-    end
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "ActivityExperienceGain", EVENT_EXPERIENCE_GAIN,
+        function(_, reason, level, previousExperience, currentExperience)
+            -- Keep this event for activity totals. Individual kill XP is
+            -- matched from EVENT_EXPERIENCE_UPDATE below, which reflects
+            -- every actual player XP-state change more reliably.
+            TPM:RecordTrackedActivityExperienceGain(reason, level, previousExperience, currentExperience)
+        end)
 
-    if _G.EVENT_EXPERIENCE_UPDATE then
-        -- Seed the baseline before the first kill so the first XP update can be
-        -- measured as a real delta instead of being lost.
-        if type(GetUnitXP) == "function" then
-            local ok, value = pcall(GetUnitXP, "player")
-            if ok and type(value) == "number" then TPM.killLogLastPlayerExperience = value end
-        end
-        if type(GetUnitXPMax) == "function" then
-            local ok, value = pcall(GetUnitXPMax, "player")
-            if ok and type(value) == "number" then TPM.killLogLastPlayerExperienceMax = value end
-        end
-        if type(GetUnitLevel) == "function" then
-            local ok, value = pcall(GetUnitLevel, "player")
-            if ok and type(value) == "number" then TPM.killLogLastPlayerLevel = value end
-        end
+    -- Seed the baseline before the first kill so the first XP update can be
+    -- measured as a real delta instead of being lost.
+    TPM.killLogLastPlayerExperience = tonumber(GetUnitXP("player")) or 0
+    TPM.killLogLastPlayerExperienceMax = tonumber(GetUnitXPMax("player")) or 0
+    TPM.killLogLastPlayerLevel = tonumber(GetUnitLevel("player")) or 1
 
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "CombatProgressXP", EVENT_EXPERIENCE_UPDATE,
-            function(_, unitTag, currentExp, maxExp, reason)
-                if unitTag ~= "player" then return end
-                TPM:HandlePlayerExperienceUpdate(currentExp, maxExp, reason)
-                if TPM.saved and TPM.saved.statisticsPage == "history" and TPM:GetStatisticsHistorySubPage() == 2 then TPM:RefreshCombatProgressionBars() end
-            end)
-        if EVENT_MANAGER.AddFilterForEvent and _G.REGISTER_FILTER_UNIT_TAG then
-            EVENT_MANAGER:AddFilterForEvent(ADDON_NAME .. "CombatProgressXP", EVENT_EXPERIENCE_UPDATE, REGISTER_FILTER_UNIT_TAG, "player")
-        end
-    end
-    if _G.EVENT_LEVEL_UPDATE then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "CombatProgressLevel", EVENT_LEVEL_UPDATE, function(_, unitTag)
-            if unitTag == "player" and TPM.saved and TPM.saved.statisticsPage == "history" and TPM:GetStatisticsHistorySubPage() == 2 then TPM:RefreshCombatProgressionBars() end
+    local combatProgressXpNamespace = ADDON_NAME .. "CombatProgressXP"
+    EVENT_MANAGER:RegisterForEvent(combatProgressXpNamespace, EVENT_EXPERIENCE_UPDATE,
+        function(_, unitTag, currentExp, maxExp, reason)
+            TPM:HandlePlayerExperienceUpdate(currentExp, maxExp, reason)
         end)
-    end
-    if _G.EVENT_CHAMPION_POINT_UPDATE then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "CombatProgressCP", EVENT_CHAMPION_POINT_UPDATE, function(_, unitTag)
-            if unitTag == "player" and TPM.saved and TPM.saved.statisticsPage == "history" and TPM:GetStatisticsHistorySubPage() == 2 then TPM:RefreshCombatProgressionBars() end
-        end)
-    end
-    if _G.EVENT_COMPANION_EXPERIENCE_GAIN then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "CombatProgressCompanionXP", EVENT_COMPANION_EXPERIENCE_GAIN, function()
-            if TPM.saved and TPM.saved.statisticsPage == "history" and TPM:GetStatisticsHistorySubPage() == 2 then TPM:RefreshCombatProgressionBars() end
-        end)
-    end
-    if _G.EVENT_COMPANION_ACTIVATED then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "CombatProgressCompanionOn", EVENT_COMPANION_ACTIVATED, function()
-            if TPM.saved and TPM.saved.statisticsPage == "history" and TPM:GetStatisticsHistorySubPage() == 2 then TPM:RefreshCombatProgressionBars() end
-        end)
-    end
-    if _G.EVENT_COMPANION_DEACTIVATED then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "CombatProgressCompanionOff", EVENT_COMPANION_DEACTIVATED, function()
-            if TPM.saved and TPM.saved.statisticsPage == "history" and TPM:GetStatisticsHistorySubPage() == 2 then TPM:RefreshCombatProgressionBars() end
-        end)
-    end
+    EVENT_MANAGER:AddFilterForEvent(combatProgressXpNamespace, EVENT_EXPERIENCE_UPDATE, REGISTER_FILTER_UNIT_TAG, "player")
 
-    if _G.EVENT_SCREEN_RESIZED then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "ScreenResized", EVENT_SCREEN_RESIZED, function()
-            if TPM.statisticsWindow then TPM:ClampStatisticsWindowToScreen() end
-            if TPM.questRewardControl then TPM:ApplyQuestRewardPosition() end
-            if TPM.skyshardGoalWidget then TPM:UpdateSkyshardGoalAnchor(true); TPM:RefreshSkyshardGoalWidget() end
-        end)
-    end
+    local combatProgressCpNamespace = ADDON_NAME .. "CombatProgressCP"
+    EVENT_MANAGER:RegisterForEvent(combatProgressCpNamespace, EVENT_CHAMPION_POINT_UPDATE, function()
+        if TPM.saved and TPM.saved.statisticsPage == "history" and TPM:GetStatisticsHistorySubPage() == 2 then
+            TPM:RefreshCombatProgressionBars()
+        end
+    end)
+    EVENT_MANAGER:AddFilterForEvent(combatProgressCpNamespace, EVENT_CHAMPION_POINT_UPDATE, REGISTER_FILTER_UNIT_TAG, "player")
+
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "CombatProgressCompanionXP", EVENT_COMPANION_EXPERIENCE_GAIN, function()
+        if TPM.saved and TPM.saved.statisticsPage == "history" and TPM:GetStatisticsHistorySubPage() == 2 then TPM:RefreshCombatProgressionBars() end
+    end)
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "CombatProgressCompanionOn", EVENT_COMPANION_ACTIVATED, function()
+        if TPM.saved and TPM.saved.statisticsPage == "history" and TPM:GetStatisticsHistorySubPage() == 2 then TPM:RefreshCombatProgressionBars() end
+    end)
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "CombatProgressCompanionOff", EVENT_COMPANION_DEACTIVATED, function()
+        if TPM.saved and TPM.saved.statisticsPage == "history" and TPM:GetStatisticsHistorySubPage() == 2 then TPM:RefreshCombatProgressionBars() end
+    end)
+
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "ScreenResized", EVENT_SCREEN_RESIZED, function()
+        if TPM.statisticsWindow then TPM:ClampStatisticsWindowToScreen() end
+        if TPM.questRewardControl then TPM:ApplyQuestRewardPosition() end
+        if TPM.skyshardGoalWidget then TPM:UpdateSkyshardGoalAnchor(true); TPM:RefreshSkyshardGoalWidget() end
+    end)
 
     SLASH_COMMANDS["/tpm"] = function(text) TPM:HandleSlashCommand(text) end
     SLASH_COMMANDS["/tamrielprogress"] = function(text) TPM:HandleSlashCommand(text) end

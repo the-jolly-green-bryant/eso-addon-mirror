@@ -18,7 +18,7 @@ EPC.DungeonChestFinder = EPC.DungeonChestFinder or {}
 local F = EPC.DungeonChestFinder
 local wm = WINDOW_MANAGER
 
-local UPDATE_MS = 200
+local UPDATE_MS = 700
 local MAX_MARKERS = 36
 local DEDUPE_DISTANCE_CM = 450
 local LOOT_MATCH_DISTANCE_CM = 700
@@ -888,12 +888,30 @@ function F:Initialize()
     local prefix = (EPC.name or "EAS") .. "_DungeonChestFinder"
 
     EVENT_MANAGER:RegisterForUpdate(prefix .. "_Update", UPDATE_MS, function()
-        if EPC.saved and EPC.saved.enabled ~= false and EPC.saved.dungeonChestFinderEnabled ~= false
-            and self:IsSupportedInstance() then
+        if not EPC.saved or EPC.saved.enabled == false or EPC.saved.dungeonChestFinderEnabled == false then
+            if self.wasActive029315 == true or (tonumber(self.lastVisibleCount) or 0) > 0 then
+                self.wasActive029315 = false
+                self:HideAllMarkers("inactive")
+            end
+            return
+        end
+
+        -- In normal overland play the finder has nothing to render. Probe the
+        -- instance type only every 2.5s there; activation/zone events reset its
+        -- cached state immediately when the player actually enters content.
+        local now029341 = type(GetFrameTimeMilliseconds) == "function" and (tonumber(GetFrameTimeMilliseconds()) or 0) or 0
+        if self.wasActive029315 ~= true and self.lastUnsupportedProbe029341
+            and (now029341 - self.lastUnsupportedProbe029341) < 2500 then return end
+        local active = self:IsSupportedInstance()
+        if not active then self.lastUnsupportedProbe029341 = now029341 end
+        if active then
+            self.lastUnsupportedProbe029341 = nil
             self:CheckReticleInteractable()
             self:RefreshMarkers()
-        else
-            self:RefreshMarkers()
+            self.wasActive029315 = true
+        elseif self.wasActive029315 == true or (tonumber(self.lastVisibleCount) or 0) > 0 then
+            self.wasActive029315 = false
+            self:HideAllMarkers("inactive")
         end
     end)
 
@@ -918,6 +936,7 @@ function F:Initialize()
 
     if EVENT_PLAYER_ACTIVATED ~= nil then
         EVENT_MANAGER:RegisterForEvent(prefix .. "_Activated", EVENT_PLAYER_ACTIVATED, function()
+            self.lastUnsupportedProbe029341 = nil
             self:HandlePlayerActivated()
         end)
     end
@@ -925,6 +944,7 @@ function F:Initialize()
     if EVENT_ZONE_CHANGED ~= nil then
         EVENT_MANAGER:RegisterForEvent(prefix .. "_Zone", EVENT_ZONE_CHANGED, function(_, unitTag)
             if not unitTag or unitTag == "player" then
+                self.lastUnsupportedProbe029341 = nil
                 self:HideAllMarkers()
             end
         end)

@@ -1,8 +1,8 @@
 ## Title: |cFFD700Tetsu's|r Combat Tools
 ## Author: Tetsurion
-## Description: Console combat HUD pack. Skill history, GCD, combat status.
-## Version: 1.1.1
-## AddOnVersion: 10101
+## Description: Console combat HUD pack. Skills, combat lamp, food and potion timers.
+## Version: 1.2.4
+## AddOnVersion: 10204
 ## APIVersion: 101050 101051
 ## SavedVariables: TetsuCombatToolsSavedVars
 ## DependsOn: LibHarvensAddonSettings
@@ -11,5 +11,6 @@ localization/en.lua
 localization/$(language).lua
 SkillTracker.lua
 CombatStatus.lua
+Consumables.lua
 Settings.lua
 Main.lua

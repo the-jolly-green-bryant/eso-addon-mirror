@@ -1,4 +1,4 @@
-SECURITY MODEL - ESO ADVENTURER SUITE 0.29.197
+SECURITY MODEL - ESO ADVENTURER SUITE 0.29.198
 ============================================
 
 ESO Adventurer Suite is primarily a recommendation, analytics, HUD, inventory-information, collection-information, crafting-helper, routing, and player-operated travel addon. It does not automate movement, targeting, normal combat ability casts, blocking, dodging, interrupts, weapon swaps, or quickslot activation.
@@ -11,9 +11,10 @@ It may create UI controls, listen for ESO UI events, calculate local scores/dist
 
 COMBAT / ACTION-BAR BOUNDARIES
 ------------------------------
-Smart Combat Advisor, Dual Action Bar HUD, Ability Overlays, BLOCK NOW warnings, unit frames, combat reports, stack/timer displays, and recommendation glows are guidance/display systems. They do not cast abilities, block, dodge, interrupt, target, move, weave, weapon-swap, use quickslots, or synthesize keyboard/mouse/controller gameplay input.
+Boss Mechanics Coach, Smart Combat Advisor, Dual Action Bar HUD, Ability Overlays, merged combat-reaction BLOCK warnings, unit frames, combat reports, stack/timer displays, and recommendation glows are guidance/display systems. They do not cast abilities, block, dodge, interrupt, target, move, weave, weapon-swap, use quickslots, or synthesize keyboard/mouse/controller gameplay input.
 
 Controller glyph features only change displayed keybind/glyph art. Force PlayStation may redirect loaded Xbox/XInput UI texture paths to ESO's built-in PlayStation art; it does not alter controller bindings or input.
+Hybrid Desktop Navigation responds only to the player's explicit menu inputs while ESO UI mode is open: controller directions move a focus target and the controller Primary button invokes the focused keyboard-style UI control's native click handler. Mouse/keyboard input hands control back immediately. It does not automate gameplay actions, move the character, cast/block/dodge, alter bindings, or change ESO's preferred UI/input settings.
 
 PLAYER-OPERATED TRAVEL
 ----------------------
@@ -29,7 +30,7 @@ This feature does not cast abilities, move the character, select targets, use qu
 
 RECIPE / STYLE LEARNER
 ----------------------
-Turbo Learner starts only from an explicit player click while the relevant inventory/bank UI is open. It builds a local queue of eligible unknown learnable items and uses ESO's protected item-use path (CallSecureProtected) one item at a time. It does not bypass protected APIs, and combat/protected-state restrictions remain authoritative.
+Turbo Learner opens as a top-menu preview page and starts only after the player explicitly presses LEARN ALL. It builds a local queue of eligible unknown learnable items and uses ESO's protected item-use path (CallSecureProtected) one item at a time. Bank items are considered only while a Bank is actually open. It does not bypass protected APIs, and combat/protected-state restrictions remain authoritative.
 
 ALCHEMY POTION / POISON MAKER
 ------------------------------
@@ -41,7 +42,7 @@ Outside the explicitly documented maintenance, Turbo Learner, and Alchemy helper
 
 WAYSHRINE AUTO MESSAGE
 -----------------------
-Optional arrival/discovery messaging is user-configurable. Public chat destinations are prepared in ESO chat and require the player's normal chat submission; Local/Suite Chat output is local to the player.
+Optional arrival/discovery messaging is user-configurable. Public chat destinations are prepared in ESO chat and require the player's normal chat submission; Local/Suite Chat output is local to the player. The /promo command is a manual player-operated resend shortcut that re-prepares the configured message; it does not silently submit public chat.
 
 NON-GROUPED PLAYER PRIVACY / DETECTION BOUNDARY
 ------------------------------------------------

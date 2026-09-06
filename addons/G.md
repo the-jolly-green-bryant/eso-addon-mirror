@@ -22,7 +22,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [GammaScry](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Latetide/GammaScry__3991) | Latetide | PC / Mac | 1.0.2 |
 | [GampeadChatNoFade](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Baertram/GampeadChatNoFade__3224) | Baertram | PC / Mac | 2 |
 | [Gank Probability](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Drako-Ei/Gank-Probability__3890) | Drako-Ei | PC / Mac | 1.0.0 |
-| [Gather Buddy](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Everdeen77/Gather-Buddy__4791) | Everdeen77 | PC / Mac | 1.2 |
+| [Gather Buddy](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Everdeen77/Gather-Buddy__4791) | Everdeen77 | PC / Mac | 1.3 |
 | [GatherUp - Rapidly Gather Teammates for Trials](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MelanAster/GatherUp---Rapidly-Gather-Teammates-for-Trials__3906) | MelanAster | PC / Mac | 0.20 |
 | [GCD Weave Timer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BLKx777/GCD-Weave-Timer__902fc32f-1993-4f03-8d5c-0b17986d5681) | BLKx777 | Console | — |
 | [GCDMonitor Revised](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/CaffeinatedMayhem/GCDMonitor-Revised__4050) | CaffeinatedMayhem | PC / Mac | 2.01 |
@@ -71,7 +71,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Gold Rush — Trading & Pricing](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/Gold-Rush-Trading-Pricing__4685) | atharti | PC / Mac | 2.1 |
 | [Gold!](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/TheSpyridon/Gold__1551) | TheSpyridon | PC / Mac | Alpha 0.6.3 |
 | [Golden Light Guild Hall Portal](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lerozain/Golden-Light-Guild-Hall-Portal__3389) | Lerozain | PC / Mac | 1.1 |
-| [Golden Pursuits Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/Golden-Pursuits-Tracker__4276) | atharti | PC / Mac | 1.6 |
+| [Golden Pursuits Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/Golden-Pursuits-Tracker__4276) | atharti | PC / Mac | 1.7 |
 | [GoldTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/drecho0426/GoldTracker__4257) | drecho0426 | PC / Mac | 1.0 |
 | [Goron Dev](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/goron_spice/Goron-Dev__4ff8232a-3b96-4a66-8401-dad48e8b5301) | goron_spice | Console | — |
 | [Got My Five](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Taraezor/Got-My-Five__586) | Taraezor | PC / Mac | v1.13r |
@@ -95,7 +95,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [GroundPaint](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/HeiKyoma/GroundPaint__4632) | HeiKyoma | PC / Mac | 1.2 |
 | [Group & Activity Finder Extensions](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Panicida/Group-Activity-Finder-Extensions__2800) | Panicida | PC / Mac | 6.2.0 |
 | [Group Buff Panels](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Group-Buff-Panels__da882875-d281-47d4-b525-aa19f4f40875) | code65536 | Console | — |
-| [Group Buff Panels](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Group-Buff-Panels__4226) | code65536 | PC / Mac | 2.3.3 |
+| [Group Buff Panels](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Group-Buff-Panels__4226) | code65536 | PC / Mac | 2.3.3.1 |
 | [Group Buffs](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Sordrak/Group-Buffs__1823) | Sordrak | PC / Mac | 1.5.22 |
 | [Group Circle](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/aldericon/Group-Circle__2032) | aldericon | PC / Mac | 10.0 |
 | [Group Damage Share](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Solinur/Group-Damage-Share__1578) | Solinur | PC / Mac | 0.3.4 |
@@ -107,7 +107,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Group Keys](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/Group-Keys__4580) | M0R | PC / Mac | 1.0 |
 | [Group Kill Feed](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/Group-Kill-Feed__e281d0bf-a7b6-4b0c-b4ff-78e38a6ed2f6) | SugaComa | Console | — |
 | [Group Kill Feed (only tested on console)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/Group-Kill-Feed-only-tested-on-console__4285) | SugaComa | PC / Mac | 1.3.5 |
-| [Group Log](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/Group-Log__4316) | atharti | PC / Mac | 1.9 |
+| [Group Log](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/Group-Log__4316) | atharti | PC / Mac | 2.0 |
 | [Group Loot](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Temeez/Group-Loot__1027) | Temeez | PC / Mac | 0.9.7 |
 | [Group Loot Notifier](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Hoft/Group-Loot-Notifier__1618) | Hoft | PC / Mac | 2.17 |
 | [Group Mementos](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PvPenny/Group-Mementos__4766) | PvPenny | PC / Mac | 2.3.3 |
@@ -175,7 +175,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Guild Tickets](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/attriel/Guild-Tickets__3205) | attriel | PC / Mac | 1.0.12 |
 | [Guild Tools \[En/Fr\] Classic](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/pills/Guild-Tools-En-Fr-Classic__884) | pills | PC / Mac | 0.4.0 |
 | [Guild Tools By Fen](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Fenweldryn/Guild-Tools-By-Fen__2939) | Fenweldryn | PC / Mac | 0.9.1 |
-| [Guild Trader Activity (GTA)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sinnereso/Guild-Trader-Activity-GTA__4590) | sinnereso | PC / Mac | 2026.09.02 |
+| [Guild Trader Activity (GTA)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sinnereso/Guild-Trader-Activity-GTA__4590) | sinnereso | PC / Mac | 2026.09.05 |
 | [Guild Trader Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ReliktKoala/Guild-Trader-Tracker__f2495833-84b0-4142-8a25-f2063d0f0a23) | ReliktKoala | Console | — |
 | [GuildActivity](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Coorbin/GuildActivity__2190) | Coorbin | PC / Mac | 1.1.1 |
 | [GuildBankLedger - 3.x - Updated](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/myristican/GuildBankLedger---3.x---Updated__2858) | myristican | PC / Mac | 3.55 |

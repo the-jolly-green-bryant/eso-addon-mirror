@@ -25,7 +25,7 @@ local WORLD_PIN_HEIGHT = 2 -- meters
 local WORLD_PIN_BASE_SIZE = 0.25 * WORLD_PIN_HEIGHT + 0.5
 local WORLD_PIN_USE_DEPTH = false -- false = beams are visible through walls
 local FAR_RANGE_FRACTION = 0.25
-local SPAWN_INTERVAL_MS = 3000
+local SPAWN_INTERVAL_MS = 6000
 local WORLD_PIN_VERTICAL_OFFSET = 3.0 -- meters above the collectible
 
 -- The lore database stores persistent world coordinates in meters, while
@@ -68,7 +68,7 @@ function WorldPins:Initialize()
 		spawnUpdateName = "EASLoreLibrary-WorldPinsSpawn",
 		tickUpdateName = "EASLoreLibrary-WorldPinsUpdate",
 		spawnIntervalMs = SPAWN_INTERVAL_MS,
-		tickIntervalMs = 50,
+		tickIntervalMs = 750,
 	})
 
 	EVENT_MANAGER:RegisterForEvent("EASLoreLibrary-WorldPins", EVENT_PLAYER_ACTIVATED, function()
@@ -163,24 +163,37 @@ end
 function WorldPins:Tick()
 	if self.fragment:IsHidden() then return end
 	if not self.zoneCache then return end
+	-- v0.29.341: when no ambient or tracked lore marker is currently active,
+	-- skip player-position/camera reads entirely until the slower spawn scan
+	-- acquires something.
+	if next(self.acquired) == nil and (not self.markerEnabled or #self.markerLocations == 0) then return end
 
 	local playerX, playerY = EASLoreLibrary.GetPlayer3DPosition()
 	local heading = GetPlayerCameraHeading()
 	local farRange = self.range * FAR_RANGE_FRACTION
 	local zoneCache = self.zoneCache
 
+	local lastHeading = tonumber(self.lastWorldHeading029315)
+	local headingChanged = lastHeading == nil
+	if not headingChanged then
+		local delta = math.abs(heading - lastHeading)
+		if delta > math.pi then delta = (math.pi * 2) - delta end
+		headingChanged = delta >= 0.010
+	end
+	if headingChanged then self.lastWorldHeading029315 = heading end
+
 	for nodeId in pairs(self.acquired) do
 		local control = self.pool:GetActiveObject(nodeId)
-		control:Set3DRenderSpaceOrientation(0, heading, 0)
+		if headingChanged then control:Set3DRenderSpaceOrientation(0, heading, 0) end
 
 		local dx = playerX - zoneCache.worldX[nodeId]
 		local dy = playerY - zoneCache.worldY[nodeId]
 		local distance = math.sqrt(dx * dx + dy * dy)
-		if distance > farRange then
-			local size = WORLD_PIN_BASE_SIZE * (distance / farRange)
+		local size = distance > farRange and (WORLD_PIN_BASE_SIZE * (distance / farRange)) or WORLD_PIN_BASE_SIZE
+		local previousSize = tonumber(control.easLoreSize029315)
+		if not previousSize or math.abs(size - previousSize) >= 0.03 then
+			control.easLoreSize029315 = size
 			control:Set3DLocalDimensions(size, size)
-		else
-			control:Set3DLocalDimensions(WORLD_PIN_BASE_SIZE, WORLD_PIN_BASE_SIZE)
 		end
 	end
 

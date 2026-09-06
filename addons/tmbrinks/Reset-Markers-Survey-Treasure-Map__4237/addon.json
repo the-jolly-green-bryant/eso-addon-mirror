@@ -8,6 +8,10 @@
   "category_id": "24",
   "compatibility": [
     {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
     }
@@ -18,7 +22,7 @@
     "SurveyResetMarker"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4237/",
-  "fingerprint": "045337a291369f5e68dc7f3cffef8833744dd5fca135c887c89ecf2188fff889",
+  "fingerprint": "3be4dabefe5672bee0a2d9aa06d2e14b45263ad0ec2717a7dd4ccc868dd326a6",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw15666.jpg",
     "https://cdn-eso.mmoui.com/preview/pvw15667.png",
@@ -30,11 +34,11 @@
   "source_id": "4237",
   "source_url": "https://www.esoui.com/downloads/info4237-ResetMarkersSurveyTreasureMap.html",
   "stats": {
-    "downloads": 18717,
-    "favorites": 30,
-    "monthly_downloads": 1633
+    "downloads": 20490,
+    "favorites": 35,
+    "monthly_downloads": 1958
   },
   "title": "Reset Markers (Survey & Treasure Map)",
-  "updated_at": 1786397902000,
-  "version": "2.2.6"
+  "updated_at": 1788626315000,
+  "version": "2.2.7"
 }

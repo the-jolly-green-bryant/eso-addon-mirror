@@ -1912,7 +1912,7 @@ function A:RegisterEvents()
             self.currentKnownSpawnZoneKey = known and known.zoneKey or nil
         end
     end)
-    EVENT_MANAGER:RegisterForUpdate(UPDATE_NAME .. "_World", 100, function()
+    EVENT_MANAGER:RegisterForUpdate(UPDATE_NAME .. "_World", 650, function()
         if self.worldRoot and type(self.worldRoot.IsHidden) == "function" and self.worldRoot:IsHidden()
             and self:IsNormalWorldSceneActive()
             and (nowMs() - (tonumber(self.lastWorldRendererRecoveryAt) or 0)) >= 1200 then
@@ -1929,7 +1929,8 @@ function A:RegisterEvents()
         end
         if not self.layoutMode and self.guide and not self.guide:IsHidden() and type(IsDiggingGameActive) == "function" and safe(IsDiggingGameActive, false) ~= true then self.guide:SetHidden(true) end
     end)
-    EVENT_MANAGER:RegisterForUpdate(UPDATE_NAME .. "_DigCell", 100, function()
+    EVENT_MANAGER:RegisterForUpdate(UPDATE_NAME .. "_DigCell", 150, function()
+        if type(IsDiggingGameActive) == "function" and safe(IsDiggingGameActive, false) ~= true then return end
         self:TrackSelectedDigCell()
     end)
 end

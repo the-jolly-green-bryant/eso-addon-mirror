@@ -161,6 +161,7 @@ BattleScrolls = BattleScrolls or {}
 ---@field failedToAssignBossUnitIds table<number, boolean>
 ---@field lastDamageDoneMs number
 ---@field lastPlayerAliveMs number Game time of the last EVENT_PLAYER_ALIVE (death-linger for ShouldReset)
+---@field lastPlayerDeathMs number Game time of the last EVENT_PLAYER_DEAD (0 = none this fight)
 ---@field effectsOnPlayer table<number, EffectStats> Effects on player with attribution, keyed by abilityId
 ---@field effectsOnBosses table<string, table<number, EffectStats>> Effects on bosses, keyed by unitTag ("boss1")
 ---@field effectsOnGroup table<string, table<number, EffectStats>> Effects on group members, keyed by displayName ("PlayerName")
@@ -178,7 +179,7 @@ BattleScrolls = BattleScrolls or {}
 ---@field cruxWindowStartMs number Start of current Crux event burst window
 ---@field ultimate UltimateState Ultimate gen/usage tracking state (managed by combat/ultimate.lua)
 ---@field cruxActivity CruxActivityState|nil Crux economy tracking (managed by combat/crux.lua; nil when not an Arcanist)
----@field resurrectionCount number Successful resurrection casts by the player this fight
+---@field resurrectionLog ResurrectionEvent[] Successful resurrection casts by the player this fight (managed by combat/resurrections.lua)
 ---@field zen ZenState Z'en/DoT-count tracking state (managed by combat/zen.lua)
 local state = {}
 
@@ -371,12 +372,13 @@ function state:Reset()
     self.playerSetup = nil
     self.lastDamageDoneMs = 0
     self.lastPlayerAliveMs = 0
+    self.lastPlayerDeathMs = 0
     self.playerDeathCount = 0
     self.deathRecaps = {}
     self.weaving = BattleScrolls.weaving.newState()
     self.ultimate = BattleScrolls.ultimate.newState()
     self.cruxActivity = nil
-    self.resurrectionCount = 0
+    self.resurrectionLog = {}
     self.zen = BattleScrolls.zen.newState()
 
     -- Clear effect tracking state via effects module
@@ -423,13 +425,14 @@ function state:Snapshot()
     snapshot.bossUnitIdRedirects = self.bossUnitIdRedirects
     snapshot.pendingSharedData = self.pendingSharedData
     snapshot.playerDeathCount = self.playerDeathCount
+    snapshot.lastPlayerDeathMs = self.lastPlayerDeathMs
     snapshot.deathRecaps = self.deathRecaps
     snapshot.playerSetup = self.playerSetup
 
     snapshot.weaving = self.weaving
     snapshot.ultimate = self.ultimate
     snapshot.cruxActivity = self.cruxActivity
-    snapshot.resurrectionCount = self.resurrectionCount
+    snapshot.resurrectionLog = self.resurrectionLog
     snapshot.zen = self.zen
 
     return snapshot
@@ -975,12 +978,10 @@ function state:Initialize()
     -- Weaving module: SLOT events, LA/HA confirmation, LA abilityId discovery
     BattleScrolls.weaving:Initialize()
 
-    -- Crux stack tracking for Exhausting Fatecarver channel duration adjustment.
-    -- Race condition: Crux events may fire before or after Fatecarver SLOT, and
-    -- multiple Crux events can fire in rapid succession (GAINED->UPDATED->FADED).
-    -- We track the max stack count seen within a recent window so that SLOT can
-    -- read the pre-consumption value regardless of event ordering.
-    self.cruxStacks = 0
+    -- Crux stack tracking. Crux events may fire before or after a SLOT event
+    -- and in rapid bursts (GAINED->UPDATED->FADED), so the max seen within a
+    -- short window gives SLOT handlers the pre-cast value either way.
+    self.cruxStacks = BattleScrolls.crux.readCurrentStacks()
     self.cruxRecentMax = 0
     self.cruxWindowStartMs = 0
     EVENT_MANAGER:RegisterForEvent("BattleScrolls_Crux", EVENT_EFFECT_CHANGED,

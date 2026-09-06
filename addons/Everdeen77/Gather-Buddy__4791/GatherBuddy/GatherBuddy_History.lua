@@ -11,7 +11,7 @@ local MAX_HISTORY = 10
 local WINDOW_WIDTH = 660
 local WINDOW_HEIGHT = 360
 
-local ROW_HEIGHT = 28
+local ROW_HEIGHT = 54
 
 ------------------------------------------------------------
 -- UI REFERENCES
@@ -27,6 +27,19 @@ local historyEmptyText
 
 local historyRows = {}
 local historyHeaderControls = {}
+
+local selectedHistorySessionIndex = nil
+local historyBackButton
+
+local historyDetailControls = {}
+
+local historyDetailTitle
+local historyDetailLength
+local historyDetailTotal
+local historyDetailPerHour
+local historyDetailMost
+
+local historyDetailItemRows = {}
 
 ------------------------------------------------------------
 -- FONT HELPERS
@@ -56,6 +69,203 @@ local function GetHistoryFont()
         "$(MEDIUM_FONT)|%d|soft-shadow-thin",
         GetHistoryFontSize()
     )
+end
+
+------------------------------------------------------------
+-- HISTORY SESSION LABEL
+------------------------------------------------------------
+
+local MONTH_NAMES = {
+    [1] = "January",
+    [2] = "February",
+    [3] = "March",
+    [4] = "April",
+    [5] = "May",
+    [6] = "June",
+    [7] = "July",
+    [8] = "August",
+    [9] = "September",
+    [10] = "October",
+    [11] = "November",
+    [12] = "December",
+}
+
+local function FormatHistorySessionLabel(session)
+    if session == nil then
+        return "SESSION"
+    end
+
+    local dateText = session.dateText or "-"
+    local timestamp = tonumber(session.endedAt)
+
+    if timestamp then
+        local year, month, day =
+            GetDateElementsFromTimestamp(timestamp)
+
+        local monthName =
+            MONTH_NAMES[tonumber(month)]
+
+        if year and monthName and day then
+            dateText = string.format(
+                "%d %s, %d",
+                day,
+                monthName,
+                year
+            )
+        end
+    end
+
+    local clockText =
+        tostring(session.clockText or "")
+
+    local hour, minute =
+        string.match(
+            clockText,
+            "^(%d+):(%d+)"
+        )
+
+    if hour and minute then
+        clockText =
+            hour .. ":" .. minute
+    end
+
+    if clockText ~= "" then
+        return string.format(
+            "SESSION — %s — %s",
+            dateText,
+            clockText
+        )
+    end
+
+    return string.format(
+        "SESSION — %s",
+        dateText
+    )
+end
+
+local function SetHistoryHeadersHidden(hidden)
+    for _, control in ipairs(historyHeaderControls) do
+        if control then
+            control:SetHidden(hidden)
+        end
+    end
+end
+
+local function HideHistoryDetailControls()
+    for _, control in ipairs(historyDetailControls) do
+        if control then
+            control:SetHidden(true)
+        end
+    end
+end
+
+------------------------------------------------------------
+-- HISTORY MATERIAL CATEGORIES
+------------------------------------------------------------
+
+local HISTORY_CATEGORY_ORDER = {
+    "BLACKSMITHING",
+    "CLOTHING",
+    "WOODWORKING",
+    "JEWELRY",
+    "ALCHEMY",
+    "ENCHANTING",
+    "PROVISIONING",
+    "FISHING",
+    "FURNISHING",
+    "OTHER",
+}
+
+local HISTORY_ITEM_TYPE_CATEGORIES = {
+    [ITEMTYPE_BLACKSMITHING_RAW_MATERIAL] = "BLACKSMITHING",
+
+    [ITEMTYPE_CLOTHIER_RAW_MATERIAL] = "CLOTHING",
+
+    [ITEMTYPE_WOODWORKING_RAW_MATERIAL] = "WOODWORKING",
+
+    [ITEMTYPE_JEWELRYCRAFTING_RAW_MATERIAL] = "JEWELRY",
+    [ITEMTYPE_JEWELRYCRAFTING_RAW_BOOSTER] = "JEWELRY",
+    [ITEMTYPE_JEWELRY_RAW_TRAIT] = "JEWELRY",
+
+    [ITEMTYPE_REAGENT] = "ALCHEMY",
+    [ITEMTYPE_POTION_BASE] = "ALCHEMY",
+    [ITEMTYPE_POISON_BASE] = "ALCHEMY",
+
+    [ITEMTYPE_ENCHANTING_RUNE_ASPECT] = "ENCHANTING",
+    [ITEMTYPE_ENCHANTING_RUNE_ESSENCE] = "ENCHANTING",
+    [ITEMTYPE_ENCHANTING_RUNE_POTENCY] = "ENCHANTING",
+
+    [ITEMTYPE_INGREDIENT] = "PROVISIONING",
+    [ITEMTYPE_FLAVORING] = "PROVISIONING",
+    [ITEMTYPE_SPICE] = "PROVISIONING",
+
+    [ITEMTYPE_FISH] = "FISHING",
+
+    [ITEMTYPE_FURNISHING_MATERIAL] = "FURNISHING",
+}
+
+local HISTORY_FISHING_FURNISHING_ITEM_IDS = {
+    [118337] = true, -- Fish, Trout
+    [118338] = true, -- Fish, Bass
+    [118339] = true, -- Fish, Salmon
+    [118357] = true, -- Fish, Small
+    [118358] = true, -- Fish, Medium
+    [118359] = true, -- Fish, Large
+}
+
+local function GetHistoryItemCategory(item)
+    if item == nil then
+        return "OTHER"
+    end
+
+    local itemId =
+        tonumber(item.itemId)
+
+    if itemId == nil then
+        return "OTHER"
+    end
+
+    --------------------------------------------------------
+    -- SPECIAL FISHING FURNISHINGS
+    --------------------------------------------------------
+
+    if HISTORY_FISHING_FURNISHING_ITEM_IDS[itemId] then
+        return "FISHING"
+    end
+
+    --------------------------------------------------------
+    -- BUILD ITEM LINK FROM SAVED ITEM ID
+    --------------------------------------------------------
+
+    local itemLink =
+        string.format(
+            "|H0:item:%d:1:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
+            itemId
+        )
+
+    local itemType, specializedItemType =
+        GetItemLinkItemType(
+            itemLink
+        )
+
+    --------------------------------------------------------
+    -- RARE ACHIEVEMENT FISH
+    --------------------------------------------------------
+
+    if itemType == ITEMTYPE_COLLECTIBLE
+        and specializedItemType
+            == SPECIALIZED_ITEMTYPE_COLLECTIBLE_RARE_FISH then
+
+        return "FISHING"
+    end
+
+    --------------------------------------------------------
+    -- STANDARD MATERIAL TYPES
+    --------------------------------------------------------
+
+    return
+        HISTORY_ITEM_TYPE_CATEGORIES[itemType]
+        or "OTHER"
 end
 
 ------------------------------------------------------------
@@ -112,6 +322,68 @@ function GB.ApplyHistoryFontSize()
         if row.mostLabel then
             row.mostLabel:SetFont(font)
         end
+    end
+
+    --------------------------------------------------------
+    -- SESSION DETAILS SUMMARY
+    --------------------------------------------------------
+
+    if historyDetailLength then
+        historyDetailLength:SetFont(font)
+    end
+
+    if historyDetailTotal then
+        historyDetailTotal:SetFont(font)
+    end
+
+    if historyDetailPerHour then
+        historyDetailPerHour:SetFont(font)
+    end
+
+    if historyDetailMost then
+        historyDetailMost:SetFont(font)
+    end
+
+    --------------------------------------------------------
+    -- DETAIL ITEM ROWS
+    --------------------------------------------------------
+
+    for _, row in ipairs(
+        historyDetailItemRows
+    ) do
+        if row.nameLabel then
+            row.nameLabel:SetFont(font)
+        end
+
+        if row.quantityLabel then
+            row.quantityLabel:SetFont(font)
+        end
+    end
+
+    --------------------------------------------------------
+    -- CATEGORY HEADERS
+    --------------------------------------------------------
+
+    if historyScrollChild
+        and historyScrollChild.historyCategoryHeaders then
+
+        for _, header in pairs(
+            historyScrollChild.historyCategoryHeaders
+        ) do
+            if header then
+                header:SetFont(font)
+            end
+        end
+    end
+
+    --------------------------------------------------------
+    -- REBUILD CURRENT VIEW
+    --------------------------------------------------------
+
+    if historyWindow
+        and GB.UpdateHistoryWindow then
+
+        GB.UpdateHistoryWindow()
     end
 end
 
@@ -473,6 +745,8 @@ function GB.ArchiveCurrentSession(
         )
     end
 
+    selectedHistorySessionIndex = nil
+
     if GB.UpdateHistoryWindow then
         GB.UpdateHistoryWindow()
     end
@@ -556,6 +830,18 @@ function GB.UpdateHistoryWindow()
         GetHistoryFont()
 
     --------------------------------------------------------
+    -- RESET SCROLL POSITION
+    --------------------------------------------------------
+
+    if historyScrollContainer
+        and ZO_Scroll_ResetToTop then
+
+        ZO_Scroll_ResetToTop(
+            historyScrollContainer
+        )
+    end
+	
+    --------------------------------------------------------
     -- HIDE EXISTING ROWS
     --------------------------------------------------------
 
@@ -565,6 +851,460 @@ function GB.UpdateHistoryWindow()
         row:SetHidden(true)
     end
 
+    --------------------------------------------------------
+    -- HIDE EXISTING DETAIL ITEM ROWS
+    --------------------------------------------------------
+
+    for _, row in ipairs(
+        historyDetailItemRows
+    ) do
+        if row then
+            row:SetHidden(true)
+        end
+    end
+
+    --------------------------------------------------------
+    -- HIDE EXISTING CATEGORY HEADERS
+    --------------------------------------------------------
+
+    if historyScrollChild
+        and historyScrollChild.historyCategoryHeaders then
+
+        for _, header in pairs(
+            historyScrollChild.historyCategoryHeaders
+        ) do
+            if header then
+                header:SetHidden(true)
+            end
+        end
+    end
+	
+    --------------------------------------------------------
+    -- RESET VIEW STATE
+    --------------------------------------------------------
+
+    HideHistoryDetailControls()
+    SetHistoryHeadersHidden(false)
+
+    if historyBackButton then
+        historyBackButton:SetHidden(true)
+    end
+
+    --------------------------------------------------------
+    -- SESSION DETAILS
+    --------------------------------------------------------
+
+    if selectedHistorySessionIndex ~= nil then
+        local session =
+            history[selectedHistorySessionIndex]
+
+        if session ~= nil then
+            SetHistoryHeadersHidden(true)
+
+            historyEmptyText:SetHidden(true)
+
+            if historyBackButton then
+                historyBackButton:SetHidden(false)
+            end
+
+            ------------------------------------------------
+            -- SESSION TITLE
+            ------------------------------------------------
+
+            historyDetailTitle:SetText(
+                "|c66CCFF"
+                    .. FormatHistorySessionLabel(session)
+                    .. "|r"
+            )
+
+            historyDetailTitle:SetHidden(false)
+
+            ------------------------------------------------
+            -- LENGTH
+            ------------------------------------------------
+
+            historyDetailLength:SetFont(font)
+
+            historyDetailLength:SetText(
+                "|cAAAAAALENGTH:|r "
+                    .. GB.FormatSessionTime(
+                        session.duration or 0
+                    )
+            )
+
+            historyDetailLength:SetHidden(false)
+
+            ------------------------------------------------
+            -- TOTAL
+            ------------------------------------------------
+
+            historyDetailTotal:SetFont(font)
+
+            historyDetailTotal:SetText(
+                "|cAAAAAATOTAL:|r "
+                    .. tostring(
+                        session.totalQuantity or 0
+                    )
+            )
+
+            historyDetailTotal:SetHidden(false)
+
+            ------------------------------------------------
+            -- ITEMS / HOUR
+            ------------------------------------------------
+
+            historyDetailPerHour:SetFont(font)
+
+            historyDetailPerHour:SetText(
+                "|cAAAAAAITEMS / HR:|r "
+                    .. tostring(
+                        session.itemsPerHour or 0
+                    )
+            )
+
+            historyDetailPerHour:SetHidden(false)
+
+            ------------------------------------------------
+            -- MOST GATHERED
+            ------------------------------------------------
+
+            local mostText = "-"
+
+            if session.mostGathered
+                and session.mostGathered.name then
+
+                local quality =
+                    session.mostGathered.quality
+                    or ITEM_QUALITY_NORMAL
+
+                local qualityColor =
+                    GetItemQualityColor(
+                        quality
+                    )
+
+                mostText =
+                    qualityColor:Colorize(
+                        session.mostGathered.name
+                    )
+                        .. " x"
+                        .. tostring(
+                            session.mostGathered.quantity
+                            or 0
+                        )
+            end
+
+            historyDetailMost:SetFont(font)
+
+            historyDetailMost:SetText(
+                "|cAAAAAAMOST GATHERED:|r "
+                    .. mostText
+            )
+
+            historyDetailMost:SetHidden(false)
+
+            ------------------------------------------------
+            -- CATEGORIZED SESSION ITEM LIST
+            ------------------------------------------------
+
+            local items =
+                session.items or {}
+
+            local categorizedItems = {}
+
+            for _, categoryName in ipairs(
+                HISTORY_CATEGORY_ORDER
+            ) do
+                categorizedItems[categoryName] = {}
+            end
+
+            ------------------------------------------------
+            -- GROUP ITEMS BY CATEGORY
+            ------------------------------------------------
+
+            for _, item in ipairs(items) do
+                local categoryName =
+                    GetHistoryItemCategory(item)
+
+                if categorizedItems[categoryName] == nil then
+                    categorizedItems[categoryName] = {}
+                end
+
+                table.insert(
+                    categorizedItems[categoryName],
+                    item
+                )
+            end
+
+            ------------------------------------------------
+            -- CATEGORY HEADER STORAGE
+            ------------------------------------------------
+
+            historyScrollChild.historyCategoryHeaders =
+                historyScrollChild.historyCategoryHeaders
+                or {}
+
+            local categoryHeaders =
+                historyScrollChild.historyCategoryHeaders
+
+            ------------------------------------------------
+            -- ROW SIZES
+            ------------------------------------------------
+
+            local detailRowHeight =
+                math.max(
+                    22,
+                    GetHistoryFontSize() + 8
+                )
+
+            local categoryHeaderHeight = 26
+            local currentY = 155
+            local displayItemIndex = 0
+            local visibleCategoryCount = 0
+
+            ------------------------------------------------
+            -- BUILD CATEGORIES
+            ------------------------------------------------
+
+            for _, categoryName in ipairs(
+                HISTORY_CATEGORY_ORDER
+            ) do
+                local categoryItems =
+                    categorizedItems[categoryName]
+
+                if categoryItems
+                    and #categoryItems > 0 then
+
+                    if visibleCategoryCount > 0 then
+                        currentY =
+                            currentY + 8
+                    end
+
+                    visibleCategoryCount =
+                        visibleCategoryCount + 1
+
+                    ----------------------------------------
+                    -- CATEGORY HEADER
+                    ----------------------------------------
+
+                    local categoryHeader =
+                        categoryHeaders[categoryName]
+
+                    if categoryHeader == nil then
+                        categoryHeader =
+                            WINDOW_MANAGER:CreateControl(
+                                "GatherBuddyHistoryCategory"
+                                    .. categoryName,
+                                historyScrollChild,
+                                CT_LABEL
+                            )
+
+                        categoryHeader:SetWidth(
+                            600
+                        )
+
+                        categoryHeaders[categoryName] =
+                            categoryHeader
+
+                        table.insert(
+                            historyDetailControls,
+                            categoryHeader
+                        )
+                    end
+
+                    categoryHeader:SetFont(
+                        GetHistoryFont()
+                    )
+
+                    categoryHeader:SetText(
+                        "|c66CCFF"
+                            .. categoryName
+                            .. "|r"
+                    )
+
+                    categoryHeader:ClearAnchors()
+
+                    categoryHeader:SetAnchor(
+                        TOPLEFT,
+                        historyScrollChild,
+                        TOPLEFT,
+                        5,
+                        currentY
+                    )
+
+                    categoryHeader:SetHidden(
+                        false
+                    )
+
+                    currentY =
+                        currentY
+                        + categoryHeaderHeight
+
+                    ----------------------------------------
+                    -- ITEMS IN CATEGORY
+                    ----------------------------------------
+
+                    for _, item in ipairs(
+                        categoryItems
+                    ) do
+                        displayItemIndex =
+                            displayItemIndex + 1
+
+                        local row =
+                            historyDetailItemRows[
+                                displayItemIndex
+                            ]
+
+                        if row == nil then
+                            row =
+                                WINDOW_MANAGER:CreateControl(
+                                    "GatherBuddyHistoryDetailItem"
+                                        .. tostring(
+                                            displayItemIndex
+                                        ),
+                                    historyScrollChild,
+                                    CT_CONTROL
+                                )
+
+                            row:SetWidth(
+                                600
+                            )
+
+                            local nameLabel =
+                                WINDOW_MANAGER:CreateControl(
+                                    "GatherBuddyHistoryDetailItemName"
+                                        .. tostring(
+                                            displayItemIndex
+                                        ),
+                                    row,
+                                    CT_LABEL
+                                )
+
+                            nameLabel:SetAnchor(
+                                LEFT,
+                                row,
+                                LEFT,
+                                15,
+                                0
+                            )
+
+                            nameLabel:SetWidth(
+                                490
+                            )
+
+                            local quantityLabel =
+                                WINDOW_MANAGER:CreateControl(
+                                    "GatherBuddyHistoryDetailItemQuantity"
+                                        .. tostring(
+                                            displayItemIndex
+                                        ),
+                                    row,
+                                    CT_LABEL
+                                )
+
+                            quantityLabel:SetAnchor(
+                                RIGHT,
+                                row,
+                                RIGHT,
+                                -5,
+                                0
+                            )
+
+                            quantityLabel:SetWidth(
+                                70
+                            )
+
+                            quantityLabel:SetHorizontalAlignment(
+                                TEXT_ALIGN_RIGHT
+                            )
+
+                            row.nameLabel =
+                                nameLabel
+
+                            row.quantityLabel =
+                                quantityLabel
+
+                            historyDetailItemRows[
+                                displayItemIndex
+                            ] = row
+
+                            table.insert(
+                                historyDetailControls,
+                                row
+                            )
+                        end
+
+                        row:SetHeight(
+                            detailRowHeight
+                        )
+
+                        row:ClearAnchors()
+
+                        row:SetAnchor(
+                            TOPLEFT,
+                            historyScrollChild,
+                            TOPLEFT,
+                            0,
+                            currentY
+                        )
+
+                        row.nameLabel:SetFont(
+                            font
+                        )
+
+                        row.quantityLabel:SetFont(
+                            font
+                        )
+
+                        local quality =
+                            item.quality
+                            or ITEM_QUALITY_NORMAL
+
+                        local qualityColor =
+                            GetItemQualityColor(
+                                quality
+                            )
+
+                        row.nameLabel:SetText(
+                            qualityColor:Colorize(
+                                item.name or "-"
+                            )
+                        )
+
+                        row.quantityLabel:SetText(
+                            "x"
+                                .. tostring(
+                                    item.quantity or 0
+                                )
+                        )
+
+                        row:SetHidden(
+                            false
+                        )
+
+                        currentY =
+                            currentY
+                            + detailRowHeight
+                    end
+                end
+            end
+
+            ------------------------------------------------
+            -- DETAIL SCROLL HEIGHT
+            ------------------------------------------------
+
+            historyScrollChild:SetHeight(
+                math.max(
+                    255,
+                    currentY + 15
+                )
+            )
+
+            return
+        else
+            selectedHistorySessionIndex = nil
+        end
+	end
+	
     --------------------------------------------------------
     -- EMPTY HISTORY
     --------------------------------------------------------
@@ -606,8 +1346,24 @@ function GB.UpdateHistoryWindow()
                 ROW_HEIGHT
             )
 
+            row:SetMouseEnabled(true)
+
+            row:SetHandler(
+                "OnMouseUp",
+                function(self, button, upInside)
+                    if button == MOUSE_BUTTON_INDEX_LEFT
+                        and upInside then
+
+                        selectedHistorySessionIndex =
+                            self.historyIndex
+
+                        GB.UpdateHistoryWindow()
+                    end
+                end
+            )
+
             ------------------------------------------------
-            -- DATE / TIME
+            -- SESSION TITLE
             ------------------------------------------------
 
             local dateLabel =
@@ -620,14 +1376,14 @@ function GB.UpdateHistoryWindow()
 
             dateLabel:SetFont(font)
 
-            dateLabel:SetWidth(140)
+            dateLabel:SetWidth(600)
 
             dateLabel:SetAnchor(
-                LEFT,
+                TOPLEFT,
                 row,
-                LEFT,
+                TOPLEFT,
                 5,
-                0
+                3
             )
 
             ------------------------------------------------
@@ -644,18 +1400,18 @@ function GB.UpdateHistoryWindow()
 
             durationLabel:SetFont(font)
 
-            durationLabel:SetWidth(85)
+            durationLabel:SetWidth(110)
 
             durationLabel:SetHorizontalAlignment(
                 TEXT_ALIGN_RIGHT
             )
 
             durationLabel:SetAnchor(
-                LEFT,
+                TOPLEFT,
                 row,
-                LEFT,
-                145,
-                0
+                TOPLEFT,
+                5,
+                27
             )
 
             ------------------------------------------------
@@ -672,18 +1428,18 @@ function GB.UpdateHistoryWindow()
 
             totalLabel:SetFont(font)
 
-            totalLabel:SetWidth(65)
+            totalLabel:SetWidth(90)
 
             totalLabel:SetHorizontalAlignment(
                 TEXT_ALIGN_RIGHT
             )
 
             totalLabel:SetAnchor(
-                LEFT,
+                TOPLEFT,
                 row,
-                LEFT,
-                240,
-                0
+                TOPLEFT,
+                125,
+                27
             )
 
             ------------------------------------------------
@@ -700,18 +1456,18 @@ function GB.UpdateHistoryWindow()
 
             perHourLabel:SetFont(font)
 
-            perHourLabel:SetWidth(75)
+            perHourLabel:SetWidth(110)
 
             perHourLabel:SetHorizontalAlignment(
                 TEXT_ALIGN_RIGHT
             )
 
             perHourLabel:SetAnchor(
-                LEFT,
+                TOPLEFT,
                 row,
-                LEFT,
-                315,
-                0
+                TOPLEFT,
+                235,
+                27
             )
 
             ------------------------------------------------
@@ -728,14 +1484,14 @@ function GB.UpdateHistoryWindow()
 
             mostLabel:SetFont(font)
 
-            mostLabel:SetWidth(210)
+            mostLabel:SetWidth(250)
 
             mostLabel:SetAnchor(
-                LEFT,
+                TOPLEFT,
                 row,
-                LEFT,
-                405,
-                0
+                TOPLEFT,
+                365,
+                27
             )
 
             row.dateLabel =
@@ -757,6 +1513,8 @@ function GB.UpdateHistoryWindow()
                 row
         end
 
+        row.historyIndex = index
+		
         ----------------------------------------------------
         -- APPLY CURRENT FONT
         ----------------------------------------------------
@@ -783,21 +1541,15 @@ function GB.UpdateHistoryWindow()
         )
 
         ----------------------------------------------------
-        -- DATE / TIME
+        -- SESSION TITLE
         ----------------------------------------------------
 
-        local dateText =
-            session.dateText
-            or "-"
-
-        local clockText =
-            session.clockText
-            or ""
-
         row.dateLabel:SetText(
-            dateText
-                .. " "
-                .. clockText
+            "|c66CCFF"
+                .. FormatHistorySessionLabel(
+                    session
+                )
+                .. "|r"
         )
 
         ----------------------------------------------------
@@ -896,7 +1648,9 @@ function GB.ToggleHistoryWindow()
     historyUserHidden =
         not historyUserHidden
 
-    if not historyUserHidden then
+    if historyUserHidden then
+        selectedHistorySessionIndex = nil
+    else
         GB.UpdateHistoryWindow()
     end
 
@@ -909,6 +1663,7 @@ function GB.HideHistoryWindow()
     end
 
     historyUserHidden = true
+    selectedHistorySessionIndex = nil
 
     ApplyHistoryWindowVisibility()
 end
@@ -1127,6 +1882,51 @@ function GB.CreateHistoryWindow()
     )
 
     --------------------------------------------------------
+    -- BACK BUTTON
+    --------------------------------------------------------
+
+    historyBackButton =
+        WINDOW_MANAGER:CreateControl(
+            "GatherBuddyHistoryBack",
+            historyWindow,
+            CT_BUTTON
+        )
+
+    historyBackButton:SetDimensions(
+        70,
+        24
+    )
+
+    historyBackButton:SetAnchor(
+        TOPRIGHT,
+        historyWindow,
+        TOPRIGHT,
+        -42,
+        3
+    )
+
+    historyBackButton:SetFont(
+        "ZoFontGame"
+    )
+
+    historyBackButton:SetText(
+        "BACK"
+    )
+
+    historyBackButton:SetHidden(
+        true
+    )
+
+    historyBackButton:SetHandler(
+        "OnClicked",
+        function()
+            selectedHistorySessionIndex = nil
+
+            GB.UpdateHistoryWindow()
+        end
+    )
+	
+    --------------------------------------------------------
     -- COLUMN HEADER HELPER
     --------------------------------------------------------
 
@@ -1182,42 +1982,34 @@ function GB.CreateHistoryWindow()
     --------------------------------------------------------
 
     CreateHeader(
-        "GatherBuddyHistoryHeaderDate",
-        "DATE / TIME",
-        15,
-        140,
-        TEXT_ALIGN_LEFT
-    )
-
-    CreateHeader(
         "GatherBuddyHistoryHeaderLength",
         "LENGTH",
-        155,
-        85,
+        15,
+        100,
         TEXT_ALIGN_RIGHT
     )
 
     CreateHeader(
         "GatherBuddyHistoryHeaderTotal",
         "TOTAL",
-        250,
-        65,
+        135,
+        80,
         TEXT_ALIGN_RIGHT
     )
 
     CreateHeader(
         "GatherBuddyHistoryHeaderPerHour",
         "ITEMS / HR",
-        325,
-        75,
+        245,
+        100,
         TEXT_ALIGN_RIGHT
     )
 
     CreateHeader(
         "GatherBuddyHistoryHeaderMost",
         "MOST GATHERED",
-        415,
-        210,
+        375,
+        240,
         TEXT_ALIGN_LEFT
     )
 
@@ -1288,6 +2080,174 @@ function GB.CreateHistoryWindow()
         8
     )
 
+    --------------------------------------------------------
+    -- SESSION DETAILS SUMMARY
+    --------------------------------------------------------
+
+    historyDetailTitle =
+        WINDOW_MANAGER:CreateControl(
+            "GatherBuddyHistoryDetailTitle",
+            historyScrollChild,
+            CT_LABEL
+        )
+
+    historyDetailTitle:SetFont(
+        "ZoFontWinH4"
+    )
+
+    historyDetailTitle:SetAnchor(
+        TOPLEFT,
+        historyScrollChild,
+        TOPLEFT,
+        5,
+        5
+    )
+
+    historyDetailTitle:SetWidth(
+        600
+    )
+
+    historyDetailTitle:SetHidden(
+        true
+    )
+
+    table.insert(
+        historyDetailControls,
+        historyDetailTitle
+    )
+
+    --------------------------------------------------------
+    -- LENGTH
+    --------------------------------------------------------
+
+    historyDetailLength =
+        WINDOW_MANAGER:CreateControl(
+            "GatherBuddyHistoryDetailLength",
+            historyScrollChild,
+            CT_LABEL
+        )
+
+    historyDetailLength:SetFont(
+        GetHistoryFont()
+    )
+
+    historyDetailLength:SetAnchor(
+        TOPLEFT,
+        historyScrollChild,
+        TOPLEFT,
+        5,
+        40
+    )
+
+    historyDetailLength:SetHidden(
+        true
+    )
+
+    table.insert(
+        historyDetailControls,
+        historyDetailLength
+    )
+
+    --------------------------------------------------------
+    -- TOTAL
+    --------------------------------------------------------
+
+    historyDetailTotal =
+        WINDOW_MANAGER:CreateControl(
+            "GatherBuddyHistoryDetailTotal",
+            historyScrollChild,
+            CT_LABEL
+        )
+
+    historyDetailTotal:SetFont(
+        GetHistoryFont()
+    )
+
+    historyDetailTotal:SetAnchor(
+        TOPLEFT,
+        historyScrollChild,
+        TOPLEFT,
+        5,
+        65
+    )
+
+    historyDetailTotal:SetHidden(
+        true
+    )
+
+    table.insert(
+        historyDetailControls,
+        historyDetailTotal
+    )
+
+    --------------------------------------------------------
+    -- ITEMS / HOUR
+    --------------------------------------------------------
+
+    historyDetailPerHour =
+        WINDOW_MANAGER:CreateControl(
+            "GatherBuddyHistoryDetailPerHour",
+            historyScrollChild,
+            CT_LABEL
+        )
+
+    historyDetailPerHour:SetFont(
+        GetHistoryFont()
+    )
+
+    historyDetailPerHour:SetAnchor(
+        TOPLEFT,
+        historyScrollChild,
+        TOPLEFT,
+        5,
+        90
+    )
+
+    historyDetailPerHour:SetHidden(
+        true
+    )
+
+    table.insert(
+        historyDetailControls,
+        historyDetailPerHour
+    )
+
+    --------------------------------------------------------
+    -- MOST GATHERED
+    --------------------------------------------------------
+
+    historyDetailMost =
+        WINDOW_MANAGER:CreateControl(
+            "GatherBuddyHistoryDetailMost",
+            historyScrollChild,
+            CT_LABEL
+        )
+
+    historyDetailMost:SetFont(
+        GetHistoryFont()
+    )
+
+    historyDetailMost:SetAnchor(
+        TOPLEFT,
+        historyScrollChild,
+        TOPLEFT,
+        5,
+        115
+    )
+
+    historyDetailMost:SetWidth(
+        600
+    )
+
+    historyDetailMost:SetHidden(
+        true
+    )
+
+    table.insert(
+        historyDetailControls,
+        historyDetailMost
+    )
+	
     --------------------------------------------------------
     -- APPLY CURRENT SETTINGS
     --------------------------------------------------------

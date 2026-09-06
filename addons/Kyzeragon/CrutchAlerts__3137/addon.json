@@ -22,7 +22,7 @@
     "CrutchAlerts"
   ],
   "download_url": "https://www.esoui.com/downloads/dl3137/",
-  "fingerprint": "94e8d8836842e890b46caca86d38bbf1072d083b77b2f655790c3993946f798c",
+  "fingerprint": "706c6854ba841cda7524055db377cb7be36453ff26641cac5e91015013faf07d",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw10631.png",
     "https://cdn-eso.mmoui.com/preview/pvw12589.png",
@@ -39,11 +39,11 @@
   "source_id": "3137",
   "source_url": "https://www.esoui.com/downloads/info3137-CrutchAlerts.html",
   "stats": {
-    "downloads": 967912,
+    "downloads": 974782,
     "favorites": 158,
-    "monthly_downloads": 12893
+    "monthly_downloads": 18374
   },
   "title": "CrutchAlerts",
-  "updated_at": 1788320466000,
-  "version": "2.25.0"
+  "updated_at": 1788654165000,
+  "version": "2.25.1"
 }

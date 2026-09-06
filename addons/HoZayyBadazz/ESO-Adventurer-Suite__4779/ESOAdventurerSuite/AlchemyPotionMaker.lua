@@ -10,8 +10,8 @@ local wm = WINDOW_MANAGER
 local PREFIX = "ESOAdventurerSuite_AlchemyPotionMaker"
 local ICON_TEXTURE = "/esoui/art/crafting/alchemy_tabicon_reagent_up.dds"
 local NORMAL_W, NORMAL_H = 64, 64
-local PANEL_W, PANEL_H = 790, 620
-local ROW_COUNT = 12
+local PANEL_W, PANEL_H = 900, 810
+local ROW_COUNT = 7
 local EFFECT_POPUP_W, EFFECT_POPUP_H = 590, 620
 local EFFECT_POPUP_ROWS = 17
 
@@ -151,6 +151,30 @@ local COUNTERS = {
 
 local POTION_SOLVENTS = {"Natural Water", "Clear Water", "Pristine Water", "Cleansed Water", "Filtered Water", "Purified Water", "Cloud Mist", "Star Dew", "Lorkhan's Tears"}
 local POISON_SOLVENTS = {"Grease", "Ichor", "Slime", "Gall", "Terebinth", "Pitch-Bile", "Tarblack", "Night-Oil", "Alkahest"}
+
+-- v0.29.237: missing-material tracking. Static harvest ingredients can be
+-- routed into the Suite Resource Pins database. Dynamic drops (dragons,
+-- critters, enemies, etc.) intentionally do not get fake fixed coordinates.
+local MISSING_GATHER_KIND = {
+    ["blessed thistle"] = "FLOWER", ["bugloss"] = "FLOWER", ["columbine"] = "FLOWER",
+    ["corn flower"] = "FLOWER", ["dragonthorn"] = "FLOWER", ["lady's smock"] = "FLOWER",
+    ["mountain flower"] = "FLOWER", ["nightshade"] = "FLOWER", ["wormwood"] = "FLOWER",
+    ["blue entoloma"] = "MUSHROOM", ["emetic russula"] = "MUSHROOM", ["imp stool"] = "MUSHROOM",
+    ["luminous russula"] = "MUSHROOM", ["namira's rot"] = "MUSHROOM", ["stinkhorn"] = "MUSHROOM",
+    ["violet coprinus"] = "MUSHROOM", ["white cap"] = "MUSHROOM",
+    ["nirnroot"] = "WATERPLANT", ["crimson nirnroot"] = "WATERPLANT", ["water hyacinth"] = "WATERPLANT",
+    ["clam gall"] = "CLAM", ["powdered mother of pearl"] = "CLAM",
+    ["chaurus egg"] = "ALCHEMY",
+}
+
+local DYNAMIC_MATERIAL_HINT = {
+    ["beetle scuttle"] = "dropped by beetles",
+    ["butterfly wing"] = "collected from butterflies",
+    ["dragon rheum"] = "dragon drop", ["dragon's bile"] = "dragon drop", ["dragon's blood"] = "dragon drop",
+    ["fleshfly larva"] = "creature drop", ["mudcrab chitin"] = "mudcrab drop",
+    ["scrib jelly"] = "scrib/kwama drop", ["spider egg"] = "spider drop",
+    ["torchbug thorax"] = "collected from torchbugs", ["vile coagulant"] = "special encounter drop",
+}
 local SOLVENT_RANK = {}
 for i, name in ipairs(POTION_SOLVENTS) do SOLVENT_RANK[normalize(name)] = i end
 for i, name in ipairs(POISON_SOLVENTS) do SOLVENT_RANK[normalize(name)] = i end
@@ -616,6 +640,150 @@ function A:BuildExactResults()
     return out
 end
 
+
+-- v0.29.240: one-click "Best Buffs" / "Best Poisons" filter.
+-- These weights are intentionally about combat usefulness, not sale value. The
+-- filter favors strong multi-effect recipes and keeps READY recipes above missing
+-- ones so the player can immediately load/craft something useful.
+local BEST_POTION_EFFECT_SCORE = {
+    ["Heroism"] = 135,
+    ["Increase Weapon Power"] = 120,
+    ["Increase Spell Power"] = 120,
+    ["Weapon Critical"] = 112,
+    ["Spell Critical"] = 112,
+    ["Unstoppable"] = 108,
+    ["Protection"] = 96,
+    ["Vitality"] = 94,
+    ["Speed"] = 88,
+    ["Restore Health"] = 84,
+    ["Restore Magicka"] = 78,
+    ["Restore Stamina"] = 78,
+    ["Increase Armor"] = 72,
+    ["Increase Spell Resist"] = 72,
+    ["Invisible"] = 62,
+    ["Detection"] = 44,
+}
+
+local BEST_POISON_EFFECT_SCORE = {
+    ["Gradual Ravage Health"] = 140,
+    ["Ravage Health"] = 132,
+    ["Breach"] = 120,
+    ["Fracture"] = 120,
+    ["Defile"] = 114,
+    ["Vulnerability"] = 112,
+    ["Maim"] = 102,
+    ["Cowardice"] = 102,
+    ["Enervation"] = 96,
+    ["Uncertainty"] = 96,
+    ["Hindrance"] = 92,
+    ["Entrapment"] = 88,
+    ["Ravage Stamina"] = 84,
+    ["Ravage Magicka"] = 84,
+    ["Timidity"] = 78,
+    ["Detection"] = 42,
+}
+
+local function EffectSet(effects)
+    local set = {}
+    for _, effect in ipairs(effects or {}) do set[effect] = true end
+    return set
+end
+
+local function BestRecipeScore(mode, effects)
+    local weights = mode == "POISON" and BEST_POISON_EFFECT_SCORE or BEST_POTION_EFFECT_SCORE
+    local score, useful = 0, 0
+    for _, effect in ipairs(effects or {}) do
+        local value = weights[effect]
+        if value then
+            score = score + value
+            useful = useful + 1
+        else
+            -- Do not call a recipe "best" when it mixes in an effect that belongs
+            -- to the opposite side of Alchemy. This keeps the list clean.
+            return 0, 0
+        end
+    end
+    if useful < 2 then return 0, useful end
+
+    local set = EffectSet(effects)
+    if mode == "POTION" then
+        if set["Increase Weapon Power"] and set["Weapon Critical"] then score = score + 78 end
+        if set["Increase Spell Power"] and set["Spell Critical"] then score = score + 78 end
+        if set["Heroism"] then score = score + 55 end
+        if set["Unstoppable"] and (set["Restore Magicka"] or set["Restore Stamina"] or set["Restore Health"]) then score = score + 42 end
+        if set["Restore Health"] and (set["Restore Magicka"] or set["Restore Stamina"]) then score = score + 30 end
+        if set["Protection"] and set["Vitality"] then score = score + 28 end
+    else
+        if set["Ravage Health"] and set["Gradual Ravage Health"] then score = score + 82 end
+        if (set["Breach"] or set["Fracture"]) and (set["Ravage Health"] or set["Gradual Ravage Health"]) then score = score + 58 end
+        if (set["Defile"] or set["Vulnerability"]) and (set["Ravage Health"] or set["Gradual Ravage Health"]) then score = score + 52 end
+        if set["Hindrance"] and (set["Ravage Health"] or set["Gradual Ravage Health"]) then score = score + 34 end
+    end
+
+    -- Three useful effects are especially valuable and should naturally rise.
+    if useful >= 3 then score = score + 36 end
+    return score, useful
+end
+
+function A:BuildBestResults()
+    self:ScanMaterials()
+    local mode = EPC.saved.alchemyPotionMakerMode == "POISON" and "POISON" or "POTION"
+    local catalog = self:GetCatalogWithOwnership()
+    local allowThree = self:IsThirdSlotUnlocked()
+    local bestByEffects = {}
+
+    local function consider(combo)
+        local active = self:GetActiveEffects(combo)
+        local score, useful = BestRecipeScore(mode, active)
+        if score <= 0 or useful < 2 then return end
+        local result = self:BuildResult(combo, active, mode, #active)
+        result.bestScore = score
+        result.bestUsefulEffects = useful
+        result.bestKind = mode == "POISON" and "BEST POISON" or "BEST BUFF"
+        local key = table.concat(active, "|")
+        local old = bestByEffects[key]
+        if not old
+            or (result.ready and not old.ready)
+            or (result.ready == old.ready and result.missingCount < old.missingCount)
+            or (result.ready == old.ready and result.missingCount == old.missingCount and result.maxCraftable > old.maxCraftable)
+            or (result.ready == old.ready and result.missingCount == old.missingCount and result.maxCraftable == old.maxCraftable and #combo < #old.combo)
+        then
+            bestByEffects[key] = result
+        end
+    end
+
+    for i = 1, #catalog - 1 do
+        for j = i + 1, #catalog do consider({catalog[i], catalog[j]}) end
+    end
+    if allowThree then
+        for i = 1, #catalog - 2 do
+            for j = i + 1, #catalog - 1 do
+                for k = j + 1, #catalog do consider({catalog[i], catalog[j], catalog[k]}) end
+            end
+        end
+    end
+
+    local out = {}
+    for _, result in pairs(bestByEffects) do out[#out + 1] = result end
+    table.sort(out, function(a,b)
+        if a.ready ~= b.ready then return a.ready end
+        if (a.bestScore or 0) ~= (b.bestScore or 0) then return (a.bestScore or 0) > (b.bestScore or 0) end
+        if a.missingCount ~= b.missingCount then return a.missingCount < b.missingCount end
+        if a.maxCraftable ~= b.maxCraftable then return a.maxCraftable > b.maxCraftable end
+        if #a.effects ~= #b.effects then return #a.effects > #b.effects end
+        return a.effectsText < b.effectsText
+    end)
+
+    -- Keep the filter focused on genuinely strong choices instead of hundreds of
+    -- minor variations. Pagination still exposes every entry in this curated set.
+    if #out > 56 then
+        local limited = {}
+        for i = 1, 56 do limited[i] = out[i] end
+        out = limited
+    end
+    return out
+end
+
 function A:GetAutoCraftLabel()
     self:EnsureSaved()
     if EPC.saved.alchemyPotionMakerAutoCraft ~= true then return "OFF" end
@@ -641,11 +809,166 @@ function A:GetStatusText()
         self:GetAutoCraftLabel())
 end
 
+function A:GetMissingTrackingMaterials(result)
+    local materials = {}
+    local seen = {}
+    if not result then return materials end
+
+    for _, reagent in ipairs(result.combo or {}) do
+        local owned = reagent.owned or (self.reagentsByName and self.reagentsByName[reagent.key])
+        if not owned or num(owned.count, 0) < 1 then
+            local name = tostring(reagent.name or "Unknown reagent")
+            local key = normalize(name)
+            if not seen[key] then
+                seen[key] = true
+                materials[#materials + 1] = {
+                    name = name,
+                    key = key,
+                    kind = MISSING_GATHER_KIND[key],
+                    dynamicHint = DYNAMIC_MATERIAL_HINT[key],
+                }
+            end
+        end
+    end
+
+    if not result.solvent then
+        local name = self:GetExpectedSolventName(result.mode)
+        local key = normalize(name)
+        if not seen[key] then
+            seen[key] = true
+            materials[#materials + 1] = { name = name, key = key, kind = "WATER", solvent = true }
+        end
+    end
+    return materials
+end
+
+function A:GetMissingRouteInfo(result)
+    if not result or result.ready then return nil end
+    local materials = self:GetMissingTrackingMaterials(result)
+    local signature = {}
+    for _, material in ipairs(materials) do signature[#signature + 1] = tostring(material.key or material.name or "") end
+    table.sort(signature)
+    signature = table.concat(signature, "|")
+    if result.easMissingRouteSignature == signature and type(result.easMissingRoute) == "table" then
+        return result.easMissingRoute
+    end
+    local pins = EPC and EPC.ResourcePins
+    local route = nil
+    if pins and type(pins.GetMissingAlchemyRoute) == "function" then
+        route = pins:GetMissingAlchemyRoute(materials)
+    end
+    result.easMissingRouteSignature = signature
+    result.easMissingRoute = route
+    return route
+end
+
+function A:GetMissingRouteDetails(result)
+    if not result or result.ready then return {} end
+    local materials = self:GetMissingTrackingMaterials(result)
+    local signatureParts = {}
+    for _, material in ipairs(materials) do signatureParts[#signatureParts + 1] = tostring(material.key or material.name or "") end
+    table.sort(signatureParts)
+    local signature = table.concat(signatureParts, "|")
+    if result.easMissingRouteDetailsSignature == signature and type(result.easMissingRouteDetails) == "table" then
+        return result.easMissingRouteDetails
+    end
+
+    local details = {}
+    local pins = EPC and EPC.ResourcePins
+    for _, material in ipairs(materials) do
+        local entry = { material = material, route = nil }
+        if pins and type(pins.GetMissingAlchemyRoute) == "function" then
+            entry.route = pins:GetMissingAlchemyRoute({ material })
+        end
+        details[#details + 1] = entry
+    end
+    result.easMissingRouteDetailsSignature = signature
+    result.easMissingRouteDetails = details
+    return details
+end
+
+function A:GetMissingRouteSummaryText(result)
+    local details = self:GetMissingRouteDetails(result)
+    if type(details) ~= "table" or #details == 0 then
+        return "Missing: " .. table.concat(result and result.missing or {}, ", ")
+    end
+    local parts = {}
+    for i = 1, math.min(2, #details) do
+        local detail = details[i]
+        local materialName = tostring(detail.material and detail.material.name or "material")
+        local route = type(detail.route) == "table" and detail.route or nil
+        if route then
+            parts[#parts + 1] = string.format("%s • %s • %s", materialName, tostring(route.zoneName or "Unknown zone"), tostring(route.locationText or "known area"))
+        else
+            parts[#parts + 1] = materialName
+        end
+    end
+    if #details > 2 then parts[#parts + 1] = string.format("+%d more", #details - 2) end
+    return table.concat(parts, "   |   ")
+end
+
+function A:TravelToMissing(result)
+    if not result or result.ready then return false end
+    local pins = EPC and EPC.ResourcePins
+    if not pins or type(pins.TravelToMissingAlchemyMaterials) ~= "function" then
+        notify("Alchemy material travel is unavailable.", false)
+        return false
+    end
+
+    local details = self:GetMissingRouteDetails(result)
+    if type(details) == "table" and #details > 1 then
+        result.easTravelRouteIndex = ((tonumber(result.easTravelRouteIndex) or 0) % #details) + 1
+        local detail = details[result.easTravelRouteIndex]
+        if detail and detail.material then
+            local route = type(detail.route) == "table" and detail.route or nil
+            notify(string.format("TRAVEL TARGET: %s%s", tostring(detail.material.name or "Missing material"), route and (" in " .. tostring(route.zoneName or "Unknown zone")) or ""), true)
+            return pins:TravelToMissingAlchemyMaterials({ detail.material })
+        end
+    end
+
+    local materials = self:GetMissingTrackingMaterials(result)
+    return pins:TravelToMissingAlchemyMaterials(materials)
+end
+
 function A:ReportMissing(result)
-    if not result then return end
-    if result.ready then return end
-    local text = #result.missing > 0 and table.concat(result.missing, ", ") or "unknown materials"
-    notify("ALCHEMY MAKER missing: " .. text .. ". Recipe: " .. tostring(result.reagentsText), false)
+    if not result or result.ready then return end
+    local missingText = #result.missing > 0 and table.concat(result.missing, ", ") or "unknown materials"
+    local materials = self:GetMissingTrackingMaterials(result)
+    local pins = EPC and EPC.ResourcePins
+
+    if pins and type(pins.TrackMissingAlchemyMaterials) == "function" and #materials > 0 then
+        local tracked, unsupported, route = pins:TrackMissingAlchemyMaterials(materials)
+        tracked = tonumber(tracked) or 0
+        unsupported = type(unsupported) == "table" and unsupported or {}
+        route = type(route) == "table" and route or self:GetMissingRouteInfo(result)
+        if route then
+            local shrine = route.wayshrineName or "no discovered wayshrine"
+            notify(string.format("ALCHEMY ROUTE: %s at %s in %s. Closest wayshrine: %s.", tostring(route.resourceName or "resource area"), tostring(route.locationText or "known location"), tostring(route.zoneName or "Unknown zone"), tostring(shrine)), true)
+        end
+        local details = self:GetMissingRouteDetails(result)
+        if type(details) == "table" and #details > 0 then
+            for i, detail in ipairs(details) do
+                local detailRoute = type(detail.route) == "table" and detail.route or nil
+                if detailRoute then
+                    notify(string.format("Need %s: %s • %s • %s", tostring(detail.material and detail.material.name or ("material " .. tostring(i))), tostring(detailRoute.zoneName or "Unknown zone"), tostring(detailRoute.locationText or "known area"), tostring(detailRoute.wayshrineName or "no discovered wayshrine")), true)
+                elseif detail and detail.material then
+                    notify(string.format("Need %s: no fixed route found.", tostring(detail.material.name or ("material " .. tostring(i)))), false)
+                end
+            end
+        end
+        if tracked > 0 then
+            notify(string.format("ALCHEMY HUNT: %d known spawn pin%s marked. If more than one ingredient is missing, TRAVEL cycles through each missing material one press at a time; after arrival the bright 3D hunt pin will guide you to the resource area.", tracked, tracked == 1 and "" or "s"), true)
+            if type(pins.ShowMissingAlchemyMap) == "function" then
+                pins:ShowMissingAlchemyMap()
+            end
+            if #unsupported > 0 then
+                notify("No fixed node for: " .. table.concat(unsupported, ", ") .. ". Dynamic drops cannot be given fake 3D coordinates.", false)
+            end
+            return
+        end
+    end
+
+    notify("ALCHEMY MAKER missing: " .. missingText .. ". Recipe: " .. tostring(result.reagentsText), false)
 end
 
 function A:PrepareResult(result, quietSuccess)
@@ -816,7 +1139,13 @@ function A:ToggleMode()
 end
 
 function A:SetView(view)
-    self.currentView = view == "EXACT" and "EXACT" or "READY"
+    if view == "EXACT" then
+        self.currentView = "EXACT"
+    elseif view == "BEST" then
+        self.currentView = "BEST"
+    else
+        self.currentView = "READY"
+    end
     self.currentPage = 1
     self:RefreshWindow(true)
 end
@@ -962,7 +1291,20 @@ function A:RefreshVisibility()
             self:RefreshStatus()
         end
     end
-    if not show and self.window and not self.window:IsHidden() then self.window:SetHidden(true) end
+    if self.window and not self.window:IsHidden() then
+        if EPC.saved.alchemyPotionMakerEnabled == false then
+            self:CloseWindow(true)
+        elseif not show then
+            local sceneShowing = false
+            if SCENE_MANAGER and type(SCENE_MANAGER.IsShowing) == "function" then
+                sceneShowing = safe(SCENE_MANAGER.IsShowing, false, SCENE_MANAGER, "ESOAdventurerSuitePotionMaker") == true
+            end
+            -- The station icon may be hidden while the full maker was opened
+            -- from the top menu or a gameplay hotkey. Do not let icon visibility
+            -- tear down that full UI.
+            if self.directHotkeyOpen ~= true and not sceneShowing then self.window:SetHidden(true) end
+        end
+    end
 end
 
 function A:SetLayoutMode(active)
@@ -1097,6 +1439,45 @@ local function setButtonText(button, text)
     if type(button.SetText) == "function" then button:SetText(text) end
 end
 
+function A:CloseWindow(returnToGame)
+    if self.effectPopup then self.effectPopup:SetHidden(true) end
+    if self.window then self.window:SetHidden(true) end
+
+    -- v0.29.270: gameplay hotkeys can open this same window without routing
+    -- through LibMainMenu. Tear down that direct-hotkey UI mode here as well,
+    -- including when the X button is used, so closing never leaves the player
+    -- stuck with the mouse/UI camera active.
+    if self.directHotkeyOpen == true then
+        self.directHotkeyOpen = false
+        self.hotkeyOpenPending = false
+        self:SetHotkeyActionLayer(false)
+        if self.hotkeyOwnsUIMode == true then self:SetHotkeyUIMode(false) end
+        self.hotkeyOwnsUIMode = false
+    end
+
+    -- When Potion Maker was opened from its top main-menu icon, hiding only
+    -- the custom window leaves the dedicated scene active. That makes the UI
+    -- disappear but keeps the player stuck in menu mode. Close that scene too
+    -- so the X button behaves like the normal ESO menu close and returns to play.
+    if returnToGame ~= false and SCENE_MANAGER then
+        local sceneName = "ESOAdventurerSuitePotionMaker"
+        local showing = false
+        if type(SCENE_MANAGER.IsShowing) == "function" then
+            showing = safe(SCENE_MANAGER.IsShowing, false, SCENE_MANAGER, sceneName) == true
+        end
+        if not showing and self.mainMenuScene and type(self.mainMenuScene.IsShowing) == "function" then
+            showing = safe(self.mainMenuScene.IsShowing, false, self.mainMenuScene) == true
+        end
+        if showing then
+            if type(SCENE_MANAGER.ShowBaseScene) == "function" then
+                pcall(SCENE_MANAGER.ShowBaseScene, SCENE_MANAGER)
+            elseif type(SCENE_MANAGER.HideCurrentScene) == "function" then
+                pcall(SCENE_MANAGER.HideCurrentScene, SCENE_MANAGER)
+            end
+        end
+    end
+end
+
 function A:CreateWindow()
     if self.window or not wm or not GuiRoot then return end
     local w = wm:CreateTopLevelWindow("EAS_AlchemyPotionMakerWindow")
@@ -1104,9 +1485,6 @@ function A:CreateWindow()
     w:SetMouseEnabled(true)
     w:SetMovable(true)
     w:SetClampedToScreen(true)
-    -- Keep the maker below the dedicated effect/options popup. A separate
-    -- top-level overlay is used for selectors so parent draw order can never
-    -- hide the options behind this window.
     if w.SetDrawTier then w:SetDrawTier(rawget(_G, "DT_MEDIUM") or rawget(_G, "DT_LOW") or DT_HIGH) end
     if w.SetDrawLayer then w:SetDrawLayer(rawget(_G, "DL_CONTROLS") or DL_CONTROLS) end
     if w.SetDrawLevel then w:SetDrawLevel(120) end
@@ -1115,74 +1493,142 @@ function A:CreateWindow()
 
     local bg = wm:CreateControl(nil, w, CT_BACKDROP)
     bg:SetAnchorFill(w)
-    bg:SetCenterColor(0.012, 0.018, 0.030, 0.985)
-    bg:SetEdgeColor(0.22, 0.72, 0.92, 0.95)
+    bg:SetCenterColor(0.010, 0.015, 0.026, 0.988)
+    bg:SetEdgeColor(0.24, 0.68, 0.88, 0.95)
     bg:SetEdgeTexture(nil, 2, 2, 1)
 
+    local function makeButton(parent, width, height, font)
+        local b = wm:CreateControl(nil, parent, CT_BUTTON)
+        b:SetDimensions(width, height)
+        b:SetFont(font or "ZoFontGameBold")
+        b:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+        b:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+        local bb = wm:CreateControl(nil, b, CT_BACKDROP)
+        bb:SetAnchorFill(b)
+        bb:SetCenterColor(0.035, 0.050, 0.070, 0.96)
+        bb:SetEdgeColor(0.22, 0.34, 0.44, 0.95)
+        bb:SetEdgeTexture(nil, 1, 1, 1)
+        b.easBg = bb
+        b:SetHandler("OnMouseEnter", function(control)
+            if control.easBg then control.easBg:SetCenterColor(0.06, 0.09, 0.12, 0.98) end
+        end)
+        b:SetHandler("OnMouseExit", function(control)
+            if control.easBg then control.easBg:SetCenterColor(0.035, 0.050, 0.070, 0.96) end
+        end)
+        return b
+    end
+
     local titleBar = wm:CreateControl(nil, w, CT_CONTROL)
-    titleBar:SetDimensions(PANEL_W - 50, 46)
-    titleBar:SetAnchor(TOPLEFT, w, TOPLEFT, 8, 6)
+    titleBar:SetDimensions(PANEL_W - 54, 50)
+    titleBar:SetAnchor(TOPLEFT, w, TOPLEFT, 8, 4)
     titleBar:SetMouseEnabled(true)
     titleBar:SetHandler("OnMouseDown", function(_, button) if button==MOUSE_BUTTON_INDEX_LEFT and w.StartMoving then w:StartMoving() end end)
     titleBar:SetHandler("OnMouseUp", function(_, button) if button==MOUSE_BUTTON_INDEX_LEFT then if w.StopMoving then w:StopMoving() end self:SavePanelPosition() end end)
 
     local title = wm:CreateControl(nil, titleBar, CT_LABEL)
     title:SetFont("ZoFontWinH2")
-    title:SetAnchor(LEFT, titleBar, LEFT, 12, 0)
-    title:SetDimensions(PANEL_W - 90, 40)
-    title:SetVerticalAlignment(TEXT_ALIGN_CENTER)
-    title:SetColor(0.94, 0.84, 0.38, 1)
-    title:SetText("ALCHEMY POTION & POISON MAKER")
+    title:SetAnchor(TOPLEFT, titleBar, TOPLEFT, 14, 4)
+    title:SetDimensions(PANEL_W - 120, 28)
+    title:SetColor(0.96, 0.84, 0.36, 1)
+    title:SetText("POTION MAKER")
 
-    local close = wm:CreateControl(nil, w, CT_BUTTON)
-    close:SetDimensions(38, 38)
-    close:SetAnchor(TOPRIGHT, w, TOPRIGHT, -8, 8)
-    close:SetFont("ZoFontWinH3")
+    local subtitle = wm:CreateControl(nil, titleBar, CT_LABEL)
+    subtitle:SetFont("ZoFontGameSmall")
+    subtitle:SetAnchor(TOPLEFT, title, BOTTOMLEFT, 2, -2)
+    subtitle:SetDimensions(PANEL_W - 140, 20)
+    subtitle:SetColor(0.68, 0.77, 0.86, 1)
+    subtitle:SetText("Choose what you want to make, then click a recipe to load it at an Alchemy Station.")
+
+    local close = makeButton(w, 38, 38, "ZoFontWinH3")
+    close:SetAnchor(TOPRIGHT, w, TOPRIGHT, -10, 8)
     close:SetText("X")
-    close:SetHandler("OnClicked", function() w:SetHidden(true) if self.effectPopup then self.effectPopup:SetHidden(true) end end)
+    close:SetHandler("OnClicked", function() self:CloseWindow(true) end)
 
-    local mode = wm:CreateControl(nil, w, CT_BUTTON)
-    mode:SetDimensions(150, 34)
-    mode:SetAnchor(TOPLEFT, w, TOPLEFT, 18, 56)
-    mode:SetFont("ZoFontGameBold")
-    mode:SetHandler("OnClicked", function() self:ToggleMode() end)
-    self.modeButton = mode
+    -- STEP 1: potion / poison selection
+    local step1 = wm:CreateControl(nil, w, CT_LABEL)
+    step1:SetFont("ZoFontGameBold")
+    step1:SetAnchor(TOPLEFT, w, TOPLEFT, 22, 62)
+    step1:SetDimensions(110, 28)
+    step1:SetColor(0.72, 0.82, 0.92, 1)
+    step1:SetText("1. TYPE")
 
-    local readyTab = wm:CreateControl(nil, w, CT_BUTTON)
-    readyTab:SetDimensions(180, 34)
-    readyTab:SetAnchor(LEFT, mode, RIGHT, 12, 0)
-    readyTab:SetFont("ZoFontGameBold")
-    readyTab:SetText("CAN MAKE NOW")
+    local potionMode = makeButton(w, 150, 38)
+    potionMode:SetAnchor(LEFT, step1, RIGHT, 8, 0)
+    potionMode:SetText("POTION")
+    potionMode:SetHandler("OnClicked", function() self:SetMode("POTION") end)
+    self.potionModeButton = potionMode
+
+    local poisonMode = makeButton(w, 150, 38)
+    poisonMode:SetAnchor(LEFT, potionMode, RIGHT, 8, 0)
+    poisonMode:SetText("POISON")
+    poisonMode:SetHandler("OnClicked", function() self:SetMode("POISON") end)
+    self.poisonModeButton = poisonMode
+    self.modeButton = potionMode -- compatibility with older refresh paths
+
+    -- STEP 2: recipe filters get their own row so each choice is obvious.
+    local step2 = wm:CreateControl(nil, w, CT_LABEL)
+    step2:SetFont("ZoFontGameBold")
+    step2:SetAnchor(TOPLEFT, w, TOPLEFT, 22, 108)
+    step2:SetDimensions(110, 28)
+    step2:SetColor(0.72, 0.82, 0.92, 1)
+    step2:SetText("2. RECIPE")
+
+    local readyTab = makeButton(w, 200, 38)
+    readyTab:SetAnchor(LEFT, step2, RIGHT, 8, 0)
+    readyTab:SetText("WHAT CAN I MAKE?")
     readyTab:SetHandler("OnClicked", function() self:SetView("READY") end)
     self.readyTab = readyTab
 
-    local exactTab = wm:CreateControl(nil, w, CT_BUTTON)
-    exactTab:SetDimensions(180, 34)
-    exactTab:SetAnchor(LEFT, readyTab, RIGHT, 8, 0)
-    exactTab:SetFont("ZoFontGameBold")
-    exactTab:SetText("MAKE EXACT")
+    local bestTab = makeButton(w, 190, 38)
+    bestTab:SetAnchor(LEFT, readyTab, RIGHT, 8, 0)
+    bestTab:SetText("BEST BUFFS")
+    bestTab:SetHandler("OnClicked", function() self:SetView("BEST") end)
+    bestTab:SetHandler("OnMouseEnter", function(control)
+        if InformationTooltip and type(InitializeTooltip) == "function" then
+            InitializeTooltip(InformationTooltip, control, BOTTOM, 0, -8, TOP)
+            InformationTooltip:AddLine("Best Combat Recipes", "ZoFontWinH4")
+            InformationTooltip:AddLine("Potion mode: strongest multi-buff potions. Poison mode: strongest damage/debuff poisons. READY recipes are listed first.", "ZoFontGame")
+        end
+    end)
+    bestTab:SetHandler("OnMouseExit", function() if InformationTooltip and type(ClearTooltip) == "function" then ClearTooltip(InformationTooltip) end end)
+    self.bestTab = bestTab
+
+    local exactTab = makeButton(w, 180, 38)
+    exactTab:SetAnchor(LEFT, bestTab, RIGHT, 8, 0)
+    exactTab:SetText("CHOOSE EFFECTS")
     exactTab:SetHandler("OnClicked", function() self:SetView("EXACT") end)
     self.exactTab = exactTab
 
-    local rescan = wm:CreateControl(nil, w, CT_BUTTON)
-    rescan:SetDimensions(150, 34)
-    rescan:SetAnchor(LEFT, exactTab, RIGHT, 8, 0)
-    rescan:SetFont("ZoFontGame")
-    rescan:SetText("RESCAN MATERIALS")
-    rescan:SetHandler("OnClicked", function() self:RefreshWindow(true) self:RefreshStatus() end)
+    -- Large status card: tells the user what they can do right now.
+    local statusCard = wm:CreateControl(nil, w, CT_BACKDROP)
+    statusCard:SetDimensions(PANEL_W - 44, 58)
+    statusCard:SetAnchor(TOPLEFT, w, TOPLEFT, 22, 158)
+    statusCard:SetCenterColor(0.025, 0.040, 0.055, 0.96)
+    statusCard:SetEdgeColor(0.14, 0.34, 0.44, 0.9)
+    statusCard:SetEdgeTexture(nil, 1, 1, 1)
+    self.statusCard = statusCard
 
-    local status = wm:CreateControl(nil, w, CT_LABEL)
-    status:SetFont("ZoFontGame")
-    status:SetAnchor(TOPLEFT, w, TOPLEFT, 20, 98)
-    status:SetDimensions(PANEL_W - 235, 42)
-    status:SetColor(0.72, 0.82, 0.92, 1)
-    status:SetText("")
+    local statusTitle = wm:CreateControl(nil, statusCard, CT_LABEL)
+    statusTitle:SetFont("ZoFontGameBold")
+    statusTitle:SetAnchor(TOPLEFT, statusCard, TOPLEFT, 12, 7)
+    statusTitle:SetDimensions(PANEL_W - 260, 22)
+    statusTitle:SetColor(0.88, 0.94, 1, 1)
+    self.statusTitle = statusTitle
+
+    local status = wm:CreateControl(nil, statusCard, CT_LABEL)
+    status:SetFont("ZoFontGameSmall")
+    status:SetAnchor(TOPLEFT, statusTitle, BOTTOMLEFT, 0, 0)
+    status:SetDimensions(PANEL_W - 270, 22)
+    status:SetColor(0.66, 0.76, 0.84, 1)
     self.statusLabel = status
 
-    local autoCraft = wm:CreateControl(nil, w, CT_BUTTON)
-    autoCraft:SetDimensions(185, 34)
-    autoCraft:SetAnchor(TOPRIGHT, w, TOPRIGHT, -20, 100)
-    autoCraft:SetFont("ZoFontGameBold")
+    local rescan = makeButton(statusCard, 118, 34, "ZoFontGame")
+    rescan:SetAnchor(RIGHT, statusCard, RIGHT, -12, 0)
+    rescan:SetText("REFRESH")
+    rescan:SetHandler("OnClicked", function() self:RefreshWindow(true) self:RefreshStatus() end)
+
+    local autoCraft = makeButton(statusCard, 150, 34, "ZoFontGameBold")
+    autoCraft:SetAnchor(RIGHT, rescan, LEFT, -8, 0)
     autoCraft:SetHandler("OnClicked", function()
         EPC.saved.alchemyPotionMakerAutoCraft = EPC.saved.alchemyPotionMakerAutoCraft ~= true
         self:RefreshWindow(false)
@@ -1191,32 +1637,39 @@ function A:CreateWindow()
         if InformationTooltip and type(InitializeTooltip) == "function" then
             InitializeTooltip(InformationTooltip, control, BOTTOM, 0, -8, TOP)
             InformationTooltip:AddLine("Auto Craft", "ZoFontWinH4")
-            InformationTooltip:AddLine("OFF: clicking READY only loads ingredients. ON: clicking READY loads and immediately crafts using the amount selected in Suite Settings.", "ZoFontGame")
+            InformationTooltip:AddLine("OFF: clicking a ready recipe only loads the ingredients. ON: it loads and crafts automatically.", "ZoFontGame")
         end
     end)
     autoCraft:SetHandler("OnMouseExit", function() if InformationTooltip and type(ClearTooltip) == "function" then ClearTooltip(InformationTooltip) end end)
     self.autoCraftButton = autoCraft
 
-    local exactBar = wm:CreateControl(nil, w, CT_CONTROL)
-    exactBar:SetDimensions(PANEL_W - 40, 42)
-    exactBar:SetAnchor(TOPLEFT, status, BOTTOMLEFT, 0, 2)
+    -- Exact-effect selector card. Hidden in the easy 'What can I make?' view.
+    local exactBar = wm:CreateControl(nil, w, CT_BACKDROP)
+    exactBar:SetDimensions(PANEL_W - 44, 74)
+    exactBar:SetAnchor(TOPLEFT, statusCard, BOTTOMLEFT, 0, 10)
+    exactBar:SetCenterColor(0.020, 0.030, 0.045, 0.96)
+    exactBar:SetEdgeColor(0.22, 0.34, 0.44, 0.9)
+    exactBar:SetEdgeTexture(nil, 1, 1, 1)
     self.exactBar = exactBar
+
+    local exactHelp = wm:CreateControl(nil, exactBar, CT_LABEL)
+    exactHelp:SetFont("ZoFontGameSmall")
+    exactHelp:SetAnchor(TOPLEFT, exactBar, TOPLEFT, 12, 6)
+    exactHelp:SetDimensions(PANEL_W - 70, 20)
+    exactHelp:SetColor(0.68, 0.78, 0.88, 1)
+    exactHelp:SetText("Pick up to 3 effects. We will show the reagent combinations that create them.")
 
     local effectButtons = {}
     for i = 1, 3 do
-        local btn = wm:CreateControl(nil, exactBar, CT_BUTTON)
-        btn:SetDimensions(205, 34)
-        if i == 1 then btn:SetAnchor(LEFT, exactBar, LEFT, 0, 0) else btn:SetAnchor(LEFT, effectButtons[i-1], RIGHT, 8, 0) end
-        btn:SetFont("ZoFontGame")
+        local btn = makeButton(exactBar, 235, 34, "ZoFontGame")
+        if i == 1 then btn:SetAnchor(BOTTOMLEFT, exactBar, BOTTOMLEFT, 12, -7) else btn:SetAnchor(LEFT, effectButtons[i-1], RIGHT, 8, 0) end
         btn:SetHandler("OnClicked", function(control) self:ShowEffectMenu(control, i) end)
         effectButtons[i] = btn
     end
     self.effectButtons = effectButtons
 
-    local clearEffects = wm:CreateControl(nil, exactBar, CT_BUTTON)
-    clearEffects:SetDimensions(105, 34)
+    local clearEffects = makeButton(exactBar, 95, 34, "ZoFontGame")
     clearEffects:SetAnchor(LEFT, effectButtons[3], RIGHT, 8, 0)
-    clearEffects:SetFont("ZoFontGame")
     clearEffects:SetText("CLEAR")
     clearEffects:SetHandler("OnClicked", function()
         EPC.saved.alchemyPotionMakerEffect1 = "Restore Health"
@@ -1226,48 +1679,110 @@ function A:CreateWindow()
         self:RefreshWindow(true)
     end)
 
-    local divider = wm:CreateControl(nil, w, CT_BACKDROP)
-    divider:SetDimensions(PANEL_W - 40, 1)
-    divider:SetAnchor(TOPLEFT, exactBar, BOTTOMLEFT, 0, 5)
-    divider:SetCenterColor(0.18, 0.42, 0.55, 0.8)
-    divider:SetEdgeColor(0,0,0,0)
+    local recipesTitle = wm:CreateControl(nil, w, CT_LABEL)
+    recipesTitle:SetFont("ZoFontWinH3")
+    recipesTitle:SetAnchor(TOPLEFT, w, TOPLEFT, 22, 312)
+    recipesTitle:SetDimensions(300, 30)
+    recipesTitle:SetColor(0.94, 0.84, 0.38, 1)
+    recipesTitle:SetText("RECIPES")
+    self.recipesTitle = recipesTitle
+
+    local recipesHint = wm:CreateControl(nil, w, CT_LABEL)
+    recipesHint:SetFont("ZoFontGameSmall")
+    recipesHint:SetAnchor(LEFT, recipesTitle, RIGHT, 8, 1)
+    recipesHint:SetDimensions(520, 24)
+    recipesHint:SetColor(0.62, 0.72, 0.82, 1)
+    recipesHint:SetText("Green = ready. Missing recipes show the needed zones/locations. MAP + 3D marks the hunt pins; TRAVEL cycles through each missing ingredient using its closest discovered wayshrine.")
+    self.recipesHint = recipesHint
 
     self.rows = {}
-    local firstY = 190
+    local firstY = 346
     for i = 1, ROW_COUNT do
         local row = wm:CreateControl(nil, w, CT_BUTTON)
-        row:SetDimensions(PANEL_W - 40, 31)
-        row:SetAnchor(TOPLEFT, w, TOPLEFT, 20, firstY + (i - 1) * 32)
+        row:SetDimensions(PANEL_W - 44, 46)
+        row:SetAnchor(TOPLEFT, w, TOPLEFT, 22, firstY + (i - 1) * 48)
         row:SetMouseEnabled(true)
+
         local rowBg = wm:CreateControl(nil, row, CT_BACKDROP)
         rowBg:SetAnchorFill(row)
-        rowBg:SetCenterColor(i % 2 == 0 and 0.025 or 0.018, i % 2 == 0 and 0.038 or 0.030, i % 2 == 0 and 0.052 or 0.044, 0.94)
+        rowBg:SetCenterColor(i % 2 == 0 and 0.025 or 0.018, i % 2 == 0 and 0.038 or 0.030, i % 2 == 0 and 0.052 or 0.044, 0.96)
         rowBg:SetEdgeColor(0.10, 0.18, 0.24, 0.8)
         rowBg:SetEdgeTexture(nil, 1, 1, 1)
-        local label = wm:CreateControl(nil, row, CT_LABEL)
-        label:SetFont("ZoFontGame")
-        label:SetAnchor(LEFT, row, LEFT, 8, 0)
-        label:SetDimensions(PANEL_W - 58, 29)
-        label:SetVerticalAlignment(TEXT_ALIGN_CENTER)
-        label:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
-        row.label = label
+
+        local state = wm:CreateControl(nil, row, CT_LABEL)
+        state:SetFont("ZoFontGameBold")
+        state:SetAnchor(LEFT, row, LEFT, 10, 0)
+        state:SetDimensions(105, 40)
+        state:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+        state:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+        row.stateLabel = state
+
+        local main = wm:CreateControl(nil, row, CT_LABEL)
+        main:SetFont("ZoFontGameBold")
+        main:SetAnchor(TOPLEFT, row, TOPLEFT, 126, 5)
+        main:SetDimensions(390, 20)
+        main:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
+        row.mainLabel = main
+
+        local sub = wm:CreateControl(nil, row, CT_LABEL)
+        sub:SetFont("ZoFontGameSmall")
+        sub:SetAnchor(TOPLEFT, main, BOTTOMLEFT, 0, -2)
+        sub:SetDimensions(500, 18)
+        sub:SetColor(0.64, 0.74, 0.84, 1)
+        sub:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
+        row.subLabel = sub
+
+        local travelButton = makeButton(row, 104, 30, "ZoFontGameBold")
+        travelButton:SetAnchor(RIGHT, row, RIGHT, -10, 0)
+        travelButton:SetText("TRAVEL")
+        travelButton:SetHidden(true)
+        travelButton:SetHandler("OnClicked", function(control)
+            if control.result then self:TravelToMissing(control.result) end
+        end)
+        row.travelButton = travelButton
+
+        local action = wm:CreateControl(nil, row, CT_LABEL)
+        action:SetFont("ZoFontGameBold")
+        action:SetAnchor(RIGHT, travelButton, LEFT, -10, 0)
+        action:SetDimensions(126, 38)
+        action:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+        action:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+        row.actionLabel = action
+
         row.bg = rowBg
         row:SetHandler("OnMouseEnter", function(control)
+            if control.bg then control.bg:SetCenterColor(0.05, 0.075, 0.095, 0.98) end
             if control.result and InformationTooltip and type(InitializeTooltip)=="function" then
                 InitializeTooltip(InformationTooltip, control, LEFT, -8, 0, RIGHT)
-                InformationTooltip:AddLine(control.result.ready and "READY - CLICK TO LOAD" or "MISSING MATERIALS", "ZoFontWinH4")
+                InformationTooltip:AddLine(control.result.ready and "READY" or "MISSING MATERIALS", "ZoFontWinH4")
                 InformationTooltip:AddLine("Effects: " .. tostring(control.result.effectsText), "ZoFontGame")
                 InformationTooltip:AddLine("Reagents: " .. tostring(control.result.reagentsText), "ZoFontGame")
                 local sol = control.result.solvent and control.result.solvent.name or self:GetExpectedSolventName(control.result.mode)
                 InformationTooltip:AddLine("Solvent: " .. tostring(sol), "ZoFontGame")
                 if control.result.ready then
-                    InformationTooltip:AddLine("Can craft at least " .. tostring(control.result.maxCraftable) .. " iteration(s) with current materials. " .. (EPC.saved.alchemyPotionMakerAutoCraft == true and "Click to load and Auto Craft." or "Click to auto-slot ingredients."), "ZoFontGameSmall")
+                    InformationTooltip:AddLine("You can make at least " .. tostring(control.result.maxCraftable) .. ". Click to " .. (EPC.saved.alchemyPotionMakerAutoCraft == true and "craft it." or "load the ingredients."), "ZoFontGameSmall")
                 else
-                    InformationTooltip:AddLine("Need: " .. table.concat(control.result.missing or {}, ", "), "ZoFontGameSmall")
+                    InformationTooltip:AddLine("Still needed: " .. table.concat(control.result.missing or {}, ", "), "ZoFontGameSmall")
+                    local details = self:GetMissingRouteDetails(control.result)
+                    if type(details) == "table" and #details > 0 then
+                        for _, detail in ipairs(details) do
+                            local materialName = tostring(detail.material and detail.material.name or "material")
+                            local route = type(detail.route) == "table" and detail.route or nil
+                            if route then
+                                InformationTooltip:AddLine(string.format("%s: %s • %s • %s", materialName, tostring(route.zoneName or "Unknown"), tostring(route.locationText or "known resource area"), tostring(route.wayshrineName or "None discovered")), "ZoFontGameSmall")
+                            else
+                                InformationTooltip:AddLine(materialName .. ": no fixed route", "ZoFontGameSmall")
+                            end
+                        end
+                    end
+                    InformationTooltip:AddLine("Click the row for Map + 3D pins. TRAVEL cycles through each missing ingredient.", "ZoFontGameSmall")
                 end
             end
         end)
-        row:SetHandler("OnMouseExit", function() if InformationTooltip and type(ClearTooltip)=="function" then ClearTooltip(InformationTooltip) end end)
+        row:SetHandler("OnMouseExit", function(control)
+            if control.bg then control.bg:SetCenterColor(0.020, 0.032, 0.046, 0.96) end
+            if InformationTooltip and type(ClearTooltip)=="function" then ClearTooltip(InformationTooltip) end
+        end)
         row:SetHandler("OnClicked", function(control)
             if not control.result then return end
             if control.result.ready then self:ActivateResult(control.result) else self:ReportMissing(control.result) end
@@ -1275,26 +1790,22 @@ function A:CreateWindow()
         self.rows[i] = row
     end
 
-    local prev = wm:CreateControl(nil, w, CT_BUTTON)
-    prev:SetDimensions(90, 32)
-    prev:SetAnchor(BOTTOMLEFT, w, BOTTOMLEFT, 20, -18)
-    prev:SetFont("ZoFontGameBold")
+    local prev = makeButton(w, 90, 34, "ZoFontGameBold")
+    prev:SetAnchor(BOTTOMLEFT, w, BOTTOMLEFT, 22, -16)
     prev:SetText("< PREV")
     prev:SetHandler("OnClicked", function() self.currentPage = math.max(1, num(self.currentPage,1)-1) self:RefreshRows() end)
     self.prevButton = prev
 
     local page = wm:CreateControl(nil, w, CT_LABEL)
-    page:SetDimensions(180, 32)
-    page:SetAnchor(LEFT, prev, RIGHT, 8, 0)
+    page:SetDimensions(250, 34)
+    page:SetAnchor(LEFT, prev, RIGHT, 10, 0)
     page:SetFont("ZoFontGame")
     page:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     page:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     self.pageLabel = page
 
-    local nextBtn = wm:CreateControl(nil, w, CT_BUTTON)
-    nextBtn:SetDimensions(90, 32)
-    nextBtn:SetAnchor(LEFT, page, RIGHT, 8, 0)
-    nextBtn:SetFont("ZoFontGameBold")
+    local nextBtn = makeButton(w, 90, 34, "ZoFontGameBold")
+    nextBtn:SetAnchor(LEFT, page, RIGHT, 10, 0)
     nextBtn:SetText("NEXT >")
     nextBtn:SetHandler("OnClicked", function()
         local pages = math.max(1, math.ceil(#(self.currentResults or {}) / ROW_COUNT))
@@ -1304,13 +1815,13 @@ function A:CreateWindow()
     self.nextButton = nextBtn
 
     local help = wm:CreateControl(nil, w, CT_LABEL)
-    help:SetDimensions(370, 40)
-    help:SetAnchor(BOTTOMRIGHT, w, BOTTOMRIGHT, -20, -14)
+    help:SetDimensions(390, 36)
+    help:SetAnchor(BOTTOMRIGHT, w, BOTTOMRIGHT, -22, -14)
     help:SetFont("ZoFontGameSmall")
     help:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
     help:SetVerticalAlignment(TEXT_ALIGN_CENTER)
-    help:SetColor(0.66, 0.72, 0.80, 1)
-    help:SetText("READY = load ingredients.\nAuto Craft is optional and OFF by default.")
+    help:SetColor(0.62, 0.72, 0.80, 1)
+    help:SetText("Tip: BEST BUFFS / BEST POISONS shows top combat recipes.\nUse CHOOSE EFFECTS when you want something specific.")
 
     w:SetHandler("OnMoveStop", function(control) if control.StopMoving then control:StopMoving() end self:SavePanelPosition() end)
     self:RestorePanelPosition()
@@ -1327,15 +1838,45 @@ function A:RefreshRows()
         row.result = result
         row:SetHidden(result == nil)
         if result then
-            local prefix = result.ready and string.format("|c55E6A5READY x%d|r", result.maxCraftable) or "|cFF8866MISSING|r"
-            local text = string.format("%s  %s  |c9FB8C8%s|r", prefix, result.effectsText ~= "" and result.effectsText or "Unknown effect", result.reagentsText)
-            row.label:SetText(text)
-            if row.bg then
-                if result.ready then row.bg:SetEdgeColor(0.12, 0.55, 0.38, 0.9) else row.bg:SetEdgeColor(0.55, 0.25, 0.20, 0.9) end
+            local ready = result.ready == true
+            local effectText = result.effectsText ~= "" and result.effectsText or "Unknown effect"
+            local solvent = result.solvent and result.solvent.name or self:GetExpectedSolventName(result.mode)
+            if self.currentView == "BEST" then
+                row.stateLabel:SetText(ready and ("TOP\nREADY x" .. tostring(result.maxCraftable or 0)) or "TOP\nMISSING")
+            else
+                row.stateLabel:SetText(ready and ("READY\nx" .. tostring(result.maxCraftable or 0)) or "MISSING")
+            end
+            row.stateLabel:SetColor(ready and 0.36 or 1.00, ready and 0.92 or 0.45, ready and 0.68 or 0.34, 1)
+            row.mainLabel:SetText(effectText)
+            row.mainLabel:SetColor(0.92, 0.94, 0.98, 1)
+            if ready then
+                row.subLabel:SetText(string.format("%s  •  %s", tostring(result.reagentsText or ""), tostring(solvent or "")))
+                row.actionLabel:SetText(EPC.saved.alchemyPotionMakerAutoCraft == true and "CRAFT" or "LOAD")
+                row.actionLabel:SetColor(0.36, 0.92, 0.68, 1)
+                if row.travelButton then row.travelButton:SetHidden(true); row.travelButton.result = nil end
+                if row.bg then row.bg:SetEdgeColor(0.12, 0.58, 0.40, 0.95) end
+            else
+                local route = self:GetMissingRouteInfo(result)
+                row.subLabel:SetText(self:GetMissingRouteSummaryText(result))
+                row.actionLabel:SetText("MAP + 3D")
+                row.actionLabel:SetColor(1.00, 0.55, 0.38, 1)
+                if row.travelButton then
+                    row.travelButton.result = result
+                    row.travelButton:SetHidden(false)
+                    local canTravel = route and route.wayshrineNodeIndex ~= nil
+                    row.travelButton:SetEnabled(canTravel == true)
+                    local routeCount = #(self:GetMissingRouteDetails(result) or {})
+                    if canTravel then
+                        row.travelButton:SetText(routeCount > 1 and ("TRAVEL " .. tostring(routeCount)) or "TRAVEL")
+                    else
+                        row.travelButton:SetText("NO SHRINE")
+                    end
+                end
+                if row.bg then row.bg:SetEdgeColor(0.58, 0.25, 0.20, 0.95) end
             end
         end
     end
-    if self.pageLabel then self.pageLabel:SetText(string.format("PAGE %d / %d   (%d results)", self.currentPage, pages, #results)) end
+    if self.pageLabel then self.pageLabel:SetText(string.format("Page %d of %d  •  %d recipe%s", self.currentPage, pages, #results, #results == 1 and "" or "s")) end
     if self.prevButton then self.prevButton:SetEnabled(self.currentPage > 1) end
     if self.nextButton then self.nextButton:SetEnabled(self.currentPage < pages) end
 end
@@ -1345,23 +1886,107 @@ function A:RefreshWindow(forceScan)
     self:CreateWindow()
     if not self.window then return end
     if forceScan then self.reagentList, self.reagentsByName, self.solvents = nil, nil, nil end
+
     local mode = EPC.saved.alchemyPotionMakerMode == "POISON" and "POISON" or "POTION"
-    setButtonText(self.modeButton, mode == "POISON" and "MODE: POISON" or "MODE: POTION")
+    if self.currentView ~= "EXACT" and self.currentView ~= "BEST" then self.currentView = "READY" end
+
+    local function selectButton(button, selected)
+        if not button or not button.easBg then return end
+        if selected then
+            button.easBg:SetCenterColor(0.10, 0.19, 0.23, 0.98)
+            button.easBg:SetEdgeColor(0.38, 0.84, 0.92, 1)
+        else
+            button.easBg:SetCenterColor(0.035, 0.050, 0.070, 0.96)
+            button.easBg:SetEdgeColor(0.22, 0.34, 0.44, 0.95)
+        end
+    end
+
+    selectButton(self.potionModeButton, mode == "POTION")
+    selectButton(self.poisonModeButton, mode == "POISON")
+    selectButton(self.readyTab, self.currentView == "READY")
+    selectButton(self.bestTab, self.currentView == "BEST")
+    selectButton(self.exactTab, self.currentView == "EXACT")
+    if self.bestTab then
+        setButtonText(self.bestTab, mode == "POISON" and "BEST POISONS" or "BEST BUFFS")
+    end
+
+    if self.statusTitle then
+        if self:IsAtAlchemyStation() then
+            self.statusTitle:SetText("ALCHEMY STATION READY — choose a recipe below")
+            self.statusTitle:SetColor(0.36, 0.92, 0.68, 1)
+            if self.statusCard then self.statusCard:SetEdgeColor(0.12, 0.58, 0.40, 0.95) end
+        else
+            self.statusTitle:SetText("PLANNER MODE — open an Alchemy Station to load or craft")
+            self.statusTitle:SetColor(0.95, 0.78, 0.38, 1)
+            if self.statusCard then self.statusCard:SetEdgeColor(0.52, 0.40, 0.16, 0.95) end
+        end
+    end
     if self.statusLabel then self.statusLabel:SetText(self:GetStatusText()) end
-    if self.autoCraftButton then setButtonText(self.autoCraftButton, "AUTO CRAFT: " .. self:GetAutoCraftLabel()) end
-    self.currentView = self.currentView == "EXACT" and "EXACT" or "READY"
+    if self.autoCraftButton then
+        setButtonText(self.autoCraftButton, EPC.saved.alchemyPotionMakerAutoCraft == true and "AUTO CRAFT: ON" or "AUTO CRAFT: OFF")
+        if self.autoCraftButton.easBg then
+            if EPC.saved.alchemyPotionMakerAutoCraft == true then
+                self.autoCraftButton.easBg:SetEdgeColor(0.36, 0.86, 0.62, 1)
+            else
+                self.autoCraftButton.easBg:SetEdgeColor(0.34, 0.38, 0.44, 1)
+            end
+        end
+    end
+
+    if self.recipesTitle then
+        if self.currentView == "BEST" then
+            self.recipesTitle:SetText(mode == "POISON" and "BEST POISONS" or "BEST BUFF POTIONS")
+        else
+            self.recipesTitle:SetText("RECIPES")
+        end
+    end
+    if self.recipesHint then
+        if self.currentView == "BEST" then
+            self.recipesHint:SetText(mode == "POISON"
+                and "Ranked by damage + debuff strength. READY recipes are listed first."
+                or "Ranked by combat buff strength. READY recipes are listed first.")
+        else
+            self.recipesHint:SetText("Green = ready. Missing recipes show the needed zones/locations. MAP + 3D marks the hunt pins; TRAVEL cycles through each missing ingredient using its closest discovered wayshrine.")
+        end
+    end
+
     if self.exactBar then self.exactBar:SetHidden(self.currentView ~= "EXACT") end
-    if self.readyTab then setButtonText(self.readyTab, self.currentView == "READY" and "[ CAN MAKE NOW ]" or "CAN MAKE NOW") end
-    if self.exactTab then setButtonText(self.exactTab, self.currentView == "EXACT" and "[ MAKE EXACT ]" or "MAKE EXACT") end
+    if self.recipesTitle then
+        self.recipesTitle:ClearAnchors()
+        if self.currentView == "EXACT" and self.exactBar then
+            self.recipesTitle:SetAnchor(TOPLEFT, self.exactBar, BOTTOMLEFT, 0, 12)
+        elseif self.statusCard then
+            self.recipesTitle:SetAnchor(TOPLEFT, self.statusCard, BOTTOMLEFT, 0, 18)
+        end
+    end
+    if self.recipesHint and self.recipesTitle then
+        self.recipesHint:ClearAnchors()
+        self.recipesHint:SetAnchor(LEFT, self.recipesTitle, RIGHT, 8, 1)
+    end
+
     if self.effectButtons then
         for i, btn in ipairs(self.effectButtons) do
             local v = tostring(EPC.saved["alchemyPotionMakerEffect" .. i] or "")
-            setButtonText(btn, string.format("EFFECT %d: %s", i, v ~= "" and v or "NONE"))
+            local label
+            if i == 1 then label = v ~= "" and v or "Choose primary effect"
+            else label = v ~= "" and v or ("Optional effect " .. tostring(i)) end
+            setButtonText(btn, label)
         end
     end
-    if self.currentView == "EXACT" then self.currentResults = self:BuildExactResults()
+
+    if self.currentView == "EXACT" then
+        self.currentResults = self:BuildExactResults()
+    elseif self.currentView == "BEST" then
+        self.currentResults = self:BuildBestResults()
     else
         if not forceScan and self.cachedReadyResults then self.currentResults = self.cachedReadyResults else self.currentResults = self:BuildCanMakeResults() end
+    end
+
+    -- The exact-effects card needs extra vertical room; READY/BEST share the same compact list position.
+    local rowStartY = self.currentView == "EXACT" and 390 or 300
+    for i, row in ipairs(self.rows or {}) do
+        row:ClearAnchors()
+        row:SetAnchor(TOPLEFT, self.window, TOPLEFT, 22, rowStartY + (i - 1) * 48)
     end
     self:RefreshRows()
 end
@@ -1372,10 +1997,11 @@ function A:OpenWindow()
         notify("Alchemy Potion & Poison Maker is disabled in Suite Settings.", false)
         return
     end
-    if not self:IsAtAlchemyStation() then
-        notify("Open an Alchemy Station first. The floating potion icon appears there automatically.", false)
-        return
-    end
+
+    -- v0.29.237: the Potion Maker can now be opened from the main ESO menu at
+    -- any time, just like the standalone PotionMaker addon. Recipe planning and
+    -- inventory checks work outside a station; loading/crafting a result still
+    -- correctly requires an active Alchemy Station through PrepareResult().
     self:CreateWindow()
     self.currentView = self.currentView or "READY"
     self.currentPage = 1
@@ -1387,7 +2013,11 @@ end
 function A:ToggleWindow()
     self:CreateWindow()
     if not self.window then return end
-    if self.window:IsHidden() then self:OpenWindow() else self.window:SetHidden(true) if self.effectPopup then self.effectPopup:SetHidden(true) end end
+    if self.window:IsHidden() then
+        self:OpenWindow()
+    else
+        self:CloseWindow(true)
+    end
 end
 
 function A:ScheduleRefresh(delay)
@@ -1414,8 +2044,7 @@ function A:RegisterEvents()
     end
     if rawget(_G, "EVENT_END_CRAFTING_STATION_INTERACT") then
         EVENT_MANAGER:RegisterForEvent(PREFIX .. "_StationClose", EVENT_END_CRAFTING_STATION_INTERACT, function()
-            if self.window then self.window:SetHidden(true) end
-            if self.effectPopup then self.effectPopup:SetHidden(true) end
+            self:CloseWindow(false)
             if type(zo_callLater)=="function" then zo_callLater(function() self:RefreshVisibility() end, 80) else self:RefreshVisibility() end
         end)
     end
@@ -1431,6 +2060,231 @@ function A:RegisterEvents()
     end
 end
 
+function A:SetHotkeyActionLayer(active)
+    local layerName = "ESOAdventurerSuitePotionMakerLayer"
+    if active then
+        if self.hotkeyActionLayerPushed or type(PushActionLayerByName) ~= "function" then return end
+        local ok = pcall(PushActionLayerByName, layerName)
+        self.hotkeyActionLayerPushed = ok == true
+    else
+        if not self.hotkeyActionLayerPushed then return end
+        if type(RemoveActionLayerByName) == "function" then pcall(RemoveActionLayerByName, layerName) end
+        self.hotkeyActionLayerPushed = false
+    end
+end
+
+function A:SetHotkeyUIMode(active)
+    active = active == true
+    if type(SetGameCameraUIMode) == "function" then pcall(SetGameCameraUIMode, active) end
+    if SCENE_MANAGER and type(SCENE_MANAGER.SetInUIMode) == "function" then
+        pcall(SCENE_MANAGER.SetInUIMode, SCENE_MANAGER, active)
+    end
+end
+
+function A:ToggleMainMenuPage()
+    self:EnsureSaved()
+
+    -- v0.29.268: a key press that opens this scene can still be propagating when
+    -- the scene pushes its inherited close-key action layer.  Without a short
+    -- debounce ESO can deliver the same physical press twice and immediately
+    -- close the page, making it look like the hotkey needs two presses.
+    local now = type(GetFrameTimeMilliseconds) == "function" and GetFrameTimeMilliseconds()
+        or (type(GetGameTimeMilliseconds) == "function" and GetGameTimeMilliseconds()) or 0
+    if now > 0 and self.lastHotkeyToggleMs and (now - self.lastHotkeyToggleMs) < 220 then
+        return true
+    end
+    self.lastHotkeyToggleMs = now
+
+    if EPC.saved.alchemyPotionMakerEnabled == false then
+        notify("Alchemy Potion & Poison Maker is disabled in Suite Settings.", false)
+        return false
+    end
+    if not self:RegisterMainMenuIcon() or not SCENE_MANAGER then
+        notify("Potion Maker top-menu page requires LibMainMenu-2.0.", false)
+        return false
+    end
+    local sceneName = "ESOAdventurerSuitePotionMaker"
+    local showing = type(SCENE_MANAGER.IsShowing) == "function" and safe(SCENE_MANAGER.IsShowing, false, SCENE_MANAGER, sceneName) == true
+    if showing then
+        self:CloseWindow(true)
+    elseif type(SCENE_MANAGER.Show) == "function" then
+        pcall(SCENE_MANAGER.Show, SCENE_MANAGER, sceneName)
+    end
+    return true
+end
+
+function ESOAdventurerSuite_TogglePotionMaker()
+    if EPC and EPC.AlchemyPotionMaker and type(EPC.AlchemyPotionMaker.ToggleMainMenuPage) == "function" then
+        return EPC.AlchemyPotionMaker:ToggleMainMenuPage()
+    end
+    return false
+end
+
+-- v0.29.270: the gameplay hotkey uses a direct launcher instead of asking
+-- LibMainMenu to enter/select the scene during the same key-down. The exact
+-- same Potion Maker window is used; only the launch path is separate. This
+-- removes the first-press scene-selection race completely.
+function A:OpenFromHotkey()
+    self:EnsureSaved()
+    if EPC.saved.alchemyPotionMakerEnabled == false then
+        notify("Alchemy Potion & Poison Maker is disabled in Suite Settings.", false)
+        return true
+    end
+
+    -- If Turbo Learner owns the current Suite tool page/window, close it first
+    -- so switching tools with their two hotkeys still behaves like changing a
+    -- single menu page instead of stacking both windows.
+    local learner = EPC and EPC.RecipeStyleLearner
+    if learner and type(learner.CloseWindow) == "function" then
+        local learnerShowing = false
+        if type(learner.IsLearnerSceneShowing) == "function" then
+            learnerShowing = safe(learner.IsLearnerSceneShowing, false, learner) == true
+        end
+        if learnerShowing or (learner.window and not learner.window:IsHidden()) then
+            pcall(learner.CloseWindow, learner)
+        end
+    end
+
+    self.hotkeyOpenPending = false
+    self:SetHotkeyActionLayer(false)
+
+    local alreadyInUIMode = type(IsGameCameraUIModeActive) == "function"
+        and safe(IsGameCameraUIModeActive, false) == true
+    self.hotkeyOwnsUIMode = not alreadyInUIMode
+    self:SetHotkeyUIMode(true)
+    self.directHotkeyOpen = true
+
+    -- Open immediately in this key-down so the first press always produces the
+    -- visible UI. Only arming the inherited close binding is delayed until the
+    -- opening key event has fully finished propagating.
+    self:OpenWindow()
+    if not self.window or self.window:IsHidden() then
+        self.directHotkeyOpen = false
+        if self.hotkeyOwnsUIMode == true then self:SetHotkeyUIMode(false) end
+        self.hotkeyOwnsUIMode = false
+        return true
+    end
+    if self.window.BringWindowToTop then self.window:BringWindowToTop() end
+
+    local function armCloseLayer()
+        if A.directHotkeyOpen == true and A.window and not A.window:IsHidden() then
+            A:SetHotkeyActionLayer(true)
+        end
+    end
+    if type(zo_callLater) == "function" then zo_callLater(armCloseLayer, 120) else armCloseLayer() end
+    return true
+end
+
+function A:CloseFromHotkey()
+    self.hotkeyOpenPending = false
+    self:CloseWindow(true)
+    return true
+end
+
+function ESOAdventurerSuite_OpenPotionMakerHotkey()
+    if EPC and EPC.AlchemyPotionMaker and type(EPC.AlchemyPotionMaker.OpenFromHotkey) == "function" then
+        return EPC.AlchemyPotionMaker:OpenFromHotkey()
+    end
+    return true
+end
+
+function ESOAdventurerSuite_ClosePotionMakerHotkey()
+    if EPC and EPC.AlchemyPotionMaker and type(EPC.AlchemyPotionMaker.CloseFromHotkey) == "function" then
+        return EPC.AlchemyPotionMaker:CloseFromHotkey()
+    end
+    return true
+end
+
+function A:RegisterMainMenuIcon()
+    if self.mainMenuRegistered then return true end
+
+    local lmm = rawget(_G, "LibMainMenu2")
+    if type(lmm) ~= "table" or type(lmm.AddMenuItem) ~= "function" then
+        return false
+    end
+    if not SCENE_MANAGER or type(ZO_Scene) ~= "table" or type(ZO_Scene.New) ~= "function" then
+        return false
+    end
+
+    if type(lmm.Init) == "function" then pcall(lmm.Init, lmm) end
+
+    local descriptor = "ESOAdventurerSuitePotionMaker"
+    local sceneName = "ESOAdventurerSuitePotionMaker"
+
+    if type(ZO_CreateStringId) == "function" and rawget(_G, "SI_EAS_ALCHEMY_POTION_MAKER_MAIN_MENU") == nil then
+        pcall(ZO_CreateStringId, "SI_EAS_ALCHEMY_POTION_MAKER_MAIN_MENU", "Potion Maker")
+    end
+    local categoryName = rawget(_G, "SI_EAS_ALCHEMY_POTION_MAKER_MAIN_MENU") or rawget(_G, "SI_BINDING_NAME_POTIONMAKER")
+    if categoryName == nil and type(ZO_CreateStringId) == "function" then
+        pcall(ZO_CreateStringId, "SI_EAS_ALCHEMY_POTION_MAKER_MAIN_MENU_FALLBACK", "Potion Maker")
+        categoryName = rawget(_G, "SI_EAS_ALCHEMY_POTION_MAKER_MAIN_MENU_FALLBACK")
+    end
+
+    local scene = self.mainMenuScene
+    if not scene then
+        scene = ZO_Scene:New(sceneName, SCENE_MANAGER)
+        self.mainMenuScene = scene
+
+        -- Match other top-menu pages: mouse-driven UI, normal right-panel shade,
+        -- then show the existing Suite Potion Maker window on top.
+        if rawget(_G, "FRAGMENT_GROUP") and FRAGMENT_GROUP.MOUSE_DRIVEN_UI_WINDOW and scene.AddFragmentGroup then
+            pcall(scene.AddFragmentGroup, scene, FRAGMENT_GROUP.MOUSE_DRIVEN_UI_WINDOW)
+        end
+        if rawget(_G, "RIGHT_PANEL_BG_FRAGMENT") and scene.AddFragment then
+            pcall(scene.AddFragment, scene, RIGHT_PANEL_BG_FRAGMENT)
+        end
+
+        scene:RegisterCallback("StateChange", function(_, state)
+            if state == SCENE_SHOWING or state == SCENE_SHOWN then
+                A:OpenWindow()
+                -- Do not push the inherited hotkey layer inside the same key-down
+                -- stack that opened the scene.  Waiting one tick prevents that
+                -- original press from being interpreted as the close action too.
+                if type(zo_callLater) == "function" then
+                    zo_callLater(function()
+                        if SCENE_MANAGER and type(SCENE_MANAGER.IsShowing) == "function"
+                            and SCENE_MANAGER:IsShowing(sceneName) then
+                            A:SetHotkeyActionLayer(true)
+                        end
+                    end, 90)
+                else
+                    A:SetHotkeyActionLayer(true)
+                end
+            elseif state == SCENE_HIDING or state == SCENE_HIDDEN then
+                A:SetHotkeyActionLayer(false)
+                if A.window then A.window:SetHidden(true) end
+                if A.effectPopup then A.effectPopup:SetHidden(true) end
+            end
+        end)
+    end
+
+    local categoryLayoutInfo = {
+        binding = "EAS_ALCHEMY_POTION_MAKER",
+        categoryName = categoryName,
+        callback = function()
+            if SCENE_MANAGER:IsShowing(sceneName) then
+                SCENE_MANAGER:ShowBaseScene()
+            else
+                SCENE_MANAGER:Show(sceneName)
+            end
+        end,
+        visible = function()
+            return not EPC.saved or EPC.saved.alchemyPotionMakerEnabled ~= false
+        end,
+        normal = "esoui/art/inventory/inventory_tabicon_consumables_up.dds",
+        pressed = "esoui/art/inventory/inventory_tabicon_consumables_down.dds",
+        highlight = "esoui/art/inventory/inventory_tabicon_consumables_over.dds",
+        disabled = "esoui/art/inventory/inventory_tabicon_consumables_disabled.dds",
+    }
+
+    local ok = pcall(lmm.AddMenuItem, lmm, descriptor, sceneName, categoryLayoutInfo, nil)
+    if ok then
+        self.mainMenuRegistered = true
+        return true
+    end
+    return false
+end
+
 function A:Initialize()
     self:EnsureSaved()
     self:CreateIcon()
@@ -1438,4 +2292,14 @@ function A:Initialize()
     self.currentView = "READY"
     self.currentPage = 1
     self:RefreshVisibility()
+
+    -- Register after startup so LibMainMenu2 and ESO's keyboard main menu have
+    -- finished initializing. Retry a few times if addon/library load order is late.
+    local attempts = 0
+    local function tryMainMenu()
+        attempts = attempts + 1
+        if A:RegisterMainMenuIcon() or attempts >= 8 then return end
+        if type(zo_callLater) == "function" then zo_callLater(tryMainMenu, 500) end
+    end
+    if type(zo_callLater) == "function" then zo_callLater(tryMainMenu, 250) else tryMainMenu() end
 end

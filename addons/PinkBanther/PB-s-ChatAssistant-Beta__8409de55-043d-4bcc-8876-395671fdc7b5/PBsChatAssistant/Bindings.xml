@@ -1,13 +1,24 @@
 <Bindings>
-	<!-- General layer, so the action is live on the HUD rather than only inside a menu.
+	<!-- General layer, so these are live on the HUD rather than only inside a menu.
 
 	     preventAutomaticInputModeChange mirrors the game's own START_CHAT_ENTER action. Without
 	     it a key press coming from the keyboard flips the UI out of gamepad-preferred mode,
-	     which on console swaps the entire interface. The stock chat bindings all set it. -->
+	     which on console swaps the entire interface. The stock chat bindings all set it.
+
+	     START_CHAT is dead on console and is here for PC, where keyboard bindings work. The two
+	     channel actions are the opposite case: keyboard keys never reach the binding system on
+	     console, but GAMEPAD buttons do, so binding these to a controller button is how the
+	     channel is walked without a key catcher up and without the buttons being paused. -->
 	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
 		<Category name="SI_KEYBINDINGS_CATEGORY_PBSCHATASSISTANT">
 			<Action name="PBSCHATASSISTANT_START_CHAT" preventAutomaticInputModeChange="true">
 				<Down>PBS_CHAT_ASSISTANT:StartChat()</Down>
+			</Action>
+			<Action name="PBSCHATASSISTANT_CHANNEL_NEXT" preventAutomaticInputModeChange="true">
+				<Down>PBS_CHAT_ASSISTANT:CycleChannel(1)</Down>
+			</Action>
+			<Action name="PBSCHATASSISTANT_CHANNEL_PREV" preventAutomaticInputModeChange="true">
+				<Down>PBS_CHAT_ASSISTANT:CycleChannel(-1)</Down>
 			</Action>
 		</Category>
 	</Layer>

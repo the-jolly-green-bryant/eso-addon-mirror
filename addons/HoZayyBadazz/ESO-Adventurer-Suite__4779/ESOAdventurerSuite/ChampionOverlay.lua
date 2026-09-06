@@ -456,7 +456,9 @@ function C:Initialize()
 
     -- Lightweight safety refresh catches Suite Codex open/close and any scene
     -- that does not publish the standard callbacks on a particular client.
-    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Visibility", 200, function()
+    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Visibility", 1000, function()
+        -- Scene/camera callbacks handle immediate visibility changes; this is only
+        -- a low-frequency fallback for custom UI states.
         self:Refresh()
     end)
 end
@@ -525,17 +527,17 @@ function C:Initialize()
 
     local prefix = EPC.name .. "_ChampionGainWatch2865"
 
-    -- Polling the earned CP total is deliberately lightweight and only performs
-    -- the comparison while Champion Point Gain Only is selected.  This makes
-    -- the mode independent of event timing differences between ESO clients.
-    EVENT_MANAGER:RegisterForUpdate(prefix, 500, function()
+    -- The earned-CP fallback is deliberately low-frequency and only performs
+    -- the comparison while Champion Point Gain Only is selected. Authoritative
+    -- CP/XP events remain the immediate path.
+    EVENT_MANAGER:RegisterForUpdate(prefix, 750, function()
         if not EPC.saved or self:GetVisibilityMode2518() ~= "GAIN" then return end
         self:CheckEarnedChampionPointGain2865(false)
     end)
 
     -- XP gain is a useful fast-path: Champion Points are awarded from XP, so do
-    -- a few delayed checks around the award boundary.  The 500ms watcher above
-    -- remains the final fallback.
+    -- a few delayed checks around the award boundary. The low-frequency watcher
+    -- above remains the final fallback.
     if EVENT_EXPERIENCE_GAIN then
         EVENT_MANAGER:RegisterForEvent(prefix .. "_XP", EVENT_EXPERIENCE_GAIN, function()
             if not EPC.saved or self:GetVisibilityMode2518() ~= "GAIN" then return end

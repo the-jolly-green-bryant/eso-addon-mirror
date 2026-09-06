@@ -133,6 +133,15 @@ local function OnLootReceived(
         GB.sessionItems[itemId].quantity
         + quantity
 
+    if GB.ShowRareMaterialAlert then
+        GB.ShowRareMaterialAlert(
+            itemId,
+            cleanItemName,
+            quantity,
+            itemQuality
+        )
+    end
+
     if GB.UpdateMaterialList then
         GB.UpdateMaterialList()
     end

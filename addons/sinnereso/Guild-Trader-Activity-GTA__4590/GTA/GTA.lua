@@ -1,7 +1,7 @@
 GuildTraderActivity = {
 	name = "GTA",
 	author = "@sinnereso",
-	version = "2026.09.02",
+	version = "2026.09.05",
 	svName = "GTAVars",
 	svVersion = 1,
 }
@@ -847,7 +847,7 @@ local function PopulateTraderActivity()
 					if DecorateDisplayName(sellerName) == GetUnitDisplayName("player") then prevSales = (prevSales + itemPrice) prevAllSales = (prevAllSales + itemPrice) prevAllActivity = (prevAllActivity + itemPrice) end
 				end
 			end
-			if guildTotal ~= 0 or prevGuildTotal ~= 0 then
+			if guildTotal ~= 0 then
 				currentCounter = currentCounter + 1
 				namesList[currentCounter] = {
 					index = i,
@@ -881,6 +881,8 @@ local function PopulateTraderActivity()
 					purchases = purchases,
 					activity = sales + purchases,
 				}
+			end
+			if prevGuildTotal ~= 0 then
 				previousCounter = previousCounter + 1
 				prevNamesList[previousCounter] = {
 					index = i,

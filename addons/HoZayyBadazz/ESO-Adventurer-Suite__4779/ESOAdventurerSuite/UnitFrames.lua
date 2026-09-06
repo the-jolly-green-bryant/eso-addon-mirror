@@ -1723,6 +1723,40 @@ function F:UpdatePlayerHealthFromEvent(unitTag, powerValue, powerMax)
     return true
 end
 
+-- v0.29.341: target Health can change many times per second in combat. Apply
+-- EVENT_POWER_UPDATE's payload directly to the target bar rather than running
+-- the full target-frame refresh/aura/layout chain on every damage tick.
+function F:UpdateTargetHealthFromEvent029341(unitTag, powerValue, powerMax)
+    if unitTag ~= "reticleover" or not self.targetFrame or not self.targetFrame.epcBars then return false end
+    local current = tonumber(powerValue)
+    local maximum = tonumber(powerMax)
+    if current == nil or maximum == nil or maximum <= 0 then return false end
+    local bar = self.targetFrame.epcBars.health
+    if not bar then return false end
+    updateFillBar(bar, current, maximum, "")
+    return true
+end
+
+-- v0.29.341: sprinting/resource regeneration can emit frequent Stamina and
+-- Magicka power events. Update only the affected Player bar from the event
+-- payload instead of rebuilding the entire Player frame and its visual-policy
+-- wrapper chain on every resource tick.
+function F:UpdatePlayerResourceFromEvent029341(unitTag, powerType, powerValue, powerMax)
+    if unitTag ~= "player" or not self.playerFrame or not self.playerFrame.epcBars then return false end
+    local current = tonumber(powerValue)
+    local maximum = tonumber(powerMax)
+    if current == nil or maximum == nil or maximum <= 0 then return false end
+    local bar = nil
+    if powerType == POWER_MAGICKA or powerType == POWERTYPE_MAGICKA then
+        bar = self.playerFrame.epcBars.magicka
+    elseif powerType == POWER_STAMINA or powerType == POWERTYPE_STAMINA then
+        bar = self.playerFrame.epcBars.stamina
+    end
+    if not bar then return false end
+    updateFillBar(bar, current, maximum, "")
+    return true
+end
+
 -- Companion health is a separate unit power stream. Match the event's companion
 -- unit tag against the companion attached to each visible Group row and push the
 -- fresh values straight into that companion bar. This works for the local
@@ -1782,14 +1816,22 @@ function F:RegisterEvents()
                 if syncLiveHealth == true then
                     if unitTag == "player" then
                         handled = self:UpdatePlayerHealthFromEvent(unitTag, powerValue, powerMax) or handled
+                    elseif unitTag == "reticleover" then
+                        handled = self:UpdateTargetHealthFromEvent029341(unitTag, powerValue, powerMax) or handled
                     end
                     handled = self:UpdateGroupHealthFromEvent(unitTag, powerValue, powerMax) or handled
                     handled = self:UpdateCompanionHealthFromEvent(unitTag, powerValue, powerMax) or handled
                 end
 
-                -- Magicka/Stamina and any unmatched target health continue through
-                -- the mature unit refresh path. Health events already handled above
-                -- do not need a second GetUnitPower()/aura refresh.
+                -- Player Magicka/Stamina use the event payload directly too. In
+                -- particular, sprinting produces frequent Stamina updates; routing
+                -- those through RefreshUnitTag() was a major movement-only cost.
+                if not handled and unitTag == "player" then
+                    handled = self:UpdatePlayerResourceFromEvent029341(unitTag, eventPowerType, powerValue, powerMax) or handled
+                end
+
+                -- Unmatched target/other power changes still use the mature full
+                -- refresh path. Already-handled Player/Group/Companion events do not.
                 if not handled then
                     self:RefreshUnitTag(unitTag)
                 end
@@ -1806,7 +1848,7 @@ function F:RegisterEvents()
             registerPower("PlayerHealth", REGISTER_FILTER_UNIT_TAG, "player", FILTER_POWER_HEALTH, true)
             registerPower("PlayerMagicka", REGISTER_FILTER_UNIT_TAG, "player", FILTER_POWER_MAGICKA, false, "MAGICKA")
             registerPower("PlayerStamina", REGISTER_FILTER_UNIT_TAG, "player", FILTER_POWER_STAMINA, false, "STAMINA")
-            registerPower("TargetHealth", REGISTER_FILTER_UNIT_TAG, "reticleover", FILTER_POWER_HEALTH, false)
+            registerPower("TargetHealth", REGISTER_FILTER_UNIT_TAG, "reticleover", FILTER_POWER_HEALTH, true)
             registerPower("CompanionHealth", REGISTER_FILTER_UNIT_TAG, "companion", FILTER_POWER_HEALTH, true)
 
             -- One native prefix filter covers the entire group/raid roster and ESO's
@@ -1935,7 +1977,7 @@ function F:RegisterEvents()
         end
     end
 
-    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Visibility", 250, function()
+    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Visibility", 650, function()
         local suppressed = self:IsHudSuppressed()
         if suppressed ~= self.lastHudSuppressed then
             self.lastHudSuppressed = suppressed
@@ -1957,7 +1999,7 @@ function F:RegisterEvents()
         end
     end)
     EVENT_MANAGER:RegisterForUpdate(prefix .. "_StatsTick", 1000, function()
-        self:RefreshStats()
+        if self.statsFrame and not self.statsFrame:IsHidden() then self:RefreshStats() end
     end)
 end
 
@@ -2289,7 +2331,7 @@ function F:RegisterEvents()
     if EVENT_PLAYER_COMBAT_STATE then
         EVENT_MANAGER:RegisterForEvent(prefix .. "_CombatVisibility",EVENT_PLAYER_COMBAT_STATE,function() self:RefreshAll(true) end)
     end
-    EVENT_MANAGER:RegisterForUpdate(prefix .. "_AuraTick",500,function()
+    EVENT_MANAGER:RegisterForUpdate(prefix .. "_AuraTick",900,function()
         if self.playerFrame and not self.playerFrame:IsHidden() then self:RefreshPlayerAuras(self.layoutMode) end
         if self.targetFrame and not self.targetFrame:IsHidden() then self:RefreshTargetAuras(self.layoutMode) end
     end)
@@ -3455,8 +3497,8 @@ function F:Initialize()
     -- Keep ownership of the non-boss native frames only. Boss health remains
     -- entirely under ESO control and has no Suite event/update loop.
     local prefix = (EPC.name or "ESOAdventurerSuite") .. "_NativeUnitFrameOwner02972"
-    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Guard", 500, function()
-        if EPC.UnitFrames then
+    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Guard", 4000, function()
+        if EPC.UnitFrames and EPC.saved and EPC.saved.replaceDefaultUnitFrames ~= false then
             EPC.UnitFrames:ApplyAllNativeFrameReplacement02972()
         end
     end)
@@ -4686,8 +4728,15 @@ function F:Initialize()
     EAS_InitializeBase02995(self)
     local key = (EPC.name or "ESOAdventurerSuite") .. "_RectResourceLive02995"
     EVENT_MANAGER:UnregisterForUpdate(key)
-    EVENT_MANAGER:RegisterForUpdate(key, 150, function()
-        if EPC.UnitFrames then EPC.UnitFrames:RefreshRectResourceFills02995() end
+    EVENT_MANAGER:RegisterForUpdate(key, 4000, function()
+        local frames = EPC.UnitFrames
+        if not frames or not EPC.saved or not EAS_IsRectDesign02995(EAS_GetUnitFrameDesign02991()) then return end
+        local visible = frames.layoutMode == true
+            or (frames.playerFrame and not frames.playerFrame:IsHidden())
+            or (frames.targetFrame and not frames.targetFrame:IsHidden())
+            or (frames.groupFrame and not frames.groupFrame:IsHidden())
+            or (frames.raidFrame and not frames.raidFrame:IsHidden())
+        if visible then frames:RefreshRectResourceFills02995() end
     end)
 
     -- Ensure an old v0.29.93/94 session cannot leave Styles 1-5 in rectangle
@@ -4841,8 +4890,11 @@ updateFillBar = function(bar, current, maximum, prefix)
     if bar then EAS_UpdateRectVisual02996(bar, current, maximum) end
 end
 
-local function EAS_ApplyDesignPolicy02996(self)
+local function EAS_ApplyDesignPolicy02996(self, force)
     local design = EAS_GetUnitFrameDesign02991()
+    -- v0.29.342: do not cache backdrop cleanup by design. Older compatibility
+    -- layers can legitimately touch roster/card colors during a layout refresh;
+    -- the final cleanup must always run after those non-hot-path operations.
     if EAS_IsRectDesign02995(design) then
         -- Styles 6-10: no surrounding cards, but keep strong rectangular
         -- resource shells/fills and fitted labels.
@@ -4886,26 +4938,27 @@ end
 local EAS_LayoutIntegratedUnitFrameBase02996 = F.LayoutIntegratedUnitFrame
 function F:LayoutIntegratedUnitFrame(frame, buffCount, debuffCount, preview)
     EAS_LayoutIntegratedUnitFrameBase02996(self, frame, buffCount, debuffCount, preview)
-    EAS_ApplyDesignPolicy02996(self)
+    EAS_ApplyDesignPolicy02996(self, false)
 end
 
 local EAS_RefreshGroupFramesBase02996 = F.RefreshGroupFrames
 function F:RefreshGroupFrames()
     EAS_RefreshGroupFramesBase02996(self)
-    EAS_ApplyDesignPolicy02996(self)
+    EAS_ApplyDesignPolicy02996(self, true)
 end
 
 local EAS_ApplyVisualStyleBase02996 = F.ApplyVisualStyle
 function F:ApplyVisualStyle()
     EAS_ApplyVisualStyleBase02996(self)
-    EAS_ApplyDesignPolicy02996(self)
+    EAS_ApplyDesignPolicy02996(self, true)
 end
 
 local EAS_UpdateUnitFrameBase02996 = F.UpdateUnitFrame
 function F:UpdateUnitFrame(frame, unitTag, preview)
-    local ok = EAS_UpdateUnitFrameBase02996(self, frame, unitTag, preview)
-    EAS_ApplyDesignPolicy02996(self)
-    return ok
+    -- v0.29.341: value changes do not require a full all-frame design pass.
+    -- Styling is applied on layout/style/roster changes, while the bar update
+    -- helpers below repaint only the resource that actually changed.
+    return EAS_UpdateUnitFrameBase02996(self, frame, unitTag, preview)
 end
 
 -- The 0.29.95 live tick already reads real Player/Target/Group/Raid power.
@@ -4913,26 +4966,8 @@ end
 -- colored width/text after those values are refreshed.
 local EAS_RefreshRectResourceFillsBase02996 = F.RefreshRectResourceFills02995
 function F:RefreshRectResourceFills02995()
-    EAS_RefreshRectResourceFillsBase02996(self)
-    if not EAS_IsRectDesign02995(EAS_GetUnitFrameDesign02991()) then return end
-    local function repaint(frame)
-        if not frame then return end
-        for _, bar in pairs(frame.epcBars or {}) do
-            if bar then EAS_UpdateRectVisual02996(bar, bar.epcRectCurrent or 0, bar.epcRectMaximum or 0) end
-        end
-    end
-    repaint(self.playerFrame)
-    repaint(self.targetFrame)
-    for _, roster in ipairs({self.groupFrame, self.raidFrame}) do
-        if roster then
-            for _, row in ipairs(roster.epcRows or {}) do
-                if row and row.epcBars and row.epcBars.health then
-                    local b = row.epcBars.health
-                    EAS_UpdateRectVisual02996(b, b.epcRectCurrent or 0, b.epcRectMaximum or 0)
-                end
-            end
-        end
-    end
+    -- v0.29.341: the final 0.29.97 renderer below owns the single repaint pass.
+    return EAS_RefreshRectResourceFillsBase02996(self)
 end
 
 -- ============================================================================
@@ -5163,8 +5198,11 @@ local function EAS_SpaceOriginalPlayerBars02997(frame, design)
     end
 end
 
-local function EAS_FinalUnitFramePolicy02997(self, allowPlayerSpacing)
+local function EAS_FinalUnitFramePolicy02997(self, allowPlayerSpacing, force)
     local design = EAS_GetUnitFrameDesign02991()
+    -- v0.29.342: always finish layout/style/roster refreshes with the final
+    -- visual cleanup. The 0.29.341 UpdateUnitFrame hot path still bypasses this
+    -- global pass, so live power events remain lightweight.
     EAS_TagFrameBars02997(self)
 
     if EAS_IsRectDesign02995(design) then
@@ -5217,28 +5255,45 @@ function F:LayoutIntegratedUnitFrame(frame, buffCount, debuffCount, preview)
     EAS_LayoutIntegratedUnitFrameBase02997(self, frame, buffCount, debuffCount, preview)
     -- Geometry is allowed only while laying out the Player frame itself.
     local allowPlayerSpacing = frame ~= nil and frame.epcKind == "player"
-    EAS_FinalUnitFramePolicy02997(self, allowPlayerSpacing)
+    EAS_FinalUnitFramePolicy02997(self, allowPlayerSpacing, false)
 end
 
 local EAS_RefreshGroupFramesBase02997 = F.RefreshGroupFrames
 function F:RefreshGroupFrames()
     EAS_RefreshGroupFramesBase02997(self)
-    EAS_FinalUnitFramePolicy02997(self, false)
+    EAS_FinalUnitFramePolicy02997(self, false, true)
+    -- v0.29.342: roster rows are parent BackdropControls. Several historical
+    -- style layers still color them before the final no-card policy runs. Lock
+    -- the final visible state once per roster refresh so those backgrounds do
+    -- not alternate/flicker between compatibility passes.
+    local function stabilize(frame)
+        if not frame then return end
+        if frame.epcBackground then frame.epcBackground:SetHidden(true) end
+        for _, row in ipairs(frame.epcRows or {}) do
+            if row then
+                if row.SetCenterColor then row:SetCenterColor(0, 0, 0, 0) end
+                if row.SetEdgeColor then row:SetEdgeColor(0, 0, 0, 0) end
+            end
+        end
+    end
+    stabilize(self.groupFrame)
+    stabilize(self.raidFrame)
 end
 
 local EAS_ApplyVisualStyleBase02997 = F.ApplyVisualStyle
 function F:ApplyVisualStyle()
     EAS_ApplyVisualStyleBase02997(self)
     -- Explicit style/layout work may intentionally establish Player spacing.
-    EAS_FinalUnitFramePolicy02997(self, true)
+    EAS_FinalUnitFramePolicy02997(self, true, true)
 end
 
 local EAS_UpdateUnitFrameBase02997 = F.UpdateUnitFrame
 function F:UpdateUnitFrame(frame, unitTag, preview)
-    local ok = EAS_UpdateUnitFrameBase02997(self, frame, unitTag, preview)
-    -- Unit/power refreshes update values only; never mutate Player bar geometry.
-    EAS_FinalUnitFramePolicy02997(self, false)
-    return ok
+    -- v0.29.341: the previous wrapper traversed Player, Target, Group and Raid
+    -- bars after every single unit-value update. updateFillBar/updateESOResourceBar
+    -- already maintain the live rectangle fill, so no global policy pass belongs
+    -- on this hot path.
+    return EAS_UpdateUnitFrameBase02997(self, frame, unitTag, preview)
 end
 
 local EAS_UpdateESOResourceBarBase02997 = updateESOResourceBar

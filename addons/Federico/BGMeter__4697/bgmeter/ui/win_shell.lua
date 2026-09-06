@@ -20,9 +20,19 @@ local Prefs = BGMeter.Prefs
 local Anim = BGMeter.Anim
 local Sound = BGMeter.Sound
 
+local Scene = BGMeter.zenimax.scene
+
 local settings_open = false
 local user_visible = false
 local in_combat = false
+
+local function in_header()
+    if not W.built then return false end
+    local _, y = BGMeter.zenimax.api.get_ui_mouse()
+    local top = W.win:GetTop()
+    local scale = W.win:GetScale() or 1
+    return y ~= nil and y >= top and y <= top + L.header_h * scale
+end
 
 local SCOREBG_L  = "EsoUI/Art/Battlegrounds/battlegrounds_scoreboardBG_left.dds"
 local SCOREBG_R  = "EsoUI/Art/Battlegrounds/battlegrounds_scoreboardBG_right.dds"
@@ -37,6 +47,7 @@ local SETTINGS_SECTIONS = {
         { kind = "cycle",  key = "auto_open_mode", label = "Auto-open results",
           states = AUTO_OPEN_STATES, labels = AUTO_OPEN_LABELS },
         { kind = "toggle", key = "show_launcher",  label = "Launcher icon" },
+        { kind = "toggle", key = "cursor_on_open", label = "Registry opens with cursor" },
         { kind = "toggle", key = "sounds",         label = "Sound cues" },
         { kind = "toggle", key = "animate",        label = "Animations" },
         { kind = "cycle",  key = "max_history",    label = "Matches kept",
@@ -226,6 +237,9 @@ local function build()
     win:SetDimensionConstraints(L.min_w, L.min_h, L.max_w, L.max_h)
     win:SetHandler("OnMoveStop", function() W.on_move_stop() end)
     win:SetHandler("OnResizeStop", function() W.on_resize_stop() end)
+    win:SetHandler("OnMouseWheel", function(_, delta) W.on_wheel(delta) end)
+    win:SetHandler("OnMouseDoubleClick", function() W.on_double_click() end)
+    Scene.register_top_level(win, function() W.on_escape() end)
 
     W.bg = P.rect(win, K.COLOR.bg)
     W.bg:SetAnchorFill(win)
@@ -464,9 +478,24 @@ end
 function W.step(dir)
     local total = BGMeter.History.count()
     if total == 0 then return end
-    W.current_index = math.max(1, math.min(total, W.current_index + dir))
+    local want = math.max(1, math.min(total, W.current_index + dir))
+    if want == W.current_index then return end
+    W.current_index = want
     W.selected_row = nil
     Sound.play("match"); W.render(true)
+end
+
+function W.on_wheel(delta)
+    if not in_header() then return end
+    W.step(delta > 0 and -1 or 1)
+
+end
+
+function W.on_double_click()
+    if not in_header() then return end
+    W.win:SetDimensions(L.window_w, L.window_h)
+    Sound.play("nav")
+    W.on_resize_stop()
 end
 
 function W.toggle_settings()
@@ -503,6 +532,11 @@ end
 function W.on_scene(onHud)
     W.on_hud = onHud and true or false
     apply_visibility()
+end
+
+function W.on_scene_state(newState)
+    if newState == SCENE_SHOWN then W.on_scene(true)
+    elseif newState == SCENE_HIDDEN and not BGMeter.zenimax.scene.next_is_hud() then W.on_scene(false) end
 end
 
 function W.on_combat(_, inCombat)
@@ -549,13 +583,11 @@ function W.on_history_changed(removedIndex)
     if W.built and not W.win:IsHidden() then W.render(false) end
 end
 
-function W.hide()
-    if not W.built then return end
-    local was_visible = not W.win:IsHidden()
+local function after_hide(was_visible)
     settings_open = false
     W.settings.window:SetHidden(true)
     user_visible = false
-    W.win:SetHidden(true); W._persist_hidden(true)
+    W._persist_hidden(true)
     W._chart_hover_stop()
     hide_medal_card()
     if was_visible then
@@ -564,6 +596,20 @@ function W.hide()
             BGMeter.UI.menu.on_report_closed()
         end
     end
+end
+
+function W.hide()
+    if not W.built then return end
+    local was_visible = not W.win:IsHidden()
+    user_visible = false
+    W.win:SetHidden(true)
+    after_hide(was_visible)
+end
+
+function W.on_escape()
+    if not W.built or W.win:IsHidden() then return end
+    if BGMeter.UI.menu and BGMeter.UI.menu.forget_reopen then BGMeter.UI.menu.forget_reopen() end
+    W.hide()
 end
 
 function W.toggle()
@@ -603,10 +649,7 @@ function W.init()
         BGMeter.zenimax.events.register("BGMeterWinCombat", zc.EVENT_PLAYER_COMBAT_STATE, W.on_combat)
     end
     if SCENE_MANAGER then
-        local function handler(_, newState)
-            if newState == SCENE_SHOWN then W.on_scene(true)
-            elseif newState == SCENE_HIDDEN then W.on_scene(false) end
-        end
+        local function handler(_, newState) W.on_scene_state(newState) end
         for _, name in ipairs({ "hud", "hudui" }) do
             local sc = safe_m(SCENE_MANAGER, "GetScene", name)
             if sc and type(sc.RegisterCallback) == "function" then

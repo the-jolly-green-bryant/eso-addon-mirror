@@ -381,8 +381,8 @@ function R:StartTurbo()
         notify("TURBO LEARNER cannot use protected inventory items while you are in combat.", false)
         return
     end
-    if not self:IsInventoryOrBankShowing() then
-        notify("Open Inventory or Bank before using Turbo Learner.", false)
+    if not self:IsInventoryOrBankShowing() and not (self.IsLearnerSceneShowing and self:IsLearnerSceneShowing()) then
+        notify("Open Turbo Learner from the top menu before learning items.", false)
         return
     end
     local queue = self:BuildQueue()
@@ -401,223 +401,599 @@ function R:StartTurbo()
     self:ProcessNext()
 end
 
+local LEARNER_SCENE_NAME = "ESOAdventurerSuiteTurboLearner"
+local LEARNER_DESCRIPTOR = "ESOAdventurerSuiteTurboLearner"
+local PANEL_W, PANEL_H = 790, 700
+local ROW_COUNT = 10
+
+local function makeLearnerButton(parent, width, height, text)
+    local b = wm:CreateControl(nil, parent, CT_BUTTON)
+    b:SetDimensions(width, height)
+    b:SetMouseEnabled(true)
+    b:SetFont("ZoFontGameBold")
+    b:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    b:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    b:SetText(text or "")
+
+    local bg = wm:CreateControl(nil, b, CT_BACKDROP)
+    bg:SetAnchorFill(b)
+    bg:SetCenterColor(0.035, 0.052, 0.075, 0.98)
+    bg:SetEdgeColor(0.26, 0.44, 0.58, 0.95)
+    bg:SetEdgeTexture("EsoUI/Art/Miscellaneous/white_1x1.dds", 1, 1, 1)
+    b.easBg = bg
+
+    b:SetHandler("OnMouseEnter", function(control)
+        if control.easBg then control.easBg:SetCenterColor(0.075, 0.10, 0.14, 1) end
+    end)
+    b:SetHandler("OnMouseExit", function(control)
+        if control.easBg then control.easBg:SetCenterColor(0.035, 0.052, 0.075, 0.98) end
+    end)
+    return b
+end
+
+local function getLinkQualityColor(link)
+    local qf = rawget(_G, "GetItemLinkDisplayQuality") or rawget(_G, "GetItemLinkQuality")
+    local q = type(qf) == "function" and safe(qf, nil, link) or nil
+    local color = q ~= nil and safe(GetItemQualityColor, nil, q) or nil
+    if color and color.UnpackRGBA then return color:UnpackRGBA() end
+    return 0.34, 0.46, 0.58, 1
+end
+
+function R:IsLearnerSceneShowing()
+    if not SCENE_MANAGER or type(SCENE_MANAGER.IsShowing) ~= "function" then return false end
+    local ok, value = pcall(SCENE_MANAGER.IsShowing, SCENE_MANAGER, LEARNER_SCENE_NAME)
+    return ok and value == true
+end
+
 function R:GetUnknownCount()
-    if not self:IsInventoryOrBankShowing() then return 0 end
     return #self:BuildQueue()
 end
 
-function R:RefreshStatus()
-    if not self.button then return end
-    local count = 0
-    if not self.running then count = self:GetUnknownCount() end
-    if self.countLabel then
-        self.countLabel:SetText(self.running and "..." or tostring(count))
-        self.countLabel:SetHidden(false)
-    end
-    if self.glow then
-        if self.running then self.glow:SetEdgeColor(1.00, 0.70, 0.18, 1)
-        elseif count > 0 then self.glow:SetEdgeColor(0.20, 0.85, 0.62, 1)
-        else self.glow:SetEdgeColor(0.28, 0.36, 0.46, 0.9) end
-    end
-end
-
-function R:RefreshVisibility()
-    self:EnsureSaved()
-    if not self.button then return end
-    local layout = self.layoutMode == true or (EPC and EPC.unitFramesMoveMode == true)
-    local show = layout or (EPC.saved.recipeStyleLearnerEnabled ~= false and self:IsInventoryOrBankShowing())
-    self.button:SetHidden(not show)
-    if show then
-        if layout then
-            if self.countLabel then self.countLabel:SetText("MOVE") end
-            if self.glow then self.glow:SetEdgeColor(1.00, 0.72, 0.22, 1) end
-        else
-            self:RefreshStatus()
-        end
-    end
-    if not show and self.running then
-        self.running = false
-        self:EndPopupSuppression()
-    end
-end
-
-function R:SetLayoutMode(active)
-    active = active == true
-    self:EnsureSaved()
-    self:CreateUI()
-    self.layoutMode = active
-    if not self.button then return end
-
-    self.button:SetDimensions(NORMAL_W, NORMAL_H)
-    self.button:SetMovable(true)
-    self.button:SetMouseEnabled(true)
-    if self.layoutDragHandle029153 then
-        self.layoutDragHandle029153:SetMouseEnabled(active)
-        self.layoutDragHandle029153:SetHidden(not active)
-    end
-    if active then
-        -- HUD Layout Mode intentionally previews the learner even when Inventory
-        -- and Bank are closed. The invisible 64x64 drag handle receives the
-        -- first mouse-down and starts moving immediately.
-        self.button:SetHidden(false)
-        if self.button.SetTopLevel then self.button:SetTopLevel(true) end
-        if self.button.SetDrawTier and DT_HIGH then self.button:SetDrawTier(DT_HIGH) end
-        if self.button.SetDrawLayer and DL_OVERLAY then self.button:SetDrawLayer(DL_OVERLAY) end
-        if self.button.SetDrawLevel then self.button:SetDrawLevel(950) end
-        if self.button.BringWindowToTop then self.button:BringWindowToTop() end
-        if self.countLabel then self.countLabel:SetText("MOVE") end
-        if self.glow then self.glow:SetEdgeColor(1.00, 0.72, 0.22, 1) end
-    else
-        self:RefreshVisibility()
-    end
+function R:SetLayoutMode(_)
+    -- v0.29.266: Turbo Learner is a top-menu page now, not a HUD overlay.
 end
 
 function R:RaiseForLayout()
-    if self.layoutMode ~= true or not self.button or self.button:IsHidden() then return end
-    if self.button.SetTopLevel then self.button:SetTopLevel(true) end
-    if self.button.SetDrawTier and DT_HIGH then self.button:SetDrawTier(DT_HIGH) end
-    if self.button.SetDrawLayer and DL_OVERLAY then self.button:SetDrawLayer(DL_OVERLAY) end
-    if self.button.SetDrawLevel then self.button:SetDrawLevel(950) end
-    if self.button.BringWindowToTop then self.button:BringWindowToTop() end
 end
 
-function R:CreateUI()
-    if self.button or not wm or not GuiRoot then return end
-    local b = wm:CreateTopLevelWindow("EAS_RecipeStyleLearner")
-    b:SetDimensions(NORMAL_W, NORMAL_H)
-    b:SetMouseEnabled(true)
-    b:SetMovable(true)
-    b:SetClampedToScreen(true)
-    b:SetDrawTier(DT_HIGH)
-    b:SetDrawLayer(DL_OVERLAY)
-    b:SetDrawLevel(900)
-    b:SetHidden(true)
-    self.button = b
+function R:RefreshVisibility()
+    -- Kept as a compatibility entry point for Suite Settings/Core. The learner
+    -- no longer has a floating overlay to show/hide.
+    if self.window and not self.window:IsHidden() then self:RefreshWindow() end
+end
 
-    local bg = wm:CreateControl(nil, b, CT_BACKDROP)
-    bg:SetDimensions(NORMAL_W, NORMAL_H)
-    bg:SetAnchor(CENTER, b, CENTER, 0, 0)
-    bg:SetCenterColor(0.018, 0.026, 0.040, 0.96)
-    bg:SetEdgeColor(0.28, 0.36, 0.46, 0.9)
-    bg:SetEdgeTexture(nil, 1, 1, 1)
-    self.glow = bg
+function R:RefreshStatus()
+    if self.window and not self.window:IsHidden() then self:RefreshWindow() end
+end
 
-    local icon = wm:CreateControl(nil, b, CT_TEXTURE)
+function R:CreateWindow()
+    if self.window or not wm or not GuiRoot then return end
+
+    local w = wm:CreateTopLevelWindow("EAS_TurboLearnerWindow")
+    w:SetDimensions(PANEL_W, PANEL_H)
+    w:SetAnchor(CENTER, GuiRoot, CENTER, 120, 0)
+    w:SetClampedToScreen(true)
+    w:SetMouseEnabled(true)
+    w:SetMovable(false)
+    if w.SetDrawTier and DT_HIGH then w:SetDrawTier(DT_HIGH) end
+    if w.SetDrawLayer and DL_CONTROLS then w:SetDrawLayer(DL_CONTROLS) end
+    w:SetDrawLevel(40)
+    w:SetHidden(true)
+    self.window = w
+
+    local bg = wm:CreateControl(nil, w, CT_BACKDROP)
+    bg:SetAnchorFill(w)
+    bg:SetCenterColor(0.012, 0.020, 0.032, 0.985)
+    bg:SetEdgeColor(0.22, 0.36, 0.48, 0.98)
+    bg:SetEdgeTexture("EsoUI/Art/Miscellaneous/white_1x1.dds", 1, 1, 2)
+
+    local header = wm:CreateControl(nil, w, CT_BACKDROP)
+    header:SetAnchor(TOPLEFT, w, TOPLEFT, 1, 1)
+    header:SetAnchor(TOPRIGHT, w, TOPRIGHT, -1, 1)
+    header:SetDimensions(0, 74)
+    header:SetCenterColor(0.025, 0.050, 0.073, 0.99)
+    header:SetEdgeColor(0, 0, 0, 0)
+
+    local icon = wm:CreateControl(nil, header, CT_TEXTURE)
     icon:SetDimensions(46, 46)
-    icon:SetAnchor(CENTER, b, CENTER, 0, 0)
+    icon:SetAnchor(LEFT, header, LEFT, 18, 0)
     icon:SetTexture(BOOK_ICON)
-    self.icon = icon
 
-    local count = wm:CreateControl(nil, b, CT_LABEL)
-    count:SetFont("ZoFontGameBold")
-    count:SetAnchor(BOTTOMRIGHT, bg, BOTTOMRIGHT, -4, -1)
-    count:SetDimensions(28, 20)
-    count:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
-    count:SetColor(1, 0.84, 0.30, 1)
-    count:SetText("0")
-    self.countLabel = count
+    local title = wm:CreateControl(nil, header, CT_LABEL)
+    title:SetFont("ZoFontWinH2")
+    title:SetAnchor(TOPLEFT, header, TOPLEFT, 78, 11)
+    title:SetDimensions(540, 31)
+    title:SetColor(0.96, 0.86, 0.46, 1)
+    title:SetText("TURBO RECIPE & STYLE LEARNER")
 
-    -- Normal inventory/bank behavior: the compact book can still be dragged,
-    -- and a click without movement starts Turbo Learner. HUD Layout Mode uses
-    -- the dedicated overlay handle below instead, avoiding the old first-click
-    -- focus/double-click behavior.
-    b:SetHandler("OnMouseDown", function(control, button)
-        if button ~= MOUSE_BUTTON_INDEX_LEFT then return end
-        if self.layoutMode == true or (EPC and EPC.unitFramesMoveMode == true) then return end
-        self.pressLeft = num(control:GetLeft(), 0)
-        self.pressTop = num(control:GetTop(), 0)
-        if control.StartMoving then control:StartMoving() end
-    end)
-    b:SetHandler("OnMouseUp", function(control, button, upInside)
-        if button ~= MOUSE_BUTTON_INDEX_LEFT then return end
-        if self.layoutMode == true or (EPC and EPC.unitFramesMoveMode == true) then return end
-        if control.StopMoving then control:StopMoving() end
-        local left = num(control:GetLeft(), 0)
-        local top = num(control:GetTop(), 0)
-        self:SavePosition029153()
-        local moved = math.abs(left - num(self.pressLeft, left)) > 4 or math.abs(top - num(self.pressTop, top)) > 4
-        self.pressLeft, self.pressTop = nil, nil
-        if upInside ~= false and not moved then
-            self:StartTurbo()
-        end
-    end)
-    b:SetHandler("OnMoveStop", function(control)
-        if control.StopMoving then control:StopMoving() end
-        self:SavePosition029153()
-    end)
+    local subtitle = wm:CreateControl(nil, header, CT_LABEL)
+    subtitle:SetFont("ZoFontGame")
+    subtitle:SetAnchor(TOPLEFT, title, BOTTOMLEFT, 0, -2)
+    subtitle:SetDimensions(590, 24)
+    subtitle:SetColor(0.68, 0.78, 0.86, 1)
+    subtitle:SetText("Review everything the Suite can learn before you press Learn All.")
 
-    -- Dedicated one-click drag surface for HUD Layout Mode. It is exactly the
-    -- same size as the visible book (no oversized grab box), but sits above the
-    -- child textures so the first mouse-down cannot be swallowed by them.
-    local layoutDragHandle = wm:CreateControl(nil, b, CT_CONTROL)
-    layoutDragHandle:SetAnchorFill(b)
-    layoutDragHandle:SetMouseEnabled(false)
-    layoutDragHandle:SetHidden(true)
-    if layoutDragHandle.SetDrawLayer and DL_OVERLAY then layoutDragHandle:SetDrawLayer(DL_OVERLAY) end
-    if layoutDragHandle.SetDrawLevel then layoutDragHandle:SetDrawLevel(2000) end
-    layoutDragHandle:SetHandler("OnMouseDown", function(_, button)
-        if button ~= MOUSE_BUTTON_INDEX_LEFT then return end
-        if self.layoutMode ~= true and not (EPC and EPC.unitFramesMoveMode == true) then return end
-        self.layoutDragging029153 = true
-        if b.BringWindowToTop then b:BringWindowToTop() end
-        if b.StartMoving then b:StartMoving() end
-    end)
-    layoutDragHandle:SetHandler("OnMouseUp", function(_, button)
-        if button ~= MOUSE_BUTTON_INDEX_LEFT then return end
-        if self.layoutDragging029153 ~= true then return end
-        self.layoutDragging029153 = false
-        if b.StopMoving then b:StopMoving() end
-        self:SavePosition029153()
-    end)
-    self.layoutDragHandle029153 = layoutDragHandle
+    local close = makeLearnerButton(header, 42, 36, "X")
+    close:SetAnchor(TOPRIGHT, header, TOPRIGHT, -14, 16)
+    close:SetHandler("OnClicked", function() self:CloseWindow() end)
 
-    b:SetHandler("OnMouseEnter", function(control)
-        if InformationTooltip and type(InitializeTooltip) == "function" then
-            InitializeTooltip(InformationTooltip, control, TOPRIGHT, 0, 0, TOPLEFT)
-            InformationTooltip:AddLine("TURBO RECIPE & STYLE LEARNER", "ZoFontWinH4")
-            InformationTooltip:AddLine("Click once to rapidly learn every unknown recipe, furnishing plan, motif, and style page available in your backpack. While the Bank is open it can pull learnable items into an empty backpack slot first.", "ZoFontGame")
-            InformationTooltip:AddLine("In Suite HUD Layout Mode, left-click and hold the book, then drag immediately. No double-click is required. You can also drag the compact book while Inventory/Bank is open.", "ZoFontGameSmall")
-        end
-    end)
-    b:SetHandler("OnMouseExit", function()
-        if InformationTooltip and type(ClearTooltip) == "function" then ClearTooltip(InformationTooltip) end
-    end)
+    local summary = wm:CreateControl(nil, w, CT_LABEL)
+    summary:SetFont("ZoFontGameBold")
+    summary:SetAnchor(TOPLEFT, w, TOPLEFT, 22, 91)
+    summary:SetDimensions(500, 27)
+    summary:SetColor(0.84, 0.90, 0.96, 1)
+    self.summaryLabel = summary
 
-    self:RestorePosition()
+    local status = wm:CreateControl(nil, w, CT_LABEL)
+    status:SetFont("ZoFontGame")
+    status:SetAnchor(TOPRIGHT, w, TOPRIGHT, -22, 91)
+    status:SetDimensions(240, 27)
+    status:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+    status:SetColor(0.44, 0.88, 0.68, 1)
+    self.statusLabel = status
+
+    local divider = wm:CreateControl(nil, w, CT_TEXTURE)
+    divider:SetAnchor(TOPLEFT, w, TOPLEFT, 22, 124)
+    divider:SetAnchor(TOPRIGHT, w, TOPRIGHT, -22, 124)
+    divider:SetHeight(1)
+    divider:SetTexture("EsoUI/Art/Miscellaneous/white_1x1.dds")
+    divider:SetColor(0.18, 0.28, 0.36, 0.95)
+
+    self.rows = {}
+    local firstY = 138
+    for i = 1, ROW_COUNT do
+        local row = wm:CreateControl(nil, w, CT_CONTROL)
+        row:SetDimensions(PANEL_W - 44, 43)
+        row:SetAnchor(TOPLEFT, w, TOPLEFT, 22, firstY + (i - 1) * 45)
+        row:SetMouseEnabled(true)
+
+        local rowBg = wm:CreateControl(nil, row, CT_BACKDROP)
+        rowBg:SetAnchorFill(row)
+        rowBg:SetCenterColor(i % 2 == 0 and 0.022 or 0.016, i % 2 == 0 and 0.035 or 0.028, i % 2 == 0 and 0.050 or 0.042, 0.98)
+        rowBg:SetEdgeColor(0.08, 0.15, 0.21, 0.9)
+        rowBg:SetEdgeTexture("EsoUI/Art/Miscellaneous/white_1x1.dds", 1, 1, 1)
+        row.bg = rowBg
+
+        local iconFrame = wm:CreateControl(nil, row, CT_BACKDROP)
+        iconFrame:SetDimensions(36, 36)
+        iconFrame:SetAnchor(LEFT, row, LEFT, 4, 0)
+        iconFrame:SetCenterColor(0.02, 0.03, 0.04, 0.98)
+        iconFrame:SetEdgeColor(0.34, 0.46, 0.58, 1)
+        iconFrame:SetEdgeTexture("EsoUI/Art/Miscellaneous/white_1x1.dds", 1, 1, 2)
+        row.iconFrame = iconFrame
+
+        local itemIcon = wm:CreateControl(nil, iconFrame, CT_TEXTURE)
+        itemIcon:SetAnchor(TOPLEFT, iconFrame, TOPLEFT, 2, 2)
+        itemIcon:SetAnchor(BOTTOMRIGHT, iconFrame, BOTTOMRIGHT, -2, -2)
+        itemIcon:SetTexture("EsoUI/Art/Icons/icon_missing.dds")
+        row.icon = itemIcon
+
+        local nameLabel = wm:CreateControl(nil, row, CT_LABEL)
+        nameLabel:SetFont("ZoFontGameBold")
+        nameLabel:SetAnchor(TOPLEFT, row, TOPLEFT, 50, 3)
+        nameLabel:SetDimensions(485, 21)
+        nameLabel:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
+        row.nameLabel = nameLabel
+
+        local detailLabel = wm:CreateControl(nil, row, CT_LABEL)
+        detailLabel:SetFont("ZoFontGameSmall")
+        detailLabel:SetAnchor(TOPLEFT, nameLabel, BOTTOMLEFT, 0, -2)
+        detailLabel:SetDimensions(500, 17)
+        detailLabel:SetColor(0.62, 0.73, 0.82, 1)
+        row.detailLabel = detailLabel
+
+        local stateLabel = wm:CreateControl(nil, row, CT_LABEL)
+        stateLabel:SetFont("ZoFontGameBold")
+        stateLabel:SetAnchor(RIGHT, row, RIGHT, -10, 0)
+        stateLabel:SetDimensions(160, 30)
+        stateLabel:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+        stateLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+        stateLabel:SetColor(0.34, 0.90, 0.64, 1)
+        stateLabel:SetText("READY TO LEARN")
+        row.stateLabel = stateLabel
+
+        row:SetHandler("OnMouseEnter", function(control)
+            if control.bg then control.bg:SetCenterColor(0.055, 0.078, 0.10, 1) end
+            local entry = control.entry
+            if entry and ItemTooltip and type(InitializeTooltip) == "function" then
+                InitializeTooltip(ItemTooltip, control, RIGHT, 6, 0, LEFT)
+                if type(ItemTooltip.SetLink) == "function" then
+                    pcall(ItemTooltip.SetLink, ItemTooltip, entry.link)
+                elseif type(ItemTooltip.SetBagItem) == "function" then
+                    pcall(ItemTooltip.SetBagItem, ItemTooltip, entry.bagId, entry.slotIndex)
+                end
+            end
+        end)
+        row:SetHandler("OnMouseExit", function(control)
+            if control.bg then control.bg:SetCenterColor(0.018, 0.030, 0.044, 0.98) end
+            if ItemTooltip and type(ClearTooltip) == "function" then pcall(ClearTooltip, ItemTooltip) end
+        end)
+        self.rows[i] = row
+    end
+
+    local prev = makeLearnerButton(w, 90, 34, "< PREV")
+    prev:SetAnchor(BOTTOMLEFT, w, BOTTOMLEFT, 22, -68)
+    prev:SetHandler("OnClicked", function()
+        self.currentPage = math.max(1, num(self.currentPage, 1) - 1)
+        self:RefreshWindow()
+    end)
+    self.prevButton = prev
+
+    local page = wm:CreateControl(nil, w, CT_LABEL)
+    page:SetDimensions(240, 34)
+    page:SetAnchor(LEFT, prev, RIGHT, 10, 0)
+    page:SetFont("ZoFontGame")
+    page:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    page:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    self.pageLabel = page
+
+    local nextButton = makeLearnerButton(w, 90, 34, "NEXT >")
+    nextButton:SetAnchor(LEFT, page, RIGHT, 10, 0)
+    nextButton:SetHandler("OnClicked", function()
+        local pages = math.max(1, math.ceil(#(self.previewQueue or {}) / ROW_COUNT))
+        self.currentPage = math.min(pages, num(self.currentPage, 1) + 1)
+        self:RefreshWindow()
+    end)
+    self.nextButton = nextButton
+
+    local refresh = makeLearnerButton(w, 110, 38, "REFRESH")
+    refresh:SetAnchor(BOTTOMRIGHT, w, BOTTOMRIGHT, -192, -16)
+    refresh:SetHandler("OnClicked", function() self:RefreshWindow(true) end)
+    self.refreshButton = refresh
+
+    local learn = makeLearnerButton(w, 154, 38, "LEARN ALL")
+    learn:SetAnchor(BOTTOMRIGHT, w, BOTTOMRIGHT, -22, -16)
+    learn.easBg:SetCenterColor(0.08, 0.20, 0.15, 0.98)
+    learn.easBg:SetEdgeColor(0.26, 0.78, 0.54, 1)
+    learn:SetHandler("OnClicked", function()
+        if self.running then return end
+        self:StartTurbo()
+    end)
+    self.learnButton = learn
+
+    local help = wm:CreateControl(nil, w, CT_LABEL)
+    help:SetFont("ZoFontGameSmall")
+    help:SetAnchor(BOTTOMLEFT, w, BOTTOMLEFT, 22, -17)
+    help:SetDimensions(360, 40)
+    help:SetColor(0.58, 0.70, 0.80, 1)
+    help:SetText("Backpack items are always scanned. Bank items are included only while a Bank is actually open and the setting is enabled.")
+
+    self.currentPage = 1
 end
 
-function R:RegisterScenes()
-    if self.scenesRegistered or not SCENE_MANAGER then return end
-    self.scenesRegistered = true
-    for _, name in ipairs({"inventory", "bank", "gamepad_inventory_root", "gamepad_banking"}) do
-        local scene = type(SCENE_MANAGER.GetScene) == "function" and SCENE_MANAGER:GetScene(name) or nil
-        if scene and type(scene.RegisterCallback) == "function" then
-            scene:RegisterCallback("StateChange", function()
-                if type(zo_callLater) == "function" then zo_callLater(function() self:RefreshVisibility() end, 0)
-                else self:RefreshVisibility() end
-            end)
+function R:RefreshWindow(force)
+    self:CreateWindow()
+    if not self.window or self.window:IsHidden() then return end
+
+    if not self.running or force == true then
+        self.previewQueue = self:BuildQueue()
+    end
+    local queue = self.previewQueue or {}
+    local pages = math.max(1, math.ceil(#queue / ROW_COUNT))
+    self.currentPage = math.max(1, math.min(pages, num(self.currentPage, 1)))
+    local startIndex = (self.currentPage - 1) * ROW_COUNT + 1
+
+    for i, row in ipairs(self.rows or {}) do
+        local entry = queue[startIndex + i - 1]
+        row.entry = entry
+        row:SetHidden(entry == nil)
+        if entry then
+            local icon = tostring(safe(GetItemLinkIcon, "", entry.link) or "")
+            row.icon:SetTexture(icon ~= "" and icon or "EsoUI/Art/Icons/icon_missing.dds")
+            row.nameLabel:SetText(zo_strformat("<<C:1>>", entry.name or "Unknown"))
+            local bagText = entry.bagId == BAG_BACKPACK and "Backpack" or ((entry.bagId == BAG_BANK or entry.bagId == BAG_SUBSCRIBER_BANK) and "Bank" or "Inventory")
+            local typeText = entry.class == "STYLE" and "Motif / Style" or "Recipe / Plan"
+            row.detailLabel:SetText(typeText .. "  •  " .. bagText)
+            local r, g, b, a = getLinkQualityColor(entry.link)
+            row.iconFrame:SetEdgeColor(r, g, b, a or 1)
+            row.stateLabel:SetText("READY TO LEARN")
         end
+    end
+
+    if self.running then
+        local total = #(self.queue or {})
+        local done = math.max(0, math.min(total, num(self.queueIndex, 1) - 1))
+        self.statusLabel:SetText(string.format("Learning %d / %d", done, total))
+        self.statusLabel:SetColor(1.00, 0.72, 0.26, 1)
+        self.learnButton:SetEnabled(false)
+        self.learnButton:SetText("LEARNING...")
+        self.refreshButton:SetEnabled(false)
+    else
+        self.statusLabel:SetText(#queue > 0 and "Ready" or "Nothing to learn")
+        self.statusLabel:SetColor(#queue > 0 and 0.38 or 0.62, #queue > 0 and 0.90 or 0.72, #queue > 0 and 0.66 or 0.80, 1)
+        self.learnButton:SetEnabled(#queue > 0)
+        self.learnButton:SetText(#queue > 0 and ("LEARN ALL (" .. tostring(#queue) .. ")") or "LEARN ALL")
+        self.refreshButton:SetEnabled(true)
+    end
+
+    self.summaryLabel:SetText(string.format("%d unknown item%s found", #queue, #queue == 1 and "" or "s"))
+    self.pageLabel:SetText(string.format("Page %d of %d", self.currentPage, pages))
+    self.prevButton:SetEnabled(self.currentPage > 1)
+    self.nextButton:SetEnabled(self.currentPage < pages)
+end
+
+function R:OpenWindow()
+    self:EnsureSaved()
+    if EPC.saved.recipeStyleLearnerEnabled == false then
+        notify("Turbo Recipe & Style Learner is disabled in Suite Settings.", false)
+        return false
+    end
+    self:CreateWindow()
+    if not self.window then return false end
+    self.window:SetHidden(false)
+    self.currentPage = 1
+    self:RefreshWindow(true)
+    return true
+end
+
+function R:CloseWindow()
+    if self.running then
+        self.running = false
+        self.queue = nil
+        self.queueIndex = nil
+        self:EndPopupSuppression()
+        notify("TURBO LEARNER cancelled.", false)
+    end
+    if self.window then self.window:SetHidden(true) end
+    if ItemTooltip and type(ClearTooltip) == "function" then pcall(ClearTooltip, ItemTooltip) end
+
+    -- v0.29.270: direct gameplay-hotkey launches own their temporary UI mode.
+    -- Release it here too so the X button and the keybind both return to game.
+    if self.directHotkeyOpen == true then
+        self.directHotkeyOpen = false
+        self.hotkeyOpenPending = false
+        self:SetHotkeyActionLayer(false)
+        if self.hotkeyOwnsUIMode == true then self:SetHotkeyUIMode(false) end
+        self.hotkeyOwnsUIMode = false
+    end
+
+    if SCENE_MANAGER and type(SCENE_MANAGER.IsShowing) == "function" and SCENE_MANAGER:IsShowing(LEARNER_SCENE_NAME) then
+        if type(SCENE_MANAGER.ShowBaseScene) == "function" then pcall(SCENE_MANAGER.ShowBaseScene, SCENE_MANAGER) end
+    end
+end
+
+function R:SetHotkeyActionLayer(active)
+    local layerName = "ESOAdventurerSuiteTurboLearnerLayer"
+    if active then
+        if self.hotkeyActionLayerPushed or type(PushActionLayerByName) ~= "function" then return end
+        local ok = pcall(PushActionLayerByName, layerName)
+        self.hotkeyActionLayerPushed = ok == true
+    else
+        if not self.hotkeyActionLayerPushed then return end
+        if type(RemoveActionLayerByName) == "function" then pcall(RemoveActionLayerByName, layerName) end
+        self.hotkeyActionLayerPushed = false
+    end
+end
+
+function R:SetHotkeyUIMode(active)
+    active = active == true
+    if type(SetGameCameraUIMode) == "function" then pcall(SetGameCameraUIMode, active) end
+    if SCENE_MANAGER and type(SCENE_MANAGER.SetInUIMode) == "function" then
+        pcall(SCENE_MANAGER.SetInUIMode, SCENE_MANAGER, active)
+    end
+end
+
+function R:ToggleMainMenuPage()
+    self:EnsureSaved()
+
+    -- v0.29.268: prevent the opening key-down from also reaching the inherited
+    -- close action after the Turbo Learner scene enters UI mode.
+    local now = type(GetFrameTimeMilliseconds) == "function" and GetFrameTimeMilliseconds()
+        or (type(GetGameTimeMilliseconds) == "function" and GetGameTimeMilliseconds()) or 0
+    if now > 0 and self.lastHotkeyToggleMs and (now - self.lastHotkeyToggleMs) < 220 then
+        return true
+    end
+    self.lastHotkeyToggleMs = now
+
+    if EPC.saved.recipeStyleLearnerEnabled == false then
+        notify("Turbo Recipe & Style Learner is disabled in Suite Settings.", false)
+        return false
+    end
+    if not self:RegisterMainMenuIcon() or not SCENE_MANAGER then
+        notify("Turbo Learner top-menu page requires LibMainMenu-2.0.", false)
+        return false
+    end
+    local showing = type(SCENE_MANAGER.IsShowing) == "function" and SCENE_MANAGER:IsShowing(LEARNER_SCENE_NAME)
+    if showing then
+        self:CloseWindow()
+    elseif type(SCENE_MANAGER.Show) == "function" then
+        SCENE_MANAGER:Show(LEARNER_SCENE_NAME)
+    end
+    return true
+end
+
+function ESOAdventurerSuite_ToggleTurboLearner()
+    if EPC and EPC.RecipeStyleLearner and type(EPC.RecipeStyleLearner.ToggleMainMenuPage) == "function" then
+        return EPC.RecipeStyleLearner:ToggleMainMenuPage()
+    end
+    return false
+end
+
+-- v0.29.270: gameplay hotkeys use a direct launcher. The same Turbo Learner
+-- window is shown, but opening no longer depends on LibMainMenu selecting a
+-- scene during the opening key-down. This guarantees a visible first press.
+function R:OpenFromHotkey()
+    self:EnsureSaved()
+    if EPC.saved.recipeStyleLearnerEnabled == false then
+        notify("Turbo Recipe & Style Learner is disabled in Suite Settings.", false)
+        return true
+    end
+
+    -- Keep the two crafting tools mutually exclusive when switching directly
+    -- between their hotkeys.
+    local potion = EPC and EPC.AlchemyPotionMaker
+    if potion and type(potion.CloseWindow) == "function" then
+        local potionSceneShowing = false
+        if SCENE_MANAGER and type(SCENE_MANAGER.IsShowing) == "function" then
+            potionSceneShowing = safe(SCENE_MANAGER.IsShowing, false, SCENE_MANAGER, "ESOAdventurerSuitePotionMaker") == true
+        end
+        if potionSceneShowing or (potion.window and not potion.window:IsHidden()) then
+            pcall(potion.CloseWindow, potion, true)
+        end
+    end
+
+    self.hotkeyOpenPending = false
+    self:SetHotkeyActionLayer(false)
+
+    local alreadyInUIMode = type(IsGameCameraUIModeActive) == "function"
+        and safe(IsGameCameraUIModeActive, false) == true
+    self.hotkeyOwnsUIMode = not alreadyInUIMode
+    self:SetHotkeyUIMode(true)
+    self.directHotkeyOpen = true
+
+    -- Show now; delay only the inherited close binding so this same physical
+    -- key press cannot immediately close what it just opened.
+    local opened = self:OpenWindow()
+    if opened ~= true or not self.window or self.window:IsHidden() then
+        self.directHotkeyOpen = false
+        if self.hotkeyOwnsUIMode == true then self:SetHotkeyUIMode(false) end
+        self.hotkeyOwnsUIMode = false
+        return true
+    end
+    if self.window.BringWindowToTop then self.window:BringWindowToTop() end
+
+    local function armCloseLayer()
+        if R.directHotkeyOpen == true and R.window and not R.window:IsHidden() then
+            R:SetHotkeyActionLayer(true)
+        end
+    end
+    if type(zo_callLater) == "function" then zo_callLater(armCloseLayer, 120) else armCloseLayer() end
+    return true
+end
+
+function R:CloseFromHotkey()
+    self.hotkeyOpenPending = false
+    self:CloseWindow()
+    return true
+end
+
+function ESOAdventurerSuite_OpenTurboLearnerHotkey()
+    if EPC and EPC.RecipeStyleLearner and type(EPC.RecipeStyleLearner.OpenFromHotkey) == "function" then
+        return EPC.RecipeStyleLearner:OpenFromHotkey()
+    end
+    return true
+end
+
+function ESOAdventurerSuite_CloseTurboLearnerHotkey()
+    if EPC and EPC.RecipeStyleLearner and type(EPC.RecipeStyleLearner.CloseFromHotkey) == "function" then
+        return EPC.RecipeStyleLearner:CloseFromHotkey()
+    end
+    return true
+end
+
+function R:RegisterMainMenuIcon()
+    if self.mainMenuRegistered then return true end
+    local lmm = rawget(_G, "LibMainMenu2")
+    if type(lmm) ~= "table" or type(lmm.AddMenuItem) ~= "function" then return false end
+    if not SCENE_MANAGER or type(ZO_Scene) ~= "table" or type(ZO_Scene.New) ~= "function" then return false end
+    if type(lmm.Init) == "function" then pcall(lmm.Init, lmm) end
+
+    if type(ZO_CreateStringId) == "function" and rawget(_G, "SI_EAS_TURBO_LEARNER_MAIN_MENU") == nil then
+        pcall(ZO_CreateStringId, "SI_EAS_TURBO_LEARNER_MAIN_MENU", "Turbo Learner")
+    end
+    local categoryName = rawget(_G, "SI_EAS_TURBO_LEARNER_MAIN_MENU") or rawget(_G, "SI_MAIN_MENU_JOURNAL")
+
+    local scene = self.mainMenuScene
+    if not scene then
+        scene = ZO_Scene:New(LEARNER_SCENE_NAME, SCENE_MANAGER)
+        self.mainMenuScene = scene
+        if rawget(_G, "FRAGMENT_GROUP") and FRAGMENT_GROUP.MOUSE_DRIVEN_UI_WINDOW and scene.AddFragmentGroup then
+            pcall(scene.AddFragmentGroup, scene, FRAGMENT_GROUP.MOUSE_DRIVEN_UI_WINDOW)
+        end
+        if rawget(_G, "RIGHT_PANEL_BG_FRAGMENT") and scene.AddFragment then
+            pcall(scene.AddFragment, scene, RIGHT_PANEL_BG_FRAGMENT)
+        end
+        scene:RegisterCallback("StateChange", function(_, state)
+            if state == SCENE_SHOWING or state == SCENE_SHOWN then
+                R:OpenWindow()
+                if type(zo_callLater) == "function" then
+                    zo_callLater(function()
+                        if SCENE_MANAGER and type(SCENE_MANAGER.IsShowing) == "function"
+                            and SCENE_MANAGER:IsShowing(LEARNER_SCENE_NAME) then
+                            R:SetHotkeyActionLayer(true)
+                        end
+                    end, 90)
+                else
+                    R:SetHotkeyActionLayer(true)
+                end
+            elseif state == SCENE_HIDING or state == SCENE_HIDDEN then
+                R:SetHotkeyActionLayer(false)
+                if R.window then R.window:SetHidden(true) end
+                if R.running then
+                    R.running = false
+                    R.queue = nil
+                    R.queueIndex = nil
+                    R:EndPopupSuppression()
+                end
+            end
+        end)
+    end
+
+    local layoutInfo = {
+        binding = "EAS_TURBO_LEARNER",
+        categoryName = categoryName,
+        callback = function()
+            if SCENE_MANAGER:IsShowing(LEARNER_SCENE_NAME) then
+                SCENE_MANAGER:ShowBaseScene()
+            else
+                SCENE_MANAGER:Show(LEARNER_SCENE_NAME)
+            end
+        end,
+        visible = function()
+            return not EPC.saved or EPC.saved.recipeStyleLearnerEnabled ~= false
+        end,
+        normal = "EsoUI/Art/MainMenu/menubar_journal_up.dds",
+        pressed = "EsoUI/Art/MainMenu/menubar_journal_down.dds",
+        highlight = "EsoUI/Art/MainMenu/menubar_journal_over.dds",
+        disabled = "EsoUI/Art/MainMenu/menubar_journal_disabled.dds",
+    }
+
+    local ok = pcall(lmm.AddMenuItem, lmm, LEARNER_DESCRIPTOR, LEARNER_SCENE_NAME, layoutInfo, nil)
+    if ok then self.mainMenuRegistered = true return true end
+    return false
+end
+
+function R:OpenMainMenuPage()
+    if self:RegisterMainMenuIcon() and SCENE_MANAGER and type(SCENE_MANAGER.Show) == "function" then
+        SCENE_MANAGER:Show(LEARNER_SCENE_NAME)
+        return true
+    end
+    notify("Turbo Learner top-menu icon requires LibMainMenu-2.0.", false)
+    return false
+end
+
+function R:RegisterEvents()
+    if self.eventsRegistered or not EVENT_MANAGER then return end
+    self.eventsRegistered = true
+
+    if rawget(_G, "EVENT_INVENTORY_SINGLE_SLOT_UPDATE") then
+        EVENT_MANAGER:RegisterForEvent(PREFIX .. "_PreviewInventory", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, function()
+            if not self.window or self.window:IsHidden() then return end
+            EVENT_MANAGER:UnregisterForUpdate(PREFIX .. "_PreviewDebounce")
+            EVENT_MANAGER:RegisterForUpdate(PREFIX .. "_PreviewDebounce", 180, function()
+                EVENT_MANAGER:UnregisterForUpdate(PREFIX .. "_PreviewDebounce")
+                self:RefreshWindow(true)
+            end)
+        end)
+    end
+    if rawget(_G, "EVENT_OPEN_BANK") then
+        EVENT_MANAGER:RegisterForEvent(PREFIX .. "_PreviewBankOpen", EVENT_OPEN_BANK, function() if self.window and not self.window:IsHidden() then self:RefreshWindow(true) end end)
+    end
+    if rawget(_G, "EVENT_CLOSE_BANK") then
+        EVENT_MANAGER:RegisterForEvent(PREFIX .. "_PreviewBankClose", EVENT_CLOSE_BANK, function() if self.window and not self.window:IsHidden() then self:RefreshWindow(true) end end)
     end
 end
 
 function R:Initialize()
     self:EnsureSaved()
-    self:CreateUI()
-    self:RegisterScenes()
-    if EVENT_MANAGER then
-        if EVENT_OPEN_BANK then EVENT_MANAGER:RegisterForEvent(PREFIX .. "_OpenBank", EVENT_OPEN_BANK, function() if type(zo_callLater)=="function" then zo_callLater(function() self:RefreshVisibility() end, 0) else self:RefreshVisibility() end end) end
-        if EVENT_CLOSE_BANK then EVENT_MANAGER:RegisterForEvent(PREFIX .. "_CloseBank", EVENT_CLOSE_BANK, function() self:RefreshVisibility() end) end
-        if EVENT_INVENTORY_SINGLE_SLOT_UPDATE then EVENT_MANAGER:RegisterForEvent(PREFIX .. "_Inventory", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, function()
-            if self.button and not self.button:IsHidden() and not self.running then
-                if EVENT_MANAGER then
-                    EVENT_MANAGER:UnregisterForUpdate(PREFIX .. "_Debounce")
-                    EVENT_MANAGER:RegisterForUpdate(PREFIX .. "_Debounce", 220, function()
-                        EVENT_MANAGER:UnregisterForUpdate(PREFIX .. "_Debounce")
-                        self:RefreshStatus()
-                    end)
-                end
-            end
-        end) end
+    self:RegisterEvents()
+    self:CreateWindow()
+
+    local attempts = 0
+    local function tryMainMenu()
+        attempts = attempts + 1
+        if R:RegisterMainMenuIcon() or attempts >= 10 then return end
+        if type(zo_callLater) == "function" then zo_callLater(tryMainMenu, 500) end
     end
-    self:RefreshVisibility()
+    if type(zo_callLater) == "function" then zo_callLater(tryMainMenu, 300) else tryMainMenu() end
 end

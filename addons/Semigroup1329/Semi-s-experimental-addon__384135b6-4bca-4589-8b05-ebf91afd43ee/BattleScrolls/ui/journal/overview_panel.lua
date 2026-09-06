@@ -25,10 +25,21 @@ local OverviewPanel = ZO_InitializingObject:Subclass()
 
 BattleScrolls_Journal_OverviewPanel = OverviewPanel
 
+local PANE_INSET_LEFT = 50
+local PANE_INSET_RIGHT = 40
+local COLUMN_GAP = 50
+
 ---@type table<string, fun(panel: BattleScrolls_Journal_OverviewPanel)>
 local layoutHandlers = {
     ["three-column"] = function(_)
         -- Default: all columns visible, default widths (no-op)
+    end,
+    ["three-equal"] = function(panel)
+        local paneWidth = panel.control:GetWidth()
+        if paneWidth <= 0 then return end
+        local column = math.floor((paneWidth - PANE_INSET_LEFT - PANE_INSET_RIGHT - 2 * COLUMN_GAP) / 3)
+        panel:SetQ2Width(column)
+        panel:SetQ4Width(column)
     end,
     ["two-column"] = function(panel)
         panel:SetQ3Hidden(true)
@@ -145,6 +156,14 @@ function OverviewPanel:SetQ2Width(width)
     end
 end
 
+---@param width number
+function OverviewPanel:SetQ4Width(width)
+    if self.q4Container then
+        self.q4OrigWidth = self.q4OrigWidth or self.q4Container:GetWidth()
+        self.q4Container:SetWidth(width)
+    end
+end
+
 -------------------------
 -- Visibility and State
 -------------------------
@@ -152,10 +171,13 @@ end
 function OverviewPanel:Clear()
     self.cf:ReleaseAll()
 
-    -- Restore Q2 width
     if self.q2OrigWidth and self.q2Container then
         self.q2Container:SetWidth(self.q2OrigWidth)
         self.q2OrigWidth = nil
+    end
+    if self.q4OrigWidth and self.q4Container then
+        self.q4Container:SetWidth(self.q4OrigWidth)
+        self.q4OrigWidth = nil
     end
 
     -- Restore Q3/Q4 visibility and anchoring

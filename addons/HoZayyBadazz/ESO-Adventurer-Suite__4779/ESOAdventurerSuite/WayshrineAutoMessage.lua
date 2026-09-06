@@ -429,9 +429,10 @@ function W:RegisterFastTravelHook()
 end
 
 function W:OnPlayerActivated(_, initial)
-    -- FastTravelToNode can be unavailable very early during addon load on some
-    -- clients. Retry the harmless prehook once the player scene is active.
+    -- FastTravelToNode and slash-command globals can be unavailable very early
+    -- during addon load on some clients. Retry both once the player scene is active.
     self:RegisterFastTravelHook()
+    self:RegisterPromoSlashCommand()
 
     local pending = self.pendingFastTravel
     if not pending then return end
@@ -465,6 +466,45 @@ function W:TestMessage()
     return self:PrepareMessage("Example Wayshrine", zoneName, true)
 end
 
+-- Manual resend for the player's configured wayshrine promo.  /promo is an
+-- explicit player action, so it works even when the automatic trigger is
+-- disabled.  Reuse the most recently prepared/arrived/discovered wayshrine
+-- context so an immediate resend matches the message the player just saw.
+function W:PromoMessage()
+    local shrineName = clean(
+        self.lastPreparedWayshrine
+        or self.lastFastTravelWayshrine
+        or self.lastDiscoveredWayshrine,
+        "Wayshrine"
+    )
+    local zoneName = clean(
+        self.lastPreparedZone
+        or self.lastFastTravelZone
+        or self.lastDiscoveredZone,
+        ""
+    )
+    if zoneName == "" then
+        zoneName = self:GetZoneName(safeCall(GetCurrentMapZoneIndex, 0))
+    end
+
+    local ok = self:PrepareMessage(shrineName, zoneName, false)
+    if ok and self:GetChannelKey() ~= "LOCAL" and EPC.Print then
+        EPC:Print("/promo prepared your Wayshrine Auto Message again. Press Enter to send or Escape to cancel.")
+    end
+    return ok
+end
+
+function W:RegisterPromoSlashCommand()
+    if self.promoSlashRegistered then return true end
+    if type(SLASH_COMMANDS) ~= "table" then return false end
+
+    SLASH_COMMANDS["/promo"] = function()
+        W:PromoMessage()
+    end
+    self.promoSlashRegistered = true
+    return true
+end
+
 function W:GetStatusText()
     if not self:IsEnabled() then return "Disabled - no wayshrine messages will be prepared." end
     local channel = self:GetChannelDisplayName(self:GetChannelKey())
@@ -485,6 +525,7 @@ function W:Initialize()
     self.initialized = true
 
     self:RegisterFastTravelHook()
+    self:RegisterPromoSlashCommand()
 
     if EVENT_MANAGER and rawget(_G, "EVENT_POI_DISCOVERED") ~= nil then
         EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_POI_DISCOVERED, function(...)

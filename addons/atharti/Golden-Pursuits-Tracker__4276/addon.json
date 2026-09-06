@@ -1,14 +1,15 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/atharti/Golden-Pursuits-Tracker__4276",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "atharti",
   "canonical_id": "esoui:4276",
   "category_id": "55",
   "compatibility": [
     {
-      "name": "Season Zero Pt.2",
-      "version": "12.0.0"
+      "name": "Season One",
+      "version": "12.1.0"
     }
   ],
   "content_id": "esoui:4276",
@@ -17,7 +18,7 @@
     "GoldenPursuitsTracker"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4276/",
-  "fingerprint": "6652be000f39c40283f8457d36493dd4f17b83389475b95df042ffd5b8a18ed1",
+  "fingerprint": "9c170a0014510ad7e3723332feb5ae35400928768f3df71cbf57eaac7ac4ecbb",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16423.png"
   ],
@@ -27,11 +28,11 @@
   "source_id": "4276",
   "source_url": "https://www.esoui.com/downloads/info4276-GoldenPursuitsTracker.html",
   "stats": {
-    "downloads": 925,
-    "favorites": 1,
-    "monthly_downloads": 39
+    "downloads": 988,
+    "favorites": 2,
+    "monthly_downloads": 57
   },
   "title": "Golden Pursuits Tracker",
-  "updated_at": 1782314644000,
-  "version": "1.6"
+  "updated_at": 1788611035000,
+  "version": "1.7"
 }

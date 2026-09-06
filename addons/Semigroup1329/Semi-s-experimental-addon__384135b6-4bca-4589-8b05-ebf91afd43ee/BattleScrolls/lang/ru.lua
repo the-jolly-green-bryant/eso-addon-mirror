@@ -60,7 +60,7 @@ local strings = {
     [BATTLESCROLLS_STAT_TIME_LOST] = "Потерянное время",
     [BATTLESCROLLS_STAT_LIGHT_ATTACKS] = "Обычные атаки",
     [BATTLESCROLLS_STAT_HEAVY_ATTACKS] = "Силовые атаки",
-    [BATTLESCROLLS_STAT_SKILL_ACTIVATIONS] = "Навыки",
+    [BATTLESCROLLS_STAT_SKILL_ACTIVATIONS] = "Касты навыков",
     [BATTLESCROLLS_STAT_CASTS] = "Касты",
     [BATTLESCROLLS_STAT_WEAVING_ERRORS] = "Ошибки вивинга",
     [BATTLESCROLLS_STAT_MISSED_LA] = "Пропущенные обычные атаки",
@@ -69,9 +69,9 @@ local strings = {
     [BATTLESCROLLS_TOOLTIP_DELAY_BEFORE] = "Задержка до каста",
     [BATTLESCROLLS_FORMAT_SECONDS] = "<<1>>с",
     [BATTLESCROLLS_FORMAT_MILLISECONDS] = "<<1>>мс",
-    [BATTLESCROLLS_TOOLTIP_INTER_CAST_DESC] = "Средняя задержка между кастами. Измеряется от окончания ГКД или времени каста навыка до начала следующего действия. Также известна как Weaving Average в CMX.",
-    [BATTLESCROLLS_TOOLTIP_TIME_LOST_DESC] = "Суммарное время простоя между кастами за бой. Также известно как Weaving Total в CMX.",
-    [BATTLESCROLLS_TOOLTIP_MISSED_LA_DESC] = "Навык активирован сразу после другого навыка, без обычной атаки между ними.",
+    [BATTLESCROLLS_TOOLTIP_INTER_CAST_DESC] = "Средний промежуток между кастами: от конца глобального отката или времени каста навыка до вашего следующего действия. В Combat Metrics это называется Weaving Average.",
+    [BATTLESCROLLS_TOOLTIP_TIME_LOST_DESC] = "Все промежутки между кастами, сложенные за весь бой. В Combat Metrics это называется Weaving Total.",
+    [BATTLESCROLLS_TOOLTIP_MISSED_LA_DESC] = "Навыки, применённые сразу после другого навыка, без обычной атаки между ними.",
     [BATTLESCROLLS_TOOLTIP_DOUBLE_LA_DESC] = "Две обычные атаки подряд, без навыка между ними.",
 
     -------------------------
@@ -240,7 +240,6 @@ local strings = {
     -- Proc Tracking
     [BATTLESCROLLS_HEADER_PROC_TRACKING] = "Отслеживание активаций",
     [BATTLESCROLLS_STAT_TOTAL_PROCS] = "<<1[$d активация/$d активации/$d активаций]>>",
-    [BATTLESCROLLS_STAT_MEDIAN_INTERVAL] = "медиана",
 
     -------------------------
     -- Damage Stats Details
@@ -252,6 +251,8 @@ local strings = {
     [BATTLESCROLLS_STAT_DPS] = "DPS",
 
     [BATTLESCROLLS_HEADER_BY_ABILITY] = "По способности",
+
+    [BATTLESCROLLS_HEADER_CASTS] = "Касты",
     [BATTLESCROLLS_HEADER_BY_DAMAGE_TYPE] = "По типу урона",
     [BATTLESCROLLS_HEADER_DIRECT_VS_DOT] = "Прямой / Периодический",
     [BATTLESCROLLS_HEADER_DAMAGE_DELIVERY] = "Способ урона",
@@ -971,6 +972,24 @@ local shareStrings = {
     [BATTLESCROLLS_MEMDIAG_GAUGE] = "Память аддонов (консольный индикатор)",
     [BATTLESCROLLS_MEMDIAG_PROBE_STRINGS] = "Измерить классы размеров строк",
     [BATTLESCROLLS_MEMDIAG_PROBE_HEADER] = "длина: индикатор / куча / модель (байт на строку)",
+    [BATTLESCROLLS_MEMDIAG_TEST_CANCELLED] = "Отменён",
+    [BATTLESCROLLS_MEMDIAG_TEST_COMBAT] = "Бой",
+    [BATTLESCROLLS_MEMDIAG_TEST_DONE] = "Готово",
+    [BATTLESCROLLS_MEMDIAG_TEST_ERROR] = "Ошибка",
+    [BATTLESCROLLS_MEMDIAG_TEST_GC_TIMEOUT] = "Тайм-аут GC",
+    [BATTLESCROLLS_MEMDIAG_TEST_HEADER] = "MiB G=шкала H=Lua; до/занято/освобождено",
+    [BATTLESCROLLS_MEMDIAG_TEST_HELD] = "Сначала освободите ручные тестовые данные в настройках.",
+    [BATTLESCROLLS_MEMDIAG_TEST_IDLE] = "%s G%s>%s H%s>%s",
+    [BATTLESCROLLS_MEMDIAG_TEST_IDLE_END] = "Покой B",
+    [BATTLESCROLLS_MEMDIAG_TEST_IDLE_START] = "Покой A",
+    [BATTLESCROLLS_MEMDIAG_TEST_LIMIT] = "Лимит 75 MiB",
+    [BATTLESCROLLS_MEMDIAG_TEST_NOT_RUNNING] = "Тест памяти не запущен.",
+    [BATTLESCROLLS_MEMDIAG_TEST_NO_REPORT] = "Отчёта о тесте памяти пока нет.",
+    [BATTLESCROLLS_MEMDIAG_TEST_ROW] = "%d G%s/%s/%s H%s/%s/%s",
+    [BATTLESCROLLS_MEMDIAG_TEST_RUNNING] = "Идёт тест",
+    [BATTLESCROLLS_MEMDIAG_TEST_STARTED] = "Тест начат. Не двигайтесь и закройте меню.",
+    [BATTLESCROLLS_MEMDIAG_TEST_SUMMARY] = "%s %d/%d; макс G %s; %dс",
+    [BATTLESCROLLS_MEMDIAG_TEST_USAGE] = "/bsmemtest [cancel|report]",
     [BATTLESCROLLS_SHARE_CHOICE_HEADER] = "Что отправить",
     [BATTLESCROLLS_SHARE_CHOICE_FULL] = "Все бои (<<1>>)",
     [BATTLESCROLLS_SHARE_CHOICE_BOSSES] = "Только боссы (<<1>>)",
@@ -1020,28 +1039,31 @@ local featureStrings = {
     [BATTLESCROLLS_HEADER_ULTIMATE] = "Суперспособность",
     [BATTLESCROLLS_STAT_ULT_AT_ENTRY] = "Заряд при входе в бой",
     [BATTLESCROLLS_STAT_ULT_GENERATED] = "Накоплено заряда",
-    [BATTLESCROLLS_STAT_ULT_DRAINED] = "Потрачено и слито",
+    [BATTLESCROLLS_STAT_ULT_SPENT_DRAINED] = "Потрачено и слито",
+    [BATTLESCROLLS_STAT_ULT_SPENT] = "Потрачено заряда",
+    [BATTLESCROLLS_STAT_ULT_LOST] = "Потеряно при касте",
+    [BATTLESCROLLS_STAT_ULT_LOST_TT] = "Применение суперспособности опустошает всю шкалу, поэтому всё сверх её стоимости теряется.",
+    [BATTLESCROLLS_STAT_ULT_DRAINED] = "Слито заряда",
     [BATTLESCROLLS_HEADER_ULT_SOURCES] = "Источники накопления",
     [BATTLESCROLLS_ULT_BASE_GENERATION] = "Базовое накопление",
     [BATTLESCROLLS_ULT_HEROISM_LINE] = "Включая <<C:1>>: аптайм <<2>>%, примерно <<3>>",
     [BATTLESCROLLS_HEADER_ULT_CASTS] = "Применённые суперспособности",
 
     [BATTLESCROLLS_HEADER_CRUX] = "Знаки",
-    [BATTLESCROLLS_STAT_CRUX_GENERATORS] = "Создание Знаков (касты)",
-    [BATTLESCROLLS_STAT_CRUX_AT_FULL] = "Создание при 3 Знаках",
-    [BATTLESCROLLS_STAT_CRUX_SPENDERS] = "Траты Знаков (касты)",
-    [BATTLESCROLLS_STAT_CRUX_UNDER] = "Траты при неполных Знаках",
+    [BATTLESCROLLS_STAT_CRUX_GENERATORS] = "Касты, дающие Знаки",
+    [BATTLESCROLLS_STAT_CRUX_AT_FULL] = "Касты при 3 Знаках",
+    [BATTLESCROLLS_STAT_CRUX_SPENDERS] = "Касты, тратящие Знаки",
+    [BATTLESCROLLS_STAT_CRUX_UNDER] = "Касты при неполных Знаках",
     [BATTLESCROLLS_CRUX_AT_N] = "Знаков: <<1>> — <<2>>",
-    [BATTLESCROLLS_HEADER_CRUX_BY_ABILITY] = "Дисциплина Знаков по способностям",
+    [BATTLESCROLLS_HEADER_CRUX_BY_ABILITY] = "Ошибки тайминга по способностям",
 
-    [BATTLESCROLLS_HEADER_ZEN] = "DoT-эффекты (З'ен)",
+    [BATTLESCROLLS_HEADER_ZEN] = "Наложение DoT (З'ен)",
     [BATTLESCROLLS_ZEN_AVG_DOTS] = "Среднее число DoT",
-    [BATTLESCROLLS_ZEN_UPTIME] = "Аптайм дебаффа З'ена",
+    [BATTLESCROLLS_ZEN_UPTIME] = "Ваш аптайм З'ена",
     [BATTLESCROLLS_ZEN_PEAK_TIME] = "Время при <<1>>",
     [BATTLESCROLLS_ZEN_DOTS_LABEL] = "<<1>> DoT",
     [BATTLESCROLLS_ZEN_SHARE_LINE] = "в среднем <<1>> — <<2>> с 5 DoT",
     [BATTLESCROLLS_ZEN_SHORT] = "З'ен",
-    [BATTLESCROLLS_ZEN_BOSS_SUMMARY] = "в средн. <<1>> DoT — З'ен <<2>>% — <<3>> <<4>>%",
 
     [BATTLESCROLLS_HEADER_SUPPORT] = "Поддержка",
     [BATTLESCROLLS_STAT_RESURRECTIONS] = "Воскрешения",
@@ -1051,13 +1073,31 @@ for id, str in pairs(featureStrings) do
 end
 
 local cruxPassiveStrings = {
-    [BATTLESCROLLS_STAT_CRUX_PASSIVE] = "Потрачено вне кастов",
-    [BATTLESCROLLS_STAT_CRUX_PASSIVE_TT] = "Знаки, потерянные без применения тратящей способности: естественное истечение срока (30 секунд) или смерть.",
-    [BATTLESCROLLS_STAT_CRUX_CONDITIONAL_TT] = "Знаки, созданные срабатываниями этого источника (сопоставлены с приростами по времени).",
+    [BATTLESCROLLS_STAT_CRUX_PASSIVE] = "Потеряно вне кастов",
+    [BATTLESCROLLS_STAT_CRUX_PASSIVE_TT] = "Знаки, пропавшие сами по себе, без траты и без смерти рядом. Знак истекает через 30 секунд.",
+    [BATTLESCROLLS_STAT_CRUX_DEATH] = "Потеряно из-за смерти",
+    [BATTLESCROLLS_STAT_CRUX_PROC_WASTED] = "Пассивные приросты при 3 Знаках",
+    [BATTLESCROLLS_STAT_CRUX_PROC_WASTED_TT] = "Пассивные приросты, сработавшие, когда у вас уже было 3 Знака, — они ничего не дали. «<<1>>» и его морфы, а также <<2>> дают Знак только когда у вас нет ни одного, поэтому здесь они не учитываются.",
+    [BATTLESCROLLS_STAT_CRUX_CONDITIONAL_TT] = "Знаки, которые этот источник создал пассивно, без каста.",
     [BATTLESCROLLS_STAT_CRUX_OTHER] = "Прочие приросты Знаков",
-    [BATTLESCROLLS_STAT_CRUX_OTHER_TT] = "Приросты Знаков без отслеживаемого источника — например, периодические срабатывания «<<1>>».",
+    [BATTLESCROLLS_STAT_CRUX_OTHER_TT] = "Знаки, полученные без срабатывания какого-либо отслеживаемого источника в этот момент.",
     [BATTLESCROLLS_HEADER_CRUX_GAINED] = "Получено Знаков по способностям",
 }
 for id, str in pairs(cruxPassiveStrings) do
+    SafeAddString(id, str, 1)
+end
+
+local activityOverviewStrings = {
+    [BATTLESCROLLS_STAT_DOWNTIME] = "Простой",
+    [BATTLESCROLLS_TOOLTIP_DOWNTIME_DESC] = "Промежутки в 3 секунды и больше между кастами — например, механики, воскрешение или смерть. В задержку каста не входят.",
+    [BATTLESCROLLS_STAT_PER_MINUTE] = "<<1>>/мин",
+    [BATTLESCROLLS_DETAIL_MEDIAN] = "медиана <<1>>",
+    [BATTLESCROLLS_DETAIL_DELAY] = "задержка <<1>>",
+    [BATTLESCROLLS_DETAIL_AT_FULL] = "<<1>> при полных",
+    [BATTLESCROLLS_DETAIL_LOST] = "<<1>> потеряно",
+    [BATTLESCROLLS_DETAIL_AVG_DOTS] = "в средн. <<1>> DoT",
+    [BATTLESCROLLS_DETAIL_AT_DOTS] = "<<1>> при <<2>>",
+}
+for id, str in pairs(activityOverviewStrings) do
     SafeAddString(id, str, 1)
 end

@@ -68,10 +68,10 @@ local strings = {
     [BATTLESCROLLS_TOOLTIP_DELAY_BEFORE] = "キャスト前の遅延",
     [BATTLESCROLLS_FORMAT_SECONDS] = "<<1>>秒",
     [BATTLESCROLLS_FORMAT_MILLISECONDS] = "<<1>>ミリ秒",
-    [BATTLESCROLLS_TOOLTIP_INTER_CAST_DESC] = "キャスト間の平均遅延時間。スキルのGCDまたはキャスト時間終了から次のアクション開始までを計測します。CMXのWeaving Averageに相当します。",
-    [BATTLESCROLLS_TOOLTIP_TIME_LOST_DESC] = "戦闘中のキャスト間の合計ロス時間。CMXのWeaving Totalに相当します。",
+    [BATTLESCROLLS_TOOLTIP_INTER_CAST_DESC] = "キャスト間の平均の空き時間。スキルのグローバルクールダウンまたはキャスト時間が終わってから、次の行動までを計測します。Combat Metricsでは Weaving Average と呼ばれます。",
+    [BATTLESCROLLS_TOOLTIP_TIME_LOST_DESC] = "戦闘全体でのキャスト間の空き時間をすべて合計したものです。Combat Metricsでは Weaving Total と呼ばれます。",
     [BATTLESCROLLS_TOOLTIP_MISSED_LA_DESC] = "軽攻撃を挟まずにスキルを連続で使用した回数。",
-    [BATTLESCROLLS_TOOLTIP_DOUBLE_LA_DESC] = "スキルを挟まずに軽攻撃を連続で入力した回数。",
+    [BATTLESCROLLS_TOOLTIP_DOUBLE_LA_DESC] = "スキルを挟まずに軽攻撃を2回続けた回数。",
 
     -------------------------
     -- Time Headers
@@ -239,7 +239,6 @@ local strings = {
     -- Proc Tracking
     [BATTLESCROLLS_HEADER_PROC_TRACKING] = "プロック追跡",
     [BATTLESCROLLS_STAT_TOTAL_PROCS] = "<<1>>発動",
-    [BATTLESCROLLS_STAT_MEDIAN_INTERVAL] = "中央値",
 
     -------------------------
     -- Damage Stats Details
@@ -251,6 +250,8 @@ local strings = {
     [BATTLESCROLLS_STAT_DPS] = "DPS",
 
     [BATTLESCROLLS_HEADER_BY_ABILITY] = "スキル別",
+
+    [BATTLESCROLLS_HEADER_CASTS] = "発動",
     [BATTLESCROLLS_HEADER_BY_DAMAGE_TYPE] = "ダメージタイプ別",
     [BATTLESCROLLS_HEADER_DIRECT_VS_DOT] = "直接攻撃 vs 継続",
     [BATTLESCROLLS_HEADER_DAMAGE_DELIVERY] = "ダメージ方式",
@@ -969,6 +970,24 @@ local shareStrings = {
     [BATTLESCROLLS_MEMDIAG_GAUGE] = "アドオンメモリ（コンソールゲージ）",
     [BATTLESCROLLS_MEMDIAG_PROBE_STRINGS] = "文字列サイズクラスを計測",
     [BATTLESCROLLS_MEMDIAG_PROBE_HEADER] = "長さ: ゲージ / ヒープ / モデル（1文字列あたりのバイト）",
+    [BATTLESCROLLS_MEMDIAG_TEST_CANCELLED] = "中止",
+    [BATTLESCROLLS_MEMDIAG_TEST_COMBAT] = "戦闘",
+    [BATTLESCROLLS_MEMDIAG_TEST_DONE] = "完了",
+    [BATTLESCROLLS_MEMDIAG_TEST_ERROR] = "エラー",
+    [BATTLESCROLLS_MEMDIAG_TEST_GC_TIMEOUT] = "GC時間切れ",
+    [BATTLESCROLLS_MEMDIAG_TEST_HEADER] = "MiB G=ゲージ H=Lua; 前/保持/解放",
+    [BATTLESCROLLS_MEMDIAG_TEST_HELD] = "先に設定から手動テストのデータを解放してください。",
+    [BATTLESCROLLS_MEMDIAG_TEST_IDLE] = "%s G%s>%s H%s>%s",
+    [BATTLESCROLLS_MEMDIAG_TEST_IDLE_END] = "待機B",
+    [BATTLESCROLLS_MEMDIAG_TEST_IDLE_START] = "待機A",
+    [BATTLESCROLLS_MEMDIAG_TEST_LIMIT] = "75 MiB上限",
+    [BATTLESCROLLS_MEMDIAG_TEST_NOT_RUNNING] = "メモリテストは実行されていません。",
+    [BATTLESCROLLS_MEMDIAG_TEST_NO_REPORT] = "メモリテストの結果はまだありません。",
+    [BATTLESCROLLS_MEMDIAG_TEST_ROW] = "%d G%s/%s/%s H%s/%s/%s",
+    [BATTLESCROLLS_MEMDIAG_TEST_RUNNING] = "実行中",
+    [BATTLESCROLLS_MEMDIAG_TEST_STARTED] = "テスト開始。メニューを閉じて動かずにお待ちください。",
+    [BATTLESCROLLS_MEMDIAG_TEST_SUMMARY] = "%s %d/%d; 最大G %s; %d秒",
+    [BATTLESCROLLS_MEMDIAG_TEST_USAGE] = "/bsmemtest [cancel|report]",
     [BATTLESCROLLS_SHARE_CHOICE_HEADER] = "送信内容の選択",
     [BATTLESCROLLS_SHARE_CHOICE_FULL] = "すべての戦闘（<<1>>）",
     [BATTLESCROLLS_SHARE_CHOICE_BOSSES] = "ボスのみ（<<1>>）",
@@ -1018,7 +1037,11 @@ local featureStrings = {
     [BATTLESCROLLS_HEADER_ULTIMATE] = "アルティメット",
     [BATTLESCROLLS_STAT_ULT_AT_ENTRY] = "戦闘開始時のアルティメット",
     [BATTLESCROLLS_STAT_ULT_GENERATED] = "獲得したアルティメット",
-    [BATTLESCROLLS_STAT_ULT_DRAINED] = "消費・喪失したアルティメット",
+    [BATTLESCROLLS_STAT_ULT_SPENT_DRAINED] = "消費・喪失したアルティメット",
+    [BATTLESCROLLS_STAT_ULT_SPENT] = "消費したアルティメット",
+    [BATTLESCROLLS_STAT_ULT_LOST] = "使用時の損失",
+    [BATTLESCROLLS_STAT_ULT_LOST_TT] = "アルティメットを使うとゲージ全体が空になるため、そのコストを超えた分はすべて失われます。",
+    [BATTLESCROLLS_STAT_ULT_DRAINED] = "喪失したアルティメット",
     [BATTLESCROLLS_HEADER_ULT_SOURCES] = "アルティメット獲得源",
     [BATTLESCROLLS_ULT_BASE_GENERATION] = "基本獲得",
     [BATTLESCROLLS_ULT_HEROISM_LINE] = "<<C:1>>を含む：維持率<<2>>%、約<<3>>",
@@ -1026,20 +1049,19 @@ local featureStrings = {
 
     [BATTLESCROLLS_HEADER_CRUX] = "クラッツ",
     [BATTLESCROLLS_STAT_CRUX_GENERATORS] = "生成スキル使用回数",
-    [BATTLESCROLLS_STAT_CRUX_AT_FULL] = "クラッツ満杯時の生成",
+    [BATTLESCROLLS_STAT_CRUX_AT_FULL] = "クラッツ満杯時の使用",
     [BATTLESCROLLS_STAT_CRUX_SPENDERS] = "消費スキル使用回数",
-    [BATTLESCROLLS_STAT_CRUX_UNDER] = "クラッツ3未満での消費",
+    [BATTLESCROLLS_STAT_CRUX_UNDER] = "クラッツ3未満での使用",
     [BATTLESCROLLS_CRUX_AT_N] = "クラッツ<<1>>時：<<2>>",
-    [BATTLESCROLLS_HEADER_CRUX_BY_ABILITY] = "スキル別クラッツ運用",
+    [BATTLESCROLLS_HEADER_CRUX_BY_ABILITY] = "スキル別のタイミングミス",
 
     [BATTLESCROLLS_HEADER_ZEN] = "継続ダメージの重ね掛け（ズェン）",
     [BATTLESCROLLS_ZEN_AVG_DOTS] = "平均DoT数",
-    [BATTLESCROLLS_ZEN_UPTIME] = "ズェンの弱体化の維持率",
+    [BATTLESCROLLS_ZEN_UPTIME] = "自分のズェンの維持率",
     [BATTLESCROLLS_ZEN_PEAK_TIME] = "<<1>>の時間",
     [BATTLESCROLLS_ZEN_DOTS_LABEL] = "DoT <<1>>個",
     [BATTLESCROLLS_ZEN_SHARE_LINE] = "平均<<1>> — DoT5個で<<2>>",
     [BATTLESCROLLS_ZEN_SHORT] = "ズェン",
-    [BATTLESCROLLS_ZEN_BOSS_SUMMARY] = "平均<<1>>DoT — ズェン<<2>>% — <<3>> <<4>>%",
 
     [BATTLESCROLLS_HEADER_SUPPORT] = "サポート",
     [BATTLESCROLLS_STAT_RESURRECTIONS] = "蘇生",
@@ -1049,13 +1071,31 @@ for id, str in pairs(featureStrings) do
 end
 
 local cruxPassiveStrings = {
-    [BATTLESCROLLS_STAT_CRUX_PASSIVE] = "スキル外での消費",
-    [BATTLESCROLLS_STAT_CRUX_PASSIVE_TT] = "消費スキルの使用なしで失われたクラッツ：自然消滅（30秒）または死亡。",
-    [BATTLESCROLLS_STAT_CRUX_CONDITIONAL_TT] = "この発生源の発動により生成されたクラッツ（タイミングでスタック増加と照合）。",
+    [BATTLESCROLLS_STAT_CRUX_PASSIVE] = "スキル外での喪失",
+    [BATTLESCROLLS_STAT_CRUX_PASSIVE_TT] = "消費スキルの使用も死亡もないまま、自然に消えたクラッツ。クラッツは30秒で消滅します。",
+    [BATTLESCROLLS_STAT_CRUX_DEATH] = "死亡による喪失",
+    [BATTLESCROLLS_STAT_CRUX_PROC_WASTED] = "クラッツ満杯時のパッシブ獲得",
+    [BATTLESCROLLS_STAT_CRUX_PROC_WASTED_TT] = "すでにクラッツが3つある状態で発動し、何も得られなかったパッシブ獲得。「<<1>>」とその派生、および<<2>>はクラッツが0のときにしか付与しないため、ここには含まれません。",
+    [BATTLESCROLLS_STAT_CRUX_CONDITIONAL_TT] = "この発生源がスキルの使用なしに、受動的に生成したクラッツ。",
     [BATTLESCROLLS_STAT_CRUX_OTHER] = "その他のクラッツ増加",
-    [BATTLESCROLLS_STAT_CRUX_OTHER_TT] = "追跡できる発生源のないクラッツの増加。例：「<<1>>」の定期的な発動。",
-    [BATTLESCROLLS_HEADER_CRUX_GAINED] = "アビリティ別クラッツ獲得",
+    [BATTLESCROLLS_STAT_CRUX_OTHER_TT] = "その時点で追跡中の発生源が何も発動していないのに得たクラッツ。",
+    [BATTLESCROLLS_HEADER_CRUX_GAINED] = "スキル別クラッツ獲得",
 }
 for id, str in pairs(cruxPassiveStrings) do
+    SafeAddString(id, str, 1)
+end
+
+local activityOverviewStrings = {
+    [BATTLESCROLLS_STAT_DOWNTIME] = "空白時間",
+    [BATTLESCROLLS_TOOLTIP_DOWNTIME_DESC] = "キャスト間の3秒以上の空白。ギミック処理、蘇生、死亡中などです。キャスト遅延には含まれません。",
+    [BATTLESCROLLS_STAT_PER_MINUTE] = "<<1>>/分",
+    [BATTLESCROLLS_DETAIL_MEDIAN] = "中央値 <<1>>",
+    [BATTLESCROLLS_DETAIL_DELAY] = "遅延 <<1>>",
+    [BATTLESCROLLS_DETAIL_AT_FULL] = "満杯時 <<1>>",
+    [BATTLESCROLLS_DETAIL_LOST] = "損失 <<1>>",
+    [BATTLESCROLLS_DETAIL_AVG_DOTS] = "平均<<1>>DoT",
+    [BATTLESCROLLS_DETAIL_AT_DOTS] = "<<2>>で<<1>>",
+}
+for id, str in pairs(activityOverviewStrings) do
     SafeAddString(id, str, 1)
 end

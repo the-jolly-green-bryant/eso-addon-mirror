@@ -1,4 +1,4 @@
-# Store listing copy — PB's ChatAssistant 1.0.3
+# Store listing copy — PB's ChatAssistant 1.4.0
 
 Text for the ZOS Console AddOn Uploader. Plain text, no markup, so it survives whatever the
 uploader does to it.
@@ -30,6 +30,8 @@ WHAT IT DOES
 - Open the chat window however you like — the controller combo included — and the input screen
   comes up for it anyway. That part works on its own, all the time, with nothing to arm.
 - Type Japanese the way you would anywhere else on the console, and send.
+- Switch which channel your next message goes to -- say, zone, party, guild -- with the left and
+  right arrow keys, before you open the box.
 
 ABOUT THE CONTROLLER
 
@@ -48,11 +50,15 @@ you open the chat window from the controller, which on its own removes most of t
 
 SETTINGS
 
+Settings -> Add-Ons -> PB's ChatAssistant holds the pause described below. The rest are
+chat commands.
+
   /pbchat              Show current state
   /pbchat delay <ms>   Pause before the window opens, 0-5000, default 100
   /pbchat enter        Arm the Enter key
   /pbchat safe         Stand down; controller buttons work
   /pbchat autosafe off Keep Enter armed instead of standing down automatically
+  /pbchat channel off  Stop the arrow keys switching channel
   /pbchat watch off    Stop raising the input screen automatically
   /pbchat on | off     Master switch
 
@@ -68,7 +74,10 @@ with /pbchat delay 300, then 500.
 NOTES
 
 - Built and tested for console. On PC, bind a key to Controls -> PB's ChatAssistant -> Open Chat.
-- No dependencies.
+- Requires LibHarvensAddonSettings for the settings panel.
+- Next/Previous Chat Channel are also offered as bindable actions, for platforms that have a
+  keybinding screen. PlayStation does not, so there they cannot be bound and the arrow keys are
+  the way.
 - /pbchat reports the running version and settings.
 
 ---

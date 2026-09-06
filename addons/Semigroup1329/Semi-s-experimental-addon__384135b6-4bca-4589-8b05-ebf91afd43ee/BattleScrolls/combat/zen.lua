@@ -3,10 +3,10 @@
 -- Z'en's Redress stack tracking for Battle Scrolls
 --
 -- For each boss, integrates time spent with 0..5 of the player's
--- damage-over-time effects active on it, each split by whether
--- Touch of Z'en (the set's debuff, from any wearer) was applied.
--- Tracked regardless of whether the player wears Z'en's, so the
--- "what uptime WOULD I have" question is answerable.
+-- damage-over-time effects active on it, each split by whether the
+-- player's own Touch of Z'en was applied. Tracked regardless of
+-- whether the player wears Z'en's, so the "what uptime WOULD I have"
+-- question is answerable.
 --
 -- DoT classification: a player-sourced debuff whose ability type
 -- is ABILITY_TYPE_DAMAGE - taken straight from the EFFECT_CHANGED
@@ -130,7 +130,7 @@ function zen.handleBossEffect(state, changeType, effectSlot, unitTag, effectType
     local z = state.zen
     if not z then return end
 
-    local isZen = abilityId == ZEN_DEBUFF_ABILITY_ID
+    local isZen = abilityId == ZEN_DEBUFF_ABILITY_ID and sourceType == COMBAT_UNIT_TYPE_PLAYER
     local isPlayerDot = sourceType == COMBAT_UNIT_TYPE_PLAYER
         and effectType == BUFF_EFFECT_TYPE_DEBUFF
         and abilityType == ABILITY_TYPE_DAMAGE
@@ -261,9 +261,8 @@ function zen.finalize(z, endTimeMs)
 end
 
 ---Aggregates ZenData into per-boss group-share metrics, counting only time
----the Z'en debuff was actually up on that boss (the local view also shows
----the hypothetical no-set numbers; the group cares about the delivered
----result). Bosses the debuff never touched are omitted.
+---the player's Z'en debuff was up on that boss. Bosses it never touched
+---are omitted.
 ---@param zenData ZenData|nil
 ---@return SharedZenBoss[]|nil entries Sorted by boss tag; nil when Z'en never landed
 function zen.shareByBoss(zenData)

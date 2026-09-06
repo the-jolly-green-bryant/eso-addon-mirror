@@ -61,9 +61,9 @@ function A:GetActionBindingName(slot, preferGamepad)
     slot = tonumber(slot)
     if not slot then return nil end
     if slot >= 3 and slot <= 8 then
-        if preferGamepad == true then
-            return "GAMEPAD_ACTION_BUTTON_" .. tostring(slot)
-        end
+        -- The player-facing binding lives on ACTION_BUTTON_n for both input
+        -- devices. Gamepad selection is handled by the explicit binding query,
+        -- not by swapping to the hidden GAMEPAD_ACTION_BUTTON_n helper action.
         return "ACTION_BUTTON_" .. tostring(slot)
     end
     return nil
@@ -72,26 +72,22 @@ end
 function A:GetBindingTextForAction(actionName, preferGamepad)
     if not actionName or actionName == "" then return "" end
 
-    if preferGamepad == true and EPC.GetForcedPlayStationActionMarkup029180 then
-        local forced = EPC:GetForcedPlayStationActionMarkup029180(actionName, 22)
-        if forced ~= "" then return forced end
-    end
-
-    -- In controller mode prefer ESO's embedded button-icon markup so the
-    -- overlay shows the real button art instead of a generic "Gamepad" label.
-    if preferGamepad == true and type(ZO_Keybindings_GetBindingStringFromAction) == "function" then
-        local textOptions = KEYBIND_TEXT_OPTIONS_NO_TEXT or KEYBIND_TEXT_OPTIONS_ABBREVIATED_NAME or 1
-        local textureOptions = KEYBIND_TEXTURE_OPTIONS_EMBED_MARKUP or KEYBIND_TEXTURE_OPTIONS_EMBEDDED_MARKUP or KEYBIND_TEXTURE_OPTIONS_NONE or 1
-        local maxBindings = tonumber(safe(GetMaxBindingsPerAction, 2)) or 2
-        for bindingIndex = 1, math.max(1, math.min(4, maxBindings)) do
-            local candidate = tostring(safe(ZO_Keybindings_GetBindingStringFromAction, "", actionName, textOptions, textureOptions, bindingIndex) or "")
-            if candidate ~= "" then return candidate end
+    -- v0.29.201: controller glyphs must bypass the visual keyboard mode and
+    -- explicitly query/render the gamepad binding set.
+    if preferGamepad == true then
+        -- Never fall through to the keyboard formatter while controller prompts
+        -- are requested. The central renderer explicitly selects the gamepad
+        -- binding device and returns ESO gamepad texture markup. An empty result
+        -- is safer than showing a misleading keyboard key.
+        if EPC.GetActionBindingMarkup029199 then
+            return EPC:GetActionBindingMarkup029199(actionName, 22) or ""
         end
+        return ""
     end
 
     local key, mod1, mod2, mod3, mod4
     if type(GetHighestPriorityActionBindingInfoFromName) == "function" then
-        key, mod1, mod2, mod3, mod4 = safe(GetHighestPriorityActionBindingInfoFromName, nil, actionName, preferGamepad)
+        key, mod1, mod2, mod3, mod4 = safe(GetHighestPriorityActionBindingInfoFromName, nil, actionName, false)
     end
 
     local parts = {}
@@ -107,7 +103,6 @@ function A:GetBindingTextForAction(actionName, preferGamepad)
     if keyText ~= "" then parts[#parts + 1] = keyText end
 
     local result = table.concat(parts, "+")
-    -- Fallback to ZOS's text formatter if the direct binding API did not produce text.
     if result == "" and type(ZO_Keybindings_GetBindingStringFromAction) == "function" then
         local textOptions = KEYBIND_TEXT_OPTIONS_ABBREVIATED_NAME or 1
         local textureOptions = KEYBIND_TEXTURE_OPTIONS_NONE or 1
@@ -125,7 +120,7 @@ function A:GetBindingTextForSlot(slot)
     local cached = self.bindingTextCache[slot]
     if cached ~= nil then return cached end
 
-    local preferGamepad = EPC.IsNativeGamepadPreferredMode029197 and EPC:IsNativeGamepadPreferredMode029197() or (type(IsInGamepadPreferredMode) == "function" and safe(IsInGamepadPreferredMode, false) == true)
+    local preferGamepad = EPC.ShouldUseGamepadPrompts029199 and EPC:ShouldUseGamepadPrompts029199() or (EPC.IsNativeGamepadPreferredMode029197 and EPC:IsNativeGamepadPreferredMode029197()) or (type(IsInGamepadPreferredMode) == "function" and safe(IsInGamepadPreferredMode, false) == true)
     local actionName = self:GetActionBindingName(slot, preferGamepad)
     if not actionName and preferGamepad then
         actionName = self:GetActionBindingName(slot, false)
@@ -204,16 +199,16 @@ function A:CreateWidget(slot, ordinal)
     icon:SetAnchor(TOPLEFT, frame, TOPLEFT, 3,3)
     icon:SetAnchor(BOTTOMRIGHT, frame, BOTTOMRIGHT, -3,-3)
 
-    -- Smart Combat Advisor recommendation glow. Keep every layer parented to
-    -- the exact Suite ability frame so the glow can never drift away from the
-    -- visible ability box. v0.29.168 uses three layers for a much stronger,
-    -- unmistakable pulse during combat.
+    -- Smart Combat Advisor recommendation highlight. Keep every layer parented
+    -- to the exact Suite ability frame so it can never drift away from the
+    -- visible ability box. v0.29.320 uses a steady soft-gold highlight instead
+    -- of a pulsing/flashing animation.
     local smartGlowOuter = wm:CreateControl(name .. "SmartGlowOuter029168", frame, CT_BACKDROP)
     smartGlowOuter:SetAnchor(TOPLEFT, frame, TOPLEFT, -8, -8)
     smartGlowOuter:SetAnchor(BOTTOMRIGHT, frame, BOTTOMRIGHT, 8, 8)
     smartGlowOuter:SetMouseEnabled(false)
-    smartGlowOuter:SetCenterColor(1.00, 0.62, 0.02, 0.035)
-    smartGlowOuter:SetEdgeColor(1.00, 0.55, 0.02, 0.72)
+    smartGlowOuter:SetCenterColor(1.00, 0.62, 0.02, 0.018)
+    smartGlowOuter:SetEdgeColor(1.00, 0.62, 0.08, 0.42)
     smartGlowOuter:SetEdgeTexture(nil, 8, 8, 8)
     if smartGlowOuter.SetDrawLayer and DL_OVERLAY then smartGlowOuter:SetDrawLayer(DL_OVERLAY) end
     if smartGlowOuter.SetDrawLevel then smartGlowOuter:SetDrawLevel(2498) end
@@ -223,8 +218,8 @@ function A:CreateWidget(slot, ordinal)
     smartGlowMid:SetAnchor(TOPLEFT, frame, TOPLEFT, -4, -4)
     smartGlowMid:SetAnchor(BOTTOMRIGHT, frame, BOTTOMRIGHT, 4, 4)
     smartGlowMid:SetMouseEnabled(false)
-    smartGlowMid:SetCenterColor(1.00, 0.72, 0.05, 0.07)
-    smartGlowMid:SetEdgeColor(1.00, 0.76, 0.08, 0.95)
+    smartGlowMid:SetCenterColor(1.00, 0.72, 0.05, 0.035)
+    smartGlowMid:SetEdgeColor(1.00, 0.78, 0.12, 0.72)
     smartGlowMid:SetEdgeTexture(nil, 4, 4, 4)
     if smartGlowMid.SetDrawLayer and DL_OVERLAY then smartGlowMid:SetDrawLayer(DL_OVERLAY) end
     if smartGlowMid.SetDrawLevel then smartGlowMid:SetDrawLevel(2499) end
@@ -233,7 +228,7 @@ function A:CreateWidget(slot, ordinal)
     local smartHighlight = wm:CreateControl(name .. "SmartHighlight029167", frame, CT_BACKDROP)
     smartHighlight:SetAnchorFill(frame)
     smartHighlight:SetMouseEnabled(false)
-    smartHighlight:SetCenterColor(1.00, 0.82, 0.10, 0.16)
+    smartHighlight:SetCenterColor(1.00, 0.82, 0.10, 0.08)
     smartHighlight:SetEdgeColor(1.00, 0.96, 0.32, 1.00)
     smartHighlight:SetEdgeTexture(nil, 4, 4, 4)
     if smartHighlight.SetDrawLayer and DL_OVERLAY then smartHighlight:SetDrawLayer(DL_OVERLAY) end
@@ -445,7 +440,7 @@ function A:SetSmartRecommendation029167(slot, category, pulseAlpha)
     self.smartRecommendedCategory029161 = category
     local activeCategory = safe(GetActiveHotbarCategory, nil)
     local shown = false
-    local pulse = math.max(0, math.min(1, tonumber(pulseAlpha) or 1.0))
+    -- pulseAlpha is retained for API compatibility, but intentionally ignored.
     for _, widget in ipairs(self.widgets or {}) do
         local highlight = widget and widget.epcSmartHighlight029167
         local mid = widget and widget.epcSmartGlowMid029168
@@ -459,11 +454,10 @@ function A:SetSmartRecommendation029167(slot, category, pulseAlpha)
             if mid then mid:SetHidden(not match) end
             if outer then outer:SetHidden(not match) end
             if match then
-                -- Stronger pulse than the old single border. The inner frame
-                -- stays bright while the two halo layers breathe around it.
-                highlight:SetAlpha(0.88 + (0.12 * pulse))
-                if mid then mid:SetAlpha(0.52 + (0.48 * pulse)) end
-                if outer then outer:SetAlpha(0.24 + (0.70 * pulse)) end
+                -- Steady recommendation: readable at a glance without flashing.
+                highlight:SetAlpha(1.00)
+                if mid then mid:SetAlpha(0.72) end
+                if outer then outer:SetAlpha(0.42) end
                 shown = true
             end
         end
@@ -531,7 +525,15 @@ function A:Initialize()
     if EVENT_KEYBINDING_SET then EVENT_MANAGER:RegisterForEvent(prefix .. "_BindingSet", EVENT_KEYBINDING_SET, function() self:InvalidateBindingText() self:Refresh() end) end
     if EVENT_KEYBINDING_CLEARED then EVENT_MANAGER:RegisterForEvent(prefix .. "_BindingCleared", EVENT_KEYBINDING_CLEARED, function() self:InvalidateBindingText() self:Refresh() end) end
     if EVENT_GAMEPAD_PREFERRED_MODE_CHANGED then EVENT_MANAGER:RegisterForEvent(prefix .. "_InputMode", EVENT_GAMEPAD_PREFERRED_MODE_CHANGED, function() self:InvalidateBindingText() self:Refresh() end) end
-    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Tick", 150, function() self:Refresh() end)
+    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Tick", 125, function()
+        local nowValue = GetFrameTimeMilliseconds and GetFrameTimeMilliseconds() or 0
+        local inCombat = type(IsUnitInCombat) == "function" and safe(IsUnitInCombat, false, "player") == true
+        local gap = inCombat and 125 or 1000
+        if self.layoutMode or not self.lastTickRefresh029312 or (nowValue - self.lastTickRefresh029312) >= gap then
+            self.lastTickRefresh029312 = nowValue
+            self:Refresh()
+        end
+    end)
     self:InvalidateBindingText()
     self:Refresh()
 end
@@ -572,8 +574,7 @@ function A:SetSmartRecommendation029167(slot, category, pulseAlpha)
                 and not widget:IsHidden()
             badge:SetHidden(not match)
             if match then
-                local pulse = math.max(0, math.min(1, tonumber(pulseAlpha) or 1))
-                badge:SetAlpha(0.72 + 0.28 * pulse)
+                badge:SetAlpha(1.00)
             end
         end
     end

@@ -28,8 +28,6 @@ CollectThemAllData_Others_Unobtainable = {
             { name = "Bonds of Battle Destrier", info = "Distributed to members of Dauntless Bananas, winner of the Tamriel Together guild contest" },
             { name = "Guild's Pride Charger", info = "Distributed to members of Goldleaf Acquisitions, winner of the Tamriel Together guild contest" },
 
-            { name = "Wraithtide Horse", info = "Though it shares the theme of the Wraithtide Crate, for unknown reasons, it is not part of it. This makes it the first crate to not have an Apex horse mount." },
-
             { name = "Adamant Dwarven Wolf", info = "Unreleased" },
             { name = "Arboreon Elk", info = "Datamined" },
             { name = "Ash-Tipped Durzog", info = "Datamined" },

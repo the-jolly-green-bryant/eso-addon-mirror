@@ -1287,18 +1287,43 @@ function M:CreateShell()
     self.resizeGrip=nil
     self.resizeHit=nil
 
+    local function resizeOnUpdate029315()
+        if not self._resizing02911 then return end
+        local mx,my=GetUIMousePosition()
+        local dw=(tonumber(mx) or 0)-(tonumber(self._resizeStartMouseX) or 0)
+        local dh=(tonumber(my) or 0)-(tonumber(self._resizeStartMouseY) or 0)
+        local mode=self._resizeMode02914 or "BOTH"
+        local currentW=root:GetWidth() or 980
+        local currentH=root:GetHeight() or 600
+        local newW=currentW
+        local newH=currentH
+        if mode=="RIGHT" or mode=="BOTH" then
+            newW=math.max(980,math.min(1320,(tonumber(self._resizeStartW) or currentW)+dw))
+        end
+        if mode=="BOTTOM" or mode=="BOTH" then
+            newH=math.max(600,math.min(800,(tonumber(self._resizeStartH) or currentH)+dh))
+        end
+        if newW~=currentW or newH~=currentH then
+            root:SetDimensions(newW,newH)
+            self._lastReflowW,self._lastReflowH=newW,newH
+            self:Reflow()
+        end
+    end
+
     local function beginInvisibleResize(mode)
         self._resizing02911=true
         self._resizeMode02914=mode
         self._resizeStartMouseX,self._resizeStartMouseY=GetUIMousePosition()
         self._resizeStartW=root:GetWidth()
         self._resizeStartH=root:GetHeight()
+        root:SetHandler("OnUpdate",resizeOnUpdate029315)
     end
 
     local function finishInvisibleResize()
         if not self._resizing02911 then return end
         self._resizing02911=false
         self._resizeMode02914=nil
+        root:SetHandler("OnUpdate",nil)
         local sv=J:EnsureSaved()
         sv.modernAppWidth02880=root:GetWidth()
         sv.modernAppHeight02880=root:GetHeight()
@@ -1342,27 +1367,7 @@ function M:CreateShell()
     root:SetHandler("OnResizeStop",function()
         local sv=J:EnsureSaved(); sv.modernAppWidth02880=root:GetWidth(); sv.modernAppHeight02880=root:GetHeight(); self:Reflow()
     end)
-    root:SetHandler("OnUpdate",function()
-        if self._resizing02911 then
-            local mx,my=GetUIMousePosition()
-            local dw=(tonumber(mx) or 0)-(tonumber(self._resizeStartMouseX) or 0)
-            local dh=(tonumber(my) or 0)-(tonumber(self._resizeStartMouseY) or 0)
-            local mode=self._resizeMode02914 or "BOTH"
-            local currentW=root:GetWidth() or 980
-            local currentH=root:GetHeight() or 600
-            local newW=currentW
-            local newH=currentH
-            if mode=="RIGHT" or mode=="BOTH" then
-                newW=math.max(980,math.min(1320,(tonumber(self._resizeStartW) or currentW)+dw))
-            end
-            if mode=="BOTTOM" or mode=="BOTH" then
-                newH=math.max(600,math.min(800,(tonumber(self._resizeStartH) or currentH)+dh))
-            end
-            if newW~=currentW or newH~=currentH then root:SetDimensions(newW,newH) end
-        end
-        local rw,rh=root:GetWidth(),root:GetHeight()
-        if rw~=self._lastReflowW or rh~=self._lastReflowH then self._lastReflowW,self._lastReflowH=rw,rh; self:Reflow() end
-    end)
+
 
     self:Reflow(); self:RefreshProfile()
 end

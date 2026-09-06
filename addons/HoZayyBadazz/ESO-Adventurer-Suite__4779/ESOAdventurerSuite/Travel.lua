@@ -3840,7 +3840,7 @@ function T:SortMapTeleporterEntries(entries)
     local mode=(EPC.saved and EPC.saved.mapTeleporterSortMode) or "SMART"
     local ports=(EPC.saved and EPC.saved.mapTeleporterPortCount) or {}
     local last=(EPC.saved and EPC.saved.mapTeleporterLastUsed) or {}
-    local pri={GROUP=1,FRIEND=2,GUILD=3,ZONE=4,HOUSE=5,PLAYER_HOME=6,SHRINE=7,QUEST=8,ITEM=9,LEAD=10,GUILD_SUMMARY=11,INSTANCE=12}
+    local pri={GROUP=1,FRIEND=2,GUILD=3,ZONE=4,HOUSE=5,PLAYER_HOME=6,SHRINE=7,QUEST=8,ITEM=9,LEAD=10,GUILD_HOME=11,GUILD_SUMMARY=12,INSTANCE=13}
     table.sort(entries,function(a,b)
         local af,bf=self:IsMapTeleporterFavorite(a),self:IsMapTeleporterFavorite(b)
         if mode=="SMART" and af~=bf then return af end
@@ -4072,7 +4072,7 @@ end
 -- ============================================================================
 MAP_TELEPORTER_MODES_02966 = {
     {"ALL", "ALL"}, {"ZONES", "ZONES"}, {"MAP", "MAP"}, {"ITEMS", "ITEMS"}, {"DELVES", "DELVES"}, {"QUESTS", "QUESTS"},
-    {"GROUP", "GROUP"}, {"FRIENDS", "FRIENDS"}, {"GUILD", "GUILD"}, {"GUILDS", "GUILDS"}, {"SHRINES", "SHRINES"}, {"HOUSES", "HOUSES"},
+    {"GROUP", "GROUP"}, {"FRIENDS", "FRIENDS"}, {"GUILD", "GUILD"}, {"GUILDS", "GUILD HOMES"}, {"SHRINES", "SHRINES"}, {"HOUSES", "HOUSES"},
     {"PLAYER_HOMES", "PLAYER HOMES"}, {"DUNGEONS", "DUNGEONS"}, {"INSTANCES", "INSTANCES"}, {"LEADS", "LEADS"}, {"FAVORITES", "FAVORITES"}, {"BLOCKED", "BLOCKED"},
 }
 
@@ -4303,27 +4303,56 @@ function T:GetMapTeleporterPlayerHomeEntries()
 end
 
 function T:GetMapTeleporterGuildSummaryEntries()
+    -- v0.29.330: Guild Homes view. One row per guild membership, traveling to
+    -- the guild master's primary residence instead of an arbitrary online member.
     local rows = {}
-    local allGuildMembers = self:GetGuildMembers(self:GetMapTeleporterSnapshot())
-    local guildCount = 0
-    if type(GetNumGuilds) == "function" then local ok, v = pcall(GetNumGuilds); if ok then guildCount = safeNumber(v, 0) end end
-    for guildIndex = 1, guildCount do
-        local guildId = nil
-        if type(GetGuildId) == "function" then local ok, v = pcall(GetGuildId, guildIndex); if ok then guildId = v end end
-        if guildId then
-            local guildName = "Guild " .. tostring(guildIndex)
-            if type(GetGuildName) == "function" then local ok, v = pcall(GetGuildName, guildId); if ok then guildName = clean(v, guildName) end end
-            local members, best = 0, nil
-            for _, e in ipairs(allGuildMembers) do
-                if e.guildName == guildName then members = members + 1; if not best and e.canTravel ~= false then best = e end end
+    local options = self:GetGuildLeaderHomeOptions()
+    local ownDisplayName = clean(type(GetDisplayName) == "function" and GetDisplayName() or "", "")
+
+    for _, option in ipairs(options or {}) do
+        local guildId = option.guildId
+        local guildName = clean(option.guildName, "Guild")
+        local leaderName = clean(option.leaderName, "")
+        local canTravel = leaderName ~= ""
+        local statusText = "VISIT HOME"
+        local detail = leaderName ~= "" and ("Guild Master: " .. leaderName .. "  |  Primary Residence") or "Guild Master unavailable"
+
+        if leaderName == "" then
+            canTravel = false
+            statusText = "LEADER UNKNOWN"
+        elseif leaderName == ownDisplayName then
+            local houseId = 0
+            if type(GetHousingPrimaryHouse) == "function" then
+                local ok, v = pcall(GetHousingPrimaryHouse)
+                if ok then houseId = safeNumber(v, 0) end
             end
-            rows[#rows + 1] = {
-                kind = "GUILD_SUMMARY", key = "GS:" .. tostring(guildId), favoriteKey = "GUILD_SUMMARY:" .. tostring(guildId),
-                guildId = guildId, name = guildName, displayName = guildName, zoneName = best and best.zoneName or "No online travel target",
-                playerCount = members, travelEntry = best, canTravel = best ~= nil, statusText = best and "FREE" or "NO ROUTE", sourceText = "GUILD",
-            }
+            canTravel = houseId > 0 and type(RequestJumpToHouse) == "function"
+            statusText = canTravel and "VISIT HOME" or "NO PRIMARY HOME"
+        elseif type(JumpToHouse) ~= "function" then
+            canTravel = false
+            statusText = "HOME API UNAVAILABLE"
         end
+
+        rows[#rows + 1] = {
+            kind = "GUILD_HOME",
+            key = "GH:" .. tostring(guildId),
+            favoriteKey = "GUILD_HOME:" .. tostring(guildId),
+            guildId = guildId,
+            guildName = guildName,
+            leaderName = leaderName,
+            name = guildName,
+            displayName = guildName,
+            characterName = leaderName,
+            zoneName = "Guild leader primary residence",
+            sourceDetail = detail,
+            canTravel = canTravel,
+            statusText = statusText,
+            costText = "Free",
+            sourceText = "GUILD HOME",
+        }
     end
+
+    table.sort(rows, function(a, b) return lower(a.guildName or a.name or "") < lower(b.guildName or b.name or "") end)
     return rows
 end
 
@@ -4870,6 +4899,18 @@ function T:TravelMapTeleporterEntry(entry)
     elseif entry.kind == "SHRINE" or entry.kind == "INSTANCE" then fn = FastTravelToNode; arg = entry.nodeIndex
     elseif entry.kind == "HOUSE" then fn = RequestJumpToHouse; arg = entry.houseId; arg2 = false
     elseif entry.kind == "PLAYER_HOME" then fn = JumpToHouse; arg = entry.displayName
+    elseif entry.kind == "GUILD_HOME" then
+        local leader = clean(entry.leaderName, "")
+        local own = clean(type(GetDisplayName) == "function" and GetDisplayName() or "", "")
+        if leader == "" then EPC:Print("ESO did not expose the guild master's display name for " .. clean(entry.guildName, "that guild") .. ".") return false end
+        if leader == own then
+            local houseId = 0
+            if type(GetHousingPrimaryHouse) == "function" then local ok, v = pcall(GetHousingPrimaryHouse); if ok then houseId = safeNumber(v, 0) end end
+            if houseId <= 0 or type(RequestJumpToHouse) ~= "function" then EPC:Print("No primary residence is available for " .. clean(entry.guildName, "that guild") .. ".") return false end
+            fn = RequestJumpToHouse; arg = houseId; arg2 = false
+        else
+            fn = JumpToHouse; arg = leader
+        end
     elseif entry.kind == "LEAD" and EPC.AntiquityLeadFinder and EPC.AntiquityLeadFinder.Toggle then EPC.AntiquityLeadFinder:Toggle(); return true
     end
     if type(fn) ~= "function" then EPC:Print("ESO's travel API is unavailable for this destination.") return false end
@@ -4923,6 +4964,9 @@ function T:ShowMapTeleporterContextMenu(entry, owner)
     end
     if clean(entry.zoneName, "") ~= "" and entry.zoneName ~= "Player primary residence" then
         AddMenuItem((EPC.saved and EPC.saved.mapTeleporterBlacklistZones and EPC.saved.mapTeleporterBlacklistZones[mtZoneKey02966(entry)]) and "Unblacklist Zone" or "Blacklist Zone", function() self:ToggleMapTeleporterZoneBlacklist(entry) end)
+    end
+    if entry.kind == "GUILD_HOME" and entry.canTravel ~= false then
+        AddMenuItem("Visit Guild Home", function() self:TravelMapTeleporterEntry(entry) end)
     end
     if entry.kind == "HOUSE" and type(RequestJumpToHouse) == "function" then
         AddMenuItem("Travel Inside", function() pcall(RequestJumpToHouse, entry.houseId, false) end)
@@ -5194,7 +5238,7 @@ local MAP_TELEPORTER_VIEW_MENU_02967 = {
     {"GROUP", "Group"},
     {"FRIENDS", "Friends"},
     {"GUILD", "Guild Members"},
-    {"GUILDS", "Guilds"},
+    {"GUILDS", "Guild Homes"},
     {"QUESTS", "Quests"},
     {"ITEMS", "Maps / Surveys / Items"},
     {"LEADS", "Antiquity Leads"},
@@ -5493,13 +5537,10 @@ function T:CreateMapTeleporter()
     root.next = nextButton
 
     root:SetHandler("OnMouseWheel", function(_, delta) self:ChangeMapTeleporterPage(delta < 0 and 1 or -1) end)
-    root:SetHandler("OnUpdate", function(_, timeMs)
-        local now = (type(GetFrameTimeMilliseconds) == "function" and GetFrameTimeMilliseconds()) or tonumber(timeMs) or 0
-        if now >= (self.mapTeleporterPopupRaiseAt02968 or 0) then
-            self.mapTeleporterPopupRaiseAt02968 = now + 250
-            self:RaiseMapTeleporterPopupSurfaces02968()
-        end
-    end)
+    -- v0.29.341: remove the legacy per-frame popup-raise guard. Since v0.29.69
+    -- Teleporter flyouts are internal controls and RaiseMapTeleporterPopupSurfaces02968
+    -- is intentionally a no-op, this OnUpdate only burned a Lua callback every frame.
+    root:SetHandler("OnUpdate", nil)
 
     self.mapTeleporter = root
     self:DockMapTeleporterToWorldMap()
@@ -5560,6 +5601,8 @@ function T:RefreshMapTeleporter()
                 if safeNumber(entry.knownWayshrines, 0) > 0 then counts = counts .. "   " .. tostring(entry.knownWayshrines) .. " shrine" .. (safeNumber(entry.knownWayshrines, 0) == 1 and "" or "s") end
                 if safeNumber(entry.unknownWayshrines, 0) > 0 then counts = counts .. "   " .. tostring(entry.unknownWayshrines) .. " undiscovered" end
                 detail = counts
+            elseif entry.kind == "GUILD_HOME" then
+                detail = clean(entry.sourceDetail, clean(entry.leaderName, "") ~= "" and ("Guild Master: " .. clean(entry.leaderName, "") .. "  |  Primary Residence") or "Guild Master unavailable")
             elseif entry.kind == "GUILD_SUMMARY" then
                 detail = string.format("%d online travel target%s", safeNumber(entry.playerCount, 0), safeNumber(entry.playerCount, 0) == 1 and "" or "s")
             elseif entry.kind == "HOUSE" and clean(entry.characterName, "") ~= "" then
@@ -5577,7 +5620,7 @@ function T:RefreshMapTeleporter()
             row.status:SetText(entry.canTravel == false and (entry.statusText or "BLOCKED") or (entry.statusText or entry.costText or "TRAVEL"))
             if self:IsMapTeleporterBlacklisted(entry) or entry.canTravel == false then
                 row.status:SetColor(0.95, 0.38, 0.34, 1)
-            elseif entry.statusText == "FREE" or entry.kind == "GROUP" or entry.kind == "FRIEND" or entry.kind == "GUILD" or entry.kind == "HOUSE" or entry.kind == "PLAYER_HOME" then
+            elseif entry.statusText == "FREE" or entry.statusText == "VISIT HOME" or entry.kind == "GROUP" or entry.kind == "FRIEND" or entry.kind == "GUILD" or entry.kind == "HOUSE" or entry.kind == "PLAYER_HOME" or entry.kind == "GUILD_HOME" then
                 row.status:SetColor(0.50, 0.92, 0.62, 1)
             else
                 row.status:SetColor(0.45, 0.90, 1.00, 1)

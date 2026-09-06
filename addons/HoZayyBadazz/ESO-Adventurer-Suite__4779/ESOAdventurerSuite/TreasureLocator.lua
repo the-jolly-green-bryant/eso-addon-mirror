@@ -119,6 +119,110 @@ function T:GetItemName(itemId, fallback)
     return fallback or "Treasure Location"
 end
 
+
+-- Hover information is built only when the player actually points at a pin.
+-- Nothing here runs in the minimap/world-map update loops, so the locator gains
+-- useful context without adding a new polling/FPS cost.
+function T:GetTypeKeyFromPinData029309(pinData, fallbackTypeKey)
+    if type(pinData) == "table" then
+        if pinData.easTypeKey and TYPES[pinData.easTypeKey] then return pinData.easTypeKey end
+        for _, typeKey in ipairs(TYPE_ORDER) do
+            if pinData.pinType == TYPES[typeKey].libType then return typeKey end
+        end
+    end
+    if fallbackTypeKey and TYPES[fallbackTypeKey] then return fallbackTypeKey end
+    return "TREASURE"
+end
+
+function T:GetMapDisplayName029309(mapId)
+    mapId = num(mapId, 0)
+    if mapId > 0 and type(GetMapNameById) == "function" then
+        local name = clean(safeCall(GetMapNameById, "", mapId), "")
+        if name ~= "" then return name end
+    end
+    if type(GetMapName) == "function" then
+        local name = clean(safeCall(GetMapName, ""), "")
+        if name ~= "" then return name end
+    end
+    return "Current map"
+end
+
+function T:GetPinExplanation029309(typeKey)
+    if typeKey == "SURVEY" then
+        return "Survey resource site. Bring the matching survey report here to find the concentrated crafting nodes."
+    elseif typeKey == "CLUE" then
+        return "Location associated with this Tribute clue."
+    end
+    return "Treasure dig location for this map. Travel to the marker and look for the treasure mound."
+end
+
+function T:GetPinScopeText029309(itemId)
+    local scope = self:GetScope()
+    if scope == SCOPE_ALL then
+        return "Shown because the locator is set to All Known Locations."
+    elseif scope == SCOPE_OPENED then
+        return "Shown because this item was opened and is still being tracked."
+    end
+    if num(itemId, 0) > 0 and self.inventoryItems and self.inventoryItems[num(itemId, 0)] then
+        return "Shown because the matching item is in your backpack."
+    end
+    return "Shown from your current locator inventory filter."
+end
+
+function T:AddPinTooltipLines029309(tooltip, pinData, fallbackTypeKey, sourceMapId, x, y)
+    if not tooltip or type(tooltip.AddLine) ~= "function" then return end
+    pinData = type(pinData) == "table" and pinData or {}
+    local typeKey = self:GetTypeKeyFromPinData029309(pinData, fallbackTypeKey)
+    local def = TYPES[typeKey] or TYPES.TREASURE
+    local itemId = num(pinData.itemId, 0)
+    local itemName = self:GetItemName(itemId, def.label)
+    sourceMapId = num(sourceMapId or pinData.easSourceMapId, 0)
+    local mapName = self:GetMapDisplayName029309(sourceMapId)
+
+    tooltip:AddLine(itemName, "ZoFontWinH4")
+    tooltip:AddLine("|cFFD166Type:|r " .. tostring(def.label), "ZoFontGame")
+    tooltip:AddLine("|cFFD166Zone / Map:|r " .. tostring(mapName), "ZoFontGame")
+    if tonumber(x) and tonumber(y) then
+        tooltip:AddLine(string.format("|cFFD166Map position:|r %.1f%%, %.1f%%", tonumber(x) * 100, tonumber(y) * 100), "ZoFontGameSmall")
+    end
+    tooltip:AddLine(self:GetPinExplanation029309(typeKey), "ZoFontGameSmall")
+    tooltip:AddLine(self:GetPinScopeText029309(itemId), "ZoFontGameSmall")
+end
+
+function T:CreateWorldMapTooltip029309(pin, fallbackTypeKey)
+    if not pin or not InformationTooltip then return end
+    local pinData = nil
+    if type(pin.GetPinTypeAndTag) == "function" then
+        local _, tag = safeCall(pin.GetPinTypeAndTag, nil, pin)
+        pinData = tag
+    end
+    if type(pinData) ~= "table" then return end
+    local x, y = nil, nil
+    if type(pin.GetNormalizedPosition) == "function" then
+        x, y = safeCall(pin.GetNormalizedPosition, nil, pin)
+    end
+    self:AddPinTooltipLines029309(InformationTooltip, pinData, fallbackTypeKey, pinData.easSourceMapId, x, y)
+end
+
+function T:ShowMiniMapTooltip029309(control, entry)
+    if not control or type(entry) ~= "table" or not InformationTooltip or type(InitializeTooltip) ~= "function" then return end
+    if type(ClearTooltip) == "function" then pcall(ClearTooltip, InformationTooltip) end
+    InitializeTooltip(InformationTooltip, control, RIGHT, 8, 0, LEFT)
+    local pinData = {
+        itemId = entry.itemId,
+        pinType = TYPES[entry.typeKey] and TYPES[entry.typeKey].libType or nil,
+        easTypeKey = entry.typeKey,
+        easSourceMapId = entry.sourceMapId,
+    }
+    self:AddPinTooltipLines029309(InformationTooltip, pinData, entry.typeKey, entry.sourceMapId, entry.x, entry.y)
+end
+
+function T:HideMiniMapTooltip029309()
+    if InformationTooltip and type(ClearTooltip) == "function" then
+        pcall(ClearTooltip, InformationTooltip)
+    end
+end
+
 function T:BuildInventoryCache()
     self.inventoryItems = self.inventoryItems or {}
     for key in pairs(self.inventoryItems) do self.inventoryItems[key] = nil end
@@ -689,7 +793,16 @@ function T:CreateMapPins(typeKey)
     if not lib or not def or type(lib.CreatePin) ~= "function" then return end
     local targetMapId = num(safeCall(GetCurrentMapId, 0), 0)
     for _, entry in ipairs(self:GetPinsForTargetMap029148(typeKey, targetMapId, false)) do
-        lib:CreatePin(def.pinName, entry.data, entry.x, entry.y)
+        -- Use a tiny metadata wrapper for the pin tag so hover tooltips know the
+        -- original source map even when LibGPS projected a sub-map pin. Keep the
+        -- normal LibTreasure fields so all existing filtering/deduplication works.
+        local tag = {}
+        if type(entry.data) == "table" then
+            for key, value in pairs(entry.data) do tag[key] = value end
+        end
+        tag.easTypeKey = typeKey
+        tag.easSourceMapId = entry.sourceMapId
+        lib:CreatePin(def.pinName, tag, entry.x, entry.y)
         self.lastWorldMapDrawn029148[typeKey] = self.lastWorldMapDrawn029148[typeKey] + 1
     end
 end
@@ -716,19 +829,30 @@ function T:RegisterMapPinTypes029148()
     local size = math.max(18, math.min(64, num(EPC.saved and EPC.saved.treasureLocatorPinSize, 32)))
     local allRegistered = true
     for _, typeKey in ipairs(TYPE_ORDER) do
-        local def = TYPES[typeKey]
-        if not self.mapPinTypeIds029148[typeKey] then
-            local layout = { level = 48, size = size, texture = self:GetPinTexture(typeKey) }
-            local ok, pinTypeId = pcall(lib.AddPinType, lib, def.pinName, function() self:CreateMapPins(typeKey) end, nil, layout, nil)
+        -- Freeze the loop value for callbacks retained by LibMapPins.
+        local currentTypeKey = typeKey
+        local def = TYPES[currentTypeKey]
+        if not self.mapPinTypeIds029148[currentTypeKey] then
+            local layout = { level = 48, size = size, texture = self:GetPinTexture(currentTypeKey) }
+            local tooltipCreator = {
+                creator = function(pin) self:CreateWorldMapTooltip029309(pin, currentTypeKey) end,
+                tooltip = 1, -- LibMapPins INFORMATION tooltip mode
+                hasTooltip = function() return true end,
+            }
+            local ok, pinTypeId = pcall(
+                lib.AddPinType, lib, def.pinName,
+                function() self:CreateMapPins(currentTypeKey) end,
+                nil, layout, tooltipCreator
+            )
             if ok then
                 pinTypeId = pinTypeId or (_G and _G[def.pinName])
-                self.mapPinTypeIds029148[typeKey] = pinTypeId or true
-                self.mapPinRegistrationErrors029148[typeKey] = nil
+                self.mapPinTypeIds029148[currentTypeKey] = pinTypeId or true
+                self.mapPinRegistrationErrors029148[currentTypeKey] = nil
             else
-                self.mapPinRegistrationErrors029148[typeKey] = tostring(pinTypeId)
+                self.mapPinRegistrationErrors029148[currentTypeKey] = tostring(pinTypeId)
             end
         end
-        if not self.mapPinTypeIds029148[typeKey] then allRegistered = false end
+        if not self.mapPinTypeIds029148[currentTypeKey] then allRegistered = false end
     end
     return allRegistered
 end

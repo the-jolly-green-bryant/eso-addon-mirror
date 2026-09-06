@@ -537,7 +537,7 @@ function A:Initialize()
         end)
     end
     if EVENT_PLAYER_COMBAT_STATE then EVENT_MANAGER:RegisterForEvent(prefix .. "_Combat", EVENT_PLAYER_COMBAT_STATE, function() self:Refresh() end) end
-    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Visibility", 250, function()
+    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Visibility", 1000, function()
         if not self.frame or not EPC.saved then return end
         local show = self:ShouldShow2960()
         if self.frame:IsHidden() == show then self:Refresh() end

@@ -453,6 +453,11 @@ local BOSS_GROUPS = {
     ["Rrarrvok"] = "GetPlayerLocationName", -- Mirrormoor Incursion
     ["Krrazzak"] = "GetPlayerLocationName", -- Mirrormoor Incursion
 
+-- Western Skyrim
+    ["Vig"] = "Hordrek's Hunting Grounds",
+    ["Hordrek"] = "Hordrek's Hunting Grounds",
+    ["Otal"] = "Hordrek's Hunting Grounds",
+
 -- Imperial City
     ["Lady Malygda"] = "Arboretum",
     ["Ysenda Resplendent"] = "Arboretum",

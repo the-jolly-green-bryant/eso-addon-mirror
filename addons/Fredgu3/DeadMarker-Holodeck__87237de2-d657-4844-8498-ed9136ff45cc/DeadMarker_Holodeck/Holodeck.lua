@@ -10,6 +10,7 @@
 -- New trial recipes belong in a sibling manifest .lua (new 200), not more
 -- `local function` here. Fold tunables into CFG / TEX, not new locals.
 --
+-- 0.0.51: Count boss-only Portal!/pads/tags; Rakkhat Backyard!; time HP bars
 -- 0.0.50: Two tag marks per side (lusterbeam)
 -- 0.0.49: Portal pads + glow from hops; DPS tag marks; smaller Portal! banner
 -- 0.0.48: Portal! from pack hops (not a generic timer); NPC pack has no cue
@@ -50,7 +51,7 @@
 local Holodeck = Holodeck or {}
 Holodeck.name        = "DeadMarker_Holodeck"
 Holodeck.displayName = "Holodeck"
-Holodeck.version     = "0.0.50"
+Holodeck.version     = "0.0.51"
 
 Holodeck.Fights = Holodeck.Fights or {}
 function Holodeck.RegisterFight(fight)
@@ -1758,6 +1759,44 @@ local function ApplyTimeline(tSec, announce)
 
     EnsurePads()
 
+    if ActorTagged("_you", tSec) then
+        local px, pz = PlayerLocalXZ()
+        if px then
+            local you = EnsureActor("_you", "dps")
+            if you then
+                you.guide = true
+                you.x, you.z = px, pz
+                you.visible = true
+                you.tagged = true
+                you.label = "YOU"
+                you.dead = false
+                PlaceActor(you)
+                if you.ctl then you.ctl:SetHidden(true) end
+                HideNameplate(you)
+                live["_you"] = true
+            end
+        end
+        local stands = fight._tagStands
+        if type(stands) == "table" then
+            local si = 1
+            while si <= #stands do
+                local st = stands[si]
+                local dummy = EnsureActor(st.id, "dps")
+                if dummy then
+                    dummy.guide = true
+                    dummy.x, dummy.z = st.x or 0, st.z or 0
+                    dummy.visible = true
+                    dummy.tagged = true
+                    dummy.label = "TAG"
+                    dummy.dead = false
+                    PlaceActor(dummy)
+                    live[st.id] = true
+                end
+                si = si + 1
+            end
+        end
+    end
+
     -- Hide leftover actors from a previous pack/save (keep plant-frame guides)
     for name, act in pairs(Holodeck.actors) do
         if act and act.guide then
@@ -1768,6 +1807,8 @@ local function ApplyTimeline(tSec, announce)
             if act.ctl then act.ctl:SetHidden(true) end
             HideNameplate(act)
             HideFacing(act)
+            HideTag(act)
+            HidePadRing(act)
         end
     end
 
@@ -1784,6 +1825,7 @@ local function ApplyTimeline(tSec, announce)
         end
     end
     UpdateSwapBanner(tSec)
+    if Holodeck.UpdateBossHpBars then Holodeck.UpdateBossHpBars(tSec) end
 end
 
 -- ============================= Legend / Sheet ===========================
@@ -1794,6 +1836,177 @@ local function HudFont(size)
         if ok and v then n = n + 2 end
     end
     return "EsoUI/Common/Fonts/univers57.otf|" .. tostring(n) .. "|soft-shadow-thick"
+end
+
+-- Time-based boss HP (remaining % = 1 - t/dur). Real log HP later if packs stay small.
+-- Not a local function — keeps the 200-local chunk budget.
+Holodeck.HpTriggers = {
+    count = { { pct = 90, label = "Adds" } },
+    zily = { { pct = 90, label = "Adds" } },
+    rakkhat = { { pct = 11, label = "Execute" } },
+    zhajhassa = { { pct = 70, label = "Shield" }, { pct = 30, label = "Shield" } },
+}
+
+function Holodeck.HideBossHpBars()
+    if Holodeck.hpTLW then Holodeck.hpTLW:SetHidden(true) end
+end
+
+function Holodeck.UpdateBossHpBars(tSec)
+    local fight = Holodeck.fight
+    if not Holodeck.origin or type(fight) ~= "table" or Holodeck.fightSource ~= "library" then
+        Holodeck.HideBossHpBars()
+        return
+    end
+    local bosses = {}
+    local ents = fight.entities
+    if type(ents) == "table" then
+        local i = 1
+        while i <= #ents do
+            local e = ents[i]
+            if e and NormalizeKind(e.kind) == "boss" then
+                bosses[#bosses + 1] = e
+            end
+            i = i + 1
+        end
+    end
+    if #bosses < 1 then
+        Holodeck.HideBossHpBars()
+        return
+    end
+    if #bosses > 2 then bosses[3] = nil end
+    local dur = tonumber(fight.durationSec) or 0
+    if dur < 1 then dur = 1 end
+    tSec = tonumber(tSec) or 0
+    local remain = 100 * (1 - (tSec / dur))
+    if remain < 0 then remain = 0 end
+    if remain > 100 then remain = 100 end
+
+    if not Holodeck.hpTLW then
+        local tlw = _SafeCreateTLW("HolodeckBossHp")
+        if not tlw then return end
+        tlw:SetMouseEnabled(false)
+        tlw:SetClampedToScreen(true)
+        tlw:SetDrawLayer(DL_OVERLAY)
+        tlw:SetDrawTier(DT_HIGH)
+        tlw:SetDrawLevel(430000)
+        tlw:SetDimensions(220, 240)
+        tlw:ClearAnchors()
+        tlw:SetAnchor(BOTTOMLEFT, GuiRoot, BOTTOMLEFT, 18, -56)
+        Holodeck.hpTLW = tlw
+        Holodeck.hpCols = {}
+    end
+    local tlw = Holodeck.hpTLW
+    tlw:SetHidden(false)
+    local n = #bosses
+    local colW = 96
+    tlw:SetDimensions(n * colW + 12, 236)
+    local key = string.lower(tostring(fight.boss or "") .. " " .. tostring(fight.id or ""))
+    local trig = nil
+    if key:find("count", 1, true) or key:find("zily", 1, true) then
+        trig = Holodeck.HpTriggers.count
+    elseif key:find("rakkhat", 1, true) then
+        trig = Holodeck.HpTriggers.rakkhat
+    elseif key:find("zhaj", 1, true) then
+        trig = Holodeck.HpTriggers.zhajhassa
+    end
+
+    local b = 1
+    while b <= n do
+        local col = Holodeck.hpCols[b]
+        if not col then
+            local x0 = 8 + (b - 1) * colW
+            local name = _SafeCreateControl("HolodeckHpName" .. b, tlw, CT_LABEL)
+            if name then
+                name:ClearAnchors()
+                name:SetAnchor(TOPLEFT, tlw, TOPLEFT, x0, 2)
+                name:SetDimensions(colW - 8, 36)
+                name:SetFont(HudFont(14))
+                name:SetColor(1, 0.92, 0.55, 1)
+                if TEXT_ALIGN_CENTER then name:SetHorizontalAlignment(TEXT_ALIGN_CENTER) end
+            end
+            local pctL = _SafeCreateControl("HolodeckHpPct" .. b, tlw, CT_LABEL)
+            if pctL then
+                pctL:ClearAnchors()
+                pctL:SetAnchor(TOPLEFT, tlw, TOPLEFT, x0, 34)
+                pctL:SetDimensions(colW - 8, 28)
+                pctL:SetFont(HudFont(20))
+                pctL:SetColor(1, 1, 1, 1)
+                if TEXT_ALIGN_CENTER then pctL:SetHorizontalAlignment(TEXT_ALIGN_CENTER) end
+            end
+            local track = _SafeCreateControl("HolodeckHpTrack" .. b, tlw, CT_BACKDROP)
+            if track then
+                track:ClearAnchors()
+                track:SetAnchor(TOPLEFT, tlw, TOPLEFT, x0 + 28, 64)
+                track:SetDimensions(22, 160)
+                track:SetCenterColor(0.08, 0.08, 0.08, 0.85)
+                track:SetEdgeColor(0.5, 0.5, 0.5, 0.9)
+                if track.SetEdgeTexture then pcall(function() track:SetEdgeTexture(nil, 1, 1, 1) end) end
+            end
+            local fill = _SafeCreateControl("HolodeckHpFill" .. b, tlw, CT_BACKDROP)
+            if fill then
+                fill:ClearAnchors()
+                fill:SetAnchor(BOTTOMLEFT, track or tlw, BOTTOMLEFT, 2, -2)
+                fill:SetDimensions(18, 156)
+                fill:SetCenterColor(0.85, 0.18, 0.12, 0.95)
+                fill:SetEdgeColor(0, 0, 0, 0)
+            end
+            local trigL = _SafeCreateControl("HolodeckHpTrig" .. b, tlw, CT_LABEL)
+            if trigL then
+                trigL:ClearAnchors()
+                trigL:SetAnchor(TOPLEFT, tlw, TOPLEFT, x0, 224)
+                trigL:SetDimensions(colW - 8, 18)
+                trigL:SetFont(HudFont(12))
+                trigL:SetColor(1, 0.85, 0.4, 1)
+                if TEXT_ALIGN_CENTER then trigL:SetHorizontalAlignment(TEXT_ALIGN_CENTER) end
+            end
+            col = { name = name, pct = pctL, fill = fill, trig = trigL }
+            Holodeck.hpCols[b] = col
+        end
+        local e = bosses[b]
+        local nm = e.label or e.id or "Boss"
+        if col.name and col._nm ~= nm then
+            col.name:SetText(nm)
+            col._nm = nm
+        end
+        local pctTxt = string.format("%d%%", math.floor(remain + 0.5))
+        if col.pct and col._pct ~= pctTxt then
+            col.pct:SetText(pctTxt)
+            col._pct = pctTxt
+        end
+        if col.fill then
+            local h = math.floor(156 * (remain / 100) + 0.5)
+            if h < 2 then h = 2 end
+            col.fill:SetDimensions(18, h)
+            local tint = ResolveEntityColor(e)
+            if tint then
+                col.fill:SetCenterColor(tint[1] or 0.85, tint[2] or 0.18, tint[3] or 0.12, 0.95)
+            end
+        end
+        local mark = ""
+        if type(trig) == "table" then
+            local ti = 1
+            while ti <= #trig do
+                local tr = trig[ti]
+                if tr and remain <= (tr.pct or 0) + 0.51 and remain > (tr.pct or 0) - 8 then
+                    mark = tostring(tr.pct) .. "% " .. tostring(tr.label or "")
+                end
+                ti = ti + 1
+            end
+        end
+        if col.trig and col._mark ~= mark then
+            col.trig:SetText(mark)
+            col._mark = mark
+        end
+        b = b + 1
+    end
+    local extra = Holodeck.hpCols
+    if extra then
+        local k = n + 1
+        while extra[k] do
+            if extra[k].name then extra[k].name:SetHidden(true) end
+            k = k + 1
+        end
+    end
 end
 
 local function LegendText()
@@ -2199,6 +2412,11 @@ local function BuildPortalLayout(fight)
         end
         h = h + 1
     end
+    local idn = string.lower(tostring(fight.id or "") .. " " .. tostring(fight.boss or "")
+        .. " " .. tostring(fight.name or ""))
+    local isCount = IsCountFight(fight)
+    local isRakk = idn:find("rakkhat", 1, true) and true or false
+
     local cues = {}
     local slotXs, zHi, zLo, nHi, nLo = {}, nil, nil, 0, 0
     local c = 1
@@ -2206,7 +2424,8 @@ local function BuildPortalLayout(fight)
         local cl = clusters[c]
         local mid = cl[math.floor((#cl + 1) / 2)]
         local tHop = mid.t or 0
-        local t0 = tHop - CFG.PORTAL_HOLD_SEC
+        local lead = isRakk and 8 or CFG.PORTAL_HOLD_SEC
+        local t0 = tHop - lead
         if t0 < 1 then t0 = 1 end
         local sx, sz, n = 0, 0, #cl
         local zs = {}
@@ -2240,11 +2459,32 @@ local function BuildPortalLayout(fight)
             nLo = nLo + nB
         end
         slotXs[#slotXs + 1] = sx
-        cues[#cues + 1] = {
-            t = t0, dur = CFG.PORTAL_HOLD_SEC, kind = "portal", text = "Portal!",
-            slotX = sx, hopT = tHop,
-        }
+        if isCount then
+            cues[#cues + 1] = {
+                t = t0, dur = CFG.PORTAL_HOLD_SEC, kind = "portal", text = "Portal!",
+                slotX = sx, hopT = tHop,
+            }
+        elseif isRakk then
+            cues[#cues + 1] = {
+                t = t0, dur = lead, kind = "backyard", text = "Backyard!",
+                hopT = tHop,
+            }
+        end
         c = c + 1
+    end
+    if isCount and #cues == 0 then
+        -- Boss-only packs have no player hops. Vet pads: ~25s then every ~60s.
+        local dur = tonumber(fight.durationSec) or 0
+        local t = 25
+        local slot = 1
+        while t + 5 < dur do
+            cues[#cues + 1] = {
+                t = t, dur = CFG.PORTAL_HOLD_SEC, kind = "portal", text = "Portal!",
+                slot = slot,
+            }
+            slot = (slot % 3) + 1
+            t = t + 60
+        end
     end
     if #cues > 0 then
         fight._cues = cues
@@ -2254,7 +2494,7 @@ local function BuildPortalLayout(fight)
         fight._cues = {}
     end
 
-    if not IsCountFight(fight) then return end
+    if not isCount then return end
     local xs = {}
     local u = 1
     while u <= #slotXs do
@@ -2361,7 +2601,7 @@ local function BuildTagAssign(fight)
         end
         i = i + 1
     end
-    if #dps < 1 or #spans < 1 then return end
+    if #spans < 1 then return end
     table.sort(spans, function(a, b) return a.t0 < b.t0 end)
     local waves = {}
     i = 1
@@ -2377,6 +2617,38 @@ local function BuildTagAssign(fight)
     end
     local fr = fight._frame
     local cz = (fr and fr.cz) or 0
+    if #dps < 1 then
+        -- Boss-only pack: tag the trainer + two stands per boss side.
+        local stands = {}
+        if fr and type(fr.bosses) == "table" then
+            local bi = 1
+            while bi <= #fr.bosses and bi <= 2 do
+                local b = fr.bosses[bi]
+                local ox, oz = 2.4, 0
+                if fr.splitPx then
+                    ox, oz = (fr.splitPx or 0) * 2.4, (fr.splitPz or 0) * 2.4
+                end
+                stands[#stands + 1] = { id = "_tag_" .. bi .. "a", x = (b.x or 0) + ox, z = (b.z or 0) + oz }
+                stands[#stands + 1] = { id = "_tag_" .. bi .. "b", x = (b.x or 0) - ox, z = (b.z or 0) - oz }
+                bi = bi + 1
+            end
+        end
+        fight._tagStands = stands
+        local w = 1
+        while w <= #waves do
+            local wv = waves[w]
+            local ids = { "_you" }
+            local s = 1
+            while s <= #stands do
+                ids[#ids + 1] = stands[s].id
+                s = s + 1
+            end
+            fight._tags[#fight._tags + 1] = { t0 = wv.t0, t1 = wv.t1 + 6, ids = ids, you = true }
+            w = w + 1
+        end
+        return
+    end
+    fight._tagStands = nil
     local w = 1
     while w <= #waves do
         local wv = waves[w]
@@ -2614,6 +2886,7 @@ local function _StartTick()
             Holodeck.legendLabel:SetText(LegendText())
         end
         UpdateSwapBanner(Holodeck.playT or 0)
+        if Holodeck.UpdateBossHpBars then Holodeck.UpdateBossHpBars(Holodeck.playT or 0) end
         UpdateMemMeter(now)
     end)
     Holodeck._tickRunning = true
@@ -4371,6 +4644,7 @@ local function CmdClear()
     DestroyAllActors()
     HideMemMeter()
     HideSwapBanner()
+    if Holodeck.HideBossHpBars then Holodeck.HideBossHpBars() end
     _StopTick()
     dhd("Full clear.")
     RefreshUI()
@@ -4387,7 +4661,7 @@ local function CmdHelp()
     dhd("v" .. Holodeck.version .. " — plant a library pack in the house.")
     d("|cAADDFFPLAY|r    plant · list · load N|<id> · play · pause · replay · halt")
     d("|cAADDFFLOOK|r    names on|off · scale N% · rot · flip z · frame · legend")
-    d("|cAADDFFCUE|r     alerts on|off  ·  Portal! / pad glow / add-tag")
+    d("|cAADDFFCUE|r     alerts on|off  ·  Portal! / Backyard! / pad glow / add-tag")
     d("plant = fight CENTER, uses facing.  Gold dashes = dual-boss split.  /hd rot = 90°.")
 end
 

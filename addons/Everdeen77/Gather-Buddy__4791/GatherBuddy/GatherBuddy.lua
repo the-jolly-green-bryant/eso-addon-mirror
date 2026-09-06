@@ -7,7 +7,7 @@ local GB = GatherBuddy
 ------------------------------------------------------------
 
 GB.ADDON_NAME = "GatherBuddy"
-GB.ADDON_VERSION = "1.2"
+GB.ADDON_VERSION = "1.3"
 
 local ADDON_NAME = GB.ADDON_NAME
 local ADDON_VERSION = GB.ADDON_VERSION
@@ -52,6 +52,12 @@ local defaults = {
     -- History window position
     historyLeft = nil,
     historyTop = nil,
+
+    -- Rare Material Alert
+    rareAlertEnabled = true,
+    rareAlertDuration = 4,
+    rareAlertLeft = nil,
+    rareAlertTop = nil,
 
     -- Current session
     sessionItems = {},
@@ -175,6 +181,132 @@ function GB.ClearSession()
 end
 
 ------------------------------------------------------------
+-- RESET UI POSITION / SIZE
+------------------------------------------------------------
+
+function GB.ResetWindowPositionsAndSize()
+    if GB.savedVariables == nil then
+        return
+    end
+
+    --------------------------------------------------------
+    -- RESET SAVED VALUES
+    --------------------------------------------------------
+
+    GB.savedVariables.left = nil
+    GB.savedVariables.top = nil
+
+    GB.savedVariables.width =
+        GB.DEFAULT_WIDTH
+
+    GB.savedVariables.height =
+        GB.DEFAULT_HEIGHT
+
+    GB.savedVariables.statsLeft = nil
+    GB.savedVariables.statsTop = nil
+
+    GB.savedVariables.historyLeft = nil
+    GB.savedVariables.historyTop = nil
+
+    GB.savedVariables.rareAlertLeft = nil
+    GB.savedVariables.rareAlertTop = nil
+
+    --------------------------------------------------------
+    -- RESET MAIN WINDOW
+    --------------------------------------------------------
+
+    if GB.mainWindow then
+        GB.mainWindow:ClearAnchors()
+
+        GB.mainWindow:SetDimensions(
+            GB.DEFAULT_WIDTH,
+            GB.DEFAULT_HEIGHT
+        )
+
+        GB.mainWindow:SetAnchor(
+            CENTER,
+            GuiRoot,
+            CENTER,
+            0,
+            0
+        )
+    end
+
+    --------------------------------------------------------
+    -- RESET STATS WINDOW
+    --------------------------------------------------------
+
+    if GB.statsWindow then
+        GB.statsWindow:ClearAnchors()
+
+        if GB.mainWindow then
+            GB.statsWindow:SetAnchor(
+                TOPLEFT,
+                GB.mainWindow,
+                TOPRIGHT,
+                10,
+                0
+            )
+        else
+            GB.statsWindow:SetAnchor(
+                CENTER,
+                GuiRoot,
+                CENTER,
+                0,
+                0
+            )
+        end
+    end
+
+    --------------------------------------------------------
+    -- RESET HISTORY WINDOW
+    --------------------------------------------------------
+
+    if GB.historyWindow then
+        GB.historyWindow:ClearAnchors()
+
+        if GB.statsWindow then
+            GB.historyWindow:SetAnchor(
+                TOPLEFT,
+                GB.statsWindow,
+                TOPRIGHT,
+                10,
+                0
+            )
+        else
+            GB.historyWindow:SetAnchor(
+                CENTER,
+                GuiRoot,
+                CENTER,
+                0,
+                0
+            )
+        end
+    end
+
+    --------------------------------------------------------
+    -- RESET RARE ALERT POSITION
+    --------------------------------------------------------
+
+    if GB.ResetRareAlertPosition then
+        GB.ResetRareAlertPosition()
+    end
+
+    --------------------------------------------------------
+    -- REFRESH MAIN WINDOW LAYOUT
+    --------------------------------------------------------
+
+    if GB.UpdateMaterialList then
+        GB.UpdateMaterialList()
+    end
+
+    CHAT_SYSTEM:AddMessage(
+        "|c66CCFF[Gather Buddy]|r "
+            .. "Window positions and size reset."
+    )
+end
+
+------------------------------------------------------------
 -- SLASH COMMANDS
 ------------------------------------------------------------
 
@@ -203,13 +335,19 @@ local function RegisterSlashCommands()
                     GB.UnlockWindow()
                 end
 
+            elseif command == "reset" then
+                if GB.ResetWindowPositionsAndSize then
+                    GB.ResetWindowPositionsAndSize()
+                end
+
             else
                 CHAT_SYSTEM:AddMessage(
                     "|c66CCFF[Gather Buddy]|r "
                         .. "Commands: "
                         .. "/gbuddy, "
                         .. "/gbuddy lock, "
-                        .. "/gbuddy unlock"
+                        .. "/gbuddy unlock, "
+                        .. "/gbuddy reset"
                 )
             end
         end
@@ -250,6 +388,14 @@ local function ValidateSavedVariables()
 
     if GB.savedVariables.historyFontSize == nil then
         GB.savedVariables.historyFontSize = 13
+    end
+
+    if GB.savedVariables.rareAlertEnabled == nil then
+        GB.savedVariables.rareAlertEnabled = true
+    end
+
+    if GB.savedVariables.rareAlertDuration == nil then
+        GB.savedVariables.rareAlertDuration = 4
     end
 
     if GB.savedVariables.width == nil then
@@ -341,6 +487,10 @@ local function OnPlayerActivated(
 
     if GB.CreateHistoryWindow then
         GB.CreateHistoryWindow()
+    end
+
+    if GB.CreateRareAlertWindow then
+        GB.CreateRareAlertWindow()
     end
 
     --------------------------------------------------------

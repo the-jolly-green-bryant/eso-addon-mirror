@@ -1,0 +1,45 @@
+local BA = BMGAdventures
+BA.Rewards = BA.Rewards or {}
+BA.Rewards.unlocks = {
+    UNLOCK_AM_ADV_10 = { id="UNLOCK_AM_ADV_10", type="ABOVE_ME_ICON", name="Novice Compass" },
+    UNLOCK_AM_ADV_25 = { id="UNLOCK_AM_ADV_25", type="ABOVE_ME_ICON", name="Adventurer Compass" },
+    UNLOCK_AM_RAIDER_BETA = { id="UNLOCK_AM_RAIDER_BETA", type="ABOVE_ME_ICON", name="Raider Beta Emblem" },
+    UNLOCK_AM_EXPLORER_BETA = { id="UNLOCK_AM_EXPLORER_BETA", type="ABOVE_ME_ICON", name="Explorer Beta Emblem" },
+    UNLOCK_AM_SECRET_BETA = { id="UNLOCK_AM_SECRET_BETA", type="ABOVE_ME_ICON", name="Secret Beta Emblem" },
+}
+BA.Rewards.titles = {
+    TITLE_FIRST_STEPS = { id="TITLE_FIRST_STEPS", name="First Steps" },
+    TITLE_ADVENTURER_10 = { id="TITLE_ADVENTURER_10", name="Adventurer" },
+    TITLE_ADVENTURER_25 = { id="TITLE_ADVENTURER_25", name="Seasoned Adventurer" },
+    TITLE_RAIDER_BETA = { id="TITLE_RAIDER_BETA", name="Raider" },
+    TITLE_DUNGEON_BETA = { id="TITLE_DUNGEON_BETA", name="Dungeon Delver" },
+    TITLE_EXPLORER_BETA = { id="TITLE_EXPLORER_BETA", name="Explorer" },
+    TITLE_QUEST_BETA = { id="TITLE_QUEST_BETA", name="Storyteller" },
+    TITLE_PVP_BETA = { id="TITLE_PVP_BETA", name="Battleground Veteran" },
+    TITLE_MASTERY_BETA = { id="TITLE_MASTERY_BETA", name="Artisan" },
+    TITLE_SECRET_BETA = { id="TITLE_SECRET_BETA", name="Hidden Adventurer" },
+    TITLE_PLANESBREAKER = { id="TITLE_PLANESBREAKER", name="Planesbreaker" },
+    TITLE_GODSLAYER = { id="TITLE_GODSLAYER", name="Godslayer" },
+    TITLE_SWASHBUCKLER = { id="TITLE_SWASHBUCKLER", name="Swashbuckler Supreme" },
+    TITLE_REDEEMER = { id="TITLE_REDEEMER", name="Immortal Redeemer" },
+    TITLE_TICKTOCK = { id="TITLE_TICKTOCK", name="Tick-Tock Tormentor" },
+    TITLE_GRYPHON = { id="TITLE_GRYPHON", name="Gryphon Heart" },
+}
+BA.Rewards.badges = {
+    BADGE_FIRST_STEPS = { id="BADGE_FIRST_STEPS", name="First Steps" },
+    BADGE_RAIDER_BETA = { id="BADGE_RAIDER_BETA", name="Raider Beta" },
+    BADGE_DUNGEON_BETA = { id="BADGE_DUNGEON_BETA", name="Dungeon Beta" },
+    BADGE_EXPLORER_BETA = { id="BADGE_EXPLORER_BETA", name="Explorer Beta" },
+    BADGE_QUEST_BETA = { id="BADGE_QUEST_BETA", name="Questing Beta" },
+    BADGE_PVP_BETA = { id="BADGE_PVP_BETA", name="PvP Beta" },
+    BADGE_MASTERY_BETA = { id="BADGE_MASTERY_BETA", name="Mastery Beta" },
+    BADGE_SCORE_500 = { id="BADGE_SCORE_500", name="500 Adventure Score" },
+    BADGE_SCORE_1000 = { id="BADGE_SCORE_1000", name="1,000 Adventure Score" },
+    BADGE_SECRET_BETA = { id="BADGE_SECRET_BETA", name="Secret Beta" },
+    BADGE_PLANESBREAKER = { id="BADGE_PLANESBREAKER", name="Planesbreaker" },
+    BADGE_GODSLAYER = { id="BADGE_GODSLAYER", name="Godslayer" },
+    BADGE_SWASHBUCKLER = { id="BADGE_SWASHBUCKLER", name="Swashbuckler Supreme" },
+    BADGE_REDEEMER = { id="BADGE_REDEEMER", name="Immortal Redeemer" },
+    BADGE_TICKTOCK = { id="BADGE_TICKTOCK", name="Tick-Tock Tormentor" },
+    BADGE_GRYPHON = { id="BADGE_GRYPHON", name="Gryphon Heart" },
+}

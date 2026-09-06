@@ -1,7 +1,7 @@
 # AetherChat
 
 [![APIVersion](https://img.shields.io/badge/ESO%20API-101050%20101051-gold.svg)](https://www.esoui.com/)
-[![Version](https://img.shields.io/badge/Version-v1.2.4-blue.svg)](https://github.com/)
+[![Version](https://img.shields.io/badge/Version-v1.2.6-blue.svg)](https://github.com/)
 [![Author](https://img.shields.io/badge/Author-%40AlexQuiet%20(EU)-green.svg)](https://github.com/)
 [![License](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
 

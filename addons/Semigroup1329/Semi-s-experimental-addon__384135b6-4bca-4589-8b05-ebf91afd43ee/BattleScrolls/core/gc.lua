@@ -139,8 +139,7 @@ local COLLECT_FULL_DEADLINE_MS = 3000
 ---the weak sentinel to actually die (a complete mark+sweep over
 ---pre-existing objects). No cooldown sleep. For allocation-heavy loops that
 ---must not start the next burst until the previous one is reclaimed.
----@return Effect Effect that resolves when reclamation is confirmed (or the
----deadline passes)
+---@return Effect<boolean> True when the sentinel is reclaimed; false when the deadline expires
 function GC:CollectFullAsync()
     return LibEffect.Async(function()
         -- Zero remaining cycles BEFORE cancelling: the cancelled fiber's
@@ -161,7 +160,7 @@ function GC:CollectFullAsync()
         while not isGarbageCollected() do
             local frameStartMs = GetGameTimeMilliseconds()
             if frameStartMs - startMs >= COLLECT_FULL_DEADLINE_MS then
-                return
+                return false
             end
             repeat
                 collectgarbage("step", GC_STEP_SIZE)
@@ -171,6 +170,7 @@ function GC:CollectFullAsync()
                 LibEffect.Yield():Await()
             end
         end
+        return true
     end)
 end
 

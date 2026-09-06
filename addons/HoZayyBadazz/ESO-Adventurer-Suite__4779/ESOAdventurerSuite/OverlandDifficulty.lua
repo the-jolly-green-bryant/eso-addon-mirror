@@ -152,47 +152,81 @@ local EVENT_WORDS = {
     "mirrormoor", "world event", "incursion",
 }
 
+-- v0.29.341: POI metadata is effectively static for a player map, but the old
+-- context check re-read every POI name/type/coordinate every 1.5 seconds. Dense
+-- cities can expose hundreds of POIs, making Automatic Difficulty one of the
+-- few non-minimap systems whose cost scaled directly with POI density. Build a
+-- compact cache containing only difficulty-relevant POIs, then movement checks
+-- iterate that handful of candidates instead of rescanning the full zone.
+function ACD:InvalidatePOIContextCache029341()
+    self.poiContextCache029341 = nil
+end
+
+function ACD:BuildPOIContextCache029341(zoneIndex)
+    if type(GetNumPOIs) ~= "function" or type(GetPOIMapInfo) ~= "function" then return {} end
+    zoneIndex = tonumber(zoneIndex) or 0
+    if zoneIndex <= 0 then return {} end
+
+    local mapId = type(GetCurrentMapId) == "function" and (tonumber(safeCall(GetCurrentMapId)) or 0) or 0
+    local cache = self.poiContextCache029341
+    if cache and cache.zoneIndex == zoneIndex and cache.mapId == mapId and type(cache.candidates) == "table" then
+        return cache.candidates
+    end
+
+    local candidates = {}
+    local count = tonumber(safeCall(GetNumPOIs, zoneIndex)) or 0
+    for poiIndex = 1, count do
+        local poiName = tostring(safeCall(GetPOIInfo, zoneIndex, poiIndex) or "")
+        local poiType = safeCall(GetPOIType, zoneIndex, poiIndex)
+        local nameKey = norm(poiName)
+        local kind
+        if rawget(_G, "POI_TYPE_PUBLIC_DUNGEON") and poiType == POI_TYPE_PUBLIC_DUNGEON then
+            kind = "PUBLIC_DUNGEON"
+        elseif rawget(_G, "POI_TYPE_GROUP_BOSS") and poiType == POI_TYPE_GROUP_BOSS then
+            kind = "WORLD_BOSS"
+        elseif nameKey:find("dragon", 1, true) then
+            kind = "DRAGON"
+        else
+            for _, word in ipairs(EVENT_WORDS) do
+                if nameKey:find(word, 1, true) then kind = "WORLD_EVENT" break end
+            end
+        end
+
+        if kind then
+            local x, y = safeCall(GetPOIMapInfo, zoneIndex, poiIndex)
+            x, y = tonumber(x), tonumber(y)
+            if x and y and x > 0 and y > 0 then
+                candidates[#candidates + 1] = { x = x, y = y, kind = kind }
+            end
+        end
+    end
+
+    self.poiContextCache029341 = { zoneIndex = zoneIndex, mapId = mapId, candidates = candidates }
+    return candidates
+end
+
 function ACD:NearestPOIContext(zoneIndex)
-    if type(GetNumPOIs) ~= "function" or type(GetPOIMapInfo) ~= "function" or type(GetMapPlayerPosition) ~= "function" then return nil end
+    if type(GetMapPlayerPosition) ~= "function" then return nil end
     if type(ZO_WorldMap_IsWorldMapShowing) == "function" and ZO_WorldMap_IsWorldMapShowing() then return nil end
 
     local playerX, playerY = GetMapPlayerPosition("player")
     if not playerX or not playerY or (playerX == 0 and playerY == 0) then return nil end
     local radiusMeters = tonumber(EPC.saved.overlandDifficultyPoiRadius) or 85
-    -- Normalized map distance is converted using LibGPS if available; otherwise
-    -- a conservative map-space radius is used.
     local gps = rawget(_G, "LibGPS3") or rawget(_G, "LibGPS")
     local bestKind, bestMeters
-    local count = safeCall(GetNumPOIs, zoneIndex) or 0
+    local candidates = self:BuildPOIContextCache029341(zoneIndex)
 
-    for poiIndex = 1, count do
-        local x, y, _, icon, _, _, discovered = safeCall(GetPOIMapInfo, zoneIndex, poiIndex)
-        if x and y and x > 0 and y > 0 then
-            local dx, dy = x - playerX, y - playerY
-            local distMap = math.sqrt(dx * dx + dy * dy)
-            local meters
-            if gps and type(gps.GetLocalDistanceInMeters) == "function" then
-                meters = safeCall(gps.GetLocalDistanceInMeters, gps, playerX, playerY, x, y)
-            end
-            meters = tonumber(meters) or (distMap * 10000)
-            if meters <= radiusMeters and (not bestMeters or meters < bestMeters) then
-                local poiName = safeCall(GetPOIInfo, zoneIndex, poiIndex) or ""
-                local poiType = safeCall(GetPOIType, zoneIndex, poiIndex)
-                local nameKey = norm(poiName)
-                local kind
-                if rawget(_G, "POI_TYPE_PUBLIC_DUNGEON") and poiType == POI_TYPE_PUBLIC_DUNGEON then
-                    kind = "PUBLIC_DUNGEON"
-                elseif rawget(_G, "POI_TYPE_GROUP_BOSS") and poiType == POI_TYPE_GROUP_BOSS then
-                    kind = "WORLD_BOSS"
-                elseif nameKey:find("dragon", 1, true) then
-                    kind = "DRAGON"
-                else
-                    for _, word in ipairs(EVENT_WORDS) do
-                        if nameKey:find(word, 1, true) then kind = "WORLD_EVENT" break end
-                    end
-                end
-                if kind then bestKind, bestMeters = kind, meters end
-            end
+    for i = 1, #candidates do
+        local poi = candidates[i]
+        local dx, dy = poi.x - playerX, poi.y - playerY
+        local distMap = math.sqrt(dx * dx + dy * dy)
+        local meters
+        if gps and type(gps.GetLocalDistanceInMeters) == "function" then
+            meters = safeCall(gps.GetLocalDistanceInMeters, gps, playerX, playerY, poi.x, poi.y)
+        end
+        meters = tonumber(meters) or (distMap * 10000)
+        if meters <= radiusMeters and (not bestMeters or meters < bestMeters) then
+            bestKind, bestMeters = poi.kind, meters
         end
     end
     return bestKind
@@ -397,6 +431,7 @@ function ACD:Initialize()
     self:CreateMapLevelLabel()
     local prefix = "ESOAdventurerSuite_AutomaticDifficulty"
     EVENT_MANAGER:RegisterForEvent(prefix, EVENT_PLAYER_ACTIVATED, function()
+        self:InvalidatePOIContextCache029341()
         self:RefreshMapLevelLabel()
         self:RequestRefresh(1200)
         self:AnnounceZone()
@@ -404,6 +439,7 @@ function ACD:Initialize()
     if EVENT_ZONE_CHANGED then
         EVENT_MANAGER:RegisterForEvent(prefix .. "_Zone", EVENT_ZONE_CHANGED, function(_, unitTag)
             if unitTag and unitTag ~= "player" then return end
+            self:InvalidatePOIContextCache029341()
             self:RefreshMapLevelLabel()
             self:RequestRefresh(1500)
             zo_callLater(function() self:AnnounceZone() end, 1700)
@@ -431,6 +467,19 @@ function ACD:Initialize()
     if EVENT_OVERLAND_DIFFICULTY_CHANGED then
         EVENT_MANAGER:RegisterForEvent(prefix .. "_Difficulty", EVENT_OVERLAND_DIFFICULTY_CHANGED, function()
             self:RequestRefresh(11000)
+        end)
+    end
+    if EVENT_POI_UPDATED then
+        EVENT_MANAGER:RegisterForEvent(prefix .. "_POI", EVENT_POI_UPDATED, function()
+            self:InvalidatePOIContextCache029341()
+            -- Debounce through RequestRefresh; the next context pass sees the
+            -- rebuilt compact candidate list after ESO settles the POI event.
+            self:RequestRefresh(350)
+        end)
+    end
+    if EVENT_POIS_INITIALIZED then
+        EVENT_MANAGER:RegisterForEvent(prefix .. "_POIInit", EVENT_POIS_INITIALIZED, function()
+            self:InvalidatePOIContextCache029341()
         end)
     end
     EVENT_MANAGER:RegisterForUpdate(prefix .. "_Context", 1500, function()

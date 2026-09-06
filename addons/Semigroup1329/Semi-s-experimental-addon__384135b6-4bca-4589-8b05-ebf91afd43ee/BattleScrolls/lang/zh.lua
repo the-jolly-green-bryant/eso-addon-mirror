@@ -68,8 +68,8 @@ local strings = {
     [BATTLESCROLLS_TOOLTIP_DELAY_BEFORE] = "施法前延迟",
     [BATTLESCROLLS_FORMAT_SECONDS] = "<<1>>秒",
     [BATTLESCROLLS_FORMAT_MILLISECONDS] = "<<1>>毫秒",
-    [BATTLESCROLLS_TOOLTIP_INTER_CAST_DESC] = "施法间的平均延迟时间。从技能GCD或施法时间结束到下一个动作开始计算。也称为CMX中的Weaving Average。",
-    [BATTLESCROLLS_TOOLTIP_TIME_LOST_DESC] = "战斗中施法间的总空闲时间。也称为CMX中的Weaving Total。",
+    [BATTLESCROLLS_TOOLTIP_INTER_CAST_DESC] = "两次施放之间的平均间隔，从技能的全局冷却或施法时间结束算到你的下一个动作。Combat Metrics 中称为 Weaving Average。",
+    [BATTLESCROLLS_TOOLTIP_TIME_LOST_DESC] = "整场战斗中所有施放间隔的总和。Combat Metrics 中称为 Weaving Total。",
     [BATTLESCROLLS_TOOLTIP_MISSED_LA_DESC] = "连续释放两个技能，中间没有穿插轻攻击。",
     [BATTLESCROLLS_TOOLTIP_DOUBLE_LA_DESC] = "连续两次轻攻击，中间没有穿插技能。",
 
@@ -239,7 +239,6 @@ local strings = {
     -- Proc Tracking
     [BATTLESCROLLS_HEADER_PROC_TRACKING] = "触发追踪",
     [BATTLESCROLLS_STAT_TOTAL_PROCS] = "<<1>>次",
-    [BATTLESCROLLS_STAT_MEDIAN_INTERVAL] = "中位数",
 
     -------------------------
     -- Damage Stats Details
@@ -251,6 +250,8 @@ local strings = {
     [BATTLESCROLLS_STAT_DPS] = "DPS",
 
     [BATTLESCROLLS_HEADER_BY_ABILITY] = "按技能",
+
+    [BATTLESCROLLS_HEADER_CASTS] = "施放",
     [BATTLESCROLLS_HEADER_BY_DAMAGE_TYPE] = "按伤害类型",
     [BATTLESCROLLS_HEADER_DIRECT_VS_DOT] = "直接 vs DoT",
     [BATTLESCROLLS_HEADER_DAMAGE_DELIVERY] = "伤害方式",
@@ -969,6 +970,24 @@ local shareStrings = {
     [BATTLESCROLLS_MEMDIAG_GAUGE] = "插件内存（主机仪表）",
     [BATTLESCROLLS_MEMDIAG_PROBE_STRINGS] = "测量字符串大小分级",
     [BATTLESCROLLS_MEMDIAG_PROBE_HEADER] = "长度：仪表 / 堆 / 模型（每字符串字节）",
+    [BATTLESCROLLS_MEMDIAG_TEST_CANCELLED] = "已取消",
+    [BATTLESCROLLS_MEMDIAG_TEST_COMBAT] = "战斗",
+    [BATTLESCROLLS_MEMDIAG_TEST_DONE] = "完成",
+    [BATTLESCROLLS_MEMDIAG_TEST_ERROR] = "错误",
+    [BATTLESCROLLS_MEMDIAG_TEST_GC_TIMEOUT] = "GC超时",
+    [BATTLESCROLLS_MEMDIAG_TEST_HEADER] = "MiB G=内存表 H=Lua; 前/占用/释放",
+    [BATTLESCROLLS_MEMDIAG_TEST_HELD] = "请先在设置中释放手动测试数据。",
+    [BATTLESCROLLS_MEMDIAG_TEST_IDLE] = "%s G%s>%s H%s>%s",
+    [BATTLESCROLLS_MEMDIAG_TEST_IDLE_END] = "空闲B",
+    [BATTLESCROLLS_MEMDIAG_TEST_IDLE_START] = "空闲A",
+    [BATTLESCROLLS_MEMDIAG_TEST_LIMIT] = "75 MiB上限",
+    [BATTLESCROLLS_MEMDIAG_TEST_NOT_RUNNING] = "没有正在运行的内存测试。",
+    [BATTLESCROLLS_MEMDIAG_TEST_NO_REPORT] = "暂无内存测试报告。",
+    [BATTLESCROLLS_MEMDIAG_TEST_ROW] = "%d G%s/%s/%s H%s/%s/%s",
+    [BATTLESCROLLS_MEMDIAG_TEST_RUNNING] = "运行中",
+    [BATTLESCROLLS_MEMDIAG_TEST_STARTED] = "测试开始。请关闭菜单并保持静止。",
+    [BATTLESCROLLS_MEMDIAG_TEST_SUMMARY] = "%s %d/%d; 最大G %s; %d秒",
+    [BATTLESCROLLS_MEMDIAG_TEST_USAGE] = "/bsmemtest [cancel|report]",
     [BATTLESCROLLS_SHARE_CHOICE_HEADER] = "选择发送内容",
     [BATTLESCROLLS_SHARE_CHOICE_FULL] = "全部战斗（<<1>>）",
     [BATTLESCROLLS_SHARE_CHOICE_BOSSES] = "仅Boss（<<1>>）",
@@ -1018,7 +1037,11 @@ local featureStrings = {
     [BATTLESCROLLS_HEADER_ULTIMATE] = "终极技能",
     [BATTLESCROLLS_STAT_ULT_AT_ENTRY] = "进入战斗时的终极值",
     [BATTLESCROLLS_STAT_ULT_GENERATED] = "获得的终极值",
-    [BATTLESCROLLS_STAT_ULT_DRAINED] = "消耗与流失的终极值",
+    [BATTLESCROLLS_STAT_ULT_SPENT_DRAINED] = "消耗与流失的终极值",
+    [BATTLESCROLLS_STAT_ULT_SPENT] = "消耗的终极值",
+    [BATTLESCROLLS_STAT_ULT_LOST] = "施放时浪费",
+    [BATTLESCROLLS_STAT_ULT_LOST_TT] = "施放终极技能会清空整条终极值，因此超出其消耗的部分全部损失。",
+    [BATTLESCROLLS_STAT_ULT_DRAINED] = "流失的终极值",
     [BATTLESCROLLS_HEADER_ULT_SOURCES] = "终极值来源",
     [BATTLESCROLLS_ULT_BASE_GENERATION] = "基础获取",
     [BATTLESCROLLS_ULT_HEROISM_LINE] = "包含<<C:1>>：覆盖率<<2>>%，约<<3>>",
@@ -1026,20 +1049,19 @@ local featureStrings = {
 
     [BATTLESCROLLS_HEADER_CRUX] = "魔核",
     [BATTLESCROLLS_STAT_CRUX_GENERATORS] = "生成技能施放次数",
-    [BATTLESCROLLS_STAT_CRUX_AT_FULL] = "魔核已满时的生成",
+    [BATTLESCROLLS_STAT_CRUX_AT_FULL] = "魔核已满时施放",
     [BATTLESCROLLS_STAT_CRUX_SPENDERS] = "消耗技能施放次数",
-    [BATTLESCROLLS_STAT_CRUX_UNDER] = "不足3层魔核时的消耗",
+    [BATTLESCROLLS_STAT_CRUX_UNDER] = "不足3层魔核时施放",
     [BATTLESCROLLS_CRUX_AT_N] = "<<1>>层魔核时：<<2>>",
-    [BATTLESCROLLS_HEADER_CRUX_BY_ABILITY] = "各技能的魔核运用",
+    [BATTLESCROLLS_HEADER_CRUX_BY_ABILITY] = "各技能的时机失误",
 
     [BATTLESCROLLS_HEADER_ZEN] = "持续伤害叠加（祖恩）",
     [BATTLESCROLLS_ZEN_AVG_DOTS] = "平均DoT数",
-    [BATTLESCROLLS_ZEN_UPTIME] = "祖恩减益覆盖率",
+    [BATTLESCROLLS_ZEN_UPTIME] = "你的祖恩覆盖率",
     [BATTLESCROLLS_ZEN_PEAK_TIME] = "<<1>>的时间",
     [BATTLESCROLLS_ZEN_DOTS_LABEL] = "<<1>>个DoT",
     [BATTLESCROLLS_ZEN_SHARE_LINE] = "平均<<1>> — 5个DoT时<<2>>",
     [BATTLESCROLLS_ZEN_SHORT] = "祖恩",
-    [BATTLESCROLLS_ZEN_BOSS_SUMMARY] = "平均<<1>>DoT — 祖恩<<2>>% — <<3>> <<4>>%",
 
     [BATTLESCROLLS_HEADER_SUPPORT] = "辅助",
     [BATTLESCROLLS_STAT_RESURRECTIONS] = "复活次数",
@@ -1049,13 +1071,31 @@ for id, str in pairs(featureStrings) do
 end
 
 local cruxPassiveStrings = {
-    [BATTLESCROLLS_STAT_CRUX_PASSIVE] = "非施放消耗",
-    [BATTLESCROLLS_STAT_CRUX_PASSIVE_TT] = "在没有临近消耗技能施放时失去的魔核：自然过期（30秒）或死亡。",
-    [BATTLESCROLLS_STAT_CRUX_CONDITIONAL_TT] = "由该来源触发生成的魔核（按时间与层数增长匹配）。",
+    [BATTLESCROLLS_STAT_CRUX_PASSIVE] = "非施放损失",
+    [BATTLESCROLLS_STAT_CRUX_PASSIVE_TT] = "在附近既没有消耗技能施放、也没有死亡的情况下自行消失的魔核。魔核会在30秒后过期。",
+    [BATTLESCROLLS_STAT_CRUX_DEATH] = "死亡损失",
+    [BATTLESCROLLS_STAT_CRUX_PROC_WASTED] = "魔核已满时的被动获取",
+    [BATTLESCROLLS_STAT_CRUX_PROC_WASTED_TT] = "在你已经有3层魔核时触发的被动获取，因此毫无收益。「<<1>>」及其变体和<<2>>只在你没有魔核时才给予魔核，所以从不计入此处。",
+    [BATTLESCROLLS_STAT_CRUX_CONDITIONAL_TT] = "该来源在没有施放的情况下被动生成的魔核。",
     [BATTLESCROLLS_STAT_CRUX_OTHER] = "其他魔核增长",
-    [BATTLESCROLLS_STAT_CRUX_OTHER_TT] = "没有可追踪来源的魔核增长——例如「<<1>>」的周期性触发。",
+    [BATTLESCROLLS_STAT_CRUX_OTHER_TT] = "获得时没有任何已追踪来源触发的魔核。",
     [BATTLESCROLLS_HEADER_CRUX_GAINED] = "按技能的魔核获取",
 }
 for id, str in pairs(cruxPassiveStrings) do
+    SafeAddString(id, str, 1)
+end
+
+local activityOverviewStrings = {
+    [BATTLESCROLLS_STAT_DOWNTIME] = "空档时间",
+    [BATTLESCROLLS_TOOLTIP_DOWNTIME_DESC] = "两次施放之间3秒及以上的空档，例如处理机制、复活或死亡。不计入施法延迟。",
+    [BATTLESCROLLS_STAT_PER_MINUTE] = "<<1>>/分",
+    [BATTLESCROLLS_DETAIL_MEDIAN] = "中位数 <<1>>",
+    [BATTLESCROLLS_DETAIL_DELAY] = "延迟 <<1>>",
+    [BATTLESCROLLS_DETAIL_AT_FULL] = "<<1>> 已满时",
+    [BATTLESCROLLS_DETAIL_LOST] = "损失 <<1>>",
+    [BATTLESCROLLS_DETAIL_AVG_DOTS] = "平均<<1>>DoT",
+    [BATTLESCROLLS_DETAIL_AT_DOTS] = "<<2>>时<<1>>",
+}
+for id, str in pairs(activityOverviewStrings) do
     SafeAddString(id, str, 1)
 end

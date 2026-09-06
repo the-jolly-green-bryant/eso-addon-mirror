@@ -22,6 +22,7 @@ local function build()
     win:SetClampedToScreen(true)
     win:SetHidden(true)
     win:SetDrawTier(DT_HIGH)
+    BGMeter.zenimax.scene.register_top_level(win, function() E.hide() end)
 
     local bg = P.rect(win, { K.COLOR.bg[1], K.COLOR.bg[2], K.COLOR.bg[3], 0.98 })
     bg:SetAnchorFill(win)

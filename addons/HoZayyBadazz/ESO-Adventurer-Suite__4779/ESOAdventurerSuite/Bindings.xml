@@ -16,6 +16,27 @@
             <Action name="ESO_ADVENTURER_SUITE_MAP_TELEPORTER_TOGGLE">
                 <Down>ESOAdventurerSuite_ToggleMapTeleporterOverlay()</Down>
             </Action>
+            <Action name="ESO_ADVENTURER_SUITE_POTION_MAKER">
+                <Down>return ESOAdventurerSuite_OpenPotionMakerHotkey()</Down>
+            </Action>
+            <Action name="ESO_ADVENTURER_SUITE_TURBO_LEARNER">
+                <Down>return ESOAdventurerSuite_OpenTurboLearnerHotkey()</Down>
+            </Action>
+            <Action name="ESO_ADVENTURER_SUITE_LOADOUT_SAVER">
+                <Down>return ESOAdventurerSuite_ToggleLoadoutSaverHotkey()</Down>
+            </Action>
+            <Action name="ESO_ADVENTURER_SUITE_PREBUFF_ACCELERATION">
+                <Down>return ESOAdventurerSuite_LoadoutPrebuffAcceleration()</Down>
+            </Action>
+            <Action name="ESO_ADVENTURER_SUITE_PREBUFF_DESTRO_ULT">
+                <Down>return ESOAdventurerSuite_LoadoutPrebuffDestroUlt()</Down>
+            </Action>
+            <Action name="ESO_ADVENTURER_SUITE_PREBUFF_MANEUVER">
+                <Down>return ESOAdventurerSuite_LoadoutPrebuffManeuver()</Down>
+            </Action>
+            <Action name="ESO_ADVENTURER_SUITE_PREBUFF_SIEGE_SHIELD">
+                <Down>return ESOAdventurerSuite_LoadoutPrebuffSiegeShield()</Down>
+            </Action>
 </Category>
         <Category name="SI_BINDING_NAME_ESO_ADVENTURER_SUITE_ANTIQUITIES_CATEGORY">
             <Action name="ESO_ADVENTURER_SUITE_ANTIQUITY_LEAD_FINDER">
@@ -52,12 +73,16 @@
     </Layer>
 
     <!--
-      Saved Loadouts also owns ESO UI mode. Keep listening for the user's
-      normal Suite toggle key while this detached workspace is open.
+      Loadout Saver owns ESO UI mode. Keep its dedicated hotkey active so the
+      same assigned key closes the workspace, and preserve the Codex key as a
+      direct switch back to the main Suite.
     -->
     <Layer name="ESOAdventurerSuiteLoadoutLayer" allowFallthrough="true">
         <Category name="SI_KEYBINDINGS_CATEGORY_GENERAL">
-            <Action name="ESO_PROGRESSION_COACH_TOGGLE_LOADOUTS" hideAction="true" inheritsBindFrom="ESO_PROGRESSION_COACH_TOGGLE">
+            <Action name="ESO_ADVENTURER_SUITE_LOADOUT_SAVER_CLOSE" hideAction="true" inheritsBindFrom="ESO_ADVENTURER_SUITE_LOADOUT_SAVER">
+                <Down>return ESOAdventurerSuite_CloseLoadoutSaverHotkey()</Down>
+            </Action>
+            <Action name="ESO_PROGRESSION_COACH_FROM_LOADOUT_SAVER" hideAction="true" inheritsBindFrom="ESO_PROGRESSION_COACH_TOGGLE">
                 <Down>ESOProgressionCoach_Toggle()</Down>
             </Action>
         </Category>
@@ -90,6 +115,57 @@
         </Category>
     </Layer>
 
+    <!-- Keep each crafting-tool hotkey active while its top-menu page owns UI mode. -->
+    <Layer name="ESOAdventurerSuitePotionMakerLayer" allowFallthrough="true">
+        <Category name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+            <Action name="ESO_ADVENTURER_SUITE_POTION_MAKER_CLOSE" hideAction="true" inheritsBindFrom="ESO_ADVENTURER_SUITE_POTION_MAKER">
+                <Down>return ESOAdventurerSuite_ClosePotionMakerHotkey()</Down>
+            </Action>
+            <Action name="ESO_ADVENTURER_SUITE_TURBO_LEARNER_FROM_POTION" hideAction="true" inheritsBindFrom="ESO_ADVENTURER_SUITE_TURBO_LEARNER">
+                <Down>return ESOAdventurerSuite_OpenTurboLearnerHotkey()</Down>
+            </Action>
+        </Category>
+    </Layer>
 
+    <Layer name="ESOAdventurerSuiteTurboLearnerLayer" allowFallthrough="true">
+        <Category name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+            <Action name="ESO_ADVENTURER_SUITE_TURBO_LEARNER_CLOSE" hideAction="true" inheritsBindFrom="ESO_ADVENTURER_SUITE_TURBO_LEARNER">
+                <Down>return ESOAdventurerSuite_CloseTurboLearnerHotkey()</Down>
+            </Action>
+            <Action name="ESO_ADVENTURER_SUITE_POTION_MAKER_FROM_TURBO" hideAction="true" inheritsBindFrom="ESO_ADVENTURER_SUITE_POTION_MAKER">
+                <Down>return ESOAdventurerSuite_OpenPotionMakerHotkey()</Down>
+            </Action>
+        </Category>
+    </Layer>
+
+
+
+    <!--
+      v0.29.205 Hybrid Desktop Navigation. This hidden layer is available while
+      a desktop keyboard-style UI is open. Its Lua handlers consume actions only
+      when controller is the most recent input; otherwise ESO falls through.
+    -->
+    <Layer name="ESOAdventurerSuiteHybridDesktopNavigation" allowFallthrough="true">
+        <Category name="SI_KEYBINDINGS_CATEGORY_USER_INTERFACE_GAMEPAD">
+            <Action name="ESO_ADVENTURER_SUITE_HYBRID_NAV_UP" hideAction="true" rebindable="false" inheritsBindFrom="UI_SHORTCUT_INPUT_UP">
+                <Down>return ESOAdventurerSuite_HybridNavUp029205()</Down>
+            </Action>
+            <Action name="ESO_ADVENTURER_SUITE_HYBRID_NAV_RIGHT" hideAction="true" rebindable="false" inheritsBindFrom="UI_SHORTCUT_INPUT_RIGHT">
+                <Down>return ESOAdventurerSuite_HybridNavRight029205()</Down>
+            </Action>
+            <Action name="ESO_ADVENTURER_SUITE_HYBRID_NAV_DOWN" hideAction="true" rebindable="false" inheritsBindFrom="UI_SHORTCUT_INPUT_DOWN">
+                <Down>return ESOAdventurerSuite_HybridNavDown029205()</Down>
+            </Action>
+            <Action name="ESO_ADVENTURER_SUITE_HYBRID_NAV_LEFT" hideAction="true" rebindable="false" inheritsBindFrom="UI_SHORTCUT_INPUT_LEFT">
+                <Down>return ESOAdventurerSuite_HybridNavLeft029205()</Down>
+            </Action>
+            <Action name="ESO_ADVENTURER_SUITE_HYBRID_NAV_PRIMARY" hideAction="true" rebindable="false" inheritsBindFrom="UI_SHORTCUT_PRIMARY">
+                <Down>return ESOAdventurerSuite_HybridNavPrimary029205()</Down>
+            </Action>
+            <Action name="ESO_ADVENTURER_SUITE_HYBRID_NAV_BACK" hideAction="true" rebindable="false" inheritsBindFrom="UI_SHORTCUT_NEGATIVE">
+                <Down>return ESOAdventurerSuite_HybridNavBack029205()</Down>
+            </Action>
+        </Category>
+    </Layer>
 
 </Bindings>

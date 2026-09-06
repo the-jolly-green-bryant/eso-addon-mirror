@@ -15,9 +15,6 @@ Module.STRINGS = {
 	-- Extracted
 	["8290981-0-122913"] = { default = "Garvin the Tracker^M", de = "Garvin der Fährtenleser^M", es = "Garvin el Rastreador^M", fr = "Garvin le pisteur^M", jp = "追跡者ガーヴィン^M", ru = "Следопыт Гарвин^M", zh = "追踪者加文" },
 	["8290981-0-122914"] = { default = "Noriwen^F", de = "Noriwen^F", es = "Noriwen^F", fr = "Noriwën^F", jp = "ノリウェン^F", ru = "Норивен^F", zh = "诺丽纹" },
-
-	-- Custom
-	elapsed = { default = "Elapsed" },
 }
 
 local COLOR_HEAL_CHECK = 0xCCFF33FF
@@ -88,7 +85,7 @@ function Module:Initialize( )
 
 	self.AOE_ALERTS = {
 		-- { alert_duration, exclude_tanks }
-		[227627] = { 1100, false }, -- Scorching Volley
+		[227627] = { 650, false }, -- Scorching Volley
 		[229531] = { 650, false }, -- Ghostly Essence
 	}
 
@@ -170,7 +167,7 @@ function Module:Initialize( )
 					LCA.PackRGBA(LCA.HSLToRGB(zo_clamp(remaining / threshold, 0, 1) / 6, 1, 0.5, 1))
 			)
 			if (Vars.venomEruption.prev > 0) then
-				elapsed = string.format("%s: %s", self:GetString("elapsed"), LCA.FormatTime(currentTime - Vars.venomEruption.prev, LCA.TIME_FORMAT_SHORT))
+				elapsed = zo_strformat(SI_LCA_TIME_SINCE_PREVIOUS, LCA.FormatTime(currentTime - Vars.venomEruption.prev, LCA.TIME_FORMAT_SHORT))
 			end
 		end
 		CA2.StatusModifyCell(1, 0,

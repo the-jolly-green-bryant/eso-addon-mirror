@@ -8,6 +8,7 @@ local FALLBACK = {
     max_history = 50, auto_open_mode = "exit", sounds = true, animate = true,
     show_haul = true, show_veterancy = true, show_standing = true,
     show_awards = true, show_timeline = true, show_launcher = true,
+    cursor_on_open = false,
     opacity = 0.97,
     sort_key = "damage", sort_desc = true,
 }

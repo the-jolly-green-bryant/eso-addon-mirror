@@ -21,7 +21,7 @@ function GB.CreateSettingsPanel()
         name = "Gather Buddy",
         displayName = "|c66CCFFGather Buddy|r",
         author = "@everdeen",
-        version = GB.ADDON_VERSION or "1.2",
+        version = GB.ADDON_VERSION or "1.3",
         registerForRefresh = true,
         registerForDefaults = true,
     }
@@ -70,6 +70,10 @@ function GB.CreateSettingsPanel()
 
                 if GB.ApplyHistoryBackgroundTransparency then
                     GB.ApplyHistoryBackgroundTransparency()
+                end
+
+                if GB.ApplyRareAlertBackgroundTransparency then
+                    GB.ApplyRareAlertBackgroundTransparency()
                 end
             end,
 
@@ -186,6 +190,97 @@ function GB.CreateSettingsPanel()
         },
 
         ----------------------------------------------------
+        -- RARE MATERIAL ALERT
+        ----------------------------------------------------
+
+        {
+            type = "header",
+            name = "Rare Material Alert",
+        },
+
+        ----------------------------------------------------
+        -- ENABLE RARE MATERIAL ALERT
+        ----------------------------------------------------
+
+        {
+            type = "checkbox",
+            name = "Enable Rare Material Alert",
+            tooltip =
+                "Show a temporary on-screen alert when "
+                .. "Gather Buddy tracks a Legendary / Gold "
+                .. "quality material.",
+
+            getFunc = function()
+                return
+                    GB.savedVariables.rareAlertEnabled
+                    == true
+            end,
+
+            setFunc = function(value)
+                GB.savedVariables.rareAlertEnabled =
+                    value == true
+
+                if value ~= true
+                    and GB.ClearRareAlertFeed then
+
+                    GB.ClearRareAlertFeed()
+                end
+            end,
+
+            default = true,
+            width = "full",
+        },
+
+        ----------------------------------------------------
+        -- ALERT DURATION
+        ----------------------------------------------------
+
+        {
+            type = "slider",
+            name = "Alert Duration",
+            tooltip =
+                "Choose how many seconds the Rare Material "
+                .. "Alert remains visible before fading out.",
+            min = 2,
+            max = 10,
+            step = 1,
+
+            getFunc = function()
+                return
+                    GB.savedVariables.rareAlertDuration
+                    or 4
+            end,
+
+            setFunc = function(value)
+                GB.savedVariables.rareAlertDuration =
+                    math.floor(value + 0.5)
+            end,
+
+            default = 4,
+            width = "full",
+        },
+
+        ----------------------------------------------------
+        -- PREVIEW / POSITION ALERT
+        ----------------------------------------------------
+
+        {
+            type = "button",
+            name = "Preview / Position Alert",
+            tooltip =
+                "Show a preview of the Rare Material Alert "
+                .. "for 10 seconds so it can be positioned.",
+
+            func = function()
+                if GB.PreviewRareAlert then
+                    GB.PreviewRareAlert()
+                end
+            end,
+
+            width = "full",
+        },
+
+        ----------------------------------------------------
         -- WINDOW
         ----------------------------------------------------
 
@@ -219,6 +314,29 @@ function GB.CreateSettingsPanel()
         },
 
         ----------------------------------------------------
+        -- RESET UI POSITION / SIZE
+        ----------------------------------------------------
+
+        {
+            type = "button",
+            name = "Reset UI Position / Size",
+            tooltip =
+                "Reset the Main, Session Stats, Session History, "
+                .. "and Rare Material Alert window positions. "
+                .. "The Main Window size is also restored to "
+                .. "300 x 300. Session data, History, and other "
+                .. "settings are not affected.",
+
+            func = function()
+                if GB.ResetWindowPositionsAndSize then
+                    GB.ResetWindowPositionsAndSize()
+                end
+            end,
+
+            width = "full",
+        },
+
+        ----------------------------------------------------
         -- FOOTER
         ----------------------------------------------------
 
@@ -226,7 +344,7 @@ function GB.CreateSettingsPanel()
             type = "description",
             text =
                 "|c777777Gather Buddy v"
-                .. (GB.ADDON_VERSION or "1.2")
+                .. (GB.ADDON_VERSION or "1.3")
                 .. "\n© 2026 @everdeen|r",
             width = "full",
         },

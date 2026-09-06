@@ -1,14 +1,18 @@
 ## Title: |cB8860BESO |cFFD700Adventurer Suite|r
 ## Description: |cFFD700All-in-one quests, travel, minimap, combat, Dual Action Bar, builds, antiquities, and HUD tools.|r
 ## Author: |c00FFFFHoZayyBadazz|r
-## Version: 0.29.197
-## AddOnVersion: 3097
+## Version: 0.29.346
+## AddOnVersion: 3346
 ## APIVersion: 101050 101051
 ## SavedVariables: ESOProgressionCoachSavedVars EASLoreLibrarySavedVariables
-## DependsOn: LibAddonMenu-2.0>=43 LibMapData>=101 LibGPS>=73 LibMapPins-1.0>=47 LibMapPing LibDebugLogger LibChatMessage
-## OptionalDependsOn: LibTreasure>=24 CustomCompassPins>=138
+## DependsOn: LibTreasure>=24 LibMapPins-1.0>=10047 LibMapPing>=1240 LibMapData>=121 LibMainMenu-2.0>=450
+## DependsOn: LibGPS>=73 LibDebugLogger>=303 LibChatMessage>=118 LibAddonMenu-2.0>=43 CustomCompassPins>=138
 
 Core.lua
+PlayerRequestOverlay.lua
+NativeNotificationOverlay.lua
+CompassFocusedInfoOverlay.lua
+HybridDesktopNavigation.lua
 Compatibility.lua
 BugCatcher.lua
 
@@ -49,6 +53,7 @@ SkillMeta.lua
 GearOptimizer.lua
 CompanionOptimizer.lua
 GearLoadoutOverlay.lua
+CharacterGearScreen.lua
 LoadoutManager.lua
 RecipeStyleLearner.lua
 AlchemyPotionMaker.lua
@@ -56,6 +61,8 @@ WayshrineAutoMessage.lua
 Advisor.lua
 CombatPresentation.lua
 Combat.lua
+BossMechanicsData.lua
+BossMechanicsAssistant.lua
 GameModeReport.lua
 RotationAssistant.lua
 Maintenance.lua
@@ -98,6 +105,8 @@ Journal.lua
 ModernAppUI.lua
 MiniMap.lua
 UtilitySuite.lua
+InventoryGrid.lua
+CraftingInventoryGrid.lua
 UI.lua
 Settings.lua
 Bindings.xml

@@ -3,7 +3,7 @@ ESO Adventurer Suite uses AI-assisted code generation and review. HoZayyBadazz i
 
 [B]ESO ADVENTURER SUITE[/B]
 Author: HoZayyBadazz
-Version: 0.29.197
+Version: 0.29.346
 Status: Public Beta
 
 ESO Adventurer Suite is an all-in-one Elder Scrolls Online dashboard and utility addon built around the Tamriel Codex. It combines questing, travel, exploration, combat guidance and statistics, action-bar/HUD customization, minimap tools, build optimization, companion utilities, activity tracking, treasure hunting, antiquities assistance, notes, checkpoints, Golden Pursuits integration, and configurable gameplay overlays in one Suite.
@@ -12,26 +12,34 @@ ESO Adventurer Suite is an all-in-one Elder Scrolls Online dashboard and utility
 Install and enable these separately through Minion/ESOUI:
 
 * LibAddonMenu-2.0 >= 43
-* LibMapData >= 101
+* LibMapData >= 121
 * LibGPS >= 73
-* LibMapPins-1.0 >= 47
-* LibMapPing
-* LibDebugLogger
-* LibChatMessage
-* LibTreasure >= 24 
+* LibMainMenu-2.0 >= 450
+* LibMapPins-1.0 >= 10047
+* LibMapPing >= 1240
+* LibDebugLogger >= 303
+* LibChatMessage >= 118
+* LibTreasure >= 24
 * CustomCompassPins >= 138
 
-
-[B]NEW / HIGHLIGHTED IN 0.29.197[/B]
-* New Keep desktop UI while using controller option keeps the normal PC/keyboard-style in-game UI while ESO Gamepad Mode remains On/Automatic for controller input
-* Controller-aware Suite overlays still show the actual controller bindings/glyphs while desktop UI lock is active
-* Smart Combat Advisor now prefers action-bar highlighting during normal combat instead of the large recommendation card
-* Existing Full/Compact display selections migrate once to Highlight Action Bar; Full Overlay and Compact remain optional if selected again
-* Weapon-bar SWAP guidance is independently movable in HUD Layout Mode, saves its position, and resets with RESET LAYOUT
-* Dual Action Bar HUD shows both weapon bars with Skill Style art, timers/stacks, binding glyphs, Ultimate charge, and Smart Advisor highlighting
-* Active bar uses a clean ESO weapons icon with a soft gold glow - no number, text arrow, or keybind letter
-* LibMapPing, LibDebugLogger, and LibChatMessage are declared required with the LibGPS support stack
-* Map Teleporter remains mouse/keyboard operated
+[B]NEW / HIGHLIGHTED IN 0.29.346[/B]
+* Time / Clock overlay responsiveness restored with a lightweight 1-second refresh and immediate wake-up on ESO UI / scene transitions
+* Responsive-overlay rebalance keeps visible Suite overlays feeling immediate while expensive hidden/background systems remain throttled for FPS safety
+* Full FPS audit removed dead runtime paths, duplicate update work, unnecessary polling, and expensive movement-time refresh chains
+* Player stamina and magicka changes now update only the affected Unit Frame bars instead of waking the full Player Unit Frame refresh chain
+* Group / Raid frame visual stabilization reduces background flicker while keeping lightweight direct health/resource updates
+* Mini Map player marker motion was reworked to remove camera-compensation shake while preserving smooth camera movement
+* Dense-POI performance was improved with relevant-POI caching and reduced movement-time scans
+* Active Quest and Golden Pursuits overlays support adaptive multi-objective sizing so all objectives remain readable without permanently oversized cards
+* Quest overlays support true right-edge anchoring so auto-sizing expands inward instead of snapping away from the user's saved position
+* Automatic Difficulty overlay stays above adaptive quest overlays during normal gameplay and HUD Layout Mode
+* ESO native Request / Invite Prompt can be moved and resized through Suite HUD Layout Mode while keeping ESO's native interaction behavior
+* ESO native alert notifications can be repositioned and use centered wrapped text
+* ESO Compass Focused Info text above the compass can be moved and resized without moving the compass itself
+* Dual Weapon Bar recommendation highlighting is steady instead of flashing
+* Guild Homes in the Teleporter lists the player's guilds and provides fast travel to the guild leader's primary residence when available
+* Crafting-station stability rollback keeps ESO's native crafting inventory panels in control to avoid overlapping station icons and filter hand-off issues
+* Mini Map automatic icon population remains enabled so POI / service / provider icons populate without opening the big World Map first
 
 [B]MAIN FEATURES[/B]
 * Smart Combat Advisor with moment-to-moment best-next-button scoring for Magicka/Stamina/Hybrid DPS, Healer, and Tank; both-bar recommendations; Suite ability highlighting; swap prompts; and adaptive BLOCK NOW warnings
@@ -42,20 +50,22 @@ Install and enable these separately through Minion/ESOUI:
 * Saved Builds workspace for gear, skill bars/allocation profile, Champion profile/slots, and attribute profile
 * MAX POWER build/respec optimizer with content-aware skills, morphs, passives, Champion Points, and attributes
 * Tamriel Codex interface with notes and checkpoints
-* Quest Finder and active quest tracking
+* Quest Finder and adaptive active quest tracking with multi-objective display
 * Suite-native Group Finder, Zone Guide, Dungeon Finder, Battlegrounds, Tales of Tribute, and Home Tours
 * Dynamic quest and wayshrine routing
 * Optional customizable Wayshrine Auto Message with clickable guild-recruitment link placeholder
-* Merchant, Guild Store, Stablemaster, Pledge Master, and guild-leader-home travel tools
-* Mini Map and native ESO map integration
-* Treasure Map, Crafting Survey, and Tales of Tribute clue locator using optional LibTreasure data
+* Merchant, Guild Store, Stablemaster, Pledge Master, Guild Homes, and guild-leader-home travel tools
+* Mini Map and native ESO map integration with automatic icon population and performance-focused movement handling
+* Treasure Map, Crafting Survey, and Tales of Tribute clue locator using LibTreasure data
 * Antiquity lead/source assistance, known dig-spawn support, and excavation guidance
 * Companion, group, raid, combat, ability, XP, Champion Point, and utility HUD tools
 * Live Combat Stats (PEN / PWR / SR / PR / CC / CD) linked to the shared fight recorder
 * Detailed Game Combat fight reports with DPS/HPS, abilities, resources, effect uptime, incoming damage sources, and history
 * Gear, set, skill, Champion Point, attribute, and companion optimization tools
 * Dungeon/activity history and Golden Pursuits integration
-* Configurable difficulty, reticle, glow, repair/recharge, stable, quickslot, FPS/latency, and utility overlays
+* Configurable difficulty, reticle, glow, repair/recharge, stable, quickslot, FPS/latency, time, and utility overlays
+* HUD Layout controls for Suite overlays plus selected ESO-native request, alert-notification, and compass-focused-info elements
+* Desktop UI + Gamepad Controls support with binding-aware controller glyphs while retaining the normal PC/keyboard-style interface
 
 [B]INSTALL / UPDATE[/B]
 1. Install the required libraries listed above.

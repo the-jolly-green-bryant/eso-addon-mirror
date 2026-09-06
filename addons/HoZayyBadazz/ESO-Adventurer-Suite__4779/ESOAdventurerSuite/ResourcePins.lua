@@ -13,8 +13,13 @@ EPC.ResourcePins = EPC.ResourcePins or {}
 local R = EPC.ResourcePins
 local wm = WINDOW_MANAGER
 
-local INTERACTION_UPDATE_MS = 200
-local RENDER_UPDATE_MS = 450
+local INTERACTION_UPDATE_MS = 900
+local RENDER_UPDATE_MS = 900
+local MOVEMENT_HEAVY_REFRESH_MS_029312 = 5000
+local STATIONARY_SAFETY_REFRESH_MS_029312 = 5000
+local MOVEMENT_MARKER_CAP_029312 = 8
+local MOVEMENT_SAMPLE_CM_029312 = 140
+local MOVEMENT_GRACE_MS_029312 = 900
 local DEFAULT_VISIBLE_MARKERS = 72
 local MIN_VISIBLE_MARKERS = 24
 local MAX_VISIBLE_MARKERS = 120
@@ -43,6 +48,12 @@ local BASE_GLOW_WIDTH_M = 1.15
 local BASE_GLOW_HEIGHT_M = 1.15
 local GLOW_TEXTURE = "EsoUI/Art/Miscellaneous/lensflare_star_256.dds"
 local GLOW_U1, GLOW_U2, GLOW_V1, GLOW_V2 = 0.22, 0.78, 0.22, 0.78
+
+-- v0.29.237: Potion Maker missing-material hunt.
+local MISSING_ALCHEMY_PIN_TYPE_STRING = "EAS_MISSING_ALCHEMY_MATERIAL_PIN"
+local MISSING_ALCHEMY_PER_MATERIAL = 6
+local MISSING_ALCHEMY_MAX_MAP_PINS = 30
+local MISSING_ALCHEMY_3D_RANGE_M = 800
 
 local WORLD_GLOW_HIDE_SCENES = {
     "gameMenuInGame", "inventory", "character", "skills", "championPerks",
@@ -881,8 +892,12 @@ function R:DecodeCommunityPacked(cache, dedupe, kind, packed)
     return added
 end
 
-function R:BuildCommunityZoneCache(zoneId)
-    if not EPC.saved or EPC.saved.resourcePinsCommunityEnabled == false then return nil end
+function R:BuildCommunityZoneCache(zoneId, forceForExplicitHunt)
+    -- v0.29.238: an explicit Potion Maker hunt is allowed to use the bundled
+    -- resource database even when the user's normal community-pin display is
+    -- disabled. Clicking MAP + 3D MISSING is an explicit one-off request.
+    if not EPC.saved then return nil end
+    if EPC.saved.resourcePinsCommunityEnabled == false and forceForExplicitHunt ~= true then return nil end
     zoneId = tonumber(zoneId)
     if not zoneId then return nil end
     if self.communityZoneId == zoneId and type(self.communityZoneCache) == "table" then
@@ -1018,6 +1033,551 @@ function R:AppendNearbyCommunity(zoneId, px, py, pz, maxDistanceM, visible, lear
         end
     end
     return added
+end
+
+local function normalizeMissingMaterialName(value)
+    local s = lower(value)
+    s = s:gsub("[’`]", "'")
+    s = s:gsub("[^%w']+", " ")
+    s = s:gsub("%s+", " ")
+    s = s:gsub("^%s+", ""):gsub("%s+$", "")
+    return s
+end
+
+function R:GetMissingAlchemyKinds(material)
+    local kind = type(material) == "table" and tostring(material.kind or "") or ""
+    if kind == "" then return {} end
+    if kind == "FLOWER" or kind == "MUSHROOM" or kind == "WATERPLANT" then
+        return { [kind] = true, ALCHEMY = true }
+    end
+    return { [kind] = true }
+end
+
+function R:EnsureMissingAlchemyMapPins()
+    if self.missingAlchemyPinType then return true end
+    if type(ZO_WorldMap_GetPinManager) ~= "function" then return false end
+    local pinManager = ZO_WorldMap_GetPinManager()
+    if not pinManager or type(pinManager.AddCustomPin) ~= "function" then return false end
+
+    local tint = type(ZO_ColorDef) == "table" and ZO_ColorDef.New and ZO_ColorDef:New(1.00, 0.78, 0.18) or nil
+    local layout = {
+        texture = NATIVE_ICON_TEXTURES.ALCHEMY,
+        level = 50,
+        size = 42,
+        tint = tint,
+    }
+    local tooltipData = nil
+    if rawget(_G, "ZO_MAP_TOOLTIP_MODE") and rawget(_G, "ZO_WorldMap_GetTooltipForMode") then
+        tooltipData = {
+            creator = function(pin)
+                local tooltip = ZO_WorldMap_GetTooltipForMode(ZO_MAP_TOOLTIP_MODE.INFORMATION)
+                local focus = self.missingAlchemyFocus
+                local title = focus and focus.summary or "Missing Alchemy Material"
+                if IsInGamepadPreferredMode and IsInGamepadPreferredMode() and tooltip and tooltip.tooltip then
+                    local section = tooltip.tooltip:AcquireSection(tooltip.tooltip:GetStyle("delveMainSection"))
+                    tooltip:LayoutStringLine(section, "ALCHEMY MATERIAL HUNT", tooltip.tooltip:GetStyle("delveTooltipName"))
+                    tooltip:LayoutStringLine(section, tostring(title), tooltip.tooltip:GetStyle("delveSkyshardHint"))
+                    tooltip.tooltip:AddSection(section)
+                elseif tooltip and tooltip.AddLine then
+                    tooltip:AddLine("ALCHEMY MATERIAL HUNT", "ZoFontWinH4", 1, 0.82, 0.24)
+                    tooltip:AddLine(tostring(title), "ZoFontGame", 1, 1, 1)
+                    tooltip:AddLine("Approach this area to see the bright 3D hunt pin.", "ZoFontGameSmall", 0.72, 0.84, 0.95)
+                end
+            end,
+            tooltip = ZO_MAP_TOOLTIP_MODE.INFORMATION,
+        }
+    end
+
+    local ok = pcall(pinManager.AddCustomPin, pinManager, MISSING_ALCHEMY_PIN_TYPE_STRING,
+        function(mgr) self:AddMissingAlchemyMapPins(mgr) end,
+        nil, layout, tooltipData)
+    if not ok then return false end
+    self.missingAlchemyPinType = rawget(_G, MISSING_ALCHEMY_PIN_TYPE_STRING)
+    if self.missingAlchemyPinType and type(pinManager.SetCustomPinEnabled) == "function" then
+        pcall(pinManager.SetCustomPinEnabled, pinManager, self.missingAlchemyPinType, true)
+    end
+    return self.missingAlchemyPinType ~= nil
+end
+
+function R:AddMissingAlchemyMapPins(pinManager)
+    if not self.missingAlchemyPinType or not pinManager or type(pinManager.CreatePin) ~= "function" then return end
+    local focus = self.missingAlchemyFocus
+    local locations = focus and focus.locations or nil
+    if type(locations) ~= "table" then return end
+    for i = 1, #locations do
+        local loc = locations[i]
+        if type(loc) == "table" and tonumber(loc.zoneId) and tonumber(loc.x) and tonumber(loc.y) and tonumber(loc.z)
+            and type(GetNormalizedWorldPosition) == "function" then
+            local nx, ny = safe(GetNormalizedWorldPosition, nil, loc.zoneId, loc.x, loc.z, loc.y)
+            nx, ny = tonumber(nx), tonumber(ny)
+            if nx and ny and nx >= -0.01 and nx <= 1.01 and ny >= -0.01 and ny <= 1.01 then
+                pcall(pinManager.CreatePin, pinManager, self.missingAlchemyPinType, loc, nx, ny)
+            end
+        end
+    end
+end
+
+function R:RefreshMissingAlchemyMapPins()
+    if not self:EnsureMissingAlchemyMapPins() then return end
+    local pinManager = ZO_WorldMap_GetPinManager and ZO_WorldMap_GetPinManager() or nil
+    if pinManager and self.missingAlchemyPinType and type(pinManager.RefreshCustomPins) == "function" then
+        pcall(pinManager.RefreshCustomPins, pinManager, self.missingAlchemyPinType)
+    end
+end
+
+function R:ClearMissingAlchemyFocus()
+    self.missingAlchemyFocus = nil
+    self:RefreshMissingAlchemyMapPins()
+    self:RefreshMarkers()
+end
+
+function R:BuildMissingAlchemyFocusForCurrentZone()
+    local focus = self.missingAlchemyFocus
+    if type(focus) ~= "table" or type(focus.materials) ~= "table" or #focus.materials == 0 then return 0, {} end
+    local zoneId, px, py, pz = self:GetPlayerRawPosition()
+    if not zoneId then return 0, {} end
+
+    local learned = self:GetZoneBucket(zoneId, false)
+    if type(learned) ~= "table" then learned = {} end
+    local community = self:BuildCommunityZoneCache(zoneId, true)
+    local final, finalByKey, unsupported = {}, {}, {}
+
+    local function distanceFor(entry)
+        return distance2Dcm(px, pz, tonumber(entry.x) or px, tonumber(entry.z) or pz) / 100
+    end
+
+    local function locationKey(entry)
+        return string.format("%d:%d:%s", math.floor((tonumber(entry.x) or 0) + 0.5), math.floor((tonumber(entry.z) or 0) + 0.5), tostring(entry.kind or "RESOURCE"))
+    end
+
+    for _, material in ipairs(focus.materials) do
+        local targetName = tostring(material.name or "Missing material")
+        local targetKey = normalizeMissingMaterialName(material.key or targetName)
+        local kinds = self:GetMissingAlchemyKinds(material)
+        local candidates = {}
+
+        local function consider(entry, sourceRank)
+            if type(entry) ~= "table" then return end
+            local ex, ey, ez = tonumber(entry.x), tonumber(entry.y), tonumber(entry.z)
+            if not ex or not ey or not ez then return end
+            if self:IsPositionDepleted(zoneId, ex, ez, entry.kind) then return end
+            local entryKey = normalizeMissingMaterialName(entry.name or "")
+            local exact = targetKey ~= "" and entryKey ~= "" and entryKey == targetKey
+            local kindMatch = kinds[tostring(entry.kind or "")] == true
+            if not exact and not kindMatch then return end
+            candidates[#candidates + 1] = {
+                entry = entry,
+                exact = exact,
+                score = exact and 0 or (sourceRank or 2),
+                distanceM = distanceFor(entry),
+            }
+        end
+
+        for i = 1, #learned do consider(learned[i], 1) end
+        if type(community) == "table" and type(community.cells) == "table" and next(kinds) ~= nil then
+            for _, cellEntries in pairs(community.cells) do
+                if type(cellEntries) == "table" then
+                    for i = 1, #cellEntries do consider(cellEntries[i], 2) end
+                end
+            end
+        end
+
+        table.sort(candidates, function(a, b)
+            if a.score ~= b.score then return a.score < b.score end
+            return (a.distanceM or 999999) < (b.distanceM or 999999)
+        end)
+
+        local taken = 0
+        for i = 1, #candidates do
+            if taken >= MISSING_ALCHEMY_PER_MATERIAL or #final >= MISSING_ALCHEMY_MAX_MAP_PINS then break end
+            local source = candidates[i].entry
+            local key = locationKey(source)
+            local loc = finalByKey[key]
+            if not loc then
+                loc = {
+                    zoneId = zoneId,
+                    x = tonumber(source.x), y = tonumber(source.y), z = tonumber(source.z),
+                    kind = tostring(source.kind or material.kind or "ALCHEMY"),
+                    name = tostring(source.name or targetName),
+                    source = tostring(source.source or "community"),
+                    focusMissing = true,
+                    focusMaterial = targetName,
+                    focusExact = candidates[i].exact == true,
+                }
+                final[#final + 1] = loc
+                finalByKey[key] = loc
+            elseif not string.find("|" .. tostring(loc.focusMaterial) .. "|", "|" .. targetName .. "|", 1, true) then
+                loc.focusMaterial = tostring(loc.focusMaterial) .. " / " .. targetName
+            end
+            taken = taken + 1
+        end
+
+        if taken == 0 then
+            local hint = tostring(material.dynamicHint or "")
+            unsupported[#unsupported + 1] = hint ~= "" and (targetName .. " (" .. hint .. ")") or targetName
+        end
+    end
+
+    focus.zoneId = zoneId
+    focus.locations = final
+    focus.unsupported = unsupported
+    local names = {}
+    for _, material in ipairs(focus.materials) do names[#names + 1] = tostring(material.name or "material") end
+    focus.summary = table.concat(names, ", ")
+    self.missingAlchemyFocus = focus
+    self:RefreshMissingAlchemyMapPins()
+    self:RefreshMarkers()
+    return #final, unsupported
+end
+
+local function missingAlchemyZoneName(zoneId)
+    zoneId = tonumber(zoneId) or 0
+    if zoneId > 0 and type(GetZoneNameById) == "function" then
+        local ok, name = pcall(GetZoneNameById, zoneId)
+        if ok and tostring(name or "") ~= "" then return zo_strformat("<<C:1>>", name) end
+    end
+    return zoneId > 0 and ("Zone " .. tostring(zoneId)) or "Unknown zone"
+end
+
+local function decodeFirstCommunityPoint(packed)
+    if type(packed) ~= "string" or #packed < 8 then return nil end
+    local x1, x2, h1, h2, v1, v2 = string.byte(packed, 1, 6)
+    if not x1 or not x2 or not h1 or not h2 or not v1 or not v2 then return nil end
+    return {
+        x = ((x1 * 256) + x2) * 20,
+        z = ((h1 * 256) + h2) * 20,
+        y = ((v1 * 256) + v2) * 20,
+    }
+end
+
+function R:GetMissingAlchemyDestinationSignature(materials)
+    local parts = {}
+    for _, material in ipairs(materials or {}) do
+        local name = normalizeMissingMaterialName(type(material) == "table" and (material.key or material.name) or material)
+        local kind = type(material) == "table" and tostring(material.kind or "") or ""
+        parts[#parts + 1] = name .. ":" .. kind
+    end
+    table.sort(parts)
+    return table.concat(parts, "|")
+end
+
+function R:GetDiscoveredWayshrineZonesForAlchemy()
+    local zones = {}
+    local travel = EPC and EPC.Travel
+    if not travel or type(travel.GetWayshrineNodeEntry) ~= "function" or type(GetNumFastTravelNodes) ~= "function" then return zones end
+    local ok, total = pcall(GetNumFastTravelNodes)
+    total = ok and tonumber(total) or 0
+    for nodeIndex = 1, total do
+        local entry = travel:GetWayshrineNodeEntry(nodeIndex)
+        if entry then
+            local zid = tonumber(entry.zoneId) or 0
+            local pid = tonumber(entry.parentZoneId) or 0
+            if zid > 0 then zones[zid] = true end
+            if pid > 0 then zones[pid] = true end
+        end
+    end
+    return zones
+end
+
+function R:ResolveMissingAlchemyWayshrine(destination)
+    if type(destination) ~= "table" or not tonumber(destination.zoneId) then return destination end
+    local travel = EPC and EPC.Travel
+    if not travel or type(travel.GetWayshrineNodeEntry) ~= "function" then return destination end
+
+    local zoneId = tonumber(destination.zoneId)
+    local mapId = 0
+    if type(GetMapIdByZoneId) == "function" then
+        local ok, value = pcall(GetMapIdByZoneId, zoneId)
+        if ok then mapId = tonumber(value) or 0 end
+    end
+    destination.mapId = mapId
+
+    local originalMapId = 0
+    if type(GetCurrentMapId) == "function" then
+        local ok, value = pcall(GetCurrentMapId)
+        if ok then originalMapId = tonumber(value) or 0 end
+    end
+    local switched = false
+    if mapId > 0 and type(SetMapToMapId) == "function" and originalMapId ~= mapId then
+        local ok = pcall(SetMapToMapId, mapId)
+        switched = ok == true
+    end
+
+    local targetX, targetY = nil, nil
+    if type(GetNormalizedWorldPosition) == "function" then
+        local ok, nx, ny = pcall(GetNormalizedWorldPosition, zoneId, destination.x, destination.z, destination.y)
+        if ok then
+            nx, ny = tonumber(nx), tonumber(ny)
+            if nx and ny and nx >= -0.01 and nx <= 1.01 and ny >= -0.01 and ny <= 1.01 then
+                targetX, targetY = nx, ny
+                destination.mapX, destination.mapY = nx, ny
+            end
+        end
+    end
+
+    local best, bestDistance, fallback = nil, nil, nil
+    if type(GetNumFastTravelNodes) == "function" then
+        local ok, total = pcall(GetNumFastTravelNodes)
+        total = ok and tonumber(total) or 0
+        for nodeIndex = 1, total do
+            local entry = travel:GetWayshrineNodeEntry(nodeIndex)
+            if entry then
+                local sameZone = tonumber(entry.zoneId) == zoneId or tonumber(entry.parentZoneId) == zoneId
+                if sameZone and not fallback then fallback = entry end
+                if targetX and targetY and entry.isShownInCurrentMap and tonumber(entry.normalizedX) and tonumber(entry.normalizedY) then
+                    local dx = tonumber(entry.normalizedX) - targetX
+                    local dy = tonumber(entry.normalizedY) - targetY
+                    local d2 = dx * dx + dy * dy
+                    if bestDistance == nil or d2 < bestDistance then
+                        best, bestDistance = entry, d2
+                    end
+                end
+            end
+        end
+    end
+
+    if switched and originalMapId > 0 and type(SetMapToMapId) == "function" then
+        pcall(SetMapToMapId, originalMapId)
+    elseif switched and type(SetMapToPlayerLocation) == "function" then
+        pcall(SetMapToPlayerLocation)
+    end
+
+    best = best or fallback
+    if best then
+        destination.wayshrineNodeIndex = best.nodeIndex
+        destination.wayshrineName = tostring(best.name or "Wayshrine")
+    end
+    return destination
+end
+
+function R:FindMissingAlchemyDestination(materials)
+    if type(materials) ~= "table" or #materials == 0 then return nil end
+    self.missingAlchemyDestinationCache = self.missingAlchemyDestinationCache or {}
+    local signature = self:GetMissingAlchemyDestinationSignature(materials)
+    if signature ~= "" and type(self.missingAlchemyDestinationCache[signature]) == "table" then
+        return self.missingAlchemyDestinationCache[signature]
+    end
+
+    local wantedKinds, wantedNames = {}, {}
+    local firstStaticMaterialName = nil
+    for _, material in ipairs(materials) do
+        if type(material) == "table" and tostring(material.dynamicHint or "") == "" then
+            if not firstStaticMaterialName then firstStaticMaterialName = tostring(material.name or "Alchemy material") end
+            local kinds = self:GetMissingAlchemyKinds(material)
+            for kind in pairs(kinds) do wantedKinds[kind] = true end
+            local key = normalizeMissingMaterialName(material.key or material.name)
+            if key ~= "" then wantedNames[key] = tostring(material.name or key) end
+        end
+    end
+    if next(wantedKinds) == nil then return nil end
+
+    local playerZoneId = select(1, self:GetPlayerRawPosition())
+    playerZoneId = tonumber(playerZoneId) or 0
+    local shrineZones = self:GetDiscoveredWayshrineZonesForAlchemy()
+    local candidates = {}
+
+    local function getCandidate(zoneId)
+        zoneId = tonumber(zoneId) or 0
+        if zoneId <= 0 then return nil end
+        local c = candidates[zoneId]
+        if not c then
+            c = { zoneId = zoneId, nodeCount = 0, kindCoverage = {}, exact = false }
+            candidates[zoneId] = c
+        end
+        return c
+    end
+
+    -- Prefer the player's own learned resource positions when available.
+    local learnedRoot = EPC.saved and EPC.saved.resourcePinLocations
+    if type(learnedRoot) == "table" then
+        for zoneKey, entries in pairs(learnedRoot) do
+            local c = getCandidate(zoneKey)
+            if c and type(entries) == "table" then
+                for _, entry in ipairs(entries) do
+                    if type(entry) == "table" then
+                        local kind = tostring(entry.kind or "")
+                        local entryName = normalizeMissingMaterialName(entry.name or "")
+                        local exact = wantedNames[entryName] ~= nil
+                        if exact or wantedKinds[kind] then
+                            c.nodeCount = c.nodeCount + 1
+                            c.kindCoverage[kind] = true
+                            if exact then c.exact = true end
+                            if not c.point or exact then
+                                c.point = { x=tonumber(entry.x), y=tonumber(entry.y), z=tonumber(entry.z), kind=kind, name=tostring(entry.name or "Alchemy resource"), source="learned" }
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    -- Scan the packed community index without decoding whole zones. String
+    -- lengths give a cheap node count; only one representative point is decoded.
+    local root = EPC.CommunityResourceData
+    if type(root) == "table" then
+        for m = 1, #COMMUNITY_MODULES do
+            local module = root[COMMUNITY_MODULES[m]]
+            if type(module) == "table" then
+                for zoneId, zoneData in pairs(module) do
+                    local c = getCandidate(zoneId)
+                    if c and type(zoneData) == "table" then
+                        for _, mapData in pairs(zoneData) do
+                            if type(mapData) == "table" then
+                                for pinTypeId, packed in pairs(mapData) do
+                                    local kind = COMMUNITY_KIND_BY_PIN[tonumber(pinTypeId)]
+                                    if kind and wantedKinds[kind] and type(packed) == "string" and #packed >= 8 then
+                                        c.nodeCount = c.nodeCount + math.floor(#packed / 8)
+                                        c.kindCoverage[kind] = true
+                                        if not c.point then
+                                            local point = decodeFirstCommunityPoint(packed)
+                                            if point then
+                                                point.kind, point.name, point.source = kind, TYPE_LABELS[kind] or "Alchemy resource", "community"
+                                                c.point = point
+                                            end
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    local best, bestScore = nil, nil
+    for zoneId, c in pairs(candidates) do
+        if c.point and c.nodeCount > 0 then
+            local coverage = 0
+            for _ in pairs(c.kindCoverage) do coverage = coverage + 1 end
+            local score = math.min(c.nodeCount, 5000) + coverage * 10000
+            if c.exact then score = score + 50000 end
+            if shrineZones[zoneId] then score = score + 100000 end
+            if zoneId == playerZoneId then score = score + 1000000 end
+            if bestScore == nil or score > bestScore then best, bestScore = c, score end
+        end
+    end
+    if not best then return nil end
+
+    local destination = {
+        zoneId = tonumber(best.zoneId),
+        zoneName = missingAlchemyZoneName(best.zoneId),
+        x = tonumber(best.point.x), y = tonumber(best.point.y), z = tonumber(best.point.z),
+        kind = tostring(best.point.kind or "ALCHEMY"),
+        resourceName = best.exact and tostring(best.point.name or firstStaticMaterialName or "Alchemy resource")
+            or string.format("%s spawn area", tostring(firstStaticMaterialName or TYPE_LABELS[best.point.kind] or "Alchemy material")),
+        source = tostring(best.point.source or "community"),
+        nodeCount = tonumber(best.nodeCount) or 0,
+    }
+    self:ResolveMissingAlchemyWayshrine(destination)
+    if destination.mapX and destination.mapY then
+        destination.locationText = string.format("%.1f, %.1f", destination.mapX * 100, destination.mapY * 100)
+    else
+        destination.locationText = "known resource area"
+    end
+    if signature ~= "" then self.missingAlchemyDestinationCache[signature] = destination end
+    return destination
+end
+
+function R:GetMissingAlchemyRoute(materials)
+    local destination = self:FindMissingAlchemyDestination(materials)
+    if not destination then return nil end
+    return destination
+end
+
+function R:TravelToMissingAlchemyMaterials(materials)
+    if type(materials) ~= "table" or #materials == 0 then return false end
+    local destination = self:FindMissingAlchemyDestination(materials)
+    if not destination then
+        if EPC and EPC.Print then EPC:Print("No fixed resource zone could be resolved for those missing Alchemy materials.") end
+        return false
+    end
+    self.missingAlchemyFocus = self.missingAlchemyFocus or { materials = materials, locations = {}, summary = "Missing Alchemy Materials" }
+    self.missingAlchemyFocus.materials = materials
+    self.missingAlchemyFocus.travelDestination = destination
+    self.missingAlchemyFocus.zoneId = destination.zoneId
+    self.missingAlchemyFocus.locations = {{
+        zoneId=destination.zoneId, x=destination.x, y=destination.y, z=destination.z,
+        kind=destination.kind, name=destination.resourceName, source=destination.source,
+        focusMissing=true, focusMaterial=self.missingAlchemyFocus.summary or "Alchemy material",
+    }}
+
+    local shrine = destination.wayshrineName or "No discovered wayshrine"
+    if EPC and EPC.Print then
+        EPC:Print(string.format("Alchemy material route: %s at %s in %s. Closest discovered wayshrine: %s.", destination.resourceName, destination.locationText or "known resource area", destination.zoneName or "Unknown zone", shrine))
+    end
+    if not destination.wayshrineNodeIndex then
+        if EPC and EPC.Print then EPC:Print("You have no discovered wayshrine resolved for that resource zone. Use the map pin or social travel to enter the zone first.") end
+        return false
+    end
+    local travel = EPC and EPC.Travel
+    if travel and type(travel.TravelToWayshrineNode) == "function" then
+        return travel:TravelToWayshrineNode(destination.wayshrineNodeIndex, destination.wayshrineName)
+    end
+    return false
+end
+
+function R:TrackMissingAlchemyMaterials(materials)
+    if type(materials) ~= "table" or #materials == 0 then return 0, {}, nil end
+    self.missingAlchemyFocus = { materials = materials, locations = {}, summary = "Missing Alchemy Materials" }
+    self:EnsureMissingAlchemyMapPins()
+    local tracked, unsupported = self:BuildMissingAlchemyFocusForCurrentZone()
+    local destination = self:FindMissingAlchemyDestination(materials)
+    if destination then
+        self.missingAlchemyFocus.travelDestination = destination
+        -- BuildMissingAlchemyFocusForCurrentZone reports static materials as
+        -- unsupported when they simply are not in the CURRENT zone. Once a
+        -- cross-zone route exists, only true dynamic-drop materials belong in
+        -- the unsupported list.
+        local dynamicUnsupported = {}
+        for _, material in ipairs(materials) do
+            if type(material) == "table" and tostring(material.dynamicHint or "") ~= "" then
+                dynamicUnsupported[#dynamicUnsupported + 1] = tostring(material.name or "material") .. " (" .. tostring(material.dynamicHint) .. ")"
+            end
+        end
+        unsupported = dynamicUnsupported
+    end
+
+    -- If the current zone has no matching static spawn, point the map at the
+    -- selected resource zone now. The 3D pin will rebuild automatically after travel.
+    if tracked <= 0 and destination then
+        self.missingAlchemyFocus.zoneId = destination.zoneId
+        self.missingAlchemyFocus.locations = {{
+            zoneId=destination.zoneId, x=destination.x, y=destination.y, z=destination.z,
+            kind=destination.kind, name=destination.resourceName, source=destination.source,
+            focusMissing=true, focusMaterial=self.missingAlchemyFocus.summary,
+        }}
+        tracked = 1
+        self:RefreshMissingAlchemyMapPins()
+    end
+    return tracked, unsupported, destination
+end
+
+function R:ShowMissingAlchemyMap()
+    local focus = self.missingAlchemyFocus
+    if type(focus) ~= "table" or type(focus.locations) ~= "table" or #focus.locations == 0 then return false end
+
+    local destination = focus.travelDestination
+    local playerZoneId = select(1, self:GetPlayerRawPosition())
+    if type(destination) == "table" and tonumber(destination.zoneId) ~= tonumber(playerZoneId)
+        and tonumber(destination.mapId) and tonumber(destination.mapId) > 0 and type(SetMapToMapId) == "function" then
+        pcall(SetMapToMapId, destination.mapId)
+    elseif type(SetMapToPlayerLocation) == "function" then
+        pcall(SetMapToPlayerLocation)
+    end
+
+    if type(ZO_WorldMap_ShowWorldMap) == "function" then
+        pcall(ZO_WorldMap_ShowWorldMap)
+    elseif SCENE_MANAGER and type(SCENE_MANAGER.Show) == "function" then
+        pcall(SCENE_MANAGER.Show, SCENE_MANAGER, "worldMap")
+    end
+    if type(zo_callLater) == "function" then
+        zo_callLater(function() if EPC and EPC.ResourcePins then EPC.ResourcePins:RefreshMissingAlchemyMapPins() end end, 120)
+    else
+        self:RefreshMissingAlchemyMapPins()
+    end
+    return true
 end
 
 function R:ClassifyByName(name)
@@ -1535,9 +2095,24 @@ function R:PositionMarker(pin, entry, distanceM)
     local size = scale * farScale
     local alphaBase = math.max(0.15, math.min(1.0, tonumber(saved.resourcePinsOpacity) or 0.72))
     local useDepth = saved.resourcePinsThroughWalls == false
+    local focusedMissing = entry.focusMissing == true
+    if focusedMissing then
+        -- Hunt targets must remain visible even when the known node is behind
+        -- terrain/buildings; otherwise the player can easily think no pin exists.
+        useDepth = false
+    end
     local iconKey = self:GetIconKeyForKind(entry.kind)
     local baseColor = COLORS[entry.kind] or COLORS.RESOURCE
     local glowColor, glowAlpha, glowSize, glowTier = self:GetGlowVisualForEntry(entry, alphaBase)
+    if focusedMissing then
+        -- Tracked Potion Maker materials deliberately stand out from normal farm
+        -- pins: oversized bright gold/green target, full opacity and a stronger
+        -- additive halo so the target is unmistakable at long range.
+        size = size * 2.10
+        alphaBase = 1.0
+        baseColor = { 1.00, 0.88, 0.10 }
+        glowColor, glowAlpha, glowSize, glowTier = { 0.48, 1.00, 0.18 }, 1.00, 1.72, "MISSING"
+    end
 
     pin:Set3DRenderSpaceOrigin(guiX, guiZ, guiY)
     pin:Set3DRenderSpaceUsesDepthBuffer(useDepth)
@@ -1549,7 +2124,7 @@ function R:PositionMarker(pin, entry, distanceM)
     if type(beam.SetDrawLevel) == "function" then beam:SetDrawLevel(6) end
     if type(icon.SetDrawLevel) == "function" then icon:SetDrawLevel(5) end
 
-    local requestedMode = tostring(saved.resourcePinsIconMode or "SUITE_GLOW")
+    local requestedMode = focusedMissing and "CATEGORY" or tostring(saved.resourcePinsIconMode or "SUITE_GLOW")
     local source = GLOW_TEXTURE
     local usingNative = false
     local usingFallback = false
@@ -1636,7 +2211,19 @@ function R:PositionMarker(pin, entry, distanceM)
 end
 
 function R:RefreshMarkers()
-    if not EPC.saved or EPC.saved.enabled == false or EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsShow3D == false then
+    local explicitAlchemyHunt = type(self.missingAlchemyFocus) == "table"
+        and type(self.missingAlchemyFocus.materials) == "table"
+        and #self.missingAlchemyFocus.materials > 0
+
+    if not EPC.saved then
+        self:HideAll("no saved settings")
+        return
+    end
+
+    -- v0.29.238: MAP + 3D MISSING must work even when ordinary Resource Pins,
+    -- community pins, or normal 3D pins are turned off. The explicit hunt only
+    -- affects the temporary missing-material targets selected by the player.
+    if not explicitAlchemyHunt and (EPC.saved.enabled == false or EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsShow3D == false) then
         self:HideAll("disabled")
         return
     end
@@ -1664,6 +2251,13 @@ function R:RefreshMarkers()
     local bucket = self:GetZoneBucket(zoneId, false)
     if type(bucket) ~= "table" then bucket = {} end
 
+    -- Potion Maker hunt pins are independent of the normal resource category
+    -- filters. They are a temporary explicit target chosen by the player.
+    local missingFocusLocations = nil
+    if type(self.missingAlchemyFocus) == "table" and tonumber(self.missingAlchemyFocus.zoneId) == tonumber(zoneId) then
+        missingFocusLocations = self.missingAlchemyFocus.locations
+    end
+
     if self.lastRenderZoneId ~= zoneId then
         self.lastRenderZoneId = zoneId
         self.lastAllZoneRefreshAt = 0
@@ -1675,8 +2269,29 @@ function R:RefreshMarkers()
     local maxDistanceM = math.max(15, math.min(500, tonumber(EPC.saved.resourcePinsDistance) or 200))
     local markerLimit = math.floor(math.max(MIN_VISIBLE_MARKERS, math.min(MAX_VISIBLE_MARKERS,
         tonumber(EPC.saved.resourcePinsMaxVisible) or DEFAULT_VISIBLE_MARKERS)))
+    -- While the player is actively running, render a smaller nearest set. The
+    -- complete configured set returns immediately after movement settles. This
+    -- prevents 50-72 3D controls from being fully reconfigured in the same
+    -- frame every time the nearby spatial query advances.
+    if self.resourceMotionActive029312 == true and not explicitAlchemyHunt then
+        markerLimit = math.min(markerLimit, MOVEMENT_MARKER_CAP_029312)
+    end
     local visible = {}
     self:PruneDepleted(zoneId)
+
+    if type(missingFocusLocations) == "table" then
+        -- Explicit hunt targets are intentionally not clipped by the normal farm
+        -- distance. If a known spawn is in the current zone, keep it eligible so
+        -- the player can actually see which direction to travel from far away.
+        for i = 1, #missingFocusLocations do
+            local entry = missingFocusLocations[i]
+            if type(entry) == "table" and not self:IsPositionDepleted(zoneId, entry.x, entry.z, entry.kind) then
+                local distanceM = distance3Dcm(px, py, pz, entry.x, entry.y, entry.z) / 100
+                local horizontalDistanceM = distance2Dcm(px, pz, entry.x, entry.z) / 100
+                visible[#visible + 1] = { entry = entry, distanceM = distanceM, horizontalDistanceM = horizontalDistanceM, focusedMissing = true, learned = true }
+            end
+        end
+    end
 
     local learnedShadow = self:BuildLearnedShadowGrid(bucket)
     for i = 1, #bucket do
@@ -1716,10 +2331,14 @@ function R:RefreshMarkers()
     table.sort(visible, function(a, b)
         -- Always keep the test marker first, then learned pins, then nearest data.
         if a.debug ~= b.debug then return a.debug == true end
+        if a.focusedMissing ~= b.focusedMissing then return a.focusedMissing == true end
         if a.learned ~= b.learned then return a.learned == true end
         return (tonumber(a.distanceM) or 999999) < (tonumber(b.distanceM) or 999999)
     end)
 
+    if explicitAlchemyHunt and type(missingFocusLocations) == "table" then
+        markerLimit = math.max(markerLimit, math.min(MISSING_ALCHEMY_MAX_MAP_PINS, #missingFocusLocations))
+    end
     local candidateCount = math.min(#visible, markerLimit)
     self.lastRequestedVisibleCount = #visible
     self.lastTargetCount = candidateCount
@@ -1860,6 +2479,81 @@ function R:HandleSlash(text)
     end
 end
 
+-- v0.29.312: the resource database query/sort and full 3D-control styling are
+-- deliberately separated from the cheap billboard rotation update. World-space
+-- origins do not need to be rebuilt just because the player moved a few feet.
+function R:QuickOrientMarkers029312()
+    if not self.markers or #self.markers == 0 then return end
+    local heading = tonumber(safe(GetPlayerCameraHeading, 0)) or 0
+    local lastHeading = tonumber(self.lastQuickOrientHeading029315)
+    if lastHeading then
+        local delta = math.abs(heading - lastHeading)
+        if delta > math.pi then delta = (math.pi * 2) - delta end
+        if delta < 0.010 then return end
+    end
+    self.lastQuickOrientHeading029315 = heading
+    local visibleCount = tonumber(self.lastCandidateCount) or #self.markers
+    visibleCount = math.min(visibleCount, #self.markers)
+    for i = 1, visibleCount do
+        local pin = self.markers[i]
+        if pin and not pin:IsHidden() and type(pin.Set3DRenderSpaceOrientation) == "function" then
+            pin:Set3DRenderSpaceOrientation(0, heading, 0)
+        end
+    end
+end
+
+function R:MovementAwareRefreshMarkers029312()
+    -- v0.29.341: a disabled 3D renderer should be truly dormant. The old timer
+    -- still sampled raw player position and camera heading even when Resource
+    -- Pins were disabled, which was unnecessary background movement work.
+    if not EPC.saved or EPC.saved.enabled == false or EPC.saved.resourcePinsEnabled == false
+        or (EPC.saved.resourcePinsShow3D == false and not self.missingAlchemyFocus) then
+        return
+    end
+    local now = nowMs()
+    local zoneId, x, _, z = self:GetPlayerRawPosition()
+    if not zoneId then return end
+
+    local changedZone = tonumber(self.motionZone029312) ~= tonumber(zoneId)
+    if changedZone then
+        self.motionZone029312 = zoneId
+        self.motionX029312, self.motionZ029312 = x, z
+        self.motionMovingUntil029312 = now + MOVEMENT_GRACE_MS_029312
+    else
+        local lx, lz = tonumber(self.motionX029312), tonumber(self.motionZ029312)
+        if lx and lz then
+            local dx, dz = x - lx, z - lz
+            if (dx * dx) + (dz * dz) >= (MOVEMENT_SAMPLE_CM_029312 * MOVEMENT_SAMPLE_CM_029312) then
+                self.motionMovingUntil029312 = now + MOVEMENT_GRACE_MS_029312
+                self.motionX029312, self.motionZ029312 = x, z
+            end
+        else
+            self.motionX029312, self.motionZ029312 = x, z
+        end
+    end
+
+    local moving = now < (tonumber(self.motionMovingUntil029312) or 0)
+    local wasMoving = self.resourceMotionActive029312 == true
+    self.resourceMotionActive029312 = moving
+
+    -- Camera-facing rotation is cheap and keeps icons visually correct between
+    -- database refreshes. No spatial search, sort, texture setup, or origin
+    -- conversion happens here.
+    self:QuickOrientMarkers029312()
+
+    local lastHeavy = tonumber(self.lastMotionHeavyRefresh029312) or 0
+    local interval = moving and MOVEMENT_HEAVY_REFRESH_MS_029312 or STATIONARY_SAFETY_REFRESH_MS_029312
+    local heavyDue = changedZone or lastHeavy == 0 or (now - lastHeavy) >= interval
+    -- On the first stationary sample after running, restore the user's full
+    -- marker count immediately rather than waiting for the safety interval.
+    if wasMoving and not moving then heavyDue = true end
+
+    if heavyDue then
+        self.lastMotionHeavyRefresh029312 = now
+        self:RefreshMarkers()
+    end
+end
+
 function R:Initialize()
     self.markers = {}
     self.pendingResource = nil
@@ -1891,6 +2585,12 @@ function R:Initialize()
     self.allZoneBuildComplete = false
     self.lastTargetCount = 0
     self.lastRequestedVisibleCount = 0
+    self.motionZone029312 = nil
+    self.motionX029312 = nil
+    self.motionZ029312 = nil
+    self.motionMovingUntil029312 = 0
+    self.lastMotionHeavyRefresh029312 = 0
+    self.resourceMotionActive029312 = false
 
     if EPC.saved then
         EPC.saved.resourcePinLocations = EPC.saved.resourcePinLocations or {}
@@ -1924,9 +2624,10 @@ function R:Initialize()
     end
 
     self:EnsureWindow()
+    self:EnsureMissingAlchemyMapPins()
     local prefix = (EPC.name or "EAS") .. "_ResourcePins"
     EVENT_MANAGER:RegisterForUpdate(prefix .. "_Interact", INTERACTION_UPDATE_MS, function() self:CaptureResourceInteraction() end)
-    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Render", RENDER_UPDATE_MS, function() self:RefreshMarkers() end)
+    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Render", RENDER_UPDATE_MS, function() self:MovementAwareRefreshMarkers029312() end)
 
     if EVENT_LOOT_RECEIVED ~= nil then
         EVENT_MANAGER:RegisterForEvent(prefix .. "_Loot", EVENT_LOOT_RECEIVED, function(_, receivedBy, itemLink, quantity, itemSound, lootType, lootedBySelf, isPickpocketLoot, questItemIcon, itemId, isStolen)
@@ -1943,6 +2644,26 @@ function R:Initialize()
             self:HandleLockpickSuccess()
         end)
     end
+    -- v0.29.238: World Map uses a different UI/render state. When it closes,
+    -- immediately rebuild the 3D render-space origin and show the active hunt
+    -- instead of waiting for a later incidental refresh.
+    if SCENE_MANAGER and not self.missingAlchemyWorldMapHooked then
+        local worldMapScene = SCENE_MANAGER:GetScene("worldMap")
+        if worldMapScene and type(worldMapScene.RegisterCallback) == "function" then
+            self.missingAlchemyWorldMapHooked = true
+            worldMapScene:RegisterCallback("StateChange", function(_, state)
+                if (state == SCENE_HIDDEN or state == SCENE_HIDING) and self.missingAlchemyFocus then
+                    zo_callLater(function()
+                        if EPC and EPC.ResourcePins then
+                            EPC.ResourcePins:ResetRenderSpace()
+                            EPC.ResourcePins:RefreshMarkers()
+                        end
+                    end, 120)
+                end
+            end)
+        end
+    end
+
     if EVENT_PLAYER_ACTIVATED ~= nil then
         EVENT_MANAGER:RegisterForEvent(prefix .. "_Activated", EVENT_PLAYER_ACTIVATED, function()
             self.pendingResource = nil
@@ -1956,7 +2677,14 @@ function R:Initialize()
             self.liveCommunityNode = nil
             self.liveCommunityVanishedAt = 0
             self:HideAll("zone change")
-            zo_callLater(function() self:ResetRenderSpace() self:RefreshMarkers() end, 400)
+            zo_callLater(function()
+                self:ResetRenderSpace()
+                if self.missingAlchemyFocus and type(self.BuildMissingAlchemyFocusForCurrentZone) == "function" then
+                    self:BuildMissingAlchemyFocusForCurrentZone()
+                else
+                    self:RefreshMarkers()
+                end
+            end, 400)
         end)
     end
 

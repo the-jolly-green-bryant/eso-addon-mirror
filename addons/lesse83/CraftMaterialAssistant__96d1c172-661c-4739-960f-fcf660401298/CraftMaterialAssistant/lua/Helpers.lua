@@ -1,10 +1,11 @@
 local CMA = CraftMaterialAssistant
 
--- Helper function to output formatted chat messages with an add-on tag
+-- output formatted chat messages with an add-on tag
 function CMA:SendChatMessage(message)
     d("|cFFD700[CraftMaterialAssistant]|r " .. message)
 end
 
+-- send formatted message concatenating items in a table. limit item count per message.
 function CMA:SendChatMessageLimitedItemCount(message, items)
     local chunks = {}
     local totalItemCount = #items
@@ -21,6 +22,30 @@ function CMA:SendChatMessageLimitedItemCount(message, items)
     end
 end
 
+-- Helper function to convert id64 to string safely
+function CMA:GetUniqueIdString(bagId, slotIndex)
+    local uniqueId = GetItemUniqueId(bagId, slotIndex)
+    if uniqueId then
+        return Id64ToString(uniqueId)
+    end
+    return nil
+end
+
+-- find an item by its uniqueId in a bag
+function CMA:findItemByUniqueId(bagId, searchedUniqueId)
+    local maxSlots = GetBagSize(bagId)
+    for slotIndex = 0, maxSlots do
+        if HasItemInSlot(bagId, slotIndex) then
+            local uniqueId = self:GetUniqueIdString(bagId, slotIndex)
+            if uniqueId == searchedUniqueId then
+                return bagId, slotIndex
+            end
+        end
+    end
+    return nil, nil
+end
+
+-- string explode function splitting a string into substrings (delimited by the separator)
 function CMA:StringExplode(text, separator)
   local result = {}
   for substring in string.gmatch(text, "([^"..separator.."]+)") do

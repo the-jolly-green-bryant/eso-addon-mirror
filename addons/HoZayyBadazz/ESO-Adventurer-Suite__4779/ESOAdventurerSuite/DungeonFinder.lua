@@ -2430,7 +2430,7 @@ function D:InitializeQueueHud2768()
             function(_, status) self:RefreshQueueHud2768(status) end)
     end
     if EVENT_MANAGER then
-        EVENT_MANAGER:RegisterForUpdate("ESOAdventurerSuite_DungeonQueueHUDPoll2768", 750, function()
+        EVENT_MANAGER:RegisterForUpdate("ESOAdventurerSuite_DungeonQueueHUDPoll2768", 1500, function()
             self:RefreshQueueHud2768()
         end)
     end

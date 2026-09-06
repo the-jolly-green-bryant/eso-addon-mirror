@@ -1,0 +1,14 @@
+## Title: Ability ID Toolkit
+## Description: Live ability/effect ID capture and lookup utility for ESO addon development.
+## Author: @BMGXSANCHO
+## Version: 0.0.05
+## APIVersion: 101050
+## SavedVariables: AbilityIDToolkitSavedVars
+## DependsOn: LibHarvensAddonSettings
+
+Registry/KnownIDs.lua
+Core/Database.lua
+Core/Capture.lua
+UI/Readout.lua
+Settings/Settings.lua
+AbilityIDToolkit.lua

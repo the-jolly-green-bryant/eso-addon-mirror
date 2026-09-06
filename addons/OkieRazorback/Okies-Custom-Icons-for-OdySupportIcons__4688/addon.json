@@ -19,10 +19,10 @@
   "content_id": "esoui:4688",
   "deleted": false,
   "directories": [
-    "OkiesCustomIcons-1.0.3b"
+    "OkiesCustomIcons"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4688/",
-  "fingerprint": "8138fdd1e52bb5b19e0a1614fdd5fd4489e2201d13f3c90ab70f96d41f68b8f1",
+  "fingerprint": "f7cae877565119118af3f4e8bf0c5b58c39c9343ce589357bc9a03e8732b16a8",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16696.png"
   ],
@@ -32,11 +32,11 @@
   "source_id": "4688",
   "source_url": "https://www.esoui.com/downloads/info4688-OkiesCustomIconsforOdySupportIcons.html",
   "stats": {
-    "downloads": 157,
+    "downloads": 181,
     "favorites": 2,
-    "monthly_downloads": 68
+    "monthly_downloads": 91
   },
   "title": "Okies Custom Icons for OdySupportIcons",
-  "updated_at": 1788573076000,
+  "updated_at": 1788635943000,
   "version": "1.0.3"
 }

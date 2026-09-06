@@ -348,6 +348,25 @@ function R:BuildReport(fight, live)
     stats.staminaSpentPerSecond = number(staminaUse.spentPerSecond)
     stats.staminaGainedPerSecond = number(staminaUse.gainedPerSecond)
     local trackedEffects = copyRows(fight.effects or {}, 30)
+    local bossMechanics = nil
+    if type(fight.bossMechanics) == "table" then
+        bossMechanics = {}
+        for key, value in pairs(fight.bossMechanics) do
+            local kind = type(value)
+            if kind == "string" or kind == "number" or kind == "boolean" then bossMechanics[key] = value end
+        end
+        bossMechanics.seen = copyRows(fight.bossMechanics.seen or {}, 10)
+    elseif live == true and EPC.BossMechanicsAssistant and EPC.BossMechanicsAssistant.GetLiveSummary then
+        local liveSummary = EPC.BossMechanicsAssistant:GetLiveSummary()
+        if type(liveSummary) == "table" then
+            bossMechanics = {}
+            for key, value in pairs(liveSummary) do
+                local kind = type(value)
+                if kind == "string" or kind == "number" or kind == "boolean" then bossMechanics[key] = value end
+            end
+            bossMechanics.seen = copyRows(liveSummary.seen or {}, 10)
+        end
+    end
     local report = {
         live = live == true,
         modeKey = modeKey, modeLabel = modeLabel, zone = zone,
@@ -373,6 +392,7 @@ function R:BuildReport(fight, live)
         actors = copyRows(fight.actors, 24),
         incomingSources = copyRows(fight.incomingSources, 18),
         stats = stats, buffs = #trackedEffects > 0 and trackedEffects or self:CaptureBuffs(),
+        bossMechanics = bossMechanics,
     }
     for _, ability in ipairs(report.abilities) do
         ability.percent = report.totalDamage > 0 and (number(ability.damage) / report.totalDamage * 100) or 0
@@ -1311,26 +1331,55 @@ function R:RefreshSummaryRows(report)
             { name = "Physical resist.", value = formatNumber(stats.physicalResistance) },
         }
     else
-        rows = {
-            { name = "ACTIVE TIME", value = formatDuration(report.duration), nameColor = GOLD },
-            { name = "STATUS", value = report.live and "LIVE COMBAT" or "COMPLETED", nameColor = MUTED, valueColor = report.live and GREEN or TEXT },
-            { section = true, name = "DAMAGE", color = GOLD },
-            { name = "Player DPS", value = formatNumber(report.dps), valueColor = CYAN },
-            { name = "Player damage", value = formatNumber(report.totalDamage) },
-            { name = "Pets / summons", value = formatNumber(report.petDamage) },
-            { name = "Companion", value = formatNumber(report.companionDamage) },
-            { name = "Combined DPS", value = formatNumber(combinedDps), valueColor = GOLD },
-            { section = true, name = "HITS", color = GOLD },
-            { name = "Total", value = formatNumber(report.hits) },
-            { name = "Normal", value = formatNumber(normalHits) },
-            { name = "Critical", value = formatNumber(report.criticalHits) },
-            { name = "Critical rate", value = formatPercent(report.criticalEventPercent) },
-            { section = true, name = "HEALING / DEFENSE", color = GOLD },
-            { name = "Player HPS", value = formatNumber(report.hps), valueColor = GREEN },
-            { name = "Player healing", value = formatNumber(report.totalHealing) },
-            { name = "Incoming DPS", value = formatNumber(report.dtps), valueColor = RED },
-            { name = "Blocked hits", value = formatPercent(report.blockPercent) },
-        }
+        local mechanics = type(report.bossMechanics) == "table" and report.bossMechanics or nil
+        if mechanics and number(mechanics.alerts) > 0 then
+            local bossName = tostring(mechanics.bossName or "Boss")
+            if mechanics.hmDetected == true then bossName = bossName .. "  •  HM" end
+            local grade = tostring(mechanics.grade or "N/A") .. "  •  " .. tostring(math.floor(number(mechanics.score))) .. "/100"
+            local interruptText = tostring(math.floor(number(mechanics.interruptSuccess))) .. "/" .. tostring(math.floor(number(mechanics.interruptRequired)))
+            local blockText = tostring(math.floor(number(mechanics.blockSuccess))) .. "/" .. tostring(math.floor(number(mechanics.blockRequired)))
+            local dodgeText = tostring(math.floor(number(mechanics.dodgeSuccess))) .. "/" .. tostring(math.floor(number(mechanics.dodgeRequired)))
+            rows = {
+                { name = "ACTIVE TIME", value = formatDuration(report.duration), nameColor = GOLD },
+                { name = "STATUS", value = report.live and "LIVE COMBAT" or "COMPLETED", nameColor = MUTED, valueColor = report.live and GREEN or TEXT },
+                { section = true, name = "BOSS EXECUTION", color = GOLD },
+                { name = "Boss", value = bossName, valueColor = GOLD },
+                { name = "Mechanic grade", value = grade, valueColor = number(mechanics.score) >= 90 and GREEN or (number(mechanics.score) >= 70 and GOLD or RED) },
+                { name = "Avoidable hits", value = formatNumber(mechanics.avoidableHits), valueColor = number(mechanics.avoidableHits) > 0 and RED or GREEN },
+                { name = "Clean avoids", value = formatNumber(mechanics.cleanAvoids), valueColor = GREEN },
+                { name = "Interrupts", value = interruptText },
+                { name = "Blocks", value = blockText },
+                { name = "Dodges", value = dodgeText },
+                { section = true, name = "DAMAGE / DEFENSE", color = GOLD },
+                { name = "Player DPS", value = formatNumber(report.dps), valueColor = CYAN },
+                { name = "Combined DPS", value = formatNumber(combinedDps), valueColor = GOLD },
+                { name = "Player damage", value = formatNumber(report.totalDamage) },
+                { name = "Critical rate", value = formatPercent(report.criticalEventPercent) },
+                { name = "Incoming DPS", value = formatNumber(report.dtps), valueColor = RED },
+                { name = "Block rate", value = formatPercent(report.blockPercent) },
+            }
+        else
+            rows = {
+                { name = "ACTIVE TIME", value = formatDuration(report.duration), nameColor = GOLD },
+                { name = "STATUS", value = report.live and "LIVE COMBAT" or "COMPLETED", nameColor = MUTED, valueColor = report.live and GREEN or TEXT },
+                { section = true, name = "DAMAGE", color = GOLD },
+                { name = "Player DPS", value = formatNumber(report.dps), valueColor = CYAN },
+                { name = "Player damage", value = formatNumber(report.totalDamage) },
+                { name = "Pets / summons", value = formatNumber(report.petDamage) },
+                { name = "Companion", value = formatNumber(report.companionDamage) },
+                { name = "Combined DPS", value = formatNumber(combinedDps), valueColor = GOLD },
+                { section = true, name = "HITS", color = GOLD },
+                { name = "Total", value = formatNumber(report.hits) },
+                { name = "Normal", value = formatNumber(normalHits) },
+                { name = "Critical", value = formatNumber(report.criticalHits) },
+                { name = "Critical rate", value = formatPercent(report.criticalEventPercent) },
+                { section = true, name = "HEALING / DEFENSE", color = GOLD },
+                { name = "Player HPS", value = formatNumber(report.hps), valueColor = GREEN },
+                { name = "Player healing", value = formatNumber(report.totalHealing) },
+                { name = "Incoming DPS", value = formatNumber(report.dtps), valueColor = RED },
+                { name = "Blocked hits", value = formatPercent(report.blockPercent) },
+            }
+        end
     end
 
     for index, row in ipairs(self.summaryRows or {}) do

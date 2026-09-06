@@ -343,7 +343,11 @@ function R:Initialize()
     if EVENT_ACTION_SLOT_UPDATED then EVENT_MANAGER:RegisterForEvent(p.."_Slot",EVENT_ACTION_SLOT_UPDATED,function() self:Refresh() end) end
     if EVENT_ACTIVE_WEAPON_PAIR_CHANGED then EVENT_MANAGER:RegisterForEvent(p.."_Bar",EVENT_ACTIVE_WEAPON_PAIR_CHANGED,function() self:Refresh() end) end
     if EVENT_PLAYER_ACTIVATED then EVENT_MANAGER:RegisterForEvent(p.."_Activated",EVENT_PLAYER_ACTIVATED,function() self:Refresh() end) end
-    EVENT_MANAGER:RegisterForUpdate(p.."_Tick",100,function() self:Refresh() end)
+    EVENT_MANAGER:RegisterForUpdate(p.."_Tick",200,function()
+        if not EPC.saved or EPC.saved.rotationAssistantEnabled == false then return end
+        if self.layoutMode ~= true and type(IsUnitInCombat) == "function" and safe(IsUnitInCombat, false, "player") ~= true then return end
+        self:Refresh()
+    end)
     self:Refresh()
 end
 
@@ -376,35 +380,32 @@ end
 
 local function actionBindingText(actionName)
     if not actionName or actionName == "" then return "" end
-    local preferGamepad = EPC.IsNativeGamepadPreferredMode029197 and EPC:IsNativeGamepadPreferredMode029197() or (type(IsInGamepadPreferredMode) == "function" and safe(IsInGamepadPreferredMode, false) == true)
-    local lookupName = actionName
+
+    local preferGamepad = EPC.ShouldUseGamepadPrompts029199 and EPC:ShouldUseGamepadPrompts029199()
+        or (EPC.IsNativeGamepadPreferredMode029197 and EPC:IsNativeGamepadPreferredMode029197())
+        or (type(IsInGamepadPreferredMode) == "function" and safe(IsInGamepadPreferredMode, false) == true)
+
+    -- v0.29.201: when ESO's Keybind Display Mode requests Gamepad, never route
+    -- through the keyboard-mode ZO formatter. The Suite-wide renderer queries
+    -- the gamepad binding set directly and emits explicit controller texture art.
     if preferGamepad == true then
-        lookupName = lookupName:gsub("^ACTION_BUTTON_", "GAMEPAD_ACTION_BUTTON_")
-        if EPC.GetForcedPlayStationActionMarkup029180 then
-            local forced = EPC:GetForcedPlayStationActionMarkup029180(lookupName, 20)
-            if forced ~= "" then return forced end
+        if EPC.GetActionBindingMarkup029199 then
+            return EPC:GetActionBindingMarkup029199(actionName, 20) or ""
         end
+        return ""
     end
+
+    if EPC.GetActionBindingMarkup029199 then
+        local unified = EPC:GetActionBindingMarkup029199(actionName, 20)
+        if unified ~= "" then return unified end
+    end
+
     if type(ZO_Keybindings_GetBindingStringFromAction) == "function" then
-        if preferGamepad == true then
-            local iconTextOptions = KEYBIND_TEXT_OPTIONS_NO_TEXT or KEYBIND_TEXT_OPTIONS_ABBREVIATED_NAME or 1
-            local iconTextureOptions = KEYBIND_TEXTURE_OPTIONS_EMBED_MARKUP or KEYBIND_TEXTURE_OPTIONS_EMBEDDED_MARKUP or KEYBIND_TEXTURE_OPTIONS_NONE or 1
-            for index = 1, 4 do
-                local iconText = tostring(safe(ZO_Keybindings_GetBindingStringFromAction, "", lookupName, iconTextOptions, iconTextureOptions, index) or "")
-                if iconText ~= "" then return iconText end
-            end
-        end
         local textOptions = KEYBIND_TEXT_OPTIONS_ABBREVIATED_NAME or 1
         local textureOptions = KEYBIND_TEXTURE_OPTIONS_NONE or 1
         for index = 1, 4 do
-            local text = tostring(safe(ZO_Keybindings_GetBindingStringFromAction, "", lookupName, textOptions, textureOptions, index) or "")
+            local text = tostring(safe(ZO_Keybindings_GetBindingStringFromAction, "", actionName, textOptions, textureOptions, index) or "")
             if text ~= "" then return text end
-        end
-        if lookupName ~= actionName then
-            for index = 1, 4 do
-                local text = tostring(safe(ZO_Keybindings_GetBindingStringFromAction, "", actionName, textOptions, textureOptions, index) or "")
-                if text ~= "" then return text end
-            end
         end
     end
     return ""
@@ -902,8 +903,7 @@ function R:ShowActionHighlight029161(entry)
 
     local highlight = self:GetOrCreateSlotHighlight029165(entry)
     if highlight then
-        local pulse = 0.72 + 0.28 * math.abs(math.sin((now() or 0) / 180))
-        highlight:SetAlpha(pulse)
+        highlight:SetAlpha(1.00)
         highlight:SetHidden(false)
     elseif EPC.AbilityOverlays then
         EPC.AbilityOverlays.smartRecommendedSlot029161 = entry.a.slot
@@ -939,6 +939,12 @@ function R:TriggerBlockWarning029161(abilityName, abilityId, reason)
     self.blockThreatName029161 = tostring(abilityName or "Incoming heavy attack")
     self.blockThreatReason029161 = tostring(reason or "incoming")
     self.blockThreatAbilityId029161 = tonumber(abilityId) or 0
+    -- v0.29.203: BLOCK is no longer a separate HUD window. Route the reaction
+    -- into the Boss Mechanics / Combat Reaction panel so the player has one
+    -- authoritative mechanic overlay instead of two competing warnings.
+    if EPC.BossMechanicsAssistant and EPC.BossMechanicsAssistant.TriggerReaction029203 then
+        EPC.BossMechanicsAssistant:TriggerReaction029203("BLOCK", self.blockThreatName029161, 1800, 5)
+    end
 end
 
 function R:OnIncomingCombat029161(_, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId)
@@ -1004,24 +1010,11 @@ end
 
 function R:RefreshBlockCue029161(combat)
     self:CreateSmartUI029161()
-    local enabled = EPC.saved and EPC.saved.rotationBlockWarningEnabled029161 ~= false
-    local active = enabled and combat and (tonumber(self.blockThreatUntil029161) or 0) > now()
-    if self.layoutMode == true then active = true end
-    self.blockWindow029161:SetHidden(not active)
-    if not active then return end
-
-    if self.layoutMode == true then
-        self.blockTitle029161:SetText("BLOCK WARNING")
-        self.blockDetail029161:SetText("DRAG • appears when a dangerous incoming attack is detected")
-        return
-    end
-
-    local key = actionBindingText("SPECIAL_MOVE_BLOCK")
-    self.blockTitle029161:SetText(key ~= "" and ("BLOCK NOW  [" .. key .. "]") or "BLOCK NOW")
-    local detail = self.blockThreatName029161 or "Incoming heavy attack"
-    self.blockDetail029161:SetText(detail)
-    local pulse = 0.72 + 0.28 * math.abs(math.sin((now() or 0) / 105))
-    self.blockWindow029161:SetAlpha(pulse)
+    -- v0.29.203: the old standalone BLOCK NOW frame is intentionally retired.
+    -- Generic block threats are forwarded by TriggerBlockWarning029161 into the
+    -- resizable Boss Mechanics / Combat Reaction overlay. Keep this control
+    -- hidden for SavedVariables/backward compatibility with older installs.
+    if self.blockWindow029161 then self.blockWindow029161:SetHidden(true) end
 end
 
 function R:Refresh()
@@ -1081,8 +1074,11 @@ function R:SetLayoutMode(active)
     EAS_RA_SetLayoutModeBase029161(self, active)
     self:CreateSmartUI029161()
     local layout = active == true
-    self.blockWindow029161:SetMouseEnabled(layout)
-    self.blockWindow029161:SetMovable(layout)
+    if self.blockWindow029161 then
+        self.blockWindow029161:SetMouseEnabled(false)
+        self.blockWindow029161:SetMovable(false)
+        self.blockWindow029161:SetHidden(true)
+    end
     if self.swapCue029161 then
         self.swapCue029161:SetMouseEnabled(layout)
         self.swapCue029161:SetMovable(layout)
@@ -1214,8 +1210,7 @@ function R:ShowActionHighlight029161(entry)
     glow:ClearAnchors()
     glow:SetAnchor(TOPLEFT, target, TOPLEFT, -3, -3)
     glow:SetAnchor(BOTTOMRIGHT, target, BOTTOMRIGHT, 3, 3)
-    local pulse = 0.76 + 0.24 * math.abs(math.sin((now() or 0) / 145))
-    glow:SetAlpha(pulse)
+    glow:SetAlpha(1.00)
     glow:SetHidden(false)
     self.lastHighlightStatus029166 = "VISIBLE:" .. tostring(entry.a.slot or "?")
 end
@@ -1320,8 +1315,7 @@ function R:ShowActionHighlight029161(entry)
         end
         if EPC.DualActionBar and EPC.saved and EPC.saved.showDualActionBar029189 == true
             and EPC.DualActionBar.SetSmartRecommendation029189 then
-            local pulse = 0.72 + 0.28 * math.abs(math.sin((now() or 0) / 145))
-            EPC.DualActionBar:SetSmartRecommendation029189(entry.a.slot, entry.a.category, pulse, true)
+            EPC.DualActionBar:SetSmartRecommendation029189(entry.a.slot, entry.a.category, 1.00, true)
         end
         self.lastHighlightStatus029166 = "SWAP"
         return
@@ -1330,8 +1324,7 @@ function R:ShowActionHighlight029161(entry)
     local dualBar = EPC.DualActionBar
     if dualBar and EPC.saved and EPC.saved.showDualActionBar029189 == true
         and dualBar.SetSmartRecommendation029189 then
-        local pulse = 0.72 + 0.28 * math.abs(math.sin((now() or 0) / 145))
-        if dualBar:SetSmartRecommendation029189(entry.a.slot, entry.a.category, pulse, false) then
+        if dualBar:SetSmartRecommendation029189(entry.a.slot, entry.a.category, 1.00, false) then
             self:HideVisibleActionHighlight029166()
             if self.HideNativeSlotHighlights029165 then self:HideNativeSlotHighlights029165() end
             self.lastHighlightStatus029166 = "DUAL:" .. tostring(entry.a.slot or "?")
@@ -1342,8 +1335,7 @@ function R:ShowActionHighlight029161(entry)
     local overlays = EPC.AbilityOverlays
     if overlays and EPC.saved and EPC.saved.showAbilityOverlays ~= false
         and overlays.SetSmartRecommendation029167 then
-        local pulse = 0.72 + 0.28 * math.abs(math.sin((now() or 0) / 145))
-        if overlays:SetSmartRecommendation029167(entry.a.slot, entry.a.category, pulse) then
+        if overlays:SetSmartRecommendation029167(entry.a.slot, entry.a.category, 1.00) then
             -- Ensure no legacy/native glow competes with the exact Suite box.
             self:HideVisibleActionHighlight029166()
             if self.HideNativeSlotHighlights029165 then self:HideNativeSlotHighlights029165() end

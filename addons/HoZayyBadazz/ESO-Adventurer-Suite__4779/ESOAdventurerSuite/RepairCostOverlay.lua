@@ -576,7 +576,7 @@ function R:Initialize()
         end
     end
     EVENT_MANAGER:UnregisterForUpdate(prefix .. "_HudAlphaSync029134")
-    EVENT_MANAGER:RegisterForUpdate(prefix .. "_HudAlphaSync029134", 100, function()
+    EVENT_MANAGER:RegisterForUpdate(prefix .. "_HudAlphaSync029134", 900, function()
         if R and R.SyncCompactHudAlpha029134 then R:SyncCompactHudAlpha029134() end
     end)
     self:Refresh()

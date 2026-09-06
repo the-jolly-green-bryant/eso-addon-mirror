@@ -13,6 +13,8 @@ CollectThemAllData_Others_DirectPurchases = {
         [COLLECTIBLE_CATEGORY_TYPE_COMPANION] = {},
         [COLLECTIBLE_CATEGORY_TYPE_MOUNT] = {
             { name = "Hailcinder Vale Elk", info = "The Hailcinder Mount Pack" },
+            { name = "Wraithtide Horse", info = "Ghostly Privateers Pack" },
+
         },
         [COLLECTIBLE_CATEGORY_TYPE_VANITY_PET] = {
             { name = "10-Year Anniversary Golden Wisp", info = "10-Year Anniversary Pack" },

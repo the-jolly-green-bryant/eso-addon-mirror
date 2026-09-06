@@ -1,3 +1,432 @@
+0.29.346 - ESOUI DEPENDENCY VERSION COMPLIANCE
+- Added mandatory >=AddOnVersion checks to every DependsOn library and corrected LibMapPins-1.0 to build 10047.
+- Split the dependency list across two DependsOn lines so each line stays safely below ESOUI manifest line-length limits.
+- Synchronized the ESOUI description required-library versions with the manifest.
+
+0.29.345 - REQUIRED LIBRARY SET
+- Updated the addon manifest so the Suite requires the exact library set used by the current build: LibTreasure, LibMapPins-1.0, LibMapPing, LibMapData, LibMainMenu-2.0, LibGPS, LibDebugLogger, LibChatMessage, LibAddonMenu-2.0, and CustomCompassPins.
+
+0.29.344 - CLOCK RESPONSIVENESS FIX
+- Restored the Time/Clock overlay's lightweight fallback refresh to once per second so it never waits up to five seconds after a visibility/state change.
+- Added Clock to the event-driven responsive HUD wake path, so opening/closing ESO UI scenes immediately reconciles its visibility.
+- Keeps the full FPS audit and 0.29.343 overlay responsiveness rebalance intact; no expensive gameplay polling was reintroduced.
+
+0.29.343 - RESPONSIVE OVERLAY REBALANCE
+- Rebalanced the 0.29.341 FPS-audit throttles so visible HUD overlays respond quickly again while hidden/inactive systems remain event-driven or heavily throttled.
+- Added event-driven HUD reconciliation on ESO scene/UI-mode hand-offs so overlays reappear immediately after menus instead of waiting for long safety timers.
+- Ability Overlay and Dual Weapon Bar live combat updates now run at 125 ms; out-of-combat fallback remains throttled.
+- Restored sub-second visibility/aura response for Unit Frames without restoring the old full resource-event repaint path.
+- Active Quest, Golden Pursuits, Quickslot, Champion, Alliance Rank, Infinite Archive, Reticle, Repair, and difficulty overlays use shorter visible-state safety intervals.
+- Combat HUD live summaries update at 250 ms in combat and remain throttled outside combat.
+- Minimap camera/player-marker architecture from the FPS audit is unchanged.
+
+0.29.342 - GROUP FRAME + ACTIVE QUEST REGRESSION FIX
+- Fixed Group/Raid member-frame background flicker introduced by the 0.29.341 FPS audit. Final no-card/background cleanup now always runs after layout/style/roster refreshes while live power-event updates remain lightweight.
+- Added a final roster-backdrop stabilizer so historical compatibility passes cannot alternate row/card backgrounds between refreshes.
+- Fixed Active Quest failing to reappear when it initialized hidden. The low-frequency safety refresh now checks hidden overlays too, and EVENT_PLAYER_ACTIVATED performs event-driven login/zone catch-up refreshes.
+- Preserves the 0.29.341 sprinting/unit-frame, minimap marker, POI-cache, and whole-addon FPS optimizations.
+
+0.29.341 - FULL FPS AUDIT + MINIMAP MARKER STABILITY
+- Completed a full 98-Lua-file performance/code-path audit across the entire Suite, using 0.29.340 as the stable feature baseline.
+- Fixed a major movement-only Unit Frames cost: Player Magicka/Stamina and target-health power events now update only the affected resource bar instead of falling through to full frame/layout/aura refresh chains. Sprint stamina ticks no longer repaint the whole Player frame.
+- Reworked minimap motion to remove player-arrow residual compensation/velocity prediction that caused visible shake. The player marker stays mathematically centered while the map can pan, only leaving center at real map boundaries; normalized map-position API sampling is capped to ~30 Hz while the visual marker path remains smooth.
+- Removed the duplicate slow-pulse player-position sample and moved the map-match watchdog to its existing low-frequency map-ID check.
+- Reduced static minimap pin-tree culling frequency and only reculls after meaningful camera movement; hidden provider population is deferred until movement settles.
+- Rebuilt Automatic Difficulty POI context lookup around a per-zone/map cache of only relevant public-dungeon/world-boss/world-event candidates instead of rescanning every POI name/type/position on each context tick. POI events invalidate/debounce the cache.
+- Removed the retired Crafting Inventory Grid implementation body entirely; the compatibility file now installs zero hooks, controls, events, or timers and ESO native station inventories remain authoritative.
+- Removed obsolete pre-optimization Dual Action Bar refresh/initializer code and filtered its native power event so only Player Ultimate updates enter the Dual Bar callback.
+- Removed the legacy Teleporter per-frame OnUpdate that was calling a function later intentionally replaced with a no-op.
+- Removed Infinite Archive cosmetic per-frame alpha pulsing and legacy Journal rainbow row OnUpdate effects; remaining OnUpdate handlers are resize-only and attach only while the user is actively resizing.
+- Consolidated/relaxed safety polling for Active Quest, Golden Pursuits, Unit Frames, Champion, Alliance Rank, Dungeon Finder, Quickslot, Repair, Reticle, controller navigation, Lore 3D/compass pins, Team Visibility, Resource Pins, and other HUD fallbacks while preserving immediate ESO event paths.
+- Dungeon Chest Finder now probes unsupported overland content at a low cadence instead of checking instance support every renderer tick; activation/zone events reset the probe immediately.
+- Clock fallback refresh reduced because the visible clock only displays minute precision; Stable Timer and custom Reticle polling now go dormant when those features are disabled.
+- Historical duplicate-named methods in Travel, Journal, Unit Frames, Rotation Assistant, Active Quest, and other versioned modules were audited individually. Wrapper predecessors captured by later patches are intentionally retained because removing them would break the live function chain; only provably unreachable/dead runtime implementations were removed.
+- No permanent gameplay OnUpdate loop remains in the Suite audit: the remaining OnUpdate handlers are transient resize handlers only.
+
+0.29.340 - AUTOMATIC DIFFICULTY HUD LAYER FIX
+- Raised the Automatic Difficulty overlay above adaptive Active Quest and Golden Pursuits cards during normal gameplay and HUD Layout Mode.
+- Difficulty icon now uses the high HUD tier with a dedicated high draw level and is brought to the front whenever it refreshes.
+- Quest auto-sizing and right-edge anchor behavior from 0.29.339 are unchanged.
+
+0.29.339 - QUEST RIGHT-EDGE ANCHOR FIX
+- Reworked Active Quest and Golden Pursuits HUD placement to preserve the actual screen edge chosen in HUD Layout Mode.
+- Overlays dropped on the right half now save a true right-edge anchor and expand leftward as objective content grows, instead of rebuilding from TOPLEFT and appearing to snap back.
+- Left-side placements keep a left-edge anchor. Reset Position clears the new edge-anchor state.
+
+0.29.338 - QUEST OVERLAY EDGE POSITION FIX
+- Fixed Active/Main Quest and Golden Pursuits overlays snapping away from user-selected positions when auto-fit expands near the right or bottom screen edge.
+- Auto-fit no longer writes temporary clamped coordinates back into SavedVariables; the position chosen in HUD Layout Mode remains authoritative.
+- Larger quest cards grow inward from nearby screen edges and automatically return to the exact saved position when their content shrinks again.
+
+0.29.337 - ADAPTIVE QUEST OBJECTIVE OVERLAYS
+- Active/Main Quest overlay now renders every visible incomplete objective instead of limiting the list to five rows.
+- Quest overlay height automatically grows for quests with more objectives and shrinks again for shorter quests.
+- Dense objective lists tighten line spacing and may widen the card modestly before consuming excessive vertical screen space.
+- Old fixed-height quest viewports are migrated to content-aware sizing; the Settings height controls are now Maximum Auto Height limits.
+- Golden Pursuits now includes every visible incomplete objective from its linked journal quest and uses the same grow/shrink behavior.
+- Both overlays are clamped back on-screen after automatic size changes so expanded quest text cannot drift beyond an edge.
+
+0.29.336 - NATIVE COMPASS FOCUSED INFO HUD CONTROL
+- Added HUD Layout control for ESO's native ZO_CompassCenterOverPinLabel, the focused-name text shown above the compass when facing quests, wayshrines, POIs, group members, and other compass pins.
+- Move and resize/scale the focused-info text independently without moving or reskinning the native compass.
+- Reapplies the saved position after ESO keyboard/gamepad template changes and screen/zone activation events; no gameplay polling loop is added.
+- Reset Layout now restores the native focused-info label to ESO's default compass-relative position.
+
+0.29.335 - SINGLE NATIVE ALERT STACK + CENTERED WRAP
+- Reworked ESO native alert positioning to use the single ALERT_MESSAGES ZO_FadingControlBuffer anchor instead of moving both outer/inner controls, eliminating the duplicate stock-top-right + moved notification behavior.
+- Uses a real ZO_Anchor object, matching ESO's own alert system and avoiding the prior numeric-anchor crash.
+- Centers ZO_AlertLine text and fixes its readable width so wrapped second/third lines remain centered instead of hugging the right edge.
+- Existing active alert rows are re-anchored and centered when the saved HUD position is applied; no gameplay polling loop added.
+
+0.29.334 - REAL NATIVE ALERT STACK CONTROL
+- Fixed the movable ESO notification control to target the child host that actually owns ZO_FadingControlBuffer instead of only moving the outer ZO_AlertTextNotification shell.
+- Covers native alert lines such as group invite accepted/declined messages and wayshrine/location notifications that were still appearing at ESO's stock upper-right position.
+- Added an event-driven ZO_FadingControlBuffer DisplayEntry hook scoped only to ESO's alert host, so saved position reapplies for alerts that bypass ZO_Alert/ZO_SoundAlert.
+- Does not modify fadingControlBuffer.anchor or any other internal buffer layout field, avoiding the 0.29.332 crash.
+
+0.29.333 - NATIVE NOTIFICATION CRASH FIX
+- Removed the unsafe write to ZO_FadingControlBuffer.anchor that caused DisplayEntry() to index a number when alerts appeared or the app GUI hid.
+- The movable ESO notification feed now repositions only the native notification container; ESO retains complete ownership of its fading-buffer anchor structure and animations.
+- Keeps event-driven position reapplication after ZO_Alert / ZO_SoundAlert without adding a polling loop.
+
+0.29.332 - NATIVE TOP-RIGHT NOTIFICATION POSITION FIX
+- Fixed the ESO top-right alert feed snapping back to its stock position whenever ESO creates a new notification.
+- Reapplies the saved Suite HUD position after ZO_Alert / ZO_SoundAlert creates a native notification; no continuous polling was added.
+- Keeps ESO's fading notification buffer anchor direction synchronized with the moved position so new lines originate from the moved notification area.
+- Test Notification now exercises the same real native alert/re-anchor path as live notifications.
+
+0.29.331 - COMMUNICATION OVERLAY TRANSPARENT BACKGROUNDS
+- Removed the large dark runtime backdrop from the ESO Request / Invite Prompt while keeping the stronger prompt text styling.
+- Removed the black fill from both communication-overlay HUD Layout proxy boxes; gold outlines remain for move/resize control.
+- Test Prompt preview no longer uses a black background.
+- Preserves Guild Homes Teleporter, station rollback, minimap/FPS, and combat-assistant fixes.
+
+0.29.330 - TELEPORTER GUILD HOMES
+- Added a dedicated Guild Homes destination view to the World Map Teleporter.
+- Lists every guild the player belongs to with the guild master display name and a direct Visit Home action.
+- Guild Home travel now targets the guild master's primary residence instead of an arbitrary online guild member.
+- Guild masters travel directly to their own primary residence; unavailable leaders/homes show a clear blocked status.
+
+0.29.329 - SINGLE-DRAG COMMUNICATION + SMITHING + QUICK POTION FIX
+- Request / Invite Prompt and ESO Top-Right Notifications now use explicit single-click-and-drag movement in HUD Layout Mode; no selection/double-click step.
+- Removed the Suite override of ESO smithing improvement booster-row lookup that could return nil and crash SmithingImprovement_Keyboard.lua while hovering improvement rows.
+- Hardened Quick Potion / Quickslot detection so valid selected quickslot content remains visible even when ESO briefly reports IsSlotUsed=false.
+- Preserves 0.29.328 communication styling/tests and current minimap/FPS work.
+
+0.29.328 - COMMUNICATION PROMPT VISIBILITY + NATIVE NOTIFICATION CONTROL
+- Made ESO's native Request / Invite Prompt easier to notice with a dark high-contrast backdrop, gold edge, and stronger native prompt text while preserving ESO's actual Accept/Decline behavior.
+- Added a harmless Test Prompt preview in Suite settings so placement/visibility can be checked without waiting for a real invite.
+- Added HUD Layout control for ZO_AlertTextNotification, ESO's native top-right notification text feed used for short duel/group/system result alerts.
+- Added a Test Notification button that sends one local native ESO alert for position/scale verification.
+- Reset Layout now restores both communication overlays; no gameplay polling loop was added.
+
+0.29.327 - ESO REQUEST / INVITE PROMPT HUD CONTROL
+- Removed the broad 0.29.326 native-ESO HUD controller entirely.
+- Added HUD Layout control only for ESO's native Player-to-Player Request / Invite Prompt (ZO_PlayerToPlayerAreaPromptContainer).
+- This is the same native prompt used by group invites, trade requests, shared quests, friend/guild invites, duel/Tribute requests, ready checks, and similar Accept/Decline interactions.
+- The ESO prompt keeps its native artwork and behavior; Suite HUD Layout Mode only moves it and uniformly scales it.
+- Added reset support through the existing RESET LAYOUT action. No recurring gameplay polling loop was added.
+
+0.29.325 - STATION OVERLAP HOTFIX
+- Temporarily disabled the Suite Crafting Inventory Grid overlay and restored ESO's native station inventory panels on all crafting stations.
+- Fixes overlapping/doubled crafting icons, broken station inventory hand-offs, and transmute/research filter instability caused by the overlay path.
+- Preserves the current minimap/FPS/combat-assistant fixes; only crafting-station inventory presentation changed.
+
+0.29.324 - CRAFTING STATION REPAIR + ICON DECONFLICT
+- Reworked Crafting Inventory Grid station hand-offs so it never draws against zero-size/transitioning ESO inventory controls.
+- Owner selection now follows the most recently observed valid ESO crafting inventory instead of holding a stale station owner.
+- Transmute filter updates are copied only after ESO finishes rebuilding its native Retrait list; no direct refresh is executed inside ESO's Refresh stack.
+- Clears stale grid anchors/cells during station mode changes and restores every suppressed native owner when leaving a station.
+- Added extra cell spacing and geometry guards to prevent crafting inventory icons from stacking/overlapping during tab transitions.
+- Minimap native/service duplicate matching is stricter, and near-identical crafting/service markers are visually fanned apart instead of overlapping.
+- Keeps the 0.29.318+ smooth camera/arrow and 0.29.319+ movement FPS architecture unchanged.
+
+0.29.323 - TRANSMUTE INVENTORY FILTER FIX
+- Fixed the Suite crafting grid at Transmute Stations so Weapons / Armor / Jewelry filters update after ESO finishes applying the native Retrait filter.
+- Added Transmute-specific hooks for ZO_Retrait_Inventory_Keyboard instead of relying on the earlier generic crafting-inventory callback.
+- Prevented the Retrait inventory grid from remaining active when the station switches to Reconstruction or another hidden mode.
+- Kept the event-driven station design; no 150 ms polling loop was reintroduced.
+
+0.29.322 - CRAFTING STATION STABILITY
+- Fixed crafting-station UI instability caused by the Suite Crafting Inventory Grid repeatedly polling/suppressing ESO crafting controls every 150 ms.
+- Crafting inventory owner selection is now sticky and event-driven, preventing tab/scene hand-offs from bouncing between multiple ESO inventory owners.
+- Added a short transition grace so the Suite grid does not tear down/rebuild during normal station tab changes.
+- Native ESO crafting list alpha/mouse state is now snapshotted and restored per suppression cycle instead of reusing stale values.
+- Learned crafting/service station minimap icons are excluded from aggressive moving-pin parking so they stay visually stable while traveling.
+- Keeps the 0.29.318+ smooth minimap camera/arrow and 0.29.319+ FPS optimizations for high-volume POI/native pins.
+
+0.29.321 - DUAL WEAPON BAR STEADY RECOMMENDATION
+- Fixed the remaining Dual Weapon Bar flashing/flicker.
+- The Smart Combat Advisor no longer visibly clears and re-shows the same Dual Bar recommendation every scoring refresh.
+- Added a short internal clear grace window so same-pass renderer handoffs stay invisible.
+- Unchanged recommendations keep one continuous soft-gold outline; a real recommendation change updates directly without pulsing.
+- No minimap/FPS architecture changes from 0.29.320.
+
+0.29.320 - STEADY COMBAT ASSISTANT HIGHLIGHT
+- Removed the pulsing/flashing animation from Smart Combat Advisor ability recommendations.
+- Recommended abilities now use a steady soft-gold outline/halo with a fixed NEXT indicator.
+- Applied the non-flashing highlight consistently to Suite Ability Overlays, Dual Weapon Bar recommendations, and the native action-bar fallback.
+- Kept all 0.29.319 minimap movement/FPS optimizations unchanged.
+
+0.29.319 - MOVING STATIC-PIN TREE OPTIMIZATION
+- Keeps the smoother 0.29.318 60 FPS player arrow + fixed 30 FPS minimap camera.
+- Off-screen/excess POI, native, wayshrine, merchant, service, and trail controls are parked under a hidden non-moving layer instead of remaining children of the panning static-pin canvas.
+- Dense-area movement budgets keep the most relevant nearby icons attached while preserving all icon data for automatic reappearance.
+- Static culling now runs only when the camera actually moves and uses a wider prefetch margin at rest.
+- No dependency on opening ESO's full World Map was reintroduced.
+
+0.29.318 - MOVEMENT SMOOTHNESS ROLLBACK + FIXED-CADENCE CAMERA
+- Rolled back the 0.29.317 shared-canvas / 10 ms threshold camera experiment because it could feel worse in motion.
+- Player arrow remains on the smooth 16 ms path while the heavy map camera now pans at a fixed 33 ms cadence.
+- Arrow compensates between camera pans, avoiding the old 100 ms skip without forcing large map trees to move every frame.
+- Added lightweight viewport culling for map-locked POI/native/service pins so off-screen controls stay hidden during travel.
+- Kept minimap auto-population: opening the large World Map is still not required.
+- Kept lower moving-time Resource Pin/Lore/Team Visibility budgets and reduced dynamic minimap refresh work while running.
+
+0.29.316 - MINIMAP AUTO-POPULATION REGRESSION FIX
+- Fixed a 0.29.315 roaming-budget regression that hid supplemental/native minimap icons while the player was moving. Static POI/native/merchant/service icons now remain visible during travel because they already ride the single map-sized parent layer.
+- Restored the guarantee that opening the ESO World Map is never required for minimap icon population. Login and map transitions now schedule delayed hidden-provider snapshots, with one guarded recovery prime only if the current map never populated itself.
+- Kept the 16 ms smooth camera/player-arrow motion path and the 0.29.315 whole-addon performance reductions; the recovery work is transition/startup-only and never becomes a repeating gameplay scan.
+
+0.29.315 - SMOOTH MOTION + FULL SUITE PERFORMANCE PASS
+- Mini Map camera and player arrow now share one lightweight 16 ms motion path; the previous 33 ms arrow / 100-180 ms camera mismatch that caused visible skipping is removed.
+- Added frame-time interpolation plus short-lived velocity prediction for player position/heading so coarse ESO map-position samples glide instead of producing stop/start arrow motion.
+- Dense-area roaming visual budget: while moving, the minimap keeps a smaller live POI/service set and temporarily hides the supplemental native mirror; full cached pins return after stopping without a World Map/provider rescan.
+- Mini Map heavyweight pulse reduced to 180 ms, map-id fallback checks reduced, and dynamic/edge/PvP guidance layers use staggered cadences.
+- Resource Pins now render at most 12 nearest 3D nodes while moving, use a slower heavy spatial rebuild, and skip camera-orientation writes when heading barely changed.
+- Dual Weapon Bar out-of-combat dynamic polling reduced to once per 1.5 seconds while combat remains responsive at 250 ms and action-bar events remain immediate.
+- Lore Book world/compass pins use slower scan/tick rates plus cached heading, size, label position, text, and alpha writes to cut repeated UI work.
+- Team Visibility now performs no particle-position work when there is no active companion/group and uses a lower background cadence.
+- Dungeon Chest Finder no longer repeatedly re-hides/re-scans markers outside supported instances.
+- Removed the Modern Suite window's permanent per-frame resize watcher; its OnUpdate handler exists only during an actual resize.
+- Map Teleporter per-frame popup guard now exits immediately while the teleporter is hidden.
+- Background roaming fallbacks were further reduced: rectangular Unit Frame safety sync, Active Quest safety refresh, Repair HUD alpha sync, Hybrid Navigation gameplay polling, and out-of-combat Ability Overlay refreshes now yield more CPU time to gameplay.
+
+0.29.314 - DENSE POI ROAMING FPS PASS
+- Deferred POI discovery/proximity rescans until the player has stopped moving briefly, preventing dense-town POI bursts from stealing movement frames.
+- Reduced the active minimap POI and supplemental native-mirror control pools to performance-safe caps while retaining the underlying map data.
+- Merchant, stable, and learned service pins now live on the static map canvas instead of being individually re-anchored during movement.
+- Ordinary POI-only refreshes no longer reconcile/re-render the entire supplemental native snapshot.
+- Resource Pins now use a nearest-24 movement cap and a slower heavy spatial refresh while running; the configured full marker count returns after stopping.
+- Preserved the independent 33 ms minimap player-arrow path from 0.29.313.
+
+0.29.313 - POI + PLAYER ARROW FPS HOTFIX
+- POI proximity/discovery events no longer trigger hidden World Map synchronization.
+- EVENT_POI_UPDATED bursts are debounced into one POI-only refresh instead of rebuilding wayshrines, PvP, native-provider, and every static minimap layer.
+- Group/tracking/quest events no longer mark the minimap map context out of sync.
+- Added an isolated 33 ms player-arrow update path; it updates only player position/rotation and never touches POI or provider pools.
+- Player arrow anchor/rotation writes are thresholded to avoid invisible UI churn.
+
+0.29.312 - MOVEMENT FRAME-DROP OVERHAUL
+- Mini Map static layers now live on a map-sized moving pin canvas: native pins, wayshrines, POIs, PvP objectives and trail markers move with one parent anchor instead of individually re-anchoring while the player runs.
+- Removed movement-time POI table re-sorting and the repeating native pin-manager snapshot that could still produce periodic gameplay hitches.
+- Added sub-pixel pan suppression so the minimap does not invalidate its anchor tree when consecutive player-map coordinates would move the map by less than a visible pixel.
+- Resource Pins now separate cheap camera-facing rotation from the expensive nearby-database query/sort/full 3D control rebuild. Heavy resource refreshes are movement-aware, capped to the nearest 36 pins while actively running, and restore the configured full count after the player stops.
+- Reduced Resource Pins reticle/depletion polling, Lore Book 3D/compass movement ticks, Team Visibility world-position conversion cadence, Antiquity world-marker polling, and Hybrid Desktop Navigation polling.
+- Dual Action Bar and Ability Overlays now use slower out-of-combat refresh cadences while retaining fast combat updates.
+- Preserved event-driven map/quest/treasure/survey updates and combat responsiveness; this pass specifically targets frame-time spikes during movement.
+
+0.29.311 - FRAME DROP / DUAL WEAPON BAR HOTFIX
+- Rebuilt Dual Action Bar runtime updates so stable slot data (icons, names, Skill Styles and hotkeys) is event-driven instead of rebuilt every 200 ms.
+- Dual Action Bar live tick now performs only lightweight cooldown/timer/stack/Ultimate/highlight updates and reuses the Rotation Assistant effect snapshot without re-running ability classification.
+- Reduced Rotation Assistant combat scoring cadence from 100 ms to 200 ms to cut UI-thread pressure while keeping next-ability guidance responsive.
+- Mini Map no longer runs a complete hidden ESO World Map/custom-provider rebuild on the repeating background safety timer.
+- Mini Map map-transition retries now stop after the first successful sync/prime instead of repeating the heavyweight native/provider rebuild several times.
+- Quest progress/counter events now refresh Suite quest pins without forcing a full hidden World Map rebuild during combat.
+- Removed the second forced hidden World Map OnUpdate pump from a single pin-prime pass and coalesced burst provider refresh events.
+
+0.29.310 - FULL ADDON FPS OVERHAUL
+- Reduced default Lore Library 3D world and compass marker ticks from 20 Hz to 8 Hz.
+- Mini Map keeps camera/player movement responsive while heavyweight native, Treasure/Survey, POI, service, antiquity, PvP and trail layers refresh on bounded cadences instead of every 100 ms.
+- Rotation Assistant skips its 100 ms recommendation work entirely while out of combat.
+- Reduced high-frequency polling across Inventory Grid, Hybrid Navigation, Reticle, Ability Overlays, Dual Action Bar, Unit Frames, Champion/Alliance/Golden Pursuits, Quickslot and Infinite Archive guards.
+- Reduced Resource Pins, Dungeon Chest Finder, Team Visibility, Antiquity and crafting-watch polling to lower CPU/UI-thread pressure.
+- Event-driven refreshes remain immediate; no Suite feature was removed.
+
+0.29.309 - Treasure & Survey Hover Information
+- Added hover tooltips to Treasure Map, Crafting Survey, and Tribute Clue icons on the World Map and Suite Mini Map.
+- Tooltips show the actual item name, marker type, zone/map, normalized map position, a short explanation of the location, and why the locator is currently showing it.
+- Tooltip details are generated only on mouse hover, with no new polling/update loop and no added gameplay FPS cost.
+- World Map pin callbacks now retain the correct Treasure/Survey/Clue type per LibMapPins registration.
+
+0.29.308 - FPS / Minimap Performance Hotfix
+- Fixed a major gameplay FPS regression caused by the minimap repeatedly driving ESO's hidden World Map and custom-pin refresh pipeline.
+- Minimap now uses event/transition-driven native pin rebuilds with a slow safety refresh instead of near-continuous background map-provider work.
+- Reduced minimap map-state polling and transition retry bursts while preserving automatic icon population without opening the full World Map.
+- Reduced always-on Team Visibility, Resource Pins, hybrid controller navigation, Infinite Archive advisor, and repair-overlay polling overhead.
+- Preserved live minimap movement, quest/POI updates, 3D resource markers, team beams, and HUD functionality.
+
+- v0.29.307: Fixed Mini Map movement in HUD Layout Mode. Removed ESO's built-in safe-area clamp from the Suite minimap so both Fantasy Round and Fantasy Square can be dragged all the way to monitor sides and corners, including slightly off-screen positioning when desired. Added a Suite recovery-only boundary that keeps a small grab strip reachable, and added an explicit saved-position flag so valid negative edge coordinates persist across reloads instead of being mistaken for the old reset sentinel. Existing minimap size, zoom, frame artwork, alliance colors, map crop, and pin sizing are unchanged.
+- v0.29.306: Replaced the Fantasy Square minimap frame artwork with the newly selected ornate compass-square frame. The new 1024x1024 ESO DDS assets use a true transparent center/outside plus internal transparent safety padding so the full N/E/S/W plaques, including the south S point, stay fully inside the texture. Added the same selected square-frame design for the blue/Daggerfall, gold/Aldmeri, and red/Ebonheart variants so automatic/manual alliance coloring still works. Fantasy Round, live map tiles, crop/mask, zoom, and pin sizing are unchanged.
+- v0.29.305: Replaced the Fantasy Round minimap frame artwork with the newly selected ornate compass frame. The new 1024x1024 ESO DDS assets use a true transparent center/outside and an internal transparent safety margin, so the full south S diamond and its lower tip remain inside the texture instead of being cut off. The same frame geometry is used for the blue/Daggerfall, gold/Aldmeri, and red/Ebonheart variants so alliance/manual frame coloring still works. Live map tiles, minimap crop/mask, zoom, pin sizing, and Fantasy Square are unchanged.
+- v0.29.303: Corrected the enlarged Fantasy minimap frame after the v0.29.302 thickness pass. Restored the undistorted frame geometry so the N/E/S/W compass plaques and border artwork are complete, sharpened the frame artwork for better recognition at normal HUD sizes, and moved the enlargement outward instead of covering more of the live map. Added a Fantasy frame size control (100-112%, default 108%) with an outer safety gutter so compass tips cannot be clipped. Minimap pins now stay fully inside the visible frame/mask boundary so edge icons are not cut in half; existing icon-size tuning, zoom, alliance colors, and live-map behavior are preserved.
+- v0.29.302: Thickened the Fantasy Round and Fantasy Square minimap artwork so the ornate alliance-colored frame is easier to see at normal HUD sizes. The frame now extends farther inward over the live map while keeping the same overall minimap size, transparent exterior, alliance/manual color choices, crop mask, zoom, and icon behavior.
+- v0.29.301: Added a manual Fantasy minimap frame color selector. Players can now choose Automatic (match the current character alliance), Aldmeri gold/yellow, Daggerfall blue, or Ebonheart red regardless of character alliance. The new dropdown replaces the prior on/off alliance-color checkbox, preserves existing profiles, updates immediately, and applies to both Fantasy Round and Fantasy Square without changing the live map, crop, zoom, or icon behavior.\n- v0.29.300: Added alliance-aware fantasy minimap frames. Fantasy Round and Fantasy Square now automatically match the current character alliance: Aldmeri Dominion uses a gold/yellow stained-glass frame, Daggerfall Covenant keeps the original blue frame, and Ebonheart Pact uses a crimson-red frame. The recolor preserves the existing gold/silver ornament, transparent center/crop, live map, pins, and zoom behavior. Added a user-friendly Mini Map setting to disable alliance coloring and keep the original blue frame.\n- v0.29.299: Added the /promo chat command for manually repeating the configured Wayshrine Auto Message. The command reuses the most recent wayshrine/zone context when available, applies the current saved message template, guild link, and selected chat channel, and works even when the automatic wayshrine trigger is disabled. Public Say/Zone/Group/Guild messages are re-prepared in ESO chat and still require the player to press Enter; Local / Suite Chat prints locally. Added the command to the Wayshrine Auto Message settings help and security documentation.
+- v0.29.298: Rebuilt the ESO Adventurer Suite settings menu into clear feature-based sections: General & Help; Tamriel Codex & Main Window; Combat Advisor & Boss Mechanics; Builds & Loadouts; Gameplay & Difficulty; Activities & Group Finder; General HUD & Utility Overlays; Quest & Progress Overlays; Action Bars, Abilities & Quickslots; Unit Frames & HUD Layout; Mini Map; Pins, Resources & Collectibles; Travel & Teleporter; Group, Team & Companion Visibility; Gear & Maintenance; Antiquities & Lead Finder; Crafting & Learning; and Utilities & Diagnostics. Every feature header is now explicitly assigned so settings cannot accidentally inherit a neighboring category. Long description/information controls are forced to full width so LibAddonMenu can wrap them cleanly, and each category opens with a short plain-language overview. Existing saved settings, defaults, getters, and setters are unchanged.
+- v0.29.297: Fixed the actual native World Map refresh-queue dependency that caused city/location icons to populate only after pressing M. ESO queues location and world-event refresh groups inside ZO_WorldMap_UpdateMap, but normally executes those private queues from the native World Map OnUpdate loop. The Suite now safely pumps that existing native update handler while the map scene stays hidden, restores the exact minimap city/interior map if ESO recenters to a parent map, and immediately captures the fully initialized pins. Hidden SetData pin capture is now allowed during this controlled refresh, and the overly strict DoesCurrentMapMatchMapForPlayerLocation gate was removed when the exact minimap mapId already matches. Area transitions force the hidden queue immediately. Minimap icon sizing remains unchanged at the current 100% tuning.
+- v0.29.296: Removed the remaining native World Map open dependency from Mini Map area icons. The Suite now keeps ESO's hidden global current-map context aligned to the exact LibMapData/player map the minimap is rendering before reading POIs, wayshrines, quests, services, or rebuilding native/custom pins. It uses SetMapToMapId directly while the World Map is closed so the hidden context can switch into city/town/interior sub-maps without marking that map as user-selected; opening M still behaves normally. Player-location sync is retried in gameplay, POI initialization triggers an immediate resync, and transition retries now continue longer for late-loading local maps. Existing 100% minimap icon sizing is unchanged.
+- v0.29.295: Fixed the remaining minimap World Map dependency at the source. Corrected the EVENT_ZONE_CHANGED handler (ESO supplies zone/subzone names there, not a unit tag), so city/subzone transitions no longer get discarded. When SetMapToPlayerLocation changes the hidden current map, the Suite now fires the same OnWorldMapChanged callback ESO fires when the full map is open, allowing LibMapData/LibMapPins and other pin providers to switch to the player's new area immediately. The hidden refresh rebuilds ESO native POI/objective/wayshrine pin groups and calls the active ESO pin manager's RefreshCustomPins() directly with no pin type, matching ZO_WorldMap_UpdateMap; quest changes now request the same refresh. Native snapshots prefer ESO's active shared pin manager and retry after transitions, so map icons can populate without pressing M. Also reduced the v293 115% icon default to 100% and capped full-World-Map native icon dimensions for the smaller minimap so city/service icons no longer render oversized.
+- v0.29.294: Removed the remaining World Map dependency from the minimap icon system. While the full map is closed, the Suite now safely primes ESO's current player-map pin manager and refreshes all registered LibMapPins custom pin types, then snapshots those native/custom pins into the minimap. Quest/POI/network events can request an immediate hidden refresh, and movement uses a throttled refresh so city services, quest markers, MapPins/LoreBooks/custom icons, and other map pins populate without pressing M. Quest pin textures are now eligible for the native mirror while player/group/waypoint/PvP dynamic markers remain handled by their dedicated live layers.
+- v0.29.293: Increased minimap navigation zoom and marker readability after the live-map crop fix. New/default base zoom is 138%, city/local maps receive an additional adaptive close-up, mounted mode no longer pulls the map excessively far back, and the default icon scale is now 115% with a 160% slider ceiling. Existing users still on the previous 1.05/0.88 tuning are migrated once without reducing larger custom settings.
+- v0.29.292: Fixed Fantasy Round showing only the ornate ring with no live map by replacing the problematic circular clip with a corrected alpha mask (opaque center, transparent corners). Added context-aware adaptive zoom: city/local SUBZONE maps zoom closer automatically, dungeon/battleground maps receive an appropriate local-view boost, while mounted/combat adjustments remain active. Manual minimap zoom now honors the existing 70%-200% settings range.
+- v0.29.291: Fixed Fantasy Round/Square minimap cropping. Rebuilt the fantasy DDS files as true transparent frame-only overlays so the baked sample map and navy square background no longer show. The live map now extends underneath the inner rim, and Fantasy Round uses ESO's native circular child clip so tiles and pins stay inside the circular opening instead of leaking through the corners.
+- v0.29.290: Reworked the fantasy minimap fit. Removed the separate round-mask overlay that could blank/hide the live map on some clients, and instead fit the live minimap viewport deeper inside the fantasy frames themselves. Themed frames still hide the generic square background/glass/chrome so no extra box shows, while the round style now uses a smaller centered live map area that sits properly inside the ornate circular opening. Raised the default minimap zoom again for a more detailed local view, while keeping the background gameplay-native pin refresh so icons keep updating without needing the main World Map open.
+- v0.29.289: Fixed the fantasy minimap presentation and live icon refresh. The round fantasy style now uses a separate ornate frame texture plus a dedicated circular corner-mask so the square tile box does not show around the minimap. Reference-style maps also hide the generic Suite background/glass/chrome overlays so no random box appears behind the frame. Added periodic gameplay-native pin captures so town/service/extra minimap icons continue to populate without requiring the player to open the full World Map first, and slightly raised the default minimap zoom for a more detailed local view.
+- v0.29.288: Fixed Fantasy Round / Fantasy Square minimap frames not rendering in-game by rebuilding the custom frame overlays as proper power-of-two 1024x1024 UI DDS textures for ESO. The live minimap still uses the same fantasy round/square art, but the frame assets are now in a safer size/layout for ESO UI texture rendering.
+- v0.29.287: Fixed the new fantasy minimap skins not rendering. The previous build was trying to use the MiniMap reference addon's 256x64 decorative strip textures as if they were full overlay frames, so the live in-game frame could not render correctly. The Suite now uses proper full-frame round and square overlay textures for the live minimap, mapped to Fantasy Round and Fantasy Square, with viewport insets tuned for those frames.
+- v0.29.286: Simplified the live in-game minimap style system to the two styles the user actually wanted: Fantasy Round and Fantasy Square. Both styles now render as the real minimap frame in gameplay, using the bundled themed frame textures instead of the earlier experimental style set. Auto by zone remains available and now switches only between those round/square fantasy frames. Legacy minimap style values from earlier builds are normalized into the new Round/Square system so existing settings continue to work.
+- v0.29.285: Fixed Mini Map hidden-map sync crash caused by Lua local function declaration order. TrySyncHiddenPlayerMap was defined before the local nowSeconds helper, so ESO resolved nowSeconds as a missing global during zone-transition callbacks. The time helper now exists before every closure that uses it; zone-theme, travel-sync, and frame-style behavior from v0.29.284 are preserved.
+- v0.29.284: Fixed the zone-themed Mini Map crash when changing the theme family to Round/Mixed. v0.29.283 accidentally dropped the PLAYER_GLOW_TEXTURES table while inserting the zone-theme style sets, causing GetPlayerGlowTexture to index nil. Restored the full glow texture table, added safe fallbacks for visual-style/player-marker/player-glow lookups, and made Auto by zone re-apply its square/round frame immediately when the actual gameplay map ID changes.
+- v0.29.283: Added zone-themed minimap styling. New settings let the player keep Manual visual styles or switch to Auto by zone, with Square, Round, or Mixed zone-theme families. In Auto by zone mode the Suite computes a stable skin from the current zone/sub-zone/map so the minimap automatically changes style on zone transitions while staying consistent inside that area. Style changes now trigger an immediate minimap rebuild so round/square viewport handling updates correctly as you travel.
+- v0.29.282: Added MiniMap-style minimap skinning options based on the user-provided reference addon. New settings let the player choose Modern Square, MiniMap square themes, or MiniMap round themes, plus separate player-marker art (Suite Arrow, MiniMap Pointer, MiniMap Arrow, MiniMap Gold Arrow). The Suite minimap now loads those frame/player textures from a bundled style pack, automatically applies a tighter viewport inset for the themed frames, preserves the smaller player-arrow footprint, and defaults existing profiles to the requested MiniMap Square Gold + MiniMap Gold Arrow look when no style had been chosen yet.
+- v0.29.281: Rebalanced the Suite Mini Map around actual gameplay readability. Minimap marker size now defaults to 88% (with a broader 60%–125% slider range), while the player arrow and glow were reduced so they no longer cover so much of the map. The minimap now actively calls the hidden SetMapToPlayerLocation sync path when the full World Map is closed, following the same live-map approach used by dedicated minimap addons, so nearby pins and area transitions populate without needing to open the main map first. Transition retries and the map-ID watchdog now also force the hidden player-map sync during travel, town/interior changes, and other sub-zone handoffs.
+- v0.29.280: Reworked the Suite Mini Map into a live gameplay-first map. Minimap pins now default to 70% size with an adjustable Mini map icon size setting; live ESO POI, wayshrine, merchant/service, quest, group, treasure, and related layers refresh without requiring the full World Map to be opened; cached native World Map pins are supplemental and deduplicated instead of replacing live API data. Travel/zone/sub-map handoffs now prefer ESO's verified current player map before LibMapData fallback, clear stale-area pins immediately, retry the handoff across the short loading window, and watch the live player map ID for same-zone transitions.
+- v0.29.279: Fixed the Loadout Saver hotkey close path with a raw keyboard fallback that directly matches the user's assigned Loadout Saver binding while the workspace or its Suite popups own UI focus. The main Loadout Saver action is now a true toggle, inherited close-layer handling remains as a fallback, and a key-edge stamp prevents the same physical keypress from closing and immediately reopening through native action fallthrough.
+- v0.29.278: Fixed the Loadout Saver dedicated hotkey so the same assigned key reliably closes the Loadout Saver. The normal gameplay binding now uses an OPEN-only handler while the Loadout Saver UI action layer inherits that key into a CLOSE-only handler, matching the proven Potion Maker/Turbo Learner pattern. Added a shared 220 ms key-edge debounce to prevent one physical press from reaching both layers, retained the legacy toggle function for compatibility, and delayed the close layer arming until the opening press has fully cleared.
+- v0.29.277: Fixed Loadout Saver popup stacking. The main Loadout Saver now uses the normal medium/controls UI tier, while MANAGE, ADD FOOD, Import, and Export windows use a separate high/overlay modal tier. Modal tier/layer/level are re-applied immediately and again after ESO finishes the current UI frame, preventing the main Loadout Saver from being redrawn over its own popups. Existing saved pages, setups, food selections, and v0.29.272 SavedVariables are preserved.
+- v0.29.276: Loadout food picker and bank-transfer reliability fix. ADD FOOD now opens a Suite-owned picker of food/drink items currently in the backpack, while drag/drop remains supported; saved food can be changed/cleared from the picker and used immediately from MANAGE. WITHDRAW/DEPOSIT remain clickable even when the bank is closed so the UI explains that a personal banker must be open, and per-setup bank actions are always visible in MANAGE. Bank transfers now match exact saved item unique IDs when available, exclude poison stacks from gear banking, move one gear piece at a time, and wait for ESO to confirm each arrival before continuing, preventing rapid protected moves from colliding on the same empty bank/inventory slot. Existing loadouts/pages and v0.29.272 SavedVariables are preserved.
+- v0.29.275: Compact Loadout Saver and popup layering fix. The Loadout Saver now defaults to a smaller 940x660 workspace and shows four setups at a time using 1-4 / 5-8 / 9-12 / 13-16 banks, while preserving all 16 setup slots and existing saved data. Reflowed page, raid, bank, skill, gear, food, CP and action controls for the compact cards. Replaced ESO's global setup context menu with a Suite-owned top-level MANAGE popup and raised import/export plus Loadout Saver tooltips above the main window, preventing menus/dialogs from rendering behind the GUI. Existing window positions are preserved and clamped on-screen during the v3 layout migration.
+- v0.29.274: Redesigned the Loadout Saver workspace for readability. Each page still keeps 16 setups, but the UI now presents them as two 8-setup banks (1-8 / 9-16) using larger two-column cards instead of the compressed 4x4 grid. Setup cards now have full FRONT/BACK skill rows, readable Gear/Food/CP state, ACTIVE/RAID ENTRY/BOSS tags, explicit READY/MISSING status, larger EQUIP/SAVE CURRENT/MANAGE actions, and clearer drag/drop targets. Replaced GEA/FOO abbreviations and CLOSE BUILDS with readable controls, split bank transfer into WITHDRAW and DEPOSIT buttons, improved page/status navigation, and migrated the Loadout Saver window to the larger v2 layout without resetting saved setup/page data.
+- v0.29.273: Fixed Loadout Saver gear scanning crash caused by ESO API multi-return values being passed directly into Lua tonumber(), where the second return was misread as the numeric base. LoadoutManager now funnels safe ESO API numeric conversions through a single-value helper, covering gear signatures, cooldowns, bag/slot lookups, skills, CP, bank handling, drag/drop, and related loadout paths. Existing 0.29.272 saved-loadout keys are intentionally preserved so current pages/setups are not reset.
+- v0.29.272: Expanded Loadout Saver into a full wardrobe-style setup manager: 16 setups per page, multiple named pages, trial/zone page binding, raid-entry and current-boss auto-equip rules, saved buff food, drag/drop gear/food/skills, exact setup bank withdraw/deposit, missing-item checks, inventory setup markers, Suite-to-Suite import/export codes, optional weapon recharge/armor repair/poison refill (all maintenance options disabled by default), and Acceleration/Destruction Ultimate/Maneuver/Siege Shield prebuff hotkeys. The dedicated Open / Close Loadout Saver hotkey continues to open the same UI directly from gameplay on the first press.
+- v0.29.271: Reworked Saved Builds into a wardrobe-style setup workflow. Build names and LOAD equip the selected setup, the active setup is highlighted, SAVE/CLEAR use two-step overwrite protection, and a dedicated Open / Close Loadout Saver keybind opens the same Saved Builds UI directly from gameplay on the first press. The hotkey stays active while the loadout workspace owns UI mode.
+- v0.29.270: Potion Maker and Turbo Learner gameplay hotkeys now bypass the LibMainMenu scene-selection race and directly open the exact same tool window on the first press. Their top-menu icons remain unchanged; direct hotkey windows acquire/release UI mode safely, the same assigned key closes them, X returns to gameplay, and switching between the two tool hotkeys closes the previous tool first.
+- v0.29.269: Reworked Potion Maker and Turbo Learner hotkeys to explicit open/close actions. Opening is queued to the next UI tick and retries scene registration briefly, fixing the persistent first-press/no-window behavior.
+- v0.29.268: Fixed Potion Maker and Turbo Learner hotkeys requiring two presses. Their UI action layers are now armed after the opening key-down completes, duplicate same-frame toggles are debounced, and either crafting-tool hotkey can switch directly from the other tool on the first press.
+- v0.29.267: Added independent Open / Close hotkeys for Potion Maker and Turbo Learner. Both hotkeys remain active while their custom top-menu pages own UI focus, so the same key closes the tool and returns to gameplay. Reorganized Suite Settings with a dedicated Crafting & Learning section for both tools and updated their access descriptions/buttons.
+- v0.29.266: Moved Turbo Recipe & Style Learner from a floating HUD overlay to its own top main-menu icon. The new page previews every unknown recipe/plan/motif/style item first and requires an explicit LEARN ALL button press before consuming anything. Added paging, rarity-colored item icons, live progress, refresh, and close-to-game behavior.
+- v0.29.265: Potion Maker X button now closes its custom main-menu scene as well as the window, returning directly to gameplay instead of leaving the player stuck in menu mode.
+- v0.29.264: Quickslot native-hover flash fix. The Suite now hard-hides both keyboard Quickslot fragment controls for the entire Suite Quickslot view and reasserts that state before hover/click handling.
+- v0.29.263: Native/free ESO emotes in the Quickslot picker now always show a bundled Suite emote/activity icon, with a small two-letter badge to make icon-only entries easier to distinguish. Collected emotes keep their own collectible artwork when ESO provides it.
+- v0.29.262: Quickslot picker now only shows content that can actually be placed on the Quickslot wheel. Removed costumes, assistants, markings and other appearance-only Collections from the picker.
+- v0.29.261: Quickslot picker now includes usable/equippable Collection entries such as Costumes, Assistants, Companions, Polymorphs, Mementos, Hats, Skins, Body/Head Markings, Hair and Adornments even when ESO does not permit them on the current utility wheel. Non-slottable Collection entries are marked USE and activate/equip directly through the protected collectible path.
+- v0.29.260: Expanded the Quickslot picker to include ESO-valid Collection actions such as Mementos, Polymorphs, Companions, Assistants, Mounts, Pets and other usable collectibles, plus regular and collected Emotes using ACTION_TYPE_EMOTE.
+- Quickslot collectible validation now relies on ESO's wheel-specific validation instead of the overly restrictive IsCollectibleSlottable gate.
+- v0.29.259: Quickslot picker now includes unlocked slottable Collection collectibles such as mementos, in addition to backpack items. Added a Suite rarity-colored icon grid over ESO shared keyboard crafting inventories while preserving native station filters/sorts and forwarding left-click selections to the station inventory handler.
+- v0.29.258: Quickslot picker now shows every backpack item ESO reports as valid for any position on the item Quickslot wheel, instead of filtering only against the currently selected wedge; picker capacity increased to the full inventory-grid capacity.
+- v0.29.257: Fixed Quickslot rarity colors carrying into the Currency tab by fully resetting reused special-card rarity tint, selection frame, and background state before Currency renders.
+- v0.29.256: Quickslot cards now use the assigned item's ESO rarity color, while selected/current slots keep a separate gold/cyan outline so rarity remains visible.
+- v0.29.255: Prevented ESO native inventory, wallet, and quickslot content from flashing during Suite inventory tab transitions by keeping native surfaces hidden for the full inventory scene and refreshing Suite panels immediately on fragment changes.
+- v0.29.254: Fixed Quickslot picker UI bleeding into Currency after switching top inventory tabs. Currency now fully clears Quickslot selection/picker state before rendering.
+- v0.29.253: Fixed the Quickslot item picker for current ESO wheel-local slot indices by dynamically resolving the eight mutable Quickslot slots instead of hard-coding the legacy 9..16 range. Added a visible empty-picker message instead of a blank panel.
+- v0.29.252: Inventory category headers now reserve more room for the full item count label so text like "12 items" is no longer clipped by the scroll area.
+- v0.29.251: Fixed Quickslot 2-8 assignment by mapping the Suite picker to ESO's actual utility-wheel action slots (ACTION_BAR_FIRST_UTILITY_BAR_SLOT + 1 through + ACTION_BAR_UTILITY_BAR_SIZE).
+- v0.29.250: Fixed Quickslot picker tonumber/base error by forcing ESO API multi-return values to a single numeric value before conversion. Also hardened all similar Inventory Grid conversions.
+- v0.29.249: Inventory category headers now show a visible "N items" count, item cards sort highest rarity to lowest inside every AutoCategory/set group, and Quickslots now have an in-tab item picker. Also corrected the quickslot wheel slot-index offset.
+- v0.29.248: Inventory Grid now supports AutoCategory - Revised headers when installed and adds Suite fallback collapsible groups for every main inventory category. Armor, Weapons, and Jewelry group set items by set name; other categories group by item subtype.
+- Fixed Suite item left-click so the ESO-style context menu opens from the normal button click path.
+- Quickslots can now be selected for replacement; after selecting a Quickslot, open Items and left-click a valid item to place it into that exact slot.
+- v0.29.247: Fixed inventory-grid context-menu security taint. Addon-created grid slots no longer invoke ESO stock protected-action closures; Use/Equip/Quickslot/Lock/Junk are dispatched safely and left/right click still open an ESO-style action menu.
+- v0.29.246: Fixed Currency tab protected-function taint. The Suite no longer iterates ESO's global table to discover currencies; it now enumerates CurrencyType IDs only through public currency APIs.
+- v0.29.245: Replaced the grid lock emoji with ESO’s native lock texture so locked items show the proper white lock icon instead of a missing-glyph box. Added Suite-styled Currency and Quickslots panels to the top inventory tabs; Currency now shows icon cards and balances, and Quickslots show the wheel slots as interactive cards with left-click selection.
+- v0.29.244: Fixed the five top inventory modes. Items, ESO+ Craft Bag, and Quest Items use the Suite grid; Currency and Quickslots keep their native specialized panels without native inventory-row bleed. Suite grid cells now bind to ESO inventory-slot data and left/right click opens ESO's normal item action context menu.
+- v0.29.243: Reworked Inventory Grid tab/filter integration. Native item rows stay completely hidden while ESO filter/search/sort logic updates explicitly in the background; the Suite grid now follows the active inventory tab/list instead of alpha-hiding the inventory container.
+- v0.29.242: Removed the black stack-count box from the inventory grid, brightened icon cards and rarity frames, and changed the grid to suppress the native list with alpha instead of hiding it so category filters/sorting continue to update correctly.
+- v0.29.241: Inventory Grid rarity frames now use ESO's native display-quality colors with a stronger outer/inner border and subtle rarity tint.
+- v0.29.241: Inventory Grid now mirrors ESO's filtered/sorted backpack scroll data, so category tabs, sub-filters, search, and native Name/Value sort controls immediately change the grid instead of always showing the full backpack alphabetically.
+- v0.29.240: Fixed Inventory Grid startup error: top-level grid now remains parented to GuiRoot while anchoring to the inventory list.
+- v0.29.240: Added a defensive Smithing Improvement compatibility guard so uninitialized booster quality rows cannot trigger nil-number subtraction on hover.
+- v0.29.239: Added Suite Inventory Grid mode for the keyboard inventory scene, restyling the item list into a colored icon grid similar to the requested reference image.
+- Potion Maker missing-material tracking now lists every missing ingredient with its own zone/location details; TRAVEL cycles through each missing ingredient when more than one is missing.
+- Potion Maker missing-material routes now show a recommended zone, map location, and closest discovered wayshrine.
+- Added a TRAVEL button on missing potion/poison recipes that fast-travels to the closest resolved wayshrine; Map + 3D remains available for the exact hunt target.
+- Fixed Potion Maker MAP + 3D MISSING hunt pins not appearing reliably: explicit hunts now override normal Resource Pins/community/3D visibility toggles, render known current-zone targets at long range, show through terrain, use a larger brighter hunt glow, and refresh immediately after closing the World Map.
+- v0.29.226: Fixed Companion Stats base-out-of-range error by capturing only the first ESO API return before numeric conversion; hardened all Character Gear numeric Safe() conversions with SafeNumber().
+- v0.29.225: Fixed Companion Gear secure-call taint by removing the global _G scan from ShiftCompanionInfoPanelRight; the mover now uses an explicit whitelist of UI controls only.
+- v0.29.224: Added compact left-side Character/Companion stats cards and shifted the native Companion information border/panel farther right so it no longer covers gear.
+- v0.29.223: Pulled the right-side Companion Gear column left for better spacing from the divider/info panel while keeping the companion centered.
+- v0.29.222: Companion Gear screen now pushes the native companion information panel farther right and re-centers the companion gear cluster so the companion sits more naturally between the icons.
+- v0.29.221: Companion Gear screen now hides the white silhouette and remaining native side-panel children, and re-centers the gear layout around the real companion model so icons/text sit around the companion more naturally.
+- v0.29.220: Companion Gear menu now matches the cleaned player gear screen with centered adaptive layout, larger gear presentation, hidden native thin-left/header clutter, and hardened scene-exit cleanup.
+- v0.29.219: Fixed Character Gear scene cleanup so backing out no longer leaves EQUIPPED/Apparel Hidden, stats, paper doll, accessories/weapons, gear slots, or native background controls stuck over gameplay.
+- v0.29.218: Increased Character Gear equipment slot size, font size, label widths, and column spacing for a larger, easier-to-read layout.
+- v0.29.217: Enhanced Character Gear now hides ESO's native wide-left black gradient while the screen is open and restores it when leaving; larger gear icons/text from 0.29.216 remain.
+- v0.29.216: Removed the Character Gear backdrop by request and increased default slot size, text size, label width, and character scale for a cleaner, more readable layout.
+- v0.29.215: Reverted the white paper-doll experiment and restored the real framed player. Character Gear now uses a full-screen masked vignette DDS with a transparent player cutout, covering left/right/bottom gear areas without drawing over the character.
+- v0.29.213: Character Gear backdrop panels now render above the 3D world but below gear UI, expand across the standalone Character screen, and cover the lower weapon area while preserving a large transparent cutout around the real character.\n- v0.29.212: Character Gear backdrop now uses segmented left/right/bottom panels with a center cutout so the real 3D character remains visually in front while the lower workspace stays covered.
+- v0.29.211: Character Gear now extends ESO's native wide-left dark background across the full character/gear workspace, with a soft fade before inventory; explicitly hides the remaining APPAREL HIDDEN/header children.
+- v0.29.210: Character Gear screen now uses a unified dark backdrop behind the real character, gear labels, and weapon area instead of leaving the center floating beside the left-side black panel.
+- v0.29.209: Character Gear screen now hides the native face-covering header ("Equipped / Apparel Hidden"), lowers real-character framing slightly, and widens compact labels for cleaner item/set names.
+Version 0.29.208
+- Removed the orange center paper-doll silhouette from the Enhanced Character Gear Screen.
+- The real 3D player is now reframed into the center of the usable equipment area and scales with Main Character Size.
+- Rebalanced the equipment canvas leftward to use previously empty screen space while preserving the inventory boundary.
+- Gear text expands outward away from the character and uses wider/two-line labels so full item and set names stay readable.
+- Repair warnings remain attached to the affected equipment data instead of tinting a separate figure.
+
+Version 0.29.207
+- Rebuilt Character Gear Screen positioning around a runtime safe area instead of ultrawide fixed coordinates.
+- Fixes overlapping equipment labels, the center character/stat list, right-side inventory and bottom keybind controls at standard 1440p resolutions.
+- Adds Compact / Detailed / Icons Only gear information density; Compact is the default.
+- Adds Auto / Always Show / Always Hide for ESO's full Character Stats panel; Auto hides it on standard-width layouts and allows it on ultrawide layouts.
+- Tightens row spacing and lifts weapon slots to preserve the bottom action strip.
+- Applies the same adaptive layout logic to companion gear and keeps native ESO slot buttons for hybrid controller navigation.
+
+Version 0.29.206
+- Added a Suite-native enhanced Character Gear Screen using ESO's real desktop equipment-slot controls instead of a separate replacement addon/window.
+- Repositions player equipment around the character with live quality-colored borders, armor condition / weapon charge percentages, item level / Champion requirement, item names/types, set-piece counts, and outfit/costume indicators.
+- Adds the same enhanced layout to the desktop Companion Character screen.
+- Adds character/gear presentation settings for slot size, detail font size, warnings, figure scale, 3D character camera distance, and reset.
+- Damaged armor can turn the center character figure red at the configured repair threshold.
+- Keeps native equipment buttons intact so v0.29.205 last-input controller navigation can focus/select them while the desktop UI remains visible.
+- Uses only Suite code and ESO-native artwork; the uploaded CharacterGearUI package was treated as the feature reference rather than shipped as a second addon.
+
+Version 0.29.205
+- Added Last-Input Hybrid Navigation for Desktop UI + Gamepad Controls: controller input now owns keyboard-style menu focus while the desktop visual UI remains active.
+- D-pad and left stick move between visible desktop-menu controls; the controller Primary button activates the focused control and Back continues through ESO's native scene/keybind handling.
+- Moving/clicking the mouse immediately returns the same screen to normal cursor control; touching the controller hands it back again without swapping UI templates.
+- Added explicit Infinite Archive Verse/Vision keyboard-selector prioritization so controller focus lands on the offered choices while the Suite recommendation highlight remains intact.
+- Added an Auto-switch menu control by last input setting (default ON).
+- The hybrid navigator never changes Gamepad Mode, Keybind Display Mode, IsInGamepadPreferredMode scene state, or combat/gameplay input.
+
+Version 0.29.204
+- Added four Boss Mechanics visibility modes: Mechanics / Reactions Only, Boss Combat + Mechanics, Any Combat + Mechanics, and Always.
+- Mechanics / Reactions Only is now the clean default so the unified panel stays hidden between actionable callouts.
+- Pre-pull boss briefing is now a separate opt-in and defaults OFF.
+- Unified BLOCK / reaction warnings still surface immediately regardless of whether the idle boss panel is hidden.
+
+Version 0.29.203
+- Merged the standalone BLOCK NOW window into the Boss Mechanics Coach so boss mechanics and urgent combat reactions use one authoritative overlay.
+- Generic heavy-attack BLOCK warnings now route into the same Boss Mechanics / Combat Reaction panel, including outside a recognized boss encounter.
+- Boss Mechanics overlay is now directly resizable in HUD Layout Mode by dragging its edges/corners, with saved width and height.
+- Added Boss Coach width/height settings, a Reset Size control, responsive text sizing, and layout reflow from compact to large panel sizes.
+- The merged panel remains movable, scalable, opacity-adjustable, controller-glyph aware, and compatible with Infinite Archive boss coaching.
+
+Version 0.29.202
+- Fixed the remaining Desktop UI + controller-icon mismatch in ESO's native keybind presentation layer.
+- While Desktop UI + Gamepad Controls is enabled and Keybind Display Mode is Gamepad, ZOS keybind helpers now select PREFERRED_INPUT_DEVICE_TYPE_GAMEPAD without changing actual input mode.
+- Native desktop action-bar labels now select GAMEPAD_ACTION_BUTTON bindings and render controller key markup instead of keyboard letters.
+- Already-created action-bar, Ultimate, Quickslot, weapon-swap, and related registered labels are refreshed after bindings/input/display mode changes and player activation.
+- Suite ability/combat prompts now prefer hidden GAMEPAD_ACTION_BUTTON bindings before generic ACTION_BUTTON fallbacks.
+- Controller glyph routing remains presentation-only: no scene switching, binding changes, input synthesis, or Gamepad Mode changes.
+- Infinite Archive Boss Mechanics Coach support remains included.
+
+Version 0.29.201
+- Removed the scene-manager preferred-mode normalization that could stop controller gameplay while the desktop UI lock was active.
+- Desktop UI selection now starts at addon bootstrap and removes the earlier setting-toggle path that contributed to mixed Gameplay Settings rendering.
+- The Suite does not change ESO Gamepad Mode or Keybind Display Mode; controller movement/combat remains owned by ESO.
+- Controller prompt rendering now queries the gamepad binding set directly, preferring GetHighestPriorityActionBindingInfoFromNameAndInputDevice when available.
+- Gamepad prompts render through GetGamepadIconPathForKeyCode so desktop visual mode cannot turn controller bindings back into keyboard text.
+- ACTION_BUTTON bindings remain on the player's normal action names; hidden GAMEPAD_ACTION_BUTTON helpers are fallback-only.
+- Desktop UI bridge changes require Reload UI to avoid mixed keyboard/gamepad templates in an already-open Settings scene.
+- Infinite Archive Boss Mechanics Coach support from 0.29.200 remains included.
+
+Version 0.29.199
+- Strengthened Desktop UI + Gamepad Controls with one Suite-wide controller prompt detector that remains gamepad-aware while the visual interface is locked to desktop mode.
+- Ability overlays and Smart Combat Advisor now use the centralized controller prompt state instead of the visually-forced keyboard UI state.
+- Boss Mechanics Coach now adds the player's real button glyphs to Block, Interrupt, Dodge, Synergy, Weapon Swap, and Break Free guidance where ESO exposes the binding.
+- Quickslot Overlay now shows the player's actual quickslot-use binding/glyph.
+- The feature remains presentation-only: it does not remap, synthesize, or activate gameplay input.
+
+Version 0.29.198
+- Added the endgame Boss Mechanics Coach for supported dungeons, trials, and arenas with live boss recognition and mechanic-specific action/position callouts.
+- Added role-aware Tank/Healer/DPS instructions, pre-pull boss briefings, Hard Mode mechanic detection, and priority-based alert presentation.
+- Added adaptive repeated-pull learning that remembers mechanic ability IDs and predicts likely next mechanics by transition history, timing, and boss-health band when enough samples exist.
+- Added mechanic execution review to Game Mode Combat Reports: avoidable hits, clean avoids, interrupts, blocks, dodges, and an S/A/B/C/D mechanic grade.
+- Boss Mechanics Coach is movable in HUD Layout Mode, has independent scale/opacity settings, and suppresses redundant generic BLOCK warnings while a specific boss BLOCK callout is active.
+- Added a distilled encounter dataset covering 52 activities, 277 boss profiles, 1,215 mechanics, and 2,570 cast aliases.
+- Boss guidance never automates protected combat input; positional advice is relative (for example edge/center/behind/stack/spread) where ESO does not expose reliable boss world coordinates.
+
 Version 0.29.197
 - Added Keep desktop UI while using controller. When enabled, ESO can remain in Gamepad Mode On/Automatic for controller input without replacing the logged-in desktop interface with the console-style Gamepad UI.
 - Suite action-bar/Advisor controller glyphs now read ESO's native controller state even while the visual interface is locked to desktop mode.
@@ -3490,3 +3919,9 @@ CHANGELOG
 
 0.1.0 - Initial prototype
 - Added movable progression overlay, saved settings, scoring, and recommendations.
+0.29.237 - Potion Maker Missing-Material Hunt
+- Missing Potion Maker recipe rows now offer MAP + 3D MISSING tracking.
+- Static alchemy materials use Suite learned/community resource locations to mark nearby known spawn spots.
+- Added bright focused 3D hunt pins plus World Map pins for tracked missing materials.
+- Missing-material tracking follows the player across zone changes and rebuilds against that zone's resource data.
+- Dynamic drops such as dragon/creature/critters are reported honestly instead of receiving fake fixed coordinates.

@@ -18,8 +18,8 @@ local BEAM_SOURCE_TEXTURE = "EsoUI/Art/Miscellaneous/lensflare_star_256.dds"
 -- soft center glow while also fading at the top and bottom so the beam
 -- hugs the character instead of looking like a hard-capped rectangle.
 local MAX_GROUP_MEMBERS = 12
-local UPDATE_MS = 100
-local WORLD_REFRESH_MS = 500
+local UPDATE_MS = 900
+local WORLD_REFRESH_MS = 600
 local POSITION_GRACE_MS = 2000
 local BEAM_CENTER_Y_CM = 170
 local BASE_BEAM_WIDTH_M = 3.55
@@ -569,6 +569,15 @@ function T:RefreshParticles()
         return
     end
 
+    local hasCompanion = safe(DoesUnitExist, false, "companion") == true
+    local groupSize = tonumber(safe(GetGroupSize, 0)) or 0
+    if not hasCompanion and groupSize <= 1 then
+        if (tonumber(self.lastVisibleParticleCount029315) or 0) > 0 then self:HideAllParticles() end
+        self.lastVisibleParticleCount029315 = 0
+        self.lastStatus = "No active companion or grouped teammate available."
+        return
+    end
+
     self:EnsureWindows()
     -- Do not cache/lock the parent origin here. PositionParticle reads ESO's live
     -- parent 3D origin on every placement, matching the proven reference addon.
@@ -631,9 +640,8 @@ function T:RefreshParticles()
         if unitTag == "companion" and unitHadVisible then companionVisible = true end
     end
 
-    if safe(DoesUnitExist, false, "companion") == true then renderUnit("companion") end
+    if hasCompanion then renderUnit("companion") end
 
-    local groupSize = tonumber(safe(GetGroupSize, 0)) or 0
     if groupSize > 1 then
         for i = 1, math.min(groupSize, MAX_GROUP_MEMBERS) do
             local unitTag = "group" .. tostring(i)
@@ -645,6 +653,7 @@ function T:RefreshParticles()
         for i = used + 1, #self.particles do self:HideParticle(self.particles[i]) end
     end
 
+    self.lastVisibleParticleCount029315 = visible
     if visible > 0 then
         if companionVisible and groupSize <= 1 then
             self.lastStatus = string.format("Companion glow active (%d particles).", visible)

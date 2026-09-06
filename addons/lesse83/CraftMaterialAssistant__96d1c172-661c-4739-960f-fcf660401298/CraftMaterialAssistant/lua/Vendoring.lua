@@ -7,24 +7,24 @@ function CMA:OnStoreOpen()
     if self.db.showVendorAlerts then
         local vendoredItems = {}
         local totalGoldEarned = 0
-        for i = 1, #self.junkedSlots do
-
-            local _, stackCount = GetItemInfo(targetBag, self.junkedSlots[i])
+        for i = 1, #self.junkedIds do
+            local bagid, slotIndex = self:findItemByUniqueId(self.sourceBag, self.junkedIds[i])
+            local _, stackCount = GetItemInfo(bagid, slotIndex)
             if stackCount > 0 then
-                local itemLink = GetItemLink(targetBag, self.junkedSlots[i])
-                local sellPrice = GetItemSellValueWithBonuses(targetBag, self.junkedSlots[i])
+                local itemLink = GetItemLink(bagid, slotIndex)
+                local sellPrice = GetItemSellValueWithBonuses(bagid, slotIndex)
                 local itemTotalGold = sellPrice * stackCount
 
                 totalGoldEarned = totalGoldEarned + itemTotalGold
-                table.insert(vendoredItems, itemLink .. " (" .. itemTotalGold .. ")")
+                table.insert(vendoredItems, itemLink .. " (" .. itemTotalGold .. "g)")
             end
         end
         if totalGoldEarned > 0 then
-            self:SendChatMessage("|cFF0000Vendored materials for" .. tostring(totalGoldEarned) "g|r")
+            self:SendChatMessage("|cFF0000Vendored materials for " .. tostring(totalGoldEarned) .. "g|r")
             self:SendChatMessageLimitedItemCount("|cFFEE00Sold items:|r ", vendoredItems)
         end
     end
     SellAllJunk()
-    self.junkedSlots = {}
-    ZO_Alert(UI_ALERT_CATEGORY_ALERT, SOUNDS.ITEM_GOLD_CHANGED, "Sold filtered materials.")
+    self.junkedIds = {}
+    ZO_Alert(UI_ALERT_CATEGORY_ALERT, SOUNDS.ITEM_GOLD_CHANGED, "CMA: Sold filtered materials.")
 end

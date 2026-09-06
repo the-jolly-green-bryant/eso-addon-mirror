@@ -22,7 +22,7 @@
     "GatherBuddy"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4791/",
-  "fingerprint": "90e50171017ed8c1e709ce9b7c645b2eb29d472cc9d6a5be4eb231815937efef",
+  "fingerprint": "5fa3caeeac866c0f66be5c1b51e823455ee652382c3f1b221d45822dfcb87367",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw17095.jpg",
     "https://cdn-eso.mmoui.com/preview/pvw17097.jpg",
@@ -34,11 +34,11 @@
   "source_id": "4791",
   "source_url": "https://www.esoui.com/downloads/info4791-GatherBuddy.html",
   "stats": {
-    "downloads": 37,
+    "downloads": 54,
     "favorites": 0,
-    "monthly_downloads": 30
+    "monthly_downloads": 54
   },
   "title": "Gather Buddy",
-  "updated_at": 1788072293000,
-  "version": "1.2"
+  "updated_at": 1788601486000,
+  "version": "1.3"
 }

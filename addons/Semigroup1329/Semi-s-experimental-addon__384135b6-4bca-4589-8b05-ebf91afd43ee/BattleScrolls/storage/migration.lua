@@ -106,7 +106,8 @@ local COMPARED_FIELDS = {
     "damageByUnitId", "damageByUnitIdGroup", "damageTakenByUnitId",
     "healingStats", "procs", "effectsOnPlayer", "effectsOnBosses",
     "effectsOnGroup", "bossNames", "playerAliveTimeMs", "unitAliveTimeMs",
-    "unitNames", "deaths", "weaving", "setup",
+    "unitNames", "deaths", "weaving", "setup", "ultimate", "crux",
+    "resurrections", "resurrectionLog", "zen",
 }
 
 -- =============================================================================
@@ -130,7 +131,7 @@ local function encounterIsLegacy(encounter)
         or encounter.sharedData ~= nil
 end
 
----Conservative check backing the persistent savedVariables.migrationDoneV18
+---Conservative check backing the persistent savedVariables.migrationDoneV20
 ---flag: no encounter anywhere may be legacy, INCLUDING the live instance
 ---(which the migration run itself skips - it must stay reachable in a later
 ---session). Failed instances are excluded: they intentionally stay legacy
@@ -149,6 +150,18 @@ local function everythingMigrated()
     return true
 end
 
+---True when the instance still holds encounters in a pre-v20 format
+---@param instance InstanceStorage
+---@return boolean
+function migration.hasLegacyEncounters(instance)
+    for _, encounter in ipairs(instance.encounters) do
+        if encounterIsLegacy(encounter) then
+            return true
+        end
+    end
+    return false
+end
+
 ---@param instance InstanceWithIndex
 ---@return boolean
 local function instanceNeedsMigration(instance)
@@ -160,12 +173,7 @@ local function instanceNeedsMigration(instance)
     if instance == BattleScrolls.scribe.instance then
         return false
     end
-    for _, encounter in ipairs(instance.encounters) do
-        if encounterIsLegacy(encounter) then
-            return true
-        end
-    end
-    return false
+    return migration.hasLegacyEncounters(instance)
 end
 
 ---@generic T
@@ -372,23 +380,32 @@ end
 
 local function runMigrationAsync()
     LibEffect.Async(function()
+        -- Re-evaluated here: scribe binds the live instance asynchronously,
+        -- so the scheduling scan may have seen it as migratable
+        local pending = {}
+        for _, instance in ipairs(BattleScrolls.storage.savedVariables.history) do
+            if instanceNeedsMigration(instance) then
+                pending[#pending + 1] = instance
+            end
+        end
+        if #pending == 0 then
+            return
+        end
+
         -- DEFER_NOTIFICATION: audible but soft (MESSAGE_BROADCAST is silent,
         -- quest/objective sounds demand too much attention)
         announce(GetString(BATTLESCROLLS_MIGRATION_START), SOUNDS.DEFER_NOTIFICATION)
 
         ---@type MigrationTotals
         local totals = { migrated = 0, poolGrowth = 0 }
-        local history = BattleScrolls.storage.savedVariables.history
         local historyBefore = historyMemoryAsync()
 
-        for _, instance in ipairs(history) do
-            if instanceNeedsMigration(instance) then
-                waitOutCombat()
-                if not migrateInstance(instance, totals) then
-                    -- Not user-facing: nothing actionable, the old format
-                    -- stays readable. Details are in the Warn log.
-                    instance._migrationFailed = true
-                end
+        for _, instance in ipairs(pending) do
+            waitOutCombat()
+            if not migrateInstance(instance, totals) then
+                -- Not user-facing: nothing actionable, the old format
+                -- stays readable. Details are in the Warn log.
+                instance._migrationFailed = true
             end
         end
 
@@ -410,7 +427,7 @@ local function runMigrationAsync()
         end
 
         if everythingMigrated() then
-            BattleScrolls.storage.savedVariables.migrationDoneV18 = true
+            BattleScrolls.storage.savedVariables.migrationDoneV20 = true
         end
 
         BattleScrolls.gc:RequestGC(2)
@@ -418,22 +435,23 @@ local function runMigrationAsync()
 end
 
 ---Schedules the migration when legacy encounters exist. Once the persistent
----migrationDoneV18 flag is set this is a no-op forever. Until then, the
+---migrationDoneV20 flag is set this is a no-op forever. Until then, the
 ---first activation decides for the whole session (the scan is a couple of
 ---field reads per stored encounter, no decoding); remaining legacy
 ---instances (interrupted session, live instance, failed ones excluded) are
 ---picked up on later loads. The flag is versioned so a format bump only
----has to introduce a fresh flag name to re-arm the whole pipeline (the v17
----run's flag was migrationDone; its stale key is cleared below).
+---has to introduce a fresh flag name to re-arm the whole pipeline (stale
+---keys of earlier runs are cleared below).
 function migration:Initialize()
     BattleScrolls.storage.savedVariables.migrationDone = nil
-    if BattleScrolls.storage.savedVariables.migrationDoneV18 then
+    BattleScrolls.storage.savedVariables.migrationDoneV18 = nil
+    if BattleScrolls.storage.savedVariables.migrationDoneV20 then
         return
     end
     EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_PLAYER_ACTIVATED, function()
         EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_PLAYER_ACTIVATED)
         if everythingMigrated() then
-            BattleScrolls.storage.savedVariables.migrationDoneV18 = true
+            BattleScrolls.storage.savedVariables.migrationDoneV20 = true
             return
         end
         for _, instance in ipairs(BattleScrolls.storage.savedVariables.history) do

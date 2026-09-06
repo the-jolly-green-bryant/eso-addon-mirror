@@ -7,7 +7,10 @@ EPC.LoadoutManager = EPC.LoadoutManager or {}
 local L = EPC.LoadoutManager
 local wm = WINDOW_MANAGER
 
-local SLOT_COUNT = 12
+local SLOT_COUNT = 16
+local MAX_PAGES = 24
+local PAGE_DATA_KEY = "savedLoadoutPages029272"
+
 local EQUIP_SLOTS = {
     EQUIP_SLOT_HEAD, EQUIP_SLOT_SHOULDERS, EQUIP_SLOT_CHEST, EQUIP_SLOT_HAND,
     EQUIP_SLOT_WAIST, EQUIP_SLOT_LEGS, EQUIP_SLOT_FEET,
@@ -22,6 +25,47 @@ local function safe(fn, fallback, ...)
     local ok, a,b,c,d,e,f = pcall(fn, ...)
     if not ok then return fallback end
     return a,b,c,d,e,f
+end
+
+-- ESO API functions frequently return multiple values. Passing a multi-return
+-- call directly to tonumber() can accidentally feed the second return value
+-- into tonumber's optional numeric-base argument. Route numeric conversions
+-- through a one-argument Lua helper so extra return values are discarded.
+local function num(value)
+    return tonumber(value)
+end
+
+-- Keep the Loadout Saver on a normal UI tier and all Suite-owned popup/modal
+-- windows on a genuinely higher tier. DrawLevel alone does not guarantee
+-- ordering between separate ESO top-level windows when they share a tier.
+local function setLoadoutWindowLayer(control)
+    if not control then return end
+    local medium = rawget(_G, "DT_MEDIUM") or rawget(_G, "DT_LOW") or rawget(_G, "DT_HIGH")
+    local controls = rawget(_G, "DL_CONTROLS") or rawget(_G, "DL_OVERLAY")
+    if medium and type(control.SetDrawTier) == "function" then control:SetDrawTier(medium) end
+    if controls and type(control.SetDrawLayer) == "function" then control:SetDrawLayer(controls) end
+    if type(control.SetDrawLevel) == "function" then control:SetDrawLevel(120) end
+end
+
+local function raiseLoadoutModal(control, level)
+    if not control then return end
+    local high = rawget(_G, "DT_HIGH")
+    local overlay = rawget(_G, "DL_OVERLAY")
+    if high and type(control.SetDrawTier) == "function" then control:SetDrawTier(high) end
+    if overlay and type(control.SetDrawLayer) == "function" then control:SetDrawLayer(overlay) end
+    if type(control.SetDrawLevel) == "function" then control:SetDrawLevel(tonumber(level) or 12000) end
+end
+
+function L:RaiseModal(control, level)
+    raiseLoadoutModal(control, level)
+    if type(zo_callLater) == "function" then
+        zo_callLater(function()
+            if control and not control:IsHidden() then raiseLoadoutModal(control, level) end
+        end, 1)
+        zo_callLater(function()
+            if control and not control:IsHidden() then raiseLoadoutModal(control, level) end
+        end, 80)
+    end
 end
 
 local function notify(text, good)
@@ -42,21 +86,339 @@ local function itemLink(bag, slot)
     return safe(GetItemLink, "", bag, slot, LINK_STYLE_DEFAULT or 0) or ""
 end
 
-function L:EnsureSaved()
-    EPC.saved = EPC.saved or {}
-    -- Keep the original SavedVariables key so every existing loadout survives
-    -- the upgrade from loadouts to full saved builds.
-    EPC.saved.savedLoadouts = EPC.saved.savedLoadouts or {}
+local function itemIconFromLink(link)
+    if tostring(link or "") == "" then return "" end
+    return tostring(safe(GetItemLinkIcon, "", link) or "")
+end
+
+function L:MakeGearEntry(bag, slot)
+    local link = itemLink(bag, slot)
+    if link == "" then return nil end
+    return {
+        uniqueId = uniqueIdString(bag, slot),
+        link = link,
+        itemId = num(safe(GetItemLinkItemId, 0, link)) or 0,
+        signature = self.GetGearSignature and self:GetGearSignature(link) or nil,
+    }
+end
+
+function L:MakeFoodEntry(bag, slot)
+    local link = itemLink(bag, slot)
+    if link == "" then return nil end
+    local itemType = num(safe(GetItemType, 0, bag, slot)) or 0
+    if itemType ~= (rawget(_G, "ITEMTYPE_FOOD") or -1001) and itemType ~= (rawget(_G, "ITEMTYPE_DRINK") or -1002) then return nil end
+    return {
+        link = link,
+        itemId = num(safe(GetItemLinkItemId, 0, link)) or 0,
+        icon = itemIconFromLink(link),
+    }
+end
+
+function L:FindBackpackItemByItemId(itemId)
+    itemId = tonumber(itemId) or 0
+    if itemId <= 0 or BAG_BACKPACK == nil then return nil end
+    local size = num(safe(GetBagSize, 0, BAG_BACKPACK)) or 0
+    for slot=0,size-1 do
+        local link = itemLink(BAG_BACKPACK, slot)
+        if link ~= "" and (num(safe(GetItemLinkItemId, 0, link)) or 0) == itemId then
+            return BAG_BACKPACK, slot
+        end
+    end
+    return nil
+end
+
+function L:UseSavedFood(index)
+    local setup = self:EnsureSaved()[tonumber(index) or 0]
+    local food = setup and setup.food
+    if type(food) ~= "table" or (tonumber(food.itemId) or 0) <= 0 then
+        notify("LOADOUTS: this setup has no buff food saved. Drag food onto the FOOD icon first.", false)
+        return false
+    end
+    if safe(IsUnitInCombat, false, "player") == true then
+        notify("LOADOUTS: buff food will be used after combat.", false)
+        return false
+    end
+    local bag,slot = self:FindBackpackItemByItemId(food.itemId)
+    if bag == nil then
+        notify("LOADOUTS: saved buff food is missing from your backpack.", false)
+        return false
+    end
+    local cooldown = num(safe(GetItemCooldownInfo, 0, bag, slot)) or 0
+    if cooldown > 0 then return false end
+    local ok,result = pcall(CallSecureProtected, "UseItem", bag, slot)
+    if ok and result ~= false then
+        EPC.saved.loadoutLastFoodItemId029272 = tonumber(food.itemId) or 0
+        return true
+    end
+    notify("LOADOUTS: ESO blocked the buff-food use request.", false)
+    return false
+end
+
+local function shallowCopyTable(source)
+    local out = {}
+    if type(source) ~= "table" then return out end
+    for k,v in pairs(source) do out[k] = v end
+    return out
+end
+
+function L:NormalizeSetupList(setups)
+    setups = type(setups) == "table" and setups or {}
     for i=1,SLOT_COUNT do
-        EPC.saved.savedLoadouts[i] = EPC.saved.savedLoadouts[i] or { name = "Build " .. i }
-        local d = EPC.saved.savedLoadouts[i]
+        setups[i] = setups[i] or { name = "Build " .. i }
+        local d = setups[i]
         if not d.name or d.name == "" then
             d.name = "Build " .. i
         elseif d.name == ("Loadout " .. i) then
             d.name = "Build " .. i
         end
     end
-    return EPC.saved.savedLoadouts
+    return setups
+end
+
+function L:EnsurePages()
+    EPC.saved = EPC.saved or {}
+    local root = EPC.saved[PAGE_DATA_KEY]
+    if type(root) ~= "table" or type(root.pages) ~= "table" then
+        local legacy = type(EPC.saved.savedLoadouts) == "table" and EPC.saved.savedLoadouts or {}
+        root = {
+            version = 1,
+            currentPageId = 1,
+            nextPageId = 2,
+            pages = {
+                [1] = {
+                    name = "General",
+                    zoneId = 0,
+                    zoneName = "",
+                    zoneAutoSlot = 0,
+                    activeIndex = tonumber(EPC.saved.savedLoadoutActiveIndex) or 0,
+                    bossRules = {},
+                    setups = legacy,
+                },
+            },
+            selectedPageByZone = {},
+        }
+        EPC.saved[PAGE_DATA_KEY] = root
+    end
+
+    root.version = 1
+    root.pages = type(root.pages) == "table" and root.pages or {}
+    root.selectedPageByZone = type(root.selectedPageByZone) == "table" and root.selectedPageByZone or {}
+    root.currentPageId = tonumber(root.currentPageId) or 1
+    root.nextPageId = tonumber(root.nextPageId) or 2
+
+    if type(root.pages[root.currentPageId]) ~= "table" then
+        local firstId
+        for id,_ in pairs(root.pages) do
+            id = tonumber(id)
+            if id and (not firstId or id < firstId) then firstId = id end
+        end
+        root.currentPageId = firstId or 1
+    end
+    if type(root.pages[root.currentPageId]) ~= "table" then
+        root.pages[root.currentPageId] = { name = "General", zoneId = 0, zoneName = "", zoneAutoSlot = 0, activeIndex = 0, bossRules = {}, setups = {} }
+    end
+
+    for id,page in pairs(root.pages) do
+        if type(page) == "table" then
+            page.name = tostring(page.name or ("Page " .. tostring(id)))
+            page.zoneId = tonumber(page.zoneId) or 0
+            page.zoneName = tostring(page.zoneName or "")
+            page.zoneAutoSlot = tonumber(page.zoneAutoSlot) or 0
+            page.activeIndex = tonumber(page.activeIndex) or 0
+            page.bossRules = type(page.bossRules) == "table" and page.bossRules or {}
+            page.setups = self:NormalizeSetupList(page.setups)
+        end
+    end
+
+    local page = root.pages[root.currentPageId]
+    EPC.saved.savedLoadouts = page.setups -- compatibility alias for older Suite modules
+    EPC.saved.savedLoadoutActiveIndex = page.activeIndex
+    return root
+end
+
+function L:GetPageIds()
+    local root = self:EnsurePages()
+    local ids = {}
+    for id,_ in pairs(root.pages) do
+        id = tonumber(id)
+        if id then ids[#ids+1] = id end
+    end
+    table.sort(ids)
+    return ids
+end
+
+function L:GetCurrentPageId()
+    return tonumber(self:EnsurePages().currentPageId) or 1
+end
+
+function L:GetCurrentPage()
+    local root = self:EnsurePages()
+    return root.pages[root.currentPageId]
+end
+
+function L:SetCurrentPage(pageId, rememberForZone)
+    local root = self:EnsurePages()
+    pageId = tonumber(pageId)
+    if not pageId or type(root.pages[pageId]) ~= "table" then return false end
+    root.currentPageId = pageId
+    local page = root.pages[pageId]
+    page.setups = self:NormalizeSetupList(page.setups)
+    EPC.saved.savedLoadouts = page.setups
+    EPC.saved.savedLoadoutActiveIndex = tonumber(page.activeIndex) or 0
+    if rememberForZone == true and (tonumber(page.zoneId) or 0) > 0 then
+        root.selectedPageByZone[tostring(page.zoneId)] = pageId
+    end
+    self.activeIndex = tonumber(page.activeIndex) or 0
+    self:RefreshUI()
+    return true
+end
+
+function L:CyclePage(direction)
+    local ids = self:GetPageIds()
+    if #ids == 0 then return false end
+    local current = self:GetCurrentPageId()
+    local pos = 1
+    for i,id in ipairs(ids) do if id == current then pos = i break end end
+    direction = tonumber(direction) or 1
+    pos = pos + (direction < 0 and -1 or 1)
+    if pos < 1 then pos = #ids elseif pos > #ids then pos = 1 end
+    return self:SetCurrentPage(ids[pos], true)
+end
+
+function L:AddPage()
+    local root = self:EnsurePages()
+    local count = 0
+    for _ in pairs(root.pages) do count = count + 1 end
+    if count >= MAX_PAGES then
+        notify("LOADOUTS: maximum page count reached.", false)
+        return false
+    end
+    local id = math.max(1, tonumber(root.nextPageId) or 1)
+    while root.pages[id] do id = id + 1 end
+    root.nextPageId = id + 1
+    root.pages[id] = {
+        name = "Page " .. tostring(count + 1), zoneId = 0, zoneName = "", zoneAutoSlot = 0,
+        activeIndex = 0, bossRules = {}, setups = self:NormalizeSetupList({}),
+    }
+    self:SetCurrentPage(id, false)
+    notify("LOADOUTS: new page created.", true)
+    return true
+end
+
+function L:DeleteCurrentPage()
+    local root = self:EnsurePages()
+    local ids = self:GetPageIds()
+    if #ids <= 1 then
+        notify("LOADOUTS: keep at least one page.", false)
+        return false
+    end
+    local current = root.currentPageId
+    local old = root.pages[current]
+    root.pages[current] = nil
+    self:RebuildGearIndex()
+    for zoneText,pageId in pairs(root.selectedPageByZone) do
+        if tonumber(pageId) == tonumber(current) then root.selectedPageByZone[zoneText] = nil end
+    end
+    local nextId = ids[1] == current and ids[2] or ids[1]
+    self:SetCurrentPage(nextId, false)
+    notify("LOADOUTS: deleted page " .. tostring(old and old.name or current) .. ".", true)
+    return true
+end
+
+function L:SetPageName(name)
+    local page = self:GetCurrentPage()
+    name = tostring(name or ""):gsub("^%s+", ""):gsub("%s+$", "")
+    if name == "" then name = "Page " .. tostring(self:GetCurrentPageId()) end
+    page.name = string.sub(name, 1, 32)
+    self:RefreshUI()
+    return true
+end
+
+function L:GetCurrentZoneInfo()
+    local zoneIndex = num(safe(GetUnitZoneIndex, 0, "player")) or 0
+    local zoneId = zoneIndex > 0 and (num(safe(GetZoneId, 0, zoneIndex)) or 0) or 0
+    local zoneName = tostring(safe(GetUnitZone, "", "player") or "")
+    if zoneName == "" and zoneIndex > 0 then zoneName = tostring(safe(GetZoneNameByIndex, "", zoneIndex) or "") end
+    return zoneId, zoneName
+end
+
+function L:BindCurrentPageToZone()
+    local zoneId, zoneName = self:GetCurrentZoneInfo()
+    if zoneId <= 0 then notify("LOADOUTS: current zone could not be identified.", false); return false end
+    local page = self:GetCurrentPage()
+    page.zoneId, page.zoneName = zoneId, zoneName
+    local root = self:EnsurePages()
+    root.selectedPageByZone[tostring(zoneId)] = self:GetCurrentPageId()
+    notify("LOADOUTS: page bound to " .. (zoneName ~= "" and zoneName or ("zone " .. zoneId)) .. ".", true)
+    self:RefreshUI()
+    return true
+end
+
+function L:UnbindCurrentPageZone()
+    local page = self:GetCurrentPage()
+    local oldZone = tonumber(page.zoneId) or 0
+    page.zoneId, page.zoneName = 0, ""
+    local root = self:EnsurePages()
+    if oldZone > 0 and tonumber(root.selectedPageByZone[tostring(oldZone)]) == self:GetCurrentPageId() then
+        root.selectedPageByZone[tostring(oldZone)] = nil
+    end
+    self:RefreshUI()
+    return true
+end
+
+function L:GetPageForCurrentZone()
+    local zoneId = self:GetCurrentZoneInfo()
+    zoneId = tonumber(zoneId) or 0
+    if zoneId <= 0 then return nil end
+    local root = self:EnsurePages()
+    local selected = tonumber(root.selectedPageByZone[tostring(zoneId)])
+    if selected and root.pages[selected] and tonumber(root.pages[selected].zoneId) == zoneId then return selected end
+    local best
+    for id,page in pairs(root.pages) do
+        if tonumber(page.zoneId) == zoneId then
+            id = tonumber(id)
+            if id and (not best or id < best) then best = id end
+        end
+    end
+    return best
+end
+
+function L:GetCurrentBossName()
+    for i=1,12 do
+        local tag = "boss" .. tostring(i)
+        if safe(DoesUnitExist, false, tag) == true then
+            local name = tostring(safe(GetRawUnitName, "", tag) or safe(GetUnitName, "", tag) or "")
+            name = name:gsub("^%s+", ""):gsub("%s+$", "")
+            if name ~= "" then return name end
+        end
+    end
+    return ""
+end
+
+function L:BindSetupToCurrentBoss(index)
+    index = tonumber(index)
+    if not index or index < 1 or index > SLOT_COUNT then return false end
+    local boss = self:GetCurrentBossName()
+    if boss == "" then notify("LOADOUTS: no active boss encounter to bind.", false); return false end
+    local page = self:GetCurrentPage()
+    page.bossRules[boss] = index
+    notify(string.format("LOADOUTS: %s will auto-load Build %d on this page.", boss, index), true)
+    self:RefreshUI()
+    return true
+end
+
+function L:SetZoneAutoSlot(index)
+    index = tonumber(index) or 0
+    if index < 0 or index > SLOT_COUNT then return false end
+    local page = self:GetCurrentPage()
+    page.zoneAutoSlot = index
+    notify(index > 0 and string.format("LOADOUTS: Build %d is the page's raid-entry setup.", index) or "LOADOUTS: raid-entry setup cleared.", true)
+    self:RefreshUI()
+    return true
+end
+
+function L:EnsureSaved()
+    return self:GetCurrentPage().setups
 end
 
 function L:GetActionSlots()
@@ -75,8 +437,8 @@ function L:CaptureBars()
     local primary = rawget(_G, "HOTBAR_CATEGORY_PRIMARY") or 0
     local backup = rawget(_G, "HOTBAR_CATEGORY_BACKUP") or 1
     for _,slot in ipairs(slots) do
-        bars.primary[#bars.primary+1] = tonumber(safe(GetSlotBoundId, 0, slot, primary)) or 0
-        bars.backup[#bars.backup+1] = tonumber(safe(GetSlotBoundId, 0, slot, backup)) or 0
+        bars.primary[#bars.primary+1] = num(safe(GetSlotBoundId, 0, slot, primary)) or 0
+        bars.backup[#bars.backup+1] = num(safe(GetSlotBoundId, 0, slot, backup)) or 0
     end
     return bars
 end
@@ -85,23 +447,17 @@ function L:CaptureGear()
     local gear = {}
     for _,slot in ipairs(EQUIP_SLOTS) do
         if slot ~= nil then
-            local link = itemLink(BAG_WORN, slot)
-            if link ~= "" then
-                gear[tostring(slot)] = {
-                    uniqueId = uniqueIdString(BAG_WORN, slot),
-                    link = link,
-                    itemId = tonumber(safe(GetItemLinkItemId, 0, link)) or 0,
-                }
-            end
+            local entry = self:MakeGearEntry(BAG_WORN, slot)
+            if entry then gear[tostring(slot)] = entry end
         end
     end
     return gear
 end
 
 function L:CaptureAttributes()
-    local health = tonumber(safe(GetAttributeSpentPoints, 0, rawget(_G, "ATTRIBUTE_HEALTH") or 1)) or 0
-    local magicka = tonumber(safe(GetAttributeSpentPoints, 0, rawget(_G, "ATTRIBUTE_MAGICKA") or 2)) or 0
-    local stamina = tonumber(safe(GetAttributeSpentPoints, 0, rawget(_G, "ATTRIBUTE_STAMINA") or 3)) or 0
+    local health = num(safe(GetAttributeSpentPoints, 0, rawget(_G, "ATTRIBUTE_HEALTH") or 1)) or 0
+    local magicka = num(safe(GetAttributeSpentPoints, 0, rawget(_G, "ATTRIBUTE_MAGICKA") or 2)) or 0
+    local stamina = num(safe(GetAttributeSpentPoints, 0, rawget(_G, "ATTRIBUTE_STAMINA") or 3)) or 0
     return { health = health, magicka = magicka, stamina = stamina, total = health + magicka + stamina }
 end
 
@@ -120,13 +476,13 @@ function L:CaptureChampion()
     local champion = { allocations = {}, slots = {}, allocatedPoints = 0, allocationCount = 0, slottedCount = 0 }
     if type(GetNumChampionDisciplines) == "function" and type(GetNumChampionDisciplineSkills) == "function"
         and type(GetChampionSkillId) == "function" and type(GetNumPointsSpentOnChampionSkill) == "function" then
-        local disciplines = tonumber(safe(GetNumChampionDisciplines, 0)) or 0
+        local disciplines = num(safe(GetNumChampionDisciplines, 0)) or 0
         for di=1,disciplines do
-            local skillCount = tonumber(safe(GetNumChampionDisciplineSkills, 0, di)) or 0
+            local skillCount = num(safe(GetNumChampionDisciplineSkills, 0, di)) or 0
             for si=1,skillCount do
-                local id = tonumber(safe(GetChampionSkillId, 0, di, si)) or 0
+                local id = num(safe(GetChampionSkillId, 0, di, si)) or 0
                 if id > 0 then
-                    local points = tonumber(safe(GetNumPointsSpentOnChampionSkill, 0, id)) or 0
+                    local points = num(safe(GetNumPointsSpentOnChampionSkill, 0, id)) or 0
                     if points > 0 then
                         champion.allocations[tostring(id)] = points
                         champion.allocatedPoints = champion.allocatedPoints + points
@@ -141,7 +497,7 @@ function L:CaptureChampion()
         local first,last = self:GetChampionSlots()
         champion.firstSlot, champion.lastSlot = first,last
         for slot=first,last do
-            local id = tonumber(safe(GetSlotBoundId, 0, slot, category)) or 0
+            local id = num(safe(GetSlotBoundId, 0, slot, category)) or 0
             champion.slots[tostring(slot)] = id
             if id > 0 then champion.slottedCount = champion.slottedCount + 1 end
         end
@@ -153,16 +509,16 @@ function L:CaptureSkillProfile()
     local profile = { purchased = {}, purchasedCount = 0 }
     if type(GetNumSkillTypes) ~= "function" or type(GetNumSkillLines) ~= "function"
         or type(GetNumSkillAbilities) ~= "function" or type(GetSkillAbilityInfo) ~= "function" then return profile end
-    local typeCount = tonumber(safe(GetNumSkillTypes, 0)) or 0
+    local typeCount = num(safe(GetNumSkillTypes, 0)) or 0
     for skillType=1,typeCount do
-        local lineCount = tonumber(safe(GetNumSkillLines, 0, skillType)) or 0
+        local lineCount = num(safe(GetNumSkillLines, 0, skillType)) or 0
         for skillLine=1,lineCount do
-            local abilityCount = tonumber(safe(GetNumSkillAbilities, 0, skillType, skillLine)) or 0
+            local abilityCount = num(safe(GetNumSkillAbilities, 0, skillType, skillLine)) or 0
             for abilityIndex=1,abilityCount do
                 local _,_,_,passive,ultimate,purchased,progressionIndex,rank = safe(GetSkillAbilityInfo, nil, skillType, skillLine, abilityIndex)
                 if purchased == true then
                     local key = string.format("%d:%d:%d", skillType, skillLine, abilityIndex)
-                    local abilityId = type(GetSkillAbilityId) == "function" and (tonumber(safe(GetSkillAbilityId, 0, skillType, skillLine, abilityIndex, false)) or 0) or 0
+                    local abilityId = type(GetSkillAbilityId) == "function" and (num(safe(GetSkillAbilityId, 0, skillType, skillLine, abilityIndex, false)) or 0) or 0
                     profile.purchased[key] = {
                         abilityId = abilityId,
                         passive = passive == true,
@@ -213,7 +569,7 @@ function L:ApplyChampionSlots(champion)
     for slotText,wanted in pairs(champion.slots) do
         local slot = tonumber(slotText)
         if slot then
-            local current = tonumber(safe(GetSlotBoundId, 0, slot, category)) or 0
+            local current = num(safe(GetSlotBoundId, 0, slot, category)) or 0
             if current ~= (tonumber(wanted) or 0) then changed = changed + 1 end
         end
     end
@@ -246,7 +602,7 @@ function L:VerifyChampionProfile(champion)
             local slot = tonumber(slotText)
             if slot then
                 slotExpected = slotExpected + 1
-                local current = tonumber(safe(GetSlotBoundId, 0, slot, category)) or 0
+                local current = num(safe(GetSlotBoundId, 0, slot, category)) or 0
                 if current == (tonumber(wanted) or 0) then slotMatched = slotMatched + 1 end
             end
         end
@@ -257,13 +613,100 @@ function L:VerifyChampionProfile(champion)
             local id = tonumber(idText)
             if id then
                 pointExpected = pointExpected + 1
-                if (tonumber(safe(GetNumPointsSpentOnChampionSkill, 0, id)) or 0) == (tonumber(wanted) or 0) then
+                if (num(safe(GetNumPointsSpentOnChampionSkill, 0, id)) or 0) == (tonumber(wanted) or 0) then
                     pointMatched = pointMatched + 1
                 end
             end
         end
     end
     return slotMatched,slotExpected,pointMatched,pointExpected
+end
+
+function L:GetActiveIndex()
+    local page = self:GetCurrentPage()
+    return tonumber(page and page.activeIndex) or 0
+end
+
+function L:SetActiveIndex(index)
+    EPC.saved = EPC.saved or {}
+    index = tonumber(index) or 0
+    if index < 1 or index > SLOT_COUNT then index = 0 end
+    local page = self:GetCurrentPage()
+    page.activeIndex = index
+    EPC.saved.savedLoadoutActiveIndex = index
+    self.activeIndex = index
+    self:RefreshUI()
+end
+
+local function nowMs()
+    if type(GetFrameTimeMilliseconds) == "function" then
+        return num(safe(GetFrameTimeMilliseconds, 0)) or 0
+    end
+    if type(GetGameTimeMilliseconds) == "function" then
+        return num(safe(GetGameTimeMilliseconds, 0)) or 0
+    end
+    return 0
+end
+
+function L:IsFilled(index)
+    local d = self:EnsureSaved()[tonumber(index) or 0]
+    return type(d) == "table" and (type(d.gear) == "table" or type(d.bars) == "table")
+end
+
+function L:RequestSave(index)
+    index = tonumber(index)
+    if not index or index < 1 or index > SLOT_COUNT then return false end
+    if not self:IsFilled(index) then return self:Save(index) end
+
+    self.pendingOverwrite = self.pendingOverwrite or {}
+    local stamp = nowMs()
+    if self.pendingOverwrite[index] and (stamp - self.pendingOverwrite[index]) <= 3000 then
+        self.pendingOverwrite[index] = nil
+        return self:Save(index)
+    end
+
+    self.pendingOverwrite[index] = stamp
+    local c = self.cards and self.cards[index]
+    if c and c.saveButton then c.saveButton:SetText("OVERWRITE?") end
+    notify(string.format("BUILD %d already has a setup. Press OVERWRITE? again to replace it.", index), true)
+    if type(zo_callLater) == "function" then
+        zo_callLater(function()
+            if self.pendingOverwrite and self.pendingOverwrite[index] == stamp then
+                self.pendingOverwrite[index] = nil
+                local card = self.cards and self.cards[index]
+                if card and card.saveButton then card.saveButton:SetText("SAVE") end
+            end
+        end, 3100)
+    end
+    return false
+end
+
+function L:RequestClear(index)
+    index = tonumber(index)
+    if not index or index < 1 or index > SLOT_COUNT then return false end
+    if not self:IsFilled(index) then return self:Clear(index) end
+
+    self.pendingClear = self.pendingClear or {}
+    local stamp = nowMs()
+    if self.pendingClear[index] and (stamp - self.pendingClear[index]) <= 3000 then
+        self.pendingClear[index] = nil
+        return self:Clear(index)
+    end
+
+    self.pendingClear[index] = stamp
+    local c = self.cards and self.cards[index]
+    if c and c.clearButton then c.clearButton:SetText("CLEAR?") end
+    notify(string.format("BUILD %d is saved. Press CLEAR? again to erase that setup.", index), false)
+    if type(zo_callLater) == "function" then
+        zo_callLater(function()
+            if self.pendingClear and self.pendingClear[index] == stamp then
+                self.pendingClear[index] = nil
+                local card = self.cards and self.cards[index]
+                if card and card.clearButton then card.clearButton:SetText("CLEAR") end
+            end
+        end, 3100)
+    end
+    return false
 end
 
 function L:Save(index)
@@ -274,45 +717,85 @@ function L:Save(index)
         return false
     end
     local all = self:EnsureSaved()
-    local oldName = all[index].name or ("Build " .. index)
+    local old = all[index] or {}
+    local oldName = old.name or ("Build " .. index)
+    local food = type(old.food) == "table" and shallowCopyTable(old.food) or nil
+    if not food or (tonumber(food.itemId) or 0) <= 0 then
+        local lastFoodId = tonumber(EPC.saved.loadoutLastFoodItemId029272) or 0
+        local bag,slot = self:FindBackpackItemByItemId(lastFoodId)
+        if bag ~= nil then food = self:MakeFoodEntry(bag, slot) end
+    end
     all[index] = {
         name = oldName,
         gear = self:CaptureGear(),
         bars = self:CaptureBars(),
         build = self:CaptureBuildProfile(),
+        food = food,
         savedAt = safe(GetTimeStamp, 0) or 0,
     }
     notify(string.format("BUILD %d SAVED: %s", index, oldName), true)
+    self:RebuildGearIndex()
     self:RefreshUI()
     return true
 end
 
+function L:GetGearSignature(link)
+    link = tostring(link or "")
+    if link == "" then return nil end
+    local sig = {
+        itemId = num(safe(GetItemLinkItemId, 0, link)) or 0,
+        equipType = num(safe(GetItemLinkEquipType, 0, link)) or 0,
+        traitType = num(safe(GetItemLinkTraitInfo, 0, link)) or 0,
+        weaponType = num(safe(GetItemLinkWeaponType, 0, link)) or 0,
+        armorType = num(safe(GetItemLinkArmorType, 0, link)) or 0,
+        setId = 0,
+    }
+    if type(GetItemLinkSetInfo) == "function" then
+        local _,_,_,_,_,setId = safe(GetItemLinkSetInfo, nil, link, false)
+        sig.setId = tonumber(setId) or 0
+    end
+    return sig
+end
+
+function L:EntryMatches(bag, slot, entry)
+    if type(entry) ~= "table" then return false end
+    local link = itemLink(bag, slot)
+    if link == "" then return false end
+    local wantedUid = tostring(entry.uniqueId or "")
+    if wantedUid ~= "" then
+        -- Saved setups created on this account have a stable ESO unique item id.
+        -- Do not silently substitute another copy of the same set/trait: that made
+        -- bank withdraw/deposit think the saved piece was already local when a
+        -- different duplicate happened to match its signature. Imported setups
+        -- intentionally have no unique id and still use the signature fallback.
+        local actualUid = uniqueIdString(bag, slot)
+        if actualUid ~= "" then return actualUid == wantedUid end
+    end
+
+    local wantedSig = type(entry.signature) == "table" and entry.signature or self:GetGearSignature(entry.link)
+    local actualSig = self:GetGearSignature(link)
+    if not wantedSig or not actualSig then return false end
+    if (tonumber(wantedSig.itemId) or tonumber(entry.itemId) or 0) > 0
+        and (tonumber(actualSig.itemId) or 0) ~= (tonumber(wantedSig.itemId) or tonumber(entry.itemId) or 0) then return false end
+    for _,key in ipairs({"equipType","traitType","weaponType","armorType","setId"}) do
+        local wanted = tonumber(wantedSig[key]) or 0
+        if wanted > 0 and (tonumber(actualSig[key]) or 0) ~= wanted then return false end
+    end
+    return (tonumber(actualSig.itemId) or 0) > 0
+end
+
 function L:FindSavedItem(entry, destination)
     if not entry then return nil end
-    local wantedUid = tostring(entry.uniqueId or "")
-    local wantedItemId = tonumber(entry.itemId) or 0
 
-    if destination ~= nil then
-        local current = itemLink(BAG_WORN, destination)
-        if current ~= "" then
-            if wantedUid ~= "" and uniqueIdString(BAG_WORN, destination) == wantedUid then
-                return BAG_WORN, destination, true
-            end
-            if wantedUid == "" and wantedItemId > 0 and tonumber(safe(GetItemLinkItemId, 0, current)) == wantedItemId then
-                return BAG_WORN, destination, true
-            end
-        end
+    if destination ~= nil and BAG_WORN ~= nil and self:EntryMatches(BAG_WORN, destination, entry) then
+        return BAG_WORN, destination, true
     end
 
     local function scanBag(bag)
         if bag == nil then return nil end
-        local size = tonumber(safe(GetBagSize, 0, bag)) or 0
+        local size = num(safe(GetBagSize, 0, bag)) or 0
         for slot=0,size-1 do
-            local link = itemLink(bag, slot)
-            if link ~= "" then
-                if wantedUid ~= "" and uniqueIdString(bag, slot) == wantedUid then return bag, slot, false end
-                if wantedUid == "" and wantedItemId > 0 and tonumber(safe(GetItemLinkItemId, 0, link)) == wantedItemId then return bag, slot, false end
-            end
+            if self:EntryMatches(bag, slot, entry) then return bag, slot, false end
         end
         return nil
     end
@@ -321,16 +804,322 @@ function L:FindSavedItem(entry, destination)
     if bag then return bag,slot,same end
     if BAG_WORN ~= nil then
         for _,slotId in ipairs(EQUIP_SLOTS) do
-            if slotId ~= nil then
-                local link = itemLink(BAG_WORN, slotId)
-                if link ~= "" then
-                    if wantedUid ~= "" and uniqueIdString(BAG_WORN, slotId) == wantedUid then return BAG_WORN, slotId, false end
-                    if wantedUid == "" and wantedItemId > 0 and tonumber(safe(GetItemLinkItemId, 0, link)) == wantedItemId then return BAG_WORN, slotId, false end
+            if slotId ~= nil and self:EntryMatches(BAG_WORN, slotId, entry) then return BAG_WORN, slotId, false end
+        end
+    end
+    return nil
+end
+
+function L:GetOpenBankBags()
+    if type(IsBankOpen) ~= "function" or safe(IsBankOpen, false) ~= true then return {} end
+    local bags = {}
+    local bankBag = num(safe(GetBankingBag, rawget(_G, "BAG_BANK")))
+    if bankBag ~= nil then bags[#bags+1] = bankBag end
+    if bankBag == rawget(_G, "BAG_BANK") and rawget(_G, "BAG_SUBSCRIBER_BANK") ~= nil
+        and safe(IsESOPlusSubscriber, false) == true then
+        bags[#bags+1] = BAG_SUBSCRIBER_BANK
+    end
+    return bags
+end
+
+function L:FindSavedItemInBank(entry)
+    for _,bag in ipairs(self:GetOpenBankBags()) do
+        local size = num(safe(GetBagSize, 0, bag)) or 0
+        for slot=0,size-1 do
+            if self:EntryMatches(bag, slot, entry) then return bag,slot end
+        end
+    end
+    return nil
+end
+
+function L:GetMissingItems(index, includeOpenBank)
+    local setup = self:EnsureSaved()[tonumber(index) or 0]
+    local missing = {}
+    if not setup or type(setup.gear) ~= "table" then return missing end
+    for slotText,entry in pairs(setup.gear) do
+        local dest = tonumber(slotText)
+        local bag = self:FindSavedItem(entry, dest)
+        if not bag and includeOpenBank == true then bag = self:FindSavedItemInBank(entry) end
+        if not bag then missing[#missing+1] = entry.link or ("Gear slot " .. tostring(slotText)) end
+    end
+    if type(setup.food) == "table" and (tonumber(setup.food.itemId) or 0) > 0 then
+        local foodBag = self:FindBackpackItemByItemId(setup.food.itemId)
+        if not foodBag then missing[#missing+1] = setup.food.link or "Saved buff food" end
+    end
+    return missing
+end
+
+function L:CheckMissing(index)
+    index = tonumber(index)
+    if not index then return false end
+    local missing = self:GetMissingItems(index, true)
+    if #missing == 0 then
+        notify(string.format("BUILD %d: all saved gear%s is available.", index,
+            (self:EnsureSaved()[index].food and " and buff food" or "")), true)
+        return true
+    end
+    local shown = {}
+    for i=1,math.min(#missing, 6) do shown[#shown+1] = tostring(missing[i]) end
+    notify(string.format("BUILD %d: %d missing item%s%s", index, #missing, #missing == 1 and "" or "s",
+        #shown > 0 and (" | " .. table.concat(shown, ", ")) or ""), false)
+    return false
+end
+
+function L:CheckCurrentPageMissing()
+    local total, setups = 0,0
+    for i=1,SLOT_COUNT do
+        if self:IsFilled(i) then
+            setups = setups + 1
+            total = total + #self:GetMissingItems(i, true)
+        end
+    end
+    if total == 0 then notify(string.format("LOADOUTS: page check complete. %d saved setup%s ready.", setups, setups == 1 and "" or "s"), true)
+    else notify(string.format("LOADOUTS: page has %d missing item%s across %d setup%s.", total, total == 1 and "" or "s", setups, setups == 1 and "" or "s"), false) end
+    return total == 0
+end
+
+function L:RebuildGearIndex()
+    self.gearIndexByUid, self.gearIndexBySignature = {}, {}
+    local root = self:EnsurePages()
+    for pageId,page in pairs(root.pages) do
+        for index,setup in ipairs(page.setups or {}) do
+            for _,entry in pairs((setup and setup.gear) or {}) do
+                local uid = tostring(entry.uniqueId or "")
+                if uid ~= "" then
+                    self.gearIndexByUid[uid] = self.gearIndexByUid[uid] or {}
+                    self.gearIndexByUid[uid][#self.gearIndexByUid[uid]+1] = {pageId=pageId,index=index,name=setup.name,pageName=page.name}
+                end
+                local sig = self:GetGearSignature(entry.link)
+                if sig and sig.itemId > 0 then
+                    local key = table.concat({sig.itemId,sig.equipType,sig.traitType,sig.weaponType,sig.armorType,sig.setId}, ":")
+                    self.gearIndexBySignature[key] = self.gearIndexBySignature[key] or {}
+                    self.gearIndexBySignature[key][#self.gearIndexBySignature[key]+1] = {pageId=pageId,index=index,name=setup.name,pageName=page.name}
                 end
             end
         end
     end
+end
+
+function L:GetItemSetupReferences(bag, slot)
+    if not self.gearIndexByUid then self:RebuildGearIndex() end
+    local uid = uniqueIdString(bag, slot)
+    if uid ~= "" and self.gearIndexByUid[uid] then return self.gearIndexByUid[uid] end
+    local sig = self:GetGearSignature(itemLink(bag, slot))
+    if sig then
+        local key = table.concat({sig.itemId,sig.equipType,sig.traitType,sig.weaponType,sig.armorType,sig.setId}, ":")
+        return self.gearIndexBySignature[key]
+    end
     return nil
+end
+
+function L:IsItemInAnySetup(bag, slot)
+    local refs = self:GetItemSetupReferences(bag, slot)
+    return type(refs) == "table" and #refs > 0, refs
+end
+
+function L:GetBankDestinationBag(sourceBag, sourceSlot)
+    local bags = self:GetOpenBankBags()
+    for _,bag in ipairs(bags) do
+        if safe(DoesBagHaveSpaceFor, false, bag, sourceBag, sourceSlot) == true then return bag end
+    end
+    return nil
+end
+
+function L:MoveItemsSequential(items, destinationResolver, callback)
+    items = type(items) == "table" and items or {}
+    if self.bankTransferBusy then
+        notify("LOADOUTS: a bank transfer is already in progress.", false)
+        if callback then callback(0, #items) end
+        return false
+    end
+
+    self.bankTransferBusy = true
+    self.bankTransferToken = (tonumber(self.bankTransferToken) or 0) + 1
+    local token = self.bankTransferToken
+    local updateName = "EAS_LoadoutBankMove" .. tostring(token)
+    local pos, moved, failed = 1,0,0
+
+    local function stopPolling()
+        if EVENT_MANAGER and type(EVENT_MANAGER.UnregisterForUpdate) == "function" then
+            pcall(EVENT_MANAGER.UnregisterForUpdate, EVENT_MANAGER, updateName)
+        end
+    end
+
+    local function finish()
+        stopPolling()
+        self.bankTransferBusy = false
+        if self.window and not self.window:IsHidden() then self:RefreshUI() end
+        if callback then callback(moved, failed) end
+    end
+
+    local step
+    local function continueLater(delay)
+        if type(zo_callLater) == "function" then zo_callLater(step, delay or 100) else step() end
+    end
+
+    step = function()
+        if token ~= self.bankTransferToken then finish(); return end
+        if pos > #items then finish(); return end
+        if safe(IsBankOpen, false) ~= true then
+            failed = failed + (#items - pos + 1)
+            finish()
+            return
+        end
+
+        local item = items[pos]
+        pos = pos + 1
+        local sourceBag,sourceSlot = item and item.bag, item and item.slot
+        if sourceBag == nil or sourceSlot == nil or itemLink(sourceBag, sourceSlot) == "" then
+            failed = failed + 1
+            continueLater(40)
+            return
+        end
+
+        local destBag = type(destinationResolver) == "function" and destinationResolver(sourceBag, sourceSlot) or destinationResolver
+        if destBag == nil then
+            failed = failed + 1
+            continueLater(40)
+            return
+        end
+        if type(DoesBagHaveSpaceFor) == "function" and safe(DoesBagHaveSpaceFor, false, destBag, sourceBag, sourceSlot) ~= true then
+            failed = failed + 1
+            continueLater(40)
+            return
+        end
+
+        local destSlot = num(safe(FindFirstEmptySlotInBag, nil, destBag))
+        if destSlot == nil then
+            failed = failed + 1
+            continueLater(40)
+            return
+        end
+
+        local sourceUid = uniqueIdString(sourceBag, sourceSlot)
+        local sourceLink = itemLink(sourceBag, sourceSlot)
+        local ok,result = pcall(CallSecureProtected, "RequestMoveItem", sourceBag, sourceSlot, destBag, destSlot, 1)
+        if not ok or result == false then
+            failed = failed + 1
+            continueLater(80)
+            return
+        end
+
+        -- Do not issue the next protected move until ESO confirms this one
+        -- reached its destination. Firing several moves at the same empty slot
+        -- before the bank UI updates caused transfers to appear to do nothing.
+        local attempts = 0
+        local completed = false
+        local function checkArrival()
+            if completed then return end
+            attempts = attempts + 1
+            local arrived = false
+            local destLink = itemLink(destBag, destSlot)
+            if sourceUid ~= "" then
+                arrived = uniqueIdString(destBag, destSlot) == sourceUid
+            elseif destLink ~= "" then
+                arrived = sourceLink == "" or destLink == sourceLink
+            end
+
+            if arrived then
+                completed = true
+                stopPolling()
+                moved = moved + 1
+                continueLater(90)
+            elseif attempts >= 30 or safe(IsBankOpen, false) ~= true then
+                completed = true
+                stopPolling()
+                failed = failed + 1
+                continueLater(90)
+            end
+        end
+
+        if EVENT_MANAGER and type(EVENT_MANAGER.RegisterForUpdate) == "function" then
+            stopPolling()
+            EVENT_MANAGER:RegisterForUpdate(updateName, 100, checkArrival)
+        elseif type(zo_callLater) == "function" then
+            local function pollLater()
+                checkArrival()
+                if not completed and attempts < 30 and self.bankTransferBusy and token == self.bankTransferToken then zo_callLater(pollLater, 100) end
+            end
+            zo_callLater(pollLater, 100)
+        else
+            moved = moved + 1
+            step()
+        end
+    end
+
+    if #items == 0 then finish() else step() end
+    return true
+end
+
+function L:BuildBankTransferList(index, direction)
+    local setup = self:EnsureSaved()[tonumber(index) or 0]
+    local list,seen = {},{}
+    if not setup or type(setup.gear) ~= "table" then return list end
+    for slotText,entry in pairs(setup.gear) do
+        local destination = tonumber(slotText)
+        -- Poison stacks are managed by the optional poison-refill feature, not
+        -- by gear banking. Keeping them out of the bank queue prevents a stack
+        -- transfer from interfering with normal one-piece gear moves.
+        if destination ~= rawget(_G, "EQUIP_SLOT_POISON") and destination ~= rawget(_G, "EQUIP_SLOT_BACKUP_POISON") then
+            local bag,slot
+            if direction == "withdraw" then
+                local localBag = self:FindSavedItem(entry, destination)
+                if not localBag then bag,slot = self:FindSavedItemInBank(entry) end
+            else
+                bag,slot = self:FindSavedItem(entry, destination)
+            end
+            if bag ~= nil and slot ~= nil then
+                local uid = uniqueIdString(bag,slot)
+                local key = uid ~= "" and uid or (tostring(bag)..":"..tostring(slot))
+                if not seen[key] then seen[key]=true; list[#list+1] = {bag=bag,slot=slot,entry=entry,destination=destination} end
+            end
+        end
+    end
+    return list
+end
+
+function L:WithdrawSetup(index, callback)
+    if self.bankTransferBusy then notify("LOADOUTS: a bank transfer is already in progress.", false); if callback then callback(0,0) end; return false end
+    if safe(IsBankOpen, false) ~= true then notify("LOADOUTS: open a personal banker first, then press WITHDRAW.", false); if callback then callback(0,0) end; return false end
+    local list = self:BuildBankTransferList(index, "withdraw")
+    if #list == 0 then notify("LOADOUTS: no saved setup gear needs withdrawing.", true); if callback then callback(0,0) end; return true end
+    self:MoveItemsSequential(list, BAG_BACKPACK, function(moved,failed)
+        notify(string.format("LOADOUTS: withdrew %d item%s%s.", moved, moved==1 and "" or "s", failed>0 and (" | "..failed.." failed") or ""), failed==0)
+        if callback then callback(moved,failed) end
+    end)
+    return true
+end
+
+function L:DepositSetup(index, callback)
+    if self.bankTransferBusy then notify("LOADOUTS: a bank transfer is already in progress.", false); if callback then callback(0,0) end; return false end
+    if safe(IsBankOpen, false) ~= true then notify("LOADOUTS: open a personal banker first, then press DEPOSIT.", false); if callback then callback(0,0) end; return false end
+    local list = self:BuildBankTransferList(index, "deposit")
+    if #list == 0 then notify("LOADOUTS: no setup gear is available to deposit.", true); if callback then callback(0,0) end; return true end
+    self:MoveItemsSequential(list, function(bag,slot) return self:GetBankDestinationBag(bag,slot) end, function(moved,failed)
+        notify(string.format("LOADOUTS: deposited %d item%s%s.", moved, moved==1 and "" or "s", failed>0 and (" | "..failed.." failed") or ""), failed==0)
+        if callback then callback(moved,failed) end
+    end)
+    return true
+end
+
+function L:TransferCurrentPage(direction)
+    if self.bankTransferBusy then notify("LOADOUTS: a bank transfer is already in progress.", false); return false end
+    if safe(IsBankOpen, false) ~= true then notify("LOADOUTS: open a personal banker first, then use WITHDRAW or DEPOSIT.", false); return false end
+    local combined,seen = {},{}
+    for i=1,SLOT_COUNT do
+        if self:IsFilled(i) then
+            for _,item in ipairs(self:BuildBankTransferList(i, direction)) do
+                local uid = uniqueIdString(item.bag,item.slot)
+                local key = uid ~= "" and uid or (tostring(item.bag)..":"..tostring(item.slot))
+                if not seen[key] then seen[key]=true; combined[#combined+1]=item end
+            end
+        end
+    end
+    local resolver = direction == "withdraw" and BAG_BACKPACK or function(bag,slot) return self:GetBankDestinationBag(bag,slot) end
+    self:MoveItemsSequential(combined, resolver, function(moved,failed)
+        notify(string.format("LOADOUTS: page %s moved %d item%s%s.", direction, moved, moved==1 and "" or "s", failed>0 and (" | "..failed.." failed") or ""), failed==0)
+    end)
+    return true
 end
 
 function L:GetSkillDataForSavedId(savedId)
@@ -360,10 +1149,10 @@ function L:GetSkillDataForSavedId(savedId)
 
     -- Fallback for clients where progression lookup is stale: scan purchased skill data.
     if type(GetNumSkillTypes) == "function" and type(GetNumSkillLines) == "function" and type(GetNumSkillAbilities) == "function" then
-        for t=1,(tonumber(safe(GetNumSkillTypes,0)) or 0) do
-            for l=1,(tonumber(safe(GetNumSkillLines,0,t)) or 0) do
-                for a=1,(tonumber(safe(GetNumSkillAbilities,0,t,l)) or 0) do
-                    local abilityId = tonumber(safe(GetSkillAbilityId,0,t,l,a)) or 0
+        for t=1,(num(safe(GetNumSkillTypes,0)) or 0) do
+            for l=1,(num(safe(GetNumSkillLines,0,t)) or 0) do
+                for a=1,(num(safe(GetNumSkillAbilities,0,t,l)) or 0) do
+                    local abilityId = num(safe(GetSkillAbilityId,0,t,l,a)) or 0
                     if abilityId == savedId then
                         local ok, data = pcall(mgr.GetSkillDataByIndices, mgr, t,l,a)
                         if ok and data then return data end
@@ -383,7 +1172,7 @@ function L:GetAbilityIndexForSavedId(savedId)
     -- abilities ESO can convert that id straight back to the protected API's
     -- abilityIndex.
     if type(GetAbilityIndex) == "function" then
-        local idx = tonumber(safe(GetAbilityIndex, 0, savedId)) or 0
+        local idx = num(safe(GetAbilityIndex, 0, savedId)) or 0
         if idx > 0 then return idx end
     end
 
@@ -405,10 +1194,10 @@ function L:GetAbilityIndexForSavedId(savedId)
     -- populated yet. This also gives us the purchased skill's progression.
     if type(GetNumSkillTypes) == "function" and type(GetNumSkillLines) == "function"
         and type(GetNumSkillAbilities) == "function" and type(GetSkillAbilityInfo) == "function" then
-        for t=1,(tonumber(safe(GetNumSkillTypes,0)) or 0) do
-            for l=1,(tonumber(safe(GetNumSkillLines,0,t)) or 0) do
-                for a=1,(tonumber(safe(GetNumSkillAbilities,0,t,l)) or 0) do
-                    local id = type(GetSkillAbilityId) == "function" and (tonumber(safe(GetSkillAbilityId,0,t,l,a,false)) or 0) or 0
+        for t=1,(num(safe(GetNumSkillTypes,0)) or 0) do
+            for l=1,(num(safe(GetNumSkillLines,0,t)) or 0) do
+                for a=1,(num(safe(GetNumSkillAbilities,0,t,l)) or 0) do
+                    local id = type(GetSkillAbilityId) == "function" and (num(safe(GetSkillAbilityId,0,t,l,a,false)) or 0) or 0
                     if id == savedId then
                         local _,_,_,passive,_,purchased,progressionIndex,rank = safe(GetSkillAbilityInfo,nil,t,l,a)
                         if purchased == true and passive ~= true then
@@ -437,7 +1226,7 @@ function L:ApplyBar(category, saved)
     for i=1,#actionSlots do
         local actionSlot = actionSlots[i]
         local savedId = tonumber(saved[i]) or 0
-        local currentId = tonumber(safe(GetSlotBoundId, 0, actionSlot, category)) or 0
+        local currentId = num(safe(GetSlotBoundId, 0, actionSlot, category)) or 0
 
         if currentId ~= savedId then
             if savedId <= 0 then
@@ -538,7 +1327,7 @@ function L:Verify(index)
             local uid = uniqueIdString(BAG_WORN, slot)
             local link = itemLink(BAG_WORN, slot)
             if (entry.uniqueId and entry.uniqueId ~= "" and uid == entry.uniqueId)
-                or ((not entry.uniqueId or entry.uniqueId == "") and tonumber(entry.itemId) == tonumber(safe(GetItemLinkItemId,0,link))) then
+                or ((not entry.uniqueId or entry.uniqueId == "") and tonumber(entry.itemId) == num(safe(GetItemLinkItemId,0,link))) then
                 gearMatched = gearMatched + 1
             end
         end
@@ -591,33 +1380,60 @@ function L:Equip(index)
     end
 
     self.equipInProgress = true
-    notify(string.format("BUILD %d APPLYING: %s", index, tostring(loadout.name or ("Build "..index))), true)
+    self:SetActiveIndex(index)
+    notify(string.format("BUILD %d LOADING: %s", index, tostring(loadout.name or ("Build "..index))), true)
 
-    self:ApplyGearSequential(loadout.gear, function(gearRequested, missing)
-        local function applyBarsAndVerify()
-            local barChanged, barFailed = self:ApplyBars(loadout.bars)
-            local cpChanged, cpFailed = self:ApplyChampionSlots(loadout.build and loadout.build.champion)
-            local unavailable = missing + barFailed + cpFailed
-            notify(string.format("BUILD %d: %d gear request%s | %d bar change%s | %d CP slot change%s%s",
-                index,
-                gearRequested, gearRequested==1 and "" or "s",
-                barChanged, barChanged==1 and "" or "s",
-                cpChanged, cpChanged==1 and "" or "s",
-                unavailable>0 and string.format(" | %d unavailable", unavailable) or ""),
-                unavailable==0)
+    local function beginApply()
+        self:ApplyGearSequential(loadout.gear, function(gearRequested, missing)
+            local function applyBarsAndVerify()
+                local barChanged, barFailed = self:ApplyBars(loadout.bars)
+                local cpChanged, cpFailed = self:ApplyChampionSlots(loadout.build and loadout.build.champion)
+                local unavailable = missing + barFailed + cpFailed
 
-            local function verifyDone()
-                self.equipInProgress = false
-                self:Verify(index)
-                if EPC.GearLoadoutOverlay and type(EPC.GearLoadoutOverlay.ScheduleRefresh) == "function" then
-                    EPC.GearLoadoutOverlay:ScheduleRefresh(50)
+                if EPC.saved.loadoutEquipFood029272 ~= false and type(loadout.food) == "table" then
+                    self:UseSavedFood(index)
                 end
-                self:RefreshUI()
+
+                if EPC.Maintenance then
+                    if EPC.saved.loadoutChargeWeapons029272 == true and type(EPC.Maintenance.RechargeEquipped) == "function" then
+                        pcall(EPC.Maintenance.RechargeEquipped, EPC.Maintenance, true)
+                    end
+                    if EPC.saved.loadoutRepairArmor029272 == true and type(EPC.Maintenance.RepairEquipped) == "function" then
+                        pcall(EPC.Maintenance.RepairEquipped, EPC.Maintenance, true)
+                    end
+                end
+
+                notify(string.format("BUILD %d: %d gear request%s | %d bar change%s | %d CP slot change%s%s",
+                    index,
+                    gearRequested, gearRequested==1 and "" or "s",
+                    barChanged, barChanged==1 and "" or "s",
+                    cpChanged, cpChanged==1 and "" or "s",
+                    unavailable>0 and string.format(" | %d unavailable", unavailable) or ""),
+                    unavailable==0)
+
+                local function verifyDone()
+                    self.equipInProgress = false
+                    self:Verify(index)
+                    if EPC.GearLoadoutOverlay and type(EPC.GearLoadoutOverlay.ScheduleRefresh) == "function" then
+                        EPC.GearLoadoutOverlay:ScheduleRefresh(50)
+                    end
+                    self:RefreshUI()
+                end
+                if type(zo_callLater) == "function" then zo_callLater(verifyDone, 750) else verifyDone() end
             end
-            if type(zo_callLater) == "function" then zo_callLater(verifyDone, 750) else verifyDone() end
-        end
-        if type(zo_callLater) == "function" then zo_callLater(applyBarsAndVerify, 180) else applyBarsAndVerify() end
-    end)
+            if type(zo_callLater) == "function" then zo_callLater(applyBarsAndVerify, 180) else applyBarsAndVerify() end
+        end)
+    end
+
+    -- If the bank is open, automatically withdraw any saved pieces that are in
+    -- the bank before equipping. From normal gameplay this path is skipped.
+    if safe(IsBankOpen, false) == true then
+        self:WithdrawSetup(index, function()
+            if type(zo_callLater) == "function" then zo_callLater(beginApply, 180) else beginApply() end
+        end)
+    else
+        beginApply()
+    end
     return true
 end
 
@@ -627,6 +1443,8 @@ function L:Clear(index)
     local all = self:EnsureSaved()
     local name = all[index].name or ("Build " .. index)
     all[index] = { name = name }
+    if self:GetActiveIndex() == index then self:SetActiveIndex(0) end
+    self:RebuildGearIndex()
     notify(string.format("BUILD %d CLEARED: %s", index, name), true)
     self:RefreshUI()
     return true
@@ -651,6 +1469,8 @@ function L:BeginRename(index)
     index = tonumber(index)
     local c = index and self.cards and self.cards[index]
     if not c or not c.edit then return end
+    c.renaming = true
+    if c.edit.SetEditEnabled then c.edit:SetEditEnabled(true) end
     self:AcquireUIMode(false)
     local function focusName()
         if not c.edit then return end
@@ -664,12 +1484,599 @@ function L:BeginRename(index)
     if type(zo_callLater) == "function" then zo_callLater(focusName, 0) end
 end
 
+
+function L:GetGearDestinationForCursor(bag, slot)
+    bag,slot = tonumber(bag),tonumber(slot)
+    if bag == nil or slot == nil then return nil end
+    if bag == BAG_WORN then return slot end
+    local link = itemLink(bag, slot)
+    if link == "" then return nil end
+    local equipType = num(safe(GetItemLinkEquipType, 0, link)) or 0
+    local shift = safe(IsShiftKeyDown, false) == true
+    if equipType == rawget(_G,"EQUIP_TYPE_HEAD") then return EQUIP_SLOT_HEAD end
+    if equipType == rawget(_G,"EQUIP_TYPE_SHOULDERS") then return EQUIP_SLOT_SHOULDERS end
+    if equipType == rawget(_G,"EQUIP_TYPE_CHEST") then return EQUIP_SLOT_CHEST end
+    if equipType == rawget(_G,"EQUIP_TYPE_HAND") then return EQUIP_SLOT_HAND end
+    if equipType == rawget(_G,"EQUIP_TYPE_WAIST") then return EQUIP_SLOT_WAIST end
+    if equipType == rawget(_G,"EQUIP_TYPE_LEGS") then return EQUIP_SLOT_LEGS end
+    if equipType == rawget(_G,"EQUIP_TYPE_FEET") then return EQUIP_SLOT_FEET end
+    if equipType == rawget(_G,"EQUIP_TYPE_NECK") then return EQUIP_SLOT_NECK end
+    if equipType == rawget(_G,"EQUIP_TYPE_RING") then return shift and EQUIP_SLOT_RING2 or EQUIP_SLOT_RING1 end
+    if equipType == rawget(_G,"EQUIP_TYPE_POISON") then return shift and EQUIP_SLOT_BACKUP_POISON or EQUIP_SLOT_POISON end
+    if equipType == rawget(_G,"EQUIP_TYPE_OFF_HAND") then return shift and EQUIP_SLOT_BACKUP_OFF or EQUIP_SLOT_OFF_HAND end
+    if equipType == rawget(_G,"EQUIP_TYPE_MAIN_HAND") or equipType == rawget(_G,"EQUIP_TYPE_ONE_HAND") or equipType == rawget(_G,"EQUIP_TYPE_TWO_HAND") then
+        return shift and EQUIP_SLOT_BACKUP_MAIN or EQUIP_SLOT_MAIN_HAND
+    end
+    return nil
+end
+
+function L:DropGearOnSetup(index)
+    index = tonumber(index)
+    if not index then return false end
+    local content = num(safe(GetCursorContentType, rawget(_G,"MOUSE_CONTENT_EMPTY") or 0)) or 0
+    if content ~= rawget(_G,"MOUSE_CONTENT_INVENTORY_ITEM") and content ~= rawget(_G,"MOUSE_CONTENT_EQUIPPED_ITEM") then return false end
+    local bag = num(safe(GetCursorBagId, nil))
+    local slot = num(safe(GetCursorSlotIndex, nil))
+    if bag == nil or slot == nil then return false end
+    local dest = self:GetGearDestinationForCursor(bag, slot)
+    if dest == nil then notify("LOADOUTS: that item cannot be assigned to a gear slot.", false); return false end
+    local entry = self:MakeGearEntry(bag, slot)
+    if not entry then return false end
+    local setup = self:EnsureSaved()[index]
+    setup.gear = type(setup.gear) == "table" and setup.gear or {}
+    setup.gear[tostring(dest)] = entry
+    if type(ClearCursor) == "function" then pcall(ClearCursor) end
+    self:RebuildGearIndex()
+    self:RefreshUI()
+    notify(string.format("BUILD %d: gear slot updated. Hold Shift while dropping rings/weapons/poisons for the second/back slot.", index), true)
+    return true
+end
+
+function L:SetFoodFromBagSlot(index, bag, slot)
+    index = tonumber(index)
+    if not index or bag == nil or slot == nil then return false end
+    local food = self:MakeFoodEntry(bag, slot)
+    if not food then notify("LOADOUTS: choose a food or drink item.", false); return false end
+    self:EnsureSaved()[index].food = food
+    EPC.saved.loadoutLastFoodItemId029272 = tonumber(food.itemId) or 0
+    self:RefreshUI()
+    local name = tostring(safe(GetItemLinkName, "", food.link) or "")
+    if name == "" then name = "buff food" end
+    notify(string.format("BUILD %d: saved food — %s.", index, name), true)
+    return true
+end
+
+function L:GetBackpackFoodChoices()
+    local out,seen = {},{}
+    if BAG_BACKPACK == nil then return out end
+    local size = num(safe(GetBagSize, 0, BAG_BACKPACK)) or 0
+    for slot=0,size-1 do
+        local food = self:MakeFoodEntry(BAG_BACKPACK, slot)
+        if food and (tonumber(food.itemId) or 0) > 0 then
+            local key = tostring(food.itemId)
+            if not seen[key] then
+                seen[key] = true
+                food.bag,food.slot = BAG_BACKPACK,slot
+                food.stack = math.max(1, num(safe(GetSlotStackSize, 1, BAG_BACKPACK, slot)) or 1)
+                food.name = tostring(safe(GetItemLinkName, "", food.link) or safe(GetItemName, "Food / Drink", BAG_BACKPACK, slot) or "Food / Drink")
+                out[#out+1] = food
+            end
+        end
+    end
+    table.sort(out, function(a,b) return string.lower(tostring(a.name or "")) < string.lower(tostring(b.name or "")) end)
+    return out
+end
+
+function L:DropFoodOnSetup(index)
+    index = tonumber(index)
+    if not index then return false end
+    local content = num(safe(GetCursorContentType, rawget(_G,"MOUSE_CONTENT_EMPTY") or 0)) or 0
+    if content ~= rawget(_G,"MOUSE_CONTENT_INVENTORY_ITEM") then
+        notify("LOADOUTS: click ADD FOOD to pick from your backpack, or drag a food/drink item onto it.", false)
+        return false
+    end
+    local bag = num(safe(GetCursorBagId, nil))
+    local slot = num(safe(GetCursorSlotIndex, nil))
+    if bag == nil or slot == nil then return false end
+    local ok = self:SetFoodFromBagSlot(index, bag, slot)
+    if ok and type(ClearCursor) == "function" then pcall(ClearCursor) end
+    return ok
+end
+
+function L:DropSkillOnSetup(index, barKey, position)
+    index,position = tonumber(index),tonumber(position)
+    if not index or not position then return false end
+    if barKey ~= "primary" and barKey ~= "backup" then return false end
+    if num(safe(GetCursorContentType, 0)) ~= rawget(_G,"MOUSE_CONTENT_ACTION") then return false end
+    local abilityId = num(safe(GetCursorAbilityId, 0)) or 0
+    if abilityId <= 0 then return false end
+    local progression = rawget(_G,"SKILLS_DATA_MANAGER") and safe(SKILLS_DATA_MANAGER.GetProgressionDataByAbilityId, nil, SKILLS_DATA_MANAGER, abilityId) or nil
+    if progression and type(progression.IsUltimate) == "function" then
+        local isUltimate = safe(progression.IsUltimate, false, progression) == true
+        if isUltimate ~= (position == 6) then
+            notify(position == 6 and "LOADOUTS: only an Ultimate can be dropped in the last slot." or "LOADOUTS: Ultimates belong in the last slot.", false)
+            return false
+        end
+    end
+    local setup = self:EnsureSaved()[index]
+    setup.bars = type(setup.bars) == "table" and setup.bars or {primary={},backup={}}
+    setup.bars[barKey] = type(setup.bars[barKey]) == "table" and setup.bars[barKey] or {}
+    setup.bars[barKey][position] = abilityId
+    if type(ClearCursor) == "function" then pcall(ClearCursor) end
+    self:RefreshUI()
+    return true
+end
+
+function L:DragSavedSkillFromSetup(index, barKey, position)
+    if safe(IsUnitInCombat, false, "player") == true then return false end
+    local setup = self:EnsureSaved()[tonumber(index) or 0]
+    local abilityId = setup and setup.bars and setup.bars[barKey] and tonumber(setup.bars[barKey][tonumber(position) or 0]) or 0
+    if abilityId <= 0 or num(safe(GetCursorContentType, 0)) ~= (rawget(_G,"MOUSE_CONTENT_EMPTY") or 0) then return false end
+    if type(GetSpecificSkillAbilityKeysByAbilityId) ~= "function" then return false end
+    local t,l,a = safe(GetSpecificSkillAbilityKeysByAbilityId, nil, abilityId)
+    if not tonumber(t) or tonumber(t) <= 0 then return false end
+    local ok,result = pcall(CallSecureProtected, "PickupAbilityBySkillLine", t,l,a)
+    if ok and result ~= false then
+        setup.bars[barKey][position] = 0
+        self:RefreshUI()
+        return true
+    end
+    return false
+end
+
+local function encodeField(text)
+    return (tostring(text or ""):gsub("([^%w%._%-])", function(ch) return string.format("%%%02X", string.byte(ch)) end))
+end
+
+local function decodeField(text)
+    return (tostring(text or ""):gsub("%%(%x%x)", function(hex) return string.char(tonumber(hex,16)) end))
+end
+
+local function splitPlain(text, sep)
+    local out = {}
+    text = tostring(text or "")
+    if text == "" then return out end
+    local start = 1
+    while true do
+        local pos = string.find(text, sep, start, true)
+        if not pos then out[#out+1] = string.sub(text,start); break end
+        out[#out+1] = string.sub(text,start,pos-1)
+        start = pos + #sep
+    end
+    return out
+end
+
+function L:ExportSetup(index)
+    index = tonumber(index)
+    local setup = index and self:EnsureSaved()[index]
+    if not setup or not self:IsFilled(index) then return "" end
+    local fields = {"EASLOADOUT1", "name="..encodeField(setup.name or ("Build "..index))}
+    local gearParts = {}
+    for slotText,entry in pairs(setup.gear or {}) do
+        if entry and tostring(entry.link or "") ~= "" then gearParts[#gearParts+1] = tostring(slotText).."~"..encodeField(entry.link) end
+    end
+    table.sort(gearParts)
+    fields[#fields+1] = "gear="..table.concat(gearParts, ",")
+    for _,pair in ipairs({{"p","primary"},{"b","backup"}}) do
+        local ids = {}
+        for i=1,6 do ids[i] = tostring(tonumber(setup.bars and setup.bars[pair[2]] and setup.bars[pair[2]][i]) or 0) end
+        fields[#fields+1] = pair[1].."="..table.concat(ids, ",")
+    end
+    local champion = setup.build and setup.build.champion or {}
+    local cpSlots = {}
+    for slotText,id in pairs(champion.slots or {}) do cpSlots[#cpSlots+1] = tostring(slotText).."~"..tostring(tonumber(id) or 0) end
+    table.sort(cpSlots)
+    fields[#fields+1] = "cps="..table.concat(cpSlots, ",")
+    local cpAlloc = {}
+    for idText,points in pairs(champion.allocations or {}) do cpAlloc[#cpAlloc+1] = tostring(idText).."~"..tostring(tonumber(points) or 0) end
+    table.sort(cpAlloc)
+    fields[#fields+1] = "cpa="..table.concat(cpAlloc, ",")
+    local attrs = setup.build and setup.build.attributes or {}
+    fields[#fields+1] = string.format("attr=%d~%d~%d", tonumber(attrs.health) or 0, tonumber(attrs.magicka) or 0, tonumber(attrs.stamina) or 0)
+    if type(setup.food) == "table" and (tonumber(setup.food.itemId) or 0) > 0 then
+        fields[#fields+1] = "food="..tostring(tonumber(setup.food.itemId) or 0).."~"..encodeField(setup.food.link or "")
+    end
+    return table.concat(fields, ";")
+end
+
+function L:ImportSetup(index, text)
+    index = tonumber(index)
+    text = tostring(text or "")
+    if not index or index < 1 or index > SLOT_COUNT or string.sub(text,1,11) ~= "EASLOADOUT1" then
+        notify("LOADOUTS: invalid ESO Adventurer Suite setup code.", false)
+        return false
+    end
+    local data = {}
+    for _,part in ipairs(splitPlain(text,";")) do
+        local eq = string.find(part,"=",1,true)
+        if eq then data[string.sub(part,1,eq-1)] = string.sub(part,eq+1) end
+    end
+    local setup = {
+        name = decodeField(data.name or "") ~= "" and decodeField(data.name) or ("Build "..index),
+        gear = {}, bars = {primary={},backup={}},
+        build = {version=2, attributes={health=0,magicka=0,stamina=0,total=0}, champion={slots={},allocations={},slottedCount=0,allocationCount=0,allocatedPoints=0}, skills={purchased={},purchasedCount=0}},
+        savedAt = safe(GetTimeStamp, 0) or 0,
+    }
+    for _,part in ipairs(splitPlain(data.gear or "",",")) do
+        local a,b = string.match(part,"^(%-?%d+)~(.+)$")
+        local slot = tonumber(a); local link = b and decodeField(b) or ""
+        if slot and link ~= "" then
+            setup.gear[tostring(slot)] = {uniqueId="", link=link, itemId=num(safe(GetItemLinkItemId,0,link)) or 0, signature=self:GetGearSignature(link)}
+        end
+    end
+    for key,barKey in pairs({p="primary",b="backup"}) do
+        for i,idText in ipairs(splitPlain(data[key] or "",",")) do if i <= 6 then setup.bars[barKey][i] = tonumber(idText) or 0 end end
+    end
+    local champ = setup.build.champion
+    for _,part in ipairs(splitPlain(data.cps or "",",")) do
+        local slot,id = string.match(part,"^(%-?%d+)~(%-?%d+)$")
+        if slot then champ.slots[tostring(tonumber(slot))] = tonumber(id) or 0; if (tonumber(id) or 0) > 0 then champ.slottedCount=champ.slottedCount+1 end end
+    end
+    for _,part in ipairs(splitPlain(data.cpa or "",",")) do
+        local id,points = string.match(part,"^(%-?%d+)~(%-?%d+)$")
+        if id and (tonumber(points) or 0) > 0 then champ.allocations[tostring(tonumber(id))]=tonumber(points); champ.allocationCount=champ.allocationCount+1; champ.allocatedPoints=champ.allocatedPoints+(tonumber(points) or 0) end
+    end
+    local ah,am,as = string.match(data.attr or "","^(%-?%d+)~(%-?%d+)~(%-?%d+)$")
+    if ah then setup.build.attributes={health=tonumber(ah) or 0,magicka=tonumber(am) or 0,stamina=tonumber(as) or 0,total=(tonumber(ah) or 0)+(tonumber(am) or 0)+(tonumber(as) or 0)} end
+    local foodId,foodLink = string.match(data.food or "","^(%d+)~(.+)$")
+    if foodId then setup.food={itemId=tonumber(foodId) or 0,link=decodeField(foodLink),icon=itemIconFromLink(decodeField(foodLink))} end
+    self:EnsureSaved()[index] = setup
+    self:RebuildGearIndex()
+    self:RefreshUI()
+    notify(string.format("BUILD %d imported: %s", index, setup.name), true)
+    return true
+end
+
+function L:CreateTransferDialog()
+    if self.transferWindow then return end
+    local win = wm:CreateTopLevelWindow("EAS_LoadoutTransfer")
+    win:SetDimensions(580, 290); win:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0); win:SetHidden(true); win:SetMouseEnabled(true); win:SetMovable(true)
+    raiseLoadoutModal(win, 12500)
+    local bg = wm:CreateControl("EAS_LoadoutTransferBG", win, CT_BACKDROP); bg:SetAnchorFill(win); bg:SetCenterColor(0.01,0.02,0.03,0.99); bg:SetEdgeColor(0.30,0.56,0.82,0.95); bg:SetEdgeTexture(nil,1,1,1)
+    local title = wm:CreateControl("EAS_LoadoutTransferTitle", win, CT_LABEL); title:SetFont("ZoFontWinH2"); title:SetAnchor(TOPLEFT,win,TOPLEFT,16,12); title:SetDimensions(500,28); self.transferTitle=title
+    local editBG = wm:CreateControl("EAS_LoadoutTransferEditBG", win, CT_BACKDROP); editBG:SetAnchor(TOPLEFT,win,TOPLEFT,16,50); editBG:SetDimensions(548,170); editBG:SetCenterColor(0.02,0.03,0.04,0.95); editBG:SetEdgeColor(0.22,0.34,0.48,0.9); editBG:SetEdgeTexture(nil,1,1,1)
+    local edit = wm:CreateControl("EAS_LoadoutTransferEdit", editBG, CT_EDITBOX); edit:SetAnchor(TOPLEFT,editBG,TOPLEFT,8,8); edit:SetDimensions(532,154); edit:SetFont("ZoFontGameSmall"); edit:SetMultiLine(true); edit:SetMaxInputChars(16000); edit:SetMouseEnabled(true); if edit.SetKeyboardEnabled then edit:SetKeyboardEnabled(true) end; if edit.SetCopyEnabled then edit:SetCopyEnabled(true) end; if edit.SetPasteEnabled then edit:SetPasteEnabled(true) end; self.transferEdit=edit
+    local function transferButton(name, text, handler)
+        local b = wm:CreateControl(name, win, CT_BUTTON)
+        b:SetFont("ZoFontGameBold"); b:SetText(text)
+        if b.SetHorizontalAlignment then b:SetHorizontalAlignment(TEXT_ALIGN_CENTER) end
+        if b.SetVerticalAlignment then b:SetVerticalAlignment(TEXT_ALIGN_CENTER) end
+        b:SetHandler("OnClicked", handler)
+        return b
+    end
+    local apply = transferButton("EAS_LoadoutTransferApply","IMPORT",function() if self.transferIndex then self:ImportSetup(self.transferIndex,edit:GetText()); win:SetHidden(true) end end); apply:SetAnchor(BOTTOMLEFT,win,BOTTOMLEFT,16,-16); apply:SetDimensions(120,30); self.transferApply=apply
+    local close = transferButton("EAS_LoadoutTransferClose","CLOSE",function() win:SetHidden(true) end); close:SetAnchor(BOTTOMRIGHT,win,BOTTOMRIGHT,-16,-16); close:SetDimensions(120,30)
+    self.transferWindow=win
+    self:AttachRawHotkeyCapture(win)
+end
+
+function L:ShowExport(index)
+    self:HideSetupPopup()
+    self:CreateTransferDialog(); self.transferIndex=index; self.transferTitle:SetText("EXPORT SETUP — COPY THIS CODE"); self.transferEdit:SetText(self:ExportSetup(index)); self.transferApply:SetHidden(true); self.transferWindow:SetHidden(false); self:RaiseModal(self.transferWindow, 12500); self.transferEdit:TakeFocus(); if self.transferEdit.SelectAllText then self.transferEdit:SelectAllText() end
+end
+
+function L:ShowImport(index)
+    self:HideSetupPopup()
+    self:CreateTransferDialog(); self.transferIndex=index; self.transferTitle:SetText("IMPORT SETUP — PASTE CODE"); self.transferEdit:SetText(""); self.transferApply:SetHidden(false); self.transferWindow:SetHidden(false); self:RaiseModal(self.transferWindow, 12500); self.transferEdit:TakeFocus()
+end
+
+function L:FindPrebuffAbility(preset)
+    local spec = {
+        ACCELERATION = {needUltimate=false, patterns={"acceleration","accelerate"}},
+        DESTRO_ULT = {needUltimate=true, patterns={"elemental rage","eye of the storm","elemental storm"}, linePattern="destruction"},
+        MANEUVER = {needUltimate=false, patterns={"maneuver","manoeuvre"}},
+        SIEGE_SHIELD = {needUltimate=false, patterns={"siege shield","propelling shield"}},
+    }
+    spec = spec[preset]
+    if not spec then return 0 end
+    local best = 0
+    local types = num(safe(GetNumSkillTypes,0)) or 0
+    for t=1,types do
+        local lines = num(safe(GetNumSkillLines,0,t)) or 0
+        for l=1,lines do
+            local lineName = ""
+            if type(GetSkillLineInfo) == "function" then lineName = string.lower(tostring(safe(GetSkillLineInfo,"",t,l) or "")) end
+            local abilities = num(safe(GetNumSkillAbilities,0,t,l)) or 0
+            for a=1,abilities do
+                local _,_,_,_,isUltimate,purchased = safe(GetSkillAbilityInfo,nil,t,l,a)
+                if purchased == true and (isUltimate == true) == spec.needUltimate then
+                    local id = num(safe(GetSkillAbilityId,0,t,l,a,false)) or 0
+                    local name = string.lower(tostring(safe(GetAbilityName,"",id) or ""))
+                    local matched = false
+                    for _,pattern in ipairs(spec.patterns) do if string.find(name,pattern,1,true) then matched=true break end end
+                    if matched and (not spec.linePattern or string.find(lineName,spec.linePattern,1,true)) then return id end
+                    if matched then best=id end
+                end
+            end
+        end
+    end
+    return best
+end
+
+function L:RestorePrebuff()
+    local c = self.prebuffCache
+    if not c then return false end
+    self.prebuffCache = nil
+    local wanted = tonumber(c.abilityId) or 0
+    local current = num(safe(GetSlotBoundId,0,c.slot,c.category)) or 0
+    if current == wanted then
+        if (tonumber(c.originalId) or 0) <= 0 then
+            pcall(CallSecureProtected,"ClearSlot",c.slot,c.category)
+        else
+            local idx = self:GetAbilityIndexForSavedId(c.originalId)
+            if idx > 0 then pcall(CallSecureProtected,"SelectSlotAbility",idx,c.slot,c.category) end
+        end
+    end
+    return true
+end
+
+function L:PreparePrebuff(preset)
+    if safe(IsUnitInCombat,false,"player") == true then notify("PREBUFF: leave combat first.",false); return false end
+    if self.prebuffCache then self:RestorePrebuff() end
+    local abilityId = self:FindPrebuffAbility(preset)
+    if abilityId <= 0 then notify("PREBUFF: the required purchased skill was not found on this character.",false); return false end
+    local slots = self:GetActionSlots()
+    local slot = preset == "DESTRO_ULT" and slots[#slots] or slots[1]
+    local category = num(safe(GetActiveHotbarCategory, rawget(_G,"HOTBAR_CATEGORY_PRIMARY") or 0)) or (rawget(_G,"HOTBAR_CATEGORY_PRIMARY") or 0)
+    local originalId = num(safe(GetSlotBoundId,0,slot,category)) or 0
+    if originalId == abilityId then notify("PREBUFF: that skill is already on the active bar.",true); return true end
+    local abilityIndex = self:GetAbilityIndexForSavedId(abilityId)
+    if abilityIndex <= 0 then notify("PREBUFF: could not resolve that skill for the hotbar.",false); return false end
+    local ok,result = pcall(CallSecureProtected,"SelectSlotAbility",abilityIndex,slot,category)
+    if ok and result ~= false then
+        self.prebuffCache={preset=preset,slot=slot,category=category,originalId=originalId,abilityId=abilityId}
+        notify("PREBUFF READY: use the temporarily slotted skill; your previous slot will restore after it fires.",true)
+        return true
+    end
+    return false
+end
+
+function L:OnPrebuffAbilityUsed(_, slotIndex)
+    local c=self.prebuffCache
+    if not c or tonumber(slotIndex) ~= tonumber(c.slot) then return end
+    if type(zo_callLater)=="function" then zo_callLater(function() self:RestorePrebuff() end,700) else self:RestorePrebuff() end
+end
+
+function L:RefillActivePoisonSlot(slotId)
+    if EPC.saved.loadoutRefillPoisons029272 ~= true then return false end
+    local active = self:GetActiveIndex()
+    if active <= 0 then return false end
+    local setup = self:EnsureSaved()[active]
+    local entry = setup and setup.gear and setup.gear[tostring(slotId)]
+    if not entry then return false end
+    local bag,slot,already = self:FindSavedItem(entry,slotId)
+    if already then return true end
+    if bag == BAG_BACKPACK and slot ~= nil then
+        local ok = pcall(RequestEquipItem,bag,slot,BAG_WORN,slotId)
+        return ok == true
+    end
+    return false
+end
+
+function L:OnWornInventoryUpdate(_, bagId, slotId)
+    if bagId ~= BAG_WORN then return end
+    if slotId ~= EQUIP_SLOT_POISON and slotId ~= EQUIP_SLOT_BACKUP_POISON then return end
+    if EPC.saved.loadoutRefillPoisons029272 ~= true then return end
+    local stack = num(safe(GetSlotStackSize,0,BAG_WORN,slotId)) or 0
+    if stack > 0 then return end
+    if type(zo_callLater)=="function" then zo_callLater(function() self:RefillActivePoisonSlot(slotId) end,120) else self:RefillActivePoisonSlot(slotId) end
+end
+
+function L:IsRaidContext()
+    if safe(IsPlayerInRaid,false) == true then return true end
+    local groupSize = num(safe(GetGroupSize,0)) or 0
+    return groupSize > 4 and safe(IsUnitInDungeon,false,"player") == true
+end
+
+function L:OnPlayerActivated()
+    local pageId = self:GetPageForCurrentZone()
+    if pageId then self:SetCurrentPage(pageId,true) end
+    if EPC.saved.loadoutAutoEquipRaids029272 ~= true or not self:IsRaidContext() then return end
+    local page = self:GetCurrentPage()
+    local index = tonumber(page.zoneAutoSlot) or 0
+    if index > 0 and self:IsFilled(index) and self:GetActiveIndex() ~= index then
+        if type(zo_callLater)=="function" then zo_callLater(function() if not safe(IsUnitInCombat,false,"player") then self:Equip(index) end end,450) else self:Equip(index) end
+    end
+end
+
+function L:OnBossesChanged()
+    if EPC.saved.loadoutAutoEquipRaids029272 ~= true or not self:IsRaidContext() then return end
+    local boss = self:GetCurrentBossName()
+    if boss == "" then return end
+    local page = self:GetCurrentPage()
+    local index = tonumber(page.bossRules and page.bossRules[boss]) or 0
+    if index <= 0 or not self:IsFilled(index) or self:GetActiveIndex() == index then return end
+    if safe(IsUnitInCombat,false,"player") == true then self.pendingRaidAutoIndex=index; return end
+    if type(zo_callLater)=="function" then zo_callLater(function() if not safe(IsUnitInCombat,false,"player") then self:Equip(index) end end,250) else self:Equip(index) end
+end
+
+function L:OnCombatState(_, inCombat)
+    if inCombat or not self.pendingRaidAutoIndex then return end
+    local index=self.pendingRaidAutoIndex; self.pendingRaidAutoIndex=nil
+    if EPC.saved.loadoutAutoEquipRaids029272 == true and self:IsRaidContext() and self:IsFilled(index) then
+        if type(zo_callLater)=="function" then zo_callLater(function() self:Equip(index) end,300) else self:Equip(index) end
+    end
+end
+
+function L:HideSetupPopup()
+    if self.setupPopup then self.setupPopup:SetHidden(true) end
+end
+
+function L:CreateSetupPopup()
+    if self.setupPopup then return self.setupPopup end
+    local popup=wm:CreateTopLevelWindow("EAS_LoadoutSetupPopup")
+    popup:SetDimensions(270,360)
+    popup:SetHidden(true)
+    popup:SetMouseEnabled(true)
+    popup:SetClampedToScreen(true)
+    raiseLoadoutModal(popup, 12000)
+
+    local bg=wm:CreateControl("EAS_LoadoutSetupPopupBG",popup,CT_BACKDROP)
+    bg:SetAnchorFill(popup)
+    bg:SetCenterColor(0.008,0.014,0.024,0.995)
+    bg:SetEdgeColor(0.34,0.58,0.82,0.98)
+    bg:SetEdgeTexture(nil,1,1,1)
+
+    popup.rows={}
+    for rowIndex=1,12 do
+        local row=wm:CreateControl("EAS_LoadoutSetupPopupRow"..rowIndex,popup,CT_BUTTON)
+        row:SetAnchor(TOPLEFT,popup,TOPLEFT,7,7+(rowIndex-1)*30)
+        row:SetDimensions(256,28)
+        row:SetFont("ZoFontGameBold")
+        if row.SetHorizontalAlignment then row:SetHorizontalAlignment(TEXT_ALIGN_LEFT) end
+        if row.SetVerticalAlignment then row:SetVerticalAlignment(TEXT_ALIGN_CENTER) end
+        row:SetHidden(true)
+        local rowBG=wm:CreateControl("EAS_LoadoutSetupPopupRowBG"..rowIndex,row,CT_BACKDROP)
+        rowBG:SetAnchorFill(row)
+        rowBG:SetCenterColor(0.025,0.040,0.060,0.96)
+        rowBG:SetEdgeColor(0.16,0.29,0.43,0.88)
+        rowBG:SetEdgeTexture(nil,1,1,1)
+        if rowBG.SetDrawLevel then rowBG:SetDrawLevel(0) end
+        row:SetHandler("OnMouseEnter",function() rowBG:SetCenterColor(0.055,0.095,0.135,0.99) end)
+        row:SetHandler("OnMouseExit",function() rowBG:SetCenterColor(0.025,0.040,0.060,0.96) end)
+        popup.rows[rowIndex]={button=row,bg=rowBG}
+    end
+    self.setupPopup=popup
+    self:AttachRawHotkeyCapture(popup)
+    return popup
+end
+
+function L:ShowSetupMenu(index, anchor)
+    index=tonumber(index) or 0
+    if index < 1 or index > SLOT_COUNT then return end
+    local items={
+        {"EQUIP SETUP",function() self:Equip(index) end},
+        {"CHECK MISSING ITEMS",function() self:CheckMissing(index) end},
+        {"SET AS RAID ENTRY",function() self:SetZoneAutoSlot(index) end},
+    }
+    if self:GetCurrentBossName() ~= "" then items[#items+1]={"BIND TO CURRENT BOSS",function() self:BindSetupToCurrentBoss(index) end} end
+    items[#items+1]={"WITHDRAW FROM BANK",function() self:WithdrawSetup(index) end}
+    items[#items+1]={"DEPOSIT TO BANK",function() self:DepositSetup(index) end}
+    local setup = self:EnsureSaved()[index]
+    if setup and type(setup.food) == "table" then
+        items[#items+1]={"USE SAVED FOOD NOW",function() self:UseSavedFood(index) end}
+    end
+    items[#items+1]={"EXPORT SETUP",function() self:ShowExport(index) end}
+    items[#items+1]={"IMPORT SETUP",function() self:ShowImport(index) end}
+    items[#items+1]={"RENAME SETUP",function() self:BeginRename(index) end}
+    items[#items+1]={self.pendingClear and self.pendingClear[index] and "CONFIRM CLEAR" or "CLEAR SETUP",function() self:RequestClear(index) end}
+
+    local popup=self:CreateSetupPopup()
+    for rowIndex,rowData in ipairs(popup.rows or {}) do
+        local item=items[rowIndex]
+        local row=rowData.button
+        row:SetDimensions(256,28)
+        if item then
+            local action=item[2]
+            row:SetText("  "..item[1])
+            row:SetHidden(false)
+            row:SetHandler("OnClicked",function()
+                self:HideSetupPopup()
+                action()
+            end)
+        else
+            row:SetHidden(true)
+            row:SetHandler("OnClicked",function() end)
+        end
+    end
+    popup:SetDimensions(270,14+#items*30)
+    popup:ClearAnchors()
+    local guiW,guiH=GuiRoot:GetDimensions()
+    guiW=tonumber(guiW) or 1920
+    guiH=tonumber(guiH) or 1080
+    local x,y=math.floor(guiW*0.5-135),math.floor(guiH*0.5-(14+#items*30)*0.5)
+    if anchor and type(anchor.GetLeft)=="function" then
+        x=(tonumber(anchor:GetLeft()) or x)+(tonumber(anchor:GetWidth()) or 0)-270
+        y=(tonumber(anchor:GetTop()) or y)+(tonumber(anchor:GetHeight()) or 0)+4
+    end
+    x=math.max(6,math.min(guiW-276,x))
+    y=math.max(6,math.min(guiH-(20+#items*30),y))
+    popup:SetAnchor(TOPLEFT,GuiRoot,TOPLEFT,x,y)
+    popup:SetHidden(false)
+    self:RaiseModal(popup, 12000)
+end
+
+function L:ShowFoodPicker(index, anchor)
+    index = tonumber(index) or 0
+    if index < 1 or index > SLOT_COUNT then return false end
+    local foods = self:GetBackpackFoodChoices()
+    if #foods == 0 then
+        notify("LOADOUTS: no food or drink was found in your backpack. Put the food in your backpack first.", false)
+        return false
+    end
+
+    local setup = self:EnsureSaved()[index]
+    local items = {}
+    local reserveClear = setup and type(setup.food) == "table" and 1 or 0
+    local maxFoods = 12 - reserveClear
+    for i=1,math.min(#foods,maxFoods) do
+        local food = foods[i]
+        local label = tostring(food.name or "Food / Drink")
+        if #label > 27 then label = string.sub(label,1,24) .. "..." end
+        label = string.format("%s  x%d", label, tonumber(food.stack) or 1)
+        items[#items+1] = {label,function() self:SetFoodFromBagSlot(index,food.bag,food.slot) end}
+    end
+    if reserveClear == 1 then
+        items[#items+1] = {"CLEAR SAVED FOOD",function()
+            self:EnsureSaved()[index].food = nil
+            self:RefreshUI()
+            notify(string.format("BUILD %d: saved food cleared.", index), true)
+        end}
+    end
+
+    local popup = self:CreateSetupPopup()
+    for rowIndex,rowData in ipairs(popup.rows or {}) do
+        local item = items[rowIndex]
+        local row = rowData.button
+        if item then
+            local action = item[2]
+            row:SetText("  " .. item[1])
+            row:SetHidden(false)
+            row:SetHandler("OnClicked",function()
+                self:HideSetupPopup()
+                action()
+            end)
+        else
+            row:SetHidden(true)
+            row:SetHandler("OnClicked",function() end)
+        end
+    end
+
+    popup:SetDimensions(300,14+#items*30)
+    for _,rowData in ipairs(popup.rows or {}) do rowData.button:SetDimensions(286,28) end
+    popup:ClearAnchors()
+    local guiW,guiH = GuiRoot:GetDimensions()
+    guiW,guiH = tonumber(guiW) or 1920, tonumber(guiH) or 1080
+    local x,y = math.floor(guiW*0.5-150),math.floor(guiH*0.5-(14+#items*30)*0.5)
+    if anchor and type(anchor.GetLeft)=="function" then
+        x=(tonumber(anchor:GetLeft()) or x)+(tonumber(anchor:GetWidth()) or 0)-300
+        y=(tonumber(anchor:GetTop()) or y)+(tonumber(anchor:GetHeight()) or 0)+4
+    end
+    x=math.max(6,math.min(guiW-306,x))
+    y=math.max(6,math.min(guiH-(20+#items*30),y))
+    popup:SetAnchor(TOPLEFT,GuiRoot,TOPLEFT,x,y)
+    popup:SetHidden(false)
+    self:RaiseModal(popup, 12000)
+    if #foods > maxFoods then
+        notify(string.format("LOADOUTS: showing %d of %d food/drink types. You can also drag any food directly onto ADD FOOD.", maxFoods, #foods), true)
+    end
+    return true
+end
+
 function L:EnsureWindowSaved()
     EPC.saved = EPC.saved or {}
     EPC.saved.savedLoadoutWindow = EPC.saved.savedLoadoutWindow or {}
     local s = EPC.saved.savedLoadoutWindow
-    s.width = tonumber(s.width) or 840
-    s.height = tonumber(s.height) or 820
+    -- Layout v3 is intentionally compact. Keep all 16 setup slots, but page
+    -- four cards at a time so the workspace no longer dominates the screen.
+    -- Preserve the user's saved position while migrating the old v2 size.
+    if (tonumber(s.layoutVersion) or 0) < 3 then
+        s.width = 940
+        s.height = 660
+        s.layoutVersion = 3
+    end
+    s.width = tonumber(s.width) or 940
+    s.height = tonumber(s.height) or 660
     return s
 end
 
@@ -722,8 +2129,8 @@ function L:GetDefaultWindowAnchor()
     local guiW, guiH = GuiRoot:GetDimensions()
     guiW = tonumber(guiW) or 1920
     guiH = tonumber(guiH) or 1080
-    local width, height = 840, 820
-    local x = math.floor((guiW - width) * 0.5 + 260)
+    local width, height = 940, 660
+    local x = math.floor((guiW - width) * 0.5 + 150)
     local y = math.floor((guiH - height) * 0.5)
 
     local journal = EPC and EPC.Journal and EPC.Journal.window
@@ -754,8 +2161,8 @@ end
 function L:RestoreWindowPlacement(forceReposition)
     if not self.window then return end
     local s = self:EnsureWindowSaved()
-    local w = math.max(820, math.min(1400, tonumber(s.width) or 840))
-    local h = math.max(780, math.min(1200, tonumber(s.height) or 820))
+    local w = math.max(880, math.min(1180, tonumber(s.width) or 940))
+    local h = math.max(640, math.min(820, tonumber(s.height) or 660))
     self.window:SetDimensions(w, h)
     self.window:ClearAnchors()
     if forceReposition == true or not tonumber(s.left) or not tonumber(s.top) then
@@ -763,8 +2170,52 @@ function L:RestoreWindowPlacement(forceReposition)
         self.window:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, x, y)
         s.left, s.top = x, y
     else
-        self.window:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, tonumber(s.left) or 100, tonumber(s.top) or 100)
+        local guiW, guiH = GuiRoot:GetDimensions()
+        guiW = tonumber(guiW) or 1920
+        guiH = tonumber(guiH) or 1080
+        local x = math.max(8, math.min(guiW - w - 8, tonumber(s.left) or 100))
+        local y = math.max(8, math.min(guiH - h - 8, tonumber(s.top) or 100))
+        self.window:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, x, y)
+        s.left, s.top = x, y
     end
+end
+
+function L:SetSlotBank(bank)
+    bank = math.max(1, math.min(4, tonumber(bank) or 1))
+    self.slotBank = bank
+    self:RefreshUI()
+end
+
+local function setBorderColor(control, r, g, b, a)
+    if control and control.easBorder and type(control.easBorder.SetEdgeColor) == "function" then
+        control.easBorder:SetEdgeColor(r, g, b, a or 1)
+    end
+end
+
+local function attachTooltip(control, text)
+    if not control or not text then return end
+    local oldTier, oldLayer, oldLevel
+    control:SetHandler("OnMouseEnter", function(c)
+        if type(InitializeTooltip) == "function" and InformationTooltip then
+            if type(InformationTooltip.GetDrawTier) == "function" then oldTier=safe(InformationTooltip.GetDrawTier,nil,InformationTooltip) end
+            if type(InformationTooltip.GetDrawLayer) == "function" then oldLayer=safe(InformationTooltip.GetDrawLayer,nil,InformationTooltip) end
+            if type(InformationTooltip.GetDrawLevel) == "function" then oldLevel=safe(InformationTooltip.GetDrawLevel,nil,InformationTooltip) end
+            if type(InformationTooltip.SetDrawTier) == "function" and DT_HIGH ~= nil then pcall(InformationTooltip.SetDrawTier, InformationTooltip, DT_HIGH) end
+            if type(InformationTooltip.SetDrawLayer) == "function" and DL_OVERLAY ~= nil then pcall(InformationTooltip.SetDrawLayer, InformationTooltip, DL_OVERLAY) end
+            if type(InformationTooltip.SetDrawLevel) == "function" then pcall(InformationTooltip.SetDrawLevel, InformationTooltip, 6800) end
+            InitializeTooltip(InformationTooltip, c, TOPLEFT, 0, 0, TOPRIGHT)
+            if type(SetTooltipText) == "function" then SetTooltipText(InformationTooltip, text) end
+        end
+    end)
+    control:SetHandler("OnMouseExit", function()
+        if type(ClearTooltip) == "function" and InformationTooltip then ClearTooltip(InformationTooltip) end
+        if InformationTooltip then
+            if oldTier ~= nil and type(InformationTooltip.SetDrawTier) == "function" then pcall(InformationTooltip.SetDrawTier,InformationTooltip,oldTier) end
+            if oldLayer ~= nil and type(InformationTooltip.SetDrawLayer) == "function" then pcall(InformationTooltip.SetDrawLayer,InformationTooltip,oldLayer) end
+            if oldLevel ~= nil and type(InformationTooltip.SetDrawLevel) == "function" then pcall(InformationTooltip.SetDrawLevel,InformationTooltip,oldLevel) end
+        end
+        oldTier,oldLayer,oldLevel=nil,nil,nil
+    end)
 end
 
 local function makeBackdrop(name, parent)
@@ -791,224 +2242,528 @@ local function makeButton(name, parent, text, handler)
     return b
 end
 
+function L:LayoutUI()
+    if not self.window or not self.cards then return end
+    local w, h = self.window:GetDimensions()
+    w = tonumber(w) or 940
+    h = tonumber(h) or 660
+    local gapX, gapY = 10, 10
+    local side = 16
+    local startY = 216
+    local cardW = math.floor((w - side * 2 - gapX) / 2)
+    local cardH = math.max(170, math.min(190, math.floor((h - startY - 34 - gapY) / 2)))
+
+    for i=1,SLOT_COUNT do
+        local c = self.cards[i]
+        if c and c.card then
+            local visual = (i - 1) % 4
+            local row = math.floor(visual / 2)
+            local col = visual % 2
+            c.card:ClearAnchors()
+            c.card:SetAnchor(TOPLEFT, self.window, TOPLEFT, side + col * (cardW + gapX), startY + row * (cardH + gapY))
+            c.card:SetDimensions(cardW, cardH)
+            if c.status then c.status:SetDimensions(cardW - 18, 18) end
+        end
+    end
+    if self.pageStatus then self.pageStatus:SetDimensions(w - 32, 20) end
+    if self.footer then self.footer:SetDimensions(w - 32, 18) end
+end
+
+-- v0.29.279: raw-key fallback for the Loadout Saver toggle. ESO can suppress
+-- inherited custom action-layer bindings while a mouse-driven top-level window
+-- owns UI mode. Compare the actual key-down against the user's saved binding so
+-- the same assigned hotkey can always close the workspace, independent of
+-- action-layer routing.
+function L:RawKeyMatchesAction(actionName, key, ctrl, alt, shift, command)
+    if type(GetNumActionLayers) ~= "function" or type(GetActionLayerInfo) ~= "function"
+        or type(GetActionLayerCategoryInfo) ~= "function" or type(GetActionInfo) ~= "function"
+        or type(GetActionBindingInfo) ~= "function" then
+        return false
+    end
+
+    local function modifierPresent(modifierKey, m1, m2, m3, m4)
+        if modifierKey == nil then return false end
+        if type(ZO_Keybindings_DoesKeyMatchAnyModifiers) == "function" then
+            return ZO_Keybindings_DoesKeyMatchAnyModifiers(modifierKey, m1, m2, m3, m4) == true
+        end
+        return m1 == modifierKey or m2 == modifierKey or m3 == modifierKey or m4 == modifierKey
+    end
+
+    local keyInvalid = rawget(_G, "KEY_INVALID")
+    local keyCtrl = rawget(_G, "KEY_CTRL")
+    local keyAlt = rawget(_G, "KEY_ALT")
+    local keyShift = rawget(_G, "KEY_SHIFT")
+    local keyCommand = rawget(_G, "KEY_COMMAND")
+
+    local numLayers = num(safe(GetNumActionLayers, 0)) or 0
+    for layerIndex = 1, numLayers do
+        local _, numCategories = safe(GetActionLayerInfo, nil, layerIndex)
+        numCategories = num(numCategories) or 0
+        for categoryIndex = 1, numCategories do
+            local _, numActions = safe(GetActionLayerCategoryInfo, nil, layerIndex, categoryIndex)
+            numActions = num(numActions) or 0
+            for actionIndex = 1, numActions do
+                local name = safe(GetActionInfo, nil, layerIndex, categoryIndex, actionIndex)
+                if name == actionName then
+                    for bindingIndex = 1, 4 do
+                        local boundKey, m1, m2, m3, m4 = safe(GetActionBindingInfo, nil, layerIndex, categoryIndex, actionIndex, bindingIndex)
+                        if boundKey ~= nil and boundKey ~= keyInvalid and boundKey == key then
+                            local wantCtrl = modifierPresent(keyCtrl, m1, m2, m3, m4)
+                            local wantAlt = modifierPresent(keyAlt, m1, m2, m3, m4)
+                            local wantShift = modifierPresent(keyShift, m1, m2, m3, m4)
+                            local wantCommand = modifierPresent(keyCommand, m1, m2, m3, m4)
+                            if (ctrl == true) == wantCtrl and (alt == true) == wantAlt
+                                and (shift == true) == wantShift and (command == true) == wantCommand then
+                                return true
+                            end
+                        end
+                    end
+                    return false
+                end
+            end
+        end
+    end
+    return false
+end
+
+function L:AttachRawHotkeyCapture(control)
+    if not control then return end
+    if type(control.SetKeyboardEnabled) == "function" then control:SetKeyboardEnabled(true) end
+    if type(control.SetHandler) ~= "function" then return end
+    control:SetHandler("OnKeyDown", function(_, key, ctrl, alt, shift, command)
+        if not self.window or self.window:IsHidden() then return end
+        if self:RawKeyMatchesAction("ESO_ADVENTURER_SUITE_LOADOUT_SAVER", key, ctrl, alt, shift, command) then
+            -- Native action dispatch may run immediately after OnKeyDown. Stamp
+            -- this edge before hiding so any fall-through OPEN/TOGGLE action from
+            -- the same physical press is debounced instead of reopening the UI.
+            self.lastHotkeyToggleMs = nowMs()
+            self:Hide()
+            return true
+        end
+    end)
+end
+
 function L:CreateUI()
     if self.window then return end
 
     local win = wm:CreateTopLevelWindow("EAS_LoadoutManager")
-    win:SetDimensions(840, 820)
-    if win.SetDimensionConstraints then win:SetDimensionConstraints(820, 780, 1400, 1200) end
+    win:SetDimensions(940, 660)
+    if win.SetDimensionConstraints then win:SetDimensionConstraints(880, 640, 1180, 820) end
     if win.SetResizeHandleSize then win:SetResizeHandleSize(24) end
-    -- Permit flush placement at the left/right edges and all four corners.
     win:SetClampedToScreen(false)
     win:SetMovable(true)
     win:SetMouseEnabled(true)
     win:SetHidden(true)
-    win:SetDrawLayer(DL_OVERLAY)
-    win:SetDrawTier(DT_HIGH)
+    setLoadoutWindowLayer(win)
     self.window = win
+    self:AttachRawHotkeyCapture(win)
     self:RestoreWindowPlacement(false)
 
     local bg = makeBackdrop("EAS_LoadoutManagerBG", win)
     bg:SetAnchorFill(win)
-    bg:SetCenterColor(0.012,0.018,0.028,0.97)
-    bg:SetEdgeColor(0.30,0.56,0.82,0.88)
+    bg:SetCenterColor(0.010,0.016,0.026,0.985)
+    bg:SetEdgeColor(0.27,0.48,0.70,0.95)
     self.bg = bg
 
     local title = wm:CreateControl("EAS_LoadoutManagerTitle", win, CT_LABEL)
     title:SetFont("ZoFontWinH2")
-    title:SetText("SAVED BUILDS")
-    title:SetAnchor(TOPLEFT, win, TOPLEFT, 18, 14)
-    title:SetDimensions(420, 30)
-    title:SetColor(0.94,0.97,1,1)
+    title:SetText("LOADOUT SAVER")
+    title:SetAnchor(TOPLEFT,win,TOPLEFT,20,13)
+    title:SetDimensions(420,32)
+    title:SetColor(0.96,0.98,1,1)
 
     local sub = wm:CreateControl("EAS_LoadoutManagerSub", win, CT_LABEL)
     sub:SetFont("ZoFontGameSmall")
-    sub:SetText("Resizable build workspace. Save gear, both skill bars, Champion profile/slots, and attribute profile.")
-    sub:SetAnchor(TOPLEFT, win, TOPLEFT, 19, 44)
-    sub:SetDimensions(730, 20)
-    sub:SetColor(0.58,0.68,0.80,1)
+    sub:SetText("Gear  •  Skills  •  CP  •  Food  •  Raid Auto    |    Food: click ADD FOOD or drag from inventory")
+    sub:SetAnchor(TOPLEFT,win,TOPLEFT,21,45)
+    sub:SetDimensions(760,20)
+    sub:SetColor(0.57,0.69,0.82,1)
 
-    local close = makeButton("EAS_LoadoutManagerClose", win, "CLOSE BUILDS", function() self:Hide() end)
-    close:SetAnchor(TOPRIGHT, win, TOPRIGHT, -14, 14)
-    close:SetDimensions(150, 30)
-    self.closeLoadoutsButton = close
+    local close = makeButton("EAS_LoadoutManagerClose",win,"X",function() self:Hide() end)
+    close:SetAnchor(TOPRIGHT,win,TOPRIGHT,-16,13)
+    close:SetDimensions(34,30)
+    self.closeLoadoutsButton=close
+    attachTooltip(close,"Close Loadout Saver")
 
-    local helper = wm:CreateControl("EAS_LoadoutManagerHelper", win, CT_LABEL)
-    helper:SetFont("ZoFontGameSmall")
-    helper:SetText("Each build shows both skill bars. APPLY restores gear, bars, and Champion slots; saved skill/CP/attribute profiles are verified too.")
-    helper:SetAnchor(TOPLEFT, win, TOPLEFT, 19, 62)
-    helper:SetDimensions(780, 18)
-    helper:SetColor(0.48,0.58,0.70,1)
+    -- Page selector row.
+    local prev = makeButton("EAS_LoadoutPagePrev",win,"<",function() self:CyclePage(-1) end)
+    prev:SetAnchor(TOPLEFT,win,TOPLEFT,18,72); prev:SetDimensions(34,28)
+    attachTooltip(prev,"Previous loadout page")
+    local nextb = makeButton("EAS_LoadoutPageNext",win,">",function() self:CyclePage(1) end)
+    nextb:SetAnchor(TOPLEFT,win,TOPLEFT,57,72); nextb:SetDimensions(34,28)
+    attachTooltip(nextb,"Next loadout page")
 
-    self.cards = {}
-    local cols, cardW, cardH, gapX, gapY = 3, 250, 154, 12, 12
-    local startX, startY = 18, 92
+    local pageNameBG=makeBackdrop("EAS_LoadoutPageNameBG",win)
+    pageNameBG:SetAnchor(TOPLEFT,win,TOPLEFT,98,72)
+    pageNameBG:SetDimensions(190,28)
+    pageNameBG:SetCenterColor(0.018,0.030,0.046,0.98)
+    pageNameBG:SetEdgeColor(0.25,0.43,0.62,0.88)
+    local pageEdit=wm:CreateControl("EAS_LoadoutPageName",pageNameBG,CT_EDITBOX)
+    pageEdit:SetAnchor(TOPLEFT,pageNameBG,TOPLEFT,8,4)
+    pageEdit:SetDimensions(174,20)
+    pageEdit:SetFont("ZoFontGameBold")
+    pageEdit:SetMaxInputChars(32)
+    pageEdit:SetMouseEnabled(true)
+    if pageEdit.SetKeyboardEnabled then pageEdit:SetKeyboardEnabled(true) end
+    pageEdit:SetHandler("OnFocusLost",function(c) self:SetPageName(c:GetText()) end)
+    pageEdit:SetHandler("OnEnter",function(c) self:SetPageName(c:GetText()); if c.LoseFocus then c:LoseFocus() end end)
+    self.pageNameEdit=pageEdit
+
+    local newPage=makeButton("EAS_LoadoutNewPage",win,"+ PAGE",function() self:AddPage() end)
+    newPage:SetAnchor(TOPLEFT,win,TOPLEFT,295,72); newPage:SetDimensions(72,28)
+    attachTooltip(newPage,"Create a new setup page")
+    local delPage=makeButton("EAS_LoadoutDeletePage",win,"DELETE",function() self:DeleteCurrentPage() end)
+    delPage:SetAnchor(TOPLEFT,win,TOPLEFT,373,72); delPage:SetDimensions(72,28)
+    attachTooltip(delPage,"Delete the current page")
+    local bindZone=makeButton("EAS_LoadoutBindZone",win,"BIND ZONE",function()
+        local p=self:GetCurrentPage()
+        if tonumber(p.zoneId or 0)>0 then self:UnbindCurrentPageZone() else self:BindCurrentPageToZone() end
+    end)
+    bindZone:SetAnchor(TOPLEFT,win,TOPLEFT,451,72); bindZone:SetDimensions(94,28); self.bindZoneButton=bindZone
+    attachTooltip(bindZone,"Bind this page to the current trial/zone")
+
+    local raidAuto=makeButton("EAS_LoadoutRaidAuto",win,"RAID AUTO",function()
+        EPC.saved.loadoutAutoEquipRaids029272 = EPC.saved.loadoutAutoEquipRaids029272 ~= true
+        self:RefreshUI()
+    end)
+    raidAuto:SetAnchor(TOPLEFT,win,TOPLEFT,18,108); raidAuto:SetDimensions(116,28); self.raidAutoButton=raidAuto
+    attachTooltip(raidAuto,"Automatically equip your bound setup when entering raids or boss encounters")
+
+    local checkPage=makeButton("EAS_LoadoutCheckPage",win,"CHECK PAGE",function() self:CheckCurrentPageMissing() end)
+    checkPage:SetAnchor(TOPLEFT,win,TOPLEFT,140,108); checkPage:SetDimensions(104,28)
+    attachTooltip(checkPage,"Check every saved setup on this page for missing gear")
+
+    local withdraw=makeButton("EAS_LoadoutWithdrawPage",win,"WITHDRAW",function() self:TransferCurrentPage("withdraw") end)
+    withdraw:SetAnchor(TOPLEFT,win,TOPLEFT,250,108); withdraw:SetDimensions(98,28); self.withdrawPageButton=withdraw
+    attachTooltip(withdraw,"With a bank open, withdraw gear used by this page")
+    local deposit=makeButton("EAS_LoadoutDepositPage",win,"DEPOSIT",function() self:TransferCurrentPage("deposit") end)
+    deposit:SetAnchor(TOPLEFT,win,TOPLEFT,354,108); deposit:SetDimensions(98,28); self.depositPageButton=deposit
+    attachTooltip(deposit,"With a bank open, deposit gear used by this page")
+
+    local pageStatus=wm:CreateControl("EAS_LoadoutPageStatus",win,CT_LABEL)
+    pageStatus:SetFont("ZoFontGameSmall")
+    pageStatus:SetAnchor(TOPLEFT,win,TOPLEFT,18,143)
+    pageStatus:SetDimensions(904,20)
+    pageStatus:SetColor(0.58,0.70,0.83,1)
+    self.pageStatus=pageStatus
+
+    local divider=makeBackdrop("EAS_LoadoutHeaderDivider",win)
+    divider:SetAnchor(TOPLEFT,win,TOPLEFT,16,168)
+    divider:SetAnchor(TOPRIGHT,win,TOPRIGHT,-16,168)
+    divider:SetHeight(1)
+    divider:SetCenterColor(0.16,0.28,0.42,0.88)
+    divider:SetEdgeColor(0,0,0,0)
+
+    local groupLabel=wm:CreateControl("EAS_LoadoutSetupGroupLabel",win,CT_LABEL)
+    groupLabel:SetFont("ZoFontGameBold")
+    groupLabel:SetText("SETUPS")
+    groupLabel:SetAnchor(TOPLEFT,win,TOPLEFT,18,180)
+    groupLabel:SetDimensions(66,24)
+    groupLabel:SetColor(0.72,0.80,0.90,1)
+
+    local bank1=makeButton("EAS_LoadoutSlotBank1",win,"1 - 4",function() self:SetSlotBank(1) end)
+    bank1:SetAnchor(TOPLEFT,win,TOPLEFT,82,176); bank1:SetDimensions(76,28); self.slotBank1Button=bank1
+    local bank2=makeButton("EAS_LoadoutSlotBank2",win,"5 - 8",function() self:SetSlotBank(2) end)
+    bank2:SetAnchor(TOPLEFT,win,TOPLEFT,164,176); bank2:SetDimensions(76,28); self.slotBank2Button=bank2
+    local bank3=makeButton("EAS_LoadoutSlotBank3",win,"9 - 12",function() self:SetSlotBank(3) end)
+    bank3:SetAnchor(TOPLEFT,win,TOPLEFT,246,176); bank3:SetDimensions(82,28); self.slotBank3Button=bank3
+    local bank4=makeButton("EAS_LoadoutSlotBank4",win,"13 - 16",function() self:SetSlotBank(4) end)
+    bank4:SetAnchor(TOPLEFT,win,TOPLEFT,334,176); bank4:SetDimensions(82,28); self.slotBank4Button=bank4
+
+    local guide=wm:CreateControl("EAS_LoadoutGuide",win,CT_LABEL)
+    guide:SetFont("ZoFontGameSmall")
+    guide:SetText("Drag to edit  •  Right-click / MANAGE for more")
+    guide:SetAnchor(TOPRIGHT,win,TOPRIGHT,-18,183)
+    guide:SetDimensions(470,20)
+    guide:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+    guide:SetColor(0.43,0.55,0.69,1)
+
+    self.cards={}
+    self.slotBank = self.slotBank or 1
     for i=1,SLOT_COUNT do
-        local row = math.floor((i-1)/cols)
-        local col = (i-1)%cols
-        local card = makeBackdrop("EAS_LoadoutCard"..i, win)
-        card:SetAnchor(TOPLEFT, win, TOPLEFT, startX + col*(cardW+gapX), startY + row*(cardH+gapY))
-        card:SetDimensions(cardW, cardH)
-        card:SetCenterColor(0.025,0.035,0.052,0.93)
-        card:SetEdgeColor(0.20,0.30,0.43,0.75)
+        local card=makeBackdrop("EAS_LoadoutCard"..i,win)
+        card:SetDimensions(440,180)
+        card:SetCenterColor(0.022,0.033,0.050,0.96)
+        card:SetEdgeColor(0.18,0.30,0.44,0.84)
+        card:SetMouseEnabled(true)
+        card:SetHandler("OnMouseUp",function(control,button,upInside)
+            if upInside~=false and button==MOUSE_BUTTON_INDEX_RIGHT then self:ShowSetupMenu(i,control) end
+        end)
 
-        local slot = wm:CreateControl("EAS_LoadoutSlot"..i, card, CT_LABEL)
+        local slotBadge=makeBackdrop("EAS_LoadoutSlotBadge"..i,card)
+        slotBadge:SetAnchor(TOPLEFT,card,TOPLEFT,8,8)
+        slotBadge:SetDimensions(30,24)
+        slotBadge:SetCenterColor(0.035,0.075,0.115,0.98)
+        slotBadge:SetEdgeColor(0.25,0.50,0.72,0.92)
+        local slot=wm:CreateControl("EAS_LoadoutSlot"..i,slotBadge,CT_LABEL)
         slot:SetFont("ZoFontGameBold")
-        slot:SetText("SET "..i)
-        slot:SetAnchor(TOPLEFT, card, TOPLEFT, 8, 8)
-        slot:SetDimensions(58, 18)
-        slot:SetColor(0.44,0.78,1,1)
+        slot:SetText(string.format("%02d",i))
+        slot:SetAnchorFill(slotBadge)
+        slot:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+        slot:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+        slot:SetColor(0.58,0.84,1,1)
 
-        local nameBG = makeBackdrop("EAS_LoadoutNameBG"..i, card)
-        nameBG:SetAnchor(TOPLEFT, card, TOPLEFT, 64, 5)
-        nameBG:SetDimensions(cardW-72, 26)
-        nameBG:SetCenterColor(0.018,0.026,0.038,0.90)
-        nameBG:SetEdgeColor(0.24,0.38,0.54,0.72)
-
-        local edit = wm:CreateControl("EAS_LoadoutName"..i, nameBG, CT_EDITBOX)
-        edit:SetFont("ZoFontGame")
-        edit:SetAnchor(TOPLEFT, nameBG, TOPLEFT, 6, 2)
-        edit:SetDimensions(cardW-86, 22)
+        local nameBG=makeBackdrop("EAS_LoadoutNameBG"..i,card)
+        nameBG:SetAnchor(TOPLEFT,card,TOPLEFT,44,8)
+        nameBG:SetDimensions(176,24)
+        nameBG:SetCenterColor(0.014,0.024,0.038,0.96)
+        nameBG:SetEdgeColor(0.22,0.38,0.56,0.78)
+        local edit=wm:CreateControl("EAS_LoadoutName"..i,nameBG,CT_EDITBOX)
+        edit:SetAnchor(TOPLEFT,nameBG,TOPLEFT,6,3)
+        edit:SetDimensions(162,18)
+        edit:SetFont("ZoFontGameBold")
         edit:SetMaxInputChars(28)
-        edit:SetColor(0.94,0.97,1,1)
-        -- ESO can render a bare CT_EDITBOX without allowing it to receive
-        -- clicks/keyboard input in a custom top-level overlay. Make the name
-        -- field explicitly editable and focusable.
+        edit:SetColor(0.95,0.98,1,1)
         edit:SetMouseEnabled(true)
         if edit.SetKeyboardEnabled then edit:SetKeyboardEnabled(true) end
-        if edit.SetEditEnabled then edit:SetEditEnabled(true) end
-        if edit.SetCopyEnabled then edit:SetCopyEnabled(true) end
-        if edit.SetPasteEnabled then edit:SetPasteEnabled(true) end
-        if edit.SetTextType and TEXT_TYPE_ALL then edit:SetTextType(TEXT_TYPE_ALL) end
-        edit:SetHandler("OnMouseUp", function(control, button, upInside)
-            if upInside ~= false and control.TakeFocus then control:TakeFocus() end
+        if edit.SetEditEnabled then edit:SetEditEnabled(false) end
+        edit:SetHandler("OnMouseUp",function(control,button,upInside)
+            if upInside==false then return end
+            if button==MOUSE_BUTTON_INDEX_RIGHT then self:ShowSetupMenu(i,control); return end
+            if button~=MOUSE_BUTTON_INDEX_LEFT then return end
+            local c=self.cards and self.cards[i]
+            if c and c.renaming then if control.TakeFocus then control:TakeFocus() end else self:Equip(i) end
         end)
-        edit:SetHandler("OnFocusGained", function(control)
-            nameBG:SetEdgeColor(0.44,0.78,1.00,0.95)
+        edit:SetHandler("OnFocusLost",function(control)
+            local c=self.cards and self.cards[i]
+            if c and c.renaming then self:SetName(i,control:GetText(),true); c.renaming=false; if control.SetEditEnabled then control:SetEditEnabled(false) end end
         end)
-        edit:SetHandler("OnFocusLost", function(control)
-            nameBG:SetEdgeColor(0.24,0.38,0.54,0.72)
-            self:SetName(i, control:GetText(), true)
-        end)
-        edit:SetHandler("OnEnter", function(control)
-            self:SetName(i, control:GetText(), false)
-            if control.LoseFocus then control:LoseFocus() end
-        end)
-        edit:SetHandler("OnEscape", function(control)
-            local all = self:EnsureSaved()
-            control:SetText((all[i] and all[i].name) or ("Build "..i))
+        edit:SetHandler("OnEnter",function(control)
+            local c=self.cards and self.cards[i]
+            if c and c.renaming then self:SetName(i,control:GetText(),false); c.renaming=false end
+            if control.SetEditEnabled then control:SetEditEnabled(false) end
             if control.LoseFocus then control:LoseFocus() end
         end)
 
-        local status = wm:CreateControl("EAS_LoadoutStatus"..i, card, CT_LABEL)
+        local tag=wm:CreateControl("EAS_LoadoutTag"..i,card,CT_LABEL)
+        tag:SetFont("ZoFontGameBold")
+        tag:SetAnchor(TOPRIGHT,card,TOPRIGHT,-8,9)
+        tag:SetDimensions(176,20)
+        tag:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+        tag:SetColor(0.58,0.70,0.84,1)
+
+        local status=wm:CreateControl("EAS_LoadoutStatus"..i,card,CT_LABEL)
         status:SetFont("ZoFontGameSmall")
-        status:SetAnchor(TOPLEFT, card, TOPLEFT, 8, 31)
-        status:SetDimensions(cardW-16, 16)
-        status:SetColor(0.56,0.66,0.76,1)
+        status:SetAnchor(TOPLEFT,card,TOPLEFT,8,36)
+        status:SetDimensions(424,18)
+        status:SetColor(0.57,0.68,0.80,1)
 
-        local frontLabel = wm:CreateControl("EAS_LoadoutFrontLabel"..i, card, CT_LABEL)
-        frontLabel:SetFont("ZoFontGameSmall")
-        frontLabel:SetText("FRONT")
-        frontLabel:SetAnchor(TOPLEFT, card, TOPLEFT, 8, 53)
-        frontLabel:SetDimensions(36, 14)
-        frontLabel:SetColor(0.62,0.72,0.84,1)
-
-        local backLabel = wm:CreateControl("EAS_LoadoutBackLabel"..i, card, CT_LABEL)
-        backLabel:SetFont("ZoFontGameSmall")
-        backLabel:SetText("BACK")
-        backLabel:SetAnchor(TOPLEFT, card, TOPLEFT, 8, 83)
-        backLabel:SetDimensions(36, 14)
-        backLabel:SetColor(0.62,0.72,0.84,1)
-
-        local function createIconRow(prefix, y)
-            local icons = {}
+        local function createIconRow(prefix,y,barKey,labelText)
+            local icons={}
+            local lbl=wm:CreateControl(prefix.."Label",card,CT_LABEL)
+            lbl:SetFont("ZoFontGameSmall")
+            lbl:SetText(labelText)
+            lbl:SetAnchor(TOPLEFT,card,TOPLEFT,8,y+5)
+            lbl:SetDimensions(34,18)
+            lbl:SetColor(0.62,0.74,0.88,1)
             for n=1,6 do
-                local holder = makeBackdrop(prefix.."Frame"..n, card)
-                holder:SetAnchor(TOPLEFT, card, TOPLEFT, 46 + (n-1)*32, y)
-                holder:SetDimensions(28, 28)
-                holder:SetCenterColor(0.015,0.020,0.028,0.90)
-                holder:SetEdgeColor(0.18,0.24,0.32,0.68)
-                local tex = wm:CreateControl(prefix.."Icon"..n, holder, CT_TEXTURE)
+                local holder=makeBackdrop(prefix.."Frame"..n,card)
+                holder:SetAnchor(TOPLEFT,card,TOPLEFT,43+(n-1)*29,y)
+                holder:SetDimensions(26,26)
+                holder:SetCenterColor(0.010,0.017,0.027,0.94)
+                holder:SetEdgeColor(0.17,0.26,0.36,0.78)
+                holder:SetMouseEnabled(true)
+                local tex=wm:CreateControl(prefix.."Icon"..n,holder,CT_TEXTURE)
                 tex:SetAnchorFill(holder)
                 tex:SetHidden(true)
-                icons[n] = { frame = holder, icon = tex }
+                holder:SetHandler("OnReceiveDrag",function() self:DropSkillOnSetup(i,barKey,n) end)
+                holder:SetHandler("OnDragStart",function() self:DragSavedSkillFromSetup(i,barKey,n) end)
+                holder:SetHandler("OnMouseUp",function(_,button,upInside)
+                    if upInside~=false and button==MOUSE_BUTTON_INDEX_RIGHT then
+                        local setup=self:EnsureSaved()[i]
+                        if setup and setup.bars and setup.bars[barKey] then setup.bars[barKey][n]=0; self:RefreshUI() end
+                    end
+                end)
+                icons[n]={frame=holder,icon=tex}
             end
             return icons
         end
+        local frontIcons=createIconRow("EAS_Loadout"..i.."Front",58,"primary","F")
+        local backIcons=createIconRow("EAS_Loadout"..i.."Back",88,"backup","B")
 
-        local frontIcons = createIconRow("EAS_Loadout"..i.."Front", 49)
-        local backIcons = createIconRow("EAS_Loadout"..i.."Back", 79)
+        -- Large, explicit drop/status targets replace the old GEA/FOO abbreviations.
+        local gearDrop=makeButton("EAS_LoadoutGearDrop"..i,card,"GEAR",function()
+            if num(safe(GetCursorContentType,0))~=(rawget(_G,"MOUSE_CONTENT_EMPTY") or 0) then self:DropGearOnSetup(i) else self:CheckMissing(i) end
+        end)
+        gearDrop:SetAnchor(TOPRIGHT,card,TOPRIGHT,-96,58)
+        gearDrop:SetDimensions(88,26)
+        gearDrop:SetMouseEnabled(true)
+        gearDrop:SetHandler("OnReceiveDrag",function() self:DropGearOnSetup(i) end)
+        attachTooltip(gearDrop,"Drop gear here to assign it, or click to check this setup for missing items")
 
-        local equip = makeButton("EAS_LoadoutEquip"..i, card, "APPLY", function() self:Equip(i) end)
-        equip:SetAnchor(BOTTOMLEFT, card, BOTTOMLEFT, 8, -8)
-        equip:SetDimensions(55, 24)
-        local save = makeButton("EAS_LoadoutSave"..i, card, "SAVE", function() self:Save(i) end)
-        save:SetAnchor(BOTTOMLEFT, card, BOTTOMLEFT, 68, -8)
-        save:SetDimensions(55, 24)
-        local rename = makeButton("EAS_LoadoutRename"..i, card, "NAME", function() self:BeginRename(i) end)
-        rename:SetAnchor(BOTTOMLEFT, card, BOTTOMLEFT, 128, -8)
-        rename:SetDimensions(55, 24)
-        local clear = makeButton("EAS_LoadoutClear"..i, card, "CLEAR", function() self:Clear(i) end)
-        clear:SetAnchor(BOTTOMLEFT, card, BOTTOMLEFT, 188, -8)
-        clear:SetDimensions(54, 24)
+        local foodDrop
+        foodDrop=makeButton("EAS_LoadoutFoodDrop"..i,card,"FOOD",function()
+            if num(safe(GetCursorContentType,0))~=(rawget(_G,"MOUSE_CONTENT_EMPTY") or 0) then
+                self:DropFoodOnSetup(i)
+            else
+                self:ShowFoodPicker(i,foodDrop)
+            end
+        end)
+        foodDrop:SetAnchor(TOPRIGHT,card,TOPRIGHT,-6,58)
+        foodDrop:SetDimensions(84,26)
+        foodDrop:SetMouseEnabled(true)
+        foodDrop:SetHandler("OnReceiveDrag",function() self:DropFoodOnSetup(i) end)
+        attachTooltip(foodDrop,"Click to choose food/drink from your backpack, or drag food here. Loading the setup uses the saved food when Loadout Food is enabled.")
 
-        self.cards[i] = {
-            card=card,
-            nameBG=nameBG,
-            edit=edit,
-            status=status,
-            frontIcons=frontIcons,
-            backIcons=backIcons,
+        local cpBadge=makeBackdrop("EAS_LoadoutCPBadge"..i,card)
+        cpBadge:SetAnchor(TOPRIGHT,card,TOPRIGHT,-96,88)
+        cpBadge:SetDimensions(88,26)
+        cpBadge:SetCenterColor(0.018,0.028,0.042,0.95)
+        cpBadge:SetEdgeColor(0.17,0.28,0.42,0.78)
+        local cpLabel=wm:CreateControl("EAS_LoadoutCPLabel"..i,cpBadge,CT_LABEL)
+        cpLabel:SetAnchorFill(cpBadge)
+        cpLabel:SetFont("ZoFontGameSmall")
+        cpLabel:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+        cpLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+        cpLabel:SetColor(0.66,0.77,0.90,1)
+
+        local ready=makeButton("EAS_LoadoutReady"..i,card,"EMPTY",function() self:CheckMissing(i) end)
+        ready:SetAnchor(TOPRIGHT,card,TOPRIGHT,-6,88)
+        ready:SetDimensions(84,26)
+        attachTooltip(ready,"Check whether all saved gear is available in your inventory or open bank")
+
+        local equip=makeButton("EAS_LoadoutEquip"..i,card,"EQUIP",function() self:Equip(i) end)
+        equip:SetAnchor(BOTTOMLEFT,card,BOTTOMLEFT,8,-8); equip:SetDimensions(82,27)
+        local save=makeButton("EAS_LoadoutSave"..i,card,"SAVE",function() self:RequestSave(i) end)
+        save:SetAnchor(BOTTOMLEFT,card,BOTTOMLEFT,96,-8); save:SetDimensions(112,27)
+        local more=makeButton("EAS_LoadoutMore"..i,card,"MANAGE",function(control) self:ShowSetupMenu(i,control) end)
+        more:SetAnchor(BOTTOMRIGHT,card,BOTTOMRIGHT,-8,-8); more:SetDimensions(88,27)
+        attachTooltip(more,"Boss rules, bank actions, import/export, rename, and clear")
+
+        self.cards[i]={
+            card=card,nameBG=nameBG,edit=edit,status=status,tag=tag,
+            frontIcons=frontIcons,backIcons=backIcons,loadButton=equip,saveButton=save,moreButton=more,
+            gearDrop=gearDrop,foodDrop=foodDrop,cpLabel=cpLabel,readyButton=ready,renaming=false
         }
     end
 
-    local footer = wm:CreateControl("EAS_LoadoutFooter", win, CT_LABEL)
+    local footer=wm:CreateControl("EAS_LoadoutFooter",win,CT_LABEL)
     footer:SetFont("ZoFontGameSmall")
-    footer:SetText("Use APPLY, SAVE, NAME, and CLEAR. Skill, attribute, and full Champion respecs are saved as profiles and never paid automatically.")
-    footer:SetAnchor(BOTTOMLEFT, win, BOTTOMLEFT, 18, -12)
-    footer:SetDimensions(794, 18)
+    footer:SetText("Hotkey: Controls  >  Keybindings  >  General  >  ESO Adventurer Suite  >  Open / Close Loadout Saver")
+    footer:SetAnchor(BOTTOMLEFT,win,BOTTOMLEFT,18,-9)
+    footer:SetDimensions(908,18)
     footer:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-    footer:SetColor(0.50,0.60,0.72,1)
+    footer:SetColor(0.45,0.57,0.71,1)
+    self.footer=footer
 
-    win:SetHandler("OnMoveStop", function(control)
-        local s = self:EnsureWindowSaved()
-        s.left, s.top = control:GetLeft(), control:GetTop()
-        s.userMoved = true
+    win:SetHandler("OnMoveStop",function(control)
+        local s=self:EnsureWindowSaved(); s.left,s.top=control:GetLeft(),control:GetTop(); s.userMoved=true
     end)
-    win:SetHandler("OnResizeStop", function(control)
-        local s = self:EnsureWindowSaved()
-        local w,h = control:GetDimensions()
-        s.width, s.height = math.floor(w + 0.5), math.floor(h + 0.5)
+    win:SetHandler("OnResizeStop",function(control)
+        local s=self:EnsureWindowSaved(); local w,h=control:GetDimensions(); s.width,s.height=math.floor(w+0.5),math.floor(h+0.5); self:LayoutUI()
     end)
+    self:LayoutUI()
 end
 
 function L:RefreshUI()
     if not self.cards then return end
-    local all = self:EnsureSaved()
+    self:HideSetupPopup()
+    local all=self:EnsureSaved()
+    local page=self:GetCurrentPage()
+    local pageId=self:GetCurrentPageId()
+    local ids=self:GetPageIds()
+    local pagePos=1
+    for pos,id in ipairs(ids) do if id==pageId then pagePos=pos break end end
+
+    if self.pageNameEdit and not self.pageNameEdit:HasFocus() then self.pageNameEdit:SetText(page.name or ("Page "..pageId)) end
+    local zoneName=tostring(page.zoneName or "")
+    local bossCount=0
+    for _ in pairs(page.bossRules or {}) do bossCount=bossCount+1 end
+    local bankOpen=safe(IsBankOpen,false)==true
+    if self.pageStatus then
+        local bound = zoneName~="" and ("Bound to "..zoneName) or "Not zone-bound"
+        local entry = tonumber(page.zoneAutoSlot or 0)>0 and ("Raid entry Setup "..tostring(page.zoneAutoSlot)) or "No raid-entry setup"
+        self.pageStatus:SetText(string.format("Page %d of %d  •  %s  •  %s  •  %d boss rule%s%s",pagePos,#ids,bound,entry,bossCount,bossCount==1 and "" or "s",bankOpen and "  •  BANK OPEN" or "  •  BANK CLOSED"))
+    end
+    if self.bindZoneButton then self.bindZoneButton:SetText(tonumber(page.zoneId or 0)>0 and "UNBIND" or "BIND ZONE") end
+    if self.raidAutoButton then
+        local on=EPC.saved.loadoutAutoEquipRaids029272==true
+        self.raidAutoButton:SetText(on and "RAID AUTO: ON" or "RAID AUTO: OFF")
+        setBorderColor(self.raidAutoButton,on and 0.72 or 0.24,on and 0.56 or 0.36,on and 0.20 or 0.54,0.96)
+    end
+    if self.withdrawPageButton then self.withdrawPageButton:SetEnabled(self.bankTransferBusy ~= true) end
+    if self.depositPageButton then self.depositPageButton:SetEnabled(self.bankTransferBusy ~= true) end
+
+    self.slotBank = math.max(1,math.min(4,tonumber(self.slotBank) or 1))
+    local bankStart=(self.slotBank-1)*4+1
+    local bankEnd=bankStart+3
+    local filled={0,0,0,0}
     for i=1,SLOT_COUNT do
-        local c = self.cards[i]
-        local d = all[i]
+        local d=all[i]
+        if d and (d.gear~=nil or d.bars~=nil or d.build~=nil or d.food~=nil) then
+            local group=math.floor((i-1)/4)+1
+            filled[group]=(filled[group] or 0)+1
+        end
+    end
+    local labels={"1 - 4","5 - 8","9 - 12","13 - 16"}
+    for group=1,4 do
+        local button=self["slotBank"..group.."Button"]
+        if button then
+            button:SetText(string.format("%s (%d)",labels[group],filled[group] or 0))
+            setBorderColor(button,self.slotBank==group and 0.72 or 0.24,self.slotBank==group and 0.56 or 0.36,self.slotBank==group and 0.20 or 0.54,0.96)
+        end
+    end
+
+    for i=1,SLOT_COUNT do
+        local c=self.cards[i]
+        local d=all[i]
         if c and d then
-            if not c.edit:HasFocus() then c.edit:SetText(d.name or ("Build "..i)) end
-            local gearCount = 0
-            for _ in pairs(d.gear or {}) do gearCount = gearCount + 1 end
-            local barCount = 0
-            for _,key in ipairs({"primary","backup"}) do
-                for _,id in ipairs((d.bars and d.bars[key]) or {}) do if tonumber(id) and tonumber(id) > 0 then barCount = barCount + 1 end end
-            end
-            local cpSlots = d.build and d.build.champion and tonumber(d.build.champion.slottedCount) or 0
-            local attrs = d.build and d.build.attributes
-            local attrShort = attrs and string.format(" | H%d M%d S%d", tonumber(attrs.health) or 0, tonumber(attrs.magicka) or 0, tonumber(attrs.stamina) or 0) or ""
-            c.status:SetText(d.gear and string.format("G%d | S%d | CP%d%s", gearCount, barCount, cpSlots, attrShort) or "EMPTY")
-            self:UpdateSkillIcons(c.frontIcons, d.bars and d.bars.primary)
-            self:UpdateSkillIcons(c.backIcons, d.bars and d.bars.backup)
-            if d.gear then
-                c.card:SetEdgeColor(0.24,0.42,0.60,0.84)
-            else
-                c.card:SetEdgeColor(0.20,0.30,0.43,0.75)
+            c.card:SetHidden(i<bankStart or i>bankEnd)
+            if i>=bankStart and i<=bankEnd then
+                if not c.edit:HasFocus() then c.edit:SetText(d.name or ("Build "..i)) end
+                local filled=d.gear~=nil or d.bars~=nil or d.build~=nil or d.food~=nil
+                local gearCount=0
+                for _ in pairs(d.gear or {}) do gearCount=gearCount+1 end
+                local barCount=0
+                for _,key in ipairs({"primary","backup"}) do
+                    for _,id in ipairs((d.bars and d.bars[key]) or {}) do if (tonumber(id) or 0)>0 then barCount=barCount+1 end end
+                end
+                local cpSlots=d.build and d.build.champion and tonumber(d.build.champion.slottedCount) or 0
+                local missing=filled and #self:GetMissingItems(i,true) or 0
+                local active=self:GetActiveIndex()==i
+                local tags={}
+                if active then tags[#tags+1]="ACTIVE" end
+                if tonumber(page.zoneAutoSlot or 0)==i then tags[#tags+1]="RAID ENTRY" end
+                for _,idx in pairs(page.bossRules or {}) do if tonumber(idx)==i then tags[#tags+1]="BOSS"; break end end
+                c.tag:SetText(table.concat(tags,"  •  "))
+                if active then c.tag:SetColor(0.96,0.76,0.32,1) elseif #tags>0 then c.tag:SetColor(0.55,0.79,1,1) else c.tag:SetColor(0.48,0.60,0.74,1) end
+
+                if filled then
+                    local state = missing>0 and ("Missing "..missing.." item"..(missing==1 and "" or "s")) or "All saved gear available"
+                    c.status:SetText(string.format("%d gear  •  %d/12 skills  •  %d CP slots  •  %s",gearCount,barCount,cpSlots,state))
+                else
+                    c.status:SetText("Empty setup — SAVE or drag gear / food / skills here")
+                end
+
+                self:UpdateSkillIcons(c.frontIcons,d.bars and d.bars.primary)
+                self:UpdateSkillIcons(c.backIcons,d.bars and d.bars.backup)
+
+                c.loadButton:SetText(active and "ACTIVE" or "EQUIP")
+                if not (self.pendingOverwrite and self.pendingOverwrite[i]) then c.saveButton:SetText("SAVE") end
+                c.gearDrop:SetText(gearCount>0 and ("GEAR  "..gearCount) or "ADD GEAR")
+                c.foodDrop:SetText(d.food and "FOOD  SET" or "ADD FOOD")
+                c.cpLabel:SetText(cpSlots>0 and ("CP  "..cpSlots) or "CP  NONE")
+                c.readyButton:SetText(not filled and "EMPTY" or (missing>0 and ("MISSING  "..missing) or "READY"))
+
+                if active then
+                    c.card:SetEdgeColor(0.88,0.68,0.24,0.99)
+                    setBorderColor(c.loadButton,0.88,0.68,0.24,0.98)
+                elseif missing>0 then
+                    c.card:SetEdgeColor(0.72,0.30,0.25,0.96)
+                    setBorderColor(c.loadButton,0.24,0.36,0.54,0.92)
+                elseif filled then
+                    c.card:SetEdgeColor(0.24,0.45,0.66,0.92)
+                    setBorderColor(c.loadButton,0.24,0.42,0.60,0.92)
+                else
+                    c.card:SetEdgeColor(0.16,0.26,0.38,0.76)
+                    setBorderColor(c.loadButton,0.20,0.30,0.43,0.82)
+                end
+                setBorderColor(c.readyButton, missing>0 and 0.72 or (filled and 0.24 or 0.18), missing>0 and 0.30 or (filled and 0.52 or 0.28), missing>0 and 0.25 or (filled and 0.38 or 0.42), 0.94)
+                setBorderColor(c.foodDrop,d.food and 0.35 or 0.24,d.food and 0.55 or 0.36,d.food and 0.30 or 0.54,0.92)
             end
         end
     end
+    self:LayoutUI()
 end
 
 function L:SetUIMode(active)
@@ -1062,11 +2817,24 @@ function L:UpdateToggleLabels(isOpen)
         EPC.GearLoadoutOverlay.playerButton:SetText(isOpen and "BUILDS OPEN" or "OPEN BUILDS")
     end
     if self.closeLoadoutsButton and type(self.closeLoadoutsButton.SetText) == "function" then
-        self.closeLoadoutsButton:SetText("CLOSE BUILDS")
+        self.closeLoadoutsButton:SetText("X")
     end
 end
 function L:Show()
     self:CreateUI()
+
+    -- Direct hotkeys for Suite tools should switch cleanly instead of stacking
+    -- independent UI-mode windows on top of one another.
+    local potion = EPC and EPC.AlchemyPotionMaker
+    if potion and potion.window and not potion.window:IsHidden() then
+        if type(potion.CloseFromHotkey) == "function" then pcall(potion.CloseFromHotkey, potion)
+        elseif type(potion.HideWindow) == "function" then pcall(potion.HideWindow, potion) end
+    end
+    local learner = EPC and EPC.RecipeStyleLearner
+    if learner and learner.window and not learner.window:IsHidden() then
+        if type(learner.CloseFromHotkey) == "function" then pcall(learner.CloseFromHotkey, learner)
+        elseif type(learner.HideWindow) == "function" then pcall(learner.HideWindow, learner) end
+    end
 
     -- Keep Live Equipment on screen while Saved Builds is open.
     if EPC.GearLoadoutOverlay and type(EPC.GearLoadoutOverlay.SetLoadoutMode) == "function" then
@@ -1099,20 +2867,30 @@ function L:Show()
 
     local s = self:EnsureWindowSaved()
     self:RestoreWindowPlacement(not s.userMoved)
+    local activeIndex = self:GetActiveIndex()
+    if activeIndex > 0 then self.slotBank = math.floor((activeIndex - 1) / 4) + 1 end
     self:RefreshUI()
+    setLoadoutWindowLayer(self.window)
     self.window:SetHidden(false)
     self:UpdateToggleLabels(true)
 
-    -- While Saved Builds owns UI mode the normal general keybind can be
-    -- swallowed by ESO's UI. Push a dedicated layer that inherits the exact
-    -- same Suite toggle binding so pressing that key returns to the Codex.
-    if not self.loadoutActionLayerPushed and type(PushActionLayerByName) == "function" then
-        local ok = pcall(PushActionLayerByName, "ESOAdventurerSuiteLoadoutLayer")
-        if ok then self.loadoutActionLayerPushed = true end
+    -- Arm the Loadout Saver UI action layer after the opening key-down has
+    -- finished. Pushing it in the same frame can make ESO deliver that opening
+    -- press to the inherited CLOSE action as well, which looks like a
+    -- two-press/no-open bug.
+    local function armLoadoutLayer()
+        if not self.window or self.window:IsHidden() then return end
+        if not self.loadoutActionLayerPushed and type(PushActionLayerByName) == "function" then
+            local ok = pcall(PushActionLayerByName, "ESOAdventurerSuiteLoadoutLayer")
+            if ok then self.loadoutActionLayerPushed = true end
+        end
     end
+    if type(zo_callLater) == "function" then zo_callLater(armLoadoutLayer, 120) else armLoadoutLayer() end
 end
 
 function L:Hide(keepUIMode)
+    self:HideSetupPopup()
+    if self.transferWindow then self.transferWindow:SetHidden(true) end
     if self.window then self.window:SetHidden(true) end
     self:UpdateToggleLabels(false)
     if self.loadoutActionLayerPushed and type(RemoveActionLayerByName) == "function" then
@@ -1129,10 +2907,86 @@ function L:Toggle()
     if not self.window or self.window:IsHidden() then self:Show() else self:Hide() end
 end
 
+-- v0.29.279: keep OPEN/CLOSE compatibility handlers, but the primary binding now
+-- calls the true toggle and the visible top-level windows also capture the raw
+-- assigned key. This makes closing independent of ESO action-layer routing.
+-- ESO disables/replaces parts of the normal GENERAL binding layer while a
+-- custom UI owns cursor mode, so using one Toggle action in both layers can
+-- leave the opening binding available but make the closing press disappear.
+-- This mirrors the working Potion Maker / Turbo Learner hotkey pattern.
+function L:AcceptHotkeyEdge()
+    local stamp = nowMs()
+    if self.lastHotkeyToggleMs and stamp > 0 and (stamp - self.lastHotkeyToggleMs) < 220 then
+        return false
+    end
+    self.lastHotkeyToggleMs = stamp
+    return true
+end
+
+function L:OpenFromHotkey()
+    if not self:AcceptHotkeyEdge() then return true end
+    if self.window and not self.window:IsHidden() then return true end
+    self:Show()
+    return true
+end
+
+function L:CloseFromHotkey()
+    if not self:AcceptHotkeyEdge() then return true end
+    if self.window and not self.window:IsHidden() then
+        self:Hide()
+    end
+    return true
+end
+
+-- Backward-compatible toggle entry point for any older Suite code or user
+-- binding cache that still references the v0.29.272-v0.29.277 function.
+function L:ToggleFromHotkey()
+    if not self:AcceptHotkeyEdge() then return true end
+    self:Toggle()
+    return true
+end
+
+function ESOAdventurerSuite_OpenLoadoutSaverHotkey()
+    if EPC and EPC.LoadoutManager and type(EPC.LoadoutManager.OpenFromHotkey) == "function" then
+        return EPC.LoadoutManager:OpenFromHotkey()
+    end
+    return true
+end
+
+function ESOAdventurerSuite_CloseLoadoutSaverHotkey()
+    if EPC and EPC.LoadoutManager and type(EPC.LoadoutManager.CloseFromHotkey) == "function" then
+        return EPC.LoadoutManager:CloseFromHotkey()
+    end
+    return true
+end
+
+function ESOAdventurerSuite_ToggleLoadoutSaverHotkey()
+    if EPC and EPC.LoadoutManager and type(EPC.LoadoutManager.ToggleFromHotkey) == "function" then
+        return EPC.LoadoutManager:ToggleFromHotkey()
+    end
+    return true
+end
+
+function ESOAdventurerSuite_LoadoutPrebuffAcceleration() if EPC and EPC.LoadoutManager then return EPC.LoadoutManager:PreparePrebuff("ACCELERATION") end return false end
+function ESOAdventurerSuite_LoadoutPrebuffDestroUlt() if EPC and EPC.LoadoutManager then return EPC.LoadoutManager:PreparePrebuff("DESTRO_ULT") end return false end
+function ESOAdventurerSuite_LoadoutPrebuffManeuver() if EPC and EPC.LoadoutManager then return EPC.LoadoutManager:PreparePrebuff("MANEUVER") end return false end
+function ESOAdventurerSuite_LoadoutPrebuffSiegeShield() if EPC and EPC.LoadoutManager then return EPC.LoadoutManager:PreparePrebuff("SIEGE_SHIELD") end return false end
+
 function L:Initialize()
+    self:EnsurePages()
     self:EnsureSaved()
     self:EnsureWindowSaved()
+    self.activeIndex = self:GetActiveIndex()
+    self:RebuildGearIndex()
     self:CreateUI()
+    local eventName = "EAS_LoadoutManager029272"
+    if EVENT_PLAYER_ACTIVATED then EVENT_MANAGER:RegisterForEvent(eventName.."Activated", EVENT_PLAYER_ACTIVATED, function() self:OnPlayerActivated() end) end
+    if EVENT_BOSSES_CHANGED then EVENT_MANAGER:RegisterForEvent(eventName.."Boss", EVENT_BOSSES_CHANGED, function() self:OnBossesChanged() end) end
+    if EVENT_PLAYER_COMBAT_STATE then EVENT_MANAGER:RegisterForEvent(eventName.."Combat", EVENT_PLAYER_COMBAT_STATE, function(...) self:OnCombatState(...) end) end
+    if EVENT_ACTION_SLOT_ABILITY_USED then EVENT_MANAGER:RegisterForEvent(eventName.."Prebuff", EVENT_ACTION_SLOT_ABILITY_USED, function(...) self:OnPrebuffAbilityUsed(...) end) end
+    if EVENT_INVENTORY_SINGLE_SLOT_UPDATE then EVENT_MANAGER:RegisterForEvent(eventName.."Worn", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, function(...) self:OnWornInventoryUpdate(...) end) end
+    if EVENT_OPEN_BANK then EVENT_MANAGER:RegisterForEvent(eventName.."BankOpen", EVENT_OPEN_BANK, function() if self.window and self.window:IsHidden() == false then self:RefreshUI() end end) end
+    if EVENT_CLOSE_BANK then EVENT_MANAGER:RegisterForEvent(eventName.."BankClose", EVENT_CLOSE_BANK, function() if self.window and self.window:IsHidden() == false then self:RefreshUI() end end) end
     SLASH_COMMANDS["/easloadouts"] = function() self:Toggle() end
     SLASH_COMMANDS["/easbuilds"] = function() self:Toggle() end
 end

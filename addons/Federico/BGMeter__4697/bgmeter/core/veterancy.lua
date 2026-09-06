@@ -33,6 +33,7 @@ local function read_track()
         progressToNext = progressToNext or 0,
         tierTotal      = tierTotal,
         endTime        = endTime,
+        rewardTrackId  = rewardTrackId,
     }
 end
 
@@ -46,15 +47,19 @@ function V.snapshot()
     snap.secondsLeft  = safe(A.get_season_time_remaining)
     snap.inZone       = safe(A.is_in_veterancy_zone) and true or false
 
+    local track = read_track()
+
     local rank = safe(A.get_unit_veterancy_rank)
     snap.rank = rank
     if rank then
-        snap.rankTitle = safe(A.get_veterancy_rank_title, rank, snap.seasonId)
-        snap.rankIcon  = safe(A.get_veterancy_large_icon, rank, snap.seasonId)
-                      or safe(A.get_veterancy_rank_icon, rank, snap.seasonId)
+        local cap = track and track.rewardTrackId and safe(A.get_num_base_tiers, track.rewardTrackId)
+        local shown = (cap and cap > 0 and rank > cap) and cap or rank
+        snap.iconRank  = shown
+        snap.rankTitle = safe(A.get_veterancy_rank_title, shown, snap.seasonId)
+        snap.rankIcon  = safe(A.get_veterancy_large_icon, shown, snap.seasonId)
+                      or safe(A.get_veterancy_rank_icon, shown, snap.seasonId)
     end
 
-    local track = read_track()
     if track then
         snap.tier           = track.tier
         snap.progressToNext = track.progressToNext

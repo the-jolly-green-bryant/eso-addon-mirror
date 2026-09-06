@@ -1,6 +1,6 @@
-TamrielProgressMap_Localization = TamrielProgressMap_Localization or {}
-TamrielProgressMap_Localization["en"] =
-{
+-- Tamriel Progress Map localization fallback (English)
+-- Loaded first from the manifest so all SI_TPM_* string ids always exist.
+local strings = {
     LANGUAGE_NAME = "English",
     SETTINGS_PANEL = "Tamriel Progress Map",
     SETTINGS_SECTION_LANGUAGE = "Language",
@@ -13,7 +13,7 @@ TamrielProgressMap_Localization["en"] =
     SETTINGS_SECTION_JOURNAL = "Journal & History",
     SETTINGS_SECTION_ADVANCED = "Advanced",
     SETTINGS_LANGUAGE = "Language",
-    SETTINGS_LANGUAGE_TT = "Choose the addon language. Automatic follows the ESO client language.",
+    SETTINGS_LANGUAGE_TT = "TPM follows the ESO client language automatically. Only the active language is loaded to reduce memory usage.",
     SETTINGS_LANGUAGE_AUTO = "Automatic (ESO)",
     SETTINGS_LANGUAGE_DE = "German",
     SETTINGS_LANGUAGE_EN = "English",
@@ -70,7 +70,7 @@ TamrielProgressMap_Localization["en"] =
     SETTINGS_QUEST_RESET_TT = "Reset the quest reward window position and size and re-enable auto-size.",
     SETTINGS_DEBUG = "Show debug information",
     SETTINGS_DEBUG_TT = "Show technical MapID, ZoneID and ProgressZoneID data when hovering a zone marker. Intended for troubleshooting.",
-    SETTINGS_RELOAD_NOTE = "The addon can be switched completely to German, English, Russian, French or Spanish. Changes apply immediately to visible TPM interfaces. Through LibZone, supported zone names also follow the selected TPM language.",
+    SETTINGS_RELOAD_NOTE = "Language is selected automatically from the ESO client. English is loaded as fallback; the active client language is loaded dynamically.",
     SETTINGS_STATISTICS_SCALE = "Statistics window scale",
     SETTINGS_STATISTICS_SCALE_TT = "Scales the complete Tamriel journal between 80% and 120%.",
     SETTINGS_STATISTICS_RESET = "Reset statistics window",
@@ -86,7 +86,7 @@ TamrielProgressMap_Localization["en"] =
     SETTINGS_RESET_ECONOMY_TT = "Resets income/expenses and personal-bank deposit/withdrawal counters for the current character. Current ESO balances are never changed.",
     SETTINGS_RESET_HISTORY = "Reset history",
     SETTINGS_RESET_HISTORY_TT = "Deletes daily/session history and milestones for the current character and starts tracking again.",
-    SETTINGS_CHANGELOG = "v2.7.7_Beta: fixed theme customization: Progress & Values now saves and uses its own color channel correctly and also works with Transparent TPM. Smooth RGB remains limited to Headings & Accents.",
+    SETTINGS_CHANGELOG = "v2.7.1: ESOUI best-practice cleanup: dynamic localization loading, single TPM addon table, server-dependent SavedVariables and additional combat event filters.",
     KEYBIND_TOGGLE_STATS = "Open / close Tamriel statistics",
 
     OVERALL_PROGRESS = "Overall progress: %d%%",
@@ -374,7 +374,7 @@ TamrielProgressMap_Localization["en"] =
     HELP_TOGGLE = "/tpm toggle - toggle percentage display",
     HELP_NAMES = "/tpm names - toggle zone names",
     HELP_REFRESH = "/tpm refresh - recalculate display",
-    HELP_LANG = "/tpm lang auto|de|en|ru|fr|es - set addon language",
+    HELP_LANG = "/tpm lang - show/use the automatic ESO client language",
     HELP_MODE = "/tpm mode objectives|categories - set progress calculation",
     HELP_COMPLETED = "/tpm completed - toggle hiding of 100% zones",
     HELP_FONT = "/tpm font <style> - set percentage font style",
@@ -576,3 +576,29 @@ TamrielProgressMap_Localization["en"] =
     STAT_ALLIANCE_ALPHA_TEST = "Alliances-Alpha-Test",
 
 }
+
+for key, value in pairs(strings) do
+    local idName = "SI_TPM_" .. key
+    local stringId = _G[idName]
+    if stringId == nil then
+        ZO_CreateStringId(idName, value)
+    else
+        -- English clients load en.lua again through $(language). Keep that safe.
+        SafeAddString(stringId, value, 2)
+    end
+end
+
+-- Keybinding strings are loaded before bindings.xml and follow the same
+-- dynamic client-language path as the rest of TPM.
+local bindingStrings = {
+    SI_KEYBINDINGS_CATEGORY_TAMRIEL_PROGRESS_MAP = "Tamriel Progress Map",
+    SI_BINDING_NAME_TPM_TOGGLE_STATISTICS = "Open / close Tamriel statistics",
+}
+for idName, value in pairs(bindingStrings) do
+    local stringId = _G[idName]
+    if stringId == nil then
+        ZO_CreateStringId(idName, value)
+    else
+        SafeAddString(stringId, value, 2)
+    end
+end

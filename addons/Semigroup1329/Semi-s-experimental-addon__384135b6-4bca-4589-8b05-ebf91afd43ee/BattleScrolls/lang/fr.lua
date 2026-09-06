@@ -59,7 +59,7 @@ local strings = {
     [BATTLESCROLLS_STAT_TIME_LOST] = "Temps perdu",
     [BATTLESCROLLS_STAT_LIGHT_ATTACKS] = "Attaques légères",
     [BATTLESCROLLS_STAT_HEAVY_ATTACKS] = "Attaques lourdes",
-    [BATTLESCROLLS_STAT_SKILL_ACTIVATIONS] = "Compétences",
+    [BATTLESCROLLS_STAT_SKILL_ACTIVATIONS] = "Compétences lancées",
     [BATTLESCROLLS_STAT_CASTS] = "Incantations",
     [BATTLESCROLLS_STAT_WEAVING_ERRORS] = "Erreurs de weaving",
     [BATTLESCROLLS_STAT_MISSED_LA] = "Attaques légères manquées",
@@ -68,9 +68,9 @@ local strings = {
     [BATTLESCROLLS_TOOLTIP_DELAY_BEFORE] = "Délai avant incantation",
     [BATTLESCROLLS_FORMAT_SECONDS] = "<<1>>s",
     [BATTLESCROLLS_FORMAT_MILLISECONDS] = "<<1>>ms",
-    [BATTLESCROLLS_TOOLTIP_INTER_CAST_DESC] = "Délai moyen entre les incantations. Mesuré à partir de la fin du GCD ou du temps d'incantation d'une compétence jusqu'au début de l'action suivante. Aussi connu sous le nom de Weaving Average dans CMX.",
-    [BATTLESCROLLS_TOOLTIP_TIME_LOST_DESC] = "Temps total entre les incantations pendant la rencontre. Aussi connu sous le nom de Weaving Total dans CMX.",
-    [BATTLESCROLLS_TOOLTIP_MISSED_LA_DESC] = "Compétence lancée directement après une autre compétence, sans attaque légère entre les deux.",
+    [BATTLESCROLLS_TOOLTIP_INTER_CAST_DESC] = "Écart moyen entre les lancements, mesuré de la fin du temps de recharge global ou du temps d'incantation d'une compétence jusqu'à votre action suivante. Combat Metrics appelle cela Weaving Average.",
+    [BATTLESCROLLS_TOOLTIP_TIME_LOST_DESC] = "Tous les écarts entre les lancements, additionnés sur l'ensemble du combat. Combat Metrics appelle cela Weaving Total.",
+    [BATTLESCROLLS_TOOLTIP_MISSED_LA_DESC] = "Compétences lancées juste après une autre compétence, sans attaque légère entre les deux.",
     [BATTLESCROLLS_TOOLTIP_DOUBLE_LA_DESC] = "Deux attaques légères consécutives, sans compétence entre les deux.",
 
     -------------------------
@@ -239,7 +239,6 @@ local strings = {
     -- Proc Tracking
     [BATTLESCROLLS_HEADER_PROC_TRACKING] = "Suivi des procs",
     [BATTLESCROLLS_STAT_TOTAL_PROCS] = "<<1[$d proc/$d procs]>>",
-    [BATTLESCROLLS_STAT_MEDIAN_INTERVAL] = "médiane",
 
     -------------------------
     -- Damage Stats Details
@@ -251,6 +250,8 @@ local strings = {
     [BATTLESCROLLS_STAT_DPS] = "DPS",
 
     [BATTLESCROLLS_HEADER_BY_ABILITY] = "Par compétence",
+
+    [BATTLESCROLLS_HEADER_CASTS] = "Lancements",
     [BATTLESCROLLS_HEADER_BY_DAMAGE_TYPE] = "Par type de dégâts",
     [BATTLESCROLLS_HEADER_DIRECT_VS_DOT] = "Direct vs DoT",
     [BATTLESCROLLS_HEADER_DAMAGE_DELIVERY] = "Mode de dégâts",
@@ -967,6 +968,24 @@ local shareStrings = {
     [BATTLESCROLLS_MEMDIAG_GAUGE] = "Mémoire des extensions (jauge console)",
     [BATTLESCROLLS_MEMDIAG_PROBE_STRINGS] = "Mesurer les classes de taille des chaînes",
     [BATTLESCROLLS_MEMDIAG_PROBE_HEADER] = "long. : jauge / tas / modèle (octets par chaîne)",
+    [BATTLESCROLLS_MEMDIAG_TEST_CANCELLED] = "Annulé",
+    [BATTLESCROLLS_MEMDIAG_TEST_COMBAT] = "Combat",
+    [BATTLESCROLLS_MEMDIAG_TEST_DONE] = "Terminé",
+    [BATTLESCROLLS_MEMDIAG_TEST_ERROR] = "Erreur",
+    [BATTLESCROLLS_MEMDIAG_TEST_GC_TIMEOUT] = "Délai GC",
+    [BATTLESCROLLS_MEMDIAG_TEST_HEADER] = "MiB G=jauge H=Lua; avant/alloué/libéré",
+    [BATTLESCROLLS_MEMDIAG_TEST_HELD] = "Libérez les données de test manuel dans les paramètres.",
+    [BATTLESCROLLS_MEMDIAG_TEST_IDLE] = "%s G%s>%s H%s>%s",
+    [BATTLESCROLLS_MEMDIAG_TEST_IDLE_END] = "Repos B",
+    [BATTLESCROLLS_MEMDIAG_TEST_IDLE_START] = "Repos A",
+    [BATTLESCROLLS_MEMDIAG_TEST_LIMIT] = "Limite 75 MiB",
+    [BATTLESCROLLS_MEMDIAG_TEST_NOT_RUNNING] = "Aucun test mémoire en cours.",
+    [BATTLESCROLLS_MEMDIAG_TEST_NO_REPORT] = "Aucun rapport mémoire disponible.",
+    [BATTLESCROLLS_MEMDIAG_TEST_ROW] = "%d G%s/%s/%s H%s/%s/%s",
+    [BATTLESCROLLS_MEMDIAG_TEST_RUNNING] = "En cours",
+    [BATTLESCROLLS_MEMDIAG_TEST_STARTED] = "Test lancé. Restez immobile et fermez les menus.",
+    [BATTLESCROLLS_MEMDIAG_TEST_SUMMARY] = "%s %d/%d; max G %s; %ds",
+    [BATTLESCROLLS_MEMDIAG_TEST_USAGE] = "/bsmemtest [cancel|report]",
     [BATTLESCROLLS_SHARE_CHOICE_HEADER] = "Contenu à envoyer",
     [BATTLESCROLLS_SHARE_CHOICE_FULL] = "Tous les combats (<<1>>)",
     [BATTLESCROLLS_SHARE_CHOICE_BOSSES] = "Boss uniquement (<<1>>)",
@@ -1016,7 +1035,11 @@ local featureStrings = {
     [BATTLESCROLLS_HEADER_ULTIMATE] = "Compétence ultime",
     [BATTLESCROLLS_STAT_ULT_AT_ENTRY] = "Ultime en début de combat",
     [BATTLESCROLLS_STAT_ULT_GENERATED] = "Ultime générée",
-    [BATTLESCROLLS_STAT_ULT_DRAINED] = "Ultime dépensée et drainée",
+    [BATTLESCROLLS_STAT_ULT_SPENT_DRAINED] = "Ultime dépensée et drainée",
+    [BATTLESCROLLS_STAT_ULT_SPENT] = "Ultime dépensée",
+    [BATTLESCROLLS_STAT_ULT_LOST] = "Perdue à l'utilisation",
+    [BATTLESCROLLS_STAT_ULT_LOST_TT] = "Lancer une ultime vide toute la réserve : tout ce qui dépasse son coût est perdu.",
+    [BATTLESCROLLS_STAT_ULT_DRAINED] = "Ultime drainée",
     [BATTLESCROLLS_HEADER_ULT_SOURCES] = "Génération d'ultime par source",
     [BATTLESCROLLS_ULT_BASE_GENERATION] = "Génération de base",
     [BATTLESCROLLS_ULT_HEROISM_LINE] = "Inclut <<C:1>> : <<2>>% d'activité, env. <<3>>",
@@ -1024,20 +1047,19 @@ local featureStrings = {
 
     [BATTLESCROLLS_HEADER_CRUX] = "Interprétations",
     [BATTLESCROLLS_STAT_CRUX_GENERATORS] = "Lancements générateurs",
-    [BATTLESCROLLS_STAT_CRUX_AT_FULL] = "Générées à 3 Interprétations",
+    [BATTLESCROLLS_STAT_CRUX_AT_FULL] = "Lancements à 3 Interprétations",
     [BATTLESCROLLS_STAT_CRUX_SPENDERS] = "Lancements consommateurs",
-    [BATTLESCROLLS_STAT_CRUX_UNDER] = "Dépensées sous 3 Interprétations",
+    [BATTLESCROLLS_STAT_CRUX_UNDER] = "Lancements sous 3 Interprétations",
     [BATTLESCROLLS_CRUX_AT_N] = "À <<1>> Interprétations : <<2>>",
-    [BATTLESCROLLS_HEADER_CRUX_BY_ABILITY] = "Discipline des Interprétations par compétence",
+    [BATTLESCROLLS_HEADER_CRUX_BY_ABILITY] = "Lancements à contretemps par compétence",
 
     [BATTLESCROLLS_HEADER_ZEN] = "Cumul de DoT (Z'en)",
     [BATTLESCROLLS_ZEN_AVG_DOTS] = "DoTs en moyenne",
-    [BATTLESCROLLS_ZEN_UPTIME] = "Temps d'activité du débuff Z'en",
+    [BATTLESCROLLS_ZEN_UPTIME] = "Votre temps d'activité Z'en",
     [BATTLESCROLLS_ZEN_PEAK_TIME] = "Temps à <<1>>",
     [BATTLESCROLLS_ZEN_DOTS_LABEL] = "<<1>> DoTs",
     [BATTLESCROLLS_ZEN_SHARE_LINE] = "moy. <<1>> — <<2>> à 5 DoTs",
     [BATTLESCROLLS_ZEN_SHORT] = "Z'en",
-    [BATTLESCROLLS_ZEN_BOSS_SUMMARY] = "moy. <<1>> DoTs — Z'en <<2>>% — <<3>> <<4>>%",
 
     [BATTLESCROLLS_HEADER_SUPPORT] = "Soutien",
     [BATTLESCROLLS_STAT_RESURRECTIONS] = "Résurrections",
@@ -1047,13 +1069,31 @@ for id, str in pairs(featureStrings) do
 end
 
 local cruxPassiveStrings = {
-    [BATTLESCROLLS_STAT_CRUX_PASSIVE] = "Consommées hors lancements",
-    [BATTLESCROLLS_STAT_CRUX_PASSIVE_TT] = "Interprétations perdues sans lancement consommateur à proximité : expiration naturelle (30 secondes) ou mort.",
-    [BATTLESCROLLS_STAT_CRUX_CONDITIONAL_TT] = "Interprétations générées par les déclenchements de cette source (associées aux gains de charges par chronologie).",
+    [BATTLESCROLLS_STAT_CRUX_PASSIVE] = "Perdues hors lancements",
+    [BATTLESCROLLS_STAT_CRUX_PASSIVE_TT] = "Interprétations disparues d'elles-mêmes, sans lancement consommateur ni mort à proximité. Une Interprétation expire au bout de 30 secondes.",
+    [BATTLESCROLLS_STAT_CRUX_DEATH] = "Perdues à la mort",
+    [BATTLESCROLLS_STAT_CRUX_PROC_WASTED] = "Gains passifs à 3 Interprétations",
+    [BATTLESCROLLS_STAT_CRUX_PROC_WASTED_TT] = "Gains passifs déclenchés alors que vous aviez déjà 3 Interprétations : ils n'ont donc rien apporté. « <<1>> » et ses métamorphoses ainsi que <<2>> ne donnent une Interprétation que si vous n'en avez aucune, ils ne sont donc jamais comptés ici.",
+    [BATTLESCROLLS_STAT_CRUX_CONDITIONAL_TT] = "Interprétations que cette source a générées passivement, sans lancement.",
     [BATTLESCROLLS_STAT_CRUX_OTHER] = "Autres gains d'Interprétations",
-    [BATTLESCROLLS_STAT_CRUX_OTHER_TT] = "Interprétations gagnées sans source suivie à proximité — par exemple les déclenchements périodiques de « <<1>> ».",
+    [BATTLESCROLLS_STAT_CRUX_OTHER_TT] = "Interprétations gagnées sans qu'aucune source suivie ici ne se déclenche à ce moment-là.",
     [BATTLESCROLLS_HEADER_CRUX_GAINED] = "Interprétations gagnées par compétence",
 }
 for id, str in pairs(cruxPassiveStrings) do
+    SafeAddString(id, str, 1)
+end
+
+local activityOverviewStrings = {
+    [BATTLESCROLLS_STAT_DOWNTIME] = "Temps mort",
+    [BATTLESCROLLS_TOOLTIP_DOWNTIME_DESC] = "Écarts de 3 secondes ou plus entre les lancements, par exemple les mécaniques, une résurrection ou la mort. Non comptés dans le délai d'incantation.",
+    [BATTLESCROLLS_STAT_PER_MINUTE] = "<<1>>/min",
+    [BATTLESCROLLS_DETAIL_MEDIAN] = "médiane <<1>>",
+    [BATTLESCROLLS_DETAIL_DELAY] = "<<1>> de délai",
+    [BATTLESCROLLS_DETAIL_AT_FULL] = "<<1>> au max",
+    [BATTLESCROLLS_DETAIL_LOST] = "<<1>> perdus",
+    [BATTLESCROLLS_DETAIL_AVG_DOTS] = "moy. <<1>> DoTs",
+    [BATTLESCROLLS_DETAIL_AT_DOTS] = "<<1>> à <<2>>",
+}
+for id, str in pairs(activityOverviewStrings) do
     SafeAddString(id, str, 1)
 end

@@ -62,10 +62,13 @@ end
 
 BattleScrolls = BattleScrolls or {}
 
----A single ultimate cast (button press on the ultimate slot)
+---A single ultimate cast (button press on the ultimate slot). A cast
+---consumes the whole pool, so poolBefore - cost is what the cast lost.
 ---@class UltCastEvent
 ---@field timeMs number Time offset from fight start in ms
 ---@field abilityId number Slotted ultimate ability id at press time
+---@field poolBefore number|nil Pool value at press (nil in pre-v20 recordings)
+---@field cost number|nil Slot cost at press (nil in pre-v20 recordings)
 
 ---Per-source ultimate gain accumulation (energize amounts vary per ability)
 ---@class UltGainBreakdown
@@ -278,6 +281,8 @@ local function onActionSlotUsed(actionSlotIndex)
     u.casts[#u.casts + 1] = {
         timeMs = GetGameTimeMilliseconds() - state.fightStartTimeMs,
         abilityId = abilityId,
+        poolBefore = u.lastUltValue,
+        cost = GetSlotAbilityCost(actionSlotIndex, COMBAT_MECHANIC_FLAGS_ULTIMATE) or 0,
     }
 end
 

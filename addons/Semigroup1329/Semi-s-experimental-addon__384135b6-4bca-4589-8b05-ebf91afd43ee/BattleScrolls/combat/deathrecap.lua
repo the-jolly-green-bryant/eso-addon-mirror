@@ -22,6 +22,7 @@ function deathRecap:Initialize()
         if not s or not s.initialized then return end
 
         s.playerDeathCount = (s.playerDeathCount or 0) + 1
+        s.lastPlayerDeathMs = GetGameTimeMilliseconds()
 
         local numAttacks = GetNumKillingAttacks()
         if numAttacks <= 0 then return end

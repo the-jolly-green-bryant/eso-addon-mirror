@@ -1,17 +1,14 @@
 ## Title: |cE6C45CTamriel Progress Map|r
 ## Author: |c66CCFFRaccoonplayz|r
-## Description: Tamriel completion journal with Progress (Alliance page 2), Economy and PvE/PvP (Character page 2). DE/EN/RU/FR/ES. / Tamriel-Fortschrittsjournal mit Fortschritt (Allianzen Seite 2), Wirtschaft und PvE/PvP (Charakter Seite 2). DE/EN/RU/FR/ES. Requires LibAddonMenu-2.0 and LibZone.
-## Version: 2.7.0
-## AddOnVersion: 20700
+## Description: Tamriel completion journal with Progress (Alliance page 2), Economy and PvE/PvP (Character page 2). DE/EN/RU/FR/ES. / Tamriel-Fortschrittsjournal mit Fortschritt (Allianzen Seite 2), Wirtschaft und PvE/PvP (Charakter Seite 2). DE/EN/RU/FR/ES. Requires LibAddonMenu-2.0.
+## Version: 2.7.2
+## AddOnVersion: 20702
 ## APIVersion: 101050 101051
 ## SavedVariables: TamrielProgressMap_SavedVariables
-## DependsOn: LibAddonMenu-2.0>=43 LibZone>=0899
+## DependsOn: LibAddonMenu-2.0>=43
 
+# English fallback + dynamic ESO client language
 localization/en.lua
-localization/de.lua
-localization/ru.lua
-localization/fr.lua
-localization/es.lua
-bindings.lua
+localization/$(language).lua
 bindings.xml
 TamrielProgressMap.lua

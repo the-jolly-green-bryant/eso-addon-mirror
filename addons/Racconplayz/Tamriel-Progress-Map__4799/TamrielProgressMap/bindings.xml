@@ -2,7 +2,7 @@
     <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
         <Category name="SI_KEYBINDINGS_CATEGORY_TAMRIEL_PROGRESS_MAP">
             <Action name="TPM_TOGGLE_STATISTICS">
-                <Down>TamrielProgressMap_KeybindToggleStatistics()</Down>
+                <Down>TamrielProgressMap.KeybindToggleStatistics()</Down>
             </Action>
         </Category>
     </Layer>

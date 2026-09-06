@@ -2,15 +2,13 @@
 -- Export
 -- Builds self-contained binary export streams for online sharing.
 --
--- Wire format v6 (bytes, before URL transport):
---   u8  wireVersion (6; v5 remains live on the public addon - the site
---       must keep its v5 decoder. v6 = v5 with the storage v19 blob
---       semantics: 24-bit section mask, ULTIMATE/RESURRECTIONS/CRUX/ZEN
---       sections, attacker-name refs inside death recap attacks. Blobs
---       otherwise keep the wire layout: column-oriented damage/effect
---       sections, permille effect times, playerTimeAtMaxStacksMs dropped
---       (see storage/binary.lua's wire writers; web/src/shared/decoder.ts
---       is the only reader))
+-- Wire format v7 (bytes, before URL transport):
+--   u8  wireVersion (7 = storage v20 blob semantics: 24-bit section mask,
+--       ULTIMATE/RESURRECTIONS/CRUX/ZEN sections, attacker-name refs inside
+--       death recap attacks. Blobs otherwise keep the wire layout:
+--       column-oriented damage/effect sections, permille effect times,
+--       playerTimeAtMaxStacksMs dropped (see storage/binary.lua's wire
+--       writers; web/src/shared/decoder.ts is the only reader))
 --   u8  flags: bit0 = body is raw-DEFLATE compressed, bit1 = archive profile
 --   body (compressed when bit0 is set):
 --     varint createdAtS               (export time)
@@ -123,7 +121,7 @@ BattleScrolls = BattleScrolls or {}
 local export = {}
 BattleScrolls.export = export
 
-export.WIRE_VERSION = 6
+export.WIRE_VERSION = 7
 export.PROFILE_VIEW = 1
 export.PROFILE_ARCHIVE = 2
 

@@ -359,11 +359,13 @@ function A:Initialize()
     -- ZO_Ingame can finish deferred initialization after this addon.  Keep the
     -- native position synchronized and keep the Suite preview above settings
     -- while layout mode is active.
-    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Guard", 250, function()
-        -- Always refresh visibility. This is intentionally safe during HUD
-        -- Layout Mode because Refresh() never reapplies the saved anchors while
-        -- layoutMode is active; it only updates visibility/text/scale.
-        A:Refresh()
+    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Guard", 1000, function()
+        -- Event callbacks own normal updates. The safety guard only wakes when
+        -- the archive HUD is relevant or being edited.
+        if A.layoutMode == true or (A.IsPlayerInArchive02972 and A:IsPlayerInArchive02972())
+            or (A.frame and not A.frame:IsHidden()) then
+            A:Refresh()
+        end
     end)
 
     self:Refresh()
@@ -890,15 +892,14 @@ function A:EnsureArchiveChoiceGlow029171(buffControl)
     if starRight.SetExcludeFromResizeToFitExtents then starRight:SetExcludeFromResizeToFitExtents(true) end
     starRight:SetHidden(true)
 
-    frame:SetHandler("OnUpdate", function(control)
-        if control:IsHidden() then return end
-        local ms = tonumber(safe(GetFrameTimeMilliseconds, 0)) or 0
-        local wave = (math.sin(ms / 155) + 1) * 0.5
-        control:SetAlpha(0.72 + wave * 0.28)
-        badge:SetAlpha(0.74 + wave * 0.26)
-        starLeft:SetAlpha(0.62 + wave * 0.38)
-        starRight:SetAlpha(0.62 + wave * 0.38)
-    end)
+    -- v0.29.341: a cosmetic alpha pulse used to run every rendered frame for
+    -- the entire time this choice overlay was visible. Keep the same emphasis
+    -- with steady opacity so Infinite Archive does not add a permanent OnUpdate.
+    frame:SetHandler("OnUpdate", nil)
+    frame:SetAlpha(1)
+    badge:SetAlpha(1)
+    starLeft:SetAlpha(0.88)
+    starRight:SetAlpha(0.88)
 
     buffControl.easBestGlow029171 = frame
     buffControl.easBestOuter029171 = nil
@@ -1089,7 +1090,7 @@ function A:RegisterArchiveChoiceAdvisor029171()
     -- The selector is deferred-initialized by ZO_Ingame, so a tiny update while
     -- it is visible is more reliable than assuming the global exists at addon
     -- load. Hidden selectors exit immediately and do no scoring work.
-    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Poll", 120, function()
+    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Poll", 750, function()
         A:UpdateArchiveChoiceAdvisor029171()
     end)
 

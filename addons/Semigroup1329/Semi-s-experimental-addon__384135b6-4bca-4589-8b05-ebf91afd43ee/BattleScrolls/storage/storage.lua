@@ -62,6 +62,8 @@ BattleScrolls = BattleScrolls or {}
 ---@field skillActivations number Total skill/ultimate activations
 ---@field totalWeavingErrors number Total skill→skill count (no LA in between)
 ---@field doubleLaErrors number Total la→la count (double light attack without a skill)
+---@field downtimeMs number Sum of gaps of 3s or more between casts, kept out of the per-ability delays (0 in pre-v20 recordings)
+---@field downtimeGaps number Count of those gaps
 ---@field byAbility WeavingAbilityData[] Per-ability weaving breakdown
 
 ---Binary-encoded encounter (v3+)
@@ -117,6 +119,7 @@ BattleScrolls = BattleScrolls or {}
 ---@field ultimate UltimateData|nil Ultimate generation/usage data (v19+)
 ---@field crux CruxData|nil Arcanist Crux economy data (v19+)
 ---@field resurrections number|nil Successful resurrection casts by the player (v19+)
+---@field resurrectionLog ResurrectionEvent[]|nil Who was resurrected and when (v20+)
 ---@field zen ZenData|nil Per-boss DoT-count/Z'en time buckets (v19+)
 
 -- Instance types distinguish between live state (during combat) and storage format.
@@ -207,8 +210,9 @@ BattleScrolls = BattleScrolls or {}
 ---@field settings StorageSettings User settings
 ---@field sharedSetups table<string, table<number, CompactSetup>>|nil Shared player setups from group members
 ---@field ownSetups table<number, OwnSetupPoolEntry>|nil Player's own full setups deduplicated by 16-bit setup hash (v17+; referenced by CompactEncounter._setupHash)
----@field migrationDone boolean|nil Retired v17-era flag; migration:Initialize clears it (superseded by migrationDoneV18)
----@field migrationDoneV18 boolean|nil True once no encounter (live instance included) is left in a pre-v18 format; lets migration skip even its startup scan. Never in defaults: ZO_SavedVars would apply it to existing installations
+---@field migrationDone boolean|nil Retired v17-era flag; migration:Initialize clears it
+---@field migrationDoneV18 boolean|nil Retired v18-era flag; migration:Initialize clears it
+---@field migrationDoneV20 boolean|nil True once no encounter (live instance included) is left in a pre-v20 format; lets migration skip even its startup scan. Never in defaults: ZO_SavedVars would apply it to existing installations
 
 ---@class SizePreset
 ---@field key string Preset key

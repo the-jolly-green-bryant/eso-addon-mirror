@@ -3,7 +3,8 @@ local T = TetsuCombatTools
 
 local ADDON = "TetsuCombatToolsStatus"
 
-local ICON_TEX = "/esoui/art/icons/mapkey/mapkey_groupboss.dds"
+-- Round radio mark exists on console. highlight.dds is missing there and hid the lamp.
+local ICON_TEX = "/esoui/art/buttons/radiobuttonup.dds"
 local COL_FIGHT = { 0.92, 0.18, 0.16, 1 }
 local COL_PEACE = { 0.22, 0.82, 0.32, 1 }
 
@@ -73,10 +74,25 @@ local function WorldHudOpen()
     return true
 end
 
-local function ClampScale(p)
+local function ClampIconScale(p)
+    p = tonumber(p) or 50
+    if p < 30 then p = 30 end
+    if p > 180 then p = 180 end
+    return p / 100
+end
+
+local function ClampTextScale(p)
     p = tonumber(p) or 100
     if p < 50 then p = 50 end
     if p > 180 then p = 180 end
+    return p / 100
+end
+
+local function IconAlpha()
+    local v = Vars()
+    local p = v and tonumber(v.statusIconAlpha) or 50
+    if p < 10 then p = 10 end
+    if p > 100 then p = 100 end
     return p / 100
 end
 
@@ -121,19 +137,22 @@ local function LayoutIcon()
     local v = Vars()
     local ox = v and tonumber(v.statusIconX) or 0
     local oy = v and tonumber(v.statusIconY) or 0
-    local sc = ClampScale(v and v.statusIconScale)
+    local sc = ClampIconScale(v and v.statusIconScale)
     local size = math.floor(48 * sc + 0.5)
     iconRoot:ClearAnchors()
     iconRoot:SetAnchor(CENTER, GuiRoot, CENTER, ox, oy)
     iconRoot:SetDimensions(size, size)
+    iconRoot:SetAlpha(1)
+    local a = IconAlpha()
     if iconBg then
-        iconBg:ClearAnchors()
-        iconBg:SetAnchorFill(iconRoot)
+        iconBg:SetHidden(true)
+        iconBg:SetAlpha(0)
     end
     if iconTex then
         iconTex:ClearAnchors()
         iconTex:SetAnchor(CENTER, iconRoot, CENTER, 0, 0)
-        iconTex:SetDimensions(math.floor(size * 0.78), math.floor(size * 0.78))
+        iconTex:SetDimensions(size, size)
+        iconTex:SetAlpha(a)
     end
 end
 
@@ -143,7 +162,7 @@ local function LayoutText()
     local ox = v and tonumber(v.statusTextX) or 0
     local oy = v and tonumber(v.statusTextY)
     if oy == nil then oy = 250 end
-    local sc = ClampScale(v and v.statusTextScale)
+    local sc = ClampTextScale(v and v.statusTextScale)
     local fontSize = math.floor(28 * sc + 0.5)
     textRoot:ClearAnchors()
     textRoot:SetAnchor(CENTER, GuiRoot, CENTER, ox, oy)
@@ -168,12 +187,13 @@ end
 local function Paint()
     local fight = InCombat()
     local col = fight and COL_FIGHT or COL_PEACE
+    local a = IconAlpha()
     if iconBg then
-        iconBg:SetCenterColor(col[1], col[2], col[3], 0.88)
-        iconBg:SetEdgeColor(col[1], col[2], col[3], 1)
+        iconBg:SetHidden(true)
     end
     if iconTex then
-        iconTex:SetColor(1, 1, 1, 1)
+        iconTex:SetColor(col[1], col[2], col[3], 1)
+        iconTex:SetAlpha(a)
     end
     if textLab then
         textLab:SetColor(col[1], col[2], col[3], 1)
@@ -212,10 +232,8 @@ local function Build()
     iconRoot:SetDrawLevel(3)
 
     iconBg = wm:CreateControl(ADDON .. "IconBg", iconRoot, CT_BACKDROP)
-    iconBg:SetCenterColor(0.22, 0.82, 0.32, 0.88)
-    iconBg:SetEdgeColor(0.22, 0.82, 0.32, 1)
-    iconBg:SetEdgeTexture("", 1, 1, 2)
-    iconBg:SetInsets(2, 2, 2, 2)
+    iconBg:SetHidden(true)
+    iconBg:SetAlpha(0)
 
     iconTex = wm:CreateControl(ADDON .. "IconTex", iconRoot, CT_TEXTURE)
     iconTex:SetTexture(ICON_TEX)

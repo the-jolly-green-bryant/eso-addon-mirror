@@ -79,7 +79,7 @@ function PinController:InitializeMouseHandling()
 	ZO_PreHook("ZO_WorldMap_MouseEnter", function()
 
 		-- check 10/second if mouse is over a pin; avoids burning map frames on a static cursor
-		EVENT_MANAGER:RegisterForUpdate("EASLoreLibrary-MouseOver", 100, function()
+		EVENT_MANAGER:RegisterForUpdate("EASLoreLibrary-MouseOver", 150, function()
 			local pinIndex, pinTypeId = self:GetMouseOverPinIndexAndType()
 			if not pinIndex then return end
 			self:ShowSelectionControl(pinIndex, pinTypeId)

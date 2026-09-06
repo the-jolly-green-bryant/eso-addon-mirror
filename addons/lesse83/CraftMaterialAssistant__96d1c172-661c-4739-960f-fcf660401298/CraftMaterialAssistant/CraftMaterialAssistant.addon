@@ -4,12 +4,14 @@
 ## Author: Lesse83
 ## Description: Helping to manage the excess of crafting materials.
 ## DependsOn: LibAddonMenu-2.0
+## DependsOn: LibCharacterKnowledge
 ## SavedVariables: CraftMaterialAssistantSavedVars
 
 lua/Constants.lua
 lua/Helpers.lua
 lua/Settings.lua
 lua/ItemEvaluation.lua
+lua/CharacterKnowledge.lua
 lua/Banking.lua
 lua/Vendoring.lua
 CraftMaterialAssistant.lua

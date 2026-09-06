@@ -73,7 +73,7 @@ local function build_header(win)
     h.gear = mk_button(win, TX.gear, 28, function() W.toggle_settings() end, "Settings")
     h.gear:SetAnchor(TOPRIGHT, win, TOPRIGHT, -(L.margin + 30), 11)
 
-    h.next = mk_button(win, TX.nextb, 26, function() W.step(1) end, "Newer match")
+    h.next = mk_button(win, TX.nextb, 26, function() W.step(1) end, "Older match")
     h.next:SetAnchor(TOPRIGHT, win, TOPRIGHT, -(L.margin + 64), 13)
 
     h.counter = P.label(win, S.FONT.small, K.COLOR.text_dim)
@@ -81,7 +81,7 @@ local function build_header(win)
     h.counter:SetDimensions(48, 18)
     h.counter:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
 
-    h.prev = mk_button(win, TX.prev, 26, function() W.step(-1) end, "Older match")
+    h.prev = mk_button(win, TX.prev, 26, function() W.step(-1) end, "Newer match")
     h.prev:SetAnchor(TOPRIGHT, win, TOPRIGHT, -(L.margin + 148), 13)
 
     return h

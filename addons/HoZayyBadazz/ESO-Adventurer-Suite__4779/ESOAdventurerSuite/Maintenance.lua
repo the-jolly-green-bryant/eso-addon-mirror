@@ -71,8 +71,8 @@ function M:FindRepairKit(targetSlot)
     return bestSlot, bestAmount
 end
 
-function M:RechargeEquipped()
-    if EPC.saved.autoRecharge == false or BAG_WORN == nil or type(IsItemChargeable) ~= "function"
+function M:RechargeEquipped(forceEnabled)
+    if forceEnabled ~= true and EPC.saved.autoRecharge == false or BAG_WORN == nil or type(IsItemChargeable) ~= "function"
         or type(GetChargeInfoForItem) ~= "function" or type(ChargeItemWithSoulGem) ~= "function" then
         return 0, 0
     end
@@ -102,8 +102,8 @@ function M:RechargeEquipped()
     return charged, skippedNoGem
 end
 
-function M:RepairEquipped()
-    if EPC.saved.autoRepair == false or BAG_WORN == nil or type(DoesItemHaveDurability) ~= "function"
+function M:RepairEquipped(forceEnabled)
+    if forceEnabled ~= true and EPC.saved.autoRepair == false or BAG_WORN == nil or type(DoesItemHaveDurability) ~= "function"
         or type(GetItemCondition) ~= "function" or type(RepairItemWithRepairKit) ~= "function" then
         return 0, 0
     end

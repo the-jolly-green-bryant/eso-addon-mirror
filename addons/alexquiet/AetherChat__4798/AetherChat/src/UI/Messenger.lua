@@ -1215,7 +1215,7 @@ function Messenger.DockNativeChatEntry()
     if not ZO_ChatWindowTextEntry or not Messenger.window then return end
 
     local isCollapsed = Settings.Get('sidebarCollapsed', false)
-    local leftOffset = isCollapsed and 68 or 230
+    local leftOffset = isCollapsed and 72 or 230
 
     ZO_ChatWindowTextEntry:SetParent(Messenger.window)
     ZO_ChatWindowTextEntry:ClearAnchors()
@@ -1265,47 +1265,52 @@ function Messenger.SetSidebarCollapsed(collapsed)
     local messages = Messenger.window:GetNamedChild('Messages')
     local bottomDiv = Messenger.window:GetNamedChild('BottomDivider')
     local collapseSidebarBtn = Messenger.window:GetNamedChild('CollapseSidebarBtn')
+    local scrollBar = scrollContainer and scrollContainer:GetNamedChild('ScrollBar')
 
     if collapsed then
         if sidebarBg then
             sidebarBg:ClearAnchors()
-            sidebarBg:SetDimensions(56)
+            sidebarBg:SetDimensions(60)
             sidebarBg:SetAnchor(TOPLEFT, Messenger.window, TOPLEFT, 6, 46)
             sidebarBg:SetAnchor(BOTTOMLEFT, Messenger.window, BOTTOMLEFT, 6, -8)
         end
         if scrollContainer then
             scrollContainer:ClearAnchors()
-            scrollContainer:SetDimensions(56)
+            scrollContainer:SetDimensions(60)
             scrollContainer:SetAnchor(TOPLEFT, Messenger.window, TOPLEFT, 6, 46)
             scrollContainer:SetAnchor(BOTTOMLEFT, Messenger.window, BOTTOMLEFT, 6, -8)
         end
+        if scrollBar then
+            scrollBar:SetWidth(8)
+            scrollBar:SetAlpha(0.55)
+        end
         if divider then
             divider:ClearAnchors()
-            divider:SetAnchor(TOPLEFT, Messenger.window, TOPLEFT, 64, 44)
-            divider:SetAnchor(BOTTOMLEFT, Messenger.window, BOTTOMLEFT, 64, -6)
+            divider:SetAnchor(TOPLEFT, Messenger.window, TOPLEFT, 68, 44)
+            divider:SetAnchor(BOTTOMLEFT, Messenger.window, BOTTOMLEFT, 68, -6)
         end
         if title then
             title:ClearAnchors()
-            title:SetAnchor(TOPLEFT, Messenger.window, TOPLEFT, 74, 48)
+            title:SetAnchor(TOPLEFT, Messenger.window, TOPLEFT, 78, 48)
         end
         if midDiv then
             midDiv:ClearAnchors()
-            midDiv:SetAnchor(TOPLEFT, Messenger.window, TOPLEFT, 68, 76)
+            midDiv:SetAnchor(TOPLEFT, Messenger.window, TOPLEFT, 72, 76)
             midDiv:SetAnchor(TOPRIGHT, Messenger.window, TOPRIGHT, -8, 76)
         end
         if messages then
             messages:ClearAnchors()
-            messages:SetAnchor(TOPLEFT, Messenger.window, TOPLEFT, 72, 82)
+            messages:SetAnchor(TOPLEFT, Messenger.window, TOPLEFT, 76, 82)
             messages:SetAnchor(BOTTOMRIGHT, Messenger.window, BOTTOMRIGHT, -10, -48)
         end
         if bottomDiv then
             bottomDiv:ClearAnchors()
-            bottomDiv:SetAnchor(BOTTOMLEFT, Messenger.window, BOTTOMLEFT, 68, -44)
+            bottomDiv:SetAnchor(BOTTOMLEFT, Messenger.window, BOTTOMLEFT, 72, -44)
             bottomDiv:SetAnchor(BOTTOMRIGHT, Messenger.window, BOTTOMRIGHT, -8, -44)
         end
         if collapseSidebarBtn then
             collapseSidebarBtn:ClearAnchors()
-            collapseSidebarBtn:SetAnchor(TOPLEFT, Messenger.window, TOPLEFT, 18, 12)
+            collapseSidebarBtn:SetAnchor(TOPLEFT, Messenger.window, TOPLEFT, 25, 12)
             collapseSidebarBtn:SetNormalTexture("/esoui/art/buttons/tree_closed_up.dds")
             collapseSidebarBtn:SetPressedTexture("/esoui/art/buttons/tree_closed_down.dds")
             collapseSidebarBtn:SetMouseOverTexture("/esoui/art/buttons/tree_closed_over.dds")
@@ -1322,6 +1327,10 @@ function Messenger.SetSidebarCollapsed(collapsed)
             scrollContainer:SetDimensions(216)
             scrollContainer:SetAnchor(TOPLEFT, Messenger.window, TOPLEFT, 6, 46)
             scrollContainer:SetAnchor(BOTTOMLEFT, Messenger.window, BOTTOMLEFT, 6, -8)
+        end
+        if scrollBar then
+            scrollBar:SetWidth(14)
+            scrollBar:SetAlpha(1.0)
         end
         if divider then
             divider:ClearAnchors()
@@ -1553,7 +1562,7 @@ function Messenger.BuildChannelItems()
         local folderItem = {
             id = 'guilds_folder',
             name = folderPrefix .. L('CH_GUILDS_FOLDER') .. ' (' .. numGuilds .. ')',
-            icon = '/esoui/art/guild/tabicon_roster_up.dds',
+            icon = '/esoui/art/guild/tabicon_heraldry_up.dds',
             isFolder = true,
         }
         table.insert(rawItems, folderItem)
@@ -1640,10 +1649,11 @@ function Messenger.RefreshChannelList()
     local theme = Theme.GetCurrentTheme()
 
     local isCollapsed = Settings.Get('sidebarCollapsed', false)
-    local btnWidth = isCollapsed and 46 or 198
-    local btnOffsetX = isCollapsed and 5 or 0
-    local btnHeight = isCollapsed and 36 or 34
-    local strideY = isCollapsed and 40 or 36
+    local btnWidth = isCollapsed and 38 or 198
+    local btnOffsetX = isCollapsed and 4 or 0
+    local btnHeight = isCollapsed and 38 or 34
+    local strideY = isCollapsed and 44 or 36
+    local offsetY = 4
 
     for i, item in ipairs(items) do
         local btn = channelButtons[i]
@@ -1657,12 +1667,32 @@ function Messenger.RefreshChannelList()
         btn:SetDimensions(btnWidth, btnHeight)
         btn:SetHidden(false)
 
+        local isSelected = (item.id == activeChannelKey)
+
+        local btnBG = btn:GetNamedChild('BG')
+        if btnBG then
+            btnBG:ClearAnchors()
+            btnBG:SetAnchorFill()
+            btnBG:SetHidden(false)
+            if isCollapsed then
+                btnBG:SetAlpha(1.0)
+                btnBG:SetCenterColor(0.10, 0.10, 0.10, 0.85)
+                btnBG:SetEdgeColor(0.24, 0.24, 0.24, 0.8)
+            else
+                btnBG:SetAlpha(0.25)
+                btnBG:SetCenterColor(0.07, 0.07, 0.07, 0.25)
+                btnBG:SetEdgeColor(0.23, 0.23, 0.23, 0.4)
+            end
+        end
+
         local nameLabel = btn:GetNamedChild('Name')
         if nameLabel then
             nameLabel:SetText(item.name)
             nameLabel:SetHidden(isCollapsed)
-            local currentFontSize = Settings.Get('chatFontSize', 16) or 16
-            nameLabel:SetFont(string.format("$(CHAT_FONT)|%d|soft-shadow-thin", math.max(13, currentFontSize - 1)))
+            if not isCollapsed then
+                local currentFontSize = Settings.Get('chatFontSize', 16) or 16
+                nameLabel:SetFont(string.format("$(CHAT_FONT)|%d|soft-shadow-thin", math.max(13, currentFontSize - 1)))
+            end
         end
 
         local icon = btn:GetNamedChild('Icon')
@@ -1678,17 +1708,37 @@ function Messenger.RefreshChannelList()
             if isCollapsed then
                 icon:SetDimensions(24, 24)
                 icon:SetAnchor(CENTER, btn, CENTER, 0, 0)
+                if isSelected then
+                    icon:SetColor(1, 1, 1, 1)
+                else
+                    icon:SetColor(0.85, 0.85, 0.85, 0.88)
+                end
             else
                 icon:SetDimensions(22, 22)
                 icon:SetAnchor(LEFT, btn, LEFT, 8, 0)
+                icon:SetColor(1, 1, 1, 1)
             end
         end
 
         local selectedBg = btn:GetNamedChild('SelectedBG')
         if selectedBg then
-            selectedBg:SetHidden(item.id ~= activeChannelKey)
-            if theme and theme.accentR then
-                selectedBg:SetCenterColor(theme.accentR, theme.accentG, theme.accentB, 0.45)
+            selectedBg:ClearAnchors()
+            selectedBg:SetAnchorFill()
+            selectedBg:SetHidden(not isSelected)
+            if isSelected then
+                local aR = (theme and theme.accentR) or 0.85
+                local aG = (theme and theme.accentG) or 0.69
+                local aB = (theme and theme.accentB) or 0.22
+                if isCollapsed then
+                    selectedBg:SetCenterColor(aR, aG, aB, 0.35)
+                    selectedBg:SetEdgeColor(aR, aG, aB, 1.0)
+                    if btnBG then
+                        btnBG:SetEdgeColor(aR, aG, aB, 1.0)
+                    end
+                else
+                    selectedBg:SetCenterColor(aR, aG, aB, 0.45)
+                    selectedBg:SetEdgeColor(aR, aG, aB, 1.0)
+                end
             end
         end
 
@@ -1728,17 +1778,41 @@ function Messenger.RefreshChannelList()
         if badge then
             badge:ClearAnchors()
             if isCollapsed then
-                badge:SetAnchor(TOPRIGHT, btn, TOPRIGHT, -2, 2)
+                badge:SetAnchor(TOPRIGHT, btn, TOPRIGHT, 0, 0)
+                if unread >= 10 then
+                    badge:SetDimensions(22, 18)
+                else
+                    badge:SetDimensions(18, 18)
+                end
             elseif isWhisperTab then
                 badge:SetAnchor(RIGHT, btn, RIGHT, -26, 0)
+                if unread >= 10 then
+                    badge:SetDimensions(22, 18)
+                else
+                    badge:SetDimensions(18, 18)
+                end
             else
-                badge:SetAnchor(RIGHT, btn, RIGHT, -4, 0)
+                badge:SetAnchor(RIGHT, btn, RIGHT, -6, 0)
+                if unread >= 10 then
+                    badge:SetDimensions(22, 18)
+                else
+                    badge:SetDimensions(18, 18)
+                end
             end
+
+            badge:SetCenterColor(0.72, 0.08, 0.08, 1.0)
+            badge:SetEdgeColor(0.90, 0.72, 0.35, 1.0)
 
             local count = badge:GetNamedChild('Count')
             if unread > 0 then
                 badge:SetHidden(false)
-                if count then count:SetText(tostring(unread)) end
+                if count then
+                    count:ClearAnchors()
+                    count:SetAnchorFill()
+                    count:SetText(unread > 99 and "99+" or tostring(unread))
+                    count:SetFont("ZoFontGameSmall")
+                    count:SetColor(1, 1, 1, 1)
+                end
             else
                 badge:SetHidden(true)
             end
@@ -1746,6 +1820,16 @@ function Messenger.RefreshChannelList()
 
         -- Clean Tooltip on hover
         btn:SetHandler('OnMouseEnter', function(self)
+            if isCollapsed and item.id ~= activeChannelKey then
+                local bg = self:GetNamedChild('BG')
+                if bg then
+                    bg:SetCenterColor(0.16, 0.16, 0.16, 0.95)
+                    bg:SetEdgeColor((theme and theme.accentR) or 0.85, (theme and theme.accentG) or 0.69, (theme and theme.accentB) or 0.22, 0.85)
+                end
+                local ic = self:GetNamedChild('Icon')
+                if ic then ic:SetColor(1, 1, 1, 1) end
+            end
+
             InitializeTooltip(InformationTooltip, self, RIGHT, 8, 0)
             InformationTooltip:AddLine("|cE5B558" .. item.name .. "|r", "ZoFontGameBold", 1, 1, 1, TOPLEFT, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_LEFT)
             if item.isGuildChild then
@@ -1756,6 +1840,15 @@ function Messenger.RefreshChannelList()
             end
         end)
         btn:SetHandler('OnMouseExit', function(self)
+            if isCollapsed and item.id ~= activeChannelKey then
+                local bg = self:GetNamedChild('BG')
+                if bg then
+                    bg:SetCenterColor(0.10, 0.10, 0.10, 0.85)
+                    bg:SetEdgeColor(0.24, 0.24, 0.24, 0.8)
+                end
+                local ic = self:GetNamedChild('Icon')
+                if ic then ic:SetColor(0.85, 0.85, 0.85, 0.88) end
+            end
             ClearTooltip(InformationTooltip)
         end)
 

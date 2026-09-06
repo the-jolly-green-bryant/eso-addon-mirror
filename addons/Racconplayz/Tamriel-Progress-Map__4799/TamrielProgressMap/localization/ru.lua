@@ -1,6 +1,6 @@
-TamrielProgressMap_Localization = TamrielProgressMap_Localization or {}
-TamrielProgressMap_Localization["ru"] =
-{
+-- Tamriel Progress Map localization (RU)
+-- English ids are created first by localization/en.lua.
+local strings = {
     LANGUAGE_NAME = "Русский",
     SETTINGS_PANEL = "Tamriel Progress Map",
     SETTINGS_SECTION_LANGUAGE = "Язык",
@@ -13,7 +13,7 @@ TamrielProgressMap_Localization["ru"] =
     SETTINGS_SECTION_JOURNAL = "Журнал и история",
     SETTINGS_SECTION_ADVANCED = "Дополнительно",
     SETTINGS_LANGUAGE = "Язык",
-    SETTINGS_LANGUAGE_TT = "Выберите язык дополнения. Автоматически использует язык ESO.",
+    SETTINGS_LANGUAGE_TT = "TPM автоматически использует язык клиента ESO. Для экономии памяти загружается только активный язык.",
     SETTINGS_LANGUAGE_AUTO = "Автоматически (ESO)",
     SETTINGS_LANGUAGE_DE = "Немецкий",
     SETTINGS_LANGUAGE_EN = "Английский",
@@ -70,7 +70,7 @@ TamrielProgressMap_Localization["ru"] =
     SETTINGS_QUEST_RESET_TT = "Возвращает положение и размер окна наград по умолчанию.",
     SETTINGS_DEBUG = "Показывать отладочную информацию",
     SETTINGS_DEBUG_TT = "Показывает технические MapID, ZoneID и ProgressZoneID для диагностики.",
-    SETTINGS_RELOAD_NOTE = "Язык дополнения можно полностью переключать между немецким, английским, русским, французским и испанским. Изменения сразу применяются ко всем видимым элементам TPM. Поддерживаемые LibZone названия зон также следуют выбранному языку TPM.",
+    SETTINGS_RELOAD_NOTE = "Язык выбирается автоматически по клиенту ESO. Английский загружается как резервный, а активный язык клиента — динамически.",
     SETTINGS_STATISTICS_SCALE = "Масштаб окна статистики",
     SETTINGS_STATISTICS_SCALE_TT = "Масштабирует журнал Тамриэля от 80% до 120%.",
     SETTINGS_STATISTICS_RESET = "Сбросить окно статистики",
@@ -86,7 +86,7 @@ TamrielProgressMap_Localization["ru"] =
     SETTINGS_RESET_ECONOMY_TT = "Сбрасывает доходы/расходы и операции личного банка текущего персонажа. Балансы ESO не меняются.",
     SETTINGS_RESET_HISTORY = "Сбросить историю",
     SETTINGS_RESET_HISTORY_TT = "Удаляет ежедневную/сессионную историю и рубежи текущего персонажа и начинает отслеживание заново.",
-    SETTINGS_CHANGELOG = "v2.7.7_Beta: исправлена настройка цветов: «Прогресс и значения» теперь действительно использует собственный цветовой канал и работает также с Transparent TPM. Плавный RGB по-прежнему применяется только к заголовкам и акцентам.",
+    SETTINGS_CHANGELOG = "v2.7.1: очистка по рекомендациям ESOUI: динамическая загрузка языка, одна глобальная таблица TPM, SavedVariables по серверам и дополнительные фильтры боевых событий.",
     KEYBIND_TOGGLE_STATS = "Открыть / закрыть статистику Тамриэля",
 
     OVERALL_PROGRESS = "Общий прогресс: %d%%",
@@ -374,7 +374,7 @@ TamrielProgressMap_Localization["ru"] =
     HELP_TOGGLE = "/tpm toggle - включить/выключить отображение процентов",
     HELP_NAMES = "/tpm names - включить/выключить названия зон",
     HELP_REFRESH = "/tpm refresh - обновить и пересчитать отображение",
-    HELP_LANG = "/tpm lang auto|de|en|ru|fr|es - выбрать язык аддона",
+    HELP_LANG = "/tpm lang - показать/использовать автоматический язык клиента ESO",
     HELP_MODE = "/tpm mode objectives|categories - выбрать расчёт прогресса",
     HELP_COMPLETED = "/tpm completed - включить/выключить скрытие зон со 100%",
     HELP_FONT = "/tpm font <style> - выбрать шрифт процентов",
@@ -574,3 +574,19 @@ TamrielProgressMap_Localization["ru"] =
     STAT_ALLIANCE_ALPHA_TEST = "Альянсы-Альфа-Тест",
 
 }
+
+for key, value in pairs(strings) do
+    local stringId = _G["SI_TPM_" .. key]
+    if stringId then
+        SafeAddString(stringId, value, 2)
+    end
+end
+
+local bindingStrings = {
+    SI_KEYBINDINGS_CATEGORY_TAMRIEL_PROGRESS_MAP = "Tamriel Progress Map",
+    SI_BINDING_NAME_TPM_TOGGLE_STATISTICS = "Открыть / закрыть статистику Тамриэля",
+}
+for idName, value in pairs(bindingStrings) do
+    local stringId = _G[idName]
+    if stringId then SafeAddString(stringId, value, 2) end
+end

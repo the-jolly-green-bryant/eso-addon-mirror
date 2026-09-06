@@ -19,8 +19,6 @@ function CMA:DetermineItemAction(bag, slotIndex)
         return self.simpleMaterialDecisionMap[self.db.bankFurnishingMaterials]
     elseif itemType == ITEMTYPE_BAIT then
         return self.simpleMaterialDecisionMap[self.db.bankBait]
-    elseif itemType == ITEMTYPE_SCRIBING_INK then
-        return self.simpleMaterialDecisionMap[self.db.bankInk]
     elseif itemType == ITEMTYPE_RAW_MATERIAL then
         return self.simpleMaterialDecisionMap[self.db.bankRawMaterials]
     elseif (specializedItemType == SPECIALIZED_ITEMTYPE_RECIPE_PROVISIONING_STANDARD_FOOD) or (specializedItemType == SPECIALIZED_ITEMTYPE_RECIPE_PROVISIONING_STANDARD_DRINK) then
@@ -72,6 +70,62 @@ function CMA:DetermineItemAction(bag, slotIndex)
             local itemLink = GetItemLink(bag, slotIndex)
             local stackCountBackpack, stackCountBank, stackCountCraftBag, stackCountHouseBanks = GetItemLinkStacks(itemLink)
             return ((stackCountBank + stackCountCraftBag + stackCountHouseBanks) < self.db.bankMinimumNumberTraitMaterial) and "bank" or "junk"
+        end
+    elseif itemType == ITEMTYPE_ARMOR_TRAIT or itemType == ITEMTYPE_JEWELRY_TRAIT or itemType == ITEMTYPE_WEAPON_TRAIT then
+        if (
+            (self.db.bankTraitMaterials == "Ignore") or (self.db.bankTraitMaterials == "Sell") or 
+            ((self.db.bankTraitMaterials == "Bank") and (not self.db.limitTraitMaterialByCount))
+        ) then
+            return self.simpleMaterialDecisionMap[self.db.bankTraitMaterials]
+        else
+            local itemLink = GetItemLink(bag, slotIndex)
+            local stackCountBackpack, stackCountBank, stackCountCraftBag, stackCountHouseBanks = GetItemLinkStacks(itemLink)
+            return ((stackCountBank + stackCountCraftBag + stackCountHouseBanks) < self.db.bankMinimumNumberTraitMaterial) and "bank" or "junk"
+        end
+    elseif itemType == ITEMTYPE_SCRIBING_INK then
+        if not self.db.bankScribingMaterials then
+            return "ignore"
+        else 
+            return self.simpleMaterialDecisionMap[self.db.bankInk]
+        end
+    elseif itemType == ITEMTYPE_CRAFTED_ABILITY_SCRIPT then
+        local itemLink = GetItemLink(bag, slotIndex)
+        local isLinkBound = IsItemLinkBound(itemLink)
+        local linkBindType = GetItemLinkBindType(itemLink)
+        if (not self.db.bankScribingMaterials) then
+            return "ignore"
+        elseif (not isLinkBound) and (linkBindType ~= BIND_TYPE_ON_PICKUP) then
+            -- The item linked is unbound -> handle unbound script
+            return self.simpleMaterialDecisionMap[self.db.bankUnboundScripts]
+        elseif  (not self.db.bankUnknownScripts) then
+            -- item is not unbount and chosen not to handle unknown scripts
+            return "ignore"
+        else
+            local scriptId = GetItemLinkItemUseReferenceId(itemLink)
+            local names, count = self:GetCharactersWithoutKnowledge(scriptId)
+            if names == nil or count == nil then
+                -- no LibCharacterKnowledge available -> ignore
+                return "ignore"
+            else
+                -- got some value: print the script and missing persons
+                if count > 0 then
+                    local stackCountBackpack, stackCountBank, stackCountCraftBag, stackCountHouseBanks = GetItemLinkStacks(itemLink)
+                    local availableCopies = stackCountBank + stackCountHouseBanks
+                    if ((stackCountBank + stackCountHouseBanks) < count) then
+                        -- not known bei all and too few copies for all
+                        self:SendChatMessage(itemLink .. " learnable by " .. count .. " Characters: " .. names .. ".\nThere are " .. availableCopies .. " copies in the bank (" .. stackCountBank .. ") and house banks (" .. stackCountHouseBanks ..") -> banking it." )
+                        return "bank"
+                    else
+                        -- not known bei all but enough copies to learn with all
+                        self:SendChatMessage(itemLink .. " learnable by " .. count .. " Characters: " .. names .. ".\nHowever there are " .. availableCopies .. " copies in the bank (" .. stackCountBank .. ") and house banks (" .. stackCountHouseBanks ..") -> marking it as junk." )
+                        return "junk"
+                    end
+                else
+                    -- known by everyone
+                    self:SendChatMessage(itemLink .. " already learned by all characters.")
+                    return "junk"
+                end
+            end
         end
     end
 

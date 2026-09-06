@@ -24,7 +24,7 @@ Opening from Enter.
 Nothing is armed at install. `/pbchat` reports the running version and settings:
 
 ```
-PB’s ChatAssistant: 1.0.3 -- on, capture off, delay 100 ms
+PB’s ChatAssistant: 1.4.0 -- on, capture off, delay 100 ms
 ```
 
 ## How it works
@@ -53,6 +53,107 @@ opened a moment ago and re-cycling it would throw the message away; and it acts 
 re-arming only when the box closes, so it cannot loop.
 
 `/pbchat watch off` turns it off.
+
+## Channel keys
+
+With Enter armed, **left and right walk the channel** the next message will go to -- say, zone,
+party, guild -- announced as an alert. Pick the channel on the HUD, then press Enter and type;
+the choice survives the open, because the chat system only resets the channel when there is not
+one set already.
+
+Only while the chat box is **closed**, where the arrow keys have nothing else to do. Inside an
+open box they move the text cursor, and taking that for a channel switch would be a poor trade.
+
+**Not while the console's input screen is up**, which is where it would be most useful. Holding
+the catcher up for exactly that window was tried, and it is the one stretch where the catcher
+costs nothing real -- the player is typing into a system overlay with the game behind it, so
+paused gamepad buttons are no loss. The overlay keeps the keyboard to itself: with the hold
+confirmed in the log, not one arrow key arrived. Nothing reaches the game while that screen is up.
+
+The list is the channels available to you right now -- the same requirement test the chat system
+itself applies, so no cycling into party chat when you are not in a group -- ordered by their
+slash command, which is how the game's own channel dropdown is ordered.
+
+This costs the gamepad nothing extra: the arrows are read by the same catcher that reads Enter,
+which is only up while Enter is armed. `/pbchat channel off` turns it off.
+
+### Not from the gamepad at all, on PS5
+
+Every route was tried and the platform closes all of them.
+
+| Route | Result |
+| --- | --- |
+| Bind a controller button by hand | No Controls entry exists under Options on PS5 |
+| Bind one from the add-on | `BindKeyToAction` is refused as **private**, from every calling context |
+| Declare a default bind | `CreateDefaultActionBind` does nothing, from load or from file scope |
+| Read the D-pad via `DIRECTIONAL_INPUT` | Its reader is built out of the private `IsKeyDown`; throws once per frame |
+| Read a stick via `DIRECTIONAL_INPUT` | Not pursued after the D-pad; its reader is `GetGamepadOrKeyboardLeftStickX`, unmarked, so it may yet work |
+| Arrow keys while the input screen is up | The overlay keeps the keyboard; not one key arrives |
+
+`Bindings.xml` still declares **Next Chat Channel** and **Previous Chat Channel**. They register
+fine -- `/pbchat binds` finds them at 1/7/2 and 1/7/3 -- and simply have nowhere to be bound. They
+cost nothing, they are correct on PC, and a console update that adds a keybinding screen would
+make them work with no change here.
+
+L2 + L3, the combination originally wanted, could not have been used regardless: gamepad chords
+are a fixed list of twenty `KEY_GAMEPAD_BOTH_*` codes and no left-trigger-plus-left-stick code is
+among them.
+
+### Not from a bound button, on PS5
+
+The plan was a bound controller button: keyboard keys never reach the binding system on console,
+but gamepad buttons do, so a button would have walked the channel with nothing shown, nothing
+armed and no buttons paused. `Bindings.xml` declares **Next Chat Channel** and **Previous Chat
+Channel** for it, and they register -- `/pbchat binds` finds them at 1/7/2 and 1/7/3.
+
+**There is nowhere on PS5 to bind them by hand.** The console has no Controls entry under Options, so the
+keybinding screen the actions would appear in does not exist. Nor can the add-on bind them
+itself: `CreateDefaultActionBind` was tried from `EVENT_ADD_ON_LOADED` and again at file scope
+from a file loaded straight after `Bindings.xml`, and `/pbchat binds` reported "nothing bound"
+both times; `BindKeyToAction`, which would do it directly, is protected.
+
+**Nor from the add-on.** `BindKeyToAction` looked like the way in, because the documentation
+marks it *protected* rather than private, and protected calls are allowed from a callstack that
+traces back to player input. It is not:
+
+```
+Attempt to access a private function 'BindKeyToAction' from insecure code.
+The callstack became untrusted 2 stack frame(s) from the top.
+```
+
+The client calls it **private**, whatever the documentation says -- the same disagreement as
+`SetSetting`, which is unmarked and is also private. And the two frames that made the callstack
+untrusted are the add-on's own: that traceback came from a slash command and bottoms out in
+`ZO_GamepadTextChatTextEntryEditBox_Enter`, a real key press. The hardware event was there and
+changed nothing.
+
+Add-on Lua is insecure code by its nature. One frame of it taints the callstack, so no calling
+context escapes this -- not a timer, not an event, not a slash command, not `OnKeyDown`.
+
+So the actions register and stay out of reach on PS5. They are kept because they cost nothing and
+are correct on PC, and because a console update that adds the screen would make them work with no
+change here. They are kept because they cost nothing
+and are correct on PC, and because a console update that adds the screen would make them work
+with no change here.
+
+L2 + L3 was the combination originally wanted and could not have been used regardless. Gamepad
+chords are not key-plus-modifier the way keyboard ones are: they are a fixed list of twenty
+`KEY_GAMEPAD_BOTH_*` codes, and no left-trigger-plus-left-stick code is among them.
+
+### So: chat mode
+
+The arrow keys are the only route on PS5, and they need the catcher, which means arming. For a
+stretch of chatting, arm it and tell it to stay:
+
+```
+/pbchat enter          -- arm Enter and the arrow keys
+/pbchat autosafe off   -- keep them armed between messages
+                       -- now: arrows pick the channel, Enter opens the box, repeat
+/pbchat safe           -- done chatting; the controller buttons come back
+```
+
+The game's own channel switches also work from the keyboard once the box is open, with no arming
+and no add-on: type `/say`, `/zone`, `/party`, `/guild1` and so on ahead of the message.
 
 ## The wait
 
@@ -109,6 +210,18 @@ sticks survive because `DIRECTIONAL_INPUT` is a separate path.
 
 That second one is **not solved**. See Limitations.
 
+## Settings panel
+
+**Settings -> Add-Ons -> PB’s ChatAssistant** (LibHarvensAddonSettings) carries the wait, and
+nothing else. The menu entry carries the version, so which build is installed can be read without
+running anything.
+
+It is the only setting a player has reason to reach for, because the right value is a property of
+the machine rather than of the add-on, and getting it wrong is the one failure that looks like the
+add-on is broken rather than mistuned. Everything else is either on because it should be or is a
+diagnostic; a panel of switches that are already right is just somewhere to make a mistake. The
+slash commands still reach all of them.
+
 ## Commands
 
 | Command | Effect |
@@ -117,6 +230,7 @@ That second one is **not solved**. See Limitations.
 | `/pbchat delay <ms>` | The wait before opening, 0-5000, default 100 |
 | `/pbchat watch on\|off` | The focus watcher |
 | `/pbchat autosafe on\|off` | Drop the catcher once the input screen is up |
+| `/pbchat channel on\|off` | Left/right cycle the outgoing channel while armed |
 | `/pbchat open [s]` | Open the box after N seconds, no key catching involved |
 | `/pbchat enter` | Catcher on -- catches every Enter, costs the buttons, expires in 60 s |
 | `/pbchat safe` | Catcher off -- buttons back |
@@ -124,6 +238,7 @@ That second one is **not solved**. See Limitations.
 | `/pbchat probe [tier]` | 15 s: report what keys reach a tier, keyboard and gamepad apart |
 | `/pbchat trial [tier]` | 20 s with a live catcher, then off by itself |
 | `/pbchat capture off\|default\|high\|medium\|low` | Which tier catches Enter |
+| `/pbchat binds` | Report whether the bindable actions registered, and what is bound |
 | `/pbchat unstick` | Force the chat entry closed, giving the controller back |
 | `/pbchat on` / `off` | Master switch |
 
@@ -189,6 +304,10 @@ back.
 > `ESOUIDocumentation.txt` does not mark `SetSetting` private. The live client does. Where the
 > two disagree, the client wins.
 
+## Requirements
+
+- `LibHarvensAddonSettings` >= 20106, for the settings panel.
+
 ## Layout rules that matter on console
 
 - Folder name, manifest filename and `addon.name` must all match exactly (`PBsChatAssistant`).
@@ -202,11 +321,11 @@ back.
 Console builds go through **Bethesda.net**, not ESOUI -- use the ZOS Console AddOn Uploader. The
 name shown in the in-game browser comes from the uploader entry, not from `## Title`. To cut a
 version, edit these two adjacent lines in `PBsChatAssistant.addon`, and `VERSION` in `Main.lua`,
-which is what `/pbchat` reports:
+which is what `/pbchat` reports and what the settings panel lists the add-on by:
 
 ```
-## Title: PB’s ChatAssistant 1.0.3
-## Version: 1.0.3
+## Title: PB’s ChatAssistant 1.4.0
+## Version: 1.4.0
 ```
 
 ---

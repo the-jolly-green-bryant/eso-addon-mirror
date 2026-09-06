@@ -119,8 +119,8 @@ function S:Initialize()
             width = "half",
         },
         {
-            type = "checkbox", name = "Show BLOCK NOW warnings",
-            tooltip = "Shows a large warning when the Suite detects a likely incoming heavy/dangerous attack targeting you. The warning tells you to block; it never blocks automatically.",
+            type = "checkbox", name = "Show BLOCK reactions",
+            tooltip = "Routes likely incoming heavy/dangerous attacks into the same Boss Mechanics / Combat Reaction overlay. There is no separate BLOCK window; the Suite only tells you to block and never blocks automatically.",
             getFunc = function() return EPC.saved.rotationBlockWarningEnabled029161 ~= false end,
             setFunc = function(v) EPC.saved.rotationBlockWarningEnabled029161 = v == true if EPC.RotationAssistant then EPC.RotationAssistant:Refresh() end end,
             default = EPC.defaults.rotationBlockWarningEnabled029161,
@@ -153,6 +153,99 @@ function S:Initialize()
                 if EPC.Role then EPC.Role:SetMode(v) else EPC.saved.combatRoleMode = v EPC:RequestRefresh("role-mode") end
             end,
             default = EPC.defaults.combatRoleMode,
+        },
+        {
+            type = "header", name = "Boss Mechanics Coach",
+        },
+        {
+            type = "checkbox", name = "Enable Boss Mechanics Coach",
+            tooltip = "Endgame encounter coach for supported dungeons, trials, and arenas. Detects bosses and mechanics, gives role-aware live action/position callouts, learns recurring timing, and grades mechanic execution. Guidance only: it never moves, blocks, interrupts, dodges, or presses abilities for you.",
+            getFunc = function() return EPC.saved.bossMechanicsEnabled029198 ~= false end,
+            setFunc = function(v) EPC.saved.bossMechanicsEnabled029198 = v == true if EPC.BossMechanicsAssistant then EPC.BossMechanicsAssistant:Refresh() end end,
+            default = EPC.defaults.bossMechanicsEnabled029198,
+        },
+        {
+            type = "dropdown", name = "Boss Mechanics visibility",
+            tooltip = "Controls when the unified Boss Mechanics / Combat Reaction panel is allowed to stay visible. Mechanics / Reactions Only is the clean default and hides the panel between actionable callouts.",
+            choices = { "Mechanics / Reactions Only", "Boss Combat + Mechanics", "Any Combat + Mechanics", "Always" },
+            choicesValues = { "MECHANIC", "BOSS", "COMBAT", "ALWAYS" },
+            getFunc = function() return EPC.saved.bossMechanicsVisibility029204 or "MECHANIC" end,
+            setFunc = function(v)
+                EPC.saved.bossMechanicsVisibility029204 = v or "MECHANIC"
+                if EPC.BossMechanicsAssistant then EPC.BossMechanicsAssistant:Refresh() end
+            end,
+            default = EPC.defaults.bossMechanicsVisibility029204 or "MECHANIC",
+        },
+        {
+            type = "checkbox", name = "Show pre-pull boss briefing",
+            tooltip = "Optional. Shows a supported boss briefing before combat. Leave this OFF for a completely quiet overlay until an actual mechanic/reaction needs your attention.",
+            getFunc = function() return EPC.saved.bossMechanicsPrePull029204 == true end,
+            setFunc = function(v) EPC.saved.bossMechanicsPrePull029204 = v == true if EPC.BossMechanicsAssistant then EPC.BossMechanicsAssistant:Refresh() end end,
+            default = EPC.defaults.bossMechanicsPrePull029204 == true,
+        },
+        {
+            type = "checkbox", name = "Role-aware boss callouts",
+            tooltip = "Adds Tank, Healer, or DPS-specific mechanic instructions using your Combat role awareness selection.",
+            getFunc = function() return EPC.saved.bossMechanicsRoleAware029198 ~= false end,
+            setFunc = function(v) EPC.saved.bossMechanicsRoleAware029198 = v == true if EPC.BossMechanicsAssistant then EPC.BossMechanicsAssistant:Refresh() end end,
+            default = EPC.defaults.bossMechanicsRoleAware029198,
+        },
+        {
+            type = "checkbox", name = "Learn boss mechanics and timing",
+            tooltip = "Learns stable ability IDs and transition timing from your own pulls. This improves matching and lets the coach adapt predictions to repeated encounters without automating combat.",
+            getFunc = function() return EPC.saved.bossMechanicsLearningEnabled029198 ~= false end,
+            setFunc = function(v) EPC.saved.bossMechanicsLearningEnabled029198 = v == true end,
+            default = EPC.defaults.bossMechanicsLearningEnabled029198,
+        },
+        {
+            type = "checkbox", name = "Predict likely next mechanic",
+            tooltip = "Uses repeated-pull transition history and the boss health band to show a confidence-rated likely next mechanic and learned timing when enough samples exist.",
+            getFunc = function() return EPC.saved.bossMechanicsPredictionEnabled029198 ~= false end,
+            setFunc = function(v) EPC.saved.bossMechanicsPredictionEnabled029198 = v == true if EPC.BossMechanicsAssistant then EPC.BossMechanicsAssistant:Refresh() end end,
+            default = EPC.defaults.bossMechanicsPredictionEnabled029198,
+        },
+        {
+            type = "slider", name = "Boss Coach width", min = 420, max = 1000, step = 20,
+            tooltip = "Sets the Boss Mechanics / Combat Reaction panel width. You can also drag its edges/corners directly in HUD Layout Mode.",
+            getFunc = function() return math.floor(tonumber(EPC.saved.bossMechanicsWidth029203) or 640) end,
+            setFunc = function(v)
+                EPC.saved.bossMechanicsWidth029203 = v
+                if EPC.BossMechanicsAssistant and EPC.BossMechanicsAssistant.SetSize029203 then EPC.BossMechanicsAssistant:SetSize029203(v, EPC.saved.bossMechanicsHeight029203) end
+            end,
+            default = EPC.defaults.bossMechanicsWidth029203 or 640,
+        },
+        {
+            type = "slider", name = "Boss Coach height", min = 110, max = 300, step = 10,
+            tooltip = "Sets the Boss Mechanics / Combat Reaction panel height. Text and spacing reflow to the new size.",
+            getFunc = function() return math.floor(tonumber(EPC.saved.bossMechanicsHeight029203) or 154) end,
+            setFunc = function(v)
+                EPC.saved.bossMechanicsHeight029203 = v
+                if EPC.BossMechanicsAssistant and EPC.BossMechanicsAssistant.SetSize029203 then EPC.BossMechanicsAssistant:SetSize029203(EPC.saved.bossMechanicsWidth029203, v) end
+            end,
+            default = EPC.defaults.bossMechanicsHeight029203 or 154,
+        },
+        {
+            type = "slider", name = "Boss Coach overall scale", min = 70, max = 140, step = 5,
+            tooltip = "Scales the entire panel after its width/height are applied. For normal sizing, use HUD Layout drag-resize or the width/height controls above.",
+            getFunc = function() return math.floor((tonumber(EPC.saved.bossMechanicsScale029198) or 1.0) * 100) end,
+            setFunc = function(v) EPC.saved.bossMechanicsScale029198 = v / 100 if EPC.BossMechanicsAssistant then EPC.BossMechanicsAssistant:ApplyScale() end end,
+            default = math.floor((EPC.defaults.bossMechanicsScale029198 or 1.0) * 100),
+        },
+        {
+            type = "slider", name = "Boss Coach opacity", min = 50, max = 100, step = 5,
+            getFunc = function() return math.floor((tonumber(EPC.saved.bossMechanicsAlpha029198) or 0.97) * 100) end,
+            setFunc = function(v) EPC.saved.bossMechanicsAlpha029198 = v / 100 if EPC.BossMechanicsAssistant then EPC.BossMechanicsAssistant:ApplyScale() end end,
+            default = math.floor((EPC.defaults.bossMechanicsAlpha029198 or 0.97) * 100),
+        },
+        {
+            type = "button", name = "Reset Boss Mechanics Coach size", buttonText = "Reset Size",
+            func = function() if EPC.BossMechanicsAssistant and EPC.BossMechanicsAssistant.ResetSize029203 then EPC.BossMechanicsAssistant:ResetSize029203() EPC.BossMechanicsAssistant:Refresh() end end,
+            width = "half",
+        },
+        {
+            type = "button", name = "Reset Boss Mechanics Coach position", buttonText = "Reset Position",
+            func = function() if EPC.BossMechanicsAssistant then EPC.BossMechanicsAssistant:ResetPosition() EPC.BossMechanicsAssistant:Refresh() end end,
+            width = "half",
         },
         {
             type = "header", name = "Gameplay & Challenge Difficulty",
@@ -473,6 +566,154 @@ function S:Initialize()
             type = "button", name = "Clear saved combat reports",
             tooltip = "Clears the report history. This does not reset personal bests or the compact combat HUD.",
             func = function() if EPC.GameModeReport and EPC.GameModeReport.ClearHistory then EPC.GameModeReport:ClearHistory() end end,
+            width = "half",
+        },
+        {
+            type = "header", name = "Character Gear Screen",
+        },
+        {
+            type = "description",
+            title = "Enhanced desktop equipment view",
+            text = "Rebuilds ESO's native desktop Character / Equipment presentation around your real 3D character while keeping the real ESO equipment-slot buttons. The old center silhouette is removed. Gear information expands outward into the available side space, full item/set names get more room, and controller/mouse last-input navigation remains intact.",
+        },
+        {
+            type = "checkbox", name = "Enable Character Gear Screen",
+            getFunc = function() return EPC.saved.characterGearScreenEnabled029206 ~= false end,
+            setFunc = function(v)
+                EPC.saved.characterGearScreenEnabled029206 = v == true
+                if EPC.CharacterGearScreen then
+                    if v then EPC.CharacterGearScreen:RequestRefresh(10) else EPC.CharacterGearScreen:RestoreAll() end
+                end
+            end,
+            default = EPC.defaults.characterGearScreenEnabled029206,
+        },
+        {
+            type = "checkbox", name = "Enhance companion equipment screen",
+            getFunc = function() return EPC.saved.characterGearCompanion029206 ~= false end,
+            setFunc = function(v) EPC.saved.characterGearCompanion029206 = v == true if EPC.CharacterGearScreen then EPC.CharacterGearScreen:RequestRefresh(10) end end,
+            default = EPC.defaults.characterGearCompanion029206,
+            disabled = function() return EPC.saved.characterGearScreenEnabled029206 == false end,
+        },
+        {
+            type = "checkbox", name = "Adaptive safe-area layout",
+            tooltip = "Recommended. Fits the gear cluster into the free desktop area between the left UI/chat and the inventory panel instead of using ultrawide-only coordinates.",
+            getFunc = function() return EPC.saved.characterGearAdaptiveLayout029207 ~= false end,
+            setFunc = function(v) EPC.saved.characterGearAdaptiveLayout029207 = v == true if EPC.CharacterGearScreen then EPC.CharacterGearScreen:RequestRefresh(10) end end,
+            default = EPC.defaults.characterGearAdaptiveLayout029207,
+            disabled = function() return EPC.saved.characterGearScreenEnabled029206 == false end,
+        },
+        {
+            type = "dropdown", name = "Gear information density",
+            tooltip = "Compact is recommended at 1440p: item name + full set name/count. Detailed also shows equipment type. Labels expand outward away from the 3D character. Icons Only removes external text while keeping condition, charge, level and quality borders on the native slot buttons.",
+            choices = { "Compact (Recommended)", "Detailed", "Icons Only" },
+            choicesValues = { "compact", "detailed", "icons" },
+            getFunc = function() return EPC.saved.characterGearDensity029207 or "compact" end,
+            setFunc = function(v) EPC.saved.characterGearDensity029207 = v if EPC.CharacterGearScreen then EPC.CharacterGearScreen:RequestRefresh(10) end end,
+            default = EPC.defaults.characterGearDensity029207,
+            disabled = function() return EPC.saved.characterGearScreenEnabled029206 == false end,
+        },
+        {
+            type = "dropdown", name = "Character stats panel",
+            tooltip = "Auto hides ESO's full attribute list on standard-width screens where it would overlap the character, gear labels, or inventory. It remains available on wide/ultrawide layouts. Show and Hide override Auto.",
+            choices = { "Auto (Recommended)", "Always Show", "Always Hide" },
+            choicesValues = { "auto", "show", "hide" },
+            getFunc = function() return EPC.saved.characterGearStatsMode029207 or "auto" end,
+            setFunc = function(v) EPC.saved.characterGearStatsMode029207 = v if EPC.CharacterGearScreen then EPC.CharacterGearScreen:RequestRefresh(10) end end,
+            default = EPC.defaults.characterGearStatsMode029207,
+            disabled = function() return EPC.saved.characterGearScreenEnabled029206 == false end,
+        },
+        {
+            type = "slider", name = "Equipment slot size", min = 48, max = 108, step = 2,
+            tooltip = "Changes the native equipment buttons without replacing their click/controller behavior.",
+            getFunc = function() return tonumber(EPC.saved.characterGearSlotSize029206) or 96 end,
+            setFunc = function(v) EPC.saved.characterGearSlotSize029206 = tonumber(v) or 96 if EPC.CharacterGearScreen then EPC.CharacterGearScreen:RequestRefresh(10) end end,
+            default = EPC.defaults.characterGearSlotSize029206,
+            disabled = function() return EPC.saved.characterGearScreenEnabled029206 == false end,
+        },
+        {
+            type = "slider", name = "Gear detail font size", min = 11, max = 22, step = 1,
+            getFunc = function() return tonumber(EPC.saved.characterGearFontSize029206) or 20 end,
+            setFunc = function(v) EPC.saved.characterGearFontSize029206 = tonumber(v) or 20 if EPC.CharacterGearScreen then EPC.CharacterGearScreen:RequestRefresh(10) end end,
+            default = EPC.defaults.characterGearFontSize029206,
+            disabled = function() return EPC.saved.characterGearScreenEnabled029206 == false end,
+        },
+        {
+            type = "checkbox", name = "Show gear text",
+            getFunc = function() return EPC.saved.characterGearShowDetails029206 ~= false end,
+            setFunc = function(v) EPC.saved.characterGearShowDetails029206 = v == true if EPC.CharacterGearScreen then EPC.CharacterGearScreen:RequestRefresh(10) end end,
+            default = EPC.defaults.characterGearShowDetails029206,
+            disabled = function() return EPC.saved.characterGearScreenEnabled029206 == false end,
+        },
+        {
+            type = "checkbox", name = "Show set piece counts",
+            getFunc = function() return EPC.saved.characterGearShowSetCount029206 ~= false end,
+            setFunc = function(v) EPC.saved.characterGearShowSetCount029206 = v == true if EPC.CharacterGearScreen then EPC.CharacterGearScreen:RequestRefresh(10) end end,
+            default = EPC.defaults.characterGearShowSetCount029206,
+            disabled = function() return EPC.saved.characterGearScreenEnabled029206 == false end,
+        },
+        {
+            type = "checkbox", name = "Show quality-colored slot borders",
+            getFunc = function() return EPC.saved.characterGearShowQuality029206 ~= false end,
+            setFunc = function(v) EPC.saved.characterGearShowQuality029206 = v == true if EPC.CharacterGearScreen then EPC.CharacterGearScreen:RequestRefresh(10) end end,
+            default = EPC.defaults.characterGearShowQuality029206,
+            disabled = function() return EPC.saved.characterGearScreenEnabled029206 == false end,
+        },
+        {
+            type = "checkbox", name = "Show armor condition / weapon charge",
+            getFunc = function() return EPC.saved.characterGearShowCondition029206 ~= false end,
+            setFunc = function(v) EPC.saved.characterGearShowCondition029206 = v == true if EPC.CharacterGearScreen then EPC.CharacterGearScreen:RequestRefresh(10) end end,
+            default = EPC.defaults.characterGearShowCondition029206,
+            disabled = function() return EPC.saved.characterGearScreenEnabled029206 == false end,
+        },
+        {
+            type = "checkbox", name = "Show item level / Champion requirement",
+            getFunc = function() return EPC.saved.characterGearShowLevel029206 ~= false end,
+            setFunc = function(v) EPC.saved.characterGearShowLevel029206 = v == true if EPC.CharacterGearScreen then EPC.CharacterGearScreen:RequestRefresh(10) end end,
+            default = EPC.defaults.characterGearShowLevel029206,
+            disabled = function() return EPC.saved.characterGearScreenEnabled029206 == false end,
+        },
+        {
+            type = "slider", name = "Repair warning threshold", min = 1, max = 100, step = 1,
+            tooltip = "Condition at or below this value is treated as a warning and is emphasized on the affected equipment slot/condition text.",
+            getFunc = function() return tonumber(EPC.saved.characterGearRepairThreshold029206) or 25 end,
+            setFunc = function(v) EPC.saved.characterGearRepairThreshold029206 = tonumber(v) or 25 if EPC.CharacterGearScreen then EPC.CharacterGearScreen:RequestRefresh(10) end end,
+            default = EPC.defaults.characterGearRepairThreshold029206,
+            disabled = function() return EPC.saved.characterGearScreenEnabled029206 == false end,
+        },
+        {
+            type = "slider", name = "Weapon charge warning threshold", min = 1, max = 100, step = 1,
+            getFunc = function() return tonumber(EPC.saved.characterGearChargeThreshold029206) or 25 end,
+            setFunc = function(v) EPC.saved.characterGearChargeThreshold029206 = tonumber(v) or 25 if EPC.CharacterGearScreen then EPC.CharacterGearScreen:RequestRefresh(10) end end,
+            default = EPC.defaults.characterGearChargeThreshold029206,
+            disabled = function() return EPC.saved.characterGearScreenEnabled029206 == false end,
+        },
+        {
+            type = "slider", name = "Item level warning gap", min = 1, max = 10, step = 1,
+            tooltip = "Highlights equipment whose required level trails the character by this many levels.",
+            getFunc = function() return tonumber(EPC.saved.characterGearLevelWarning029206) or 5 end,
+            setFunc = function(v) EPC.saved.characterGearLevelWarning029206 = tonumber(v) or 5 if EPC.CharacterGearScreen then EPC.CharacterGearScreen:RequestRefresh(10) end end,
+            default = EPC.defaults.characterGearLevelWarning029206,
+            disabled = function() return EPC.saved.characterGearScreenEnabled029206 == false end,
+        },
+        {
+            type = "slider", name = "Main character size", min = 65, max = 180, step = 5,
+            tooltip = "Controls how large your real 3D player appears in the center. The old orange paper-doll silhouette is no longer used.",
+            getFunc = function() return math.floor((tonumber(EPC.saved.characterGearFigureScale029206) or 1.28) * 100 + 0.5) end,
+            setFunc = function(v) EPC.saved.characterGearFigureScale029206 = (tonumber(v) or 128) / 100 if EPC.CharacterGearScreen then EPC.CharacterGearScreen:RequestRefresh(10) end end,
+            default = math.floor((EPC.defaults.characterGearFigureScale029206 or 1.2) * 100),
+            disabled = function() return EPC.saved.characterGearScreenEnabled029206 == false end,
+        },
+        {
+            type = "slider", name = "Character camera distance", min = 100, max = 295, step = 5,
+            tooltip = "Advanced framing control for the real 3D character. Main Character Size is applied on top of this base distance. 300 is intentionally avoided because ESO treats it as a boundary value.",
+            getFunc = function() return math.floor((tonumber(EPC.saved.characterGearCameraDistance029206) or 2.0) * 100 + 0.5) end,
+            setFunc = function(v) EPC.saved.characterGearCameraDistance029206 = (tonumber(v) or 200) / 100 if EPC.CharacterGearScreen then EPC.CharacterGearScreen:ApplyCamera() end end,
+            default = math.floor((EPC.defaults.characterGearCameraDistance029206 or 2.0) * 100),
+            disabled = function() return EPC.saved.characterGearScreenEnabled029206 == false end,
+        },
+        {
+            type = "button", name = "Reset Character Gear Screen", buttonText = "Reset Gear Screen",
+            func = function() if EPC.CharacterGearScreen then EPC.CharacterGearScreen:ResetDefaults() end end,
             width = "half",
         },
         {
@@ -1772,7 +2013,7 @@ function S:Initialize()
         },
         {
             type = "checkbox", name = "Show active quest overlay",
-            tooltip = "Shows your focused/tracked quest and current incomplete objectives as a background-free movable/resizable text overlay. Long quest text wraps to the current width. It updates as objectives advance or you focus a different quest.",
+            tooltip = "Shows your focused/tracked quest and every current incomplete objective. The overlay automatically grows or shrinks to the quest content, tightens spacing for longer objective lists, and can widen slightly when needed so objectives stay readable without leaving a large empty box.",
             getFunc = function() return EPC.saved.showActiveQuestOverlay ~= false end,
             setFunc = function(v) EPC.saved.showActiveQuestOverlay = v == true if EPC.ActiveQuest then EPC.ActiveQuest:Refresh() end end,
             default = EPC.defaults.showActiveQuestOverlay,
@@ -1796,11 +2037,11 @@ function S:Initialize()
             default = EPC.defaults.activeQuestWidth or 420,
         },
         {
-            type = "slider", name = "Active quest height", min = 80, max = 520, step = 10,
-            tooltip = "Changes the Active Quest viewport height. Manual sizes are respected; smaller heights simply show less wrapped objective text.",
-            getFunc = function() return tonumber(EPC.saved.activeQuestHeight) or 160 end,
-            setFunc = function(v) EPC.saved.activeQuestHeight = v if EPC.ActiveQuest then EPC.ActiveQuest:SetSize(tonumber(EPC.saved.activeQuestWidth) or 420, v) end end,
-            default = EPC.defaults.activeQuestHeight or 160,
+            type = "slider", name = "Active quest maximum auto height", min = 220, max = 520, step = 10,
+            tooltip = "Sets the maximum height the Active/Main Quest overlay may use. The overlay grows only as much as needed to show the current objectives and shrinks automatically for shorter quests.",
+            getFunc = function() return tonumber(EPC.saved.activeQuestAutoMaxHeight337) or 520 end,
+            setFunc = function(v) EPC.saved.activeQuestAutoMaxHeight337 = v if EPC.ActiveQuest then EPC.ActiveQuest:Refresh() end end,
+            default = EPC.defaults.activeQuestAutoMaxHeight337 or 520,
         },
         {
             type = "button", name = "Reset active quest size", buttonText = "Reset Quest Size",
@@ -1811,7 +2052,7 @@ function S:Initialize()
         },
         {
             type = "checkbox", name = "Show Golden Pursuits overlay",
-            tooltip = "Shows the selected Golden Pursuit, its linked quest, and live progress. This is independent from Quest Tracker Source, so it can stay visible at the same time as the Active Quest overlay.",
+            tooltip = "Shows the selected Golden Pursuit, its linked quest, live progress, and every visible incomplete objective from that linked journal quest. The panel auto-fits its content and remains independent from Quest Tracker Source.",
             getFunc = function() return EPC.saved.showGoldenPursuitsOverlay ~= false end,
             setFunc = function(v) EPC.saved.showGoldenPursuitsOverlay = v == true if EPC.GoldenPursuits then EPC.GoldenPursuits:RefreshSelectedQuestPanel2504() end end,
             default = EPC.defaults.showGoldenPursuitsOverlay,
@@ -1835,11 +2076,11 @@ function S:Initialize()
             default = EPC.defaults.goldenPursuitsWidth or 420,
         },
         {
-            type = "slider", name = "Golden Pursuits height", min = 90, max = 420, step = 10,
-            tooltip = "Changes the Golden Pursuits viewport height. Compact sizes clip extra rows instead of forcing the overlay larger.",
-            getFunc = function() return tonumber(EPC.saved.goldenPursuitsHeight) or 136 end,
-            setFunc = function(v) EPC.saved.goldenPursuitsHeight = v if EPC.GoldenPursuits then EPC.GoldenPursuits:SetSize(tonumber(EPC.saved.goldenPursuitsWidth) or 420, v) end end,
-            default = EPC.defaults.goldenPursuitsHeight or 136,
+            type = "slider", name = "Golden Pursuits maximum auto height", min = 180, max = 420, step = 10,
+            tooltip = "Sets the maximum automatic height for the Golden Pursuits / linked quest overlay. It grows only when extra progress/objective rows need room and shrinks again automatically.",
+            getFunc = function() return tonumber(EPC.saved.goldenPursuitsAutoMaxHeight337) or 420 end,
+            setFunc = function(v) EPC.saved.goldenPursuitsAutoMaxHeight337 = v if EPC.GoldenPursuits then EPC.GoldenPursuits:RefreshSelectedQuestPanel2504() end end,
+            default = EPC.defaults.goldenPursuitsAutoMaxHeight337 or 420,
         },
         {
             type = "button", name = "Reset Golden Pursuits size", buttonText = "Reset Golden Size",
@@ -2041,21 +2282,31 @@ function S:Initialize()
         },
 
         {
-            type = "header", name = "Controller / Gamepad UI",
+            type = "header", name = "Desktop UI + Gamepad Controls",
         },
         {
             type = "checkbox", name = "Keep desktop UI while using controller",
-            tooltip = "Keeps ESO's normal keyboard/mouse desktop interface instead of switching the whole game to the console-style Gamepad UI. Controller movement, combat input, bindings, and Suite controller button glyphs remain available. Turn this off to restore ESO's native Gamepad UI. Because this intentionally changes what UI mode ESO's Lua interface sees, a gamepad-only addon may prefer the native mode.",
+            tooltip = "Keeps ESO's keyboard/desktop interface on screen while controller movement/combat remains handled by ESO. The Suite never changes Gamepad Mode or Keybind Display Mode. For controller icons, set ESO > Settings > Gameplay > Keybind Display Mode to Gamepad. Reload UI after changing this bridge so ESO never mixes keyboard and gamepad Settings controls in one scene.",
             getFunc = function() return EPC.saved.keepDesktopUIWithGamepad029197 == true end,
             setFunc = function(v)
                 EPC.saved.keepDesktopUIWithGamepad029197 = v == true
-                if EPC.ApplyDesktopGamepadUIBridge029197 then EPC:ApplyDesktopGamepadUIBridge029197(true) end
             end,
             default = EPC.defaults.keepDesktopUIWithGamepad029197,
+            requiresReload = true,
+        },
+        {
+            type = "checkbox", name = "Auto-switch menu control by last input",
+            tooltip = "Recommended. Keeps the desktop-looking UI, but when the controller is the most recent input the Suite adds controller focus/navigation to keyboard-style menus. D-pad/left stick moves, the primary controller button selects, and Back falls through to ESO. Moving/clicking the mouse immediately returns the same screen to normal cursor control. This does not switch to ESO's large Gamepad UI.",
+            getFunc = function() return EPC.saved.hybridDesktopGamepadNavigation029205 ~= false end,
+            setFunc = function(v)
+                EPC.saved.hybridDesktopGamepadNavigation029205 = v == true
+                if EPC.RefreshHybridDesktopNavigation029205 then EPC:RefreshHybridDesktopNavigation029205(true) end
+            end,
+            default = EPC.defaults.hybridDesktopGamepadNavigation029205,
         },
         {
             type = "description",
-            text = "This affects the in-game interface after addons load. Character select/login screens are controlled by ESO before addons are available.",
+            text = "This affects the in-game interface after addons load. Character select/login screens are controlled by ESO before addons are available. With auto-switch enabled, controller and mouse can hand the same desktop menu back and forth without changing ESO UI templates.",
         },
         {
             type = "header", name = "Ability Overlays",
@@ -2454,7 +2705,7 @@ function S:Initialize()
         {
             type = "description",
             title = "Custom message when you wayshrine somewhere new",
-            text = "Optional chat helper for wayshrine travel and/or brand-new wayshrine discoveries. The Suite prepares your own custom message in the selected channel. ESO does not allow addons to silently submit normal chat, so for Say/Zone/Group/Guild you still press Enter to send (or Escape to cancel). Local / Suite Chat prints only to you and needs no confirmation.",
+            text = "Optional chat helper for wayshrine travel and/or brand-new wayshrine discoveries. The Suite prepares your own custom message in the selected channel. ESO does not allow addons to silently submit normal chat, so for Say/Zone/Group/Guild you still press Enter to send (or Escape to cancel). Local / Suite Chat prints only to you and needs no confirmation. Want to repeat the message manually? Type /promo in chat at any time; it re-prepares your most recent Wayshrine Auto Message using your current template and selected channel.",
         },
         {
             type = "description",
@@ -2648,8 +2899,81 @@ function S:Initialize()
             default = EPC.defaults.miniMapMode,
         },
         {
+            type = "dropdown", name = "Mini map visual style",
+            tooltip = "Choose the live in-game minimap frame style.",
+            choices = { "Fantasy Round", "Fantasy Square" },
+            choicesValues = { "FANTASY_ROUND", "FANTASY_SQUARE" },
+            getFunc = function() return (EPC.MiniMap and EPC.MiniMap:GetVisualStyle()) or (EPC.saved.miniMapVisualStyle or "FANTASY_ROUND") end,
+            setFunc = function(v) EPC.saved.miniMapVisualStyle = v if EPC.MiniMap then EPC.MiniMap:ApplySizeAndStyle() EPC.MiniMap:Refresh(true) end end,
+            default = EPC.defaults.miniMapVisualStyle,
+        },
+        {
+            type = "dropdown", name = "Fantasy frame color",
+            tooltip = "Choose the color of the Fantasy Round or Fantasy Square frame. Automatic matches the current character's alliance. Manual choices let any character use Aldmeri gold/yellow, Daggerfall blue, or Ebonheart red regardless of alliance.",
+            choices = { "Automatic (Match Alliance)", "Aldmeri Gold / Yellow", "Daggerfall Blue", "Ebonheart Red" },
+            choicesValues = { "AUTO", "AD", "BLUE", "EP" },
+            getFunc = function()
+                if EPC.MiniMap and EPC.MiniMap.GetFrameColorChoice then
+                    return EPC.MiniMap:GetFrameColorChoice()
+                end
+                local choice = tostring(EPC.saved.miniMapFrameColorChoice or "")
+                if choice == "AUTO" or choice == "AD" or choice == "BLUE" or choice == "EP" then
+                    return choice
+                end
+                return EPC.saved.miniMapAllianceFrame == false and "BLUE" or "AUTO"
+            end,
+            setFunc = function(v)
+                v = tostring(v or "AUTO")
+                EPC.saved.miniMapFrameColorChoice = v
+                -- Keep the old boolean coherent for backward compatibility.
+                EPC.saved.miniMapAllianceFrame = (v == "AUTO")
+                if EPC.MiniMap then
+                    EPC.MiniMap:ApplySizeAndStyle()
+                    EPC.MiniMap:Refresh(true)
+                end
+            end,
+            default = "AUTO",
+        },
+        {
+            type = "slider", name = "Fantasy frame size", min = 100, max = 112, step = 1,
+            tooltip = "Enlarges only the Fantasy frame presentation and gives its North, East, South, and West plaques extra room so they are not clipped. The live-map zoom and your chosen icon size are kept separate.",
+            getFunc = function() return math.floor((tonumber(EPC.saved.miniMapFantasyFrameScale) or 1.08) * 100 + 0.5) end,
+            setFunc = function(v)
+                EPC.saved.miniMapFantasyFrameScale = (tonumber(v) or 108) / 100
+                if EPC.MiniMap then EPC.MiniMap:ApplySizeAndStyle() EPC.MiniMap:Refresh(true) end
+            end,
+            default = math.floor((EPC.defaults.miniMapFantasyFrameScale or 1.08) * 100 + 0.5),
+        },
+        {
+            type = "dropdown", name = "Mini map theme mode",
+            tooltip = "Manual keeps the exact visual style you picked. Auto by zone changes the minimap skin automatically whenever you move into a different zone or sub-zone.",
+            choices = { "Manual", "Auto by zone" },
+            choicesValues = { "MANUAL", "AUTO_ZONE" },
+            getFunc = function() return EPC.saved.miniMapThemeMode or "MANUAL" end,
+            setFunc = function(v) EPC.saved.miniMapThemeMode = v if EPC.MiniMap then EPC.MiniMap:ApplySizeAndStyle() EPC.MiniMap:Refresh(true) end end,
+            default = EPC.defaults.miniMapThemeMode,
+        },
+        {
+            type = "dropdown", name = "Zone-themed style family",
+            tooltip = "When Auto by zone is enabled, choose whether zones use the Fantasy Square frame, the Fantasy Round frame, or a mix of both.",
+            choices = { "Square", "Round", "Mixed" },
+            choicesValues = { "SQUARE", "ROUND", "MIXED" },
+            getFunc = function() return EPC.saved.miniMapZoneThemeFamily or "MIXED" end,
+            setFunc = function(v) EPC.saved.miniMapZoneThemeFamily = v if EPC.MiniMap then EPC.MiniMap:ApplySizeAndStyle() EPC.MiniMap:Refresh(true) end end,
+            default = EPC.defaults.miniMapZoneThemeFamily,
+        },
+        {
+            type = "dropdown", name = "Mini map player marker style",
+            tooltip = "Choose the player-arrow art used on the minimap.",
+            choices = { "Suite Arrow", "MiniMap Pointer", "MiniMap Arrow", "MiniMap Gold Arrow" },
+            choicesValues = { "SUITE", "MINIMAP", "MINIMAP_ARROW", "MINIMAP_GOLD_ARROW" },
+            getFunc = function() return EPC.saved.miniMapPlayerMarkerStyle or "MINIMAP_GOLD_ARROW" end,
+            setFunc = function(v) EPC.saved.miniMapPlayerMarkerStyle = v if EPC.MiniMap then EPC.MiniMap:ApplySizeAndStyle() EPC.MiniMap:UpdatePanAndPins(true) end end,
+            default = EPC.defaults.miniMapPlayerMarkerStyle,
+        },
+        {
             type = "checkbox", name = "Adaptive zoom",
-            tooltip = "Automatically zooms out while mounted and closer in combat, then returns to your base zoom without overwriting it.",
+            tooltip = "Automatically uses a closer navigation view in cities/local maps and dungeons, with smaller mounted/combat adjustments, then returns to your base zoom without overwriting it.",
             getFunc = function() return EPC.saved.miniMapAdaptiveZoom ~= false end,
             setFunc = function(v) EPC.saved.miniMapAdaptiveZoom = v == true if EPC.MiniMap then EPC.MiniMap:RebuildMap(true) end end,
             default = EPC.defaults.miniMapAdaptiveZoom,
@@ -2665,7 +2989,7 @@ function S:Initialize()
         },
         {
             type = "slider", name = "Mini map size", min = 180, max = 420, step = 10,
-            tooltip = "Physical minimap size in UI units.",
+            tooltip = "Base minimap size in UI units. Fantasy frames can be enlarged separately with Fantasy frame size so the compass plaques and ornament details stay readable.",
             getFunc = function() return tonumber(EPC.saved.miniMapSize) or 260 end,
             setFunc = function(v) EPC.saved.miniMapSize = math.floor(v) if EPC.MiniMap then EPC.MiniMap:ApplySizeAndStyle() EPC.MiniMap:Refresh(true) end end,
             default = EPC.defaults.miniMapSize,
@@ -2673,9 +2997,16 @@ function S:Initialize()
         {
             type = "slider", name = "Mini map zoom", min = 70, max = 200, step = 5,
             tooltip = "Higher values zoom closer to your character. You can also use /esosuite minimap zoom 1.25 or the mouse wheel while Mini Map Move Mode is active.",
-            getFunc = function() return math.floor((tonumber(EPC.saved.miniMapZoom) or 1.0) * 100) end,
+            getFunc = function() return math.floor((tonumber(EPC.saved.miniMapZoom) or 1.38) * 100) end,
             setFunc = function(v) EPC.saved.miniMapZoom = v / 100 if EPC.MiniMap then EPC.MiniMap:RebuildMap(true) EPC.MiniMap:Refresh(true) end end,
             default = math.floor((EPC.defaults.miniMapZoom or 1.0) * 100),
+        },
+        {
+            type = "slider", name = "Mini map icon size", min = 60, max = 160, step = 5,
+            tooltip = "Scales minimap markers only. 100% is the Suite default; full-map native icon dimensions are capped separately so city/service markers stay readable without covering the minimap.",
+            getFunc = function() return math.floor((tonumber(EPC.saved.miniMapIconScale) or 1.00) * 100 + 0.5) end,
+            setFunc = function(v) EPC.saved.miniMapIconScale = (tonumber(v) or 100) / 100 if EPC.MiniMap then EPC.MiniMap:UpdatePanAndPins(true) end end,
+            default = math.floor((EPC.defaults.miniMapIconScale or 1.00) * 100 + 0.5),
         },
         {
             type = "slider", name = "Mini map opacity", min = 35, max = 100, step = 1,
@@ -2784,6 +3115,22 @@ function S:Initialize()
             end,
         },
         {
+            type = "description",
+            text = "HUD Layout Mode includes two ESO-native communication overlays: the high-visibility Request / Invite Prompt used for group invites, trade requests and shared quests, plus ESO's native fading alert notification stack used for group invite results, wayshrine/location notices, duel/group/system messages. Both keep ESO's actual behavior while Suite controls position and scale.",
+        },
+        {
+            type = "button", name = "Test request / invite prompt", buttonText = "Test Prompt",
+            tooltip = "Shows a harmless 6.5-second preview at the saved request-prompt position. It does not send, accept, or decline anything.",
+            func = function() if EPC.PlayerRequestOverlay and EPC.PlayerRequestOverlay.TestPrompt then EPC.PlayerRequestOverlay:TestPrompt() end end,
+            width = "half",
+        },
+        {
+            type = "button", name = "Test native alert notification", buttonText = "Test Notification",
+            tooltip = "Sends one harmless local ESO alert through the same native fading alert stack used by group invite results and wayshrine/location notices so you can verify its position and scale.",
+            func = function() if EPC.NativeNotificationOverlay and EPC.NativeNotificationOverlay.TestNotification then EPC.NativeNotificationOverlay:TestNotification() end end,
+            width = "half",
+        },
+        {
             type = "button", name = "HUD layout mode", buttonText = "Move Frames",
             tooltip = "Closes Suite Settings, releases the mouse, and shows every movable HUD overlay. A small HUD Layout bar appears with Save & Exit and Reset Layout, so Settings never blocks the overlays while you position them.",
             func = function() if EPC.SetUnitFramesMoveMode then EPC:SetUnitFramesMoveMode(true) end end,
@@ -2803,7 +3150,7 @@ function S:Initialize()
         },
         {
             type = "button", name = "Reset HUD frame positions", buttonText = "Reset Frames",
-            tooltip = "Restores default positions for Player, Target, Group, Raid, Live Combat Stats, Mini Map, Stable, Clock, Active Quest, Alliance Rank, Repair Estimate, Use Synergy, Rotation Assistant, Antiquity Augur Guide, Antiquity Tile Selector, and every Ability icon.",
+            tooltip = "Restores default positions for Player, Target, Group, Raid, Live Combat Stats, Mini Map, Stable, Clock, Active Quest, Alliance Rank, Repair Estimate, Use Synergy, Rotation Assistant, Antiquity Augur Guide, Antiquity Tile Selector, every Ability icon, and the ESO Request / Invite Prompt plus ESO Top-Right Notifications.",
             func = function() if EPC.ResetUnitFramePositions then EPC:ResetUnitFramePositions() end end,
         },
         {
@@ -3015,16 +3362,80 @@ function S:Initialize()
             disabled = function() return not EPC.BugCatcher end, width = "full",
         },
         {
-            type = "header", name = "Recipe & Style Learner (Turbo Mode)",
+            type = "header", name = "Loadout Saver",
         },
         {
             type = "description",
-            title = "One-click learning from Inventory and Bank",
-            text = "Shows a floating book while Inventory or Bank is open. Position it through Suite HUD Layout Mode (it is also draggable while Inventory/Bank is open). Click once to rapidly learn unknown recipes, furnishing plans/blueprints, motifs, and style pages. ESO protected item-use calls are used out of combat; Bank items are moved one at a time into an empty backpack slot before they are learned.",
+            title = "Wardrobe-style setup manager",
+            text = "Save gear, both skill bars, Champion Points, attributes and buff food into 16 setups per page. Create multiple pages for trials/raiding groups, bind pages to zones, assign raid-entry or current-boss setups, check missing gear, transfer setup gear at an open Bank, drag/drop gear/food/skills, and import/export setup codes. Assign Open / Close Loadout Saver and optional prebuff hotkeys under Controls > Keybindings > General > ESO Adventurer Suite.",
         },
         {
-            type = "checkbox", name = "Enable floating Turbo Learner",
-            tooltip = "Shows the learner book while Inventory or Bank is open. Its saved position is controlled by Suite HUD Layout Mode or direct dragging.",
+            type = "button", name = "Open Loadout Saver", buttonText = "Open Loadout Saver",
+            tooltip = "Opens the exact same Loadout Saver UI used by its dedicated hotkey.",
+            func = function() if EPC.LoadoutManager and EPC.LoadoutManager.Show then EPC.LoadoutManager:Show() end end,
+            width = "full",
+        },
+        {
+            type = "checkbox", name = "Auto-equip raid setups",
+            tooltip = "When enabled, automatically selects the page bound to the current raid/trial zone and equips its raid-entry or current-boss setup. Disabled by default to avoid unexpected gear changes.",
+            getFunc = function() return EPC.saved.loadoutAutoEquipRaids029272 == true end,
+            setFunc = function(v) EPC.saved.loadoutAutoEquipRaids029272 = v == true if EPC.LoadoutManager then EPC.LoadoutManager:RefreshUI() end end,
+            default = EPC.defaults.loadoutAutoEquipRaids029272, width = "half",
+        },
+        {
+            type = "checkbox", name = "Use saved buff food",
+            tooltip = "Uses the saved food/drink when a setup is loaded, if that item is in the backpack.",
+            getFunc = function() return EPC.saved.loadoutEquipFood029272 ~= false end,
+            setFunc = function(v) EPC.saved.loadoutEquipFood029272 = v == true end,
+            default = EPC.defaults.loadoutEquipFood029272, width = "half",
+        },
+        {
+            type = "checkbox", name = "Inventory setup markers",
+            tooltip = "Marks Suite inventory-grid items that are referenced by any saved Loadout Saver setup.",
+            getFunc = function() return EPC.saved.loadoutInventoryMarkers029272 ~= false end,
+            setFunc = function(v) EPC.saved.loadoutInventoryMarkers029272 = v == true if EPC.LoadoutManager then EPC.LoadoutManager:RebuildGearIndex() end if EASInventoryGrid and EASInventoryGrid.Refresh then EASInventoryGrid:Refresh() end end,
+            default = EPC.defaults.loadoutInventoryMarkers029272, width = "half",
+        },
+        {
+            type = "checkbox", name = "Charge weapons on load",
+            tooltip = "Uses the Suite maintenance engine to charge equipped weapons after loading a setup. Disabled by default.",
+            getFunc = function() return EPC.saved.loadoutChargeWeapons029272 == true end,
+            setFunc = function(v) EPC.saved.loadoutChargeWeapons029272 = v == true end,
+            default = EPC.defaults.loadoutChargeWeapons029272, width = "half",
+        },
+        {
+            type = "checkbox", name = "Repair armor on load",
+            tooltip = "Uses the Suite maintenance engine to repair equipped armor after loading a setup. Disabled by default.",
+            getFunc = function() return EPC.saved.loadoutRepairArmor029272 == true end,
+            setFunc = function(v) EPC.saved.loadoutRepairArmor029272 = v == true end,
+            default = EPC.defaults.loadoutRepairArmor029272, width = "half",
+        },
+        {
+            type = "checkbox", name = "Refill saved poisons",
+            tooltip = "When a saved equipped poison stack is exhausted, attempts to equip the matching saved poison from the backpack. Disabled by default.",
+            getFunc = function() return EPC.saved.loadoutRefillPoisons029272 == true end,
+            setFunc = function(v) EPC.saved.loadoutRefillPoisons029272 = v == true end,
+            default = EPC.defaults.loadoutRefillPoisons029272, width = "half",
+        },
+        {
+            type = "header", name = "Crafting & Learning Tools",
+        },
+        {
+            type = "description",
+            title = "Top-menu icons + hotkeys",
+            text = "Potion Maker and Turbo Learner both have their own ESO top-menu icon and their own Open / Close hotkey. Assign them under Controls > Keybindings > General > ESO Adventurer Suite. The same assigned key closes the tool and returns you to gameplay while that tool has UI focus.",
+        },
+        {
+            type = "header", name = "Turbo Learner",
+        },
+        {
+            type = "description",
+            title = "Turbo Learner access",
+            text = "Open Turbo Learner from its top-menu icon, the button below, or the Open / Close Turbo Learner hotkey. It previews every unknown recipe, furnishing plan/blueprint, motif, and style page the Suite can learn. Nothing is consumed until you explicitly press LEARN ALL. ESO protected item-use calls are used out of combat; Bank items are included only while a Bank is actually open and can be moved one at a time into an empty backpack slot before learning.",
+        },
+        {
+            type = "checkbox", name = "Enable Turbo Learner",
+            tooltip = "Enables the Turbo Learner top-menu icon, hotkey, preview page, and LEARN ALL workflow.",
             getFunc = function() return EPC.saved.recipeStyleLearnerEnabled ~= false end,
             setFunc = function(v) EPC.saved.recipeStyleLearnerEnabled = v == true if EPC.RecipeStyleLearner then EPC.RecipeStyleLearner:RefreshVisibility() end end,
             default = EPC.defaults.recipeStyleLearnerEnabled,
@@ -3046,29 +3457,23 @@ function S:Initialize()
             width = "half",
         },
         {
-            type = "button", name = "Run Turbo Learner now", buttonText = "Learn Unknown Items",
-            tooltip = "Runs the same action as clicking the floating book. Inventory or Bank must be open.",
-            func = function() if EPC.RecipeStyleLearner then EPC.RecipeStyleLearner:StartTurbo() end end,
+            type = "button", name = "Open Turbo Learner", buttonText = "Open Turbo Learner",
+            tooltip = "Opens the same Turbo Learner page as the top-menu icon so you can review the learnable list before pressing LEARN ALL.",
+            func = function() if EPC.RecipeStyleLearner and EPC.RecipeStyleLearner.OpenMainMenuPage then EPC.RecipeStyleLearner:OpenMainMenuPage() end end,
             disabled = function() return not EPC.RecipeStyleLearner or EPC.saved.recipeStyleLearnerEnabled == false end,
-            width = "half",
+            width = "full",
         },
         {
-            type = "button", name = "Reset Turbo Learner position", buttonText = "Reset Book Position",
-            func = function() if EPC.RecipeStyleLearner then EPC.RecipeStyleLearner:ResetPosition() end end,
-            disabled = function() return not EPC.RecipeStyleLearner end,
-            width = "half",
-        },
-        {
-            type = "header", name = "Alchemy Potion & Poison Maker",
+            type = "header", name = "Potion & Poison Maker",
         },
         {
             type = "description",
-            title = "Floating Alchemy maker - just like the Learner",
-            text = "Shows a movable potion icon at an Alchemy Station. Position it through Suite HUD Layout Mode using one left-click-and-hold drag. Click it at the station to see everything your current materials can make, or choose exact effects and see the exact solvent/reagents you own or are missing. Clicking a READY mixture auto-slots the ingredients into ESO's Alchemy table. Optional Auto Craft can immediately craft 1, a chosen amount, or the maximum; it is OFF by default.",
+            title = "Potion Maker access",
+            text = "Open Potion Maker from its top-menu icon, the button below, or the Open / Close Potion Maker hotkey. It can be used anywhere as a recipe planner; loading or crafting ingredients still requires an active Alchemy Station. The optional station potion icon remains available while crafting and can be positioned through Suite HUD Layout Mode.",
         },
         {
-            type = "checkbox", name = "Enable floating Alchemy Maker",
-            tooltip = "Shows the floating Alchemy icon while using an Alchemy Station. The icon is also visible and movable during Suite HUD Layout Mode.",
+            type = "checkbox", name = "Enable Potion Maker",
+            tooltip = "Enables the Potion Maker top-menu icon, hotkey, recipe planner, and the optional station icon shown while using an Alchemy Station.",
             getFunc = function() return EPC.saved.alchemyPotionMakerEnabled ~= false end,
             setFunc = function(v) EPC.saved.alchemyPotionMakerEnabled = v == true if EPC.AlchemyPotionMaker then EPC.AlchemyPotionMaker:RefreshVisibility() end end,
             default = EPC.defaults.alchemyPotionMakerEnabled,
@@ -3143,9 +3548,9 @@ function S:Initialize()
             width = "half",
         },
         {
-            type = "button", name = "Open Alchemy Maker", buttonText = "Open Potion Maker",
-            tooltip = "Opens the same window as clicking the floating potion icon. You must currently be at an Alchemy Station.",
-            func = function() if EPC.AlchemyPotionMaker then EPC.AlchemyPotionMaker:OpenWindow() end end,
+            type = "button", name = "Open Potion Maker", buttonText = "Open Potion Maker",
+            tooltip = "Opens the same Potion Maker page as the top-menu icon and hotkey. Planning works anywhere; loading/crafting requires an Alchemy Station.",
+            func = function() if EPC.AlchemyPotionMaker and EPC.AlchemyPotionMaker.ToggleMainMenuPage then EPC.AlchemyPotionMaker:ToggleMainMenuPage() end end,
             disabled = function() return not EPC.AlchemyPotionMaker or EPC.saved.alchemyPotionMakerEnabled == false end,
             width = "half",
         },
@@ -3257,109 +3662,201 @@ function S:Initialize()
         },
     }
 
-    -- v0.27.24: Present the same settings in purpose-based groups.
-    -- This only changes organization; every existing getter/setter remains intact.
+    -- v0.29.298: Rebuilt the Settings menu around clear feature categories.
+    -- Existing getters, setters, defaults, and saved-variable keys are preserved;
+    -- this block only changes presentation and makes information text full-width.
     local categoryOrder = {
         "GENERAL",
         "CODEX",
         "COMBAT",
+        "BUILDS",
         "DIFFICULTY",
+        "ACTIVITIES",
         "HUD",
+        "QUESTS",
+        "ACTIONBARS",
         "FRAMES",
         "MAP",
-        "TELEPORTER",
+        "PINS",
+        "TRAVEL",
+        "GROUP",
         "GEAR",
-        "ACTIVITIES",
         "ANTIQUITIES",
+        "CRAFTING",
         "UTILITIES",
     }
 
     local categoryInfo = {
-        GENERAL = { name = "General & Getting Started", tooltip = "Core Suite enablement, compatibility information, and basic behavior." },
-        CODEX = { name = "Tamriel Codex & Window", tooltip = "Codex access, menu behavior, main Suite window appearance, and interaction controls." },
-        COMBAT = { name = "Combat, Role & Builds", tooltip = "Role awareness, combat presentation, endgame guidance, target builds, and combat history controls." },
-        DIFFICULTY = { name = "Gameplay & Difficulty", tooltip = "Automatic Challenge Difficulty, Leveling Journey, activity rules, zone overrides, and zone-entry difficulty behavior." },
-        HUD = { name = "HUD & Gameplay Overlays", tooltip = "Combat HUD, quest, rank, Champion, ability, clock, stable, repair, and reticle overlays." },
-        FRAMES = { name = "Unit Frames & HUD Layout", tooltip = "Player, target, group, raid, live-stat frames, scaling, backgrounds, and move/reset controls." },
-        MAP = { name = "Mini Map & Navigation", tooltip = "Mini Map visibility, layers, zoom, sizing, opacity, pins, and position controls." },
-        TELEPORTER = { name = "Map Teleporter", tooltip = "Teleporter enablement, Open with Map / Always visibility, HUD behavior, sorting, destination rows, and travel filtering." },
-        GEAR = { name = "Gear, Maintenance & Loot", tooltip = "Automatic repair/recharge and gear-related maintenance behavior." },
-        ACTIVITIES = { name = "Activities & Group Finder", tooltip = "Group Finder filtering, activity planning, and session goals." },
-        ANTIQUITIES = { name = "Antiquities & Lead Finder", tooltip = "Antiquity dig-site navigation, learned 3D shovel spawns, Augur/bonus-loot assistance, and the Lead Finder source browser." },
-        UTILITIES = { name = "Utilities & Inventory", tooltip = "Utility Command Center, inventory snapshots, research/collection alerts, and search tools." },
+        GENERAL = {
+            name = "General & Help",
+            tooltip = "Master Suite controls, compatibility status, and getting-started information.",
+            intro = "Start here for the Suite master switch, compatibility information, and basic help. Feature-specific options are kept in their own sections so this page stays easy to scan.",
+        },
+        CODEX = {
+            name = "Tamriel Codex & Main Window",
+            tooltip = "Codex access, main Suite window behavior, appearance, and interaction controls.",
+            intro = "Controls for opening and using the Tamriel Codex, plus the main Suite window's interaction, opacity, scale, and position behavior.",
+        },
+        COMBAT = {
+            name = "Combat Advisor & Boss Mechanics",
+            tooltip = "Smart Combat Advisor, role awareness, combat HUD, boss mechanics, reactions, reports, and combat visibility.",
+            intro = "Combat guidance lives here: next-skill recommendations, role awareness, block reactions, the combat HUD, boss-mechanic coaching, pre-encounter reminders, combat reports, and world combat feedback.",
+        },
+        BUILDS = {
+            name = "Builds & Loadouts",
+            tooltip = "MAX POWER, Target Build, endgame presets, Champion Point guidance, and saved loadouts.",
+            intro = "Use this section for build goals and setup management, including MAX POWER, target sets, endgame presets, Champion Point guidance, and saved loadouts.",
+        },
+        DIFFICULTY = {
+            name = "Gameplay & Difficulty",
+            tooltip = "Automatic Challenge Difficulty, Leveling Journey, world activity rules, and zone overrides.",
+            intro = "Controls ESO's native Challenge Difficulty behavior for overland content, activities, companions, and per-zone overrides.",
+        },
+        ACTIVITIES = {
+            name = "Activities & Group Finder",
+            tooltip = "Group Finder filters, Infinite Archive assistance, activity planning, and session goals.",
+            intro = "Settings for finding groups and planning activities, including listing filters, Infinite Archive guidance, activity goals, and timed or continuous play sessions.",
+        },
+        HUD = {
+            name = "General HUD & Utility Overlays",
+            tooltip = "Performance meter, stable timer, clock, custom reticle, and other general-purpose HUD utilities.",
+            intro = "General HUD tools that are not tied to a specific combat, quest, gear, or action-bar feature are kept here, including performance, stable, clock, and reticle controls.",
+        },
+        QUESTS = {
+            name = "Quest & Progress Overlays",
+            tooltip = "Quest tracking, active quest, Golden Pursuits, Alliance Rank, and Level/Champion progress overlays.",
+            intro = "Everything related to quest and progression information on the HUD is grouped here, with visibility, sizing, and reset controls kept beside each overlay.",
+        },
+        ACTIONBARS = {
+            name = "Action Bars, Abilities & Quickslots",
+            tooltip = "Dual Action Bar, ability overlays, quickslot display, controller glyphs, and desktop/gamepad UI behavior.",
+            intro = "Controls for combat buttons and input presentation: Dual Action Bar, ability overlays, quickslots, hotkey/controller glyphs, and desktop UI behavior while using a controller.",
+        },
+        FRAMES = {
+            name = "Unit Frames & HUD Layout",
+            tooltip = "Player, target, group, raid, live-stat frames, HUD Layout Mode, sizing, backgrounds, and reset controls.",
+            intro = "Player, target, group, raid, and live-stat frame settings are kept together here, along with HUD Layout Mode and shared frame sizing/background controls.",
+        },
+        MAP = {
+            name = "Mini Map",
+            tooltip = "Mini Map visibility, style, adaptive zoom, size, opacity, icon layers, and position controls.",
+            intro = "All Mini Map display and behavior settings are together here: style, adaptive zoom, icon size, opacity, map layers, movement guidance, and HUD position controls.",
+        },
+        PINS = {
+            name = "Pins, Resources & Collectibles",
+            tooltip = "Resource pins, lore books, treasure/survey markers, chest markers, Farm Focus, and marker appearance.",
+            intro = "Location-marker features are grouped here, including resource gathering, Farm Focus, lore books, treasure/survey locations, and dungeon/trial chest or Heavy Sack guidance.",
+        },
+        TRAVEL = {
+            name = "Travel & Teleporter",
+            tooltip = "World Map Teleporter, wayshrine behavior, travel filtering, sorting, and travel messages.",
+            intro = "Travel-specific controls, including the World Map Teleporter and optional wayshrine messages, are grouped here instead of being mixed into Mini Map or marker settings.",
+        },
+        GROUP = {
+            name = "Group, Team & Companion Visibility",
+            tooltip = "Team Visibility, companion glow, group glow defaults, and per-player group glow overrides.",
+            intro = "Controls that help you visually identify companions and group members, including default role colors and per-player glow overrides.",
+        },
+        GEAR = {
+            name = "Gear & Maintenance",
+            tooltip = "Character Gear Screen, equipment presentation, repair/recharge estimate, and automatic equipment maintenance.",
+            intro = "Equipment display and upkeep are grouped here: the Character Gear Screen, companion equipment view, repair/recharge estimates, condition thresholds, weapon charge, and automatic maintenance.",
+        },
+        ANTIQUITIES = {
+            name = "Antiquities & Lead Finder",
+            tooltip = "Dig-site navigation, shovel markers, Augur/bonus-loot assistance, learned dig locations, and Lead Finder.",
+            intro = "All Scrying and Excavation assistance is kept together here, including dig-site markers, learned exact spawns, Augur help, bonus-loot guidance, and the Lead Finder.",
+        },
+        CRAFTING = {
+            name = "Crafting & Learning",
+            tooltip = "Turbo Learner, Potion & Poison Maker, crafting access, material sources, and learning options.",
+            intro = "Crafting and knowledge tools live here, including Turbo Learner and the Potion & Poison Maker with their material and safety options.",
+        },
+        UTILITIES = {
+            name = "Utilities & Diagnostics",
+            tooltip = "Bug Catcher, inventory snapshots, loot/research alerts, search tools, and the Utility Command Center.",
+            intro = "Maintenance and diagnostic tools that do not belong to a gameplay feature are grouped here, including Bug Catcher, inventory snapshots, alerts, and inventory search.",
+        },
     }
 
+    -- Every feature header is assigned explicitly. This avoids the old behavior
+    -- where a section could inherit the category of whichever header happened
+    -- to appear before it in rawOptions.
     local headerCategory = {
+        ["Boss Mechanics Coach"] = "COMBAT",
+        ["Gameplay & Challenge Difficulty"] = "DIFFICULTY",
         ["Live Group Finder"] = "ACTIVITIES",
         ["Game Mode Combat Report"] = "COMBAT",
+        ["Character Gear Screen"] = "GEAR",
         ["Automatic Equipment Maintenance"] = "GEAR",
-        ["Repair / Recharge Estimate Overlay"] = "HUD",
-        ["World Combat Visibility"] = "COMBAT",
-        ["Dungeon / Trial Chest Finder"] = "HUD",
-        ["Resource 3D Pins"] = "HUD",
+        ["Repair / Recharge Estimate Overlay"] = "GEAR",
+        ["Suite FPS / Latency Overlay"] = "HUD",
+        ["Pre-Encounter Reminders"] = "COMBAT",
+        ["Lore Book Locations"] = "PINS",
+        ["Dungeon / Trial Chest Finder"] = "PINS",
         ["Antiquity Assistant"] = "ANTIQUITIES",
-        ["Team Visibility"] = "HUD",
+        ["Antiquity Lead Finder"] = "ANTIQUITIES",
+        ["Suite Resource Pins"] = "PINS",
+        ["Resource Pin Icon Replacer"] = "PINS",
+        ["Farm Focus"] = "PINS",
+        ["Normal Resource Pin Filters"] = "PINS",
+        ["Team Visibility"] = "GROUP",
+        ["Companion Glow"] = "GROUP",
+        ["Group Default Glow"] = "GROUP",
+        ["Per-Player Group Glow"] = "GROUP",
+        ["World Combat Visibility"] = "COMBAT",
         ["Persistent HUD & Unit Frames"] = "FRAMES",
-        ["Unit Frame Designs"] = "FRAMES",
         ["Stable Training Timer"] = "HUD",
         ["Clock"] = "HUD",
-        ["Quest Tracking"] = "HUD",
-        ["Active Quest Overlay"] = "HUD",
-        ["Golden Pursuits Overlay"] = "HUD",
-        ["Alliance Rank Overlay"] = "HUD",
-        ["Champion Level Overlay"] = "HUD",
-        ["Controller / Gamepad UI"] = "HUD",
-        ["Ability Overlays"] = "HUD",
-        ["Quickslot Overlay"] = "HUD",
-        ["Infinite Archive Overlay"] = "HUD",
+        ["Quest Tracking"] = "QUESTS",
+        ["Active Quest Overlay"] = "QUESTS",
+        ["Golden Pursuits Overlay"] = "QUESTS",
+        ["Alliance Rank Overlay"] = "QUESTS",
+        ["Character Level / Champion Progress Overlay"] = "QUESTS",
+        ["Dual Action Bar HUD"] = "ACTIONBARS",
+        ["Desktop UI + Gamepad Controls"] = "ACTIONBARS",
+        ["Ability Overlays"] = "ACTIONBARS",
+        ["Quickslot Overlay"] = "ACTIONBARS",
+        ["Infinite Archive Overlay"] = "ACTIVITIES",
         ["Custom ESO Reticle"] = "HUD",
         ["Tamriel Codex"] = "CODEX",
-        ["World Map Teleporter"] = "TELEPORTER",
-        ["Wayshrine Auto Message"] = "MAP",
-        ["Treasure & Survey Locator"] = "MAP",
+        ["Unit Frame Designs"] = "FRAMES",
+        ["World Map Teleporter"] = "TRAVEL",
+        ["Wayshrine Auto Message"] = "TRAVEL",
+        ["Treasure & Survey Locator"] = "PINS",
         ["Mini Map"] = "MAP",
-        ["Gameplay & Challenge Difficulty"] = "DIFFICULTY",
-        ["Target Build"] = "COMBAT",
-        ["MAX POWER Build / Champion Points"] = "COMBAT",
+        ["MAX POWER Build / Champion Points"] = "BUILDS",
+        ["Target Build"] = "BUILDS",
         ["Built-in Bug Catcher"] = "UTILITIES",
-        ["Recipe & Style Learner (Turbo Mode)"] = "UTILITIES",
-        ["Alchemy Potion & Poison Maker"] = "UTILITIES",
+        ["Loadout Saver"] = "BUILDS",
+        ["Crafting & Learning Tools"] = "CRAFTING",
+        ["Turbo Learner"] = "CRAFTING",
+        ["Potion & Poison Maker"] = "CRAFTING",
         ["Utility Command Center"] = "UTILITIES",
-        ["Antiquity Lead Finder"] = "ANTIQUITIES",
     }
 
+    -- A few controls intentionally sit inside a different raw header for layout
+    -- reasons. Route those controls to the feature category they actually affect.
     local nameCategory = {
+        ["Smart Combat Advisor"] = "COMBAT",
+        ["Smart Advisor specialization"] = "COMBAT",
+        ["Smart Advisor display"] = "COMBAT",
+        ["Test Action-Bar Highlight"] = "COMBAT",
+        ["Show BLOCK reactions"] = "COMBAT",
+        ["Block warning sensitivity"] = "COMBAT",
+        ["Learn dangerous attacks"] = "COMBAT",
         ["Combat role awareness"] = "COMBAT",
-        ["Show combat HUD"] = "HUD",
-        ["Combat HUD visibility"] = "HUD",
-        ["Move compact combat HUD"] = "HUD",
-        ["Lock combat HUD"] = "HUD",
-        ["Reset combat HUD position"] = "HUD",
-        ["Combat HUD scale"] = "HUD",
-        ["Combat HUD opacity"] = "HUD",
 
-        ["Enable Game Mode Combat Report"] = "COMBAT",
-        ["Enable Antiquity Lead Finder"] = "ANTIQUITIES",
-        ["Open Antiquity Lead Finder"] = "ANTIQUITIES",
-        ["Reset Lead Finder window"] = "ANTIQUITIES",
-        ["Report opacity"] = "COMBAT",
-        ["Reset report position and size"] = "COMBAT",
-        ["Clear saved combat reports"] = "COMBAT",
+        ["Show combat HUD"] = "COMBAT",
+        ["Combat HUD visibility"] = "COMBAT",
+        ["Move compact combat HUD"] = "COMBAT",
+        ["Lock combat HUD"] = "COMBAT",
+        ["Reset combat HUD position"] = "COMBAT",
+        ["Combat HUD scale"] = "COMBAT",
+        ["Combat HUD opacity"] = "COMBAT",
 
-        ["Replace ESO default unit frames"] = "FRAMES",
-        ["Replace ALL ESO unit frames"] = "FRAMES",
-        ["Unit frame design"] = "FRAMES",
-        ["Show player frame"] = "FRAMES",
-        ["Player frame visibility"] = "FRAMES",
-        ["Show target frame"] = "FRAMES",
-        ["Target frame visibility"] = "FRAMES",
-        ["Show group frame"] = "FRAMES",
-        ["Group frame visibility"] = "FRAMES",
-        ["Show raid frame"] = "FRAMES",
-        ["Raid frame visibility"] = "FRAMES",
-        ["Show live combat stat panel"] = "FRAMES",
-        ["Live Combat Stats visibility"] = "FRAMES",
         ["HUD layout mode"] = "FRAMES",
+        ["HUD layout exit"] = "FRAMES",
         ["Lock HUD frames"] = "FRAMES",
         ["Reset HUD frame positions"] = "FRAMES",
         ["Player frame size"] = "FRAMES",
@@ -3372,45 +3869,56 @@ function S:Initialize()
         ["Floating HUD opacity"] = "FRAMES",
         ["Target aura icons per type"] = "FRAMES",
 
-        ["Endgame suite focus"] = "COMBAT",
-        ["Endgame gear preset"] = "COMBAT",
-        ["MAX POWER content target"] = "COMBAT",
-        ["Intelligent Next Best Move"] = "COMBAT",
-        ["Clear last combat sample"] = "COMBAT",
-
-        ["Session planner mode"] = "ACTIVITIES",
-        ["Custom session length"] = "ACTIVITIES",
-        ["Activity planner goal"] = "ACTIVITIES",
-
         ["Auto-expand in interaction mode"] = "CODEX",
         ["Lock window"] = "CODEX",
         ["Show recommendation reasons"] = "CODEX",
         ["Window opacity"] = "CODEX",
         ["Window scale"] = "CODEX",
-        ["Show Golden Pursuits overlay"] = "HUD",
-        ["Golden Pursuits visibility"] = "HUD",
-        ["Reset Golden Pursuits position"] = "HUD",
-        ["Golden Pursuits width"] = "HUD",
-        ["Golden Pursuits height"] = "HUD",
-        ["Reset Golden Pursuits size"] = "HUD",
         ["Reset overlay position"] = "CODEX",
+
+        ["Endgame suite focus"] = "BUILDS",
+        ["Endgame gear preset"] = "BUILDS",
+        ["MAX POWER content target"] = "BUILDS",
+        ["Intelligent Next Best Move"] = "BUILDS",
+
+        ["Session planner mode"] = "ACTIVITIES",
+        ["Custom session length"] = "ACTIVITIES",
+        ["Activity planner goal"] = "ACTIVITIES",
+
+        ["Clear last combat sample"] = "COMBAT",
+    }
+
+    local descriptionCategory = {
+        ["Gameplay hotkeys"] = "CODEX",
+        ["Compatibility status"] = "GENERAL",
     }
 
     local grouped = {}
-    for _, key in ipairs(categoryOrder) do grouped[key] = {} end
+    for _, key in ipairs(categoryOrder) do
+        grouped[key] = {}
+    end
 
     local currentCategory = "GENERAL"
     for _, control in ipairs(rawOptions) do
+        -- Information/description controls should always use the full settings
+        -- width so LibAddonMenu can wrap the label instead of squeezing it into
+        -- a half-width column. This also fixes the Potion Maker safety note.
+        if control.type == "description" then
+            control.width = "full"
+        end
+
         local category = currentCategory
-        if control.type == "header" and headerCategory[control.name] then
-            category = headerCategory[control.name]
+        if control.type == "header" then
+            category = headerCategory[control.name] or currentCategory
             currentCategory = category
         elseif control.name and nameCategory[control.name] then
             category = nameCategory[control.name]
-        elseif control.type == "description" and control.title == "Tamriel Codex hotkey" then
-            category = "CODEX"
-        elseif control.name == "Open Tamriel Codex" or control.name == "Hide Suite HUD in menus / map" then
-            category = "CODEX"
+        elseif control.type == "description" and control.title and descriptionCategory[control.title] then
+            category = descriptionCategory[control.title]
+        end
+
+        if not grouped[category] then
+            category = "GENERAL"
         end
         grouped[category][#grouped[category] + 1] = control
     end
@@ -3418,8 +3926,9 @@ function S:Initialize()
     local organizedOptions = {
         {
             type = "description",
-            title = "Organized Settings",
-            text = "Settings are grouped by the part of ESO Adventurer Suite they control. Open only the section you want to change; all existing settings and defaults are preserved.",
+            title = "ESO Adventurer Suite Settings",
+            text = "Open the section for the feature you want to change. Every setting is grouped by purpose, and information text now uses the full menu width so longer explanations wrap cleanly and remain readable.",
+            width = "full",
         },
     }
 
@@ -3427,11 +3936,21 @@ function S:Initialize()
         local controls = grouped[key]
         if controls and #controls > 0 then
             local info = categoryInfo[key]
+            local submenuControls = {
+                {
+                    type = "description",
+                    text = info.intro,
+                    width = "full",
+                },
+            }
+            for _, control in ipairs(controls) do
+                submenuControls[#submenuControls + 1] = control
+            end
             organizedOptions[#organizedOptions + 1] = {
                 type = "submenu",
                 name = info.name,
                 tooltip = info.tooltip,
-                controls = controls,
+                controls = submenuControls,
             }
         end
     end

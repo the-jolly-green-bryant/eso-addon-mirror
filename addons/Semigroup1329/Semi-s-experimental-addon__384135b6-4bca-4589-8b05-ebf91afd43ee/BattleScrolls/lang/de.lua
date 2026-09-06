@@ -59,7 +59,7 @@ local strings = {
     [BATTLESCROLLS_STAT_TIME_LOST] = "Verlorene Zeit",
     [BATTLESCROLLS_STAT_LIGHT_ATTACKS] = "Leichte Angriffe",
     [BATTLESCROLLS_STAT_HEAVY_ATTACKS] = "Schwere Angriffe",
-    [BATTLESCROLLS_STAT_SKILL_ACTIVATIONS] = "Fertigkeiten",
+    [BATTLESCROLLS_STAT_SKILL_ACTIVATIONS] = "Gewirkte Fähigkeiten",
     [BATTLESCROLLS_STAT_CASTS] = "Gewirkt",
     [BATTLESCROLLS_STAT_WEAVING_ERRORS] = "Weaving-Fehler",
     [BATTLESCROLLS_STAT_MISSED_LA] = "Verpasste leichte Angriffe",
@@ -68,9 +68,9 @@ local strings = {
     [BATTLESCROLLS_TOOLTIP_DELAY_BEFORE] = "Verzögerung davor",
     [BATTLESCROLLS_FORMAT_SECONDS] = "<<1>>s",
     [BATTLESCROLLS_FORMAT_MILLISECONDS] = "<<1>>ms",
-    [BATTLESCROLLS_TOOLTIP_INTER_CAST_DESC] = "Durchschnittliche Verzögerung zwischen Fähigkeiten. Gemessen vom Ende der GCD oder Wirkzeit einer Fähigkeit bis zum Beginn der nächsten Aktion. In CMX auch als Weaving Average bekannt.",
-    [BATTLESCROLLS_TOOLTIP_TIME_LOST_DESC] = "Gesamte Leerlaufzeit zwischen Fähigkeiten im Kampf. In CMX auch als Weaving Total bekannt.",
-    [BATTLESCROLLS_TOOLTIP_MISSED_LA_DESC] = "Fähigkeit direkt nach einer anderen Fähigkeit gewirkt, ohne leichten Angriff dazwischen.",
+    [BATTLESCROLLS_TOOLTIP_INTER_CAST_DESC] = "Durchschnittliche Lücke zwischen zwei Einsätzen, gemessen vom Ende der globalen Abklingzeit oder Wirkzeit einer Fähigkeit bis zu deiner nächsten Aktion. In Combat Metrics heißt das Weaving Average.",
+    [BATTLESCROLLS_TOOLTIP_TIME_LOST_DESC] = "Alle Lücken zwischen den Einsätzen, über den ganzen Kampf zusammengezählt. In Combat Metrics heißt das Weaving Total.",
+    [BATTLESCROLLS_TOOLTIP_MISSED_LA_DESC] = "Fähigkeiten, die direkt nach einer anderen Fähigkeit gewirkt wurden, ohne leichten Angriff dazwischen.",
     [BATTLESCROLLS_TOOLTIP_DOUBLE_LA_DESC] = "Zwei leichte Angriffe hintereinander, ohne Fähigkeit dazwischen.",
 
     -------------------------
@@ -239,7 +239,6 @@ local strings = {
     -- Proc Tracking
     [BATTLESCROLLS_HEADER_PROC_TRACKING] = "Proc-Verfolgung",
     [BATTLESCROLLS_STAT_TOTAL_PROCS] = "<<1[$d Proc/$d Procs]>>",
-    [BATTLESCROLLS_STAT_MEDIAN_INTERVAL] = "Median",
 
     -------------------------
     -- Damage Stats Details
@@ -251,6 +250,8 @@ local strings = {
     [BATTLESCROLLS_STAT_DPS] = "DPS",
 
     [BATTLESCROLLS_HEADER_BY_ABILITY] = "Nach Fähigkeit",
+
+    [BATTLESCROLLS_HEADER_CASTS] = "Einsätze",
     [BATTLESCROLLS_HEADER_BY_DAMAGE_TYPE] = "Nach Schadenstyp",
     [BATTLESCROLLS_HEADER_DIRECT_VS_DOT] = "Direkt vs. DoT",
     [BATTLESCROLLS_HEADER_DAMAGE_DELIVERY] = "Schadensart",
@@ -967,6 +968,24 @@ local shareStrings = {
     [BATTLESCROLLS_MEMDIAG_GAUGE] = "Add-On-Speicher (Konsolenanzeige)",
     [BATTLESCROLLS_MEMDIAG_PROBE_STRINGS] = "Zeichenketten-Größenklassen messen",
     [BATTLESCROLLS_MEMDIAG_PROBE_HEADER] = "Länge: Anzeige / Heap / Modell (Bytes pro Zeichenkette)",
+    [BATTLESCROLLS_MEMDIAG_TEST_CANCELLED] = "Abgebrochen",
+    [BATTLESCROLLS_MEMDIAG_TEST_COMBAT] = "Kampf",
+    [BATTLESCROLLS_MEMDIAG_TEST_DONE] = "Fertig",
+    [BATTLESCROLLS_MEMDIAG_TEST_ERROR] = "Fehler",
+    [BATTLESCROLLS_MEMDIAG_TEST_GC_TIMEOUT] = "GC-Zeitlimit",
+    [BATTLESCROLLS_MEMDIAG_TEST_HEADER] = "MiB G=Anzeige H=Lua; vorher/belegt/frei",
+    [BATTLESCROLLS_MEMDIAG_TEST_HELD] = "Manuelle Testdaten zuerst in Einstellungen freigeben.",
+    [BATTLESCROLLS_MEMDIAG_TEST_IDLE] = "%s G%s>%s H%s>%s",
+    [BATTLESCROLLS_MEMDIAG_TEST_IDLE_END] = "Leerlauf B",
+    [BATTLESCROLLS_MEMDIAG_TEST_IDLE_START] = "Leerlauf A",
+    [BATTLESCROLLS_MEMDIAG_TEST_LIMIT] = "75-MiB-Limit",
+    [BATTLESCROLLS_MEMDIAG_TEST_NOT_RUNNING] = "Kein Speichertest läuft.",
+    [BATTLESCROLLS_MEMDIAG_TEST_NO_REPORT] = "Noch kein Speichertestbericht.",
+    [BATTLESCROLLS_MEMDIAG_TEST_ROW] = "%d G%s/%s/%s H%s/%s/%s",
+    [BATTLESCROLLS_MEMDIAG_TEST_RUNNING] = "Läuft",
+    [BATTLESCROLLS_MEMDIAG_TEST_STARTED] = "Speichertest läuft. Stillstehen und Menüs schließen.",
+    [BATTLESCROLLS_MEMDIAG_TEST_SUMMARY] = "%s %d/%d; max G %s; %ds",
+    [BATTLESCROLLS_MEMDIAG_TEST_USAGE] = "/bsmemtest [cancel|report]",
     [BATTLESCROLLS_SHARE_CHOICE_HEADER] = "Was senden?",
     [BATTLESCROLLS_SHARE_CHOICE_FULL] = "Alle Kämpfe (<<1>>)",
     [BATTLESCROLLS_SHARE_CHOICE_BOSSES] = "Nur Bosse (<<1>>)",
@@ -1016,7 +1035,11 @@ local featureStrings = {
     [BATTLESCROLLS_HEADER_ULTIMATE] = "Ultimative Fähigkeit",
     [BATTLESCROLLS_STAT_ULT_AT_ENTRY] = "Ultimative zu Kampfbeginn",
     [BATTLESCROLLS_STAT_ULT_GENERATED] = "Ultimative erzeugt",
-    [BATTLESCROLLS_STAT_ULT_DRAINED] = "Ultimative verbraucht & entzogen",
+    [BATTLESCROLLS_STAT_ULT_SPENT_DRAINED] = "Ultimative verbraucht & entzogen",
+    [BATTLESCROLLS_STAT_ULT_SPENT] = "Ultimative verbraucht",
+    [BATTLESCROLLS_STAT_ULT_LOST] = "Beim Einsatz verloren",
+    [BATTLESCROLLS_STAT_ULT_LOST_TT] = "Beim Einsatz einer Ultimativen wird der gesamte Vorrat verbraucht – alles über ihren Kosten geht verloren.",
+    [BATTLESCROLLS_STAT_ULT_DRAINED] = "Ultimative entzogen",
     [BATTLESCROLLS_HEADER_ULT_SOURCES] = "Ultimative-Erzeugung nach Quelle",
     [BATTLESCROLLS_ULT_BASE_GENERATION] = "Basiserzeugung",
     [BATTLESCROLLS_ULT_HEROISM_LINE] = "Enthält <<C:1>>: <<2>>% Aktivzeit, ca. <<3>>",
@@ -1024,20 +1047,19 @@ local featureStrings = {
 
     [BATTLESCROLLS_HEADER_CRUX] = "Crux",
     [BATTLESCROLLS_STAT_CRUX_GENERATORS] = "Erzeuger-Einsätze",
-    [BATTLESCROLLS_STAT_CRUX_AT_FULL] = "Erzeugt bei vollem Crux",
+    [BATTLESCROLLS_STAT_CRUX_AT_FULL] = "Bei vollem Crux eingesetzt",
     [BATTLESCROLLS_STAT_CRUX_SPENDERS] = "Verbraucher-Einsätze",
-    [BATTLESCROLLS_STAT_CRUX_UNDER] = "Verbraucht unter 3 Crux",
+    [BATTLESCROLLS_STAT_CRUX_UNDER] = "Unter 3 Crux eingesetzt",
     [BATTLESCROLLS_CRUX_AT_N] = "Bei <<1>> Crux: <<2>>",
-    [BATTLESCROLLS_HEADER_CRUX_BY_ABILITY] = "Crux-Disziplin nach Fähigkeit",
+    [BATTLESCROLLS_HEADER_CRUX_BY_ABILITY] = "Schlecht getimte Einsätze nach Fähigkeit",
 
     [BATTLESCROLLS_HEADER_ZEN] = "DoT-Stapel (Z'en)",
     [BATTLESCROLLS_ZEN_AVG_DOTS] = "Durchschnittliche DoTs",
-    [BATTLESCROLLS_ZEN_UPTIME] = "Z'en-Debuff-Aktivzeit",
+    [BATTLESCROLLS_ZEN_UPTIME] = "Deine Z'en-Aktivzeit",
     [BATTLESCROLLS_ZEN_PEAK_TIME] = "Zeit bei <<1>>",
     [BATTLESCROLLS_ZEN_DOTS_LABEL] = "<<1>> DoTs",
     [BATTLESCROLLS_ZEN_SHARE_LINE] = "Ø <<1>> — <<2>> mit 5 DoTs",
     [BATTLESCROLLS_ZEN_SHORT] = "Z'en",
-    [BATTLESCROLLS_ZEN_BOSS_SUMMARY] = "Ø <<1>> DoTs — Z'en <<2>>% — <<3>> <<4>>%",
 
     [BATTLESCROLLS_HEADER_SUPPORT] = "Unterstützung",
     [BATTLESCROLLS_STAT_RESURRECTIONS] = "Wiederbelebungen",
@@ -1047,13 +1069,31 @@ for id, str in pairs(featureStrings) do
 end
 
 local cruxPassiveStrings = {
-    [BATTLESCROLLS_STAT_CRUX_PASSIVE] = "Außerhalb von Einsätzen verbraucht",
-    [BATTLESCROLLS_STAT_CRUX_PASSIVE_TT] = "Crux, der ohne nahen Verbraucher-Einsatz verloren ging: natürliches Auslaufen (30 Sekunden) oder Tod.",
-    [BATTLESCROLLS_STAT_CRUX_CONDITIONAL_TT] = "Durch Auslösungen dieser Quelle erzeugter Crux (zeitlich den Stapelzuwächsen zugeordnet).",
+    [BATTLESCROLLS_STAT_CRUX_PASSIVE] = "Außerhalb von Einsätzen verloren",
+    [BATTLESCROLLS_STAT_CRUX_PASSIVE_TT] = "Crux, der von selbst verfallen ist, ohne Verbraucher-Einsatz und ohne Tod in der Nähe. Crux verfällt nach 30 Sekunden.",
+    [BATTLESCROLLS_STAT_CRUX_DEATH] = "Durch Tod verloren",
+    [BATTLESCROLLS_STAT_CRUX_PROC_WASTED] = "Passive Zuwächse bei vollem Crux",
+    [BATTLESCROLLS_STAT_CRUX_PROC_WASTED_TT] = "Passive Zuwächse, die ausgelöst wurden, während du schon 3 Crux hattest, und deshalb nichts gebracht haben. „<<1>>“ und seine Varianten sowie <<2>> geben nur Crux, wenn du keinen hast, und werden hier deshalb nie mitgezählt.",
+    [BATTLESCROLLS_STAT_CRUX_CONDITIONAL_TT] = "Crux, den diese Quelle passiv erzeugt hat, ohne Einsatz.",
     [BATTLESCROLLS_STAT_CRUX_OTHER] = "Sonstige Crux-Zuwächse",
-    [BATTLESCROLLS_STAT_CRUX_OTHER_TT] = "Crux-Zuwächse ohne erfassbare Quelle in der Nähe — etwa periodische Auslösungen von „<<1>>“.",
+    [BATTLESCROLLS_STAT_CRUX_OTHER_TT] = "Crux, der gewonnen wurde, ohne dass zu dem Zeitpunkt eine hier erfasste Quelle ausgelöst hat.",
     [BATTLESCROLLS_HEADER_CRUX_GAINED] = "Erhaltener Crux nach Fähigkeit",
 }
 for id, str in pairs(cruxPassiveStrings) do
+    SafeAddString(id, str, 1)
+end
+
+local activityOverviewStrings = {
+    [BATTLESCROLLS_STAT_DOWNTIME] = "Leerlauf",
+    [BATTLESCROLLS_TOOLTIP_DOWNTIME_DESC] = "Lücken von 3 Sekunden oder mehr zwischen zwei Einsätzen, etwa Mechaniken, Wiederbeleben oder Totsein. Zählt nicht zur Wirkverzögerung.",
+    [BATTLESCROLLS_STAT_PER_MINUTE] = "<<1>>/min",
+    [BATTLESCROLLS_DETAIL_MEDIAN] = "Median <<1>>",
+    [BATTLESCROLLS_DETAIL_DELAY] = "<<1>> Verzögerung",
+    [BATTLESCROLLS_DETAIL_AT_FULL] = "<<1>> bei voll",
+    [BATTLESCROLLS_DETAIL_LOST] = "<<1>> verloren",
+    [BATTLESCROLLS_DETAIL_AVG_DOTS] = "Ø <<1>> DoTs",
+    [BATTLESCROLLS_DETAIL_AT_DOTS] = "<<1>> bei <<2>>",
+}
+for id, str in pairs(activityOverviewStrings) do
     SafeAddString(id, str, 1)
 end

@@ -16,8 +16,113 @@ local GPS = LibGPS3
 local LMP = LibMapPins
 
 local EPC_SQUARE_FRAME_TEXTURE = EPC:AssetPath("Art/minimap_eso_square_frame.dds")
+local EPC_MINIMAP_STYLE_BASE = "Art/minimap_styles/"
+local EPC_MINIMAP_STYLE_FULL_BASE = "Art/minimap_styles_custom/"
+
+-- v0.29.306: Fantasy Round and Fantasy Square DDS files now use the selected ornate compass-frame artwork.
+-- Each 1024x1024 asset contains transparent center/outside areas and internal safety padding,
+-- so all N/E/S/W plaques stay fully inside the texture bounds, including the south point.
+local MINIMAP_STYLE_TEXTURES = {
+    FANTASY_SQUARE = EPC:AssetPath(EPC_MINIMAP_STYLE_FULL_BASE .. "fantasy_square_frame.dds"),
+    FANTASY_ROUND = EPC:AssetPath(EPC_MINIMAP_STYLE_FULL_BASE .. "fantasy_round_frame.dds"),
+    -- compatibility aliases
+    MODERN_SQUARE = EPC:AssetPath(EPC_MINIMAP_STYLE_FULL_BASE .. "fantasy_square_frame.dds"),
+    MINIMAP_SQUARE_DEFAULT = EPC:AssetPath(EPC_MINIMAP_STYLE_FULL_BASE .. "fantasy_square_frame.dds"),
+    MINIMAP_SQUARE_GOLD = EPC:AssetPath(EPC_MINIMAP_STYLE_FULL_BASE .. "fantasy_square_frame.dds"),
+    MINIMAP_SQUARE_BLACK = EPC:AssetPath(EPC_MINIMAP_STYLE_FULL_BASE .. "fantasy_square_frame.dds"),
+    MINIMAP_SQUARE_RED = EPC:AssetPath(EPC_MINIMAP_STYLE_FULL_BASE .. "fantasy_square_frame.dds"),
+    MINIMAP_ROUND_DEFAULT = EPC:AssetPath(EPC_MINIMAP_STYLE_FULL_BASE .. "fantasy_round_frame.dds"),
+    MINIMAP_ROUND_GOLD = EPC:AssetPath(EPC_MINIMAP_STYLE_FULL_BASE .. "fantasy_round_frame.dds"),
+    MINIMAP_ROUND_BLACK = EPC:AssetPath(EPC_MINIMAP_STYLE_FULL_BASE .. "fantasy_round_frame.dds"),
+    MINIMAP_ROUND_RED = EPC:AssetPath(EPC_MINIMAP_STYLE_FULL_BASE .. "fantasy_round_frame.dds"),
+}
+
+local MINIMAP_ALLIANCE_STYLE_TEXTURES = {
+    AD = {
+        FANTASY_SQUARE = EPC:AssetPath(EPC_MINIMAP_STYLE_FULL_BASE .. "fantasy_square_frame_ad.dds"),
+        FANTASY_ROUND = EPC:AssetPath(EPC_MINIMAP_STYLE_FULL_BASE .. "fantasy_round_frame_ad.dds"),
+    },
+    EP = {
+        FANTASY_SQUARE = EPC:AssetPath(EPC_MINIMAP_STYLE_FULL_BASE .. "fantasy_square_frame_ep.dds"),
+        FANTASY_ROUND = EPC:AssetPath(EPC_MINIMAP_STYLE_FULL_BASE .. "fantasy_round_frame_ep.dds"),
+    },
+    -- Daggerfall Covenant intentionally uses the original blue fantasy frame.
+}
+
+local MINIMAP_STYLE_MASK_TEXTURES = {
+    FANTASY_ROUND = EPC:AssetPath(EPC_MINIMAP_STYLE_FULL_BASE .. "fantasy_round_mask.dds"),
+    MINIMAP_ROUND_DEFAULT = EPC:AssetPath(EPC_MINIMAP_STYLE_FULL_BASE .. "fantasy_round_mask.dds"),
+    MINIMAP_ROUND_GOLD = EPC:AssetPath(EPC_MINIMAP_STYLE_FULL_BASE .. "fantasy_round_mask.dds"),
+    MINIMAP_ROUND_BLACK = EPC:AssetPath(EPC_MINIMAP_STYLE_FULL_BASE .. "fantasy_round_mask.dds"),
+    MINIMAP_ROUND_RED = EPC:AssetPath(EPC_MINIMAP_STYLE_FULL_BASE .. "fantasy_round_mask.dds"),
+}
+
+local PLAYER_MARKER_TEXTURES = {
+    SUITE = "EsoUI/Art/MapPins/UI-WorldMapPlayerPip.dds",
+    MINIMAP = EPC:AssetPath(EPC_MINIMAP_STYLE_BASE .. "PlayerPointer.dds"),
+    MINIMAP_ARROW = EPC:AssetPath(EPC_MINIMAP_STYLE_BASE .. "VixionPlayerPointer_arrow.dds"),
+    MINIMAP_GOLD_ARROW = EPC:AssetPath(EPC_MINIMAP_STYLE_BASE .. "VixionPlayerPointer_arrow_gold.dds"),
+}
+
+local PLAYER_GLOW_TEXTURES = {
+    SUITE = "EsoUI/Art/MapPins/UI-WorldMapPlayerPip.dds",
+    MINIMAP = EPC:AssetPath(EPC_MINIMAP_STYLE_BASE .. "VixionCameraPointer_glow.dds"),
+    MINIMAP_ARROW = EPC:AssetPath(EPC_MINIMAP_STYLE_BASE .. "VixionCameraPointer_glow.dds"),
+    MINIMAP_GOLD_ARROW = EPC:AssetPath(EPC_MINIMAP_STYLE_BASE .. "VixionCameraPointer_glow.dds"),
+}
+
+local ZONE_THEME_STYLE_SETS = {
+    SQUARE = { "FANTASY_SQUARE" },
+    ROUND = { "FANTASY_ROUND" },
+    MIXED = { "FANTASY_SQUARE", "FANTASY_ROUND" },
+}
 
 local wm = WINDOW_MANAGER
+
+-- v0.29.308 performance governor. The minimap still follows the player smoothly,
+-- but expensive native World Map/provider rebuilds must never run at frame-like
+-- cadence during ordinary gameplay. These values keep live navigation responsive
+-- while moving heavyweight pin work onto event/transition paths plus a slow safety pass.
+local MINIMAP_PULSE_MS = 240
+-- v0.29.313: the player pointer has its own very cheap update. Keeping this
+-- independent from POI/map-layer work makes the arrow feel smooth without
+-- forcing the rest of the minimap to run at 30 Hz.
+local MINIMAP_PLAYER_MARKER_MS = 16
+local MINIMAP_POSITION_SAMPLE_MS_029341 = 33
+local MINIMAP_CAMERA_PAN_MS_029318 = 33
+local POI_EVENT_DEBOUNCE_S = 0.65
+local POI_REFRESH_MIN_GAP_S = 1.50
+-- v0.29.314: dense settlements can expose hundreds of POI/native controls.
+-- Keep all source data, but bound the number of simultaneously rendered static
+-- controls so clipping/off-screen UI traversal cannot consume a large slice of
+-- the frame budget while the player is running.
+local POI_RENDER_HARD_CAP_029314 = 72
+local NATIVE_MIRROR_RENDER_CAP_029314 = 64
+local POI_REFRESH_STATIONARY_GRACE_S_029314 = 0.55
+local MAP_ID_WATCH_INTERVAL_S = 0.60
+local HIDDEN_SYNC_PULSE_MIN_GAP_S = 1.00
+local HIDDEN_PIN_PRIME_MOVING_MIN_GAP_S = 3.0
+local HIDDEN_PIN_PRIME_SAFETY_S = 10.0
+-- v0.29.315 roaming governor. Dense towns can contain far more static controls
+-- than are useful inside a small minimap viewport. While the player is moving,
+-- keep only the nearest/first visual budget active. All source data remains
+-- intact and the full stationary presentation is restored after movement stops.
+local ROAMING_POI_CAP_029315 = POI_RENDER_HARD_CAP_029314
+local ROAMING_NATIVE_CAP_029315 = NATIVE_MIRROR_RENDER_CAP_029314
+local ROAMING_MERCHANT_CAP_029315 = 48
+local ROAMING_SERVICE_CAP_029315 = 32
+-- v0.29.319: keep 0.29.318 camera cadence/smoothness, but drastically
+-- reduce the number of descendants attached to the moving static-pin canvas.
+-- Off-screen/excess controls are parked under a hidden non-moving layer; the
+-- source data remains loaded and controls are reattached as they approach.
+local ROAMING_VISIBLE_POI_CAP_029319 = 34
+local ROAMING_VISIBLE_NATIVE_CAP_029319 = 26
+local ROAMING_VISIBLE_SHRINE_CAP_029319 = 18
+local ROAMING_VISIBLE_MERCHANT_CAP_029319 = 18
+local ROAMING_STATIC_CULL_MS_029319 = 650
+local STATIONARY_STATIC_CULL_MS_029319 = 1200
+local ROAMING_MOTION_GRACE_MS_029315 = 220
+local MOTION_SMOOTH_TIME_S_029315 = 0.040
 
 local COLORS = {
     white = {0.96, 0.97, 0.99, 1},
@@ -159,6 +264,420 @@ local function clamp(value, low, high)
     if value < low then return low end
     if value > high then return high end
     return value
+end
+
+-- 0.29.281: minimap pins stay readable by default while the player arrow
+-- footprint is reduced. The minimap also actively keeps the hidden player map
+-- synced, similar to dedicated minimap addons, so opening the full map is not
+-- required just to populate nearby pins.
+function M:GetIconScale()
+    return clamp(EPC.saved and EPC.saved.miniMapIconScale or 1.00, 0.60, 1.60)
+end
+
+function M:GetScaledPinSize(size)
+    local base = tonumber(size) or 18
+    return math.floor(clamp((base * self:GetIconScale()) + 0.5, 5, 48))
+end
+function M:GetVisualStyle()
+    return self:NormalizeLegacyMiniMapStyle(EPC.saved and EPC.saved.miniMapVisualStyle or "FANTASY_ROUND")
+end
+
+function M:GetFrameColorChoice()
+    -- v0.29.301: allow the player to override alliance coloring manually.
+    -- Preserve the old v0.29.300 checkbox behavior for existing profiles that
+    -- have not used the new dropdown yet.
+    local saved = EPC.saved
+    if not saved then return "AUTO" end
+
+    local choice = tostring(saved.miniMapFrameColorChoice or "")
+    if choice == "AUTO" or choice == "BLUE" or choice == "AD" or choice == "EP" then
+        return choice
+    end
+
+    if saved.miniMapAllianceFrame == false then
+        return "BLUE"
+    end
+    return "AUTO"
+end
+
+function M:GetAllianceFrameKey()
+    local choice = self:GetFrameColorChoice()
+
+    -- Manual override choices. BLUE intentionally resolves to DC/base art.
+    if choice == "AD" then return "AD" end
+    if choice == "EP" then return "EP" end
+    if choice == "BLUE" then return "DC" end
+
+    -- AUTO follows the current character alliance.
+    if type(GetUnitAlliance) ~= "function" then return nil end
+
+    local alliance = tonumber(safe(GetUnitAlliance, 0, "player")) or 0
+    local isAD = (ALLIANCE_ALDMERI_DOMINION ~= nil and alliance == ALLIANCE_ALDMERI_DOMINION) or alliance == 1
+    local isEP = (ALLIANCE_EBONHEART_PACT ~= nil and alliance == ALLIANCE_EBONHEART_PACT) or alliance == 2
+    local isDC = (ALLIANCE_DAGGERFALL_COVENANT ~= nil and alliance == ALLIANCE_DAGGERFALL_COVENANT) or alliance == 3
+
+    if isAD then return "AD" end
+    if isEP then return "EP" end
+    if isDC then return "DC" end
+    return nil
+end
+
+function M:GetVisualStyleTexture(style)
+    local textures = MINIMAP_STYLE_TEXTURES or {}
+    local styleKey = tostring(style or self:GetVisualStyle())
+    local baseTexture = textures[styleKey]
+
+    -- v0.29.301: fantasy frame color can follow the current alliance or use a manual override.
+    -- AUTO follows alliance; manual Gold/Yellow, Blue, or Red choices override it.
+    -- This swaps only the decorative frame DDS;
+    -- the live map, crop mask, pins, and minimap zoom are untouched.
+    local allianceKey = self:GetAllianceFrameKey()
+    local allianceTextures = allianceKey and MINIMAP_ALLIANCE_STYLE_TEXTURES[allianceKey] or nil
+    return (allianceTextures and allianceTextures[styleKey]) or baseTexture
+end
+
+function M:GetVisualThemeMode()
+    return tostring(EPC.saved and EPC.saved.miniMapThemeMode or "MANUAL")
+end
+
+function M:GetZoneThemeFamily()
+    return tostring(EPC.saved and EPC.saved.miniMapZoneThemeFamily or "MIXED")
+end
+
+function M:GetZoneThemeSeed()
+    local seed = tonumber(self.mapId) or tonumber(self.zoneIndex) or 0
+    local name = tostring(self.mapName or "")
+    for i = 1, #name do
+        seed = (seed * 33 + string.byte(name, i)) % 2147483647
+    end
+    if type(IsInImperialCity) == "function" and safe(IsInImperialCity, false) == true then
+        seed = seed + 103
+    elseif type(IsInCyrodiil) == "function" and safe(IsInCyrodiil, false) == true then
+        seed = seed + 211
+    end
+    return math.abs(seed)
+end
+
+function M:GetZoneThemeStyle()
+    local family = string.upper(self:GetZoneThemeFamily())
+    local set = ZONE_THEME_STYLE_SETS[family] or ZONE_THEME_STYLE_SETS.MIXED
+    local count = #set
+    if count <= 0 then return self:GetVisualStyle() end
+    local index = (self:GetZoneThemeSeed() % count) + 1
+    return set[index] or self:GetVisualStyle()
+end
+
+function M:GetEffectiveVisualStyle()
+    if string.upper(self:GetVisualThemeMode()) == "AUTO_ZONE" then
+        return self:GetZoneThemeStyle()
+    end
+    return self:GetVisualStyle()
+end
+
+function M:NormalizeLegacyMiniMapStyle(style)
+    style = tostring(style or "")
+    if style == "" then return "FANTASY_ROUND" end
+    if string.find(style, "ROUND", 1, true) then return "FANTASY_ROUND" end
+    if string.find(style, "SQUARE", 1, true) or style == "MODERN_SQUARE" then return "FANTASY_SQUARE" end
+    return "FANTASY_ROUND"
+end
+
+function M:GetPlayerMarkerStyle()
+    return tostring(EPC.saved and EPC.saved.miniMapPlayerMarkerStyle or "MINIMAP_GOLD_ARROW")
+end
+
+function M:GetPlayerMarkerTexture(style)
+    style = tostring(style or self:GetPlayerMarkerStyle())
+    local textures = PLAYER_MARKER_TEXTURES or {}
+    return textures[style] or textures.SUITE or PLAYER_TEXTURE
+end
+
+function M:GetPlayerGlowTexture(style)
+    style = tostring(style or self:GetPlayerMarkerStyle())
+    local textures = PLAYER_GLOW_TEXTURES or {}
+    return textures[style] or textures.SUITE or PLAYER_TEXTURE
+end
+
+
+function M:GetPlayerPinSize()
+    local style = self:GetPlayerMarkerStyle()
+    if style == "SUITE" then return 18 end
+    return 16
+end
+
+function M:GetPlayerGlowSize()
+    local style = self:GetPlayerMarkerStyle()
+    if style == "SUITE" then return 24 end
+    return 20
+end
+
+local function nowSeconds()
+    if type(GetFrameTimeSeconds) == "function" then return tonumber(GetFrameTimeSeconds()) or 0 end
+    if type(GetGameTimeMilliseconds) == "function" then return (tonumber(GetGameTimeMilliseconds()) or 0) / 1000 end
+    return 0
+end
+
+function M:TrySyncHiddenPlayerMap(reason)
+    if self:IsWorldMapShowing() then return false end
+    if type(SetMapToPlayerLocation) ~= "function" then return false end
+    local now = nowSeconds()
+    -- SetMapToPlayerLocation can cascade through LibMapData/LibMapPins callbacks.
+    -- Never hammer it from the normal minimap pulse; transitions still get the
+    -- short retry window needed for city/interior map hand-offs.
+    local minGap = HIDDEN_SYNC_PULSE_MIN_GAP_S
+    if reason == "transition" then minGap = 0.08 end
+    if self.lastHiddenPlayerMapSyncAt and (now - self.lastHiddenPlayerMapSyncAt) < minGap then return false end
+    self.lastHiddenPlayerMapSyncAt = now
+
+    -- Do this even when DoesCurrentMapMatchMapForPlayerLocation() says true.
+    -- ESO can consider the surrounding zone map a valid player-location map
+    -- while LibMapData has already resolved a more specific city/sub-map. The
+    -- native World Map calls SetMapToPlayerLocation again when M is opened;
+    -- repeating that call in gameplay is what lets the hidden map advance to
+    -- the final local map without requiring the player to open the World Map.
+    local ok, result = pcall(SetMapToPlayerLocation)
+    if not ok then return false end
+    self.lastHiddenPlayerMapSyncResult = tonumber(result) or result
+
+    -- ESO normally fires OnWorldMapChanged immediately after
+    -- SetMapToPlayerLocation changes the map while the World Map is open.  The
+    -- minimap performs the same player-map sync while the scene is hidden, so
+    -- fire the same callback here.  LibMapData, LibMapPins and many pin addons
+    -- use this signal to switch/rebuild their current-area data.
+    local currentMapId = safeNumber(GetCurrentMapId, 0)
+    local mapChanged = SET_MAP_RESULT_MAP_CHANGED ~= nil and result == SET_MAP_RESULT_MAP_CHANGED
+    local firstSignalForMap = (reason == "transition") and currentMapId > 0
+        and tonumber(self.lastHiddenWorldMapCallbackMapId) ~= currentMapId
+    if (mapChanged or firstSignalForMap)
+        and CALLBACK_MANAGER and type(CALLBACK_MANAGER.FireCallbacks) == "function" then
+        self.lastHiddenWorldMapCallbackMapId = currentMapId
+        pcall(CALLBACK_MANAGER.FireCallbacks, CALLBACK_MANAGER, "OnWorldMapChanged")
+    end
+
+    return result ~= SET_MAP_RESULT_FAILED and result ~= 0
+end
+
+-- v0.29.296 - Keep ESO's hidden CURRENT MAP in the exact same coordinate
+-- space the minimap is rendering. This is the missing piece that made city,
+-- town, interior and other local-map icons appear only after pressing M.
+--
+-- LibMapData can correctly report the player's local map before ESO's global
+-- current-map state has switched away from the surrounding zone map. APIs such
+-- as GetPOIMapInfo(), GetFastTravelNodeInfo() and the native pin manager all
+-- use that global current-map state. The minimap therefore looked correct but
+-- queried pins for the wrong map until the native World Map opened and changed
+-- the global map context.
+--
+-- SetMapToMapId is used directly (not WORLD_MAP_MANAGER:SetMapById) so this
+-- background alignment is NOT marked as a user-chosen World Map. Opening M
+-- still behaves normally and recenters on the player.
+function M:EnsureHiddenMapContext(mapId, reason)
+    mapId = tonumber(mapId) or 0
+    if mapId <= 0 or self:IsWorldMapShowing() then return false end
+    if self.hiddenMapContextSyncInProgress == true then
+        return safeNumber(GetCurrentMapId, 0) == mapId
+    end
+
+    local currentMapId = safeNumber(GetCurrentMapId, 0)
+    if currentMapId == mapId then return true end
+    if type(SetMapToMapId) ~= "function" then return false end
+
+    self.hiddenMapContextSyncInProgress = true
+    local ok, result = pcall(SetMapToMapId, mapId)
+    local afterMapId = safeNumber(GetCurrentMapId, 0)
+    local changed = ok and afterMapId == mapId and afterMapId ~= currentMapId
+
+    -- Match the native World Map's map-change path while the scene remains
+    -- closed. Keeping the guard set during callbacks prevents the minimap's own
+    -- LibMapData callback from recursively starting another map switch, while
+    -- still allowing ESO/custom pin providers to rebuild for this exact map.
+    if changed and CALLBACK_MANAGER and type(CALLBACK_MANAGER.FireCallbacks) == "function" then
+        self.lastHiddenWorldMapCallbackMapId = afterMapId
+        pcall(CALLBACK_MANAGER.FireCallbacks, CALLBACK_MANAGER, "OnWorldMapChanged")
+    end
+    self.hiddenMapContextSyncInProgress = false
+
+    self.lastHiddenExactMapId = afterMapId
+    self.lastHiddenExactMapReason = reason
+    self.lastHiddenExactMapResult = tonumber(result) or result
+    return afterMapId == mapId
+end
+
+-- v0.29.295 - Keep ESO/LibMapPins pin state current while the World Map is CLOSED.
+-- SetMapToPlayerLocation updates the current player map, but it does not always
+-- cause ESO or custom pin providers to rebuild their pin manager. Opening the
+-- full World Map did that implicitly, which is why many icons only appeared
+-- after pressing M. Prime the hidden map at a controlled cadence instead.
+-- v0.29.297 - ESO's native World Map does not execute its OnUpdate loop while
+-- the scene is hidden. ZO_WorldMap_UpdateMap() queues several refresh groups
+-- (notably map-location/city labels and world-event data), but those queued
+-- groups are only consumed by the native World Map OnUpdate. That is why
+-- pressing M instantly made missing minimap icons appear even after we had
+-- already selected the correct hidden map and called the public refreshers.
+--
+-- Pump the EXISTING native OnUpdate handler without showing either World Map
+-- scene. This executes ESO's private refresh queue exactly as the visible map
+-- would. We then restore the minimap's exact local map if ESO's periodic player
+-- recenter changed it during the pump, and run one second pump to consume the
+-- refreshes queued for the restored map.
+function M:PumpHiddenNativeWorldMap(reason, force)
+    if self:IsWorldMapShowing() or self.hiddenNativeMapPumpInProgress == true then return false end
+
+    local control = ZO_WorldMap
+    if not control or type(control.GetHandler) ~= "function" then return false end
+    local okHandler, handler = pcall(control.GetHandler, control, "OnUpdate")
+    if not okHandler or type(handler) ~= "function" then return false end
+
+    local now = nowSeconds()
+    local minGap = force == true and 0.04 or 0.70
+    if self.lastHiddenNativeMapPumpAt and (now - self.lastHiddenNativeMapPumpAt) < minGap then
+        return false
+    end
+    self.lastHiddenNativeMapPumpAt = now
+
+    local targetMapId = tonumber(self.mapId) or 0
+    if targetMapId <= 0 and LMD then targetMapId = tonumber(LMD.mapId) or 0 end
+
+    self.hiddenNativeMapPumpInProgress = true
+    local ok = pcall(handler, control, now)
+
+    -- The native update periodically calls SetMapToPlayerLocation(). If that
+    -- resolves to a parent map while LibMapData/minimap is already on a city or
+    -- interior sub-map, put the hidden context back and flush that map's queue.
+    if targetMapId > 0 and safeNumber(GetCurrentMapId, 0) ~= targetMapId then
+        self:EnsureHiddenMapContext(targetMapId, "pump-restore:" .. tostring(reason or ""))
+        if safeNumber(GetCurrentMapId, 0) == targetMapId then
+            if type(ZO_WorldMap_UpdateMap) == "function" then
+                pcall(ZO_WorldMap_UpdateMap)
+            end
+            -- g_refreshUpdateTime was advanced by the first call, so this second
+            -- call normally flushes the restored map without another recenter.
+            pcall(handler, control, now + 0.001)
+        end
+    end
+
+    self.hiddenNativeMapPumpInProgress = false
+    return ok
+end
+
+function M:PrimeHiddenWorldMapPins(reason, force)
+    if self:IsWorldMapShowing() or self.hiddenPinPrimeInProgress == true then return false end
+
+    local primeNow029311 = nowSeconds()
+    if force == true and reason == "event" and self.lastForcedEventPrimeAt029311
+        and primeNow029311 - self.lastForcedEventPrimeAt029311 < 1.25 then
+        return false
+    end
+
+    local targetMapId = tonumber(self.mapId) or 0
+    if targetMapId <= 0 and LMD then targetMapId = tonumber(LMD.mapId) or 0 end
+
+    local now = nowSeconds()
+    local x, y = safe(GetMapPlayerPosition, nil, "player")
+    x, y = tonumber(x), tonumber(y)
+    local moved2 = 1
+    if x and y and self.lastHiddenPinPrimeX and self.lastHiddenPinPrimeY
+        and tonumber(self.lastHiddenPinPrimeMapId) == targetMapId then
+        local dx, dy = x - self.lastHiddenPinPrimeX, y - self.lastHiddenPinPrimeY
+        moved2 = (dx * dx) + (dy * dy)
+    end
+
+    -- Heavy native refreshers below rebuild ESO POIs, wayshrines, custom pin
+    -- providers and the native World Map refresh queue. Before 0.29.308 this
+    -- path could be entered every ~1 second while moving. Keep force=true for
+    -- actual map/pin events, but make ordinary movement a slow safety fallback.
+    if force ~= true and targetMapId > 0 and tonumber(self.lastHiddenPinPrimeMapId) == targetMapId then
+        local elapsed = now - (tonumber(self.lastHiddenPinPrimeAt) or 0)
+        if elapsed < HIDDEN_PIN_PRIME_MOVING_MIN_GAP_S then return false end
+        if elapsed < HIDDEN_PIN_PRIME_SAFETY_S and moved2 < 0.001600 then return false end
+    end
+
+    -- Only after the cheap throttle passes do we touch ESO's global hidden map.
+    self:TrySyncHiddenPlayerMap(reason == "transition" and "transition" or "pulse")
+    if targetMapId <= 0 then
+        targetMapId = tonumber(self.mapId) or 0
+        if targetMapId <= 0 and LMD then targetMapId = tonumber(LMD.mapId) or 0 end
+    end
+    if targetMapId > 0 then self:EnsureHiddenMapContext(targetMapId, reason) end
+
+    local matchesPlayer = type(DoesCurrentMapMatchMapForPlayerLocation) ~= "function"
+        or safe(DoesCurrentMapMatchMapForPlayerLocation, false) == true
+    if not matchesPlayer and targetMapId <= 0 then return false end
+
+    local currentMapId = safeNumber(GetCurrentMapId, 0)
+    if currentMapId <= 0 then return false end
+    if targetMapId > 0 and currentMapId ~= targetMapId then return false end
+
+    if force == true and reason == "event" then self.lastForcedEventPrimeAt029311 = primeNow029311 end
+    self.lastHiddenPinPrimeAt = now
+    self.lastHiddenPinPrimeMapId = currentMapId
+    if x and y then self.lastHiddenPinPrimeX, self.lastHiddenPinPrimeY = x, y end
+    self.hiddenPinPrimeInProgress = true
+
+    local refreshed = false
+
+    -- Rebuild the same native pin groups ESO refreshes for its World Map, but do
+    -- it while the scene remains hidden.  These functions operate on the shared
+    -- map pin manager and do not require the player to actually open the map.
+    local nativeRefreshers = {
+        "ZO_WorldMap_RefreshAllPOIs",
+        "ZO_WorldMap_RefreshObjectives",
+        "ZO_WorldMap_RefreshWayshrines",
+        "ZO_WorldMap_RefreshKeeps",
+        "ZO_WorldMap_RefreshForwardCamps",
+        "ZO_WorldMap_RefreshKillLocations",
+    }
+    for i = 1, #nativeRefreshers do
+        local fn = _G[nativeRefreshers[i]]
+        if type(fn) == "function" then
+            local ok = pcall(fn)
+            refreshed = ok or refreshed
+        end
+    end
+
+    -- This remains a compatibility safety pass because ESO's own UpdateMap()
+    -- also refreshes map-location/world-event managers that are not exposed as
+    -- individual public functions on every API revision.
+    if type(ZO_WorldMap_UpdateMap) == "function" then
+        local ok = pcall(ZO_WorldMap_UpdateMap)
+        refreshed = ok or refreshed
+    end
+
+    -- ZO_WorldMap_UpdateMap() queues private refresh groups; it does not execute
+    -- them. The native World Map normally consumes those queues from its hidden
+    -- local OnUpdate function. Pump that handler here so city/location pins are
+    -- actually built while M remains closed.
+    local pumped = self:PumpHiddenNativeWorldMap(reason, force)
+    refreshed = pumped or refreshed
+
+    -- IMPORTANT: refresh the actual ESO pin manager directly.  ESO's
+    -- ZO_WorldMap_UpdateMap() calls g_mapPinManager:RefreshCustomPins() with NO
+    -- pin type to rebuild every registered custom provider.  The previous Suite
+    -- path called LibMapPins:RefreshPins(nil), which does not reproduce that
+    -- world-map-open behavior for all providers and is why many icons still only
+    -- appeared after pressing M.
+    local pinManager = nil
+    if type(ZO_WorldMap_GetPinManager) == "function" then
+        local ok, manager = pcall(ZO_WorldMap_GetPinManager)
+        if ok then pinManager = manager end
+    end
+    if not pinManager and LMP then pinManager = LMP.pinManager end
+    if pinManager and type(pinManager.RefreshCustomPins) == "function" then
+        local ok = pcall(pinManager.RefreshCustomPins, pinManager)
+        refreshed = ok or refreshed
+    end
+    if pinManager and type(pinManager.UpdateMovingPins) == "function" then
+        pcall(pinManager.UpdateMovingPins, pinManager)
+    end
+
+    -- v0.29.311: do not force a second native World Map OnUpdate pump in the
+    -- same frame. The first pump plus RefreshCustomPins builds the active set;
+    -- delayed mirror snapshots catch providers that finish on a later UI tick.
+
+    -- Snapshot the freshly rebuilt manager into the Suite mirror immediately.
+    local captured = self:CaptureAllNativeMapPins(true)
+    self.hiddenPinPrimeInProgress = false
+    return refreshed or captured
 end
 
 local function clean(text, fallback)
@@ -666,12 +1185,6 @@ local function directionText(dx, dy)
     return dy < 0 and "NW" or "SW"
 end
 
-local function nowSeconds()
-    if type(GetFrameTimeSeconds) == "function" then return tonumber(GetFrameTimeSeconds()) or 0 end
-    if type(GetGameTimeMilliseconds) == "function" then return (tonumber(GetGameTimeMilliseconds()) or 0) / 1000 end
-    return 0
-end
-
 local function makeBackdrop(parent, name)
     local control = wm:CreateControl(name, parent, CT_BACKDROP)
     control:SetCenterColor(0.035, 0.045, 0.060, 0.22)
@@ -792,13 +1305,56 @@ function M:LayerEnabled(layer)
     return true
 end
 
+-- v0.29.307: The stock SetClampedToScreen movement clamp keeps top-level
+-- windows inside ESO's UI-safe rectangle, which prevents the minimap from being
+-- placed flush against some monitor edges/corners. HUD Layout Mode now uses its
+-- own light recovery clamp instead: the map may be placed directly on any edge
+-- (or slightly off-screen), while a small grab strip always remains recoverable.
+function M:GetPositionRecoveryBounds()
+    if not self.frame or not GuiRoot then return nil end
+    local frameW = tonumber(self.frame:GetWidth()) or tonumber(self.frameSize) or 0
+    local frameH = tonumber(self.frame:GetHeight()) or tonumber(self.frameSize) or 0
+    local rootW = tonumber(GuiRoot:GetWidth()) or 0
+    local rootH = tonumber(GuiRoot:GetHeight()) or 0
+    if frameW <= 0 or frameH <= 0 or rootW <= 0 or rootH <= 0 then return nil end
+
+    -- Keep only a small draggable part visible. This deliberately does NOT keep
+    -- the whole minimap inside the screen, so corners and side edges are usable.
+    local grab = math.floor(math.min(56, math.max(28, math.min(frameW, frameH) * 0.16)) + 0.5)
+    return -(frameW - grab), rootW - grab, -(frameH - grab), rootH - grab
+end
+
+function M:KeepPositionRecoverable(left, top)
+    left, top = tonumber(left), tonumber(top)
+    if not left or not top then return left, top end
+    local minLeft, maxLeft, minTop, maxTop = self:GetPositionRecoveryBounds()
+    if minLeft then
+        left = clamp(left, minLeft, maxLeft)
+        top = clamp(top, minTop, maxTop)
+    end
+    return left, top
+end
+
 function M:SavePosition()
     if not EPC.saved or not self.frame then return end
     local left = tonumber(self.frame:GetLeft())
     local top = tonumber(self.frame:GetTop())
     if left and top then
+        left, top = self:KeepPositionRecoverable(left, top)
+        -- StartMoving may leave the control fractionally outside our recovery
+        -- range. Re-anchor only when correction is actually needed.
+        local currentLeft = tonumber(self.frame:GetLeft()) or left
+        local currentTop = tonumber(self.frame:GetTop()) or top
+        if math.abs(currentLeft - left) > 0.25 or math.abs(currentTop - top) > 0.25 then
+            self.frame:ClearAnchors()
+            self.frame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, left, top)
+        end
         EPC.saved.miniMapLeft = left
         EPC.saved.miniMapTop = top
+        -- A separate validity flag is required because edge placement can now
+        -- legitimately save negative coordinates. The old -1 sentinel alone
+        -- cannot distinguish those positions from "use default".
+        EPC.saved.miniMapPositionSaved = true
     end
 end
 
@@ -807,7 +1363,14 @@ function M:AnchorFrame()
     self.frame:ClearAnchors()
     local left = tonumber(EPC.saved.miniMapLeft) or -1
     local top = tonumber(EPC.saved.miniMapTop) or -1
-    if left >= 0 and top >= 0 then
+    -- Migrate existing installations automatically: any old non-negative saved
+    -- position remains valid even before miniMapPositionSaved exists.
+    local hasSavedPosition = EPC.saved.miniMapPositionSaved == true or (left >= 0 and top >= 0)
+    if hasSavedPosition then
+        left, top = self:KeepPositionRecoverable(left, top)
+        EPC.saved.miniMapLeft = left
+        EPC.saved.miniMapTop = top
+        EPC.saved.miniMapPositionSaved = true
         self.frame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, left, top)
     else
         self.frame:SetAnchor(TOPRIGHT, GuiRoot, TOPRIGHT, -34, 185)
@@ -818,11 +1381,14 @@ function M:ResetPosition()
     if not EPC.saved then return end
     EPC.saved.miniMapLeft = -1
     EPC.saved.miniMapTop = -1
+    EPC.saved.miniMapPositionSaved = false
     self:AnchorFrame()
 end
 
-function M:CreatePin(name, size, texture, color)
-    local pin = wm:CreateControl(name, self.viewport, CT_TEXTURE)
+function M:CreatePin(name, size, texture, color, mapLocked)
+    local parent = (mapLocked == true and self.staticPinLayer) or self.viewport
+    local pin = wm:CreateControl(name, parent, CT_TEXTURE)
+    pin.easMapLocked029312 = mapLocked == true
     pin:SetDimensions(size, size)
     pin:SetTexture(texture or WAYPOINT_TEXTURE)
     pin:SetDrawLayer(DL_OVERLAY)
@@ -927,7 +1493,10 @@ local function easNativeTownPinIsDynamic(texture)
     local t = string.lower(tostring(texture or ""))
     if t == "" then return true end
     local dynamic = {
-        "player", "group", "companion", "quest", "waypoint", "rally",
+        -- Quest pins are intentionally NOT filtered in v0.29.295. They are
+        -- rebuilt in gameplay now, so the minimap can mirror the same quest
+        -- markers that would normally appear only after opening the World Map.
+        "player", "group", "companion", "waypoint", "rally",
         "ping", "ava_", "battleground", "killlocation", "elder_scroll",
     }
     for i=1,#dynamic do if string.find(t, dynamic[i], 1, true) then return true end end
@@ -1006,7 +1575,10 @@ function M:CaptureNativeTownPin(pinType, pinTag, x, y, textureOverride, sizeOver
     -- really matches the player's location. This keeps quest/wayshrine scans
     -- from polluting the minimap cache while still letting the minimap follow
     -- cities, homes, delves, interiors, and zone maps automatically.
-    if not self:IsWorldMapShowing() and self.allowGameplayNativeCapture ~= true then return end
+    local hiddenCaptureActive = self.allowGameplayNativeCapture == true
+        or self.hiddenPinPrimeInProgress == true
+        or self.hiddenNativeMapPumpInProgress == true
+    if not self:IsWorldMapShowing() and not hiddenCaptureActive then return end
     x, y = tonumber(x), tonumber(y)
     if not x or not y or x < 0 or x > 1 or y < 0 or y > 1 then return end
 
@@ -1116,7 +1688,10 @@ function M:HookNativeTownPins()
     -- the exact texture ESO chose for that pin.
     if ZO_MapPin and type(ZO_MapPin.SetData) == "function" and type(ZO_PostHook) == "function" then
         ZO_PostHook(ZO_MapPin, "SetData", function(pin, pinType, pinTag)
-            if not owner:IsWorldMapShowing() or not pin then return end
+            local hiddenCaptureActive = owner.hiddenPinPrimeInProgress == true
+                or owner.hiddenNativeMapPumpInProgress == true
+                or owner.allowGameplayNativeCapture == true
+            if (not owner:IsWorldMapShowing() and not hiddenCaptureActive) or not pin then return end
             local x, y
             if type(pin.GetNormalizedPosition) == "function" then
                 local ok, px, py = pcall(pin.GetNormalizedPosition, pin)
@@ -1178,10 +1753,15 @@ function M:CaptureAllNativeMapPins(allowGameplayCapture)
     local gameplayCapture = (not worldMapShowing) and allowGameplayCapture == true
     if not worldMapShowing and not gameplayCapture then return false end
 
-    local manager = LMP.pinManager
-    if not manager and type(ZO_WorldMap_GetPinManager) == "function" then
-        manager = ZO_WorldMap_GetPinManager()
+    -- Always prefer ESO's active shared pin manager.  LibMapPins normally wraps
+    -- this same manager, but some library/provider versions do not publish their
+    -- manager reference until the full World Map has been shown once.
+    local manager = nil
+    if type(ZO_WorldMap_GetPinManager) == "function" then
+        local okManager, activeManager = pcall(ZO_WorldMap_GetPinManager)
+        if okManager then manager = activeManager end
     end
+    if not manager then manager = LMP.pinManager end
     if not manager or type(manager.GetActiveObjects) ~= "function" then return false end
 
     local mapId = tonumber(safe(GetCurrentMapId, 0)) or 0
@@ -1189,13 +1769,12 @@ function M:CaptureAllNativeMapPins(allowGameplayCapture)
 
     if gameplayCapture then
         -- Do not snapshot a map that some unrelated addon/quest scan has made
-        -- current. It must be the exact map the Suite is rendering and ESO must
-        -- agree that it matches the player's location.
+        -- current. Exact map-id equality with the Suite's verified render map is
+        -- the authoritative guard here. DoesCurrentMapMatchMapForPlayerLocation()
+        -- can legitimately report false for city/interior sub-maps selected by
+        -- LibMapData, and that old second gate was discarding the very hidden
+        -- snapshots we need until the user opened the native World Map.
         if mapId ~= (tonumber(self.mapId) or 0) then return false end
-        if type(DoesCurrentMapMatchMapForPlayerLocation) == "function"
-            and safe(DoesCurrentMapMatchMapForPlayerLocation, false) ~= true then
-            return false
-        end
     end
 
     local ok, pins = pcall(manager.GetActiveObjects, manager)
@@ -1338,7 +1917,11 @@ function M:AddCapturedNativeTownPins()
                     seen[key] = true
                     self.nativeMirrorData[#self.nativeMirrorData + 1] = {
                         x=x, y=y, texture=row.texture, pinType=row.pinType,
-                        name=clean(row.name, ""), size=clamp(tonumber(row.size) or 24, 14, 42),
+                        -- Full World Map controls can be 36-48+ UI units.  Reusing
+                        -- those dimensions made the newly live-refreshed city
+                        -- icons dominate the minimap.  Preserve relative sizing
+                        -- but cap the minimap base footprint before user scaling.
+                        name=clean(row.name, ""), size=clamp(tonumber(row.size) or 22, 12, 28),
                     }
                 end
             end
@@ -1349,42 +1932,140 @@ function M:AddCapturedNativeTownPins()
     return self.useExactNativeStaticMirror
 end
 
+-- Native World Map pins are supplemental only. Live ESO POI/wayshrine APIs are
+-- always refreshed in gameplay, and the minimap now actively syncs the hidden
+-- current player map so opening the full map is never required to
+-- keep the minimap current. Remove native snapshot entries that are already
+-- represented by a live pin to avoid double icons when a cached snapshot exists.
+function M:FilterNativeMirrorDuplicates()
+    if type(self.nativeMirrorData) ~= "table" or #self.nativeMirrorData == 0 then
+        self.useExactNativeStaticMirror = false
+        return
+    end
+
+    local live = {}
+    local function addRows(rows)
+        for i = 1, #(rows or {}) do
+            local d = rows[i]
+            if d and tonumber(d.x) and tonumber(d.y) then
+                live[#live + 1] = {
+                    x = tonumber(d.x), y = tonumber(d.y),
+                    texture = string.lower(tostring(d.icon or d.texture or "")),
+                }
+            end
+        end
+    end
+    addRows(self.shrineData)
+    addRows(self.poiData)
+    addRows(self.merchantData)
+    addRows(self.serviceData)
+
+    local filtered = {}
+    for i = 1, #self.nativeMirrorData do
+        local d = self.nativeMirrorData[i]
+        local duplicate = false
+        local dx0, dy0 = tonumber(d.x), tonumber(d.y)
+        local texture = string.lower(tostring(d.texture or ""))
+        if dx0 and dy0 then
+            for j = 1, #live do
+                local row = live[j]
+                local dx, dy = dx0 - row.x, dy0 - row.y
+                local dist2 = (dx * dx) + (dy * dy)
+                -- Exact/near-exact coordinate matches are duplicates. Slightly
+                -- wider matching is allowed only when ESO chose the same art.
+                if dist2 <= 0.00000009
+                    or (texture ~= "" and texture == row.texture and dist2 <= 0.00000025) then
+                    duplicate = true
+                    break
+                end
+            end
+        end
+        if not duplicate then filtered[#filtered + 1] = d end
+    end
+
+    self.nativeMirrorData = filtered
+    self.useExactNativeStaticMirror = #filtered > 0
+end
+
 function M:EnsureNativeMirrorPins(count)
     self.nativeMirrorPins = self.nativeMirrorPins or {}
     for i = #self.nativeMirrorPins + 1, count do
-        local pin = self:CreatePin("EPC_MiniMap_NativeMirror_" .. tostring(i), 24, POI_FALLBACK_TEXTURE, COLORS.white)
+        local pin = self:CreatePin("EPC_MiniMap_NativeMirror_" .. tostring(i), 24, POI_FALLBACK_TEXTURE, COLORS.white, true)
         pin:SetDrawLevel(84)
         self.nativeMirrorPins[i] = pin
     end
 end
 
+local function easLooksLikeStationServiceTexture(texture)
+    local t = string.lower(tostring(texture or ""))
+    return string.find(t, "craft", 1, true) ~= nil
+        or string.find(t, "service", 1, true) ~= nil
+        or string.find(t, "blacksmith", 1, true) ~= nil
+        or string.find(t, "cloth", 1, true) ~= nil
+        or string.find(t, "woodwork", 1, true) ~= nil
+        or string.find(t, "jewelry", 1, true) ~= nil
+        or string.find(t, "alchemy", 1, true) ~= nil
+        or string.find(t, "enchant", 1, true) ~= nil
+        or string.find(t, "provision", 1, true) ~= nil
+        or string.find(t, "transmute", 1, true) ~= nil
+        or string.find(t, "outfit", 1, true) ~= nil
+end
+
 function M:RenderNativeMirrorPins()
     local data = self.nativeMirrorData or {}
     if self.useExactNativeStaticMirror ~= true or #data == 0 then
+        self.lastNativeMirrorUsed029318 = 0
         for i=1,#(self.nativeMirrorPins or {}) do self.nativeMirrorPins[i]:SetHidden(true) end
         return
     end
-    self:EnsureNativeMirrorPins(#data)
+    local renderCount = math.min(#data, self.roamingVisualBudget029315 == true and ROAMING_NATIVE_CAP_029315 or NATIVE_MIRROR_RENDER_CAP_029314)
+    self:EnsureNativeMirrorPins(renderCount)
     local used = 0
-    for i=1,#data do
+    local stationClusters = {}
+    local fullW = math.max(1, tonumber(self.fullMapWidth) or tonumber(self.size) or 300)
+    local stationNear = 7 / fullW
+    local stationNear2 = stationNear * stationNear
+    local stationOffset = 9 / fullW
+    for i=1,renderCount do
         local d = data[i]
         if d and d.x and d.y and type(d.texture) == "string" and d.texture ~= "" then
-            local _, _, inside = self:MapToScreen(d.x, d.y)
-            if inside then
-                used = used + 1
-                local pin = self.nativeMirrorPins[used]
-                local size = clamp(tonumber(d.size) or 24, 14, 42)
-                pin:SetDimensions(size, size)
-                pin:SetTexture(d.texture)
-                if type(pin.SetTextureCoords) == "function" then pin:SetTextureCoords(0, 1, 0, 1) end
-                if type(pin.SetBlendMode) == "function" then pin:SetBlendMode(TEX_BLEND_MODE_ALPHA) end
-                pin:SetColor(1, 1, 1, 1)
-                -- Exact coordinates only. Never clamp native map pins to the
-                -- minimap edge because that changes their apparent position.
-                self:PlacePin(pin, d.x, d.y, size, false)
+            used = used + 1
+            local pin = self.nativeMirrorPins[used]
+            local size = clamp(tonumber(d.size) or 22, 12, 28)
+            pin:SetDimensions(size, size)
+            pin:SetTexture(d.texture)
+            if type(pin.SetTextureCoords) == "function" then pin:SetTextureCoords(0, 1, 0, 1) end
+            if type(pin.SetBlendMode) == "function" then pin:SetBlendMode(TEX_BLEND_MODE_ALPHA) end
+            pin:SetColor(1, 1, 1, 1)
+
+            local drawX, drawY = d.x, d.y
+            -- ESO/provider snapshots can legitimately contain several service/crafting
+            -- pins at virtually the same coordinate. On a small minimap they become
+            -- an unreadable stack. Keep every station icon, but fan only the visual
+            -- controls a few pixels around the shared point; the stored map data stays exact.
+            if easLooksLikeStationServiceTexture(d.texture) then
+                local cluster = nil
+                for c = 1, #stationClusters do
+                    local row = stationClusters[c]
+                    local dx, dy = d.x - row.x, d.y - row.y
+                    if (dx * dx + dy * dy) <= stationNear2 then cluster = row; break end
+                end
+                if cluster then
+                    cluster.count = cluster.count + 1
+                    local slot = cluster.count - 1
+                    local angles = {0, math.pi * 0.5, math.pi, math.pi * 1.5, math.pi * 0.25, math.pi * 0.75, math.pi * 1.25, math.pi * 1.75}
+                    local angle = angles[((slot - 1) % #angles) + 1]
+                    local ring = 1 + math.floor((slot - 1) / #angles)
+                    drawX = clamp(d.x + math.cos(angle) * stationOffset * ring, 0, 1)
+                    drawY = clamp(d.y + math.sin(angle) * stationOffset * ring, 0, 1)
+                else
+                    stationClusters[#stationClusters + 1] = { x=d.x, y=d.y, count=1 }
+                end
             end
+            self:PlacePin(pin, drawX, drawY, size, false)
         end
     end
+    self.lastNativeMirrorUsed029318 = used
     for i=used+1,#self.nativeMirrorPins do self.nativeMirrorPins[i]:SetHidden(true) end
 end
 
@@ -1422,17 +2103,46 @@ function M:ScheduleLiveNativeMirrorRefresh(mapId)
     if mapId <= 0 or type(zo_callLater) ~= "function" then return end
     self.nativeRefreshToken = (tonumber(self.nativeRefreshToken) or 0) + 1
     local token = self.nativeRefreshToken
-    local delays = { 120, 350, 750 }
 
+    -- v0.29.316: opening the full World Map must never be required to populate
+    -- minimap icons. Normal transition/event code still owns the first hidden
+    -- provider prime. These delayed passes mainly snapshot providers that finish
+    -- registering a little later. Only if the current map never received a prime
+    -- (or the live manager is still empty after settling) do we perform ONE
+    -- guarded recovery prime. This keeps the 0.29.315 FPS gains without making M
+    -- a prerequisite for POI/service/custom-provider icons.
+    local recoveryPrimeUsed = false
+    local delays = { 450, 1100, 2600 }
     for i = 1, #delays do
+        local pass = i
         zo_callLater(function()
             if token ~= self.nativeRefreshToken then return end
             if self:IsWorldMapShowing() then return end
             if (tonumber(self.mapId) or 0) ~= mapId then return end
 
-            if self:CaptureAllNativeMapPins(true) then
-                self:RefreshStaticPins()
-                self:UpdatePanAndPins(true)
+            local captured = self:CaptureAllNativeMapPins(true)
+            if captured then
+                self.staticPinsDirty = true
+            end
+
+            local savedList = EPC.saved and EPC.saved.miniMapNativeTownPins
+                and EPC.saved.miniMapNativeTownPins[tostring(mapId)]
+            local hasSnapshot = type(savedList) == "table" and #savedList > 0
+            local primedThisMap = tonumber(self.lastHiddenPinPrimeMapId) == mapId
+
+            -- First delayed pass only recovers a transition whose normal prime
+            -- never happened. The final pass may recover an empty provider set,
+            -- but at most once for this schedule token.
+            local needsRecoveryPrime = (pass == 1 and not primedThisMap)
+                or (pass == #delays and not hasSnapshot)
+            if needsRecoveryPrime and not recoveryPrimeUsed then
+                recoveryPrimeUsed = true
+                if self:PrimeHiddenWorldMapPins("autopopulate", true) then
+                    self.staticPinsDirty = true
+                    if self:CaptureAllNativeMapPins(true) then
+                        self.staticPinsDirty = true
+                    end
+                end
             end
         end, delays[i])
     end
@@ -1453,7 +2163,7 @@ end
 function M:EnsurePvPPins(count)
     self.pvpPins = self.pvpPins or {}
     for i = #self.pvpPins + 1, count do
-        local pin = self:CreatePin("EPC_MiniMap_PvPObjective_" .. tostring(i), 26, POI_FALLBACK_TEXTURE, COLORS.white)
+        local pin = self:CreatePin("EPC_MiniMap_PvPObjective_" .. tostring(i), 26, POI_FALLBACK_TEXTURE, COLORS.white, true)
         pin:SetDrawLevel(88)
         self.pvpPins[i] = pin
     end
@@ -1579,21 +2289,21 @@ end
 function M:EnsureShrinePins(count)
     self.shrinePins = self.shrinePins or {}
     for i = #self.shrinePins + 1, count do
-        self.shrinePins[i] = self:CreatePin("EPC_MiniMap_Shrine_" .. tostring(i), 17, WAYPOINT_TEXTURE, COLORS.gold)
+        self.shrinePins[i] = self:CreatePin("EPC_MiniMap_Shrine_" .. tostring(i), 17, WAYPOINT_TEXTURE, COLORS.gold, true)
     end
 end
 
 function M:EnsurePOIPins(count)
     self.poiPins = self.poiPins or {}
     for i = #self.poiPins + 1, count do
-        self.poiPins[i] = self:CreatePin("EPC_MiniMap_POI_" .. tostring(i), 17, POI_FALLBACK_TEXTURE, COLORS.white)
+        self.poiPins[i] = self:CreatePin("EPC_MiniMap_POI_" .. tostring(i), 17, POI_FALLBACK_TEXTURE, COLORS.white, true)
     end
 end
 
 function M:EnsureMerchantPins(count)
     self.merchantPins = self.merchantPins or {}
     for i = #self.merchantPins + 1, count do
-        local pin = self:CreatePin("EPC_MiniMap_Merchant_" .. tostring(i), 22, POI_FALLBACK_TEXTURE, COLORS.gold)
+        local pin = self:CreatePin("EPC_MiniMap_Merchant_" .. tostring(i), 22, POI_FALLBACK_TEXTURE, COLORS.gold, true)
         pin:SetDrawLayer(DL_OVERLAY)
         pin:SetDrawLevel(55)
         self.merchantPins[i] = pin
@@ -1606,12 +2316,18 @@ function M:EnsureServicePins(count)
     for i = #self.servicePins + 1, count do
         -- A guaranteed-visible backing means a learned service can never vanish
         -- just because ESO rejects a service-specific texture path.
-        local backing = self:CreatePin("EPC_MiniMap_ServiceBacking_" .. tostring(i), 30, POI_FALLBACK_TEXTURE, COLORS.gold)
+        local backing = self:CreatePin("EPC_MiniMap_ServiceBacking_" .. tostring(i), 30, POI_FALLBACK_TEXTURE, COLORS.gold, true)
         backing:SetDrawLayer(DL_OVERLAY)
         backing:SetDrawLevel(78)
+        -- Backings are intentionally never rendered in the current minimap style.
+        -- Keep them completely out of the moving static hierarchy.
+        if self.staticPinDormantLayer029319 and type(backing.SetParent) == "function" then
+            backing:SetParent(self.staticPinDormantLayer029319)
+            backing.easMapParked029319 = true
+        end
         self.serviceBackings[i] = backing
 
-        local pin = self:CreatePin("EPC_MiniMap_Service_" .. tostring(i), 24, POI_FALLBACK_TEXTURE, COLORS.white)
+        local pin = self:CreatePin("EPC_MiniMap_Service_" .. tostring(i), 24, POI_FALLBACK_TEXTURE, COLORS.white, true)
         pin:SetDrawLayer(DL_OVERLAY)
         -- Above the player arrow (70) so the Stable icon is visible immediately
         -- while the player is still standing on top of the learned location.
@@ -1623,7 +2339,7 @@ end
 function M:EnsureTrailPins(count)
     self.trailPins = self.trailPins or {}
     for i = #self.trailPins + 1, count do
-        local pin = self:CreatePin("EPC_MiniMap_Trail_" .. tostring(i), 6, PLAYER_TEXTURE, COLORS.muted)
+        local pin = self:CreatePin("EPC_MiniMap_Trail_" .. tostring(i), 6, PLAYER_TEXTURE, COLORS.muted, true)
         pin:SetDrawLevel(8)
         self.trailPins[i] = pin
     end
@@ -1668,6 +2384,20 @@ function M:EnsureTreasureLocatorPins(count)
     for i = #self.treasureLocatorPins + 1, count do
         local pin = self:CreatePin("EPC_MiniMap_TreasureLocator_" .. tostring(i), 28, POI_FALLBACK_TEXTURE, COLORS.gold)
         pin:SetDrawLevel(92)
+        -- The parent minimap only accepts mouse input while Suite interaction/HUD
+        -- layout mode is active, so enabling these children does not steal normal
+        -- camera input. Tooltip work runs only on actual mouse enter/exit.
+        pin:SetMouseEnabled(true)
+        pin:SetHandler("OnMouseEnter", function(control)
+            local locator = EPC and EPC.TreasureLocator
+            if locator and type(locator.ShowMiniMapTooltip029309) == "function" and control.easTreasureEntry029309 then
+                locator:ShowMiniMapTooltip029309(control, control.easTreasureEntry029309)
+            end
+        end)
+        pin:SetHandler("OnMouseExit", function()
+            local locator = EPC and EPC.TreasureLocator
+            if locator and type(locator.HideMiniMapTooltip029309) == "function" then locator:HideMiniMapTooltip029309() end
+        end)
         self.treasureLocatorPins[i] = pin
     end
 end
@@ -1676,7 +2406,10 @@ function M:RenderTreasureLocatorPins()
     local locator = EPC.TreasureLocator
     local enabled = EPC.saved and EPC.saved.treasureLocatorEnabled ~= false and EPC.saved.treasureLocatorShowMap ~= false
     if not enabled or not locator or type(locator.GetMiniMapPins) ~= "function" then
-        for _, pin in ipairs(self.treasureLocatorPins or {}) do pin:SetHidden(true) end
+        for _, pin in ipairs(self.treasureLocatorPins or {}) do
+            pin.easTreasureEntry029309 = nil
+            pin:SetHidden(true)
+        end
         return
     end
     local entries = locator:GetMiniMapPins(self.mapId) or {}
@@ -1685,28 +2418,68 @@ function M:RenderTreasureLocatorPins()
     for index, pin in ipairs(self.treasureLocatorPins or {}) do
         local entry = entries[index]
         if entry then
+            pin.easTreasureEntry029309 = entry
             pin:SetTexture(entry.texture or POI_FALLBACK_TEXTURE)
             pin:SetDimensions(size, size)
             pin:SetColor(1, 1, 1, 1)
             local edgeGuide = locator.GetScope and locator:GetScope() ~= "ALL"
             self:PlacePin(pin, entry.x, entry.y, size, edgeGuide)
         else
+            pin.easTreasureEntry029309 = nil
             pin:SetHidden(true)
         end
     end
 end
 
-function M:GetEffectiveZoom()
-    -- ESO's map art is raster-based. Keeping the zoom range tighter prevents
-    -- the minimap from magnifying the source tiles until they look blocky.
-    local zoom = clamp(EPC.saved and EPC.saved.miniMapZoom or 0.90, 0.70, 1.35)
-    if not EPC.saved or EPC.saved.miniMapAdaptiveZoom == false or self.layoutMode then return zoom end
-    if safe(IsUnitInCombat, false, "player") == true then
-        zoom = zoom * 1.22
-    elseif safe(IsMounted, false) == true then
-        zoom = zoom * 0.82
+function M:GetAdaptiveMapZoomMultiplier()
+    local mapId = tonumber(self.mapId) or 0
+    if mapId <= 0 or type(GetMapInfoById) ~= "function" then return 1.0 end
+
+    -- Cache per gameplay map. City/local maps in ESO are commonly SUBZONE maps;
+    -- dungeon and battleground maps are also physically tighter than overland
+    -- zone maps. Use the map metadata rather than English place-name matching so
+    -- this works in every client language.
+    if self.zoomContextMapId == mapId and self.zoomContextMultiplier then
+        return self.zoomContextMultiplier
     end
-    return clamp(zoom, 0.70, 1.35)
+
+    local _, mapType, mapContentType = safe(GetMapInfoById, nil, mapId)
+    local multiplier = 1.0
+    local kind = "OVERLAND"
+
+    if MAPTYPE_SUBZONE ~= nil and mapType == MAPTYPE_SUBZONE then
+        multiplier = 1.28
+        kind = "LOCAL"
+    end
+
+    if MAP_CONTENT_DUNGEON ~= nil and mapContentType == MAP_CONTENT_DUNGEON then
+        multiplier = math.max(multiplier, 1.18)
+        kind = "DUNGEON"
+    elseif MAP_CONTENT_BATTLEGROUND ~= nil and mapContentType == MAP_CONTENT_BATTLEGROUND then
+        multiplier = math.max(multiplier, 1.10)
+        kind = "BATTLEGROUND"
+    end
+
+    self.zoomContextMapId = mapId
+    self.zoomContextMultiplier = multiplier
+    self.zoomContextKind = kind
+    return multiplier
+end
+
+function M:GetEffectiveZoom()
+    local zoom = clamp(EPC.saved and EPC.saved.miniMapZoom or 1.38, 0.70, 2.00)
+    if not EPC.saved or EPC.saved.miniMapAdaptiveZoom == false or self.layoutMode then return zoom end
+
+    -- Cities, settlements, interiors and other local/sub-zone maps get a closer
+    -- automatic view. Riding still pulls the view back a little, while combat
+    -- gets a modest detail boost without making the city view excessively large.
+    zoom = zoom * self:GetAdaptiveMapZoomMultiplier()
+    if safe(IsUnitInCombat, false, "player") == true then
+        zoom = zoom * 1.08
+    elseif safe(IsMounted, false) == true then
+        zoom = zoom * 0.95
+    end
+    return clamp(zoom, 0.70, 2.00)
 end
 
 function M:IsInteractive()
@@ -1718,7 +2491,7 @@ end
 
 function M:AdjustZoom(delta)
     if not self:IsInteractive() or not EPC.saved then return end
-    local zoom = clamp((tonumber(EPC.saved.miniMapZoom) or 0.90) + ((tonumber(delta) or 0) * 0.05), 0.70, 1.35)
+    local zoom = clamp((tonumber(EPC.saved.miniMapZoom) or 1.38) + ((tonumber(delta) or 0) * 0.05), 0.70, 2.00)
     EPC.saved.miniMapZoom = zoom
     self:RebuildMap(true)
 end
@@ -1740,7 +2513,10 @@ end
 
 function M:Create()
     self.frame = wm:CreateTopLevelWindow("EPC_MiniMap")
-    self.frame:SetClampedToScreen(true)
+    -- Do not use ESO's built-in UI-safe-area clamp here. It blocks true edge and
+    -- corner placement in HUD Layout Mode. SavePosition/AnchorFrame provide a
+    -- small recovery-only bound so the minimap can never become irretrievable.
+    self.frame:SetClampedToScreen(false)
     self.frame:SetDrawTier(DT_HIGH)
     self.frame:SetDrawLayer(DL_CONTROLS)
     self.frame:SetMovable(true)
@@ -1760,6 +2536,23 @@ function M:Create()
     self.tileContainer:SetDrawLayer(DL_BACKGROUND)
     self.tileContainer:SetDrawLevel(1)
     self.tiles = {}
+
+    -- v0.29.312 movement-performance layer. Static map pins live on a map-sized
+    -- canvas that pans with the map tiles. This lets ESO move hundreds of icons
+    -- with ONE parent-anchor update instead of the Suite clearing/re-anchoring
+    -- every POI/wayshrine/native pin whenever the player runs.
+    self.staticPinLayer = wm:CreateControl("EPC_MiniMap_StaticPins", self.viewport, CT_CONTROL)
+    self.staticPinLayer:SetDrawLayer(DL_OVERLAY)
+    self.staticPinLayer:SetDrawLevel(20)
+    self.staticPinLayer:SetMouseEnabled(false)
+
+    -- v0.29.319: off-screen static pins do not need to remain descendants of
+    -- the control that pans every 33 ms. Park them here so ESO's layout walk for
+    -- the moving layer scales with visible icons instead of every cached icon.
+    self.staticPinDormantLayer029319 = wm:CreateControl("EPC_MiniMap_StaticPinsDormant029319", self.viewport, CT_CONTROL)
+    self.staticPinDormantLayer029319:SetDimensions(1, 1)
+    self.staticPinDormantLayer029319:SetMouseEnabled(false)
+    self.staticPinDormantLayer029319:SetHidden(true)
 
     -- Modern map-surface treatment: a soft glass tint above the raw ESO tiles
     -- plus a subtle inner chrome ring so the minimap feels more like a modern
@@ -1813,6 +2606,13 @@ function M:Create()
     self.esoFrame:SetDrawLevel(60)
     self.esoFrame:SetMouseEnabled(false)
     self.esoFrame:SetHidden(true)
+
+    self.esoMask = wm:CreateControl("EPC_MiniMap_ESOMask", self.frame, CT_TEXTURE)
+    self.esoMask:SetAnchorFill(self.frame)
+    self.esoMask:SetDrawLayer(DL_OVERLAY)
+    self.esoMask:SetDrawLevel(59)
+    self.esoMask:SetMouseEnabled(false)
+    self.esoMask:SetHidden(true)
 
     self.modeLabel = makeLabel(self.frame, "EPC_MiniMap_Mode", "$(BOLD_FONT)|11|soft-shadow-thick", COLORS.gold, TEXT_ALIGN_LEFT)
     self.modeLabel:SetAnchor(TOPLEFT, self.frame, TOPLEFT, 15, 10)
@@ -1878,13 +2678,13 @@ function M:Create()
     self.statusLabel:SetDrawLevel(60)
     self.statusLabel:SetHidden(true)
 
-    self.playerGlow = self:CreatePin("EPC_MiniMap_PlayerGlow", 40, PLAYER_TEXTURE, COLORS.cyan)
+    self.playerGlow = self:CreatePin("EPC_MiniMap_PlayerGlow", self:GetPlayerGlowSize(), PLAYER_TEXTURE, COLORS.cyan)
     self.playerGlow:SetHidden(false)
     self.playerGlow:SetAnchor(CENTER, self.viewport, CENTER, 0, 0)
     self.playerGlow:SetDrawLevel(66)
-    self.playerGlow:SetAlpha(0.28)
+    self.playerGlow:SetAlpha(0.18)
 
-    self.playerPin = self:CreatePin("EPC_MiniMap_Player", 26, PLAYER_TEXTURE, COLORS.white)
+    self.playerPin = self:CreatePin("EPC_MiniMap_Player", self:GetPlayerPinSize(), PLAYER_TEXTURE, COLORS.white)
     self.playerPin:SetHidden(false)
     self.playerPin:SetAnchor(CENTER, self.viewport, CENTER, 0, 0)
     self.playerPin:SetDrawLevel(70)
@@ -1920,123 +2720,230 @@ end
 
 function M:ApplySizeAndStyle()
     if not self.frame or not EPC.saved then return end
-    local frameSize = math.floor(clamp(EPC.saved.miniMapSize or 270, 180, 420))
-    local inset = math.floor(math.max(12, frameSize * 0.055))
-    local contentSize = frameSize - (inset * 2)
+
+    local visualStyle = self:GetEffectiveVisualStyle()
+    local frameTexture = self:GetVisualStyleTexture(visualStyle)
+    local useReferenceFrame = type(frameTexture) == "string" and frameTexture ~= ""
+    local roundStyle = string.find(visualStyle, "ROUND", 1, true) ~= nil
+    local insetRatio = 0.055
+    -- v0.29.291: the fantasy DDS files are now true transparent frame overlays,
+    -- not full mockup screenshots. Let the live map extend underneath the inner
+    -- rim so there is no exposed gap between the live tiles and the artwork.
+    if useReferenceFrame then insetRatio = 0.105 end
+
+    -- v0.29.303: keep the fantasy artwork outside the live map instead of
+    -- thickening it inward.  This preserves the complete N/E/S/W plaques and
+    -- keeps map pins from being buried under the decorative ring.  The frame
+    -- gets its own small scale control and a transparent safety gutter so the
+    -- compass tips are never clipped by the top-level window.
+    local configuredSize = math.floor(clamp(EPC.saved.miniMapSize or 270, 180, 420))
+    local inset = math.floor(math.max(12, configuredSize * insetRatio))
+    local baseContentSize = configuredSize - (inset * 2)
+    local fantasyScale = 1.0
+    local frameArtSize = configuredSize
+    local frameSafePad = 0
+    local frameSize = configuredSize
+    local contentSize = baseContentSize
+    if useReferenceFrame then
+        fantasyScale = clamp(tonumber(EPC.saved.miniMapFantasyFrameScale) or 1.08, 1.00, 1.12)
+        frameArtSize = math.floor(configuredSize * fantasyScale + 0.5)
+        frameSafePad = math.max(5, math.floor(frameArtSize * 0.025 + 0.5))
+        frameSize = frameArtSize + (frameSafePad * 2)
+        -- Grow the live viewport just enough to continue underneath the same
+        -- inner rim as the artwork grows.  Icon dimensions themselves do not
+        -- change, so the user's current pin-size tuning stays intact.
+        contentSize = baseContentSize + math.floor((frameArtSize - configuredSize) * 0.72 + 0.5)
+    end
     local sizeChanged = self.frameSize ~= frameSize or self.size ~= contentSize
-    EPC.saved.miniMapSize = frameSize
+    local styleChanged = self.appliedVisualStyle ~= visualStyle or self.circularStyle ~= roundStyle
+    EPC.saved.miniMapSize = configuredSize
     self.frameSize = frameSize
+    self.frameArtSize = frameArtSize
+    self.frameSafePad = frameSafePad
     self.inset = inset
     self.size = contentSize
-    self.circularStyle = false
+    self.circularStyle = roundStyle
+    self.appliedVisualStyle = visualStyle
 
     self.frame:SetDimensions(frameSize, frameSize)
     self.viewport:ClearAnchors()
     self.viewport:SetDimensions(contentSize, contentSize)
     self.viewport:SetAnchor(CENTER, self.frame, CENTER, 0, 0)
 
+    if self.esoFrame then
+        self.esoFrame:ClearAnchors()
+        if useReferenceFrame then
+            self.esoFrame:SetDimensions(frameArtSize, frameArtSize)
+            self.esoFrame:SetAnchor(CENTER, self.frame, CENTER, 0, 0)
+        else
+            self.esoFrame:SetAnchorFill(self.frame)
+        end
+    end
+
+    -- v0.29.292: use a real alpha mask for the round viewport. The previous
+    -- SetCircularClip call could blank the entire live minimap on some clients.
+    -- The corrected mask is opaque in the circular center and transparent in the
+    -- corners, so map tiles + pins stay visible inside the ornate ring and never
+    -- leak outside it. Square mode explicitly disables the mask.
+    local maskTexture = roundStyle and MINIMAP_STYLE_MASK_TEXTURES[visualStyle] or nil
+    if roundStyle and maskTexture and type(self.viewport.SetMaskTexture) == "function" and type(self.viewport.SetMaskMode) == "function" and CONTROL_MASK_MODE_BASIC ~= nil then
+        self.viewport:SetMaskTexture(maskTexture)
+        self.viewport:SetMaskMode(CONTROL_MASK_MODE_BASIC)
+    elseif type(self.viewport.SetMaskMode) == "function" and CONTROL_MASK_MODE_NONE ~= nil then
+        self.viewport:SetMaskMode(CONTROL_MASK_MODE_NONE)
+    end
+
     local alpha = clamp(EPC.saved.miniMapAlpha or 0.92, 0.35, 1.0)
     self.frame:SetAlpha(alpha)
 
+    local playerMarkerStyle = self:GetPlayerMarkerStyle()
+    if self.playerPin then
+        self.playerPin:SetTexture(self:GetPlayerMarkerTexture(playerMarkerStyle))
+        self.playerPin:SetColor(1, 1, 1, 1)
+    end
+    if self.playerGlow then
+        self.playerGlow:SetTexture(self:GetPlayerGlowTexture(playerMarkerStyle))
+        self.playerGlow:SetColor(1, 1, 1, 1)
+        self.playerGlow:SetAlpha(playerMarkerStyle == "SUITE" and 0.18 or 0.30)
+    end
+
     local softAlpha = clamp(EPC.saved.unitFrameBackgroundAlpha or 0.20, 0.08, 0.45)
-    if self.layoutMode then
+    if useReferenceFrame then
+        self.background:SetCenterColor(0, 0, 0, 0)
+        self.background:SetEdgeColor(0, 0, 0, 0)
+    elseif self.layoutMode then
         self.background:SetCenterColor(0.10, 0.08, 0.05, 0.34)
         self.background:SetEdgeColor(0.82, 0.66, 0.26, 0.72)
     else
         self.background:SetCenterColor(0.06, 0.05, 0.03, math.max(0.14, softAlpha * 0.78))
         self.background:SetEdgeColor(0, 0, 0, 0)
     end
-    if self.frameBorder then
-        self.frameBorder:SetCenterColor(0, 0, 0, 0)
-        self.frameBorder:SetEdgeTexture(nil, 1, 1, 3)
-        self.frameBorder:SetEdgeColor(0.52, 0.37, 0.14, self.layoutMode and 0.98 or 0.92)
-    end
+
     if self.mapGlass then
-        self.mapGlass:SetCenterColor(0.88, 0.95, 1.00, self.layoutMode and 0.08 or 0.11)
         self.mapGlass:SetEdgeTexture(nil, 1, 1, 0)
         self.mapGlass:SetEdgeColor(0, 0, 0, 0)
+        if useReferenceFrame then
+            self.mapGlass:SetHidden(true)
+        else
+            self.mapGlass:SetHidden(false)
+            self.mapGlass:SetCenterColor(0.88, 0.95, 1.00, self.layoutMode and 0.08 or 0.11)
+        end
     end
     if self.mapChrome then
-        self.mapChrome:SetCenterColor(0, 0, 0, 0)
-        self.mapChrome:SetEdgeTexture(nil, 1, 1, 1)
-        self.mapChrome:SetEdgeColor(0.92, 0.97, 1.00, self.layoutMode and 0.34 or 0.26)
+        if useReferenceFrame then
+            self.mapChrome:SetHidden(true)
+        else
+            self.mapChrome:SetHidden(false)
+            self.mapChrome:SetCenterColor(0, 0, 0, 0)
+            self.mapChrome:SetEdgeTexture(nil, 1, 1, 1)
+            self.mapChrome:SetEdgeColor(0.92, 0.97, 1.00, self.layoutMode and 0.34 or 0.26)
+        end
     end
     if self.mapNorthFade then
         self.mapNorthFade:ClearAnchors()
         self.mapNorthFade:SetAnchor(TOPLEFT, self.viewport, TOPLEFT, 0, 0)
         self.mapNorthFade:SetAnchor(TOPRIGHT, self.viewport, TOPRIGHT, 0, 0)
         self.mapNorthFade:SetHeight(math.max(16, math.floor(contentSize * 0.13)))
-        self.mapNorthFade:SetCenterColor(1.00, 1.00, 1.00, self.layoutMode and 0.05 or 0.08)
         self.mapNorthFade:SetEdgeTexture(nil, 1, 1, 0)
         self.mapNorthFade:SetEdgeColor(0, 0, 0, 0)
-    end
-
-    local rail = math.max(5, math.floor(frameSize * 0.022))
-    local corner = math.max(15, math.floor(frameSize * 0.060))
-    local goldR, goldG, goldB = 0.82, 0.65, 0.28
-    local darkR, darkG, darkB = 0.12, 0.08, 0.035
-    local pieces = { self.skinTop, self.skinBottom, self.skinLeft, self.skinRight }
-    for i = 1, #pieces do
-        local c = pieces[i]
-        if c then
-            c:SetCenterColor(goldR, goldG, goldB, 0.90)
-            c:SetEdgeColor(0.30, 0.20, 0.07, 0.98)
-            c:SetEdgeTexture(nil, 1, 1, 1)
+        if useReferenceFrame then
+            self.mapNorthFade:SetHidden(true)
+        else
+            self.mapNorthFade:SetHidden(false)
+            self.mapNorthFade:SetCenterColor(1.00, 1.00, 1.00, self.layoutMode and 0.04 or 0.06)
         end
     end
-    if self.skinTop then
-        self.skinTop:ClearAnchors()
-        self.skinTop:SetAnchor(TOPLEFT, self.viewport, TOPLEFT, -rail, -rail)
-        self.skinTop:SetAnchor(TOPRIGHT, self.viewport, TOPRIGHT, rail, -rail)
-        self.skinTop:SetHeight(rail)
-    end
-    if self.skinBottom then
-        self.skinBottom:ClearAnchors()
-        self.skinBottom:SetAnchor(BOTTOMLEFT, self.viewport, BOTTOMLEFT, -rail, rail)
-        self.skinBottom:SetAnchor(BOTTOMRIGHT, self.viewport, BOTTOMRIGHT, rail, rail)
-        self.skinBottom:SetHeight(rail)
-    end
-    if self.skinLeft then
-        self.skinLeft:ClearAnchors()
-        self.skinLeft:SetAnchor(TOPLEFT, self.viewport, TOPLEFT, -rail, 0)
-        self.skinLeft:SetAnchor(BOTTOMLEFT, self.viewport, BOTTOMLEFT, -rail, 0)
-        self.skinLeft:SetWidth(rail)
-    end
-    if self.skinRight then
-        self.skinRight:ClearAnchors()
-        self.skinRight:SetAnchor(TOPRIGHT, self.viewport, TOPRIGHT, rail, 0)
-        self.skinRight:SetAnchor(BOTTOMRIGHT, self.viewport, BOTTOMRIGHT, rail, 0)
-        self.skinRight:SetWidth(rail)
-    end
 
-    local corners = {
-        {self.skinTL, TOPLEFT, self.viewport, TOPLEFT, -corner * 0.45, -corner * 0.45},
-        {self.skinTR, TOPRIGHT, self.viewport, TOPRIGHT, corner * 0.45, -corner * 0.45},
-        {self.skinBL, BOTTOMLEFT, self.viewport, BOTTOMLEFT, -corner * 0.45, corner * 0.45},
-        {self.skinBR, BOTTOMRIGHT, self.viewport, BOTTOMRIGHT, corner * 0.45, corner * 0.45},
-    }
-    for i = 1, #corners do
-        local c, point, rel, relPoint, x, y = unpack(corners[i])
-        if c then
-            c:ClearAnchors()
-            c:SetDimensions(corner, corner)
-            c:SetAnchor(point, rel, relPoint, x, y)
-            c:SetCenterColor(darkR, darkG, darkB, 0.98)
-            c:SetEdgeTexture(nil, 1, 1, 2)
-            c:SetEdgeColor(goldR, goldG, goldB, 0.96)
+    local pieces = { self.skinTop, self.skinBottom, self.skinLeft, self.skinRight, self.skinTL, self.skinTR, self.skinBL, self.skinBR, self.skinTopGem }
+    if useReferenceFrame then
+        if self.frameBorder then self.frameBorder:SetHidden(true) end
+        for i = 1, #pieces do if pieces[i] then pieces[i]:SetHidden(true) end end
+        if self.esoMask then self.esoMask:SetHidden(true) end
+        if self.esoFrame then
+            self.esoFrame:SetTexture(frameTexture)
+            self.esoFrame:SetColor(1, 1, 1, 1)
+            self.esoFrame:SetAlpha(1)
+            self.esoFrame:SetHidden(false)
         end
-    end
-    if self.skinTopGem then
-        self.skinTopGem:ClearAnchors()
-        self.skinTopGem:SetDimensions(corner, math.max(9, math.floor(corner * 0.55)))
-        self.skinTopGem:SetAnchor(TOP, self.viewport, TOP, 0, -math.floor(corner * 0.45))
-        self.skinTopGem:SetCenterColor(0.36, 0.23, 0.07, 0.98)
-        self.skinTopGem:SetEdgeTexture(nil, 1, 1, 2)
-        self.skinTopGem:SetEdgeColor(0.92, 0.74, 0.32, 1.0)
-    end
-    if self.esoFrame then self.esoFrame:SetHidden(true) end
+    else
+        if self.frameBorder then
+            self.frameBorder:SetHidden(false)
+            self.frameBorder:SetCenterColor(0, 0, 0, 0)
+            self.frameBorder:SetEdgeTexture(nil, 1, 1, 3)
+            self.frameBorder:SetEdgeColor(0.52, 0.37, 0.14, self.layoutMode and 0.98 or 0.92)
+        end
 
-    if sizeChanged and self.mapId then self:RebuildMap(true) end
+        local rail = math.max(5, math.floor(frameSize * 0.022))
+        local corner = math.max(15, math.floor(frameSize * 0.060))
+        local goldR, goldG, goldB = 0.82, 0.65, 0.28
+        local darkR, darkG, darkB = 0.12, 0.08, 0.035
+        local rails = { self.skinTop, self.skinBottom, self.skinLeft, self.skinRight }
+        for i = 1, #rails do
+            local c = rails[i]
+            if c then
+                c:SetHidden(false)
+                c:SetCenterColor(goldR, goldG, goldB, 0.90)
+                c:SetEdgeColor(0.30, 0.20, 0.07, 0.98)
+                c:SetEdgeTexture(nil, 1, 1, 1)
+            end
+        end
+        if self.skinTop then
+            self.skinTop:ClearAnchors()
+            self.skinTop:SetAnchor(TOPLEFT, self.viewport, TOPLEFT, -rail, -rail)
+            self.skinTop:SetAnchor(TOPRIGHT, self.viewport, TOPRIGHT, rail, -rail)
+            self.skinTop:SetHeight(rail)
+        end
+        if self.skinBottom then
+            self.skinBottom:ClearAnchors()
+            self.skinBottom:SetAnchor(BOTTOMLEFT, self.viewport, BOTTOMLEFT, -rail, rail)
+            self.skinBottom:SetAnchor(BOTTOMRIGHT, self.viewport, BOTTOMRIGHT, rail, rail)
+            self.skinBottom:SetHeight(rail)
+        end
+        if self.skinLeft then
+            self.skinLeft:ClearAnchors()
+            self.skinLeft:SetAnchor(TOPLEFT, self.viewport, TOPLEFT, -rail, 0)
+            self.skinLeft:SetAnchor(BOTTOMLEFT, self.viewport, BOTTOMLEFT, -rail, 0)
+            self.skinLeft:SetWidth(rail)
+        end
+        if self.skinRight then
+            self.skinRight:ClearAnchors()
+            self.skinRight:SetAnchor(TOPRIGHT, self.viewport, TOPRIGHT, rail, 0)
+            self.skinRight:SetAnchor(BOTTOMRIGHT, self.viewport, BOTTOMRIGHT, rail, 0)
+            self.skinRight:SetWidth(rail)
+        end
+
+        local corners = {
+            {self.skinTL, TOPLEFT, self.viewport, TOPLEFT, -corner * 0.45, -corner * 0.45},
+            {self.skinTR, TOPRIGHT, self.viewport, TOPRIGHT, corner * 0.45, -corner * 0.45},
+            {self.skinBL, BOTTOMLEFT, self.viewport, BOTTOMLEFT, -corner * 0.45, corner * 0.45},
+            {self.skinBR, BOTTOMRIGHT, self.viewport, BOTTOMRIGHT, corner * 0.45, corner * 0.45},
+        }
+        for i = 1, #corners do
+            local c, point, rel, relPoint, x, y = unpack(corners[i])
+            if c then
+                c:SetHidden(false)
+                c:ClearAnchors()
+                c:SetDimensions(corner, corner)
+                c:SetAnchor(point, rel, relPoint, x, y)
+                c:SetCenterColor(darkR, darkG, darkB, 0.98)
+                c:SetEdgeTexture(nil, 1, 1, 2)
+                c:SetEdgeColor(goldR, goldG, goldB, 0.96)
+            end
+        end
+        if self.skinTopGem then
+            self.skinTopGem:SetHidden(false)
+            self.skinTopGem:ClearAnchors()
+            self.skinTopGem:SetDimensions(corner, math.max(9, math.floor(corner * 0.55)))
+            self.skinTopGem:SetAnchor(TOP, self.viewport, TOP, 0, -math.floor(corner * 0.45))
+            self.skinTopGem:SetCenterColor(0.36, 0.23, 0.07, 0.98)
+            self.skinTopGem:SetEdgeTexture(nil, 1, 1, 2)
+            self.skinTopGem:SetEdgeColor(0.92, 0.74, 0.32, 1.0)
+        end
+        if self.esoFrame then self.esoFrame:SetHidden(true) end
+        if self.esoMask then self.esoMask:SetHidden(true) end
+    end
+
+    if (sizeChanged or styleChanged) and self.mapId then self:RebuildMap(true) end
 end
 
 function M:SetLayoutMode(active)
@@ -2052,6 +2959,9 @@ function M:SetLayoutMode(active)
     self:SyncESOCompassVisibility()
 
     if not self.frame then return end
+    -- Keep native clamping disabled in both layout and gameplay; otherwise a
+    -- saved edge position can snap inward as soon as HUD Layout Mode closes.
+    self.frame:SetClampedToScreen(false)
     self.frame:SetMouseEnabled(self:IsInteractive())
     self.frame:SetMovable(self.layoutMode)
     if self.dragSurface then
@@ -2146,24 +3056,48 @@ function M:SyncToPlayerMap(force)
     local mapId = 0
     local zoneIndex = nil
     local mapName = nil
+
+    -- Keep asking ESO for its player-location map while the World Map is hidden.
+    -- On login and city/interior handoffs the first call can still resolve to a
+    -- parent zone; later calls refine it just like opening M does.
+    self:TrySyncHiddenPlayerMap(force and "transition" or "pulse")
+
+    -- LibMapData is specifically the player-location map authority used by the
+    -- Suite dependencies. Prefer its mapId for gameplay so a city/sub-map does
+    -- not get replaced by a broader parent map merely because ESO reports that
+    -- both maps "match" the player's location.
     if LMD then
         mapId = tonumber(LMD.mapId) or 0
         zoneIndex = tonumber(LMD.zoneIndex)
         mapName = clean(LMD.mapName or LMD.subzoneName or "", "")
     end
 
-    -- Fallback only when LibMapData has not populated yet. Importantly this
-    -- reads the map; it never calls SetMapToPlayerLocation.
-    if mapId <= 0 and type(DoesCurrentMapMatchMapForPlayerLocation) == "function" and safe(DoesCurrentMapMatchMapForPlayerLocation, false) == true then
-        mapId = safeNumber(GetCurrentMapId, 0)
-        local _, _, _, zi = safe(GetMapInfoById, nil, mapId)
-        zoneIndex = tonumber(zi)
-        mapName = clean(safe(GetMapNameById, "", mapId), "")
+    if mapId <= 0 then
+        local currentMatchesPlayer = type(DoesCurrentMapMatchMapForPlayerLocation) ~= "function"
+            or safe(DoesCurrentMapMatchMapForPlayerLocation, false) == true
+        if currentMatchesPlayer then
+            mapId = safeNumber(GetCurrentMapId, 0)
+            if mapId > 0 then
+                if type(GetCurrentMapZoneIndex) == "function" then
+                    zoneIndex = tonumber(safe(GetCurrentMapZoneIndex, nil))
+                end
+                if not zoneIndex then
+                    local _, _, _, zi = safe(GetMapInfoById, nil, mapId)
+                    zoneIndex = tonumber(zi)
+                end
+                mapName = clean(safe(GetMapNameById, "", mapId), "")
+            end
+        end
     end
     if mapId <= 0 then
         self.playerShown = false
         return false
     end
+
+    -- IMPORTANT: GetMapPlayerPosition, GetPOIMapInfo, wayshrines and the native
+    -- pin manager are all relative to ESO's global current map. Align that
+    -- hidden context to the exact minimap map BEFORE reading coordinates.
+    self:EnsureHiddenMapContext(mapId, force and "transition" or "sync")
 
     local x, y, heading, shown = safe(GetMapPlayerPosition, nil, "player")
     x, y = tonumber(x), tonumber(y)
@@ -2198,8 +3132,17 @@ function M:SyncToPlayerMap(force)
         if changed then
             self.trailData = {}
             self:ClearStaticPinsForMapTransition()
+            if string.upper(self:GetVisualThemeMode()) == "AUTO_ZONE" then
+                self:ApplySizeAndStyle()
+            end
         end
         self:RebuildMap(true)
+        -- v0.29.311 frame-time hotfix: SyncToPlayerMap owns coordinate/map state
+        -- only. Do not perform a full hidden ESO World Map/provider rebuild inside
+        -- this generic sync function; transition/event code schedules exactly one
+        -- controlled prime. This prevents callers using force=true from accidentally
+        -- stacking multiple complete pin rebuilds in the same frame.
+        if changed then self.hiddenPinRefreshRequested = true end
         self:RefreshStaticPins()
         if changed then self:ScheduleLiveNativeMirrorRefresh(mapId) end
         self:UpdateContextText(true)
@@ -2234,15 +3177,20 @@ function M:RebuildMap(force)
     self.effectiveZoom = zoom
     -- Show more territory at each zoom level so the native map texture stays
     -- closer to its intended sampling scale and looks less pixelated.
-    local visibleSpan = clamp(0.34 / zoom, 0.18, 0.48)
+    local visibleSpan = clamp(0.31 / zoom, 0.145, 0.44)
     local fullW = self.size / visibleSpan
     local fullH = fullW * (vertical / horizontal)
     self.fullMapWidth = fullW
     self.fullMapHeight = fullH
+    self.motionCameraX029318 = nil
+    self.motionCameraY029318 = nil
+    self.lastCameraPanAt029318 = nil
+    self.lastStaticCullAt029318 = nil
     self.horizontalTiles = horizontal
     self.verticalTiles = vertical
 
     self.tileContainer:SetDimensions(fullW, fullH)
+    if self.staticPinLayer then self.staticPinLayer:SetDimensions(fullW, fullH) end
     self:EnsureTiles(horizontal * vertical)
     local tileW = fullW / horizontal
     local tileH = fullH / vertical
@@ -2287,35 +3235,85 @@ end
 
 function M:PlacePin(pin, x, y, size, allowEdge)
     if not pin then return false, false end
+    local drawSize = self:GetScaledPinSize(size)
+    if type(pin.SetDimensions) == "function" then pin:SetDimensions(drawSize, drawSize) end
+
+    -- Static pins are anchored once in full-map coordinates. The parent map
+    -- canvas moves with tileContainer, so running no longer causes hundreds of
+    -- ClearAnchors/SetAnchor calls. The viewport clips off-screen children.
+    if pin.easMapLocked029312 == true and self.staticPinLayer and self.fullMapWidth and self.fullMapHeight then
+        x, y = tonumber(x), tonumber(y)
+        if not x or not y or x < 0 or x > 1 or y < 0 or y > 1 then
+            pin:SetHidden(true)
+            return false, false
+        end
+        pin.easMapX029318 = x
+        pin.easMapY029318 = y
+        pin.easMapCullHidden029318 = false
+        local ax = x * self.fullMapWidth
+        local ay = y * self.fullMapHeight
+        local key = string.format("%.5f:%.5f:%d:%d", x, y, math.floor(self.fullMapWidth + 0.5), math.floor(self.fullMapHeight + 0.5))
+
+        -- A pin may have been parked on the dormant layer by the movement
+        -- governor. Any real render/refresh makes it active again immediately.
+        local parentChanged029319 = false
+        if self.staticPinDormantLayer029319 and type(pin.GetParent) == "function" and type(pin.SetParent) == "function" then
+            local okParent029319, currentParent029319 = pcall(pin.GetParent, pin)
+            if okParent029319 and currentParent029319 ~= self.staticPinLayer then
+                pin:SetParent(self.staticPinLayer)
+                parentChanged029319 = true
+            end
+        end
+        if parentChanged029319 or pin.easMapAnchorKey029312 ~= key then
+            pin.easMapAnchorKey029312 = key
+            pin:ClearAnchors()
+            pin:SetAnchor(CENTER, self.staticPinLayer, TOPLEFT, ax, ay)
+        end
+        pin:SetHidden(false)
+        pin:SetAlpha(1.0)
+        return true, false
+    end
+
     local px, py, inside = self:MapToScreen(x, y)
     if px == nil then pin:SetHidden(true) return false, false end
-    local margin = math.max(10, (tonumber(size) or 18) * 0.6)
+    local margin = math.max(8, drawSize * 0.6)
     local edge = false
+    local guideEnabled = EPC.saved and EPC.saved.miniMapEdgeGuidance ~= false
     if not inside then
-        if allowEdge == true and EPC.saved and EPC.saved.miniMapEdgeGuidance ~= false then
-            if self.circularStyle == true then
-                local center = self.size * 0.5
-                local dx = px - center
-                local dy = py - center
-                local distance = math.sqrt((dx * dx) + (dy * dy))
-                local radius = math.max(12, center - margin - 4)
-                if distance > 0.0001 then
-                    local scale = radius / distance
-                    px = center + (dx * scale)
-                    py = center + (dy * scale)
-                else
-                    px = center
-                    py = center
-                end
-            else
-                px = clamp(px, margin, self.size - margin)
-                py = clamp(py, margin + 18, self.size - margin - 14)
-            end
+        if allowEdge == true and guideEnabled then
             edge = true
         else
             pin:SetHidden(true)
             return false, false
         end
+    end
+
+    -- v0.29.303: even a pin whose CENTER is inside the viewport can have half
+    -- of its texture cut by the round mask / fantasy rim.  Keep the complete
+    -- icon inside a safe visual boundary so wayshrines, services, quests, etc.
+    -- remain recognizable at the edge of the minimap.
+    local frameGuard = (self.appliedVisualStyle and string.find(self.appliedVisualStyle, "FANTASY_", 1, true)) and 6 or 2
+    if self.circularStyle == true then
+        local center = self.size * 0.5
+        local dx = px - center
+        local dy = py - center
+        local distance = math.sqrt((dx * dx) + (dy * dy))
+        local radius = math.max(12, center - margin - frameGuard)
+        if distance > radius and distance > 0.0001 then
+            local scale = radius / distance
+            px = center + (dx * scale)
+            py = center + (dy * scale)
+            edge = true
+        end
+    else
+        local minX = margin + frameGuard
+        local maxX = self.size - margin - frameGuard
+        local minY = margin + frameGuard + 4
+        local maxY = self.size - margin - frameGuard - 4
+        local oldX, oldY = px, py
+        px = clamp(px, minX, maxX)
+        py = clamp(py, minY, maxY)
+        if px ~= oldX or py ~= oldY then edge = true end
     end
     pin:ClearAnchors()
     pin:SetAnchor(CENTER, self.viewport, TOPLEFT, px, py)
@@ -2442,6 +3440,81 @@ function M:AddRememberedMerchants()
     end
 end
 
+-- v0.29.313: POI proximity/discovery events are common while running through
+-- towns and dense objective areas. Refresh only the live POI/service layers here
+-- instead of rescanning every wayshrine, PvP keep, native mirror provider, etc.
+function M:RefreshLivePOILayer029313()
+    if not EPC.saved then return end
+    local zoneIndex = tonumber(self.zoneIndex)
+    if not zoneIndex or type(GetNumPOIs) ~= "function" or type(GetPOIMapInfo) ~= "function" then
+        self.poiRefreshDirty029313 = false
+        return
+    end
+
+    self.poiData = {}
+    self.merchantData = {}
+    self.serviceData = {}
+    self.nearestUndiscoveredPOI = nil
+
+    local poiCount = safeNumber(GetNumPOIs, 0, zoneIndex)
+    local noneType = ZONE_COMPLETION_TYPE_NONE or 0
+    for poiIndex = 1, poiCount do
+        local x, y, pinType, icon, shown, locked, discovered, nearby = safe(GetPOIMapInfo, nil, zoneIndex, poiIndex)
+        x, y = tonumber(x), tonumber(y)
+        if shown == true and locked ~= true and x and y and x >= 0 and x <= 1 and y >= 0 and y <= 1 then
+            local completionType = type(GetPOIZoneCompletionType) == "function"
+                and safe(GetPOIZoneCompletionType, noneType, zoneIndex, poiIndex) or noneType
+            local isCompletion = completionType ~= noneType
+            local name = type(GetPOIInfo) == "function"
+                and clean(select(1, safe(GetPOIInfo, "", zoneIndex, poiIndex)), "Point of Interest") or "Point of Interest"
+            local dx = x - (self.playerX or 0.5)
+            local dy = y - (self.playerY or 0.5)
+            local dist2 = (dx * dx) + (dy * dy)
+            local nativeIcon = self:GetNativePvEMapPinTexture(icon, pinType)
+            local data = {
+                x=x, y=y, icon=nativeIcon or icon, name=name, discovered=discovered == true,
+                nearby=nearby == true, isCompletion=isCompletion, distance2=dist2, pinType=pinType,
+                nativeIcon=nativeIcon ~= nil,
+            }
+            if isStableMasterPOI(name, icon) then
+                data.kind = "stable"
+                data.isService = true
+                data.name = clean(name, "Stablemaster")
+                if not data.icon or data.icon == "" then data.icon = getServiceFallbackIcon("stable") end
+                self.serviceData[#self.serviceData + 1] = data
+            elseif isSellMerchantPOI(name, icon) then
+                data.isMerchant = true
+                self.merchantData[#self.merchantData + 1] = data
+            elseif self:LayerEnabled("pois") then
+                self.poiData[#self.poiData + 1] = data
+                if discovered ~= true and (not self.nearestUndiscoveredPOI or dist2 < self.nearestUndiscoveredPOI.distance2) then
+                    self.nearestUndiscoveredPOI = data
+                end
+            end
+        end
+    end
+
+    self:UpdatePOIDistances()
+    -- Legacy caches are disabled in normal Suite builds; these calls remain safe
+    -- for users who deliberately retained that compatibility mode.
+    self:AddRememberedMerchants()
+    self:AddRememberedServices()
+
+    local maxPins = math.max(24, math.min(POI_RENDER_HARD_CAP_029314, tonumber(EPC.saved.miniMapPOIMax) or 160))
+    self:EnsurePOIPins(maxPins)
+    self:EnsureMerchantPins(math.min(48, math.max(16, #(self.merchantData or {}))))
+    self:EnsureServicePins(math.min(32, math.max(8, #(self.serviceData or {}))))
+
+    -- v0.29.314: do not touch the supplemental native snapshot on ordinary POI
+    -- proximity/discovery updates. Filtering that snapshot against every live POI
+    -- and then re-rendering the entire native pool was a dense-town hitch. Native
+    -- snapshot reconciliation now belongs to true static/map-transition refreshes.
+    self:RenderPOIPins()
+    self:RenderMerchantPins()
+    self:RenderServicePins()
+    self.poiRefreshDirty029313 = false
+end
+
 function M:RefreshStaticPins()
     if not EPC.saved then return end
 
@@ -2533,30 +3606,41 @@ function M:RefreshStaticPins()
         end
         self:UpdatePOIDistances()
     end
-    -- If ESO's full map has been opened for this exact mapId, its live pin
-    -- snapshot becomes authoritative. Clear the Suite's independently scanned
-    -- static layers so we do not add extra pins or slightly different positions.
-    local exactNativeMirror = self:AddCapturedNativeTownPins()
-    if exactNativeMirror then
-        self.shrineData = {}
-        self.poiData = {}
-        self.merchantData = {}
-        self.serviceData = {}
-        self.nearestUndiscoveredPOI = nil
-    else
-        -- No native snapshot yet: retain the existing API-based fallback until
-        -- the player opens ESO's full map once for this mapId.
-        self:RememberVisiblePOIs()
-        self:AddRememberedMerchants()
-        self:AddRememberedServices()
-    end
+    -- 0.29.280: live gameplay APIs are always authoritative. A native World Map
+    -- snapshot is optional supplemental data only; it must never replace the
+    -- live layers or require the player to open the full map before icons sync.
+    self:RememberVisiblePOIs()
+    self:AddRememberedMerchants()
+    self:AddRememberedServices()
+    self:AddCapturedNativeTownPins()
+    self:FilterNativeMirrorDuplicates()
 
-    local maxPins = math.max(24, math.min(220, tonumber(EPC.saved.miniMapPOIMax) or 160))
+    local maxPins = math.max(24, math.min(POI_RENDER_HARD_CAP_029314, tonumber(EPC.saved.miniMapPOIMax) or 160))
     self:EnsurePOIPins(maxPins)
-    self:EnsureMerchantPins(math.min(96, math.max(16, #(self.merchantData or {}))))
-    self:EnsureServicePins(math.min(96, math.max(8, #(self.serviceData or {}))))
+    self:EnsureMerchantPins(math.min(48, math.max(16, #(self.merchantData or {}))))
+    self:EnsureServicePins(math.min(32, math.max(8, #(self.serviceData or {}))))
     self:RefreshPvPKeepData()
+
+    -- Place map-locked layers only when their data changes. They subsequently
+    -- travel with staticPinLayer while the player moves.
+    if self.shrineData and self.shrinePins then
+        if self:LayerEnabled("shrines") then
+            for i = 1, #self.shrinePins do
+                local data = self.shrineData[i]
+                if data then self:PlacePin(self.shrinePins[i], data.x, data.y, 17, false) else self.shrinePins[i]:SetHidden(true) end
+            end
+        else
+            for i = 1, #self.shrinePins do self.shrinePins[i]:SetHidden(true) end
+        end
+    end
+    self:RenderNativeMirrorPins()
+    self:RenderPOIPins()
+    self:RenderPvPPins()
+    self:RenderTrail()
+    self:RenderModeLabels()
+    self:UpdateContextText(false)
     self.staticPinsDirty = false
+    self.poiRefreshDirty029313 = false
 end
 
 function M:RefreshPvPKeepData()
@@ -2699,8 +3783,8 @@ function M:RefreshQuestPin()
                     questName = clean(safe(GetJournalQuestName, "Quest", questIndex), "Quest")
                 end
                 local qx, qy = tonumber(position.x), tonumber(position.y)
-                local currentMapId = 0
-                if type(GetCurrentMapId) == "function" then
+                local currentMapId = tonumber(self.mapId) or 0
+                if currentMapId <= 0 and type(GetCurrentMapId) == "function" then
                     currentMapId = tonumber(safe(GetCurrentMapId, 0)) or 0
                 end
                 -- RequestJournalQuestConditionAssistance returns coordinates for
@@ -2743,8 +3827,8 @@ function M:RefreshQuestPin()
     local position = quest and quest.position or nil
     if position and position.available == true then
         local x, y = tonumber(position.x), tonumber(position.y)
-        local currentMapId = 0
-        if type(GetCurrentMapId) == "function" then currentMapId = tonumber(safe(GetCurrentMapId, 0)) or 0 end
+        local currentMapId = tonumber(self.mapId) or 0
+        if currentMapId <= 0 and type(GetCurrentMapId) == "function" then currentMapId = tonumber(safe(GetCurrentMapId, 0)) or 0 end
 
         local gx, gy = tonumber(position.globalX), tonumber(position.globalY)
         if gx ~= nil and gy ~= nil and currentMapId > 0 then
@@ -2886,10 +3970,12 @@ function M:RenderServicePins()
     if not self.servicePins then return end
     local used = 0
     for i = 1, #(self.serviceData or {}) do
-        if used >= #self.servicePins then break end
+        local serviceCap = self.roamingVisualBudget029315 == true and ROAMING_SERVICE_CAP_029315 or #self.servicePins
+        if used >= math.min(#self.servicePins, serviceCap) then break end
         local data = self.serviceData[i]
-        local _, _, inside = self:MapToScreen(data.x, data.y)
-        if inside then
+        -- Service pins are map-locked in 0.29.314. Render them once in full-map
+        -- coordinates and let the viewport clip them; never re-anchor per movement.
+        if data and tonumber(data.x) and tonumber(data.y) then
             used = used + 1
             local pin = self.servicePins[used]
             local backing = self.serviceBackings and self.serviceBackings[used] or nil
@@ -2922,6 +4008,7 @@ function M:RenderServicePins()
             end
         end
     end
+    self.lastServiceRenderUsed029319 = used
     for i = used + 1, #self.servicePins do self.servicePins[i]:SetHidden(true) end
     if self.serviceBackings then
         for i = used + 1, #self.serviceBackings do self.serviceBackings[i]:SetHidden(true) end
@@ -2932,10 +4019,11 @@ function M:RenderMerchantPins()
     if not self.merchantPins then return end
     local used = 0
     for i = 1, #(self.merchantData or {}) do
-        if used >= #self.merchantPins then break end
+        local merchantCap = self.roamingVisualBudget029315 == true and ROAMING_MERCHANT_CAP_029315 or #self.merchantPins
+        if used >= math.min(#self.merchantPins, merchantCap) then break end
         local data = self.merchantData[i]
-        local _, _, inside = self:MapToScreen(data.x, data.y)
-        if inside then
+        -- Merchant pins ride the same static map canvas as POIs/wayshrines.
+        if data and tonumber(data.x) and tonumber(data.y) then
             used = used + 1
             local pin = self.merchantPins[used]
             local size = data.learned and 26 or 22
@@ -2952,26 +4040,27 @@ function M:RenderMerchantPins()
             self:PlacePin(pin, data.x, data.y, size, true)
         end
     end
+    self.lastMerchantRenderUsed029319 = used
     for i = used + 1, #self.merchantPins do self.merchantPins[i]:SetHidden(true) end
 end
 
 function M:RenderPOIPins()
     if not self.poiPins then return end
     if not self:LayerEnabled("pois") then
+        self.lastPOIRenderUsed029318 = 0
         for i = 1, #self.poiPins do self.poiPins[i]:SetHidden(true) end
         return
     end
 
-    local maxPins = math.max(24, math.min(220, tonumber(EPC.saved.miniMapPOIMax) or 160))
+    local maxPins = math.max(24, math.min(POI_RENDER_HARD_CAP_029314, tonumber(EPC.saved.miniMapPOIMax) or 160))
+    if self.roamingVisualBudget029315 == true then maxPins = math.min(maxPins, ROAMING_POI_CAP_029315) end
     local used = 0
     local nativePvE = not self:IsPvPIconOnlyMode()
 
     for i = 1, #(self.poiData or {}) do
         if used >= maxPins then break end
         local data = self.poiData[i]
-        local _, _, inside = self:MapToScreen(data.x, data.y)
-        if inside then
-            local texture = self:GetNativePvEMapPinTexture(data.icon, data.pinType)
+        local texture = self:GetNativePvEMapPinTexture(data.icon, data.pinType)
 
             -- Never replace a missing ESO icon with the generic white/custom
             -- destination diamond.  This keeps the overland map looking like
@@ -3008,27 +4097,28 @@ function M:RenderPOIPins()
                     end
                 end
             end
-        end
     end
 
+    self.lastPOIRenderUsed029318 = used
     for i = used + 1, #self.poiPins do self.poiPins[i]:SetHidden(true) end
 end
 
 function M:CaptureTrailPoint(force)
-    if not self:LayerEnabled("trail") or not self.playerShown then return end
+    if not self:LayerEnabled("trail") or not self.playerShown then return false end
     self.trailData = self.trailData or {}
     local x = tonumber(self.playerX)
     local y = tonumber(self.playerY)
-    if not x or not y then return end
+    if not x or not y then return false end
     local last = self.trailData[#self.trailData]
     if not force and last then
         local dx = x - last.x
         local dy = y - last.y
-        if (dx * dx) + (dy * dy) < 0.000010 then return end
+        if (dx * dx) + (dy * dy) < 0.000010 then return false end
     end
     self.trailData[#self.trailData + 1] = { x=x, y=y }
     local maxPoints = 10
     while #self.trailData > maxPoints do table.remove(self.trailData, 1) end
+    return true
 end
 
 function M:RenderTrail()
@@ -3073,88 +4163,378 @@ function M:PulsePriorityPins()
     if self.waypointPin and not self.waypointPin:IsHidden() and self.waypointPin.SetScale then self.waypointPin:SetScale(scale) end
 end
 
-function M:UpdatePanAndPins(forceStatic)
+-- v0.29.313: update only the player marker. This is intentionally tiny: one
+-- position read, at most two anchors, and texture rotation. It must never touch
+-- POI pools, hidden map providers, quest scans, or static map layers.
+function M:ApplyRoamingVisualBudget029315(moving)
+    moving = moving == true
+    if self.roamingVisualBudget029315 == moving then return end
+    self.roamingVisualBudget029315 = moving
+
+    -- v0.29.316: never delete/static-hide the data merely because the player is
+    -- moving. v0.29.319 only changes which already-populated controls are attached
+    -- to the moving canvas, and restores the wider nearby set as soon as movement
+    -- settles.
+    self.restoreRoamingPins029315 = false
+    self.lastStaticCullAt029318 = nil
+    if self.CullStaticMapPins029318 and self.staticPinLayer then
+        self:CullStaticMapPins029318(true)
+    end
+end
+
+-- v0.29.315: one lightweight motion path owns BOTH the map camera and player
+-- marker. 0.29.313 updated the arrow at 33 ms while the map camera moved at
+-- 100 ms, so the two coordinate spaces repeatedly drifted apart and snapped
+-- back together. That was the visible arrow skip. This path samples the player,
+-- smooths position/heading with frame-time based interpolation, pans only the
+-- two parent map controls, and never touches POI/provider/quest data.
+function M:SetStaticPinParked029319(pin, parked)
+    if not pin or pin.easMapLocked029312 ~= true then return end
+    local dormant = self.staticPinDormantLayer029319
+    if parked == true then
+        if pin.easMapParked029319 == true then return end
+        pin.easMapParked029319 = true
+        pin.easMapCullHidden029318 = true
+        pin:SetHidden(true)
+        if dormant and type(pin.SetParent) == "function" then
+            pin:ClearAnchors()
+            pin:SetParent(dormant)
+            pin.easMapAnchorKey029312 = nil
+        end
+        return
+    end
+
+    if pin.easMapParked029319 ~= true then
+        if pin.easMapCullHidden029318 == true then
+            pin:SetHidden(false)
+            pin.easMapCullHidden029318 = false
+        end
+        return
+    end
+
+    pin.easMapParked029319 = false
+    if self.staticPinLayer and type(pin.SetParent) == "function" then
+        pin:SetParent(self.staticPinLayer)
+    end
+    local x, y = tonumber(pin.easMapX029318), tonumber(pin.easMapY029318)
+    if x and y and self.fullMapWidth and self.fullMapHeight then
+        local ax, ay = x * self.fullMapWidth, y * self.fullMapHeight
+        pin:ClearAnchors()
+        pin:SetAnchor(CENTER, self.staticPinLayer, TOPLEFT, ax, ay)
+        pin.easMapAnchorKey029312 = string.format("%.5f:%.5f:%d:%d", x, y, math.floor(self.fullMapWidth + 0.5), math.floor(self.fullMapHeight + 0.5))
+    end
+    if pin.easMapCullHidden029318 == true then
+        pin:SetHidden(false)
+        pin.easMapCullHidden029318 = false
+    end
+end
+
+function M:CullStaticMapPins029318(force)
     if not self.playerShown or not self.fullMapWidth or not self.fullMapHeight then return end
-    local x, y, heading, shown = safe(GetMapPlayerPosition, nil, "player")
-    if shown == true and tonumber(x) and tonumber(y) then
-        self.playerX = clamp(x, 0, 1)
-        self.playerY = clamp(y, 0, 1)
-        self.playerHeading = tonumber(heading) or self.playerHeading or 0
+    local nowMs = type(GetFrameTimeMilliseconds) == "function" and (tonumber(GetFrameTimeMilliseconds()) or 0) or (nowSeconds() * 1000)
+    local moving = nowMs < (tonumber(self.motionMovingUntil029315) or 0)
+    local cullGap = moving and ROAMING_STATIC_CULL_MS_029319 or STATIONARY_STATIC_CULL_MS_029319
+    if force ~= true and self.lastStaticCullAt029318 and (nowMs - self.lastStaticCullAt029318) < cullGap then return end
+    self.lastStaticCullAt029318 = nowMs
+
+    local cx = tonumber(self.viewPlayerX) or tonumber(self.playerX) or 0.5
+    local cy = tonumber(self.viewPlayerY) or tonumber(self.playerY) or 0.5
+    -- v0.29.341: do not rescan every static pin pool just because the cull timer
+    -- elapsed. Require meaningful camera travel as well. This removes recurring
+    -- 300 ms traversal spikes while running through dense POI areas.
+    if force ~= true and self.lastStaticCullCenterX029341 and self.lastStaticCullCenterY029341 then
+        local dxPx = math.abs(cx - self.lastStaticCullCenterX029341) * self.fullMapWidth
+        local dyPx = math.abs(cy - self.lastStaticCullCenterY029341) * self.fullMapHeight
+        if dxPx < 20 and dyPx < 20 then return end
     end
+    self.lastStaticCullCenterX029341, self.lastStaticCullCenterY029341 = cx, cy
+    -- Smaller roaming prefetch keeps the moving hierarchy lean. At rest use a
+    -- wider margin so nearby icons are already attached before the next move.
+    local marginScale = moving and 0.58 or 0.72
+    local halfX = math.min(0.5, (self.size * marginScale) / self.fullMapWidth)
+    local halfY = math.min(0.5, (self.size * marginScale) / self.fullMapHeight)
 
-    -- Keep the camera inside the actual ESO map texture. Near zone/map edges the
-    -- player is allowed to move away from the center instead of exposing empty
-    -- space beyond the source map, similar to modern navigation apps.
-    local halfVisibleX = math.min(0.5, (self.size * 0.5) / self.fullMapWidth)
-    local halfVisibleY = math.min(0.5, (self.size * 0.5) / self.fullMapHeight)
-    local targetViewX = clamp(self.playerX, halfVisibleX, 1.0 - halfVisibleX)
-    local targetViewY = clamp(self.playerY, halfVisibleY, 1.0 - halfVisibleY)
+    local poiLimit = tonumber(self.lastPOIRenderUsed029318) or 0
+    local nativeLimit = tonumber(self.lastNativeMirrorUsed029318) or 0
+    local shrineLimit = #(self.shrineData or {})
+    local merchantLimit = tonumber(self.lastMerchantRenderUsed029319) or 0
+    local trailLimit = #(self.trailData or {})
+    local groups = {
+        { pool = self.poiPins, limit = poiLimit, cap = moving and ROAMING_VISIBLE_POI_CAP_029319 or poiLimit },
+        { pool = self.nativeMirrorPins, limit = nativeLimit, cap = moving and ROAMING_VISIBLE_NATIVE_CAP_029319 or nativeLimit },
+        { pool = self.shrinePins, limit = shrineLimit, cap = moving and ROAMING_VISIBLE_SHRINE_CAP_029319 or shrineLimit },
+        { pool = self.merchantPins, limit = merchantLimit, cap = moving and ROAMING_VISIBLE_MERCHANT_CAP_029319 or merchantLimit },
+        -- Crafting/service stations stay attached to the static map layer. They are
+        -- few in number, and parking/re-parenting them while moving made learned
+        -- station icons appear to blink/jump or lag behind the map.
+        { pool = self.trailPins, limit = trailLimit, cap = trailLimit },
+    }
 
-    -- GetMapPlayerPosition can advance in visible steps even with a 60 Hz pulse.
-    -- Ease the camera center toward the clamped target so movement glides instead
-    -- of snapping between map coordinates.
-    if forceStatic or self.viewPlayerX == nil or self.viewPlayerY == nil then
-        self.viewPlayerX = targetViewX
-        self.viewPlayerY = targetViewY
-    else
-        local follow = 0.18
-        self.viewPlayerX = self.viewPlayerX + ((targetViewX - self.viewPlayerX) * follow)
-        self.viewPlayerY = self.viewPlayerY + ((targetViewY - self.viewPlayerY) * follow)
-        -- Never let interpolation itself drift outside the legal camera range.
-        self.viewPlayerX = clamp(self.viewPlayerX, halfVisibleX, 1.0 - halfVisibleX)
-        self.viewPlayerY = clamp(self.viewPlayerY, halfVisibleY, 1.0 - halfVisibleY)
-    end
-
-    local offsetX = (self.size * 0.5) - (self.viewPlayerX * self.fullMapWidth)
-    local offsetY = (self.size * 0.5) - (self.viewPlayerY * self.fullMapHeight)
-    self.tileContainer:ClearAnchors()
-    self.tileContainer:SetAnchor(TOPLEFT, self.viewport, TOPLEFT, offsetX, offsetY)
-
-    -- The player stays centered in the interior of a map, but naturally shifts
-    -- toward the viewport edge when the camera reaches the map boundary.
-    local playerScreenX, playerScreenY = self:MapToScreen(self.playerX, self.playerY)
-    playerScreenX = playerScreenX or (self.size * 0.5)
-    playerScreenY = playerScreenY or (self.size * 0.5)
-    if self.playerGlow then
-        if type(self.playerGlow.SetTextureRotation) == "function" then self.playerGlow:SetTextureRotation(self.playerHeading or 0, 0.5, 0.5) end
-        self.playerGlow:ClearAnchors()
-        self.playerGlow:SetAnchor(CENTER, self.viewport, TOPLEFT, playerScreenX, playerScreenY)
-        self.playerGlow:SetHidden(false)
-    end
-    if type(self.playerPin.SetTextureRotation) == "function" then self.playerPin:SetTextureRotation(self.playerHeading or 0, 0.5, 0.5) end
-    self.playerPin:ClearAnchors()
-    self.playerPin:SetAnchor(CENTER, self.viewport, TOPLEFT, playerScreenX, playerScreenY)
-    self.playerPin:SetHidden(false)
-
-    if self.shrineData and self.shrinePins then
-        if self:LayerEnabled("shrines") then
-            for i = 1, #self.shrinePins do
-                local data = self.shrineData[i]
-                if data then self:PlacePin(self.shrinePins[i], data.x, data.y, 17, false) else self.shrinePins[i]:SetHidden(true) end
+    for _, group in ipairs(groups) do
+        local pool = group.pool
+        local limit = math.max(0, tonumber(group.limit) or 0)
+        local visibleCap = math.max(0, tonumber(group.cap) or limit)
+        local visibleUsed = 0
+        if type(pool) == "table" then
+            local activeLimit = math.min(#pool, limit)
+            for i = 1, activeLimit do
+                local pin = pool[i]
+                if pin and pin.easMapLocked029312 == true then
+                    local x, y = tonumber(pin.easMapX029318), tonumber(pin.easMapY029318)
+                    if x and y then
+                        local inBudget = math.abs(x - cx) <= halfX and math.abs(y - cy) <= halfY
+                        local shouldAttach = inBudget and visibleUsed < visibleCap
+                        if shouldAttach then
+                            visibleUsed = visibleUsed + 1
+                            self:SetStaticPinParked029319(pin, false)
+                        else
+                            self:SetStaticPinParked029319(pin, true)
+                        end
+                    else
+                        self:SetStaticPinParked029319(pin, true)
+                    end
+                end
             end
-        else
-            for i = 1, #self.shrinePins do self.shrinePins[i]:SetHidden(true) end
+            -- Pool controls above the currently rendered count are otherwise
+            -- hidden but still descendants of the moving layer. Park them too;
+            -- PlacePin() automatically reattaches one when a later refresh uses it.
+            for i = activeLimit + 1, #pool do
+                self:SetStaticPinParked029319(pool[i], true)
+            end
         end
     end
+end
 
-    self:RenderNativeMirrorPins()
-    self:RenderTreasureLocatorPins()
-    self:RenderMerchantPins()
-    self:RenderServicePins()
-    self:RenderPOIPins()
-    self:RenderAntiquityPins()
-    -- Draw alliance-owned transitus connections beneath PvP objective icons.
-    self:RenderPvPTransitLines()
-    self:RenderPvPPins()
-    self:RenderTrail()
-    self:RefreshWaypointPin()
-    self:RefreshQuestPin()
-    self:RefreshRallyPin()
-    self:RefreshGroupPins()
-    self:RefreshCompanionPin()
-    self:PulsePriorityPins()
-    self:RenderModeLabels()
-    self:UpdateContextText(false)
+function M:UpdatePlayerMarkerFast(force, useCachedPosition)
+    if not self.playerShown or not self.viewport or not self.fullMapWidth or not self.fullMapHeight then return end
+
+    local nowMs = type(GetFrameTimeMilliseconds) == "function" and (tonumber(GetFrameTimeMilliseconds()) or 0) or (nowSeconds() * 1000)
+    local lastMs = tonumber(self.lastFastMotionAt029315) or nowMs
+    local dt = math.max(0.001, math.min(0.050, (nowMs - lastMs) / 1000))
+    self.lastFastMotionAt029315 = nowMs
+
+    -- v0.29.341: ESO's normalized map position does not need to be queried on
+    -- every 16 ms marker tick. Sample it at the same fixed cadence as the map
+    -- camera, then interpolate the cached sample between updates. This halves
+    -- the movement-time map-position API traffic and removes the old velocity
+    -- prediction overshoot/correction cycle that could make the marker tremble.
+    local positionDue = force == true
+        or self.lastMapPositionSampleAt029341 == nil
+        or (nowMs - self.lastMapPositionSampleAt029341) >= MINIMAP_POSITION_SAMPLE_MS_029341
+
+    if useCachedPosition ~= true and positionDue then
+        local x, y, heading, shown = safe(GetMapPlayerPosition, nil, "player")
+        if shown == true and tonumber(x) and tonumber(y) then
+            self.lastMapPositionSampleAt029341 = nowMs
+            local nx, ny = clamp(x, 0, 1), clamp(y, 0, 1)
+            local lx, ly = tonumber(self.lastMotionMapX029314), tonumber(self.lastMotionMapY029314)
+            if lx and ly then
+                local mdx, mdy = nx - lx, ny - ly
+                if (mdx * mdx) + (mdy * mdy) >= 0.0000000004 then
+                    self.lastPlayerMotionAt029314 = nowSeconds()
+                    self.motionMovingUntil029315 = nowMs + ROAMING_MOTION_GRACE_MS_029315
+                end
+            end
+            self.lastMotionMapX029314, self.lastMotionMapY029314 = nx, ny
+            self.playerShown = true
+            self.playerX, self.playerY = nx, ny
+            if tonumber(self.mapId) and self.mapId > 0 then
+                self.lastGameplayMapId = self.mapId
+                self.lastGameplayX = nx
+                self.lastGameplayY = ny
+            end
+            local sampledHeading = tonumber(heading)
+            if sampledHeading ~= nil then
+                local previousHeading = tonumber(self.playerHeading)
+                if previousHeading == nil then
+                    self.playerHeading = sampledHeading
+                else
+                    local headingDelta = sampledHeading - previousHeading
+                    while headingDelta > math.pi do headingDelta = headingDelta - (math.pi * 2) end
+                    while headingDelta < -math.pi do headingDelta = headingDelta + (math.pi * 2) end
+                    -- Ignore sub-degree camera/player-heading noise. Accumulated
+                    -- real turning still crosses the threshold immediately, while
+                    -- standing/running straight no longer makes the arrow twitch.
+                    if math.abs(headingDelta) >= 0.0025 then self.playerHeading = sampledHeading end
+                end
+            elseif self.playerHeading == nil then
+                self.playerHeading = 0
+            end
+        elseif self.playerX == nil or self.playerY == nil then
+            return
+        end
+    elseif self.playerX == nil or self.playerY == nil then
+        return
+    end
+
+    local targetX = tonumber(self.playerX)
+    local targetY = tonumber(self.playerY)
+    if not targetX or not targetY then return end
+    local targetHeading = tonumber(self.playerHeading) or 0
+
+    if force == true or self.motionDisplayX029315 == nil or self.motionDisplayY029315 == nil then
+        self.motionDisplayX029315, self.motionDisplayY029315 = targetX, targetY
+        self.motionDisplayHeading029315 = targetHeading
+    else
+        local follow = 1 - math.exp(-dt / MOTION_SMOOTH_TIME_S_029315)
+        self.motionDisplayX029315 = self.motionDisplayX029315 + ((targetX - self.motionDisplayX029315) * follow)
+        self.motionDisplayY029315 = self.motionDisplayY029315 + ((targetY - self.motionDisplayY029315) * follow)
+        local h = tonumber(self.motionDisplayHeading029315) or targetHeading
+        local delta = targetHeading - h
+        while delta > math.pi do delta = delta - (math.pi * 2) end
+        while delta < -math.pi do delta = delta + (math.pi * 2) end
+        h = h + (delta * follow)
+        if h < 0 then h = h + (math.pi * 2) elseif h >= math.pi * 2 then h = h - (math.pi * 2) end
+        self.motionDisplayHeading029315 = h
+    end
+
+    local displayX = self.motionDisplayX029315
+    local displayY = self.motionDisplayY029315
+    local displayHeading = tonumber(self.motionDisplayHeading029315) or targetHeading
+
+    -- The map tree still pans at a fixed 30 Hz. The marker itself no longer
+    -- carries the camera's inter-frame residual in the ordinary interior of a
+    -- map: that old compensation made it drift a fraction of a pixel and snap
+    -- back every camera pan. Keep the marker exactly centered while the camera
+    -- can follow; only let it move on an axis when the map boundary clamps that
+    -- axis and the player genuinely has to travel away from center.
+    local halfVisibleX = math.min(0.5, (self.size * 0.5) / self.fullMapWidth)
+    local halfVisibleY = math.min(0.5, (self.size * 0.5) / self.fullMapHeight)
+    local desiredViewX = clamp(displayX, halfVisibleX, 1.0 - halfVisibleX)
+    local desiredViewY = clamp(displayY, halfVisibleY, 1.0 - halfVisibleY)
+
+    local cameraX = tonumber(self.motionCameraX029318)
+    local cameraY = tonumber(self.motionCameraY029318)
+    local panDue = force == true or cameraX == nil or cameraY == nil
+        or self.lastCameraPanAt029318 == nil
+        or (nowMs - self.lastCameraPanAt029318) >= MINIMAP_CAMERA_PAN_MS_029318
+    if panDue then
+        cameraX, cameraY = desiredViewX, desiredViewY
+        self.motionCameraX029318, self.motionCameraY029318 = cameraX, cameraY
+        self.lastCameraPanAt029318 = nowMs
+        local offsetX = (self.size * 0.5) - (cameraX * self.fullMapWidth)
+        local offsetY = (self.size * 0.5) - (cameraY * self.fullMapHeight)
+        local cameraMoved029319 = force == true or self.lastPanOffsetX029312 == nil
+            or math.abs(offsetX - self.lastPanOffsetX029312) >= 0.20
+            or math.abs(offsetY - self.lastPanOffsetY029312) >= 0.20
+        if cameraMoved029319 then
+            self.lastPanOffsetX029312, self.lastPanOffsetY029312 = offsetX, offsetY
+            self.tileContainer:ClearAnchors()
+            self.tileContainer:SetAnchor(TOPLEFT, self.viewport, TOPLEFT, offsetX, offsetY)
+            if self.staticPinLayer then
+                self.staticPinLayer:ClearAnchors()
+                self.staticPinLayer:SetAnchor(TOPLEFT, self.viewport, TOPLEFT, offsetX, offsetY)
+            end
+        end
+        self.viewPlayerX, self.viewPlayerY = cameraX, cameraY
+        if cameraMoved029319 or force == true then
+            self:CullStaticMapPins029318(force == true)
+        end
+    else
+        cameraX = cameraX or desiredViewX
+        cameraY = cameraY or desiredViewY
+        self.viewPlayerX, self.viewPlayerY = cameraX, cameraY
+    end
+
+    local center = self.size * 0.5
+    local xIsBoundaryClamped = math.abs(desiredViewX - displayX) > 0.0000001
+    local yIsBoundaryClamped = math.abs(desiredViewY - displayY) > 0.0000001
+    local playerScreenX = xIsBoundaryClamped and (center + ((displayX - desiredViewX) * self.fullMapWidth)) or center
+    local playerScreenY = yIsBoundaryClamped and (center + ((displayY - desiredViewY) * self.fullMapHeight)) or center
+
+    local lastHeading = tonumber(self.lastFastPlayerHeading029313)
+    local headingChanged = force == true or lastHeading == nil
+    if not headingChanged then
+        local d = math.abs(displayHeading - lastHeading)
+        if d > math.pi then d = (math.pi * 2) - d end
+        headingChanged = d >= 0.0012
+    end
+    local moved = force == true or self.lastFastPlayerX029313 == nil
+        or math.abs(playerScreenX - self.lastFastPlayerX029313) >= 0.10
+        or math.abs(playerScreenY - self.lastFastPlayerY029313) >= 0.10
+
+    if self.playerGlow then
+        local glowSize = self:GetPlayerGlowSize()
+        if force == true or self.lastFastGlowSize029313 ~= glowSize then
+            self.lastFastGlowSize029313 = glowSize
+            if type(self.playerGlow.SetDimensions) == "function" then self.playerGlow:SetDimensions(glowSize, glowSize) end
+        end
+        if headingChanged and type(self.playerGlow.SetTextureRotation) == "function" then
+            self.playerGlow:SetTextureRotation(displayHeading, 0.5, 0.5)
+        end
+        if moved then
+            self.playerGlow:ClearAnchors()
+            self.playerGlow:SetAnchor(CENTER, self.viewport, TOPLEFT, playerScreenX, playerScreenY)
+        end
+        self.playerGlow:SetHidden(false)
+    end
+
+    if self.playerPin then
+        local playerSize = self:GetPlayerPinSize()
+        if force == true or self.lastFastPlayerSize029313 ~= playerSize then
+            self.lastFastPlayerSize029313 = playerSize
+            if type(self.playerPin.SetDimensions) == "function" then self.playerPin:SetDimensions(playerSize, playerSize) end
+        end
+        if headingChanged and type(self.playerPin.SetTextureRotation) == "function" then
+            self.playerPin:SetTextureRotation(displayHeading, 0.5, 0.5)
+        end
+        if moved then
+            self.playerPin:ClearAnchors()
+            self.playerPin:SetAnchor(CENTER, self.viewport, TOPLEFT, playerScreenX, playerScreenY)
+        end
+        self.playerPin:SetHidden(false)
+    end
+
+    if moved then self.lastFastPlayerX029313, self.lastFastPlayerY029313 = playerScreenX, playerScreenY end
+    if headingChanged then self.lastFastPlayerHeading029313 = displayHeading end
+
+    local moving = nowMs < (tonumber(self.motionMovingUntil029315) or 0)
+    self:ApplyRoamingVisualBudget029315(moving)
+end
+
+function M:UpdatePanAndPins(forceStatic)
+    if not self.playerShown or not self.fullMapWidth or not self.fullMapHeight then return end
+
+    -- The 16 ms motion path owns position, camera pan, and arrow rotation. A
+    -- forced rebuild snaps that shared motion state immediately; ordinary slow
+    -- pulses must not move the camera a second time.
+    if forceStatic == true then
+        self:UpdatePlayerMarkerFast(true, false)
+    end
+
+    local pinNow029312 = nowSeconds()
+    local frameNowMs029318 = type(GetFrameTimeMilliseconds) == "function" and (tonumber(GetFrameTimeMilliseconds()) or 0) or (pinNow029312 * 1000)
+    local moving029318 = frameNowMs029318 < (tonumber(self.motionMovingUntil029315) or 0)
+    local edgeGap029318 = moving029318 and 1.25 or 0.75
+    local dynamicGap029318 = moving029318 and 0.85 or 0.60
+    local pvpGap029318 = moving029318 and 1.50 or 1.00
+    if forceStatic == true or not self.lastEdgePinLayoutAt029312 or (pinNow029312 - self.lastEdgePinLayoutAt029312) >= edgeGap029318 then
+        self.lastEdgePinLayoutAt029312 = pinNow029312
+        self:RenderTreasureLocatorPins()
+        self:RenderAntiquityPins()
+    end
+    if forceStatic == true or not self.lastDynamicPinLayoutAt029312 or (pinNow029312 - self.lastDynamicPinLayoutAt029312) >= dynamicGap029318 then
+        self.lastDynamicPinLayoutAt029312 = pinNow029312
+        self:RefreshWaypointPin()
+        self:RefreshQuestPin()
+        self:RefreshRallyPin()
+        self:RefreshGroupPins()
+        self:RefreshCompanionPin()
+    end
+    if forceStatic == true or not self.lastPvPLineLayoutAt029312 or (pinNow029312 - self.lastPvPLineLayoutAt029312) >= pvpGap029318 then
+        self.lastPvPLineLayoutAt029312 = pinNow029312
+        self:RenderPvPTransitLines()
+    end
+    if moving029318 then
+        if self.priorityPulsePaused029318 ~= true then
+            self.priorityPulsePaused029318 = true
+            if self.questPin and self.questPin.SetScale then self.questPin:SetScale(1) end
+            if self.waypointPin and self.waypointPin.SetScale then self.waypointPin:SetScale(1) end
+        end
+    else
+        self.priorityPulsePaused029318 = false
+        self:PulsePriorityPins()
+    end
 end
 
 function M:Refresh(force)
@@ -3187,24 +4567,80 @@ function M:RegisterEvents()
     local function syncMapTransitionNow()
         self.needsSync = true
         self.staticPinsDirty = true
+        -- The hidden native pump can legitimately trigger OnWorldMapChanged as
+        -- part of ESO's own update function. Do not recursively start another
+        -- transition/pump from that internally generated callback.
+        if self.hiddenNativeMapPumpInProgress == true then return end
 
-        -- Town/sub-map boundaries can change underneath the player without a
-        -- normal zone load. Do the handoff immediately so the player marker
-        -- never keeps running across the stale town map while waiting for the
-        -- periodic update/watchdog.
-        if self.frame and not self:IsWorldMapShowing() then
+        -- LibMapData and ESO can report the same handoff through several
+        -- callbacks on adjacent frames. Coalesce that burst so one zone change
+        -- does not rebuild the tile grid several times. The scheduled retries
+        -- below still catch a mapId that becomes valid a few frames later.
+        local signalAt = nowSeconds()
+        if self.lastMapTransitionSignal and signalAt - self.lastMapTransitionSignal < 0.20 then return end
+        self.lastMapTransitionSignal = signalAt
+
+        self.mapTransitionToken = (tonumber(self.mapTransitionToken) or 0) + 1
+        local token = self.mapTransitionToken
+
+        -- Never carry static pins/trails from the previous area across a travel
+        -- handoff. ESO and LibMapData can publish the new map on adjacent frames,
+        -- so retry briefly until the verified player map is ready.
+        self.trailData = {}
+        self:ClearStaticPinsForMapTransition()
+
+        local function attempt()
+            if token ~= self.mapTransitionToken then return end
+            if not self.frame or self:IsWorldMapShowing() then return end
+            if self.hiddenMapContextSyncInProgress == true then
+                self.needsSync = true
+                self.staticPinsDirty = true
+                return
+            end
+            self:TrySyncHiddenPlayerMap("transition")
             local synced = self:SyncToPlayerMap(true)
             self.needsSync = not synced
             if synced then
+                -- v0.29.311: prime the expensive hidden native map exactly once
+                -- for this resolved transition. All scheduled attempts share this
+                -- token; once the map is valid, invalidate the remaining retries.
+                local resolvedMapId = tonumber(self.mapId) or 0
+                local primeNow = nowSeconds()
+                if resolvedMapId > 0 and (tonumber(self.lastTransitionPrimedMapId029311) ~= resolvedMapId
+                    or primeNow - (tonumber(self.lastTransitionPrimeAt029311) or 0) >= 2.0) then
+                    self.lastTransitionPrimedMapId029311 = resolvedMapId
+                    self.lastTransitionPrimeAt029311 = primeNow
+                    if self:PrimeHiddenWorldMapPins("transition", true) then
+                        self.hiddenPinRefreshRequested = false
+                    end
+                end
                 self:RefreshStaticPins()
                 self:UpdatePanAndPins(true)
                 self:ScheduleLiveNativeMirrorRefresh(self.mapId)
+                if self.mapTransitionToken == token then self.mapTransitionToken = token + 1 end
+            end
+        end
+
+        attempt()
+        if type(zo_callLater) == "function" then
+            for _, delay in ipairs({60, 160, 350, 700, 1200, 2200, 3500}) do
+                zo_callLater(attempt, delay)
             end
         end
     end
 
     if LMD and type(LMD.RegisterCallback) == "function" and LMD.callbackType then
         local function onMapDataChanged()
+            if self.hiddenNativeMapPumpInProgress == true then
+                self.needsSync = true
+                self.staticPinsDirty = true
+                return
+            end
+            if self.hiddenMapContextSyncInProgress == true then
+                self.needsSync = true
+                self.staticPinsDirty = true
+                return
+            end
             syncMapTransitionNow()
         end
         if LMD.callbackType.OnWorldMapChanged then
@@ -3227,19 +4663,56 @@ function M:RegisterEvents()
     local function register(eventId, staticPinsDirty)
         if not eventId or seen[eventId] or not EVENT_MANAGER or type(EVENT_MANAGER.RegisterForEvent) ~= "function" then return end
         seen[eventId] = true
-        EVENT_MANAGER:RegisterForEvent(prefix .. "_" .. tostring(eventId), eventId, function()
-            if eventId == EVENT_LINKED_WORLD_POSITION_CHANGED then
+        EVENT_MANAGER:RegisterForEvent(prefix .. "_" .. tostring(eventId), eventId, function(...)
+            -- Only genuine player-map transitions are allowed to request a map
+            -- resync. POI/group/quest/network events do NOT mean the current map
+            -- is wrong, and treating them as transitions was the main POI-area
+            -- frame-drop source in 0.29.312.
+            if eventId == EVENT_PLAYER_ACTIVATED
+                or eventId == EVENT_ZONE_CHANGED
+                or eventId == EVENT_LINKED_WORLD_POSITION_CHANGED then
                 syncMapTransitionNow()
                 return
             end
-            self.needsSync = true
-            if staticPinsDirty == true then self.staticPinsDirty = true end
+
+            -- Approaching, discovering, or changing POIs can emit bursts of these
+            -- events while the player is running. Coalesce them and refresh only
+            -- the live POI layer after the burst settles.
+            if eventId == EVENT_POI_UPDATED
+                or (EVENT_POIS_INITIALIZED ~= nil and eventId == EVENT_POIS_INITIALIZED) then
+                self.poiRefreshDirty029313 = true
+                self.lastPOIEventAt029313 = nowSeconds()
+                return
+            end
+
+            -- Group/tracking/quest pins are already refreshed by the cheap dynamic
+            -- marker cadence in UpdatePanAndPins. Never wake the hidden map for them.
+            if eventId == EVENT_GROUP_UPDATE
+                or eventId == EVENT_GROUP_MEMBER_JOINED
+                or eventId == EVENT_GROUP_MEMBER_LEFT
+                or eventId == EVENT_TRACKING_UPDATE
+                or eventId == EVENT_QUEST_ADDED
+                or eventId == EVENT_QUEST_REMOVED
+                or eventId == EVENT_QUEST_ADVANCED
+                or eventId == EVENT_QUEST_CONDITION_COUNTER_CHANGED then
+                return
+            end
+
+            if staticPinsDirty == true then
+                self.staticPinsDirty = true
+                -- Fast-travel/world-object networks may genuinely alter native
+                -- provider pins. Coalesce one provider prime, but never mark the
+                -- player map itself as out of sync.
+                self.hiddenPinRefreshRequested = true
+            end
         end)
     end
 
     register(EVENT_PLAYER_ACTIVATED, true)
     register(EVENT_ZONE_CHANGED, true)
     register(EVENT_LINKED_WORLD_POSITION_CHANGED, true)
+    register(EVENT_POIS_INITIALIZED, true)
+    register(EVENT_WORLD_EVENTS_INITIALIZED, true)
     register(EVENT_FAST_TRAVEL_NETWORK_UPDATED, true)
     register(EVENT_FAST_TRAVEL_KEEP_NETWORK_UPDATED, true)
     register(EVENT_FAST_TRAVEL_KEEP_NETWORK_LINK_CHANGED, true)
@@ -3268,13 +4741,22 @@ function M:RegisterEvents()
     end
     -- Custom stable learning intentionally removed. Native stable map POIs
     -- continue to render through the ordinary ESO POI layer when available.
-    register(EVENT_QUEST_ADDED, false)
-    register(EVENT_QUEST_REMOVED, false)
-    register(EVENT_QUEST_ADVANCED, false)
-    register(EVENT_QUEST_CONDITION_COUNTER_CHANGED, false)
+    register(EVENT_QUEST_ADDED, true)
+    register(EVENT_QUEST_REMOVED, true)
+    register(EVENT_QUEST_ADVANCED, true)
+    register(EVENT_QUEST_CONDITION_COUNTER_CHANGED, true)
 
     if not EVENT_MANAGER or type(EVENT_MANAGER.RegisterForUpdate) ~= "function" then return end
-    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Pulse", 50, function()
+
+    EVENT_MANAGER:RegisterForUpdate(prefix .. "_PlayerMarker", MINIMAP_PLAYER_MARKER_MS, function()
+        -- The main minimap pulse owns visibility/menu state. The fast marker path
+        -- only needs to know whether its parent is currently visible; avoid doing
+        -- additional scene/map queries 30 times per second.
+        if not self.frame or not EPC.saved or self.frame:IsHidden() then return end
+        self:UpdatePlayerMarkerFast(false, false)
+    end)
+
+    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Pulse", MINIMAP_PULSE_MS, function()
         if not self.frame or not EPC.saved then return end
         self:SyncESOCompassVisibility()
         local show = EPC.saved.showMiniMap ~= false or self.layoutMode == true
@@ -3326,16 +4808,39 @@ function M:RegisterEvents()
         -- request a full sync whenever it differs from the minimap map. This never
         -- changes ESO's visible World Map.
         local mapWatchNow = nowSeconds()
-        if LMD and (not self.lastMapIdWatch or mapWatchNow - self.lastMapIdWatch >= 0.05) then
+        if not self.lastMapIdWatch or mapWatchNow - self.lastMapIdWatch >= MAP_ID_WATCH_INTERVAL_S then
             self.lastMapIdWatch = mapWatchNow
-            local libraryMapId = tonumber(LMD.mapId) or 0
-            if libraryMapId > 0 and libraryMapId ~= (tonumber(self.mapId) or 0) then
+            local watchedMapId = 0
+            if type(DoesCurrentMapMatchMapForPlayerLocation) == "function"
+                and safe(DoesCurrentMapMatchMapForPlayerLocation, false) == true then
+                watchedMapId = safeNumber(GetCurrentMapId, 0)
+            end
+            if watchedMapId <= 0 and LMD then watchedMapId = tonumber(LMD.mapId) or 0 end
+            if watchedMapId > 0 and watchedMapId ~= (tonumber(self.mapId) or 0) then
                 self.needsSync = true
                 self.staticPinsDirty = true
+                -- Keep ESO's hidden current map aligned with the player's real area
+                -- so the minimap can switch immediately on city/interior travel.
+                self:TrySyncHiddenPlayerMap("transition")
+                -- Switch on this pulse rather than waiting for another one.
+                local synced = self:SyncToPlayerMap(true)
+                self.needsSync = not synced
+                if synced then
+                    self:RefreshStaticPins()
+                    self:UpdatePanAndPins(true)
+                    self:ScheduleLiveNativeMirrorRefresh(self.mapId)
+                end
+            elseif type(DoesCurrentMapMatchMapForPlayerLocation) == "function"
+                and safe(DoesCurrentMapMatchMapForPlayerLocation, false) ~= true then
+                -- v0.29.341: this used to run on every 240 ms pulse. Checking at
+                -- the map-id watchdog cadence is sufficient and avoids repeated
+                -- hidden-map sync probes during ordinary movement.
+                self:TrySyncHiddenPlayerMap("pulse")
             end
         end
 
         if self.needsSync or not self.mapId then
+            self:TrySyncHiddenPlayerMap("transition")
             local synced = self:SyncToPlayerMap(true)
             self.needsSync = not synced
             self.staticPinsDirty = true
@@ -3348,45 +4853,80 @@ function M:RegisterEvents()
                 self:UpdatePanAndPins(true)
             end
         else
-            local x, y, heading, shown = safe(GetMapPlayerPosition, nil, "player")
-            if shown == true and tonumber(x) and tonumber(y) then
-                self.playerShown = true
-                self.playerX = clamp(x, 0, 1)
-                self.playerY = clamp(y, 0, 1)
-                self.playerHeading = tonumber(heading) or self.playerHeading or 0
-                if tonumber(self.mapId) and self.mapId > 0 then
-                    self.lastGameplayMapId = self.mapId
-                    self.lastGameplayX = self.playerX
-                    self.lastGameplayY = self.playerY
-                end
-            else
-                self.needsSync = true
-            end
+            -- v0.29.341: the fast marker path already owns the authoritative
+            -- GetMapPlayerPosition sample at 30 Hz. Re-reading it here duplicated
+            -- map-position work during movement and could feed the camera two
+            -- slightly different samples. The slow pulse consumes that cache only.
+            if self.playerX == nil or self.playerY == nil then self.needsSync = true end
         end
 
         local effective = self:GetEffectiveZoom()
         if self.effectiveZoom and math.abs(effective - self.effectiveZoom) > 0.01 then self:RebuildMap(true) end
 
         local now = nowSeconds()
-        if self.staticPinsDirty and (not self.lastStaticRefresh or now - self.lastStaticRefresh >= 0.50) then
+
+        -- Quest/POI/network events can change map pins while the player stands
+        -- still. Rebuild the hidden pin manager once for those events so custom
+        -- and native icons update without waiting for World Map interaction.
+        if self.hiddenPinRefreshRequested == true then
+            -- v0.29.341: heavyweight hidden-provider primes never compete with
+            -- active movement. Network/world-event changes can wait until the
+            -- player has been still briefly; the request remains queued.
+            local lastMotionForPrime = tonumber(self.lastPlayerMotionAt029314) or 0
+            local providerPrimeSettled = lastMotionForPrime <= 0 or (now - lastMotionForPrime) >= 0.65
+            if providerPrimeSettled then
+                self.hiddenPinRefreshRequested = false
+                if self:PrimeHiddenWorldMapPins("event", true) then
+                    self.staticPinsDirty = true
+                end
+            end
+        end
+
+        -- POI proximity/discovery has a dedicated debounce. Dense towns can fire
+        -- many EVENT_POI_UPDATED callbacks in a short run; perform one POI-only
+        -- pass after the burst instead of rebuilding every static minimap layer.
+        if self.poiRefreshDirty029313 == true then
+            local lastEvent = tonumber(self.lastPOIEventAt029313) or 0
+            local lastRefresh = tonumber(self.lastPOIRefreshAt029313) or 0
+            local lastMotion = tonumber(self.lastPlayerMotionAt029314) or 0
+            local movementSettled = lastMotion <= 0 or (now - lastMotion) >= POI_REFRESH_STATIONARY_GRACE_S_029314
+            if movementSettled and now - lastEvent >= POI_EVENT_DEBOUNCE_S and now - lastRefresh >= POI_REFRESH_MIN_GAP_S then
+                self.lastPOIRefreshAt029313 = now
+                self:RefreshLivePOILayer029313()
+            end
+        end
+
+        if self.restoreRoamingPins029315 == true and self.roamingVisualBudget029315 ~= true then
+            self.restoreRoamingPins029315 = false
+            -- Cached-data-only restore. No World Map/provider/POI API scan.
+            self:RenderNativeMirrorPins()
+            self:RenderPOIPins()
+            self:RenderMerchantPins()
+            self:RenderServicePins()
+        end
+
+        if self.staticPinsDirty and (not self.lastStaticRefresh or now - self.lastStaticRefresh >= 0.35) then
             self.lastStaticRefresh = now
             self:RefreshStaticPins()
         end
-        if not self.lastPOIOrder or now - self.lastPOIOrder >= 0.75 then
-            self.lastPOIOrder = now
-            if self:LayerEnabled("pois") then self:UpdatePOIDistances() end
-        end
-        if not self.lastTrailCapture or now - self.lastTrailCapture >= 0.55 then
+        -- v0.29.312: POI order is built when static map data changes. Do not
+        -- re-sort the entire POI table just because the player is moving.
+        if not self.lastTrailCapture or now - self.lastTrailCapture >= 1.20 then
             self.lastTrailCapture = now
-            self:CaptureTrailPoint(false)
+            if self:CaptureTrailPoint(false) then self:RenderTrail() end
         end
         -- Poll crafting interactions as a fallback for clients where a dedicated
         -- crafting event is absent. Learned locations are save-once and deduped.
         local t = nowSeconds()
-        if t - (self.lastServiceLearnCheck or 0) >= 2.0 then
+        if EVENT_CRAFTING_STATION_INTERACT == nil and t - (self.lastServiceLearnCheck or 0) >= 3.0 then
             self.lastServiceLearnCheck = t
             self:RememberCurrentCraftingStation()
         end
+
+        -- v0.29.312: no periodic native-pin snapshot while running. Even without
+        -- a provider rebuild, walking the entire ESO/LibMapPins manager can hitch
+        -- a frame in dense maps. Native snapshots are now event/map-transition
+        -- driven only; Suite-owned group/quest/waypoint pins update independently.
 
         self:UpdatePanAndPins(false)
     end)
@@ -3401,23 +4941,86 @@ function M:Initialize()
     self.lastGameplayX = nil
     self.lastGameplayY = nil
     self.stableInteractionActive = false
-    -- 0.29.33 keeps snapshots separated by exact mapId and adds live current-area
-    -- refreshes. Invalidate older static snapshots once so no parent/sub-map
-    -- projection history can survive into the dynamic mirror.
-    if EPC.saved and tonumber(EPC.saved.miniMapNativeMirrorSchema) ~= 2933 then
+    -- v0.29.297 rebuilds native/custom pin snapshots while the World Map is
+    -- hidden. Invalidate the older cache once so every map starts from pin data
+    -- produced by the new gameplay refresh path.
+    if EPC.saved and tonumber(EPC.saved.miniMapNativeMirrorSchema) ~= 2970 then
         EPC.saved.miniMapNativeTownPins = {}
-        EPC.saved.miniMapNativeMirrorSchema = 2933
+        EPC.saved.miniMapNativeMirrorSchema = 2970
+    end
+    if EPC.saved then
+        -- v0.29.293: the first live-map crop build preserved the older, very
+        -- wide 1.05/0.88 tuning. Migrate only that old/default range once so
+        -- existing users immediately get a useful navigation scale and readable
+        -- POI/service icons, while leaving deliberately larger custom values alone.
+        local tuningSchema = tonumber(EPC.saved.miniMapTuningSchema) or 0
+        if tuningSchema < 293 then
+            local oldZoom = tonumber(EPC.saved.miniMapZoom)
+            local oldIcons = tonumber(EPC.saved.miniMapIconScale)
+            if oldZoom == nil or oldZoom <= 1.10 then EPC.saved.miniMapZoom = 1.38 end
+            if oldIcons == nil or oldIcons <= 0.90 then EPC.saved.miniMapIconScale = 1.15 end
+            EPC.saved.miniMapTuningSchema = 293
+        end
+
+        -- v0.29.295: the 115% marker boost was useful before independent pin
+        -- refresh was working, but ESO's real city/service pin artwork is larger
+        -- than our fallback POI set.  Migrate only that v293 default band back to
+        -- 100%; deliberate user sizes outside the band are left unchanged.
+        local iconTuningSchema = tonumber(EPC.saved.miniMapIconTuningSchema) or 0
+        if iconTuningSchema < 295 then
+            local currentIcons = tonumber(EPC.saved.miniMapIconScale)
+            if currentIcons == nil or (currentIcons >= 1.10 and currentIcons <= 1.20) then
+                EPC.saved.miniMapIconScale = 1.00
+            end
+            EPC.saved.miniMapIconTuningSchema = 295
+        end
+
+        local visualSchema = tonumber(EPC.saved.miniMapVisualSchema) or 0
+        if visualSchema < 29283 then
+            local currentScale = tonumber(EPC.saved.miniMapIconScale)
+            if currentScale == nil or math.abs(currentScale - 0.70) < 0.001 then
+                EPC.saved.miniMapIconScale = 0.88
+            end
+            if not EPC.saved.miniMapVisualStyle or EPC.saved.miniMapVisualStyle == "" then
+                EPC.saved.miniMapVisualStyle = "FANTASY_ROUND"
+            elseif string.find(tostring(EPC.saved.miniMapVisualStyle), "ROUND", 1, true) then
+                EPC.saved.miniMapVisualStyle = "FANTASY_ROUND"
+            else
+                EPC.saved.miniMapVisualStyle = "FANTASY_SQUARE"
+            end
+            if not EPC.saved.miniMapPlayerMarkerStyle or EPC.saved.miniMapPlayerMarkerStyle == "" then
+                EPC.saved.miniMapPlayerMarkerStyle = "MINIMAP_GOLD_ARROW"
+            end
+            if not EPC.saved.miniMapThemeMode or EPC.saved.miniMapThemeMode == "" then
+                EPC.saved.miniMapThemeMode = "MANUAL"
+            end
+            if not EPC.saved.miniMapZoneThemeFamily or EPC.saved.miniMapZoneThemeFamily == "" then
+                EPC.saved.miniMapZoneThemeFamily = "MIXED"
+            end
+            EPC.saved.miniMapVisualSchema = 29283
+        end
     end
     self:CleanupLearnedMapData()
     self.mapWasOpen = false
     self.needsSync = true
     self.staticPinsDirty = true
+    self.hiddenPinRefreshRequested = true
+    self.hiddenPinPrimeInProgress = false
     self.trailData = {}
     self:Create()
     self:RegisterEvents()
     self:HookNativeTownPins()
     if type(zo_callLater) == "function" then zo_callLater(function() self:HookNativeTownPins() end, 1200) end
     self:Refresh(true)
+    if tonumber(self.mapId) and tonumber(self.mapId) > 0 then
+        self:ScheduleLiveNativeMirrorRefresh(self.mapId)
+    elseif type(zo_callLater) == "function" then
+        zo_callLater(function()
+            if tonumber(self.mapId) and tonumber(self.mapId) > 0 then
+                self:ScheduleLiveNativeMirrorRefresh(self.mapId)
+            end
+        end, 500)
+    end
 end
 
 
@@ -3429,7 +5032,7 @@ end
 function M:EnsurePvPScrollPins(count)
     self.pvpScrollPins = self.pvpScrollPins or {}
     for i = #self.pvpScrollPins + 1, count do
-        local pin = self:CreatePin("EPC_MiniMap_ElderScroll_" .. tostring(i), 30, POI_FALLBACK_TEXTURE, COLORS.white)
+        local pin = self:CreatePin("EPC_MiniMap_ElderScroll_" .. tostring(i), 30, POI_FALLBACK_TEXTURE, COLORS.white, true)
         pin:SetDrawLevel(94)
         self.pvpScrollPins[i] = pin
     end

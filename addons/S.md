@@ -236,6 +236,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Spaulder Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Bjørn/Spaulder-Tracker__3230) | Bjørn | PC / Mac | 1.1.0 |
 | [SpawnPoints](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/SpawnPoints__4220) | Masteroshi430 | PC / Mac | 2026.07.09 |
 | [Speak Like Khajiit](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/YFNatey/Speak-Like-Khajiit__8edcdae2-d71b-4fb8-b99c-7d1fca55bfb2) | YFNatey | Console | — |
+| [SpecificLorebookPins](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/thewizadt/SpecificLorebookPins__f1c471fe-a595-4f2b-a52b-a1838964ff3a) | thewizadt | Console | — |
 | [Speed Farmer (aka no more book spam)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/dopiate/Speed-Farmer-aka-no-more-book-spam__969) | dopiate | PC / Mac | 1.3.0 |
 | [Speed Icons](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/B7TxSpeed/Speed-Icons__3569) | B7TxSpeed | PC / Mac | 1.0.1 |
 | [Speedometer - Major Update!](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/UnDead-0rbit/Speedometer---Major-Update__3040) | UnDead 0rbit | PC / Mac | 2.1.2 |

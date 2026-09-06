@@ -2,32 +2,26 @@
 -- Crux
 -- Arcanist Crux economy tracking for Battle Scrolls
 --
--- Counts generator casts made at full Crux (wasted generation)
--- and spender casts made under 3 Crux (undervalued spend), per
--- ability and in aggregate. Uses the pre-cast stack count from
--- state's Crux window tracking (the same burst-window logic
--- weaving uses for Exhausting Fatecarver), because Crux
--- gain/consume effect events can fire before or after the
--- action-slot event within the same frame.
+-- Every observed stack gain is credited to exactly one bucket: a generator
+-- cast (byAbility.gained), a conditional source (conditionalGains) or
+-- unattributedGains, so gains always reconcile against drops. Explanations
+-- for a gain are claimed first-come first-served by event time; synthetic
+-- Cruxweaver Armor guesses claim last.
 --
--- Also counts Crux consumed OUTSIDE tracked casts: stack drops with no
--- spender cast nearby - natural 30s expiry and death land in this bucket.
+-- Drops with no spender cast nearby are split into death (the player was
+-- dead when the buff faded) and passive (expiry or unexplained).
 --
--- Conditional GENERATION (stack gains outside generator casts) is
--- attributed per source by correlating the gain with observable proc
--- events: gate passes, Spattering Disjunction procs, and Tome-Bearer
--- pulse hits emit EVENT_COMBAT_EVENTs; Class Mastery generation comes
--- with trackable secondary-effect buffs; Scribing's Class Flourish
--- signature casts are paired the same way (all verified in game
--- 2026-08-23). Cruxweaver Armor emits no client event at all, so it is
--- reconstructed: armor buff active + damage taken + adaptive ~5s proc
--- cooldown elapsed (reset by recasts). Banner Bearer's in-combat Class Flourish crux pulses
--- are verified to emit nothing observable; they are reclaimed by
--- elimination (gain unexplained for 1s + banner sighted but silent for
--- 5s+). Whatever remains lands in unattributedGains.
+-- Conditional generation pairs stack gains with observable proc events:
+-- gate passes, Spattering Disjunction procs and Tome-Bearer pulse hits
+-- emit EVENT_COMBAT_EVENTs; Class Mastery generation comes with a
+-- secondary-effect buff; scribed Class Flourish casts count as generators.
+-- Cruxweaver Armor emits nothing and is reconstructed from damage taken
+-- under its buff on a ~5s cooldown. Banner Bearer's in-combat crux pulse
+-- emits nothing either and is reclaimed by elimination. Sources that only
+-- generate at zero Crux (Tome-Bearer line, Banner) never count as wasted;
+-- an unpaired proc of any other source found Crux full (conditionalWasted).
 --
--- No class gate: Crux is reachable on any class via subclassing, so
--- activity state is created lazily on the first Crux-related event.
+-- No class gate: Crux is reachable on any class via subclassing.
 -----------------------------------------------------------
 
 if not SemisPlaygroundCheckAccess() then
@@ -37,32 +31,22 @@ end
 BattleScrolls = BattleScrolls or {}
 
 local MAX_CRUX = 3
+local CRUX_ABILITY_ID = 184220
 
--- Same-batch event races - a Crux effect event landing just BEFORE its
--- SLOT event, or a proc combat event pairing with its stack gain - are
--- matched within this window. Client-side ordering jitter only, so short.
+-- Same-batch delivery jitter between a Crux effect event and the SLOT press
+-- or proc event that explains it
 local SPENDER_CONSUME_WINDOW_MS = 400
 
--- SLOT events fire client-side on the button press, but the resulting
--- Crux effect event only comes back with the server response - a full
--- round-trip that dwarfs the race window whenever the server is under
--- load (PvP fights spike well past a second; observed in a battleground
--- as "unknown source" gains and inflated passive loss). A pressed cast
--- therefore stays claimable for this long, as a ONE-SHOT flag consumed
--- by the first effect it explains, so the wide window can't let one cast
--- explain two.
+-- A SLOT press fires client-side; its Crux effect arrives with the server
+-- response (well past a second under load). One-shot: the first effect it
+-- explains consumes it.
 local CAST_EFFECT_WINDOW_MS = 1500
 
--- Conditional Crux generation sources: proc combat events mapped to a
--- canonical display ability id (used for GetAbilityName/GetAbilityIcon and
--- to merge sub-ids of one source). Verified in game 2026-08-23 on
--- Fleet-Footed Gate and Spattering Disjunction; Tome-Bearer pulse hits are
--- the long-established proc-tracking damage ids from constants.lua.
+local DEATH_ORDER_GUARD_MS = 500
 
--- Gate passes: ACTION_RESULT_EFFECT_GAINED, player source AND player
--- target (casting emits enemy/entity-targeted events only, so the
--- self-target filter separates a pass from a cast). Each morph has two
--- sub-ids, one per pass direction. All verified in game 2026-08-23.
+-- Gate passes: EFFECT_GAINED with player source AND player target (a cast
+-- emits enemy/entity-targeted events only). Two sub-ids per morph, one per
+-- pass direction.
 ---@type table<number, number>
 local CRUX_GATE_PASS_SOURCES = {
     [183544] = 183542, [183547] = 183542, -- Apocryphal Gate
@@ -70,14 +54,12 @@ local CRUX_GATE_PASS_SOURCES = {
     [186221] = 186220, [186223] = 186220, -- Passage Between Worlds
 }
 
--- Enemy-targeted EFFECT_GAINED procs.
 ---@type table<number, number>
 local CRUX_PROC_EFFECT_SOURCES = {
     [227565] = 227381, -- Spattering Disjunction
 }
 
--- Damage hits that generate a Crux (Tome-Bearer line pulse-empowered
--- strikes; same ids SingleTargetDamageProcAbilityIds tracks).
+-- Tome-Bearer line pulse-empowered hits (the proc-tracking damage ids)
 ---@type table<number, number>
 local CRUX_PROC_DAMAGE_SOURCES = {
     [185843] = 185842, -- Inspired Scholarship
@@ -85,95 +67,69 @@ local CRUX_PROC_DAMAGE_SOURCES = {
     [183048] = 183047, -- Recuperative Treatise
 }
 
--- Scribing: the Class Flourish signature script makes any scribed cast
--- generate a Crux (ids lifted from a real scribed build in a web share).
--- Such casts are full generators, discipline included - a scribed skill
--- may well be the build's spammable. Banner Bearer is the exception: its
--- Class Flourish pulses every 5s instead (a Crux at 0 stacks, else +3
--- ultimate). Verified 2026-08-23: the in-combat crux pulse emits NO
--- event, the ult pulse energizes as id 252143, and out of combat the
--- timer ticks as ABILITY_ON_COOLDOWN id 227116 (both named "Arcanist's
--- Banner").
+-- Proc sources that fire regardless of the stack count: an unpaired proc
+-- of one of these means Crux was full
+---@type table<number, boolean>
+local CRUX_OVERCAP_SOURCES = {
+    [183542] = true, [186211] = true, [186220] = true, -- gates
+    [227381] = true, -- Spattering Disjunction
+    [263419] = true, -- Ink-Scribe's Verve
+}
+
+-- Scribing: the Class Flourish signature script makes a scribed cast a
+-- generator. Banner Bearer instead pulses every 5s (a Crux at 0 stacks,
+-- else +3 ultimate): the crux pulse emits no event, the ult pulse
+-- energizes as 252143, and out of combat the timer ticks as 227116.
 local CLASS_FLOURISH_SCRIPT_ID = 31
 local BANNER_BEARER_CRAFTED_ID = 12
 
--- Banner fallback: the silent crux pulse is reclaimed from unattributed
--- by elimination - a gain still unexplained a full second later is
--- reattributed to the banner IF a banner tick has ever been sighted
--- (either id above) but NOT near the gain: the pulse cycle is 5s, so a
--- VISIBLE tick close to the gain means that pulse slot was not a silent
--- crux one. "Near" is 4s before to 1s after the gain - 5s total ending
--- at the nominal settle moment, asymmetric to absorb event jitter.
--- Displayed under the out-of-combat tick id.
-local BANNER_TICK_OOC_ID = 227116  -- also the fallback's display id
+-- Banner fallback: a gain still unexplained a second later is the banner's
+-- silent pulse if a banner tick was ever sighted but none landed within the
+-- pulse cycle around the gain (a visible tick there means that pulse slot
+-- was an ult one)
+local BANNER_TICK_OOC_ID = 227116
 local BANNER_TICK_ULT_ID = 252143
 local BANNER_FALLBACK_AFTER_MS = 1000
 local BANNER_TICK_BEFORE_MS = 4000
 local BANNER_TICK_AFTER_MS = 1000
 
--- Cruxweaver Armor: taking damage while the buff is up generates a Crux
--- on a ~5s internal cooldown, and the proc emits NO client event
--- (verified with an unfiltered logger). Reconstructed as a SYNTHETIC
--- proc instead: each damage hit past the cooldown parks a proc entry
--- that rides the same attribution queue as real proc events - including
--- claiming an already-parked gain, since event order within a batch is
--- never trustworthy. RECASTING the ability presumably resets the proc
--- cooldown (UNVERIFIED in game - test this!), so a buff (re)application
--- clears the gate. The gate is nominal-minus-margin (4950ms) and
--- COMPENSATES observation jitter: the server cooldown re-anchors at the
--- real proc, but our anchor is the observed attribution, shifted by
--- event-delivery jitter. An attribution observed EARLY means the anchor
--- slipped ahead, so the next real proc sits farther from it - the next
--- gate becomes (2*nominal - margin) - observedInterval (observed 4980 ->
--- gate 4970; observed 5000 -> base 4950). A LATE observation never
--- shortens the gate below base: the proc may genuinely have waited for
--- a hit past the cooldown's end, which re-anchors the window at the
--- proc itself.
--- The player buff is id 185908 alone (verified in game 2026-08-23); the
--- other Fatewoven morphs don't generate Crux.
+-- Cruxweaver Armor: damage taken under the buff generates a Crux on a ~5s
+-- cooldown with no client event. Each eligible hit parks a synthetic proc.
+-- The gate compensates observation jitter: an early observation lengthens
+-- the next gate, a late one never shortens it below base. Recasting is
+-- assumed to reset the cooldown (unverified in game).
 local ARMOR_PROC_NOMINAL_MS = 5000
 local ARMOR_PROC_MARGIN_MS = 50
-local CRUX_ARMOR_BUFF_ID = 185908 -- Cruxweaver Armor
+local CRUX_ARMOR_BUFF_ID = 185908
 
--- Class Mastery: subclassed Crux generation emits no proc event of its
--- own, but each mastery's secondary-effect buff on the player is
--- observable (verified in game 2026-08-23). Gaining one of these grants
--- the mapped number of Crux at once.
----@type table<number, number> Buff ability id -> Crux granted on gain
+-- Class Mastery: the secondary-effect buff appearing grants the mapped
+-- number of Crux at once (fill-to-max sources, never counted as wasted)
+---@type table<number, number>
 local CRUX_MASTERY_BUFF_GAIN_SOURCES = {
     [263369] = 3, -- Abyssal Emergence
     [268372] = 3, -- Fate Realigned
 }
 
--- Ink-Scribe's Verve (Class Mastery): CONSUMING the buff grants 1 Crux
--- together with Major Force; natural expiry grants nothing. The only
--- observable difference is the simultaneous Major Force grant, so a Verve
--- FADED (specifically, not UPDATED) is paired with a Major Force gain
--- within a short window, in either delivery order. UPDATED is accepted on
--- the Major Force side - the consumption may merely refresh a Major Force
--- an ally already provided.
-local VERVE_BUFF_ID = 263419 -- Ink-Scribe's Verve (also the display id)
+-- Ink-Scribe's Verve: consuming the buff grants a Crux together with Major
+-- Force; natural expiry grants nothing. A FADED paired with a Major Force
+-- gain/refresh within the window is a consumption.
+local VERVE_BUFF_ID = 263419
 local MAJOR_FORCE_BUFF_ID = 61747
 local VERVE_PAIR_WINDOW_MS = 100
 
--- Slot 3..8 = skills + ultimate
 local SKILL_SLOT_MIN = 3
 local SKILL_SLOT_MAX = 8
 
--- Ability ids of slotted base abilities and morphs that GENERATE 1 Crux
--- directly on cast. Conditional generators are deliberately excluded -
--- recasting them at full Crux is upkeep, not waste: Tome-Bearer's
--- Inspiration line (timed pulse), Cruxweaver Armor (on taking damage),
--- Apocryphal Gate line (on teleport).
--- Many abilities exist under two ids sharing name/icon (slotted id varies),
--- so both members of each known alias pair are listed.
+-- Slotted abilities that generate 1 Crux on cast. Conditional generators are
+-- excluded (recasting them at full Crux is upkeep, not waste). Alias pairs
+-- share name/icon with a varying slotted id.
 ---@type table<number, boolean>
 local CRUX_GENERATORS = {
     -- Herald of the Tome
     [185794] = true, [188658] = true, -- Runeblades
     [185803] = true, [188787] = true, -- Writhing Runeblades
     [182977] = true, [188780] = true, -- Escalating Runeblades
-    [183006] = true,                  -- Cephaliarch's Flail (Abyssal Impact morph)
+    [183006] = true,                  -- Cephaliarch's Flail
     -- Soldier of Apocrypha
     [183165] = true, -- Runic Jolt
     [183430] = true, -- Runic Sunder
@@ -182,31 +138,29 @@ local CRUX_GENERATORS = {
     [183261] = true, [198282] = true, -- Runemend
     [186189] = true, [198288] = true, -- Evolving Runemend
     [186191] = true, [198292] = true, -- Audacious Runemend
-    [186207] = true, [198564] = true, -- Chakram of Destiny (Chakram Shields morph)
-    -- Vengeance Apocryphal Gate teleports immediately on cast and generates
-    -- Crux then - a plain slotted generator, unlike the live morphs' passes
+    [186207] = true, [198564] = true, -- Chakram of Destiny
+    -- Vengeance Apocryphal Gate teleports on cast
     [238545] = true,
 }
 
--- Ability ids of slotted base abilities and morphs that CONSUME all Crux for
--- a bonus effect. Alias pairs and seasonal Vengeance variants included.
+-- Slotted abilities that consume all Crux
 ---@type table<number, boolean>
 local CRUX_SPENDERS = {
     -- Herald of the Tome
     [185805] = true, [193331] = true, -- Fatecarver
     [183122] = true, [193397] = true, -- Exhausting Fatecarver
     [186366] = true, [193398] = true, -- Pragmatic Fatecarver
-    [185823] = true,                  -- Tentacular Dread (Abyssal Impact morph)
+    [185823] = true,                  -- Tentacular Dread
     -- Soldier of Apocrypha
     [185894] = true, -- Runespite Ward
     [185901] = true, -- Spiteward of the Lucid Mind
     [183241] = true, -- Impervious Runeward
-    [186477] = true, -- Unbreakable Fate (Fatewoven Armor morph)
+    [186477] = true, -- Unbreakable Fate
     -- Curative Runeforms
     [183537] = true, [198309] = true, -- Remedy Cascade
     [186193] = true, [198330] = true, -- Cascading Fortune
     [186200] = true, [198537] = true, -- Curative Surge
-    [186209] = true, [198567] = true, -- Tidal Chakram (Chakram Shields morph)
+    [186209] = true, [198567] = true, -- Tidal Chakram
     -- Vengeance variants
     [238174] = true, -- Vengeance Fatecarver
     [238249] = true, -- Vengeance Runespite Ward
@@ -215,46 +169,62 @@ local CRUX_SPENDERS = {
 
 ---Per-ability Crux activity
 ---@class CruxAbilityActivity
----@field casts number Casts of this ability
----@field bad number Wasted-generation casts (generators) or under-3 spends (spenders)
+---@field casts number
+---@field bad number Generator casts at full Crux, or spender casts under 3
+---@field gained number Observed stack gains paired with this generator's casts
 
----Live Crux tracking state (attached to BattleScrollsState; nil when not an Arcanist)
+---@class CruxPendingProc
+---@field ms number
+---@field id number Canonical source id
+---@field stacks number Crux left to claim
+---@field synthetic boolean|nil Armor guess from a damage hit; claimed last
+
+---@class CruxPendingStacks
+---@field ms number
+---@field stacks number
+---@field dead boolean|nil Player was dead when the stacks dropped
+
+---Live Crux tracking state (attached to BattleScrollsState)
 ---@class CruxActivityState
 ---@field generatorCasts number
----@field generatorAtFull number Generator casts made at 3 Crux
+---@field generatorAtFull number
 ---@field spenderCasts number
----@field spenderUnder number[] Spender casts by pre-cast Crux count: [1]=at 0, [2]=at 1, [3]=at 2
+---@field spenderUnder number[] Spender casts by pre-cast Crux: [1]=at 0, [2]=at 1, [3]=at 2
 ---@field byAbility table<number, CruxAbilityActivity>
----@field passiveEvents number Stack drops with no spender cast nearby (expiry/death)
----@field passiveStacks number Total Crux consumed in those drops
----@field pendingSpenderCastMs number Game time of a spender SLOT press whose consumption drop hasn't arrived yet (0 = none; consumed by the drop it explains)
----@field pendingDrops { ms: number, stacks: number }[] Recent unattributed drops awaiting a possible late spender SLOT event
----@field conditionalGains table<number, number> Canonical source ability id -> Crux generated by its procs
----@field unattributedGains number Stack gains explained by neither a proc nor a generator cast (Cruxweaver Armor lands here for now)
----@field pendingGeneratorCastMs number Game time of a generator SLOT press whose stack gain hasn't arrived yet (0 = none; consumed by the gain it explains)
----@field pendingProcs { ms: number, id: number, stacks: number, synthetic: boolean|nil }[] Recent proc events awaiting their stack gain (stacks = Crux left to claim; synthetic = armor-proc guess from a damage hit, claimed last)
----@field pendingGains { ms: number, stacks: number }[] Recent unexplained gains awaiting a possible late proc event
+---@field passiveEvents number Drops with neither a spender cast nor a death nearby
+---@field passiveStacks number
+---@field deathEvents number Drops while the player was dead
+---@field deathStacks number
+---@field pendingSpenderCastMs number Spender press awaiting its drop (0 = none)
+---@field pendingDrops CruxPendingStacks[] Drops awaiting a late spender press
+---@field conditionalGains table<number, number> Canonical source id -> Crux paired with its procs
+---@field conditionalWasted table<number, number> Canonical source id -> procs that found Crux full
+---@field unattributedGains number
+---@field pendingGeneratorCastMs number Generator press awaiting its gain (0 = none)
+---@field pendingGeneratorAbilityId number
+---@field pendingProcs CruxPendingProc[] Proc events awaiting their gain
+---@field pendingGains CruxPendingStacks[] Unexplained gains awaiting a late proc event
 
 ---@class BattleScrollsCrux : StateObserver
 local crux = {}
 BattleScrolls.crux = crux
 
--- Live armor-buff state (module-local: the buff and the proc cooldown
--- outlive any single combat)
 local armorBuffActive = false
-local lastArmorAttribMs = 0 -- 0 = no anchor (fresh cast): next hit is eligible
+local lastArmorAttribMs = 0
 local armorIcdFloorMs = ARMOR_PROC_NOMINAL_MS - ARMOR_PROC_MARGIN_MS
+local lastVerveFadedMs = 0
+local lastMajorForceMs = 0
+local bannerLastSeenMs = 0
 
----True when the armor proc cooldown has elapsed (or was reset by a cast)
+crux.CRUX_GENERATORS = CRUX_GENERATORS
+crux.CRUX_SPENDERS = CRUX_SPENDERS
+
 ---@param nowMs number
 ---@return boolean
 local function armorIcdReady(nowMs)
     return lastArmorAttribMs == 0 or (nowMs - lastArmorAttribMs) >= armorIcdFloorMs
 end
 
----Records a Cruxweaver Armor attribution: anchors the cooldown and sets
----the next gate to compensate an early observation (longer gate); a late
----one keeps the base gate - see the constants comment
 ---@param nowMs number
 local function onArmorAttributed(nowMs)
     if lastArmorAttribMs > 0 then
@@ -264,18 +234,7 @@ local function onArmorAttributed(nowMs)
     end
     lastArmorAttribMs = nowMs
 end
--- Verve/Major Force pairing timestamps (a match consumes the matched one,
--- so a later unrelated event can't re-pair with it)
-local lastVerveFadedMs = 0
-local lastMajorForceMs = 0
--- Last sighted Arcanist's Banner tick, either id (module-local: the
--- out-of-combat ticks that prove the banner is slotted precede combat)
-local bannerLastSeenMs = 0
 
-crux.CRUX_GENERATORS = CRUX_GENERATORS
-crux.CRUX_SPENDERS = CRUX_SPENDERS
-
----Creates a fresh CruxActivityState
 ---@return CruxActivityState
 function crux.newState()
     return {
@@ -286,17 +245,32 @@ function crux.newState()
         byAbility = {},
         passiveEvents = 0,
         passiveStacks = 0,
+        deathEvents = 0,
+        deathStacks = 0,
         pendingSpenderCastMs = 0,
         pendingDrops = {},
         conditionalGains = {},
+        conditionalWasted = {},
         unattributedGains = 0,
         pendingGeneratorCastMs = 0,
+        pendingGeneratorAbilityId = 0,
         pendingProcs = {},
         pendingGains = {},
     }
 end
 
----Returns the combat's CruxActivityState, creating it on first use
+---Current Crux stack count from the player's buff list
+---@return number
+function crux.readCurrentStacks()
+    for i = 1, GetNumBuffs("player") do
+        local _, _, _, _, stackCount, _, _, _, _, _, abilityId = GetUnitBuffInfo("player", i)
+        if abilityId == CRUX_ABILITY_ID then
+            return stackCount or 0
+        end
+    end
+    return 0
+end
+
 ---@param state BattleScrollsState
 ---@return CruxActivityState
 local function getOrCreateActivity(state)
@@ -308,17 +282,35 @@ local function getOrCreateActivity(state)
     return c
 end
 
----Folds pending drops older than the spender window into the passive
----counters (a spender cast can no longer claim them)
+---@param c CruxActivityState
+---@param abilityId number
+---@return CruxAbilityActivity
+local function getOrCreateEntry(c, abilityId)
+    local entry = c.byAbility[abilityId]
+    if not entry then
+        entry = { casts = 0, bad = 0, gained = 0 }
+        c.byAbility[abilityId] = entry
+    end
+    return entry
+end
+
 ---@param c CruxActivityState
 ---@param nowMs number
-local function settlePendingDrops(c, nowMs)
+---@param lastDeathMs number Game time of the last player death (0 = none)
+local function settlePendingDrops(c, nowMs, lastDeathMs)
     local pending = c.pendingDrops
     local i = 1
     while i <= #pending do
-        if (nowMs - pending[i].ms) > SPENDER_CONSUME_WINDOW_MS then
-            c.passiveEvents = c.passiveEvents + 1
-            c.passiveStacks = c.passiveStacks + pending[i].stacks
+        local drop = pending[i]
+        if (nowMs - drop.ms) > SPENDER_CONSUME_WINDOW_MS then
+            local deathAfterDrop = lastDeathMs >= drop.ms and (lastDeathMs - drop.ms) <= DEATH_ORDER_GUARD_MS
+            if drop.dead or deathAfterDrop then
+                c.deathEvents = c.deathEvents + 1
+                c.deathStacks = c.deathStacks + drop.stacks
+            else
+                c.passiveEvents = c.passiveEvents + 1
+                c.passiveStacks = c.passiveStacks + drop.stacks
+            end
             table.remove(pending, i)
         else
             i = i + 1
@@ -326,15 +318,17 @@ local function settlePendingDrops(c, nowMs)
     end
 end
 
----Discards pending proc events older than the pairing window (their stack
----gain never arrived - e.g. a proc at full Crux)
 ---@param c CruxActivityState
 ---@param nowMs number
 local function settlePendingProcs(c, nowMs)
     local pending = c.pendingProcs
     local i = 1
     while i <= #pending do
-        if (nowMs - pending[i].ms) > SPENDER_CONSUME_WINDOW_MS then
+        local proc = pending[i]
+        if (nowMs - proc.ms) > SPENDER_CONSUME_WINDOW_MS then
+            if not proc.synthetic and proc.stacks > 0 and CRUX_OVERCAP_SOURCES[proc.id] then
+                c.conditionalWasted[proc.id] = (c.conditionalWasted[proc.id] or 0) + proc.stacks
+            end
             table.remove(pending, i)
         else
             i = i + 1
@@ -342,10 +336,6 @@ local function settlePendingProcs(c, nowMs)
     end
 end
 
----Folds pending gains that outlived the fallback window: reattributed to
----the Arcanist's Banner when its silent-pulse conditions hold (sighted
----before, but no visible tick in the last 5s - see the banner comment),
----otherwise into unattributedGains
 ---@param c CruxActivityState
 ---@param nowMs number
 local function settlePendingGains(c, nowMs)
@@ -354,9 +344,6 @@ local function settlePendingGains(c, nowMs)
     while i <= #pending do
         local entry = pending[i]
         if (nowMs - entry.ms) > BANNER_FALLBACK_AFTER_MS then
-            -- Banner recency is judged against the GAIN's moment: a
-            -- visible banner tick from 4s before to 1s after it puts the
-            -- gain off the silent pulse's 5s grid
             local sinceSighting = entry.ms - bannerLastSeenMs
             local silentPulse = bannerLastSeenMs > 0
                 and (sinceSighting >= BANNER_TICK_BEFORE_MS
@@ -375,13 +362,12 @@ local function settlePendingGains(c, nowMs)
 end
 
 ---Handles a conditional-generation proc worth `stacks` Crux: claims recent
----unexplained stack gains (event order within a batch is never trusted -
----the gain may well have landed first), or parks the remainder for the
----gain still to arrive.
+---unexplained gains (either delivery order is possible) or parks the rest
+---for the gain still to arrive
 ---@param canonicalId number
 ---@param stacks number
----@param synthetic boolean|nil Mark parked entries as armor guesses (the gain side claims those last)
----@return number claimedNow Stacks claimed from already-parked gains
+---@param synthetic boolean|nil
+---@return number claimedNow
 local function onConditionalProc(canonicalId, stacks, synthetic)
     local state = BattleScrolls.state
     if not state or not state.initialized then
@@ -394,9 +380,6 @@ local function onConditionalProc(canonicalId, stacks, synthetic)
     local remaining = stacks
     local i = 1
     while remaining > 0 and i <= #pending do
-        -- A stack gain arrived first - claim it. Only gains within the
-        -- pairing window are claimable; older ones outlived every real
-        -- proc and are just waiting out the banner fallback.
         local gainEntry = pending[i]
         if (now - gainEntry.ms) <= SPENDER_CONSUME_WINDOW_MS then
             local take = zo_min(remaining, gainEntry.stacks)
@@ -419,11 +402,7 @@ local function onConditionalProc(canonicalId, stacks, synthetic)
     return stacks - remaining
 end
 
----Called from state on every damage hit the player takes. While the
----Cruxweaver Armor buff is up and its proc cooldown has elapsed, the hit
----MAY have generated a Crux (the real proc emits no event) - claim an
----already-parked unexplained gain, or park a synthetic proc for the gain
----still to arrive.
+---Called from state on every damage hit the player takes
 function crux.onPlayerDamaged()
     if not armorBuffActive then
         return
@@ -437,13 +416,14 @@ function crux.onPlayerDamaged()
     end
 end
 
----Called from state's Crux effect handler on every stack change.
----Drops not explained by a spender press (in either event order) are
----counted as passive consumption (expiry, death). Gains are attributed in
----order: recent proc events (conditional generation), then a generator
----press still awaiting its server response (one-shot, one stack), and any
----remainder is parked for a late proc before settling into
----unattributedGains (via the banner fallback).
+---@param c CruxActivityState
+---@param nowMs number
+---@return boolean
+local function generatorArmed(c, nowMs)
+    return c.pendingGeneratorCastMs > 0 and (nowMs - c.pendingGeneratorCastMs) <= CAST_EFFECT_WINDOW_MS
+end
+
+---Called from state's Crux effect handler on every stack change
 ---@param state BattleScrollsState
 ---@param oldStacks number
 ---@param newStacks number
@@ -453,41 +433,53 @@ function crux.onCruxStacksChanged(state, oldStacks, newStacks)
     end
     local c = getOrCreateActivity(state)
     local now = GetGameTimeMilliseconds()
+    BattleScrolls.log.Debug(function()
+        return string.format("Crux %d->%d spender=%d gen=%d procs=%d gains=%d drops=%d",
+            oldStacks, newStacks,
+            c.pendingSpenderCastMs > 0 and (now - c.pendingSpenderCastMs) or -1,
+            c.pendingGeneratorCastMs > 0 and (now - c.pendingGeneratorCastMs) or -1,
+            #c.pendingProcs, #c.pendingGains, #c.pendingDrops)
+    end)
 
     local gain = newStacks - oldStacks
     if gain > 0 then
         settlePendingProcs(c, now)
-        -- Also settle expired gains here so they don't sit parked until
-        -- the next proc event (keeps banner-fallback timing near-live)
         settlePendingGains(c, now)
         local procs = c.pendingProcs
-        -- Phase 1: real proc events (exact attribution)
+        local genArmed = generatorArmed(c, now)
+        local genMs = c.pendingGeneratorCastMs
+        local function claimGenerator()
+            if genArmed and gain > 0 then
+                genArmed = false
+                c.pendingGeneratorCastMs = 0
+                local entry = getOrCreateEntry(c, c.pendingGeneratorAbilityId)
+                entry.gained = entry.gained + 1
+                gain = gain - 1
+            end
+        end
         local i = 1
         while gain > 0 and i <= #procs do
             local proc = procs[i]
-            if not proc.synthetic then
-                local take = zo_min(gain, proc.stacks)
-                c.conditionalGains[proc.id] = (c.conditionalGains[proc.id] or 0) + take
-                gain = gain - take
-                proc.stacks = proc.stacks - take
-                if proc.stacks <= 0 then
-                    table.remove(procs, i)
-                else
-                    i = i + 1
-                end
-            else
+            if proc.synthetic then
                 i = i + 1
+            else
+                if genArmed and genMs <= proc.ms then
+                    claimGenerator()
+                end
+                if gain > 0 then
+                    local take = zo_min(gain, proc.stacks)
+                    c.conditionalGains[proc.id] = (c.conditionalGains[proc.id] or 0) + take
+                    gain = gain - take
+                    proc.stacks = proc.stacks - take
+                    if proc.stacks <= 0 then
+                        table.remove(procs, i)
+                    else
+                        i = i + 1
+                    end
+                end
             end
         end
-        -- Phase 2: a generator SLOT press awaiting its server response
-        -- explains one stack (one-shot: consumed so it can't explain two)
-        if gain > 0 and c.pendingGeneratorCastMs > 0
-                and (now - c.pendingGeneratorCastMs) <= CAST_EFFECT_WINDOW_MS then
-            c.pendingGeneratorCastMs = 0
-            gain = gain - 1
-        end
-        -- Phase 3: synthetic armor procs (guesses, so claimed last; re-check
-        -- the cooldown - an earlier claim may have just consumed it)
+        claimGenerator()
         i = 1
         while gain > 0 and i <= #procs do
             if procs[i].synthetic and armorIcdReady(now) then
@@ -500,7 +492,6 @@ function crux.onCruxStacksChanged(state, oldStacks, newStacks)
             end
         end
         if gain > 0 then
-            -- The proc combat event may still arrive after the stack gain
             c.pendingGains[#c.pendingGains + 1] = { ms = now, stacks = gain }
         end
         return
@@ -510,28 +501,14 @@ function crux.onCruxStacksChanged(state, oldStacks, newStacks)
     if drop <= 0 then
         return
     end
-    settlePendingDrops(c, now)
+    settlePendingDrops(c, now, state.lastPlayerDeathMs)
     if c.pendingSpenderCastMs > 0 and (now - c.pendingSpenderCastMs) <= CAST_EFFECT_WINDOW_MS then
         c.pendingSpenderCastMs = 0
-        return -- the drop this spender press was waiting for
+        return
     end
-    -- The spender SLOT event may still arrive after this drop - park it
-    c.pendingDrops[#c.pendingDrops + 1] = { ms = now, stacks = drop }
+    c.pendingDrops[#c.pendingDrops + 1] = { ms = now, stacks = drop, dead = IsUnitDead("player") }
 end
 
----@param c CruxActivityState
----@param abilityId number
----@return CruxAbilityActivity
-local function getOrCreateEntry(c, abilityId)
-    local entry = c.byAbility[abilityId]
-    if not entry then
-        entry = { casts = 0, bad = 0 }
-        c.byAbility[abilityId] = entry
-    end
-    return entry
-end
-
----Handles skill/ultimate slot presses for Crux accounting
 ---@param actionSlotIndex number
 local function onActionSlotUsed(actionSlotIndex)
     if actionSlotIndex < SKILL_SLOT_MIN or actionSlotIndex > SKILL_SLOT_MAX then
@@ -564,23 +541,27 @@ local function onActionSlotUsed(actionSlotIndex)
     end
     local c = getOrCreateActivity(state)
 
-    -- Pre-cast stacks: Crux effect events race with the SLOT event, so use
-    -- the burst-window max the same way weaving does for Fatecarver duration.
+    -- Pre-cast stacks: Crux effect events race the SLOT event, so use the
+    -- burst-window max like weaving does for Fatecarver duration
     local now = GetGameTimeMilliseconds()
     local stacks = state.cruxStacks
     if (now - state.cruxWindowStartMs) < 100 then
         stacks = zo_max(state.cruxRecentMax, stacks)
     end
+    BattleScrolls.log.Debug(function()
+        return string.format("Crux %s %d at %d stacks", isGenerator and "generator" or "spender", abilityId, stacks)
+    end)
 
     local entry = getOrCreateEntry(c, abilityId)
     entry.casts = entry.casts + 1
 
     if isGenerator then
         c.generatorCasts = c.generatorCasts + 1
-        -- The cast's gain may have landed just before this SLOT event -
-        -- claim one parked stack; otherwise arm the one-shot flag for the
-        -- gain still in flight from the server
-        local claimed = false
+        if stacks >= MAX_CRUX then
+            c.generatorAtFull = c.generatorAtFull + 1
+            entry.bad = entry.bad + 1
+            return
+        end
         local pending = c.pendingGains
         for i = #pending, 1, -1 do
             if (now - pending[i].ms) <= SPENDER_CONSUME_WINDOW_MS then
@@ -588,22 +569,14 @@ local function onActionSlotUsed(actionSlotIndex)
                 if pending[i].stacks <= 0 then
                     table.remove(pending, i)
                 end
-                claimed = true
-                break
+                entry.gained = entry.gained + 1
+                return
             end
         end
-        if not claimed then
-            c.pendingGeneratorCastMs = now
-        end
-        if stacks >= MAX_CRUX then
-            c.generatorAtFull = c.generatorAtFull + 1
-            entry.bad = entry.bad + 1
-        end
+        c.pendingGeneratorCastMs = now
+        c.pendingGeneratorAbilityId = abilityId
     else
         c.spenderCasts = c.spenderCasts + 1
-        -- The consumption drop may have landed just before this SLOT
-        -- event - claim it; otherwise arm the one-shot flag for the drop
-        -- still in flight from the server
         local claimed = false
         local pending = c.pendingDrops
         for i = #pending, 1, -1 do
@@ -630,27 +603,31 @@ end
 ---@field spenderCasts number
 ---@field spenderUnder number[] [1]=at 0 Crux, [2]=at 1, [3]=at 2
 ---@field byAbility table<number, CruxAbilityActivity>
----@field passiveEvents number Stack drops outside spender casts (expiry/death)
----@field passiveStacks number Total Crux consumed in those drops
----@field conditionalGains table<number, number> Canonical source ability id -> Crux generated by its procs
----@field unattributedGains number Stack gains with no tracked explanation
+---@field passiveEvents number Drops with neither a spender cast nor a death nearby
+---@field passiveStacks number
+---@field deathEvents number Drops while the player was dead
+---@field deathStacks number
+---@field conditionalGains table<number, number> Canonical source id -> Crux paired with its procs
+---@field conditionalWasted table<number, number> Canonical source id -> procs that found Crux full
+---@field unattributedGains number
 
 ---Finalizes crux state into encounter-ready data
 ---@param c CruxActivityState|nil
----@param endTimeMs number|nil Absolute game time of combat end (settles pending events)
+---@param endTimeMs number|nil Absolute game time of combat end
+---@param lastDeathMs number Game time of the last player death (0 = none)
 ---@return CruxData|nil data Nil when no Crux activity was seen
-function crux.finalize(c, endTimeMs)
+function crux.finalize(c, endTimeMs, lastDeathMs)
     if not c then
         return nil
     end
-    -- Anything still parked past the longest window is settled by now
-    -- (BANNER_FALLBACK_AFTER_MS is the widest hold, covering the spender
-    -- window too)
     local settleMs = (endTimeMs or GetGameTimeMilliseconds()) + BANNER_FALLBACK_AFTER_MS + 1
-    settlePendingDrops(c, settleMs)
+    settlePendingDrops(c, settleMs, lastDeathMs)
+    settlePendingProcs(c, settleMs)
     settlePendingGains(c, settleMs)
-    local hasConditional = next(c.conditionalGains) ~= nil or c.unattributedGains > 0
-    if c.generatorCasts == 0 and c.spenderCasts == 0 and c.passiveEvents == 0 and not hasConditional then
+    local hasConditional = next(c.conditionalGains) ~= nil or next(c.conditionalWasted) ~= nil
+        or c.unattributedGains > 0
+    if c.generatorCasts == 0 and c.spenderCasts == 0 and c.passiveEvents == 0 and c.deathEvents == 0
+            and not hasConditional then
         return nil
     end
     return {
@@ -661,17 +638,18 @@ function crux.finalize(c, endTimeMs)
         byAbility = c.byAbility,
         passiveEvents = c.passiveEvents,
         passiveStacks = c.passiveStacks,
+        deathEvents = c.deathEvents,
+        deathStacks = c.deathStacks,
         conditionalGains = c.conditionalGains,
+        conditionalWasted = c.conditionalWasted,
         unattributedGains = c.unattributedGains,
     }
 end
 
----Registers one per-ability-id filtered combat event handler for a
----conditional-generation proc source
 ---@param eventAbilityId number
 ---@param canonicalId number
----@param isDamageProc boolean True for damage hits, false for EFFECT_GAINED markers
----@param filterTargetPlayer boolean Also filter target = player (gate passes)
+---@param isDamageProc boolean
+---@param filterTargetPlayer boolean
 local function registerConditionalSource(eventAbilityId, canonicalId, isDamageProc, filterTargetPlayer)
     local namespace = "BattleScrolls_Crux_Cond" .. eventAbilityId
     local damageResults = BattleScrolls.constants.damageResultsSet
@@ -695,8 +673,6 @@ local function registerConditionalSource(eventAbilityId, canonicalId, isDamagePr
     end
 end
 
----Registers a player-buff EFFECT_CHANGED watcher for a Class Mastery
----secondary effect whose fresh appearance grants Crux
 ---@param buffAbilityId number
 ---@param grantedStacks number
 local function registerBuffGainSource(buffAbilityId, grantedStacks)
@@ -711,8 +687,6 @@ local function registerBuffGainSource(buffAbilityId, grantedStacks)
             REGISTER_FILTER_UNIT_TAG, "player")
 end
 
----Ink-Scribe's Verve FADED: grants a Crux only if Major Force landed in
----the same instant (otherwise the buff just expired)
 local function onVerveFaded()
     local now = GetGameTimeMilliseconds()
     if lastMajorForceMs > 0 and (now - lastMajorForceMs) <= VERVE_PAIR_WINDOW_MS then
@@ -723,8 +697,6 @@ local function onVerveFaded()
     end
 end
 
----Major Force gained/refreshed: completes a Verve consumption pair when
----the Verve buff faded in the same instant
 local function onMajorForceGained()
     local now = GetGameTimeMilliseconds()
     if lastVerveFadedMs > 0 and (now - lastVerveFadedMs) <= VERVE_PAIR_WINDOW_MS then
@@ -735,7 +707,6 @@ local function onMajorForceGained()
     end
 end
 
----Registers Crux tracking event handlers
 function crux:Initialize()
     EVENT_MANAGER:RegisterForEvent("BattleScrolls_Crux_Slot", EVENT_ACTION_SLOT_ABILITY_USED,
             function(_, actionSlotIndex)
@@ -755,9 +726,6 @@ function crux:Initialize()
             armorBuffActive = false
         else
             armorBuffActive = true
-            -- Recasting presumably resets the proc cooldown (unverified
-            -- in game - test!): the very next hit may generate. A new
-            -- anchor chain starts, so the gate returns to base.
             lastArmorAttribMs = 0
             armorIcdFloorMs = ARMOR_PROC_NOMINAL_MS - ARMOR_PROC_MARGIN_MS
         end
@@ -784,9 +752,6 @@ function crux:Initialize()
     EVENT_MANAGER:AddFilterForEvent("BattleScrolls_Crux_Force", EVENT_EFFECT_CHANGED,
             REGISTER_FILTER_ABILITY_ID, MAJOR_FORCE_BUFF_ID,
             REGISTER_FILTER_UNIT_TAG, "player")
-    -- Arcanist's Banner sightings for the silent-pulse fallback: the OOC
-    -- cooldown tick is our own cast (source = player), the ult pulse is an
-    -- energize landing on us (target = player)
     EVENT_MANAGER:RegisterForEvent("BattleScrolls_Crux_BannerOoc", EVENT_COMBAT_EVENT, function()
         bannerLastSeenMs = GetGameTimeMilliseconds()
     end)
@@ -801,7 +766,6 @@ function crux:Initialize()
             REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
 end
 
----Unregisters all event handlers for cleanup/hot reload
 function crux:Cleanup()
     EVENT_MANAGER:UnregisterForEvent("BattleScrolls_Crux_Slot", EVENT_ACTION_SLOT_ABILITY_USED)
     for _, sources in ipairs({ CRUX_GATE_PASS_SOURCES, CRUX_PROC_EFFECT_SOURCES, CRUX_PROC_DAMAGE_SOURCES }) do

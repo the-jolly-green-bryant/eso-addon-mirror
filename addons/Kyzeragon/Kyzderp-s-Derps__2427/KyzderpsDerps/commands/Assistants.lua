@@ -83,13 +83,16 @@ function KD.InitializeAssistantCommands()
                 -- If one of this type is active, just unsummon
                 for _, id in ipairs(available) do
                     if (IsCollectibleActive(id)) then
+                        KD:msg(string.format("Unsummoning |H1:collectible:%d|h|h...", id))
                         UseCollectible(id)
                         return
                     end
                 end
 
                 -- Otherwise, randomize
-                UseCollectible(available[math.random(1, #available)])
+                local chosen = available[math.random(1, #available)]
+                KD:msg(string.format("Summoning |H1:collectible:%d|h|h...", chosen))
+                UseCollectible(chosen)
             end
         end
     end

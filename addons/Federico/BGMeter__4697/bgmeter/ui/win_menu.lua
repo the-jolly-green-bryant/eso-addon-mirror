@@ -35,10 +35,14 @@ local PANEL_H = 128
 local QUEUE_H = 36
 local FOOT_H = 34
 local INSET_PAD = 20
+local SCROLL_W = 6
 local MIN_H, MAX_AUTO_H = 390, 764
 
 local TELVAR = CURT_TELVAR_STONES
 
+local Scene = BGMeter.zenimax.scene
+
+local layout_scrollbar
 local built = false
 local launcher = nil
 local panel = nil
@@ -46,6 +50,9 @@ local rows = {}
 local offset = 0
 local on_hud = true
 local reopen_after_report = false
+local drag = { on = false, y0 = 0, off0 = 0 }
+local armed_index = nil
+local DISARM_MS = 3000
 
 local function safe(fn, ...)
     if type(fn) ~= "function" then return nil end
@@ -173,10 +180,11 @@ local function refresh_panel()
 
     st = panel.stats.vet
     local snap = BGMeter.Veterancy and BGMeter.Veterancy.snapshot()
+    if st.link then st.link:SetHidden(not (snap and snap.rank)) end
     if snap and snap.rank then
         st.c:SetHidden(false)
         if st.icon then
-            st.icon:SetTexture(safe(A.get_veterancy_rank_icon, snap.rank, snap.seasonId)
+            st.icon:SetTexture(safe(A.get_veterancy_rank_icon, snap.iconRank or snap.rank, snap.seasonId)
                 or snap.rankIcon or "")
         end
         set_text(st.label, string.format("%s  %d", clean(snap.rankTitle) or "Veterancy", snap.rank))
@@ -291,9 +299,23 @@ local function refresh_panel()
             (sess.streak or 0) >= 2 and string.format("\n%d wins in a row", sess.streak) or "",
             F.commas(sess.ap), F.commas(sess.xp))
     else
-        set_text(st.label, "no battles yet")
-        S.color(st.label, K.COLOR.text_dim)
-        st.tip = "This play session (since login)"
+        local Hist = BGMeter.History
+        local n, aw, al = Hist.count(), 0, 0
+        for i = 1, n do
+            local m = Hist.get(i)
+            if m.result == "WIN" then aw = aw + 1 elseif m.result == "LOSS" then al = al + 1 end
+        end
+        if n > 0 then
+            set_text(st.label, string.format("%dW-%dL all time", aw, al))
+            local col = K.COLOR.text_dim
+            if aw > al then col = K.COLOR.heal elseif al > aw then col = K.COLOR.accent end
+            S.color(st.label, col)
+            st.tip = string.format("All recorded battlegrounds\n%d battles\nNo battles yet this session", n)
+        else
+            set_text(st.label, "no battles yet")
+            S.color(st.label, K.COLOR.text_dim)
+            st.tip = "This play session (since login)"
+        end
     end
     st.c:SetHidden(false)
 end
@@ -336,9 +358,14 @@ local function make_row(i)
     r.ago:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
     U.clamp_line(r.ago)
 
+    r.delArm = P.rect(r.container, { K.COLOR.accent[1], K.COLOR.accent[2], K.COLOR.accent[3], 0.55 })
+    r.delArm:SetDimensions(20, 20)
+    r.delArm:SetAnchor(RIGHT, r.container, RIGHT, -3, 0)
+    r.delArm:SetHidden(true)
+
     r.del = mk_button(r.container, TX.close, 14, function()
-        M.delete(r.index)
-    end, "Delete this match")
+        M.request_delete(r.index)
+    end, "Delete this match\nClick twice")
     r.del:SetAnchor(RIGHT, r.container, RIGHT, -6, 0)
 
     r.container:SetHandler("OnMouseEnter", function()
@@ -465,15 +492,10 @@ local function build()
         apply_art_cover()
         M.refresh()
     end)
-    pw:SetHandler("OnMouseWheel", function(_, delta)
-        local count = BGMeter.History.count()
-        local maxOff = math.max(0, count - (panel.vis or 1))
-        local want = math.max(0, math.min(offset - delta, maxOff))
-        if want ~= offset then
-            offset = want
-            M.refresh()
-        end
-    end)
+    pw:SetHandler("OnMouseWheel", function(_, delta) M.scroll_to(offset - delta) end)
+    pw:SetHandler("OnMouseUp", function() M.on_thumb_up() end)
+    pw:SetHandler("OnMouseDoubleClick", function() M.on_double_click() end)
+    Scene.register_top_level(pw, function() M.hide_menu() end)
     panel = { win = pw }
 
     local bg = P.rect(pw, { K.COLOR.bg[1], K.COLOR.bg[2], K.COLOR.bg[3], 0.97 })
@@ -505,7 +527,7 @@ local function build()
     panel.gear = mk_button(pw, TX.gear, 22, function() W.toggle_settings() end, "Settings")
     panel.gear:SetAnchor(RIGHT, panel.close, LEFT, -8, 0)
 
-    local function make_stat(rowi, right, withIcon, withBar)
+    local function make_stat(rowi, right, withIcon, withBar, withLink)
         local c = BGMeter.zenimax.ui.create_control(nil, pw, CT_CONTROL)
         local rowH = right and 28 or 38
         local iconS = right and 26 or 38
@@ -531,8 +553,13 @@ local function build()
         U.clamp_line(st.label)
         if withBar then
             st.label:SetAnchor(TOPLEFT, c, TOPLEFT, textX, 3)
-            st.label:SetAnchor(TOPRIGHT, c, TOPRIGHT, 0, 3)
+            st.label:SetAnchor(TOPRIGHT, c, TOPRIGHT, withLink and -20 or 0, 3)
             st.label:SetHeight(20)
+            if withLink then
+                st.link = mk_button(c, TX.nextb, 16, function() M.open_veterancy() end, "View veterancy")
+                st.link:SetAnchor(TOPRIGHT, c, TOPRIGHT, 0, 5)
+                st.link:SetHidden(true)
+            end
             st.bar = U.inset_bar(c)
             st.bar.container:SetAnchor(BOTTOMLEFT, c, BOTTOMLEFT, textX, -3)
             st.bar.container:SetAnchor(BOTTOMRIGHT, c, BOTTOMRIGHT, 0, -3)
@@ -554,7 +581,7 @@ local function build()
 
     panel.stats = {
         ava     = make_stat(1, false, true, true),
-        vet     = make_stat(2, false, true, true),
+        vet     = make_stat(2, false, true, true, true),
         stand   = make_stat(3, false, true),
         ap      = make_stat(1, true, true),
         telvar  = make_stat(2, true, true),
@@ -600,6 +627,27 @@ local function build()
     panel.insetBg = P.rect(panel.inset, { 0, 0, 0, 0.45 })
     panel.insetBg:SetAnchorFill(panel.inset)
     P.frame(panel.inset):SetAnchorFill(panel.inset)
+
+    panel.scroll = {}
+    local track = BGMeter.zenimax.ui.create_control(nil, panel.inset, CT_CONTROL)
+    track:SetAnchor(TOPRIGHT, panel.inset, TOPRIGHT, -4, 6)
+    track:SetAnchor(BOTTOMRIGHT, panel.inset, BOTTOMRIGHT, -4, -6)
+    track:SetWidth(SCROLL_W)
+    track:SetMouseEnabled(true)
+    track:SetHidden(true)
+    track:SetHandler("OnMouseUp", function(_, _, upInside) if upInside then M.on_track_click() end end)
+    panel.scroll.track = track
+    panel.scroll.trackBg = P.rect(track, { 1, 1, 1, 0.06 })
+    panel.scroll.trackBg:SetAnchorFill(track)
+    local thumb = P.rect(track, { K.COLOR.text_dim[1], K.COLOR.text_dim[2], K.COLOR.text_dim[3], 0.55 })
+    thumb:SetAnchor(TOPLEFT, track, TOPLEFT, 0, 0)
+    thumb:SetWidth(SCROLL_W)
+    thumb:SetMouseEnabled(true)
+    thumb:SetHandler("OnMouseDown", function() M.on_thumb_down() end)
+    thumb:SetHandler("OnMouseUp", function() M.on_thumb_up() end)
+    thumb:SetHandler("OnMouseEnter", function() P.set_rect_color(thumb, { K.COLOR.text[1], K.COLOR.text[2], K.COLOR.text[3], 0.75 }) end)
+    thumb:SetHandler("OnMouseExit", function() if not drag.on then P.set_rect_color(thumb, { K.COLOR.text_dim[1], K.COLOR.text_dim[2], K.COLOR.text_dim[3], 0.55 }) end end)
+    panel.scroll.thumb = thumb
 
     panel.empty = P.label(panel.inset, S.FONT.small, K.COLOR.text_dim)
     panel.empty:SetText("no battlegrounds recorded yet\nqueue up below to record your first battle")
@@ -857,6 +905,74 @@ function M.queue_click()
     end
 end
 
+local function max_offset()
+    return math.max(0, BGMeter.History.count() - (panel.vis or 1))
+end
+
+function layout_scrollbar(count, maxOff)
+    local sc = panel.scroll
+    if maxOff <= 0 then sc.track:SetHidden(true) return end
+    local th = sc.track:GetHeight()
+    if th <= 0 then sc.track:SetHidden(true) return end
+    local thumbH = math.floor(th * panel.vis / count + 0.5)
+    if thumbH < 16 then thumbH = 16 end
+    if thumbH > th then thumbH = th end
+    local y = math.floor((th - thumbH) * offset / maxOff + 0.5)
+    sc.thumb:SetHeight(thumbH)
+    sc.thumb:ClearAnchors()
+    sc.thumb:SetAnchor(TOPLEFT, sc.track, TOPLEFT, 0, y)
+    sc.track:SetHidden(false)
+end
+
+function M.scroll_to(want)
+    if not built then return end
+    want = math.max(0, math.min(want, max_offset()))
+    if want == offset then return end
+    offset = want
+    M.disarm_delete()
+    M.refresh()
+end
+
+function M.on_track_click()
+    if drag.on then return end
+    local track = panel.scroll.track
+    local _, my = BGMeter.zenimax.api.get_ui_mouse()
+    local th = track:GetHeight()
+    if not my or th <= 0 then return end
+    local rel = (my - track:GetTop()) / th
+    M.scroll_to(math.floor(rel * (max_offset() + 1)))
+end
+
+local function drag_update()
+    if not drag.on then return end
+    local track, thumb = panel.scroll.track, panel.scroll.thumb
+    local free = track:GetHeight() - thumb:GetHeight()
+    local maxOff = max_offset()
+    if free <= 0 or maxOff <= 0 then return end
+    local _, my = BGMeter.zenimax.api.get_ui_mouse()
+    if not my then return end
+    M.scroll_to(drag.off0 + math.floor((my - drag.y0) * maxOff / free + 0.5))
+end
+
+function M.on_thumb_down()
+    local _, my = BGMeter.zenimax.api.get_ui_mouse()
+    drag.on, drag.y0, drag.off0 = true, my or 0, offset
+    panel.win:SetHandler("OnUpdate", drag_update)
+end
+
+function M.on_thumb_up()
+    if not drag.on then return end
+    drag.on = false
+    panel.win:SetHandler("OnUpdate", nil)
+    P.set_rect_color(panel.scroll.thumb, { K.COLOR.text_dim[1], K.COLOR.text_dim[2], K.COLOR.text_dim[3], 0.55 })
+end
+
+function M.window() return panel and panel.win end
+
+function M.scroll_state()
+    return offset, panel and panel.scroll and not panel.scroll.track:IsHidden(), panel and panel.scroll and panel.scroll.thumb:GetHeight() or 0
+end
+
 function M.refresh()
     if not built or panel.win:IsHidden() then return end
     local H = BGMeter.History
@@ -876,8 +992,10 @@ function M.refresh()
     if offset > maxOff then offset = maxOff end
     local vis = math.min(count - offset, panel.vis)
 
-    local roww = w - 2 * INSET_PAD - 10
+    local scrolling = maxOff > 0
+    local roww = w - 2 * INSET_PAD - 10 - (scrolling and (SCROLL_W + 6) or 0)
     panel.empty:SetHidden(count > 0)
+    layout_scrollbar(count, maxOff)
 
     for i = 1, vis do
         local r = rows[i]
@@ -893,6 +1011,7 @@ function M.refresh()
         r.container:SetDimensions(roww, ROW_H)
         r.container:SetHidden(false)
         r.highlight:SetHidden(true)
+        r.delArm:SetHidden(armed_index ~= idx)
         r.name:SetWidth(math.max(72, roww - 232))
         P.set_rect_color(r.pip, result_color(m.result))
         set_text(r.name, m.name or "Battleground")
@@ -900,7 +1019,7 @@ function M.refresh()
         set_text(r.mode, mode_tag(m))
         set_text(r.ago, ago_label(m.capturedAt))
         local lr = BGMeter.Match.local_row(m)
-        set_text(r.kda, lr and string.format("%d/%d/%d", lr.kills or 0, lr.deaths or 0, lr.assists or 0) or "")
+        set_text(r.kda, lr and string.format("|c%s%d|r/%d/%d", U.hexc(K.COLOR.you), lr.kills or 0, lr.deaths or 0, lr.assists or 0) or "")
         local score = m.result or ""
         if m.teams and #m.teams >= 2 then
             score = string.format("%s  %d - %d", m.result or "", m.teams[1].score or 0, m.teams[2].score or 0)
@@ -919,12 +1038,57 @@ function M.refresh()
 end
 
 function M.delete(index)
+    M.disarm_delete()
     if not BGMeter.History.delete(index) then return end
     Sound.play("nav")
     W.on_history_changed(index)
     auto_height()
     apply_art_cover()
     M.refresh()
+end
+
+function M.disarm_delete()
+    if not armed_index then return end
+    armed_index = nil
+    BGMeter.zenimax.events.unregister_update("BGMeterDisarm")
+    for _, r in ipairs(rows) do r.delArm:SetHidden(true) end
+end
+
+function M.request_delete(index)
+    if not index or not BGMeter.History.get(index) then return false end
+    if armed_index == index then
+        M.delete(index)
+        return true
+    end
+    M.disarm_delete()
+    armed_index = index
+    for _, r in ipairs(rows) do r.delArm:SetHidden(r.index ~= index) end
+    Sound.play("nav")
+    BGMeter.zenimax.events.register_update("BGMeterDisarm", DISARM_MS, M.disarm_delete)
+    return false
+end
+
+function M.armed_index() return armed_index end
+
+function M.stat_text(key) return panel and panel.stats[key] and panel.stats[key].label:GetText() or nil end
+function M.row_kda(i) return rows[i] and rows[i].kda:GetText() or nil end
+
+function M.on_double_click()
+    if not built then return end
+    local _, y = BGMeter.zenimax.api.get_ui_mouse()
+    local top = panel.win:GetTop()
+    if y == nil or y < top or y > top + HEAD_H then return end
+    local mg = sv_menu()
+    mg.w, mg.h = 0, 0
+    panel.win:SetDimensions(MENU_W, MENU_H)
+    auto_height()
+    apply_art_cover()
+    Sound.play("nav")
+    M.refresh()
+end
+
+function M.open_veterancy()
+    if Scene.push("VeterancySceneKeyboard") then Sound.play("nav") end
 end
 
 local DEMO_RANKS = { 96, 42, 7, 1 }
@@ -953,6 +1117,7 @@ function M.show_menu()
         panel.win:SetAnchor(TOPLEFT, launcher.win, BOTTOMRIGHT, 2, 2)
     end
     panel.win:SetHidden(false)
+    if Prefs.get("cursor_on_open") then Scene.enter_ui_mode() end
     offset = 0
     auto_height()
     apply_art_cover()
@@ -967,8 +1132,10 @@ end
 
 function M.hide_menu(silent)
     if not built then return end
-    if not silent and not panel.win:IsHidden() then Sound.play("close") end
+    local was_visible = not panel.win:IsHidden()
+    M.disarm_delete()
     panel.win:SetHidden(true)
+    if not silent and was_visible then Sound.play("close") end
     queue_ticker_sync(false)
 end
 
@@ -976,6 +1143,12 @@ function M.toggle()
     if not built then return end
     if panel.win:IsHidden() then M.show_menu() else M.hide_menu() end
 end
+
+function M.is_hidden()
+    return not built or panel.win:IsHidden()
+end
+
+function M.forget_reopen() reopen_after_report = false end
 
 function M.on_report_closed()
     if not reopen_after_report then return end
@@ -1017,6 +1190,11 @@ function M.on_scene(hud)
     M.sync()
 end
 
+function M.on_scene_state(newState)
+    if newState == SCENE_SHOWN then M.on_scene(true)
+    elseif newState == SCENE_HIDDEN and not BGMeter.zenimax.scene.next_is_hud() then M.on_scene(false) end
+end
+
 function M.init()
     build()
     local C = BGMeter.zenimax.constants
@@ -1025,10 +1203,7 @@ function M.init()
             function() M.update_queue() end)
     end
     if SCENE_MANAGER then
-        local function handler(_, newState)
-            if newState == SCENE_SHOWN then M.on_scene(true)
-            elseif newState == SCENE_HIDDEN then M.on_scene(false) end
-        end
+        local function handler(_, newState) M.on_scene_state(newState) end
         for _, name in ipairs({ "hud", "hudui" }) do
             local ok, sc = pcall(function() return SCENE_MANAGER:GetScene(name) end)
             if ok and sc and type(sc.RegisterCallback) == "function" then

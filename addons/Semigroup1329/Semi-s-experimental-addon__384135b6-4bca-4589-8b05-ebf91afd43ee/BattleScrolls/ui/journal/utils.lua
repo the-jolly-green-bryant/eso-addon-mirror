@@ -167,6 +167,9 @@ end
 
 ---@type table<number, number>
 local abilityIconAbilityIdOverrides = {
+    [227116] = 217699, -- arcanist's banner (crux pulse) -> banner bearer grimoire
+    [252143] = 217699, -- arcanist's banner (ult pulse) -> banner bearer grimoire
+    [227381] = 163896, -- spattering disjunction (generic mage icon) -> whirlpool
     [201265] = 186370, -- pragmatic fatecarver shield -> damage
     [69118] = 63956, -- radiant glory heal -> damage
     [201275] = 183006, -- cephaliarch's flail heal -> damage

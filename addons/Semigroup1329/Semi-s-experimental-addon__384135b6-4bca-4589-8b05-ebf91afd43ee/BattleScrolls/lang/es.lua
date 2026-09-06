@@ -59,7 +59,7 @@ local strings = {
     [BATTLESCROLLS_STAT_TIME_LOST] = "Tiempo perdido",
     [BATTLESCROLLS_STAT_LIGHT_ATTACKS] = "Ataques ligeros",
     [BATTLESCROLLS_STAT_HEAVY_ATTACKS] = "Ataques pesados",
-    [BATTLESCROLLS_STAT_SKILL_ACTIVATIONS] = "Habilidades",
+    [BATTLESCROLLS_STAT_SKILL_ACTIVATIONS] = "Habilidades lanzadas",
     [BATTLESCROLLS_STAT_CASTS] = "Lanzamientos",
     [BATTLESCROLLS_STAT_WEAVING_ERRORS] = "Errores de weaving",
     [BATTLESCROLLS_STAT_MISSED_LA] = "Ligeros perdidos",
@@ -68,9 +68,9 @@ local strings = {
     [BATTLESCROLLS_TOOLTIP_DELAY_BEFORE] = "Retraso antes de lanzar",
     [BATTLESCROLLS_FORMAT_SECONDS] = "<<1>>s",
     [BATTLESCROLLS_FORMAT_MILLISECONDS] = "<<1>>ms",
-    [BATTLESCROLLS_TOOLTIP_INTER_CAST_DESC] = "Retraso medio entre lanzamientos. Se mide desde que termina el GCD o el tiempo de lanzamiento de una habilidad hasta que comienza la siguiente acción. También conocido como Weaving Average en CMX.",
-    [BATTLESCROLLS_TOOLTIP_TIME_LOST_DESC] = "Tiempo total entre lanzamientos durante el encuentro. También conocido como Weaving Total en CMX.",
-    [BATTLESCROLLS_TOOLTIP_MISSED_LA_DESC] = "Habilidad lanzada directamente tras otra habilidad, sin un ataque ligero entre medias.",
+    [BATTLESCROLLS_TOOLTIP_INTER_CAST_DESC] = "Hueco medio entre lanzamientos, medido desde que acaba el tiempo de reutilización global o el tiempo de lanzamiento de una habilidad hasta tu siguiente acción. En Combat Metrics se llama Weaving Average.",
+    [BATTLESCROLLS_TOOLTIP_TIME_LOST_DESC] = "Todos los huecos entre lanzamientos sumados a lo largo del combate. En Combat Metrics se llama Weaving Total.",
+    [BATTLESCROLLS_TOOLTIP_MISSED_LA_DESC] = "Habilidades lanzadas justo después de otra habilidad, sin un ataque ligero entre medias.",
     [BATTLESCROLLS_TOOLTIP_DOUBLE_LA_DESC] = "Dos ataques ligeros seguidos, sin una habilidad entre medias.",
 
     -------------------------
@@ -239,7 +239,6 @@ local strings = {
     -- Proc Tracking
     [BATTLESCROLLS_HEADER_PROC_TRACKING] = "Seguimiento de procs",
     [BATTLESCROLLS_STAT_TOTAL_PROCS] = "<<1[$d proc/$d procs]>>",
-    [BATTLESCROLLS_STAT_MEDIAN_INTERVAL] = "mediana",
 
     -------------------------
     -- Damage Stats Details
@@ -251,6 +250,8 @@ local strings = {
     [BATTLESCROLLS_STAT_DPS] = "DPS",
 
     [BATTLESCROLLS_HEADER_BY_ABILITY] = "Por habilidad",
+
+    [BATTLESCROLLS_HEADER_CASTS] = "Lanzamientos",
     [BATTLESCROLLS_HEADER_BY_DAMAGE_TYPE] = "Por tipo de daño",
     [BATTLESCROLLS_HEADER_DIRECT_VS_DOT] = "Directo vs DoT",
     [BATTLESCROLLS_HEADER_DAMAGE_DELIVERY] = "Aplicación de daño",
@@ -967,6 +968,24 @@ local shareStrings = {
     [BATTLESCROLLS_MEMDIAG_GAUGE] = "Memoria de accesorios (indicador de consola)",
     [BATTLESCROLLS_MEMDIAG_PROBE_STRINGS] = "Medir clases de tamaño de cadenas",
     [BATTLESCROLLS_MEMDIAG_PROBE_HEADER] = "long.: indicador / montículo / modelo (bytes por cadena)",
+    [BATTLESCROLLS_MEMDIAG_TEST_CANCELLED] = "Cancelado",
+    [BATTLESCROLLS_MEMDIAG_TEST_COMBAT] = "Combate",
+    [BATTLESCROLLS_MEMDIAG_TEST_DONE] = "Listo",
+    [BATTLESCROLLS_MEMDIAG_TEST_ERROR] = "Error",
+    [BATTLESCROLLS_MEMDIAG_TEST_GC_TIMEOUT] = "Tiempo GC",
+    [BATTLESCROLLS_MEMDIAG_TEST_HEADER] = "MiB G=indicador H=Lua; antes/usado/libre",
+    [BATTLESCROLLS_MEMDIAG_TEST_HELD] = "Libera los datos de prueba manuales en Ajustes primero.",
+    [BATTLESCROLLS_MEMDIAG_TEST_IDLE] = "%s G%s>%s H%s>%s",
+    [BATTLESCROLLS_MEMDIAG_TEST_IDLE_END] = "Reposo B",
+    [BATTLESCROLLS_MEMDIAG_TEST_IDLE_START] = "Reposo A",
+    [BATTLESCROLLS_MEMDIAG_TEST_LIMIT] = "Límite 75 MiB",
+    [BATTLESCROLLS_MEMDIAG_TEST_NOT_RUNNING] = "No hay prueba de memoria en curso.",
+    [BATTLESCROLLS_MEMDIAG_TEST_NO_REPORT] = "Aún no hay informe de memoria.",
+    [BATTLESCROLLS_MEMDIAG_TEST_ROW] = "%d G%s/%s/%s H%s/%s/%s",
+    [BATTLESCROLLS_MEMDIAG_TEST_RUNNING] = "En curso",
+    [BATTLESCROLLS_MEMDIAG_TEST_STARTED] = "Prueba iniciada. No te muevas y cierra los menús.",
+    [BATTLESCROLLS_MEMDIAG_TEST_SUMMARY] = "%s %d/%d; máx G %s; %ds",
+    [BATTLESCROLLS_MEMDIAG_TEST_USAGE] = "/bsmemtest [cancel|report]",
     [BATTLESCROLLS_SHARE_CHOICE_HEADER] = "Qué enviar",
     [BATTLESCROLLS_SHARE_CHOICE_FULL] = "Todos los combates (<<1>>)",
     [BATTLESCROLLS_SHARE_CHOICE_BOSSES] = "Solo jefes (<<1>>)",
@@ -1016,7 +1035,11 @@ local featureStrings = {
     [BATTLESCROLLS_HEADER_ULTIMATE] = "Habilidad máxima",
     [BATTLESCROLLS_STAT_ULT_AT_ENTRY] = "Máxima al entrar en combate",
     [BATTLESCROLLS_STAT_ULT_GENERATED] = "Máxima generada",
-    [BATTLESCROLLS_STAT_ULT_DRAINED] = "Máxima gastada y drenada",
+    [BATTLESCROLLS_STAT_ULT_SPENT_DRAINED] = "Máxima gastada y drenada",
+    [BATTLESCROLLS_STAT_ULT_SPENT] = "Máxima gastada",
+    [BATTLESCROLLS_STAT_ULT_LOST] = "Perdida al lanzar",
+    [BATTLESCROLLS_STAT_ULT_LOST_TT] = "Lanzar una habilidad máxima vacía toda la reserva, así que se pierde todo lo que supere su coste.",
+    [BATTLESCROLLS_STAT_ULT_DRAINED] = "Máxima drenada",
     [BATTLESCROLLS_HEADER_ULT_SOURCES] = "Generación de máxima por fuente",
     [BATTLESCROLLS_ULT_BASE_GENERATION] = "Generación base",
     [BATTLESCROLLS_ULT_HEROISM_LINE] = "Incluye <<C:1>>: <<2>>% de tiempo activo, aprox. <<3>>",
@@ -1024,20 +1047,19 @@ local featureStrings = {
 
     [BATTLESCROLLS_HEADER_CRUX] = "Crux",
     [BATTLESCROLLS_STAT_CRUX_GENERATORS] = "Lanzamientos generadores",
-    [BATTLESCROLLS_STAT_CRUX_AT_FULL] = "Generados con Crux lleno",
+    [BATTLESCROLLS_STAT_CRUX_AT_FULL] = "Lanzados con Crux lleno",
     [BATTLESCROLLS_STAT_CRUX_SPENDERS] = "Lanzamientos consumidores",
-    [BATTLESCROLLS_STAT_CRUX_UNDER] = "Gastados con menos de 3 Crux",
+    [BATTLESCROLLS_STAT_CRUX_UNDER] = "Lanzados con menos de 3 Crux",
     [BATTLESCROLLS_CRUX_AT_N] = "Con <<1>> Crux: <<2>>",
-    [BATTLESCROLLS_HEADER_CRUX_BY_ABILITY] = "Disciplina de Crux por habilidad",
+    [BATTLESCROLLS_HEADER_CRUX_BY_ABILITY] = "Lanzamientos a destiempo por habilidad",
 
     [BATTLESCROLLS_HEADER_ZEN] = "Acumulación de DoT (Z'en)",
     [BATTLESCROLLS_ZEN_AVG_DOTS] = "DoTs medios",
-    [BATTLESCROLLS_ZEN_UPTIME] = "Tiempo activo del debilitamiento de Z'en",
+    [BATTLESCROLLS_ZEN_UPTIME] = "Tu tiempo activo de Z'en",
     [BATTLESCROLLS_ZEN_PEAK_TIME] = "Tiempo en <<1>>",
     [BATTLESCROLLS_ZEN_DOTS_LABEL] = "<<1>> DoTs",
     [BATTLESCROLLS_ZEN_SHARE_LINE] = "media <<1>> — <<2>> con 5 DoTs",
     [BATTLESCROLLS_ZEN_SHORT] = "Z'en",
-    [BATTLESCROLLS_ZEN_BOSS_SUMMARY] = "media <<1>> DoTs — Z'en <<2>>% — <<3>> <<4>>%",
 
     [BATTLESCROLLS_HEADER_SUPPORT] = "Apoyo",
     [BATTLESCROLLS_STAT_RESURRECTIONS] = "Resurrecciones",
@@ -1047,13 +1069,31 @@ for id, str in pairs(featureStrings) do
 end
 
 local cruxPassiveStrings = {
-    [BATTLESCROLLS_STAT_CRUX_PASSIVE] = "Consumidos fuera de lanzamientos",
-    [BATTLESCROLLS_STAT_CRUX_PASSIVE_TT] = "Crux perdidos sin un lanzamiento consumidor cercano: expiración natural (30 segundos) o muerte.",
-    [BATTLESCROLLS_STAT_CRUX_CONDITIONAL_TT] = "Crux generados por las activaciones de esta fuente (asociados a los aumentos de cargas por tiempo).",
+    [BATTLESCROLLS_STAT_CRUX_PASSIVE] = "Perdidos fuera de lanzamientos",
+    [BATTLESCROLLS_STAT_CRUX_PASSIVE_TT] = "Crux que se desvanecieron solos, sin ningún lanzamiento consumidor ni muerte cerca. Los Crux caducan a los 30 segundos.",
+    [BATTLESCROLLS_STAT_CRUX_DEATH] = "Perdidos por muerte",
+    [BATTLESCROLLS_STAT_CRUX_PROC_WASTED] = "Ganancias pasivas con Crux lleno",
+    [BATTLESCROLLS_STAT_CRUX_PROC_WASTED_TT] = "Ganancias pasivas que se activaron cuando ya tenías 3 Crux, así que no dieron nada. «<<1>>» y sus variantes y <<2>> solo dan Crux cuando no tienes ninguno, por eso nunca se cuentan aquí.",
+    [BATTLESCROLLS_STAT_CRUX_CONDITIONAL_TT] = "Crux que esta fuente generó de forma pasiva, sin ningún lanzamiento.",
     [BATTLESCROLLS_STAT_CRUX_OTHER] = "Otras ganancias de crux",
-    [BATTLESCROLLS_STAT_CRUX_OTHER_TT] = "Crux obtenidos sin fuente rastreada cercana; por ejemplo, las activaciones periódicas de «<<1>>».",
+    [BATTLESCROLLS_STAT_CRUX_OTHER_TT] = "Crux obtenidos sin que ninguna fuente registrada aquí se activara en ese momento.",
     [BATTLESCROLLS_HEADER_CRUX_GAINED] = "Crux obtenidos por habilidad",
 }
 for id, str in pairs(cruxPassiveStrings) do
+    SafeAddString(id, str, 1)
+end
+
+local activityOverviewStrings = {
+    [BATTLESCROLLS_STAT_DOWNTIME] = "Tiempo inactivo",
+    [BATTLESCROLLS_TOOLTIP_DOWNTIME_DESC] = "Huecos de 3 segundos o más entre lanzamientos, por ejemplo mecánicas, resucitar o estar muerto. No cuentan en el retraso de lanzamiento.",
+    [BATTLESCROLLS_STAT_PER_MINUTE] = "<<1>>/min",
+    [BATTLESCROLLS_DETAIL_MEDIAN] = "mediana <<1>>",
+    [BATTLESCROLLS_DETAIL_DELAY] = "<<1>> de retraso",
+    [BATTLESCROLLS_DETAIL_AT_FULL] = "<<1>> al máximo",
+    [BATTLESCROLLS_DETAIL_LOST] = "<<1>> perdidos",
+    [BATTLESCROLLS_DETAIL_AVG_DOTS] = "media <<1>> DoTs",
+    [BATTLESCROLLS_DETAIL_AT_DOTS] = "<<1>> con <<2>>",
+}
+for id, str in pairs(activityOverviewStrings) do
     SafeAddString(id, str, 1)
 end

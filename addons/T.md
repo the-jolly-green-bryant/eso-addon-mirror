@@ -20,7 +20,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Tamriel Chronos - Clock](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Gandalf/Tamriel-Chronos---Clock__3348) | Gandalf | PC / Mac | 20101 |
 | [Tamriel Master Ledger](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/xPricee/Tamriel-Master-Ledger__1e746db5-8418-4a6f-9f17-4449e0d7e3f0) | xPricee | Console | — |
 | [Tamriel Master Ledger - DEV](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/xPricee/Tamriel-Master-Ledger---DEV__89ecfc27-e76b-48ae-8d40-e76bbf0c5c13) | xPricee | Console | — |
-| [Tamriel Progress Map](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Racconplayz/Tamriel-Progress-Map__4799) | Racconplayz | PC / Mac | 2.7.0 Beta |
+| [Tamriel Progress Map](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Racconplayz/Tamriel-Progress-Map__4799) | Racconplayz | PC / Mac | 2.7.2 Beta |
 | [Tamriel Races](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/Tamriel-Races__167ff6ab-0d5c-4582-83cc-0ec8ced35cc1) | SugaComa | Console | — |
 | [Tamriel Tomes Map Pins](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/runcarsnowpen/Tamriel-Tomes-Map-Pins__4591) | runcarsnowpen | PC / Mac | 1.2.1 |
 | [Tamriel Trade Centre](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/cyxui/Tamriel-Trade-Centre__1245) | cyxui | PC / Mac | 4.27.281.39281 |
@@ -48,6 +48,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [TaterTotal](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Evolynne/TaterTotal__2617) | Evolynne | PC / Mac | 1.0 |
 | [Taunt Assist](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Cozy_Radish/Taunt-Assist__443e6038-7baa-4e81-84fb-afe6cd3f92d6) | Cozy_Radish | Console | — |
 | [Taunt Indicator](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Marnu/Taunt-Indicator__4429) | Marnu | PC / Mac | 0.9 |
+| [TauntEffectLogger](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Unfounded_Puppy3/TauntEffectLogger__ca2e7b91-c87c-4f7f-b317-fa7d4a389511) | Unfounded_Puppy3 | Console | — |
 | [Tauntless](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/hoellik/Tauntless__153e64a6-b621-4c91-b84a-c2ae48778142) | hoellik | Console | — |
 | [TauntTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tenshiraito/TauntTracker__4554) | Tenshiraito | PC / Mac | 3.0.0 |
 | [Taximeter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MrPikPik/Taximeter__3636) | MrPikPik | PC / Mac | 1.0 |
@@ -67,6 +68,8 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [test](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/satuve/test__3735024b-209d-4fab-966c-339f5adffcb5) | satuve | Console | — |
 | [test](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sirinsidiator/test__081b2e52-b426-454f-9be3-3a9a4aa5678f) | sirinsidiator | Console | — |
 | [Test](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/wh0c4r35ab0utth15/Test__43eacadc-428c-4ca4-b0da-e2777148a4fb) | wh0c4r35ab0utth15 | Console | — |
+| [Test 02](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BMGxSancho/Test-02__69873c4a-bc92-4a96-8f41-a37e845d828c) | BMGxSancho | Console | — |
+| [TEST 03](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BMGxSancho/TEST-03__ccd8ba3a-f81c-4f99-98fd-84f9ce3c76f0) | BMGxSancho | Console | — |
 | [Test addon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Copper0/Test-addon__0633023c-b987-4b33-ba10-4437f11b6efd) | Copper0 | Console | — |
 | [Test Addon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/xbutch/Test-Addon__f7a014ce-5df1-49ee-80fd-7ef4f53bec84) | xbutch | Console | — |
 | [Test suite](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tekatsu/Test-suite__dc420d92-00cf-428d-8c89-a7cb5ceecd44) | Tekatsu | Console | — |

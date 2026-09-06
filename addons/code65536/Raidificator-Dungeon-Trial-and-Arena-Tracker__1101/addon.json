@@ -74,7 +74,7 @@
     "Raidificator"
   ],
   "download_url": "https://www.esoui.com/downloads/dl1101/",
-  "fingerprint": "9b214e21dd22b043b6908dac05f8835ab5d9ac68775706073a47d1ff12db871d",
+  "fingerprint": "9ed485a3e406b6a383707f7f63f1aeca40de44ef2c2f661e2d2cbcc1f0b38042",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw13337.png",
     "https://cdn-eso.mmoui.com/preview/pvw12621.png",
@@ -93,11 +93,11 @@
   "source_id": "1101",
   "source_url": "https://www.esoui.com/downloads/info1101-RaidificatorDungeonTrialandArenaTracker.html",
   "stats": {
-    "downloads": 158053,
+    "downloads": 159808,
     "favorites": 115,
-    "monthly_downloads": 5468
+    "monthly_downloads": 5955
   },
   "title": "Raidificator (Dungeon, Trial, and Arena Tracker)",
-  "updated_at": 1788193942000,
-  "version": "4.7.3"
+  "updated_at": 1788610035000,
+  "version": "4.7.3.1"
 }

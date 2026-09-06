@@ -62,15 +62,17 @@ end
 
 function O:ApplyDrawOrder()
     if not self.frame then return end
-    local layout = self.layoutMode == true
+    -- v0.29.340: the adaptive quest overlays can use DT_HIGH and grow across
+    -- nearby HUD space. Keep Automatic Difficulty above all normal Suite HUD
+    -- cards in gameplay as well as HUD Layout Mode so it never gets buried.
     pcall(function()
-        if self.frame.SetTopLevel then self.frame:SetTopLevel(layout) end
-        if self.frame.SetDrawTier then self.frame:SetDrawTier(layout and (DT_HIGH or DT_MEDIUM) or (DT_MEDIUM or DT_LOW)) end
+        if self.frame.SetTopLevel then self.frame:SetTopLevel(true) end
+        if self.frame.SetDrawTier then self.frame:SetDrawTier(DT_HIGH or DT_MEDIUM) end
         if self.frame.SetDrawLayer then self.frame:SetDrawLayer(DL_OVERLAY or DL_CONTROLS) end
-        if self.frame.SetDrawLevel then self.frame:SetDrawLevel(layout and 5000 or 260) end
+        if self.frame.SetDrawLevel then self.frame:SetDrawLevel(9000) end
         if self.icon and self.icon.SetDrawLayer then self.icon:SetDrawLayer(DL_OVERLAY or DL_CONTROLS) end
-        if self.icon and self.icon.SetDrawLevel then self.icon:SetDrawLevel(layout and 5010 or 270) end
-        if layout and self.frame.BringWindowToTop then self.frame:BringWindowToTop() end
+        if self.icon and self.icon.SetDrawLevel then self.icon:SetDrawLevel(9010) end
+        if self.frame.BringWindowToTop then self.frame:BringWindowToTop() end
     end)
 end
 
@@ -184,6 +186,6 @@ function O:Initialize()
     elseif EVENT_ZONE_UPDATE then
         EVENT_MANAGER:RegisterForEvent(prefix .. "_Zone", EVENT_ZONE_UPDATE, function() self:Refresh() end)
     end
-    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Pulse", 1500, function() self:Refresh() end)
+    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Pulse", 800, function() self:Refresh() end)
     self:Refresh()
 end

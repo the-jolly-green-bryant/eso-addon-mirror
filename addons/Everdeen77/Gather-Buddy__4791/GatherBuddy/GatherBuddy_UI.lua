@@ -593,6 +593,10 @@ function GB.ApplyWindowLockState()
     if GB.ApplyHistoryWindowLockState then
         GB.ApplyHistoryWindowLockState()
     end
+
+    if GB.ApplyRareAlertLockState then
+        GB.ApplyRareAlertLockState()
+    end
 end
 
 function GB.LockWindow()
@@ -895,7 +899,7 @@ function GB.CreateWindow()
         "|c66CCFFGATHER BUDDY v"
             .. (
                 GB.ADDON_VERSION
-                or "1.2"
+                or "1.3"
             )
             .. "|r"
     )

@@ -18,7 +18,7 @@ function CMA:printResultsToChat()
             self:SendChatMessageLimitedItemCount("|cFFFFFFIgnored:|r ", self.ignoredItems)
         end
     end
-    ZO_Alert(UI_ALERT_CATEGORY_ALERT, SOUNDS.SKILL_GAINED, "Finished banking materials.")
+    ZO_Alert(UI_ALERT_CATEGORY_ALERT, SOUNDS.ABILITY_SYNERGY_AVAILABLE, "CMA: Finished banking materials.")
     self:cleanupTables()
 end
 
@@ -26,10 +26,10 @@ end
 function CMA:OnMoveFailed(itemLink, stackSizeToDeposit)
     EVENT_MANAGER:UnregisterForUpdate(self.moveTimeoutName)
     -- check if there are attempts left
-    
-    if self:checkIfAttemptsLeft(self.sourceBag , self.processedSlot) then
+    local uniqueId = self:GetUniqueIdString(self.sourceBag , self.processedSlot)
+    if self:checkIfAttemptsLeft(uniqueId) then
         -- readd to list and go on with processing
-        table.insert(self.itemsToMove, self.processedSlot)
+        table.insert(self.itemsToMove, uniqueId)
     else
         table.insert(self.failedItems, itemLink .. " (" .. stackSizeToDeposit .. ")")
     end
@@ -41,9 +41,7 @@ function CMA:OnMoveFailed(itemLink, stackSizeToDeposit)
 end
 
 -- this function checks if the maximum number of retries for an item is reached and returns true or false
-function CMA:checkIfAttemptsLeft(bagId, slotIndex)
-    local uniqueId64b = GetItemUniqueId(bagId, slotIndex)
-    local uniqueId = Id64ToString(uniqueId64b)
+function CMA:checkIfAttemptsLeft(uniqueId)
     if self.failedItemMoveAttempts[uniqueId] then
         if self.failedItemMoveAttempts[uniqueId][1] >= self.numberOfRetriesPerItem then
             -- reached maximum number of reties -> no retry
@@ -111,10 +109,11 @@ function CMA:MoveNextItem()
     -- set processing to true to prevent other items to be processed at the same time
     self.processingMove = true
 
-    local currentSlot = table.remove(self.itemsToMove)
-    local itemId = GetItemId(self.sourceBag, currentSlot)
-    local itemLink = GetItemLink(self.sourceBag, currentSlot)
-    local stackSizeToDeposit = GetSlotStackSize(self.sourceBag, currentSlot)
+    local uniqueId = table.remove(self.itemsToMove)
+    local bagId, slotIndex = self:findItemByUniqueId(self.sourceBag, uniqueId)
+    local itemId = GetItemId(bagId, slotIndex)
+    local itemLink = GetItemLink(bagId, slotIndex)
+    local stackSizeToDeposit = GetSlotStackSize(bagId, slotIndex)
     local depositSlot = self:GetBestFitMapSlot(self.targetBag, itemId, stackSizeToDeposit)
 
     if depositSlot ~= nil then
@@ -122,7 +121,7 @@ function CMA:MoveNextItem()
         self:StartTimeout(itemLink, stackSizeToDeposit)
         self.processedSlot = depositSlot
         -- try to do the move operation - if successful will end up in the callback OnMoveSuccess before timeout triggers
-        CallSecureProtected("RequestMoveItem", self.sourceBag, currentSlot, self.targetBag, self.processedSlot, stackSizeToDeposit)
+        CallSecureProtected("RequestMoveItem", bagId, slotIndex, self.targetBag, self.processedSlot, stackSizeToDeposit)
     else
         -- did not find an existing slot to deposit - try using a new slot
         if GetNumBagFreeSlots(self.targetBag) <= 0 then
@@ -133,7 +132,7 @@ function CMA:MoveNextItem()
             -- start a timer and abort operation it takes too long (=timeout)
             self:StartTimeout(itemLink, stackSizeToDeposit)
             -- try to do the move operation - if successful will end up in the callback OnMoveSuccess before timeout triggers
-            CallSecureProtected("RequestMoveItem", self.sourceBag, currentSlot, self.targetBag, self.processedSlot, stackSizeToDeposit)
+            CallSecureProtected("RequestMoveItem", bagId, slotIndex, self.targetBag, self.processedSlot, stackSizeToDeposit)
         end
     end
 end
@@ -160,32 +159,33 @@ function CMA:cleanupTables()
     self.failedItemMoveAttempts = nil
 end
 
-function CMA:OnBankOpen()
-    if not self.db.enableAddon then return end
+function CMA:StartBankingProcess()
+    EVENT_MANAGER:UnregisterForUpdate(self.initialTimeoutName)
     if not IsBankOpen() then return end
 
     self:InitializeTables()
 
     -- iterate the bag and check each item individually
     local totalSlots = GetBagSize(self.sourceBag)
-    for slotIndex = 0, totalSlots - 1 do
+    for slotIndex = 0, totalSlots do
         if HasItemInSlot(self.sourceBag, slotIndex) then
             local action = self:DetermineItemAction(self.sourceBag, slotIndex)
             local itemLink = GetItemLink(self.sourceBag, slotIndex)
             local stackCount = GetSlotStackSize(self.sourceBag, slotIndex)
+            local uniqueId = self:GetUniqueIdString(self.sourceBag, slotIndex)
             if action == "bank" then
                 -- if it was marked junk previously, unmark it
                 if IsItemJunk(self.sourceBag, slotIndex) then
                     SetItemIsJunk(self.sourceBag, slotIndex, false)
                 end
                 -- add item to be moved to the bank
-                table.insert(self.itemsToMove, slotIndex)
+                table.insert(self.itemsToMove, uniqueId)
             elseif action == "junk" then
                 if self.db.markAsTrashIfNotBanked then
                     if not IsItemJunk(self.sourceBag, slotIndex) then
                         SetItemIsJunk(self.sourceBag, slotIndex, true)
                         table.insert(self.junkedItems, itemLink .. " (" .. stackCount .. ")")
-                        table.insert(self.junkedSlots, slotIndex)
+                        table.insert(self.junkedIds, uniqueId)
                     end
                 else
                     table.insert(self.ignoredItems, itemLink .. " (" .. stackCount .. ")")
@@ -207,6 +207,14 @@ function CMA:OnBankOpen()
     EVENT_MANAGER:AddFilterForEvent(self.name, EVENT_INVENTORY_SINGLE_SLOT_UPDATE, REGISTER_FILTER_BAG_ID, self.targetBag)
     -- start the move process
     self:MoveNextItem()
+end
+
+function CMA:OnBankOpen()
+    if not self.db.enableAddon then return end
+    ZO_Alert(UI_ALERT_CATEGORY_ALERT, SOUNDS.NO_SOUND, "CMA: Banking materials in " .. tostring(math.ceil(self.db.initialDelayInMs / 1000)) .. " seconds.")
+    -- start the inital delay
+    EVENT_MANAGER:RegisterForUpdate(self.initialTimeoutName, self.db.initialDelayInMs, function() self:StartBankingProcess() end)
+
 end
 
 function CMA:OnBankClosed(event, bankBag)

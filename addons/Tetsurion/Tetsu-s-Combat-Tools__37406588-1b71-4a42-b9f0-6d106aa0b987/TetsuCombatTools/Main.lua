@@ -12,17 +12,27 @@ local defaultAccountVars = {
     skillHideAfter = 8,
     skillLightAttacks = false,
     skillShowGcd = true,
+    skillShowWeave = true,
     statusEnabled = true,
     statusIcon = true,
     statusIconX = 0,
     statusIconY = 0,
     statusIconScale = 50,
+    statusIconAlpha = 50,
     statusText = false,
     statusTextX = 0,
     statusTextY = 250,
     statusTextScale = 100,
     statusSound = true,
     statusSoundId = "duel",
+    consEnabled = true,
+    consOffsetX = 0,
+    consOffsetY = 220,
+    consScale = 100,
+    consFoodWarn = 5,
+    consPotWarn = 10,
+    consPotCombat = false,
+    consFoodSound = false,
 }
 
 local function OnAddOnLoaded(_, addonName)
@@ -40,6 +50,7 @@ local function OnAddOnLoaded(_, addonName)
     if T.savedVars.skillShow == nil then T.savedVars.skillShow = "combat" end
     if T.savedVars.skillHideAfter == nil then T.savedVars.skillHideAfter = 8 end
     if T.savedVars.skillShowGcd == nil then T.savedVars.skillShowGcd = true end
+    if T.savedVars.skillShowWeave == nil then T.savedVars.skillShowWeave = true end
     if T.savedVars.statusEnabled == nil then T.savedVars.statusEnabled = true end
     if T.savedVars.statusIcon == nil then T.savedVars.statusIcon = true end
     if T.savedVars.statusText == nil then T.savedVars.statusText = false end
@@ -48,6 +59,7 @@ local function OnAddOnLoaded(_, addonName)
         T.savedVars.statusSoundId = "duel"
     end
     if T.savedVars.statusTextY == nil then T.savedVars.statusTextY = 250 end
+    if T.savedVars.statusIconAlpha == nil then T.savedVars.statusIconAlpha = 50 end
     if T.savedVars.statusIconScaleRev == nil then
         local sc = tonumber(T.savedVars.statusIconScale)
         if sc == nil or sc == 100 then
@@ -71,6 +83,9 @@ local function OnAddOnLoaded(_, addonName)
     end
     if T.StatusStart then
         T.StatusStart()
+    end
+    if T.ConsStart then
+        T.ConsStart()
     end
 end
 

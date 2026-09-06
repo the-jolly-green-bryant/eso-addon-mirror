@@ -183,6 +183,8 @@ journal.StatIcons = {
     SINGLE_TARGET = "EsoUI/Art/Icons/scribing_tertiary_vulnerability.dds",
 
     -- Ultimate
+    ULTIMATE = "EsoUI/Art/Icons/scribing_primary_gainultimate.dds",
+    COMBAT = "EsoUI/Art/TreeIcons/Gamepad/gp_tutorial_idexIcon_combat.dds",
     HEROISM = "EsoUI/Art/Icons/scribing_tertiary_heroism.dds",
 
     -- Deaths

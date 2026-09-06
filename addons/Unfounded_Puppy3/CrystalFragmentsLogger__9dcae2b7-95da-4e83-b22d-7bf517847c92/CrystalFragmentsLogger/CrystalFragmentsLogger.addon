@@ -1,0 +1,8 @@
+## Title: CrystalFragmentsLogger
+## Description: 水晶の断片の情報収集用
+## Author: Unfounded Puppy3
+## Version: 1.0
+## APIVersion: 101050
+## SavedVariables: CrystalFragmentsLogger_SV
+
+CrystalFragmentsLogger.lua

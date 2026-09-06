@@ -74,7 +74,7 @@
     "ItemBrowser"
   ],
   "download_url": "https://www.esoui.com/downloads/dl1480/",
-  "fingerprint": "32049c4058f096836b5d721fb9a1197b81adb26319dcec3f53110a9f103afe05",
+  "fingerprint": "fe0fabd80a80e464580448683e35aa97988c45720a892497316e2d0d4edc10a7",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw9635.png",
     "https://cdn-eso.mmoui.com/preview/pvw4789.png",
@@ -93,11 +93,11 @@
   "source_id": "1480",
   "source_url": "https://www.esoui.com/downloads/info1480-ItemSetBrowser.html",
   "stats": {
-    "downloads": 1917675,
+    "downloads": 1923251,
     "favorites": 752,
-    "monthly_downloads": 16297
+    "monthly_downloads": 17698
   },
   "title": "Item Set Browser",
-  "updated_at": 1788193904000,
-  "version": "4.7.1.1"
+  "updated_at": 1788610013000,
+  "version": "4.7.1.2"
 }

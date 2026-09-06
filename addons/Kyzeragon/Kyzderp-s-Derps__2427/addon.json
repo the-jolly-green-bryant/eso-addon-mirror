@@ -22,7 +22,7 @@
     "KyzderpsDerps"
   ],
   "download_url": "https://www.esoui.com/downloads/dl2427/",
-  "fingerprint": "d0be23a7dc7a386efa491668dda1712f1fec1505a3b7213beb6dcbb31a1751a4",
+  "fingerprint": "a1ee4ad398405615403d8244d8b9fbf4a1216f82a651164bcbc55506e9dc07d0",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw8255.png",
     "https://cdn-eso.mmoui.com/preview/pvw8256.png",
@@ -41,11 +41,11 @@
   "source_id": "2427",
   "source_url": "https://www.esoui.com/downloads/info2427-KyzderpsDerps.html",
   "stats": {
-    "downloads": 66041,
+    "downloads": 66697,
     "favorites": 51,
-    "monthly_downloads": 1842
+    "monthly_downloads": 2248
   },
   "title": "Kyzderp's Derps",
-  "updated_at": 1787812565000,
-  "version": "1.52.0"
+  "updated_at": 1788654175000,
+  "version": "1.53.0"
 }

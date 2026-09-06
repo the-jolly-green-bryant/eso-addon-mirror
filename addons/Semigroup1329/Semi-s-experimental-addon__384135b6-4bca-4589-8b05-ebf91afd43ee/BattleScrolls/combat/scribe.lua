@@ -443,6 +443,15 @@ local function addDiscardedSink(entry)
     })
 end
 
+---The live instance cannot be re-encoded while scribe owns its registry, so
+---an instance still holding pre-v20 encounters is closed instead of resumed
+---and the migration picks it up like any other
+---@param instance InstanceStorage
+---@return boolean
+local function migrationPending(instance)
+    return not instance._migrationFailed and BattleScrolls.migration.hasLegacyEncounters(instance)
+end
+
 function scribe:Initialize()
     -- Register callback for incoming encounter share data
     BattleScrolls.encounterShare:RegisterCallback("scribe", matchShare)
@@ -451,8 +460,8 @@ function scribe:Initialize()
     LibEffect.Async(function()
         -- Load instance from history or create new
         local history = BattleScrolls.storage.savedVariables.history
-        if history and #history > 0 and history[#history].left == false then
-            local lastInstance = history[#history]
+        local lastInstance = history and history[#history]
+        if lastInstance and lastInstance.left == false and not migrationPending(lastInstance) then
             self.instance = lastInstance
             self.pushedToStorage = true
             -- Decode abilityInfo into cache (yields internally)
@@ -461,6 +470,9 @@ function scribe:Initialize()
             self.registry = BattleScrolls.binaryStorage.newRegistry(result[3], result[4])
             BattleScrolls.storage:CacheInstanceRegistry(lastInstance, self.registry)
         else
+            if lastInstance and lastInstance.left == false then
+                lastInstance.left = true
+            end
             self:ResetForNewInstance()
         end
 
@@ -715,9 +727,12 @@ function scribe:ImportEncounterFromStateAsync()
         -- Must precede the encounter-share send: resurrections ride in the
         -- shared summary built from this encounter.
         encounter.ultimate = BattleScrolls.ultimate.finalize(capturedState.ultimate)
-        encounter.crux = BattleScrolls.crux.finalize(capturedState.cruxActivity, capturedState.lastDamageDoneMs)
-        if (capturedState.resurrectionCount or 0) > 0 then
-            encounter.resurrections = capturedState.resurrectionCount
+        encounter.crux = BattleScrolls.crux.finalize(capturedState.cruxActivity, capturedState.lastDamageDoneMs,
+            capturedState.lastPlayerDeathMs or 0)
+        local resurrectionLog = capturedState.resurrectionLog or {}
+        if #resurrectionLog > 0 then
+            encounter.resurrections = #resurrectionLog
+            encounter.resurrectionLog = resurrectionLog
         end
         encounter.zen = BattleScrolls.zen.finalize(capturedState.zen, capturedState.lastDamageDoneMs)
 
@@ -869,6 +884,8 @@ function scribe:ImportEncounterFromStateAsync()
                 skillActivations = cw.skillActivations,
                 totalWeavingErrors = cw.totalWeavingErrors,
                 doubleLaErrors = cw.doubleLaErrors,
+                downtimeMs = cw.downtimeMs,
+                downtimeGaps = cw.downtimeGaps,
                 byAbility = weavingByAbility,
             }
         end

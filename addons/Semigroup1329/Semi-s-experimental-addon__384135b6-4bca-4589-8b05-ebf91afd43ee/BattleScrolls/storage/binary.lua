@@ -12,14 +12,13 @@ BattleScrolls = BattleScrolls or {}
 local binaryStorage = {}
 BattleScrolls.binaryStorage = binaryStorage
 
-local CURRENT_VERSION = 19
+local CURRENT_VERSION = 20
 -- Exposed for the migration's legacy scan; the wire version signals this to
--- the web decoder (wire v6 frames v19 blobs, v5 framed v18). v19 is v18 plus:
--- a 24-bit section mask (was 16), first-class ULTIMATE/RESURRECTIONS/CRUX/ZEN
--- sections (CRUX includes conditional-generation fields), an attacker-name
--- ref on every stored death recap attack, and the resurrections + zen share
--- metrics appended to shared payloads. Not readable by v18 decoders -
--- acceptable, the format never shipped outside this dev build.
+-- the web decoder (wire v7 frames v20 blobs). v19 added a 24-bit section
+-- mask, ULTIMATE/RESURRECTIONS/CRUX/ZEN sections, attacker-name refs on
+-- death recap attacks and the resurrections + zen share metrics. v20 adds
+-- weaving downtime, per-cast ultimate pool/cost, observed generator gains,
+-- proc waste and the death split in CRUX, and the resurrection log.
 binaryStorage.CURRENT_VERSION = CURRENT_VERSION
 
 -- Import BitEncoder/BitDecoder from bitcodec module
@@ -1059,6 +1058,8 @@ local function writeWeaving(encoder, weaving, registry)
     encoder:writeVarUInt(weaving.skillActivations or 0)
     encoder:writeVarUInt(weaving.totalWeavingErrors or 0)
     encoder:writeVarUInt(weaving.doubleLaErrors or 0)
+    encoder:writeVarUInt(weaving.downtimeMs or 0)
+    encoder:writeVarUInt(weaving.downtimeGaps or 0)
 
     local byAbility = weaving.byAbility or {}
     local abilityCount = writeVarCount(encoder, #byAbility)
@@ -1090,8 +1091,14 @@ local function readWeaving(decoder, version, registry)
         skillActivations = readVal(decoder, version, BITS.COUNT),
         totalWeavingErrors = readVal(decoder, version, BITS.COUNT),
         doubleLaErrors = readVal(decoder, version, BITS.COUNT),
+        downtimeMs = 0,
+        downtimeGaps = 0,
         byAbility = {},
     }
+    if version >= 20 then
+        weaving.downtimeMs = decoder:readVarUInt()
+        weaving.downtimeGaps = decoder:readVarUInt()
+    end
 
     local abilityCount = readMapCount(decoder, version)
     for _ = 1, abilityCount do
@@ -1162,14 +1169,21 @@ local function writeUltimate(encoder, ult, registry)
         encoder:writeVarUInt(delta)
         prevTimeMs = prevTimeMs + delta
         writeAbilityRef(encoder, registry, cast.abilityId)
+        -- cost 0 = pool/cost unknown (pre-v20 recording)
+        local cost = cast.cost or 0
+        encoder:writeVarUInt(cost)
+        if cost > 0 then
+            encoder:writeVarUInt(cast.poolBefore or 0)
+        end
     end
 end
 
 ---Reads UltimateData
 ---@param decoder BitDecoder
 ---@param registry RegistryArrays
+---@param version number
 ---@return UltimateData
-local function readUltimate(decoder, registry)
+local function readUltimate(decoder, registry, version)
     ---@type UltimateData
     local ult = {
         startUlt = decoder:readVarUInt(),
@@ -1204,13 +1218,51 @@ local function readUltimate(decoder, registry)
     local prevTimeMs = 0
     for _ = 1, castCount do
         prevTimeMs = prevTimeMs + decoder:readVarUInt()
-        ult.casts[#ult.casts + 1] = {
+        ---@type UltCastEvent
+        local cast = {
             timeMs = prevTimeMs,
             abilityId = readAbilityRef(decoder, registry),
         }
+        if version >= 20 then
+            local cost = decoder:readVarUInt()
+            if cost > 0 then
+                cast.cost = cost
+                cast.poolBefore = decoder:readVarUInt()
+            end
+        end
+        ult.casts[#ult.casts + 1] = cast
     end
 
     return ult
+end
+
+---Writes a sparse id -> count map with raw ability ids, sorted
+---@param encoder BitEncoder
+---@param map table<number, number>
+local function writeRawIdMap(encoder, map)
+    local ids = {}
+    for id in pairs(map) do
+        ids[#ids + 1] = id
+    end
+    table.sort(ids)
+    encoder:writeVarUInt(#ids)
+    for i = 1, #ids do
+        encoder:writeVarUInt(ids[i])
+        encoder:writeVarUInt(map[ids[i]])
+    end
+end
+
+---@param decoder BitDecoder
+---@return table<number, number>
+local function readRawIdMap(decoder)
+    local map = {}
+    local count = decoder:readVarUInt()
+    if count > MAX_MAP_COUNT then count = MAX_MAP_COUNT end
+    for _ = 1, count do
+        local id = decoder:readVarUInt()
+        map[id] = decoder:readVarUInt()
+    end
+    return map
 end
 
 ---Writes CruxData
@@ -1227,6 +1279,8 @@ local function writeCrux(encoder, crux, registry)
     encoder:writeVarUInt(under[3] or 0)
     encoder:writeVarUInt(crux.passiveEvents or 0)
     encoder:writeVarUInt(crux.passiveStacks or 0)
+    encoder:writeVarUInt(crux.deathEvents or 0)
+    encoder:writeVarUInt(crux.deathStacks or 0)
 
     local entries = sortedAbilityEntries(registry, crux.byAbility or {})
     local count = writeVarCount(encoder, #entries)
@@ -1237,30 +1291,22 @@ local function writeCrux(encoder, crux, registry)
         prevIndex = entry.index
         encoder:writeVarUInt(entry.value.casts or 0)
         encoder:writeVarUInt(entry.value.bad or 0)
+        encoder:writeVarUInt(entry.value.gained or 0)
     end
 
-    -- Conditional generation. Canonical source ids are written raw
-    -- (not registry refs) - they are display ids that may appear nowhere
-    -- else in the encounter, and there are at most a handful.
-    local conditional = crux.conditionalGains or {}
-    local condIds = {}
-    for abilityId in pairs(conditional) do
-        condIds[#condIds + 1] = abilityId
-    end
-    table.sort(condIds)
-    encoder:writeVarUInt(#condIds)
-    for i = 1, #condIds do
-        encoder:writeVarUInt(condIds[i])
-        encoder:writeVarUInt(conditional[condIds[i]])
-    end
+    -- Conditional source ids are display ids that may appear nowhere else
+    -- in the encounter, so they ship raw rather than as registry refs
+    writeRawIdMap(encoder, crux.conditionalGains or {})
+    writeRawIdMap(encoder, crux.conditionalWasted or {})
     encoder:writeVarUInt(crux.unattributedGains or 0)
 end
 
 ---Reads CruxData
 ---@param decoder BitDecoder
 ---@param registry RegistryArrays
+---@param version number
 ---@return CruxData
-local function readCrux(decoder, registry)
+local function readCrux(decoder, registry, version)
     ---@type CruxData
     local crux = {
         generatorCasts = decoder:readVarUInt(),
@@ -1268,12 +1314,19 @@ local function readCrux(decoder, registry)
         spenderCasts = decoder:readVarUInt(),
         spenderUnder = {},
         byAbility = {},
+        deathEvents = 0,
+        deathStacks = 0,
+        conditionalWasted = {},
     }
     crux.spenderUnder[1] = decoder:readVarUInt()
     crux.spenderUnder[2] = decoder:readVarUInt()
     crux.spenderUnder[3] = decoder:readVarUInt()
     crux.passiveEvents = decoder:readVarUInt()
     crux.passiveStacks = decoder:readVarUInt()
+    if version >= 20 then
+        crux.deathEvents = decoder:readVarUInt()
+        crux.deathStacks = decoder:readVarUInt()
+    end
 
     local count = decoder:readVarUInt()
     if count > MAX_MAP_COUNT then count = MAX_MAP_COUNT end
@@ -1281,18 +1334,16 @@ local function readCrux(decoder, registry)
     for _ = 1, count do
         local abilityId
         abilityId, prevIndex = readDeltaAbilityRef(decoder, registry, prevIndex)
-        crux.byAbility[abilityId] = {
-            casts = decoder:readVarUInt(),
-            bad = decoder:readVarUInt(),
-        }
+        local casts = decoder:readVarUInt()
+        local bad = decoder:readVarUInt()
+        -- v19 credited generators by cast count
+        local gained = version >= 20 and decoder:readVarUInt() or (casts - bad)
+        crux.byAbility[abilityId] = { casts = casts, bad = bad, gained = gained }
     end
 
-    crux.conditionalGains = {}
-    local condCount = decoder:readVarUInt()
-    if condCount > MAX_MAP_COUNT then condCount = MAX_MAP_COUNT end
-    for _ = 1, condCount do
-        local abilityId = decoder:readVarUInt()
-        crux.conditionalGains[abilityId] = decoder:readVarUInt()
+    crux.conditionalGains = readRawIdMap(decoder)
+    if version >= 20 then
+        crux.conditionalWasted = readRawIdMap(decoder)
     end
     crux.unattributedGains = decoder:readVarUInt()
 
@@ -2963,6 +3014,15 @@ local function encodeEncounterImpl(encounter, setupPooled, registry, wireDuratio
         end
         if present[SECTION.RESURRECTIONS] then
             encoder:writeVarUInt(encounter.resurrections)
+            local log = encounter.resurrectionLog or {}
+            local logCount = writeVarCount(encoder, #log)
+            local prevTimeMs = 0
+            for i = 1, logCount do
+                writeNameRef(encoder, registry, log[i].displayName)
+                local timeMs = math.max(log[i].timeMs or 0, prevTimeMs)
+                encoder:writeVarUInt(timeMs - prevTimeMs)
+                prevTimeMs = timeMs
+            end
             encoder:alignToByte()
         end
         if present[SECTION.CRUX] then
@@ -3201,15 +3261,28 @@ function binaryStorage.decodeEncounterAsync(binaryEncounter, registry)
         -- v19+ sections (24-bit mask)
         if _v >= 19 then
             if hasSection(mask, SECTION.ULTIMATE) then
-                result.ultimate = readUltimate(decoder, registry)
+                result.ultimate = readUltimate(decoder, registry, _v)
                 alignSection()
             end
             if hasSection(mask, SECTION.RESURRECTIONS) then
                 result.resurrections = decoder:readVarUInt()
+                if _v >= 20 then
+                    local logCount = readMapCount(decoder, _v)
+                    if logCount > 0 then
+                        local log = {}
+                        local prevTimeMs = 0
+                        for i = 1, logCount do
+                            local displayName = readNameRef(decoder, registry)
+                            prevTimeMs = prevTimeMs + decoder:readVarUInt()
+                            log[i] = { displayName = displayName, timeMs = prevTimeMs }
+                        end
+                        result.resurrectionLog = log
+                    end
+                end
                 alignSection()
             end
             if hasSection(mask, SECTION.CRUX) then
-                result.crux = readCrux(decoder, registry)
+                result.crux = readCrux(decoder, registry, _v)
                 alignSection()
             end
             if hasSection(mask, SECTION.ZEN) then

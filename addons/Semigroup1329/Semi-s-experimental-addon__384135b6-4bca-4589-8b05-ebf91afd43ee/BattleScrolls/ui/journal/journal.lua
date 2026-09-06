@@ -215,6 +215,7 @@ function BattleScrolls_Journal_Gamepad:Initialize(control)
         BATTLESCROLLS_JOURNAL_GAMEPAD_SCENE = ZO_Scene:New("battleScrollsJournalGamepad", SCENE_MANAGER)
         BATTLESCROLLS_JOURNAL_GAMEPAD_SCENE:AddFragmentGroup(FRAGMENT_GROUP.GAMEPAD_DRIVEN_UI_WINDOW)
         BATTLESCROLLS_JOURNAL_GAMEPAD_SCENE:AddFragmentGroup(FRAGMENT_GROUP.FRAME_TARGET_GAMEPAD)
+        BATTLESCROLLS_JOURNAL_GAMEPAD_SCENE:AddFragment(FRAME_TARGET_DISTANCE_GAMEPAD_FAR_FRAGMENT)
         BATTLESCROLLS_JOURNAL_GAMEPAD_SCENE:AddFragment(GAMEPAD_NAV_QUADRANT_1_BACKGROUND_FRAGMENT)
         BATTLESCROLLS_JOURNAL_GAMEPAD_SCENE:AddFragment(GAMEPAD_GENERIC_FOOTER_FRAGMENT)
         BATTLESCROLLS_JOURNAL_GAMEPAD_SCENE:AddFragment(GAMEPAD_MENU_SOUND_FRAGMENT)
@@ -921,6 +922,18 @@ EVENT_MANAGER:RegisterForEvent("BattleScrolls_JournalUI", EVENT_PLAYER_ACTIVATED
     end
 
     EVENT_MANAGER:UnregisterForEvent("BattleScrolls_JournalUI", EVENT_PLAYER_ACTIVATED)
+end)
+
+-- Label widths are measured at render time; a resize changes glyph metrics
+EVENT_MANAGER:RegisterForEvent("BattleScrolls_JournalUI_Resize", EVENT_SCREEN_RESIZED, function()
+    local journalUI = BattleScrolls.journalUI
+    if not journalUI or not SCENE_MANAGER:IsShowing("battleScrollsJournalGamepad") then
+        return
+    end
+    local list = journalUI:GetCurrentList()
+    if list then
+        journalUI:RefreshTargetTooltip(list:GetTargetData())
+    end
 end)
 
 -------------------------

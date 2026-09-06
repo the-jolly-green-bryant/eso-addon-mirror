@@ -132,7 +132,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [More Camera Sensitivity](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/More-Camera-Sensitivity__c12b4c6f-c657-4d0b-ac4e-77374335877c) | M0R | Console | — |
 | [More Colourful Group Frames](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/More-Colourful-Group-Frames__4607) | M0R | PC / Mac | 1 |
 | [More Markers](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/More-Markers__c41f5a50-974f-45e6-a218-e99590da3841) | M0R | Console | — |
-| [More Markers](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/More-Markers__4266) | M0R | PC / Mac | 2.2.2 |
+| [More Markers](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/More-Markers__4266) | M0R | PC / Mac | 2.2.3 |
 | [More Target Information](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/lordrichter/More-Target-Information__b2507553-0888-4fae-9f69-5b1f89f1b266) | lordrichter | Console | — |
 | [More Target Information](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/lordrichter/More-Target-Information__1189) | lordrichter | PC / Mac | 3.49 |
 | [MoreEmotes](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/relas/MoreEmotes__1646) | relas | PC / Mac | 2.0 |
@@ -180,6 +180,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [My Donation (Arkadius' Trade Tools Addon)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Verbalinkontinenz/My-Donation-Arkadius-Trade-Tools-Addon__2762) | Verbalinkontinenz | PC / Mac | 1.0.3 |
 | [My Little Journal](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lledos/My-Little-Journal__4802) | Lledos | PC / Mac | 1.01 |
 | [MyAutoMarker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Unfounded_Puppy3/MyAutoMarker__097cf265-8ddc-4970-9836-914d69dbdc80) | Unfounded_Puppy3 | Console | — |
+| [MyCrystalFragmentsProcUI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Unfounded_Puppy3/MyCrystalFragmentsProcUI__d706fcf0-71fd-47e6-911a-fdacc426303a) | Unfounded_Puppy3 | Console | — |
 | [MyDebuffLog](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Unfounded_Puppy3/MyDebuffLog__eae4a86c-cd3b-44d0-81f9-5ca0caf0eb10) | Unfounded_Puppy3 | Console | — |
 | [MyDung](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/awfuldead/MyDung__2888) | awfuldead | PC / Mac | 1.1.1 |
 | [MyDynamicCamera](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/vatechier/MyDynamicCamera__4115) | vatechier | PC / Mac | 1 |

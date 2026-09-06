@@ -416,7 +416,7 @@ function Q:BuildObjectiveText(index)
     end
 
     local lines = {}
-    for i = 1, math.min(#ordered, 5) do
+    for i = 1, #ordered do
         local row = ordered[i]
         if row.text and row.text ~= "" then
             lines[#lines + 1] = "• " .. row.text
@@ -437,6 +437,25 @@ function Q:BuildObjectiveText(index)
         lines[1] = completed == true and "Quest ready to complete." or "Follow the quest marker."
     end
     return normalizeProgressCounters(table.concat(lines, "\n"))
+end
+
+-- v0.29.337: keep the raw quest text so the overlay can re-wrap it when
+-- objective count changes. Gameplay height is content-driven; the user's saved
+-- width remains the baseline and the overlay only widens modestly for unusually
+-- dense objective lists.
+function Q:SetOverlayText337(titleText, objectiveText)
+    self.rawTitleText337 = tostring(titleText or "")
+    self.rawObjectiveText337 = tostring(objectiveText or "")
+    if self.title then self.title:SetText(self:WrapTitleText(self.rawTitleText337)) end
+    if self.steps then self.steps:SetText(self:WrapObjectiveText(self.rawObjectiveText337)) end
+end
+
+local function easCountLines337(text)
+    text = tostring(text or "")
+    if text == "" then return 0 end
+    local count = 1
+    for _ in string.gmatch(text, "\n") do count = count + 1 end
+    return count
 end
 
 -- v0.28.72: quest overlay visibility/content is independent from the single
@@ -490,8 +509,15 @@ function Q:Create()
 
     local left = tonumber(EPC.saved and EPC.saved.activeQuestLeft) or -1
     local top = tonumber(EPC.saved and EPC.saved.activeQuestTop) or -1
-    if left >= 0 and top >= 0 then frame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, left, top)
-    else frame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 34, 180) end
+    local side = EPC.saved and EPC.saved.activeQuestAnchorSide339 or nil
+    local rightMargin = tonumber(EPC.saved and EPC.saved.activeQuestRightMargin339)
+    if side == "RIGHT" and rightMargin and rightMargin >= 0 and top >= 0 then
+        frame:SetAnchor(TOPRIGHT, GuiRoot, TOPRIGHT, -rightMargin, top)
+    elseif left >= 0 and top >= 0 then
+        frame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, left, top)
+    else
+        frame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 34, 180)
+    end
 
     -- v0.25.05: match the Golden Pursuits HUD with the same inset dark card,
     -- gold border, spacing, and layout-mode resize treatment.
@@ -556,8 +582,23 @@ function Q:Create()
 
     frame:SetHandler("OnMoveStop", function(control)
         if EPC.saved then
-            EPC.saved.activeQuestLeft = control:GetLeft()
-            EPC.saved.activeQuestTop = control:GetTop()
+            local left = tonumber(control:GetLeft()) or 0
+            local top = tonumber(control:GetTop()) or 0
+            local right = tonumber(control:GetRight()) or (left + (tonumber(control:GetWidth()) or DEFAULT_WIDTH))
+            local guiWidth = GuiRoot and type(GuiRoot.GetWidth) == "function" and tonumber(GuiRoot:GetWidth()) or 1920
+            local centerX = (left + right) * 0.5
+            EPC.saved.activeQuestLeft = left
+            EPC.saved.activeQuestTop = top
+            if centerX >= guiWidth * 0.5 then
+                EPC.saved.activeQuestAnchorSide339 = "RIGHT"
+                EPC.saved.activeQuestRightMargin339 = math.max(0, guiWidth - right)
+            else
+                EPC.saved.activeQuestAnchorSide339 = "LEFT"
+                EPC.saved.activeQuestRightMargin339 = nil
+            end
+            local w, h = control:GetDimensions()
+            EPC.saved.activeQuestPositionWidth338 = tonumber(w) or DEFAULT_WIDTH
+            EPC.saved.activeQuestPositionHeight338 = tonumber(h) or DEFAULT_HEIGHT
         end
     end)
     frame:SetHandler("OnResizeStop", function(control)
@@ -565,6 +606,18 @@ function Q:Create()
             local width, height = control:GetDimensions()
             EPC.saved.activeQuestWidth = math.floor((tonumber(width) or DEFAULT_WIDTH) + 0.5)
             EPC.saved.activeQuestHeight = math.floor((tonumber(height) or DEFAULT_HEIGHT) + 0.5)
+            EPC.saved.activeQuestPositionWidth338 = tonumber(width) or DEFAULT_WIDTH
+            EPC.saved.activeQuestPositionHeight338 = tonumber(height) or DEFAULT_HEIGHT
+            local left = tonumber(control:GetLeft()) or 0
+            local right = tonumber(control:GetRight()) or (left + (tonumber(width) or DEFAULT_WIDTH))
+            local guiWidth = GuiRoot and type(GuiRoot.GetWidth) == "function" and tonumber(GuiRoot:GetWidth()) or 1920
+            if ((left + right) * 0.5) >= guiWidth * 0.5 then
+                EPC.saved.activeQuestAnchorSide339 = "RIGHT"
+                EPC.saved.activeQuestRightMargin339 = math.max(0, guiWidth - right)
+            else
+                EPC.saved.activeQuestAnchorSide339 = "LEFT"
+                EPC.saved.activeQuestRightMargin339 = nil
+            end
             -- v0.28.75: once the player manually resizes the overlay, preserve
             -- that exact viewport instead of auto-growing it back to fit text.
             EPC.saved.activeQuestManualSize2875 = true
@@ -612,11 +665,36 @@ end
 -- expand the card automatically, then shrink again when the quest gets shorter.
 function Q:AutoFitHeight()
     if not self.frame or not self.title or not self.steps or self.layoutMode then return end
-    if EPC.saved and EPC.saved.activeQuestManualSize2875 == true then
-        self:ApplyManualLayout2875()
-        return
-    end
+
     self.steps:SetHidden(false)
+    local guiWidth = GuiRoot and type(GuiRoot.GetWidth) == "function" and tonumber(GuiRoot:GetWidth()) or 1920
+    local guiHeight = GuiRoot and type(GuiRoot.GetHeight) == "function" and tonumber(GuiRoot:GetHeight()) or 1080
+
+    -- Always return to the user's chosen width first. Dense quests may borrow a
+    -- little extra horizontal room so four or more objectives do not turn into
+    -- a very tall wall of wrapped text.
+    local baseWidth = math.max(MIN_WIDTH, math.min(MAX_WIDTH, tonumber(EPC.saved and EPC.saved.activeQuestWidth) or DEFAULT_WIDTH))
+    local logicalRows = easCountLines337(self.rawObjectiveText337 or self.steps:GetText())
+    local extraWidth = logicalRows > 4 and math.min(150, (logicalRows - 4) * 30) or 0
+    local screenWidthCap = math.max(baseWidth, math.min(MAX_WIDTH, math.floor(guiWidth * 0.48)))
+    local targetWidth = math.min(screenWidthCap, baseWidth + extraWidth)
+    self.frame:SetWidth(targetWidth)
+
+    -- Re-wrap from raw text after any adaptive width change. This avoids keeping
+    -- old manual newline breaks from a narrower quest.
+    if self.rawTitleText337 ~= nil then self.title:SetText(self:WrapTitleText(self.rawTitleText337)) end
+    if self.rawObjectiveText337 ~= nil then self.steps:SetText(self:WrapObjectiveText(self.rawObjectiveText337)) end
+
+    local physicalRows = easCountLines337(self.steps:GetText())
+    if self.steps.SetLineSpacing then
+        if physicalRows >= 8 then
+            self.steps:SetLineSpacing(0)
+        elseif physicalRows >= 5 then
+            self.steps:SetLineSpacing(2)
+        else
+            self.steps:SetLineSpacing(4)
+        end
+    end
 
     local headerHeight = 20
     if self.header then self.header:SetHeight(headerHeight) end
@@ -624,25 +702,68 @@ function Q:AutoFitHeight()
     local titleHeight = 36
     if type(self.title.GetTextHeight) == "function" then
         local ok, value = pcall(self.title.GetTextHeight, self.title)
-        if ok and tonumber(value) then titleHeight = math.max(36, math.ceil(tonumber(value)) + 2) end
+        if ok and tonumber(value) then titleHeight = math.max(24, math.ceil(tonumber(value)) + 2) end
     end
     self.title:SetHeight(titleHeight)
 
     local stepsHeight = 24
     if type(self.steps.GetTextHeight) == "function" then
         local ok, value = pcall(self.steps.GetTextHeight, self.steps)
-        if ok and tonumber(value) then stepsHeight = math.max(24, math.ceil(tonumber(value))) end
+        if ok and tonumber(value) then stepsHeight = math.max(24, math.ceil(tonumber(value)) + 2) end
     else
-        local text = tostring(self.steps:GetText() or "")
-        local lines = 1
-        for _ in string.gmatch(text, "\n") do lines = lines + 1 end
-        stepsHeight = math.max(24, lines * 22)
+        stepsHeight = math.max(24, physicalRows * 22)
     end
     self.steps:SetHeight(stepsHeight)
 
-    local desiredHeight = math.max(MIN_HEIGHT, math.min(MAX_HEIGHT, 10 + headerHeight + 2 + titleHeight + 8 + stepsHeight + 10))
-    self.frame:SetHeight(desiredHeight)
-    if EPC.saved then EPC.saved.activeQuestHeight = math.floor(desiredHeight + 0.5) end
+    local desiredHeight = 10 + headerHeight + 2 + titleHeight + 6 + stepsHeight + 10
+    local userMax = tonumber(EPC.saved and EPC.saved.activeQuestAutoMaxHeight337) or MAX_HEIGHT
+    userMax = math.max(220, math.min(MAX_HEIGHT, userMax))
+    local screenMax = math.max(220, math.floor(guiHeight * 0.48))
+    local maxHeight = math.min(userMax, screenMax)
+
+    -- Four/five-objective quests normally fit before this cap because spacing
+    -- and width are adaptive. Extremely long quest descriptions are bounded to
+    -- under half the screen so the HUD does not take over gameplay.
+    local finalHeight = math.max(MIN_HEIGHT, math.min(maxHeight, desiredHeight))
+    self.frame:SetHeight(finalHeight)
+
+    local contentBottom = finalHeight - 8
+    local titleTop = 8 + headerHeight + 2
+    self.title:SetHeight(math.min(titleHeight, math.max(18, contentBottom - titleTop - 24)))
+    local stepsTop = titleTop + self.title:GetHeight() + 6
+    self.steps:SetHeight(math.max(0, contentBottom - stepsTop))
+    self.steps:SetHidden(self.steps:GetHeight() < 8)
+
+    if EPC.saved then EPC.saved.activeQuestHeight = math.floor(finalHeight + 0.5) end
+
+    -- v0.29.339: preserve the edge the player actually chose in HUD Layout.
+    -- Right-side placements use a true TOPRIGHT anchor, so auto-width growth
+    -- expands leftward without making the overlay jump back toward its old
+    -- TOPLEFT position. Left-side placements keep a TOPLEFT anchor.
+    local savedLeft = tonumber(EPC.saved and EPC.saved.activeQuestLeft)
+    local savedTop = tonumber(EPC.saved and EPC.saved.activeQuestTop)
+    if savedLeft == nil or savedLeft < 0 then savedLeft = tonumber(self.frame:GetLeft()) or 34 end
+    if savedTop == nil or savedTop < 0 then savedTop = tonumber(self.frame:GetTop()) or 180 end
+
+    local positionedWidth = tonumber(EPC.saved and EPC.saved.activeQuestPositionWidth338) or baseWidth
+    local side = EPC.saved and EPC.saved.activeQuestAnchorSide339 or nil
+    if side ~= "LEFT" and side ~= "RIGHT" then
+        side = (savedLeft + positionedWidth * 0.5 >= guiWidth * 0.5) and "RIGHT" or "LEFT"
+    end
+
+    local renderTop = math.max(8, math.min(math.max(8, guiHeight - finalHeight - 8), savedTop))
+    self.frame:ClearAnchors()
+    if side == "RIGHT" then
+        local rightMargin = tonumber(EPC.saved and EPC.saved.activeQuestRightMargin339)
+        if rightMargin == nil then
+            rightMargin = math.max(8, guiWidth - (savedLeft + positionedWidth))
+        end
+        rightMargin = math.max(8, math.min(math.max(8, guiWidth - targetWidth - 8), rightMargin))
+        self.frame:SetAnchor(TOPRIGHT, GuiRoot, TOPRIGHT, -rightMargin, renderTop)
+    else
+        local renderLeft = math.max(8, math.min(math.max(8, guiWidth - targetWidth - 8), savedLeft))
+        self.frame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, renderLeft, renderTop)
+    end
 end
 
 function Q:Refresh()
@@ -663,8 +784,7 @@ function Q:Refresh()
     end
     if self.layoutMode and not index then
         if self.header then self.header:SetText("ACTIVE QUEST") end
-        self.title:SetText(self:WrapTitleText("Quest Overlay Preview"))
-        self.steps:SetText(self:WrapObjectiveText("• Current objective\n• Next quest step"))
+        self:SetOverlayText337("Quest Overlay Preview", "• Current objective\n• Next quest step")
         self:AutoFitHeight()
         return
     end
@@ -675,7 +795,7 @@ function Q:Refresh()
         if pendingMain and trim(pendingMain.name) ~= "" then
             -- Keep the unaccepted Main Quest HUD intentionally minimal. Detailed
             -- prerequisites and route notes stay in Quest Finder.
-            self.title:SetText(self:WrapTitleText(tostring(pendingMain.name or "Main Story")))
+            local pendingTitle337 = tostring(pendingMain.name or "Main Story")
             local zone = tostring(pendingMain.zone or "Main Story")
             local giver = trim(pendingMain.questGiver or pendingMain.starter or "")
             local acceptAt = trim(pendingMain.acceptAt or "")
@@ -689,10 +809,9 @@ function Q:Refresh()
                 lines[#lines+1] = "• IN: " .. zone
             end
             lines[#lines+1] = "• TRAVEL: Nearest wayshrine"
-            self.steps:SetText(self:WrapObjectiveText(table.concat(lines, "\n")))
+            self:SetOverlayText337(pendingTitle337, table.concat(lines, "\n"))
         else
-            self.title:SetText(self:WrapTitleText("No Focused Quest"))
-            self.steps:SetText(self:WrapObjectiveText("Track or focus a quest to see its next steps."))
+            self:SetOverlayText337("No Focused Quest", "Track or focus a quest to see its next steps.")
         end
         self:AutoFitHeight()
         return
@@ -700,8 +819,7 @@ function Q:Refresh()
     local name = trim(safe(GetJournalQuestInfo, "", index))
     if name == "" then name = "Active Quest" end
     if self.header then self.header:SetText(self:GetTrackedQuestHeader()) end
-    self.title:SetText(self:WrapTitleText(name))
-    self.steps:SetText(self:WrapObjectiveText(normalizeProgressCounters(self:BuildObjectiveText(index))))
+    self:SetOverlayText337(name, normalizeProgressCounters(self:BuildObjectiveText(index)))
     self:AutoFitHeight()
 end
 
@@ -722,8 +840,7 @@ function Q:SetSize(width, height)
     self.frame:SetDimensions(width, height)
     EPC.saved.activeQuestWidth = math.floor(width + 0.5)
     EPC.saved.activeQuestHeight = math.floor(height + 0.5)
-    EPC.saved.activeQuestManualSize2875 = true
-    self:ApplyManualLayout2875()
+    EPC.saved.activeQuestManualSize2875 = false
     self:Refresh()
 end
 
@@ -740,6 +857,10 @@ end
 function Q:ResetPosition()
     if not self.frame or not EPC.saved then return end
     EPC.saved.activeQuestLeft, EPC.saved.activeQuestTop = -1, -1
+    EPC.saved.activeQuestPositionWidth338 = nil
+    EPC.saved.activeQuestPositionHeight338 = nil
+    EPC.saved.activeQuestAnchorSide339 = nil
+    EPC.saved.activeQuestRightMargin339 = nil
     self.frame:ClearAnchors()
     self.frame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 34, 180)
 end
@@ -764,7 +885,7 @@ function Q:Initialize()
             end)
         end
     end
-    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Tick", 500, function() self:Refresh() end)
+    -- v0.29.341: lifecycle events + the final consolidated safety pulse own refreshes.
 end
 
 -- ============================================================================
@@ -1240,7 +1361,7 @@ function Q:Initialize()
     easLegacyInitialize_2512(self)
     self:CreateDirectionArrow2512()
     local prefix = EPC.name .. "_QuestDirection2512"
-    EVENT_MANAGER:RegisterForUpdate(prefix, 100, function() self:UpdateDirectionArrow2512(false) end)
+    -- Legacy custom direction-arrow polling retired; ESO native compass owns guidance.
     self:UpdateDirectionArrow2512(true)
 end
 
@@ -2749,9 +2870,7 @@ function Q:Initialize()
         EVENT_MANAGER:UnregisterForUpdate(EPC.name .. "_QuestDirection2512")
         local prefix = EPC.name .. "_QuestTracking2522"
         EVENT_MANAGER:UnregisterForUpdate(prefix)
-        EVENT_MANAGER:RegisterForUpdate(prefix, 750, function()
-            self:RefreshNativeQuestTracking2522(false)
-        end)
+        -- v0.29.341: native quest tracking is serviced by the final consolidated safety pulse.
     end
 
     easHideRemovedQuestArrow2522(self)
@@ -3114,6 +3233,66 @@ function Q:Initialize()
                 zo_callLater(adopt, 700)
             else
                 adopt()
+            end
+        end)
+    end
+end
+
+
+-- v0.29.337 - migrate old fixed-height quest viewports to adaptive content fit.
+local easInitializeBefore337 = Q.Initialize
+function Q:Initialize()
+    if EPC.saved and EPC.saved.activeQuestAutoFitVersion337 ~= 337 then
+        EPC.saved.activeQuestManualSize2875 = false
+        EPC.saved.activeQuestAutoMaxHeight337 = tonumber(EPC.saved.activeQuestAutoMaxHeight337) or MAX_HEIGHT
+        EPC.saved.activeQuestAutoFitVersion337 = 337
+    end
+    return easInitializeBefore337(self)
+end
+
+-- ==========================================================================
+-- v0.29.341 - FPS audit: consolidate legacy quest safety polling.
+-- Quest lifecycle/tracking events still refresh immediately. Older revisions
+-- left both a 1s full-HUD refresh and a separate native-tracking poll alive.
+-- Keep one low-frequency safety tick instead so the two jobs cannot align and
+-- burst on the same frame while the player is moving through a busy area.
+-- ==========================================================================
+local EAS_ActiveQuestInitializeBase029341 = Q.Initialize
+function Q:Initialize()
+    EAS_ActiveQuestInitializeBase029341(self)
+    if not EVENT_MANAGER then return end
+    EVENT_MANAGER:UnregisterForUpdate(EPC.name .. "_ActiveQuest_Tick")
+    EVENT_MANAGER:UnregisterForUpdate(EPC.name .. "_QuestTracking2522")
+    local key = EPC.name .. "_ActiveQuestSafety029341"
+    EVENT_MANAGER:UnregisterForUpdate(key)
+    EVENT_MANAGER:RegisterForUpdate(key, 1500, function()
+        if not EPC or not EPC.ActiveQuest then return end
+        local q = EPC.ActiveQuest
+        if q.RefreshNativeQuestTracking2522 then q:RefreshNativeQuestTracking2522(false) end
+        -- v0.29.342: the 0.29.341 guard only refreshed an already-visible frame.
+        -- If the overlay initialized before quest tracking was ready, it could
+        -- remain hidden forever. Refresh is safe here: it exits immediately when
+        -- disabled/suppressed, and this is only a low-frequency safety pulse.
+        if q.Refresh then q:Refresh() end
+    end)
+
+    -- Player activation is the authoritative login/reload/zone-ready moment.
+    -- Do two one-shot reconciliations so the overlay appears promptly without
+    -- bringing back a permanent 1-second quest polling loop.
+    if EVENT_PLAYER_ACTIVATED then
+        local eventKey = EPC.name .. "_ActiveQuestActivated029342"
+        EVENT_MANAGER:UnregisterForEvent(eventKey, EVENT_PLAYER_ACTIVATED)
+        EVENT_MANAGER:RegisterForEvent(eventKey, EVENT_PLAYER_ACTIVATED, function()
+            local function refreshQuest()
+                local q = EPC and EPC.ActiveQuest
+                if not q then return end
+                if q.RefreshNativeQuestTracking2522 then q:RefreshNativeQuestTracking2522(false) end
+                if q.Refresh then q:Refresh() end
+            end
+            refreshQuest()
+            if type(zo_callLater) == "function" then
+                zo_callLater(refreshQuest, 250)
+                zo_callLater(refreshQuest, 900)
             end
         end)
     end

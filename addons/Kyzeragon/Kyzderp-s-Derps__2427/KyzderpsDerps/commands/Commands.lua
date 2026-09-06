@@ -17,7 +17,7 @@ local function HandleKDDCommand(argString)
         length = length + 1
     end
 
-    local usage = "Usage: /kdd <settings || grievous || bosstimer || played || points || totalpoints || armory || junkstyle || hidelogout || normlogout || questtracker || openall || writhing || resetcraft || pocket || multi>"
+    local usage = "Usage: /kdd <settings || grievous || bosstimer || played || points || totalpoints || armory || junkstyle || hidelogout || normlogout || questtracker || openall || writhing || resetcraft || pocket || multi || flex>"
 
     if (length == 0) then
         CHAT_ROUTER:AddSystemMessage(usage)
@@ -131,7 +131,7 @@ local function HandleKDDCommand(argString)
 
     -- janky manual reset for priority craft reroll
     elseif (args[1] == "resetcraft") then
-        KD.Chatter.ResetPriority()
+        KD.Quests.Chatter.ResetPriority()
 
     -- i am forgerful
     elseif (args[1] == "kyzerg") then
@@ -179,6 +179,33 @@ local function HandleKDDCommand(argString)
             end
         end
         KD:msg("No multi-rider mounts available (or data hasn't been added, yell at Kyzer?)")
+
+    -- Equip trifecta mount
+    elseif(args[1] == "flex") then
+        local triMounts = {
+            6466, -- Sunspire Champion Senche-Lion
+            9062, -- Sul-Xan Fleshripper
+            10242, -- Stormsurge Howler
+            10919, -- Ram of Dark Dreams
+            12257, -- Refulgent Mirrormoor Steed
+            12979, -- Heart's Grief Welwa
+        }
+
+        local available = {}
+        for _, id in ipairs(triMounts) do
+            if (IsCollectibleUnlocked(id) and not IsCollectibleActive(id, GAMEPLAY_ACTOR_CATEGORY_PLAYER)) then
+                table.insert(available, id)
+            end
+        end
+
+        if (#available == 0) then
+            KD:msg("No trifecta mounts available to flex, or it is already equipped.")
+            return
+        end
+
+        local chosen = available[math.random(1, #available)]
+        UseCollectible(chosen)
+        KD:msg(string.format("Flexing |H1:collectible:%d|h|h...", chosen))
 
     -- Unknown
     else

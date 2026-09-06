@@ -16,6 +16,12 @@ local addon = {
 	name = "PBsChatAssistant",
 }
 
+-- Display name is a Lua constant; the version is VERSION below. Both are what the settings
+-- panel shows. Typographic apostrophe (U+2019), matching the manifest title -- the identifier
+-- stays plain ASCII so folder, manifest filename and addon.name can match byte for byte.
+local DISPLAY_NAME = "PB’s ChatAssistant"
+local AUTHOR = "PinkBanther"
+
 local em = EVENT_MANAGER
 
 -- ROUTES
@@ -27,6 +33,11 @@ local em = EVENT_MANAGER
 --            AreKeyboardBindingsSupportedInGamepadUI() returns false, meaning the client does
 --            not route keyboard keys into the binding system at all. The action is still
 --            declared, because it costs nothing and is the right route wherever it does work.
+--
+--   Neither is a gamepad route, and there is none. DIRECTIONAL_INPUT looked like one -- a plain
+--   Lua object add-ons may register with -- but the D-pad reader is built out of the private
+--   IsKeyDown and threw once per frame, and the stick reader was not pursued after that. Binding
+--   is closed too: PS5 has no keybinding screen, and BindKeyToAction is refused as private.
 --
 --   catcher  A TopLevelControl with keyboardEnabled="true" and an OnKeyDown handler, kept shown
 --            so it is handed key events. The game uses this pattern itself on a console-only
@@ -73,8 +84,10 @@ local DEFAULTS = {
 	delayMs = 100,
 	watch = true,
 	autoSafe = true,
+	channelKeys = true,
 	followInput = false,
 	idleSeconds = 15,
+	logResetDone = false,
 	triggerOnKeyboard = false,
 	log = false,
 }
@@ -87,6 +100,17 @@ local ENTER_KEYS = {
 	[KEY_ENTER] = true,
 	[KEY_NUMPAD_ENTER] = true,
 }
+
+-- Built rather than declared. A table constructor with a nil key raises "table index is nil" at
+-- load, which would take the whole add-on down -- and KEY_ENTER is confirmed on PS5 while these
+-- two are not yet. Cheap insurance against a constant that turns out not to exist.
+local CHANNEL_KEYS = {}
+if KEY_LEFTARROW then
+	CHANNEL_KEYS[KEY_LEFTARROW] = -1
+end
+if KEY_RIGHTARROW then
+	CHANNEL_KEYS[KEY_RIGHTARROW] = 1
+end
 
 local CATCHER_CONTROL_NAMES = {
 	default = "PBsChatAssistantKeyCatcher",
@@ -101,7 +125,7 @@ local CATCHER_CONTROL_NAMES = {
 -- Reported by /pbchat rather than announced at login. It was announced while the add-on was
 -- being built, because a build behaving unlike its code was the hardest thing to diagnose from
 -- inside the game. That is worth a command, not a line of chat on every login.
-local VERSION = "1.0.3"
+local VERSION = "1.7.2"
 
 -- How long the catcher waits for the box to close before coming back anyway.
 local RESUME_DEADLINE_SECONDS = 120
@@ -298,6 +322,93 @@ function addon:StartChat()
 end
 
 ----------------------------------------------------------------------------------------------
+-- Channel cycling
+----------------------------------------------------------------------------------------------
+
+-- Left and right walk the channel the next message will go to.
+--
+-- Only while the chat box is CLOSED. Inside an open box the arrow keys move the text cursor, and
+-- taking them would be a poor trade for a channel switch. So the gesture is: pick the channel on
+-- the HUD, then press Enter and type. The choice survives the open -- StartTextEntry only resets
+-- the channel when there is not one already set.
+--
+-- This costs the gamepad nothing it was not already costing. The arrows are read by the same
+-- catcher that reads Enter, which is up only when Enter is armed, so a build with the channel
+-- keys behaves exactly like one without until /pbchat enter is used.
+local function GetCyclableChannels()
+	if type(ZO_ChatSystem_GetChannelInfo) ~= "function"
+		or type(ZO_ChatSystem_GetChannelSwitchLookupTable) ~= "function" then
+		return {}
+	end
+
+	local channelInfo = ZO_ChatSystem_GetChannelInfo()
+	local switchLookup = ZO_ChatSystem_GetChannelSwitchLookupTable()
+	local channels = {}
+
+	for channelId, data in pairs(channelInfo) do
+		local switch = switchLookup[channelId]
+		-- The same requirement test the chat system applies when it decides whether a channel
+		-- can be selected: not in a group, no guild, no such channel to walk into.
+		local available = not data.requires or data.requires(channelId)
+		-- A whisper needs someone to whisper to, so there is nothing to cycle into.
+		local needsTarget = data.saveTarget ~= nil
+
+		if switch and available and not needsTarget then
+			channels[#channels + 1] = { id = channelId, switch = switch, name = data.name }
+		end
+	end
+
+	-- By switch, which is how the game's own channel dropdown is ordered, so the sequence the
+	-- arrows walk is the sequence the player has already seen there.
+	table.sort(channels, function(a, b)
+		return a.switch < b.switch
+	end)
+
+	return channels
+end
+
+-- Reached two ways: the arrow keys, which need the catcher up and so need Enter armed, and the
+-- bindable actions in Bindings.xml, which do not. Keyboard keys never reach the binding system
+-- on console, but gamepad buttons do, so a controller button bound to one of those walks the
+-- channel with nothing shown and no buttons paused.
+--
+-- No guard on the chat box being closed here. That guard belongs to the arrow keys alone, where
+-- it stops an open box losing its text cursor; a bound button has nothing to take.
+function addon:CycleChannel(step)
+	if not self.sv or not self.sv.enabled then
+		return
+	end
+
+	local chat = GetChatSystem()
+	if not chat or type(chat.SetChannel) ~= "function" then
+		return
+	end
+
+	local channels = GetCyclableChannels()
+	if #channels == 0 then
+		return
+	end
+
+	local index = 1
+	for i, channel in ipairs(channels) do
+		if channel.id == chat.currentChannel then
+			index = i
+			break
+		end
+	end
+
+	local target = channels[((index - 1 + step) % #channels) + 1]
+	chat:SetChannel(target.id)
+	self:Log("channel -> %s", tostring(target.name))
+
+	-- An alert rather than a chat line: the box is closed, so there is nothing on screen saying
+	-- which channel is selected, and a line per key press would bury the conversation.
+	if type(ZO_Alert) == "function" then
+		ZO_Alert(UI_ALERT_CATEGORY_ALERT, nil, target.name)
+	end
+end
+
+----------------------------------------------------------------------------------------------
 -- Catching the key
 ----------------------------------------------------------------------------------------------
 
@@ -471,6 +582,14 @@ function addon:OnCatcherKey(control, key)
 
 	if ENTER_KEYS[key] then
 		self:StartChat()
+		return
+	end
+
+	-- Only while the box is closed, where the arrow keys have nothing else to do. Inside an open
+	-- box they move the text cursor; while the input screen is up they never arrive at all.
+	local step = CHANNEL_KEYS[key]
+	if step and self.sv.channelKeys and not IsTextEntryOpen() then
+		self:CycleChannel(step)
 	end
 end
 
@@ -555,6 +674,15 @@ function addon:OnWatchTick()
 	--
 	-- captureMode is a saved setting, so this persists: a session starts with the buttons
 	-- working, and /pbchat enter is how Enter is armed for the next stretch of typing.
+	-- The catcher's entire job is the one key press that starts a chat. Once the input screen is
+	-- up that press has been had, and everything the catcher still costs -- the gamepad buttons,
+	-- for as long as it is shown -- is being paid for nothing.
+	--
+	-- Holding it up across the input screen was tried, so the arrow keys could change channel at
+	-- the one moment the cost is not real: the player is typing into a system overlay with the
+	-- game behind it, so paused buttons are no loss. It cannot work. The overlay keeps the
+	-- keyboard to itself and no key reaches the game at all -- measured on PS5, with the hold
+	-- confirmed in the log and not one arrow arriving.
 	if self.sv.autoSafe and self.sv.captureMode ~= "off" and IsInputScreenUp() then
 		self.sv.captureMode = "off"
 		self:ApplyCatcher()
@@ -769,6 +897,66 @@ function addon:PrintStatus()
 		tostring(self.sv.autoSafe), tostring(HasEditFocus()), tostring(IsInputScreenUp()))
 end
 
+-- Reports what the game thinks of the add-on's bindable actions.
+--
+-- Read-only, and that is not a limitation of this function but of add-ons. BindKeyToAction cannot
+-- be called from here or from anywhere else in an add-on: the client refuses it as a PRIVATE
+-- function, whatever ESOUIDocumentation.txt says, and the refusal names the add-on's own frames
+-- as the untrusted part. Measured from a slash command whose traceback bottoms out in
+-- ZO_GamepadTextChatTextEntryEditBox_Enter -- a real key press -- so the hardware event was
+-- there and made no difference. Add-on Lua is insecure code by its nature; one frame of it taints
+-- the callstack, and no calling context escapes that.
+--
+-- Three things can be wrong when a bound button does nothing, and they need telling apart before
+-- anything is changed: the action was never registered (Bindings.xml did not take), it was
+-- registered but nothing is bound to it (CreateDefaultActionBind did not take, and it is an
+-- unproven call), or something is bound and the chord is not reaching it.
+--
+-- All read-only calls, so this is safe to run any time.
+function addon:PrintBinds()
+	if type(GetActionIndicesFromName) ~= "function" then
+		Print("no binding API on this client")
+		return
+	end
+
+	local actions = {
+		"PBSCHATASSISTANT_CHANNEL_NEXT",
+		"PBSCHATASSISTANT_CHANNEL_PREV",
+		"PBSCHATASSISTANT_START_CHAT",
+	}
+
+	for _, actionName in ipairs(actions) do
+		local shortName = actionName:gsub("^PBSCHATASSISTANT_", "")
+		local layerIndex, categoryIndex, actionIndex = GetActionIndicesFromName(actionName)
+
+		if not layerIndex then
+			-- Bindings.xml never registered it. Nothing else below can be true.
+			Print("%s: NOT REGISTERED", shortName)
+		else
+			local bound = {}
+			local maxBindings = type(GetMaxBindingsPerAction) == "function" and GetMaxBindingsPerAction() or 2
+			for bindingIndex = 1, maxBindings do
+				local key = GetActionBindingInfo(layerIndex, categoryIndex, actionIndex, bindingIndex)
+				if key and key ~= 0 then
+					bound[#bound + 1] = string.format("%d (%s)", key, tostring(GetKeyName(key)))
+				end
+			end
+
+			if #bound == 0 then
+				Print("%s: registered at %d/%d/%d, nothing bound", shortName, layerIndex, categoryIndex, actionIndex)
+			else
+				Print("%s: registered, bound to %s", shortName, table.concat(bound, ", "))
+			end
+		end
+	end
+
+	if KEY_GAMEPAD_BOTH_SHOULDERS then
+		Print("L1+R1 is key %d (%s)", KEY_GAMEPAD_BOTH_SHOULDERS, tostring(GetKeyName(KEY_GAMEPAD_BOTH_SHOULDERS)))
+	else
+		Print("KEY_GAMEPAD_BOTH_SHOULDERS does not exist on this client")
+	end
+end
+
 function addon:InitSlashCommand()
 	SLASH_COMMANDS["/pbchat"] = function(args)
 		args = zo_strtrim(args or "")
@@ -855,6 +1043,11 @@ function addon:InitSlashCommand()
 			self.sv.captureMode = "off"
 			self:ApplyCatcher()
 			Print("Enter capture OFF (catcher %s) -- gamepad buttons back", tostring(IsCatcherShown()))
+		elseif command == "binds" then
+			self:PrintBinds()
+		elseif command == "channel" then
+			self.sv.channelKeys = (argument ~= "off")
+			Print("channel keys %s", self.sv.channelKeys and "on" or "off")
 		elseif command == "autosafe" then
 			self.sv.autoSafe = (argument ~= "off")
 			Print("auto safe %s", self.sv.autoSafe and "on" or "off")
@@ -925,9 +1118,34 @@ local function OnAddOnLoaded(_, name)
 	-- "default", which left the Options button dead on a fresh install, and a stored "default"
 	-- would have survived the fix and kept doing it. Losing a tuned delay is the cheaper mistake.
 	addon.sv = ZO_SavedVars:NewAccountWide("PBsChatAssistant_Data", 12, nil, DEFAULTS)
+	-- Log off, once.
+	--
+	-- It shipped ON for a stretch while the add-on was being built, when the only way to tell
+	-- "the event did not fire" from "it fired and the open declined" was to print everything.
+	-- That value is still sitting in the saved settings of anyone who ran those builds, spraying
+	-- refocus lines into chat on every Enter.
+	--
+	-- Cleared here rather than by moving the saved-variables version, which would have taken the
+	-- tuned wait and everything else with it. The marker makes it a one-time correction: turn the
+	-- log back on afterwards and it stays on.
+	if not addon.sv.logResetDone then
+		addon.sv.logResetDone = true
+		addon.sv.log = false
+	end
+
 	addon:InitSlashCommand()
 	addon:ApplyCatcher()
 	addon:ApplyWatch()
+
+	-- The version rides in the title, because that is what the settings panel lists add-ons by:
+	-- settings.version below only fills a field inside the panel, which is no help when the
+	-- question is which build is installed and the menu is all that is on screen.
+	addon.title = string.format("%s %s", DISPLAY_NAME, VERSION)
+	addon.author = AUTHOR
+	addon.version = VERSION
+	if addon.InitSettings then
+		addon:InitSettings()
+	end
 
 	-- Auto reads the binding route, which on PC depends on which UI is in front. Console never
 	-- fires this.
@@ -979,6 +1197,17 @@ local function OnAddOnLoaded(_, name)
 			addon:StartChat()
 		end
 	end)
+
+	-- No default binds, and no way to make any. CreateDefaultActionBind does nothing from an
+	-- add-on, tried from here and from file scope straight after Bindings.xml. BindKeyToAction is
+	-- refused outright: the client calls it PRIVATE, whatever the documentation's "protected"
+	-- says, and names the add-on's own frames as what made the callstack untrusted -- measured
+	-- from a slash command whose traceback bottoms out in a real key press, so the hardware event
+	-- was there and changed nothing.
+	--
+	-- The actions register fine, 1/7/1..3 on PS5, and on this platform there is no keybinding
+	-- screen to reach them from either. They are kept for PC, and for a console update that adds
+	-- one.
 end
 
 em:RegisterForEvent(addon.name, EVENT_ADD_ON_LOADED, OnAddOnLoaded)

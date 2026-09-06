@@ -116,5 +116,10 @@ function C:Initialize()
     self.layoutMode = false
     self:Create()
     self:Refresh()
-    EVENT_MANAGER:RegisterForUpdate(EPC.name .. "_Clock", 1000, function() self:Refresh() end)
+    EVENT_MANAGER:RegisterForUpdate(EPC.name .. "_Clock", 1000, function()
+        -- The clock is deliberately cheap: refresh once per second so visibility and
+        -- the minute rollover never feel delayed. Scene/UI changes also wake it
+        -- immediately through the responsive-overlay reconciliation path.
+        self:Refresh()
+    end)
 end

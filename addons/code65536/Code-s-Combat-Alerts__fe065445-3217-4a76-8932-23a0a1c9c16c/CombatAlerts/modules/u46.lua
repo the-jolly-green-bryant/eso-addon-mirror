@@ -76,6 +76,7 @@ function Module:Initialize( )
 		[235146] = { -2, 2, offset = 100 }, -- Shadow Strike
 		[236458] = { -3, 2 }, -- Potent Ethereal Burst
 		[236569] = { -2, 1, vet = true }, -- Spectral Revenge
+		[238948] = { -2, 2 }, -- Necrotic Wave
 		[240984] = { -2, 2 }, -- Heavy Strike
 		[245273] = { -2, 1 }, -- Bone Saw
 	}
