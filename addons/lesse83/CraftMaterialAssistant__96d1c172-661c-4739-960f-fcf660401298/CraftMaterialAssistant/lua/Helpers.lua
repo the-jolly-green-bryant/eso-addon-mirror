@@ -94,19 +94,19 @@ function CMA:GetBestFitMapSlot(bag, itemId, stackSizeToDeposit)
             -- multiple options - iterate them and look where it fits and the left space is smallest
             local possibleSlots = self:StringExplode(self.cachedBankSlots[itemId][2], self.cachedBankSlotSeparator)
             local smallestDifferenceValue = math.huge
-            local smallestDifferenceIndex = 0
+            local smallestDifferenceIndex = -1
             -- iterate over slots
             for i = 1, #possibleSlots do
                 local currentStackSize, maxStackSize = GetSlotStackSize(bag, possibleSlots[i])
                 local computedNewStackSize = maxStackSize - currentStackSize - stackSizeToDeposit
                 -- only remember slot if it fits and is the best fitting
-                if (computedNewStackSize > 0) and (computedNewStackSize < smallestDifferenceValue) then
+                if (computedNewStackSize >= 0) and (computedNewStackSize < smallestDifferenceValue) then
                     smallestDifferenceValue = computedNewStackSize
                     smallestDifferenceIndex = possibleSlots[i]
                 end
             end
             -- now check if there was something found to be merged with
-            if smallestDifferenceIndex ~= 0 then
+            if smallestDifferenceIndex ~= -1 then
                 -- one optimal was found, return the slotIndex
                 return smallestDifferenceIndex
             else

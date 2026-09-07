@@ -4,6 +4,82 @@ Full version history. See README.md for current features, installation, and usag
 
 ---
 
+### 0.19.30
+- **Reverted the version floors added to
+  `## OptionalDependsOn: Frostfall LibZoneTemp` in 0.19.29** (back to
+  bare names, no versions). A follow-up moderator comment clarified that
+  `OptionalDependsOn` does not support `>=` version syntax at all - only
+  `DependsOn` does, since a missing *hard* dependency is what actually
+  stops an addon from loading, which is what the version check exists to
+  guard against. An optional dependency doesn't block loading either
+  way, so a version check on it isn't just unsupported syntax, it's not
+  a meaningful concept there.
+- **This was likely a real functional bug, not just a style issue**:
+  `Frostfall>=25`/`LibZoneTemp>=21` were almost certainly being read as
+  literal dependency names, which would never match the real `Frostfall`/
+  `LibZoneTemp` addons - meaning the optional-dependency detection may
+  have been silently failing to recognize either as installed at all,
+  even when they genuinely were (falling back to no temperature data
+  entirely, regardless of whether Frostfall/LibZoneTemp were present).
+- **This also resolves the tension flagged in 0.19.29's own entry
+  below**: that entry raised a concern about reopening a
+  previously-solved blocking-risk tradeoff (the same one that led to
+  0.19.6 removing floors from these same two entries originally). It
+  turns out the original no-floors-on-optional-dependencies precedent
+  was correct all along; 0.19.29's floors were the actual mistake, not a
+  justified reversal of it.
+
+---
+
+### 0.19.29
+- **Fixed the status displays showing with no/stale data on login when the
+  master "Enable the addon" toggle is off but a display's own sub-setting
+  is on.** Each display's window already starts hidden by default at its
+  own `Initialize()`, but the startup code in
+  `RealisticNeedsAndDiseases.lua` called `SetShown()`/`RefreshAll()`
+  unconditionally from each sub-setting alone (`showStatusBar`,
+  `statusIconsTransparencyEnabled`, `statusBarsEnabled`), ignoring
+  `sv.settings.masterEnabled` entirely - the same class of bug fixed in
+  Frostfall v3.4.26's `HUD:Initialize()`. Every `SetShown()`/`RefreshAll()`
+  call at startup now also requires `sv.settings.masterEnabled ~= false`,
+  matching the exact check already used by the checkbox `setFunc`s in
+  `RealisticNeedsAndDiseases_Settings.lua`. The master-toggle checkbox's
+  own `setFunc` already correctly handled the mid-session case - this
+  only affected loading in with the toggle already off.
+- **Compliance fix**: added version floors to
+  `## OptionalDependsOn: Frostfall LibZoneTemp` (now `Frostfall>=25
+  LibZoneTemp>=21`), per an ESOUI moderator's written rule that version
+  checks are mandatory for `OptionalDependsOn` too, not just hard
+  `DependsOn`. Worth flagging: this reopens a tradeoff this project
+  previously decided the other way on purpose - version floors were
+  deliberately *removed* from these same two entries in an earlier
+  version (0.19.6) specifically because a floor can block the whole
+  addon from loading if the optional dependency is present but below the
+  floor, defeating the point of it being optional. Added back to comply
+  with the written rule regardless; if a stale-but-present Frostfall or
+  LibZoneTemp install is ever reported as blocking this addon from
+  loading entirely - rather than gracefully falling back to no
+  temperature data - that floor is the reason.
+- Moved the README's Dependencies section to the very first section
+  (previously 7th of 13), per the same rule's guidance that dependencies
+  should be visible "at the top at best."
+- Confirmed via a full compliance sweep: no `GetEventManager()` repeated
+  calls (already uses the cached `EVENT_MANAGER` global throughout), and
+  no global variable leaks anywhere (the two functions that looked like
+  candidates, `CanPlayEmotesNow` and `HandleConsumedItem`, are both
+  legitimate forward-declared locals, not leaks).
+- **Correcting the record**: these same fixes were previously drafted
+  and shipped as an erroneous "0.19.27" built against a stale 0.19.26
+  baseline, before this addon's real 0.19.27 (the disease-overlay-opacity
+  slider, below) and 0.19.28 (the water-restore floor change, below) were
+  known. That erroneous build was never the actual released 0.19.27 and
+  is not reflected anywhere in this changelog - this entry is the correct
+  continuation, built on top of the real, already-published 0.19.28
+  rather than the stale baseline. No functional loss: none of the fixes
+  themselves changed, only which version they're correctly attached to.
+
+---
+
 ### 0.19.28
 - **"Thirst restored per wild water node harvested" slider's minimum
   lowered from 5 to 0.** Setting it to 0 now disables the mechanic

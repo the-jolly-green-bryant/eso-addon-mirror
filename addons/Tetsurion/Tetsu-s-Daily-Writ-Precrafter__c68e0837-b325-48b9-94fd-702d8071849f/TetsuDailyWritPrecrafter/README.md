@@ -85,6 +85,10 @@ Equipment and glyphs must be made by the character who turns the writ in. That i
 
 ---
 
+## 2.5.3
+
+Smithing / clothing / woodworking: if the racial (or first known) style has no stone left, the addon picks another known style that still has material in backpack or craft bag. A multi-day batch can mix styles when one motif runs out mid-queue. Jewelry is unchanged (no style).
+
 ## 2.5.2
 
 Scribing (`CRAFTING_TYPE_SCRIBING`) is ignored: no R3, no “rotation phase unknown”. Enchanting glyphs are unchanged. 2.5.1 tab-filter revert.

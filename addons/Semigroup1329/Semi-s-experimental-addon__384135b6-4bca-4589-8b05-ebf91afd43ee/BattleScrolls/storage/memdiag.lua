@@ -6,9 +6,10 @@
 -- measurable parts (see the settings screen's Memory Diagnostics section).
 --
 -- Three distinct meters, none interchangeable:
---   - the console Add-On Memory gauge: engine-side, allocator-level, counts
---     code + UI + libs + loaded SavedVariables + allocator rounding
---   - collectgarbage("count"): live Lua heap for the WHOLE VM (all addons)
+--   - the console Add-On Memory gauge: engine addon-pool accounting; its
+--     Xbox allocator/attribution rules are still under investigation
+--   - collectgarbage("count"): requested Lua heap for the WHOLE VM,
+--     including uncollected garbage and VM metadata
 --   - storage's EstimateHistorySize: layout model of history instances only,
 --     times an empirical 1.5 fudge
 --
@@ -52,7 +53,7 @@ BattleScrolls = BattleScrolls or {}
 ---@field busyText string|nil Localized status while an async op runs; nil when idle
 ---@field _held (string|number[])[]|nil Calibration allocations currently pinned
 ---@field _heldModelBytes number Model cost of the pinned allocations
----@field _stringSerial number Ever-increasing suffix counter: Havok interns ALL strings (5.1 lineage), so restarting the counter per press would regenerate identical strings and later presses would allocate nothing
+---@field _stringSerial number Ever-increasing prefix counter: Havok interns ALL strings, so restarting it per press would reuse strings
 ---@field _fiber Fiber<any>|nil Running diagnostic op (measure/allocate/release)
 local memDiag = {
     lastReport = nil,
@@ -286,10 +287,12 @@ function memDiag.allocateStrings(onDone)
         local count = math.floor(CALIBRATION_BYTES / perString)
         local base = string.rep("m", CALIBRATION_STRING_LEN - 12)
         for i = 1, count do
-            -- The 12-digit suffix keeps every string unique — across presses
+            -- The 12-digit prefix keeps every string unique — across presses
             -- too, via the persistent serial (see _stringSerial above)
             memDiag._stringSerial = memDiag._stringSerial + 1
-            held[#held + 1] = base .. string.format("%012d", memDiag._stringSerial)
+            -- The traced HKS hash uses only length and the first 31 bytes.
+            -- Put uniqueness first; a common prefix caused hash collisions.
+            held[#held + 1] = string.format("%012d", memDiag._stringSerial) .. base
             if i % STRINGS_PER_YIELD == 0 then
                 LibEffect.Yield():Await()
             end
@@ -299,14 +302,10 @@ function memDiag.allocateStrings(onDone)
 end
 
 -- Size-class probe ---------------------------------------------------------
--- Havok Script allocates through hkFreeListMemorySystem, whose allocators
--- (read out of the client binary) both work in 16-byte steps: requests up to
--- 640 bytes come from binned free lists ((size+15)/16 selects the bin),
--- larger ones from hkLargeBlockAllocator's coalescing list. So our 240-char
--- chunk strings should cost ~288 bytes and the model should be within a few
--- percent. These lengths bracket the 641-byte boundary and the 1996-char
--- chunk size we reduced from, to confirm that on the real console allocator
--- rather than trusting the disassembly.
+-- These are experimental lengths, not established Xbox allocator classes.
+-- The earlier hkFreeListMemorySystem attribution was not an HKS call trace.
+-- Marginal gauge cost also depends on previous allocations; use memlab's
+-- repeated shapes and controls before interpreting a per-string coefficient.
 local PROBE_LENGTHS = { 120, 200, 240, 260, 300, 380, 500, 590, 620, 1996 }
 
 -- Allocate a roughly constant volume at every length: the console gauge reads
@@ -329,7 +328,7 @@ end
 ---@return string
 local function uniqueString(length)
     memDiag._stringSerial = memDiag._stringSerial + 1
-    return string.rep("m", length - 12) .. string.format("%012d", memDiag._stringSerial)
+    return string.format("%012d", memDiag._stringSerial) .. string.rep("m", length - 12)
 end
 
 ---Measures marginal per-string cost at one length: allocate a pinned batch,

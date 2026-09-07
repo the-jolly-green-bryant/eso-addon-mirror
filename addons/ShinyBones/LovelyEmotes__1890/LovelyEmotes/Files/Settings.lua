@@ -41,6 +41,7 @@ LovelyEmotes_Settings = {
 		MinimizeInCombat = true,
 		MinimizeAutomatically = false,
 		ToggleCursorWidthKeyBinding = true,
+		ShowEmoteKeybindings = false,
 		EnableAlternativeSounds = true,
 		FavoritesButtonDesign = 1,
 		EmoteListButtonDesign = 1,

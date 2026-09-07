@@ -281,7 +281,7 @@ local function GetSettings()
         local positionSettings = NQOL.Settings.EnsureTable(reticleInfoSettings, positionKey)
         local positionDefaults = combatReticleDefaults.info[positionKey]
         NQOL.Settings.Default(positionSettings, positionDefaults, "content")
-        if positionSettings.content ~= "off" and positionSettings.content ~= "crux" and positionSettings.content ~= "offBalance" and positionSettings.content ~= "offBalanceImmunity" and positionSettings.content ~= "taunt" and positionSettings.content ~= "zensRedress" then
+        if positionSettings.content ~= "off" and positionSettings.content ~= "crux" and positionSettings.content ~= "offBalance" and positionSettings.content ~= "offBalanceImmunity" and positionSettings.content ~= "taunt" and positionSettings.content ~= "sulXan" and positionSettings.content ~= "zensRedress" then
             positionSettings.content = positionDefaults.content
         end
         NQOL.Settings.Default(positionSettings, positionDefaults, "iconPosition")

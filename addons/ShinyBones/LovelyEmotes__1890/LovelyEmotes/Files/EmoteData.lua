@@ -23,10 +23,12 @@ LE_EmoteData = {
 	[35] = { HasLoop = true, }, -- /cower
 	[729] = { HasLoop = true, }, -- /crochet
 	[122] = { HasLoop = true, }, -- /crouch
+	[925] = { HasLoop = true, Ignore = true }, -- /crouch
 	[361] = { HasLoop = true, }, -- /crownstore
 	[240] = { HasLoop = true, }, -- /cry
 	[79] = { HasLoop = true, }, -- /crying
 	[80] = { HasLoop = true, }, -- /dance
+	[902] = { Ignore = true }, -- /dance2
 	[278] = { HasLoop = true, }, -- /dancealtmer
 	[279] = { HasLoop = true, }, -- /danceargonian
 	[280] = { HasLoop = true, }, -- /dancebosmer
@@ -84,6 +86,7 @@ LE_EmoteData = {
 	[296] = { HasLoop = true, }, -- /idle5
 	[856] = { HasLoop = true, }, -- /idlemagic
 	[181] = { HasLoop = true, }, -- /impatient
+	[781] = { HasLoop = true, }, -- /jig
 	[292] = { HasLoop = true, }, -- /juggleflame
 	[533] = { HasLoop = true, }, -- /jugglepumpkin
 	[758] = { HasLoop = true, }, -- /juggleyarn
@@ -109,9 +112,10 @@ LE_EmoteData = {
 	[796] = { HasLoop = true, }, -- /palelord
 	[831] = { HasLoop = true, }, -- /panflute
 	[788] = { HasLoop = true, }, -- /plantyourself
-	[141] = { HasLoop = true, }, -- /playdead
+	[142] = { HasLoop = true, }, -- /playdead
 	[857] = { HasLoop = true, }, -- /playglassarmonica
 	[60] = { HasLoop = true, }, -- /pray
+	[783] = { HasLoop = true, }, -- /propose
 	[130] = { HasLoop = true, }, -- /prov
 	[100] = { HasLoop = true, }, -- /pushup
 	[99] = { HasLoop = true, }, -- /pushups
@@ -130,6 +134,7 @@ LE_EmoteData = {
 	[676] = { HasLoop = true, }, -- /scarecrow
 	[196] = { HasLoop = true, }, -- /shovel
 	[104] = { HasLoop = true, }, -- /sick
+	[959] = { HasLoop = true, ReplaceName = { ["en"] = "Sickened (Intense)", ["de"] = "Übelkeit (Intensiv)", ["fr"] = "Malade (Intense)", ["es"] = "Náuseas (Intensas)" } }, -- /sick
 	[120] = { HasLoop = true, }, -- /sit
 	[146] = { HasLoop = true, }, -- /sit2
 	[147] = { HasLoop = true, }, -- /sit3
@@ -137,6 +142,8 @@ LE_EmoteData = {
 	[149] = { HasLoop = true, }, -- /sit5
 	[150] = { HasLoop = true, }, -- /sit6
 	[121] = { HasLoop = true, }, -- /sitchair
+	[766] = { HasLoop = true, }, -- /sitdrink
+	[876] = { HasLoop = true, ReplaceName = { ["en"] = "Sit and Drink 2", ["de"] = "Schlückchen im Sitzen 2", ["fr"] = "Boire assis 2", ["es"] = "Siéntate y bebe 2" } }, -- /sitdrink
 	[140] = { HasLoop = true, }, -- /situps
 	[540] = { HasLoop = true, }, -- /skullponder
 	[143] = { HasLoop = true, }, -- /sleep
@@ -148,11 +155,13 @@ LE_EmoteData = {
 	[616] = { HasLoop = true, }, -- /summonbat
 	[187] = { HasLoop = true, }, -- /surrender
 	[290] = { HasLoop = true, }, -- /sweep
-	[809] = { HasLoop = true, }, -- /sweep
+	[809] = { HasLoop = true, ReplaceName = { ["en"] = "Sweeping (Leaves)", ["de"] = "Fegen (Laub)", ["fr"] = "Balayer (Feuilles)", ["es"] = "Barrer (Hojas)" } }, -- /sweep
 	[767] = { HasLoop = true, }, -- /sworddance
+	[784] = { HasLoop = true, }, -- /taichi
 	[560] = { HasLoop = true, }, -- /teebadribble
 	[561] = { HasLoop = true, }, -- /teebawarmup
 	[1] =  { HasLoop = true, }, -- /torch
+	[785] = { HasLoop = true, }, -- /tot
 	[541] = { HasLoop = true, }, -- /tracker
 	[793] = { HasLoop = true, }, -- /trumpetsolo
 	[2] = { HasLoop = true, }, -- /wand2

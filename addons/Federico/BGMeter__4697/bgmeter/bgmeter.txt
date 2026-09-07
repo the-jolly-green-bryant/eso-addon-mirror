@@ -1,8 +1,8 @@
 ## Title: BGmeter
 ## Description: Post-battle Battleground analytics -- full scoreboard (every player's dmg/heal/K/D/A/medals) plus your AP/XP/veterancy haul, with match history.
 ## Author: Federico Vergelli
-## Version: 0.1.2
-## AddOnVersion: 3
+## Version: 0.1.3
+## AddOnVersion: 4
 ## APIVersion: 101051 101050
 ## SavedVariables: BGMeterSavedVars
 

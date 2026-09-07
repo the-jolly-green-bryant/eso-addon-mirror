@@ -1,0 +1,21 @@
+## Title: Writ Ready
+## Author: @Dicen95728
+## Version: 3.20
+## AddOnVersion: 2
+## APIVersion: 101050
+## SavedVariables: WritReadySV
+## DependsOn: LibCharacterKnowledge
+## OptionalDependsOn: LibAddonMenu-2.0
+## Description: Checks unconsumed Smithing/Clothier/Woodworking/Jewelry Master Writs in your inventory and tells you if you can craft them right now - trait AND style checked. /writready = inventory, /writready bank = + bank, then type /writready trader to check them.
+WritReady.lua
+
+# Self-contained: does not require the WritWorthy addon (not available on
+# console). Writ-decoding and research-line data adapted from publicly
+# documented ESO crafting structure and WritWorthy's open-source project
+# (github.com/ziggr/ESO-WritWorthy) for interoperability - not copied
+# verbatim, and used to reimplement equivalent logic independently.
+#
+# This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc.
+# or its affiliates. The Elder Scrolls and related logos are registered trademarks
+# or trademarks of ZeniMax Media Inc. Full terms:
+# https://account.elderscrollsonline.com/add-on-terms

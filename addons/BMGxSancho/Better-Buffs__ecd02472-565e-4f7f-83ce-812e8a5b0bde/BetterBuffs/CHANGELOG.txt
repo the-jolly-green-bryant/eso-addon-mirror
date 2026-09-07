@@ -1,3 +1,14 @@
+Better Buffs v0.3.16
+- Added dedicated Gear Set trackers for Turning Tide and Archdruid Devyric.
+- Turning Tide uses verified provider/cooldown event 167059 and hostile proc 167062.
+- Archdruid Devyric uses provider/cooldown event 176813 and confirmed hostile proc 176816.
+- Turning Tide and Archdruid each own an independent 15-second provider cooldown; normalized Major Vulnerability remains separate and cannot start either set timer.
+- Provider cooldown events require the local player as source plus the matching equipped set, preventing remote-player and Colossus contamination.
+- Added Crimson Oath's Rive as a Gear Set debuff tracker with 3,541 Armor reduction included in Current Pen while the hostile effect is active.
+- Crimson provider cooldown remains intentionally unmodeled until a clean provider event ID is verified.
+- Stonehulk Domination remains deferred pending clean event-ID research.
+- No new polling loop or duplicate effect cache introduced.
+
 Better Buffs v0.3.15
 - Corrected live HUD scene layering for Buff/Debuff dashboards and all Analytics stat panels.
 - Live refreshes can no longer re-show Better Buffs controls above Map, Inventory, Skills, Character, or other non-HUD scenes.

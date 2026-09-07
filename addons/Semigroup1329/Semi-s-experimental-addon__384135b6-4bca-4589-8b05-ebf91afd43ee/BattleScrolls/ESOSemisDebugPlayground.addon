@@ -1,12 +1,12 @@
 ## Title: Semi's Debug Playground
 ## Author: Semigroup1329
 ## APIVersion: 101049 101050
-## AddOnVersion: 490
-## Version: 0.0.490
+## AddOnVersion: 494
+## Version: 0.0.494
 ## IsLibrary: False
 ## DependsOn: LibGroupBroadcast LibAsync>=30100
 ## OptionalDependsOn: LibHarvensAddonSettings
-## SavedVariables: BattleScrollsSavedVariables
+## SavedVariables: BattleScrollsSavedVariables BattleScrollsMemoryProbe
 
 ; Localization - default (English) must load first
 lang/default.lua
@@ -57,6 +57,7 @@ storage/bitcodec.lua
 storage/binary.lua
 storage/storage.lua
 storage/memdiag.lua
+storage/memlab.lua
 storage/migration.lua
 
 ; Network domain

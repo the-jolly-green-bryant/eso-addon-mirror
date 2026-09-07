@@ -1,7 +1,7 @@
 ## Title: Camera|r Motion
 ## APIVersion: 101050
-## Version: 1.0
-## Description: Adds new camera behaviour to the native "Screen Shake" setting (3rd person bobbing, combat-reactive offsets/FOV, damage-telegraphing distance tweens, situationally dampened movement tracking, interaction camera pans, swim cam, etc).
+## Version: 2.0
+## Description: New camera behaviour written and designed in replication of the kind found in singleplayer mainline Bethesda titles. Most camera movement scaled off the 'Screen Shake' setting.
 ## Author: Sirzecs (Lokiragor)
 ## SavedVariables: CameraMotionSavedVariables
 

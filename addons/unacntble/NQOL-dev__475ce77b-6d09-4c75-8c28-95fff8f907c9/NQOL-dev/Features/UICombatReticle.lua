@@ -33,6 +33,18 @@ local ZENS_REDRESS_REQUIRED_PIECES = 5
 local ZENS_REDRESS_ABILITY_ID = 126593
 local ZENS_TOUCH_ABILITY_ID = 126597
 local ZENS_EVENT_NAMESPACE = EVENT_NAMESPACE .. "_ZensRedress"
+local SUL_XAN = {
+    SOUL_ABILITY_ID = 154720,
+    BUFF_ABILITY_ID = 154737,
+    SOUL_EVENT_NAMESPACE = EVENT_NAMESPACE .. "_SulXanSoul",
+    BUFF_EVENT_NAMESPACE = EVENT_NAMESPACE .. "_SulXanBuff",
+    UPDATE_NAMESPACE = UPDATE_NAMESPACE .. "_SulXan",
+    UPDATE_MS = 100,
+    soulEndTime = 0,
+    buffEndTime = 0,
+    eventsInstalled = false,
+    updateLoopInstalled = false,
+}
 local OFF_BALANCE_ABILITY_IDS = NQOL.Data and NQOL.Data.OffBalanceAbilityIds or {}
 local RETICLE_INFO_FONT_SIZE_DEFAULT = 28
 local RETICLE_INFO_FONT_SIZE_MIN = 12
@@ -44,13 +56,14 @@ local RETICLE_INFO_WIDTH = 200
 local RETICLE_INFO_HEIGHT = 42
 local RETICLE_INFO_ROOT_SIZE = 1200
 local RETICLE_INFO_CONTENT_DEFAULT = "off"
-local RETICLE_INFO_CONTENT_CHOICES = { RETICLE_INFO_CONTENT_DEFAULT, "crux", "offBalance", "offBalanceImmunity", "taunt", "zensRedress" }
+local RETICLE_INFO_CONTENT_CHOICES = { RETICLE_INFO_CONTENT_DEFAULT, "crux", "offBalance", "offBalanceImmunity", "taunt", "sulXan", "zensRedress" }
 local RETICLE_INFO_CONTENT_NAMES = NQOL.Lexicon.LocalizedList({
     "common.off",
     "features.ui_combat_reticle.crux_tracker",
     "features.ui_combat_reticle.off_balance_tracker",
     "features.ui_combat_reticle.off_balance_immunity_tracker",
     "features.ui_combat_reticle.taunt_remaining_tracker",
+    { "features.ui_combat_reticle.sul_xan_tracker", GetAbilityName and GetAbilityName(SUL_XAN.BUFF_ABILITY_ID) or "" },
     { "features.ui_combat_reticle.zens_redress_tracker", GetAbilityName and GetAbilityName(ZENS_REDRESS_ABILITY_ID) or "" },
 })
 local RETICLE_INFO_ICON_POSITION_DEFAULT = "off"
@@ -267,6 +280,28 @@ local function UsesZensTracker()
     end
 
     return false
+end
+
+function SUL_XAN.UsesTracker()
+    for _, positionKey in ipairs(RETICLE_INFO_POSITION_KEYS) do
+        local settings = GetReticleInfoPositionSettings(positionKey)
+        if settings and settings.content == "sulXan" then
+            return true
+        end
+    end
+
+    return false
+end
+
+function SUL_XAN.GetDisplayState()
+    local currentTime = GetFrameTimeSeconds and GetFrameTimeSeconds() or 0
+    if SUL_XAN.buffEndTime > currentTime then
+        return SUL_XAN.buffEndTime, SUL_XAN.BUFF_ABILITY_ID
+    elseif SUL_XAN.soulEndTime > currentTime then
+        return SUL_XAN.soulEndTime, SUL_XAN.SOUL_ABILITY_ID
+    end
+
+    return 0, SUL_XAN.BUFF_ABILITY_ID
 end
 
 local function HasFivePieceZensEquipped()
@@ -569,6 +604,9 @@ local function GetReticleInfoAbilityId(content)
         return OFF_BALANCE_IMMUNITY_ABILITY_ID
     elseif content == "taunt" then
         return TAUNT_ICON_ABILITY_ID
+    elseif content == "sulXan" then
+        local _, abilityId = SUL_XAN.GetDisplayState()
+        return abilityId
     elseif content == "zensRedress" then
         return ZENS_TOUCH_ABILITY_ID
     end
@@ -609,6 +647,9 @@ local function ApplyReticleInfo()
         local settings = GetReticleInfoPositionSettings(positionKey)
         local label = reticleInfoLabels[positionKey]
         local shouldDisplay = settings and (settings.content == "offBalance" or settings.content == "offBalanceImmunity" or settings.content == "taunt" or (settings.content == "zensRedress" and zensFivePieceEquipped) or (settings.content == "crux" and canDisplayCrux))
+        if settings and settings.content == "sulXan" then
+            shouldDisplay = true
+        end
         if shouldDisplay then
             label = EnsureReticleInfoLabel(positionKey)
             if label then
@@ -635,6 +676,8 @@ local function ApplyReticleInfo()
                     infoText = GetCountdownText(offBalanceImmunityEndTime)
                 elseif settings.content == "taunt" then
                     infoText = GetCountdownText(tauntEndTime)
+                elseif settings.content == "sulXan" then
+                    infoText = GetCountdownText(SUL_XAN.GetDisplayState())
                 else
                     infoText = GetCountdownText(offBalanceEndTime)
                 end
@@ -945,6 +988,10 @@ local function InstallReticleEvents()
         if UsesZensTracker() then
             RefreshZensEquipmentState()
         end
+        if SUL_XAN.UsesTracker() then
+            SUL_XAN.soulEndTime = 0
+            SUL_XAN.ScanBuffEndTime()
+        end
         InstallReticleHooks()
         InstallSceneCallback()
         UI.QueueCombatReticleApply()
@@ -1180,6 +1227,100 @@ local function UninstallZensEvents()
     zensStacks = 0
 end
 
+function SUL_XAN.ScanBuffEndTime()
+    local nextEndTime = 0
+    if GetNumBuffs and GetUnitBuffInfo then
+        for buffIndex = 1, GetNumBuffs("player") do
+            local _, _, endTime, _, _, _, _, _, _, _, abilityId = GetUnitBuffInfo("player", buffIndex)
+            if abilityId == SUL_XAN.BUFF_ABILITY_ID then
+                nextEndTime = tonumber(endTime) or 0
+                break
+            end
+        end
+    end
+
+    SUL_XAN.buffEndTime = nextEndTime
+    UI.QueueCombatReticleApply()
+end
+
+function SUL_XAN.OnSoulEffectChanged(_, changeType, _, _, _, _, endTime, _, _, _, _, _, _, _, _, abilityId)
+    if abilityId ~= SUL_XAN.SOUL_ABILITY_ID then
+        return
+    end
+
+    SUL_XAN.soulEndTime = changeType == EFFECT_RESULT_FADED and 0 or math.max(0, tonumber(endTime) or 0)
+    UI.QueueCombatReticleApply()
+end
+
+function SUL_XAN.OnBuffEffectChanged(_, changeType, _, _, _, _, endTime, _, _, _, _, _, _, _, _, abilityId)
+    if abilityId ~= SUL_XAN.BUFF_ABILITY_ID then
+        return
+    end
+
+    SUL_XAN.buffEndTime = changeType == EFFECT_RESULT_FADED and 0 or math.max(0, tonumber(endTime) or 0)
+    UI.QueueCombatReticleApply()
+end
+
+function SUL_XAN.InstallEvents()
+    if SUL_XAN.eventsInstalled or not EVENT_MANAGER or not SUL_XAN.UsesTracker() then
+        return
+    end
+
+    EVENT_MANAGER:RegisterForEvent(SUL_XAN.SOUL_EVENT_NAMESPACE, EVENT_EFFECT_CHANGED, SUL_XAN.OnSoulEffectChanged)
+    EVENT_MANAGER:RegisterForEvent(SUL_XAN.BUFF_EVENT_NAMESPACE, EVENT_EFFECT_CHANGED, SUL_XAN.OnBuffEffectChanged)
+    if EVENT_MANAGER.AddFilterForEvent then
+        EVENT_MANAGER:AddFilterForEvent(SUL_XAN.SOUL_EVENT_NAMESPACE, EVENT_EFFECT_CHANGED, REGISTER_FILTER_ABILITY_ID, SUL_XAN.SOUL_ABILITY_ID)
+        EVENT_MANAGER:AddFilterForEvent(SUL_XAN.SOUL_EVENT_NAMESPACE, EVENT_EFFECT_CHANGED, REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
+        EVENT_MANAGER:AddFilterForEvent(SUL_XAN.BUFF_EVENT_NAMESPACE, EVENT_EFFECT_CHANGED, REGISTER_FILTER_ABILITY_ID, SUL_XAN.BUFF_ABILITY_ID)
+        EVENT_MANAGER:AddFilterForEvent(SUL_XAN.BUFF_EVENT_NAMESPACE, EVENT_EFFECT_CHANGED, REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
+    end
+    SUL_XAN.eventsInstalled = true
+end
+
+function SUL_XAN.UninstallEvents()
+    if SUL_XAN.eventsInstalled and EVENT_MANAGER then
+        EVENT_MANAGER:UnregisterForEvent(SUL_XAN.SOUL_EVENT_NAMESPACE, EVENT_EFFECT_CHANGED)
+        EVENT_MANAGER:UnregisterForEvent(SUL_XAN.BUFF_EVENT_NAMESPACE, EVENT_EFFECT_CHANGED)
+    end
+
+    SUL_XAN.eventsInstalled = false
+    SUL_XAN.soulEndTime = 0
+    SUL_XAN.buffEndTime = 0
+end
+
+function SUL_XAN.InstallUpdateLoop()
+    if SUL_XAN.updateLoopInstalled or not EVENT_MANAGER or not SUL_XAN.UsesTracker() then
+        return
+    end
+
+    EVENT_MANAGER:RegisterForUpdate(SUL_XAN.UPDATE_NAMESPACE, SUL_XAN.UPDATE_MS, function()
+        if IsReticleRuntimeActive() and SUL_XAN.UsesTracker() then
+            ApplyCombatReticle()
+        end
+    end)
+    SUL_XAN.updateLoopInstalled = true
+end
+
+function SUL_XAN.UninstallUpdateLoop()
+    if SUL_XAN.updateLoopInstalled and EVENT_MANAGER then
+        EVENT_MANAGER:UnregisterForUpdate(SUL_XAN.UPDATE_NAMESPACE)
+    end
+
+    SUL_XAN.updateLoopInstalled = false
+end
+
+function SUL_XAN.RefreshRuntime()
+    if IsReticleRuntimeActive() and SUL_XAN.UsesTracker() then
+        SUL_XAN.InstallEvents()
+        SUL_XAN.InstallUpdateLoop()
+        SUL_XAN.ScanBuffEndTime()
+        return
+    end
+
+    SUL_XAN.UninstallEvents()
+    SUL_XAN.UninstallUpdateLoop()
+end
+
 RefreshReticleRuntime = function()
     runtimeActive = settingsPreviewVisible or UsesCustomShape() or HasEnabledReticleInfo()
     if IsReticleRuntimeActive() then
@@ -1205,6 +1346,7 @@ RefreshReticleRuntime = function()
         else
             UninstallZensEvents()
         end
+        SUL_XAN.RefreshRuntime()
         InstallReticleHooks()
         InstallSceneCallback()
         RefreshAnimationLoop()
@@ -1217,6 +1359,7 @@ RefreshReticleRuntime = function()
     UninstallTargetEffectEvents()
     UninstallTargetEffectUpdateLoop()
     UninstallZensEvents()
+    SUL_XAN.RefreshRuntime()
     UninstallSceneCallback()
     UninstallUpdateLoop()
     HideSettingsPreviewReticle()
@@ -1396,7 +1539,7 @@ function UI.SetReticleInfoContent(positionKey, content)
         return
     end
 
-    if content ~= "crux" and content ~= "offBalance" and content ~= "offBalanceImmunity" and content ~= "taunt" and content ~= "zensRedress" then
+    if content ~= "crux" and content ~= "offBalance" and content ~= "offBalanceImmunity" and content ~= "taunt" and content ~= "sulXan" and content ~= "zensRedress" then
         content = RETICLE_INFO_CONTENT_DEFAULT
     end
     settings.content = content

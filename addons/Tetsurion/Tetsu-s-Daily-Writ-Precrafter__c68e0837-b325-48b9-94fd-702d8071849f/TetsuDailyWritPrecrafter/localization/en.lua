@@ -44,7 +44,7 @@ TetsuDailyWritPrecrafter.L = {
     PROGRESS_STATUS         = "Processed: <<1>> of <<2>>",
 
     ERR_BAG_FULL            = "Not enough bag space (need ~<<1>> free slots).",
-    ERR_NO_STYLE            = "No known style material found in backpack or craft bag.",
+    ERR_NO_STYLE            = "No style material for any known motif (backpack / craft bag).",
     ERR_MISSING_RUNES       = "Missing enchanting runes (potency / essence / Ta).",
     ERR_CANNOT_CRAFT        = "Cannot craft <<1>> (missing materials, style, or skill).",
     ERR_CRAFT_FAILED        = "Craft failed (<<1>>/<<2>>). Skipping.",

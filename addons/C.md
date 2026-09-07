@@ -14,7 +14,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Call To Arms](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/Call-To-Arms__72f77b51-a84a-492e-a266-4f7175a53a71) | SugaComa | Console | — |
 | [Call-I-Do](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/lebiez/Call-I-Do__4263) | lebiez | PC / Mac | 1.09 |
 | [Camera Control](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ArctixFox/Camera-Control__1669) | ArctixFox | PC / Mac | 1.1.42 |
-| [Camera Motion](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Sirzecs/Camera-Motion__4763) | Sirzecs | PC / Mac | 1.02 |
+| [Camera Motion](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Sirzecs/Camera-Motion__4763) | Sirzecs | PC / Mac | 2.00 |
 | [Camera Shoulder Swap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MissingSemicolon/Camera-Shoulder-Swap__1555) | MissingSemicolon | PC / Mac | 1.0.6 |
 | [Campaign Queue Status](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kawamonkey/Campaign-Queue-Status__3305) | kawamonkey | PC / Mac | 1.0 |
 | [Campaign Reward Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/Campaign-Reward-Tracker__3821) | M0R | PC / Mac | 1.0 |
@@ -40,7 +40,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Cashier](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tarlac/Cashier__2040) | Tarlac | PC / Mac | 1.35 |
 | [Cast Skill IDs (CastIDs)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wendiga/Cast-Skill-IDs-CastIDs__4183) | Wendiga | PC / Mac | 1.1 |
 | [CasualClean](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Th3rtythr33/CasualClean__c75df85c-f9c0-4e54-a0f3-d5173e44a850) | Th3rtythr33 | Console | — |
-| [Cat Icons](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/cpcharles/Cat-Icons__4228) | cpcharles | PC / Mac | 1.5 |
+| [Cat Icons](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/cpcharles/Cat-Icons__4228) | cpcharles | PC / Mac | 1.6 |
 | [CatSupportIcons - icon pack for OdySupportIcons](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/def-venom/CatSupportIcons---icon-pack-for-OdySupportIcons__3396) | def venom | PC / Mac | 1.001 |
 | [CB's stamp of manufacture](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/dicen9/CB-s-stamp-of-manufacture__4e562dc4-090e-42a9-9a27-6c9ef5e1daee) | dicen9 | Console | — |
 | [CBookFontStylist](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Calamath/CBookFontStylist__2505) | Calamath | PC / Mac | 5.0.2 |
@@ -69,7 +69,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Character Homes](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/g0thicicecream/Character-Homes__4654) | g0thicicecream | PC / Mac | 1.3.0 |
 | [Character Knowledge (Research, Motif, Recipe, Furnishing Plan and Scribing Tracker)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Character-Knowledge-Research-Motif-Recipe-Furnishing-Plan-and-Scribing-Tracker__2938) | code65536 | PC / Mac | 3.1.2.1 |
 | [Character Zone Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/silvereyes/Character-Zone-Tracker__3323) | silvereyes | PC / Mac | 1.3.0 |
-| [CharacterGearUI (for alone or PerfectPixel)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Trobo/CharacterGearUI-for-alone-or-PerfectPixel__4743) | Trobo | PC / Mac | 0.4.6 |
+| [CharacterGearUI (for alone or PerfectPixel)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Trobo/CharacterGearUI-for-alone-or-PerfectPixel__4743) | Trobo | PC / Mac | 0.4.7 |
 | [CharacterMarkdown](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/solaegis/CharacterMarkdown__4279) | solaegis | PC / Mac | 2.3.0 |
 | [CharCount](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Coorbin/CharCount__2773) | Coorbin | PC / Mac | 1.1 |
 | [Chat Be Gone](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/xPricee/Chat-Be-Gone__85e2f419-414a-48a9-ad3b-4b713c098ca2) | xPricee | Console | — |

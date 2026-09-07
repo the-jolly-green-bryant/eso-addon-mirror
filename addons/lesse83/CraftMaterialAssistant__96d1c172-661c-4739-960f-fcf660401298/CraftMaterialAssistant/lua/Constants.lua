@@ -118,8 +118,11 @@ CMA.processingMove = false
 -- the slot of the item which is currently being transferred to the bank
 CMA.processedSlot = nil
 
+-- the uniqueId of the currently processed item
+CMA.processedUniqueId = nil
+
 -- number of retries for a item until give up (unless there is no space left)
-CMA.numberOfRetriesPerItem = 2
+CMA.numberOfRetriesPerItem = 0
 
 -- table holding the count for failed move attempts per unique item id
 CMA.failedItemMoveAttempts = {}

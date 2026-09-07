@@ -1,6 +1,6 @@
 BetterTwins = BetterTwins or {}
 local BT = BetterTwins
-BT.name, BT.displayName, BT.version = "BetterTwins", "Better Twins", "0.0.01-dev5"
+BT.name, BT.displayName, BT.version = "BetterTwins", "Better Twins", "0.0.01-dev6"
 
 local ID = { CINDER=166693, NUMBING=166735, T_MULTI=166745, L_MULTI=166909 }
 local bossFor = {[ID.CINDER]="Lylanar", [ID.NUMBING]="Turlassil"}
@@ -25,6 +25,7 @@ BT.state = {
     lockedBoss=nil, calloutUntil=0, recording=false, recordStart=0, recordStop=0,
     reportOpen=false, reportScene=nil, previewActive=false, previewScene=nil,
     throwCount=0,lastThrowAt=0,worldMarkers={},worldMarkersUntil=0,
+    preferredTargetValid=false,
 }
 
 local function BossName(name)
@@ -83,13 +84,11 @@ function BT:CreateWorldMarkers()
     camera:Create3DRenderSpace()
     self.worldCamera=camera
     self.worldMarkersAvailable=true
-    local originX,_,originZ=GuiRender3DPositionToWorldPosition(0,0,0)
     for i,pos in ipairs(teleportPositions) do
         local control=w:CreateControl("BetterTwinsWorldMarker"..i,layer,CT_CONTROL)
         control:SetDimensions(180,180); control:SetSpace(SPACE_WORLD)
         control:SetTransformNormalizedOriginPoint(.5,.5); control:SetTransformScale(.01)
         control:SetAnchor(CENTER,GuiRoot,CENTER)
-        control:SetTransformOffset((pos[1]-originX)/100,(pos[2]+260)/100,(pos[3]-originZ)/100)
         local bg=w:CreateControl("$(parent)BG",control,CT_BACKDROP)
         bg:SetAnchor(CENTER,control,CENTER); bg:SetDimensions(118,118)
         -- Backdrop edge dimensions must both be powers of two on console.
@@ -102,10 +101,31 @@ function BT:CreateWorldMarkers()
     end
 end
 
+-- SPACE_WORLD offsets are relative to the active camera render origin. They
+-- must be calculated inside the trial when the markers are shown; calculating
+-- them during addon initialization leaves stale offsets after zoning.
+function BT:PositionWorldMarkers()
+    if not self.worldMarkersAvailable or not self.worldCamera then return false end
+    self.state.worldOriginX=nil
+    self.state.worldOriginZ=nil
+    Set3DRenderSpaceToCurrentCamera(self.worldCamera:GetName())
+    local originX,_,originZ=GuiRender3DPositionToWorldPosition(0,0,0)
+    if not originX or not originZ then return false end
+    for i,control in ipairs(self.state.worldMarkers) do
+        local pos=teleportPositions[i]
+        control:SetTransformOffset((pos[1]-originX)/100,(pos[2]+260)/100,(pos[3]-originZ)/100)
+    end
+    self.state.worldOriginX=originX
+    self.state.worldOriginZ=originZ
+    return true
+end
+
 function BT:ShowWorldMarkers(duration)
     if not self.worldMarkersAvailable then return end
+    if not self:PositionWorldMarkers() then return end
     self.state.worldMarkersUntil=GetGameTimeMilliseconds()+(duration or 25000)
     for _,control in ipairs(self.state.worldMarkers) do control:SetHidden(false) end
+    self:UpdateWorldMarkers()
 end
 
 function BT:HideWorldMarkers()
@@ -187,11 +207,31 @@ function BT:BothTwinsPresent()
     return foundL and foundT
 end
 
-function BT:CaptureHardTarget()
-    if self.state.lockedBoss or not self.sv.enabled or not self.sv.splitEnabled or not IsUnitInCombat("player") or not self:BothTwinsPresent() then return end
+function BT:AssignBoss(boss)
+    if not boss or self.state.lockedBoss==boss then return end
+    self.state.lockedBoss=boss
+    self:Callout("TARGET LOCKED",boss,{.2,1,.35,1},1800)
+    self.hud.sub:SetText("DOME & BASH ASSIGNMENT")
+end
+
+function BT:UpdateHardTarget()
+    if not self.sv.enabled or not self.sv.splitEnabled or not IsUnitInCombat("player") then
+        self.state.preferredTargetValid=false
+        return
+    end
+
+    local valid=IsGameCameraPreferredTargetValid and IsGameCameraPreferredTargetValid() or false
+    local wasValid=self.state.preferredTargetValid
+    self.state.preferredTargetValid=valid
+    if not valid or not self:BothTwinsPresent() then return end
+
+    -- ESO exposes whether a preferred target exists, but not its unit tag. Read
+    -- reticleover only when the preferred target has just become valid (or when
+    -- no assignment has yet been captured), never merely because the reticle
+    -- happens to pass over a Twin.
+    if wasValid and self.state.lockedBoss then return end
     if DoesUnitExist("reticleover") and IsUnitAttackable("reticleover") then
-        local boss=BossName(GetUnitName("reticleover"))
-        if boss then self.state.lockedBoss=boss end
+        self:AssignBoss(BossName(GetUnitName("reticleover")))
     end
 end
 
@@ -217,6 +257,11 @@ function BT:StartRecording(abilityId,sourceName,targetId)
     self:AddLine(string.format("Better Twins %s | Capture %d",self.version,self.sv.diagnosticPull))
     self:AddLine(string.format("START +0.000 %s MultiLoc id=%d source=%s",boss,abilityId,Short(sourceName)))
     self:AddLine(self.worldMarkersAvailable and "Letters A-H are native test anchors, not team numbers." or "Native SPACE_WORLD anchors unavailable; event capture continued.")
+    if self.state.worldOriginX then
+        self:AddLine(string.format("WORLD origin=%s,%s markers=8",tostring(self.state.worldOriginX),tostring(self.state.worldOriginZ)))
+    else
+        self:AddLine("WORLD marker positioning failed; event capture continued.")
+    end
     self:AddLine("TYPE  TIME     ID      ABILITY          RESULT   VALUE  SOURCE-ID  TARGET-ID")
     self:RecordThrow(abilityId,targetId)
     EVENT_MANAGER:RegisterForEvent(self.name.."Diagnostic",EVENT_COMBAT_EVENT,function(...) self:DiagnosticEvent(...) end)
@@ -320,7 +365,7 @@ function BT:CloseReport()
 end
 
 function BT:Update()
-    self:CaptureHardTarget()
+    self:UpdateHardTarget()
     self:UpdateWorldMarkers()
     if self.state.recording and GetGameTimeMilliseconds()>=self.state.recordStop then self:StopRecording("30-second corner window complete") end
     -- The settings preview owns the HUD for its full five-second lifetime.
@@ -340,14 +385,14 @@ function BT:ResetFight()
     self:StopRecording("combat ended")
     self:HideWorldMarkers()
     for _,b in ipairs({"Lylanar","Turlassil"}) do local s=self.state[b]; s.readyAt=nil;s.last=nil;s.lastSignal=nil end
-    self.state.lockedBoss=nil; self.state.calloutUntil=0; self.hud.root:SetHidden(true)
+    self.state.lockedBoss=nil; self.state.preferredTargetValid=false; self.state.calloutUntil=0; self.hud.root:SetHidden(true)
 end
 
 function BT:Initialize()
     self.sv=ZO_SavedVars:NewAccountWide("BetterTwinsSavedVariables",1,nil,defaults); self:CreateHUD(); self:CreateWorldMarkers(); self:CreateReport(); self:CreateSettingsMenu()
     self.sceneCallback=function(_,newState) if newState==SCENE_HIDING or newState==SCENE_HIDDEN then self:CloseReport() end end
     for key,id in pairs(ID) do local n=self.name.."Combat"..key; EVENT_MANAGER:RegisterForEvent(n,EVENT_COMBAT_EVENT,function(...) self:TrackedEvent(...) end); EVENT_MANAGER:AddFilterForEvent(n,EVENT_COMBAT_EVENT,REGISTER_FILTER_ABILITY_ID,id) end
-    EVENT_MANAGER:RegisterForEvent(self.name.."Target",EVENT_RETICLE_TARGET_CHANGED,function() self:CaptureHardTarget() end)
+    EVENT_MANAGER:RegisterForEvent(self.name.."Target",EVENT_RETICLE_TARGET_CHANGED,function() self:UpdateHardTarget() end)
     EVENT_MANAGER:RegisterForEvent(self.name.."CombatState",EVENT_PLAYER_COMBAT_STATE,function(_,active) if not active then self:ResetFight() end end)
     SCENE_MANAGER:RegisterCallback("SceneStateChanged",function() if not self:HudScene() then self.hud.root:SetHidden(true) end end)
     EVENT_MANAGER:RegisterForUpdate(self.name.."Update",100,function() self:Update() end)

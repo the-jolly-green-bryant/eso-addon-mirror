@@ -805,9 +805,35 @@ function Runtime:OnCombatEvent(result, sourceName, targetName, sourceUnitId, tar
 
     local definition = BB.Registry.byCombatEventId and BB.Registry.byCombatEventId[abilityId]
     if not definition or not self:IsObserved(definition.key) then return end
-    if definition.intelligenceMode ~= "RECIPIENT_COOLDOWN" then return end
+
     local groupState = BB.Context:GetGroupEncounterState()
     if not BB.Context.inCombat and not groupState.encounterActive then return end
+
+    -- Some gear sets expose a provider-side proc event that is distinct from the
+    -- normalized debuff they ultimately apply. Keep that cooldown on the set's
+    -- own Gear Set tile. Only the LOCAL player's verified provider event may
+    -- start it, and Auto capability must confirm the matching set is equipped.
+    -- This prevents another player's Turning Tide/Archdruid or a Colossus Major
+    -- Vulnerability application from contaminating the local set cooldown.
+    if definition.providerCooldownFromCombatEvent and definition.providerCooldown then
+        if not BB.Context:IsLocalPlayer(nil, sourceUnitId, sourceName) then return end
+        if not self:HasLocalProviderCapability(definition) then return end
+        local now = EffectNow()
+        local intel = self.intelligence[definition.key] or NewIntelligence()
+        self.intelligence[definition.key] = intel
+        intel.providerObserved = true
+        -- Duplicate callbacks from one proc must not continually extend the timer.
+        -- A verified provider cannot legitimately proc again while its ICD is live.
+        if (tonumber(intel.providerCooldownUntil) or 0) <= now + 0.5 then
+            intel.providerCooldownUntil = now + definition.providerCooldown
+            intel.lastApplication = now
+            self:RefreshEffect(definition.key, now, true)
+            self:StartUpdate()
+        end
+        return
+    end
+
+    if definition.intelligenceMode ~= "RECIPIENT_COOLDOWN" then return end
     if not BB.Context:IsGroupedPlayer(nil, targetUnitId, targetName) then return end
 
     local account = BB.Context:ResolveAccount(nil, targetName, targetUnitId)
@@ -1027,7 +1053,7 @@ function Runtime:GetSnapshot(key,now)
         remaining = intel.providerCooldownUntil-now
         percent = definition.providerCooldown and definition.providerCooldown > 0 and zo_clamp((remaining/definition.providerCooldown)*100,0,100) or 0
     elseif definition.showReady then
-        availability = (not definition.readyRequiresObservedProvider or intel.providerObserved == true) and "READY" or "INACTIVE"
+        availability = providerKnown and "READY" or "INACTIVE"
     end
 
     return {

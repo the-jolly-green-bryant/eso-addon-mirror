@@ -14,6 +14,10 @@ function LE_FavoriteEmoteListItem:Initialize(index, control)
 	self.BaseControl = control
 	self.EmoteButton = control:GetNamedChild("EmoteButton")
 	self.ConfigButton = control:GetNamedChild("ConfigButton")
+	self.KeybindLabel = control:GetNamedChild("KeybindLabel")
+
+	ZO_KeyMarkupLabel_SetCustomOffsets(self.KeybindLabel, -5, 5, -2, 2)
+	ZO_KeyMarkupLabel_SetEdgeFileColor(self.KeybindLabel, ZO_NORMAL_TEXT)
 end
 
 function LE_FavoriteEmoteListItem:IsControlHidden()
@@ -21,6 +25,21 @@ function LE_FavoriteEmoteListItem:IsControlHidden()
 end
 
 function LE_FavoriteEmoteListItem:SetHidden(isHidden)
+	if isHidden then
+		if self.BoundActionName ~= nil then
+			ZO_Keybindings_UnregisterLabelForBindingUpdate(self.KeybindLabel)
+			self.BoundActionName = nil
+
+			self.KeybindLabel:SetHidden(true)
+			self.KeybindLabel:SetText(nil)
+		end
+	else
+		if LovelyEmotes_Settings.SavedAccountVariables.ShowEmoteKeybindings == true and self.BoundActionName == nil then
+			self.BoundActionName = "LOVELYEMOTES_FAVORITE_EMOTE_" .. self.Index
+			ZO_Keybindings_RegisterLabelForBindingUpdate(self.KeybindLabel, self.BoundActionName, false, nil, nil, false)
+		end
+	end
+
 	self.BaseControl:SetHidden(isHidden)
 end
 

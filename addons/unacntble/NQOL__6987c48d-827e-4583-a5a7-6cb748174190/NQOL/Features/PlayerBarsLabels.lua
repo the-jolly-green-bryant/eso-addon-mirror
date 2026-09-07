@@ -59,6 +59,14 @@ function PlayerBars.GetGroupShowInSettingsTooltip()
     return NQOL.L("features.player_bars.group_show_in_settings_tooltip")
 end
 
+function PlayerBars.GetGroupShowShieldLabel()
+    return NQOL.L("features.player_bars.group_show_shield_label")
+end
+
+function PlayerBars.GetGroupShowShieldTooltip()
+    return NQOL.L("features.player_bars.group_show_shield_tooltip")
+end
+
 function PlayerBars.GetGroupShowTraumaLabel()
     return NQOL.L("features.player_bars.group_show_trauma_label")
 end
@@ -369,6 +377,14 @@ end
 
 function PlayerBars.GetGroupHealerColorTooltip()
     return NQOL.L("features.player_bars.group_healer_color_tooltip")
+end
+
+function PlayerBars.GetGroupShieldColorLabel()
+    return NQOL.L("features.player_bars.group_shield_color_label")
+end
+
+function PlayerBars.GetGroupShieldColorTooltip()
+    return NQOL.L("features.player_bars.group_shield_color_tooltip")
 end
 
 function PlayerBars.GetGroupTraumaColorLabel()

@@ -6,7 +6,7 @@ RealisticNeeds = RealisticNeeds or {}
 local RN = RealisticNeeds
 
 RN.NAME    = "RealisticNeedsAndDiseases"
-RN.VERSION = "0.19.28"
+RN.VERSION = "0.19.30"
 
 -- Keybind display name. Must run at file-parse time (not inside
 -- OnAddOnLoaded) — see bindings.xml for the matching Action definition and
@@ -855,26 +855,43 @@ local function OnAddOnLoaded(eventCode, addonName)
     -- always back-filled. This never overwrites a value ZO_SavedVars already loaded.
     DeepFillDefaults(sv, SV_DEFAULTS)
 
+    -- Each display module's window starts hidden by default at its own
+    -- Initialize() (see e.g. RealisticNeedsAndDiseases_StatusBar.lua) - but
+    -- SetShown()/RefreshAll() below were previously called unconditionally
+    -- from each sub-setting alone, ignoring sv.settings.masterEnabled
+    -- entirely. Loading in with the master toggle off but a display's own
+    -- sub-setting on would eagerly show that display before the tick loop
+    -- (gated on masterEnabled) had run even once to populate it - the same
+    -- "shown with no/stale data" bug fixed in Frostfall v3.4.26's
+    -- HUD:Initialize(). Every SetShown()/RefreshAll() call below now also
+    -- requires sv.settings.masterEnabled ~= false, matching the exact
+    -- check already used by the checkbox setFuncs in
+    -- RealisticNeedsAndDiseases_Settings.lua (e.g. the icon-display
+    -- checkbox). The master-toggle checkbox's OWN setFunc already
+    -- correctly handles the mid-session case - this only affects loading
+    -- in with the toggle already off.
     if RN.Overlay and RN.Overlay.Initialize then
         RN.Overlay.Initialize()
-        RN.Overlay.RefreshAll(sv)
+        if sv.settings.masterEnabled ~= false then
+            RN.Overlay.RefreshAll(sv)
+        end
     end
 
     if RN.StatusBar and RN.StatusBar.Initialize then
         RN.StatusBar.Initialize()
-        RN.StatusBar.SetShown(sv.settings.showStatusBar)
+        RN.StatusBar.SetShown(sv.settings.showStatusBar and sv.settings.masterEnabled ~= false)
         RN.StatusBar.Refresh(sv)
     end
 
     if RN.StatusIconsTransparency and RN.StatusIconsTransparency.Initialize then
         RN.StatusIconsTransparency.Initialize()
-        RN.StatusIconsTransparency.SetShown(sv.settings.statusIconsTransparencyEnabled)
+        RN.StatusIconsTransparency.SetShown(sv.settings.statusIconsTransparencyEnabled and sv.settings.masterEnabled ~= false)
         RN.StatusIconsTransparency.Refresh(sv)
     end
 
     if RN.StatusBars and RN.StatusBars.Initialize then
         RN.StatusBars.Initialize()
-        RN.StatusBars.SetShown(sv.settings.statusBarsEnabled)
+        RN.StatusBars.SetShown(sv.settings.statusBarsEnabled and sv.settings.masterEnabled ~= false)
         RN.StatusBars.Refresh(sv)
     end
 

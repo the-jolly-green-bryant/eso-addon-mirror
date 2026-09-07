@@ -22,7 +22,7 @@
     "Frostfall"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4710/",
-  "fingerprint": "fa0c0914e144edfb33d23a4e7b279d6d20d8435b22e32b47fea18fc8d6c8a9ea",
+  "fingerprint": "1996e156d5b6eea8e93242d02d6944db1af927965260050238d82e9ecedd8edf",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16736.png",
     "https://cdn-eso.mmoui.com/preview/pvw16737.png",
@@ -35,11 +35,11 @@
   "source_id": "4710",
   "source_url": "https://www.esoui.com/downloads/info4710-Frostfall.html",
   "stats": {
-    "downloads": 135,
+    "downloads": 174,
     "favorites": 2,
-    "monthly_downloads": 86
+    "monthly_downloads": 91
   },
   "title": "Frostfall",
-  "updated_at": 1787793429000,
-  "version": "3.4.24"
+  "updated_at": 1788745367000,
+  "version": "3.4.32"
 }

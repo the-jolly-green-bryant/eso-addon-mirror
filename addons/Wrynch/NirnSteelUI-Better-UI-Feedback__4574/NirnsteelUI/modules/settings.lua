@@ -21,6 +21,9 @@ local MODULE_MENU_ICONS =
     ["HARDCORE Support"] = "EsoUI/Art/Campaign/campaignbrowser_indexicon_hardcore_up.dds",
     ["Kill Sound"] = "EsoUI/Art/Options/Gamepad/gp_options_audio.dds",
     ["Loot History"] = "EsoUI/Art/AddOns/Gamepad/gp_mod_listing_category_bankandinventory.dds",
+    ["Minimap"] = "EsoUI/Art/AddOns/Gamepad/gp_mod_listing_category_mapandcompass.dds",
+    ["Misc"] = "EsoUI/Art/AddOns/Gamepad/gp_mod_listing_category_uigraphics.dds",
+    ["PvP"] = "EsoUI/Art/AddOns/Gamepad/gp_mod_listing_category_combat.dds",
     ["Resource Bars"] = "EsoUI/Art/AddOns/Gamepad/gp_mod_listing_category_uigraphics.dds",
     ["Target Frame"] = "EsoUI/Art/AddOns/Gamepad/gp_mod_listing_category_unitframes.dds",
 }
@@ -360,11 +363,34 @@ local TARGET_FRAME_DEFAULTS =
     unknownClassColor = { r = 0.54, g = 0.59, b = 0.66 },
 }
 
+local MINIMAP_DEFAULTS =
+{
+    enabled = true, unlocked = false, shape = "circle", orientation = "north",
+    diameter = 280, width = 340, height = 240, questTrackerOffset = 0,
+    mapOpacity = 95, frameOpacity = 100, borderThickness = 2, shadow = true,
+    borderColor = { r = 0.64, g = 0.72, b = 0.77 },
+    accentColor = { r = 0.90, g = 0.74, b = 0.40 },
+    showLocation = true, showCardinals = true, showCoordinates = false,
+    zoom = 2.5, markerScale = 100, playerScale = 110,
+    combatBehavior = "show", combatOpacity = 40,
+    clickThrough = false, wheelZoom = true, tooltips = true,
+    showGroup = true, showQuests = true, showWayshrines = true,
+    showLocations = true, showWaypoint = true, waypointEdge = true, questMode = "tracked",
+}
+
 local ACCOUNT_DEFAULTS =
 {
     debugMode = false,
     modules =
     {
+        synergyAlert =
+        {
+            enabled = true,
+            unlocked = false,
+            scale = 100,
+            opacity = 100,
+            animationIntensity = 85,
+        },
         lootHistory =
         {
             enabled = true,
@@ -398,14 +424,31 @@ local ACCOUNT_DEFAULTS =
                 unlocked = false,
                 scale = 100,
                 soundEnabled = true,
+                tierSoundsEnabled = true,
                 faceRight = false,
                 displayMode = "damageDone",
+                graceMS = 1250,
+                animationIntensity = 80,
+                showTimer = true,
+                showModeLabel = true,
+                showHitCount = true,
+                showPeakLabel = true,
             },
         },
         killSound =
         {
             enabled = true,
             soundKey = "CODE_REDEMPTION_SUCCESS",
+        },
+        pvp =
+        {
+            enabled = true,
+            unlocked = false,
+            scale = 100,
+            intensity = 100,
+            soundEnabled = true,
+            chainEnabled = true,
+            includeDuels = true,
         },
         actionBarFrames =
         {
@@ -438,6 +481,7 @@ local ACCOUNT_DEFAULTS =
         {
             enabled = true,
         },
+        minimap = MINIMAP_DEFAULTS,
         experienceTracker =
         {
             enabled = true,
@@ -537,6 +581,11 @@ local SERVER_DEFAULTS =
                         y = 250,
                     },
                 },
+                pvp =
+                {
+                    x = 0,
+                    y = 140,
+                },
                 experienceTracker =
                 {
                     x = 30,
@@ -562,6 +611,13 @@ local SERVER_DEFAULTS =
                     x = 0,
                     y = -180,
                 },
+                synergyAlert =
+                {
+                    custom = false,
+                    x = 0,
+                    y = 0,
+                },
+                minimap = { x = -32, y = -48 },
             },
         },
     },
@@ -966,6 +1022,14 @@ function Settings:Initialize()
     self.account = ZO_SavedVars:NewAccountWide("NirnsteelUI_Account", SAVED_VARS_VERSION, nil, ACCOUNT_DEFAULTS, self.serverKey)
     MigrateKnownSettings(self.account, GetRawAccountWideSettings("NirnsteelUI_Account", "Default"), ACCOUNT_DEFAULTS)
     CopyDefaults(self.account, ACCOUNT_DEFAULTS)
+    -- Preserve the old combined preference once, then let each option vary.
+    local minigame = self.account.modules.damageNumbers.damageDoneMinigame
+    if minigame.showDetails ~= nil then
+        for _, key in ipairs({ "showTimer", "showModeLabel", "showHitCount", "showPeakLabel" }) do
+            minigame[key] = minigame.showDetails ~= false
+        end
+        minigame.showDetails = nil
+    end
     UpgradeDamageNumberDefaults(self.account)
     UpgradeExperienceTrackerDefaults(self.account)
     UpgradeResourceBarDefaults(self.account)
@@ -1014,6 +1078,14 @@ function Settings:GetKillSound()
     return self.account.modules.killSound
 end
 
+function Settings:GetPvP()
+    return self.account.modules.pvp
+end
+
+function Settings:GetPvPPosition()
+    return self.server.modules.pvp
+end
+
 function Settings:GetGroupCallouts()
     return self.character.modules.groupCallouts
 end
@@ -1040,6 +1112,28 @@ end
 
 function Settings:GetCompass()
     return self.account.modules.compass
+end
+
+function Settings:GetMinimap()
+    return self.account.modules.minimap
+end
+
+function Settings:GetMinimapPosition()
+    return self.server.modules.minimap
+end
+
+function Settings:SetMinimapValue(key, value)
+    self:GetMinimap()[key] = value
+    if Nirnsteel_UI.Minimap then Nirnsteel_UI.Minimap:RefreshSettings() end
+end
+
+function Settings:ResetMinimapSettings()
+    local defaults = {}
+    CopyDefaults(defaults, MINIMAP_DEFAULTS)
+    self.account.modules.minimap = defaults
+    local position = self:GetMinimapPosition()
+    position.x, position.y = -32, -48
+    if Nirnsteel_UI.Minimap then Nirnsteel_UI.Minimap:RefreshSettings() end
 end
 
 function Settings:GetExperienceTracker()
@@ -1090,6 +1184,7 @@ function Settings:SetDebugModeEnabled(value)
     {
         Nirnsteel_UI.LootHistory,
         Nirnsteel_UI.DamageNumbers,
+        Nirnsteel_UI.PvP,
         Nirnsteel_UI.ExperienceTracker,
         Nirnsteel_UI.ResourceBars,
         Nirnsteel_UI.GroupFrames,
@@ -1282,6 +1377,77 @@ function Settings:SetKillSoundValue(key, value)
     end
 end
 
+function Settings:GetSynergyAlert()
+    return self.account.modules.synergyAlert
+end
+
+function Settings:GetSynergyAlertPosition()
+    return self.server.modules.synergyAlert
+end
+
+function Settings:SetSynergyAlertValue(key, value)
+    local ranges = { scale = { 70, 160 }, opacity = { 20, 100 }, animationIntensity = { 0, 160 } }
+    if ranges[key] then
+        value = ClampNumber(value, ranges[key][1], ranges[key][2])
+    end
+    self:GetSynergyAlert()[key] = value
+    if Nirnsteel_UI.SynergyAlert then
+        Nirnsteel_UI.SynergyAlert:RefreshSettings()
+    end
+end
+
+function Settings:SetSynergyAlertPosition(x, y)
+    local position = self:GetSynergyAlertPosition()
+    position.custom = true
+    position.x = x
+    position.y = y
+end
+
+function Settings:ResetSynergyAlertPosition()
+    local position = self:GetSynergyAlertPosition()
+    position.custom = false
+    position.x = 0
+    position.y = 0
+    if Nirnsteel_UI.SynergyAlert then
+        Nirnsteel_UI.SynergyAlert:ApplyLayout()
+    end
+end
+
+function Settings:IsPvPEnabled()
+    return self:GetPvP().enabled
+end
+
+function Settings:IsPvPUnlocked()
+    return self:GetPvP().unlocked
+end
+
+function Settings:SetPvPEnabled(value)
+    self:GetPvP().enabled = value == true
+    if Nirnsteel_UI.PvP then
+        Nirnsteel_UI.PvP:RefreshSettings()
+    end
+end
+
+function Settings:SetPvPUnlocked(value)
+    self:GetPvP().unlocked = value == true
+    if Nirnsteel_UI.PvP then
+        Nirnsteel_UI.PvP:RefreshSettings()
+    end
+end
+
+function Settings:SetPvPValue(key, value)
+    self:GetPvP()[key] = value
+    if Nirnsteel_UI.PvP then
+        Nirnsteel_UI.PvP:RefreshSettings()
+    end
+end
+
+function Settings:SetPvPPosition(x, y)
+    local position = self:GetPvPPosition()
+    position.x = x
+    position.y = y
+end
+
 function Settings:IsGroupCalloutsEnabled()
     return self:GetGroupCallouts().enabled
 end
@@ -1435,15 +1601,21 @@ function Settings:PreviewDamageNumberCritSound()
     end
 end
 
-function Settings:PreviewDamageDoneMinigame()
+function Settings:PreviewDamageDoneMinigame(showTiers)
     if Nirnsteel_UI.DamageNumbers and Nirnsteel_UI.DamageNumbers.PreviewDamageDoneMinigame then
-        Nirnsteel_UI.DamageNumbers:PreviewDamageDoneMinigame()
+        Nirnsteel_UI.DamageNumbers:PreviewDamageDoneMinigame(showTiers)
     end
 end
 
 function Settings:PreviewKillSound()
     if Nirnsteel_UI.KillSound and Nirnsteel_UI.KillSound.PreviewSound then
         Nirnsteel_UI.KillSound:PreviewSound()
+    end
+end
+
+function Settings:PreviewPvPChain()
+    if Nirnsteel_UI.PvP and Nirnsteel_UI.PvP.PreviewChain then
+        Nirnsteel_UI.PvP:PreviewChain()
     end
 end
 
@@ -2643,6 +2815,93 @@ function Settings:BuildTargetFrameOptions()
     return controls
 end
 
+function Settings:BuildMinimapControls()
+    local controls = {}
+    local function Add(kind, name, key, extra)
+        local option = extra or {}
+        option.type, option.name = kind, name
+        option.getFunc = function() return self:GetMinimap()[key] end
+        option.setFunc = function(value) self:SetMinimapValue(key, value) end
+        option.default = MINIMAP_DEFAULTS[key]
+        if key ~= "enabled" then
+            local extraDisabled = option.disabled
+            option.disabled = function()
+                return not self:GetMinimap().enabled or (extraDisabled and extraDisabled())
+            end
+        end
+        controls[#controls + 1] = option
+    end
+    local function Header(name) controls[#controls + 1] = { type = "header", name = name } end
+    local function Slider(name, key, low, high, step, extra)
+        local option = extra or {}
+        option.min, option.max, option.step = low, high, step or 1
+        if step and step < 1 then option.decimals = 2 end
+        Add("slider", name, key, option)
+    end
+    Add("checkbox", "Enable Minimap", "enabled")
+    Add("checkbox", "Unlock Position", "unlocked", {
+        tooltip = "With the cursor visible, drag anywhere on the minimap or its header. Position is saved on this server. Waypoint placement is disabled while unlocked.",
+    })
+    Slider("Quest Tracker Vertical Offset", "questTrackerOffset", 0, 600, 5, {
+        tooltip = "Move the native quest tracker down by this many UI pixels to make room for the minimap at the top right. Zero restores its normal position. The offset is removed while Minimap is disabled.",
+    })
+    Add("dropdown", "Shape", "shape", { choices = { "Circular", "Rectangular" }, choicesValues = { "circle", "rectangle" } })
+    Add("dropdown", "Orientation", "orientation", { choices = { "North Up", "Rotating (Camera Heading)" }, choicesValues = { "north", "rotating" } })
+    Header("Dimensions")
+    Slider("Circle Diameter", "diameter", 180, 500, 10, { disabled = function() return self:GetMinimap().shape ~= "circle" end })
+    Slider("Rectangle Width", "width", 220, 600, 10, { disabled = function() return self:GetMinimap().shape ~= "rectangle" end })
+    Slider("Rectangle Height", "height", 160, 500, 10, { disabled = function() return self:GetMinimap().shape ~= "rectangle" end })
+    Header("Appearance")
+    Slider("Map Opacity", "mapOpacity", 0, 100)
+    Slider("Frame Opacity", "frameOpacity", 0, 100)
+    Slider("Border Thickness", "borderThickness", 1, 6)
+    for _, entry in ipairs({ { "Border Color", "borderColor" }, { "Accent Color", "accentColor" } }) do
+        local name, key = entry[1], entry[2]
+        controls[#controls + 1] = {
+            type = "colorpicker", name = name,
+            getFunc = function() local c = self:GetMinimap()[key]; return c.r, c.g, c.b, 1 end,
+            setFunc = function(r, g, b) self:SetMinimapValue(key, { r = r, g = g, b = b }) end,
+            default = { r = MINIMAP_DEFAULTS[key].r, g = MINIMAP_DEFAULTS[key].g, b = MINIMAP_DEFAULTS[key].b, a = 1 },
+            disabled = function() return not self:GetMinimap().enabled end,
+        }
+    end
+    Add("checkbox", "Frame Shadow", "shadow")
+    Add("checkbox", "Location Name", "showLocation")
+    Add("checkbox", "Cardinal Directions", "showCardinals")
+    Add("checkbox", "Player Coordinates", "showCoordinates", { tooltip = "Show normalized map coordinates as percentages, not world distances." })
+    Header("Navigation")
+    Slider("Zoom", "zoom", 1, 8, 0.25)
+    Slider("Marker Scale", "markerScale", 75, 150, 5)
+    Slider("Player Arrow Scale", "playerScale", 75, 175, 5)
+    Add("checkbox", "Group Members", "showGroup")
+    Add("checkbox", "Quest Objectives", "showQuests")
+    Add("dropdown", "Quest Filter", "questMode", {
+        choices = { "Tracked Only", "All Journal Quests" }, choicesValues = { "tracked", "all" },
+        disabled = function() return not self:GetMinimap().showQuests end,
+    })
+    Add("checkbox", "Discovered Wayshrines", "showWayshrines")
+    Add("checkbox", "Locations", "showLocations")
+    Add("checkbox", "Personal Waypoint", "showWaypoint")
+    Add("checkbox", "Waypoint Edge Indicator", "waypointEdge", { disabled = function() return not self:GetMinimap().showWaypoint end })
+    Header("Visibility and Interaction")
+    Add("dropdown", "During Combat", "combatBehavior", { choices = { "Show", "Dim", "Hide" }, choicesValues = { "show", "dim", "hide" } })
+    Slider("Combat Dim Opacity", "combatOpacity", 0, 100, 1, { disabled = function() return self:GetMinimap().combatBehavior ~= "dim" end })
+    Add("checkbox", "Click Through", "clickThrough", { tooltip = "Make the map passive while locked. Unlock Position and Preview remain available here." })
+    Add("checkbox", "Mouse Wheel Zoom", "wheelZoom", { disabled = function() return self:GetMinimap().clickThrough end })
+    Add("checkbox", "Marker Tooltips", "tooltips", { disabled = function() return self:GetMinimap().clickThrough end })
+    controls[#controls + 1] = { type = "description", text = "Assign Minimap: Place Waypoint at Cursor under Controls > Keybindings > Nirnsteel UI (unbound by default). With the cursor over the map, press your assigned key to place a waypoint; right click its marker to remove it. Hover for zoom and world-map buttons. Gamepad navigation uses the full world map." }
+    for _, entry in ipairs({ { "Preview", "Preview" }, { "Reset Position", "ResetPosition" } }) do
+        local name, method = entry[1], entry[2]
+        controls[#controls + 1] = {
+            type = "button", name = name,
+            func = function() if Nirnsteel_UI.Minimap then Nirnsteel_UI.Minimap[method](Nirnsteel_UI.Minimap) end end,
+            disabled = function() return not self:GetMinimap().enabled end,
+        }
+    end
+    controls[#controls + 1] = { type = "button", name = "Reset Minimap Settings", func = function() self:ResetMinimapSettings() end }
+    return controls
+end
+
 function Settings:RegisterAddonMenu()
     local LAM = LibAddonMenu2
     if not LAM and LibStub then
@@ -2664,7 +2923,7 @@ function Settings:RegisterAddonMenu()
         name = ADDON_DISPLAY_NAME,
         displayName = ADDON_DISPLAY_NAME,
         author = "Wrynch",
-        version = "2.0.0",
+        version = "2.1.0",
         registerForRefresh = true,
         registerForDefaults = true,
     }
@@ -2674,6 +2933,83 @@ function Settings:RegisterAddonMenu()
         {
             type = "description",
             text = "Most settings are account wide",
+        },
+        {
+            type = "submenu",
+            name = "Misc",
+            controls =
+            {
+                { type = "header", name = "Synergy Alert" },
+                {
+                    type = "checkbox",
+                    name = "Enable Synergy Alert",
+                    tooltip = "Show a large animated synergy icon, with a centered binding and name row underneath. The original sound and activation binding are preserved.",
+                    getFunc = function() return self:GetSynergyAlert().enabled end,
+                    setFunc = function(value) self:SetSynergyAlertValue("enabled", value) end,
+                    default = ACCOUNT_DEFAULTS.modules.synergyAlert.enabled,
+                },
+                {
+                    type = "checkbox",
+                    name = "Unlock Position",
+                    tooltip = "Drag the sample synergy emblem while settings are open. Its position is saved on this server.",
+                    getFunc = function() return self:GetSynergyAlert().unlocked end,
+                    setFunc = function(value) self:SetSynergyAlertValue("unlocked", value) end,
+                    disabled = function() return not self:GetSynergyAlert().enabled end,
+                    default = ACCOUNT_DEFAULTS.modules.synergyAlert.unlocked,
+                },
+                {
+                    type = "slider",
+                    name = "Scale",
+                    min = 70,
+                    max = 160,
+                    step = 1,
+                    getFunc = function() return self:GetSynergyAlert().scale end,
+                    setFunc = function(value) self:SetSynergyAlertValue("scale", value) end,
+                    disabled = function() return not self:GetSynergyAlert().enabled end,
+                    default = ACCOUNT_DEFAULTS.modules.synergyAlert.scale,
+                },
+                {
+                    type = "slider",
+                    name = "Opacity",
+                    min = 20,
+                    max = 100,
+                    step = 1,
+                    getFunc = function() return self:GetSynergyAlert().opacity end,
+                    setFunc = function(value) self:SetSynergyAlertValue("opacity", value) end,
+                    disabled = function() return not self:GetSynergyAlert().enabled end,
+                    default = ACCOUNT_DEFAULTS.modules.synergyAlert.opacity,
+                },
+                {
+                    type = "slider",
+                    name = "Animation Intensity",
+                    tooltip = "Adjust the soft glow pulse. The icon fades in without resizing or bouncing. Set to zero for a static prompt.",
+                    min = 0,
+                    max = 160,
+                    step = 1,
+                    getFunc = function() return self:GetSynergyAlert().animationIntensity end,
+                    setFunc = function(value) self:SetSynergyAlertValue("animationIntensity", value) end,
+                    disabled = function() return not self:GetSynergyAlert().enabled end,
+                    default = ACCOUNT_DEFAULTS.modules.synergyAlert.animationIntensity,
+                },
+                {
+                    type = "button",
+                    name = "Preview",
+                    tooltip = "Show a silent sample for four seconds, or until locked while positioning.",
+                    func = function()
+                        if Nirnsteel_UI.SynergyAlert then Nirnsteel_UI.SynergyAlert:Preview() end
+                    end,
+                    disabled = function() return not self:GetSynergyAlert().enabled end,
+                    width = "half",
+                },
+                {
+                    type = "button",
+                    name = "Reset Position",
+                    tooltip = "Return the emblem to ESO's default synergy location for the current input mode.",
+                    func = function() self:ResetSynergyAlertPosition() end,
+                    disabled = function() return not self:GetSynergyAlert().enabled end,
+                    width = "half",
+                },
+            },
         },
         {
             type = "submenu",
@@ -2980,7 +3316,7 @@ function Settings:RegisterAddonMenu()
                 },
                 {
                     type = "description",
-                    text = "Chain player and pet damage into a fast draining arcade score.",
+                    text = "Chain player and pet damage into a gold arcade score. Keep the timer alive, rescue a draining chain, and finish with your peak score.",
                 },
                 {
                     type = "checkbox",
@@ -3010,6 +3346,15 @@ function Settings:RegisterAddonMenu()
                 },
                 {
                     type = "checkbox",
+                    name = "Tier Progression Sounds",
+                    tooltip = "Play a different sound when each new tier is reached, building to a final victory sound at the cap. Applies to Damage Done and DPS. Turn off to keep only normal and critical hit sounds. Preview All Tiers demonstrates the progression.",
+                    getFunc = function() return self:GetDamageDoneMinigame().tierSoundsEnabled end,
+                    setFunc = function(value) self:SetDamageDoneMinigameValue("tierSoundsEnabled", value) end,
+                    disabled = function() return not self:IsDamageDoneMinigameEnabled() or not self:AreDamageDoneMinigameSoundsEnabled() end,
+                    default = ACCOUNT_DEFAULTS.modules.damageNumbers.damageDoneMinigame.tierSoundsEnabled,
+                },
+                {
+                    type = "checkbox",
                     name = "Face Right",
                     tooltip = "Reverse the number's tilt, skew, and decorative accents so it faces right.",
                     getFunc = function() return self:GetDamageDoneMinigame().faceRight end,
@@ -3030,6 +3375,66 @@ function Settings:RegisterAddonMenu()
                 },
                 {
                     type = "slider",
+                    name = "Combo Grace Period (ms)",
+                    tooltip = "Time after the last hit before the score starts draining over 1.5 seconds. The default allows a normal one-second attack rhythm.",
+                    min = 500,
+                    max = 3000,
+                    step = 50,
+                    getFunc = function() return self:GetDamageDoneMinigame().graceMS end,
+                    setFunc = function(value) self:SetDamageDoneMinigameValue("graceMS", value) end,
+                    disabled = function() return not self:IsDamageDoneMinigameEnabled() end,
+                    default = ACCOUNT_DEFAULTS.modules.damageNumbers.damageDoneMinigame.graceMS,
+                },
+                {
+                    type = "slider",
+                    name = "Impact Animation Intensity",
+                    tooltip = "Adjust punch, recoil, echoes, sparks, and flashes. Zero keeps the score and timer with simple fades.",
+                    min = 0,
+                    max = 150,
+                    step = 5,
+                    getFunc = function() return self:GetDamageDoneMinigame().animationIntensity end,
+                    setFunc = function(value) self:SetDamageDoneMinigameValue("animationIntensity", value) end,
+                    disabled = function() return not self:IsDamageDoneMinigameEnabled() end,
+                    default = ACCOUNT_DEFAULTS.modules.damageNumbers.damageDoneMinigame.animationIntensity,
+                },
+                {
+                    type = "checkbox",
+                    name = "Show Combo Timer",
+                    tooltip = "Drain the gold in the crest's segmented metal wings to show remaining chain time. Turn off to keep the wings filled.",
+                    getFunc = function() return self:GetDamageDoneMinigame().showTimer end,
+                    setFunc = function(value) self:SetDamageDoneMinigameValue("showTimer", value) end,
+                    disabled = function() return not self:IsDamageDoneMinigameEnabled() end,
+                    default = ACCOUNT_DEFAULTS.modules.damageNumbers.damageDoneMinigame.showTimer,
+                },
+                {
+                    type = "checkbox",
+                    name = "Show Damage Done / DPS Label",
+                    tooltip = "Show the Damage Done or DPS text beneath the score, independently of the hit count and peak label.",
+                    getFunc = function() return self:GetDamageDoneMinigame().showModeLabel end,
+                    setFunc = function(value) self:SetDamageDoneMinigameValue("showModeLabel", value) end,
+                    disabled = function() return not self:IsDamageDoneMinigameEnabled() end,
+                    default = ACCOUNT_DEFAULTS.modules.damageNumbers.damageDoneMinigame.showModeLabel,
+                },
+                {
+                    type = "checkbox",
+                    name = "Show Hit Count",
+                    tooltip = "Show the number of hits beneath the score, independently of the Damage Done or DPS label.",
+                    getFunc = function() return self:GetDamageDoneMinigame().showHitCount end,
+                    setFunc = function(value) self:SetDamageDoneMinigameValue("showHitCount", value) end,
+                    disabled = function() return not self:IsDamageDoneMinigameEnabled() end,
+                    default = ACCOUNT_DEFAULTS.modules.damageNumbers.damageDoneMinigame.showHitCount,
+                },
+                {
+                    type = "checkbox",
+                    name = "Show Peak Label",
+                    tooltip = "Show PEAK beneath the final score when a chain ends. This does not change the final score or the other labels.",
+                    getFunc = function() return self:GetDamageDoneMinigame().showPeakLabel end,
+                    setFunc = function(value) self:SetDamageDoneMinigameValue("showPeakLabel", value) end,
+                    disabled = function() return not self:IsDamageDoneMinigameEnabled() end,
+                    default = ACCOUNT_DEFAULTS.modules.damageNumbers.damageDoneMinigame.showPeakLabel,
+                },
+                {
+                    type = "slider",
                     name = "Minigame Scale",
                     min = 60,
                     max = 180,
@@ -3042,8 +3447,15 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "button",
                     name = "Preview Minigame",
-                    tooltip = "Play a short normal-hit, pet-hit, critical-hit, and drain sequence.",
+                    tooltip = "Preview rapid hits, critical impacts, milestones, the draining timer, and the final peak score. Real damage starts a fresh chain.",
                     func = function() self:PreviewDamageDoneMinigame() end,
+                    disabled = function() return not self:IsDamageDoneMinigameEnabled() end,
+                },
+                {
+                    type = "button",
+                    name = "Preview All Tiers",
+                    tooltip = "Climb through all six milestones in the selected mode, including the final transformation at 5 million damage or 140,000 DPS.",
+                    func = function() self:PreviewDamageDoneMinigame(true) end,
                     disabled = function() return not self:IsDamageDoneMinigameEnabled() end,
                 },
             },
@@ -3078,6 +3490,96 @@ function Settings:RegisterAddonMenu()
                     end,
                     disabled = function() return not self:IsKillSoundEnabled() end,
                     default = GetSoundChoiceLabel(ACCOUNT_DEFAULTS.modules.killSound.soundKey),
+                },
+            },
+        },
+        {
+            type = "submenu",
+            name = "PvP",
+            tooltip = "Customize your PvP experience.",
+            controls =
+            {
+                {
+                    type = "description",
+                    text = "Customize your PvP experience.",
+                },
+                {
+                    type = "header",
+                    name = "Kill Streak Animation",
+                },
+                {
+                    type = "checkbox",
+                    name = "Enable Kill Streak Animation",
+                    tooltip = "Celebrate PvP kills and kill streaks.",
+                    getFunc = function() return self:IsPvPEnabled() end,
+                    setFunc = function(value) self:SetPvPEnabled(value) end,
+                    default = ACCOUNT_DEFAULTS.modules.pvp.enabled,
+                },
+                {
+                    type = "checkbox",
+                    name = "Unlock Animation",
+                    tooltip = "Show a drag handle for the PvP medallion. Its position is saved on this server.",
+                    getFunc = function() return self:IsPvPUnlocked() end,
+                    setFunc = function(value) self:SetPvPUnlocked(value) end,
+                    disabled = function() return not self:IsPvPEnabled() end,
+                    default = ACCOUNT_DEFAULTS.modules.pvp.unlocked,
+                },
+                {
+                    type = "checkbox",
+                    name = "Enable Sounds",
+                    tooltip = "Play progressively stronger sounds as the kill chain grows.",
+                    getFunc = function() return self:GetPvP().soundEnabled end,
+                    setFunc = function(value) self:SetPvPValue("soundEnabled", value) end,
+                    disabled = function() return not self:IsPvPEnabled() end,
+                    default = ACCOUNT_DEFAULTS.modules.pvp.soundEnabled,
+                },
+                {
+                    type = "checkbox",
+                    name = "Enable Kill Chains",
+                    tooltip = "Combine rapid killing blows into a single escalating counter.",
+                    getFunc = function() return self:GetPvP().chainEnabled end,
+                    setFunc = function(value) self:SetPvPValue("chainEnabled", value) end,
+                    disabled = function() return not self:IsPvPEnabled() end,
+                    default = ACCOUNT_DEFAULTS.modules.pvp.chainEnabled,
+                },
+                {
+                    type = "checkbox",
+                    name = "Include Duels",
+                    tooltip = "Celebrate duels that you win. Forfeits do not count as kills.",
+                    getFunc = function() return self:GetPvP().includeDuels end,
+                    setFunc = function(value) self:SetPvPValue("includeDuels", value) end,
+                    disabled = function() return not self:IsPvPEnabled() end,
+                    default = ACCOUNT_DEFAULTS.modules.pvp.includeDuels,
+                },
+                {
+                    type = "slider",
+                    name = "Scale",
+                    min = 60,
+                    max = 180,
+                    step = 1,
+                    getFunc = function() return self:GetPvP().scale end,
+                    setFunc = function(value) self:SetPvPValue("scale", value) end,
+                    disabled = function() return not self:IsPvPEnabled() end,
+                    default = ACCOUNT_DEFAULTS.modules.pvp.scale,
+                },
+                {
+                    type = "slider",
+                    name = "Animation Intensity",
+                    tooltip = "Control flashes, impact shake, sparks, and the maximum-chain shockwave.",
+                    min = 0,
+                    max = 150,
+                    step = 5,
+                    getFunc = function() return self:GetPvP().intensity end,
+                    setFunc = function(value) self:SetPvPValue("intensity", value) end,
+                    disabled = function() return not self:IsPvPEnabled() end,
+                    default = ACCOUNT_DEFAULTS.modules.pvp.intensity,
+                },
+                {
+                    type = "button",
+                    name = "Preview Kill Chain",
+                    tooltip = "Preview the x1, x4, and x8 medallions, kill-card fans, and sounds.",
+                    func = function() self:PreviewPvPChain() end,
+                    disabled = function() return not self:IsPvPEnabled() end,
                 },
             },
         },
@@ -3713,8 +4215,8 @@ function Settings:RegisterAddonMenu()
                 },
                 {
                     type = "checkbox",
-                    name = "Show Tick Flashes",
-                    tooltip = "Show small white flashes as the cast moves along.",
+                    name = "Show Progress Marks",
+                    tooltip = "Show progress divisions that pulse as the cast passes them.",
                     getFunc = function() return self:GetCastBar().showTicks end,
                     setFunc = function(value) self:SetCastBarValue("showTicks", value) end,
                     disabled = function() return not self:IsCastBarEnabled() end,
@@ -3777,7 +4279,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Animation Intensity",
-                    tooltip = "Set the strength of the glow and flash effects.",
+                    tooltip = "Set the strength of cast pulses, moving highlights, and the completion flash and expanding glow. Zero disables decorative animation.",
                     min = 0,
                     max = 160,
                     step = 5,
@@ -4616,6 +5118,7 @@ function Settings:RegisterAddonMenu()
             default = ACCOUNT_DEFAULTS.debugMode,
         },
     }
+    options[#options + 1] = { type = "submenu", name = "Minimap", controls = self:BuildMinimapControls() }
     options = ConfigureModuleMenuOptions(options)
 
     local noMouseWheelSlider = Nirnsteel_UI.NoMouseWheelSlider
@@ -4625,6 +5128,17 @@ function Settings:RegisterAddonMenu()
 
     LAM:RegisterAddonPanel(panelName, panelData)
     LAM:RegisterOptionControls(panelName, options)
+    for _, eventName in ipairs({ "LAM-PanelOpened", "LAM-PanelClosed" }) do
+        local visible = eventName == "LAM-PanelOpened"
+        CALLBACK_MANAGER:RegisterCallback(eventName, function(panel)
+            if panel and panel:GetName() == panelName and Nirnsteel_UI.Minimap then
+                Nirnsteel_UI.Minimap:SetSettingsPanelVisible(visible)
+            end
+            if panel and panel:GetName() == panelName and Nirnsteel_UI.SynergyAlert then
+                Nirnsteel_UI.SynergyAlert:SetSettingsPanelVisible(visible)
+            end
+        end)
+    end
     self:HookResourceBarsSubmenuPreview(panelName)
     self:HookGroupCalloutsSubmenuPreview(panelName)
     self:HookGroupFramesSubmenuPreview(panelName)

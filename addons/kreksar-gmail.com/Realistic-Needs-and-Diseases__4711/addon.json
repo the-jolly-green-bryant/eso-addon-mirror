@@ -22,7 +22,7 @@
     "RealisticNeedsAndDiseases"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4711/",
-  "fingerprint": "16073cd0e49310ae9eabbedaa7d2e03bcb82168037a0bf57b7a469a66dd6635c",
+  "fingerprint": "0d4c4ebbe69038e9dc30b2250395cfd08cd323b4289b9875ec0a2d6071b08f98",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16724.png",
     "https://cdn-eso.mmoui.com/preview/pvw16721.png",
@@ -37,11 +37,11 @@
   "source_id": "4711",
   "source_url": "https://www.esoui.com/downloads/info4711-RealisticNeedsandDiseases.html",
   "stats": {
-    "downloads": 131,
+    "downloads": 151,
     "favorites": 0,
-    "monthly_downloads": 105
+    "monthly_downloads": 89
   },
   "title": "Realistic Needs and Diseases",
-  "updated_at": 1787793603000,
-  "version": "0.19.28"
+  "updated_at": 1788722892000,
+  "version": "0.19.30"
 }

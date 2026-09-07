@@ -1,6 +1,6 @@
 ------------------------------------------------------------
 -- Character Gear UI
--- Version 0.4.6
+-- Version 0.4.7
 -- API 101050 / 101051
 --
 -- Equipment quality borders, condition and level warnings are
@@ -16,7 +16,7 @@ local companion = addon.CompanionGearUI
 local perfectPixel = _G.PP
 
 addon.name = "CharacterGearUI"
-addon.version = "0.4.6"
+addon.version = "0.4.7"
 
 local DEFAULT_BACKGROUND_OFFSET_Y = -85
 local DEFAULT_UI_SCALE = 1.12
@@ -48,6 +48,8 @@ local OUTFIT_ICON_TEXTURE =
     "EsoUI/Art/Dye/dyes_tabicon_dye_down.dds"
 local COSTUME_ICON_TEXTURE =
     "EsoUI/Art/Dye/dyes_tabicon_costumedye_down.dds"
+local ITEM_DETAIL_BACKGROUND_TEXTURE =
+    "EsoUI/Art/Performance/StatusMeterMunge.dds"
 
 local PREVIEW_CONTROLS =
 {
@@ -113,6 +115,7 @@ local ATTRIBUTE_FIRST_ENTRY_OFFSET_X = 10
 local PERFECT_PIXEL_ATTRIBUTE_CONTENT_OFFSET_Y = 30
 
 local DEFAULT_SHOW_ITEM_BORDERS = true
+local DEFAULT_SHOW_SLOT_BACKGROUNDS = true
 local DEFAULT_SHOW_ITEM_CONDITION = true
 local DEFAULT_SHOW_WEAPON_CHARGE = true
 local DEFAULT_SHOW_ITEM_LEVEL = true
@@ -364,6 +367,7 @@ addon.defaults =
     figureScale = DEFAULT_FIGURE_SCALE,
     characterDistance = DEFAULT_CHARACTER_DISTANCE,
     showItemBorders = DEFAULT_SHOW_ITEM_BORDERS,
+    showSlotBackgrounds = DEFAULT_SHOW_SLOT_BACKGROUNDS,
     showItemCondition = DEFAULT_SHOW_ITEM_CONDITION,
     showWeaponCharge = DEFAULT_SHOW_WEAPON_CHARGE,
     showItemLevel = DEFAULT_SHOW_ITEM_LEVEL,
@@ -1380,6 +1384,30 @@ end
 
 local function CreateItemDetailControls(slotControl)
 
+    local background =
+        slotControl.CharacterGearUIItemDetailBackground
+
+    if not background then
+
+        background = WINDOW_MANAGER:CreateControl(
+            slotControl:GetName()
+                .. "CharacterGearUIItemDetailBackground",
+            slotControl,
+            CT_TEXTURE
+        )
+        background:SetTexture(
+            ITEM_DETAIL_BACKGROUND_TEXTURE
+        )
+        background:SetDrawLayer(DL_BACKGROUND)
+        background:SetDrawLevel(0)
+        background:SetMouseEnabled(false)
+        background:SetHidden(true)
+
+        slotControl.CharacterGearUIItemDetailBackground =
+            background
+
+    end
+
     local nameLabel = slotControl.CharacterGearUIItemNameLabel
 
     if not nameLabel then
@@ -1506,11 +1534,71 @@ local function CreateItemDetailControls(slotControl)
     end
 
     return
+        background,
         nameLabel,
         armorTypeLabel,
         outfitIcon,
         setCountLabel,
         costumeIcon
+
+end
+
+local function UpdateItemDetailBackground(
+    background,
+    slotControl,
+    side,
+    contentWidth
+)
+
+    if not addon.saved.showSlotBackgrounds then
+        background:SetHidden(true)
+        return
+    end
+
+    local slotWidth = slotControl:GetWidth()
+    local backgroundWidth =
+        slotWidth + 10 + math.max(contentWidth, 0) + 12
+
+    background:ClearAnchors()
+    background:SetWidth(backgroundWidth)
+
+    if side == "left" then
+        background:SetTextureCoords(
+            0.875,
+            0.12890625,
+            0.40625,
+            0.59375
+        )
+        background:SetAnchor(
+            TOPRIGHT,
+            slotControl,
+            TOPRIGHT
+        )
+        background:SetAnchor(
+            BOTTOMRIGHT,
+            slotControl,
+            BOTTOMRIGHT
+        )
+    else
+        background:SetTextureCoords(
+            0.12890625,
+            0.875,
+            0.40625,
+            0.59375
+        )
+        background:SetAnchor(
+            TOPLEFT,
+            slotControl,
+            TOPLEFT
+        )
+        background:SetAnchor(
+            BOTTOMLEFT,
+            slotControl,
+            BOTTOMLEFT
+        )
+    end
+
+    background:SetHidden(false)
 
 end
 
@@ -1631,7 +1719,8 @@ function addon.RefreshItemDetail(
         return
     end
 
-    local nameLabel,
+    local background,
+        nameLabel,
         armorTypeLabel,
         outfitIcon,
         setCountLabel,
@@ -1645,6 +1734,7 @@ function addon.RefreshItemDetail(
     local hasItem = itemName and itemName ~= ""
 
     if not hasItem then
+        background:SetHidden(true)
         nameLabel:SetHidden(true)
         armorTypeLabel:SetHidden(true)
         outfitIcon:SetHidden(true)
@@ -1723,6 +1813,8 @@ function addon.RefreshItemDetail(
     end
 
     nameLabel:SetHidden(false)
+
+    local contentWidth = nameLabel:GetTextWidth()
 
     local itemLink = GetItemLink(
         BAG_WORN,
@@ -1845,6 +1937,23 @@ function addon.RefreshItemDetail(
             not showCostumeIcon
         )
 
+        local typeRowWidth = textWidth
+
+        if showOutfitIcon then
+            typeRowWidth = typeRowWidth + 8 + iconSize
+        end
+
+        if showCostumeIcon then
+            typeRowWidth = typeRowWidth
+                + (showOutfitIcon and 4 or 8)
+                + iconSize
+        end
+
+        contentWidth = math.max(
+            contentWidth,
+            typeRowWidth
+        )
+
         local hasSet,
             setName,
             numBonuses,
@@ -1906,6 +2015,11 @@ function addon.RefreshItemDetail(
             setCountLabel:SetColor(1, 1, 1, 1)
             setCountLabel:SetHidden(false)
 
+            contentWidth = math.max(
+                contentWidth,
+                setCountLabel:GetTextWidth()
+            )
+
         else
 
             setCountLabel:SetHidden(true)
@@ -1920,6 +2034,13 @@ function addon.RefreshItemDetail(
         costumeIcon:SetHidden(true)
 
     end
+
+    UpdateItemDetailBackground(
+        background,
+        slotControl,
+        detailData.side,
+        contentWidth
+    )
 
 end
 
@@ -3280,6 +3401,28 @@ function addon.CreateSettingsMenu()
 
             width = "full",
         },
+
+        {
+            type = "checkbox",
+            name = GetString(
+                SI_CHARACTER_GEAR_UI_SHOW_SLOT_BACKGROUNDS
+            ),
+            tooltip = GetString(
+                SI_CHARACTER_GEAR_UI_SHOW_SLOT_BACKGROUNDS_TOOLTIP
+            ),
+            default = DEFAULT_SHOW_SLOT_BACKGROUNDS,
+
+            getFunc = function()
+                return addon.saved.showSlotBackgrounds
+            end,
+
+            setFunc = function(value)
+                addon.saved.showSlotBackgrounds = value
+                addon.RefreshItemDetails()
+            end,
+
+            width = "full",
+        },
     }
 
     local flatOptions = options
@@ -3400,6 +3543,7 @@ function addon.CreateSettingsMenu()
             controls = MergeControls(
             {
                 flatOptions[2],
+                flatOptions[25],
                 flatOptions[23],
                 flatOptions[24],
             }, companionSettings.slots),

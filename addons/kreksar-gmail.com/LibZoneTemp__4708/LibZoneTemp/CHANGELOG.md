@@ -4,6 +4,81 @@ Full version history for LibZoneTemp. See README.md for current features, instal
 
 ---
 
+## What's New in 2.3.18
+
+- **Reverted the version floor added to `## OptionalDependsOn: LibInteriorDetection`
+  in 2.3.17** (back to no version, just the bare name). A follow-up
+  moderator comment clarified that `OptionalDependsOn` does not support
+  `>=` version syntax at all - only `DependsOn` does, since a missing
+  *hard* dependency is what actually stops an addon from loading, which
+  is what the version check exists to guard against. An optional
+  dependency doesn't block loading either way, so a version check on it
+  isn't just unsupported syntax, it's not a meaningful concept there.
+- **This was likely a real functional bug, not just a style issue**:
+  `LibInteriorDetection>=28` was almost certainly being read as a
+  literal dependency name (i.e. "look for an addon literally called
+  `LibInteriorDetection>=28`"), which would never match the real
+  `LibInteriorDetection` addon - meaning the optional-dependency
+  detection may have been silently failing to recognize
+  `LibInteriorDetection` as installed at all, even when it genuinely was.
+- **This also resolves the tension flagged in 2.3.17's own entry below**:
+  that entry raised a concern that adding the floor might reopen a
+  previously-solved blocking-risk tradeoff. It turns out the original
+  no-floors-on-optional-dependencies precedent was correct all along;
+  2.3.17's floor was the actual mistake, not a justified reversal of it.
+
+---
+
+## What's New in 2.3.17
+
+- **Added a version floor to the `## OptionalDependsOn: LibInteriorDetection`
+  entry** (now `>=28`), in response to an ESOUI moderator complaint on a
+  sibling addon stating that version checks are mandatory for
+  `OptionalDependsOn` too, not just hard `DependsOn`.
+- **Worth flagging directly**: this reopens a tradeoff this project
+  previously decided the other way on purpose, for a different addon
+  (Realistic Needs and Diseases) - version floors were deliberately
+  *removed* from its `OptionalDependsOn` entries specifically because a
+  floor can cause the whole addon to fail to load if the optional
+  dependency is present but below that floor, which defeats the point of
+  it being optional rather than required. The moderator's written rule
+  says to add the floor regardless, so it's been added here to comply -
+  but if a stale-but-present LibInteriorDetection install is ever
+  reported as blocking LibZoneTemp from loading entirely (rather than
+  just gracefully falling back to the pre-LibInteriorDetection interior
+  detection), that specific failure mode is the reason, and removing
+  this floor again would be the fix, written policy or not.
+
+---
+
+## What's New in 2.3.16
+
+- **Interior detection now prefers LibInteriorDetection when installed.**
+  Previously, `lib.GetCurrentTemperature()` determined `isInterior` solely
+  via `LibZone:GetCurrentZoneAndGroupStatus()` (true only for delves,
+  public dungeons, group dungeons, and trials) - meaning ordinary
+  buildings, player houses, and any other real interior got no
+  interior treatment at all (no `INTERIOR_MODIFIER`, no shielding from
+  weather/time-of-day). If `LibInteriorDetection` is installed, its live,
+  general-purpose `IsPlayerIndoors()` check is used instead, covering
+  those cases too. If it isn't installed, or its state hasn't been
+  established yet, behavior is unchanged - falls back to the original
+  LibZone-based delve/dungeon/trial check.
+- **Added `LibInteriorDetection` as a new `## OptionalDependsOn`** - not a
+  hard requirement, since other addons may depend on `LibZoneTemp`
+  without wanting to also require `LibInteriorDetection`. No version
+  floor, matching this project's established convention for optional
+  dependencies (a stale floor could block loading of an otherwise-
+  optional library).
+- Updated the `isInterior` parameter documentation on
+  `GetBaseTemperatureForZone`/`CalculateTemperature` to reflect the
+  broader definition.
+- No changes to `INTERIOR_MODIFIER`, the weather/time-of-day shielding
+  logic itself, or any other calculation - only what feeds the
+  `isInterior` boolean into them.
+
+---
+
 ## What's New in 2.3.15
 
 - Manifest `## APIVersion` updated to `101050 101051`, covering the newly

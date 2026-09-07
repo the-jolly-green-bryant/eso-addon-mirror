@@ -79,6 +79,88 @@
 --          now reads FV.SV.driftRate (falling back to the BASE_DRIFT_RATE
 --          constant if FV.SV is unavailable); insulation-based scaling via
 --          ComputeDriftRate is unaffected and still applies on top of it.
+-- v3.4.25: Added a passive indoor-shelter steadying effect via
+--          LibInteriorDetection (a NEW ## OptionalDependsOn - not
+--          required, degrades to a no-op if not installed). Whenever
+--          LibInteriorDetection reports the player is currently indoors,
+--          effective temperature is nudged toward neutral (22°C), capped
+--          at INDOOR_PROTECTION_MAX_SHIFT (initially 5°C). STACKS
+--          ADDITIVELY with the spell-resist reagent buff rather than
+--          replacing it - both computed independently from the same true
+--          playerTemp differential and summed in FV:GetEffectiveTemp(),
+--          now a plain function plus a shared SteadyingOffset() helper.
+--          /ff status and the HUD's "FEELS LIKE" indicator (renamed
+--          UpdateSpellResistIndicator -> UpdateSteadyingIndicator in
+--          ui/TemperatureHUD.lua) report either or both effects when
+--          active.
+-- v3.4.26: Raised INDOOR_PROTECTION_MAX_SHIFT from 5°C to 15°C (1.5x the
+--          spell-resist reagent's 10°C cap, up from 0.5x), per explicit
+--          request - being genuinely sheltered indoors judged stronger
+--          protection than the temporary alchemical buff, not weaker.
+-- v3.4.27: Fixed the HUD showing empty (no data) on login when the master
+--          "Enable Frostfall" toggle is off but "Show Thermal Status HUD"
+--          is on. HUD:Initialize() set visibility from FV.SV.showHUD
+--          alone, ignoring FV.SV.enabled; now checks both.
+-- v3.4.28: Fixed the spell-resist reagent buff continuing to decay
+--          against real wall-clock time while the master toggle is off.
+--          FV:SetEnabled(false)/true now pause/resume it the same way a
+--          real logout already did, reusing SaveSpellResistRemaining/
+--          RestoreSpellResistBuff; FV:Initialize() only auto-resumes if
+--          the toggle is already on at load.
+-- v3.4.29: Compliance: added a version floor to
+--          ## OptionalDependsOn: LibInteriorDetection (now >=28), per an
+--          ESOUI moderator's written rule that version checks are
+--          mandatory for OptionalDependsOn too, not just hard DependsOn.
+-- v3.4.30: REVERTED v3.4.29's version floor - a follow-up moderator
+--          comment clarified OptionalDependsOn does not support >= at
+--          all, only DependsOn does. Likely a real functional bug, not
+--          just non-compliant syntax: LibInteriorDetection>=28 was
+--          probably read as a literal dependency name, meaning the
+--          optional-dependency detection could have been silently
+--          failing to recognize LibInteriorDetection as installed at
+--          all. Back to the bare name, no version.
+-- v3.4.31: BUGFIX - reported as effective temperature reading ABOVE
+--          ambient (and rising) while cold, indoors, with the spell-resist
+--          buff active. Root cause: each of the two steadying effects
+--          independently capped itself at min(itsMax, distanceToNeutral),
+--          correctly preventing either ONE from overshooting past neutral
+--          alone - but GetEffectiveTemp() simply summed both, so their
+--          COMBINED push could still exceed the real distance to neutral
+--          whenever both were active (their caps sum to 25°C, easily more
+--          than most real gaps), blowing straight through neutral and out
+--          the opposite side. Fixed by scaling both offsets down
+--          proportionally whenever their combined demand would exceed the
+--          actual distance to neutral - single-effect cases are
+--          unaffected (scale=1, no-op), only the combined-overshoot case
+--          changes. Confirmed via direct code inspection that this
+--          integration never touches LibZoneTemp's own ambient
+--          temperature calculation (INTERIOR_MODIFIER is unchanged, still
+--          -3°C, still a cooling adjustment) - the bug was entirely in
+--          this file's own effective-temperature stacking.
+-- v3.4.32: REDESIGNED indoor shelter from a display-only mask (matching
+--          the spell-resist buff's shape) to a REAL, additional drift
+--          toward neutral applied directly to playerTemp in
+--          CalculatePlayerTemperature. Prompted by a follow-up report: a
+--          real, modest warmth source (a cooking fire's one-time +5°C)
+--          combined with the old display mask to show a misleadingly
+--          "perfect" 72°F reading while genuinely still cold underneath,
+--          which then appeared to jump right back down the moment the
+--          player stepped outside and the mask vanished - even though
+--          the true temperature barely changed either time, since the
+--          mask never touched it. Shelter is now governed by
+--          INDOOR_SHELTER_DRIFT_RATE (3.0°C/min before insulation
+--          scaling, replacing INDOOR_PROTECTION_MAX_SHIFT's old 15°C
+--          cap) and runs alongside the existing ambient drift rather
+--          than overriding the display - the two can reinforce or
+--          partially compete, settling at whatever equilibrium point
+--          they reach together. GetEffectiveTemp() is back to handling
+--          only the spell-resist mask, the single-effect shape it had
+--          before v3.4.25 - the v3.4.31 combined-overshoot fix is now
+--          moot for this pairing specifically, since shelter no longer
+--          contributes a display offset to stack with anything. The
+--          spell-resist reagent buff itself is UNCHANGED - this was a
+--          deliberate, explicit request to redesign shelter specifically,
+--          not the reagent mechanic.
 
 Frostfall = Frostfall or {}
 local FV = Frostfall
@@ -87,7 +169,7 @@ local FV = Frostfall
 -- CONSTANTS
 -- ============================================================
 FV.NAME            = "Frostfall"
-FV.VERSION         = "3.4.24"
+FV.VERSION         = "3.4.32"
 FV.DISPLAY_NAME    = "Frostfall Temperature System"
 FV.SAVED_VARS_VER  = 8   -- unchanged: spellResistRemainingSeconds (v3.4.21, replacing v3.4.19's spellResistEndTimestamp) is additive and needs no data migration
 
@@ -263,6 +345,28 @@ local DRIFT_RATE_MIN  = 0.1   -- multiplier floor
 
 local SPELL_RESIST_MAX_SHIFT = 10  -- °C cap on the spell-resist reagent's temperature-steadying effect
 
+-- REDESIGNED (was a display-only masking cap through v3.4.31, same shape
+-- as the spell-resist buff above). Reported issue with that design: a
+-- real, modest warmth source (e.g. a cooking fire's one-time +5°C) could
+-- combine with the display mask to show a misleadingly "perfect" reading
+-- (e.g. 72°F while genuinely still cold underneath), which then appeared
+-- to jump right back down the moment the player stepped outside and the
+-- mask disappeared - even though the true temperature barely changed
+-- either time, since the mask never touched it. Indoor shelter is now a
+-- REAL, additional drift toward NEUTRAL (not ambient) applied directly to
+-- playerTemp in CalculatePlayerTemperature, alongside the existing
+-- ambient drift - so the displayed value always reflects the true state,
+-- and there's no discontinuity when entering/leaving, only a faster (or
+-- slower) rate of change while sheltered. The spell-resist reagent buff
+-- above is UNCHANGED - it remains a display-only mask, per explicit
+-- request to redesign shelter specifically, not the reagent mechanic.
+local INDOOR_SHELTER_DRIFT_RATE = 3.0  -- °C per minute pulling toward neutral while indoors, before
+                                        -- insulation scaling (same ComputeDriftRate() curve as the
+                                        -- ambient drift uses). Set noticeably higher than
+                                        -- BASE_DRIFT_RATE's 1.75°C/min default, reflecting that shelter
+                                        -- is meant to feel like a meaningfully strong benefit - purely a
+                                        -- balance choice; adjust directly if it feels wrong in play.
+
 local EMOTE_LOOP_INTERVAL = 15000   -- ms
 
 -- ============================================================
@@ -321,6 +425,13 @@ FV.State = {
     spellResistOffset       = 0,
     spellResistEndTime      = nil,  -- game-time seconds when the buff expires (this session only)
     spellResistWarnedMinute = nil,  -- last minute-mark we already warned for
+
+    -- Indoor shelter (LibInteriorDetection integration): as of the
+    -- redesign, this is a REAL drift effect applied directly to
+    -- playerTemp in CalculatePlayerTemperature, not a display offset -
+    -- there is no separate numeric magnitude to track here anymore, only
+    -- whether it's currently active, kept for the HUD/status display.
+    isIndoorProtected       = false,
 
     insulation         = 0,
     insulationSource   = "none",
@@ -466,6 +577,33 @@ function FV:CalculatePlayerTemperature(tickSeconds)
     local driftAmount    = math.min(math.abs(delta), maxDrift) * (driftingCold and -1 or 1)
     local playerTemp     = currentTemp + driftAmount
 
+    -- Indoor shelter: a REAL, additional pull toward NEUTRAL (not ambient)
+    -- while indoors - see the redesign note on INDOOR_SHELTER_DRIFT_RATE
+    -- above for why this replaced the old display-only masking approach.
+    -- Uses the same ComputeDriftRate() insulation curve as the ambient
+    -- drift above, applied to the neutral-ward direction instead of the
+    -- ambient-ward one, so a well-insulated player still warms up faster
+    -- than a poorly-insulated one even while being helped by shelter.
+    -- This runs independently of, and in addition to, the ambient drift
+    -- above - the two can reinforce (ambient happens to be near neutral
+    -- too) or partially compete (ambient is pulling toward a temperature
+    -- far from neutral), in which case the player settles at whatever
+    -- equilibrium point the two opposing pulls balance out to, rather
+    -- than fully reaching either target - a natural consequence of this
+    -- being a real physical-style model now, not a display override.
+    local isIndoorProtected = (LibInteriorDetection and LibInteriorDetection.IsPlayerIndoors and LibInteriorDetection.IsPlayerIndoors()) and true or false
+    FV.State.isIndoorProtected = isIndoorProtected
+
+    if isIndoorProtected then
+        local neutral = (FV.TEMP.COMFORTABLE_LO + FV.TEMP.COMFORTABLE_HI) / 2
+        local neutralDelta = neutral - playerTemp
+        local shelterDriftingCold = neutralDelta < 0  -- true if cooling toward neutral, false if warming toward it
+        local shelterRateMultiplier = ComputeDriftRate(insulationFactor, shelterDriftingCold)
+        local maxShelterDrift = INDOOR_SHELTER_DRIFT_RATE * tickMinutes * shelterRateMultiplier
+        local shelterDriftAmount = math.min(math.abs(neutralDelta), maxShelterDrift) * (shelterDriftingCold and -1 or 1)
+        playerTemp = playerTemp + shelterDriftAmount
+    end
+
     -- NOTE: precipitation drag was removed — ESO's addon API does not expose
     -- any live weather state (no EVENT_WEATHER_CHANGED event, no WEATHER_*
     -- constants), so this could never be detected.
@@ -495,40 +633,44 @@ function FV:CalculatePlayerTemperature(tickSeconds)
 end
 
 -- ============================================================
--- EFFECTIVE TEMPERATURE — true playerTemp + live spell-resist offset
+-- EFFECTIVE TEMPERATURE — true playerTemp + spell-resist offset
 --
--- FV.State.playerTemp is the "true" physical temperature: it always drifts
--- toward ambient exactly as before, completely unaffected by the buff.
+-- FV.State.playerTemp is the "true" physical temperature. As of the
+-- indoor-shelter redesign (see INDOOR_SHELTER_DRIFT_RATE above), shelter
+-- is now baked directly into playerTemp's own drift in
+-- CalculatePlayerTemperature - it is NOT applied here anymore. Only the
+-- spell-resist reagent buff remains a display-only mask at this layer.
 --
--- While the spell-resist buff is active, the steadying offset is NOT a
--- fixed snapshot taken when the reagent was eaten — it is recalculated
--- every time this function runs, from whatever FV.State.playerTemp
--- currently is. So if the player keeps moving through zones/weather while
--- the buff is up, the steadying effect keeps tracking their current real
--- differential from neutral (still capped at 10°C either direction) rather
--- than staying locked to the differential at the moment of consumption.
+-- The spell-resist offset is capped at min(SPELL_RESIST_MAX_SHIFT,
+-- distanceToNeutral) - a single effect capped this way can never
+-- overshoot past neutral on its own, since its own cap is bounded by the
+-- actual remaining distance. (The combined-overshoot bug fixed in
+-- v3.4.31 only existed because TWO such independently-capped offsets
+-- were being summed together; with shelter no longer contributing an
+-- offset here at all, that failure mode no longer applies - this
+-- function is back to the single-effect shape it had before v3.4.25.)
 --
 -- FV:GetEffectiveTemp() is what the player actually perceives/sees — HUD,
 -- overlay, emotes, and band-transition alerts all read this value instead
--- of FV.State.playerTemp directly. When the buff expires, the offset drops
--- to 0 and the effective temp simply reflects the true temp directly —
--- i.e. "calculations proceed as normal."
+-- of FV.State.playerTemp directly. When the reagent buff isn't active,
+-- the offset is 0 and the effective temp simply reflects the true temp
+-- directly — i.e. "calculations proceed as normal."
 -- ============================================================
 function FV:GetEffectiveTemp()
-    local offset = 0
+    local spellResistOffset = 0
     if FV.State.spellResistEndTime then
         local neutral = (FV.TEMP.COMFORTABLE_LO + FV.TEMP.COMFORTABLE_HI) / 2  -- 22°C
         local diff = FV.State.playerTemp - neutral
         local shiftMag = math.min(SPELL_RESIST_MAX_SHIFT, math.abs(diff))
         if diff > 0 then
-            offset = -shiftMag   -- hot  → cool off
+            spellResistOffset = -shiftMag   -- hot  → cool off
         elseif diff < 0 then
-            offset = shiftMag    -- cold → warm up
+            spellResistOffset = shiftMag    -- cold → warm up
         end
     end
-    FV.State.spellResistOffset = offset   -- kept in sync for /ff status display
+    FV.State.spellResistOffset = spellResistOffset   -- kept in sync for /ff status display
 
-    local t = FV.State.playerTemp + offset
+    local t = FV.State.playerTemp + spellResistOffset
     return math.max(-20, math.min(70, t))
 end
 
@@ -792,8 +934,32 @@ function FV:SetEnabled(val)
     CheckIfEventsNeeded()
 
     if val then
+        -- Resume any spell-resist buff that was paused while the master
+        -- toggle was off, the same way a real relogin resumes one paused
+        -- by going offline - both share the same
+        -- FV.SV.spellResistRemainingSeconds snapshot and
+        -- FV:RestoreSpellResistBuff() re-anchoring logic. Guarded so this
+        -- can never overwrite an already-active buff (shouldn't be
+        -- possible given disable always clears spellResistEndTime below,
+        -- but cheap to guard against regardless).
+        if not FV.State.spellResistEndTime then
+            self:RestoreSpellResistBuff()
+        end
         self:OnUpdate(0)
     else
+        -- Pause the spell-resist buff's countdown the same way a real
+        -- logout pauses it: snapshot the remaining time into
+        -- FV.SV.spellResistRemainingSeconds via the existing
+        -- SaveSpellResistRemaining, then stop the absolute clock it was
+        -- counting down against and unregister the tick, so it can't
+        -- keep expiring in real time while the addon's own simulation is
+        -- switched off.
+        if FV.State.spellResistEndTime then
+            self:SaveSpellResistRemaining()
+            FV.State.spellResistEndTime = nil
+            EVENT_MANAGER:UnregisterForUpdate(FV.NAME .. "_SpellResistTick")
+        end
+
         if Frostfall_HUD and Frostfall_HUD.container then
             Frostfall_HUD.container:SetHidden(true)
         end
@@ -1205,7 +1371,7 @@ end
 
 -- ── Crafting station interaction → warming ───────────────────────────────────
 -- When the player opens a provisioning or smithing station, their temperature
--- rises by 10°C (forges and cooking fires are hot).  Rate-limited to once per
+-- rises by 5°C (forges and cooking fires are hot).  Rate-limited to once per
 -- minute so rapid open/close spam cannot be exploited.
 local _lastStationWarmTime = 0
 local STATION_WARM_COOLDOWN = 60   -- seconds
@@ -1230,7 +1396,7 @@ local function OnStationWarm(_, craftingType, sameStation)
         local stationName = craftingType == CRAFTING_TYPE_PROVISIONING
             and "cooking fire" or "forge"
         FV:Notify(string.format("|cFF9933The heat of the %s warms you.|r", stationName))
-        FV_Log(string.format("StationWarm: playerTemp +10 → %.1f°C (%s)", newTemp, stationName))
+        FV_Log(string.format("StationWarm: playerTemp +5 → %.1f°C (%s)", newTemp, stationName))
         if FV.SV.showHUD and Frostfall_HUD then
             Frostfall_HUD:Update(FV:GetEffectiveTemp(), FV.State)
         end
@@ -1530,8 +1696,18 @@ end
 function FV:SaveSpellResistRemaining()
     if not FV.SV then return end
     if not FV.State.spellResistEndTime then
-        FV.SV.spellResistRemainingSeconds = nil
-        FV_Log("SaveSpellResistRemaining: no buff active at logout — nothing to save.")
+        -- No currently-active buff. This could genuinely mean no buff was
+        -- ever applied, OR that it's already paused (master toggle off)
+        -- with its remaining time already correctly sitting here from
+        -- FV:SetEnabled(false) - don't clear a real paused snapshot to
+        -- nil just because a real logout also happens to fire while
+        -- paused (EVENT_PLAYER_DEACTIVATED still fires normally even
+        -- with the master toggle off).
+        if FV.SV.spellResistRemainingSeconds == nil then
+            FV_Log("SaveSpellResistRemaining: no buff active at logout — nothing to save.")
+        else
+            FV_Log("SaveSpellResistRemaining: buff already paused (master toggle off) — leaving saved remaining time as-is.")
+        end
         return
     end
 
@@ -1552,7 +1728,16 @@ function FV:Initialize()
         FV.State._initialized = true
     end
 
-    self:RestoreSpellResistBuff()
+    -- Only resume/consume a saved paused spell-resist buff if the master
+    -- toggle is actually on - otherwise leave
+    -- FV.SV.spellResistRemainingSeconds parked untouched, so it resumes
+    -- correctly (with zero decay across the entire disabled period)
+    -- whenever the player later re-enables via FV:SetEnabled(true),
+    -- instead of restoring an active countdown that immediately starts
+    -- expiring in real time despite the toggle being off.
+    if FV.SV.enabled then
+        self:RestoreSpellResistBuff()
+    end
 
     -- Sit/sleep command + world-interaction hooks (see the section above
     -- for full reasoning) are registered unconditionally, once, same as
@@ -1671,6 +1856,10 @@ function FV:HandleSlashCommand(args)
             CHAT_SYSTEM:AddMessage(string.format(
                 "|c88CCFF[Frostfall]|r Spell-resist reagent steadying effect: %+.1f°C, fades in %d:%02d",
                 s.spellResistOffset, math.floor(remaining / 60), math.floor(remaining % 60)))
+        end
+        if s.isIndoorProtected then
+            CHAT_SYSTEM:AddMessage(
+                "|c88CCFF[Frostfall]|r Indoor shelter is active - your true temperature is drifting toward comfortable faster than it would outdoors.")
         end
     elseif cmd == "config" then
         if Frostfall_ConfigMenu then Frostfall_ConfigMenu:Show() end

@@ -68,13 +68,14 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [ESO Master Recipe List](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Phinix/ESO-Master-Recipe-List__1043) | Phinix | PC / Mac | 1.56.76 |
 | [ESO Master Recipe List Alt Format](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/silvereyes/ESO-Master-Recipe-List-Alt-Format__1621) | silvereyes | PC / Mac | 1.1.17 |
 | [ESO Ody Custom Icons/Dungeon Pork Addon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/bbage2/ESO-Ody-Custom-Icons-Dungeon-Pork-Addon__3300) | bbage2 | PC / Mac | 2.0 |
+| [eso Report](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/codeWarrior82/eso-Report__52e26019-7e65-4ad8-9af6-bfdf51ef2bce) | codeWarrior82 | Console | — |
 | [ESO Thief](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Zakaylis/ESO-Thief__3270) | Zakaylis | PC / Mac | 01 |
 | [ESO Toolbox](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Smaxx/ESO-Toolbox__176) | Smaxx | PC / Mac | 3.1 |
 | [ESO Treasure Box](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Phinix/ESO-Treasure-Box__3178) | Phinix | PC / Mac | 1.08 |
 | [ESO-Database.com Export AddOn](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Keldor/ESO-Database.com-Export-AddOn__916) | Keldor | PC / Mac | 4.6.18 |
 | [ESO-Database.com Game Data Export AddOn](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Keldor/ESO-Database.com-Game-Data-Export-AddOn__2687) | Keldor | PC / Mac | 1.0.24 |
 | [ESO-Database.com Leaderboard Export AddOn](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Keldor/ESO-Database.com-Leaderboard-Export-AddOn__3438) | Keldor | PC / Mac | 1.0.13 |
-| [ESO-Hub Trading](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Woeler/ESO-Hub-Trading__4095) | Woeler | PC / Mac | 2026.08.31.02.54 |
+| [ESO-Hub Trading](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Woeler/ESO-Hub-Trading__4095) | Woeler | PC / Mac | 2026.09.07.02.55 |
 | [ESO-Skillfactory.com Build Export](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Keldor/ESO-Skillfactory.com-Build-Export__2899) | Keldor | PC / Mac | 1.2.12 |
 | [ESO_BuildForge](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SremmurdDex/ESO_BuildForge__3ea08b32-8d76-48a9-8c15-7f6867883984) | SremmurdDex | Console | — |
 | [ESO_UnlimitedSkies \[WiP\]](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/devKyle/ESO_UnlimitedSkies-WiP__1781) | devKyle | PC / Mac | v0.00.000.01 |

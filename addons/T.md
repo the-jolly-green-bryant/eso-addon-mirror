@@ -7,6 +7,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | Add-on | Author | Platform | Version |
 | --- | --- | --- | --- |
 | [t](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/user562/t__f275dcc8-b6ab-4c05-b554-4091a83eaf58) | user562 | Console | — |
+| [t](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/user562x/t__27d49a9c-4edf-4a92-8de2-a066a14cc503) | user562x | Console | — |
 | [t](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/user562x/t__bbe159f8-5b9f-4b54-aa51-36d94bab4683) | user562x | Console | — |
 | [t](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/user562x/t__eb9e1258-2704-4f27-ae8a-ac3d34541fb9) | user562x | Console | — |
 | [TABEPHA BOPOH CEBEPA](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BOPOH-CEBEPA/TABEPHA-BOPOH-CEBEPA__4076) | BOPOH CEBEPA | PC / Mac | 1.0 |

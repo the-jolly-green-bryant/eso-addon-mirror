@@ -1852,6 +1852,16 @@ function PlayerBars.SetGroupShowInSettings(value)
     PlayerBars.Group.QueueRefresh()
 end
 
+function PlayerBars.GetGroupShowShield()
+    return PlayerBars.Group.GetSettings().showShield
+end
+
+function PlayerBars.SetGroupShowShield(value)
+    PlayerBars.Group.GetSettings().showShield = value == true
+    PlayerBars.Group.ResetSmoothAnimations()
+    PlayerBars.Group.QueueRefresh()
+end
+
 function PlayerBars.GetGroupShowTrauma()
     return PlayerBars.Group.GetSettings().showTrauma
 end
@@ -2220,6 +2230,16 @@ end
 
 function PlayerBars.SetGroupHealerColor(red, green, blue, alpha)
     PlayerBars.Group.GetSettings().roleColors.heal = PlayerBars.Group.CopyColorTable({ r = red, g = green, b = blue, a = alpha or 1 })
+    PlayerBars.Group.QueueRefresh()
+end
+
+function PlayerBars.GetGroupShieldColor()
+    local color = PlayerBars.Group.GetSettings().shieldColor
+    return color.r, color.g, color.b, color.a or 1
+end
+
+function PlayerBars.SetGroupShieldColor(red, green, blue, alpha)
+    PlayerBars.Group.GetSettings().shieldColor = PlayerBars.Group.CopyColorTable({ r = red, g = green, b = blue, a = alpha or 1 })
     PlayerBars.Group.QueueRefresh()
 end
 

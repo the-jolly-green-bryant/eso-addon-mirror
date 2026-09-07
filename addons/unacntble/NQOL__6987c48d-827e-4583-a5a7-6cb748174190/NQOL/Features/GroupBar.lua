@@ -319,6 +319,8 @@ function PlayerBars.Group.ResetSmoothAnimations()
         local row = PlayerBars.Group.rows[index]
         if row and row.widget then
             PlayerBars.Smooth.Reset(row.widget, C.RESOURCE_HEALTH)
+            PlayerBars.Smooth.Reset(row.widget, C.PLAYER_SHIELD_SMOOTH_KEY)
+            row.widget.nqolShieldSmoothInitialized = nil
         end
     end
 end
@@ -636,34 +638,44 @@ function PlayerBars.Group.GetHealthVisuals(unitTag, settings, visualValues)
         return PlayerBars.EMPTY_HEALTH_VISUALS
     end
 
+    local showShield = settings.showShield == true
+    local shield = showShield and PlayerBars.GetUnitAttributeVisualValue(unitTag, ATTRIBUTE_VISUAL_POWER_SHIELDING) or 0
     local trauma = settings.showTrauma == true and PlayerBars.GetUnitAttributeVisualValue(unitTag, ATTRIBUTE_VISUAL_TRAUMA) or 0
     local noHealing = settings.showNoHealing == true and PlayerBars.GetUnitAttributeVisualValue(unitTag, ATTRIBUTE_VISUAL_NO_HEALING) or 0
-    if trauma <= 0 and noHealing <= 0 then
+    if shield <= 0 and trauma <= 0 and noHealing <= 0 then
         return PlayerBars.EMPTY_HEALTH_VISUALS
     end
 
     visualValues = visualValues or {}
-    visualValues.shield = 0
+    visualValues.shield = shield
+    visualValues.showShield = showShield
     visualValues.trauma = trauma
     visualValues.noHealing = noHealing
+    visualValues.currentOverride = nil
     return visualValues
 end
 
 function PlayerBars.Group.GetPreviewHealthVisuals(current, maximum, settings, index, visualValues)
+    local shield = 0
     local trauma = 0
     maximum = tonumber(maximum) or 0
+    if settings.showShield == true then
+        local multiplier = 0.12 + ((tonumber(index) or 1) - 1) % 4 * 0.03
+        shield = math.max(1, zo_floor(maximum * multiplier))
+    end
     if settings.showTrauma == true then
         local multiplier = 0.14 + ((tonumber(index) or 1) - 1) % 4 * 0.045
         trauma = math.max(1, zo_floor(maximum * multiplier))
     end
 
     local noHealing = settings.showNoHealing == true and 1 or 0
-    if trauma <= 0 and noHealing <= 0 then
+    if shield <= 0 and trauma <= 0 and noHealing <= 0 then
         return PlayerBars.EMPTY_HEALTH_VISUALS
     end
 
     visualValues = visualValues or {}
-    visualValues.shield = 0
+    visualValues.shield = shield
+    visualValues.showShield = settings.showShield == true
     visualValues.trauma = trauma
     visualValues.noHealing = noHealing
     visualValues.currentOverride = maximum
@@ -878,6 +890,10 @@ end
 
 ApplyGroupRowValue = function(row, data, settings, smoothUpdate)
     local widget = row.widget
+    local shieldColor = settings.shieldColor
+    if widget.shield and shieldColor then
+        widget.shield:SetCenterColor(shieldColor.r, shieldColor.g, shieldColor.b, shieldColor.a or 1)
+    end
     local traumaColor = settings.traumaColor
     if widget.trauma and traumaColor then
         widget.trauma:SetCenterColor(traumaColor.r, traumaColor.g, traumaColor.b, traumaColor.a or 1)
@@ -888,11 +904,22 @@ ApplyGroupRowValue = function(row, data, settings, smoothUpdate)
         rangeMaximum = 1
     end
 
-    local fillCurrent = PlayerBars.GetVisibleHealthForFill(data, data.healthVisuals)
+    local fillCurrent, traumaAmount, shieldAmount = PlayerBars.GetHealthSegmentValues(data, data.healthVisuals)
     if settings.smoothTransitions == true and PlayerBars.Smooth then
         fillCurrent = PlayerBars.Smooth.GetValue(widget, C.RESOURCE_HEALTH, fillCurrent, row.smoothUpdateCallback or PlayerBars.Group.QueueRefresh, rangeMaximum)
+        if data.healthVisuals.showShield == true and shieldAmount > 0 then
+            shieldAmount = PlayerBars.Smooth.GetValue(widget, C.PLAYER_SHIELD_SMOOTH_KEY, shieldAmount, row.smoothUpdateCallback or PlayerBars.Group.QueueRefresh, nil, false)
+            widget.nqolShieldSmoothInitialized = true
+        elseif widget.nqolShieldSmoothInitialized == true then
+            PlayerBars.Smooth.Reset(widget, C.PLAYER_SHIELD_SMOOTH_KEY)
+            widget.nqolShieldSmoothInitialized = nil
+        end
     elseif PlayerBars.Smooth then
         PlayerBars.Smooth.Reset(widget, C.RESOURCE_HEALTH)
+        if widget.nqolShieldSmoothInitialized == true then
+            PlayerBars.Smooth.Reset(widget, C.PLAYER_SHIELD_SMOOTH_KEY)
+            widget.nqolShieldSmoothInitialized = nil
+        end
     end
     local percent = Clamp(fillCurrent / rangeMaximum, 0, 1)
     local width = widget:GetWidth() or settings.width
@@ -924,9 +951,7 @@ ApplyGroupRowValue = function(row, data, settings, smoothUpdate)
     if data.showResurrecting then
         PlayerBars.HideHealthVisualOverlays(widget)
     else
-        data.healthVisuals.normalOverride = fillCurrent
-        PlayerBars.ApplyHealthVisualOverlays(widget, data, rangeMaximum, innerWidth, innerHeight, borderSize, settings.reverse == true, false, data.healthVisuals)
-        data.healthVisuals.normalOverride = nil
+        PlayerBars.ApplyHealthVisualOverlays(widget, data, rangeMaximum, innerWidth, innerHeight, borderSize, settings.reverse == true, false, data.healthVisuals, fillCurrent, traumaAmount, shieldAmount)
     end
 
     local nameText = data.nameText or PlayerBars.Group.GetRowNameText(data, settings, height)
@@ -1239,11 +1264,19 @@ function PlayerBars.Group.UpdateRowHealth(unitTag, current, maximum, effectiveMa
     effectiveMaximum = tonumber(effectiveMaximum) or maximum
     local settings = PlayerBars.Group.GetSettings()
     local changed = data.current ~= current or data.maximum ~= maximum or data.effectiveMaximum ~= effectiveMaximum
+    local previousShield = data.healthVisuals and data.healthVisuals.showShield == true and data.healthVisuals.shield or 0
     data.current = current
     data.maximum = maximum
     data.effectiveMaximum = effectiveMaximum
     data.healthVisualCache = data.healthVisualCache or {}
     data.healthVisuals = PlayerBars.Group.GetHealthVisuals(unitTag, settings, data.healthVisualCache)
+    local currentShield = data.healthVisuals.showShield == true and data.healthVisuals.shield or 0
+    local shieldVisibilityChanged = (previousShield > 0) ~= (currentShield > 0)
+    if shieldVisibilityChanged and PlayerBars.Smooth then
+        PlayerBars.Smooth.Reset(row.widget, C.RESOURCE_HEALTH)
+        PlayerBars.Smooth.Reset(row.widget, C.PLAYER_SHIELD_SMOOTH_KEY)
+        row.widget.nqolShieldSmoothInitialized = nil
+    end
     local isDead = IsUnitDeadForResurrectingMonitor(unitTag)
     local deathStateChanged = data.isDead ~= isDead
     if deathStateChanged then
@@ -1258,7 +1291,7 @@ function PlayerBars.Group.UpdateRowHealth(unitTag, current, maximum, effectiveMa
     end
     PlayerBars.Group.UpdateRowResurrectState(unitTag, data)
 
-    if changed or deathStateChanged or settings.showTrauma == true or settings.showNoHealing == true then
+    if changed or deathStateChanged or settings.showShield == true or settings.showTrauma == true or settings.showNoHealing == true then
         PlayerBars.Group.ApplyRowValueByRow(row)
         if data.inSupportRange == false or settings.showNoHealing == true then
             ApplyGroupRowRangeStyle(row, data, settings)
@@ -1453,6 +1486,8 @@ function PlayerBars.Group.LayoutAndApplyRows()
             PlayerBars.HideLossFill(row.widget)
             if PlayerBars.Smooth then
                 PlayerBars.Smooth.Reset(row.widget, C.RESOURCE_HEALTH)
+                PlayerBars.Smooth.Reset(row.widget, C.PLAYER_SHIELD_SMOOTH_KEY)
+                row.widget.nqolShieldSmoothInitialized = nil
             end
             row.deathCounterIcon:SetHidden(true)
             row.deathCounterLabel:SetHidden(true)

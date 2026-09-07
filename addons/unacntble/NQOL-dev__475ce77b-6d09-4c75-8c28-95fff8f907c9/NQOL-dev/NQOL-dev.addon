@@ -1,9 +1,9 @@
 ## Title: NQOL-dev
 ## Author: unacntble
 ## APIVersion: 101050 101051
-## AddOnVersion: 336
-## LastProdVersionCommitID: 948200d
-## LastDevVersionCommitID: cf58577
+## AddOnVersion: 338
+## LastProdVersionCommitID: 3858540
+## LastDevVersionCommitID: 6ce344f
 ## Description: Console-focused quality-of-life tools.
 ## SavedVariables: NQOLSavedVariablesDev NQOLLanguageSettingsDev
 ## OptionalDependsOn: LibFoodDrinkBuff LibCustomNames LibGPS>=73 LibQRC>=046

@@ -1,14 +1,15 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/ShinyBones/LovelyEmotes__1890",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "ShinyBones",
   "canonical_id": "esoui:1890",
   "category_id": "114",
   "compatibility": [
     {
-      "name": "Update 44",
-      "version": "10.2.0"
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
     }
   ],
   "content_id": "esoui:1890",
@@ -17,7 +18,7 @@
     "LovelyEmotes"
   ],
   "download_url": "https://www.esoui.com/downloads/dl1890/",
-  "fingerprint": "0c4b5a7ce64097366d129e26a765562ae70ae1cdb2d36c989134fcd653f66150",
+  "fingerprint": "557063d90a763b98eaba7ec07145eb51758b7646379a36b9a7dabf77f5ca758d",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw7645.jpg",
     "https://cdn-eso.mmoui.com/preview/pvw8312.jpg",
@@ -32,11 +33,11 @@
   "source_id": "1890",
   "source_url": "https://www.esoui.com/downloads/info1890-LovelyEmotes.html",
   "stats": {
-    "downloads": 277720,
-    "favorites": 330,
-    "monthly_downloads": 606
+    "downloads": 278988,
+    "favorites": 329,
+    "monthly_downloads": 836
   },
   "title": "LovelyEmotes",
-  "updated_at": 1736098657000,
-  "version": "5.1"
+  "updated_at": 1788719286000,
+  "version": "5.2"
 }

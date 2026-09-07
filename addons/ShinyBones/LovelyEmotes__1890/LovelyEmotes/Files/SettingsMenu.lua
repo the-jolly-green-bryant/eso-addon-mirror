@@ -518,6 +518,16 @@ function LovelyEmotes.InitializeSettingsMenu()
 
 	table.insert(optionsData, {
 		type = "checkbox",
+		name = GetString(SI_LOVELYEMOTES_SETTINGS_SHOW_EMOTE_KEYBINDINGS_NAME),
+		tooltip = GetString(SI_LOVELYEMOTES_SETTINGS_SHOW_EMOTE_KEYBINDINGS_TOOLTIP),
+		getFunc = function() return savedAccountVariables.ShowEmoteKeybindings end,
+		setFunc = function(value) savedAccountVariables.ShowEmoteKeybindings = value end,
+		default = defaultAccountVariables.ShowEmoteKeybindings,
+		requiresReload = true,
+	} )
+
+	table.insert(optionsData, {
+		type = "checkbox",
 		name = GetString(SI_LOVELYEMOTES_SETTINGS_ENABLE_ALTERNATIVE_SOUNDS_NAME),
 		tooltip = GetString(SI_LOVELYEMOTES_SETTINGS_ENABLE_ALTERNATIVE_SOUNDS_TOOLTIP),
 		getFunc = function() return savedAccountVariables.EnableAlternativeSounds end,

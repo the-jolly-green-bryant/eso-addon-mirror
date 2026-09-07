@@ -11,7 +11,7 @@ DM2StatsMenuShell = DM2StatsMenuShell or {}
 local M = DM2StatsMenuShell
 
 M.name    = "DM2StatsMenuShell"
-M.version = "3.18.0"
+M.version = "3.18.2"
 
 local WM = WINDOW_MANAGER
 local SCENE_NAME = "dm2StatsMenuShellGamepad"
@@ -2029,10 +2029,10 @@ local function collectSlottedChampionSkills(maxN)
   end
 
   ------------------------------------------------------------------
-  -- Path C: ALWAYS merge IsChampionSkillSlotted (fills missing Warfare slot
-  -- when Path A type-filter or slot range drops a star like Backstabber).
+  -- Path C: fill holes only. If Path A already read a full bar, extra
+  -- IsChampionSkillSlotted hits minted a new Build ID on the next dummy.
   ------------------------------------------------------------------
-  if type(GetNumChampionDisciplines) == "function"
+  if #out < 8 and type(GetNumChampionDisciplines) == "function"
       and type(GetChampionSkillId) == "function"
       and type(IsChampionSkillSlotted) == "function" then
     local okN, numDisc = pcall(GetNumChampionDisciplines)
@@ -2467,15 +2467,73 @@ local function barSlotIdsFromBuild(build, side)
   return ids
 end
 
+local function countNonZeroIds(ids)
+  local n = 0
+  for i = 1, #(ids or {}) do
+    if (tonumber(ids[i]) or 0) > 0 then n = n + 1 end
+  end
+  return n
+end
+
+-- Perfected vs non-Perfected was minting a new hash with the same gear.
+local function canonicalizeSetName(n)
+  local s = string.lower(tostring(n or ""))
+  s = s:gsub("%s+", " "):gsub("^%s+", ""):gsub("%s+$", "")
+  s = s:gsub("^perfected%s+", "")
+  s = s:gsub("^perfect%s+", "")
+  return s
+end
+
+local function lastStableBuild()
+  local sv = R and R.SV
+  if type(sv) == "table" and type(sv.lastStableBuild) == "table" then
+    return sv.lastStableBuild
+  end
+  return nil
+end
+
+local function saveLastStableBuild(front, back, setNames, mundus, cpIds)
+  local sv = R and R.SV
+  if type(sv) ~= "table" then return end
+  if countNonZeroIds(front) < 5 or countNonZeroIds(back) < 5 then return end
+  if type(setNames) ~= "table" or #setNames < 2 then return end
+  if type(mundus) ~= "string" or mundus == "" then return end
+  if type(cpIds) ~= "table" or #cpIds < 8 then return end
+  sv.lastStableBuild = {
+    front = { front[1], front[2], front[3], front[4], front[5], front[6] },
+    back = { back[1], back[2], back[3], back[4], back[5], back[6] },
+    sets = setNames,
+    mundus = mundus,
+    cpIds = cpIds,
+  }
+end
+
+local function championIdsForFingerprint(list)
+  local ids = {}
+  if type(list) ~= "table" then return ids end
+  for _, cp in ipairs(list) do
+    local id = tonumber(type(cp) == "table" and cp.id or cp) or 0
+    if id > 0 then
+      local cKey = type(cp) == "table" and cp.constellation or nil
+      -- Craft capture flickers (Steed's Blessing etc.) and is not dummy DPS.
+      if cKey ~= "craft" then
+        ids[#ids + 1] = id
+      end
+    end
+  end
+  return ids
+end
+
 local function buildFingerprintParts(session, championList)
-  -- Build ID = bars + sets + Mundus + slotted CP ids ONLY.
-  -- Food, potions, temporary Major/Minor, and attributes are intentionally excluded
-  -- so food expiring mid-session does NOT force a new fingerprint.
+  -- Build ID = bars + sets + Mundus + Warfare/Fitness CP ids ONLY.
+  -- Food, potions, Major/Minor, attributes, and Craft CP are excluded.
+  -- Gap-fill zeros/empties from start snap then last-stable. Never union extras
+  -- (a flaky extra set/CP id was minting a new hash on the next dummy).
   local front = barSlotIds(session, "Front")
   local back = barSlotIds(session, "Back")
-  -- Stabilize against incomplete mid-fight re-captures: fill zeros from start snap
   local startB = session and session.buildStart
   local endB = session and (session.buildEnd or session.build)
+  local stable = lastStableBuild()
   if type(startB) == "table" then
     front = mergeBarSlotIds(front, barSlotIdsFromBuild(startB, "front"))
     back = mergeBarSlotIds(back, barSlotIdsFromBuild(startB, "back"))
@@ -2484,28 +2542,36 @@ local function buildFingerprintParts(session, championList)
     front = mergeBarSlotIds(front, barSlotIdsFromBuild(endB, "front"))
     back = mergeBarSlotIds(back, barSlotIdsFromBuild(endB, "back"))
   end
+  if type(stable) == "table" then
+    front = mergeBarSlotIds(front, stable.front)
+    back = mergeBarSlotIds(back, stable.back)
+  end
   local setNames = {}
   local function addSetName(n)
-    local s = string.lower(tostring(n or ""))
-    s = s:gsub("%s+", " "):gsub("^%s+", ""):gsub("%s+$", "")
+    local s = canonicalizeSetName(n)
     if s ~= "" then setNames[#setNames + 1] = s end
   end
   if session and type(session.equippedSets) == "table" then
     for _, n in ipairs(session.equippedSets) do addSetName(n) end
   end
-  -- Union start + end snaps (partial live list used to skip these and mint a new hash)
-  if type(startB) == "table" and type(startB.sets) == "table" then
-    for _, n in ipairs(startB.sets) do
-      addSetName(type(n) == "table" and n.name or n)
+  -- Only fill a sparse live list. A complete 2+ set read is authoritative
+  -- (union of Perfected vs not / extra names was the 5-minute drift).
+  if #setNames < 2 then
+    if type(startB) == "table" and type(startB.sets) == "table" then
+      for _, n in ipairs(startB.sets) do
+        addSetName(type(n) == "table" and n.name or n)
+      end
     end
-  end
-  if type(endB) == "table" and type(endB.sets) == "table" then
-    for _, n in ipairs(endB.sets) do
-      addSetName(type(n) == "table" and n.name or n)
+    if #setNames < 2 and type(endB) == "table" and type(endB.sets) == "table" then
+      for _, n in ipairs(endB.sets) do
+        addSetName(type(n) == "table" and n.name or n)
+      end
+    end
+    if #setNames < 2 and type(stable) == "table" and type(stable.sets) == "table" then
+      for _, n in ipairs(stable.sets) do addSetName(n) end
     end
   end
   table.sort(setNames)
-  -- Dedupe after sort
   do
     local uniq, prev = {}, nil
     for _, s in ipairs(setNames) do
@@ -2513,7 +2579,6 @@ local function buildFingerprintParts(session, championList)
     end
     setNames = uniq
   end
-  -- Union CP ids from live list + start + end snapshot (intermittent console misses)
   local cpIds = {}
   local seenCp = {}
   local function addCp(id)
@@ -2523,20 +2588,29 @@ local function buildFingerprintParts(session, championList)
       cpIds[#cpIds + 1] = id
     end
   end
-  for _, cp in ipairs(championList or {}) do addCp(cp.id) end
-  if type(startB) == "table" and type(startB.champion) == "table" then
-    for _, cp in ipairs(startB.champion) do addCp(cp and cp.id) end
-  end
-  if type(endB) == "table" and type(endB.champion) == "table" then
-    for _, cp in ipairs(endB.champion) do addCp(cp and cp.id) end
+  for _, id in ipairs(championIdsForFingerprint(championList)) do addCp(id) end
+  -- Fill holes only when the live bar is short
+  if #cpIds < 8 then
+    if type(startB) == "table" then
+      for _, id in ipairs(championIdsForFingerprint(startB.champion)) do addCp(id) end
+    end
+    if #cpIds < 8 and type(endB) == "table" then
+      for _, id in ipairs(championIdsForFingerprint(endB.champion)) do addCp(id) end
+    end
+    if #cpIds < 8 and type(stable) == "table" and type(stable.cpIds) == "table" then
+      for _, id in ipairs(stable.cpIds) do addCp(id) end
+    end
   end
   cpIds = sortedIdList(cpIds)
-  -- Canonical stone only — food/magicka text must never land in M:
   local mundus = canonicalMundusName(session and session.mundus)
     or canonicalMundusName(type(startB) == "table" and startB.mundus)
     or canonicalMundusName(type(endB) == "table" and endB.mundus)
     or ""
+  if mundus == "" and type(stable) == "table" then
+    mundus = canonicalMundusName(stable.mundus) or ""
+  end
   mundus = string.lower(mundus)
+  saveLastStableBuild(front, back, setNames, mundus, cpIds)
   local parts = {
     "F:" .. table.concat(front, ","),
     "B:" .. table.concat(back, ","),
@@ -2590,6 +2664,17 @@ local function captureSessionBuild(session, phase)
   local canon, setNames = buildFingerprintParts(session, champion)
   local fp = simpleHashHex(canon)
   local label = fingerprintLabel(session, setNames, champion)
+  local fpParts = { f = "", b = "", s = "", m = "", c = "" }
+  for piece in string.gmatch(tostring(canon), "[^|]+") do
+    local k = string.sub(piece, 1, 1)
+    if k == "F" then fpParts.f = piece
+    elseif k == "B" then fpParts.b = piece
+    elseif k == "S" then fpParts.s = piece
+    elseif k == "M" then fpParts.m = piece
+    elseif k == "C" then fpParts.c = piece end
+  end
+  session.buildFingerprintCanon = canon
+  session.buildFpParts = fpParts
   local profile = getActiveContentProfile()
 
   local function snapBars(barLabel, sideKey)
@@ -2635,6 +2720,8 @@ local function captureSessionBuild(session, phase)
   local build = {
     fingerprint = fp,
     fingerprintLabel = label,
+    fingerprintCanon = canon,
+    fpParts = fpParts,
     profileId = profile.id,
     phase = phase,
     wallClock = (type(os) == "table" and type(os.time) == "function") and os.time() or 0,
@@ -2669,7 +2756,7 @@ local function captureSessionBuild(session, phase)
   local backIds = barSlotIdsFromBuild(build, "back")
   local setParts = {}
   for _, n in ipairs(build.sets) do
-    local s = string.lower(tostring((type(n) == "table" and n.name) or n or ""))
+    local s = canonicalizeSetName((type(n) == "table" and n.name) or n)
     if s ~= "" then setParts[#setParts + 1] = s end
   end
   table.sort(setParts)
@@ -6291,7 +6378,22 @@ local function buildComparisonTable(maxCols)
     if sameFp then
       bits[#bits + 1] = "same build"
     else
-      bits[#bits + 1] = "build differs"
+      local pa = a.buildFpParts or (a.build and a.build.fpParts)
+      local pb = b.buildFpParts or (b.build and b.build.fpParts)
+      if type(pa) == "table" and type(pb) == "table" then
+        local diffs = {}
+        if pa.f ~= pb.f or pa.b ~= pb.b then diffs[#diffs + 1] = "bars" end
+        if pa.s ~= pb.s then diffs[#diffs + 1] = "sets" end
+        if pa.m ~= pb.m then diffs[#diffs + 1] = "mundus" end
+        if pa.c ~= pb.c then diffs[#diffs + 1] = "CP" end
+        if #diffs > 0 then
+          bits[#bits + 1] = "build " .. table.concat(diffs, "/")
+        else
+          bits[#bits + 1] = "build differs"
+        end
+      else
+        bits[#bits + 1] = "build differs"
+      end
     end
     local laA, laB = sessionLaHits(a), sessionLaHits(b)
     if laA ~= laB then
@@ -7697,12 +7799,12 @@ local BUFF_MID_ROWS = 12
 local BUFF_DEB_ROWS = 12
 
 local function createBuffsUI(screen)
-  if screen.buffsUI and not screen.buffsUI._v31718 then screen.buffsUI = nil end
+  if screen.buffsUI and not screen.buffsUI._v3181 then screen.buffsUI = nil end
   if screen.buffsUI then return screen.buffsUI end
   ensureContentHost(screen)
   local panel = screen.contentPanels and screen.contentPanels.buffs
   if not panel then return nil end
-  local ui = { panel = panel, rows = {}, midRows = {}, sideRows = {}, _v31718 = true }
+  local ui = { panel = panel, rows = {}, midRows = {}, sideRows = {}, _v3181 = true }
 
   ui.root = WM:CreateControl("DM2StatsMenuBuffRootV4", panel, CT_CONTROL)
   ui.root:SetAnchor(TOPLEFT, panel, TOPLEFT, 4, 2)
@@ -7844,6 +7946,13 @@ local function createBuffsUI(screen)
   -- Phase 2.5.4: pen discoverability (link to Insights recipe — not a full duplicate)
   ui.penFooter = makeDashLabel(ui.root, "DM2StatsMenuBuffPenFootV4", 12, 0.85, 0.78, 0.45, 1)
   ui.penFooter:SetMaxLineCount(2)
+  ui.raidLegend = makeDashLabel(ui.root, "DM2StatsMenuBuffRaidLegV1", 11, 0.78, 0.72, 0.52, 1)
+  ui.raidLegend:SetMaxLineCount(4)
+  ui.raidLegend:SetText(
+    "Raid essentials (Major / Minor):  Berserk +10/+5% dmg done  ·  Slayer +10/+5% vs monsters  ·  Force +20/+10% crit dmg   ·   "
+      .. "Courage +430/+215 Wpn/Spell  ·  Brutality/Sorcery +20/+10%  ·  Heroism 3/1 ult per 1.5s   ·   "
+      .. "Breach −5948/−2974 armor  ·  Brittle +20/+10% crit taken  ·  Vulnerability +10/+5% dmg taken"
+  )
   screen.buffsUI = ui
   return ui
 end
@@ -7860,8 +7969,16 @@ local function layoutBuffsUI(ui, hostW, hostH)
   ui.legend:SetWidth(W)
   ui.empty:SetWidth(W)
 
-  local footH = 28
+  local footH = 72
   local bodyY, bodyH = 48, H - 52 - footH
+  if ui.raidLegend then
+    ui.raidLegend:ClearAnchors()
+    ui.raidLegend:SetAnchor(BOTTOMLEFT, ui.root, BOTTOMLEFT, 4, -22)
+    ui.raidLegend:SetWidth(W - 8)
+    if ui.raidLegend.SetWrapMode then
+      ui.raidLegend:SetWrapMode(TEXT_WRAP_MODE_TRUNCATE or TEXT_WRAP_MODE_ELLIPSIS)
+    end
+  end
   if ui.penFooter then
     ui.penFooter:ClearAnchors()
     ui.penFooter:SetAnchor(BOTTOMLEFT, ui.root, BOTTOMLEFT, 4, -2)

@@ -1180,9 +1180,8 @@ end
 
 function M.sync()
     if not built then return end
-    local vis = Prefs.get("show_launcher") and on_hud
-    launcher.win:SetHidden(not vis)
-    if not vis then M.hide_menu(true) end
+    launcher.win:SetHidden(not (Prefs.get("show_launcher") and on_hud))
+    if not on_hud then M.hide_menu(true) end
 end
 
 function M.on_scene(hud)

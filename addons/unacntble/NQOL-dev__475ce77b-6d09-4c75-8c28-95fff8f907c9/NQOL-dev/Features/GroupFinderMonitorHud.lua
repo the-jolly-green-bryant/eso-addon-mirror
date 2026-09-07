@@ -196,6 +196,19 @@ local function GetRowAccent(data)
     return C.OTHER_COLOR
 end
 
+local function FormatChampionPoints(championPoints, formatNumber)
+    championPoints = math.floor(tonumber(championPoints) or 0)
+    if championPoints <= 0 then return "" end
+    local icon = ""
+    if ZO_GetChampionIconMarkupStringInheritColor then
+        icon = ZO_GetChampionIconMarkupStringInheritColor("100%")
+    elseif ZO_GetChampionIconMarkupString then
+        icon = ZO_GetChampionIconMarkupString("100%")
+    end
+    local numberText = formatNumber == false and tostring(championPoints) or NQOL.Util.FormatNumber(championPoints)
+    return string.format("%s%s", icon, numberText)
+end
+
 local function RowNeedsRender(row, data, width, y, rowHeight, fontChoice, textColor)
     return row.renderedKey ~= data.key
         or row.renderedRoleCountsText ~= data.roleCountsText
@@ -203,6 +216,8 @@ local function RowNeedsRender(row, data, width, y, rowHeight, fontChoice, textCo
         or row.renderedIsAlarm ~= data.isAlarm
         or row.renderedIsNew ~= data.isNew
         or row.renderedIsVeteran ~= data.isVeteran
+        or row.renderedOrganizerChampionPoints ~= data.organizerChampionPoints
+        or row.renderedMinimumChampionPoints ~= data.minimumChampionPoints
         or row.renderedWidth ~= width
         or row.renderedY ~= y
         or row.renderedRowHeight ~= rowHeight
@@ -232,10 +247,16 @@ local function RenderRow(row, data, width, y, rowHeight, fontChoice, textColor)
 
     local innerWidth = width - (C.PADDING * 2) - 24
     row.eyebrow:SetFont(GetFont(-9, fontChoice))
+    local categoryText = Upper(data.categoryText)
+    local primaryText = Upper(data.primary)
+    local minimumChampionPoints = FormatChampionPoints(data.minimumChampionPoints, false)
+    if minimumChampionPoints ~= "" then
+        primaryText = NQOL.L("features.group_finder_monitor.row_eyebrow", primaryText, minimumChampionPoints)
+    end
     local eyebrow = data.primary ~= "" and data.primary ~= data.categoryText
-        and NQOL.L("features.group_finder_monitor.row_eyebrow", data.categoryText, data.primary)
-        or data.categoryText
-    row.eyebrow:SetText(Upper(eyebrow))
+        and NQOL.L("features.group_finder_monitor.row_eyebrow", categoryText, primaryText)
+        or categoryText
+    row.eyebrow:SetText(eyebrow)
     row.eyebrow:SetColor(accent[1], accent[2], accent[3], 0.92)
     row.eyebrow:ClearAnchors()
     row.eyebrow:SetAnchor(TOPLEFT, row.control, TOPLEFT, 14, 4)
@@ -260,7 +281,10 @@ local function RenderRow(row, data, width, y, rowHeight, fontChoice, textColor)
         details = data.activity
     end
     if data.leader and data.leader ~= "" then
-        details = details ~= "" and string.format("%s · %s", data.leader, details) or data.leader
+        local leader = data.leader
+        local organizerChampionPoints = FormatChampionPoints(data.organizerChampionPoints)
+        if organizerChampionPoints ~= "" then leader = string.format("%s %s", leader, organizerChampionPoints) end
+        details = details ~= "" and string.format("%s · %s", leader, details) or leader
     end
     row.details:SetFont(GetFont(-8, fontChoice))
     row.details:SetText(details)
@@ -289,6 +313,8 @@ local function RenderRow(row, data, width, y, rowHeight, fontChoice, textColor)
     row.renderedIsAlarm = data.isAlarm
     row.renderedIsNew = data.isNew
     row.renderedIsVeteran = data.isVeteran
+    row.renderedOrganizerChampionPoints = data.organizerChampionPoints
+    row.renderedMinimumChampionPoints = data.minimumChampionPoints
     row.renderedWidth = width
     row.renderedY = y
     row.renderedRowHeight = rowHeight

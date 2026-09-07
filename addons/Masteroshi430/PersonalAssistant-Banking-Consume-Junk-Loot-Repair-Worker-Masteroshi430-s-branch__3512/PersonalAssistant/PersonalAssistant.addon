@@ -5,10 +5,10 @@
 
 ## Title: |cFFD700P|rersonal|cFFD700A|rssistant
 ## Description: Contains core functions, must be enabled to use any other PersonalAssistant Add-On.
-## Version: 2026.07.31
-## AddOnVersion: 20260731
+## Version: 2026.09.06
+## AddOnVersion: 20260906
 ## Author: Klingo, |c3CB371@Masteroshi430|r
-## APIVersion: 101050 
+## APIVersion: 101051 
 ## SavedVariables: PersonalAssistant_SavedVariables
 ## DependsOn: LibAddonMenu-2.0>=40 LibMainMenu-2.0>=40400 LibCustomMenu>=711
 ## OptionalDependsOn: LibChatMessage>=105 LibCharacterKnowledge>=11 

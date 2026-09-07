@@ -1,0 +1,35 @@
+<Bindings>
+	<!-- General layer, so these are live on the HUD rather than only inside a menu.
+
+	     preventAutomaticInputModeChange mirrors the game's own START_CHAT_ENTER action. Without
+	     it a key press coming from the keyboard flips the UI out of gamepad-preferred mode,
+	     which on console swaps the entire interface. The stock chat bindings all set it.
+
+	     START_CHAT is dead on console and is here for PC, where keyboard bindings work. The two
+	     channel actions are the opposite case: keyboard keys never reach the binding system on
+	     console, but GAMEPAD buttons do, so binding these to a controller button is how the
+	     channel is walked without a key catcher up and without the buttons being paused. -->
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="SI_KEYBINDINGS_CATEGORY_PBSCHATASSISTANT">
+			<Action name="PBSCHATASSISTANT_START_CHAT" preventAutomaticInputModeChange="true">
+				<Down>PBS_CHAT_ASSISTANT:StartChat()</Down>
+			</Action>
+			<Action name="PBSCHATASSISTANT_CHANNEL_NEXT" preventAutomaticInputModeChange="true">
+				<Down>PBS_CHAT_ASSISTANT:CycleChannel(1)</Down>
+			</Action>
+			<Action name="PBSCHATASSISTANT_CHANNEL_PREV" preventAutomaticInputModeChange="true">
+				<Down>PBS_CHAT_ASSISTANT:CycleChannel(-1)</Down>
+			</Action>
+		</Category>
+	</Layer>
+	<!-- The HUD channel layer that lived here is withdrawn.
+	     
+	     It inherited its binds from UI_SHORTCUT_LEFT_TRIGGER and UI_SHORTCUT_LEFT_STICK so that
+	     L2+L3 could be composed in Lua, and it worked. What it also did was shadow L2 on the HUD,
+	     so blocking stopped working. allowFallthrough="true" with handlers returning false was not
+	     enough to keep the game's own L2 alive underneath it.
+	     
+	     Removed rather than merely left unpushed, so nothing can activate it. The implementation
+	     is kept in HUDChannel.lua, which the manifest no longer loads, and the finding is written
+	     up in FINDINGS.md. -->
+</Bindings>

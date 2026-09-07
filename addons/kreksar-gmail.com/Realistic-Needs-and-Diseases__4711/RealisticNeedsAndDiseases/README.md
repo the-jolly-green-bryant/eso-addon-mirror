@@ -11,6 +11,17 @@ This is an original implementation — not a patch or derivative of RolePlayNeed
 
 For the full version history, see the Change Log tab, or CHANGELOG.md included in the download.
 
+[size=5][b]Dependencies[/b][/size]
+
+Please install the newest available version of each:
+
+[list]
+[*][url=https://www.esoui.com/downloads/info7-LibAddonMenu.html][b]LibAddonMenu-2.0[/b][/url] — [b]Required.[/b] Settings panel.
+[*][b]LibFoodDrinkBuff[/b] — [b]Required.[/b] Confirms food/drink consumption via its IsAbilityAFoodOrDrinkBuff(abilityId) method, used as a consumption-confirmation gate.
+[*][b]Frostfall[/b] — Optional. Preferred source for effective temperature (Frostfall:GetEffectiveTemp()).
+[*][b]LibZoneTemp[/b] — Optional. Fallback temperature source if Frostfall isn't installed.
+[/list]
+
 [size=5][b]Credits[/b][/size]
 
 [list]
@@ -107,17 +118,6 @@ Everything below is adjustable without editing code:
 [/list]
 
 Debug/reset actions live in [b]/rnd debug[/b] — see Slash Commands below.
-
-[size=5][b]Dependencies[/b][/size]
-
-Please install the newest available version of each:
-
-[list]
-[*][url=https://www.esoui.com/downloads/info7-LibAddonMenu.html][b]LibAddonMenu-2.0[/b][/url] — [b]Required.[/b] Settings panel.
-[*][b]LibFoodDrinkBuff[/b] — [b]Required.[/b] Confirms food/drink consumption via its IsAbilityAFoodOrDrinkBuff(abilityId) method, used as a consumption-confirmation gate.
-[*][b]Frostfall[/b] — Optional. Preferred source for effective temperature (Frostfall:GetEffectiveTemp()).
-[*][b]LibZoneTemp[/b] — Optional. Fallback temperature source if Frostfall isn't installed.
-[/list]
 
 [size=5][b]Slash Commands[/b][/size]
 

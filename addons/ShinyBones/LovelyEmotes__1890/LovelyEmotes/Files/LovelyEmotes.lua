@@ -10,7 +10,7 @@ local _name = "LovelyEmotes"
 
 LovelyEmotes = {
 	Name = _name,
-	Version = "5.1",
+	Version = "5.2",
 
 	AvailableEmotes = _availableEmotes,
 	AvailablePersonalities = _availablePersonalities,
@@ -84,7 +84,7 @@ local function InitializeAvailableEmotes()
 					PlayEmoteByIndex(index)
 					ConcurrencyWorkaround()
 				end,
-				TagString = string.lower(zo_strformat("<<1>> <<2>>", slashName, displayName)),
+				TagString = string.lower(zo_strformat("<<1>> <<2>> <<3>>", slashName, displayName, id)),
 			}
 
 			AddEmoteToLists(emote)

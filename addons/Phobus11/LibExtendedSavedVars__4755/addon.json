@@ -8,17 +8,37 @@
   "category_id": "53",
   "compatibility": [
     {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
     }
   ],
   "content_id": "esoui:4755",
   "deleted": false,
   "directories": [
-    "LibExtendedSavedVars_pkg"
+    "LibExtendedSavedVars"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4755/",
-  "fingerprint": "87e9a7e6ff8800a54187528de183ac2056adf48ce92c1d9055de9dd25410eb0e",
+  "fingerprint": "6287f7f919495c028902b25a8fc1ba9b80df6c5d3a893ac44f0c02e4455cc53e",
   "images": [],
   "platform": "pc",
   "published": true,
@@ -26,11 +46,11 @@
   "source_id": "4755",
   "source_url": "https://www.esoui.com/downloads/info4755-LibExtendedSavedVars.html",
   "stats": {
-    "downloads": 17,
+    "downloads": 101,
     "favorites": 0,
-    "monthly_downloads": 2
+    "monthly_downloads": 58
   },
   "title": "LibExtendedSavedVars",
-  "updated_at": 1785969226000,
-  "version": "104"
+  "updated_at": 1788715554000,
+  "version": "107"
 }

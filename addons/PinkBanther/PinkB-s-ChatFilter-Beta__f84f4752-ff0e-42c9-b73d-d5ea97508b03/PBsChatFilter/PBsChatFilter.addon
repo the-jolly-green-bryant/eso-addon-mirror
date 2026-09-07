@@ -1,0 +1,19 @@
+## To release a new version, edit the version in the two lines below and nothing else.
+## |cRRGGBB...|r in Title and Author colours them in the in-game add-on list; the version
+## is read back through that markup, so it can sit inside or outside the colour.
+## The settings panel takes its version from ## Title; the name itself is fixed in Main.lua.
+## Title: |cFF69B4PB’s ChatFilter|r 1.2.0
+## Author: |cFF69B4PinkBanther|r
+## Description: Shows guild chat only from the guilds you choose, and can hide guild recruitment adverts. Pick which of your guilds -- and their officer channels -- reach the chat window; the rest are dropped before they are ever added. Optionally hides any message carrying a guild link, which is what a Guild Finder recruitment advert is. Everything else (zone, say, yell, whisper, group, emote, system) is left exactly as it was. Settings panel, or /pbfilter.
+## Version: 1.2.0
+## APIVersion: 101050 101051
+## OptionalDependsOn: LibHarvensAddonSettings>=20106
+## SavedVariables: PBsChatFilter_Data
+
+lang/strings.lua
+lang/$(language).lua
+
+Main.lua
+Settings.lua
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls© and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.

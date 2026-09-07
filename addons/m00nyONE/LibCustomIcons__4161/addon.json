@@ -22,7 +22,7 @@
     "LibCustomIcons"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4161/",
-  "fingerprint": "18bc2bbbd65320315da6ed514c50157c4cf87914c5bda55e982f4c7d9372baa7",
+  "fingerprint": "2196cffdfa70a0c8095f4f35530a72b12c598d415c798c49452f93a52ef85467",
   "images": [],
   "platform": "pc",
   "published": true,
@@ -30,11 +30,11 @@
   "source_id": "4161",
   "source_url": "https://www.esoui.com/downloads/info4161-LibCustomIcons.html",
   "stats": {
-    "downloads": 399641,
+    "downloads": 405377,
     "favorites": 40,
-    "monthly_downloads": 20760
+    "monthly_downloads": 20344
   },
   "title": "LibCustomIcons",
-  "updated_at": 1788136598000,
-  "version": "2026-08-31"
+  "updated_at": 1788738844000,
+  "version": "2026-09-06"
 }

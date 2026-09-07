@@ -1,0 +1,15 @@
+## Title: LibInteriorDetection
+## Description: A library that reports whether the player is currently indoors, combining a per-zone interior/exterior default (overridable via settings menu) with door-transition and map-teleport toggles, plus per-character logout/reload persistence. AI-ASSISTED, written with Claude.ai, reviewed and tested in-game by the author — see README.
+## Author: @Kreksar5 and Claude.ai
+## Version: 1.0.1
+## AddOnVersion: 28
+## APIVersion: 101050 101051
+## IsLibrary: true
+## SavedVariables: LibInteriorDetectionSavedVars LibInteriorDetectionCharSavedVars
+## DependsOn: LibZone>=077 LibAddonMenu-2.0>=43
+
+LibInteriorDetection.lua
+
+# This Add-on is not created by, affiliated with, or sponsored by ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc.
+# in the United States and/or other countries. All rights reserved.

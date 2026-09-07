@@ -447,6 +447,7 @@ local defaults = {
                 showOnlyInCombat = false,
                 showCustomNames = false,
                 showInSettings = true,
+                showShield = false,
                 showTrauma = false,
                 showNoHealing = false,
                 horizontalPosition = 8,
@@ -472,6 +473,7 @@ local defaults = {
                 reverse = false,
                 shadow = Shadow.TOP,
                 shadowIntensity = 25,
+                shieldColor = { r = C.PLAYER_SHIELD_COLOR[1], g = C.PLAYER_SHIELD_COLOR[2], b = C.PLAYER_SHIELD_COLOR[3], a = C.PLAYER_SHIELD_COLOR[4] },
                 traumaColor = { r = 0.42, g = 0.76, b = 0.82, a = 0.82 },
                 resurrectingColor = { r = 0.1, g = 0.9, b = 0.8, a = 1 },
                 roleColors = {
@@ -549,6 +551,7 @@ local healthVisuals = {
 }
 PlayerBars.EMPTY_HEALTH_VISUALS = {
     shield = 0,
+    showShield = false,
     trauma = 0,
     noHealing = 0,
 }
@@ -895,6 +898,7 @@ function PlayerBars.Group.GetSettings()
     NQOL.Settings.Boolean(settings, groupDefaults, "showOnlyInCombat")
     NQOL.Settings.Boolean(settings, groupDefaults, "showCustomNames")
     NQOL.Settings.Boolean(settings, groupDefaults, "showInSettings")
+    NQOL.Settings.Boolean(settings, groupDefaults, "showShield")
     NQOL.Settings.Boolean(settings, groupDefaults, "showTrauma")
     NQOL.Settings.Boolean(settings, groupDefaults, "showNoHealing")
     NQOL.Settings.ClampedNumber(settings, groupDefaults, "horizontalPosition", 0, 100)
@@ -937,6 +941,7 @@ function PlayerBars.Group.GetSettings()
     PlayerBars.Group.EnsureColor(roleColors, roleColorDefaults, "dps")
     PlayerBars.Group.EnsureColor(roleColors, roleColorDefaults, "tank")
     PlayerBars.Group.EnsureColor(roleColors, roleColorDefaults, "heal")
+    PlayerBars.Group.EnsureColor(settings, groupDefaults, "shieldColor")
     PlayerBars.Group.EnsureColor(settings, groupDefaults, "traumaColor")
     PlayerBars.Group.EnsureColor(settings, groupDefaults, "resurrectingColor")
 

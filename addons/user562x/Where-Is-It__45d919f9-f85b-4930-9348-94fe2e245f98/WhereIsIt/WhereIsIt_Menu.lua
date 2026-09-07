@@ -1413,6 +1413,60 @@ local function PagedState()
     return state
 end
 
+local function SelectedSliderData()
+    local lcm = LCM()
+    if not (lcm and lcm.list and lcm.CT_SLIDER) then return nil end
+    if type(lcm.NudgeFocusedSlider) ~= "function" then return nil end
+
+    local data = lcm.list:GetSelectedData()
+    if not (data and data.type == lcm.CT_SLIDER) then return nil end
+    if type(data.IsDisabled) == "function" and data:IsDisabled() then return nil end
+
+    return data
+end
+
+local function SliderKeybindName(globalName, fallback)
+    local stringId = rawget(_G, globalName)
+    if stringId and type(GetString) == "function" then
+        local text = GetString(stringId)
+        if text and text ~= "" then return text end
+    end
+    return fallback
+end
+
+local function BuildShoulderKeybind(direction, pageName, stringName, sliderFallback, order)
+    return {
+        alignment    = KEYBIND_STRIP_ALIGN_RIGHT,
+        name         = function()
+            if SelectedSliderData() then
+                return SliderKeybindName(stringName, sliderFallback)
+            end
+            return pageName
+        end,
+        keybind      = (direction < 0) and "UI_SHORTCUT_LEFT_SHOULDER" or "UI_SHORTCUT_RIGHT_SHOULDER",
+        gamepadOrder = order,
+        callback     = function()
+            if SelectedSliderData() then
+                LCM().NudgeFocusedSlider(direction)
+                return
+            end
+
+            local state = PagedState()
+            if state then GoToPage(activePageId, (state.pageIndex or 1) + direction) end
+        end,
+        visible      = function()
+            if SelectedSliderData() then return true end
+
+            local state = PagedState()
+            if not state then return false end
+
+            local index = state.pageIndex or 1
+            if direction < 0 then return index > 1 end
+            return index < (state.pageCount or 1)
+        end,
+    }
+end
+
 local function InstallPageKeybinds()
     if pageKeybinds then return end
 
@@ -1421,35 +1475,10 @@ local function InstallPageKeybinds()
     local descriptor = scrollList and scrollList.keybindStripDescriptor
     if type(descriptor) ~= "table" then return end
 
-    descriptor[#descriptor + 1] = {
-        alignment    = KEYBIND_STRIP_ALIGN_RIGHT,
-        name         = "Previous Page",
-        keybind      = "UI_SHORTCUT_LEFT_SHOULDER",
-        gamepadOrder = 4,
-        callback     = function()
-            local state = PagedState()
-            if state then GoToPage(activePageId, (state.pageIndex or 1) - 1) end
-        end,
-        visible      = function()
-            local state = PagedState()
-            return state ~= nil and (state.pageIndex or 1) > 1
-        end,
-    }
-
-    descriptor[#descriptor + 1] = {
-        alignment    = KEYBIND_STRIP_ALIGN_RIGHT,
-        name         = "Next Page",
-        keybind      = "UI_SHORTCUT_RIGHT_SHOULDER",
-        gamepadOrder = 3,
-        callback     = function()
-            local state = PagedState()
-            if state then GoToPage(activePageId, (state.pageIndex or 1) + 1) end
-        end,
-        visible      = function()
-            local state = PagedState()
-            return state ~= nil and (state.pageIndex or 1) < state.pageCount
-        end,
-    }
+    descriptor[#descriptor + 1] = BuildShoulderKeybind(
+        -1, "Previous Page", "SI_LCM_SLIDER_LARGE_DECREASE", "Large Decrease", 2)
+    descriptor[#descriptor + 1] = BuildShoulderKeybind(
+        1, "Next Page", "SI_LCM_SLIDER_LARGE_INCREASE", "Large Increase", 1)
 
     pageKeybinds = true
 end

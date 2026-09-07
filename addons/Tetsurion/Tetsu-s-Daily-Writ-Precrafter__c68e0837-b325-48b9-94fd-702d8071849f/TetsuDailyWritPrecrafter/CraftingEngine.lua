@@ -171,10 +171,14 @@ local function ResolveSmithingFromQuest(craftType, materialIndex)
     if numPatterns == 0 then return resolved end
 
     local seenCond = {} -- conditionIndex already fully queued
+    local styleReserve = Data.ResetStyleReserve and Data.ResetStyleReserve() or {}
     for patternIndex = 1, numPatterns do
         local styleId = 0
         if craftType ~= Data.CRAFT_JEWELRY and craftType ~= 7 then
-            styleId = Data.GetAvailableStyleId(patternIndex) or 1
+            -- Link probe can use any known style; actual stones are reserved per job below.
+            styleId = (Data.GetProbeStyleId and Data.GetProbeStyleId(patternIndex))
+                or Data.GetAvailableStyleId(patternIndex)
+                or 1
         end
         local qtyList
         if craftType == Data.CRAFT_JEWELRY or craftType == 7 then
@@ -197,12 +201,18 @@ local function ResolveSmithingFromQuest(craftType, materialIndex)
                     seenCond[cIndex] = true
                     matched = true
                     for n = 1, remaining do
+                        local jobStyle = styleId
+                        if craftType ~= Data.CRAFT_JEWELRY and craftType ~= 7 then
+                            jobStyle = (Data.ReserveStyleForPattern and Data.ReserveStyleForPattern(patternIndex, styleReserve))
+                                or Data.GetAvailableStyleId(patternIndex, styleReserve)
+                                or jobStyle
+                        end
                         resolved[#resolved + 1] = {
                             craftType = craftType,
                             patternIndex = patternIndex,
                             materialIndex = materialIndex,
                             materialQuantity = qty,
-                            styleId = styleId,
+                            styleId = jobStyle,
                         }
                     end
                 end
@@ -389,9 +399,10 @@ local function JewelryOunces(patternIndex, materialIndex)
     return Data.GetJewelryOunces(patternIndex, Data.GetCraftingTier(7))
 end
 
-local function JobsFromPatternList(craftType, patternList, materialIndex)
+local function JobsFromPatternList(craftType, patternList, materialIndex, styleReserve)
     local jobs = {}
     if not patternList then return jobs end
+    styleReserve = styleReserve or (Data.ResetStyleReserve and Data._styleReserve) or {}
     for i = 1, #patternList do
         local patternIndex = patternList[i]
         local qty
@@ -400,7 +411,9 @@ local function JobsFromPatternList(craftType, patternList, materialIndex)
             qty = JewelryOunces(patternIndex, materialIndex)
         else
             qty = Data.GetRequiredMaterialQuantity(patternIndex, materialIndex)
-            styleId = Data.GetAvailableStyleId(patternIndex) or 1
+            styleId = (Data.ReserveStyleForPattern and Data.ReserveStyleForPattern(patternIndex, styleReserve))
+                or Data.GetAvailableStyleId(patternIndex, styleReserve)
+                or 0
         end
         jobs[#jobs + 1] = {
             craftType = craftType,
@@ -430,6 +443,7 @@ local function BuildPrecraftEquipmentJobs(craftType, startOff, endOff, startPhas
     local materialIndex = Data.GetMaterialIndex(craftType, tier)
     startOff = tonumber(startOff) or 0
     endOff = tonumber(endOff) or startOff
+    local styleReserve = Data.ResetStyleReserve and Data.ResetStyleReserve() or {}
 
     for offset = startOff, endOff do
         local dayIdx = ((startPhase - 1 + offset) % 3) + 1
@@ -447,7 +461,7 @@ local function BuildPrecraftEquipmentJobs(craftType, startOff, endOff, startPhas
                 }
             end
         else
-            local part = JobsFromPatternList(craftType, patterns, materialIndex)
+            local part = JobsFromPatternList(craftType, patterns, materialIndex, styleReserve)
             for i = 1, #part do
                 part[i].dayOffset = offset
                 part[i].phase = dayIdx
@@ -673,9 +687,13 @@ local function CheckMaterialsForJobs(itemsList, craftType)
     end
 
     local function addNeed(itemId, fallbackName, amount)
-        if not itemId or itemId <= 0 or not amount or amount <= 0 then return end
+        if not itemId or itemId == 0 or not amount or amount <= 0 then return end
         if not need[itemId] then
-            need[itemId] = { name = niceName(itemId, fallbackName), amount = 0 }
+            if itemId < 0 then
+                need[itemId] = { name = fallbackName or "style", amount = 0 }
+            else
+                need[itemId] = { name = niceName(itemId, fallbackName), amount = 0 }
+            end
         end
         need[itemId].amount = need[itemId].amount + amount
     end
@@ -715,6 +733,8 @@ local function CheckMaterialsForJobs(itemsList, craftType)
                 if styleMatId then
                     addNeed(styleMatId, "style", 1)
                 end
+            elseif craftType ~= Data.CRAFT_JEWELRY and craftType ~= 7 then
+                addNeed(-1, L().ERR_NO_STYLE or "style", 1)
             end
         end
     end
@@ -1010,6 +1030,12 @@ local function ProcessNextCraftItem()
     end
 
     -- Smithing / Clothing / Woodworking / Jewelry
+    if item.craftType ~= Data.CRAFT_JEWELRY and item.craftType ~= 7 then
+        if not item.styleId or item.styleId < 1 then
+            local alt = Data.GetAvailableStyleId and Data.GetAvailableStyleId(item.patternIndex)
+            if alt then item.styleId = alt end
+        end
+    end
     if not CanCraftSmithing(item) then
         Chat(zo_strformat(L().ERR_CANNOT_CRAFT, "equipment"))
         Chat(L().PRECHECK_ABORT)
@@ -1031,6 +1057,23 @@ local function ProcessNextCraftItem()
     local styleId = item.styleId or 0
     if item.craftType == Data.CRAFT_JEWELRY or item.craftType == 7 then
         styleId = 0
+    else
+        local function smithingIters(sid)
+            if not sid or sid < 1 or not GetMaxIterationsPossibleForSmithingItem then
+                return 0
+            end
+            local n = GetMaxIterationsPossibleForSmithingItem(
+                item.patternIndex, item.materialIndex, qty, sid, trait, false
+            )
+            return tonumber(n) or 0
+        end
+        if smithingIters(styleId) < 1 then
+            local alt = Data.GetAvailableStyleId and Data.GetAvailableStyleId(item.patternIndex)
+            if alt and alt ~= styleId and smithingIters(alt) > 0 then
+                styleId = alt
+                item.styleId = alt
+            end
+        end
     end
     local want = item.count or 1
     local maxN = want

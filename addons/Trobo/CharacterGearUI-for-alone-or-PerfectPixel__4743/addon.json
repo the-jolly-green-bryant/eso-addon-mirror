@@ -18,8 +18,10 @@
     "CharacterGearUI"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4743/",
-  "fingerprint": "e1ff639bbaf108eab7390b155e2907ff6058fabff0b9135c7015e4bea94cd5ca",
+  "fingerprint": "1c4d03538cb2ce3b64807f9f95164f1c986ae90f9a1b0749e4020826dfac0895",
   "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17301.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17302.png",
     "https://cdn-eso.mmoui.com/preview/pvw16874.png",
     "https://cdn-eso.mmoui.com/preview/pvw16875.png",
     "https://cdn-eso.mmoui.com/preview/pvw16876.png",
@@ -32,11 +34,11 @@
   "source_id": "4743",
   "source_url": "https://www.esoui.com/downloads/info4743-CharacterGearUIforaloneorPerfectPixel.html",
   "stats": {
-    "downloads": 174,
+    "downloads": 216,
     "favorites": 2,
-    "monthly_downloads": 171
+    "monthly_downloads": 100
   },
   "title": "CharacterGearUI (for alone or PerfectPixel)",
-  "updated_at": 1785772375000,
-  "version": "0.4.6"
+  "updated_at": 1788700799000,
+  "version": "0.4.7"
 }

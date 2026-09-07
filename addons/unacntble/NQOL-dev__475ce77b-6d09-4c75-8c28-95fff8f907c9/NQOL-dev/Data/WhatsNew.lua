@@ -2,59 +2,59 @@ NQOL = NQOL or {}
 
 -- Replace this table for each release. Only the current release is retained.
 NQOL.WhatsNewContent = {
-    version = "330",
+    version = "338",
     messages = {
-        en = [[- Beefed-up custom reticle, with trackers for crux, off balance, taunt, and Z'en stacks. Give it a go under Combat > Combat Reticle.
-- Custom player frame now supports visualisation of shields.
-- Want to manage your gear and sticker book? Try the NGear addon!
+        en = [[- Group Finder monitor now shows minimum CP requirements.
+- Added Sul-Xan soul and collected-soul countdown tracking to configurable combat-reticle slots. Check it out under the "Combat" menu.
+- Added visual shield segments to the custom group frame.
 
 You can send any feedback to:
 nqol@agentmail.to
 
 Thank you for your support and for using NQOL!]],
-        fr = [[- Réticule personnalisé amélioré, avec des suivis pour les Crux, le Déséquilibre, la provocation et les cumuls de Z'en. Essayez-le dans Combat > Réticule de combat.
-- Le cadre de joueur personnalisé prend désormais en charge l'affichage des boucliers.
-- Vous souhaitez gérer votre équipement et votre collection d'ensembles ? Essayez l'extension NGear !
+        fr = [[- Le moniteur de recherche de groupe affiche désormais les exigences minimales de CP.
+- Ajout du suivi des comptes à rebours de l’âme Sul-Xan et de l’âme collectée aux emplacements configurables du réticule de combat. Découvrez-le dans le menu « Combat ».
+- Ajout de segments de bouclier visuels au cadre de groupe personnalisé.
 
 Vous pouvez envoyer vos commentaires à :
 nqol@agentmail.to
 
 Merci pour votre soutien et pour avoir utilisé NQOL !]],
-        de = [[- Das benutzerdefinierte Fadenkreuz wurde erweitert und bietet jetzt Anzeigen für Crux, „Aus dem Gleichgewicht“, Verspotten und Z'en-Stapel. Probieren Sie es unter Kampf > Kampffadenkreuz aus.
-- Der benutzerdefinierte Spielerrahmen unterstützt jetzt die Anzeige von Schilden.
-- Möchten Sie Ihre Ausrüstung und Set-Sammlung verwalten? Probieren Sie das Add-on NGear aus!
+        de = [[- Die Gruppensuche-Überwachung zeigt jetzt die Mindestanforderungen an CP an.
+- Die Countdown-Anzeige für die Sul-Xan-Seele und die gesammelte Seele kann jetzt konfigurierbaren Kampfabsehen-Slots zugewiesen werden. Probieren Sie sie im Menü „Kampf“ aus.
+- Dem benutzerdefinierten Gruppenrahmen wurden visuelle Schildsegmente hinzugefügt.
 
 Sie können Ihr Feedback an folgende Adresse senden:
 nqol@agentmail.to
 
 Vielen Dank für Ihre Unterstützung und die Nutzung von NQOL!]],
-        jp = [[- カスタムレティクルを強化し、クラックス、オフバランス、挑発、Z'enの累積数を追跡できるようになりました。「戦闘」>「戦闘レティクル」からお試しください。
-- カスタムプレイヤーフレームでシールドを表示できるようになりました。
-- 装備やセットコレクションを管理したいですか？NGearアドオンをお試しください！
+        jp = [[- グループ検索モニターに最低CP要件が表示されるようになりました。
+- 設定可能な戦闘レティクルのスロットで、Sul-Xanの魂と収集した魂の残り時間を追跡できるようになりました。「戦闘」メニューからお試しください。
+- カスタムグループフレームにシールドを視覚化するセグメントを追加しました。
 
 フィードバックは次の宛先に送信できます。
 nqol@agentmail.to
 
 いつもNQOLをご利用いただき、誠にありがとうございます。]],
-        es = [[- Retícula personalizada mejorada, con indicadores de Crux, Desequilibrio, provocación y acumulaciones de Z'en. Pruébala en Combate > Retícula de combate.
-- El marco de jugador personalizado ahora permite visualizar escudos.
-- ¿Quieres gestionar tu equipo y tu colección de conjuntos? ¡Prueba el complemento NGear!
+        es = [[- El monitor del Buscador de grupo ahora muestra los requisitos mínimos de CP.
+- Se ha añadido el seguimiento de la cuenta atrás del alma Sul-Xan y del alma recogida a las ranuras configurables de la retícula de combate. Pruébalo en el menú «Combate».
+- Se han añadido segmentos visuales de escudo al marco de grupo personalizado.
 
 Puedes enviar cualquier comentario a:
 nqol@agentmail.to
 
 ¡Gracias por su apoyo y por usar NQOL!]],
-        ru = [[- Пользовательский прицел стал ещё функциональнее: добавлены индикаторы круксов, потери равновесия, провокации и зарядов Z'en. Попробуйте его в разделе Бой > Боевой прицел.
-- Пользовательская рамка игрока теперь поддерживает отображение щитов.
-- Хотите управлять снаряжением и коллекцией комплектов? Попробуйте аддон NGear!
+        ru = [[- Монитор поиска группы теперь показывает минимальные требования к CP.
+- В настраиваемые слоты боевого прицела добавлено отслеживание обратного отсчёта души Sul-Xan и собранной души. Попробуйте его в меню «Бой».
+- В пользовательскую рамку группы добавлены визуальные сегменты щита.
 
 Любой отзыв вы можете отправить по адресу:
 nqol@agentmail.to
 
 Спасибо за вашу поддержку и за использование NQOL!]],
-        zh = [[- 大幅增强自定义准星，新增秘能点、失衡、嘲讽和 Z'en 层数追踪。可前往“战斗 > 战斗准星”试用。
-- 自定义玩家框架现在支持显示护盾。
-- 想要管理你的装备和套装收藏吗？试试 NGear 插件吧！
+        zh = [[- 队伍查找监视器现在会显示最低CP要求。
+- 可配置的战斗准星插槽现已支持Sul-Xan灵魂和已收集灵魂的倒计时追踪。可前往“战斗”菜单体验。
+- 自定义队伍框架新增了可视化护盾分段。
 
 您可以将任何反馈发送至：
 nqol@agentmail.to

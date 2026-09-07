@@ -7,6 +7,21 @@ Thematically inspired by [i]Frostfall[/i], the well-known Skyrim mod by [b]Chesk
 
 For the full version history, see the Change Log tab, or CHANGELOG.md included in the download.
 
+[size=5][b]Dependencies[/b][/size]
+
+All are [b]required[/b] unless noted. Please install the newest available version of each — Minion (the standard ESO addon manager) will do this automatically.
+
+[list]
+[*][url=https://www.esoui.com/downloads/info7-LibAddonMenu.html][b]LibAddonMenu-2.0[/b][/url] — Settings panel UI
+[*][b]LibZoneTemp[/b] (ESOUI) — Zone ambient temperature data
+[*][b]LibArmorInsulation[/b] (ESOUI) — Armor insulation breakdown
+[/list]
+
+[b]Optional:[/b]
+[list]
+[*][b]LibInteriorDetection[/b] (ESOUI) — powers the indoor shelter steadying effect described below. Frostfall works fine without it; that one effect just won't apply.
+[/list]
+
 [size=5][b]Credits[/b][/size]
 
 [list]
@@ -65,6 +80,14 @@ Swimming in open water equilibrates your body temperature toward the water tempe
 [*][b]Water ingredient loot[/b] — Looting an alchemy water solvent cools you by 5°C (only if you are already above COMFORTABLE_HI).
 [*][b]Crafting station interaction[/b] — Opening a provisioning or smithing station warms you by 5°C (only if below COMFORTABLE_LO). Rate-limited to once per minute.
 [/list]
+
+[size=4][b]Spell-Resist Reagent Buff (display steadying)[/b][/size]
+Consuming a reagent with the "Increase Spell Resist" alchemy trait (Bugloss, Mudcrab Chitin, Clam Gall, White Cap) steadies your [i]displayed[/i] feels-like temperature ("FEELS LIKE" — what the HUD, overlay, emotes, and alerts actually react to) toward neutral (22°C) by up to 10°C, for 30 real-world minutes (extended by your Medicinal Use rank). This does [b]not[/b] change your true underlying temperature — it's a display mask that fades when the buff ends, at which point your feels-like reading reverts to whatever your true temperature actually is. Re-consuming refreshes the timer; the last 5 minutes give per-minute fade warnings. Pauses (doesn't count down) while you're offline or while Frostfall's master toggle is off, resuming with the exact same time remaining either way. Check current status any time with [b]/ff status[/b], or watch the HUD's "FEELS LIKE" label, which turns violet while active (e.g. "FEELS LIKE (12m)").
+
+[size=4][b]Indoor Shelter (real, accelerated recovery)[/b][/size]
+Whenever [b]LibInteriorDetection[/b] reports you're currently indoors, your [i]true[/i] temperature actively drifts toward neutral faster than it would outdoors — this is a real change to your underlying temperature, not a display trick, so there's no discontinuity when you step outside: your feels-like reading always reflects your actual state, it just changes at a different rate while sheltered. This runs alongside your normal drift toward the zone's ambient temperature, not instead of it — the two can reinforce each other (ambient happens to be close to neutral too) or partially compete (a very cold room still pulls you cold even while sheltered), in which case you settle at whatever balance point the two effects reach, rather than snapping straight to comfortable. Requires LibInteriorDetection to be installed (optional — Frostfall works fine without it, this effect simply won't apply). Check current status with [b]/ff status[/b], or watch for "Sheltered" next to the HUD's "FEELS LIKE" label.
+
+[i]Note: these are two different kinds of effect. The reagent buff only ever changes what's displayed; indoor shelter changes what's real. Both can be active at once, and each behaves independently — the reagent buff's own cap can never push its display past neutral on its own, and shelter's acceleration simply runs as an additional force on your true temperature regardless of whether the reagent buff is also active.[/i]
 
 [size=4][b]Temperature Thresholds (all in °C)[/b][/size]
 [list]
@@ -169,16 +192,6 @@ Accessible via [b]/ff config[/b] or the ESO addon settings panel (LibAddonMenu-2
 [/list]
 
 ★ = magical = true — clamped to the full -10..90 tier range instead of the mundane 0..80 range reserved for ordinary materials.
-
-[size=5][b]Dependencies[/b][/size]
-
-All are [b]required[/b]. Please install the newest available version of each — Minion (the standard ESO addon manager) will do this automatically.
-
-[list]
-[*][url=https://www.esoui.com/downloads/info7-LibAddonMenu.html][b]LibAddonMenu-2.0[/b][/url] — Settings panel UI
-[*][b]LibZoneTemp[/b] (ESOUI) — Zone ambient temperature data
-[*][b]LibArmorInsulation[/b] (ESOUI) — Armor insulation breakdown
-[/list]
 
 [size=5][b]Compatibility[/b][/size]
 

@@ -22,7 +22,7 @@
     "bgmeter"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4697/",
-  "fingerprint": "8a34d99162b45538aa075255a3379959ad0ae0657e257d8cb40b7590e3b11bbb",
+  "fingerprint": "2376ab8bf5808c14cb199bb7d5ffcf02bba07bf91e882941e437798deea0839a",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16658.png",
     "https://cdn-eso.mmoui.com/preview/pvw16659.png",
@@ -35,11 +35,11 @@
   "source_id": "4697",
   "source_url": "https://www.esoui.com/downloads/info4697-BGMeter.html",
   "stats": {
-    "downloads": 109,
+    "downloads": 135,
     "favorites": 1,
-    "monthly_downloads": 25
+    "monthly_downloads": 44
   },
   "title": "BGMeter",
-  "updated_at": 1788650647000,
-  "version": "0.1.2"
+  "updated_at": 1788711507000,
+  "version": "0.1.3"
 }

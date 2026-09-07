@@ -22,7 +22,7 @@
     "NirnsteelUI"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4574/",
-  "fingerprint": "2361aa50d8698103d85792e898d9ebd606eede3b7f44772bee3afcd8c202e635",
+  "fingerprint": "b4658f0099ff8d2349ca3a9416220a269ef4f2f717165b351e68e3f8b293f13b",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16032.jpg",
     "https://cdn-eso.mmoui.com/preview/pvw16034.png",
@@ -36,11 +36,11 @@
   "source_id": "4574",
   "source_url": "https://www.esoui.com/downloads/info4574-NirnSteelUIBetterUIFeedback.html",
   "stats": {
-    "downloads": 5287,
-    "favorites": 5,
-    "monthly_downloads": 2924
+    "downloads": 5622,
+    "favorites": 6,
+    "monthly_downloads": 3224
   },
   "title": "NirnSteelUI \u00b7 Better UI Feedback",
-  "updated_at": 1788351187000,
-  "version": "2.0.2"
+  "updated_at": 1788724608000,
+  "version": "2.1.0"
 }

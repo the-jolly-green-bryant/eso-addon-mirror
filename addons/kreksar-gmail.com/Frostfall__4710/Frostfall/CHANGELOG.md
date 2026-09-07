@@ -4,6 +4,220 @@ Full version history for Frostfall. See README.md for current features, installa
 
 ---
 
+### v3.4.32
+- **Redesigned indoor shelter from a display-only mask to a real,
+  accelerated recovery toward neutral.** Prompted by a follow-up report
+  after v3.4.31: standing indoors near a cooking fire (a real, modest
+  one-time +5°C warmth source) produced a misleadingly "perfect" 72°F
+  effective reading, which then appeared to jump right back down the
+  moment the player stepped outside - even though the true temperature
+  barely changed either time. The old design steadied the *displayed*
+  value only, capped at 15°C, completely independent of the true
+  temperature underneath - so the display and the reality could diverge
+  by a large margin, and reconciling them (by leaving the building)
+  looked like a sudden, ungraduated jump even though nothing sudden had
+  actually happened to the true temperature.
+- **Indoor shelter is now a real, additional pull toward neutral (not
+  ambient) applied directly to the player's true temperature** in
+  `CalculatePlayerTemperature`, governed by a new
+  `INDOOR_SHELTER_DRIFT_RATE` (3.0°C/min before insulation scaling,
+  replacing the old `INDOOR_PROTECTION_MAX_SHIFT` 15°C display cap). It
+  runs alongside the existing drift toward ambient, not instead of it -
+  the two can reinforce each other or partially compete (a very cold
+  room still pulls you cold even while sheltered), settling at whatever
+  equilibrium the two forces reach together, rather than snapping
+  straight to comfortable. Uses the same insulation-based rate curve
+  (`ComputeDriftRate`) as the ambient drift, so better-insulated players
+  still warm up faster than poorly-insulated ones even while sheltered.
+- **Because the displayed value now always reflects the true state**,
+  there's no more discontinuity when entering or leaving a building -
+  only a faster or slower rate of change while the effect is active.
+- `GetEffectiveTemp()` is back to handling only the spell-resist reagent
+  mask, the single-effect shape it had before v3.4.25 - the v3.4.31
+  combined-overshoot fix is now moot for this specific pairing, since
+  shelter no longer contributes a display offset to stack with anything.
+  **The spell-resist reagent buff itself is unchanged** - this was a
+  deliberate, explicit request to redesign shelter specifically, not the
+  reagent mechanic.
+- Removed `FV.State.indoorProtectionOffset` (no longer a meaningful
+  concept); `/ff status` and the HUD's "Sheltered" tag are updated to
+  describe the new mechanic accurately.
+- **Also fixed a stale doc/log discrepancy** found while investigating
+  this report: the cooking-fire/forge warming comment and its debug log
+  message both said "+10°C", but the code has always added `+5` (matching
+  the README, which was already correct). Cosmetic only - no functional
+  change, since the actual behavior was already the documented 5°C.
+
+---
+
+### v3.4.31
+- **Fixed a real bug reported directly from play**: effective temperature
+  reading *above* ambient (and rising) while cold, indoors, with the
+  spell-resist reagent buff (Bugloss etc.) also active - e.g. a 60°F zone
+  producing a 74°F effective reading that kept climbing.
+- **Root cause**: each of the two steadying effects (spell-resist buff,
+  indoor shelter) independently capped itself at
+  `min(itsOwnMax, distanceToNeutral)` - correctly preventing either ONE
+  effect from ever overshooting past neutral (22°C/71.6°F) on its own.
+  But `GetEffectiveTemp()` simply summed both offsets together with no
+  check on the combined total. Since the two caps sum to 25°C
+  (10°C + 15°C) - more than most real temperature gaps - having both
+  effects active at once routinely pushed the combined total past the
+  actual distance to neutral, overshooting straight through it and out
+  the opposite side. Worse, since the true temperature (unaffected by
+  this bug) kept drifting further from neutral while cold, both
+  offsets kept growing toward their caps, so the overshoot - and the
+  backwards-seeming "rising" effective temperature - grew right along
+  with it, even while the true temperature was actually falling.
+- **Fixed** by scaling both offsets down proportionally whenever their
+  combined demand would exceed the actual distance to neutral, so the
+  combined push can bring the player to neutral but never past it.
+  Single-effect cases (only one of the two active, or neither near its
+  own cap) are completely unaffected - the scaling factor is exactly 1
+  in those cases, a no-op - only the combined-overshoot case changes.
+- **Also directly verified, per a follow-up question**: this integration
+  does not touch `LibZoneTemp`'s own ambient temperature calculation in
+  any way - confirmed via direct code inspection that `INTERIOR_MODIFIER`
+  (a `-3°C` cooling adjustment) is completely unchanged, and our change
+  there only ever affects which signal feeds the `isInterior` boolean,
+  never what that boolean does once determined. The reported 60°F
+  ambient reading was accurate; the entire discrepancy traced to this
+  file's own effective-temperature stacking, not to the zone calculation.
+
+---
+
+### v3.4.30
+- **Reverted v3.4.29's version floor** on
+  `## OptionalDependsOn: LibInteriorDetection` (back to no version, just
+  the bare name). A follow-up moderator comment clarified that
+  `OptionalDependsOn` does not support `>=` version syntax at all - only
+  `DependsOn` does, since a missing *hard* dependency is what actually
+  stops an addon from loading, which is what the version check exists to
+  guard against. An optional dependency doesn't block loading either way,
+  so a version check on it isn't just unsupported syntax, it's not a
+  meaningful concept there.
+- **This was likely a real functional bug, not just a style issue**:
+  `LibInteriorDetection>=28` was almost certainly being read as a literal
+  dependency name, which would never match the real `LibInteriorDetection`
+  addon - meaning the optional-dependency detection may have been
+  silently failing to recognize it as installed at all, even when it
+  genuinely was.
+- **This also resolves the tension flagged in v3.4.29's own entry
+  below**: that entry raised a concern about reopening a
+  previously-solved blocking-risk tradeoff. It turns out the original
+  no-floors-on-optional-dependencies precedent was correct all along;
+  v3.4.29's floor was the actual mistake, not a justified reversal of it.
+
+---
+
+### v3.4.29
+- **Compliance fix**: added a version floor to
+  `## OptionalDependsOn: LibInteriorDetection` (now `>=28`), per an
+  ESOUI moderator's written rule that version checks are mandatory for
+  `OptionalDependsOn` too, not just hard `DependsOn`. Worth flagging: this
+  reopens a tradeoff this project previously decided the other way on
+  purpose for a different addon (Realistic Needs and Diseases) - version
+  floors were deliberately removed from an optional dependency there,
+  since a floor can block the whole addon from loading if the optional
+  dependency is present but outdated. Added here to comply with the
+  written rule regardless; if a stale-but-present LibInteriorDetection
+  install is ever reported as blocking Frostfall from loading entirely -
+  rather than gracefully falling back to no indoor-shelter effect - that
+  floor is the reason.
+
+---
+
+### v3.4.28
+- **Fixed the spell-resist reagent buff (Bugloss etc.) continuing to
+  decay against real wall-clock time while the master "Enable Frostfall"
+  toggle is off.** It was already paused correctly across a real logout
+  (since v3.4.21) but not across the master toggle — `FV:SetEnabled(false)`
+  never touched it, so the buff's absolute end-time kept advancing
+  regardless of the toggle.
+- `FV:SetEnabled(false)` now snapshots the remaining time (reusing the
+  existing `SaveSpellResistRemaining`) and stops the countdown tick;
+  `FV:SetEnabled(true)` resumes it (reusing the existing
+  `RestoreSpellResistBuff`) the same way a relogin already did.
+- `FV:Initialize()` now only restores/resumes the buff if the master
+  toggle is already on at load — previously it restored (and immediately
+  started decaying) the countdown unconditionally, even when loading in
+  with the toggle off.
+- **Fixed a related edge case**: a real logout firing while the buff was
+  already paused by the master toggle would previously wipe the paused
+  snapshot to `nil` (it saw no active countdown and assumed there had
+  never been a buff at all). It now leaves an already-paused snapshot
+  alone instead of clearing it.
+
+---
+
+### v3.4.27
+- **Fixed the HUD showing empty (no data) on login** when the master
+  "Enable Frostfall" toggle is off but "Show Thermal Status HUD" is on.
+  `HUD:Initialize()` set visibility from `FV.SV.showHUD` alone, ignoring
+  `FV.SV.enabled` — unlike the overlay (which starts hidden and only
+  becomes visible via the master-toggle-gated `Update()` call), the HUD
+  eagerly set its own visibility at load time, before the tick loop that
+  actually populates it had run even once.
+- Now hidden unless both `showHUD` and `enabled` are true.
+  `FV:SetEnabled()` (the mid-session toggle path, e.g. `/ff` or the
+  settings checkbox) was already correct since v3.4.14 — this only
+  affected loading in with the master toggle already off.
+
+---
+
+### v3.4.26
+- **Raised the indoor shelter effect's cap from 5°C to 15°C** — 1.5x the
+  spell-resist reagent buff's 10°C cap, up from 0.5x, per explicit
+  request. Being genuinely sheltered indoors is now treated as stronger
+  protection than the temporary alchemical buff, not weaker.
+- No other change — still stacks additively with the spell-resist reagent
+  buff (each capped independently, now 15°C and 10°C respectively), still
+  requires `LibInteriorDetection` to be installed.
+
+---
+
+### v3.4.25
+- **New: passive indoor-shelter steadying effect** via `LibInteriorDetection`
+  (a new `## OptionalDependsOn` — not required; degrades to a no-op if not
+  installed). Whenever `LibInteriorDetection` reports the player is
+  currently indoors, effective temperature is nudged toward neutral
+  (22°C), capped at 5°C — half the spell-resist reagent buff's 10°C cap
+  at the time (later raised to 1.5x in v3.4.26).
+- **This STACKS ADDITIVELY with the spell-resist reagent buff** (Bugloss
+  etc.) rather than replacing or capping against it — both effects are
+  computed independently from the player's true temperature differential
+  and summed. Standing indoors while under the reagent buff gives the
+  combined steadying of both, each still capped on its own.
+- `FV:GetEffectiveTemp()` is restructured around a shared
+  `SteadyingOffset()` helper used by both effects, rather than one inline
+  calculation specific to the reagent buff.
+- `/ff status` and the HUD's "FEELS LIKE" indicator (renamed
+  `UpdateSpellResistIndicator` -> `UpdateSteadyingIndicator` in
+  `ui/TemperatureHUD.lua`) now report either or both effects when active.
+- **`LibZoneTemp` updated alongside this (v2.3.16)** to prefer
+  `LibInteriorDetection` for its own interior penalty and weather/time
+  shielding calculation too — previously delve/dungeon/trial-only via
+  `LibZone`, now covers ordinary buildings and player houses when
+  `LibInteriorDetection` is installed. See `LibZoneTemp`'s own changelog.
+- No SavedVariables schema changes — the new state is derived live each
+  tick, not persisted.
+
+---
+
+**Correcting the record**: v3.4.25 through v3.4.29 above were originally
+drafted and shipped as an erroneous "v3.4.24" through "v3.4.28," built
+against a stale v3.4.23 baseline that predated this addon's real v3.4.24
+(the sit/sleep-detection port and Screen Overlay Max Opacity slider,
+below) — a version collision discovered only when the actual latest
+published files were compared directly against what that work was based
+on. That erroneous numbering was never the actual released v3.4.24-28 and
+is not reflected anywhere else in this changelog. The entries above are
+the correct continuation, built on top of the real v3.4.24 rather than
+the stale baseline. No functional loss: none of the fixes themselves
+changed, only which version numbers they're correctly attached to.
+
+---
+
 ### v3.4.24
 - **Temperature emotes no longer interrupt sitting or sleeping.** Previously,
   a cold/hot temperature emote firing while the player was mid-sit or

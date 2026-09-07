@@ -1,6 +1,6 @@
 -------------------------------------------------------------------------------
 -- LibZoneTemp
--- Version: 2.3.15
+-- Version: 2.3.18
 --
 -- A library that calculates ambient temperatures (in Celsius) for ESO zones.
 --
@@ -36,7 +36,7 @@
 -------------------------------------------------------------------------------
 
 local LIB_NAME    = "LibZoneTemp"
-local LIB_VERSION = 19
+local LIB_VERSION = 21
 
 -- Guard against loading an older version over a newer one.
 if LibZoneTemp and LibZoneTemp.version >= LIB_VERSION then
@@ -2215,7 +2215,7 @@ end
 ---
 --- @param zoneId         number   The zone ID used for the base-temp table lookup
 ---                                (may be an overland parent; see CalculateTemperature).
---- @param isInterior     boolean  True if the zone is a delve, dungeon, or trial.
+--- @param isInterior     boolean  True if the player is indoors - via LibInteriorDetection if installed (any building/interior it detects), otherwise a delve/dungeon/trial fallback.
 --- @param specificZoneId number|nil  The player's exact current zone ID, if it
 ---                                differs from zoneId (e.g. the delve itself,
 ---                                as opposed to the overland zone it inherits
@@ -2255,7 +2255,7 @@ end
 --- @param zoneId         number   The zone ID used for the base-temp table lookup
 ---                                (may be an overland parent zone; see
 ---                                GetCurrentTemperature).
---- @param isInterior     boolean  True if the zone is a delve, dungeon, or trial.
+--- @param isInterior     boolean  True if the player is indoors - via LibInteriorDetection if installed (any building/interior it detects), otherwise a delve/dungeon/trial fallback.
 --- @param loreHour       number   Hour 0–23 from LibClockTST.
 --- @param isSwimming     boolean  True if the player is currently swimming.
 --- @param specificZoneId number|nil  The player's exact current zone ID; passed
@@ -2307,10 +2307,29 @@ function lib.GetCurrentTemperature()
     -- fall back to the parent (e.g. a Wrothgar delve inherits Wrothgar's climate).
     local climateZoneId = ZONE_BASE_TEMPS[zoneId] and zoneId or (parentZoneId or zoneId)
 
-    -- Determine if we are in an interior zone (delve / dungeon / trial).
-    local _, _, isInDelve, isInPublicDungeon, isInGroupDungeon, isInTrial =
-        LibZone:GetCurrentZoneAndGroupStatus()
-    local isInterior = isInDelve or isInPublicDungeon or isInGroupDungeon or isInTrial
+    -- Determine if we are in an interior zone. Prefers LibInteriorDetection's
+    -- live, general-purpose indoor detection (catches ordinary buildings,
+    -- player houses, and door transitions, not just delve/dungeon/trial)
+    -- when it's installed; falls back to the original LibZone-based
+    -- delve/dungeon/trial-only check otherwise, so this behaves exactly as
+    -- before for anyone who doesn't have LibInteriorDetection.
+    -- LibInteriorDetection is a NEW ## OptionalDependsOn (2.3.16) - not a
+    -- hard requirement, since other addons may depend on LibZoneTemp
+    -- without wanting to also pull in LibInteriorDetection.
+    local isInterior
+    if LibInteriorDetection and LibInteriorDetection.IsPlayerIndoors then
+        local liveIsInterior = LibInteriorDetection.IsPlayerIndoors()
+        if liveIsInterior ~= nil then
+            isInterior = liveIsInterior
+        end
+    end
+    if isInterior == nil then
+        -- Fallback: LibInteriorDetection not installed, or its state hasn't
+        -- been established yet (e.g. before its first EVENT_PLAYER_ACTIVATED).
+        local _, _, isInDelve, isInPublicDungeon, isInGroupDungeon, isInTrial =
+            LibZone:GetCurrentZoneAndGroupStatus()
+        isInterior = isInDelve or isInPublicDungeon or isInGroupDungeon or isInTrial
+    end
 
     -- Retrieve the current lore hour from LibClockTST.
     local loreHour = 12  -- sensible noon default if clock is unavailable

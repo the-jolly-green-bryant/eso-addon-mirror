@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/PinkBanther/PinkB-s-MiniMap__d636a31f-9393-47d7-b16f-8d932870cff3",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "PinkBanther",
+  "canonical_id": "bethesda:d636a31f-9393-47d7-b16f-8d932870cff3",
+  "content_id": "d636a31f-9393-47d7-b16f-8d932870cff3",
+  "deleted": false,
+  "fingerprint": "10aed3e197a5287e8e214cc54063c3fc9419b1072d28ef4dcd75a184b3543728",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "d636a31f-9393-47d7-b16f-8d932870cff3",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/d636a31f-9393-47d7-b16f-8d932870cff3",
+  "title": "PinkB's MiniMap"
+}

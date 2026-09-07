@@ -341,6 +341,8 @@ function Data.GetRequiredMaterialQuantity(patternIndex, materialIndex)
     if craftType == Data.CRAFT_JEWELRY or craftType == 7 then
         styleId = 0
         return Data.GetJewelryOunces(patternIndex, Data.GetCraftingTier(7))
+    elseif Data.GetProbeStyleId then
+        styleId = Data.GetProbeStyleId(patternIndex) or 1
     elseif Data.GetAvailableStyleId then
         styleId = Data.GetAvailableStyleId(patternIndex) or 1
     end
@@ -378,62 +380,106 @@ end
 
 -- Pick a style the character KNOWS and has materials for.
 -- patternIndex (optional) lets us prefer GetFirstKnownItemStyleId for that pattern.
-function Data.GetAvailableStyleId(patternIndex)
-    local function hasStyleMats(styleId)
-        if not styleId or styleId < 1 then return false end
-        if GetCurrentSmithingStyleItemCount then
-            local count = GetCurrentSmithingStyleItemCount(styleId)
-            if count and count > 0 then return true end
-        end
-        return false
+function Data.IsStyleKnown(styleId, patternIndex)
+    if not styleId or styleId < 1 then return false end
+    if IsSmithingStyleKnown then
+        return IsSmithingStyleKnown(styleId, patternIndex or 1) and true or false
     end
+    return true
+end
 
-    local function isKnown(styleId)
-        if not styleId or styleId < 1 then return false end
-        if IsSmithingStyleKnown then
-            -- patternIndex 1 is a safe probe when none given
-            return IsSmithingStyleKnown(styleId, patternIndex or 1)
-        end
-        return true
+function Data.CountStyleMaterial(styleId)
+    if not styleId or styleId < 1 then return 0 end
+    if GetCurrentSmithingStyleItemCount then
+        local n = GetCurrentSmithingStyleItemCount(styleId)
+        if n and n > 0 then return n end
     end
+    local itemId = Data.GetStyleMaterialItemId(styleId)
+    if itemId then
+        return Data.CountItemById(itemId, false) or 0
+    end
+    return 0
+end
 
-    -- 1) Game's preferred known style for this pattern
+-- Known styles, racial first, then the rest of unlocked motifs.
+function Data.ListKnownStyles(patternIndex)
+    local seen, list = {}, {}
+    local function add(styleId)
+        styleId = tonumber(styleId)
+        if not styleId or styleId < 1 or seen[styleId] then return end
+        if not Data.IsStyleKnown(styleId, patternIndex) then return end
+        seen[styleId] = true
+        list[#list + 1] = styleId
+    end
     if patternIndex and GetFirstKnownItemStyleId then
-        local sid = GetFirstKnownItemStyleId(patternIndex)
-        if sid and isKnown(sid) and hasStyleMats(sid) then
-            return sid
-        end
-        -- known but maybe no mats — still prefer it if any known
-        if sid and isKnown(sid) then
-            return sid
-        end
+        add(GetFirstKnownItemStyleId(patternIndex))
     end
-
-    -- 2) Racial styles 1..9 that are known AND have materials
     for styleId = 1, 9 do
-        if isKnown(styleId) and hasStyleMats(styleId) then
-            return styleId
-        end
+        add(styleId)
     end
-
-    -- 3) Any valid known style with materials
     if GetNumValidItemStyles and GetValidItemStyleId then
         local num = GetNumValidItemStyles() or 0
         for i = 1, num do
-            local styleId = GetValidItemStyleId(i)
-            if isKnown(styleId) and hasStyleMats(styleId) then
-                return styleId
-            end
+            add(GetValidItemStyleId(i))
         end
     end
+    return list
+end
 
-    -- 4) Fallback: first known racial without mat check
-    for styleId = 1, 9 do
-        if isKnown(styleId) then
-            return styleId
-        end
+-- Pick a known style that still has material after `reserved` allocations
+-- in this batch. Never returns a style with 0 stones if another known style has any.
+-- reserved[styleId] = already assigned jobs in the current queue build.
+function Data.GetAvailableStyleId(patternIndex, reserved)
+    reserved = reserved or Data._styleReserve
+    local known = Data.ListKnownStyles(patternIndex)
+    local preferred = nil
+    if patternIndex and GetFirstKnownItemStyleId then
+        preferred = GetFirstKnownItemStyleId(patternIndex)
     end
 
+    local function remaining(styleId)
+        return Data.CountStyleMaterial(styleId) - (reserved and reserved[styleId] or 0)
+    end
+
+    if preferred and Data.IsStyleKnown(preferred, patternIndex) and remaining(preferred) > 0 then
+        return preferred
+    end
+    for i = 1, #known do
+        if remaining(known[i]) > 0 then
+            return known[i]
+        end
+    end
+    return nil
+end
+
+-- Consume one style stone from the batch budget. Returns styleId or nil.
+function Data.ReserveStyleForPattern(patternIndex, reserved)
+    reserved = reserved or Data._styleReserve
+    if not reserved then
+        reserved = {}
+        Data._styleReserve = reserved
+    end
+    local styleId = Data.GetAvailableStyleId(patternIndex, reserved)
+    if not styleId then return nil end
+    reserved[styleId] = (reserved[styleId] or 0) + 1
+    return styleId
+end
+
+function Data.ResetStyleReserve()
+    Data._styleReserve = {}
+    return Data._styleReserve
+end
+
+-- Style id that is valid for result-link probes even when bags are empty.
+function Data.GetProbeStyleId(patternIndex)
+    local sid = Data.GetAvailableStyleId(patternIndex)
+    if sid then return sid end
+    if patternIndex and GetFirstKnownItemStyleId then
+        local pref = GetFirstKnownItemStyleId(patternIndex)
+        if pref and pref >= 1 then return pref end
+    end
+    local known = Data.ListKnownStyles(patternIndex)
+    if known[1] then return known[1] end
     return 1
 end
 

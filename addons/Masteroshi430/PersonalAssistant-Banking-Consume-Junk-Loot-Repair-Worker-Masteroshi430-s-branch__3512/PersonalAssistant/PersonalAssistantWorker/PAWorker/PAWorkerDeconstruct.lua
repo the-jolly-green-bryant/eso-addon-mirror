@@ -58,7 +58,9 @@ local function _canWeaponArmorJewelryBeDeconstructed(savedVarsGroup, itemLink, i
 					
                     if (not canBeResearched and savedVarsGroup.autoMarkKnownTraits) or (canBeResearched and savedVarsGroup.autoMarkUnknownTraits) then
                         local isIntricateTrait = PAHF.isItemLinkIntricateTraitType(itemLink)
-                        if not isIntricateTrait or (isIntricateTrait and savedVarsGroup.autoMarkIntricateTrait) then
+                        local isOrnateTrait = PAHF.isItemLinkOrnateTraitType(itemLink)
+                        if (not isIntricateTrait or (isIntricateTrait and savedVarsGroup.autoMarkIntricateTrait))
+                                and (not isOrnateTrait or (isOrnateTrait and savedVarsGroup.autoMarkOrnate)) then
 						    if PA.Worker.traitsAlreadySaved[craftingSkillType..researchLineName..trait] then
 							    -- deconstructed if we already saved an item for research with that exact same trait
 								PAW.println(SI_PA_CHAT_ALREADY_GOT_ITEM_WITH_TRAIT, researchLineName, GetString("SI_ITEMTRAITTYPE",trait))

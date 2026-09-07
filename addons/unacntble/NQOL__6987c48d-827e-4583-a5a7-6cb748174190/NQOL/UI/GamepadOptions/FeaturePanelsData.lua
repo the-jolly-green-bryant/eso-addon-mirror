@@ -557,6 +557,7 @@ function GamepadOptions.BuildGroupFrameOptionsData()
         GamepadOptions.BuildGroupShowOnlyInCombatOption(),
         GamepadOptions.BuildGroupShowCustomNamesOption(),
         GamepadOptions.BuildGroupShowInSettingsOption(),
+        GamepadOptions.BuildGroupShowShieldOption(),
         GamepadOptions.BuildGroupShowTraumaOption(),
         GamepadOptions.BuildGroupShowNoHealingOption(),
         GamepadOptions.WithHeader(GamepadOptions.BuildGroupHorizontalPositionOption(), NQOL.L("ui.headers.position_cf1c85a")),
@@ -585,6 +586,7 @@ function GamepadOptions.BuildGroupFrameOptionsData()
         GamepadOptions.BuildGroupDamageColorOption(),
         GamepadOptions.BuildGroupTankColorOption(),
         GamepadOptions.BuildGroupHealerColorOption(),
+        GamepadOptions.BuildGroupShieldColorOption(),
         GamepadOptions.BuildGroupTraumaColorOption(),
         GamepadOptions.BuildGroupResurrectingColorOption(),
     }

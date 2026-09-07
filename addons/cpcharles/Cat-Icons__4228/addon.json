@@ -1,11 +1,20 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/cpcharles/Cat-Icons__4228",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "cpcharles",
   "canonical_id": "esoui:4228",
   "category_id": "17",
   "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
     {
       "name": "Season Zero",
       "version": "11.3.0"
@@ -65,7 +74,7 @@
     "CatIcons"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4228/",
-  "fingerprint": "15cd720698d0d3c080acdae77b610ae0a1b1aa9eee58c9d451ccc3b7f1ab8566",
+  "fingerprint": "d820554c00f86c867dcc1f5352b7789a474774f1333d210fdf92660935ba0577",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw14448.png"
   ],
@@ -75,11 +84,11 @@
   "source_id": "4228",
   "source_url": "https://www.esoui.com/downloads/info4228-CatIcons.html",
   "stats": {
-    "downloads": 1988,
+    "downloads": 2175,
     "favorites": 4,
-    "monthly_downloads": 85
+    "monthly_downloads": 150
   },
   "title": "Cat Icons",
-  "updated_at": 1775397596000,
-  "version": "1.5"
+  "updated_at": 1788693054000,
+  "version": "1.6"
 }

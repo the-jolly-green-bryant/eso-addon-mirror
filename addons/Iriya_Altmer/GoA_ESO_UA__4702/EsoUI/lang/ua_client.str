@@ -11351,7 +11351,7 @@
 [SI_TRIBUTE_TARGET_VIEWER_SELECT_ACTION] = "Вибрати"
 [SI_TRIBUTE_TARGET_VIEWER_SHOW_BOARD_ACTION] = "Показати поле"
 [SI_TRIBUTE_TARGET_VIEWER_SHOW_TARGETS_ACTION] = "Показати цілі"
-[SI_TRIBUTE_TOOLTIP_CITY_NAME] = "Gonfalon Bay"
+[SI_TRIBUTE_TOOLTIP_CITY_NAME] = "Гонфалон-Бей"
 [SI_TRIBUTE_TOOLTIP_UNAVAILABLE_FORMATTER] = "<<X:1>>\n\n<<X:2>>"
 [SI_TRIBUTE_TOOLTIP_UNAVAILABLE_REQUIREMENT] = "Потребує завершення завдання «<<1>>», яке можна отримати в <<2>> в межах <<3>>."
 [SI_TRIBUTE_TOOLTIP_UNAVAILABLE_UNLOCK] = "Ви можете розблокувати доступ до <<1>>, оновившись до <<2>>."

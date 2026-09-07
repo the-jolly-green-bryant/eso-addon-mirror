@@ -226,6 +226,11 @@ function GamepadOptions.BuildGroupShowInSettingsOption()
     return GamepadOptions.BuildCheckboxOption(GamepadOptions.GROUP_FRAME_PANEL_ID, 3, playerBars.GetGroupShowInSettingsLabel(), playerBars.GetGroupShowInSettingsTooltip(), playerBars.GetGroupShowInSettings, playerBars.SetGroupShowInSettings)
 end
 
+function GamepadOptions.BuildGroupShowShieldOption()
+    local playerBars = NQOL.Features.PlayerBars
+    return GamepadOptions.BuildCheckboxOption(GamepadOptions.GROUP_FRAME_PANEL_ID, 36, playerBars.GetGroupShowShieldLabel(), playerBars.GetGroupShowShieldTooltip(), playerBars.GetGroupShowShield, playerBars.SetGroupShowShield)
+end
+
 function GamepadOptions.BuildGroupShowTraumaOption()
     local playerBars = NQOL.Features.PlayerBars
     return GamepadOptions.BuildCheckboxOption(GamepadOptions.GROUP_FRAME_PANEL_ID, 4, playerBars.GetGroupShowTraumaLabel(), playerBars.GetGroupShowTraumaTooltip(), playerBars.GetGroupShowTrauma, playerBars.SetGroupShowTrauma)
@@ -459,6 +464,11 @@ end
 function GamepadOptions.BuildGroupHealerColorOption()
     local playerBars = NQOL.Features.PlayerBars
     return GamepadOptions.BuildColorOption(GamepadOptions.GROUP_FRAME_PANEL_ID, 22, playerBars.GetGroupHealerColorLabel(), playerBars.GetGroupHealerColorTooltip(), playerBars.GetGroupHealerColor, playerBars.SetGroupHealerColor)
+end
+
+function GamepadOptions.BuildGroupShieldColorOption()
+    local playerBars = NQOL.Features.PlayerBars
+    return GamepadOptions.BuildColorOption(GamepadOptions.GROUP_FRAME_PANEL_ID, 37, playerBars.GetGroupShieldColorLabel(), playerBars.GetGroupShieldColorTooltip(), playerBars.GetGroupShieldColor, playerBars.SetGroupShieldColor)
 end
 
 function GamepadOptions.BuildGroupTraumaColorOption()

@@ -1,6 +1,6 @@
 ------------------------------------------------------------
 -- Character Gear UI - Companion equipment
--- Version 0.4.6
+-- Version 0.4.7
 -- API 101050 / 101051
 ------------------------------------------------------------
 
@@ -18,6 +18,8 @@ local OUTFIT_ICON_TEXTURE =
     "EsoUI/Art/Dye/dyes_tabicon_dye_down.dds"
 local COSTUME_ICON_TEXTURE =
     "EsoUI/Art/Dye/dyes_tabicon_costumedye_down.dds"
+local ITEM_DETAIL_BACKGROUND_TEXTURE =
+    "EsoUI/Art/Performance/StatusMeterMunge.dds"
 
 local REFERENCE_SCREEN_WIDTH = 3440
 local REFERENCE_SCREEN_HEIGHT = 1440
@@ -42,6 +44,7 @@ local COMPANION_DEFAULTS =
     companionHeaderPositionX = 0,
     companionHeaderPositionY = 100,
     companionEquipmentSlotSize = 68,
+    companionShowSlotBackgrounds = true,
     companionShowItemBorders = true,
     companionEquipmentIndicatorFontSize = 17,
     companionFigureScale = 1.2,
@@ -319,6 +322,30 @@ end
 
 local function CreateItemDetailControls(slotControl)
 
+    local background =
+        slotControl.CompanionGearUIItemDetailBackground
+
+    if not background then
+
+        background = WINDOW_MANAGER:CreateControl(
+            slotControl:GetName()
+                .. "CompanionGearUIItemDetailBackground",
+            slotControl,
+            CT_TEXTURE
+        )
+        background:SetTexture(
+            ITEM_DETAIL_BACKGROUND_TEXTURE
+        )
+        background:SetDrawLayer(DL_BACKGROUND)
+        background:SetDrawLevel(0)
+        background:SetMouseEnabled(false)
+        background:SetHidden(true)
+
+        slotControl.CompanionGearUIItemDetailBackground =
+            background
+
+    end
+
     local nameLabel =
         slotControl.CompanionGearUIItemNameLabel
 
@@ -336,6 +363,27 @@ local function CreateItemDetailControls(slotControl)
         nameLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
 
         slotControl.CompanionGearUIItemNameLabel = nameLabel
+
+    end
+
+    local traitLabel =
+        slotControl.CompanionGearUITraitLabel
+
+    if not traitLabel then
+
+        traitLabel = WINDOW_MANAGER:CreateControl(
+            slotControl:GetName()
+                .. "CompanionGearUITraitLabel",
+            slotControl,
+            CT_LABEL
+        )
+        traitLabel:SetDrawLayer(DL_OVERLAY)
+        traitLabel:SetDrawLevel(6)
+        traitLabel:SetMouseEnabled(false)
+        traitLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+        traitLabel:SetColor(1, 1, 1, 1)
+
+        slotControl.CompanionGearUITraitLabel = traitLabel
 
     end
 
@@ -400,21 +448,104 @@ local function CreateItemDetailControls(slotControl)
 
     end
 
-    return nameLabel, typeLabel, outfitIcon, costumeIcon
+    return
+        background,
+        nameLabel,
+        typeLabel,
+        traitLabel,
+        outfitIcon,
+        costumeIcon
 
 end
 
 local function HideItemDetailControls(
+    background,
     nameLabel,
     typeLabel,
+    traitLabel,
     outfitIcon,
     costumeIcon
 )
 
+    background:SetHidden(true)
     nameLabel:SetHidden(true)
     typeLabel:SetHidden(true)
+    traitLabel:SetHidden(true)
     outfitIcon:SetHidden(true)
     costumeIcon:SetHidden(true)
+
+end
+
+local function UpdateItemDetailBackground(
+    background,
+    slotControl,
+    side,
+    contentWidth
+)
+
+    if not companion.saved.companionShowSlotBackgrounds then
+        background:SetHidden(true)
+        return
+    end
+
+    local slotWidth = slotControl:GetWidth()
+    local backgroundWidth =
+        slotWidth + 10 + math.max(contentWidth, 0) + 12
+
+    background:ClearAnchors()
+    background:SetWidth(backgroundWidth)
+
+    if side == "left" then
+        background:SetTextureCoords(
+            0.875,
+            0.12890625,
+            0.40625,
+            0.59375
+        )
+        background:SetAnchor(
+            TOPRIGHT,
+            slotControl,
+            TOPRIGHT
+        )
+        background:SetAnchor(
+            BOTTOMRIGHT,
+            slotControl,
+            BOTTOMRIGHT
+        )
+    else
+        background:SetTextureCoords(
+            0.12890625,
+            0.875,
+            0.40625,
+            0.59375
+        )
+        background:SetAnchor(
+            TOPLEFT,
+            slotControl,
+            TOPLEFT
+        )
+        background:SetAnchor(
+            BOTTOMLEFT,
+            slotControl,
+            BOTTOMLEFT
+        )
+    end
+
+    background:SetHidden(false)
+
+end
+
+local function GetCompanionTraitText(itemLink)
+
+    local traitType = GetItemLinkTraitType(itemLink)
+
+    if not traitType
+        or traitType == ITEM_TRAIT_TYPE_NONE
+    then
+        return ""
+    end
+
+    return GetString("SI_ITEMTRAITTYPE", traitType)
 
 end
 
@@ -867,8 +998,10 @@ function companion.RefreshSingleSlotDetail(
     end
 
     local border = CreateQualityBorder(slotControl)
-    local nameLabel,
+    local background,
+        nameLabel,
         typeLabel,
+        traitLabel,
         outfitIcon,
         costumeIcon =
             CreateItemDetailControls(slotControl)
@@ -881,8 +1014,10 @@ function companion.RefreshSingleSlotDetail(
     if not hasItem then
         border:SetHidden(true)
         HideItemDetailControls(
+            background,
             nameLabel,
             typeLabel,
+            traitLabel,
             outfitIcon,
             costumeIcon
         )
@@ -963,6 +1098,8 @@ function companion.RefreshSingleSlotDetail(
     nameLabel:SetColor(qualityColor:UnpackRGBA())
     nameLabel:SetHidden(false)
 
+    local contentWidth = nameLabel:GetTextWidth()
+
     local itemLink = GetItemLink(
         BAG_COMPANION_WORN,
         slotData.slotId,
@@ -975,8 +1112,15 @@ function companion.RefreshSingleSlotDetail(
 
     if typeText == "" then
         typeLabel:SetHidden(true)
+        traitLabel:SetHidden(true)
         outfitIcon:SetHidden(true)
         costumeIcon:SetHidden(true)
+        UpdateItemDetailBackground(
+            background,
+            slotControl,
+            slotData.side,
+            contentWidth
+        )
         return
     end
 
@@ -1065,6 +1209,64 @@ function companion.RefreshSingleSlotDetail(
 
     outfitIcon:SetHidden(not showOutfitIcon)
     costumeIcon:SetHidden(not showCostumeIcon)
+
+    local typeRowWidth = textWidth
+
+    if showOutfitIcon then
+        typeRowWidth = typeRowWidth + 8 + iconSize
+    end
+
+    if showCostumeIcon then
+        typeRowWidth = typeRowWidth
+            + (showOutfitIcon and 4 or 8)
+            + iconSize
+    end
+
+    contentWidth = math.max(contentWidth, typeRowWidth)
+
+    local traitText = GetCompanionTraitText(itemLink)
+
+    if traitText ~= "" then
+        traitLabel:SetFont(typeFont)
+        traitLabel:SetDimensions(420, typeFontSize + 8)
+        traitLabel:ClearAnchors()
+
+        if slotData.side == "left" then
+            traitLabel:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+            traitLabel:SetAnchor(
+                TOPRIGHT,
+                typeLabel,
+                BOTTOMRIGHT,
+                0,
+                -2
+            )
+        else
+            traitLabel:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+            traitLabel:SetAnchor(
+                TOPLEFT,
+                typeLabel,
+                BOTTOMLEFT,
+                0,
+                -2
+            )
+        end
+
+        traitLabel:SetText(traitText)
+        traitLabel:SetHidden(false)
+        contentWidth = math.max(
+            contentWidth,
+            traitLabel:GetTextWidth()
+        )
+    else
+        traitLabel:SetHidden(true)
+    end
+
+    UpdateItemDetailBackground(
+        background,
+        slotControl,
+        slotData.side,
+        contentWidth
+    )
 
 end
 
@@ -1392,6 +1594,25 @@ function companion.CreateSettingsControls()
                 setFunc = function(value)
                     saved.companionEquipmentSlotSize = value
                     companion.ApplyEquipmentLayout()
+                end,
+                width = "full",
+            },
+            {
+                type = "checkbox",
+                name = GetString(
+                    SI_CHARACTER_GEAR_UI_COMPANION_SHOW_SLOT_BACKGROUNDS
+                ),
+                tooltip = GetString(
+                    SI_CHARACTER_GEAR_UI_COMPANION_SHOW_SLOT_BACKGROUNDS_TOOLTIP
+                ),
+                default = COMPANION_DEFAULTS
+                    .companionShowSlotBackgrounds,
+                getFunc = function()
+                    return saved.companionShowSlotBackgrounds
+                end,
+                setFunc = function(value)
+                    saved.companionShowSlotBackgrounds = value
+                    companion.RefreshEquipmentDetails()
                 end,
                 width = "full",
             },

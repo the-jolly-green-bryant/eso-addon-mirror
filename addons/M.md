@@ -173,6 +173,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Mute Bards Improved](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/psi-pisi/Mute-Bards-Improved__4016) | psi-pisi | PC / Mac | 1.0.5 |
 | [MuteyPacrooti](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/L_cky/MuteyPacrooti__5ea04c1b-93b5-42c8-9870-118a7b08e4ae) | L_cky | Console | — |
 | [MuteyPacrooti](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/L_cky/MuteyPacrooti__4507) | L_cky | PC / Mac | 0.3.0 |
+| [MWeyes](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/dicen9/MWeyes__0bb2a403-2da7-4c0d-8546-7957cbc8735b) | dicen9 | Console | — |
 | [My Build Redux - Updated](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/d2allgr/My-Build-Redux---Updated__2809) | d2allgr | PC / Mac | 3.4.0 |
 | [My Collection](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/AlvinTheFox/My-Collection__2690) | AlvinTheFox | PC / Mac | 0.1.14 |
 | [My Damage Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Architectofmusic/My-Damage-Tracker__709a6cab-1710-4ae0-803a-1b4957a0a59a) | Architectofmusic | Console | — |

@@ -32,21 +32,29 @@
 			<Dimensions x="22" y="20" />
 		</Button>
 
-		<Button name="LE_ConfigButtonTemplate" inherits="LE_ButtonBehaviorClickSoundTemplate" virtual="true" >
-			<Dimensions x="30" y="30" />
-			<Anchor point="LEFT" />
-			<Textures
-				normal="esoui/art/buttons/edit_up.dds"
-				mouseOver="esoui/art/buttons/edit_over.dds"
-				pressed="esoui/art/buttons/edit_down.dds"
-				disabled="esoui/art/buttons/edit_disabled.dds"
-			/>
-		</Button>
-
-		<Control name="LE_FavoriteEmoteDefaultButtonTemplate" virtual="true" >
+		<Control name="LE_FavoriteEmoteButtonTemplateBase" virtual="true" >
 			<Controls>
 
-				<Button name="$(parent)ConfigButton" inherits="LE_ConfigButtonTemplate" />
+				<Button name="$(parent)ConfigButton" inherits="LE_ButtonBehaviorClickSoundTemplate" >
+					<Dimensions x="30" y="30" />
+					<Anchor point="LEFT" />
+					<Textures
+						normal="esoui/art/buttons/edit_up.dds"
+						mouseOver="esoui/art/buttons/edit_over.dds"
+						pressed="esoui/art/buttons/edit_down.dds"
+						disabled="esoui/art/buttons/edit_disabled.dds"
+					/>
+				</Button>
+
+				<Label name="$(parent)KeybindLabel" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" inherits="ZO_LargeKeyMarkupLabel" hidden="true" >
+					<Anchor point="LEFT" relativePoint="RIGHT" offsetX="15" offsetY="-1" />
+				</Label>
+
+			</Controls>
+		</Control>
+
+		<Control name="LE_FavoriteEmoteDefaultButtonTemplate" inherits="LE_FavoriteEmoteButtonTemplateBase" virtual="true" >
+			<Controls>
 
 				<Button name="$(parent)EmoteButton" inherits="LE_EmoteDefaultButtonTemplate" >
 					<Anchor point="TOPLEFT" offsetX="30" />
@@ -56,10 +64,8 @@
 			</Controls>
 		</Control>
 
-		<Control name="LE_FavoriteEmoteTextButtonTemplate" virtual="true" >
+		<Control name="LE_FavoriteEmoteTextButtonTemplate" inherits="LE_FavoriteEmoteButtonTemplateBase" virtual="true" >
 			<Controls>
-
-				<Button name="$(parent)ConfigButton" inherits="LE_ConfigButtonTemplate" />
 
 				<Button name="$(parent)EmoteButton" inherits="LE_EmoteTextButtonTemplate" >
 					<Anchor point="TOPLEFT" offsetX="30" />

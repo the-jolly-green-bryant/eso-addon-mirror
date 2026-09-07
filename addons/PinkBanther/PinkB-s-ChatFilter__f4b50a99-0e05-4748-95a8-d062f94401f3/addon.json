@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/PinkBanther/PinkB-s-ChatFilter__f4b50a99-0e05-4748-95a8-d062f94401f3",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "PinkBanther",
+  "canonical_id": "bethesda:f4b50a99-0e05-4748-95a8-d062f94401f3",
+  "content_id": "f4b50a99-0e05-4748-95a8-d062f94401f3",
+  "deleted": false,
+  "fingerprint": "dc21928adb9026494bbcbc3ed59b0e102b61ccf98d1308b6579d67a12962aa65",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "f4b50a99-0e05-4748-95a8-d062f94401f3",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/f4b50a99-0e05-4748-95a8-d062f94401f3",
+  "title": "PinkB's ChatFilter"
+}

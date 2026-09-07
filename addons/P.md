@@ -38,16 +38,6 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Pawksickles Updated and jpFix](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/2ch/Pawksickles-Updated-and-jpFix__1401) | 2ch | PC / Mac | 1.5.2 |
 | [Pawksickles updated for High Isle](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/trollusk/Pawksickles-updated-for-High-Isle__3422) | trollusk | PC / Mac | 1.6.1 |
 | [PB](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/alexdragian/PB__2499) | alexdragian | PC / Mac | 0.0.23 |
-| [PB's ChatAssistant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PB-s-ChatAssistant__416eb892-aa32-4a10-8d1a-7ba7cf27cedf) | PinkBanther | Console | — |
-| [PB's ChatAssistant(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PB-s-ChatAssistant-Beta__8409de55-043d-4bcc-8876-395671fdc7b5) | PinkBanther | Console | — |
-| [PB's ChatFilter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PB-s-ChatFilter__f4b50a99-0e05-4748-95a8-d062f94401f3) | PinkBanther | Console | — |
-| [PB's ChatFilter(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PB-s-ChatFilter-Beta__f84f4752-ff0e-42c9-b73d-d5ea97508b03) | PinkBanther | Console | — |
-| [PB's MiniMap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PB-s-MiniMap__d636a31f-9393-47d7-b16f-8d932870cff3) | PinkBanther | Console | — |
-| [PB's MiniMap(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PB-s-MiniMap-Beta__d0219382-bec1-477e-bcc2-d2b0c7138a79) | PinkBanther | Console | — |
-| [PB's QuestTrackerFontChanger](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PB-s-QuestTrackerFontChanger__cc94a283-12a5-4e75-8e54-727d2ab6977c) | PinkBanther | Console | — |
-| [PB's QuestTrackerFontChanger(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PB-s-QuestTrackerFontChanger-Beta__35920898-3b27-4e32-9f59-c0d8fee0b3bb) | PinkBanther | Console | — |
-| [PBs' NamePlateFontChanger](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PBs-NamePlateFontChanger__c370eaba-64de-4a9b-9d9a-d6bd0c3db0aa) | PinkBanther | Console | — |
-| [PBs' NamePlateFontChanger(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PBs-NamePlateFontChanger-Beta__dda2c060-41fd-485e-b1f1-39c1b6f7ca6f) | PinkBanther | Console | — |
 | [pChat (Chat customization & help: look/notification/sound/automation/history)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Puddy/pChat-Chat-customization-help-look-notification-sound-automation-history__93) | Puddy | PC / Mac | 10.0.7.4 |
 | [pChat - jp Nickname Patch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Marify/pChat---jp-Nickname-Patch__2697) | Marify | PC / Mac | 1.3.12 |
 | [pChatZHPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FusRoDah/pChatZHPatch__3908) | FusRoDah | PC / Mac | 10.0.5.3 |
@@ -68,7 +58,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Persona](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/Persona__a3bda6e6-a854-4387-825a-dccb05d706d8) | SugaComa | Console | — |
 | [Personal Assistant + Companions](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ayantir/Personal-Assistant-Companions__1296) | Ayantir | PC / Mac | 19 |
 | [Personal Dps Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shienar/Personal-Dps-Tracker__c9b85989-bab6-4000-a3fc-80ed49e25e87) | Shienar | Console | — |
-| [PersonalAssistant (Banking, Consume, Junk, Loot, Repair, Worker) \[Masteroshi430's branch\]](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/PersonalAssistant-Banking-Consume-Junk-Loot-Repair-Worker-Masteroshi430-s-branch__3512) | Masteroshi430 | PC / Mac | 2026.07.31 |
+| [PersonalAssistant (Banking, Consume, Junk, Loot, Repair, Worker) \[Masteroshi430's branch\]](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/PersonalAssistant-Banking-Consume-Junk-Loot-Repair-Worker-Masteroshi430-s-branch__3512) | Masteroshi430 | PC / Mac | 2026.09.06 |
 | [Personality Designer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Atronyx/Personality-Designer__2695) | Atronyx | PC / Mac | 2.1.1 |
 | [Pet Dead Alert](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/rockingdice/Pet-Dead-Alert__1825) | rockingdice | PC / Mac | 1.01 |
 | [Pet Dismiss](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/adriant1978/Pet-Dismiss__1314) | adriant1978 | PC / Mac | 1.3.1 |
@@ -93,6 +83,18 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [PinAutoResizer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/PinAutoResizer__f386385b-2805-4720-8481-1d87d1cd1d0c) | Masteroshi430 | Console | — |
 | [PinAutoResizer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/PinAutoResizer__3365) | Masteroshi430 | PC / Mac | 2026.07.24 |
 | [PinHelper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/olegbl/PinHelper__3259) | olegbl | PC / Mac | 1.06 |
+| [PinkB's ChatAssistant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-ChatAssistant__416eb892-aa32-4a10-8d1a-7ba7cf27cedf) | PinkBanther | Console | — |
+| [PinkB's ChatAssistant(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-ChatAssistant-Beta__8409de55-043d-4bcc-8876-395671fdc7b5) | PinkBanther | Console | — |
+| [PinkB's ChatFilter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-ChatFilter__f4b50a99-0e05-4748-95a8-d062f94401f3) | PinkBanther | Console | — |
+| [PinkB's ChatFilter(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-ChatFilter-Beta__f84f4752-ff0e-42c9-b73d-d5ea97508b03) | PinkBanther | Console | — |
+| [PinkB's CyrodiilAlert](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-CyrodiilAlert__da931320-7488-4ce0-83a2-100180a2f3f2) | PinkBanther | Console | — |
+| [PinkB's CyrodiilAlert(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-CyrodiilAlert-Beta__233a612c-6650-451b-80d8-b1862f95c90a) | PinkBanther | Console | — |
+| [PinkB's MiniMap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-MiniMap__d636a31f-9393-47d7-b16f-8d932870cff3) | PinkBanther | Console | — |
+| [PinkB's MiniMap(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-MiniMap-Beta__d0219382-bec1-477e-bcc2-d2b0c7138a79) | PinkBanther | Console | — |
+| [PinkB's NamePlateFontChanger](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-NamePlateFontChanger__c370eaba-64de-4a9b-9d9a-d6bd0c3db0aa) | PinkBanther | Console | — |
+| [PinkB's NamePlateFontChanger(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-NamePlateFontChanger-Beta__dda2c060-41fd-485e-b1f1-39c1b6f7ca6f) | PinkBanther | Console | — |
+| [PinkB's QuestTrackerFontChanger](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-QuestTrackerFontChanger__cc94a283-12a5-4e75-8e54-727d2ab6977c) | PinkBanther | Console | — |
+| [PinkB's QuestTrackerFontChanger(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-QuestTrackerFontChanger-Beta__35920898-3b27-4e32-9f59-c0d8fee0b3bb) | PinkBanther | Console | — |
 | [PinKiller](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni/PinKiller__190) | Shinni | PC / Mac | 2.5 |
 | [PinKiller](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni42/PinKiller__b141aa03-f456-45eb-b8b9-eee57c6d78d9) | Shinni42 | Console | — |
 | [Pit's Zenkosh Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Pit_Eso/Pit-s-Zenkosh-Tracker__4723) | Pit_Eso | PC / Mac | 1.0.0 |

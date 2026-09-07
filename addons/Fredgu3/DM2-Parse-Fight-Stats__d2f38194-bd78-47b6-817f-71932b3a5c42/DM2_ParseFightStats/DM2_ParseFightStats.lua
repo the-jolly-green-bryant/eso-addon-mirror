@@ -21,7 +21,7 @@ local R = DM2Stats
 
 R.name        = "DM2_ParseFightStats"
 R.displayName = "DM2 Parse & Fight Stats"
-R.version     = "3.18.0"
+R.version     = "3.18.2"
 
 -- User-facing debug log page (slash toggles still work; set true to restore in UI)
 local DEBUG_UI_ENABLED = false
@@ -107,6 +107,8 @@ R.defaults = {
     weaveFlashSize = 36,    -- font size for weave flash (20-52)
     weaveFlashDuration = 500, -- flash duration in ms (200-800)
     weaveFlashSound = false,  -- play a sound cue on each weave result
+    showRaidStrip = true,          -- left-side strip in dungeons/trials
+    showRaidStripOnDummy = true,   -- left-side strip in housing / dummy parses (independent)
     -- v3.5.0: gamepad menu shell entry in Journal (still used)
     experimentalGamepadMenu = true,
     -- v3.9.0: default stats viewer — "menu" (MenuShell) or "overlay" (legacy window)
@@ -450,8 +452,16 @@ R._announcements = {
     title = "NEW: Insights: Build is a real page",
     body = "Insights: Build is no longer a thin clone of Damage / CP lists.\n\n• Mix · honest sets (buff sets are not 0 DPS) · what you brought\n• CP story vs this dummy’s Direct/DoT mix · Front/Back dwell + damage\n• Potions: uses + coverage (tri-stat / magicka / stamina) — no fake potion DPS\n  Pre-pot at pull counts as use #1. New dummy required for potion numbers.\n\nInsights: DPS still owns execution, weave, and the experiment (Y).",
   },
+  ["3.18.1"] = {
+    title = "NEW: raid strip + stiffer Build ID",
+    body = "• Left-side RAID strip: two independent toggles — dungeons/trials, and dummy/housing.\n  Force, Slayer, Berserk, Courage, Heroism, Breach, Crusher, Brittle, Vuln, Pen.\n  ON / MIN / OFF — Pen is % of the usual 18.2k recipe (CAP at 100%).\n• Buffs page: raid-essentials legend at the bottom (Major/Minor effects).\n• Build ID: no extra CP/set union, Perfected names normalized, Craft CP ignored. History vs #2 says bars/sets/mundus/CP if it still drifts.\n\nSettings > Raid strip. Test in housing first.",
+  },
+  ["3.18.2"] = {
+    title = "FIX: raid strip names + spacing",
+    body = "Left RAID strip: full names (BERSERK, COURAGE, …) and right-justified ON/MIN/CAP so status never runs into the label.\n\nSame two toggles: dungeons/trials, dummy/housing.",
+  },
 }
-R._latestAnnouncementVersion = "3.18.0"
+R._latestAnnouncementVersion = "3.18.2"
 
 R._pageIndex = 1
 R._lastBarSwapMs = 0          -- debounce EVENT_ACTIVE_WEAPON_PAIR_CHANGED (fires up to 3x per swap)
@@ -529,6 +539,7 @@ R.ui = {
   footer = nil,
   footerLabel = nil,
   weaveFlash = nil,   -- screen-center flash label for real-time weave feedback
+  raidStrip = nil,    -- left-side dungeon/trial buff + pen coverage
 }
 
 -- keybind group for console (plain KEYBIND_STRIP, same as DM2_Metrics — no scenes)
@@ -7314,6 +7325,24 @@ local function initLAM()
       default = R.defaults.settings.weaveFlashSound,
     },
 
+    { type = "header", name = "Raid strip (live)" },
+    {
+      type = "checkbox",
+      name = "Raid strip in dungeons / trials",
+      tooltip = "Left-side ON/MIN/OFF list (Force, Slayer, Berserk, Courage, Heroism, Breach, Crusher, Brittle, Vuln) plus Pen % of the usual 18.2k recipe. Independent of the dummy/housing toggle.",
+      getFunc = function() return SV.settings.showRaidStrip ~= false end,
+      setFunc = function(v) SV.settings.showRaidStrip = v and true or false end,
+      default = true,
+    },
+    {
+      type = "checkbox",
+      name = "Raid strip on dummy / housing",
+      tooltip = "Same left-side strip while in a house or dummy parse, so you can test it. Independent of the dungeon/trial toggle.",
+      getFunc = function() return SV.settings.showRaidStripOnDummy ~= false end,
+      setFunc = function(v) SV.settings.showRaidStripOnDummy = v and true or false end,
+      default = true,
+    },
+
     -- =============================================
     -- ADVANCED / LEGACY (overlay retained for rollback only)
     -- =============================================
@@ -7498,6 +7527,8 @@ function R:Initialize()
   end
 
   EM:RegisterForEvent(self.name, EVENT_EFFECT_CHANGED, function(...) self:OnEffectChanged(...) end)
+
+  if type(R.StartRaidStrip) == "function" then pcall(R.StartRaidStrip) end
 
   -- Belt-and-braces: scrub history before SV serialization (logout / character select)
   if type(EVENT_PLAYER_DEACTIVATED) ~= "nil" then

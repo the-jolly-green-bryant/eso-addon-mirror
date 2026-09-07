@@ -28,7 +28,7 @@ The only place a zone [i]name[/i] is shown to the player is display text: the se
 [*][b]Time-of-day modifiers[/b] using the in-game Tamriel clock (dawn, day, dusk, night)
 [*][b]Climate/weather modifiers[/b] derived from zone lore
 [*][b]Water temperature[/b] when the player is swimming (IsUnitSwimming)
-[*][b]Interior/dungeon penalty[/b] — delves, group dungeons, public dungeons, and trials are shielded from weather; many now have their own explicit temperatures
+[*][b]Interior/dungeon penalty[/b] — interior spaces are shielded from weather and see reduced diurnal swing; many now have their own explicit temperatures. Interior detection prefers [b]LibInteriorDetection[/b] when installed (covers ordinary buildings and player houses, not just delves/dungeons/trials), falling back to LibZone's delve/dungeon/trial status otherwise
 [*][b]Parent zone inheritance[/b] — unlisted child zones fall back to their parent's climate data
 [*][b]Per-zone user overrides[/b] via the LibAddonMenu-2.0 settings panel
 [*][b]Celsius / Fahrenheit toggle[/b] in settings
@@ -46,7 +46,11 @@ Please install the newest available version of each:
 [*][url=https://www.esoui.com/downloads/info2360-LibClockTST.html][b]LibClockTST[/b][/url] — in-game lore time (hour/minute) for time-of-day modifiers
 [/list]
 
-All three dependencies must be installed and loaded for full functionality — LibZone, LibAddonMenu-2.0, and LibClockTST are all hard dependencies, so ESO will refuse to load LibZoneTemp at all if any is missing. The library degrades gracefully if LibClockTST's clock instance isn't ready yet (defaulting to noon).
+All three above must be installed and loaded for full functionality — LibZone, LibAddonMenu-2.0, and LibClockTST are all hard dependencies, so ESO will refuse to load LibZoneTemp at all if any is missing. The library degrades gracefully if LibClockTST's clock instance isn't ready yet (defaulting to noon).
+
+[list]
+[*][b]LibInteriorDetection[/b] — optional. If installed, its live indoor/outdoor detection is used for the interior penalty and weather/time shielding instead of the narrower delve/dungeon/trial-only fallback. Nothing breaks if it isn't installed.
+[/list]
 
 [size=5][b]Installation[/b][/size]
 

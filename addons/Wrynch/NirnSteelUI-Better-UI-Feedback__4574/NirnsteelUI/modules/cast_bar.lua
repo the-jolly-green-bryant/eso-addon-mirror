@@ -26,18 +26,18 @@ local MAX_WIDTH = 620
 local MIN_HEIGHT = 18
 local MAX_HEIGHT = 48
 local MIN_DURATION_MS = 120
-local COMPLETE_HOLD_MS = 220
+local COMPLETE_HOLD_MS = 360
+local ENTER_MS = 160
 local FADE_OUT_MS = 220
-local ICON_PAD = 5
-local FRAME_PAD = 4
+local ICON_PAD = 6
+local FRAME_PAD = 3
+local TICK_FLASH_MS = 220
 local BAR_TEXTURE = "EsoUI/Art/Miscellaneous/progressbar_genericFill_tall.dds"
 local BAR_GLOSS_TEXTURE = "EsoUI/Art/Miscellaneous/timerBar_genericFill_gloss.dds"
 local BAR_LEADING_EDGE_TEXTURE = "EsoUI/Art/Miscellaneous/progressbar_genericFill_leadingEdge_blunt.dds"
 local EDGE_FRAME_TEXTURE = "EsoUI/Art/Miscellaneous/Gamepad/edgeframeGamepadBorder_thin.dds"
-local SHINE_TEXTURE = BAR_GLOSS_TEXTURE
 local FALLBACK_ICON = "EsoUI/Art/Icons/icon_missing.dds"
-local CHUNK_PULSE_COUNT = 8
-local CHUNK_PULSE_MS = 340
+local TICK_COUNT = 4
 
 local TEXT_MODE_ALIASES =
 {
@@ -151,51 +151,42 @@ local function FormatCastTime(elapsedMS, durationMS)
     return string.format("%.1f / %.1f", elapsed, duration)
 end
 
-local function StopTimeline(timeline)
-    if timeline then
-        timeline:Stop()
-    end
-end
-
-local function PlayAlpha(control, fromAlpha, toAlpha, durationMS, onStop)
-    if not control then
-        return
-    end
-
-    if control.nirnsteelAlphaTimeline then
-        control.nirnsteelAlphaTimeline:Stop()
-    end
-
-    local animation, timeline = CreateSimpleAnimation(ANIMATION_ALPHA, control)
-    animation:SetAlphaValues(fromAlpha, toAlpha)
-    animation:SetDuration(durationMS)
-    if onStop then
-        animation:SetHandler("OnStop", onStop)
-    end
-    timeline:SetPlaybackType(ANIMATION_PLAYBACK_ONE_SHOT, 0)
-    control.nirnsteelAlphaTimeline = timeline
-    timeline:PlayFromStart()
-end
-
-local function Pulse01(progress)
-    return math.sin(zo_clamp(progress, 0, 1) * math.pi)
+-- One clock owns every animation phase so a previous cast cannot leave effects
+-- or delayed callbacks behind when another ability is used.
+local function EaseOut(progress)
+    return 1 - (1 - zo_clamp(progress, 0, 1)) ^ 3
 end
 
 local function ConfigureStatusBar(bar)
     bar:SetTexture(BAR_TEXTURE)
     bar:SetTextureCoords(0, 1, 0, 0.8125)
-    bar:SetGradientColors(0.03, 0.48, 0.78, 0.98, 0.38, 0.92, 1.00, 1.00)
     bar:EnableLeadingEdge(false)
     bar:SetPixelRoundingEnabled(false)
+    bar:SetMinMax(0, 1)
     if bar.SetBarAlignment then
         bar:SetBarAlignment(BAR_ALIGNMENT_NORMAL)
     end
 end
 
+local function CreateBackdrop(parent, center, edge, thickness)
+    local control = WINDOW_MANAGER:CreateControl(nil, parent, CT_BACKDROP)
+    control:SetCenterColor(unpack(center))
+    control:SetEdgeColor(unpack(edge))
+    control:SetEdgeTexture(EDGE_FRAME_TEXTURE, 128, 16, thickness or 2, 0)
+    return control
+end
+
+local function CreateTexture(parent, texture, r, g, b, alpha, level)
+    local control = WINDOW_MANAGER:CreateControl(nil, parent, CT_TEXTURE)
+    if texture then control:SetTexture(texture) end
+    control:SetColor(r, g, b, alpha)
+    control:SetDrawLayer(DL_OVERLAY)
+    control:SetDrawLevel(level or 1)
+    return control
+end
+
 function CastBar:GetRoot()
-    if self.root then
-        return self.root
-    end
+    if self.root then return self.root end
 
     local root = WINDOW_MANAGER:CreateTopLevelWindow("Nirnsteel_UI_CastBarRoot")
     root:SetClampedToScreen(true)
@@ -208,153 +199,101 @@ function CastBar:GetRoot()
     frame:SetAnchorFill(root)
     root.frame = frame
 
-    frame.outerGlow = WINDOW_MANAGER:CreateControl(nil, frame, CT_BACKDROP)
-    frame.outerGlow:SetAnchor(TOPLEFT, frame, TOPLEFT, -10, -9)
-    frame.outerGlow:SetAnchor(BOTTOMRIGHT, frame, BOTTOMRIGHT, 10, 9)
-    frame.outerGlow:SetEdgeTexture(EDGE_FRAME_TEXTURE, 128, 16, 8, 0)
-    frame.outerGlow:SetCenterColor(0.02, 0.17, 0.22, 0.13)
-    frame.outerGlow:SetEdgeColor(0.10, 0.82, 1.00, 0.70)
-    frame.outerGlow:SetDrawLayer(DL_BACKGROUND)
+    frame.track = CreateBackdrop(frame, { 0.018, 0.026, 0.035, 0.96 }, { 0.32, 0.40, 0.46, 0.95 })
+    frame.shadow = CreateBackdrop(frame, { 0, 0, 0, 0.25 }, { 0, 0, 0, 0.65 }, 4)
+    frame.shadow:SetAnchor(TOPLEFT, frame.track, TOPLEFT, -3, -2)
+    frame.shadow:SetAnchor(BOTTOMRIGHT, frame.track, BOTTOMRIGHT, 3, 4)
+    frame.shadow:SetDrawLayer(DL_BACKGROUND)
 
-    frame.shadow = WINDOW_MANAGER:CreateControl(nil, frame, CT_BACKDROP)
-    frame.shadow:SetAnchor(TOPLEFT, frame, TOPLEFT, -6, -6)
-    frame.shadow:SetAnchor(BOTTOMRIGHT, frame, BOTTOMRIGHT, 6, 6)
-    frame.shadow:SetEdgeTexture(EDGE_FRAME_TEXTURE, 128, 16, 6, 0)
-    frame.shadow:SetCenterColor(0, 0, 0, 0.58)
-    frame.shadow:SetEdgeColor(0, 0, 0, 1)
+    frame.well = WINDOW_MANAGER:CreateControl(nil, frame.track, CT_CONTROL)
+    frame.well:SetAnchor(TOPLEFT, frame.track, TOPLEFT, FRAME_PAD, FRAME_PAD)
+    frame.well:SetAnchor(BOTTOMRIGHT, frame.track, BOTTOMRIGHT, -FRAME_PAD, -FRAME_PAD)
 
-    frame.backplate = WINDOW_MANAGER:CreateControl(nil, frame, CT_BACKDROP)
-    frame.backplate:SetAnchorFill(frame)
-    frame.backplate:SetEdgeTexture(EDGE_FRAME_TEXTURE, 128, 16, 5, 0)
-    frame.backplate:SetCenterColor(0.015, 0.012, 0.010, 0.96)
-    frame.backplate:SetEdgeColor(0, 0, 0, 1)
-
-    frame.goldRim = WINDOW_MANAGER:CreateControl(nil, frame, CT_BACKDROP)
-    frame.goldRim:SetAnchor(TOPLEFT, frame, TOPLEFT, 1, 1)
-    frame.goldRim:SetAnchor(BOTTOMRIGHT, frame, BOTTOMRIGHT, -1, -1)
-    frame.goldRim:SetEdgeTexture(EDGE_FRAME_TEXTURE, 128, 16, 4, 0)
-    frame.goldRim:SetCenterColor(0, 0, 0, 0)
-    frame.goldRim:SetEdgeColor(1.00, 0.58, 0.16, 1)
-
-    frame.track = WINDOW_MANAGER:CreateControl(nil, frame, CT_BACKDROP)
-    frame.track:SetEdgeTexture(EDGE_FRAME_TEXTURE, 128, 16, 3, 0)
-    frame.track:SetCenterColor(0.00, 0.015, 0.022, 0.92)
-    frame.track:SetEdgeColor(0.04, 0.04, 0.04, 1)
-
-    frame.fillGlow = WINDOW_MANAGER:CreateControl(nil, frame.track, CT_STATUSBAR)
-    frame.fillGlow:SetAnchor(TOPLEFT, frame.track, TOPLEFT, -1, -3)
-    frame.fillGlow:SetAnchor(BOTTOMRIGHT, frame.track, BOTTOMRIGHT, 1, 3)
-    frame.fillGlow:SetTexture(BAR_TEXTURE)
-    frame.fillGlow:SetTextureCoords(0, 1, 0, 0.8125)
-    frame.fillGlow:SetGradientColors(0.00, 0.62, 0.88, 0.42, 0.76, 1.00, 1.00, 0.66)
-    frame.fillGlow:EnableLeadingEdge(false)
-    frame.fillGlow:SetPixelRoundingEnabled(false)
-    if frame.fillGlow.SetBarAlignment then
-        frame.fillGlow:SetBarAlignment(BAR_ALIGNMENT_NORMAL)
-    end
-
-    frame.bar = WINDOW_MANAGER:CreateControl(nil, frame.track, CT_STATUSBAR)
-    frame.bar:SetAnchorFill(frame.track)
+    frame.bar = WINDOW_MANAGER:CreateControl(nil, frame.well, CT_STATUSBAR)
+    frame.bar:SetAnchorFill(frame.well)
     ConfigureStatusBar(frame.bar)
+    frame.bar:SetDrawLayer(DL_CONTROLS)
+    frame.bar:SetDrawLevel(1)
 
-    frame.gloss = WINDOW_MANAGER:CreateControl(nil, frame.track, CT_STATUSBAR)
-    frame.gloss:SetAnchorFill(frame.track)
+    frame.gloss = WINDOW_MANAGER:CreateControl(nil, frame.well, CT_STATUSBAR)
+    frame.gloss:SetAnchorFill(frame.well)
+    ConfigureStatusBar(frame.gloss)
     frame.gloss:SetTexture(BAR_GLOSS_TEXTURE)
-    frame.gloss:SetTextureCoords(0, 1, 0, 0.8125)
-    frame.gloss:SetColor(1, 1, 1, 0.22)
-    frame.gloss:EnableLeadingEdge(false)
-    frame.gloss:SetPixelRoundingEnabled(false)
-    if frame.gloss.SetBarAlignment then
-        frame.gloss:SetBarAlignment(BAR_ALIGNMENT_NORMAL)
-    end
+    frame.gloss:SetColor(0.78, 0.90, 1, 0.16)
+    frame.gloss:SetDrawLayer(DL_OVERLAY)
+    frame.gloss:SetDrawLevel(0)
 
-    frame.flash = WINDOW_MANAGER:CreateControl(nil, frame.track, CT_STATUSBAR)
-    frame.flash:SetAnchorFill(frame.track)
-    frame.flash:SetTexture(BAR_TEXTURE)
-    frame.flash:SetTextureCoords(0, 1, 0, 0.8125)
-    frame.flash:SetColor(1.00, 0.67, 0.18, 0)
-    frame.flash:SetAlpha(0)
-    frame.flash:SetHidden(true)
-    frame.flash:EnableLeadingEdge(false)
-    if frame.flash.SetBarAlignment then
-        frame.flash:SetBarAlignment(BAR_ALIGNMENT_NORMAL)
-    end
-
-    frame.shine = WINDOW_MANAGER:CreateControl(nil, frame.track, CT_TEXTURE)
-    frame.shine:SetTexture(SHINE_TEXTURE)
-    frame.shine:SetColor(0.80, 1.00, 1.00, 0.30)
-    frame.shine:SetTextureCoords(0, 1, 0, 1)
-    frame.shine:SetHidden(true)
-    frame.shine:SetDrawLayer(DL_OVERLAY)
-
-    frame.leadingEdge = WINDOW_MANAGER:CreateControl(nil, frame.track, CT_TEXTURE)
-    frame.leadingEdge:SetTexture(BAR_LEADING_EDGE_TEXTURE)
+    -- The wake stays inside the filled section, never crossing unread progress.
+    frame.wake = CreateTexture(frame.well, BAR_GLOSS_TEXTURE, 0.66, 0.88, 1, 1, 1)
+    frame.leadingEdge = CreateTexture(frame.well, BAR_LEADING_EDGE_TEXTURE, 0.87, 0.96, 1, 1, 3)
     frame.leadingEdge:SetTextureCoords(0, 1, 0, 0.6)
-    frame.leadingEdge:SetColor(1.00, 0.96, 0.46, 0.95)
-    frame.leadingEdge:SetDrawLayer(DL_OVERLAY)
     frame.leadingEdge:SetHidden(true)
+    frame.wake:SetHidden(true)
 
-    frame.impactFlash = WINDOW_MANAGER:CreateControl(nil, frame, CT_BACKDROP)
-    frame.impactFlash:SetAnchor(TOPLEFT, frame, TOPLEFT, -8, -8)
-    frame.impactFlash:SetAnchor(BOTTOMRIGHT, frame, BOTTOMRIGHT, 8, 8)
-    frame.impactFlash:SetEdgeTexture(EDGE_FRAME_TEXTURE, 128, 16, 8, 0)
-    frame.impactFlash:SetCenterColor(0.70, 0.94, 1.00, 0.05)
-    frame.impactFlash:SetEdgeColor(0.56, 0.96, 1.00, 1)
-    frame.impactFlash:SetDrawLayer(DL_OVERLAY)
-    frame.impactFlash:SetAlpha(0)
+    frame.chargeSweep = CreateTexture(frame.well, BAR_GLOSS_TEXTURE, 0.72, 0.94, 1, 1, 3)
+    frame.chargeSweep:SetHidden(true)
+    frame.feedbackFlash = WINDOW_MANAGER:CreateControl(nil, frame.well, CT_STATUSBAR)
+    frame.feedbackFlash:SetAnchorFill(frame.well)
+    ConfigureStatusBar(frame.feedbackFlash)
+    frame.feedbackFlash:SetDrawLayer(DL_OVERLAY)
+    frame.feedbackFlash:SetDrawLevel(4)
+    frame.feedbackFlash:SetHidden(true)
 
-    frame.shockwave = WINDOW_MANAGER:CreateControl(nil, frame, CT_BACKDROP)
-    frame.shockwave:SetAnchor(TOPLEFT, frame, TOPLEFT, -12, -11)
-    frame.shockwave:SetAnchor(BOTTOMRIGHT, frame, BOTTOMRIGHT, 12, 11)
-    frame.shockwave:SetEdgeTexture(EDGE_FRAME_TEXTURE, 128, 16, 10, 0)
-    frame.shockwave:SetCenterColor(1.00, 0.70, 0.18, 0.08)
-    frame.shockwave:SetEdgeColor(1.00, 0.70, 0.20, 0.95)
-    frame.shockwave:SetDrawLayer(DL_OVERLAY)
-    frame.shockwave:SetAlpha(0)
-    frame.shockwave:SetHidden(true)
+    frame.castGlow = CreateBackdrop(frame, { 0, 0, 0, 0 }, { 0.34, 0.80, 1, 1 }, 4)
+    frame.castGlow:SetAnchor(TOPLEFT, frame.track, TOPLEFT, -4, -4)
+    frame.castGlow:SetAnchor(BOTTOMRIGHT, frame.track, BOTTOMRIGHT, 4, 4)
+    frame.castGlow:SetDrawLayer(DL_OVERLAY)
+    frame.castGlow:SetDrawLevel(0)
+    frame.castGlow:SetHidden(true)
 
-    frame.chunkPulses = {}
-    for index = 1, CHUNK_PULSE_COUNT do
-        local pulse = WINDOW_MANAGER:CreateControl(nil, frame.track, CT_TEXTURE)
-        pulse:SetTexture(BAR_LEADING_EDGE_TEXTURE)
-        pulse:SetTextureCoords(0, 1, 0, 0.6)
-        pulse:SetColor(0.90, 1.00, 1.00, 1)
-        pulse:SetDrawLayer(DL_OVERLAY)
-        pulse:SetAlpha(0)
-        pulse:SetHidden(true)
-        frame.chunkPulses[index] = pulse
+    frame.ticks = {}
+    for index = 1, TICK_COUNT do
+        frame.ticks[index] = CreateTexture(frame.well, nil, 0.65, 0.76, 0.84, 1, 2)
     end
 
-    frame.iconFrame = WINDOW_MANAGER:CreateControl(nil, frame, CT_BACKDROP)
-    frame.iconFrame:SetCenterColor(0.03, 0.02, 0.01, 1)
-    frame.iconFrame:SetEdgeColor(1.00, 0.62, 0.18, 1)
-    frame.iconFrame:SetEdgeTexture(EDGE_FRAME_TEXTURE, 128, 16, 4, 0)
+    frame.finishGlow = CreateBackdrop(frame, { 0, 0, 0, 0 }, { 0.93, 0.76, 0.43, 1 }, 3)
+    frame.finishGlow:SetAnchor(TOPLEFT, frame.track, TOPLEFT, -2, -2)
+    frame.finishGlow:SetAnchor(BOTTOMRIGHT, frame.track, BOTTOMRIGHT, 2, 2)
+    frame.finishGlow:SetDrawLayer(DL_OVERLAY)
+    frame.finishGlow:SetAlpha(0)
+    frame.finishGlow:SetHidden(true)
+    frame.finishSweep = CreateTexture(frame.well, BAR_GLOSS_TEXTURE, 1, 0.91, 0.68, 1, 4)
+    frame.finishSweep:SetHidden(true)
 
-    frame.iconGlow = WINDOW_MANAGER:CreateControl(nil, frame.iconFrame, CT_BACKDROP)
-    frame.iconGlow:SetAnchor(TOPLEFT, frame.iconFrame, TOPLEFT, -5, -5)
-    frame.iconGlow:SetAnchor(BOTTOMRIGHT, frame.iconFrame, BOTTOMRIGHT, 5, 5)
-    frame.iconGlow:SetCenterColor(1.00, 0.42, 0.06, 0.06)
-    frame.iconGlow:SetEdgeColor(1.00, 0.52, 0.10, 0.92)
-    frame.iconGlow:SetEdgeTexture(EDGE_FRAME_TEXTURE, 128, 16, 5, 0)
-
+    frame.iconFrame = CreateBackdrop(frame, { 0.02, 0.026, 0.033, 1 }, { 0.42, 0.52, 0.60, 1 })
     frame.icon = WINDOW_MANAGER:CreateControl(nil, frame.iconFrame, CT_TEXTURE)
     frame.icon:SetAnchor(TOPLEFT, frame.iconFrame, TOPLEFT, 3, 3)
     frame.icon:SetAnchor(BOTTOMRIGHT, frame.iconFrame, BOTTOMRIGHT, -3, -3)
     frame.icon:SetTexture(FALLBACK_ICON)
+    frame.icon:SetTextureCoords(0.08, 0.92, 0.08, 0.92)
+
+    frame.iconGlow = CreateBackdrop(frame, { 0, 0, 0, 0 }, { 0.34, 0.80, 1, 1 }, 4)
+    frame.iconGlow:SetAnchor(TOPLEFT, frame.iconFrame, TOPLEFT, -3, -3)
+    frame.iconGlow:SetAnchor(BOTTOMRIGHT, frame.iconFrame, BOTTOMRIGHT, 3, 3)
+    frame.iconGlow:SetDrawLayer(DL_BACKGROUND)
+    frame.iconGlow:SetHidden(true)
+
+    -- Keep the lettering readable when highlights pass underneath it.
+    frame.textShade = CreateTexture(frame.well, nil, 0, 0, 0, 0.18, 5)
+    frame.textShade:SetAnchorFill(frame.well)
 
     frame.leftLabel = WINDOW_MANAGER:CreateControl(nil, frame, CT_LABEL)
-    frame.leftLabel:SetFont("$(BOLD_FONT)|20|thick-outline")
-    frame.leftLabel:SetColor(0.94, 0.98, 1.00, 1)
+    frame.leftLabel:SetColor(0.88, 0.93, 0.96, 1)
     frame.leftLabel:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
     frame.leftLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
-    frame.leftLabel:SetModifyTextType(MODIFY_TEXT_TYPE_UPPERCASE)
+    frame.leftLabel:SetModifyTextType(MODIFY_TEXT_TYPE_NONE)
+    frame.leftLabel:SetMaxLineCount(1)
+    frame.leftLabel:SetDrawLayer(DL_OVERLAY)
+    frame.leftLabel:SetDrawLevel(6)
 
     frame.rightLabel = WINDOW_MANAGER:CreateControl(nil, frame, CT_LABEL)
-    frame.rightLabel:SetFont("$(BOLD_FONT)|18|thick-outline")
-    frame.rightLabel:SetColor(1.00, 0.86, 0.44, 1)
+    frame.rightLabel:SetColor(0.65, 0.77, 0.85, 1)
     frame.rightLabel:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
     frame.rightLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     frame.rightLabel:SetModifyTextType(MODIFY_TEXT_TYPE_NONE)
+    frame.rightLabel:SetMaxLineCount(1)
+    frame.rightLabel:SetDrawLayer(DL_OVERLAY)
+    frame.rightLabel:SetDrawLevel(6)
 
     self.root = root
     return root
@@ -419,340 +358,262 @@ function CastBar:ApplyLayout()
     local root = self:GetRoot()
     local mover = self:GetMover()
     local frame = root.frame
-    local width = GetConfiguredWidth()
-    local height = GetConfiguredHeight()
-    local scale = GetScale()
-    local alpha = GetAlpha()
+    local width, height = GetConfiguredWidth(), GetConfiguredHeight()
+    local textMode = GetTextMode()
+    local iconSize = height
+    local barLeft = ShouldShowIcon() and (iconSize + ICON_PAD) or 0
+    local trackWidth = width - barLeft
+    local timerWidth = math.min(100, math.max(86, math.floor(trackWidth * 0.43)))
+    local labelInset = FRAME_PAD + 5
+    local labelHeight = height - 4
+    local nameFontSize = zo_clamp(height - 6, 12, 18)
+    local timerFontSize = zo_clamp(height - 7, 11, 16)
     local position = GetPosition()
-    local showIcon = ShouldShowIcon()
-    local contentHeight = math.max(height - (FRAME_PAD * 2), 1)
-    local iconSize = showIcon and height + 6 or 0
-    local barLeft = showIcon and (iconSize + ICON_PAD) or 0
-    local labelInset = math.max(6, math.floor(height * 0.22))
-    local nameFontSize = zo_clamp(math.floor(contentHeight * 0.64), 12, 24)
-    local timerFontSize = zo_clamp(math.floor(contentHeight * 0.56), 11, 22)
-    local timerWidth = math.max(86, math.floor(width * 0.22))
-    local nameWidth = math.max(width - barLeft - labelInset * 3 - timerWidth, 40)
 
     root:SetDimensions(width, height)
-    root:SetScale(scale)
+    root:SetScale(GetScale())
     root:ClearAnchors()
     root:SetAnchor(CENTER, GuiRoot, CENTER, position.x, position.y)
-    root:SetAlpha(alpha)
 
     mover:SetDimensions(width, height)
-    mover:SetScale(scale)
+    mover:SetScale(GetScale())
     mover:ClearAnchors()
     mover:SetAnchor(CENTER, GuiRoot, CENTER, position.x, position.y)
     mover:SetHidden(not IsModuleUnlocked())
 
     frame.track:ClearAnchors()
-    frame.track:SetAnchor(TOPLEFT, frame, TOPLEFT, barLeft + FRAME_PAD, FRAME_PAD)
-    frame.track:SetAnchor(BOTTOMRIGHT, frame, BOTTOMRIGHT, -FRAME_PAD, -FRAME_PAD)
+    frame.track:SetAnchor(LEFT, frame, LEFT, barLeft, 0)
+    frame.track:SetDimensions(trackWidth, height)
+    self.trackWidth = trackWidth - FRAME_PAD * 2
+    self.trackHeight = height - FRAME_PAD * 2
 
     frame.iconFrame:ClearAnchors()
     frame.iconFrame:SetDimensions(iconSize, iconSize)
-    frame.iconFrame:SetAnchor(LEFT, frame, LEFT, -3, 0)
-    frame.iconFrame:SetHidden(not showIcon)
-    frame.iconGlow:SetHidden(not showIcon)
+    frame.iconFrame:SetAnchor(LEFT, frame, LEFT, 0, 0)
+    frame.iconFrame:SetHidden(not ShouldShowIcon())
 
     frame.leftLabel:ClearAnchors()
-    frame.leftLabel:SetAnchor(LEFT, frame.track, LEFT, labelInset, 0)
-    frame.leftLabel:SetDimensions(nameWidth, contentHeight)
-    frame.leftLabel:SetFont(BuildTextFont(nameFontSize, "thick-outline"))
-
+    frame.leftLabel:SetAnchor(LEFT, frame.track, LEFT, labelInset, 2)
+    frame.leftLabel:SetDimensions(textMode == "nameOnly" and trackWidth - labelInset * 2
+        or trackWidth - timerWidth - labelInset * 2 - 8, labelHeight)
+    frame.leftLabel:SetFont(BuildTextFont(nameFontSize))
     frame.rightLabel:ClearAnchors()
-    frame.rightLabel:SetAnchor(RIGHT, frame.track, RIGHT, -labelInset, 0)
-    frame.rightLabel:SetDimensions(timerWidth, contentHeight)
-    frame.rightLabel:SetFont(BuildTextFont(timerFontSize, "thick-outline"))
+    frame.rightLabel:SetAnchor(RIGHT, frame.track, RIGHT, -labelInset, 2)
+    frame.rightLabel:SetDimensions(textMode == "timerOnly" and trackWidth - labelInset * 2 or timerWidth, labelHeight)
+    frame.rightLabel:SetFont(BuildTextFont(timerFontSize))
+    frame.leftLabel:SetHidden(textMode == "off" or textMode == "timerOnly")
+    frame.rightLabel:SetHidden(textMode == "off" or textMode == "nameOnly")
+    frame.textShade:SetHidden(textMode == "off")
 
-    frame.shine:SetDimensions(math.max(48, math.floor((width - barLeft) * 0.26)), contentHeight + 8)
-    frame.leadingEdge:SetDimensions(12 + (6 * GetIntensity()), contentHeight + 16)
-    local showTicks = ShouldShowTicks()
-    for _, pulse in ipairs(frame.chunkPulses) do
-        pulse:SetDimensions(8 + (4 * GetIntensity()), contentHeight + 18)
-        if not showTicks then
-            pulse.activeMS = nil
-            pulse:SetAlpha(0)
-            pulse:SetHidden(true)
-        end
+    for index, tick in ipairs(frame.ticks) do
+        tick:ClearAnchors()
+        tick:SetAnchor(CENTER, frame.well, LEFT, self.trackWidth * index / (TICK_COUNT + 1), 0)
+        tick:SetDimensions(1, self.trackHeight)
+        tick:SetHidden(not ShouldShowTicks())
     end
-
-    ConfigureStatusBar(frame.bar)
-    ConfigureStatusBar(frame.fillGlow)
-    frame.gloss:SetTexture(BAR_GLOSS_TEXTURE)
+    self:UpdateText(self.elapsedMS or 0)
+    if self.phase then self:UpdateAnimation() else root:SetAlpha(GetAlpha()) end
 end
 
 function CastBar:UpdateText(elapsedMS)
-    local root = self:GetRoot()
-    local frame = root.frame
+    local frame = self:GetRoot().frame
     local textMode = GetTextMode()
-    local timeText = FormatCastTime(elapsedMS or 0, self.durationMS or 0)
-    local name = self.abilityName or ""
-
-    if textMode == "off" then
-        frame.leftLabel:SetText("")
-        frame.rightLabel:SetText("")
-    elseif textMode == "nameOnly" then
-        frame.leftLabel:SetText(name)
-        frame.rightLabel:SetText("")
-    elseif textMode == "timerOnly" then
-        frame.leftLabel:SetText("")
-        frame.rightLabel:SetText(timeText)
-    else
-        frame.leftLabel:SetText(name)
-        frame.rightLabel:SetText(timeText)
-    end
+    frame.leftLabel:SetText((textMode == "off" or textMode == "timerOnly") and "" or (self.abilityName or ""))
+    frame.rightLabel:SetText((textMode == "off" or textMode == "nameOnly") and ""
+        or FormatCastTime(elapsedMS or 0, self.durationMS or 0))
 end
 
-function CastBar:PlayStartFeedback()
-    local root = self:GetRoot()
-    local frame = root.frame
-    local intensity = GetIntensity()
-    local alpha = GetAlpha()
-
-    StopTimeline(root.nirnsteelAlphaTimeline)
-    root:SetHidden(false)
-    root:SetAlpha(math.min(1, alpha * (0.78 + intensity * 0.18)))
-
-    frame.outerGlow:SetEdgeColor(0.20, 0.94, 1.00, 0.72 + 0.20 * intensity)
-    frame.impactFlash:SetEdgeColor(0.50, 0.95, 1.00, 1)
-    frame.impactFlash:SetCenterColor(0.42, 0.92, 1.00, 0.07)
-    PlayAlpha(frame.impactFlash, 0.72 * intensity, 0, 380)
-
-    frame.flash:SetHidden(false)
-    frame.flash:SetValue(0)
-    frame.flash:SetColor(0.54, 0.96, 1.00, 0.78 * intensity)
-    PlayAlpha(frame.flash, 0.62 * intensity, 0, 320)
+function CastBar:ResetFeedback()
+    local frame = self:GetRoot().frame
+    frame.wake:SetHidden(true)
+    frame.leadingEdge:SetHidden(true)
+    frame.chargeSweep:SetHidden(true)
+    frame.feedbackFlash:SetHidden(true)
+    frame.castGlow:SetHidden(true)
+    frame.iconGlow:SetHidden(true)
+    frame.finishSweep:SetHidden(true)
+    frame.finishGlow:SetHidden(true)
+    frame.finishGlow:SetAlpha(0)
+    frame.iconGlow:SetEdgeColor(0.34, 0.80, 1, 1)
+    frame.track:SetEdgeColor(0.32, 0.40, 0.46, 0.95)
+    frame.iconFrame:SetEdgeColor(0.42, 0.52, 0.60, 1)
+    frame.rightLabel:SetColor(0.82, 0.92, 0.98, 1)
+    frame.bar:SetGradientColors(0.16, 0.32, 0.44, 1, 0.50, 0.73, 0.85, 1)
 end
 
-function CastBar:PlayCompleteFeedback()
-    local root = self:GetRoot()
-    local frame = root.frame
-    local intensity = GetIntensity()
-
-    frame.outerGlow:SetEdgeColor(1.00, 0.70, 0.18, 0.98)
-    frame.impactFlash:SetEdgeColor(1.00, 0.78, 0.20, 1)
-    frame.impactFlash:SetCenterColor(1.00, 0.60, 0.12, 0.10)
-    PlayAlpha(frame.impactFlash, 1 * intensity, 0, 520)
-
-    frame.shockwave:SetHidden(false)
-    frame.shockwave:SetScale(1)
-    PlayAlpha(frame.shockwave, 0.95 * intensity, 0, 620, function()
-        frame.shockwave:SetHidden(true)
-        frame.shockwave:SetScale(1)
-    end)
-
-    frame.flash:SetHidden(false)
-    frame.flash:SetMinMax(0, 1)
-    frame.flash:SetValue(1)
-    frame.flash:SetColor(1.00, 0.66, 0.16, 1 * intensity)
-    PlayAlpha(frame.flash, 1 * intensity, 0, 480, function()
-        frame.flash:SetHidden(true)
-    end)
-end
-
-function CastBar:TriggerChunkPulse(progress)
-    if not ShouldShowTicks() then
-        return
-    end
-
-    local root = self:GetRoot()
-    local frame = root.frame
-    local pulses = frame.chunkPulses
-    if not pulses or #pulses == 0 then
-        return
-    end
-
-    self.nextChunkPulseIndex = (self.nextChunkPulseIndex or 0) + 1
-    if self.nextChunkPulseIndex > #pulses then
-        self.nextChunkPulseIndex = 1
-    end
-
-    local pulse = pulses[self.nextChunkPulseIndex]
-    pulse.activeMS = GetFrameTimeMilliseconds()
-    pulse.baseX = frame.track:GetWidth() * zo_clamp(progress, 0, 1)
-    pulse:ClearAnchors()
-    pulse:SetAnchor(CENTER, frame.track, LEFT, pulse.baseX, 0)
-    pulse:SetAlpha(0.96)
-    pulse:SetHidden(false)
-end
-
-function CastBar:UpdateChunkPulses(nowMS)
-    if not ShouldShowTicks() then
-        return
-    end
-
-    local root = self:GetRoot()
-    local frame = root.frame
-    if not frame.chunkPulses then
-        return
-    end
-
-    for _, pulse in ipairs(frame.chunkPulses) do
-        if pulse.activeMS then
-            local progress = zo_clamp((nowMS - pulse.activeMS) / CHUNK_PULSE_MS, 0, 1)
-            if progress >= 1 then
-                pulse.activeMS = nil
-                pulse:SetAlpha(0)
-                pulse:SetHidden(true)
-            else
-                local width = 8 + (progress * 18) + (GetIntensity() * 4)
-                local height = frame.track:GetHeight() + 16 + (progress * 14)
-                pulse:SetDimensions(width, height)
-                pulse:ClearAnchors()
-                pulse:SetAnchor(CENTER, frame.track, LEFT, pulse.baseX or 0, 0)
-                pulse:SetAlpha((1 - progress) * 0.88)
-            end
-        end
+function CastBar:SetProgress(progress)
+    local frame = self:GetRoot().frame
+    progress = zo_clamp(progress, 0, 1)
+    frame.bar:SetValue(progress)
+    frame.gloss:SetValue(progress)
+    for index, tick in ipairs(frame.ticks) do
+        local threshold = index / (TICK_COUNT + 1)
+        -- Derive each pulse from the deadline: no queued flashes after a hitch.
+        local age = (self.elapsedMS or 0) - (self.durationMS or 0) * threshold
+        local pulse = self.phase == "casting" and age >= 0 and age < TICK_FLASH_MS
+            and (1 - age / TICK_FLASH_MS) or 0
+        tick:SetAlpha(zo_clamp((progress >= threshold and 0.40 or 0.16) + pulse * 0.60 * GetIntensity(), 0, 1))
+        tick:SetDimensions(1 + 3 * pulse * GetIntensity(), self.trackHeight)
     end
 end
 
 function CastBar:Hide(immediate)
-    self.active = false
-    self.castId = (self.castId or 0) + 1
-
     local root = self:GetRoot()
-    local frame = root.frame
-    root:SetHandler("OnUpdate", nil)
-    frame.shine:SetHidden(true)
-    frame.leadingEdge:SetHidden(true)
-    frame.shockwave:SetHidden(true)
-    frame.shockwave:SetAlpha(0)
-    frame.shockwave:SetScale(1)
-    frame.impactFlash:SetAlpha(0)
-    if frame.chunkPulses then
-        for _, pulse in ipairs(frame.chunkPulses) do
-            pulse.activeMS = nil
-            pulse:SetAlpha(0)
-            pulse:SetHidden(true)
-        end
-    end
-
+    self.active = false
     if immediate then
-        StopTimeline(root.nirnsteelAlphaTimeline)
+        self.castId = (self.castId or 0) + 1
+        self.phase = nil
+        root:SetHandler("OnUpdate", nil)
+        root:SetAlpha(0)
         root:SetHidden(true)
-        return
+        self:ResetFeedback()
+    elseif self.phase ~= "exit" and not root:IsHidden() then
+        self.phase = "exit"
+        self.phaseStartMS = GetFrameTimeMilliseconds()
+        self.exitAlpha = root:GetAlpha()
+        self:ResetFeedback()
     end
-
-    local startAlpha = root:GetAlpha()
-    PlayAlpha(root, startAlpha, 0, FADE_OUT_MS, function(_, completedPlaying)
-        if completedPlaying and not self.active then
-            root:SetHidden(true)
-        end
-    end)
 end
 
 function CastBar:Complete(castId)
-    if castId and castId ~= self.castId then
+    if (castId and castId ~= self.castId) or self.phase ~= "casting" then return end
+    self.active = false
+    self.phase = "complete"
+    -- Use the cast deadline so low frame rates cannot lengthen the celebration.
+    self.phaseStartMS = self.endMS
+    self.elapsedMS = self.durationMS
+    self:SetProgress(1)
+    self:UpdateText(self.durationMS)
+    local frame = self:GetRoot().frame
+    frame.wake:SetHidden(true)
+    frame.leadingEdge:SetHidden(true)
+    frame.chargeSweep:SetHidden(true)
+    frame.castGlow:SetHidden(true)
+    frame.bar:SetGradientColors(0.35, 0.30, 0.20, 1, 0.86, 0.73, 0.46, 1)
+    frame.track:SetEdgeColor(0.64, 0.55, 0.37, 1)
+    frame.iconFrame:SetEdgeColor(0.77, 0.65, 0.43, 1)
+    frame.iconGlow:SetEdgeColor(1, 0.78, 0.38, 1)
+    frame.rightLabel:SetColor(0.92, 0.81, 0.58, 1)
+end
+
+function CastBar:UpdateAnimation()
+    local root = self:GetRoot()
+    if not self.phase then return end
+    if not IsModuleEnabled() or not IsHudSceneShowing() then
+        self:Hide(true)
         return
     end
 
-    local root = self:GetRoot()
     local frame = root.frame
-    self.active = false
-    root:SetHandler("OnUpdate", nil)
-    frame.bar:SetValue(self.durationMS or 1)
-    frame.fillGlow:SetValue(self.durationMS or 1)
-    frame.gloss:SetValue(self.durationMS or 1)
-    frame.shine:SetHidden(true)
-    frame.leadingEdge:SetHidden(true)
-    self:UpdateText(self.durationMS or 0)
-    self:PlayCompleteFeedback()
+    local now = GetFrameTimeMilliseconds()
+    local intensity = GetIntensity()
+    local width, height = self.trackWidth, self.trackHeight
+    if self.phase == "casting" then
+        self.elapsedMS = zo_clamp(now - self.startMS, 0, self.durationMS)
+        local progress = self.elapsedMS / self.durationMS
+        self:SetProgress(progress)
+        self:UpdateText(self.elapsedMS)
+        local entrance = intensity == 0 and 1 or EaseOut(self.elapsedMS / ENTER_MS)
+        root:SetAlpha(GetAlpha() * (0.55 + 0.45 * entrance))
+        local filledWidth = width * progress
+        local breath = 0.5 + 0.5 * math.sin(self.elapsedMS / 1000 * math.pi * 2 / 0.85)
+        local edgeWidth = math.min(3 + (3 + breath * 3) * intensity, filledWidth)
+        frame.leadingEdge:SetHidden(filledWidth < 1)
+        frame.leadingEdge:SetDimensions(edgeWidth, height)
+        frame.leadingEdge:ClearAnchors()
+        frame.leadingEdge:SetAnchor(LEFT, frame.well, LEFT, math.max(0, filledWidth - edgeWidth), 0)
+        frame.leadingEdge:SetAlpha(zo_clamp(0.82 + breath * 0.18 * intensity, 0, 1))
 
-    zo_callLater(function()
-        if self.castId == castId and not self.active then
-            self:Hide(false)
+        local wakeWidth = math.min(filledWidth, 48 + intensity * (20 + breath * 12))
+        frame.wake:SetDimensions(wakeWidth, height)
+        frame.wake:ClearAnchors()
+        frame.wake:SetAnchor(LEFT, frame.well, LEFT, filledWidth - wakeWidth, 0)
+        frame.wake:SetAlpha(zo_clamp((0.30 + 0.22 * breath) * intensity, 0, 1))
+        frame.wake:SetHidden(intensity == 0 or filledWidth < 1)
+
+        local startPulse = (1 - zo_clamp(self.elapsedMS / 280, 0, 1)) ^ 2
+        frame.castGlow:SetHidden(intensity == 0)
+        frame.castGlow:SetAlpha(zo_clamp((0.22 + breath * 0.26 + startPulse * 0.55) * intensity, 0, 1))
+        frame.iconGlow:SetHidden(intensity == 0 or not ShouldShowIcon())
+        frame.iconGlow:SetAlpha(zo_clamp((0.28 + breath * 0.32 + startPulse * 0.40) * intensity, 0, 1))
+        frame.feedbackFlash:SetHidden(intensity == 0 or startPulse == 0)
+        frame.feedbackFlash:SetValue(progress)
+        frame.feedbackFlash:SetColor(0.65, 0.91, 1, 1)
+        frame.feedbackFlash:SetAlpha(zo_clamp(startPulse * 0.55 * intensity, 0, 1))
+
+        -- Repeating light travels through the charge, beneath the outlined text.
+        local sweepProgress = (self.elapsedMS % 900) / 900
+        local sweepWidth = math.min(filledWidth, 38 + intensity * 18)
+        frame.chargeSweep:SetDimensions(sweepWidth, height)
+        frame.chargeSweep:ClearAnchors()
+        frame.chargeSweep:SetAnchor(LEFT, frame.well, LEFT, (filledWidth - sweepWidth) * sweepProgress, 0)
+        frame.chargeSweep:SetAlpha(zo_clamp(math.sin(sweepProgress * math.pi) * 0.46 * intensity, 0, 1))
+        frame.chargeSweep:SetHidden(intensity == 0 or filledWidth < 1)
+        if progress >= 1 then self:Complete(self.castId) end
+    end
+
+    if self.phase == "complete" then
+        local elapsed = math.max(0, now - self.phaseStartMS)
+        local progress = zo_clamp(elapsed / COMPLETE_HOLD_MS, 0, 1)
+        root:SetAlpha(GetAlpha())
+        local impact = (1 - zo_clamp(elapsed / 180, 0, 1)) ^ 2
+        frame.feedbackFlash:SetHidden(intensity == 0 or impact == 0)
+        frame.feedbackFlash:SetValue(1)
+        frame.feedbackFlash:SetColor(1, 0.87, 0.54, 1)
+        frame.feedbackFlash:SetAlpha(zo_clamp(impact * 0.72 * intensity, 0, 1))
+        frame.finishGlow:SetHidden(intensity == 0)
+        local expansion = 2 + 9 * EaseOut(progress) * intensity
+        frame.finishGlow:ClearAnchors()
+        frame.finishGlow:SetAnchor(TOPLEFT, frame.track, TOPLEFT, -expansion, -expansion)
+        frame.finishGlow:SetAnchor(BOTTOMRIGHT, frame.track, BOTTOMRIGHT, expansion, expansion)
+        frame.finishGlow:SetAlpha(zo_clamp((1 - progress) * 0.95 * intensity, 0, 1))
+        frame.iconGlow:SetHidden(intensity == 0 or not ShouldShowIcon())
+        frame.iconGlow:SetAlpha(zo_clamp((1 - progress) * intensity, 0, 1))
+        local sweepWidth = math.min(width, 72)
+        frame.finishSweep:SetDimensions(sweepWidth, height)
+        frame.finishSweep:ClearAnchors()
+        frame.finishSweep:SetAnchor(LEFT, frame.well, LEFT, (width - sweepWidth) * EaseOut(progress), 0)
+        frame.finishSweep:SetAlpha(zo_clamp(math.sin(progress * math.pi) * 0.72 * intensity, 0, 1))
+        frame.finishSweep:SetHidden(intensity == 0)
+        if elapsed >= COMPLETE_HOLD_MS then
+            self.phase = "exit"
+            self.phaseStartMS = self.endMS + COMPLETE_HOLD_MS
+            self.exitAlpha = GetAlpha()
+            frame.finishGlow:SetHidden(true)
+            frame.finishSweep:SetHidden(true)
+            frame.feedbackFlash:SetHidden(true)
+            frame.iconGlow:SetHidden(true)
         end
-    end, COMPLETE_HOLD_MS)
+    end
+
+    if self.phase == "exit" then
+        local progress = zo_clamp((now - self.phaseStartMS) / FADE_OUT_MS, 0, 1)
+        root:SetAlpha(math.min(self.exitAlpha or GetAlpha(), GetAlpha()) * (1 - EaseOut(progress)))
+        if progress >= 1 then self:Hide(true) end
+    end
 end
 
 function CastBar:StartCast(abilityId, abilityName, iconTexture, durationMS)
     durationMS = tonumber(durationMS) or 0
-    if durationMS < MIN_DURATION_MS then
-        return
-    end
+    if durationMS < MIN_DURATION_MS or not IsModuleEnabled() or not IsHudSceneShowing() then return end
 
+    self:Hide(true)
     self.castId = (self.castId or 0) + 1
-    local castId = self.castId
-    local root = self:GetRoot()
-    local frame = root.frame
-    local now = GetFrameTimeMilliseconds()
-
-    self.active = true
     self.abilityId = abilityId
     self.abilityName = abilityName and abilityName ~= "" and abilityName or "Unknown Ability"
     self.iconTexture = iconTexture and iconTexture ~= "" and iconTexture or FALLBACK_ICON
     self.durationMS = durationMS
-    self.startMS = now
-    self.endMS = now + durationMS
-
+    self.elapsedMS = 0
+    self.startMS = GetFrameTimeMilliseconds()
+    self.endMS = self.startMS + durationMS
     self:ApplyLayout()
-    frame.icon:SetTexture(self.iconTexture)
-    frame.bar:SetMinMax(0, durationMS)
-    frame.bar:SetValue(0)
-    frame.fillGlow:SetMinMax(0, durationMS)
-    frame.fillGlow:SetValue(0)
-    frame.gloss:SetMinMax(0, durationMS)
-    frame.gloss:SetValue(0)
-    frame.flash:SetHidden(true)
-    frame.shine:SetHidden(false)
-    frame.leadingEdge:SetHidden(false)
-    frame.shockwave:SetHidden(true)
-    frame.shockwave:SetAlpha(0)
-    frame.impactFlash:SetAlpha(0)
-    self.lastChunkIndex = 0
-    self.nextChunkPulseIndex = 0
-    self:UpdateText(0)
-    self:PlayStartFeedback()
-
-    root:SetHandler("OnUpdate", function()
-        if not self.active or self.castId ~= castId or not IsModuleEnabled() or not IsHudSceneShowing() then
-            self:Hide(false)
-            return
-        end
-
-        local nowMS = GetFrameTimeMilliseconds()
-        local elapsed = nowMS - self.startMS
-        if elapsed >= durationMS then
-            self:Complete(castId)
-            return
-        end
-
-        local value = math.max(0, elapsed)
-        local progress = zo_clamp(value / durationMS, 0, 1)
-        local pulse = Pulse01((progress * 5) % 1)
-        local intensity = GetIntensity()
-        frame.bar:SetValue(value)
-        frame.fillGlow:SetValue(value)
-        frame.gloss:SetValue(value)
-        frame.outerGlow:SetAlpha(zo_clamp(0.76 + pulse * 0.18 * intensity, 0, 1))
-        frame.fillGlow:SetAlpha(zo_clamp(0.40 + pulse * 0.34 * intensity, 0, 0.92))
-        frame.leadingEdge:SetAlpha(zo_clamp(0.70 + pulse * 0.30 * intensity, 0, 1))
-        frame.iconGlow:SetAlpha(zo_clamp(0.64 + pulse * 0.30 * intensity, 0, 1))
-        self:UpdateText(value)
-        self:UpdateChunkPulses(nowMS)
-
-        local chunkIndex = math.floor(progress * 10)
-        if chunkIndex > (self.lastChunkIndex or 0) then
-            self.lastChunkIndex = chunkIndex
-            self:TriggerChunkPulse(progress)
-        end
-
-        local trackWidth = frame.track:GetWidth()
-        if trackWidth and trackWidth > 0 then
-            local shineWidth = frame.shine:GetWidth()
-            local x = -shineWidth + ((trackWidth + shineWidth * 2) * progress)
-            frame.shine:ClearAnchors()
-            frame.shine:SetAnchor(LEFT, frame.track, LEFT, x, 0)
-            frame.shine:SetAlpha(zo_clamp(0.26 + pulse * 0.18 * intensity, 0, 0.72))
-
-            frame.leadingEdge:ClearAnchors()
-            frame.leadingEdge:SetAnchor(CENTER, frame.track, LEFT, trackWidth * progress, 0)
-
-            frame.shockwave:SetScale(1 + progress * 0.08)
-        end
-    end)
+    self.active = true
+    self.phase = "casting"
+    local root = self:GetRoot()
+    root.frame.icon:SetTexture(self.iconTexture)
+    root:SetHidden(false)
+    root:SetHandler("OnUpdate", function() self:UpdateAnimation() end)
+    self:UpdateAnimation()
 end
 
 function CastBar:OnActionSlotAbilityUsed(actionSlotIndex)
@@ -799,11 +660,8 @@ function CastBar:Preview()
 end
 
 function CastBar:UpdateVisibility()
-    local root = self:GetRoot()
-    if not IsModuleEnabled() or (not self.active and not self.previewActive) or not IsHudSceneShowing() then
-        if self.active or not root:IsHidden() then
-            self:Hide(not IsModuleEnabled())
-        end
+    if not IsModuleEnabled() or not IsHudSceneShowing() then
+        self:Hide(true)
     end
 end
 

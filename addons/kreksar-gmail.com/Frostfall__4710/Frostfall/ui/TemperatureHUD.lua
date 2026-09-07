@@ -159,35 +159,51 @@ function HUD:CreateControls()
 end
 
 -- ============================================================
--- SPELL-RESIST REAGENT BUFF INDICATOR
+-- STEADYING/SHELTER INDICATOR
 --
 -- Row 2 ("FEELS LIKE") is exactly what the spell-resist reagent buff
 -- (FV:ApplySpellResistReagent in Frostfall.lua) shifts, so the indicator
 -- lives on that row's own label rather than as a separate badge/icon —
 -- no new control or art asset needed, and it reads naturally as "this
--- number is currently being steadied." FV.State.spellResistEndTime is
--- this session's game-time expiry (see Frostfall.lua for how it's kept in
--- sync with the persisted FV.SV.spellResistEndTimestamp across a relog);
--- nil/absent means the buff isn't active, which is the only thing this
--- indicator needs to know.
+-- number is currently being steadied." The "Sheltered" tag is displayed
+-- alongside it whenever indoors, but note these are two different KINDS
+-- of effect as of the shelter redesign: the reagent buff steadies the
+-- DISPLAYED value only (playerTemp itself is unaffected), while indoor
+-- shelter accelerates playerTemp's own real drift toward neutral
+-- (CalculatePlayerTemperature in Frostfall.lua) - "Sheltered" here just
+-- means that acceleration is currently active, not that this label's
+-- number is being masked the way the reagent timer portion is.
+-- FV.State.spellResistEndTime nil/absent means the reagent buff isn't
+-- active; FV.State.isIndoorProtected false means the player isn't
+-- currently indoors per LibInteriorDetection (or it isn't installed).
 -- ============================================================
 local PLAYER_TEMP_LABEL_BASE  = "FEELS LIKE"
 local PLAYER_TEMP_LABEL_BUFFED_COLOR = { r = 0.85, g = 0.65, b = 1.0 }  -- soft violet, distinct from the plain label color below
 local PLAYER_TEMP_LABEL_BASE_COLOR   = { r = 0.7,  g = 0.85, b = 1.0 }  -- matches MakeRow's default label color
 
-local function UpdateSpellResistIndicator(lbl, state)
-    if not state.spellResistEndTime then
+local function UpdateSteadyingIndicator(lbl, state)
+    local parts = {}
+
+    if state.spellResistEndTime then
+        local remainingSeconds = state.spellResistEndTime - (GetGameTimeMilliseconds() / 1000)
+        local remainingMinutes = math.max(0, math.ceil(remainingSeconds / 60))
+        parts[#parts + 1] = string.format("%dm", remainingMinutes)
+    end
+
+    if state.isIndoorProtected then
+        parts[#parts + 1] = "Sheltered"
+    end
+
+    if #parts == 0 then
         lbl:SetText(PLAYER_TEMP_LABEL_BASE)
         lbl:SetColor(PLAYER_TEMP_LABEL_BASE_COLOR.r, PLAYER_TEMP_LABEL_BASE_COLOR.g, PLAYER_TEMP_LABEL_BASE_COLOR.b, 0.8)
         return
     end
 
-    local remainingSeconds = state.spellResistEndTime - (GetGameTimeMilliseconds() / 1000)
-    local remainingMinutes = math.max(0, math.ceil(remainingSeconds / 60))
     -- Kept short (vs. e.g. "(STEADIED, 12m)") since this label has no fixed
     -- width/wrap and sits inside a 220px-wide HUD — the color shift is the
     -- primary "buff active" signal, this is just the bonus detail.
-    lbl:SetText(string.format("%s (%dm)", PLAYER_TEMP_LABEL_BASE, remainingMinutes))
+    lbl:SetText(string.format("%s (%s)", PLAYER_TEMP_LABEL_BASE, table.concat(parts, ", ")))
     lbl:SetColor(PLAYER_TEMP_LABEL_BUFFED_COLOR.r, PLAYER_TEMP_LABEL_BUFFED_COLOR.g, PLAYER_TEMP_LABEL_BUFFED_COLOR.b, 1.0)
 end
 
@@ -211,7 +227,7 @@ function HUD:Update(playerTemp, state)
     local col = GetTempColor(playerTemp)
     self.playerTempVal:SetText(FV.FormatTemp(playerTemp))
     self.playerTempVal:SetColor(col.r, col.g, col.b, 1.0)
-    UpdateSpellResistIndicator(self.playerTempLbl, state)
+    UpdateSteadyingIndicator(self.playerTempLbl, state)
 
     -- Row 3: insulation value and source
     self.insulationVal:SetText(
@@ -228,5 +244,13 @@ end
 
 function HUD:Initialize()
     self:CreateControls()
-    self.container:SetHidden(not FV.SV.showHUD)
+    -- Must check FV.SV.enabled here too, not just FV.SV.showHUD - unlike
+    -- the overlay (which starts hidden and only ever becomes visible via
+    -- the master-toggle-gated Update() call), this function eagerly sets
+    -- visibility itself at load time, before the tick loop has run even
+    -- once. Checking showHUD alone meant loading in with the master
+    -- toggle off but showHUD on displayed an empty HUD with no data,
+    -- since Update() - which is what actually populates it - never runs
+    -- while the master toggle is off.
+    self.container:SetHidden(not (FV.SV.showHUD and FV.SV.enabled))
 end

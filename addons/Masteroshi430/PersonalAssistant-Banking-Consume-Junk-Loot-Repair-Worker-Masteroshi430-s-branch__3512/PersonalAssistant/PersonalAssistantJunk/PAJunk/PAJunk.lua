@@ -501,8 +501,10 @@ local function _canWeaponArmorJewelryBeMarkedAsJunk(savedVarsGroup, itemLink, it
                 else
                     local canBeResearched = CanItemLinkBeTraitResearched(itemLink)
                     if (not canBeResearched and savedVarsGroup.autoMarkKnownTraits) or (canBeResearched and savedVarsGroup.autoMarkUnknownTraits) then
-                        local isIntricateTtrait = PAHF.isItemLinkIntricateTraitType(itemLink)
-                        if not isIntricateTtrait or (isIntricateTtrait and savedVarsGroup.autoMarkIntricateTrait) then
+                        local isIntricateTrait = PAHF.isItemLinkIntricateTraitType(itemLink)
+                        local isOrnateTrait = PAHF.isItemLinkOrnateTraitType(itemLink)
+                        if (not isIntricateTrait or (isIntricateTrait and savedVarsGroup.autoMarkIntricateTrait))
+                                and (not isOrnateTrait or (isOrnateTrait and savedVarsGroup.autoMarkOrnate)) then
                             return true
                         end
                     end

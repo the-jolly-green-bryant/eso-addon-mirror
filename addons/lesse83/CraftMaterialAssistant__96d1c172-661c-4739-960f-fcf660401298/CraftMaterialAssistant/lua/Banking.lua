@@ -7,7 +7,7 @@ function CMA:printResultsToChat()
             self:SendChatMessageLimitedItemCount("|c00AA00Moved to Bank:|r ", self.movedItems)
         end
         if #self.failedItems > 0 then
-            self:SendChatMessageLimitedItemCount("|cFF0000Failed to move:|r ", self.failedItems)
+            self:SendChatMessageLimitedItemCount("|cCF9700No success callback:|r ", self.failedItems)
         end
     end
     if self.db.showJunkAlerts then
@@ -26,16 +26,25 @@ end
 function CMA:OnMoveFailed(itemLink, stackSizeToDeposit)
     EVENT_MANAGER:UnregisterForUpdate(self.moveTimeoutName)
     -- check if there are attempts left
-    local uniqueId = self:GetUniqueIdString(self.sourceBag , self.processedSlot)
-    if self:checkIfAttemptsLeft(uniqueId) then
-        -- readd to list and go on with processing
-        table.insert(self.itemsToMove, uniqueId)
+    local uniqueId = self.processedUniqueId
+    -- check if the item is still in the bag or if only the success message got lost
+    local bagId, slotIndex = self:findItemByUniqueId(self.sourceBag, uniqueId)
+    if slotIndex ~= nil then
+        -- item is still in the bag, retry
+        if self:checkIfAttemptsLeft(uniqueId) then
+            -- readd to list and go on with processing
+            table.insert(self.itemsToMove, uniqueId)
+        else
+            table.insert(self.failedItems, itemLink .. " (" .. stackSizeToDeposit .. ")")
+        end
     else
-        table.insert(self.failedItems, itemLink .. " (" .. stackSizeToDeposit .. ")")
+        -- not in bag anymore -> was moved
+        table.insert(self.movedItems, itemLink .. " (" .. stackSizeToDeposit .. ")")
     end
     -- set processing to false to enable processing of new items
     self.processingMove = false
     self.processedSlot = nil
+    self.processedUniqueId = nil
     -- go on and process the next move
     self:MoveNextItem()
 end
@@ -69,12 +78,14 @@ end
 -- Called when a move operation was successful
 function CMA:OnMoveSuccess(eventCode, bagId, slotIndex, isNewItem, itemSoundCategory, updateReason, stackCountChange)
     -- Verify this update matches the queried bag and slot
-    if bagId == self.targetBag and slotIndex == self.processedSlot then
+    local uniqueId = self:GetUniqueIdString(self.targetBag, self.processedSlot)
+    if uniqueId == self.processedUniqueId then
         -- clear the timeout
         EVENT_MANAGER:UnregisterForUpdate(self.moveTimeoutName)
         -- set processing to false to be able to handle the next item
         self.processingMove = false
         self.processedSlot = nil
+        self.processedUniqueId = nil
         -- add the item to movedItems
         local itemLink = GetItemLink(bagId, slotIndex)
         table.insert(self.movedItems, itemLink .. " (" .. stackCountChange .. ")")
@@ -87,7 +98,7 @@ end
 function CMA:StartTimeout(itemLink, stackSizeToDeposit)
     EVENT_MANAGER:RegisterForUpdate(
         self.moveTimeoutName,
-        700,
+        500,
         function()
             self:OnMoveFailed(itemLink, stackSizeToDeposit)
         end
@@ -120,6 +131,7 @@ function CMA:MoveNextItem()
         -- start a timer and abort operation it takes too long (=timeout)
         self:StartTimeout(itemLink, stackSizeToDeposit)
         self.processedSlot = depositSlot
+        self.processedUniqueId = uniqueId
         -- try to do the move operation - if successful will end up in the callback OnMoveSuccess before timeout triggers
         CallSecureProtected("RequestMoveItem", bagId, slotIndex, self.targetBag, self.processedSlot, stackSizeToDeposit)
     else
@@ -129,6 +141,7 @@ function CMA:MoveNextItem()
             self:OnMoveFailed(itemLink, stackSizeToDeposit)
         else
             self.processedSlot = FindFirstEmptySlotInBag(self.targetBag)
+            self.processedUniqueId = uniqueId
             -- start a timer and abort operation it takes too long (=timeout)
             self:StartTimeout(itemLink, stackSizeToDeposit)
             -- try to do the move operation - if successful will end up in the callback OnMoveSuccess before timeout triggers
@@ -209,7 +222,8 @@ function CMA:StartBankingProcess()
     self:MoveNextItem()
 end
 
-function CMA:OnBankOpen()
+function CMA:OnBankOpen(eventCode, bag)
+    if bag ~= BAG_BANK then return end
     if not self.db.enableAddon then return end
     ZO_Alert(UI_ALERT_CATEGORY_ALERT, SOUNDS.NO_SOUND, "CMA: Banking materials in " .. tostring(math.ceil(self.db.initialDelayInMs / 1000)) .. " seconds.")
     -- start the inital delay

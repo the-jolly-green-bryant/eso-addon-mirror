@@ -1,11 +1,16 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/kreksar-gmail.com/LibZoneTemp__4708",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "kreksar@gmail.com",
   "canonical_id": "esoui:4708",
   "category_id": "53",
   "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
     {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
@@ -17,7 +22,7 @@
     "LibZoneTemp"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4708/",
-  "fingerprint": "6f900db1b73341a03d8947ed66cfe07ad02c64934ea8025fc102f0f1ce704bf8",
+  "fingerprint": "913cab6ce11b9b1f411c3c298429f9be81c5c8a656363c728f8b96ceb87f8399",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16700.png",
     "https://cdn-eso.mmoui.com/preview/pvw16701.png"
@@ -28,11 +33,11 @@
   "source_id": "4708",
   "source_url": "https://www.esoui.com/downloads/info4708-LibZoneTemp.html",
   "stats": {
-    "downloads": 284,
-    "favorites": 0,
-    "monthly_downloads": 265
+    "downloads": 858,
+    "favorites": 1,
+    "monthly_downloads": 416
   },
   "title": "LibZoneTemp",
-  "updated_at": 1785195625000,
-  "version": "2.3.15"
+  "updated_at": 1788722613000,
+  "version": "2.3.18"
 }

@@ -397,6 +397,41 @@ local function GetListingRoleData(listingIndex, capacity, hasRoleData, enforcesR
     return totalDesired < capacity or selectedDesired > selectedCount, roleCountsText
 end
 
+local function GetOrganizerChampionPoints(displayName)
+    if displayName == "" then return 0 end
+
+    local undecoratedDisplayName = UndecorateDisplayName and UndecorateDisplayName(displayName) or displayName
+    local normalizedDisplayName = NQOL.Util.Lower(undecoratedDisplayName)
+    if GetNumFriends and GetFriendInfo and GetFriendCharacterInfo then
+        for friendIndex = 1, GetNumFriends() do
+            local friendDisplayName = GetFriendInfo(friendIndex)
+            friendDisplayName = UndecorateDisplayName and UndecorateDisplayName(friendDisplayName) or friendDisplayName
+            if NQOL.Util.Lower(friendDisplayName) == normalizedDisplayName then
+                local hasCharacter, _, _, _, _, _, championPoints = GetFriendCharacterInfo(friendIndex)
+                championPoints = tonumber(championPoints) or 0
+                if hasCharacter and championPoints > 0 then return championPoints end
+            end
+        end
+    end
+
+    if GetNumGuilds and GetGuildId and GetGuildMemberIndexFromDisplayName and GetGuildMemberCharacterInfo then
+        for guildIndex = 1, GetNumGuilds() do
+            local guildId = GetGuildId(guildIndex)
+            local memberIndex = guildId and GetGuildMemberIndexFromDisplayName(guildId, displayName)
+            if not memberIndex and guildId and undecoratedDisplayName ~= displayName then
+                memberIndex = GetGuildMemberIndexFromDisplayName(guildId, undecoratedDisplayName)
+            end
+            if memberIndex then
+                local hasCharacter, _, _, _, _, _, championPoints = GetGuildMemberCharacterInfo(guildId, memberIndex)
+                championPoints = tonumber(championPoints) or 0
+                if hasCharacter and championPoints > 0 then return championPoints end
+            end
+        end
+    end
+
+    return 0
+end
+
 local function CaptureCurrentResults(task)
     local resultData = GROUP_FINDER_SEARCH_MANAGER:GetSearchResults() or {}
     for _, data in ipairs(resultData) do
@@ -405,7 +440,9 @@ local function CaptureCurrentResults(task)
         local category = GetGroupFinderSearchListingCategoryByIndex(listingIndex)
         local title = CleanText(GetGroupFinderSearchListingTitleByIndex(listingIndex))
         local description = CleanText(GetGroupFinderSearchListingDescriptionByIndex(listingIndex))
-        local leader = CleanText(GetGroupFinderSearchListingLeaderDisplayNameByIndex(listingIndex))
+        local rawLeader = CleanText(GetGroupFinderSearchListingLeaderDisplayNameByIndex(listingIndex))
+        local organizerChampionPoints = GetOrganizerChampionPoints(rawLeader)
+        local leader = rawLeader
         if ZO_FormatUserFacingDisplayName then leader = ZO_FormatUserFacingDisplayName(leader) end
         if leader ~= "" and string.sub(leader, 1, 1) ~= "@" then leader = "@" .. leader end
         primary = CleanText(primary)
@@ -420,6 +457,10 @@ local function CaptureCurrentResults(task)
         local enforcesRoles = supportsRoles and DoesGroupFinderSearchListingEnforceRoles(listingIndex) == true
         local hasSelectedRoleSpace, roleCountsText = GetListingRoleData(listingIndex, capacity, supportsRoles, enforcesRoles, scanConfig.role)
         if hasSelectedRoleSpace then
+            local minimumChampionPoints = 0
+            if category == GROUP_FINDER_CATEGORY_TRIAL and DoesGroupFinderSearchListingRequireChampion(listingIndex) then
+                minimumChampionPoints = tonumber(GetGroupFinderSearchListingChampionPointsByIndex(listingIndex)) or 0
+            end
             local key = string.format("%s\31%s\31%s\31%s\31%s\31%s", category, primary, secondary, leader, title, description)
             scanRows[#scanRows + 1] = {
                 key = key,
@@ -431,6 +472,8 @@ local function CaptureCurrentResults(task)
                 preferActivityTitle = preferActivityTitle,
                 title = title,
                 leader = leader,
+                organizerChampionPoints = organizerChampionPoints,
+                minimumChampionPoints = minimumChampionPoints,
                 description = description,
                 supportsRoles = supportsRoles,
                 roleCountsText = roleCountsText,

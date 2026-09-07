@@ -57,6 +57,7 @@ local function E(key, name, effectType, timer, coverage, defaultTracked, aliases
         criticalDamageTaken=tonumber(options.criticalDamageTaken),
         criticalDamagePerStack=tonumber(options.criticalDamagePerStack),
         providerCooldownFromLocalEffect=options.providerCooldownFromLocalEffect == true,
+        providerCooldownFromCombatEvent=options.providerCooldownFromCombatEvent == true,
         requiresLocalProviderEffect=options.requiresLocalProviderEffect == true,
         coverageTriggerIds=options.coverageTriggerIds or {},
         reconcileCoverageOnTrigger=options.reconcileCoverageOnTrigger == true,
@@ -139,6 +140,20 @@ Registry.definitions = {
     -- candidate for the collected-soul 30-second player buff. Keeping this ID in
     -- registry data lets live testing confirm or replace it without runtime changes.
     E("SUL_XANS_TORMENT","Sul-Xan's Torment","BUFF",true,false,false,{"Sul-Xan's Torment"},{abilityIds={154737},targetType="SELF",displayPriority=74,iconAbilityId=154737,autoProviderSets={{name="Sul-Xan's Torment",minPieces=5},{name="Perfected Sul-Xan's Torment",minPieces=5}},menuCategory="GEAR"}),
+
+    -- Provider-specific Major Vulnerability set intelligence. The Gear Set tiles
+    -- own only their provider cooldowns; normalized Major Vulnerability remains
+    -- the authoritative hostile debuff state. Provider cooldown events are
+    -- accepted only when the local player is the source and the matching set is
+    -- currently equipped, preventing Colossus or another player's set proc from
+    -- driving these timers.
+    E("TURNING_TIDE","Turning Tide","DEBUFF",true,false,false,{"Turning Tide"},{abilityIds={167062},combatEventIds={167059},providerCooldown=15,providerCooldownFromCombatEvent=true,providerCooldownOverridesActive=true,preserveProviderCooldownOnEncounterEnd=true,showReady=true,readyRequiresObservedProvider=true,targetType="HOSTILE_ENCOUNTER_UNIT",displayPriority=7,iconAbilityId=167059,autoProviderSets={{name="Turning Tide",minPieces=5}},menuCategory="GEAR",lifecycle="TARGET_PROVIDER_COOLDOWN"}),
+    E("ARCHDRUID_DEVYRIC","Archdruid Devyric","DEBUFF",true,false,false,{"Archdruid Devyric"},{abilityIds={176816},combatEventIds={176813},providerCooldown=15,providerCooldownFromCombatEvent=true,providerCooldownOverridesActive=true,preserveProviderCooldownOnEncounterEnd=true,showReady=true,readyRequiresObservedProvider=true,targetType="HOSTILE_ENCOUNTER_UNIT",displayPriority=8,iconAbilityId=176813,autoProviderSets={{name="Archdruid Devyric",minPieces=2}},menuCategory="GEAR",lifecycle="TARGET_PROVIDER_COOLDOWN"}),
+
+    -- Crimson Oath is intentionally name/event driven until a clean provider ID
+    -- is captured. Its hostile Armor reduction remains useful to the canonical
+    -- debuff runtime and Current Pen without inventing a cooldown trigger.
+    E("CRIMSON_OATHS_RIVE","Crimson Oath's Rive","DEBUFF",true,false,false,{"Crimson Oath's Rive","Crimson Oath’s Rive"},{targetType="HOSTILE_ENCOUNTER_UNIT",displayPriority=13,icon=I("ability_armor_001"),autoGroupEffect=true,autoProviderSets={{name="Crimson Oath's Rive",minPieces=5},{name="Crimson Oath’s Rive",minPieces=5}},menuCategory="GEAR",resistanceReduction=3541,affectsPenetration=true}),
 
     E("MAJOR_VULNERABILITY","Major Vulnerability","DEBUFF",true,false,true,nil,{abilityIds={106754},displayPriority=5,icon=I("ability_debuff_major_vulnerability"),autoGroupEffect=true,autoProviderSets={{name="Turning Tide",minPieces=5},{name="Archdruid Devyric",minPieces=2}},autoProviderAbilityNames={"Glacial Colossus","Frozen Colossus","Pestilent Colossus"}}),
     E("MINOR_VULNERABILITY","Minor Vulnerability","DEBUFF",true,false,true,nil,{displayPriority=55,icon=I("ability_debuff_minor_vulnerability")}),
