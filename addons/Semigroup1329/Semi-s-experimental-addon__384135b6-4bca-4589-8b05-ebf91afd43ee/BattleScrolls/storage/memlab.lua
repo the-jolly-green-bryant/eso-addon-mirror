@@ -92,13 +92,15 @@ local MIRROR_SUFFIX = ":BSML"
 ---@field running boolean
 ---@field fileSample MemLabSample After this module's dependencies loaded; not loader peak
 ---@field loadedSample MemLabSample Before Battle Scrolls initialization
+---@field activatedSample MemLabSample First player activation, after every addon-loaded handler
 ---@field loadedShape string
 ---@field loadedCount integer
 ---@field seedChanged boolean Refuse load comparisons after changing the seed this session
+BattleScrolls.memTrace.boundary("file")
 local lab = {
     running = false,
     fileSample = { gauge = diag.gaugeBytes() / MIB, heap = diag.luaHeapBytes() / MIB },
-    loadedSample = {}, loadedShape = "empty", loadedCount = 0, seedChanged = false,
+    loadedSample = {}, activatedSample = {}, loadedShape = "empty", loadedCount = 0, seedChanged = false,
 }
 BattleScrolls.memLab = lab
 
@@ -114,6 +116,7 @@ EVENT_MANAGER:RegisterForEvent("BattleScrolls_MemLab", EVENT_ADD_ON_LOADED, func
     if addonName ~= BattleScrolls.addonName then return end
     lab.loadedSample.gauge = diag.gaugeBytes() / MIB
     lab.loadedSample.heap = diag.luaHeapBytes() / MIB
+    BattleScrolls.memTrace.sample("init")
     local saved = seed()
     if type(saved) == "table" and type(saved.root) == "table"
         and type(saved.shape) == "string" and type(saved.count) == "number" then
@@ -127,6 +130,25 @@ end)
 local function readSample(sample)
     sample.gauge = diag.gaugeBytes() / MIB
     sample.heap = diag.luaHeapBytes() / MIB
+end
+
+-- Registered before main.lua's initializers register theirs, so this observes
+-- the first activation after every EVENT_ADD_ON_LOADED handler has run. Later
+-- activations (zone changes, reloads) are not part of the startup timeline.
+EVENT_MANAGER:RegisterForEvent("BattleScrolls_MemLab_Activated", EVENT_PLAYER_ACTIVATED, function()
+    readSample(lab.activatedSample)
+    BattleScrolls.memTrace.sample("active")
+    EVENT_MANAGER:UnregisterForEvent("BattleScrolls_MemLab_Activated", EVENT_PLAYER_ACTIVATED)
+end)
+
+---Manifest-boundary samples recorded by storage/memtrace.lua, if it loaded.
+---@param name string
+---@return MemLabSample
+local function traceSample(name)
+    local trace = BattleScrolls.memTrace
+    local sample = trace and trace.samples[name]
+    if not sample then return {} end
+    return { gauge = sample.gauge, heap = sample.heap }
 end
 
 ---@param report MemLabReport
@@ -745,24 +767,70 @@ end
 
 local function loadTest()
     if lab.seedChanged then d(GetString(BATTLESCROLLS_MEMLAB_SAVE_RESTART)) return end
-    run("load", { "file", "init", "idle" }, function(report)
+    -- Startup timeline: first = before any Battle Scrolls file (libraries are
+    -- already loaded); file = this module's load; code = after the last Lua/XML
+    -- file, before SavedVariables (before / after the eager collection in
+    -- storage/memtrace_end.lua); init = this module's addon-loaded handler /
+    -- start of main.lua's handler / end of it (independent of handler order);
+    -- active = first player activation; idle = now.
+    run("load", { "first", "file", "code", "init", "active", "idle" }, function(report)
         seedPayload() -- validate the loaded shape; never reconstruct it here
         report.seedCount = lab.loadedCount
         if seed() then report.mirror = seed().mirror end
-        report.rows[1].before = lab.fileSample
-        report.rows[2].before = lab.loadedSample
-        report.completed = 2
-        local row = report.rows[3]
+        report.rows[1].before = traceSample("first")
+        report.rows[2].before = lab.fileSample
+        report.rows[3].before = traceSample("code")
+        report.rows[3].freed = traceSample("code+")
+        report.rows[4].before = lab.loadedSample
+        report.rows[4].work = traceSample("main0")
+        report.rows[4].freed = traceSample("main1")
+        report.rows[5].before = lab.activatedSample
+        report.completed = 5
+        local row = report.rows[6]
         readSample(row.before)
         wait(report, 10000)
         readSample(row.work)
         collect(report)
         readSample(row.freed)
         check(report)
-        report.completed = 3
+        report.completed = 6
         -- The native file query can allocate too. Run it after all memory
         -- samples, so it cannot perturb the startup comparison being reported.
         report.diskMiB = diskUsage()
+    end)
+end
+
+-- Startup trace: one row per recorded boundary, in manifest order. before =
+-- change since the previous boundary's settled sample (garbage included);
+-- work = the same change measured after that boundary's collection, when the
+-- build collected there; freed = the absolute settled sample. The first row
+-- is absolute. Nothing is allocated or collected by this command.
+local function traceTest()
+    local trace = BattleScrolls.memTrace
+    local labels = {}
+    for _, name in ipairs(trace.order) do
+        if name:sub(-1) ~= "+" then labels[#labels + 1] = name end
+    end
+    run("trace", labels, function(report)
+        ---@type MemTraceSample|nil
+        local previous = nil
+        for i, name in ipairs(labels) do
+            local row = report.rows[i]
+            local sample, collected = trace.samples[name], trace.samples[name .. "+"]
+            local settled = collected or sample
+            if previous then
+                row.before = { gauge = sample.gauge - previous.gauge, heap = sample.heap - previous.heap }
+                if collected then
+                    row.work = { gauge = collected.gauge - previous.gauge, heap = collected.heap - previous.heap }
+                end
+            else
+                row.before = { gauge = sample.gauge, heap = sample.heap }
+                if collected then row.work = { gauge = collected.gauge, heap = collected.heap } end
+            end
+            row.freed = { gauge = settled.gauge, heap = settled.heap }
+            previous = settled
+        end
+        report.completed = #labels
     end)
 end
 
@@ -871,6 +939,7 @@ SLASH_COMMANDS["/bsmemlab"] = function(args)
     elseif command == "control" and #words == 1 then
         allocationTest(command, { "C", "C", "C", "C", "C", "C" })
     elseif command == "load" and #words == 1 then loadTest()
+    elseif command == "trace" and #words == 1 then traceTest()
     elseif command == "compact" and #words == 1 then compactSeedTest()
     elseif command == "discard" and #words == 1 then discardSeedTest()
     elseif command == "census" and #words == 1 then censusTest()

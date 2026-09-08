@@ -62,6 +62,29 @@ function M.push(name)
     return pcall(function() s:Push(name) end)
 end
 
+function M.push_bg_leaderboard(lbType)
+    if not M.push("leaderboards") then return false end
+    local lb = BATTLEGROUND_LEADERBOARDS
+    if not lb or type(lb.SelectByBattlegroundLeaderboardType) ~= "function" then return true end
+    local function select_node()
+        pcall(function() lb:SelectByBattlegroundLeaderboardType(lbType, false) end)
+    end
+    local scene = LEADERBOARDS_SCENE
+    if scene and type(scene.GetState) == "function" and scene:GetState() == SCENE_SHOWN then
+        select_node()
+    elseif scene and type(scene.RegisterCallback) == "function" then
+        local function once(_, newState)
+            if newState ~= SCENE_SHOWN then return end
+            if type(scene.UnregisterCallback) == "function" then scene:UnregisterCallback("StateChange", once) end
+            select_node()
+        end
+        scene:RegisterCallback("StateChange", once)
+    else
+        select_node()
+    end
+    return true
+end
+
 function M.next_is_hud()
     local sm = SCENE_MANAGER
     if not sm or type(sm.GetNextScene) ~= "function" then return false end

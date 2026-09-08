@@ -1131,6 +1131,6 @@ SafeAddString(BATTLESCROLLS_MEMLAB_CENSUS_STRINGS, "Строки %d; %.2f MiB", 
 SafeAddString(BATTLESCROLLS_MEMLAB_MIRROR_INFO, "Копия T%d S%d L%.2f K%.2f", 1)
 SafeAddString(BATTLESCROLLS_MEMLAB_MIRROR_CLEAR, "Перед копией удалите тестовые данные и перезапустите.", 1)
 SafeAddString(BATTLESCROLLS_MEMLAB_DISCARD_REQUIRED, "Перед discard загрузите тестовые данные.", 1)
-SafeAddString(BATTLESCROLLS_MEMLAB_USAGE_MIRROR, "/bsmemlab seed mirror; discard; census live", 1)
+SafeAddString(BATTLESCROLLS_MEMLAB_USAGE_MIRROR, "/bsmemlab seed mirror; discard; census live; trace", 1)
 SafeAddString(BATTLESCROLLS_MEMLAB_LIVE_COUNTS, "Последний активен %d (1=да); A%d I%d N%d", 1)
 SafeAddString(BATTLESCROLLS_MEMLAB_LIVE_BYTES, "Кэш записи L%.2f K%.2f", 1)

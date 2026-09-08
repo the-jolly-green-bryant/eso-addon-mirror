@@ -342,16 +342,22 @@ function SEC.haul(m, animate)
         hide_all(vetControls, false)
         if vet.rankIcon then p.vetIcon:SetTexture(vet.rankIcon); p.vetIcon:SetHidden(false) else p.vetIcon:SetHidden(true) end
         set_text(p.vetTitle, vet.rankTitle or ("Veteran Rank " .. tostring(vet.rank)))
-        set_text(p.vetTier, vet.tier and string.format("Tier %d", vet.tier) or "")
+        local laps = vet.laps or 0
+        local tierTxt = vet.tier and string.format("Tier %d", vet.tier) or ""
+        if vet.pastMax then
+            tierTxt = laps > 0 and string.format("Max rank  ·  reward ×%d", laps) or "Max rank"
+        end
+        set_text(p.vetTier, tierTxt)
         local hasPct = vet.percent ~= nil
         Bar.set_hidden(p.track, not hasPct)
-        if hasPct then set_bar(p.track, vet.percent, K.COLOR.veterancy, L.haul_w - 32, animate) end
+        if hasPct then set_bar(p.track, math.max(0, math.min(1, vet.percent)), K.COLOR.veterancy, L.haul_w - 32, animate) end
         if h.vetRankUp then
-            set_text(p.vetDelta, "RANK UP this match!"); S.color(p.vetDelta, K.COLOR.gold)
+            set_text(p.vetDelta, vet.pastMax and "REWARD this match!" or "RANK UP this match!"); S.color(p.vetDelta, K.COLOR.gold)
         elseif hasPct then
             local txt
             if vet.tierTotal and vet.tierTotal > 0 then
-                txt = string.format("%s / %s to next rank", F.commas(vet.progressToNext or 0), F.commas(vet.tierTotal))
+                txt = string.format("%s / %s to next %s", F.commas(vet.progressToNext or 0), F.commas(vet.tierTotal),
+                    vet.pastMax and "reward" or "rank")
             else
                 txt = "max rank reached"
             end
@@ -364,7 +370,8 @@ function SEC.haul(m, animate)
             and ("\nseason ends in " .. F.countdown(vet.secondsLeft)) or ""
         W.tips[p.vetIconHit] = string.format("%s%s\n%s%s",
             vet.rankTitle or ("Veteran Rank " .. tostring(vet.rank)),
-            vet.tier and ("  ·  Tier " .. vet.tier) or "",
+            vet.pastMax and (laps > 0 and ("  ·  max rank, reward ×" .. laps) or "  ·  max rank")
+                or (vet.tier and ("  ·  Tier " .. vet.tier) or ""),
             vet.seasonName or "Veterancy season", endsTxt)
     else
         hide_all(vetControls, false)

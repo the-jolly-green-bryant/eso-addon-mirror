@@ -82,6 +82,10 @@ function E.show_text(text)
     controls.edit:SelectAll()
 end
 
+function E.is_hidden()
+    return not controls or controls.window:IsHidden()
+end
+
 function E.hide()
     if not controls or controls.window:IsHidden() then return end
     controls.window:SetHidden(true)

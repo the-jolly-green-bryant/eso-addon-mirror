@@ -7,6 +7,22 @@ local ver = LFC.Internal.Constants.Versioning
 
 -- Season One
 FurC.LuxuryFurnisher[ver.THIEVES] = {
+  [223880] = { -- Vampiric Scales, Laboratory
+    itemPrice = 6000,
+    itemDate = "2026-06-12",
+  },
+  [223881] = { -- Argonian Tile, Trap Trigger Display
+    itemPrice = 4000,
+    itemDate = "2026-06-19",
+  },
+  [223882] = { -- Nord Tile, Trap Trigger Display
+    itemPrice = 4000,
+    itemDate = "2026-06-26",
+  },
+  [223883] = { -- Goblin Bedding, Leather
+    itemPrice = 3000,
+    itemDate = "2026-07-03",
+  },
   [223884] = { -- Rock Altar, Spiked
     itemPrice = 4000,
     itemDate = "2026-07-10",
@@ -39,25 +55,9 @@ FurC.LuxuryFurnisher[ver.THIEVES] = {
     itemPrice = 10000,
     itemDate = "2026-08-28",
   },
-}
-
--- Season Zero Pt. 2
-FurC.LuxuryFurnisher[ver.ZERO2] = {
-  [223880] = { -- Vampiric Scales, Laboratory
-    itemPrice = 6000,
-    itemDate = "2026-06-12",
-  },
-  [223881] = { -- Argonian Tile, Trap Trigger Display
-    itemPrice = 4000,
-    itemDate = "2026-06-19",
-  },
-  [223882] = { -- Nord Tile, Trap Trigger Display
-    itemPrice = 4000,
-    itemDate = "2026-06-26",
-  },
-  [223883] = { -- Goblin Bedding, Leather
-    itemPrice = 3000,
-    itemDate = "2026-07-03",
+  [223892] = { -- Kelp Tree, Giant
+    itemPrice = 20000,
+    itemDate = "2026-09-04",
   },
 }
 
@@ -281,7 +281,7 @@ FurC.LuxuryFurnisher[ver.FALLBAN] = {
   },
   [212583] = { -- Dock Bollard, Metal
     itemPrice = 450,
-    itemDate = "2025-08-08",
+    itemDate = "2026-09-04",
   },
   [212579] = { -- Flowers, Sunflower Row
     itemPrice = 1000,
@@ -501,7 +501,7 @@ FurC.LuxuryFurnisher[ver.SCIONS] = {
   },
   [203589] = { -- Festering Coral, Large Crimson-Orange
     itemPrice = 5000,
-    itemDate = "2025-08-08",
+    itemDate = "2026-09-04",
   },
   [203588] = { -- Alinor Boat, Unfinished
     itemPrice = 4500,
@@ -757,7 +757,7 @@ FurC.LuxuryFurnisher[ver.SCRIBE] = {
   },
   [193790] = { -- Festering Coral, Crimson-Orange
     itemPrice = 4000,
-    itemDate = "2025-08-08",
+    itemDate = "2026-09-04",
   },
   [193789] = { -- Gonfalon Bay Dockside Bell
     itemPrice = 18000,
@@ -993,7 +993,7 @@ FurC.LuxuryFurnisher[ver.TIDES] = {
   },
   [184198] = { -- Coral Formation, Branching Red Cluster
     itemPrice = 1000,
-    itemDate = "2025-08-08",
+    itemDate = "2026-09-04",
   },
   [184197] = { -- Canopy, Netted
     itemPrice = 4000,
@@ -1229,7 +1229,7 @@ FurC.LuxuryFurnisher[ver.FLAMES] = {
   },
   [171823] = { -- Coral Formation, Branching Red
     itemPrice = 2000,
-    itemDate = "2025-08-08",
+    itemDate = "2026-09-04",
   },
   [171822] = { -- Harbor Winch, Treadwheel
     itemPrice = 7000,
@@ -1485,7 +1485,7 @@ FurC.LuxuryFurnisher[ver.DRAGON2] = {
   },
   [156651] = { -- Anchor, Hanging
     itemPrice = 20000,
-    itemDate = "2025-08-08",
+    itemDate = "2026-09-04",
   },
   [156650] = { -- Platform, Floating Dock
     itemPrice = 3000,
@@ -1877,7 +1877,7 @@ FurC.LuxuryFurnisher[ver.SLAVES] = {
   },
   [145473] = { -- Antler Coral, Stout Crimson
     itemPrice = 75000,
-    itemDate = "2025-08-08",
+    itemDate = "2026-09-04",
   },
   [145472] = { -- Antler Coral, Crimson
     itemPrice = 50000,
@@ -2036,7 +2036,7 @@ FurC.LuxuryFurnisher[ver.DRAGONS] = {
   },
   [134828] = { -- Antler Coral, Branched Spire
     itemPrice = 100000,
-    itemDate = "2025-08-08",
+    itemDate = "2026-09-04",
   },
   [134827] = { -- Mooring Line, Coiled
     itemPrice = 7500,
@@ -2664,7 +2664,7 @@ FurC.LuxuryFurnisher[ver.HOMESTEAD] = {
   },
   [120847] = { -- Dock Winch
     itemPrice = 4000,
-    itemDate = "2025-08-08",
+    itemDate = "2026-09-04",
   },
   [120846] = { -- Dock Rope Wheel
     itemPrice = 3000,
@@ -2708,7 +2708,7 @@ FurC.LuxuryFurnisher[ver.HOMESTEAD] = {
   },
   [121269] = { -- Ocean Antler Coral
     itemPrice = 7500,
-    itemDate = "2025-08-08",
+    itemDate = "2026-09-04",
   },
   [121268] = { -- Fisher's Catch of the Day Rack
     itemPrice = 5000,
@@ -2748,11 +2748,11 @@ FurC.LuxuryFurnisher[ver.HOMESTEAD] = {
   },
   [120849] = { -- Anchor
     itemPrice = 10000,
-    itemDate = "2025-08-08",
+    itemDate = "2026-09-04",
   },
   [120848] = { -- Fishing Pole Rack
     itemPrice = 2500,
-    itemDate = "2025-08-08",
+    itemDate = "2026-09-04",
   },
   [121273] = { -- Soul Gem, Grand
     itemPrice = 5000,

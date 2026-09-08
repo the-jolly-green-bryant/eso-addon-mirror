@@ -10,9 +10,23 @@ LFC.Internal.Constants = this
 FurC.Constants = this -- TODO: move alias to LFC.Internal
 
 local getZoneStr = GetZoneNameById
+local getCrateStr = GetCrownCrateName
+local getSkillLineStr = GetSkillLineNameById
 local sFormat = zo_strformat
 
--- TODO #DBOVERHAUL maybe: Current DB is tree-like which works well with LUA. Right now entries are indexed by localised strings, which may change, may not be unique and are different per language. That is no problem, because people usually don't switch between languages and rebuilding the DB doesn't take long. But if we, for whatever reason, switch to a relational DB or want to sync it with an online relational DB we will need unique and consistent indices.
+local function getStr(id)
+  return GetString(id)
+end
+
+--- One resolver per type: stable id -> localised text
+this.Resolvers = {
+  Zone = getZoneStr,
+  Place = getStr,
+  Npc = getStr,
+  Event = getStr,
+  Crate = getCrateStr,
+  SkillLine = getSkillLineStr,
+}
 
 local idCounter = {}
 
@@ -24,11 +38,25 @@ local function getNextIdFor(id_type)
   return idCounter[id_type]
 end
 
+---Fill "names" table and its reverse "byName" map from a table of stable ids
+--- Resolves them with passed table specific callback function
+---@param ids table<string, integer> key -> stable game or string id
+---@param resolve fun(id: integer): string Resolver callback, use 1 resolver per table
+---@param names table<string, string> key -> localised name, filled in place (mutating)
+---@param byName table<string, integer> localised name -> id, filled in place (mutating)
+local function deriveNames(ids, resolve, names, byName)
+  for key, id in pairs(ids) do
+    local name = resolve(id)
+    names[key] = name
+    if name and name ~= "" then
+      byName[name] = id
+    end
+  end
+end
+
 -- Public event names, used in Api.lua as LFC.API.Events
 -- here, because DB build fires them and loads before Api.lua
 this.ApiEvents = {
-  CHANGE = "LFC_DATABASE_CHANGED",
-  READY = "LFC_READY",
   SCAN_STARTED = "LFC_SCAN_STARTED",
   SCAN_COMPLETE = "LFC_SCAN_COMPLETE",
   SCAN_FAILED = "LFC_SCAN_FAILED",
@@ -62,6 +90,12 @@ this.ItemSources = {
   COLL_MERCH = getNextIdFor("ITEM_SOURCES"), -- 22
   EDITOR = getNextIdFor("ITEM_SOURCES"), -- 23
   ANTIQUITY = getNextIdFor("ITEM_SOURCES"), -- 24
+  DUNGEON = getNextIdFor("ITEM_SOURCES"), -- 25
+  HARVEST = getNextIdFor("ITEM_SOURCES"), -- 26
+  CHEST = getNextIdFor("ITEM_SOURCES"), -- 27
+  QUEST = getNextIdFor("ITEM_SOURCES"), -- 28
+  PICKPOCKET = getNextIdFor("ITEM_SOURCES"), -- 29
+  CONTAINER = getNextIdFor("ITEM_SOURCES"), -- 30
 }
 
 ---@alias FurCItemSource integer # FurC.Constants.ItemSources values
@@ -81,6 +115,13 @@ do
     [src.COLL_MERCH] = 32,
     [src.BAZAAR] = 61,
     -- drop / harvest / steal
+    -- fine-grained sources rank higher than their parent
+    [src.DUNGEON] = 33,
+    [src.HARVEST] = 34,
+    [src.CHEST] = 35,
+    [src.QUEST] = 36,
+    [src.PICKPOCKET] = 37,
+    [src.CONTAINER] = 38,
     [src.DROP] = 40,
     [src.JUSTICE] = 41,
     [src.FISHING] = 42,
@@ -96,6 +137,52 @@ do
     [src.OTHER] = 70,
     [src.GUILDSTORE] = 98, -- do we even use this?
     [src.RUMOUR] = 99,
+  }
+end
+
+-- Stable English names for the source types (because the enum meaning might not be obvious)
+-- Those are not and will not be locale strings
+do
+  local src = this.ItemSources
+  this.SourceLabels = {
+    [src.NONE] = "Unknown",
+    [src.FAVE] = "Favourite",
+    [src.CRAFTING] = "Crafting",
+    [src.CRAFTING_KNOWN] = "Crafting",
+    [src.CRAFTING_UNKNOWN] = "Crafting",
+    [src.VENDOR] = "Achievement Vendor",
+    [src.PVP] = "PvP Vendor",
+    [src.WRIT_VENDOR] = "Master Writ Vendor",
+    [src.CROWN] = "Crown Store",
+    [src.RUMOUR] = "Datamined, unconfirmed",
+    [src.LUXURY] = "Luxury Furnisher",
+    [src.OTHER] = "Other",
+    [src.ROLIS] = "Rolis Hlaalu",
+    [src.DROP] = "Drop",
+    [src.JUSTICE] = "Justice",
+    [src.FISHING] = "Fishing",
+    [src.GUILDSTORE] = "Guild Store",
+    [src.FESTIVAL_DROP] = "Event",
+    [src.BAZAAR] = "Gold Coast Bazaar",
+    [src.TOMES] = "Tamriel Tomes",
+    [src.TELVAR] = "Tel Var Merchant",
+    [src.COLL_MERCH] = "Collectibles Merchant",
+    [src.EDITOR] = "Housing Editor",
+    [src.ANTIQUITY] = "Antiquity",
+    [src.DUNGEON] = "Dungeon",
+    [src.HARVEST] = "Harvesting",
+    [src.CHEST] = "Treasure Chest",
+    [src.QUEST] = "Quest Reward",
+    [src.PICKPOCKET] = "Pickpocketing",
+    [src.CONTAINER] = "Container",
+  }
+
+  -- Enum values that just exist for filtering, not as an item source
+  -- TODO: mv those into FC only
+  this.NotASource = {
+    [src.FAVE] = true,
+    [src.CRAFTING_KNOWN] = true,
+    [src.CRAFTING_UNKNOWN] = true,
   }
 end
 
@@ -141,233 +228,281 @@ this.Versioning = {
   SHADOWS = getNextIdFor("VERSIONING"), -- 36 Feast of Shadows (U47)
   WORMS2 = getNextIdFor("VERSIONING"), -- 37 Seasons of the Worm Cult Part 2 (U48)
   ZERO = getNextIdFor("VERSIONING"), -- 38 Season Zero (U49)
-  ZERO2 = getNextIdFor("VERSIONING"), -- 39 Season Zero Part 2 (U50)
-  THIEVES = getNextIdFor("VERSIONING"), -- 40 Season One (U50)
+  THIEVES = getNextIdFor("VERSIONING"), -- 39 Season One (U50)
 }
+
+-- value -> name, taken before the aliases below start sharing values
+this.VersionNames = {}
+for name, value in pairs(this.Versioning) do
+  this.VersionNames[value] = name
+end
 
 this.Versioning.LATEST = this.Versioning.THIEVES
 
--- Location Ids, mix of ingame strings and translations, more control over translations
-this.Locations = {
-  -- Translations exist ingame
-  --  Careful: the ids may change with expansions, use FurCDev.FindZone to fix any broken ones
-  -- TODO: if the id change happens often, write autofixer for it
-  ALIKR = getZoneStr(104), -- Alik'r Desert
-  APOCRYPHA = getZoneStr(1413), -- Apocrypha
-  ARTAEUM = getZoneStr(1027), -- Artaeum
-  AURIDON = getZoneStr(381), -- Auridon
-  BALFOYEN = getZoneStr(281), -- Bal Foyen
-  BANG = getZoneStr(92), -- Bangkorai
-  BETNIKH = getZoneStr(535), -- Betnikh
-  BLACKREACH_GMC = getZoneStr(1161), --  Blackreach: Greymoor Caverns
-  BLACKWOOD = getZoneStr(1261), -- Blackwood
-  BLEAK = getZoneStr(280), -- Bleakrock Isle
-  COLDH = getZoneStr(347), -- Coldharbor
-  CRAGLORN = getZoneStr(888), -- Craglorn
-  CWC = getZoneStr(980), -- Clockwork City
-  CYRO = getZoneStr(181), -- Cyrodiil
-  DEADLANDS = getZoneStr(1286), -- Deadlands
-  DESHAAN = getZoneStr(57), -- Deshaan
-  DUNG_DOM = getZoneStr(1081), -- Depths of Malatar
-  DUNG_FL = getZoneStr(1009), -- Fang Lair
-  DUNG_FV = getZoneStr(1080), -- Frostvault
-  DUNG_IA = getZoneStr(1436), -- Infinite Archive
-  DUNG_MHK = getZoneStr(1052), -- Moon Hunter Keep
-  DUNG_MOS = getZoneStr(1055), -- March of the Sacrifices
-  DUNG_NYMIC = getZoneStr(1420), -- Bastion Nymic
-  DUNG_SCP = getZoneStr(1010), -- Scalecaller Peak
-  DUNG_SCRIV = getZoneStr(1390), -- Scrivener's Hall
-  EASTMARCH = getZoneStr(101), -- Eastmarch
-  FARGRAVE = getZoneStr(1282), -- Fargrave
-  GALEN = getZoneStr(1383), -- Galen
-  GLENUMBRA = getZoneStr(3), -- Glenumbra
-  GOLDCOAST = getZoneStr(823), -- Gold Coast
-  GRAHTWOOD = getZoneStr(383), -- Grahtwood
-  GREENSHADE = getZoneStr(108), -- Greenshade
-  HEWSBANE = getZoneStr(816), -- Hew's Bane
-  HIGHISLE = getZoneStr(1318), -- High Isle
-  IMPCITY = getZoneStr(584), -- Imperial City
-  KHENARTHI = getZoneStr(537), -- Khenarthi's Roost
-  MALABAL = getZoneStr(58), -- Malabal Tor
-  MURKMIRE = getZoneStr(726), -- Murkmire
-  NELSWEYR = getZoneStr(1086), -- Northern Elsweyr
-  NMARKET = getZoneStr(1559), -- Night Market
-  PDUNG_VVARDENFELL_FW = getZoneStr(919), -- Forgotten Wastes
-  REACH = getZoneStr(1207), -- The Reach
-  REAPER = getZoneStr(382), -- Reaper's March
-  RIFT = getZoneStr(103), -- Rift
-  RIVENSPIRE = getZoneStr(20), -- Rivenspire
-  SCHOLAR = getZoneStr(1463), -- The Scholarium
-  SELSWEYR = getZoneStr(1133), -- Southern Elsweyr
-  SHADOWFEN = getZoneStr(117), -- Shadowfen
-  SOLSTICE = getZoneStr(1502), -- Solstice
-  STONEFALLS = getZoneStr(41), -- Stonefalls
-  STORMHAVEN = getZoneStr(19), -- Stormhaven
-  STROSMKAI = getZoneStr(534), -- Stonefalls
-  SUMMERSET = getZoneStr(1011), -- Summerset
-  TELVANNI = getZoneStr(1414), -- Telvanni Peninsula
-  VVARDENFELL = getZoneStr(849), -- Vvardenfell
-  WEALD = getZoneStr(1443), -- West Weald
+---@deprecated Version smushing related compatibility workaround. Currently required by FC 7.0.0
+--- Delete at next main version update.
+this.Versioning.ZERO2 = this.Versioning.THIEVES
 
-  WROTHGAR = getZoneStr(684), -- Wrothgar
-  WSKYRIM = getZoneStr(1160), -- Western Skyrim
+-- Game zones, translated by the game
+--  Careful: the ids may change with expansions, use FurCDev.FindZone to fix any broken ones
+this.ZoneIds = {
+  ALIKR = 104, -- Alik'r Desert
+  APOCRYPHA = 1413, -- Apocrypha
+  ARTAEUM = 1027, -- Artaeum
+  AURIDON = 381, -- Auridon
+  BALFOYEN = 281, -- Bal Foyen
+  BANG = 92, -- Bangkorai
+  BETNIKH = 535, -- Betnikh
+  BLACKREACH_GMC = 1161, --  Blackreach: Greymoor Caverns
+  BLACKWOOD = 1261, -- Blackwood
+  BLEAK = 280, -- Bleakrock Isle
+  COLDH = 347, -- Coldharbor
+  CRAGLORN = 888, -- Craglorn
+  CWC = 980, -- Clockwork City
+  CYRO = 181, -- Cyrodiil
+  DEADLANDS = 1286, -- Deadlands
+  DESHAAN = 57, -- Deshaan
+  DUNG_DOM = 1081, -- Depths of Malatar
+  DUNG_FL = 1009, -- Fang Lair
+  DUNG_FV = 1080, -- Frostvault
+  DUNG_IA = 1436, -- Infinite Archive
+  DUNG_MHK = 1052, -- Moon Hunter Keep
+  DUNG_MOS = 1055, -- March of the Sacrifices
+  DUNG_NYMIC = 1420, -- Bastion Nymic
+  DUNG_SCP = 1010, -- Scalecaller Peak
+  DUNG_SCRIV = 1390, -- Scrivener's Hall
+  EASTMARCH = 101, -- Eastmarch
+  FARGRAVE = 1282, -- Fargrave
+  GALEN = 1383, -- Galen
+  GLENUMBRA = 3, -- Glenumbra
+  GOLDCOAST = 823, -- Gold Coast
+  GRAHTWOOD = 383, -- Grahtwood
+  GREENSHADE = 108, -- Greenshade
+  HEWSBANE = 816, -- Hew's Bane
+  HIGHISLE = 1318, -- High Isle
+  IMPCITY = 584, -- Imperial City
+  KHENARTHI = 537, -- Khenarthi's Roost
+  MALABAL = 58, -- Malabal Tor
+  MURKMIRE = 726, -- Murkmire
+  NELSWEYR = 1086, -- Northern Elsweyr
+  NMARKET = 1559, -- Night Market
+  PDUNG_VVARDENFELL_FW = 919, -- Forgotten Wastes
+  REACH = 1207, -- The Reach
+  REAPER = 382, -- Reaper's March
+  RIFT = 103, -- Rift
+  RIVENSPIRE = 20, -- Rivenspire
+  SCHOLAR = 1463, -- The Scholarium
+  SELSWEYR = 1133, -- Southern Elsweyr
+  SHADOWFEN = 117, -- Shadowfen
+  SOLSTICE = 1502, -- Solstice
+  STONEFALLS = 41, -- Stonefalls
+  STORMHAVEN = 19, -- Stormhaven
+  STROSMKAI = 534, -- Stros M'Kai
+  SUMMERSET = 1011, -- Summerset
+  TELVANNI = 1414, -- Telvanni Peninsula
+  VVARDENFELL = 849, -- Vvardenfell
+  WEALD = 1443, -- West Weald
 
-  -- Custom
-  ANY = GetString(SI_FURC_LOC_ANY),
-  ANY_CAPITAL = GetString(SI_FURC_LOC_ANY_CAPITAL),
-  ANY_CITY = GetString(SI_FURC_LOC_ANY_CITY),
-  -- TODO
-  LILANDRIL = GetString(SI_FURC_LOC_LILANDRIL),
-  MURKMIRE_LIL = GetString(SI_FURC_LOC_MURKMIRE_LIL),
-  PLACE_ORSINIUM = GetString(SI_FURC_LOC_PLACE_ORSINIUM),
-  REACH_MARKARTH_MM = GetString(SI_FURC_LOC_REACH_MARKARTH_MM),
-  SELSWEYR_DHA = GetString(SI_FURC_LOC_SELSWEYR_DHA),
-  SELSWEYR_SENCHAL_MARKET = GetString(SI_FURC_LOC_SELSWEYR_SENCHAL_MARKET),
-  SHADOWFEN_CORIMONT = GetString(SI_FURC_LOC_SHADOWFEN_CORIMONT),
-  STONEFALLS_EBONHEART = GetString(SI_FURC_LOC_STONEFALLS_EBONHEART),
-  SUMMERSET_ALINOR = GetString(SI_FURC_LOC_SUMMERSET_ALINOR),
-  SUMMERSET_ALINOR_RIVERSIDE = GetString(SI_FURC_LOC_SUMMERSET_ALINOR_RIVERSIDE),
-  UNDAUNTED = GetString(SI_FURC_LOC_UNDAUNTED),
-  STORMHAVEN_WAY_MERCH = GetString(SI_FURC_LOC_STORMHAVEN_WAY_MERCH),
-  TELVANNI_NECROM_FRF = GetString(SI_FURC_TELVANNI_NECROM_FRF),
-  VVARDENFELL_SURAN = GetString(SI_FURC_LOC_VVARDENFELL_SURAN),
-  VVARDENFELL_ALDRUHN = GetString(SI_FURC_LOC_VVARDENFELL_ALDRUHN), -- Vvardenfell
-  VVARDENFELL_VIVEC = GetString(SI_FURC_LOC_VVARDENFELL_VIVEC),
-  VVARDENFELL_VIVEC_GQ = GetString(SI_FURC_LOC_VVARDENFELL_VIVEC_GQ),
-  VVARDENFELL_VIVEC_SDI = GetString(SI_FURC_LOC_VVARDENFELL_VIVEC_SDI),
-  WSKYRIM_SOLI_DH = GetString(SI_FURC_LOC_WSKYRIM_SOLI_DH),
+  WROTHGAR = 684, -- Wrothgar
+  WSKYRIM = 1160, -- Western Skyrim
 }
+
+-- Places the game has no zone ids for
+this.PlaceIds = {
+  ANY = SI_FURC_LOC_ANY,
+  ANY_CAPITAL = SI_FURC_LOC_ANY_CAPITAL,
+  ANY_CITY = SI_FURC_LOC_ANY_CITY,
+  GUILD_FIGHTERS = SI_FURC_GUILD_FIGHTERS, -- location in AchievementVendors
+  GUILD_MAGES = SI_FURC_GUILD_MAGES, -- location in AchievementVendors
+  -- TODO
+  LILANDRIL = SI_FURC_LOC_LILANDRIL,
+  MURKMIRE_LIL = SI_FURC_LOC_MURKMIRE_LIL,
+  PLACE_ORSINIUM = SI_FURC_LOC_PLACE_ORSINIUM,
+  REACH_MARKARTH_MM = SI_FURC_LOC_REACH_MARKARTH_MM,
+  SELSWEYR_DHA = SI_FURC_LOC_SELSWEYR_DHA,
+  SELSWEYR_SENCHAL_MARKET = SI_FURC_LOC_SELSWEYR_SENCHAL_MARKET,
+  SHADOWFEN_CORIMONT = SI_FURC_LOC_SHADOWFEN_CORIMONT,
+  STONEFALLS_EBONHEART = SI_FURC_LOC_STONEFALLS_EBONHEART,
+  SUMMERSET_ALINOR = SI_FURC_LOC_SUMMERSET_ALINOR,
+  SUMMERSET_ALINOR_RIVERSIDE = SI_FURC_LOC_SUMMERSET_ALINOR_RIVERSIDE,
+  UNDAUNTED = SI_FURC_LOC_UNDAUNTED,
+  STORMHAVEN_WAY_MERCH = SI_FURC_LOC_STORMHAVEN_WAY_MERCH,
+  TELVANNI_NECROM_FRF = SI_FURC_TELVANNI_NECROM_FRF,
+  VVARDENFELL_SURAN = SI_FURC_LOC_VVARDENFELL_SURAN,
+  VVARDENFELL_ALDRUHN = SI_FURC_LOC_VVARDENFELL_ALDRUHN, -- Vvardenfell
+  VVARDENFELL_VIVEC = SI_FURC_LOC_VVARDENFELL_VIVEC,
+  VVARDENFELL_VIVEC_GQ = SI_FURC_LOC_VVARDENFELL_VIVEC_GQ,
+  VVARDENFELL_VIVEC_SDI = SI_FURC_LOC_VVARDENFELL_VIVEC_SDI,
+  WSKYRIM_SOLI_DH = SI_FURC_LOC_WSKYRIM_SOLI_DH,
+}
+
+-- Localised names, keyed as before. Zones and places share the namespace
+this.Locations = {}
+this.ZoneByName = {}
+this.PlaceByName = {}
+deriveNames(this.ZoneIds, getZoneStr, this.Locations, this.ZoneByName)
+deriveNames(this.PlaceIds, getStr, this.Locations, this.PlaceByName)
 
 -- NPC ids, for better readability and more control of the string sources
-this.NPC = {
+-- Names keep the game's grammar markup; the formatter resolves it
+this.NpcIds = {
   -- Writ Furnishers
-  ROLIS = GetString(SI_FURC_TRADERS_ROLIS), -- Rolis Hlaalu, Mastercraft Mediator
-  FAUSTINA = GetString(SI_FURC_TRADERS_FAUSTINA), -- Faustina Curio, Achievement Mediator
+  ROLIS = SI_FURC_TRADERS_ROLIS, -- Rolis Hlaalu, Mastercraft Mediator
+  FAUSTINA = SI_FURC_TRADERS_FAUSTINA, -- Faustina Curio, Achievement Mediator
 
   -- Other Furnishers
-  ALCHEMISTS = GetString(SI_FURC_TRADERS_ALCHEMISTS), -- any alchemist
-  BLACKSMITHS = GetString(SI_FURC_TRADERS_BLACKSMITHS), -- any blacksmith
-  CARPENTERS = GetString(SI_FURC_TRADERS_CARPENTERS), -- any capenter
-  CLOTHIERS = GetString(SI_FURC_TRADERS_CLOTHIERS), -- any clothier
-  COOKS = GetString(SI_FURC_TRADERS_COOKS), -- any cook
-  ENCHANTERS = GetString(SI_FURC_TRADERS_ENCHANTERS), -- any enchanter
+  ALCHEMISTS = SI_FURC_TRADERS_ALCHEMISTS, -- any alchemist
+  BLACKSMITHS = SI_FURC_TRADERS_BLACKSMITHS, -- any blacksmith
+  CARPENTERS = SI_FURC_TRADERS_CARPENTERS, -- any capenter
+  CLOTHIERS = SI_FURC_TRADERS_CLOTHIERS, -- any clothier
+  COOKS = SI_FURC_TRADERS_COOKS, -- any cook
+  ENCHANTERS = SI_FURC_TRADERS_ENCHANTERS, -- any enchanter
 
   -- Special Merchants
-  AF = GetString(SI_FURC_TRADERS_AF), -- Achievement Vendor: Lozotusk, ...
-  BGF = GetString(SI_FURC_TRADERS_BGF), -- Battlegrounds Furnishers
-  CAF = GetString(SI_FURC_TRADERS_CAF), -- Global Achievement Vendor: Nolenowen, ...
-  EVENT = GetString(SI_FURC_TRADERS_EVENT), -- Event Merchant, any capital city: The Impressario
-  HGF = GetString(SI_FURC_TRADERS_HGF), -- Home Goods Furnisher: Maladiq, Rohzika, ...
-  HOLIDAY = GetString(SI_FURC_TRADERS_HOLIDAY), -- Heralda, Tildannire, ...
-  LUXF = GetString(SI_FURC_TRADERS_LUXF), -- Luxury Furnisher: Zanil
-  NM = GetString(SI_FURC_TRADERS_NM), -- Night Market Vendors: Nymisasha, Fennel, Najirra
-  COLL_MERCH = GetString(SI_FURC_TRADERS_COLL_MERCH), -- Tel Var Collectibles Merchant: Enruvie, Skoref Bearblood, Bernamund Bertault
+  AF = SI_FURC_TRADERS_AF, -- Achievement Vendor: Lozotusk, ...
+  BGF = SI_FURC_TRADERS_BGF, -- Battlegrounds Furnishers
+  CAF = SI_FURC_TRADERS_CAF, -- Global Achievement Vendor: Nolenowen, ...
+  EVENT = SI_FURC_TRADERS_EVENT, -- Event Merchant, any capital city: The Impressario
+  HGF = SI_FURC_TRADERS_HGF, -- Home Goods Furnisher: Maladiq, Rohzika, ...
+  HOLIDAY = SI_FURC_TRADERS_HOLIDAY, -- Heralda, Tildannire, ...
+  LUXF = SI_FURC_TRADERS_LUXF, -- Luxury Furnisher: Zanil
+  NM = SI_FURC_TRADERS_NM, -- Night Market Vendors: Nymisasha, Fennel, Najirra
+  COLL_MERCH = SI_FURC_TRADERS_COLL_MERCH, -- Tel Var Collectibles Merchant: Enruvie, Skoref Bearblood, Bernamund Bertault
 
   -- Guild Traders
-  FIGHTERS_STEWARD = GetString(SI_FURC_GUILD_FIGHTERS_STEWARD), -- stewards in Fighters Guild locations
-  MAGES_MYSTIC = GetString(SI_FURC_GUILD_MAGES_MYSTIC), --  mystics in Mages Guild locations
-  PSIJIC_NALIRSEWEN = GetString(SI_FURC_GUILD_PSIJIC_NALIRSEWEN), -- Psijic Trader on Artaeum
-  THIEVES_MERCH = GetString(SI_FURC_GUILD_THIEVES_MERCH), -- Outlaw Merchant in any refuge
-  UNDAUNTED_QM = GetString(SI_FURC_GUILD_UNDAUNTED_QM), -- Undaunted Achievement trader
+  FIGHTERS_STEWARD = SI_FURC_GUILD_FIGHTERS_STEWARD, -- stewards in Fighters Guild locations
+  MAGES_MYSTIC = SI_FURC_GUILD_MAGES_MYSTIC, --  mystics in Mages Guild locations
+  PSIJIC_NALIRSEWEN = SI_FURC_GUILD_PSIJIC_NALIRSEWEN, -- Psijic Trader on Artaeum
+  THIEVES_MERCH = SI_FURC_GUILD_THIEVES_MERCH, -- Outlaw Merchant in any refuge
+  UNDAUNTED_QM = SI_FURC_GUILD_UNDAUNTED_QM, -- Undaunted Achievement trader
 
-  -- enemies (loot) and social classes (pickpocketing)
-  ENEMY_AUTOMATON = GetString(SI_FURC_NPC_AUTOMATON),
-  ENEMY_RND = sFormat("<<m:1>>", GetString(SI_FURC_SRC_RNDMOB)),
-  CLASS_ALCHEMIST = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS2)),
-  CLASS_ARTISAN = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS3)),
-  CLASS_ASSASSIN = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS4)),
-  CLASS_BARD = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS5)),
-  CLASS_BEGGAR = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS6)),
-  CLASS_CHEF = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS7)),
-  CLASS_CIVIL_SERVANT = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS8)),
-  CLASS_CLOTHIER = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS9)),
-  CLASS_COMMONER = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS10)),
-  CLASS_CRAFTER = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS11)),
-  CLASS_CULTIST = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS12)),
-  CLASS_DAEDRA = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS47)),
-  CLASS_DRUNKARD = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS13)),
-  CLASS_FARMER = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS14)),
-  CLASS_FIGHTER = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS15)),
-  CLASS_FISHER = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS16)),
-  CLASS_GATHERER = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS17)),
-  CLASS_GHOST = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS18)),
-  CLASS_GUARD = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS19)),
-  CLASS_HEALER = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS20)),
-  CLASS_HUNTER = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS21)),
-  CLASS_LABORER = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS22)),
-  CLASS_MAGE = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS23)),
-  CLASS_MERCHANT = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS24)),
-  CLASS_NOBLE = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS25)),
-  CLASS_NUDE = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS26)),
-  CLASS_ORDINATOR = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS27)),
-  CLASS_OUTLAW = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS28)),
-  CLASS_PILGRIM = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS29)),
-  CLASS_PRIEST = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS30)),
-  CLASS_PRISONER = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS31)),
-  CLASS_PROVISIONER = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS32)),
-  CLASS_SAILOR = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS33)),
-  CLASS_SCHOLAR = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS34)),
-  CLASS_SERVANT = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS35)),
-  CLASS_SKELETON = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS36)),
-  CLASS_SLAVE = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS37)),
-  CLASS_SMITH = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS38)),
-  CLASS_SOLDIER = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS39)),
-  CLASS_STUDENT = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS40)),
-  CLASS_THIEF = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS41)),
-  CLASS_VAMPIRE = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS42)),
-  CLASS_WARRIOR = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS43)),
-  CLASS_WATCHMEN = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS44)),
-  CLASS_WEREWOLF = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS45)),
-  CLASS_WOODWORKER = sFormat("<<1>>", GetString(SI_MONSTERSOCIALCLASS46)),
+  -- enemies (loot)
+  ENEMY_AUTOMATON = SI_FURC_NPC_AUTOMATON,
 }
 
-this.CrownCrates = {
+-- Social classes (pickpocketing), rendered singular
+-- NOTE: Extra lookup table for better testing, and because we don't own those strings (nil str would drop the whole row)
+local SOCIAL_CLASS_STRINGS = {
+  CLASS_ALCHEMIST = "SI_MONSTERSOCIALCLASS2",
+  CLASS_ARTISAN = "SI_MONSTERSOCIALCLASS3",
+  CLASS_ASSASSIN = "SI_MONSTERSOCIALCLASS4",
+  CLASS_BARD = "SI_MONSTERSOCIALCLASS5",
+  CLASS_BEGGAR = "SI_MONSTERSOCIALCLASS6",
+  CLASS_CHEF = "SI_MONSTERSOCIALCLASS7",
+  CLASS_CIVIL_SERVANT = "SI_MONSTERSOCIALCLASS8",
+  CLASS_CLOTHIER = "SI_MONSTERSOCIALCLASS9",
+  CLASS_COMMONER = "SI_MONSTERSOCIALCLASS10",
+  CLASS_CRAFTER = "SI_MONSTERSOCIALCLASS11",
+  CLASS_CULTIST = "SI_MONSTERSOCIALCLASS12",
+  CLASS_DAEDRA = "SI_MONSTERSOCIALCLASS47",
+  CLASS_DRUNKARD = "SI_MONSTERSOCIALCLASS13",
+  CLASS_FARMER = "SI_MONSTERSOCIALCLASS14",
+  CLASS_FIGHTER = "SI_MONSTERSOCIALCLASS15",
+  CLASS_FISHER = "SI_MONSTERSOCIALCLASS16",
+  CLASS_GATHERER = "SI_MONSTERSOCIALCLASS17",
+  CLASS_GHOST = "SI_MONSTERSOCIALCLASS18",
+  CLASS_GUARD = "SI_MONSTERSOCIALCLASS19",
+  CLASS_HEALER = "SI_MONSTERSOCIALCLASS20",
+  CLASS_HUNTER = "SI_MONSTERSOCIALCLASS21",
+  CLASS_LABORER = "SI_MONSTERSOCIALCLASS22",
+  CLASS_MAGE = "SI_MONSTERSOCIALCLASS23",
+  CLASS_MERCHANT = "SI_MONSTERSOCIALCLASS24",
+  CLASS_NOBLE = "SI_MONSTERSOCIALCLASS25",
+  CLASS_NUDE = "SI_MONSTERSOCIALCLASS26",
+  CLASS_ORDINATOR = "SI_MONSTERSOCIALCLASS27",
+  CLASS_OUTLAW = "SI_MONSTERSOCIALCLASS28",
+  CLASS_PILGRIM = "SI_MONSTERSOCIALCLASS29",
+  CLASS_PRIEST = "SI_MONSTERSOCIALCLASS30",
+  CLASS_PRISONER = "SI_MONSTERSOCIALCLASS31",
+  CLASS_PROVISIONER = "SI_MONSTERSOCIALCLASS32",
+  CLASS_SAILOR = "SI_MONSTERSOCIALCLASS33",
+  CLASS_SCHOLAR = "SI_MONSTERSOCIALCLASS34",
+  CLASS_SERVANT = "SI_MONSTERSOCIALCLASS35",
+  CLASS_SKELETON = "SI_MONSTERSOCIALCLASS36",
+  CLASS_SLAVE = "SI_MONSTERSOCIALCLASS37",
+  CLASS_SMITH = "SI_MONSTERSOCIALCLASS38",
+  CLASS_SOLDIER = "SI_MONSTERSOCIALCLASS39",
+  CLASS_STUDENT = "SI_MONSTERSOCIALCLASS40",
+  CLASS_THIEF = "SI_MONSTERSOCIALCLASS41",
+  CLASS_VAMPIRE = "SI_MONSTERSOCIALCLASS42",
+  CLASS_WARRIOR = "SI_MONSTERSOCIALCLASS43",
+  CLASS_WATCHMEN = "SI_MONSTERSOCIALCLASS44",
+  CLASS_WEREWOLF = "SI_MONSTERSOCIALCLASS45",
+  CLASS_WOODWORKER = "SI_MONSTERSOCIALCLASS46",
+}
+
+this.NpcClassIds = {}
+for key, stringId in pairs(SOCIAL_CLASS_STRINGS) do
+  this.NpcClassIds[key] = _G[stringId]
+end
+
+-- Groups of enemies, rendered plural
+this.NpcGroupIds = {
+  ENEMY_RND = SI_FURC_SRC_RNDMOB,
+}
+
+this.NPC = {}
+this.NpcByName = {}
+deriveNames(this.NpcIds, getStr, this.NPC, this.NpcByName)
+deriveNames(SOCIAL_CLASS_STRINGS, function(stringId)
+  local id = _G[stringId]
+  return id and sFormat("<<1>>", GetString(id)) or ""
+end, this.NPC, this.NpcByName)
+deriveNames(this.NpcGroupIds, function(id)
+  return sFormat("<<m:1>>", GetString(id))
+end, this.NPC, this.NpcByName)
+
+this.CrownCrateIds = {
   -- Source: https://en.uesp.net/wiki/Online:Crown_Crates
 
   -- ids not confirmed ingame yet
 
-  KINDRED = GetCrownCrateName(64), -- 2025-12, Hidden Kindred
+  KINDRED = 64, -- 2025-12, Hidden Kindred
 
   -- confirmed ids
-  ANU_PAD = GetCrownCrateName(67), -- 2026-06, Anu vs. Padomay
-  DB = GetCrownCrateName(60), -- 2024-12, Dark Brotherhood
-  MIRROR = GetCrownCrateName(61), -- 2025-03, Mirrormoor
-  WAVE = GetCrownCrateName(66), -- 2026-06, Warrior Wave
-  AKA_ALDU = GetCrownCrateName(63), -- 2025-09, Akatosh vs. Alduin
-  CARNAVAL = GetCrownCrateName(62), -- 2025-06, Carnaval
-  ORSINIUM = GetCrownCrateName(65), -- 2026-03, Moons Over Orsinium
-  DIAMOND = GetCrownCrateName(59), -- 2024-07, Diamond Anniversary
-  LAMP = GetCrownCrateName(58), -- 2024-04 Order of the Lamp
-  ALLMAKER = GetCrownCrateName(57), -- 2023-12 All-Maker
-  ARMIGER = GetCrownCrateName(55), -- 2023-09 Buoyant Armiger
-  FEATHER = GetCrownCrateName(54), -- 2023-06, Unfeathered
-  RAGE = GetCrownCrateName(53), -- 2023-04 Ragebound
-  STONELORE = GetCrownCrateName(52), -- 2022-12 Stonelore
-  WRAITH = GetCrownCrateName(51), -- 2022-09 Wraithtide
-  DARK = GetCrownCrateName(50), -- 2022-06 Dark Chivalry
-  SUNKEN = GetCrownCrateName(49), -- 2022-04 Sunken Trove
-  CELESTIAL = GetCrownCrateName(48), -- 2021-12 Celestial
-  HARLEQUIN = GetCrownCrateName(47), -- 2021-09 Grim Harlequin
-  IRON_ATRO = GetCrownCrateName(46), -- 2021-06 Iron Atronach
-  AYLEID = GetCrownCrateName(45), -- 2021-03 Ayleid
-  POTENTATE = GetCrownCrateName(44), -- 2020-12, Akaviri Potentate
-  SOVNGARDE = GetCrownCrateName(41), -- 2020-09 Sovngarde
-  NIGHTFALL = GetCrownCrateName(39), -- 2020-06 Nightfall
-  GLOOMSPORE = GetCrownCrateName(37), -- 2020-04 Gloomspore
-  FROST_ATRO = GetCrownCrateName(30), -- 2020-01 Frost Atronach
-  NEWMOON = GetCrownCrateName(27), -- 2019-09 New Moon
-  BAANDARI = GetCrownCrateName(21), -- 2019-07, Baandari Pedlar
-  DRAGONSCALE = GetCrownCrateName(24), -- 2019-04 Dragonscale
-  XANMEER = GetCrownCrateName(12), -- 2018-12, Xanmeer
-  HOLLOWJACK = GetCrownCrateName(10), -- 2018-09, Hollowjack
-  PSIJIC = GetCrownCrateName(9), -- 2018-06, Psijic Vault
-  SCALECALLER = GetCrownCrateName(8), -- 2018-03, Scalecaller
-  FIRE_ATRO = GetCrownCrateName(6), -- 2017-11, Flame Atronach
-  REAPER = GetCrownCrateName(5), -- 2017-09, Reaper's Harvest
-  DWEMER = GetCrownCrateName(4), -- 2017-07, Dwarven
-  WILD_HUNT = GetCrownCrateName(2), -- 2017-04, Wild Hunt
-  --STORM_ATRO = GetCrownCrateName(1), -- 2016-12, Storm Atronach, no exclusive furnishings
+  ANU_PAD = 67, -- 2026-06, Anu vs. Padomay
+  DB = 60, -- 2024-12, Dark Brotherhood
+  MIRROR = 61, -- 2025-03, Mirrormoor
+  WAVE = 66, -- 2026-06, Warrior Wave
+  AKA_ALDU = 63, -- 2025-09, Akatosh vs. Alduin
+  CARNAVAL = 62, -- 2025-06, Carnaval
+  ORSINIUM = 65, -- 2026-03, Moons Over Orsinium
+  DIAMOND = 59, -- 2024-07, Diamond Anniversary
+  LAMP = 58, -- 2024-04 Order of the Lamp
+  ALLMAKER = 57, -- 2023-12 All-Maker
+  ARMIGER = 55, -- 2023-09 Buoyant Armiger
+  FEATHER = 54, -- 2023-06, Unfeathered
+  RAGE = 53, -- 2023-04 Ragebound
+  STONELORE = 52, -- 2022-12 Stonelore
+  WRAITH = 51, -- 2022-09 Wraithtide
+  DARK = 50, -- 2022-06 Dark Chivalry
+  SUNKEN = 49, -- 2022-04 Sunken Trove
+  CELESTIAL = 48, -- 2021-12 Celestial
+  HARLEQUIN = 47, -- 2021-09 Grim Harlequin
+  IRON_ATRO = 46, -- 2021-06 Iron Atronach
+  AYLEID = 45, -- 2021-03 Ayleid
+  POTENTATE = 44, -- 2020-12, Akaviri Potentate
+  SOVNGARDE = 41, -- 2020-09 Sovngarde
+  NIGHTFALL = 39, -- 2020-06 Nightfall
+  GLOOMSPORE = 37, -- 2020-04 Gloomspore
+  FROST_ATRO = 30, -- 2020-01 Frost Atronach
+  NEWMOON = 27, -- 2019-09 New Moon
+  BAANDARI = 21, -- 2019-07, Baandari Pedlar
+  DRAGONSCALE = 24, -- 2019-04 Dragonscale
+  XANMEER = 12, -- 2018-12, Xanmeer
+  HOLLOWJACK = 10, -- 2018-09, Hollowjack
+  PSIJIC = 9, -- 2018-06, Psijic Vault
+  SCALECALLER = 8, -- 2018-03, Scalecaller
+  FIRE_ATRO = 6, -- 2017-11, Flame Atronach
+  REAPER = 5, -- 2017-09, Reaper's Harvest
+  DWEMER = 4, -- 2017-07, Dwarven
+  WILD_HUNT = 2, -- 2017-04, Wild Hunt
+  --STORM_ATRO = 1, -- 2016-12, Storm Atronach, no exclusive furnishings
 }
+
+this.CrownCrates = {}
+this.CrownCrateByName = {}
+deriveNames(this.CrownCrateIds, getCrateStr, this.CrownCrates, this.CrownCrateByName)
 
 -- Book containers
 -- Source: manual lookup + https://en.uesp.net (minedItemSummary, ITEMTYPE_CONTAINER)
@@ -480,32 +615,40 @@ this.ItemBundles = {
   STABLE = SI_FURC_ITEMPACK_STABLE,
 }
 
-this.SkillLines = {
+this.SkillLineIds = {
   -- manual lookup for now:
   -- /script for i=1, 1000 do if (string.find(LocaleAwareToLower(GetSkillLineNameById(i)), "psijic")) then d(string.format("%d: %s", i, GetSkillLineNameById(i))) end end
 
-  LEGERDEMAIN = GetSkillLineNameById(111),
-  PSIJIC = GetSkillLineNameById(130),
+  LEGERDEMAIN = 111,
+  PSIJIC = 130,
 }
 
-this.Events = {
-  ANNIVERSARY = GetString(SI_FURC_EVENT_ANNIVERSARY), -- Anniversary Jubilee
-  BLACKWOOD = GetString(SI_FURC_EVENT_BLACKWOOD), -- Bounties of Blackwood
-  CRIME = GetString(SI_FURC_EVENT_CRIME), -- Crime Wave
-  ELSWEYR = GetString(SI_FURC_EVENT_ELSWEYR), -- Season of the Dragon
-  HOLLOWJACK = GetString(SI_FURC_EVENT_HOLLOWJACK), -- Sinister Hollowjack
-  IC = GetString(SI_FURC_EVENT_IC), -- Imperial City Celebration Event
-  JESTER = GetString(SI_FURC_EVENT_JESTER), -- Jester's Festival
-  MAYHEM = GetString(SI_FURC_EVENT_MAYHEM), -- Whitestrake's Mayhem
-  NEWLIFE = GetString(SI_FURC_EVENT_NEWLIFE), -- New Life Festival
-  UNDAUNTED = GetString(SI_FURC_EVENT_UNDAUNTED), -- Undaunted Celebration
-  WITCHES = GetString(SI_FURC_EVENT_WITCHES), -- Witches Festival
-  ZENITHAR = GetString(SI_FURC_EVENT_ZENITHAR), -- Zeal of Zenithar
-  HEARTS = GetString(SI_FURC_EVENT_HEARTS), -- Hearts Week
-  NIGHTMARKET = GetString(SI_FURC_EVENT_NIGHTMARKET), -- Night Market
-  WRITHING = GetString(SI_FURC_EVENT_WRITHING), -- Writhing Wall
-  ORSINIUM = GetString(SI_FURC_EVENT_ORSINIUM), -- Orsinium Celebration
+this.SkillLines = {}
+this.SkillLineByName = {}
+deriveNames(this.SkillLineIds, getSkillLineStr, this.SkillLines, this.SkillLineByName)
+
+this.EventIds = {
+  ANNIVERSARY = SI_FURC_EVENT_ANNIVERSARY, -- Anniversary Jubilee
+  BLACKWOOD = SI_FURC_EVENT_BLACKWOOD, -- Bounties of Blackwood
+  CRIME = SI_FURC_EVENT_CRIME, -- Crime Wave
+  ELSWEYR = SI_FURC_EVENT_ELSWEYR, -- Season of the Dragon
+  HOLLOWJACK = SI_FURC_EVENT_HOLLOWJACK, -- Sinister Hollowjack
+  IC = SI_FURC_EVENT_IC, -- Imperial City Celebration Event
+  JESTER = SI_FURC_EVENT_JESTER, -- Jester's Festival
+  MAYHEM = SI_FURC_EVENT_MAYHEM, -- Whitestrake's Mayhem
+  NEWLIFE = SI_FURC_EVENT_NEWLIFE, -- New Life Festival
+  UNDAUNTED = SI_FURC_EVENT_UNDAUNTED, -- Undaunted Celebration
+  WITCHES = SI_FURC_EVENT_WITCHES, -- Witches Festival
+  ZENITHAR = SI_FURC_EVENT_ZENITHAR, -- Zeal of Zenithar
+  HEARTS = SI_FURC_EVENT_HEARTS, -- Hearts Week
+  NIGHTMARKET = SI_FURC_EVENT_NIGHTMARKET, -- Night Market
+  WRITHING = SI_FURC_EVENT_WRITHING, -- Writhing Wall
+  ORSINIUM = SI_FURC_EVENT_ORSINIUM, -- Orsinium Celebration
 }
+
+this.Events = {}
+this.EventByName = {}
+deriveNames(this.EventIds, getStr, this.Events, this.EventByName)
 
 this.Containers = {
   BOONBOX = "|H0:item:121526:1:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h", -- during Whitestrake's Mayhem

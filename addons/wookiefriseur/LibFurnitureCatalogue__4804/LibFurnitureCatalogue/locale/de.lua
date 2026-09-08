@@ -2,6 +2,13 @@
 -- Edit values between START/END markers
 local strings = {
   -- ////// START : DON'T REMOVE THIS LINE
+  SI_FURC_CHAT_BAD_ITEM = "<<1>> ist weder ein Gegenstandslink noch eine Gegenstands-ID",
+  SI_FURC_CHAT_BUILDING = "Die Datenbank wird noch aufgebaut, bitte gleich noch einmal versuchen.",
+  SI_FURC_CHAT_MATS = "Materialien:",
+  SI_FURC_CHAT_NO_MATS = "Nicht herstellbar.",
+  SI_FURC_CHAT_NO_SOURCE = "Keine bekannte Quelle.",
+  SI_FURC_CHAT_UNKNOWN = "<<1>> ist nicht in der Datenbank",
+  SI_FURC_CHAT_USAGE = "Befehle:",
   SI_FURC_DATAMINED_UNCLEAR = "Die Existenz dieses Gegenstands wurde bestätigt, aber sein Ursprung ist noch nicht bekannt.",
   SI_FURC_DB = "Die Händler der Dunklen Bruderschaft verkaufen diese",
   SI_FURC_DB_EQUIP = "mit Ausrüstung",
@@ -130,7 +137,4 @@ local strings = {
   -- ////// END   : DON'T REMOVE THIS LINE
 }
 
-for stringId, stringValue in pairs(strings) do
-  ZO_CreateStringId(stringId, stringValue)
-  SafeAddVersion(stringId, 1)
-end
+LibFurnitureCatalogue.Internal.RegisterStrings(strings)

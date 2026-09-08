@@ -182,13 +182,20 @@ local function IsWeaponAllowed(
             itemLink
         )
 
-    local matchesFilter = false
-
-    if IsItemReconstructed(
+    local reconstructed = IsItemReconstructed(
         bagId,
         slotIndex
-    ) and profile.reconstructed
+    )
+
+    if reconstructed
+        and not profile.reconstructed
     then
+        return false
+    end
+
+    local matchesFilter = false
+
+    if reconstructed then
         matchesFilter = true
     end
 

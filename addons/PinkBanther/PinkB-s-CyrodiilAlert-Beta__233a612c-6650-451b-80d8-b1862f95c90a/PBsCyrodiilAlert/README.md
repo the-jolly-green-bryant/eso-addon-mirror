@@ -58,6 +58,12 @@ never take a click away from the game. That is why the size and place are settin
 drag handle — on a controller, a window you can grab by accident is a window that eventually
 eats a keybind.
 
+**The window belongs to Cyrodiil and the Imperial City.** Anywhere else it is not merely empty —
+it is not there, and it comes back empty rather than carrying an hour-old alert into the next
+session in the field. Output does not stop out there: it goes to chat, which is where it would
+have gone anyway. (This is not the watch's *only while in an AvA zone* setting. That one decides
+whether the campaign is being read; this decides where a window is allowed to sit.)
+
 **It will not swallow its own output.** If the window cannot be created on a client, every line
 goes to chat instead and `/pbalert` says why.
 
@@ -154,6 +160,14 @@ The holdings and scores are the campaign's own numbers — `GetTotalCampaignHold
 (`campaignscoring_shared.lua:44`). The **under attack** column is not: no API answers "how many
 of this alliance's holdings are being fought over", so it is counted off the add-on's own pass.
 That column is the reason to have the summary on screen rather than opening the map.
+
+**In an Imperial City campaign the keep columns are dropped.** There are no keeps there, the
+campaign is scored on districts, and nothing the keep watch counts can be under attack — three
+columns of zeroes are not a summary, they are furniture. What is left is the alliance, whether
+it is yours, and how busy it is, which is the part that still means something there. The test is
+the client's own `IsImperialCityCampaign`, the same one the world map uses to decide which set
+of pins it is drawing. With nothing left to sort on, the alliances keep their own order rather
+than shuffling on every refresh.
 
 It degrades one column at a time. Not in a campaign, or the client has not said yet: holdings
 fall back to the add-on's own count and the score reads `-`. Outside Cyrodiil, or with the
@@ -406,4 +420,4 @@ cannot be arranged on demand in a real campaign (a siege lasting past the repeat
 that flips while it is being hit) are played out in milliseconds. It also stubs the window
 manager, so what reaches the screen — which lines, in what colours, in what font, anchored
 where, and when they expire — and the campaign APIs, so the summary's numbers, ordering,
-colours and every way it degrades are checked too. 310 checks.
+colours and every way it degrades are checked too. 333 checks.

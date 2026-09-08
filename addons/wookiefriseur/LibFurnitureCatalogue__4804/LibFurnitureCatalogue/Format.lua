@@ -1,4 +1,5 @@
 -- Formatting and string/link utilities
+-- TODO: mv most parts to FC, leave basic formatter, lib doesn't need a pretty one
 
 FurC = FurC or {}
 local LFC = LibFurnitureCatalogue
@@ -523,7 +524,7 @@ local function getItemLink(item)
 end
 this.GetItemLink = getItemLink
 
---- Drops id→link just for benchmarks
+--- Drops id->link (just for benchmarks)
 function this.ClearLinkCache()
   linkCache = {}
 end

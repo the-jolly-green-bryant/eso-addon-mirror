@@ -538,6 +538,11 @@ function addon:InitSettings()
 			"liteScaleBattleground",
 			GetString(SI_PBSMINIMAP_LITE_ZOOM_BG_TOOLTIP)
 		)
+		addZoomSetting(
+			GetString(SI_PBSMINIMAP_LITE_ZOOM_AVA),
+			"liteScaleAva",
+			GetString(SI_PBSMINIMAP_LITE_ZOOM_AVA_TOOLTIP)
+		)
 		settings:AddSetting(
 			{
 				type = LibHarvensAddonSettings.ST_BUTTON,

@@ -29,8 +29,6 @@ local function IsWearableClothing(itemLink)
         return false
     end
 
-    -- Щити належать до ITEMTYPE_ARMOR,
-    -- але не повинні потрапляти в категорію «Одяг».
     local equipType =
         GetItemLinkEquipType(itemLink)
 
@@ -87,7 +85,7 @@ local function CanExtractClothing(
     slotIndex
 )
     if deconstruct.IsUniversalStation() then
-        -- Важка броня належить до ковальства.
+
         local canExtractBlacksmithing =
             CanItemBeSmithingExtractedOrRefined(
                 bagId,
@@ -95,8 +93,6 @@ local function CanExtractClothing(
                 CRAFTING_TYPE_BLACKSMITHING
             )
 
-        -- Легка і середня броня належать
-        -- до кравецтва.
         local canExtractClothier =
             CanItemBeSmithingExtractedOrRefined(
                 bagId,
@@ -196,13 +192,20 @@ local function IsClothingAllowed(
             itemLink
         )
 
-    local matchesFilter = false
-
-    if IsItemReconstructed(
+    local reconstructed = IsItemReconstructed(
         bagId,
         slotIndex
-    ) and profile.reconstructed
+    )
+
+    if reconstructed
+        and not profile.reconstructed
     then
+        return false
+    end
+
+    local matchesFilter = false
+
+    if reconstructed then
         matchesFilter = true
     end
 

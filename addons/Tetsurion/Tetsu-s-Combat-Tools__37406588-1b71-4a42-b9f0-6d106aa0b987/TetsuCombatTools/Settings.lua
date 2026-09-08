@@ -40,6 +40,11 @@ local function ConsOff()
     return not (v and v.consEnabled ~= false)
 end
 
+local function TimerOff()
+    local v = Vars()
+    return not (v and v.timerEnabled == true)
+end
+
 local function SoundItems()
     return {
         { name = L("SOUND_DUEL", "Duel start"), data = "duel" },
@@ -81,7 +86,7 @@ function T.RegisterSettings()
         allowDefaults = true,
     })
     if not settings then return end
-    settings.version = "1.2.4"
+    settings.version = "1.3.5"
     settings.author = "Tetsurion"
 
     settings:AddSetting({
@@ -130,6 +135,20 @@ function T.RegisterSettings()
         setFunction = function(val)
             vars.consEnabled = val and true or false
             if T.ConsRefresh then T.ConsRefresh() end
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarven.ST_CHECKBOX,
+        label = L("TIMER_ENABLE", "Run Timer"),
+        tooltip = L("TIMER_ENABLE_TT", ""),
+        default = false,
+        getFunction = function()
+            return vars.timerEnabled == true
+        end,
+        setFunction = function(val)
+            vars.timerEnabled = val and true or false
+            if T.TimerRefresh then T.TimerRefresh() end
         end,
     })
 
@@ -611,4 +630,139 @@ function T.RegisterSettings()
             vars.consFoodSound = val and true or false
         end,
     })
+
+    settings:AddSetting({
+        type = LibHarven.ST_SECTION,
+        label = L("TIMER_SECTION", "Run Timer"),
+        tooltip = L("TIMER_SECTION_TT", ""),
+    })
+
+    settings:AddSetting({
+        type = LibHarven.ST_CHECKBOX,
+        label = L("TIMER_DUNGEON", "Group dungeons"),
+        tooltip = L("TIMER_DUNGEON_TT", ""),
+        default = true,
+        disable = TimerOff,
+        getFunction = function()
+            return vars.timerDungeon ~= false
+        end,
+        setFunction = function(val)
+            vars.timerDungeon = val and true or false
+            if T.TimerRefresh then T.TimerRefresh() end
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarven.ST_CHECKBOX,
+        label = L("TIMER_TRIAL", "Trials"),
+        tooltip = L("TIMER_TRIAL_TT", ""),
+        default = true,
+        disable = TimerOff,
+        getFunction = function()
+            return vars.timerTrial ~= false
+        end,
+        setFunction = function(val)
+            vars.timerTrial = val and true or false
+            if T.TimerRefresh then T.TimerRefresh() end
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarven.ST_CHECKBOX,
+        label = L("TIMER_ARENA", "Arenas"),
+        tooltip = L("TIMER_ARENA_TT", ""),
+        default = true,
+        disable = TimerOff,
+        getFunction = function()
+            return vars.timerArena ~= false
+        end,
+        setFunction = function(val)
+            vars.timerArena = val and true or false
+            if T.TimerRefresh then T.TimerRefresh() end
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarven.ST_CHECKBOX,
+        label = L("TIMER_GOAL", "Show speed limit"),
+        tooltip = L("TIMER_GOAL_TT", ""),
+        default = true,
+        disable = TimerOff,
+        getFunction = function()
+            return vars.timerGoal ~= false
+        end,
+        setFunction = function(val)
+            vars.timerGoal = val and true or false
+            if T.TimerRefresh then T.TimerRefresh() end
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarven.ST_SLIDER,
+        label = L("TIMER_X", "Offset X"),
+        tooltip = L("TIMER_X_TT", ""),
+        min = -500,
+        max = 500,
+        step = 10,
+        default = 0,
+        disable = TimerOff,
+        getFunction = function()
+            return vars.timerOffsetX or 0
+        end,
+        setFunction = function(val)
+            vars.timerOffsetX = tonumber(val) or 0
+            if T.TimerRefresh then T.TimerRefresh() end
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarven.ST_SLIDER,
+        label = L("TIMER_Y", "Offset Y"),
+        tooltip = L("TIMER_Y_TT", ""),
+        min = -500,
+        max = 500,
+        step = 10,
+        default = -280,
+        disable = TimerOff,
+        getFunction = function()
+            local y = tonumber(vars.timerOffsetY)
+            if y == nil then return -280 end
+            return y
+        end,
+        setFunction = function(val)
+            vars.timerOffsetY = tonumber(val) or -280
+            if T.TimerRefresh then T.TimerRefresh() end
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarven.ST_SLIDER,
+        label = L("TIMER_SCALE", "Scale %"),
+        tooltip = L("TIMER_SCALE_TT", ""),
+        min = 50,
+        max = 180,
+        step = 5,
+        default = 100,
+        disable = TimerOff,
+        getFunction = function()
+            return vars.timerScale or 100
+        end,
+        setFunction = function(val)
+            vars.timerScale = tonumber(val) or 100
+            if T.TimerRefresh then T.TimerRefresh() end
+        end,
+    })
+
+    if LibHarven.ST_BUTTON then
+        settings:AddSetting({
+            type = LibHarven.ST_BUTTON,
+            label = L("TIMER_PREVIEW", "Preview"),
+            tooltip = L("TIMER_PREVIEW_TT", ""),
+            buttonText = L("TIMER_PREVIEW_BTN", "Show 10s"),
+            disable = TimerOff,
+            clickHandler = function()
+                if T.TimerPreview then T.TimerPreview() end
+            end,
+        })
+    end
 end

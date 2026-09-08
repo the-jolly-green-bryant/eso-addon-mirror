@@ -1,12 +1,26 @@
 -- LibFurnitureCatalogue - Furniture Catalogue database library, startup file
 
-local MAJOR, MINOR = "LibFurnitureCatalogue", 10000 -- TODO: generate version from bump
+local MAJOR, MINOR = "LibFurnitureCatalogue", 1001000 -- AUTOREPLACED with AddOnVersion
 
-if _G[MAJOR] and _G[MAJOR].version and _G[MAJOR].version >= MINOR then
+-- set up key maps for "id -> SI_" (used in locale files)
+local lib = _G[MAJOR] or {}
+_G[MAJOR] = lib
+lib.Internal = lib.Internal or {}
+lib.Internal.StringKeys = lib.Internal.StringKeys or {}
+lib.Internal.RegisterStrings = lib.Internal.RegisterStrings
+  or function(strings)
+    local keys = lib.Internal.StringKeys
+    for stringId, stringValue in pairs(strings) do
+      ZO_CreateStringId(stringId, stringValue)
+      SafeAddVersion(stringId, 1)
+      keys[_G[stringId]] = stringId
+    end
+  end
+
+if lib.version and lib.version >= MINOR then
   return
 end
 
-local lib = _G[MAJOR] or {}
 lib.version = MINOR
 lib.name = MAJOR
 _G[MAJOR] = lib
@@ -14,16 +28,28 @@ _G[MAJOR] = lib
 lib.API = lib.API or {} -- public API for DB queries and stuff
 lib.Internal = lib.Internal or {} -- internal use only
 
----Single furniture entry returned by FurC.Find
+---Single furniture entry, returned by GetEntry and Query.Find
+---
+---"NOT PROMISED" = delivered but not subject to change
+---
+---A stored row holds only infos that the game cannot tell us directly: sources, update version, blueprint of an item.
+---
+--- `origin` is derived from `sources` and the two category fields from the item itself, through one metatable shared by every row (it is the primary source as compatibility attribute)
+---
+---GetEntry copies the row and puts `origin` onto the copy (copy iterates with `pairs` and `pairs` cannot see derived fields)
+---
+--- The category fields are not added, use GetFurnitureCategories, or game functions
 ---@class FurCEntry
----@field sources table<FurCItemSource, boolean> every source this item has
----@field origin FurCItemSource top-ranked source
+---@field id integer the itemId this entry is stored under
+---@field sources table<FurCItemSource, boolean> every source this item has, plus the ones a fine-grained source was carved from
+---@field origin FurCItemSource NOT PROMISED, top-ranked source, derived from `sources`
 ---@field version integer game version when the item was added
 ---@field blueprint integer|nil blueprint itemId, when craftable
----@field craftable boolean|nil
----@field craftingSkill integer|nil crafting skill type, when known
----@field furnCategory integer cached ESO furniture category id (0 = no category)
----@field furnSubcategory integer cached ESO furniture subcategory id
+---@field furnCategory integer NOT PROMISED, derived. Furniture category id (0 = no category). Absent from a copy
+---@field furnSubcategory integer NOT PROMISED, derived. Furniture subcategory id. Absent from a copy
+---@field recipeListIndex integer|nil NOT PROMISED. Set only on rows the recipe scan found, pairs with recipeIndex
+---@field recipeIndex integer|nil NOT PROMISED. Set only on rows the recipe scan found, pairs with recipeListIndex
+---@field compatSources integer|nil NOT PROMISED, deprecated. Bitmask of the `sources` members that exist only for deprecated calls, absent when nothing was injected. Use Internal.Compat.IsInjected to check
 
 -- Runtime furniture database, built per session by the scanner: DB[itemId] = FurCEntry
 ---@type table<integer, FurCEntry>
@@ -46,13 +72,12 @@ lifecycle.State = lifecycle.State
   }
 lifecycle.current = lifecycle.current
   or (lib.Internal.DBReady == true and lifecycle.State.READY or lifecycle.State.UNINITIALIZED)
-lifecycle.everReady = lifecycle.everReady or lifecycle.current == lifecycle.State.READY
 lifecycle.readyWaiters = lifecycle.readyWaiters or {}
 lifecycle.callbacks = lifecycle.callbacks or {}
 lifecycle.notifying = lifecycle.notifying == true
 lib.Internal.DBReady = lifecycle.current == lifecycle.State.READY
 
--- Legacy alias, same table — never reassign either side
+-- Legacy alias, same table
 FurC = FurC or {}
 FurC.DB = lib.Internal.DB
 

@@ -37,7 +37,7 @@ function deconstruct.CreateSettings()
 
     local panelId = "OWDeconstructSettings"
 
-    local function NormalizeQualityValue(value)
+local function NormalizeQualityValue(value)
         if type(value) == "number" then
             return value
         end
@@ -70,8 +70,6 @@ function deconstruct.CreateSettings()
 
         local profile = profiles[profileName]
 
-        -- Versions before 0.1.3 used a separate research checkbox.
-        -- Preserve its effective state when migrating to one dropdown.
         if profile.research ~= nil then
             if profile.research == false then
                 profile.researchMode = "none"
@@ -123,7 +121,7 @@ function deconstruct.CreateSettings()
         return profile
     end
 
-    local function Checkbox(profile, field, name, tooltip, isEnableCheckbox)
+local function Checkbox(profile, field, name, tooltip, isEnableCheckbox)
         return {
             type = "checkbox",
             name = name,
@@ -266,7 +264,7 @@ function deconstruct.CreateSettings()
         }
     end
 
-    local function CreateEquipmentControls(profileName, T)
+local function CreateEquipmentControls(profileName, T)
         local profile = GetProfile(profileName)
 
         return {
@@ -286,7 +284,7 @@ function deconstruct.CreateSettings()
         }
     end
 
-    local function CreateJewelryControls(T)
+local function CreateJewelryControls(T)
         local profile = GetProfile("jewelry")
 
         return {
@@ -356,7 +354,7 @@ function deconstruct.CreateSettings()
         }
     end
 
-    local function CreateEnchantingControls(T)
+local function CreateEnchantingControls(T)
         local profile = GetProfile("enchanting")
 
         return {

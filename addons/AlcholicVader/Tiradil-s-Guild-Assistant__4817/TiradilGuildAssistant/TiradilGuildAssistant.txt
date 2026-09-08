@@ -1,0 +1,21 @@
+## Title: Tiradil's Guild Assistant
+## Author: Tiradil
+## Version: 1.0.0
+## Copyright: © 2026 Tiradil
+## AddOnVersion: 12
+## APIVersion: 101050 101051
+## SavedVariables: TiradilRoster_SavedVariables GuildLedger_SavedVars TiradilInactiveWatch_SavedVars TiradilRosterColumn_SavedVars TiradilGuildAssistant_SavedVars
+## DependsOn: LibHistoire LibAddonMenu-2.0 LibGuildRoster LibCustomMenu
+
+TiradilLocalization.lua
+TiradilInactiveWatchLocalization.lua
+TiradilGuildAssistant.xml
+TiradilRoster.xml
+GuildLedger.xml
+TiradilInactiveWatch.xml
+TiradilRoster.lua
+GuildLedger.lua
+TiradilInactiveWatch.lua
+TiradilGuildButton.lua
+TiradilRosterColumn.lua
+TiradilGuildAssistant.lua

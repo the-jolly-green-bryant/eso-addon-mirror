@@ -18,6 +18,90 @@ local function CreateDeconstructProfile()
     }
 end
 
+local function CreateMerchantEquipmentProfile()
+    return {
+        enabled = false,
+        maxQuality = ITEM_QUALITY_NORMAL,
+        noTrait = false,
+        ornate = false,
+        intricate = false,
+        tradable = false,
+        traitMaterialsEnabled = false,
+        traitMaterials = {},
+    }
+end
+
+local function CreateMerchantEnchantingProfile()
+    return {
+        enabled = false,
+        maxQuality = ITEM_QUALITY_NORMAL,
+        potencyRunesEnabled = false,
+        potencyRunes = {},
+        essenceRunesEnabled = false,
+        essenceRunes = {},
+        aspectRunesEnabled = false,
+        aspectRunes = {},
+    }
+end
+
+local function CreateMerchantConsumablesProfile()
+    return {
+        enabled = true,
+        foodDrinkEnabled = false,
+        foodDrinkMaxQuality = ITEM_QUALITY_NORMAL,
+        excludeFoodDrinkCP150 = false,
+        nonCraftedFoodDrink = false,
+
+        potionPoisonEnabled = false,
+        excludePotionPoisonCP150 = false,
+        nonCraftedPotionPoison = false,
+
+        knownRecipesEnabled = false,
+        recipeMaxQuality = ITEM_QUALITY_NORMAL,
+
+        knownHousingPatternsEnabled = false,
+        housingPatternMaxQuality = ITEM_QUALITY_NORMAL,
+    }
+end
+
+local function CreateMerchantMaterialsProfile()
+    return {
+        blacksmithingEnabled = false,
+        blacksmithingRawEnabled = false,
+        clothingMaterialsEnabled = false,
+        clothingRawMaterialsEnabled = false,
+        leatherMaterialsEnabled = false,
+        leatherRawMaterialsEnabled = false,
+        woodworkingEnabled = false,
+        woodworkingRawEnabled = false,
+        jewelryMaterialsEnabled = false,
+        jewelryRawMaterialsEnabled = false,
+        furnishingMaterialsEnabled = false,
+        furnishingMaterials = {},
+        styleMaterialsEnabled = false,
+        styleMaterials = {},
+    }
+end
+
+local function CreateMerchantResourcesProfile()
+    return {
+        provisioningEnabled = false,
+        provisioningIngredients = {},
+        alchemyEnabled = false,
+        alchemyIngredients = {},
+        alchemySolventsEnabled = false,
+        alchemySolvents = {},
+    }
+end
+
+local function CreateMerchantOtherProfile()
+    return {
+        emptySoulGemsEnabled = false,
+        fishingBaitEnabled = false,
+        trophyFishEnabled = false,
+    }
+end
+
 local function GetSavedVariableDefaults()
     local defaults = owa.GetAccountDefaults()
     local savedRoot = _G["OWAssistantSavedVariables"]
@@ -28,25 +112,52 @@ local function GetSavedVariableDefaults()
 
     local displayName = GetDisplayName()
     local worldName = GetWorldName()
-    local worldData = savedRoot[worldName]
-    local currentSettings = worldData
-        and worldData[displayName]
-        and worldData[displayName]["$AccountWide"]
+    local profileData = savedRoot["Default"]
+    local displayData = profileData
+        and profileData[displayName]
+    local accountData = displayData
+        and displayData["$AccountWide"]
+    local currentSettings = accountData
+        and accountData[worldName]
 
     if currentSettings then
         return defaults
     end
 
-    local oldData = savedRoot["Default"]
-    local oldSettings = oldData
-        and oldData[displayName]
-        and oldData[displayName]["$AccountWide"]
+    local oldSettings = accountData
 
     if not oldSettings then
         return defaults
     end
 
-    local migratedDefaults = ZO_ShallowTableCopy(oldSettings)
+    local migratedDefaults = defaults
+    local migratableKeys = {
+        "language",
+        "accountWide",
+        "repairEnabled",
+        "deconstructEnabled",
+        "merchantEnabled",
+        "merchantChatMessages",
+        "merchantChatMode",
+        "deconstructChatMessages",
+        "repairAndRecharge",
+        "deconstructProfiles",
+        "merchantProfiles",
+    }
+
+    for _, key in ipairs(migratableKeys) do
+        local value = rawget(oldSettings, key)
+
+        if value ~= nil then
+            if type(value) == "table" then
+                migratedDefaults[key] =
+                    ZO_DeepTableCopy(value)
+            else
+                migratedDefaults[key] = value
+            end
+        end
+    end
+
     return migratedDefaults
 end
 
@@ -84,6 +195,9 @@ function owa.GetAccountDefaults()
 
         repairEnabled = false,
         deconstructEnabled = true,
+        merchantEnabled = false,
+        merchantChatMessages = true,
+        merchantChatMode = "summary",
         deconstructChatMessages = true,
 
         repairAndRecharge = {
@@ -110,6 +224,17 @@ function owa.GetAccountDefaults()
             jewelry = CreateDeconstructProfile(),
             enchanting = CreateDeconstructProfile(),
         },
+
+        merchantProfiles = {
+            weapon = CreateMerchantEquipmentProfile(),
+            clothing = CreateMerchantEquipmentProfile(),
+            jewelry = CreateMerchantEquipmentProfile(),
+            enchanting = CreateMerchantEnchantingProfile(),
+            consumables = CreateMerchantConsumablesProfile(),
+            resources = CreateMerchantResourcesProfile(),
+            materials = CreateMerchantMaterialsProfile(),
+            other = CreateMerchantOtherProfile(),
+        },
     }
 end
 
@@ -124,5 +249,10 @@ function owa.LoadModules()
     if savedVariables.deconstructEnabled then
         owa.Deconstruct.Initialize()
         owa.Deconstruct.CreateSettings()
+    end
+
+    if savedVariables.merchantEnabled then
+        owa.Merchant.Initialize()
+        owa.Merchant.CreateSettings()
     end
 end

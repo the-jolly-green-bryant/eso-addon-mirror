@@ -77,11 +77,20 @@ function owa.CreateSettings()
             requiresReload = true,
             warning = L("RELOAD_UI_WARNING"),
         },
-        DevelopmentCheckbox(
-            L("MERCHANT"),
-            L("MODULE_IN_DEVELOPMENT"),
-            false
-        ),
+        {
+            type = "checkbox",
+            name = L("MERCHANT"),
+            tooltip = L("MERCHANT_TOOLTIP"),
+            getFunc = function()
+                return owa.savedVariables.merchantEnabled
+            end,
+            setFunc = function(value)
+                owa.savedVariables.merchantEnabled = value
+            end,
+            default = false,
+            requiresReload = true,
+            warning = L("RELOAD_UI_WARNING"),
+        },
         {
             type = "checkbox",
             name = L("REPAIR"),

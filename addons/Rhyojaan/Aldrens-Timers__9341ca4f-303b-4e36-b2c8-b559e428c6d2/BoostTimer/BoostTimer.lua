@@ -13,11 +13,14 @@ local defaults = {
     height = 120,
     fontSize = 24,
     hideInMenus = true,
+    textColor = { r = 1, g = 1, b = 1, a = 1 },
+    backgroundColor = { r = 0, g = 0, b = 0, a = 0.65 },
 }
 
 local savedVariables
 local timerWindow
 local timerLabel
+local panelBackground
 local visibleTimerRows = 1
 
 local function RefreshPanelVisibility()
@@ -163,6 +166,25 @@ local function GetAutomaticPanelHeight()
     return savedVariables.height + (extraRows * rowHeight)
 end
 
+local function GetSavedColor(colorValue, defaultColor)
+    if type(colorValue) ~= "table" then
+        colorValue = defaultColor
+    end
+
+    return tonumber(colorValue.r) or defaultColor.r,
+        tonumber(colorValue.g) or defaultColor.g,
+        tonumber(colorValue.b) or defaultColor.b,
+        tonumber(colorValue.a) or defaultColor.a
+end
+
+local function SaveColor(colorKey, r, g, b, a, defaultColor)
+    savedVariables[colorKey] = savedVariables[colorKey] or {}
+    savedVariables[colorKey].r = r
+    savedVariables[colorKey].g = g
+    savedVariables[colorKey].b = b
+    savedVariables[colorKey].a = a or defaultColor.a
+end
+
 local function ApplyPanelSettings()
     if not timerWindow or not timerLabel then
         return
@@ -172,6 +194,14 @@ local function ApplyPanelSettings()
     timerWindow:SetAnchor(TOP, GuiRoot, TOP, savedVariables.offsetX, savedVariables.offsetY)
     timerWindow:SetDimensions(savedVariables.width, GetAutomaticPanelHeight())
     timerLabel:SetFont(string.format("$(BOLD_FONT)|%d|soft-shadow-thick", savedVariables.fontSize))
+
+    local textR, textG, textB, textA = GetSavedColor(savedVariables.textColor, defaults.textColor)
+    timerLabel:SetColor(textR, textG, textB, textA)
+
+    if panelBackground then
+        local backgroundR, backgroundG, backgroundB, backgroundA = GetSavedColor(savedVariables.backgroundColor, defaults.backgroundColor)
+        panelBackground:SetCenterColor(backgroundR, backgroundG, backgroundB, backgroundA)
+    end
 end
 
 local function UpdateTimerDisplay()
@@ -308,7 +338,7 @@ local function CreateSettingsPanel()
         name = DISPLAY_NAME,
         displayName = DISPLAY_NAME,
         author = "Aldren Project",
-        version = "0.0.17",
+        version = "0.0.18",
         registerForRefresh = true,
         registerForDefaults = true,
     }
@@ -400,6 +430,34 @@ local function CreateSettingsPanel()
             default = defaults.fontSize,
         },
         {
+            type = "colorpicker",
+            name = "Timer Text Color",
+            tooltip = "Uses ESO's color picker to change the timer and XP text color.",
+            getFunc = function()
+                return GetSavedColor(savedVariables.textColor, defaults.textColor)
+            end,
+            setFunc = function(r, g, b, a)
+                SaveColor("textColor", r, g, b, a, defaults.textColor)
+                ApplyPanelSettings()
+            end,
+            default = defaults.textColor,
+            width = "half",
+        },
+        {
+            type = "colorpicker",
+            name = "Panel Background Color",
+            tooltip = "Uses ESO's color picker to change the panel background color and opacity.",
+            getFunc = function()
+                return GetSavedColor(savedVariables.backgroundColor, defaults.backgroundColor)
+            end,
+            setFunc = function(r, g, b, a)
+                SaveColor("backgroundColor", r, g, b, a, defaults.backgroundColor)
+                ApplyPanelSettings()
+            end,
+            default = defaults.backgroundColor,
+            width = "half",
+        },
+        {
             type = "button",
             name = "Reset Position and Size",
             tooltip = "Returns the timer panel to the tested default position and size.",
@@ -424,16 +482,14 @@ local function CreateTimerWindow()
     timerWindow:SetMouseEnabled(false)
     timerWindow:SetClampedToScreen(true)
 
-    local background = WINDOW_MANAGER:CreateControl("BoostTimerBackground", timerWindow, CT_BACKDROP)
-    background:SetAnchorFill(timerWindow)
-    background:SetCenterColor(0, 0, 0, 0.65)
-    background:SetEdgeColor(1, 1, 1, 0.30)
-    background:SetEdgeTexture(nil, 1, 1, 1)
+    panelBackground = WINDOW_MANAGER:CreateControl("BoostTimerBackground", timerWindow, CT_BACKDROP)
+    panelBackground:SetAnchorFill(timerWindow)
+    panelBackground:SetEdgeColor(1, 1, 1, 0.30)
+    panelBackground:SetEdgeTexture(nil, 1, 1, 1)
 
     timerLabel = WINDOW_MANAGER:CreateControl("BoostTimerLabel", timerWindow, CT_LABEL)
     timerLabel:SetAnchor(TOPLEFT, timerWindow, TOPLEFT, 14, 12)
     timerLabel:SetAnchor(BOTTOMRIGHT, timerWindow, BOTTOMRIGHT, -14, -12)
-    timerLabel:SetColor(1, 1, 1, 1)
     timerLabel:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
     timerLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
 

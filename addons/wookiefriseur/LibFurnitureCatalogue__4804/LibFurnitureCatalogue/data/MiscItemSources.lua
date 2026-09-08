@@ -117,9 +117,6 @@ end
 -- Season One
 FurC.MiscItemSources[ver.THIEVES] = {}
 
--- Season Zero Part 2
-FurC.MiscItemSources[ver.ZERO2] = {}
-
 -- Season Zero
 FurC.MiscItemSources[ver.ZERO] = {
   [src.BAZAAR] = {
@@ -159,25 +156,52 @@ FurC.MiscItemSources[ver.WORMS2] = {
     [223157] = strGeneric(srcDrop, "mobs in public dungeons and delves", nil, loc.SOLSTICE), -- Worm Cult Bucket, Bismuth Samples
     [223176] = strGeneric(srcDrop, "mobs in public dungeons and delves", nil, loc.SOLSTICE), -- Leg Armor, Arrow-Damaged
     [223177] = strGeneric(srcDrop, "mobs in public dungeons and delves", nil, loc.SOLSTICE), -- Skull, Extinct Seabeast
+  },
 
-    -- Harvesting
+  [src.HARVEST] = {
     [223173] = strGeneric(srcHarvest, strSrc("src", "Woodworking"), nil, loc.SOLSTICE), -- Leaf Pile, Royal Palm
     [223172] = strGeneric(srcHarvest, strSrc("src", "Woodworking"), nil, loc.SOLSTICE), -- Leaf Pile, Thatch Palm
     [223171] = strGeneric(srcHarvest, strSrc("src", "Clothing"), nil, loc.SOLSTICE), -- Plant, Corrupted Fanik Goc
     [223170] = strGeneric(srcHarvest, strSrc("src", "Clothing"), nil, loc.SOLSTICE), -- Plant, Corrupted Flowering Fanik Goc
     [223169] = strGeneric(srcHarvest, strSrc("src", "Blacksmithing"), nil, loc.SOLSTICE), -- Stones, Jagged Granite Cluster
     [223168] = strGeneric(srcHarvest, strSrc("src", "Blacksmithing"), nil, loc.SOLSTICE), -- Stone, Smooth Limestone
+  },
 
+  [src.CHEST] = {
     [223174] = strChests(loc.SOLSTICE), -- Cook's Still Life Painting, Unfinished
   },
 }
 
--- Feast of Shadows
-FurC.MiscItemSources[ver.SHADOWS] = {}
-
 -- Seasons of the Worm Cult // Solstice
 FurC.MiscItemSources[ver.WORMS] = {
-  [src.DROP] = {
+  [src.HARVEST] = {
+    [214479] = strGeneric(srcHarvest, strSrc("src", "Blacksmithing and Jewelry"), nil, loc.SOLSTICE), -- Solstice Bismuth, Deposit II
+    [214478] = strGeneric(srcHarvest, strSrc("src", "Blacksmithing and Jewelry"), nil, loc.SOLSTICE), -- Solstice Bismuth, Deposit I
+    [214485] = strGeneric(srcHarvest, strSrc("src", "Clothing and Alchemy"), nil, loc.SOLSTICE), -- Plant, Pineapple
+    [214482] = strGeneric(srcHarvest, strSrc("src", "Clothing"), nil, loc.SOLSTICE), -- Fanik Goc, Sprouted
+    [214480] = strGeneric(srcHarvest, strSrc("src", "Clothing and Alchemy"), nil, loc.SOLSTICE), -- Flowers, Poinsettia
+    [214481] = strGeneric(srcHarvest, strSrc("src", "Clothing and Alchemy"), nil, loc.SOLSTICE), -- Flower Patch, Flame Lily
+    [214483] = strGeneric(srcHarvest, strSrc("src", "Clothing"), nil, loc.SOLSTICE), -- Flowering Gorse, Orange
+    [214484] = strGeneric(srcHarvest, strSrc("src", "Clothing"), nil, loc.SOLSTICE), -- Grass, Pampas Cluster
+    [214486] = strGeneric(srcHarvest, strSrc("src", "Clothing"), nil, loc.SOLSTICE), -- Flowers, Sea Lavender Cluster
+    [214487] = strGeneric(srcHarvest, strSrc("src", "Clothing and Alchemy"), nil, loc.SOLSTICE), -- Bush, Sea Lavender
+  },
+
+  [src.CHEST] = {
+    [214363] = strChests(loc.SOLSTICE), -- Tide-Born Tapestry, Turtle
+    [214364] = strChests(loc.SOLSTICE), -- Tide-Born Tapestry, Contemplation
+    [214365] = strChests(loc.SOLSTICE), -- Tide-Born Tapestry, Origins
+    [214366] = strChests(loc.SOLSTICE), -- Tide-Born Tapestry, Training
+    [214367] = strChests(loc.SOLSTICE), -- Tide-Born Tapestry, Lizard
+    [214368] = strChests(loc.SOLSTICE), -- Tide-Born Tapestry, Triptych
+    [214369] = strChests(loc.SOLSTICE), -- Tide-Born Tapestry, Sap
+    [214370] = strChests(loc.SOLSTICE), -- Tide-Born Tapestry, Snake
+    [214371] = strChests(loc.SOLSTICE), -- Tide-Born Reed Art, Turtle
+    [214373] = strChests(loc.SOLSTICE), -- Meadow Study Painting, Unfinished
+    [214372] = strChests(loc.SOLSTICE), -- Forest Study Painting, Unfinished
+  },
+
+  [src.QUEST] = {
     [211517] = strQuest(5952), -- Storm Lord Shield
     [211518] = strQuest(5952), -- Pit Daemon Shield
     [211519] = strQuest(5952), -- Fire Drake Shield
@@ -202,35 +226,8 @@ FurC.MiscItemSources[ver.WORMS] = {
     [211527] = strQuest(5952), -- Storm Lord Rug, Horizontal
     [211529] = strQuest(5952), -- Fire Drake Rug, Round
     [211528] = strQuest(5952), -- Storm Lord Rug, Vertical
-
-    [214363] = strChests(loc.SOLSTICE), -- Tide-Born Tapestry, Turtle
-    [214364] = strChests(loc.SOLSTICE), -- Tide-Born Tapestry, Contemplation
-    [214365] = strChests(loc.SOLSTICE), -- Tide-Born Tapestry, Origins
-    [214366] = strChests(loc.SOLSTICE), -- Tide-Born Tapestry, Training
-    [214367] = strChests(loc.SOLSTICE), -- Tide-Born Tapestry, Lizard
-    [214368] = strChests(loc.SOLSTICE), -- Tide-Born Tapestry, Triptych
-    [214369] = strChests(loc.SOLSTICE), -- Tide-Born Tapestry, Sap
-    [214370] = strChests(loc.SOLSTICE), -- Tide-Born Tapestry, Snake
-    [214371] = strChests(loc.SOLSTICE), -- Tide-Born Reed Art, Turtle
-    [214373] = strChests(loc.SOLSTICE), -- Meadow Study Painting, Unfinished
-    [214372] = strChests(loc.SOLSTICE), -- Forest Study Painting, Unfinished
-
-    -- Harvesting
-    [214479] = strGeneric(srcHarvest, strSrc("src", "Blacksmithing and Jewelry"), nil, loc.SOLSTICE), -- Solstice Bismuth, Deposit II
-    [214478] = strGeneric(srcHarvest, strSrc("src", "Blacksmithing and Jewelry"), nil, loc.SOLSTICE), -- Solstice Bismuth, Deposit I
-    [214485] = strGeneric(srcHarvest, strSrc("src", "Clothing and Alchemy"), nil, loc.SOLSTICE), -- Plant, Pineapple
-    [214482] = strGeneric(srcHarvest, strSrc("src", "Clothing"), nil, loc.SOLSTICE), -- Fanik Goc, Sprouted
-    [214480] = strGeneric(srcHarvest, strSrc("src", "Clothing and Alchemy"), nil, loc.SOLSTICE), -- Flowers, Poinsettia
-    [214481] = strGeneric(srcHarvest, strSrc("src", "Clothing and Alchemy"), nil, loc.SOLSTICE), -- Flower Patch, Flame Lily
-    [214483] = strGeneric(srcHarvest, strSrc("src", "Clothing"), nil, loc.SOLSTICE), -- Flowering Gorse, Orange
-    [214484] = strGeneric(srcHarvest, strSrc("src", "Clothing"), nil, loc.SOLSTICE), -- Grass, Pampas Cluster
-    [214486] = strGeneric(srcHarvest, strSrc("src", "Clothing"), nil, loc.SOLSTICE), -- Flowers, Sea Lavender Cluster
-    [214487] = strGeneric(srcHarvest, strSrc("src", "Clothing and Alchemy"), nil, loc.SOLSTICE), -- Bush, Sea Lavender
   },
 }
-
--- 33 Fallen Banners
-FurC.MiscItemSources[ver.FALLBAN] = {}
 
 -- 32 Golden Pursuits Update 44
 FurC.MiscItemSources[ver.BASE44] = {
@@ -241,18 +238,15 @@ FurC.MiscItemSources[ver.BASE44] = {
     [211303] = strBazaar(2000), -- Statue of Molag Bal, Harvester
   },
 
-  [src.DROP] = {
+  [src.QUEST] = {
     [211505] = strQuest(nil, "Tanlorin rapport"), -- Letter from Tanlorin
     [211503] = strQuest(nil, "Zerith-Var rapport"), -- Letter from Zerith-var
   },
 }
 
--- 31 Home Tours Update 43
-FurC.MiscItemSources[ver.BASE43] = {}
-
 -- 30 Gold Road
 FurC.MiscItemSources[ver.WEALD] = {
-  [src.DROP] = {
+  [src.CHEST] = {
     [204800] = strChests(loc.WEALD), -- Preparing to Entertain Painting, Wood
     [204801] = strChests(loc.WEALD), -- Great Chapel of Julianos Painting, Wood
     [204802] = strChests(loc.WEALD), -- Wonders of Water Painting, Wood
@@ -265,7 +259,9 @@ FurC.MiscItemSources[ver.WEALD] = {
     [204754] = strChests(loc.WEALD), -- Sun-Gilded Vineyard Painting, Metal
     [204755] = strChests(loc.WEALD), -- Colovian Bounty Painting, Wood
     [204799] = strChests(loc.WEALD), -- The Optimism of Dogs Painting, Metal
+  },
 
+  [src.QUEST] = {
     [204416] = tribute, -- Saint's Wrath Tapestry, Large
     [204413] = tribute, -- Morihaus the Archer Tapestry
     [204414] = tribute, -- Morihaus the Archer Tapestry, Large
@@ -273,12 +269,9 @@ FurC.MiscItemSources[ver.WEALD] = {
   },
 }
 
--- 29 Scions of Ithelia
-FurC.MiscItemSources[ver.SCIONS] = {}
-
 -- 28 Secrets of the Telvanni
 FurC.MiscItemSources[ver.ENDLESS] = {
-  [src.DROP] = {
+  [src.DUNGEON] = {
     [203472] = inf_archive, -- Materials for Novice Necromancers
     [203471] = inf_archive, -- The Spotted Towers
     [203470] = inf_archive, -- Song of Fate
@@ -351,17 +344,17 @@ FurC.MiscItemSources[ver.ENDLESS] = {
     [203207] = inf_archive, -- Apocrypha Pipe, Small Curved
     [203206] = inf_archive, -- Apocrypha Pipe, Medium
     [203204] = inf_archive, -- Apocrypha Pipe, Large Curved
+  },
 
+  [src.CHEST] = {
     [203407] = strChests(loc.WROTHGAR), -- Vosh Rakh
     [203406] = strChests(loc.WROTHGAR), -- Vorgrosh Rot-Tusk's Guide to Dirty Fighting
     [203405] = strChests(loc.WROTHGAR), -- Orc Clans and Symbology
     [203404] = strChests(loc.WROTHGAR), -- Birds of Wrothgar
-
     [203403] = chests_summerset, -- The Ubiquitous Sinking Isle
     [203402] = chests_summerset, -- The Truth of Minotaurs
     [203401] = chests_summerset, -- The Flight of Gryphons
     [203400] = chests_summerset, -- Artaeum Lost
-
     [203399] = strChests(loc.SELSWEYR), -- The Marriage of Moon and Tide
     [203398] = strChests(loc.SELSWEYR), -- The Favored Daughter of Fadomai
     [203397] = strChests(loc.SELSWEYR), -- Khunzar-ri and the Lost Alfiq
@@ -385,7 +378,9 @@ FurC.MiscItemSources[ver.ENDLESS] = {
     [203379] = strChests(loc.CWC), -- The Blackfeather Court
     [203378] = strChests(loc.CWC), -- Engine of Expression
     [203377] = strChests(loc.CWC), -- A Brief History of Ald Sotha
+  },
 
+  [src.QUEST] = {
     [199117] = tribute, -- Chromatic Reservoir Tapestry, Large
     [199116] = tribute, -- Chromatic Reservoir Tapestry
     [199115] = tribute, -- Seeker Aspirant Tapestry, Large
@@ -398,18 +393,18 @@ FurC.MiscItemSources[ver.BASED] = {}
 
 -- 26 Necrom
 FurC.MiscItemSources[ver.NECROM] = {
-  [src.DROP] = {
+  [src.DUNGEON] = {
     [197921] = nymic, -- Peryite's Salvation
     [197920] = nymic, -- The Doom of the Hushed
     [197919] = nymic, -- The Legend of Fathoms Drift
     [197918] = nymic, -- Deal with a Daedric Prince
     [197917] = nymic, -- Ode to Vaermina
+  },
 
+  [src.CHEST] = {
     [197783] = chests_necrom, -- Pilgrimage Triptych Painting, Wood
     [197782] = chests_necrom, -- Alleyway Still Life Painting
     [197781] = chests_necrom, -- The City of Necrom Painting, Wood
-    [197780] = strQuest(nil, "Sharp-as-Night rapport"), -- Letter from Sharp
-    [197779] = strQuest(nil, "Azandar's rapport"), -- Letter from Azandar
     [197755] = chests_necrom, -- Shadow over Necrom Painting
     [197754] = chests_necrom, -- Offerings to the Dead Painting, Wood
     [197753] = chests_necrom, -- Telvanni Peninsula Painting, Wood
@@ -417,7 +412,11 @@ FurC.MiscItemSources[ver.NECROM] = {
     [197751] = chests_necrom, -- Sunset Fleet Painting, Wood
     [197750] = chests_necrom, -- Telvanni Mushroom Spire Painting, Wood
     [197749] = chests_necrom, -- Necrom Still Life Painting, Wood
+  },
 
+  [src.QUEST] = {
+    [197780] = strQuest(nil, "Sharp-as-Night rapport"), -- Letter from Sharp
+    [197779] = strQuest(nil, "Azandar's rapport"), -- Letter from Azandar
     [193786] = tribute, -- Mercymother Elite Tribute Tapestry
     [193785] = tribute, -- Mercymother Elite Tribute Tapestry, Large
     [193784] = tribute, -- Hand of Almalexia Tribute Tapestry
@@ -427,7 +426,7 @@ FurC.MiscItemSources[ver.NECROM] = {
 
 -- 25 Scribes of Fate
 FurC.MiscItemSources[ver.SCRIBE] = {
-  [src.DROP] = {
+  [src.DUNGEON] = {
     [194460] = book_hall, -- Apocrypha, Apocrypha
     [194459] = book_hall, -- Dream of a Thousand Dreamers
     [194458] = book_hall, -- Lord Hollowjack's Dream Realm
@@ -459,7 +458,7 @@ FurC.MiscItemSources[ver.SCRIBE] = {
 
 -- 24 Firesong
 FurC.MiscItemSources[ver.DRUID] = {
-  [src.DROP] = {
+  [src.QUEST] = {
     [192404] = tribute, -- Forest Wraith Tribute Tapestry, Large
     [192403] = tribute, -- Forest Wraith Tribute Tapestry
     [192402] = tribute, -- The Chimera Tribute Tapestry, Large
@@ -469,7 +468,7 @@ FurC.MiscItemSources[ver.DRUID] = {
 
 -- 23 Lost Depths
 FurC.MiscItemSources[ver.DEPTHS] = {
-  [src.DROP] = {
+  [src.QUEST] = {
     [187807] = tribute_ranked, -- Tribute Trophy, Voidsteel
     [187806] = tribute_ranked, -- Tribute Trophy, Quicksilver
     [187805] = tribute_ranked, -- Tribute Trophy, Ebony
@@ -479,7 +478,20 @@ FurC.MiscItemSources[ver.DEPTHS] = {
 
 -- 22 High Isle
 FurC.MiscItemSources[ver.BRETON] = {
-  [src.DROP] = {
+  [src.CHEST] = {
+    [187877] = chests_high, -- Gates of Gonfalon Bay Painting, Wood
+    [187876] = chests_high, -- Gonfalon Colossus Painting, Wood
+    [187875] = chests_high, -- Tor Draioch Towers Painting, Wood
+    [187874] = chests_high, -- Masted Behemoth Painting, Wood
+    [187873] = chests_high, -- Abecean Bounty Painting, Wood
+    [187872] = chests_high, -- Light's Warning Painting, Wood
+    [187871] = chests_high, -- High Isle Seahome Painting, Metal
+    [187870] = chests_high, -- Gifts of the Sun Painting, Metal
+    [187869] = chests_high, -- Noble Still Life Painting, Metal
+    [187868] = chests_high, -- Ascendant Silence Painting, Metal
+  },
+
+  [src.QUEST] = {
     [188285] = tribute, -- Serpentguard Rider Tribute Tapestry, Large
     [188284] = tribute, -- Serpentguard Rider Tribute Tapestry
     [188283] = tribute, -- Pyandonean War Fleet Tribute Tapestry, Large
@@ -496,16 +508,6 @@ FurC.MiscItemSources[ver.BRETON] = {
     [188272] = tribute, -- Blackfeather Knight Tribute Tapestry
     [188202] = strQuest(nil, "Isobel rapport"), -- Letter From Isobel
     [188201] = strQuest(nil, "Ember rapport"), -- Letter From Ember
-    [187877] = chests_high, -- Gates of Gonfalon Bay Painting, Wood
-    [187876] = chests_high, -- Gonfalon Colossus Painting, Wood
-    [187875] = chests_high, -- Tor Draioch Towers Painting, Wood
-    [187874] = chests_high, -- Masted Behemoth Painting, Wood
-    [187873] = chests_high, -- Abecean Bounty Painting, Wood
-    [187872] = chests_high, -- Light's Warning Painting, Wood
-    [187871] = chests_high, -- High Isle Seahome Painting, Metal
-    [187870] = chests_high, -- Gifts of the Sun Painting, Metal
-    [187869] = chests_high, -- Noble Still Life Painting, Metal
-    [187868] = chests_high, -- Ascendant Silence Painting, Metal
     [187808] = tribute_ranked, -- Tribute Trophy, Rubedite
   },
 }
@@ -517,7 +519,21 @@ FurC.MiscItemSources[ver.TIDES] = {}
 FurC.MiscItemSources[ver.DEADL] = {
   [src.DROP] = {
     [166960] = "From combining Stone Husk Fragments from the Labyrinthian in Western Skyrim", -- Target Stone Husk
+    [163432] = string.format("%s %s", formatAchievement(2669, true), strSrc("loc", loc.WSKYRIM)), -- Music Box, Merry Mead Maker ; Achievement
+    [166027] = strGeneric(srcDrop, "chaurus mobs", nil, loc.BLACKREACH_GMC), -- Chaurus Egg, Dormant
+  },
 
+  [src.DUNGEON] = {
+    [147644] = frostvault, -- Palisade, Crude
+    [147642] = frostvault, -- Boar Totem, Balance
+    [147643] = frostvault, -- Boar Totem, Solitary
+  },
+
+  [src.HARVEST] = {
+    [145595] = strGeneric(srcHarvest, strSrc("src", getItemName(145595)), nil, loc.MURKMIRE), -- Scuttlebloom
+  },
+
+  [src.CHEST] = {
     [178442] = chests_blackwood, -- Idylls of Gideon Painting, Wood
     [178443] = chests_blackwood, -- Path of Eternity Painting, Wood
     [178444] = chests_blackwood, -- A Study in Structure Painting, Wood
@@ -528,27 +544,12 @@ FurC.MiscItemSources[ver.DEADL] = {
     [178449] = chests_blackwood, -- The Legacy of Kaladas Painting, Wood
     [178450] = chests_blackwood, -- Harvest's Gifts Painting, Wood
     [178451] = chests_blackwood, -- Reverence's Mandate Painting, Wood
-    [145595] = strGeneric(srcHarvest, strSrc("src", getItemName(145595)), nil, loc.MURKMIRE), -- Scuttlebloom
-    [147644] = frostvault, -- Palisade, Crude
-    [147642] = frostvault, -- Boar Totem, Balance
-    [147643] = frostvault, -- Boar Totem, Solitary
-    [163432] = string.format("%s %s", formatAchievement(2669, true), strSrc("loc", loc.WSKYRIM)), -- Music Box, Merry Mead Maker ; Achievement
-    [166027] = strGeneric(srcDrop, "chaurus mobs", nil, loc.BLACKREACH_GMC), -- Chaurus Egg, Dormant
   },
 
   [src.BAZAAR] = {
     [178694] = strBazaar(1950), -- Target Ogrim
   },
 }
-
--- Waking Flame
-FurC.MiscItemSources[ver.WAKE] = {}
-
--- 19 Blackwood
-FurC.MiscItemSources[ver.BLACKW] = {}
-
--- 18 Flames of Ambition
-FurC.MiscItemSources[ver.FLAMES] = {}
 
 -- 17 Markarth
 FurC.MiscItemSources[ver.MARKAT] = {
@@ -568,12 +569,9 @@ FurC.MiscItemSources[ver.MARKAT] = {
   },
 }
 
--- 16 Stonethorn
-FurC.MiscItemSources[ver.STONET] = {}
-
 -- 15 Greymoor
 FurC.MiscItemSources[ver.SKYRIM] = {
-  [src.DROP] = {
+  [src.CHEST] = {
     [165829] = strChests(loc.NELSWEYR), -- Before the Trade Gathering Painting, Wood
     [165830] = chests_elsweyr, -- Elsweyr Vista Painting, Wood
     [165831] = strChests(loc.NELSWEYR), -- Catnap Painting, Gold
@@ -611,19 +609,13 @@ FurC.MiscItemSources[ver.SKYRIM] = {
   [src.FISHING] = {},
 }
 
--- 14 Harrowstorm
-FurC.MiscItemSources[ver.HARROW] = {}
-
--- 13 Dragonhold
-FurC.MiscItemSources[ver.DRAGON2] = {}
-
--- 12 Scalebreaker
-FurC.MiscItemSources[ver.SCALES] = {}
-
 -- 11 Elsweyr
 FurC.MiscItemSources[ver.KITTY] = {
   [src.DROP] = {
     [153563] = ev_elsweyr, -- Target Bone Goliath, Reanimated
+  },
+
+  [src.CHEST] = {
     [165834] = chests_elsweyr, -- A Simple Five-Claw Life Painting, Gold
   },
   [src.BAZAAR] = {
@@ -636,13 +628,18 @@ FurC.MiscItemSources[ver.WOTL] = {}
 
 -- 9 Wolfhunter
 FurC.MiscItemSources[ver.WEREWOLF] = {
-  [src.DROP] = {
+  [src.DUNGEON] = {
     [141851] = strGeneric(srcDung, nil, nil, loc.DUNG_MHK, loc.DUNG_MOS), -- Bear Skull, Fresh
     [141850] = strGeneric(srcDung, nil, nil, loc.DUNG_MHK, loc.DUNG_MOS), -- Bear Skeleton, Picked Clean
     [141847] = strGeneric(srcDung, nil, nil, loc.DUNG_MHK, loc.DUNG_MOS), -- Animal Bones, Gnawed
     [141848] = strGeneric(srcDung, nil, nil, loc.DUNG_MHK, loc.DUNG_MOS), -- Animal Bones, Jumbled
     [141849] = strGeneric(srcDung, nil, nil, loc.DUNG_MHK, loc.DUNG_MOS), -- Animal Bones, Fresh
+    [147639] = strGeneric(srcDung, nil, nil, loc.DUNG_DOM), -- Magna-Geode
+    [147640] = strGeneric(srcDung, nil, nil, loc.DUNG_DOM), -- Magna-Geode, Large
+    [147641] = strGeneric(srcDung, nil, nil, loc.DUNG_DOM), -- Garlas Alpinia, Tall
+  },
 
+  [src.QUEST] = {
     [141921] = daily_murk, -- Murkmire Bowl, Geometric Pattern
     [141923] = daily_murk, -- Murkmire Amphora, Seed Pattern
     [141922] = daily_murk, -- Murkmire Dish, Geometric Pattern
@@ -650,10 +647,6 @@ FurC.MiscItemSources[ver.WEREWOLF] = {
     [141925] = daily_murk, -- Murkmire Hearth Shrine, Sithis Relief
     [141926] = daily_murk, -- Murkmire Hearth Shrine, Sithis Figure
     [141920] = daily_murk, -- Murkmire Brazier, Ceremonial
-
-    [147639] = strGeneric(srcDung, nil, nil, loc.DUNG_DOM), -- Magna-Geode
-    [147640] = strGeneric(srcDung, nil, nil, loc.DUNG_DOM), -- Magna-Geode, Large
-    [147641] = strGeneric(srcDung, nil, nil, loc.DUNG_DOM), -- Garlas Alpinia, Tall
   },
 }
 
@@ -662,7 +655,7 @@ FurC.MiscItemSources[ver.SLAVES] = {}
 
 -- 7 Summerset Isles
 FurC.MiscItemSources[ver.ALTMER] = {
-  [src.DROP] = {
+  [src.QUEST] = {
     [139073] = strQuest(6129, nil, loc.SUMMERSET, loc.LILANDRIL), -- Painting of Summerset Coast, Refined ; Quest: The Perils of Art
   },
 }
@@ -670,17 +663,31 @@ FurC.MiscItemSources[ver.ALTMER] = {
 -- 6 Dragon Bones
 FurC.MiscItemSources[ver.DRAGONS] = {
   [src.DROP] = {
+    [139060] = summerset_clamsngeysers, -- Giant Clam, Ancient
+    [139062] = summerset_clamsngeysers, -- Pearl, Large
+    [139063] = summerset_clamsngeysers, -- Pearl, Enormous
+    [139061] = summerset_clamsngeysers, -- Giant Clam, Sealed
+    [139059] = strGeneric(srcDrop), -- Ivory, Polished - drops from Echatere, and probably a lot else
+  },
+
+  [src.DUNGEON] = {
     [134909] = strDungeon(nil, loc.DUNG_FL, loc.DUNG_SCP), -- Mushrooms, Puspocket Group
     [134910] = strDungeon(nil, loc.DUNG_FL, loc.DUNG_SCP), -- Mushrooms, Puspocket Cluster
     [134911] = strDungeon(nil, loc.DUNG_FL, loc.DUNG_SCP), -- Mushroom, Puspocket Sporecap
     [134912] = strDungeon(nil, loc.DUNG_FL, loc.DUNG_SCP), -- Mushroom, Large Puspocket
     [134913] = strDungeon(nil, loc.DUNG_FL, loc.DUNG_SCP), -- Mushroom, Tall Puspocket
     [134914] = strDungeon(nil, loc.DUNG_FL, loc.DUNG_SCP), -- Mushrooms, Large Puspocket Cluster
+  },
+
+  [src.HARVEST] = {
     [139064] = strGeneric(srcHarvest, "Clothing and Alchemy", nil, loc.SUMMERSET), -- Flowers, Hummingbird Mint
     [139067] = strGeneric(srcHarvest, nil, nil, loc.SUMMERSET), -- Flower, Yellow Oleander
     [139068] = strGeneric(srcHarvest, "Clothing", nil, loc.SUMMERSET), -- Plants, Springwheeze
     [139066] = strGeneric(srcHarvest, "Alchemy", nil, loc.SUMMERSET), -- Plant, Redtop Grass
     [139065] = strGeneric(srcHarvest, "Clothing"), -- Flowers, Lizard Tail
+  },
+
+  [src.CHEST] = {
     [139076] = chests_summerset, -- Painting of Ancient Road, Refined
     [139075] = chests_summerset, -- Painting of Sinkhole, Refined
     [139072] = elfpic, -- Painting of Monastery of Serene Harmony, Refined
@@ -688,11 +695,6 @@ FurC.MiscItemSources[ver.DRAGONS] = {
     [139069] = elfpic, -- Painting of Gryphon Nest, Elegant
     [139070] = elfpic, -- Painting of College of the Sapiarchs, Refined
     [139071] = elfpic, -- Painting of High Elf Tower, Refined
-    [139060] = summerset_clamsngeysers, -- Giant Clam, Ancient
-    [139062] = summerset_clamsngeysers, -- Pearl, Large
-    [139063] = summerset_clamsngeysers, -- Pearl, Enormous
-    [139061] = summerset_clamsngeysers, -- Giant Clam, Sealed
-    [139059] = strGeneric(srcDrop), -- Ivory, Polished - drops from Echatere, and probably a lot else
   },
 }
 
@@ -705,6 +707,9 @@ FurC.MiscItemSources[ver.CLOCKWORK] = {
     [134405] = automaton_loot_cc, -- Factotum Arm, Obsolete
     [134409] = automaton_loot_cc, -- Factotum Head, Obsolete
     [134406] = automaton_loot_cc, -- Factotum Body, Obsolete
+  },
+
+  [src.QUEST] = {
     [132348] = strQuest(6075, nil, loc.CWC), -- The Precursor ; Quest: The Oscillating Son
   },
 }
@@ -712,6 +717,10 @@ FurC.MiscItemSources[ver.CLOCKWORK] = {
 -- 4 Horns of the Reach
 FurC.MiscItemSources[ver.REACH] = {
   [src.DROP] = {
+    [130067] = strGeneric(srcDrop, strSrc("other", npc.CLASS_DAEDRA, GetString(SI_FURC_SRC_DOLMEN))), -- Daedric Chain Segment
+  },
+
+  [src.HARVEST] = {
     [130284] = strGeneric(srcHarvest), -- Coldharbour Glowstalk, Seedlings
     [131422] = strGeneric(srcHarvest), -- Flower Patch, Glowstalks
     [130283] = strGeneric(srcHarvest), -- Coldharbour Glowstalk, Sprout
@@ -719,19 +728,17 @@ FurC.MiscItemSources[ver.REACH] = {
     [131420] = strGeneric(srcHarvest), -- Shrub, Glowing Thistle
     [130281] = strGeneric(srcHarvest), -- Coldharbour Glowstalk, Towering
     [130282] = strGeneric(srcHarvest), -- Coldharbour Glowstalk, Strong
-    [130067] = strGeneric(srcDrop, strSrc("other", npc.CLASS_DAEDRA, GetString(SI_FURC_SRC_DOLMEN))), -- Daedric Chain Segment
-
-    [130302] = GetString(SI_FURC_LOOT_HARVEST_WOOD), -- Shrub, Burnt Brush
-    [130301] = GetString(SI_FURC_LOOT_HARVEST_WOOD), -- Saplings, Burnt Sparse
-    [130300] = GetString(SI_FURC_LOOT_HARVEST_WOOD), -- Saplings, Burnt Tall
-    [130299] = GetString(SI_FURC_LOOT_HARVEST_WOOD), -- Saplings, Burnt Cluster
-    [130298] = GetString(SI_FURC_LOOT_HARVEST_WOOD), -- Branch, Curved Laurel
-    [130297] = GetString(SI_FURC_LOOT_HARVEST_WOOD), -- Branch, Forked Laurel
-    [130296] = GetString(SI_FURC_LOOT_HARVEST_WOOD), -- Branch, Sturdy Laurel
-    [130295] = GetString(SI_FURC_LOOT_HARVEST_WOOD), -- Branch, Sturdy Burnt
-    [130294] = GetString(SI_FURC_LOOT_HARVEST_WOOD), -- Branch, Forked Burnt
-    [130293] = GetString(SI_FURC_LOOT_HARVEST_WOOD), -- Branch, Curved Burnt
-    [130280] = GetString(SI_FURC_LOOT_HARVEST_WOOD), -- Sapling, Petrified Ashen
+    [130302] = strGeneric(srcHarvest, strSrc("src", "Wood"), nil, nil), -- Shrub, Burnt Brush
+    [130301] = strGeneric(srcHarvest, strSrc("src", "Wood"), nil, nil), -- Saplings, Burnt Sparse
+    [130300] = strGeneric(srcHarvest, strSrc("src", "Wood"), nil, nil), -- Saplings, Burnt Tall
+    [130299] = strGeneric(srcHarvest, strSrc("src", "Wood"), nil, nil), -- Saplings, Burnt Cluster
+    [130298] = strGeneric(srcHarvest, strSrc("src", "Wood"), nil, nil), -- Branch, Curved Laurel
+    [130297] = strGeneric(srcHarvest, strSrc("src", "Wood"), nil, nil), -- Branch, Forked Laurel
+    [130296] = strGeneric(srcHarvest, strSrc("src", "Wood"), nil, nil), -- Branch, Sturdy Laurel
+    [130295] = strGeneric(srcHarvest, strSrc("src", "Wood"), nil, nil), -- Branch, Sturdy Burnt
+    [130294] = strGeneric(srcHarvest, strSrc("src", "Wood"), nil, nil), -- Branch, Forked Burnt
+    [130293] = strGeneric(srcHarvest, strSrc("src", "Wood"), nil, nil), -- Branch, Curved Burnt
+    [130280] = strGeneric(srcHarvest, strSrc("src", "Wood"), nil, nil), -- Sapling, Petrified Ashen
   },
 }
 
@@ -762,13 +769,6 @@ FurC.MiscItemSources[ver.MORROWIND] = {
     [126753] = vvardenfell_tombsruins, -- Velothi Cerecloth, Austere
     [126758] = vvardenfell_tombsruins, -- Velothi Mat, Prayer
     [126757] = vvardenfell_tombsruins,
-
-    [126465] = painting_vvardenfell_chests, -- Telvanni Painting, Modest Volcanic
-    [126466] = painting_vvardenfell_chests, -- Telvanni Painting, Modest Forest
-    [126467] = painting_vvardenfell_chests, -- Telvanni Painting, Modest Valley
-    [126468] = painting_vvardenfell_chests, -- Telvanni Painting, Classic Volcanic
-    [126469] = painting_vvardenfell_chests, -- Telvanni Painting, Classic Forest
-    [126470] = painting_vvardenfell_chests, -- Telvanni Painting, Classic Valley
     [126593] = painting_vvardenfell, -- Velothi Tryptich, Volcano
     [126594] = painting_vvardenfell, -- Velothi Painting, Classic Volcano
     [126595] = painting_vvardenfell, -- Velothi Painting, Modest Volcano
@@ -781,12 +781,10 @@ FurC.MiscItemSources[ver.MORROWIND] = {
     [126600] = painting_vvardenfell, -- Velothi Tapestry, Geyser
     [126602] = painting_vvardenfell, -- Velothi Painting, Classic Geyser
     [126603] = painting_vvardenfell, -- Velothi Painting, Modest Geyser
+    [125597] = strGeneric(srcDrop, strSrc("src", "shroom beetles"), nil, loc.VVARDENFELL), -- Mushroom, Polyp Stinkhorn
+  },
 
-    -- Ashlander dailies
-    [126119] = daily_ashlander, -- Crimson Shard of Moonshadow
-    [126393] = daily_ashlander, -- Ashlander Knife, Cheese
-
-    -- drops from plants
+  [src.HARVEST] = {
     [125631] = plants_vvardenfell, -- Plants, Ash Frond
     [125544] = plants_vvardenfell, -- Fern, Strong Dusky
     [131420] = plants_vvardenfell, -- Plants, Ash Frond
@@ -803,7 +801,6 @@ FurC.MiscItemSources[ver.MORROWIND] = {
     [125600] = plants_vvardenfell, -- Mushroom, Spongecap Patch
     [125606] = plants_vvardenfell, -- Mushroom, Young Milkcap
     [125583] = plants_vvardenfell, -- Mushroom, Cave Bracket
-
     [125608] = plants_vvardenfell, -- Mushrooms, Buttercake Cluster
     [125609] = plants_vvardenfell, -- Mushrooms, Buttercake Stack
     [125613] = plants_vvardenfell, -- Mushrooms, Lavaburst Sprouts
@@ -827,9 +824,20 @@ FurC.MiscItemSources[ver.MORROWIND] = {
     [125670] = plants_vvardenfell, -- Toadstool, Bloodtooth
     [125671] = plants_vvardenfell, -- Toadstool, Bloodtooth Cap
     [125672] = plants_vvardenfell, -- Toadstool, Bloodtooth Cluster
+  },
 
-    [125597] = strGeneric(srcDrop, strSrc("src", "shroom beetles"), nil, loc.VVARDENFELL), -- Mushroom, Polyp Stinkhorn
+  [src.CHEST] = {
+    [126465] = painting_vvardenfell_chests, -- Telvanni Painting, Modest Volcanic
+    [126466] = painting_vvardenfell_chests, -- Telvanni Painting, Modest Forest
+    [126467] = painting_vvardenfell_chests, -- Telvanni Painting, Modest Valley
+    [126468] = painting_vvardenfell_chests, -- Telvanni Painting, Classic Volcanic
+    [126469] = painting_vvardenfell_chests, -- Telvanni Painting, Classic Forest
+    [126470] = painting_vvardenfell_chests, -- Telvanni Painting, Classic Valley
+  },
 
+  [src.QUEST] = {
+    [126119] = daily_ashlander, -- Crimson Shard of Moonshadow
+    [126393] = daily_ashlander, -- Ashlander Knife, Cheese
     [126759] = strQuest(5864, nil, loc.VVARDENFELL, loc.VVARDENFELL_SURAN), -- Sir Sock's Ball of Yarn ; Quest: 'Nothing to Sneeze At'
   },
 }
@@ -841,8 +849,9 @@ FurC.MiscItemSources[ver.HOMESTEAD] = {
     [119936] = db_poison, -- Poisoned Blood
     [119938] = db_poison, -- Light and Shadow
     [119952] = db_equip, -- Sacrificial Heart
+  },
 
-    -- Paintings
+  [src.CHEST] = {
     [118216] = chestsGeneral, -- Painting of Spring, Sturdy
     [118217] = chestsGeneral, -- Painting of Pasture, Sturdy
     [118218] = chestsGeneral, -- Painting of Creek, Sturdy

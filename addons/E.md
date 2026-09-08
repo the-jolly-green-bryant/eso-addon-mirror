@@ -54,7 +54,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Equipment Level (for Update 6)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Garkin/Equipment-Level-for-Update-6__625) | Garkin | PC / Mac | 1.3 |
 | [Equipped Champion Stars - Equipped CP](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/notnear/Equipped-Champion-Stars---Equipped-CP__3691) | notnear | PC / Mac | 1.1.1 |
 | [ERA's Collection Book](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/WildEra/ERA-s-Collection-Book__2235) | WildEra | PC / Mac | 2.2.0 |
-| [ESO Adventurer Suite](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/HoZayyBadazz/ESO-Adventurer-Suite__4779) | HoZayyBadazz | PC / Mac | 0.29.346 |
+| [ESO Adventurer Suite](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/HoZayyBadazz/ESO-Adventurer-Suite__4779) | HoZayyBadazz | PC / Mac | 0.29.475 |
 | [ESO Arabic](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lofand/ESO-Arabic__3e5cdaca-d941-4fff-873b-7fd31d726a80) | Lofand | Console | — |
 | [ESO Arabic](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lofand/ESO-Arabic__a46a8bd0-fa70-4d6a-817e-5f69d01e04ec) | Lofand | Console | — |
 | [ESO Assistant by ESO-hub.com](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ESO-Hub/ESO-Assistant-by-ESO-hub.com__3b053cc9-5963-4eb9-96b7-de3d29a5fa8b) | ESO-Hub | Console | — |
@@ -101,6 +101,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [ESOTR_TEST_MODUL](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/XANTOSTR/ESOTR_TEST_MODUL__cbc2e748-501a-4137-8faa-cabf349da2d7) | XANTOSTR | Console | — |
 | [EsoUA — Ukrainian Localization](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/w2unemdhysend/EsoUA-Ukrainian-Localization__3437) | w2unemdhysend | PC / Mac | 1.07 |
 | [ESOXP](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Deathfather/ESOXP__4078) | Deathfather | PC / Mac | 4 |
+| [Essence Thief Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/codeWarrior82/Essence-Thief-Tracker__e6634e8a-1c51-45d7-ba7b-f062e50e5ee8) | codeWarrior82 | Console | — |
 | [Essential Housing Tools](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Cardinal05/Essential-Housing-Tools__1959) | Cardinal05 | PC / Mac | 1776 |
 | [EssentialHousingTools RU Patch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/alezhu/EssentialHousingTools-RU-Patch__3226) | alezhu | PC / Mac | 1.0.0 |
 | [Ev](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Mr_tee21/Ev__dd556dbe-ac20-41a5-8dba-9ba37eb97347) | Mr_tee21 | Console | — |

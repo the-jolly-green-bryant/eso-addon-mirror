@@ -722,8 +722,7 @@ function repair.Initialize()
         EVENT_NAMESPACE .. "PlayerAlive",
         EVENT_PLAYER_ALIVE,
         function()
-            -- Durability can reach zero while the player is dead. The worn-item
-            -- update is ignored at that moment, so repeat the scan after revival.
+
             repair.ScheduleScan(750)
         end
     )

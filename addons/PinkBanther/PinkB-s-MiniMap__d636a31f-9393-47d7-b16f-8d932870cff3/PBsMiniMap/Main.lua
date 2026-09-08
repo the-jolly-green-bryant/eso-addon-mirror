@@ -554,6 +554,46 @@ function addon:SetDormant(value)
 		if self.orgAllowPanPastMapEdge ~= nil then
 			self:SetAllowPanPastMapEdge(self.orgAllowPanPastMapEdge)
 		end
+
+		-- Give the zoom range back, or the standard map inherits the minimap's.
+		--
+		-- The range we install is deliberately narrow and usually has min == max, because the
+		-- minimap is meant to sit at one zoom. The game only recomputes its own range in
+		-- ZO_MapPanAndZoom:InitializeMap, which runs when a map is loaded -- not when the world
+		-- map is opened. So nothing was undoing ours, and the full map could barely be zoomed
+		-- at all until the player crossed into a different map.
+		--
+		-- Recomputed exactly the way InitializeMap does it, and any custom range is dropped
+		-- first since that sits above this one.
+		local panZoom = self.panZoom
+		if panZoom then
+			if ZO_WorldMap_ClearCustomZoomLevels then
+				ZO_WorldMap_ClearCustomZoomLevels()
+			elseif panZoom.ClearCustomZoomMimMax then
+				panZoom:ClearCustomZoomMimMax()
+			end
+			if panZoom.SetMapZoomMinMax and panZoom.ComputeMinZoom and panZoom.ComputeMaxZoom then
+				panZoom:SetMapZoomMinMax(panZoom:ComputeMinZoom(), panZoom:ComputeMaxZoom())
+			end
+
+			-- And put the view back on the player.
+			--
+			-- The offset is left wherever the minimap had it, which is centred on the player
+			-- but at the minimap's zoom, and often outside the map edge -- the minimap runs
+			-- with SetAllowPanPastMapEdge on so the player can stay centred at a border. Handed
+			-- to the full map at its own zoom that lands somewhere arbitrary, so the map opens
+			-- looking at the wrong place.
+			--
+			-- InitializeMap clears the pending offset before it recomputes; do the same, then
+			-- move to the player through the game's own helper rather than computing an offset
+			-- here, for the reasons in ReclampLiteMapView.
+			if panZoom.ClearTargetOffset then
+				panZoom:ClearTargetOffset()
+			end
+			if ZO_WorldMap_JumpToPlayer then
+				ZO_WorldMap_JumpToPlayer()
+			end
+		end
 		if self.ApplyLiteAlpha then
 			self:ApplyLiteAlpha()
 		end
@@ -2581,6 +2621,9 @@ function addon:Initialize()
 		-- two and a half times more magnified than the value that reads comfortably on the
 		-- small subzone maps.
 		liteScaleBattleground = 0.3,
+		-- The Imperial City districts: subzone maps, but far larger and denser than a building
+		-- or a town. A starting point rather than a measured value.
+		liteScaleAva = 0.6,
 		bgScaleRetuned = false,
 		zoom = 1.3,
 		mountedZoom = 1,
@@ -3528,6 +3571,17 @@ function addon:Initialize()
 			return "bg"
 		elseif contentType == MAP_CONTENT_DUNGEON then
 			return "dungeon"
+		elseif MAP_CONTENT_AVA and contentType == MAP_CONTENT_AVA and GetMapType() == MAPTYPE_SUBZONE then
+			-- The Imperial City districts, and only those.
+			--
+			-- Both halves of the test are needed. AvA on its own is also Cyrodiil, which is an
+			-- ordinary outdoor zone as far as the zoom is concerned and should stay on the
+			-- outdoor setting. Subzone on its own is every building and city in the game. The
+			-- districts are the intersection: AvA content drawn on a subzone map.
+			--
+			-- This has to come before the plain subzone test, or the districts fall into it --
+			-- which is what happened in 2.0.16, and why the new setting appeared to do nothing.
+			return "ava"
 		elseif GetMapType() == MAPTYPE_SUBZONE then
 			return "subzone"
 		end
@@ -3549,6 +3603,8 @@ function addon:Initialize()
 			return clamp(account.liteScaleDungeon or account.liteScale)
 		elseif context == "subzone" then
 			return clamp(account.liteScaleSubZone or account.liteScale)
+		elseif context == "ava" then
+			return clamp(account.liteScaleAva or account.liteScale)
 		end
 		return clamp(account.liteScale)
 	end

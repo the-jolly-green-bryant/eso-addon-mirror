@@ -1,0 +1,39 @@
+{
+  "archive_error": "ESOUI returned an empty response",
+  "archive_path": "addons/its_wifey/Reviving-Barrier__4819",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archive_status": "unavailable",
+  "archived": false,
+  "author": "its_wifey",
+  "canonical_id": "esoui:4819",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    }
+  ],
+  "content_id": "esoui:4819",
+  "deleted": false,
+  "directories": [
+    "RevivingBarrier"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4819/",
+  "fingerprint": "413c7c0603150a8749cc3096227fa228bc4896075689fc2199df10a0f6bc01c6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17318.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4819",
+  "source_url": "https://www.esoui.com/downloads/info4819-RevivingBarrier.html",
+  "stats": {
+    "downloads": 1,
+    "favorites": 0,
+    "monthly_downloads": 0
+  },
+  "title": "Reviving Barrier",
+  "updated_at": 1788837959000,
+  "version": "1.1"
+}

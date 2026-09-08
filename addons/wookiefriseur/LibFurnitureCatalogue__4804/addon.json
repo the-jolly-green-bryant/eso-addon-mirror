@@ -14,6 +14,58 @@
     {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
     }
   ],
   "content_id": "esoui:4804",
@@ -22,19 +74,25 @@
     "LibFurnitureCatalogue"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4804/",
-  "fingerprint": "c2799519a4bbf78221f54a92e9c6c281949f0548b70b2658535a095e58fdfe4d",
-  "images": [],
+  "fingerprint": "bf6d42bb361a9bec4c940b92d988ca183fcb4396b116a656f380efb451850200",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17297.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17298.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17296.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17299.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17317.png"
+  ],
   "platform": "pc",
   "published": true,
   "source": "esoui",
   "source_id": "4804",
   "source_url": "https://www.esoui.com/downloads/info4804-LibFurnitureCatalogue.html",
   "stats": {
-    "downloads": 25,
+    "downloads": 255,
     "favorites": 2,
-    "monthly_downloads": 10
+    "monthly_downloads": 229
   },
   "title": "LibFurnitureCatalogue",
-  "updated_at": 1788121914000,
-  "version": "1.0.0"
+  "updated_at": 1788827062000,
+  "version": "1.1.0"
 }

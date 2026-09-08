@@ -33,9 +33,9 @@ local pickpocket_weald = strGeneric(srcPick, nil, "other", loc.WEALD)
 local pickpocket_solstice = strGeneric(srcPick, nil, "other", loc.SOLSTICE)
 local pickpocket_glenumbra = strGeneric(srcPick, nil, "other", loc.GLENUMBRA)
 
--- Season Zero Part 2
-FurC.Justice[ver.ZERO2] = {
-  [src.JUSTICE] = {
+-- Season One
+FurC.Justice[ver.THIEVES] = {
+  [src.PICKPOCKET] = {
     [225017] = pickpocket_glenumbra, -- Keg Spigot, Brass
     [225018] = pickpocket_glenumbra, -- Pin Cushion, Red
     [225019] = pickpocket_glenumbra, -- Flask, Fancy
@@ -54,7 +54,7 @@ FurC.Justice[ver.ZERO2] = {
 
 -- Seasons of the Worm Cult // Solstice
 FurC.Justice[ver.WORMS] = {
-  [src.JUSTICE] = {
+  [src.PICKPOCKET] = {
     [214471] = pickpocket_solstice, -- Tide-Born Spoon, Wooden
     [214470] = pickpocket_solstice, -- Tide-Born Spatula, Wooden
     [214469] = pickpocket_solstice, -- Tide-Born Mallet, Crab
@@ -74,7 +74,7 @@ FurC.Justice[ver.WORMS] = {
 
 -- 30 Gold Road
 FurC.Justice[ver.WEALD] = {
-  [src.JUSTICE] = {
+  [src.PICKPOCKET] = {
     [204736] = pickpocket_weald, -- Colovian Shovel, Rough
     [204737] = pickpocket_weald, -- Colovian Rake, Rough
     [204738] = pickpocket_weald, -- Cheesemaking Sieve, Metal
@@ -99,7 +99,7 @@ FurC.Justice[ver.WEALD] = {
 
 -- 26 Necrom
 FurC.Justice[ver.NECROM] = {
-  [src.JUSTICE] = {
+  [src.PICKPOCKET] = {
     [197647] = pickpocket_necrom, -- Telvanni Knife, Bread
     [197646] = pickpocket_necrom, -- Telvanni Knife, Wooden
     [197645] = pickpocket_necrom, -- Telvanni Fork, Wooden
@@ -107,15 +107,14 @@ FurC.Justice[ver.NECROM] = {
   },
 }
 
--- 20 Deadlands
-FurC.Justice[ver.DEADL] = {}
-
--- 15 Greymoor
-FurC.Justice[ver.SKYRIM] = {}
-
 -- 11 Elsweyr
 FurC.Justice[ver.KITTY] = {
-  [src.JUSTICE] = {
+  [src.PICKPOCKET] = {
+    [151890] = stealable_noble, -- Elsweyr Hand Mirror, Bronze Oval
+    [151891] = stealable_noble, -- Elsweyr Hand Mirror, Rectangular
+  },
+
+  [src.CONTAINER] = {
     [151892] = strGeneric(srcSteal, "from wardrobes", nil, loc.NELSWEYR), -- Elsweyr Fragrance Bottle, Moons-Blessed
     [151889] = stealable_elsewhere, -- Elsweyr Comb, Grooming
     [151893] = strGeneric(srcSteal, "from wardrobes", nil, loc.NELSWEYR), -- Elsweyr Fragrance Bottle, Moonlit Tryst
@@ -124,8 +123,6 @@ FurC.Justice[ver.KITTY] = {
     [151900] = strGeneric(srcSteal, "from cabinets and wardrobes", nil, loc.NELSWEYR), -- Elsweyr Pillow, Gold-Ruby Throw
     [151895] = strGeneric(srcSteal, "from cabinets and wardrobes", nil, loc.NELSWEYR), -- Elsweyr Cloth, Rolled
     [151643] = strGeneric(srcSteal, "from cabinets and wardrobes", nil, loc.NELSWEYR), -- Elsweyr Rolling Pin, Well-Worn
-    [151890] = stealable_noble, -- Elsweyr Hand Mirror, Bronze Oval
-    [151891] = stealable_noble, -- Elsweyr Hand Mirror, Rectangular
     [151897] = strGeneric(srcSteal, "from cabinets and wardrobes", nil, loc.NELSWEYR), -- Elsweyr Fabric, Display
     [151886] = stealable_elsewhere, -- Elsweyr Fan, Handheld
     [151887] = stealable_elsewhere, -- Elsweyr Brush, Body
@@ -136,7 +133,7 @@ FurC.Justice[ver.KITTY] = {
 
 -- 8 Murkmire
 FurC.Justice[ver.SLAVES] = {
-  [src.JUSTICE] = {
+  [src.CONTAINER] = {
     [145399] = stealable_swamp, -- Murkmire Rug, Crawling Serpents Worn
     [145400] = stealable_swamp, -- Murkmire Rug, Lurking Lizard Worn
     [145398] = stealable_swamp, -- Murkmire Rug, Supine Turtle Worn
@@ -150,7 +147,7 @@ FurC.Justice[ver.SLAVES] = {
 
 -- 7 Summerset Isles
 FurC.Justice[ver.ALTMER] = {
-  [src.JUSTICE] = {
+  [src.PICKPOCKET] = {
     [139238] = pickpocket_summerset, -- Alinor Wall Mirror, Ornate
     [139239] = pickpocket_summerset, -- Alinor Wall Mirror, Verdant
     [139237] = pickpocket_summerset, -- Alinor Wall Mirror, Noble
@@ -162,33 +159,33 @@ FurC.Justice[ver.ALTMER] = {
 
 -- 5 Clockwork City
 FurC.Justice[ver.CLOCKWORK] = {
-  [src.JUSTICE] = {
+  [src.CONTAINER] = {
     [134403] = strGeneric(srcSteal, "from wardrobes", nil, loc.HEWSBANE), -- Spool, Red Thread
-    [134410] = stealable_cc, -- Clockwork Crank, Miniature
-    [134411] = stealable_cc, -- Clockwork Gear Shaft, Miniature
-    [134412] = stealable_cc, -- Clockwork Piston, Miniature
-    [134413] = stealable_cc, -- Clockwork Magnifier, Handheld
-    [134414] = stealable_cc, -- Clockwork Micrometer, Handheld
-    [134415] = stealable_cc, -- Clockwork Dial Calipers, Handheld
-    [134416] = stealable_cc, -- Clockwork Slide Calipers, Handheld
+    [134410] = strGeneric(srcSteal, "from safeboxes", nil, loc.CWC), -- Clockwork Crank, Miniature
+    [134411] = strGeneric(srcSteal, "from safeboxes", nil, loc.CWC), -- Clockwork Gear Shaft, Miniature
+    [134412] = strGeneric(srcSteal, "from safeboxes", nil, loc.CWC), -- Clockwork Piston, Miniature
+    [134413] = strGeneric(srcSteal, "from safeboxes", nil, loc.CWC), -- Clockwork Magnifier, Handheld
+    [134414] = strGeneric(srcSteal, "from safeboxes", nil, loc.CWC), -- Clockwork Micrometer, Handheld
+    [134415] = strGeneric(srcSteal, "from safeboxes", nil, loc.CWC), -- Clockwork Dial Calipers, Handheld
+    [134416] = strGeneric(srcSteal, "from safeboxes", nil, loc.CWC), -- Clockwork Slide Calipers, Handheld
     [134402] = stealable, -- Spool, Empty
     [134400] = stealable, -- Soft Leather, Stacked
     [134401] = stealable, -- Soft Leather, Folded
-    [134417] = stealable_cc, -- Clockwork Firm-Joint Calipers, Handheld
+    [134417] = strGeneric(srcSteal, "from safeboxes", nil, loc.CWC), -- Clockwork Firm-Joint Calipers, Handheld
     [134399] = stealable, -- Quality Fabric, Folded
   },
 }
 
 -- 4 Horns of the Reach
 FurC.Justice[ver.REACH] = {
-  [src.JUSTICE] = {
+  [src.CONTAINER] = {
     [130191] = stealable, -- The Shivering Cheese
   },
 }
 
 -- 3 Morrowind
 FurC.Justice[ver.MORROWIND] = {
-  [src.JUSTICE] = {
+  [src.PICKPOCKET] = {
     [126481] = strGeneric(srcPick, strSrc("src", npc.CLASS_PRIEST, npc.CLASS_PILGRIM), loc.VVARDENFELL), -- Indoril Incense, Burning
     [126772] = stealable_thief, -- Khajiit Ponder Sphere
   },
@@ -196,7 +193,7 @@ FurC.Justice[ver.MORROWIND] = {
 
 -- 2 Homestead
 FurC.Justice[ver.HOMESTEAD] = {
-  [src.JUSTICE] = {
+  [src.PICKPOCKET] = {
     [117939] = strGeneric(srcPick, strSrc("src", npc.CLASS_WOODWORKER)), -- Rough Axe, Practical
     [118206] = stealable_thief, -- Gaming die
     [118489] = stealable_scholars, -- Papers, Stack
@@ -215,6 +212,9 @@ FurC.Justice[ver.HOMESTEAD] = {
     [118716] = stealable_guard, -- Bounty Sheet: Orc Woman
     [118717] = stealable_guard, -- Bounty Sheet: Orc Man
     [121055] = strGeneric(srcPick, strSrc("src", npc.CLASS_DRUNKARD)), -- Breton Mug, Full
+  },
+
+  [src.CONTAINER] = {
     [116512] = strGeneric(srcSteal, nil, nil, loc.WROTHGAR), -- Orcish Carpet, Blood
   },
 }

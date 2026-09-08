@@ -1,9 +1,9 @@
 ## Title: DM2 Parse & Fight Stats
 ## APIVersion: 101048 101047
-## AddOnVersion: 31802
+## AddOnVersion: 31803
 ## Author: Skye-Forge
-## Description: Parse + fight stats. v3.18.2 raid strip names + spacing.
-## Version: 3.18.2
+## Description: Parse + fight stats. v3.18.3 overlay removed; menu-only viewer.
+## Version: 3.18.3
 ## OptionalDependsOn: LibAddonMenu-2.0 LibAddonMenu2 LibStub
 ## SavedVariables: DM2_ParseFightStats_SV
 

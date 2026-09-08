@@ -1,7 +1,7 @@
 ## APIVersion: 101050
 ## Title: Olha's Wrath Assistant
 ## Author: @Invs
-## Version: 0.1.2
+## Version: 0.1.3
 ## SavedVariables: OWAssistantSavedVariables
 
 ## DependsOn: LibAddonMenu-2.0>=43
@@ -15,6 +15,8 @@ deconstruct/lang/en.lua
 deconstruct/lang/ua.lua
 repairAndRecharge/lang/en.lua
 repairAndRecharge/lang/ua.lua
+merchant/lang/en.lua
+merchant/lang/ua.lua
 
 OWAssistantFunctions.lua
 OWAssistantMenu.lua
@@ -28,5 +30,16 @@ deconstruct/OWDeconstructClothingFunctions.lua
 deconstruct/OWDeconstructJewelryFunctions.lua
 deconstruct/OWDeconstructEnchantingFunctions.lua
 deconstruct/OWDeconstructMenu.lua
+
+merchant/OWMerchantFunctions.lua
+merchant/OWMerchantWeaponFunctions.lua
+merchant/OWMerchantClothingFunctions.lua
+merchant/OWMerchantJewelryFunctions.lua
+merchant/OWMerchantEnchantingFunctions.lua
+merchant/OWMerchantConsumablesFunctions.lua
+merchant/OWMerchantResourcesFunctions.lua
+merchant/OWMerchantMaterialsFunctions.lua
+merchant/OWMerchantOtherFunctions.lua
+merchant/OWMerchantMenu.lua
 
 bindings.xml

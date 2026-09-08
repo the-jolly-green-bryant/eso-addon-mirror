@@ -1,4 +1,5 @@
 local strings = {
+
     WEAPON = "Weapons",
     WEAPON_TOOLTIP = "Weapon deconstruction settings.",
 

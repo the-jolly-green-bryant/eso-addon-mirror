@@ -8,6 +8,7 @@ LFC.Internal.Build = this
 local db = LFC.Internal.DB
 local src = LFC.Internal.Constants.ItemSources
 local SOURCE_PRIORITY = LFC.Internal.Constants.SOURCE_PRIORITY
+local compat = LFC.Internal.Compat
 local apiEvents = LFC.Internal.Constants.ApiEvents
 local lifecycle = LFC.Internal.Lifecycle
 local state = lifecycle.State
@@ -38,28 +39,20 @@ local function resolveRecipe(recipeId)
 end
 this.ResolveRecipe = resolveRecipe
 
--- Looks up furniture category and subcategory for item link
-local function cacheFurnishingCategory(itemLink, recipeArray)
-  if not recipeArray then
-    return
-  end
-  -- Skip if already cached
-  if recipeArray.furnCategory ~= nil then
-    return
-  end
-
-  local dataId = GetItemLinkFurnitureDataId(itemLink)
+---Furniture category and subcategory the game holds for an item
+---@param itemId integer
+---@return integer categoryId 0 when the game knows no furnishing for it
+---@return integer subcategoryId
+local function furnishingCategory(itemId)
+  local itemLink = itemId and getItemLink(itemId)
+  local dataId = itemLink and GetItemLinkFurnitureDataId(itemLink)
   if not dataId or dataId == 0 then
-    recipeArray.furnCategory = 0
-    recipeArray.furnSubcategory = 0
-    return
+    return 0, 0
   end
-
   local categoryId, subcategoryId = GetFurnitureDataCategoryInfo(dataId)
-  recipeArray.furnCategory = categoryId or 0
-  recipeArray.furnSubcategory = subcategoryId or 0
+  return categoryId or 0, subcategoryId or 0
 end
-this.CacheFurnishingCategory = cacheFurnishingCategory
+this.FurnishingCategory = furnishingCategory
 
 local function primarySource(sources)
   local best, bestRank
@@ -71,6 +64,56 @@ local function primarySource(sources)
   end
   return best
 end
+this.PrimarySource = primarySource
+
+-- Metatable shared by every stored row
+--
+-- `pairs` does not see these fields, so a shallow copy of a row does not carry them
+local rowMeta = {
+  __index = function(row, key)
+    if key == "origin" then
+      local sources = rawget(row, "sources")
+      return sources and primarySource(sources) or nil
+    end
+    if key == "furnCategory" then
+      return (furnishingCategory(rawget(row, "id")))
+    end
+    if key == "furnSubcategory" then
+      local _, subcategoryId = furnishingCategory(rawget(row, "id"))
+      return subcategoryId
+    end
+    return nil
+  end,
+}
+this.RowMeta = rowMeta
+
+-- DB revision is a change counter and starts at 1,  writes outside a build bump straight away
+local pendingChange = false
+
+local function markDatabaseChanged()
+  if lifecycle.current == state.BUILDING then
+    pendingChange = true
+  else
+    LFC.Internal.DBRevision = LFC.Internal.DBRevision + 1
+  end
+end
+
+local function flushDatabaseChange()
+  if pendingChange then
+    pendingChange = false
+    LFC.Internal.DBRevision = LFC.Internal.DBRevision + 1
+  end
+end
+
+-- Fields a row actually keeps. `origin` is an input here, not a field
+-- a caller says which source it found, the row records it in `sources`, and origin is derived (primary source)
+-- Anything not named here can already be looked up by the game
+local STORED_FIELDS = {
+  version = true,
+  blueprint = true,
+  recipeListIndex = true,
+  recipeIndex = true,
+}
 
 -- partial update or full overwrite
 local function addDatabaseEntry(recipeKey, partial)
@@ -80,13 +123,12 @@ local function addDatabaseEntry(recipeKey, partial)
 
   local stored = db[recipeKey]
   if stored == nil then
-    stored = partial
+    stored = setmetatable({ id = recipeKey }, rowMeta)
     db[recipeKey] = stored
-  else
-    for k, v in pairs(partial) do
-      if k ~= "origin" and k ~= "sources" then
-        stored[k] = v -- last writer wins
-      end
+  end
+  for k, v in pairs(partial) do
+    if STORED_FIELDS[k] and v ~= nil then
+      stored[k] = v -- last writer wins
     end
   end
 
@@ -111,17 +153,19 @@ local function addDatabaseEntry(recipeKey, partial)
       end
     end
   end
-  if next(sources) ~= nil then
-    stored.origin = primarySource(sources)
+  local injected = stored.compatSources or 0
+  if partial.origin ~= nil and compat.IsInjected(injected, partial.origin) then
+    -- a scan naming it outright means it is genuinely a source, not an injected one
+    injected = injected - (2 ^ (partial.origin - 1))
+  end
+  injected = compat.CloseOverAncestors(sources, injected)
+  --
+  -- Used when versions are changed / split. Not written when there is nothing to record
+  if injected ~= 0 or stored.compatSources ~= nil then
+    stored.compatSources = injected ~= 0 and injected or nil
   end
 
-  -- Cache furnishing category IDs onto the stored entry
-  local itemLink = getItemLink(recipeKey)
-  if itemLink then
-    cacheFurnishingCategory(itemLink, stored)
-  end
-
-  LFC.Internal.DBRevision = LFC.Internal.DBRevision + 1
+  markDatabaseChanged()
 end
 this.Upsert = addDatabaseEntry
 
@@ -130,7 +174,7 @@ local function clear()
   for itemId in pairs(db) do
     db[itemId] = nil
   end
-  LFC.Internal.DBRevision = LFC.Internal.DBRevision + 1
+  markDatabaseChanged()
 end
 this.Clear = clear
 
@@ -162,13 +206,10 @@ local function publish(eventName, ...)
   end
 end
 
-local function publishLifecycleSuccess(publishedBefore, revision)
+local function publishLifecycleSuccess(revision)
   local publishReady = LFC.Internal.PublishReady
   if publishReady then
     publishReady(revision)
-  end
-  if publishedBefore then
-    publish(apiEvents.CHANGE, revision)
   end
 end
 
@@ -192,14 +233,14 @@ local function parseFurnitureItem(itemLink, override) -- saves to DB, returns re
   local recipeKey = GetItemLinkItemId(itemLink)
   local recipeArray = db[recipeKey]
   if nil ~= recipeArray then
-    return recipeArray
+    return recipeArray, recipeKey
   end
 
   recipeArray = {}
 
   addDatabaseEntry(recipeKey, recipeArray)
 
-  return recipeArray
+  return recipeArray, recipeKey
 end
 this.ParseFurnitureItem = parseFurnitureItem
 
@@ -215,13 +256,14 @@ local function parseBlueprint(blueprintLink) -- saves to DB, returns recipeArray
     return
   end
 
-  local recipeArray = db[recipeKey] or {}
-  recipeArray.origin = recipeArray.origin or src.CRAFTING
-  recipeArray.craftingSkill = recipeArray.craftingSkill or GetItemLinkCraftingSkillType(blueprintLink)
-  recipeArray.blueprint = recipeArray.blueprint or getItemId(blueprintLink)
+  local stored = db[recipeKey]
+  if stored ~= nil and stored.blueprint ~= nil and stored.sources and stored.sources[src.CRAFTING] then
+    -- Already carries everything a blueprint contributes (otherwise we would just wastefully rewrite the data while happily bumping revision and invalidating cache)
+    return stored, recipeKey
+  end
 
-  addDatabaseEntry(recipeKey, recipeArray)
-  return recipeArray
+  addDatabaseEntry(recipeKey, { origin = src.CRAFTING, blueprint = blueprintId })
+  return db[recipeKey], recipeKey
 end
 this.ParseBlueprint = parseBlueprint
 
@@ -269,11 +311,12 @@ for _, splitData in ipairs(splitFiles) do
   end
 end
 
+compat.MirrorAncestorBuckets(FurC.MiscItemSources, legacyMirror)
+
 ---@param blocking? boolean scan inline instead of yielding through LibAsync
 local function scanFromFiles(blocking)
   lifecycle.task = lifecycle.task or (LibAsync and LibAsync:Create("LibFurnitureCatalogue_ScanDataFiles"))
   local task = lifecycle.task
-  local publishedBefore = lifecycle.everReady
 
   -- Expects [zone][vendor][itemId]
   local function parseZoneData(zoneName, zoneData, versionNumber, origin)
@@ -334,6 +377,21 @@ local function scanFromFiles(blocking)
     end
   end
 
+  -- Rows that name their own source
+  -- (writ vendor rows do not, because FurC.Rolis/FurC.Faustina already carry them)
+  local function scanRecipeSources()
+    for recipeId, row in pairs(FurC.RecipeSources) do
+      if type(row) == "table" and nil ~= row.source then
+        local itemId, blueprintId = resolveRecipe(recipeId)
+        if nil == itemId then
+          logDebug("scanRecipeSources: %s is not a resolvable furniture recipe", recipeId)
+        else
+          addDatabaseEntry(itemId, { origin = row.source, version = row.version, blueprint = blueprintId })
+        end
+      end
+    end
+  end
+
   local function scanRolis()
     -- Both tables mix furnishings with Master Writ recipes
     -- We resolve first, otherwise we get item+blueprint (duplicate)
@@ -360,14 +418,11 @@ local function scanFromFiles(blocking)
         for eventItemSource, eventItemData in pairs(eventData) do
           if type(eventItemData) == "table" then
             for itemId in pairs(eventItemData) do
-              addDatabaseEntry(itemId, { origin = src.FESTIVAL_DROP, version = versionNumber, craftable = false })
+              addDatabaseEntry(itemId, { origin = src.FESTIVAL_DROP, version = versionNumber })
             end
           else
             -- No container/coffer level: eventItemSource IS the itemId (e.g. environment drops)
-            addDatabaseEntry(
-              eventItemSource,
-              { origin = src.FESTIVAL_DROP, version = versionNumber, craftable = false }
-            )
+            addDatabaseEntry(eventItemSource, { origin = src.FESTIVAL_DROP, version = versionNumber })
           end
         end
       end
@@ -506,17 +561,19 @@ local function scanFromFiles(blocking)
 
   local buildStarted = GetGameTimeMilliseconds()
   local function finish()
+    flushDatabaseChange()
     setState(state.READY)
-    lifecycle.everReady = true
     logDebug("DB build finished: %d entries in %d ms", NonContiguousCount(db), GetGameTimeMilliseconds() - buildStarted)
     notify(function()
       local revision = LFC.Internal.DBRevision
-      publishLifecycleSuccess(publishedBefore, revision)
+      publishLifecycleSuccess(revision)
       publish(apiEvents.SCAN_COMPLETE, revision)
     end)
   end
 
   local function fail(err)
+    -- a failed build still leaves partial writes behind
+    flushDatabaseChange()
     setState(state.FAILED, err)
     logError("DB build failed: %s", tostring(err))
     notify(function()
@@ -526,6 +583,7 @@ local function scanFromFiles(blocking)
 
   local steps = {
     scanRecipeFile,
+    scanRecipeSources,
     scanMiscItemFile,
     scanCrownStore,
     scanAntiquities,

@@ -12,7 +12,6 @@ local dataminedUnclear = GetString(SI_FURC_DATAMINED_UNCLEAR)
 -- Return of the Thieves Guild
 FurC.Rumours[ver.THIEVES] = {
   [225408] = rumourSource, -- Tapestry, Sanguine
-  [217601] = rumourSource, -- Molag Bal Plaque
   [225410] = rumourSource, -- Vines, Rose Ivy Curtain
   [225411] = rumourSource, -- Vines, Rose Ivy Swath
   [225028] = rumourSource, -- Witches Fest, Plunder Skull Basket
@@ -26,7 +25,6 @@ FurC.Rumours[ver.THIEVES] = {
   [224860] = rumourSource, -- Imperial Brazier, Cold-Flame
   [224859] = rumourSource, -- Necrom Brazier, Cold-Flame
   [226760] = rumourSource, -- Pirate Flag, Sea Elf
-  [217650] = rumourSource, -- Argonian Houseboat
   [226941] = rumourSource, -- School of fish Green
   [226784] = rumourSource, -- Driftwood Log
   [226776] = rumourSource, -- Sage Voernet's Tome, Replica
@@ -102,13 +100,8 @@ FurC.Rumours[ver.THIEVES] = {
   [225405] = rumourSource, -- Carnaval Wall, Long Rectangular Cloth
   [225406] = rumourSource, -- Carnaval Wagon, Covered
   [225407] = rumourSource, -- Colovian Throne, Noble
-}
-
--- Season Zero Part 2
-FurC.Rumours[ver.ZERO2] = {
   [224876] = rumourSource, -- Music Box, A Wish for Fish
   [225184] = rumourSource, -- Pipe, Stately
-  [223844] = rumourSource, -- Hearts Week Decor, Red Bow
 }
 
 -- Season Zero
@@ -122,7 +115,6 @@ FurC.Rumours[ver.ZERO] = {
   [223849] = rumourSource, -- Hearts Week Decor, Floral Dangle
   [223850] = rumourSource, -- Hearts Week Decor, Long Floral Dangle
   [223851] = rumourSource, -- Hearts Week Wreath, Floral
-  [223892] = rumourSource, -- Kelp Tree, Giant
   [223841] = rumourSource, -- Hearts Week Banner, Standing
   [223842] = rumourSource, -- Hearts Week Banner, Hanging
   [223843] = rumourSource, -- Hearts Week Banner, Small Standing

@@ -94,9 +94,6 @@ local function IsGlyphAllowed(
         return false
     end
 
-    -- Некрафчені гліфи дозволені завжди.
-    -- Скрафчені дозволяються лише
-    -- відповідним чекбоксом.
     if IsItemLinkCrafted(itemLink)
         and not profile.crafted
     then

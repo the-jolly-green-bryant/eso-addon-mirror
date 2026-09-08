@@ -16,6 +16,8 @@ local strings = {
     DECONSTRUCT = "Deconstructor",
     DECONSTRUCTOR_PANEL = "OWDeconstructor",
     MERCHANT = "Merchant",
+    MERCHANT_TOOLTIP = "Enables automatic item selling when an NPC merchant is opened.",
+    MERCHANT_PANEL = "OWMerchant",
     BANKING = "Banking",
 
     MASS_DECONSTRUCT = "Mass Decon",
@@ -24,7 +26,6 @@ local strings = {
 
     MODULE_IN_DEVELOPMENT = "This module is under development and will be available in a future version.",
     ACCOUNT_WIDE_IN_DEVELOPMENT = "In the test version, settings are always saved account-wide.",
-
 }
 
 local owa = OWAssistant

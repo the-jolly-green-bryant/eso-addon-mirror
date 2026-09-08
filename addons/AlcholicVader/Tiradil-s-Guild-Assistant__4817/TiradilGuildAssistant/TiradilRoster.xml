@@ -1,0 +1,264 @@
+<!-- Title: Tiradil's Guild Assistant -->
+<!-- Author: Tiradil -->
+<!-- Copyright: © 2026 Tiradil -->
+
+<GuiXml>
+    <Controls>
+        <Control name="TiradilRosterRowTemplate" virtual="true">
+            <Dimensions x="670" y="26" />
+            <Controls>
+                <Label name="$(parent)Time" font="ZoFontGame" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                    <Dimensions x="130" y="26" />
+                    <Anchor point="LEFT" offsetX="4" />
+                    <OnInitialized>
+                        self:SetColor(0.75, 0.75, 0.75, 1)
+                    </OnInitialized>
+                </Label>
+                <Label name="$(parent)Guild" font="ZoFontGame" horizontalAlignment="LEFT" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+                    <Dimensions x="140" y="26" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Time" relativePoint="RIGHT" offsetX="6" />
+                </Label>
+                <Label name="$(parent)From" font="ZoFontGame" horizontalAlignment="LEFT" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+                    <Dimensions x="185" y="26" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Guild" relativePoint="RIGHT" offsetX="6" />
+                    <OnInitialized>
+                        self:SetColor(0.4, 1, 0.4, 1)
+                    </OnInitialized>
+                </Label>
+                <Label name="$(parent)To" font="ZoFontGame" horizontalAlignment="LEFT" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+                    <Dimensions x="185" y="26" />
+                    <Anchor point="LEFT" relativeTo="$(parent)From" relativePoint="RIGHT" offsetX="6" />
+                    <OnInitialized>
+                        self:SetColor(1, 0.65, 0.2, 1)
+                    </OnInitialized>
+                </Label>
+            </Controls>
+        </Control>
+
+        <TopLevelControl name="TiradilRosterWindow" hidden="true" movable="true" mouseEnabled="true" clampedToScreen="true" tier="HIGH" resizeHandleSize="8">
+            <DimensionConstraints minX="700" minY="480" />
+            <Dimensions x="700" y="660" />
+            <Anchor point="CENTER" />
+
+            <Controls>
+                <Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop" mouseEnabled="true">
+                    <AnchorFill />
+                    <OnMouseDown>
+                        if button == MOUSE_BUTTON_INDEX_LEFT then
+                            self:GetParent():StartMoving()
+                        end
+                    </OnMouseDown>
+                    <OnMouseUp>
+                        self:GetParent():StopMovingOrResizing()
+                    </OnMouseUp>
+                </Backdrop>
+
+                <Backdrop name="$(parent)ColorWash" centerColor="70000000" edgeColor="00000000" mouseEnabled="false">
+                    <AnchorFill />
+                </Backdrop>
+                <Label name="$(parent)Title" font="ZoFontWinH3">
+                    <Anchor point="TOP" relativeTo="$(parent)" offsetY="10" />
+                    <OnInitialized>
+                        self:SetText(TiradilL10n.Get("ROSTER_TITLE") .. " - Tiradil")
+                    </OnInitialized>
+                </Label>
+
+                <Button name="$(parent)Close" inherits="ZO_CloseButton">
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" offsetX="-5" offsetY="5" />
+                    <OnClicked>
+                        TiradilRoster.ToggleWindow()
+                    </OnClicked>
+                </Button>
+
+                <Button name="$(parent)Tab1" inherits="ZO_DefaultButton">
+                    <Dimensions x="108" y="26" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="10" offsetY="45" />
+                    <OnInitialized> self:SetText(TiradilL10n.Get("TAB_APPROVED")) </OnInitialized>
+                    <OnClicked> TiradilRoster.SelectTab(1) </OnClicked>
+                </Button>
+                <Button name="$(parent)Tab2" inherits="ZO_DefaultButton">
+                    <Dimensions x="108" y="26" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Tab1" relativePoint="RIGHT" offsetX="4" />
+                    <OnInitialized> self:SetText(TiradilL10n.Get("TAB_INVITED")) </OnInitialized>
+                    <OnClicked> TiradilRoster.SelectTab(2) </OnClicked>
+                </Button>
+                <Button name="$(parent)Tab3" inherits="ZO_DefaultButton">
+                    <Dimensions x="108" y="26" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Tab2" relativePoint="RIGHT" offsetX="4" />
+                    <OnInitialized> self:SetText(TiradilL10n.Get("TAB_JOINED")) </OnInitialized>
+                    <OnClicked> TiradilRoster.SelectTab(3) </OnClicked>
+                </Button>
+                <Button name="$(parent)Tab4" inherits="ZO_DefaultButton">
+                    <Dimensions x="108" y="26" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Tab3" relativePoint="RIGHT" offsetX="4" />
+                    <OnInitialized> self:SetText(TiradilL10n.Get("TAB_REJECTED")) </OnInitialized>
+                    <OnClicked> TiradilRoster.SelectTab(4) </OnClicked>
+                </Button>
+                <Button name="$(parent)Tab5" inherits="ZO_DefaultButton">
+                    <Dimensions x="108" y="26" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Tab4" relativePoint="RIGHT" offsetX="4" />
+                    <OnInitialized> self:SetText(TiradilL10n.Get("TAB_KICKED")) </OnInitialized>
+                    <OnClicked> TiradilRoster.SelectTab(5) </OnClicked>
+                </Button>
+                <Button name="$(parent)Tab6" inherits="ZO_DefaultButton">
+                    <Dimensions x="108" y="26" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Tab5" relativePoint="RIGHT" offsetX="4" />
+                    <OnInitialized> self:SetText(TiradilL10n.Get("TAB_LEFT")) </OnInitialized>
+                    <OnClicked> TiradilRoster.SelectTab(6) </OnClicked>
+                </Button>
+
+                <Button name="$(parent)Tab7" inherits="ZO_DefaultButton">
+                    <Dimensions x="108" y="26" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Tab1" offsetY="30" />
+                    <OnInitialized> self:SetText("|c66FF66^|r " .. TiradilL10n.Get("TAB_PROMOTED")) </OnInitialized>
+                    <OnClicked> TiradilRoster.SelectTab(7) </OnClicked>
+                </Button>
+                <Button name="$(parent)Tab8" inherits="ZO_DefaultButton">
+                    <Dimensions x="108" y="26" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Tab7" relativePoint="RIGHT" offsetX="4" />
+                    <OnInitialized> self:SetText("|cFF6666v|r " .. TiradilL10n.Get("TAB_DEMOTED")) </OnInitialized>
+                    <OnClicked> TiradilRoster.SelectTab(8) </OnClicked>
+                </Button>
+
+                <Button name="$(parent)GF0" inherits="ZO_DefaultButton">
+                    <Dimensions x="52" y="24" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="10" offsetY="110" />
+                    <OnInitialized> self:SetText(TiradilL10n.Get("FILTER_ALL")) self:SetState(BSTATE_PRESSED, false) </OnInitialized>
+                    <OnClicked> TiradilRoster.SelectGuildFilter(0, self) </OnClicked>
+                </Button>
+                <Button name="$(parent)GF1" inherits="ZO_DefaultButton">
+                    <Dimensions x="52" y="24" />
+                    <Anchor point="LEFT" relativeTo="$(parent)GF0" relativePoint="RIGHT" offsetX="3" />
+                    <OnInitialized> self:SetText("G1") </OnInitialized>
+                    <OnClicked> TiradilRoster.SelectGuildFilter(1, self) </OnClicked>
+                </Button>
+                <Button name="$(parent)GF2" inherits="ZO_DefaultButton">
+                    <Dimensions x="52" y="24" />
+                    <Anchor point="LEFT" relativeTo="$(parent)GF1" relativePoint="RIGHT" offsetX="3" />
+                    <OnInitialized> self:SetText("G2") </OnInitialized>
+                    <OnClicked> TiradilRoster.SelectGuildFilter(2, self) </OnClicked>
+                </Button>
+                <Button name="$(parent)GF3" inherits="ZO_DefaultButton">
+                    <Dimensions x="52" y="24" />
+                    <Anchor point="LEFT" relativeTo="$(parent)GF2" relativePoint="RIGHT" offsetX="3" />
+                    <OnInitialized> self:SetText("G3") </OnInitialized>
+                    <OnClicked> TiradilRoster.SelectGuildFilter(3, self) </OnClicked>
+                </Button>
+                <Button name="$(parent)GF4" inherits="ZO_DefaultButton">
+                    <Dimensions x="52" y="24" />
+                    <Anchor point="LEFT" relativeTo="$(parent)GF3" relativePoint="RIGHT" offsetX="3" />
+                    <OnInitialized> self:SetText("G4") </OnInitialized>
+                    <OnClicked> TiradilRoster.SelectGuildFilter(4, self) </OnClicked>
+                </Button>
+                <Button name="$(parent)GF5" inherits="ZO_DefaultButton">
+                    <Dimensions x="52" y="24" />
+                    <Anchor point="LEFT" relativeTo="$(parent)GF4" relativePoint="RIGHT" offsetX="3" />
+                    <OnInitialized> self:SetText("G5") </OnInitialized>
+                    <OnClicked> TiradilRoster.SelectGuildFilter(5, self) </OnClicked>
+                </Button>
+
+                <Button name="$(parent)DFWeek" inherits="ZO_DefaultButton">
+                    <Dimensions x="80" y="24" />
+                    <Anchor point="LEFT" relativeTo="$(parent)GF5" relativePoint="RIGHT" offsetX="14" />
+                    <OnInitialized> self:SetText(TiradilL10n.Get("FILTER_THIS_WEEK")) </OnInitialized>
+                    <OnClicked> TiradilRoster.SelectDateFilter("Week", self) </OnClicked>
+                </Button>
+                <Button name="$(parent)DFD7" inherits="ZO_DefaultButton">
+                    <Dimensions x="60" y="24" />
+                    <Anchor point="LEFT" relativeTo="$(parent)DFWeek" relativePoint="RIGHT" offsetX="3" />
+                    <OnInitialized> self:SetText(TiradilL10n.Get("FILTER_7_DAYS")) </OnInitialized>
+                    <OnClicked> TiradilRoster.SelectDateFilter("D7", self) </OnClicked>
+                </Button>
+                <Button name="$(parent)DFD30" inherits="ZO_DefaultButton">
+                    <Dimensions x="65" y="24" />
+                    <Anchor point="LEFT" relativeTo="$(parent)DFD7" relativePoint="RIGHT" offsetX="3" />
+                    <OnInitialized> self:SetText(TiradilL10n.Get("FILTER_30_DAYS")) </OnInitialized>
+                    <OnClicked> TiradilRoster.SelectDateFilter("D30", self) </OnClicked>
+                </Button>
+                <Button name="$(parent)DFAll" inherits="ZO_DefaultButton">
+                    <Dimensions x="52" y="24" />
+                    <Anchor point="LEFT" relativeTo="$(parent)DFD30" relativePoint="RIGHT" offsetX="3" />
+                    <OnInitialized> self:SetText(TiradilL10n.Get("FILTER_ALL")) self:SetState(BSTATE_PRESSED, false) </OnInitialized>
+                    <OnClicked> TiradilRoster.SelectDateFilter("All", self) </OnClicked>
+                </Button>
+
+                <Button name="$(parent)StatsBtn" inherits="ZO_DefaultButton">
+                    <Dimensions x="150" y="26" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="15" offsetY="142" />
+                    <OnInitialized> self:SetText(TiradilL10n.Get("OFFICER_STATS")) </OnInitialized>
+                    <OnClicked> TiradilRoster.ToggleStats() </OnClicked>
+                </Button>
+
+                <Backdrop name="$(parent)SearchBg" inherits="ZO_DefaultBackdrop">
+                    <Dimensions x="250" y="28" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" offsetX="-15" offsetY="140" />
+                    <Controls>
+                        <EditBox name="$(parent)Box" font="ZoFontGame" mouseEnabled="true">
+                            <Anchor point="TOPLEFT" offsetX="8" offsetY="4" />
+                            <Anchor point="BOTTOMRIGHT" offsetX="-8" offsetY="-4" />
+                            <OnMouseUp>
+                                self:TakeFocus()
+                            </OnMouseUp>
+                            <OnTextChanged>
+                                TiradilRoster.OnSearchTextChanged(self)
+                            </OnTextChanged>
+                        </EditBox>
+                    </Controls>
+                </Backdrop>
+                <Label name="$(parent)SearchLabel" font="ZoFontGameSmall">
+                    <Anchor point="RIGHT" relativeTo="$(parent)SearchBg" relativePoint="LEFT" offsetX="-8" />
+                    <OnInitialized>
+                        self:SetText(TiradilL10n.Get("SEARCH_LABEL"))
+                        self:SetColor(0.75, 0.75, 0.75, 1)
+                    </OnInitialized>
+                </Label>
+
+                <Label name="$(parent)ColTime" font="ZoFontGame" horizontalAlignment="LEFT">
+                    <Dimensions x="130" y="20" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="19" offsetY="180" />
+                    <OnInitialized>
+                        self:SetText(TiradilL10n.Get("COL_TIME"))
+                        self:SetColor(0.929, 0.761, 0.365, 1)
+                    </OnInitialized>
+                </Label>
+                <Label name="$(parent)ColGuild" font="ZoFontGame" horizontalAlignment="LEFT">
+                    <Dimensions x="140" y="20" />
+                    <Anchor point="LEFT" relativeTo="$(parent)ColTime" relativePoint="RIGHT" offsetX="6" />
+                    <OnInitialized>
+                        self:SetText(TiradilL10n.Get("COL_GUILD"))
+                        self:SetColor(0.929, 0.761, 0.365, 1)
+                    </OnInitialized>
+                </Label>
+                <Label name="$(parent)ColFrom" font="ZoFontGame" horizontalAlignment="LEFT">
+                    <Dimensions x="185" y="20" />
+                    <Anchor point="LEFT" relativeTo="$(parent)ColGuild" relativePoint="RIGHT" offsetX="6" />
+                    <OnInitialized>
+                        self:SetText(TiradilL10n.Get("COL_OFFICER"))
+                        self:SetColor(0.929, 0.761, 0.365, 1)
+                    </OnInitialized>
+                </Label>
+                <Label name="$(parent)ColTo" font="ZoFontGame" horizontalAlignment="LEFT">
+                    <Dimensions x="185" y="20" />
+                    <Anchor point="LEFT" relativeTo="$(parent)ColFrom" relativePoint="RIGHT" offsetX="6" />
+                    <OnInitialized>
+                        self:SetText(TiradilL10n.Get("COL_MEMBER"))
+                        self:SetColor(0.929, 0.761, 0.365, 1)
+                    </OnInitialized>
+                </Label>
+
+                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="15" offsetY="205" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-15" offsetY="-15" />
+                </Control>
+
+                <Label name="$(parent)StatsDisplay" font="ZoFontGame" horizontalAlignment="LEFT" hidden="true" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="15" offsetY="205" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-15" offsetY="-15" />
+                    <OnInitialized>
+                        self:SetText("")
+                    </OnInitialized>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

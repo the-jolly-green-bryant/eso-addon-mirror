@@ -1,7 +1,7 @@
 ## Title: |c66f2ffCastle of Necro cat Guild Hall|r
 ## Author: |cff6401Soul_Hagans|r
 ## APIVersion: 101050
-## Version: 1.9.8
+## Version: 1.9.9
 ## AddOnVersion: 10908
 ## Description: Добавляет кнопки для перемещения в гилд и крафт холлы,а так же остальные функции.
 ## SavedVariables: NecroCat_SV

@@ -128,7 +128,7 @@ FurC.FurnishingFolios[204499] = { -- Galen
   version = ver.SCRIBE,
   contents = {
     194392, -- Sketch: Resonance Crystal, Cerulean
-    194393, -- Forumula: Druidic Throne, Y'ffre's Bloom
+    194393, -- Formula: Druidic Throne, Y'ffre's Bloom
     194394, -- Design: Druidic Oven, Stone
     194395, -- Pattern: Mage Tapestry, Aurbic Phoenix
     194396, -- Praxis: Stone, Lava-Etched

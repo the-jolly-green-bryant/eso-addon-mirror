@@ -1,0 +1,273 @@
+<!-- Title: Tiradil's Guild Assistant -->
+<!-- Author: Tiradil -->
+<!-- Copyright: © 2026 Tiradil -->
+
+<GuiXml>
+    <Controls>
+        <Control name="TiradilIWRowTemplate" virtual="true">
+            <Dimensions x="850" y="30" />
+            <Controls>
+                <Label name="$(parent)Member" font="ZoFontGame" horizontalAlignment="LEFT" verticalAlignment="CENTER" wrapMode="ELLIPSIS" mouseEnabled="true">
+                    <Dimensions x="220" y="30" />
+                    <Anchor point="LEFT" offsetX="8" />
+                    <OnInitialized> self:SetColor(0.92, 0.92, 0.92, 1) </OnInitialized>
+                </Label>
+                <Label name="$(parent)Guild" font="ZoFontGame" horizontalAlignment="LEFT" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+                    <Dimensions x="150" y="30" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Member" relativePoint="RIGHT" offsetX="6" />
+                    <OnInitialized> self:SetColor(0.72, 0.72, 0.75, 1) </OnInitialized>
+                </Label>
+                <Label name="$(parent)Days" font="ZoFontGame" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+                    <Dimensions x="110" y="30" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Guild" relativePoint="RIGHT" offsetX="6" />
+                </Label>
+                <Label name="$(parent)LastContrib" font="ZoFontGame" horizontalAlignment="LEFT" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+                    <Dimensions x="200" y="30" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Days" relativePoint="RIGHT" offsetX="6" />
+                    <OnInitialized> self:SetColor(0.72, 0.72, 0.75, 1) </OnInitialized>
+                </Label>
+                <Label name="$(parent)Total" font="ZoFontGame" horizontalAlignment="RIGHT" verticalAlignment="CENTER">
+                    <Dimensions x="140" y="30" />
+                    <Anchor point="LEFT" relativeTo="$(parent)LastContrib" relativePoint="RIGHT" offsetX="6" />
+                </Label>
+            </Controls>
+        </Control>
+
+        <Control name="TiradilIWKickRowTemplate" virtual="true">
+            <Dimensions x="850" y="30" />
+            <Controls>
+                <Label name="$(parent)Member" font="ZoFontGame" horizontalAlignment="LEFT" verticalAlignment="CENTER" wrapMode="ELLIPSIS" mouseEnabled="true">
+                    <Dimensions x="220" y="30" />
+                    <Anchor point="LEFT" offsetX="8" />
+                    <OnInitialized> self:SetColor(0.92, 0.92, 0.92, 1) </OnInitialized>
+                </Label>
+                <Label name="$(parent)Guild" font="ZoFontGame" horizontalAlignment="LEFT" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+                    <Dimensions x="200" y="30" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Member" relativePoint="RIGHT" offsetX="6" />
+                    <OnInitialized> self:SetColor(0.72, 0.72, 0.75, 1) </OnInitialized>
+                </Label>
+                <Label name="$(parent)Reason" font="ZoFontGame" horizontalAlignment="LEFT" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+                    <Dimensions x="150" y="30" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Guild" relativePoint="RIGHT" offsetX="6" />
+                </Label>
+                <Button name="$(parent)RemoveBtn" inherits="ZO_DefaultButton" text="X">
+                    <Dimensions x="60" y="24" />
+                    <Anchor point="RIGHT" offsetX="-8" />
+                </Button>
+                <Button name="$(parent)KickBtn" inherits="ZO_DefaultButton" text="Kick">
+                    <Dimensions x="65" y="24" />
+                    <Anchor point="RIGHT" relativeTo="$(parent)RemoveBtn" relativePoint="LEFT" offsetX="-6" />
+                    <OnInitialized>
+                        self:SetNormalFontColor(1, 0.42, 0.42, 1)
+                    </OnInitialized>
+                </Button>
+            </Controls>
+        </Control>
+
+        <TopLevelControl name="TiradilInactiveWatchWindow" hidden="true" movable="true" mouseEnabled="true" clampedToScreen="true" tier="HIGH" resizeHandleSize="8">
+            <DimensionConstraints minX="900" minY="400" />
+            <Dimensions x="900" y="620" />
+            <Anchor point="CENTER" />
+
+            <Controls>
+                <Backdrop name="$(parent)Bg" inheritAlpha="false" mouseEnabled="true">
+                    <AnchorFill />
+                    <Edge file="EsoUI/Art/Tooltips/UI-Border.dds" edgeFileWidth="128" edgeFileHeight="16" />
+                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" />
+                    <OnMouseDown>
+                        if button == MOUSE_BUTTON_INDEX_LEFT then
+                            self:GetParent():StartMoving()
+                        end
+                    </OnMouseDown>
+                    <OnMouseUp>
+                        self:GetParent():StopMovingOrResizing()
+                    </OnMouseUp>
+                </Backdrop>
+
+                <Backdrop name="$(parent)ColorWash" centerColor="AA000000" edgeColor="00000000" mouseEnabled="false">
+                    <AnchorFill />
+                </Backdrop>
+
+                <Label name="$(parent)Title" font="ZoFontWinH4">
+                    <Anchor point="TOP" relativeTo="$(parent)" offsetY="12" />
+                    <OnInitialized>
+                        self:SetText(TiradilIWL10n.Get("WINDOW_TITLE"))
+                        self:SetColor(0.929, 0.761, 0.365, 1)
+                    </OnInitialized>
+                </Label>
+
+                <Button name="$(parent)Close" inherits="ZO_CloseButton">
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" offsetX="-8" offsetY="8" />
+                    <OnClicked>
+                        TiradilInactiveWatch.ToggleWindow()
+                    </OnClicked>
+                </Button>
+
+                <Button name="$(parent)TabWatch" inherits="ZO_DefaultButton">
+                    <Dimensions x="150" y="26" />
+                    <Anchor point="TOP" relativeTo="$(parent)" offsetY="42" offsetX="-80" />
+                    <OnInitialized>
+                        self:SetText(TiradilIWL10n.Get("TAB_WATCH_LIST"))
+                        self:SetState(BSTATE_PRESSED, false)
+                    </OnInitialized>
+                    <OnClicked> TiradilInactiveWatch.SelectTab("watch") </OnClicked>
+                </Button>
+                <Button name="$(parent)TabKick" inherits="ZO_DefaultButton">
+                    <Dimensions x="150" y="26" />
+                    <Anchor point="LEFT" relativeTo="$(parent)TabWatch" relativePoint="RIGHT" offsetX="6" />
+                    <OnInitialized>
+                        self:SetText(TiradilIWL10n.Get("TAB_KICK_LIST"))
+                    </OnInitialized>
+                    <OnClicked> TiradilInactiveWatch.SelectTab("kick") </OnClicked>
+                </Button>
+
+                <Button name="$(parent)GF0" inherits="ZO_DefaultButton">
+                    <Dimensions x="90" y="24" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="15" offsetY="78" />
+                    <OnInitialized> self:SetText(TiradilIWL10n.Get("FILTER_ALL")) </OnInitialized>
+                    <OnClicked> TiradilInactiveWatch.SetGuildFilter(nil, self) </OnClicked>
+                </Button>
+                <Button name="$(parent)GF1" inherits="ZO_DefaultButton">
+                    <Dimensions x="50" y="24" />
+                    <Anchor point="LEFT" relativeTo="$(parent)GF0" relativePoint="RIGHT" offsetX="3" />
+                    <OnInitialized> self:SetText("G1") </OnInitialized>
+                    <OnClicked> TiradilInactiveWatch.SetGuildFilter(1, self) </OnClicked>
+                </Button>
+                <Button name="$(parent)GF2" inherits="ZO_DefaultButton">
+                    <Dimensions x="50" y="24" />
+                    <Anchor point="LEFT" relativeTo="$(parent)GF1" relativePoint="RIGHT" offsetX="3" />
+                    <OnInitialized> self:SetText("G2") </OnInitialized>
+                    <OnClicked> TiradilInactiveWatch.SetGuildFilter(2, self) </OnClicked>
+                </Button>
+                <Button name="$(parent)GF3" inherits="ZO_DefaultButton">
+                    <Dimensions x="50" y="24" />
+                    <Anchor point="LEFT" relativeTo="$(parent)GF2" relativePoint="RIGHT" offsetX="3" />
+                    <OnInitialized> self:SetText("G3") </OnInitialized>
+                    <OnClicked> TiradilInactiveWatch.SetGuildFilter(3, self) </OnClicked>
+                </Button>
+                <Button name="$(parent)GF4" inherits="ZO_DefaultButton">
+                    <Dimensions x="50" y="24" />
+                    <Anchor point="LEFT" relativeTo="$(parent)GF3" relativePoint="RIGHT" offsetX="3" />
+                    <OnInitialized> self:SetText("G4") </OnInitialized>
+                    <OnClicked> TiradilInactiveWatch.SetGuildFilter(4, self) </OnClicked>
+                </Button>
+                <Button name="$(parent)GF5" inherits="ZO_DefaultButton">
+                    <Dimensions x="50" y="24" />
+                    <Anchor point="LEFT" relativeTo="$(parent)GF4" relativePoint="RIGHT" offsetX="3" />
+                    <OnInitialized> self:SetText("G5") </OnInitialized>
+                    <OnClicked> TiradilInactiveWatch.SetGuildFilter(5, self) </OnClicked>
+                </Button>
+
+                <Label name="$(parent)ThresholdLabel" font="ZoFontGameSmall">
+                    <Anchor point="LEFT" relativeTo="$(parent)GF5" relativePoint="RIGHT" offsetX="18" />
+                    <OnInitialized>
+                        self:SetText(TiradilIWL10n.Get("THRESHOLD_LABEL"))
+                        self:SetColor(0.75, 0.75, 0.75, 1)
+                    </OnInitialized>
+                </Label>
+                <Button name="$(parent)T14" inherits="ZO_DefaultButton">
+                    <Dimensions x="65" y="24" />
+                    <Anchor point="LEFT" relativeTo="$(parent)ThresholdLabel" relativePoint="RIGHT" offsetX="8" />
+                    <OnInitialized> self:SetText(TiradilIWL10n.Get("THRESHOLD_14")) </OnInitialized>
+                    <OnClicked> TiradilInactiveWatch.SetThreshold(14, self) </OnClicked>
+                </Button>
+                <Button name="$(parent)T30" inherits="ZO_DefaultButton">
+                    <Dimensions x="65" y="24" />
+                    <Anchor point="LEFT" relativeTo="$(parent)T14" relativePoint="RIGHT" offsetX="3" />
+                    <OnInitialized> self:SetText(TiradilIWL10n.Get("THRESHOLD_30")) </OnInitialized>
+                    <OnClicked> TiradilInactiveWatch.SetThreshold(30, self) </OnClicked>
+                </Button>
+                <Button name="$(parent)T60" inherits="ZO_DefaultButton">
+                    <Dimensions x="65" y="24" />
+                    <Anchor point="LEFT" relativeTo="$(parent)T30" relativePoint="RIGHT" offsetX="3" />
+                    <OnInitialized> self:SetText(TiradilIWL10n.Get("THRESHOLD_60")) </OnInitialized>
+                    <OnClicked> TiradilInactiveWatch.SetThreshold(60, self) </OnClicked>
+                </Button>
+
+                <Backdrop name="$(parent)SearchBg" inherits="ZO_DefaultBackdrop">
+                    <Dimensions x="260" y="28" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" offsetX="-15" offsetY="110" />
+                    <Controls>
+                        <EditBox name="$(parent)Box" font="ZoFontGame" mouseEnabled="true">
+                            <Anchor point="TOPLEFT" offsetX="8" offsetY="4" />
+                            <Anchor point="BOTTOMRIGHT" offsetX="-8" offsetY="-4" />
+                            <OnMouseUp>
+                                self:TakeFocus()
+                            </OnMouseUp>
+                            <OnTextChanged>
+                                TiradilInactiveWatch.OnSearchTextChanged(self)
+                            </OnTextChanged>
+                        </EditBox>
+                    </Controls>
+                </Backdrop>
+                <Label name="$(parent)SearchLabel" font="ZoFontGameSmall">
+                    <Anchor point="RIGHT" relativeTo="$(parent)SearchBg" relativePoint="LEFT" offsetX="-8" />
+                    <OnInitialized>
+                        self:SetText(TiradilIWL10n.Get("SEARCH_LABEL"))
+                        self:SetColor(0.75, 0.75, 0.75, 1)
+                    </OnInitialized>
+                </Label>
+
+                <Label name="$(parent)ColMember" font="ZoFontGame" horizontalAlignment="LEFT">
+                    <Dimensions x="220" y="20" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="23" offsetY="152" />
+                    <OnInitialized>
+                        self:SetText(TiradilIWL10n.Get("COL_MEMBER"))
+                        self:SetColor(0.929, 0.761, 0.365, 1)
+                    </OnInitialized>
+                </Label>
+                <Label name="$(parent)ColGuild" font="ZoFontGame" horizontalAlignment="LEFT">
+                    <Dimensions x="150" y="20" />
+                    <Anchor point="LEFT" relativeTo="$(parent)ColMember" relativePoint="RIGHT" offsetX="6" />
+                    <OnInitialized>
+                        self:SetText(TiradilIWL10n.Get("COL_GUILD"))
+                        self:SetColor(0.929, 0.761, 0.365, 1)
+                    </OnInitialized>
+                </Label>
+                <Label name="$(parent)ColDays" font="ZoFontGame" horizontalAlignment="CENTER">
+                    <Dimensions x="110" y="20" />
+                    <Anchor point="LEFT" relativeTo="$(parent)ColGuild" relativePoint="RIGHT" offsetX="6" />
+                    <OnInitialized>
+                        self:SetText(TiradilIWL10n.Get("COL_DAYS"))
+                        self:SetColor(0.929, 0.761, 0.365, 1)
+                    </OnInitialized>
+                </Label>
+                <Label name="$(parent)ColLastContrib" font="ZoFontGame" horizontalAlignment="LEFT">
+                    <Dimensions x="200" y="20" />
+                    <Anchor point="LEFT" relativeTo="$(parent)ColDays" relativePoint="RIGHT" offsetX="6" />
+                    <OnInitialized>
+                        self:SetText(TiradilIWL10n.Get("COL_LAST_CONTRIB"))
+                        self:SetColor(0.929, 0.761, 0.365, 1)
+                    </OnInitialized>
+                </Label>
+                <Label name="$(parent)ColTotal" font="ZoFontGame" horizontalAlignment="RIGHT">
+                    <Dimensions x="140" y="20" />
+                    <Anchor point="LEFT" relativeTo="$(parent)ColLastContrib" relativePoint="RIGHT" offsetX="6" />
+                    <OnInitialized>
+                        self:SetText(TiradilIWL10n.Get("COL_TOTAL"))
+                        self:SetColor(0.929, 0.761, 0.365, 1)
+                    </OnInitialized>
+                </Label>
+
+                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="18" offsetY="180" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-18" offsetY="-50" />
+                </Control>
+
+                <Label name="$(parent)Status" font="ZoFontGameSmall" wrapMode="ELLIPSIS" horizontalAlignment="LEFT">
+                    <Dimensions x="700" y="20" />
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" offsetX="18" offsetY="-16" />
+                    <OnInitialized>
+                        self:SetColor(0.75, 0.75, 0.75, 1)
+                    </OnInitialized>
+                </Label>
+                <Button name="$(parent)RefreshBtn" inherits="ZO_DefaultButton">
+                    <Dimensions x="100" y="28" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" offsetX="-18" offsetY="-14" />
+                    <OnInitialized> self:SetText(TiradilIWL10n.Get("BTN_REFRESH")) </OnInitialized>
+                    <OnClicked> TiradilInactiveWatch.Refresh() </OnClicked>
+                </Button>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

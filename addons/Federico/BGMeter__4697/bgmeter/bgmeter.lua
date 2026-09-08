@@ -386,6 +386,11 @@ local function on_slash(args)
     args = (args or ""):lower():gsub("^%s+", ""):gsub("%s+$", "")
     local Log = BGMeter.Log
 
+    if args == "vet" then
+        BGMeter.UI.export.show_text(table.concat(BGMeter.Veterancy.raw_lines(), "\n"))
+        return
+    end
+
     if not K.dev_tools() then
         BGMeter.UI.menu.toggle()
         return
@@ -423,6 +428,8 @@ local function on_slash(args)
     elseif args == "debug" then
         Log.DEBUG = not Log.DEBUG
         Log.say("debug %s", Log.DEBUG and "ON" or "OFF")
+    elseif args:find("^vetmock") == 1 and BGMeter.Mock then
+        BGMeter.Mock.vet(args:match("^vetmock%s*(.*)$"))
     elseif args:find("^mock") == 1 and BGMeter.Mock then
         BGMeter.Mock.run(args:match("^mock%s*(.*)$"))
     elseif args == "perf" and BGMeter.Diag and BGMeter.Diag.on then
@@ -439,7 +446,7 @@ local function on_slash(args)
     elseif args == "trophy" then
         BGMeter.UI.menu.demo_trophy()
     else
-        Log.say("dev: show|hide|toggle|last|demo|demo2|ap|dump|clear|debug|layers|mock <dm|dom|ck|ball|relic>|perf|gcprobe [sec]|sound [name]|csa [rank]|trophy")
+        Log.say("dev: show, hide, toggle, last, demo, demo2, ap, dump, clear, debug, layers, mock <dm/dom/ck/ball/relic>, vet, vetmock <below/cap/h1/h2/h3/off>, perf, gcprobe [sec], sound [name], csa [rank], trophy")
     end
 end
 

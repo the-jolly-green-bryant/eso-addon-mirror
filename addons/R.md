@@ -36,6 +36,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Rajines Exp Left](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rajine/Rajines-Exp-Left__4636) | Rajine | PC / Mac | 1.0 |
 | [Rakkis Guild Points](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/arkais_troumaan/Rakkis-Guild-Points__2605) | arkais_troumaan | PC / Mac | 1.15 |
 | [Rally Group](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/evainefaye/Rally-Group__4658) | evainefaye | PC / Mac | 1.02 |
+| [Rallying Cry Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/codeWarrior82/Rallying-Cry-Tracker__cec19621-d3f2-4b43-b391-5d028918cfb4) | codeWarrior82 | Console | — |
 | [Ranckor's Baggage](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ranckor90/Ranckor-s-Baggage__a17836b4-17ec-478f-91a6-f0c59e123e2a) | Ranckor90 | Console | — |
 | [Ranckors Baggage](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ranckor90/Ranckors-Baggage__3933) | Ranckor90 | PC / Mac | v3.1.2 |
 | [Ranckors Leaderboard Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ranckor90/Ranckors-Leaderboard-Tracker__4047) | Ranckor90 | PC / Mac | v1.0.3 |
@@ -111,6 +112,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Reticle only first person](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/awfuldead/Reticle-only-first-person__2982) | awfuldead | PC / Mac | 1.2 |
 | [Reticle Rainbow](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FiNk3F13/Reticle-Rainbow__30b30033-06cc-48b7-a0c6-7be8d27487cf) | FiNk3F13 | Console | — |
 | [Reveries: Emotes and Mementos](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/StorybookTerror/Reveries-Emotes-and-Mementos__2726) | StorybookTerror | PC / Mac | 0.9 |
+| [Reviving Barrier](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/its_wifey/Reviving-Barrier__4819) | its_wifey | PC / Mac | 1.1 |
 | [Reward popup Reworked](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SlickStyles/Reward-popup-Reworked__4694) | SlickStyles | PC / Mac | 1.8 |
 | [Rewards For The Lazy](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Citats/Rewards-For-The-Lazy__3848) | Citats | PC / Mac | 1.4 |
 | [Rewards for the Worthy](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/bitrock/Rewards-for-the-Worthy__2779) | bitrock | PC / Mac | 1.0.2 |

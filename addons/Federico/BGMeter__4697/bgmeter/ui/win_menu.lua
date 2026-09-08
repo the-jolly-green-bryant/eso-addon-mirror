@@ -187,12 +187,16 @@ local function refresh_panel()
             st.icon:SetTexture(safe(A.get_veterancy_rank_icon, snap.iconRank or snap.rank, snap.seasonId)
                 or snap.rankIcon or "")
         end
-        set_text(st.label, string.format("%s  %d", clean(snap.rankTitle) or "Veterancy", snap.rank))
+        local laps = snap.laps or 0
+        set_text(st.label, string.format("%s  %d%s", clean(snap.rankTitle) or "Veterancy", snap.rank,
+            laps > 0 and (" ×" .. laps) or ""))
         local season = clean(snap.seasonName)
         local seasonLine = season and ("\n" .. season) or ""
         if snap.tierTotal and snap.tierTotal > 0 then
-            st.tip = string.format("Veterancy rank %d\n%s / %s to the next rank%s",
-                snap.rank, F.commas(snap.progressToNext or 0), F.commas(snap.tierTotal), seasonLine)
+            st.tip = string.format("Veterancy rank %d%s\n%s / %s to the next %s%s",
+                snap.rank, laps > 0 and string.format("  ·  max rank, reward ×%d", laps) or "",
+                F.commas(snap.progressToNext or 0), F.commas(snap.tierTotal),
+                snap.pastMax and "reward" or "rank", seasonLine)
         else
             st.tip = string.format("Veterancy rank %d%s", snap.rank, seasonLine)
         end
@@ -220,6 +224,7 @@ local function refresh_panel()
     local standing = sv and sv.standing
     if M._demo_rank then standing = { rank = M._demo_rank, score = 123456 } end
     st.c:SetHidden(false)
+    if st.link then st.link:SetHidden(false) end
     if standing and (standing.rank or 0) > 0 then
         local top = standing.rank <= 100
         if st.icon then
@@ -527,7 +532,7 @@ local function build()
     panel.gear = mk_button(pw, TX.gear, 22, function() W.toggle_settings() end, "Settings")
     panel.gear:SetAnchor(RIGHT, panel.close, LEFT, -8, 0)
 
-    local function make_stat(rowi, right, withIcon, withBar, withLink)
+    local function make_stat(rowi, right, withIcon, withBar, link)
         local c = BGMeter.zenimax.ui.create_control(nil, pw, CT_CONTROL)
         local rowH = right and 28 or 38
         local iconS = right and 26 or 38
@@ -553,10 +558,10 @@ local function build()
         U.clamp_line(st.label)
         if withBar then
             st.label:SetAnchor(TOPLEFT, c, TOPLEFT, textX, 3)
-            st.label:SetAnchor(TOPRIGHT, c, TOPRIGHT, withLink and -20 or 0, 3)
+            st.label:SetAnchor(TOPRIGHT, c, TOPRIGHT, link and -20 or 0, 3)
             st.label:SetHeight(20)
-            if withLink then
-                st.link = mk_button(c, TX.nextb, 16, function() M.open_veterancy() end, "View veterancy")
+            if link then
+                st.link = mk_button(c, TX.nextb, 16, link.fn, link.tip)
                 st.link:SetAnchor(TOPRIGHT, c, TOPRIGHT, 0, 5)
                 st.link:SetHidden(true)
             end
@@ -567,8 +572,13 @@ local function build()
             st.barW = 200 - textX
         else
             st.label:SetAnchor(LEFT, c, LEFT, textX, 0)
-            st.label:SetAnchor(RIGHT, c, RIGHT, 0, 0)
+            st.label:SetAnchor(RIGHT, c, RIGHT, link and -20 or 0, 0)
             st.label:SetHeight(rowH)
+            if link then
+                st.link = mk_button(c, TX.nextb, 16, link.fn, link.tip)
+                st.link:SetAnchor(RIGHT, c, RIGHT, 0, 0)
+                st.link:SetHidden(true)
+            end
         end
         c:SetHandler("OnMouseEnter", function()
             if st.tip and ZO_Tooltips_ShowTextTooltip then ZO_Tooltips_ShowTextTooltip(c, BOTTOM, st.tip) end
@@ -581,8 +591,8 @@ local function build()
 
     panel.stats = {
         ava     = make_stat(1, false, true, true),
-        vet     = make_stat(2, false, true, true, true),
-        stand   = make_stat(3, false, true),
+        vet     = make_stat(2, false, true, true, { fn = function() M.open_veterancy() end, tip = "View veterancy" }),
+        stand   = make_stat(3, false, true, false, { fn = function() M.open_leaderboard() end, tip = "View competitive leaderboard" }),
         ap      = make_stat(1, true, true),
         telvar  = make_stat(2, true, true),
         session = make_stat(3, true, false),
@@ -1071,6 +1081,10 @@ end
 function M.armed_index() return armed_index end
 
 function M.stat_text(key) return panel and panel.stats[key] and panel.stats[key].label:GetText() or nil end
+function M.stat_link_hidden(key)
+    local st = panel and panel.stats[key]
+    return not (st and st.link) or st.link:IsHidden()
+end
 function M.row_kda(i) return rows[i] and rows[i].kda:GetText() or nil end
 
 function M.on_double_click()
@@ -1089,6 +1103,11 @@ end
 
 function M.open_veterancy()
     if Scene.push("VeterancySceneKeyboard") then Sound.play("nav") end
+end
+
+function M.open_leaderboard()
+    local C = BGMeter.zenimax.constants
+    if Scene.push_bg_leaderboard(C.BATTLEGROUND_LEADERBOARD_TYPE_COMPETITIVE) then Sound.play("nav") end
 end
 
 local DEMO_RANKS = { 96, 42, 7, 1 }

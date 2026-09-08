@@ -93,6 +93,17 @@ FurC.EventItems[ver.ZERO] = {
 
 -- 37 Seasons of the Worm Cult Part 2
 FurC.EventItems[ver.WORMS2] = {
+  -- Dropped during Worm Cult invasion event
+  -- Plans are now ordinary container drops
+  [events.WRITHING] = {
+    [219727] = true, -- Worm Cult Papers, Scattered
+    [219728] = true, -- Worm Cult Scroll, Unfinished
+    [219729] = true, -- Worm Cult Sconce, Jaw
+    [219730] = true, -- Worm Cult Brew, Bubbling
+    [219731] = true, -- Worm Cult Rug, Triangular Sigil
+    [219732] = true, -- Worm Cult Lamp, Jaw
+  },
+
   [events.JESTER] = {
     [containers.JESTERBOX] = {
       [214490] = { -- Jester's Garland, Short
@@ -116,18 +127,6 @@ FurC.EventItems[ver.WORMS2] = {
         achievement = 1719,
       },
     },
-  },
-}
-
--- 35 Seasons of the Worm Cult (U46)
-FurC.EventItems[ver.WORMS] = {
-  [events.WRITHING] = {
-    [220297] = true, -- Worm Cult Lamp, Jaw
-    [220300] = true, -- Worm Cult Sconce, Jaw
-    [220318] = true, -- Worm Cult Papers, Scattered
-    [220320] = true, -- Worm Cult Brew, Bubbling
-    [220323] = true, -- Worm Cult Scroll, Unfinished
-    [220288] = true, -- Worm Cult Rug, Triangular Sigil
   },
 }
 

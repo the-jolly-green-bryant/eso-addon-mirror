@@ -137,11 +137,21 @@ local em = EVENT_MANAGER
 -- PB's ChatFilter does it -- reading the name back out of "## Title" mangles the "PB's "
 -- prefix in the settings library.
 --
--- ASCII apostrophe, and exactly one half-width space before the name. This string has to be
--- character-for-character what "## Title" carries: the manifest feeds the in-game add-on list
--- and this feeds the settings panel and the chat prefix, and a name that differs between the
--- two reads as two add-ons.
-local DISPLAY_NAME = "PB's CyrodiilAlert"
+-- TYPOGRAPHIC apostrophe (U+2019), and exactly one half-width space before the name.
+--
+-- The apostrophe is not a typographic preference, it is what the settings library will accept.
+-- With an ASCII ' here the panel showed "CyrodiilAlert" -- the whole "PB's " was eaten -- while
+-- the in-game add-on list, which is fed by "## Title" and not by this, showed it correctly.
+-- Every other PB's add-on has carried U+2019 in this constant for the same reason, and their
+-- panels are named properly.
+--
+-- So the manifest keeps the ASCII form (the add-on list is happy with it and that is the name
+-- the store listing uses) and this one carries U+2019. The two differ by one character that
+-- reads the same, which is the price of both surfaces showing the name at all.
+--
+-- Written as the character itself, not as "\u{2019}": that escape is Lua 5.3, the client is
+-- 5.1, and it would be a syntax error on the machine that matters rather than on this one.
+local DISPLAY_NAME = "PB’s CyrodiilAlert"
 local AUTHOR = "PinkBanther"
 local SLASH = "/pbalert"
 local SHORT_SLASH = "/pbca"
@@ -854,6 +864,27 @@ local function PopulationText(populationType, asWord)
 	return PopulationWord(populationType)
 end
 
+-- The campaign being played is one of the Imperial City's. The client's own test, and the same
+-- one the world map uses to decide which set of pins it is drawing (worldmap.lua:2201).
+--
+-- It matters here because three of the summary's columns are about keeps: the Imperial City has
+-- none, its campaign is scored on districts, and nothing counted by the keep watch can be under
+-- attack there. Three columns of zeroes are not a summary, they are furniture.
+function addon:InImperialCityCampaign()
+	local campaignId = GetCurrentCampaignId and GetCurrentCampaignId() or 0
+	if not campaignId or campaignId == 0 then
+		return false
+	end
+	if IsImperialCityCampaign then
+		return IsImperialCityCampaign(campaignId) and true or false
+	end
+	-- No way to ask about the campaign: fall back to asking about the place.
+	if IsInImperialCity then
+		return IsInImperialCity() and true or false
+	end
+	return false
+end
+
 function addon:Situation()
 	local campaignId = GetCurrentCampaignId and GetCurrentCampaignId() or 0
 	local hasCampaign = campaignId ~= nil and campaignId ~= 0
@@ -895,14 +926,19 @@ function addon:Situation()
 	end
 
 	-- Score order, the way the scoreboard reads. With no scores to sort on, holdings decide.
-	table.sort(rows, function(a, b)
-		if (a.score or 0) ~= (b.score or 0) then
-			return (a.score or 0) > (b.score or 0)
-		end
-		return a.held > b.held
-	end)
+	-- In an Imperial City campaign there is neither, and sorting on two columns of zeroes would
+	-- shuffle the alliances from one refresh to the next; they stay in their own order there.
+	local imperialCity = self:InImperialCityCampaign()
+	if not imperialCity then
+		table.sort(rows, function(a, b)
+			if (a.score or 0) ~= (b.score or 0) then
+				return (a.score or 0) > (b.score or 0)
+			end
+			return a.held > b.held
+		end)
+	end
 
-	local situation = { rows = rows }
+	local situation = { rows = rows, imperialCity = imperialCity }
 	if hasCampaign and GetCampaignName then
 		local name = GetCampaignName(campaignId)
 		if name and name ~= "" then
@@ -998,13 +1034,20 @@ function addon:SituationLines()
 
 	for _, row in ipairs(situation.rows) do
 		local mark = row.mine and GetString(SI_PBSCA_BOARD_MARK_MINE) or GetString(SI_PBSCA_BOARD_MARK_OTHER)
-		local score = row.score and CommaNumber(row.score) or GetString(SI_PBSCA_BOARD_UNKNOWN)
-		-- The count is always printed, zero included. A column that appears and disappears has
-		-- to be read before it can be counted; one that is always in the same place on every
-		-- line can be taken in at a glance, which is the whole job of the summary.
-		local text = Format(SI_PBSCA_BOARD_LINE, mark, AllianceName(row.alliance), row.held, score)
-			.. Format(SI_PBSCA_BOARD_ATTACKED, row.attacked)
-			.. Format(SI_PBSCA_BOARD_POPULATION, PopulationText(row.population, self.sv.board.populationText))
+		local text
+		if situation.imperialCity then
+			-- Keeps, keep score and what the keep watch found under attack: none of the three
+			-- means anything in a campaign fought over districts, so none of them is printed.
+			text = Format(SI_PBSCA_BOARD_LINE_PLAIN, mark, AllianceName(row.alliance))
+		else
+			local score = row.score and CommaNumber(row.score) or GetString(SI_PBSCA_BOARD_UNKNOWN)
+			-- The count is always printed, zero included. A column that appears and disappears
+			-- has to be read before it can be counted; one that is always in the same place on
+			-- every line can be taken in at a glance, which is the summary's whole job.
+			text = Format(SI_PBSCA_BOARD_LINE, mark, AllianceName(row.alliance), row.held, score)
+				.. Format(SI_PBSCA_BOARD_ATTACKED, row.attacked)
+		end
+		text = text .. Format(SI_PBSCA_BOARD_POPULATION, PopulationText(row.population, self.sv.board.populationText))
 		lines[#lines + 1] = { text = text, colour = AllianceHex(row.alliance) }
 	end
 
@@ -1713,7 +1756,9 @@ function addon:PrintStatus()
 		GetString(destination == "chat" and SI_PBSCA_LOG_TO_CHAT
 			or destination == "both" and SI_PBSCA_LOG_TO_BOTH
 			or SI_PBSCA_LOG_TO_WINDOW))
-	if destination ~= "chat" and not self.log:Available() then
+	if destination ~= "chat" and not self:InAvAZone() then
+		Print(GetString(SI_PBSCA_STATUS_LOG_OUT_OF_AVA))
+	elseif destination ~= "chat" and not self.log:Available() then
 		Print(GetString(SI_PBSCA_STATUS_LOG_FAILED))
 	elseif destination ~= "chat" and self.log.drawOrderRefused then
 		Print(GetString(SI_PBSCA_LOG_DRAW_REFUSED))

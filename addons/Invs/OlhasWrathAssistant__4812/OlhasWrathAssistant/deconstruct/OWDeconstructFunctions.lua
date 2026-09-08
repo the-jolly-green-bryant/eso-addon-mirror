@@ -10,8 +10,88 @@ deconstruct.collectorOrder = {}
 
 deconstruct.itemQueue = {}
 deconstruct.deconstructedCount = 0
+deconstruct.soundOverride = nil
 
 local QUEUE_EVENT_NAME = "OWDeconstructQueue"
+
+local function RestoreRegularStationSound(override)
+    if not override
+        or deconstruct.soundOverride ~= override
+    then
+        return
+    end
+
+    CALLBACK_MANAGER:UnregisterCallback(
+        "CraftingAnimationsStopped",
+        override.callback
+    )
+
+    local results = override.results
+
+    if results then
+        results:SetTooltipAnimationSounds(
+            override.originalSuccessSound,
+            override.originalFailureSound
+        )
+    end
+
+    deconstruct.soundOverride = nil
+end
+
+local function PrepareRegularStationSound()
+    if deconstruct.IsUniversalStation() then
+        return
+    end
+
+    RestoreRegularStationSound(
+        deconstruct.soundOverride
+    )
+
+    local results
+
+    if IsInGamepadPreferredMode() then
+        results = GAMEPAD_CRAFTING_RESULTS
+    else
+        results = CRAFTING_RESULTS
+    end
+
+    if not results
+        or not results.SetTooltipAnimationSounds
+    then
+        return
+    end
+
+    local override = {
+        results = results,
+        originalSuccessSound =
+            results.tooltipAnimationSuccessSound,
+        originalFailureSound =
+            results.tooltipAnimationFailureSound,
+    }
+
+    override.callback = function()
+
+        zo_callLater(function()
+            RestoreRegularStationSound(override)
+        end, 0)
+    end
+
+    deconstruct.soundOverride = override
+
+    results:SetTooltipAnimationSounds(
+        SOUNDS.UNIVERSAL_DECONSTRUCTION_SUCCESS,
+        SOUNDS.UNIVERSAL_DECONSTRUCTION_FAIL
+    )
+
+    CALLBACK_MANAGER:RegisterCallback(
+        "CraftingAnimationsStopped",
+        override.callback
+    )
+
+    zo_callLater(function()
+        RestoreRegularStationSound(override)
+    end, 5000)
+end
 
 local keybindStripDescriptor = {
     {
@@ -80,6 +160,10 @@ function deconstruct.OnStationExit()
 
     deconstruct.itemQueue = {}
     deconstruct.deconstructedCount = 0
+
+    RestoreRegularStationSound(
+        deconstruct.soundOverride
+    )
 
     deconstruct.HideKeybind()
 end
@@ -245,104 +329,30 @@ StartNextBatch = function()
         EVENT_CRAFT_COMPLETED
     )
 
-    -- На звичайній станції зачарування
-    -- гліфи розбираються по одному,
-    -- оскільки ESO використовує окремий
-    -- виклик ExtractEnchantingItem.
-    if deconstruct.IsEnchantingStation() then
-        while #deconstruct.itemQueue > 0 do
-            local item = table.remove(
-                deconstruct.itemQueue,
-                1
-            )
-
-            local canExtract =
-                CanItemBeSmithingExtractedOrRefined(
-                    item.bagId,
-                    item.slotIndex,
-                    CRAFTING_TYPE_ENCHANTING
-                )
-
-            if canExtract then
-                EVENT_MANAGER:RegisterForEvent(
-                    QUEUE_EVENT_NAME,
-                    EVENT_CRAFT_COMPLETED,
-                    ContinueDeconstruction
-                )
-
-                deconstruct.deconstructedCount =
-                    deconstruct.deconstructedCount + 1
-
-                ExtractEnchantingItem(
-                    item.bagId,
-                    item.slotIndex
-                )
-
-                return
-            end
-        end
-
+    if #deconstruct.itemQueue == 0 then
         FinishDeconstruction()
         return
     end
 
-    -- Ковальська, швейна, деревообробна,
-    -- ювелірна та універсальна станції.
-    local smithingObject =
-        deconstruct.GetSmithingObject()
-
-    local deconstructionPanel =
-        smithingObject
-        and smithingObject.deconstructionPanel
-
-    if not smithingObject
-        or not deconstructionPanel
-    then
-        FinishDeconstruction()
-        return
-    end
-
-    if deconstructionPanel.extractionSlot:HasItems() then
-        deconstruct.Chat(
-            owa.GetString("DECONSTRUCT_CHAT_SLOT_OCCUPIED")
-        )
-
-        FinishDeconstruction()
-        return
-    end
+    PrepareDeconstructMessage()
 
     local addedItems = 0
 
-    local maximumItems =
-        MAX_ITERATIONS_PER_DECONSTRUCTION
-        or 100
-
-    while #deconstruct.itemQueue > 0
-        and addedItems < maximumItems
-    do
+    while #deconstruct.itemQueue > 0 do
         local item = table.remove(
             deconstruct.itemQueue,
             1
         )
 
-        local canAdd = true
-
-        if smithingObject.CanItemBeAddedToCraft then
-            canAdd =
-                smithingObject:CanItemBeAddedToCraft(
-                    item.bagId,
-                    item.slotIndex
-                )
-        end
-
-        if canAdd then
-            smithingObject:AddItemToCraft(
+        local itemAdded =
+            AddItemToDeconstructMessage(
                 item.bagId,
-                item.slotIndex
+                item.slotIndex,
+                item.quantity
             )
 
+        if itemAdded then
             addedItems = addedItems + 1
-
             deconstruct.deconstructedCount =
                 deconstruct.deconstructedCount + 1
         end
@@ -359,11 +369,8 @@ StartNextBatch = function()
         ContinueDeconstruction
     )
 
-    if addedItems == 1 then
-        deconstructionPanel:ExtractSingle()
-    else
-        deconstructionPanel:ExtractAll()
-    end
+    PrepareRegularStationSound()
+    SendDeconstructMessage()
 end
 
 function deconstruct.StartQueue(candidates)

@@ -1,17 +1,21 @@
 ## Title: Semi's Debug Playground
 ## Author: Semigroup1329
 ## APIVersion: 101049 101050
-## AddOnVersion: 494
-## Version: 0.0.494
+## AddOnVersion: 498
+## Version: 0.0.498
 ## IsLibrary: False
 ## DependsOn: LibGroupBroadcast LibAsync>=30100
 ## OptionalDependsOn: LibHarvensAddonSettings
 ## SavedVariables: BattleScrollsSavedVariables BattleScrollsMemoryProbe
 
+; Startup memory timeline sampler: must be the first file (see storage/memtrace.lua)
+storage/memtrace.lua
+
 ; Localization - default (English) must load first
 lang/default.lua
 ; Client language override ($(language) = de, fr, es, ru, jp, zh, or en)
 lang/$(language).lua
+trace/lang.lua
 
 ; Access control
 accesscheck.lua
@@ -21,15 +25,18 @@ havok/structures.lua
 
 ; Constants
 constants.lua
+trace/const.lua
 
 ; Vendored libraries
 lib/deflate.lua
+trace/deflate.lua
 
 ; Core infrastructure
 core/utils.lua
 core/effect.lua
 core/gc.lua
 core/log.lua
+trace/core.lua
 
 ; Combat domain
 combat/arithmancer.lua
@@ -51,6 +58,7 @@ combat/scribe.lua
 combat/ticker.lua
 combat/setup.lua
 combat/setup_analysis.lua
+trace/combat.lua
 
 ; Storage domain
 storage/bitcodec.lua
@@ -59,6 +67,7 @@ storage/storage.lua
 storage/memdiag.lua
 storage/memlab.lua
 storage/migration.lua
+trace/storage.lua
 
 ; Network domain
 network/lgb.lua
@@ -70,9 +79,11 @@ network/setupshare.lua
 network/sharetrace.lua
 network/export.lua
 network/shareurl.lua
+trace/network.lua
 
 ; Entry point
 main.lua
+trace/main.lua
 
 ; UI - DPS Meter
 ui/meter/types.lua
@@ -86,7 +97,9 @@ ui/meter/designs/group/text.lua
 ui/meter/designs/group/hodor.lua
 ui/meter/designs/group/bars.lua
 ui/meter/meter.lua
+trace/meterlua.lua
 ui/meter/meter.xml
+trace/meterxml.lua
 
 ; UI - Journal (types and utils load first, then renderers, then controllers)
 ui/journal/types.lua
@@ -125,15 +138,23 @@ ui/journal/chronicler.lua
 ui/journal/subheader.lua
 ui/journal/share_stepper.lua
 ui/journal/group_table.lua
+trace/journallua.lua
 ui/journal/journal.xml
+trace/journalxml.lua
 ui/journal/dialogs.xml
+trace/dialogs.lua
 
 ; UI - Onboarding
 ui/onboarding/onboarding.lua
+trace/onboardlua.lua
 ui/onboarding/onboarding.xml
+trace/onboardxml.lua
 
 ; UI - Character Stats integration
 ui/character/character_stats.lua
+
+; Startup memory timeline sampler: must be the last file (see storage/memtrace.lua)
+storage/memtrace_end.lua
 
 # This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
 # The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States

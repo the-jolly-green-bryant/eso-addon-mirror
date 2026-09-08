@@ -89,6 +89,7 @@ PvPUA.constants.userIcons = {
     ["@suzibrew"]        = { texture = "PvPUA/Textures/icon_elephant.dds" },
     ["@maddogmcree6157"] = { texture = "PvPUA/Textures/icon_devildog.dds" },
     ["@sgt bear78fh"]    = { texture = "PvPUA/Textures/icon_bear.dds", heightOffset = 1.0 },
+    ["@rolo tsg"]        = { texture = "PvPUA/Textures/icon_wizard.dds" },
 }
 
 PvPUA.defaults = { posX = 100, posY = 450, timerColor = { r = 1, g = 1, b = 1, a = 1 }, enableAPChat = true, consolidateAPChat = false, consolidateRepairDelay = 5, consolidateCombatDelay = 10, alertsEnabled = false, alertLifespan = 10, font = "EsoUI/Common/Fonts/FTN57.otf", backdropStyle = "Alliance", backdropColor = { r = 0, g = 0, b = 0, a = 1 }, listSize = "Default", uiScale = 1.0, barMode = "AP", iconShowSelf = true, iconShowOthers = true, showMilegates = true, showBridges = true, showTowns = true, showResources = true, showScrollCarriers = true, showVolendrungRow = true, showListInMenus = false, showListWhileSieging = false, showListWhileDead = true, showListDeadRepair = false, listCap = 0 }

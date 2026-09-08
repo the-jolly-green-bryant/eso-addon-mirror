@@ -387,3 +387,82 @@ function Mock.run(arg)
     end
     BUILDERS[mode]()
 end
+
+local VET_PRESETS = {
+    below = { rank = 37,  cur = 37,  prog = 120000, total = 168000, claimed = 0 },
+    cap   = { rank = 100, cur = 100, prog = 150000, total = 168000, claimed = 0 },
+    h1    = { rank = 104, cur = 104, prog = 50627,  total = 168000, claimed = 3 },
+    h2    = { rank = 101, cur = 101, prog = 218527, total = 168000, claimed = 1 },
+    h3    = { rank = 101, cur = 101, prog = 50627,  total = 168000, claimed = 3 },
+}
+local VET_ORDER = { "below", "cap", "h1", "h2", "h3" }
+local vet_saved = nil
+
+local function vet_install(p)
+    local A = BGMeter.zenimax.api
+    if not vet_saved then
+        vet_saved = {}
+        for _, k in ipairs({ "is_veterancy_season_active", "get_season_id", "get_season_name",
+            "get_season_time_remaining", "is_in_veterancy_zone", "get_unit_veterancy_rank",
+            "get_veterancy_rank_title", "get_active_ref_track_ids", "get_ref_track_index",
+            "get_reward_track_id_from_ref", "get_info_for_reward_track", "get_tier_total_progress",
+            "get_num_base_tiers", "has_repeatable_tier", "get_repeatable_tier", "get_repeatable_claimed" }) do
+            vet_saved[k] = A[k]
+        end
+    end
+    A.is_veterancy_season_active = function() return true end
+    A.get_season_id              = function() return 1 end
+    A.get_season_name            = function() return "Mock Season" end
+    A.get_season_time_remaining  = function() return 387600 end
+    A.is_in_veterancy_zone       = function() return true end
+    A.get_unit_veterancy_rank    = function() return p.rank end
+    A.get_veterancy_rank_title   = function(r) return r >= 100 and "Sovereign" or ("Veteran " .. r) end
+    A.get_active_ref_track_ids   = function() return 5 end
+    A.get_ref_track_index        = function() return 1 end
+    A.get_reward_track_id_from_ref = function() return 9 end
+    A.get_info_for_reward_track  = function() return 9, p.cur, p.prog, 0 end
+    A.get_tier_total_progress    = function(_, idx) return idx <= 101 and p.total or 0 end
+    A.get_num_base_tiers         = function() return 100 end
+    A.has_repeatable_tier        = function() return true end
+    A.get_repeatable_tier        = function() return 101 end
+    A.get_repeatable_claimed     = function() return p.claimed, 0 end
+end
+
+local function vet_restore()
+    if not vet_saved then return end
+    local A = BGMeter.zenimax.api
+    for k, fn in pairs(vet_saved) do A[k] = fn end
+    vet_saved = nil
+end
+
+function Mock.vet(arg)
+    local Log = BGMeter.Log
+    local key = (arg or ""):lower():gsub("%s+", "")
+    if key == "off" then
+        vet_restore()
+        if BGMeter.UI.menu then BGMeter.UI.menu.refresh() end
+        Log.say("vetmock off -- live API restored")
+        return
+    end
+    local p = VET_PRESETS[key]
+    if not p then
+        Log.say("vetmock presets: %s  off", table.concat(VET_ORDER, "  "))
+        return
+    end
+    vet_install(p)
+    local Vet = BGMeter.Veterancy
+    local before = Vet.snapshot()
+    local m = BGMeter.History.get(1)
+    if m then
+        m.haul.vetStart = before
+        m.haul.vetEnd = Vet.snapshot()
+        m.haul.vetRankUp = false
+        BGMeter.UI.window.show_match(1)
+    end
+    if BGMeter.UI.menu then BGMeter.UI.menu.refresh() end
+    Log.say("vetmock %s: rank=%d cur=%d prog=%s total=%s claimed=%d -> laps=%s within=%s pct=%.2f",
+        key, p.rank, p.cur, tostring(p.prog), tostring(p.total), p.claimed,
+        tostring(before.laps), tostring(before.progressToNext), before.percent or 0)
+end
+
+Mock.vet_presets = VET_PRESETS

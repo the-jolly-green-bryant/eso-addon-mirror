@@ -1,0 +1,40 @@
+{
+  "archive_error": "ESOUI returned an empty response",
+  "archive_path": "addons/its_wifey/Bright-Harbinger__4818",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archive_status": "unavailable",
+  "archived": false,
+  "author": "its_wifey",
+  "canonical_id": "esoui:4818",
+  "category_id": "56",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    }
+  ],
+  "content_id": "esoui:4818",
+  "deleted": false,
+  "directories": [
+    "BrightHarbinger"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4818/",
+  "fingerprint": "e1072ba2551455759e8a99051182d3fcb448f9e0ba38bd1d6fb0b7582c4c637f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17316.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17315.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4818",
+  "source_url": "https://www.esoui.com/downloads/info4818-BrightHarbinger.html",
+  "stats": {
+    "downloads": 2,
+    "favorites": 1,
+    "monthly_downloads": 1
+  },
+  "title": "Bright Harbinger",
+  "updated_at": 1788837730000,
+  "version": "1.4"
+}

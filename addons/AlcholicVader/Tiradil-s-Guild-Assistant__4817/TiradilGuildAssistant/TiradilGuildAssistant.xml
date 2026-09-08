@@ -1,0 +1,77 @@
+<!-- Title: Tiradil's Guild Assistant -->
+<!-- Author: Tiradil -->
+<!-- Copyright: © 2026 Tiradil -->
+
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="TiradilGuildAssistantWindow" hidden="true" mouseEnabled="true" movable="true" clampedToScreen="true" tier="HIGH" resizeHandleSize="8">
+            <DimensionConstraints minX="360" minY="280" />
+            <Dimensions x="360" y="280" />
+            <Anchor point="CENTER" />
+
+            <Controls>
+                <Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop" mouseEnabled="true">
+                    <OnMouseDown>
+                        if button == MOUSE_BUTTON_INDEX_LEFT then
+                            self:GetParent():StartMoving()
+                        end
+                    </OnMouseDown>
+                    <OnMouseUp>
+                        self:GetParent():StopMovingOrResizing()
+                    </OnMouseUp>
+                </Backdrop>
+
+                <Backdrop name="$(parent)ColorWash" centerColor="70000000" edgeColor="00000000" mouseEnabled="false">
+                    <AnchorFill />
+                </Backdrop>
+
+                <Label name="$(parent)Title" font="ZoFontWinH3">
+                    <Anchor point="TOP" relativeTo="$(parent)" offsetY="15" />
+                    <OnInitialized>
+                        self:SetText(TiradilL10n.Get("SUITE_TITLE"))
+                    </OnInitialized>
+                </Label>
+
+                <Button name="$(parent)Close" inherits="ZO_CloseButton">
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" offsetX="-5" offsetY="5" />
+                    <OnClicked>
+                        TiradilGuildAssistantWindow:SetHidden(true)
+                    </OnClicked>
+                </Button>
+
+                <Button name="$(parent)RosterBtn" inherits="ZO_DefaultButton">
+                    <Dimensions x="260" y="55" />
+                    <Anchor point="TOP" relativeTo="$(parent)" offsetY="65" />
+                    <OnInitialized>
+                        self:SetText(TiradilL10n.Get("BTN_GUILD_ROSTER"))
+                    </OnInitialized>
+                    <OnClicked>
+                        TiradilRoster.ToggleWindow()
+                    </OnClicked>
+                </Button>
+
+                <Button name="$(parent)LedgerBtn" inherits="ZO_DefaultButton">
+                    <Dimensions x="260" y="55" />
+                    <Anchor point="TOP" relativeTo="$(parent)RosterBtn" relativePoint="BOTTOM" offsetY="15" />
+                    <OnInitialized>
+                        self:SetText(TiradilL10n.Get("BTN_GUILD_LEDGER"))
+                    </OnInitialized>
+                    <OnClicked>
+                        GuildLedger.ToggleUI()
+                    </OnClicked>
+                </Button>
+
+                <Button name="$(parent)InactiveWatchBtn" inherits="ZO_DefaultButton">
+                    <Dimensions x="260" y="55" />
+                    <Anchor point="TOP" relativeTo="$(parent)LedgerBtn" relativePoint="BOTTOM" offsetY="15" />
+                    <OnInitialized>
+                        self:SetText(TiradilIWL10n.Get("BTN_LAUNCHER"))
+                    </OnInitialized>
+                    <OnClicked>
+                        TiradilInactiveWatch.ToggleWindow()
+                    </OnClicked>
+                </Button>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

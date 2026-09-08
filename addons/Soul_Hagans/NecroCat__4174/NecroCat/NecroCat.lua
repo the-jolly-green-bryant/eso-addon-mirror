@@ -2,7 +2,7 @@
 NecroCat = NecroCat or {
     name    = "NecroCat",
     author  = "Soul_Hagans",
-    version = "1.9.8",
+    version = "1.9.9",
 }
 
 local NC = NecroCat
@@ -1570,6 +1570,26 @@ local function InitializeMenu()
             name = "|c66f2ff4. Чат и Иконки|r",
             tooltip = "Настройки кнопок быстрого доступа у окна чата",
             controls = {
+                { type = "header", name = "Цветные иконки интерфейса" },
+                {
+                    type = "checkbox",
+                    name = "Цветные иконки классов и альянсов",
+                    tooltip = "Заменяет стандартные иконки классов, альянсов и гильд-торговца на красивые цветные.",
+                    requiresReload = true,
+                    getFunc = function() return NC.savedVars.customColorIcons end,
+                    setFunc = function(v) NC.savedVars.customColorIcons = v end,
+                },
+                {
+                    type = "checkbox",
+                    name = "Иконка БГ в списках друзей и гильдии",
+                    tooltip = "Отображает значок скрещенных мечей рядом с локацией игрока в списке друзей (O) и составе гильдии (G), если он находится на Полях сражений (БГ).",
+                    getFunc = function() return NC.savedVars.showBgZoneIcon end,
+                    setFunc = function(v) 
+                        NC.savedVars.showBgZoneIcon = v 
+                        if FRIENDS_LIST then FRIENDS_LIST:RefreshData() end
+                        if GUILD_ROSTER_KEYBOARD then GUILD_ROSTER_KEYBOARD:RefreshData() end
+                    end,
+                },
                 {
                     type = "checkbox",
                     name = "Показывать иконку телепорта в дом",
@@ -1765,6 +1785,26 @@ local function InitializeMenu()
                     tooltip = "Отображает стильное всплывающее окно вверху экрана с иконкой вещи, названием сета и счетчиком собранных предметов (например: 14/25)",
                     getFunc = function() return NC.savedVars.showAutoBindToast end,
                     setFunc = function(v) NC.savedVars.showAutoBindToast = v end,
+                },
+                {
+                    type = "button",
+                    name = "Тестовый показ тоста (Переместить)",
+                    tooltip = "Показывает тост на 6 секунд, чтобы вы могли зажать ЛКМ и перетащить его в любое удобное место на экране.",
+                    func = function() 
+                        if NC.TestSetToast then NC.TestSetToast() end 
+                    end,
+                },
+                {
+                    type = "button",
+                    name = "Сбросить позицию тоста",
+                    func = function()
+                        NC.savedVars.setToastLeft = 500
+                        NC.savedVars.setToastTop  = 140
+                        if NC.SetToastFrame then
+                            NC.SetToastFrame:ClearAnchors()
+                            NC.SetToastFrame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 500, 140)
+                        end
+                    end,
                 },
                 { type = "header", name = "Счетчик сундуков" },
                 {
@@ -2180,16 +2220,23 @@ end
 function NC.CreateSetToastUI()
     local frame = WINDOW_MANAGER:CreateTopLevelWindow("NecroCat_SetToastFrame")
     frame:SetDimensions(360, 54)
-    frame:SetAnchor(TOP, GuiRoot, TOP, 0, 140)
+    frame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, NC.savedVars.setToastLeft or 500, NC.savedVars.setToastTop or 140)
+    frame:SetMovable(true)
+    frame:SetMouseEnabled(true)
     frame:SetClampedToScreen(true)
     frame:SetHidden(true)
     frame:SetDrawTier(DT_HIGH)
 
+    frame:SetHandler("OnMoveStop", function(self)
+        NC.savedVars.setToastLeft = self:GetLeft()
+        NC.savedVars.setToastTop  = self:GetTop()
+    end)
+
     local bg = WINDOW_MANAGER:CreateControl("$(parent)BG", frame, CT_BACKDROP)
     bg:SetAnchorFill(frame)
-    bg:SetCenterColor(0.05, 0.05, 0.05, 0.85)
-    bg:SetEdgeColor(0.4, 0.95, 1, 0.8)
-    bg:SetEdgeTexture("", 8, 1, 1)
+    bg:SetCenterColor(0.03, 0.03, 0.03, 0.92)
+    bg:SetEdgeColor(0.2, 0.85, 1, 0.9)
+    bg:SetEdgeTexture("EsoUI/Art/Tooltips/UI-Border.dds", 8, 8)
 
     local icon = WINDOW_MANAGER:CreateControl("$(parent)Icon", frame, CT_TEXTURE)
     icon:SetDimensions(40, 40)
@@ -2249,6 +2296,25 @@ function NC.ShowSetToast(itemLink, setId, setName)
             NC.SetToastFrame:SetHidden(true)
         end
     end, 3500)
+end
+
+function NC.TestSetToast()
+    if not NC.SetToastFrame then return end
+
+    NC.SetToastIcon:SetTexture("EsoUI/Art/Icons/gear_nord_heavy_chest_d.dds")
+    NC.SetToastName:SetText("|c00FF00Кираса матери ночи|r")
+    NC.SetToastSet:SetText("|c66f2ffОбъятия матери ночи|r  |c00FF00(12/25)|r")
+    NC.SetToastFrame:SetHidden(false)
+    NC.SetToastFrame:BringWindowToTop()
+    PlaySound("Item_Unlocked")
+
+    local showTime = GetFrameTimeSeconds()
+    NC.lastSetToastTime = showTime
+    zo_callLater(function()
+        if NC.SetToastFrame and NC.lastSetToastTime == showTime then
+            NC.SetToastFrame:SetHidden(true)
+        end
+    end, 6000)
 end
 
 function NC.OnInventorySlotUpdateForAutoBind(eventCode, bagId, slotIndex, isNewItem)
@@ -2347,6 +2413,8 @@ function NC.OnAddOnLoaded(eventCode, addOnName)
         -- Авто-привязка сетов (Stickerbook) и всплывающий тост
         autoBindSetItems        = false,
         showAutoBindToast       = true,
+        setToastLeft            = 500,
+        setToastTop             = 140,
         -- Счетчик сундуков
         showChestCounter        = false,
         chestSize               = 36,
@@ -2355,6 +2423,8 @@ function NC.OnAddOnLoaded(eventCode, addOnName)
         currentChestsCount      = 0,
         lastZoneId              = 0,
         openedChestsCoords      = {},
+        customColorIcons        = false,
+        showBgZoneIcon          = false,
         playerHouses            = {},
     }, GetWorldName())
     -- Бесшовная миграция старой настройки банка со слота на ID
@@ -2366,6 +2436,8 @@ function NC.OnAddOnLoaded(eventCode, addOnName)
         NC.savedVars.firstLoad = false
         NC.savedVars.vrxCoord = 136
     end
+    
+    NC.ApplyCustomIcons()
 
     NC.CastleIcon = WINDOW_MANAGER:CreateControl("NecroCatGuildHall", ZO_ChatWindow, CT_BUTTON)
     NC.CastleIcon:SetDimensions(25, 25)
@@ -2421,6 +2493,7 @@ function NC.OnAddOnLoaded(eventCode, addOnName)
     NC.HookFriendsSorting()
     NC.HookGuildSelector()
     NC.HookMenuColors()
+    NC.HookBattlegroundZoneIcons()
     
     CreateWhisperUI()
     NC.UpdateWhisperUI()
@@ -2573,6 +2646,78 @@ function NC.SetDiffAdventurer() NC.SetDifficulty(OVERLAND_DIFFICULTY_TYPE_ADVENT
 function NC.SetDiffBasegame()   NC.SetDifficulty(OVERLAND_DIFFICULTY_TYPE_BASEGAME) end
 function NC.SetDiffJourneyman() NC.SetDifficulty(OVERLAND_DIFFICULTY_TYPE_JOURNEYMAN) end
 function NC.SetDiffVeteran()    NC.SetDifficulty(OVERLAND_DIFFICULTY_TYPE_VETERAN) end
+
+---------------------------------------------------------
+-- МОДУЛЬ: ИКОНКА БГ В СПИСКАХ ДРУЗЕЙ И ГИЛЬДИИ
+---------------------------------------------------------
+function NC.HookBattlegroundZoneIcons()
+    local function ApplyBgIcon(control, data)
+        if not NC.savedVars or not NC.savedVars.showBgZoneIcon then return end
+        if not control or not control.zoneLabel or not data then return end
+
+        local zoneId = data.zoneId
+        if zoneId and zoneId > 0 then
+            local bgId = GetZoneBattlegroundId(zoneId)
+            if bgId and bgId > 0 then
+                local currentText = control.zoneLabel:GetText()
+                if currentText and not string.find(currentText, "poi_battlefield_complete") then
+                    control.zoneLabel:SetText("|t18:18:EsoUI/Art/Icons/poi/poi_battlefield_complete.dds|t " .. currentText)
+                end
+            end
+        end
+    end
+
+    -- 1. Хук для Списка друзей (O)
+    if FRIENDS_LIST and FRIENDS_LIST.SetupRow then
+        ZO_PostHook(FRIENDS_LIST, "SetupRow", ApplyBgIcon)
+    end
+
+    -- 2. Хук для Списка гильдии (G)
+    if GUILD_ROSTER_KEYBOARD and GUILD_ROSTER_KEYBOARD.SetupRow then
+        ZO_PostHook(GUILD_ROSTER_KEYBOARD, "SetupRow", ApplyBgIcon)
+    end
+end
+
+---------------------------------------------------------
+-- МОДУЛЬ: ЦВЕТНЫЕ ИКОНКИ КЛАССОВ И АЛЬЯНСОВ
+---------------------------------------------------------
+function NC.ApplyCustomIcons()
+    if not NC.savedVars or not NC.savedVars.customColorIcons then return end
+
+    -- 1. Иконки классов (Клавиатура 32x32)
+    RedirectTexture("esoui/art/icons/class/class_dragonknight.dds", "NecroCat/imgs/icons/dragonknight32.dds")
+    RedirectTexture("esoui/art/icons/class/class_necromancer.dds", "NecroCat/imgs/icons/necro32.dds")
+    RedirectTexture("esoui/art/icons/class/class_nightblade.dds", "NecroCat/imgs/icons/nightblade32.dds")
+    RedirectTexture("esoui/art/icons/class/class_sorcerer.dds", "NecroCat/imgs/icons/sorc32.dds")
+    RedirectTexture("esoui/art/icons/class/class_templar.dds", "NecroCat/imgs/icons/templar32.dds")
+    RedirectTexture("esoui/art/icons/class/class_warden.dds", "NecroCat/imgs/icons/warden32.dds")
+    RedirectTexture("esoui/art/icons/class/class_arcanist.dds", "NecroCat/imgs/icons/arcanist32.dds")
+
+    -- 2. Иконки классов (Геймпад 64x64)
+    RedirectTexture("esoui/art/icons/class/gamepad/gp_class_dragonknight.dds", "NecroCat/imgs/icons/gpdragonknight.dds")
+    RedirectTexture("esoui/art/icons/class/gamepad/gp_class_necromancer.dds", "NecroCat/imgs/icons/gpnecro.dds")
+    RedirectTexture("esoui/art/icons/class/gamepad/gp_class_nightblade.dds", "NecroCat/imgs/icons/gpnightblade.dds")
+    RedirectTexture("esoui/art/icons/class/gamepad/gp_class_sorcerer.dds", "NecroCat/imgs/icons/gpsorc.dds")
+    RedirectTexture("esoui/art/icons/class/gamepad/gp_class_templar.dds", "NecroCat/imgs/icons/gptemplar.dds")
+    RedirectTexture("esoui/art/icons/class/gamepad/gp_class_warden.dds", "NecroCat/imgs/icons/gpwarden.dds")
+    RedirectTexture("esoui/art/icons/class/gamepad/gp_class_arcanist.dds", "NecroCat/imgs/icons/arcanist64.dds")
+
+    -- 3. Значки Альянсов (32, 64, 128)
+    RedirectTexture("esoui/art/contacts/social_allianceicon_aldmeri.dds", "NecroCat/imgs/icons/aldmeri32.dds")
+    RedirectTexture("esoui/art/contacts/social_allianceicon_daggerfall.dds", "NecroCat/imgs/icons/daggerfall32.dds")
+    RedirectTexture("esoui/art/contacts/social_allianceicon_ebonheart.dds", "NecroCat/imgs/icons/ebonheart32.dds")
+    RedirectTexture("esoui/art/stats/alliancebadge_aldmeri.dds", "NecroCat/imgs/icons/aldmeri64.dds")
+    RedirectTexture("esoui/art/stats/alliancebadge_daggerfall.dds", "NecroCat/imgs/icons/daggerfall64.dds")
+    RedirectTexture("esoui/art/stats/alliancebadge_ebonheart.dds", "NecroCat/imgs/icons/ebonheart64.dds")
+    RedirectTexture("esoui/art/ava/avacapturebar_alliancebadge_aldmeri.dds", "NecroCat/imgs/icons/aldmeri128.dds")
+    RedirectTexture("esoui/art/ava/avacapturebar_alliancebadge_daggerfall.dds", "NecroCat/imgs/icons/daggerfall128.dds")
+    RedirectTexture("esoui/art/ava/avacapturebar_alliancebadge_ebonheart.dds", "NecroCat/imgs/icons/ebonheart128.dds")
+
+    -- 4. Торговец и Война Альянсов
+    RedirectTexture("esoui/art/guild/gamepad/gp_ownership_icon_guildtrader.dds", "NecroCat/imgs/icons/guildtrader64.dds")
+    RedirectTexture("esoui/art/guild/ownership_icon_guildtrader.dds", "NecroCat/imgs/icons/guildtrader128.dds")
+    RedirectTexture("esoui/art/guild/ownership_icon_keep.dds", "NecroCat/imgs/icons/alliancewarowned.dds")
+end
 
 EVENT_MANAGER:RegisterForEvent(NC.name, EVENT_ADD_ON_LOADED, NC.OnAddOnLoaded)
 

@@ -66,7 +66,14 @@ local strings = {
   SI_FURC_TRADERS_HGF = "Fournisseur intérieur^n,de",
   SI_FURC_TRADERS_HOLIDAY = "Fournisseur fêtes^n,from",
   SI_FURC_TRADERS_LUXF = "Zanil Theran",
-  -- 60 ENTRIES UNTRANSLATED/IDENTICAL
+  -- 67 ENTRIES UNTRANSLATED/IDENTICAL
+  SI_FURC_CHAT_BAD_ITEM = "<<1>> is not an item link or an item id",
+  SI_FURC_CHAT_BUILDING = "The database is still being built, please try again in a moment.",
+  SI_FURC_CHAT_MATS = "Mats:",
+  SI_FURC_CHAT_NO_MATS = "Not craftable.",
+  SI_FURC_CHAT_NO_SOURCE = "No known source.",
+  SI_FURC_CHAT_UNKNOWN = "<<1>> is not in the database",
+  SI_FURC_CHAT_USAGE = "Commands:",
   SI_FURC_DB_EQUIP = "with equipment",
   SI_FURC_EVENT_ANNIVERSARY = "Anniversary Jubilee",
   SI_FURC_EVENT_BLACKWOOD = "Bounties of Blackwood",
@@ -130,7 +137,4 @@ local strings = {
   -- ////// END   : DON'T REMOVE THIS LINE
 }
 
-for stringId, stringValue in pairs(strings) do
-  ZO_CreateStringId(stringId, stringValue)
-  SafeAddVersion(stringId, 1)
-end
+LibFurnitureCatalogue.Internal.RegisterStrings(strings)

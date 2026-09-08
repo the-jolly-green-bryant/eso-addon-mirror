@@ -5,10 +5,10 @@ FurC.Recipes = FurC.Recipes or {}
 local LFC = LibFurnitureCatalogue
 local ver = LFC.Internal.Constants.Versioning
 
-FurC.Recipes[ver.ZERO2] = {}
+FurC.Recipes[ver.THIEVES] = {}
 
--- Season Zero Part 2
-FurC.Recipes[ver.ZERO2] = {
+-- Season One
+FurC.Recipes[ver.THIEVES] = {
   225103, -- Blueprint: Completed Bounty, Framed Breton Man
   225089, -- Pattern: Breton Drapes, Maroon
   225090, -- Pattern: Breton Drapes, Sage
@@ -867,7 +867,7 @@ FurC.Recipes[ver.SCRIBE] = {
   194390, -- Diagram: Firesong Sculpture, Archdruid's Staff,
   194391, -- Diagram: Firesong Sculpture, Menhir,
   194392, -- Sketch: Resonance Crystal, Cerulean,
-  194393, -- Forumula: Druidic Throne, Y'ffre's Bloom,
+  194393, -- Formula: Druidic Throne, Y'ffre's Bloom,
   194394, -- Design: Druidic Oven, Stone,
   194395, -- Pattern: Mage Tapestry, Aurbic Phoenix,
   194396, -- Praxis: Stone, Lava-Etched,
@@ -1369,7 +1369,6 @@ FurC.Recipes[ver.MARKAT] = {
   171483, -- Diagram: Dwarven Lamp, Conal Frustum Cage
   171482, -- Diagram: Dwarven Lamp, Cylinder Cage
   171481, -- Diagram: Dwarven Potted Plant, Polished Vase
-  141901, -- Pattern: Psijic Banner, Long
   119408, -- Pattern: Simple Blue Banner
 }
 
@@ -2491,6 +2490,7 @@ FurC.Recipes[ver.ALTMER] = {
   139580, -- Sketch: Scrimshaw Jewelry Box, Floral
   139549, -- Blueprint: Alinor Chair, Polished
   139496, -- Pattern: Psijic Banner, Large
+  141901, -- Pattern: Psijic Banner, Long
   139576, -- Sketch: Scrimshaw, Sea Monster
   139502, -- Praxis: Alinor Column, Slender Timeworn
   139568, -- Blueprint: Alinor Jewelry Box, Polished

@@ -63,7 +63,7 @@ because this means it's available all the time. List all sources. If even one
 of those sources isn't crowns, IT DOESN'T BELONG IN THIS FILE.]]
 --
 
-FurC.CrownStore[ver.ZERO2] = {
+FurC.CrownStore[ver.THIEVES] = {
   [src.CROWN] = {
     [224739] = strCrate(crates.ANU_PAD), -- Aetherean Rupture, Liminal
     [224843] = strCrate(crates.ANU_PAD), -- Starsong Staircase, Spiral
@@ -608,9 +608,9 @@ FurC.CrownStore[ver.DEADL] = {
     [181487] = strCrate(crates.HARLEQUIN), -- Grim Harlequin Chandelier
     [181438] = strCrate(crates.HARLEQUIN), -- Mad God's Monarch Flock
     [178800] = strCrate(crates.HARLEQUIN), -- Amethyst Candlefly Gathering
-    [171947] = strCrate(crates.IRONY), -- Deadlands Chandelier, Bladed
-    [171946] = strCrate(crates.IRONY), -- Deadlands Cage, Bladed
-    [171945] = strCrate(crates.IRONY), -- Deadlands Sconce, Horned
+    [171947] = strCrate(crates.IRON_ATRO), -- Deadlands Chandelier, Bladed
+    [171946] = strCrate(crates.IRON_ATRO), -- Deadlands Cage, Bladed
+    [171945] = strCrate(crates.IRON_ATRO), -- Deadlands Sconce, Horned
     [171546] = strCrate(crates.AYLEID), -- Ayleid Relief, Blessed Life-Tree
     [171545] = strCrate(crates.AYLEID), -- Ayleid Gate, Large
     [171544] = strCrate(crates.AYLEID), -- Comet, Aetherial

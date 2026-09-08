@@ -19,6 +19,7 @@ local TEXT_GAP = 5
 local TEXTURE_WHITE = "EsoUI/Art/Miscellaneous/white.dds"
 local MAIL_ICON = "EsoUI/Art/MenuBar/Gamepad/gp_playermenu_icon_mail.dds"
 local CLOCK_ICON_FILE = "nqol_clock.dds"
+local FOOD_DRINK_ICON = "EsoUI/Art/Crafting/provisioner_indexIcon_meat_up.dds"
 local SOUL_GEM_FALLBACK_ICON = "EsoUI/Art/Inventory/inventory_tabIcon_Craftbag_enchanting_up.dds"
 local GAMEPLAY_SCENES = {
     hud = true,
@@ -117,6 +118,8 @@ local inventoryEventRegistered = false
 local vampireTimerCached = false
 local vampireTimerValue
 local vampireTimerIcon
+local foodDrinkTimerCached = false
+local foodDrinkTimerValue
 
 local ICON_COLORS = {
     alliancePoints = { 0.85, 0.39, 1.00, 1 },
@@ -130,6 +133,7 @@ local ICON_COLORS = {
     cpXp = { 1.00, 0.55, 0.18, 1 },
     crownGems = { 0.50, 0.95, 0.95, 1 },
     endeavorSeals = { 0.55, 0.72, 1.00, 1 },
+    foodDrinkTimer = { 1.00, 0.42, 0.78, 1 },
     fps = { 0.30, 0.95, 0.44, 1 },
     gold = { 1.00, 0.80, 0.22, 1 },
     latency = { 0.45, 0.82, 1.00, 1 },
@@ -447,6 +451,58 @@ local function GetCpOrLevelXpValue()
     return FormatNumber(GetUnitXP("player") or 0) .. "/" .. FormatNumber(GetUnitXPMax("player") or 0)
 end
 
+local function IsFoodOrDrinkBuffAbility(abilityId)
+    local lib = LibFoodDrinkBuff or LIB_FOOD_DRINK_BUFF
+    if not lib or not abilityId or abilityId == 0 then
+        return false
+    end
+
+    if type(lib.IsAbilityAFoodOrDrinkBuff) == "function" then
+        return lib:IsAbilityAFoodOrDrinkBuff(abilityId) == true
+    end
+
+    return (type(lib.IsAbilityAFoodBuff) == "function" and lib:IsAbilityAFoodBuff(abilityId) == true)
+        or (type(lib.IsAbilityADrinkBuff) == "function" and lib:IsAbilityADrinkBuff(abilityId) == true)
+end
+
+local function ComputeFoodDrinkTimer()
+    if not GetNumBuffs or not GetUnitBuffInfo then
+        return nil
+    end
+
+    local now = GetFrameTimeSeconds and GetFrameTimeSeconds() or nil
+    if not now and GetGameTimeMilliseconds then
+        now = GetGameTimeMilliseconds() / 1000
+    end
+    if not now then
+        return nil
+    end
+
+    local latestEnding
+    for index = 1, GetNumBuffs("player") do
+        local _, _, timeEnding, _, _, _, _, _, _, _, abilityId = GetUnitBuffInfo("player", index)
+        local ending = tonumber(timeEnding)
+        if IsFoodOrDrinkBuffAbility(abilityId) and ending and ending > now and (not latestEnding or ending > latestEnding) then
+            latestEnding = ending
+        end
+    end
+
+    if latestEnding then
+        return FormatMilliseconds(math.floor((latestEnding - now) * 1000))
+    end
+
+    return nil
+end
+
+local function GetFoodDrinkTimer()
+    if not foodDrinkTimerCached then
+        foodDrinkTimerValue = ComputeFoodDrinkTimer()
+        foodDrinkTimerCached = true
+    end
+
+    return foodDrinkTimerValue
+end
+
 local VAMPIRE_STAGE_BY_ICON = {
     ["/esoui/art/icons/ability_u26_vampire_infection_stage1.dds"] = 1,
     ["/esoui/art/icons/ability_u26_vampire_infection_stage2.dds"] = 2,
@@ -687,6 +743,14 @@ local entryDefinitions = {
         CURRENCY_LOCATION_ACCOUNT
     ),
     {
+        key = "foodDrinkTimer",
+        label = NQOL.L("features.ticker.food_drink_timer"),
+        tooltip = NQOL.L("features.ticker.food_drink_timer_tooltip"),
+        icon = FOOD_DRINK_ICON,
+        iconTextureCoords = { 0.08, 0.92, 0.08, 0.92 },
+        getValue = GetFoodDrinkTimer,
+    },
+    {
         key = "fps",
         label = NQOL.L("features.ticker.fps_fce204a"),
         tooltip = NQOL.L("features.ticker.shows_current_frames_per_second_ff66e76"),
@@ -850,6 +914,7 @@ NQOL.Lexicon.RegisterRefreshCallback(function()
         clock12 = { "features.ticker.clock12", "features.ticker.clock12_tooltip" },
         cp = { "features.ticker.cp_f19057b", "features.ticker.shows_the_account_s_current_champion_points_or_this__d485fb9" },
         cpXp = { "features.ticker.cp_xp_85779db", "features.ticker.shows_champion_xp_progress_or_level_xp_before_champi_bf38c0c" },
+        foodDrinkTimer = { "features.ticker.food_drink_timer", "features.ticker.food_drink_timer_tooltip" },
         fps = { "features.ticker.fps_fce204a", "features.ticker.shows_current_frames_per_second_ff66e76" },
         gold = { "features.ticker.gold_amount_7afd1ac", "features.ticker.shows_this_character_s_carried_gold_52d8a95" },
         latency = { "features.ticker.latency_3e39972", "features.ticker.shows_current_connection_latency_af9f590" },
@@ -1289,6 +1354,8 @@ local function UnregisterInventoryEvents()
 end
 
 Refresh = function()
+    foodDrinkTimerCached = false
+    foodDrinkTimerValue = nil
     vampireTimerCached = false
     vampireTimerValue = nil
     vampireTimerIcon = nil
@@ -1348,6 +1415,14 @@ Refresh = function()
                 local control = GetEntryControl(definition)
                 local icon = ResolveIcon(definition)
                 local hideIcon = not definition.iconText and definition.hideIconWhenMissing == true and not icon
+                if control.icon.SetTextureCoords then
+                    local coords = definition.iconTextureCoords
+                    if coords then
+                        control.icon:SetTextureCoords(coords[1], coords[2], coords[3], coords[4])
+                    else
+                        control.icon:SetTextureCoords(0, 1, 0, 1)
+                    end
+                end
                 if definition.iconText then
                     control.icon:SetTexture(TEXTURE_WHITE)
                     control.iconLabel:SetText(definition.iconText)

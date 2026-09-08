@@ -135,7 +135,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [LibFonts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/TheJoltman/LibFonts__4004) | TheJoltman | PC / Mac | 1.0.0 |
 | [LibFoodDrinkBuff](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Baertram/LibFoodDrinkBuff__1902) | Baertram | PC / Mac | 19 |
 | [LibFsCommons](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FelipeS11/LibFsCommons__2439) | FelipeS11 | PC / Mac | 3.0 |
-| [LibFurnitureCatalogue](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/wookiefriseur/LibFurnitureCatalogue__4804) | wookiefriseur | PC / Mac | 1.0.0 |
+| [LibFurnitureCatalogue](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/wookiefriseur/LibFurnitureCatalogue__4804) | wookiefriseur | PC / Mac | 1.1.0 |
 | [LibGamepad](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/YeOldeDragon/LibGamepad__37661fa7-7702-4eeb-b3ed-7e840aa17647) | YeOldeDragon | Console | — |
 | [LibGamepad](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/YeOldeDragon/LibGamepad__4441) | YeOldeDragon | PC / Mac | 1.0.8 |
 | [LibGamepadOptions](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/OfficialZoruah/LibGamepadOptions__4614) | OfficialZoruah | PC / Mac | 0.2.4 |
@@ -231,7 +231,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [LibQuestStatus](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/LibQuestStatus__df55d66d-d19b-41dd-99a2-8d385916f4a1) | code65536 | Console | — |
 | [LibQuestStatus](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/LibQuestStatus__4573) | code65536 | PC / Mac | 1.0.3 |
 | [LibRadialMenu](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/LibRadialMenu__f3dd1d3e-85df-448d-8d84-fdf6545dbebb) | M0R | Console | — |
-| [LibRadialMenu](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/LibRadialMenu__4297) | M0R | PC / Mac | 6 |
+| [LibRadialMenu](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/LibRadialMenu__4297) | M0R | PC / Mac | 8 |
 | [Librarian Book Manager](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Flamage/Librarian-Book-Manager__188) | Flamage | PC / Mac | 3.17 |
 | [LibRecipe](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Sharlikran/LibRecipe__17071a4b-f373-41fa-8874-778672bae73c) | Sharlikran | Console | — |
 | [LibRecipe](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Sharlikran/LibRecipe__3927) | Sharlikran | PC / Mac | 1.12 |

@@ -1,4 +1,5 @@
 local strings = {
+
     AUTO_REPAIR = "Automatic repair",
     AUTO_REPAIR_TOOLTIP = "Settings for automatically repairing equipped items.",
 

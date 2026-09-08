@@ -1,7 +1,7 @@
 OWAssistant = {
     name = "OWAssistant",
     addonName = "OlhasWrathAssistant",
-    version = "0.1.2",
+    version = "0.1.3",
     Localization = {
         defaultLanguage = "en",
         languages = {},

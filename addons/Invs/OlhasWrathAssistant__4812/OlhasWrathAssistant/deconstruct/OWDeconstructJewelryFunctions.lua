@@ -193,13 +193,20 @@ local function IsJewelryAllowed(
             itemLink
         )
 
-    local matchesFilter = false
-
-    if IsItemReconstructed(
+    local reconstructed = IsItemReconstructed(
         bagId,
         slotIndex
-    ) and profile.reconstructed
+    )
+
+    if reconstructed
+        and not profile.reconstructed
     then
+        return false
+    end
+
+    local matchesFilter = false
+
+    if reconstructed then
         matchesFilter = true
     end
 
@@ -303,8 +310,6 @@ local function RemoveLowestResearchJewelry(
 
     local lowestItemByTrait = {}
 
-    -- Знаходимо предмет найнижчої якості
-    -- для кожного невивченого трейту.
     for _, candidate in ipairs(candidates) do
         if candidate.unresearched then
             local key =
@@ -334,9 +339,6 @@ local function RemoveLowestResearchJewelry(
                 GetJewelryResearchKey(candidate)
             ] == candidate
 
-        -- Уже вивчені трейти розбираються.
-        -- Для невивченого трейту залишається
-        -- один предмет найнижчої якості.
         if not shouldKeepForResearch then
             table.insert(
                 filteredCandidates,

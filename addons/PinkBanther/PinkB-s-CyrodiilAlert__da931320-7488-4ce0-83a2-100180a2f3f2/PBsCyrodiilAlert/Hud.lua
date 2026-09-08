@@ -701,10 +701,24 @@ function log:Render()
 	self.window:SetHidden(false)
 end
 
+-- The window belongs to Cyrodiil and the Imperial City. Anywhere else it is not merely empty,
+-- it is not there: a panel of add-on output over a city or a trial is somebody else's screen.
+-- Output does not stop there, it goes to chat, which is where it would have gone anyway.
+--
+-- This is not the watch's onlyInAvA setting. That one decides whether the campaign is being
+-- read; this decides where a window is allowed to sit, and the answer to that does not change
+-- because somebody wants their keeps watched from a crafting station.
+function log:ShouldShow()
+	return addon:InAvAZone()
+end
+
 -- Returns true if the line was taken. False means the caller has to put it in chat instead --
 -- which is the whole of the promise that the add-on never swallows its own output.
 function log:Push(text)
 	if not addon.sv or addon.sv.log.destination == "chat" then
+		return false
+	end
+	if not self:ShouldShow() then
 		return false
 	end
 	if not self:Create() then
@@ -729,6 +743,16 @@ end
 
 function log:Refresh()
 	if not (addon.sv and addon.sv.log) then
+		return
+	end
+	if not self:ShouldShow() then
+		-- Taken down on the way out, and empty on the way back in: an hour-old alert reappearing
+		-- when you ride back into Cyrodiil is not a log, it is a ghost.
+		self.lines = {}
+		if self.window then
+			self.label:SetText("")
+			self.window:SetHidden(true)
+		end
 		return
 	end
 	if addon.sv.log.destination == "chat" then

@@ -41,13 +41,13 @@ local function CleanName(name) return zo_strformat("<<1>>", name or "") end
 -- Screen-space angles are clockwise; ESO camera/texture headings are counterclockwise.
 -- Keep these pure transforms shared by tiles, pins and the inverse click projection.
 function Minimap:Project(x, y)
-    local dx, dy = (x - self.playerX) * self.span, (y - self.playerY) * self.span
+    local dx, dy = (x - self.centerX) * self.span, (y - self.centerY) * self.span
     return dx * self.cosAngle - dy * self.sinAngle, dx * self.sinAngle + dy * self.cosAngle
 end
 
 function Minimap:Unproject(x, y)
-    return self.playerX + (x * self.cosAngle + y * self.sinAngle) / self.span,
-        self.playerY + (-x * self.sinAngle + y * self.cosAngle) / self.span
+    return self.centerX + (x * self.cosAngle + y * self.sinAngle) / self.span,
+        self.centerY + (-x * self.sinAngle + y * self.cosAngle) / self.span
 end
 
 function Minimap:Contains(x, y, inset)
@@ -77,6 +77,17 @@ function Minimap:UpdateTransform(x, y, heading, elapsed)
     self.angle = (self.angle + delta * (1 - math.exp(-12 * (elapsed or 1)))) % TAU
     self.cosAngle, self.sinAngle = math.cos(self.angle), math.sin(self.angle)
     self.span = math.min(self.width, self.height) * Settings().zoom
+    -- Bound the entire viewport in map space, including rotated corners.
+    -- At low zoom a wide rectangle may need a larger span to fit the map.
+    local extentX, extentY = self.width / 2, self.height / 2
+    if Settings().shape ~= "circle" then
+        local c, s = math.abs(self.cosAngle), math.abs(self.sinAngle)
+        extentX, extentY = c * extentX + s * extentY, s * extentX + c * extentY
+    end
+    self.span = math.max(self.span, extentX * 2, extentY * 2)
+    local marginX, marginY = extentX / self.span, extentY / self.span
+    self.centerX = Clamp(x, marginX, 1 - marginX)
+    self.centerY = Clamp(y, marginY, 1 - marginY)
     self.heading = heading
 end
 
@@ -240,7 +251,7 @@ function Minimap:NormalizeSettings()
     local ranges = {
         diameter = {180, 500, 280}, width = {220, 600, 340}, height = {160, 500, 240}, questTrackerOffset = {0, 600, 0},
         mapOpacity = {0, 100, 95}, frameOpacity = {0, 100, 100}, borderThickness = {1, 6, 2},
-        zoom = {1, 8, 2.5}, markerScale = {75, 150, 100}, playerScale = {75, 175, 110}, combatOpacity = {0, 100, 40},
+        zoom = {1, 12, 2.5}, markerScale = {75, 200, 100}, playerScale = {75, 175, 110}, combatOpacity = {0, 100, 40},
     }
     for key, range in pairs(ranges) do s[key] = Clamp(s[key], range[1], range[2], range[3]) end
     if s.shape ~= "rectangle" then s.shape = "circle" end
@@ -470,9 +481,9 @@ function Minimap:RefreshMap()
     return true
 end
 
-local function AddPin(list, kind, x, y, icon, name, radius)
+local function AddPin(list, kind, x, y, icon, name, radius, areaColor)
     if ValidPoint(x, y) and type(icon) == "string" and icon ~= "" then
-        list[#list + 1] = { kind = kind, x = x, y = y, icon = icon, name = CleanName(name), radius = radius or 0 }
+        list[#list + 1] = { kind = kind, x = x, y = y, icon = icon, name = CleanName(name), radius = radius or 0, areaColor = areaColor }
     end
 end
 
@@ -511,11 +522,17 @@ function Minimap:BuildStaticPins()
                 for _, conditions in pairs(steps or {}) do
                     for _, data in pairs(conditions) do
                         -- Use the native icon lookup with its tiny read-only input contract.
-                        local proxy = { m_PinTag = { isBreadcrumb = data.isBreadcrumb }, GetPinType = function() return data.pinType end }
+                        local pinType = data.pinType
+                        if GetQuestPinTypeForTrackingLevel and GetTrackingLevel then
+                            pinType = GetQuestPinTypeForTrackingLevel(pinType, GetTrackingLevel(TRACK_TYPE_QUEST, quest))
+                        end
+                        local proxy = { m_PinTag = { isBreadcrumb = data.isBreadcrumb }, GetPinType = function() return pinType end }
                         local icon = ZO_MapPin.GetQuestIcon(proxy) or ICONS.quest
+                        local assisted = ZO_MapPin.ASSISTED_PIN_TYPES and ZO_MapPin.ASSISTED_PIN_TYPES[pinType]
+                        local areaColor = assisted and ZO_MAP_PIN_ASSISTED_COLOR or ZO_MAP_PIN_NORMAL_COLOR
                         local name = GetJournalQuestName(quest)
                         if data.insideCurrentMapWorld then
-                            AddPin(pins, "quest", data.xLoc, data.yLoc, icon, name, data.areaRadius)
+                            AddPin(pins, "quest", data.xLoc, data.yLoc, icon, name, data.areaRadius, areaColor)
                         end
                         if data.symbolicState == QUEST_PIN_STATE_HAS_ADDITIONAL_SYMBOLIC_POSITION then
                             AddPin(pins, "quest", data.additionalSymbolicLocX, data.additionalSymbolicLocY, icon, name)
@@ -529,7 +546,15 @@ function Minimap:BuildStaticPins()
     self.staticPins = {}
     for _, pin in ipairs(pins) do
         local key = string.format("%s:%.6f:%.6f:%s", pin.kind, pin.x, pin.y, pin.name)
-        if not seen[key] then self.staticPins[#self.staticPins + 1] = pin; seen[key] = true end
+        local existing = seen[key]
+        if not existing then
+            self.staticPins[#self.staticPins + 1] = pin
+            seen[key] = pin
+        elseif Finite(pin.radius) and pin.radius > (existing.radius or 0) then
+            -- A point condition and a search condition can share a position.
+            -- Retain the search area regardless of provider iteration order.
+            existing.radius, existing.areaColor = pin.radius, pin.areaColor
+        end
     end
     self.staticDirty = false
 end
@@ -549,10 +574,11 @@ end
 function Minimap:AcquirePin(index)
     local pin = self.pinPool[index]
     if not pin then
-        pin = { icon = Control(self.pins, CT_TEXTURE, 20), area = Polygon(self.pins, CIRCLE, 10) }
-        pin.area:SetCenterColor(0.90, 0.74, 0.40, 0.10)
-        pin.area:SetBorderColor(0.90, 0.74, 0.40, 0.38)
-        pin.area:SetBorderThickness(1, 1, 1)
+        pin = { icon = Control(self.pins, CT_TEXTURE, 20), area = Control(self.pins, CT_TEXTURE, 10) }
+        -- Match the world map's ZO_PinBlob: the native halo shader supplies
+        -- the filled search region and rim without a texture or gold tint.
+        pin.area:SetPixelRoundingEnabled(false)
+        pin.area:SetShaderEffectType(SHADER_EFFECT_TYPE_HALO)
         self:ClipControl(pin.icon)
         self:ClipControl(pin.area)
         self.pinPool[index] = pin
@@ -570,17 +596,19 @@ function Minimap:DrawPin(data, index)
     local radius = Finite(data.radius) and math.max(0, data.radius) * self.span or 0
     if radius > 0 and self:Contains(x, y, -radius) then
         Place(pin.area, self.viewport, radius * 2, radius * 2, x, y)
-        pin.area:SetCenterColor(Color(Settings().accentColor, 0.10))
-        pin.area:SetBorderColor(Color(Settings().accentColor, 0.38))
+        if data.areaColor then pin.area:SetColor(data.areaColor:UnpackRGBA())
+        else pin.area:SetColor(0.35, 0.75, 0.95, 1) end
         pin.area:SetHidden(false)
     end
     if self:Contains(x, y) then
         Place(pin.icon, self.viewport, size, size, x, y)
         pin.icon:SetTexture(data.icon)
-        if data.kind == "quest" or data.kind == "waypoint" then pin.icon:SetColor(Color(Settings().accentColor))
+        if data.color then pin.icon:SetColor(unpack(data.color))
+        elseif data.kind == "objective" or data.kind == "quest" then pin.icon:SetColor(1, 1, 1, 1)
+        elseif data.kind == "waypoint" then pin.icon:SetColor(Color(Settings().accentColor))
         elseif data.kind == "group" then pin.icon:SetColor(0.54, 0.83, 0.95, 1)
         else pin.icon:SetColor(0.94, 0.96, 0.95, 1) end
-        pin.icon:SetDrawLevel(data.kind == "waypoint" and 23 or data.kind == "group" and 22 or data.kind == "quest" and 21 or 20)
+        pin.icon:SetDrawLevel(data.kind == "objective" and (data.aura and 23 or 24) or data.kind == "waypoint" and 23 or data.kind == "group" and 22 or data.kind == "quest" and 21 or 20)
         pin.icon:SetHidden(false)
         pin.visible = true
     elseif data.kind == "waypoint" and Settings().waypointEdge then
@@ -593,11 +621,52 @@ function Minimap:DrawPin(data, index)
     return index + 1
 end
 
+function Minimap:DrawBattlegroundPins(index)
+    if not IsActiveWorldBattleground or not IsActiveWorldBattleground()
+        or GetMapFilterType() ~= MAP_FILTER_TYPE_BATTLEGROUND then return index end
+    self.objectiveRecords = self.objectiveRecords or {}
+    local used = 0
+    local function DrawObjective(pinType, x, y, name, color, aura)
+        local layout = ZO_MapPin.PIN_DATA[pinType]
+        if pinType == MAP_PIN_TYPE_INVALID or not ValidPoint(x, y)
+            or not layout or type(layout.texture) ~= "string" then return end
+        used = used + 1
+        local record = self.objectiveRecords[used] or { kind = "objective" }
+        self.objectiveRecords[used] = record
+        record.x, record.y, record.name, record.icon = x, y, name, layout.texture
+        record.color, record.aura = color, aura
+        index = self:DrawPin(record, index)
+    end
+    -- Read live positions and states: carried flags/balls and moving capture
+    -- points must update even when the full world map has never been opened.
+    for i = 1, GetNumObjectives() do
+        local keepId, objectiveId, context = GetObjectiveIdsForIndex(i)
+        if IsLocalBattlegroundContext(context) and IsBattlegroundObjective(keepId, objectiveId, context)
+            and IsObjectiveEnabled(keepId, objectiveId, context) then
+            local name = CleanName(GetObjectiveInfo(keepId, objectiveId, context))
+            local pinType, x, y = GetObjectiveSpawnPinInfo(keepId, objectiveId, context)
+            DrawObjective(pinType, x, y, name)
+            pinType, x, y = GetObjectiveReturnPinInfo(keepId, objectiveId, context)
+            DrawObjective(pinType, x, y, name)
+            if IsObjectiveObjectVisible(keepId, objectiveId, context) then
+                pinType, x, y = GetObjectivePinInfo(keepId, objectiveId, context)
+                if pinType ~= MAP_PIN_TYPE_INVALID and ValidPoint(x, y) then
+                    local auraType, r, g, b = GetObjectiveAuraPinInfo(keepId, objectiveId, context)
+                    DrawObjective(auraType, x, y, name, { r, g, b, 1 }, true)
+                    DrawObjective(pinType, x, y, name)
+                end
+            end
+        end
+    end
+    return index
+end
+
 function Minimap:DrawPins()
     local index = 1
     self.waypointArrow:SetHidden(true)
     for _, data in ipairs(self.staticPins) do index = self:DrawPin(data, index) end
     if not self.preview then
+        index = self:DrawBattlegroundPins(index)
         self.groupRecords = self.groupRecords or {}
         if Settings().showGroup then
             for i = 1, GetGroupSize() do
@@ -657,6 +726,8 @@ function Minimap:Render(elapsed)
         -- the frame. ESO texture angles have the opposite sign to Project().
         tile:SetTextureRotation(-self.angle, 0.5, 0.5)
     end
+    local playerX, playerY = self:Project(x, y)
+    Place(self.player, self.viewport, 22 * Settings().playerScale / 100, 22 * Settings().playerScale / 100, playerX, playerY)
     self.player:SetTextureRotation(heading - self.angle, 0.5, 0.5)
     self:DrawPins()
     self:LayoutCompass()
@@ -713,7 +784,12 @@ function Minimap:HandleClick(button)
 end
 
 function Minimap:ChangeZoom(delta)
-    Nirnsteel_UI.Settings:SetMinimapValue("zoom", Clamp(Settings().zoom + (delta > 0 and 0.25 or -0.25), 1, 8))
+    local previousZoom = Settings().zoom
+    local zoom = Clamp(previousZoom + (delta > 0 and 0.25 or -0.25), 1, 12)
+    if zoom == previousZoom then return end
+    Nirnsteel_UI.Settings:SetMinimapValue("zoom", zoom)
+    local sound = SOUNDS and (zoom > previousZoom and SOUNDS.MAP_ZOOM_IN or SOUNDS.MAP_ZOOM_OUT)
+    if sound then PlaySound(sound) end
 end
 
 function Minimap:ClearHover()
@@ -798,7 +874,9 @@ function Minimap:Tick()
     if not self.preview then
         -- Map IDs/floors may change between one-second location checks (another
         -- addon or a floor transition). Never project old pins onto new tiles.
-        if self.mapKey and self.mapKey ~= self:GetMapKey() then self:InvalidateMap() end
+        if self.mapKey and (self.mapKey ~= self:GetMapKey() or not DoesCurrentMapMatchMapForPlayerLocation()) then
+            self:InvalidateMap()
+        end
         if now >= (self.nextMapCheck or 0) then
             self:RefreshMap()
             self.nextMapCheck = now + MAP_CHECK_MS

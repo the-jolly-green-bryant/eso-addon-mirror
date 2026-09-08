@@ -57,6 +57,8 @@ in a corner.
 ・新しい行が上に入ります（折り返しが起きても新しい行が切られない唯一の並びです）。
 ・ウィンドウはクリックもドラッグもできません。下のゲームからクリックを奪わないためで、
 　大きさと位置をドラッグではなく設定で決めているのも同じ理由です。
+・シロディールと帝都の外では、ウィンドウは非表示になります（空になるのではなく消えます）。
+　その間の出力はチャット欄に出るので、見落とすことはありません。再入場時は空の状態で出ます。
 ・ウィンドウを作成できないクライアントでは、すべてチャット欄に出ます。アドオンが自分の
 　出力を黙って捨てることはありません。
 
@@ -152,6 +154,9 @@ in a corner.
 キャンペーンの勝敗を決めるスコアです（累計なので、いまの勢力より遅れて動きます）。
 「攻撃中」の列だけは対応するAPIが無いため、このアドオン自身の走査で数えています。
 マップを開かずに画面へ出す価値があるのは、この列です。
+
+帝都のキャンペーンでは、拠点・得点・攻撃中の3列を表示しません。帝都に砦は無く、地区で
+争われるため、その3つはゼロが並ぶだけだからです（陣営と混雑度は表示します）。
 
 シロディールの外や監視オフのときは表示を消します。得点だけ正しくて「攻撃中」が
 止まったまま残るのが一番良くない状態だからです。
@@ -256,6 +261,8 @@ all of it -- so it never fills your chat window. Console has no tabs to sort it 
 - Newest line at the top: the one arrangement a wrapped line cannot push out of the window.
 - The window has no mouse, so it can never take a click away from the game. That is also why
   its size and place are settings rather than a drag handle.
+- Outside Cyrodiil and the Imperial City the window is hidden, not merely empty, and comes back
+  empty. Output goes to chat while it is away.
 - If the window cannot be created, everything goes to chat instead. The add-on will not swallow
   its own output.
 
@@ -354,6 +361,10 @@ Holdings and scores are the campaign's own numbers, the ones the game's campaign
 The score is cumulative — it is what decides the campaign, so it lags the current situation.
 The under-attack column has no API behind it and is counted off this add-on's own pass; it is
 the column that makes the summary worth having on screen instead of opening the map.
+
+In an Imperial City campaign the keeps, score and under-attack columns are dropped -- there are
+no keeps there and the campaign is scored on districts, so all three would read zero. The
+alliance and how busy it is are what remain.
 
 Outside Cyrodiil, or with the watch switched off, it takes itself down: correct scores beside a
 frozen under-attack column is the worst of the three possible states.

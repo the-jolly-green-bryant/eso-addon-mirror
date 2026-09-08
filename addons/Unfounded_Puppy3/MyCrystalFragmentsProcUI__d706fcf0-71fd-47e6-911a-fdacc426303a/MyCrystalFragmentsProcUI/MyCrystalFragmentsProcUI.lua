@@ -93,10 +93,9 @@ local function OnEffectChanged(eventCode,
     abilityId,
     sourceType)
 
-    d("EffectChanged: " .. tostring(abilityId))
-
-    if unitTag ~= "player" then return end
+    -- abilityId フィルタはコード側で行う
     if not WATCH_LIST[abilityId] then return end
+    if unitTag ~= "player" then return end
 
     -- Bound Armaments Proc: stackCount < 4 のときは非表示
     if abilityId == 203447 and stackCount < 4 then
@@ -108,7 +107,8 @@ local function OnEffectChanged(eventCode,
         return
     end
 
-    if changeType == EFFECT_RESULT_GAINED then
+    -- ★ UPDATED を処理する（Bound Armaments のスタック増加は UPDATED）
+    if changeType == EFFECT_RESULT_GAINED or changeType == EFFECT_RESULT_UPDATED then
         BuffTable[abilityId] = {
             abilityId = abilityId,
             icon = iconName,
@@ -140,18 +140,11 @@ local function UpdateUI()
     local sorted = {}
 
     for abilityId, data in pairs(BuffTable) do
-
-        -- Bound Armaments Proc: stackCount < 4 のときは非表示
-        if abilityId == 203447 and data.stackCount < 4 then
+        if now < data.endTime then
+            table.insert(sorted, {abilityId=abilityId, data=data})
+        else
             BuffTable[abilityId] = nil
             if BuffBars[abilityId] then BuffBars[abilityId]:SetHidden(true) end
-        else
-            if now < data.endTime then
-                table.insert(sorted, {abilityId=abilityId, data=data})
-            else
-                BuffTable[abilityId] = nil
-                if BuffBars[abilityId] then BuffBars[abilityId]:SetHidden(true) end
-            end
         end
     end
 
@@ -186,14 +179,12 @@ local function OnAddOnLoaded(event, addonName)
 
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_EFFECT_CHANGED, OnEffectChanged)
 
-    -- abilityId フィルタ（OR 条件で積み上がる）
---    for id, _ in pairs(WATCH_LIST) do
---        EVENT_MANAGER:AddFilterForEvent(ADDON_NAME, EVENT_EFFECT_CHANGED, REGISTER_FILTER_ABILITY_ID, id)
---    end
+    -- abilityId フィルタは使わない（不安定なため）
+    -- コード側で abilityId を判定する
 
     EVENT_MANAGER:RegisterForUpdate(ADDON_NAME .. "_Update", 100, UpdateUI)
 
-    d("MyCrystalFragmentsProcUI Loaded (filters + stackCount logic)")
+    d("MyCrystalFragmentsProcUI Loaded (no filters, stackCount logic OK)")
 end
 
 EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_ADD_ON_LOADED, OnAddOnLoaded)

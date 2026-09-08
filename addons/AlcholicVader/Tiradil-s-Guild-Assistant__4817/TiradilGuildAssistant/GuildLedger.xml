@@ -1,0 +1,429 @@
+<!-- Title: Tiradil's Guild Assistant -->
+<!-- Author: Tiradil -->
+<!-- Copyright: © 2026 Tiradil -->
+
+<GuiXml>
+    <Controls>
+        <Control name="GuildLedgerTextRowTemplate" virtual="true">
+            <Dimensions x="800" y="20" />
+            <Controls>
+                <Label name="$(parent)Label" font="ZoFontGameSmall" horizontalAlignment="LEFT" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+                    <AnchorFill />
+                </Label>
+            </Controls>
+        </Control>
+
+        <Control name="GuildLedgerTextRowTemplateLarge" virtual="true">
+            <Dimensions x="800" y="26" />
+            <Controls>
+                <Label name="$(parent)Label" font="ZoFontWinH3" horizontalAlignment="LEFT" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+                    <AnchorFill />
+                </Label>
+            </Controls>
+        </Control>
+
+        <TopLevelControl name="GuildLedgerFrame" hidden="true" mouseEnabled="true" movable="true" clampedToScreen="true" tier="HIGH" resizeHandleSize="8">
+            <DimensionConstraints minX="940" minY="940" />
+            <Dimensions x="940" y="940" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
+            
+            <Controls>
+                <Backdrop name="$(parent)Bg" inheritAlpha="false" mouseEnabled="true">
+                    <AnchorFill />
+                    <Edge file="EsoUI/Art/Tooltips/UI-Border.dds" edgeFileWidth="128" edgeFileHeight="16" />
+                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" />
+                    <OnMouseDown>
+                        if button == MOUSE_BUTTON_INDEX_LEFT then
+                            self:GetParent():StartMoving()
+                        end
+                    </OnMouseDown>
+                    <OnMouseUp>
+                        self:GetParent():StopMovingOrResizing()
+                    </OnMouseUp>
+                </Backdrop>
+
+                <Backdrop name="$(parent)ColorWash" centerColor="70000000" edgeColor="00000000" mouseEnabled="false">
+                    <AnchorFill />
+                </Backdrop>
+
+                <Control name="$(parent)Header">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="3" offsetY="15" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-3" offsetY="15" />
+                    <Dimensions y="45" />
+                    <Controls>
+                        <Label name="$(parent)Title" font="ZoFontHeader3" color="FFB800" text="GUILD LEDGER &amp; ACCOUNTING SYSTEM" horizontalAlignment="CENTER">
+                            <Dimensions x="780" y="0" />
+                            <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="0" />
+                        </Label>
+                        <Button name="$(parent)CloseBtn">
+                            <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+                            <Dimensions x="28" y="28" />
+                            <Textures normal="EsoUI/Art/Buttons/closebutton_up.dds" 
+                                     pressed="EsoUI/Art/Buttons/closebutton_down.dds" 
+                                     mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"/>
+                        </Button>
+                        <Texture name="$(parent)Divider" textureFile="EsoUI/Art/Miscellaneous/horizontalDivider.dds">
+                            <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+                            <Dimensions y="4" />
+                        </Texture>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)FilterArea">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Header" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="14" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Header" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="14" />
+                    <Dimensions y="32" />
+                </Control>
+
+                <Control name="$(parent)Body">
+                    <Dimensions y="700" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)FilterArea" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="14" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)FilterArea" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="14" />
+                    <Controls>
+
+                        <Control name="$(parent)StatsColumn">
+                            <Dimensions y="300" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+                            <Controls>
+
+                                <Backdrop name="$(parent)Bg" inheritAlpha="false">
+                                    <AnchorFill />
+                                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" />
+                                    <Edge file="EsoUI/Art/Tooltips/UI-Border.dds" edgeFileWidth="128" edgeFileHeight="16" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)ColorWash" centerColor="70000000" edgeColor="00000000" mouseEnabled="false">
+                                    <AnchorFill />
+                                </Backdrop>
+
+                                <Label name="$(parent)Row1Label" font="ZoFontHeader4" color="FFFFFF" text="Bank Gold">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="36" offsetY="10" />
+                                </Label>
+                                <Label name="$(parent)Row1Value" font="ZoFontHeader4" color="FFFFFF" text="0 Gold" wrapMode="ELLIPSIS" horizontalAlignment="RIGHT">
+                                    <Dimensions x="400" y="0" />
+                                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-36" offsetY="10" />
+                                </Label>
+
+                                <Label name="$(parent)Row2Label" font="ZoFontHeader4" color="FFFFFF" text="Store Sales Volume">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Row1Label" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
+                                </Label>
+                                <Label name="$(parent)Row2Value" font="ZoFontHeader4" color="FFFFFF" text="0 Gold" wrapMode="ELLIPSIS" horizontalAlignment="RIGHT">
+                                    <Dimensions x="400" y="0" />
+                                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Row1Value" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="2" />
+                                </Label>
+
+                                <Label name="$(parent)Row3Label" font="ZoFontHeader4" color="FFFFFF" text="Guild Tax Revenue">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Row2Label" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
+                                </Label>
+                                <Label name="$(parent)Row3Value" font="ZoFontHeader4" color="4DDB4D" text="+0 Gold" wrapMode="ELLIPSIS" horizontalAlignment="RIGHT">
+                                    <Dimensions x="400" y="0" />
+                                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Row2Value" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="2" />
+                                </Label>
+
+                                <Label name="$(parent)Row4Label" font="ZoFontHeader4" color="FFFFFF" text="Member Deposits">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Row3Label" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
+                                </Label>
+                                <Label name="$(parent)Row4Value" font="ZoFontHeader4" color="4DDB4D" text="+0 Gold" wrapMode="ELLIPSIS" horizontalAlignment="RIGHT">
+                                    <Dimensions x="400" y="0" />
+                                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Row3Value" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="2" />
+                                </Label>
+
+                                <Label name="$(parent)Row5Label" font="ZoFontHeader4" color="FFFFFF" text="Withdrawn From Bank">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Row4Label" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
+                                </Label>
+                                <Label name="$(parent)Row5Value" font="ZoFontHeader4" color="FF6B6B" text="0 Gold" wrapMode="ELLIPSIS" horizontalAlignment="RIGHT">
+                                    <Dimensions x="400" y="0" />
+                                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Row4Value" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="2" />
+                                </Label>
+
+                                <Label name="$(parent)Row6Label" font="ZoFontHeader4" color="FFFFFF" text="Trader Rent &amp; Bid Expense">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Row5Label" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
+                                </Label>
+                                <Label name="$(parent)Row6Value" font="ZoFontHeader4" color="FF6B6B" text="0 Gold" wrapMode="ELLIPSIS" horizontalAlignment="RIGHT">
+                                    <Dimensions x="400" y="0" />
+                                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Row5Value" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="2" />
+                                </Label>
+
+                                <Backdrop name="$(parent)Divider" centerColor="40FFFFFF" edgeColor="00000000">
+                                    <Dimensions x="0" y="1" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Row6Label" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
+                                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Row6Value" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="2" />
+                                </Backdrop>
+
+                                <Label name="$(parent)NetLabel" font="ZoFontHeader3" color="EDC25D" text="NET PROFIT / LOSS">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Divider" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="4" />
+                                </Label>
+                                <Label name="$(parent)NetValue" font="ZoFontHeader3" color="FFFFFF" text="0 Gold" wrapMode="ELLIPSIS" horizontalAlignment="RIGHT">
+                                    <Dimensions x="400" y="0" />
+                                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Divider" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="14" />
+                                </Label>
+
+                            </Controls>
+                        </Control>
+
+                        <Control name="$(parent)BidsPanel">
+                            <Dimensions x="300" y="400" />
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)StatsColumn" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="24" />
+                            <Controls>
+                                <Backdrop name="$(parent)Bg" inheritAlpha="false">
+                                    <AnchorFill />
+                                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" />
+                                    <Edge file="EsoUI/Art/Tooltips/UI-Border.dds" edgeFileWidth="128" edgeFileHeight="16" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)ColorWash" centerColor="70000000" edgeColor="00000000" mouseEnabled="false">
+                                    <AnchorFill />
+                                </Backdrop>
+                                <Label name="$(parent)Title" font="ZoFontGame" color="FFB800" text="THIS PERIOD'S BIDS (up to 10)" horizontalAlignment="CENTER">
+                                    <Dimensions x="280" y="0" />
+                                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="8" />
+                                </Label>
+                                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetX="14" offsetY="8" />
+                                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-14" offsetY="-8" />
+                                </Control>
+                            </Controls>
+                        </Control>
+
+                        <Control name="$(parent)DonationsPanel">
+                            <Dimensions y="400" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)StatsColumn" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="24" />
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)BidsPanel" relativePoint="TOPLEFT" offsetX="-4" offsetY="0" />
+                            <Controls>
+                                <Backdrop name="$(parent)Bg" inheritAlpha="false">
+                                    <AnchorFill />
+                                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" />
+                                    <Edge file="EsoUI/Art/Tooltips/UI-Border.dds" edgeFileWidth="128" edgeFileHeight="16" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)ColorWash" centerColor="70000000" edgeColor="00000000" mouseEnabled="false">
+                                    <AnchorFill />
+                                </Backdrop>
+                                <Label name="$(parent)Title" font="ZoFontGame" color="FFB800" text="TOP DONORS &amp; SELLERS (this period)" horizontalAlignment="CENTER">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="8" />
+                                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="8" />
+                                </Label>
+
+                                <Label name="$(parent)DonorsSubtitle" font="ZoFontGameSmall" color="FFB800" text="DONORS" horizontalAlignment="CENTER">
+                                    <Dimensions x="300" y="0" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="10" />
+                                </Label>
+                                <Control name="$(parent)DonorsList" inherits="ZO_ScrollList">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)DonorsSubtitle" relativePoint="BOTTOMLEFT" offsetX="24" offsetY="6" />
+                                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="24" offsetY="-8" />
+                                    <Dimensions x="270" y="0" />
+                                </Control>
+
+                                <Backdrop name="$(parent)Divider" centerColor="90FFB800" edgeColor="00000000">
+                                    <Dimensions x="2" y="0" />
+                                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="36" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-8" />
+                                </Backdrop>
+
+                                <Label name="$(parent)SellersSubtitle" font="ZoFontGameSmall" color="4DA6FF" text="TOP SELLERS" horizontalAlignment="CENTER">
+                                    <Dimensions x="300" y="0" />
+                                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Title" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="10" />
+                                </Label>
+                                <Control name="$(parent)SellersList" inherits="ZO_ScrollList">
+                                    <Anchor point="TOPRIGHT" relativeTo="$(parent)SellersSubtitle" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="6" />
+                                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="-8" />
+                                    <Dimensions x="290" y="0" />
+                                </Control>
+                            </Controls>
+                        </Control>
+
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)KiosksPanel" hidden="true">
+                    <Dimensions y="700" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)FilterArea" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="14" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)FilterArea" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="14" />
+                    <Controls>
+                        <Backdrop name="$(parent)Bg" inheritAlpha="false">
+                            <AnchorFill />
+                            <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" />
+                            <Edge file="EsoUI/Art/Tooltips/UI-Border.dds" edgeFileWidth="128" edgeFileHeight="16" />
+                        </Backdrop>
+                                <Backdrop name="$(parent)ColorWash" centerColor="70000000" edgeColor="00000000" mouseEnabled="false">
+                                    <AnchorFill />
+                                </Backdrop>
+                        <Label name="$(parent)Title" font="ZoFontHeader3" color="FFB800" text="RECENT TRADER KIOSK PURCHASES (ALL GUILDS)" horizontalAlignment="CENTER">
+                            <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="12" />
+                        </Label>
+                        <Control name="$(parent)List" inherits="ZO_ScrollList">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="12" />
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-15" offsetY="-12" />
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)RanksPanel" hidden="true">
+                    <Dimensions y="700" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)FilterArea" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="14" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)FilterArea" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="14" />
+                    <Controls>
+                        <Backdrop name="$(parent)Bg" inheritAlpha="false">
+                            <AnchorFill />
+                            <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" />
+                            <Edge file="EsoUI/Art/Tooltips/UI-Border.dds" edgeFileWidth="128" edgeFileHeight="16" />
+                        </Backdrop>
+                                <Backdrop name="$(parent)ColorWash" centerColor="70000000" edgeColor="00000000" mouseEnabled="false">
+                                    <AnchorFill />
+                                </Backdrop>
+                        <Label name="$(parent)Title" font="ZoFontHeader3" color="FFB800" text="MEMBER RANKS (this guild, this period)" horizontalAlignment="CENTER">
+                            <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="12" />
+                        </Label>
+                        <Label name="$(parent)Subtitle" font="ZoFontGame" color="FFFFFF" text="Members meeting requirements this week (they may already hold these ranks)" horizontalAlignment="CENTER">
+                            <Anchor point="TOP" relativeTo="$(parent)Title" relativePoint="BOTTOM" offsetX="0" offsetY="8" />
+                        </Label>
+                        <Control name="$(parent)List" inherits="ZO_ScrollList">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="70" />
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-15" offsetY="-12" />
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)SearchPanel" hidden="true">
+                    <Dimensions y="700" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)FilterArea" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="14" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)FilterArea" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="14" />
+                    <Controls>
+                        <Backdrop name="$(parent)Bg" inheritAlpha="false">
+                            <AnchorFill />
+                            <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" />
+                            <Edge file="EsoUI/Art/Tooltips/UI-Border.dds" edgeFileWidth="128" edgeFileHeight="16" />
+                        </Backdrop>
+                        <Backdrop name="$(parent)ColorWash" centerColor="70000000" edgeColor="00000000" mouseEnabled="false">
+                            <AnchorFill />
+                        </Backdrop>
+                        <Label name="$(parent)Title" font="ZoFontHeader3" color="FFB800" text="MEMBER LOOKUP" horizontalAlignment="CENTER">
+                            <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="12" />
+                        </Label>
+
+                        <Backdrop name="$(parent)SearchBg" inherits="ZO_DefaultBackdrop">
+                            <Dimensions x="280" y="30" />
+                            <Anchor point="TOP" relativeTo="$(parent)Title" relativePoint="BOTTOM" offsetX="0" offsetY="16" />
+                            <Controls>
+                                <EditBox name="$(parent)Box" font="ZoFontGame" mouseEnabled="true">
+                                    <Anchor point="TOPLEFT" offsetX="8" offsetY="5" />
+                                    <Anchor point="BOTTOMRIGHT" offsetX="-8" offsetY="-5" />
+                                    <OnMouseUp>
+                                        self:TakeFocus()
+                                    </OnMouseUp>
+                                    <OnTextChanged>
+                                        GuildLedger.OnSearchPanelTextChanged(self)
+                                    </OnTextChanged>
+                                </EditBox>
+                            </Controls>
+                        </Backdrop>
+
+                        <Label name="$(parent)Hint" font="ZoFontGameSmall" color="A0A0A0" text="" horizontalAlignment="CENTER">
+                            <Anchor point="TOP" relativeTo="$(parent)SearchBg" relativePoint="BOTTOM" offsetX="0" offsetY="10" />
+                        </Label>
+
+                        <Control name="$(parent)List" inherits="ZO_ScrollList">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="100" />
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-15" offsetY="-12" />
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)Footer">
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="20" offsetY="-15" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-20" offsetY="-15" />
+                    <Dimensions y="40" />
+                    <Controls>
+                        <Label name="$(parent)Status" font="ZoFontGameSmall" color="A0A0A0" text="Processing data...">
+                            <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="5" offsetY="0" />
+                        </Label>
+                        <Button name="$(parent)RefreshBtn" inherits="ZO_DefaultButton" text="Refresh">
+                            <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+                            <Dimensions x="110" y="32" />
+                        </Button>
+                        <Button name="$(parent)KiosksBtn" inherits="ZO_DefaultButton" text="Kiosks">
+                            <Anchor point="RIGHT" relativeTo="$(parent)RefreshBtn" relativePoint="LEFT" offsetX="-10" offsetY="0" />
+                            <Dimensions x="100" y="32" />
+                        </Button>
+                        <Button name="$(parent)RanksBtn" inherits="ZO_DefaultButton" text="Ranks">
+                            <Anchor point="RIGHT" relativeTo="$(parent)KiosksBtn" relativePoint="LEFT" offsetX="-10" offsetY="0" />
+                            <Dimensions x="90" y="32" />
+                        </Button>
+                        <Button name="$(parent)SearchBtn" inherits="ZO_DefaultButton" text="Search">
+                            <Anchor point="RIGHT" relativeTo="$(parent)RanksBtn" relativePoint="LEFT" offsetX="-10" offsetY="0" />
+                            <Dimensions x="100" y="32" />
+                        </Button>
+                        <Button name="$(parent)ClearFilterBtn" inherits="ZO_DefaultButton" text="Clear Filter" hidden="true">
+                            <Anchor point="RIGHT" relativeTo="$(parent)SearchBtn" relativePoint="LEFT" offsetX="-10" offsetY="0" />
+                            <Dimensions x="120" y="32" />
+                            <OnClicked>
+                                GuildLedger.ClearSearchFilter()
+                            </OnClicked>
+                        </Button>
+                    </Controls>
+                </Control>
+
+            </Controls>
+        </TopLevelControl>
+
+        <TopLevelControl name="TGA_EditNoteWindow" hidden="true" mouseEnabled="true" movable="true" clampedToScreen="true" tier="HIGH">
+            <Dimensions x="420" y="190" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
+            <Controls>
+                <Backdrop name="$(parent)Bg" inheritAlpha="false">
+                    <AnchorFill />
+                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" />
+                    <Edge file="EsoUI/Art/Tooltips/UI-Border.dds" edgeFileWidth="128" edgeFileHeight="16" />
+                </Backdrop>
+                <Backdrop name="$(parent)ColorWash" centerColor="70000000" edgeColor="00000000" mouseEnabled="false">
+                    <AnchorFill />
+                </Backdrop>
+                <Label name="$(parent)Title" font="ZoFontHeader3" color="FFB800" text="" horizontalAlignment="CENTER">
+                    <Dimensions x="380" y="0" />
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="14" />
+                </Label>
+                <Button name="$(parent)CloseBtn">
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-6" offsetY="6" />
+                    <Dimensions x="24" y="24" />
+                    <Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+                             pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+                             mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"/>
+                    <OnClicked>
+                        TGA_EditNoteWindow:SetHidden(true)
+                    </OnClicked>
+                </Button>
+                <Label name="$(parent)SubTitle" font="ZoFontGameSmall" color="A0A0A0" text="" horizontalAlignment="CENTER" wrapMode="ELLIPSIS">
+                    <Dimensions x="380" y="0" />
+                    <Anchor point="TOP" relativeTo="$(parent)Title" relativePoint="BOTTOM" offsetX="0" offsetY="10" />
+                </Label>
+                <Backdrop name="$(parent)InputBg" inherits="ZO_DefaultBackdrop">
+                    <Dimensions x="380" y="30" />
+                    <Anchor point="TOP" relativeTo="$(parent)SubTitle" relativePoint="BOTTOM" offsetX="0" offsetY="16" />
+                    <Controls>
+                        <EditBox name="$(parent)Box" font="ZoFontGame" mouseEnabled="true">
+                            <Anchor point="TOPLEFT" offsetX="8" offsetY="4" />
+                            <Anchor point="BOTTOMRIGHT" offsetX="-8" offsetY="-4" />
+                            <OnMouseUp>
+                                self:TakeFocus()
+                            </OnMouseUp>
+                        </EditBox>
+                    </Controls>
+                </Backdrop>
+                <Button name="$(parent)SaveBtn" inherits="ZO_DefaultButton" text="Save">
+                    <Dimensions x="110" y="28" />
+                    <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="-60" offsetY="-18" />
+                    <OnClicked>
+                        GuildLedger.SaveEditNoteDialog()
+                    </OnClicked>
+                </Button>
+                <Button name="$(parent)CancelBtn" inherits="ZO_DefaultButton" text="Cancel">
+                    <Dimensions x="110" y="28" />
+                    <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="60" offsetY="-18" />
+                    <OnClicked>
+                        TGA_EditNoteWindow:SetHidden(true)
+                    </OnClicked>
+                </Button>
+            </Controls>
+        </TopLevelControl>
+
+    </Controls>
+</GuiXml>

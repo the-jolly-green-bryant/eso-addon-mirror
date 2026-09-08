@@ -238,7 +238,7 @@ local strings = {
 
 	-- ---- 出力ウィンドウ ----------------------------------------------------------------
 	SI_PBSCA_SECTION_LOG = "出力ウィンドウ",
-	SI_PBSCA_SECTION_LOG_NOTE = "このアドオンの出力（通知もコマンドの応答もすべて）を専用のウィンドウに表示します。チャット欄が埋まって会話が流れてしまうのを防ぐためです。新しい行が上に入ります。ウィンドウはクリックもドラッグもできないので、下のゲームからクリックを奪うことはありません。大きさと位置はここで設定します。",
+	SI_PBSCA_SECTION_LOG_NOTE = "このアドオンの出力（通知もコマンドの応答もすべて）を専用のウィンドウに表示します。チャット欄が埋まって会話が流れてしまうのを防ぐためです。このウィンドウはシロディールと帝都のためのものなので、それ以外の場所では非表示になり、出力はすべてチャット欄に出ます（見落とさないようにするためです）。新しい行が上に入ります。ウィンドウはクリックもドラッグもできないので、下のゲームからクリックを奪うことはありません。大きさと位置はここで設定します。",
 	SI_PBSCA_LOG_WHERE = "出力先",
 	SI_PBSCA_LOG_WHERE_TOOLTIP = "専用ウィンドウ、チャット欄、または両方。ウィンドウを作成できないクライアントでは、この設定にかかわらずチャット欄に出します（出力を黙って捨てることはありません）。",
 	SI_PBSCA_LOG_TO_WINDOW = "専用ウィンドウ",
@@ -271,6 +271,7 @@ local strings = {
 	SI_PBSCA_POS_BOTTOMRIGHT = "右下",
 	SI_PBSCA_STATUS_LOG = "出力先: %s",
 	SI_PBSCA_STATUS_LOG_FAILED = "出力ウィンドウを作成できませんでした。すべてチャット欄に出しています",
+	SI_PBSCA_STATUS_LOG_OUT_OF_AVA = "シロディール外のためウィンドウは非表示で、すべてチャット欄に出しています",
 	SI_PBSCA_ERROR_LOG_WHERE = "window / chat / both のいずれかを指定してください",
 	SI_PBSCA_HELP_LOG = "/pbalert log window | chat | both -- アドオンの出力先",
 	SI_PBSCA_HELP_LOG_CLEAR = "/pbalert log clear -- 出力ウィンドウを空にする",
@@ -303,6 +304,9 @@ local strings = {
 	SI_PBSCA_HELP_BOARD_POP = "/pbalert board pop icon | text -- 人口の表示方法",
 	SI_PBSCA_ERROR_POP = "icon か text を指定してください",
 	SI_PBSCA_BOARD_LINE = "%s%s  拠点 %d  得点 %s",
+	-- 帝都のキャンペーンには砦も砦の得点も無く、攻撃中に数えるものも無い。その場合の
+	-- 陣営行は「陣営名＋混雑度」だけになる。
+	SI_PBSCA_BOARD_LINE_PLAIN = "%s%s",
 	SI_PBSCA_BOARD_ATTACKED = "  攻撃中 %d",
 	SI_PBSCA_BOARD_POPULATION = "  人口 %s",
 	SI_PBSCA_BOARD_MARK_MINE = "> ",

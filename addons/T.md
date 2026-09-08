@@ -84,6 +84,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Tetsu's Combat Tools](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tetsurion/Tetsu-s-Combat-Tools__37406588-1b71-4a42-b9f0-6d106aa0b987) | Tetsurion | Console | — |
 | [Tetsu's Daily Writ Precrafter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tetsurion/Tetsu-s-Daily-Writ-Precrafter__c68e0837-b325-48b9-94fd-702d8071849f) | Tetsurion | Console | — |
 | [Tetsu's Housing FPS Booster](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tetsurion/Tetsu-s-Housing-FPS-Booster__febdb84e-a3d4-46d5-b70c-e9b1e491be5f) | Tetsurion | Console | — |
+| [Tetsu's Quite Zone](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tetsurion/Tetsu-s-Quite-Zone__ea28fcab-28b2-43ca-addc-2547aa85a38f) | Tetsurion | Console | — |
 | [Tetsu's Raid Lead Assistant(dev)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tetsurion/Tetsu-s-Raid-Lead-Assistant-dev__a9073aea-3308-48be-91d6-ecdc650b851e) | Tetsurion | Console | — |
 | [Text Trials Guide](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Splat/Text-Trials-Guide__2461) | Splat | PC / Mac | 1.2.8 |
 | [TG's Group Trackers](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/TaTerGoTcha/TG-s-Group-Trackers__cd045612-ec90-4885-be99-f35f328691f8) | TaTerGoTcha | Console | — |
@@ -129,6 +130,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Timing Bars](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Soleya/Timing-Bars__2770) | Soleya | PC / Mac | 1.1.0.0 |
 | [Tinydog's Crafting Calculator](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tinydog/Tinydog-s-Crafting-Calculator__1240) | @tinydog | PC / Mac | 1.23.42 |
 | [Tinydog's Crafting Calculator 2.0](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/wolfstar/Tinydog-s-Crafting-Calculator-2.0__3870) | wolfstar | PC / Mac | 1.23.1 |
+| [Tiradil's Guild Assistant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/AlcholicVader/Tiradil-s-Guild-Assistant__4817) | AlcholicVader | PC / Mac | 1.0.0 |
 | [Title List Search Box](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/perfiction/Title-List-Search-Box__3327) | perfiction | PC / Mac | 1.1.0 |
 | [Title Loop](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Copper0/Title-Loop__5e051775-8c73-4e96-bb6b-dcaa188dc064) | Copper0 | Console | — |
 | [TitleFlex](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Skvysh/TitleFlex__2509) | Skvysh | PC / Mac | 1.8 |

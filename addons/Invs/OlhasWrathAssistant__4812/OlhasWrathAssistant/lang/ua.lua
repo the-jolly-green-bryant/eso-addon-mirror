@@ -15,7 +15,9 @@ local strings = {
     REPAIR_PANEL = "OWRepair & Recharge",
     DECONSTRUCT = "Розбірник",
     DECONSTRUCTOR_PANEL = "OWDeconstructor",
-    MERCHANT = "Торговець",
+    MERCHANT = "Продавець",
+    MERCHANT_TOOLTIP = "Вмикає автоматичний продаж предметів під час відкриття NPC-продавця.",
+    MERCHANT_PANEL = "OWMerchant",
     BANKING = "Банкір",
 
     MASS_DECONSTRUCT = "Масовий розбір",
@@ -24,7 +26,6 @@ local strings = {
 
     MODULE_IN_DEVELOPMENT = "Цей модуль перебуває в розробці та буде доступний у наступних версіях.",
     ACCOUNT_WIDE_IN_DEVELOPMENT = "У тестовій версії налаштування завжди зберігаються для всього облікового запису.",
-
 }
 
 local owa = OWAssistant

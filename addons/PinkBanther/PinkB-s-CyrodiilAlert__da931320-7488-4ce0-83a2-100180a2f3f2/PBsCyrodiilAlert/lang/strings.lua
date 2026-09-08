@@ -239,7 +239,7 @@ local strings = {
 
 	-- ---- The output window ------------------------------------------------------------
 	SI_PBSCA_SECTION_LOG = "Output window",
-	SI_PBSCA_SECTION_LOG_NOTE = "Everything this add-on says -- alerts, command replies, the lot -- in a window of its own, so it does not push the conversation out of your chat window. Newest line at the top. The window cannot be clicked or dragged, so it can never take a click away from the game; its size and place are set here.",
+	SI_PBSCA_SECTION_LOG_NOTE = "Everything this add-on says -- alerts, command replies, the lot -- in a window of its own, so it does not push the conversation out of your chat window. It belongs to Cyrodiil and the Imperial City: anywhere else it is hidden and everything goes to chat, where it cannot be missed. Newest line at the top. The window cannot be clicked or dragged, so it can never take a click away from the game; its size and place are set here.",
 	SI_PBSCA_LOG_WHERE = "Where the add-on speaks",
 	SI_PBSCA_LOG_WHERE_TOOLTIP = "The window, the chat window, or both. If the window cannot be created on this client, chat is used whatever this says -- the add-on will not silently swallow its own output.",
 	SI_PBSCA_LOG_TO_WINDOW = "Its own window",
@@ -272,6 +272,7 @@ local strings = {
 	SI_PBSCA_POS_BOTTOMRIGHT = "Bottom right",
 	SI_PBSCA_STATUS_LOG = "output: %s",
 	SI_PBSCA_STATUS_LOG_FAILED = "the output window could not be created -- everything is going to chat",
+	SI_PBSCA_STATUS_LOG_OUT_OF_AVA = "outside Cyrodiil, so the window is hidden and everything is going to chat",
 	SI_PBSCA_ERROR_LOG_WHERE = "say window, chat or both",
 	SI_PBSCA_HELP_LOG = "/pbalert log window | chat | both -- where the add-on says things",
 	SI_PBSCA_HELP_LOG_CLEAR = "/pbalert log clear -- empty the output window",
@@ -305,6 +306,9 @@ local strings = {
 	SI_PBSCA_HELP_BOARD_POP = "/pbalert board pop icon | text -- how the population is shown",
 	SI_PBSCA_ERROR_POP = "say icon or text",
 	SI_PBSCA_BOARD_LINE = "%s%s  keeps %d  score %s",
+	-- The Imperial City has no keeps, no keep score and nothing of ours to be under attack, so
+	-- in one of its campaigns the alliance line is the alliance and how busy it is.
+	SI_PBSCA_BOARD_LINE_PLAIN = "%s%s",
 	SI_PBSCA_BOARD_ATTACKED = "  under attack %d",
 	SI_PBSCA_BOARD_POPULATION = "  pop %s",
 	SI_PBSCA_BOARD_MARK_MINE = "> ",

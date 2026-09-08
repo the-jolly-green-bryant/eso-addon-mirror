@@ -33,6 +33,14 @@ local defaultAccountVars = {
     consPotWarn = 10,
     consPotCombat = false,
     consFoodSound = false,
+    timerEnabled = false,
+    timerDungeon = true,
+    timerTrial = true,
+    timerArena = true,
+    timerGoal = true,
+    timerOffsetX = 0,
+    timerOffsetY = -280,
+    timerScale = 100,
 }
 
 local function OnAddOnLoaded(_, addonName)
@@ -75,6 +83,17 @@ local function OnAddOnLoaded(_, addonName)
         T.savedVars.skillPosRev = 1
     end
 
+    if T.savedVars.timerDefRev == nil then
+        T.savedVars.timerEnabled = false
+        T.savedVars.timerDefRev = 1
+    end
+    if T.savedVars.timerDungeon == nil then T.savedVars.timerDungeon = true end
+    if T.savedVars.timerTrial == nil then T.savedVars.timerTrial = true end
+    if T.savedVars.timerArena == nil then T.savedVars.timerArena = true end
+    if T.savedVars.timerGoal == nil then T.savedVars.timerGoal = true end
+    if T.savedVars.timerOffsetY == nil then T.savedVars.timerOffsetY = -280 end
+    if T.savedVars.timerScale == nil then T.savedVars.timerScale = 100 end
+
     if T.RegisterSettings then
         T.RegisterSettings()
     end
@@ -86,6 +105,9 @@ local function OnAddOnLoaded(_, addonName)
     end
     if T.ConsStart then
         T.ConsStart()
+    end
+    if T.TimerStart then
+        T.TimerStart()
     end
 end
 

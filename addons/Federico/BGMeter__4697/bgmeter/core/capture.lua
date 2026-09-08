@@ -504,6 +504,8 @@ function Capture.finalize()
     end
 
     active.haul.vetEnd = BGMeter.Veterancy.snapshot()
+    local vs, ve = active.haul.vetStart, active.haul.vetEnd
+    if vs and ve and (ve.laps or 0) > (vs.laps or 0) then active.haul.vetRankUp = true end
     local lr = Match.local_row(active)
     if lr then active.haul.medals = lr.medals end
 

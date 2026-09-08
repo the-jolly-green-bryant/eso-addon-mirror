@@ -10,6 +10,8 @@
 -- New trial recipes belong in a sibling manifest .lua (new 200), not more
 -- `local function` here. Fold tunables into CFG / TEX, not new locals.
 --
+-- 0.0.53: YOU/add-debuff headmarker uses raw body pos (DeadMarker2), not house-fit local
+-- 0.0.52: Boss-only tag = you only + debuff shout; Rakkhat house-fit from boss path
 -- 0.0.51: Count boss-only Portal!/pads/tags; Rakkhat Backyard!; time HP bars
 -- 0.0.50: Two tag marks per side (lusterbeam)
 -- 0.0.49: Portal pads + glow from hops; DPS tag marks; smaller Portal! banner
@@ -51,7 +53,7 @@
 local Holodeck = Holodeck or {}
 Holodeck.name        = "DeadMarker_Holodeck"
 Holodeck.displayName = "Holodeck"
-Holodeck.version     = "0.0.51"
+Holodeck.version     = "0.0.53"
 
 Holodeck.Fights = Holodeck.Fights or {}
 function Holodeck.RegisterFight(fight)
@@ -265,6 +267,7 @@ local function ShouldNameplate(act)
     if act.visible == false then return false end
     local lab = act.label
     if type(lab) ~= "string" or lab == "" or lab == "origin" then return false end
+    if act.name == "_you" then return act.tagged == true end
     if act.guide then return true end
     local k = act.kind
     return k == "boss" or k == "mini"
@@ -683,7 +686,24 @@ local function PlaceNameplate(act, wx, wy, wz, pitch, yaw)
         lbl:SetText(act.label)
         act._plateText = act.label
     end
+    -- YOU is a tight head sticker (DeadMarker2-style). Boss plates stay large
+    -- with origin at the bottom so the name sits above the pin.
     local lift = (act.kind == "boss") and 55 or 40
+    if act.name == "_you" then
+        lbl:SetDimensions(180, 36)
+        if lbl.SetTransformScale then lbl:SetTransformScale(1.25) end
+        if lbl.SetTransformNormalizedOriginPoint then
+            lbl:SetTransformNormalizedOriginPoint(0.5, 0.5)
+        end
+        lift = 0
+    else
+        lbl:SetDimensions(520, 56)
+        local sizeM = (act.kind == "boss") and 2.6 or 2.1
+        if lbl.SetTransformScale then lbl:SetTransformScale(sizeM) end
+        if lbl.SetTransformNormalizedOriginPoint then
+            lbl:SetTransformNormalizedOriginPoint(0.5, 1.0)
+        end
+    end
     WS_SetAtRaw(lbl, wx, wy + lift, wz, pitch or 0, yaw or 0, 0)
     lbl:SetHidden(false)
 end
@@ -695,7 +715,12 @@ local function PlayScale()
     end
     if pct < 25 then pct = 25 end
     if pct > 400 then pct = 400 end
-    return pct / 100
+    local fit = 1
+    local fr = Holodeck.fight and Holodeck.fight._frame
+    if type(fr) == "table" and type(fr.fitScale) == "number" and fr.fitScale > 0.2 then
+        fit = fr.fitScale
+    end
+    return (pct / 100) * fit
 end
 
 local function PackFlipXZ()
@@ -850,7 +875,9 @@ local function PlaceTag(act, wx, wy, wz, pitch, yaw)
     ctl:SetColor(1.00, 0.28, 0.82, 1)
     ctl:SetAlpha(0.95)
     if ctl.SetTransformScale then ctl:SetTransformScale(1.05) end
-    WS_SetAtRaw(ctl, wx, wy + 38, wz, pitch or 0, yaw or 0, 0)
+    -- Pack ghosts: hover just above the actor pin. YOU: wx/wy/wz is already head.
+    local extra = (act.name == "_you") and 8 or 38
+    WS_SetAtRaw(ctl, wx, wy + extra, wz, pitch or 0, yaw or 0, 0)
     ctl:SetHidden(false)
 end
 
@@ -1090,25 +1117,23 @@ local function ComputeFightFrame(fight)
             j = j + 1
         end
     end
-    local used = false
+    -- Boss path only. Trash/void (Rakkhat backyard) must not set the room size.
     i = 1
     while i <= #ents do
-        local k = NormalizeKind(ents[i] and ents[i].kind)
-        if k == "boss" or k == "mini" or k == "trash" then
+        if NormalizeKind(ents[i] and ents[i].kind) == "boss" then
             acc(ents[i].track)
-            used = true
         end
         i = i + 1
     end
-    if not used then
-        i = 1
-        while i <= #ents do
-            acc(ents[i] and ents[i].track)
-            i = i + 1
-        end
-    end
     local r = math.sqrt(r2)
     if r < 4 then r = 4 end
+    local fitScale = 1
+    local targetR = CFG.HOUSE_RING_RADIUS_M or 22
+    if r < targetR * 0.72 then
+        fitScale = targetR / r
+    elseif r > targetR * 1.7 then
+        fitScale = targetR / r
+    end
     local splitPx, splitPz = nil, nil
     if #bosses >= 2 then
         local dx = bosses[2].x - bosses[1].x
@@ -1119,7 +1144,7 @@ local function ComputeFightFrame(fight)
             splitPx, splitPz = px / plen, pz / plen
         end
     end
-    return { cx = cx, cz = cz, r = r, splitPx = splitPx, splitPz = splitPz, bosses = bosses }
+    return { cx = cx, cz = cz, r = r, splitPx = splitPx, splitPz = splitPz, bosses = bosses, fitScale = fitScale }
 end
 
 local function FrameOn()
@@ -1760,39 +1785,26 @@ local function ApplyTimeline(tSec, announce)
     EnsurePads()
 
     if ActorTagged("_you", tSec) then
-        local px, pz = PlayerLocalXZ()
-        if px then
+        -- Attach to the trainer's body in raw cm (DeadMarker2). Do NOT run
+        -- PlayerLocalXZ → LocalToWorld: house-fit scale / pack shift / yaw
+        -- put the tag on a planter instead of the player.
+        local _, px, py, pz = GetUnitRawWorldPosition("player")
+        if px and py and pz then
             local you = EnsureActor("_you", "dps")
             if you then
-                you.guide = true
-                you.x, you.z = px, pz
+                you.guide = false
                 you.visible = true
                 you.tagged = true
                 you.label = "YOU"
                 you.dead = false
-                PlaceActor(you)
                 if you.ctl then you.ctl:SetHidden(true) end
-                HideNameplate(you)
+                HideFacing(you)
+                HidePadRing(you)
+                local yOff = (sv().yOffsetM or 1.8) * 100
+                local yaw, pitch = BillboardYawPitch()
+                PlaceNameplate(you, px, py + yOff, pz, pitch, yaw)
+                PlaceTag(you, px, py + yOff, pz, pitch, yaw)
                 live["_you"] = true
-            end
-        end
-        local stands = fight._tagStands
-        if type(stands) == "table" then
-            local si = 1
-            while si <= #stands do
-                local st = stands[si]
-                local dummy = EnsureActor(st.id, "dps")
-                if dummy then
-                    dummy.guide = true
-                    dummy.x, dummy.z = st.x or 0, st.z or 0
-                    dummy.visible = true
-                    dummy.tagged = true
-                    dummy.label = "TAG"
-                    dummy.dead = false
-                    PlaceActor(dummy)
-                    live[st.id] = true
-                end
-                si = si + 1
             end
         end
     end
@@ -2617,38 +2629,23 @@ local function BuildTagAssign(fight)
     end
     local fr = fight._frame
     local cz = (fr and fr.cz) or 0
+    fight._tagStands = nil
+    local cues = fight._cues
+    if type(cues) ~= "table" then
+        cues = {}
+        fight._cues = cues
+    end
     if #dps < 1 then
-        -- Boss-only pack: tag the trainer + two stands per boss side.
-        local stands = {}
-        if fr and type(fr.bosses) == "table" then
-            local bi = 1
-            while bi <= #fr.bosses and bi <= 2 do
-                local b = fr.bosses[bi]
-                local ox, oz = 2.4, 0
-                if fr.splitPx then
-                    ox, oz = (fr.splitPx or 0) * 2.4, (fr.splitPz or 0) * 2.4
-                end
-                stands[#stands + 1] = { id = "_tag_" .. bi .. "a", x = (b.x or 0) + ox, z = (b.z or 0) + oz }
-                stands[#stands + 1] = { id = "_tag_" .. bi .. "b", x = (b.x or 0) - ox, z = (b.z or 0) - oz }
-                bi = bi + 1
-            end
-        end
-        fight._tagStands = stands
+        -- Boss-only: tag the trainer only. No dummy heads.
         local w = 1
         while w <= #waves do
             local wv = waves[w]
-            local ids = { "_you" }
-            local s = 1
-            while s <= #stands do
-                ids[#ids + 1] = stands[s].id
-                s = s + 1
-            end
-            fight._tags[#fight._tags + 1] = { t0 = wv.t0, t1 = wv.t1 + 6, ids = ids, you = true }
+            fight._tags[#fight._tags + 1] = { t0 = wv.t0, t1 = wv.t1 + 6, ids = { "_you" }, you = true }
+            cues[#cues + 1] = { t = wv.t0, dur = 2, kind = "debuff", text = "Debuff the adds!" }
             w = w + 1
         end
         return
     end
-    fight._tagStands = nil
     local w = 1
     while w <= #waves do
         local wv = waves[w]
@@ -2684,6 +2681,7 @@ local function BuildTagAssign(fight)
         end
         if #ids > 0 then
             fight._tags[#fight._tags + 1] = { t0 = wv.t0, t1 = wv.t1 + 6, ids = ids }
+            cues[#cues + 1] = { t = wv.t0, dur = 2, kind = "debuff", text = "Debuff the adds!" }
         end
         w = w + 1
     end

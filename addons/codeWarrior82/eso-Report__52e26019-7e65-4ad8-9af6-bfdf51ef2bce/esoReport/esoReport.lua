@@ -20,11 +20,11 @@ local function combatReport(eventCode, result, isError, abilityName, abilityGrap
         return
     end
 
-    local nameTmp = GetUnitName("player")
+    --local nameTmp = GetUnitName("player")
 
-    if nameTmp ~= cleanName(targetName) then
-        return
-    end
+    --if nameTmp ~= cleanName(targetName) then
+    --    return
+    --end
 
     printMessage("---------------")
     printMessage("combatReport")
@@ -50,9 +50,9 @@ local function effectReport(eventCode, changeType, effectSlot, effectName, unitT
 
     local nameTmp = GetUnitName("player")
 
-    if nameTmp ~= cleanName(unitName) then
-        return
-    end
+    --if nameTmp ~= cleanName(unitName) then
+   --     return
+    --end
 
     --(changeType)	 -- 1 is gained, 2 is gone, 3 is update
 	--(effectType)	 -- 1 is debuff, 0 is buff
@@ -92,9 +92,9 @@ end
 --register for notifications 
 local function registerAlerts()
     EVENT_MANAGER:RegisterForEvent("effectReport", EVENT_EFFECT_CHANGED, effectReport)
-    --EVENT_MANAGER:AddFilterForEvent("effectReport", EVENT_EFFECT_CHANGED, REGISTER_FILTER_ABILITY_ID, 226887)
+    EVENT_MANAGER:AddFilterForEvent("effectReport", EVENT_EFFECT_CHANGED, REGISTER_FILTER_ABILITY_ID, 67334)
     EVENT_MANAGER:RegisterForEvent("combatReport", EVENT_COMBAT_EVENT, combatReport)
-    --EVENT_MANAGER:AddFilterForEvent("combatReport", EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, 226887)
+    EVENT_MANAGER:AddFilterForEvent("combatReport", EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, 67324)
 end
 
 --an addon has loaded
