@@ -340,7 +340,8 @@ function U:UpdateCombatHUD(summary)
     local movePreview = self.combatHudMoveMode == true or EPC.combatHudMoveMode == true
     local hudSuppressed = not movePreview and EPC.IsGameplayHudSuppressed and EPC:IsGameplayHudSuppressed() == true
     local modeAllowed = not EPC.OverlayModeAllows or EPC:OverlayModeAllows("combatHudVisibility")
-    local shouldShow = not hudSuppressed and (movePreview or (EPC.saved.showCombatHud ~= false and modeAllowed and summary ~= nil))
+    local alwaysMode = EPC.saved and string.upper(tostring(EPC.saved.combatHudVisibility or "COMBAT")) == "ALWAYS"
+    local shouldShow = not hudSuppressed and (movePreview or (EPC.saved.showCombatHud ~= false and modeAllowed and (summary ~= nil or alwaysMode)))
     self.combatHud:SetHidden(not shouldShow)
     if not shouldShow then return end
 

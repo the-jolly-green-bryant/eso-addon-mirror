@@ -4,6 +4,29 @@ Full version history for LibInteriorDetection (renamed from LibIndoorDetection a
 
 ---
 
+## What's New in 1.1.0
+
+- **Reinstated `/lid debug saved`**, removed in 1.0.0's cleanup on the
+  assumption the restore-on-login mechanism had been fully validated by
+  then. A report of the restore failing specifically for an interior
+  sub-space combined with a multi-hour offline gap showed that
+  assumption didn't hold for every case - this command dumps saved vs.
+  current raw zoneId/position/state, plus whether the raw-zoneId match
+  that gates the restore (`OnPlayerActivated`) actually holds, so that
+  case (and any other restore failure) can be diagnosed directly instead
+  of guessed at.
+- **New `/lid debug flip`**: inverts the live `isInterior` flag for the
+  current session only, entirely unpersisted. A manual escape hatch for
+  when the restore-on-login logic gets it wrong - the player can correct
+  their own indoor/outdoor state in one command rather than wait for a
+  real fix, or live with it being wrong until their next real zone
+  change, door interaction, or map teleport naturally overrides it
+  anyway (which this command doesn't interfere with - the very next one
+  of those re-evaluates and overrides normally, as if the flip had never
+  happened).
+
+---
+
 ## What's New in 1.0.1
 
 - **Fixed an ESOUI moderator-flagged compliance violation**: the manifest's

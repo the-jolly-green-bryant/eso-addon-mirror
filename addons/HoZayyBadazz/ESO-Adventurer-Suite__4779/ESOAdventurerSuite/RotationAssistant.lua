@@ -343,7 +343,7 @@ function R:Initialize()
     if EVENT_ACTION_SLOT_UPDATED then EVENT_MANAGER:RegisterForEvent(p.."_Slot",EVENT_ACTION_SLOT_UPDATED,function() self:Refresh() end) end
     if EVENT_ACTIVE_WEAPON_PAIR_CHANGED then EVENT_MANAGER:RegisterForEvent(p.."_Bar",EVENT_ACTIVE_WEAPON_PAIR_CHANGED,function() self:Refresh() end) end
     if EVENT_PLAYER_ACTIVATED then EVENT_MANAGER:RegisterForEvent(p.."_Activated",EVENT_PLAYER_ACTIVATED,function() self:Refresh() end) end
-    EVENT_MANAGER:RegisterForUpdate(p.."_Tick",200,function()
+    EVENT_MANAGER:RegisterForUpdate(p.."_Tick",350,function()
         if not EPC.saved or EPC.saved.rotationAssistantEnabled == false then return end
         if self.layoutMode ~= true and type(IsUnitInCombat) == "function" and safe(IsUnitInCombat, false, "player") ~= true then return end
         self:Refresh()
@@ -380,20 +380,6 @@ end
 
 local function actionBindingText(actionName)
     if not actionName or actionName == "" then return "" end
-
-    local preferGamepad = EPC.ShouldUseGamepadPrompts029199 and EPC:ShouldUseGamepadPrompts029199()
-        or (EPC.IsNativeGamepadPreferredMode029197 and EPC:IsNativeGamepadPreferredMode029197())
-        or (type(IsInGamepadPreferredMode) == "function" and safe(IsInGamepadPreferredMode, false) == true)
-
-    -- v0.29.201: when ESO's Keybind Display Mode requests Gamepad, never route
-    -- through the keyboard-mode ZO formatter. The Suite-wide renderer queries
-    -- the gamepad binding set directly and emits explicit controller texture art.
-    if preferGamepad == true then
-        if EPC.GetActionBindingMarkup029199 then
-            return EPC:GetActionBindingMarkup029199(actionName, 20) or ""
-        end
-        return ""
-    end
 
     if EPC.GetActionBindingMarkup029199 then
         local unified = EPC:GetActionBindingMarkup029199(actionName, 20)
@@ -2450,3 +2436,48 @@ function R:Initialize()
     EAS_RA_InitializeBase029171(self)
     self:RegisterMomentToMomentEvents029171()
 end
+
+
+-- ============================================================================
+-- v0.29.365 - hold advisor recommendation through cast/channel completion.
+-- ============================================================================
+local EAS_BuildRecommendationsBase029365=R.BuildRecommendations
+function R:BuildRecommendations()
+    local t=now()
+    if (tonumber(self.advisorCastLockUntil029365) or 0)>t and type(self.advisorLockedRecommendations029365)=="table" then
+        local c=self.advisorLockedContext029365 or self.lastSmartContext029161 or {}
+        return self.advisorLockedRecommendations029365, tonumber(c.targetHP) or self:GetTargetHealth(), c.crystalProc==true, c
+    end
+    local a,b,c,d=EAS_BuildRecommendationsBase029365(self)
+    self.advisorLockedRecommendations029365=a
+    self.advisorLockedContext029365=d
+    return a,b,c,d
+end
+local EAS_RegisterMomentBase029365=R.RegisterMomentToMomentEvents029171
+function R:RegisterMomentToMomentEvents029171()
+    if self.castLockEventInstalled029365 then return EAS_RegisterMomentBase029365(self) end
+    EAS_RegisterMomentBase029365(self)
+    self.castLockEventInstalled029365=true
+    local prefix=(EPC.name or "ESOAdventurerSuite").."_CastLock029365"
+    if EVENT_ACTION_SLOT_ABILITY_USED then
+        EVENT_MANAGER:RegisterForEvent(prefix,EVENT_ACTION_SLOT_ABILITY_USED,function(_,slotNum)
+            local slot=tonumber(slotNum) or 0; local category=safe(GetActiveHotbarCategory,nil)
+            local abilityId=tonumber(safe(GetSlotBoundId,0,slot,category)) or 0
+            if abilityId<=0 or type(self.GetAbilityRuntimeMeta029170)~="function" then return end
+            local meta=self:GetAbilityRuntimeMeta029170(abilityId) or {}
+            local cast=tonumber(meta.castTime) or 0; local channel=tonumber(meta.channelTime) or 0
+            local duration=math.max(cast,channel)
+            if duration>100 then
+                -- Runtime metadata is milliseconds in ESO. Snapshot the current
+                -- recommendation before the older "ability used" listener can
+                -- advance it, then keep returning that snapshot until completion.
+                self.advisorCastLockUntil029365=now()+duration+60
+                if type(self.advisorLockedRecommendations029365)~="table" then
+                    local recs,_,_,ctx=EAS_BuildRecommendationsBase029365(self); self.advisorLockedRecommendations029365=recs; self.advisorLockedContext029365=ctx
+                end
+                zo_callLater(function() if EPC and EPC.RotationAssistant then EPC.RotationAssistant.advisorCastLockUntil029365=0; EPC.RotationAssistant:Refresh() end end,duration+70)
+            end
+        end)
+    end
+end
+

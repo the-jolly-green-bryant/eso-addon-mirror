@@ -1,0 +1,26 @@
+## To release a new version, edit the version in the two lines below and nothing else.
+## |cRRGGBB...|r in Title and Author colours them in the in-game add-on list; the version
+## is read back through that markup, so it can sit inside or outside the colour.
+## The name itself is fixed in Main.lua.
+## Title: |cFF69B4PB's MailerExtension|r 1.2.0
+## Author: |cFF69B4PinkBanther|r
+## Description: The mail window has an inbox and a page to write on, and nothing else. This adds the two boxes that are missing. Drafts: a third tab in the mail window, beside Inbox and Send. Put an unfinished letter away with everything on it -- addressee, subject, body, attached items and gold -- and take it out again later. Works in both the keyboard and the gamepad interface, and everything it does is also on /pbmail. Sent: every letter you send is written down as it goes -- the game keeps no copy and the API cannot read one -- so you can look back at what you sent, and put any of it back on the page to send again. How many each box holds is a setting, up to a thousand each. Nothing is sent by the add-on itself; you always press Send yourself.
+## Version: 1.2.0
+## APIVersion: 101050 101051
+## OptionalDependsOn: LibHarvensAddonSettings>=20106
+## SavedVariables: PBsMailerExtension_Data
+
+lang/strings.lua
+lang/$(language).lua
+
+Main.lua
+Compose.lua
+Box.lua
+Drafts.lua
+Sent.lua
+UI.lua
+Gamepad.lua
+Keyboard.lua
+Settings.lua
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls© and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.

@@ -106,7 +106,10 @@ end
 
 function R:Create()
     local frame = wm:CreateTopLevelWindow("EAS_RepairCostOverlay")
-    frame:SetDimensions(410, 98)
+    local detailWidth = math.max(320, math.min(800, tonumber(EPC.saved and EPC.saved.repairCostWidth) or 410))
+    frame:SetDimensions(detailWidth, 98)
+    if frame.SetDimensionConstraints then frame:SetDimensionConstraints(320, 98, 800, 420) end
+    if frame.SetResizeHandleSize then frame:SetResizeHandleSize(0) end
     frame:SetClampedToScreen(true)
     frame:SetMouseEnabled(false)
     frame:SetMovable(false)
@@ -137,12 +140,14 @@ function R:Create()
     for i = 1, 11 do
         local row = wm:CreateControl("EAS_RepairCostOverlay_Row" .. tostring(i), frame, CT_CONTROL)
         row:SetAnchor(TOPLEFT, frame, TOPLEFT, 10, 45 + ((i - 1) * 20))
-        row:SetDimensions(390, 19)
+        row:SetAnchor(TOPRIGHT, frame, TOPRIGHT, -10, 45 + ((i - 1) * 20))
+        row:SetHeight(19)
         row:SetHidden(true)
 
         local left = wm:CreateControl("EAS_RepairCostOverlay_Row" .. tostring(i) .. "Left", row, CT_LABEL)
         left:SetAnchor(TOPLEFT, row, TOPLEFT, 0, 0)
-        left:SetDimensions(276, 19)
+        left:SetAnchor(TOPRIGHT, row, TOPRIGHT, -116, 0)
+        left:SetHeight(19)
         left:SetFont("ZoFontGameSmall")
         left:SetColor(0.91, 0.92, 0.94, 1)
         left:SetVerticalAlignment(TEXT_ALIGN_CENTER)
@@ -172,7 +177,7 @@ function R:Create()
     hint:SetFont("ZoFontGameSmall")
     hint:SetColor(0.94, 0.82, 0.44, 1)
     hint:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
-    hint:SetText("DRAG TO MOVE")
+    hint:SetText("DRAG TO MOVE - EDGES TO RESIZE")
     hint:SetHidden(true)
 
     frame:SetHandler("OnMoveStop", function(control)
@@ -182,10 +187,25 @@ function R:Create()
         end
     end)
 
+    frame:SetHandler("OnResizeStart", function() R.detailResizing = true end)
+    frame:SetHandler("OnResizeStop", function(control)
+        R.detailResizing = false
+        if EPC.saved then
+            EPC.saved.repairCostWidth = math.floor(math.max(320, math.min(800, tonumber(control:GetWidth()) or 410)) + 0.5)
+            EPC.saved.repairCostLeft = control:GetLeft()
+            EPC.saved.repairCostTop = control:GetTop()
+        end
+        R:Refresh()
+    end)
+
     -- The ALWAYS presentation is intentionally a separate, text-only HUD item.
     -- The detailed repair/recharge card remains exclusive to Inventory Only.
     local compactFrame = wm:CreateTopLevelWindow("EAS_RepairCostCompactOverlay")
-    compactFrame:SetDimensions(260, 34)
+    local compactW = math.max(150, math.min(600, tonumber(EPC.saved and EPC.saved.repairCostCompactWidth) or 260))
+    local compactH = math.max(24, math.min(90, tonumber(EPC.saved and EPC.saved.repairCostCompactHeight) or 34))
+    compactFrame:SetDimensions(compactW, compactH)
+    if compactFrame.SetDimensionConstraints then compactFrame:SetDimensionConstraints(150, 24, 600, 90) end
+    if compactFrame.SetResizeHandleSize then compactFrame:SetResizeHandleSize(0) end
     compactFrame:SetClampedToScreen(true)
     compactFrame:SetMouseEnabled(false)
     compactFrame:SetMovable(false)
@@ -193,7 +213,7 @@ function R:Create()
 
     local compactLabel = wm:CreateControl("EAS_RepairCostCompactOverlay_Label", compactFrame, CT_LABEL)
     compactLabel:SetAnchorFill(compactFrame)
-    compactLabel:SetFont("$(BOLD_FONT)|18|soft-shadow-thick")
+    compactLabel:SetFont(string.format("$(BOLD_FONT)|%d|soft-shadow-thick", math.max(14, math.min(42, math.floor(compactH * 0.53 + 0.5)))))
     compactLabel:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     compactLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     compactLabel:SetColor(0.94, 0.82, 0.44, 1)
@@ -204,6 +224,22 @@ function R:Create()
             EPC.saved.repairCostCompactLeft = control:GetLeft()
             EPC.saved.repairCostCompactTop = control:GetTop()
         end
+    end)
+
+    compactFrame:SetHandler("OnResizeStart", function() R.compactResizing = true end)
+    compactFrame:SetHandler("OnResizeStop", function(control)
+        R.compactResizing = false
+        if EPC.saved then
+            EPC.saved.repairCostCompactWidth = math.floor(math.max(150, math.min(600, tonumber(control:GetWidth()) or 260)) + 0.5)
+            EPC.saved.repairCostCompactHeight = math.floor(math.max(24, math.min(90, tonumber(control:GetHeight()) or 34)) + 0.5)
+            EPC.saved.repairCostCompactLeft = control:GetLeft()
+            EPC.saved.repairCostCompactTop = control:GetTop()
+        end
+        if R.compactLabel then
+            local h = tonumber(control:GetHeight()) or 34
+            R.compactLabel:SetFont(string.format("$(BOLD_FONT)|%d|soft-shadow-thick", math.max(14, math.min(42, math.floor(h * 0.53 + 0.5)))))
+        end
+        R:Refresh()
     end)
 
     self.compactFrame, self.compactLabel = compactFrame, compactLabel
@@ -264,7 +300,7 @@ end
 
 function R:IsInventoryOpen()
     if not SCENE_MANAGER or type(SCENE_MANAGER.IsShowing) ~= "function" then return false end
-    local scenes = { "inventory", "gamepad_inventory_root" }
+    local scenes = { "inventory", }
     for i = 1, #scenes do
         local ok, showing = pcall(SCENE_MANAGER.IsShowing, SCENE_MANAGER, scenes[i])
         if ok and showing == true then return true end
@@ -274,9 +310,8 @@ end
 
 function R:IsPauseMenuOpen()
     if not SCENE_MANAGER or type(SCENE_MANAGER.IsShowing) ~= "function" then return false end
-    -- Keyboard Esc menu plus the equivalent gamepad/player menus.  The compact
     -- Always HUD is gameplay information and should not sit on top of Pause.
-    local scenes = { "gameMenuInGame", "gameMenu", "gamepad_main_menu", "gamepad_player_menu", "gamepad_options_root" }
+    local scenes = { "gameMenuInGame", "gameMenu", }
     for i = 1, #scenes do
         local ok, showing = pcall(SCENE_MANAGER.IsShowing, SCENE_MANAGER, scenes[i])
         if ok and showing == true then return true end
@@ -314,6 +349,18 @@ function R:Refresh()
 
     local enabled = EPC.saved.showRepairCostOverlay ~= false
     local mode = EPC.saved.repairCostVisibility or "INVENTORY"
+
+    -- Persisted HUD-layout sizing. Height of the detailed card remains content-driven,
+    -- while its width is user-resizable. The compact HUD can be resized freely.
+    local detailWidth = math.max(320, math.min(800, tonumber(EPC.saved.repairCostWidth) or 410))
+    if self.detailResizing ~= true then self.frame:SetWidth(detailWidth) end
+    local compactW = math.max(150, math.min(600, tonumber(EPC.saved.repairCostCompactWidth) or 260))
+    local compactH = math.max(24, math.min(90, tonumber(EPC.saved.repairCostCompactHeight) or 34))
+    if self.compactResizing ~= true then self.compactFrame:SetDimensions(compactW, compactH) end
+    if self.compactLabel then
+        self.compactLabel:SetFont(string.format("$(BOLD_FONT)|%d|soft-shadow-thick", math.max(14, math.min(42, math.floor(compactH * 0.53 + 0.5)))))
+    end
+
     local showDetail = false
     local showCompact = false
 
@@ -474,8 +521,10 @@ function R:SetLayoutMode(active)
     local compactMove = self.layoutMode and mode == "ALWAYS"
     self.frame:SetMouseEnabled(detailMove)
     self.frame:SetMovable(detailMove)
+    if self.frame.SetResizeHandleSize then self.frame:SetResizeHandleSize(detailMove and 18 or 0) end
     self.compactFrame:SetMouseEnabled(compactMove)
     self.compactFrame:SetMovable(compactMove)
+    if self.compactFrame.SetResizeHandleSize then self.compactFrame:SetResizeHandleSize(compactMove and 18 or 0) end
     if self.hint then self.hint:SetHidden(not detailMove) end
     self:Refresh()
     if self.layoutMode then
@@ -563,10 +612,9 @@ function R:Initialize()
 
 
     -- Inventory update events do not necessarily fire when the scene itself closes.
-    -- Listen to the keyboard and gamepad inventory scene states so the estimate
     -- hides immediately when Inventory is dismissed.
     if SCENE_MANAGER and type(SCENE_MANAGER.GetScene) == "function" then
-        for _, sceneName in ipairs({"inventory", "gamepad_inventory_root", "gameMenuInGame", "gameMenu", "gamepad_main_menu", "gamepad_player_menu", "gamepad_options_root"}) do
+        for _, sceneName in ipairs({"inventory", "gameMenuInGame", "gameMenu",}) do
             local ok, scene = pcall(SCENE_MANAGER.GetScene, SCENE_MANAGER, sceneName)
             if ok and scene and type(scene.RegisterCallback) == "function" then
                 scene:RegisterCallback("StateChange", function()

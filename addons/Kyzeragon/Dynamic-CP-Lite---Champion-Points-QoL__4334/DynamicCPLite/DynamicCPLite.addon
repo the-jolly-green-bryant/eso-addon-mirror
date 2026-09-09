@@ -8,11 +8,11 @@
 ## Description: Champion Point automatic presets, quality of life changes, and more!
 ## Author: Kyzeragon
 ## Contributors: from original Dynamic CP: Raijindono (UX), camrenis (testing & feedback), Plonkerr (testing & feedback)
-## Version: 1.0.1
-## AddOnVersion: 10001
-## APIVersion: 101048
+## Version: 1.1.0
+## AddOnVersion: 10100
+## APIVersion: 101050 101051
 
-## DependsOn: LibAddonMenu-2.0>=41
+## DependsOn: LibAddonMenu-2.0>=43
 ## PCDependsOn: LibDialog>=127
 ## OptionalDependsOn: LibFilteredChatPanel
 
@@ -31,10 +31,13 @@ src/points.lua
 src/slottables.lua
 
 src/smartPresets/presets/blueAutoPve.lua
+src/smartPresets/presets/blueGeneralPvp.lua
 src/smartPresets/presets/greenCombat.lua
 src/smartPresets/presets/greenLootGoblin.lua
 src/smartPresets/presets/greenThieving.lua
 src/smartPresets/presets/redAutoPve.lua
+src/smartPresets/presets/redSpeed.lua
+src/smartPresets/presets/redGeneralPvp.lua
 src/smartPresets/smartPresets.lua
 
 PC/Settings.lua

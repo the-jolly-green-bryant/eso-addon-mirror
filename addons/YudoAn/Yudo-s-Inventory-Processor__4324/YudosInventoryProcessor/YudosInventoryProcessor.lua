@@ -79,6 +79,7 @@ YIP.Whitelists = {
 local DELAY_TICK = 10  -- ms between actions (Reduced from 20 to 10)
 
 local defaults = {
+    accountWide = true,
     global = {
         respectFCOIS = true,
         respectLWC = true
@@ -121,16 +122,31 @@ local defaults = {
 }
 
 function YIP.Initialize()
-    YIP.savedVars = ZO_SavedVars:NewAccountWide("YudosInventoryProcessorVars", 1, nil, defaults, GetWorldName())
+    local charSavedVars = (ZO_SavedVars.NewCharacterIdSettings and ZO_SavedVars:NewCharacterIdSettings("YudosInventoryProcessorVars", 1, nil, defaults, GetWorldName())) or ZO_SavedVars:New("YudosInventoryProcessorVars", 1, nil, defaults, GetWorldName())
+    local acctSavedVars = ZO_SavedVars:NewAccountWide("YudosInventoryProcessorVars", 1, nil, defaults, GetWorldName())
+
+    YIP.charSavedVars = charSavedVars
+    YIP.acctSavedVars = acctSavedVars
+
+    if charSavedVars.accountWide then
+        YIP.savedVars = acctSavedVars
+    else
+        YIP.savedVars = charSavedVars
+    end
+
+    YIP.savedVars.banker = YIP.savedVars.banker or {}
     YIP.savedVars.banker.minCurrency = YIP.savedVars.banker.minCurrency or {}
     
     -- Migration/Defaults safety checks
+    YIP.savedVars.decon = YIP.savedVars.decon or {}
     if YIP.savedVars.decon.includeBackpack == nil then YIP.savedVars.decon.includeBackpack = false end
     if YIP.savedVars.decon.includeBank == nil then YIP.savedVars.decon.includeBank = false end
+    YIP.savedVars.merchant = YIP.savedVars.merchant or {}
     YIP.savedVars.merchant.junkRules = YIP.savedVars.merchant.junkRules or defaults.merchant.junkRules
     if YIP.savedVars.merchant.fenceJunk == nil then YIP.savedVars.merchant.fenceJunk = false end
     if YIP.savedVars.merchant.sellNormalJunk == nil then YIP.savedVars.merchant.sellNormalJunk = YIP.savedVars.merchant.sellJunk end
     if YIP.savedVars.merchant.companionSellThreshold == nil then YIP.savedVars.merchant.companionSellThreshold = 0 end
+    YIP.savedVars.global = YIP.savedVars.global or defaults.global
     if YIP.savedVars.global.respectLWC == nil then YIP.savedVars.global.respectLWC = true end
     
     -- SILENT DATA MIGRATION: Convert old strings to numbers once
@@ -145,6 +161,7 @@ function YIP.Initialize()
     YIP.savedVars.decon.qualityThreshold = tonumber(YIP.savedVars.decon.qualityThreshold) or 2
     
     YIP.savedVars.global = YIP.savedVars.global or defaults.global
+    YIP.savedVars.junkMemory = YIP.savedVars.junkMemory or {}
 
     -- Register the Confirmation Popup
     ZO_Dialogs_RegisterCustomDialog("YIP_CONFIRM_RESET_MEMORY", {
@@ -961,12 +978,24 @@ function YIP.InitializeSettings()
         name = "Yudo's Inventory Processor",
         displayName = "Yudo's Inventory Processor",
         author = "YudoAn",
-        version = "1.11.4",
+        version = "1.12.0",
         website = "https://www.esoui.com/downloads/info4324-YudosInventoryProcessor.html",
         registerForRefresh = true,
     }
 
     local optionsTable = {
+        {
+            type = "checkbox",
+            name = "Account-Wide Settings",
+            tooltip = "Shared settings across all characters.",
+            getFunc = function() return YIP.charSavedVars.accountWide end,
+            setFunc = function(v) 
+                YIP.charSavedVars.accountWide = v 
+            end,
+            default = true,
+            requiresReload = true,
+        },
+
         { type = "header", name = "Compatibility" },
         {
             type = "checkbox",

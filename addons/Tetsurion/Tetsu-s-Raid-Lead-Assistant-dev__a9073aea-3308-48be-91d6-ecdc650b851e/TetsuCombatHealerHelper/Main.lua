@@ -5,10 +5,10 @@ local T = TetsuCombatHealerHelper
 local defaultAccountVars = {
     enabled = true,
     hudList = true,
-    hudBuff1 = "prayer",
-    hudBuff2 = "powerfulAssault",
-    hudBuff3 = "majorCourage",
-    hudBuff4 = "off",
+    hudBuff1 = "powerfulAssault",
+    hudBuff2 = "prayer",
+    hudBuff3 = "radiatingRegen",
+    hudBuff4 = "majorSlayer",
     hudBuff5 = "off",
     hudOffsetX = 0,
     hudOffsetY = 0,
@@ -31,6 +31,15 @@ local defaultAccountVars = {
     hudColColor3 = "cyan",
     hudColColor4 = "orange",
     hudColColor5 = "purple",
+    buffPair_expedition = false,
+    buffPair_fortitude = false,
+    buffPair_mending = false,
+    buffPair_protection = false,
+    buffPair_toughness = false,
+    buffPair_aegis = false,
+    buffPair_evasion = false,
+    debuffPair_alkosh = true,
+    debuffPair_zen = true,
 }
 
 local function OnEffectChanged(...)
@@ -151,6 +160,14 @@ local function OnAddOnLoaded(_, addonName)
     if T.savedVars.debuffPair_fracture == nil then T.savedVars.debuffPair_fracture = false end
     if T.savedVars.debuffPair_cowardice == nil then T.savedVars.debuffPair_cowardice = false end
     if T.savedVars.debuffPair_maim == nil then T.savedVars.debuffPair_maim = false end
+    if T.savedVars.hudLayout17 ~= true then
+        T.savedVars.hudBuff1 = "powerfulAssault"
+        T.savedVars.hudBuff2 = "prayer"
+        T.savedVars.hudBuff3 = "radiatingRegen"
+        T.savedVars.hudBuff4 = "majorSlayer"
+        T.savedVars.hudBuff5 = "off"
+        T.savedVars.hudLayout17 = true
+    end
 
     if T.RegisterSettings then
         T.RegisterSettings()

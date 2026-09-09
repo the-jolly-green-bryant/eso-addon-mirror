@@ -1,6 +1,6 @@
 CurvedHUD = CurvedHUD or {}
 local CH = CurvedHUD
-CH.name, CH.version, CH.updateName, CH.dataVersion = "CurvedHUD", "0.9.19", "CurvedHUD_Update", 1
+CH.name, CH.version, CH.updateName, CH.dataVersion = "CurvedHUD", "1.0.7", "CurvedHUD_Update", 1
 CH.defaults = {enabled=true,preview=false,showDefaultResources=true,buffVerticalOffset=0,useOutOfCombatOpacity=false,outOfCombatOpacity=.45,scale=1.0,spacing=235,verticalOffset=35,resourceGap=7,barWidth=48,leftTimerOffset=-6,leftTimerSpacing=15,rightTimerOffset=3,rightTimerSpacing=3,fillAlpha=.85,frameAlpha=.48,backgroundAlpha=.24,shieldAlpha=.68,textAlpha=.95,timerFontSize=24,expirationAlerts=false,resourceValueFontSize=27,resourcePercentFontSize=20,majorBuffTracked="None",insideTimerStyle="Thin",outsideTimerStyle="Thick",majorBuffColor="Purple",balanceEnabled=false,balanceSlot="bottomLeftInside",balanceColor="Orange",aegisEnabled=false,aegisSlot="topLeftOutside",aegisColor="Pale Blue",armamentsEnabled=false,armamentsSlot="topRightInside",armamentsColor="Pale Blue",fragmentsEnabled=false,fragmentsPosition="Top",fragmentsScale=.75,surgeEnabled=false,surgeSlot="topRightOutside",surgeColor="Gold",shroudEnabled=false,shroudSlot="bottomRightOutside",shroudColor="Cyan",soulBurstEnabled=false,soulBurstSlot="topRightInside",soulBurstColor="Purple",soulBurstDuration=20,contingencyEnabled=false,contingencySlot="bottomRightInside",contingencyColor="Cyan",contingencyDuration=20,showRaw=true,showPercent=true,showMaximum=false,debug=false,layout="Parallel",staminaInside=true,iconCache={},abilityIdCache={}}
 CH.characterKeys = {majorBuffTracked=true,majorBuffColor=true,balanceEnabled=true,balanceSlot=true,balanceColor=true,aegisEnabled=true,aegisSlot=true,aegisColor=true,armamentsEnabled=true,armamentsSlot=true,armamentsColor=true,fragmentsEnabled=true,fragmentsPosition=true,surgeEnabled=true,surgeSlot=true,surgeColor=true,shroudEnabled=true,shroudSlot=true,shroudColor=true,soulBurstEnabled=true,soulBurstSlot=true,soulBurstColor=true,soulBurstDuration=true,contingencyEnabled=true,contingencySlot=true,contingencyColor=true,contingencyDuration=true}
 CH.characterDefaults = {majorBuffTracked="None",majorBuffColor="Purple",balanceEnabled=false,balanceSlot="bottomLeftInside",balanceColor="Orange",aegisEnabled=false,aegisSlot="topLeftOutside",aegisColor="Pale Blue",armamentsEnabled=false,armamentsSlot="topRightInside",armamentsColor="Pale Blue",fragmentsEnabled=false,fragmentsPosition="Top",surgeEnabled=false,surgeSlot="topRightOutside",surgeColor="Gold",shroudEnabled=false,shroudSlot="bottomRightOutside",shroudColor="Cyan",soulBurstEnabled=false,soulBurstSlot="topRightInside",soulBurstColor="Purple",soulBurstDuration=20,contingencyEnabled=false,contingencySlot="bottomRightInside",contingencyColor="Cyan",contingencyDuration=20,initialized=false}
@@ -363,6 +363,26 @@ local SHROUD_ICON_PATHS={
 }
 local DEFAULT_SHROUD_ICON_PATH=SHROUD_ICON_PATHS["vibrant shroud"]
 local ULFSILD_EFFECT_ID=222285
+-- Contingency uses three persistent priming effects and a large family of
+-- generated signature/affix effects. The triggered effect frequently does not
+-- contain "Ulfsild" in its localized name, so IDs are the authoritative link.
+-- Keep this family aligned with the live mappings used by action-bar trackers.
+local CONTINGENCY_PRIME_IDS={[217528]=true,[222285]=true,[222678]=true}
+local CONTINGENCY_EFFECT_IDS={
+    [221185]=true,[217611]=true,[221354]=true,[221392]=true,
+    [221155]=true,[221156]=true,[221157]=true,[221158]=true,
+    [217655]=true,[217613]=true,[217621]=true,[217605]=true,
+    [221179]=true,[221180]=true,[221181]=true,[221182]=true,[221183]=true,[221184]=true,
+    [221169]=true,[221170]=true,[221171]=true,[221172]=true,
+    [217656]=true,[217652]=true,[217609]=true,[217610]=true,[221356]=true,[218340]=true,
+    [221166]=true,[221167]=true,[221168]=true,
+    [221159]=true,[221160]=true,[221161]=true,[217654]=true,
+    [217528]=true,[217604]=true,[217616]=true,[217618]=true,[217653]=true,[217657]=true,
+    [217659]=true,[218341]=true,[219662]=true,[221189]=true,[221352]=true,[221353]=true,
+    [221355]=true,[221734]=true,[222285]=true,[222364]=true,[222678]=true,
+    [221173]=true,[221174]=true,[221175]=true,[221176]=true,[221177]=true,[217608]=true,
+    [240148]=true,[240149]=true,[240150]=true,
+}
 local WM = WINDOW_MANAGER
 local HEALTH_POWER=_G["COMBAT_MECHANIC_FLAGS_HEALTH"] or POWERTYPE_HEALTH
 local STAMINA_POWER=_G["COMBAT_MECHANIC_FLAGS_STAMINA"] or POWERTYPE_STAMINA
@@ -928,14 +948,57 @@ function CH:CacheExternalTrackerControls()
         for _,existing in ipairs(controls) do if existing==control then return end end
         controls[#controls+1]=control
     end
-    if FOCUSED_QUEST_TRACKER and FOCUSED_QUEST_TRACKER.GetContainerControl then add(FOCUSED_QUEST_TRACKER:GetContainerControl()) end
-    add(ZO_FocusedQuestTrackerPanel)
-    add(ZO_FocusedQuestTrackerPanelContainerQuestContainerAssisted)
-    add(ZO_FocusedQuestTrackerPanelContainerQuestContainerTrackedHeader1)
-    add(ZO_FocusedQuestTrackerPanelContainerQuestContainerTrackedHeader2)
+    local function addQuestControl(control)
+        add(control)
+        -- The assisted quest title is a sibling of the objective/details area
+        -- in some gamepad builds. Include quest-tracker parents, but stop before
+        -- reaching shared HUD roots that would hide unrelated interface pieces.
+        local parent=control and control.GetParent and control:GetParent()
+        for _=1,2 do
+            if not parent then break end
+            local name=parent.GetName and parent:GetName() or ""
+            if not string.find(name,"QuestTracker",1,true) and not string.find(name,"FocusedQuest",1,true) then break end
+            add(parent)
+            parent=parent.GetParent and parent:GetParent() or nil
+        end
+    end
+    local function addQuestTree(control,depth)
+        if not control or (depth or 0)>7 then return end
+        add(control)
+        if control.GetNumChildren and control.GetChild then
+            local count=control:GetNumChildren() or 0
+            for index=1,count do addQuestTree(control:GetChild(index),(depth or 0)+1) end
+        end
+    end
+    if FOCUSED_QUEST_TRACKER and FOCUSED_QUEST_TRACKER.GetContainerControl then addQuestControl(FOCUSED_QUEST_TRACKER:GetContainerControl()) end
+    addQuestControl(ZO_FocusedQuestTrackerPanel)
+    addQuestControl(ZO_FocusedQuestTrackerPanelContainer)
+    addQuestControl(ZO_FocusedQuestTrackerPanelContainerQuestContainer)
+    addQuestControl(ZO_FocusedQuestTrackerPanelContainerQuestContainerAssisted)
+    addQuestControl(ZO_FocusedQuestTrackerPanelContainerQuestContainerAssistedHeader)
+    addQuestControl(ZO_FocusedQuestTrackerPanelContainerQuestContainerAssistedHeaderQuestName)
+    addQuestControl(ZO_FocusedQuestTrackerPanelContainerQuestContainerAssistedQuest)
+    addQuestControl(ZO_FocusedQuestTrackerPanelContainerQuestContainerAssistedQuestHeader)
+    addQuestControl(ZO_FocusedQuestTrackerPanelContainerQuestContainerAssistedQuestName)
+    addQuestControl(ZO_FocusedQuestTrackerPanelContainerQuestContainerTrackedHeader1)
+    addQuestControl(ZO_FocusedQuestTrackerPanelContainerQuestContainerTrackedHeader2)
+    -- Platform layouts create some title controls late and under different
+    -- names. Traverse only the focused-quest containers so the remaining yellow
+    -- title is included without affecting unrelated HUD controls.
+    addQuestTree(ZO_FocusedQuestTrackerPanelContainer,0)
+    addQuestTree(ZO_FocusedQuestTrackerPanelContainerQuestContainer,0)
+    if WM and WM.GetControlByName then
+        for _,name in ipairs({
+            "ZO_FocusedQuestTrackerPanelContainerQuestContainerAssistedHeaderQuestName",
+            "ZO_FocusedQuestTrackerPanelContainerQuestContainerAssistedQuestName",
+            "ZO_FocusedQuestTrackerPanelContainerQuestContainerQuestName",
+            "ZO_FocusedQuestTrackerPanelContainerQuestContainerHeaderQuestName",
+        }) do addQuestControl(WM:GetControlByName(name)) end
+    end
     add(PROMOTIONAL_EVENT_TRACKER)
     add(ZO_PromotionalEventTracker_TL)
     self.externalTrackerControls=controls
+    self.lastExternalTrackerCacheAt=GetGameTimeMilliseconds and GetGameTimeMilliseconds() or 0
 end
 
 function CH:UpdateExternalTrackerOpacity()
@@ -951,7 +1014,10 @@ function CH:UpdateExternalTrackerOpacity()
     local restricted=(self.sv.reduceQuestTrackersInCombat and inCombat) or (self.sv.reduceQuestTrackersInInstances and inInstance)
     local targetAlpha=restricted and clamp(tonumber(self.sv.reducedQuestTrackerOpacity) or 0,0,1) or 1
     self.externalTrackerBaseAlpha=self.externalTrackerBaseAlpha or {}
-    if not self.externalTrackerControls then self:CacheExternalTrackerControls() end
+    -- Refresh on entry and periodically while restricted because ESO can build
+    -- or replace the focused quest title after the rest of its tracker exists.
+    local cacheNow=GetGameTimeMilliseconds and GetGameTimeMilliseconds() or 0
+    if not self.externalTrackerControls or (restricted and not self.externalTrackersReduced) or (restricted and cacheNow-(self.lastExternalTrackerCacheAt or 0)>5000) then self:CacheExternalTrackerControls() end
     for _,control in ipairs(self.externalTrackerControls) do
         if self.externalTrackerBaseAlpha[control]==nil then
             self.externalTrackerBaseAlpha[control]=control.GetAlpha and control:GetAlpha() or 1
@@ -1752,10 +1818,34 @@ function CH:HandleScribingCast(abilityName,abilityGraphic,abilityId,allowActive)
             self:RememberDefinitionAbilityId(definition,abilityId)
             local tracker=self.trackers[definition.key]
             if allowActive or not tracker.active then self:StartCastTracker(tracker,self.sv[definition.key.."Duration"],abilityGraphic,abilityId) end
+            if definition.key=="contingency" then
+                local now=GetGameTimeSeconds()
+                self.contingencyPrimed=true
+                self.contingencyPrimedAt=now
+                self.contingencyPrimeAbilityId=abilityId
+                self.contingencyPrimeEnd=now+self:GetConfiguredAbilityDuration(abilityId,self.sv.contingencyDuration)
+                tracker.contingencyProcActive=false
+                tracker.contingencyProcEnd=0
+            end
             return true
         end
     end
     return false
+end
+
+function CH:TriggerPrimedContingency(requirePowerDelay)
+    if not self.contingencyPrimed or not self.sv.contingencyEnabled or not self.trackers.contingency then return false end
+    local now=GetGameTimeSeconds()
+    if now>(self.contingencyPrimeEnd or 0) then self.contingencyPrimed=false; return false end
+    -- A power event from the priming cast itself can arrive just after its slot
+    -- event. Delay only that fallback path; direct subsequent skill casts remain
+    -- authoritative and may animation-cancel the prime immediately.
+    if requirePowerDelay and now-(self.contingencyPrimedAt or now)<.6 then return false end
+    self:StartCastTracker(self.trackers.contingency,self.sv.contingencyDuration,nil,self.contingencyPrimeAbilityId)
+    self.contingencyPrimed=false
+    self.contingencyTriggeredAt=now
+    self:Log("Ulfsild's Contingency triggered; timer restarted from proc",false)
+    return true
 end
 
 function CH:HandleWardenCast(abilityName,abilityGraphic,abilityId,allowActive)
@@ -1841,6 +1931,46 @@ function CH:HandleNonClassCast(abilityName,abilityGraphic,abilityId,allowActive)
     end
     return handled
 end
+
+function CH:HandleTrackedAbilityCast(abilityName,abilityGraphic,abilityId,authoritative)
+    local lowerName=string.lower(abilityName or "")
+    -- Do not use the learned/transformed ability-ID cache to decide whether
+    -- this is another Contingency cast. On console the next action may expose
+    -- a reused crafted ID, causing the real trigger to be mistaken for the
+    -- priming skill. Only the explicit skill name suppresses the trigger.
+    local isExplicitContingency=self:PhraseMatches(lowerName,"ulfsild's contingency")
+        or self:PhraseMatches(lowerName,"ulfsilds contingency")
+        or lowerName=="contingency"
+    if self.contingencyPrimed and not isExplicitContingency then
+        -- Direct action-slot use is itself the reliable signal; GetAbilityCost
+        -- frequently reports zero for crafted or transformed ability IDs.
+        if authoritative or string.find(lowerName,"dodge",1,true) or string.find(lowerName,"roll",1,true) then self:TriggerPrimedContingency(false) end
+    end
+    -- Encase/Vibrant Shroud predates the table-driven Sorcerer definitions and
+    -- was handled only by EVENT_COMBAT_EVENT. Once action-slot events became
+    -- authoritative, that combat path was intentionally filtered and this
+    -- family was accidentally bypassed. Route both sources through one handler.
+    if self.sv.shroudEnabled and self.trackers.shroud and
+       (self:PhraseMatches(lowerName,"vibrant shroud") or self:PhraseMatches(lowerName,"shattering spines") or self:PhraseMatches(lowerName,"encase")) then
+        local t=self.trackers.shroud
+        if authoritative or not t.active then
+            local duration=self:GetConfiguredAbilityDuration(abilityId,10)
+            local now=GetGameTimeSeconds()
+            t.active,t.beginTime,t.endTime,t.duration=true,now,now+duration,duration
+            t.castDriven,t.lastCastAt=true,now
+            local iconPath=self:GetShroudIcon(abilityName)
+            t.preferredIcon=iconPath; t.icon:SetTexture(iconPath)
+            self:UpdateTrackers()
+        end
+        return true
+    end
+    return self:HandleScribingCast(abilityName,abilityGraphic,abilityId,authoritative)
+        or self:HandleSorcererCast(abilityName,abilityGraphic,abilityId,authoritative)
+        or self:HandleWardenCast(abilityName,abilityGraphic,abilityId,authoritative)
+        or self:HandleArcanistCast(abilityName,abilityGraphic,abilityId,authoritative)
+        or self:HandleRemainingClassCast(abilityName,abilityGraphic,abilityId,authoritative)
+        or self:HandleNonClassCast(abilityName,abilityGraphic,abilityId,authoritative)
+end
 function CH:OnEffectChanged(changeType,effectName,unitTag,beginTime,endTime,stackCount,iconName,abilityId)
     if unitTag~="player" then return end
     local lowerName=string.lower(effectName or "")
@@ -1850,6 +1980,79 @@ function CH:OnEffectChanged(changeType,effectName,unitTag,beginTime,endTime,stac
         if iconName and iconName~="" and self.procAlert then self.procAlert.icon:SetTexture(iconName) end
         self:UpdateProcAlert()
         return
+    end
+    local numericAbilityId=tonumber(abilityId)
+    local isKnownContingencyEffect=numericAbilityId and CONTINGENCY_EFFECT_IDS[numericAbilityId]
+    local isContingencyPrime=numericAbilityId and CONTINGENCY_PRIME_IDS[numericAbilityId]
+    if isContingencyPrime and self.trackers.contingency then
+        -- Establish the prepared-runes state from ESO's persistent priming
+        -- buff, not only from the active action-bar slot. This survives weapon
+        -- swaps and crafted-ID changes when Contingency is slotted on one bar.
+        local t=self.trackers.contingency
+        local now=GetGameTimeSeconds()
+        local reportedBegin=(tonumber(beginTime) or 0)>0 and tonumber(beginTime) or now
+        local reportedEnd=tonumber(endTime) or 0
+        if changeType~=EFFECT_RESULT_FADED then
+            if reportedEnd<=now then reportedEnd=now+self:GetConfiguredAbilityDuration(numericAbilityId,self.sv.contingencyDuration) end
+            self.contingencyPrimed=true
+            self.contingencyPrimedAt=reportedBegin
+            self.contingencyPrimeAbilityId=numericAbilityId
+            self.contingencyPrimeEnd=reportedEnd
+            t.active,t.beginTime,t.endTime,t.duration,t.stackCount=true,reportedBegin,reportedEnd,math.max(.01,reportedEnd-reportedBegin),stackCount or 0
+            t.castDriven=false
+            t.contingencyProcActive=false
+            t.contingencyProcEnd=0
+            if t.preferredIcon then t.icon:SetTexture(t.preferredIcon)
+            elseif iconName and iconName~="" then t.icon:SetTexture(iconName) end
+            self:Log("Ulfsild's Contingency priming effect "..tostring(abilityId).." detected",false)
+        elseif (self.contingencyPrimeEnd or 0)<=now+.15 then
+            self.contingencyPrimed=false
+            if not t.contingencyProcActive then t.active=false end
+        end
+        self:UpdateTrackers()
+        return
+    end
+    if isKnownContingencyEffect and not isContingencyPrime and self.trackers.contingency then
+        -- This is the generated effect after the prepared runes are consumed,
+        -- not the priming buff. Replace the inferred priming endpoint with the
+        -- API's real effect window. Several scripts may arrive together; retain
+        -- the latest endpoint so the complete overlapping effect is represented.
+        local t=self.trackers.contingency
+        local now=GetGameTimeSeconds()
+        local reportedBegin=(tonumber(beginTime) or 0)>0 and tonumber(beginTime) or now
+        local reportedEnd=tonumber(endTime) or 0
+        self.contingencyPrimed=false
+        if changeType~=EFFECT_RESULT_FADED and reportedEnd>now then
+            local firstProc=not t.contingencyProcActive
+            local mergedBegin=firstProc and reportedBegin or math.min(t.beginTime or reportedBegin,reportedBegin)
+            local mergedEnd=firstProc and reportedEnd or math.max(t.endTime or 0,reportedEnd)
+            t.active,t.beginTime,t.endTime,t.duration,t.stackCount=true,mergedBegin,mergedEnd,math.max(.01,mergedEnd-mergedBegin),stackCount or 0
+            t.castDriven=false
+            t.contingencyProcActive=true
+            t.contingencyProcEnd=mergedEnd
+            if t.preferredIcon then t.icon:SetTexture(t.preferredIcon)
+            elseif iconName and iconName~="" then t.icon:SetTexture(iconName) end
+            self:Log("Ulfsild's Contingency proc effect "..tostring(abilityId).." tracked for "..string.format("%.1f",mergedEnd-now).."s",false)
+        elseif t.contingencyProcActive and (t.contingencyProcEnd or 0)<=now+.15 then
+            t.active=false
+            t.contingencyProcActive=false
+            t.contingencyProcEnd=0
+        end
+        self:UpdateTrackers()
+        return
+    end
+    local isContingencyEffect=isKnownContingencyEffect
+        or string.find(lowerName,"ulfsild",1,true) and string.find(lowerName,"contingency",1,true)
+    if isContingencyEffect and self.contingencyPrimed and changeType~=EFFECT_RESULT_FADED then
+        -- The proc's applied/updated effect is the authoritative fallback when
+        -- EVENT_ACTION_SLOT_ABILITY_USED does not identify the overlapping
+        -- ability or hard action correctly. Ignore only the initial priming
+        -- effect, whose begin time is effectively the priming cast time.
+        local effectBegin=tonumber(beginTime) or 0
+        if effectBegin>(self.contingencyPrimedAt or effectBegin)+.15 then
+            self:TriggerPrimedContingency(false)
+            return
+        end
     end
     local t
     t=self:FindStandardBuffTracker(effectName,abilityId)
@@ -1861,7 +2064,7 @@ function CH:OnEffectChanged(changeType,effectName,unitTag,beginTime,endTime,stac
     elseif (string.find(lowerName,"vibrant shroud",1,true) or string.find(lowerName,"shattering spines",1,true) or lowerName=="encase") and self.trackers.shroud then
         t=self.trackers.shroud
         local iconPath=self:GetShroudIcon(effectName); t.preferredIcon=iconPath; t.icon:SetTexture(iconPath)
-    elseif (abilityId==ULFSILD_EFFECT_ID or string.find(lowerName,"ulfsild",1,true) and string.find(lowerName,"contingency",1,true)) and self.trackers.contingency then t=self.trackers.contingency
+    elseif isContingencyEffect and self.trackers.contingency then t=self.trackers.contingency
     elseif (string.find(lowerName,"betty netch",1,true) or string.find(lowerName,"blue betty",1,true) or string.find(lowerName,"bull netch",1,true)) and self.trackers.netch then
         t=self.trackers.netch
         local iconPath=self:GetFamilyIcon(self.wardenTrackerDefinitions[1],effectName); t.preferredIcon=iconPath; t.icon:SetTexture(iconPath)
@@ -1951,28 +2154,10 @@ function CH:QueuePlayerActivationRefresh(delayMs)
     if zo_callLater then zo_callLater(refresh,delayMs or 350) else refresh() end
 end
 
-function CH:QueueSettingsRegistration(delayMs)
-    if self.settingsRegistered or self.settingsRegistrationQueued then return end
-    self.settingsRegistrationQueued=true
-    local function register()
-        self.settingsRegistrationQueued=false
-        if self.settingsRegistered then return end
-        self:Guard("deferred settings registration",function()
-            if self.RegisterSettings then
-                self:RegisterSettings()
-                self.settingsRegistered=true
-            end
-        end)
-    end
-    -- Console settings providers eagerly construct large option trees. Keeping
-    -- this work away from EVENT_ADD_ON_LOADED prevents CurvedHUD from adding to
-    -- the same 1000 ms frame used by Fancy Action Bar and other large add-ons.
-    if zo_callLater then zo_callLater(register,delayMs or 12000) else register() end
-end
-
 function CH:StartPeriodicUpdates()
     EVENT_MANAGER:UnregisterForUpdate(self.updateName)
     EVENT_MANAGER:UnregisterForUpdate(self.updateName.."Slow")
+    EVENT_MANAGER:UnregisterForUpdate(self.updateName.."Memory")
     -- Keep animation/timer presentation responsive without repeating the more
     -- expensive resource, buff and external-control queries ten times a second.
     EVENT_MANAGER:RegisterForUpdate(self.updateName,100,function()
@@ -1985,6 +2170,23 @@ function CH:StartPeriodicUpdates()
         self:Guard("state update",function()
             if self.sv.enabled then self:UpdateResources(); self:RefreshCrux() end
             self:UpdateDefaultUI(false); self:UpdateExternalTrackerOpacity()
+        end)
+    end)
+    -- Small, infrequent incremental GC steps avoid the hitch and CPU-budget
+    -- risk of forcing a full global collection. This cannot clear ESO's CPU
+    -- script budget; it only helps release unreachable Lua allocations.
+    EVENT_MANAGER:RegisterForUpdate(self.updateName.."Memory",60000,function()
+        self:Guard("memory maintenance",function()
+            if IsUnitInCombat and IsUnitInCombat("player") then return end
+            local now=GetGameTimeSeconds()
+            for _,tracker in pairs(self.trackers or {}) do
+                if tracker.setEffectInstances then
+                    for key,instance in pairs(tracker.setEffectInstances) do
+                        if (instance.endTime or 0)<=now then tracker.setEffectInstances[key]=nil end
+                    end
+                end
+            end
+            if collectgarbage then pcall(collectgarbage,"step",16) end
         end)
     end)
 end
@@ -2014,7 +2216,12 @@ function CH:RegisterEvents()
         if unitTag~="player" then return end
         local key=powerType==HEALTH_POWER and "health" or powerType==STAMINA_POWER and "stamina" or powerType==MAGICKA_POWER and "magicka"
         local usableMax=(maximum or 0)>1 and maximum or (effectiveMaximum or 0)
-        if key and usableMax>1 then self.power[key]={current,usableMax}; self:Guard("power event",function() self:UpdateResources() end) end
+        if key and usableMax>1 then
+            local previous=self.power[key] and tonumber(self.power[key][1]) or tonumber(current) or 0
+            self.power[key]={current,usableMax}
+            if (key=="stamina" or key=="magicka") and (tonumber(current) or 0)<previous then self:TriggerPrimedContingency(true) end
+            self:Guard("power event",function() self:UpdateResources() end)
+        end
     end); EVENT_MANAGER:AddFilterForEvent(self.name,EVENT_POWER_UPDATE,REGISTER_FILTER_UNIT_TAG,"player")
     EVENT_MANAGER:RegisterForEvent(self.name.."Effects",EVENT_EFFECT_CHANGED,function(_,changeType,_,effectName,unitTag,beginTime,endTime,stackCount,iconName,_,_,_,_,_,_,abilityId)
         self:Guard("effect event",function() self:OnEffectChanged(changeType,effectName,unitTag,beginTime,endTime,stackCount,iconName,abilityId) end)
@@ -2034,26 +2241,18 @@ function CH:RegisterEvents()
         -- the final tick restart an expired parent timer.
         if EVENT_ACTION_SLOT_ABILITY_USED and ACTION_RESULT_BEGIN and result~=ACTION_RESULT_BEGIN then return end
         if PERIODIC_COMBAT_RESULTS[result] then return end
-        local lowerName=string.lower(abilityName or "")
-        if self.sv.shroudEnabled and self.trackers.shroud and (string.find(lowerName,"vibrant shroud",1,true) or string.find(lowerName,"shattering spines",1,true) or lowerName=="encase") then
-            local beginTime=GetGameTimeSeconds(); local t=self.trackers.shroud; t.active,t.beginTime,t.endTime,t.duration=true,beginTime,beginTime+10,10
-            local iconPath=self:GetShroudIcon(abilityName); t.preferredIcon=iconPath; t.icon:SetTexture(iconPath)
-            self:UpdateTrackers()
-        else
-            if not self:HandleScribingCast(abilityName,abilityGraphic,abilityId,false) and not self:HandleSorcererCast(abilityName,abilityGraphic,abilityId,false) and not self:HandleWardenCast(abilityName,abilityGraphic,abilityId,false) and not self:HandleArcanistCast(abilityName,abilityGraphic,abilityId,false) and not self:HandleRemainingClassCast(abilityName,abilityGraphic,abilityId,false) then self:HandleNonClassCast(abilityName,abilityGraphic,abilityId,false) end
-        end
+        self:HandleTrackedAbilityCast(abilityName,abilityGraphic,abilityId,false)
     end)
     if EVENT_ACTION_SLOT_ABILITY_USED then
         EVENT_MANAGER:RegisterForEvent(self.name.."SlotUsed",EVENT_ACTION_SLOT_ABILITY_USED,function(_,slotNum)
             local ok,id=pcall(GetSlotBoundId,slotNum); if not ok or not id or id<=0 then return end
             local abilityName=GetAbilityName and GetAbilityName(id) or ""; local abilityGraphic=nil
             if GetSlotTexture then local okIcon,icon=pcall(GetSlotTexture,slotNum); if okIcon then abilityGraphic=icon end end
-            if not self:HandleScribingCast(abilityName,abilityGraphic,id,true) and not self:HandleSorcererCast(abilityName,abilityGraphic,id,true) and not self:HandleWardenCast(abilityName,abilityGraphic,id,true) and not self:HandleArcanistCast(abilityName,abilityGraphic,id,true) and not self:HandleRemainingClassCast(abilityName,abilityGraphic,id,true) then self:HandleNonClassCast(abilityName,abilityGraphic,id,true) end
+            self:HandleTrackedAbilityCast(abilityName,abilityGraphic,id,true)
         end)
     end
     EVENT_MANAGER:RegisterForEvent(self.name.."Activated",EVENT_PLAYER_ACTIVATED,function()
         self:QueuePlayerActivationRefresh(350)
-        self:QueueSettingsRegistration(12000)
     end)
     EVENT_MANAGER:RegisterForEvent(self.name.."Combat",EVENT_PLAYER_COMBAT_STATE,function(_,inCombat)
         self:Guard("combat state",function()
@@ -2123,6 +2322,11 @@ function CH:PrintDiagnosticReport()
 end
 
 function CH:Initialize()
+    -- These flags describe this Lua load, not a character or account. The
+    -- CurvedHUD table can survive console character transitions, so never let
+    -- a previous load suppress the current initialization pass.
+    self.settingsRegistered=false
+    self.settingsRegistrationQueued=false
     self.globalSV=ZO_SavedVars:NewAccountWide("CurvedHUD_SavedVariables",1,nil,self.defaults)
     self.characterSV=ZO_SavedVars:New("CurvedHUD_CharacterSavedVariables",1,nil,self.characterDefaults)
     self:MigrateSavedVariables()
@@ -2140,9 +2344,12 @@ function CH:Initialize()
     })
     self.power={health={0,0},stamina={0,0},magicka={0,0}}; self.shieldValue=0; self.hudVisible=true
     self:Guard("HUD creation",function() self:CreateHUD() end)
-    -- Settings are intentionally registered after EVENT_PLAYER_ACTIVATED. On
-    -- console, registering hundreds of controls here competes with every other
-    -- add-on's startup menu construction in the same CPU-budgeted frame.
+    -- Register with the other add-ons during the normal load phase. Late
+    -- LibVotans AddAddon calls can rebuild/corrupt its shared console tables;
+    -- AddSettings batching keeps this normal initialization pass bounded.
+    self:Guard("settings registration",function()
+        if self.RegisterSettings then self:RegisterSettings(); self.settingsRegistered=true end
+    end)
     self:Guard("event registration",function() self:RegisterEvents() end)
     SLASH_COMMANDS["/curvedhud"]=function(arg)
         arg=string.lower(arg or "")

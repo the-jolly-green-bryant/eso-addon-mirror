@@ -1,0 +1,250 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="|cff0055-tim's Keybinds - Tools-|r">
+		<Action name="Tool_FinvirsTrinket">
+		<Down>timCollectibles.PrintCooldownOrUseCollectible(336)</Down>
+		</Action>
+		<Action name="Tool_AlmalexiasEnchantedLantern">
+		<Down>timCollectibles.PrintCooldownOrUseCollectible(341)</Down>
+		</Action>
+		<Action name="Tool_AntiquariansEye">
+		<Down>timCollectibles.PrintCooldownOrUseCollectible(8006)</Down>
+		</Action>
+		<Action name="Tool_CartMap">
+		<Down>UseCollectible(11083)</Down>
+		</Action>
+		<Action name="Tool_RelicOfTheSentinel">
+		<Down>UseCollectible(8883)</Down>
+		</Action>
+		<Action name="Tool_EyeOfInfinite">
+		<Down>UseCollectible(12269)</Down>
+		</Action>
+    </Category>
+    <Category name="|cff0055-tim's Keybinds - Assistants-|r">
+		<Action name="Asst_TythisAndromo">
+			<Down>
+				PressTime = GetFrameTimeMilliseconds()
+			</Down>
+			<Up>
+				timCollectibles.HandleAssistant(267)			
+			</Up>			
+		</Action>
+		<Action name="Asst_Pirharri">
+			<Down>
+				PressTime = GetFrameTimeMilliseconds()
+			</Down>
+			<Up>
+				timCollectibles.HandleAssistant(300)			
+			</Up>			
+		</Action>	 
+		<Action name="Asst_Nuzimeh">
+			<Down>
+				PressTime = GetFrameTimeMilliseconds()
+			</Down>
+			<Up>
+				timCollectibles.HandleAssistant(301)			
+			</Up>			
+		</Action>
+		<Action name="Asst_Ezabi">
+			<Down>
+				PressTime = GetFrameTimeMilliseconds()
+			</Down>
+			<Up>
+				timCollectibles.HandleAssistant(6376)			
+			</Up>			
+		</Action>
+		<Action name="Asst_Fezez">
+			<Down>
+				PressTime = GetFrameTimeMilliseconds()
+			</Down>
+			<Up>
+				timCollectibles.HandleAssistant(6378)			
+			</Up>			
+		</Action>
+		<Action name="Asst_BaronJangleplume">
+			<Down>
+				PressTime = GetFrameTimeMilliseconds()
+			</Down>
+			<Up>
+				timCollectibles.HandleAssistant(8994)			
+			</Up>			
+		</Action>
+		<Action name="Asst_PeddlerOfPrizes">
+			<Down>
+				PressTime = GetFrameTimeMilliseconds()
+			</Down>
+			<Up>
+				timCollectibles.HandleAssistant(8995)			
+			</Up>			
+		</Action>
+		<Action name="Asst_FactotumPropertySteward">
+			<Down>
+				PressTime = GetFrameTimeMilliseconds()
+			</Down>
+			<Up>
+				timCollectibles.HandleAssistant(9743)			
+			</Up>			
+		</Action>
+		<Action name="Asst_FactotumCommerceDelegate">
+			<Down>
+				PressTime = GetFrameTimeMilliseconds()
+			</Down>
+			<Up>
+				timCollectibles.HandleAssistant(9744)			
+			</Up>			
+		</Action>
+		<Action name="Asst_Ghrashorog">
+			<Down>
+				PressTime = GetFrameTimeMilliseconds()
+			</Down>
+			<Up>
+				timCollectibles.HandleAssistant(9745)			
+			</Up>			
+		</Action>
+		<Action name="Asst_Giladil_the_Ragpicker">
+			<Down>
+				PressTime = GetFrameTimeMilliseconds()
+			</Down>
+			<Up>
+				timCollectibles.HandleAssistant(10184)			
+			</Up>		
+		</Action>
+		<Action name="Asst_Aderene">
+			<Down>
+				PressTime = GetFrameTimeMilliseconds()
+			</Down>
+			<Up>
+				timCollectibles.HandleAssistant(10617)			
+			</Up>			
+		</Action>
+		<Action name="Asst_Zuqoth">
+			<Down>
+				PressTime = GetFrameTimeMilliseconds()
+			</Down>
+			<Up>
+				timCollectibles.HandleAssistant(10618)			
+			</Up>			
+		</Action>
+		<Action name="Asst_Hoarfrost">
+			<Down>
+				PressTime = GetFrameTimeMilliseconds()
+			</Down>
+			<Up>
+				timCollectibles.HandleAssistant(11059)			
+			</Up>			
+		</Action>
+		<Action name="Asst_Pyroclast">
+			<Down>
+				PressTime = GetFrameTimeMilliseconds()
+			</Down>
+			<Up>
+				timCollectibles.HandleAssistant(11097)			
+			</Up>			
+		</Action>
+		<Action name="Asst_Drinweth">
+			<Down>
+				PressTime = GetFrameTimeMilliseconds()
+			</Down>
+			<Up>
+				timCollectibles.HandleAssistant(11876)			
+			</Up>			
+		</Action>
+		<Action name="Asst_Xyn">
+			<Down>
+				PressTime = GetFrameTimeMilliseconds()
+			</Down>
+			<Up>
+				timCollectibles.HandleAssistant(12414)			
+			</Up>			
+		</Action>
+		<Action name="Asst_Tzoz">
+			<Down>
+				PressTime = GetFrameTimeMilliseconds()
+			</Down>
+			<Up>
+				timCollectibles.HandleAssistant(11877)			
+			</Up>			
+		</Action>
+		<Action name="Asst_Eri">
+			<Down>
+				PressTime = GetFrameTimeMilliseconds()
+			</Down>
+			<Up>
+				timCollectibles.HandleAssistant(12413)			
+			</Up>			
+		</Action>
+		<Action name="Asst_Siluruz">
+			<Down>
+				PressTime = GetFrameTimeMilliseconds()
+			</Down>
+			<Up>
+				timCollectibles.HandleAssistant(13063)			
+			</Up>			
+		</Action>
+		<Action name="Asst_Cammio">
+			<Down>
+				PressTime = GetFrameTimeMilliseconds()
+			</Down>
+			<Up>
+				timCollectibles.HandleAssistant(14204)			
+			</Up>				
+		</Action>	 
+	</Category>
+	<Category name="|cff0055-tim's Keybinds - Companions-|r">
+		<Action name="Comp_BastianHallix">
+		 <Down>UseCollectible(9245)</Down>	
+		</Action>
+		<Action name="Comp_MirriElendis">
+		<Down>UseCollectible(9353)</Down>
+		</Action>
+		<Action name="Comp_Ember">
+		<Down>UseCollectible(9911)</Down>
+		</Action>
+		<Action name="Comp_IsobelVeloise">
+		<Down>UseCollectible(9912)</Down>
+		</Action>
+		<Action name="Comp_SharpAsNight">
+		<Down>UseCollectible(11113)</Down>
+		</Action>
+		<Action name="Comp_Azandar">
+		<Down>UseCollectible(11114)</Down>
+		</Action>
+		<Action name="Comp_Tanlorin">
+		<Down>UseCollectible(12172)</Down>
+		</Action>
+		<Action name="Comp_Zerithvar">
+		<Down>UseCollectible(12173)</Down>
+		</Action>
+    </Category>
+    <Category name="|cff0055-tim's Keybinds - Throwables-|r">
+		<Action name="Thro_MudBallPouch">
+		<Down>timCollectibles.PrintCooldownOrUseCollectible(601)</Down>
+		</Action>
+		<Action name="Thro_CherryBlossomBranch">
+		<Down>timCollectibles.PrintCooldownOrUseCollectible(1108)</Down>
+		</Action>
+		<Action name="Thro_MurderousStrike">
+		<Down>timCollectibles.PrintCooldownOrUseCollectible(1385)</Down>
+		</Action>
+		<Action name="Thro_EverlastingSnowball">
+		<Down>timCollectibles.PrintCooldownOrUseCollectible(6932)</Down>
+		</Action>
+    </Category>
+    <Category name="|cff0055-tim's Keybinds - Random Mounts-|r">
+		<Action name="tmC_Mount_Player">
+			<Down>timCollectibles.MountPlayer()</Down>
+		</Action>
+		<Action name="tmC_Mount_Random">
+			<Down>timCollectibles.SetRdmMount(2,"Random")</Down>
+		</Action>
+		<Action name="tmC_Mount_RandomFav">
+			<Down>timCollectibles.SetRdmMount(1, "Random Favorite")</Down>
+		</Action>
+	</Category>
+	<Category name="|cff0055-tim's Keybinds - Mementos-|r">
+		<Action name="Meme_PrismaticBannerRibbon">
+			<Down>UseCollectible(5889)</Down>
+		</Action>
+    </Category>   
+  </Layer>
+</Bindings>

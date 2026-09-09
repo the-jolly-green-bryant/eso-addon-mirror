@@ -22,14 +22,14 @@
 			</Action>
 		</Category>
 	</Layer>
-	<!-- The HUD channel layer that lived here is withdrawn.
-	     
-	     It inherited its binds from UI_SHORTCUT_LEFT_TRIGGER and UI_SHORTCUT_LEFT_STICK so that
-	     L2+L3 could be composed in Lua, and it worked. What it also did was shadow L2 on the HUD,
-	     so blocking stopped working. allowFallthrough="true" with handlers returning false was not
-	     enough to keep the game's own L2 alive underneath it.
-	     
-	     Removed rather than merely left unpushed, so nothing can activate it. The implementation
-	     is kept in HUDChannel.lua, which the manifest no longer loads, and the finding is written
-	     up in FINDINGS.md. -->
+	<!-- L2 is read through its analog API and is NEVER declared as an action.
+         This layer exists only on HUD while L2 is held; otherwise L3 is untouched. -->
+	<Layer name="PBsChatAssistantHUDChannelLayer" allowFallthrough="true">
+		<Category>
+			<Action name="PBSCHATASSISTANT_HUD_CHANNEL_L3" inheritsBindFrom="UI_SHORTCUT_LEFT_STICK" hideAction="true" rebindable="false" preventAutomaticInputModeChange="true">
+				<Down>return PBS_CHAT_ASSISTANT_HUD_CHANNEL:OnL3Down()</Down>
+				<Up>return PBS_CHAT_ASSISTANT_HUD_CHANNEL:OnL3Up()</Up>
+			</Action>
+		</Category>
+	</Layer>
 </Bindings>

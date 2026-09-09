@@ -164,16 +164,17 @@ local strings = {
     [BATTLESCROLLS_SETTINGS_STORAGE_SIZE_YOLO] = "Что может пойти не так?",
     -- Storage tooltip
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_DESC] = "Сколько истории боёв хранить. При превышении лимита старые незаблокированные области удаляются автоматически. Вы можете заблокировать отдельные области, чтобы защитить их от очистки.",
-    [BATTLESCROLLS_SETTINGS_STORAGE_TT_NOTE] = "Этот лимит относится только к сохранённой истории. Аддон также использует память для отслеживания текущего боя и отрисовки интерфейса, поэтому общее потребление будет выше.",
+    [BATTLESCROLLS_SETTINGS_STORAGE_TT_NOTE] = "Этот лимит относится только к сохранённым данным: боям, билдам и настройкам. Аддон также использует память для отслеживания текущего боя и отрисовки интерфейса, поэтому общее потребление будет выше.",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_CURRENT] = "История: <<1>> МБ из <<2>> МБ (<<3>>%)",
+    [BATTLESCROLLS_SETTINGS_STORAGE_TT_PROTECTED] = "Одни только закреплённые бои, билды и настройки превышают лимит: очистка не сможет опуститься ниже него.",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_PRESETS] = "Пресеты (полное испытание ~0.3 МБ, подземелье ~0.15 МБ, вечер прогресса ~1 МБ):",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_XS] = "  Минимум: 5 МБ - только свежие свитки",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_SMALL] = "  Мало: 8 МБ - добрая стопка свитков",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_MEDIUM] = "  Средне: 12 МБ - аккуратный журнал",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_LARGE] = "  Много: 18 МБ - личная библиотека",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_XL] = "  Очень много: 25 МБ - целый архив",
-    [BATTLESCROLLS_SETTINGS_STORAGE_TT_CAUTION] = "  Осторожно: 40 МБ - вы правда любите данные",
-    [BATTLESCROLLS_SETTINGS_STORAGE_TT_YOLO] = "  Что может пойти не так?: 60 МБ - живём опасно",
+    [BATTLESCROLLS_SETTINGS_STORAGE_TT_CAUTION] = "  Осторожно: 35 МБ - вы правда любите данные",
+    [BATTLESCROLLS_SETTINGS_STORAGE_TT_YOLO] = "  Что может пойти не так?: 50 МБ - вы сами себе это устроили",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_WARNING] = "О лимитах памяти ESO: все аддоны делят пул в 100 МБ. При 70 МБ ESO показывает предупреждение. При 100 МБ интерфейс перезагружается и всё отключается. Если у вас много аддонов, выберите меньший пресет. Совет: введите /addonmemdisplay в чат для отслеживания памяти в реальном времени.",
 
     -------------------------
@@ -1134,3 +1135,6 @@ SafeAddString(BATTLESCROLLS_MEMLAB_DISCARD_REQUIRED, "Перед discard заг�
 SafeAddString(BATTLESCROLLS_MEMLAB_USAGE_MIRROR, "/bsmemlab seed mirror; discard; census live; trace", 1)
 SafeAddString(BATTLESCROLLS_MEMLAB_LIVE_COUNTS, "Последний активен %d (1=да); A%d I%d N%d", 1)
 SafeAddString(BATTLESCROLLS_MEMLAB_LIVE_BYTES, "Кэш записи L%.2f K%.2f", 1)
+SafeAddString(BATTLESCROLLS_MEMLAB_CALIB_HEADER, "Калиб.: dG/dH по классам, вторая половина %d MiB", 1)
+SafeAddString(BATTLESCROLLS_MEMLAB_CALIB_ROW, "%s n%d dH%.1f s%s m%s p%s G%s/%s/%s", 1)
+SafeAddString(BATTLESCROLLS_MEMLAB_USAGE_CALIB, "/bsmemlab calib [4..32] [class] (MiB per class)", 1)

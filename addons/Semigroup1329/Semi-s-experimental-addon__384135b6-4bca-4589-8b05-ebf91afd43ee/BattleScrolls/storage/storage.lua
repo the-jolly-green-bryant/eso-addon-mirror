@@ -139,7 +139,8 @@ BattleScrolls = BattleScrolls or {}
 ---@field isHouse boolean|nil True when the zone is a player house
 ---@field isPvP boolean|nil True when an AvA/battleground zone
 ---@field isAdventureZone boolean|nil True when an adventure zone (infinite archive)
----@field _estimatedSize number|nil Cached memory estimate
+---@field _estimatedSize number|nil Cached chunk bytes (BattleScrolls.sizeModel)
+---@field _estimatedSizeV number|nil Model version the cache was computed with
 ---@field index number|nil Position in history (set by the journal list)
 ---@field zone string Zone or instance name
 ---@field isOverland boolean True if this is an overland zone
@@ -202,6 +203,8 @@ BattleScrolls = BattleScrolls or {}
 ---@class OwnSetupPoolEntry
 ---@field v number Schema version the setup was encoded with
 ---@field c string[] Base64 chunks of the binary-encoded PlayerSetup
+---@field _estimatedSize number|nil Cached chunk bytes (BattleScrolls.sizeModel)
+---@field _estimatedSizeV number|nil Model version the cache was computed with
 
 ---@class StorageData
 ---@field version number Version of the saved variables structure
@@ -217,7 +220,7 @@ BattleScrolls = BattleScrolls or {}
 ---@class SizePreset
 ---@field key string Preset key
 ---@field labelStringId string Localization string ID
----@field memoryMB number Maximum memory in megabytes
+---@field memoryMiB number History limit in MiB, the unit of the game's memory display
 
 ---@class AsyncSpeedPreset
 ---@field key string Preset key
@@ -294,17 +297,17 @@ storage.defaults = {
     }
 }
 
--- Memory size presets
--- Reference sizes: dungeon ~0.25-0.5 MB, trial ~0.5-1 MB
--- ESO addon pool limit: 100 MB total (warning at 70 MB)
+-- History size presets, in MiB of estimated gauge cost (storage/sizemodel.lua).
+-- Reference sizes: dungeon ~0.15 MiB, trial run ~0.3 MiB, a night of prog ~1 MiB.
+-- ESO addon pool: 100 MiB for all addons together, warning popup at 70.
 storage.sizePresets = {
-    xs = { key = "xs", labelStringId = "BATTLESCROLLS_SETTINGS_STORAGE_SIZE_XS", memoryMB = 5 },
-    small = { key = "small", labelStringId = "BATTLESCROLLS_SETTINGS_STORAGE_SIZE_SMALL", memoryMB = 8 },
-    medium = { key = "medium", labelStringId = "BATTLESCROLLS_SETTINGS_STORAGE_SIZE_MEDIUM", memoryMB = 12 },
-    large = { key = "large", labelStringId = "BATTLESCROLLS_SETTINGS_STORAGE_SIZE_LARGE", memoryMB = 18 },
-    xl = { key = "xl", labelStringId = "BATTLESCROLLS_SETTINGS_STORAGE_SIZE_XL", memoryMB = 25 },
-    caution = { key = "caution", labelStringId = "BATTLESCROLLS_SETTINGS_STORAGE_SIZE_CAUTION", memoryMB = 40 },
-    yolo = { key = "yolo", labelStringId = "BATTLESCROLLS_SETTINGS_STORAGE_SIZE_YOLO", memoryMB = 60 },
+    xs = { key = "xs", labelStringId = "BATTLESCROLLS_SETTINGS_STORAGE_SIZE_XS", memoryMiB = 5 },
+    small = { key = "small", labelStringId = "BATTLESCROLLS_SETTINGS_STORAGE_SIZE_SMALL", memoryMiB = 8 },
+    medium = { key = "medium", labelStringId = "BATTLESCROLLS_SETTINGS_STORAGE_SIZE_MEDIUM", memoryMiB = 12 },
+    large = { key = "large", labelStringId = "BATTLESCROLLS_SETTINGS_STORAGE_SIZE_LARGE", memoryMiB = 18 },
+    xl = { key = "xl", labelStringId = "BATTLESCROLLS_SETTINGS_STORAGE_SIZE_XL", memoryMiB = 25 },
+    caution = { key = "caution", labelStringId = "BATTLESCROLLS_SETTINGS_STORAGE_SIZE_CAUTION", memoryMiB = 35 },
+    yolo = { key = "yolo", labelStringId = "BATTLESCROLLS_SETTINGS_STORAGE_SIZE_YOLO", memoryMiB = 50 },
 }
 
 -- Ordered list of preset keys for UI
@@ -468,123 +471,93 @@ function storage:GetCurrentSizePreset()
     return self.sizePresets[presetKey] or self.sizePresets.medium
 end
 
----Rounds up to the next power of 2 (Lua allocates array/hash in powers of 2)
----@param n number
----@return number
-local function nextPow2(n)
-    if n <= 0 then return 0 end
-    local p = 1
-    while p < n do p = p * 2 end
-    return p
+---History limit of the current preset in bytes
+---@return number bytes
+function storage:GetSizeLimitBytes()
+    return self:GetCurrentSizePreset().memoryMiB * BattleScrolls.sizeModel.MIB
 end
 
----Estimates memory usage of a value in bytes (Lua 5.1 64-bit layout)
----Based on actual Lua 5.1 memory structures:
---- - TValue: 16 bytes (8-byte Value union + 4-byte type tag + 4 padding)
---- - TString: 32 bytes header (CommonHeader + reserved + hash + len) + string length + 1 null
---- - Table: 72 bytes header, plus (allocated in powers of 2):
----   - Array part (keys 1..n): 16 bytes per slot
----   - Hash part: 40 bytes per Node (key TValue + value TValue + next ptr)
---- - Short strings (<=40 chars) are interned, long strings are separate allocations
----@param value any Value to estimate size of
----@param visited table<any, boolean>|nil Table to track visited tables/strings to avoid counting duplicates
----@return number bytes Estimated memory in bytes
-local function estimateValueSize(value, visited)
-    local valueType = type(value)
-
-    if valueType == "nil" then
-        return 0
-    elseif valueType == "boolean" or valueType == "number" then
-        -- These are stored directly in TValue, no separate heap allocation
-        -- The table slot (counted in table overhead) provides the TValue space
-        return 0
-    elseif valueType == "string" then
-        local len = #value
-        -- Lua 5.1 interns short strings (≤40 chars), long strings are separate allocations
-        if len <= 40 then
-            visited = visited or {}
-            if visited[value] then
-                return 0 -- Already counted this interned string
-            end
-            visited[value] = true
-        end
-        -- TString: CommonHeader(16) + reserved(1) + padding(3) + hash(4) + len(8) = 32 bytes
-        -- Plus string content + null terminator
-        return 32 + len + 1
-    elseif valueType == "table" then
-        visited = visited or {}
-        if visited[value] then
-            return 0 -- Already counted this table reference
-        end
-        visited[value] = true
-
-        -- Table struct header: ~72 bytes
-        local size = 72
-
-        -- Check if this is a pure array (consecutive integers 1..n)
-        local arrayLen = #value
-        local totalKeys = 0
-        local isPureArray = arrayLen > 0
-        local stringKeyBytes = 0
-
-        for k, v in pairs(value) do
-            totalKeys = totalKeys + 1
-
-            -- Check if key breaks pure array pattern
-            if isPureArray then
-                local kType = type(k)
-                if kType ~= "number" or k < 1 or k > arrayLen or k % 1 ~= 0 then
-                    isPureArray = false
-                end
-            end
-
-            -- Track string key overhead (short strings interned, long strings always counted)
-            if type(k) == "string" then
-                local kLen = #k
-                if kLen > 40 or not visited[k] then
-                    if kLen <= 40 then visited[k] = true end
-                    stringKeyBytes = stringKeyBytes + 32 + kLen + 1
-                end
-            end
-
-            -- Recursively count value
-            size = size + estimateValueSize(v, visited)
-        end
-
-        if isPureArray and totalKeys == arrayLen then
-            -- Pure array: 16 bytes per TValue slot (allocated in powers of 2)
-            size = size + nextPow2(arrayLen) * 16
-        else
-            -- Hash table: 40 bytes per node + string key overhead (allocated in powers of 2)
-            size = size + nextPow2(totalKeys) * 40 + stringKeyBytes
-        end
-
-        return size
-    else
-        -- function, userdata, thread - shouldn't appear in saved data
-        return 0
-    end
-end
-
--- Correction factor for memory estimates. The raw Lua layout model
--- undershoots the in-game Add-On Memory counter (the reference here - NOT
--- collectgarbage("count")) by ~50%, god knows why; 1.5 is an empirical
--- fudge from limited evidence, not a derived constant.
-local MEMORY_ESTIMATE_CORRECTION_FACTOR = 1.5
-
----Gets the estimated size of an instance in bytes, using cached value if available
----Calculates and caches the size on first access
+---Gets the estimated gauge cost of an instance in bytes. The chunk bytes are
+---cached on the instance with the model version; older caches are recomputed.
 ---@param instance Instance
----@return number bytes Estimated memory in bytes
+---@return number bytes Estimated gauge bytes
 local function getInstanceSize(instance)
-    if instance._estimatedSize then
-        return instance._estimatedSize
+    local sizeModel = BattleScrolls.sizeModel
+    if not instance._estimatedSize or instance._estimatedSizeV ~= sizeModel.VERSION then
+        instance._estimatedSize = sizeModel.measure(instance)
+        instance._estimatedSizeV = sizeModel.VERSION
+        BattleScrolls.gc:RequestGC() -- the walk generates a lot of garbage
     end
-    -- Calculate and cache for future use (with correction factor applied)
-    local size = estimateValueSize(instance) * MEMORY_ESTIMATE_CORRECTION_FACTOR
-    BattleScrolls.gc:RequestGC() -- estimateValueSize generates a lot of garbage
-    instance._estimatedSize = size
-    return size
+    return instance._estimatedSize * sizeModel.GAUGE_PER_CHUNK_BYTE
+end
+
+---Model bytes of a setup pool payload, cached on the payload with the model
+---version like instances, so a login measures only payloads added since.
+---Strings shared between payloads count once per payload, a small
+---overstatement.
+---@param payload OwnSetupPoolEntry|CompactSetup
+---@return number modelBytes
+local function payloadModelBytes(payload)
+    local sizeModel = BattleScrolls.sizeModel
+    if not payload._estimatedSize or payload._estimatedSizeV ~= sizeModel.VERSION then
+        payload._estimatedSize = sizeModel.measure(payload)
+        payload._estimatedSizeV = sizeModel.VERSION
+    end
+    return payload._estimatedSize
+end
+
+---Model bytes of both setup pools, containers included
+---@param sv StorageData
+---@return number modelBytes
+local function setupPoolsModelBytes(sv)
+    local sizeModel = BattleScrolls.sizeModel
+    local bytes = 0
+    if sv.ownSetups then
+        local count = 0
+        for _, payload in pairs(sv.ownSetups) do
+            bytes = bytes + payloadModelBytes(payload)
+            count = count + 1
+        end
+        bytes = bytes + sizeModel.tableShell(count)
+    end
+    if sv.sharedSetups then
+        local players = 0
+        for _, byHash in pairs(sv.sharedSetups) do
+            local count = 0
+            for _, payload in pairs(byHash) do
+                bytes = bytes + payloadModelBytes(payload)
+                count = count + 1
+            end
+            bytes = bytes + sizeModel.tableShell(count)
+            players = players + 1
+        end
+        bytes = bytes + sizeModel.tableShell(players)
+    end
+    return bytes
+end
+
+-- Model bytes of everything else the saved global loads, measured once per
+-- session: settings, indexes and flags of this world, and any other world's
+-- data in the same file. Only settings change it during a session.
+local otherModelBytes = nil
+
+---@param sv StorageData
+---@return number modelBytes
+local function otherRootsModelBytes(sv)
+    if otherModelBytes then
+        return otherModelBytes
+    end
+    local root = rawget(_G, "BattleScrollsSavedVariables")
+    if type(root) ~= "table" then
+        otherModelBytes = 0
+        return 0
+    end
+    -- Exclude what history and the pools count for themselves
+    local visited = { [sv.history] = true }
+    if sv.ownSetups then visited[sv.ownSetups] = true end
+    if sv.sharedSetups then visited[sv.sharedSetups] = true end
+    otherModelBytes = BattleScrolls.sizeModel.measure(root, visited)
+    return otherModelBytes
 end
 
 function storage:Initialize()
@@ -619,8 +592,7 @@ function storage:CleanupIfNecessaryAsync()
         self.cleanupTask = nil
     end
 
-    local preset = self:GetCurrentSizePreset()
-    local byteLimit = preset.memoryMB * 1000000
+    local byteLimit = self:GetSizeLimitBytes()
     local history = self.savedVariables.history
 
     if #history == 0 then
@@ -628,16 +600,20 @@ function storage:CleanupIfNecessaryAsync()
     end
 
     self.cleanupTask = LibEffect.Async(function()
-        -- Sum sizes (yields per instance)
-        local currentBytes = 0
+        -- Sum sizes (yields per instance); the setup pools and the other saved
+        -- roots count against the limit too, but only instances are evicted.
+        -- Setups orphaned by an eviction are pruned below, a bonus the
+        -- selection does not rely on.
         local instanceSizes = {}
-
+        local currentBytes = 0
         for i, instance in ipairs(history) do
             local size = getInstanceSize(instance)
             instanceSizes[i] = size
             currentBytes = currentBytes + size
             LibEffect.YieldWithGC():Await()
         end
+        local factor = BattleScrolls.sizeModel.GAUGE_PER_CHUNK_BYTE
+        currentBytes = currentBytes + (setupPoolsModelBytes(self.savedVariables) + otherRootsModelBytes(self.savedVariables)) * factor
         LibEffect.YieldWithGC():Await()
 
         -- Check if cleanup needed
@@ -743,42 +719,62 @@ function storage:CleanupIfNecessaryAsync()
     end):Run()
 end
 
----Estimates total memory usage of the combat history in bytes
----Based on Lua 5.1 64-bit memory layout
----Uses cached per-instance sizes for efficiency
----@return number bytes Total estimated memory in bytes
----@return number encounterCount Total number of encounters
----@return number instanceCount Total number of instances
-function storage:EstimateHistorySize()
-    local history = self.savedVariables.history
-    if not history then
-        return 0, 0, 0
+---@class SavedSizeEstimate
+---@field totalBytes number Gauge bytes of everything the saved file loads: history, setup pools and the other roots
+---@field historyBytes number History instances
+---@field lockedBytes number The locked instances' share of historyBytes
+---@field setupBytes number Own and shared setup pools
+---@field otherBytes number Everything else in the saved global: settings, indexes, other worlds' data
+---@field encounterCount number
+---@field instanceCount number
+
+---Estimates the gauge cost of everything the saved file loads
+---(storage/sizemodel.lua): history from cached per-instance sizes, the setup
+---pools from a session cache per payload, and the other saved roots measured
+---once per session. The history limit compares against totalBytes.
+---@return SavedSizeEstimate
+function storage:EstimateSavedSize()
+    ---@type SavedSizeEstimate
+    local estimate = {
+        totalBytes = 0, historyBytes = 0, lockedBytes = 0, setupBytes = 0, otherBytes = 0,
+        encounterCount = 0, instanceCount = 0,
+    }
+    local sv = self.savedVariables
+    if not sv then
+        return estimate
     end
-
-    local totalBytes = 0
-    local encounterCount = 0
-
-    for _, instance in ipairs(history) do
-        totalBytes = totalBytes + getInstanceSize(instance)
-        encounterCount = encounterCount + #instance.encounters
+    local history = sv.history
+    if history then
+        for _, instance in ipairs(history) do
+            local bytes = getInstanceSize(instance)
+            estimate.historyBytes = estimate.historyBytes + bytes
+            if instance.locked then
+                estimate.lockedBytes = estimate.lockedBytes + bytes
+            end
+            estimate.encounterCount = estimate.encounterCount + #instance.encounters
+        end
+        estimate.instanceCount = #history
     end
-
-    return totalBytes, encounterCount, #history
+    local factor = BattleScrolls.sizeModel.GAUGE_PER_CHUNK_BYTE
+    estimate.setupBytes = setupPoolsModelBytes(sv) * factor
+    estimate.otherBytes = otherRootsModelBytes(sv) * factor
+    estimate.totalBytes = estimate.historyBytes + estimate.setupBytes + estimate.otherBytes
+    return estimate
 end
 
----Estimates the in-memory size of an encounter in bytes
+---Estimates the gauge cost of an encounter in bytes
 ---@param encounter CompactEncounter|Encounter
 ---@return number bytes Estimated memory in bytes
 function storage:EstimateEncounterSize(encounter)
-    return estimateValueSize(encounter) * MEMORY_ESTIMATE_CORRECTION_FACTOR
+    return BattleScrolls.sizeModel.gaugeBytes(encounter)
 end
 
----Estimates the in-memory size of an arbitrary stored value in bytes
+---Estimates the gauge cost of an arbitrary stored value in bytes
 ---(pool entries, individual fields; same model as EstimateEncounterSize)
 ---@param value any
 ---@return number bytes Estimated memory in bytes
 function storage:EstimateValueMemory(value)
-    return estimateValueSize(value) * MEMORY_ESTIMATE_CORRECTION_FACTOR
+    return BattleScrolls.sizeModel.gaugeBytes(value)
 end
 
 ---Gets the estimated size of an instance in bytes
@@ -810,8 +806,7 @@ function storage:CanLockInstance(instanceIndex)
         return false
     end
 
-    local preset = self:GetCurrentSizePreset()
-    local byteLimit = preset.memoryMB * 1000000
+    local byteLimit = self:GetSizeLimitBytes()
 
     -- Find the instance
     local targetInstance = nil

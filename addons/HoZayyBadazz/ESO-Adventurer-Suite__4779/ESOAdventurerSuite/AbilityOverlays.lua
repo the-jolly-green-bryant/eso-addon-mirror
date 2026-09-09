@@ -57,33 +57,18 @@ local function compactBindingText(text)
     return text
 end
 
-function A:GetActionBindingName(slot, preferGamepad)
+function A:GetActionBindingName(slot)
     slot = tonumber(slot)
     if not slot then return nil end
     if slot >= 3 and slot <= 8 then
-        -- The player-facing binding lives on ACTION_BUTTON_n for both input
-        -- devices. Gamepad selection is handled by the explicit binding query,
-        -- not by swapping to the hidden GAMEPAD_ACTION_BUTTON_n helper action.
+        -- The player-facing keyboard binding lives on ACTION_BUTTON_n.
         return "ACTION_BUTTON_" .. tostring(slot)
     end
     return nil
 end
 
-function A:GetBindingTextForAction(actionName, preferGamepad)
+function A:GetBindingTextForAction(actionName)
     if not actionName or actionName == "" then return "" end
-
-    -- v0.29.201: controller glyphs must bypass the visual keyboard mode and
-    -- explicitly query/render the gamepad binding set.
-    if preferGamepad == true then
-        -- Never fall through to the keyboard formatter while controller prompts
-        -- are requested. The central renderer explicitly selects the gamepad
-        -- binding device and returns ESO gamepad texture markup. An empty result
-        -- is safer than showing a misleading keyboard key.
-        if EPC.GetActionBindingMarkup029199 then
-            return EPC:GetActionBindingMarkup029199(actionName, 22) or ""
-        end
-        return ""
-    end
 
     local key, mod1, mod2, mod3, mod4
     if type(GetHighestPriorityActionBindingInfoFromName) == "function" then
@@ -119,15 +104,10 @@ function A:GetBindingTextForSlot(slot)
     self.bindingTextCache = self.bindingTextCache or {}
     local cached = self.bindingTextCache[slot]
     if cached ~= nil then return cached end
-
-    local preferGamepad = EPC.ShouldUseGamepadPrompts029199 and EPC:ShouldUseGamepadPrompts029199() or (EPC.IsNativeGamepadPreferredMode029197 and EPC:IsNativeGamepadPreferredMode029197()) or (type(IsInGamepadPreferredMode) == "function" and safe(IsInGamepadPreferredMode, false) == true)
-    local actionName = self:GetActionBindingName(slot, preferGamepad)
-    if not actionName and preferGamepad then
-        actionName = self:GetActionBindingName(slot, false)
-    end
+    local actionName = self:GetActionBindingName(slot)
     if not actionName then return "" end
 
-    local result = self:GetBindingTextForAction(actionName, preferGamepad)
+    local result = self:GetBindingTextForAction(actionName)
     self.bindingTextCache[slot] = result
     return result
 end
@@ -524,11 +504,10 @@ function A:Initialize()
     if EVENT_KEYBINDINGS_LOADED then EVENT_MANAGER:RegisterForEvent(prefix .. "_BindingsLoaded", EVENT_KEYBINDINGS_LOADED, function() self:InvalidateBindingText() self:Refresh() end) end
     if EVENT_KEYBINDING_SET then EVENT_MANAGER:RegisterForEvent(prefix .. "_BindingSet", EVENT_KEYBINDING_SET, function() self:InvalidateBindingText() self:Refresh() end) end
     if EVENT_KEYBINDING_CLEARED then EVENT_MANAGER:RegisterForEvent(prefix .. "_BindingCleared", EVENT_KEYBINDING_CLEARED, function() self:InvalidateBindingText() self:Refresh() end) end
-    if EVENT_GAMEPAD_PREFERRED_MODE_CHANGED then EVENT_MANAGER:RegisterForEvent(prefix .. "_InputMode", EVENT_GAMEPAD_PREFERRED_MODE_CHANGED, function() self:InvalidateBindingText() self:Refresh() end) end
     EVENT_MANAGER:RegisterForUpdate(prefix .. "_Tick", 125, function()
         local nowValue = GetFrameTimeMilliseconds and GetFrameTimeMilliseconds() or 0
         local inCombat = type(IsUnitInCombat) == "function" and safe(IsUnitInCombat, false, "player") == true
-        local gap = inCombat and 125 or 1000
+        local gap = inCombat and 250 or 1000
         if self.layoutMode or not self.lastTickRefresh029312 or (nowValue - self.lastTickRefresh029312) >= gap then
             self.lastTickRefresh029312 = nowValue
             self:Refresh()
@@ -588,3 +567,72 @@ function A:ClearSmartRecommendation029167()
         if widget and widget.epcSmartNext029171 then widget.epcSmartNext029171:SetHidden(true) end
     end
 end
+
+
+-- ============================================================================
+-- v0.29.365 - API-driven proc/Ultimate readiness alerts.
+-- ============================================================================
+local EAS_RefreshWidgetBase029365 = A.RefreshWidget
+local function EAS_OverlayNow029365()
+    if type(GetFrameTimeMilliseconds)=="function" then return tonumber(safe(GetFrameTimeMilliseconds,0)) or 0 end
+    return 0
+end
+function A:EnsureReadyGlow029365(widget)
+    if not widget or widget.epcReadyGlow029365 then return end
+    local glow=wm:CreateControl(nil,widget,CT_BACKDROP); glow:SetAnchorFill(widget); glow:SetMouseEnabled(false)
+    glow:SetCenterColor(1.00,0.68,0.05,0.06); glow:SetEdgeColor(1.00,0.88,0.20,1.00); glow:SetEdgeTexture(nil,8,8,5)
+    if glow.SetDrawLayer and DL_OVERLAY then glow:SetDrawLayer(DL_OVERLAY) end; if glow.SetDrawLevel then glow:SetDrawLevel(2550) end
+    glow:SetHidden(true); widget.epcReadyGlow029365=glow
+end
+function A:GetSlotStateSignature029365(slot,category)
+    local base=tonumber((safe(GetSlotBoundId,0,slot,category))) or 0
+    local effective=base
+    if base>0 and type(GetEffectiveAbilityIdForAbilityOnHotbar)=="function" then effective=tonumber((safe(GetEffectiveAbilityIdForAbilityOnHotbar,base,base,category))) or base end
+    local texture=tostring(safe(GetSlotTexture,"",slot,category) or "")
+    return tostring(base)..":"..tostring(effective)..":"..texture,base,effective
+end
+function A:RefreshWidget(widget)
+    EAS_RefreshWidgetBase029365(self,widget)
+    if not widget then return end
+    self:EnsureReadyGlow029365(widget)
+    local glow=widget.epcReadyGlow029365; if not glow then return end
+    local category=safe(GetActiveHotbarCategory,nil); local slot=widget.epcSlot
+    local nowMs=EAS_OverlayNow029365(); local isUltimate=widget.epcOrdinal==#(self.widgets or {})
+    local sig,base,effective=self:GetSlotStateSignature029365(slot,category)
+    local prior=widget.epcStateSignature029365
+    local suppressUntil=tonumber(self.readyBaselineUntil029365) or 0
+    local procActive = not isUltimate and base > 0 and effective > 0 and effective ~= base
+    if procActive and widget.epcProcActiveWas029365 ~= true and prior and nowMs > suppressUntil then
+        local sound=SOUNDS and (rawget(SOUNDS,"ABILITY_SLOTTED") or rawget(SOUNDS,"DEFAULT_CLICK"))
+        if sound and type(PlaySound)=="function" then pcall(PlaySound,sound) end
+    end
+    widget.epcProcActiveWas029365 = procActive
+    widget.epcStateSignature029365=sig
+    local ultimateReady=false
+    if isUltimate and base>0 and COMBAT_MECHANIC_FLAGS_ULTIMATE then
+        local current=tonumber((safe(GetUnitPower,0,"player",COMBAT_MECHANIC_FLAGS_ULTIMATE))) or 0
+        local cost=tonumber((safe(GetSlotAbilityCost,0,slot))) or 0
+        ultimateReady=cost>0 and current>=cost
+        if ultimateReady and widget.epcUltimateWasReady029365~=true then
+            local sound=SOUNDS and rawget(SOUNDS,"ABILITY_ULTIMATE_READY")
+            if sound and type(PlaySound)=="function" then pcall(PlaySound,sound) end
+        end
+        widget.epcUltimateWasReady029365=ultimateReady
+    end
+    local procReady=procActive
+    glow:SetHidden(not (ultimateReady or procReady) or widget:IsHidden())
+    if not glow:IsHidden() then
+        local phase=(nowMs%700)/700; local alpha=0.55+0.45*math.abs(phase*2-1)
+        glow:SetAlpha(alpha)
+    end
+end
+local EAS_InitializeBase029365=A.Initialize
+function A:Initialize()
+    EAS_InitializeBase029365(self)
+    self.readyBaselineUntil029365=EAS_OverlayNow029365()+600
+    local prefix=(EPC.name or "ESOAdventurerSuite").."_ReadyAlerts029365"
+    local function resetBaseline() self.readyBaselineUntil029365=EAS_OverlayNow029365()+350; for _,w in ipairs(self.widgets or {}) do w.epcStateSignature029365=nil end; self:Refresh() end
+    if EVENT_ACTION_SLOTS_ACTIVE_HOTBAR_UPDATED then EVENT_MANAGER:RegisterForEvent(prefix.."_Bar",EVENT_ACTION_SLOTS_ACTIVE_HOTBAR_UPDATED,function() resetBaseline() end) end
+    if EVENT_ACTIVE_WEAPON_PAIR_CHANGED then EVENT_MANAGER:RegisterForEvent(prefix.."_Weapon",EVENT_ACTIVE_WEAPON_PAIR_CHANGED,function() resetBaseline() end) end
+end
+

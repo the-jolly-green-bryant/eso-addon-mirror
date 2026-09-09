@@ -85,6 +85,8 @@ local DEFAULTS = {
 	watch = true,
 	autoSafe = true,
 	channelKeys = true,
+	entryChannelLayer = true, -- legacy setting
+	hudChannelEnabled = true,
 	followInput = false,
 	idleSeconds = 15,
 	logResetDone = false,
@@ -125,7 +127,7 @@ local CATCHER_CONTROL_NAMES = {
 -- Reported by /pbchat rather than announced at login. It was announced while the add-on was
 -- being built, because a build behaving unlike its code was the hardest thing to diagnose from
 -- inside the game. That is worth a command, not a line of chat on every login.
-local VERSION = "1.9.0"
+local VERSION = "1.14.6"
 
 -- How long the catcher waits for the box to close before coming back anyway.
 local RESUME_DEADLINE_SECONDS = 120
@@ -335,6 +337,53 @@ end
 -- This costs the gamepad nothing it was not already costing. The arrows are read by the same
 -- catcher that reads Enter, which is up only when Enter is armed, so a build with the channel
 -- keys behaves exactly like one without until /pbchat enter is used.
+local function IsUsableChannelName(name)
+	return type(name) == "string" and name ~= "" and name ~= "nil"
+end
+
+-- Officer channels answer to the same guild name as the guild channel they belong to, so without
+-- this the two are indistinguishable in the label and in the switch message: two entries reading
+-- the same guild name, one of which is not the one you meant.
+--
+-- Built rather than declared, because a table constructor with a nil key raises at load and would
+-- take the add-on down with it if any of these constants ever went missing.
+local OFFICER_CHANNELS = {}
+for _, channelId in ipairs({
+	CHAT_CHANNEL_OFFICER_1, CHAT_CHANNEL_OFFICER_2, CHAT_CHANNEL_OFFICER_3,
+	CHAT_CHANNEL_OFFICER_4, CHAT_CHANNEL_OFFICER_5,
+}) do
+	OFFICER_CHANNELS[channelId] = true
+end
+
+local function OfficerSuffix(channelId)
+	if not OFFICER_CHANNELS[channelId] then
+		return ""
+	end
+	return GetString(SI_PBSCHATASSISTANT_OFFICER_SUFFIX) or ""
+end
+
+function addon:GetChannelDisplayName(channelId)
+	if channelId == nil then return "--" end
+	local info = type(ZO_ChatSystem_GetChannelInfo) == "function" and ZO_ChatSystem_GetChannelInfo()
+	local data = info and info[channelId]
+	-- Guild and officer channels have dynamicName=true and no fixed name.
+	local suffix = OfficerSuffix(channelId)
+	if data and data.dynamicName and type(GetDynamicChatChannelName) == "function" then
+		local ok, name = pcall(GetDynamicChatChannelName, channelId)
+		if ok and IsUsableChannelName(name) then return name .. suffix end
+	end
+	if type(GetChannelName) == "function" then
+		local ok, name = pcall(GetChannelName, channelId)
+		if ok and IsUsableChannelName(name) then return name .. suffix end
+	end
+	if data and IsUsableChannelName(data.name) then return data.name .. suffix end
+	-- Membership information may not yet be available immediately after a load.
+	local switches = type(ZO_ChatSystem_GetChannelSwitchLookupTable) == "function"
+		and ZO_ChatSystem_GetChannelSwitchLookupTable()
+	local switch = switches and switches[channelId]
+	return IsUsableChannelName(switch) and (switch .. suffix) or tostring(channelId)
+end
+
 local function GetCyclableChannels()
 	if type(ZO_ChatSystem_GetChannelInfo) ~= "function"
 		or type(ZO_ChatSystem_GetChannelSwitchLookupTable) ~= "function" then
@@ -354,7 +403,7 @@ local function GetCyclableChannels()
 		local needsTarget = data.saveTarget ~= nil
 
 		if switch and available and not needsTarget then
-			channels[#channels + 1] = { id = channelId, switch = switch, name = data.name }
+			channels[#channels + 1] = { id = channelId, switch = switch, name = addon:GetChannelDisplayName(channelId) }
 		end
 	end
 
@@ -399,12 +448,18 @@ function addon:CycleChannel(step, suppressAlert)
 
 	local target = channels[((index - 1 + step) % #channels) + 1]
 	chat:SetChannel(target.id)
-	self:Log("channel -> %s", tostring(target.name))
 
-	-- An alert rather than a chat line: the box is closed, so there is nothing on screen saying
-	-- which channel is selected, and a line per key press would bury the conversation.
+	-- Printed whatever the log setting says, because this one is not diagnostics: it is the
+	-- answer to "where is my next message going", and it is wanted in the chat log where it can
+	-- be scrolled back to. Resolved through GetChannelDisplayName so guild channels get their
+	-- guild name and officer channels are marked as such.
+	local displayName = self:GetChannelDisplayName(target.id)
+	Print(GetString(SI_PBSCHATASSISTANT_CHANNEL_LABEL), displayName)
+
+	-- The alert is the on-screen version, for when nothing else is showing the channel. The HUD
+	-- path suppresses it because its own label is already saying the same thing.
 	if not suppressAlert and type(ZO_Alert) == "function" then
-		ZO_Alert(UI_ALERT_CATEGORY_ALERT, nil, target.name)
+		ZO_Alert(UI_ALERT_CATEGORY_ALERT, nil, displayName)
 	end
 end
 
@@ -653,16 +708,14 @@ function addon:RefocusForInputScreen()
 		return
 	end
 
-	self:Log("refocus: closing to earn the input screen")
-
 	-- keepText is not passed, so the box is cleared. It is empty at this point by the check in
 	-- the watcher; clearing is only belt and braces.
 	chat:CloseTextEntry()
 
+	-- Not logged. The watcher runs this on every chat open, which is the most common thing the
+	-- add-on does, so the pair of lines it used to print were in the chat window constantly.
 	zo_callLater(function()
-		local opened = OpenChatEntry()
-		self:Log("refocus: reopened %s, input screen %s", tostring(opened or false),
-			tostring(IsInputScreenUp()))
+		OpenChatEntry()
 	end, self.sv.delayMs)
 end
 
@@ -737,7 +790,9 @@ function addon:ApplyWatch()
 		em:RegisterForUpdate(updateName, WATCH_INTERVAL_MS, function()
 			self:OnWatchTick()
 		end)
+		return
 	end
+
 end
 
 ----------------------------------------------------------------------------------------------
@@ -887,6 +942,26 @@ function addon:ReportEntryState(label)
 		lastInputGamepad and "gamepad" or "keyboard")
 end
 
+-- The active action layers, outermost first.
+--
+-- Precedence is the first thing to suspect when a layer is up, its push reports working, and its
+-- action still never fires: the chat system pushes GamepadChatSystem when the entry takes focus,
+-- and a layer pushed after ours sits above it. Read-only throughout.
+function addon:PrintLayers()
+	if type(GetNumActiveActionLayers) ~= "function" then
+		Print("no action layer API on this client")
+		return
+	end
+
+	local count = GetNumActiveActionLayers()
+	Print("%d active layer(s):", count)
+	for i = 1, count do
+		local layerIndex = GetActiveActionLayerIndex(i)
+		local name = layerIndex and GetActionLayerNameByIndex(layerIndex)
+		Print("  %d: %s", i, tostring(name))
+	end
+end
+
 function addon:PrintStatus()
 	Print("%s -- %s, capture %s, delay %d ms", VERSION, self.sv.enabled and "on" or "off",
 		self:DescribeCaptureMode(), self.sv.delayMs)
@@ -897,6 +972,7 @@ function addon:PrintStatus()
 	Print("input type: %s, follow %s, trigger %s", IsGamepadInput() and "gamepad" or "keyboard",
 		tostring(self.sv.followInput), tostring(self.sv.triggerOnKeyboard))
 	Print("catcher shown: %s, keyboard active: %s", tostring(IsCatcherShown()), tostring(keyboardActive))
+	if PBS_CHAT_ASSISTANT_HUD_CHANNEL then PBS_CHAT_ASSISTANT_HUD_CHANNEL:PrintStatus() end
 	Print("watch %s, auto safe %s, edit focus %s, input screen %s", tostring(self.sv.watch),
 		tostring(self.sv.autoSafe), tostring(HasEditFocus()), tostring(IsInputScreenUp()))
 end
@@ -923,14 +999,21 @@ function addon:PrintBinds()
 		return
 	end
 
+	-- The chord action and the stock action it inherits from, side by side. Between them they say
+	-- which of the three remaining possibilities is true: the action never registered, so
+	-- Bindings.xml did not take; it registered with no bind, so the inheritance did not attach;
+	-- or the source itself is unbound on this platform, in which case inheriting it was always
+	-- going to inherit nothing.
 	local actions = {
+		"PBSCHATASSISTANT_HUD_CHANNEL_L3",
+		"UI_SHORTCUT_LEFT_STICK",
+		"UI_SHORTCUT_LEFT_TRIGGER",
 		"PBSCHATASSISTANT_CHANNEL_NEXT",
-		"PBSCHATASSISTANT_CHANNEL_PREV",
 		"PBSCHATASSISTANT_START_CHAT",
 	}
 
 	for _, actionName in ipairs(actions) do
-		local shortName = actionName:gsub("^PBSCHATASSISTANT_", "")
+		local shortName = actionName:gsub("^PBSCHATASSISTANT_", ""):gsub("^UI_SHORTCUT_", "UI:")
 		local layerIndex, categoryIndex, actionIndex = GetActionIndicesFromName(actionName)
 
 		if not layerIndex then
@@ -970,6 +1053,10 @@ function addon:InitSlashCommand()
 
 		if command == "on" or command == "off" then
 			self.sv.enabled = (command == "on")
+			-- The master switch has to reach everything that is running, the channel layer
+			-- included; ApplyWatch takes that down when it stops the tick.
+			self:ApplyCatcher()
+			self:ApplyWatch()
 			Print("%s", self.sv.enabled and "on" or "off")
 		elseif command == "probe" then
 			self:StartProbe(argument ~= "" and argument or "default")
@@ -1047,8 +1134,18 @@ function addon:InitSlashCommand()
 			self.sv.captureMode = "off"
 			self:ApplyCatcher()
 			Print("Enter capture OFF (catcher %s) -- gamepad buttons back", tostring(IsCatcherShown()))
+		elseif command == "forcelayer" then
+			Print("force layer is disabled; hold L2 on the HUD to enable the L3 channel shortcut")
+		elseif command == "hudstatus" then
+			if PBS_CHAT_ASSISTANT_HUD_CHANNEL then PBS_CHAT_ASSISTANT_HUD_CHANNEL:PrintStatus() end
+		elseif command == "layers" then
+			self:PrintLayers()
 		elseif command == "binds" then
 			self:PrintBinds()
+		elseif command == "hudchannel" or command == "entrychannel" then
+			self.sv.hudChannelEnabled = (argument ~= "off")
+			if PBS_CHAT_ASSISTANT_HUD_CHANNEL then PBS_CHAT_ASSISTANT_HUD_CHANNEL:Update() end
+			Print("HUD L2+L3 channel switching %s", self.sv.hudChannelEnabled and "on" or "off")
 		elseif command == "channel" then
 			self.sv.channelKeys = (argument ~= "off")
 			Print("channel keys %s", self.sv.channelKeys and "on" or "off")
@@ -1182,8 +1279,10 @@ local function OnAddOnLoaded(_, name)
 	-- first key of a session opens the box whatever key it was. /pbchat follow off and
 	-- /pbchat trigger off turn those two off separately.
 	em:RegisterForEvent(addon.name, EVENT_INPUT_TYPE_CHANGED, function(_, isGamepad)
-		addon:Log("input type -> %s, entry %s", isGamepad and "gamepad" or "keyboard",
-			tostring(IsTextEntryOpen()))
+		-- Deliberately not logged. This fires on every switch between the keyboard and the
+		-- controller, which is constantly, and with followInput and triggerOnKeyboard both off by
+		-- default the handler has nothing else to say. It was noise in the chat window and it
+		-- drowned the lines that were worth reading.
 
 		if isGamepad then
 			keyboardActive = false

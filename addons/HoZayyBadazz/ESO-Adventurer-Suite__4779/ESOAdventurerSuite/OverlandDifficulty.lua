@@ -471,10 +471,11 @@ function ACD:Initialize()
     end
     if EVENT_POI_UPDATED then
         EVENT_MANAGER:RegisterForEvent(prefix .. "_POI", EVENT_POI_UPDATED, function()
-            self:InvalidatePOIContextCache029341()
-            -- Debounce through RequestRefresh; the next context pass sees the
-            -- rebuilt compact candidate list after ESO settles the POI event.
-            self:RequestRefresh(350)
+            -- POI_UPDATED fires in bursts while crossing town/boss/POI borders.
+            -- POI metadata is static for the current player map, so rebuilding
+            -- the complete POI cache here is wasted work and caused traversal
+            -- hitches. Keep the cache and merely schedule a cheap context check.
+            self:RequestRefresh(900)
         end)
     end
     if EVENT_POIS_INITIALIZED then
@@ -482,7 +483,7 @@ function ACD:Initialize()
             self:InvalidatePOIContextCache029341()
         end)
     end
-    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Context", 1500, function()
+    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Context", 2500, function()
         if EPC.saved and EPC.saved.overlandDifficultyEnabled then self:RequestRefresh(0) end
     end)
     self:RequestRefresh(1000)

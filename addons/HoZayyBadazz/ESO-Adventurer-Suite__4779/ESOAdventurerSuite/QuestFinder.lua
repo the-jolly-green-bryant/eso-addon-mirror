@@ -883,10 +883,6 @@ function Q:AssistAcceptedQuest2511(entry, setMapZone)
     if type(nativeJournal) == "table" and type(nativeJournal.FocusQuestWithIndex) == "function" then
         pcall(nativeJournal.FocusQuestWithIndex, nativeJournal, questIndex)
     end
-    local gamepadJournal = rawget(_G, "QUEST_JOURNAL_GAMEPAD")
-    if type(gamepadJournal) == "table" and type(gamepadJournal.FocusQuestWithIndex) == "function" then
-        pcall(gamepadJournal.FocusQuestWithIndex, gamepadJournal, questIndex)
-    end
 
     -- Compatibility fallback if the focused tracker object was unavailable.
     if not nativeFocused and TRACK_TYPE_QUEST ~= nil and type(SetTrackedIsAssisted) == "function" then

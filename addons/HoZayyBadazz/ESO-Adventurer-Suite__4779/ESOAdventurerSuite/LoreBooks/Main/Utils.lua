@@ -110,6 +110,5 @@ function EASLoreLibrary.ShowLocationOnMap(location)
 	local normalizedX, normalizedY = GetNormalizedWorldPosition(location.zoneId, location.worldX * 100, location.worldZ * 100, location.worldY * 100)
 	ZO_WorldMap_ShowWorldMap()
 
-	ZO_WorldMap_GetGamepadMap():StopMotion()
 	PanWhenMapIsReady(normalizedX, normalizedY, GetFrameTimeSeconds() + SHOW_ON_MAP_POEASLL_TIMEOUT_S)
 end

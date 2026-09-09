@@ -5,7 +5,7 @@ EASLoreLibrary:RegisterModule("filterMenu", FilterMenu)
 
 --[[
 Adds a checkbox for each pin type (Lore Books / Eidetic Memory) to the world
-map's "Filter" menu, for both the keyboard and gamepad UIs, so the player can
+map's keyboard "Filter" menu so the player can
 turn either kind of pin on/off. EASLoreLibrary.settings holds the actual on/off
 state; these checkboxes just read/write it.
 ]]--
@@ -34,7 +34,6 @@ end
 
 function FilterMenu:Initialize()
 	self:InitializeKeyboard()
-	self:InitializeGamepad()
 end
 
 -- the keyboard filter panel builds its checkboxes once and never rebuilds the
@@ -86,42 +85,3 @@ function FilterMenu:RefreshKeyboardCheckBoxes()
 	end
 end
 
--- the gamepad filter panel rebuilds its entire list every time it's shown or
--- a toggle changes, so hook PostBuildControls (right before it commits the
--- list) to re-add our entries on every rebuild
-function FilterMenu:InitializeGamepad()
-	local panel = GAMEPAD_WORLD_MAP_FILTERS and GAMEPAD_WORLD_MAP_FILTERS.pvePanel
-	if not panel then return end
-
-	ZO_PreHook(panel, "PostBuildControls", function(panelSelf)
-		for _, pinTypeId in ipairs(EASLoreLibrary.PINTYPES) do
-			self:AddGamepadCheckBox(panelSelf, pinTypeId)
-		end
-	end)
-end
-
-function FilterMenu:AddGamepadCheckBox(panel, pinTypeId)
-	local function ToggleFunction(data)
-		data.currentValue = not data.currentValue
-		EASLoreLibrary.settings:SetPinTypeEnabled(pinTypeId, data.currentValue)
-		panel:BuildControls()
-		SCREEN_NARRATION_MANAGER:QueueParametricListEntry(panel.list)
-	end
-
-	local info = {
-		name = PIN_TYPE_LABELS[pinTypeId],
-		onSelect = ToggleFunction,
-		showSelectButton = true,
-		narrationText = function(entryData)
-			return ZO_FormatToggleNarrationText(entryData.text, entryData.currentValue)
-		end,
-	}
-
-	local checkBox = ZO_GamepadEntryData:New(info.name)
-	checkBox:SetDataSource(info)
-	checkBox.currentValue = EASLoreLibrary.settings:IsPinTypeEnabled(pinTypeId)
-	local size = 40 -- gamepad size
-	checkBox:SetText(GetColoredIcon(pinTypeId, size) .. " " .. PIN_TYPE_LABELS[pinTypeId])
-
-	panel.list:AddEntry("ZO_GamepadWorldMapFilterCheckboxOptionTemplate", checkBox)
-end

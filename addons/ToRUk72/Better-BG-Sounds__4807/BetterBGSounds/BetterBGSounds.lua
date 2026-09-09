@@ -3,7 +3,7 @@
 --------------------------------------------------
 -- DECLARAÇÃO CRUCIAL PARA SALVAR CONFIGURAÇÕES
 --------------------------------------------------
-BetterBGSoundsSV = BetterBGSoundsSV or {} -- Isso avisa o Windows/ESO para salvar o arquivo físico!
+BetterBGSoundsSV = BetterBGSoundsSV or {}
 
 --------------------------------------------------
 -- Inicializa as variáveis do addon
@@ -11,28 +11,28 @@ BetterBGSoundsSV = BetterBGSoundsSV or {} -- Isso avisa o Windows/ESO para salva
 BetterBGSounds = {}
 BetterBGSounds.name = "BetterBGSounds"
 
+-- Variável global para controlar o tempo do último som tocado
+local lastKillTime = 0
+
 --------------------------------------------------
 -- Configurações padrões do addon
 --------------------------------------------------
 BetterBGSounds.defaults = {
     muteMedals = true,
     killSoundEnabled = true,
-    selectedKillSound = "DUEL_START",
+    selectedKillSound = "HUD_ARMOR_BROKEN",
     killBoost = 3,
 }
 
 --------------------------------------------------
--- Lista de Sons Selecionados
+-- Lista de Sons Refinada (Apenas os que aceitam Spam)
 --------------------------------------------------
 BetterBGSounds.soundChoices = {
     "ABILITY_COMPANION_ULTIMATE_READY",
     "ANTIQUITIES_FANFARE_COMPLETED",
     "ANTIQUITIES_FANFARE_FRAGMENT_DISCOVERED_FINAL",
-    "CHALLENGE_DIFFICULTY_SELECTED_VETERAN",
-    "CHAMPION_PENDING_POINTS_CLEARED",
     "DUEL_START",
     "HUD_ARMOR_BROKEN",
-    "LOCKPICKING_BREAK",
     "LOCKPICKING_UNLOCKED",
     "SKILL_POINT_GAINED"
 }
@@ -51,19 +51,40 @@ PlaySound = function(soundName)
 end
 
 --------------------------------------------------
--- SISTEMA DE DETECÇÃO DE ABATES (PvP)
+-- SISTEMA DE DETECÇÃO DE ABATES (COM TRAVA GERAL DE 300MS)
 --------------------------------------------------
 function BetterBGSounds.OnCombatEvent(eventCode, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType, log)
     if BetterBGSounds.savedVariables and BetterBGSounds.savedVariables.killSoundEnabled then
-        if result == ACTION_RESULT_KILLING_BLOW and sourceType == COMBAT_UNIT_TYPE_PLAYER then
-            local soundKey = BetterBGSounds.savedVariables.selectedKillSound
-            local soundConstant = SOUNDS[soundKey]
+        if result == ACTION_RESULT_KILLING_BLOW then
             
-            if soundConstant then
-                for i = 1, (BetterBGSounds.savedVariables.killBoost or 1) do
-                    originalPlaySound(soundConstant)
+            -- Limpeza de formatação para checagem cirúrgica de nomes
+            local cleanSourceName = zo_strformat("<<1>>", sourceName)
+            local myCleanName = zo_strformat("<<1>>", GetUnitName("player"))
+            
+            -- O golpe final precisa ser obrigatoriamente SEU
+            if cleanSourceName == myCleanName then
+                -- O alvo precisa ser um jogador (BG ou Cyrodiil)
+                if targetType == COMBAT_UNIT_TYPE_PLAYER or targetType == COMBAT_UNIT_TYPE_OTHER then
+                    
+                    local currentTime = GetFrameTimeMilliseconds()
+                    
+                    -- TRAVA GERAL: Só toca o som se já tiver passado mais de 300ms desde o ÚLTIMO som tocado pelo addon
+                    if (currentTime - lastKillTime) > 300 then
+                        lastKillTime = currentTime -- Atualiza o cronômetro global do addon
+                        
+                        local soundKey = BetterBGSounds.savedVariables.selectedKillSound
+                        local soundConstant = SOUNDS[soundKey]
+                        
+                        if soundConstant then
+                            for i = 1, (BetterBGSounds.savedVariables.killBoost or 1) do
+                                originalPlaySound(soundConstant)
+                            end
+                        end
+                    end
+                    
                 end
             end
+            
         end
     end
 end
@@ -72,7 +93,6 @@ end
 -- Inicializa variáveis salvas e eventos
 --------------------------------------------------
 function BetterBGSounds.Initialize()
-    -- Conecta os dados salvos com a tabela física global do arquivo txt
     BetterBGSounds.savedVariables = ZO_SavedVars:NewAccountWide("BetterBGSoundsSV", 1, nil, BetterBGSounds.defaults)
     EVENT_MANAGER:RegisterForEvent(BetterBGSounds.name, EVENT_COMBAT_EVENT, BetterBGSounds.OnCombatEvent)
 end
@@ -99,7 +119,7 @@ function BetterBGSounds.InitializeSettingsMenu()
         name = "Better BG Sounds",
         displayName = "|c00E600Better BG Sounds|r",
         author = "@ToRUk72",
-        version = "2.3",
+        version = "1.2",
         registerForRefresh = true
     }
     

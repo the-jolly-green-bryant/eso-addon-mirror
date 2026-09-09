@@ -81,7 +81,6 @@ local function getAllianceDisplayName(alliance)
 end
 
 local function getAllianceCrestTexture(alliance)
-    -- Use the same large alliance-symbol helper ESO uses in its own gamepad/guild UI.
     -- It returns a texture path appropriate for the active client/platform.
     if type(ZO_GetLargeAllianceSymbolIcon) == "function" then
         local texture = safe(ZO_GetLargeAllianceSymbolIcon, "", alliance)

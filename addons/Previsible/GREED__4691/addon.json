@@ -1,14 +1,15 @@
 {
-  "archive_path": "addons/Previsible/GREED-Beta__4691",
+  "archive_format": "zip",
+  "archive_path": "addons/Previsible/GREED__4691",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Previsible",
   "canonical_id": "esoui:4691",
   "category_id": "20",
   "compatibility": [
     {
-      "name": "Season Zero Pt.2",
-      "version": "12.0.0"
+      "name": "Season One",
+      "version": "12.1.0"
     }
   ],
   "content_id": "esoui:4691",
@@ -17,7 +18,7 @@
     "Greed"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4691/",
-  "fingerprint": "4118f45e922862cedbe43a110d5006fefbc786c34da98b8268d7960da75bc60b",
+  "fingerprint": "2408fc22bd66bd53d095cd32174beb01868356ff98e5a64281ecfe8781b014f4",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16606.png",
     "https://cdn-eso.mmoui.com/preview/pvw16629.png",
@@ -33,13 +34,13 @@
   "published": true,
   "source": "esoui",
   "source_id": "4691",
-  "source_url": "https://www.esoui.com/downloads/info4691-GREEDBeta.html",
+  "source_url": "https://www.esoui.com/downloads/info4691-GREED.html",
   "stats": {
-    "downloads": 96,
-    "favorites": 3,
-    "monthly_downloads": 95
+    "downloads": 126,
+    "favorites": 2,
+    "monthly_downloads": 24
   },
-  "title": "GREED Beta",
-  "updated_at": 1784873481000,
-  "version": "0.9.8-beta"
+  "title": "GREED",
+  "updated_at": 1788876035000,
+  "version": "1"
 }

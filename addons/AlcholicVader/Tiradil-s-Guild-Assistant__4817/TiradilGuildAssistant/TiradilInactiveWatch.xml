@@ -1,7 +1,3 @@
-<!-- Title: Tiradil's Guild Assistant -->
-<!-- Author: Tiradil -->
-<!-- Copyright: © 2026 Tiradil -->
-
 <GuiXml>
     <Controls>
         <Control name="TiradilIWRowTemplate" virtual="true">

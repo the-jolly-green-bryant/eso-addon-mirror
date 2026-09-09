@@ -1,6 +1,6 @@
 local ADDON_NAME = "TamrielProgressMap"
 local DISPLAY_NAME = "Tamriel Progress Map"
-local VERSION = "2.7.2"
+local VERSION = "2.7.4_Hotfix"
 local AUTHOR = "Raccoonplayz"
 local PIN_TYPE_STRING = "TamrielProgressMap_ZoneProgressPin"
 local SUPPORTED_LANGUAGES = { de = true, en = true, ru = true, fr = true, es = true }
@@ -55,8 +55,8 @@ local DEFAULTS =
     statisticsWindowScale = 100,
     statisticsSortMode = "progress",
     statisticsPage = "progress",
-    statisticsProgressSubPage = 1, -- 2.7.31: 1=Completion, 2=Alliance progress
-    statisticsHistorySubPage = 1, -- 2.7.31: 1=PvE/PvP, 2=Character
+    statisticsProgressSubPage = 1, -- 1=Completion, 2=Alliance progress
+    statisticsHistorySubPage = 1, -- 1=PvE/PvP, 2=Character
     statisticsCompletionPage = 1, -- 2.6.0: 1=zone completion, 2=collections, 3=achievements
     statisticsCategorySortMode = "all", -- 2.6.8: all/name/asc/desc for the three completion sub-pages
     skyshardGoalEnabled = false, -- personal zone-aware Skyshard goal HUD
@@ -366,7 +366,7 @@ local HISTORY_MAX_CHART_POINTS = 60
 local HISTORY_SAMPLE_INTERVAL_SECONDS = 300 -- detailed recent chart cadence; large changes can create an earlier point.
 local HISTORY_SAMPLE_RETENTION_DAYS = 45 -- older history uses daily close + daily high/low.
 local CHARACTER_PLAYTIME_RETENTION_DAYS = 365 -- dedicated Character page date/time + playtime ledger.
-local CURRENT_SCHEMA_VERSION = 4 -- 2.7.11 expanded Statistics theme color channels.
+local CURRENT_SCHEMA_VERSION = 4 -- schema v4: expanded Statistics theme color channels.
 local HISTORY_MAX_SAMPLES = 1400
 local SESSION_CONTINUITY_SECONDS = 300
 
@@ -728,6 +728,31 @@ function TPM:RecordCharacterDailyCombat(field, amount)
     entry.combatDataReliable = true
 end
 
+function TPM:QueueStatisticsLiveRefresh()
+    if self.statisticsLiveRefreshQueued or not self.saved
+        or not self.statisticsWindow or self.statisticsWindow:IsHidden() then return end
+    local page = self.saved.statisticsPage
+    if page ~= "economy" and page ~= "history" then return end
+
+    -- Record every event immediately; batch only the relatively expensive UI
+    -- work when a kill or loot action emits several events in the same frame.
+    self.statisticsLiveRefreshQueued = true
+    zo_callLater(function()
+        self.statisticsLiveRefreshQueued = false
+        if not self.saved or not self.statisticsWindow or self.statisticsWindow:IsHidden() then return end
+        local currentPage = self.saved.statisticsPage
+        if currentPage == "economy" then
+            self:RefreshEconomyStatisticsPage()
+        elseif currentPage == "history" then
+            if self:GetStatisticsHistorySubPage() == 2 then
+                self:RefreshPlayerStatisticsPage()
+            else
+                self:RefreshHistoryStatisticsPage()
+            end
+        end
+    end, 100)
+end
+
 function TPM:IncrementPlayerCombatStat(field, amount)
     local stats = self:GetPlayerCombatStats()
     if stats[field] == nil then return end
@@ -738,15 +763,7 @@ function TPM:IncrementPlayerCombatStat(field, amount)
         or field == "pvpKills" or field == "pvpDeaths" then
         self:QueueCombatHistoryCheckpoint()
     end
-    if self.statisticsWindow and not self.statisticsWindow:IsHidden() and self.saved then
-        if self.saved.statisticsPage == "history" then
-            if self:GetStatisticsHistorySubPage() == 2 then
-                self:RefreshPlayerStatisticsPage()
-            else
-                self:RefreshHistoryStatisticsPage()
-            end
-        end
-    end
+    if self.saved and self.saved.statisticsPage == "history" then self:QueueStatisticsLiveRefresh() end
 end
 
 -- v2.0.15 Economy journal ------------------------------------------------------
@@ -864,6 +881,61 @@ function TPM:GetEconomyCurrentAmount(definition)
     return self:GetEconomyCurrentAmounts(definition).current
 end
 
+function TPM:MigrateLegacyEconomyStats(currentKey, currentCache)
+    -- A populated character-ID ledger is authoritative. Older name-keyed
+    -- snapshots must not replace it each time the economy page is refreshed.
+    local function EconomyCacheScore(cache)
+        if type(cache) ~= "table" or type(cache.currencies) ~= "table" then return 0 end
+        local score = 0
+        for _, e in pairs(cache.currencies) do
+            if type(e) == "table" then
+                score = score + math.max(0, tonumber(e.received) or 0)
+                score = score + math.max(0, tonumber(e.spent) or 0)
+                score = score + math.max(0, tonumber(e.bankDeposited) or 0)
+                score = score + math.max(0, tonumber(e.bankWithdrawn) or 0)
+                score = score + math.max(0, tonumber(e.fenceSales) or 0)
+                score = score + math.max(0, tonumber(e.stolenGold) or 0)
+                score = score + math.max(0, tonumber(e.bountyPaid) or 0)
+            end
+        end
+        return score
+    end
+
+    local selected = type(currentCache) == "table" and currentCache or nil
+    if not (selected and selected.legacyMigrationCompleted274)
+        and EconomyCacheScore(selected) == 0 then
+        local rawName = GetUnitName("player") or ""
+        local formattedName = rawName ~= "" and zo_strformat("<<C:1>>", rawName) or ""
+        local fallbackKeys = { "player" }
+        if rawName ~= "" then fallbackKeys[#fallbackKeys + 1] = rawName end
+        if formattedName ~= "" and formattedName ~= rawName then
+            fallbackKeys[#fallbackKeys + 1] = formattedName
+        end
+        local bestScore = 0
+        for _, legacyKey in ipairs(fallbackKeys) do
+            local candidate = self.saved.economyStatsByCharacter[legacyKey]
+            if legacyKey ~= currentKey and type(candidate) == "table" then
+                local recordedName = candidate.characterName
+                local nameMatches = type(recordedName) == "string" and recordedName ~= ""
+                    and (recordedName == rawName or recordedName == formattedName)
+                -- "player" alone does not identify a character. Leave any
+                -- ambiguous legacy ledger intact instead of assigning it to
+                -- whichever character happens to log in next.
+                local eligible = legacyKey == "player" and nameMatches
+                    or legacyKey ~= "player" and (not recordedName or recordedName == "" or nameMatches)
+                local score = eligible and EconomyCacheScore(candidate) or 0
+                if score > bestScore then selected, bestScore = candidate, score end
+            end
+        end
+    end
+
+    -- Detach both legacy sources and pre-existing aliases. New transactions
+    -- must never mutate another character's table or the preserved snapshot.
+    local stats = selected and TPM_DeepCopyPlain(selected) or { trackingVersion = "2.0.15", currencies = {} }
+    stats.legacyMigrationCompleted274 = true
+    return stats
+end
+
 function TPM:GetEconomyStats()
     if not self.saved then return { trackingVersion = "2.0.15", currencies = {} } end
     if type(self.saved.economyStatsByCharacter) ~= "table" then
@@ -875,57 +947,14 @@ function TPM:GetEconomyStats()
     if type(self.saved.milestoneStateByCharacter) ~= "table" then
         self.saved.milestoneStateByCharacter = {}
     end
-
-
-    -- 2.6.46: preserve the oldest Economy cache if a previous build stored the
-    -- character under the fallback name/"player" key. Never add caches together:
-    -- pick the richest existing cache only when the current ID cache is missing
-    -- or contains less historical activity. This prevents duplicate totals.
-    local function EconomyCacheScore(cache)
-        if type(cache) ~= "table" or type(cache.currencies) ~= "table" then return 0 end
-        local score = 0
-        for _, e in pairs(cache.currencies) do
-            if type(e) == "table" then
-                score = score + math.max(0, tonumber(e.received) or 0)
-                score = score + math.max(0, tonumber(e.spent) or 0)
-                score = score + math.max(0, tonumber(e.fenceSales) or 0)
-                score = score + math.max(0, tonumber(e.stolenGold) or 0)
-                score = score + math.max(0, tonumber(e.bountyPaid) or 0)
-            end
-        end
-        return score
-    end
-
-    local currentKey = self:GetCurrentCharacterStatsKey()
-    local currentCache = self.saved.economyStatsByCharacter[currentKey]
-    local bestCache, bestScore = currentCache, EconomyCacheScore(currentCache)
-    local fallbackKeys = { "player" }
-    local rawName = type(GetUnitName) == "function" and (GetUnitName("player") or "") or ""
-    if rawName ~= "" then
-        fallbackKeys[#fallbackKeys + 1] = rawName
-        if type(zo_strformat) == "function" then
-            local formatted = zo_strformat("<<C:1>>", rawName)
-            if formatted and formatted ~= "" then fallbackKeys[#fallbackKeys + 1] = formatted end
-        end
-    end
-    for _, legacyKey in ipairs(fallbackKeys) do
-        if legacyKey ~= currentKey then
-            local candidate = self.saved.economyStatsByCharacter[legacyKey]
-            local score = EconomyCacheScore(candidate)
-            if score > bestScore then
-                bestCache, bestScore = candidate, score
-            end
-        end
-    end
-    if bestCache and bestCache ~= currentCache then
-        self.saved.economyStatsByCharacter[currentKey] = bestCache
-    end
     local key = self:GetCurrentCharacterStatsKey()
     local stats = self.saved.economyStatsByCharacter[key]
-    if type(stats) ~= "table" then
-        stats = { trackingVersion = "2.0.15", currencies = {} }
-        self.saved.economyStatsByCharacter[key] = stats
+    if type(stats) == "table" and self.economyPreparedStats == stats
+        and self.economyPreparedStatsKey == key then
+        return stats
     end
+    stats = self:MigrateLegacyEconomyStats(key, stats)
+    self.saved.economyStatsByCharacter[key] = stats
     stats.trackingVersion = stats.trackingVersion or "2.0.15"
     if type(stats.currencies) ~= "table" then stats.currencies = {} end
 
@@ -953,6 +982,8 @@ function TPM:GetEconomyStats()
             entry.bountyTrackingVersion = entry.bountyTrackingVersion or "2.6.22"
         end
     end
+    self.economyPreparedStats = stats
+    self.economyPreparedStatsKey = key
     return stats
 end
 
@@ -1129,10 +1160,10 @@ function TPM:RecordEconomyPersonalBankTransfer(definition, currencyLocation, new
     if not entry then return true end
     if isDeposit and delta < 0 then
         entry.bankDeposited = math.max(0, Round((tonumber(entry.bankDeposited) or 0) + math.abs(delta)))
-        self:RecordEconomyZoneBankTransfer(math.abs(delta), true)
+        if definition.key == "gold" then self:RecordEconomyZoneBankTransfer(math.abs(delta), true) end
     elseif isWithdrawal and delta > 0 then
         entry.bankWithdrawn = math.max(0, Round((tonumber(entry.bankWithdrawn) or 0) + delta))
-        self:RecordEconomyZoneBankTransfer(delta, false)
+        if definition.key == "gold" then self:RecordEconomyZoneBankTransfer(delta, false) end
     end
     return true
 end
@@ -1164,10 +1195,7 @@ function TPM:RecordEconomyCurrencyChange(currencyType, currencyLocation, newAmou
     -- separately so the Bank Gold development view can show Deposits and
     -- Withdrawals. Count the character-side event only to avoid double counts.
     if self:RecordEconomyPersonalBankTransfer(definition, currencyLocation, newAmount, oldAmount, reason) then
-        if self.statisticsWindow and not self.statisticsWindow:IsHidden() and self.saved then
-            if self.saved.statisticsPage == "economy" then self:RefreshEconomyStatisticsPage()
-            elseif self.saved.statisticsPage == "history" then self:RefreshHistoryStatisticsPage() end
-        end
+        self:QueueStatisticsLiveRefresh()
         return
     end
 
@@ -1213,13 +1241,7 @@ function TPM:RecordEconomyCurrencyChange(currencyType, currencyLocation, newAmou
         self:RecordEconomyZoneDelta(delta, reason)
     end
 
-    if self.statisticsWindow and not self.statisticsWindow:IsHidden() and self.saved then
-        if self.saved.statisticsPage == "economy" then
-            self:RefreshEconomyStatisticsPage()
-        elseif self.saved.statisticsPage == "history" then
-            self:RefreshHistoryStatisticsPage()
-        end
-    end
+    self:QueueStatisticsLiveRefresh()
 end
 
 
@@ -1241,13 +1263,7 @@ function TPM:RecordEconomyBountyPayment(goldAmount)
     if zoneEntry then zoneEntry.bountyPaid = math.max(0, Round((tonumber(zoneEntry.bountyPaid) or 0) + goldAmount)) end
     entry.bountyTrackingVersion = entry.bountyTrackingVersion or "2.6.22"
 
-    if self.statisticsWindow and not self.statisticsWindow:IsHidden() and self.saved then
-        if self.saved.statisticsPage == "economy" then
-            self:RefreshEconomyStatisticsPage()
-        elseif self.saved.statisticsPage == "history" then
-            self:RefreshHistoryStatisticsPage()
-        end
-    end
+    self:QueueStatisticsLiveRefresh()
     self:QueueEconomyHistoryCheckpoint()
 end
 
@@ -3542,7 +3558,13 @@ function TPM:UpdateCharacterPlaytime365(store, snapshot)
     local previousOffset = type(previous) == "table" and tonumber(previous.utcOffset) or currentOffset
     local previousZoneId = type(previous) == "table" and math.max(0, tonumber(previous.zoneId) or 0) or currentZoneId
     local previousZoneName = type(previous) == "table" and tostring(previous.zoneName or "") or currentZoneName
-    if previousAt and previousPlayed and timestamp > previousAt and played >= previousPlayed then
+    if previousAt and previousPlayed and timestamp == previousAt and played > previousPlayed then
+        -- /played and the Unix clock can tick at different points within a
+        -- frame. Preserve the real played delta even when the timestamp has
+        -- not advanced; replacing the observation alone would discard it.
+        TouchDay(dayKey, timestamp, timestamp, played - previousPlayed,
+            currentOffset, previousZoneId, previousZoneName, true)
+    elseif previousAt and previousPlayed and timestamp > previousAt and played >= previousPlayed then
         local deltaPlayed = math.max(0, played - previousPlayed)
         local wallSpan = timestamp - previousAt
         if deltaPlayed > 0 and wallSpan > 0 then
@@ -4833,14 +4855,35 @@ function TPM:GetCompletionTypeName(completionType)
     return tostring(completionType)
 end
 
--- Zone Guide completion helpers use the current public ESO API directly.
--- ESO's own live Zone Stories code uses these functions for category totals.
+-- Zone Guide completion wrapper shared by API 101050 and 101051+.
+-- ZOS changed the underlying global functions in Update 51, while
+-- ZONE_STORIES_MANAGER:GetActivityCompletionProgressValues remains the stable
+-- UI abstraction and dispatches to the correct API for the active client.
+function TPM:GetZoneCompletionActivityProgress(zoneId, completionType)
+    zoneId = tonumber(zoneId) or 0
+    if zoneId <= 0 or completionType == nil then return 0, 0 end
+
+    local manager = _G.ZONE_STORIES_MANAGER
+    local getter = manager and manager.GetActivityCompletionProgressValues
+    if type(getter) ~= "function" then return 0, 0 end
+
+    local ok, completed, total = pcall(getter, zoneId, completionType)
+    if not ok then return 0, 0 end
+
+    completed = math.max(0, tonumber(completed) or 0)
+    total = math.max(0, tonumber(total) or 0)
+    if completed > total then completed = total end
+    return completed, total
+end
+
 function TPM:GetZoneCompletionActivityTotal(zoneId, completionType)
-    return math.max(0, tonumber(GetNumZoneActivitiesForZoneCompletionType(zoneId, completionType)) or 0)
+    local _, total = self:GetZoneCompletionActivityProgress(zoneId, completionType)
+    return total
 end
 
 function TPM:GetZoneCompletionActivityCompleted(zoneId, completionType)
-    return math.max(0, tonumber(GetNumCompletedZoneActivitiesForZoneCompletionType(zoneId, completionType)) or 0)
+    local completed = self:GetZoneCompletionActivityProgress(zoneId, completionType)
+    return completed
 end
 
 function TPM:GetCompletionBreakdown(zoneId)
@@ -4992,12 +5035,67 @@ function TPM:IsSkyshardGoalHudSceneVisible()
     return currentScene == HUD_SCENE or currentScene == HUD_UI_SCENE
 end
 
+-- Register the global release event only while TPM is actively dragging or
+-- resizing something. This keeps the addon idle during unrelated mouse input
+-- while still safely ending interactions when the cursor leaves a control.
+function TPM:HasActivePointerInteraction()
+    return self.skyshardGoalDragging == true
+        or self.skyshardGoalResizing == true
+        or self.alliancePlannerMapDragging == true
+        or self.questRewardResizing == true
+        or self.questRewardMoving == true
+        or self.statisticsWindowMoving == true
+end
+
+function TPM:UpdateGlobalMouseUpRegistration()
+    if not EVENT_MANAGER or not EVENT_GLOBAL_MOUSE_UP then return end
+    local namespace = ADDON_NAME .. "GlobalMouseUp"
+    local shouldRegister = self:HasActivePointerInteraction()
+
+    if shouldRegister and self.globalMouseUpRegistered ~= true then
+        EVENT_MANAGER:RegisterForEvent(namespace, EVENT_GLOBAL_MOUSE_UP, function(eventCode, button)
+            TPM:HandleGlobalMouseUp(eventCode, button)
+        end)
+        self.globalMouseUpRegistered = true
+    elseif not shouldRegister and self.globalMouseUpRegistered == true then
+        EVENT_MANAGER:UnregisterForEvent(namespace, EVENT_GLOBAL_MOUSE_UP)
+        self.globalMouseUpRegistered = false
+    end
+end
+
+function TPM:HandleGlobalMouseUp(_, button)
+    if button ~= MOUSE_BUTTON_INDEX_LEFT then return end
+    if self.skyshardGoalDragging then self:StopSkyshardGoalMove() end
+    if self.skyshardGoalResizing then self:StopSkyshardGoalResize() end
+    if self.alliancePlannerMapDragging then self:EndAlliancePlannerMapPan() end
+    if self.questRewardResizing then self:StopResizingQuestRewardWindow() end
+    if self.questRewardMoving then self:StopMovingQuestRewardWindow() end
+    if self.statisticsWindowMoving then self:StopMovingStatisticsWindow() end
+    self:UpdateGlobalMouseUpRegistration()
+end
+
 -- 2.6.13: Personal Skyshard HUD renderer rebuilt around a true top-level
 -- window. Earlier test builds used a normal GuiRoot child and tried to anchor
 -- to ESO's quest tracker container. On current clients that container can have
 -- scene-dependent geometry/visibility, so an enabled goal could exist but never
 -- become effectively visible. The goal now owns its own top-level window and
 -- uses an independently resolved HUD anchor.
+function TPM:StopSkyshardGoalMove()
+    if self.skyshardGoalDragSurface then
+        self.skyshardGoalDragSurface:SetHandler("OnUpdate", nil)
+    end
+    self.skyshardGoalDragging = false
+    self:UpdateGlobalMouseUpRegistration()
+end
+
+function TPM:StopSkyshardGoalResize()
+    if self.skyshardGoalResizeGrip then
+        self.skyshardGoalResizeGrip:SetHandler("OnUpdate", nil)
+    end
+    self.skyshardGoalResizing = false
+    self:UpdateGlobalMouseUpRegistration()
+end
+
 function TPM:CreateSkyshardGoalWidget()
     if self.skyshardGoalWidget then return end
     local widgetName = ADDON_NAME .. "SkyshardGoalHUD"
@@ -5091,14 +5189,17 @@ function TPM:CreateSkyshardGoalWidget()
     self.skyshardGoalLastAnchorScan = 0
 
     local function StopMove()
-        dragSurface:SetHandler("OnUpdate", nil)
-        self.skyshardGoalDragging = false
+        TPM:StopSkyshardGoalMove()
     end
 
     local function StopResize()
-        resizeGrip:SetHandler("OnUpdate", nil)
-        self.skyshardGoalResizing = false
+        TPM:StopSkyshardGoalResize()
     end
+
+    widget:SetHandler("OnHide", function()
+        StopMove()
+        StopResize()
+    end)
 
     dragSurface:SetHandler("OnMouseDown", function(_, button)
         if TPM.skyshardGoalEditMode ~= true or button ~= MOUSE_BUTTON_INDEX_LEFT then return end
@@ -5111,6 +5212,7 @@ function TPM:CreateSkyshardGoalWidget()
         if not mouseX or not mouseY or not left or not top then return end
 
         TPM.skyshardGoalDragging = true
+        TPM:UpdateGlobalMouseUpRegistration()
         TPM.skyshardGoalDragStartMouseX = mouseX
         TPM.skyshardGoalDragStartMouseY = mouseY
         TPM.skyshardGoalDragStartX = left
@@ -5152,6 +5254,7 @@ function TPM:CreateSkyshardGoalWidget()
         mouseX, mouseY = tonumber(mouseX), tonumber(mouseY)
         if not mouseX or not mouseY then return end
         TPM.skyshardGoalResizing = true
+        TPM:UpdateGlobalMouseUpRegistration()
         TPM.skyshardGoalResizeStartMouseX = mouseX
         TPM.skyshardGoalResizeStartMouseY = mouseY
         TPM.skyshardGoalResizeStartWidth = tonumber(widget:GetWidth()) or 360
@@ -5556,6 +5659,26 @@ function TPM:GetProgressGoalHudTitle(completionType)
     return string.format("|t22:22:%s|t  %s", texture, name)
 end
 
+function TPM:UpdateSkyshardGoalRefreshTimer()
+    if not EVENT_MANAGER then return end
+    local namespace = ADDON_NAME .. "SkyshardGoalHudRefresh"
+    local shouldRun = self.saved and self.saved.skyshardGoalEnabled == true
+
+    if shouldRun and self.skyshardGoalRefreshTimerRegistered ~= true then
+        EVENT_MANAGER:RegisterForUpdate(namespace, 1500, function()
+            if TPM.saved and TPM.saved.skyshardGoalEnabled == true then
+                TPM:RefreshSkyshardGoalWidget()
+            else
+                TPM:UpdateSkyshardGoalRefreshTimer()
+            end
+        end)
+        self.skyshardGoalRefreshTimerRegistered = true
+    elseif not shouldRun and self.skyshardGoalRefreshTimerRegistered == true then
+        EVENT_MANAGER:UnregisterForUpdate(namespace)
+        self.skyshardGoalRefreshTimerRegistered = false
+    end
+end
+
 function TPM:ToggleSkyshardGoalWidget(completionType)
     if not self.saved then return end
     local targetType = completionType or self:GetActiveProgressGoalCategoryType() or _G.ZONE_COMPLETION_TYPE_SKYSHARDS
@@ -5569,6 +5692,7 @@ function TPM:ToggleSkyshardGoalWidget(completionType)
     if self.saved.skyshardGoalEnabled ~= true and self.skyshardGoalEditMode == true then
         self:SetSkyshardGoalEditMode(false, false)
     end
+    self:UpdateSkyshardGoalRefreshTimer()
     self:RefreshSkyshardGoalWidget()
     if self.statisticsWindow and not self.statisticsWindow:IsHidden() then
         self:RefreshStatisticsWindow()
@@ -5579,10 +5703,9 @@ local function TPM_TryZoneStoriesSkyshardProgress(zoneId)
     zoneId = tonumber(zoneId) or 0
     if zoneId <= 0 then return nil end
 
-    local completed, total = ZONE_STORIES_MANAGER.GetActivityCompletionProgressValues(zoneId, ZONE_COMPLETION_TYPE_SKYSHARDS)
-    completed, total = tonumber(completed), tonumber(total)
-    if completed ~= nil and total ~= nil and total > 0 then
-        return math.max(0, completed), math.max(0, total)
+    local completed, total = TPM:GetZoneCompletionActivityProgress(zoneId, ZONE_COMPLETION_TYPE_SKYSHARDS)
+    if total > 0 then
+        return completed, total
     end
     return nil
 end
@@ -5676,15 +5799,17 @@ function TPM:RefreshSkyshardGoalWidget()
     local widget = self.skyshardGoalWidget
     if not widget then return end
 
-    -- 2.6.31 hotfix: the progress HUD must never reappear behind the
-    -- Statistics journal. The 1.5 second safety refresh used to show it again
-    -- after ShowStatisticsWindow() had explicitly hidden it.
-    if self.statisticsWindow and not self.statisticsWindow:IsHidden() then
+    -- The normal HUD stays hidden behind the journal, but the explicit gear
+    -- editor must survive the 1.5-second refresh while the journal is open.
+    local editingPosition = self.skyshardGoalEditMode == true
+    if not editingPosition and self.statisticsWindow and not self.statisticsWindow:IsHidden() then
         widget:SetHidden(true)
         return
     end
-
-    local editingPosition = self.skyshardGoalEditMode == true
+    if editingPosition and not self:IsStatisticsAllowedInCurrentScene() then
+        widget:SetHidden(true)
+        return
+    end
     if (not self.saved or self.saved.skyshardGoalEnabled ~= true) and not editingPosition then
         widget:SetHidden(true)
         return
@@ -5768,6 +5893,8 @@ function TPM:SetSkyshardGoalEditMode(enabled, commitChanges)
     self.skyshardGoalEditMode = enabled
     self.skyshardGoalDragging = false
     self.skyshardGoalResizing = false
+    self:UpdateGlobalMouseUpRegistration()
+    self:UpdateSkyshardGoalRefreshTimer()
     if self.skyshardGoalDragSurface then self.skyshardGoalDragSurface:SetHandler("OnUpdate", nil) end
     if self.skyshardGoalResizeGrip then self.skyshardGoalResizeGrip:SetHandler("OnUpdate", nil) end
 
@@ -5923,12 +6050,12 @@ function TPM:InvalidateStatisticsData(rebuildZoneList)
     self.statisticsData = nil
     self.zoneAchievementSummaryCache = nil
     if rebuildZoneList then
+        -- Zone availability can change after activation, so rebuild only the
+        -- dynamic progress-zone set. Quest master metadata (quest -> zone,
+        -- repeatable/type/name eligibility and Crown starter IDs) is static for
+        -- the lifetime of the current UI session and can safely survive loading
+        -- screens. Keeping it avoids repeating the 1..SIDE_QUEST_SCAN_MAX_ID scan.
         self.progressZoneIdsCache = nil
-        self.sideQuestIdsByScope = nil
-        self.sideQuestIndexBuilt = false -- legacy cleanup for pre-2.6.14 Saved/UI state
-        self.sideQuestIds = nil
-        self.crownQuestIndexBuilt = false
-        self.crownQuestIds = nil
     end
 end
 
@@ -6861,6 +6988,7 @@ function TPM:StartMovingQuestRewardWindow()
     if not left or not top then return end
 
     self.questRewardMoving = true
+    self:UpdateGlobalMouseUpRegistration()
     self.questRewardMoveStartMouseX = mouseX
     self.questRewardMoveStartMouseY = mouseY
     self.questRewardMoveStartX = left - parentLeft
@@ -6885,6 +7013,7 @@ function TPM:StopMovingQuestRewardWindow()
     if not self.questRewardMoving then return end
 
     self.questRewardMoving = false
+    self:UpdateGlobalMouseUpRegistration()
     local driver = self.questRewardDragHandle or self.questRewardControl
     if driver then
         driver:SetHandler("OnUpdate", nil)
@@ -6979,6 +7108,7 @@ function TPM:StartResizingQuestRewardWindow()
 
     local mouseX, mouseY = GetUIMousePosition()
     self.questRewardResizing = true
+    self:UpdateGlobalMouseUpRegistration()
     self.questRewardResizeStartMouseX = mouseX
     self.questRewardResizeStartMouseY = mouseY
     self.questRewardResizeStartWidth = control:GetWidth() or DEFAULTS.questRewardWidth
@@ -7000,6 +7130,7 @@ end
 function TPM:StopResizingQuestRewardWindow()
     if not self.questRewardResizing then return end
     self.questRewardResizing = false
+    self:UpdateGlobalMouseUpRegistration()
     if self.questRewardResizeHandle then
         self.questRewardResizeHandle:SetHandler("OnUpdate", nil)
     end
@@ -7173,6 +7304,11 @@ function TPM:CreateQuestRewardControl()
     end)
     self.questRewardResizeHandle = resizeHandle
 
+    control:SetHandler("OnHide", function()
+        if TPM.questRewardMoving then TPM:StopMovingQuestRewardWindow() end
+        if TPM.questRewardResizing then TPM:StopResizingQuestRewardWindow() end
+    end)
+
     self:UpdateQuestRewardLockState()
     self:ApplyQuestRewardFonts()
     self:UpdateQuestRewardLayout()
@@ -7185,6 +7321,27 @@ function TPM:HideQuestRewards()
     end
     if self.questRewardControl then
         self.questRewardControl:SetHidden(true)
+    end
+end
+
+function TPM:UpdateFocusedRewardPanelPolling()
+    if not EVENT_MANAGER then return end
+    local namespace = ADDON_NAME .. "FocusedRewardPanel"
+    local shouldRun = self.saved and self.saved.showQuestRewards == true
+        and self:IsFullWorldMapSceneVisible()
+
+    if shouldRun and self.focusedRewardPanelPolling ~= true then
+        EVENT_MANAGER:RegisterForUpdate(namespace, 2000, function()
+            if TPM.saved and TPM.saved.showQuestRewards == true and TPM:IsFullWorldMapSceneVisible() then
+                TPM:RefreshQuestRewards()
+            else
+                TPM:UpdateFocusedRewardPanelPolling()
+            end
+        end)
+        self.focusedRewardPanelPolling = true
+    elseif not shouldRun and self.focusedRewardPanelPolling == true then
+        EVENT_MANAGER:UnregisterForUpdate(namespace)
+        self.focusedRewardPanelPolling = false
     end
 end
 
@@ -7341,6 +7498,7 @@ local function TPM_GetProgressZoneScopeKey(progressZoneIds)
 end
 
 function TPM:BuildSideQuestIndex(progressZoneIds)
+    progressZoneIds = progressZoneIds or {}
     self.sideQuestIdsByScope = self.sideQuestIdsByScope or {}
     local scopeKey = TPM_GetProgressZoneScopeKey(progressZoneIds)
     if self.sideQuestIdsByScope[scopeKey] then
@@ -7361,28 +7519,47 @@ function TPM:BuildSideQuestIndex(progressZoneIds)
     local normalQuestType = _G.QUEST_TYPE_NONE
     if notRepeatable == nil or normalQuestType == nil then return sideQuestIds end
 
-    for questId = 1, SIDE_QUEST_SCAN_MAX_ID do
-        if not priorityQuestIds[questId] then
+    -- Index quest locations once, then reuse them across focus scopes. Keep
+    -- eligibility lazy so opening one zone does not query every quest's name
+    -- and type. Completion itself remains live in GetSideQuestStatistics.
+    if not self.sideQuestCandidatesByZone then
+        local byZone = {}
+        for questId = 1, SIDE_QUEST_SCAN_MAX_ID do
             local zoneId = GetQuestZoneId(questId) or 0
             if zoneId > 0 then
-                local progressZoneId = zoneId
-                if not progressZoneIds[progressZoneId] and type(GetZoneStoryZoneIdForZoneId) == "function" then
-                    local storyZoneId = GetZoneStoryZoneIdForZoneId(zoneId)
-                    if storyZoneId and storyZoneId > 0 then progressZoneId = storyZoneId end
-                end
+                byZone[zoneId] = byZone[zoneId] or {}
+                local ids = byZone[zoneId]
+                ids[#ids + 1] = questId
+            end
+        end
+        self.sideQuestCandidatesByZone = byZone
+        self.sideQuestEligibilityById = {}
+    end
 
-                if progressZoneIds[progressZoneId]
-                    and GetQuestRepeatableType(questId) == notRepeatable
-                    and GetQuestType(questId) == normalQuestType then
-                    local name = GetQuestName(questId) or ""
-                    if self:IsLikelySideQuestName(name) then
-                        sideQuestIds[#sideQuestIds + 1] = questId
+    local eligibleById = self.sideQuestEligibilityById
+    for zoneId, questIds in pairs(self.sideQuestCandidatesByZone) do
+        local progressZoneId = zoneId
+        if not progressZoneIds[progressZoneId] and type(GetZoneStoryZoneIdForZoneId) == "function" then
+            local storyZoneId = GetZoneStoryZoneIdForZoneId(zoneId)
+            if storyZoneId and storyZoneId > 0 then progressZoneId = storyZoneId end
+        end
+        if progressZoneIds[progressZoneId] then
+            for _, questId in ipairs(questIds) do
+                if not priorityQuestIds[questId] then
+                    local eligible = eligibleById[questId]
+                    if eligible == nil then
+                        eligible = GetQuestRepeatableType(questId) == notRepeatable
+                            and GetQuestType(questId) == normalQuestType
+                            and self:IsLikelySideQuestName(GetQuestName(questId) or "")
+                        eligibleById[questId] = eligible == true
                     end
+                    if eligible then sideQuestIds[#sideQuestIds + 1] = questId end
                 end
             end
         end
     end
 
+    table.sort(sideQuestIds)
     self.sideQuestIdsByScope[scopeKey] = sideQuestIds
     return sideQuestIds
 end
@@ -7408,84 +7585,53 @@ function TPM:GetSideQuestStatistics(progressZoneIds)
 end
 
 -- ESO intentionally does not expose the live Crown Store catalog to addons.
--- We therefore track a curated list of permanent/current Crown Store quest
--- starters by their localized DE/EN quest names. Completion itself is read
--- from HasCompletedQuest, so already-finished quests are detected retroactively.
--- Rotating limited-time quest starters are deliberately not counted here.
-local CROWN_QUEST_STARTER_NAMES =
+-- Track the curated permanent/current quest starters by stable quest ID rather
+-- than localized quest name. This works identically on DE/EN/FR/ES/RU and
+-- avoids a second 1..SIDE_QUEST_SCAN_MAX_ID name scan.
+local CROWN_QUEST_STARTER_IDS =
 {
-    -- Permanent/current Crown Store Quest Starters known for 2.0.8 (DE + EN).
-    ["the demon weapon"] = true,
-    ["die dämonenwaffe"] = true,
-    ["the dragonguard's legacy"] = true,
-    ["das erbe der drachengarde"] = true,
-    ["the coven conspiracy"] = true,
-    ["die zirkelverschwörung"] = true,
-    ["the ravenwatch inquiry"] = true,
-    ["die rabenwacht-untersuchung"] = true,
-    ["a mortal's touch"] = true,
-    ["berührung eines sterblichen"] = true,
-    ["an apocalyptic situation"] = true,
-    ["eine apokalyptische lage"] = true,
-    ["through a veil darkly"] = true,
-    ["durch einen dunklen schleier"] = true,
-    ["ruthless competition"] = true,
-    ["skrupellose konkurrenz"] = true,
-    ["the missing prophecy"] = true,
-    ["die fehlende prophezeiung"] = true,
-    ["ascending doubt"] = true,
-    ["emporstrebender zweifel"] = true,
-    ["sojourn of the druid king"] = true,
-    ["das verweilen des druidenkönigs"] = true,
-    ["eye of fate"] = true,
-    ["auge des schicksals"] = true,
-    ["prisoner of fate"] = true,
-    ["gefangene des schicksals"] = true,
-    ["a guild in crisis"] = true,
-    ["eine gilde in der krise"] = true,
-    ["room to spare"] = true,
-    ["zimmer frei"] = true,
-    ["wohnprospekt: zimmer frei"] = true,
-    ["the margins of ire"] = true,
-    ["die randnotizen der wut"] = true,
-    ["a study in discipline"] = true,
-    ["eine studie in sachen disziplin"] = true,
-    ["the second era of scribing"] = true,
-    ["die zweite ära der schriftlehre"] = true,
+    6299, -- The Demon Weapon
+    6395, -- The Dragonguard's Legacy
+    6454, -- The Coven Conspiracy
+    6549, -- The Ravenwatch Inquiry
+    6612, -- A Mortal's Touch
+    6701, -- An Apocalyptic Situation
+    6097, -- Through a Veil Darkly
+    6226, -- Ruthless Competition
+    5935, -- The Missing Prophecy
+    6751, -- Ascending Doubt
+    6843, -- Sojourn of the Druid King
+    6967, -- Eye of Fate
+    7079, -- Prisoner of Fate
+    7290, -- A Guild in Crisis
+    6130, -- Room to Spare
+    7061, -- The Margins of Ire
+    7325, -- A Study in Discipline
+    7104, -- The Second Era of Scribing
 }
-
-
-local function NormalizeQuestStarterName(name)
-    if not name or name == "" then return "" end
-    local value = zo_strlower(name)
-    value = value:gsub("[%c]", " ")
-    value = value:gsub("%s+", " ")
-    value = value:gsub("^%s+", ""):gsub("%s+$", "")
-    return value
-end
 
 function TPM:BuildCrownQuestIndex()
     if self.crownQuestIndexBuilt then return end
+    self.crownQuestIndexBuilt = true
     self.crownQuestIds = {}
 
-    if type(GetQuestName) ~= "function" or type(HasCompletedQuest) ~= "function" then
-        return
-    end
+    if type(HasCompletedQuest) ~= "function" then return end
 
     local notRepeatable = _G.QUEST_REPEAT_NOT_REPEATABLE
-    self.crownQuestIndexBuilt = true
-
-    local seen = {}
-    for questId = 1, SIDE_QUEST_SCAN_MAX_ID do
-        local name = GetQuestName(questId) or ""
-        local include = name ~= "" and CROWN_QUEST_STARTER_NAMES[NormalizeQuestStarterName(name)] == true
-
-        if include and notRepeatable ~= nil and type(GetQuestRepeatableType) == "function" then
+    for _, questId in ipairs(CROWN_QUEST_STARTER_IDS) do
+        local include = true
+        if notRepeatable ~= nil and type(GetQuestRepeatableType) == "function" then
             include = GetQuestRepeatableType(questId) == notRepeatable
         end
 
-        if include and not seen[questId] then
-            seen[questId] = true
+        -- If the client can resolve quest metadata, ignore IDs that no longer
+        -- exist in its data. Completed quests remain valid through HasCompletedQuest.
+        if include and type(GetQuestName) == "function" then
+            local name = GetQuestName(questId) or ""
+            include = name ~= "" or HasCompletedQuest(questId) == true
+        end
+
+        if include then
             self.crownQuestIds[#self.crownQuestIds + 1] = questId
         end
     end
@@ -10906,6 +11052,23 @@ function TPM:EnsureAlliancePlannerTamrielTiles()
     return true
 end
 
+-- Based on Trobo's verified scaling correction on TPM's ESOUI page.
+function TPM:GetAlliancePlannerMapLocalDimensions()
+    local frame = self.statisticsAllianceMapFrame
+    if not frame then return 1, 1 end
+
+    local frameW, frameH = frame:GetDimensions()
+    frameW, frameH = tonumber(frameW) or 1, tonumber(frameH) or 1
+
+    local windowScale = 1
+    if self.statisticsWindow and type(self.statisticsWindow.GetScale) == "function" then
+        windowScale = tonumber(self.statisticsWindow:GetScale()) or 1
+    end
+    if windowScale <= 0 then windowScale = 1 end
+
+    return math.max(1, frameW / windowScale), math.max(1, frameH / windowScale)
+end
+
 function TPM:RefreshAlliancePlannerTamrielTiles(viewLeft, viewTop, span)
     if not self:EnsureAlliancePlannerTamrielTiles() then return false end
 
@@ -10913,8 +11076,7 @@ function TPM:RefreshAlliancePlannerTamrielTiles(viewLeft, viewTop, span)
     local tiles = self.statisticsAllianceMapTiles or {}
     local numX = tonumber(self.statisticsAllianceMapTileColumns) or 0
     local numY = tonumber(self.statisticsAllianceMapTileRows) or 0
-    local frameW, frameH = frame:GetDimensions()
-    frameW, frameH = math.max(1, tonumber(frameW) or 1), math.max(1, tonumber(frameH) or 1)
+    local frameW, frameH = self:GetAlliancePlannerMapLocalDimensions()
 
     local viewRight, viewBottom = viewLeft + span, viewTop + span
     for row = 1, numY do
@@ -10956,6 +11118,14 @@ function TPM:GetAlliancePlannerZoneNormalizedPosition(zoneId)
     local tamrielMapId = self:GetAlliancePlannerTamrielMapId()
     if not tamrielMapId or tamrielMapId <= 0 then return nil end
 
+    if self.alliancePlannerZonePositionCacheMapId ~= tamrielMapId then
+        self.alliancePlannerZonePositionCache = {}
+        self.alliancePlannerZonePositionCacheMapId = tamrielMapId
+    end
+    local cache = self.alliancePlannerZonePositionCache
+    local position = cache and cache[zoneId]
+    if position then return position.x, position.y end
+
     local zoneMapId = tonumber(GetMapIdByZoneId(zoneId))
     if not zoneMapId or zoneMapId <= 0 then return nil end
 
@@ -10972,6 +11142,8 @@ function TPM:GetAlliancePlannerZoneNormalizedPosition(zoneId)
     local x = ((zx + zw * 0.5) - tx) / tw
     local y = ((zy + zh * 0.5) - ty) / th
     if x < -0.05 or x > 1.05 or y < -0.05 or y > 1.05 then return nil end
+    self.alliancePlannerZonePositionCache = cache or {}
+    self.alliancePlannerZonePositionCache[zoneId] = { x = x, y = y }
     return x, y
 end
 
@@ -11016,8 +11188,8 @@ function TPM:EnsureAlliancePlannerZoneMarkers()
                     TPM:OpenAllianceZoneInProgress(control.zoneId)
                 end
             end)
-            label:SetHandler("OnUpdate", function()
-                TPM:UpdateAlliancePlannerMapPan()
+            label:SetHandler("OnMouseWheel", function(_, delta)
+                if delta ~= 0 then TPM:ZoomAlliancePlannerMapAtMouse(delta > 0 and 0.25 or -0.25) end
             end)
             label:SetHandler("OnMouseEnter", function(control)
                 if not control.zoneId then return end
@@ -11040,8 +11212,7 @@ function TPM:RefreshAlliancePlannerZoneMarkers(viewLeft, viewTop, span, reuseVal
     self:EnsureAlliancePlannerZoneMarkers()
     local frame = self.statisticsAllianceMapFrame
     if not frame then return end
-    local frameW, frameH = frame:GetDimensions()
-    frameW, frameH = math.max(1, tonumber(frameW) or 1), math.max(1, tonumber(frameH) or 1)
+    local frameW, frameH = self:GetAlliancePlannerMapLocalDimensions()
 
     for zoneId, label in pairs(self.statisticsAllianceMapMarkers or {}) do
         local x, y = self:GetAlliancePlannerZoneNormalizedPosition(zoneId)
@@ -11120,7 +11291,7 @@ end
 function TPM:ZoomAlliancePlannerMapAtMouse(step)
     if not self.saved or not self.statisticsAllianceMapTexture then return end
 
-    local surface = self.statisticsAllianceMapTexture
+    local surface = self.statisticsAllianceMapFrame or self.statisticsAllianceMapTexture
     local oldZoom = Clamp(tonumber(self.saved.alliancePlannerMapZoom) or 1.0, 1.0, 4.5)
     local newZoom = Clamp(oldZoom + (tonumber(step) or 0), 1.0, 4.5)
     if math.abs(newZoom - oldZoom) < 0.001 then return end
@@ -11166,6 +11337,8 @@ end
 
 
 function TPM:BeginAlliancePlannerMapPan()
+    self:EndAlliancePlannerMapPan()
+    self.alliancePlannerMapDidMove = false
     if not self.saved or not self.statisticsAllianceMapTexture then return false end
     local zoom = tonumber(self.saved.alliancePlannerMapZoom) or 1.0
     if zoom <= 1.001 or type(GetUIMousePosition) ~= "function" then
@@ -11176,11 +11349,18 @@ function TPM:BeginAlliancePlannerMapPan()
 
     local mouseX, mouseY = GetUIMousePosition()
     self.alliancePlannerMapDragging = true
+    self:UpdateGlobalMouseUpRegistration()
     self.alliancePlannerMapDidMove = false
     self.alliancePlannerMapDragStartX = tonumber(mouseX) or 0
     self.alliancePlannerMapDragStartY = tonumber(mouseY) or 0
     self.alliancePlannerMapDragCenterX = tonumber(self.saved.alliancePlannerMapCenterX) or 0.5
     self.alliancePlannerMapDragCenterY = tonumber(self.saved.alliancePlannerMapCenterY) or 0.5
+    -- One update owner for the whole map, installed only during a drag.
+    if self.statisticsAllianceMapInputLayer then
+        self.statisticsAllianceMapInputLayer:SetHandler("OnUpdate", function()
+            TPM:UpdateAlliancePlannerMapPan()
+        end)
+    end
     return true
 end
 
@@ -11188,22 +11368,16 @@ end
 function TPM:UpdateAlliancePlannerMapPan()
     if not self.alliancePlannerMapDragging or type(GetUIMousePosition) ~= "function" then return end
     local surface = self.statisticsAllianceMapTexture
-    if not surface or not self.saved then return end
+    if not surface or not self.saved then self:EndAlliancePlannerMapPan(); return end
 
     local zoom = Clamp(tonumber(self.saved.alliancePlannerMapZoom) or 1.0, 1.0, 4.5)
     if zoom <= 1.001 then
-        self.alliancePlannerMapDragging = false
-        self.alliancePlannerMapDidMove = false
-        return
-    end
-
-    -- If the user released the left button outside the map control, stop the
-    -- drag here as a safety net. ESO exposes IsMouseButtonDown on supported clients.
-    if not IsMouseButtonDown(MOUSE_BUTTON_INDEX_LEFT) then
         self:EndAlliancePlannerMapPan()
         return
     end
 
+    -- Mouse release is finalized by EVENT_GLOBAL_MOUSE_UP, which also fires
+    -- when the pointer leaves the map control. Keep OnUpdate focused on panning.
     local mouseX, mouseY = GetUIMousePosition()
     local dragSurface = self.statisticsAllianceMapFrame or surface
     local width, height = dragSurface:GetDimensions()
@@ -11218,12 +11392,19 @@ function TPM:UpdateAlliancePlannerMapPan()
         self.alliancePlannerMapDidMove = true
         ClearTooltip(InformationTooltip)
     end
+    if not self.alliancePlannerMapDidMove then return end
 
     local span, halfSpan = 1 / zoom, (1 / zoom) * 0.5
     local centerX = (tonumber(self.alliancePlannerMapDragCenterX) or 0.5) - (dx / width) * span
     local centerY = (tonumber(self.alliancePlannerMapDragCenterY) or 0.5) - (dy / height) * span
-    self.saved.alliancePlannerMapCenterX = Clamp(centerX, halfSpan, 1 - halfSpan)
-    self.saved.alliancePlannerMapCenterY = Clamp(centerY, halfSpan, 1 - halfSpan)
+    centerX = Clamp(centerX, halfSpan, 1 - halfSpan)
+    centerY = Clamp(centerY, halfSpan, 1 - halfSpan)
+    if math.abs(centerX - (tonumber(self.saved.alliancePlannerMapCenterX) or 0.5)) < 0.000001
+        and math.abs(centerY - (tonumber(self.saved.alliancePlannerMapCenterY) or 0.5)) < 0.000001 then
+        return
+    end
+    self.saved.alliancePlannerMapCenterX = centerX
+    self.saved.alliancePlannerMapCenterY = centerY
     self:RefreshAlliancePlannerMapView(true)
 end
 
@@ -11231,7 +11412,12 @@ end
 function TPM:EndAlliancePlannerMapPan()
     local didMove = self.alliancePlannerMapDidMove == true
     self.alliancePlannerMapDragging = false
-    self.alliancePlannerMapDidMove = false
+    self:UpdateGlobalMouseUpRegistration()
+    if self.statisticsAllianceMapInputLayer then
+        self.statisticsAllianceMapInputLayer:SetHandler("OnUpdate", nil)
+    end
+    -- Keep the result until the next mouse-down. OnUpdate can see the release
+    -- before a marker's OnMouseUp; clearing it here would turn a drag into a click.
     return didMove
 end
 
@@ -11475,8 +11661,8 @@ function TPM:CreateAllianceStatisticsPage(control)
     inputLayer:SetHandler("OnMouseWheel",function(_,delta)
         TPM:ZoomAlliancePlannerMapAtMouse((tonumber(delta) or 0)>0 and 0.25 or -0.25)
     end)
-    inputLayer:SetHandler("OnUpdate",function()
-        TPM:UpdateAlliancePlannerMapPan()
+    inputLayer:SetHandler("OnHide",function()
+        TPM:EndAlliancePlannerMapPan()
     end)
     self.statisticsAllianceMapInputLayer=inputLayer
 
@@ -13805,7 +13991,7 @@ function TPM:GetTodayPlaySeconds()
         local previousAt = tonumber(previous.timestamp) or 0
         local previousPlayed = tonumber(previous.played)
         local previousOffset = tonumber(previous.utcOffset) or currentOffset
-        if previousAt > 0 and previousPlayed and now > previousAt and currentPlayed >= previousPlayed then
+        if previousAt > 0 and previousPlayed and now >= previousAt and currentPlayed >= previousPlayed then
             local delta = math.max(0, currentPlayed - previousPlayed)
             if delta > 0 then
                 local previousDay = TPM_CharacterDayKeyWithOffset(previousAt, previousOffset)
@@ -14567,7 +14753,11 @@ function TPM:ApplyStatisticsTheme()
     if design~="tpm" and design~="vanilla" and design~="dark" then design="tpm" end
     self.saved.statisticsThemeDesign=design
     self.saved.statisticsThemeRGB=false
-    local bg=self.saved.statisticsThemeBackground or DEFAULTS.statisticsThemeBackground
+    local bg=self.saved.statisticsThemeBackground
+    if type(bg) ~= "table" then
+        bg = TPM_DeepCopyPlain(DEFAULTS.statisticsThemeBackground)
+        self.saved.statisticsThemeBackground = bg
+    end
     local br,bgG,bb,ba=Clamp(tonumber(bg.r) or .035,0,1),Clamp(tonumber(bg.g) or .031,0,1),Clamp(tonumber(bg.b) or .024,0,1),Clamp(tonumber(bg.a) or 1,0.20,1)
     if design == "vanilla" then
         -- 2.7.14: Restore the original Transparent TPM midnight-blue journal skin.
@@ -15325,6 +15515,7 @@ function TPM:CreateStatisticsWindow()
     dragHandle:SetHandler("OnMouseDown", function(_, button)
         if button == MOUSE_BUTTON_INDEX_LEFT then
             TPM.statisticsWindowMoving = true
+            TPM:UpdateGlobalMouseUpRegistration()
             control:StartMoving()
         end
     end)
@@ -15344,7 +15535,7 @@ function TPM:CreateStatisticsWindow()
     mode:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     self.statisticsMode = mode
 
-    -- 2.7.31: Progress and PvE/PvP each use two journal pages. The compact
+    -- Progress and PvE/PvP each use two journal pages. The compact
     -- < 1 / 2 > navigator occupies the old mode-text position only on those
     -- sections; Economy stays a single page and keeps its mode text.
     local subNav = WINDOW_MANAGER:CreateControl(ADDON_NAME .. "StatisticsSubPageNavigation", control, CT_CONTROL)
@@ -16088,6 +16279,7 @@ end
 function TPM:StopMovingStatisticsWindow()
     if not self.statisticsWindowMoving then return end
     self.statisticsWindowMoving = false
+    self:UpdateGlobalMouseUpRegistration()
     if self.statisticsWindow then
         self.statisticsWindow:StopMovingOrResizing()
     end
@@ -16584,7 +16776,7 @@ function TPM:ShowStatisticsWindow(openStandalone)
     end
     self:ClampStatisticsWindowToScreen()
     self:HideQuestRewards()
-    if self.skyshardGoalWidget then self.skyshardGoalWidget:SetHidden(true) end
+    if self.skyshardGoalWidget then self:RefreshSkyshardGoalWidget() end
     -- Always take a fresh snapshot when the journal is opened. While it stays
     -- open, completion events invalidate the cache as needed.
     self:InvalidateStatisticsData(false)
@@ -17104,6 +17296,8 @@ function TPM:HandleSlashCommand(text)
         d(string.format("%s: %s", self:L("HIDE_COMPLETED"), hide and self:L("ON") or self:L("OFF")))
     elseif text == "rewards" then
         self.saved.showQuestRewards = not self.saved.showQuestRewards
+        self:UpdateFocusedRewardPanelPolling()
+        if not self.saved.showQuestRewards then self:HideQuestRewards() end
         d(string.format("%s: %s", self:L("QUEST_REWARDS"), self.saved.showQuestRewards and self:L("ON") or self:L("OFF")))
         self:QueueRefresh(10)
     elseif text == "skydebug" then
@@ -17737,7 +17931,8 @@ end
 function TPM:ResetCurrentCharacterEconomyStats()
     if not self.saved then return end
     local key = self:GetCurrentCharacterStatsKey()
-    self.saved.economyStatsByCharacter[key] = { trackingVersion = VERSION, currencies = {} }
+    if type(self.saved.economyStatsByCharacter) ~= "table" then self.saved.economyStatsByCharacter = {} end
+    self.saved.economyStatsByCharacter[key] = { trackingVersion = VERSION, currencies = {}, legacyMigrationCompleted274 = true }
     if type(self.saved.economyZoneStatsByCharacter) ~= "table" then self.saved.economyZoneStatsByCharacter = {} end
     self.saved.economyZoneStatsByCharacter[key] = {}
     self.economyCurrencyPrevious = nil
@@ -17886,6 +18081,7 @@ function TPM:RegisterSettings()
                 TPM.saved.statisticsWindowScale = Clamp(Round(value), 80, 120)
                 if TPM.statisticsWindow then
                     TPM.statisticsWindow:SetScale(TPM.saved.statisticsWindowScale / 100)
+                    TPM:RefreshAlliancePlannerMapView(true)
                     TPM:ClampStatisticsWindowToScreen()
                 end
             end,
@@ -17934,7 +18130,11 @@ function TPM:RegisterSettings()
             name = function() return TPM:L("SETTINGS_QUEST_REWARDS") end,
             tooltip = function() return TPM:L("SETTINGS_QUEST_REWARDS_TT") end,
             getFunc = function() return TPM.saved.showQuestRewards end,
-            setFunc = function(value) TPM.saved.showQuestRewards = value; TPM:QueueRefresh(10) end,
+            setFunc = function(value)
+                TPM.saved.showQuestRewards = value
+                TPM:UpdateFocusedRewardPanelPolling()
+                if value then TPM:QueueRefresh(10) else TPM:HideQuestRewards() end
+            end,
             default = DEFAULTS.showQuestRewards,
             width = "full",
         },
@@ -18417,11 +18617,13 @@ function TPM:Initialize()
         WORLD_MAP_SCENE:RegisterCallback("StateChange", function(_, newState)
             if newState == SCENE_SHOWING then
                 TPM.worldMapSceneVisible = true
+                TPM:UpdateFocusedRewardPanelPolling()
                 if TPM.skyshardGoalWidget then TPM.skyshardGoalWidget:SetHidden(true) end
                 TPM:RefreshAllianceTerritoryBorders()
                 TPM:QueueRefresh(40)
             elseif newState == SCENE_SHOWN then
                 TPM.worldMapSceneVisible = true
+                TPM:UpdateFocusedRewardPanelPolling()
                 TPM:RefreshAllianceTerritoryBorders()
                 -- Do not let a refresh queued during SCENE_SHOWING suppress the
                 -- final refresh after ESO has finished showing the map.
@@ -18429,6 +18631,7 @@ function TPM:Initialize()
                 TPM:QueueRefresh(20)
             elseif newState == SCENE_HIDING or newState == SCENE_HIDDEN then
                 TPM.worldMapSceneVisible = false
+                TPM:UpdateFocusedRewardPanelPolling()
                 TPM.refreshQueued = false
                 TPM:ReleaseOverlayLabels()
                 TPM:HideAllianceTerritoryBorders()
@@ -18457,16 +18660,19 @@ function TPM:Initialize()
         GAMEPAD_WORLD_MAP_SCENE:RegisterCallback("StateChange", function(_, newState)
             if newState == SCENE_SHOWING then
                 TPM.gamepadWorldMapSceneVisible = true
+                TPM:UpdateFocusedRewardPanelPolling()
                 if TPM.skyshardGoalWidget then TPM.skyshardGoalWidget:SetHidden(true) end
                 TPM:RefreshAllianceTerritoryBorders()
                 TPM:QueueRefresh(40)
             elseif newState == SCENE_SHOWN then
                 TPM.gamepadWorldMapSceneVisible = true
+                TPM:UpdateFocusedRewardPanelPolling()
                 TPM:RefreshAllianceTerritoryBorders()
                 TPM.refreshQueued = false
                 TPM:QueueRefresh(20)
             elseif newState == SCENE_HIDING or newState == SCENE_HIDDEN then
                 TPM.gamepadWorldMapSceneVisible = false
+                TPM:UpdateFocusedRewardPanelPolling()
                 TPM.refreshQueued = false
                 TPM:ReleaseOverlayLabels()
                 TPM:HideAllianceTerritoryBorders()
@@ -18588,25 +18794,8 @@ function TPM:Initialize()
         TPM:InvalidateStatisticsData(false)
         zo_callLater(function() TPM:RefreshSkyshardGoalWidget() end, 100)
     end)
-    EVENT_MANAGER:RegisterForUpdate(ADDON_NAME .. "SkyshardGoalHudRefresh", 1500, function()
-        if TPM.saved and TPM.saved.skyshardGoalEnabled == true then
-            TPM:RefreshSkyshardGoalWidget()
-        end
-    end)
-
-    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "GlobalMouseUp", EVENT_GLOBAL_MOUSE_UP, function(_, button)
-        if button == MOUSE_BUTTON_INDEX_LEFT then
-            if TPM.questRewardResizing then
-                TPM:StopResizingQuestRewardWindow()
-            end
-            if TPM.questRewardMoving then
-                TPM:StopMovingQuestRewardWindow()
-            end
-            if TPM.statisticsWindowMoving then
-                TPM:StopMovingStatisticsWindow()
-            end
-        end
-    end)
+    -- Optional polling/global mouse events are registered lazily only while needed.
+    TPM:UpdateSkyshardGoalRefreshTimer()
 
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "QuestFocus", EVENT_QUEST_SHOW_JOURNAL_ENTRY, function()
         TPM:QueueRefresh(30)
@@ -18626,14 +18815,9 @@ function TPM:Initialize()
         end)
     end
 
-    -- Event callbacks handle normal changes. A 2-second safety poll covers rare tracker rebuilds
-    -- without rebuilding text/layout twice per second while the map is idle.
-    EVENT_MANAGER:RegisterForUpdate(ADDON_NAME .. "FocusedRewardPanel", 2000, function()
-        if TPM.saved and TPM.saved.showQuestRewards
-            and TPM:IsFullWorldMapSceneVisible() then
-            TPM:RefreshQuestRewards()
-        end
-    end)
+    -- Rare tracker rebuilds are covered by a 2-second safety poll only while
+    -- the full world map is actually open and the feature is enabled.
+    TPM:UpdateFocusedRewardPanelPolling()
 
     -- Lightweight live updates for the Statistics journal. The manifest targets
     -- the current live APIs, so register the documented events directly.

@@ -269,6 +269,9 @@ local function EnsureBuffRow(i)
     return buffRows[i]
 end
 
+local MAX_BOSS = 4
+local PAIR_W = 100
+
 local function EnsureDebuffHud()
     if debuffRoot then return debuffRoot end
     debuffRoot = MakeTop("TetsuCHH_BossDebuffs", 176, 80)
@@ -285,7 +288,7 @@ local function EnsureBossBlock(idx)
     local title = wm:CreateControl(block:GetName() .. "T", block, CT_LABEL)
     ApplyFont(title)
     title:SetAnchor(TOPLEFT, block, TOPLEFT, 6, 2)
-    title:SetDimensions(170, 18)
+    title:SetDimensions(300, 18)
     title:SetColor(0.45, 0.95, 0.68, 1)
     local h1 = wm:CreateControl(block:GetName() .. "H1", block, CT_LABEL)
     ApplyFont(h1)
@@ -299,22 +302,65 @@ local function EnsureBossBlock(idx)
     h2:SetDimensions(COL, 18)
     h2:SetColor(0.75, 0.88, 0.78, 1)
     h2:SetText("Mn")
+    local heads, mjh, mnh = {}, {}, {}
+    for b = 1, MAX_BOSS do
+        local h = wm:CreateControl(block:GetName() .. "HN" .. b, block, CT_LABEL)
+        ApplyFont(h)
+        h:SetDimensions(PAIR_W, 16)
+        h:SetColor(0.75, 0.88, 0.78, 1)
+        h:SetHidden(true)
+        heads[b] = h
+        local mj = wm:CreateControl(block:GetName() .. "HMJ" .. b, block, CT_LABEL)
+        ApplyFont(mj)
+        mj:SetDimensions(COL, 14)
+        mj:SetColor(0.70, 0.84, 0.74, 1)
+        mj:SetHidden(true)
+        mjh[b] = mj
+        local mn = wm:CreateControl(block:GetName() .. "HMN" .. b, block, CT_LABEL)
+        ApplyFont(mn)
+        mn:SetDimensions(COL, 14)
+        mn:SetColor(0.70, 0.84, 0.74, 1)
+        mn:SetHidden(true)
+        mnh[b] = mn
+        local onl = wm:CreateControl(block:GetName() .. "HON" .. b, block, CT_LABEL)
+        ApplyFont(onl)
+        onl:SetDimensions(COL, 14)
+        onl:SetColor(0.70, 0.84, 0.74, 1)
+        onl:SetHidden(true)
+        local iml = wm:CreateControl(block:GetName() .. "HIM" .. b, block, CT_LABEL)
+        ApplyFont(iml)
+        iml:SetDimensions(COL, 14)
+        iml:SetColor(0.70, 0.84, 0.74, 1)
+        iml:SetHidden(true)
+        mjh[b]._on = onl
+        mjh[b]._imm = iml
+    end
+    local nPairs = (T.BossDebuffPairs and #T.BossDebuffPairs) or 10
     local rows = {}
-    for i = 1, #T.BossDebuffPairs do
+    for i = 1, nPairs do
         local row = wm:CreateControl(block:GetName() .. "R" .. i, block, CT_CONTROL)
-        row:SetDimensions(176, ROW)
+        row:SetDimensions(400, ROW)
         local name = wm:CreateControl(row:GetName() .. "N", row, CT_LABEL)
         ApplyFont(name)
         name:SetDimensions(NAME_W, ROW)
         name:SetAnchor(LEFT, row, LEFT, 6, 0)
         name:SetColor(0.9, 0.93, 0.88, 1)
-        local d1 = MakeDot(row, "A")
-        d1.wrap:SetAnchor(LEFT, row, LEFT, NAME_W + 10, 0)
-        local d2 = MakeDot(row, "B")
-        d2.wrap:SetAnchor(LEFT, row, LEFT, NAME_W + 10 + COL, 0)
-        rows[i] = { row = row, name = name, d1 = d1, d2 = d2 }
+        local cols = {}
+        for b = 1, MAX_BOSS do
+            local d1 = MakeDot(row, "A" .. b)
+            local d2 = MakeDot(row, "B" .. b)
+            cols[b] = { d1 = d1, d2 = d2 }
+        end
+        rows[i] = { row = row, name = name, cols = cols }
     end
-    debuffBlocks[idx] = { block = block, title = title, h1 = h1, h2 = h2, rows = rows }
+    local onh, imh = {}, {}
+    for b = 1, MAX_BOSS do
+        onh[b] = mjh[b]._on
+        imh[b] = mjh[b]._imm
+        mjh[b]._on = nil
+        mjh[b]._imm = nil
+    end
+    debuffBlocks[idx] = { block = block, title = title, h1 = h1, h2 = h2, heads = heads, mjh = mjh, mnh = mnh, onh = onh, imh = imh, rows = rows }
     return debuffBlocks[idx]
 end
 
@@ -325,7 +371,7 @@ local function LiveBosses()
         if DoesUnitExist and DoesUnitExist(tag) then
             local name = GetUnitName and GetUnitName(tag) or tag
             if name and name ~= "" then
-                list[#list + 1] = { tag = tag, name = name }
+                list[#list + 1] = { tag = tag, name = name, idx = i }
             end
         end
     end
@@ -341,10 +387,64 @@ local function LiveBosses()
         end
         if monster then
             local name = GetUnitName and GetUnitName("reticleover") or "Target"
-            list[1] = { tag = "reticleover", name = name, target = true }
+            list[1] = { tag = "reticleover", name = name, target = true, idx = 0 }
         end
     end
+    if #list > MAX_BOSS then
+        local cut = {}
+        for i = 1, MAX_BOSS do
+            cut[i] = list[i]
+        end
+        return cut
+    end
     return list
+end
+
+local function BossColTitle(boss)
+    if boss and boss.empty then
+        return (T.L and T.L.NO_BOSS) or "Out"
+    end
+    local idx = boss and boss.idx
+    local prefix = (idx and idx > 0) and tostring(idx) or "•"
+    local raw = (boss and boss.name) or ""
+    raw = raw:gsub("%^.*", "")
+    local name = T.ClipLabel and T.ClipLabel(raw, 8) or raw
+    if name == "" then name = "Boss" end
+    return prefix .. " " .. name
+end
+
+local function PairOn(tag, pair)
+    local onMaj, onMin = false, false
+    if pair.keysMaj then
+        for k = 1, #pair.keysMaj do
+            if BossHas(tag, pair.keysMaj[k]) then onMaj = true end
+        end
+    end
+    if pair.keysMin then
+        for k = 1, #pair.keysMin do
+            if BossHas(tag, pair.keysMin[k]) then onMin = true end
+        end
+    end
+    return onMaj, onMin
+end
+
+local function LayoutBossDots(row, nBoss, single)
+    for b = 1, MAX_BOSS do
+        local col = row.cols[b]
+        if not col then
+        elseif b > nBoss then
+            col.d1.wrap:SetHidden(true)
+            col.d2.wrap:SetHidden(true)
+        else
+            local x = NAME_W + 10 + (b - 1) * PAIR_W
+            col.d1.wrap:ClearAnchors()
+            col.d1.wrap:SetAnchor(LEFT, row.row, LEFT, x, 0)
+            col.d1.wrap:SetHidden(false)
+            col.d2.wrap:ClearAnchors()
+            col.d2.wrap:SetAnchor(LEFT, row.row, LEFT, x + COL, 0)
+            col.d2.wrap:SetHidden(single and true or false)
+        end
+    end
 end
 
 function P.Refresh()
@@ -367,11 +467,8 @@ function P.Refresh()
         if root then
             root:SetHidden(false)
             root:ClearAnchors()
-            if healerOn and parent and not parent:IsHidden() then
-                root:SetAnchor(TOPLEFT, parent, BOTTOMLEFT, 0, 8)
-            else
-                root:SetAnchor(TOPRIGHT, GuiRoot, TOPRIGHT, -24 + pairOx, 132 + pairOy)
-            end
+            -- Final anchors are applied after both windows exist.
+            root:SetAnchor(TOPRIGHT, GuiRoot, TOPRIGHT, -24 + pairOx, 132 + pairOy)
             local y = 42
             local used = 0
             for i = 1, #T.RaidBuffPairs do
@@ -401,128 +498,116 @@ function P.Refresh()
     end
 
     local bosses = showDeb and LiveBosses() or {}
-    local compactBoss = false
     if showDeb then
         if #bosses < 1 then
-            compactBoss = true
-            bosses = { { tag = "boss1", name = (T.L and T.L.NO_BOSS) or "Out", empty = true } }
+            bosses = { { tag = "_empty", name = (T.L and T.L.NO_BOSS) or "Out", idx = 0, empty = true } }
         end
         local root = EnsureDebuffHud()
         if root then
             root:SetHidden(false)
-            local y = 0
-            for b = 1, #bosses do
-                local blk = EnsureBossBlock(b)
-                if blk then
-                    blk.block:ClearAnchors()
-                    blk.block:SetAnchor(TOPLEFT, root, TOPLEFT, 0, y)
-                    blk.block:SetHidden(false)
-                    local panelWord = (T.L and T.L.DEBUFFS_SHORT) or "Debuffs"
-                    local nm
-                    if compactBoss or bosses[b].empty then
-                        nm = panelWord
-                    elseif bosses[b].name and bosses[b].name ~= "" then
-                        nm = bosses[b].name
-                        if (T.Utf8Len and T.Utf8Len(nm) or #nm) > 14 then nm = (T.Utf8Sub and T.Utf8Sub(nm, 1, 13) or nm) .. "…" end
-                    else
-                        nm = panelWord
-                    end
-                    blk.title:SetText(nm)
-                    blk.h1:SetText("Mj")
-                    blk.h2:SetText("Mn")
-                    local ry = 22
-                    if compactBoss or bosses[b].empty then
-                        blk.h1:SetHidden(true)
-                        blk.h2:SetHidden(true)
-                        blk.title:SetText(panelWord .. "  " .. ((T.L and T.L.NO_BOSS) or "Out"))
-                        for i = 1, #blk.rows do
-                            blk.rows[i].row:SetHidden(true)
-                        end
-                        if blk.obH then blk.obH:SetHidden(true) end
-                        if blk.obH2 then blk.obH2:SetHidden(true) end
-                        blk.block:SetDimensions(176, 26)
-                        y = y + 28
-                    else
-                    blk.h1:SetHidden(false)
-                    blk.h2:SetHidden(false)
-                    ry = 42
-                    local obPair, obRow
-                    for i = 1, #T.BossDebuffPairs do
-                        local pair = T.BossDebuffPairs[i]
-                        local r = blk.rows[i]
-                        if pair.ob then
-                            obPair = pair
-                            obRow = r
-                            r.row:SetHidden(true)
-                        elseif T.PairEnabled("debuff", pair.id) then
-                            r.row:ClearAnchors()
-                            r.row:SetAnchor(TOPLEFT, blk.block, TOPLEFT, 0, ry)
-                            r.name:SetText(PairLabel(pair.id))
-                            local onMaj, onMin = false, false
-                            for k = 1, #pair.keysMaj do
-                                if BossHas(bosses[b].tag, pair.keysMaj[k]) then onMaj = true end
-                            end
-                            for k = 1, #pair.keysMin do
-                                if BossHas(bosses[b].tag, pair.keysMin[k]) then onMin = true end
-                            end
-                            PaintDot(r.d1.ring, r.d1.fill, r.d1.glow, onMaj and 2 or 0, COL_DEBUFF)
-                            PaintDot(r.d2.ring, r.d2.fill, r.d2.glow, onMin and 2 or 0, COL_DEBUFF)
-                            r.row:SetHidden(false)
-                            ry = ry + ROW
-                        else
-                            r.row:SetHidden(true)
-                        end
-                    end
-                    if obPair and obRow and T.PairEnabled("debuff", "offbalance") then
-                        if not blk.obH then
-                            local wm = WINDOW_MANAGER
-                            local lab = wm:CreateControl(blk.block:GetName() .. "OBH", blk.block, CT_LABEL)
-                            ApplyFont(lab)
-                            lab:SetDimensions(COL, 18)
-                            lab:SetColor(0.75, 0.88, 0.78, 1)
-                            blk.obH = lab
-                        end
-                        blk.obH:ClearAnchors()
-                        blk.obH:SetAnchor(TOPLEFT, blk.block, TOPLEFT, NAME_W + 6, ry + 2)
-                        blk.obH:SetDimensions(COL, 18)
-                        ApplyFont(blk.obH, true)
-                        blk.obH:SetText("On")
-                        blk.obH:SetHidden(false)
-                        if not blk.obH2 then
-                            local lab2 = WINDOW_MANAGER:CreateControl(blk.block:GetName() .. "OBH2", blk.block, CT_LABEL)
-                            lab2:SetColor(0.75, 0.88, 0.78, 1)
-                            blk.obH2 = lab2
-                        end
-                        blk.obH2:ClearAnchors()
-                        blk.obH2:SetAnchor(TOPLEFT, blk.block, TOPLEFT, NAME_W + 6 + COL, ry + 2)
-                        blk.obH2:SetDimensions(COL, 18)
-                        ApplyFont(blk.obH2)
-                        blk.obH2:SetText("Imm")
-                        blk.obH2:SetHidden(false)
-                        ry = ry + 18
-                        obRow.row:ClearAnchors()
-                        obRow.row:SetAnchor(TOPLEFT, blk.block, TOPLEFT, 0, ry)
-                        obRow.name:SetText(PairLabel("offbalance"))
-                        local on = BossHas(bosses[b].tag, "offBalance")
-                        local imm = BossHas(bosses[b].tag, "offBalanceImm")
-                        PaintDot(obRow.d1.ring, obRow.d1.fill, obRow.d1.glow, on and 2 or 0, COL_DEBUFF)
-                        PaintDot(obRow.d2.ring, obRow.d2.fill, obRow.d2.glow, imm and 2 or 0, COL_IMM)
-                        obRow.row:SetHidden(false)
-                        ry = ry + ROW
-                    else
-                        if blk.obH then blk.obH:SetHidden(true) end
-                        if blk.obH2 then blk.obH2:SetHidden(true) end
-                        if obRow then obRow.row:SetHidden(true) end
-                    end
-                    blk.block:SetDimensions(176, ry + 4)
-                    y = y + ry + 8
-                    end
-                end
-            end
-            for b = #bosses + 1, #debuffBlocks do
+            local nBoss = #bosses
+            local blk = EnsureBossBlock(1)
+            for b = 2, #debuffBlocks do
                 debuffBlocks[b].block:SetHidden(true)
             end
-            root:SetDimensions(176, math.max(40, y))
+            if blk then
+                blk.block:ClearAnchors()
+                blk.block:SetAnchor(TOPLEFT, root, TOPLEFT, 0, 0)
+                blk.block:SetHidden(false)
+                local panelWord = (T.L and T.L.DEBUFFS_SHORT) or "Debuffs"
+                blk.title:SetText(panelWord)
+                blk.h1:SetHidden(true)
+                blk.h2:SetHidden(true)
+                if blk.obH then blk.obH:SetHidden(true) end
+                if blk.obH2 then blk.obH2:SetHidden(true) end
+                for b = 1, MAX_BOSS do
+                    local x = NAME_W + 8 + (b - 1) * PAIR_W
+                    local h = blk.heads and blk.heads[b]
+                    local mj = blk.mjh and blk.mjh[b]
+                    local mn = blk.mnh and blk.mnh[b]
+                    if b <= nBoss then
+                        if h then
+                            h:ClearAnchors()
+                            h:SetAnchor(TOPLEFT, blk.block, TOPLEFT, x, 20)
+                            h:SetText(BossColTitle(bosses[b]))
+                            h:SetHidden(false)
+                        end
+                        if mj then
+                            mj:ClearAnchors()
+                            mj:SetAnchor(TOPLEFT, blk.block, TOPLEFT, x, 36)
+                            mj:SetText("Mj")
+                            mj:SetHidden(false)
+                        end
+                        if mn then
+                            mn:ClearAnchors()
+                            mn:SetAnchor(TOPLEFT, blk.block, TOPLEFT, x + COL, 36)
+                            mn:SetText("Mn")
+                            mn:SetHidden(false)
+                        end
+                    else
+                        if h then h:SetHidden(true) end
+                        if mj then mj:SetHidden(true) end
+                        if mn then mn:SetHidden(true) end
+                    end
+                    if blk.onh and blk.onh[b] then blk.onh[b]:SetHidden(true) end
+                    if blk.imh and blk.imh[b] then blk.imh[b]:SetHidden(true) end
+                end
+                local ry = 54
+                for i = 1, #T.BossDebuffPairs do
+                    local pair = T.BossDebuffPairs[i]
+                    local r = blk.rows[i]
+                    if not r then
+                    elseif not T.PairEnabled("debuff", pair.id) then
+                        r.row:SetHidden(true)
+                    else
+                        if pair.ob then
+                            for b = 1, nBoss do
+                                local x = NAME_W + 8 + (b - 1) * PAIR_W
+                                local onl = blk.onh and blk.onh[b]
+                                local iml = blk.imh and blk.imh[b]
+                                if onl then
+                                    onl:ClearAnchors()
+                                    onl:SetAnchor(TOPLEFT, blk.block, TOPLEFT, x, ry)
+                                    onl:SetText("On")
+                                    onl:SetHidden(false)
+                                end
+                                if iml then
+                                    iml:ClearAnchors()
+                                    iml:SetAnchor(TOPLEFT, blk.block, TOPLEFT, x + COL, ry)
+                                    iml:SetText("Imm")
+                                    iml:SetHidden(false)
+                                end
+                            end
+                            ry = ry + 16
+                        end
+                        r.row:ClearAnchors()
+                        r.row:SetAnchor(TOPLEFT, blk.block, TOPLEFT, 0, ry)
+                        r.name:SetText(PairLabel(pair.id))
+                        LayoutBossDots(r, nBoss, pair.single or pair.onOnly)
+                        for b = 1, nBoss do
+                            local col = r.cols[b]
+                            if pair.ob then
+                                local on = BossHas(bosses[b].tag, "offBalance")
+                                local imm = BossHas(bosses[b].tag, "offBalanceImm")
+                                PaintDot(col.d1.ring, col.d1.fill, col.d1.glow, on and 2 or 0, COL_DEBUFF)
+                                PaintDot(col.d2.ring, col.d2.fill, col.d2.glow, imm and 2 or 0, COL_IMM)
+                            else
+                                local onMaj, onMin = PairOn(bosses[b].tag, pair)
+                                PaintDot(col.d1.ring, col.d1.fill, col.d1.glow, onMaj and 2 or 0, COL_DEBUFF)
+                                if not (pair.single or pair.onOnly) then
+                                    PaintDot(col.d2.ring, col.d2.fill, col.d2.glow, onMin and 2 or 0, COL_DEBUFF)
+                                end
+                            end
+                        end
+                        r.row:SetHidden(false)
+                        ry = ry + ROW
+                    end
+                end
+                local w = NAME_W + 16 + nBoss * PAIR_W
+                if w < 176 then w = 176 end
+                blk.block:SetDimensions(w, ry + 4)
+                root:SetDimensions(w, ry + 4)
+            end
         end
     elseif debuffRoot then
         debuffRoot:SetHidden(true)
@@ -533,17 +618,23 @@ function P.Refresh()
     -- Pack from the healer's RIGHT edge. Pair widths are fixed (~170+176);
     -- if we hang them off the healer's LEFT, a short healer grid pushes the
     -- boss window off-screen and SetClampedToScreen slides it back over buffs.
+    -- Stack under the healer, right edges aligned:
+    -- healer HUD
+    -- debuffs (grows left when 3–4 bosses)
+    -- raid buffs
+    -- pairOffset nudges the whole stack in both modes.
     if healerOn and parent and not parent:IsHidden() then
         if debShown then
             debuffRoot:ClearAnchors()
-            debuffRoot:SetAnchor(TOPRIGHT, parent, BOTTOMRIGHT, 0, 8)
+            -- Y follows the healer HUD. Stack X can still nudge left/right.
+            debuffRoot:SetAnchor(TOPRIGHT, parent, BOTTOMRIGHT, pairOx, 8)
         end
         if buffShown then
             buffRoot:ClearAnchors()
             if debShown then
-                buffRoot:SetAnchor(TOPRIGHT, debuffRoot, TOPLEFT, -8, 0)
+                buffRoot:SetAnchor(TOPRIGHT, debuffRoot, BOTTOMRIGHT, 0, 8)
             else
-                buffRoot:SetAnchor(TOPRIGHT, parent, BOTTOMRIGHT, 0, 8)
+                buffRoot:SetAnchor(TOPRIGHT, parent, BOTTOMRIGHT, pairOx, 8)
             end
         end
     else
@@ -554,7 +645,7 @@ function P.Refresh()
         if buffShown then
             buffRoot:ClearAnchors()
             if debShown then
-                buffRoot:SetAnchor(TOPRIGHT, debuffRoot, TOPLEFT, -8, 0)
+                buffRoot:SetAnchor(TOPRIGHT, debuffRoot, BOTTOMRIGHT, 0, 8)
             else
                 buffRoot:SetAnchor(TOPRIGHT, GuiRoot, TOPRIGHT, -24 + pairOx, 132 + pairOy)
             end

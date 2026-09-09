@@ -165,7 +165,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [LibId64](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sirinsidiator/LibId64__3585) | sirinsidiator | PC / Mac | 1.0.1 |
 | [LibImplex](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/imPDA/LibImplex__4108) | imPDA | PC / Mac | 24 |
 | [LibInteractionHook](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/IsJustaGhost/LibInteractionHook__3644) | IsJustaGhost | PC / Mac | 3.2 |
-| [LibInteriorDetection](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kreksar-gmail.com/LibInteriorDetection__4816) | kreksar@gmail.com | PC / Mac | 1.0.1 |
+| [LibInteriorDetection](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kreksar-gmail.com/LibInteriorDetection__4816) | kreksar@gmail.com | PC / Mac | 1.1.0 |
 | [LibItemLink](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Sharlikran/LibItemLink__3855) | Sharlikran | PC / Mac | 9.4.0 |
 | [LibItemLinkDecoder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Delte/LibItemLinkDecoder__03b27b8e-253d-4288-ba88-4340d56faeac) | Delte | Console | — |
 | [LibItemLinkDecoder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/olegbl/LibItemLinkDecoder__3265) | olegbl | PC / Mac | 1.03 |
@@ -335,7 +335,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [LootWall](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vicodine/LootWall__1010) | Vicodine | PC / Mac | 0.7 |
 | [LootWall Ultimate 2018](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/redgabber/LootWall-Ultimate-2018__1988) | redgabber | PC / Mac | 1.0.8 |
 | [Lore Book Locations](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni42/Lore-Book-Locations__ca0d62e7-58ab-4ea4-9729-f139cb28a64d) | Shinni42 | Console | — |
-| [Lore Book Locations (3D, Compass, Map Pins)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni/Lore-Book-Locations-3D-Compass-Map-Pins__4756) | Shinni | PC / Mac | 1.0.45 |
+| [Lore Book Locations (3D, Compass, Map Pins)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni/Lore-Book-Locations-3D-Compass-Map-Pins__4756) | Shinni | PC / Mac | 1.0.49 |
 | [LoreBooks](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kyoma/LoreBooks__288) | Kyoma | PC / Mac | 107 |
 | [Lorebooks](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Sharlikran/Lorebooks__d324f223-1cd9-40d2-8e37-8cf302dde557) | Sharlikran | Console | — |
 | [LorebooksColoredLibrary](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tim99/LorebooksColoredLibrary__3168) | tim99 | PC / Mac | 4.1 |

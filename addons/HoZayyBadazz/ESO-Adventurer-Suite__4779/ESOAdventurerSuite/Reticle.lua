@@ -235,8 +235,10 @@ function R:ShouldShow()
     if not (EPC.saved and EPC.saved.enabled ~= false and EPC.saved.customReticleEnabled == true) then return false end
     if tostring(EPC.saved.customReticleStyle or STYLE_RUNE) == STYLE_DEFAULT then return false end
     if EPC.saved.hudHideInMenus ~= false and EPC.IsGameplayHudSuppressed and EPC:IsGameplayHudSuppressed() then return false end
-    local native = nativeReticle()
-    if native and native.IsHidden and native:IsHidden() then return false end
+    -- The replacement reticle owns gameplay visibility. ESO temporarily hides
+    -- or swaps its native reticle during combat/interactions; mirroring that
+    -- hidden state made the Suite reticle disappear and allowed vanilla to flash
+    -- back in. Menu suppression above is the only visibility gate we need.
     return true
 end
 
@@ -261,11 +263,13 @@ function R:Refresh(force)
     -- every backdrop even for a static reticle, which made Codex button clicks
     -- noticeably heavier than they needed to be. RGB still refreshes its color.
     if force == true or self.lastVisualSignature ~= signature or color == "RGB" then
-        self:ApplyNativeState()
         self:ApplyStyle()
         self.lastVisualSignature = signature
     end
 
+    -- ESO can restore native reticle alpha when combat/interaction state changes.
+    -- Reassert ownership on every inexpensive refresh without rebuilding geometry.
+    self:ApplyNativeState()
     self.frame:SetHidden(not self:ShouldShow())
 end
 

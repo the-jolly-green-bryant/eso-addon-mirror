@@ -70,6 +70,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Materialist](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DeDumCHee/Materialist__2574) | DeDumCHee | PC / Mac | 1.2 |
 | [May I Bash?](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ownedbynico/May-I-Bash__2569) | ownedbynico | PC / Mac | 1.1 |
 | [Mechanic Mentor](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BLKx777/Mechanic-Mentor__e4a3d0f8-bf1e-4c57-8b4b-4d65364fb344) | BLKx777 | Console | — |
+| [Mechanical Acuity Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/codeWarrior82/Mechanical-Acuity-Tracker__254690df-a05a-4c44-9c95-9a898dea8d92) | codeWarrior82 | Console | — |
 | [Medic - UI Fixes](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sirinsidiator/Medic---UI-Fixes__b0c7d3d5-b3e6-4a61-b509-5d05a12c2130) | sirinsidiator | Console | — |
 | [Medic - UI Fixes](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sirinsidiator/Medic---UI-Fixes__1073) | sirinsidiator | PC / Mac | 2.2.0 |
 | [Memento Refresh](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Pretz333/Memento-Refresh__2671) | Pretz333 | PC / Mac | 0.1.7 |

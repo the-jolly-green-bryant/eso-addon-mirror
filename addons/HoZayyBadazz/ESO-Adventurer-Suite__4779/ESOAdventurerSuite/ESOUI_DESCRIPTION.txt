@@ -1,81 +1,107 @@
 [B]AI DEVELOPMENT DISCLOSURE[/B]
 ESO Adventurer Suite uses AI-assisted code generation and review. HoZayyBadazz is responsible for testing, publishing, maintaining, and supporting the addon.
 
-[B]ESO ADVENTURER SUITE[/B]
+[B][SIZE="5"]ESO ADVENTURER SUITE[/SIZE][/B]
 Author: HoZayyBadazz
-Version: 0.29.346
+Version: 0.29.475
 Status: Public Beta
 
-ESO Adventurer Suite is an all-in-one Elder Scrolls Online dashboard and utility addon built around the Tamriel Codex. It combines questing, travel, exploration, combat guidance and statistics, action-bar/HUD customization, minimap tools, build optimization, companion utilities, activity tracking, treasure hunting, antiquities assistance, notes, checkpoints, Golden Pursuits integration, and configurable gameplay overlays in one Suite.
+ESO Adventurer Suite is an all-in-one Elder Scrolls Online utility suite focused on replacing scattered single-purpose tools with one coordinated, performance-conscious interface. Major systems cover combat guidance, action bars, builds/loadouts, inventory/crafting, minimap/exploration, questing/travel, character gear, antiquities, group tools, HUD overlays, diagnostics, and quality-of-life features.
 
-[B]REQUIRED LIBRARIES[/B]
-Install and enable these separately through Minion/ESOUI:
+[B][SIZE="4"]FEATURE HIGHLIGHTS[/SIZE][/B]
+
+[B]COMBAT & ACTION BARS[/B]
+* Smart best-next-action recommendations for DPS, Healer, Tank, and hybrid setups
+* Two-bar action-bar presentation with active-bar emphasis, timers, stacks/procs, Skill Styles, bindings, Ultimate information, and unusable-skill fading
+* Boss mechanics assistance, BLOCK NOW warnings, combat statistics/reports, and Infinite Archive Verse/Vision recommendations
+* Integrated Health/Magicka/Stamina recovery-tick tracking inside the Suite player frame
+
+[B]BUILDS, GEAR & LOADOUTS[/B]
+* MAX POWER build/respec guidance for skills, morphs, passives, Champion Points, and attributes
+* Saved loadouts for gear, skills, Champion setup, attributes, food, and related preparation
+* Gear, set, Champion, attribute, and companion optimization tools
+* Custom character/companion gear presentation with adaptive layout, item-quality presentation, readable text backdrops, weapon organization, and appearance utilities
+
+[B]INVENTORY & CRAFTING[/B]
+* Suite inventory grid with rarity presentation, search/filtering, quickslot support, and native item interaction
+* Native ESO context menus are preserved so ESO actions and compatible third-party LibCustomMenu entries can still appear
+* Bank, Guild Trader, and crafting/deconstruction category integration
+* Enchant+ for compatible glyph selection
+* Potion/Poison Maker and Turbo Recipe & Style Learner
+
+[B]MINIMAP, EXPLORATION & TRAVEL[/B]
+* Suite minimap with fantasy-frame styles, alliance-themed Suite player arrows, quest/POI/service pins, and performance-focused live navigation
+* ESO-native Skyshard data shown on the big map, minimap, and nearby 3D markers
+* 3D resource, fishing, treasure, survey, lore, antiquity, and dungeon/trial chest assistance
+* Wayshrine routing, Guild Homes, merchant/stable/guild travel tools, Treasure/Survey/Tribute clue locations, and antiquity assistance
+
+[B]QUESTS, ACTIVITIES & CODEX[/B]
+* Tamriel Codex workspace, notes/checkpoints, Quest Finder, active-quest tracking, Golden Pursuits, activity history, dungeon tools, Group Finder, Battlegrounds, Tribute, Zone Guide, and Home Tours
+
+[B]HUD & QUALITY OF LIFE[/B]
+* Player/Group/Target/Companion frames
+* Quickslot, repair/recharge, FPS/latency, time, difficulty, stable, reticle, synergy, quest, Champion, and utility overlays
+* HUD Layout support for Suite elements plus selected ESO-native request, notification, and compass-focused-information elements
+
+[B]DIAGNOSTICS[/B]
+* /easscan - quick Suite/addon diagnostic
+* /easbugs - recent captured errors
+* /easbugs last - latest full error/stack
+* /eastestall - safe Suite self-test
+* /eastestall copy - opens a copy-friendly full diagnostic report
+* /eastestall last - shows the most recent self-test report
+The self-test validates loaded modules/libraries, secure Skills barriers, current-session errors, and context-sensitive Bank/Trader/Crafting/Skills checks without blindly executing protected gameplay actions.
+
+[B][SIZE="4"]REQUIRED LIBRARIES[/SIZE][/B]
+Install and enable these separately through Minion/ESOUI. The version numbers below are AddOnVersion minimums used by the manifest.
 
 * LibAddonMenu-2.0 >= 43
-* LibMapData >= 121
-* LibGPS >= 73
+* LibCustomMenu >= 730
 * LibMainMenu-2.0 >= 450
-* LibMapPins-1.0 >= 10047
-* LibMapPing >= 1240
-* LibDebugLogger >= 303
 * LibChatMessage >= 118
-* LibTreasure >= 24
+* LibDebugLogger >= 303
+* LibMapPing >= 1240
+* LibGPS >= 73
+* LibMapData >= 122
+* LibMapPins-1.0 >= 10047
 * CustomCompassPins >= 138
+* LibTreasure >= 24
 
-[B]NEW / HIGHLIGHTED IN 0.29.346[/B]
-* Time / Clock overlay responsiveness restored with a lightweight 1-second refresh and immediate wake-up on ESO UI / scene transitions
-* Responsive-overlay rebalance keeps visible Suite overlays feeling immediate while expensive hidden/background systems remain throttled for FPS safety
-* Full FPS audit removed dead runtime paths, duplicate update work, unnecessary polling, and expensive movement-time refresh chains
-* Player stamina and magicka changes now update only the affected Unit Frame bars instead of waking the full Player Unit Frame refresh chain
-* Group / Raid frame visual stabilization reduces background flicker while keeping lightweight direct health/resource updates
-* Mini Map player marker motion was reworked to remove camera-compensation shake while preserving smooth camera movement
-* Dense-POI performance was improved with relevant-POI caching and reduced movement-time scans
-* Active Quest and Golden Pursuits overlays support adaptive multi-objective sizing so all objectives remain readable without permanently oversized cards
-* Quest overlays support true right-edge anchoring so auto-sizing expands inward instead of snapping away from the user's saved position
-* Automatic Difficulty overlay stays above adaptive quest overlays during normal gameplay and HUD Layout Mode
-* ESO native Request / Invite Prompt can be moved and resized through Suite HUD Layout Mode while keeping ESO's native interaction behavior
-* ESO native alert notifications can be repositioned and use centered wrapped text
-* ESO Compass Focused Info text above the compass can be moved and resized without moving the compass itself
-* Dual Weapon Bar recommendation highlighting is steady instead of flashing
-* Guild Homes in the Teleporter lists the player's guilds and provides fast travel to the guild leader's primary residence when available
-* Crafting-station stability rollback keeps ESO's native crafting inventory panels in control to avoid overlapping station icons and filter hand-off issues
-* Mini Map automatic icon population remains enabled so POI / service / provider icons populate without opening the big World Map first
+The Suite does not hard-load embedded copies of these libraries. Keep standalone libraries current through ESOUI/Minion.
 
-[B]MAIN FEATURES[/B]
-* Smart Combat Advisor with moment-to-moment best-next-button scoring for Magicka/Stamina/Hybrid DPS, Healer, and Tank; both-bar recommendations; Suite ability highlighting; swap prompts; and adaptive BLOCK NOW warnings
-* Dual Action Bar HUD with both weapon bars, Skill Style icons, stacks, timers, Ultimate charge, binding glyphs, and active-bar emphasis
-* Infinite Archive Verse / Vision Choice Advisor that highlights the best offered choice for the current build and run state
-* Floating Recipe & Style Learner (Turbo Mode)
-* Floating Alchemy Potion & Poison Maker with CAN MAKE NOW, exact-effect planning, missing-material guidance, native ingredient auto-slotting, and optional Auto Craft (1 / X / Maximum)
-* Saved Builds workspace for gear, skill bars/allocation profile, Champion profile/slots, and attribute profile
-* MAX POWER build/respec optimizer with content-aware skills, morphs, passives, Champion Points, and attributes
-* Tamriel Codex interface with notes and checkpoints
-* Quest Finder and adaptive active quest tracking with multi-objective display
-* Suite-native Group Finder, Zone Guide, Dungeon Finder, Battlegrounds, Tales of Tribute, and Home Tours
-* Dynamic quest and wayshrine routing
-* Optional customizable Wayshrine Auto Message with clickable guild-recruitment link placeholder
-* Merchant, Guild Store, Stablemaster, Pledge Master, Guild Homes, and guild-leader-home travel tools
-* Mini Map and native ESO map integration with automatic icon population and performance-focused movement handling
-* Treasure Map, Crafting Survey, and Tales of Tribute clue locator using LibTreasure data
-* Antiquity lead/source assistance, known dig-spawn support, and excavation guidance
-* Companion, group, raid, combat, ability, XP, Champion Point, and utility HUD tools
-* Live Combat Stats (PEN / PWR / SR / PR / CC / CD) linked to the shared fight recorder
-* Detailed Game Combat fight reports with DPS/HPS, abilities, resources, effect uptime, incoming damage sources, and history
-* Gear, set, skill, Champion Point, attribute, and companion optimization tools
-* Dungeon/activity history and Golden Pursuits integration
-* Configurable difficulty, reticle, glow, repair/recharge, stable, quickslot, FPS/latency, time, and utility overlays
-* HUD Layout controls for Suite overlays plus selected ESO-native request, alert-notification, and compass-focused-info elements
-* Desktop UI + Gamepad Controls support with binding-aware controller glyphs while retaining the normal PC/keyboard-style interface
+[B][SIZE="4"]RECENT RELEASE FOCUS - 0.29.475[/SIZE][/B]
+
+[B]FEATURES[/B]
+* Added the copy-friendly /eastestall Suite self-test and live-context validation
+* Expanded ESO-native Skyshard/minimap/3D marker integration
+* Expanded native Bank/Trader/crafting inventory integration while preserving ESO/third-party right-click actions
+* Continued character-gear presentation improvements and alliance-themed Suite minimap arrows
+
+[B]STABILITY / PERFORMANCE[/B]
+* Fixed Dual Action Bar hover descriptions so they render above other UI panels
+* Hardened native Skills dragging against Suite-induced secure-action taint
+* Removed the Suite's global ZO_ScrollList_Commit hook
+* Fixed duplicate 3D fishing pins
+* Continued minimap, overlay, unit-frame, and event-refresh performance work
+
+[B]SETTINGS / UI POLISH[/B]
+* Reduced unnecessary disabled settings
+* Improved character-gear text contrast and weapon label organization
+* Consolidated repeated changelog entries so feature work is separated from smaller settings/UI adjustments
 
 [B]INSTALL / UPDATE[/B]
-1. Install the required libraries listed above.
-2. When updating manually, remove the old ESOAdventurerSuite folder first so deleted/renamed files cannot remain behind.
-3. Extract the ZIP so the path is: Documents/Elder Scrolls Online/live/AddOns/ESOAdventurerSuite/ESOAdventurerSuite.txt
-4. Enable ESO Adventurer Suite and its required libraries at the character-select Add-Ons screen.
-5. Log in and use Settings > Addons > ESO Adventurer Suite.
+1. Install/update every required library listed above.
+2. When manually updating, remove the old ESOAdventurerSuite folder first so deleted or renamed files cannot remain behind.
+3. Extract the ZIP to:
+   Documents/Elder Scrolls Online/live/AddOns/ESOAdventurerSuite/
+4. Confirm ESOAdventurerSuite.txt is directly inside that folder.
+5. Enable ESO Adventurer Suite and all required libraries at the character-select Add-Ons screen.
+6. Log in and open Settings > Addons > ESO Adventurer Suite.
 
-[B]CONTROLLER NOTE[/B]
-Keep desktop UI while using controller can prevent ESO from replacing the logged-in PC interface with its console-style Gamepad UI while retaining controller input. Controller glyph support remains binding-aware. Force PlayStation applies after addons load, so pre-login/character-select UI and glyphs are outside addon control. The Suite Map Teleporter is intentionally mouse/keyboard operated.
+[B]COMPATIBILITY NOTES[/B]
+* ESO's native right-click item menu remains the authority for normal inventory items so other compatible addons can add actions through supported menu integration.
+* Protected ESO Skills drag/pickup controls are intentionally left untouched.
+* Context-dependent diagnostics report SKIP when the corresponding ESO scene is not open; SKIP does not mean the feature failed.
 
 [B]CREATOR, SUPPORT & COMMUNITY[/B]
 Creator: HoZayyBadazz
@@ -84,6 +110,9 @@ Discord Community: The Legends Den
 Discord Invite: discord.gg/Tj72TAEqat
 
 Optional gifts: in-game gold or Crown Store gifts. ESO Adventurer Suite and community support are free. No feature, update, addon access, Discord membership, or support is sold, required, or exchanged for gold, Crowns, gifts, or real money.
+
+[B]CREDITS / THIRD-PARTY COMPONENTS[/B]
+Required libraries remain the work of their respective authors. See ESO_ADVENTURER_SUITE_THIRD_PARTY_NOTICES.txt and NOTICE.txt in the addon package for included notices/credits.
 
 [B]DISCLAIMER[/B]
 This Add-on is not created by, affiliated with, or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls and related marks are property of their respective owners.

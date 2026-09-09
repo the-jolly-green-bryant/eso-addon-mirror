@@ -450,39 +450,47 @@ end
 
 function H.OnEffectChanged(_, changeType, _slot, effectName, unitTag, beginTime, endTime, _stacks, _icon, _buffType, _effectType, _abilityType, _status, _unitName, _unitId, abilityId, _sourceType)
     if not unitTag or unitTag == "" then return end
+    local keys = T.KeysFromAbility and T.KeysFromAbility(abilityId, effectName) or nil
     local key = T.LookupKeyForAbilityId(abilityId, effectName)
-    if not key then return end
+    if not key and not (keys and next(keys)) then return end
     local gained = (changeType == EFFECT_RESULT_GAINED or changeType == EFFECT_RESULT_UPDATED)
     if EFFECT_RESULT_FULL_REFRESH and changeType == EFFECT_RESULT_FULL_REFRESH then
         gained = true
+    end
+    local function applyOne(k, on, endMs)
+        if not k then return end
+        if on then
+            local em = endMs
+            if k == "illustrious" then
+                local sticky = Now() + 2500
+                if em < sticky then em = sticky end
+            end
+            SetEffect(unitTag, k, true, em)
+        else
+            if k == "illustrious" or k == "orbLockout" then
+                local ck = CovKey(unitTag)
+                local cur = ck and coverage[ck] and coverage[ck][k]
+                if cur and cur > Now() then return end
+            end
+            SetEffect(unitTag, k, false)
+        end
     end
     if gained then
         local endMs = 0
         if endTime and endTime > 0 then
             endMs = math.floor(endTime * 1000)
         end
-        -- Ground HoT ticks last ~1s. Keep the HUD lit between ticks.
-        if key == "illustrious" then
-            local sticky = Now() + 2500
-            if endMs < sticky then endMs = sticky end
+        if keys then
+            for k in pairs(keys) do applyOne(k, true, endMs) end
+        else
+            applyOne(key, true, endMs)
         end
-        SetEffect(unitTag, key, true, endMs)
     elseif changeType == EFFECT_RESULT_FADED then
-        if key == "illustrious" then
-            local ck = CovKey(unitTag)
-            local cur = ck and coverage[ck] and coverage[ck][key]
-            if cur and cur > Now() then
-                return
-            end
+        if keys then
+            for k in pairs(keys) do applyOne(k, false, 0) end
+        else
+            applyOne(key, false, 0)
         end
-        if key == "orbLockout" then
-            local ck = CovKey(unitTag)
-            local cur = ck and coverage[ck] and coverage[ck][key]
-            if cur and cur > Now() then
-                return
-            end
-        end
-        SetEffect(unitTag, key, false)
     end
 end
 
@@ -792,6 +800,9 @@ function H.RefreshAll()
         local w = NAME_W + 16 + math.max(1, #liveCols) * COL_W
         root:SetDimensions(w, math.max(78, 60 + rowI * ROW_H + 6))
     end
+    if T.Panels and T.Panels.Refresh then
+        pcall(T.Panels.Refresh)
+    end
 end
 
 
@@ -806,13 +817,20 @@ local function ScanUnitBuffs(unitTag)
             local ok, buffName, _s, timeEnding, _slot, _stacks, _icon, _bt, _et, _at, _st, abilityId =
                 pcall(GetUnitBuffInfo, unitTag, i)
             if ok then
-                local mapped = T.LookupKeyForAbilityId(abilityId, buffName)
-                if mapped then
-                    local endMs = 0
-                    if timeEnding and timeEnding > 0 then
-                        endMs = math.floor(timeEnding * 1000)
+                local endMs = 0
+                if timeEnding and timeEnding > 0 then
+                    endMs = math.floor(timeEnding * 1000)
+                end
+                local keys = T.KeysFromAbility and T.KeysFromAbility(abilityId, buffName)
+                if keys then
+                    for mapped in pairs(keys) do
+                        fresh[mapped] = endMs
                     end
-                    fresh[mapped] = endMs
+                else
+                    local mapped = T.LookupKeyForAbilityId(abilityId, buffName)
+                    if mapped then
+                        fresh[mapped] = endMs
+                    end
                 end
             end
         end

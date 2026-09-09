@@ -1,16 +1,16 @@
 -- ESO Adventurer Suite
 -- Copyright (c) 2026 HoZayyBadazz. All Rights Reserved.
 -- Suite-native enhanced desktop Character / Equipment presentation.
--- v0.29.226
+-- v0.29.448
 
 ESOProgressionCoach = ESOProgressionCoach or {}
 local EPC = ESOProgressionCoach
 EPC.CharacterGearScreen = EPC.CharacterGearScreen or {}
 local G = EPC.CharacterGearScreen
 
-local NS = "ESOAdventurerSuite_CharacterGearScreen029226"
+local NS = "ESOAdventurerSuite_CharacterGearScreen029355"
 local REF_W, REF_H = 2560, 1440
-local MIN_SCALE, MAX_SCALE = 0.68, 1.18
+local MIN_SCALE, MAX_SCALE = 0.60, 1.12
 local DEFAULT_SLOT_SIZE = 68
 -- v0.29.207: the original source layout was authored around ultrawide screens.
 -- The Suite now fits the equipment cluster into the actual free center area between
@@ -233,7 +233,11 @@ function G:BuildAdaptiveLayout(isCompanion)
     -- Five armor/jewelry rows. The old 200px vertical jumps made the top and
     -- bottom labels collide with headers/keybind strips at 1440p.
     local rowStep = Clamp(150 * scale, 108, 164)
-    local topY = -2 * rowStep - 25 * scale
+    -- v0.29.460: leave the weapon area alone and shift only the armor/jewelry
+    -- ring upward so the whole gear cluster sits higher around the character.
+    -- v0.29.461: push the non-weapon gear ring further upward around the character.
+    -- v0.29.462: move the non-weapon gear ring just a bit higher again.
+    local topY = -2 * rowStep - 105 * scale
     local weaponY = Clamp(WEAPON_Y * scale, 315, math.max(330, h * 0.34))
 
     return {
@@ -353,23 +357,38 @@ local function GearFormatCritical(value)
     return GearFormatInteger(value)
 end
 
-local GEAR_MUNDUS_WORDS = {
-    "the thief", "the shadow", "the lover", "the warrior", "the mage", "the tower",
-    "the serpent", "the steed", "the lord", "the lady", "the atronach", "the ritual", "the apprentice",
-}
-
-local function GearGetMundusName()
-    if type(GetNumBuffs) ~= "function" or type(GetUnitBuffInfo) ~= "function" then return "None detected" end
-    local count = SafeNumber(GetNumBuffs, 0, "player") or 0
-    for i=1,count do
-        local name = tostring(Safe(GetUnitBuffInfo, "", "player", i) or "")
-        local low = zo_strlower and zo_strlower(name) or string.lower(name)
-        if low:find("boon:", 1, true) then return name end
-        for _, word in ipairs(GEAR_MUNDUS_WORDS) do
-            if low:find(word, 1, true) then return name end
-        end
+-- The player stats footer uses ESO's own native Mundus row template rather
+-- than a Suite-drawn item/buff icon.  ZO_MundusStonesStatsEntry contains the
+-- localized MUNDUS header and ZO_StatsMundusIcon controls used by the stock
+-- keyboard Character Stats screen.
+local function RefreshNativeMundusRow(row)
+    if not row then return end
+    if type(ZO_SharedStats_SetupMundusIconControls) ~= "function" then
+        row:SetHidden(true)
+        return
     end
-    return "None detected"
+
+    local icons = { row.mundus1, row.mundus2 }
+    if not icons[1] then
+        row:SetHidden(true)
+        return
+    end
+
+    -- The shared helper also marks derived-stat rows on ESO's normal stats
+    -- page.  Our compact card has no ZO_StatEntry rows, so supply a harmless
+    -- sink that preserves the helper's native icon/effect setup without
+    -- mutating or depending on the stock stats list.
+    local sinkEntry = {
+        SetHasMundusEffect = function() end,
+        UpdateStatValue = function() end,
+        ShowComparisonValue = function() end,
+        HideComparisonValue = function() end,
+    }
+    local sinkControl = { statEntry = sinkEntry }
+    local function GetDerivedStatSink() return sinkControl end
+
+    local ok = pcall(ZO_SharedStats_SetupMundusIconControls, icons, LEFT, 5, GetDerivedStatSink)
+    row:SetHidden(not ok)
 end
 
 function G:EnsureGearStatsCard()
@@ -377,11 +396,26 @@ function G:EnsureGearStatsCard()
     local wm=WINDOW_MANAGER
     local panel=wm:CreateTopLevelWindow(NS .. "GearStatsCard")
     panel:SetDimensions(270, 540)
-    panel:SetMouseEnabled(false)
+    panel:SetMouseEnabled(true)
+    panel:SetMovable(true)
     panel:SetClampedToScreen(true)
     if panel.SetDrawTier and rawget(_G,"DT_HIGH") then panel:SetDrawTier(DT_HIGH) end
     panel:SetDrawLayer(DL_CONTROLS)
     panel:SetDrawLevel(5)
+    panel:SetHandler("OnMouseDown", function(self, button)
+        if button == MOUSE_BUTTON_INDEX_LEFT and self.StartMoving then self:StartMoving() end
+    end)
+    panel:SetHandler("OnMouseUp", function(self, button)
+        if button ~= MOUSE_BUTTON_INDEX_LEFT then return end
+        if self.StopMovingOrResizing then self:StopMovingOrResizing() end
+        local left = self.GetLeft and tonumber(self:GetLeft()) or nil
+        local top = self.GetTop and tonumber(self:GetTop()) or nil
+        if left and top and EPC.saved then
+            EPC.saved.characterGearStatsX029355 = left
+            EPC.saved.characterGearStatsY029355 = top
+            EPC.saved.characterGearStatsMoved029355 = true
+        end
+    end)
 
     local bg=wm:CreateControl(nil,panel,CT_BACKDROP)
     bg:SetAnchorFill(panel)
@@ -427,6 +461,7 @@ function G:EnsureGearStatsCard()
     div:SetColor(0.72,0.62,0.38,0.72)
     div:SetAnchor(BOTTOMLEFT,panel,BOTTOMLEFT,12,-58)
     div:SetDimensions(246,1)
+    panel.footerDivider=div
 
     local footerTitle=CreateLabel(NS.."GearStatsFooterTitle",panel,"$(BOLD_FONT)|16|soft-shadow-thick")
     footerTitle:SetAnchor(BOTTOMLEFT,panel,BOTTOMLEFT,14,-49)
@@ -441,6 +476,22 @@ function G:EnsureGearStatsCard()
     footerValue:SetColor(0.70,0.90,1,1)
     panel.footerValue=footerValue
 
+    -- Reuse ESO's native Mundus presentation directly.  This is the same
+    -- virtual row used by ZO_CharacterWindowStats: localized MUNDUS heading
+    -- plus the native glowing Mundus boon symbol(s).
+    local nativeMundus=nil
+    if type(CreateControlFromVirtual)=="function" then
+        local ok,control=pcall(CreateControlFromVirtual,NS.."GearStatsNativeMundus",panel,"ZO_MundusStonesStatsEntry")
+        if ok then nativeMundus=control end
+    end
+    if nativeMundus then
+        nativeMundus:ClearAnchors()
+        nativeMundus:SetAnchor(BOTTOMLEFT,panel,BOTTOMLEFT,12,-43)
+        nativeMundus:SetDimensions(246,28)
+        nativeMundus:SetHidden(true)
+    end
+    panel.nativeMundus=nativeMundus
+
     panel:SetHidden(true)
     self.gearStatsCard=panel
     return panel
@@ -452,9 +503,16 @@ function G:RefreshGearStatsCard(isCompanion)
     local cardH=math.min(540,math.max(500,h-170))
     panel:SetDimensions(270,cardH)
     panel:ClearAnchors()
-    -- v0.29.236: nudge the left-side stats card upward slightly for both
-    -- character and companion screens so it sits a little higher on the page.
-    panel:SetAnchor(TOPLEFT,GuiRoot,TOPLEFT,22,math.max(56,(h-cardH)*0.46 - 22))
+    -- Keep the user's exact dragged GuiRoot position. This also avoids applying
+    -- our gear-layout scale on top of PerfectPixel/ESO UI scaling.
+    local moved = EPC.saved and EPC.saved.characterGearStatsMoved029355 == true
+    local savedX = moved and tonumber(EPC.saved.characterGearStatsX029355) or nil
+    local savedY = moved and tonumber(EPC.saved.characterGearStatsY029355) or nil
+    if savedX and savedY then
+        panel:SetAnchor(TOPLEFT,GuiRoot,TOPLEFT,savedX,savedY)
+    else
+        panel:SetAnchor(TOPLEFT,GuiRoot,TOPLEFT,22,math.max(56,(h-cardH)*0.46 - 22))
+    end
     panel.title:SetText(isCompanion and "COMPANION STATS" or "CHARACTER STATS")
     local tag=isCompanion and "companion" or "player"
     for _,entry in ipairs(panel.statRows) do
@@ -462,14 +520,27 @@ function G:RefreshGearStatsCard(isCompanion)
         entry.value:SetText(entry.meta.critical and GearFormatCritical(v) or GearFormatInteger(v))
     end
     if isCompanion then
+        if panel.nativeMundus then panel.nativeMundus:SetHidden(true) end
+        if panel.footerDivider then panel.footerDivider:SetHidden(false) end
+        panel.footerTitle:SetHidden(false)
         panel.footerTitle:SetText("COMPANION")
         local name=type(GetUnitName)=="function" and tostring(Safe(GetUnitName,"","companion") or "") or ""
         local level=type(GetActiveCompanionLevelInfo)=="function" and SafeNumber(GetActiveCompanionLevelInfo,0) or 0
         if name=="" then name="Active companion" end
+        panel.footerValue:SetHidden(false)
         panel.footerValue:SetText(level>0 and zo_strformat("<<1>>  •  Level <<2>>",name,level) or name)
     else
-        panel.footerTitle:SetText("MUNDUS")
-        panel.footerValue:SetText(GearGetMundusName())
+        -- Player footer: show ESO's actual Mundus row.  Do not place a second
+        -- Suite title/value/icon over it; the virtual control already owns the
+        -- localized header, native symbol, glow/effect and tooltip behavior.
+        if panel.footerDivider then panel.footerDivider:SetHidden(true) end
+        panel.footerTitle:SetHidden(true)
+        panel.footerValue:SetHidden(true)
+        panel.footerValue:SetText("")
+        if panel.nativeMundus then
+            panel.nativeMundus:SetHidden(false)
+            RefreshNativeMundusRow(panel.nativeMundus)
+        end
     end
     panel:SetHidden(false)
 end
@@ -763,6 +834,15 @@ local function EnsureDecor(slot)
     if slot.EASGearName.SetMaxLineCount then slot.EASGearName:SetMaxLineCount(2) end
     if slot.EASGearType.SetMaxLineCount then slot.EASGearType:SetMaxLineCount(1) end
     if slot.EASGearSet.SetMaxLineCount then slot.EASGearSet:SetMaxLineCount(2) end
+    slot.EASGearTextBackdrop = WINDOW_MANAGER:CreateControl(name .. "EASGearTextBackdrop", slot, CT_BACKDROP)
+    slot.EASGearTextBackdrop:SetDrawLayer(DL_OVERLAY)
+    slot.EASGearTextBackdrop:SetDrawLevel(7)
+    slot.EASGearTextBackdrop:SetMouseEnabled(false)
+    slot.EASGearTextBackdrop:SetCenterTexture("EsoUI/Art/Tooltips/UI-TooltipCenter.dds")
+    slot.EASGearTextBackdrop:SetEdgeTexture("EsoUI/Art/Tooltips/UI-TooltipBorder.dds", 16, 4, 4)
+    slot.EASGearTextBackdrop:SetCenterColor(0, 0, 0, 0.34)
+    slot.EASGearTextBackdrop:SetEdgeColor(0.06, 0.06, 0.06, 0.62)
+    slot.EASGearTextBackdrop:SetHidden(true)
     slot.EASGearOutfit = CreateTexture(name .. "EASGearOutfit", slot, OUTFIT_ICON)
     slot.EASGearCostume = CreateTexture(name .. "EASGearCostume", slot, COSTUME_ICON)
     slot.EASGearOutfit:SetDimensions(20, 20)
@@ -771,7 +851,7 @@ end
 
 local function HideDecor(slot)
     if not slot then return end
-    for _, key in ipairs({"EASGearCondition","EASGearLevel","EASGearName","EASGearType","EASGearSet","EASGearOutfit","EASGearCostume"}) do
+    for _, key in ipairs({"EASGearCondition","EASGearLevel","EASGearName","EASGearType","EASGearSet","EASGearTextBackdrop","EASGearOutfit","EASGearCostume"}) do
         local c = slot[key]
         if c then c:SetHidden(true) end
     end
@@ -781,6 +861,70 @@ end
 local function HideSlotPresentation(slot)
     HideDecor(slot)
     HideSlotBackdrop(slot)
+end
+
+local function LayoutTextBackdrop(slot, isWeaponCell, textSide)
+    local bg = slot and slot.EASGearTextBackdrop or nil
+    local nameLabel = slot and slot.EASGearName or nil
+    local typeLabel = slot and slot.EASGearType or nil
+    local setLabel = slot and slot.EASGearSet or nil
+    if not bg or not nameLabel or nameLabel:IsHidden() then
+        if bg then bg:SetHidden(true) end
+        return
+    end
+
+    local bottom = nameLabel
+    if isWeaponCell then
+        if typeLabel and not typeLabel:IsHidden() then
+            bottom = typeLabel
+        elseif setLabel and not setLabel:IsHidden() then
+            bottom = setLabel
+        end
+    else
+        if setLabel and not setLabel:IsHidden() then
+            bottom = setLabel
+        elseif typeLabel and not typeLabel:IsHidden() then
+            bottom = typeLabel
+        end
+    end
+
+    local function measuredWidth(label)
+        if not label or label.IsHidden and label:IsHidden() then return 0 end
+        if type(label.GetTextWidth) == "function" then
+            local ok, value = pcall(label.GetTextWidth, label)
+            if ok then return tonumber(value) or 0 end
+        end
+        return tonumber(label.GetWidth and label:GetWidth()) or 0
+    end
+
+    local maxTextWidth = math.max(measuredWidth(nameLabel), measuredWidth(typeLabel), measuredWidth(setLabel))
+    local maxLabelWidth = math.max(tonumber(nameLabel.GetWidth and nameLabel:GetWidth()) or 0, 1)
+    local desiredWidth = Clamp(maxTextWidth + 18, 84, maxLabelWidth)
+
+    bg:ClearAnchors()
+    -- v0.29.457: fit the backdrop to the actual visible text width instead of
+    -- the full reserved label block. This removes the overly long outside edge
+    -- that could stretch far away from the text on armor/jewelry side labels.
+    if isWeaponCell or textSide == "center" then
+        bg:SetAnchor(TOPLEFT, nameLabel, TOPLEFT, -6, -4)
+        bg:SetAnchor(BOTTOMRIGHT, bottom, BOTTOMRIGHT, 6, 5)
+    elseif textSide == "left" then
+        bg:SetAnchor(TOPRIGHT, nameLabel, TOPRIGHT, 6, -4)
+        bg:SetAnchor(BOTTOMLEFT, bottom, BOTTOMRIGHT, -desiredWidth - 6, 5)
+    else
+        bg:SetAnchor(TOPLEFT, nameLabel, TOPLEFT, -6, -4)
+        bg:SetAnchor(BOTTOMRIGHT, bottom, BOTTOMLEFT, desiredWidth + 6, 5)
+    end
+    -- v0.29.463: darken the name backdrops a bit more so item names remain easy
+    -- to read over bright sand, dark water, shadows, and busy scene detail.
+    if isWeaponCell then
+        bg:SetCenterColor(0, 0, 0, 0.82)
+        bg:SetEdgeColor(0.26, 0.26, 0.26, 0.98)
+    else
+        bg:SetCenterColor(0, 0, 0, 0.70)
+        bg:SetEdgeColor(0.18, 0.18, 0.18, 0.88)
+    end
+    bg:SetHidden(false)
 end
 
 local function GetBag(isCompanion)
@@ -950,49 +1094,77 @@ function G:RefreshSlot(slotData, isCompanion)
     local detailVisible = saved.characterGearShowDetails029206 ~= false and not slotData.poison and density ~= "icons"
     -- v0.29.230: keep the larger gear text overall, but dial the companion
     -- labels back slightly so they do not dominate the companion layout.
-    local fontSize = Clamp((tonumber(saved.characterGearFontSize029206) or 20) + 4, 18, 32)
+    -- v0.29.448: external gear text must scale with the same adaptive layout
+    -- as the slot controls. Previously a 1680x945/1080p-style UI shrank the
+    -- equipment boxes but kept 24-26px labels, making the whole gear screen look
+    -- zoomed and causing weapon text to spill into neighboring cells.
+    local requestedFontSize = Clamp((tonumber(saved.characterGearFontSize029206) or 20) + 4, 18, 32)
+    local textScale = Clamp(tonumber(layout.scale) or 1, 0.68, 1.0)
+    local fontSize = math.floor(requestedFontSize * textScale + 0.5)
+    fontSize = Clamp(fontSize, 16, 28)
     if isCompanion then
-        fontSize = math.max(16, fontSize - 2)
+        fontSize = math.max(15, fontSize - 1)
     end
     if density == "compact" then
-        fontSize = math.min(fontSize, isCompanion and 24 or 26)
+        fontSize = math.min(fontSize, isCompanion and 21 or 22)
     end
     local detailFont = string.format("$(BOLD_FONT)|%d|soft-shadow-thick", fontSize)
     local subFont = string.format("$(MEDIUM_FONT)|%d|soft-shadow-thick", math.max(isCompanion and 14 or 16, fontSize - 2))
     local nameLabel, typeLabel, setLabel = control.EASGearName, control.EASGearType, control.EASGearSet
     nameLabel:SetFont(detailFont); typeLabel:SetFont(subFont); setLabel:SetFont(subFont)
     local width = layout.labelWidth or (COMPACT_LABEL_WIDTH * math.max(LayoutScale(), 0.88))
-    -- v0.29.208: labels expand away from the real 3D character instead of into it.
-    -- Two-line name/set boxes preserve full set names on 16:9 layouts without
-    -- forcing the equipment controls back over the model.
-    local nameHeight = (fontSize + 5) * 2
-    local typeHeight = fontSize + 7
-    local setHeight = (math.max(10, fontSize - 2) + 5) * 2
-    nameLabel:SetDimensions(width, nameHeight); typeLabel:SetDimensions(width, typeHeight); setLabel:SetDimensions(width, setHeight)
-    if nameLabel.SetMaxLineCount then pcall(nameLabel.SetMaxLineCount, nameLabel, 2) end
-    if setLabel.SetMaxLineCount then pcall(setLabel.SetMaxLineCount, setLabel, 2) end
-    nameLabel:ClearAnchors(); typeLabel:ClearAnchors(); setLabel:ClearAnchors()
-
-    local outwardSide = slotData.side
-    if slotData.weaponCol == nil then
-        if (slotData.x or 0) < 0 then
-            outwardSide = "left"
-        elseif (slotData.x or 0) > 0 then
-            outwardSide = "right"
-        end
+    local isWeaponCell = slotData.weaponCol ~= nil and not isCompanion
+    -- v0.29.448: player weapon labels live inside their own grid column instead
+    -- of expanding sideways. This prevents Off Hand text from drawing over the
+    -- poison/potion cell and keeps future populated utility slots readable.
+    if isWeaponCell then
+        local weaponScale = tonumber(layout.scale) or 1
+        local weaponSlotPx = Clamp(saved.characterGearSlotSize029206, 64, 128) * weaponScale
+        local colGap = weaponSlotPx + math.max(34, 54 * weaponScale)
+        width = Clamp(colGap - 12, 88, 170)
     end
 
-    local labelGap = slotData.weaponCol ~= nil and 26 or 10
-    if outwardSide == "left" then
-        nameLabel:SetHorizontalAlignment(TEXT_ALIGN_RIGHT); typeLabel:SetHorizontalAlignment(TEXT_ALIGN_RIGHT); setLabel:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
-        nameLabel:SetAnchor(TOPRIGHT, control, TOPLEFT, -labelGap, -4)
-        typeLabel:SetAnchor(TOPRIGHT, nameLabel, BOTTOMRIGHT, 0, -2)
-        setLabel:SetAnchor(TOPRIGHT, density == "detailed" and typeLabel or nameLabel, BOTTOMRIGHT, 0, -2)
+    local nameHeight = isWeaponCell and (fontSize + 5) or ((fontSize + 5) * 2)
+    local typeHeight = fontSize + 7
+    local setHeight = isWeaponCell and (math.max(10, fontSize - 2) + 5) or ((math.max(10, fontSize - 2) + 5) * 2)
+    nameLabel:SetDimensions(width, nameHeight); typeLabel:SetDimensions(width, typeHeight); setLabel:SetDimensions(width, setHeight)
+    if nameLabel.SetMaxLineCount then pcall(nameLabel.SetMaxLineCount, nameLabel, isWeaponCell and 1 or 2) end
+    if setLabel.SetMaxLineCount then pcall(setLabel.SetMaxLineCount, setLabel, isWeaponCell and 1 or 2) end
+    nameLabel:ClearAnchors(); typeLabel:ClearAnchors(); setLabel:ClearAnchors()
+
+    local textSide = "center"
+    if isWeaponCell then
+        nameLabel:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+        typeLabel:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+        setLabel:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+        -- v0.29.449: every player-weapon label now lives BELOW its box. This
+        -- guarantees the text never covers the weapon art or the neighboring
+        -- poison/utility cells, even when the off-hand or set name is long.
+        nameLabel:SetAnchor(TOP, control, BOTTOM, 0, 5)
+        setLabel:SetAnchor(TOP, nameLabel, BOTTOM, 0, -1)
+        typeLabel:SetAnchor(TOP, density == "detailed" and setLabel or nameLabel, BOTTOM, 0, -1)
     else
-        nameLabel:SetHorizontalAlignment(TEXT_ALIGN_LEFT); typeLabel:SetHorizontalAlignment(TEXT_ALIGN_LEFT); setLabel:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
-        nameLabel:SetAnchor(TOPLEFT, control, TOPRIGHT, labelGap, -4)
-        typeLabel:SetAnchor(TOPLEFT, nameLabel, BOTTOMLEFT, 0, -2)
-        setLabel:SetAnchor(TOPLEFT, density == "detailed" and typeLabel or nameLabel, BOTTOMLEFT, 0, -2)
+        local outwardSide = slotData.side
+        if slotData.weaponCol == nil then
+            if (slotData.x or 0) < 0 then
+                outwardSide = "left"
+            elseif (slotData.x or 0) > 0 then
+                outwardSide = "right"
+            end
+        end
+        textSide = outwardSide or "right"
+        local labelGap = slotData.weaponCol ~= nil and 26 or 10
+        if outwardSide == "left" then
+            nameLabel:SetHorizontalAlignment(TEXT_ALIGN_RIGHT); typeLabel:SetHorizontalAlignment(TEXT_ALIGN_RIGHT); setLabel:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+            nameLabel:SetAnchor(TOPRIGHT, control, TOPLEFT, -labelGap, -4)
+            typeLabel:SetAnchor(TOPRIGHT, nameLabel, BOTTOMRIGHT, 0, -2)
+            setLabel:SetAnchor(TOPRIGHT, density == "detailed" and typeLabel or nameLabel, BOTTOMRIGHT, 0, -2)
+        else
+            nameLabel:SetHorizontalAlignment(TEXT_ALIGN_LEFT); typeLabel:SetHorizontalAlignment(TEXT_ALIGN_LEFT); setLabel:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+            nameLabel:SetAnchor(TOPLEFT, control, TOPRIGHT, labelGap, -4)
+            typeLabel:SetAnchor(TOPLEFT, nameLabel, BOTTOMLEFT, 0, -2)
+            setLabel:SetAnchor(TOPLEFT, density == "detailed" and typeLabel or nameLabel, BOTTOMLEFT, 0, -2)
+        end
     end
     nameLabel:SetText(zo_strformat(SI_TOOLTIP_ITEM_NAME, itemName))
     if quality then
@@ -1000,7 +1172,7 @@ function G:RefreshSlot(slotData, isCompanion)
         if qc and qc.UnpackRGBA then nameLabel:SetColor(qc:UnpackRGBA()) else nameLabel:SetColor(1,1,1,1) end
     end
     typeLabel:SetText(ItemTypeText(link, slotData.slot))
-    typeLabel:SetColor(0.82,0.82,0.82,1)
+    typeLabel:SetColor(1,1,1,1)
     typeLabel:SetHidden(not detailVisible or density ~= "detailed")
     local hasSet, setName, _, normalEquipped, maxEquipped, _, perfectedEquipped = false, "", 0,0,0,0,0
     if link ~= "" and type(GetItemLinkSetInfo) == "function" then
@@ -1009,11 +1181,12 @@ function G:RefreshSlot(slotData, isCompanion)
     if hasSet and tonumber(maxEquipped) and maxEquipped > 0 then
         local count = math.min((tonumber(normalEquipped) or 0) + (tonumber(perfectedEquipped) or 0), maxEquipped)
         setLabel:SetText(zo_strformat("<<1>>  <<2>>/<<3>>", setName or "Set", count, maxEquipped))
-        setLabel:SetColor(0.73,0.82,1,1)
+        setLabel:SetColor(0.98,0.99,1,1)
         setLabel:SetHidden(not detailVisible or saved.characterGearShowSetCount029206 == false)
     else setLabel:SetHidden(true) end
     nameLabel:SetHidden(not detailVisible)
     if density ~= "detailed" then typeLabel:SetHidden(true) end
+    LayoutTextBackdrop(control, isWeaponCell, textSide)
 
     local actorCategory = isCompanion and rawget(_G, "GAMEPLAY_ACTOR_CATEGORY_COMPANION") or rawget(_G, "GAMEPLAY_ACTOR_CATEGORY_PLAYER")
     local outfitSlots = actorCategory and WeaponOutfitSlots(actorCategory) or {}
@@ -1049,6 +1222,21 @@ function G:RefreshSlot(slotData, isCompanion)
     end
 end
 
+local function PlayerWeaponGridMetrics(layout, slotSize, scale)
+    local slotPx = slotSize * scale
+    local colGap = slotPx + math.max(34, 54 * scale)
+    -- v0.29.461: restore a bit more breathing room between the two weapon rows
+    -- to stop top-row labels/icons from colliding with the lower row, while
+    -- keeping the whole weapon block compact enough to avoid the footer.
+    local rowGap = slotPx + math.max(68, 84 * scale)
+    local baseCenter = layout.centerY + layout.weaponY - math.max(18, 24 * scale)
+    local maxCenter = layout.h - math.max(138, 168 * scale)
+    local armorBottomCenter = layout.centerY + layout.topY + 4 * layout.rowStep
+    local minCenter = armorBottomCenter + slotPx + rowGap * 0.14 + math.max(0, 4 * scale)
+    local centerY = math.min(math.max(baseCenter, minCenter), maxCenter)
+    return slotPx, colGap, rowGap, centerY
+end
+
 function G:ApplySlotLayout(slotData, slotSize, scale, isCompanion)
     local c = rawget(_G, slotData.control)
     if not c then return end
@@ -1070,9 +1258,7 @@ function G:ApplySlotLayout(slotData, slotSize, scale, isCompanion)
             -- column 4 is reserved for utility cells (Appearance / Bar Swap).
             -- The entire grid stays lower than the armor rows but remains clear
             -- of ESO's bottom action prompt.
-            local colGap = slotPx + math.max(34, 54 * scale)
-            local rowGap = slotPx + math.max(44, 66 * scale)
-            local centerY = math.min(layout.centerY + layout.weaponY + math.max(10, 18 * scale), layout.h - math.max(150, 190 * scale))
+            local _, colGap, rowGap, centerY = PlayerWeaponGridMetrics(layout, slotSize, scale)
             local gridColBySlot = {
                 [EQUIP_SLOT_MAIN_HAND]=1,
                 [EQUIP_SLOT_OFF_HAND]=2,
@@ -1135,6 +1321,7 @@ function G:CapturePlayerState()
     add(rawget(_G, "ZO_CharacterHeaderSectionTitle"))
     add(rawget(_G, "ZO_CharacterHeaderSectionDivider"))
     add(rawget(_G, "ZO_CharacterApparelSectionText"))
+    add(rawget(_G, "ZO_CharacterEquipmentSlotsCostume"))
     local nativeBg = rawget(_G, "ZO_SharedWideLeftPanelBackground")
     add(nativeBg)
     if nativeBg and nativeBg.GetNamedChild then
@@ -1304,15 +1491,12 @@ end
 
 function G:LayoutWeaponUtilityCells(layout, slotSize, scale)
     if not layout then return end
-    local slotPx = slotSize * scale
-    local colGap = slotPx + math.max(34, 54 * scale)
-    local rowGap = slotPx + math.max(44, 66 * scale)
-    local centerY = math.min(layout.centerY + layout.weaponY + math.max(10, 18 * scale), layout.h - math.max(150, 190 * scale))
-    -- v0.29.236: keep the dedicated utility column OUTSIDE the character drag
-    -- area. The old fourth-column center sat over the player's legs and stole
-    -- the exact mouse area used to rotate the 3D character.
-    local desiredUtilityX = layout.centerX + 2.45 * colGap
-    local maxUtilityX = (layout.safeRight or (layout.w * 0.78)) - slotPx * 0.62
+    local slotPx, colGap, rowGap, centerY = PlayerWeaponGridMetrics(layout, slotSize, scale)
+    -- v0.29.459: the detached utility column created an awkward empty gap to the
+    -- right of the weapon rows. Keep it outside the core drag area, but bring it
+    -- much closer to the rest of the grid so the layout feels intentional.
+    local desiredUtilityX = layout.centerX + 1.55 * colGap
+    local maxUtilityX = (layout.safeRight or (layout.w * 0.78)) - slotPx * 0.54
     local utilityX = math.min(desiredUtilityX, maxUtilityX)
     local topY = centerY - rowGap * 0.5
     local bottomY = centerY + rowGap * 0.5
@@ -1432,6 +1616,11 @@ function G:ApplyPlayerLayout()
     if headerTitle then headerTitle:SetHidden(true) end
     if headerDivider then headerDivider:SetHidden(true) end
     if apparelText then apparelText:SetHidden(true) end
+    -- Obsolete native costume/style slot: the Suite already exposes appearance
+    -- state on the real equipment slots, and this legacy control can otherwise
+    -- sit underneath the movable stats card.
+    local obsoleteCostumeSlot = rawget(_G, "ZO_CharacterEquipmentSlotsCostume")
+    if obsoleteCostumeSlot then obsoleteCostumeSlot:SetHidden(true) end
 
     -- v0.29.208: remove the redundant orange/paper-doll silhouette. The real
     -- framed 3D player is the only character shown in the center of the gear UI.
@@ -1635,6 +1824,7 @@ function G:ResetDefaults()
         "characterGearFigureScale029206","characterGearHeaderScale029206","characterGearCameraDistance029206",
         "characterGearColorFigureWarning029206",
         "characterGearAdaptiveLayout029207","characterGearDensity029207","characterGearStatsMode029207",
+        "characterGearStatsX029355","characterGearStatsY029355","characterGearStatsMoved029355",
     }
     for _, k in ipairs(keys) do s[k] = d[k] end
     self:RequestRefresh(10)
@@ -1646,4 +1836,222 @@ function G:Initialize()
     self:SetupScenes()
     self:RegisterEvents()
     zo_callLater(function() G:SetupScenes(); G:RequestRefresh(10) end, 500)
+end
+
+
+-- v0.29.365 - disabling the Suite gear presentation must restore the native
+-- Character UI immediately, not only after a scene reload.
+function G:SetEnabled029365(enabled)
+    if enabled then
+        self:RequestRefresh(0)
+        return
+    end
+    self.refreshPending = false
+    self:RestoreAll()
+    if self:IsPlayerSceneShowing() then
+        local showControls={
+            rawget(_G,"ZO_Character"),rawget(_G,"ZO_CharacterAccessoriesSection"),rawget(_G,"ZO_CharacterWeaponsSection"),
+            rawget(_G,"ZO_CharacterHeaderSection"),rawget(_G,"ZO_CharacterPaperDoll"),rawget(_G,"ZO_CharacterWeaponSwap"),
+            rawget(_G,"ZO_CharacterWindowStats"),rawget(_G,"ZO_SharedWideLeftPanelBackground")
+        }
+        for _,c in ipairs(showControls) do if c and c.SetHidden then pcall(c.SetHidden,c,false) end end
+        for _,d in ipairs(PLAYER_SLOTS) do local c=rawget(_G,d.control); if c and c.SetHidden then pcall(c.SetHidden,c,false) end end
+        if type(ZO_Character_UpdateAll)=="function" then pcall(ZO_Character_UpdateAll) end
+        if type(ZO_Character_UpdateWindow)=="function" then pcall(ZO_Character_UpdateWindow) end
+    end
+    if self:IsCompanionSceneShowing() then
+        for _,d in ipairs(COMPANION_SLOTS) do local c=rawget(_G,d.control); if c and c.SetHidden then pcall(c.SetHidden,c,false) end end
+        local root=rawget(_G,"ZO_CompanionCharacterWindow_Keyboard_TopLevel"); if root and root.SetHidden then pcall(root.SetHidden,root,false) end
+    end
+end
+
+
+
+-- v0.29.365 follow-up: scene cleanup must never hide native controls after the
+-- feature was turned off during the same session.
+local EAS_CleanupPlayerSceneBase029365 = G.CleanupPlayerScene
+function G:CleanupPlayerScene()
+    if not self:IsEnabled() then self:RestoreAll(); return end
+    return EAS_CleanupPlayerSceneBase029365(self)
+end
+local EAS_CleanupCompanionSceneBase029365 = G.CleanupCompanionScene
+function G:CleanupCompanionScene()
+    if not self:IsEnabled() then self:RestoreAll(); return end
+    return EAS_CleanupCompanionSceneBase029365(self)
+end
+
+-- ============================================================================
+-- v0.29.372 - Safe Character/Inventory scene cleanup.
+-- ESO owns visibility of its Character controls.  The Suite may alter anchors,
+-- decoration and camera framing while the scene is active, but it must never
+-- hard-hide ESO scene controls during stacked transitions (Inventory ->
+-- Character -> UI-mode/Alt).  Doing so can leave the entire active UI blank
+-- until a reload or another scene rebuilds those controls.
+-- ============================================================================
+function G:IsPlayerSceneActiveOrTransitioning029372(excludeScene)
+    local scenes = { self.inventoryScene, self.characterScene }
+    for _, scene in ipairs(scenes) do
+        if scene and scene ~= excludeScene then
+            local state = nil
+            if type(scene.GetState) == "function" then
+                local ok, value = pcall(scene.GetState, scene)
+                if ok then state = value end
+            end
+            if state == SCENE_SHOWING or state == SCENE_SHOWN then return true end
+            if type(scene.IsShowing) == "function" then
+                local ok, showing = pcall(scene.IsShowing, scene)
+                if ok and showing == true then return true end
+            end
+        end
+    end
+    return false
+end
+
+function G:CleanupPlayerScene029372(sourceScene)
+    if not self:IsEnabled() then
+        self:RestoreAll()
+        return
+    end
+
+    -- If Inventory is handing off to Character (or vice versa), do not tear
+    -- down the shared Character presentation between the two scenes.
+    if self:IsPlayerSceneActiveOrTransitioning029372(sourceScene) then
+        self:RequestRefresh(0)
+        return
+    end
+
+    self:HideGearStatsCard()
+    self:HideWeaponUtilityCells()
+    self:RestorePlayerState()
+    self:HideWorkspaceBackdrop()
+
+    -- Deliberately do NOT SetHidden(true) on ZO_Character, its sections,
+    -- paper doll, stats, weapon swap or equipment controls here.  Those are
+    -- native scene-owned controls and ESO's fragments decide their visibility.
+    -- We only remove Suite decoration/presentation from the equipment slots.
+    for _, d in ipairs(PLAYER_SLOTS) do
+        HideSlotPresentation(rawget(_G, d.control))
+    end
+end
+
+-- Replace the earlier cleanup implementation with the scene-safe version.
+function G:CleanupPlayerScene()
+    return self:CleanupPlayerScene029372(nil)
+end
+
+-- Re-registering scene callbacks is unnecessary because the existing callback
+-- closures resolve G:CleanupPlayerScene dynamically.  Keep a small UI-mode
+-- reconciliation hook so Alt/UI-mode changes during an active Character scene
+-- immediately re-apply the layout instead of leaving a transition frame stale.
+if EVENT_MANAGER and rawget(_G, "EVENT_GAME_CAMERA_UI_MODE_CHANGED") then
+    EVENT_MANAGER:UnregisterForEvent(NS .. "UIModeSafe029372", EVENT_GAME_CAMERA_UI_MODE_CHANGED)
+    EVENT_MANAGER:RegisterForEvent(NS .. "UIModeSafe029372", EVENT_GAME_CAMERA_UI_MODE_CHANGED, function()
+        if G:IsEnabled() and G:IsPlayerSceneShowing() then
+            G:RequestRefresh(0)
+        end
+    end)
+end
+
+-- ============================================================================
+-- v0.29.374 - Character Gear lifecycle ownership hardening.
+-- Keep native Character controls suppressed only while the Suite presentation
+-- owns Inventory/Character.  Once both player scenes are fully inactive, hide
+-- every GuiRoot-anchored gear/native Character control so nothing leaks onto
+-- gameplay.  This is deferred so menu-to-menu handoffs are never torn down
+-- during SCENE_HIDING.
+-- ============================================================================
+function G:HardHideInactivePlayerControls029374()
+    if self:IsPlayerSceneActiveOrTransitioning029372(nil) then return false end
+
+    self:HideGearStatsCard()
+    self:HideWeaponUtilityCells()
+    self:HideWorkspaceBackdrop()
+
+    local controls = {
+        rawget(_G, "ZO_Character"),
+        rawget(_G, "ZO_CharacterAccessoriesSection"),
+        rawget(_G, "ZO_CharacterWeaponsSection"),
+        rawget(_G, "ZO_CharacterHeaderSection"),
+        rawget(_G, "ZO_CharacterHeaderSectionTitle"),
+        rawget(_G, "ZO_CharacterHeaderSectionDivider"),
+        rawget(_G, "ZO_CharacterApparelSectionText"),
+        rawget(_G, "ZO_CharacterEquipmentSlotsCostume"),
+        rawget(_G, "ZO_CharacterPaperDoll"),
+        rawget(_G, "ZO_CharacterWeaponSwap"),
+        rawget(_G, "ZO_CharacterWindowStats"),
+        rawget(_G, "ZO_SharedWideLeftPanelBackground"),
+    }
+    for _, control in ipairs(controls) do
+        if control and control.SetHidden then pcall(control.SetHidden, control, true) end
+    end
+    for _, d in ipairs(PLAYER_SLOTS) do
+        local c = rawget(_G, d.control)
+        HideSlotPresentation(c)
+        if c and c.SetHidden then pcall(c.SetHidden, c, true) end
+    end
+    return true
+end
+
+function G:ScheduleInactivePlayerCleanup029374()
+    self.cleanupGeneration029374 = (tonumber(self.cleanupGeneration029374) or 0) + 1
+    local generation = self.cleanupGeneration029374
+    local function finalize()
+        if not G or generation ~= G.cleanupGeneration029374 then return end
+        if G:IsPlayerSceneActiveOrTransitioning029372(nil) then
+            -- Another player scene took ownership during the handoff. Reapply
+            -- the Suite layout instead of hiding controls beneath it.
+            if G:IsEnabled() then G:RequestRefresh(0) end
+            return
+        end
+        G:HardHideInactivePlayerControls029374()
+    end
+    if type(zo_callLater) == "function" then
+        zo_callLater(finalize, 0)
+        zo_callLater(finalize, 35)
+    else
+        finalize()
+    end
+end
+
+-- Final player cleanup now has two phases: restore Suite mutations immediately,
+-- then hard-hide scene controls only after ESO confirms there is no Inventory or
+-- Character scene left to own them.
+function G:CleanupPlayerScene()
+    if not self:IsEnabled() then
+        self:RestoreAll()
+        self:ScheduleInactivePlayerCleanup029374()
+        return
+    end
+
+    if self:IsPlayerSceneActiveOrTransitioning029372(nil) then
+        self:RequestRefresh(0)
+        return
+    end
+
+    self:HideGearStatsCard()
+    self:HideWeaponUtilityCells()
+    self:RestorePlayerState()
+    self:HideWorkspaceBackdrop()
+    for _, d in ipairs(PLAYER_SLOTS) do HideSlotPresentation(rawget(_G, d.control)) end
+    self:ScheduleInactivePlayerCleanup029374()
+end
+
+-- ESO can refresh its native stats/paper-doll controls on UI-mode changes while
+-- the Character scene remains open. Reassert Suite ownership after that event;
+-- when no player scene is active, run the final gameplay cleanup instead.
+if EVENT_MANAGER and rawget(_G, "EVENT_GAME_CAMERA_UI_MODE_CHANGED") then
+    EVENT_MANAGER:UnregisterForEvent(NS .. "CharacterLifecycle029374", EVENT_GAME_CAMERA_UI_MODE_CHANGED)
+    EVENT_MANAGER:RegisterForEvent(NS .. "CharacterLifecycle029374", EVENT_GAME_CAMERA_UI_MODE_CHANGED, function()
+        if not G then return end
+        if G:IsEnabled() and G:IsPlayerSceneShowing() then
+            G:RequestRefresh(0)
+            if type(zo_callLater) == "function" then
+                zo_callLater(function()
+                    if G and G:IsEnabled() and G:IsPlayerSceneShowing() then G:ApplyPlayerLayout() end
+                end, 25)
+            end
+        else
+            G:ScheduleInactivePlayerCleanup029374()
+        end
+    end)
 end

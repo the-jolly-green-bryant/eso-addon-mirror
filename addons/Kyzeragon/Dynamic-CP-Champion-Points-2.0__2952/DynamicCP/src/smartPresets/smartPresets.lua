@@ -239,6 +239,12 @@ DynamicCP.SMART_PRESETS = {
             end,
             applyFunc = DynamicCP.SmartPresets.ApplyBluePVE,
         },
+        ["DEFAULT_SMART_BLUE_PVP"] = {
+            name = function()
+                return "Auto General PvP"
+            end,
+            applyFunc = DynamicCP.SmartPresets.ApplyBlueGeneralPVP,
+        },
     },
     Red = {
         ["DEFAULT_SMART_RED_PVE"] = {
@@ -250,6 +256,18 @@ DynamicCP.SMART_PRESETS = {
                     )
             end,
             applyFunc = DynamicCP.SmartPresets.ApplyRedPVE,
+        },
+        ["DEFAULT_SMART_RED_SPEED"] = {
+            name = function()
+                return "Auto Speed / Solo"
+            end,
+            applyFunc = DynamicCP.SmartPresets.ApplyRedSpeed,
+        },
+        ["DEFAULT_SMART_RED_PVP"] = {
+            name = function()
+                return "Auto General PvP"
+            end,
+            applyFunc = DynamicCP.SmartPresets.ApplyRedGeneralPvP,
         },
     },
 }

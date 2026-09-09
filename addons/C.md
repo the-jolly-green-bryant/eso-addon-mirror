@@ -305,7 +305,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Customizable Bars (Discontinued)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Beholder/Customizable-Bars-Discontinued__4472) | Beholder | PC / Mac | 1.3 |
 | [CustomKillFeed](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/CustomKillFeed__3770) | Masteroshi430 | PC / Mac | 2026.07.06 |
 | [Cute Zodiac Icons - icon pack for OdySupportIcons](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/def-venom/Cute-Zodiac-Icons---icon-pack-for-OdySupportIcons__3400) | def venom | PC / Mac | 1.001 |
-| [Cutthroat's Focus/MAJOR VULNERABILITY Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/its_wifey/Cutthroat-s-Focus-MAJOR-VULNERABILITY-Tracker__4820) | its_wifey | PC / Mac | 1.2 |
+| [Cutthroat's Focus/MAJOR VULNERABILITY Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/its_wifey/Cutthroat-s-Focus-MAJOR-VULNERABILITY-Tracker__4820) | its_wifey | PC / Mac | 1.3 |
 | [CyrHUD](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Sasky/CyrHUD__559) | Sasky | PC / Mac | 2026.07.20 |
 | [Cyrillic Chat Filter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Revived-AddOns/Cyrillic-Chat-Filter__2328) | Revived AddOns | PC / Mac | 5 |
 | [Cyro Quest Manager](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/scobster007/Cyro-Quest-Manager__4208) | scobster007 | PC / Mac | 2.1 |

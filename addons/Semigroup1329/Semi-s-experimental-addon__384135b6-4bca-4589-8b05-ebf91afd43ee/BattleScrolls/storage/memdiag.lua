@@ -10,8 +10,8 @@
 --     Xbox allocator/attribution rules are still under investigation
 --   - collectgarbage("count"): requested Lua heap for the WHOLE VM,
 --     including uncollected garbage and VM metadata
---   - storage's EstimateHistorySize: layout model of history instances only,
---     times an empirical 1.5 fudge
+--   - storage's EstimateSavedSize: layout model of history, setup pools and
+--     the other saved roots (storage/sizemodel.lua), times its 1.1 factor
 --
 -- Provides:
 --   - a raw walk of the ENTIRE BattleScrollsSavedVariables global (every
@@ -20,7 +20,7 @@
 --     of the serialized on-disk file size (what the game parses at load)
 --   - calibration allocators: hold exactly N model-MB of strings or tables
 --     so the gauge's bytes-per-model-byte factor can be read off the
---     console display, replacing the guessed 1.5 fudge with a measurement
+--     console display (how sizemodel's 1.1 was calibrated)
 -----------------------------------------------------------
 
 if not SemisPlaygroundCheckAccess() then
@@ -37,7 +37,7 @@ BattleScrolls = BattleScrolls or {}
 ---@class MemDiagReport
 ---@field totalRawBytes number Raw model bytes for the whole SV global
 ---@field totalSerializedBytes number Approximate on-disk SV file size
----@field historyEstimateBytes number storage:EstimateHistorySize() (the shown, fudged number)
+---@field historyEstimateBytes number storage:EstimateSavedSize().totalBytes, the figure the settings show
 ---@field sections MemDiagSection[] Depth-3 breakdown, largest first
 
 ---@class MemDiagProbeRow
@@ -51,7 +51,7 @@ BattleScrolls = BattleScrolls or {}
 ---@field probeRows MemDiagProbeRow[]|nil Result of the latest size-class probe
 ---@field retentionReport MemDiagRetentionReport|nil Latest slash-command test; never persisted
 ---@field busyText string|nil Localized status while an async op runs; nil when idle
----@field _held (string|number[])[]|nil Calibration allocations currently pinned
+---@field _held table|nil Pinned allocations: an array of strings or tables, or (memlab calib) an array of holder chunks
 ---@field _heldModelBytes number Model cost of the pinned allocations
 ---@field _stringSerial number Ever-increasing prefix counter: Havok interns ALL strings, so restarting it per press would reuse strings
 ---@field _fiber Fiber<any>|nil Running diagnostic op (measure/allocate/release)
@@ -232,7 +232,7 @@ local function measureEffect()
 
         table.sort(sections, function(a, b) return a.rawBytes > b.rawBytes end)
 
-        local historyEstimateBytes = BattleScrolls.storage:EstimateHistorySize()
+        local historyEstimateBytes = BattleScrolls.storage:EstimateSavedSize().totalBytes
         ---@type MemDiagReport
         return {
             totalRawBytes = totalRaw,

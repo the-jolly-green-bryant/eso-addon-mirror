@@ -1,5 +1,34 @@
 # Platform findings — ESO on console (PS5)
 
+## 2026-09-09: source audit and 1.14.0 (pending PS5 validation)
+
+The latest user report is that 1.13.1 catches neither button. Earlier claims below that the
+entry-only approach works must not be treated as verified success.
+
+Source defects confirmed:
+
+- The HUD loop enables the layer only when the text entry is open; closed-HUD switching is excluded.
+- OnWatchTick references forceLayer before its local declaration. Lua resolves that reference as a
+  global, so the slash command's local flag is not the flag the watcher reads.
+- channelFragment and channelFragmentAdded are declared twice; the latter locals shadow the former.
+- PrintBinds queries PBSCHATASSISTANT_ENTRY_CHANNEL_CHORD, which the supplied Bindings.xml does not declare.
+- README says L2 is not bound, but supplied Bindings.xml explicitly binds UI_SHORTCUT_LEFT_TRIGGER.
+
+The claim below that fragments uniquely attach inherited bindings is an inference, not established
+by the cited observations. The published ZO_ActionLayerFragment:Show itself calls
+PushActionLayerByName; lifecycle, ordering, scene state and variable scope must also be considered.
+
+1.14.0 removes the old entry-only machinery. A separate 10ms HUD loop reads L2 analog magnitude,
+adds a fragment containing ONLY L3 while L2 is held, and removes it on release or on leaving HUD.
+Each L3 Down reads L2 again, with no Up-dependent latch. No L2 binding and no private key-state or
+binding APIs are used. L3 is intentionally reassigned only during the modifier hold.
+
+Local tests cover lifecycle, missed Up notifications, repeated L3 events, analog API rejection,
+menus, text entry, capture conflicts and master/feature toggles. They do not emulate native engine
+input dispatch, prove that blocking is preserved on PS5, or prove that L3 will arrive in this new scope.
+
+---
+
 What was measured on the way to this add-on, and what each measurement rules in or out. Almost
 none of it is written down anywhere else, and several entries contradict `ESOUIDocumentation.txt`.
 
@@ -135,6 +164,37 @@ precedence over the gameplay action on the same button, fallthrough or not.
 Which leaves the technique sound and the choice of buttons wrong. Reviving it means finding buttons
 the HUD does not need — and note that anything reachable through `inheritsBindFrom` is, by
 definition, a button the game already uses somewhere.
+
+### …and how it came back, in 1.10.0 and 1.11.0
+
+Two changes, neither of them to the buttons.
+
+**The layer is pushed only while the chat entry is open.** That is the whole fix. While the player
+is typing there is no gameplay action to shadow: the entry binds `UI_SHORTCUT_PRIMARY` and
+`UI_SHORTCUT_NEGATIVE` and nothing else, and the chat system is already eating directional input. A
+watchdog takes the layer down on any tick that finds the entry closed, because a layer left pushed
+*is* the 1.8.0 failure.
+
+**Only L3 is bound.** L2 is never declared as an action anywhere, so it is never shadowed. What
+the chord needs is whether the trigger is pulled at the moment L3 goes down, and
+`GetGamepadLeftTriggerMagnitude()` answers that on the spot — which also removes the chord latch
+and the polling that existed only because analogue triggers do not report their release reliably.
+There is no release to miss when each press is judged by itself.
+
+### A layer being active is not the same as its actions being bound
+
+`PushActionLayerByName` works from an add-on, and `IsActionLayerActiveByName` agrees afterwards.
+`/pbchat layers` showed the layer active and innermost, above the general layer, with
+`GamepadChatSystem` not even on the stack — and the action never fired. Forced up on the HUD,
+where 1.8.0 had already proved the same `inheritsBindFrom` delivers, still nothing.
+
+**An inherited bind attaches when the layer arrives through a `ZO_ActionLayerFragment`. Pushing
+the same layer by name produces a layer with no binds in it** — active, topmost, and inert, which
+is the worst combination to debug because every reading says it should be working.
+
+So the fragment is the mechanism, and the scoping is done by adding and removing it from the `hud`
+scene rather than by choosing when to push. 1.8.0 left the fragment in place, which is why it
+shadowed a button for the whole of play.
 
 **The lesson worth keeping:** every entry above is a measurement, and measurements are sound. The
 sentence that was wrong was the one that generalised from them without being measured itself.

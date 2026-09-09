@@ -1,6 +1,6 @@
 -------------------------------------------------------------------------------
 -- LibInteriorDetection
--- Version: 1.0.1
+-- Version: 1.1.0
 --
 -- A library that reports whether the player is currently indoors, by
 -- combining a per-zone "interior" default with live door-transition and
@@ -104,15 +104,23 @@
 -- this library's own ZONE_INTERIOR table, not ESO's zone enumeration,
 -- since that doesn't cover delves/dungeons).
 --
--- DEBUG COMMAND: /lid debug hud on|off shows/hides an on-screen
+-- DEBUG COMMANDS: /lid debug hud on|off shows/hides an on-screen
 -- INDOORS/OUTDOORS label. Persisted (account-wide), not exposed in the
 -- settings menu, matching the /rnd debug <subcommand> convention already
 -- used in Realistic Needs and Diseases.
+--   /lid debug saved dumps saved-vs-current raw zoneId/position/state, to
+--   diagnose the restore-on-login logic in OnPlayerActivated directly
+--   rather than guessing at it.
+--   /lid debug flip inverts the live isInterior flag for the current
+--   session only (not persisted) - a manual escape hatch for when the
+--   restore-on-login logic gets it wrong; the next real zone change, door
+--   interaction, or map teleport overrides it normally, same as if the
+--   command had never been run.
 -------------------------------------------------------------------------------
 
 local LIB_NAME  = "LibInteriorDetection"
 local ADDON_ID  = "LibInteriorDetection"  -- LAM panel name / slash command namespace
-local LIB_VERSION = 28
+local LIB_VERSION = 29
 
 -- Cached once rather than calling GetEventManager() repeatedly throughout
 -- the file - same singleton either way, avoids the repeated lookup.
@@ -1828,7 +1836,69 @@ local function SlashLid(argString)
         return
     end
 
-    CHAT_ROUTER:AddSystemMessage("[LibInteriorDetection] Usage: /lid debug hud on|off")
+    -- /lid debug saved - dumps saved vs. current raw position/state, to
+    -- diagnose the restore-on-login logic (OnPlayerActivated above)
+    -- without guessing. Removed in the 1.0.0 "final deployment" cleanup on
+    -- the assumption the mechanism was fully validated by then; reinstated
+    -- after a report of a failed restore specifically for an interior
+    -- sub-space combined with a multi-hour offline gap, which evidently
+    -- wasn't covered by the earlier testing that justified removing this.
+    if args[1] == "debug" and args[2] == "saved" then
+        local curZone, curX, curY, curZ = GetRawPosition()
+        local curLibZoneId = LibZone:GetCurrentZoneIds()
+
+        CHAT_ROUTER:AddSystemMessage(
+            string.format("[LibInteriorDetection] Current live state: %s (zoneDefault: %s)",
+                DescribeIsInterior(lib.state.isInterior), DescribeIsInterior(lib.state.zoneDefaultInterior))
+        )
+        CHAT_ROUTER:AddSystemMessage(
+            string.format("[LibInteriorDetection] Current: rawZone=%s (%s) libZone=%s x=%s y=%s z=%s",
+                tostring(curZone), curZone and (GetZoneNameById(curZone) or "?") or "?",
+                tostring(curLibZoneId), tostring(curX), tostring(curY), tostring(curZ))
+        )
+
+        if not lib.charSavedVars or not lib.charSavedVars.lastPosition then
+            CHAT_ROUTER:AddSystemMessage("[LibInteriorDetection] No saved position on record for this character.")
+            return
+        end
+
+        local saved = lib.charSavedVars.lastPosition
+        CHAT_ROUTER:AddSystemMessage(
+            string.format("[LibInteriorDetection] Saved: rawZone=%s (%s) x=%s y=%s z=%s savedState=%s",
+                tostring(saved.zoneId), saved.zoneId and (GetZoneNameById(saved.zoneId) or "?") or "?",
+                tostring(saved.x), tostring(saved.y), tostring(saved.z),
+                DescribeIsInterior(lib.charSavedVars.lastIsInterior))
+        )
+
+        local zoneMatches = curZone ~= nil and saved.zoneId == curZone
+        CHAT_ROUTER:AddSystemMessage(
+            string.format("[LibInteriorDetection] rawZone match: %s (this is the ONLY gate checked when initial==true - see the OnPlayerActivated restore logic)",
+                tostring(zoneMatches))
+        )
+        return
+    end
+
+    -- /lid debug flip - inverts the live isInterior flag for the current
+    -- session only. A manual escape hatch for exactly the failure mode
+    -- above: if the restore-on-login logic ever gets this wrong (e.g. the
+    -- interior-sub-space-plus-long-offline-gap case), the player can
+    -- correct it themselves in one command rather than wait for a real
+    -- fix. Deliberately NOT persisted anywhere and does not touch
+    -- zoneDefaultInterior - the very next real zone change, door
+    -- interaction, or map teleport will naturally re-evaluate and
+    -- override this the normal way, exactly as if this command had never
+    -- been run.
+    if args[1] == "debug" and args[2] == "flip" then
+        lib.state.isInterior = not lib.state.isInterior
+        UpdateHud()
+        CHAT_ROUTER:AddSystemMessage(
+            string.format("[LibInteriorDetection] Flipped to: %s (this session only - not saved)",
+                DescribeIsInterior(lib.state.isInterior))
+        )
+        return
+    end
+
+    CHAT_ROUTER:AddSystemMessage("[LibInteriorDetection] Usage: /lid debug hud on|off | /lid debug saved | /lid debug flip")
 end
 
 -------------------------------------------------------------------------------

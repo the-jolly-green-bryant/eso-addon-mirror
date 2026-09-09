@@ -218,6 +218,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [arabic](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lofand/arabic__c8823ab9-749b-4180-ad52-c15b1363d974) | Lofand | Console | — |
 | [arabic new text](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lofand/arabic-new-text__6ca61801-549f-44fd-b20a-9b655530c6bc) | Lofand | Console | — |
 | [Arcanist Crux Job Gauge](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ViciousTomato/Arcanist-Crux-Job-Gauge__3661) | ViciousTomato | PC / Mac | 1.1 |
+| [Arcanist Mastery Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/its_wifey/Arcanist-Mastery-Tracker__4823) | its_wifey | PC / Mac | 1.2 |
 | [Arcanum Artis GuildHall](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Niwasaka/Arcanum-Artis-GuildHall__3013) | Niwasaka | PC / Mac | 1.22.0 |
 | [Arch's Enhanced Crafting](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Architecture/Arch-s-Enhanced-Crafting__1443) | Architecture | PC / Mac | 2.1.1 |
 | [Arch's Enhanced Gamepad](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Architecture/Arch-s-Enhanced-Gamepad__1645) | Architecture | PC / Mac | 1.0.8 |

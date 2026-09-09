@@ -1,0 +1,21 @@
+## Title: Greed
+## Author: Previsible
+## Version: 0.9.8-beta
+## APIVersion: 101050
+## AddOnVersion: 9
+## Description: Visual set wishlist and stickerbook tracker.
+## SavedVariables: GreedSavedVariables
+## DependsOn: LibAddonMenu-2.0>=43 LibSets>=0009020
+
+Localization/en.lua
+Localization/$(language).lua
+GreedData.lua
+Greed.xml
+Greed.lua
+UI/GreedMainWindow.lua
+Features/GreedOwned.lua
+UI/GreedSetWindows.lua
+UI/GreedDropList.lua
+Features/GreedPrompts.lua
+Features/GreedLoot.lua
+GreedBootstrap.lua

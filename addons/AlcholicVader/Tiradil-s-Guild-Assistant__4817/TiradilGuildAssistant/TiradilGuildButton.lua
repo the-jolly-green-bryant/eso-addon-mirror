@@ -1,7 +1,3 @@
--- Title: Tiradil's Guild Assistant
--- Author: Tiradil
--- Copyright: © 2026 Tiradil
-
 
 local function TryAddGuildHomeButton()
     local candidateNames = {

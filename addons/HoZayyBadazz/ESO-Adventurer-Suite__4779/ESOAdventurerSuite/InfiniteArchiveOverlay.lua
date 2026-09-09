@@ -1076,9 +1076,7 @@ end
 function A:UpdateArchiveChoiceAdvisor029171()
     local seen = false
     local keyboard = rawget(_G, "ENDLESS_DUNGEON_BUFF_SELECTOR_KEYBOARD")
-    local gamepad = rawget(_G, "ENDLESS_DUNGEON_BUFF_SELECTOR_GAMEPAD")
     if keyboard then seen = self:UpdateArchiveChoiceSelector029171(keyboard) or seen end
-    if gamepad then seen = self:UpdateArchiveChoiceSelector029171(gamepad) or seen end
     return seen
 end
 

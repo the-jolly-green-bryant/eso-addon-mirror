@@ -410,13 +410,13 @@ local function runMigrationAsync()
         end
 
         -- Freed = the actual change of the settings "History" figure, minus
-        -- what the setup pool (stored beside history) gained. Decimal MB,
-        -- matching the settings tooltip's currency. Observed on the real
+        -- what the setup pool (stored beside history) gained. MiB, matching
+        -- the settings tooltip's unit. Observed on the real
         -- Xbox run: the Add-On Memory gauge showed this drop only after the
         -- next UI reload - freeing long-lived data may not register
         -- in-session (core/gc.lua header).
         local freedMb = math.max(0,
-            historyBefore - historyMemoryAsync() - totals.poolGrowth) / 1000000
+            historyBefore - historyMemoryAsync() - totals.poolGrowth) / BattleScrolls.sizeModel.MIB
         announce(zo_strformat(GetString(BATTLESCROLLS_MIGRATION_DONE),
             totals.migrated, string.format("%.1f", freedMb)), SOUNDS.QUEST_COMPLETED)
         if totals.migrated > 0 then

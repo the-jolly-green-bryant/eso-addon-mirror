@@ -1,7 +1,7 @@
 ## Title: BetterBGSounds
 ## APIVersion: 101046
-## Description: Mutes annoying medal sounds in PvP.
-## Version: 1.0
+## Description: Mutes annoying BG Medal sounds and adds customizable KillSounds in PvP.
+## Version: 1.2
 ## Author: @ToRUk72
 ## SavedVariables: BetterBGSoundsSV
 ## DependsOn: LibAddonMenu-2.0

@@ -39,7 +39,7 @@ function T.RegisterSettings()
 
     local settings = LibHarven:AddAddon(L.TITLE, { allowRefresh = true, allowDefaults = true })
     if not settings then return end
-    settings.version = "1.6.10"
+    settings.version = "1.7.6"
     settings.author = "Tetsurion"
 
     settings:AddSetting({
@@ -193,10 +193,10 @@ function T.RegisterSettings()
 
     settings:AddSetting({
         type = LibHarvensAddonSettings.ST_SLIDER,
-        label = L.PAIR_X_LABEL or "Buff/debuff offset X",
-        tooltip = L.PAIR_X_TT or "Used when the healer HUD is off. Moves raid + boss panels together.",
-        min = -400,
-        max = 80,
+        label = L.PAIR_X_LABEL or "Buff/debuff stack X",
+        tooltip = L.PAIR_X_TT or "Nudge the stacked debuff+buff windows left/right. They sit under the healer HUD (right-aligned). Negative = left.",
+        min = -500,
+        max = 200,
         step = 10,
         default = 0,
         getFunction = function()
@@ -210,9 +210,9 @@ function T.RegisterSettings()
 
     settings:AddSetting({
         type = LibHarvensAddonSettings.ST_SLIDER,
-        label = L.PAIR_Y_LABEL or "Buff/debuff offset Y",
-        tooltip = L.PAIR_Y_TT or "Used when the healer HUD is off. Moves raid + boss panels together.",
-        min = -80,
+        label = L.PAIR_Y_LABEL or "Buff/debuff stack Y",
+        tooltip = L.PAIR_Y_TT or "Nudge the stacked debuff+buff windows up/down under the healer HUD. Positive = lower.",
+        min = -120,
         max = 400,
         step = 10,
         default = 0,

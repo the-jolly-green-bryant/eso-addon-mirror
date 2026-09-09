@@ -77,7 +77,7 @@ function D:GetCategories()
 end
 
 function D:GetBoundAbilityId(slot, category)
-    local id = tonumber(safe(GetSlotBoundId, 0, slot, category)) or 0
+    local id = tonumber((safe(GetSlotBoundId, 0, slot, category))) or 0
     local actionType = safe(GetSlotType, nil, slot, category)
     if actionType == rawget(_G, "ACTION_TYPE_CRAFTED_ABILITY") and type(GetAbilityIdForCraftedAbilityId) == "function" then
         id = tonumber(safe(GetAbilityIdForCraftedAbilityId, id, id)) or id
@@ -963,12 +963,6 @@ function D:Initialize()
             self:Refresh()
         end)
     end
-    if EVENT_GAMEPAD_PREFERRED_MODE_CHANGED then
-        EVENT_MANAGER:RegisterForEvent(prefix .. "_Input", EVENT_GAMEPAD_PREFERRED_MODE_CHANGED, function()
-            if EPC.AbilityOverlays and EPC.AbilityOverlays.InvalidateBindingText then EPC.AbilityOverlays:InvalidateBindingText() end
-            self:Refresh()
-        end)
-    end
     if EVENT_PLAYER_COMBAT_STATE then
         EVENT_MANAGER:RegisterForEvent(prefix .. "_Combat", EVENT_PLAYER_COMBAT_STATE, function()
             self:RefreshDynamic029311(true)
@@ -998,7 +992,7 @@ function D:Initialize()
         if not EPC.saved or EPC.saved.showDualActionBar029189 ~= true then return end
         local nowValue = type(GetFrameTimeMilliseconds) == "function" and (tonumber(GetFrameTimeMilliseconds()) or 0) or 0
         local inCombat = type(IsUnitInCombat) == "function" and safe(IsUnitInCombat, false, "player") == true
-        local gap = inCombat and 125 or 1000
+        local gap = inCombat and 250 or 1000
         if not self.lastDynamicTick029315 or (nowValue - self.lastDynamicTick029315) >= gap then
             self.lastDynamicTick029315 = nowValue
             self:RefreshDynamic029311(false)
@@ -1087,4 +1081,1022 @@ function D:ClearSmartRecommendation029189()
     else
         reallyClear()
     end
+end
+
+-- ============================================================================
+-- v0.29.365 - proc/Ultimate readiness glow + sound on the dual action bar too.
+-- ============================================================================
+local EAS_DAB_RefreshDynamicBase029365 = D.RefreshDynamic029311
+local function EAS_DAB_EnsureReadyGlow029365(frame)
+    if not frame or frame.epcReadyGlow029365 then return end
+    local glow = WM:CreateControl(nil, frame, CT_BACKDROP)
+    glow:SetAnchor(TOPLEFT, frame, TOPLEFT, -4, -4)
+    glow:SetAnchor(BOTTOMRIGHT, frame, BOTTOMRIGHT, 4, 4)
+    glow:SetMouseEnabled(false)
+    glow:SetCenterColor(1.00, 0.68, 0.05, 0.06)
+    glow:SetEdgeColor(1.00, 0.90, 0.20, 1.00)
+    glow:SetEdgeTexture(nil, 8, 8, 5)
+    if glow.SetDrawLayer and DL_OVERLAY then glow:SetDrawLayer(DL_OVERLAY) end
+    if glow.SetDrawLevel then glow:SetDrawLevel(1550) end
+    glow:SetHidden(true)
+    frame.epcReadyGlow029365 = glow
+end
+
+local function EAS_DAB_Signature029365(slot, category)
+    local base = tonumber((safe(GetSlotBoundId, 0, slot, category))) or 0
+    local effective = base
+    if base > 0 and type(GetEffectiveAbilityIdForAbilityOnHotbar) == "function" then
+        effective = tonumber((safe(GetEffectiveAbilityIdForAbilityOnHotbar, base, base, category))) or base
+    end
+    local texture = tostring(safe(GetSlotTexture, "", slot, category) or "")
+    return tostring(base) .. ":" .. tostring(effective) .. ":" .. texture, base, effective
+end
+
+function D:RefreshDynamic029311(force)
+    EAS_DAB_RefreshDynamicBase029365(self, force)
+    if not self.window or self.window:IsHidden() then return end
+    local activeCategory = safe(GetActiveHotbarCategory, nil)
+    local nowValue = nowMS()
+    for _, row in ipairs(self.rows or {}) do
+        local category = row.epcCategory
+        for ordinal, frame in ipairs(row.slots or {}) do
+            EAS_DAB_EnsureReadyGlow029365(frame)
+            local glow = frame.epcReadyGlow029365
+            local slot = self.slots and self.slots[ordinal]
+            if glow and slot then
+                local sig, base, effective = EAS_DAB_Signature029365(slot, category)
+                local previous = frame.epcReadySignature029365
+                local procActive = ordinal < #(self.slots or {}) and base > 0 and effective > 0 and effective ~= base
+                if procActive and frame.epcProcActiveWas029365 ~= true and previous and category == activeCategory then
+                    local sound = SOUNDS and (rawget(SOUNDS, "ABILITY_SLOTTED") or rawget(SOUNDS, "DEFAULT_CLICK"))
+                    if sound and type(PlaySound) == "function" then pcall(PlaySound, sound) end
+                end
+                frame.epcProcActiveWas029365 = procActive
+                frame.epcReadySignature029365 = sig
+
+                local ultimateReady = false
+                if ordinal == #(self.slots or {}) and base > 0 and COMBAT_MECHANIC_FLAGS_ULTIMATE then
+                    local current = tonumber((safe(GetUnitPower, 0, "player", COMBAT_MECHANIC_FLAGS_ULTIMATE))) or 0
+                    local cost = tonumber((safe(GetSlotAbilityCost, 0, slot, category))) or 0
+                    ultimateReady = cost > 0 and current >= cost
+                    if category == activeCategory and ultimateReady and frame.epcUltimateWasReady029365 ~= true then
+                        local sound = SOUNDS and rawget(SOUNDS, "ABILITY_ULTIMATE_READY")
+                        if sound and type(PlaySound) == "function" then pcall(PlaySound, sound) end
+                    end
+                    frame.epcUltimateWasReady029365 = ultimateReady
+                end
+                local procReady = procActive
+                glow:SetHidden(not (ultimateReady or procReady))
+                if not glow:IsHidden() then
+                    local phase = (nowValue % 700) / 700
+                    glow:SetAlpha(0.55 + 0.45 * math.abs(phase * 2 - 1))
+                end
+            end
+        end
+    end
+end
+
+-- ============================================================================
+-- v0.29.376 - action-bar live-state hardening.
+--  * keep selected Skill Style artwork stable while a skill enters a proc/stack
+--    runtime variant;
+--  * never advertise an inactive-bar Ultimate as ready;
+--  * refresh newly slotted skills after ESO finishes the slot mutation;
+--  * wake stack rendering from effect events and bridge brief snapshot gaps.
+-- ============================================================================
+local EAS_DAB_RefreshStaticBase029376 = D.RefreshStatic029311
+local EAS_DAB_RefreshDynamicBase029376 = D.RefreshDynamic029311
+-- v0.29.386 - combat performance: player EVENT_EFFECT_CHANGED can fire many
+-- times in a single frame. Collapse those bursts into one dynamic refresh.
+function D:QueueDynamicRefresh029386(force)
+    self.pendingDynamicRefreshForce029386 = self.pendingDynamicRefreshForce029386 == true or force == true
+    if self.dynamicRefreshQueued029386 == true then return end
+    self.dynamicRefreshQueued029386 = true
+    local function run()
+        local bar = EPC and EPC.DualActionBar
+        if not bar then return end
+        bar.dynamicRefreshQueued029386 = false
+        local doForce = bar.pendingDynamicRefreshForce029386 == true
+        bar.pendingDynamicRefreshForce029386 = false
+        bar:RefreshDynamic029311(doForce)
+    end
+    if type(zo_callLater) == "function" then zo_callLater(run, 50) else run() end
+end
+
+local EAS_DAB_InitializeBase029376 = D.Initialize
+
+local function EAS_DAB_ProgressionId029376(abilityId)
+    abilityId = tonumber(abilityId) or 0
+    if abilityId <= 0 or type(GetSpecificSkillAbilityKeysByAbilityId) ~= "function"
+        or type(GetProgressionSkillProgressionId) ~= "function" then return 0 end
+    local skillType, skillLineIndex, skillIndex = safe(GetSpecificSkillAbilityKeysByAbilityId, nil, abilityId)
+    if skillType == nil or skillLineIndex == nil or skillIndex == nil then return 0 end
+    local value = safe(GetProgressionSkillProgressionId, 0, skillType, skillLineIndex, skillIndex)
+    return tonumber((value)) or 0
+end
+
+function D:RefreshStatic029311(...)
+    local result = EAS_DAB_RefreshStaticBase029376(self, ...)
+    self.stableStyleBySlot029376 = self.stableStyleBySlot029376 or {}
+    for _, row in ipairs(self.rows or {}) do
+        local category = row.epcCategory
+        for ordinal, frame in ipairs(row.slots or {}) do
+            local ability = frame.epcAbility029311
+            if ability and ability.used == true then
+                local slot = ability.slot or (self.slots and self.slots[ordinal])
+                local baseId = tonumber(ability.abilityId) or 0
+                local effectiveId = tonumber(ability.effectiveAbilityId029311) or baseId
+                local fallback = tostring(ability.icon or "")
+                local key = tostring(category) .. ":" .. tostring(slot or ordinal)
+                local resolved = tostring(self:GetSkillStyleIcon(baseId, fallback) or "")
+                local cached = self.stableStyleBySlot029376[key]
+                local progressionId = EAS_DAB_ProgressionId029376(baseId)
+                local styled = resolved ~= "" and resolved ~= fallback
+
+                if styled then
+                    cached = { abilityId = baseId, progressionId = progressionId, texture = resolved }
+                    self.stableStyleBySlot029376[key] = cached
+                elseif cached and cached.texture and cached.texture ~= "" then
+                    local sameProgression = progressionId > 0 and cached.progressionId and cached.progressionId > 0
+                        and progressionId == cached.progressionId
+                    local priorEffective = cached.abilityId
+                    if cached.abilityId and type(GetEffectiveAbilityIdForAbilityOnHotbar) == "function" then
+                        priorEffective = tonumber((safe(GetEffectiveAbilityIdForAbilityOnHotbar, cached.abilityId, cached.abilityId, category))) or cached.abilityId
+                    end
+                    local runtimeVariant = effectiveId ~= baseId
+                        or baseId == tonumber(priorEffective)
+                        or effectiveId == tonumber(priorEffective)
+                    if sameProgression or runtimeVariant or baseId == tonumber(cached.abilityId) then
+                        resolved = cached.texture
+                    else
+                        self.stableStyleBySlot029376[key] = nil
+                    end
+                end
+
+                if resolved ~= "" and frame.epcIcon then
+                    EAS_DAB_SetTexture029311(frame.epcIcon, frame, "iconTexture029311", resolved)
+                end
+            end
+        end
+    end
+    return result
+end
+
+function D:RefreshDynamic029311(force)
+    local result = EAS_DAB_RefreshDynamicBase029376(self, force)
+    if not self.rows then return result end
+    self.stackGrace029376 = self.stackGrace029376 or {}
+    local nowValue = nowMS()
+    local activeCategory = safe(GetActiveHotbarCategory, nil)
+
+    for _, row in ipairs(self.rows) do
+        local category = row.epcCategory
+        for ordinal, frame in ipairs(row.slots or {}) do
+            local ability = frame.epcAbility029311
+            local slot = ability and ability.slot or (self.slots and self.slots[ordinal])
+            local key = tostring(category) .. ":" .. tostring(slot or ordinal)
+
+            -- ESO/Rotation snapshots can briefly report zero stacks between the
+            -- heavy-attack/effect event and the next effect snapshot. Keep the
+            -- last non-zero badge for a short bridge only. Ability use clears it
+            -- immediately below, so consumed stacks never linger for the grace.
+            if frame.epcStack and frame.epcStack.GetText then
+                local text = tostring(frame.epcStack:GetText() or "")
+                if text ~= "" then
+                    self.stackGrace029376[key] = { text = text, expires = nowValue + 900 }
+                else
+                    local cached = self.stackGrace029376[key]
+                    if cached and nowValue <= (tonumber(cached.expires) or 0) then
+                        EAS_DAB_SetText029311(frame.epcStack, frame, "stackText029311", cached.text)
+                    elseif cached then
+                        self.stackGrace029376[key] = nil
+                    end
+                end
+            end
+
+            -- The player cannot activate the inactive weapon-bar Ultimate. Do
+            -- not glow it just because the shared Ultimate pool exceeds that
+            -- ability's cost; readiness guidance belongs to the active bar.
+            if ordinal == #(self.slots or {}) and frame.epcReadyGlow029365 and category ~= activeCategory then
+                frame.epcReadyGlow029365:SetHidden(true)
+                frame.epcUltimateWasReady029365 = false
+            end
+        end
+    end
+    return result
+end
+
+function D:Initialize()
+    local result = EAS_DAB_InitializeBase029376(self)
+    local prefix = (EPC.name or "ESOAdventurerSuite") .. "_DualActionBar029376"
+
+    -- EVENT_ACTION_SLOT_UPDATED can fire before the new slot payload is fully
+    -- visible to GetSlotBoundId/GetSlotTexture. Re-read on the next short frame
+    -- boundary so drag/drop skill changes appear without requiring a bar swap.
+    if EVENT_ACTION_SLOT_UPDATED then
+        EVENT_MANAGER:RegisterForEvent(prefix .. "_SlotSettled", EVENT_ACTION_SLOT_UPDATED, function()
+            local function refreshSettled()
+                if EPC and EPC.DualActionBar then
+                    EPC.DualActionBar:InvalidateStyleCache029189()
+                    EPC.DualActionBar:Refresh()
+                end
+            end
+            if type(zo_callLater) == "function" then
+                zo_callLater(refreshSettled, 35)
+                zo_callLater(refreshSettled, 120)
+            else refreshSettled() end
+        end)
+    end
+    if EVENT_ACTION_SLOTS_FULL_UPDATE then
+        EVENT_MANAGER:RegisterForEvent(prefix .. "_SlotsFull", EVENT_ACTION_SLOTS_FULL_UPDATE, function()
+            if type(zo_callLater) == "function" then
+                zo_callLater(function() if EPC and EPC.DualActionBar then EPC.DualActionBar:Refresh() end end, 30)
+            elseif EPC and EPC.DualActionBar then EPC.DualActionBar:Refresh() end
+        end)
+    end
+    if EVENT_ACTION_SLOT_ABILITY_USED then
+        EVENT_MANAGER:RegisterForEvent(prefix .. "_Used", EVENT_ACTION_SLOT_ABILITY_USED, function(_, slot)
+            local category = safe(GetActiveHotbarCategory, nil)
+            if self.stackGrace029376 then self.stackGrace029376[tostring(category) .. ":" .. tostring(slot)] = nil end
+            self:RefreshDynamic029311(true)
+        end)
+    end
+    if EVENT_EFFECT_CHANGED then
+        EVENT_MANAGER:RegisterForEvent(prefix .. "_Effect", EVENT_EFFECT_CHANGED, function()
+            self:QueueDynamicRefresh029386(true)
+        end)
+        if REGISTER_FILTER_UNIT_TAG then
+            EVENT_MANAGER:AddFilterForEvent(prefix .. "_Effect", EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG, "player")
+        end
+    end
+    return result
+end
+
+-- ============================================================================
+-- v0.29.380 - immediate scene visibility + event-driven stack state.
+-- Fixes delayed hide/show on menu scene transitions and stale/delayed stack
+-- counters (notably Grim Focus-family abilities after heavy attacks/consume).
+-- ============================================================================
+local EAS_DAB_InitializeBase029380 = D.Initialize
+local EAS_DAB_RefreshDynamicBase029380 = D.RefreshDynamic029311
+
+local function EAS_DAB_Now029380()
+    if type(GetFrameTimeMilliseconds) == "function" then
+        local ok, value = pcall(GetFrameTimeMilliseconds)
+        if ok then return tonumber(value) or 0 end
+    end
+    return 0
+end
+
+local function EAS_DAB_HideImmediately029380(self)
+    if self and self.window and self.layoutMode ~= true then
+        self.window:SetHidden(true)
+        self.windowHidden029311 = true
+    end
+end
+
+local function EAS_DAB_RegisterSceneCallbacks029380(self)
+    if self.sceneVisibilityHooks029380 or not SCENE_MANAGER or type(SCENE_MANAGER.GetScene) ~= "function" then return end
+    self.sceneVisibilityHooks029380 = true
+    local names = {
+        "gameMenuInGame", "gameMenu", "inventory", "character", "skills", "championPerks",
+        "journal", "collectionsBook", "groupMenu", "groupList", "groupFinderKeyboard",
+        "contacts", "friendsList", "friendsListKeyboard", "guildHome", "guildRoster",
+        "mailInbox", "mailSend", "bank", "guildBank", "store", "tradingHouse",
+        "crafting", "smithing", "alchemy", "enchanting", "provisioner", "settings",
+        "worldMap", "achievements", "loreLibrary", "housingEditor",
+    }
+    for i = 1, #names do
+        local ok, scene = pcall(SCENE_MANAGER.GetScene, SCENE_MANAGER, names[i])
+        if ok and scene and type(scene.RegisterCallback) == "function" then
+            scene:RegisterCallback("StateChange", function(_, newState)
+                if newState == SCENE_SHOWING or newState == SCENE_SHOWN then
+                    EAS_DAB_HideImmediately029380(self)
+                elseif newState == SCENE_HIDDEN then
+                    if type(zo_callLater) == "function" then
+                        zo_callLater(function()
+                            if EPC and EPC.DualActionBar then EPC.DualActionBar:IsVisibleNow029311() end
+                        end, 0)
+                    else
+                        self:IsVisibleNow029311()
+                    end
+                end
+            end)
+        end
+    end
+end
+
+function D:RefreshDynamic029311(force)
+    local result = EAS_DAB_RefreshDynamicBase029380(self, force)
+    if not self.rows then return result end
+    self.stackDirect029380 = self.stackDirect029380 or { byId = {}, byName = {} }
+    self.stackConsumedUntil029380 = self.stackConsumedUntil029380 or {}
+    local nowValue = EAS_DAB_Now029380()
+
+    for _, row in ipairs(self.rows) do
+        local category = row.epcCategory
+        for ordinal, frame in ipairs(row.slots or {}) do
+            local ability = frame.epcAbility029311
+            if ability and ability.used == true and frame.epcStack then
+                local key = tostring(category) .. ":" .. tostring(ability.slot or ordinal)
+                local suppressUntil = tonumber(self.stackConsumedUntil029380[key]) or 0
+                if suppressUntil > nowValue then
+                    EAS_DAB_SetText029311(frame.epcStack, frame, "stackText029311", "")
+                    if self.stackGrace029376 then self.stackGrace029376[key] = nil end
+                else
+                    local best = 0
+                    local abilityId = tonumber(ability.abilityId) or 0
+                    local effectiveId = tonumber(ability.effectiveAbilityId029311) or 0
+                    if abilityId > 0 then best = math.max(best, tonumber(self.stackDirect029380.byId[abilityId]) or 0) end
+                    if effectiveId > 0 then best = math.max(best, tonumber(self.stackDirect029380.byId[effectiveId]) or 0) end
+                    local normalizedName = EAS_DAB_Normalize029311(ability.name or "")
+                    if normalizedName ~= "" then best = math.max(best, tonumber(self.stackDirect029380.byName[normalizedName]) or 0) end
+                    if best > 0 then
+                        local threshold = 0
+                        local current = tostring(frame.epcStack:GetText() or "")
+                        threshold = tonumber(current:match("/(%d+)$")) or 0
+                        local text = threshold > 0 and (tostring(math.floor(best + 0.5)) .. "/" .. tostring(threshold)) or tostring(math.floor(best + 0.5))
+                        EAS_DAB_SetText029311(frame.epcStack, frame, "stackText029311", text)
+                        if self.stackGrace029376 then self.stackGrace029376[key] = { text = text, expires = nowValue + 300 } end
+                    end
+                end
+            end
+        end
+    end
+    return result
+end
+
+function D:Initialize()
+    local result = EAS_DAB_InitializeBase029380(self)
+    EAS_DAB_RegisterSceneCallbacks029380(self)
+    local prefix = (EPC.name or "ESOAdventurerSuite") .. "_DualActionBar029380"
+    self.stackDirect029380 = self.stackDirect029380 or { byId = {}, byName = {} }
+    self.stackConsumedUntil029380 = self.stackConsumedUntil029380 or {}
+
+    if EVENT_EFFECT_CHANGED then
+        EVENT_MANAGER:RegisterForEvent(prefix .. "_Stacks", EVENT_EFFECT_CHANGED,
+            function(_, changeType, effectSlot, effectName, unitTag, beginTime, endTime, stackCount, iconName,
+                     buffType, effectType, abilityType, statusEffectType, unitName, unitId, abilityId, sourceType)
+                local count = math.max(0, tonumber(stackCount) or 0)
+                local id = tonumber(abilityId) or 0
+                local name = EAS_DAB_Normalize029311(effectName or "")
+                if id > 0 then self.stackDirect029380.byId[id] = count end
+                if name ~= "" then self.stackDirect029380.byName[name] = count end
+
+                -- A fresh non-zero stack event is authoritative and cancels any
+                -- short consume suppression created by the proc spender.
+                if count > 0 then
+                    self.stackConsumedUntil029380 = {}
+                end
+                self.lastDynamicAt029311 = nil
+                self:QueueDynamicRefresh029386(true)
+            end)
+        if REGISTER_FILTER_UNIT_TAG then
+            EVENT_MANAGER:AddFilterForEvent(prefix .. "_Stacks", EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG, "player")
+        end
+    end
+
+    if EVENT_ACTION_SLOT_ABILITY_USED then
+        EVENT_MANAGER:RegisterForEvent(prefix .. "_Consume", EVENT_ACTION_SLOT_ABILITY_USED, function(_, slot)
+            local category = safe(GetActiveHotbarCategory, nil)
+            local key = tostring(category) .. ":" .. tostring(slot)
+            self.stackConsumedUntil029380[key] = EAS_DAB_Now029380() + 900
+            if self.stackGrace029376 then self.stackGrace029376[key] = nil end
+            -- Clear the visible badge immediately; don't wait for ESO's effect
+            -- removal snapshot, which can trail the actual proc use.
+            for _, row in ipairs(self.rows or {}) do
+                if row.epcCategory == category then
+                    for _, frame in ipairs(row.slots or {}) do
+                        local ability = frame.epcAbility029311
+                        if ability and tonumber(ability.slot) == tonumber(slot) and frame.epcStack then
+                            EAS_DAB_SetText029311(frame.epcStack, frame, "stackText029311", "")
+                        end
+                    end
+                end
+            end
+            self.lastDynamicAt029311 = nil
+            self:RefreshDynamic029311(true)
+        end)
+    end
+
+    return result
+end
+
+
+-- ============================================================================
+-- v0.29.381 - authoritative hotbar slot refresh.
+-- ESO can publish drag/drop slot data over more than one UI frame. Refresh the
+-- static bar directly from the hotbar APIs at several settled frame boundaries
+-- so a newly moved/replaced skill never waits for a weapon swap.
+-- ============================================================================
+local EAS_DAB_InitializeBase029381 = D.Initialize
+function D:Initialize()
+    local result = EAS_DAB_InitializeBase029381(self)
+    local prefix = (EPC.name or "ESOAdventurerSuite") .. "_DualActionBar029381"
+    local function hardRefresh()
+        if not EPC or not EPC.DualActionBar then return end
+        local bar = EPC.DualActionBar
+        bar.staticAbilityData029311 = {}
+        if bar.InvalidateStyleCache029189 then bar:InvalidateStyleCache029189() end
+        bar.lastDynamicAt029311 = nil
+        bar:Refresh()
+    end
+    local function settle()
+        hardRefresh()
+        if type(zo_callLater) == "function" then
+            zo_callLater(hardRefresh, 16)
+            zo_callLater(hardRefresh, 60)
+            zo_callLater(hardRefresh, 180)
+        end
+    end
+    if EVENT_ACTION_SLOT_UPDATED then
+        EVENT_MANAGER:RegisterForEvent(prefix .. "_Slot", EVENT_ACTION_SLOT_UPDATED, function() settle() end)
+    end
+    if EVENT_ACTION_SLOTS_FULL_UPDATE then
+        EVENT_MANAGER:RegisterForEvent(prefix .. "_Full", EVENT_ACTION_SLOTS_FULL_UPDATE, function() settle() end)
+    end
+    return result
+end
+
+-- ============================================================================
+-- v0.29.382 - stack-ready glow + unusable/no-target visual state.
+-- Proc-mode glow/sound already exists since v0.29.365.  This layer adds a
+-- generic stack-threshold readiness glow (covers Grim Focus when its tracked
+-- state reaches 5/5) and dims active-bar skills when ESO says the slot cannot
+-- currently be used.  Runtime variants such as Venom Skull at its empowered
+-- state continue to use the effective-ability proc glow, so no English skill
+-- name matching is required here.
+-- ============================================================================
+local EAS_DAB_RefreshDynamicBase029382 = D.RefreshDynamic029311
+
+local function EAS_DAB_ParseStacks029382(frame)
+    if not frame or not frame.epcStack or type(frame.epcStack.GetText) ~= "function" then return 0, 0 end
+    local text = tostring(frame.epcStack:GetText() or "")
+    local a, b = text:match("^(%d+)%s*/%s*(%d+)$")
+    if a then return tonumber(a) or 0, tonumber(b) or 0 end
+    return tonumber(text:match("^(%d+)$")) or 0, 0
+end
+
+function D:RefreshDynamic029311(force)
+    local result = EAS_DAB_RefreshDynamicBase029382(self, force)
+    if not self.window or self.window:IsHidden() then return result end
+    local activeCategory = safe(GetActiveHotbarCategory, nil)
+    local nowValue = nowMS()
+
+    for _, row in ipairs(self.rows or {}) do
+        local category = row.epcCategory
+        for ordinal, frame in ipairs(row.slots or {}) do
+            local ability = frame.epcAbility029311
+            local slot = ability and ability.slot or (self.slots and self.slots[ordinal])
+            if ability and ability.used == true and slot then
+                EAS_DAB_EnsureReadyGlow029365(frame)
+                local glow = frame.epcReadyGlow029365
+                local stacks, threshold = EAS_DAB_ParseStacks029382(frame)
+                local stackReady = (threshold > 0 and stacks >= threshold) or (threshold <= 0 and stacks >= 5)
+
+                -- Keep the existing proc/Ultimate readiness state, then add the
+                -- stack-spender readiness state.  This makes Grim Focus glow at
+                -- 5 stacks without hardcoding its localized name.
+                if glow and stackReady then
+                    glow:SetHidden(false)
+                    local phase = (nowValue % 700) / 700
+                    glow:SetAlpha(0.62 + 0.38 * math.abs(phase * 2 - 1))
+                end
+
+                -- ESO's native slot-usability result accounts for the current
+                -- resource/casting/target restrictions. Only evaluate the active
+                -- bar; an inactive bar cannot be activated and should retain the
+                -- user's configured inactive-bar appearance instead of being
+                -- falsely marked unusable.
+                local usable = true
+                if category == activeCategory and ordinal < #(self.slots or {}) and type(IsSlotUsable) == "function" then
+                    usable = (safe(IsSlotUsable, true, slot, category)) ~= false
+                end
+                local icon = frame.epcIcon
+                if icon and type(icon.SetAlpha) == "function" then
+                    icon:SetAlpha(usable and 1.0 or 0.30)
+                end
+                if frame.epcShade and type(frame.epcShade.SetCenterColor) == "function" then
+                    if usable then frame.epcShade:SetCenterColor(0, 0, 0, 0)
+                    else frame.epcShade:SetCenterColor(0, 0, 0, 0.48) end
+                end
+            end
+        end
+    end
+    return result
+end
+
+-- ============================================================================
+-- v0.29.383 - action-bar interaction/proc/style corrections.
+--  * only render Skill Style artwork while ESO reports a style override active;
+--  * let runtime proc icons (Crystal Fragments etc.) update from GetSlotTexture;
+--  * Venom Skull counter displays 0..2 and clears after the empowered third use;
+--  * custom bar slots expose a safe hover description and hardware-event drag/drop.
+-- ============================================================================
+local function EAS_DAB_GetActiveStyleCollectible029383(abilityId)
+    abilityId = tonumber(abilityId) or 0
+    if abilityId <= 0 or type(GetSpecificSkillAbilityKeysByAbilityId) ~= "function"
+        or type(GetProgressionSkillProgressionId) ~= "function"
+        or type(GetActiveProgressionSkillAbilityFxOverrideCollectibleId) ~= "function" then return 0 end
+    abilityId = SKILL_STYLE_ABILITY_ALIAS_029189[abilityId] or abilityId
+    local skillType, skillLineIndex, skillIndex = safe(GetSpecificSkillAbilityKeysByAbilityId, nil, abilityId)
+    if skillType == nil or skillLineIndex == nil or skillIndex == nil then return 0 end
+    local progressionId = tonumber(safe(GetProgressionSkillProgressionId, 0, skillType, skillLineIndex, skillIndex)) or 0
+    if progressionId <= 0 then return 0 end
+    return tonumber(safe(GetActiveProgressionSkillAbilityFxOverrideCollectibleId, 0, progressionId)) or 0
+end
+
+local EAS_DAB_GetSkillStyleIconBase029383 = D.GetSkillStyleIcon
+function D:GetSkillStyleIcon(abilityId, fallbackIcon)
+    if not EPC.saved or EPC.saved.dualActionBarSkillStyles029189 == false then return fallbackIcon or "" end
+    -- The previous stable-style cache could keep a formerly selected style after
+    -- the player switched back to the default skill appearance. ESO's active
+    -- override id is authoritative: zero means render the live native icon.
+    if EAS_DAB_GetActiveStyleCollectible029383(abilityId) <= 0 then
+        if self.styleIconCache029189 then self.styleIconCache029189[tonumber(abilityId) or 0] = false end
+        return fallbackIcon or ""
+    end
+    return EAS_DAB_GetSkillStyleIconBase029383(self, abilityId, fallbackIcon)
+end
+
+local EAS_DAB_RefreshStaticBase029383 = D.RefreshStatic029311
+function D:RefreshStatic029311(...)
+    local result = EAS_DAB_RefreshStaticBase029383(self, ...)
+    -- Drop a remembered styled texture immediately when that slot no longer has
+    -- an active Skill Style. This deliberately does not disturb an active style
+    -- during a proc/runtime ability-id change.
+    for _, row in ipairs(self.rows or {}) do
+        local category = row.epcCategory
+        for ordinal, frame in ipairs(row.slots or {}) do
+            local ability = frame.epcAbility029311
+            if ability and ability.used == true then
+                local key = tostring(category) .. ":" .. tostring(ability.slot or ordinal)
+                if EAS_DAB_GetActiveStyleCollectible029383(ability.abilityId) <= 0 and self.stableStyleBySlot029376 then
+                    self.stableStyleBySlot029376[key] = nil
+                end
+            end
+        end
+    end
+    return result
+end
+
+local function EAS_DAB_IsVenomSkull029383(ability)
+    if not ability then return false end
+    local name = EAS_DAB_Normalize029311(ability.name or "")
+    if name:find("venom skull", 1, true) then return true end
+    -- Name-independent fallback: look for the unique localized mechanic text.
+    local id = tonumber(ability.abilityId) or 0
+    if id > 0 and type(GetAbilityDescription) == "function" then
+        local description = EAS_DAB_Normalize029311(safe(GetAbilityDescription, "", id) or "")
+        if description:find("third", 1, true) and description:find("necromancer", 1, true) then return true end
+    end
+    return false
+end
+
+local EAS_DAB_RefreshDynamicBase029383 = D.RefreshDynamic029311
+function D:RefreshDynamic029311(force)
+    local result = EAS_DAB_RefreshDynamicBase029383(self, force)
+    if not self.rows then return result end
+
+    for _, row in ipairs(self.rows) do
+        local category = row.epcCategory
+        for ordinal, frame in ipairs(row.slots or {}) do
+            local ability = frame.epcAbility029311
+            if ability and ability.used == true then
+                local slot = ability.slot or (self.slots and self.slots[ordinal])
+                if slot then
+                    -- If no Skill Style is actually selected, the live hotbar
+                    -- texture is the authority. ESO swaps this texture for proc
+                    -- states such as Crystal Fragments; update it without waiting
+                    -- for a weapon swap/static rebuild.
+                    if EAS_DAB_GetActiveStyleCollectible029383(ability.abilityId) <= 0 then
+                        local liveTexture = tostring(safe(GetSlotTexture, ability.icon or "", slot, category) or "")
+                        if liveTexture ~= "" and frame.epcIcon then
+                            EAS_DAB_SetTexture029311(frame.epcIcon, frame, "iconTexture029311", liveTexture)
+                        end
+                    end
+
+                    -- Venom Skull's third cast is the empowered cast, not a third
+                    -- stored stack. Keep the visible counter in the useful 0..2
+                    -- range; EVENT_ACTION_SLOT_ABILITY_USED below clears it as
+                    -- soon as the empowered skull is consumed.
+                    if EAS_DAB_IsVenomSkull029383(ability) and frame.epcStack and frame.epcStack.GetText then
+                        local text = tostring(frame.epcStack:GetText() or "")
+                        local count = tonumber(text:match("^(%d+)"))
+                        if count and count > 2 then
+                            EAS_DAB_SetText029311(frame.epcStack, frame, "stackText029311", "2")
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return result
+end
+
+function D:EnsureHoverTooltip029471()
+    if self.hoverTooltip029471 then return self.hoverTooltip029471 end
+    local tip = WM:CreateTopLevelWindow("EAS_DualActionBarHoverTooltip029471")
+    tip:SetDimensions(420, 120)
+    tip:SetMouseEnabled(false)
+    tip:SetClampedToScreen(true)
+    tip:SetHidden(true)
+    if tip.SetDrawLayer and DL_OVERLAY then tip:SetDrawLayer(DL_OVERLAY) end
+    if tip.SetDrawTier and DT_HIGH then tip:SetDrawTier(DT_HIGH) end
+    if tip.SetDrawLevel then tip:SetDrawLevel(10000) end
+
+    local bg = WM:CreateControl("EAS_DualActionBarHoverTooltip029471BG", tip, CT_BACKDROP)
+    bg:SetAnchorFill(tip)
+    bg:SetMouseEnabled(false)
+    bg:SetCenterTexture("EsoUI/Art/Tooltips/UI-TooltipCenter.dds")
+    bg:SetEdgeTexture("EsoUI/Art/Tooltips/UI-TooltipBorder.dds", 16, 4, 4)
+    bg:SetCenterColor(0.015, 0.015, 0.015, 0.96)
+    bg:SetEdgeColor(0.58, 0.46, 0.20, 0.96)
+    bg:SetDrawLayer(DL_OVERLAY)
+    bg:SetDrawLevel(9998)
+
+    local title = WM:CreateControl("EAS_DualActionBarHoverTooltip029471Title", tip, CT_LABEL)
+    title:SetFont("$(BOLD_FONT)|18|soft-shadow-thick")
+    title:SetColor(1.00, 0.84, 0.32, 1)
+    title:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    title:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    title:SetAnchor(TOPLEFT, tip, TOPLEFT, 12, 10)
+    title:SetAnchor(TOPRIGHT, tip, TOPRIGHT, -12, 10)
+    title:SetHeight(24)
+    title:SetDrawLayer(DL_OVERLAY)
+    title:SetDrawLevel(10001)
+
+    local body = WM:CreateControl("EAS_DualActionBarHoverTooltip029471Body", tip, CT_LABEL)
+    body:SetFont("$(MEDIUM_FONT)|15|soft-shadow-thin")
+    body:SetColor(0.98, 0.98, 0.98, 1)
+    body:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+    body:SetVerticalAlignment(TEXT_ALIGN_TOP)
+    body:SetAnchor(TOPLEFT, title, BOTTOMLEFT, 0, 6)
+    body:SetAnchor(TOPRIGHT, title, BOTTOMRIGHT, 0, 6)
+    body:SetDrawLayer(DL_OVERLAY)
+    body:SetDrawLevel(10001)
+    if body.SetMaxLineCount then body:SetMaxLineCount(12) end
+
+    tip.bg = bg
+    tip.title = title
+    tip.body = body
+    self.hoverTooltip029471 = tip
+    return tip
+end
+
+function D:ShowHoverTooltip029471(control, abilityId, fallbackName)
+    local tip = self:EnsureHoverTooltip029471()
+    if not tip then return end
+    local name = tostring(safe(GetAbilityName, fallbackName or "", abilityId) or fallbackName or "")
+    local description = tostring(safe(GetAbilityDescription, "", abilityId) or "")
+    tip.title:SetText(name)
+    tip.body:SetText(description)
+
+    local bodyHeight = 26
+    if tip.body.GetTextHeight then
+        local ok, measured = pcall(tip.body.GetTextHeight, tip.body)
+        if ok and tonumber(measured) then bodyHeight = math.max(26, tonumber(measured)) end
+    end
+    local height = zo_clamp(48 + bodyHeight, 82, 310)
+    tip:SetDimensions(420, height)
+    tip:ClearAnchors()
+    -- Prefer above the slot; clamping keeps it on screen if the bar is near an edge.
+    tip:SetAnchor(BOTTOM, control, TOP, 0, -10)
+    tip:SetHidden(false)
+end
+
+function D:HideHoverTooltip029471()
+    if self.hoverTooltip029471 then self.hoverTooltip029471:SetHidden(true) end
+end
+
+function D:InstallSlotInteraction029383(frame)
+    if not frame or frame.epcInteraction029383 then return end
+    frame.epcInteraction029383 = true
+    frame:SetMouseEnabled(true)
+
+    frame:SetHandler("OnMouseEnter", function(control)
+        local ability = control.epcAbility029311
+        if not ability or ability.used ~= true then return end
+        local effectiveId = tonumber(ability.effectiveAbilityId029311) or 0
+        if effectiveId <= 0 and type(GetEffectiveAbilityIdForAbilityOnHotbar) == "function" then
+            effectiveId = tonumber(safe(GetEffectiveAbilityIdForAbilityOnHotbar, 0, ability.abilityId, ability.category)) or 0
+        end
+        local id = effectiveId > 0 and effectiveId or (tonumber(ability.abilityId) or 0)
+        if id <= 0 then return end
+        D:ShowHoverTooltip029471(control, id, ability.name)
+    end)
+    frame:SetHandler("OnMouseExit", function()
+        D:HideHoverTooltip029471()
+    end)
+
+    frame:SetHandler("OnDragStart", function(control, button)
+        if MOUSE_BUTTON_INDEX_LEFT and button and button ~= MOUSE_BUTTON_INDEX_LEFT then return end
+        if safe(IsUnitInCombat, false, "player") == true then return end
+        local ability = control.epcAbility029311
+        if not ability or ability.used ~= true then return end
+        local slot = tonumber(ability.slot)
+        local category = ability.category
+        if not slot then return end
+        -- Protected action-bar mutation is only attempted directly from this
+        -- hardware drag event. Never call it from timers/events.
+        if type(CallSecureProtected) == "function" then
+            pcall(CallSecureProtected, "PickupAction", slot, category)
+        end
+    end)
+
+    frame:SetHandler("OnReceiveDrag", function(control)
+        if safe(IsUnitInCombat, false, "player") == true then return end
+        local ability = control.epcAbility029311
+        local slot = tonumber(ability and ability.slot) or tonumber(self.slots and self.slots[control.epcOrdinal])
+        local category = ability and ability.category or (control:GetParent() and control:GetParent().epcCategory)
+        if not slot then return end
+        if type(CallSecureProtected) == "function" then
+            local ok, placed = pcall(CallSecureProtected, "PlaceInActionBar", slot, category)
+            if ok and placed ~= false then
+                self.staticAbilityData029311 = {}
+                self:InvalidateStyleCache029189()
+                if type(zo_callLater) == "function" then zo_callLater(function() if EPC and EPC.DualActionBar then EPC.DualActionBar:Refresh() end end, 0) end
+            end
+        end
+    end)
+end
+
+local EAS_DAB_CreateUIBase029383 = D.CreateUI
+function D:CreateUI()
+    EAS_DAB_CreateUIBase029383(self)
+    for _, row in ipairs(self.rows or {}) do
+        for _, frame in ipairs(row.slots or {}) do self:InstallSlotInteraction029383(frame) end
+    end
+end
+
+local EAS_DAB_InitializeBase029383 = D.Initialize
+function D:Initialize()
+    local result = EAS_DAB_InitializeBase029383(self)
+    self:CreateUI()
+    local prefix = (EPC.name or "ESOAdventurerSuite") .. "_DualActionBar029383"
+    if EVENT_ACTION_SLOT_ABILITY_USED then
+        EVENT_MANAGER:RegisterForEvent(prefix .. "_VenomConsume", EVENT_ACTION_SLOT_ABILITY_USED, function(_, slot)
+            local category = safe(GetActiveHotbarCategory, nil)
+            for _, row in ipairs(self.rows or {}) do
+                if row.epcCategory == category then
+                    for _, frame in ipairs(row.slots or {}) do
+                        local ability = frame.epcAbility029311
+                        if ability and tonumber(ability.slot) == tonumber(slot) and EAS_DAB_IsVenomSkull029383(ability) then
+                            -- The empowered third skull is represented by ESO's
+                            -- runtime variant. If it was active at cast time, reset
+                            -- the visible count immediately rather than showing 3.
+                            local baseId = tonumber(ability.abilityId) or 0
+                            local effectiveId = baseId
+                            if baseId > 0 and type(GetEffectiveAbilityIdForAbilityOnHotbar) == "function" then
+                                effectiveId = tonumber(safe(GetEffectiveAbilityIdForAbilityOnHotbar, baseId, baseId, category)) or baseId
+                            end
+                            if effectiveId ~= baseId and frame.epcStack then
+                                EAS_DAB_SetText029311(frame.epcStack, frame, "stackText029311", "")
+                                local key = tostring(category) .. ":" .. tostring(slot)
+                                if self.stackGrace029376 then self.stackGrace029376[key] = nil end
+                                if self.stackConsumedUntil029380 then self.stackConsumedUntil029380[key] = nowMS() + 900 end
+                            end
+                        end
+                    end
+                end
+            end
+            self.lastDynamicAt029311 = nil
+        end)
+    end
+    return result
+end
+
+
+-- ============================================================================
+-- v0.29.384 - Grim Focus release reset + settled slot mutation refresh.
+-- ============================================================================
+local EAS_DAB_RefreshDynamicBase029384 = D.RefreshDynamic029311
+local EAS_DAB_InitializeBase029384 = D.Initialize
+
+local function EAS_DAB_StackNumbers029384(frame)
+    if not frame or not frame.epcStack or not frame.epcStack.GetText then return 0, 0 end
+    local text = tostring(frame.epcStack:GetText() or "")
+    local current, threshold = text:match("^(%d+)%s*/%s*(%d+)$")
+    if current then return tonumber(current) or 0, tonumber(threshold) or 0 end
+    return tonumber(text:match("^(%d+)$")) or 0, 0
+end
+
+function D:RefreshDynamic029311(force)
+    local result = EAS_DAB_RefreshDynamicBase029384(self, force)
+    if not self.rows then return result end
+    self.stackReleaseSuppress029384 = self.stackReleaseSuppress029384 or {}
+    local nowValue = nowMS()
+    for _, row in ipairs(self.rows) do
+        local category = row.epcCategory
+        for ordinal, frame in ipairs(row.slots or {}) do
+            local ability = frame.epcAbility029311
+            local slot = ability and ability.slot or (self.slots and self.slots[ordinal])
+            local key = tostring(category) .. ":" .. tostring(slot or ordinal)
+            local untilMs = tonumber(self.stackReleaseSuppress029384[key]) or 0
+            if untilMs > nowValue and frame.epcStack then
+                -- A spender used at a full stack threshold is authoritative.  Do
+                -- not let a late EFFECT_CHANGED snapshot repaint the old 5/5.
+                EAS_DAB_SetText029311(frame.epcStack, frame, "stackText029311", "")
+                if self.stackGrace029376 then self.stackGrace029376[key] = nil end
+            elseif untilMs > 0 then
+                self.stackReleaseSuppress029384[key] = nil
+            end
+        end
+    end
+    return result
+end
+
+function D:Initialize()
+    local result = EAS_DAB_InitializeBase029384(self)
+    local prefix = (EPC.name or "ESOAdventurerSuite") .. "_DualActionBar029384"
+    self.stackReleaseSuppress029384 = self.stackReleaseSuppress029384 or {}
+
+    -- Record a full-stack spender before the older stack/event layers have a
+    -- chance to repaint a stale snapshot.  This is language-agnostic: it keys
+    -- from the visible N/N threshold rather than English ability names.
+    if EVENT_ACTION_SLOT_ABILITY_USED then
+        EVENT_MANAGER:RegisterForEvent(prefix .. "_FullStackConsume", EVENT_ACTION_SLOT_ABILITY_USED, function(_, usedSlot)
+            local category = safe(GetActiveHotbarCategory, nil)
+            for _, row in ipairs(self.rows or {}) do
+                if row.epcCategory == category then
+                    for ordinal, frame in ipairs(row.slots or {}) do
+                        local ability = frame.epcAbility029311
+                        local slot = ability and ability.slot or (self.slots and self.slots[ordinal])
+                        if tonumber(slot) == tonumber(usedSlot) then
+                            local current, threshold = EAS_DAB_StackNumbers029384(frame)
+                            if threshold > 0 and current >= threshold then
+                                local key = tostring(category) .. ":" .. tostring(slot)
+                                self.stackReleaseSuppress029384[key] = nowMS() + 1600
+                                if self.stackGrace029376 then self.stackGrace029376[key] = nil end
+                                if frame.epcStack then EAS_DAB_SetText029311(frame.epcStack, frame, "stackText029311", "") end
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+    end
+
+    -- Slot mutation data can settle over several frames, especially when the
+    -- drag originated from the Skills UI.  Poll only after slot-change events;
+    -- there is no gameplay OnUpdate cost.
+    local function settledRefresh()
+        if not EPC or not EPC.DualActionBar then return end
+        local bar = EPC.DualActionBar
+        bar.staticAbilityData029311 = {}
+        if bar.InvalidateStyleCache029189 then bar:InvalidateStyleCache029189() end
+        bar.lastDynamicAt029311 = nil
+        bar:Refresh()
+    end
+    local function scheduleSettledRefreshes()
+        settledRefresh()
+        if type(zo_callLater) == "function" then
+            zo_callLater(settledRefresh, 40)
+            zo_callLater(settledRefresh, 120)
+            zo_callLater(settledRefresh, 300)
+            zo_callLater(settledRefresh, 650)
+        end
+    end
+    if EVENT_ACTION_SLOT_UPDATED then
+        EVENT_MANAGER:RegisterForEvent(prefix .. "_SlotSettle", EVENT_ACTION_SLOT_UPDATED, scheduleSettledRefreshes)
+    end
+    if EVENT_ACTION_SLOTS_FULL_UPDATE then
+        EVENT_MANAGER:RegisterForEvent(prefix .. "_FullSettle", EVENT_ACTION_SLOTS_FULL_UPDATE, scheduleSettledRefreshes)
+    end
+
+    return result
+end
+
+-- ============================================================================
+-- v0.29.385 - Venom Skull readiness + runtime skill-mode cue + usability fade.
+--
+--  * Venom Skull glows as soon as its visible setup counter reaches 2.
+--  * Runtime skill-mode changes (Crystal Fragments proc, Power Whip proc, etc.)
+--    glow the slot and play one sound when the changed mode first becomes active.
+--    Detection is language-independent: effective ability id and the live ESO
+--    hotbar texture are compared with the bound/base ability.
+--  * Active-bar skill icons fade whenever ESO reports the slot unusable, which
+--    includes resource/casting/target-context restrictions exposed by
+--    IsSlotUsable (for example corpse/target dependent abilities).
+--
+-- This is visual-only. It never mutates ESO's action slots and has no OnUpdate of
+-- its own; it rides the DualActionBar's existing lightweight dynamic refresh.
+-- ============================================================================
+local EAS_DAB_RefreshDynamicBase029385 = D.RefreshDynamic029311
+
+local function EAS_DAB_GetLiveModeState029385(ability, slot, category)
+    if not ability or not slot then return false, 0, 0, "", "" end
+
+    local boundId = tonumber(safe(GetSlotBoundId, 0, slot, category)) or tonumber(ability.abilityId) or 0
+    local effectiveId = boundId
+    if boundId > 0 and type(GetEffectiveAbilityIdForAbilityOnHotbar) == "function" then
+        effectiveId = tonumber(safe(GetEffectiveAbilityIdForAbilityOnHotbar, boundId, boundId, category)) or boundId
+    end
+
+    local liveTexture = tostring(safe(GetSlotTexture, "", slot, category) or "")
+    local baseTexture = ""
+    if boundId > 0 and type(GetAbilityIcon) == "function" then
+        baseTexture = tostring(safe(GetAbilityIcon, "", boundId) or "")
+    end
+    if baseTexture == "" then baseTexture = tostring(ability.icon or "") end
+
+    -- A selected Skill Style legitimately changes the hotbar artwork; that is
+    -- not a proc/mode transition. Only use texture-difference detection when no
+    -- Skill Style collectible is actually active for the bound ability.
+    local styleActive = false
+    if boundId > 0 and type(EAS_DAB_GetActiveStyleCollectible029383) == "function" then
+        styleActive = EAS_DAB_GetActiveStyleCollectible029383(boundId) > 0
+    end
+
+    local idChanged = boundId > 0 and effectiveId > 0 and effectiveId ~= boundId
+    local textureChanged = (not styleActive) and liveTexture ~= "" and baseTexture ~= "" and liveTexture ~= baseTexture
+    return idChanged or textureChanged, boundId, effectiveId, liveTexture, baseTexture
+end
+
+local function EAS_DAB_PlayProcCue029385()
+    if type(PlaySound) ~= "function" or not SOUNDS then return end
+    local sound = rawget(SOUNDS, "ABILITY_SLOTTED")
+        or rawget(SOUNDS, "ABILITY_READY")
+        or rawget(SOUNDS, "DEFAULT_CLICK")
+    if sound then pcall(PlaySound, sound) end
+end
+
+function D:RefreshDynamic029311(force)
+    local result = EAS_DAB_RefreshDynamicBase029385(self, force)
+    if not self.window or self.window:IsHidden() or not self.rows then return result end
+
+    local activeCategory = safe(GetActiveHotbarCategory, nil)
+    local nowValue = nowMS()
+
+    for _, row in ipairs(self.rows) do
+        local category = row.epcCategory
+        for ordinal, frame in ipairs(row.slots or {}) do
+            local ability = frame.epcAbility029311
+            local slot = ability and ability.slot or (self.slots and self.slots[ordinal])
+
+            if ability and ability.used == true and slot then
+                EAS_DAB_EnsureReadyGlow029365(frame)
+                local glow = frame.epcReadyGlow029365
+
+                -- Venom Skull is ready on the NEXT (third) cast once two setup
+                -- counts are active, so 2 is the readiness threshold regardless
+                -- of whether the generic tracker exposes a /3 threshold.
+                local stackCount = EAS_DAB_StackNumbers029384(frame)
+                local venomReady = EAS_DAB_IsVenomSkull029383(ability) and stackCount >= 2
+
+                -- Detect ESO runtime ability-mode changes without hardcoded
+                -- English proc names. This covers effective-id swaps and clients
+                -- where only the live action-slot texture changes.
+                local modeActive, boundId, effectiveId, liveTexture = EAS_DAB_GetLiveModeState029385(ability, slot, category)
+                local modeKey = tostring(category) .. ":" .. tostring(slot) .. ":" .. tostring(boundId)
+                local previousKey = frame.epcModeKey029385
+                local wasModeActive = frame.epcModeActive029385 == true and previousKey == modeKey
+
+                -- A newly slotted/replaced ability starts a new baseline and must
+                -- not make a proc sound simply because its icon differs from the
+                -- control that occupied this slot previously.
+                if previousKey ~= nil and previousKey ~= modeKey then
+                    wasModeActive = false
+                    frame.epcModeActive029385 = false
+                end
+
+                if modeActive and not wasModeActive and previousKey == modeKey and category == activeCategory then
+                    EAS_DAB_PlayProcCue029385()
+                end
+                frame.epcModeKey029385 = modeKey
+                frame.epcModeActive029385 = modeActive
+                frame.epcModeTexture029385 = liveTexture
+                frame.epcModeEffectiveId029385 = effectiveId
+
+                if glow and (venomReady or modeActive) then
+                    glow:SetHidden(false)
+                    local phase = (nowValue % 700) / 700
+                    glow:SetAlpha(0.62 + 0.38 * math.abs(phase * 2 - 1))
+                end
+
+                -- Re-assert live usability after all older visual layers have run.
+                -- Inactive rows retain their configured inactive-alpha treatment;
+                -- only ESO's currently active bar is evaluated for target/resource
+                -- usability so the back bar isn't permanently dimmed.
+                if category == activeCategory and ordinal < #(self.slots or {}) then
+                    local usable = true
+                    if type(IsSlotUsable) == "function" then
+                        usable = safe(IsSlotUsable, true, slot, category) ~= false
+                    end
+                    if frame.epcIcon and type(frame.epcIcon.SetAlpha) == "function" then
+                        frame.epcIcon:SetAlpha(usable and 1.0 or 0.28)
+                    end
+                    if frame.epcShade and type(frame.epcShade.SetCenterColor) == "function" then
+                        if usable then frame.epcShade:SetCenterColor(0, 0, 0, 0)
+                        else frame.epcShade:SetCenterColor(0, 0, 0, 0.52) end
+                    end
+                end
+            else
+                frame.epcModeKey029385 = nil
+                frame.epcModeActive029385 = false
+            end
+        end
+    end
+
+    return result
 end

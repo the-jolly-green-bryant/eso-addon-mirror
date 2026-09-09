@@ -1374,7 +1374,13 @@ function F:IsPlayerInCombat()
     return false
 end
 
+function F:IsRecoveryTickPreview()
+    return EPC.saved and EPC.saved.enabled ~= false and EPC.saved.showTickTracker029382 == true
+        and EPC.TickTracker and EPC.TickTracker.IsPreviewActive and EPC.TickTracker:IsPreviewActive()
+end
+
 function F:IsPlayerFrameContextActive()
+    if self:IsRecoveryTickPreview() then return true end
     if self.layoutMode == true then return true end
     if EPC.saved and EPC.saved.playerFrameContextual == false then return true end
     if self:IsPlayerInCombat() then return true end
@@ -1399,7 +1405,7 @@ function F:RefreshContextVisibility()
     if not EPC.saved or self:IsHudSuppressed() then return end
 
     if self.playerFrame then
-        local shouldShowPlayer = (EPC.saved.showPlayerFrame ~= false or self.layoutMode == true)
+        local shouldShowPlayer = (EPC.saved.showPlayerFrame ~= false or self.layoutMode == true or self:IsRecoveryTickPreview())
             and self:IsPlayerFrameContextActive()
         if self.playerFrame:IsHidden() == shouldShowPlayer then
             self:RefreshPlayer()
@@ -1448,7 +1454,7 @@ end
 
 function F:RefreshPlayer()
     if not self.playerFrame or not EPC.saved then return end
-    local show = (EPC.saved.showPlayerFrame ~= false or self.layoutMode == true)
+    local show = (EPC.saved.showPlayerFrame ~= false or self.layoutMode == true or self:IsRecoveryTickPreview())
         and self:IsPlayerFrameContextActive()
         and not self:IsHudSuppressed()
     self.playerFrame:SetHidden(not show)
@@ -2262,7 +2268,7 @@ end
 
 function F:RefreshPlayer()
     if not self.playerFrame or not EPC.saved then return end
-    local show=(EPC.saved.showPlayerFrame ~= false or self.layoutMode == true) and not self:IsHudSuppressed()
+    local show=(EPC.saved.showPlayerFrame ~= false or self.layoutMode == true or self:IsRecoveryTickPreview()) and not self:IsHudSuppressed()
     if not self.layoutMode and EPC.OverlayModeAllows then show=show and EPC:OverlayModeAllows("playerFrameVisibility") end
     self.playerFrame:SetHidden(not show)
     if not show then return end
@@ -4332,9 +4338,16 @@ end
 
 local function EAS_SetRectBox02993(bar, parent, x, y, w, h)
     if not bar then return end
+    local layoutW = math.max(28, math.floor((tonumber(w) or 28) + 0.5))
+    local layoutH = math.max(8, math.floor((tonumber(h) or 8) + 0.5))
+    -- Save the rectangle geometry explicitly. Some native ESO status bars can
+    -- later report their template/original width through GetWidth(), which is
+    -- not necessarily the width this rectangle design was laid out at.
+    bar.epcRectLayoutW029434 = layoutW
+    bar.epcRectLayoutH029434 = layoutH
     bar:ClearAnchors()
     bar:SetAnchor(TOPLEFT, parent, TOPLEFT, x, y)
-    bar:SetDimensions(math.max(28, w), math.max(8, h))
+    bar:SetDimensions(layoutW, layoutH)
     EAS_EnsureRectBar02993(bar)
     EAS_UpdateRectBarFill02993(bar, bar.epcRectCurrent or 0, bar.epcRectMaximum or 0)
 end
@@ -4543,6 +4556,14 @@ local function EAS_RestoreOriginalBar02995(bar)
     -- Hide the v0.29.93/94 replacement shell without destroying it. This lets
     -- the user switch back to Styles 6-10 live without recreating controls.
     if bar.epcRectPanel02994 then bar.epcRectPanel02994:SetHidden(true) end
+    if bar.epcRectTrack029427 then bar.epcRectTrack029427:SetHidden(true) end
+    if bar.epcRectTrack029429 then bar.epcRectTrack029429:SetHidden(true) end
+    if bar.epcRectStatusFill029429 then bar.epcRectStatusFill029429:SetHidden(true) end
+    if bar.epcRectBackdropFill029431 then bar.epcRectBackdropFill029431:SetHidden(true) end
+    if bar.epcRectColorFill029427 then bar.epcRectColorFill029427:SetHidden(true) end
+    if bar.epcRectColorFill029426 then bar.epcRectColorFill029426:SetHidden(true) end
+    if bar.epcRectWidthFill029425 then bar.epcRectWidthFill029425:SetHidden(true) end
+    if bar.epcRectLiveFill029424 then bar.epcRectLiveFill029424:SetHidden(true) end
     if bar.epcRectFill then bar.epcRectFill:SetHidden(true) end
     if bar.epcRectBack then bar.epcRectBack:SetHidden(true) end
     for _, control in ipairs(bar.epcRectEdges or {}) do
@@ -5395,4 +5416,929 @@ local EAS_UpdateESOResourceBarBaseStable02998 = updateESOResourceBar
 updateESOResourceBar = function(bar, current, maximum)
     EAS_UpdateESOResourceBarBaseStable02998(bar, current, maximum)
     EAS_CenterStablePlayerResourceText02998(bar, current, maximum)
+end
+
+
+-- ============================================================================
+-- v0.29.424 - Rectangular live-fill status bars.
+-- The previous rectangular renderer resized a CT_TEXTURE child. Depending on
+-- the active layout/rescale pass, ESO could visually retain the full-width
+-- texture even though the percentage text was current. Rectangular resource
+-- designs now use a real CT_STATUSBAR anchored to the exact 2 px inner cavity,
+-- so the visible color itself always depletes/regenerates with current/max.
+-- ============================================================================
+local EAS_ForceRectFillBase029424 = EAS_ForceRectFill02997
+EAS_ForceRectFill02997 = function(bar, current, maximum)
+    -- Run the mature renderer first so track color, labels, saved values and
+    -- compatibility state remain intact.
+    EAS_ForceRectFillBase029424(bar, current, maximum)
+    if not bar or not EAS_IsRectDesign02995(EAS_GetUnitFrameDesign02991()) then return end
+
+    current, maximum = tonumber(current) or 0, tonumber(maximum) or 0
+    bar.epcRectCurrent, bar.epcRectMaximum = current, maximum
+
+    if not bar.epcRectLiveFill029424 then
+        local fill = wm:CreateControl(nil, bar, CT_STATUSBAR)
+        fill:ClearAnchors()
+        fill:SetAnchor(TOPLEFT, bar, TOPLEFT, 2, 2)
+        fill:SetAnchor(BOTTOMRIGHT, bar, BOTTOMRIGHT, -2, -2)
+        fill:SetTexture(EAS_WHITE_TEXTURE_02993)
+        fill:SetBarAlignment(BAR_ALIGNMENT_NORMAL)
+        fill:SetMouseEnabled(false)
+        if fill.SetDrawTier then fill:SetDrawTier(DT_HIGH) end
+        fill:SetDrawLayer(DL_CONTROLS)
+        fill:SetDrawLevel(96)
+        bar.epcRectLiveFill029424 = fill
+    end
+
+    local fill = bar.epcRectLiveFill029424
+    fill:ClearAnchors()
+    fill:SetAnchor(TOPLEFT, bar, TOPLEFT, 2, 2)
+    fill:SetAnchor(BOTTOMRIGHT, bar, BOTTOMRIGHT, -2, -2)
+
+    local c = EAS_ColorForRectBar02997(bar)
+    fill:SetTexture(EAS_WHITE_TEXTURE_02993)
+    fill:SetColor(c[1], c[2], c[3], 1.00)
+    fill:SetAlpha(1.00)
+    fill:SetBarAlignment(BAR_ALIGNMENT_NORMAL)
+
+    if maximum <= 0 then
+        fill:SetMinMax(0, 1)
+        fill:SetValue(0)
+        fill:SetHidden(true)
+    else
+        local value = math.max(0, math.min(current, maximum))
+        fill:SetMinMax(0, maximum)
+        fill:SetValue(value)
+        fill:SetHidden(value <= 0)
+    end
+
+    -- Only the live status bar should paint the bright resource color.
+    if bar.epcRectFill then bar.epcRectFill:SetHidden(true) end
+    if bar.epcLabel then
+        if bar.epcLabel.SetDrawTier then bar.epcLabel:SetDrawTier(DT_HIGH) end
+        bar.epcLabel:SetDrawLayer(DL_OVERLAY)
+        bar.epcLabel:SetDrawLevel(230)
+    end
+end
+
+-- ============================================================================
+-- v0.29.425 - Unmistakable rectangular depletion.
+-- The colored track made partially-depleted block bars read as a solid color.
+-- Use a neutral dark track and an explicitly width-driven texture for the live
+-- resource amount. This avoids status-bar/template quirks and makes the empty
+-- portion visually obvious on every rectangular player-frame design.
+-- ============================================================================
+local EAS_ForceRectFillBase029425 = EAS_ForceRectFill02997
+EAS_ForceRectFill02997 = function(bar, current, maximum)
+    EAS_ForceRectFillBase029425(bar, current, maximum)
+    if not bar or not EAS_IsRectDesign02995(EAS_GetUnitFrameDesign02991()) then return end
+
+    current, maximum = tonumber(current) or 0, tonumber(maximum) or 0
+    bar.epcRectCurrent, bar.epcRectMaximum = current, maximum
+    local ratio = maximum > 0 and math.max(0, math.min(1, current / maximum)) or 0
+    local c = EAS_ColorForRectBar02997(bar)
+
+    -- Empty resource space should read as empty, not as a darker version of the
+    -- same resource color. Keep only the border resource-tinted.
+    if bar.epcRectPanel02994 then
+        bar.epcRectPanel02994:SetHidden(false)
+        bar.epcRectPanel02994:SetCenterColor(0.012, 0.014, 0.018, 0.97)
+        bar.epcRectPanel02994:SetEdgeColor(
+            math.min(1, c[1] * 0.78 + 0.14),
+            math.min(1, c[2] * 0.78 + 0.14),
+            math.min(1, c[3] * 0.78 + 0.14),
+            1.00
+        )
+    end
+
+    if not bar.epcRectWidthFill029425 then
+        local fill = wm:CreateControl(nil, bar, CT_TEXTURE)
+        fill:SetTexture(EAS_WHITE_TEXTURE_02993)
+        fill:SetMouseEnabled(false)
+        if fill.SetDrawTier then fill:SetDrawTier(DT_HIGH) end
+        fill:SetDrawLayer(DL_CONTROLS)
+        fill:SetDrawLevel(100)
+        bar.epcRectWidthFill029425 = fill
+    end
+
+    local fill = bar.epcRectWidthFill029425
+    local innerW = math.max(1, (tonumber(bar:GetWidth()) or 1) - 4)
+    local innerH = math.max(1, (tonumber(bar:GetHeight()) or 1) - 4)
+    local visibleW = math.floor(innerW * ratio + 0.5)
+
+    fill:ClearAnchors()
+    fill:SetAnchor(TOPLEFT, bar, TOPLEFT, 2, 2)
+    fill:SetDimensions(math.max(1, visibleW), innerH)
+    fill:SetTexture(EAS_WHITE_TEXTURE_02993)
+    fill:SetColor(c[1], c[2], c[3], 1.00)
+    fill:SetAlpha(1.00)
+    fill:SetHidden(visibleW <= 0 or ratio <= 0)
+
+    -- Retire every older bright full-width renderer so only the explicit-width
+    -- texture can paint the live resource amount.
+    if bar.epcRectFill then bar.epcRectFill:SetHidden(true) end
+    if bar.epcRectLiveFill029424 then bar.epcRectLiveFill029424:SetHidden(true) end
+
+    if bar.epcLabel then
+        if bar.epcLabel.SetDrawTier then bar.epcLabel:SetDrawTier(DT_HIGH) end
+        bar.epcLabel:SetDrawLayer(DL_OVERLAY)
+        bar.epcLabel:SetDrawLevel(230)
+    end
+end
+
+-- ============================================================================
+-- v0.29.426 - Resource-colored rectangular depletion.
+-- Keep the entire rectangular bar visually tied to its resource: the depleted
+-- portion is a darker resource tint, while the current amount is a vivid fill.
+-- A dedicated backdrop fill is used here because backdrop draw order is more
+-- reliable than the previous texture/statusbar variants in these custom bars.
+-- ============================================================================
+local EAS_ForceRectFillBase029426 = EAS_ForceRectFill02997
+EAS_ForceRectFill02997 = function(bar, current, maximum)
+    EAS_ForceRectFillBase029426(bar, current, maximum)
+    if not bar or not EAS_IsRectDesign02995(EAS_GetUnitFrameDesign02991()) then return end
+
+    current, maximum = tonumber(current) or 0, tonumber(maximum) or 0
+    bar.epcRectCurrent, bar.epcRectMaximum = current, maximum
+    local ratio = maximum > 0 and math.max(0, math.min(1, current / maximum)) or 0
+    local c = EAS_ColorForRectBar02997(bar)
+
+    -- Depleted space remains the same resource hue, only dimmer. This keeps the
+    -- rectangle visually colored without making a partially depleted bar look
+    -- full, and avoids the black-track appearance from 0.29.425.
+    if bar.epcRectPanel02994 then
+        bar.epcRectPanel02994:SetHidden(false)
+        if bar.epcRectPanel02994.SetDrawTier then bar.epcRectPanel02994:SetDrawTier(DT_MEDIUM) end
+        bar.epcRectPanel02994:SetDrawLayer(DL_CONTROLS)
+        bar.epcRectPanel02994:SetDrawLevel(18)
+        bar.epcRectPanel02994:SetCenterColor(c[1] * 0.26, c[2] * 0.26, c[3] * 0.26, 0.98)
+        bar.epcRectPanel02994:SetEdgeColor(
+            math.min(1, c[1] * 0.82 + 0.12),
+            math.min(1, c[2] * 0.82 + 0.12),
+            math.min(1, c[3] * 0.82 + 0.12),
+            1.00
+        )
+    end
+
+    if not bar.epcRectColorFill029426 then
+        local fill = wm:CreateControl(nil, bar, CT_BACKDROP)
+        fill:SetCenterColor(1, 1, 1, 1)
+        fill:SetEdgeColor(0, 0, 0, 0)
+        fill:SetEdgeTexture(nil, 1, 1, 1)
+        fill:SetMouseEnabled(false)
+        if fill.SetDrawTier then fill:SetDrawTier(DT_MEDIUM) end
+        fill:SetDrawLayer(DL_CONTROLS)
+        fill:SetDrawLevel(72)
+        bar.epcRectColorFill029426 = fill
+    end
+
+    local fill = bar.epcRectColorFill029426
+    local innerW = math.max(1, (tonumber(bar:GetWidth()) or 1) - 4)
+    local innerH = math.max(1, (tonumber(bar:GetHeight()) or 1) - 4)
+    local visibleW = math.floor(innerW * ratio + 0.5)
+
+    fill:ClearAnchors()
+    fill:SetAnchor(TOPLEFT, bar, TOPLEFT, 2, 2)
+    fill:SetDimensions(math.max(1, visibleW), innerH)
+    fill:SetCenterColor(c[1], c[2], c[3], 1.00)
+    fill:SetEdgeColor(0, 0, 0, 0)
+    fill:SetAlpha(1.00)
+    fill:SetHidden(ratio <= 0 or visibleW <= 0)
+
+    -- Only the 0.29.426 fill paints the current amount. Retire older renderers
+    -- so they cannot cover the dim resource track or make it appear solid.
+    if bar.epcRectFill then bar.epcRectFill:SetHidden(true) end
+    if bar.epcRectLiveFill029424 then bar.epcRectLiveFill029424:SetHidden(true) end
+    if bar.epcRectWidthFill029425 then bar.epcRectWidthFill029425:SetHidden(true) end
+
+    if bar.epcLabel then
+        if bar.epcLabel.SetDrawTier then bar.epcLabel:SetDrawTier(DT_HIGH) end
+        bar.epcLabel:SetDrawLayer(DL_OVERLAY)
+        bar.epcLabel:SetDrawLevel(230)
+    end
+end
+
+
+-- ============================================================================
+-- v0.29.427 - Framed colored rectangular depletion.
+-- The 0.29.426 colored fill restored resource identity, but at full values the
+-- bars could read like a solid slab instead of a colored fill living inside a
+-- visible frame. Rectangular styles now render as: visible frame border,
+-- darker resource-colored inner track, and a bright live fill inset inside the
+-- same cavity. This keeps the bars resource-colored without turning them black
+-- and makes the fill look properly contained inside the frame.
+-- ============================================================================
+local EAS_ForceRectFillBase029427 = EAS_ForceRectFill02997
+EAS_ForceRectFill02997 = function(bar, current, maximum)
+    EAS_ForceRectFillBase029427(bar, current, maximum)
+    if not bar or not EAS_IsRectDesign02995(EAS_GetUnitFrameDesign02991()) then return end
+
+    current, maximum = tonumber(current) or 0, tonumber(maximum) or 0
+    bar.epcRectCurrent, bar.epcRectMaximum = current, maximum
+    local ratio = maximum > 0 and math.max(0, math.min(1, current / maximum)) or 0
+    local c = EAS_ColorForRectBar02997(bar)
+    local inset = 2
+    local innerW = math.max(1, (tonumber(bar:GetWidth()) or 1) - (inset * 2))
+    local innerH = math.max(1, (tonumber(bar:GetHeight()) or 1) - (inset * 2))
+    local visibleW = math.floor(innerW * ratio + 0.5)
+
+    if bar.epcRectPanel02994 then
+        bar.epcRectPanel02994:SetHidden(false)
+        if bar.epcRectPanel02994.SetDrawTier then bar.epcRectPanel02994:SetDrawTier(DT_MEDIUM) end
+        bar.epcRectPanel02994:SetDrawLayer(DL_CONTROLS)
+        bar.epcRectPanel02994:SetDrawLevel(18)
+        bar.epcRectPanel02994:SetCenterColor(0.015, 0.018, 0.026, 0.96)
+        bar.epcRectPanel02994:SetEdgeColor(
+            math.min(1, c[1] * 0.80 + 0.18),
+            math.min(1, c[2] * 0.80 + 0.18),
+            math.min(1, c[3] * 0.80 + 0.18),
+            1.00
+        )
+    end
+
+    if not bar.epcRectTrack029427 then
+        local track = wm:CreateControl(nil, bar, CT_TEXTURE)
+        track:SetTexture(EAS_WHITE_TEXTURE_02993)
+        track:SetMouseEnabled(false)
+        if track.SetDrawTier then track:SetDrawTier(DT_MEDIUM) end
+        track:SetDrawLayer(DL_CONTROLS)
+        track:SetDrawLevel(70)
+        bar.epcRectTrack029427 = track
+    end
+
+    local track = bar.epcRectTrack029427
+    track:ClearAnchors()
+    track:SetAnchor(TOPLEFT, bar, TOPLEFT, inset, inset)
+    track:SetDimensions(innerW, innerH)
+    track:SetTexture(EAS_WHITE_TEXTURE_02993)
+    track:SetColor(c[1] * 0.44, c[2] * 0.44, c[3] * 0.44, 0.98)
+    track:SetAlpha(1.00)
+    track:SetHidden(false)
+
+    if not bar.epcRectColorFill029427 then
+        local fill = wm:CreateControl(nil, bar, CT_TEXTURE)
+        fill:SetTexture(EAS_WHITE_TEXTURE_02993)
+        fill:SetMouseEnabled(false)
+        if fill.SetDrawTier then fill:SetDrawTier(DT_HIGH) end
+        fill:SetDrawLayer(DL_CONTROLS)
+        fill:SetDrawLevel(95)
+        bar.epcRectColorFill029427 = fill
+    end
+
+    local fill = bar.epcRectColorFill029427
+    fill:ClearAnchors()
+    fill:SetAnchor(TOPLEFT, bar, TOPLEFT, inset, inset)
+    fill:SetDimensions(math.max(1, visibleW), innerH)
+    fill:SetTexture(EAS_WHITE_TEXTURE_02993)
+    fill:SetColor(c[1], c[2], c[3], 1.00)
+    fill:SetAlpha(1.00)
+    fill:SetHidden(ratio <= 0 or visibleW <= 0)
+
+    -- Retire the older rectangle painters so only the framed track + vivid fill
+    -- remain visible inside the shell.
+    if bar.epcRectFill then bar.epcRectFill:SetHidden(true) end
+    if bar.epcRectLiveFill029424 then bar.epcRectLiveFill029424:SetHidden(true) end
+    if bar.epcRectWidthFill029425 then bar.epcRectWidthFill029425:SetHidden(true) end
+    if bar.epcRectColorFill029426 then bar.epcRectColorFill029426:SetHidden(true) end
+
+    if bar.epcLabel then
+        if bar.epcLabel.SetDrawTier then bar.epcLabel:SetDrawTier(DT_HIGH) end
+        bar.epcLabel:SetDrawLayer(DL_OVERLAY)
+        bar.epcLabel:SetDrawLevel(230)
+    end
+end
+
+
+-- ============================================================================
+-- v0.29.429 - Final rectangle fill hotfix.
+-- User-facing symptom: rectangle styles showed only the colored outline and
+-- percentage text, but not the live interior fill. The earlier renderer stack
+-- left multiple competing fill controls alive; depending on creation order,
+-- the visible bright fill could end up hidden or not repaint after layout.
+--
+-- This final override makes one status bar the sole authority for the bright
+-- live fill, keeps a separate dim resource-colored track behind it, and forces
+-- all legacy rectangle fill variants to stay hidden.
+-- ============================================================================
+local EAS_ForceRectFillBase029429 = EAS_ForceRectFill02997
+EAS_ForceRectFill02997 = function(bar, current, maximum)
+    EAS_ForceRectFillBase029429(bar, current, maximum)
+    if not bar or not EAS_IsRectDesign02995(EAS_GetUnitFrameDesign02991()) then return end
+
+    current, maximum = tonumber(current) or 0, tonumber(maximum) or 0
+    bar.epcRectCurrent, bar.epcRectMaximum = current, maximum
+
+    local c = EAS_ColorForRectBar02997(bar)
+    local inset = 2
+    local innerW = math.max(1, math.floor((tonumber(bar:GetWidth()) or 1) - (inset * 2)))
+    local innerH = math.max(1, math.floor((tonumber(bar:GetHeight()) or 1) - (inset * 2)))
+    local maxValue = math.max(1, maximum)
+    local value = maximum > 0 and math.max(0, math.min(current, maximum)) or 0
+
+    if bar.epcRectPanel02994 then
+        bar.epcRectPanel02994:SetHidden(false)
+        if bar.epcRectPanel02994.SetDrawTier then bar.epcRectPanel02994:SetDrawTier(DT_MEDIUM) end
+        bar.epcRectPanel02994:SetDrawLayer(DL_CONTROLS)
+        bar.epcRectPanel02994:SetDrawLevel(18)
+        bar.epcRectPanel02994:SetCenterColor(0.015, 0.018, 0.026, 0.96)
+        bar.epcRectPanel02994:SetEdgeColor(
+            math.min(1, c[1] * 0.80 + 0.18),
+            math.min(1, c[2] * 0.80 + 0.18),
+            math.min(1, c[3] * 0.80 + 0.18),
+            1.00
+        )
+    end
+
+    if not bar.epcRectTrack029429 then
+        local track = wm:CreateControl(nil, bar, CT_TEXTURE)
+        track:SetMouseEnabled(false)
+        track:SetTexture(EAS_WHITE_TEXTURE_02993)
+        if track.SetDrawTier then track:SetDrawTier(DT_MEDIUM) end
+        track:SetDrawLayer(DL_CONTROLS)
+        track:SetDrawLevel(72)
+        bar.epcRectTrack029429 = track
+    end
+
+    local track = bar.epcRectTrack029429
+    track:ClearAnchors()
+    track:SetAnchor(TOPLEFT, bar, TOPLEFT, inset, inset)
+    track:SetAnchor(BOTTOMRIGHT, bar, BOTTOMRIGHT, -inset, -inset)
+    track:SetTexture(EAS_WHITE_TEXTURE_02993)
+    track:SetColor(c[1] * 0.32, c[2] * 0.32, c[3] * 0.32, 0.98)
+    track:SetAlpha(1.00)
+    track:SetHidden(false)
+
+    if not bar.epcRectStatusFill029429 then
+        local fill = wm:CreateControl(nil, bar, CT_STATUSBAR)
+        fill:SetMouseEnabled(false)
+        fill:SetTexture(EAS_WHITE_TEXTURE_02993)
+        fill:ClearAnchors()
+        fill:SetAnchor(TOPLEFT, bar, TOPLEFT, inset, inset)
+        fill:SetAnchor(BOTTOMRIGHT, bar, BOTTOMRIGHT, -inset, -inset)
+        if fill.SetBarAlignment then fill:SetBarAlignment(BAR_ALIGNMENT_NORMAL) end
+        if fill.SetDrawTier then fill:SetDrawTier(DT_HIGH) end
+        fill:SetDrawLayer(DL_CONTROLS)
+        fill:SetDrawLevel(96)
+        bar.epcRectStatusFill029429 = fill
+    end
+
+    local fill = bar.epcRectStatusFill029429
+    fill:ClearAnchors()
+    fill:SetAnchor(TOPLEFT, bar, TOPLEFT, inset, inset)
+    fill:SetAnchor(BOTTOMRIGHT, bar, BOTTOMRIGHT, -inset, -inset)
+    fill:SetDimensions(innerW, innerH)
+    fill:SetTexture(EAS_WHITE_TEXTURE_02993)
+    if fill.SetColor then fill:SetColor(c[1], c[2], c[3], 1.00) end
+    fill:SetAlpha(1.00)
+    if fill.SetBarAlignment then fill:SetBarAlignment(BAR_ALIGNMENT_NORMAL) end
+    fill:SetMinMax(0, maxValue)
+    fill:SetValue(value)
+    fill:SetHidden(maximum <= 0 or value <= 0)
+
+    -- Keep every prior experimental rectangle fill path retired so there is no
+    -- possibility of one hiding or visually overriding the authoritative fill.
+    if bar.epcRectFill then bar.epcRectFill:SetHidden(true) end
+    if bar.epcRectLiveFill029424 then bar.epcRectLiveFill029424:SetHidden(true) end
+    if bar.epcRectWidthFill029425 then bar.epcRectWidthFill029425:SetHidden(true) end
+    if bar.epcRectColorFill029426 then bar.epcRectColorFill029426:SetHidden(true) end
+    if bar.epcRectColorFill029427 then bar.epcRectColorFill029427:SetHidden(true) end
+    if bar.epcRectTrack029427 then bar.epcRectTrack029427:SetHidden(true) end
+
+    if bar.epcLabel then
+        if bar.epcLabel.SetDrawTier then bar.epcLabel:SetDrawTier(DT_HIGH) end
+        bar.epcLabel:SetDrawLayer(DL_OVERLAY)
+        bar.epcLabel:SetDrawLevel(230)
+    end
+end
+
+local EAS_RefreshRectResourceFillsBase029429 = F.RefreshRectResourceFills02995
+function F:RefreshRectResourceFills02995()
+    if EAS_RefreshRectResourceFillsBase029429 then
+        EAS_RefreshRectResourceFillsBase029429(self)
+    end
+    if not EAS_IsRectDesign02995(EAS_GetUnitFrameDesign02991()) then return end
+
+    local function paint(frame)
+        if not frame or not frame.epcBars then return end
+        for _, bar in pairs(frame.epcBars) do
+            if bar then EAS_ForceRectFill02997(bar, bar.epcRectCurrent or 0, bar.epcRectMaximum or 0) end
+        end
+    end
+
+    paint(self.playerFrame)
+    paint(self.targetFrame)
+
+    if self.groupPool and type(self.groupPool.GetActiveObjects) == 'function' then
+        for _, row in pairs(self.groupPool:GetActiveObjects()) do
+            if row and row.epcBars then
+                for _, bar in pairs(row.epcBars) do
+                    if bar then EAS_ForceRectFill02997(bar, bar.epcRectCurrent or 0, bar.epcRectMaximum or 0) end
+                end
+            end
+            if row and row.epcCompanionHealth and row.epcCompanionHealth ~= false then
+                EAS_ForceRectFill02997(row.epcCompanionHealth, row.epcCompanionHealth.epcRectCurrent or 0, row.epcCompanionHealth.epcRectMaximum or 0)
+            end
+        end
+    end
+end
+
+
+-- ============================================================================
+-- v0.29.430 - Rectangle bars now reuse the proven Classic/Compact status bar.
+-- The rectangle-only CT_TEXTURE/CT_STATUSBAR experiments could render an
+-- outline without any visible interior on some clients. Player/Target bars are
+-- already built with the same ZO status bar used by the working ESO Classic
+-- path (bar.epcFill). For rectangle designs, reshape THAT proven status bar
+-- into the rectangle cavity instead of drawing a second replacement fill.
+-- ============================================================================
+local EAS_ForceRectFillBase029430 = EAS_ForceRectFill02997
+EAS_ForceRectFill02997 = function(bar, current, maximum)
+    EAS_ForceRectFillBase029430(bar, current, maximum)
+    if not bar or not EAS_IsRectDesign02995(EAS_GetUnitFrameDesign02991()) then return end
+
+    current, maximum = tonumber(current) or 0, tonumber(maximum) or 0
+    bar.epcRectCurrent, bar.epcRectMaximum = current, maximum
+    local c = EAS_ColorForRectBar02997(bar)
+
+    -- Player/Target native resource bars: use the exact status bar control that
+    -- already works in ESO Classic/Compact. Only its anchors/texture change.
+    if bar.epcNative and bar.epcFill and type(bar.epcFill.SetMinMax) == "function" and type(bar.epcFill.SetValue) == "function" then
+        local fill = bar.epcFill
+        fill:ClearAnchors()
+        fill:SetAnchor(TOPLEFT, bar, TOPLEFT, 2, 2)
+        fill:SetAnchor(BOTTOMRIGHT, bar, BOTTOMRIGHT, -2, -2)
+        if fill.SetTexture then fill:SetTexture(EAS_WHITE_TEXTURE_02993) end
+        if fill.SetColor then fill:SetColor(c[1], c[2], c[3], 1.00) end
+        if fill.SetAlpha then fill:SetAlpha(1.00) end
+        if fill.SetBarAlignment then fill:SetBarAlignment(BAR_ALIGNMENT_NORMAL) end
+        if fill.SetDrawTier then fill:SetDrawTier(DT_HIGH) end
+        if fill.SetDrawLayer then fill:SetDrawLayer(DL_CONTROLS) end
+        if fill.SetDrawLevel then fill:SetDrawLevel(110) end
+
+        if maximum > 0 then
+            local value = math.max(0, math.min(current, maximum))
+            fill:SetMinMax(0, maximum)
+            fill:SetValue(value)
+            fill:SetHidden(value <= 0)
+        else
+            fill:SetMinMax(0, 1)
+            fill:SetValue(0)
+            fill:SetHidden(true)
+        end
+
+        -- A dark cavity remains visible as the depleted portion of the bar.
+        if bar.epcRectPanel02994 then
+            bar.epcRectPanel02994:SetHidden(false)
+            bar.epcRectPanel02994:SetCenterColor(c[1] * 0.10, c[2] * 0.10, c[3] * 0.10, 0.96)
+            bar.epcRectPanel02994:SetEdgeColor(c[1], c[2], c[3], 1.00)
+            if bar.epcRectPanel02994.SetDrawTier then bar.epcRectPanel02994:SetDrawTier(DT_MEDIUM) end
+            bar.epcRectPanel02994:SetDrawLayer(DL_CONTROLS)
+            bar.epcRectPanel02994:SetDrawLevel(18)
+        end
+
+        -- Do not let any of the replacement rectangle painters cover the native
+        -- status bar. This is now the single bright fill for native unit bars.
+        if bar.epcRectFill then bar.epcRectFill:SetHidden(true) end
+        if bar.epcRectLiveFill029424 then bar.epcRectLiveFill029424:SetHidden(true) end
+        if bar.epcRectWidthFill029425 then bar.epcRectWidthFill029425:SetHidden(true) end
+        if bar.epcRectColorFill029426 then bar.epcRectColorFill029426:SetHidden(true) end
+        if bar.epcRectColorFill029427 then bar.epcRectColorFill029427:SetHidden(true) end
+        if bar.epcRectStatusFill029429 then bar.epcRectStatusFill029429:SetHidden(true) end
+        if bar.epcRectTrack029427 then bar.epcRectTrack029427:SetHidden(true) end
+        if bar.epcRectTrack029429 then bar.epcRectTrack029429:SetHidden(true) end
+        if bar.epcGloss then bar.epcGloss:SetHidden(true) end
+
+        -- Hide only the original curved/tapered shell pieces; rectangle panel
+        -- above supplies the border, while epcFill supplies the live color.
+        for _, list in ipairs({bar.epcBgPieces, bar.epcFramePieces, bar.epcGlossPieces, bar.epcFillPieces}) do
+            for _, control in ipairs(list or {}) do
+                if control and control ~= fill then control:SetHidden(true) end
+            end
+        end
+
+        if bar.epcLabel then
+            if bar.epcLabel.SetDrawTier then bar.epcLabel:SetDrawTier(DT_HIGH) end
+            bar.epcLabel:SetDrawLayer(DL_OVERLAY)
+            bar.epcLabel:SetDrawLevel(240)
+            EAS_FitRectLabel02996(bar, current, maximum)
+        end
+    end
+end
+
+-- Put one final hook after every older wrapper so every actual power update
+-- finishes by reshaping/repainting the proven native status bar.
+local EAS_UpdateESOResourceBarBase029430 = updateESOResourceBar
+updateESOResourceBar = function(bar, current, maximum)
+    EAS_UpdateESOResourceBarBase029430(bar, current, maximum)
+    if bar and bar.epcNative and EAS_IsRectDesign02995(EAS_GetUnitFrameDesign02991()) then
+        EAS_ForceRectFill02997(bar, current, maximum)
+    end
+end
+
+
+-- ============================================================================
+-- v0.29.431 - Backdrop-based rectangle fill (render-proof hotfix).
+-- The frame outline is confirmed visible in-game while CT_TEXTURE and the
+-- templated CT_STATUSBAR interior can remain visually black on this layout.
+-- Use the same CT_BACKDROP primitive that already renders the rectangle shell
+-- to paint the live resource interior. This deliberately does NOT call any
+-- earlier rectangle painter, so no legacy wrapper can hide the final fill.
+-- ============================================================================
+EAS_ForceRectFill02997 = function(bar, current, maximum)
+    if not bar or not EAS_IsRectDesign02995(EAS_GetUnitFrameDesign02991()) then return end
+
+    current, maximum = tonumber(current) or 0, tonumber(maximum) or 0
+    bar.epcRectCurrent, bar.epcRectMaximum = current, maximum
+
+    local ratio = maximum > 0 and math.max(0, math.min(1, current / maximum)) or 0
+    local c = EAS_ColorForRectBar02997(bar)
+    local inset = 2
+    local innerW = math.max(1, math.floor((tonumber(bar:GetWidth()) or 1) - inset * 2))
+    local innerH = math.max(1, math.floor((tonumber(bar:GetHeight()) or 1) - inset * 2))
+    local visibleW = math.max(1, math.floor(innerW * ratio + 0.5))
+
+    -- Visible outer shell + dark depleted cavity.
+    if not bar.epcRectPanel02994 then
+        local panel = wm:CreateControl(nil, bar, CT_BACKDROP)
+        panel:SetAnchorFill(bar)
+        panel:SetEdgeTexture(nil, 1, 1, 1)
+        bar.epcRectPanel02994 = panel
+    end
+    local panel = bar.epcRectPanel02994
+    panel:ClearAnchors()
+    panel:SetAnchorFill(bar)
+    panel:SetHidden(false)
+    panel:SetCenterColor(c[1] * 0.08, c[2] * 0.08, c[3] * 0.08, 0.98)
+    panel:SetEdgeColor(c[1], c[2], c[3], 1.00)
+    if panel.SetDrawTier then panel:SetDrawTier(DT_MEDIUM) end
+    panel:SetDrawLayer(DL_CONTROLS)
+    panel:SetDrawLevel(20)
+
+    -- Bright live fill. CT_BACKDROP is intentionally used because this exact
+    -- control type is visibly rendering the outline/cavity in-game.
+    if not bar.epcRectBackdropFill029431 then
+        local fill = wm:CreateControl(nil, bar, CT_BACKDROP)
+        fill:SetEdgeTexture(nil, 1, 1, 1)
+        fill:SetMouseEnabled(false)
+        if fill.SetDrawTier then fill:SetDrawTier(DT_HIGH) end
+        fill:SetDrawLayer(DL_CONTROLS)
+        fill:SetDrawLevel(120)
+        bar.epcRectBackdropFill029431 = fill
+    end
+
+    local fill = bar.epcRectBackdropFill029431
+    fill:ClearAnchors()
+    fill:SetAnchor(TOPLEFT, bar, TOPLEFT, inset, inset)
+    fill:SetAnchor(BOTTOMLEFT, bar, BOTTOMLEFT, inset, -inset)
+    fill:SetWidth(visibleW)
+    fill:SetCenterColor(c[1], c[2], c[3], 1.00)
+    -- Keep the fill itself borderless so the outer frame remains crisp.
+    fill:SetEdgeColor(c[1], c[2], c[3], 0.00)
+    fill:SetAlpha(1.00)
+    fill:SetHidden(ratio <= 0)
+
+    -- Disable every earlier rectangle interior implementation. The new
+    -- backdrop fill above is the one and only live colored interior.
+    local old = {
+        bar.epcFill,
+        bar.epcGloss,
+        bar.epcRectFill,
+        bar.epcRectLiveFill029424,
+        bar.epcRectWidthFill029425,
+        bar.epcRectColorFill029426,
+        bar.epcRectColorFill029427,
+        bar.epcRectStatusFill029429,
+        bar.epcRectTrack029427,
+        bar.epcRectTrack029429,
+    }
+    for _, control in ipairs(old) do
+        if control and control.SetHidden then control:SetHidden(true) end
+    end
+
+    for _, list in ipairs({bar.epcBgPieces, bar.epcFramePieces, bar.epcGlossPieces, bar.epcFillPieces}) do
+        for _, control in ipairs(list or {}) do
+            if control and control.SetHidden then control:SetHidden(true) end
+        end
+    end
+
+    if bar.epcLabel then
+        bar.epcLabel:SetHidden(false)
+        if bar.epcLabel.SetDrawTier then bar.epcLabel:SetDrawTier(DT_HIGH) end
+        bar.epcLabel:SetDrawLayer(DL_OVERLAY)
+        bar.epcLabel:SetDrawLevel(250)
+        EAS_FitRectLabel02996(bar, current, maximum)
+    end
+end
+
+
+-- ============================================================================
+-- v0.29.433 - Backdrop API safety fix.
+-- Keep the rectangle fill on valid BackdropControl geometry at all times:
+-- edge texture dimensions are 1x1 (valid power-of-two values), and a depleted
+-- hidden fill never receives a zero width.
+-- ============================================================================
+-- v0.29.432 - Contained rectangle fill width clamp.
+-- 0.29.431 restored the interior color, but at 100% the live fill could draw
+-- slightly past the right border on some rectangle widths, especially the
+-- shorter Magicka/Stamina shells. Keep the live fill fully inside the shell by
+-- using a safe interior width and removing any right-edge overshoot.
+-- ============================================================================
+EAS_ForceRectFill02997 = function(bar, current, maximum)
+    if not bar or not EAS_IsRectDesign02995(EAS_GetUnitFrameDesign02991()) then return end
+
+    current, maximum = tonumber(current) or 0, tonumber(maximum) or 0
+    bar.epcRectCurrent, bar.epcRectMaximum = current, maximum
+
+    local ratio = maximum > 0 and math.max(0, math.min(1, current / maximum)) or 0
+    local c = EAS_ColorForRectBar02997(bar)
+    local inset = 2
+    local edgeInset = 1
+    local rawW = math.max(1, math.floor(tonumber(bar:GetWidth()) or 1))
+    local rawH = math.max(1, math.floor(tonumber(bar:GetHeight()) or 1))
+    local innerW = math.max(1, rawW - inset * 2)
+    local innerH = math.max(1, rawH - inset * 2)
+    local safeW = math.max(1, innerW - edgeInset)
+    local visibleW = math.floor(safeW * ratio + 0.5)
+    visibleW = math.max(0, math.min(safeW, visibleW))
+
+    if not bar.epcRectPanel02994 then
+        local panel = wm:CreateControl(nil, bar, CT_BACKDROP)
+        panel:SetAnchorFill(bar)
+        panel:SetEdgeTexture(nil, 1, 1, 1)
+        bar.epcRectPanel02994 = panel
+    end
+    local panel = bar.epcRectPanel02994
+    panel:ClearAnchors()
+    panel:SetAnchorFill(bar)
+    panel:SetHidden(false)
+    panel:SetCenterColor(c[1] * 0.08, c[2] * 0.08, c[3] * 0.08, 0.98)
+    panel:SetEdgeColor(c[1], c[2], c[3], 1.00)
+    if panel.SetDrawTier then panel:SetDrawTier(DT_MEDIUM) end
+    panel:SetDrawLayer(DL_CONTROLS)
+    panel:SetDrawLevel(20)
+
+    if not bar.epcRectBackdropFill029431 then
+        local fill = wm:CreateControl(nil, bar, CT_BACKDROP)
+        -- ESO BackdropControl edge dimensions must be positive powers of two.
+        -- Use a valid 1x1 edge and make it visually borderless with alpha 0.
+        fill:SetEdgeTexture(nil, 1, 1, 1)
+        fill:SetMouseEnabled(false)
+        if fill.SetDrawTier then fill:SetDrawTier(DT_HIGH) end
+        fill:SetDrawLayer(DL_CONTROLS)
+        fill:SetDrawLevel(120)
+        bar.epcRectBackdropFill029431 = fill
+    end
+
+    local fill = bar.epcRectBackdropFill029431
+    fill:ClearAnchors()
+    fill:SetAnchor(TOPLEFT, bar, TOPLEFT, inset, inset)
+    -- BackdropControls may not be assigned a zero width. Keep a 1 px hidden
+    -- geometry at zero resource, and only reveal it when visibleW > 0.
+    fill:SetDimensions(math.max(1, visibleW), math.max(1, innerH))
+    fill:SetCenterColor(c[1], c[2], c[3], 1.00)
+    fill:SetEdgeColor(c[1], c[2], c[3], 0.00)
+    fill:SetAlpha(1.00)
+    fill:SetHidden(ratio <= 0 or visibleW <= 0)
+
+    local old = {
+        bar.epcFill,
+        bar.epcGloss,
+        bar.epcRectFill,
+        bar.epcRectLiveFill029424,
+        bar.epcRectWidthFill029425,
+        bar.epcRectColorFill029426,
+        bar.epcRectColorFill029427,
+        bar.epcRectStatusFill029429,
+        bar.epcRectTrack029427,
+        bar.epcRectTrack029429,
+    }
+    for _, control in ipairs(old) do
+        if control and control.SetHidden then control:SetHidden(true) end
+    end
+
+    for _, list in ipairs({bar.epcBgPieces, bar.epcFramePieces, bar.epcGlossPieces, bar.epcFillPieces}) do
+        for _, control in ipairs(list or {}) do
+            if control and control.SetHidden then control:SetHidden(true) end
+        end
+    end
+
+    if bar.epcLabel then
+        bar.epcLabel:SetHidden(false)
+        if bar.epcLabel.SetDrawTier then bar.epcLabel:SetDrawTier(DT_HIGH) end
+        bar.epcLabel:SetDrawLayer(DL_OVERLAY)
+        bar.epcLabel:SetDrawLevel(250)
+        EAS_FitRectLabel02996(bar, current, maximum)
+    end
+end
+
+-- Final update hook: update values through the mature updater first, then make
+-- the backdrop renderer the last visual operation for rectangle designs.
+local EAS_UpdateESOResourceBarBase029431 = updateESOResourceBar
+updateESOResourceBar = function(bar, current, maximum)
+    EAS_UpdateESOResourceBarBase029431(bar, current, maximum)
+    if bar and EAS_IsRectDesign02995(EAS_GetUnitFrameDesign02991()) then
+        EAS_ForceRectFill02997(bar, current, maximum)
+    end
+end
+
+-- Repaint immediately after rectangle layout/style changes as well.
+local EAS_RefreshRectResourceFillsBase029431 = F.RefreshRectResourceFills02995
+function F:RefreshRectResourceFills02995()
+    if EAS_RefreshRectResourceFillsBase029431 then
+        EAS_RefreshRectResourceFillsBase029431(self)
+    end
+    if not EAS_IsRectDesign02995(EAS_GetUnitFrameDesign02991()) then return end
+
+    local function paint(frame)
+        if not frame or not frame.epcBars then return end
+        for _, bar in pairs(frame.epcBars) do
+            if bar then
+                EAS_ForceRectFill02997(bar, bar.epcRectCurrent or 0, bar.epcRectMaximum or 0)
+            end
+        end
+    end
+    paint(self.playerFrame)
+    paint(self.targetFrame)
+end
+
+
+-- ============================================================================
+-- v0.29.434 - Exact rectangle geometry ownership.
+-- Native ESO resource controls can report their template/original width even
+-- after the rectangle layout has assigned a much smaller visual width. That is
+-- why Magicka/Stamina could overflow despite width clamping. The rectangle
+-- layout now stores its intended width/height, and this renderer uses those
+-- exact dimensions for both the shell and the fill.
+-- ============================================================================
+EAS_ForceRectFill02997 = function(bar, current, maximum)
+    if not bar or not EAS_IsRectDesign02995(EAS_GetUnitFrameDesign02991()) then return end
+
+    current, maximum = tonumber(current) or 0, tonumber(maximum) or 0
+    bar.epcRectCurrent, bar.epcRectMaximum = current, maximum
+
+    local ratio = maximum > 0 and math.max(0, math.min(1, current / maximum)) or 0
+    local c = EAS_ColorForRectBar02997(bar)
+    local inset = 2
+    local layoutW = math.max(28, tonumber(bar.epcRectLayoutW029434) or tonumber(bar:GetWidth()) or 28)
+    local layoutH = math.max(8, tonumber(bar.epcRectLayoutH029434) or tonumber(bar:GetHeight()) or 8)
+    layoutW = math.floor(layoutW + 0.5)
+    layoutH = math.floor(layoutH + 0.5)
+    local innerW = math.max(1, layoutW - inset * 2)
+    local innerH = math.max(1, layoutH - inset * 2)
+    local visibleW = math.floor(innerW * ratio + 0.5)
+    visibleW = math.max(0, math.min(innerW, visibleW))
+
+    if not bar.epcRectPanel02994 then
+        local panel = wm:CreateControl(nil, bar, CT_BACKDROP)
+        panel:SetEdgeTexture(nil, 1, 1, 1)
+        bar.epcRectPanel02994 = panel
+    end
+    local panel = bar.epcRectPanel02994
+    panel:ClearAnchors()
+    panel:SetAnchor(TOPLEFT, bar, TOPLEFT, 0, 0)
+    panel:SetDimensions(layoutW, layoutH)
+    panel:SetHidden(false)
+    panel:SetCenterColor(c[1] * 0.08, c[2] * 0.08, c[3] * 0.08, 0.98)
+    panel:SetEdgeColor(c[1], c[2], c[3], 1.00)
+    if panel.SetDrawTier then panel:SetDrawTier(DT_MEDIUM) end
+    panel:SetDrawLayer(DL_CONTROLS)
+    panel:SetDrawLevel(20)
+
+    if not bar.epcRectBackdropFill029431 then
+        local fill = wm:CreateControl(nil, bar, CT_BACKDROP)
+        fill:SetEdgeTexture(nil, 1, 1, 1)
+        fill:SetMouseEnabled(false)
+        if fill.SetDrawTier then fill:SetDrawTier(DT_HIGH) end
+        fill:SetDrawLayer(DL_CONTROLS)
+        fill:SetDrawLevel(120)
+        bar.epcRectBackdropFill029431 = fill
+    end
+
+    local fill = bar.epcRectBackdropFill029431
+    fill:ClearAnchors()
+    fill:SetAnchor(TOPLEFT, bar, TOPLEFT, inset, inset)
+    fill:SetDimensions(math.max(1, visibleW), innerH)
+    fill:SetCenterColor(c[1], c[2], c[3], 1.00)
+    fill:SetEdgeColor(c[1], c[2], c[3], 0.00)
+    fill:SetAlpha(1.00)
+    fill:SetHidden(ratio <= 0 or visibleW <= 0)
+
+    local old = {
+        bar.epcFill, bar.epcGloss, bar.epcRectFill,
+        bar.epcRectLiveFill029424, bar.epcRectWidthFill029425,
+        bar.epcRectColorFill029426, bar.epcRectColorFill029427,
+        bar.epcRectStatusFill029429, bar.epcRectTrack029427,
+        bar.epcRectTrack029429,
+    }
+    for _, control in ipairs(old) do
+        if control and control.SetHidden then control:SetHidden(true) end
+    end
+    for _, list in ipairs({bar.epcBgPieces, bar.epcFramePieces, bar.epcGlossPieces, bar.epcFillPieces}) do
+        for _, control in ipairs(list or {}) do
+            if control and control.SetHidden then control:SetHidden(true) end
+        end
+    end
+
+    if bar.epcLabel then
+        bar.epcLabel:SetHidden(false)
+        bar.epcLabel:ClearAnchors()
+        bar.epcLabel:SetAnchor(CENTER, bar, TOPLEFT, math.floor(layoutW / 2), math.floor(layoutH / 2))
+        bar.epcLabel:SetDimensions(math.max(1, layoutW - 8), layoutH)
+        bar.epcLabel:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+        bar.epcLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+        if bar.epcLabel.SetDrawTier then bar.epcLabel:SetDrawTier(DT_HIGH) end
+        bar.epcLabel:SetDrawLayer(DL_OVERLAY)
+        bar.epcLabel:SetDrawLevel(250)
+        EAS_FitRectLabel02996(bar, current, maximum)
+    end
+end
+
+
+-- ============================================================================
+-- v0.29.435 - Strict rectangle/native visual isolation.
+-- Rectangle-only backdrop/status controls must never remain visible when the
+-- active design is ESO Classic, Compact, or any other non-rectangle style.
+-- This fixes the colored rectangular extensions appearing past the native
+-- pointed ESO bar ends after switching styles.
+-- ============================================================================
+local function EAS_HideAllRectOnlyControls029435(bar)
+    if not bar then return end
+    local controls = {
+        bar.epcRectPanel02994,
+        bar.epcRectBack,
+        bar.epcRectFill,
+        bar.epcRectLiveFill029424,
+        bar.epcRectWidthFill029425,
+        bar.epcRectColorFill029426,
+        bar.epcRectColorFill029427,
+        bar.epcRectTrack029427,
+        bar.epcRectTrack029429,
+        bar.epcRectStatusFill029429,
+        bar.epcRectBackdropFill029431,
+    }
+    for _, control in ipairs(controls) do
+        if control and control.SetHidden then control:SetHidden(true) end
+    end
+    for _, control in ipairs(bar.epcRectEdges or {}) do
+        if control and control.SetHidden then control:SetHidden(true) end
+    end
+end
+
+local function EAS_RestoreNativeOnly029435(self)
+    if not self then return end
+    local function restoreFrame(frame)
+        if not frame then return end
+        for _, bar in pairs(frame.epcBars or {}) do
+            EAS_HideAllRectOnlyControls029435(bar)
+            for _, list in ipairs({bar.epcBgPieces, bar.epcFramePieces, bar.epcGlossPieces, bar.epcFillPieces}) do
+                for _, control in ipairs(list or {}) do
+                    if control and control.SetHidden then control:SetHidden(false) end
+                end
+            end
+            if bar.epcFill and bar.epcFill.SetHidden then bar.epcFill:SetHidden(false) end
+            if bar.epcGloss and bar.epcGloss.SetHidden then bar.epcGloss:SetHidden(false) end
+        end
+    end
+    local function restoreRoster(frame)
+        if not frame then return end
+        for _, row in ipairs(frame.epcRows or {}) do
+            if row and row.epcBars then
+                for _, bar in pairs(row.epcBars) do
+                    EAS_HideAllRectOnlyControls029435(bar)
+                end
+            end
+            if row and row.epcCompanionHealth and row.epcCompanionHealth ~= false then
+                EAS_HideAllRectOnlyControls029435(row.epcCompanionHealth)
+            end
+        end
+    end
+    restoreFrame(self.playerFrame)
+    restoreFrame(self.targetFrame)
+    restoreRoster(self.groupFrame)
+    restoreRoster(self.raidFrame)
+end
+
+local EAS_ApplyVisualStyleBase029435 = F.ApplyVisualStyle
+function F:ApplyVisualStyle()
+    EAS_ApplyVisualStyleBase029435(self)
+    if not EAS_IsRectDesign02995(EAS_GetUnitFrameDesign02991()) then
+        EAS_RestoreNativeOnly029435(self)
+    end
+end
+
+local EAS_LayoutIntegratedUnitFrameBase029435 = F.LayoutIntegratedUnitFrame
+function F:LayoutIntegratedUnitFrame(frame, buffCount, debuffCount, preview)
+    EAS_LayoutIntegratedUnitFrameBase029435(self, frame, buffCount, debuffCount, preview)
+    if not EAS_IsRectDesign02995(EAS_GetUnitFrameDesign02991()) then
+        EAS_RestoreNativeOnly029435(self)
+    end
+end
+
+local EAS_UpdateESOResourceBarBase029435 = updateESOResourceBar
+updateESOResourceBar = function(bar, current, maximum)
+    EAS_UpdateESOResourceBarBase029435(bar, current, maximum)
+    if bar and not EAS_IsRectDesign02995(EAS_GetUnitFrameDesign02991()) then
+        EAS_HideAllRectOnlyControls029435(bar)
+    end
 end

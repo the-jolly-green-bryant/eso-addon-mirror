@@ -1,0 +1,100 @@
+## Title: Tamrielic Tongues
+## APIVersion: 101050 101051
+## Version: 1.5.0
+## AddOnVersion: 10500
+## Author: André Azevedo
+## Description: Speak nine reconstructed languages of Tamriel in ESO chat, with automatic translation for other users of the addon.
+## SavedVariables: TamrielicTonguesSavedVariables
+## DependsOn: LibAddonMenu-2.0
+## OptionalDependsOn: pChat
+
+Core/Bootstrap.lua
+Locale/Localization.lua
+Locale/en.lua
+Core/Constants.lua
+Core/SavedVariables.lua
+Core/Versioning.lua
+Core/LanguageRegistry.lua
+Core/CanonicalCatalog.lua
+Core/Knowledge.lua
+Core/Progression.lua
+Core/Proficiency.lua
+
+Languages/Shared/Common.lua
+Languages/Shared/FrozenVocabulary.lua
+
+Language/Normalizer.lua
+Language/Tokenizer.lua
+Language/WordGenerator.lua
+Language/Morphology.lua
+Language/Grammar.lua
+Language/Translator.lua
+Language/RoundTrip.lua
+Language/Analysis.lua
+Language/Comprehension.lua
+
+Languages/Taagra/Phonology.lua
+Languages/Taagra/Morphology.lua
+Languages/Taagra/Grammar.lua
+Languages/Taagra/Lexicon.lua
+Languages/Taagra/Language.lua
+
+Languages/Jel/Phonology.lua
+Languages/Jel/Morphology.lua
+Languages/Jel/Grammar.lua
+Languages/Jel/Lexicon.lua
+Languages/Jel/Language.lua
+
+Languages/Dunmeri/Phonology.lua
+Languages/Dunmeri/Morphology.lua
+Languages/Dunmeri/Grammar.lua
+Languages/Dunmeri/Lexicon.lua
+Languages/Dunmeri/Language.lua
+
+Languages/Altmeris/Phonology.lua
+Languages/Altmeris/Morphology.lua
+Languages/Altmeris/Grammar.lua
+Languages/Altmeris/Lexicon.lua
+Languages/Altmeris/Language.lua
+
+Languages/Bosmeri/Phonology.lua
+Languages/Bosmeri/Morphology.lua
+Languages/Bosmeri/Grammar.lua
+Languages/Bosmeri/Lexicon.lua
+Languages/Bosmeri/Language.lua
+
+Languages/Nordic/Phonology.lua
+Languages/Nordic/Morphology.lua
+Languages/Nordic/Grammar.lua
+Languages/Nordic/Lexicon.lua
+Languages/Nordic/Language.lua
+
+Languages/Orcish/Phonology.lua
+Languages/Orcish/Morphology.lua
+Languages/Orcish/Grammar.lua
+Languages/Orcish/Lexicon.lua
+Languages/Orcish/Language.lua
+
+Languages/Yoku/Phonology.lua
+Languages/Yoku/Morphology.lua
+Languages/Yoku/Grammar.lua
+Languages/Yoku/Lexicon.lua
+Languages/Yoku/Language.lua
+
+Languages/Bretic/Phonology.lua
+Languages/Bretic/Morphology.lua
+Languages/Bretic/Grammar.lua
+Languages/Bretic/Lexicon.lua
+Languages/Bretic/Language.lua
+
+Chat/MessageDetector.lua
+Chat/Formatter.lua
+Chat/Input.lua
+Chat/Output.lua
+Chat/Chat.lua
+
+UI/Settings.lua
+UI/ChatMenu.lua
+UI/Commands.lua
+
+TamrielicTongues.lua

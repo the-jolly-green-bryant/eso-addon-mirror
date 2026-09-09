@@ -2157,7 +2157,6 @@ function D:DiscoverNativeQueueHud2770()
         remember(rawget(_G, name))
     end
 
-    -- v0.27.74: ESO's current queue widget name can vary by keyboard/gamepad/UI
     -- revision. Instead of scanning _G (unsafe), enumerate WINDOW_MANAGER's UI
     -- controls only. This cannot touch private C functions. We accept only names
     -- that clearly identify an Activity Finder/LFG queue/status control, and we

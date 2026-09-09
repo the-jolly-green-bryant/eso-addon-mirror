@@ -59,9 +59,34 @@ function S:Initialize()
         author = EPC.author,
         version = EPC.version,
         slashCommand = "/esosuite",
-        registerForRefresh = true,
+        -- v0.29.375: This panel has 500+ controls. LAM's registerForRefresh=true
+        -- refreshes every control whenever the panel is shown and after every setting
+        -- change, which caused a visible hitch each time Addon Settings opened. Keep
+        -- LAM's automatic whole-panel refresh disabled and debounce dependency
+        -- refreshes only after settings that can affect other controls change.
+        registerForRefresh = false,
         registerForDefaults = true,
     })
+
+    -- v0.29.375: Dependency refreshes remain available for controls whose disabled
+    -- state depends on another checkbox/dropdown. They are intentionally debounced
+    -- so dragging sliders or changing several options cannot force hundreds of LAM
+    -- controls to reevaluate on the same frame.
+    function S:RequestDependencyRefresh029375(delayMs)
+        if not self.panelObject or type(self.panelObject.RefreshPanel) ~= "function" then return end
+        if not EVENT_MANAGER then
+            pcall(self.panelObject.RefreshPanel, self.panelObject)
+            return
+        end
+        local key = EPC.name .. "_SettingsDependencyRefresh029375"
+        EVENT_MANAGER:UnregisterForUpdate(key)
+        EVENT_MANAGER:RegisterForUpdate(key, math.max(120, tonumber(delayMs) or 220), function()
+            EVENT_MANAGER:UnregisterForUpdate(key)
+            if S and S.panelObject and type(S.panelObject.RefreshPanel) == "function" then
+                pcall(S.panelObject.RefreshPanel, S.panelObject)
+            end
+        end)
+    end
 
     local rawOptions = {
         {
@@ -133,7 +158,6 @@ function S:Initialize()
             getFunc = function() return EPC.saved.rotationBlockSensitivity029161 or "NORMAL" end,
             setFunc = function(v) EPC.saved.rotationBlockSensitivity029161 = v end,
             default = EPC.defaults.rotationBlockSensitivity029161,
-            disabled = function() return EPC.saved.rotationBlockWarningEnabled029161 == false end,
         },
         {
             type = "checkbox", name = "Learn dangerous attacks",
@@ -141,7 +165,6 @@ function S:Initialize()
             getFunc = function() return EPC.saved.rotationBlockLearning029161 ~= false end,
             setFunc = function(v) EPC.saved.rotationBlockLearning029161 = v == true end,
             default = EPC.defaults.rotationBlockLearning029161,
-            disabled = function() return EPC.saved.rotationBlockWarningEnabled029161 == false end,
         },
         {
             type = "dropdown", name = "Combat role awareness",
@@ -266,14 +289,12 @@ function S:Initialize()
             tooltip = "Assigns adventure zones levels from 1 to 50 and automatically chooses a Challenge Difficulty based on your character's level. Your custom rules are preserved and return when this is turned off. World Bosses are capped at Master.",
             getFunc = function() return EPC.saved.overlandDifficultyLevelingJourney == true end,
             setFunc = function(v) EPC.saved.overlandDifficultyLevelingJourney = v == true if EPC.OverlandDifficulty then EPC.OverlandDifficulty:RefreshMapLevelLabel() EPC.OverlandDifficulty:RequestRefresh(100) end end,
-            disabled = function() return EPC.saved.overlandDifficultyEnabled ~= true end,
             default = EPC.defaults.overlandDifficultyLevelingJourney,
         },
         {
             type = "checkbox", name = "Show zone levels on World Map",
             getFunc = function() return EPC.saved.overlandDifficultyShowZoneLevelsMap ~= false end,
             setFunc = function(v) EPC.saved.overlandDifficultyShowZoneLevelsMap = v == true if EPC.OverlandDifficulty then EPC.OverlandDifficulty:RefreshMapLevelLabel() end end,
-            disabled = function() return EPC.saved.overlandDifficultyLevelingJourney ~= true end,
             default = EPC.defaults.overlandDifficultyShowZoneLevelsMap,
             width = "half",
         },
@@ -282,7 +303,6 @@ function S:Initialize()
             tooltip = "Shows the zone level and the difficulty icon/name when you enter a zone.",
             getFunc = function() return EPC.saved.overlandDifficultyZoneMessages == true end,
             setFunc = function(v) EPC.saved.overlandDifficultyZoneMessages = v == true end,
-            disabled = function() return EPC.saved.overlandDifficultyEnabled ~= true end,
             default = EPC.defaults.overlandDifficultyZoneMessages,
             width = "half",
         },
@@ -291,7 +311,6 @@ function S:Initialize()
             tooltip = "When a companion is active, temporarily use the Companion difficulty selected below. When the companion is dismissed, the normal zone/activity rule returns.",
             getFunc = function() return EPC.saved.overlandDifficultyCompanionEnabled == true end,
             setFunc = function(v) EPC.saved.overlandDifficultyCompanionEnabled = v == true if EPC.OverlandDifficulty then EPC.OverlandDifficulty:RequestRefresh(100) end end,
-            disabled = function() return EPC.saved.overlandDifficultyEnabled ~= true end,
             default = EPC.defaults.overlandDifficultyCompanionEnabled,
             width = "half",
         },
@@ -302,7 +321,6 @@ function S:Initialize()
             choicesValues = challengeValues,
             getFunc = function() return tonumber(EPC.saved.overlandDifficultyCompanion) or 3 end,
             setFunc = function(v) EPC.saved.overlandDifficultyCompanion = tonumber(v) or 3 if EPC.OverlandDifficulty then EPC.OverlandDifficulty:RequestRefresh(100) end end,
-            disabled = function() return EPC.saved.overlandDifficultyEnabled ~= true or EPC.saved.overlandDifficultyCompanionEnabled ~= true end,
             default = EPC.defaults.overlandDifficultyCompanion,
             width = "half",
         },
@@ -311,7 +329,6 @@ function S:Initialize()
             tooltip = "Keeps the World Boss difficulty rule active for this many seconds after a World Boss is detected. Prevents multi-wave bosses from reverting to Open World difficulty between waves.",
             getFunc = function() return tonumber(EPC.saved.overlandDifficultyWorldBossHoldSeconds) or 45 end,
             setFunc = function(v) EPC.saved.overlandDifficultyWorldBossHoldSeconds = tonumber(v) or 45 end,
-            disabled = function() return EPC.saved.overlandDifficultyEnabled ~= true end,
             default = EPC.defaults.overlandDifficultyWorldBossHoldSeconds,
         },
         {
@@ -345,7 +362,6 @@ function S:Initialize()
             tooltip = "Distance in meters used to detect nearby World Boss, World Event, Dragon, and Public Dungeon POIs.",
             getFunc = function() return tonumber(EPC.saved.overlandDifficultyPoiRadius) or 85 end,
             setFunc = function(v) EPC.saved.overlandDifficultyPoiRadius = tonumber(v) or 85 end,
-            disabled = function() return EPC.saved.overlandDifficultyEnabled ~= true end,
             default = EPC.defaults.overlandDifficultyPoiRadius,
         },
         {
@@ -354,7 +370,6 @@ function S:Initialize()
             choicesValues = challengeValues,
             getFunc = function() return tonumber(EPC.saved.overlandDifficultyOpenWorld) or 0 end,
             setFunc = function(v) EPC.saved.overlandDifficultyOpenWorld = tonumber(v) or 0 if EPC.OverlandDifficulty then EPC.OverlandDifficulty:RequestRefresh(100) end end,
-            disabled = function() return EPC.saved.overlandDifficultyEnabled ~= true or EPC.saved.overlandDifficultyLevelingJourney == true end,
             default = EPC.defaults.overlandDifficultyOpenWorld,
         },
         {
@@ -363,7 +378,6 @@ function S:Initialize()
             choicesValues = challengeValues,
             getFunc = function() return tonumber(EPC.saved.overlandDifficultyDelve) or 1 end,
             setFunc = function(v) EPC.saved.overlandDifficultyDelve = tonumber(v) or 1 if EPC.OverlandDifficulty then EPC.OverlandDifficulty:RequestRefresh(100) end end,
-            disabled = function() return EPC.saved.overlandDifficultyEnabled ~= true or EPC.saved.overlandDifficultyLevelingJourney == true end,
             default = EPC.defaults.overlandDifficultyDelve,
             width = "half",
         },
@@ -373,7 +387,6 @@ function S:Initialize()
             choicesValues = challengeValues,
             getFunc = function() return tonumber(EPC.saved.overlandDifficultyPublicDungeon) or 2 end,
             setFunc = function(v) EPC.saved.overlandDifficultyPublicDungeon = tonumber(v) or 2 if EPC.OverlandDifficulty then EPC.OverlandDifficulty:RequestRefresh(100) end end,
-            disabled = function() return EPC.saved.overlandDifficultyEnabled ~= true or EPC.saved.overlandDifficultyLevelingJourney == true end,
             default = EPC.defaults.overlandDifficultyPublicDungeon,
             width = "half",
         },
@@ -383,7 +396,6 @@ function S:Initialize()
             choicesValues = challengeValues,
             getFunc = function() return tonumber(EPC.saved.overlandDifficultyWorldBoss) or 2 end,
             setFunc = function(v) EPC.saved.overlandDifficultyWorldBoss = tonumber(v) or 2 if EPC.OverlandDifficulty then EPC.OverlandDifficulty:RequestRefresh(100) end end,
-            disabled = function() return EPC.saved.overlandDifficultyEnabled ~= true or EPC.saved.overlandDifficultyLevelingJourney == true end,
             default = EPC.defaults.overlandDifficultyWorldBoss,
             width = "half",
         },
@@ -393,7 +405,6 @@ function S:Initialize()
             choicesValues = challengeValues,
             getFunc = function() return tonumber(EPC.saved.overlandDifficultyWorldEvent) or 2 end,
             setFunc = function(v) EPC.saved.overlandDifficultyWorldEvent = tonumber(v) or 2 if EPC.OverlandDifficulty then EPC.OverlandDifficulty:RequestRefresh(100) end end,
-            disabled = function() return EPC.saved.overlandDifficultyEnabled ~= true or EPC.saved.overlandDifficultyLevelingJourney == true end,
             default = EPC.defaults.overlandDifficultyWorldEvent,
             width = "half",
         },
@@ -403,7 +414,6 @@ function S:Initialize()
             choicesValues = challengeValues,
             getFunc = function() return tonumber(EPC.saved.overlandDifficultyDragon) or 2 end,
             setFunc = function(v) EPC.saved.overlandDifficultyDragon = tonumber(v) or 2 if EPC.OverlandDifficulty then EPC.OverlandDifficulty:RequestRefresh(100) end end,
-            disabled = function() return EPC.saved.overlandDifficultyEnabled ~= true or EPC.saved.overlandDifficultyLevelingJourney == true end,
             default = EPC.defaults.overlandDifficultyDragon,
             width = "half",
         },
@@ -412,7 +422,6 @@ function S:Initialize()
             tooltip = "When enabled, a boss targeted by your reticle can temporarily use the History Boss difficulty rule. Experimental because not every story boss is exposed consistently by ESO.",
             getFunc = function() return EPC.saved.overlandDifficultyHistoryBosses == true end,
             setFunc = function(v) EPC.saved.overlandDifficultyHistoryBosses = v == true end,
-            disabled = function() return EPC.saved.overlandDifficultyEnabled ~= true end,
             default = EPC.defaults.overlandDifficultyHistoryBosses,
             width = "half",
         },
@@ -422,7 +431,6 @@ function S:Initialize()
             choicesValues = challengeValues,
             getFunc = function() return tonumber(EPC.saved.overlandDifficultyHistoryBoss) or 2 end,
             setFunc = function(v) EPC.saved.overlandDifficultyHistoryBoss = tonumber(v) or 2 end,
-            disabled = function() return EPC.saved.overlandDifficultyEnabled ~= true or EPC.saved.overlandDifficultyHistoryBosses ~= true or EPC.saved.overlandDifficultyLevelingJourney == true end,
             default = EPC.defaults.overlandDifficultyHistoryBoss,
             width = "half",
         },
@@ -433,7 +441,6 @@ function S:Initialize()
             choicesValues = challengeValues,
             getFunc = function() return EPC.OverlandDifficulty:GetCurrentZoneOverride() or tonumber(EPC.saved.overlandDifficultyOpenWorld) or 0 end,
             setFunc = function(v) EPC.OverlandDifficulty:SetCurrentZoneOverride(v) end,
-            disabled = function() return EPC.saved.overlandDifficultyEnabled ~= true or EPC.saved.overlandDifficultyLevelingJourney == true end,
             default = EPC.defaults.overlandDifficultyOpenWorld,
             width = "half",
         },
@@ -490,7 +497,14 @@ function S:Initialize()
             type = "dropdown", name = "Combat HUD visibility",
             choices = { "Always", "Combat Only" }, choicesValues = { "ALWAYS", "COMBAT" },
             getFunc = function() return EPC.saved.combatHudVisibility or "COMBAT" end,
-            setFunc = function(v) EPC.saved.combatHudVisibility = v if EPC.RefreshGameplayOverlays then EPC:RefreshGameplayOverlays() end end,
+            setFunc = function(v)
+                EPC.saved.combatHudVisibility = v
+                if EPC.RefreshGameplayOverlays then EPC:RefreshGameplayOverlays() end
+                if EPC.UI and EPC.UI.UpdateCombatHUD then
+                    local summary = EPC.Combat and EPC.Combat.GetHUDSummary and EPC.Combat:GetHUDSummary() or nil
+                    EPC.UI:UpdateCombatHUD(summary)
+                end
+            end,
             default = EPC.defaults.combatHudVisibility,
         },
         {
@@ -569,12 +583,50 @@ function S:Initialize()
             width = "half",
         },
         {
+            type = "header", name = "Inventory Grid Categories",
+        },
+        {
+            type = "checkbox", name = "Enable inventory categories",
+            tooltip = "Groups inventory, bank, store/trading and deconstruction items into API-based categories. Turn this off to keep the Suite grid without category headers and restore native interaction lists without Suite headers.",
+            getFunc = function() return EPC.saved.inventoryGridCategoriesEnabled029365 ~= false end,
+            setFunc = function(v)
+                EPC.saved.inventoryGridCategoriesEnabled029365 = v == true
+                local grid = rawget(_G, "EASInventoryGrid")
+                if grid and grid.RefreshCategoryMode029365 then grid:RefreshCategoryMode029365() end
+            end,
+            default = EPC.defaults.inventoryGridCategoriesEnabled029365,
+        },
+        {
+            type = "dropdown", name = "Category priority",
+            tooltip = "Controls which broad category families appear first. Item identity is API-based; translated item names are only used for display and alphabetical tie-breaking.",
+            choices = { "Gear First", "Consumables First", "Materials First", "Alphabetical" },
+            choicesValues = { "GEAR_FIRST", "CONSUMABLES_FIRST", "MATERIALS_FIRST", "ALPHABETICAL" },
+            getFunc = function() return EPC.saved.inventoryGridCategoryPriority029365 or "GEAR_FIRST" end,
+            setFunc = function(v)
+                EPC.saved.inventoryGridCategoryPriority029365 = tostring(v or "GEAR_FIRST")
+                local grid = rawget(_G, "EASInventoryGrid")
+                if grid and grid.RefreshCategoryMode029365 then grid:RefreshCategoryMode029365() end
+            end,
+            default = EPC.defaults.inventoryGridCategoryPriority029365,
+        },
+        {
+            type = "slider", name = "Category font size", min = 12, max = 20, step = 1,
+            tooltip = "Changes the category/header text size in the Suite inventory grid and the Suite category rows added to Bank, Store/Trading, and Deconstruction lists.",
+            getFunc = function() return tonumber(EPC.saved.inventoryGridCategoryFontSize029377) or 15 end,
+            setFunc = function(v)
+                EPC.saved.inventoryGridCategoryFontSize029377 = tonumber(v) or 15
+                local grid = rawget(_G, "EASInventoryGrid")
+                if grid and grid.ApplyCategoryFontSize029377 then grid:ApplyCategoryFontSize029377(true) end
+            end,
+            default = EPC.defaults.inventoryGridCategoryFontSize029377 or 15,
+        },
+        {
             type = "header", name = "Character Gear Screen",
         },
         {
             type = "description",
             title = "Enhanced desktop equipment view",
-            text = "Rebuilds ESO's native desktop Character / Equipment presentation around your real 3D character while keeping the real ESO equipment-slot buttons. The old center silhouette is removed. Gear information expands outward into the available side space, full item/set names get more room, and controller/mouse last-input navigation remains intact.",
+            text = "Rebuilds ESO's native desktop Character / Equipment presentation around your real 3D character while keeping the real ESO equipment-slot buttons. The old center silhouette is removed. Gear information expands outward into the available side space, full item/set names get more room, while preserving the native keyboard/mouse equipment interaction.",
         },
         {
             type = "checkbox", name = "Enable Character Gear Screen",
@@ -582,7 +634,13 @@ function S:Initialize()
             setFunc = function(v)
                 EPC.saved.characterGearScreenEnabled029206 = v == true
                 if EPC.CharacterGearScreen then
-                    if v then EPC.CharacterGearScreen:RequestRefresh(10) else EPC.CharacterGearScreen:RestoreAll() end
+                    if EPC.CharacterGearScreen.SetEnabled029365 then
+                        EPC.CharacterGearScreen:SetEnabled029365(v == true)
+                    elseif v then
+                        EPC.CharacterGearScreen:RequestRefresh(10)
+                    else
+                        EPC.CharacterGearScreen:RestoreAll()
+                    end
                 end
             end,
             default = EPC.defaults.characterGearScreenEnabled029206,
@@ -592,7 +650,6 @@ function S:Initialize()
             getFunc = function() return EPC.saved.characterGearCompanion029206 ~= false end,
             setFunc = function(v) EPC.saved.characterGearCompanion029206 = v == true if EPC.CharacterGearScreen then EPC.CharacterGearScreen:RequestRefresh(10) end end,
             default = EPC.defaults.characterGearCompanion029206,
-            disabled = function() return EPC.saved.characterGearScreenEnabled029206 == false end,
         },
         {
             type = "checkbox", name = "Adaptive safe-area layout",
@@ -600,7 +657,6 @@ function S:Initialize()
             getFunc = function() return EPC.saved.characterGearAdaptiveLayout029207 ~= false end,
             setFunc = function(v) EPC.saved.characterGearAdaptiveLayout029207 = v == true if EPC.CharacterGearScreen then EPC.CharacterGearScreen:RequestRefresh(10) end end,
             default = EPC.defaults.characterGearAdaptiveLayout029207,
-            disabled = function() return EPC.saved.characterGearScreenEnabled029206 == false end,
         },
         {
             type = "dropdown", name = "Gear information density",
@@ -610,7 +666,6 @@ function S:Initialize()
             getFunc = function() return EPC.saved.characterGearDensity029207 or "compact" end,
             setFunc = function(v) EPC.saved.characterGearDensity029207 = v if EPC.CharacterGearScreen then EPC.CharacterGearScreen:RequestRefresh(10) end end,
             default = EPC.defaults.characterGearDensity029207,
-            disabled = function() return EPC.saved.characterGearScreenEnabled029206 == false end,
         },
         {
             type = "dropdown", name = "Character stats panel",
@@ -620,57 +675,49 @@ function S:Initialize()
             getFunc = function() return EPC.saved.characterGearStatsMode029207 or "auto" end,
             setFunc = function(v) EPC.saved.characterGearStatsMode029207 = v if EPC.CharacterGearScreen then EPC.CharacterGearScreen:RequestRefresh(10) end end,
             default = EPC.defaults.characterGearStatsMode029207,
-            disabled = function() return EPC.saved.characterGearScreenEnabled029206 == false end,
         },
         {
             type = "slider", name = "Equipment slot size", min = 48, max = 108, step = 2,
-            tooltip = "Changes the native equipment buttons without replacing their click/controller behavior.",
+            tooltip = "Changes the native equipment buttons without replacing their native click behavior.",
             getFunc = function() return tonumber(EPC.saved.characterGearSlotSize029206) or 96 end,
             setFunc = function(v) EPC.saved.characterGearSlotSize029206 = tonumber(v) or 96 if EPC.CharacterGearScreen then EPC.CharacterGearScreen:RequestRefresh(10) end end,
             default = EPC.defaults.characterGearSlotSize029206,
-            disabled = function() return EPC.saved.characterGearScreenEnabled029206 == false end,
         },
         {
             type = "slider", name = "Gear detail font size", min = 11, max = 22, step = 1,
             getFunc = function() return tonumber(EPC.saved.characterGearFontSize029206) or 20 end,
             setFunc = function(v) EPC.saved.characterGearFontSize029206 = tonumber(v) or 20 if EPC.CharacterGearScreen then EPC.CharacterGearScreen:RequestRefresh(10) end end,
             default = EPC.defaults.characterGearFontSize029206,
-            disabled = function() return EPC.saved.characterGearScreenEnabled029206 == false end,
         },
         {
             type = "checkbox", name = "Show gear text",
             getFunc = function() return EPC.saved.characterGearShowDetails029206 ~= false end,
             setFunc = function(v) EPC.saved.characterGearShowDetails029206 = v == true if EPC.CharacterGearScreen then EPC.CharacterGearScreen:RequestRefresh(10) end end,
             default = EPC.defaults.characterGearShowDetails029206,
-            disabled = function() return EPC.saved.characterGearScreenEnabled029206 == false end,
         },
         {
             type = "checkbox", name = "Show set piece counts",
             getFunc = function() return EPC.saved.characterGearShowSetCount029206 ~= false end,
             setFunc = function(v) EPC.saved.characterGearShowSetCount029206 = v == true if EPC.CharacterGearScreen then EPC.CharacterGearScreen:RequestRefresh(10) end end,
             default = EPC.defaults.characterGearShowSetCount029206,
-            disabled = function() return EPC.saved.characterGearScreenEnabled029206 == false end,
         },
         {
             type = "checkbox", name = "Show quality-colored slot borders",
             getFunc = function() return EPC.saved.characterGearShowQuality029206 ~= false end,
             setFunc = function(v) EPC.saved.characterGearShowQuality029206 = v == true if EPC.CharacterGearScreen then EPC.CharacterGearScreen:RequestRefresh(10) end end,
             default = EPC.defaults.characterGearShowQuality029206,
-            disabled = function() return EPC.saved.characterGearScreenEnabled029206 == false end,
         },
         {
             type = "checkbox", name = "Show armor condition / weapon charge",
             getFunc = function() return EPC.saved.characterGearShowCondition029206 ~= false end,
             setFunc = function(v) EPC.saved.characterGearShowCondition029206 = v == true if EPC.CharacterGearScreen then EPC.CharacterGearScreen:RequestRefresh(10) end end,
             default = EPC.defaults.characterGearShowCondition029206,
-            disabled = function() return EPC.saved.characterGearScreenEnabled029206 == false end,
         },
         {
             type = "checkbox", name = "Show item level / Champion requirement",
             getFunc = function() return EPC.saved.characterGearShowLevel029206 ~= false end,
             setFunc = function(v) EPC.saved.characterGearShowLevel029206 = v == true if EPC.CharacterGearScreen then EPC.CharacterGearScreen:RequestRefresh(10) end end,
             default = EPC.defaults.characterGearShowLevel029206,
-            disabled = function() return EPC.saved.characterGearScreenEnabled029206 == false end,
         },
         {
             type = "slider", name = "Repair warning threshold", min = 1, max = 100, step = 1,
@@ -678,14 +725,12 @@ function S:Initialize()
             getFunc = function() return tonumber(EPC.saved.characterGearRepairThreshold029206) or 25 end,
             setFunc = function(v) EPC.saved.characterGearRepairThreshold029206 = tonumber(v) or 25 if EPC.CharacterGearScreen then EPC.CharacterGearScreen:RequestRefresh(10) end end,
             default = EPC.defaults.characterGearRepairThreshold029206,
-            disabled = function() return EPC.saved.characterGearScreenEnabled029206 == false end,
         },
         {
             type = "slider", name = "Weapon charge warning threshold", min = 1, max = 100, step = 1,
             getFunc = function() return tonumber(EPC.saved.characterGearChargeThreshold029206) or 25 end,
             setFunc = function(v) EPC.saved.characterGearChargeThreshold029206 = tonumber(v) or 25 if EPC.CharacterGearScreen then EPC.CharacterGearScreen:RequestRefresh(10) end end,
             default = EPC.defaults.characterGearChargeThreshold029206,
-            disabled = function() return EPC.saved.characterGearScreenEnabled029206 == false end,
         },
         {
             type = "slider", name = "Item level warning gap", min = 1, max = 10, step = 1,
@@ -693,7 +738,6 @@ function S:Initialize()
             getFunc = function() return tonumber(EPC.saved.characterGearLevelWarning029206) or 5 end,
             setFunc = function(v) EPC.saved.characterGearLevelWarning029206 = tonumber(v) or 5 if EPC.CharacterGearScreen then EPC.CharacterGearScreen:RequestRefresh(10) end end,
             default = EPC.defaults.characterGearLevelWarning029206,
-            disabled = function() return EPC.saved.characterGearScreenEnabled029206 == false end,
         },
         {
             type = "slider", name = "Main character size", min = 65, max = 180, step = 5,
@@ -701,7 +745,6 @@ function S:Initialize()
             getFunc = function() return math.floor((tonumber(EPC.saved.characterGearFigureScale029206) or 1.28) * 100 + 0.5) end,
             setFunc = function(v) EPC.saved.characterGearFigureScale029206 = (tonumber(v) or 128) / 100 if EPC.CharacterGearScreen then EPC.CharacterGearScreen:RequestRefresh(10) end end,
             default = math.floor((EPC.defaults.characterGearFigureScale029206 or 1.2) * 100),
-            disabled = function() return EPC.saved.characterGearScreenEnabled029206 == false end,
         },
         {
             type = "slider", name = "Character camera distance", min = 100, max = 295, step = 5,
@@ -709,7 +752,6 @@ function S:Initialize()
             getFunc = function() return math.floor((tonumber(EPC.saved.characterGearCameraDistance029206) or 2.0) * 100 + 0.5) end,
             setFunc = function(v) EPC.saved.characterGearCameraDistance029206 = (tonumber(v) or 200) / 100 if EPC.CharacterGearScreen then EPC.CharacterGearScreen:ApplyCamera() end end,
             default = math.floor((EPC.defaults.characterGearCameraDistance029206 or 2.0) * 100),
-            disabled = function() return EPC.saved.characterGearScreenEnabled029206 == false end,
         },
         {
             type = "button", name = "Reset Character Gear Screen", buttonText = "Reset Gear Screen",
@@ -811,7 +853,7 @@ function S:Initialize()
             default = EPC.defaults.repairCostVisibility,
         },
         {
-            type = "slider", name = "Repair estimate scale", min = 65, max = 180, step = 5,
+            type = "slider", name = "Repair estimate scale", tooltip = "Scales the Repair / Recharge overlay. You can also resize the selected Repair overlay directly from its edges in HUD Layout Mode.", min = 65, max = 180, step = 5,
             getFunc = function() return math.floor((tonumber(EPC.saved.repairCostScale) or 1.0) * 100) end,
             setFunc = function(v) EPC.saved.repairCostScale = v / 100 if EPC.RepairCostOverlay then EPC.RepairCostOverlay:Refresh() end end,
             default = math.floor((EPC.defaults.repairCostScale or 1.0) * 100),
@@ -942,7 +984,6 @@ function S:Initialize()
             type = "checkbox", name = "Show undiscovered Lore Books",
             getFunc = function() return EASLoreLibrary and EASLoreLibrary.settings and EASLoreLibrary.settings:IsPinTypeEnabled(EASLoreLibrary.LOREBOOK) or false end,
             setFunc = function(v) if EASLoreLibrary and EASLoreLibrary.settings then EASLoreLibrary.settings:SetPinTypeEnabled(EASLoreLibrary.LOREBOOK, v == true) end end,
-            disabled = function() return not (EASLoreLibrary and EASLoreLibrary.settings and EASLoreLibrary.settings:Get("loreBooksEnabled") ~= false) end,
             default = true,
         },
         {
@@ -950,14 +991,12 @@ function S:Initialize()
             tooltip = "Disabled by default. You can also toggle this from the World Map filter panel.",
             getFunc = function() return EASLoreLibrary and EASLoreLibrary.settings and EASLoreLibrary.settings:IsPinTypeEnabled(EASLoreLibrary.EIDETICBOOK) or false end,
             setFunc = function(v) if EASLoreLibrary and EASLoreLibrary.settings then EASLoreLibrary.settings:SetPinTypeEnabled(EASLoreLibrary.EIDETICBOOK, v == true) end end,
-            disabled = function() return not (EASLoreLibrary and EASLoreLibrary.settings and EASLoreLibrary.settings:Get("loreBooksEnabled") ~= false) end,
             default = false,
         },
         {
             type = "checkbox", name = "Book markers on compass",
             getFunc = function() return EASLoreLibrary and EASLoreLibrary.settings and EASLoreLibrary.settings:Get("compassPinsEnabled") ~= false end,
             setFunc = function(v) if EASLoreLibrary and EASLoreLibrary.settings then EASLoreLibrary.settings:Set("compassPinsEnabled", v == true) end end,
-            disabled = function() return not (EASLoreLibrary and EASLoreLibrary.settings and EASLoreLibrary.settings:Get("loreBooksEnabled") ~= false) end,
             default = true,
             width = "half",
         },
@@ -965,7 +1004,6 @@ function S:Initialize()
             type = "checkbox", name = "Book markers in 3D world",
             getFunc = function() return EASLoreLibrary and EASLoreLibrary.settings and EASLoreLibrary.settings:Get("worldPinsEnabled") ~= false end,
             setFunc = function(v) if EASLoreLibrary and EASLoreLibrary.settings then EASLoreLibrary.settings:Set("worldPinsEnabled", v == true) end end,
-            disabled = function() return not (EASLoreLibrary and EASLoreLibrary.settings and EASLoreLibrary.settings:Get("loreBooksEnabled") ~= false) end,
             default = true,
             width = "half",
         },
@@ -974,7 +1012,6 @@ function S:Initialize()
             tooltip = "Recommended. Suppresses floating 3D icons for known quest-phased books/documents whose physical object may not exist at that location yet. Map and compass guidance remain available.",
             getFunc = function() return EASLoreLibrary and EASLoreLibrary.settings and EASLoreLibrary.settings:Get("hideQuestDependentWorldPins") ~= false end,
             setFunc = function(v) if EASLoreLibrary and EASLoreLibrary.settings then EASLoreLibrary.settings:Set("hideQuestDependentWorldPins", v == true) end end,
-            disabled = function() return not (EASLoreLibrary and EASLoreLibrary.settings and EASLoreLibrary.settings:Get("loreBooksEnabled") ~= false) end,
             default = true,
         },
         {
@@ -985,7 +1022,6 @@ function S:Initialize()
             type = "slider", name = "Compass book distance", min = 100, max = 2000, step = 100,
             getFunc = function() return EASLoreLibrary and EASLoreLibrary.settings and (tonumber(EASLoreLibrary.settings:Get("compassPinsDistance")) or 300) or 300 end,
             setFunc = function(v) if EASLoreLibrary and EASLoreLibrary.settings then EASLoreLibrary.settings:Set("compassPinsDistance", tonumber(v) or 300) end end,
-            disabled = function() return not (EASLoreLibrary and EASLoreLibrary.settings and EASLoreLibrary.settings:Get("loreBooksEnabled") ~= false) end,
             default = 300,
             width = "half",
         },
@@ -993,7 +1029,6 @@ function S:Initialize()
             type = "slider", name = "3D book distance", min = 100, max = 1000, step = 50,
             getFunc = function() return EASLoreLibrary and EASLoreLibrary.settings and (tonumber(EASLoreLibrary.settings:Get("worldPinsDistance")) or 250) or 250 end,
             setFunc = function(v) if EASLoreLibrary and EASLoreLibrary.settings then EASLoreLibrary.settings:Set("worldPinsDistance", tonumber(v) or 250) end end,
-            disabled = function() return not (EASLoreLibrary and EASLoreLibrary.settings and EASLoreLibrary.settings:Get("loreBooksEnabled") ~= false) end,
             default = 250,
             width = "half",
         },
@@ -1018,7 +1053,6 @@ function S:Initialize()
             tooltip = "Shows remembered possible spawn points only when no confirmed chest/Heavy Sack is currently being rendered. Leave this off if you only want the actual detected chest location to glow.",
             getFunc = function() return EPC.saved.dungeonChestShowPossible ~= false end,
             setFunc = function(v) EPC.saved.dungeonChestShowPossible = v == true if EPC.DungeonChestFinder then EPC.DungeonChestFinder:RefreshSettings() end end,
-            disabled = function() return EPC.saved.dungeonChestFinderEnabled == false end,
             default = EPC.defaults.dungeonChestShowPossible,
             width = "half",
         },
@@ -1026,7 +1060,6 @@ function S:Initialize()
             type = "checkbox", name = "Show Heavy Sack glows",
             getFunc = function() return EPC.saved.dungeonChestShowHeavySacks ~= false end,
             setFunc = function(v) EPC.saved.dungeonChestShowHeavySacks = v == true if EPC.DungeonChestFinder then EPC.DungeonChestFinder:RefreshSettings() end end,
-            disabled = function() return EPC.saved.dungeonChestFinderEnabled == false end,
             default = EPC.defaults.dungeonChestShowHeavySacks,
             width = "half",
         },
@@ -1035,7 +1068,6 @@ function S:Initialize()
             tooltip = "Saves a chest/Heavy Sack spawn point when ESO identifies it under your reticle at interaction range. Existing learned locations remain visible if this is turned off.",
             getFunc = function() return EPC.saved.dungeonChestLearnLocations ~= false end,
             setFunc = function(v) EPC.saved.dungeonChestLearnLocations = v == true end,
-            disabled = function() return EPC.saved.dungeonChestFinderEnabled == false end,
             default = EPC.defaults.dungeonChestLearnLocations,
             width = "half",
         },
@@ -1044,7 +1076,6 @@ function S:Initialize()
             tooltip = "When enabled, 3D chest glows ignore the depth buffer so they can remain visible through dungeon geometry where ESO permits it.",
             getFunc = function() return EPC.saved.dungeonChestThroughWalls ~= false end,
             setFunc = function(v) EPC.saved.dungeonChestThroughWalls = v == true if EPC.DungeonChestFinder then EPC.DungeonChestFinder:RefreshSettings() end end,
-            disabled = function() return EPC.saved.dungeonChestFinderEnabled == false end,
             default = EPC.defaults.dungeonChestThroughWalls,
             width = "half",
         },
@@ -1053,7 +1084,6 @@ function S:Initialize()
             tooltip = "Maximum distance in meters for learned dungeon/trial chest glows.",
             getFunc = function() return tonumber(EPC.saved.dungeonChestDistance) or 120 end,
             setFunc = function(v) EPC.saved.dungeonChestDistance = tonumber(v) or 120 if EPC.DungeonChestFinder then EPC.DungeonChestFinder:RefreshSettings() end end,
-            disabled = function() return EPC.saved.dungeonChestFinderEnabled == false end,
             default = EPC.defaults.dungeonChestDistance,
             width = "half",
         },
@@ -1061,7 +1091,6 @@ function S:Initialize()
             type = "slider", name = "Chest glow size", min = 50, max = 200, step = 5,
             getFunc = function() return math.floor((tonumber(EPC.saved.dungeonChestMarkerScale) or 1.0) * 100 + 0.5) end,
             setFunc = function(v) EPC.saved.dungeonChestMarkerScale = (tonumber(v) or 100) / 100 if EPC.DungeonChestFinder then EPC.DungeonChestFinder:RefreshSettings() end end,
-            disabled = function() return EPC.saved.dungeonChestFinderEnabled == false end,
             default = math.floor((EPC.defaults.dungeonChestMarkerScale or 1.0) * 100),
             width = "half",
         },
@@ -1070,7 +1099,6 @@ function S:Initialize()
             tooltip = "Controls the brightness of chest/Heavy Sack glows. Confirmed spawns stay brighter and pulse until looted.",
             getFunc = function() return math.floor((tonumber(EPC.saved.dungeonChestGlowOpacity) or 0.60) * 100 + 0.5) end,
             setFunc = function(v) EPC.saved.dungeonChestGlowOpacity = (tonumber(v) or 60) / 100 if EPC.DungeonChestFinder then EPC.DungeonChestFinder:RefreshSettings() end end,
-            disabled = function() return EPC.saved.dungeonChestFinderEnabled == false end,
             default = math.floor((EPC.defaults.dungeonChestGlowOpacity or 0.60) * 100),
             width = "half",
         },
@@ -1078,7 +1106,6 @@ function S:Initialize()
             type = "colorpicker", name = "Chest glow color",
             getFunc = function() local c = EPC.saved.dungeonChestColor or EPC.defaults.dungeonChestColor return c.r or 1.0, c.g or 0.74, c.b or 0.14, 1 end,
             setFunc = function(r, g, b, a) EPC.saved.dungeonChestColor = { r = r, g = g, b = b } if EPC.DungeonChestFinder then EPC.DungeonChestFinder:RefreshSettings() end end,
-            disabled = function() return EPC.saved.dungeonChestFinderEnabled == false end,
             default = EPC.defaults.dungeonChestColor,
             width = "half",
         },
@@ -1086,7 +1113,6 @@ function S:Initialize()
             type = "colorpicker", name = "Heavy Sack glow color",
             getFunc = function() local c = EPC.saved.dungeonChestSackColor or EPC.defaults.dungeonChestSackColor return c.r or 0.62, c.g or 0.92, c.b or 0.52, 1 end,
             setFunc = function(r, g, b, a) EPC.saved.dungeonChestSackColor = { r = r, g = g, b = b } if EPC.DungeonChestFinder then EPC.DungeonChestFinder:RefreshSettings() end end,
-            disabled = function() return EPC.saved.dungeonChestFinderEnabled == false or EPC.saved.dungeonChestShowHeavySacks == false end,
             default = EPC.defaults.dungeonChestSackColor,
             width = "half",
         },
@@ -1118,7 +1144,6 @@ function S:Initialize()
             tooltip = "Marks the center of every active Antiquity search area with the Heavy Shovel skill icon.",
             getFunc = function() return EPC.saved.antiquityShowWorldMap ~= false end,
             setFunc = function(v) EPC.saved.antiquityShowWorldMap = v == true if EPC.AntiquityAssistant then EPC.AntiquityAssistant:RefreshSettings() end end,
-            disabled = function() return EPC.saved.antiquityAssistantEnabled == false end,
             default = EPC.defaults.antiquityShowWorldMap,
             width = "half",
         },
@@ -1127,7 +1152,6 @@ function S:Initialize()
             tooltip = "Shows active Antiquity dig-site centers on the Suite minimap, including edge guidance when the site is off-screen.",
             getFunc = function() return EPC.saved.antiquityShowMiniMap ~= false end,
             setFunc = function(v) EPC.saved.antiquityShowMiniMap = v == true if EPC.AntiquityAssistant then EPC.AntiquityAssistant:RefreshSettings() end end,
-            disabled = function() return EPC.saved.antiquityAssistantEnabled == false end,
             default = EPC.defaults.antiquityShowMiniMap,
             width = "half",
         },
@@ -1136,7 +1160,6 @@ function S:Initialize()
             tooltip = "Shows a true 3D Heavy Shovel marker above the learned excavation mound. The Suite learns the mound when ESO exposes the actual Excavate / Dig Site interaction target and can reuse that saved spawn later. The old approximate search-area-center 3D marker stays disabled.",
             getFunc = function() return EPC.saved.antiquityShow3D ~= false end,
             setFunc = function(v) EPC.saved.antiquityShow3D = v == true if EPC.AntiquityAssistant then EPC.AntiquityAssistant:RefreshSettings() end end,
-            disabled = function() return EPC.saved.antiquityAssistantEnabled == false end,
             default = EPC.defaults.antiquityShow3D,
             width = "half",
         },
@@ -1145,7 +1168,6 @@ function S:Initialize()
             tooltip = "Kept for saved-variable compatibility. Exact mound markers use ESO's interaction target and do not use approximate through-terrain search-area markers.",
             getFunc = function() return EPC.saved.antiquity3DThroughWalls ~= false end,
             setFunc = function(v) EPC.saved.antiquity3DThroughWalls = v == true if EPC.AntiquityAssistant then EPC.AntiquityAssistant:RefreshSettings() end end,
-            disabled = function() return EPC.saved.antiquityAssistantEnabled == false or EPC.saved.antiquityShow3D == false end,
             default = EPC.defaults.antiquity3DThroughWalls,
             width = "half",
         },
@@ -1154,7 +1176,6 @@ function S:Initialize()
             tooltip = "Maximum distance in meters for known dig-spawn candidate shovels. The confirmed exact mound still follows ESO's actual interaction target.",
             getFunc = function() return math.floor(tonumber(EPC.saved.antiquity3DRange) or 1200) end,
             setFunc = function(v) EPC.saved.antiquity3DRange = math.floor(tonumber(v) or 1200) if EPC.AntiquityAssistant then EPC.AntiquityAssistant:RefreshSettings() end end,
-            disabled = function() return EPC.saved.antiquityAssistantEnabled == false or EPC.saved.antiquityShow3D == false end,
             default = EPC.defaults.antiquity3DRange,
             width = "half",
         },
@@ -1162,7 +1183,6 @@ function S:Initialize()
             type = "slider", name = "3D shovel size", min = 60, max = 200, step = 5,
             getFunc = function() return math.floor((tonumber(EPC.saved.antiquity3DScale) or 1.0) * 100 + 0.5) end,
             setFunc = function(v) EPC.saved.antiquity3DScale = (tonumber(v) or 100) / 100 if EPC.AntiquityAssistant then EPC.AntiquityAssistant:RefreshSettings() end end,
-            disabled = function() return EPC.saved.antiquityAssistantEnabled == false or EPC.saved.antiquityShow3D == false end,
             default = math.floor((EPC.defaults.antiquity3DScale or 1.0) * 100),
             width = "half",
         },
@@ -1171,7 +1191,6 @@ function S:Initialize()
             tooltip = "When ESO exposes the real Excavate / Dig Site mound under your reticle, save that learned 3D spawn in SavedVariables. The next time the same dig-site spawn becomes active, the Suite restores the shovel automatically. Turning this off stops new learning; already learned spots remain available.",
             getFunc = function() return EPC.saved.antiquityLearnExactDigSpots ~= false end,
             setFunc = function(v) EPC.saved.antiquityLearnExactDigSpots = v == true end,
-            disabled = function() return EPC.saved.antiquityAssistantEnabled == false or EPC.saved.antiquityShow3D == false end,
             default = EPC.defaults.antiquityLearnExactDigSpots,
             width = "half",
         },
@@ -1180,7 +1199,6 @@ function S:Initialize()
             tooltip = "Uses the integrated known Antiquity dig-spawn reference library to filter possible mound spawns to ESO's active dig-site search area. Confirmed/learned spawns are gold; unconfirmed known possibilities are smaller cyan shovels until ESO exposes the real mound.",
             getFunc = function() return EPC.saved.antiquityKnownSpawnAssist ~= false end,
             setFunc = function(v) EPC.saved.antiquityKnownSpawnAssist = v == true if EPC.AntiquityAssistant then EPC.AntiquityAssistant:RefreshSettings() end end,
-            disabled = function() return EPC.saved.antiquityAssistantEnabled == false or EPC.saved.antiquityShow3D == false end,
             default = EPC.defaults.antiquityKnownSpawnAssist,
             width = "half",
         },
@@ -1190,7 +1208,6 @@ function S:Initialize()
             func = function()
                 if EPC.AntiquityAssistant and EPC.AntiquityAssistant.ClearLearnedDigSpots then EPC.AntiquityAssistant:ClearLearnedDigSpots() end
             end,
-            disabled = function() return EPC.saved.antiquityAssistantEnabled == false end,
             width = "half",
         },
         {
@@ -1233,7 +1250,6 @@ function S:Initialize()
             tooltip = "After each successful Augur use, tap Green, Yellow, Orange, or Red. The Suite caches the clicked board cell using multiple ESO UI fallbacks and recommends the strongest next scan. It never labels a non-green prediction as a guaranteed dig. Both Antiquity overlays can be moved in HUD Layout Mode.",
             getFunc = function() return EPC.saved.antiquityExcavationGuide ~= false end,
             setFunc = function(v) EPC.saved.antiquityExcavationGuide = v == true if EPC.AntiquityAssistant then EPC.AntiquityAssistant:RefreshSettings() end end,
-            disabled = function() return EPC.saved.antiquityAssistantEnabled == false end,
             default = EPC.defaults.antiquityExcavationGuide,
             width = "full",
         },
@@ -1242,7 +1258,6 @@ function S:Initialize()
             tooltip = "After ESO reports the main Antiquity unearthed, switches the Augur Guide into a bonus-loot coverage route. It tracks bonus loot separately, watches stability/time/dig power, and recommends the next area to work. Bonus coordinates are not exposed by ESO, so these are search-efficiency predictions rather than guaranteed locations.",
             getFunc = function() return EPC.saved.antiquityBonusLootGuide ~= false end,
             setFunc = function(v) EPC.saved.antiquityBonusLootGuide = v == true if EPC.AntiquityAssistant then EPC.AntiquityAssistant:RefreshSettings() end end,
-            disabled = function() return EPC.saved.antiquityAssistantEnabled == false or EPC.saved.antiquityExcavationGuide == false end,
             default = EPC.defaults.antiquityBonusLootGuide,
             width = "full",
         },
@@ -1262,7 +1277,7 @@ function S:Initialize()
         {
             type = "description",
             title = "Learned + Suite Community Resource Data",
-            text = "Suite Resource Pins combines your personally learned resource locations with 124,625 bundled community resource records. The full current-zone database stays available, but only the nearest capped set receives 3D controls at one time. Personal and community locations share the same temporary depletion system: harvested or already-empty nodes hide for the configured cooldown and then return automatically. As you move, the pool automatically swaps to the next nearby community pins. This avoids the severe FPS loss caused by trying to create thousands of 3D markers simultaneously.",
+            text = "Suite Resource Pins combines your personally learned resource locations with 124,625 bundled community resource records and ESO-native uncollected Skyshards. The full current-zone database stays available, but only the nearest capped set receives 3D controls at one time. Personal and community locations share the same temporary depletion system: harvested or already-empty nodes hide for the configured cooldown and then return automatically. As you move, the pool automatically swaps to the next nearby community pins. This avoids the severe FPS loss caused by trying to create thousands of 3D markers simultaneously.",
         },
         {
             type = "checkbox", name = "Enable Suite Resource Pins",
@@ -1277,7 +1292,6 @@ function S:Initialize()
             tooltip = "Shows pre-collected resource locations bundled with the Suite. Only the current zone is decoded into the fast 3D spatial cache. Your personally learned pins remain separate and take priority over nearby community records.",
             getFunc = function() return EPC.saved.resourcePinsCommunityEnabled ~= false end,
             setFunc = function(v) EPC.saved.resourcePinsCommunityEnabled = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false end,
             default = EPC.defaults.resourcePinsCommunityEnabled,
             width = "half",
         },
@@ -1286,7 +1300,6 @@ function S:Initialize()
             tooltip = "Optionally records a personal copy of resource locations after you gather them. Temporary depleted-node hiding works even when personal learning is turned off.",
             getFunc = function() return EPC.saved.resourcePinsLearn ~= false end,
             setFunc = function(v) EPC.saved.resourcePinsLearn = v == true end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false end,
             default = EPC.defaults.resourcePinsLearn,
             width = "half",
         },
@@ -1295,7 +1308,6 @@ function S:Initialize()
             tooltip = "Hides a resource pin only after ESO confirms that you personally collected loot from that resource interaction. Simply walking up to a community pin never hides it. The pin returns after the cooldown.",
             getFunc = function() return EPC.saved.resourcePinsHideDepleted ~= false end,
             setFunc = function(v) EPC.saved.resourcePinsHideDepleted = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false end,
             default = EPC.defaults.resourcePinsHideDepleted,
             width = "half",
         },
@@ -1304,7 +1316,6 @@ function S:Initialize()
             tooltip = "How long a resource location stays hidden after you personally collect it before it becomes eligible to appear again.",
             getFunc = function() return math.floor(tonumber(EPC.saved.resourcePinsDepletedCooldownMinutes) or 5) end,
             setFunc = function(v) EPC.saved.resourcePinsDepletedCooldownMinutes = math.floor(tonumber(v) or 5) if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsHideDepleted == false end,
             default = EPC.defaults.resourcePinsDepletedCooldownMinutes or 5,
             width = "half",
         },
@@ -1319,7 +1330,6 @@ function S:Initialize()
             type = "checkbox", name = "Show resource pins in 3D world",
             getFunc = function() return EPC.saved.resourcePinsShow3D ~= false end,
             setFunc = function(v) EPC.saved.resourcePinsShow3D = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false end,
             default = EPC.defaults.resourcePinsShow3D,
             width = "half",
         },
@@ -1328,7 +1338,6 @@ function S:Initialize()
             tooltip = "Lets Suite learned and community 3D resource markers remain visible through terrain/objects where ESO permits addon 3D controls.",
             getFunc = function() return EPC.saved.resourcePinsThroughWalls ~= false end,
             setFunc = function(v) EPC.saved.resourcePinsThroughWalls = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsShow3D == false end,
             default = EPC.defaults.resourcePinsThroughWalls,
             width = "half",
         },
@@ -1337,7 +1346,6 @@ function S:Initialize()
             tooltip = "Maximum distance used to select nearby learned and community nodes for the dynamic 3D pool.",
             getFunc = function() return tonumber(EPC.saved.resourcePinsDistance) or 200 end,
             setFunc = function(v) EPC.saved.resourcePinsDistance = tonumber(v) or 200 if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsShow3D == false end,
             default = EPC.defaults.resourcePinsDistance,
             width = "half",
         },
@@ -1346,7 +1354,6 @@ function S:Initialize()
             tooltip = "Hard performance cap for active 3D resource controls. The full community database remains available; this only limits how many nearest pins are drawn at the same time.",
             getFunc = function() return math.floor(tonumber(EPC.saved.resourcePinsMaxVisible) or 72) end,
             setFunc = function(v) EPC.saved.resourcePinsMaxVisible = math.floor(tonumber(v) or 72) if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsShow3D == false end,
             default = EPC.defaults.resourcePinsMaxVisible or 72,
             width = "half",
         },
@@ -1354,7 +1361,6 @@ function S:Initialize()
             type = "slider", name = "Resource pin size", min = 45, max = 250, step = 5,
             getFunc = function() return math.floor((tonumber(EPC.saved.resourcePinsScale) or 1.0) * 100 + 0.5) end,
             setFunc = function(v) EPC.saved.resourcePinsScale = (tonumber(v) or 100) / 100 if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsShow3D == false end,
             default = math.floor((EPC.defaults.resourcePinsScale or 1.0) * 100),
             width = "half",
         },
@@ -1362,7 +1368,6 @@ function S:Initialize()
             type = "slider", name = "Resource pin brightness", min = 15, max = 100, step = 5,
             getFunc = function() return math.floor((tonumber(EPC.saved.resourcePinsOpacity) or 0.72) * 100 + 0.5) end,
             setFunc = function(v) EPC.saved.resourcePinsOpacity = (tonumber(v) or 72) / 100 if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsShow3D == false end,
             default = math.floor((EPC.defaults.resourcePinsOpacity or 0.72) * 100),
             width = "half",
         },
@@ -1371,7 +1376,6 @@ function S:Initialize()
             tooltip = "Uses normalized per-resource sizing and reduced distance growth so all resource symbols stay crisp and visually consistent in the world.",
             getFunc = function() return EPC.saved.resourcePinsSharpIcons ~= false end,
             setFunc = function(v) EPC.saved.resourcePinsSharpIcons = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsShow3D == false or EPC.saved.resourcePinsIconMode == "SUITE_GLOW" end,
             default = EPC.defaults.resourcePinsSharpIcons,
             width = "half",
         },
@@ -1380,7 +1384,6 @@ function S:Initialize()
             tooltip = "Adds a colored glow behind resource icons. Rarity changes glow color and intensity only; it no longer makes higher-tier icons physically larger.",
             getFunc = function() return EPC.saved.resourcePinsValueGlow ~= false end,
             setFunc = function(v) EPC.saved.resourcePinsValueGlow = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsShow3D == false or EPC.saved.resourcePinsIconMode == "SUITE_GLOW" end,
             default = EPC.defaults.resourcePinsValueGlow,
             width = "half",
         },
@@ -1389,7 +1392,6 @@ function S:Initialize()
             tooltip = "Controls how bright the rune-style value/rarity glow appears behind resource icons.",
             getFunc = function() return math.floor(tonumber(EPC.saved.resourcePinsGlowStrength) or 78) end,
             setFunc = function(v) EPC.saved.resourcePinsGlowStrength = math.floor(tonumber(v) or 78) if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsShow3D == false or EPC.saved.resourcePinsIconMode == "SUITE_GLOW" end,
             default = EPC.defaults.resourcePinsGlowStrength or 78,
             width = "half",
         },
@@ -1398,7 +1400,6 @@ function S:Initialize()
             tooltip = "Changes the physical size of non-Glow resource icons in the 3D world without changing the general resource-pin distance settings.",
             getFunc = function() return math.floor(tonumber(EPC.saved.resourcePinsIconSize) or 100) end,
             setFunc = function(v) EPC.saved.resourcePinsIconSize = math.floor(tonumber(v) or 100) if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsShow3D == false or EPC.saved.resourcePinsIconMode == "SUITE_GLOW" end,
             default = EPC.defaults.resourcePinsIconSize or 100,
             width = "half",
         },
@@ -1407,7 +1408,6 @@ function S:Initialize()
             tooltip = "Adds category color to the resource symbol itself. 0 keeps icons white, 100 fully tints them by resource type.",
             getFunc = function() return math.floor(tonumber(EPC.saved.resourcePinsIconTintStrength) or 85) end,
             setFunc = function(v) EPC.saved.resourcePinsIconTintStrength = math.floor(tonumber(v) or 85) if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsShow3D == false or EPC.saved.resourcePinsIconMode == "SUITE_GLOW" end,
             default = EPC.defaults.resourcePinsIconTintStrength or 85,
             width = "half",
         },
@@ -1425,7 +1425,6 @@ function S:Initialize()
             choicesValues = { "SUITE_GLOW", "CATEGORY", "CUSTOM" },
             getFunc = function() return EPC.saved.resourcePinsIconMode or "SUITE_GLOW" end,
             setFunc = function(v) EPC.saved.resourcePinsIconMode = v if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false end,
             default = EPC.defaults.resourcePinsIconMode,
             width = "full",
         },
@@ -1434,7 +1433,6 @@ function S:Initialize()
             choices = { "Automatic", "Suite Glow", "Mining", "Wood", "Clothing", "Alchemy", "Enchanting", "Mushroom", "Flower", "Water Plant", "Solvent", "Fishing", "Chest", "Heavy Sack", "Giant Clam", "Trove", "Justice", "Stash" }, choicesValues = { "AUTO", "SUITE_GLOW", "MINING", "WOOD", "CLOTHING", "ALCHEMY", "ENCHANTING", "MUSHROOM", "FLOWER", "WATERPLANT", "SOLVENT", "FISH", "CHEST", "HEAVYSACK", "CLAM", "TROVE", "JUSTICE", "STASH" },
             getFunc = function() return EPC.saved.resourcePinsIconOre or "AUTO" end,
             setFunc = function(v) EPC.saved.resourcePinsIconOre = v if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsIconMode ~= "CUSTOM" end,
             default = EPC.defaults.resourcePinsIconOre,
             width = "half",
         },
@@ -1443,7 +1441,6 @@ function S:Initialize()
             choices = { "Automatic", "Suite Glow", "Mining", "Wood", "Clothing", "Alchemy", "Enchanting", "Mushroom", "Flower", "Water Plant", "Solvent", "Fishing", "Chest", "Heavy Sack", "Giant Clam", "Trove", "Justice", "Stash" }, choicesValues = { "AUTO", "SUITE_GLOW", "MINING", "WOOD", "CLOTHING", "ALCHEMY", "ENCHANTING", "MUSHROOM", "FLOWER", "WATERPLANT", "SOLVENT", "FISH", "CHEST", "HEAVYSACK", "CLAM", "TROVE", "JUSTICE", "STASH" },
             getFunc = function() return EPC.saved.resourcePinsIconWood or "AUTO" end,
             setFunc = function(v) EPC.saved.resourcePinsIconWood = v if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsIconMode ~= "CUSTOM" end,
             default = EPC.defaults.resourcePinsIconWood,
             width = "half",
         },
@@ -1452,7 +1449,6 @@ function S:Initialize()
             choices = { "Automatic", "Suite Glow", "Mining", "Wood", "Clothing", "Alchemy", "Enchanting", "Mushroom", "Flower", "Water Plant", "Solvent", "Fishing", "Chest", "Heavy Sack", "Giant Clam", "Trove", "Justice", "Stash" }, choicesValues = { "AUTO", "SUITE_GLOW", "MINING", "WOOD", "CLOTHING", "ALCHEMY", "ENCHANTING", "MUSHROOM", "FLOWER", "WATERPLANT", "SOLVENT", "FISH", "CHEST", "HEAVYSACK", "CLAM", "TROVE", "JUSTICE", "STASH" },
             getFunc = function() return EPC.saved.resourcePinsIconCloth or "AUTO" end,
             setFunc = function(v) EPC.saved.resourcePinsIconCloth = v if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsIconMode ~= "CUSTOM" end,
             default = EPC.defaults.resourcePinsIconCloth,
             width = "half",
         },
@@ -1461,7 +1457,6 @@ function S:Initialize()
             choices = { "Automatic", "Suite Glow", "Mining", "Wood", "Clothing", "Alchemy", "Enchanting", "Mushroom", "Flower", "Water Plant", "Solvent", "Fishing", "Chest", "Heavy Sack", "Giant Clam", "Trove", "Justice", "Stash" }, choicesValues = { "AUTO", "SUITE_GLOW", "MINING", "WOOD", "CLOTHING", "ALCHEMY", "ENCHANTING", "MUSHROOM", "FLOWER", "WATERPLANT", "SOLVENT", "FISH", "CHEST", "HEAVYSACK", "CLAM", "TROVE", "JUSTICE", "STASH" },
             getFunc = function() return EPC.saved.resourcePinsIconAlchemy or "AUTO" end,
             setFunc = function(v) EPC.saved.resourcePinsIconAlchemy = v if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsIconMode ~= "CUSTOM" end,
             default = EPC.defaults.resourcePinsIconAlchemy,
             width = "half",
         },
@@ -1470,7 +1465,6 @@ function S:Initialize()
             choices = { "Automatic", "Suite Glow", "Mining", "Wood", "Clothing", "Alchemy", "Enchanting", "Mushroom", "Flower", "Water Plant", "Solvent", "Fishing", "Chest", "Heavy Sack", "Giant Clam", "Trove", "Justice", "Stash" }, choicesValues = { "AUTO", "SUITE_GLOW", "MINING", "WOOD", "CLOTHING", "ALCHEMY", "ENCHANTING", "MUSHROOM", "FLOWER", "WATERPLANT", "SOLVENT", "FISH", "CHEST", "HEAVYSACK", "CLAM", "TROVE", "JUSTICE", "STASH" },
             getFunc = function() return EPC.saved.resourcePinsIconRunes or "AUTO" end,
             setFunc = function(v) EPC.saved.resourcePinsIconRunes = v if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsIconMode ~= "CUSTOM" end,
             default = EPC.defaults.resourcePinsIconRunes,
             width = "half",
         },
@@ -1479,7 +1473,6 @@ function S:Initialize()
             choices = { "Automatic", "Suite Glow", "Mining", "Wood", "Clothing", "Alchemy", "Enchanting", "Mushroom", "Flower", "Water Plant", "Solvent", "Fishing", "Chest", "Heavy Sack", "Giant Clam", "Trove", "Justice", "Stash" }, choicesValues = { "AUTO", "SUITE_GLOW", "MINING", "WOOD", "CLOTHING", "ALCHEMY", "ENCHANTING", "MUSHROOM", "FLOWER", "WATERPLANT", "SOLVENT", "FISH", "CHEST", "HEAVYSACK", "CLAM", "TROVE", "JUSTICE", "STASH" },
             getFunc = function() return EPC.saved.resourcePinsIconWater or "AUTO" end,
             setFunc = function(v) EPC.saved.resourcePinsIconWater = v if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsIconMode ~= "CUSTOM" end,
             default = EPC.defaults.resourcePinsIconWater,
             width = "half",
         },
@@ -1488,7 +1481,6 @@ function S:Initialize()
             choices = { "Automatic", "Suite Glow", "Mining", "Wood", "Clothing", "Alchemy", "Enchanting", "Mushroom", "Flower", "Water Plant", "Solvent", "Fishing", "Chest", "Heavy Sack", "Giant Clam", "Trove", "Justice", "Stash" }, choicesValues = { "AUTO", "SUITE_GLOW", "MINING", "WOOD", "CLOTHING", "ALCHEMY", "ENCHANTING", "MUSHROOM", "FLOWER", "WATERPLANT", "SOLVENT", "FISH", "CHEST", "HEAVYSACK", "CLAM", "TROVE", "JUSTICE", "STASH" },
             getFunc = function() return EPC.saved.resourcePinsIconFishing or "AUTO" end,
             setFunc = function(v) EPC.saved.resourcePinsIconFishing = v if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsIconMode ~= "CUSTOM" end,
             default = EPC.defaults.resourcePinsIconFishing,
             width = "half",
         },
@@ -1497,7 +1489,6 @@ function S:Initialize()
             choices = { "Automatic", "Suite Glow", "Mining", "Wood", "Clothing", "Alchemy", "Enchanting", "Mushroom", "Flower", "Water Plant", "Solvent", "Fishing", "Chest", "Heavy Sack", "Giant Clam", "Trove", "Justice", "Stash" }, choicesValues = { "AUTO", "SUITE_GLOW", "MINING", "WOOD", "CLOTHING", "ALCHEMY", "ENCHANTING", "MUSHROOM", "FLOWER", "WATERPLANT", "SOLVENT", "FISH", "CHEST", "HEAVYSACK", "CLAM", "TROVE", "JUSTICE", "STASH" },
             getFunc = function() return EPC.saved.resourcePinsIconSpecial or "AUTO" end,
             setFunc = function(v) EPC.saved.resourcePinsIconSpecial = v if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsIconMode ~= "CUSTOM" end,
             default = EPC.defaults.resourcePinsIconSpecial,
             width = "half",
         },
@@ -1506,7 +1497,6 @@ function S:Initialize()
             choices = { "Automatic", "Suite Glow", "Mining", "Wood", "Clothing", "Alchemy", "Enchanting", "Mushroom", "Flower", "Water Plant", "Solvent", "Fishing", "Chest", "Heavy Sack", "Giant Clam", "Trove", "Justice", "Stash" }, choicesValues = { "AUTO", "SUITE_GLOW", "MINING", "WOOD", "CLOTHING", "ALCHEMY", "ENCHANTING", "MUSHROOM", "FLOWER", "WATERPLANT", "SOLVENT", "FISH", "CHEST", "HEAVYSACK", "CLAM", "TROVE", "JUSTICE", "STASH" },
             getFunc = function() return EPC.saved.resourcePinsIconOther or "AUTO" end,
             setFunc = function(v) EPC.saved.resourcePinsIconOther = v if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsIconMode ~= "CUSTOM" end,
             default = EPC.defaults.resourcePinsIconOther,
             width = "half",
         },
@@ -1519,10 +1509,9 @@ function S:Initialize()
         },
         {
             type = "checkbox", name = "Enable Farm Focus",
-            tooltip = "When enabled, only the checked Farm Targets below are rendered as resource pins.",
+            tooltip = "When enabled, only the checked Farm Targets below are rendered as resource pins. You can configure Farm Targets at any time, even while Farm Focus is off.",
             getFunc = function() return EPC.saved.resourcePinsFarmFocusEnabled == true end,
             setFunc = function(v) EPC.saved.resourcePinsFarmFocusEnabled = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false end,
             default = EPC.defaults.resourcePinsFarmFocusEnabled or false,
             width = "full",
         },
@@ -1530,49 +1519,42 @@ function S:Initialize()
             type = "checkbox", name = "Farm ore / seams",
             getFunc = function() return EPC.saved.resourcePinsFarmOre == true end,
             setFunc = function(v) EPC.saved.resourcePinsFarmOre = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsFarmFocusEnabled ~= true end,
             default = false, width = "half",
         },
         {
             type = "checkbox", name = "Farm wood",
             getFunc = function() return EPC.saved.resourcePinsFarmWood == true end,
             setFunc = function(v) EPC.saved.resourcePinsFarmWood = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsFarmFocusEnabled ~= true end,
             default = false, width = "half",
         },
         {
             type = "checkbox", name = "Farm cloth",
             getFunc = function() return EPC.saved.resourcePinsFarmCloth == true end,
             setFunc = function(v) EPC.saved.resourcePinsFarmCloth = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsFarmFocusEnabled ~= true end,
             default = false, width = "half",
         },
         {
             type = "checkbox", name = "Farm alchemy plants",
             getFunc = function() return EPC.saved.resourcePinsFarmAlchemy == true end,
             setFunc = function(v) EPC.saved.resourcePinsFarmAlchemy = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsFarmFocusEnabled ~= true end,
             default = false, width = "half",
         },
         {
             type = "checkbox", name = "Farm runestones",
             getFunc = function() return EPC.saved.resourcePinsFarmRunes == true end,
             setFunc = function(v) EPC.saved.resourcePinsFarmRunes = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsFarmFocusEnabled ~= true end,
             default = false, width = "half",
         },
         {
             type = "checkbox", name = "Farm water / solvents",
             getFunc = function() return EPC.saved.resourcePinsFarmWater == true end,
             setFunc = function(v) EPC.saved.resourcePinsFarmWater = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsFarmFocusEnabled ~= true end,
             default = false, width = "half",
         },
         {
             type = "checkbox", name = "Farm fishing holes",
             getFunc = function() return EPC.saved.resourcePinsFarmFishing == true end,
             setFunc = function(v) EPC.saved.resourcePinsFarmFishing = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsFarmFocusEnabled ~= true end,
             default = false, width = "half",
         },
         {
@@ -1580,26 +1562,22 @@ function S:Initialize()
             tooltip = "Chests, Heavy Sacks, Giant Clams, Troves, Justice containers and hidden stashes.",
             getFunc = function() return EPC.saved.resourcePinsFarmSpecial == true end,
             setFunc = function(v) EPC.saved.resourcePinsFarmSpecial = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsFarmFocusEnabled ~= true end,
             default = false, width = "half",
         },
         {
             type = "checkbox", name = "Farm other / unknown",
             getFunc = function() return EPC.saved.resourcePinsFarmOther == true end,
             setFunc = function(v) EPC.saved.resourcePinsFarmOther = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsFarmFocusEnabled ~= true end,
             default = false, width = "half",
         },
         {
             type = "button", name = "Farm targets", buttonText = "Select All",
-            func = function() if EPC.ResourcePins then EPC.ResourcePins:SetAllFarmTargets(true) end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsFarmFocusEnabled ~= true end,
+            func = function() if EPC.ResourcePins then EPC.ResourcePins:SetAllFarmTargets(true) end S:RequestDependencyRefresh029375(120) end,
             width = "half",
         },
         {
             type = "button", name = "Farm targets", buttonText = "Clear All",
-            func = function() if EPC.ResourcePins then EPC.ResourcePins:SetAllFarmTargets(false) end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false or EPC.saved.resourcePinsFarmFocusEnabled ~= true end,
+            func = function() if EPC.ResourcePins then EPC.ResourcePins:SetAllFarmTargets(false) end S:RequestDependencyRefresh029375(120) end,
             width = "half",
         },
         {
@@ -1609,57 +1587,54 @@ function S:Initialize()
             type = "checkbox", name = "Show ore / seams",
             getFunc = function() return EPC.saved.resourcePinsShowOre ~= false end,
             setFunc = function(v) EPC.saved.resourcePinsShowOre = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false end, default = true, width = "half",
         },
         {
             type = "checkbox", name = "Show wood",
             getFunc = function() return EPC.saved.resourcePinsShowWood ~= false end,
             setFunc = function(v) EPC.saved.resourcePinsShowWood = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false end, default = true, width = "half",
         },
         {
             type = "checkbox", name = "Show cloth",
             getFunc = function() return EPC.saved.resourcePinsShowCloth ~= false end,
             setFunc = function(v) EPC.saved.resourcePinsShowCloth = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false end, default = true, width = "half",
         },
         {
             type = "checkbox", name = "Show alchemy plants",
             getFunc = function() return EPC.saved.resourcePinsShowAlchemy ~= false end,
             setFunc = function(v) EPC.saved.resourcePinsShowAlchemy = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false end, default = true, width = "half",
         },
         {
             type = "checkbox", name = "Show runestones",
             getFunc = function() return EPC.saved.resourcePinsShowRunes ~= false end,
             setFunc = function(v) EPC.saved.resourcePinsShowRunes = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false end, default = true, width = "half",
         },
         {
             type = "checkbox", name = "Show water / solvents",
             getFunc = function() return EPC.saved.resourcePinsShowWater ~= false end,
             setFunc = function(v) EPC.saved.resourcePinsShowWater = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false end, default = true, width = "half",
         },
         {
             type = "checkbox", name = "Show fishing holes",
             getFunc = function() return EPC.saved.resourcePinsShowFishing ~= false end,
             setFunc = function(v) EPC.saved.resourcePinsShowFishing = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false end, default = true, width = "half",
         },
         {
             type = "checkbox", name = "Show special resources",
             tooltip = "Shows recognized special resource locations such as Chests, Heavy Sacks, Giant Clams, Troves and hidden stashes from learned and community data.",
             getFunc = function() return EPC.saved.resourcePinsShowSpecial ~= false end,
             setFunc = function(v) EPC.saved.resourcePinsShowSpecial = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false end, default = true, width = "half",
+        },
+        {
+            type = "checkbox", name = "Show uncollected Skyshards",
+            tooltip = "Shows uncollected Skyshards with ESO's native skyshard icon tinted gold on the big map, minimap, and as nearby 3D markers. Skyshard positions and completion state come directly from ESO's API; the Suite does not copy or store a second Skyshard database.",
+            getFunc = function() return EPC.saved.resourcePinsShowSkyshards ~= false end,
+            setFunc = function(v) EPC.saved.resourcePinsShowSkyshards = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
         },
         {
             type = "checkbox", name = "Show other / unknown",
             tooltip = "Shows resource nodes whose type could not be classified.",
             getFunc = function() return EPC.saved.resourcePinsShowOther ~= false end,
             setFunc = function(v) EPC.saved.resourcePinsShowOther = v == true if EPC.ResourcePins then EPC.ResourcePins:RefreshSettings() end end,
-            disabled = function() return EPC.saved.resourcePinsEnabled == false end, default = true, width = "half",
         },
         {
             type = "button", name = "Test Suite Resource Pin", buttonText = "Show Test Pin",
@@ -1701,7 +1676,6 @@ function S:Initialize()
             tooltip = "Shows the visibility glow on companions and group members where ESO allows addon 3D controls.",
             getFunc = function() return EPC.saved.teamVisibilityLightsEnabled ~= false end,
             setFunc = function(v) EPC.saved.teamVisibilityLightsEnabled = v == true if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
-            disabled = function() return EPC.saved.teamVisibilityEnabled == false end,
             default = EPC.defaults.teamVisibilityLightsEnabled,
             width = "half",
         },
@@ -1710,7 +1684,6 @@ function S:Initialize()
             tooltip = "Controls the brightness of the reserved flashing red glow used when a grouped player dies or the active companion goes down. This setting is independent from their normal glow intensity.",
             getFunc = function() return math.floor((tonumber(EPC.saved.teamVisibilityDeadOpacity) or 1.00) * 100 + 0.5) end,
             setFunc = function(v) EPC.saved.teamVisibilityDeadOpacity = (tonumber(v) or 100) / 100 if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
-            disabled = function() return EPC.saved.teamVisibilityEnabled == false or EPC.saved.teamVisibilityLightsEnabled == false end,
             default = 100,
             width = "half",
         },
@@ -1735,7 +1708,6 @@ function S:Initialize()
                 EPC.saved.teamVisibilityCompanionColor = { r = r, g = g, b = b }
                 if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end
             end,
-            disabled = function() return EPC.saved.teamVisibilityEnabled == false or EPC.saved.teamVisibilityLightsEnabled == false end,
             default = { r = 0.72, g = 0.38, b = 1.00 },
             width = "full",
         },
@@ -1744,7 +1716,6 @@ function S:Initialize()
             tooltip = "Adjusts the companion glow width independently from group members.",
             getFunc = function() return math.floor(((tonumber(EPC.saved.teamVisibilityCompanionBeamWidth) or 3.55) / 3.55) * 100 + 0.5) end,
             setFunc = function(v) EPC.saved.teamVisibilityCompanionBeamWidth = 3.55 * ((tonumber(v) or 100) / 100) if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
-            disabled = function() return EPC.saved.teamVisibilityEnabled == false or EPC.saved.teamVisibilityLightsEnabled == false end,
             default = 100,
             width = "half",
         },
@@ -1753,7 +1724,6 @@ function S:Initialize()
             tooltip = "Adjusts the companion glow height independently from group members.",
             getFunc = function() return math.floor(((tonumber(EPC.saved.teamVisibilityCompanionBeamHeight) or 8.20) / 8.20) * 100 + 0.5) end,
             setFunc = function(v) EPC.saved.teamVisibilityCompanionBeamHeight = 8.20 * ((tonumber(v) or 100) / 100) if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
-            disabled = function() return EPC.saved.teamVisibilityEnabled == false or EPC.saved.teamVisibilityLightsEnabled == false end,
             default = 100,
             width = "half",
         },
@@ -1762,7 +1732,6 @@ function S:Initialize()
             tooltip = "Controls how transparent or bright the companion glow appears. Higher values now render at full additive brightness instead of being capped low.",
             getFunc = function() return math.floor((tonumber(EPC.saved.teamVisibilityCompanionOpacity) or 0.24) * 100 + 0.5) end,
             setFunc = function(v) EPC.saved.teamVisibilityCompanionOpacity = (tonumber(v) or 24) / 100 if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
-            disabled = function() return EPC.saved.teamVisibilityEnabled == false or EPC.saved.teamVisibilityLightsEnabled == false end,
             default = 24,
             width = "half",
         },
@@ -1771,7 +1740,6 @@ function S:Initialize()
             tooltip = "Keeps the companion glow visible through walls, trees, and world geometry where ESO permits it.",
             getFunc = function() return EPC.saved.teamVisibilityCompanionThroughWalls ~= false end,
             setFunc = function(v) EPC.saved.teamVisibilityCompanionThroughWalls = v == true if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
-            disabled = function() return EPC.saved.teamVisibilityEnabled == false or EPC.saved.teamVisibilityLightsEnabled == false end,
             default = true,
             width = "half",
         },
@@ -1795,7 +1763,6 @@ function S:Initialize()
             tooltip = "Default obstacle visibility for group members that do not have a player-specific override.",
             getFunc = function() return EPC.saved.teamVisibilityThroughWalls ~= false end,
             setFunc = function(v) EPC.saved.teamVisibilityThroughWalls = v == true if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
-            disabled = function() return EPC.saved.teamVisibilityEnabled == false or EPC.saved.teamVisibilityLightsEnabled == false end,
             default = EPC.defaults.teamVisibilityThroughWalls,
             width = "half",
         },
@@ -1804,7 +1771,6 @@ function S:Initialize()
             tooltip = "Default width for group members without a player-specific override.",
             getFunc = function() return math.floor(((tonumber(EPC.saved.teamVisibilityBeamWidth) or 3.55) / 3.55) * 100 + 0.5) end,
             setFunc = function(v) EPC.saved.teamVisibilityBeamWidth = 3.55 * ((tonumber(v) or 100) / 100) if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
-            disabled = function() return EPC.saved.teamVisibilityEnabled == false or EPC.saved.teamVisibilityLightsEnabled == false end,
             default = 100,
             width = "half",
         },
@@ -1813,7 +1779,6 @@ function S:Initialize()
             tooltip = "Default height for group members without a player-specific override.",
             getFunc = function() return math.floor(((tonumber(EPC.saved.teamVisibilityBeamHeight) or 8.20) / 8.20) * 100 + 0.5) end,
             setFunc = function(v) EPC.saved.teamVisibilityBeamHeight = 8.20 * ((tonumber(v) or 100) / 100) if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
-            disabled = function() return EPC.saved.teamVisibilityEnabled == false or EPC.saved.teamVisibilityLightsEnabled == false end,
             default = 100,
             width = "half",
         },
@@ -1822,7 +1787,6 @@ function S:Initialize()
             tooltip = "Default brightness for group members without a player-specific override. Higher values now render at full additive brightness instead of being capped low.",
             getFunc = function() return math.floor((tonumber(EPC.saved.teamVisibilityOpacity) or 0.24) * 100 + 0.5) end,
             setFunc = function(v) EPC.saved.teamVisibilityOpacity = (tonumber(v) or 24) / 100 if EPC.TeamVisibility then EPC.TeamVisibility:RefreshSettings() end end,
-            disabled = function() return EPC.saved.teamVisibilityEnabled == false or EPC.saved.teamVisibilityLightsEnabled == false end,
             default = 24,
             width = "half",
         },
@@ -2215,7 +2179,71 @@ function S:Initialize()
             default = EPC.defaults.dualActionBarShowStacks029189,
         },
         {
-            type = "checkbox", name = "Show ability hotkeys/controller glyphs",
+            type = "description",
+            text = "Readiness: a tracked stack spender glows when its displayed stack threshold is full (for example Grim Focus at 5/5). Runtime proc/mode changes such as empowered Venom Skull, free Crystal Fragments, and Power Whip use ESO's effective hotbar ability state and also glow; entering that proc state plays a short readiness sound. Active-bar skills that ESO reports as unusable are dimmed until they can be used again.",
+        },
+        {
+            type = "header", name = "Player Frame Recovery Ticks",
+        },
+        {
+            type = "checkbox", name = "Show recovery ticks in player bars",
+            tooltip = "Uses the Suite player Health, Magicka and Stamina frames themselves to show the next estimated recovery tick. A resource-colored sweep advances inside each real bar. An optional native-framed countdown attachment is anchored directly to the left of its matching Health, Magicka or Stamina bar, so each timer looks like part of the frame and stays aligned with its resource. Hidden when full, recovery is zero, or timing is unknown. No separate tracker panel.",
+            getFunc = function() return EPC.saved.showTickTracker029382 == true end,
+            setFunc = function(v) EPC.saved.showTickTracker029382 = v == true if EPC.TickTracker then EPC.TickTracker:Refresh() end end,
+            default = EPC.defaults.showTickTracker029382,
+        },
+        {
+            type = "dropdown", name = "Tick readout attachment",
+            tooltip = "Chooses the small readout attached to the left of each Health, Magicka and Stamina frame. Slim uses the same-height native ESO frame silhouette. Fancy uses a slightly larger, more decorative framed sidecar with a stronger resource-colored inner glow. Off hides the side attachment while keeping the in-bar tick fill active.",
+            choices = { "Off (fill only)", "Slim Attachment", "Fancy Attachment" },
+            choicesValues = { "OFF", "SLIM", "FANCY" },
+            getFunc = function() return EPC.saved.tickTrackerReadoutStyle029417 or "SLIM" end,
+            setFunc = function(v) EPC.saved.tickTrackerReadoutStyle029417 = v or "SLIM" if EPC.TickTracker then EPC.TickTracker:Refresh() end end,
+            default = EPC.defaults.tickTrackerReadoutStyle029417,
+        },
+        {
+            type = "dropdown", name = "Recovery tick detail",
+            tooltip = "Basic shows only the countdown. Advanced keeps the same in-bar fill and shows a clean countdown plus predicted recovery amount. Confirmed ticks, recovery-stat changes, delayed resync, and resource pressure are communicated visually instead of adding symbol/letter suffixes to the text.",
+            choices = { "Basic", "Advanced" }, choicesValues = { "BASIC", "ADVANCED" },
+            getFunc = function() return EPC.saved.tickTrackerMode029415 or "ADVANCED" end,
+            setFunc = function(v) EPC.saved.tickTrackerMode029415 = v or "ADVANCED" if EPC.TickTracker then EPC.TickTracker:Refresh() end end,
+            default = EPC.defaults.tickTrackerMode029415,
+        },
+        {
+            type = "checkbox", name = "Show overcap recovery waste",
+            tooltip = "Advanced mode marks the readout with WASTE when part of the next natural recovery pulse would be lost because the resource is near full. The main amount remains the predicted recovery that can actually fit.",
+            getFunc = function() return EPC.saved.tickTrackerWaste029415 ~= false end,
+            setFunc = function(v) EPC.saved.tickTrackerWaste029415 = v == true if EPC.TickTracker then EPC.TickTracker:Refresh() end end,
+            default = EPC.defaults.tickTrackerWaste029415,
+        },
+        {
+            type = "checkbox", name = "Flash on confirmed recovery tick",
+            tooltip = "Briefly flashes the matching Health, Magicka, or Stamina countdown box when ESO actually applies a recovery-sized pulse on the trusted cadence.",
+            getFunc = function() return EPC.saved.tickTrackerConfirm029415 ~= false end,
+            setFunc = function(v) EPC.saved.tickTrackerConfirm029415 = v == true end,
+            default = EPC.defaults.tickTrackerConfirm029415,
+        },
+        {
+            type = "checkbox", name = "Show resource pressure hint",
+            tooltip = "Advanced mode subtly tints the matching countdown box when recent spending or damage over the last four seconds is outpacing natural recovery. No extra symbols are added to the text.",
+            getFunc = function() return EPC.saved.tickTrackerPressure029415 ~= false end,
+            setFunc = function(v) EPC.saved.tickTrackerPressure029415 = v == true end,
+            default = EPC.defaults.tickTrackerPressure029415,
+        },
+        {
+            type = "checkbox", name = "Detect delayed ticks and resync",
+            tooltip = "If a trusted recovery pulse does not arrive when expected while the resource is not full, Advanced mode briefly shows SYNC instead of pretending the old cadence is still accurate. The next valid pulse automatically locks the tracker back on phase.",
+            getFunc = function() return EPC.saved.tickTrackerResync029415 ~= false end,
+            setFunc = function(v) EPC.saved.tickTrackerResync029415 = v == true end,
+            default = EPC.defaults.tickTrackerResync029415,
+        },
+        {
+            type = "button", name = "Preview player recovery ticks", buttonText = "Test Tick Indicators",
+            tooltip = "Run a ten-second demo inside the player resource bars. Close settings to see it. Temporarily shows the Suite player frame during gameplay; the timer starts when visible.",
+            func = function() if EPC.TickTracker then EPC.TickTracker:Reveal(true) end end,
+        },
+        {
+            type = "checkbox", name = "Show ability hotkeys",
             getFunc = function() return EPC.saved.dualActionBarShowHotkeys029189 ~= false end,
             setFunc = function(v) EPC.saved.dualActionBarShowHotkeys029189 = v == true if EPC.DualActionBar then EPC.DualActionBar:Refresh() end end,
             default = EPC.defaults.dualActionBarShowHotkeys029189,
@@ -2234,8 +2262,8 @@ function S:Initialize()
             default = "ICON_GLOW",
         },
         {
-            type = "checkbox", name = "Put Bar 1 on top",
-            tooltip = "Off keeps Bar 1 on the bottom and Bar 2 on top. The rows stay in fixed positions when you weapon-swap; the active marker moves instead.",
+            type = "checkbox", name = "Put Front Bar (Bar 1) on top",
+            tooltip = "On by default: Bar 1 (front/main bar) is on top and Bar 2 (back bar) is on the bottom. Turn this off to reverse the rows. The rows stay fixed when you weapon-swap; the active marker moves instead.",
             getFunc = function() return EPC.saved.dualActionBarPrimaryOnTop029189 == true end,
             setFunc = function(v) EPC.saved.dualActionBarPrimaryOnTop029189 = v == true if EPC.DualActionBar then EPC.DualActionBar:Refresh() end end,
             default = EPC.defaults.dualActionBarPrimaryOnTop029189,
@@ -2282,33 +2310,6 @@ function S:Initialize()
         },
 
         {
-            type = "header", name = "Desktop UI + Gamepad Controls",
-        },
-        {
-            type = "checkbox", name = "Keep desktop UI while using controller",
-            tooltip = "Keeps ESO's keyboard/desktop interface on screen while controller movement/combat remains handled by ESO. The Suite never changes Gamepad Mode or Keybind Display Mode. For controller icons, set ESO > Settings > Gameplay > Keybind Display Mode to Gamepad. Reload UI after changing this bridge so ESO never mixes keyboard and gamepad Settings controls in one scene.",
-            getFunc = function() return EPC.saved.keepDesktopUIWithGamepad029197 == true end,
-            setFunc = function(v)
-                EPC.saved.keepDesktopUIWithGamepad029197 = v == true
-            end,
-            default = EPC.defaults.keepDesktopUIWithGamepad029197,
-            requiresReload = true,
-        },
-        {
-            type = "checkbox", name = "Auto-switch menu control by last input",
-            tooltip = "Recommended. Keeps the desktop-looking UI, but when the controller is the most recent input the Suite adds controller focus/navigation to keyboard-style menus. D-pad/left stick moves, the primary controller button selects, and Back falls through to ESO. Moving/clicking the mouse immediately returns the same screen to normal cursor control. This does not switch to ESO's large Gamepad UI.",
-            getFunc = function() return EPC.saved.hybridDesktopGamepadNavigation029205 ~= false end,
-            setFunc = function(v)
-                EPC.saved.hybridDesktopGamepadNavigation029205 = v == true
-                if EPC.RefreshHybridDesktopNavigation029205 then EPC:RefreshHybridDesktopNavigation029205(true) end
-            end,
-            default = EPC.defaults.hybridDesktopGamepadNavigation029205,
-        },
-        {
-            type = "description",
-            text = "This affects the in-game interface after addons load. Character select/login screens are controlled by ESO before addons are available. With auto-switch enabled, controller and mouse can hand the same desktop menu back and forth without changing ESO UI templates.",
-        },
-        {
             type = "header", name = "Ability Overlays",
         },
         {
@@ -2324,21 +2325,6 @@ function S:Initialize()
             getFunc = function() return EPC.saved.abilityOverlayVisibility or "ALWAYS" end,
             setFunc = function(v) EPC.saved.abilityOverlayVisibility = v if EPC.AbilityOverlays then EPC.AbilityOverlays:Refresh() end end,
             default = EPC.defaults.abilityOverlayVisibility,
-        },
-        {
-            type = "dropdown", name = "Controller button icon style (entire ESO UI)",
-            tooltip = "Automatic (ESO) follows the controller family ESO reports. Force PlayStation remaps Xbox/XInput glyphs to ESO's built-in DualSense/PlayStation art across the loaded ESO UI as well as Suite overlays. It changes artwork only, not your controls or bindings. Some already-cached controls may need /reloadui once.",
-            choices = { "Automatic (ESO)", "Force PlayStation" },
-            choicesValues = { "AUTO", "PLAYSTATION" },
-            getFunc = function() return EPC.saved.abilityOverlayControllerGlyphStyle029180 or "AUTO" end,
-            setFunc = function(v)
-                EPC.saved.abilityOverlayControllerGlyphStyle029180 = (v == "PLAYSTATION") and "PLAYSTATION" or "AUTO"
-                if EPC.ApplyGlobalControllerGlyphOverride029181 then EPC:ApplyGlobalControllerGlyphOverride029181() end
-                if EPC.AbilityOverlays then EPC.AbilityOverlays:InvalidateBindingText() EPC.AbilityOverlays:Refresh() end
-                if EPC.DualActionBar then EPC.DualActionBar:Refresh() end
-                if EPC.RotationAssistant and EPC.RotationAssistant.Refresh then EPC.RotationAssistant:Refresh() end
-            end,
-            default = EPC.defaults.abilityOverlayControllerGlyphStyle029180 or "AUTO",
         },
         {
             type = "slider", name = "Ability icon size", min = 40, max = 90, step = 2,
@@ -2492,7 +2478,6 @@ function S:Initialize()
             getFunc = function() return EPC.saved.customReticleColor or "GOLD" end,
             setFunc = function(v) EPC.saved.customReticleColor = v if EPC.Reticle then EPC.Reticle:Refresh() end end,
             default = EPC.defaults.customReticleColor,
-            disabled = function() return EPC.saved.customReticleStyle == "DEFAULT" end,
         },
         {
             type = "slider", name = "Reticle size", min = 60, max = 180, step = 5,
@@ -2500,14 +2485,12 @@ function S:Initialize()
             getFunc = function() return tonumber(EPC.saved.customReticleSize) or 100 end,
             setFunc = function(v) EPC.saved.customReticleSize = v if EPC.Reticle then EPC.Reticle:Refresh() end end,
             default = EPC.defaults.customReticleSize,
-            disabled = function() return EPC.saved.customReticleStyle == "DEFAULT" end,
         },
         {
             type = "slider", name = "Reticle opacity", min = 25, max = 100, step = 5,
             getFunc = function() return math.floor((tonumber(EPC.saved.customReticleOpacity) or 0.95) * 100 + 0.5) end,
             setFunc = function(v) EPC.saved.customReticleOpacity = v / 100 if EPC.Reticle then EPC.Reticle:Refresh() end end,
             default = math.floor((EPC.defaults.customReticleOpacity or 0.95) * 100 + 0.5),
-            disabled = function() return EPC.saved.customReticleStyle == "DEFAULT" end,
         },
         {
             type = "header", name = "Tamriel Codex",
@@ -2964,8 +2947,8 @@ function S:Initialize()
         },
         {
             type = "dropdown", name = "Mini map player marker style",
-            tooltip = "Choose the player-arrow art used on the minimap.",
-            choices = { "Suite Arrow", "MiniMap Pointer", "MiniMap Arrow", "MiniMap Gold Arrow" },
+            tooltip = "Choose the minimap player-arrow style. Suite Arrow keeps the current Suite look. The other three use the same Suite arrow artwork with Aldmeri gold, Daggerfall blue, or Ebonheart red alliance coloring.",
+            choices = { "Suite Arrow", "Aldmeri Suite Arrow", "Daggerfall Suite Arrow", "Ebonheart Suite Arrow" },
             choicesValues = { "SUITE", "MINIMAP", "MINIMAP_ARROW", "MINIMAP_GOLD_ARROW" },
             getFunc = function() return EPC.saved.miniMapPlayerMarkerStyle or "MINIMAP_GOLD_ARROW" end,
             setFunc = function(v) EPC.saved.miniMapPlayerMarkerStyle = v if EPC.MiniMap then EPC.MiniMap:ApplySizeAndStyle() EPC.MiniMap:UpdatePanAndPins(true) end end,
@@ -3314,7 +3297,7 @@ function S:Initialize()
         {
             type = "description",
             title = "Suite error log",
-            text = "Captures Lua errors, protected-function violations, and low-Lua-memory notices into ESO Adventurer Suite without replacing ESO's own error handler. Repeated identical errors are grouped together. Use /easscan (or /easbugs scan) for a runtime addon health scan, /easbugs to list recent errors, or /easbugs last to print the full latest stack trace to chat for copying/reporting.",
+            text = "Captures Lua errors, protected-function violations, and low-Lua-memory notices into ESO Adventurer Suite without replacing ESO's own error handler. Repeated identical errors are grouped together. Use /eastestall for the full safe Suite self-test with a copyable report, /easscan (or /easbugs scan) for a runtime addon health scan, /easbugs to list recent errors, or /easbugs last to print the full latest stack trace.",
         },
         {
             type = "checkbox", name = "Enable built-in Bug Catcher",
@@ -3327,7 +3310,6 @@ function S:Initialize()
             tooltip = "Prints a short notice when an error is caught. Full stack traces are stored instead of spammed into chat automatically.",
             getFunc = function() return EPC.saved.bugCatcherNotifyChat ~= false end,
             setFunc = function(v) EPC.saved.bugCatcherNotifyChat = v == true end,
-            disabled = function() return EPC.saved.bugCatcherEnabled == false end,
             default = EPC.defaults.bugCatcherNotifyChat, width = "half",
         },
         {
@@ -3335,7 +3317,6 @@ function S:Initialize()
             tooltip = "After the Bug Catcher records a live Lua error, ask ESO to close its standard error dialog. The error remains stored in the Suite and can be viewed with /easbugs last.",
             getFunc = function() return EPC.saved.bugCatcherSuppressPopup == true end,
             setFunc = function(v) EPC.saved.bugCatcherSuppressPopup = v == true end,
-            disabled = function() return EPC.saved.bugCatcherEnabled == false end,
             default = EPC.defaults.bugCatcherSuppressPopup, width = "full",
         },
         {
@@ -3343,7 +3324,6 @@ function S:Initialize()
             tooltip = "Maximum number of unique error records kept in SavedVariables. Duplicate occurrences are counted on the existing record.",
             getFunc = function() return tonumber(EPC.saved.bugCatcherMaxErrors) or 40 end,
             setFunc = function(v) EPC.saved.bugCatcherMaxErrors = tonumber(v) or 40 if EPC.BugCatcher then EPC.BugCatcher:TrimToLimit() end end,
-            disabled = function() return EPC.saved.bugCatcherEnabled == false end,
             default = EPC.defaults.bugCatcherMaxErrors, width = "full",
         },
         {
@@ -3512,7 +3492,6 @@ function S:Initialize()
             getFunc = function() return EPC.saved.alchemyPotionMakerAutoCraftMode or "ONE" end,
             setFunc = function(v) EPC.saved.alchemyPotionMakerAutoCraftMode = (v == "MAX" or v == "CUSTOM") and v or "ONE" if EPC.AlchemyPotionMaker then EPC.AlchemyPotionMaker:RefreshWindow(false) end end,
             default = EPC.defaults.alchemyPotionMakerAutoCraftMode,
-            disabled = function() return EPC.saved.alchemyPotionMakerAutoCraft ~= true end,
             width = "half",
         },
         {
@@ -3522,7 +3501,6 @@ function S:Initialize()
             getFunc = function() return math.max(1, math.floor(tonumber(EPC.saved.alchemyPotionMakerAutoCraftQuantity) or 1)) end,
             setFunc = function(v) EPC.saved.alchemyPotionMakerAutoCraftQuantity = math.max(1, math.floor(tonumber(v) or 1)) if EPC.AlchemyPotionMaker then EPC.AlchemyPotionMaker:RefreshWindow(false) end end,
             default = EPC.defaults.alchemyPotionMakerAutoCraftQuantity,
-            disabled = function() return EPC.saved.alchemyPotionMakerAutoCraft ~= true or EPC.saved.alchemyPotionMakerAutoCraftMode ~= "CUSTOM" end,
             width = "half",
         },
         {
@@ -3642,15 +3620,37 @@ function S:Initialize()
         },
         {
             type = "slider", name = "Window opacity", min = 35, max = 100, step = 1,
-            getFunc = function() return math.floor(EPC.saved.alpha * 100) end,
-            setFunc = function(v) EPC.saved.alpha = v / 100 EPC.UI.root:SetAlpha(EPC.saved.alpha) end,
+            tooltip = "Changes the opacity of the visible ESO Adventurer Suite window, including the modern Codex interface.",
+            getFunc = function() return math.floor((tonumber(EPC.saved.alpha) or EPC.defaults.alpha or 0.96) * 100) end,
+            setFunc = function(v)
+                EPC.saved.alpha = (tonumber(v) or 96) / 100
+                if EPC.UI and EPC.UI.root and EPC.UI.root.SetAlpha then EPC.UI.root:SetAlpha(EPC.saved.alpha) end
+                if EPC.ModernAppUI and EPC.ModernAppUI.ApplyWindowAppearance029363 then EPC.ModernAppUI:ApplyWindowAppearance029363() end
+            end,
             default = math.floor(EPC.defaults.alpha * 100),
         },
         {
             type = "slider", name = "Window scale", min = 70, max = 140, step = 5,
-            getFunc = function() return math.floor(EPC.saved.scale * 100) end,
-            setFunc = function(v) EPC.saved.scale = v / 100 EPC.UI.root:SetScale(EPC.saved.scale) end,
+            tooltip = "Scales the visible ESO Adventurer Suite window. This now applies to the modern Codex window as well as the legacy UI root.",
+            getFunc = function() return math.floor((tonumber(EPC.saved.scale) or EPC.defaults.scale or 1.0) * 100) end,
+            setFunc = function(v)
+                EPC.saved.scale = (tonumber(v) or 100) / 100
+                -- v0.29.376: the modern application is a separate top-level.
+                -- Scaling the retired legacy root at the same time could distort
+                -- hit regions/anchors when moving between Codex tabs.
+                if EPC.ModernAppUI and EPC.ModernAppUI.ApplyWindowAppearance029363 then EPC.ModernAppUI:ApplyWindowAppearance029363() end
+            end,
             default = math.floor(EPC.defaults.scale * 100),
+        },
+        {
+            type = "slider", name = "Codex text size", min = 14, max = 28, step = 1,
+            tooltip = "Changes Crafting Codex body text size. The page automatically re-wraps and repaginates so larger text remains readable.",
+            getFunc = function() return tonumber(EPC.saved.codexModernFontSize029363) or 18 end,
+            setFunc = function(v)
+                EPC.saved.codexModernFontSize029363 = tonumber(v) or 18
+                if EPC.ModernAppUI and EPC.ModernAppUI.ApplyCodexTextSize029363 then EPC.ModernAppUI:ApplyCodexTextSize029363() end
+            end,
+            default = EPC.defaults.codexModernFontSize029363 or 18,
         },
         {
             type = "button", name = "Clear last combat sample", buttonText = "Clear",
@@ -3729,8 +3729,8 @@ function S:Initialize()
         },
         ACTIONBARS = {
             name = "Action Bars, Abilities & Quickslots",
-            tooltip = "Dual Action Bar, ability overlays, quickslot display, controller glyphs, and desktop/gamepad UI behavior.",
-            intro = "Controls for combat buttons and input presentation: Dual Action Bar, ability overlays, quickslots, hotkey/controller glyphs, and desktop UI behavior while using a controller.",
+            tooltip = "Dual Action Bar, ability overlays, and quickslot display.",
+            intro = "Controls for combat buttons and keyboard/mouse hotkey presentation: Dual Action Bar, ability overlays, and quickslots.",
         },
         FRAMES = {
             name = "Unit Frames & HUD Layout",
@@ -3787,6 +3787,7 @@ function S:Initialize()
         ["Gameplay & Challenge Difficulty"] = "DIFFICULTY",
         ["Live Group Finder"] = "ACTIVITIES",
         ["Game Mode Combat Report"] = "COMBAT",
+        ["Inventory Grid Categories"] = "GEAR",
         ["Character Gear Screen"] = "GEAR",
         ["Automatic Equipment Maintenance"] = "GEAR",
         ["Repair / Recharge Estimate Overlay"] = "GEAR",
@@ -3814,7 +3815,6 @@ function S:Initialize()
         ["Alliance Rank Overlay"] = "QUESTS",
         ["Character Level / Champion Progress Overlay"] = "QUESTS",
         ["Dual Action Bar HUD"] = "ACTIONBARS",
-        ["Desktop UI + Gamepad Controls"] = "ACTIONBARS",
         ["Ability Overlays"] = "ACTIONBARS",
         ["Quickslot Overlay"] = "ACTIONBARS",
         ["Infinite Archive Overlay"] = "ACTIVITIES",
@@ -3874,6 +3874,7 @@ function S:Initialize()
         ["Show recommendation reasons"] = "CODEX",
         ["Window opacity"] = "CODEX",
         ["Window scale"] = "CODEX",
+        ["Codex text size"] = "CODEX",
         ["Reset overlay position"] = "CODEX",
 
         ["Endgame suite focus"] = "BUILDS",
@@ -3927,7 +3928,7 @@ function S:Initialize()
         {
             type = "description",
             title = "ESO Adventurer Suite Settings",
-            text = "Open the section for the feature you want to change. Every setting is grouped by purpose, and information text now uses the full menu width so longer explanations wrap cleanly and remain readable.",
+            text = "Open the section for the feature you want to change. Configuration controls stay editable even when their feature is currently turned off, so you can prepare settings first and enable the feature later. Only actions that truly require a live module or selected target are disabled.",
             width = "full",
         },
     }
@@ -3955,5 +3956,35 @@ function S:Initialize()
         end
     end
 
+    -- With global LAM refresh disabled, keep dependent disabled/enabled states
+    -- responsive without paying the cost on every panel open. Only boolean/mode
+    -- controls can reasonably fan out to many dependent controls; sliders/editboxes
+    -- update themselves and do not trigger a 500-control refresh.
+    local function wrapDependencySetters029375(list)
+        for _, control in ipairs(list or {}) do
+            if control.type == "submenu" and type(control.controls) == "table" then
+                wrapDependencySetters029375(control.controls)
+            elseif (control.type == "checkbox" or control.type == "dropdown") and type(control.setFunc) == "function" then
+                local original = control.setFunc
+                control.setFunc = function(...)
+                    original(...)
+                    S:RequestDependencyRefresh029375(220)
+                end
+            end
+        end
+    end
+    wrapDependencySetters029375(organizedOptions)
+
     LAM:RegisterOptionControls(panelName, organizedOptions)
+
+    -- v0.29.446: refresh once when this panel is actually opened. Global automatic
+    -- refresh remains disabled for performance, but this one-shot pass prevents
+    -- the small number of genuine runtime/context guards from becoming stale.
+    if CALLBACK_MANAGER and type(CALLBACK_MANAGER.RegisterCallback) == "function" then
+        CALLBACK_MANAGER:RegisterCallback("LAM-PanelOpened", function(panel)
+            if panel == S.panelObject and S.panelObject and type(S.panelObject.RefreshPanel) == "function" then
+                pcall(S.panelObject.RefreshPanel, S.panelObject)
+            end
+        end)
+    end
 end

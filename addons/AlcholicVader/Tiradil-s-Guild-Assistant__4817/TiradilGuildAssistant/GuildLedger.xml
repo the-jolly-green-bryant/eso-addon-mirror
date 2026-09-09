@@ -1,7 +1,3 @@
-<!-- Title: Tiradil's Guild Assistant -->
-<!-- Author: Tiradil -->
-<!-- Copyright: © 2026 Tiradil -->
-
 <GuiXml>
     <Controls>
         <Control name="GuildLedgerTextRowTemplate" virtual="true">
@@ -23,8 +19,8 @@
         </Control>
 
         <TopLevelControl name="GuildLedgerFrame" hidden="true" mouseEnabled="true" movable="true" clampedToScreen="true" tier="HIGH" resizeHandleSize="8">
-            <DimensionConstraints minX="940" minY="940" />
-            <Dimensions x="940" y="940" />
+            <DimensionConstraints minX="940" minY="988" />
+            <Dimensions x="940" y="988" />
             <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
             
             <Controls>
@@ -83,7 +79,7 @@
                     <Controls>
 
                         <Control name="$(parent)StatsColumn">
-                            <Dimensions y="300" />
+                            <Dimensions y="348" />
                             <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
                             <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
                             <Controls>
@@ -145,10 +141,26 @@
                                     <Anchor point="TOPRIGHT" relativeTo="$(parent)Row5Value" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="2" />
                                 </Label>
 
+                                <Label name="$(parent)Row7Label" font="ZoFontHeader4" color="FFFFFF" text="Current Trader Bids">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Row6Label" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
+                                </Label>
+                                <Label name="$(parent)Row7Value" font="ZoFontHeader4" color="FFFFFF" text="0 Gold" wrapMode="ELLIPSIS" horizontalAlignment="RIGHT">
+                                    <Dimensions x="400" y="0" />
+                                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Row6Value" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="2" />
+                                </Label>
+
+                                <Label name="$(parent)Row8Label" font="ZoFontHeader4" color="EDC25D" text="Available Guild Funds">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Row7Label" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
+                                </Label>
+                                <Label name="$(parent)Row8Value" font="ZoFontHeader4" color="EDC25D" text="0 Gold" wrapMode="ELLIPSIS" horizontalAlignment="RIGHT">
+                                    <Dimensions x="400" y="0" />
+                                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Row7Value" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="2" />
+                                </Label>
+
                                 <Backdrop name="$(parent)Divider" centerColor="40FFFFFF" edgeColor="00000000">
                                     <Dimensions x="0" y="1" />
-                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Row6Label" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
-                                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Row6Value" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="2" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Row8Label" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
+                                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Row8Value" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="2" />
                                 </Backdrop>
 
                                 <Label name="$(parent)NetLabel" font="ZoFontHeader3" color="EDC25D" text="NET PROFIT / LOSS">

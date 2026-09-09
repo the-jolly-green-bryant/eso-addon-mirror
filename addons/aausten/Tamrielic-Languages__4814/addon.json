@@ -22,19 +22,21 @@
     "TamrielicTongues"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4814/",
-  "fingerprint": "684dc0ab96afa688a1fc908ea8a9edc33f40d27ef59536f350e7172cd590605c",
-  "images": [],
+  "fingerprint": "433b91c85b73a50199d135f5c0bc8a3f7c289a408f85b289fad6dbf71a4ac3b1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17334.png"
+  ],
   "platform": "pc",
   "published": true,
   "source": "esoui",
   "source_id": "4814",
   "source_url": "https://www.esoui.com/downloads/info4814-TamrielicLanguages.html",
   "stats": {
-    "downloads": 9,
+    "downloads": 37,
     "favorites": 0,
-    "monthly_downloads": 9
+    "monthly_downloads": 35
   },
   "title": "Tamrielic Languages",
-  "updated_at": 1788656987000,
-  "version": "1.0.0"
+  "updated_at": 1788915336000,
+  "version": "1.5.0"
 }

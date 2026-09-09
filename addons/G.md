@@ -54,7 +54,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Go Fast Don't Die](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Drezzek/Go-Fast-Don-t-Die__3332) | Drezzek | PC / Mac | 1.4 |
 | [Go Home](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/static_recharge/Go-Home__1604) | static_recharge | PC / Mac | 8.0.0 |
 | [GoA_DolgubonsLazyWritCreatorUAPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_DolgubonsLazyWritCreatorUAPatch__4703) | Iriya_Altmer | PC / Mac | 1.7 |
-| [GoA_ESO_UA](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_ESO_UA__4702) | Iriya_Altmer | PC / Mac | 46.91 |
+| [GoA_ESO_UA](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_ESO_UA__4702) | Iriya_Altmer | PC / Mac | 46.92 |
 | [GoA_FCOLockpickerUAPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_FCOLockpickerUAPatch__4733) | Iriya_Altmer | PC / Mac | 1.0 |
 | [GoA_HarvestMapUAPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_HarvestMapUAPatch__4707) | Iriya_Altmer | PC / Mac | 1.1 |
 | [GoA_TamrielTradeCentreUAPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_TamrielTradeCentreUAPatch__4705) | Iriya_Altmer | PC / Mac | 1.2 |
@@ -80,7 +80,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Gotta Open 'em all!](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Eldibabalo/Gotta-Open-em-all__c8456e9d-2e93-40d9-a266-88d0ad1f9332) | Eldibabalo | Console | — |
 | [Grandparents holiday Guildhall](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/KesBruun/Grandparents-holiday-Guildhall__3272) | KesBruun | PC / Mac | 0.0.1.1 |
 | [Greasy Grabby Mitts (Lucent Orphic Mirrors)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/STUDLETON/Greasy-Grabby-Mitts-Lucent-Orphic-Mirrors__4366) | STUDLETON | PC / Mac | 0.2.0 |
-| [GREED Beta](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Previsible/GREED-Beta__4691) | Previsible | PC / Mac | 0.9.8-beta |
+| [GREED](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Previsible/GREED__4691) | Previsible | PC / Mac | 1 |
 | [Greymind Quick Slot Bar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/bsrealm/Greymind-Quick-Slot-Bar__258) | bsrealm | PC / Mac | v2.7.2.24 |
 | [GREYMOOR - Enhanced Lockpicking - A Lockpicking Interface Retexture](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/luxape/GREYMOOR---Enhanced-Lockpicking---A-Lockpicking-Interface-Retexture__2420) | luxape | PC / Mac | 1.4 |
 | [Greyskull : Weapon / Spell Damage Meter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ghostbane/Greyskull-Weapon-Spell-Damage-Meter__1924) | ghostbane | PC / Mac | 1.1.1 |

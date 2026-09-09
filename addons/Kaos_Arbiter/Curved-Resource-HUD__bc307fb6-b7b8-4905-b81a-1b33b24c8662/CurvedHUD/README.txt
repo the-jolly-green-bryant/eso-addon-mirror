@@ -1,4 +1,4 @@
-Curved Resource HUD 0.9.19
+Curved Resource HUD 1.0.7
 
 Upload CurvedHUD as one folder with CurvedHUD.addon at its root.
 The package contains exactly one .addon manifest, as required by the console uploader.
@@ -18,7 +18,83 @@ If neither library loads, the HUD still renders. Chat commands:
 frame; while hidden, ESO's self-buff row moves down into the available space.
 
 Expected startup chat line:
-  [CurvedHUD] Loaded 0.9.19; HUD, shield, and trackers created
+  [CurvedHUD] Loaded 1.0.7; HUD, shield, and trackers created
+
+1.0.7 removes CurvedHUD's late settings registration. Its LibVotans pages now
+register during the normal add-on initialization phase, matching established
+add-ons and avoiding delayed AddAddon calls that rebuild the shared console
+settings tables after every other add-on has finished. Supported AddSettings
+batching and duplicate-page reuse remain enabled.
+
+1.0.6 uses LibVotans' supported AddSettings batch API and makes registration
+idempotent across character changes. Existing populated CurvedHUD pages are
+reused instead of receiving another copy of every control, preventing the
+session-wide menu registry from growing with each login. Fully restart ESO once
+after installing this build to clear duplicate pages retained by older builds.
+
+1.0.5 makes Contingency's priming phase effect-driven as well as its triggered
+phase. The three persistent prepared-runes effects now establish and refresh
+the primed state directly, allowing one-bar Contingency configurations to keep
+working across weapon swaps and crafted action-slot ID changes.
+
+1.0.4 tracks Ulfsild's Contingency through its complete generated effect-ID
+family. The initial priming timer is replaced when ESO applies the triggered
+signature or affix effect, using that effect's real begin and end times. If a
+crafted combination applies several related effects, the tracker retains the
+latest endpoint rather than continuing the original priming countdown.
+
+1.0.3 corrects Ulfsild's Contingency trigger detection on console. The initial
+cast still displays its priming window, while the next ability or hard action
+now restarts the visible timer from the actual proc. Trigger recognition no
+longer depends on a transformed crafted ability ID, and the applied Contingency
+effect provides an authoritative fallback when the action-slot event is vague.
+
+1.0.2 finalizes each of CurvedHUD's six native LibVotans settings pages once,
+restoring every selectable settings page while retaining batched registration.
+The library's console list is rebuilt six times rather than once per control,
+avoiding both missing menus and the former rapid-character startup spike.
+
+1.0.1 batches registration of CurvedHUD's six native LibVotans settings pages.
+The library's console section list is now rebuilt once after every CurvedHUD
+control has been added, instead of once per control. This removes the quadratic
+startup spike that could exhaust ESO's shared 1000 ms add-on CPU budget during
+rapid character changes and make whichever add-on ran next appear responsible.
+The library method is restored even if page construction encounters an error.
+
+1.0.1 corrects Ulfsild's Contingency's two-phase timer. The initial cast starts
+the priming countdown, and the next action-slot ability restarts the countdown
+from the moment the runes actually trigger. A guarded Magicka/Stamina-spend
+fallback captures dodge rolls and other resource actions while ignoring the
+priming cast's own delayed power event. This no longer relies on ESO returning a
+nonzero cost for Scribing or transformed ability IDs.
+
+1.0.0 divides the native LibVotans settings into focused selectable pages for
+Global HUD, Class Timers, Weapon Timers, Guild & Other Timers, Armor Timers and
+Item Set Timers. Every page clearly identifies whether its options are global
+or character-specific. All classes remain together on the Class Timers page,
+separated by blue class headings. This keeps the stable native console settings
+path without restoring LibAddonMenu's costly console conversion step.
+
+0.9.22 restores blue section headings in the native LibVotans settings menu and
+moves HUD alignment, scale, spacing and appearance controls into their own
+section instead of the Quest & Golden Pursuits section. Quest reduction now
+includes the assisted quest title/header as well as objectives and details, and
+refreshes late-created tracker controls while in combat or an instance.
+Ulfsild's Contingency now begins with its priming window and restarts the timer
+when the next qualifying resource-costing ability or dodge actually triggers it.
+
+0.9.21 restores Encase, Vibrant Shroud and Shattering Spines tracking after the
+periodic-tick safety changes. Direct action-slot and filtered combat events now
+share one cast dispatcher, so legacy special cases cannot be skipped while the
+table-driven class, weapon, guild, scribing and armor/set paths use a different
+route. Morph-aware icons and API-reported full durations remain preserved.
+
+0.9.20 bypasses LibAddonMenu's costly console-to-LibVotans option converter
+when LibVotans is installed. CurvedHUD now registers directly with LibVotans,
+while LibAddonMenu remains the fallback provider. This removes the recursive
+conversion path shown in the CPU-budget traceback. Infrequent out-of-combat
+memory maintenance also prunes expired set-effect records and performs a tiny
+incremental garbage-collection step without forcing a full global purge.
 
 0.9.19 restores Turning Tide's complete state cycle. Flowing Water displays the
 green READY state, consuming it early with the activating Bash begins the full

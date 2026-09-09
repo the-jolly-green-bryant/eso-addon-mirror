@@ -45,12 +45,7 @@ local WORLD_GLOW_HIDE_SCENES = {
     "gameMenuInGame", "inventory", "character", "skills", "championPerks",
     "journal", "collectionsBook", "groupMenu", "contacts", "guildHome",
     "mailInbox", "bank", "store", "tradingHouse", "crafting", "settings",
-    "worldMap", "gamepad_worldMap", "gamepad_inventory_root",
-    "gamepad_character_root", "gamepad_skills_root", "gamepad_journal_root",
-    "gamepad_collections_book", "gamepad_group_root", "gamepad_options_root",
-    "gamepad_player_menu", "gamepad_main_menu", "gamepad_championPerks_root",
-    "gamepad_store", "gamepad_banking", "gamepad_trading_house",
-    "gamepad_mail_manager", "gamepad_guild_hub", "gamepad_contacts_root",
+    "worldMap",
 }
 
 local function safe(fn, fallback, ...)
@@ -204,6 +199,44 @@ function F:IsWorldGlowSuppressed()
         end
     end
     return false
+end
+
+
+function F:CompactLearnedLocationData()
+    if not EPC.saved or type(EPC.saved.dungeonChestLocations) ~= "table" then return 0 end
+    local removed = 0
+    for zoneKey, bucket in pairs(EPC.saved.dungeonChestLocations) do
+        if type(bucket) == "table" then
+            local compact = {}
+            for i = 1, #bucket do
+                local entry = bucket[i]
+                local x = type(entry) == "table" and tonumber(entry.x) or nil
+                local z = type(entry) == "table" and tonumber(entry.z) or nil
+                local kind = type(entry) == "table" and tostring(entry.kind or "") or ""
+                if x and z and (kind == "CHEST" or kind == "SACK") then
+                    local duplicate = nil
+                    for j = 1, #compact do
+                        local other = compact[j]
+                        if other.kind == kind and distance2Dcm(other.x, other.z, x, z) <= DEDUPE_DISTANCE_CM then
+                            duplicate = other
+                            break
+                        end
+                    end
+                    if duplicate then
+                        if (not duplicate.name or duplicate.name == "") and entry.name and entry.name ~= "" then duplicate.name = entry.name end
+                        removed = removed + 1
+                    else
+                        compact[#compact + 1] = entry
+                    end
+                else
+                    removed = removed + 1
+                end
+            end
+            EPC.saved.dungeonChestLocations[zoneKey] = compact
+        end
+    end
+    self.lastDataCompactionRemoved = removed
+    return removed
 end
 
 function F:GetZoneBucket(zoneId, create)
@@ -857,6 +890,10 @@ function F:Initialize()
 
     if EPC.saved then
         EPC.saved.dungeonChestLocations = EPC.saved.dungeonChestLocations or {}
+        if (tonumber(EPC.saved.dungeonChestDataCompactionVersion) or 0) < 1 then
+            self:CompactLearnedLocationData()
+            EPC.saved.dungeonChestDataCompactionVersion = 1
+        end
         if EPC.saved.dungeonChestColor == nil then EPC.saved.dungeonChestColor = { r = DEFAULT_CHEST_COLOR.r, g = DEFAULT_CHEST_COLOR.g, b = DEFAULT_CHEST_COLOR.b } end
         if EPC.saved.dungeonChestSackColor == nil then EPC.saved.dungeonChestSackColor = { r = DEFAULT_SACK_COLOR.r, g = DEFAULT_SACK_COLOR.g, b = DEFAULT_SACK_COLOR.b } end
         if EPC.saved.dungeonChestGlowOpacity == nil then EPC.saved.dungeonChestGlowOpacity = 0.60 end

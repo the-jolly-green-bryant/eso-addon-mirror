@@ -1,6 +1,6 @@
 ## Title: Yudo's Inventory Processor
 ## Author: YudoAn
-## Version: 1.11.4
+## Version: 1.12.0
 ## APIVersion: 101050
 ## SavedVariables: YudosInventoryProcessorVars
 ## DependsOn: LibAddonMenu-2.0>=43

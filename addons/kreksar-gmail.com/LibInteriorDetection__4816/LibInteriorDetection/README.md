@@ -29,10 +29,10 @@ Zone lookups are keyed entirely by real, language-independent [b]zoneId[/b] — 
 [*][b]Per-zone interior/exterior defaults[/b] for all 1,053 zoneIds LibZoneTemp v2.3.15 tracks — overland zones, delves, dungeons, trials, and player houses
 [*][b]Live door-transition toggle[/b] for ordinary building interiors with no zone/map change, ported from the DoorDeltaTest diagnostic addon
 [*][b]Map-teleport check[/b] that resets to the zone default when the player fast-travels to a different part of the same zone — covering wayshrine travel, player-house map travel, and a general world-map-open/close fallback for cases where the specific triggering function isn't known
-[*][b]Logout/login persistence[/b] — a player who logs out inside an interior pocket of an exterior-default zone and logs back into the same spot stays flagged interior
+[*][b]Logout/login persistence[/b] — normally, a player who logs out inside an interior pocket of an exterior-default zone and logs back into the same spot stays flagged interior; a known gap exists for some cases after a long offline gap specifically (see Design Notes) — `/lid debug flip` is available as a manual workaround
 [*][b]Settings panel[/b] — configurable door-check delay, door-transition distance threshold, per-zone interior/exterior overrides
 [*][b]Debug-only on-screen HUD[/b] showing live INDOORS/OUTDOORS status, off by default
-[*][b]Slash commands[/b] — [code]/amioutside[/code], [code]/lid debug hud on|off[/code]
+[*][b]Slash commands[/b] — [code]/amioutside[/code], [code]/lid debug hud on|off[/code], [code]/lid debug saved[/code], [code]/lid debug flip[/code]
 [/list]
 
 [size=5][b]Dependencies[/b][/size]
@@ -82,6 +82,8 @@ local isInterior, isKnown = LibInteriorDetection.IsZoneInterior(zoneId)
 [list]
 [*][b]/amioutside[/b] — prints the live state as true/false, plus a diagnostic line with zone name, zoneId, the zone's static default, the current door-delta threshold, and the current door-check delay
 [*][b]/lid debug hud on|off[/b] — shows/hides the on-screen debug HUD. Off by default; state persists across relogs (account-wide) but is deliberately not exposed in the settings menu
+[*][b]/lid debug saved[/b] — dumps saved-vs-current raw zoneId/position/state, for diagnosing a failed restore-on-login
+[*][b]/lid debug flip[/b] — inverts the live indoor/outdoor flag for the current session only (not persisted); a manual workaround if the automatic detection ever gets it wrong, overridden normally by the next real zone change, door interaction, or map teleport
 [/list]
 
 [size=5][b]Settings Panel[/b][/size]
@@ -149,6 +151,8 @@ Final split: [b]671 interior / 382 exterior[/b].
 [b]How is per-character persistence actually implemented?[/b] Via the same `ZO_SavedVars:NewAccountWide` call already used for the account-wide settings table, but with an explicit namespace string combining `GetWorldName()` (server) and `GetCurrentCharacterId()` (character) — `"<server>_<characterId>"`. An earlier version (0.5.0–0.6.0) used `ZO_SavedVars:NewCharacterIdSettings` instead, passed `GetWorldName()` as its namespace by analogy with the account-wide call; that function's exact parameter semantics were never independently confirmed, and it's the likely reason per-character persistence was reported not working — plausibly leaving data scoped by server only, shared across every character on it. The current construction avoids relying on that function's assumed behavior, using only individually well-established primitives instead.
 
 [b]Why 50 raw units (0.5m) as a position-match tolerance again, after saying it didn't work?[/b] Position-matching across a genuine relogin was abandoned in 0.6.7 for the reason still true today — ESO does not reliably restore exact raw coordinates across a real login, confirmed in testing (positions differed by tens of meters despite no movement). But 0.6.7's `initial`-only design turned out not to cover `/reloadui`: testing confirmed `initial` reads **false** for a reload, not true. A reload is the opposite case from a login, though — the player never leaves the 3D world, so position genuinely should be exact or near-exact if unmoved. 0.6.9 combines both signals: restore if the saved zoneId matches AND EITHER `initial` is true (trust the saved flag, ignore position — a real login) OR the position is within this tolerance (a reload that provably didn't move). A same-zone teleport fails both simultaneously — not a login, and genuinely far from the saved spot — so it still correctly resets to the zone default instead of carrying over a stale flag.
+
+[b]Known gap: restore-on-login can fail for an interior sub-space of an exterior zone, specifically after a long offline gap.[/b] Reported directly: a player logged out inside an interior pocket of an otherwise-exterior zone, was offline for several hours, and logged back in showing as exterior rather than interior. The restore in `OnPlayerActivated` gates entirely on the saved raw zoneId matching the current one when `initial` is true — position isn't even checked in that branch, per the design above. If that raw-zoneId match fails for this specific case (not confirmed exactly why — possibly something about how ESO re-establishes a player's position in a sub-space-style interior specifically, as opposed to a fully separate zone, after an extended absence), the fallback is the zone's own default classification. For an interior pocket that shares its LibZone-scheme zoneId with its exterior parent (plausible given the established raw-vs-LibZone-scheme zoneId divergence this whole project has repeatedly run into), that default reads exterior, with no other signal to catch it — unlike a true separate interior zone (a dungeon, a player house), which would still classify correctly from its own zone default even if the restore itself fails. `/lid debug saved` (added in 1.1.0) now surfaces the saved-vs-current raw zoneId directly so this can be confirmed with real data next time, rather than guessed at; `/lid debug flip` provides an immediate manual workaround in the meantime.
 
 [size=5][b]For Addon Authors[/b][/size]
 

@@ -6,16 +6,13 @@ EASLoreLibrary:RegisterModule("markerPin", MarkerPin)
 
 --[[
 Tracks a single "tracked book" (picked via the Lore Library's "Show On Map"
-context menu/keybind - see UI/EASLoreLibraryMenu.lua and
-UI/EASLoreLibraryGamepadMenu.lua) and draws it on the 2D world map using the
+context menu/keybind - see UI/EASLoreLibraryMenu.lua) and uses the
 game's own custom map pin API (ZO_WorldMapPins_Manager:AddCustomPin) instead
 of our own composite-based PinController. That gets the tracked-book pin
-native mouse and gamepad tooltips (the book's title) and native gamepad
 reticle magnetism/interact-keybind for free, at the cost of not showing on
 third-party minimaps the way LOREBOOK/EIDETICBOOK pins do (those stay on the
 old system - see MapPins.lua/MapPinController.lua).
 
-Left-clicking (mouse) or interacting with (gamepad) a tracked-book pin
 untracks it; so does discovering the book (see the "BookRemoved" listener
 below).
 
@@ -41,33 +38,17 @@ function MarkerPin:Initialize()
 		nil,
 		EASLoreLibrary.mapPinLayout[EASLoreLibrary.MARKER],
 		{
-			-- the gamepad and keyboard tooltip objects ZO_WorldMap_GetTooltipForMode
-			-- returns are different types (ZO_MapLocationTooltip_Gamepad vs
-			-- InformationTooltip) with unrelated APIs: the keyboard one takes
-			-- plain :AddLine calls, while the gamepad one has no :AddLine at
-			-- all and instead needs content laid out into its .tooltip
-			-- sub-object via ZO_MapInformationTooltip_Gamepad_Mixin's section
-			-- helpers (see maptooltips.lua). Reuses the same styles and
+			-- Use the standard world-map information tooltip so the tracked-book
+			-- marker follows the same keyboard/mouse presentation as native pins.
 			-- "Press <<1>> to ..." keybind-line format the base game's own
 			-- delve/wayshrine pin tooltips use (AppendDelveInfo,
 			-- AppendWayshrineTooltip) instead of the small generic content
 			-- label style, so the title/hint read at the same size as any
-			-- other pin's gamepad tooltip.
 			creator = function(pin)
 				local tooltip = ZO_WorldMap_GetTooltipForMode(ZO_MAP_TOOLTIP_MODE.INFORMATION)
 				local title = EASLoreLibrary.GetBookTitle(self.bookId)
-
-				if IsInGamepadPreferredMode() then
-					local section = tooltip.tooltip:AcquireSection(tooltip.tooltip:GetStyle("delveMainSection"))
-					if title then
-						tooltip:LayoutStringLine(section, title, tooltip.tooltip:GetStyle("delveTooltipName"))
-					end
-					tooltip:LayoutKeybindStringLine(section, "UI_SHORTCUT_PRIMARY", "Press <<1>> to " .. STOP_TRACKING_TEXT, tooltip.tooltip:GetStyle("delveSkyshardHint"))
-					tooltip.tooltip:AddSection(section)
-				else
-					if title then
-						tooltip:AddLine(title, "", ZO_TOOLTIP_DEFAULT_COLOR:UnpackRGB())
-					end
+				if tooltip and tooltip.AddLine then
+					if title then tooltip:AddLine(title, "", ZO_TOOLTIP_DEFAULT_COLOR:UnpackRGB()) end
 					tooltip:AddLine("Left-click to " .. STOP_TRACKING_TEXT, "", ZO_HIGHLIGHT_TEXT:UnpackRGB())
 				end
 			end,
@@ -136,14 +117,12 @@ end
 -- just the one the player picked from the menu
 function MarkerPin:Track(bookId, locations)
 	self.bookId = bookId
-	self.bookId = bookId
 	self.locations = locations
 	ZO_WorldMap_GetPinManager():RefreshCustomPins(self.pinType)
 	self:FireCallbacks("LocationsChanged", locations, bookId)
 end
 
 function MarkerPin:Untrack()
-	self.bookId = nil
 	self.bookId = nil
 	self.locations = {}
 	ZO_WorldMap_GetPinManager():RefreshCustomPins(self.pinType)

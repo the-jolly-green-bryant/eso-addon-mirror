@@ -11,10 +11,7 @@ It may create UI controls, listen for ESO UI events, calculate local scores/dist
 
 COMBAT / ACTION-BAR BOUNDARIES
 ------------------------------
-Boss Mechanics Coach, Smart Combat Advisor, Dual Action Bar HUD, Ability Overlays, merged combat-reaction BLOCK warnings, unit frames, combat reports, stack/timer displays, and recommendation glows are guidance/display systems. They do not cast abilities, block, dodge, interrupt, target, move, weave, weapon-swap, use quickslots, or synthesize keyboard/mouse/controller gameplay input.
 
-Controller glyph features only change displayed keybind/glyph art. Force PlayStation may redirect loaded Xbox/XInput UI texture paths to ESO's built-in PlayStation art; it does not alter controller bindings or input.
-Hybrid Desktop Navigation responds only to the player's explicit menu inputs while ESO UI mode is open: controller directions move a focus target and the controller Primary button invokes the focused keyboard-style UI control's native click handler. Mouse/keyboard input hands control back immediately. It does not automate gameplay actions, move the character, cast/block/dodge, alter bindings, or change ESO's preferred UI/input settings.
 
 PLAYER-OPERATED TRAVEL
 ----------------------
@@ -34,7 +31,6 @@ Turbo Learner opens as a top-menu preview page and starts only after the player 
 
 ALCHEMY POTION / POISON MAKER
 ------------------------------
-The Alchemy helper analyzes owned materials and can auto-slot a player-selected valid recipe through ESO's crafting UI/controller. Optional Auto Craft is OFF by default and starts only after the player explicitly chooses a ready mixture/auto-craft action. ESO's crafting APIs and station state remain authoritative.
 
 INVENTORY / LOOT BOUNDARIES
 ---------------------------

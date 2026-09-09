@@ -18,7 +18,8 @@ local BEAM_SOURCE_TEXTURE = "EsoUI/Art/Miscellaneous/lensflare_star_256.dds"
 -- soft center glow while also fading at the top and bottom so the beam
 -- hugs the character instead of looking like a hard-capped rectangle.
 local MAX_GROUP_MEMBERS = 12
-local UPDATE_MS = 900
+local UPDATE_MS = 500
+local FOLLOW_UPDATE_MS = 33
 local WORLD_REFRESH_MS = 600
 local POSITION_GRACE_MS = 2000
 local BEAM_CENTER_Y_CM = 170
@@ -441,7 +442,11 @@ function T:CreateParticle(index)
 end
 
 function T:HideParticle(particle)
-    if particle and particle.texture then particle.texture:SetHidden(true) end
+    if particle and particle.texture then
+        particle.texture:SetHidden(true)
+        particle.unitTag = nil
+        particle.layerIndex = nil
+    end
 end
 
 function T:HideAllParticles()
@@ -562,6 +567,60 @@ function T:PositionParticle(particle, unitTag, layerIndex)
     return true, "ok"
 end
 
+-- Fast positional follow path.  The full RefreshParticles pass handles membership,
+-- colors, size, death state, visibility, and texture state.  This lightweight pass
+-- only moves already-visible particles so the glow stays attached while units run.
+-- World position/conversion and camera values are calculated once per unit/pass,
+-- rather than once per particle layer, keeping the 30 Hz follow path inexpensive.
+function T:FollowVisibleParticles()
+    if not self:LightsEnabled() or not self.particles or not self.particleWindow then return end
+    if type(WorldPositionToGuiRender3DPosition) ~= "function" then return end
+
+    local baseX, baseY, baseZ = 0, 0, 0
+    if type(self.particleWindow.Get3DRenderSpaceOrigin) == "function" then
+        local ox, oy, oz = safe(self.particleWindow.Get3DRenderSpaceOrigin, nil, self.particleWindow)
+        baseX, baseY, baseZ = tonumber(ox) or 0, tonumber(oy) or 0, tonumber(oz) or 0
+        self.renderOriginX, self.renderOriginY, self.renderOriginZ = baseX, baseY, baseZ
+    end
+
+    local heading = self:GetCameraHeading()
+    local pitch = BASE_PITCH + math.abs(self:GetCameraForwardY()) * BASE_PITCH
+    local unitPositions = {}
+
+    for _, particle in ipairs(self.particles) do
+        local tex = particle and particle.texture
+        local unitTag = particle and particle.unitTag
+        if tex and unitTag and not tex:IsHidden() then
+            local pos = unitPositions[unitTag]
+            if pos == nil then
+                local zoneId, rawX, rawY, rawZ = self:GetRawWorldPosition(unitTag)
+                if rawX ~= nil then
+                    local gx, gy, gz = safe(WorldPositionToGuiRender3DPosition, nil,
+                        rawX, rawY + BEAM_CENTER_Y_CM, rawZ)
+                    gx, gy, gz = tonumber(gx), tonumber(gy), tonumber(gz)
+                    if gx ~= nil and gy ~= nil and gz ~= nil then
+                        pos = { gx - baseX, gy - baseY, gz - baseZ }
+                    else
+                        pos = false
+                    end
+                else
+                    pos = false
+                end
+                unitPositions[unitTag] = pos
+            end
+
+            if pos then
+                if type(tex.Set3DRenderSpaceOrigin) == "function" then
+                    tex:Set3DRenderSpaceOrigin(pos[1], pos[2], pos[3])
+                end
+                if type(tex.Set3DRenderSpaceOrientation) == "function" then
+                    tex:Set3DRenderSpaceOrientation(pitch, heading, 0)
+                end
+            end
+        end
+    end
+end
+
 function T:RefreshParticles()
     if not self:LightsEnabled() then
         self.lastStatus = "Team beam disabled in settings."
@@ -620,6 +679,10 @@ function T:RefreshParticles()
         for layer = 1, LAYERS_PER_UNIT do
             used = used + 1
             local p = self:CreateParticle(used)
+            if p then
+                p.unitTag = unitTag
+                p.layerIndex = layer
+            end
             local ok, reason = self:PositionParticle(p, unitTag, layer)
             if ok then
                 visible = visible + 1
@@ -733,6 +796,10 @@ function T:Initialize()
     local prefix = (EPC.name or "EAS") .. "_TeamVisibility"
     EVENT_MANAGER:RegisterForUpdate(prefix .. "_Particles", UPDATE_MS, function()
         self:RefreshParticles()
+    end)
+
+    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Follow", FOLLOW_UPDATE_MS, function()
+        self:FollowVisibleParticles()
     end)
 
     if EVENT_PLAYER_ACTIVATED then

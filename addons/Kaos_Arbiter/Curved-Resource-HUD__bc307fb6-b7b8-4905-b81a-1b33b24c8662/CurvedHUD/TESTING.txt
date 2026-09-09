@@ -1,4 +1,4 @@
-CURVED RESOURCE HUD 0.9.19 RELEASE CHECKLIST
+CURVED RESOURCE HUD 1.0.7 RELEASE CHECKLIST
 
 1. In Bethesda.net, set required dependencies to:
    - LibAddonMenu-2.0
@@ -8,7 +8,108 @@ CURVED RESOURCE HUD 0.9.19 RELEASE CHECKLIST
 2. Install/update, enable CurvedHUD, then reload the UI or relog.
 
 3. Confirm chat prints:
-   [CurvedHUD] Loaded 0.9.19; HUD, shield, and trackers created
+   [CurvedHUD] Loaded 1.0.7; HUD, shield, and trackers created
+
+1.0.7 normal-load registration checklist:
+- Fully close ESO before installing, then start a fresh session.
+- Confirm CurvedHUD settings are available immediately after login without a
+  delayed menu insertion roughly 12 seconds after player activation.
+- Cycle through at least 10 characters and verify no shared 1000 ms error.
+
+1.0.6 repeated-character initialization checklist:
+- Fully close and restart ESO once after installing to clear old library state.
+- Log through at least 10 characters without reloading the UI manually.
+- Confirm no CPU-budget traceback appears in LibVotans, LibAddonMenu,
+  Fancy Action Bar+, Artaeum Group Tool, or whichever add-on initializes next.
+- Confirm CurvedHUD's six settings pages appear once and contain no duplicates.
+
+1.0.5 Contingency bar-swap checklist:
+- Slot Contingency on only one weapon bar and cast it.
+- Swap away before triggering it, then use a qualifying action and confirm the
+  timer changes from the priming window to the generated effect duration.
+- Swap back, prime and trigger repeatedly, confirming every cycle is detected.
+
+1.0.4 direct Contingency-effect checklist:
+- Test at least two Contingency script combinations with different durations.
+- Confirm the initial priming countdown appears after casting Contingency.
+- Trigger it after several seconds and confirm the timer changes to the actual
+  generated effect's full API-reported duration rather than continuing prime.
+- With debug enabled, confirm chat reports the triggered effect ID and duration.
+
+1.0.3 Ulfsild's Contingency proc checklist:
+- Cast Contingency and confirm its initial priming countdown begins.
+- Wait several seconds, use another ability, and confirm the visible timer
+  immediately restarts at the full duration from that second action.
+- Repeat using a dodge roll or another qualifying resource-costing hard action.
+- Confirm the priming cast's own effect event does not cause a false restart.
+
+1.0.2 settings visibility and rapid-character checklist:
+- Confirm all six CurvedHUD pages appear in the LibVotans add-on settings list.
+- Open every page and confirm its blue headings and controls are populated.
+- Swap through at least 8-10 characters at roughly crafting-writ speed.
+- Confirm no 1000 ms CPU-budget error names SetupSections,
+  RefreshAfterSettingsChange, FancyHideKeys, or another add-on loaded afterward.
+- Open all six CurvedHUD settings pages after the final swap and confirm every
+  page, blue heading, and control is present and responds normally.
+- Change one setting and confirm the native settings page refreshes normally;
+  CurvedHUD must not leave LibVotans' refresh method suppressed.
+
+1.0.1 Ulfsild's Contingency two-phase checklist:
+- Cast Contingency and confirm the initial priming countdown starts immediately.
+- Wait several seconds, cast a normal ability, and confirm the same tracker
+  restarts at its full configured duration from the actual trigger moment.
+- Repeat with a rapid animation-cancelled follow-up ability; the reset must not
+  depend on ESO reporting a nonzero ability cost.
+- Prime again, wait at least 0.6 seconds, dodge roll, and confirm the resource-
+  spend fallback restarts the triggered timer exactly once.
+- Let the priming window expire without an action and confirm a later unrelated
+  resource change does not restart the expired tracker.
+
+1.0.0 native settings-page checklist:
+- Confirm six CurvedHUD pages are selectable: Global HUD, Class Timers, Weapon
+  Timers, Guild & Other Timers, Armor Timers, and Item Set Timers.
+- Confirm Global HUD begins with GLOBAL SETTINGS - SHARED BY ALL CHARACTERS.
+- Confirm every other page begins with CHARACTER-SPECIFIC SETTINGS.
+- Confirm every class appears on the single Class Timers page beneath its own
+  blue heading and that no controls spill into a preceding section.
+- Confirm the Global HUD alignment controls remain below HUD ALIGNMENT, SCALE &
+  APPEARANCE and outside Quest & Golden Pursuits Trackers.
+- Repeat the rapid-character startup test and confirm no LAM-to-LibVotans
+  conversion traceback or 1000 ms CPU-budget error returns.
+
+0.9.22 menu and external-tracker checklist:
+- Open the native LibVotans menu and confirm every section heading is blue.
+- Confirm HUD layout, scale, resource spacing, timer spacing, width, opacity and
+  font controls appear beneath HUD ALIGNMENT, SCALE & APPEARANCE, not beneath Quest &
+  Golden Pursuits Trackers.
+- Set reduced tracker opacity to 0 and enter Sunspire or another trial. Confirm
+  the quest title, quest icon, objectives/details and Golden Pursuits all hide.
+- Repeat with partial opacity and confirm the complete tracker dims uniformly.
+- Leave the instance and confirm all tracker elements restore their prior alpha.
+- Prime Ulfsild's Contingency and confirm its first countdown starts. Cast a
+  resource-costing skill before it expires and confirm the timer restarts from
+  the trigger moment. Repeat with a dodge roll and confirm the same behavior.
+
+0.9.21 cast-routing regression checklist:
+- Enable and cast Encase, Vibrant Shroud and Shattering Spines individually.
+  Each must start/restart its complete timer and display the equipped morph icon.
+- Retest one enabled skill from every class plus each weapon, guild, armor and
+  scribing section. Direct casts must start once and use the complete duration.
+- Let Stampede, Wall of Elements, Volley and other DoTs expire naturally. Their
+  final periodic tick must not restart the timer.
+- Reapply Powerful Assault and other enabled timed sets multiple times; confirm
+  each new application starts normally and one-bar effects survive bar swaps.
+- Verify Turning Tide still moves through WAIT, READY and cooldown.
+
+0.9.20 console-provider and memory checklist:
+- With both dependencies enabled, wait 12 seconds after login and open CurvedHUD
+  settings. Confirm the native LibVotans menu is present and functional.
+- Repeat the rapid 8-10 character crafting rotation. Confirm no traceback enters
+  LAMtoHASDropdownConverter or convertLamOptionsToHasTable.
+- Remain out of combat for over 60 seconds and confirm there is no visible hitch
+  when incremental memory maintenance runs.
+- Exercise several item-set timers, allow them to expire, then use /curvedhud
+  memory and confirm memory does not continually climb across repeated cycles.
 
 0.9.19 Turning Tide and icon-row checklist:
 - Equip at least three Turning Tide pieces and confirm the tracker remains

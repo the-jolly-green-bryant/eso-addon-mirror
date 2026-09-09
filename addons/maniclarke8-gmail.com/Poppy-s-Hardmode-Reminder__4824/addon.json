@@ -1,0 +1,39 @@
+{
+  "archive_error": "ESOUI returned an empty response",
+  "archive_path": "addons/maniclarke8-gmail.com/Poppy-s-Hardmode-Reminder__4824",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archive_status": "unavailable",
+  "archived": false,
+  "author": "maniclarke8@gmail.com",
+  "canonical_id": "esoui:4824",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4824",
+  "deleted": false,
+  "directories": [
+    "PoppysHardmodeReminder"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4824/",
+  "fingerprint": "16d76889834914d3063fbbc6df021524e9c89152b5b1a7ae3139691038d2f20f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17335.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4824",
+  "source_url": "https://www.esoui.com/downloads/info4824-PoppysHardmodeReminder.html",
+  "stats": {
+    "downloads": 2,
+    "favorites": 1,
+    "monthly_downloads": 0
+  },
+  "title": "Poppy's Hardmode Reminder",
+  "updated_at": 1788938540000,
+  "version": "1.0"
+}

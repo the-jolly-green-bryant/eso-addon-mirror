@@ -163,16 +163,17 @@ local strings = {
     [BATTLESCROLLS_SETTINGS_STORAGE_SIZE_YOLO] = "Qu'est-ce qui pourrait mal tourner?",
     -- Storage tooltip
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_DESC] = "Combien d'historique de combat garder. Quand la limite est atteinte, les zones les plus anciennes non verrouillées sont automatiquement supprimées. Vous pouvez verrouiller des zones individuelles pour les protéger du nettoyage.",
-    [BATTLESCROLLS_SETTINGS_STORAGE_TT_NOTE] = "Cette limite s'applique uniquement à l'historique sauvegardé. L'addon utilise aussi de la mémoire pour le combat en cours et l'interface, donc l'utilisation totale sera plus élevée.",
+    [BATTLESCROLLS_SETTINGS_STORAGE_TT_NOTE] = "Cette limite s'applique uniquement aux données sauvegardées : combats, builds et réglages. L'addon utilise aussi de la mémoire pour le combat en cours et l'interface, donc l'utilisation totale sera plus élevée.",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_CURRENT] = "Historique: <<1>> Mo sur <<2>> Mo (<<3>>%)",
+    [BATTLESCROLLS_SETTINGS_STORAGE_TT_PROTECTED] = "Les combats verrouillés, les builds et les réglages dépassent à eux seuls la limite : le nettoyage ne peut pas descendre en dessous.",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_PRESETS] = "Préréglages (épreuve complète ~0,3 Mo, donjon ~0,15 Mo, une soirée de prog ~1 Mo):",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_XS] = "  Très petit: 5 Mo - seulement les parchemins les plus récents",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_SMALL] = "  Petit: 8 Mo - une belle pile de parchemins",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_MEDIUM] = "  Moyen: 12 Mo - un journal bien tenu",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_LARGE] = "  Grand: 18 Mo - une bibliothèque personnelle",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_XL] = "  Très grand: 25 Mo - de grandes archives",
-    [BATTLESCROLLS_SETTINGS_STORAGE_TT_CAUTION] = "  Attention: 40 Mo - vous aimez vraiment les données",
-    [BATTLESCROLLS_SETTINGS_STORAGE_TT_YOLO] = "  Qu'est-ce qui pourrait mal tourner?: 60 Mo - vivre dangereusement",
+    [BATTLESCROLLS_SETTINGS_STORAGE_TT_CAUTION] = "  Attention: 35 Mo - vous aimez vraiment les données",
+    [BATTLESCROLLS_SETTINGS_STORAGE_TT_YOLO] = "  Qu'est-ce qui pourrait mal tourner?: 50 Mo - vous l'aurez bien cherché",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_WARNING] = "À propos des limites de mémoire ESO: tous les addons partagent 100 Mo. À 70 Mo, ESO affiche un avertissement. À 100 Mo, l'interface redémarre et tout est désactivé. Si vous utilisez beaucoup d'addons, choisissez un préréglage plus petit. Astuce: tapez /addonmemdisplay dans le chat pour voir un suivi en temps réel.",
 
     -------------------------
@@ -1130,3 +1131,6 @@ SafeAddString(BATTLESCROLLS_MEMLAB_DISCARD_REQUIRED, "Chargez des données de te
 SafeAddString(BATTLESCROLLS_MEMLAB_USAGE_MIRROR, "/bsmemlab seed mirror; discard; census live; trace", 1)
 SafeAddString(BATTLESCROLLS_MEMLAB_LIVE_COUNTS, "Dernière active %d (1=oui); A%d I%d N%d", 1)
 SafeAddString(BATTLESCROLLS_MEMLAB_LIVE_BYTES, "Scribe en plus L%.2f K%.2f", 1)
+SafeAddString(BATTLESCROLLS_MEMLAB_CALIB_HEADER, "Calib: dG/dH par classe, dernière moitié de %d MiB", 1)
+SafeAddString(BATTLESCROLLS_MEMLAB_CALIB_ROW, "%s n%d dH%.1f s%s m%s p%s G%s/%s/%s", 1)
+SafeAddString(BATTLESCROLLS_MEMLAB_USAGE_CALIB, "/bsmemlab calib [4..32] [class] (MiB per class)", 1)

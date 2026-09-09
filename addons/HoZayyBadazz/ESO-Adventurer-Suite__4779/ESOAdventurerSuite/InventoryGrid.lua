@@ -101,6 +101,8 @@ end
 local function hideTooltip()
     if InformationTooltip and type(ClearTooltip) == "function" then pcall(ClearTooltip, InformationTooltip) end
     if ItemTooltip and type(ClearTooltip) == "function" then pcall(ClearTooltip, ItemTooltip) end
+    if ComparativeTooltip1 and type(ClearTooltip) == "function" then pcall(ClearTooltip, ComparativeTooltip1) end
+    if ComparativeTooltip2 and type(ClearTooltip) == "function" then pcall(ClearTooltip, ComparativeTooltip2) end
 end
 
 
@@ -230,10 +232,14 @@ function EASInventoryGrid:CreateCell(index)
     cell.loadoutMarker = loadoutMarker
 
     cell:SetHandler("OnMouseEnter", function(control)
+        EASInventoryGrid:SetHoveredCell(control)
         if control.bg then
             local r, g, b = control.qualityR or 0.35, control.qualityG or 0.42, control.qualityB or 0.50
             control.bg:SetCenterColor(0.10 + r * 0.22, 0.11 + g * 0.22, 0.13 + b * 0.22, 1)
         end
+
+        -- Do not reopen gear/comparison tips behind an active context submenu.
+        if ZO_Menu and not ZO_Menu:IsHidden() then return end
 
         -- Keep hover informational only. Calling ESO's full inventory-slot
         -- hover pipeline from an addon-created control can register stock
@@ -243,6 +249,7 @@ function EASInventoryGrid:CreateCell(index)
             if type(ItemTooltip.SetBagItem) == "function" then
                 pcall(ItemTooltip.SetBagItem, ItemTooltip, control.bagId, control.slotIndex)
             end
+            if EASInventoryGrid.ShowComparisonTooltips029365 then EASInventoryGrid:ShowComparisonTooltips029365(control) end
         elseif ItemTooltip and type(InitializeTooltip) == "function" and control.questItem then
             InitializeTooltip(ItemTooltip, control, RIGHT, 4, 0, LEFT)
             if control.toolIndex and type(ItemTooltip.SetQuestTool) == "function" then
@@ -256,6 +263,7 @@ function EASInventoryGrid:CreateCell(index)
         end
     end)
     cell:SetHandler("OnMouseExit", function(control)
+        EASInventoryGrid:ClearHoveredCell(control)
         if control.bg then
             setCellQuality(control, control.qualityR, control.qualityG, control.qualityB, control.qualityA)
         end
@@ -276,7 +284,7 @@ function EASInventoryGrid:CreateCell(index)
     cell:SetHandler("OnMouseUp", function(control, button, upInside)
         if not upInside or not control.slotType then return end
         if button == MOUSE_BUTTON_INDEX_RIGHT then
-            EASInventoryGrid:ShowSafeItemMenu(control)
+            EASInventoryGrid:ShowCompatibleItemMenu(control)
         end
     end)
 
@@ -470,14 +478,61 @@ function EASInventoryGrid:ArmQuickslotAssignment(slotNum, displayIndex)
     self:RefreshSpecialMode()
 end
 
+
+-- v0.29.474: Compatibility right-click menu. Suite grid cells should still
+-- expose ESO's complete inventory menu and every LibCustomMenu contribution
+-- from other addons. Build the normal menu first, then replace only protected
+-- stock actions that are unsafe when reached from an addon-created cell.
+function EASInventoryGrid:ShowCompatibleItemMenu(control)
+    if not control then return false end
+    local bag, slot = tonumber(control.bagId), tonumber(control.slotIndex)
+    if bag == nil or slot == nil or type(ZO_InventorySlot_ShowContextMenu) ~= "function" then
+        self:ShowSafeItemMenu(control)
+        return false
+    end
+
+    hideTooltip()
+    local ok = pcall(ZO_InventorySlot_ShowContextMenu, control)
+    if not ok then
+        self:ShowSafeItemMenu(control)
+        return false
+    end
+
+    -- The native builder is important here: LibCustomMenu callbacks registered
+    -- by FCOItemSaver, Inventory Insight, etc. are fired while it is built.
+    -- Do not clear/rebuild/re-anchor the resulting menu or those entries vanish.
+    local menu = rawget(_G, "ZO_Menu")
+    if menu and type(menu.items) == "table" then
+        local useText = menuText(rawget(_G, "SI_ITEM_ACTION_USE"), "Use")
+        local equipText = menuText(rawget(_G, "SI_ITEM_ACTION_EQUIP"), "Equip")
+        local destroyText = menuText(rawget(_G, "SI_ITEM_ACTION_DESTROY"), "Destroy")
+        for _, entry in ipairs(menu.items) do
+            local item = entry and entry.item
+            local label = item and item.nameLabel and tostring(item.nameLabel:GetText() or "") or ""
+            if item and label == useText then
+                item.OnSelect = function() self:SafeUseBagItem(control) end
+            elseif item and label == equipText then
+                item.OnSelect = function() self:SafeEquipBagItem(control) end
+            elseif item and label == destroyText then
+                item.OnSelect = function()
+                    if self.RequestDestroyItem029365 then self:RequestDestroyItem029365(control) end
+                end
+            end
+        end
+    end
+    return true
+end
+
 function EASInventoryGrid:ShowSafeItemMenu(control)
     if not control then return end
+    hideTooltip()
     if type(ClearMenu) == "function" then pcall(ClearMenu) end
 
     local added = 0
     local function add(label, callback)
-        if type(AddMenuItem) ~= "function" then return end
-        AddMenuItem(label, callback, MENU_ADD_OPTION_LABEL)
+        -- Never put addon callbacks in ESO's protected native menu control pool.
+        if type(AddCustomMenuItem) ~= "function" then return end
+        AddCustomMenuItem(label, callback, MENU_ADD_OPTION_LABEL)
         added = added + 1
     end
 
@@ -500,6 +555,25 @@ function EASInventoryGrid:ShowSafeItemMenu(control)
     else
         local bag, slot = tonumber(control.bagId), tonumber(control.slotIndex)
         if bag ~= nil and slot ~= nil then
+            if EASEnchantPlus and EASEnchantPlus.AddMenu(bag, slot) then added = added + 1 end
+
+            -- v0.29.473: Restore the normal item-specific actions that were lost
+            -- when Suite cells were moved off ESO's taint-prone native menu builder.
+            -- These callbacks stay Suite-owned and route protected functions through
+            -- CallSecureProtected via SafeUseBagItem / SafeEquipBagItem.
+            local usable, onlyFromActionSlot = safe(IsItemUsable, false, bag, slot)
+            if usable == true and onlyFromActionSlot ~= true then
+                add(menuText(rawget(_G, "SI_ITEM_ACTION_USE"), "Use"), function()
+                    self:SafeUseBagItem(control)
+                end)
+            end
+
+            if safe(IsEquipable, false, bag, slot) == true then
+                add(menuText(rawget(_G, "SI_ITEM_ACTION_EQUIP"), "Equip"), function()
+                    self:SafeEquipBagItem(control)
+                end)
+            end
+
             if self.quickslotAssignTarget then
                 local target = tonumber(self.quickslotAssignTarget)
                 local category = rawget(_G, "HOTBAR_CATEGORY_QUICKSLOT_WHEEL")
@@ -508,16 +582,8 @@ function EASInventoryGrid:ShowSafeItemMenu(control)
                 end
             end
 
-            local usable, onlyFromActionSlot = safe(IsItemUsable, false, bag, slot)
-            if usable == true and onlyFromActionSlot ~= true then
-                add(menuText(rawget(_G, "SI_ITEM_ACTION_USE"), "Use"), function() self:SafeUseBagItem(control); self:RefreshSoon() end)
-            end
-
-            local actorCategory = safe(GetItemActorCategory, rawget(_G, "GAMEPLAY_ACTOR_CATEGORY_PLAYER"), bag, slot)
-            local companionOkay = actorCategory ~= rawget(_G, "GAMEPLAY_ACTOR_CATEGORY_COMPANION") or safe(GetInteractionType, nil) == rawget(_G, "INTERACTION_COMPANION_MENU")
-            if companionOkay and safe(IsEquipable, false, bag, slot) == true and safe(IsItemPlayerLocked, false, bag, slot) ~= true then
-                add(menuText(rawget(_G, "SI_ITEM_ACTION_EQUIP"), "Equip"), function() self:SafeEquipBagItem(control) end)
-            end
+            -- Remaining Suite actions are kept in this addon-owned menu. Native ESO
+            -- protected callbacks are still not imported into the custom grid.
 
             if QUICKSLOT_KEYBOARD and type(QUICKSLOT_KEYBOARD.AreQuickSlotsShowing) == "function" and QUICKSLOT_KEYBOARD:AreQuickSlotsShowing() then
                 local category = rawget(_G, "HOTBAR_CATEGORY_QUICKSLOT_WHEEL")
@@ -557,6 +623,12 @@ function EASInventoryGrid:ShowSafeItemMenu(control)
                     self:RefreshSoon()
                 end)
             end
+
+            if safe(IsItemPlayerLocked, false, bag, slot) ~= true and (type(IsItemDestroyable) ~= "function" or safe(IsItemDestroyable, true, bag, slot) == true) then
+                add(menuText(rawget(_G, "SI_ITEM_ACTION_DESTROY"), "Destroy"), function()
+                    if self.RequestDestroyItem029365 then self:RequestDestroyItem029365(control) end
+                end)
+            end
         end
     end
 
@@ -566,11 +638,268 @@ function EASInventoryGrid:ShowSafeItemMenu(control)
     if type(ShowMenu) == "function" then pcall(ShowMenu, control) end
 end
 
+
+-- v0.29.364: Suite-created inventory cells are not part of ESO's native
+-- mouse-over keybind pipeline. Give the hovered cell its own PRIMARY (E) action
+-- without replacing ESO's protected inventory slot handlers.
+function EASInventoryGrid:GetPrimaryActionName(control)
+    if not control then return "Select" end
+    if self.quickslotAssignTarget and control.bagId ~= nil then return "Assign" end
+
+    local bag, slot = tonumber(control.bagId), tonumber(control.slotIndex)
+    if bag ~= nil and slot ~= nil then
+        local usable, onlyFromActionSlot = safe(IsItemUsable, false, bag, slot)
+        if usable == true and onlyFromActionSlot ~= true then
+            return menuText(rawget(_G, "SI_ITEM_ACTION_USE"), "Use")
+        end
+        if safe(IsEquipable, false, bag, slot) == true then
+            return menuText(rawget(_G, "SI_ITEM_ACTION_EQUIP"), "Equip")
+        end
+    end
+    return menuText(rawget(_G, "SI_ITEM_ACTION_MENU"), "Actions")
+end
+
+function EASInventoryGrid:ActivateHoveredCell()
+    local control = self.hoveredCell
+    if not self.visible or not control or control:IsHidden() then return end
+    if self.quickslotAssignTarget and control.bagId ~= nil and control.slotIndex ~= nil then
+        if self:AssignItemToSelectedQuickslot(control) then return end
+    end
+
+    local bag, slot = tonumber(control.bagId), tonumber(control.slotIndex)
+    if bag ~= nil and slot ~= nil then
+        local usable, onlyFromActionSlot = safe(IsItemUsable, false, bag, slot)
+        if usable == true and onlyFromActionSlot ~= true and self:SafeUseBagItem(control) then return end
+        if safe(IsEquipable, false, bag, slot) == true and self:SafeEquipBagItem(control) then return end
+    end
+
+    self:ShowSafeItemMenu(control)
+end
+
+function EASInventoryGrid:EnsurePrimaryKeybind029364()
+    if self.primaryKeybind029364 then return end
+    self.primaryKeybind029364 = {
+        alignment = rawget(_G, "KEYBIND_STRIP_ALIGN_CENTER") or 2,
+        name = function() return self:GetPrimaryActionName(self.hoveredCell) end,
+        keybind = "UI_SHORTCUT_PRIMARY",
+        callback = function() self:ActivateHoveredCell() end,
+        visible = function() return self.visible == true and self.hoveredCell ~= nil end,
+    }
+end
+
+function EASInventoryGrid:SetHoveredCell(control)
+    self.hoveredCell = control
+    self:EnsurePrimaryKeybind029364()
+    if KEYBIND_STRIP and type(KEYBIND_STRIP.AddKeybindButton) == "function" then
+        pcall(KEYBIND_STRIP.AddKeybindButton, KEYBIND_STRIP, self.primaryKeybind029364)
+        if type(KEYBIND_STRIP.UpdateKeybindButton) == "function" then
+            pcall(KEYBIND_STRIP.UpdateKeybindButton, KEYBIND_STRIP, self.primaryKeybind029364)
+        end
+    end
+end
+
+function EASInventoryGrid:ClearHoveredCell(control)
+    if control ~= nil and self.hoveredCell ~= control then return end
+    self.hoveredCell = nil
+    if self.primaryKeybind029364 and KEYBIND_STRIP and type(KEYBIND_STRIP.RemoveKeybindButton) == "function" then
+        pcall(KEYBIND_STRIP.RemoveKeybindButton, KEYBIND_STRIP, self.primaryKeybind029364)
+    end
+end
+
+-- Native interaction lists (bank/store/trading/deconstruction) must remain ESO
+-- controls so deposit/sell/buy/deconstruct primary actions stay secure. Categories
+-- are therefore injected as ordinary scroll-list headers instead of replacing the
+-- native list with Suite buttons.
+local EAS_NATIVE_CATEGORY_TYPE_029364 = 989364
+
+function EASInventoryGrid:GetExternalGroupName029364(link)
+    link = tostring(link or "")
+    if link == "" then return nil end
+    local setName = self:GetSetName(link)
+    local armorType = num(safe(GetItemLinkArmorType, 0, link), 0)
+    local weaponType = num(safe(GetItemLinkWeaponType, 0, link), 0)
+    local equipType = num(safe(GetItemLinkEquipType, 0, link), 0)
+    local isJewelry = equipType == rawget(_G, "EQUIP_TYPE_RING") or equipType == rawget(_G, "EQUIP_TYPE_NECK")
+    local isArmor = armorType ~= 0 and not isJewelry
+    local isWeapon = weaponType ~= 0
+    if setName then return setName end
+    if isWeapon then return enumText("SI_ITEMTYPE", rawget(_G, "ITEMTYPE_WEAPON") or 1, "Weapons") end
+    if isJewelry then return enumText("SI_EQUIPTYPE", equipType, "Jewelry") end
+    if isArmor then return enumText("SI_ARMORTYPE", armorType, "Armor") end
+    local itemType, specialized = safe(GetItemLinkItemType, nil, link)
+    itemType, specialized = tonumber(itemType), tonumber(specialized)
+    if specialized and specialized ~= 0 then
+        local txt = cleanGroupName(enumText("SI_SPECIALIZEDITEMTYPE", specialized, ""))
+        if txt ~= "" and txt ~= "Other" then return txt end
+    end
+    if itemType and itemType ~= 0 then return cleanGroupName(enumText("SI_ITEMTYPE", itemType, "Other")) end
+    return "Other"
+end
+
+function EASInventoryGrid:GetNativeEntryLink029364(entry)
+    local data = type(entry) == "table" and (entry.data or entry) or nil
+    if type(data) ~= "table" then return "" end
+    local direct = data.itemLink or data.link or data.itemLinkString or (type(data.itemData) == "table" and data.itemData.itemLink)
+    if tostring(direct or "") ~= "" then return tostring(direct) end
+    local bag = tonumber(data.bagId or data.bag)
+    local slot = tonumber(data.slotIndex or data.slot)
+    if bag ~= nil and slot ~= nil then
+        return tostring(safe(GetItemLink, "", bag, slot, LINK_STYLE_DEFAULT or 0) or "")
+    end
+    local storeIndex = tonumber(data.storeIndex or data.storeEntryIndex)
+    if storeIndex and type(GetStoreItemLink) == "function" then
+        return tostring(safe(GetStoreItemLink, "", storeIndex, LINK_STYLE_DEFAULT or 0) or "")
+    end
+    return ""
+end
+
+function EASInventoryGrid:RegisterNativeCategoryType029364(list)
+    self.nativeCategoryLists029364 = self.nativeCategoryLists029364 or {}
+    if self.nativeCategoryLists029364[list] then return true end
+    if type(ZO_ScrollList_AddDataType) ~= "function" then return false end
+    local ok = pcall(ZO_ScrollList_AddDataType, list, EAS_NATIVE_CATEGORY_TYPE_029364, "ZO_SelectableLabel", 26, function(control, data)
+        if control.SetText then control:SetText(tostring(data and data.text or "")) end
+        if control.SetFont then control:SetFont("ZoFontWinH4") end
+        if control.SetColor then control:SetColor(0.96, 0.84, 0.30, 1) end
+        if control.SetMouseEnabled then control:SetMouseEnabled(false) end
+    end)
+    if ok then self.nativeCategoryLists029364[list] = true end
+    return ok
+end
+
+function EASInventoryGrid:ApplyCategoriesToNativeList029364(list)
+    if not list or type(ZO_ScrollList_GetDataList) ~= "function" then return false end
+    local ok, dataList = pcall(ZO_ScrollList_GetDataList, list)
+    if not ok or type(dataList) ~= "table" or #dataList < 2 then return false end
+
+    local base, itemCount = {}, 0
+    for _, entry in ipairs(dataList) do
+        local d = type(entry) == "table" and (entry.data or entry) or nil
+        if not (type(d) == "table" and d.easSuiteCategoryHeader029364 == true) then
+            base[#base + 1] = entry
+            if self:GetNativeEntryLink029364(entry) ~= "" then itemCount = itemCount + 1 end
+        end
+    end
+    if itemCount < 2 then return false end
+    if not self:RegisterNativeCategoryType029364(list) then return false end
+
+    local prefix, suffix, groups, order = {}, {}, {}, {}
+    local seenItem = false
+    for _, entry in ipairs(base) do
+        local link = self:GetNativeEntryLink029364(entry)
+        if link ~= "" then
+            seenItem = true
+            local group = self:GetExternalGroupName029364(link) or "Other"
+            if not groups[group] then groups[group] = {}; order[#order + 1] = group end
+            groups[group][#groups[group] + 1] = entry
+        elseif not seenItem then
+            prefix[#prefix + 1] = entry
+        else
+            suffix[#suffix + 1] = entry
+        end
+    end
+    if #order < 2 then return false end
+
+    local rebuilt = {}
+    for _, e in ipairs(prefix) do rebuilt[#rebuilt + 1] = e end
+    for _, group in ipairs(order) do
+        local hd = { easSuiteCategoryHeader029364 = true, text = group }
+        local headerEntry = type(ZO_ScrollList_CreateDataEntry) == "function" and ZO_ScrollList_CreateDataEntry(EAS_NATIVE_CATEGORY_TYPE_029364, hd) or { typeId = EAS_NATIVE_CATEGORY_TYPE_029364, data = hd }
+        rebuilt[#rebuilt + 1] = headerEntry
+        for _, e in ipairs(groups[group]) do rebuilt[#rebuilt + 1] = e end
+    end
+    for _, e in ipairs(suffix) do rebuilt[#rebuilt + 1] = e end
+
+    for i = #dataList, 1, -1 do dataList[i] = nil end
+    for i, e in ipairs(rebuilt) do dataList[i] = e end
+    if type(ZO_ScrollList_Commit) == "function" then
+        local priorGuard = self.nativeCategoryCommitGuard029364
+        self.nativeCategoryCommitGuard029364 = true
+        pcall(ZO_ScrollList_Commit, list)
+        self.nativeCategoryCommitGuard029364 = priorGuard
+    end
+    return true
+end
+
+function EASInventoryGrid:CollectNativeInteractionLists029364()
+    local lists, seen = {}, {}
+    self.nativeInteractionTargets029364 = self.nativeInteractionTargets029364 or {}
+    local function add(v)
+        if v and not seen[v] and type(ZO_ScrollList_GetDataList) == "function" then
+            local ok, dl = pcall(ZO_ScrollList_GetDataList, v)
+            if ok and type(dl) == "table" then
+                seen[v] = true
+                self.nativeInteractionTargets029364[v] = true
+                lists[#lists + 1] = v
+            end
+        end
+    end
+    local inv = rawget(_G, "PLAYER_INVENTORY")
+    if type(inv) == "table" and type(inv.inventories) == "table" then
+        for _, d in pairs(inv.inventories) do if type(d) == "table" then add(d.listView); add(d.list) end end
+    end
+    local function scan(root, depth)
+        if type(root) ~= "table" or depth > 3 then return end
+        for k, v in pairs(root) do
+            local key = tostring(k or ""):lower()
+            if key:find("list", 1, true) or key:find("inventory", 1, true) or key:find("result", 1, true) then add(v) end
+            if type(v) == "table" and (key:find("panel",1,true) or key:find("inventory",1,true) or key:find("result",1,true) or key:find("list",1,true)) then scan(v, depth + 1) end
+        end
+    end
+    scan(rawget(_G, "STORE_WINDOW"), 0)
+    scan(rawget(_G, "TRADING_HOUSE"), 0)
+    local smithing = rawget(_G, "SMITHING")
+    if type(smithing) == "table" then scan(smithing.deconstructionPanel, 0) end
+    scan(rawget(_G, "UNIVERSAL_DECONSTRUCTION"), 0)
+    return lists
+end
+
+function EASInventoryGrid:RefreshNativeInteractionCategories029364()
+    if self.visible then return end -- player inventory has its own Suite grid headers
+    local active = false
+    if SCENE_MANAGER and type(SCENE_MANAGER.IsShowing) == "function" then
+        for _, sceneName in ipairs({"bank", "store", "tradingHouse", "crafting", "universalDeconstruction"}) do
+            local ok, showing = pcall(SCENE_MANAGER.IsShowing, SCENE_MANAGER, sceneName)
+            if ok and showing == true then active = true; break end
+        end
+    end
+    if not active then return end
+    for _, list in ipairs(self:CollectNativeInteractionLists029364()) do self:ApplyCategoriesToNativeList029364(list) end
+end
+
 function EASInventoryGrid:EnsureSaved()
     if not ESOProgressionCoach then return end
     ESOProgressionCoach.saved = ESOProgressionCoach.saved or {}
     local s = ESOProgressionCoach.saved
     s.inventoryGridCollapsedGroups = s.inventoryGridCollapsedGroups or {}
+end
+
+local function EAS_CategoryFontSize029377()
+    local saved = ESOProgressionCoach and ESOProgressionCoach.saved
+    local n = tonumber(saved and saved.inventoryGridCategoryFontSize029377) or 15
+    return math.max(12, math.min(20, math.floor(n + 0.5)))
+end
+
+local function EAS_CategoryFont029377(bold)
+    local face = bold and "$(BOLD_FONT)" or "$(MEDIUM_FONT)"
+    return string.format("%s|%d|soft-shadow-thin", face, EAS_CategoryFontSize029377())
+end
+
+function EASInventoryGrid:ApplyCategoryFontSize029377(refreshNative)
+    local font = EAS_CategoryFont029377(true)
+    local countFont = EAS_CategoryFont029377(false)
+    for _, header in ipairs(self.groupHeaders or {}) do
+        if header then
+            if header.toggleLabel then header.toggleLabel:SetFont(font) end
+            if header.titleLabel then header.titleLabel:SetFont(font) end
+            if header.countLabel then header.countLabel:SetFont(countFont) end
+        end
+    end
+    if refreshNative == true and self.RefreshNativeInteractionCategories029364 then
+        zo_callLater(function()
+            if EASInventoryGrid then EASInventoryGrid:RefreshNativeInteractionCategories029364() end
+        end, 0)
+    end
 end
 
 function EASInventoryGrid:CreateGroupHeader(index)
@@ -590,7 +919,7 @@ function EASInventoryGrid:CreateGroupHeader(index)
     local toggle = wm:CreateControl(nil, header, CT_LABEL)
     toggle:SetAnchor(LEFT, header, LEFT, 8, 0)
     toggle:SetDimensions(28, 24)
-    toggle:SetFont("ZoFontGameBold")
+    toggle:SetFont(EAS_CategoryFont029377(true))
     toggle:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     toggle:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     toggle:SetColor(0.95, 0.84, 0.38, 1)
@@ -600,16 +929,18 @@ function EASInventoryGrid:CreateGroupHeader(index)
     title:SetAnchor(LEFT, toggle, RIGHT, 4, 0)
     -- Leave a dedicated right-side lane for the full "# items" text.
     title:SetAnchor(RIGHT, header, RIGHT, -140, 0)
-    title:SetFont("ZoFontGameBold")
+    title:SetFont(EAS_CategoryFont029377(true))
+    title:SetHeight(24)
     title:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     title:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
+    if type(title.SetMaxLineCount) == "function" then title:SetMaxLineCount(1) end
     title:SetColor(0.90, 0.94, 0.98, 1)
     header.titleLabel = title
 
     local count = wm:CreateControl(nil, header, CT_LABEL)
     count:SetAnchor(RIGHT, header, RIGHT, -10, 0)
     count:SetDimensions(122, 24)
-    count:SetFont("ZoFontGame")
+    count:SetFont(EAS_CategoryFont029377(false))
     count:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
     count:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     count:SetColor(0.96, 0.88, 0.56, 1)
@@ -626,7 +957,7 @@ function EASInventoryGrid:CreateGroupHeader(index)
         self:EnsureSaved()
         local collapsed = ESOProgressionCoach.saved.inventoryGridCollapsedGroups
         collapsed[control.groupKey] = not (collapsed[control.groupKey] == true)
-        self:Refresh()
+        self:LayoutGroupedItems(self.items or {})
     end)
 
     self.groupHeaders[index] = header
@@ -776,6 +1107,9 @@ function EASInventoryGrid:LayoutGroupedItems(items)
         -- word "items" is never clipped at the right edge.
         header:SetDimensions(math.max(180, width - 28), headerH)
         header:SetAnchor(TOPLEFT, self.scrollChild, TOPLEFT, 4, y)
+        header.toggleLabel:SetFont(EAS_CategoryFont029377(true))
+        header.titleLabel:SetFont(EAS_CategoryFont029377(true))
+        header.countLabel:SetFont(EAS_CategoryFont029377(false))
         header.toggleLabel:SetText(isCollapsed and "[+]" or "[-]")
         header.titleLabel:SetText(group.name)
         local itemCount = #group.items
@@ -1640,7 +1974,7 @@ function EASInventoryGrid:CollectQuickslotEmotes()
 
     local count = num(safe(GetNumEmotes, 0), 0)
     for emoteIndex = 1, count do
-        local slashName, emoteCategory, emoteId, displayName, showInGamepadUI = safe(GetEmoteInfo, nil, emoteIndex)
+        local slashName, emoteCategory, emoteId, displayName, showInAlternateUI = safe(GetEmoteInfo, nil, emoteIndex)
         emoteId = tonumber(emoteId)
         if emoteId and emoteId > 0 and self:IsEmoteValidForAnyQuickslot(emoteId) then
             local collectibleId = nil
@@ -2061,6 +2395,7 @@ function EASInventoryGrid:CollectItems()
                             filterData = slot.filterData,
                             dataEntry = entry,
                             autoCategoryGroup = currentAutoCategoryGroup,
+                            actorCategory = safe(GetItemActorCategory, rawget(_G, "GAMEPLAY_ACTOR_CATEGORY_PLAYER"), bagId, slotIndex),
                         }
                     elseif slot.iconFile or slot.name then
                         -- Quest-item style lists do not expose a backpack bag/slot.
@@ -2120,6 +2455,7 @@ function EASInventoryGrid:CollectItems()
                     junk = safe(IsItemJunk, false, bagId, slotIndex) == true,
                     displayQuality = num(safe(GetItemDisplayQuality, nil, bagId, slotIndex), nil),
                     slotType = type(activeData) == "table" and activeData.slotType or rawget(_G, "SLOT_TYPE_ITEM"),
+                    actorCategory = safe(GetItemActorCategory, rawget(_G, "GAMEPLAY_ACTOR_CATEGORY_PLAYER"), bagId, slotIndex),
                 }
             end
         end
@@ -2140,10 +2476,12 @@ function EASInventoryGrid:BindCellToNativeSlot(cell, item)
     cell.questIndex, cell.toolIndex, cell.stepIndex, cell.conditionIndex = nil, nil, nil, nil
     cell.filterData = nil
     cell.dataEntry = nil
+    cell.actorCategory = nil
 
     if not item then return end
     cell.filterData = item.filterData
     cell.dataEntry = item.dataEntry
+    cell.actorCategory = item.actorCategory
     cell.slotType = tonumber(item.slotType) or (item.questItem and rawget(_G, "SLOT_TYPE_QUEST_ITEM") or rawget(_G, "SLOT_TYPE_ITEM"))
     cell.stackCount = num(item.stack, 1)
 
@@ -2190,8 +2528,11 @@ function EASInventoryGrid:Refresh(forceNativeUpdate)
     self:RefreshLayout()
     self.items = self:CollectItems()
 
-    for i, cell in ipairs(self.cells) do
+    local bindCount = math.max(#(self.items or {}), tonumber(self.lastBoundCellCount029377) or 0)
+    for i = 1, bindCount do
+        local cell = self.cells[i]
         local item = self.items[i]
+        if not cell then break end
         if item then
             local r, g, b, a = colorForQuality(item.link, item.displayQuality)
             cell:SetHidden(false)
@@ -2224,11 +2565,21 @@ function EASInventoryGrid:Refresh(forceNativeUpdate)
             if cell.loadoutMarker then cell.loadoutMarker:SetHidden(true) end
         end
     end
+    self.lastBoundCellCount029377 = #(self.items or {})
     self:LayoutGroupedItems(self.items)
 end
 
 function EASInventoryGrid:SetVisible(show)
-    self.visible = show == true
+    local wanted = show == true
+    if self.visible == wanted then
+        if wanted then
+            self:SetNativeListsHidden(true)
+            self:SetNativeSpecialPanelHidden("currency", true)
+            self:SetNativeSpecialPanelHidden("quickslot", true)
+        end
+        return
+    end
+    self.visible = wanted
     self:Create()
     if not self.root then return end
 
@@ -2279,6 +2630,7 @@ function EASInventoryGrid:SetVisible(show)
         end)
     else
         EVENT_MANAGER:UnregisterForUpdate(self.name .. "Refresh")
+        self:ClearHoveredCell()
         self.quickslotAssignTarget = nil
         self.quickslotAssignIndex = nil
         if self.root then self.root:SetHidden(true) end
@@ -2365,17 +2717,46 @@ function EASInventoryGrid:Initialize()
     local scene = SCENE_MANAGER and SCENE_MANAGER:GetScene("inventory") or nil
     if scene and type(scene.RegisterCallback) == "function" then
         scene:RegisterCallback("StateChange", function(_, newState)
-            local showing = newState == SCENE_SHOWING or newState == SCENE_SHOWN
-            self:SetVisible(showing)
+            if newState == SCENE_SHOWING then
+                self:SetVisible(true)
+            elseif newState == SCENE_HIDDEN then
+                self:SetVisible(false)
+            end
         end)
     end
 
+    if SCENE_MANAGER and type(SCENE_MANAGER.RegisterCallback) == "function" and not self.nativeInteractionSceneHook029364 then
+        self.nativeInteractionSceneHook029364 = true
+        SCENE_MANAGER:RegisterCallback("SceneStateChanged", function(_, _, newState)
+            if newState == SCENE_SHOWING or newState == SCENE_SHOWN then
+                zo_callLater(function() if EASInventoryGrid then EASInventoryGrid:RefreshNativeInteractionCategories029364() end end, 0)
+            end
+        end)
+    end
+
+    -- v0.29.454 SECURITY: never hook the global ZO_ScrollList_Commit function.
+    -- ESO uses that same global list-builder for the keyboard Skills window. A
+    -- Suite post-hook here can make skill-row construction insecure and later
+    -- cause ZO_ActiveSkillProgressionData:TryPickup() to be blocked when it calls
+    -- the private PickupAbilityById function. Native inventory categories are
+    -- refreshed only from scene/inventory events below and from the dedicated
+    -- SceneStateChanged refresh path, so Skills never pass through Suite code.
+    self.nativeCategoryCommitHook029364 = false
+
     EVENT_MANAGER:RegisterForEvent(self.name, EVENT_INVENTORY_SINGLE_SLOT_UPDATE, function()
-        if self.visible then zo_callLater(function() if self.visible then self:Refresh(true) end end, 20) end
+        if self.visible then
+            zo_callLater(function() if self.visible then self:Refresh(true) end end, 20)
+        else
+            zo_callLater(function() self:RefreshNativeInteractionCategories029364() end, 20)
+        end
     end)
 
     EVENT_MANAGER:RegisterForEvent(self.name .. "Bag", EVENT_INVENTORY_FULL_UPDATE, function()
-        if self.visible then zo_callLater(function() if self.visible then self:Refresh(true) end end, 20) end
+        if self.visible then
+            zo_callLater(function() if self.visible then self:Refresh(true) end end, 20)
+        else
+            zo_callLater(function() self:RefreshNativeInteractionCategories029364() end, 20)
+        end
     end)
 
     if rawget(_G, "EVENT_HOTBAR_SLOT_UPDATED") then
@@ -2401,3 +2782,1021 @@ EVENT_MANAGER:RegisterForEvent(EASInventoryGrid.name, EVENT_ADD_ON_LOADED, funct
     EVENT_MANAGER:UnregisterForEvent(EASInventoryGrid.name, EVENT_ADD_ON_LOADED)
     EASInventoryGrid:Initialize()
 end)
+
+
+-- ============================================================================
+-- v0.29.365 - native-interaction compatibility, category controls and priority.
+-- ============================================================================
+_G.EASInventoryGrid = EASInventoryGrid
+
+local function EAS_InventoryCategoriesEnabled029365()
+    return not (ESOProgressionCoach and ESOProgressionCoach.saved and ESOProgressionCoach.saved.inventoryGridCategoriesEnabled029365 == false)
+end
+
+local function EAS_GroupKind029365(item)
+    if not item then return "OTHER" end
+    if item.questItem then return "QUEST" end
+    local link = tostring(item.link or "")
+    if link == "" then return "OTHER" end
+    local weaponType = num(safe(GetItemLinkWeaponType, 0, link), 0)
+    local armorType = num(safe(GetItemLinkArmorType, 0, link), 0)
+    local equipType = num(safe(GetItemLinkEquipType, 0, link), 0)
+    if weaponType ~= 0 then
+        if item.actorCategory == rawget(_G, "GAMEPLAY_ACTOR_CATEGORY_COMPANION") then return "COMPANION_WEAPON" end
+        return "WEAPON"
+    end
+    if equipType == rawget(_G, "EQUIP_TYPE_RING") or equipType == rawget(_G, "EQUIP_TYPE_NECK") then return "JEWELRY" end
+    if armorType ~= 0 then return "ARMOR" end
+    local itemType = num(safe(GetItemLinkItemType, 0, link), 0)
+    local materialNames = {
+        "ITEMTYPE_BLACKSMITHING_MATERIAL","ITEMTYPE_BLACKSMITHING_RAW_MATERIAL","ITEMTYPE_CLOTHIER_MATERIAL","ITEMTYPE_CLOTHIER_RAW_MATERIAL",
+        "ITEMTYPE_WOODWORKING_MATERIAL","ITEMTYPE_WOODWORKING_RAW_MATERIAL","ITEMTYPE_JEWELRYCRAFTING_MATERIAL","ITEMTYPE_JEWELRYCRAFTING_RAW_MATERIAL",
+        "ITEMTYPE_ALCHEMY_BASE","ITEMTYPE_REAGENT","ITEMTYPE_ENCHANTING_RUNE_ASPECT","ITEMTYPE_ENCHANTING_RUNE_ESSENCE","ITEMTYPE_ENCHANTING_RUNE_POTENCY",
+        "ITEMTYPE_INGREDIENT","ITEMTYPE_STYLE_MATERIAL","ITEMTYPE_ARMOR_TRAIT","ITEMTYPE_WEAPON_TRAIT","ITEMTYPE_JEWELRY_RAW_TRAIT","ITEMTYPE_JEWELRY_TRAIT",
+        "ITEMTYPE_FURNISHING_MATERIAL","ITEMTYPE_RAW_MATERIAL"
+    }
+    for _, key in ipairs(materialNames) do if rawget(_G,key) ~= nil and itemType == rawget(_G,key) then return "MATERIAL" end end
+    local consumableNames = {"ITEMTYPE_FOOD","ITEMTYPE_DRINK","ITEMTYPE_POTION","ITEMTYPE_POISON","ITEMTYPE_RECIPE","ITEMTYPE_SOUL_GEM","ITEMTYPE_SIEGE","ITEMTYPE_TOOL","ITEMTYPE_AVA_REPAIR"}
+    for _, key in ipairs(consumableNames) do if rawget(_G,key) ~= nil and itemType == rawget(_G,key) then return "CONSUMABLE" end end
+    return "OTHER"
+end
+
+local EAS_GetBuiltInGroupNameBase029365 = EASInventoryGrid.GetBuiltInGroupName
+function EASInventoryGrid:GetBuiltInGroupName(item)
+    local base = EAS_GetBuiltInGroupNameBase029365(self, item)
+    if item and EAS_GroupKind029365(item) == "COMPANION_WEAPON" then
+        local setName = tostring(self:GetSetName(tostring(item.link or "")) or "")
+        local weaponType = num(safe(GetItemLinkWeaponType, 0, tostring(item.link or "")), 0)
+        local label = enumText("SI_WEAPONTYPE", weaponType, "Weapons")
+        return setName ~= "" and ("Companion Weapons • " .. setName) or ("Companion Weapons • " .. label)
+    elseif item and EAS_GroupKind029365(item) == "WEAPON" then
+        -- Explicit player prefix prevents companion/player weapons from merging
+        -- even when both use the same set or weapon type.
+        local setName = tostring(self:GetSetName(tostring(item.link or "")) or "")
+        local weaponType = num(safe(GetItemLinkWeaponType, 0, tostring(item.link or "")), 0)
+        local label = enumText("SI_WEAPONTYPE", weaponType, "Weapons")
+        return setName ~= "" and ("Player Weapons • " .. setName) or ("Player Weapons • " .. label)
+    end
+    return base
+end
+
+local EAS_BuildGroupsBase029365 = EASInventoryGrid.BuildGroups
+function EASInventoryGrid:BuildGroups(items)
+    if not EAS_InventoryCategoriesEnabled029365() then
+        local all = { name = "", noHeader = true, items = {} }
+        for i=1,#(items or {}) do all.items[#all.items+1]=i end
+        table.sort(all.items, function(ai,bi)
+            local a,b=items[ai],items[bi]
+            local aq,bq=self:GetItemQualityRank(a),self:GetItemQualityRank(b)
+            if aq ~= bq then return aq > bq end
+            return lower(a and a.name or "") < lower(b and b.name or "")
+        end)
+        return {all}
+    end
+    local groups = EAS_BuildGroupsBase029365(self, items)
+    for _, group in ipairs(groups) do
+        local firstIndex = group.items and group.items[1]
+        group.easKind029365 = EAS_GroupKind029365(firstIndex and items[firstIndex] or nil)
+    end
+    local mode = string.upper(tostring(ESOProgressionCoach and ESOProgressionCoach.saved and ESOProgressionCoach.saved.inventoryGridCategoryPriority029365 or "GEAR_FIRST"))
+    if mode == "ALPHABETICAL" then
+        table.sort(groups, function(a,b) return lower(a.name) < lower(b.name) end)
+    else
+        local maps = {
+            GEAR_FIRST={QUEST=5,WEAPON=10,ARMOR=20,JEWELRY=30,COMPANION_WEAPON=40,CONSUMABLE=50,MATERIAL=60,OTHER=90},
+            CONSUMABLES_FIRST={CONSUMABLE=10,QUEST=20,WEAPON=30,ARMOR=40,JEWELRY=50,COMPANION_WEAPON=55,MATERIAL=60,OTHER=90},
+            MATERIALS_FIRST={MATERIAL=10,QUEST=20,WEAPON=30,ARMOR=40,JEWELRY=50,COMPANION_WEAPON=55,CONSUMABLE=60,OTHER=90},
+        }
+        local weights = maps[mode] or maps.GEAR_FIRST
+        table.sort(groups,function(a,b)
+            local aw,bw=weights[a.easKind029365] or 90,weights[b.easKind029365] or 90
+            if aw ~= bw then return aw < bw end
+            return lower(a.name) < lower(b.name)
+        end)
+    end
+    return groups
+end
+
+local EAS_LayoutGroupedItemsBase029365 = EASInventoryGrid.LayoutGroupedItems
+function EASInventoryGrid:LayoutGroupedItems(items)
+    if EAS_InventoryCategoriesEnabled029365() then return EAS_LayoutGroupedItemsBase029365(self, items) end
+    if not self.root or not self.scrollChild then return end
+    local groups=self:BuildGroups(items); local group=groups[1] or {items={}}
+    local width=num(self.root:GetWidth(),360); local cellSize,gap=44,5
+    local cols=math.max(5,math.floor((width-8)/(cellSize+gap))); self.columns=cols
+    for i,h in ipairs(self.groupHeaders or {}) do if h then h:SetHidden(true) end end
+    for pos,itemIndex in ipairs(group.items) do
+        local cell=self.cells[itemIndex]
+        if cell then
+            local col=(pos-1)%cols; local row=math.floor((pos-1)/cols)
+            cell:SetHidden(false); cell:ClearAnchors(); cell:SetAnchor(TOPLEFT,self.scrollChild,TOPLEFT,4+col*(cellSize+gap),4+row*(cellSize+gap))
+        end
+    end
+    for i=#(items or {})+1,#self.cells do if self.cells[i] then self.cells[i]:SetHidden(true) end end
+    local rows=math.max(1,math.ceil(#group.items/cols)); self.scrollChild:SetDimensions(width,math.max(20,8+rows*(cellSize+gap)))
+end
+
+local EAS_ApplyCategoriesNativeBase029365 = EASInventoryGrid.ApplyCategoriesToNativeList029364
+function EASInventoryGrid:ApplyCategoriesToNativeList029364(list)
+    if not list or type(ZO_ScrollList_GetDataList) ~= "function" then return false end
+    if EAS_InventoryCategoriesEnabled029365() then return EAS_ApplyCategoriesNativeBase029365(self,list) end
+    local ok,dataList=pcall(ZO_ScrollList_GetDataList,list); if not ok or type(dataList)~="table" then return false end
+    local changed=false; local base={}
+    for _,entry in ipairs(dataList) do
+        local d=type(entry)=="table" and (entry.data or entry) or nil
+        if type(d)=="table" and d.easSuiteCategoryHeader029364==true then changed=true else base[#base+1]=entry end
+    end
+    if changed then
+        for i=#dataList,1,-1 do dataList[i]=nil end; for i,e in ipairs(base) do dataList[i]=e end
+        local guard=self.nativeCategoryCommitGuard029364; self.nativeCategoryCommitGuard029364=true
+        if type(ZO_ScrollList_Commit)=="function" then pcall(ZO_ScrollList_Commit,list) end
+        self.nativeCategoryCommitGuard029364=guard
+    end
+    return changed
+end
+
+function EASInventoryGrid:RefreshCategoryMode029365()
+    self.lastSignature=nil
+    if self.visible then self:Refresh(true) end
+    for _,list in ipairs(self:CollectNativeInteractionLists029364()) do self:ApplyCategoriesToNativeList029364(list) end
+end
+
+-- Comparison tooltips are informational only; do not invoke ESO's protected
+-- stock mouse-enter pipeline from an addon-created control.
+function EASInventoryGrid:ShowComparisonTooltips029365(control)
+    if not control or control.bagId==nil or control.slotIndex==nil or not ComparativeTooltip1 then return end
+    if type(ClearTooltip)=="function" then pcall(ClearTooltip,ComparativeTooltip1); if ComparativeTooltip2 then pcall(ClearTooltip,ComparativeTooltip2) end end
+    local link=tostring(control.link or safe(GetItemLink,"",control.bagId,control.slotIndex,LINK_STYLE_DEFAULT or 0) or "")
+    if link=="" then return end
+    local equip=num(safe(GetItemLinkEquipType,0,link), 0)
+    local actor=control.actorCategory or safe(GetItemActorCategory,rawget(_G,"GAMEPLAY_ACTOR_CATEGORY_PLAYER"),control.bagId,control.slotIndex)
+    local worn=(actor==rawget(_G,"GAMEPLAY_ACTOR_CATEGORY_COMPANION") and rawget(_G,"BAG_COMPANION_WORN")) or rawget(_G,"BAG_WORN")
+    if worn==nil then return end
+    local slots={}
+    local function add(const) local v=rawget(_G,const); if v~=nil then slots[#slots+1]=v end end
+    if equip==rawget(_G,"EQUIP_TYPE_HEAD") then add("EQUIP_SLOT_HEAD")
+    elseif equip==rawget(_G,"EQUIP_TYPE_CHEST") then add("EQUIP_SLOT_CHEST")
+    elseif equip==rawget(_G,"EQUIP_TYPE_SHOULDERS") then add("EQUIP_SLOT_SHOULDERS")
+    elseif equip==rawget(_G,"EQUIP_TYPE_WAIST") then add("EQUIP_SLOT_WAIST")
+    elseif equip==rawget(_G,"EQUIP_TYPE_LEGS") then add("EQUIP_SLOT_LEGS")
+    elseif equip==rawget(_G,"EQUIP_TYPE_FEET") then add("EQUIP_SLOT_FEET")
+    elseif equip==rawget(_G,"EQUIP_TYPE_HAND") then add("EQUIP_SLOT_HAND")
+    elseif equip==rawget(_G,"EQUIP_TYPE_NECK") then add("EQUIP_SLOT_NECK")
+    elseif equip==rawget(_G,"EQUIP_TYPE_RING") then add("EQUIP_SLOT_RING1"); add("EQUIP_SLOT_RING2")
+    else
+        local wt=num(safe(GetItemLinkWeaponType,0,link), 0)
+        if wt~=0 then add("EQUIP_SLOT_MAIN_HAND"); add("EQUIP_SLOT_OFF_HAND") end
+    end
+    local tips={ComparativeTooltip1,ComparativeTooltip2}; local shown=0
+    for _,slot in ipairs(slots) do
+        if shown>=2 then break end
+        local equipped=tostring(safe(GetItemLink,"",worn,slot,LINK_STYLE_DEFAULT or 0) or "")
+        if equipped~="" then
+            shown=shown+1; local tip=tips[shown]
+            if tip and type(InitializeTooltip)=="function" then
+                InitializeTooltip(tip,ItemTooltip,shown==1 and TOPRIGHT or BOTTOMRIGHT,6,0,shown==1 and TOPLEFT or BOTTOMLEFT)
+                if type(tip.SetBagItem)=="function" then pcall(tip.SetBagItem,tip,worn,slot) end
+            end
+        end
+    end
+end
+
+function EASInventoryGrid:RequestDestroyItem029365(control)
+    local bag,slot=tonumber(control and control.bagId),tonumber(control and control.slotIndex)
+    if bag==nil or slot==nil or safe(IsItemPlayerLocked,false,bag,slot)==true then return false end
+    local name=tostring(safe(GetItemName,"Item",bag,slot) or "Item")
+    if type(ZO_Dialogs_ShowDialog)=="function" and type(ZO_Dialogs_RegisterCustomDialog)=="function" then
+        if not self.destroyDialogRegistered029365 then
+            self.destroyDialogRegistered029365=true
+            ZO_Dialogs_RegisterCustomDialog("EAS_INVENTORY_DESTROY_029365",{
+                title={text=SI_PROMPT_TITLE_DELETE},
+                mainText={text="Destroy <<1>>?"},
+                buttons={
+                    {text=SI_DIALOG_ACCEPT,callback=function(dialog) local d=dialog.data or {}; callGameFunction("DestroyItem",d.bag,d.slot); if EASInventoryGrid then EASInventoryGrid:RefreshSoon() end end},
+                    {text=SI_DIALOG_CANCEL},
+                },
+            })
+        end
+        pcall(ZO_Dialogs_ShowDialog,"EAS_INVENTORY_DESTROY_029365",{bag=bag,slot=slot},{mainTextParams={name}}); return true
+    end
+    return false
+end
+
+-- Native cursor drag support. Once picked up, the item can be dropped onto ESO
+-- equipment/quickslot/mail/etc. targets. ESO's normal mouse-destroy request can
+-- also handle dropping it onto the game background.
+for _, cell in ipairs(EASInventoryGrid.cells or {}) do
+    if cell and not cell.easDragInstalled029365 then
+        cell.easDragInstalled029365=true
+        cell:SetHandler("OnDragStart",function(control)
+            if control.bagId~=nil and control.slotIndex~=nil then callGameFunction("PickupInventoryItem",control.bagId,control.slotIndex) end
+        end)
+    end
+end
+
+
+-- v0.29.365 follow-up: install drag behavior on cells created after ADD_ON_LOADED
+-- and keep AutoCategory from merging player/companion weapons back together.
+local EAS_CreateCellBase029365 = EASInventoryGrid.CreateCell
+function EASInventoryGrid:CreateCell(index)
+    local cell = EAS_CreateCellBase029365(self, index)
+    if cell and not cell.easDragInstalled029365 then
+        cell.easDragInstalled029365 = true
+        cell:SetHandler("OnDragStart", function(control)
+            if control.bagId ~= nil and control.slotIndex ~= nil then
+                callGameFunction("PickupInventoryItem", control.bagId, control.slotIndex)
+            end
+        end)
+    end
+    return cell
+end
+
+local EAS_GetGroupNameBase029365 = EASInventoryGrid.GetGroupName
+function EASInventoryGrid:GetGroupName(item)
+    local kind = EAS_GroupKind029365(item)
+    if kind == "WEAPON" or kind == "COMPANION_WEAPON" then
+        return self:GetBuiltInGroupName(item)
+    end
+    return EAS_GetGroupNameBase029365(self, item)
+end
+
+-- ============================================================================
+-- v0.29.376 - interactive native categories + deconstruction discovery.
+-- Bank/Store/Trading/Deconstruction remain ESO-native secure lists; Suite
+-- categories are clickable header rows that collapse/expand without replacing
+-- item rows or primary actions.
+-- ============================================================================
+local EAS_NATIVE_CATEGORY_TYPE_029376 = 989376
+local EAS_CollectNativeInteractionListsBase029376 = EASInventoryGrid.CollectNativeInteractionLists029364
+
+local function EAS_IsCompanionWeapon029376(item, link)
+    local actor = item and item.actorCategory or nil
+    if actor == rawget(_G, "GAMEPLAY_ACTOR_CATEGORY_COMPANION") then return true end
+    if type(GetItemLinkActorCategory) == "function" and link and link ~= "" then
+        local value = safe(GetItemLinkActorCategory, nil, link)
+        if value == rawget(_G, "GAMEPLAY_ACTOR_CATEGORY_COMPANION") then return true end
+    end
+    local itemType = num(safe(GetItemLinkItemType, 0, link or ""), 0)
+    local companionWeaponType = rawget(_G, "ITEMTYPE_COMPANION_WEAPON")
+    return companionWeaponType ~= nil and itemType == companionWeaponType
+end
+
+local EAS_GroupKindBase029376 = EAS_GroupKind029365
+EAS_GroupKind029365 = function(item)
+    if item then
+        local link = tostring(item.link or "")
+        local weaponType = num(safe(GetItemLinkWeaponType, 0, link), 0)
+        if weaponType ~= 0 and EAS_IsCompanionWeapon029376(item, link) then return "COMPANION_WEAPON" end
+    end
+    return EAS_GroupKindBase029376(item)
+end
+
+function EASInventoryGrid:RegisterNativeCategoryType029376(list)
+    self.nativeCategoryLists029376 = self.nativeCategoryLists029376 or {}
+    if self.nativeCategoryLists029376[list] then return true end
+    if type(ZO_ScrollList_AddDataType) ~= "function" then return false end
+    local ok = pcall(ZO_ScrollList_AddDataType, list, EAS_NATIVE_CATEGORY_TYPE_029376, "ZO_SelectableLabel", 28, function(control, data)
+        if not control then return end
+        local collapsed = data and data.collapsed == true
+        if control.SetText then control:SetText((collapsed and "+  " or "-  ") .. tostring(data and data.text or "")) end
+        if control.SetFont then control:SetFont(EAS_CategoryFont029377(true)) end
+        if type(control.SetMaxLineCount) == "function" then control:SetMaxLineCount(1) end
+        if control.SetColor then control:SetColor(0.96, 0.84, 0.30, 1) end
+        if control.SetMouseEnabled then control:SetMouseEnabled(true) end
+        if control.SetHandler then
+            control:SetHandler("OnMouseUp", function(_, button, inside)
+                if inside == false or (MOUSE_BUTTON_INDEX_LEFT and button ~= MOUSE_BUTTON_INDEX_LEFT) then return end
+                local owner = data and data.owner
+                local targetList = data and data.list
+                local group = data and data.group
+                if owner and targetList and group then owner:ToggleNativeCategory029376(targetList, group) end
+            end)
+        end
+    end)
+    if ok then self.nativeCategoryLists029376[list] = true end
+    return ok
+end
+
+function EASInventoryGrid:ToggleNativeCategory029376(list, group)
+    self.nativeCollapsed029376 = self.nativeCollapsed029376 or setmetatable({}, {__mode="k"})
+    local state = self.nativeCollapsed029376[list]
+    if not state then state = {}; self.nativeCollapsed029376[list] = state end
+    state[group] = not (state[group] == true)
+    self:ApplyCategoriesToNativeList029364(list)
+end
+
+function EASInventoryGrid:ApplyCategoriesToNativeList029364(list)
+    if not list or type(ZO_ScrollList_GetDataList) ~= "function" then return false end
+    if not EAS_InventoryCategoriesEnabled029365() then
+        local ok, dataList = pcall(ZO_ScrollList_GetDataList, list)
+        if not ok or type(dataList) ~= "table" then return false end
+        local base, changed = {}, false
+        local cached = self.nativeBaseEntries029376 and self.nativeBaseEntries029376[list] or nil
+        if cached then
+            base = cached; changed = true
+        else
+            for _, entry in ipairs(dataList) do
+                local d = type(entry)=="table" and (entry.data or entry) or nil
+                if type(d)=="table" and (d.easSuiteCategoryHeader029364==true or d.easSuiteCategoryHeader029376==true) then changed=true
+                else base[#base+1]=entry end
+            end
+        end
+        if changed then
+            for i=#dataList,1,-1 do dataList[i]=nil end
+            for i,entry in ipairs(base) do dataList[i]=entry end
+            local guard=self.nativeCategoryCommitGuard029364; self.nativeCategoryCommitGuard029364=true
+            if type(ZO_ScrollList_Commit)=="function" then pcall(ZO_ScrollList_Commit,list) end
+            self.nativeCategoryCommitGuard029364=guard
+        end
+        return changed
+    end
+    local ok, dataList = pcall(ZO_ScrollList_GetDataList, list)
+    if not ok or type(dataList) ~= "table" then return false end
+    if not self:RegisterNativeCategoryType029376(list) then return false end
+
+    self.nativeBaseEntries029376 = self.nativeBaseEntries029376 or setmetatable({}, {__mode="k"})
+    local hadSuiteHeader = false
+    local stripped = {}
+    for _, entry in ipairs(dataList) do
+        local d = type(entry) == "table" and (entry.data or entry) or nil
+        if type(d) == "table" and (d.easSuiteCategoryHeader029364 == true or d.easSuiteCategoryHeader029376 == true) then
+            hadSuiteHeader = true
+        else
+            stripped[#stripped + 1] = entry
+        end
+    end
+    if not hadSuiteHeader then
+        self.nativeBaseEntries029376[list] = stripped
+    end
+    local base = self.nativeBaseEntries029376[list] or stripped
+
+    local itemCount = 0
+    for _, entry in ipairs(base) do if self:GetNativeEntryLink029364(entry) ~= "" then itemCount = itemCount + 1 end end
+    if itemCount < 2 then return false end
+
+    local prefix, suffix, groups, order = {}, {}, {}, {}
+    local seenItem = false
+    for _, entry in ipairs(base) do
+        local link = self:GetNativeEntryLink029364(entry)
+        if link ~= "" then
+            seenItem = true
+            local group = self:GetExternalGroupName029364(link) or "Other"
+            if not groups[group] then groups[group] = {}; order[#order + 1] = group end
+            groups[group][#groups[group] + 1] = entry
+        elseif not seenItem then prefix[#prefix + 1] = entry else suffix[#suffix + 1] = entry end
+    end
+    if #order < 2 then return false end
+
+    local collapsedMap = self.nativeCollapsed029376 and self.nativeCollapsed029376[list] or nil
+    local rebuilt = {}
+    for _, entry in ipairs(prefix) do rebuilt[#rebuilt + 1] = entry end
+    for _, group in ipairs(order) do
+        local collapsed = collapsedMap and collapsedMap[group] == true or false
+        local hd = { easSuiteCategoryHeader029376=true, easSuiteCategoryHeader029364=true, text=group, group=group, collapsed=collapsed, owner=self, list=list }
+        local header = type(ZO_ScrollList_CreateDataEntry) == "function"
+            and ZO_ScrollList_CreateDataEntry(EAS_NATIVE_CATEGORY_TYPE_029376, hd)
+            or {typeId=EAS_NATIVE_CATEGORY_TYPE_029376, data=hd}
+        rebuilt[#rebuilt + 1] = header
+        if not collapsed then for _, entry in ipairs(groups[group]) do rebuilt[#rebuilt + 1] = entry end end
+    end
+    for _, entry in ipairs(suffix) do rebuilt[#rebuilt + 1] = entry end
+
+    for i=#dataList,1,-1 do dataList[i]=nil end
+    for i,entry in ipairs(rebuilt) do dataList[i]=entry end
+    if type(ZO_ScrollList_Commit) == "function" then
+        local guard = self.nativeCategoryCommitGuard029364
+        self.nativeCategoryCommitGuard029364 = true
+        pcall(ZO_ScrollList_Commit, list)
+        self.nativeCategoryCommitGuard029364 = guard
+    end
+    return true
+end
+
+function EASInventoryGrid:CollectNativeInteractionLists029364()
+    local lists = EAS_CollectNativeInteractionListsBase029376(self) or {}
+    local seen = {}; for _,v in ipairs(lists) do seen[v]=true end
+    local function add(v)
+        if not v or seen[v] or type(ZO_ScrollList_GetDataList) ~= "function" then return end
+        local ok, dl = pcall(ZO_ScrollList_GetDataList, v)
+        if ok and type(dl)=="table" then
+            seen[v]=true; lists[#lists+1]=v
+            self.nativeInteractionTargets029364 = self.nativeInteractionTargets029364 or {}
+            self.nativeInteractionTargets029364[v]=true
+        end
+    end
+    local known = {
+        "ZO_SmithingTopLevelDeconstructionPanelInventoryBackpack",
+        "ZO_SmithingTopLevelDeconstructionPanelInventoryCraftBag",
+        "ZO_UniversalDeconstructionTopLevel_KeyboardPanelInventoryBackpack",
+        "ZO_UniversalDeconstructionTopLevel_KeyboardPanelInventoryCraftBag",
+        "ZO_UniversalDeconstructionTopLevelKeyboardPanelInventoryBackpack",
+        "ZO_UniversalDeconstructionTopLevelKeyboardPanelInventoryCraftBag",
+    }
+    for _,name in ipairs(known) do add(rawget(_G,name)) end
+
+    -- v0.29.378: Never enumerate _G here. ESO exposes protected/private API
+    -- values through the global table and merely reading them from insecure code
+    -- can taint the call stack (for example OpenURLByType). Keep discovery to the
+    -- explicit, known-safe control names above. API-specific additions should be
+    -- added to that whitelist rather than probing arbitrary globals.
+    return lists
+end
+
+
+-- v0.29.377: category typography is user-scalable and inventory scene state
+-- changes are edge-triggered so SHOWING/SHOWN cannot rebuild the full grid twice.
+
+
+-- ============================================================================
+-- v0.29.381 - deconstruction category discovery without protected-global scans.
+-- Walk only children of known ESO deconstruction top-level controls and accept
+-- controls that are actual ZO scroll lists. This keeps secure rows native.
+-- ============================================================================
+local EAS_CollectNativeInteractionListsBase029381 = EASInventoryGrid.CollectNativeInteractionLists029364
+function EASInventoryGrid:CollectNativeInteractionLists029364()
+    local lists = EAS_CollectNativeInteractionListsBase029381(self) or {}
+    local seen = {}
+    for _, v in ipairs(lists) do seen[v] = true end
+    local function add(control)
+        if not control or seen[control] or type(ZO_ScrollList_GetDataList) ~= "function" then return false end
+        local ok, data = pcall(ZO_ScrollList_GetDataList, control)
+        if ok and type(data) == "table" then
+            seen[control] = true
+            lists[#lists + 1] = control
+            self.nativeInteractionTargets029364 = self.nativeInteractionTargets029364 or {}
+            self.nativeInteractionTargets029364[control] = true
+            return true
+        end
+        return false
+    end
+    local function walk(control, depth)
+        if not control or depth > 8 then return end
+        add(control)
+        if type(control.GetNumChildren) ~= "function" or type(control.GetChild) ~= "function" then return end
+        local ok, count = pcall(control.GetNumChildren, control)
+        if not ok then return end
+        count = tonumber(count) or 0
+        for i = 1, math.min(count, 120) do
+            local oc, child = pcall(control.GetChild, control, i)
+            if oc and child then walk(child, depth + 1) end
+        end
+    end
+    local roots = {
+        rawget(_G, "ZO_SmithingTopLevel"),
+        rawget(_G, "ZO_SmithingTopLevelDeconstructionPanel"),
+        rawget(_G, "ZO_UniversalDeconstructionTopLevel_Keyboard"),
+        rawget(_G, "ZO_UniversalDeconstructionTopLevelKeyboard"),
+        rawget(_G, "ZO_UniversalDeconstructionTopLevel"),
+    }
+    for _, rootControl in ipairs(roots) do walk(rootControl, 0) end
+    return lists
+end
+
+
+
+-- ============================================================================
+-- v0.29.382 - Never inject Suite category rows into PLAYER_INVENTORY native
+-- backpack lists. ESO's InventoryManager runs ZO_UpdateStatusControlIcons over
+-- those visible rows when clearing "new" status (including after selling). A
+-- Suite header is not a ZO_PlayerInventorySlot, so the native callback indexes
+-- children/slot fields that do not exist and errors. The Suite's own grid keeps
+-- its category headers; bank/deconstruction/dedicated interaction lists may keep
+-- native headers. Player backpack/store rows remain 100% native and secure.
+-- ============================================================================
+local EAS_ApplyCategoriesNativeBase029382 = EASInventoryGrid.ApplyCategoriesToNativeList029364
+local EAS_CollectNativeInteractionListsBase029382 = EASInventoryGrid.CollectNativeInteractionLists029364
+
+local function EAS_IsPlayerInventoryNativeList029382(list)
+    if not list then return false end
+    local inv = rawget(_G, "PLAYER_INVENTORY")
+    if type(inv) ~= "table" or type(inv.inventories) ~= "table" then return false end
+    for _, data in pairs(inv.inventories) do
+        if type(data) == "table" and (data.list == list or data.listView == list) then
+            return true
+        end
+    end
+    local named = rawget(_G, "ZO_PlayerInventoryList")
+    return named ~= nil and named == list
+end
+
+local function EAS_RemoveSuiteHeadersFromNativeList029382(list)
+    if not list or type(ZO_ScrollList_GetDataList) ~= "function" then return false end
+    local ok, dataList = pcall(ZO_ScrollList_GetDataList, list)
+    if not ok or type(dataList) ~= "table" then return false end
+
+    local clean, changed = {}, false
+    for _, entry in ipairs(dataList) do
+        local data = type(entry) == "table" and (entry.data or entry) or nil
+        if type(data) == "table" and (data.easSuiteCategoryHeader029364 == true or data.easSuiteCategoryHeader029376 == true) then
+            changed = true
+        else
+            clean[#clean + 1] = entry
+        end
+    end
+    if not changed then return false end
+
+    for i = #dataList, 1, -1 do dataList[i] = nil end
+    for i, entry in ipairs(clean) do dataList[i] = entry end
+
+    if type(ZO_ScrollList_Commit) == "function" then
+        local oldGuard = EASInventoryGrid.nativeCategoryCommitGuard029364
+        EASInventoryGrid.nativeCategoryCommitGuard029364 = true
+        pcall(ZO_ScrollList_Commit, list)
+        EASInventoryGrid.nativeCategoryCommitGuard029364 = oldGuard
+    end
+    return true
+end
+
+function EASInventoryGrid:ApplyCategoriesToNativeList029364(list)
+    if EAS_IsPlayerInventoryNativeList029382(list) then
+        -- Also clean up a header that may have been injected before this fix or
+        -- before a scene changed into store/trading context.
+        EAS_RemoveSuiteHeadersFromNativeList029382(list)
+        if self.nativeBaseEntries029376 then self.nativeBaseEntries029376[list] = nil end
+        if self.nativeCollapsed029376 then self.nativeCollapsed029376[list] = nil end
+        return false
+    end
+    return EAS_ApplyCategoriesNativeBase029382(self, list)
+end
+
+function EASInventoryGrid:CollectNativeInteractionLists029364()
+    local source = EAS_CollectNativeInteractionListsBase029382(self) or {}
+    local out = {}
+    for _, list in ipairs(source) do
+        if EAS_IsPlayerInventoryNativeList029382(list) then
+            EAS_RemoveSuiteHeadersFromNativeList029382(list)
+            if self.nativeInteractionTargets029364 then self.nativeInteractionTargets029364[list] = nil end
+        else
+            out[#out + 1] = list
+        end
+    end
+    return out
+end
+
+-- ============================================================================
+-- v0.29.383 - category consistency, Buyback discovery, and Mythic priority.
+-- ============================================================================
+local EAS_GetNativeEntryLinkBase029383 = EASInventoryGrid.GetNativeEntryLink029364
+function EASInventoryGrid:GetNativeEntryLink029364(entry)
+    local link = tostring(EAS_GetNativeEntryLinkBase029383(self, entry) or "")
+    if link ~= "" then return link end
+    local data = type(entry) == "table" and (entry.data or entry) or nil
+    if type(data) ~= "table" or type(GetBuybackItemLink) ~= "function" then return "" end
+    local buybackIndex = tonumber(data.buybackIndex or data.buyBackIndex or data.buybackEntryIndex)
+    if not buybackIndex and (data.isBuyback == true or data.isBuyBack == true) then
+        buybackIndex = tonumber(data.index or data.entryIndex or data.slotIndex)
+    end
+    if buybackIndex and buybackIndex > 0 then
+        return tostring(safe(GetBuybackItemLink, "", buybackIndex, LINK_STYLE_DEFAULT or 0) or "")
+    end
+    return ""
+end
+
+local EAS_CollectNativeListsBase029383 = EASInventoryGrid.CollectNativeInteractionLists029364
+function EASInventoryGrid:CollectNativeInteractionLists029364()
+    local lists = EAS_CollectNativeListsBase029383(self) or {}
+    local seen = {}; for _, list in ipairs(lists) do seen[list] = true end
+    self.nativeInteractionTargets029364 = self.nativeInteractionTargets029364 or {}
+    local function add(control)
+        if not control or seen[control] or type(ZO_ScrollList_GetDataList) ~= "function" then return end
+        local ok, dl = pcall(ZO_ScrollList_GetDataList, control)
+        if ok and type(dl) == "table" then
+            seen[control] = true; lists[#lists + 1] = control
+            self.nativeInteractionTargets029364[control] = true
+        end
+    end
+    local function scanBuyback(node, depth)
+        if type(node) ~= "table" or depth > 5 then return end
+        for k, v in pairs(node) do
+            local key = tostring(k or ""):lower()
+            if key:find("buyback", 1, true) or key:find("buy back", 1, true) then
+                add(v)
+                if type(v) == "table" then scanBuyback(v, depth + 1) end
+            elseif type(v) == "table" and (key:find("store",1,true) or key:find("panel",1,true) or key:find("tab",1,true)) then
+                scanBuyback(v, depth + 1)
+            end
+        end
+    end
+    scanBuyback(rawget(_G, "STORE_WINDOW"), 0)
+    add(rawget(_G, "ZO_StoreWindowBuyBackList"))
+    add(rawget(_G, "ZO_StoreWindowBuybackList"))
+    add(rawget(_G, "ZO_StoreWindowBuyBack"))
+    add(rawget(_G, "ZO_StoreWindowBuyback"))
+    return lists
+end
+
+local function EAS_IsMythic029383(item)
+    if not item then return false end
+    local quality = tonumber(item.displayQuality)
+    if quality == nil and tostring(item.link or "") ~= "" then
+        quality = tonumber(select(1, safe(GetItemLinkDisplayQuality or GetItemLinkQuality, nil, item.link)))
+    end
+    local mythic = rawget(_G, "ITEM_DISPLAY_QUALITY_MYTHIC") or rawget(_G, "ITEM_QUALITY_MYTHIC")
+    return mythic ~= nil and quality == mythic
+end
+
+local EAS_GroupKindBase029383 = EAS_GroupKind029365
+EAS_GroupKind029365 = function(item)
+    if EAS_IsMythic029383(item) then return "MYTHIC" end
+    return EAS_GroupKindBase029383(item)
+end
+
+local EAS_BuildGroupsBase029383 = EASInventoryGrid.BuildGroups
+function EASInventoryGrid:BuildGroups(items)
+    local groups = EAS_BuildGroupsBase029383(self, items)
+    local mode = string.upper(tostring(ESOProgressionCoach and ESOProgressionCoach.saved and ESOProgressionCoach.saved.inventoryGridCategoryPriority029365 or "GEAR_FIRST"))
+    if mode == "GEAR_FIRST" then
+        for _, group in ipairs(groups or {}) do
+            local firstIndex = group.items and group.items[1]
+            if firstIndex and EAS_IsMythic029383(items and items[firstIndex]) then group.easMythic029383 = true end
+        end
+        table.sort(groups, function(a,b)
+            local am, bm = a.easMythic029383 == true, b.easMythic029383 == true
+            if am ~= bm then return am end
+            local weights={QUEST=5,WEAPON=10,ARMOR=20,JEWELRY=30,COMPANION_WEAPON=40,CONSUMABLE=50,MATERIAL=60,OTHER=90,MYTHIC=1}
+            local aw,bw=weights[a.easKind029365] or 90,weights[b.easKind029365] or 90
+            if aw ~= bw then return aw < bw end
+            return lower(a.name or "") < lower(b.name or "")
+        end)
+    end
+    return groups
+end
+
+-- Make native Bank/Store/Trade/Deconstruction headers visually match the Suite
+-- inventory category cards instead of the old bare gold text row.
+function EASInventoryGrid:RegisterNativeCategoryType029376(list)
+    self.nativeCategoryLists029376 = self.nativeCategoryLists029376 or {}
+    if self.nativeCategoryLists029376[list] then return true end
+    if type(ZO_ScrollList_AddDataType) ~= "function" then return false end
+    local ok = pcall(ZO_ScrollList_AddDataType, list, EAS_NATIVE_CATEGORY_TYPE_029376, "ZO_SelectableLabel", 30, function(control, data)
+        if not control then return end
+        local collapsed = data and data.collapsed == true
+        if control.SetText then control:SetText((collapsed and "+  " or "-  ") .. tostring(data and data.text or "")) end
+        if control.SetFont then control:SetFont(EAS_CategoryFont029377(true)) end
+        if control.SetColor then control:SetColor(0.90, 0.94, 0.98, 1) end
+        if control.SetMouseEnabled then control:SetMouseEnabled(true) end
+        if not control.easSuiteCategoryBG029383 and wm then
+            local bg = wm:CreateControl(nil, control, CT_BACKDROP)
+            bg:SetAnchorFill(control)
+            bg:SetCenterColor(0.035, 0.055, 0.075, 0.98)
+            bg:SetEdgeColor(0.28, 0.48, 0.62, 0.95)
+            bg:SetEdgeTexture("EsoUI/Art/Miscellaneous/white_1x1.dds", 1, 1, 1)
+            bg:SetDrawLevel(math.max(0, (control.GetDrawLevel and control:GetDrawLevel() or 1) - 1))
+            bg:SetMouseEnabled(false)
+            control.easSuiteCategoryBG029383 = bg
+        end
+        if control.SetHandler then
+            control:SetHandler("OnMouseEnter", function(c) if c.easSuiteCategoryBG029383 then c.easSuiteCategoryBG029383:SetCenterColor(0.07,0.10,0.14,1) end end)
+            control:SetHandler("OnMouseExit", function(c) if c.easSuiteCategoryBG029383 then c.easSuiteCategoryBG029383:SetCenterColor(0.035,0.055,0.075,0.98) end end)
+            control:SetHandler("OnMouseUp", function(_, button, inside)
+                if inside == false or (MOUSE_BUTTON_INDEX_LEFT and button ~= MOUSE_BUTTON_INDEX_LEFT) then return end
+                local owner, targetList, group = data and data.owner, data and data.list, data and data.group
+                if owner and targetList and group then owner:ToggleNativeCategory029376(targetList, group) end
+            end)
+        end
+    end)
+    if ok then self.nativeCategoryLists029376[list] = true end
+    return ok
+end
+
+-- ============================================================================
+-- v0.29.451 - reliable native categories + full ESO/addon context menus.
+-- ============================================================================
+-- The original 0.29.382 protection treated every PLAYER_INVENTORY-owned list as
+-- the main backpack list. That accidentally excluded the bank/house bank/guild
+-- bank lists from Suite categories. Keep only the genuinely unsafe main backpack
+-- style lists excluded; interaction-owned lists remain native and can receive
+-- category header rows.
+local function EAS_IsUnsafeMainInventoryList029451(list)
+    if not list then return false end
+
+    -- Direct stock control names.
+    if list == rawget(_G, "ZO_PlayerInventoryList")
+        or list == rawget(_G, "ZO_QuestItemsList")
+        or list == rawget(_G, "ZO_CraftBagList")
+        or list == rawget(_G, "ZO_FurnitureVaultList") then
+        return true
+    end
+
+    -- v0.29.475: ESO also exposes the same native lists through
+    -- PLAYER_INVENTORY.inventories[INVENTORY_*].  Comparing only the named
+    -- top-level controls misses those aliases and can let a Suite category
+    -- header enter the player backpack list.  Inventory.lua later assumes
+    -- every visible row is a ZO_PlayerInventorySlot while clearing NEW status
+    -- and ZO_UpdateStatusControlIcons then indexes a nil child.
+    local inv = rawget(_G, "PLAYER_INVENTORY")
+    if type(inv) == "table" and type(inv.inventories) == "table" then
+        local unsafeTypes = {
+            rawget(_G, "INVENTORY_BACKPACK"),
+            rawget(_G, "INVENTORY_QUEST_ITEM"),
+            rawget(_G, "INVENTORY_CRAFT_BAG"),
+            rawget(_G, "INVENTORY_FURNITURE_VAULT"),
+        }
+        for _, inventoryType in ipairs(unsafeTypes) do
+            local data = inventoryType ~= nil and inv.inventories[inventoryType] or nil
+            if type(data) == "table" then
+                if data.list == list or data.listView == list or data.scrollList == list then
+                    return true
+                end
+            end
+        end
+    end
+    return false
+end
+
+local function EAS_CurrentSceneName029451()
+    if not SCENE_MANAGER or type(SCENE_MANAGER.GetCurrentScene) ~= "function" then return "" end
+    local ok, scene = pcall(SCENE_MANAGER.GetCurrentScene, SCENE_MANAGER)
+    if not ok or not scene or type(scene.GetName) ~= "function" then return "" end
+    local okName, name = pcall(scene.GetName, scene)
+    return okName and tostring(name or "") or ""
+end
+
+function EASInventoryGrid:IsNativeCategorySceneActive029451()
+    if self.visible == true then return false end
+    local name = string.lower(EAS_CurrentSceneName029451())
+    if name == "" then return true end
+    local allowed = {
+        bank=true, store=true, tradinghouse=true, trade=true,
+        smithing=true, crafting=true, universaldeconstruction=true,
+        enchanting=true, alchemy=true, retrait=true,
+    }
+    if allowed[name] then return true end
+    -- API revisions/addons can decorate the stock scene name. Keep matching
+    -- deliberately narrow to real inventory-interaction scenes.
+    return name:find("bank", 1, true) ~= nil
+        or name:find("tradinghouse", 1, true) ~= nil
+        or name:find("deconstruct", 1, true) ~= nil
+        or name:find("smithing", 1, true) ~= nil
+        or name:find("store", 1, true) ~= nil
+        or name:find("trade", 1, true) ~= nil
+end
+
+function EASInventoryGrid:ResetNativeCategorySceneState029451()
+    -- Base entries belong to one concrete native list build. Never reuse a
+    -- deconstruction snapshot after bank/trader opens (or vice versa).
+    self.nativeBaseEntries029376 = setmetatable({}, {__mode="k"})
+    self.nativeCollapsed029376 = setmetatable({}, {__mode="k"})
+    self.nativeInteractionTargets029364 = setmetatable({}, {__mode="k"})
+end
+
+-- v0.29.475: Native player inventory rows must never contain Suite category
+-- headers.  Purge every known alias before/after scene transitions so ESO's
+-- ClearNewStatusOnItemsThePlayerHasSeen can safely walk the list.
+function EASInventoryGrid:PurgeUnsafePlayerInventoryHeaders029475()
+    local seen = {}
+    local function purge(list)
+        if not list or seen[list] then return end
+        seen[list] = true
+        if EAS_IsUnsafeMainInventoryList029451(list) then
+            EAS_RemoveSuiteHeadersFromNativeList029382(list)
+            if self.nativeBaseEntries029376 then self.nativeBaseEntries029376[list] = nil end
+            if self.nativeCollapsed029376 then self.nativeCollapsed029376[list] = nil end
+            if self.nativeInteractionTargets029364 then self.nativeInteractionTargets029364[list] = nil end
+        end
+    end
+
+    purge(rawget(_G, "ZO_PlayerInventoryList"))
+    purge(rawget(_G, "ZO_QuestItemsList"))
+    purge(rawget(_G, "ZO_CraftBagList"))
+    purge(rawget(_G, "ZO_FurnitureVaultList"))
+
+    local inv = rawget(_G, "PLAYER_INVENTORY")
+    if type(inv) == "table" and type(inv.inventories) == "table" then
+        local unsafeTypes = {
+            rawget(_G, "INVENTORY_BACKPACK"),
+            rawget(_G, "INVENTORY_QUEST_ITEM"),
+            rawget(_G, "INVENTORY_CRAFT_BAG"),
+            rawget(_G, "INVENTORY_FURNITURE_VAULT"),
+        }
+        for _, inventoryType in ipairs(unsafeTypes) do
+            local data = inventoryType ~= nil and inv.inventories[inventoryType] or nil
+            if type(data) == "table" then
+                purge(data.list)
+                purge(data.listView)
+                purge(data.scrollList)
+            end
+        end
+    end
+end
+
+-- Discover only known/safe interaction objects. No _G enumeration, so this does
+-- not reintroduce the protected-global taint that older revisions removed.
+function EASInventoryGrid:CollectNativeInteractionLists029364()
+    local lists, seen = {}, {}
+    self.nativeInteractionTargets029364 = self.nativeInteractionTargets029364 or setmetatable({}, {__mode="k"})
+
+    local function add(control)
+        if not control or seen[control] or EAS_IsUnsafeMainInventoryList029451(control) then return end
+        if type(ZO_ScrollList_GetDataList) ~= "function" then return end
+        local ok, data = pcall(ZO_ScrollList_GetDataList, control)
+        if ok and type(data) == "table" then
+            seen[control] = true
+            lists[#lists + 1] = control
+            self.nativeInteractionTargets029364[control] = true
+        end
+    end
+
+    -- Stock player-bank lists are owned by PLAYER_INVENTORY but are not the
+    -- normal backpack list, so explicitly include all banking variants.
+    add(rawget(_G, "ZO_PlayerBankBackpack"))
+    add(rawget(_G, "ZO_HouseBankBackpack"))
+    add(rawget(_G, "ZO_GuildBankBackpack"))
+    local inv = rawget(_G, "PLAYER_INVENTORY")
+    if type(inv) == "table" and type(inv.inventories) == "table" then
+        for _, key in ipairs({rawget(_G,"INVENTORY_BANK"), rawget(_G,"INVENTORY_HOUSE_BANK"), rawget(_G,"INVENTORY_GUILD_BANK")}) do
+            local data = key and inv.inventories[key] or nil
+            if type(data) == "table" then add(data.listView); add(data.list) end
+        end
+    end
+
+    local function scan(root, depth)
+        if type(root) ~= "table" or depth > 5 then return end
+        for k, v in pairs(root) do
+            local key = string.lower(tostring(k or ""))
+            if key:find("list",1,true) or key:find("inventory",1,true) or key:find("result",1,true) or key:find("backpack",1,true) then
+                add(v)
+            end
+            if type(v) == "table" and (key:find("panel",1,true) or key:find("inventory",1,true) or key:find("result",1,true)
+                or key:find("list",1,true) or key:find("pane",1,true) or key:find("deconstruct",1,true)) then
+                scan(v, depth + 1)
+            end
+        end
+    end
+
+    -- Vendor / buyback.
+    scan(rawget(_G, "STORE_WINDOW"), 0)
+    for _, name in ipairs({"ZO_StoreWindowList","ZO_StoreWindowBuyBackList","ZO_StoreWindowBuybackList","ZO_StoreWindowBuyBack","ZO_StoreWindowBuyback"}) do
+        add(rawget(_G, name))
+    end
+
+    -- Guild trader. ESO initializes this lazily, so both object fields and known
+    -- controls are checked each time the tradinghouse scene becomes visible.
+    local trading = rawget(_G, "TRADING_HOUSE")
+    scan(trading, 0)
+    if type(trading) == "table" then
+        add(trading.searchResultsList)
+        add(trading.postingList)
+        add(trading.listingsList)
+    end
+    for _, name in ipairs({
+        "ZO_TradingHouseItemPaneSearchResults",
+        "ZO_TradingHouseBrowseItemsRightPaneSearchResults",
+        "ZO_TradingHouseSearchResults",
+    }) do add(rawget(_G, name)) end
+
+    -- Smithing + Universal Deconstruction. These controls can be created only
+    -- after the station initializes, so scan the known module roots each pass.
+    local smithing = rawget(_G, "SMITHING")
+    if type(smithing) == "table" then scan(smithing.deconstructionPanel, 0) end
+    scan(rawget(_G, "UNIVERSAL_DECONSTRUCTION"), 0)
+    for _, name in ipairs({
+        "ZO_SmithingTopLevelDeconstructionPanelInventoryBackpack",
+        "ZO_SmithingTopLevelDeconstructionPanelInventoryCraftBag",
+        "ZO_UniversalDeconstructionTopLevel_KeyboardPanelInventoryBackpack",
+        "ZO_UniversalDeconstructionTopLevel_KeyboardPanelInventoryCraftBag",
+        "ZO_UniversalDeconstructionTopLevelKeyboardPanelInventoryBackpack",
+        "ZO_UniversalDeconstructionTopLevelKeyboardPanelInventoryCraftBag",
+    }) do add(rawget(_G, name)) end
+
+    return lists
+end
+
+function EASInventoryGrid:ApplyCategoriesToNativeList029364(list)
+    if not list or EAS_IsUnsafeMainInventoryList029451(list) or type(ZO_ScrollList_GetDataList) ~= "function" then return false end
+    local ok, dataList = pcall(ZO_ScrollList_GetDataList, list)
+    if not ok or type(dataList) ~= "table" then return false end
+
+    self.nativeBaseEntries029376 = self.nativeBaseEntries029376 or setmetatable({}, {__mode="k"})
+    self.nativeCollapsed029376 = self.nativeCollapsed029376 or setmetatable({}, {__mode="k"})
+
+    local stripped, hadHeader = {}, false
+    for _, entry in ipairs(dataList) do
+        local data = type(entry) == "table" and (entry.data or entry) or nil
+        if type(data) == "table" and (data.easSuiteCategoryHeader029364 == true or data.easSuiteCategoryHeader029376 == true) then
+            hadHeader = true
+        else
+            stripped[#stripped + 1] = entry
+        end
+    end
+
+    if not EAS_InventoryCategoriesEnabled029365() then
+        local base = self.nativeBaseEntries029376[list] or stripped
+        if hadHeader then
+            for i=#dataList,1,-1 do dataList[i]=nil end
+            for i,entry in ipairs(base) do dataList[i]=entry end
+            local guard=self.nativeCategoryCommitGuard029364; self.nativeCategoryCommitGuard029364=true
+            if type(ZO_ScrollList_Commit)=="function" then pcall(ZO_ScrollList_Commit,list) end
+            self.nativeCategoryCommitGuard029364=guard
+        end
+        self.nativeBaseEntries029376[list] = nil
+        return hadHeader
+    end
+
+    -- No Suite headers means ESO/another addon rebuilt this list. That fresh
+    -- native build becomes the new authoritative base for THIS scene/list.
+    if not hadHeader then
+        self.nativeBaseEntries029376[list] = stripped
+    end
+    local base = self.nativeBaseEntries029376[list] or stripped
+
+    local itemCount = 0
+    for _, entry in ipairs(base) do
+        if self:GetNativeEntryLink029364(entry) ~= "" then itemCount = itemCount + 1 end
+    end
+    if itemCount < 1 then return false end
+    if not self:RegisterNativeCategoryType029376(list) then return false end
+
+    local prefix, suffix, groups, order = {}, {}, {}, {}
+    local seenItem = false
+    for _, entry in ipairs(base) do
+        local link = self:GetNativeEntryLink029364(entry)
+        if link ~= "" then
+            seenItem = true
+            local group = self:GetExternalGroupName029364(link) or "Other"
+            if not groups[group] then groups[group] = {}; order[#order + 1] = group end
+            groups[group][#groups[group] + 1] = entry
+        elseif not seenItem then
+            prefix[#prefix + 1] = entry
+        else
+            suffix[#suffix + 1] = entry
+        end
+    end
+    if #order < 1 then return false end
+
+    local collapsedMap = self.nativeCollapsed029376[list] or {}
+    local rebuilt = {}
+    for _, entry in ipairs(prefix) do rebuilt[#rebuilt + 1] = entry end
+    for _, group in ipairs(order) do
+        local collapsed = collapsedMap[group] == true
+        local hd = {
+            easSuiteCategoryHeader029376=true, easSuiteCategoryHeader029364=true,
+            text=group, group=group, collapsed=collapsed, owner=self, list=list,
+        }
+        local header = type(ZO_ScrollList_CreateDataEntry) == "function"
+            and ZO_ScrollList_CreateDataEntry(EAS_NATIVE_CATEGORY_TYPE_029376, hd)
+            or {typeId=EAS_NATIVE_CATEGORY_TYPE_029376, data=hd}
+        rebuilt[#rebuilt + 1] = header
+        if not collapsed then
+            for _, entry in ipairs(groups[group]) do rebuilt[#rebuilt + 1] = entry end
+        end
+    end
+    for _, entry in ipairs(suffix) do rebuilt[#rebuilt + 1] = entry end
+
+    for i=#dataList,1,-1 do dataList[i]=nil end
+    for i,entry in ipairs(rebuilt) do dataList[i]=entry end
+    if type(ZO_ScrollList_Commit) == "function" then
+        local guard = self.nativeCategoryCommitGuard029364
+        self.nativeCategoryCommitGuard029364 = true
+        pcall(ZO_ScrollList_Commit, list)
+        self.nativeCategoryCommitGuard029364 = guard
+    end
+    return true
+end
+
+function EASInventoryGrid:RefreshNativeInteractionCategories029364()
+    self:PurgeUnsafePlayerInventoryHeaders029475()
+    if not self:IsNativeCategorySceneActive029451() then return end
+    for _, list in ipairs(self:CollectNativeInteractionLists029364()) do
+        self:ApplyCategoriesToNativeList029364(list)
+    end
+end
+
+-- v0.29.472 SECURITY: Suite grid cells are addon-created controls and must never
+-- be passed into ESO's native inventory context-menu builder.  Stock menu entries
+-- such as TryUseItem -> UseItem are protected/private and inherit an insecure call
+-- chain when their inventorySlot originates from addon UI.  Keep Suite cells on the
+-- Suite-owned menu only; native ESO rows continue using ESO's own secure menu.
+local EAS_ShowSafeItemMenuBase029451 = EASInventoryGrid.ShowSafeItemMenu
+function EASInventoryGrid:ShowSafeItemMenu(control)
+    return EAS_ShowSafeItemMenuBase029451(self, control)
+end
+
+-- Scene transitions invalidate category snapshots. Re-run after both the scene
+-- edge and the lazy UI initialization pass (notably Trading House / Decon).
+if SCENE_MANAGER and type(SCENE_MANAGER.RegisterCallback) == "function" and not EASInventoryGrid.nativeCategorySceneResetHook029451 then
+    EASInventoryGrid.nativeCategorySceneResetHook029451 = true
+    SCENE_MANAGER:RegisterCallback("SceneStateChanged", function(_, _, newState)
+        if not EASInventoryGrid then return end
+
+        -- ESO clears seen/new status while inventory scenes are being hidden.
+        -- Remove any stale Suite header before that native refresh can run.
+        if newState == SCENE_HIDING or newState == SCENE_HIDDEN then
+            EASInventoryGrid:PurgeUnsafePlayerInventoryHeaders029475()
+            return
+        end
+
+        if newState ~= SCENE_SHOWING and newState ~= SCENE_SHOWN then return end
+        EASInventoryGrid:PurgeUnsafePlayerInventoryHeaders029475()
+        EASInventoryGrid:ResetNativeCategorySceneState029451()
+        if type(zo_callLater) == "function" then
+            for _, delay in ipairs({0, 90, 260, 650}) do
+                zo_callLater(function()
+                    if EASInventoryGrid then EASInventoryGrid:RefreshNativeInteractionCategories029364() end
+                end, delay)
+            end
+        else
+            EASInventoryGrid:RefreshNativeInteractionCategories029364()
+        end
+    end)
+end

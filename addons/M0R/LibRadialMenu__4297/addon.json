@@ -1,14 +1,23 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/M0R/LibRadialMenu__4297",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "M0R",
   "canonical_id": "esoui:4297",
   "category_id": "53",
   "compatibility": [
     {
-      "name": "Seasons of the Worm Cult Pt2",
-      "version": "11.2.0"
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
     }
   ],
   "content_id": "esoui:4297",
@@ -17,7 +26,7 @@
     "LibRadialMenu"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4297/",
-  "fingerprint": "e7849cecaf158f2a88568a57403cff74aef34a76e59c96a5cc3600fc294ab23a",
+  "fingerprint": "bde9e03869ade1a721eb6f9022ee6ed1bbf621c9a695c5c4f721d61ecbaf0d4d",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw14754.png",
     "https://cdn-eso.mmoui.com/preview/pvw14755.png",
@@ -30,11 +39,11 @@
   "source_id": "4297",
   "source_url": "https://www.esoui.com/downloads/info4297-LibRadialMenu.html",
   "stats": {
-    "downloads": 6731,
-    "favorites": 8,
-    "monthly_downloads": 871
+    "downloads": 8266,
+    "favorites": 9,
+    "monthly_downloads": 1140
   },
   "title": "LibRadialMenu",
-  "updated_at": 1772842141000,
-  "version": "6"
+  "updated_at": 1788844259000,
+  "version": "8"
 }

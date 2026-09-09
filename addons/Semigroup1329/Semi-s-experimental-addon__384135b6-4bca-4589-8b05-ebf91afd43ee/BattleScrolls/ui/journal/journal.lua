@@ -643,9 +643,8 @@ function BattleScrolls_Journal_Gamepad:ShowDeleteInstanceDialog()
     local utils = BattleScrolls.journal.utils
 
     local instanceSize = storage:EstimateInstanceSize(instance)
-    local totalBytes, _, _ = storage:EstimateHistorySize()
-    local preset = storage:GetCurrentSizePreset()
-    local limitBytes = preset.memoryMB * 1000000
+    local totalBytes = storage:EstimateSavedSize().totalBytes
+    local limitBytes = storage:GetSizeLimitBytes()
     local usagePercent = limitBytes > 0 and (totalBytes / limitBytes * 100) or 0
 
     local encounterCount = #instance.encounters
@@ -681,9 +680,8 @@ function BattleScrolls_Journal_Gamepad:ShowDeleteEncounterDialog()
     local utils = BattleScrolls.journal.utils
 
     local encounterSize = storage:EstimateEncounterSize(encounter)
-    local totalBytes, _, _ = storage:EstimateHistorySize()
-    local preset = storage:GetCurrentSizePreset()
-    local limitBytes = preset.memoryMB * 1000000
+    local totalBytes = storage:EstimateSavedSize().totalBytes
+    local limitBytes = storage:GetSizeLimitBytes()
     local usagePercent = limitBytes > 0 and (totalBytes / limitBytes * 100) or 0
 
     local encounterName = encounter.customName or encounter.displayName
@@ -804,8 +802,7 @@ function BattleScrolls_Journal_Gamepad:ShowLockErrorDialog(instance)
 
     local instanceSize = storage:EstimateInstanceSize(instance)
     local lockedSize = storage:GetLockedInstancesSize()
-    local preset = storage:GetCurrentSizePreset()
-    local limitBytes = preset.memoryMB * 1000000
+    local limitBytes = storage:GetSizeLimitBytes()
 
     local mainText = table.concat({
         GetString(BATTLESCROLLS_LOCK_ERROR_TEXT),

@@ -54,10 +54,29 @@ local function safeCall(fn, fallback, ...)
 end
 
 local function clean(value, fallback)
-    value = tostring(value or "")
-    value = value:gsub("[%c]+", " "):gsub("%s+", " "):gsub("^%s+", ""):gsub("%s+$", "")
-    if value == "" then return fallback or "" end
-    return value
+    local text = tostring(value or "")
+    if text == "" then text = tostring(fallback or "") end
+
+    -- ESO item/map names can carry language grammar payloads (for example
+    -- Russian case/gender markers).  Always give ESO first chance to resolve
+    -- those markers instead of trying to parse translated text ourselves.
+    if text ~= "" and type(zo_strformat) == "function" then
+        local ok, formatted = pcall(zo_strformat, "<<1>>", text)
+        if ok and type(formatted) == "string" and formatted ~= "" then
+            text = formatted
+        end
+    end
+
+    -- If a third-party/library string still contains an unresolved grammar
+    -- suffix, remove only the ASCII control payload.  Do not byte-slice UTF-8
+    -- text; that was the source of the apparent missing Cyrillic letters.
+    text = text:gsub("%^+[%a][%a%d]*{[^}]*}", "")
+    text = text:gsub("%^+[%a][%a%d]*", "")
+    text = text:gsub("%^", "")
+    text = text:gsub("{[%d]+}", "")
+    text = text:gsub("[%c]+", " "):gsub("%s+", " "):gsub("^%s+", ""):gsub("%s+$", "")
+    if text == "" then return tostring(fallback or "") end
+    return text
 end
 
 function T:IsLibTreasureAvailable()
@@ -183,7 +202,10 @@ function T:AddPinTooltipLines029309(tooltip, pinData, fallbackTypeKey, sourceMap
     tooltip:AddLine("|cFFD166Type:|r " .. tostring(def.label), "ZoFontGame")
     tooltip:AddLine("|cFFD166Zone / Map:|r " .. tostring(mapName), "ZoFontGame")
     if tonumber(x) and tonumber(y) then
-        tooltip:AddLine(string.format("|cFFD166Map position:|r %.1f%%, %.1f%%", tonumber(x) * 100, tonumber(y) * 100), "ZoFontGameSmall")
+        -- LibTreasure / map pin coordinates are normalized map coordinates
+        -- (0..1), not percentages.  Show the actual coordinate values so the
+        -- tooltip is unambiguous and can be compared directly with API data.
+        tooltip:AddLine(string.format("|cFFD166Map coordinates:|r X: %.3f, Y: %.3f", tonumber(x), tonumber(y)), "ZoFontGameSmall")
     end
     tooltip:AddLine(self:GetPinExplanation029309(typeKey), "ZoFontGameSmall")
     tooltip:AddLine(self:GetPinScopeText029309(itemId), "ZoFontGameSmall")
@@ -191,6 +213,11 @@ end
 
 function T:CreateWorldMapTooltip029309(pin, fallbackTypeKey)
     if not pin or not InformationTooltip then return end
+    -- LibMapPins initializes and anchors InformationTooltip before invoking this
+    -- creator.  Do NOT ClearTooltip here: clearing it destroys LibMapPins' hover
+    -- state/anchor and makes the description flash briefly and disappear while
+    -- the pointer is still over the pin.  Localized grammar cleanup is handled
+    -- on the strings themselves instead.
     local pinData = nil
     if type(pin.GetPinTypeAndTag) == "function" then
         local _, tag = safeCall(pin.GetPinTypeAndTag, nil, pin)

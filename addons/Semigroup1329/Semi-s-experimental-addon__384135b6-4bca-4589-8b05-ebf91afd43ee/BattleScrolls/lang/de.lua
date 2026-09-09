@@ -163,16 +163,17 @@ local strings = {
     [BATTLESCROLLS_SETTINGS_STORAGE_SIZE_YOLO] = "Was kann schon schiefgehen?",
     -- Storage tooltip
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_DESC] = "Wie viel Kampfverlauf gespeichert werden soll. Wenn das Limit erreicht wird, werden die ältesten nicht gesperrten Gebiete automatisch entfernt. Du kannst einzelne Gebiete sperren, um sie vor der Bereinigung zu schützen.",
-    [BATTLESCROLLS_SETTINGS_STORAGE_TT_NOTE] = "Dieses Limit gilt nur für gespeicherten Verlauf. Das Addon verwendet zusätzlich Speicher für den aktuellen Kampf und die Benutzeroberfläche, daher wird der Gesamtverbrauch höher sein.",
+    [BATTLESCROLLS_SETTINGS_STORAGE_TT_NOTE] = "Dieses Limit gilt nur für gespeicherte Daten: Kämpfe, Builds und Einstellungen. Das Addon verwendet zusätzlich Speicher für den aktuellen Kampf und die Benutzeroberfläche, daher wird der Gesamtverbrauch höher sein.",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_CURRENT] = "Verlauf: <<1>> MB von <<2>> MB (<<3>>%)",
+    [BATTLESCROLLS_SETTINGS_STORAGE_TT_PROTECTED] = "Gesperrte Kämpfe, Builds und Einstellungen allein überschreiten das Limit: Die Bereinigung kann es nicht unterschreiten.",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_PRESETS] = "Voreinstellungen (Prüfungs-Run ~0,3 MB, Verlies ~0,15 MB, ein Prog-Abend ~1 MB):",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_XS] = "  Extra Klein: 5 MB - nur die frischesten Schriftrollen",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_SMALL] = "  Klein: 8 MB - ein ordentlicher Stapel Schriftrollen",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_MEDIUM] = "  Mittel: 12 MB - ein gut geführtes Tagebuch",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_LARGE] = "  Groß: 18 MB - eine persönliche Bibliothek",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_XL] = "  Extra Groß: 25 MB - ein großes Archiv",
-    [BATTLESCROLLS_SETTINGS_STORAGE_TT_CAUTION] = "  Vorsicht: 40 MB - du magst Daten wirklich",
-    [BATTLESCROLLS_SETTINGS_STORAGE_TT_YOLO] = "  Was kann schon schiefgehen?: 60 MB - lebe gefährlich",
+    [BATTLESCROLLS_SETTINGS_STORAGE_TT_CAUTION] = "  Vorsicht: 35 MB - du magst Daten wirklich",
+    [BATTLESCROLLS_SETTINGS_STORAGE_TT_YOLO] = "  Was kann schon schiefgehen?: 50 MB - das hast du dir selbst eingebrockt",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_WARNING] = "Zu ESO-Speicherlimits: Alle Addons teilen sich 100 MB. Bei 70 MB zeigt ESO eine Warnung. Bei 100 MB lädt die UI neu und deaktiviert alles. Bei vielen Addons eine kleinere Einstellung wählen. Tipp: /addonmemdisplay im Chat eingeben für Echtzeit-Speicheranzeige.",
 
     -------------------------
@@ -1130,3 +1131,6 @@ SafeAddString(BATTLESCROLLS_MEMLAB_DISCARD_REQUIRED, "Vor discard Testdaten lade
 SafeAddString(BATTLESCROLLS_MEMLAB_USAGE_MIRROR, "/bsmemlab seed mirror; discard; census live; trace", 1)
 SafeAddString(BATTLESCROLLS_MEMLAB_LIVE_COUNTS, "Letztes aktiv %d (1=ja); A%d I%d N%d", 1)
 SafeAddString(BATTLESCROLLS_MEMLAB_LIVE_BYTES, "Schreiber extra L%.2f K%.2f", 1)
+SafeAddString(BATTLESCROLLS_MEMLAB_CALIB_HEADER, "Kalib: dG/dH je Klasse, letzte Hälfte von %d MiB", 1)
+SafeAddString(BATTLESCROLLS_MEMLAB_CALIB_ROW, "%s n%d dH%.1f s%s m%s p%s G%s/%s/%s", 1)
+SafeAddString(BATTLESCROLLS_MEMLAB_USAGE_CALIB, "/bsmemlab calib [4..32] [class] (MiB per class)", 1)

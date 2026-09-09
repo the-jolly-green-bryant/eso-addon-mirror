@@ -1177,14 +1177,26 @@ function M:CreateShell()
         s.modernAppHeight02880 = 600
         s.modernAppDefaultMinSize02930 = true
     end
-    local w = tonumber(s.modernAppWidth02880) or 980
-    local h = tonumber(s.modernAppHeight02880) or 600
-    w = math.max(980, math.min(1320, w))
-    h = math.max(600, math.min(800, h))
+    -- v0.29.363: the 980x600 migration made the modern Suite unnecessarily
+    -- small on 1440p/4K displays. Enlarge only installs that are still sitting
+    -- at that old minimum; preserve any size the player already chose.
+    if not s.modernAppReadableDefault029363 then
+        local oldW = tonumber(s.modernAppWidth02880) or 980
+        local oldH = tonumber(s.modernAppHeight02880) or 600
+        if oldW <= 990 and oldH <= 610 then
+            s.modernAppWidth02880 = 1260
+            s.modernAppHeight02880 = 780
+        end
+        s.modernAppReadableDefault029363 = true
+    end
+    local w = tonumber(s.modernAppWidth02880) or 1260
+    local h = tonumber(s.modernAppHeight02880) or 780
+    w = math.max(980, math.min(1600, w))
+    h = math.max(600, math.min(1000, h))
 
     local root = wm:CreateTopLevelWindow("EAS_ModernApplication02880")
     root:SetDimensions(w,h)
-    root:SetDimensionConstraints(980,600,1320,800)
+    root:SetDimensionConstraints(980,600,1600,1000)
     root:SetAnchor(CENTER,GuiRoot,CENTER,0,-4)
     root:SetClampedToScreen(true)
     root:SetMovable(true)
@@ -1298,10 +1310,10 @@ function M:CreateShell()
         local newW=currentW
         local newH=currentH
         if mode=="RIGHT" or mode=="BOTH" then
-            newW=math.max(980,math.min(1320,(tonumber(self._resizeStartW) or currentW)+dw))
+            newW=math.max(980,math.min(1600,(tonumber(self._resizeStartW) or currentW)+dw))
         end
         if mode=="BOTTOM" or mode=="BOTH" then
-            newH=math.max(600,math.min(800,(tonumber(self._resizeStartH) or currentH)+dh))
+            newH=math.max(600,math.min(1000,(tonumber(self._resizeStartH) or currentH)+dh))
         end
         if newW~=currentW or newH~=currentH then
             root:SetDimensions(newW,newH)
@@ -1369,7 +1381,7 @@ function M:CreateShell()
     end)
 
 
-    self:Reflow(); self:RefreshProfile()
+    self:Reflow(); self:ApplyWindowAppearance029363(); self:RefreshProfile()
 end
 
 function M:Reflow()
@@ -3117,6 +3129,9 @@ function M:CreateCodex()
     end
     p.card=flatPanel("EAS_ModernCodexCard02895",p,8,142,1150,474,SURFACE,EDGE_SOFT)
     p.text=label("EAS_ModernCodexText02895",p.card,"",24,24,1102,356,"ZoFontGame",MUTED)
+    local codexFontSize = tonumber(EPC.saved and EPC.saved.codexModernFontSize029363) or 18
+    codexFontSize = math.max(14, math.min(28, math.floor(codexFontSize + 0.5)))
+    p.text:SetFont(string.format("$(MEDIUM_FONT)|%d|soft-shadow-thick", codexFontSize))
     p.codexPage=1
     p.prev=button("EAS_ModernCodexPrev02895",p.card,"< PREV",24,408,110,38,function() p.codexPage=math.max(1,(tonumber(p.codexPage) or 1)-1); self:RefreshCodex() end)
     p.pageLabel=label("EAS_ModernCodexPage02895",p.card,"PAGE 1 / 1",148,417,854,20,"ZoFontGameSmall",MUTED); p.pageLabel:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
@@ -3128,8 +3143,15 @@ end
 function M:RefreshCodex()
     local p=self.pages.CODEX; if not p then return end
     local raw=J.GetCodexText and J:GetCodexText() or ""
-    local formatted=wrapTextWords(organizeInfoText(raw),145)
-    local body,page,pages=paginateSingle(formatted,p.codexPage,14)
+    local fontSize = tonumber(EPC.saved and EPC.saved.codexModernFontSize029363) or 18
+    fontSize = math.max(14, math.min(28, math.floor(fontSize + 0.5)))
+    if p.text.SetFont then p.text:SetFont(string.format("$(MEDIUM_FONT)|%d|soft-shadow-thick", fontSize)) end
+    -- Larger fonts need fewer characters per wrapped line and fewer lines per
+    -- page. Recompute both so text remains readable rather than clipping.
+    local maxChars = math.max(72, math.min(172, math.floor(145 * 18 / fontSize)))
+    local linesPerPage = math.max(8, math.min(18, math.floor(350 / (fontSize + 6))))
+    local formatted=wrapTextWords(organizeInfoText(raw),maxChars)
+    local body,page,pages=paginateSingle(formatted,p.codexPage,linesPerPage)
     p.codexPage=page; p.text:SetText(body)
     p.pageLabel:SetText(string.format("PAGE %d / %d",page,pages))
     p.prev:SetHidden(pages<=1); p.next:SetHidden(pages<=1); setEnabled(p.prev,page>1); setEnabled(p.next,page<pages)
@@ -3361,6 +3383,28 @@ function M:CloseSettingsSceneForSuite02943()
     return false
 end
 
+-- v0.29.363: Settings.lua historically targeted EPC.UI.root, which is the
+-- retired legacy shell. Keep modern window appearance in one live method so
+-- Window Scale/Opacity affect the UI the player actually sees.
+function M:ApplyWindowAppearance029363()
+    if not self.window then return end
+    local alpha = tonumber(EPC.saved and EPC.saved.alpha) or 0.96
+    local scale = tonumber(EPC.saved and EPC.saved.scale) or 1.0
+    alpha = math.max(0.35, math.min(1.0, alpha))
+    scale = math.max(0.70, math.min(1.40, scale))
+    self.window:SetAlpha(alpha)
+    self.window:SetScale(scale)
+end
+
+function M:ApplyCodexTextSize029363()
+    local p = self.pages and self.pages.CODEX
+    if not p or not p.text then return end
+    local size = tonumber(EPC.saved and EPC.saved.codexModernFontSize029363) or 18
+    size = math.max(14, math.min(28, math.floor(size + 0.5)))
+    p.text:SetFont(string.format("$(MEDIUM_FONT)|%d|soft-shadow-thick", size))
+    self:RefreshCodex()
+end
+
 function M:Show()
     if not self.window then self:CreateShell() end
     if self.fullSettingsBridge02943 or self.settingsHotkeyLayer02943 then
@@ -3369,8 +3413,8 @@ function M:Show()
     if EPC.LoadoutManager and EPC.LoadoutManager.window and not EPC.LoadoutManager.window:IsHidden() and EPC.LoadoutManager.Hide then EPC.LoadoutManager:Hide(true) end
     local already=safe(IsGameCameraUIModeActive,false)==true; J.ownsUIMode=not already
     if not already then if type(SetGameCameraUIMode)=="function" then pcall(SetGameCameraUIMode,true) elseif SCENE_MANAGER and SCENE_MANAGER.SetInUIMode then pcall(SCENE_MANAGER.SetInUIMode,SCENE_MANAGER,true) end end
-    self.window:SetAlpha(1)
     self.window:SetHidden(false)
+    self:ApplyWindowAppearance029363()
     if self.shell then
         self.shell:SetHidden(false)
         setPanelVisual(self.shell, BG, {0,0,0,0})
@@ -3450,4 +3494,67 @@ if type(SLASH_COMMANDS)=="table" then
         local msg="UI: Modern Application active."
         if EPC and EPC.Print then EPC:Print(msg) elseif type(d)=="function" then d("[ESO Adventurer Suite] "..msg) end
     end
+end
+
+-- ============================================================================
+-- v0.29.376 - safe modern-window scaling across tab changes.
+-- Reflow the logical viewport after changing top-level scale and never compound
+-- the scale onto page controls. All pages stay anchored to the same unscaled
+-- body, so changing CODEX/other tabs cannot inherit stale scaled anchors.
+-- ============================================================================
+local EAS_ApplyWindowAppearanceBase029376 = M.ApplyWindowAppearance029363
+function M:ApplyWindowAppearance029363()
+    EAS_ApplyWindowAppearanceBase029376(self)
+    if self.window and self.window.SetClampedToScreen then self.window:SetClampedToScreen(true) end
+    if self.Reflow then self:Reflow() end
+end
+
+
+-- ============================================================================
+-- v0.29.381 - Codex scale/tab geometry hardening.
+-- Page controls always remain at logical scale 1. The saved Window Scale is
+-- applied only to the top-level window after each tab has been laid out.
+-- ============================================================================
+local EAS_ModernSetTabBase029381 = M.SetTab
+function M:SetTab(tab)
+    if self.window then self.window:SetScale(1) end
+    if self.body then self.body:SetScale(1) end
+    for _, page in pairs(self.pages or {}) do
+        if page and page.SetScale then page:SetScale(1) end
+    end
+    local result = EAS_ModernSetTabBase029381(self, tab)
+    if self.Reflow then self:Reflow() end
+    for _, page in pairs(self.pages or {}) do
+        if page and page.SetScale then page:SetScale(1) end
+    end
+    local scale = tonumber(EPC.saved and EPC.saved.scale) or 1.0
+    scale = math.max(0.70, math.min(1.40, scale))
+    if self.window then self.window:SetScale(scale) end
+    return result
+end
+
+
+-- ============================================================================
+-- v0.29.384 - stable Codex scaling while switching tabs.
+-- Keep the user-selected scale on the top-level window continuously.  Previous
+-- code briefly forced the window to scale 1 during SetTab/Reflow, which could
+-- make child anchors/layout calculations jump and accumulate bad geometry.
+-- ============================================================================
+local EAS_ModernSetTabLogicalBase029384 = EAS_ModernSetTabBase029381 or M.SetTab
+function M:SetTab(tab)
+    local scale = tonumber(EPC.saved and EPC.saved.scale) or 1.0
+    scale = math.max(0.70, math.min(1.40, scale))
+    if self.window and self.window.SetScale then self.window:SetScale(scale) end
+    if self.body and self.body.SetScale then self.body:SetScale(1) end
+    for _, page in pairs(self.pages or {}) do
+        if page and page.SetScale then page:SetScale(1) end
+    end
+    local result = EAS_ModernSetTabLogicalBase029384(self, tab)
+    if self.body and self.body.SetScale then self.body:SetScale(1) end
+    for _, page in pairs(self.pages or {}) do
+        if page and page.SetScale then page:SetScale(1) end
+    end
+    if self.Reflow then self:Reflow() end
+    if self.window and self.window.SetScale then self.window:SetScale(scale) end
+    return result
 end

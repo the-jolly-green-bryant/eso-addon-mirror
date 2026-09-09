@@ -94,10 +94,11 @@ end
 ---@param bytes number
 ---@return string
 function utils.formatBytes(bytes)
-    if bytes >= 1000000 then
-        return string.format("%.1f MB", bytes / 1000000)
-    elseif bytes >= 1000 then
-        return string.format("%.1f KB", bytes / 1000)
+    -- Binary units under the game's own labels: its memory display says MB for MiB
+    if bytes >= 1024 * 1024 then
+        return string.format("%.1f MB", bytes / (1024 * 1024))
+    elseif bytes >= 1024 then
+        return string.format("%.1f KB", bytes / 1024)
     else
         return string.format("%d bytes", bytes)
     end

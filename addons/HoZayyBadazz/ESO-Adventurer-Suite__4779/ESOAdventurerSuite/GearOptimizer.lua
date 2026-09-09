@@ -1531,6 +1531,56 @@ function G:ApplyMetaMorphPreference(entry, desiredName)
     return false
 end
 
+-- 0.29.395 - Resolve a curated SkillMeta choice to the exact ESO morph slot.
+-- ApplyMetaMorphPreference can return early when entry.name already matches the
+-- requested display name.  That is normally harmless, but it can leave the
+-- entry's morphSlot pointing at the generic scorer's previously selected morph.
+-- Bound Armor -> Bound Armaments/Bound Aegis exposed this: the bar contained the
+-- correct progression, while the pending respec committed the opposite morph.
+function G:ForceExactMetaMorph029395(entry)
+    if not entry or not entry.metaPreferredName then return false end
+    if not EPC.SkillMeta or type(EPC.SkillMeta.NameMatches)~="function" then return false end
+    local progressionId=tonumber(entry.progressionId) or 0
+    if progressionId<=0 or type(GetProgressionSkillMorphSlotAbilityId)~="function" then return false end
+
+    local wanted=tostring(entry.metaPreferredName)
+    local base=rawget(_G,"MORPH_SLOT_BASE") or 0
+    local m1=rawget(_G,"MORPH_SLOT_MORPH_1") or 1
+    local m2=rawget(_G,"MORPH_SLOT_MORPH_2") or 2
+    for _,morphSlot in ipairs({m1,m2,base}) do
+        local abilityId=safeNumber(GetProgressionSkillMorphSlotAbilityId,0,progressionId,morphSlot)
+        if abilityId>0 then
+            local name=easAbilityNameById(abilityId,"")
+            if EPC.SkillMeta:NameMatches(name,wanted) then
+                -- A requested morph can only be committed when this progression
+                -- has actually reached ESO's morph point.  Buying a base skill
+                -- during a respec does not grant the XP needed to morph it.
+                -- Keep the requested morph as a future target, but stage the base
+                -- skill now so MAX POWER applies the strongest legal build instead
+                -- of repeatedly submitting an impossible morph transaction.
+                if morphSlot~=base and entry.canMorph~=true and (tonumber(entry.currentMorph) or base)==base then
+                    entry.desiredMorphSlot029396=morphSlot
+                    entry.desiredMorphAbilityId029396=abilityId
+                    entry.desiredMorphName029396=name~="" and name or wanted
+                    entry.morphBlockedByProgression029396=true
+                    local baseId=safeNumber(GetProgressionSkillMorphSlotAbilityId,0,progressionId,base)
+                    if baseId>0 then entry.abilityId=baseId end
+                    entry.morphSlot=base
+                    entry.name=entry.baseName or easAbilityNameById(baseId,entry.name)
+                    entry.metaExactMorph029395=true
+                    return true
+                end
+                entry.morphSlot=morphSlot
+                entry.abilityId=abilityId
+                entry.name=name~="" and name or wanted
+                entry.metaExactMorph029395=true
+                return true
+            end
+        end
+    end
+    return false
+end
+
 function G:FindMetaAbilityEntry(active, candidates, context, isBackup, used, wantUltimate)
     if type(candidates)=="string" then candidates={candidates} end
     if type(candidates)~="table" then return nil,nil end
@@ -1655,6 +1705,74 @@ function G:BuildPlannedWeaponBar(active, context, isBackup)
     return chosen, ults[1] and ults[1].entry or nil
 end
 
+
+-- 0.29.393 - MAX POWER should only spend skill points on passives that can
+-- materially benefit the selected build. The old e.score > 0 rule treated the
+-- broad skill-type baseline as recommendation evidence and could buy/report
+-- unrelated passives such as Improved Hiding or Bounty Hunter.
+function G:IsPassiveRecommendedForMaxPower029393(entry,context)
+    if not entry then return false end
+    context=context or self:GetWornBuildContext()
+    local metaBonus=0
+    if EPC.SkillMeta and type(EPC.SkillMeta.GetPassiveBonus)=="function" and context.skillMeta then
+        metaBonus=tonumber(EPC.SkillMeta:GetPassiveBonus(entry.name,context.skillMeta)) or 0
+    end
+    if metaBonus>0 then return true end
+
+    local st=entry.skillType
+    -- Class and racial passives are core character-power passives. Keep them
+    -- even when their localized text does not contain one of our scoring words.
+    if st==SKILL_TYPE_CLASS or st==SKILL_TYPE_RACIAL then return true end
+
+    -- Weapon passives only matter when their line matches one of the two
+    -- equipped weapon families.
+    if st==SKILL_TYPE_WEAPON then
+        return self:IsPlannedAbilityCompatibleWithWeapon(entry,context.frontWeaponType)
+            or self:IsPlannedAbilityCompatibleWithWeapon(entry,context.backWeaponType)
+    end
+
+    local score=tonumber(entry.score) or self:ScorePassiveForCurrentBuild(entry,context) or 0
+    -- Armor and miscellaneous lines must have actual build relevance above the
+    -- generic category baseline. Curated SkillMeta priorities already returned
+    -- above, so utility/crafting passives are not purchased just because points
+    -- remain.
+    if st==SKILL_TYPE_ARMOR then return score>=900 end
+    if st==SKILL_TYPE_GUILD or st==SKILL_TYPE_WORLD or st==SKILL_TYPE_AVA then return score>=700 end
+    return false
+end
+
+-- 0.29.394 - Distinguish mandatory MAX POWER passives from optional beneficial
+-- extras. Optional extras may still be purchased when points remain, but they
+-- must not make an otherwise correct build report BUILD INCOMPLETE.
+function G:IsPassiveRequiredForMaxPowerCompletion029394(entry,context)
+    if not entry then return false end
+    context=context or self:GetWornBuildContext()
+    local metaBonus=0
+    if EPC.SkillMeta and type(EPC.SkillMeta.GetPassiveBonus)=="function" and context.skillMeta then
+        metaBonus=tonumber(EPC.SkillMeta:GetPassiveBonus(entry.name,context.skillMeta)) or 0
+    end
+    if metaBonus>0 then return true end
+
+    local st=entry.skillType
+    -- Racial passives are always direct character power.
+    if st==SKILL_TYPE_RACIAL then return true end
+    -- Equipped-weapon passives are mandatory for a power build; unrelated
+    -- weapon lines remain optional/unselected.
+    if st==SKILL_TYPE_WEAPON then
+        return self:IsPlannedAbilityCompatibleWithWeapon(entry,context.frontWeaponType)
+            or self:IsPlannedAbilityCompatibleWithWeapon(entry,context.backWeaponType)
+    end
+    -- Armor passives only become mandatory when the relevance score shows an
+    -- actual combat benefit for the current build. Class/guild/world/AVA
+    -- passives not explicitly curated by SkillMeta are treated as optional
+    -- extras rather than completion blockers.
+    if st==SKILL_TYPE_ARMOR then
+        local score=tonumber(entry.score) or self:ScorePassiveForCurrentBuild(entry,context) or 0
+        return score>=900
+    end
+    return false
+end
+
 function G:BuildFullSkillPlan()
     local context=self:GetWornBuildContext()
     local skillMeta,skillPreset=self:GetSkillMetaForContext(context)
@@ -1731,6 +1849,19 @@ function G:BuildFullSkillPlan()
         frontMetaStats={matched=0,fallback=5,requested=5,ultimateMatched=false}
         backMetaStats={matched=0,fallback=5,requested=5,ultimateMatched=false}
     end
+
+    -- Curated profile names are authoritative for morph choice. Normalize the
+    -- selected bar entries now, before they are deduplicated into the purchase
+    -- plan, budgeted, morphed, staged, or verified. This prevents a generic
+    -- pre-score morph from surviving when the requested SkillMeta name already
+    -- happened to match the entry's display name.
+    if skillMeta then
+        for _,e in ipairs(frontWanted or {}) do self:ForceExactMetaMorph029395(e) end
+        for _,e in ipairs(backWanted or {}) do self:ForceExactMetaMorph029395(e) end
+        self:ForceExactMetaMorph029395(frontUltWanted)
+        self:ForceExactMetaMorph029395(backUltWanted)
+    end
+
     local chosen,chosenMap={},{}
     local chosenUlts={}
     local spent=0
@@ -1849,7 +1980,7 @@ function G:BuildFullSkillPlan()
 
     local desiredPassiveRanks={}
     for _,e in ipairs(passives) do
-        if e.score>0 then
+        if self:IsPassiveRecommendedForMaxPower029393(e,context) then
             local can=math.min(e.maxRank,math.max(0,budget-spent))
             if can>0 then desiredPassiveRanks[e]=can spent=spent+can end
         end
@@ -1976,6 +2107,78 @@ function G:BuildCompatiblePurchasedBar(category, context)
     return chosen,ults[1] and ults[1].ability or nil,normal,ults,stats
 end
 
+-- 0.29.388 - resolve a plan entry to the exact ability ID for its requested morph.
+-- The plan can retain a base/progression-facing abilityId while ESO's hotbar stores
+-- the current morph ability ID, so never compare only entry.abilityId.
+function G:ResolvePlannedSlottableAbilityId029388(entry)
+    if not entry then return 0 end
+    local progressionId=tonumber(entry.progressionId) or 0
+    local morphSlot=tonumber(entry.morphSlot)
+    if progressionId>0 and morphSlot~=nil and type(GetProgressionSkillMorphSlotAbilityId)=="function" then
+        local id=safeNumber(GetProgressionSkillMorphSlotAbilityId,0,progressionId,morphSlot)
+        if id>0 then return id end
+    end
+    local id=tonumber(entry.abilityId) or 0
+    if id>0 then return id end
+    if type(GetSkillAbilityId)=="function" then
+        id=safeNumber(GetSkillAbilityId,0,entry.skillType,entry.skillLine,entry.skillIndex,false)
+        if id>0 then return id end
+    end
+    return 0
+end
+
+function G:DoesHotbarAbilityMatchPlan029388(gotAbilityId, entry, hotbarCategory)
+    gotAbilityId=tonumber(gotAbilityId) or 0
+    if gotAbilityId<=0 or not entry then return false end
+    local want=self:ResolvePlannedSlottableAbilityId029388(entry)
+    if want>0 and gotAbilityId==want then return true end
+    if tonumber(entry.abilityId) and gotAbilityId==tonumber(entry.abilityId) then return true end
+
+    -- 0.29.392: ESO can expose a weapon-dependent EFFECTIVE ability ID on the
+    -- hotbar instead of the progression's canonical morph ID. Destruction Staff
+    -- Wall is the common example: the planned morph is Unstable Wall of Elements
+    -- while an Inferno Staff exposes Unstable Wall of Fire. Compare each canonical
+    -- progression ID against the effective hotbar ID for this category as well.
+    local function matchesCanonical(id)
+        id=tonumber(id) or 0
+        if id<=0 then return false end
+        if gotAbilityId==id then return true end
+        if hotbarCategory~=nil and type(GetEffectiveAbilityIdForAbilityOnHotbar)=="function" then
+            local effective=safeNumber(GetEffectiveAbilityIdForAbilityOnHotbar,0,id,hotbarCategory)
+            if effective>0 and gotAbilityId==effective then return true end
+        end
+        return false
+    end
+
+    -- Treat base + either morph of the same progression as the same slottable skill.
+    -- Morph correctness is verified separately by GetPlannedBuildVerification().
+    local progressionId=tonumber(entry.progressionId) or 0
+    if progressionId>0 and type(GetProgressionSkillMorphSlotAbilityId)=="function" then
+        local slots={rawget(_G,"MORPH_SLOT_BASE") or 0,rawget(_G,"MORPH_SLOT_1") or 1,rawget(_G,"MORPH_SLOT_2") or 2}
+        for _,morph in ipairs(slots) do
+            local id=safeNumber(GetProgressionSkillMorphSlotAbilityId,0,progressionId,morph)
+            if matchesCanonical(id) then return true end
+        end
+    end
+    return matchesCanonical(want)
+end
+
+-- 0.29.391 - canonical physical player action-bar slots.
+-- ESO's exported ACTION_BAR_* constants are zero-based in several clients,
+-- while GetSlotBoundId/SelectSlotAbility and the pending assignment hotbar use
+-- the physical 1-based skill slots. Prefer ESO's live assignable range when it
+-- exists; otherwise convert the exported constants by +1.
+function G:GetPhysicalPlayerHotbarSlots029391()
+    local first,ult
+    if type(GetAssignableAbilityBarStartAndEndSlots)=="function" then
+        local ok,a,b=pcall(GetAssignableAbilityBarStartAndEndSlots)
+        if ok then first=tonumber(a); ult=tonumber(b) end
+    end
+    if not first then first=(tonumber(ACTION_BAR_FIRST_NORMAL_SLOT_INDEX) or 2)+1 end
+    if not ult then ult=(tonumber(ACTION_BAR_ULTIMATE_SLOT_INDEX) or 7)+1 end
+    return first,ult
+end
+
 function G:StagePlannedHotbarsInRespec(plan)
     if not plan then return false,0,{"missing plan"} end
     local barMgr=rawget(_G,"ACTION_BAR_ASSIGNMENT_MANAGER")
@@ -1984,15 +2187,11 @@ function G:StagePlannedHotbarsInRespec(plan)
         return false,0,{"ESO action-bar assignment manager unavailable"}
     end
 
-    -- IMPORTANT: ZO_ActionBarAssignmentManager_Hotbar uses its own 1-indexed
-    -- Skills-UI slot range. ESO's source converts the legacy ACTION_BAR_*
-    -- constants by +1 before using them with hotbar:ClearSlot()/AssignSkillToSlot().
-    -- The public action-bar APIs (GetSlotBoundId/SelectSlotAbility) still use the
-    -- normal ACTION_BAR_* indexes, so this +1 conversion belongs ONLY here.
-    local actionFirst=tonumber(ACTION_BAR_FIRST_NORMAL_SLOT_INDEX) or 3
-    local actionUlt=tonumber(ACTION_BAR_ULTIMATE_SLOT_INDEX) or (actionFirst+5)
-    local first=actionFirst+1
-    local ultSlot=actionUlt+1
+    -- 0.29.391: stage into ESO's physical 1-based skill slots. 0.29.389
+    -- accidentally fed the exported zero-based ACTION_BAR constants directly
+    -- into the pending hotbar and caused four legal recommendations to be
+    -- rejected. Use the same canonical physical range everywhere.
+    local first,ultSlot=self:GetPhysicalPlayerHotbarSlots029391()
     local PRIMARY=rawget(_G,"HOTBAR_CATEGORY_PRIMARY") or 0
     local BACKUP=rawget(_G,"HOTBAR_CATEGORY_BACKUP") or 1
     local changed=0
@@ -2028,13 +2227,22 @@ function G:StagePlannedHotbarsInRespec(plan)
             if entry then
                 local skillData=getSkillData(entry)
                 local slot=first+(i-1)
+                local targetId=self:ResolvePlannedSlottableAbilityId029388(entry)
+                local ok,result=false,false
+                -- 0.29.390: During a pending full respec, the requested morph may not
+                -- exist yet as a live ability ID even though ESO's SkillData object
+                -- already represents the pending purchased/morphed skill. Prefer the
+                -- native SkillData assignment path and use the ability-ID path only as
+                -- a fallback. This is required for pending morphs/ultimates such as
+                -- Force Pulse, Hurricane, Flawless Dawnbreaker and Power Overload.
                 if skillData and type(hotbar.AssignSkillToSlot)=="function" then
-                    local ok,result=pcall(hotbar.AssignSkillToSlot,hotbar,slot,skillData)
-                    if ok and result~=false then
-                        changed=changed+1
-                    else
-                        failures[#failures+1]=label.." "..i.."="..tostring(entry.name)
-                    end
+                    ok,result=pcall(hotbar.AssignSkillToSlot,hotbar,slot,skillData)
+                end
+                if (not ok or result==false) and targetId>0 and type(hotbar.AssignSkillToSlotByAbilityId)=="function" then
+                    ok,result=pcall(hotbar.AssignSkillToSlotByAbilityId,hotbar,slot,targetId)
+                end
+                if ok and result~=false then
+                    changed=changed+1
                 else
                     failures[#failures+1]=label.." "..i.."="..tostring(entry.name)
                 end
@@ -2045,13 +2253,16 @@ function G:StagePlannedHotbarsInRespec(plan)
 
         if ultimate then
             local skillData=getSkillData(ultimate)
+            local targetId=self:ResolvePlannedSlottableAbilityId029388(ultimate)
+            local ok,result=false,false
             if skillData and type(hotbar.AssignSkillToSlot)=="function" then
-                local ok,result=pcall(hotbar.AssignSkillToSlot,hotbar,ultSlot,skillData)
-                if ok and result~=false then
-                    changed=changed+1
-                else
-                    failures[#failures+1]=label.." Ultimate="..tostring(ultimate.name)
-                end
+                ok,result=pcall(hotbar.AssignSkillToSlot,hotbar,ultSlot,skillData)
+            end
+            if (not ok or result==false) and targetId>0 and type(hotbar.AssignSkillToSlotByAbilityId)=="function" then
+                ok,result=pcall(hotbar.AssignSkillToSlotByAbilityId,hotbar,ultSlot,targetId)
+            end
+            if ok and result~=false then
+                changed=changed+1
             else
                 failures[#failures+1]=label.." Ultimate="..tostring(ultimate.name)
             end
@@ -2083,7 +2294,38 @@ function G:GetPlannedBuildVerification(plan)
     local expectedSkills,confirmedSkills=0,0
     local expectedMorphs,confirmedMorphs=0,0
     local expectedPassiveRanks,confirmedPassiveRanks=0,0
+    local missingMorphs={}
+    local blockedMorphs={}
+    local missingPassives={}
     local seen={}
+
+    -- A few ESO progressions can report a stale/alternate currentMorph value
+    -- after respec even though the exact requested morph is live on the bar.
+    -- Bound Armaments is one observed case. Verify the exact requested morph
+    -- against the physical hotbars as a second authoritative signal.
+    local first,ultSlot=self:GetPhysicalPlayerHotbarSlots029391()
+    local PRIMARY=rawget(_G,"HOTBAR_CATEGORY_PRIMARY") or 0
+    local BACKUP=rawget(_G,"HOTBAR_CATEGORY_BACKUP") or 1
+    local function exactMorphIsSlotted(e)
+        if not e or type(GetSlotBoundId)~="function" then return false end
+        local wanted=self:ResolvePlannedSlottableAbilityId029388(e)
+        if wanted<=0 then wanted=tonumber(e.abilityId) or 0 end
+        if wanted<=0 then return false end
+        local function matches(category,slot)
+            local got=safeNumber(GetSlotBoundId,0,slot,category)
+            if got==wanted then return true end
+            if type(GetEffectiveAbilityIdForAbilityOnHotbar)=="function" then
+                local effective=safeNumber(GetEffectiveAbilityIdForAbilityOnHotbar,0,wanted,category)
+                if effective>0 and got==effective then return true end
+            end
+            return false
+        end
+        for i=1,5 do
+            local slot=first+i-1
+            if matches(PRIMARY,slot) or matches(BACKUP,slot) then return true end
+        end
+        return matches(PRIMARY,ultSlot) or matches(BACKUP,ultSlot)
+    end
 
     local function verifyActive(e)
         if not e then return end
@@ -2094,12 +2336,24 @@ function G:GetPlannedBuildVerification(plan)
         local _,_,_,passive,_,purchased,progressionIndex,rank=safe(GetSkillAbilityInfo,nil,e.skillType,e.skillLine,e.skillIndex)
         if passive~=true and purchased==true then confirmedSkills=confirmedSkills+1 end
         local wantedMorph=tonumber(e.morphSlot) or base
-        if wantedMorph~=base then
+        if e.morphBlockedByProgression029396==true then
+            local desired=tostring(e.desiredMorphName029396 or e.metaPreferredName or e.name or key)
+            local baseName=tostring(e.baseName or e.name or "base skill")
+            blockedMorphs[#blockedMorphs+1]=string.format("%s (level %s to its morph point / Rank IV)",desired,baseName)
+        elseif wantedMorph~=base then
             expectedMorphs=expectedMorphs+1
             progressionIndex=tonumber(progressionIndex) or tonumber(e.progressionIndex)
             if progressionIndex and progressionIndex>0 then
                 local _,currentMorph=safe(GetAbilityProgressionInfo,nil,progressionIndex)
-                if tonumber(currentMorph)==wantedMorph then confirmedMorphs=confirmedMorphs+1 end
+                if tonumber(currentMorph)==wantedMorph or exactMorphIsSlotted(e) then
+                    confirmedMorphs=confirmedMorphs+1
+                else
+                    missingMorphs[#missingMorphs+1]=tostring(e.name or e.baseName or key)
+                end
+            elseif exactMorphIsSlotted(e) then
+                confirmedMorphs=confirmedMorphs+1
+            else
+                missingMorphs[#missingMorphs+1]=tostring(e.name or e.baseName or key)
             end
         end
     end
@@ -2109,19 +2363,19 @@ function G:GetPlannedBuildVerification(plan)
 
     for e,desired in pairs(plan.desiredPassiveRanks or {}) do
         desired=math.max(0,tonumber(desired) or 0)
-        if desired>0 and e then
+        if desired>0 and e and self:IsPassiveRequiredForMaxPowerCompletion029394(e,plan.context) then
             expectedPassiveRanks=expectedPassiveRanks+desired
             local _,_,_,passive,_,purchased,_,rank=safe(GetSkillAbilityInfo,nil,e.skillType,e.skillLine,e.skillIndex)
             if passive==true and purchased==true then
-                confirmedPassiveRanks=confirmedPassiveRanks+math.min(desired,math.max(1,tonumber(rank) or 1))
+                local have=math.min(desired,math.max(1,tonumber(rank) or 1))
+                confirmedPassiveRanks=confirmedPassiveRanks+have
+                if have<desired then missingPassives[#missingPassives+1]=string.format("%s %d/%d",tostring(e.name or "Passive"),have,desired) end
+            else
+                missingPassives[#missingPassives+1]=string.format("%s 0/%d",tostring(e.name or "Passive"),desired)
             end
         end
     end
 
-    local first=tonumber(rawget(_G,"SKILL_BAR_FIRST_NORMAL_SLOT_INDEX")) or tonumber(ACTION_BAR_FIRST_NORMAL_SLOT_INDEX) or 3
-    local ultSlot=tonumber(rawget(_G,"SKILL_BAR_ULTIMATE_SLOT_INDEX")) or tonumber(ACTION_BAR_ULTIMATE_SLOT_INDEX) or (first+5)
-    local PRIMARY=rawget(_G,"HOTBAR_CATEGORY_PRIMARY") or 0
-    local BACKUP=rawget(_G,"HOTBAR_CATEGORY_BACKUP") or 1
     local primaryCount,backupCount=0,0
     if type(GetSlotBoundId)=="function" then
         for i=1,5 do
@@ -2147,26 +2401,98 @@ function G:GetPlannedBuildVerification(plan)
         expectedMorphs=expectedMorphs, confirmedMorphs=confirmedMorphs,
         expectedPassiveRanks=expectedPassiveRanks, confirmedPassiveRanks=confirmedPassiveRanks,
         primaryCount=primaryCount, backupCount=backupCount, backRequired=backRequired,
+        missingMorphs=missingMorphs, blockedMorphs=blockedMorphs, missingPassives=missingPassives,
     }
 end
 
 function G:ConfirmFullSkillBuild(plan)
     local v=self:GetPlannedBuildVerification(plan)
     if not v then return false end
-    local state=v.complete and "BUILD CONFIRMED" or "BUILD INCOMPLETE"
+    local hasLevelingLock=v.blockedMorphs and #v.blockedMorphs>0
+    local state=v.complete and (hasLevelingLock and "BUILD APPLIED - MORPH LEVELING NEEDED" or "BUILD CONFIRMED") or "BUILD INCOMPLETE"
     local msg=string.format(
         "%s: Skills %d/%d | Morphs %d/%d | Passive ranks %d/%d | Primary %d/6 | Backup %d/6.",
         state,v.confirmedSkills,v.expectedSkills,v.confirmedMorphs,v.expectedMorphs,
         v.confirmedPassiveRanks,v.expectedPassiveRanks,v.primaryCount,v.backupCount)
     if not v.backRequired then msg=msg:gsub(" | Backup %d/6%."," | Backup locked.") end
+    if #v.missingMorphs>0 then
+        msg=msg.." Missing morph: "..table.concat(v.missingMorphs,", ").."."
+    end
+    if v.blockedMorphs and #v.blockedMorphs>0 then
+        msg=msg.." Morph locked by progression XP: "..table.concat(v.blockedMorphs,", ")..". Re-run MAX POWER after the base skill reaches its morph point."
+    end
+    if #v.missingPassives>0 then
+        local shown={}
+        for i=1,math.min(6,#v.missingPassives) do shown[#shown+1]=v.missingPassives[i] end
+        msg=msg.." Missing passive ranks: "..table.concat(shown,", ")
+        if #v.missingPassives>#shown then msg=msg..string.format(" (+%d more)",#v.missingPassives-#shown) end
+        msg=msg.."."
+    end
     self:NotifyResult(msg,v.complete)
     return v.complete
 end
 
+-- 0.29.387 - verify the exact MAX POWER bar plan, not merely six non-empty slots.
+function G:VerifyExactPlannedHotbars029387(plan, quiet)
+    if not plan or type(GetSlotBoundId)~="function" then return false end
+    local first,ultSlot=self:GetPhysicalPlayerHotbarSlots029391()
+    local PRIMARY=rawget(_G,"HOTBAR_CATEGORY_PRIMARY") or 0
+    local BACKUP=rawget(_G,"HOTBAR_CATEGORY_BACKUP") or 1
+    local matched,expected=0,0
+    local mismatches={}
+
+    local function expectedAbilityId(entry)
+        if not entry then return 0 end
+        local id=tonumber(entry.abilityId) or 0
+        if id>0 then return id end
+        if type(GetSkillAbilityId)=="function" then
+            return safeNumber(GetSkillAbilityId,0,entry.skillType,entry.skillLine,entry.skillIndex,false)
+        end
+        return 0
+    end
+
+    local function verifySlot(category,slot,entry,label)
+        if not entry then return end
+        local want=expectedAbilityId(entry)
+        if want<=0 then return end
+        expected=expected+1
+        local got=safeNumber(GetSlotBoundId,0,slot,category)
+        if self:DoesHotbarAbilityMatchPlan029388(got,entry,category) then
+            matched=matched+1
+        else
+            local gotName=(got>0 and type(GetAbilityName)=="function") and tostring(safe(GetAbilityName,"",got) or "") or "empty"
+            mismatches[#mismatches+1]=string.format("%s=%s (got %s)",label,tostring(entry.name or want),gotName~="" and gotName or tostring(got))
+        end
+    end
+
+    for i=1,5 do
+        verifySlot(PRIMARY,first+i-1,plan.frontWanted and plan.frontWanted[i],"Primary "..i)
+    end
+    verifySlot(PRIMARY,ultSlot,plan.frontUltWanted,"Primary U")
+
+    local backRequired=true
+    if type(GetWeaponSwapUnlockedLevel)=="function" and type(GetUnitLevel)=="function" then
+        backRequired=safeNumber(GetUnitLevel,1,"player")>=safeNumber(GetWeaponSwapUnlockedLevel,15)
+    end
+    if backRequired then
+        for i=1,5 do
+            verifySlot(BACKUP,first+i-1,plan.backWanted and plan.backWanted[i],"Backup "..i)
+        end
+        verifySlot(BACKUP,ultSlot,plan.backUltWanted,"Backup U")
+    end
+
+    local complete=expected>0 and matched>=expected
+    if not quiet then
+        local msg=string.format("MAX POWER BAR VERIFY: %d/%d recommended slots match.",matched,expected)
+        if #mismatches>0 then msg=msg.." Missing/wrong: "..table.concat(mismatches,", ") end
+        self:NotifyResult(msg,complete)
+    end
+    return complete,matched,expected,mismatches
+end
+
 function G:VerifyPlannedHotbars(plan, quiet)
     if not plan or type(GetSlotBoundId)~="function" then return false end
-    local first=tonumber(rawget(_G,"SKILL_BAR_FIRST_NORMAL_SLOT_INDEX")) or tonumber(ACTION_BAR_FIRST_NORMAL_SLOT_INDEX) or 3
-    local ultSlot=tonumber(rawget(_G,"SKILL_BAR_ULTIMATE_SLOT_INDEX")) or tonumber(ACTION_BAR_ULTIMATE_SLOT_INDEX) or (first+5)
+    local first,ultSlot=self:GetPhysicalPlayerHotbarSlots029391()
     local PRIMARY=rawget(_G,"HOTBAR_CATEGORY_PRIMARY") or 0
     local BACKUP=rawget(_G,"HOTBAR_CATEGORY_BACKUP") or 1
     local primaryCount,backupCount=0,0
@@ -2184,8 +2510,7 @@ end
 
 function G:ApplyPlannedHotbars(plan, quiet)
     if not plan or safe(IsUnitInCombat,false,"player")==true or type(CallSecureProtected)~="function" then return false,0 end
-    local first=tonumber(ACTION_BAR_FIRST_NORMAL_SLOT_INDEX) or 3
-    local ultSlot=tonumber(ACTION_BAR_ULTIMATE_SLOT_INDEX) or (first+5)
+    local first,ultSlot=self:GetPhysicalPlayerHotbarSlots029391()
     local PRIMARY=rawget(_G,"HOTBAR_CATEGORY_PRIMARY") or 0
     local BACKUP=rawget(_G,"HOTBAR_CATEGORY_BACKUP") or 1
     local context=plan.context or self:GetWornBuildContext()
@@ -2225,6 +2550,55 @@ function G:ApplyPlannedHotbars(plan, quiet)
     end
     if EPC and EPC.AbilityOverlays and EPC.AbilityOverlays.Refresh then EPC.AbilityOverlays:Refresh() end
     return changed>0,changed
+end
+
+-- 0.29.387 - immediate best-effort hotbar application for recommended skills
+-- that are already purchased.  This is primarily a fallback when ESO refuses to
+-- enter full respec mode; it also gives the user useful feedback instead of a no-op.
+function G:ApplyPurchasedPlannedHotbars029387(plan, quiet)
+    if not plan or safe(IsUnitInCombat,false,"player")==true or type(CallSecureProtected)~="function" then return false,0,{} end
+    local first,ultSlot=self:GetPhysicalPlayerHotbarSlots029391()
+    local PRIMARY=rawget(_G,"HOTBAR_CATEGORY_PRIMARY") or 0
+    local BACKUP=rawget(_G,"HOTBAR_CATEGORY_BACKUP") or 1
+    local changed=0
+    local skipped={}
+
+    local function isPurchased(entry)
+        if not entry then return false end
+        local _,_,_,passive,_,purchased=safe(GetSkillAbilityInfo,nil,entry.skillType,entry.skillLine,entry.skillIndex)
+        return passive~=true and purchased==true
+    end
+
+    local function applyOne(category,slot,entry,label)
+        if not entry then skipped[#skipped+1]=label.." missing"; return end
+        if not isPurchased(entry) then skipped[#skipped+1]=label.." not purchased"; return end
+        local idx=self:ResolvePlannedAbilityIndex(entry)
+        if not idx or idx<=0 then skipped[#skipped+1]=label.." unresolved"; return end
+        local ok,result=pcall(CallSecureProtected,"SelectSlotAbility",idx,slot,category)
+        if ok and result~=false then changed=changed+1 else skipped[#skipped+1]=label.." rejected" end
+    end
+
+    for i=1,5 do applyOne(PRIMARY,first+i-1,plan.frontWanted and plan.frontWanted[i],"Primary "..i) end
+    applyOne(PRIMARY,ultSlot,plan.frontUltWanted,"Primary U")
+
+    local backUnlocked=true
+    if type(GetWeaponSwapUnlockedLevel)=="function" and type(GetUnitLevel)=="function" then
+        backUnlocked=safeNumber(GetUnitLevel,1,"player")>=safeNumber(GetWeaponSwapUnlockedLevel,15)
+    end
+    if backUnlocked then
+        for i=1,5 do applyOne(BACKUP,first+i-1,plan.backWanted and plan.backWanted[i],"Backup "..i) end
+        applyOne(BACKUP,ultSlot,plan.backUltWanted,"Backup U")
+    end
+
+    if not quiet then
+        local ok=changed>0
+        local msg=string.format("MAX POWER BAR FALLBACK: applied %d already-purchased recommended slot%s.",changed,changed==1 and "" or "s")
+        if #skipped>0 then msg=msg.." Pending respec/unavailable: "..table.concat(skipped,", ") end
+        self:NotifyResult(msg,ok)
+    end
+    if EPC and EPC.AbilityOverlays and EPC.AbilityOverlays.Refresh then EPC.AbilityOverlays:Refresh() end
+    if EPC and EPC.DualActionBar and EPC.DualActionBar.RefreshDynamic029311 then EPC.DualActionBar:RefreshDynamic029311(true) end
+    return changed>0,changed,skipped
 end
 
 function G:ApplyFullSkillPlan(plan)
@@ -2268,7 +2642,16 @@ function G:ApplyFullSkillPlan(plan)
 
         local base=rawget(_G,"MORPH_SLOT_BASE") or 0
         local purchasedActives,morphedActives,passiveRanks=0,0,0
+        local morphedCounted={}
         local failures={}
+        local function countMorphOnce(e)
+            if not e then return end
+            local key=tostring(e.skillType)..":"..tostring(e.skillLine)..":"..tostring(e.skillIndex)
+            if not morphedCounted[key] then
+                morphedCounted[key]=true
+                morphedActives=morphedActives+1
+            end
+        end
 
         local function getAllocator(e)
             if type(skillsMgr.GetSkillDataByIndices)~="function" then return nil end
@@ -2294,11 +2677,15 @@ function G:ApplyFullSkillPlan(plan)
                     end
                 end
                 local wantedMorph=tonumber(e.morphSlot) or base
+                -- MAX POWER wants the exact recommended morph. A freshly morphed
+                -- ability being rank I is valid; rank IV is not required. ESO only
+                -- needs the base progression to be morph-eligible. Purchase first,
+                -- then morph immediately in the same pending respec transaction.
                 if wantedMorph~=base and type(a.CanMorph)=="function" and type(a.Morph)=="function" then
                     local okCan,can=pcall(a.CanMorph,a)
                     if okCan and can==true then
-                        local okMorph=pcall(a.Morph,a,wantedMorph)
-                        if okMorph then morphedActives=morphedActives+1 end
+                        local okMorph,result=pcall(a.Morph,a,wantedMorph)
+                        if okMorph and result~=false then countMorphOnce(e) end
                     end
                 end
                 if not bought and type(a.IsPurchased)=="function" then
@@ -2322,17 +2709,54 @@ function G:ApplyFullSkillPlan(plan)
                     end
                 end
                 local wantedMorph=tonumber(e.morphSlot) or base
+                -- MAX POWER wants the exact recommended morph. A freshly morphed
+                -- ability being rank I is valid; rank IV is not required. ESO only
+                -- needs the base progression to be morph-eligible. Purchase first,
+                -- then morph immediately in the same pending respec transaction.
                 if wantedMorph~=base and type(a.CanMorph)=="function" and type(a.Morph)=="function" then
                     local okCan,can=pcall(a.CanMorph,a)
                     if okCan and can==true then
-                        local okMorph=pcall(a.Morph,a,wantedMorph)
-                        if okMorph then morphedActives=morphedActives+1 end
+                        local okMorph,result=pcall(a.Morph,a,wantedMorph)
+                        if okMorph and result~=false then countMorphOnce(e) end
                     end
                 end
             else
                 failures[#failures+1]=tostring(e.name)
             end
         end
+
+        -- 0.29.394: retry every requested morph after all active skills have
+        -- been purchased. ESO's pending full-respec allocator can report
+        -- CanMorph=false immediately after Purchase for an individual skill even
+        -- though the morph becomes legal once the complete pending allocation has
+        -- settled. A rank-I morph is valid; do not require rank IV.
+        local morphRetried={}
+        local function retryExactMorph(e)
+            if not e then return end
+            local key=tostring(e.skillType)..":"..tostring(e.skillLine)..":"..tostring(e.skillIndex)
+            if morphRetried[key] then return end
+            morphRetried[key]=true
+            local wantedMorph=tonumber(e.morphSlot) or base
+            if wantedMorph==base then return end
+            local a=getAllocator(e)
+            if not a or type(a.Morph)~="function" then return end
+            -- Prefer ESO's readiness signal, but make one guarded direct attempt
+            -- even when CanMorph is temporarily stale inside the pending batch.
+            local shouldTry=true
+            if type(a.CanMorph)=="function" then
+                local okCan,can=pcall(a.CanMorph,a)
+                shouldTry=(not okCan) or can==true
+                if not shouldTry then
+                    local okMorph,result=pcall(a.Morph,a,wantedMorph)
+                    if okMorph and result~=false then countMorphOnce(e) end
+                    return
+                end
+            end
+            local okMorph,result=pcall(a.Morph,a,wantedMorph)
+            if okMorph and result~=false then countMorphOnce(e) end
+        end
+        for _,e in ipairs(plan.chosen or {}) do retryExactMorph(e) end
+        for _,e in ipairs(plan.chosenUlts or {}) do retryExactMorph(e) end
 
         -- Rebuild the recommended passive ranks from zero.
         for _,e in ipairs(plan.allPassives or {}) do
@@ -2371,6 +2795,19 @@ function G:ApplyFullSkillPlan(plan)
         if type(mgr.HasAnyPendingChanges)=="function" then
             local okPending,pending=pcall(mgr.HasAnyPendingChanges,mgr)
             if okPending and pending~=true then
+                -- 0.29.397: An otherwise-complete MAX POWER plan can legitimately
+                -- produce zero pending changes when its only remaining target is a
+                -- morph that is progression-XP locked.  Do not report this as a
+                -- failed respec; the live character already matches every legal
+                -- part of the plan.  Verification will surface the exact future
+                -- morph target and the base skill that needs leveling.
+                local verify=self:GetPlannedBuildVerification(plan)
+                if verify and verify.complete==true and verify.blockedMorphs and #verify.blockedMorphs>0 then
+                    self._lastAppliedFullSkillPlan=plan
+                    self:NotifyResult("MAX POWER: all currently legal build changes are already applied. The remaining morph is progression-XP locked; no empty respec was submitted.",true)
+                    self:ConfirmFullSkillBuild(plan)
+                    return true
+                end
                 self:NotifyResult("RESPEC BUILD: ESO entered respec mode, but no valid skill changes were produced.",false)
                 return false
             end
@@ -2398,9 +2835,17 @@ function G:ApplyFullSkillPlan(plan)
 
             if type(zo_callLater)=="function" then
                 -- ESO can finish the server-side respec shortly after the final confirm.
-                zo_callLater(function() self:VerifyPlannedHotbars(plan,true) end,900)
-                zo_callLater(function() self:ConfirmFullSkillBuild(plan) end,2400)
+                -- Verify the exact recommended slot IDs after the server settles; the old
+                -- check only counted non-empty slots and could report success with the
+                -- player's previous abilities still equipped.
+                zo_callLater(function() self:VerifyExactPlannedHotbars029387(plan,true) end,900)
+                zo_callLater(function() self:VerifyExactPlannedHotbars029387(plan,true) end,1600)
+                zo_callLater(function()
+                    self:VerifyExactPlannedHotbars029387(plan,false)
+                    self:ConfirmFullSkillBuild(plan)
+                end,2400)
             else
+                self:VerifyExactPlannedHotbars029387(plan,false)
                 self:ConfirmFullSkillBuild(plan)
             end
             if EPC and EPC.RequestRefresh then EPC:RequestRefresh("full-skill-respec") end
@@ -2458,8 +2903,16 @@ function G:ApplyFullSkillPlan(plan)
     self:NotifyResult("RESPEC BUILD: starting ESO's free skill respec mode...",true)
     local started=easProtectedOrDirect("StartSkillRespecFromUI")
     if not started then
-        self:NotifyResult("RESPEC BUILD: ESO would not start respec mode. Leave combat/leaderboard/Vengeance content and try again.",false)
-        return false
+        -- We are still on the original MAX POWER button click stack in 0.29.387,
+        -- so make one trusted best-effort pass for recommendations that are already
+        -- purchased.  Skills/morphs/passives that require a respec remain untouched.
+        local fallbackOk,fallbackChanged=self:ApplyPurchasedPlannedHotbars029387(plan,true)
+        if fallbackOk then
+            self:NotifyResult("RESPEC BUILD: ESO refused full respec mode, but "..tostring(fallbackChanged or 0).." already-purchased recommended bar slots were applied. Full morph/passive changes still require ESO respec mode.",false)
+        else
+            self:NotifyResult("RESPEC BUILD: ESO would not start respec mode. Leave combat/leaderboard/Vengeance content and try again.",false)
+        end
+        return fallbackOk==true
     end
 
     -- StartSkillRespecFromUI has a short server/cast transition. Poll only until
@@ -2495,6 +2948,19 @@ function G:RespecAndApplyBestBuild()
     local now=type(GetFrameTimeMilliseconds)=="function" and safeNumber(GetFrameTimeMilliseconds,0) or 0
     local plan=(self._pendingFullSkillPlan and self._respecConfirmUntil and now<=self._respecConfirmUntil) and self._pendingFullSkillPlan or self:BuildFullSkillPlan()
 
+    -- 0.29.397: preflight before opening ESO's respec scene. If the current
+    -- character already satisfies every legal part of the plan and the only
+    -- outstanding recommendation is a morph that still needs progression XP,
+    -- there is nothing ESO can change in a respec transaction yet. Report the
+    -- leveling target immediately instead of entering an empty respec session.
+    local preflight=self:GetPlannedBuildVerification(plan)
+    if preflight and preflight.complete==true and preflight.blockedMorphs and #preflight.blockedMorphs>0 then
+        self._lastAppliedFullSkillPlan=plan
+        self:NotifyResult("MAX POWER: current build already matches every available recommendation. Morph leveling is still required before the final morph can be purchased.",true)
+        self:ConfirmFullSkillBuild(plan)
+        return true
+    end
+
     -- Start-to-finish workflow: when launched from the Codex/world, move into
     -- ESO's native Skills scene first, then begin the protected respec flow.
     if EPC and EPC.Journal and EPC.Journal.window and not EPC.Journal.window:IsHidden() and type(EPC.Journal.Hide)=="function" then
@@ -2509,12 +2975,14 @@ function G:RespecAndApplyBestBuild()
         self:NotifyResult(string.format("RESPEC BUILD META: %s | %s | Primary %d/5 meta | Backup %d/5 meta. Unlocked/weapon fallbacks fill the rest.",tostring(plan.skillMeta.label or "Current profile"),tostring(plan.skillMetaPreset or "TRIAL"),tonumber(fs.matched) or 0,tonumber(bs.matched) or 0),true)
     end
     self:NotifyResult("RESPEC BUILD: opening Skills and preparing the best detected build...",true)
-    if type(zo_callLater)=="function" then
-        zo_callLater(function()
-            self:ApplyFullSkillPlan(plan)
-        end,250)
-        return true
-    end
+
+    -- 0.29.387: Start the protected ESO respec from the original MAX POWER
+    -- button click.  Deferring ApplyFullSkillPlan() with zo_callLater() loses the
+    -- trusted hardware-event stack on live clients, so StartSkillRespecFromUI()
+    -- can be rejected and the recommended skills/bars never get applied.
+    -- ApplyFullSkillPlan() already performs its own asynchronous polling AFTER
+    -- the protected respec has successfully started, which is the safe place to
+    -- defer work.
     return self:ApplyFullSkillPlan(plan)
 end
 

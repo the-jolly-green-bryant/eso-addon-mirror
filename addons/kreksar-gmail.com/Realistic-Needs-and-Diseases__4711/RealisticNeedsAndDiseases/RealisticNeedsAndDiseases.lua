@@ -6,7 +6,7 @@ RealisticNeeds = RealisticNeeds or {}
 local RN = RealisticNeeds
 
 RN.NAME    = "RealisticNeedsAndDiseases"
-RN.VERSION = "0.19.30"
+RN.VERSION = "0.19.31"
 
 -- Keybind display name. Must run at file-parse time (not inside
 -- OnAddOnLoaded) — see bindings.xml for the matching Action definition and
@@ -172,10 +172,13 @@ end
 -- the inventory event happened to be processed first, the buff timestamp
 -- wasn't set yet, the gate rejected a genuine consumption, and that
 -- restore was silently lost — no error, no trace, just a drink that
--- "didn't work." _pendingConsumption below covers the other direction: if
--- the inventory shrink arrives with no recent buff, it's held (not
--- dropped) for BUFF_APPLICATION_WINDOW_MS so a buff event that arrives
--- shortly AFTER can still credit it retroactively.
+-- "didn't work." The _pendingConsumptions queue below covers the other
+-- direction: if the inventory shrink arrives with no recent buff, it's held
+-- (not dropped) for BUFF_APPLICATION_WINDOW_MS so a buff event that arrives
+-- shortly AFTER can still credit it retroactively. It's a queue rather than
+-- a single value so that eating a food and a drink back-to-back — a very
+-- common combo in ESO — queues two independent pending entries instead of
+-- the second silently overwriting and losing the first.
 --
 -- LibFoodDrinkBuff:IsAbilityAFoodOrDrinkBuff(abilityId) — real, confirmed method.
 -- EVENT_EFFECT_CHANGED parameter order and EFFECT_RESULT_GAINED/UPDATED — real, confirmed constants.
@@ -187,12 +190,27 @@ local _lastFoodDrinkBuffTimeMs = 0
 -- further down this file; the assignment there fills this in.
 local HandleConsumedItem
 
--- Holds { itemType, specializedItemType, itemName, timeMs } for an
+-- Holds one entry per { itemType, specializedItemType, itemName, timeMs }
 -- inventory shrink that looked like food/drink consumption but hadn't yet
--- seen a confirming buff event when it was detected. Cleared once credited
--- or once overwritten by a newer pending shrink — a stale, never-confirmed
--- entry is harmless since it's simply replaced, never accumulated.
-local _pendingConsumption = nil
+-- seen a confirming buff event when it was detected. This is a QUEUE, not a
+-- single slot — a player very commonly eats a food AND a drink back-to-back
+-- (to get the combined buff), which produces two pending shrinks within
+-- milliseconds of each other. A single-value "pending" would have the second
+-- shrink silently clobber the first before it could be confirmed, permanently
+-- losing that consumption (or worse, getting it wrongly credited to the other
+-- item's buff confirmation). Entries are removed once credited, and stale
+-- entries (older than BUFF_APPLICATION_WINDOW_MS with no matching buff ever
+-- seen) are pruned so the queue can't grow unbounded.
+local _pendingConsumptions = {}
+
+local function PruneStalePendingConsumptions()
+    local now = GetGameTimeMilliseconds()
+    for i = #_pendingConsumptions, 1, -1 do
+        if now - _pendingConsumptions[i].timeMs > BUFF_APPLICATION_WINDOW_MS then
+            table.remove(_pendingConsumptions, i)
+        end
+    end
+end
 
 local function OnFoodDrinkBuffChanged(eventCode, changeType, effectSlot, effectName, unitTag, beginTime, endTime,
                                        stackCount, iconName, buffType, effectType, abilityType, statusEffectType,
@@ -201,14 +219,17 @@ local function OnFoodDrinkBuffChanged(eventCode, changeType, effectSlot, effectN
     if LibFoodDrinkBuff:IsAbilityAFoodOrDrinkBuff(abilityId) then
         _lastFoodDrinkBuffTimeMs = GetGameTimeMilliseconds()
 
-        -- Forward direction: a pending inventory shrink was waiting on this
-        -- confirmation. Credit it now if it's still within the window.
-        if _pendingConsumption and
-           (_lastFoodDrinkBuffTimeMs - _pendingConsumption.timeMs) <= BUFF_APPLICATION_WINDOW_MS then
-            HandleConsumedItem(_pendingConsumption.itemType, _pendingConsumption.specializedItemType,
-                _pendingConsumption.itemName, RN.SavedVars)
+        -- Forward direction: one or more pending inventory shrinks were
+        -- waiting on a confirmation. Each real food/drink buff-gained event
+        -- corresponds to exactly one real consumption, so credit the OLDEST
+        -- still-valid pending entry (FIFO) — this pairs buff events to
+        -- pending shrinks 1:1 even when several were consumed in quick
+        -- succession, regardless of which buff happens to arrive first.
+        PruneStalePendingConsumptions()
+        local entry = table.remove(_pendingConsumptions, 1)
+        if entry then
+            HandleConsumedItem(entry.itemType, entry.specializedItemType, entry.itemName, RN.SavedVars)
         end
-        _pendingConsumption = nil
     end
 end
 
@@ -277,24 +298,27 @@ local function OnFoodDrinkInventoryChange(eventCode, bagId, slotId, isNewItem, i
         -- guard above already handles the common cases; the buff gate is a
         -- belt-and-suspenders check for edge cases.
         --
-        -- BACKWARD direction: the buff already arrived before this inventory
-        -- event, so credit immediately, same as before.
+        -- BACKWARD direction: a buff already arrived before this inventory
+        -- event, so credit immediately, same as before. This does NOT touch
+        -- the pending queue — any other in-flight consumption still waiting
+        -- on its own buff confirmation is left alone.
         if RecentlyGrantedFoodDrinkBuff() then
-            _pendingConsumption = nil
             HandleConsumedItem(itemType, specializedItemType, itemName, sv)
             return
         end
         -- FORWARD direction: no recent buff yet, but ESO doesn't guarantee
-        -- the buff event arrives first — hold this shrink as pending so
-        -- OnFoodDrinkBuffChanged can still credit it if the buff shows up
-        -- within BUFF_APPLICATION_WINDOW_MS. Not dropped outright, unlike
-        -- before.
-        _pendingConsumption = {
+        -- the buff event arrives first — queue this shrink as pending so
+        -- OnFoodDrinkBuffChanged can still credit it once its buff shows up,
+        -- within BUFF_APPLICATION_WINDOW_MS. Appended (not overwritten), so
+        -- consuming a food and a drink back-to-back queues two independent
+        -- entries instead of the second wiping out the first.
+        PruneStalePendingConsumptions()
+        table.insert(_pendingConsumptions, {
             itemType             = itemType,
             specializedItemType  = specializedItemType,
             itemName             = itemName,
             timeMs               = GetGameTimeMilliseconds(),
-        }
+        })
     end
 
     if currentLink and currentLink ~= "" then

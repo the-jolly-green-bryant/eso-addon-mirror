@@ -10,7 +10,8 @@ local EPC = ESOProgressionCoach
 EPC.name = "ESOAdventurerSuite"
 EPC.legacyName = "ESOProgressionCoach"
 EPC.displayName = "ESO Adventurer Suite"
-EPC.version = "0.29.322"
+EPC.version = "0.29.471"
+EPC.addOnVersion = 3456
 EPC.author = "HoZayyBadazz"
 EPC.savedVersion = 1
 EPC.interactionMode = false
@@ -24,305 +25,7 @@ EPC.miniMapMoveOwned = false
 
 -- v0.29.208 - Character Gear framing pass: real 3D player only, outward labels, full names, left-space rebalance.
 -- v0.29.207 - Character Gear readability pass: adaptive safe-area layout, compact labels, auto stats visibility.
--- v0.29.205 - Last-input hybrid controller navigation for desktop UI menus.
--- v0.29.204 - Boss Mechanics visibility modes; mechanic/reaction-only is the clean default.
--- v0.29.203 - Unified resizable Boss Mechanics + Combat Reaction overlay.
--- v0.29.202 - Desktop UI + native controller-glyph routing.
--- v0.29.201 - Stable controller input + desktop UI bridge.
--- v0.29.200 - Stable desktop UI + explicit Keybind Display Mode gamepad routing.
--- v0.29.199 - Desktop UI + Gamepad Controls: Suite-wide controller prompt routing.
--- v0.29.198 - Endgame Boss Mechanics Coach: live encounter callouts, adaptive prediction, and execution grading.
--- v0.29.197 - Desktop UI while controller input remains enabled.
---
--- IMPORTANT: do not drive SCENE_MANAGER's preferred-mode handler here. ESO's
--- internal input preference must remain real so controller movement/combat keeps
--- working. We only override the Lua UI-mode query used by keyboard/gamepad visual
--- selection. This is intentionally installed before SavedVariables initialize;
--- the feature defaults ON, so keyboard controls/templates are selected from the
--- beginning instead of first creating gamepad controls and switching them later.
-local EAS_NATIVE_IS_IN_GAMEPAD_PREFERRED_MODE029197 = rawget(_G, "IsInGamepadPreferredMode")
-EPC.nativeIsInGamepadPreferredMode029197 = EAS_NATIVE_IS_IN_GAMEPAD_PREFERRED_MODE029197
-
-function EPC:IsNativeGamepadPreferredMode029197()
-    local native = self.nativeIsInGamepadPreferredMode029197
-    if type(native) == "function" then
-        local ok, value = pcall(native)
-        if ok then return value == true end
-    end
-
-    if type(GetSetting) == "function" and SETTING_TYPE_GAMEPAD ~= nil and GAMEPAD_SETTING_INPUT_PREFERRED_MODE ~= nil then
-        local ok, setting = pcall(GetSetting, SETTING_TYPE_GAMEPAD, GAMEPAD_SETTING_INPUT_PREFERRED_MODE)
-        if ok then
-            local n = tonumber(setting)
-            if INPUT_PREFERRED_MODE_ALWAYS_GAMEPAD ~= nil and n == tonumber(INPUT_PREFERRED_MODE_ALWAYS_GAMEPAD) then
-                return true
-            end
-            if INPUT_PREFERRED_MODE_AUTOMATIC ~= nil and n == tonumber(INPUT_PREFERRED_MODE_AUTOMATIC) then
-                if type(WasLastInputGamepad) == "function" then
-                    local okLast, last = pcall(WasLastInputGamepad)
-                    if okLast then return last == true end
-                end
-            end
-        end
-    end
-    return false
-end
-
-function EPC:ShouldKeepDesktopUIWithGamepad029197()
-    -- The shipped default is ON. Returning true during bootstrap is deliberate:
-    -- it prevents ESO from constructing gamepad-flavored controls first and then
-    -- repainting them as keyboard controls after SavedVariables load (the source
-    -- of the duplicated Gameplay settings row reported in v0.29.199/200).
-    if self.saved == nil then return true end
-    return self.saved.keepDesktopUIWithGamepad029197 == true
-end
-
--- Keybind Display Mode is independent from the visual UI mode. This setting is
--- the authoritative preference for whether the Suite should draw controller art.
-function EPC:GetKeybindDisplayMode029200()
-    if type(GetSetting) ~= "function" or SETTING_TYPE_GAMEPAD == nil
-        or GAMEPAD_SETTING_KEYBIND_DISPLAY_MODE == nil then return nil end
-    local ok, value = pcall(GetSetting, SETTING_TYPE_GAMEPAD, GAMEPAD_SETTING_KEYBIND_DISPLAY_MODE)
-    if not ok then return nil end
-    return tonumber(value)
-end
-
-function EPC:ShouldUseGamepadPrompts029199()
-    if type(IsConsoleUI) == "function" and IsConsoleUI() == true then return true end
-
-    local displayMode = self:GetKeybindDisplayMode029200()
-    if displayMode ~= nil then
-        if KEYBIND_DISPLAY_MODE_ALWAYS_GAMEPAD ~= nil
-            and displayMode == tonumber(KEYBIND_DISPLAY_MODE_ALWAYS_GAMEPAD) then return true end
-        if KEYBIND_DISPLAY_MODE_ALWAYS_KEYBOARD ~= nil
-            and displayMode == tonumber(KEYBIND_DISPLAY_MODE_ALWAYS_KEYBOARD) then return false end
-    end
-
-    -- Automatic display mode follows the real controller state, not the visual
-    -- keyboard UI override.
-    if self.IsNativeGamepadPreferredMode029197 and self:IsNativeGamepadPreferredMode029197() then return true end
-    if type(WasLastInputGamepad) == "function" then
-        local ok, last = pcall(WasLastInputGamepad)
-        if ok and last == true then return true end
-    end
-    return false
-end
-
--- v0.29.202 - ESO's native keybind renderer normally chooses keyboard bindings
--- whenever IsInGamepadPreferredMode() is false.  The Desktop UI bridge intentionally
--- returns false from that visual-mode query, so without this companion bridge the
--- stock desktop action bar still prints keyboard letters even while the player is
--- actually using a controller and Keybind Display Mode is set to Gamepad.
---
--- These hooks affect PRESENTATION ONLY: they tell ZOS keybind-label helpers which
--- binding device/art to display.  They do not change input mode, scenes, bindings,
--- or execute any action.
-local EAS_NATIVE_KEYBIND_GET_PREFERRED_TYPE029202 = rawget(_G, "ZO_Keybindings_GetPreferredKeyType")
-local EAS_NATIVE_KEYBIND_SHOULD_USE_GAMEPAD_ACTION029202 = rawget(_G, "ZO_Keybindings_ShouldUseGamepadAction")
-local EAS_NATIVE_KEYBIND_SHOULD_SHOW_GAMEPAD029202 = rawget(_G, "ZO_Keybindings_ShouldShowGamepadKeybind")
-
-function EPC:ShouldForceDesktopGamepadGlyphs029202()
-    if type(IsConsoleUI) == "function" and IsConsoleUI() == true then return false end
-    return self:ShouldKeepDesktopUIWithGamepad029197() == true
-        and self:ShouldUseGamepadPrompts029199() == true
-end
-
-local function EAS_KeybindPreferredTypeWrapper029202(alwaysPreferGamepadMode)
-    local suite = rawget(_G, "ESOProgressionCoach")
-    if suite and suite.ShouldForceDesktopGamepadGlyphs029202
-        and suite:ShouldForceDesktopGamepadGlyphs029202()
-        and PREFERRED_INPUT_DEVICE_TYPE_GAMEPAD ~= nil then
-        return PREFERRED_INPUT_DEVICE_TYPE_GAMEPAD
-    end
-    if type(EAS_NATIVE_KEYBIND_GET_PREFERRED_TYPE029202) == "function" then
-        return EAS_NATIVE_KEYBIND_GET_PREFERRED_TYPE029202(alwaysPreferGamepadMode)
-    end
-    if alwaysPreferGamepadMode and PREFERRED_INPUT_DEVICE_TYPE_GAMEPAD ~= nil then
-        return PREFERRED_INPUT_DEVICE_TYPE_GAMEPAD
-    end
-    return PREFERRED_INPUT_DEVICE_TYPE_KEYBOARD_OR_MOUSE or PREFERRED_INPUT_DEVICE_TYPE_KEYBOARD
-end
-
-local function EAS_KeybindShouldUseGamepadActionWrapper029202(alwaysPreferGamepadMode)
-    local suite = rawget(_G, "ESOProgressionCoach")
-    if suite and suite.ShouldForceDesktopGamepadGlyphs029202
-        and suite:ShouldForceDesktopGamepadGlyphs029202() then
-        return true
-    end
-    if type(EAS_NATIVE_KEYBIND_SHOULD_USE_GAMEPAD_ACTION029202) == "function" then
-        return EAS_NATIVE_KEYBIND_SHOULD_USE_GAMEPAD_ACTION029202(alwaysPreferGamepadMode)
-    end
-    return alwaysPreferGamepadMode == true
-end
-
-local function EAS_KeybindShouldShowGamepadWrapper029202(alwaysPreferGamepadMode)
-    local suite = rawget(_G, "ESOProgressionCoach")
-    if suite and suite.ShouldForceDesktopGamepadGlyphs029202
-        and suite:ShouldForceDesktopGamepadGlyphs029202() then
-        return true
-    end
-    if type(EAS_NATIVE_KEYBIND_SHOULD_SHOW_GAMEPAD029202) == "function" then
-        return EAS_NATIVE_KEYBIND_SHOULD_SHOW_GAMEPAD029202(alwaysPreferGamepadMode)
-    end
-    return alwaysPreferGamepadMode == true
-end
-
-function EPC:InstallDesktopGamepadKeybindPresentation029202()
-    if self.desktopGamepadKeybindPresentationInstalled029202 then return true end
-
-    if type(EAS_NATIVE_KEYBIND_GET_PREFERRED_TYPE029202) == "function" then
-        _G.ZO_Keybindings_GetPreferredKeyType = EAS_KeybindPreferredTypeWrapper029202
-    end
-    if type(EAS_NATIVE_KEYBIND_SHOULD_USE_GAMEPAD_ACTION029202) == "function" then
-        _G.ZO_Keybindings_ShouldUseGamepadAction = EAS_KeybindShouldUseGamepadActionWrapper029202
-    end
-    if type(EAS_NATIVE_KEYBIND_SHOULD_SHOW_GAMEPAD029202) == "function" then
-        _G.ZO_Keybindings_ShouldShowGamepadKeybind = EAS_KeybindShouldShowGamepadWrapper029202
-    end
-
-    -- Native keybind labels already listen to these events, but their callbacks
-    -- may have run before the Suite installed the presentation wrappers. Queue
-    -- one targeted repaint when ESO changes bindings/input/display mode or when
-    -- the player finishes loading. This never changes the underlying setting.
-    if EVENT_MANAGER and not self.desktopGamepadGlyphRefreshEvents029202 then
-        local namespace = "ESOAdventurerSuite_DesktopGamepadGlyphs029202"
-        local pending = false
-        local function QueueGlyphRefresh029202()
-            if pending then return end
-            pending = true
-            local function run()
-                pending = false
-                local suite = rawget(_G, "ESOProgressionCoach")
-                if suite and suite.RefreshNativeDesktopGamepadGlyphs029202 then
-                    suite:RefreshNativeDesktopGamepadGlyphs029202()
-                end
-            end
-            if type(zo_callLater) == "function" then zo_callLater(run, 30) else run() end
-        end
-
-        if EVENT_KEYBINDING_SET ~= nil then EVENT_MANAGER:RegisterForEvent(namespace, EVENT_KEYBINDING_SET, QueueGlyphRefresh029202) end
-        if EVENT_KEYBINDING_CLEARED ~= nil then EVENT_MANAGER:RegisterForEvent(namespace, EVENT_KEYBINDING_CLEARED, QueueGlyphRefresh029202) end
-        if EVENT_KEYBINDINGS_LOADED ~= nil then EVENT_MANAGER:RegisterForEvent(namespace, EVENT_KEYBINDINGS_LOADED, QueueGlyphRefresh029202) end
-        if EVENT_INPUT_TYPE_CHANGED ~= nil then EVENT_MANAGER:RegisterForEvent(namespace, EVENT_INPUT_TYPE_CHANGED, QueueGlyphRefresh029202) end
-        if EVENT_KEYBIND_DISPLAY_MODE_CHANGED ~= nil then EVENT_MANAGER:RegisterForEvent(namespace, EVENT_KEYBIND_DISPLAY_MODE_CHANGED, QueueGlyphRefresh029202) end
-        if EVENT_PLAYER_ACTIVATED ~= nil then EVENT_MANAGER:RegisterForEvent(namespace, EVENT_PLAYER_ACTIVATED, QueueGlyphRefresh029202) end
-
-        self.desktopGamepadGlyphRefreshEvents029202 = true
-    end
-
-    self.desktopGamepadKeybindPresentationInstalled029202 = true
-    return true
-end
-
-local function EAS_RefreshRegisteredKeybindLabel029202(label)
-    if label and type(label.updateRegisteredKeybindCallback) == "function" then
-        pcall(label.updateRegisteredKeybindCallback)
-    end
-end
-
-function EPC:RefreshNativeDesktopGamepadGlyphs029202()
-    -- Refresh the stock action bar immediately.  Its label registration happened
-    -- before addons load, so installing the helper hooks alone does not repaint
-    -- already-created labels until a keybind/input event occurs.
-    if type(ZO_ActionBar_GetButton) == "function" then
-        local first = tonumber(ACTION_BAR_FIRST_NORMAL_SLOT_INDEX) and (tonumber(ACTION_BAR_FIRST_NORMAL_SLOT_INDEX) + 1) or 3
-        local ultimate = tonumber(ACTION_BAR_ULTIMATE_SLOT_INDEX) and (tonumber(ACTION_BAR_ULTIMATE_SLOT_INDEX) + 1) or 8
-        for slot = first, ultimate do
-            local ok, button = pcall(ZO_ActionBar_GetButton, slot)
-            if ok and button then EAS_RefreshRegisteredKeybindLabel029202(button.buttonText) end
-        end
-
-        if HOTBAR_CATEGORY_QUICKSLOT_WHEEL ~= nil then
-            local ok, quick = pcall(ZO_ActionBar_GetButton, nil, HOTBAR_CATEGORY_QUICKSLOT_WHEEL)
-            if ok and quick then EAS_RefreshRegisteredKeybindLabel029202(quick.buttonText) end
-        end
-        if HOTBAR_CATEGORY_COMPANION ~= nil then
-            local ok, companion = pcall(ZO_ActionBar_GetButton, ultimate, HOTBAR_CATEGORY_COMPANION)
-            if ok and companion then EAS_RefreshRegisteredKeybindLabel029202(companion.buttonText) end
-        end
-    end
-
-    -- Refresh other already-created registered keybind labels under the desktop
-    -- action bar root (weapon swap and similar prompts).  Keep this targeted;
-    -- recursively walking GuiRoot would be unnecessary work.
-    local root = rawget(_G, "ZO_ActionBar1")
-    if root and type(root.GetNumChildren) == "function" and type(root.GetChild) == "function" then
-        local function walk(control, depth)
-            if not control or depth > 8 then return end
-            EAS_RefreshRegisteredKeybindLabel029202(control)
-            if type(control.GetNumChildren) ~= "function" or type(control.GetChild) ~= "function" then return end
-            local okCount, count = pcall(control.GetNumChildren, control)
-            count = okCount and tonumber(count) or 0
-            for i = 1, count do
-                local okChild, child = pcall(control.GetChild, control, i)
-                if okChild and child then walk(child, depth + 1) end
-            end
-        end
-        walk(root, 0)
-    end
-
-    self:RefreshControllerAwareSuiteUI029197()
-end
-
-local function EAS_DesktopGamepadPreferredModeWrapper029197()
-    local suite = rawget(_G, "ESOProgressionCoach")
-    if suite and suite.ShouldKeepDesktopUIWithGamepad029197 and suite:ShouldKeepDesktopUIWithGamepad029197() then
-        if type(IsConsoleUI) ~= "function" or IsConsoleUI() ~= true then
-            return false
-        end
-    end
-
-    local native = suite and suite.nativeIsInGamepadPreferredMode029197 or EAS_NATIVE_IS_IN_GAMEPAD_PREFERRED_MODE029197
-    if type(native) == "function" then
-        local ok, value = pcall(native)
-        if ok then return value == true end
-    end
-    return false
-end
-
-EPC.desktopGamepadPreferredModeWrapper029197 = EAS_DesktopGamepadPreferredModeWrapper029197
-
-function EPC:InstallDesktopGamepadUIBridge029197()
-    if type(self.nativeIsInGamepadPreferredMode029197) ~= "function" then return false end
-    if rawget(_G, "IsInGamepadPreferredMode") ~= self.desktopGamepadPreferredModeWrapper029197 then
-        _G.IsInGamepadPreferredMode = self.desktopGamepadPreferredModeWrapper029197
-    end
-    if self.InstallDesktopGamepadKeybindPresentation029202 then
-        self:InstallDesktopGamepadKeybindPresentation029202()
-    end
-    -- Deliberately do NOT hook SCENE_MANAGER:OnGamepadPreferredModeChanged and
-    -- do NOT call SetSetting for GAMEPAD_SETTING_INPUT_PREFERRED_MODE. Those
-    -- operations change/normalize input state and can break controller gameplay
-    -- or duplicate keyboard/gamepad option controls in the same Settings scene.
-    return true
-end
-
-function EPC:RefreshControllerAwareSuiteUI029197()
-    if self.AbilityOverlays then
-        if self.AbilityOverlays.InvalidateBindingText then self.AbilityOverlays:InvalidateBindingText() end
-        if self.AbilityOverlays.Refresh then self.AbilityOverlays:Refresh() end
-    end
-    if self.DualActionBar and self.DualActionBar.Refresh then self.DualActionBar:Refresh() end
-    if self.RotationAssistant and self.RotationAssistant.Refresh then self.RotationAssistant:Refresh() end
-    if self.QuickslotOverlay and self.QuickslotOverlay.Refresh then self.QuickslotOverlay:Refresh() end
-    if self.BossMechanicsAssistant and self.BossMechanicsAssistant.Refresh then self.BossMechanicsAssistant:Refresh() end
-end
-
-function EPC:ApplyDesktopGamepadUIBridge029197(forceRefresh)
-    if not self:InstallDesktopGamepadUIBridge029197() then return false end
-    if type(IsConsoleUI) == "function" and IsConsoleUI() == true then return false end
-    if forceRefresh == true then
-        if self.RefreshNativeDesktopGamepadGlyphs029202 then
-            self:RefreshNativeDesktopGamepadGlyphs029202()
-        else
-            self:RefreshControllerAwareSuiteUI029197()
-        end
-    end
-    return true
-end
-
--- Install immediately, before Settings/other Suite modules are created.
-EPC:InstallDesktopGamepadUIBridge029197()
+-- v0.29.347 - Keyboard/mouse-only production hardening build.
 
 -- v0.29.113: The distributed archive always contains one canonical
 -- ESOAdventurerSuite folder.  Use that known-good addon-relative texture root
@@ -342,424 +45,12 @@ function EPC:AssetPath(relativePath)
 end
 
 
--- v0.29.180 - Controller glyph family support for ability/Ultimate prompts.
--- ESO normally chooses gamepad art from GetGamepadType()/GetMostRecentGamepadType().
--- Steam Input and similar XInput translation can make a PlayStation controller
--- report as Xbox, so the Suite supports a PlayStation glyph override without
--- changing the player's actual bindings. v0.29.181 also applies that art choice
--- across the loaded ESO UI through native texture redirection.
-local function EAS_TextureMarkup029180(path, width, height)
-    if not path or path == "" then return "" end
-    width = tonumber(width) or 24
-    height = tonumber(height) or width
-    return string.format("|t%d:%d:%s|t", width, height, path)
-end
-
-local function EAS_AddKeyGlyph029180(map, keyCode, textureName)
-    if keyCode ~= nil and textureName and textureName ~= "" then
-        map[keyCode] = "/esoui/art/buttons/gamepad/ps5/" .. textureName
-    end
-end
-
-local EAS_PS_KEY_GLYPHS029180 = {}
-EAS_AddKeyGlyph029180(EAS_PS_KEY_GLYPHS029180, KEY_GAMEPAD_BUTTON_1, "nav_ps5_x.dds")
-EAS_AddKeyGlyph029180(EAS_PS_KEY_GLYPHS029180, KEY_GAMEPAD_BUTTON_2, "nav_ps5_circle.dds")
-EAS_AddKeyGlyph029180(EAS_PS_KEY_GLYPHS029180, KEY_GAMEPAD_BUTTON_3, "nav_ps5_square.dds")
-EAS_AddKeyGlyph029180(EAS_PS_KEY_GLYPHS029180, KEY_GAMEPAD_BUTTON_4, "nav_ps5_triangle.dds")
-EAS_AddKeyGlyph029180(EAS_PS_KEY_GLYPHS029180, KEY_GAMEPAD_LEFT_SHOULDER, "nav_ps5_l1.dds")
-EAS_AddKeyGlyph029180(EAS_PS_KEY_GLYPHS029180, KEY_GAMEPAD_RIGHT_SHOULDER, "nav_ps5_r1.dds")
-EAS_AddKeyGlyph029180(EAS_PS_KEY_GLYPHS029180, KEY_GAMEPAD_LEFT_TRIGGER, "nav_ps5_l2.dds")
-EAS_AddKeyGlyph029180(EAS_PS_KEY_GLYPHS029180, KEY_GAMEPAD_RIGHT_TRIGGER, "nav_ps5_r2.dds")
-EAS_AddKeyGlyph029180(EAS_PS_KEY_GLYPHS029180, KEY_GAMEPAD_BOTH_SHOULDERS, "nav_ps5_l1r1.dds")
-EAS_AddKeyGlyph029180(EAS_PS_KEY_GLYPHS029180, KEY_GAMEPAD_BOTH_TRIGGERS, "nav_ps5_l2r2.dds")
-EAS_AddKeyGlyph029180(EAS_PS_KEY_GLYPHS029180, KEY_GAMEPAD_LEFT_STICK, "nav_ps5_ls_press.dds")
-EAS_AddKeyGlyph029180(EAS_PS_KEY_GLYPHS029180, KEY_GAMEPAD_RIGHT_STICK, "nav_ps5_rs_press.dds")
-EAS_AddKeyGlyph029180(EAS_PS_KEY_GLYPHS029180, KEY_GAMEPAD_BOTH_STICKS, "nav_ps5_lsrs_press.dds")
-EAS_AddKeyGlyph029180(EAS_PS_KEY_GLYPHS029180, KEY_GAMEPAD_DPAD_UP, "nav_ps5_dpadup.dds")
-EAS_AddKeyGlyph029180(EAS_PS_KEY_GLYPHS029180, KEY_GAMEPAD_DPAD_DOWN, "nav_ps5_dpaddown.dds")
-EAS_AddKeyGlyph029180(EAS_PS_KEY_GLYPHS029180, KEY_GAMEPAD_DPAD_LEFT, "nav_ps5_dpadleft.dds")
-EAS_AddKeyGlyph029180(EAS_PS_KEY_GLYPHS029180, KEY_GAMEPAD_DPAD_RIGHT, "nav_ps5_dpadright.dds")
-EAS_AddKeyGlyph029180(EAS_PS_KEY_GLYPHS029180, KEY_GAMEPAD_START, "nav_ps5_options.dds")
-EAS_AddKeyGlyph029180(EAS_PS_KEY_GLYPHS029180, KEY_GAMEPAD_BACK, "nav_ps5_broadcast.dds")
-
--- Useful common chord bindings, including ESO's default Ultimate.
-EAS_AddKeyGlyph029180(EAS_PS_KEY_GLYPHS029180, KEY_GAMEPAD_BOTH_LEFT_SHOULDER_BUTTON_1, "nav_ps5_l1x.dds")
-EAS_AddKeyGlyph029180(EAS_PS_KEY_GLYPHS029180, KEY_GAMEPAD_BOTH_LEFT_SHOULDER_BUTTON_2, "nav_ps5_l1circle.dds")
-EAS_AddKeyGlyph029180(EAS_PS_KEY_GLYPHS029180, KEY_GAMEPAD_BOTH_LEFT_SHOULDER_BUTTON_3, "nav_ps5_l1square.dds")
-EAS_AddKeyGlyph029180(EAS_PS_KEY_GLYPHS029180, KEY_GAMEPAD_BOTH_LEFT_SHOULDER_BUTTON_4, "nav_ps5_l1triangle.dds")
-EAS_AddKeyGlyph029180(EAS_PS_KEY_GLYPHS029180, KEY_GAMEPAD_BOTH_RIGHT_SHOULDER_BUTTON_1, "nav_ps5_r1x.dds")
-EAS_AddKeyGlyph029180(EAS_PS_KEY_GLYPHS029180, KEY_GAMEPAD_BOTH_RIGHT_SHOULDER_BUTTON_2, "nav_ps5_r1circle.dds")
-EAS_AddKeyGlyph029180(EAS_PS_KEY_GLYPHS029180, KEY_GAMEPAD_BOTH_RIGHT_SHOULDER_BUTTON_3, "nav_ps5_r1square.dds")
-EAS_AddKeyGlyph029180(EAS_PS_KEY_GLYPHS029180, KEY_GAMEPAD_BOTH_RIGHT_SHOULDER_BUTTON_4, "nav_ps5_r1triangle.dds")
-EAS_AddKeyGlyph029180(EAS_PS_KEY_GLYPHS029180, KEY_GAMEPAD_BOTH_LEFT_TRIGGER_BUTTON_1, "nav_ps5_l2x.dds")
-EAS_AddKeyGlyph029180(EAS_PS_KEY_GLYPHS029180, KEY_GAMEPAD_BOTH_BUTTON_2_BUTTON_4, "nav_ps5_trianglecircle.dds")
-
-function EPC:GetControllerGlyphStyle029180()
-    local style = self.saved and tostring(self.saved.abilityOverlayControllerGlyphStyle029180 or "AUTO") or "AUTO"
-    style = string.upper(style)
-    if style ~= "PLAYSTATION" then style = "AUTO" end
-    return style
-end
-
-function EPC:GetDetectedGamepadFamily029180()
-    local gamepadType = nil
-    if type(GetMostRecentGamepadType) == "function" then
-        local ok, value = pcall(GetMostRecentGamepadType)
-        if ok then gamepadType = value end
-    end
-    if (gamepadType == nil or (GAMEPAD_TYPE_NONE ~= nil and gamepadType == GAMEPAD_TYPE_NONE)) and type(GetGamepadType) == "function" then
-        local ok, value = pcall(GetGamepadType)
-        if ok then gamepadType = value end
-    end
-    if (GAMEPAD_TYPE_PS4 ~= nil and gamepadType == GAMEPAD_TYPE_PS4)
-        or (GAMEPAD_TYPE_PS4_NO_TOUCHPAD ~= nil and gamepadType == GAMEPAD_TYPE_PS4_NO_TOUCHPAD)
-        or (GAMEPAD_TYPE_PS5 ~= nil and gamepadType == GAMEPAD_TYPE_PS5) then
-        return "PLAYSTATION"
-    end
-    if (GAMEPAD_TYPE_XBOX ~= nil and gamepadType == GAMEPAD_TYPE_XBOX)
-        or (GAMEPAD_TYPE_XBSX ~= nil and gamepadType == GAMEPAD_TYPE_XBSX) then
-        return "XBOX"
-    end
-    return "UNKNOWN"
-end
-
-function EPC:GetForcedPlayStationKeyMarkup029180(keyCode, size)
-    keyCode = tonumber(keyCode)
-    local path = EAS_PS_KEY_GLYPHS029180[keyCode]
-    if not path then return "" end
-    local height = tonumber(size) or 24
-    local width = height
-    -- ESO's combined shoulder/trigger/stick glyphs are horizontally composed.
-    -- Rendering them in the same square box as a face button crushes L1+R1
-    -- into the tiny appearance shown by the player. Preserve a wide aspect.
-    if (KEY_GAMEPAD_BOTH_SHOULDERS ~= nil and keyCode == KEY_GAMEPAD_BOTH_SHOULDERS)
-        or (KEY_GAMEPAD_BOTH_TRIGGERS ~= nil and keyCode == KEY_GAMEPAD_BOTH_TRIGGERS)
-        or (KEY_GAMEPAD_BOTH_STICKS ~= nil and keyCode == KEY_GAMEPAD_BOTH_STICKS) then
-        width = math.floor(height * 1.85 + 0.5)
-    end
-    return EAS_TextureMarkup029180(path, width, height)
-end
-
-function EPC:GetPreferredGamepadBindingCodes029201(actionName)
-    actionName = tostring(actionName or "")
-    if actionName == "" then return nil end
-
-    local candidates = { actionName }
-    if actionName:find("^ACTION_BUTTON_") then
-        -- The hidden GAMEPAD_ACTION_BUTTON_n action is the authoritative gamepad
-        -- binding for combat slots. Query it first; ACTION_BUTTON_n remains the
-        -- fallback for unusual/custom client binding layouts.
-        candidates = { actionName:gsub("^ACTION_BUTTON_", "GAMEPAD_ACTION_BUTTON_"), actionName }
-    end
-
-    local function hasGamepadCode(key, mod1, mod2, mod3, mod4)
-        for _, code in ipairs({ key, mod1, mod2, mod3, mod4 }) do
-            local n = tonumber(code)
-            if n and (KEY_INVALID == nil or n ~= KEY_INVALID) then
-                if type(IsKeyCodeGamepadKey) ~= "function" then return true end
-                local ok, isGp = pcall(IsKeyCodeGamepadKey, n)
-                if ok and isGp == true then return true end
-            end
-        end
-        return false
-    end
-
-    -- Newer clients expose an explicit input-device query. Prefer it so the
-    -- keyboard visual mode cannot influence which binding set is returned.
-    if type(GetHighestPriorityActionBindingInfoFromNameAndInputDevice) == "function"
-        and PREFERRED_INPUT_DEVICE_TYPE_GAMEPAD ~= nil then
-        for _, candidate in ipairs(candidates) do
-            local ok, key, mod1, mod2, mod3, mod4 = pcall(
-                GetHighestPriorityActionBindingInfoFromNameAndInputDevice,
-                candidate,
-                PREFERRED_INPUT_DEVICE_TYPE_GAMEPAD
-            )
-            if ok and hasGamepadCode(key, mod1, mod2, mod3, mod4) then
-                return key, mod1, mod2, mod3, mod4
-            end
-        end
-    end
-
-    if type(GetHighestPriorityActionBindingInfoFromName) == "function" then
-        for _, candidate in ipairs(candidates) do
-            local ok, key, mod1, mod2, mod3, mod4 = pcall(GetHighestPriorityActionBindingInfoFromName, candidate, true)
-            if ok and hasGamepadCode(key, mod1, mod2, mod3, mod4) then
-                return key, mod1, mod2, mod3, mod4
-            end
-        end
-    end
-    return nil
-end
-
-function EPC:GetForcedPlayStationActionMarkup029180(actionName, size)
-    if self:GetControllerGlyphStyle029180() ~= "PLAYSTATION" then return "" end
-    local key, mod1, mod2, mod3, mod4 = self:GetPreferredGamepadBindingCodes029201(actionName)
-    if key == nil then return "" end
-
-    -- Prefer a native combined chord glyph (e.g. L1+R1 for Ultimate).
-    local direct = self:GetForcedPlayStationKeyMarkup029180(key, size)
-    if direct ~= "" then return direct end
-
-    local values, seen = {}, {}
-    for _, code in ipairs({mod1, mod2, mod3, mod4, key}) do
-        local n = tonumber(code)
-        if n and not seen[n] and (KEY_INVALID == nil or n ~= KEY_INVALID) then
-            values[#values + 1] = n
-            seen[n] = true
-        end
-    end
-
-    if KEY_GAMEPAD_LEFT_SHOULDER ~= nil and KEY_GAMEPAD_RIGHT_SHOULDER ~= nil
-        and seen[KEY_GAMEPAD_LEFT_SHOULDER] and seen[KEY_GAMEPAD_RIGHT_SHOULDER]
-        and KEY_GAMEPAD_BOTH_SHOULDERS ~= nil then
-        local chord = self:GetForcedPlayStationKeyMarkup029180(KEY_GAMEPAD_BOTH_SHOULDERS, size)
-        if chord ~= "" then return chord end
-    end
-    if KEY_GAMEPAD_LEFT_TRIGGER ~= nil and KEY_GAMEPAD_RIGHT_TRIGGER ~= nil
-        and seen[KEY_GAMEPAD_LEFT_TRIGGER] and seen[KEY_GAMEPAD_RIGHT_TRIGGER]
-        and KEY_GAMEPAD_BOTH_TRIGGERS ~= nil then
-        local chord = self:GetForcedPlayStationKeyMarkup029180(KEY_GAMEPAD_BOTH_TRIGGERS, size)
-        if chord ~= "" then return chord end
-    end
-
-    local parts = {}
-    for _, n in ipairs(values) do
-        local markup = self:GetForcedPlayStationKeyMarkup029180(n, size)
-        if markup ~= "" then parts[#parts + 1] = markup end
-    end
-    return table.concat(parts, "")
-end
-
--- v0.29.181 - Suite-wide PlayStation/DualSense glyph override.
--- ESO often renders XInput prompts from /gamepad/xbox even when the physical
--- device is a DualSense translated by Steam Input. Redirect those built-in
--- glyph textures to ESO's own PS5 art so native ESO screens and Suite screens
--- agree. This changes presentation only; bindings/input remain untouched.
-local EAS_XBOX_TO_PS5_BASE029181 = {
-    a="x", b="circle", x="square", y="triangle",
-    dpad_down_hold="dpad_down_hold", dpad_left_hold="dpad_left_hold", dpad_right_hold="dpad_right_hold", dpad_up_hold="dpad_up_hold",
-    dpad="dpad", dpaddown_hold_rs="dpaddown_hold_rs", dpaddown="dpaddown", dpadleft="dpadleft", dpadright="dpadright", dpadrightb="dpadrightcircle", dpadup="dpadup",
-    hold_lt_press_rt="hold_l2_press_r2",
-    lb="l1", lba="l1x", lbb="l1circle", lbdpaddown="l1dpaddown", lbdpadleft="l1dpadleft", lbrb="l1r1", lbrs_press="l1rs_press", lbrs_right="l1rs_right", lbrt="l1r2", lbx="l1square", lby="l1triangle",
-    left_shoulder_hold="left_shoulder_hold", left_trigger_hold="left_trigger_hold", leftarrowrightarrow="broadcastoptions",
-    ls_click="ls_click", ls_down="ls_down", ls_left="ls_left", ls_press="ls_press", ls_right="ls_right", ls_scroll="ls_scroll", ls_slide_scroll="ls_slide_scroll", ls_slide="ls_slide", ls_up="ls_up", ls="ls",
-    lsrs_click="lsrs_click", lsrs_press="lsrs_press", lsrs="lsrs",
-    lt_dim="l2_dim", lt="l2", lta="l2x", ltb="l2circle", ltrt="l2r2", ltx="l2square", lty="l2triangle",
-    menu_button_hold="options_hold",
-    rb="r1", rba="r1x", rbb="r1circle", rbx="r1square", rby="r1triangle",
-    right_shoulder_hold="right_shoulder_hold", right_trigger_hold="right_trigger_hold",
-    rs_click="rs_click", rs_down="rs_down", rs_hold="rs_hold", rs_left="rs_left", rs_menu="options", rs_press="rs_press", rs_right="rs_right", rs_scroll="rs_scroll", rs_slide_scroll="rs_slide_scroll", rs_slide="rs_slide", rs_up="rs_up", rs="rs",
-    rt_dim="r2_dim", rt="r2", view_button_hold="broadcast_hold", view="broadcast", yb="trianglecircle",
-}
-
-local EAS_PS5_KEY_PATHS029181 = {}
-local function EAS_AddPS5Path029181(keyCode, file)
-    if keyCode ~= nil and file and file ~= "" then
-        EAS_PS5_KEY_PATHS029181[keyCode] = "/esoui/art/buttons/gamepad/ps5/" .. file
-    end
-end
-EAS_AddPS5Path029181(KEY_GAMEPAD_BUTTON_1, "nav_ps5_x.dds")
-EAS_AddPS5Path029181(KEY_GAMEPAD_BUTTON_2, "nav_ps5_circle.dds")
-EAS_AddPS5Path029181(KEY_GAMEPAD_BUTTON_3, "nav_ps5_square.dds")
-EAS_AddPS5Path029181(KEY_GAMEPAD_BUTTON_4, "nav_ps5_triangle.dds")
-EAS_AddPS5Path029181(KEY_GAMEPAD_LEFT_SHOULDER, "nav_ps5_l1.dds")
-EAS_AddPS5Path029181(KEY_GAMEPAD_RIGHT_SHOULDER, "nav_ps5_r1.dds")
-EAS_AddPS5Path029181(KEY_GAMEPAD_LEFT_TRIGGER, "nav_ps5_l2.dds")
-EAS_AddPS5Path029181(KEY_GAMEPAD_RIGHT_TRIGGER, "nav_ps5_r2.dds")
-EAS_AddPS5Path029181(KEY_GAMEPAD_BOTH_SHOULDERS, "nav_ps5_l1r1.dds")
-EAS_AddPS5Path029181(KEY_GAMEPAD_BOTH_TRIGGERS, "nav_ps5_l2r2.dds")
-EAS_AddPS5Path029181(KEY_GAMEPAD_LEFT_STICK, "nav_ps5_ls_press.dds")
-EAS_AddPS5Path029181(KEY_GAMEPAD_RIGHT_STICK, "nav_ps5_rs_press.dds")
-EAS_AddPS5Path029181(KEY_GAMEPAD_BOTH_STICKS, "nav_ps5_lsrs_press.dds")
-EAS_AddPS5Path029181(KEY_GAMEPAD_DPAD_UP, "nav_ps5_dpadup.dds")
-EAS_AddPS5Path029181(KEY_GAMEPAD_DPAD_DOWN, "nav_ps5_dpaddown.dds")
-EAS_AddPS5Path029181(KEY_GAMEPAD_DPAD_LEFT, "nav_ps5_dpadleft.dds")
-EAS_AddPS5Path029181(KEY_GAMEPAD_DPAD_RIGHT, "nav_ps5_dpadright.dds")
-EAS_AddPS5Path029181(KEY_GAMEPAD_START, "nav_ps5_options.dds")
-EAS_AddPS5Path029181(KEY_GAMEPAD_BACK, "nav_ps5_broadcast.dds")
-EAS_AddPS5Path029181(KEY_GAMEPAD_BOTH_LEFT_SHOULDER_BUTTON_1, "nav_ps5_l1x.dds")
-EAS_AddPS5Path029181(KEY_GAMEPAD_BOTH_LEFT_SHOULDER_BUTTON_2, "nav_ps5_l1circle.dds")
-EAS_AddPS5Path029181(KEY_GAMEPAD_BOTH_LEFT_SHOULDER_BUTTON_3, "nav_ps5_l1square.dds")
-EAS_AddPS5Path029181(KEY_GAMEPAD_BOTH_LEFT_SHOULDER_BUTTON_4, "nav_ps5_l1triangle.dds")
-EAS_AddPS5Path029181(KEY_GAMEPAD_BOTH_RIGHT_SHOULDER_BUTTON_1, "nav_ps5_r1x.dds")
-EAS_AddPS5Path029181(KEY_GAMEPAD_BOTH_RIGHT_SHOULDER_BUTTON_2, "nav_ps5_r1circle.dds")
-EAS_AddPS5Path029181(KEY_GAMEPAD_BOTH_RIGHT_SHOULDER_BUTTON_3, "nav_ps5_r1square.dds")
-EAS_AddPS5Path029181(KEY_GAMEPAD_BOTH_RIGHT_SHOULDER_BUTTON_4, "nav_ps5_r1triangle.dds")
-EAS_AddPS5Path029181(KEY_GAMEPAD_BOTH_LEFT_TRIGGER_BUTTON_1, "nav_ps5_l2x.dds")
-EAS_AddPS5Path029181(KEY_GAMEPAD_BOTH_BUTTON_2_BUTTON_4, "nav_ps5_trianglecircle.dds")
-
-local EAS_OriginalKeyTexturePath029181 = ZO_Keybindings_GetTexturePathForKey
-local EAS_GlobalGlyphHookInstalled029181 = false
-local EAS_RedirectedXboxTextures029181 = {}
-
-local function EAS_Redirect029181(src, dst, forcePS)
-    if type(RedirectTexture) ~= "function" or not src or not dst then return end
-    local target = forcePS and dst or src
-    pcall(RedirectTexture, src, target)
-    EAS_RedirectedXboxTextures029181[src] = true
-end
-
-local function EAS_RedirectBase029181(srcName, dstName, forcePS)
-    local dst = "/esoui/art/buttons/gamepad/ps5/nav_ps5_" .. dstName .. ".dds"
-    -- Steam/XInput may make ESO choose either the Xbox One (xbone) or
-    -- Xbox Series (scarlett) art family. Redirect both to the same PS5 glyph.
-    EAS_Redirect029181("/esoui/art/buttons/gamepad/xbox/nav_xbone_" .. srcName .. ".dds", dst, forcePS)
-    EAS_Redirect029181("/esoui/art/buttons/gamepad/scarlett/nav_scarlett_" .. srcName .. ".dds", dst, forcePS)
-end
-
-local function EAS_RedirectFamily029181(srcName, dstName, forcePS)
-    local locales = {"en","de","es","fr","jp","ru","zh"}
-    EAS_RedirectBase029181(srcName, dstName, forcePS)
-    for _, suffix in ipairs({"_hold", "_hold_greyedout"}) do
-        EAS_RedirectBase029181(srcName .. suffix, dstName .. suffix, forcePS)
-        for _, locale in ipairs(locales) do
-            EAS_RedirectBase029181(srcName .. suffix .. "_" .. locale, dstName .. suffix .. "_" .. locale, forcePS)
-        end
-    end
-end
-
-local function EAS_RedirectLocalized029181(srcName, dstName, forcePS)
-    local locales = {"en","de","es","fr","jp","ru","zh"}
-    EAS_RedirectBase029181(srcName, dstName, forcePS)
-    for _, locale in ipairs(locales) do
-        EAS_RedirectBase029181(srcName .. "_" .. locale, dstName .. "_" .. locale, forcePS)
-        EAS_RedirectBase029181(srcName .. "_greyedout_" .. locale, dstName .. "_greyedout_" .. locale, forcePS)
-    end
-end
-
-function EPC:ApplyGlobalControllerGlyphOverride029181()
-    local forcePS = self:GetControllerGlyphStyle029180() == "PLAYSTATION"
-
-    -- Generated keybind markup throughout ESO flows through this helper.
-    if not EAS_GlobalGlyphHookInstalled029181 and type(EAS_OriginalKeyTexturePath029181) == "function" then
-        ZO_Keybindings_GetTexturePathForKey = function(keyCode, ...)
-            if ESOProgressionCoach and ESOProgressionCoach.GetControllerGlyphStyle029180
-                and ESOProgressionCoach:GetControllerGlyphStyle029180() == "PLAYSTATION" then
-                local path = EAS_PS5_KEY_PATHS029181[tonumber(keyCode)]
-                if path then return path, 64, 64 end
-            end
-            return EAS_OriginalKeyTexturePath029181(keyCode, ...)
-        end
-        EAS_GlobalGlyphHookInstalled029181 = true
-    end
-
-    -- Direct texture references in native ESO gamepad screens are redirected too.
-    EAS_Redirect029181("/esoui/art/buttons/gamepad/xbox/console_art_xb1.dds", "/esoui/art/buttons/gamepad/ps5/console_art_ps5.dds", forcePS)
-    EAS_Redirect029181("/esoui/art/buttons/gamepad/scarlett/console_art_scarlett.dds", "/esoui/art/buttons/gamepad/ps5/console_art_ps5.dds", forcePS)
-    EAS_Redirect029181("/esoui/art/buttons/gamepad/xbox/leftarrow_down.dds", "/esoui/art/buttons/gamepad/ps5/nav_ps5_broadcast.dds", forcePS)
-    EAS_Redirect029181("/esoui/art/buttons/gamepad/scarlett/leftarrow_down.dds", "/esoui/art/buttons/gamepad/ps5/nav_ps5_broadcast.dds", forcePS)
-    EAS_Redirect029181("/esoui/art/buttons/gamepad/xbox/rightarrow_down.dds", "/esoui/art/buttons/gamepad/ps5/nav_ps5_options.dds", forcePS)
-    EAS_Redirect029181("/esoui/art/buttons/gamepad/scarlett/rightarrow_down.dds", "/esoui/art/buttons/gamepad/ps5/nav_ps5_options.dds", forcePS)
-
-    local family = {a=true,b=true,x=true,y=true,ls=true,rs=true}
-    local localized = {dpad_down_hold=true,dpad_left_hold=true,dpad_right_hold=true,dpad_up_hold=true,left_shoulder_hold=true,left_trigger_hold=true,right_shoulder_hold=true,right_trigger_hold=true,menu_button_hold=true,view_button_hold=true,hold_lt_press_rt=true}
-    for srcName, dstName in pairs(EAS_XBOX_TO_PS5_BASE029181) do
-        if family[srcName] then
-            EAS_RedirectFamily029181(srcName, dstName, forcePS)
-        elseif localized[srcName] then
-            EAS_RedirectLocalized029181(srcName, dstName, forcePS)
-        else
-            EAS_RedirectBase029181(srcName, dstName, forcePS)
-        end
-    end
-
-    -- Force cached keybind labels/strips to request their textures again where possible.
-    if KEYBIND_STRIP and type(KEYBIND_STRIP.UpdateKeybindButtonGroup) == "function" then
-        -- Individual screens own their groups, so a delayed scene refresh is safer than
-        -- trying to enumerate private keybind-strip internals here.
-        if type(zo_callLater) == "function" and SCENE_MANAGER and type(SCENE_MANAGER.RefreshCurrentScene) == "function" then
-            zo_callLater(function() pcall(SCENE_MANAGER.RefreshCurrentScene, SCENE_MANAGER) end, 50)
-        end
-    end
-
-    if self.AbilityOverlays then self.AbilityOverlays:InvalidateBindingText() self.AbilityOverlays:Refresh() end
-    if self.RotationAssistant and self.RotationAssistant.Refresh then self.RotationAssistant:Refresh() end
-end
-
--- v0.29.199 - Return the player's real binding as controller glyph markup when
--- controller prompts are active, or compact keyboard text otherwise. This is
--- presentation only; it never changes or invokes a binding.
+-- v0.29.347 - Keyboard/mouse binding presentation only.
+-- Uses ESO's binding APIs and never depends on localized key names for logic.
 function EPC:GetActionBindingMarkup029199(actionName, size)
     actionName = tostring(actionName or "")
     if actionName == "" then return "" end
-    local preferGamepad = self:ShouldUseGamepadPrompts029199()
 
-    if preferGamepad then
-        local forced = self.GetForcedPlayStationActionMarkup029180 and self:GetForcedPlayStationActionMarkup029180(actionName, tonumber(size) or 22) or ""
-        if forced ~= "" then return forced end
-
-        local key, mod1, mod2, mod3, mod4 = self:GetPreferredGamepadBindingCodes029201(actionName)
-        if key ~= nil then
-            local values, seen = {}, {}
-            for _, code in ipairs({ mod1, mod2, mod3, mod4, key }) do
-                local n = tonumber(code)
-                if n and not seen[n] and (KEY_INVALID == nil or n ~= KEY_INVALID) then
-                    seen[n] = true
-                    values[#values + 1] = n
-                end
-            end
-
-            -- First use ZOS's generic key-markup generator on the already-selected
-            -- GAMEPAD key codes. Gamepad key codes render as controller art even
-            -- while the visual UI mode is keyboard/desktop. This also handles
-            -- combined chord key codes (Ultimate, Break Free, etc.) correctly.
-            if type(ZO_Keybindings_GetBindingStringFromKeys) == "function" then
-                local textOptions = KEYBIND_TEXT_OPTIONS_FULL_NAME or KEYBIND_TEXT_OPTIONS_ABBREVIATED_NAME or 1
-                local textureOptions = KEYBIND_TEXTURE_OPTIONS_EMBED_MARKUP or 2
-                local scalePercent = math.max(80, math.floor((tonumber(size) or 22) / 22 * 180 + 0.5))
-                local okMarkup, markup = pcall(
-                    ZO_Keybindings_GetBindingStringFromKeys,
-                    key, mod1, mod2, mod3, mod4,
-                    textOptions, textureOptions, scalePercent, scalePercent
-                )
-                markup = okMarkup and tostring(markup or "") or ""
-                if markup ~= "" and (SI_ACTION_IS_NOT_BOUND == nil or markup ~= GetString(SI_ACTION_IS_NOT_BOUND)) then
-                    return markup
-                end
-            end
-
-            local parts = {}
-            local h = tonumber(size) or 22
-            for _, n in ipairs(values) do
-                local piece = ""
-                -- Direct texture fallback if a client build lacks the generic
-                -- embedded-key markup path.
-                if type(GetGamepadIconPathForKeyCode) == "function" then
-                    local okPath, path, width, height = pcall(GetGamepadIconPathForKeyCode, n, false)
-                    if okPath and path and path ~= "" then
-                        local w = h
-                        if tonumber(width) and tonumber(height) and tonumber(height) > 0 then
-                            w = math.floor(h * tonumber(width) / tonumber(height) + 0.5)
-                        end
-                        piece = string.format("|t%d:%d:%s|t", w, h, path)
-                    end
-                end
-                if piece ~= "" then parts[#parts + 1] = piece end
-            end
-            if #parts > 0 then return table.concat(parts, "") end
-        end
-
-        -- Last gamepad fallback: ask ZOS for embedded markup, but keep the same
-        -- generic action name first because that is where the user's binding lives.
-        if type(ZO_Keybindings_GetBindingStringFromAction) == "function" then
-            local textOptions = KEYBIND_TEXT_OPTIONS_NO_TEXT or KEYBIND_TEXT_OPTIONS_ABBREVIATED_NAME or 1
-            local textureOptions = KEYBIND_TEXTURE_OPTIONS_EMBED_MARKUP or KEYBIND_TEXTURE_OPTIONS_EMBEDDED_MARKUP or KEYBIND_TEXTURE_OPTIONS_NONE or 1
-            local candidates = { actionName }
-            if actionName:find("^ACTION_BUTTON_") then
-                candidates = { actionName:gsub("^ACTION_BUTTON_", "GAMEPAD_ACTION_BUTTON_"), actionName }
-            end
-            for _, candidateName in ipairs(candidates) do
-                for bindingIndex = 1, 4 do
-                    local ok, text = pcall(ZO_Keybindings_GetBindingStringFromAction, candidateName, textOptions, textureOptions, bindingIndex)
-                    text = ok and tostring(text or "") or ""
-                    if text ~= "" then return text end
-                end
-            end
-        end
-        return ""
-    end
-
-    -- Keyboard presentation path.
     if type(ZO_Keybindings_GetBindingStringFromAction) == "function" then
         local textOptions = KEYBIND_TEXT_OPTIONS_ABBREVIATED_NAME or 1
         local textureOptions = KEYBIND_TEXTURE_OPTIONS_NONE or 1
@@ -813,6 +104,8 @@ EPC.defaults = {
     minimized = false,
     alpha = 0.96,
     scale = 1.0,
+    -- Modern Suite / Crafting Codex readability.
+    codexModernFontSize029363 = 18,
     fontSize = 17,
     left = 760,
     top = 180,
@@ -863,9 +156,9 @@ EPC.defaults = {
     alchemyPotionMakerIncludeCraftBag = true,
     alchemyPotionMakerUseThreeReagents = true,
     alchemyPotionMakerMode = "POTION",
-    alchemyPotionMakerEffect1 = "Restore Health",
-    alchemyPotionMakerEffect2 = "",
-    alchemyPotionMakerEffect3 = "",
+    alchemyPotionMakerEffect1 = 10,
+    alchemyPotionMakerEffect2 = 0,
+    alchemyPotionMakerEffect3 = 0,
     alchemyPotionMakerLeft = -1,
     alchemyPotionMakerTop = -1,
     alchemyPotionMakerPanelLeft = -1,
@@ -896,6 +189,9 @@ EPC.defaults = {
     combatHudWhenHidden = true,
     showCombatHud = true,
     combatHudVisibility = "COMBAT",
+    inventoryGridCategoriesEnabled029365 = true,
+    inventoryGridCategoryPriority029365 = "GEAR_FIRST",
+    inventoryGridCategoryFontSize029377 = 15,
     combatHudLeft = -1,
     combatHudTop = -1,
     combatHudScale = 1.0,
@@ -922,12 +218,8 @@ EPC.defaults = {
     bossMechanicsAbilityMap029198 = {},
     bossMechanicsLearning029198 = {},
 
-    -- Keep the normal desktop/keyboard ESO interface while controller input is enabled.
-    keepDesktopUIWithGamepad029197 = true,
-    hybridDesktopGamepadNavigation029205 = true,
-
     -- v0.29.206: enhanced desktop Character / Equipment screen. Uses ESO's
-    -- native slot controls so the Suite hybrid controller navigator can own it.
+    -- native slot controls so ESO click/drag behavior remains intact.
     characterGearScreenEnabled029206 = true,
     characterGearCompanion029206 = true,
     characterGearSlotSize029206 = 96,
@@ -1099,6 +391,7 @@ EPC.defaults = {
     resourcePinsShowFishing = true,
     resourcePinsShowSpecial = true,
     resourcePinsShowOther = true,
+    resourcePinsShowSkyshards = true,
     -- Farm Focus is a temporary target-only view. Normal resource filters are
     -- preserved underneath and resume when Farm Focus is disabled.
     resourcePinsFarmFocusEnabled = false,
@@ -1261,11 +554,6 @@ EPC.defaults = {
     abilityOverlayVisibility = "ALWAYS",
     abilityOverlayScale = 1.0,
     abilityOverlaySize = 56,
-    -- Controller glyph style for Suite ability/ultimate prompts. AUTO follows
-    -- ESO's detected controller family; PLAYSTATION forces PS symbols for
-    -- users whose DualShock/DualSense is exposed to ESO as XInput/Xbox.
-    abilityOverlayControllerGlyphStyle029180 = "AUTO",
-
     -- Dual Action Bar HUD (v0.29.189): both weapon bars, active marker,
     -- Skill Style icons, timers/stacks, and Smart Combat Advisor integration.
     showDualActionBar029189 = false,
@@ -1278,12 +566,21 @@ EPC.defaults = {
     dualActionBarRowGap029189 = 6,
     dualActionBarInactiveAlpha029189 = 45,
     dualActionBarInactiveDesaturation029189 = 45,
-    dualActionBarPrimaryOnTop029189 = false,
+    dualActionBarPrimaryOnTop029189 = true,
     dualActionBarMarkerStyle029189 = "ICON_GLOW",
     dualActionBarSkillStyles029189 = true,
     dualActionBarShowTimers029189 = true,
     dualActionBarShowStacks029189 = true,
     dualActionBarShowHotkeys029189 = true,
+
+    -- Resource Tick Tracker: event-driven Health/Magicka/Stamina recovery cadence integrated into player bars.
+    showTickTracker029382 = true,
+    tickTrackerMode029415 = "ADVANCED",
+    tickTrackerReadoutStyle029417 = "SLIM",
+    tickTrackerWaste029415 = true,
+    tickTrackerConfirm029415 = true,
+    tickTrackerPressure029415 = true,
+    tickTrackerResync029415 = true,
 
     -- Movable quickslot item/food/potion overlay.
     showQuickslotOverlay = true,
@@ -1310,6 +607,9 @@ EPC.defaults = {
     showRepairCostOverlay = true,
     repairCostVisibility = "INVENTORY",
     repairCostScale = 1.0,
+    repairCostWidth = 410,
+    repairCostCompactWidth = 260,
+    repairCostCompactHeight = 34,
     repairCostLeft = -1,
     repairCostTop = -1,
     repairCostCompactLeft = -1,
@@ -1432,16 +732,18 @@ function EPC:Safe(fn, fallback, ...)
 end
 
 local HUD_MENU_SCENES = {
-    "gameMenuInGame", "inventory", "character", "skills", "championPerks",
-    "journal", "collectionsBook", "groupMenu", "contacts", "guildHome",
-    "mailInbox", "bank", "store", "tradingHouse", "crafting", "settings",
-    "worldMap", "gamepad_worldMap", "gamepad_inventory_root",
-    "gamepad_character_root", "gamepad_skills_root", "gamepad_journal_root",
-    "gamepad_collections_book", "gamepad_group_root", "gamepad_options_root",
-    "gamepad_player_menu", "gamepad_main_menu", "gamepad_championPerks_root",
-    "gamepad_store", "gamepad_banking", "gamepad_trading_house",
-    "gamepad_mail_manager", "gamepad_guild_hub", "gamepad_contacts_root",
+    -- Core keyboard menus. Keep aliases used by different ESO builds so scene
+    -- hand-offs (Inventory -> Character/Friends/Group/etc.) are deterministic.
+    "gameMenuInGame", "gameMenu", "inventory", "character", "skills", "championPerks",
+    "journal", "collectionsBook", "groupMenu", "groupList", "groupFinderKeyboard",
+    "contacts", "friendsList", "friendsListKeyboard", "guildHome", "guildRoster",
+    "mailInbox", "mailSend", "bank", "guildBank", "store", "tradingHouse",
+    "crafting", "smithing", "alchemy", "enchanting", "provisioner",
+    "settings", "worldMap", "achievements", "loreLibrary", "housingEditor",
 }
+
+local HUD_MENU_SCENE_SET029373 = {}
+for i = 1, #HUD_MENU_SCENES do HUD_MENU_SCENE_SET029373[HUD_MENU_SCENES[i]] = true end
 
 local function sceneShowing(scene)
     if scene and type(scene.IsShowing) == "function" then
@@ -1451,36 +753,68 @@ local function sceneShowing(scene)
     return false
 end
 
+-- v0.29.383: PerfectPixel and other UI overhauls can route keyboard menus
+-- through scene names that are not part of ESO's stock list above.  Treat only
+-- the actual gameplay HUD scenes as gameplay.  Free-pointer mode does not
+-- change the current scene, so it remains exempt naturally.
+local function EAS_IsGameplaySceneName029383(name)
+    name = string.lower(tostring(name or ""))
+    if name == "" then return false end
+    if name == "hud" or name == "hudui" then return true end
+    -- Some builds/addons decorate the HUD scene name. Keep this deliberately
+    -- narrow so menu scenes containing words like "gameMenu" are not exempt.
+    if name == "gameplay" or name == "gameplayhud" then return true end
+    return false
+end
+
+local function EAS_CurrentSceneName029383()
+    if not SCENE_MANAGER or type(SCENE_MANAGER.GetCurrentScene) ~= "function" then return "" end
+    local okScene, scene = pcall(SCENE_MANAGER.GetCurrentScene, SCENE_MANAGER)
+    if not okScene or not scene or type(scene.GetName) ~= "function" then return "" end
+    local okName, name = pcall(scene.GetName, scene)
+    if not okName then return "" end
+    return tostring(name or "")
+end
+
 -- Persistent EPC HUD elements are gameplay-only.  Move/layout modes and the
 -- addon's own interaction mode are intentionally exempt so users can still
 -- position frames and interact with the suite.
 function EPC:IsGameplayHudSuppressed()
-    -- Real ESO menu scenes own the screen. Check them before EPC-owned mouse
-    -- modes so Pause, Character, Inventory, Journal, Settings, and the full Map
-    -- always force-hide every EPC gameplay element.
-    if sceneShowing(WORLD_MAP_SCENE) or sceneShowing(GAMEPAD_WORLD_MAP_SCENE) then return true end
+    -- v0.29.373: Camera UI mode is NOT a menu signal. ESO uses the same mode for
+    -- the free-pointer key and other cursor-only states. Treating
+    -- IsGameCameraUIModeActive() as suppression made every Suite HUD element
+    -- disappear when the player pressed the free-pointer key (default '.').
+    -- Only real ESO menu scenes suppress gameplay overlays now.
 
-    if self.saved == nil or self.saved.hudHideInMenus ~= false then
-        if SCENE_MANAGER and type(SCENE_MANAGER.IsShowing) == "function" then
-            for i = 1, #HUD_MENU_SCENES do
-                local ok, showing = pcall(SCENE_MANAGER.IsShowing, SCENE_MANAGER, HUD_MENU_SCENES[i])
-                if ok and showing == true then return true end
-            end
+    if self.unitFramesMoveMode or self.miniMapMoveMode or self.combatHudMoveMode then return false end
+    if self.saved and self.saved.hudHideInMenus == false then return false end
+
+    -- Immediate transition bookkeeping is authoritative while scenes are
+    -- changing. It is a set, not a single boolean, so Inventory -> Character ->
+    -- Friends/Group and similar stacked hand-offs cannot briefly clear the HUD
+    -- state or leave it stuck after Alt/free-pointer transitions.
+    if self.activeMenuScenes029373 then
+        for _ in pairs(self.activeMenuScenes029373) do return true end
+    end
+
+    -- v0.29.383: the current scene is the authoritative compatibility fallback
+    -- for PerfectPixel/Tamriel Tomes/Antiquities and other addons that replace
+    -- or rename stock keyboard scenes.  A freed cursor still reports hud/hudui.
+    local currentSceneName029383 = EAS_CurrentSceneName029383()
+    if currentSceneName029383 ~= "" and not EAS_IsGameplaySceneName029383(currentSceneName029383) then
+        return true
+    end
+
+    if sceneShowing(WORLD_MAP_SCENE) then return true end
+    if SCENE_MANAGER and type(SCENE_MANAGER.IsShowing) == "function" then
+        for i = 1, #HUD_MENU_SCENES do
+            local ok, showing = pcall(SCENE_MANAGER.IsShowing, SCENE_MANAGER, HUD_MENU_SCENES[i])
+            if ok and showing == true then return true end
         end
     end
 
-    -- EPC-owned interaction/layout modes are only exempt when no real ESO menu
-    -- scene is open. This still allows slash-command dragging during gameplay.
-    if self.unitFramesMoveMode or self.miniMapMoveMode or self.combatHudMoveMode or self.interactionMode then
-        return false
-    end
-
-    if self.saved and self.saved.hudHideInMenus == false then return false end
-
-    if type(IsGameCameraUIModeActive) == "function" then
-        local ok, active = pcall(IsGameCameraUIModeActive)
-        if ok and active == true then return true end
-    end
+    -- EPC-owned cursor/interaction mode is not a real ESO menu scene either.
+    -- Leave Suite HUD visibility unchanged when the cursor is merely freed.
     return false
 end
 
@@ -1543,10 +877,12 @@ function EPC:RefreshGameplayOverlays()
     if self.AllianceRank and self.AllianceRank.Refresh then self.AllianceRank:Refresh() end
     if self.ChampionOverlay and self.ChampionOverlay.Refresh then self.ChampionOverlay:Refresh() end
     if self.AbilityOverlays and self.AbilityOverlays.Refresh then self.AbilityOverlays:Refresh() end
+    if self.Reticle and self.Reticle.Refresh then self.Reticle:Refresh(true) end
     if self.QuickslotOverlay and self.QuickslotOverlay.Refresh then self.QuickslotOverlay:Refresh() end
     if self.InfiniteArchiveOverlay and self.InfiniteArchiveOverlay.Refresh then self.InfiniteArchiveOverlay:Refresh() end
     if self.RepairCostOverlay and self.RepairCostOverlay.Refresh then self.RepairCostOverlay:Refresh() end
     if self.PerformanceOverlay and self.PerformanceOverlay.Refresh then self.PerformanceOverlay:Refresh(true) end
+    if self.TickTracker and self.TickTracker.Refresh then self.TickTracker:Refresh() end
     if self.EncounterReminders and self.EncounterReminders.Refresh then self.EncounterReminders:Refresh() end
     if self.ChallengeDifficultyOverlay and self.ChallengeDifficultyOverlay.Refresh then self.ChallengeDifficultyOverlay:Refresh() end
     if self.Travel and self.Travel.RefreshMapTeleporterVisibility then self.Travel:RefreshMapTeleporterVisibility() end
@@ -1751,7 +1087,7 @@ function EPC:RaiseLayoutOverlays()
         self.UnitFrames, self.MiniMap, self.StableTimer, self.Clock,
         self.ActiveQuest, self.GoldenPursuits, self.AllianceRank,
         self.ChampionOverlay, self.AbilityOverlays, self.DualActionBar, self.QuickslotOverlay,
-        self.InfiniteArchiveOverlay, self.RepairCostOverlay, self.PerformanceOverlay, self.EncounterReminders,
+        self.InfiniteArchiveOverlay, self.RepairCostOverlay, self.PerformanceOverlay, self.TickTracker, self.EncounterReminders,
         self.ChallengeDifficultyOverlay, self.DungeonFinder,
         self.PlayerRequestOverlay, self.NativeNotificationOverlay, self.CompassFocusedInfoOverlay,
         self.SynergyOverlay, self.RotationAssistant, self.AntiquityAssistant,
@@ -1959,6 +1295,7 @@ function EPC:SetUnitFramesMoveMode(active, exitReason)
     local canInfiniteArchive = self.InfiniteArchiveOverlay and self.InfiniteArchiveOverlay.SetLayoutMode
     local canRepairCosts = self.RepairCostOverlay and self.RepairCostOverlay.SetLayoutMode
     local canPerformanceOverlay = self.PerformanceOverlay and self.PerformanceOverlay.SetLayoutMode
+    local canTickTracker = self.TickTracker and self.TickTracker.SetLayoutMode
     local canEncounterReminders = self.EncounterReminders and self.EncounterReminders.SetLayoutMode
     local canBossMechanics = self.BossMechanicsAssistant and self.BossMechanicsAssistant.SetLayoutMode
     local canChallengeOverlay = self.ChallengeDifficultyOverlay and self.ChallengeDifficultyOverlay.SetLayoutMode
@@ -1972,7 +1309,7 @@ function EPC:SetUnitFramesMoveMode(active, exitReason)
     local canPlayerRequest = self.PlayerRequestOverlay and self.PlayerRequestOverlay.SetLayoutMode
     local canNativeNotification = self.NativeNotificationOverlay and self.NativeNotificationOverlay.SetLayoutMode
     local canCompassFocusedInfo = self.CompassFocusedInfoOverlay and self.CompassFocusedInfoOverlay.SetLayoutMode
-    if not canFrames and not canMiniMap and not canStableTimer and not canClock and not canActiveQuest and not canGoldenPursuits and not canAllianceRank and not canChampionOverlay and not canAbilities and not canDualActionBar and not canQuickslot and not canInfiniteArchive and not canRepairCosts and not canPerformanceOverlay and not canEncounterReminders and not canBossMechanics and not canChallengeOverlay and not canDungeonQueue and not canSynergy and not canRotationAssistant and not canAntiquityAssistant and not canMapTeleporter and not canRecipeStyleLearner and not canAlchemyPotionMaker and not canPlayerRequest and not canNativeNotification and not canCompassFocusedInfo then return end
+    if not canFrames and not canMiniMap and not canStableTimer and not canClock and not canActiveQuest and not canGoldenPursuits and not canAllianceRank and not canChampionOverlay and not canAbilities and not canDualActionBar and not canQuickslot and not canInfiniteArchive and not canRepairCosts and not canPerformanceOverlay and not canTickTracker and not canEncounterReminders and not canBossMechanics and not canChallengeOverlay and not canDungeonQueue and not canSynergy and not canRotationAssistant and not canAntiquityAssistant and not canMapTeleporter and not canRecipeStyleLearner and not canAlchemyPotionMaker and not canPlayerRequest and not canNativeNotification and not canCompassFocusedInfo then return end
     active = active == true
 
     -- Once full HUD Layout Mode is active, only its SAVE & EXIT button is
@@ -2038,6 +1375,7 @@ function EPC:SetUnitFramesMoveMode(active, exitReason)
 
         if canRepairCosts then self.RepairCostOverlay:SetLayoutMode(true) end
         if canPerformanceOverlay then self.PerformanceOverlay:SetLayoutMode(true) end
+        if canTickTracker then self.TickTracker:SetLayoutMode(true) end
         if canEncounterReminders then self.EncounterReminders:SetLayoutMode(true) end
         if canBossMechanics then self.BossMechanicsAssistant:SetLayoutMode(true) end
         if canChallengeOverlay then self.ChallengeDifficultyOverlay:SetLayoutMode(true) end
@@ -2091,6 +1429,7 @@ function EPC:SetUnitFramesMoveMode(active, exitReason)
         if canInfiniteArchive then self.InfiniteArchiveOverlay:SetLayoutMode(false) end
         if canRepairCosts then self.RepairCostOverlay:SetLayoutMode(false) end
         if canPerformanceOverlay then self.PerformanceOverlay:SetLayoutMode(false) end
+        if canTickTracker then self.TickTracker:SetLayoutMode(false) end
         if canEncounterReminders then self.EncounterReminders:SetLayoutMode(false) end
         if canBossMechanics then self.BossMechanicsAssistant:SetLayoutMode(false) end
         if canChallengeOverlay then self.ChallengeDifficultyOverlay:SetLayoutMode(false) end
@@ -2207,6 +1546,10 @@ function EPC:ResetUnitFramePositions()
     if self.PerformanceOverlay and self.PerformanceOverlay.ResetPosition then
         self.PerformanceOverlay:ResetPosition()
         self.PerformanceOverlay:Refresh(true)
+    end
+    if self.TickTracker and self.TickTracker.ResetPosition then
+        self.TickTracker:ResetPosition()
+        self.TickTracker:Refresh()
     end
     if self.EncounterReminders and self.EncounterReminders.ResetPosition then
         self.EncounterReminders:ResetPosition()
@@ -2785,16 +2128,51 @@ function EPC:RegisterEvents()
     if SCENE_MANAGER and type(SCENE_MANAGER.RegisterCallback) == "function" and self.responsiveSceneHook029343 ~= true then
         self.responsiveSceneHook029343 = true
         self.lastResponsiveSuppressed029343 = self:IsGameplayHudSuppressed() == true
-        SCENE_MANAGER:RegisterCallback("SceneStateChanged", function()
-            if not EPC or not EPC.ScheduleResponsiveOverlayRefresh029343 then return end
+        local suppressScenes029364 = HUD_MENU_SCENE_SET029373
+        self.activeMenuScenes029373 = self.activeMenuScenes029373 or {}
+
+        SCENE_MANAGER:RegisterCallback("SceneStateChanged", function(scene, oldState, newState)
+            if not EPC then return end
+            local sceneName = nil
+            if scene and type(scene.GetName) == "function" then
+                local ok, value = pcall(scene.GetName, scene)
+                if ok then sceneName = tostring(value or "") end
+            end
+
+            -- v0.29.383: track every non-HUD scene, not only a stock-name
+            -- whitelist. PerfectPixel and other menu replacements use alternate
+            -- scene names, but free-pointer mode leaves the current scene as HUD.
+            local isGameplayScene029383 = EAS_IsGameplaySceneName029383(sceneName)
+            local isMenuScene029383 = sceneName ~= nil and sceneName ~= "" and not isGameplayScene029383
+
+            if isMenuScene029383 then
+                EPC.activeMenuScenes029373 = EPC.activeMenuScenes029373 or {}
+                local wasSuppressed = EPC.lastResponsiveSuppressed029343 == true
+                if newState == SCENE_SHOWING or newState == SCENE_SHOWN then
+                    EPC.activeMenuScenes029373[sceneName] = true
+                elseif newState == SCENE_HIDDEN then
+                    EPC.activeMenuScenes029373[sceneName] = nil
+                elseif newState == SCENE_HIDING then
+                    EPC.activeMenuScenes029373[sceneName] = true
+                end
+
+                local suppressed = EPC:IsGameplayHudSuppressed() == true
+                EPC.sceneTransitionSuppressed029364 = suppressed
+                EPC.lastResponsiveSuppressed029343 = suppressed
+                if suppressed ~= wasSuppressed and EPC.RefreshGameplayOverlays then
+                    EPC:RefreshGameplayOverlays()
+                end
+                return
+            end
+
+            -- HUD/HUDUI state changes can be the final edge after a menu closes.
             local suppressed = EPC:IsGameplayHudSuppressed() == true
             if suppressed ~= EPC.lastResponsiveSuppressed029343 then
                 EPC.lastResponsiveSuppressed029343 = suppressed
-                EPC:ScheduleResponsiveOverlayRefresh029343(1)
-                if not suppressed and type(zo_callLater) == "function" then
-                    zo_callLater(function()
-                        if EPC and EPC.ScheduleResponsiveOverlayRefresh029343 then EPC:ScheduleResponsiveOverlayRefresh029343(1) end
-                    end, 70)
+                if EPC.RefreshGameplayOverlays then
+                    EPC:RefreshGameplayOverlays()
+                elseif EPC.ScheduleResponsiveOverlayRefresh029343 then
+                    EPC:ScheduleResponsiveOverlayRefresh029343(1)
                 end
             end
         end)
@@ -2913,6 +2291,16 @@ function EPC:Initialize()
         self.saved.hudOverlayModesMigrated = true
     end
 
+    -- v0.29.420: Bar 1/front/main is the Suite's canonical top row. Earlier
+    -- beta builds shipped the reverse default and that SavedVariable survives
+    -- addon updates, so simply changing EPC.defaults does not repair existing
+    -- profiles. Normalize that legacy state once; after this migration the user
+    -- can still deliberately turn the setting off and their choice is preserved.
+    if self.saved.dualActionBarFrontTopMigrated029420 ~= true then
+        self.saved.dualActionBarPrimaryOnTop029189 = true
+        self.saved.dualActionBarFrontTopMigrated029420 = true
+    end
+
     -- Repair / Recharge estimate is now intended to appear with Inventory, not
     -- the Tamriel Codex. Existing CODEX/legacy values migrate to Inventory Only.
     if self.saved.repairCostVisibility == "CODEX" or self.saved.repairCostVisibility == "COMBAT" then
@@ -2921,27 +2309,6 @@ function EPC:Initialize()
         self.saved.repairCostVisibility = "INVENTORY"
     end
 
-    if self.ApplyGlobalControllerGlyphOverride029181 then self:ApplyGlobalControllerGlyphOverride029181() end
-
-    -- v0.29.201: the visual bridge was installed during file bootstrap, before
-    -- Suite controls are created. This delayed pass only refreshes Suite binding
-    -- caches/HUD glyphs; it never drives ESO's scene manager or input setting.
-    if self.ApplyDesktopGamepadUIBridge029197 then
-        self:ApplyDesktopGamepadUIBridge029197(false)
-        if self.saved.keepDesktopUIWithGamepad029197 == true then
-            if type(zo_callLater) == "function" then
-                zo_callLater(function() if EPC and EPC.ApplyDesktopGamepadUIBridge029197 then EPC:ApplyDesktopGamepadUIBridge029197(true) end end, 120)
-            else
-                self:ApplyDesktopGamepadUIBridge029197(true)
-            end
-        end
-    end
-
-    -- v0.29.205: preserve desktop visuals but let the last physical input own
-    -- keyboard-style menu navigation. This never changes preferred UI mode.
-    if self.InstallHybridDesktopNavigation029205 then
-        self:InstallHybridDesktopNavigation029205()
-    end
 
     if self.Compatibility then self.Compatibility:Initialize() end
     local function initModule(name, object)
@@ -2954,6 +2321,7 @@ function EPC:Initialize()
     end
 
     initModule("BUG_CATCHER", self.BugCatcher)
+    initModule("SELF_TEST", self.SelfTest)
     initModule("ROLE", self.Role)
     initModule("TRAVEL", self.Travel)
     initModule("ACTIVITIES", self.Activities)
@@ -2996,6 +2364,7 @@ function EPC:Initialize()
     initModule("CUSTOM_RETICLE", self.Reticle)
     initModule("REPAIR_COST_OVERLAY", self.RepairCostOverlay)
     initModule("PERFORMANCE_OVERLAY", self.PerformanceOverlay)
+    initModule("TICK_TRACKER", self.TickTracker)
     initModule("ENCOUNTER_REMINDERS", self.EncounterReminders)
     initModule("OVERLAND_DIFFICULTY", self.OverlandDifficulty)
     initModule("CHALLENGE_DIFFICULTY_OVERLAY", self.ChallengeDifficultyOverlay)
@@ -3360,3 +2729,23 @@ local function OnAddOnLoaded(_, addonName)
 end
 
 EVENT_MANAGER:RegisterForEvent(EPC.name, EVENT_ADD_ON_LOADED, OnAddOnLoaded)
+
+-- ============================================================================
+-- v0.29.376 - immediate Dual Action Bar scene visibility reconciliation.
+-- The bar previously relied on its 125/1000 ms dynamic tick, so out-of-combat
+-- menu changes could leave it visible for almost a second after Quickslot/HUD
+-- had already hidden. Reconcile it on the same gameplay<->menu edge as the rest
+-- of the Suite overlays.
+-- ============================================================================
+local EAS_RefreshGameplayOverlaysBase029376 = EPC.RefreshGameplayOverlays
+function EPC:RefreshGameplayOverlays()
+    local result = EAS_RefreshGameplayOverlaysBase029376(self)
+    local bar = self.DualActionBar
+    if bar and type(bar.IsVisibleNow029311) == "function" then
+        local visible = bar:IsVisibleNow029311()
+        if visible and type(bar.RefreshDynamic029311) == "function" then
+            bar:RefreshDynamic029311(true)
+        end
+    end
+    return result
+end

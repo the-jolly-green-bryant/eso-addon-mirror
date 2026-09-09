@@ -12,6 +12,7 @@ local EPC = ESOProgressionCoach
 EPC.ResourcePins = EPC.ResourcePins or {}
 local R = EPC.ResourcePins
 local wm = WINDOW_MANAGER
+local GPS = rawget(_G, "LibGPS3") or rawget(_G, "LibGPS")
 
 local INTERACTION_UPDATE_MS = 900
 local RENDER_UPDATE_MS = 900
@@ -24,6 +25,7 @@ local DEFAULT_VISIBLE_MARKERS = 72
 local MIN_VISIBLE_MARKERS = 24
 local MAX_VISIBLE_MARKERS = 120
 local DEDUPE_DISTANCE_CM = 375
+local FISHING_DEDUPE_DISTANCE_CM = 1200
 local INTERACT_FORWARD_OFFSET_CM = 145
 local GLOW_VERTICAL_OFFSET_CM = 65
 local RESOURCE_WINDOW_MS = 5000
@@ -59,12 +61,7 @@ local WORLD_GLOW_HIDE_SCENES = {
     "gameMenuInGame", "inventory", "character", "skills", "championPerks",
     "journal", "collectionsBook", "groupMenu", "contacts", "guildHome",
     "mailInbox", "bank", "store", "tradingHouse", "crafting", "settings",
-    "worldMap", "gamepad_worldMap", "gamepad_inventory_root",
-    "gamepad_character_root", "gamepad_skills_root", "gamepad_journal_root",
-    "gamepad_collections_book", "gamepad_group_root", "gamepad_options_root",
-    "gamepad_player_menu", "gamepad_main_menu", "gamepad_championPerks_root",
-    "gamepad_store", "gamepad_banking", "gamepad_trading_house",
-    "gamepad_mail_manager", "gamepad_guild_hub", "gamepad_contacts_root",
+    "worldMap",
 }
 
 local COLORS = {
@@ -85,6 +82,7 @@ local COLORS = {
     JUSTICE = { 0.94, 0.46, 0.94 },
     STASH = { 0.94, 0.46, 0.94 },
     RESOURCE = { 1.00, 0.92, 0.45 },
+    SKYSHARD = { 1.00, 0.82, 0.20 },
 }
 
 local TYPE_LABELS = {
@@ -105,6 +103,7 @@ local TYPE_LABELS = {
     JUSTICE = "Justice Container",
     STASH = "Hidden Stash",
     RESOURCE = "Resource",
+    SKYSHARD = "Skyshard",
 }
 
 
@@ -136,6 +135,7 @@ local ICON_TEXTURES = {
     TROVE = EPC:AssetPath("Art/ResourcePins/trove.dds"),
     JUSTICE = EPC:AssetPath("Art/ResourcePins/justice.dds"),
     STASH = EPC:AssetPath("Art/ResourcePins/stash.dds"),
+    SKYSHARD = "EsoUI/Art/MapPins/skyshard_seen.dds",
 }
 
 
@@ -159,6 +159,7 @@ local NATIVE_ICON_TEXTURES = {
     TROVE = "/esoui/art/icons/mapkey/mapkey_areaofinterest.dds",
     JUSTICE = "/esoui/art/icons/servicemappins/servicepin_fence.dds",
     STASH = "/esoui/art/icons/servicemappins/servicepin_fence.dds",
+    SKYSHARD = "EsoUI/Art/MapPins/skyshard_seen.dds",
 }
 
 local NATIVE_ICON_SCALE = {
@@ -179,6 +180,7 @@ local NATIVE_ICON_SCALE = {
     TROVE = 0.82,
     JUSTICE = 0.82,
     STASH = 0.82,
+    SKYSHARD = 0.96,
 }
 
 local AUTO_ICON = {
@@ -186,7 +188,7 @@ local AUTO_ICON = {
     MUSHROOM = "MUSHROOM", FLOWER = "FLOWER", WATERPLANT = "WATERPLANT",
     RUNE = "ENCHANTING", WATER = "SOLVENT", FISHING = "FISH", CHEST = "CHEST",
     HEAVYSACK = "HEAVYSACK", CLAM = "CLAM", TROVE = "TROVE", JUSTICE = "JUSTICE",
-    STASH = "STASH", RESOURCE = "WORLD",
+    STASH = "STASH", RESOURCE = "WORLD", SKYSHARD = "SKYSHARD",
 }
 
 local CUSTOM_ICON_SETTING = {
@@ -195,7 +197,7 @@ local CUSTOM_ICON_SETTING = {
     WATERPLANT = "resourcePinsIconAlchemy", RUNE = "resourcePinsIconRunes", WATER = "resourcePinsIconWater",
     FISHING = "resourcePinsIconFishing", CHEST = "resourcePinsIconSpecial", HEAVYSACK = "resourcePinsIconSpecial",
     CLAM = "resourcePinsIconSpecial", TROVE = "resourcePinsIconSpecial", JUSTICE = "resourcePinsIconSpecial",
-    STASH = "resourcePinsIconSpecial", RESOURCE = "resourcePinsIconOther",
+    STASH = "resourcePinsIconSpecial", RESOURCE = "resourcePinsIconOther", SKYSHARD = "resourcePinsIconOther",
 }
 
 -- Bundled Suite Community Resource Data. The supplied database stores coordinates
@@ -204,6 +206,10 @@ local CUSTOM_ICON_SETTING = {
 -- remaps axes while converting to centimeters.
 local COMMUNITY_GRID_CM = 5000
 local COMMUNITY_DEDUPE_CM = DEDUPE_DISTANCE_CM
+
+local function dedupeDistanceForKind(kind)
+    return tostring(kind or "") == "FISHING" and FISHING_DEDUPE_DISTANCE_CM or DEDUPE_DISTANCE_CM
+end
 local COMMUNITY_DATASET_RECORDS = 124625
 local COMMUNITY_MODULES = { "AD", "DC", "DLC", "EP", "NF" }
 local COMMUNITY_KIND_BY_PIN = {
@@ -329,6 +335,7 @@ function R:GetGlowTierForKind(kind)
     kind = tostring(kind or "RESOURCE")
     if kind == "CHEST" or kind == "TROVE" then return "EPIC" end
     if kind == "HEAVYSACK" or kind == "CLAM" or kind == "JUSTICE" or kind == "STASH" then return "RARE" end
+    if kind == "SKYSHARD" then return "EPIC" end
     if kind == "RUNE" or kind == "ALCHEMY" or kind == "MUSHROOM" or kind == "FLOWER" or kind == "WATERPLANT" or kind == "FISHING" then return "UNCOMMON" end
     return "COMMON"
 end
@@ -806,6 +813,140 @@ function R:IsWorldGlowSuppressed()
     return false
 end
 
+
+function R:IsOwnedByDungeonChestFinder(kind)
+    kind = tostring(kind or "")
+    if kind ~= "CHEST" and kind ~= "HEAVYSACK" then return false end
+    if not EPC.saved or EPC.saved.dungeonChestFinderEnabled == false then return false end
+    local now = nowMs()
+    if self.dungeonChestOwnershipCheckedAt and (now - self.dungeonChestOwnershipCheckedAt) < 750 then
+        return self.dungeonChestOwnershipActive == true
+    end
+    local finder = EPC.DungeonChestFinder
+    if not finder or type(finder.IsSupportedInstance) ~= "function" then return false end
+    local ok, active = pcall(finder.IsSupportedInstance, finder)
+    self.dungeonChestOwnershipCheckedAt = now
+    self.dungeonChestOwnershipActive = ok and active == true
+    return self.dungeonChestOwnershipActive == true
+end
+
+function R:CompactLearnedLocationData()
+    if not EPC.saved or type(EPC.saved.resourcePinLocations) ~= "table" then return 0 end
+    local removed = 0
+    for zoneKey, bucket in pairs(EPC.saved.resourcePinLocations) do
+        if type(bucket) == "table" then
+            local compact, grid = {}, {}
+            for i = 1, #bucket do
+                local entry = bucket[i]
+                local x = type(entry) == "table" and tonumber(entry.x) or nil
+                local y = type(entry) == "table" and tonumber(entry.y) or nil
+                local z = type(entry) == "table" and tonumber(entry.z) or nil
+                if x and y and z then
+                    local kind = tostring(entry.kind or "RESOURCE")
+                    local dedupeCm = dedupeDistanceForKind(kind)
+                    local _, gx, gz = gridKey(x, z, dedupeCm)
+                    local duplicate = nil
+                    for dx = -1, 1 do
+                        for dz = -1, 1 do
+                            local nearby = grid[tostring(gx + dx) .. ":" .. tostring(gz + dz)]
+                            if nearby then
+                                for j = 1, #nearby do
+                                    local other = nearby[j]
+                                    local otherKind = tostring(other.kind or "RESOURCE")
+                                    local compatibleKind = otherKind == kind or otherKind == "RESOURCE" or kind == "RESOURCE"
+                                    if compatibleKind
+                                        and math.abs((tonumber(other.y) or 0) - y) <= 600
+                                        and distance2Dcm(other.x, other.z, x, z) <= math.max(dedupeCm, dedupeDistanceForKind(otherKind)) then
+                                        duplicate = other
+                                        break
+                                    end
+                                end
+                            end
+                            if duplicate then break end
+                        end
+                        if duplicate then break end
+                    end
+                    if duplicate then
+                        if tostring(duplicate.kind or "RESOURCE") == "RESOURCE" and kind ~= "RESOURCE" then duplicate.kind = kind end
+                        if (not duplicate.name or duplicate.name == "") and entry.name and entry.name ~= "" then duplicate.name = entry.name end
+                        duplicate.lastSeenAt = math.max(tonumber(duplicate.lastSeenAt) or 0, tonumber(entry.lastSeenAt) or 0)
+                        removed = removed + 1
+                    else
+                        compact[#compact + 1] = entry
+                        local key = tostring(gx) .. ":" .. tostring(gz)
+                        grid[key] = grid[key] or {}
+                        grid[key][#grid[key] + 1] = entry
+                    end
+                else
+                    removed = removed + 1
+                end
+            end
+            EPC.saved.resourcePinLocations[zoneKey] = compact
+        end
+    end
+    self.lastLearnedCompactionRemoved = removed
+    return removed
+end
+
+function R:DeduplicateVisibleCandidates(visible)
+    if type(visible) ~= "table" or #visible < 2 then return visible, 0 end
+    table.sort(visible, function(a, b)
+        if a.debug ~= b.debug then return a.debug == true end
+        if a.focusedMissing ~= b.focusedMissing then return a.focusedMissing == true end
+        -- A zone only has a small number of nearby uncollected skyshards. Give
+        -- them priority inside the bounded pool so dense resource areas cannot
+        -- push every Skyshard out of the moving-player marker cap.
+        if a.skyshard ~= b.skyshard then return a.skyshard == true end
+        if a.learned ~= b.learned then return a.learned == true end
+        return (tonumber(a.distanceM) or 999999) < (tonumber(b.distanceM) or 999999)
+    end)
+    local out, grid, removed = {}, {}, 0
+    for i = 1, #visible do
+        local candidate = visible[i]
+        local entry = candidate and candidate.entry
+        if candidate.debug == true or type(entry) ~= "table" then
+            out[#out + 1] = candidate
+        else
+            local x, y, z = tonumber(entry.x), tonumber(entry.y), tonumber(entry.z)
+            local kind = tostring(entry.kind or "RESOURCE")
+            local duplicate = false
+            if x and y and z then
+                local dedupeCm = dedupeDistanceForKind(kind)
+                local _, gx, gz = gridKey(x, z, dedupeCm)
+                local gridPrefix = tostring(dedupeCm) .. ":"
+                for dx = -1, 1 do
+                    for dz = -1, 1 do
+                        local nearby = grid[gridPrefix .. tostring(gx + dx) .. ":" .. tostring(gz + dz)]
+                        if nearby then
+                            for j = 1, #nearby do
+                                local other = nearby[j]
+                                local otherKind = tostring(other.kind or "RESOURCE")
+                                local compatibleKind = otherKind == kind or otherKind == "RESOURCE" or kind == "RESOURCE"
+                                if compatibleKind
+                                    and math.abs((tonumber(other.y) or 0) - y) <= 600
+                                    and distance2Dcm(other.x, other.z, x, z) <= math.max(dedupeCm, dedupeDistanceForKind(otherKind)) then
+                                    duplicate = true
+                                    break
+                                end
+                            end
+                        end
+                        if duplicate then break end
+                    end
+                    if duplicate then break end
+                end
+                if not duplicate then
+                    local key = gridPrefix .. tostring(gx) .. ":" .. tostring(gz)
+                    grid[key] = grid[key] or {}
+                    grid[key][#grid[key] + 1] = entry
+                end
+            end
+            if duplicate then removed = removed + 1 else out[#out + 1] = candidate end
+        end
+    end
+    self.lastVisibleDuplicatesRemoved = removed
+    return out, removed
+end
+
 function R:GetZoneBucket(zoneId, create)
     if not EPC.saved then return nil end
     EPC.saved.resourcePinLocations = EPC.saved.resourcePinLocations or {}
@@ -830,17 +971,18 @@ function R:AddCommunityNode(cache, dedupe, kind, x, y, z)
 
     -- Mirror the Suite's learned-node merge radius so aliased community records
     -- (for example ore/jewelry and rune/portal records) do not create double pins.
-    local _, gx, gz = gridKey(x, z, COMMUNITY_DEDUPE_CM)
+    local communityDedupeCm = tostring(kind) == "FISHING" and FISHING_DEDUPE_DISTANCE_CM or COMMUNITY_DEDUPE_CM
+    local _, gx, gz = gridKey(x, z, communityDedupeCm)
     for dx = -1, 1 do
         for dz = -1, 1 do
-            local key = tostring(kind) .. ":" .. tostring(gx + dx) .. ":" .. tostring(gz + dz)
+            local key = tostring(kind) .. ":" .. tostring(communityDedupeCm) .. ":" .. tostring(gx + dx) .. ":" .. tostring(gz + dz)
             local nearby = dedupe[key]
             if type(nearby) == "table" then
                 for i = 1, #nearby do
                     local other = nearby[i]
                     if type(other) == "table"
                         and math.abs((tonumber(other.y) or 0) - (tonumber(y) or 0)) <= 600
-                        and distance2Dcm(other.x, other.z, x, z) <= COMMUNITY_DEDUPE_CM then
+                        and distance2Dcm(other.x, other.z, x, z) <= communityDedupeCm then
                         return false
                     end
                 end
@@ -862,7 +1004,7 @@ function R:AddCommunityNode(cache, dedupe, kind, x, y, z)
     cache.count = (tonumber(cache.count) or 0) + 1
     cache.byKind[kind] = (tonumber(cache.byKind[kind]) or 0) + 1
 
-    local ownKey = tostring(kind) .. ":" .. tostring(gx) .. ":" .. tostring(gz)
+    local ownKey = tostring(kind) .. ":" .. tostring(communityDedupeCm) .. ":" .. tostring(gx) .. ":" .. tostring(gz)
     dedupe[ownKey] = dedupe[ownKey] or {}
     dedupe[ownKey][#dedupe[ownKey] + 1] = entry
     return true
@@ -1073,12 +1215,7 @@ function R:EnsureMissingAlchemyMapPins()
                 local tooltip = ZO_WorldMap_GetTooltipForMode(ZO_MAP_TOOLTIP_MODE.INFORMATION)
                 local focus = self.missingAlchemyFocus
                 local title = focus and focus.summary or "Missing Alchemy Material"
-                if IsInGamepadPreferredMode and IsInGamepadPreferredMode() and tooltip and tooltip.tooltip then
-                    local section = tooltip.tooltip:AcquireSection(tooltip.tooltip:GetStyle("delveMainSection"))
-                    tooltip:LayoutStringLine(section, "ALCHEMY MATERIAL HUNT", tooltip.tooltip:GetStyle("delveTooltipName"))
-                    tooltip:LayoutStringLine(section, tostring(title), tooltip.tooltip:GetStyle("delveSkyshardHint"))
-                    tooltip.tooltip:AddSection(section)
-                elseif tooltip and tooltip.AddLine then
+                if tooltip and tooltip.AddLine then
                     tooltip:AddLine("ALCHEMY MATERIAL HUNT", "ZoFontWinH4", 1, 0.82, 0.24)
                     tooltip:AddLine(tostring(title), "ZoFontGame", 1, 1, 1)
                     tooltip:AddLine("Approach this area to see the bright 3D hunt pin.", "ZoFontGameSmall", 0.72, 0.84, 0.95)
@@ -1625,6 +1762,7 @@ end
 
 function R:IsKindEnabled(kind)
     if not EPC.saved then return false end
+    if self:IsOwnedByDungeonChestFinder(kind) then return false end
 
     -- Farm Focus deliberately uses its own target set. This lets the player
     -- switch back to the normal all-purpose filters without rebuilding them.
@@ -1635,8 +1773,9 @@ function R:IsKindEnabled(kind)
             WATERPLANT = "resourcePinsFarmAlchemy", RUNE = "resourcePinsFarmRunes", WATER = "resourcePinsFarmWater",
             FISHING = "resourcePinsFarmFishing", CHEST = "resourcePinsFarmSpecial", HEAVYSACK = "resourcePinsFarmSpecial",
             CLAM = "resourcePinsFarmSpecial", TROVE = "resourcePinsFarmSpecial", JUSTICE = "resourcePinsFarmSpecial",
-            STASH = "resourcePinsFarmSpecial", RESOURCE = "resourcePinsFarmOther",
+            STASH = "resourcePinsFarmSpecial", RESOURCE = "resourcePinsFarmOther", SKYSHARD = "resourcePinsShowSkyshards",
         }
+        if kind == "SKYSHARD" then return false end
         local focusKey = farmKey[kind] or "resourcePinsFarmOther"
         return EPC.saved[focusKey] == true
     end
@@ -1647,7 +1786,7 @@ function R:IsKindEnabled(kind)
         WATERPLANT = "resourcePinsShowAlchemy", RUNE = "resourcePinsShowRunes", WATER = "resourcePinsShowWater",
         FISHING = "resourcePinsShowFishing", CHEST = "resourcePinsShowSpecial", HEAVYSACK = "resourcePinsShowSpecial",
         CLAM = "resourcePinsShowSpecial", TROVE = "resourcePinsShowSpecial", JUSTICE = "resourcePinsShowSpecial",
-        STASH = "resourcePinsShowSpecial", RESOURCE = "resourcePinsShowOther",
+        STASH = "resourcePinsShowSpecial", RESOURCE = "resourcePinsShowOther", SKYSHARD = "resourcePinsShowSkyshards",
     }
     local savedKey = key[kind] or "resourcePinsShowOther"
     return EPC.saved[savedKey] ~= false
@@ -1700,10 +1839,11 @@ function R:SaveNode(kind, name, zoneId, x, y, z, source)
     zoneId, x, y, z = tonumber(zoneId), tonumber(x), tonumber(y), tonumber(z)
     if not zoneId or not x or not y or not z then return nil end
     kind = tostring(kind or "RESOURCE")
+    if self:IsOwnedByDungeonChestFinder(kind) then return nil end
     local bucket = self:GetZoneBucket(zoneId, true)
     if not bucket then return nil end
 
-    local nearby = self:FindNearbyEntry(zoneId, x, z, DEDUPE_DISTANCE_CM)
+    local nearby = self:FindNearbyEntry(zoneId, x, z, dedupeDistanceForKind(kind))
     if nearby then
         local entry = bucket[nearby]
         if entry then
@@ -2210,6 +2350,94 @@ function R:PositionMarker(pin, entry, distanceM)
     return true
 end
 
+-- Native skyshard 3D source. This intentionally does NOT copy or persist any
+-- SkyShards addon coordinate database. ESO supplies the current character's
+-- skyshard IDs, discovery state and world position; the Suite only builds the
+-- small in-range candidate list needed by the existing 3D renderer.
+function R:AppendNativeSkyshards(zoneId, px, py, pz, maxDistanceM, visible)
+    if not EPC.saved or EPC.saved.resourcePinsShowSkyshards == false then return 0 end
+    if EPC.saved.resourcePinsFarmFocusEnabled == true then return 0 end
+    if type(GetNumSkyshardsInZone) ~= "function" or type(GetZoneSkyshardId) ~= "function"
+        or type(GetSkyshardDiscoveryStatus) ~= "function" then return 0 end
+
+    local count = tonumber(safe(GetNumSkyshardsInZone, 0, zoneId)) or 0
+    if count <= 0 then return 0 end
+
+    local regularZone, regularX, regularY, regularZ
+    if type(GetUnitWorldPosition) == "function" then
+        regularZone, regularX, regularY, regularZ = safe(GetUnitWorldPosition, nil, "player")
+    end
+    regularZone = tonumber(regularZone)
+    regularX, regularY, regularZ = tonumber(regularX), tonumber(regularY), tonumber(regularZ)
+    local rawOffsetX, rawOffsetY, rawOffsetZ
+    if regularZone == tonumber(zoneId) and regularX and regularY and regularZ then
+        rawOffsetX, rawOffsetY, rawOffsetZ = px - regularX, py - regularY, pz - regularZ
+    end
+
+    local measurement
+    if GPS and type(GPS.GetCurrentMapMeasurement) == "function" then
+        measurement = safe(function() return GPS:GetCurrentMapMeasurement() end, nil)
+    end
+
+    local acquired = rawget(_G, "SKYSHARD_DISCOVERY_STATUS_ACQUIRED")
+    local added, seen = 0, {}
+    for i = 1, count do
+        local shardId = tonumber(safe(GetZoneSkyshardId, 0, zoneId, i)) or 0
+        if shardId > 0 and not seen[shardId] then
+            seen[shardId] = true
+            local status = safe(GetSkyshardDiscoveryStatus, acquired, shardId)
+            if acquired == nil or status ~= acquired then
+                local wx, wy, wz
+
+                -- Preferred path: ESO's exact world position, transformed from
+                -- regular world space into the raw render space used by this
+                -- module. In normal zones this is normally a simple offset.
+                if rawOffsetX and type(GetWorldPositionForSkyshardId) == "function" then
+                    local sZone, sx, sy, sz = safe(GetWorldPositionForSkyshardId, nil, shardId)
+                    sZone, sx, sy, sz = tonumber(sZone), tonumber(sx), tonumber(sy), tonumber(sz)
+                    if sZone == tonumber(zoneId) and sx and sy and sz then
+                        wx, wy, wz = sx + rawOffsetX, sy + rawOffsetY, sz + rawOffsetZ
+                    end
+                end
+
+                -- Fallback for clients/maps where the exact world API is not
+                -- exposed: project the native normalized shard location through
+                -- LibGPS. Only accept shards actually represented by this map.
+                if not wx and measurement and type(measurement.ToWorld) == "function"
+                    and type(GetNormalizedPositionForSkyshardId) == "function" then
+                    local nx, ny, isInMap = safe(GetNormalizedPositionForSkyshardId, nil, shardId)
+                    nx, ny = tonumber(nx), tonumber(ny)
+                    if nx and ny and isInMap ~= false then
+                        local ok, mx, my, mz = pcall(measurement.ToWorld, measurement, nx, ny)
+                        mx, my, mz = tonumber(mx), tonumber(my), tonumber(mz)
+                        if ok and mx and my and mz then wx, wy, wz = mx, my, mz end
+                    end
+                end
+
+                if wx and wy and wz then
+                    local distanceM = distance3Dcm(px, py, pz, wx, wy, wz) / 100
+                    if distanceM <= maxDistanceM then
+                        local hint = type(GetSkyshardHint) == "function" and tostring(safe(GetSkyshardHint, "Skyshard", shardId) or "Skyshard") or "Skyshard"
+                        local entry = {
+                            kind = "SKYSHARD", name = hint ~= "" and hint or "Skyshard",
+                            zoneId = zoneId, x = wx, y = wy, z = wz,
+                            skyshardId = shardId, nativeSkyshard = true,
+                        }
+                        visible[#visible + 1] = {
+                            entry = entry, distanceM = distanceM,
+                            horizontalDistanceM = distance2Dcm(px, pz, wx, wz) / 100,
+                            skyshard = true, noDepletionProbe = true,
+                        }
+                        added = added + 1
+                    end
+                end
+            end
+        end
+    end
+    self.lastSkyshardCandidateCount = added
+    return added
+end
+
 function R:RefreshMarkers()
     local explicitAlchemyHunt = type(self.missingAlchemyFocus) == "table"
         and type(self.missingAlchemyFocus.materials) == "table"
@@ -2311,6 +2539,10 @@ function R:RefreshMarkers()
     -- becomes eligible automatically as the player moves into range.
     self:AppendNearbyCommunity(zoneId, px, py, pz, maxDistanceM, visible, learnedShadow)
 
+    -- Skyshards share the same bounded 3D marker pool but come only from ESO's
+    -- native API. They are never learned, persisted, or mixed into depletion.
+    self:AppendNativeSkyshards(zoneId, px, py, pz, maxDistanceM, visible)
+
     if self.debugEntry and now <= (tonumber(self.debugUntil) or 0) then
         visible[#visible + 1] = { entry = self.debugEntry, distanceM = 4, horizontalDistanceM = 4, debug = true }
     elseif self.debugEntry then
@@ -2318,23 +2550,17 @@ function R:RefreshMarkers()
         self.debugUntil = 0
     end
 
+    visible = self:DeduplicateVisibleCandidates(visible)
+
     self.nearestDepletionCandidate = nil
     for i = 1, #visible do
         local candidate = visible[i]
         local candidateProbeDistance = tonumber(candidate.horizontalDistanceM) or tonumber(candidate.distanceM) or 999999
         local currentProbeDistance = self.nearestDepletionCandidate and (tonumber(self.nearestDepletionCandidate.horizontalDistanceM) or tonumber(self.nearestDepletionCandidate.distanceM) or 999999) or 999999
-        if candidate.debug ~= true and (not self.nearestDepletionCandidate or candidateProbeDistance < currentProbeDistance) then
+        if candidate.debug ~= true and candidate.noDepletionProbe ~= true and (not self.nearestDepletionCandidate or candidateProbeDistance < currentProbeDistance) then
             self.nearestDepletionCandidate = candidate
         end
     end
-
-    table.sort(visible, function(a, b)
-        -- Always keep the test marker first, then learned pins, then nearest data.
-        if a.debug ~= b.debug then return a.debug == true end
-        if a.focusedMissing ~= b.focusedMissing then return a.focusedMissing == true end
-        if a.learned ~= b.learned then return a.learned == true end
-        return (tonumber(a.distanceM) or 999999) < (tonumber(b.distanceM) or 999999)
-    end)
 
     if explicitAlchemyHunt and type(missingFocusLocations) == "table" then
         markerLimit = math.max(markerLimit, math.min(MISSING_ALCHEMY_MAX_MAP_PINS, #missingFocusLocations))
@@ -2368,7 +2594,8 @@ function R:RefreshMarkers()
     if renderedCount > 0 then
         self.lastHiddenReason = hudFragmentHidden and "prepared; HUD fragment hidden" or "visible"
     else
-        self.lastHiddenReason = (#bucket == 0 and communityCount == 0) and "no resource nodes here" or "no nodes passed range/filter"
+        local skyCount = tonumber(self.lastSkyshardCandidateCount) or 0
+        self.lastHiddenReason = (#bucket == 0 and communityCount == 0 and skyCount == 0) and "no resource nodes or skyshards here" or "no nodes passed range/filter"
     end
 end
 
@@ -2595,6 +2822,12 @@ function R:Initialize()
     if EPC.saved then
         EPC.saved.resourcePinLocations = EPC.saved.resourcePinLocations or {}
         EPC.saved.resourcePinsDepleted = EPC.saved.resourcePinsDepleted or {}
+        if (tonumber(EPC.saved.resourcePinsDataCompactionVersion) or 0) < 2 then
+            -- v0.29.466: fishing holes use a wider merge radius than ordinary
+            -- resource nodes, so compact old learned duplicates once on upgrade.
+            self:CompactLearnedLocationData()
+            EPC.saved.resourcePinsDataCompactionVersion = 2
+        end
 
         -- 0.29.00 removed the Suite World Marker presentation option. Migrate
         -- old saved selections so users do not keep an invisible/invalid mode.
@@ -2767,9 +3000,9 @@ function R:ScheduleSuite3DRecovery029144(reason, delayMs)
         if not EPC or not EPC.ResourcePins then return end
         local pins = EPC.ResourcePins
         if pins.cameraRecoveryGeneration029144 ~= generation then return end
-        if type(IsGameCameraUIModeActive) == "function" then
-            local ok, active = pcall(IsGameCameraUIModeActive)
-            if ok and active == true then return end
+        if EPC and type(EPC.IsGameplayHudSuppressed) == "function" then
+            local ok, suppressed = pcall(EPC.IsGameplayHudSuppressed, EPC)
+            if ok and suppressed == true then return end
         end
         if pins.IsNormalWorldSceneActive and not pins:IsNormalWorldSceneActive() then return end
         pins:RecoverSuite3DWorldPins(tag)

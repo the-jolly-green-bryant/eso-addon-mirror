@@ -318,13 +318,6 @@ function C:ResetPosition()
 end
 
 function C:Initialize()
-    -- ESO reapplies keyboard/gamepad templates to the focused label when input
-    -- mode changes. Reapply the saved Suite anchor immediately afterward.
-    if rawget(_G, "EVENT_GAMEPAD_PREFERRED_MODE_CHANGED") then
-        EVENT_MANAGER:RegisterForEvent(self.name .. "InputMode", EVENT_GAMEPAD_PREFERRED_MODE_CHANGED, function()
-            zo_callLater(function() C:GetTarget() C:ApplySaved() end, 0)
-        end)
-    end
 
     EVENT_MANAGER:RegisterForEvent(self.name .. "Activated", EVENT_PLAYER_ACTIVATED, function()
         zo_callLater(function() C:GetTarget() C:ApplySaved() end, 150)

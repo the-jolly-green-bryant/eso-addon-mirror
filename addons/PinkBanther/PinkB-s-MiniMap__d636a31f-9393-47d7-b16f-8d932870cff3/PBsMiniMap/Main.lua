@@ -565,12 +565,29 @@ function addon:SetDormant(value)
 		--
 		-- Recomputed exactly the way InitializeMap does it, and any custom range is dropped
 		-- first since that sits above this one.
+		-- Hand the map back; do not reset it.
+		--
+		-- Standing down is not always the player opening the map. The game opens it for its
+		-- own purposes too -- a wayshrine, an antiquity dig -- and it has already decided what
+		-- that view should show. Clearing the custom zoom range destroys the magnification it
+		-- installed for the dig site, and jumping to the player throws away the position it
+		-- chose. Both were happening, which is the dig map coming up at the wrong zoom centred
+		-- on the player.
+		--
+		-- Recomputing the game's own min and max is kept either way. It is what InitializeMap
+		-- does, our narrow range has to go regardless, and a custom range sits above it, so a
+		-- view that installed one is unaffected.
+		local playerOpenedIt = not (WORLD_MAP_MANAGER and WORLD_MAP_MANAGER.inSpecialMode)
+			and not IsWorldMapShownElsewhere()
+
 		local panZoom = self.panZoom
 		if panZoom then
-			if ZO_WorldMap_ClearCustomZoomLevels then
-				ZO_WorldMap_ClearCustomZoomLevels()
-			elseif panZoom.ClearCustomZoomMimMax then
-				panZoom:ClearCustomZoomMimMax()
+			if playerOpenedIt then
+				if ZO_WorldMap_ClearCustomZoomLevels then
+					ZO_WorldMap_ClearCustomZoomLevels()
+				elseif panZoom.ClearCustomZoomMimMax then
+					panZoom:ClearCustomZoomMimMax()
+				end
 			end
 			if panZoom.SetMapZoomMinMax and panZoom.ComputeMinZoom and panZoom.ComputeMaxZoom then
 				panZoom:SetMapZoomMinMax(panZoom:ComputeMinZoom(), panZoom:ComputeMaxZoom())
@@ -587,11 +604,13 @@ function addon:SetDormant(value)
 			-- InitializeMap clears the pending offset before it recomputes; do the same, then
 			-- move to the player through the game's own helper rather than computing an offset
 			-- here, for the reasons in ReclampLiteMapView.
-			if panZoom.ClearTargetOffset then
-				panZoom:ClearTargetOffset()
-			end
-			if ZO_WorldMap_JumpToPlayer then
-				ZO_WorldMap_JumpToPlayer()
+			if playerOpenedIt then
+				if panZoom.ClearTargetOffset then
+					panZoom:ClearTargetOffset()
+				end
+				if ZO_WorldMap_JumpToPlayer then
+					ZO_WorldMap_JumpToPlayer()
+				end
 			end
 		end
 		if self.ApplyLiteAlpha then

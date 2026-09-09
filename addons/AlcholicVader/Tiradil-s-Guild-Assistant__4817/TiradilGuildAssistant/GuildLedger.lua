@@ -1,7 +1,3 @@
--- Title: Tiradil's Guild Assistant
--- Author: Tiradil
--- Copyright: © 2026 Tiradil
-
 
 GuildLedger = GuildLedger or {}
 local GL = GuildLedger
@@ -66,6 +62,7 @@ local function GetConfirmedWonBids(bankList)
     end
 
     local won = {}
+    local pendingTotal = 0
     for _, key in ipairs(order) do
         local pos = positions[key]
         if not refundedInCycle[key] then
@@ -78,11 +75,15 @@ local function GetConfirmedWonBids(bankList)
                     confirmedAt = confirmedAt,
                     periodTime = pos.cycle,
                 })
+            else
+                -- Henuz reset+guvenlik payi gecmemis - kazanip kazanmadigi
+                -- belli degil, halen guild bankasindan dusulmus durumda.
+                pendingTotal = pendingTotal + pos.amount
             end
         end
     end
 
-    return won
+    return won, pendingTotal
 end
 
 local TEXT_ROW_TYPE = 1
@@ -429,7 +430,11 @@ function GL.Initialize()
     GL.settingsGuildIndex = GL.settingsGuildIndex or 1
     if GL.savedVars.language == nil then
         local ok, clientLang = pcall(GetCVar, "Language.2")
-        GL.savedVars.language = (ok and clientLang == "de") and "de" or "en"
+        if ok and (clientLang == "de" or clientLang == "ru") then
+            GL.savedVars.language = clientLang
+        else
+            GL.savedVars.language = "en"
+        end
     end
 
     GL.SetupUI()
@@ -752,7 +757,7 @@ end
 function GL.OpenEditNoteDialog(displayName)
     if not displayName then return end
     if not TGA_EditNoteWindow then
-        d("|cFF6B6B[Tiradil's Guild Assistant]|r GuildLedger.xml eski bir surumde gorunuyor - \"Notu Duzenle\" penceresi bulunamadi. Lutfen tum addon dosyalarini (ozellikle .xml dosyalarini) guncelleyin.")
+        d("|cFF6B6B[Tiradil's Guild Assistant]|r " .. TiradilL10n.Get("EDIT_NOTE_XML_OUTDATED"))
         return
     end
     GL.editNoteTarget = displayName
@@ -951,8 +956,8 @@ function GL.RegisterLAMSettings()
             reference = "TGA_LAM_LanguageDropdown",
             name = function() return TiradilL10n.Get("LAM_LANGUAGE_NAME") end,
             tooltip = function() return TiradilL10n.Get("LAM_LANGUAGE_TOOLTIP") end,
-            choices = { TiradilL10n.Get("LANG_EN"), TiradilL10n.Get("LANG_TR"), TiradilL10n.Get("LANG_DE"), TiradilL10n.Get("LANG_ES"), TiradilL10n.Get("LANG_PL") },
-            choicesValues = { "en", "tr", "de", "es", "pl" },
+            choices = { TiradilL10n.Get("LANG_EN"), TiradilL10n.Get("LANG_TR"), TiradilL10n.Get("LANG_DE"), TiradilL10n.Get("LANG_ES"), TiradilL10n.Get("LANG_PL"), TiradilL10n.Get("LANG_RU"), TiradilL10n.Get("LANG_IT"), TiradilL10n.Get("LANG_PT") },
+            choicesValues = { "en", "tr", "de", "es", "pl", "ru", "it", "pt" },
             getFunc = function() return GL.savedVars.language or "en" end,
             setFunc = function(value)
                 GL.savedVars.language = value
@@ -1621,9 +1626,12 @@ function GL.RefreshData()
     local guildName = GetGuildName(guildId)
 
     local bankGoldText
+    local knownBankGold = nil -- canli veya cache'den bilinen en son deger (yoksa nil)
+    local bankGoldSuffix = "" -- "(last seen X)" gibi ek bilgi, Available Guild Funds'a da eklenir
     local bankOk, bankGold = pcall(GetGuildBankedMoney, guildId)
-    if bankOk and bankGold ~= nil then
+    if bankOk and bankGold and bankGold > 0 then
         bankGoldText = FormatGold(bankGold)
+        knownBankGold = bankGold
         GL.savedVars.bankCache[tostring(guildId)] = {
             amount = bankGold,
             time = os.time(),
@@ -1632,7 +1640,9 @@ function GL.RefreshData()
         local cached = GL.savedVars.bankCache[tostring(guildId)]
         if cached then
             local dateStr = os.date("%d.%m %H:%M", cached.time)
-            bankGoldText = string.format("%s (%s %s)", FormatGold(cached.amount), TiradilL10n.Get("BANK_GOLD_LAST_SEEN"), dateStr)
+            bankGoldSuffix = string.format(" (%s %s)", TiradilL10n.Get("BANK_GOLD_LAST_SEEN"), dateStr)
+            bankGoldText = FormatGold(cached.amount) .. bankGoldSuffix
+            knownBankGold = cached.amount
         else
             bankGoldText = TiradilL10n.Get("BANK_GOLD_UNAVAILABLE")
         end
@@ -1661,7 +1671,7 @@ function GL.RefreshData()
         end
     end
 
-    local wonBids = GetConfirmedWonBids(bankList)
+    local wonBids, currentTraderBidsTotal = GetConfirmedWonBids(bankList)
     for i = 1, #wonBids do
         local b = wonBids[i]
         if b.periodTime >= minTime and b.periodTime < maxTime then
@@ -1701,12 +1711,28 @@ function GL.RefreshData()
         GuildLedgerFrameBodyStatsColumnRow6Value:SetText("0 Gold")
     end
 
+    -- "Current Trader Bids": HENUZ SONUCLANMAMIS (reset+guvenlik payi gecmemis)
+    -- bid'lerin toplami - bunlar bankadan dusulmus ama kaybederse iade
+    -- edilecek, kazanirsa kalici gidere donusecek. Net Kar/Zarar'a KATILMAZ,
+    -- sadece bilgi amacli gosterilir.
+    GuildLedgerFrameBodyStatsColumnRow7Value:SetText(FormatGold(currentTraderBidsTotal or 0))
+
+    -- "Available Guild Funds" = Bank Gold + Current Trader Bids - SADECE Bank
+    -- Gold CANLI okunduysa hesaplanir. Bank Gold cache'den (bayat) geliyorsa,
+    -- iki farkli zaman noktasini karistirmamak icin Bank Gold ile AYNI metni
+    -- gosterir (yanlis bir toplam UYDURULMAZ).
+    if knownBankGold then
+        GuildLedgerFrameBodyStatsColumnRow8Value:SetText(FormatGold(knownBankGold + (currentTraderBidsTotal or 0)) .. bankGoldSuffix)
+    else
+        GuildLedgerFrameBodyStatsColumnRow8Value:SetText(bankGoldText)
+    end
+
     local netLabel = GuildLedgerFrameBodyStatsColumnNetValue
     local netIcon = "|t18:18:esoui/art/bank/bank_tabicon_gold_up.dds|t "
     if netProfit >= 0 then
-        netLabel:SetText(netIcon .. "|c4DDB4D+" .. FormatGold(netProfit) .. " (PROFIT)|r")
+        netLabel:SetText(netIcon .. "|c4DDB4D+" .. FormatGold(netProfit) .. " (" .. TiradilL10n.Get("NET_PROFIT_LABEL") .. ")|r")
     else
-        netLabel:SetText(netIcon .. "|cFF6B6B" .. FormatGold(netProfit) .. " (LOSS)|r")
+        netLabel:SetText(netIcon .. "|cFF6B6B" .. FormatGold(netProfit) .. " (" .. TiradilL10n.Get("NET_LOSS_LABEL") .. ")|r")
     end
 
     if GL.selectedTimeframe == "week" then

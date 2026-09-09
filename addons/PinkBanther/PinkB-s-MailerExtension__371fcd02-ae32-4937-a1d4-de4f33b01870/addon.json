@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/PinkBanther/PinkB-s-MailerExtension__371fcd02-ae32-4937-a1d4-de4f33b01870",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "PinkBanther",
+  "canonical_id": "bethesda:371fcd02-ae32-4937-a1d4-de4f33b01870",
+  "content_id": "371fcd02-ae32-4937-a1d4-de4f33b01870",
+  "deleted": false,
+  "fingerprint": "b583b51ddf90074c4470edbb6d2ce2c5c89f7ab756db3d430cfe83f791e0cd51",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "371fcd02-ae32-4937-a1d4-de4f33b01870",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/371fcd02-ae32-4937-a1d4-de4f33b01870",
+  "title": "PinkB's MailerExtension"
+}

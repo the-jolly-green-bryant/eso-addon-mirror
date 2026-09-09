@@ -167,6 +167,17 @@ T.Ability = {
     offBalanceImm = {
         134599, 102771,
     },
+    -- Extra named Maj/Min: prefer name needles. IDs only when they do not
+    -- collide with the generic 617xx table above.
+    minorSlayer = { 144325 },
+    majorExpedition = { 61722 },
+    minorExpedition = { 62760 },
+    majorAegis = { 147386 },
+    minorAegis = { 147387 },
+    majorBrittle = { 145975 },
+    minorBrittle = { 145977 },
+    alkosh = { 75753, 76667, 78854, 75752, 75751 },
+    zenTouch = { 126597, 126598, 126593 },
 }
 
 T.PUDDLE_RADIUS_M = 8
@@ -178,15 +189,49 @@ T.PRAYER_ARM_DELAY_MS = 4000
 T.SlotCatalog = {
     { key = "off" },
     { key = "prayer" },
+    { key = "powerfulAssault" },
     { key = "radiatingRegen" },
     { key = "rapidRegen" },
-    { key = "powerfulAssault" },
     { key = "majorCourage" },
     { key = "minorCourage" },
-    { key = "majorForce" },
     { key = "majorSlayer" },
+    { key = "minorSlayer" },
+    { key = "majorForce" },
+    { key = "minorForce" },
+    { key = "majorBerserk" },
     { key = "minorBerserk" },
+    { key = "majorResolve" },
     { key = "minorResolve" },
+    { key = "majorVitality" },
+    { key = "minorVitality" },
+    { key = "majorHeroism" },
+    { key = "minorHeroism" },
+    { key = "majorBrutality" },
+    { key = "minorBrutality" },
+    { key = "majorSorcery" },
+    { key = "minorSorcery" },
+    { key = "majorSavagery" },
+    { key = "minorSavagery" },
+    { key = "majorProphecy" },
+    { key = "minorProphecy" },
+    { key = "majorIntellect" },
+    { key = "minorIntellect" },
+    { key = "majorEndurance" },
+    { key = "minorEndurance" },
+    { key = "majorExpedition" },
+    { key = "minorExpedition" },
+    { key = "majorFortitude" },
+    { key = "minorFortitude" },
+    { key = "majorMending" },
+    { key = "minorMending" },
+    { key = "majorProtection" },
+    { key = "minorProtection" },
+    { key = "majorToughness" },
+    { key = "minorToughness" },
+    { key = "majorAegis" },
+    { key = "minorAegis" },
+    { key = "majorEvasion" },
+    { key = "minorEvasion" },
     { key = "minorMagickasteal" },
 }
 
@@ -196,7 +241,7 @@ T.NameNeedles = {
     illustrious = {
         "illustrious healing", "healing springs", "grand healing",
         "блистательное исцеление", "блистательн", "прославленное исцеление",
-        "великое исцеление", "высшее лечение",
+        "высшее лечение",
         "исцеляющие источники", "целительные источники", "исцеляющие родник",
         "erhabene heilung", "heilende quellen", "heilendequellen", "große heilung", "grosse heilung",
         "guérison illustre", "sources de soins", "grande guérison",
@@ -378,7 +423,7 @@ function T.AbilityName(abilityId)
     if not abilityId or abilityId == 0 or not GetAbilityName then return "" end
     local ok, name = pcall(GetAbilityName, abilityId)
     if not ok or not name then return "" end
-    return zo_strlower(name)
+    return CleanName(name)
 end
 
 function T.NameMatches(abilityId, key)
@@ -398,13 +443,97 @@ function T.IsIllustriousAbility(abilityId)
     return abilityId and T.IsIllustrious and T.IsIllustrious[abilityId] and true or false
 end
 
+-- Console zo_strlower only touches A-Z and can mangle UTF-8.
+-- Fold ASCII + Cyrillic ourselves, then match needles.
+local CYR_UP = {
+    ["А"]="а",["Б"]="б",["В"]="в",["Г"]="г",["Д"]="д",["Е"]="е",["Ё"]="ё",
+    ["Ж"]="ж",["З"]="з",["И"]="и",["Й"]="й",["К"]="к",["Л"]="л",["М"]="м",
+    ["Н"]="н",["О"]="о",["П"]="п",["Р"]="р",["С"]="с",["Т"]="т",["У"]="у",
+    ["Ф"]="ф",["Х"]="х",["Ц"]="ц",["Ч"]="ч",["Ш"]="ш",["Щ"]="щ",["Ъ"]="ъ",
+    ["Ы"]="ы",["Ь"]="ь",["Э"]="э",["Ю"]="ю",["Я"]="я",
+}
+
+local function FoldName(s)
+    if not s or s == "" then return "" end
+    local out, i, n = {}, 1, #s
+    while i <= n do
+        local a = s:byte(i)
+        if not a then break end
+        local nxt = i
+        if a < 0x80 then
+            nxt = i
+        elseif a < 0xE0 then
+            nxt = i + 1
+        elseif a < 0xF0 then
+            nxt = i + 2
+        else
+            nxt = i + 3
+        end
+        local ch = s:sub(i, nxt)
+        if a < 0x80 then
+            if ch >= "A" and ch <= "Z" then
+                ch = string.char(a + 32)
+            end
+        else
+            ch = CYR_UP[ch] or ch
+        end
+        out[#out + 1] = ch
+        i = nxt + 1
+    end
+    return table.concat(out)
+end
+
 local function CleanName(text)
     if not text or text == "" then return "" end
     text = tostring(text)
     text = text:gsub("|c%x%x%x%x%x%x%x%x", "")
     text = text:gsub("|r", "")
     text = text:gsub("|t.-|t", "")
-    return zo_strlower(text)
+    text = text:gsub("%^.*", "")
+    return FoldName(text)
+end
+
+local function AbilityNameOf(abilityId)
+    if not abilityId or abilityId == 0 or not GetAbilityName then return "" end
+    local ok, name = pcall(GetAbilityName, abilityId)
+    if not ok or not name then return "" end
+    return CleanName(name)
+end
+
+local function AbilityDescOf(abilityId)
+    if not abilityId or abilityId == 0 then return "" end
+    local blob = ""
+    if GetAbilityDescription then
+        local ok, d = pcall(GetAbilityDescription, abilityId)
+        if ok and d then blob = blob .. " " .. tostring(d) end
+    end
+    if GetAbilityEffectDescription then
+        local ok, d = pcall(GetAbilityEffectDescription, abilityId)
+        if ok and d then blob = blob .. " " .. tostring(d) end
+    end
+    return CleanName(blob)
+end
+
+local function LooksLikeBanner(name)
+    if not name or name == "" then return false end
+    return name:find("banner", 1, true) or name:find("знам", 1, true)
+end
+
+local function KeysInText(name)
+    if not name or name == "" then return nil end
+    local found, hitLen = {}, 0
+    local best
+    for i = 1, #needleList do
+        local needle = needleList[i][1]
+        if needle ~= "" and name:find(needle, 1, true) then
+            found[needleList[i][2]] = true
+            if #needle > hitLen then
+                hitLen = #needle
+                best = needleList[i][2]
+            end
+        end
+    end
+    return found, best
 end
 
 function T.TextMatchesNeedles(text, key)
@@ -504,12 +633,19 @@ function T.LookupKeyForAbilityId(abilityId, effectName)
         end
     end
     local name = CleanName(effectName)
+    if name == "" then
+        name = AbilityNameOf(abilityId)
+    end
     if name ~= "" then
         local cached = nameToKey[name]
         if cached ~= nil then
             if abilityId and abilityId ~= 0 then idToKey[abilityId] = cached end
-            if cached == false then return nil end
-            return cached
+            if cached == false then
+                -- Banner aura names are not a Maj/Min key. Fall through to
+                -- the description so "Magical Banner" still yields Courage.
+            else
+                return cached
+            end
         end
         if name:find("immun", 1, true) and (name:find("off", 1, true) or name:find("равновес", 1, true) or name:find("gleichgewicht", 1, true)) then
             nameToKey[name] = "offBalanceImm"
@@ -531,11 +667,36 @@ function T.LookupKeyForAbilityId(abilityId, effectName)
             end
             return hitKey
         end
-        nameToKey[name] = false
+        if not LooksLikeBanner(name) then
+            nameToKey[name] = false
+        end
     end
-    -- Never negative-cache an abilityId when the name was empty. Combat log
-    -- often arrives with id only; a later EFFECT_CHANGED still needs to learn it.
+    if LooksLikeBanner(name) or LooksLikeBanner(AbilityNameOf(abilityId)) then
+        local desc = AbilityDescOf(abilityId)
+        local _, best = KeysInText(desc)
+        if best then
+            if abilityId and abilityId ~= 0 then idToKey[abilityId] = best end
+            return best
+        end
+    end
+    -- Never negative-cache an abilityId when the name was empty.
     return nil
+end
+
+function T.KeysFromAbility(abilityId, effectName)
+    local keys = {}
+    local primary = T.LookupKeyForAbilityId(abilityId, effectName)
+    if primary then keys[primary] = true end
+    local name = CleanName(effectName)
+    if name == "" then name = AbilityNameOf(abilityId) end
+    if LooksLikeBanner(name) then
+        local desc = AbilityDescOf(abilityId)
+        local found = KeysInText(desc)
+        if found then
+            for k in pairs(found) do keys[k] = true end
+        end
+    end
+    return keys
 end
 
 function T.SlotIndexByKey(key)
@@ -566,6 +727,40 @@ T.EnglishName = {
     minorBerserk = "Minor Berserk",
     minorResolve = "Minor Resolve",
     minorMagickasteal = "Minor Magickasteal",
+    minorSlayer = "Minor Slayer",
+    minorForce = "Minor Force",
+    majorBerserk = "Major Berserk",
+    majorResolve = "Major Resolve",
+    majorVitality = "Major Vitality",
+    minorVitality = "Minor Vitality",
+    majorHeroism = "Major Heroism",
+    minorHeroism = "Minor Heroism",
+    majorBrutality = "Major Brutality",
+    minorBrutality = "Minor Brutality",
+    majorSorcery = "Major Sorcery",
+    minorSorcery = "Minor Sorcery",
+    majorSavagery = "Major Savagery",
+    minorSavagery = "Minor Savagery",
+    majorProphecy = "Major Prophecy",
+    minorProphecy = "Minor Prophecy",
+    majorIntellect = "Major Intellect",
+    minorIntellect = "Minor Intellect",
+    majorEndurance = "Major Endurance",
+    minorEndurance = "Minor Endurance",
+    majorExpedition = "Major Expedition",
+    minorExpedition = "Minor Expedition",
+    majorFortitude = "Major Fortitude",
+    minorFortitude = "Minor Fortitude",
+    majorMending = "Major Mending",
+    minorMending = "Minor Mending",
+    majorProtection = "Major Protection",
+    minorProtection = "Minor Protection",
+    majorToughness = "Major Toughness",
+    minorToughness = "Minor Toughness",
+    majorAegis = "Major Aegis",
+    minorAegis = "Minor Aegis",
+    majorEvasion = "Major Evasion",
+    minorEvasion = "Minor Evasion",
     slayer = "Slayer",
     force = "Force",
     berserk = "Berserk",
@@ -583,16 +778,40 @@ T.EnglishName = {
     maim = "Maim",
     defile = "Defile",
     offbalance = "Off Balance",
+    courage = "Courage",
+    expedition = "Expedition",
+    fortitude = "Fortitude",
+    mending = "Mending",
+    protection = "Protection",
+    toughness = "Toughness",
+    aegis = "Aegis",
+    evasion = "Evasion",
+    alkosh = "Alkosh",
+    zen = "Z'en",
 }
 
 -- Healer HUD default (no custom text): drop Major/Minor prefix.
 T.HudBareName = {
-    majorCourage = "Courage",
-    minorCourage = "Courage",
-    majorForce = "Force",
-    majorSlayer = "Slayer",
-    minorBerserk = "Berserk",
-    minorResolve = "Resolve",
+    majorCourage = "Courage", minorCourage = "Courage",
+    majorForce = "Force", minorForce = "Force",
+    majorSlayer = "Slayer", minorSlayer = "Slayer",
+    majorBerserk = "Berserk", minorBerserk = "Berserk",
+    majorResolve = "Resolve", minorResolve = "Resolve",
+    majorVitality = "Vitality", minorVitality = "Vitality",
+    majorHeroism = "Heroism", minorHeroism = "Heroism",
+    majorBrutality = "Brutality", minorBrutality = "Brutality",
+    majorSorcery = "Sorcery", minorSorcery = "Sorcery",
+    majorSavagery = "Savagery", minorSavagery = "Savagery",
+    majorProphecy = "Prophecy", minorProphecy = "Prophecy",
+    majorIntellect = "Intellect", minorIntellect = "Intellect",
+    majorEndurance = "Endurance", minorEndurance = "Endurance",
+    majorExpedition = "Expedition", minorExpedition = "Expedition",
+    majorFortitude = "Fortitude", minorFortitude = "Fortitude",
+    majorMending = "Mending", minorMending = "Mending",
+    majorProtection = "Protection", minorProtection = "Protection",
+    majorToughness = "Toughness", minorToughness = "Toughness",
+    majorAegis = "Aegis", minorAegis = "Aegis",
+    majorEvasion = "Evasion", minorEvasion = "Evasion",
     minorMagickasteal = "Magickasteal",
 }
 
@@ -724,6 +943,40 @@ T.HudShortName = {
     minorBerserk = "Bers",
     minorResolve = "Res",
     minorMagickasteal = "MStl",
+    minorSlayer = "mSly",
+    minorForce = "mFrc",
+    majorBerserk = "Bers",
+    majorResolve = "Res",
+    majorVitality = "Vit",
+    minorVitality = "mVit",
+    majorHeroism = "Hero",
+    minorHeroism = "mHer",
+    majorBrutality = "Brut",
+    minorBrutality = "mBrt",
+    majorSorcery = "Sorc",
+    minorSorcery = "mSrc",
+    majorSavagery = "Sav",
+    minorSavagery = "mSav",
+    majorProphecy = "Prop",
+    minorProphecy = "mPrp",
+    majorIntellect = "Int",
+    minorIntellect = "mInt",
+    majorEndurance = "End",
+    minorEndurance = "mEnd",
+    majorExpedition = "Exp",
+    minorExpedition = "mExp",
+    majorFortitude = "Fort",
+    minorFortitude = "mFrt",
+    majorMending = "Mend",
+    minorMending = "mMnd",
+    majorProtection = "Prot",
+    minorProtection = "mPrt",
+    majorToughness = "Tgh",
+    minorToughness = "mTgh",
+    majorAegis = "Aeg",
+    minorAegis = "mAeg",
+    majorEvasion = "Eva",
+    minorEvasion = "mEva",
     slayer = "Slay",
     force = "Forc",
     berserk = "Bers",
@@ -741,6 +994,16 @@ T.HudShortName = {
     maim = "Maim",
     defile = "Def",
     offbalance = "OB",
+    courage = "Cour",
+    expedition = "Exp",
+    fortitude = "Fort",
+    mending = "Mend",
+    protection = "Prot",
+    toughness = "Tgh",
+    aegis = "Aeg",
+    evasion = "Eva",
+    alkosh = "Alk",
+    zen = "Zen",
 }
 
 T.PairLocaleKey = {
@@ -761,6 +1024,16 @@ T.PairLocaleKey = {
     maim = "PAIR_MAIM",
     defile = "PAIR_DEFILE",
     offbalance = "PAIR_OFFBALANCE",
+    courage = "PAIR_COURAGE",
+    expedition = "PAIR_EXPEDITION",
+    fortitude = "PAIR_FORTITUDE",
+    mending = "PAIR_MENDING",
+    protection = "PAIR_PROTECTION",
+    toughness = "PAIR_TOUGHNESS",
+    aegis = "PAIR_AEGIS",
+    evasion = "PAIR_EVASION",
+    alkosh = "PAIR_ALKOSH",
+    zen = "PAIR_ZEN",
 }
 
 function T.SlotShort(key)

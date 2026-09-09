@@ -404,6 +404,8 @@ journal.AbilityIconStyle = {
 ---@field scriptIds number[] 3 script IDs (0 = empty)
 
 ---@class CompactSetup
+---@field _estimatedSize number|nil Cached chunk bytes when stored in the shared setup pool (BattleScrolls.sizeModel)
+---@field _estimatedSizeV number|nil Model version the cache was computed with
 ---@field classId number 4 bits
 ---@field raceId number 4 bits
 ---@field isVengeance boolean|nil True when this is a Vengeance ruleset setup

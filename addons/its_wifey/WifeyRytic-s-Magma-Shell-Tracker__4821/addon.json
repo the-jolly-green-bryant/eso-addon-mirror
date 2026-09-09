@@ -1,0 +1,39 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/its_wifey/WifeyRytic-s-Magma-Shell-Tracker__4821",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "its_wifey",
+  "canonical_id": "esoui:4821",
+  "category_id": "57",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    }
+  ],
+  "content_id": "esoui:4821",
+  "deleted": false,
+  "directories": [
+    "WifeyRyticMagmaTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4821/",
+  "fingerprint": "e37c83755f41b7a3976acc3aa1d74bf81e1f24c47a68aeebed7e9c127aa61a96",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17321.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17323.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4821",
+  "source_url": "https://www.esoui.com/downloads/info4821-WifeyRyticsMagmaShellTracker.html",
+  "stats": {
+    "downloads": 4,
+    "favorites": 0,
+    "monthly_downloads": 3
+  },
+  "title": "WifeyRytic's Magma Shell Tracker",
+  "updated_at": 1788840449000,
+  "version": "1.0"
+}

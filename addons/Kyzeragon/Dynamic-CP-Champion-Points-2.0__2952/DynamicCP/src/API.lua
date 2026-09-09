@@ -69,12 +69,15 @@ end
 ---------------------------------------------------------------------
 -- Sends a champion purchase request with all the slottable sets you have previously queued
 -- @param uniqueName - a unique name, e.g. your addon name
--- @param suppressMessages - whether to not print messages of what slottables were slotted
-function DCP.CommitSlottableSets(uniqueName, suppressMessages)
+-- @param suppressNames - whether to not print messages of what slottable sets are being slotted
+-- @param suppressSlottables - whether to not print messages of what slottables were slotted
+-- Error messages such as slottables without enough points allocated, or missing slottable sets, will be printed regardless
+function DCP.CommitSlottableSets(uniqueName, suppressNames, suppressSlottables)
     local sets = pendingSets[uniqueName]
     if (ZO_IsTableEmpty(sets)) then return end
 
     -- Do a first pass to collect wanted skillIds because we don't want to prepare purchase request if unneeded
+    local slotSetNames = {}
     local desiredSlottables = {} -- {[slotIndex] = skillId}
     local valid = {}
     local alreadySlotted = {}
@@ -84,6 +87,7 @@ function DCP.CommitSlottableSets(uniqueName, suppressMessages)
         if (slotSetId ~= -1) then
             local slotSet = DCP.savedOptions.slotGroups[tree][slotSetId]
             if (slotSet) then
+                table.insert(slotSetNames, string.format("|c%s%s|r", COLORS[tree], slotSet.name))
                 for i = 1, 4 do
                     local skillId = slotSet[i]
                     if (skillId) then
@@ -99,9 +103,7 @@ function DCP.CommitSlottableSets(uniqueName, suppressMessages)
                     end
                 end
             else
-                if (not suppressMessages) then
-                    DCP.msg(string.format("|cFF0000Unable to apply slottable set %s in %s tree; was it deleted?", slotSetId, tree))
-                end
+                DCP.msg(string.format("|cFF0000Unable to apply slottable set %s in %s tree; was it deleted?", slotSetId, tree))
             end
         end
     end
@@ -117,17 +119,21 @@ function DCP.CommitSlottableSets(uniqueName, suppressMessages)
     end
 
     -- Feedback
-    if (not suppressMessages) then
+    if (not suppressNames) then
+        DCP.msg("Attempting to apply slottable sets: " .. table.concat(slotSetNames, "|cAAAAAA, |r"))
+    end
+    if (not suppressSlottables) then
         if (#valid > 0) then
             DCP.msg("Slotting: " .. table.concat(valid, "|cAAAAAA, |r"))
         end
         if (#alreadySlotted > 0) then
             DCP.msg("Already slotted: " .. table.concat(alreadySlotted, "|cAAAAAA, |r"))
         end
-        if (#unavailable > 0) then
-            DCP.msg("Unavailable: " .. table.concat(unavailable, "|cAAAAAA, |r"))
-        end
+    end
+    if (#unavailable > 0) then
+        DCP.msg("|cFF0000Unavailable: " .. table.concat(unavailable, "|cAAAAAA, |r"))
     end
 
     pendingSets[uniqueName] = nil
 end
+DCP.CommitSlottableSetsSupportsSuppression = true

@@ -177,8 +177,8 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Dustman](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Garkin/Dustman__97) | Garkin | PC / Mac | 10.9.1 |
 | [DVD ScreenSaver](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Phamo1000/DVD-ScreenSaver__f0561a3c-bea9-49e8-926e-53825934fb7e) | Phamo1000 | Console | — |
 | [Dyer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ayantir/Dyer__1440) | Ayantir | PC / Mac | 14 |
-| [Dynamic CP (Champion Points 2.0)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kyzeragon/Dynamic-CP-Champion-Points-2.0__2952) | Kyzeragon | PC / Mac | 3.3.0 |
-| [Dynamic CP Lite - Champion Points QoL](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kyzeragon/Dynamic-CP-Lite---Champion-Points-QoL__4334) | Kyzeragon | PC / Mac | 1.0.1 |
+| [Dynamic CP (Champion Points 2.0)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kyzeragon/Dynamic-CP-Champion-Points-2.0__2952) | Kyzeragon | PC / Mac | 3.4.0 |
+| [Dynamic CP Lite - Champion Points QoL](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kyzeragon/Dynamic-CP-Lite---Champion-Points-QoL__4334) | Kyzeragon | PC / Mac | 1.1.0 |
 | [Dynamic Encounter Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/R0ctan/Dynamic-Encounter-Tracker__4726) | R0ctan | PC / Mac | 1.2.0 |
 | [Dynamic Encounters + (Including: Custom Timers & Custom Wayshrines)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/WayshrineWalker/Dynamic-Encounters-Including-Custom-Timers-Custom-Wayshrines__4724) | WayshrineWalker | PC / Mac | v1.0.1 |
 | [Dynamic FPS](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SirNightstorm/Dynamic-FPS__3947) | SirNightstorm | PC / Mac | 0.1.2 |

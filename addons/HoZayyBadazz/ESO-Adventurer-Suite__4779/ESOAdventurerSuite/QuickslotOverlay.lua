@@ -285,9 +285,6 @@ function Q:Initialize()
     if EVENT_KEYBINDING_CLEARED then
         EVENT_MANAGER:RegisterForEvent(prefix.."_BindingCleared", EVENT_KEYBINDING_CLEARED, function() self:InvalidateBinding029199() self:Refresh() end)
     end
-    if EVENT_GAMEPAD_PREFERRED_MODE_CHANGED then
-        EVENT_MANAGER:RegisterForEvent(prefix.."_InputMode", EVENT_GAMEPAD_PREFERRED_MODE_CHANGED, function() self:InvalidateBinding029199() self:Refresh() end)
-    end
     if EVENT_HOTBAR_SLOT_UPDATED then
         EVENT_MANAGER:RegisterForEvent(prefix.."_HotbarSlot", EVENT_HOTBAR_SLOT_UPDATED, function() self:Refresh() end)
     end
@@ -295,4 +292,38 @@ function Q:Initialize()
         if self.layoutMode == true or (self.frame and not self.frame:IsHidden()) then self:Refresh() end
     end)
     self:Refresh()
+end
+
+-- v0.29.380 - hide Quickslot overlay on the scene transition frame rather than
+-- waiting for its 650ms polling refresh.
+local EAS_Q_InitializeBase029380 = Q.Initialize
+local function EAS_Q_RegisterSceneCallbacks029380(self)
+    if self.sceneVisibilityHooks029380 or not SCENE_MANAGER or type(SCENE_MANAGER.GetScene) ~= "function" then return end
+    self.sceneVisibilityHooks029380 = true
+    local names = {
+        "gameMenuInGame", "gameMenu", "inventory", "character", "skills", "championPerks",
+        "journal", "collectionsBook", "groupMenu", "groupList", "groupFinderKeyboard",
+        "contacts", "friendsList", "friendsListKeyboard", "guildHome", "guildRoster",
+        "mailInbox", "mailSend", "bank", "guildBank", "store", "tradingHouse",
+        "crafting", "smithing", "alchemy", "enchanting", "provisioner", "settings",
+        "worldMap", "achievements", "loreLibrary", "housingEditor",
+    }
+    for i = 1, #names do
+        local ok, scene = pcall(SCENE_MANAGER.GetScene, SCENE_MANAGER, names[i])
+        if ok and scene and type(scene.RegisterCallback) == "function" then
+            scene:RegisterCallback("StateChange", function(_, newState)
+                if newState == SCENE_SHOWING or newState == SCENE_SHOWN then
+                    if self.frame and self.layoutMode ~= true then self.frame:SetHidden(true) end
+                elseif newState == SCENE_HIDDEN then
+                    if type(zo_callLater) == "function" then zo_callLater(function() if EPC and EPC.QuickslotOverlay then EPC.QuickslotOverlay:Refresh() end end, 0)
+                    else self:Refresh() end
+                end
+            end)
+        end
+    end
+end
+function Q:Initialize()
+    local result = EAS_Q_InitializeBase029380(self)
+    EAS_Q_RegisterSceneCallbacks029380(self)
+    return result
 end

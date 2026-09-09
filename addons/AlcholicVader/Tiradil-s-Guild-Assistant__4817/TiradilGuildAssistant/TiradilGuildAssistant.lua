@@ -1,7 +1,3 @@
--- Title: Tiradil's Guild Assistant
--- Author: Tiradil
--- Copyright: © 2026 Tiradil
-
 TiradilSuite = {}
 
 TiradilSuite.BUILD_TAG = "TGA-QWxjaG9saWNWYWRlcg=="

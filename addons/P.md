@@ -87,8 +87,12 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [PinkB's ChatAssistant(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-ChatAssistant-Beta__8409de55-043d-4bcc-8876-395671fdc7b5) | PinkBanther | Console | — |
 | [PinkB's ChatFilter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-ChatFilter__f4b50a99-0e05-4748-95a8-d062f94401f3) | PinkBanther | Console | — |
 | [PinkB's ChatFilter(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-ChatFilter-Beta__f84f4752-ff0e-42c9-b73d-d5ea97508b03) | PinkBanther | Console | — |
+| [PinkB's CraftMaterialAssistant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-CraftMaterialAssistant__c7f082bc-03e0-4e0c-b82b-d7903e5101ad) | PinkBanther | Console | — |
+| [PinkB's CraftMaterialAssistant(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-CraftMaterialAssistant-Beta__bb9043ae-169f-4492-8abb-7d3111e97820) | PinkBanther | Console | — |
 | [PinkB's CyrodiilAlert](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-CyrodiilAlert__da931320-7488-4ce0-83a2-100180a2f3f2) | PinkBanther | Console | — |
 | [PinkB's CyrodiilAlert(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-CyrodiilAlert-Beta__233a612c-6650-451b-80d8-b1862f95c90a) | PinkBanther | Console | — |
+| [PinkB's MailerExtension](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-MailerExtension__371fcd02-ae32-4937-a1d4-de4f33b01870) | PinkBanther | Console | — |
+| [PinkB's MailerExtension(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-MailerExtension-Beta__5ad76243-a1e2-42b3-ad86-ad1aabc5940d) | PinkBanther | Console | — |
 | [PinkB's MiniMap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-MiniMap__d636a31f-9393-47d7-b16f-8d932870cff3) | PinkBanther | Console | — |
 | [PinkB's MiniMap(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-MiniMap-Beta__d0219382-bec1-477e-bcc2-d2b0c7138a79) | PinkBanther | Console | — |
 | [PinkB's NamePlateFontChanger](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-NamePlateFontChanger__c370eaba-64de-4a9b-9d9a-d6bd0c3db0aa) | PinkBanther | Console | — |
@@ -127,6 +131,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Pollox's Daily Quest Tracker - Sort by Created](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/notnear/Pollox-s-Daily-Quest-Tracker---Sort-by-Created__4113) | notnear | PC / Mac | 1.0 |
 | [Pollox's Daily Quest Tracker - Update](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DarkPhalanx/Pollox-s-Daily-Quest-Tracker---Update__2714) | DarkPhalanx | PC / Mac | 1.8.15 |
 | [Pomodoro](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/rdok/Pomodoro__2331) | rdok | PC / Mac | v1.0.1 |
+| [Poppy's Hardmode Reminder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/maniclarke8-gmail.com/Poppy-s-Hardmode-Reminder__4824) | maniclarke8@gmail.com | PC / Mac | 1.0 |
 | [Port to Friend's House](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Sordrak/Port-to-Friend-s-House__1758) | Sordrak | PC / Mac | 2.5.46 |
 | [Port to H's House](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/HUMILIATION115/Port-to-H-s-House__2750) | HUMILIATION115 | PC / Mac | 3.1 |
 | [Port to Jo  (aka Fast Port to Group Leader or Partner)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tazmyr/Port-to-Jo-aka-Fast-Port-to-Group-Leader-or-Partner__2921) | Tazmyr | PC / Mac | 3.09 |

@@ -1,20 +1,21 @@
 ## Title: |cB8860BESO |cFFD700Adventurer Suite|r
 ## Description: |cFFD700All-in-one quests, travel, minimap, combat, Dual Action Bar, builds, antiquities, and HUD tools.|r
 ## Author: |c00FFFFHoZayyBadazz|r
-## Version: 0.29.346
-## AddOnVersion: 3346
+## Version: 0.29.475
+## AddOnVersion: 3460
 ## APIVersion: 101050 101051
 ## SavedVariables: ESOProgressionCoachSavedVars EASLoreLibrarySavedVariables
-## DependsOn: LibTreasure>=24 LibMapPins-1.0>=10047 LibMapPing>=1240 LibMapData>=121 LibMainMenu-2.0>=450
-## DependsOn: LibGPS>=73 LibDebugLogger>=303 LibChatMessage>=118 LibAddonMenu-2.0>=43 CustomCompassPins>=138
+## DependsOn: LibAddonMenu-2.0>=43 LibCustomMenu>=730 LibMainMenu-2.0>=450 LibChatMessage>=118
+## DependsOn: LibDebugLogger>=303 LibMapPing>=1240 LibGPS>=73 LibMapData>=122
+## DependsOn: LibMapPins-1.0>=10047 CustomCompassPins>=138 LibTreasure>=24
 
 Core.lua
 PlayerRequestOverlay.lua
 NativeNotificationOverlay.lua
 CompassFocusedInfoOverlay.lua
-HybridDesktopNavigation.lua
 Compatibility.lua
 BugCatcher.lua
+SelfTest.lua
 
 LoreBooks/EASLoreLibrary.lua
 LoreBooks/EASLoreLibraryData.lua
@@ -26,7 +27,6 @@ LoreBooks/Data/ZoneCache.lua
 LoreBooks/Data/Serialization.lua
 LoreBooks/Data/Data.lua
 LoreBooks/UI/LoreLibraryMenu.lua
-LoreBooks/UI/LoreLibraryGamepadMenu.lua
 LoreBooks/UI/FilterMenu.lua
 LoreBooks/Pins/MapPinController.lua
 LoreBooks/Pins/MapPins.lua
@@ -87,6 +87,7 @@ ChampionOptimizer.lua
 AttributeOptimizer.lua
 AbilityOverlays.lua
 DualActionBar.lua
+TickTracker.lua
 QuickslotOverlay.lua
 InfiniteArchiveOverlay.lua
 SynergyOverlay.lua
@@ -106,7 +107,10 @@ ModernAppUI.lua
 MiniMap.lua
 UtilitySuite.lua
 InventoryGrid.lua
+EnchantPlus.lua
 CraftingInventoryGrid.lua
+SkillMorphCompare.xml
+SkillMorphCompare.lua
 UI.lua
 Settings.lua
 Bindings.xml

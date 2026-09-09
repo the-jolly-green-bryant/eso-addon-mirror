@@ -63,14 +63,14 @@ function R:IsBankOpen()
         local interaction = safe(GetInteractionType, nil)
         if interaction == INTERACTION_BANK then return true end
     end
-    return self:IsSceneShowing("bank") or self:IsSceneShowing("gamepad_banking")
+    return self:IsSceneShowing("bank") or self:IsSceneShowing()
 end
 
 function R:IsInventoryOrBankShowing()
     return self:IsSceneShowing("inventory")
-        or self:IsSceneShowing("gamepad_inventory_root")
+        or self:IsSceneShowing()
         or self:IsSceneShowing("bank")
-        or self:IsSceneShowing("gamepad_banking")
+        or self:IsSceneShowing()
         or self:IsBankOpen()
 end
 
@@ -112,33 +112,10 @@ end
 function R:ClassifyLink(link)
     if not link or link == "" then return nil end
     local itemType = num(safe(GetItemLinkItemType, -1, link), -1)
-    local specialized = num(safe(GetItemLinkSpecializedItemType, -1, link), -1)
-    local itemName = tostring(safe(GetItemLinkName, "", link) or "")
-    local text = lower(itemName .. " " .. self:GetStringForType("SI_ITEMTYPE", itemType) .. " " .. self:GetStringForType("SI_SPECIALIZEDITEMTYPE", specialized))
-
     local recipeType = rawget(_G, "ITEMTYPE_RECIPE")
     local motifType = rawget(_G, "ITEMTYPE_RACIAL_STYLE_MOTIF")
-    local isRecipe = recipeType ~= nil and itemType == recipeType
-    local isMotif = motifType ~= nil and itemType == motifType
-
-    if string.find(text, "recipe", 1, true)
-        or string.find(text, "blueprint", 1, true)
-        or string.find(text, "diagram", 1, true)
-        or string.find(text, "pattern", 1, true)
-        or string.find(text, "praxis", 1, true)
-        or string.find(text, "formula", 1, true)
-        or string.find(text, "design", 1, true) then
-        isRecipe = true
-    end
-
-    if string.find(text, "motif", 1, true)
-        or string.find(text, "style page", 1, true)
-        or string.find(text, "crafting style", 1, true) then
-        isMotif = true
-    end
-
-    if isRecipe then return "RECIPE" end
-    if isMotif then return "STYLE" end
+    if recipeType ~= nil and itemType == recipeType then return "RECIPE" end
+    if motifType ~= nil and itemType == motifType then return "STYLE" end
     return nil
 end
 

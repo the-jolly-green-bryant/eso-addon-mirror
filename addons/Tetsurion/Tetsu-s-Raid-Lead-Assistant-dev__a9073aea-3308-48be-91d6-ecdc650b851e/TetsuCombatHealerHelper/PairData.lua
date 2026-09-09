@@ -6,12 +6,20 @@ T.RaidBuffPairs = {
     { id = "slayer",     keysMaj = { "majorSlayer" },               keysMin = { "minorSlayer" } },
     { id = "force",      keysMaj = { "majorForce" },                keysMin = { "minorForce" } },
     { id = "berserk",    keysMaj = { "majorBerserk" },              keysMin = { "minorBerserk" } },
+    { id = "courage",    keysMaj = { "majorCourage" },              keysMin = { "minorCourage" } },
     { id = "resolve",    keysMaj = { "majorResolve" },              keysMin = { "minorResolve" } },
     { id = "vitality",   keysMaj = { "majorVitality" },             keysMin = { "minorVitality" } },
     { id = "wdspd",      keysMaj = { "majorSorcery", "majorBrutality" }, keysMin = { "minorSorcery", "minorBrutality" } },
     { id = "crit",       keysMaj = { "majorProphecy", "majorSavagery" }, keysMin = { "minorProphecy", "minorSavagery" } },
     { id = "recover",    keysMaj = { "majorIntellect", "majorEndurance" }, keysMin = { "minorIntellect", "minorEndurance" } },
     { id = "heroism",    keysMaj = { "majorHeroism" },              keysMin = { "minorHeroism" } },
+    { id = "expedition", keysMaj = { "majorExpedition" },           keysMin = { "minorExpedition" } },
+    { id = "fortitude",  keysMaj = { "majorFortitude" },            keysMin = { "minorFortitude" } },
+    { id = "mending",    keysMaj = { "majorMending" },              keysMin = { "minorMending" } },
+    { id = "protection", keysMaj = { "majorProtection" },           keysMin = { "minorProtection" } },
+    { id = "toughness",  keysMaj = { "majorToughness" },            keysMin = { "minorToughness" } },
+    { id = "aegis",      keysMaj = { "majorAegis" },                keysMin = { "minorAegis" } },
+    { id = "evasion",    keysMaj = { "majorEvasion" },              keysMin = { "minorEvasion" } },
 }
 
 -- Boss named pairs. Off-Balance uses Active | Immune instead of Mj | Mn.
@@ -19,11 +27,13 @@ T.BossDebuffPairs = {
     { id = "breach",         keysMaj = { "majorBreach" },         keysMin = { "minorBreach" } },
     { id = "vulnerability",  keysMaj = { "majorVulnerability" }, keysMin = { "minorVulnerability" } },
     { id = "brittle",        keysMaj = { "majorBrittle" },        keysMin = { "minorBrittle" } },
-    { id = "offbalance",     keysMaj = { "offBalance" },          keysMin = { "offBalanceImm" }, ob = true },
     { id = "defile",         keysMaj = { "majorDefile" },         keysMin = { "minorDefile" } },
     { id = "fracture",       keysMaj = { "majorFracture" },       keysMin = { "minorFracture" } },
     { id = "cowardice",      keysMaj = { "majorCowardice" },      keysMin = { "minorCowardice" } },
     { id = "maim",           keysMaj = { "majorMaim" },           keysMin = { "minorMaim" } },
+    { id = "offbalance",     keysMaj = { "offBalance" },          keysMin = { "offBalanceImm" }, ob = true },
+    { id = "alkosh",         keysMaj = { "alkosh" },              keysMin = {}, single = true, onOnly = true },
+    { id = "zen",            keysMaj = { "zenTouch" },            keysMin = {}, single = true, onOnly = true },
 }
 
 T.NameNeedles = T.NameNeedles or {}
@@ -58,8 +68,8 @@ T.PairNeedles = {
     minorBrittle = { "minor brittle", "малая хрупкость" },
     majorCowardice = { "major cowardice", "великая трусость" },
     minorCowardice = { "minor cowardice", "малая трусость" },
-    majorMaim = { "major maim", "великое калечение" },
-    minorMaim = { "minor maim", "малое калечение" },
+    majorMaim = { "major maim", "великое повреждение", "великое калечение" },
+    minorMaim = { "minor maim", "малое повреждение", "малое калечение" },
     majorDefile = { "major defile", "великое осквернение" },
     minorDefile = { "minor defile", "малое осквернение" },
     offBalanceImm = {
@@ -72,6 +82,28 @@ T.PairNeedles = {
         "потеря равновесия", "без равновесия",
         "aus dem gleichgewicht", "unausgeglichen",
     },
+    majorExpedition = { "major expedition", "великое ускорение" },
+    minorExpedition = { "minor expedition", "малое ускорение" },
+    majorFortitude = { "major fortitude", "великая стойкость" },
+    minorFortitude = { "minor fortitude", "малая стойкость" },
+    majorMending = { "major mending", "великое исцеление" },
+    minorMending = { "minor mending", "малое исцеление" },
+    majorProtection = { "major protection", "великая защита" },
+    minorProtection = { "minor protection", "малая защита" },
+    majorToughness = { "major toughness", "великая твердость" },
+    minorToughness = { "minor toughness", "малая твердость" },
+    majorAegis = { "major aegis", "великая эгида" },
+    minorAegis = { "minor aegis", "малая эгида" },
+    majorEvasion = { "major evasion", "великое уклонение" },
+    minorEvasion = { "minor evasion", "малое уклонение" },
+    alkosh = {
+        "roar of alkosh", "alkosh",
+        "рёв алкоша", "рев алкоша", "алкош",
+    },
+    zenTouch = {
+        "touch of z'en", "touch of zen", "z'en's redress", "zens redress",
+        "касание з'ена", "касание зена", "возмездие зена", "возмездие з'ена",
+    },
 }
 
 for key, list in pairs(T.PairNeedles) do
@@ -83,7 +115,12 @@ end
 
 local function Lower(s)
     if not s then return "" end
-    return zo_strlower(tostring(s):gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", ""):gsub("%^.*", ""))
+    if T.TextMatchesNeedles then
+        -- reuse Data cleaner via a dummy: just strip here; match goes through Lookup
+    end
+    s = tostring(s):gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", ""):gsub("%^.*", "")
+    if zo_strlower then s = zo_strlower(s) end
+    return s
 end
 
 function T.MatchPairKey(abilityId, effectName)

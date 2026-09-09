@@ -1,7 +1,3 @@
-<!-- Title: Tiradil's Guild Assistant -->
-<!-- Author: Tiradil -->
-<!-- Copyright: © 2026 Tiradil -->
-
 <GuiXml>
     <Controls>
         <TopLevelControl name="TiradilGuildAssistantWindow" hidden="true" mouseEnabled="true" movable="true" clampedToScreen="true" tier="HIGH" resizeHandleSize="8">

@@ -4,6 +4,35 @@ Full version history. See README.md for current features, installation, and usag
 
 ---
 
+### 0.19.31
+- **Fixed a residual food/drink consumption-crediting bug in the bidirectional
+  buff-confirmation gate added in 0.19.14.** That fix held one pending
+  inventory-shrink (`_pendingConsumption`, a single value) so a buff-gain
+  event arriving shortly after could still confirm it. But eating a food
+  item and a drink item back-to-back — a very common combo for the paired
+  buff — produces two pending shrinks within the same short window, and the
+  second one silently overwrote the first before it could be confirmed.
+  Depending on event-arrival timing, this could either drop one of the two
+  consumptions entirely (no error, no trace — the exact "doesn't update"
+  symptom reported) or misattribute a buff confirmation to the wrong pending
+  item.
+- **Replaced the single pending slot with a FIFO queue
+  (`_pendingConsumptions`)**, so each unconfirmed shrink gets its own entry
+  instead of clobbering the previous one. Each `LibFoodDrinkBuff`-confirmed
+  buff-gain event now credits the oldest still-valid queued entry — since one
+  real consumption produces exactly one confirming buff event, this pairs
+  them up correctly regardless of arrival order or how many were consumed in
+  quick succession. Stale entries older than `BUFF_APPLICATION_WINDOW_MS`
+  (500ms, unchanged) are pruned rather than accumulating.
+- **What was verified**: reasoned through the corrected forward/backward
+  timing logic line-by-line against the 0.19.14 design intent; confirmed no
+  other reference to the old single-value `_pendingConsumption` remains
+  anywhere in the file. **What wasn't**: no live-client test of the specific
+  eat-food-then-drink-quickly sequence this fix targets — this is the
+  priority scenario to check in-game before considering this closed.
+
+---
+
 ### 0.19.30
 - **Reverted the version floors added to
   `## OptionalDependsOn: Frostfall LibZoneTemp` in 0.19.29** (back to

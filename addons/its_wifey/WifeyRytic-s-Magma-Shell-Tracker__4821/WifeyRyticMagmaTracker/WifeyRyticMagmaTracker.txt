@@ -1,0 +1,9 @@
+## Title: WifeyRytic's Magma Shell Tracker
+## Author: WifeyRytic
+## Version: 1.0
+## APIVersion: 101051
+## Description: Tracks Magma Shell duration with a customizable final countdown.
+## DependsOn: LibAddonMenu-2.0>=38
+## SavedVariables: WifeyRyticMagmaTrackerSavedVariables
+
+WifeyRyticMagmaTracker.lua

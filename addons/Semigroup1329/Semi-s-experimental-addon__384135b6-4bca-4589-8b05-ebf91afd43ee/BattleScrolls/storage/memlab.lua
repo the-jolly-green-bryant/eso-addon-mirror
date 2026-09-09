@@ -46,6 +46,25 @@ local MIRROR_SUFFIX = ":BSML"
 ---@field before MemLabSample
 ---@field work MemLabSample
 ---@field freed MemLabSample
+---@field calib MemLabCalibSummary|nil Per-class slope, calibration mode only
+
+---@class MemLabCalibSummary
+---@field count integer Objects allocated in the phase
+---@field marks integer Samples taken, one per MiB of H growth
+---@field deltaHeap number H growth at the last mark, MiB
+---@field slope number|nil dG/dH from the middle mark to the last
+---@field median number|nil Median of the per-mark dG/dH over the same half
+---@field predicted number Segment-model dG/dH for the class (calib-results doc)
+
+---@class MemLabCalibClass
+---@field label string
+---@field bytes integer HKS request bytes per object (header + slots, or 27 + length)
+---@field requests integer[] The HKS requests one object makes, in order
+---@field kind string "table", "hash8", "string" or "mix"
+---@field length integer|nil String length (mix: chunk string length)
+---@field strings integer Strings created per object
+---@field slots integer Holder slots per object
+---@field pad string|nil Interned filler, built once per run
 
 ---@class MemLabReport
 ---@field mode string
@@ -56,6 +75,8 @@ local MIRROR_SUFFIX = ":BSML"
 ---@field maxHeap number
 ---@field startedMs number
 ---@field elapsedSeconds integer
+---@field timeoutMs integer Abort threshold checked by every poll
+---@field calibTarget integer|nil MiB of H growth per class, calibration mode only
 ---@field diskMiB number|nil Saved file size, not runtime memory
 ---@field seedCount integer|nil
 ---@field matches integer|nil Nonempty ability results (summed over passes)
@@ -165,7 +186,7 @@ local function check(report, allowCombat)
     elseif not allowCombat and IsUnitInCombat("player") then
         report.statusId = BATTLESCROLLS_MEMDIAG_TEST_COMBAT
         error(report.statusId)
-    elseif GetGameTimeMilliseconds() - report.startedMs > 180000 then
+    elseif GetGameTimeMilliseconds() - report.startedMs > report.timeoutMs then
         report.statusId = BATTLESCROLLS_MEMLAB_TIMEOUT
         error(report.statusId)
     end
@@ -237,6 +258,8 @@ local function printReport(report)
             d(string.format(GetString(BATTLESCROLLS_MEMLAB_CENSUS_STRINGS),
                 census.strings, census.stringBytes / MIB))
         end
+    elseif report.mode == "calib" then
+        d(string.format(GetString(BATTLESCROLLS_MEMLAB_CALIB_HEADER), report.calibTarget or 0))
     else
         d(string.format(GetString(BATTLESCROLLS_MEMLAB_HEADER), report.mode))
     end
@@ -252,9 +275,16 @@ local function printReport(report)
             report.mirror.listBytes / MIB, report.mirror.hashBytes / MIB))
     end
     for _, row in ipairs(report.rows) do
-        d(string.format(GetString(BATTLESCROLLS_MEMLAB_ROW), row.label,
-            number(row.before.gauge), number(row.work.gauge), number(row.freed.gauge),
-            number(row.before.heap), number(row.work.heap), number(row.freed.heap)))
+        if row.calib then
+            d(string.format(GetString(BATTLESCROLLS_MEMLAB_CALIB_ROW), row.label, row.calib.count,
+                row.calib.deltaHeap, number(row.calib.slope), number(row.calib.median),
+                number(row.calib.predicted),
+                number(row.before.gauge), number(row.work.gauge), number(row.freed.gauge)))
+        else
+            d(string.format(GetString(BATTLESCROLLS_MEMLAB_ROW), row.label,
+                number(row.before.gauge), number(row.work.gauge), number(row.freed.gauge),
+                number(row.before.heap), number(row.work.heap), number(row.freed.heap)))
+        end
     end
     d(string.format(GetString(BATTLESCROLLS_MEMLAB_FOOTER), GetString(report.statusId),
         report.completed, #report.rows, number(report.maxGauge), number(report.maxHeap), report.elapsedSeconds))
@@ -270,7 +300,7 @@ local function run(mode, labels, body)
     local report = {
         mode = mode, rows = {}, statusId = BATTLESCROLLS_MEMDIAG_TEST_RUNNING,
         completed = 0, maxGauge = 0, maxHeap = 0,
-        startedMs = GetGameTimeMilliseconds(), elapsedSeconds = 0,
+        startedMs = GetGameTimeMilliseconds(), elapsedSeconds = 0, timeoutMs = 180000,
     }
     for _, label in ipairs(labels) do
         report.rows[#report.rows + 1] = { label = label, before = {}, work = {}, freed = {} }
@@ -907,6 +937,295 @@ local function abilityTest(kind, first, count)
     end)
 end
 
+-- Calibration of the console allocator: per-class cold cost, dG/dH measured
+-- past the allocator's cached free memory (research guide, startup timeline §8).
+-- Every phase allocates one HKS request size until H has grown by the target,
+-- sampling G and H once per MiB; the slope over the last half is the cost of
+-- fresh memory for that class. Objects live in preallocated holder chunks so
+-- the holder itself never reallocates during a phase, and strings are built
+-- from precomputed unique pieces so no temporary is created per object.
+local CALIB_CHUNK = 1024
+local CALIB_MIDS = 4096
+local CALIB_SLICE_BYTES = 256 * 1024
+-- The MIX record imitates one saved encounter: three 24-character names and
+-- sixteen 240-character chunk strings, then an 8-key hash table holding the
+-- names and a 16-key hash table holding the chunks. Its measured slope over
+-- the segment model's perfect-packing prediction is the packing waste.
+local CALIB_MIX_NAMES = 3
+local CALIB_MIX_CHUNKS = 16
+local CALIB_MIX_CHUNK_LENGTH = 240
+local CALIB_MIX_STRINGS = CALIB_MIX_NAMES + CALIB_MIX_CHUNKS
+
+---@param label string
+---@param bytes integer
+---@param kind string
+---@param requests integer[]
+---@param length? integer
+---@param strings? integer
+---@param slots? integer
+---@return MemLabCalibClass
+local function calibClass(label, bytes, kind, requests, length, strings, slots)
+    return { label = label, bytes = bytes, kind = kind, requests = requests, length = length,
+        strings = strings or 0, slots = slots or 1 }
+end
+
+local function mixRequests()
+    local requests = {}
+    for _ = 1, CALIB_MIX_NAMES do requests[#requests + 1] = 27 + 24 end
+    for _ = 1, CALIB_MIX_CHUNKS do requests[#requests + 1] = 27 + CALIB_MIX_CHUNK_LENGTH end
+    requests[#requests + 1] = 64; requests[#requests + 1] = 8 * 40
+    requests[#requests + 1] = 64; requests[#requests + 1] = 16 * 40
+    return requests
+end
+local MIX_REQUESTS = mixRequests()
+local MIX_BYTES = 0
+for _, request in ipairs(MIX_REQUESTS) do MIX_BYTES = MIX_BYTES + request end
+
+---@type MemLabCalibClass[]
+local CALIB_CLASSES = {
+    calibClass("T64", 64, "table", { 64 }),
+    calibClass("N8", 64 + 8 * 40, "hash8", { 64, 8 * 40 }),
+    calibClass("S100", 127, "string", { 127 }, 100, 1),
+    calibClass("S700", 727, "string", { 727 }, 700, 1),
+    calibClass("S1300", 1327, "string", { 1327 }, 1300, 1),
+    calibClass("S2000", 2027, "string", { 2027 }, 2000, 1),
+    calibClass("S4000", 4027, "string", { 4027 }, 4000, 1),
+    calibClass("MIX", MIX_BYTES, "mix", MIX_REQUESTS, CALIB_MIX_CHUNK_LENGTH, CALIB_MIX_STRINGS, 2),
+}
+
+---@param word string
+---@return MemLabCalibClass|nil
+local function findCalibClass(word)
+    local label = string.upper(word)
+    for _, class in ipairs(CALIB_CLASSES) do
+        if class.label == label then return class end
+    end
+    return nil
+end
+
+-- Segment model of the console allocator, from the 2026-09-09 calibration
+-- (docs/addon-memory-calib-results.md): dlmalloc chunks of
+-- max(32, roundUp8(request + 8)) inside separate 4 KiB backing segments with
+-- a 72-byte foot, the whole segment charged to the gauge. A request that
+-- does not fit gets a larger segment: request plus padding, rounded up to
+-- whole segments.
+local CALIB_SEGMENT = 4096
+local CALIB_SEGMENT_FOOT = 72
+local CALIB_SEGMENT_PAD = 88
+local CALIB_MIN_CHUNK = 32
+
+---@param request integer
+---@return integer
+local function calibChunkBytes(request)
+    return math.max(CALIB_MIN_CHUNK, math.ceil((request + 8) / 8) * 8)
+end
+
+-- Predicted dG/dH for one class: uniform packing of whole objects per
+-- segment when an object fits in one; perfect packing (chunk bytes over
+-- request bytes, foot included) when it does not, so the measured excess
+-- over the prediction is the packing waste.
+---@param class MemLabCalibClass
+---@return number
+local function calibPredict(class)
+    local chunks = 0
+    for _, request in ipairs(class.requests) do chunks = chunks + calibChunkBytes(request) end
+    local usable = CALIB_SEGMENT - CALIB_SEGMENT_FOOT
+    if chunks <= usable then
+        return CALIB_SEGMENT / (math.floor(usable / chunks) * class.bytes)
+    elseif #class.requests == 1 then
+        local segment = math.ceil((chunks + CALIB_SEGMENT_PAD) / CALIB_SEGMENT) * CALIB_SEGMENT
+        return segment / (math.floor((segment - CALIB_SEGMENT_FOOT) / chunks) * class.bytes)
+    end
+    return chunks / class.bytes * CALIB_SEGMENT / usable
+end
+
+---@class MemLabCalibStrings
+---@field prefixes string[] 12 characters each, fresh serials per run
+---@field mids string[] 12 characters each, fresh serials per run
+
+---@param uniques integer Distinct strings a phase may create
+---@return MemLabCalibStrings
+local function calibStrings(uniques)
+    local prefixes, mids = {}, {}
+    for i = 1, math.max(1, math.ceil(uniques / CALIB_MIDS)) do
+        diag._stringSerial = diag._stringSerial + 1
+        prefixes[i] = string.format("P%011d", diag._stringSerial)
+    end
+    for i = 1, CALIB_MIDS do
+        diag._stringSerial = diag._stringSerial + 1
+        mids[i] = string.format("M%011d", diag._stringSerial)
+    end
+    return { prefixes = prefixes, mids = mids }
+end
+
+-- Unique 24-character string number index (0-based): one request.
+---@param strings MemLabCalibStrings
+---@param index integer
+---@return string
+local function calibName(strings, index)
+    return strings.prefixes[math.floor(index / CALIB_MIDS) + 1] .. strings.mids[index % CALIB_MIDS + 1]
+end
+
+-- Unique padded string: a three-operand concatenation allocates only its
+-- result, so this is one request too.
+---@param strings MemLabCalibStrings
+---@param index integer
+---@param pad string
+---@return string
+local function calibPadded(strings, index, pad)
+    return strings.prefixes[math.floor(index / CALIB_MIDS) + 1] .. strings.mids[index % CALIB_MIDS + 1] .. pad
+end
+
+-- Non-yielding: fills the holder with objects first..first+count-1, each
+-- taking class.slots consecutive slots. String phases add exactly one
+-- request per object; MIX records allocate their strings before the two
+-- tables that hold them, the way an encounter is laid out.
+---@param class MemLabCalibClass
+---@param held table[]
+---@param strings MemLabCalibStrings
+---@param first integer
+---@param count integer
+local function calibFill(class, held, strings, first, count)
+    for i = first, first + count - 1 do
+        local position = (i - 1) * class.slots
+        local chunk = held[math.floor(position / CALIB_CHUNK) + 1]
+        local slot = position % CALIB_CHUNK + 1
+        if class.kind == "table" then
+            chunk[slot] = {}
+        elseif class.kind == "hash8" then
+            chunk[slot] = { [1] = i, [2] = i, [3] = i, [4] = i, [5] = i, [6] = i, [7] = i, [8] = i }
+        elseif class.kind == "string" then
+            chunk[slot] = calibPadded(strings, i - 1, class.pad)
+        else
+            local base, pad = (i - 1) * CALIB_MIX_STRINGS, class.pad
+            local n1, n2, n3 = calibName(strings, base), calibName(strings, base + 1), calibName(strings, base + 2)
+            local c1, c2, c3, c4 = calibPadded(strings, base + 3, pad), calibPadded(strings, base + 4, pad),
+                calibPadded(strings, base + 5, pad), calibPadded(strings, base + 6, pad)
+            local c5, c6, c7, c8 = calibPadded(strings, base + 7, pad), calibPadded(strings, base + 8, pad),
+                calibPadded(strings, base + 9, pad), calibPadded(strings, base + 10, pad)
+            local c9, c10, c11, c12 = calibPadded(strings, base + 11, pad), calibPadded(strings, base + 12, pad),
+                calibPadded(strings, base + 13, pad), calibPadded(strings, base + 14, pad)
+            local c13, c14, c15, c16 = calibPadded(strings, base + 15, pad), calibPadded(strings, base + 16, pad),
+                calibPadded(strings, base + 17, pad), calibPadded(strings, base + 18, pad)
+            chunk[slot] = { [1] = n1, [2] = n2, [3] = n3, [4] = i, [5] = i, [6] = i, [7] = i, [8] = i }
+            chunk[slot + 1] = { [1] = c1, [2] = c2, [3] = c3, [4] = c4, [5] = c5, [6] = c6, [7] = c7, [8] = c8,
+                [9] = c9, [10] = c10, [11] = c11, [12] = c12, [13] = c13, [14] = c14, [15] = c15, [16] = c16 }
+        end
+    end
+end
+
+---@param report MemLabReport
+---@param held table[]
+---@param slots integer Occupied holder slots
+local function calibClear(report, held, slots)
+    for c = 1, math.ceil(slots / CALIB_CHUNK) do
+        local chunk = held[c]
+        for j = 1, CALIB_CHUNK do chunk[j] = false end
+        if c % 64 == 0 then
+            check(report)
+            SLICE:Await()
+        end
+    end
+end
+
+---@param class MemLabCalibClass
+---@param marks MemLabSample[]
+---@param count integer
+---@param heap0 number MiB
+---@return MemLabCalibSummary
+local function calibSummary(class, marks, count, heap0)
+    local total = #marks
+    ---@type MemLabCalibSummary
+    local summary = { count = count, marks = total, deltaHeap = total > 0 and marks[total].heap - heap0 or 0,
+        predicted = calibPredict(class) }
+    local fit = math.floor(total / 2)
+    if fit >= 2 then
+        local first, last = marks[total - fit], marks[total]
+        summary.slope = (last.gauge - first.gauge) / (last.heap - first.heap)
+        local steps = {}
+        for k = total - fit + 1, total do
+            local a, b = marks[k - 1], marks[k]
+            steps[#steps + 1] = (b.gauge - a.gauge) / (b.heap - a.heap)
+        end
+        table.sort(steps)
+        local n = #steps
+        summary.median = n % 2 == 1 and steps[(n + 1) / 2] or (steps[n / 2] + steps[n / 2 + 1]) / 2
+    end
+    return summary
+end
+
+---@param targetMiB integer
+---@param only MemLabCalibClass|nil Run a single class instead of all
+local function calibrationTest(targetMiB, only)
+    local classes = only and { only } or CALIB_CLASSES
+    local labels = {}
+    for i, class in ipairs(classes) do labels[i] = class.label end
+    run("calib", labels, function(report)
+        report.timeoutMs = 600000
+        report.calibTarget = targetMiB
+        -- Enough slots and unique strings for the hungriest class plus one
+        -- slice of overshoot.
+        local budget = targetMiB * MIB + CALIB_SLICE_BYTES
+        local slots, uniques = 0, 0
+        for _, class in ipairs(classes) do
+            local objects = math.ceil(budget / class.bytes)
+            slots = math.max(slots, objects * class.slots)
+            uniques = math.max(uniques, objects * class.strings)
+        end
+        local chunks = math.ceil(slots / CALIB_CHUNK)
+        local capacity = chunks * CALIB_CHUNK
+        ---@type table[]
+        local held = {}
+        diag._held = held
+        for c = 1, chunks do
+            local chunk = {}
+            for j = 1, CALIB_CHUNK do chunk[j] = false end
+            held[c] = chunk
+            if c % 32 == 0 then
+                check(report)
+                SLICE:Await()
+            end
+        end
+        local strings = calibStrings(uniques)
+        for index, row in ipairs(report.rows) do
+            local class = classes[index]
+            if class.length then class.pad = string.rep("m", class.length - 24) end
+            settle(report, row.before)
+            ---@type MemLabSample[]
+            local marks = {}
+            local heap0 = diag.luaHeapBytes()
+            local nextMark = heap0 + MIB
+            local count, grown = 0, 0
+            local objectCapacity = math.floor(capacity / class.slots)
+            local perSlice = math.max(1, math.floor(CALIB_SLICE_BYTES / class.bytes))
+            while grown < targetMiB * MIB and count < objectCapacity do
+                check(report)
+                local n = math.min(perSlice, objectCapacity - count)
+                calibFill(class, held, strings, count + 1, n)
+                count = count + n
+                diag._heldModelBytes = count * class.bytes
+                check(report)
+                local heap = diag.luaHeapBytes()
+                grown = heap - heap0
+                -- One mark per reading: a jump past several MiB in one slice
+                -- (a string-table doubling) must not repeat a reading, which
+                -- would put a 0/0 step into the median.
+                if heap >= nextMark then
+                    marks[#marks + 1] = { gauge = diag.gaugeBytes() / MIB, heap = heap / MIB }
+                    nextMark = heap0 + (math.floor(grown / MIB) + 1) * MIB
+                end
+                SLICE:Await()
+            end
+            readSample(row.work)
+            row.calib = calibSummary(class, marks, count, heap0 / MIB)
+            calibClear(report, held, count * class.slots)
+            diag._heldModelBytes = 0
+            settle(report, row.freed)
+            report.completed = report.completed + 1
+        end
+    end)
+end
+
 ---@param text string|nil
 ---@param default integer
 ---@param shape? string
@@ -951,6 +1270,16 @@ SLASH_COMMANDS["/bsmemlab"] = function(args)
         prepareSeed(words[2], seedCount(words[3], 8192, words[2]))
     elseif command == "runtime" and #words <= 2 and seedCount(words[2], 8192) then
         runtimeSeedTest(seedCount(words[2], 8192))
+    elseif command == "calib" and #words <= 3 then
+        local target, only, valid = 24, nil, true
+        for i = 2, #words do
+            local class = findCalibClass(words[i])
+            if tonumber(words[i]) then target = tonumber(words[i])
+            elseif class then only = class
+            else valid = false end
+        end
+        if valid and target % 1 == 0 and target >= 4 and target <= 32 then calibrationTest(target, only)
+        else d(GetString(BATTLESCROLLS_MEMLAB_USAGE_CALIB)) end
     elseif command == "watch" and #words <= 2 then
         local seconds = tonumber(words[2] or "60")
         if seconds and seconds % 1 == 0 and seconds >= 10 and seconds <= 120 then watch(seconds)
@@ -969,5 +1298,6 @@ SLASH_COMMANDS["/bsmemlab"] = function(args)
         d(GetString(BATTLESCROLLS_MEMLAB_USAGE_MIRROR))
         d(GetString(BATTLESCROLLS_MEMLAB_USAGE_ABILITY))
         d(GetString(BATTLESCROLLS_MEMLAB_USAGE_WATCH))
+        d(GetString(BATTLESCROLLS_MEMLAB_USAGE_CALIB))
     end
 end

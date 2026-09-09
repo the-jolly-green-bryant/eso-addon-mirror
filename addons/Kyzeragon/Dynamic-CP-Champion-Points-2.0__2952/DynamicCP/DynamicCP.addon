@@ -8,9 +8,9 @@
 ## Description: Champion Point presets per tree, with role filters, quality of life changes, and more!
 ## Author: Kyzeragon
 ## Contributors: Raijindono (UX), camrenis (testing & feedback), Plonkerr (testing & feedback)
-## Version: 3.3.0
-## AddOnVersion: 30300
-## APIVersion: 101049 101050
+## Version: 3.4.0
+## AddOnVersion: 30400
+## APIVersion: 101050 101051
 
 ## DependsOn: LibAddonMenu-2.0>=43
 ## PCDependsOn: LibDialog>=127
@@ -35,10 +35,13 @@ src/slottables.lua
 src/API.lua
 
 src/smartPresets/presets/blueAutoPve.lua
+src/smartPresets/presets/blueGeneralPvp.lua
 src/smartPresets/presets/greenCombat.lua
 src/smartPresets/presets/greenLootGoblin.lua
 src/smartPresets/presets/greenThieving.lua
 src/smartPresets/presets/redAutoPve.lua
+src/smartPresets/presets/redSpeed.lua
+src/smartPresets/presets/redGeneralPvp.lua
 src/smartPresets/smartPresets.lua
 
 data/presetData.lua

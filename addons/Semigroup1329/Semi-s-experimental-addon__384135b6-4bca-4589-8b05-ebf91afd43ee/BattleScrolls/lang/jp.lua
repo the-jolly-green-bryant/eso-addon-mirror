@@ -163,16 +163,17 @@ local strings = {
     [BATTLESCROLLS_SETTINGS_STORAGE_SIZE_YOLO] = "まあ大丈夫でしょ",
     -- Storage tooltip
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_DESC] = "戦闘履歴の保存量を設定します。制限を超えると、ロックされていない古いゾーンが自動的に削除されます。個別のゾーンをロックして保護することができます。",
-    [BATTLESCROLLS_SETTINGS_STORAGE_TT_NOTE] = "この制限は保存された履歴のみに適用されます。アドオンは現在の戦闘の追跡やUIの描画にもメモリを使用するため、実際の使用量はここに表示されているより高くなります。",
+    [BATTLESCROLLS_SETTINGS_STORAGE_TT_NOTE] = "この制限は保存データ（戦闘、ビルド、設定）のみに適用されます。アドオンは現在の戦闘の追跡やUIの描画にもメモリを使用するため、実際の使用量はここに表示されているより高くなります。",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_CURRENT] = "履歴: <<1>> MB / <<2>> MB (<<3>>%)",
+    [BATTLESCROLLS_SETTINGS_STORAGE_TT_PROTECTED] = "ロック済みの戦闘、ビルド、設定だけで上限を超えています。クリーンアップでは上限内に収まりません。",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_PRESETS] = "プリセット (トライアル1周 ~0.3 MB、ダンジョン ~0.15 MB、プログ一晩 ~1 MB):",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_XS] = "  極小: 5 MB - 最新の巻物だけ",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_SMALL] = "  小: 8 MB - 巻物ひと山",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_MEDIUM] = "  中: 12 MB - しっかりした戦闘日誌",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_LARGE] = "  大: 18 MB - 個人書庫",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_XL] = "  極大: 25 MB - 大書庫",
-    [BATTLESCROLLS_SETTINGS_STORAGE_TT_CAUTION] = "  注意: 40 MB - データ好きですね",
-    [BATTLESCROLLS_SETTINGS_STORAGE_TT_YOLO] = "  まあ大丈夫でしょ: 60 MB - 危険を恐れない",
+    [BATTLESCROLLS_SETTINGS_STORAGE_TT_CAUTION] = "  注意: 35 MB - データ好きですね",
+    [BATTLESCROLLS_SETTINGS_STORAGE_TT_YOLO] = "  まあ大丈夫でしょ: 50 MB - 自業自得です",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_WARNING] = "ESOのメモリ制限について: 全アドオンで100 MBを共有します。70 MBで警告が表示されます。100 MBでUIがリロードされ、全て無効化されます。多くのアドオンを使用している場合は、小さいプリセットを選択してください。ヒント: チャットで /addonmemdisplay と入力するとリアルタイムでメモリ使用量を確認できます。",
 
     -------------------------
@@ -1132,3 +1133,6 @@ SafeAddString(BATTLESCROLLS_MEMLAB_DISCARD_REQUIRED, "discardの前にテスト�
 SafeAddString(BATTLESCROLLS_MEMLAB_USAGE_MIRROR, "/bsmemlab seed mirror; discard; census live; trace", 1)
 SafeAddString(BATTLESCROLLS_MEMLAB_LIVE_COUNTS, "最終記録が稼働中 %d (1=はい); A%d I%d N%d", 1)
 SafeAddString(BATTLESCROLLS_MEMLAB_LIVE_BYTES, "記録処理の追加 L%.2f K%.2f", 1)
+SafeAddString(BATTLESCROLLS_MEMLAB_CALIB_HEADER, "校正: クラス別dG/dH、%d MiBの後半", 1)
+SafeAddString(BATTLESCROLLS_MEMLAB_CALIB_ROW, "%s n%d dH%.1f s%s m%s p%s G%s/%s/%s", 1)
+SafeAddString(BATTLESCROLLS_MEMLAB_USAGE_CALIB, "/bsmemlab calib [4..32] [class] (MiB per class)", 1)

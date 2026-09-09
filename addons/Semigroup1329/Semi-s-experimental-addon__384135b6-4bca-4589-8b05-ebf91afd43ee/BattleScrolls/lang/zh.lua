@@ -163,16 +163,17 @@ local strings = {
     [BATTLESCROLLS_SETTINGS_STORAGE_SIZE_YOLO] = "能出什么问题呢？",
     -- Storage tooltip
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_DESC] = "保留多少战斗历史。超过限制时，最旧的未锁定区域会被自动删除。您可以锁定单个区域以保护它们不被清理。",
-    [BATTLESCROLLS_SETTINGS_STORAGE_TT_NOTE] = "此限制仅适用于保存的历史记录。插件还会使用内存来追踪当前战斗和渲染界面，因此总使用量会更高。",
+    [BATTLESCROLLS_SETTINGS_STORAGE_TT_NOTE] = "此限制仅适用于保存的数据：战斗、配装和设置。插件还会使用内存来追踪当前战斗和渲染界面，因此总使用量会更高。",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_CURRENT] = "历史: <<1>> MB / <<2>> MB (<<3>>%)",
+    [BATTLESCROLLS_SETTINGS_STORAGE_TT_PROTECTED] = "仅锁定的战斗、配装和设置就已超过上限：清理无法降到上限以下。",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_PRESETS] = "预设 (试炼一次 ~0.3 MB，地下城 ~0.15 MB，一晚开荒 ~1 MB):",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_XS] = "  极小: 5 MB - 只留最新的卷轴",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_SMALL] = "  小: 8 MB - 一叠厚厚的卷轴",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_MEDIUM] = "  中: 12 MB - 一本翔实的战斗日志",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_LARGE] = "  大: 18 MB - 一座个人藏书室",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_XL] = "  极大: 25 MB - 一整座档案馆",
-    [BATTLESCROLLS_SETTINGS_STORAGE_TT_CAUTION] = "  小心: 40 MB - 你真的很喜欢数据",
-    [BATTLESCROLLS_SETTINGS_STORAGE_TT_YOLO] = "  能出什么问题呢？: 60 MB - 危险地活着",
+    [BATTLESCROLLS_SETTINGS_STORAGE_TT_CAUTION] = "  小心: 35 MB - 你真的很喜欢数据",
+    [BATTLESCROLLS_SETTINGS_STORAGE_TT_YOLO] = "  能出什么问题呢？: 50 MB - 这是你自找的",
     [BATTLESCROLLS_SETTINGS_STORAGE_TT_WARNING] = "关于ESO内存限制：所有插件共享100 MB内存池。达到70 MB时，ESO会显示警告。达到100 MB时，界面会重新加载并禁用所有插件。如果你使用很多插件，请选择较小的预设。提示：在聊天中输入 /addonmemdisplay 可以查看实时内存监控。",
 
     -------------------------
@@ -1132,3 +1133,6 @@ SafeAddString(BATTLESCROLLS_MEMLAB_DISCARD_REQUIRED, "运行discard前，请先�
 SafeAddString(BATTLESCROLLS_MEMLAB_USAGE_MIRROR, "/bsmemlab seed mirror; discard; census live; trace", 1)
 SafeAddString(BATTLESCROLLS_MEMLAB_LIVE_COUNTS, "最后记录仍在使用 %d (1=是); A%d I%d N%d", 1)
 SafeAddString(BATTLESCROLLS_MEMLAB_LIVE_BYTES, "记录缓存额外 L%.2f K%.2f", 1)
+SafeAddString(BATTLESCROLLS_MEMLAB_CALIB_HEADER, "校准: 各类别dG/dH, %d MiB的后半段", 1)
+SafeAddString(BATTLESCROLLS_MEMLAB_CALIB_ROW, "%s n%d dH%.1f s%s m%s p%s G%s/%s/%s", 1)
+SafeAddString(BATTLESCROLLS_MEMLAB_USAGE_CALIB, "/bsmemlab calib [4..32] [class] (MiB per class)", 1)

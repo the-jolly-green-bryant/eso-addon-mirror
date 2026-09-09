@@ -1385,7 +1385,7 @@ end
 function A:ExtractDigCellFromObject(object)
     if object == nil then return nil end
 
-    -- Common tile/data accessors used by ESO keyboard/gamepad UI objects.
+    -- Common tile/data accessors used by ESO keyboard UI objects.
     local pairsOfMethods = {
         { "GetGridCoordinates" }, { "GetGridPosition" }, { "GetRowColumn" },
     }
@@ -1424,11 +1424,10 @@ function A:ExtractDigCellFromObject(object)
 end
 
 function A:GetDigCellFromESOUI()
-    -- These are UI-controller fallbacks only. They are used to identify the
-    -- tile the player actually clicked; they do NOT reveal the hidden relic.
+    -- Keyboard UI-object fallbacks identify the tile the player actually clicked;
+    -- they do NOT reveal the hidden relic.
     local controllers = {
         _G.ANTIQUITY_DIGGING_KEYBOARD,
-        _G.ANTIQUITY_DIGGING_GAMEPAD,
         _G.ANTIQUITY_DIGGING,
     }
     local methods = { "GetMouseOverTile", "GetSelectedTile", "GetMouseOverDigTile", "GetSelectedDigTile" }
@@ -1445,7 +1444,7 @@ function A:GetDigCellFromESOUI()
                 end
             end
             local row, column = self:ExtractDigCellFromObject(controller)
-            if row and column then return row, column, "ui:controller" end
+            if row and column then return row, column, "ui:digging" end
         end
     end
     return nil
@@ -1463,7 +1462,7 @@ function A:TrackSelectedDigCell()
 
     -- Cache the real board cell continuously before the mouse moves from the
     -- board to the Suite color buttons. Try the public cell helpers first,
-    -- then ESO's live UI controller objects as a compatibility fallback.
+    -- then ESO's live keyboard UI objects as a compatibility fallback.
     if type(GetSelectedDigCell) == "function" then
         local row, column = safe(GetSelectedDigCell, nil)
         row, column = validDigCell(row, column)
@@ -1478,7 +1477,7 @@ function A:TrackSelectedDigCell()
     if row and column then self:RememberDigCell(row, column, source) return end
     if type(ANTIQUITY_DIGGING) == "table" then
         row, column = validDigCell(ANTIQUITY_DIGGING.selectedRow, ANTIQUITY_DIGGING.selectedColumn)
-        if row and column then self:RememberDigCell(row, column, "gamepad") return end
+        if row and column then self:RememberDigCell(row, column, "ui") return end
     end
 end
 
@@ -1497,7 +1496,7 @@ function A:GetSelectedDigCellSafe()
     if row and column then return self:RememberDigCell(row, column, source) end
     if type(ANTIQUITY_DIGGING) == "table" then
         row, column = validDigCell(ANTIQUITY_DIGGING.selectedRow, ANTIQUITY_DIGGING.selectedColumn)
-        if row and column then return self:RememberDigCell(row, column, "gamepad") end
+        if row and column then return self:RememberDigCell(row, column, "ui") end
     end
     if type(self.lastLiveDigCell) == "table" then
         row, column = validDigCell(self.lastLiveDigCell.row, self.lastLiveDigCell.column)

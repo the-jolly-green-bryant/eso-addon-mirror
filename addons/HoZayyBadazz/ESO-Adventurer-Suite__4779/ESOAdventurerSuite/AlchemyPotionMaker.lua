@@ -1,6 +1,6 @@
 -- ESO Adventurer Suite
 -- Floating Alchemy Potion & Poison Maker
--- v0.29.160
+-- v0.29.353
 
 local EPC = ESOProgressionCoach
 EPC.AlchemyPotionMaker = EPC.AlchemyPotionMaker or {}
@@ -49,146 +49,162 @@ local function notify(text, good)
     end
 end
 
-local TRAIT_ALIASES = {
-    ["invisibility"] = "Invisible",
-    ["invisible"] = "Invisible",
-    ["lower spell power"] = "Cowardice",
-    ["cowardice"] = "Cowardice",
-    ["lower armor"] = "Fracture",
-    ["fracture"] = "Fracture",
-    ["lower spell resist"] = "Breach",
-    ["lower spell resistance"] = "Breach",
-    ["breach"] = "Breach",
-    ["lower weapon power"] = "Maim",
-    ["maim"] = "Maim",
-    ["lower weapon crit"] = "Enervation",
-    ["lower weapon critical"] = "Enervation",
-    ["enervation"] = "Enervation",
-    ["lower spell crit"] = "Uncertainty",
-    ["lower spell critical"] = "Uncertainty",
-    ["uncertainty"] = "Uncertainty",
-    ["weapon crit"] = "Weapon Critical",
-    ["weapon critical"] = "Weapon Critical",
-    ["spell crit"] = "Spell Critical",
-    ["spell critical"] = "Spell Critical",
-    ["reduce speed"] = "Hindrance",
-    ["reduced speed"] = "Hindrance",
-    ["hindrance"] = "Hindrance",
-    ["stun"] = "Entrapment",
-    ["entrapment"] = "Entrapment",
-    ["sustained restore health"] = "Lingering Health",
-    ["lingering health"] = "Lingering Health",
-    ["creeping ravage health"] = "Gradual Ravage Health",
-    ["gradual ravage health"] = "Gradual Ravage Health",
-    ["increase spell resistance"] = "Increase Spell Resist",
-    ["increase spell resist"] = "Increase Spell Resist",
+local FX = {
+    BREACH = 1,
+    INCREASE_ARMOR = 2,
+    PROTECTION = 3,
+    VITALITY = 4,
+    RESTORE_STAMINA = 5,
+    RAVAGE_HEALTH = 6,
+    INCREASE_WEAPON_POWER = 7,
+    SPEED = 8,
+    RAVAGE_MAGICKA = 9,
+    RESTORE_HEALTH = 10,
+    COWARDICE = 11,
+    INVISIBLE = 12,
+    INCREASE_SPELL_RESIST = 13,
+    RESTORE_MAGICKA = 14,
+    LINGERING_HEALTH = 15,
+    UNCERTAINTY = 16,
+    TIMIDITY = 17,
+    DETECTION = 18,
+    HINDRANCE = 19,
+    VULNERABILITY = 20,
+    DEFILE = 21,
+    UNSTOPPABLE = 22,
+    SPELL_CRITICAL = 23,
+    GRADUAL_RAVAGE_HEALTH = 24,
+    HEROISM = 25,
+    ENERVATION = 26,
+    FRACTURE = 27,
+    WEAPON_CRITICAL = 28,
+    RAVAGE_STAMINA = 29,
+    MAIM = 30,
+    ENTRAPMENT = 31,
+    INCREASE_SPELL_POWER = 32,
 }
 
-local function canonicalTrait(name)
-    local key = normalize(name)
-    if key == "" then return nil end
-    return TRAIT_ALIASES[key] or trim(name)
+-- Display-only fallback labels. Recipe identity remains numeric/API-based.
+-- ESO may intentionally hide an undiscovered reagent trait name; in that case
+-- use a readable label rather than leaking the internal effect id into the UI.
+local EFFECT_FALLBACK_NAMES = {
+    [1] = "Breach",
+    [2] = "Increase Armor",
+    [3] = "Protection",
+    [4] = "Vitality",
+    [5] = "Restore Stamina",
+    [6] = "Ravage Health",
+    [7] = "Increase Weapon Power",
+    [8] = "Speed",
+    [9] = "Ravage Magicka",
+    [10] = "Restore Health",
+    [11] = "Cowardice",
+    [12] = "Invisible",
+    [13] = "Increase Spell Resist",
+    [14] = "Restore Magicka",
+    [15] = "Lingering Health",
+    [16] = "Uncertainty",
+    [17] = "Timidity",
+    [18] = "Detection",
+    [19] = "Hindrance",
+    [20] = "Vulnerability",
+    [21] = "Defile",
+    [22] = "Unstoppable",
+    [23] = "Spell Critical",
+    [24] = "Gradual Ravage Health",
+    [25] = "Heroism",
+    [26] = "Enervation",
+    [27] = "Fracture",
+    [28] = "Weapon Critical",
+    [29] = "Ravage Stamina",
+    [30] = "Maim",
+    [31] = "Entrapment",
+    [32] = "Increase Spell Power",
+}
+
+-- Planner identity is itemId/effectId based. Names are never used to decide
+-- reagent ownership, recipe compatibility, ranking, or routing.
+local REAGENT_CATALOG = {
+    {77583,  {FX.BREACH, FX.INCREASE_ARMOR, FX.PROTECTION, FX.VITALITY}, "ALCHEMY"},
+    {30157,  {FX.RESTORE_STAMINA, FX.RAVAGE_HEALTH, FX.INCREASE_WEAPON_POWER, FX.SPEED}, "FLOWER"},
+    {30148,  {FX.RAVAGE_MAGICKA, FX.RESTORE_HEALTH, FX.COWARDICE, FX.INVISIBLE}, "MUSHROOM"},
+    {30160,  {FX.INCREASE_SPELL_RESIST, FX.COWARDICE, FX.RESTORE_HEALTH, FX.RESTORE_MAGICKA}, "FLOWER"},
+    {77585,  {FX.RESTORE_HEALTH, FX.LINGERING_HEALTH, FX.UNCERTAINTY, FX.VITALITY}, "ALCHEMY", "DYNAMIC"},
+    {150669, {FX.TIMIDITY, FX.RAVAGE_MAGICKA, FX.RESTORE_STAMINA, FX.DETECTION}, "ALCHEMY"},
+    {139020, {FX.INCREASE_SPELL_RESIST, FX.HINDRANCE, FX.VULNERABILITY, FX.DEFILE}, "CLAM"},
+    {30164,  {FX.RESTORE_HEALTH, FX.RESTORE_STAMINA, FX.RESTORE_MAGICKA, FX.UNSTOPPABLE}, "FLOWER"},
+    {30161,  {FX.RESTORE_MAGICKA, FX.RAVAGE_HEALTH, FX.INCREASE_SPELL_POWER, FX.DETECTION}, "FLOWER"},
+    {150672, {FX.TIMIDITY, FX.SPELL_CRITICAL, FX.GRADUAL_RAVAGE_HEALTH, FX.RESTORE_HEALTH}, "WATERPLANT"},
+    {150671, {FX.RESTORE_MAGICKA, FX.HEROISM, FX.ENERVATION, FX.SPEED}, "ALCHEMY", "DYNAMIC"},
+    {150789, {FX.HEROISM, FX.VULNERABILITY, FX.INVISIBLE, FX.VITALITY}, "ALCHEMY", "DYNAMIC"},
+    {150731, {FX.LINGERING_HEALTH, FX.RESTORE_STAMINA, FX.HEROISM, FX.DEFILE}, "ALCHEMY", "DYNAMIC"},
+    {30162,  {FX.INCREASE_WEAPON_POWER, FX.FRACTURE, FX.RESTORE_STAMINA, FX.WEAPON_CRITICAL}, "FLOWER"},
+    {30151,  {FX.RAVAGE_HEALTH, FX.RAVAGE_STAMINA, FX.RAVAGE_MAGICKA, FX.ENTRAPMENT}, "MUSHROOM"},
+    {77587,  {FX.RAVAGE_STAMINA, FX.GRADUAL_RAVAGE_HEALTH, FX.VULNERABILITY, FX.VITALITY}, "ALCHEMY", "DYNAMIC"},
+    {30156,  {FX.MAIM, FX.INCREASE_ARMOR, FX.RAVAGE_STAMINA, FX.ENERVATION}, "MUSHROOM"},
+    {30158,  {FX.INCREASE_SPELL_POWER, FX.BREACH, FX.RESTORE_MAGICKA, FX.SPELL_CRITICAL}, "FLOWER"},
+    {30155,  {FX.RAVAGE_STAMINA, FX.RESTORE_HEALTH, FX.MAIM, FX.HINDRANCE}, "MUSHROOM"},
+    {30163,  {FX.INCREASE_ARMOR, FX.MAIM, FX.RESTORE_HEALTH, FX.RESTORE_STAMINA}, "FLOWER"},
+    {77591,  {FX.INCREASE_SPELL_RESIST, FX.PROTECTION, FX.INCREASE_ARMOR, FX.DEFILE}, "ALCHEMY", "DYNAMIC"},
+    {30153,  {FX.SPELL_CRITICAL, FX.INVISIBLE, FX.SPEED, FX.UNSTOPPABLE}, "MUSHROOM"},
+    {77590,  {FX.RAVAGE_HEALTH, FX.GRADUAL_RAVAGE_HEALTH, FX.PROTECTION, FX.DEFILE}, "FLOWER"},
+    {30165,  {FX.RAVAGE_HEALTH, FX.ENERVATION, FX.UNCERTAINTY, FX.INVISIBLE}, "WATERPLANT"},
+    {139019, {FX.LINGERING_HEALTH, FX.SPEED, FX.VITALITY, FX.PROTECTION}, "CLAM"},
+    {77589,  {FX.RAVAGE_MAGICKA, FX.VULNERABILITY, FX.SPEED, FX.LINGERING_HEALTH}, "ALCHEMY", "DYNAMIC"},
+    {77584,  {FX.HINDRANCE, FX.LINGERING_HEALTH, FX.INVISIBLE, FX.DEFILE}, "ALCHEMY", "DYNAMIC"},
+    {30149,  {FX.FRACTURE, FX.INCREASE_WEAPON_POWER, FX.RAVAGE_HEALTH, FX.RAVAGE_STAMINA}, "MUSHROOM"},
+    {77581,  {FX.FRACTURE, FX.DETECTION, FX.ENERVATION, FX.VITALITY}, "ALCHEMY", "DYNAMIC"},
+    {150670, {FX.TIMIDITY, FX.RAVAGE_HEALTH, FX.RESTORE_MAGICKA, FX.PROTECTION}, "ALCHEMY", "DYNAMIC"},
+    {30152,  {FX.BREACH, FX.INCREASE_SPELL_POWER, FX.RAVAGE_HEALTH, FX.RAVAGE_MAGICKA}, "MUSHROOM"},
+    {30166,  {FX.RESTORE_HEALTH, FX.WEAPON_CRITICAL, FX.SPELL_CRITICAL, FX.ENTRAPMENT}, "WATERPLANT"},
+    {30154,  {FX.COWARDICE, FX.INCREASE_SPELL_RESIST, FX.RAVAGE_MAGICKA, FX.DETECTION}, "MUSHROOM"},
+    {30159,  {FX.WEAPON_CRITICAL, FX.DETECTION, FX.HINDRANCE, FX.UNSTOPPABLE}, "FLOWER"},
+}
+
+local REAGENT_BY_ID = {}
+for _, row in ipairs(REAGENT_CATALOG) do REAGENT_BY_ID[row[1]] = row end
+
+local COUNTER_FX = {
+    [FX.RESTORE_HEALTH] = FX.RAVAGE_HEALTH, [FX.RAVAGE_HEALTH] = FX.RESTORE_HEALTH,
+    [FX.RESTORE_MAGICKA] = FX.RAVAGE_MAGICKA, [FX.RAVAGE_MAGICKA] = FX.RESTORE_MAGICKA,
+    [FX.RESTORE_STAMINA] = FX.RAVAGE_STAMINA, [FX.RAVAGE_STAMINA] = FX.RESTORE_STAMINA,
+    [FX.INCREASE_ARMOR] = FX.FRACTURE, [FX.FRACTURE] = FX.INCREASE_ARMOR,
+    [FX.INCREASE_SPELL_RESIST] = FX.BREACH, [FX.BREACH] = FX.INCREASE_SPELL_RESIST,
+    [FX.INCREASE_WEAPON_POWER] = FX.MAIM, [FX.MAIM] = FX.INCREASE_WEAPON_POWER,
+    [FX.INCREASE_SPELL_POWER] = FX.COWARDICE, [FX.COWARDICE] = FX.INCREASE_SPELL_POWER,
+    [FX.WEAPON_CRITICAL] = FX.ENERVATION, [FX.ENERVATION] = FX.WEAPON_CRITICAL,
+    [FX.SPELL_CRITICAL] = FX.UNCERTAINTY, [FX.UNCERTAINTY] = FX.SPELL_CRITICAL,
+    [FX.SPEED] = FX.HINDRANCE, [FX.HINDRANCE] = FX.SPEED,
+    [FX.INVISIBLE] = FX.DETECTION, [FX.DETECTION] = FX.INVISIBLE,
+    [FX.UNSTOPPABLE] = FX.ENTRAPMENT, [FX.ENTRAPMENT] = FX.UNSTOPPABLE,
+    [FX.LINGERING_HEALTH] = FX.GRADUAL_RAVAGE_HEALTH, [FX.GRADUAL_RAVAGE_HEALTH] = FX.LINGERING_HEALTH,
+    [FX.VITALITY] = FX.DEFILE, [FX.DEFILE] = FX.VITALITY,
+    [FX.PROTECTION] = FX.VULNERABILITY, [FX.VULNERABILITY] = FX.PROTECTION,
+    [FX.HEROISM] = FX.TIMIDITY, [FX.TIMIDITY] = FX.HEROISM,
+}
+
+local POTION_SOLVENT_IDS = {883, 1187, 4570, 23265, 23266, 23267, 23268, 64500, 64501}
+local POISON_SOLVENT_IDS = {75357, 75358, 75359, 75360, 75361, 75362, 75363, 75364, 75365}
+
+local function makeItemLinkFromItemId(itemId)
+    itemId = tonumber(itemId) or 0
+    local itemStyleNone = tonumber(rawget(_G, "ITEMSTYLE_NONE")) or 0
+    return string.format("|H1:item:%d:%d:50:0:0:0:0:0:0:0:0:0:0:0:0:%d:%d:0:0:%d:0|h|h", itemId, 0, itemStyleNone, 0, 10000)
 end
 
--- Current ESO reagent catalog. Live item-link traits override these entries for
--- reagents the player actually owns, so future game changes continue to work
--- for carried materials without requiring a hardcoded item ID table.
-local REAGENT_CATALOG = {
-    {"Beetle Scuttle", "Breach", "Increase Armor", "Protection", "Vitality"},
-    {"Blessed Thistle", "Restore Stamina", "Ravage Health", "Increase Weapon Power", "Speed"},
-    {"Blue Entoloma", "Ravage Magicka", "Restore Health", "Cowardice", "Invisible"},
-    {"Bugloss", "Increase Spell Resist", "Cowardice", "Restore Health", "Restore Magicka"},
-    {"Butterfly Wing", "Restore Health", "Lingering Health", "Uncertainty", "Vitality"},
-    {"Chaurus Egg", "Timidity", "Ravage Magicka", "Restore Stamina", "Detection"},
-    {"Clam Gall", "Increase Spell Resist", "Hindrance", "Vulnerability", "Defile"},
-    {"Columbine", "Restore Health", "Restore Stamina", "Restore Magicka", "Unstoppable"},
-    {"Corn Flower", "Restore Magicka", "Ravage Health", "Increase Spell Power", "Detection"},
-    {"Crimson Nirnroot", "Timidity", "Spell Critical", "Gradual Ravage Health", "Restore Health"},
-    {"Dragon Rheum", "Restore Magicka", "Heroism", "Enervation", "Speed"},
-    {"Dragon's Bile", "Heroism", "Vulnerability", "Invisible", "Vitality"},
-    {"Dragon's Blood", "Lingering Health", "Restore Stamina", "Heroism", "Defile"},
-    {"Dragonthorn", "Increase Weapon Power", "Fracture", "Restore Stamina", "Weapon Critical"},
-    {"Emetic Russula", "Ravage Health", "Ravage Stamina", "Ravage Magicka", "Entrapment"},
-    {"Fleshfly Larva", "Ravage Stamina", "Gradual Ravage Health", "Vulnerability", "Vitality"},
-    {"Imp Stool", "Maim", "Increase Armor", "Ravage Stamina", "Enervation"},
-    {"Lady's Smock", "Increase Spell Power", "Breach", "Restore Magicka", "Spell Critical"},
-    {"Luminous Russula", "Ravage Stamina", "Restore Health", "Maim", "Hindrance"},
-    {"Mountain Flower", "Increase Armor", "Maim", "Restore Health", "Restore Stamina"},
-    {"Mudcrab Chitin", "Increase Spell Resist", "Protection", "Increase Armor", "Defile"},
-    {"Namira's Rot", "Spell Critical", "Invisible", "Speed", "Unstoppable"},
-    {"Nightshade", "Ravage Health", "Gradual Ravage Health", "Protection", "Defile"},
-    {"Nirnroot", "Ravage Health", "Enervation", "Uncertainty", "Invisible"},
-    {"Powdered Mother of Pearl", "Lingering Health", "Speed", "Vitality", "Protection"},
-    {"Scrib Jelly", "Ravage Magicka", "Vulnerability", "Speed", "Lingering Health"},
-    {"Spider Egg", "Hindrance", "Lingering Health", "Invisible", "Defile"},
-    {"Stinkhorn", "Fracture", "Increase Weapon Power", "Ravage Health", "Ravage Stamina"},
-    {"Torchbug Thorax", "Fracture", "Detection", "Enervation", "Vitality"},
-    {"Vile Coagulant", "Timidity", "Ravage Health", "Restore Magicka", "Protection"},
-    {"Violet Coprinus", "Breach", "Increase Spell Power", "Ravage Health", "Ravage Magicka"},
-    {"Water Hyacinth", "Restore Health", "Weapon Critical", "Spell Critical", "Entrapment"},
-    {"White Cap", "Cowardice", "Increase Spell Resist", "Ravage Magicka", "Detection"},
-    {"Wormwood", "Weapon Critical", "Detection", "Hindrance", "Unstoppable"},
-}
-
-local COUNTERS = {
-    ["Restore Health"] = "Ravage Health", ["Ravage Health"] = "Restore Health",
-    ["Restore Magicka"] = "Ravage Magicka", ["Ravage Magicka"] = "Restore Magicka",
-    ["Restore Stamina"] = "Ravage Stamina", ["Ravage Stamina"] = "Restore Stamina",
-    ["Increase Armor"] = "Fracture", ["Fracture"] = "Increase Armor",
-    ["Increase Spell Resist"] = "Breach", ["Breach"] = "Increase Spell Resist",
-    ["Increase Weapon Power"] = "Maim", ["Maim"] = "Increase Weapon Power",
-    ["Increase Spell Power"] = "Cowardice", ["Cowardice"] = "Increase Spell Power",
-    ["Weapon Critical"] = "Enervation", ["Enervation"] = "Weapon Critical",
-    ["Spell Critical"] = "Uncertainty", ["Uncertainty"] = "Spell Critical",
-    ["Speed"] = "Hindrance", ["Hindrance"] = "Speed",
-    ["Invisible"] = "Detection", ["Detection"] = "Invisible",
-    ["Unstoppable"] = "Entrapment", ["Entrapment"] = "Unstoppable",
-    ["Lingering Health"] = "Gradual Ravage Health", ["Gradual Ravage Health"] = "Lingering Health",
-    ["Vitality"] = "Defile", ["Defile"] = "Vitality",
-    ["Protection"] = "Vulnerability", ["Vulnerability"] = "Protection",
-    ["Heroism"] = "Timidity", ["Timidity"] = "Heroism",
-}
-
-local POTION_SOLVENTS = {"Natural Water", "Clear Water", "Pristine Water", "Cleansed Water", "Filtered Water", "Purified Water", "Cloud Mist", "Star Dew", "Lorkhan's Tears"}
-local POISON_SOLVENTS = {"Grease", "Ichor", "Slime", "Gall", "Terebinth", "Pitch-Bile", "Tarblack", "Night-Oil", "Alkahest"}
-
--- v0.29.237: missing-material tracking. Static harvest ingredients can be
--- routed into the Suite Resource Pins database. Dynamic drops (dragons,
--- critters, enemies, etc.) intentionally do not get fake fixed coordinates.
-local MISSING_GATHER_KIND = {
-    ["blessed thistle"] = "FLOWER", ["bugloss"] = "FLOWER", ["columbine"] = "FLOWER",
-    ["corn flower"] = "FLOWER", ["dragonthorn"] = "FLOWER", ["lady's smock"] = "FLOWER",
-    ["mountain flower"] = "FLOWER", ["nightshade"] = "FLOWER", ["wormwood"] = "FLOWER",
-    ["blue entoloma"] = "MUSHROOM", ["emetic russula"] = "MUSHROOM", ["imp stool"] = "MUSHROOM",
-    ["luminous russula"] = "MUSHROOM", ["namira's rot"] = "MUSHROOM", ["stinkhorn"] = "MUSHROOM",
-    ["violet coprinus"] = "MUSHROOM", ["white cap"] = "MUSHROOM",
-    ["nirnroot"] = "WATERPLANT", ["crimson nirnroot"] = "WATERPLANT", ["water hyacinth"] = "WATERPLANT",
-    ["clam gall"] = "CLAM", ["powdered mother of pearl"] = "CLAM",
-    ["chaurus egg"] = "ALCHEMY",
-}
-
-local DYNAMIC_MATERIAL_HINT = {
-    ["beetle scuttle"] = "dropped by beetles",
-    ["butterfly wing"] = "collected from butterflies",
-    ["dragon rheum"] = "dragon drop", ["dragon's bile"] = "dragon drop", ["dragon's blood"] = "dragon drop",
-    ["fleshfly larva"] = "creature drop", ["mudcrab chitin"] = "mudcrab drop",
-    ["scrib jelly"] = "scrib/kwama drop", ["spider egg"] = "spider drop",
-    ["torchbug thorax"] = "collected from torchbugs", ["vile coagulant"] = "special encounter drop",
-}
-local SOLVENT_RANK = {}
-for i, name in ipairs(POTION_SOLVENTS) do SOLVENT_RANK[normalize(name)] = i end
-for i, name in ipairs(POISON_SOLVENTS) do SOLVENT_RANK[normalize(name)] = i end
-
-local EFFECTS = {}
-do
-    local seen = {}
-    for _, row in ipairs(REAGENT_CATALOG) do
-        for i = 2, #row do
-            local t = canonicalTrait(row[i])
-            if t and not seen[t] then seen[t] = true EFFECTS[#EFFECTS + 1] = t end
-        end
+local function localizedItemName(itemId)
+    local link = makeItemLinkFromItemId(itemId)
+    local name = tostring(safe(GetItemLinkName, "", link) or "")
+    if name ~= "" and type(zo_strformat) == "function" then
+        name = zo_strformat("<<C:1>>", name)
     end
-    table.sort(EFFECTS)
+    return name ~= "" and name or ("Item " .. tostring(itemId)), link
+end
+
+local function solventIdForRank(mode, rank)
+    local list = mode == "POISON" and POISON_SOLVENT_IDS or POTION_SOLVENT_IDS
+    rank = math.max(1, math.min(#list, tonumber(rank) or 1))
+    return list[rank]
 end
 
 function A:EnsureSaved()
@@ -199,9 +215,9 @@ function A:EnsureSaved()
     if s.alchemyPotionMakerIncludeCraftBag == nil then s.alchemyPotionMakerIncludeCraftBag = true end
     if s.alchemyPotionMakerUseThreeReagents == nil then s.alchemyPotionMakerUseThreeReagents = true end
     if s.alchemyPotionMakerMode == nil then s.alchemyPotionMakerMode = "POTION" end
-    if s.alchemyPotionMakerEffect1 == nil then s.alchemyPotionMakerEffect1 = "Restore Health" end
-    if s.alchemyPotionMakerEffect2 == nil then s.alchemyPotionMakerEffect2 = "" end
-    if s.alchemyPotionMakerEffect3 == nil then s.alchemyPotionMakerEffect3 = "" end
+    if s.alchemyPotionMakerEffect1 == nil then s.alchemyPotionMakerEffect1 = FX.RESTORE_HEALTH end
+    if s.alchemyPotionMakerEffect2 == nil then s.alchemyPotionMakerEffect2 = 0 end
+    if s.alchemyPotionMakerEffect3 == nil then s.alchemyPotionMakerEffect3 = 0 end
     if s.alchemyPotionMakerLeft == nil then s.alchemyPotionMakerLeft = -1 end
     if s.alchemyPotionMakerTop == nil then s.alchemyPotionMakerTop = -1 end
     if s.alchemyPotionMakerPanelLeft == nil then s.alchemyPotionMakerPanelLeft = -1 end
@@ -278,60 +294,180 @@ end
 
 function A:ForEachBagSlot(bagId, callback)
     if bagId == nil or type(callback) ~= "function" then return end
-    if rawget(_G, "BAG_VIRTUAL") ~= nil and bagId == BAG_VIRTUAL and type(GetNextVirtualBagSlotId) == "function" then
-        local last = nil
-        local guard = 0
-        while guard < 10000 do
-            local slotIndex = safe(GetNextVirtualBagSlotId, nil, last)
-            if slotIndex == nil and last == nil then slotIndex = safe(GetNextVirtualBagSlotId, nil, 0) end
-            if slotIndex == nil then break end
-            callback(bagId, slotIndex)
-            last = slotIndex
-            guard = guard + 1
+
+    -- BAG_VIRTUAL is not a normal indexed bag: its slot id is the item's itemId.
+    -- Prefer ESO's already-maintained inventory cache so opening/switching the
+    -- Potion Maker does not walk the entire craft bag through thousands of API
+    -- calls.  This is both faster and more reliable on ESO+ craft-bag entries.
+    if rawget(_G, "BAG_VIRTUAL") ~= nil and bagId == BAG_VIRTUAL then
+        local shared = rawget(_G, "SHARED_INVENTORY")
+        if shared and type(shared.GetOrCreateBagCache) == "function" then
+            local ok, cache = pcall(shared.GetOrCreateBagCache, shared, bagId)
+            if ok and type(cache) == "table" then
+                for cacheKey, slotData in pairs(cache) do
+                    if type(slotData) == "table" then
+                        local slotIndex = slotData.slotIndex or slotData.itemId or cacheKey
+                        if slotIndex ~= nil then callback(bagId, slotIndex, slotData) end
+                    end
+                end
+                return
+            end
+        end
+
+        -- Compatibility fallback for unusual UI states/older API builds.
+        if type(GetNextVirtualBagSlotId) == "function" then
+            local last, guard = nil, 0
+            while guard < 10000 do
+                local slotIndex = safe(GetNextVirtualBagSlotId, nil, last)
+                if slotIndex == nil then break end
+                callback(bagId, slotIndex, nil)
+                last = slotIndex
+                guard = guard + 1
+            end
         end
         return
     end
+
     local size = num(safe(GetBagSize, 0, bagId), 0)
-    for slotIndex = 0, size - 1 do callback(bagId, slotIndex) end
+    for slotIndex = 0, size - 1 do callback(bagId, slotIndex, nil) end
 end
 
-function A:GetSlotCount(bagId, slotIndex)
+function A:GetSlotCount(bagId, slotIndex, slotData)
+    if type(slotData) == "table" and slotData.stackCount ~= nil then
+        return math.max(0, num(slotData.stackCount, 0))
+    end
     local stack = safe(GetSlotStackSize, nil, bagId, slotIndex)
     if stack ~= nil then return math.max(0, num(stack, 0)) end
     local _, stackCount = safe(GetItemInfo, nil, bagId, slotIndex)
     return math.max(0, num(stackCount, 0))
 end
 
-function A:GetLiveTraits(link)
-    local out, seen = {}, {}
-    if type(GetItemLinkReagentTraitInfo) ~= "function" or not link or link == "" then return out end
-    for i = 1, 4 do
-        local known, name = safe(GetItemLinkReagentTraitInfo, nil, link, i)
-        local trait = canonicalTrait(name)
-        -- The name can be available even when the character has not personally
-        -- discovered the trait. We only need the game's current effect identity.
-        if trait and not seen[trait] then
-            seen[trait] = true
-            out[#out + 1] = trait
+function A:EnsurePlannerCatalog()
+    if self.plannerCatalog and self.effectNames and self.effectNameToId and self.effectChoices then
+        return self.plannerCatalog
+    end
+
+    local catalog, effectNames, effectNameToId = {}, {}, {}
+    for catalogIndex, row in ipairs(REAGENT_CATALOG) do
+        local itemId, effectIds, kind, sourceKind = row[1], row[2], row[3], row[4]
+        local name, link = localizedItemName(itemId)
+        local entry = {
+            itemId = itemId,
+            key = "id:" .. tostring(itemId),
+            name = name,
+            link = link,
+            effectIds = effectIds,
+            kind = kind,
+            sourceKind = sourceKind,
+            catalogIndex = catalogIndex,
+        }
+        catalog[#catalog + 1] = entry
+
+        if type(GetItemLinkReagentTraitInfo) == "function" then
+            for traitIndex, effectId in ipairs(effectIds) do
+                local _, traitName = safe(GetItemLinkReagentTraitInfo, nil, link, traitIndex)
+                traitName = trim(traitName)
+                if traitName ~= "" then
+                    if not effectNames[effectId] or effectNames[effectId] == "" then effectNames[effectId] = traitName end
+                    effectNameToId[normalize(traitName)] = effectId
+                end
+            end
         end
     end
-    return out
-end
 
-function A:GetStaticTraits(name)
-    local key = normalize(name)
+    local choices = {}
+    local seen = {}
     for _, row in ipairs(REAGENT_CATALOG) do
-        if normalize(row[1]) == key then
-            local out = {}
-            for i = 2, #row do out[#out + 1] = canonicalTrait(row[i]) end
-            return out
+        for _, effectId in ipairs(row[2]) do
+            if not seen[effectId] then
+                seen[effectId] = true
+                choices[#choices + 1] = effectId
+            end
         end
     end
-    return {}
+    table.sort(choices, function(a, b)
+        local an = tostring(effectNames[a] or EFFECT_FALLBACK_NAMES[a] or "Unknown Effect")
+        local bn = tostring(effectNames[b] or EFFECT_FALLBACK_NAMES[b] or "Unknown Effect")
+        return an < bn
+    end)
+
+    self.plannerCatalog = catalog
+    self.effectNames = effectNames
+    self.effectNameToId = effectNameToId
+    self.effectChoices = choices
+    return catalog
 end
 
-function A:ScanMaterials()
+function A:GetEffectName(effectId)
+    self:EnsurePlannerCatalog()
+    effectId = tonumber(effectId)
+    if effectId and self.effectNames and trim(self.effectNames[effectId]) ~= "" then
+        return self.effectNames[effectId]
+    end
+    if effectId and EFFECT_FALLBACK_NAMES[effectId] then
+        return EFFECT_FALLBACK_NAMES[effectId]
+    end
+    return "Unknown Effect"
+end
+
+function A:GetEffectIdFromName(name)
+    self:EnsurePlannerCatalog()
+    local key = normalize(name)
+    if key == "" then return nil end
+    return self.effectNameToId and self.effectNameToId[key] or nil
+end
+
+function A:GetEffectNames(effectIds)
+    local names = {}
+    for _, effectId in ipairs(effectIds or {}) do names[#names + 1] = self:GetEffectName(effectId) end
+    return names
+end
+
+function A:GetLiveTraitRecords(bagId, slotIndex, link, itemId)
+    self:EnsurePlannerCatalog()
+    local records = {}
+    local row = REAGENT_BY_ID[tonumber(itemId) or 0]
+    local staticEffectIds = row and row[2] or nil
+
+    if type(GetAlchemyItemTraits) == "function" and bagId ~= nil and slotIndex ~= nil then
+        local ok,
+            t1, i1, m1, c1, x1,
+            t2, i2, m2, c2, x2,
+            t3, i3, m3, c3, x3,
+            t4, i4, m4, c4, x4 = pcall(GetAlchemyItemTraits, bagId, slotIndex)
+        if ok then
+            local raw = {
+                {t1, c1}, {t2, c2}, {t3, c3}, {t4, c4},
+            }
+            for index, pair in ipairs(raw) do
+                local effectId = staticEffectIds and staticEffectIds[index] or self:GetEffectIdFromName(pair[1])
+                local traitName = trim(pair[1])
+                if effectId and traitName ~= "" then
+                    self.effectNames[effectId] = traitName
+                    self.effectNameToId[normalize(traitName)] = effectId
+                end
+                local cancelId = self:GetEffectIdFromName(pair[2]) or (effectId and COUNTER_FX[effectId])
+                if effectId then records[#records + 1] = { effectId = effectId, cancelsId = cancelId } end
+            end
+        end
+    end
+
+    if #records == 0 and type(GetItemLinkReagentTraitInfo) == "function" and link and link ~= "" then
+        for index = 1, 4 do
+            local _, traitName = safe(GetItemLinkReagentTraitInfo, nil, link, index)
+            local effectId = staticEffectIds and staticEffectIds[index] or self:GetEffectIdFromName(traitName)
+            if effectId then records[#records + 1] = { effectId = effectId, cancelsId = COUNTER_FX[effectId] } end
+        end
+    end
+    return records
+end
+
+function A:ScanMaterials(force)
     self:EnsureSaved()
+    if not force and self.reagentList and self.reagentsByName and self.solvents then
+        return self.reagentList, self.solvents
+    end
+    self.traitCounters = {}
     local reagentsByName, solvents = {}, { POTION = {}, POISON = {} }
     local reagentType = rawget(_G, "ITEMTYPE_REAGENT")
     local potionBase = rawget(_G, "ITEMTYPE_POTION_BASE")
@@ -348,28 +484,63 @@ function A:ScanMaterials()
     if EPC.saved.alchemyPotionMakerIncludeCraftBag ~= false then addBag(rawget(_G, "BAG_VIRTUAL")) end
 
     for _, bagId in ipairs(bags) do
-        self:ForEachBagSlot(bagId, function(bag, slot)
-            local link = tostring(safe(GetItemLink, "", bag, slot, LINK_STYLE_DEFAULT or 0) or "")
-            if link == "" then return end
-            local itemType = num(safe(GetItemLinkItemType, -1, link), -1)
-            local count = self:GetSlotCount(bag, slot)
+        self:ForEachBagSlot(bagId, function(bag, slot, slotData)
+            local link = ""
+            if type(slotData) == "table" then
+                link = tostring(slotData.itemLink or slotData.link or "")
+            end
+            if link == "" then link = tostring(safe(GetItemLink, "", bag, slot, LINK_STYLE_DEFAULT or 0) or "") end
+
+            -- Prefer direct bag data for real inventory slots, especially BAG_VIRTUAL.
+            -- Item links are a fallback, not the identity source.
+            local itemType, specializedType
+            if type(slotData) == "table" then
+                itemType = slotData.itemType
+                specializedType = slotData.specializedItemType
+            end
+            if itemType == nil and type(GetItemType) == "function" then
+                itemType, specializedType = safe(GetItemType, nil, bag, slot)
+            end
+            if itemType == nil and link ~= "" then
+                itemType, specializedType = safe(GetItemLinkItemType, nil, link)
+            end
+            itemType = num(itemType, -1)
+
+            local count = self:GetSlotCount(bag, slot, slotData)
             if count <= 0 then return end
-            local name = tostring(safe(GetItemLinkName, "", link) or "")
+
+            local name = type(slotData) == "table" and tostring(slotData.name or "") or ""
+            if name == "" and link ~= "" then name = tostring(safe(GetItemLinkName, "", link) or "") end
             if name == "" then name = tostring(safe(GetItemName, "", bag, slot) or "") end
-            local key = normalize(name)
+
+            local itemId = type(slotData) == "table" and num(slotData.itemId, 0) or 0
+            if itemId <= 0 then itemId = num(safe(GetItemId, 0, bag, slot), 0) end
+            if itemId <= 0 and link ~= "" then itemId = num(safe(GetItemLinkItemId, 0, link), 0) end
+            local key = itemId > 0 and ("id:" .. tostring(itemId)) or ("bag:" .. tostring(bag) .. ":" .. tostring(slot))
+
+            local isSolvent = type(IsAlchemySolvent) == "function" and safe(IsAlchemySolvent, false, itemType) == true
+            local potionSpecial = rawget(_G, "SPECIALIZED_ITEMTYPE_POTION_BASE")
+            local poisonSpecial = rawget(_G, "SPECIALIZED_ITEMTYPE_POISON_BASE")
             if reagentType ~= nil and itemType == reagentType then
                 local entry = reagentsByName[key]
                 if not entry then
-                    entry = { name = name, key = key, count = 0, locations = {}, traits = {} }
+                    entry = { name = name, key = key, itemId = itemId, count = 0, locations = {}, effectIds = {} }
                     reagentsByName[key] = entry
                 end
                 entry.count = entry.count + count
                 entry.locations[#entry.locations + 1] = { bagId = bag, slotIndex = slot, count = count, link = link }
-                local live = self:GetLiveTraits(link)
-                if #live > #entry.traits then entry.traits = live end
-            elseif potionBase ~= nil and itemType == potionBase then
+                local liveRecords = self:GetLiveTraitRecords(bag, slot, link, itemId)
+                local live = {}
+                for _, record in ipairs(liveRecords) do
+                    live[#live + 1] = record.effectId
+                    if record.effectId and record.cancelsId then
+                        self.traitCounters[record.effectId] = record.cancelsId
+                    end
+                end
+                if #live > #entry.effectIds then entry.effectIds = live end
+            elseif (potionBase ~= nil and itemType == potionBase) or (isSolvent and potionSpecial ~= nil and specializedType == potionSpecial) then
                 solvents.POTION[#solvents.POTION + 1] = { name = name, key = key, count = count, bagId = bag, slotIndex = slot, link = link }
-            elseif poisonBase ~= nil and itemType == poisonBase then
+            elseif (poisonBase ~= nil and itemType == poisonBase) or (isSolvent and poisonSpecial ~= nil and specializedType == poisonSpecial) then
                 solvents.POISON[#solvents.POISON + 1] = { name = name, key = key, count = count, bagId = bag, slotIndex = slot, link = link }
             end
         end)
@@ -377,23 +548,26 @@ function A:ScanMaterials()
 
     local reagentList = {}
     for _, entry in pairs(reagentsByName) do
-        if #entry.traits == 0 then entry.traits = self:GetStaticTraits(entry.name) end
         reagentList[#reagentList + 1] = entry
     end
     table.sort(reagentList, function(a,b) return tostring(a.name) < tostring(b.name) end)
 
     for _, mode in ipairs({"POTION", "POISON"}) do
         table.sort(solvents[mode], function(a,b)
-            local ar = SOLVENT_RANK[a.key] or (num(safe(GetItemLinkRequiredChampionPoints, 0, a.link), 0) * 100 + num(safe(GetItemLinkRequiredLevel, 0, a.link), 0))
-            local br = SOLVENT_RANK[b.key] or (num(safe(GetItemLinkRequiredChampionPoints, 0, b.link), 0) * 100 + num(safe(GetItemLinkRequiredLevel, 0, b.link), 0))
+            local ar = num(safe(GetItemLinkRequiredChampionPoints, 0, a.link), 0) * 100 + num(safe(GetItemLinkRequiredLevel, 0, a.link), 0)
+            local br = num(safe(GetItemLinkRequiredChampionPoints, 0, b.link), 0) * 100 + num(safe(GetItemLinkRequiredLevel, 0, b.link), 0)
             if ar == br then return a.count > b.count end
             return ar > br
         end)
     end
 
+    -- Effect labels come from generated item links, while recipe identity stays numeric.
+
     self.reagentsByName = reagentsByName
     self.reagentList = reagentList
     self.solvents = solvents
+    self.resultCache = {}
+    self.cachedReadyResults = nil
     self.lastScanAt = num(safe(GetFrameTimeMilliseconds, 0), 0)
     return reagentList, solvents
 end
@@ -408,8 +582,6 @@ end
 
 function A:IsSolventLevelUsable(solvent)
     if not solvent then return false end
-    local solventRank = SOLVENT_RANK[solvent.key] or 999
-    if solventRank > self:GetSolventProficiencyIndex() then return false end
 
     -- A character can own account/bank solvents above the level that character
     -- can actually use. Filter those before presenting a recipe as READY.
@@ -443,32 +615,53 @@ end
 
 function A:GetExpectedSolventName(mode)
     local rank = self:GetSolventProficiencyIndex()
-    local list = mode == "POISON" and POISON_SOLVENTS or POTION_SOLVENTS
-    return list[rank] or list[#list]
+    local itemId = solventIdForRank(mode, rank)
+    local name = localizedItemName(itemId)
+    return name
 end
 
 function A:GetCatalogWithOwnership()
-    local out, present = {}, {}
-    local owned = self.reagentsByName or {}
-    for _, row in ipairs(REAGENT_CATALOG) do
-        local key = normalize(row[1])
-        local live = owned[key]
-        local traits = {}
-        if live and #live.traits > 0 then
-            for _, t in ipairs(live.traits) do traits[#traits + 1] = canonicalTrait(t) end
-        else
-            for i = 2, #row do traits[#traits + 1] = canonicalTrait(row[i]) end
-        end
-        out[#out + 1] = { name = live and live.name or row[1], key = key, traits = traits, owned = live }
-        present[key] = true
+    if not self.reagentList then self:ScanMaterials() end
+    local planner = self:EnsurePlannerCatalog()
+    local ownedByItemId = {}
+    for _, live in ipairs(self.reagentList or {}) do
+        if tonumber(live.itemId) and tonumber(live.itemId) > 0 then ownedByItemId[tonumber(live.itemId)] = live end
     end
-    -- Future reagents not yet in the static catalog still participate in "Can
-    -- Make Now" and exact matching as soon as the game exposes their traits.
-    for key, live in pairs(owned) do
-        if not present[key] and #live.traits > 0 then
-            out[#out + 1] = { name = live.name, key = key, traits = live.traits, owned = live }
+
+    local out, matched = {}, {}
+    for _, base in ipairs(planner or {}) do
+        local owned = ownedByItemId[base.itemId]
+        if owned then matched[base.itemId] = true end
+        out[#out + 1] = {
+            name = owned and owned.name or base.name,
+            key = base.key,
+            itemId = base.itemId,
+            link = base.link,
+            effectIds = base.effectIds,
+            kind = base.kind,
+            sourceKind = base.sourceKind,
+            owned = owned,
+            catalogIndex = base.catalogIndex,
+        }
+    end
+
+    -- Future reagents whose itemIds are not in the bundled ID catalog can still
+    -- participate if the live API maps their traits to existing effect IDs.
+    for _, live in ipairs(self.reagentList or {}) do
+        local itemId = tonumber(live.itemId) or 0
+        if itemId > 0 and not matched[itemId] and type(live.effectIds) == "table" and #live.effectIds > 0 then
+            out[#out + 1] = {
+                name = live.name,
+                key = live.key,
+                itemId = itemId,
+                effectIds = live.effectIds,
+                owned = live,
+                apiOnly = true,
+                kind = "ALCHEMY",
+            }
         end
     end
+
     table.sort(out, function(a,b) return tostring(a.name) < tostring(b.name) end)
     return out
 end
@@ -476,29 +669,32 @@ end
 function A:GetActiveEffects(combo)
     local counts, all = {}, {}
     for _, reagent in ipairs(combo or {}) do
-        for _, rawTrait in ipairs(reagent.traits or {}) do
-            local trait = canonicalTrait(rawTrait)
-            if trait then
-                counts[trait] = (counts[trait] or 0) + 1
-                all[trait] = true
+        for _, effectId in ipairs(reagent.effectIds or {}) do
+            effectId = tonumber(effectId)
+            if effectId then
+                counts[effectId] = (counts[effectId] or 0) + 1
+                all[effectId] = true
             end
         end
     end
     local active = {}
-    for trait, count in pairs(counts) do
+    for effectId, count in pairs(counts) do
         if count >= 2 then
-            local counter = COUNTERS[trait]
-            if not counter or not all[counter] then active[#active + 1] = trait end
+            local counter = (self.traitCounters and self.traitCounters[effectId]) or COUNTER_FX[effectId]
+            if not counter or not all[counter] then active[#active + 1] = effectId end
         end
     end
-    table.sort(active)
+    table.sort(active, function(a, b) return self:GetEffectName(a) < self:GetEffectName(b) end)
     return active
 end
 
 function A:HasDesiredEffects(active, desired)
     local set = {}
-    for _, t in ipairs(active or {}) do set[t] = true end
-    for _, t in ipairs(desired or {}) do if t ~= "" and not set[t] then return false end end
+    for _, effectId in ipairs(active or {}) do set[tonumber(effectId)] = true end
+    for _, effectId in ipairs(desired or {}) do
+        effectId = tonumber(effectId)
+        if effectId and not set[effectId] then return false end
+    end
     return true
 end
 
@@ -538,7 +734,7 @@ function A:BuildResult(combo, active, mode, selectedCount)
     return {
         combo = combo,
         effects = active,
-        effectsText = table.concat(active, " + "),
+        effectsText = table.concat(self:GetEffectNames(active), " + "),
         reagentsText = table.concat(names, " + "),
         mode = mode,
         solvent = solvent,
@@ -553,11 +749,14 @@ end
 function A:BuildCanMakeResults()
     self:ScanMaterials()
     local mode = EPC.saved.alchemyPotionMakerMode == "POISON" and "POISON" or "POTION"
+    local cacheKey = "READY:" .. mode .. ":" .. (self:IsThirdSlotUnlocked() and "3" or "2")
+    self.resultCache = self.resultCache or {}
+    if self.resultCache[cacheKey] then return self.resultCache[cacheKey] end
     local solvent = self:GetBestSolvent(mode)
     if not solvent then return {} end
     local list = self.reagentList or {}
     local wrappers = {}
-    for _, entry in ipairs(list) do wrappers[#wrappers + 1] = { name = entry.name, key = entry.key, traits = entry.traits, owned = entry } end
+    for _, entry in ipairs(list) do wrappers[#wrappers + 1] = { name = entry.name, key = entry.key, itemId = entry.itemId, effectIds = entry.effectIds, owned = entry } end
     local bestByEffects = {}
     local allowThree = self:IsThirdSlotUnlocked()
     local function consider(combo)
@@ -588,15 +787,30 @@ function A:BuildCanMakeResults()
         if a.maxCraftable ~= b.maxCraftable then return a.maxCraftable > b.maxCraftable end
         return a.effectsText < b.effectsText
     end)
+    self.resultCache[cacheKey] = out
+    if mode == (EPC.saved.alchemyPotionMakerMode == "POISON" and "POISON" or "POTION") then
+        self.cachedReadyResults = out
+    end
     return out
 end
 
 function A:GetDesiredEffects()
     self:EnsureSaved()
+    self:EnsurePlannerCatalog()
     local out, seen = {}, {}
     for _, key in ipairs({"alchemyPotionMakerEffect1", "alchemyPotionMakerEffect2", "alchemyPotionMakerEffect3"}) do
-        local value = canonicalTrait(EPC.saved[key])
-        if value and value ~= "" and not seen[value] then seen[value] = true out[#out + 1] = value end
+        local rawValue = EPC.saved[key]
+        local effectId = tonumber(rawValue)
+        if not effectId and type(rawValue) == "string" and trim(rawValue) ~= "" then
+            -- One-time migration for saved selections from pre-ID builds. The
+            -- current client's localized API label is the only string consulted.
+            effectId = self:GetEffectIdFromName(rawValue)
+            EPC.saved[key] = effectId or 0
+        end
+        if effectId and effectId > 0 and not seen[effectId] then
+            seen[effectId] = true
+            out[#out + 1] = effectId
+        end
     end
     return out
 end
@@ -606,6 +820,10 @@ function A:BuildExactResults()
     local desired = self:GetDesiredEffects()
     if #desired == 0 then return {} end
     local mode = EPC.saved.alchemyPotionMakerMode == "POISON" and "POISON" or "POTION"
+    local desiredKey = table.concat(desired, "|")
+    local cacheKey = "EXACT:" .. mode .. ":" .. (self:IsThirdSlotUnlocked() and "3" or "2") .. ":" .. desiredKey
+    self.resultCache = self.resultCache or {}
+    if self.resultCache[cacheKey] then return self.resultCache[cacheKey] end
     local catalog = self:GetCatalogWithOwnership()
     local allowThree = self:IsThirdSlotUnlocked()
     local out = {}
@@ -637,69 +855,70 @@ function A:BuildExactResults()
         for i = 1, 160 do limited[i] = out[i] end
         out = limited
     end
+    self.resultCache[cacheKey] = out
     return out
 end
 
 
--- v0.29.240: one-click "Best Buffs" / "Best Poisons" filter.
--- These weights are intentionally about combat usefulness, not sale value. The
--- filter favors strong multi-effect recipes and keeps READY recipes above missing
--- ones so the player can immediately load/craft something useful.
+-- Recommendation engine for new and experienced players.
+-- Identity is still effectId/itemId based. These profiles only decide which
+-- recipe is presented as the best fit for a combat goal; ownership never hides
+-- a recommendation.
 local BEST_POTION_EFFECT_SCORE = {
-    ["Heroism"] = 135,
-    ["Increase Weapon Power"] = 120,
-    ["Increase Spell Power"] = 120,
-    ["Weapon Critical"] = 112,
-    ["Spell Critical"] = 112,
-    ["Unstoppable"] = 108,
-    ["Protection"] = 96,
-    ["Vitality"] = 94,
-    ["Speed"] = 88,
-    ["Restore Health"] = 84,
-    ["Restore Magicka"] = 78,
-    ["Restore Stamina"] = 78,
-    ["Increase Armor"] = 72,
-    ["Increase Spell Resist"] = 72,
-    ["Invisible"] = 62,
-    ["Detection"] = 44,
+    [FX.HEROISM] = 135,
+    [FX.INCREASE_WEAPON_POWER] = 120,
+    [FX.INCREASE_SPELL_POWER] = 120,
+    [FX.WEAPON_CRITICAL] = 112,
+    [FX.SPELL_CRITICAL] = 112,
+    [FX.UNSTOPPABLE] = 108,
+    [FX.PROTECTION] = 96,
+    [FX.VITALITY] = 94,
+    [FX.SPEED] = 88,
+    [FX.RESTORE_HEALTH] = 84,
+    [FX.RESTORE_MAGICKA] = 78,
+    [FX.RESTORE_STAMINA] = 78,
+    [FX.INCREASE_ARMOR] = 72,
+    [FX.INCREASE_SPELL_RESIST] = 72,
+    [FX.LINGERING_HEALTH] = 70,
+    [FX.INVISIBLE] = 62,
+    [FX.DETECTION] = 44,
 }
 
 local BEST_POISON_EFFECT_SCORE = {
-    ["Gradual Ravage Health"] = 140,
-    ["Ravage Health"] = 132,
-    ["Breach"] = 120,
-    ["Fracture"] = 120,
-    ["Defile"] = 114,
-    ["Vulnerability"] = 112,
-    ["Maim"] = 102,
-    ["Cowardice"] = 102,
-    ["Enervation"] = 96,
-    ["Uncertainty"] = 96,
-    ["Hindrance"] = 92,
-    ["Entrapment"] = 88,
-    ["Ravage Stamina"] = 84,
-    ["Ravage Magicka"] = 84,
-    ["Timidity"] = 78,
-    ["Detection"] = 42,
+    [FX.GRADUAL_RAVAGE_HEALTH] = 140,
+    [FX.RAVAGE_HEALTH] = 132,
+    [FX.BREACH] = 120,
+    [FX.FRACTURE] = 120,
+    [FX.DEFILE] = 114,
+    [FX.VULNERABILITY] = 112,
+    [FX.MAIM] = 102,
+    [FX.COWARDICE] = 102,
+    [FX.ENERVATION] = 96,
+    [FX.UNCERTAINTY] = 96,
+    [FX.HINDRANCE] = 92,
+    [FX.ENTRAPMENT] = 88,
+    [FX.RAVAGE_STAMINA] = 84,
+    [FX.RAVAGE_MAGICKA] = 84,
+    [FX.TIMIDITY] = 78,
+    [FX.DETECTION] = 42,
 }
 
 local function EffectSet(effects)
     local set = {}
-    for _, effect in ipairs(effects or {}) do set[effect] = true end
+    for _, effectId in ipairs(effects or {}) do set[tonumber(effectId)] = true end
     return set
 end
 
 local function BestRecipeScore(mode, effects)
     local weights = mode == "POISON" and BEST_POISON_EFFECT_SCORE or BEST_POTION_EFFECT_SCORE
     local score, useful = 0, 0
-    for _, effect in ipairs(effects or {}) do
-        local value = weights[effect]
+    for _, effectId in ipairs(effects or {}) do
+        effectId = tonumber(effectId)
+        local value = effectId and weights[effectId] or nil
         if value then
             score = score + value
             useful = useful + 1
         else
-            -- Do not call a recipe "best" when it mixes in an effect that belongs
-            -- to the opposite side of Alchemy. This keeps the list clean.
             return 0, 0
         end
     end
@@ -707,46 +926,150 @@ local function BestRecipeScore(mode, effects)
 
     local set = EffectSet(effects)
     if mode == "POTION" then
-        if set["Increase Weapon Power"] and set["Weapon Critical"] then score = score + 78 end
-        if set["Increase Spell Power"] and set["Spell Critical"] then score = score + 78 end
-        if set["Heroism"] then score = score + 55 end
-        if set["Unstoppable"] and (set["Restore Magicka"] or set["Restore Stamina"] or set["Restore Health"]) then score = score + 42 end
-        if set["Restore Health"] and (set["Restore Magicka"] or set["Restore Stamina"]) then score = score + 30 end
-        if set["Protection"] and set["Vitality"] then score = score + 28 end
+        if set[FX.INCREASE_WEAPON_POWER] and set[FX.WEAPON_CRITICAL] then score = score + 78 end
+        if set[FX.INCREASE_SPELL_POWER] and set[FX.SPELL_CRITICAL] then score = score + 78 end
+        if set[FX.HEROISM] then score = score + 55 end
+        if set[FX.UNSTOPPABLE] and (set[FX.RESTORE_MAGICKA] or set[FX.RESTORE_STAMINA] or set[FX.RESTORE_HEALTH]) then score = score + 42 end
+        if set[FX.RESTORE_HEALTH] and (set[FX.RESTORE_MAGICKA] or set[FX.RESTORE_STAMINA]) then score = score + 30 end
+        if set[FX.PROTECTION] and set[FX.VITALITY] then score = score + 28 end
     else
-        if set["Ravage Health"] and set["Gradual Ravage Health"] then score = score + 82 end
-        if (set["Breach"] or set["Fracture"]) and (set["Ravage Health"] or set["Gradual Ravage Health"]) then score = score + 58 end
-        if (set["Defile"] or set["Vulnerability"]) and (set["Ravage Health"] or set["Gradual Ravage Health"]) then score = score + 52 end
-        if set["Hindrance"] and (set["Ravage Health"] or set["Gradual Ravage Health"]) then score = score + 34 end
+        if set[FX.RAVAGE_HEALTH] and set[FX.GRADUAL_RAVAGE_HEALTH] then score = score + 82 end
+        if (set[FX.BREACH] or set[FX.FRACTURE]) and (set[FX.RAVAGE_HEALTH] or set[FX.GRADUAL_RAVAGE_HEALTH]) then score = score + 58 end
+        if (set[FX.DEFILE] or set[FX.VULNERABILITY]) and (set[FX.RAVAGE_HEALTH] or set[FX.GRADUAL_RAVAGE_HEALTH]) then score = score + 52 end
+        if set[FX.HINDRANCE] and (set[FX.RAVAGE_HEALTH] or set[FX.GRADUAL_RAVAGE_HEALTH]) then score = score + 34 end
     end
-
-    -- Three useful effects are especially valuable and should naturally rise.
     if useful >= 3 then score = score + 36 end
     return score, useful
+end
+
+local POTION_RECOMMENDATION_PROFILES = {
+    { key="OVERALL", title="BEST OVERALL", why="Strongest all-around combat value for a new player.", weights={
+        [FX.HEROISM]=155, [FX.RESTORE_HEALTH]=100, [FX.RESTORE_MAGICKA]=92, [FX.RESTORE_STAMINA]=92,
+        [FX.UNSTOPPABLE]=85, [FX.INCREASE_SPELL_POWER]=82, [FX.INCREASE_WEAPON_POWER]=82,
+        [FX.SPELL_CRITICAL]=76, [FX.WEAPON_CRITICAL]=76, [FX.SPEED]=52,
+    }},
+    { key="MAGICKA", title="MAGICKA DPS", why="Prioritizes spell damage, spell critical and Magicka sustain.", weights={
+        [FX.INCREASE_SPELL_POWER]=185, [FX.SPELL_CRITICAL]=175, [FX.RESTORE_MAGICKA]=145,
+        [FX.HEROISM]=110, [FX.RESTORE_HEALTH]=55, [FX.UNSTOPPABLE]=45,
+    }},
+    { key="STAMINA", title="STAMINA DPS", why="Prioritizes weapon damage, weapon critical and Stamina sustain.", weights={
+        [FX.INCREASE_WEAPON_POWER]=185, [FX.WEAPON_CRITICAL]=175, [FX.RESTORE_STAMINA]=145,
+        [FX.HEROISM]=110, [FX.RESTORE_HEALTH]=55, [FX.UNSTOPPABLE]=45,
+    }},
+    { key="TANK", title="TANK", why="Prioritizes survival, resources and control resistance.", weights={
+        [FX.RESTORE_HEALTH]=180, [FX.RESTORE_STAMINA]=135, [FX.RESTORE_MAGICKA]=120,
+        [FX.PROTECTION]=150, [FX.VITALITY]=140, [FX.UNSTOPPABLE]=125,
+        [FX.INCREASE_ARMOR]=95, [FX.INCREASE_SPELL_RESIST]=95, [FX.LINGERING_HEALTH]=90,
+    }},
+    { key="HEALER", title="HEALER", why="Prioritizes Magicka sustain, healing support and spell output.", weights={
+        [FX.RESTORE_MAGICKA]=180, [FX.VITALITY]=155, [FX.INCREASE_SPELL_POWER]=135,
+        [FX.SPELL_CRITICAL]=125, [FX.RESTORE_HEALTH]=95, [FX.LINGERING_HEALTH]=105,
+        [FX.HEROISM]=90,
+    }},
+    { key="SOLO", title="SOLO / SURVIVAL", why="Balances healing, sustain and staying alive while alone.", weights={
+        [FX.RESTORE_HEALTH]=190, [FX.RESTORE_MAGICKA]=115, [FX.RESTORE_STAMINA]=115,
+        [FX.UNSTOPPABLE]=145, [FX.PROTECTION]=120, [FX.VITALITY]=110, [FX.LINGERING_HEALTH]=105,
+        [FX.SPEED]=65,
+    }},
+    { key="PVP", title="PVP", why="Prioritizes mobility, control resistance, recovery and utility.", weights={
+        [FX.UNSTOPPABLE]=190, [FX.SPEED]=150, [FX.RESTORE_HEALTH]=145,
+        [FX.RESTORE_MAGICKA]=105, [FX.RESTORE_STAMINA]=105, [FX.INVISIBLE]=95,
+        [FX.DETECTION]=85, [FX.PROTECTION]=75,
+    }},
+    { key="BEGINNER", title="BEGINNER / CHEAP", why="Useful two-reagent option that avoids rare/dynamic ingredients when possible.", beginner=true, weights={
+        [FX.RESTORE_HEALTH]=145, [FX.RESTORE_MAGICKA]=110, [FX.RESTORE_STAMINA]=110,
+        [FX.INCREASE_SPELL_POWER]=95, [FX.INCREASE_WEAPON_POWER]=95,
+        [FX.SPELL_CRITICAL]=88, [FX.WEAPON_CRITICAL]=88, [FX.UNSTOPPABLE]=70,
+    }},
+    { key="ENDGAME", title="ENDGAME", why="Highest raw combat score available from the planner catalog.", endgame=true },
+}
+
+local POISON_RECOMMENDATION_PROFILES = {
+    { key="OVERALL", title="BEST OVERALL", why="Strongest general-purpose offensive poison in the planner.", weights={
+        [FX.GRADUAL_RAVAGE_HEALTH]=190, [FX.RAVAGE_HEALTH]=180, [FX.VULNERABILITY]=145,
+        [FX.BREACH]=125, [FX.FRACTURE]=125, [FX.DEFILE]=105, [FX.HINDRANCE]=80,
+    }},
+    { key="DAMAGE", title="MAX DAMAGE", why="Prioritizes direct and lingering health pressure.", weights={
+        [FX.GRADUAL_RAVAGE_HEALTH]=220, [FX.RAVAGE_HEALTH]=210, [FX.VULNERABILITY]=135,
+        [FX.BREACH]=105, [FX.FRACTURE]=105,
+    }},
+    { key="PVP", title="PVP PRESSURE", why="Combines damage with healing reduction, vulnerability or movement pressure.", weights={
+        [FX.DEFILE]=190, [FX.VULNERABILITY]=175, [FX.RAVAGE_HEALTH]=145,
+        [FX.GRADUAL_RAVAGE_HEALTH]=145, [FX.HINDRANCE]=135, [FX.MAIM]=105,
+        [FX.COWARDICE]=105,
+    }},
+    { key="MAGICKA", title="MAGICKA PRESSURE", why="Targets Magicka users with resource and spell-pressure effects.", weights={
+        [FX.RAVAGE_MAGICKA]=195, [FX.COWARDICE]=165, [FX.UNCERTAINTY]=150,
+        [FX.RAVAGE_HEALTH]=90, [FX.VULNERABILITY]=90,
+    }},
+    { key="STAMINA", title="STAMINA PRESSURE", why="Targets Stamina users with resource and weapon-pressure effects.", weights={
+        [FX.RAVAGE_STAMINA]=195, [FX.MAIM]=165, [FX.ENERVATION]=150,
+        [FX.RAVAGE_HEALTH]=90, [FX.VULNERABILITY]=90,
+    }},
+    { key="CONTROL", title="CONTROL", why="Prioritizes slows, immobilization-style pressure and combat disruption.", weights={
+        [FX.HINDRANCE]=200, [FX.ENTRAPMENT]=190, [FX.TIMIDITY]=155,
+        [FX.COWARDICE]=135, [FX.MAIM]=120, [FX.DEFILE]=95,
+    }},
+    { key="BEGINNER", title="BEGINNER / CHEAP", why="Useful two-reagent poison that avoids rare/dynamic ingredients when possible.", beginner=true, weights={
+        [FX.RAVAGE_HEALTH]=175, [FX.RAVAGE_STAMINA]=120, [FX.RAVAGE_MAGICKA]=120,
+        [FX.HINDRANCE]=95, [FX.FRACTURE]=85, [FX.BREACH]=85,
+    }},
+    { key="ENDGAME", title="ENDGAME", why="Highest raw offensive/debuff score available from the planner catalog.", endgame=true },
+}
+
+local function ProfileRecipeScore(mode, result, profile)
+    if not result or not profile then return -1000000 end
+    local score = 0
+    local matched = 0
+    if profile.endgame then
+        local base, useful = BestRecipeScore(mode, result.effects)
+        if useful < 2 then return -1000000 end
+        score = base * 10
+        matched = useful
+    else
+        for _, effectId in ipairs(result.effects or {}) do
+            local w = profile.weights and profile.weights[tonumber(effectId)] or nil
+            if w then score = score + w; matched = matched + 1 else score = score - 18 end
+        end
+        if matched < 2 then return -1000000 end
+        score = score + (#(result.effects or {}) >= 3 and 55 or 0)
+    end
+
+    if profile.beginner then
+        if #(result.combo or {}) == 2 then score = score + 130 else score = score - 85 end
+        for _, reagent in ipairs(result.combo or {}) do
+            if reagent.sourceKind == "DYNAMIC" then score = score - 120 end
+            if reagent.kind == "CLAM" then score = score - 65 end
+        end
+    end
+    -- Recommendation quality is independent of what the player currently owns.
+    -- Ownership is only a small tie-breaker so "best" never becomes "whatever is in my bag".
+    if result.ready then score = score + 2 end
+    return score
 end
 
 function A:BuildBestResults()
     self:ScanMaterials()
     local mode = EPC.saved.alchemyPotionMakerMode == "POISON" and "POISON" or "POTION"
+    local cacheKey = "RECOMMENDED:" .. mode .. ":" .. (self:IsThirdSlotUnlocked() and "3" or "2")
+    self.resultCache = self.resultCache or {}
+    if self.resultCache[cacheKey] then return self.resultCache[cacheKey] end
+
     local catalog = self:GetCatalogWithOwnership()
     local allowThree = self:IsThirdSlotUnlocked()
+    local candidates = {}
     local bestByEffects = {}
-
     local function consider(combo)
         local active = self:GetActiveEffects(combo)
-        local score, useful = BestRecipeScore(mode, active)
-        if score <= 0 or useful < 2 then return end
+        if #active < 2 then return end
         local result = self:BuildResult(combo, active, mode, #active)
-        result.bestScore = score
-        result.bestUsefulEffects = useful
-        result.bestKind = mode == "POISON" and "BEST POISON" or "BEST BUFF"
+        result.bestScore = select(1, BestRecipeScore(mode, active))
         local key = table.concat(active, "|")
         local old = bestByEffects[key]
         if not old
-            or (result.ready and not old.ready)
-            or (result.ready == old.ready and result.missingCount < old.missingCount)
-            or (result.ready == old.ready and result.missingCount == old.missingCount and result.maxCraftable > old.maxCraftable)
-            or (result.ready == old.ready and result.missingCount == old.missingCount and result.maxCraftable == old.maxCraftable and #combo < #old.combo)
+            or #combo < #old.combo
+            or (#combo == #old.combo and result.missingCount < old.missingCount)
+            or (#combo == #old.combo and result.missingCount == old.missingCount and result.maxCraftable > old.maxCraftable)
         then
             bestByEffects[key] = result
         end
@@ -762,25 +1085,39 @@ function A:BuildBestResults()
             end
         end
     end
+    for _, result in pairs(bestByEffects) do candidates[#candidates + 1] = result end
 
-    local out = {}
-    for _, result in pairs(bestByEffects) do out[#out + 1] = result end
-    table.sort(out, function(a,b)
-        if a.ready ~= b.ready then return a.ready end
-        if (a.bestScore or 0) ~= (b.bestScore or 0) then return (a.bestScore or 0) > (b.bestScore or 0) end
-        if a.missingCount ~= b.missingCount then return a.missingCount < b.missingCount end
-        if a.maxCraftable ~= b.maxCraftable then return a.maxCraftable > b.maxCraftable end
-        if #a.effects ~= #b.effects then return #a.effects > #b.effects end
-        return a.effectsText < b.effectsText
-    end)
-
-    -- Keep the filter focused on genuinely strong choices instead of hundreds of
-    -- minor variations. Pagination still exposes every entry in this curated set.
-    if #out > 56 then
-        local limited = {}
-        for i = 1, 56 do limited[i] = out[i] end
-        out = limited
+    local profiles = mode == "POISON" and POISON_RECOMMENDATION_PROFILES or POTION_RECOMMENDATION_PROFILES
+    local out, usedSignature = {}, {}
+    for rank, profile in ipairs(profiles) do
+        local best, bestScore
+        for _, result in ipairs(candidates) do
+            local score = ProfileRecipeScore(mode, result, profile)
+            local sig = result.effectsText .. "|" .. result.reagentsText
+            -- Prefer a distinct recipe for each category, but allow reuse if no
+            -- genuinely suitable alternate exists.
+            if usedSignature[sig] then score = score - 35 end
+            if not best or score > bestScore
+                or (score == bestScore and #result.effects > #best.effects)
+                or (score == bestScore and #result.effects == #best.effects and #result.combo < #best.combo)
+            then
+                best, bestScore = result, score
+            end
+        end
+        if best and bestScore and bestScore > -1000000 then
+            local copy = {}
+            for k,v in pairs(best) do copy[k]=v end
+            copy.recommendationRank = rank
+            copy.recommendationKey = profile.key
+            copy.recommendationTitle = profile.title
+            copy.recommendationWhy = profile.why
+            copy.recommendationScore = bestScore
+            out[#out + 1] = copy
+            usedSignature[best.effectsText .. "|" .. best.reagentsText] = true
+        end
     end
+
+    self.resultCache[cacheKey] = out
     return out
 end
 
@@ -817,26 +1154,35 @@ function A:GetMissingTrackingMaterials(result)
     for _, reagent in ipairs(result.combo or {}) do
         local owned = reagent.owned or (self.reagentsByName and self.reagentsByName[reagent.key])
         if not owned or num(owned.count, 0) < 1 then
-            local name = tostring(reagent.name or "Unknown reagent")
-            local key = normalize(name)
-            if not seen[key] then
-                seen[key] = true
+            local itemId = tonumber(reagent.itemId) or 0
+            local identity = itemId > 0 and ("id:" .. tostring(itemId)) or tostring(reagent.key or reagent.name or "")
+            if not seen[identity] then
+                seen[identity] = true
                 materials[#materials + 1] = {
-                    name = name,
-                    key = key,
-                    kind = MISSING_GATHER_KIND[key],
-                    dynamicHint = DYNAMIC_MATERIAL_HINT[key],
+                    name = tostring(reagent.name or ("Item " .. tostring(itemId))),
+                    key = identity,
+                    itemId = itemId,
+                    kind = tostring(reagent.kind or "ALCHEMY"),
+                    dynamicHint = reagent.sourceKind == "DYNAMIC" and "dynamic source" or nil,
                 }
             end
         end
     end
 
     if not result.solvent then
-        local name = self:GetExpectedSolventName(result.mode)
-        local key = normalize(name)
-        if not seen[key] then
-            seen[key] = true
-            materials[#materials + 1] = { name = name, key = key, kind = "WATER", solvent = true }
+        local rank = self:GetSolventProficiencyIndex()
+        local itemId = solventIdForRank(result.mode, rank)
+        local identity = "id:" .. tostring(itemId)
+        if not seen[identity] then
+            seen[identity] = true
+            materials[#materials + 1] = {
+                name = self:GetExpectedSolventName(result.mode),
+                key = identity,
+                itemId = itemId,
+                kind = result.mode == "POISON" and "ALCHEMY" or "WATER",
+                dynamicHint = result.mode == "POISON" and "dynamic source" or nil,
+                solvent = true,
+            }
         end
     end
     return materials
@@ -980,10 +1326,7 @@ function A:PrepareResult(result, quietSuccess)
     end
     local alchemy = rawget(_G, "ALCHEMY")
     if type(alchemy) ~= "table" or type(alchemy.AddItemToCraft) ~= "function" then
-        alchemy = rawget(_G, "GAMEPAD_ALCHEMY")
-    end
-    if type(alchemy) ~= "table" or type(alchemy.AddItemToCraft) ~= "function" then
-        notify("Alchemy crafting controller is not available on this UI mode.", false)
+        notify("Alchemy crafting UI is not available.", false)
         return false, nil
     end
 
@@ -1130,7 +1473,9 @@ function A:SetMode(mode)
     self:EnsureSaved()
     EPC.saved.alchemyPotionMakerMode = mode == "POISON" and "POISON" or "POTION"
     self.currentPage = 1
-    self:RefreshWindow(true)
+    -- Mode changes do not change inventory. Reuse the material scan and any
+    -- already-built result set instead of rescanning BAG_VIRTUAL synchronously.
+    self:RefreshWindow(false)
     self:RefreshStatus()
 end
 
@@ -1147,15 +1492,15 @@ function A:SetView(view)
         self.currentView = "READY"
     end
     self.currentPage = 1
-    self:RefreshWindow(true)
+    self:RefreshWindow(false)
 end
 
 function A:SetEffect(slot, value)
     self:EnsureSaved()
     slot = math.max(1, math.min(3, num(slot, 1)))
-    EPC.saved["alchemyPotionMakerEffect" .. slot] = value or ""
+    EPC.saved["alchemyPotionMakerEffect" .. slot] = tonumber(value) or 0
     self.currentPage = 1
-    self:RefreshWindow(true)
+    self:RefreshWindow(false)
 end
 
 function A:CreateEffectPopup()
@@ -1221,19 +1566,20 @@ end
 
 function A:ShowEffectMenu(owner, slot)
     self:CreateEffectPopup()
+    self:EnsurePlannerCatalog()
     if not self.effectPopup then return end
     self.effectPopupSlot = math.max(1, math.min(3, num(slot, 1)))
     if self.effectPopupTitle then self.effectPopupTitle:SetText("SELECT EFFECT " .. tostring(self.effectPopupSlot)) end
 
     local choices = {}
     if self.effectPopupSlot == 1 then
-        choices[#choices + 1] = { label = "Restore Health (Default)", value = "Restore Health" }
+        choices[#choices + 1] = { label = self:GetEffectName(FX.RESTORE_HEALTH) .. " (Default)", value = FX.RESTORE_HEALTH }
     else
-        choices[#choices + 1] = { label = "-- NONE --", value = "" }
+        choices[#choices + 1] = { label = "-- NONE --", value = 0 }
     end
-    for _, effect in ipairs(EFFECTS) do
-        if not (self.effectPopupSlot == 1 and effect == "Restore Health") then
-            choices[#choices + 1] = { label = effect, value = effect }
+    for _, effectId in ipairs(self.effectChoices or {}) do
+        if not (self.effectPopupSlot == 1 and effectId == FX.RESTORE_HEALTH) then
+            choices[#choices + 1] = { label = self:GetEffectName(effectId), value = effectId }
         end
     end
 
@@ -1243,7 +1589,7 @@ function A:ShowEffectMenu(owner, slot)
         btn:SetHidden(choice == nil)
         if choice then
             btn:SetText(choice.label)
-            local current = tostring(EPC.saved["alchemyPotionMakerEffect" .. self.effectPopupSlot] or "")
+            local current = tonumber(EPC.saved["alchemyPotionMakerEffect" .. self.effectPopupSlot]) or 0
             if current == choice.value then btn:SetFont("ZoFontGameBold") else btn:SetFont("ZoFontGame") end
         end
     end
@@ -1672,11 +2018,11 @@ function A:CreateWindow()
     clearEffects:SetAnchor(LEFT, effectButtons[3], RIGHT, 8, 0)
     clearEffects:SetText("CLEAR")
     clearEffects:SetHandler("OnClicked", function()
-        EPC.saved.alchemyPotionMakerEffect1 = "Restore Health"
-        EPC.saved.alchemyPotionMakerEffect2 = ""
-        EPC.saved.alchemyPotionMakerEffect3 = ""
+        EPC.saved.alchemyPotionMakerEffect1 = 0
+        EPC.saved.alchemyPotionMakerEffect2 = 0
+        EPC.saved.alchemyPotionMakerEffect3 = 0
         self.currentPage = 1
-        self:RefreshWindow(true)
+        self:RefreshWindow(false)
     end)
 
     local recipesTitle = wm:CreateControl(nil, w, CT_LABEL)
@@ -1721,7 +2067,6 @@ function A:CreateWindow()
         main:SetFont("ZoFontGameBold")
         main:SetAnchor(TOPLEFT, row, TOPLEFT, 126, 5)
         main:SetDimensions(390, 20)
-        main:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
         row.mainLabel = main
 
         local sub = wm:CreateControl(nil, row, CT_LABEL)
@@ -1729,7 +2074,6 @@ function A:CreateWindow()
         sub:SetAnchor(TOPLEFT, main, BOTTOMLEFT, 0, -2)
         sub:SetDimensions(500, 18)
         sub:SetColor(0.64, 0.74, 0.84, 1)
-        sub:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
         row.subLabel = sub
 
         local travelButton = makeButton(row, 104, 30, "ZoFontGameBold")
@@ -1755,6 +2099,10 @@ function A:CreateWindow()
             if control.result and InformationTooltip and type(InitializeTooltip)=="function" then
                 InitializeTooltip(InformationTooltip, control, LEFT, -8, 0, RIGHT)
                 InformationTooltip:AddLine(control.result.ready and "READY" or "MISSING MATERIALS", "ZoFontWinH4")
+                if control.result.recommendationTitle then
+                    InformationTooltip:AddLine("Recommended: " .. tostring(control.result.recommendationTitle), "ZoFontGameBold")
+                    if control.result.recommendationWhy then InformationTooltip:AddLine(tostring(control.result.recommendationWhy), "ZoFontGameSmall") end
+                end
                 InformationTooltip:AddLine("Effects: " .. tostring(control.result.effectsText), "ZoFontGame")
                 InformationTooltip:AddLine("Reagents: " .. tostring(control.result.reagentsText), "ZoFontGame")
                 local sol = control.result.solvent and control.result.solvent.name or self:GetExpectedSolventName(control.result.mode)
@@ -1808,7 +2156,7 @@ function A:CreateWindow()
     nextBtn:SetAnchor(LEFT, page, RIGHT, 10, 0)
     nextBtn:SetText("NEXT >")
     nextBtn:SetHandler("OnClicked", function()
-        local pages = math.max(1, math.ceil(#(self.currentResults or {}) / ROW_COUNT))
+        local pages = math.max(1, math.ceil(#(self.currentResults or {}) / self:GetRowsPerPage()))
         self.currentPage = math.min(pages, num(self.currentPage,1)+1)
         self:RefreshRows()
     end)
@@ -1821,20 +2169,27 @@ function A:CreateWindow()
     help:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
     help:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     help:SetColor(0.62, 0.72, 0.80, 1)
-    help:SetText("Tip: BEST BUFFS / BEST POISONS shows top combat recipes.\nUse CHOOSE EFFECTS when you want something specific.")
+    help:SetText("Tip: BEST starts with clear recommendations for new players.\nHover a pick to see why, ingredients, solvent and missing-material routes.")
 
     w:SetHandler("OnMoveStop", function(control) if control.StopMoving then control:StopMoving() end self:SavePanelPosition() end)
     self:RestorePanelPosition()
 end
 
+function A:GetRowsPerPage()
+    -- BEST rows are intentionally taller so recommendation text remains readable.
+    -- Keep READY/EXACT at the denser seven-row layout.
+    return self.currentView == "BEST" and 6 or ROW_COUNT
+end
+
 function A:RefreshRows()
     if not self.rows then return end
     local results = self.currentResults or {}
-    local pages = math.max(1, math.ceil(#results / ROW_COUNT))
+    local rowsPerPage = self:GetRowsPerPage()
+    local pages = math.max(1, math.ceil(#results / rowsPerPage))
     self.currentPage = math.max(1, math.min(pages, num(self.currentPage, 1)))
-    local startIndex = (self.currentPage - 1) * ROW_COUNT + 1
+    local startIndex = (self.currentPage - 1) * rowsPerPage + 1
     for i, row in ipairs(self.rows) do
-        local result = results[startIndex + i - 1]
+        local result = (i <= rowsPerPage) and results[startIndex + i - 1] or nil
         row.result = result
         row:SetHidden(result == nil)
         if result then
@@ -1842,22 +2197,35 @@ function A:RefreshRows()
             local effectText = result.effectsText ~= "" and result.effectsText or "Unknown effect"
             local solvent = result.solvent and result.solvent.name or self:GetExpectedSolventName(result.mode)
             if self.currentView == "BEST" then
-                row.stateLabel:SetText(ready and ("TOP\nREADY x" .. tostring(result.maxCraftable or 0)) or "TOP\nMISSING")
+                -- BEST is guidance, not a leaderboard. Keep the status simple.
+                row.stateLabel:SetText(ready and "READY" or "MISSING")
             else
                 row.stateLabel:SetText(ready and ("READY\nx" .. tostring(result.maxCraftable or 0)) or "MISSING")
             end
             row.stateLabel:SetColor(ready and 0.36 or 1.00, ready and 0.92 or 0.45, ready and 0.68 or 0.34, 1)
-            row.mainLabel:SetText(effectText)
+            if self.currentView == "BEST" and result.recommendationTitle then
+                row.mainLabel:SetText(tostring(result.recommendationTitle) .. " — " .. effectText)
+            else
+                row.mainLabel:SetText(effectText)
+            end
             row.mainLabel:SetColor(0.92, 0.94, 0.98, 1)
             if ready then
-                row.subLabel:SetText(string.format("%s  •  %s", tostring(result.reagentsText or ""), tostring(solvent or "")))
+                if self.currentView == "BEST" and result.recommendationWhy then
+                    row.subLabel:SetText(tostring(result.recommendationWhy))
+                else
+                    row.subLabel:SetText(string.format("%s  •  %s", tostring(result.reagentsText or ""), tostring(solvent or "")))
+                end
                 row.actionLabel:SetText(EPC.saved.alchemyPotionMakerAutoCraft == true and "CRAFT" or "LOAD")
                 row.actionLabel:SetColor(0.36, 0.92, 0.68, 1)
                 if row.travelButton then row.travelButton:SetHidden(true); row.travelButton.result = nil end
                 if row.bg then row.bg:SetEdgeColor(0.12, 0.58, 0.40, 0.95) end
             else
                 local route = self:GetMissingRouteInfo(result)
-                row.subLabel:SetText(self:GetMissingRouteSummaryText(result))
+                if self.currentView == "BEST" and result.recommendationWhy then
+                    row.subLabel:SetText(tostring(result.recommendationWhy))
+                else
+                    row.subLabel:SetText(self:GetMissingRouteSummaryText(result))
+                end
                 row.actionLabel:SetText("MAP + 3D")
                 row.actionLabel:SetColor(1.00, 0.55, 0.38, 1)
                 if row.travelButton then
@@ -1935,7 +2303,7 @@ function A:RefreshWindow(forceScan)
 
     if self.recipesTitle then
         if self.currentView == "BEST" then
-            self.recipesTitle:SetText(mode == "POISON" and "BEST POISONS" or "BEST BUFF POTIONS")
+            self.recipesTitle:SetText(mode == "POISON" and "TOP POISON RECOMMENDATIONS" or "TOP POTION RECOMMENDATIONS")
         else
             self.recipesTitle:SetText("RECIPES")
         end
@@ -1943,8 +2311,8 @@ function A:RefreshWindow(forceScan)
     if self.recipesHint then
         if self.currentView == "BEST" then
             self.recipesHint:SetText(mode == "POISON"
-                and "Ranked by damage + debuff strength. READY recipes are listed first."
-                or "Ranked by combat buff strength. READY recipes are listed first.")
+                and "New-player guide: best overall, damage, PvP pressure, resource pressure, control, beginner and endgame picks."
+                or "New-player guide: best overall, Magicka DPS, Stamina DPS, tank, healer, solo, PvP, beginner and endgame picks.")
         else
             self.recipesHint:SetText("Green = ready. Missing recipes show the needed zones/locations. MAP + 3D marks the hunt pins; TRAVEL cycles through each missing ingredient using its closest discovered wayshrine.")
         end
@@ -1965,11 +2333,13 @@ function A:RefreshWindow(forceScan)
     end
 
     if self.effectButtons then
+        self:EnsurePlannerCatalog()
         for i, btn in ipairs(self.effectButtons) do
-            local v = tostring(EPC.saved["alchemyPotionMakerEffect" .. i] or "")
+            local effectId = tonumber(EPC.saved["alchemyPotionMakerEffect" .. i]) or 0
             local label
-            if i == 1 then label = v ~= "" and v or "Choose primary effect"
-            else label = v ~= "" and v or ("Optional effect " .. tostring(i)) end
+            if effectId > 0 then label = self:GetEffectName(effectId)
+            elseif i == 1 then label = "Choose primary effect"
+            else label = "Optional effect " .. tostring(i) end
             setButtonText(btn, label)
         end
     end
@@ -1982,11 +2352,33 @@ function A:RefreshWindow(forceScan)
         if not forceScan and self.cachedReadyResults then self.currentResults = self.cachedReadyResults else self.currentResults = self:BuildCanMakeResults() end
     end
 
-    -- The exact-effects card needs extra vertical room; READY/BEST share the same compact list position.
+    -- BEST recommendations use taller rows and real wrapping so titles, effects and
+    -- explanations remain readable. READY/EXACT stay compact.
+    local isBest = self.currentView == "BEST"
     local rowStartY = self.currentView == "EXACT" and 390 or 300
+    local rowHeight = isBest and 68 or 46
+    local rowStep = isBest and 70 or 48
     for i, row in ipairs(self.rows or {}) do
         row:ClearAnchors()
-        row:SetAnchor(TOPLEFT, self.window, TOPLEFT, 22, rowStartY + (i - 1) * 48)
+        row:SetDimensions(PANEL_W - 44, rowHeight)
+        row:SetAnchor(TOPLEFT, self.window, TOPLEFT, 22, rowStartY + (i - 1) * rowStep)
+        if row.stateLabel then
+            row.stateLabel:SetDimensions(isBest and 94 or 105, isBest and 62 or 40)
+        end
+        if row.mainLabel then
+            row.mainLabel:ClearAnchors()
+            row.mainLabel:SetAnchor(TOPLEFT, row, TOPLEFT, isBest and 108 or 126, isBest and 6 or 5)
+            row.mainLabel:SetDimensions(isBest and 470 or 390, isBest and 32 or 20)
+            if row.mainLabel.SetMaxLineCount then row.mainLabel:SetMaxLineCount(isBest and 2 or 1) end
+            if row.mainLabel.SetLineSpacing then row.mainLabel:SetLineSpacing(isBest and 1 or 0) end
+        end
+        if row.subLabel and row.mainLabel then
+            row.subLabel:ClearAnchors()
+            row.subLabel:SetAnchor(TOPLEFT, row.mainLabel, BOTTOMLEFT, 0, isBest and 0 or -2)
+            row.subLabel:SetDimensions(isBest and 470 or 500, isBest and 26 or 18)
+            if row.subLabel.SetMaxLineCount then row.subLabel:SetMaxLineCount(isBest and 2 or 1) end
+            if row.subLabel.SetLineSpacing then row.subLabel:SetLineSpacing(isBest and 1 or 0) end
+        end
     end
     self:RefreshRows()
 end
@@ -2003,7 +2395,7 @@ function A:OpenWindow()
     -- inventory checks work outside a station; loading/crafting a result still
     -- correctly requires an active Alchemy Station through PrepareResult().
     self:CreateWindow()
-    self.currentView = self.currentView or "READY"
+    self.currentView = self.currentView or "BEST"
     self.currentPage = 1
     self:RefreshWindow(true)
     self.window:SetHidden(false)
@@ -2026,7 +2418,7 @@ function A:ScheduleRefresh(delay)
     EVENT_MANAGER:RegisterForUpdate(PREFIX .. "_Refresh", math.max(80, num(delay, 250)), function()
         EVENT_MANAGER:UnregisterForUpdate(PREFIX .. "_Refresh")
         self.reagentList, self.reagentsByName, self.solvents = nil, nil, nil
-        self.cachedReadyResults = nil
+        self.resultCache, self.cachedReadyResults = nil, nil
         self:RefreshVisibility()
         if self.window and not self.window:IsHidden() and self:IsAtAlchemyStation() then self:RefreshWindow(true) end
     end)
@@ -2049,8 +2441,21 @@ function A:RegisterEvents()
         end)
     end
     if rawget(_G, "EVENT_INVENTORY_SINGLE_SLOT_UPDATE") then
-        EVENT_MANAGER:RegisterForEvent(PREFIX .. "_Inventory", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, function()
-            if self:IsAtAlchemyStation() then self:ScheduleRefresh(350) end
+        EVENT_MANAGER:RegisterForEvent(PREFIX .. "_Inventory", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, function(_, bagId)
+            local backpack = rawget(_G, "BAG_BACKPACK")
+            local bank = rawget(_G, "BAG_BANK")
+            local subBank = rawget(_G, "BAG_SUBSCRIBER_BANK")
+            local virtual = rawget(_G, "BAG_VIRTUAL")
+            if bagId ~= backpack and bagId ~= bank and bagId ~= subBank and bagId ~= virtual then return end
+            -- Only alchemy source bags can invalidate Potion Maker ownership.
+            -- Debounce the refresh so looting/crafting stack changes collapse into
+            -- one rebuild rather than repeatedly rescanning and recomputing recipes.
+            if self:IsAtAlchemyStation() or (self.window and not self.window:IsHidden()) then
+                self:ScheduleRefresh(450)
+            else
+                self.reagentList, self.reagentsByName, self.solvents = nil, nil, nil
+                self.resultCache, self.cachedReadyResults = nil, nil
+            end
         end)
     end
     if rawget(_G, "EVENT_CRAFT_COMPLETED") then

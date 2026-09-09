@@ -3510,7 +3510,7 @@ function T:SetMapTeleporterVisible(visible)
         zo_callLater(function() if EPC.Travel then EPC.Travel:DockMapTeleporterToWorldMap() end end, 220)
         if EVENT_MANAGER then
             EVENT_MANAGER:UnregisterForUpdate(MAP_TELEPORTER_REFRESH)
-            EVENT_MANAGER:RegisterForUpdate(MAP_TELEPORTER_REFRESH, 1600, function()
+            EVENT_MANAGER:RegisterForUpdate(MAP_TELEPORTER_REFRESH, 4000, function()
                 if EPC.Travel and EPC.Travel.mapTeleporter and not EPC.Travel.mapTeleporter:IsHidden() and EPC.Travel:IsMapTeleporterMapShowing() then
                     EPC.Travel:RefreshMapTeleporter()
                 else
@@ -3550,7 +3550,6 @@ function T:InitializeMapTeleporter()
         end
     end
     registerScene(WORLD_MAP_SCENE)
-    registerScene(GAMEPAD_WORLD_MAP_SCENE)
 
     if CALLBACK_MANAGER and type(CALLBACK_MANAGER.RegisterCallback) == "function" then
         CALLBACK_MANAGER:RegisterCallback("OnWorldMapChanged", function()
@@ -4062,7 +4061,7 @@ end
 
 function T:SetMapTeleporterVisible(visible)
     local root=self:CreateMapTeleporter(); if not root then return end; visible=visible==true and EPC.saved and EPC.saved.mapTeleporterEnabled~=false; root:SetHidden(not visible); self:HideMapCompletionForTeleporter(visible)
-    if visible then self.mapTeleporterPage=self.mapTeleporterPage or 1; self.mapTeleporterMode=self.mapTeleporterMode or "ALL"; self:DockMapTeleporterToWorldMap(); self:RefreshMapTeleporter(); if EVENT_MANAGER then EVENT_MANAGER:UnregisterForUpdate(MAP_TELEPORTER_REFRESH); EVENT_MANAGER:RegisterForUpdate(MAP_TELEPORTER_REFRESH,1600,function() if EPC.Travel and EPC.Travel.mapTeleporter and not EPC.Travel.mapTeleporter:IsHidden() and EPC.Travel:IsMapTeleporterMapShowing() then EPC.Travel:HideMapCompletionForTeleporter(true); EPC.Travel:RefreshMapTeleporter() else EVENT_MANAGER:UnregisterForUpdate(MAP_TELEPORTER_REFRESH) end end) end
+    if visible then self.mapTeleporterPage=self.mapTeleporterPage or 1; self.mapTeleporterMode=self.mapTeleporterMode or "ALL"; self:DockMapTeleporterToWorldMap(); self:RefreshMapTeleporter(); if EVENT_MANAGER then EVENT_MANAGER:UnregisterForUpdate(MAP_TELEPORTER_REFRESH); EVENT_MANAGER:RegisterForUpdate(MAP_TELEPORTER_REFRESH,4000,function() if EPC.Travel and EPC.Travel.mapTeleporter and not EPC.Travel.mapTeleporter:IsHidden() and EPC.Travel:IsMapTeleporterMapShowing() then EPC.Travel:HideMapCompletionForTeleporter(true); EPC.Travel:RefreshMapTeleporter() else EVENT_MANAGER:UnregisterForUpdate(MAP_TELEPORTER_REFRESH) end end) end
     elseif EVENT_MANAGER then EVENT_MANAGER:UnregisterForUpdate(MAP_TELEPORTER_REFRESH) end
 end
 
@@ -4183,6 +4182,8 @@ function T:GetMapTeleporterItemEntries()
                             if ok then itemType, specializedType = a, b end
                         end
                     end
+                    local itemId = 0
+                    if type(GetItemId) == "function" then local okId, vId = pcall(GetItemId, bagId, slotIndex); if okId then itemId = safeNumber(vId, 0) end end
                     local lname = lower(itemName)
                     local isTreasure = (treasureType ~= nil and specializedType == treasureType) or string.find(lname, "treasure map", 1, true) ~= nil
                     local isSurvey = (surveyType ~= nil and specializedType == surveyType) or string.find(lname, "survey", 1, true) ~= nil
@@ -4199,7 +4200,7 @@ function T:GetMapTeleporterItemEntries()
                             local kindText = isSurvey and "SURVEY" or (isTreasure and "TREASURE" or "CLUE")
                             grouped[key] = {
                                 kind = "ITEM", key = "ITEM:" .. key, favoriteKey = "ITEM:" .. key,
-                                name = itemName, displayName = itemName, zoneId = zoneId, zoneName = zoneName ~= "" and zoneName or "Zone not identified",
+                                name = itemName, displayName = itemName, itemId = itemId, zoneId = zoneId, zoneName = zoneName ~= "" and zoneName or "Zone not identified",
                                 travelEntry = route, canTravel = route ~= nil, stack = stack, itemKind = kindText,
                                 sourceText = kindText, statusText = route and ((route.kind == "GROUP" or route.kind == "FRIEND" or route.kind == "GUILD" or route.kind == "HOUSE") and "FREE" or (route.costText or "TRAVEL")) or "NO ROUTE",
                             }
@@ -9559,6 +9560,886 @@ function T:FinishMapTeleporterHotkeyClose029136(skipRefresh, hostAlreadyHidden)
     local result = EAS_FinishMapTeleporterHotkeyCloseBase029144(self, skipRefresh, hostAlreadyHidden)
     if EPC and EPC.ResourcePins and EPC.ResourcePins.ScheduleSuite3DRecovery029144 then
         EPC.ResourcePins:ScheduleSuite3DRecovery029144("Teleporter closed", 220)
+    end
+    return result
+end
+
+-- ============================================================================
+-- v0.29.358 - Teleporter input, tab responsiveness, click-away and localization.
+-- ============================================================================
+local EAS_BuildMapTeleporterEntriesBase029358 = T.BuildMapTeleporterEntries
+local EAS_SetMapTeleporterModeBase029358 = T.SetMapTeleporterMode
+local EAS_RefreshMapTeleporterBase029358 = T.RefreshMapTeleporter
+local EAS_OpenMapTeleporterOverlayBase029358 = T.OpenMapTeleporterOverlay029136
+local EAS_FinishMapTeleporterHotkeyCloseBase029358 = T.FinishMapTeleporterHotkeyClose029136
+local EAS_RegisterMapTeleporterClickAwayBase029358 = T.RegisterMapTeleporterClickAway029136
+
+local function EAS_TeleporterNowMs029358()
+    if type(GetFrameTimeMilliseconds) == "function" then
+        local ok, value = pcall(GetFrameTimeMilliseconds)
+        if ok then return safeNumber(value, 0) end
+    end
+    if type(GetGameTimeMilliseconds) == "function" then
+        local ok, value = pcall(GetGameTimeMilliseconds)
+        if ok then return safeNumber(value, 0) end
+    end
+    return 0
+end
+
+local function EAS_LocalizedText029358(value, fallback)
+    local text = tostring(value or "")
+    if text == "" then text = tostring(fallback or "") end
+
+    -- Let ESO consume its own grammar payload first. This is language-neutral
+    -- and preserves Cyrillic/Latin/Asian UTF-8 text instead of trying to parse
+    -- translated names ourselves.
+    if text ~= "" and type(zo_strformat) == "function" then
+        local ok, formatted = pcall(zo_strformat, "<<1>>", text)
+        if ok and type(formatted) == "string" and formatted ~= "" then
+            text = formatted
+        end
+    end
+
+    -- Safety fallback for unresolved ESO grammar suffixes. The Teleporter must
+    -- never expose raw ^ control markers to the player on any language client.
+    -- Strip the complete ASCII control token first, then remove any stray caret
+    -- that survives malformed/third-party text. UTF-8 name bytes are untouched.
+    text = text:gsub("%^+[%a][%a%d]*{[^}]*}", "")
+    text = text:gsub("%^+[%a][%a%d]*", "")
+    text = text:gsub("%^+[%w_:%-+,=|/\\{}%[%]%(%)%.]*", "")
+    text = text:gsub("%^", "")
+    text = text:gsub("{[%d]+}", "")
+    text = text:gsub("[%c]+", " ")
+    text = text:gsub("%s+", " ")
+    text = text:gsub("^%s+", ""):gsub("%s+$", "")
+    if text == "" then return tostring(fallback or "") end
+    return text
+end
+
+local EAS_TELEPORTER_LOCALIZED_FIELDS_029358 = {
+    "name", "displayName", "characterName", "zoneName", "guildName",
+    "sourceText", "sourceDetail", "statusText", "costText", "leaderName",
+    "displayText",
+}
+
+local function EAS_NormalizeTeleporterEntry029358(entry)
+    if type(entry) ~= "table" then return entry end
+    for _, field in ipairs(EAS_TELEPORTER_LOCALIZED_FIELDS_029358) do
+        if entry[field] ~= nil then
+            entry[field] = EAS_LocalizedText029358(entry[field], "")
+        end
+    end
+    return entry
+end
+
+function T:BuildMapTeleporterEntries()
+    local key = self.GetMapTeleporterBuildCacheKey029143 and self:GetMapTeleporterBuildCacheKey029143() or nil
+    local now = EAS_TeleporterNowMs029358()
+    local cache = key and self.mapTeleporterBuildCache029143 and self.mapTeleporterBuildCache029143[key] or nil
+
+    -- Reuse a recent completed tab result. Older code rebuilt the provider every
+    -- time a tab was selected, which is visible as a UI hitch on large social /
+    -- housing / item collections.
+    if self.mapTeleporterFastOpen029143 ~= true and cache and type(cache.entries) == "table" then
+        local age = now > 0 and math.max(0, now - safeNumber(cache.builtAt, 0)) or 0
+        if age <= 10000 then
+            for _, entry in ipairs(cache.entries) do EAS_NormalizeTeleporterEntry029358(entry) end
+            return cache.entries
+        end
+    end
+
+    local entries = EAS_BuildMapTeleporterEntriesBase029358(self) or {}
+    for _, entry in ipairs(entries) do EAS_NormalizeTeleporterEntry029358(entry) end
+    return entries
+end
+
+function T:SetMapTeleporterMode(mode)
+    local previous = self.mapTeleporterMode or "ALL"
+    if mode == previous then return end
+
+    -- Switch the visible tab immediately using any cached result (or an empty
+    -- placeholder) and do exactly one deferred provider rebuild. This prevents
+    -- the click itself from blocking the current frame.
+    self.mapTeleporterFastOpen029143 = true
+    EAS_SetMapTeleporterModeBase029358(self, mode)
+    self.mapTeleporterFastOpen029143 = false
+
+    self.mapTeleporterTabGeneration029358 = safeNumber(self.mapTeleporterTabGeneration029358, 0) + 1
+    local generation = self.mapTeleporterTabGeneration029358
+    if type(zo_callLater) == "function" then
+        zo_callLater(function()
+            local travel = EPC and EPC.Travel
+            if not travel or travel.mapTeleporterTabGeneration029358 ~= generation then return end
+            local root = travel.mapTeleporter
+            if not root or root:IsHidden() then return end
+            travel.mapTeleporterLastRefresh029114 = 0
+            travel:RefreshMapTeleporter(true)
+        end, 40)
+    else
+        self:RefreshMapTeleporter(true)
+    end
+end
+
+local function EAS_IsControlDescendant029358(control, ancestor)
+    local node = control
+    local guard = 0
+    while node and guard < 32 do
+        if node == ancestor then return true end
+        guard = guard + 1
+        if type(node.GetParent) ~= "function" then break end
+        local ok, parent = pcall(node.GetParent, node)
+        if not ok or parent == node then break end
+        node = parent
+    end
+    return false
+end
+
+function T:IsMouseInsideMapTeleporterFlyout029358()
+    local root = self.mapTeleporter
+    local flyout = root and root.flyout02969 or nil
+    if not flyout or flyout:IsHidden() then return false end
+
+    local control = nil
+    if WINDOW_MANAGER and type(WINDOW_MANAGER.GetMouseOverControl) == "function" then
+        local ok, value = pcall(WINDOW_MANAGER.GetMouseOverControl, WINDOW_MANAGER)
+        if ok then control = value end
+    end
+    if control and EAS_IsControlDescendant029358(control, flyout) then return true end
+
+    if type(GetUIMousePosition) == "function" then
+        local ok, x, y = pcall(GetUIMousePosition)
+        if ok and x and y then
+            local left, top = safeNumber(flyout:GetLeft(), 0), safeNumber(flyout:GetTop(), 0)
+            local right, bottom = safeNumber(flyout:GetRight(), left), safeNumber(flyout:GetBottom(), top)
+            return x >= left and x <= right and y >= top and y <= bottom
+        end
+    end
+    return false
+end
+
+function T:RegisterMapTeleporterClickAway029136()
+    if EAS_RegisterMapTeleporterClickAwayBase029358 then
+        EAS_RegisterMapTeleporterClickAwayBase029358(self)
+    end
+    if not EVENT_MANAGER or not EVENT_GLOBAL_MOUSE_UP then return end
+
+    local eventName = (EPC.name or "ESOAdventurerSuite") .. "_TeleporterFlyoutClickAway029358"
+    EVENT_MANAGER:UnregisterForEvent(eventName, EVENT_GLOBAL_MOUSE_UP)
+    EVENT_MANAGER:RegisterForEvent(eventName, EVENT_GLOBAL_MOUSE_UP, function()
+        local travel = EPC and EPC.Travel
+        if not travel then return end
+        local root = travel.mapTeleporter
+        if not root or root:IsHidden() or not travel:IsMapTeleporterFlyoutOpen02969() then return end
+
+        local function closeFlyoutIfOutside()
+            local active = EPC and EPC.Travel
+            if active and active:IsMapTeleporterFlyoutOpen02969() and not active:IsMouseInsideMapTeleporterFlyout029358() then
+                active:HideMapTeleporterFlyout02969()
+            end
+        end
+        if type(zo_callLater) == "function" then zo_callLater(closeFlyoutIfOutside, 0) else closeFlyoutIfOutside() end
+    end)
+end
+
+function T:ApplyMapTeleporterOutsideInput029358(root)
+    root = root or self.mapTeleporter
+    if not root or self:IsMapTeleporterMapShowing() or self.mapTeleporterHotkeySession029132 ~= true then return end
+
+    if root.SetKeyboardEnabled then root:SetKeyboardEnabled(true) end
+    root:SetHandler("OnKeyDown", function(_, key, ctrl, alt, shift, command)
+        local isEscape = KEY_ESCAPE ~= nil and key == KEY_ESCAPE
+        local isAltKey = KEY_ALT ~= nil and key == KEY_ALT
+        local altOnly = alt == true and ctrl ~= true and shift ~= true and command ~= true
+        if isEscape or isAltKey or altOnly then
+            self:CloseMapTeleporterOverlay029136(false)
+        elseif self:IsMapTeleporterToggleKey029134(key, ctrl, alt, shift, command) then
+            self:CloseMapTeleporterOverlay029136(false)
+        end
+    end)
+end
+
+function T:OpenMapTeleporterOverlay029136()
+    local result = EAS_OpenMapTeleporterOverlayBase029358(self)
+    if result then self:ApplyMapTeleporterOutsideInput029358(self.mapTeleporter) end
+    return result
+end
+
+function T:FinishMapTeleporterHotkeyClose029136(skipRefresh, hostAlreadyHidden)
+    if EVENT_MANAGER and EVENT_GLOBAL_MOUSE_UP then
+        EVENT_MANAGER:UnregisterForEvent((EPC.name or "ESOAdventurerSuite") .. "_TeleporterFlyoutClickAway029358", EVENT_GLOBAL_MOUSE_UP)
+    end
+    local root = self.mapTeleporter
+    if root and root.SetKeyboardEnabled then root:SetKeyboardEnabled(false) end
+    if root and root.SetHandler then root:SetHandler("OnKeyDown", nil) end
+    return EAS_FinishMapTeleporterHotkeyCloseBase029358(self, skipRefresh, hostAlreadyHidden)
+end
+
+function T:RefreshMapTeleporter(...)
+    local result = EAS_RefreshMapTeleporterBase029358(self, ...)
+    if self.mapTeleporterHotkeySession029132 == true and not self:IsMapTeleporterMapShowing() then
+        self:ApplyMapTeleporterOutsideInput029358(self.mapTeleporter)
+    end
+    return result
+end
+
+-- Keep old public aliases on the corrected outside-map state machine.
+function T:OpenMapTeleporterOverlay029134() return self:OpenMapTeleporterOverlay029136() end
+function T:OpenMapTeleporterOverlay029132() return self:OpenMapTeleporterOverlay029136() end
+function T:CloseMapTeleporterOverlay029134(skipRefresh) return self:CloseMapTeleporterOverlay029136(skipRefresh) end
+function T:CloseMapTeleporterOverlay029132(skipRefresh) return self:CloseMapTeleporterOverlay029136(skipRefresh) end
+
+-- ============================================================================
+-- v0.29.361 - Teleporter tab click restoration.
+-- Do not attach OnMouseDown handlers to ESO buttons. ESO's button state machine
+-- uses mouse-down internally; replacing that handler can prevent OnClicked from
+-- firing at all. Flyout dismissal is performed inside the existing OnClicked
+-- path instead, after the button has received the click normally.
+-- ============================================================================
+function T:ApplyMapTeleporterFlyoutPassThrough029361(root)
+    root = root or self.mapTeleporter
+    if not root then return end
+
+    local function clearBadMouseDown(control)
+        if control and control.SetHandler then
+            -- Remove the v0.29.360 handler that interfered with ESO button clicks.
+            control:SetHandler("OnMouseDown", nil)
+        end
+    end
+
+    clearBadMouseDown(root.viewButton)
+    clearBadMouseDown(root.favoriteButton)
+    clearBadMouseDown(root.toolsButton)
+    clearBadMouseDown(root.prev)
+    clearBadMouseDown(root.next)
+    for _, control in pairs(root.tabs or {}) do clearBadMouseDown(control) end
+
+    -- Rebind the visible Teleporter toolbar using normal OnClicked handlers.
+    -- VIEW/TOOLS own their flyout toggle logic; FAVORITES is a real destination
+    -- tab and explicitly dismisses any flyout before switching modes.
+    if root.viewButton then
+        root.viewButton:SetHandler("OnClicked", function(control)
+            if self:IsMapTeleporterFlyoutOpen02969() and root.flyout02969 and root.flyout02969.owner02969 == control then
+                self:HideMapTeleporterFlyout02969()
+            else
+                self:HideMapTeleporterFlyout02969()
+                self:ShowMapTeleporterViewMenu02967(control)
+                if root.flyout02969 then root.flyout02969.owner02969 = control end
+            end
+        end)
+    end
+    if root.toolsButton then
+        root.toolsButton:SetHandler("OnClicked", function(control)
+            if self:IsMapTeleporterFlyoutOpen02969() and root.flyout02969 and root.flyout02969.owner02969 == control then
+                self:HideMapTeleporterFlyout02969()
+            else
+                self:HideMapTeleporterFlyout02969()
+                self:ShowMapTeleporterToolsMenu02967(control)
+                if root.flyout02969 then root.flyout02969.owner02969 = control end
+            end
+        end)
+    end
+    if root.favoriteButton then
+        root.favoriteButton:SetHandler("OnClicked", function()
+            self:HideMapTeleporterFlyout02969()
+            self:SetMapTeleporterMode("FAVORITES")
+        end)
+    end
+
+    -- Legacy/direct mode tabs, if present, switch normally and dismiss flyouts.
+    for mode, control in pairs(root.tabs or {}) do
+        if control then
+            control:SetHandler("OnClicked", function()
+                self:HideMapTeleporterFlyout02969()
+                self:SetMapTeleporterMode(mode)
+            end)
+        end
+    end
+
+    if root.prev then
+        root.prev:SetHandler("OnClicked", function()
+            self:HideMapTeleporterFlyout02969()
+            self:ChangeMapTeleporterPage(-1)
+        end)
+    end
+    if root.next then
+        root.next:SetHandler("OnClicked", function()
+            self:HideMapTeleporterFlyout02969()
+            self:ChangeMapTeleporterPage(1)
+        end)
+    end
+end
+
+local EAS_CreateMapTeleporterBase029361 = T.CreateMapTeleporter
+function T:CreateMapTeleporter()
+    local root = EAS_CreateMapTeleporterBase029361(self)
+    self:ApplyMapTeleporterFlyoutPassThrough029361(root)
+    return root
+end
+
+local EAS_RefreshMapTeleporterBase029361 = T.RefreshMapTeleporter
+function T:RefreshMapTeleporter(...)
+    local result = EAS_RefreshMapTeleporterBase029361(self, ...)
+    self:ApplyMapTeleporterFlyoutPassThrough029361(self.mapTeleporter)
+    return result
+end
+
+-- ============================================================================
+-- v0.29.362 - Teleporter flyout same-click flash guard.
+-- EVENT_GLOBAL_MOUSE_UP is deferred by the click-away handler. When VIEW/TOOLS
+-- opens a flyout on that same mouse-up, the deferred outside check sees the
+-- pointer over the toolbar button (not the newly-opened flyout) and immediately
+-- closes it, producing a visible one-frame flash. Mark toolbar-driven flyout
+-- actions for a tiny same-click grace window so only a subsequent outside click
+-- can dismiss the menu.
+-- ============================================================================
+local function EAS_MapTeleporterNowMs029362()
+    if type(GetFrameTimeMilliseconds) == "function" then
+        local ok, value = pcall(GetFrameTimeMilliseconds)
+        if ok and tonumber(value) then return tonumber(value) end
+    end
+    if type(GetGameTimeMilliseconds) == "function" then
+        local ok, value = pcall(GetGameTimeMilliseconds)
+        if ok and tonumber(value) then return tonumber(value) end
+    end
+    return 0
+end
+
+function T:SuppressMapTeleporterClickAway029362(durationMs)
+    local now = EAS_MapTeleporterNowMs029362()
+    self.mapTeleporterClickAwaySuppressUntil029362 = now + (tonumber(durationMs) or 120)
+end
+
+function T:IsMapTeleporterClickAwaySuppressed029362()
+    local untilMs = tonumber(self.mapTeleporterClickAwaySuppressUntil029362) or 0
+    return untilMs > EAS_MapTeleporterNowMs029362()
+end
+
+function T:RegisterMapTeleporterClickAway029136()
+    if EAS_RegisterMapTeleporterClickAwayBase029358 then
+        EAS_RegisterMapTeleporterClickAwayBase029358(self)
+    end
+    if not EVENT_MANAGER or not EVENT_GLOBAL_MOUSE_UP then return end
+
+    local eventName = (EPC.name or "ESOAdventurerSuite") .. "_TeleporterFlyoutClickAway029358"
+    EVENT_MANAGER:UnregisterForEvent(eventName, EVENT_GLOBAL_MOUSE_UP)
+    EVENT_MANAGER:RegisterForEvent(eventName, EVENT_GLOBAL_MOUSE_UP, function()
+        local travel = EPC and EPC.Travel
+        if not travel then return end
+        local root = travel.mapTeleporter
+        if not root or root:IsHidden() or not travel:IsMapTeleporterFlyoutOpen02969() then return end
+        if travel:IsMapTeleporterClickAwaySuppressed029362() then return end
+
+        local function closeFlyoutIfOutside()
+            local active = EPC and EPC.Travel
+            if not active or active:IsMapTeleporterClickAwaySuppressed029362() then return end
+            if active:IsMapTeleporterFlyoutOpen02969() and not active:IsMouseInsideMapTeleporterFlyout029358() then
+                active:HideMapTeleporterFlyout02969()
+            end
+        end
+        if type(zo_callLater) == "function" then zo_callLater(closeFlyoutIfOutside, 0) else closeFlyoutIfOutside() end
+    end)
+end
+
+function T:ApplyMapTeleporterFlyoutPassThrough029361(root)
+    root = root or self.mapTeleporter
+    if not root then return end
+
+    local function clearBadMouseDown(control)
+        if control and control.SetHandler then control:SetHandler("OnMouseDown", nil) end
+    end
+
+    clearBadMouseDown(root.viewButton)
+    clearBadMouseDown(root.favoriteButton)
+    clearBadMouseDown(root.toolsButton)
+    clearBadMouseDown(root.prev)
+    clearBadMouseDown(root.next)
+    for _, control in pairs(root.tabs or {}) do clearBadMouseDown(control) end
+
+    if root.viewButton then
+        root.viewButton:SetHandler("OnClicked", function(control)
+            self:SuppressMapTeleporterClickAway029362(140)
+            if self:IsMapTeleporterFlyoutOpen02969() and root.flyout02969 and root.flyout02969.owner02969 == control then
+                self:HideMapTeleporterFlyout02969()
+            else
+                self:HideMapTeleporterFlyout02969()
+                self:ShowMapTeleporterViewMenu02967(control)
+                if root.flyout02969 then root.flyout02969.owner02969 = control end
+            end
+        end)
+    end
+    if root.toolsButton then
+        root.toolsButton:SetHandler("OnClicked", function(control)
+            self:SuppressMapTeleporterClickAway029362(140)
+            if self:IsMapTeleporterFlyoutOpen02969() and root.flyout02969 and root.flyout02969.owner02969 == control then
+                self:HideMapTeleporterFlyout02969()
+            else
+                self:HideMapTeleporterFlyout02969()
+                self:ShowMapTeleporterToolsMenu02967(control)
+                if root.flyout02969 then root.flyout02969.owner02969 = control end
+            end
+        end)
+    end
+    if root.favoriteButton then
+        root.favoriteButton:SetHandler("OnClicked", function()
+            self:SuppressMapTeleporterClickAway029362(140)
+            self:HideMapTeleporterFlyout02969()
+            self:SetMapTeleporterMode("FAVORITES")
+        end)
+    end
+
+    for mode, control in pairs(root.tabs or {}) do
+        if control then
+            local selectedMode = mode
+            control:SetHandler("OnClicked", function()
+                self:SuppressMapTeleporterClickAway029362(140)
+                self:HideMapTeleporterFlyout02969()
+                self:SetMapTeleporterMode(selectedMode)
+            end)
+        end
+    end
+
+    if root.prev then
+        root.prev:SetHandler("OnClicked", function()
+            self:SuppressMapTeleporterClickAway029362(140)
+            self:HideMapTeleporterFlyout02969()
+            self:ChangeMapTeleporterPage(-1)
+        end)
+    end
+    if root.next then
+        root.next:SetHandler("OnClicked", function()
+            self:SuppressMapTeleporterClickAway029362(140)
+            self:HideMapTeleporterFlyout02969()
+            self:ChangeMapTeleporterPage(1)
+        end)
+    end
+end
+
+
+-- ============================================================================
+-- v0.29.365 - survey/treasure destinations resolve by LibTreasure item ID.
+-- ============================================================================
+function T:EnsureMapTeleporterTreasureIndex029365()
+    if self.mapTeleporterTreasureIndexReady029365 or self.mapTeleporterTreasureIndexBuilding029365 then return end
+    if type(_G.LibTreasure_GetMapIdData)~="function" or type(GetNumMaps)~="function" or type(GetMapIdByIndex)~="function" then return end
+    self.mapTeleporterTreasureIndexBuilding029365=true; self.mapTeleporterTreasureIndex029365=self.mapTeleporterTreasureIndex029365 or {}
+    local ok,count=pcall(GetNumMaps); count=ok and safeNumber(count,0) or 0; local index=1
+    local function step()
+        local stop=math.min(count,index+29)
+        for mapIndex=index,stop do
+            local okId,mapId=pcall(GetMapIdByIndex,mapIndex); mapId=okId and safeNumber(mapId,0) or 0
+            if mapId>0 then
+                local okData,data=pcall(_G.LibTreasure_GetMapIdData,mapId)
+                if okData and type(data)=="table" then
+                    local zoneId,zoneName=0,""
+                    if type(GetMapInfoById)=="function" then
+                        local okInfo,_,_,_,zoneIndex=pcall(GetMapInfoById,mapId); zoneIndex=okInfo and safeNumber(zoneIndex,0) or 0
+                        if zoneIndex>0 and type(GetZoneId)=="function" then local oz,z=pcall(GetZoneId,zoneIndex); if oz then zoneId=safeNumber(z,0) end end
+                    end
+                    if zoneId>0 and type(GetParentZoneId)=="function" then local op,p=pcall(GetParentZoneId,zoneId); if op and safeNumber(p,0)>0 then zoneId=safeNumber(p,zoneId) end end
+                    if zoneId>0 and type(GetZoneNameById)=="function" then local on,n=pcall(GetZoneNameById,zoneId); if on then zoneName=EAS_LocalizedText029358(n,"") end end
+                    for _,pin in ipairs(data) do
+                        local iid=safeNumber(type(pin)=="table" and pin.itemId or 0,0)
+                        if iid>0 and not self.mapTeleporterTreasureIndex029365[iid] then self.mapTeleporterTreasureIndex029365[iid]={mapId=mapId,zoneId=zoneId,zoneName=zoneName} end
+                    end
+                end
+            end
+        end
+        index=stop+1
+        if index<=count and type(zo_callLater)=="function" then zo_callLater(step,0) else
+            self.mapTeleporterTreasureIndexBuilding029365=false; self.mapTeleporterTreasureIndexReady029365=true
+            self.mapTeleporterBuildCache029143={}
+            if self.mapTeleporterPanel and not self.mapTeleporterPanel:IsHidden() and type(zo_callLater)=="function" then zo_callLater(function() if T and T.RefreshMapTeleporter then T:RefreshMapTeleporter(true) end end,0) end
+        end
+    end
+    step()
+end
+local EAS_GetMapTeleporterItemEntriesBase029365=T.GetMapTeleporterItemEntries
+function T:GetMapTeleporterItemEntries()
+    self:EnsureMapTeleporterTreasureIndex029365()
+    local rows=EAS_GetMapTeleporterItemEntriesBase029365(self)
+    local idx=self.mapTeleporterTreasureIndex029365 or {}; local routing=nil
+    for _,row in ipairs(rows or {}) do
+        if row.kind=="ITEM" and safeNumber(row.itemId,0)>0 then
+            local loc=idx[safeNumber(row.itemId,0)]
+            if loc and safeNumber(loc.zoneId,0)>0 then
+                if not routing then
+                    local snap=self:GetMapTeleporterSnapshot(); routing={social=self:GetMapTeleporterSocialEntries(),shrines=self:GetWayshrines(snap),houses=self:GetMapTeleporterHouseEntries()}
+                end
+                row.zoneId=loc.zoneId; row.zoneName=EAS_LocalizedText029358(loc.zoneName,"")
+                row.travelEntry=self:GetMapTeleporterBestRouteForZone(row.zoneId,row.zoneName,routing.social,routing.shrines,routing.houses)
+                row.canTravel=row.travelEntry~=nil
+                row.statusText=row.travelEntry and ((row.travelEntry.kind=="GROUP" or row.travelEntry.kind=="FRIEND" or row.travelEntry.kind=="GUILD" or row.travelEntry.kind=="HOUSE") and "FREE" or (row.travelEntry.costText or "TRAVEL")) or "NO ROUTE"
+            elseif self.mapTeleporterTreasureIndexBuilding029365 then
+                row.zoneName=EAS_LocalizedText029358("Locating survey destination...","")
+            end
+            EAS_NormalizeTeleporterEntry029358(row)
+        end
+    end
+    return rows
+end
+
+-- ============================================================================
+-- v0.29.376 - Teleporter input/localization/survey hardening.
+-- ============================================================================
+local EAS_EnsureTeleporterHostBase029376 = T.EnsureMapTeleporterInteractionHost029136
+local EAS_InitializeTravelBase029376 = T.Initialize
+
+-- Use a full-screen, low-tier interaction host while the outside-map Teleporter
+-- owns UI mode. The Teleporter itself remains DT_HIGH, so its buttons win mouse
+-- hit-testing; blank screen clicks hit this host and close the overlay reliably.
+function T:EnsureMapTeleporterInteractionHost029136()
+    local host = EAS_EnsureTeleporterHostBase029376(self)
+    if not host or not GuiRoot then return host end
+    host:ClearAnchors(); host:SetAnchorFill(GuiRoot)
+    host:SetMouseEnabled(true)
+    if host.SetKeyboardEnabled then host:SetKeyboardEnabled(true) end
+    if host.SetDrawTier and DT_LOW then host:SetDrawTier(DT_LOW) end
+    if host.SetDrawLayer and DL_BACKGROUND then host:SetDrawLayer(DL_BACKGROUND) end
+    if host.SetDrawLevel then host:SetDrawLevel(1) end
+    host:SetHandler("OnMouseUp", function(_, button, inside)
+        local travel=EPC and EPC.Travel
+        if not travel or travel.mapTeleporterHotkeySession029132~=true or travel:IsMapTeleporterMapShowing() then return end
+        if not travel:IsMapTeleporterMouseInside029136() and not travel:IsMouseInsideMapTeleporterFlyout029358() then
+            travel:CloseMapTeleporterOverlay029136(false)
+        end
+    end)
+    host:SetHandler("OnKeyDown", function(_, key, ctrl, alt, shift, command)
+        local travel=EPC and EPC.Travel
+        if not travel or travel.mapTeleporterHotkeySession029132~=true or travel:IsMapTeleporterMapShowing() then return end
+        local escape = KEY_ESCAPE ~= nil and key == KEY_ESCAPE
+        local altKey = KEY_ALT ~= nil and key == KEY_ALT
+        local altOnly = alt == true and ctrl ~= true and shift ~= true and command ~= true
+        if escape or altKey or altOnly or travel:IsMapTeleporterToggleKey029134(key,ctrl,alt,shift,command) then
+            travel:CloseMapTeleporterOverlay029136(false)
+        end
+    end)
+    return host
+end
+
+-- Rebind the localized-text sanitizer to strip only ESO's ASCII grammar tokens.
+-- The older broad fallback could consume too much text after malformed carets on
+-- Russian clients. Never pattern-match arbitrary UTF-8 bytes.
+EAS_LocalizedText029358 = function(value, fallback)
+    local text=tostring(value or "")
+    if text=="" then text=tostring(fallback or "") end
+    if text~="" and type(zo_strformat)=="function" then
+        local ok,formatted=pcall(zo_strformat,"<<1>>",text)
+        if ok and type(formatted)=="string" and formatted~="" then text=formatted end
+    end
+    text=text:gsub("%^+[A-Za-z][A-Za-z0-9]*%b{}","")
+    text=text:gsub("%^+[A-Za-z][A-Za-z0-9]*","")
+    text=text:gsub("%^","")
+    text=text:gsub("[%c]+"," "):gsub("%s+"," ")
+    text=text:gsub("^%s+",""):gsub("%s+$","")
+    return text~="" and text or tostring(fallback or "")
+end
+
+local function EAS_MapZoneId029376(mapId, mapMeta)
+    mapId=safeNumber(mapId,0); if mapId<=0 then return 0,"" end
+    local zoneId=0
+    if type(GetMapInfoById)=="function" then
+        local ok,_,_,_,zoneIndex=pcall(GetMapInfoById,mapId)
+        zoneIndex=ok and safeNumber(zoneIndex,0) or 0
+        if zoneIndex>0 and type(GetZoneId)=="function" then local oz,z=pcall(GetZoneId,zoneIndex); if oz then zoneId=safeNumber(z,0) end end
+    end
+    -- Some survey source maps have no direct zoneIndex. Resolve their universal
+    -- rectangle to the smallest containing map that does have a zone.
+    if zoneId<=0 and mapMeta and type(GetUniversallyNormalizedMapInfo)=="function" then
+        local current=mapMeta[mapId]
+        if current and current.w and current.w>0 and current.h and current.h>0 then
+            local cx,cy=current.x+current.w*0.5,current.y+current.h*0.5
+            local bestArea=nil
+            for candidateId,m in pairs(mapMeta) do
+                if m.zoneId and m.zoneId>0 and m.w and m.w>0 and m.h and m.h>0 then
+                    if cx>=m.x and cx<=m.x+m.w and cy>=m.y and cy<=m.y+m.h then
+                        local area=m.w*m.h
+                        if area>=current.w*current.h and (bestArea==nil or area<bestArea) then zoneId=m.zoneId; bestArea=area end
+                    end
+                end
+            end
+        end
+    end
+    if zoneId>0 and type(GetParentZoneId)=="function" then
+        for _=1,4 do local ok,p=pcall(GetParentZoneId,zoneId); p=ok and safeNumber(p,0) or 0; if p<=0 or p==zoneId then break end; zoneId=p end
+    end
+    local zoneName=""
+    if zoneId>0 and type(GetZoneNameById)=="function" then local ok,n=pcall(GetZoneNameById,zoneId); if ok then zoneName=EAS_LocalizedText029358(n,"") end end
+    return zoneId,zoneName
+end
+
+function T:EnsureMapTeleporterTreasureIndex029365()
+    if self.mapTeleporterTreasureIndexReady029376 or self.mapTeleporterTreasureIndexBuilding029376 then return end
+    if type(_G.LibTreasure_GetMapIdData)~="function" or type(GetNumMaps)~="function" or type(GetMapIdByIndex)~="function" then return end
+    self.mapTeleporterTreasureIndexBuilding029376=true
+    self.mapTeleporterTreasureIndexBuilding029365=true
+    self.mapTeleporterTreasureIndexReady029365=false
+    self.mapTeleporterTreasureIndex029365={}
+    local ok,count=pcall(GetNumMaps); count=ok and safeNumber(count,0) or 0
+    local ids,meta={},{}; local i=1
+    local function metaStep()
+        local stop=math.min(count,i+39)
+        for n=i,stop do
+            local oi,mapId=pcall(GetMapIdByIndex,n); mapId=oi and safeNumber(mapId,0) or 0
+            if mapId>0 then
+                ids[#ids+1]=mapId
+                local zoneId=0
+                if type(GetMapInfoById)=="function" then local om,_,_,_,zi=pcall(GetMapInfoById,mapId); zi=om and safeNumber(zi,0) or 0; if zi>0 and type(GetZoneId)=="function" then local oz,z=pcall(GetZoneId,zi); if oz then zoneId=safeNumber(z,0) end end end
+                local x,y,w,h=0,0,0,0
+                if type(GetUniversallyNormalizedMapInfo)=="function" then local orc,a,b,c,d=pcall(GetUniversallyNormalizedMapInfo,mapId); if orc then x,y,w,h=tonumber(a) or 0,tonumber(b) or 0,tonumber(c) or 0,tonumber(d) or 0 end end
+                meta[mapId]={zoneId=zoneId,x=x,y=y,w=w,h=h}
+            end
+        end
+        i=stop+1
+        if i<=count and type(zo_callLater)=="function" then zo_callLater(metaStep,0) else
+            local pos=1
+            local function dataStep()
+                local finish=math.min(#ids,pos+24)
+                for k=pos,finish do
+                    local mapId=ids[k]
+                    local od,data=pcall(_G.LibTreasure_GetMapIdData,mapId)
+                    if od and type(data)=="table" then
+                        local zoneId,zoneName=EAS_MapZoneId029376(mapId,meta)
+                        for _,pin in ipairs(data) do
+                            if type(pin)=="table" then
+                                local iid=safeNumber(pin.itemId or pin.itemID or pin.itemid,0)
+                                if iid>0 then
+                                    local old=self.mapTeleporterTreasureIndex029365[iid]
+                                    if not old or (safeNumber(old.zoneId,0)<=0 and zoneId>0) then self.mapTeleporterTreasureIndex029365[iid]={mapId=mapId,zoneId=zoneId,zoneName=zoneName} end
+                                end
+                            end
+                        end
+                    end
+                end
+                pos=finish+1
+                if pos<=#ids and type(zo_callLater)=="function" then zo_callLater(dataStep,0) else
+                    self.mapTeleporterTreasureIndexBuilding029376=false; self.mapTeleporterTreasureIndexBuilding029365=false
+                    self.mapTeleporterTreasureIndexReady029376=true; self.mapTeleporterTreasureIndexReady029365=true
+                    self.mapTeleporterBuildCache029143={}
+                    if self.mapTeleporter and not self.mapTeleporter:IsHidden() and type(zo_callLater)=="function" then zo_callLater(function() if T and T.RefreshMapTeleporter then T:RefreshMapTeleporter(true) end end,0) end
+                end
+            end
+            dataStep()
+        end
+    end
+    metaStep()
+end
+
+function T:Initialize()
+    local result=EAS_InitializeTravelBase029376(self)
+    local prefix=(EPC.name or "ESOAdventurerSuite").."_TeleporterInput029376"
+    if EVENT_GAME_CAMERA_UI_MODE_CHANGED then
+        EVENT_MANAGER:UnregisterForEvent(prefix,EVENT_GAME_CAMERA_UI_MODE_CHANGED)
+        EVENT_MANAGER:RegisterForEvent(prefix,EVENT_GAME_CAMERA_UI_MODE_CHANGED,function()
+            local travel=EPC and EPC.Travel
+            if not travel or travel.mapTeleporterHotkeySession029132~=true or travel:IsMapTeleporterMapShowing() then return end
+            local inUi = true
+            if type(IsGameCameraUIModeActive) == "function" then
+                local ok, value = pcall(IsGameCameraUIModeActive)
+                if ok then inUi = value == true end
+            end
+            if not inUi then travel:CloseMapTeleporterOverlay029136(false) end
+        end)
+    end
+    return result
+end
+
+
+-- ============================================================================
+-- v0.29.381 - Teleporter input ownership, click-away, and UTF-8-safe labels.
+-- ============================================================================
+local function EAS_TeleporterStripGrammar029381(value, fallback)
+    local text = tostring(value or "")
+    if text == "" then text = tostring(fallback or "") end
+    local out, i, n = {}, 1, #text
+    while i <= n do
+        local b = text:byte(i)
+        if b == 94 then -- ^ : ESO grammar payload begins here
+            i = i + 1
+            -- Consume chained ASCII grammar directives such as ^Fa{1}n{2}.
+            while i <= n do
+                local c = text:byte(i)
+                if (c >= 65 and c <= 90) or (c >= 97 and c <= 122) or (c >= 48 and c <= 57) then
+                    i = i + 1
+                elseif c == 123 then -- {
+                    local close = text:find("}", i + 1, true)
+                    if close then i = close + 1 else i = i + 1; break end
+                else
+                    break
+                end
+            end
+        else
+            out[#out + 1] = text:sub(i, i)
+            i = i + 1
+        end
+    end
+    text = table.concat(out)
+    text = text:gsub("[%c]+", " "):gsub("%s+", " ")
+    text = text:gsub("^%s+", ""):gsub("%s+$", "")
+    return text ~= "" and text or tostring(fallback or "")
+end
+EAS_LocalizedText029358 = EAS_TeleporterStripGrammar029381
+
+function T:ApplyMapTeleporterOutsideInput029358(root)
+    root = root or self.mapTeleporter
+    if not root or self:IsMapTeleporterMapShowing() or self.mapTeleporterHotkeySession029132 ~= true then return end
+    local function keyHandler(_, key, ctrl, alt, shift, command)
+        local isEscape = KEY_ESCAPE ~= nil and key == KEY_ESCAPE
+        local isAltKey = KEY_ALT ~= nil and key == KEY_ALT
+        local altOnly = alt == true and ctrl ~= true and shift ~= true and command ~= true
+        if isEscape or isAltKey or altOnly or self:IsMapTeleporterToggleKey029134(key, ctrl, alt, shift, command) then
+            if root.playerSearch and root.playerSearch.LoseFocus then pcall(root.playerSearch.LoseFocus, root.playerSearch) end
+            if root.zoneSearch and root.zoneSearch.LoseFocus then pcall(root.zoneSearch.LoseFocus, root.zoneSearch) end
+            self:CloseMapTeleporterOverlay029136(false)
+        end
+    end
+    if root.SetKeyboardEnabled then root:SetKeyboardEnabled(true) end
+    root:SetHandler("OnKeyDown", keyHandler)
+    -- Focused search boxes receive key events before their parent. Wire the same
+    -- close keys there while preserving ordinary typing/search behavior.
+    for _, edit in ipairs({root.playerSearch, root.zoneSearch}) do
+        if edit and edit.SetKeyboardEnabled then edit:SetKeyboardEnabled(true) end
+        if edit and edit.SetHandler then
+            local old = edit.GetHandler and edit:GetHandler("OnKeyDown") or nil
+            if not edit.easTeleporterKeyWrapped029381 then
+                edit.easTeleporterKeyWrapped029381 = true
+                edit:SetHandler("OnKeyDown", function(control, key, ctrl, alt, shift, command)
+                    local closeKey = (KEY_ESCAPE ~= nil and key == KEY_ESCAPE) or (KEY_ALT ~= nil and key == KEY_ALT)
+                        or (alt == true and ctrl ~= true and shift ~= true and command ~= true)
+                    if closeKey then keyHandler(control, key, ctrl, alt, shift, command); return end
+                    if type(old) == "function" then pcall(old, control, key, ctrl, alt, shift, command) end
+                end)
+            end
+        end
+    end
+    -- A click on empty Teleporter chrome should dismiss only the flyout/dropdown.
+    if root.SetMouseEnabled then root:SetMouseEnabled(true) end
+    if root.SetHandler and not root.easFlyoutClickAway029381 then
+        root.easFlyoutClickAway029381 = true
+        local prior = root.GetHandler and root:GetHandler("OnMouseUp") or nil
+        root:SetHandler("OnMouseUp", function(control, button, inside)
+            if self:IsMapTeleporterFlyoutOpen02969() and not self:IsMouseInsideMapTeleporterFlyout029358() then
+                self:HideMapTeleporterFlyout02969()
+            end
+            if type(prior) == "function" then pcall(prior, control, button, inside) end
+        end)
+    end
+end
+
+local EAS_RefreshMapTeleporterBase029381 = T.RefreshMapTeleporter
+function T:RefreshMapTeleporter(...)
+    local result = EAS_RefreshMapTeleporterBase029381(self, ...)
+    local root = self.mapTeleporter
+    if root then
+        -- Re-sanitize visible labels after every data refresh. This catches cached
+        -- entries created before the current language-safe normalization pass.
+        local labels = {root.title, root.status, root.playerSearchLabel, root.zoneSearchLabel}
+        for _, label in ipairs(labels) do
+            if label and label.GetText and label.SetText then
+                local ok, value = pcall(label.GetText, label)
+                if ok then label:SetText(EAS_TeleporterStripGrammar029381(value, "")) end
+            end
+        end
+    end
+    if self.mapTeleporterHotkeySession029132 == true and not self:IsMapTeleporterMapShowing() then
+        self:ApplyMapTeleporterOutsideInput029358(root)
+    end
+    return result
+end
+
+
+-- ============================================================================
+-- v0.29.384 - World Map Teleporter ESC/click-away + Russian label hardening.
+-- ============================================================================
+local EAS_CreateMapTeleporterBase029384 = T.CreateMapTeleporter
+local EAS_RefreshMapTeleporterBase029384 = T.RefreshMapTeleporter
+local EAS_ShowMapTeleporterFlyoutBase029384 = T.ShowMapTeleporterFlyout02969
+
+local function EAS_TeleporterDisplayText029384(value, fallback)
+    local text = tostring(value or "")
+    if text == "" then text = tostring(fallback or "") end
+
+    -- Let ESO resolve its own grammar markers first. This is safe for Cyrillic
+    -- and avoids hand-editing multibyte letters.
+    if text ~= "" and type(zo_strformat) == "function" then
+        local ok, formatted = pcall(zo_strformat, "<<1>>", text)
+        if ok and type(formatted) == "string" and formatted ~= "" then text = formatted end
+    end
+
+    -- Remove only ASCII ESO display markup.  None of these patterns consume
+    -- Cyrillic/UTF-8 bytes.
+    text = text:gsub("|c%x%x%x%x%x%x", ""):gsub("|r", "")
+    text = text:gsub("|t[^|]-|t", "")
+    text = text:gsub("|u[^|]-|u", "")
+    text = text:gsub("%^+[A-Za-z][A-Za-z0-9]*%b{}", "")
+    text = text:gsub("%^+[A-Za-z][A-Za-z0-9]*", "")
+    text = text:gsub("[%c]+", " "):gsub("%s+", " ")
+    text = text:gsub("^%s+", ""):gsub("%s+$", "")
+    return text ~= "" and text or tostring(fallback or "")
+end
+
+function T:CreateMapTeleporter()
+    local root = EAS_CreateMapTeleporterBase029384(self)
+    -- Click-away must also be registered for the docked World Map Teleporter,
+    -- not only for the hotkey/outside-map session.
+    if self.RegisterMapTeleporterClickAway029136 then self:RegisterMapTeleporterClickAway029136() end
+    return root
+end
+
+function T:ShowMapTeleporterFlyout02969(titleText, items, owner, contextMode)
+    local cleanItems = {}
+    for i, item in ipairs(items or {}) do
+        if type(item) == "table" then
+            local copy = {}
+            for k, v in pairs(item) do copy[k] = v end
+            if copy.text ~= nil then copy.text = EAS_TeleporterDisplayText029384(copy.text, "") end
+            if copy.label ~= nil then copy.label = EAS_TeleporterDisplayText029384(copy.label, "") end
+            cleanItems[i] = copy
+        else
+            cleanItems[i] = item
+        end
+    end
+    return EAS_ShowMapTeleporterFlyoutBase029384(self, EAS_TeleporterDisplayText029384(titleText, "OPTIONS"), cleanItems, owner, contextMode)
+end
+
+function T:RefreshMapTeleporter(...)
+    local result = EAS_RefreshMapTeleporterBase029384(self, ...)
+    local root = self.mapTeleporter
+    if not root then return result end
+
+    -- The docked Teleporter must not retain keyboard ownership from an earlier
+    -- hotkey session. Otherwise Escape/Alt never reaches the World Map scene.
+    if self:IsMapTeleporterMapShowing() then
+        if root.SetKeyboardEnabled then root:SetKeyboardEnabled(false) end
+        if root.SetHandler then root:SetHandler("OnKeyDown", nil) end
+        for _, edit in ipairs({root.playerSearch, root.zoneSearch}) do
+            if edit and edit.SetHandler then
+                edit:SetHandler("OnEscape", function(c)
+                    if c and c.LoseFocus then c:LoseFocus() end
+                    if self:IsMapTeleporterFlyoutOpen02969() then self:HideMapTeleporterFlyout02969() end
+                end)
+            end
+        end
+    end
+
+    if self.RegisterMapTeleporterClickAway029136 then self:RegisterMapTeleporterClickAway029136() end
+
+    -- Normalize every currently visible string, including rows. This addresses
+    -- Russian names cached before the latest sanitizer and strips stray ESO
+    -- grammar/markup without byte-wise mutation of Cyrillic text.
+    local labels = {root.title, root.status, root.stats, root.page, root.playerSearchLabel, root.zoneSearchLabel}
+    for _, control in ipairs(labels) do
+        if control and control.GetText and control.SetText then
+            local ok, value = pcall(control.GetText, control)
+            if ok then control:SetText(EAS_TeleporterDisplayText029384(value, "")) end
+        end
+    end
+    for _, row in ipairs(root.rows or {}) do
+        for _, control in ipairs({row.name, row.zone, row.source, row.status}) do
+            if control and control.GetText and control.SetText then
+                local ok, value = pcall(control.GetText, control)
+                if ok then control:SetText(EAS_TeleporterDisplayText029384(value, "")) end
+            end
+        end
     end
     return result
 end

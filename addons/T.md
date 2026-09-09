@@ -21,7 +21,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Tamriel Chronos - Clock](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Gandalf/Tamriel-Chronos---Clock__3348) | Gandalf | PC / Mac | 20101 |
 | [Tamriel Master Ledger](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/xPricee/Tamriel-Master-Ledger__1e746db5-8418-4a6f-9f17-4449e0d7e3f0) | xPricee | Console | — |
 | [Tamriel Master Ledger - DEV](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/xPricee/Tamriel-Master-Ledger---DEV__89ecfc27-e76b-48ae-8d40-e76bbf0c5c13) | xPricee | Console | — |
-| [Tamriel Progress Map](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Racconplayz/Tamriel-Progress-Map__4799) | Racconplayz | PC / Mac | 2.7.2 Beta |
+| [Tamriel Progress Map](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Racconplayz/Tamriel-Progress-Map__4799) | Racconplayz | PC / Mac | 2.7.4 Hotfix |
 | [Tamriel Races](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/Tamriel-Races__167ff6ab-0d5c-4582-83cc-0ec8ced35cc1) | SugaComa | Console | — |
 | [Tamriel Tomes Map Pins](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/runcarsnowpen/Tamriel-Tomes-Map-Pins__4591) | runcarsnowpen | PC / Mac | 1.2.1 |
 | [Tamriel Trade Centre](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/cyxui/Tamriel-Trade-Centre__1245) | cyxui | PC / Mac | 4.27.281.39281 |
@@ -30,7 +30,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Tamriel Trade Centre jpPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Marify/Tamriel-Trade-Centre-jpPatch__2193) | Marify | PC / Mac | 0.11.0 |
 | [Tamriel Trade Centre Simple Price](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kriax/Tamriel-Trade-Centre-Simple-Price__3078) | _Kriax | PC / Mac | 1.1.3 |
 | [TamrielGuard - disable accidental stealing](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Schrodi/TamrielGuard---disable-accidental-stealing__2780) | Schrodi | PC / Mac | 1.0 |
-| [Tamrielic Languages](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/aausten/Tamrielic-Languages__4814) | aausten | PC / Mac | 1.0.0 |
+| [Tamrielic Languages](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/aausten/Tamrielic-Languages__4814) | aausten | PC / Mac | 1.5.0 |
 | [TamrielTime](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/NWDD/TamrielTime__232) | NWDD | PC / Mac | 0.9.9.3 |
 | [TamrielTradeCentre-KR](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ricci-Curvature/TamrielTradeCentre-KR__4505) | Ricci Curvature | PC / Mac | 1.0.0 |
 | [Tank](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Criscal/Tank__1192) | Criscal | PC / Mac | 1.1.42 |
@@ -119,6 +119,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Thurisaz Guild Info](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/calia1120/Thurisaz-Guild-Info__807) | calia1120 | PC / Mac | 1.5 |
 | [Tic Tac Toe](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Colligation/Tic-Tac-Toe__4757) | Colligation | PC / Mac | 1.0 |
 | [TiEmote Extended](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Khrill/TiEmote-Extended__763) | Khrill | PC / Mac | 1.83 |
+| [Tim's Collectibles](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tim-p/Tim-s-Collectibles__4822) | tim-p | PC / Mac | 1.0 |
 | [tim99s ColoredLists](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tim99/tim99s-ColoredLists__3373) | tim99 | PC / Mac | 10.0 |
 | [tim99s FTSIO](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tim99/tim99s-FTSIO__3423) | tim99 | PC / Mac | 3 |
 | [tim99s Toolbar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tim99/tim99s-Toolbar__3187) | tim99 | PC / Mac | 19.6 |
@@ -130,7 +131,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Timing Bars](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Soleya/Timing-Bars__2770) | Soleya | PC / Mac | 1.1.0.0 |
 | [Tinydog's Crafting Calculator](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tinydog/Tinydog-s-Crafting-Calculator__1240) | @tinydog | PC / Mac | 1.23.42 |
 | [Tinydog's Crafting Calculator 2.0](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/wolfstar/Tinydog-s-Crafting-Calculator-2.0__3870) | wolfstar | PC / Mac | 1.23.1 |
-| [Tiradil's Guild Assistant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/AlcholicVader/Tiradil-s-Guild-Assistant__4817) | AlcholicVader | PC / Mac | 1.0.0 |
+| [Tiradil's Guild Assistant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/AlcholicVader/Tiradil-s-Guild-Assistant__4817) | AlcholicVader | PC / Mac | 1.3.2 |
 | [Title List Search Box](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/perfiction/Title-List-Search-Box__3327) | perfiction | PC / Mac | 1.1.0 |
 | [Title Loop](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Copper0/Title-Loop__5e051775-8c73-4e96-bb6b-dcaa188dc064) | Copper0 | Console | — |
 | [TitleFlex](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Skvysh/TitleFlex__2509) | Skvysh | PC / Mac | 1.8 |

@@ -48,9 +48,7 @@ function S:GetRootCenter()
 end
 
 function S:GetDefaultBottomOffset()
-    local gamepad = type(IsInGamepadPreferredMode) == "function" and IsInGamepadPreferredMode() == true
-    local offset = gamepad and rawget(_G, "ZO_COMMON_INFO_DEFAULT_GAMEPAD_BOTTOM_OFFSET_Y")
-        or rawget(_G, "ZO_COMMON_INFO_DEFAULT_KEYBOARD_BOTTOM_OFFSET_Y")
+    local offset = rawget(_G, "ZO_COMMON_INFO_DEFAULT_KEYBOARD_BOTTOM_OFFSET_Y")
     return num(offset, 0)
 end
 
@@ -119,7 +117,6 @@ function S:ShowNativeLayoutPreview()
 
     -- Use the actual vanilla controls. Only provide preview text when no live
     -- synergy exists; the native key control already owns USE_SYNERGY and keeps
-    -- its current keyboard/gamepad template from ZO_Synergy:ApplyTextStyle().
     if synergy.action and type(synergy.action.SetText) == "function" then
         synergy.action:SetText(self:GetPreviewText())
         if type(synergy.action.SetHidden) == "function" then synergy.action:SetHidden(false) end

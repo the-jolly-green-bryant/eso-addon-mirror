@@ -1,0 +1,19 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="matrack">
+			<Dimensions x="64" y="64"/>
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="1400" offsetY="930"/>
+			<Controls>
+				<Label name="$(parent)Icon" width="64" height="64 " font="" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP"/>
+				</Label>
+				<Label name="$(parent)LabelMain" width="64" height="64 " font="" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" offsetX="4" offsetY="14"/>
+				</Label>
+				<Label name="$(parent)LabelCorner" width="64" height="64 " font="" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" offsetX="52" offsetY="-10"/>
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>
