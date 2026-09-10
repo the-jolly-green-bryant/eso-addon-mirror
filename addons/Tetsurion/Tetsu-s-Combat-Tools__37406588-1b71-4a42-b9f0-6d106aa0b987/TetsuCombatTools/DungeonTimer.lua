@@ -443,19 +443,35 @@ local function Layout()
     local oy = v and tonumber(v.timerOffsetY)
     if oy == nil then oy = -280 end
     local sc = tonumber(v and v.timerScale) or 100
-    if sc < 50 then sc = 50 end
-    if sc > 180 then sc = 180 end
+    if sc < 40 then sc = 40 end
+    if sc > 250 then sc = 250 end
     sc = sc / 100
-    local fontName = "ZoFontGamepad34"
-    if sc < 0.85 then
-        fontName = "ZoFontGamepad27"
-    end
+    local px = math.floor(36 * sc + 0.5)
+    if px < 16 then px = 16 end
+    if px > 90 then px = 90 end
+    local fontName = "$(GAMEPAD_BOLD_FONT)|" .. px .. "|soft-shadow-thick"
+    root:SetClampedToScreen(false)
     root:ClearAnchors()
     root:SetAnchor(CENTER, GuiRoot, CENTER, ox, oy)
-    root:SetDimensions(math.floor(420 * sc), math.floor(44 * sc))
-    pcall(function()
+    root:SetDimensions(math.floor(520 * sc), math.floor(px + 18))
+    lab:ClearAnchors()
+    lab:SetAnchor(CENTER, root, CENTER, 0, 0)
+    lab:SetDimensions(math.floor(520 * sc), math.floor(px + 18))
+    local ok = pcall(function()
         lab:SetFont(fontName)
     end)
+    if not ok then
+        pcall(function()
+            lab:SetFont("ZoFontGamepad34")
+        end)
+        pcall(function()
+            lab:SetScale(sc)
+        end)
+    else
+        pcall(function()
+            lab:SetScale(1)
+        end)
+    end
 end
 
 local function ElapsedMs()
@@ -651,7 +667,7 @@ end
 local function Build()
     if built then return end
     root = WINDOW_MANAGER:CreateTopLevelWindow(ADDON .. "Root")
-    root:SetClampedToScreen(true)
+    root:SetClampedToScreen(false)
     root:SetMouseEnabled(false)
     root:SetHidden(true)
     lab = WINDOW_MANAGER:CreateControl(ADDON .. "Lab", root, CT_LABEL)

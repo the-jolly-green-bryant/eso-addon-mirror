@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/PinkBanther/PinkB-s-DiceExtension__c8c74e10-f091-4e38-b894-20bb194c9b87",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "PinkBanther",
+  "canonical_id": "bethesda:c8c74e10-f091-4e38-b894-20bb194c9b87",
+  "content_id": "c8c74e10-f091-4e38-b894-20bb194c9b87",
+  "deleted": false,
+  "fingerprint": "e597833a890566d7d83ab8056af93e62da048a218df1f7a0120b99520fc23676",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "c8c74e10-f091-4e38-b894-20bb194c9b87",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/c8c74e10-f091-4e38-b894-20bb194c9b87",
+  "title": "PinkB's DiceExtension"
+}

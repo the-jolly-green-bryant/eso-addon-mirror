@@ -1,7 +1,7 @@
 ## Title: |c5865F2AetherChat|r
 ## APIVersion: 101050 101051
-## Version: 1.2.6
-## AddOnVersion: 10206
+## Version: 1.3.0
+## AddOnVersion: 10300
 ## Author: @AlexQuiet
 ## Description: Modern, immersive chat & messenger replacement for The Elder Scrolls Online. Multi-zone chat, collapsible folders, loot feed, sound alerts, and customizable themes.
 ## DependsOn: LibAddonMenu-2.0>=43
@@ -16,6 +16,7 @@ src/Theme.lua
 src/Settings.lua
 src/Modules/SoundManager.lua
 src/Modules/History.lua
+src/Modules/CustomTabs.lua
 src/ChatEngine.lua
 src/UI/Messenger.lua
 src/Core.lua

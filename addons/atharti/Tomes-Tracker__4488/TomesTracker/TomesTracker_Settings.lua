@@ -1,36 +1,36 @@
 local TT = TomesTracker
 
 function TT.RegisterLAMPanel()
-    local LAM = LibAddonMenu2
+	local LAM = LibAddonMenu2
 
-    TT.SV = TT.SV or {}
-        
-    local optionsData = {
-        {
-            type = "header",
-            name = "General Settings",
-        },
-        {
-            type = "checkbox",
-            name = "Hide Completed Tasks",
-            tooltip = "Hide tome challenges that have been fully completed.",
-            getFunc = function() return TT.SV.HideCompleted end,
-            setFunc = function(value)
-                TT.SV.HideCompleted = value
-                TT.RefreshTasksPositions()
-            end,
-            default = false,
-        },
-        {
-            type = "checkbox",
-            name = "Chat Messages",
-            tooltip = "Show tasks progress messages in chat.",
-            getFunc = function() return TT.SV.chatUpdates end,
-            setFunc = function(value)
-                TT.SV.chatUpdates = value
-            end,
-            default = true,
-        },	
+	TT.SV = TT.SV or {}
+
+	local optionsData = {
+		{
+			type = "header",
+			name = "General Settings",
+		},
+		{
+			type = "checkbox",
+			name = "Hide Completed Tasks",
+			tooltip = "Hide tome challenges that have been fully completed.",
+			getFunc = function() return TT.SV.HideCompleted end,
+			setFunc = function(value)
+				TT.SV.HideCompleted = value
+				TT.RefreshTasksPositions()
+			end,
+			default = false,
+		},
+		{
+			type = "checkbox",
+			name = "Chat Messages",
+			tooltip = "Show tasks progress messages in chat.",
+			getFunc = function() return TT.SV.chatUpdates end,
+			setFunc = function(value)
+				TT.SV.chatUpdates = value
+			end,
+			default = true,
+		},
 		{
 			type = "checkbox",
 			name = "Hide Reroll Count When Zero",
@@ -41,7 +41,7 @@ function TT.RegisterLAMPanel()
 				TT.UpdateCurrency()
 			end,
 			default = false,
-		},		
+		},
 		{
 			type = "slider",
 			name = "Background Opacity",
@@ -50,7 +50,7 @@ function TT.RegisterLAMPanel()
 			max = 1,
 			step = 0.1,
 			decimals = 1,
-			getFunc = function() 
+			getFunc = function()
 				return TT.SV.panelOpacity or 0.8
 			end,
 			setFunc = function(value)
@@ -58,7 +58,7 @@ function TT.RegisterLAMPanel()
 				TT.RefreshPanel()
 			end,
 			default = 0.8,
-		},	
+		},
 		{
 			type = "slider",
 			name = "UI Scale",
@@ -67,7 +67,7 @@ function TT.RegisterLAMPanel()
 			max = 1.5,
 			step = 0.05,
 			decimals = 2,
-			getFunc = function() 
+			getFunc = function()
 				return TT.SV.uiScale or 1.0
 			end,
 			setFunc = function(value)
@@ -75,7 +75,7 @@ function TT.RegisterLAMPanel()
 				TT.RefreshPanel()
 			end,
 			default = 1.0,
-		},	
+		},
 		{
 			type = "checkbox",
 			name = "Hide in Combat",
@@ -86,19 +86,19 @@ function TT.RegisterLAMPanel()
 			end,
 			default = false,
 			requiresReload = true,
-		},	
-		
-    }
+		},
 
-    local panelData = {
-        type = "panel",
-        name = "Tomes Tracker",
-        displayName = "|cFFD700Tomes Tracker|r",
-        author = "|cFFD700@Atharti|r",
-        registerForRefresh = true,
-        registerForDefaults = true,
-    }
+	}
 
-    LAM:RegisterAddonPanel("TomesTrackerPanel", panelData)
-    LAM:RegisterOptionControls("TomesTrackerPanel", optionsData)
+	local panelData = {
+		type = "panel",
+		name = "Tomes Tracker",
+		displayName = "|cFFD700Tomes Tracker|r",
+		author = "|cFFD700@Atharti|r",
+		registerForRefresh = true,
+		registerForDefaults = true,
+	}
+
+	LAM:RegisterAddonPanel("TomesTrackerPanel", panelData)
+	LAM:RegisterOptionControls("TomesTrackerPanel", optionsData)
 end

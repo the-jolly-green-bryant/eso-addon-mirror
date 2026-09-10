@@ -4,7 +4,7 @@ local M = Verdant.Graph
 
 local api  = Verdant.zenimax.api
 local zui  = Verdant.zenimax.ui
-local PlaySound = zui.PlaySound
+local Sound = Verdant.Sound
 local zc   = Verdant.zenimax.constants
 local zev  = Verdant.zenimax.events
 local WINDOW_MANAGER             = zui.WINDOW_MANAGER
@@ -72,13 +72,14 @@ local C_TIME_LBL  = { r = 0.68, g = 0.70, b = 0.75, a = 0.85 }
 local controls           = {}
 local recording_start_ms = 0
 
-local VIEW = { EMS = 1, SKILL = 2, CRIT = 3, OVERHEAL = 4, BUFFS = 5, TRIAGE = 6 }
-local VIEW_LABELS = { "EMS", "SKILL", "CRIT", "OHEAL", "BUFFS", "TRIAGE" }
+local VIEW = { EMS = 1, SKILL = 2, CRIT = 3, OVERHEAL = 4, BUFFS = 5, TRIAGE = 6, CONTRIB = 7 }
+local VIEW_LABELS = { "EMS", "SKILL", "CRIT", "OHEAL", "BUFFS", "TRIAGE", "CONTRIB" }
 local VIEW_TIPS
 local function view_tips()
   if not VIEW_TIPS then
     VIEW_TIPS = { VERDANT_VIEWTIP_EMS, VERDANT_VIEWTIP_SKILL, VERDANT_VIEWTIP_CRIT,
-                  VERDANT_VIEWTIP_OHEAL, VERDANT_VIEWTIP_BUFFS, VERDANT_VIEWTIP_TRIAGE }
+                  VERDANT_VIEWTIP_OHEAL, VERDANT_VIEWTIP_BUFFS, VERDANT_VIEWTIP_TRIAGE,
+                  VERDANT_VIEWTIP_CONTRIB }
   end
   return VIEW_TIPS
 end
@@ -100,13 +101,15 @@ local hit_top  = { cols = {}, n = 0 }
 local hit_bot  = { cols = {}, n = 0 }
 local buff_hit = { n = 0, y0 = {}, y1 = {}, rec = {}, lane_x = 0, lane_w = 0, t0 = 0, span = 0 }
 local buff_vis = {}
-local C_BUFF_FALLBACK = { r = 0.55, g = 0.92, b = 0.62, a = 0.95 }
+local C_BUFF_FALLBACK = { r = 0.60, g = 0.63, b = 0.66, a = 0.95 }
+local BUFF_FOLD = { PCT = 0.90, H = 24, ICON = 18, GAP = 3, MIN = 2, n = 0, x0 = {}, x1 = {}, rec = {}, y0 = 0, y1 = 0, on = false, scroll = 0, max_scroll = 0 }
 
 local function buff_color(rec)
+  local SC = Verdant.SkillColors
   if rec.group and rec.group ~= "other" then
-    return Verdant.SkillColors.group_color(rec.group)
+    return SC.group_color(rec.group)
   end
-  return C_BUFF_FALLBACK
+  return SC.buff_family_color(rec.name) or C_BUFF_FALLBACK
 end
 
 local function buff_description(rec)
@@ -359,6 +362,7 @@ local function release_all_pools()
   end
   if controls.pool_buff_seg then
     controls.pool_buff_seg:ReleaseAllObjects()
+    controls.pool_buff_rim:ReleaseAllObjects()
     controls.pool_buff_icon:ReleaseAllObjects()
     controls.pool_buff_lbl:ReleaseAllObjects()
   end
@@ -1196,6 +1200,7 @@ local function show_buff_card(rec, t_at, conc_at, mx, my)
   card.time:SetText(string_format("t  %s  ·  %d %s", fmt_secs(t_at), conc_at, GetString(VERDANT_BUFFH_HOLDERS)))
 
   clear_card_rows(card)
+  local fam = Verdant.SkillColors.buff_family(rec.name)
   local rows = {
     { GetString(VERDANT_BUFFH_PLAYERS), tostring(rec.unique_units) },
     { GetString(VERDANT_BUFFH_MAXC),    tostring(rec.max_conc) },
@@ -1203,6 +1208,9 @@ local function show_buff_card(rec, t_at, conc_at, mx, my)
     { GetString(VERDANT_BUFFH_APPS),    tostring(rec.applications) },
     { GetString(VERDANT_BUFFH_GAP),     fmt_secs(rec.longest_gap_ms) },
   }
+  if fam then
+    rows[#rows + 1] = { GetString(VERDANT_BUFFH_FAMILY), GetString(rawget(_G, "VERDANT_BUFF_FAM_" .. fam:upper())) }
+  end
   for i = 1, #rows do
     local row = card.rows[i]
     row.icon:SetHidden(true)
@@ -1241,6 +1249,22 @@ local function buff_hover_poll(mx, my)
   local inside = rel_x >= 0 and rel_x <= cw and rel_y >= 0 and rel_y <= ch
 
   local rec = nil
+  if inside and BUFF_FOLD.on and rel_y >= BUFF_FOLD.y0 and rel_y <= BUFF_FOLD.y1 then
+    for k = 1, BUFF_FOLD.n do
+      if BUFF_FOLD.x0[k] and rel_x >= BUFF_FOLD.x0[k] and rel_x <= BUFF_FOLD.x1[k] then
+        rec = BUFF_FOLD.rec[k]
+        break
+      end
+    end
+    local new = rec and rec.id or nil
+    if new ~= hover_key then hover_key = new; render_current_view() end
+    if rec then
+      show_buff_card(rec, rec.uptime_ms, rec.max_conc or 0, mx, my)
+    else
+      hide_hover_ui()
+    end
+    return
+  end
   if inside then
     for i = 1, buff_hit.n do
       if rel_y >= buff_hit.y0[i] and rel_y <= buff_hit.y1[i] then
@@ -1286,7 +1310,7 @@ local function hover_poll()
     buff_hover_poll(mx, my)
     return
   end
-  if current_view ~= VIEW.TRIAGE and Verdant.Ultimate.has_data() then
+  if current_view ~= VIEW.TRIAGE and current_view ~= VIEW.CONTRIB and Verdant.Ultimate.has_data() then
     local skill = (current_view == VIEW.SKILL)
     local canvas = skill and controls.ehps_canvas or controls.canvas
     local g_t0, g_span, g_xl, g_bw
@@ -1359,6 +1383,10 @@ local function hover_poll()
     else
       fade_out(card_fader)
     end
+    return
+  end
+  if current_view == VIEW.CONTRIB then
+    Verdant.ContribView.hover(mx, my)
     return
   end
   local band, col, canvas, H, unit
@@ -1467,6 +1495,7 @@ function light.chrome(hidden)
   controls.btn_record:SetHidden(hidden)
   controls.btn_flush:SetHidden(hidden)
   controls.btn_lib:SetHidden(hidden)
+  controls.btn_save:SetHidden(hidden)
   VerdantGraphWindowBarBtn:SetHidden(hidden or not Verdant.Visibility.is_bar_enabled())
 end
 
@@ -2201,15 +2230,23 @@ local C_BUFF_LANE   = { r = 0.62, g = 1.00, b = 0.74, a = 0.05 }
 
 local function seg_alpha(conc, max_conc)
   if max_conc <= 1 then return 0.90 end
-  return 0.40 + 0.55 * (conc / max_conc)
+  return (conc / max_conc > 0.5) and 0.92 or 0.50
 end
 
 local function buff_seg(canvas, x0, x1, y, row_h, conc, rec, c, dim)
+  local rim = controls.pool_buff_rim:AcquireObject()
+  rim:ClearAnchors()
+  rim:SetAnchor(TOPLEFT, canvas, TOPLEFT, x0 - 1, y - 1)
+  rim:SetWidth(math_max(1, x1 - x0) + 2)
+  rim:SetHeight(row_h + 2)
+  rim:SetColor(0, 0, 0, dim and 0.20 or 0.50)
+  rim:SetHidden(false)
   local seg = controls.pool_buff_seg:AcquireObject()
   seg:ClearAnchors()
   seg:SetAnchor(TOPLEFT, canvas, TOPLEFT, x0, y)
   seg:SetWidth(math_max(1, x1 - x0))
   seg:SetHeight(row_h)
+  seg:SetDrawLevel(4)
   if dim then
     seg:SetColor(c.r * 0.30 + C_DIM_BIAS, c.g * 0.30 + C_DIM_BIAS,
                  c.b * 0.30 + C_DIM_BIAS, 0.25)
@@ -2224,6 +2261,7 @@ end
 
 local function render_view4()
   controls.pool_buff_seg:ReleaseAllObjects()
+  controls.pool_buff_rim:ReleaseAllObjects()
   controls.pool_buff_icon:ReleaseAllObjects()
   controls.pool_buff_lbl:ReleaseAllObjects()
 
@@ -2231,15 +2269,40 @@ local function render_view4()
   local n_all = BT.count()
   local vis   = buff_vis
   local n     = 0
+  local recording = Verdant.TemporalBuffer.is_recording()
+  local sv_settings = Verdant.SavedVars and Verdant.SavedVars.settings
+  local unfolded = sv_settings and sv_settings.buffs_unfolded == true
+  local fold_dur = (not recording) and (BT.session_end() - BT.session_start()) or 0
+  local always_n = 0
+  BUFF_FOLD.n = 0
+  BUFF_FOLD.on = false
   for i = 1, n_all do
     local rec = BT.get(i)
     if not (rec.only_self and rec.desc == "" and rec.group ~= "item" and not rec.vetoed) then
-      n = n + 1
-      vis[n] = rec
+      if fold_dur > 0 and rec.uptime_ms / fold_dur >= BUFF_FOLD.PCT then
+        always_n = always_n + 1
+        BUFF_FOLD.rec[always_n] = rec
+      else
+        n = n + 1
+        vis[n] = rec
+      end
     end
   end
+  if always_n < BUFF_FOLD.MIN then
+    for k = always_n, 1, -1 do
+      table.insert(vis, 1, BUFF_FOLD.rec[k])
+      n = n + 1
+    end
+    always_n = 0
+  elseif unfolded then
+    for k = always_n, 1, -1 do
+      table.insert(vis, 1, BUFF_FOLD.rec[k])
+      n = n + 1
+    end
+  end
+  BUFF_FOLD.n = always_n
 
-  if n == 0 then
+  if n == 0 and always_n == 0 then
     controls.no_data:SetHidden(false)
     hide_grid(controls.grid_ems)
     return
@@ -2250,7 +2313,6 @@ local function render_view4()
   local cw, ch = canvas:GetWidth(), canvas:GetHeight()
   if cw <= BUFF_GUTTER_W + 40 or ch <= 4 then return end
 
-  local recording = Verdant.TemporalBuffer.is_recording()
   local t0   = BT.session_start()
   local t_hi = recording and GetGameTimeMilliseconds() or BT.session_end()
   local span = t_hi - t0
@@ -2259,7 +2321,49 @@ local function render_view4()
   Verdant.Diagnostics.bump("graph.view_buffs.renders")
   draw_grid(controls.grid_ems, canvas, 0, span)
 
-  local ch_plot = math_max(4, ch - TIME_STRIP_H - ULT_L.CHIP)
+  local strip_h = (always_n > 0) and (BUFF_FOLD.H + BUFF_ROW_GAP) or 0
+  local top = ULT_L.CHIP + strip_h
+  if always_n > 0 then
+    BUFF_FOLD.on = true
+    BUFF_FOLD.y0 = ULT_L.CHIP
+    BUFF_FOLD.y1 = ULT_L.CHIP + BUFF_FOLD.H
+    local band = controls.pool_buff_seg:AcquireObject()
+    band:ClearAnchors()
+    band:SetAnchor(TOPLEFT, canvas, TOPLEFT, 0, ULT_L.CHIP)
+    band:SetWidth(cw)
+    band:SetHeight(BUFF_FOLD.H)
+    band:SetColor(C_BUFF_LANE.r, C_BUFF_LANE.g, C_BUFF_LANE.b, unfolded and 0.03 or 0.08)
+    band:SetHidden(false)
+    local head = controls.pool_buff_lbl:AcquireObject()
+    head:ClearAnchors()
+    head:SetText(string_format(GetString(unfolded and VERDANT_BUFFS_ALWAYS_OPEN or VERDANT_BUFFS_ALWAYS), always_n))
+    head:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+    head:SetColor(C_BUFF_MORE.r, C_BUFF_MORE.g, C_BUFF_MORE.b, C_BUFF_MORE.a)
+    head:SetDimensions(BUFF_GUTTER_W - 8, BUFF_FOLD.H)
+    head:SetAnchor(TOPLEFT, canvas, TOPLEFT, 6, ULT_L.CHIP)
+    head:SetHidden(false)
+    if not unfolded then
+      local x = BUFF_GUTTER_W
+      local iy = ULT_L.CHIP + math_floor((BUFF_FOLD.H - BUFF_FOLD.ICON) / 2)
+      for k = 1, always_n do
+        if x + BUFF_FOLD.ICON > cw then break end
+        local rec = BUFF_FOLD.rec[k]
+        local ic = controls.pool_buff_icon:AcquireObject()
+        ic:ClearAnchors()
+        ic:SetTexture(Verdant.SkillColors.ability_icon(rec.id))
+        ic:SetDimensions(BUFF_FOLD.ICON, BUFF_FOLD.ICON)
+        ic:SetColor(1, 1, 1, (hover_key ~= nil and rec.id ~= hover_key) and 0.45 or 1)
+        ic:SetAnchor(TOPLEFT, canvas, TOPLEFT, x, iy)
+        ic:SetHidden(false)
+        BUFF_FOLD.x0[k] = x
+        BUFF_FOLD.x1[k] = x + BUFF_FOLD.ICON
+        x = x + BUFF_FOLD.ICON + BUFF_FOLD.GAP
+      end
+    end
+  end
+  if n == 0 then return end
+
+  local ch_plot = math_max(4, ch - TIME_STRIP_H - top)
   local rows    = n
   local extra   = 0
   local row_h   = math_floor(ch_plot / rows) - BUFF_ROW_GAP
@@ -2273,6 +2377,11 @@ local function render_view4()
     row_h = BUFF_MAX_ROW_H
   end
   if n > rows then Verdant.Diagnostics.bump("graph.view_buffs.overflow") end
+  local max_scroll = (n > rows) and (n - rows) or 0
+  if BUFF_FOLD.scroll > max_scroll then BUFF_FOLD.scroll = max_scroll end
+  if BUFF_FOLD.scroll < 0 then BUFF_FOLD.scroll = 0 end
+  BUFF_FOLD.max_scroll = max_scroll
+  local off = BUFF_FOLD.scroll
 
   local SC     = Verdant.SkillColors
   local lane_x = BUFF_GUTTER_W
@@ -2289,8 +2398,8 @@ local function render_view4()
   local dur = capture and (BT.session_end() - BT.session_start()) or 0
 
   for i = 1, rows do
-    local rec = vis[i]
-    local y   = ULT_L.CHIP + (i - 1) * (row_h + BUFF_ROW_GAP)
+    local rec = vis[i + off]
+    local y   = top + (i - 1) * (row_h + BUFF_ROW_GAP)
     local c   = buff_color(rec)
     if capture then
       buff_hit.y0[i]  = y
@@ -2342,9 +2451,31 @@ local function render_view4()
     else
       lbl:SetColor(C_BUFF_NAME.r, C_BUFF_NAME.g, C_BUFF_NAME.b, C_BUFF_NAME.a)
     end
-    lbl:SetDimensions(name_w, row_h)
+    local bar_room = capture and dur > 0 and row_h >= 18
+    lbl:SetDimensions(name_w, bar_room and (row_h - 6) or row_h)
     lbl:SetAnchor(TOPLEFT, canvas, TOPLEFT, isz + 20, y)
     lbl:SetHidden(false)
+
+    if bar_room then
+      local frac = rec.uptime_ms / dur
+      if frac > 1 then frac = 1 end
+      local track = controls.pool_buff_seg:AcquireObject()
+      track:ClearAnchors()
+      track:SetAnchor(TOPLEFT, canvas, TOPLEFT, isz + 20, y + row_h - 5)
+      track:SetWidth(name_w)
+      track:SetHeight(3)
+      track:SetDrawLevel(3)
+      track:SetColor(1, 1, 1, dim and 0.03 or 0.07)
+      track:SetHidden(false)
+      local fill = controls.pool_buff_seg:AcquireObject()
+      fill:ClearAnchors()
+      fill:SetAnchor(TOPLEFT, canvas, TOPLEFT, isz + 20, y + row_h - 5)
+      fill:SetWidth(math_max(1, math_floor(name_w * frac + 0.5)))
+      fill:SetHeight(3)
+      fill:SetDrawLevel(4)
+      fill:SetColor(c.r, c.g, c.b, dim and 0.25 or 0.80)
+      fill:SetHidden(false)
+    end
 
     if capture and dur > 0 then
       local pct = controls.pool_buff_lbl:AcquireObject()
@@ -2393,17 +2524,18 @@ local function render_view4()
   if n > rows then
     local more = controls.pool_buff_lbl:AcquireObject()
     more:ClearAnchors()
-    more:SetText(string_format(GetString(VERDANT_BUFFS_MORE), n - rows))
+    more:SetText(string_format(GetString(VERDANT_BUFFS_SCROLLED), off, n - rows - off))
     more:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
     more:SetColor(C_BUFF_MORE.r, C_BUFF_MORE.g, C_BUFF_MORE.b, C_BUFF_MORE.a)
     more:SetDimensions(cw, row_h)
-    more:SetAnchor(TOPLEFT, canvas, TOPLEFT, 0, ULT_L.CHIP + rows * (row_h + BUFF_ROW_GAP))
+    more:SetAnchor(TOPLEFT, canvas, TOPLEFT, 0, top + rows * (row_h + BUFF_ROW_GAP))
     more:SetHidden(false)
   end
 end
 
 local function render_view5()
   controls.pool_buff_seg:ReleaseAllObjects()
+  controls.pool_buff_rim:ReleaseAllObjects()
   controls.pool_buff_icon:ReleaseAllObjects()
   controls.pool_buff_lbl:ReleaseAllObjects()
   hide_grid(controls.grid_ems)
@@ -2859,6 +2991,8 @@ function render_current_view()
     render_view4()
   elseif current_view == VIEW.TRIAGE then
     render_view5()
+  elseif current_view == VIEW.CONTRIB then
+    Verdant.ContribView.render()
   else
     layout_skill_area()
     render_view2()
@@ -2983,10 +3117,45 @@ local function update_summary_chip()
   end
 end
 
+function M.save_available()
+  local TB = Verdant.TemporalBuffer
+  local n = TB.count()
+  if TB.is_recording() or n == 0 or controls.save_locked then return false end
+  return not (controls.saved_start == recording_start_ms and controls.saved_count == n)
+end
+
+function M.pulse(btn, name)
+  if not btn then return end
+  controls.pulse_t = controls.pulse_t or {}
+  controls.pulse_t[name] = 0
+  zev.register_update(name, 16, function()
+    local t = controls.pulse_t[name] + 16
+    controls.pulse_t[name] = t
+    if t >= 720 then
+      btn:SetAlpha(1)
+      zev.unregister_update(name)
+      return
+    end
+    btn:SetAlpha(0.35 + 0.65 * math.abs(math.cos((t % 360) / 360 * math.pi)))
+  end)
+end
+
+function M.pulse_lib() M.pulse(controls.btn_lib, "VerdantLibPulse") end
+
+function M.on_shown()
+  if not controls.window or light.active then return end
+  local f = controls.win_fader
+  if not f then return end
+  f.visible = false
+  controls.window:SetAlpha(0)
+  fade_in(f)
+end
+
 local function refresh_button_colors()
   local recording = Verdant.TemporalBuffer.is_recording()
   controls.btn_record:SetEnabled(not recording)
   controls.btn_stop:SetEnabled(recording)
+  if controls.btn_save then controls.btn_save:SetEnabled(M.save_available()) end
   update_hover_gate()
   update_summary_chip()
 end
@@ -3034,6 +3203,8 @@ local function set_view(v)
   controls.view_label:SetText(VIEW_LABELS[v])
   style_tabs()
   hover_key = nil
+  BUFF_FOLD.scroll = 0
+  Verdant.ContribView.reset_scroll()
   if controls.oh_legend then
     controls.oh_legend:SetHidden(v ~= VIEW.OVERHEAL or Verdant.TemporalBuffer.count() == 0)
   end
@@ -3100,12 +3271,14 @@ end
 function M.on_record_click()
   if Verdant.TemporalBuffer.is_recording() then return end
   log:info("record click")
-  PlaySound(SOUNDS.DIALOG_ACCEPT)
+  Sound.play("record")
   if not Verdant.AutoRecord.is_auto_active() then
     Verdant.AutoRecord.notify_manual_record()
   end
   summary_text = nil
   Verdant.SessionStore.finish_autosave()
+  controls.save_locked = false
+  controls.saved_start, controls.saved_count = nil, nil
   Verdant.TemporalBuffer.clear()
   Verdant.Metrics.reset()
   Verdant.Metrics.session_mark()
@@ -3114,6 +3287,7 @@ function M.on_record_click()
   hide_all_grids()
   controls.no_data:SetHidden(false)
   Verdant.TemporalBuffer.start_recording()
+  Verdant.Trace.on_record(Verdant.SavedVars)
   recording_start_ms = GetGameTimeMilliseconds()
   Verdant.BuffTracker.start_session(recording_start_ms)
   Verdant.Ultimate.start_session(recording_start_ms)
@@ -3123,6 +3297,7 @@ function M.on_record_click()
   zev.register_update(Verdant.Constants.TEMPORAL.UPDATE_NAME, interval, on_sample_update)
   refresh_button_colors()
   controls.status:SetText("0:00")
+  controls.status:SetColor(0.65, 0.65, 0.65, 1)
   if light.enabled() then light.enter() end
 end
 
@@ -3130,14 +3305,20 @@ function M.on_stop_click()
   if not Verdant.TemporalBuffer.is_recording() then return end
   log:info("stop click")
   Verdant.Hitch.mark("stop")
-  PlaySound(SOUNDS.DIALOG_ACCEPT)
+  Sound.play("stop")
   light.exit()
   Verdant.AutoRecord.notify_manual_stop()
   Verdant.TemporalBuffer.stop_recording()
+  Verdant.Trace.on_stop(Verdant.SavedVars)
   zev.unregister_update(Verdant.Constants.TEMPORAL.UPDATE_NAME)
   Verdant.BuffTracker.finalize(GetGameTimeMilliseconds())
   Verdant.Ultimate.finalize(GetGameTimeMilliseconds())
   Verdant.SessionStore.on_session_stop()
+  if not Verdant.SessionStore.autosave_pending() then
+    controls.status:SetText(GetString(VERDANT_SAVE_STATUS_UNSAVED))
+    controls.status:SetColor(0.93, 0.72, 0.36, 1)
+    M.pulse(controls.btn_save, "VerdantSavePulse")
+  end
   report.hot, report.direct = Verdant.Metrics.overheal_split()
   summary_text = build_summary_text()
   local s = Verdant.TemporalBuffer.summary()
@@ -3248,6 +3429,8 @@ function M.load_session(sess)
   report.hot, report.direct = hs.oh_hot or 0, hs.oh_direct or 0
   controls.status:SetText(string_format(GetString(VERDANT_LIB_LOADED),
     sess.head.zone or "?"))
+  controls.status:SetColor(0.65, 0.65, 0.65, 1)
+  controls.save_locked = true
   Verdant.Visibility.set("graph", true)
   refresh_button_colors()
   render_current_view()
@@ -3256,7 +3439,7 @@ function M.load_session(sess)
 end
 
 function M.on_flush_click()
-  PlaySound(SOUNDS.DIALOG_DECLINE)
+  Sound.play("discard")
   Verdant.SessionStore.finish_autosave()
   light.exit()
   if Verdant.TemporalBuffer.is_recording() then
@@ -3267,15 +3450,43 @@ function M.on_flush_click()
   Verdant.Ultimate.reset()
   summary_text = nil
   Verdant.TemporalBuffer.clear()
+  controls.save_locked = false
+  controls.saved_start, controls.saved_count = nil, nil
   release_all_pools()
   hide_all_grids()
   refresh_button_colors()
   controls.status:SetText("")
+  controls.status:SetColor(0.65, 0.65, 0.65, 1)
   controls.no_data:SetHidden(false)
 end
 
+function M.on_save_click()
+  local TB = Verdant.TemporalBuffer
+  if TB.is_recording() then
+    Sound.play("deny")
+    d("[V] " .. GetString(VERDANT_SAVE_BUSY))
+    return false
+  end
+  if TB.count() == 0 then
+    Sound.play("deny")
+    d("[V] " .. GetString(VERDANT_SAVE_NOTHING))
+    return false
+  end
+  Verdant.SessionStore.finish_autosave()
+  if not M.save_available() then
+    Sound.play("deny")
+    d("[V] " .. GetString(VERDANT_SAVE_ALREADY))
+    return false
+  end
+  log:info("manual save")
+  Sound.play("confirm")
+  Verdant.SessionStore.save_now()
+  Verdant.Diagnostics.bump("library.manual_save")
+  return true
+end
+
 function M.on_close_click()
-  PlaySound(SOUNDS.ADVENTURE_ZONE_OVERVIEW_CLOSED)
+  Sound.play("close")
   light.exit()
   Verdant.Visibility.set("graph", false)
   stop_hover_poll(); hide_hover_ui(); hover_key = nil
@@ -3297,7 +3508,7 @@ function M.on_title_double_click()
   local C = Verdant.Constants
   local w, h = controls.window:GetDimensions()
   if w == C.GRAPH_DEFAULT_W and h == C.GRAPH_DEFAULT_H then return end
-  PlaySound(SOUNDS.DIALOG_ACCEPT)
+  Sound.play("click")
   controls.window:SetDimensions(C.GRAPH_DEFAULT_W, C.GRAPH_DEFAULT_H)
   M.on_resize_stop()
 end
@@ -3355,16 +3566,39 @@ function M.toggle_record()
   end
 end
 
+function M.toggle_buffs_fold()
+  local sv = Verdant.SavedVars
+  if not sv then return end
+  sv.settings = sv.settings or {}
+  sv.settings.buffs_unfolded = not (sv.settings.buffs_unfolded == true)
+  Sound.play(sv.settings.buffs_unfolded and "on" or "off")
+  hide_hover_ui(); hover_key = nil
+  release_all_pools()
+  render_current_view()
+end
+
+function M.buffs_unfolded()
+  local sv = Verdant.SavedVars
+  return sv and sv.settings and sv.settings.buffs_unfolded == true or false
+end
+
+function M.step_view(dir)
+  if not controls.window or controls.window:IsHidden() then return false end
+  Sound.play("page")
+  if dir and dir < 0 then M.prev_view() else M.next_view() end
+  return true
+end
+
 function M.prev_view()
   local v = current_view - 1
-  if v < VIEW.EMS then v = VIEW.TRIAGE end
+  if v < VIEW.EMS then v = VIEW.CONTRIB end
   release_all_pools()
   set_view(v)
 end
 
 function M.next_view()
   local v = current_view + 1
-  if v > VIEW.TRIAGE then v = VIEW.EMS end
+  if v > VIEW.CONTRIB then v = VIEW.EMS end
   release_all_pools()
   set_view(v)
 end
@@ -3402,7 +3636,7 @@ function M.on_welcome_ok()
   local sv = Verdant.SavedVars
   sv.settings = sv.settings or {}
   sv.settings.welcomed = true
-  PlaySound(SOUNDS.DIALOG_ACCEPT)
+  Sound.play("confirm")
   if controls.welcome then controls.welcome:SetHidden(true) end
 end
 
@@ -3410,7 +3644,7 @@ function M.toggle()
   local now_visible = not Verdant.Visibility.get("graph")
   log:info("toggle ->", now_visible and "show" or "hide")
   Verdant.Visibility.set("graph", now_visible)
-  PlaySound(now_visible and SOUNDS.ARMORY_OPEN or SOUNDS.ADVENTURE_ZONE_OVERVIEW_CLOSED)
+  Sound.play(now_visible and "open" or "close")
   if now_visible then
     local sv = Verdant.SavedVars
     if controls.welcome and not (sv.settings and sv.settings.welcomed) then
@@ -3438,6 +3672,7 @@ function M.init()
   controls.btn_stop      = VerdantGraphWindowStopBtn
   controls.btn_flush     = VerdantGraphWindowFlushBtn
   controls.btn_lib       = VerdantGraphWindowLibBtn
+  controls.btn_save      = VerdantGraphWindowSaveBtn
   controls.status        = VerdantGraphWindowStatusLabel
   controls.btn_prev_view = VerdantGraphWindowPrevViewBtn
   controls.view_label    = VerdantGraphWindowViewLabel
@@ -3446,6 +3681,7 @@ function M.init()
   zui.tooltip(controls.btn_stop,      VERDANT_TIP_STOP)
   zui.tooltip(controls.btn_flush,     VERDANT_TIP_FLUSH)
   zui.tooltip(controls.btn_lib,       VERDANT_TIP_LIB)
+  zui.tooltip(controls.btn_save,      VERDANT_TIP_SAVE)
   zui.tooltip(controls.btn_prev_view, VERDANT_TIP_PREV_VIEW)
   zui.tooltip(controls.btn_next_view, VERDANT_TIP_NEXT_VIEW)
   zui.tooltip(VerdantGraphWindowSettingsBtn, VERDANT_TIP_SETTINGS)
@@ -3546,7 +3782,16 @@ function M.init()
     end,
     function(c) c:SetHidden(true) end)
 
-  controls.pool_buff_seg = make_fill_pool("VerdantBuffSeg")
+  controls.pool_buff_seg = Pool.new("VerdantBuffSeg", controls.canvas, CT_TEXTURE,
+    function(c)
+      fill_factory(c)
+      c:SetDrawLevel(2)
+    end,
+    function(c)
+      c:SetHidden(true)
+      c:SetDrawLevel(2)
+    end)
+  controls.pool_buff_rim = make_fill_pool("VerdantBuffRim", 3)
   controls.pool_buff_icon = Pool.new("VerdantBuffIcon", controls.canvas, CT_TEXTURE,
     function(c) c:SetPixelRoundingEnabled(false) end,
     function(c) c:SetHidden(true) end)
@@ -3557,6 +3802,15 @@ function M.init()
       c:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     end,
     function(c) c:SetHidden(true) end)
+  Verdant.ContribView.attach({
+    canvas = controls.canvas, grid = controls.grid_ems, no_data = controls.no_data,
+    seg = controls.pool_buff_seg, rim = controls.pool_buff_rim, icon = controls.pool_buff_icon, lbl = controls.pool_buff_lbl,
+    layout = ULT_L, fmt_val = fmt_val, hexc = hexc, hide_grid = hide_grid,
+    show_card = show_moment_card,
+    hide_card = function() fade_out(card_fader) end,
+    hit_reset = function() hit_begin(hit_main, 0) end,
+    rerender = function() render_current_view() end,
+  })
 
   controls.title:SetText(GetString(VERDANT_GRAPH_TITLE))
   controls.title:SetColor(0.75, 0.75, 0.75, 1)
@@ -3570,7 +3824,7 @@ function M.init()
   end)
   controls.view_label:SetHandler("OnMouseUp", function(_, button, upInside)
     if upInside == false then return end
-    PlaySound(SOUNDS.DIALOG_ACCEPT)
+    Sound.play("page")
     if button == zc.MOUSE_BUTTON_INDEX_RIGHT then M.prev_view() else M.next_view() end
   end)
 
@@ -3598,7 +3852,7 @@ function M.init()
     local view = v
     hit:SetHandler("OnMouseUp", function(_, _, upInside)
       if upInside == false or view == current_view then return end
-      PlaySound(SOUNDS.DIALOG_ACCEPT)
+      Sound.play("page")
       release_all_pools()
       set_view(view)
     end)
@@ -3615,9 +3869,38 @@ function M.init()
   layout_tabs()
   style_tabs()
 
+  controls.saving_frames = { "SAVING", "SAVING ·", "SAVING · ·", "SAVING · · ·" }
+  Verdant.SessionStore.on_save_begin = function()
+    controls.saving_t = 0
+    controls.status:SetText(controls.saving_frames[1])
+    controls.status:SetColor(0.65, 0.65, 0.65, 1)
+    if controls.btn_save then controls.btn_save:SetAlpha(0.45) end
+    zev.register_update("VerdantSavingSpin", 150, function()
+      local t = controls.saving_t + 1
+      controls.saving_t = t
+      controls.status:SetText(controls.saving_frames[(t % 4) + 1])
+    end)
+  end
+  Verdant.SessionStore.on_save_end = function(stored)
+    zev.unregister_update("VerdantSavingSpin")
+    if controls.btn_save then controls.btn_save:SetAlpha(1) end
+    if not stored then
+      controls.status:SetText(GetString(VERDANT_SAVE_STATUS_UNSAVED))
+      controls.status:SetColor(0.93, 0.72, 0.36, 1)
+    end
+  end
   Verdant.SessionStore.on_saved = function(session)
     d("[V] " .. string_format(GetString(VERDANT_LIB_SAVED),
       session.head.zone or "?", fmt_secs(session.head.dur_ms or 0)))
+    controls.saved_start, controls.saved_count = recording_start_ms, Verdant.TemporalBuffer.count()
+    controls.status:SetText(string_format(GetString(VERDANT_SAVE_STATUS), session.head.zone or "?"))
+    controls.status:SetColor(0.65, 0.65, 0.65, 1)
+    if session.head.manual then Sound.play("save") end
+    refresh_button_colors()
+    M.pulse_lib()
+    if Verdant.Library and Verdant.Library.on_session_saved then
+      Verdant.Library.on_session_saved(session.head.manual == true)
+    end
   end
 
   controls.welcome = VerdantGraphWindowWelcome
@@ -3699,7 +3982,7 @@ function M.init()
   sum_hit:SetHandler("OnMouseUp", function(_, _, upInside)
     if upInside == false then return end
     show_report_card()
-    PlaySound(SOUNDS.DIALOG_ACCEPT)
+    Sound.play("click")
     Verdant.CopyBox.show(GetString(VERDANT_REPORT_COPY_TITLE), report_text())
   end)
 
@@ -3720,6 +4003,8 @@ function M.init()
 
   build_hover_card()
   card_fader = make_fader(controls.card.root)
+  controls.win_fader = make_fader(controls.window)
+  controls.win_fader.visible = true
 
   local crosshair = WINDOW_MANAGER:CreateControl("VerdantGraphCrosshair", controls.window, CT_TEXTURE)
   crosshair:SetTexture(FILL_TEXTURE)
@@ -3753,8 +4038,26 @@ function M.init()
   controls.hit_bot  = make_hit("VerdantGraphHitBot",  controls.mps_canvas)
 
   controls.hit_main:SetHandler("OnMouseWheel", function(_, delta)
-    if current_view ~= VIEW.TRIAGE then return end
     local dir = (delta and delta < 0) and 1 or -1
+    if current_view == VIEW.BUFFS then
+      local next_off = BUFF_FOLD.scroll + dir
+      if next_off < 0 then next_off = 0 end
+      if next_off > BUFF_FOLD.max_scroll then next_off = BUFF_FOLD.max_scroll end
+      if next_off ~= BUFF_FOLD.scroll then
+        BUFF_FOLD.scroll = next_off
+        hide_hover_ui(); hover_key = nil
+        render_current_view()
+      end
+      return
+    end
+    if current_view == VIEW.CONTRIB then
+      if Verdant.ContribView.scroll(dir) then
+        hide_hover_ui()
+        render_current_view()
+      end
+      return
+    end
+    if current_view ~= VIEW.TRIAGE then return end
     local max_scroll = tri_hit.matches - tri_hit.fit
     if max_scroll < 0 then max_scroll = 0 end
     local next_off = tri_hit.scroll + dir
@@ -3778,7 +4081,7 @@ function M.init()
           if cls ~= tri_hit.filter then
             tri_hit.filter = cls
             tri_hit.scroll = 0
-            PlaySound(SOUNDS.DIALOG_ACCEPT)
+            Sound.play("click")
             hide_hover_ui(); hover_key = nil
             render_current_view()
           end
@@ -3791,12 +4094,16 @@ function M.init()
     local mx, my = GetUIMousePosition()
     local rel_x = mx - controls.canvas:GetLeft()
     local rel_y = my - controls.canvas:GetTop()
+    if BUFF_FOLD.on and rel_y >= BUFF_FOLD.y0 and rel_y <= BUFF_FOLD.y1 and rel_x >= 0 then
+      M.toggle_buffs_fold()
+      return
+    end
     if rel_x < 0 or rel_x > 20 then return end
     for i = 1, buff_hit.n do
       if rel_y >= buff_hit.y0[i] and rel_y <= buff_hit.y1[i] then
         local rec = buff_hit.rec[i]
         local thr = Verdant.BuffWatch.toggle(rec.name, rec.id)
-        PlaySound(SOUNDS.ABILITY_SLOTTED)
+        Sound.play("arm")
         if thr then
           d("[V] " .. string_format(GetString(VERDANT_WATCH_ARMED), rec.name or "?", thr))
         else

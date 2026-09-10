@@ -19,6 +19,18 @@ function M.unregister_callback(event_name, callback)
   SCENE_MANAGER:UnregisterCallback(event_name, callback)
 end
 
+function M.register_top_level(control)
+  SCENE_MANAGER:RegisterTopLevel(control, false)
+end
+
+function M.show_top_level(control)
+  SCENE_MANAGER:ShowTopLevel(control)
+end
+
+function M.hide_top_level(control)
+  SCENE_MANAGER:HideTopLevel(control)
+end
+
 function M.is_hud_scene(name)
   return name == "hud" or name == "hudui"
 end

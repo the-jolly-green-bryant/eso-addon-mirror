@@ -3,6 +3,7 @@ local Verdant = Verdant
 
 Verdant.Watch = {}
 local M = Verdant.Watch
+local Sound = Verdant.Sound
 
 local zui = Verdant.zenimax.ui
 local zc  = Verdant.zenimax.constants
@@ -92,9 +93,9 @@ function M.render(alerts)
   if not window then return end
   local chime = alerts.chime or 0
   if chime == 2 then
-    zui.PlaySound(SOUNDS.ABILITY_READY)
+    Sound.play("alert_ready")
   elseif chime == 1 then
-    zui.PlaySound(SOUNDS.NEW_TIMED_NOTIFICATION)
+    Sound.play("alert_timer")
   end
   alerts.chime = 0
   local n = alerts.n

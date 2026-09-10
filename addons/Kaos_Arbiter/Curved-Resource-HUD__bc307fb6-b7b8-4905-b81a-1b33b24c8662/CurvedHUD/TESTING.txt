@@ -1,4 +1,4 @@
-CURVED RESOURCE HUD 1.0.7 RELEASE CHECKLIST
+CURVED RESOURCE HUD 1.1.2 RELEASE CHECKLIST
 
 1. In Bethesda.net, set required dependencies to:
    - LibAddonMenu-2.0
@@ -8,7 +8,41 @@ CURVED RESOURCE HUD 1.0.7 RELEASE CHECKLIST
 2. Install/update, enable CurvedHUD, then reload the UI or relog.
 
 3. Confirm chat prints:
-   [CurvedHUD] Loaded 1.0.7; HUD, shield, and trackers created
+   [CurvedHUD] Loaded 1.1.2; HUD, shield, and trackers created
+
+1.1.2 Soul Burst checklist:
+- Enable Soul Burst, equip Anchorite's Potency, and cast it while in combat.
+- Confirm a five-second timer starts for the Soul Gem/Ultimate lockout.
+- Recast during those five seconds and confirm the timer does not restart.
+- Confirm the shield and Minor Courage expiration do not alter the timer.
+- Cast out of combat and confirm no Potency cooldown is shown.
+- Re-scribe Soul Burst without Anchorite's Potency and confirm it tracks the
+  API-reported effect duration, or the Soul Burst fallback duration when the
+  API does not provide one.
+
+1.1.1 submenu-hierarchy checklist:
+- Confirm only the seven primary category headers are blue.
+- Confirm every class, skill line, and item-set family uses a normal-colored
+  collapsed submenu title.
+
+1.1.0 consolidated-menu checklist:
+- Confirm there is exactly one CurvedHUD entry in Add-on Settings.
+- Confirm only the seven category headers are blue; submenu titles use the
+  normal menu color.
+- Confirm each class, skill line, and item-set family has its own collapsed
+  submenu beneath the appropriate category header.
+- Open every subsection and verify its controls are in the correct group.
+- Switch through all sixteen characters and confirm the menu and HUD are not
+  duplicated and no shared CPU-budget error occurs.
+
+1.0.8 distributed settings-registration checklist:
+- Fully restart ESO before testing.
+- Confirm all six CurvedHUD settings pages appear after login.
+- Rapidly switch through at least ten characters without a shared 1000 ms
+  add-on CPU-budget error.
+- Complete all sixteen character logins in one session and verify the HUD,
+  settings pages, and scene transitions do not multiply or slow down.
+- Open every CurvedHUD settings page and confirm its controls populate.
 
 1.0.7 normal-load registration checklist:
 - Fully close ESO before installing, then start a fresh session.

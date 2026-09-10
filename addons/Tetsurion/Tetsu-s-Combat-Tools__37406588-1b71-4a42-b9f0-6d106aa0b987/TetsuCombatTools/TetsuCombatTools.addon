@@ -1,8 +1,8 @@
 ## Title: |cFFD700Tetsu's|r Combat Tools
 ## Author: Tetsurion
 ## Description: Console combat HUD pack. Skills, combat lamp, food, potion, veteran run timer.
-## Version: 1.3.5
-## AddOnVersion: 10305
+## Version: 1.3.12
+## AddOnVersion: 10312
 ## APIVersion: 101050 101051
 ## SavedVariables: TetsuCombatToolsSavedVars
 ## DependsOn: LibHarvensAddonSettings

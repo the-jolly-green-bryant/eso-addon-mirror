@@ -33,6 +33,29 @@ local function Now()
     return 0
 end
 
+-- ZOS (buffdebuffstyles.lua): timeStarted/timeEnding are GetFrameTimeSeconds.
+-- permanent = (timeEnding - timeStarted) == 0. A toggle often has
+-- start == end == "now", not end == 0. Comparing end*1000 to
+-- GetGameTimeMilliseconds then treats it as already expired.
+local function EndMs(timeStarted, timeEnding)
+    local start = tonumber(timeStarted) or 0
+    local stop = tonumber(timeEnding) or 0
+    if stop <= 0 or (stop - start) <= 0.05 then
+        return 0
+    end
+    local nowS
+    if GetFrameTimeSeconds then
+        nowS = GetFrameTimeSeconds()
+    else
+        nowS = Now() / 1000
+    end
+    local remain = stop - nowS
+    if remain <= 0.25 then
+        return 0
+    end
+    return Now() + math.floor(remain * 1000)
+end
+
 local function Vars()
     return T.savedVars
 end
@@ -61,7 +84,9 @@ local function HasEffect(unitTag, key)
     local bag = coverage[CovKey(unitTag)]
     if not bag then return false end
     local t = bag[key]
-    if not t then return false end
+    -- 0 = no expiry (banner / toggle). In Lua `not 0` is true, so
+    -- `if not t` would treat permanent buffs as missing.
+    if t == nil then return false end
     if t == 0 then return true end
     return t > Now()
 end
@@ -113,7 +138,7 @@ local function EffectMode(unitTag, key)
         return 2
     end
     local t = EffectEnd(unitTag, key)
-    if not t then return 0 end
+    if t == nil then return 0 end
     if t == 0 then return 2 end
     local left = t - Now()
     if left <= 0 then return 0 end
@@ -450,6 +475,7 @@ end
 
 function H.OnEffectChanged(_, changeType, _slot, effectName, unitTag, beginTime, endTime, _stacks, _icon, _buffType, _effectType, _abilityType, _status, _unitName, _unitId, abilityId, _sourceType)
     if not unitTag or unitTag == "" then return end
+    if T.IsJunkAbility and T.IsJunkAbility(abilityId) then return end
     local keys = T.KeysFromAbility and T.KeysFromAbility(abilityId, effectName) or nil
     local key = T.LookupKeyForAbilityId(abilityId, effectName)
     if not key and not (keys and next(keys)) then return end
@@ -476,10 +502,7 @@ function H.OnEffectChanged(_, changeType, _slot, effectName, unitTag, beginTime,
         end
     end
     if gained then
-        local endMs = 0
-        if endTime and endTime > 0 then
-            endMs = math.floor(endTime * 1000)
-        end
+        local endMs = EndMs(beginTime, endTime)
         if keys then
             for k in pairs(keys) do applyOne(k, true, endMs) end
         else
@@ -553,9 +576,16 @@ function H.OnCombatEvent(_, result, isError, abilityName, _g, _slot, _srcName, _
 end
 
 function H.OnCombatState(_, inCombat)
-    -- Keep tracked effects out of combat so HUD dots stay testable.
-    if inCombat == false and H.ScanGroupBuffs then
-        H.ScanGroupBuffs()
+    if inCombat == false then
+        if T.TrimJunkIds then
+            pcall(T.TrimJunkIds)
+        end
+        if collectgarbage then
+            pcall(collectgarbage, "step", 120)
+        end
+        if H.ScanGroupBuffs then
+            H.ScanGroupBuffs()
+        end
     end
 end
 
@@ -814,13 +844,10 @@ local function ScanUnitBuffs(unitTag)
     local okN, n = pcall(GetNumBuffs, unitTag)
     if okN and n and n > 0 then
         for i = 1, n do
-            local ok, buffName, _s, timeEnding, _slot, _stacks, _icon, _bt, _et, _at, _st, abilityId =
+            local ok, buffName, timeStarted, timeEnding, _slot, _stacks, _icon, _bt, _et, _at, _st, abilityId =
                 pcall(GetUnitBuffInfo, unitTag, i)
             if ok then
-                local endMs = 0
-                if timeEnding and timeEnding > 0 then
-                    endMs = math.floor(timeEnding * 1000)
-                end
+                local endMs = EndMs(timeStarted, timeEnding)
                 local keys = T.KeysFromAbility and T.KeysFromAbility(abilityId, buffName)
                 if keys then
                     for mapped in pairs(keys) do

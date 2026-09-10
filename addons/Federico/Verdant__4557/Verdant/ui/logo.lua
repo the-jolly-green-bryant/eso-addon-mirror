@@ -26,18 +26,39 @@ local DRAG_THRESHOLD = 5
 local GLOW_MIN       = 0.45
 local GLOW_MAX       = 1.00
 local GLOW_PERIOD_MS = 650
+local HEART_MIN      = 0.40
+local HEART_MAX      = 0.90
+local HEART_PERIOD_MS = 1100
 
 -- ── state ───────────────────────────────────────────────────────────────────
 local controls = {}
 local enabled  = true
 local allowed  = false
+local recording = false
+local hovering  = false
 local down_x, down_y = 0, 0
+
+local function heartbeat(on)
+  local tl = controls.heart_timeline
+  if not tl then return end
+  if on then
+    if not controls.heart_on then
+      controls.heart_on = true
+      tl:PlayFromStart()
+    end
+  elseif controls.heart_on then
+    controls.heart_on = false
+    tl:Stop()
+    controls.icon:SetAlpha(IDLE_ALPHA)
+  end
+end
 
 local function reset_hover()
   if controls.glow_timeline then controls.glow_timeline:Stop() end
   if controls.glow then controls.glow:SetHidden(true) end
   controls.icon:SetScale(1.0)
   controls.icon:SetAlpha(IDLE_ALPHA)
+  heartbeat(recording and enabled and allowed and not hovering)
 end
 
 local function refresh()
@@ -50,7 +71,16 @@ function M.sync(is_allowed)
   allowed = is_allowed
   if enabled and allowed then controls.icon:SetAlpha(IDLE_ALPHA) end
   refresh()
+  heartbeat(recording and enabled and allowed and not hovering)
 end
+
+function M.set_recording(on)
+  recording = on and true or false
+  if not controls.icon then return end
+  heartbeat(recording and enabled and allowed and not hovering)
+end
+
+function M.is_beating() return controls.heart_on == true end
 
 function M.is_enabled() return enabled end
 
@@ -64,6 +94,8 @@ end
 
 -- ── mouse ────────────────────────────────────────────────────────────────────
 function M.on_enter()
+  hovering = true
+  heartbeat(false)
   controls.icon:SetAlpha(HOVER_ALPHA)
   controls.icon:SetScale(HOVER_SCALE)
   controls.glow:SetHidden(false)
@@ -71,10 +103,12 @@ function M.on_enter()
 end
 
 function M.on_exit()
+  hovering = false
   controls.icon:SetAlpha(IDLE_ALPHA)
   controls.icon:SetScale(1.0)
   controls.glow_timeline:Stop()
   controls.glow:SetHidden(true)
+  heartbeat(recording and enabled and allowed)
 end
 
 function M.on_mouse_down()
@@ -110,6 +144,13 @@ function M.init()
   a:SetDuration(GLOW_PERIOD_MS)
   tl:SetPlaybackType(ANIMATION_PLAYBACK_PING_PONG, LOOP_INDEFINITELY)
   controls.glow_timeline = tl
+
+  local ht = ANIMATION_MANAGER:CreateTimeline()
+  local ha = ht:InsertAnimation(ANIMATION_ALPHA, controls.icon)
+  ha:SetAlphaValues(HEART_MIN, HEART_MAX)
+  ha:SetDuration(HEART_PERIOD_MS)
+  ht:SetPlaybackType(ANIMATION_PLAYBACK_PING_PONG, LOOP_INDEFINITELY)
+  controls.heart_timeline = ht
 
   local sv = Verdant.SavedVars
   sv.logo = sv.logo or {}

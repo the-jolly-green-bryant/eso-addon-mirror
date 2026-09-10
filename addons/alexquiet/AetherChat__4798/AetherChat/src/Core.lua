@@ -5,12 +5,17 @@ AetherChat = AetherChat or {}
 local AetherChat = AetherChat
 
 AetherChat.name = 'AetherChat'
-AetherChat.version = '1.2.6'
+AetherChat.version = '1.3.0'
 
 -- Keybinding Strings (Must be created before Bindings.xml is loaded by C++ engine)
 local L = AetherChat.L or function(k) return k end
 ZO_CreateStringId("SI_BINDINGS_CATEGORY_AETHERCHAT", "AetherChat")
 ZO_CreateStringId("SI_BINDING_NAME_AETHERCHAT_TOGGLE", L('BINDING_NAME'))
+ZO_CreateStringId("SI_BINDING_NAME_AETHERCHAT_TOGGLE_MODE", L('BINDING_TOGGLE_MODE'))
+ZO_CreateStringId("SI_BINDING_NAME_AETHERCHAT_NEXT_TAB", L('BINDING_NEXT_TAB'))
+ZO_CreateStringId("SI_BINDING_NAME_AETHERCHAT_PREV_TAB", L('BINDING_PREV_TAB'))
+ZO_CreateStringId("SI_BINDING_NAME_AETHERCHAT_NEXT_GUILD", L('BINDING_NEXT_GUILD'))
+ZO_CreateStringId("SI_BINDING_NAME_AETHERCHAT_FOCUS_CHAT", L('BINDING_FOCUS_CHAT'))
 
 -- Register Slash Commands
 SLASH_COMMANDS['/aetherc'] = function()
@@ -24,6 +29,13 @@ SLASH_COMMANDS['/aether'] = function()
         AetherChat.Messenger.Toggle()
     end
 end
+
+SLASH_COMMANDS['/aethermode'] = function()
+    if AetherChat.Messenger and AetherChat.Messenger.ToggleInterfaceMode then
+        AetherChat.Messenger.ToggleInterfaceMode()
+    end
+end
+SLASH_COMMANDS['/acmode'] = SLASH_COMMANDS['/aethermode']
 
 SLASH_COMMANDS['/chathead'] = function()
     if AetherChat.Messenger and AetherChat.Messenger.TestWhisper then
@@ -48,7 +60,7 @@ SLASH_COMMANDS['/aetherkw'] = function(args)
     -- Also force rebuild the keyword table first
     if AetherChat.ChatEngine and AetherChat.ChatEngine.RebuildKeywordTable then
         AetherChat.ChatEngine.RebuildKeywordTable()
-        d('|c5865F2[AetherChat]|r Keywords chargés : ' .. tostring(#(AetherChat.ChatEngine.keywordTable or {})))
+        d('|c5865F2[AetherChat]|r Keywords: ' .. tostring(#(AetherChat.ChatEngine.keywordTable or {})))
     end
 end
 
@@ -67,6 +79,9 @@ local function OnAddOnLoaded(event, addOnName)
 
     -- Initialize Modules in strict safe order
     AetherChat.Settings.Initialize()
+    if AetherChat.CustomTabs and AetherChat.CustomTabs.Initialize then
+        AetherChat.CustomTabs.Initialize()
+    end
     if AetherChat.History and AetherChat.History.CleanAllDuplicates then
         AetherChat.History.CleanAllDuplicates()
     end

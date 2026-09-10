@@ -182,13 +182,26 @@
           <OnClicked>Verdant.Library.toggle()</OnClicked>
         </Button>
 
-        <!-- StatusLabel spans the gap between Lib and the view nav so it
+        <Button name="$(parent)SaveBtn"
+                mouseEnabled="true"
+                mouseOverBlendMode="ADD"
+                inherits="ZO_ButtonBehaviorClickSound">
+          <Anchor point="TOPLEFT" offsetX="232" offsetY="31"/>
+          <Dimensions x="28" y="28"/>
+          <Textures normal="EsoUI/Art/Buttons/edit_save_up.dds"
+                    pressed="EsoUI/Art/Buttons/edit_save_down.dds"
+                    mouseOver="EsoUI/Art/Buttons/edit_save_over.dds"
+                    disabled="EsoUI/Art/Buttons/edit_save_disabled.dds"/>
+          <OnClicked>Verdant.Graph.on_save_click()</OnClicked>
+        </Button>
+
+        <!-- StatusLabel spans the gap between Save and the view nav so it
              contracts gracefully at the minimum window width. -->
         <Label name="$(parent)StatusLabel"
                font="ZoFontGameSmall"
                horizontalAlignment="LEFT"
                verticalAlignment="CENTER">
-          <Anchor point="TOPLEFT"  offsetX="252"  offsetY="38"/>
+          <Anchor point="TOPLEFT"  offsetX="284"  offsetY="38"/>
           <Anchor point="TOPRIGHT" offsetX="-14"  offsetY="38"/>
           <Dimensions y="14"/>
         </Label>

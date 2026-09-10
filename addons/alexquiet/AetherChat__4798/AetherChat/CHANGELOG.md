@@ -4,9 +4,58 @@ Toutes les modifications notables apportées à l'addon **AetherChat** sont cons
 
 ---
 
+## [1.3.0] - 2026-09-09
+
+### 🎮 Prise en Charge Manette Complète & Mode Hybride (Gamepad)
+- **Compatibilité Manette & Raccourcis Dédiés :**
+  - AetherChat reste pleinement actif et visible lors du jeu à la manette (`IsInGamepadPreferredMode`).
+  - Nouveaux raccourcis assignables dans *Commandes > AetherChat* : **Basculer Mode Standard / Compact** (`AETHERCHAT_TOGGLE_MODE`), **Onglet suivant** (`AETHERCHAT_NEXT_TAB`), **Onglet précédent** (`AETHERCHAT_PREV_TAB`), **Guilde suivante** (`AETHERCHAT_NEXT_GUILD`) et **Activer/Quitter la saisie** (`AETHERCHAT_FOCUS_CHAT`).
+  - Défilement optimisé en mode Compact : arrêt unique sur l'onglet `[Guildes ▾]` correspondant à la vue écran (1:1), avec rotation directe des guildes via le nouveau raccourci ou menu déroulant à la souris.
+- **Libération Intelligente de la Saisie :**
+  - **Annulation par déplacement (Joystick)** : Libère instantanément le chat dès que le joueur pousse le stick gauche ou commence à marcher, redonnant immédiatement le contrôle des sorts et des mouvements.
+  - **Protection en combat** : Fermeture automatique de la saisie dès l'entrée en combat.
+- **Mode Chat Exclusif AetherChat :**
+  - Nouvelle option dans les réglages : permet de désactiver intégralement le chat manette officiel d'ESO (`GAMEPAD_SETTING_USE_KEYBOARD_CHAT`) afin d'éviter tout conflit, disparition du chat ou basculement intempestif vers l'interface console.
+
+### 🚀 Mode Ultra-Compact & Ergonomie
+- **Disposition Ultra-Compacte Réinventée :**
+  - Permutation instantanée entre Mode Standard (Messenger complet avec volet latéral) et Mode Ultra-Compact (bandeau d'onglets horizontaux minimaliste) via bouton dédié ou raccourci.
+  - Sauvegarde indépendante des dimensions et positions pour chaque mode.
+  - Menu contextuel au clic droit sur l'onglet [Zone] pour le filtrage linguistique instantané (Tous, EN, FR, DE, RU, ES, JP, ZH).
+  - Déplacement fluide par glisser-déposer de la fenêtre compacte.
+
+### 📁 Canaux & Onglets Personnalisés (Custom Tabs)
+- **Créateur d'Onglets Personnalisés :**
+  - Fenêtre de configuration dédiée avec sélection parmi 10 emblèmes officiels haute résolution (Étoile, Or, PvP, Raid, Donjon, Courrier, Lore, Artisanat, Tel Var, Histoires de Gloire).
+  - Matrice de filtrage multi-canaux (Zone multi-langues, Dire, Crier, Chuchoter, Groupe, PNJ, Guildes 1 à 5, Officiers 1 à 5).
+  - Agrégation rétroactive dynamique des messages existants.
+  - Modification et suppression faciles par clic droit sur l'onglet compact.
+
+### 🌐 Bilinguisme Intégral 100% (Français & Anglais)
+- **Audit & Parité Complète des Traductions :**
+  - Traduction bilingue intégrale et miroir parfait entre le français et l'anglais pour l'ensemble des 283 clés de localisation (`Localization.lua`).
+  - Traduction dynamique complète des infobulles de redimensionnement de la fenêtre (bords droit, supérieur et inférieur), des noms et infobulles des onglets compacts, des menus contextuels de filtrage de zone et des alertes de butin/ventes.
+  - Traduction intégrée des noms de thèmes et de sonneries dans le panneau de configuration LibAddonMenu (LAM).
+  - Élimination de 100% des chaînes en dur restantes dans le code Lua.
+
+---
+
 ## [1.2.6] - 2026-09-05
 
 ### ✨ Interface & Expérience Utilisateur
+
+- **Double Interface & Mode Ultra-Compact (Au choix dans les paramètres) :**
+  - **Mode Standard (Messenger complet)** : L'interface riche originale avec sa barre latérale développable ou réductible en mini-dock de tuiles 38px reste 100% active par défaut et inchangée.
+  - **Mode Ultra-Compact (Nouveau)** : Une disposition épurée pensée pour les joueurs souhaitant un encombrement minimal sur l'écran (à l'instar du chat natif d'ESO) :
+    - Bandeau d'onglets horizontaux supérieur (`[Zone]`, `[Général]`, `[Groupe]`, `[Système]`, `[Butin]`, `[Guildes ▾]` et onglets de chuchotements dynamiques `[@Ami ✕]`).
+    - Menu déroulant contextuel pour basculer facilement entre les 5 guildes avec badges de notifications cumulés.
+    - Filtrage linguistique instantané par clic droit sur l'onglet `[Zone]`.
+    - Bascule rapide du filtre "Sets Uniquement" par clic droit sur l'onglet `[Butin]`.
+    - 100% de la largeur de la fenêtre allouée à la lecture des messages (plus aucune perte d'espace sur une colonne latérale).
+    - Boîte de texte native `ZO_ChatWindowTextEntry` intégrée sur toute la largeur inférieure.
+    - Redimensionnement libre jusqu'à `320x180 px` pour se loger discrètement dans le coin inférieur gauche de l'écran.
+    - **Mémoire de géométrie indépendante** : Sauvegarde et restauration séparée des coordonnées et dimensions pour le mode Standard et le mode Compact.
+    - **Bascule instantanée 1-clic** : Bouton direct dans l'en-tête et commande `/aethermode` ou `/acmode`.
 
 - **Refonte et Harmonisation de la Barre Latérale Réduite (Mini-Dock) :**
   - Géométrie carrée symétrique nordique (`38x38 px`) avec espacement vertical aéré (`strideY = 44`).

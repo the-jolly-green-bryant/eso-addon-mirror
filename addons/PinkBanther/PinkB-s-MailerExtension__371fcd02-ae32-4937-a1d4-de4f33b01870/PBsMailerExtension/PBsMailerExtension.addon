@@ -2,10 +2,10 @@
 ## |cRRGGBB...|r in Title and Author colours them in the in-game add-on list; the version
 ## is read back through that markup, so it can sit inside or outside the colour.
 ## The name itself is fixed in Main.lua.
-## Title: |cFF69B4PB's MailerExtension|r 1.2.0
+## Title: |cFF69B4PB's MailerExtension|r 1.9.2
 ## Author: |cFF69B4PinkBanther|r
-## Description: The mail window has an inbox and a page to write on, and nothing else. This adds the two boxes that are missing. Drafts: a third tab in the mail window, beside Inbox and Send. Put an unfinished letter away with everything on it -- addressee, subject, body, attached items and gold -- and take it out again later. Works in both the keyboard and the gamepad interface, and everything it does is also on /pbmail. Sent: every letter you send is written down as it goes -- the game keeps no copy and the API cannot read one -- so you can look back at what you sent, and put any of it back on the page to send again. How many each box holds is a setting, up to a thousand each. Nothing is sent by the add-on itself; you always press Send yourself.
-## Version: 1.2.0
+## Description: The mail window has an inbox and a page to write on, and nothing else. This adds the two boxes that are missing. Drafts: a third tab in the mail window, beside Inbox and Send. Put an unfinished letter away with everything on it -- addressee, subject, body, attached items and gold -- and take it out again later. Works in both the keyboard and the gamepad interface, and everything it does is also on /pbmail. Sent: every letter you send is written down as it goes -- the game keeps no copy and the API cannot read one -- so you can look back at what you sent, and put any of it back on the page to send again. Important: inbox mail all expires eventually, so a mail you want to keep -- guild mail included -- can be copied into a box of its own where nothing expires, and read there whole. The letter itself, not its attachments, which have to be taken before the mail goes. The letter you are writing is saved to the drafts box while you write it, so an unfinished one survives a crash, and the draft a sent letter came from is thrown away once it has gone. The bottom of the mail window says how much room is left for saved add-on data, since three boxes of letters is a thing that grows. How many each box holds is a setting, up to a thousand each. Nothing is sent by the add-on itself; you always press Send yourself.
+## Version: 1.9.2
 ## APIVersion: 101050 101051
 ## OptionalDependsOn: LibHarvensAddonSettings>=20106
 ## SavedVariables: PBsMailerExtension_Data
@@ -18,7 +18,9 @@ Compose.lua
 Box.lua
 Drafts.lua
 Sent.lua
+Keep.lua
 UI.lua
+Gamepad.xml
 Gamepad.lua
 Keyboard.lua
 Settings.lua

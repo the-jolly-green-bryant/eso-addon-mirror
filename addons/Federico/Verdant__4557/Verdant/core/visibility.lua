@@ -12,12 +12,19 @@ local restore = {}
 local AUX_WINDOWS = { "VerdantSettingsPanel", "VerdantLibrary", "VerdantAssignPanel", "VerdantWatchOverlay" }
 
 
+local graph_shown = false
+
 local function apply()
   if VerdantBarWindow then
     VerdantBarWindow:SetHidden(not (in_hud and user_visible.bar and bar_enabled))
   end
   if VerdantGraphWindow then
-    VerdantGraphWindow:SetHidden(not (in_hud and user_visible.graph))
+    local show = in_hud and user_visible.graph
+    VerdantGraphWindow:SetHidden(not show)
+    if show and not graph_shown and Verdant.Graph and Verdant.Graph.on_shown then
+      Verdant.Graph.on_shown()
+    end
+    graph_shown = show
   end
   if VerdantGraphWindowBarBtn then
     VerdantGraphWindowBarBtn:SetHidden(not bar_enabled)

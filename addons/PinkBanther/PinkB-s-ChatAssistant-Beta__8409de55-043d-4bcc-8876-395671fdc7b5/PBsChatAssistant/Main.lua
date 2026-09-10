@@ -87,6 +87,9 @@ local DEFAULTS = {
 	channelKeys = true,
 	entryChannelLayer = true, -- legacy setting
 	hudChannelEnabled = true,
+	-- 0 means leave the channel wherever the game left it. Any other value is a channel id
+	-- applied once when the player enters the world; see ApplyDefaultChannel.
+	defaultChannel = 0,
 	followInput = false,
 	idleSeconds = 15,
 	logResetDone = false,
@@ -127,7 +130,7 @@ local CATCHER_CONTROL_NAMES = {
 -- Reported by /pbchat rather than announced at login. It was announced while the add-on was
 -- being built, because a build behaving unlike its code was the hardest thing to diagnose from
 -- inside the game. That is worth a command, not a line of chat on every login.
-local VERSION = "1.14.6"
+local VERSION = "1.15.0"
 
 -- How long the catcher waits for the box to close before coming back anyway.
 local RESUME_DEADLINE_SECONDS = 120
@@ -139,6 +142,10 @@ local ARM_TIMEOUT_SECONDS = 60
 -- Focus watcher cadence. Fast enough that the re-focus follows the box opening closely, slow
 -- enough to be nothing on a frame budget: four reads of state and no allocation.
 local WATCH_INTERVAL_MS = 200
+
+-- Long enough for guild membership to be known. The default is applied once, so a few seconds
+-- late costs nothing and being early costs the setting.
+local DEFAULT_CHANNEL_DELAY_MS = 3000
 
 local PROBE_SECONDS = 15
 local TRIAL_SECONDS = 20
@@ -423,6 +430,44 @@ end
 --
 -- No guard on the chat box being closed here. That guard belongs to the arrow keys alone, where
 -- it stops an open box losing its text cursor; a bound button has nothing to take.
+-- The same list the arrows and L2+L3 walk, for the settings panel to offer.
+function addon:GetSelectableChannels()
+	return GetCyclableChannels()
+end
+
+-- Applied once, when the player enters the world, and never on opening the chat box.
+--
+-- Per-open would fight the feature it sits beside: L2+L3 chooses the channel on the HUD, before
+-- the box opens, so re-imposing a default at that moment would throw the choice away every time.
+-- Once per session is what "default" means here -- where messages start, not where they are
+-- forced back to.
+--
+-- Deferred, because guild membership is not known the instant the world appears, and a guild
+-- channel is exactly the kind of default worth setting.
+function addon:ApplyDefaultChannel()
+	local wanted = self.sv and self.sv.defaultChannel or 0
+	if wanted == 0 then
+		return
+	end
+
+	local chat = GetChatSystem()
+	if not chat or type(chat.SetChannel) ~= "function" then
+		return
+	end
+
+	for _, channel in ipairs(GetCyclableChannels()) do
+		if channel.id == wanted then
+			chat:SetChannel(wanted)
+			self:Log("default channel -> %s", tostring(self:GetChannelDisplayName(wanted)))
+			return
+		end
+	end
+
+	-- Not available: no guild any more, or not grouped. Left alone rather than reset, since the
+	-- setting may become valid again later in the session.
+	self:Log("default channel %s not available", tostring(wanted))
+end
+
 function addon:CycleChannel(step, suppressAlert)
 	if not self.sv or not self.sv.enabled then
 		return
@@ -1278,6 +1323,12 @@ local function OnAddOnLoaded(_, name)
 	-- The cost is that the buttons are dead while the player is at the keyboard, and that the
 	-- first key of a session opens the box whatever key it was. /pbchat follow off and
 	-- /pbchat trigger off turn those two off separately.
+	em:RegisterForEvent(addon.name, EVENT_PLAYER_ACTIVATED, function()
+		zo_callLater(function()
+			addon:ApplyDefaultChannel()
+		end, DEFAULT_CHANNEL_DELAY_MS)
+	end)
+
 	em:RegisterForEvent(addon.name, EVENT_INPUT_TYPE_CHANGED, function(_, isGamepad)
 		-- Deliberately not logged. This fires on every switch between the keyboard and the
 		-- controller, which is constantly, and with followInput and triggerOnKeyboard both off by

@@ -210,6 +210,15 @@ function M.full_report(include_gc)
   if Vermilion.Probe and Vermilion.Probe.suspects_report then
     section("source audit", { Vermilion.Probe.suspects_report() })
   end
+  if Vermilion.DebuffTracker and Vermilion.DebuffTracker.report_lines then
+    section("debuff tracker", Vermilion.DebuffTracker.report_lines())
+  end
+  if Vermilion.AutoRecord and Vermilion.AutoRecord.report_lines then
+    section("auto record", Vermilion.AutoRecord.report_lines())
+  end
+  if Vermilion.Trace and Vermilion.Trace.status_line then
+    section("trace", { Vermilion.Trace.status_line() })
+  end
   if Vermilion.Log and Vermilion.Log.recent_lines then
     section("log (last 20)", Vermilion.Log.recent_lines(20))
   end

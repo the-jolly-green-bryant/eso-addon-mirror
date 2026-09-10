@@ -15,7 +15,6 @@ M.clear      = NOOP
 M.hide       = NOOP
 M.is_visible = function() return false end
 
-if not Vermilion.Constants.DEBUG then return end
 
 local zui = Vermilion.zenimax.ui
 local zc  = Vermilion.zenimax.constants

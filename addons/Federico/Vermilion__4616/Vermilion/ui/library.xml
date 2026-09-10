@@ -1,0 +1,191 @@
+<GuiXml>
+  <Controls>
+
+    <TopLevelControl name="VermilionLibrary"
+                     hidden="true"
+                     clampedToScreen="true"
+                     movable="true"
+                     mouseEnabled="true">
+
+      <Dimensions x="440" y="470"/>
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="120" offsetY="0"/>
+
+      <OnMouseWheel>Vermilion.Library.on_scroll(delta)</OnMouseWheel>
+
+      <Controls>
+
+        <Backdrop name="$(parent)Bg">
+          <AnchorFill/>
+          <Edge file="EsoUI/Art/Tooltips/UI-Border.dds"
+                edgeFileWidth="128" edgeFileHeight="16" edgeSize="6"/>
+          <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds"/>
+          <Insets left="6" top="6" right="-6" bottom="-6"/>
+        </Backdrop>
+
+        <Texture name="$(parent)BrandLogo" textureFile="Vermilion/assets/logo.dds">
+          <Anchor point="TOPLEFT" offsetX="12" offsetY="8"/>
+          <Dimensions x="24" y="24"/>
+        </Texture>
+
+        <Label name="$(parent)WindowTitle"
+               font="ZoFontWindowTitle"
+               horizontalAlignment="LEFT"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT" offsetX="42" offsetY="10"/>
+          <Dimensions y="18"/>
+        </Label>
+
+        <Button name="$(parent)CloseBtn" mouseEnabled="true"
+                mouseOverBlendMode="ADD" inherits="ZO_ButtonBehaviorClickSound">
+          <Anchor point="TOPRIGHT" offsetX="-8" offsetY="8"/>
+          <Dimensions x="16" y="16"/>
+          <Textures normal="EsoUI/Art/Buttons/decline_up.dds"
+                    pressed="EsoUI/Art/Buttons/decline_down.dds"
+                    mouseOver="EsoUI/Art/Buttons/decline_over.dds"/>
+          <OnClicked>Vermilion.Library.hide()</OnClicked>
+        </Button>
+
+        <Texture name="$(parent)ListFill"
+                 textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_fill.dds">
+          <Anchor point="TOPLEFT"     offsetX="15"  offsetY="45"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-15" offsetY="-93"/>
+        </Texture>
+
+        <Backdrop name="$(parent)ListBg">
+          <Anchor point="TOPLEFT"     offsetX="14"  offsetY="44"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-14" offsetY="-92"/>
+          <Edge file="EsoUI/Art/Tooltips/UI-Border.dds"
+                edgeFileWidth="128" edgeFileHeight="16" edgeSize="4"/>
+          <Insets left="4" top="4" right="-4" bottom="-4"/>
+        </Backdrop>
+
+        <Button name="$(parent)ScrollUp" mouseEnabled="true" hidden="true" mouseOverBlendMode="ADD">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)ListBg" relativePoint="TOPRIGHT" offsetX="-4" offsetY="4"/>
+          <Dimensions x="16" y="16"/>
+          <Textures normal="EsoUI/Art/Buttons/scrollbox_upArrow_up.dds"
+                    pressed="EsoUI/Art/Buttons/scrollbox_upArrow_down.dds"
+                    mouseOver="EsoUI/Art/Buttons/scrollbox_upArrow_over.dds"/>
+          <OnClicked>Vermilion.Library.on_scroll(1)</OnClicked>
+        </Button>
+
+        <Button name="$(parent)ScrollDown" mouseEnabled="true" hidden="true" mouseOverBlendMode="ADD">
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)ListBg" relativePoint="BOTTOMRIGHT" offsetX="-4" offsetY="-4"/>
+          <Dimensions x="16" y="16"/>
+          <Textures normal="EsoUI/Art/Buttons/scrollbox_downArrow_up.dds"
+                    pressed="EsoUI/Art/Buttons/scrollbox_downArrow_down.dds"
+                    mouseOver="EsoUI/Art/Buttons/scrollbox_downArrow_over.dds"/>
+          <OnClicked>Vermilion.Library.on_scroll(-1)</OnClicked>
+        </Button>
+
+        <Control name="$(parent)ScrollTrack" mouseEnabled="true" hidden="true">
+          <Anchor point="TOPRIGHT"    relativeTo="$(parent)ListBg" relativePoint="TOPRIGHT"    offsetX="-8" offsetY="22"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)ListBg" relativePoint="BOTTOMRIGHT" offsetX="-8" offsetY="-22"/>
+          <Dimensions x="8"/>
+          <OnMouseUp>Vermilion.Library.on_track_click()</OnMouseUp>
+          <Controls>
+            <Texture name="$(parent)Bg" textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_fill.dds">
+              <AnchorFill/>
+            </Texture>
+            <Control name="$(parent)Thumb" mouseEnabled="true">
+              <Anchor point="TOPLEFT" offsetX="0" offsetY="0"/>
+              <Dimensions x="8" y="24"/>
+              <OnMouseDown>Vermilion.Library.on_thumb_down()</OnMouseDown>
+              <OnMouseUp>Vermilion.Library.on_thumb_up()</OnMouseUp>
+              <Controls>
+                <Texture name="$(parent)Tex" textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_fill.dds">
+                  <AnchorFill/>
+                </Texture>
+              </Controls>
+            </Control>
+          </Controls>
+        </Control>
+
+        <Control name="$(parent)List" mouseEnabled="false">
+          <Anchor point="TOPLEFT"  offsetX="20"  offsetY="50"/>
+          <Anchor point="TOPRIGHT" offsetX="-34" offsetY="50"/>
+          <Dimensions y="320"/>
+          <Controls>
+            <Label name="$(parent)Empty"
+                   font="ZoFontGameSmall"
+                   horizontalAlignment="CENTER"
+                   verticalAlignment="CENTER">
+              <AnchorFill/>
+            </Label>
+          </Controls>
+        </Control>
+
+        <Backdrop name="$(parent)LabelBox" inherits="ZO_EditBackdrop">
+          <Anchor point="BOTTOMLEFT"  offsetX="14"   offsetY="-52"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-132" offsetY="-52"/>
+          <Dimensions y="26"/>
+          <Controls>
+            <EditBox name="$(parent)Edit" inherits="ZO_DefaultEditForBackdrop" maxInputCharacters="32"
+                     defaultTextColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED">
+              <Anchor point="TOPLEFT"     offsetX="8"  offsetY="0"/>
+              <Anchor point="BOTTOMRIGHT" offsetX="-8" offsetY="0"/>
+              <OnEnter>Vermilion.Library.on_label_save()</OnEnter>
+              <OnFocusGained>Vermilion.Library.on_label_focus(true)</OnFocusGained>
+              <OnFocusLost>Vermilion.Library.on_label_focus(false)</OnFocusLost>
+            </EditBox>
+          </Controls>
+        </Backdrop>
+
+        <Button name="$(parent)LabelBtn"
+                mouseEnabled="true"
+                font="ZoFontGameSmall"
+                inherits="ZO_DefaultButton">
+          <Anchor point="BOTTOMRIGHT" offsetX="-14" offsetY="-52"/>
+          <Dimensions x="110" y="26"/>
+          <OnClicked>Vermilion.Library.on_label_save()</OnClicked>
+        </Button>
+
+        <Button name="$(parent)OpenBtn"
+                mouseEnabled="true"
+                font="ZoFontGameSmall"
+                inherits="ZO_DefaultButton">
+          <Anchor point="BOTTOMLEFT" offsetX="14" offsetY="-12"/>
+          <Dimensions x="110" y="24"/>
+          <OnClicked>Vermilion.Library.on_open_click()</OnClicked>
+          <Controls>
+            <Texture name="$(parent)Icon" textureFile="EsoUI/Art/Buttons/rightArrow_up.dds">
+              <Anchor point="LEFT" offsetX="10" offsetY="0"/>
+              <Dimensions x="16" y="16"/>
+            </Texture>
+          </Controls>
+        </Button>
+
+        <Button name="$(parent)LockBtn"
+                mouseEnabled="true"
+                font="ZoFontGameSmall"
+                inherits="ZO_DefaultButton">
+          <Anchor point="BOTTOM" offsetX="0" offsetY="-12"/>
+          <Dimensions x="110" y="24"/>
+          <OnClicked>Vermilion.Library.on_lock_click()</OnClicked>
+          <Controls>
+            <Texture name="$(parent)Icon" textureFile="EsoUI/Art/Miscellaneous/locked_up.dds">
+              <Anchor point="LEFT" offsetX="10" offsetY="0"/>
+              <Dimensions x="16" y="16"/>
+            </Texture>
+          </Controls>
+        </Button>
+
+        <Button name="$(parent)DeleteBtn"
+                mouseEnabled="true"
+                font="ZoFontGameSmall"
+                inherits="ZO_DefaultButton">
+          <Anchor point="BOTTOMRIGHT" offsetX="-14" offsetY="-12"/>
+          <Dimensions x="110" y="24"/>
+          <OnClicked>Vermilion.Library.on_delete_click()</OnClicked>
+          <Controls>
+            <Texture name="$(parent)Icon" textureFile="EsoUI/Art/Buttons/decline_up.dds">
+              <Anchor point="LEFT" offsetX="10" offsetY="0"/>
+              <Dimensions x="16" y="16"/>
+            </Texture>
+          </Controls>
+        </Button>
+
+      </Controls>
+    </TopLevelControl>
+
+  </Controls>
+</GuiXml>

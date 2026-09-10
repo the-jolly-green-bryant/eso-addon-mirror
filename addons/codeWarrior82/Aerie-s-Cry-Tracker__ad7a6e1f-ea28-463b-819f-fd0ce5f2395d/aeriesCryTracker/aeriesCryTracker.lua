@@ -7,6 +7,7 @@ local picPath = GetAbilityIcon(aeriesAbilityID)
 local iconText = zo_iconTextFormat(picPath, 80, 80, " ")
 local isLoaded = false
 local isMenuOpen = false
+local buffRunning = false
 
 aeriesCryTracker = {}
 
@@ -59,6 +60,8 @@ end
 local function processBuff()
     if buffActive() then
 
+        buffRunning = true
+
         local time = timeRemaining
 
         local text = ""
@@ -77,6 +80,7 @@ local function processBuff()
 
         zo_callLater(function() processBuff() end, 1000)
     else
+        buffRunning = false
         actrackLabelMain:SetText("")
     end
 end
@@ -137,11 +141,11 @@ end
 
 --change eagles anchor to move text around the screen
 local function setAnchorIconEagles(x, y)
-    if not buffActive() then
+    if not buffRunning then
         emtrackIcon:SetText("Target Name")
     end
     emtrack:SetHidden(false)
-    zo_callLater(function () if isMenuOpen == true then emtrack:SetHidden(true) end end, 2000)
+    zo_callLater(function () if not buffRunning then emtrackIcon:SetText("") end if isMenuOpen == true then emtrack:SetHidden(true) end end, 2000)
     emtrack:ClearAnchors()
     emtrack:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, x, y)
 end

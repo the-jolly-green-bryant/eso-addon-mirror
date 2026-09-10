@@ -9,7 +9,7 @@ local zui  = Verdant.zenimax.ui
 local zc   = Verdant.zenimax.constants
 local GetGameTimeMilliseconds = api.GetGameTimeMilliseconds
 local GetAPIVersion           = api.GetAPIVersion
-local PlaySound               = zui.PlaySound
+local Sound = Verdant.Sound
 local WINDOW_MANAGER          = zui.WINDOW_MANAGER
 local string_format           = string.format
 local math_max                = math.max
@@ -454,7 +454,7 @@ end
 
 function M.prev_metric()
   metric_idx = ((metric_idx - 2) % #DISPLAY_METRICS) + 1
-  PlaySound(SOUNDS.DIALOG_ACCEPT)
+  Sound.play("page")
   apply_size_constraints()
   save_state()
   refresh()
@@ -462,7 +462,7 @@ end
 
 function M.next_metric()
   metric_idx = (metric_idx % #DISPLAY_METRICS) + 1
-  PlaySound(SOUNDS.DIALOG_ACCEPT)
+  Sound.play("page")
   apply_size_constraints()
   save_state()
   refresh()
@@ -471,7 +471,7 @@ end
 function M.toggle_display_mode()
   display_pct = not display_pct
   log:info("display_mode ->", display_pct and "%" or "#")
-  PlaySound(SOUNDS.DIALOG_ACCEPT)
+  Sound.play("click")
   save_state()
   refresh()
 end
@@ -480,12 +480,12 @@ function M.toggle()
   local now_visible = not Verdant.Visibility.get("bar")
   log:info("toggle ->", now_visible and "show" or "hide")
   Verdant.Visibility.set("bar", now_visible)
-  PlaySound(now_visible and SOUNDS.ARMORY_OPEN or SOUNDS.ADVENTURE_ZONE_OVERVIEW_CLOSED)
+  Sound.play(now_visible and "open" or "close")
 end
 
 function M.on_close_click()
   Verdant.Visibility.set("bar", false)
-  PlaySound(SOUNDS.ADVENTURE_ZONE_OVERVIEW_CLOSED)
+  Sound.play("close")
 end
 
 function M.set_rate(ms)

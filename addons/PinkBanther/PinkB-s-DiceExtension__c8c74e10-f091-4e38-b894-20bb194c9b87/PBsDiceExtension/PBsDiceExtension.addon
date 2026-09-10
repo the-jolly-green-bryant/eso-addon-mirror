@@ -1,0 +1,22 @@
+## To release a new version, edit the version in the two lines below and nothing else.
+## |cRRGGBB...|r in Title and Author colours them in the in-game add-on list; the version
+## is read back through that markup, so it can sit inside or outside the colour.
+## The settings panel takes its version from ## Title; the name itself is fixed in Main.lua.
+## Title: |cFF69B4PB's DiceExtension|r 1.4.1
+## Author: |cFF69B4PinkBanther|r
+## Description: Extends the chat window's Random Roll. The game's own /roll is fixed at one die of 100 from the chat screen's Random Roll keybind; this remembers how many dice you want and how many sides they have -- up to 10 dice of up to 1000 sides -- rolls them from /pbdice, from R3 in the chat screen, or from the settings panel, and shows every die and the total. Optionally puts the matching /roll command in the chat box so the game itself rolls it and your group sees it.
+## Version: 1.4.1
+## APIVersion: 101050 101051
+## OptionalDependsOn: LibHarvensAddonSettings>=20106
+## SavedVariables: PBsDiceExtension_Data
+
+lang/strings.lua
+lang/$(language).lua
+
+Main.lua
+Dice.lua
+Keybind.lua
+Prefill.lua
+Settings.lua
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls© and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.

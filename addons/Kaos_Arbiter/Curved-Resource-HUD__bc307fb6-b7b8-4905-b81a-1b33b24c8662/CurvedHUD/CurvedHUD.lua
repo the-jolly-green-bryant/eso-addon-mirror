@@ -1,6 +1,6 @@
 CurvedHUD = CurvedHUD or {}
 local CH = CurvedHUD
-CH.name, CH.version, CH.updateName, CH.dataVersion = "CurvedHUD", "1.0.7", "CurvedHUD_Update", 1
+CH.name, CH.version, CH.updateName, CH.dataVersion = "CurvedHUD", "1.1.2", "CurvedHUD_Update", 1
 CH.defaults = {enabled=true,preview=false,showDefaultResources=true,buffVerticalOffset=0,useOutOfCombatOpacity=false,outOfCombatOpacity=.45,scale=1.0,spacing=235,verticalOffset=35,resourceGap=7,barWidth=48,leftTimerOffset=-6,leftTimerSpacing=15,rightTimerOffset=3,rightTimerSpacing=3,fillAlpha=.85,frameAlpha=.48,backgroundAlpha=.24,shieldAlpha=.68,textAlpha=.95,timerFontSize=24,expirationAlerts=false,resourceValueFontSize=27,resourcePercentFontSize=20,majorBuffTracked="None",insideTimerStyle="Thin",outsideTimerStyle="Thick",majorBuffColor="Purple",balanceEnabled=false,balanceSlot="bottomLeftInside",balanceColor="Orange",aegisEnabled=false,aegisSlot="topLeftOutside",aegisColor="Pale Blue",armamentsEnabled=false,armamentsSlot="topRightInside",armamentsColor="Pale Blue",fragmentsEnabled=false,fragmentsPosition="Top",fragmentsScale=.75,surgeEnabled=false,surgeSlot="topRightOutside",surgeColor="Gold",shroudEnabled=false,shroudSlot="bottomRightOutside",shroudColor="Cyan",soulBurstEnabled=false,soulBurstSlot="topRightInside",soulBurstColor="Purple",soulBurstDuration=20,contingencyEnabled=false,contingencySlot="bottomRightInside",contingencyColor="Cyan",contingencyDuration=20,showRaw=true,showPercent=true,showMaximum=false,debug=false,layout="Parallel",staminaInside=true,iconCache={},abilityIdCache={}}
 CH.characterKeys = {majorBuffTracked=true,majorBuffColor=true,balanceEnabled=true,balanceSlot=true,balanceColor=true,aegisEnabled=true,aegisSlot=true,aegisColor=true,armamentsEnabled=true,armamentsSlot=true,armamentsColor=true,fragmentsEnabled=true,fragmentsPosition=true,surgeEnabled=true,surgeSlot=true,surgeColor=true,shroudEnabled=true,shroudSlot=true,shroudColor=true,soulBurstEnabled=true,soulBurstSlot=true,soulBurstColor=true,soulBurstDuration=true,contingencyEnabled=true,contingencySlot=true,contingencyColor=true,contingencyDuration=true}
 CH.characterDefaults = {majorBuffTracked="None",majorBuffColor="Purple",balanceEnabled=false,balanceSlot="bottomLeftInside",balanceColor="Orange",aegisEnabled=false,aegisSlot="topLeftOutside",aegisColor="Pale Blue",armamentsEnabled=false,armamentsSlot="topRightInside",armamentsColor="Pale Blue",fragmentsEnabled=false,fragmentsPosition="Top",surgeEnabled=false,surgeSlot="topRightOutside",surgeColor="Gold",shroudEnabled=false,shroudSlot="bottomRightOutside",shroudColor="Cyan",soulBurstEnabled=false,soulBurstSlot="topRightInside",soulBurstColor="Purple",soulBurstDuration=20,contingencyEnabled=false,contingencySlot="bottomRightInside",contingencyColor="Cyan",contingencyDuration=20,initialized=false}
@@ -100,7 +100,7 @@ for _,definition in ipairs(CH.setTrackerDefinitions) do
     CH.characterDefaults[key.."Enabled"]=false; CH.characterDefaults[key.."Slot"]=definition.slot; CH.characterDefaults[key.."Color"]=definition.color
 end
 CH.scribingTrackerDefinitions = {
-    {key="soulBurst",label="Soul Burst",icon="CurvedHUD/textures/soul_burst.dds",slot="topRightInside",color="Purple",duration=20,needles={"soul burst","binding burst","bloody burst","chilling burst","fiery burst","healing burst","leashing burst","magical burst","pestilent burst","shocking burst","sundering burst","warding burst"}},
+    {key="soulBurst",label="Soul Burst",icon="CurvedHUD/textures/soul_burst.dds",slot="topRightInside",color="Purple",duration=20,anchoriteCooldown=5,needles={"soul burst","binding burst","bloody burst","chilling burst","fiery burst","healing burst","leashing burst","magical burst","pestilent burst","shocking burst","sundering burst","warding burst"}},
     {key="contingency",label="Ulfsild's Contingency",icon="CurvedHUD/textures/ulfsilds_contingency.dds",slot="bottomRightInside",color="Cyan",duration=20,needles={"contingency"}},
     {key="elementalExplosion",label="Elemental Explosion",icon="CurvedHUD/textures/elemental_explosion.dds",slot="topRightOutside",color="Orange",duration=20,needles={"elemental explosion","explosion"}},
     {key="mendersBond",label="Mender's Bond",icon="CurvedHUD/textures/menders_bond.dds",slot="bottomRightOutside",color="Cyan",duration=12,needles={"mender's bond","menders bond"," bond"}},
@@ -1760,6 +1760,52 @@ function CH:StartCastTracker(t,duration,abilityGraphic,abilityId)
     if iconName and iconName~="" then t.icon:SetTexture(iconName); t.preferredIcon=iconName end
     self:UpdateTrackers()
 end
+function CH:StartFixedCastCooldown(t,duration,abilityGraphic,abilityId)
+    if not t then return end
+    local now=GetGameTimeSeconds()
+    -- Soul Burst may be cast repeatedly, but Anchorite's Potency can consume a
+    -- Soul Gem and grant Ultimate only once per cooldown. Do not let an
+    -- ineligible cast restart or extend the existing lockout.
+    if t.active and (t.endTime or 0)>now then return end
+    duration=math.max(.1,tonumber(duration) or 5)
+    t.active,t.beginTime,t.endTime,t.duration,t.stackCount=true,now,now+duration,duration,0
+    t.castDriven,t.lastCastAt=true,now
+    local iconName=t.preferredIcon or abilityGraphic
+    if (not iconName or iconName=="") and GetAbilityIcon then
+        local ok,value=pcall(GetAbilityIcon,abilityId); if ok then iconName=value end
+    end
+    if iconName and iconName~="" then t.icon:SetTexture(iconName); t.preferredIcon=iconName end
+    self:UpdateTrackers()
+end
+function CH:SoulBurstUsesAnchoritesPotency(abilityId)
+    if not GetNumCraftedAbilities or not GetCraftedAbilityIdAtIndex or not GetCraftedAbilityActiveScriptIds then return false end
+    local requestedAbilityId=tonumber(abilityId) or 0
+    local ok,count=pcall(GetNumCraftedAbilities); if not ok then return false end
+    for index=1,(tonumber(count) or 0) do
+        local idOk,craftedAbilityId=pcall(GetCraftedAbilityIdAtIndex,index)
+        if idOk and craftedAbilityId and craftedAbilityId~=0 then
+            local nameOk,craftedName=pcall(GetCraftedAbilityDisplayName,craftedAbilityId)
+            local lowerCraftedName=nameOk and string.lower(craftedName or "") or ""
+            local currentId,representativeId=0,0
+            if GetAbilityIdForCraftedAbilityId then local valueOk,value=pcall(GetAbilityIdForCraftedAbilityId,craftedAbilityId); if valueOk then currentId=tonumber(value) or 0 end end
+            if GetCraftedAbilityRepresentativeAbilityId then local valueOk,value=pcall(GetCraftedAbilityRepresentativeAbilityId,craftedAbilityId); if valueOk then representativeId=tonumber(value) or 0 end end
+            if lowerCraftedName=="soul burst" or (requestedAbilityId>0 and (requestedAbilityId==currentId or requestedAbilityId==representativeId)) then
+                local scripts={pcall(GetCraftedAbilityActiveScriptIds,craftedAbilityId)}
+                if not scripts[1] then return false end
+                for scriptIndex=2,4 do
+                    local scriptId=tonumber(scripts[scriptIndex]) or 0
+                    if scriptId>0 and GetCraftedAbilityScriptDisplayName then
+                        local scriptOk,scriptName=pcall(GetCraftedAbilityScriptDisplayName,scriptId)
+                        local lowerScriptName=scriptOk and string.lower(scriptName or "") or ""
+                        if string.find(lowerScriptName,"anchorite",1,true) and string.find(lowerScriptName,"potency",1,true) then return true end
+                    end
+                end
+                return false
+            end
+        end
+    end
+    return false
+end
 function CH:IsCarveCast(lowerName,abilityId)
     if self:PhraseMatches(lowerName,"carve") then
         if abilityId and abilityId>0 then
@@ -1817,7 +1863,13 @@ function CH:HandleScribingCast(abilityName,abilityGraphic,abilityId,allowActive)
         if matched and self.sv[definition.key.."Enabled"] then
             self:RememberDefinitionAbilityId(definition,abilityId)
             local tracker=self.trackers[definition.key]
-            if allowActive or not tracker.active then self:StartCastTracker(tracker,self.sv[definition.key.."Duration"],abilityGraphic,abilityId) end
+            if definition.anchoriteCooldown and self:SoulBurstUsesAnchoritesPotency(abilityId) then
+                if not IsUnitInCombat or IsUnitInCombat("player") then
+                    self:StartFixedCastCooldown(tracker,definition.anchoriteCooldown,abilityGraphic,abilityId)
+                end
+            elseif allowActive or not tracker.active then
+                self:StartCastTracker(tracker,self.sv[definition.key.."Duration"],abilityGraphic,abilityId)
+            end
             if definition.key=="contingency" then
                 local now=GetGameTimeSeconds()
                 self.contingencyPrimed=true
@@ -2133,6 +2185,35 @@ function CH:OnEffectChanged(changeType,effectName,unitTag,beginTime,endTime,stac
 end
 
 function CH:CreateHUD()
+    if self.root and self.bars and self.bars.health and self.bars.stamina and self.bars.magicka and self.mountBar then
+        -- Console character changes can reload addon Lua while preserving the
+        -- UI control tree. Recreating named controls here leaked another full
+        -- HUD (and every enabled tracker) per character until later add-ons
+        -- exhausted the shared frame budget. Reuse the session-owned controls.
+        for _,tracker in pairs(self.trackers or {}) do
+            tracker.active=false
+            tracker.beginTime,tracker.endTime,tracker.duration=0,0,0
+            tracker.stackCount=0
+            tracker.cooldownEnd=0
+            tracker.conditionActive=false
+            tracker.conditionEndTime=0
+            tracker.equipped=false
+            tracker.setEffectInstances=nil
+            tracker:SetHidden(true)
+            if tracker.stackLabel then tracker.stackLabel:SetHidden(true); tracker.stackLabel:SetText("") end
+            if tracker.readyLabel then tracker.readyLabel:SetHidden(true); tracker.readyLabel:SetText("") end
+            if tracker.readyBorder then tracker.readyBorder:SetHidden(true) end
+            if tracker.expiryBorder then tracker.expiryBorder:SetHidden(true) end
+        end
+        if self.procAlert then self.procAlert:SetHidden(true) end
+        self.fragmentsEventActive=false
+        self.fragmentsEndTime=0
+        self.mountBar:SetHidden(true)
+        self:EnsureOptionalCoreTrackers()
+        self:EnsureEnabledDefinitionTrackers()
+        self:ApplyLayout()
+        return
+    end
     self.root=WM:CreateTopLevelWindow("CurvedHUD_Root"); self.root:SetDimensions(900,600); self.root:SetMouseEnabled(false); self.root:SetClampedToScreen(false); self.root:SetDrawTier(DT_HIGH)
     self.bars,self.trackers={},{}; self:CreateBar("health","left",{.85,.1,.1}); self:CreateBar("stamina","right",{.15,.78,.22}); self:CreateBar("magicka","right",{.12,.42,.95})
     self:CreateShield(); self:CreateMountBar()
@@ -2266,8 +2347,11 @@ function CH:RegisterEvents()
     EVENT_MANAGER:RegisterForEvent(self.name.."ShieldAdded",EVENT_UNIT_ATTRIBUTE_VISUAL_ADDED,shieldCallback)
     EVENT_MANAGER:RegisterForEvent(self.name.."ShieldUpdated",EVENT_UNIT_ATTRIBUTE_VISUAL_UPDATED,shieldCallback)
     EVENT_MANAGER:RegisterForEvent(self.name.."ShieldRemoved",EVENT_UNIT_ATTRIBUTE_VISUAL_REMOVED,shieldCallback)
-    local callback=function(_,state) self:UpdateVisibility(state) end
-    SCENE_MANAGER:GetScene("hud"):RegisterCallback("StateChange",callback); SCENE_MANAGER:GetScene("hudui"):RegisterCallback("StateChange",callback)
+    if not self.sceneCallbacksRegistered then
+        local callback=function(_,state) self:UpdateVisibility(state) end
+        SCENE_MANAGER:GetScene("hud"):RegisterCallback("StateChange",callback); SCENE_MANAGER:GetScene("hudui"):RegisterCallback("StateChange",callback)
+        self.sceneCallbacksRegistered=true
+    end
     -- Let the login scene and other add-ons settle before starting recurring work.
     if zo_callLater then zo_callLater(function() self:StartPeriodicUpdates() end,1000) else self:StartPeriodicUpdates() end
 end
@@ -2322,10 +2406,9 @@ function CH:PrintDiagnosticReport()
 end
 
 function CH:Initialize()
-    -- These flags describe this Lua load, not a character or account. The
-    -- CurvedHUD table can survive console character transitions, so never let
-    -- a previous load suppress the current initialization pass.
-    self.settingsRegistered=false
+    -- CurvedHUD's global table and UI controls can survive console character
+    -- transitions. Session-owned registrations must therefore be preserved;
+    -- only saved-variable bindings and transient character state are renewed.
     self.settingsRegistrationQueued=false
     self.globalSV=ZO_SavedVars:NewAccountWide("CurvedHUD_SavedVariables",1,nil,self.defaults)
     self.characterSV=ZO_SavedVars:New("CurvedHUD_CharacterSavedVariables",1,nil,self.characterDefaults)
@@ -2347,9 +2430,11 @@ function CH:Initialize()
     -- Register with the other add-ons during the normal load phase. Late
     -- LibVotans AddAddon calls can rebuild/corrupt its shared console tables;
     -- AddSettings batching keeps this normal initialization pass bounded.
-    self:Guard("settings registration",function()
-        if self.RegisterSettings then self:RegisterSettings(); self.settingsRegistered=true end
-    end)
+    if not self.settingsRegistered then
+        self:Guard("settings registration",function()
+            if self.RegisterSettings then self:RegisterSettings(); self.settingsRegistered=true end
+        end)
+    end
     self:Guard("event registration",function() self:RegisterEvents() end)
     SLASH_COMMANDS["/curvedhud"]=function(arg)
         arg=string.lower(arg or "")

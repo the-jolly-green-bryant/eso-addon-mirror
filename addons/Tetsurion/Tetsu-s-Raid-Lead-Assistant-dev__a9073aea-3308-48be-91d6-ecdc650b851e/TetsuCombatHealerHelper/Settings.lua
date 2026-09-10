@@ -39,7 +39,7 @@ function T.RegisterSettings()
 
     local settings = LibHarven:AddAddon(L.TITLE, { allowRefresh = true, allowDefaults = true })
     if not settings then return end
-    settings.version = "1.7.6"
+    settings.version = "1.7.11"
     settings.author = "Tetsurion"
 
     settings:AddSetting({

@@ -56,6 +56,24 @@ ui.AlertError = AlertError
 -- Saving
 -- ---------------------------------------------------------------------------------------
 
+-- ---------------------------------------------------------------------------------------
+-- The counts moved
+--
+-- A tab's name carries how many letters its box holds, and nothing re-evaluates that on its
+-- own. Everything that adds or removes one says so here; an interface that draws a count
+-- registers to hear about it.
+-- ---------------------------------------------------------------------------------------
+
+function ui:OnCountChanged(handler)
+	self.countChangedHandler = handler
+end
+
+function ui:CountChanged()
+	if self.countChangedHandler then
+		pcall(self.countChangedHandler)
+	end
+end
+
 function ui:Save(name)
 	local drafts = addon.drafts
 	local draft, problem = drafts:SaveFromCompose(name)
@@ -66,10 +84,62 @@ function ui:Save(name)
 	end
 
 	local index = drafts:IndexOf(draft)
+	self:CountChanged()
 	local said = Format(SI_PBSMX_SAVED, index, drafts:Describe(draft))
 	Alert(Format(SI_PBSMX_ALERT_SAVED, index))
 	Print(said)
 	return draft
+end
+
+-- ---------------------------------------------------------------------------------------
+-- Keeping the mail you are looking at
+--
+-- The copy is of what the letter said, and the message says so plainly when the letter had
+-- something attached: a record is not a bag, and somebody who thinks the parcel is safe now
+-- will find out the hard way when the mail expires.
+-- ---------------------------------------------------------------------------------------
+
+function ui:Keep()
+	local kept = addon.kept
+	local entry, problem = kept:SaveFromInbox()
+	if not entry then
+		AlertError(problem)
+		Print(problem)
+		return nil
+	end
+
+	local index = kept:IndexOf(entry)
+	self:CountChanged()
+	Alert(Format(SI_PBSMX_ALERT_KEPT, index))
+	Print(Format(SI_PBSMX_KEPT, index, kept:Describe(entry)))
+
+	if #(entry.attachments or {}) > 0 or (entry.gold or 0) > 0 then
+		Print(GetString(SI_PBSMX_KEPT_ATTACHMENTS_WARNING))
+	end
+
+	return entry
+end
+
+-- ---------------------------------------------------------------------------------------
+-- Reading one whole
+--
+-- The tooltip beside the list is a preview and cuts the body off; this is the whole of it.
+-- Chat is the only surface with somewhere to put a long letter, so that is where it goes.
+-- ---------------------------------------------------------------------------------------
+
+function ui:Read(box, index)
+	local entry = box:At(index)
+	if not entry then
+		return false
+	end
+
+	Print(box:Describe(entry))
+	for line in (box:Preview(entry) .. "\n"):gmatch("(.-)\n") do
+		Line("  " .. line)
+	end
+
+	Alert(GetString(SI_PBSMX_ALERT_READ))
+	return true
 end
 
 -- ---------------------------------------------------------------------------------------
@@ -121,8 +191,47 @@ end
 function ui:Apply(box, index)
 	self.lastBox = box
 	self.lastIndex = index
+
+	local entry = box:At(index)
 	local ok, notes = box:LoadToCompose(index)
+
+	-- Which draft the page is now holding, by its stable id rather than its place in the list.
+	-- This is what lets the draft go when the letter is sent, and it is only ever a draft: a
+	-- sent letter or a kept one is a record, and sending a copy of it does not use it up.
+	if ok and entry and box == addon.drafts then
+		self.pageSource = entry.id
+	end
+
 	return self:Report(ok, notes)
+end
+
+-- ---------------------------------------------------------------------------------------
+-- What the page is holding
+-- ---------------------------------------------------------------------------------------
+
+-- Called when the letter on the page has gone.
+function ui:LetterSent()
+	local id = self.pageSource
+	self.pageSource = nil
+
+	if not id or not addon:DeleteDraftOnSend() then
+		return false
+	end
+
+	local removed = addon.drafts:DeleteById(id)
+	if removed then
+		Print(Format(SI_PBSMX_DRAFT_SENT, addon.drafts:Describe(removed)))
+		return true
+	end
+	return false
+end
+
+-- Called when the page has been cleared. Whatever it was holding, it is not holding it now.
+function ui:PageCleared()
+	self.pageSource = nil
+	if addon.drafts then
+		addon.drafts:ForgetAutoDraft()
+	end
 end
 
 function ui:RequestLoad(box, index)
@@ -217,8 +326,9 @@ function ui:ConfirmDelete(box, index, onDone)
 
 	local function DoDelete()
 		local removed = box:Delete(index)
+		self:CountChanged()
 		Print(Format(SI_PBSMX_DELETED, box:Noun(), index, box:Describe(removed)))
-		Alert(GetString(SI_PBSMX_ALERT_DELETED))
+		Alert(Format(SI_PBSMX_ALERT_DELETED, box:Noun()))
 		if onDone then
 			onDone()
 		end
@@ -227,8 +337,13 @@ function ui:ConfirmDelete(box, index, onDone)
 	RegisterDeleteDialog()
 
 	if ESO_Dialogs and ESO_Dialogs[DELETE_DIALOG] and ZO_Dialogs_ShowPlatformDialog then
+		-- The title takes the box's word for one of its letters, so the same dialog asks
+		-- "delete this draft?" and "delete this kept mail?" without being two dialogs.
 		ZO_Dialogs_ShowPlatformDialog(DELETE_DIALOG, { callback = DoDelete },
-			{ mainTextParams = { box:Describe(entry, true) } })
+			{
+				titleParams = { box:Noun() },
+				mainTextParams = { box:Describe(entry, true) },
+			})
 		return
 	end
 

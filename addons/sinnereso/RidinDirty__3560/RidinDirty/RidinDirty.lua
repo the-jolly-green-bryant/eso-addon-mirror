@@ -1,7 +1,7 @@
 RidinDirty = {
 	name = "RidinDirty",
 	author = "@sinnereso",
-	version = "2026.07.30",
+	version = "2026.09.09",
 	svName = "RidinDirtyVars",
 	svVersion = 1,
 	tradeTable = {},
@@ -1040,7 +1040,7 @@ local function RDInitializeControls()
 	{
 		type = "checkbox",
 		name = "Combat & Taunt Reticle",
-		tooltip = "Shows if in combat or target taunt time left including companion(provoke) and taunt immunity in the center of reticle",
+		tooltip = "Shows if in combat or target taunt time left, including companion taunts, as well as taunt immunity in the center of reticle",
 		getFunc = function() return RidinDirty.savedVariables.combatReticle end,
 		setFunc = function(value) RidinDirty.CombatReticleToggle(value) end,
 	},
@@ -2789,13 +2789,18 @@ end
 --157235provoke--(tauntID)Blazing grasp--193132scathing rune--213165perigean armor--157242savage instinct--159179frost blast
 --df(tostring(buffName) .. " - " .. tostring(abilityId) .. " - " .. tostring(zo_roundToNearest(timeEnding - GetFrameTimeSeconds(), 1)))
 --IsUnitAttackable(target) ----IsUnitDead(target)
+--taunt=ABILITY_TYPE_SETTARGET=7, 
 local function CombatReticle()
 	local target = "reticleover"
+	local playerTaunt = false
 	if DoesUnitExist(target) and not IsUnitPlayer(target) then
-		local tauntEnding, immuneEnding = 0, 0
+		local tauntEnding, immuneEnding, playerTaunt = 0, 0, false
 		for buff = 1, GetNumBuffs(target) do
-			local buffName, timeStarted, timeEnding, _, stackCount, _, buffType, effectType, abilityType, _, abilityId, _  = GetUnitBuffInfo(target, buff)
-			if abilityId == 38254 then tauntEnding = timeEnding end
+			local buffName, timeStarted, timeEnding, _, stackCount, _, buffType, effectType, abilityType, statusType, abilityId, _, playerCast  = GetUnitBuffInfo(target, buff)
+			if abilityType == 7 then
+				tauntEnding = timeEnding
+				if playerCast then playerTaunt = true end
+			end
 			if abilityId == 52788 then immuneEnding = timeEnding end
 		end
 		if immuneEnding ~= 0 then
@@ -2807,10 +2812,14 @@ local function CombatReticle()
 			return
 		elseif tauntEnding ~= 0 then
 			local timeLeft = zo_roundToNearest(tauntEnding - GetFrameTimeSeconds(), 1)
-			if timeLeft <= 3 then
-				RidinDirty.TauntCounter.label:SetColor(128,128,0,1)
+			if playerTaunt then
+				if timeLeft <= 3 then
+					RidinDirty.TauntCounter.label:SetColor(128,128,0,1)
+				else
+					RidinDirty.TauntCounter.label:SetColor(0,128,0,1)
+				end
 			else
-				RidinDirty.TauntCounter.label:SetColor(0,128,0,1)
+				RidinDirty.TauntCounter.label:SetColor(128,128,128,1)
 			end
 			RidinDirty.TauntCounter.label:SetText(timeLeft)
 			RidinDirty.Combat:SetAlpha(0)
@@ -3280,7 +3289,7 @@ local function AddOnLoaded(eventCode, addOnName)
 		traderEnhance = false,
 		avtLog = false,
 		minimumAVT = 100,
-		bombSensitivity = 200,
+		bombSensitivity = 500,
 		pvpKillFeed = false,
 		pvpKillsReset = GetLastDailyReset(),
 		pvpKills = 0,

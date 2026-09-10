@@ -94,8 +94,24 @@ local function on_slash(input)
       elseif sub == "stop" then Verdant.Trace.stop()
       elseif sub == "save" then Verdant.Trace.save(Verdant.SavedVars)
       elseif sub == "clear" then Verdant.Trace.clear(Verdant.SavedVars) d("[trace] cleared")
-      else d("[trace] " .. Verdant.Trace.status_line() .. "  (subcmd: start | stop | save | clear)")
+      elseif sub == "auto" then
+        local on = not Verdant.Trace.auto_enabled(Verdant.SavedVars)
+        Verdant.Trace.set_auto(Verdant.SavedVars, on)
+        d("[trace] auto-trace while recording: " .. (on and "ON" or "OFF"))
+      else
+        local ring = Verdant.SavedVars.traces
+        d("[trace] " .. Verdant.Trace.status_line()
+          .. "  auto=" .. (Verdant.Trace.auto_enabled(Verdant.SavedVars) and "ON" or "OFF")
+          .. "  staged=" .. tostring(ring and #ring or 0) .. "/3"
+          .. "  (subcmd: start | stop | save | clear | auto)")
       end
+      return
+    elseif cmd == "sound" then
+      Verdant.Sound.audition(string_match(input, "^%s*%S+%s*(.*)$"))
+      return
+    elseif cmd == "flush" then
+      d("[V] writing SavedVariables to disk")
+      Verdant.zenimax.api.ReloadUI()
       return
     elseif cmd == "diag" then
       Verdant.Diagnostics.print_diag() ; return

@@ -1,7 +1,7 @@
 # AetherChat
 
 [![APIVersion](https://img.shields.io/badge/ESO%20API-101050%20101051-gold.svg)](https://www.esoui.com/)
-[![Version](https://img.shields.io/badge/Version-v1.2.6-blue.svg)](https://github.com/)
+[![Version](https://img.shields.io/badge/Version-v1.3.0-blue.svg)](https://github.com/)
 [![Author](https://img.shields.io/badge/Author-%40AlexQuiet%20(EU)-green.svg)](https://github.com/)
 [![License](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
 
@@ -11,10 +11,13 @@ A modern, immersive Chat & Messenger replacement for **The Elder Scrolls Online 
 
 ## Features
 
+- **Full Gamepad & Controller Support**: Dedicated bindings (Toggle Mode, Next Tab, Prev Tab, Next Guild, Focus Chat), joystick movement auto-unfocus, combat protection, 1:1 compact tab cycling, and exclusive chat mode.
+- **Ultra-Compact Mode**: Minimalist horizontal tabs bar, right-click fast filters, independent geometry memory, 1-click toggle (`/aethermode`).
+- **Custom Tabs**: Multi-channel filter matrix, 10 official HD icons, and retroactive message aggregation.
 - Dedicated System Channel: Full capture of server broadcasts, queue alerts, and game status notifications with native ESO gear icon.
 - Smart Escape Menu Auto-Hide: Automatically hides cleanly when opening the Escape Game Menu (Settings, Controls, Addons) and restores seamlessly upon returning to the game.
 - Real-Time Typography Scaling: 12px to 24px slider with proportional scaling across the entire interface (messages, sidebar, header, search).
-- Full Unicode & Cyrillic Support: Native  rendering for Cyrillic and extended international characters.
+- Full Unicode & Cyrillic Support: Native rendering for Cyrillic and extended international characters.
 - Real-Time Loot Feed & 1-Click Need Requests (Synced with LootLog): Instant right-click context menu to request drops or ask in party chat.
 - Live Guild Store Sales Scanner: Real-time sale detection even inside trials, dungeons, and combat.
 - Collapsible Guild Folders: Expand/collapse your 5 guild discussions in 1 click.

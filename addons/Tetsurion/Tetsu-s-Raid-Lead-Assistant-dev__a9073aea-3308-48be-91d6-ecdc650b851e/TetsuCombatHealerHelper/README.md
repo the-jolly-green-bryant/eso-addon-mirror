@@ -1,4 +1,4 @@
-# Tetsu's Raid Lead Assistant 1.7.6
+# Tetsu's Raid Lead Assistant 1.7.11
 
 Console (PS5 / Xbox) raid-lead HUD for The Elder Scrolls Online.
 

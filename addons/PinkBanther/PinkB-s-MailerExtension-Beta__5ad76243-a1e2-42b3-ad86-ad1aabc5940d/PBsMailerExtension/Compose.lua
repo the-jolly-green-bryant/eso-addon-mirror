@@ -375,13 +375,21 @@ function compose:Read()
 	}
 end
 
-function compose:Write(draft)
-	if not self:WriteText(draft.to, draft.subject, draft.body) then
+function compose:Write(entry)
+	if not self:WriteText(entry.to, entry.subject, entry.body) then
 		return false, GetString(SI_PBSMX_ERROR_NOT_OPEN)
 	end
 
-	local notes = self:WriteAttachments(draft.attachments)
-	for _, note in ipairs(self:WriteMoney(draft.gold, draft.cod)) do
+	-- A letter somebody sent you puts back its words and nothing else. Its record lists what
+	-- was attached to it because that is worth knowing later, but those items are yours now
+	-- and its gold is spent -- attaching your own copies of them to a reply, or queueing that
+	-- much of your own gold, is not what anybody meant by "put it on the page".
+	if entry.received then
+		return true, {}
+	end
+
+	local notes = self:WriteAttachments(entry.attachments)
+	for _, note in ipairs(self:WriteMoney(entry.gold, entry.cod)) do
 		notes[#notes + 1] = note
 	end
 

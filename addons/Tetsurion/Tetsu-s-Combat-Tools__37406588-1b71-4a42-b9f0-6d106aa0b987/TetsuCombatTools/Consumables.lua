@@ -21,12 +21,30 @@ local foodIcon
 local foodLab
 local potIcon
 local potLab
+local msgRoot
+local foodMsgLab
+local potMsgLab
 local built = false
 local ticking = false
 local hadFood = false
+local hadPot = false
 local lastFoodId = 0
 local potUntil = 0
 local potIconHold = nil
+local previewUntil = 0
+local foodMsgUntil = 0
+local potMsgUntil = 0
+
+local SOUND_KEYS = {
+    duel = { SOUNDS_KEY = "DUEL_START", fallback = "Duel_Start" },
+    alert = { SOUNDS_KEY = "GENERAL_ALERT_ERROR", fallback = "General_Alert_Error" },
+    notify = { SOUNDS_KEY = "NEW_NOTIFICATION", fallback = "New_Notification" },
+    discover = { SOUNDS_KEY = "OBJECTIVE_DISCOVERED", fallback = "Objective_Discovered" },
+}
+
+local PREVIEW_SEC = 8
+local FOOD_MSG_SEC = 60
+local POT_MSG_SEC = 6
 
 local function Vars()
     return T.savedVars
@@ -40,6 +58,41 @@ end
 local function ConsOn()
     local v = Vars()
     return v and v.consEnabled ~= false
+end
+
+local function FoodSlotOn()
+    local v = Vars()
+    return ConsOn() and v and v.consShowFood ~= false
+end
+
+local function PotSlotOn()
+    local v = Vars()
+    return ConsOn() and v and v.consShowPot ~= false
+end
+
+local function FoodMsgOn()
+    local v = Vars()
+    return ConsOn() and v and v.consMsgFood == true
+end
+
+local function PotMsgOn()
+    local v = Vars()
+    return ConsOn() and v and v.consMsgPot == true
+end
+
+local function AnyMsgOn()
+    return FoodMsgOn() or PotMsgOn()
+end
+
+local function NowMs()
+    if GetGameTimeMilliseconds then
+        return GetGameTimeMilliseconds()
+    end
+    return (GetTimeStamp and GetTimeStamp() or 0) * 1000
+end
+
+local function PreviewLive()
+    return previewUntil > NowMs()
 end
 
 local function InCombat()
@@ -73,9 +126,77 @@ end
 local function Scale()
     local v = Vars()
     local p = v and tonumber(v.consScale) or 100
-    if p < 50 then p = 50 end
-    if p > 180 then p = 180 end
+    if p < 40 then p = 40 end
+    if p > 250 then p = 250 end
     return p / 100
+end
+
+local function MsgScale()
+    local v = Vars()
+    local p = v and tonumber(v.consMsgScale) or 100
+    if p < 40 then p = 40 end
+    if p > 250 then p = 250 end
+    return p / 100
+end
+
+local function ApplyFont(lab, px)
+    if not lab then return end
+    px = math.floor(px + 0.5)
+    if px < 12 then px = 12 end
+    if px > 90 then px = 90 end
+    local name = "$(GAMEPAD_BOLD_FONT)|" .. px .. "|soft-shadow-thick"
+    local ok = pcall(function()
+        lab:SetFont(name)
+    end)
+    if not ok then
+        pcall(function()
+            lab:SetFont(px >= 28 and "ZoFontGamepad34" or (px >= 22 and "ZoFontGamepad27" or "ZoFontGamepad22"))
+        end)
+    end
+end
+
+local function InInstance()
+    if IsUnitInDungeon then
+        local ok, v = pcall(IsUnitInDungeon, "player")
+        if ok and v then return true end
+    end
+    if IsPlayerInRaid then
+        local ok, v = pcall(IsPlayerInRaid)
+        if ok and v then return true end
+    end
+    if IsPlayerInEndlessDungeon then
+        local ok, v = pcall(IsPlayerInEndlessDungeon)
+        if ok and v then return true end
+    end
+    if GetCurrentEndlessDungeonId then
+        local ok, id = pcall(GetCurrentEndlessDungeonId)
+        if ok and tonumber(id) and tonumber(id) > 0 then return true end
+    end
+    if IsActiveWorldBattleground then
+        local ok, v = pcall(IsActiveWorldBattleground)
+        if ok and v then return true end
+    end
+    if IsPlayerInBattleground then
+        local ok, v = pcall(IsPlayerInBattleground)
+        if ok and v then return true end
+    end
+    if IsInAvAWorld then
+        local ok, v = pcall(IsInAvAWorld)
+        if ok and v then return true end
+    end
+    if IsPlayerInAvAWorld then
+        local ok, v = pcall(IsPlayerInAvAWorld)
+        if ok and v then return true end
+    end
+    if IsInCyrodiil then
+        local ok, v = pcall(IsInCyrodiil)
+        if ok and v then return true end
+    end
+    if IsInImperialCity then
+        local ok, v = pcall(IsInImperialCity)
+        if ok and v then return true end
+    end
+    return false
 end
 
 local function FoodWarnSec()
@@ -314,35 +435,73 @@ local function Layout()
     local icon = math.floor(36 * sc + 0.5)
     local gap = math.floor(18 * sc + 0.5)
     local cell = icon + 8
-    local width = cell * 2 + gap
-    local height = icon + math.floor(22 * sc + 0.5)
+    local showFood = FoodSlotOn()
+    local showPot = PotSlotOn()
+    local slots = (showFood and 1 or 0) + (showPot and 1 or 0)
+    if slots < 1 then slots = 1 end
+    local width = cell * slots + (slots > 1 and gap or 0)
+    local px = 18 * sc
+    local height = icon + math.floor(px + 10)
     root:ClearAnchors()
     root:SetAnchor(CENTER, GuiRoot, CENTER, ox, oy)
     root:SetDimensions(width, height)
 
+    local foodX, potX = 0, 0
+    if showFood and showPot then
+        foodX = -((cell + gap) / 2)
+        potX = (cell + gap) / 2
+    end
+
     if foodIcon then
         foodIcon:ClearAnchors()
-        foodIcon:SetAnchor(TOP, root, TOP, -((cell + gap) / 2), 0)
+        foodIcon:SetAnchor(TOP, root, TOP, foodX, 0)
         foodIcon:SetDimensions(icon, icon)
+        foodIcon:SetHidden(not showFood)
     end
     if foodLab then
         foodLab:ClearAnchors()
         foodLab:SetAnchor(TOP, foodIcon, BOTTOM, 0, 2)
-        pcall(function()
-            foodLab:SetFont(sc >= 1.2 and "ZoFontGamepad27" or "ZoFontGamepad22")
-        end)
+        foodLab:SetDimensions(math.floor(80 * sc), math.floor(px + 8))
+        ApplyFont(foodLab, px)
+        foodLab:SetHidden(not showFood)
     end
     if potIcon then
         potIcon:ClearAnchors()
-        potIcon:SetAnchor(TOP, root, TOP, (cell + gap) / 2, 0)
+        potIcon:SetAnchor(TOP, root, TOP, potX, 0)
         potIcon:SetDimensions(icon, icon)
+        potIcon:SetHidden(not showPot)
     end
     if potLab then
         potLab:ClearAnchors()
         potLab:SetAnchor(TOP, potIcon, BOTTOM, 0, 2)
-        pcall(function()
-            potLab:SetFont(sc >= 1.2 and "ZoFontGamepad27" or "ZoFontGamepad22")
-        end)
+        potLab:SetDimensions(math.floor(80 * sc), math.floor(px + 8))
+        ApplyFont(potLab, px)
+        potLab:SetHidden(not showPot)
+    end
+
+    if msgRoot then
+        local mx = v and tonumber(v.consMsgX) or 0
+        local my = v and tonumber(v.consMsgY)
+        if my == nil then my = -200 end
+        local msc = MsgScale()
+        local mpx = 28 * msc
+        local lineH = math.floor(mpx + 10)
+        msgRoot:ClearAnchors()
+        msgRoot:SetAnchor(CENTER, GuiRoot, CENTER, mx, my)
+        msgRoot:SetDimensions(math.floor(640 * msc), lineH * 2)
+        if foodMsgLab then
+            foodMsgLab:ClearAnchors()
+            foodMsgLab:SetAnchor(TOP, msgRoot, TOP, 0, 0)
+            foodMsgLab:SetDimensions(math.floor(640 * msc), lineH)
+            ApplyFont(foodMsgLab, mpx)
+        end
+        if potMsgLab then
+            potMsgLab:ClearAnchors()
+            -- Same X as food; a full line height lower.
+            potMsgLab:SetAnchor(TOP, msgRoot, TOP, 0, lineH)
+            potMsgLab:SetDimensions(math.floor(640 * msc), lineH)
+            ApplyFont(potMsgLab, mpx)
+        end
     end
 end
 
@@ -365,28 +524,91 @@ local function PaintSlot(icon, lab, data, warnSec, emptyTex)
     end
 end
 
-local function PlayFoodGone()
+local function PlayEndSound()
     local v = Vars()
-    if not v or v.consFoodSound ~= true then return end
-    if SOUNDS and SOUNDS.GENERAL_ALERT_ERROR then
-        pcall(PlaySound, SOUNDS.GENERAL_ALERT_ERROR)
-    elseif PlaySound then
-        pcall(PlaySound, "General_Alert_Error")
+    local key = v and v.consEndSoundId or "alert"
+    local spec = SOUND_KEYS[key] or SOUND_KEYS.alert
+    local played = false
+    if SOUNDS and spec.SOUNDS_KEY and SOUNDS[spec.SOUNDS_KEY] then
+        played = pcall(PlaySound, SOUNDS[spec.SOUNDS_KEY])
     end
+    if not played and spec.fallback and PlaySound then
+        pcall(PlaySound, spec.fallback)
+    end
+end
+
+local function ShowEndMsg(kind)
+    if not PreviewLive() and not InInstance() then return end
+    local now = NowMs()
+    if kind == "food" or kind == "both" then
+        if FoodMsgOn() then
+            if PreviewLive() then
+                foodMsgUntil = previewUntil
+            else
+                foodMsgUntil = now + FOOD_MSG_SEC * 1000
+            end
+        end
+    end
+    if kind == "pot" or kind == "both" then
+        if PotMsgOn() then
+            if PreviewLive() then
+                potMsgUntil = previewUntil
+            else
+                potMsgUntil = now + POT_MSG_SEC * 1000
+            end
+        end
+    end
+end
+
+local function NotifyEnded(kind)
+    local v = Vars()
+    if kind == "food" and v and v.consFoodSound == true then
+        PlayEndSound()
+    elseif kind == "pot" and v and v.consPotSound == true then
+        PlayEndSound()
+    end
+    ShowEndMsg(kind)
+end
+
+local function DummyFood()
+    return { icon = FOOD_EMPTY, left = 4 * 60 + 32 }
+end
+
+local function DummyPot()
+    return { icon = POT_EMPTY, left = 12 }
 end
 
 local function Paint()
     if not root then return end
-    local food = Scan()
-    local pot = ScanPotion()
-    if hadFood and not food then
-        PlayFoodGone()
+    local food, pot
+    if PreviewLive() then
+        food = DummyFood()
+        pot = DummyPot()
+    else
+        food = Scan()
+        pot = ScanPotion()
+        if FoodSlotOn() and hadFood and not food then
+            NotifyEnded("food")
+        end
+        if PotSlotOn() and hadPot and not pot then
+            NotifyEnded("pot")
+        end
+        hadFood = food and true or false
+        hadPot = pot and true or false
+        if food and food.id ~= 0 then lastFoodId = food.id end
     end
-    hadFood = food and true or false
-    if food and food.id ~= 0 then lastFoodId = food.id end
-    PaintSlot(foodIcon, foodLab, food, FoodWarnSec(), FOOD_EMPTY)
-    local showPot = true
-    if PotCombatOnly() and not InCombat() then
+
+    if FoodSlotOn() then
+        PaintSlot(foodIcon, foodLab, food, FoodWarnSec(), FOOD_EMPTY)
+        if foodIcon then foodIcon:SetHidden(false) end
+        if foodLab then foodLab:SetHidden(false) end
+    else
+        if foodIcon then foodIcon:SetHidden(true) end
+        if foodLab then foodLab:SetHidden(true) end
+    end
+
+    local showPot = PotSlotOn()
+    if showPot and PotCombatOnly() and not InCombat() and not PreviewLive() then
         showPot = false
     end
     if potIcon then potIcon:SetHidden(not showPot) end
@@ -394,22 +616,56 @@ local function Paint()
     if showPot then
         PaintSlot(potIcon, potLab, pot, PotWarnSec(), POT_EMPTY)
     end
+
+    local now = NowMs()
+    local foodLive = FoodMsgOn() and foodMsgUntil > now
+    local potLive = PotMsgOn() and potMsgUntil > now
+    if foodMsgLab then
+        if foodLive then
+            foodMsgLab:SetText(L("CONS_MSG_FOOD", "Food ended"))
+            foodMsgLab:SetColor(1, 0.82, 0.28, 1)
+            foodMsgLab:SetHidden(false)
+        else
+            foodMsgLab:SetHidden(true)
+        end
+    end
+    if potMsgLab then
+        if potLive then
+            potMsgLab:SetText(L("CONS_MSG_POT", "Potion ended"))
+            potMsgLab:SetColor(1, 0.82, 0.28, 1)
+            potMsgLab:SetHidden(false)
+        else
+            potMsgLab:SetHidden(true)
+        end
+    end
+    if msgRoot then
+        local live = foodLive or potLive
+        if PreviewLive() then
+            msgRoot:SetHidden(not live)
+        else
+            msgRoot:SetHidden(not (live and WorldHudOpen()))
+        end
+    end
 end
 
 local function ApplyShown()
     if not root then return end
+    local preview = PreviewLive()
+    if preview then
+        root:SetHidden(not ConsOn())
+        return
+    end
     root:SetHidden(not (ConsOn() and WorldHudOpen()))
 end
 
 local function Tick()
     if not ConsOn() then
         if root then root:SetHidden(true) end
+        if msgRoot then msgRoot:SetHidden(true) end
         return
     end
     ApplyShown()
-    if root and not root:IsHidden() then
-        Paint()
-    end
+    Paint()
 end
 
 local function StartTick()
@@ -428,30 +684,61 @@ local function Build()
     end
     root:SetParent(GuiRoot)
     root:SetHidden(true)
-    root:SetClampedToScreen(true)
+    root:SetClampedToScreen(false)
     root:SetMouseEnabled(false)
     root:SetDrawLayer(DL_CONTROLS)
     root:SetDrawLevel(3)
 
     foodIcon = wm:CreateControl(ADDON .. "Food", root, CT_TEXTURE)
     foodLab = wm:CreateControl(ADDON .. "FoodLab", root, CT_LABEL)
-    foodLab:SetFont("ZoFontGamepad22")
     foodLab:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    foodLab:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     potIcon = wm:CreateControl(ADDON .. "Pot", root, CT_TEXTURE)
     potLab = wm:CreateControl(ADDON .. "PotLab", root, CT_LABEL)
-    potLab:SetFont("ZoFontGamepad22")
     potLab:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    potLab:SetVerticalAlignment(TEXT_ALIGN_CENTER)
 
-    AttachFragment(root)
+    msgRoot = wm:CreateTopLevelWindow(ADDON .. "MsgRoot")
+    if not msgRoot then
+        msgRoot = wm:CreateControl(ADDON .. "MsgRoot", GuiRoot, CT_TOPLEVELCONTROL)
+    end
+    msgRoot:SetParent(GuiRoot)
+    msgRoot:SetHidden(true)
+    msgRoot:SetClampedToScreen(false)
+    msgRoot:SetMouseEnabled(false)
+    msgRoot:SetDrawLayer(DL_OVERLAY)
+    msgRoot:SetDrawLevel(8)
+    foodMsgLab = wm:CreateControl(ADDON .. "FoodMsg", msgRoot, CT_LABEL)
+    foodMsgLab:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    foodMsgLab:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    foodMsgLab:SetColor(1, 0.82, 0.28, 1)
+    potMsgLab = wm:CreateControl(ADDON .. "PotMsg", msgRoot, CT_LABEL)
+    potMsgLab:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    potMsgLab:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    potMsgLab:SetColor(1, 0.82, 0.28, 1)
+
     built = true
     Layout()
     Paint()
     ApplyShown()
 end
 
+function T.ConsPreview()
+    if not ConsOn() then return end
+    previewUntil = NowMs() + PREVIEW_SEC * 1000
+    Build()
+    ShowEndMsg("both")
+    PlayEndSound()
+    Layout()
+    Paint()
+    ApplyShown()
+    StartTick()
+end
+
 function T.ConsRefresh()
     if not ConsOn() then
         if root then root:SetHidden(true) end
+        if msgRoot then msgRoot:SetHidden(true) end
         return
     end
     if not built then Build() end

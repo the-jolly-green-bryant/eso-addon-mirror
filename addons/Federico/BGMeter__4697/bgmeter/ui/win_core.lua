@@ -29,6 +29,7 @@ local TX = {
     gear   = { n = "EsoUI/Art/MenuBar/menuBar_mainMenu_over.dds", p = "EsoUI/Art/MenuBar/menuBar_mainMenu_down.dds", o = "EsoUI/Art/MenuBar/menuBar_mainMenu_over.dds" },
     prev   = { n = "EsoUI/Art/Buttons/large_leftArrow_up.dds",  p = "EsoUI/Art/Buttons/large_leftArrow_down.dds",  o = "EsoUI/Art/Buttons/large_leftArrow_over.dds" },
     nextb  = { n = "EsoUI/Art/Buttons/large_rightArrow_up.dds", p = "EsoUI/Art/Buttons/large_rightArrow_down.dds", o = "EsoUI/Art/Buttons/large_rightArrow_over.dds" },
+    satchel = { n = "EsoUI/Art/Inventory/inventory_tabIcon_Craftbag_up.dds", p = "EsoUI/Art/Inventory/inventory_tabIcon_Craftbag_down.dds", o = "EsoUI/Art/Inventory/inventory_tabIcon_Craftbag_over.dds" },
 }
 
 local MAP_ART = {

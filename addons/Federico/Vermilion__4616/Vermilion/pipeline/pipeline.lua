@@ -27,6 +27,7 @@ local Processing  = Vermilion.Pipeline.Processing
 local C = Vermilion.zenimax.constants
 local EVENT_COMBAT_EVENT          = C.EVENT_COMBAT_EVENT
 local REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE = C.REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE
+local EVENT_EFFECT_CHANGED = C.EVENT_EFFECT_CHANGED
 local REGISTER_FILTER_COMBAT_RESULT           = C.REGISTER_FILTER_COMBAT_RESULT
 local REGISTER_FILTER_IS_ERROR                = C.REGISTER_FILTER_IS_ERROR
 local COMBAT_UNIT_TYPE_PLAYER     = C.COMBAT_UNIT_TYPE_PLAYER
@@ -107,6 +108,13 @@ function M.dispatch_shield_out(result, isError, _name, _g, _slot,
   prof_exit("pipeline.combat_event")
 end
 
+function M.dispatch_effect_player_src(changeType, _slot, _name, unitTag, _bt, endTime,
+                                       _stack, _icon, _depBuff, effectType, _abilityType,
+                                       _stat, _uname, unitId, abilityId)
+  bump("engine.effect.in_player_src")
+  Vermilion.DebuffTracker.on_effect(changeType, abilityId, unitId, endTime, now(), unitTag, effectType)
+end
+
 function M.init()
   local E = Vermilion.zenimax.events
 
@@ -136,5 +144,14 @@ function M.init()
   E.add_filter("Vermilion_E_ShieldOut", EVENT_COMBAT_EVENT,
     REGISTER_FILTER_IS_ERROR, false)
 
-  Log:info("init complete; 2 combat-event handlers registered")
+  E.register("Vermilion_E_EffectPlayer", EVENT_EFFECT_CHANGED, M.dispatch_effect_player_src)
+  E.add_filter("Vermilion_E_EffectPlayer", EVENT_EFFECT_CHANGED,
+    REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
+  if C.EVENT_ACTIVE_WEAPON_PAIR_CHANGED then
+    E.register("Vermilion_E_WeaponPair", C.EVENT_ACTIVE_WEAPON_PAIR_CHANGED, function()
+      Vermilion.DebuffTracker.on_bars_changed()
+    end)
+  end
+
+  Log:info("init complete; 2 combat-event handlers and the effect handler registered")
 end

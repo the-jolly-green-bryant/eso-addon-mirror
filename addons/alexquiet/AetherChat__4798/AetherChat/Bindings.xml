@@ -1,8 +1,23 @@
 <Bindings>
-    <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
-        <Category name="SI_BINDINGS_CATEGORY_AETHERCHAT">
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="AETHERCHAT">
             <Action name="AETHERCHAT_TOGGLE">
                 <Down>AetherChat.Messenger.Toggle()</Down>
+            </Action>
+            <Action name="AETHERCHAT_TOGGLE_MODE">
+                <Down>AetherChat.Messenger.ToggleInterfaceMode()</Down>
+            </Action>
+            <Action name="AETHERCHAT_NEXT_TAB">
+                <Down>AetherChat.Messenger.NextTab()</Down>
+            </Action>
+            <Action name="AETHERCHAT_PREV_TAB">
+                <Down>AetherChat.Messenger.PrevTab()</Down>
+            </Action>
+            <Action name="AETHERCHAT_NEXT_GUILD">
+                <Down>AetherChat.Messenger.NextGuild()</Down>
+            </Action>
+            <Action name="AETHERCHAT_FOCUS_CHAT">
+                <Down>AetherChat.Messenger.FocusChatInput()</Down>
             </Action>
         </Category>
     </Layer>

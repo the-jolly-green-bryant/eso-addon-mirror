@@ -33,6 +33,8 @@ local function now_ms()
   return Verdant.zenimax.api.GetGameTimeMilliseconds()
 end
 
+local tick
+
 local function push_hist(what)
   hist_n = hist_n + 1
   local slot = ((hist_n - 1) % HIST_CAP) + 1
@@ -54,6 +56,25 @@ local function scan_bosses()
     end
   end
   return found, name
+end
+
+local function auto_stop_on()
+  local sv = Verdant.SavedVars
+  return sv and sv.settings and sv.settings.auto_stop == true or false
+end
+
+local function stop_wanted()
+  return auto_active or (auto_stop_on() and not in_combat)
+end
+
+local function sync_tick()
+  local zev = Verdant.zenimax.events
+  if mode ~= MODE_OFF or auto_stop_on() then
+    zev.register_update(TICK_NAME, TICK_MS, tick)
+  else
+    zev.unregister_update(TICK_NAME)
+    grace_deadline = nil
+  end
 end
 
 local function should_record()
@@ -92,18 +113,18 @@ local function do_stop(reason)
 end
 
 local function evaluate()
-  if mode == MODE_OFF then return end
-  if should_record() then
+  if mode == MODE_OFF and not auto_stop_on() then return end
+  if should_record() or (in_combat and grace_deadline and not auto_active) then
     if grace_deadline then
       bump("autorec.grace_cancelled")
       push_hist("grace cancelled")
       grace_deadline = nil
     end
-    if not Verdant.TemporalBuffer.is_recording() then
+    if should_record() and not Verdant.TemporalBuffer.is_recording() then
       try_start()
     end
   else
-    if auto_active and Verdant.TemporalBuffer.is_recording() and grace_deadline == nil then
+    if stop_wanted() and Verdant.TemporalBuffer.is_recording() and grace_deadline == nil then
       grace_deadline = now_ms() + GRACE_MS
       push_hist("grace armed")
       bump("autorec.grace_armed")
@@ -140,8 +161,8 @@ function M.on_zone_changed()
   grace_deadline = nil
 end
 
-local function tick()
-  if mode == MODE_OFF then return end
+function tick()
+  if mode == MODE_OFF and not auto_stop_on() then return end
   local api = Verdant.zenimax.api
   local live = api.IsUnitInCombat("player") and true or false
   if live ~= in_combat then
@@ -150,8 +171,8 @@ local function tick()
     evaluate()
   end
   if grace_deadline and now_ms() >= grace_deadline then
-    if auto_active and Verdant.TemporalBuffer.is_recording() then
-      do_stop("grace")
+    if stop_wanted() and Verdant.TemporalBuffer.is_recording() then
+      do_stop(auto_active and "grace" or "combat_end")
     else
       grace_deadline = nil
     end
@@ -188,15 +209,14 @@ function M.set_mode(m)
   log:info("mode:", mode, "->", m)
   push_hist("mode " .. m)
   mode = m
-  local zev = Verdant.zenimax.events
   if mode == MODE_OFF then
-    zev.unregister_update(TICK_NAME)
     if auto_active and Verdant.TemporalBuffer.is_recording() then
       do_stop("disabled")
     end
     grace_deadline = nil
+    sync_tick()
   else
-    zev.register_update(TICK_NAME, TICK_MS, tick)
+    sync_tick()
     local found, name = scan_bosses()
     boss_present = found
     boss_name    = name
@@ -211,11 +231,30 @@ function M.set_mode(m)
   return true
 end
 
+function M.set_auto_stop(on)
+  local sv = Verdant.SavedVars
+  if not sv then return false end
+  sv.settings = sv.settings or {}
+  on = on and true or false
+  if sv.settings.auto_stop == on then return true end
+  sv.settings.auto_stop = on
+  log:info("auto_stop:", on)
+  push_hist(on and "auto_stop on" or "auto_stop off")
+  if on then
+    in_combat = Verdant.zenimax.api.IsUnitInCombat("player") and true or false
+  end
+  sync_tick()
+  if on then evaluate() end
+  return true
+end
+
+function M.get_auto_stop() return auto_stop_on() end
+
 function M.report_lines()
   local lines = {}
   lines[#lines + 1] = string.format(
-    "mode=%s  state=%s  in_combat=%s  boss=%s  grace=%s",
-    mode,
+    "mode=%s  auto_stop=%s  state=%s  in_combat=%s  boss=%s  grace=%s",
+    mode, tostring(auto_stop_on()),
     auto_active and (grace_deadline and "GRACE" or "RECORDING") or "IDLE",
     tostring(in_combat),
     boss_present and tostring(boss_name) or "none",
@@ -252,5 +291,6 @@ function M.init()
   local saved = sv and sv.settings and sv.settings.auto_record or MODE_OFF
   mode = MODE_OFF
   M.set_mode(saved)
+  sync_tick()
   log:info("init: mode=", mode)
 end

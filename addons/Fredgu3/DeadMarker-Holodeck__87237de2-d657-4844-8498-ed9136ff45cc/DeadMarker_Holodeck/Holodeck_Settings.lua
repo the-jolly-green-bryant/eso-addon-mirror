@@ -41,7 +41,8 @@ function H.CreateSettingsMenu()
         {
             type = "description",
             text = "|cC0E0FF/hd plant|r  →  |cC0E0FF/hd list|r  →  |cC0E0FF/hd load N|r  →  |cC0E0FF/hd play|r\n"
-                .. "Library picker is |cC0E0FF/hd list|r (left). Cue card is the legend (right).",
+                .. "Wrong size or facing: |cC0E0FF/hd scale 150|r  ·  |cC0E0FF/hd rot 90|r  ·  |cC0E0FF/hd flip z|r\n"
+                .. "Full list: |cC0E0FF/hd help|r  (legend, top-right).",
         },
 
         { type = "header", name = "Playback" },
@@ -67,18 +68,24 @@ function H.CreateSettingsMenu()
             default = true,
         },
         {
-            type = "checkbox",
-            name = "Boss / mini names on pins",
-            tooltip = "World labels from the pack (Vashai vs S'kinrai). Also: /hd names on|off",
-            getFunc = function() return sv.namesOn ~= false end,
+            type = "dropdown",
+            name = "Pin nameplates",
+            tooltip = "Off: no names. Important: boss, mini, and named adds (Fate, Will, Atro…). All: every enemy/role. Also: /hd names off|important|all",
+            choices = { "Off", "Important adds", "All pins" },
+            choicesValues = { "off", "important", "all" },
+            getFunc = function()
+                if type(H.NamesMode) == "function" then return H.NamesMode() end
+                return sv.namesMode or "important"
+            end,
             setFunc = function(v)
-                sv.namesOn = (v == true)
+                sv.namesMode = v
+                sv.namesOn = (v ~= "off")
                 if type(H.ApplyTimeline) == "function" then
                     H.ApplyTimeline(H.playT or 0, false)
                 end
                 if type(H.RefreshUI) == "function" then H.RefreshUI() end
             end,
-            default = true,
+            default = "important",
         },
         {
             type = "checkbox",

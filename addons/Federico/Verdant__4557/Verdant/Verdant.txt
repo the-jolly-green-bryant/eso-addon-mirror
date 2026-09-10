@@ -1,9 +1,9 @@
 ## Title: Verdant
 ## Description: Real-time healer contribution tool — healing, shields and triage, with skill-colour breakdown
 ## Author: Federico Vergelli
-## Version: 2.5.0
-## AddOnVersion: 10
-## APIVersion: 101051
+## Version: 2.6.0
+## AddOnVersion: 11
+## APIVersion: 101051 101050
 ## SavedVariables: VerdantSavedVars
 
 # This Add-on is not created by, affiliated with, or sponsored by ZeniMax Media Inc. or its affiliates.
@@ -27,6 +27,8 @@ zenimax/ui.lua
 zenimax/savedvars.lua
 zenimax/events.lua
 zenimax/scene.lua
+core/sound.lua
+core/content_kind.lua
 lib/plot/style.lua
 lib/plot/primitives.lua
 lib/plot/pool.lua
@@ -64,6 +66,7 @@ ui/settings.xml
 ui/settings.lua
 ui/graph.xml
 ui/graph.lua
+ui/contrib.lua
 ui/watch.xml
 ui/watch.lua
 ui/library.xml

@@ -29,7 +29,7 @@ local function combatReport(eventCode, result, isError, abilityName, abilityGrap
     printMessage("---------------")
     printMessage("combatReport")
     printMessage(zo_strformat("eventCode- <<1>>", eventCode))
-    --printMessage(zo_strformat("result- <<1>>", result))
+    printMessage(zo_strformat("result- <<1>>", result))
     printMessage(zo_strformat("abilityName- <<1>>", abilityName))
     printMessage(zo_strformat("sourceName- <<1>>", sourceName))
     --printMessage(zo_strformat("sourceType- <<1>>", sourceType))
@@ -92,9 +92,9 @@ end
 --register for notifications 
 local function registerAlerts()
     EVENT_MANAGER:RegisterForEvent("effectReport", EVENT_EFFECT_CHANGED, effectReport)
-    EVENT_MANAGER:AddFilterForEvent("effectReport", EVENT_EFFECT_CHANGED, REGISTER_FILTER_ABILITY_ID, 159275)
+    EVENT_MANAGER:AddFilterForEvent("effectReport", EVENT_EFFECT_CHANGED, REGISTER_FILTER_ABILITY_ID, 60230)
     EVENT_MANAGER:RegisterForEvent("combatReport", EVENT_COMBAT_EVENT, combatReport)
-    EVENT_MANAGER:AddFilterForEvent("combatReport", EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, 159275)
+    EVENT_MANAGER:AddFilterForEvent("combatReport", EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, 60230)
 end
 
 --an addon has loaded

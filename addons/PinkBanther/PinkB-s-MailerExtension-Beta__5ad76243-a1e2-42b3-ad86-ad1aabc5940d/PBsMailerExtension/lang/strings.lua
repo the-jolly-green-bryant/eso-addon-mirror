@@ -62,14 +62,14 @@ local strings = {
 	SI_PBSMX_PREVIEW_NO_BODY = "(no message)",
 	SI_PBSMX_PREVIEW_ATTACHMENTS = "Attached (%d):",
 
-	SI_PBSMX_DELETE_TITLE = "Delete this draft?",
+	SI_PBSMX_DELETE_TITLE = "Delete this <<1>>?",
 	SI_PBSMX_DELETE_PROMPT = "<<1>>\n\nThis cannot be undone.",
 
 	-- ---- Said over the game, for when the chat window is not on screen ------------------
 	SI_PBSMX_ALERT_SAVED = "Saved as draft %s",
 	SI_PBSMX_ALERT_LOADED = "The draft is on the page",
 	SI_PBSMX_ALERT_LOADED_WITH_NOTES = "The draft is on the page -- %d things could not be put back, see chat",
-	SI_PBSMX_ALERT_DELETED = "Draft deleted",
+	SI_PBSMX_ALERT_DELETED = "Deleted the %s",
 	SI_PBSMX_ERROR_NO_DIALOG = "This client has no dialog to confirm with, so nothing was deleted. Use /pbmail delete <n>.",
 
 	SI_PBSMX_WHERE_TABS = "Drafts tab -- keyboard: %s, gamepad: %s",
@@ -101,6 +101,74 @@ local strings = {
 
 	SI_PBSMX_GO_TO_SEND = "It is on the compose page. Go to the Send tab to read it -- and read it before you press Send.",
 	SI_PBSMX_ALERT_GO_TO_SEND = "Go to the Send tab to read it",
+
+	-- ---- The kept box ------------------------------------------------------------------
+	SI_PBSMX_TAB_KEPT = "Kept",
+	SI_PBSMX_NOUN_KEPT = "kept mail",
+	SI_PBSMX_KEPT_EMPTY = "Nothing kept yet. Open a mail in the inbox and press Keep this mail, and a copy of it is written here, where nothing expires.",
+	SI_PBSMX_KEEP_ENTRY = "Keep this mail",
+	SI_PBSMX_KEYBIND_REPLY = "Reply on the page",
+
+	SI_PBSMX_KEPT = "Kept as %s -- %s",
+	SI_PBSMX_ALERT_KEPT = "Kept as %s",
+	SI_PBSMX_KEPT_ATTACHMENTS_WARNING = "What it SAID is kept. What was ATTACHED is not -- an add-on has nowhere to put an item. Take the attachments before the mail expires.",
+
+	SI_PBSMX_ERROR_NO_MAIL_OPEN = "No mail is open. Pick one in the inbox first.",
+	SI_PBSMX_ERROR_GUILD_MAIL = "This client does not offer the guild mail calls, so there is nothing to copy from.",
+	SI_PBSMX_ERROR_ALREADY_KEPT = "That one is already kept, as %s.",
+	SI_PBSMX_ERROR_MAIL_NOT_READY = "The client has not finished fetching that mail. Open it, wait for the text, and try again.",
+
+	SI_PBSMX_LIMIT_KEPT = "Kept mails",
+	SI_PBSMX_LIMIT_KEPT_TOOLTIP = "How many kept mails the box holds. Full means keeping is refused, never that the oldest is thrown away -- a kept mail is one you chose to save from expiring. Lowering this deletes nothing. /pbmail max keep <n> sets any exact figure.",
+
+	SI_PBSMX_HELP_KEEP = "/pbmail keep [save | load <n> | read <n> | delete <n>] -- mails saved from expiring",
+	SI_PBSMX_DESCRIBE_FROM = "%s <- %s",
+	SI_PBSMX_PREVIEW_FROM = "From: %s",
+
+	SI_PBSMX_KEYBIND_READ = "Read it",
+	SI_PBSMX_ALERT_READ = "The whole letter is in chat",
+	SI_PBSMX_PICK_ONE = "Pick one above to read it.",
+	SI_PBSMX_ERROR_GUILD_MAIL_GONE = "That guild mail is no longer there to copy.",
+	SI_PBSMX_PREVIEW_GUILD = "Guild: %s",
+
+	-- ---- The pane beside the list (fallbacks; the client's own words are used when it has them)
+	SI_PBSMX_VIEW_TO = "To",
+	SI_PBSMX_VIEW_FROM = "From",
+	SI_PBSMX_VIEW_SUBJECT = "Subject",
+	SI_PBSMX_VIEW_BODY = "Message",
+	SI_PBSMX_VIEW_ATTACHED = "Attached",
+	SI_PBSMX_VIEW_NOTHING_ATTACHED = "Nothing",
+	SI_PBSMX_VIEW_GOLD = "Gold",
+	SI_PBSMX_VIEW_COD = "C.O.D.",
+	SI_PBSMX_VIEW_NO_GOLD = "None",
+
+	-- ---- Writing -----------------------------------------------------------------------
+	SI_PBSMX_SECTION_WRITING = "While you are writing",
+
+	SI_PBSMX_AUTOSAVE = "Save what I am writing, every",
+	SI_PBSMX_AUTOSAVE_TOOLTIP = "Seconds between saves of the letter on the Send page, so an unfinished one survives a crash or walking away. 0 turns it off. It is ONE draft, kept up to date -- never a new one each time -- it is named so you can tell it from the drafts you saved yourself, and it goes when the letter is sent or the page is cleared. /pbmail autosave <seconds | off> sets any exact figure.",
+	SI_PBSMX_AUTOSAVE_NAME = "(being written)",
+	SI_PBSMX_AUTOSAVE_EVERY = "Saving what you are writing every %d seconds.",
+	SI_PBSMX_AUTOSAVE_OFF = "Not saving what you are writing.",
+
+	SI_PBSMX_ONSEND = "Delete a draft once it is sent",
+	SI_PBSMX_ONSEND_TOOLTIP = "When a letter put on the page from the drafts box is sent, the draft it came from is thrown away -- a draft is a letter you have not sent yet. Off keeps it. Either way the sent box has a copy of what went.",
+	SI_PBSMX_ONSEND_ON = "A draft is deleted once its letter is sent.",
+	SI_PBSMX_ONSEND_OFF = "A draft is kept after its letter is sent.",
+	SI_PBSMX_DRAFT_SENT = "Sent, so the draft it came from is gone -- %s",
+
+	SI_PBSMX_ERROR_NEED_SECONDS = "How often? A number of seconds up to %d, or off.",
+	SI_PBSMX_ERROR_ON_OR_OFF = "on or off?",
+
+	SI_PBSMX_HELP_AUTOSAVE = "/pbmail autosave [seconds | off] -- saving the letter you are writing",
+	SI_PBSMX_HELP_ONSEND = "/pbmail onsend [on | off] -- delete a draft once its letter is sent",
+
+	-- ---- Room left for saved data ------------------------------------------------------
+	SI_PBSMX_STORAGE_FREE = "Add-on storage: %s MB free of %s MB",
+	SI_PBSMX_STORAGE_USED = "Add-on storage in use: %s MB",
+	SI_PBSMX_STORAGE_MINE = "(this add-on %s MB)",
+	SI_PBSMX_STORAGE_UNKNOWN = "This client does not say how much add-on storage is left.",
+	SI_PBSMX_HELP_DISK = "/pbmail disk -- how much room is left for saved add-on data",
 }
 
 for stringId, stringValue in pairs(strings) do

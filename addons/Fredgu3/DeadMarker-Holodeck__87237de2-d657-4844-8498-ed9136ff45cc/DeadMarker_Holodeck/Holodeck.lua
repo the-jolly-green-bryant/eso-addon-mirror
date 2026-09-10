@@ -10,6 +10,10 @@
 -- New trial recipes belong in a sibling manifest .lua (new 200), not more
 -- `local function` here. Fold tunables into CFG / TEX, not new locals.
 --
+-- 0.0.57: Nav QA — park landed boss, LAND!, portal after hide, plant facing, no BASH upstairs
+-- 0.0.56: Recipes.lua parse fix (while/then) — 0.0.55 did not load
+-- 0.0.55: /hd help card on the legend (scale / rot / flip)
+-- 0.0.54: vSS recipe, add looks, legend, /hd help card (scale rot flip)
 -- 0.0.53: YOU/add-debuff headmarker uses raw body pos (DeadMarker2), not house-fit local
 -- 0.0.52: Boss-only tag = you only + debuff shout; Rakkhat house-fit from boss path
 -- 0.0.51: Count boss-only Portal!/pads/tags; Rakkhat Backyard!; time HP bars
@@ -53,7 +57,7 @@
 local Holodeck = Holodeck or {}
 Holodeck.name        = "DeadMarker_Holodeck"
 Holodeck.displayName = "Holodeck"
-Holodeck.version     = "0.0.53"
+Holodeck.version     = "0.0.57"
 
 Holodeck.Fights = Holodeck.Fights or {}
 function Holodeck.RegisterFight(fight)
@@ -256,21 +260,38 @@ local function ColorForActor(act)
     return def.color or { 1, 1, 1 }
 end
 
-local function NamesOn()
+function Holodeck.NamesMode()
     local s = Holodeck.savedVars
-    if s and s.namesOn ~= nil then return s.namesOn == true end
-    return true
+    if type(s) == "table" and type(s.namesMode) == "string" and s.namesMode ~= "" then
+        return s.namesMode
+    end
+    if s and s.namesOn == false then return "off" end
+    return "important"
+end
+
+local function NamesOn()
+    return Holodeck.NamesMode() ~= "off"
 end
 
 local function ShouldNameplate(act)
-    if not act or not NamesOn() then return false end
+    if not act then return false end
+    local mode = Holodeck.NamesMode()
     if act.visible == false then return false end
     local lab = act.label
     if type(lab) ~= "string" or lab == "" or lab == "origin" then return false end
     if act.name == "_you" then return act.tagged == true end
-    if act.guide then return true end
+    if mode == "off" then return false end
+    if act.guide then
+        -- Pad numbers during portal; statue S1–S4 stay quiet (glow is the tell).
+        return act.kind == "portal"
+    end
     local k = act.kind
-    return k == "boss" or k == "mini"
+    if mode == "all" then
+        return k == "boss" or k == "mini" or k == "trash"
+            or k == "tank" or k == "healer" or k == "dps"
+    end
+    if k == "boss" or k == "mini" then return true end
+    return act.important == true
 end
 
 -- Exact-name → kind (before substring heuristics)
@@ -328,6 +349,7 @@ local DEFAULTS = {
     bossSizeM = 1.6, minibossSizeM = 1.25, originSizeM = 0.7, roleSizeM = 1.1,
     yOffsetM = 1.8, opacity = 1.0, debug = false,
     legendOn = true, sheetOn = false, pathOn = true, frameOn = true, namesOn = true,
+    namesMode = "important",
     alertsOn = true,
     playScalePct = 100,
     flipXByPack = {},
@@ -451,7 +473,8 @@ local function RefineKind(kind, label, id)
     if blob:find("blackguard", 1, true) or blob:find("lightweaver", 1, true)
         or blob:find("lieutenant", 1, true) or blob:find("deadraiser", 1, true)
         or blob:find("overseer", 1, true) or blob:find("colossus", 1, true)
-        or blob:find("miniboss", 1, true) then
+        or blob:find("miniboss", 1, true)
+        or (blob:find("alkosh", 1, true) and blob:find("fate", 1, true)) then
         return "mini"
     end
     return kind
@@ -686,9 +709,9 @@ local function PlaceNameplate(act, wx, wy, wz, pitch, yaw)
         lbl:SetText(act.label)
         act._plateText = act.label
     end
-    -- YOU is a tight head sticker (DeadMarker2-style). Boss plates stay large
-    -- with origin at the bottom so the name sits above the pin.
-    local lift = (act.kind == "boss") and 55 or 40
+    -- YOU is a tight head sticker. Boss plates stay large. Add/mini plates
+    -- stay near pin scale (~1.2 m), not 2 m billboards.
+    local lift = (act.kind == "boss") and 55 or 28
     if act.name == "_you" then
         lbl:SetDimensions(180, 36)
         if lbl.SetTransformScale then lbl:SetTransformScale(1.25) end
@@ -696,10 +719,15 @@ local function PlaceNameplate(act, wx, wy, wz, pitch, yaw)
             lbl:SetTransformNormalizedOriginPoint(0.5, 0.5)
         end
         lift = 0
-    else
+    elseif act.kind == "boss" then
         lbl:SetDimensions(520, 56)
-        local sizeM = (act.kind == "boss") and 2.6 or 2.1
-        if lbl.SetTransformScale then lbl:SetTransformScale(sizeM) end
+        if lbl.SetTransformScale then lbl:SetTransformScale(2.6) end
+        if lbl.SetTransformNormalizedOriginPoint then
+            lbl:SetTransformNormalizedOriginPoint(0.5, 1.0)
+        end
+    else
+        lbl:SetDimensions(240, 36)
+        if lbl.SetTransformScale then lbl:SetTransformScale(1.15) end
         if lbl.SetTransformNormalizedOriginPoint then
             lbl:SetTransformNormalizedOriginPoint(0.5, 1.0)
         end
@@ -1680,7 +1708,11 @@ local function UpdateSwapBanner(tSec)
     local cid = (cue.kind or "portal") .. ":" .. tostring(cue.t or 0)
     if Holodeck._lastCueAnnounced ~= cid then
         Holodeck._lastCueAnnounced = cid
-        dhd(string.format("|cFFEE55%s|r  — glowing pad  %.0fs", text, cue.dur or CFG.PORTAL_HOLD_SEC))
+        if (cue.kind or "") == "portal" then
+            dhd(string.format("|cFFEE55%s|r  %.0fs", text, cue.dur or CFG.PORTAL_HOLD_SEC))
+        else
+            dhd(string.format("|cFFEE55%s|r", text))
+        end
     end
 end
 
@@ -1692,7 +1724,9 @@ local function EnsurePads()
     while i <= #pads do
         local p = pads[i]
         if p then
-            local act = EnsureActor(p.id, "portal")
+            local pk = p.kind or "portal"
+            if not KIND[pk] then pk = "portal" end
+            local act = EnsureActor(p.id, pk)
             if act then
                 act.guide = true
                 act.label = p.label or tostring(p.slot or i)
@@ -1701,7 +1735,7 @@ local function EnsurePads()
                 act.padSlot = p.slot
                 act.dead = false
                 act.aspect = nil
-                act.baseColor = KIND.portal.color
+                act.baseColor = KIND[pk].color
                 PlaceActor(act)
             end
         end
@@ -1763,6 +1797,13 @@ local function ApplyTimeline(tSec, announce)
                     local x, z, vis, asp, dead, fdx, fdz = SampleLibraryTrack(def.track, tSec)
                     -- Bosses stay planted when dead (red tint). Minis/trash still despawn.
                     if kind == "boss" then vis = true end
+                    if kind == "boss" and Holodeck.GroundBossAt then
+                        local gx, gz = Holodeck.GroundBossAt(fight, tSec)
+                        if gx ~= nil then
+                            x, z = gx, gz
+                            fdx, fdz = nil, nil
+                        end
+                    end
                     act.x, act.z, act.visible, act.aspect = x, z, vis, asp
                     if fdx and fdz and (fdx * fdx + fdz * fdz) > 0.01 then
                         act.fdx, act.fdz = fdx, fdz
@@ -1774,6 +1815,21 @@ local function ApplyTimeline(tSec, announce)
                     if not col and kind == "boss" and uncoloredBosses >= 2 then
                         bossPaletteI = bossPaletteI + 1
                         col = BOSS_PALETTE[((bossPaletteI - 1) % #BOSS_PALETTE) + 1]
+                    end
+                    act.important = false
+                    if Holodeck.LookupActorLook then
+                        local look = Holodeck.LookupActorLook(def.label, def.id, kind)
+                        if look then
+                            act.important = look.important == true
+                            if look.short then act.label = look.short end
+                            if not col and look.color then col = look.color end
+                            if look.tex and act.ctl then
+                                _SetTextureSafe(act.ctl, look.tex, look.fb or TEX.TRASH_ESO)
+                            end
+                            if look.sizeM and act.ctl and act.ctl.SetTransformScale then
+                                act.ctl:SetTransformScale(look.sizeM)
+                            end
+                        end
                     end
                     act.baseColor = col
                     PlaceActor(act)
@@ -1857,6 +1913,15 @@ Holodeck.HpTriggers = {
     zily = { { pct = 90, label = "Adds" } },
     rakkhat = { { pct = 11, label = "Execute" } },
     zhajhassa = { { pct = 70, label = "Shield" }, { pct = 30, label = "Shield" } },
+    nahviintaas = {
+        { pct = 90, label = "Portal" },
+        { pct = 80, label = "Fly" },
+        { pct = 70, label = "Portal" },
+        { pct = 60, label = "Fly" },
+        { pct = 50, label = "Portal" },
+        { pct = 40, label = "Fly" },
+        { pct = 33, label = "Execute" },
+    },
 }
 
 function Holodeck.HideBossHpBars()
@@ -1890,6 +1955,10 @@ function Holodeck.UpdateBossHpBars(tSec)
     if dur < 1 then dur = 1 end
     tSec = tonumber(tSec) or 0
     local remain = 100 * (1 - (tSec / dur))
+    if Holodeck.RemainHp then
+        local g = Holodeck.RemainHp(fight, tSec)
+        if type(g) == "number" then remain = g end
+    end
     if remain < 0 then remain = 0 end
     if remain > 100 then remain = 100 end
 
@@ -1920,6 +1989,8 @@ function Holodeck.UpdateBossHpBars(tSec)
         trig = Holodeck.HpTriggers.rakkhat
     elseif key:find("zhaj", 1, true) then
         trig = Holodeck.HpTriggers.zhajhassa
+    elseif key:find("nahviintaas", 1, true) then
+        trig = Holodeck.HpTriggers.nahviintaas
     end
 
     local b = 1
@@ -2022,10 +2093,15 @@ function Holodeck.UpdateBossHpBars(tSec)
 end
 
 local function LegendText()
-    local pack = Holodeck.loadedId or (Holodeck.fight and Holodeck.fight.id)
-    local title = (Holodeck.fight and Holodeck.fight.name) or pack or "no fight loaded"
+    if Holodeck.helpOpen and Holodeck.HelpCardText then
+        return Holodeck.HelpCardText()
+    end
+    local fight = Holodeck.fight
+    local pack = Holodeck.loadedId or (fight and fight.id)
+    local title = (fight and fight.name) or pack or "no fight loaded"
     local planted = Holodeck.origin and true or false
     local t = Holodeck.playT or 0
+    local dur = (fight and tonumber(fight.durationSec)) or 0
     local phase
     if Holodeck.playing then
         phase = "|c55FF88RUN|r"
@@ -2034,11 +2110,65 @@ local function LegendText()
     else
         phase = "|c88AACCidle|r"
     end
+    local loop = Holodeck.playMode or "once"
+    local names = Holodeck.NamesMode and Holodeck.NamesMode() or "important"
+
+    local function clock(sec)
+        sec = math.floor((tonumber(sec) or 0) + 0.5)
+        if sec < 0 then sec = 0 end
+        local m = math.floor(sec / 60)
+        return string.format("%d:%02d", m, sec - m * 60)
+    end
+
+    local hpBit = ""
+    if fight and dur >= 1 then
+        local remain = 100 * (1 - (t / dur))
+        if Holodeck.RemainHp then
+            local g = Holodeck.RemainHp(fight, t)
+            if type(g) == "number" then remain = g end
+        end
+        if remain < 0 then remain = 0 end
+        if remain > 100 then remain = 100 end
+        hpBit = string.format("  ·  HP %d%%", math.floor(remain + 0.5))
+    end
+
+    local userPct = 100
+    if Holodeck.savedVars and Holodeck.savedVars.playScalePct then
+        userPct = tonumber(Holodeck.savedVars.playScalePct) or 100
+    end
+    local fit = 1
+    local fr = fight and fight._frame
+    if type(fr) == "table" and type(fr.fitScale) == "number" and fr.fitScale > 0.2 then
+        fit = fr.fitScale
+    end
+    local scaleBit
+    if math.abs(fit - 1) > 0.02 then
+        scaleBit = string.format("scale %d%%×%.2f", userPct, fit)
+    else
+        scaleBit = string.format("scale %d%%", userPct)
+    end
+
+    local rotBit = "rot —"
+    if planted and Holodeck.origin and Holodeck.origin.yaw ~= nil then
+        local deg = math.floor((Holodeck.origin.yaw * 180 / math.pi) + 0.5)
+        deg = deg % 360
+        if deg < 0 then deg = deg + 360 end
+        rotBit = string.format("rot %d°", deg)
+    end
+    local fx, fz = PackFlipXZ()
+    local flipBit = "flip off"
+    if fx and fz then
+        flipBit = "flip xz"
+    elseif fx then
+        flipBit = "flip x"
+    elseif fz then
+        flipBit = "flip z"
+    end
 
     local nextLine
-    local cue, remain = CueAt(Holodeck.fight, t)
+    local cue, left = CueAt(fight, t)
     if cue then
-        nextLine = string.format("|cFFEE55%s|r  %.0fs  ·  glowing pad", cue.text or "Portal!", remain or 0)
+        nextLine = string.format("|cFFEE55%s|r  %.0fs", cue.text or "Portal!", left or 0)
     elseif not planted then
         nextLine = "|cFFEE55Stand on the mark|r  →  |cC0E0FF/hd plant|r"
     elseif not pack then
@@ -2050,26 +2180,23 @@ local function LegendText()
     else
         nextLine = "|cC0E0FF/hd play|r"
     end
+    local lookHint = "|cC0E0FF/hd scale 150|r   |cC0E0FF/hd rot 90|r   |cC0E0FF/hd flip z|r   ·  |c888888/hd help|r"
 
-    local extras = {}
-    local pct = math.floor(PlayScale() * 100 + 0.5)
-    if pct ~= 100 then extras[#extras + 1] = pct .. "%" end
-    local fx, fz = PackFlipXZ()
-    if fx and fz then
-        extras[#extras + 1] = "flip xz"
-    elseif fx then
-        extras[#extras + 1] = "flip x"
-    elseif fz then
-        extras[#extras + 1] = "flip z"
+    local tLine
+    if dur >= 1 then
+        tLine = string.format("%s  ·  t %s / %s%s  ·  plant %s",
+            phase, clock(t), clock(dur), hpBit, planted and "SET" or "no")
+    else
+        tLine = string.format("%s  ·  t %s  ·  plant %s",
+            phase, clock(t), planted and "SET" or "no")
     end
-    local extra = ""
-    if #extras > 0 then extra = "  ·  " .. table.concat(extras, "  ·  ") end
 
     return table.concat({
-        "|cAADDFFHolodeck|r",
+        string.format("|cAADDFFHolodeck|r  ·  %s  ·  names %s", loop, names),
         planted and ("|cFFFFFF" .. tostring(title) .. "|r") or "|c888888no fight loaded|r",
-        string.format("%s  ·  plant %s  ·  t=%.1fs%s",
-            phase, planted and "SET" or "no", t, extra),
+        tLine,
+        string.format("%s  ·  %s  ·  %s", scaleBit, rotBit, flipBit),
+        lookHint,
         nextLine,
     }, "\n")
 end
@@ -2084,7 +2211,7 @@ local function EnsureLegend()
     tlw:SetDrawLayer(DL_OVERLAY)
     tlw:SetDrawTier(DT_HIGH)
     tlw:SetDrawLevel(320000)
-    tlw:SetDimensions(420, 118)
+    tlw:SetDimensions(468, 176)
     tlw:ClearAnchors()
     -- Right side: away from chat + skill bar (controller).
     tlw:SetAnchor(TOPRIGHT, GuiRoot, TOPRIGHT, -16, 72)
@@ -2145,6 +2272,13 @@ end
 local function UpdateLegend()
     EnsureLegend()
     ApplyLegendVisibility()
+    if Holodeck.legendTLW then
+        if Holodeck.helpOpen then
+            Holodeck.legendTLW:SetDimensions(468, 348)
+        else
+            Holodeck.legendTLW:SetDimensions(468, 176)
+        end
+    end
     if IsLegendOn() and Holodeck.legendLabel then
         Holodeck.legendLabel:SetText(LegendText())
     end
@@ -2703,6 +2837,7 @@ local function LoadFightTable(fight, source, resetTime)
     ExpandFight(fight)
     BuildPortalLayout(fight)
     BuildTagAssign(fight)
+    if Holodeck.ApplyRecipe then Holodeck.ApplyRecipe(fight) end
     DestroyAllActors()
     Holodeck.fight = fight
     Holodeck.fightSource = source
@@ -2898,8 +3033,8 @@ local function CmdPlant()
     if type(GetPlayerCameraHeading) == "function" then
         yaw = GetPlayerCameraHeading() or 0
     end
-    -- +90°: stand on the split, face a boss — gold line runs left-right through plant.
-    Holodeck.origin = { x = x, y = y, z = z, yaw = yaw + math.pi / 2 }
+    -- Pack +Z follows the camera. (Old +90° made every fight need /hd rot 90.)
+    Holodeck.origin = { x = x, y = y, z = z, yaw = yaw }
     Holodeck.playing = false
     Holodeck.playFinished = false
     Holodeck.playT = 0
@@ -2912,9 +3047,9 @@ local function CmdPlant()
     RefreshUI()
     dhd("Planted |cFFEE55fight center|r at your feet (facing locked).")
     if Holodeck.fight and Holodeck.fightSource == "library" then
-        dhd("Gold dots = split. Face a boss side. /hd rot = 90°  ·  /hd flip z = mirror")
+        dhd("Facing = camera. Sideways? |cC0E0FF/hd rot 90|r  ·  orbit backwards? |cC0E0FF/hd flip z|r")
     else
-        dhd("Then: |cC0E0FF/hd list|r  ·  |cC0E0FF/hd load <id>|r  ·  |cC0E0FF/hd play|r")
+        dhd("Then: |cC0E0FF/hd list|r  ·  |cC0E0FF/hd load <id>|r  ·  |cC0E0FF/hd play|r  ·  |cC0E0FF/hd help|r")
     end
 end
 
@@ -3196,6 +3331,7 @@ local function CmdPlay(arg)
     Holodeck._lastPhaseAnnounced = nil
     Holodeck._lastCueAnnounced = nil
     if Holodeck.fight then BuildTagAssign(Holodeck.fight) end
+    Holodeck.helpOpen = false
     Holodeck.playing = true
     Holodeck._memKbAtPlay = ReadLuaKb()
     Holodeck._memText = nil
@@ -3350,17 +3486,25 @@ end
 local function CmdNames(arg)
     arg = (arg or ""):lower():match("^%s*(%S*)") or ""
     if not Holodeck.savedVars then return end
-    if arg == "on" then
-        Holodeck.savedVars.namesOn = true
-    elseif arg == "off" then
-        Holodeck.savedVars.namesOn = false
+    local mode = Holodeck.NamesMode()
+    if arg == "off" then
+        mode = "off"
+    elseif arg == "all" then
+        mode = "all"
+    elseif arg == "on" or arg == "important" then
+        mode = "important"
     else
-        Holodeck.savedVars.namesOn = not NamesOn()
+        if mode == "off" then mode = "important"
+        elseif mode == "important" then mode = "all"
+        else mode = "off" end
     end
+    Holodeck.savedVars.namesMode = mode
+    Holodeck.savedVars.namesOn = (mode ~= "off")
     for _, act in pairs(Holodeck.actors) do
         PlaceActor(act)
     end
-    dhd("Pin names (boss/mini): |cC0E0FF" .. (NamesOn() and "ON" or "OFF") .. "|r  ·  /hd names on|off")
+    UpdateLegend()
+    dhd("Pin names: |cC0E0FF" .. mode .. "|r  ·  /hd names off|important|all")
 end
 
 local function PackSpanMeters(fight)
@@ -4621,7 +4765,7 @@ local function CmdLoad(arg)
     if Holodeck.savesPanel and not Holodeck.savesPanel:IsHidden() then
         ShowSavesPanel(true)
     end
-    dhd("Loaded |cC0E0FF" .. id .. "|r  ·  plant is fight center  ·  /hd play")
+    dhd("Loaded |cC0E0FF" .. id .. "|r  ·  /hd play   ·  wrong size/facing: /hd help")
     if f._frame and f._frame.splitPx then
         dhd("Gold dots = room split (candles). Stand on it, /hd flip z until bosses sit on either side.")
     end
@@ -4655,12 +4799,24 @@ local function CmdStatus()
         tostring(Holodeck.playing), Holodeck.playT or 0))
 end
 
-local function CmdHelp()
-    dhd("v" .. Holodeck.version .. " — plant a library pack in the house.")
-    d("|cAADDFFPLAY|r    plant · list · load N|<id> · play · pause · replay · halt")
-    d("|cAADDFFLOOK|r    names on|off · scale N% · rot · flip z · frame · legend")
-    d("|cAADDFFCUE|r     alerts on|off  ·  Portal! / Backyard! / pad glow / add-tag")
-    d("plant = fight CENTER, uses facing.  Gold dashes = dual-boss split.  /hd rot = 90°.")
+local function CmdHelp(arg)
+    arg = (arg or ""):lower():match("^%s*(%S*)") or ""
+    if arg == "off" then
+        Holodeck.helpOpen = false
+    elseif arg == "on" then
+        Holodeck.helpOpen = true
+    else
+        Holodeck.helpOpen = not Holodeck.helpOpen
+    end
+    if not IsLegendOn() and Holodeck.helpOpen and Holodeck.savedVars then
+        Holodeck.savedVars.legendOn = true
+    end
+    UpdateLegend()
+    if Holodeck.helpOpen then
+        dhd("Help is on the legend (top-right). |cC0E0FF/hd help|r again to close.")
+    else
+        dhd("Help closed.")
+    end
 end
 
 local function OnSlash(args)
@@ -4670,7 +4826,7 @@ local function OnSlash(args)
     rest = rest or ""
 
     local map = {
-        help = CmdHelp, ["?"] = CmdHelp,
+        help = function() CmdHelp(rest) end, ["?"] = function() CmdHelp(rest) end,
         plant = CmdPlant, origin = CmdPlant, pin = CmdPlant,
         play = function() CmdPlay(rest) end,
         mode = function() CmdMode(rest) end,
@@ -4721,9 +4877,14 @@ local function OnSlash(args)
         end,
     }
 
-    if cmd == "" then CmdHelp() return end
+    if cmd == "" then CmdHelp("") return end
     local fn = map[cmd]
-    if fn then fn() else dhd("Unknown: /hd " .. cmd) CmdHelp() end
+    if fn then
+        fn()
+    else
+        dhd("Unknown: /hd " .. cmd)
+        CmdHelp("on")
+    end
 end
 
 -- ============================= Lifecycle ================================
@@ -4739,6 +4900,9 @@ local function OnAddOnLoaded(_, addonName)
     if s.pathOn == nil then s.pathOn = true end
     if s.frameOn == nil then s.frameOn = true end
     if s.namesOn == nil then s.namesOn = true end
+    if s.namesMode == nil then
+        if s.namesOn == false then s.namesMode = "off" else s.namesMode = "important" end
+    end
     if s.playScalePct == nil then s.playScalePct = 100 end
     if type(s.flipXByPack) ~= "table" then s.flipXByPack = {} end
     if type(s.flipZByPack) ~= "table" then s.flipZByPack = {} end

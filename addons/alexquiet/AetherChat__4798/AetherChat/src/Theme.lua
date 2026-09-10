@@ -12,7 +12,10 @@ Theme.Hex = {
     OTHER_GUILD   = '8CD17D', -- Fixed Sage Green for Guild Members
     OTHER_PARTY   = '80C0FF', -- Fixed Celestial Blue for Party Members
     OTHER_WHISPER = 'C084FC', -- Fixed Soft Violet/Lilac for Whisper Contacts
-    OTHER_ZONE    = 'C5C29E', -- Fixed Weathered Parchment for Zone/Say
+    OTHER_ZONE    = 'C5C29E', -- Fixed Weathered Parchment for Zone
+    OTHER_SAY     = 'E5B558', -- Warm Nordic Gold for Say / NPC / General
+    OTHER_OFFICER = '23A55A', -- Emerald Green for Officers
+    OTHER_YELL    = 'FF5555', -- Alert Red for Yell
 
     -- Standard text colors
     NORMAL        = 'E0E0E0', -- Pure Crisp Chat Text

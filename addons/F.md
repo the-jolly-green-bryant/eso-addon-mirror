@@ -114,6 +114,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Franz' Banana Counter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Orejana/Franz-Banana-Counter__2909) | Orejana | PC / Mac | 1.0.7 |
 | [Free Dialog Camera (First and Third Person)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni/Free-Dialog-Camera-First-and-Third-Person__1601) | Shinni | PC / Mac | 1.1 |
 | [FreeSlots Resurrected](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/marlonbrando/FreeSlots-Resurrected__1977) | marlonbrando | PC / Mac | 2.24 |
+| [Frenzied Momentum Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/codeWarrior82/Frenzied-Momentum-Tracker__35f1d905-7f5e-4e44-90e8-b304454b4bc9) | codeWarrior82 | Console | — |
 | [FreshUI - New UI Look](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Yosemite-JK/FreshUI---New-UI-Look__3804) | Yosemite-JK | PC / Mac | 1.4.1 |
 | [Friend Auto Trade](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Quazzert/Friend-Auto-Trade__1168) | Quazzert | PC / Mac | 0.1 |
 | [Friend Removed Notification](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/CaptainBlagbird/Friend-Removed-Notification__1225) | CaptainBlagbird | PC / Mac | 2.01 |

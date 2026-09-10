@@ -11,6 +11,7 @@ M.GetAPIVersion           = GetAPIVersion
 M.GetWorldName            = GetWorldName
 
 M.GetString = GetString
+M.ReloadUI  = ReloadUI
 
 M.IsUnitGrouped           = IsUnitGrouped
 M.IsUnitInCombat          = IsUnitInCombat
@@ -25,6 +26,17 @@ M.GetTimeStamp            = GetTimeStamp
 M.GetUIGlobalScale        = GetUIGlobalScale
 M.GetDateStringFromTimestamp = GetDateStringFromTimestamp
 M.GetCurrentZoneDungeonDifficulty = GetCurrentZoneDungeonDifficulty
+M.GetMapContentType         = GetMapContentType
+M.IsActiveWorldBattleground = IsActiveWorldBattleground
+M.GetCurrentBattlegroundId  = GetCurrentBattlegroundId
+M.GetBattlegroundTeamSize   = GetBattlegroundTeamSize
+M.IsPlayerInRaid            = IsPlayerInRaid
+M.IsPlayerInEndlessDungeon  = IsPlayerInEndlessDungeon
+M.IsInCyrodiil              = IsInCyrodiil
+M.IsInImperialCity          = IsInImperialCity
+M.GetCurrentZoneHouseId     = GetCurrentZoneHouseId
+M.GetZoneId                 = GetZoneId
+M.GetUnitZoneIndex          = GetUnitZoneIndex
 M.GetLatency              = GetLatency
 M.GetUnitDisplayName      = GetUnitDisplayName
 M.GetUnitClass            = GetUnitClass

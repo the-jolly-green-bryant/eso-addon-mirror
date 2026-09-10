@@ -3,6 +3,7 @@ local Verdant = Verdant
 
 Verdant.Library = {}
 local M = Verdant.Library
+local Sound = Verdant.Sound
 
 local string_format = string.format
 local math_floor    = math.floor
@@ -12,7 +13,6 @@ local zui           = Verdant.zenimax.ui
 local zc            = Verdant.zenimax.constants
 local zev           = Verdant.zenimax.events
 local Scene         = Verdant.zenimax.scene
-local PlaySound     = zui.PlaySound
 
 local ROW_H   = 30
 local ROW_GAP = 2
@@ -32,6 +32,7 @@ local controls = {}
 local rows = {}
 local row_session = {}
 local selected = nil
+local pending_idx = nil
 local delete_armed = false
 local scroll_off = 0
 local drag = { on = false, y0 = 0, off0 = 0 }
@@ -122,10 +123,16 @@ local function make_row(i)
   pip:SetDimensions(3, ROW_H - 12)
   pip:SetAnchor(LEFT, row, LEFT, 4, 0)
 
+  local kind = WM:CreateControl(nm .. "Kind", row, CT_TEXTURE)
+  kind:SetDimensions(22, 22)
+  kind:SetAnchor(LEFT, row, LEFT, 7, 0)
+  kind:SetColor(0.85, 0.90, 0.86, 0.95)
+  kind:SetHidden(true)
+
   local vet = WM:CreateControl(nm .. "Vet", row, CT_TEXTURE)
   vet:SetTexture(VET_ICON)
-  vet:SetDimensions(16, 16)
-  vet:SetAnchor(LEFT, row, LEFT, 10, 0)
+  vet:SetDimensions(13, 13)
+  vet:SetAnchor(LEFT, row, LEFT, 31, 0)
   vet:SetColor(0.95, 0.80, 0.35, 1)
   vet:SetHidden(true)
 
@@ -133,8 +140,8 @@ local function make_row(i)
   name:SetFont("ZoFontGameSmall")
   name:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
   name:SetVerticalAlignment(TEXT_ALIGN_CENTER)
-  name:SetDimensions(110, ROW_H)
-  name:SetAnchor(LEFT, row, LEFT, 30, 0)
+  name:SetDimensions(96, ROW_H)
+  name:SetAnchor(LEFT, row, LEFT, 46, 0)
   name:SetMaxLineCount(1)
   name:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
 
@@ -159,10 +166,11 @@ local function make_row(i)
   star:SetColor(C_STAR.r, C_STAR.g, C_STAR.b, 0.95)
   star:SetHidden(true)
 
-  return { root = row, bg = bg, sel = sel, hov = hov, pip = pip, vet = vet,
+  return { root = row, bg = bg, sel = sel, hov = hov, pip = pip, vet = vet, kind = kind,
            name = name, stats = stats, when = when, star = star }
 end
 
+local HAND_GLYPH  = "|t12:12:EsoUI/Art/Buttons/edit_save_up.dds|t "
 local ICON_LOCK   = "EsoUI/Art/Miscellaneous/locked_up.dds"
 local ICON_UNLOCK = "EsoUI/Art/Miscellaneous/unlocked_up.dds"
 
@@ -244,8 +252,11 @@ function M.refresh()
       (pc == C_PIP_LOST) and "f26b56" or "8cea9e",
       sum.saves or 0, denom))
     row.stats:SetColor(1, 1, 1, 1)
+    local kind_icon = Verdant.ContentKind.icon(h.kind)
+    if kind_icon then row.kind:SetTexture(kind_icon) end
+    row.kind:SetHidden(kind_icon == nil)
     row.vet:SetHidden((h.difficulty or 0) ~= Verdant.zenimax.constants.DUNGEON_DIFFICULTY_VETERAN)
-    row.when:SetText(fmt_dur(h.dur_ms) .. "  " .. fmt_ago(h.ts))
+    row.when:SetText((h.manual and HAND_GLYPH or "") .. fmt_dur(h.dur_ms) .. "  " .. fmt_ago(h.ts))
     row.when:SetColor(C_DIM.r, C_DIM.g, C_DIM.b, 1)
     row.star:SetHidden(not h.locked)
   end
@@ -274,8 +285,10 @@ function M.on_row_enter(i)
   local zc  = Verdant.zenimax.constants
   local when = (api.GetDateStringFromTimestamp and h.ts and api.GetDateStringFromTimestamp(h.ts)) or fmt_ago(h.ts)
   local diff = ""
-  if (h.difficulty or 0) == zc.DUNGEON_DIFFICULTY_VETERAN then diff = "  ·  " .. GetString(VERDANT_LIB_VETERAN)
-  elseif (h.difficulty or 0) == zc.DUNGEON_DIFFICULTY_NORMAL then diff = "  ·  " .. GetString(VERDANT_LIB_NORMAL) end
+  local kind_label = Verdant.ContentKind.label(h.kind)
+  if kind_label then diff = "  ·  " .. kind_label end
+  if (h.difficulty or 0) == zc.DUNGEON_DIFFICULTY_VETERAN then diff = diff .. "  ·  " .. GetString(VERDANT_LIB_VETERAN)
+  elseif (h.difficulty or 0) == zc.DUNGEON_DIFFICULTY_NORMAL then diff = diff .. "  ·  " .. GetString(VERDANT_LIB_NORMAL) end
   local text = string_format(GetString(VERDANT_LIB_ROW_HEAD),
     when, h.zone or "?", diff, h.group_size or 0, fmt_dur(h.dur_ms))
   text = text .. "\n" .. string_format(GetString(VERDANT_LIB_ROW_TIP),
@@ -331,13 +344,13 @@ end
 
 function M.on_label_save()
   if not selected then
-    PlaySound(SOUNDS.NEGATIVE_CLICK)
+    Sound.play("deny")
     return
   end
   local idx = row_session[selected]
   local text = controls.label_edit:GetText() or ""
   if Verdant.SessionStore.set_label(idx, text) then
-    PlaySound(SOUNDS.DIALOG_ACCEPT)
+    Sound.play("confirm")
     local keep = selected
     M.refresh()
     selected = keep
@@ -351,7 +364,7 @@ function M.on_open_click()
   if not selected then return end
   local sess = Verdant.SessionStore.get(row_session[selected])
   if sess and Verdant.Graph.load_session(sess) then
-    PlaySound(SOUNDS.DIALOG_ACCEPT)
+    Sound.play("page")
     M.hide()
   end
 end
@@ -362,7 +375,7 @@ function M.on_lock_click()
   local s = Verdant.SessionStore.get(idx)
   if s then
     Verdant.SessionStore.set_locked(idx, not s.head.locked)
-    PlaySound(SOUNDS.DIALOG_ACCEPT)
+    Sound.play("confirm")
     M.refresh()
   end
 end
@@ -429,45 +442,18 @@ local function shown_rows()
   return n
 end
 
-function M.on_key(key)
-  if controls.label_edit and controls.label_edit:HasFocus() then return false end
-  if key == zc.KEY_DELETE then
-    M.on_delete_click()
-  elseif key == zc.KEY_ENTER then
-    M.on_open_click()
-  elseif key == zc.KEY_ESCAPE then
-    M.hide()
-  elseif key == zc.KEY_UPARROW or key == zc.KEY_DOWNARROW then
-    local n = shown_rows()
-    if n == 0 then return true end
-    local step = (key == zc.KEY_UPARROW) and -1 or 1
-    local i = selected and (selected + step) or ((step < 0) and n or 1)
-    if i < 1 then
-      set_scroll(scroll_off + 1)
-      i = 1
-    elseif i > n then
-      set_scroll(scroll_off - 1)
-      i = n
-    end
-    M.on_row_click(i)
-  else
-    return false
-  end
-  return true
-end
-
 function M.on_delete_click()
   if not selected then return end
   local s = Verdant.SessionStore.get(row_session[selected])
   if s and s.head.locked then return end
   if not delete_armed then
     arm_delete()
-    PlaySound(SOUNDS.NEGATIVE_CLICK)
+    Sound.play("deny")
     set_buttons()
     return
   end
   disarm_delete()
-  PlaySound(SOUNDS.DIALOG_DECLINE)
+  Sound.play("discard")
   Verdant.SessionStore.delete(row_session[selected])
   selected = nil
   M.refresh()
@@ -486,26 +472,47 @@ local function dock_window()
   end
 end
 
+local function select_pending()
+  if not pending_idx then return end
+  for k = 1, #rows do
+    if row_session[k] == pending_idx then
+      M.on_row_click(k)
+      break
+    end
+  end
+  pending_idx = nil
+end
+
 function M.show()
   selected = nil
   disarm_delete()
   scroll_off = 0
   dock_window()
   M.refresh()
+  select_pending()
   sync_label_box()
   Scene.show_top_level(controls.window)
-  PlaySound(SOUNDS.ARMORY_OPEN)
+  Sound.play("open")
 end
 
 function M.hide()
   M.on_thumb_up()
   if controls.window:IsHidden() then return end
-  PlaySound(SOUNDS.ADVENTURE_ZONE_OVERVIEW_CLOSED)
+  Sound.play("close")
   Scene.hide_top_level(controls.window)
 end
 
 function M.toggle()
   if controls.window:IsHidden() then M.show() else M.hide() end
+end
+
+function M.on_session_saved(manual)
+  if manual then pending_idx = Verdant.SessionStore.count() end
+  if not controls.window or controls.window:IsHidden() then return end
+  scroll_off = 0
+  M.refresh()
+  select_pending()
+  sync_label_box()
 end
 
 function M.init()

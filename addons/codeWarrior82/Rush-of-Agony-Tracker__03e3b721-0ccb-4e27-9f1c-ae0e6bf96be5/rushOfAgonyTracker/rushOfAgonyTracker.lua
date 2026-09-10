@@ -81,7 +81,7 @@ local function processCooldown()
     else
         EVENT_MANAGER:UnregisterForUpdate("rushUpdate")
         roatrackLabelMain:SetText("")
-        timeRemaining = 8
+        timeRemaining = 5
     end
 
     timeRemaining = timeRemaining - 1
@@ -100,7 +100,7 @@ local function combatReport(eventCode, result, isError, abilityName, abilityGrap
         return
     end
 
-    timeRemaining = 8
+    timeRemaining = 5
     processCooldown()
 end
 

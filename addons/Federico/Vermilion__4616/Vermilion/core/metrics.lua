@@ -64,13 +64,38 @@ function M.set_shield_window(ms)
 end
 
 function M.window_seconds() return W_MS / 1000 end
+function M.shield_window_seconds() return W_SHIELD_MS / 1000 end
+
+local tot_damage, tot_shield, tot_crit, tot_hits = 0, 0, 0, 0
+
+function M.session_mark()
+  tot_damage, tot_shield, tot_crit, tot_hits = 0, 0, 0, 0
+end
+
+function M.totals()
+  return tot_damage, tot_shield, tot_crit, tot_hits
+end
 
 function M.ingest_damage_out(ev)
-  if ev.amount > 0 then damage_out_buf:push(ev) else event_pool:release(ev) end
+  local amt = ev.amount
+  if amt > 0 then
+    tot_damage = tot_damage + amt
+    tot_hits   = tot_hits + 1
+    if is_crit(ev) then tot_crit = tot_crit + amt end
+    damage_out_buf:push(ev)
+  else
+    event_pool:release(ev)
+  end
 end
 
 function M.ingest_shield_out(ev)
-  if ev.amount > 0 then shield_out_buf:push(ev) else event_pool:release(ev) end
+  local amt = ev.amount
+  if amt > 0 then
+    tot_shield = tot_shield + amt
+    shield_out_buf:push(ev)
+  else
+    event_pool:release(ev)
+  end
 end
 
 function M.eDPS(now_ms)  return damage_out_buf:sum(now_ms, "amount") / (W_MS / 1000)        end

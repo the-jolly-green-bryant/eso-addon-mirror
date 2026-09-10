@@ -149,7 +149,7 @@ function CH:RegisterLAM()
     return true
 end
 
-function CH:RegisterHarvens()
+function CH:BuildHarvensSettings()
     local HAS = LibHarvensAddonSettings
     if not HAS or not HAS.AddAddon then return false end
     local function resetSettings()
@@ -182,7 +182,13 @@ function CH:RegisterHarvens()
         if not currentPanelAlreadyPopulated then pendingSettings[#pendingSettings+1]=setting end
     end
     local function createPanel(name)
-        flushPanel()
+        if panel then
+            flushPanel()
+            -- Each page contains dozens of closures and section records. Give
+            -- ESO a fresh script frame before defining the next page so this
+            -- add-on cannot consume the shared 1000 ms startup allowance.
+            coroutine.yield()
+        end
         panel=HAS:AddAddon(name,{allowDefaults=true,allowRefresh=true,defaultsFunction=resetSettings})
         if not panel or not panel.AddSetting then return false end
         -- AddAddon returns the existing object when this name is already in
@@ -194,7 +200,7 @@ function CH:RegisterHarvens()
         if currentPanelAlreadyPopulated then CH:Log("Reusing existing LibVotans page: "..name,false) end
         return true
     end
-    if not createPanel("CurvedHUD - Global HUD") then return false end
+    if not createPanel("CurvedHUD") then return false end
     local function checkbox(label,key)
         addSetting({type=HAS.ST_CHECKBOX,label=label,getFunction=function() return CH.sv[key] end,setFunction=function(v) apply(key,v) end,default=CH.defaults[key]})
     end
@@ -209,18 +215,20 @@ function CH:RegisterHarvens()
         end
         addSetting({type=HAS.ST_DROPDOWN,label=label,tooltip=tooltip,items=items,getFunction=function() return displayValue(CH.sv[key]) end,setFunction=function(_,name,item) apply(key,(item and item.data) or name) end,default=displayValue(CH.defaults[key]),disable=disabled})
     end
-    -- ST_SECTION becomes a container boundary on some console builds and can
-    -- absorb later controls. A colored label keeps each heading top-level.
-    local function title(label) addSetting({type=HAS.ST_LABEL or HAS.ST_SECTION,label="|c45CFFF"..label.."|r"}) end
-    title("GLOBAL SETTINGS - SHARED BY ALL CHARACTERS")
-    title("CORE HUD")
+    -- LibVotans renders ST_SECTION entries as collapsed submenus on console.
+    -- A blue, intentionally empty section acts as the category header; the
+    -- ordinary section immediately after it owns the actual submenu controls.
+    local function categoryHeader(label) addSetting({type=HAS.ST_SECTION,label="|c45CFFF"..label.."|r"}) end
+    local function submenuTitle(label) addSetting({type=HAS.ST_SECTION,label=label}) end
+    categoryHeader("GLOBAL HUD AND APPEARANCE")
+    submenuTitle("Core HUD")
     checkbox("Enabled","enabled"); checkbox("Preview mode","preview"); checkbox("Show default ESO resource bars","showDefaultResources"); checkbox("Use out-of-combat opacity","useOutOfCombatOpacity")
     addSetting({type=HAS.ST_SLIDER,label="Out-of-combat opacity",min=0.05,max=1,step=0.05,getFunction=function() return CH.sv.outOfCombatOpacity end,setFunction=function(v) apply("outOfCombatOpacity",v) end,default=CH.defaults.outOfCombatOpacity,disable=function() return not CH.sv.useOutOfCombatOpacity end})
-    title("QUEST & GOLDEN PURSUITS TRACKERS")
+    submenuTitle("Quest & Golden Pursuits Trackers")
     checkbox("Reduce trackers in combat","reduceQuestTrackersInCombat")
     checkbox("Reduce trackers in dungeons and trials","reduceQuestTrackersInInstances")
     addSetting({type=HAS.ST_SLIDER,label="Reduced tracker opacity",tooltip="0% hides both trackers completely; higher values dim them.",min=0,max=1,step=0.05,getFunction=function() return CH.sv.reducedQuestTrackerOpacity end,setFunction=function(v) apply("reducedQuestTrackerOpacity",v) end,default=CH.defaults.reducedQuestTrackerOpacity,disable=function() return not CH.sv.reduceQuestTrackersInCombat and not CH.sv.reduceQuestTrackersInInstances end})
-    title("HUD ALIGNMENT, SCALE & APPEARANCE")
+    submenuTitle("HUD Alignment, Scale & Appearance")
     checkbox("Stamina inside / top","staminaInside"); checkbox("Debug chat logging","debug")
     addSetting({type=HAS.ST_DROPDOWN,label="Right resource layout",items={{name="Parallel",data="Parallel"},{name="Stacked",data="Stacked"}},getFunction=function() return CH.sv.layout end,setFunction=function(_,name,item) apply("layout",(item and item.data) or name) end,default=CH.defaults.layout})
     slider("HUD scale","scale",0.5,1.5,0.05); slider("Character spacing","spacing",100,450,5); slider("Vertical offset","verticalOffset",-250,250,5)
@@ -237,17 +245,16 @@ function CH:RegisterHarvens()
     dropdown("Outside timer thickness","outsideTimerStyle",{"Thin","Thick"},"Shared by every tracker assigned to an outside position.")
     slider("Resource value font size","resourceValueFontSize",16,42,1); slider("Resource percent font size","resourcePercentFontSize",14,34,1)
     checkbox("Show raw values","showRaw"); checkbox("Show maximum values","showMaximum"); checkbox("Show percentages","showPercent")
-    if not createPanel("CurvedHUD - Class Timers") then return false end
-    title("CHARACTER-SPECIFIC SETTINGS")
-    title("GLOBAL BUFF TIMERS")
+    categoryHeader("BUFF TRACKING")
+    submenuTitle("Buff Tracking")
     for _,definition in ipairs(CH.standardBuffTrackerDefinitions) do
         local disabled=function() return CH.sv[definition.selectionSetting]=="None" end
         dropdown(definition.label,definition.selectionSetting,definition.choices,"Select the standardized buff tracked in this slot.")
         dropdown(definition.label.." position",definition.slotSetting,CH.trackerSlotNames,"Choose one of the eight timer positions.",CH.trackerSlotValues,disabled)
         dropdown(definition.label.." color",definition.colorSetting,CH.colorChoices,nil,nil,disabled)
     end
-    title("CLASS TIMERS")
-    title("SORCERER")
+    categoryHeader("INDIVIDUAL CLASSES")
+    submenuTitle("Sorcerer")
     checkbox("Track Bound Aegis","aegisEnabled")
     dropdown("Bound Aegis position","aegisSlot",CH.trackerSlotNames,"Choose the quadrant and its inside/outside timer position.",CH.trackerSlotValues,function() return not CH.sv.aegisEnabled end)
     dropdown("Bound Aegis timer color","aegisColor",CH.colorChoices,nil,nil,function() return not CH.sv.aegisEnabled end)
@@ -269,14 +276,14 @@ function CH:RegisterHarvens()
         dropdown(definition.label.." position",key.."Slot",CH.trackerSlotNames,"Choose one of the eight timer positions.",CH.trackerSlotValues,function() return not CH.sv[key.."Enabled"] end)
         dropdown(definition.label.." timer color",key.."Color",CH.colorChoices,nil,nil,function() return not CH.sv[key.."Enabled"] end)
     end
-    title("WARDEN")
+    submenuTitle("Warden")
     for _,definition in ipairs(CH.wardenTrackerDefinitions) do
         local key=definition.key
         checkbox("Track "..definition.label,key.."Enabled")
         dropdown(definition.label.." position",key.."Slot",CH.trackerSlotNames,"Choose one of the eight timer positions.",CH.trackerSlotValues,function() return not CH.sv[key.."Enabled"] end)
         dropdown(definition.label.." timer color",key.."Color",CH.colorChoices,nil,nil,function() return not CH.sv[key.."Enabled"] end)
     end
-    title("ARCANIST")
+    submenuTitle("Arcanist")
     for _,definition in ipairs(CH.arcanistTrackerDefinitions) do
         local key=definition.key
         checkbox("Track "..definition.label,key.."Enabled")
@@ -294,7 +301,7 @@ function CH:RegisterHarvens()
         dropdown(definition.label.." timer color",key.."Color",CH.colorChoices,nil,nil,function() return not CH.sv[key.."Enabled"] end)
     end
     for _,group in ipairs(CH.remainingClassDefinitionGroups) do
-        title(group.name:upper())
+        submenuTitle(group.name)
         for _,definition in ipairs(group.definitions) do addStandardDefinition(definition) end
     end
     local function addScribingDefinition(definition)
@@ -302,7 +309,7 @@ function CH:RegisterHarvens()
         slider(definition.label.." fallback duration",definition.key.."Duration",1,120,1)
     end
     local function addSkillLine(line)
-        title(line:upper())
+        submenuTitle(line)
         for _,definition in ipairs(CH.nonClassTrackerDefinitions) do if definition.line==line then addStandardDefinition(definition) end end
         for _,definition in ipairs(CH.scribingTrackerDefinitions) do if CH.scribingSkillLineByKey[definition.key]==line then addScribingDefinition(definition) end end
         if line=="Mages Guild" then
@@ -311,30 +318,49 @@ function CH:RegisterHarvens()
             dropdown("Equilibrium penalty color","balanceColor",CH.colorChoices,nil,nil,function() return not CH.sv.balanceEnabled end)
         end
     end
-    if not createPanel("CurvedHUD - Weapon Timers") then return false end
-    title("CHARACTER-SPECIFIC SETTINGS")
-    title("WEAPON TIMERS")
+    categoryHeader("WEAPON SKILL LINES")
     for _,line in ipairs(CH.weaponSkillLines) do addSkillLine(line) end
-    if not createPanel("CurvedHUD - Guild & Other Timers") then return false end
-    title("CHARACTER-SPECIFIC SETTINGS")
-    title("GUILD / VAMPIRE / WEREWOLF TIMERS")
+    categoryHeader("GUILD AND OTHER SKILL LINES")
     for _,line in ipairs(CH.otherSkillLines) do addSkillLine(line) end
-    if not createPanel("CurvedHUD - Armor Timers") then return false end
-    title("CHARACTER-SPECIFIC SETTINGS")
-    title("ARMOR")
-    for _,definition in ipairs(CH.nonClassTrackerDefinitions) do
-        for _,line in ipairs(CH.armorSkillLines) do if definition.line==line then addStandardDefinition(definition); break end end
-    end
-    if not createPanel("CurvedHUD - Item Set Timers") then return false end
-    title("CHARACTER-SPECIFIC SETTINGS")
-    title("ITEM SET TIMERS")
+    categoryHeader("ARMOR SKILLS")
+    for _,line in ipairs(CH.armorSkillLines) do addSkillLine(line) end
+    categoryHeader("ITEM-SET FAMILIES")
     for _,category in ipairs(CH.setTrackerCategories) do
-        title(category:upper())
+        submenuTitle(category)
         if category=="DPS Sets" then checkbox("Way of Martial Knowledge Stamina cue","martialKnowledgeStaminaCue") end
         for _,definition in ipairs(CH.setTrackerDefinitions) do if definition.category==category then addStandardDefinition(definition) end end
     end
     flushPanel()
     CH:Log("LibHarvensAddonSettings settings registered (AddSettings batches)")
+    return true
+end
+
+function CH:RegisterHarvens()
+    local HAS=LibHarvensAddonSettings
+    if not HAS or not HAS.AddAddon then return false end
+    if self.harvensSettingsBuildStarted then return true end
+    self.harvensSettingsBuildStarted=true
+    local generation=(self.harvensSettingsBuildGeneration or 0)+1
+    self.harvensSettingsBuildGeneration=generation
+    local builder=coroutine.create(function() return self:BuildHarvensSettings() end)
+    local function advance()
+        if CH.harvensSettingsBuildGeneration~=generation then return end
+        local ok,result=coroutine.resume(builder)
+        if not ok then
+            CH.harvensSettingsBuildStarted=false
+            CH:Log("LibVotans incremental settings registration failed: "..tostring(result),true)
+            return
+        end
+        if coroutine.status(builder)=="dead" then
+            if result==false then CH.harvensSettingsBuildStarted=false end
+            return
+        end
+        if zo_callLater then zo_callLater(advance,50) else advance() end
+    end
+    -- Do not add CurvedHUD's settings-definition cost to the frame in which
+    -- every add-on receives EVENT_ADD_ON_LOADED. This is a startup sequence,
+    -- not character-activation registration, and completes in a few frames.
+    if zo_callLater then zo_callLater(advance,50) else advance() end
     return true
 end
 

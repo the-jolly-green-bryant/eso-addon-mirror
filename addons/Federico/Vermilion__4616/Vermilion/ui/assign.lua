@@ -226,12 +226,14 @@ function M.show()
   clear_pending()
   controls.window:SetHidden(false)
   M.refresh()
+  Vermilion.Sound.play("open")
 end
 
 function M.hide()
   controls.flyout:SetHidden(true)
   controls.confirm:SetHidden(true)
   clear_pending()
+  if not controls.window:IsHidden() then Vermilion.Sound.play("close") end
   controls.window:SetHidden(true)
   row_pool:ReleaseAllObjects()
 end
@@ -246,11 +248,13 @@ function M.on_assign_click()
   if pending_count() == 0 then
     M.hide()
   else
+    Vermilion.Sound.play("click")
     show_confirm()
   end
 end
 
 function M.on_confirm_no()
+  Vermilion.Sound.play("discard")
   controls.confirm:SetHidden(true)
   controls.window:SetHidden(false)
   M.refresh()
@@ -266,6 +270,7 @@ function M.on_confirm_yes()
     end
     log:info("committed", id, "->", key)
   end
+  Vermilion.Sound.play("confirm")
   controls.confirm:SetHidden(true)
   M.hide()
 end

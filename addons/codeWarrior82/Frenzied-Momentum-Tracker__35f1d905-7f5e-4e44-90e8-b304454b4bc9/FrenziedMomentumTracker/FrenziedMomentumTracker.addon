@@ -1,0 +1,9 @@
+## Title: Frenzied Momentum Tracker
+## Author: CodeWarrior82
+## Description: Tracks the amount of Frenzied Momentum stacks you have.
+## APIVersion: 101050
+## DependsOn: LibAddonMenu-2.0>=42 LibChatMessage
+## SavedVariables: fmtAddonVars
+
+FrenziedMomentumTracker.lua
+FrenziedMomentumTracker.xml

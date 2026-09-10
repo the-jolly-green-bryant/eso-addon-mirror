@@ -77,11 +77,20 @@ local function effectReport(eventCode, changeType, effectSlot, effectName, unitT
 
     if changeType == 2 then
         gttrackLabelMain:SetText("")
+		--reset counter
         return
     end
+	
+	--gained a stack, start or reset counter to 30
 
     local text = ""
 
+	if stackCount >= 9 then
+		gttrackLabelMain:SetColor(0, 255, 0, 255)
+	else
+		gttrackLabelMain:SetColor(255, 255, 255, 255)
+	end
+	
     if stackCount == 10 then
         text = string.format(" %d", stackCount)
     else
@@ -211,10 +220,10 @@ local function onAddOnLoaded(event, name)
     --setup text field areas
     gttrack:SetMovable(true)
     gttrackIcon:SetFont("$(GAMEPAD_MEDIUM_FONT)|$(GP_54)|soft-shadow-thick")
-    gttrackLabelMain:SetFont("$(GAMEPAD_BOLD_FONT)|$(GP_54)|soft-shadow-thick")
+    gttrackLabelMain:SetFont("$(GAMEPAD_BOLD_FONT)|$(GP_61)|soft-shadow-thick")
     gttrackIcon:SetText(iconText)
     gttrackLabelMain:SetText("")
-    --rctrackLabelMain:SetColor(255, 255, 0, 255)
+    --gttrackLabelMain:SetColor(255, 255, 0, 255)
 
     setAnchorStartupIcon(gorethiefTracker.savedVariables.xAxisText, gorethiefTracker.savedVariables.yAxisText)
 

@@ -22,7 +22,7 @@
     "Verdant"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4557/",
-  "fingerprint": "0e0c10c883ef5248f5b82738ba9bebf726112c5daf5736544420f445217964cc",
+  "fingerprint": "bce44e1dd008097a83d1eef3236b70803b119ed403931051d278372885a6df3e",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16234.png",
     "https://cdn-eso.mmoui.com/preview/pvw16239.png",
@@ -45,11 +45,11 @@
   "source_id": "4557",
   "source_url": "https://www.esoui.com/downloads/info4557-Verdant.html",
   "stats": {
-    "downloads": 263,
-    "favorites": 3,
-    "monthly_downloads": 45
+    "downloads": 304,
+    "favorites": 4,
+    "monthly_downloads": 75
   },
   "title": "Verdant",
-  "updated_at": 1788548055000,
-  "version": "2.5.0"
+  "updated_at": 1788999613000,
+  "version": "2.6.0"
 }

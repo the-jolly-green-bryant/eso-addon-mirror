@@ -10,6 +10,10 @@ M.stop        = NOOP
 M.save        = NOOP
 M.clear       = NOOP
 M.init        = NOOP
+M.on_record   = NOOP
+M.on_stop     = NOOP
+M.set_auto    = NOOP
+M.auto_enabled = function() return false end
 M.status_line = function() return "trace disabled (DEBUG=false)" end
 
 if not Verdant.Constants.DEBUG then return end
@@ -24,6 +28,7 @@ local GetGameTimeMilliseconds = api.GetGameTimeMilliseconds
 
 local CAP       = 40000
 local CHUNK_MAX = 1800
+local RING      = 3
 
 local CONST_NAMES = {
   "ACTION_RESULT_HEAL", "ACTION_RESULT_CRITICAL_HEAL", "ACTION_RESULT_HOT_TICK",
@@ -104,7 +109,16 @@ function M.clear(sv)
   lines  = {}
   n      = 0
   active = false
-  if sv then sv.trace = nil end
+  if sv then
+    sv.trace  = nil
+    sv.traces = nil
+  end
+end
+
+local function reset()
+  lines  = {}
+  n      = 0
+  active = false
 end
 
 function M.save(sv)
@@ -124,15 +138,50 @@ function M.save(sv)
   for _, k in ipairs(CONST_NAMES) do
     consts[k] = rawget(_G, k)
   end
-  sv.trace = {
+  local temporal = sv.temporal or {}
+  local entry = {
     version   = 2,
-    build     = Verdant.Constants.BUILD,
+    build     = Verdant.Constants.VERSION,
+    settings  = {
+      sample_rate_ms = temporal.sample_rate_ms or Verdant.Constants.TEMPORAL.SAMPLE_RATE_DEFAULT,
+      time_window_s  = temporal.time_window_s or Verdant.Constants.TEMPORAL.TIME_WINDOW_DEFAULT,
+    },
     world     = api.GetWorldName(),
+    zone      = api.GetUnitZone("player") or "",
+    ts        = api.GetTimeStamp() or 0,
     count     = n,
     chunks    = chunks,
     constants = consts,
   }
-  d("[trace] " .. n .. " events staged to SavedVars; /reloadui to flush to disk")
+  sv.trace = entry
+  sv.traces = sv.traces or {}
+  local ring = sv.traces
+  ring[#ring + 1] = entry
+  while #ring > RING do table.remove(ring, 1) end
+  d("[trace] " .. n .. " events staged, slot " .. #ring .. "/" .. RING .. "; /verdant flush writes them to disk")
+  return entry
+end
+
+function M.auto_enabled(sv)
+  return sv and sv.debug and sv.debug.auto_trace == true or false
+end
+
+function M.set_auto(sv, on)
+  if not sv then return end
+  sv.debug = sv.debug or {}
+  sv.debug.auto_trace = on and true or false
+end
+
+function M.on_record(sv)
+  if not M.auto_enabled(sv) then return end
+  reset()
+  M.start()
+end
+
+function M.on_stop(sv)
+  if not (active and M.auto_enabled(sv)) then return end
+  M.stop()
+  if n > 0 then M.save(sv) end
 end
 
 function M.status_line()

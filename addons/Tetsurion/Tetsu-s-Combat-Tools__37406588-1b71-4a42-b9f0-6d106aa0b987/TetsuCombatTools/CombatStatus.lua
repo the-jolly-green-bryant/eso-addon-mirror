@@ -83,8 +83,8 @@ end
 
 local function ClampTextScale(p)
     p = tonumber(p) or 100
-    if p < 50 then p = 50 end
-    if p > 180 then p = 180 end
+    if p < 40 then p = 40 end
+    if p > 250 then p = 250 end
     return p / 100
 end
 
@@ -139,6 +139,7 @@ local function LayoutIcon()
     local oy = v and tonumber(v.statusIconY) or 0
     local sc = ClampIconScale(v and v.statusIconScale)
     local size = math.floor(48 * sc + 0.5)
+    iconRoot:SetClampedToScreen(false)
     iconRoot:ClearAnchors()
     iconRoot:SetAnchor(CENTER, GuiRoot, CENTER, ox, oy)
     iconRoot:SetDimensions(size, size)
@@ -163,24 +164,25 @@ local function LayoutText()
     local oy = v and tonumber(v.statusTextY)
     if oy == nil then oy = 250 end
     local sc = ClampTextScale(v and v.statusTextScale)
-    local fontSize = math.floor(28 * sc + 0.5)
+    local px = math.floor(28 * sc + 0.5)
+    if px < 14 then px = 14 end
+    if px > 90 then px = 90 end
+    textRoot:SetClampedToScreen(false)
     textRoot:ClearAnchors()
     textRoot:SetAnchor(CENTER, GuiRoot, CENTER, ox, oy)
-    textRoot:SetDimensions(math.floor(280 * sc), math.floor(36 * sc + 0.5))
-    if ZO_CreateFont then
-        -- keep gamepad fonts
-    end
-    local fontName = "ZoFontGamepad27"
-    if fontSize >= 34 then
-        fontName = "ZoFontGamepad34"
-    elseif fontSize <= 22 then
-        fontName = "ZoFontGamepad22"
-    end
-    pcall(function()
+    textRoot:SetDimensions(math.floor(420 * sc), math.floor(px + 16))
+    local fontName = "$(GAMEPAD_BOLD_FONT)|" .. px .. "|soft-shadow-thick"
+    local ok = pcall(function()
         textLab:SetFont(fontName)
     end)
+    if not ok then
+        pcall(function()
+            textLab:SetFont(px >= 32 and "ZoFontGamepad34" or (px >= 24 and "ZoFontGamepad27" or "ZoFontGamepad22"))
+        end)
+    end
     textLab:ClearAnchors()
     textLab:SetAnchor(CENTER, textRoot, CENTER, 0, 0)
+    textLab:SetDimensions(math.floor(420 * sc), math.floor(px + 16))
     textLab:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
 end
 
@@ -226,7 +228,7 @@ local function Build()
     end
     iconRoot:SetParent(GuiRoot)
     iconRoot:SetHidden(true)
-    iconRoot:SetClampedToScreen(true)
+    iconRoot:SetClampedToScreen(false)
     iconRoot:SetMouseEnabled(false)
     iconRoot:SetDrawLayer(DL_CONTROLS)
     iconRoot:SetDrawLevel(3)
@@ -245,7 +247,7 @@ local function Build()
     end
     textRoot:SetParent(GuiRoot)
     textRoot:SetHidden(true)
-    textRoot:SetClampedToScreen(true)
+    textRoot:SetClampedToScreen(false)
     textRoot:SetMouseEnabled(false)
     textRoot:SetDrawLayer(DL_CONTROLS)
     textRoot:SetDrawLevel(3)

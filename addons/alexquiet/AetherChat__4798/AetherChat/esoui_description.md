@@ -6,6 +6,7 @@
 [CENTER]
 [SIZE="6"][COLOR="Gold"][B]✦ AETHERCHAT ✦[/B][/COLOR][/SIZE]
 [SIZE="3"][COLOR="LightSteelBlue"][I]The Modern, Immersive Messenger & Complete Chat Suite for The Elder Scrolls Online[/I][/COLOR][/SIZE]
+[SIZE="2"][COLOR="PaleGreen"][B]Version 1.3.0 — Full Gamepad Support, Ultra-Compact Mode & Custom Tabs[/B][/COLOR][/SIZE]
 [/CENTER]
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -22,18 +23,54 @@
 [SIZE="5"][COLOR="Gold"][B]🇬🇧 ENGLISH PRESENTATION & OVERVIEW[/B][/COLOR][/SIZE]
 [/CENTER]
 
-[B]AetherChat[/B] completely revolutionizes the Elder Scrolls Online chat interface into a modern, sleek, and intuitive messenger inspired by contemporary communication apps and Nordic fantasy aesthetics. It enhances immersion, social connectivity, and convenience across every activity in Tamriel—from Trials and Dungeons to Guild Trading and Roleplay.
+[B]AetherChat[/B] completely revolutionizes the Elder Scrolls Online chat interface into a modern, sleek, and intuitive messenger inspired by contemporary communication apps and Nordic fantasy aesthetics. It enhances immersion, social connectivity, and convenience across every activity in Tamriel—from Trials and Dungeons to Guild Trading, Gamepad play, and Roleplay.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-[SIZE="4"][COLOR="Orange"][B]✨ KEY FEATURES[/B][/COLOR][/SIZE]
+[SIZE="4"][COLOR="Orange"][B]✨ NEW IN VERSION 1.3.0[/B][/COLOR][/SIZE]
+
+[B]🎮 Full Gamepad & Controller Support[/B]
+[LIST]
+[*][B]Full Gamepad Compatibility:[/B] AetherChat remains active and fully accessible whether you play with mouse/keyboard or an Xbox/PlayStation controller.
+[*][B]Dedicated Controller Keybindings:[/B] Bind [B]Toggle Mode[/B], [B]Next Tab[/B], [B]Previous Tab[/B], [B]Next Guild[/B], and [B]Focus / Unfocus Chat[/B] directly to your controller buttons (Bumper, Trigger, D-Pad, etc.) in [I]Settings -> Controls -> AetherChat[/I].
+[*][B]Optimized 1:1 Compact Tab Cycling:[/B] Tab navigation stops exactly once on the active guild tab, matching the visual layout. Use the dedicated [B]Next Guild[/B] keybind to rotate through guilds instantly without cluttering the main cycle.
+[*][B]Smart Joystick Movement Auto-Release:[/B] Moving the left thumbstick or beginning to walk instantly dismisses chat input focus, immediately restoring full control of character movement and abilities.
+[*][B]Combat Safety:[/B] Automatically releases chat input when entering combat so you never get locked into typing during fights.
+[*][B]Exclusive Chat Mode:[/B] Option in [I]Settings -> AetherChat -> Gamepad[/I] that automatically activates ESO's native [B]GAMEPAD_SETTING_USE_KEYBOARD_CHAT[/B], completely disabling the native gamepad HUD bubble and routing all chat cleanly through AetherChat.
+[/LIST]
+
+[B]🚀 Reimagined Ultra-Compact Layout[/B]
+[LIST]
+[*][B]Minimalist Horizontal Tab Bar:[/B] Switch between Full Messenger mode (with expandable sidebar) and Ultra-Compact mode ([B]Zone[/B], [B]General[/B], [B]Group[/B], [B]System[/B], [B]Loot[/B], [B]Guilds ▾[/B], [B]Custom Tabs[/B]).
+[*][B]100% Reading Area:[/B] No lost horizontal space; fits cleanly in the bottom corner of your screen (down to 320x180 px).
+[*][B]Independent Geometry Memory:[/B] Position and dimensions are saved independently for standard and compact modes.
+[*][B]Instant 1-Click Toggle:[/B] Seamlessly switch anytime with the header toggle button or via [B]/aethermode[/B] / [B]/acmode[/B].
+[*][B]Context Menus:[/B] Right-click [B]Zone[/B] to switch language filter; right-click [B]Loot[/B] to toggle Set Pieces Only filter.
+[/LIST]
+
+[B]📁 Custom Tabs System[/B]
+[LIST]
+[*][B]Custom Multi-Channel Tabs:[/B] Create personalized tabs with custom labels, colors, and 10 official high-res emblems (Star, Gold, PvP, Raid, Dungeon, Mail, Lore, Crafting, Tel Var, Tales of Tribute).
+[*][B]Multi-Channel Filtering Matrix:[/B] Combine any channels into a single tab: Zone (multi-language), Say, Yell, Whisper, Group, NPC, Guilds 1-5, and Officer channels 1-5.
+[*][B]Retroactive History Aggregation:[/B] Automatically pulls existing chat history into your new tab upon creation.
+[/LIST]
+
+[B]🌐 100% Bilingual Parity (English & French)[/B]
+[LIST]
+[*][B]Comprehensive Bilingual Audit:[/B] Complete parity across all settings, menus, themes, sounds, tooltips, edge resizing handles, context menus, and chat system announcements.
+[*][B]Zero Untranslated Strings:[/B] Every single UI element dynamically adapts to the selected client or addon language with no hardcoded leftovers.
+[/LIST]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[SIZE="4"][COLOR="Orange"][B]✨ CORE FEATURES[/B][/COLOR][/SIZE]
 
 [B]🌟 Modern Messenger Architecture & Native Scene Orchestration[/B]
 [LIST]
 [*][B]Nordic Sleek Interface:[/B] High-fidelity dark slate panels with refined metallic accents, smooth animations, and clean typography.
 [*][B]Collapsible Sidebar Rail:[/B] Switch seamlessly between an expanded sidebar with full channel labels and a minimalist compact icon dock to maximize screen real estate.
 [*][B]Native Chat Replacement & Smart Input Docking:[/B] Full two-way synchronization with default ESO chat. When AetherChat closes, text focus instantly restores to standard chat without friction.
-[*][B]Native Scene Fragment Integration:[/B] Fully compliant with ZOS Scene Manager architecture ([ICODE]ZO_HUDFadeSceneFragment[/ICODE] with [ICODE]SetConditional[/ICODE]). Automatically hides when opening game menus (Escape, Inventory, Skills, Map) and restores seamlessly upon returning to the world.
+[*][B]Native Scene Fragment Integration:[/B] Fully compliant with ZOS Scene Manager architecture ([B]ZO_HUDFadeSceneFragment[/B] with [B]SetConditional[/B]). Automatically hides when opening game menus (Escape, Inventory, Skills, Map) and restores seamlessly upon returning to the world.
 [*][B]Combat Auto-Close:[/B] Optional automatic window hiding during combat to keep your battlefield view entirely clear.
 [/LIST]
 
@@ -64,8 +101,8 @@
 
 [B]🌍 Instant Multi-Zone Language Filters & Cyrillic Support[/B]
 [LIST]
-[*][B]Interactive Language Pills:[/B] Filter the Zone chat instantly right from the header: [B]ALL[/B], [B]FR[/B], [B]EN[/B], [B]DE[/B], [B]ES[/B], and [B]GLOBAL[/B].
-[*][B]Full Unicode & Cyrillic Support:[/B] Crystal-clear rendering of Russian, Cyrillic, and extended European alphabets without empty boxes ([ICODE][][][][/ICODE]).
+[*][B]Interactive Language Pills:[/B] Filter Zone chat instantly right from the header or right-click: [B]ALL[/B], [B]FR[/B], [B]EN[/B], [B]DE[/B], [B]RU[/B], [B]ES[/B], [B]JP[/B], [B]ZH[/B].
+[*][B]Full Unicode & Cyrillic Support:[/B] Crystal-clear rendering of Russian, Cyrillic, and extended European alphabets without empty boxes ([][][]).
 [/LIST]
 
 [B]🔤 Real-Time Typography Scaling[/B]
@@ -81,15 +118,15 @@
 
 [B]🎯 Custom Keywords & Mention Alerts (Pings)[/B]
 [LIST]
-[*][B]Personalized Watchlist:[/B] Track any custom word or tag ([ICODE]@MyName, WTS, WTT, Tank, Heal, Motif, vCR, vSS, LF[/ICODE]).
-[*][B]Visual Highlight & Star Marker:[/B] Triggered lines display a colored [B]★ star marker[/B] beside the timestamp, with the keyword framed in a stylish [B][KEYWORD][/B] badge.
+[*][B]Personalized Watchlist:[/B] Track any custom word or tag ([I]@MyName, WTS, WTT, Tank, Heal, Motif, vCR, vSS, LF[/I]).
+[*][B]Visual Highlight & Star Marker:[/B] Triggered lines display a colored [B]★ star marker[/B] beside the timestamp, with the keyword framed in a stylish [B]{KEYWORD}[/B] badge.
 [*][B]Audible Chime Alert:[/B] Crisp audio notification plays when a monitored keyword is detected.
 [*][B]7 Selectable Accent Colors:[/B] Customize your ping badge with Skyrim Gold, Neon Pink, Celestial Cyan, Emerald Green, Burnt Amber, Arcanist Purple, or Lightning Yellow.
 [/LIST]
 
 [B]💎 Smart Loot & Gear Feed with 1-Click "Need"[/B]
 [LIST]
-[*][B]Filtered Loot Feed:[/B] Dedicated loot log with customizable quality filters (White, Green, Blue, Purple, Gold) and an "Equipment Only" toggle.
+[*][B]Filtered Loot Feed:[/B] Dedicated loot log with customizable quality filters (White, Green, Blue, Purple, Gold) and an "Equipment Only" / "Sets Only" toggle.
 [*][B]Enhanced Item Display:[/B] Shows equipment traits (e.g. [I]Divines, Infused, Arcane[/I]), item icons, and an alert tag [B]|cFFCC00!!!|r[/B] on gear set pieces.
 [*][B]1-Click Need Whisper:[/B] Right-click any looted item to whisper a customizable template message directly to the looter or ask in party chat.
 [/LIST]
@@ -115,8 +152,17 @@
 
 [SIZE="4"][COLOR="SkyBlue"][B]⌨️ SLASH COMMANDS & KEYBINDINGS[/B][/COLOR][/SIZE]
 [LIST]
-[*][B]Esc -> Controls -> AetherChat:[/B] Bind any hotkey to toggle the messenger window.
+[*][B]Esc -> Controls -> AetherChat:[/B]
+  [LIST]
+  [*]Toggle AetherChat Window
+  [*]Toggle Standard / Ultra-Compact Mode
+  [*]Next Tab (Cycle through channels / custom tabs)
+  [*]Previous Tab
+  [*]Next Guild (Compact Mode)
+  [*]Focus / Unfocus Chat Input
+  [/LIST]
 [*][B]/aetherchat[/B] or [B]/ac[/B] or [B]/aether[/B] — Toggle AetherChat window.
+[*][B]/aethermode[/B] or [B]/acmode[/B] — Toggle between Standard Messenger and Ultra-Compact layout.
 [*][B]/aethericon[/B] — Show / hide the floating HUD dock widget.
 [*][B]/chathead[/B] — Test message and notification sounds.
 [/LIST]
@@ -140,6 +186,42 @@
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+[SIZE="4"][COLOR="Orange"][B]✨ NOUVEAUTÉS VERSION 1.3.0[/B][/COLOR][/SIZE]
+
+[B]🎮 Prise en Charge Manette Complète & Mode Exclusif (Gamepad)[/B]
+[LIST]
+[*][B]Compatibilité Manette Totale :[/B] AetherChat reste actif et utilisable que vous jouiez au clavier/souris ou à la manette (Xbox / PlayStation).
+[*][B]Raccourcis Manette Dédiés :[/B] Attribuez dans [I]Échap -> Commandes -> AetherChat[/I] les actions [B]Basculer Mode Standard / Compact[/B], [B]Onglet suivant[/B], [B]Onglet précédent[/B], [B]Guilde suivante[/B] et [B]Activer/Quitter la saisie[/B] sur vos gâchettes ou boutons favoris.
+[*][B]Défilement 1:1 en Mode Compact :[/B] La navigation par onglets s'arrête une seule fois sur l'onglet de guilde active (conforme à l'affichage visuel). La touche dédiée [B]Guilde suivante[/B] permet de faire tourner les 5 guildes directement sans quitter l'onglet.
+[*][B]Libération Intelligente de la Saisie (Stick Gauche) :[/B] Dès que vous poussez le joystick de déplacement ou commencez à marcher, la saisie se ferme automatiquement pour redonner immédiatement le contrôle des sorts et des mouvements.
+[*][B]Sécurité en Combat :[/B] Fermeture automatique de la saisie dès l'entrée en combat pour éviter tout blocage.
+[*][B]Mode Chat Exclusif AetherChat :[/B] Option dédiée dans [I]Réglages -> Extensions -> AetherChat[/I] qui active le paramètre natif d'ESO [B]GAMEPAD_SETTING_USE_KEYBOARD_CHAT[/B], désactivant proprement la bulle de chat d'ATH et le chat console officiel.
+[/LIST]
+
+[B]🚀 Disposition Ultra-Compacte Réinventée[/B]
+[LIST]
+[*][B]Bandeau d'Onglets Horizontaux Minimaliste :[/B] Basculez d'un clic entre le mode Messenger complet (volet latéral) et le mode Ultra-Compact ([B]Zone[/B], [B]Général[/B], [B]Groupe[/B], [B]Système[/B], [B]Butin[/B], [B]Guildes ▾[/B], [B]Onglets Perso[/B]).
+[*][B]100% d'Espace de Lecture :[/B] Aucune perte d'espace latéral ; se loge discrètement dans le coin inférieur gauche (jusqu'à 320x180 px).
+[*][B]Mémoire de Géométrie Indépendante :[/B] Dimensions et positions distinctes mémorisées pour chaque mode.
+[*][B]Bascule Instantanée 1-Clic :[/B] Bouton dédié dans l'en-tête ou commandes [B]/aethermode[/B] / [B]/acmode[/B].
+[*][B]Menus Contextuels Rapides :[/B] Clic droit sur [B]Zone[/B] pour filtrer la langue instantanément ; clic droit sur [B]Butin[/B] pour basculer le filtre "Sets uniquement".
+[/LIST]
+
+[B]📁 Canaux & Onglets Personnalisés (Custom Tabs)[/B]
+[LIST]
+[*][B]Création d'Onglets sur Mesure :[/B] Créez vos propres onglets avec nom personnalisé, couleur et sélection parmi 10 emblèmes officiels haute résolution (Étoile, Or, PvP, Raid, Donjon, Courrier, Lore, Artisanat, Tel Var, Histoires de Gloire).
+[*][B]Matrice de Filtrage Multi-Canaux :[/B] Associez n'importe quels canaux (Zone multi-langues, Dire, Crier, Chuchoter, Groupe, PNJ, Guildes 1-5, Officiers 1-5).
+[*][B]Agrégation Rétroactive :[/B] Récupère et affiche dynamiquement l'historique des messages correspondants dès la création.
+[/LIST]
+
+[B]🌐 Bilinguisme Intégral 100% (Français & Anglais)[/B]
+[LIST]
+[*][B]Audit Bilingue Complet :[/B] Traduction intégrale et miroir parfait entre le français et l'anglais pour l'ensemble des paramètres LAM, infobulles, menus contextuels, poignées d'étirement de fenêtre, alertes CSA et annonces système.
+[*][B]Zéro Texte Résiduel :[/B] Remplacement de toutes les chaînes fixes par le moteur de localisation dynamique [B]L(...)[/B].
+[/LIST]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 [SIZE="4"][COLOR="Orange"][B]✨ FONCTIONNALITÉS MAJEURES[/B][/COLOR][/SIZE]
 
 [B]🌟 Interface Moderne & Intégration Native au Scene Manager[/B]
@@ -147,7 +229,7 @@
 [*][B]Design Nordique Épuré :[/B] Panneaux ardoise sombres, bordures ouvragées et lisibilité optimale.
 [*][B]Volet Latéral Rétractable :[/B] Basculez en un clic du mode étendu (avec noms des canaux) au mode compact (avec icônes seules).
 [*][B]Remplacement Transparent du Chat Natif :[/B] Synchronisation totale avec le chat du jeu. Dès la fermeture d'AetherChat, la saisie clavier retourne immédiatement au chat par défaut.
-[*][B]Intégration Standard par Fragments :[/B] Conforme aux normes ZOS ([ICODE]ZO_HUDFadeSceneFragment[/ICODE] avec [ICODE]SetConditional[/ICODE]). Se masque automatiquement lors de l'ouverture des menus du jeu (Échap, Réglages, Inventaire, Carte) et réapparaît à la fermeture.
+[*][B]Intégration Standard par Fragments :[/B] Conforme aux normes ZOS ([B]ZO_HUDFadeSceneFragment[/B] avec [B]SetConditional[/B]). Se masque automatiquement lors de l'ouverture des menus du jeu (Échap, Réglages, Inventaire, Carte) et réapparaît à la fermeture.
 [*][B]Masquage en Combat :[/B] Option de fermeture automatique lors de l'entrée en combat pour une visibilité totale.
 [/LIST]
 
@@ -178,8 +260,8 @@
 
 [B]🌍 Filtres de Zone Multilingues & Support Cyrillique[/B]
 [LIST]
-[*][B]Pastilles de Langue Interactives :[/B] Filtrez le canal Zone d'un simple clic : [B]ALL[/B], [B]FR[/B], [B]EN[/B], [B]DE[/B], [B]ES[/B], [B]GLOBAL[/B].
-[*][B]Support Intégral du Cyrillique :[/B] Rendu net des caractères russes, cyrilliques et internationaux sans boîte vide ([ICODE][][][][/ICODE]).
+[*][B]Pastilles de Langue Interactives :[/B] Filtrez le canal Zone d'un simple clic : [B]ALL[/B], [B]FR[/B], [B]EN[/B], [B]DE[/B], [B]RU[/B], [B]ES[/B], [B]JP[/B], [B]ZH[/B].
+[*][B]Support Intégral du Cyrillique :[/B] Rendu net des caractères russes, cyrilliques et internationaux sans boîte vide ([][][]).
 [/LIST]
 
 [B]🔤 Curseur de Taille de Police en Temps Réel[/B]
@@ -194,14 +276,14 @@
 
 [B]🎯 Mots-Clés & Mentions Personnalisées (Pings)[/B]
 [LIST]
-[*][B]Surveillance Personnalisée :[/B] Suivez vos termes favoris ([ICODE]@MonPseudo, WTS, WTT, Tank, Heal, Motif, vCR, vSS, Cherche[/ICODE]).
+[*][B]Surveillance Personnalisée :[/B] Suivez vos termes favoris ([I]@MonPseudo, WTS, WTT, Tank, Heal, Motif, vCR, vSS, Cherche[/I]).
 [*][B]Alerte Visuelle & Étoile ★ :[/B] Étoile dorée ★ et mot-clé encadré d'un badge coloré avec sonnerie claire.
 [*][B]7 Couleurs d'Accentuation au Choix :[/B] Or nordique, Rose Néon, Cyan Céleste, Vert Émeraude, Ambre, Violet Arcaniste ou Jaune Flash.
 [/LIST]
 
 [B]💎 Suivi du Butin & Demande de Set Rapide (Need 1-Clic)[/B]
 [LIST]
-[*][B]Journal de Butin Filtrable :[/B] Filtrez par qualité avec option "Équipement uniquement".
+[*][B]Journal de Butin Filtrable :[/B] Filtrez par qualité avec option "Équipement uniquement" ou "Sets uniquement".
 [*][B]Détails Avancés des Objets :[/B] Traits d'armure, icônes d'objets et marqueur d'alerte [B]|cFFCC00!!!|r[/B] sur les sets.
 [*][B]Demande de Set d'un Clic :[/B] Clic droit sur un objet pour chuchoter directement au looteur.
 [/LIST]
@@ -222,8 +304,17 @@
 
 [SIZE="4"][COLOR="SkyBlue"][B]⌨️ COMMANDES SLASH & RACCOURCIS[/B][/COLOR][/SIZE]
 [LIST]
-[*][B]Échap -> Commandes -> AetherChat :[/B] Attribuez un raccourci clavier pour ouvrir / fermer la messagerie.
+[*][B]Échap -> Commandes -> AetherChat :[/B]
+  [LIST]
+  [*]Afficher / Masquer AetherChat
+  [*]Basculer Mode Standard / Ultra-Compact
+  [*]Onglet suivant (Parcourir canaux / onglets perso)
+  [*]Onglet précédent
+  [*]Guilde suivante (Mode Compact)
+  [*]Activer / Quitter la saisie chat
+  [/LIST]
 [*][B]/aetherchat[/B] ou [B]/ac[/B] ou [B]/aether[/B] — Ouvrir / Fermer AetherChat.
+[*][B]/aethermode[/B] ou [B]/acmode[/B] — Basculer entre Mode Standard et Mode Ultra-Compact.
 [*][B]/aethericon[/B] — Afficher / Masquer l'icône HUD flottante.
 [*][B]/chathead[/B] — Tester les sons et l'interface.
 [/LIST]

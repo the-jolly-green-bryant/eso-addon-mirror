@@ -40,6 +40,28 @@ local function ConsOff()
     return not (v and v.consEnabled ~= false)
 end
 
+local function ConsFoodOff()
+    local v = Vars()
+    return ConsOff() or not (v and v.consShowFood ~= false)
+end
+
+local function ConsPotOff()
+    local v = Vars()
+    return ConsOff() or not (v and v.consShowPot ~= false)
+end
+
+local function ConsMsgOff()
+    local v = Vars()
+    if ConsOff() then return true end
+    return not (v and (v.consMsgFood == true or v.consMsgPot == true))
+end
+
+local function ConsEndSoundOff()
+    local v = Vars()
+    if ConsOff() then return true end
+    return not (v and (v.consFoodSound == true or v.consPotSound == true))
+end
+
 local function TimerOff()
     local v = Vars()
     return not (v and v.timerEnabled == true)
@@ -86,7 +108,7 @@ function T.RegisterSettings()
         allowDefaults = true,
     })
     if not settings then return end
-    settings.version = "1.3.5"
+    settings.version = "1.3.12"
     settings.author = "Tetsurion"
 
     settings:AddSetting({
@@ -336,8 +358,8 @@ function T.RegisterSettings()
         type = LibHarven.ST_SLIDER,
         label = L("STATUS_ICON_X", "Icon offset X"),
         tooltip = L("STATUS_ICON_X_TT", ""),
-        min = -500,
-        max = 500,
+        min = -900,
+        max = 900,
         step = 10,
         default = 0,
         disable = StatusIconOff,
@@ -354,8 +376,8 @@ function T.RegisterSettings()
         type = LibHarven.ST_SLIDER,
         label = L("STATUS_ICON_Y", "Icon offset Y"),
         tooltip = L("STATUS_ICON_Y_TT", ""),
-        min = -500,
-        max = 500,
+        min = -900,
+        max = 900,
         step = 10,
         default = 0,
         disable = StatusIconOff,
@@ -423,8 +445,8 @@ function T.RegisterSettings()
         type = LibHarven.ST_SLIDER,
         label = L("STATUS_TEXT_X", "Text offset X"),
         tooltip = L("STATUS_TEXT_X_TT", ""),
-        min = -500,
-        max = 500,
+        min = -900,
+        max = 900,
         step = 10,
         default = 0,
         disable = StatusTextOff,
@@ -441,8 +463,8 @@ function T.RegisterSettings()
         type = LibHarven.ST_SLIDER,
         label = L("STATUS_TEXT_Y", "Text offset Y"),
         tooltip = L("STATUS_TEXT_Y_TT", ""),
-        min = -500,
-        max = 500,
+        min = -900,
+        max = 900,
         step = 10,
         default = 250,
         disable = StatusTextOff,
@@ -461,8 +483,8 @@ function T.RegisterSettings()
         type = LibHarven.ST_SLIDER,
         label = L("STATUS_TEXT_SCALE", "Text scale %"),
         tooltip = L("STATUS_TEXT_SCALE_TT", ""),
-        min = 50,
-        max = 180,
+        min = 40,
+        max = 250,
         step = 5,
         default = 100,
         disable = StatusTextOff,
@@ -514,8 +536,8 @@ function T.RegisterSettings()
         type = LibHarven.ST_SLIDER,
         label = L("CONS_X", "Offset X"),
         tooltip = L("CONS_X_TT", ""),
-        min = -500,
-        max = 500,
+        min = -900,
+        max = 900,
         step = 10,
         default = 0,
         disable = ConsOff,
@@ -532,8 +554,8 @@ function T.RegisterSettings()
         type = LibHarven.ST_SLIDER,
         label = L("CONS_Y", "Offset Y"),
         tooltip = L("CONS_Y_TT", ""),
-        min = -500,
-        max = 500,
+        min = -900,
+        max = 900,
         step = 10,
         default = 220,
         disable = ConsOff,
@@ -552,8 +574,8 @@ function T.RegisterSettings()
         type = LibHarven.ST_SLIDER,
         label = L("CONS_SCALE", "Scale %"),
         tooltip = L("CONS_SCALE_TT", ""),
-        min = 50,
-        max = 180,
+        min = 40,
+        max = 250,
         step = 5,
         default = 100,
         disable = ConsOff,
@@ -567,6 +589,36 @@ function T.RegisterSettings()
     })
 
     settings:AddSetting({
+        type = LibHarven.ST_CHECKBOX,
+        label = L("CONS_SHOW_FOOD", "Show food"),
+        tooltip = L("CONS_SHOW_FOOD_TT", ""),
+        default = true,
+        disable = ConsOff,
+        getFunction = function()
+            return vars.consShowFood ~= false
+        end,
+        setFunction = function(val)
+            vars.consShowFood = val and true or false
+            if T.ConsRefresh then T.ConsRefresh() end
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarven.ST_CHECKBOX,
+        label = L("CONS_SHOW_POT", "Show potion"),
+        tooltip = L("CONS_SHOW_POT_TT", ""),
+        default = true,
+        disable = ConsOff,
+        getFunction = function()
+            return vars.consShowPot ~= false
+        end,
+        setFunction = function(val)
+            vars.consShowPot = val and true or false
+            if T.ConsRefresh then T.ConsRefresh() end
+        end,
+    })
+
+    settings:AddSetting({
         type = LibHarven.ST_SLIDER,
         label = L("CONS_FOOD_WARN", "Food warn (min)"),
         tooltip = L("CONS_FOOD_WARN_TT", ""),
@@ -574,7 +626,7 @@ function T.RegisterSettings()
         max = 15,
         step = 1,
         default = 5,
-        disable = ConsOff,
+        disable = ConsFoodOff,
         getFunction = function()
             return vars.consFoodWarn or 5
         end,
@@ -592,7 +644,7 @@ function T.RegisterSettings()
         max = 20,
         step = 1,
         default = 10,
-        disable = ConsOff,
+        disable = ConsPotOff,
         getFunction = function()
             return vars.consPotWarn or 10
         end,
@@ -607,7 +659,7 @@ function T.RegisterSettings()
         label = L("CONS_POT_COMBAT", "Potion only in combat"),
         tooltip = L("CONS_POT_COMBAT_TT", ""),
         default = false,
-        disable = ConsOff,
+        disable = ConsPotOff,
         getFunction = function()
             return vars.consPotCombat == true
         end,
@@ -622,7 +674,7 @@ function T.RegisterSettings()
         label = L("CONS_FOOD_SOUND", "Sound when food ends"),
         tooltip = L("CONS_FOOD_SOUND_TT", ""),
         default = false,
-        disable = ConsOff,
+        disable = ConsFoodOff,
         getFunction = function()
             return vars.consFoodSound == true
         end,
@@ -630,6 +682,134 @@ function T.RegisterSettings()
             vars.consFoodSound = val and true or false
         end,
     })
+
+    settings:AddSetting({
+        type = LibHarven.ST_CHECKBOX,
+        label = L("CONS_POT_SOUND", "Sound when potion ends"),
+        tooltip = L("CONS_POT_SOUND_TT", ""),
+        default = false,
+        disable = ConsPotOff,
+        getFunction = function()
+            return vars.consPotSound == true
+        end,
+        setFunction = function(val)
+            vars.consPotSound = val and true or false
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarven.ST_DROPDOWN,
+        label = L("CONS_END_SOUND", "End sound"),
+        tooltip = L("CONS_END_SOUND_TT", ""),
+        items = SoundItems(),
+        default = L("SOUND_ALERT", "Alert"),
+        disable = ConsEndSoundOff,
+        getFunction = function()
+            return SoundLabel(vars.consEndSoundId or "alert")
+        end,
+        setFunction = function(control, itemName, itemData)
+            vars.consEndSoundId = (itemData and itemData.data) or "alert"
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarven.ST_CHECKBOX,
+        label = L("CONS_MSG_FOOD_ON", "Food end text"),
+        tooltip = L("CONS_MSG_FOOD_ON_TT", ""),
+        default = false,
+        disable = ConsOff,
+        getFunction = function()
+            return vars.consMsgFood == true
+        end,
+        setFunction = function(val)
+            vars.consMsgFood = val and true or false
+            if T.ConsRefresh then T.ConsRefresh() end
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarven.ST_CHECKBOX,
+        label = L("CONS_MSG_POT_ON", "Potion end text"),
+        tooltip = L("CONS_MSG_POT_ON_TT", ""),
+        default = false,
+        disable = ConsOff,
+        getFunction = function()
+            return vars.consMsgPot == true
+        end,
+        setFunction = function(val)
+            vars.consMsgPot = val and true or false
+            if T.ConsRefresh then T.ConsRefresh() end
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarven.ST_SLIDER,
+        label = L("CONS_MSG_X", "Text offset X"),
+        tooltip = L("CONS_MSG_X_TT", ""),
+        min = -900,
+        max = 900,
+        step = 10,
+        default = 0,
+        disable = ConsMsgOff,
+        getFunction = function()
+            return vars.consMsgX or 0
+        end,
+        setFunction = function(val)
+            vars.consMsgX = tonumber(val) or 0
+            if T.ConsRefresh then T.ConsRefresh() end
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarven.ST_SLIDER,
+        label = L("CONS_MSG_Y", "Text offset Y"),
+        tooltip = L("CONS_MSG_Y_TT", ""),
+        min = -900,
+        max = 900,
+        step = 10,
+        default = -200,
+        disable = ConsMsgOff,
+        getFunction = function()
+            local y = tonumber(vars.consMsgY)
+            if y == nil then return -200 end
+            return y
+        end,
+        setFunction = function(val)
+            vars.consMsgY = tonumber(val) or -200
+            if T.ConsRefresh then T.ConsRefresh() end
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarven.ST_SLIDER,
+        label = L("CONS_MSG_SCALE", "Text scale %"),
+        tooltip = L("CONS_MSG_SCALE_TT", ""),
+        min = 40,
+        max = 250,
+        step = 5,
+        default = 100,
+        disable = ConsMsgOff,
+        getFunction = function()
+            return vars.consMsgScale or 100
+        end,
+        setFunction = function(val)
+            vars.consMsgScale = tonumber(val) or 100
+            if T.ConsRefresh then T.ConsRefresh() end
+        end,
+    })
+
+    if LibHarven.ST_BUTTON then
+        settings:AddSetting({
+            type = LibHarven.ST_BUTTON,
+            label = L("CONS_PREVIEW", "Preview"),
+            tooltip = L("CONS_PREVIEW_TT", ""),
+            buttonText = L("CONS_PREVIEW_BTN", "Show 8s"),
+            disable = ConsOff,
+            clickHandler = function()
+                if T.ConsPreview then T.ConsPreview() end
+            end,
+        })
+    end
 
     settings:AddSetting({
         type = LibHarven.ST_SECTION,
@@ -701,8 +881,8 @@ function T.RegisterSettings()
         type = LibHarven.ST_SLIDER,
         label = L("TIMER_X", "Offset X"),
         tooltip = L("TIMER_X_TT", ""),
-        min = -500,
-        max = 500,
+        min = -900,
+        max = 900,
         step = 10,
         default = 0,
         disable = TimerOff,
@@ -719,8 +899,8 @@ function T.RegisterSettings()
         type = LibHarven.ST_SLIDER,
         label = L("TIMER_Y", "Offset Y"),
         tooltip = L("TIMER_Y_TT", ""),
-        min = -500,
-        max = 500,
+        min = -900,
+        max = 900,
         step = 10,
         default = -280,
         disable = TimerOff,
@@ -739,8 +919,8 @@ function T.RegisterSettings()
         type = LibHarven.ST_SLIDER,
         label = L("TIMER_SCALE", "Scale %"),
         tooltip = L("TIMER_SCALE_TT", ""),
-        min = 50,
-        max = 180,
+        min = 40,
+        max = 250,
         step = 5,
         default = 100,
         disable = TimerOff,

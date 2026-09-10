@@ -1,6 +1,5 @@
-2026.07.30
-- Removed companion taunt logic for increased performance due to there being 6 different taunts they can possibly use.
-- Misc text output tweaks.
+2026.09.09
+- Re-added companion taunts to taunt reticle more efficiently with some enhancements.
 ** POSSIBLE FUTURE OPTIONS **
 - Auto com res?
 

@@ -305,6 +305,161 @@ Two things, both narrower, both deliberate, and neither able to reach `PopulateM
   on the Send page still could, if the client dispatches inventory events synchronously -- which
   is measurement 13.
 
+
+## 10. An expiring mail cannot be pinned — only copied
+
+**From source.** Every mail carries an expiry: `GetMailItemInfo` returns `expiresInDays`, and
+`mailinbox_shared.lua` draws it. There is no counterpart to it — no call that extends a mail,
+marks one, or stops its clock. The inbox is the server's list, and the whole of the add-on API
+for it is reads plus `DeleteMail`, `ReturnMail` and the take-attachment calls.
+
+So "keep this mail for ever" can only mean copying what it said into the saved variables, where
+nothing expires:
+
+```
+GetMailItemInfo(mailId)  -> sender, subject, ..., numAttachments, attachedMoney, expiresInDays
+ReadMail(mailId)         -> the body, from the client's own cache
+GetAttachedItemLink/Info -> what was attached
+```
+
+`ReadMail` only answers once the client has fetched the mail, which it does itself when one is
+selected (`RequestReadMail`, `mailinbox_gamepad.lua:873`). `IsReadMailInfoReady` is how that is
+checked rather than assumed — a kept letter with an empty body would be worse than a refusal.
+
+**What cannot be copied is everything that is not text.** Attached items and gold are the
+server's until they are taken, and an add-on has nowhere to put an item; there is no API that
+could hold one. The record notes what was attached, and the add-on says so out loud when it
+keeps a mail that had anything on it, because "keep this mail" sounds like it should keep the
+parcel too.
+
+A kept letter is also marked `received = true`, and Compose puts back its words and nothing
+else. Re-attaching *your* copies of what somebody sent you, or queueing that much of your own
+gold, is not what anybody means by answering a letter.
+
+### Guild mail is a second, simpler system
+
+**From source.** Guild mail has its own id space and its own reads, and it hands the body over
+with the header — no fetch to wait for, and `IsReadMailInfoReady` does not apply:
+
+```
+GetGuildMailItemInfo(guildMailId) -> guildId, subject, body, expiresInDays, expiresInSeconds,
+                                     secsSinceReceived, sender
+```
+
+Which kind of mail is selected comes from `MAIL_INBOX.isMailFromGuild` on the keyboard and
+`ZO_MailInbox_Gamepad:IsActiveMailFromGuild()` on the gamepad. Because the two id spaces are
+unrelated, the kept box keys its records `mail:<id>` and `guild:<id>` — the same number in each
+is two different letters, and without the prefix the second would look like a duplicate of the
+first.
+
+Guild mail carries no attachments and no gold, so the warning about the parcel does not arise.
+It is shown as coming from the guild, which is how the client shows it, and addressed back to
+the officer who sent it, who is the only party a reply could reach.
+
+### The preview tooltip: GAMEPAD_LEFT_TOOLTIP, not RIGHT
+
+**Measured**, 1.3.0: a kept mail's body did not appear. Version 1.3.0 drew the preview into
+`GAMEPAD_RIGHT_TOOLTIP`, and the mail scene does not carry that tooltip's fragment, so it drew
+nothing at all and — being `pcall`ed — said nothing about it either.
+
+The mail screen uses exactly one tooltip, and the client's own code says which:
+`GAMEPAD_TOOLTIPS:LayoutItem(GAMEPAD_LEFT_TOOLTIP, ...)` for attached items
+(`mailinbox_gamepad.lua:158`) and `LayoutBagItem(GAMEPAD_LEFT_TOOLTIP, ...)` on the send page
+(`mailsend_gamepad.lua:843`). The background is turned on and off around it the same way the
+inbox does around its own (`SetBgType`/`ShowBg` going in, `HideBg`/`ClearLines`/`Reset` coming
+out).
+
+### The pane beside the list is declared in XML, because Lua layout is not the same thing
+
+**Measured**, PS5, 1.6.0 through 1.6.3. The mail view is not a virtual control --
+`mailinbox_gamepad.xml` and `mailsend_gamepad.xml` each write their own inline, assigning the
+shared `ZO_MailView_*_Gamepad` functions in `OnInitialized` -- so there is nothing to
+instantiate. Its *parts*, though, are all virtual and public:
+
+```
+ZO_Mail_Gamepad_Label                the small uppercase heading over a field
+ZO_Mail_Gamepad_LabelBox             a one-line field; its OnInitialized sets self.edit
+ZO_Mail_Gamepad_Scrollable_LabelBox  the body box, which scrolls; also sets self.edit
+ZO_GamepadGrid_NavQuadrant_2_3_4_Anchors / _ContainerAnchors   where the right pane sits
+```
+
+Three versions were spent assembling those in Lua with the inbox's anchors copied out of its
+XML. Two things went wrong, and both are things XML does not have:
+
+1. **`SetAnchor` adds; it does not replace.** A control takes two anchors, and several of these
+   templates arrive carrying one of their own (`ZO_Mail_Gamepad_LabelBox` inherits
+   `ZO_DefaultBackdrop_Gamepad`, which anchors itself), so setting two on top of that is three:
+   *"already has two anchors, adding another will have no effect"*. Clearing first fixed that
+   one.
+2. **A row's height is settled by the time an XML layout is resolved, and was zero in Lua.**
+   Every field landed on top of the heading above it -- the address inside its own label,
+   "subject" printed over "message". Stating the heights explicitly, and turning off
+   `resizeToFitDescendents` on the boxes that carry it, did *not* fix it.
+
+So the pane is now `Gamepad.xml`: the inbox's own view copied, the same templates, the same
+anchors, the same 15-pixel gaps and -115/-15 insets. The client writes this in XML, and the
+reason turns out not to be taste.
+
+Two things stay in Lua, because the client does them in Lua too: the pane's own two anchors
+inside the quadrant container, and the attachment slots, created one at a time and anchored to
+the base control the XML leaves for them. The slots are deliberately **not** put through
+`ZO_Inventory_BindSlot` -- binding would make them inventory slots somebody could act on, and
+these are a picture: a draft's items are in the backpack, and a kept letter's are gone. For a
+kept letter they are drawn faded for the same reason.
+
+**XML comments may not contain a double hyphen.** An addon whose XML fails to parse loses the
+file, and the pane with it.
+
+### Where the button goes
+
+Both inboxes have a free keybind, and both take a table entry rather than a hook:
+
+* gamepad — `ZO_MailInbox_Gamepad`'s `mainKeybindDescriptor` uses the primary, secondary,
+  tertiary, quinary and right stick, so the **quaternary** is free.
+* keyboard — `MailInbox`'s `selectionKeybindStripDescriptor` (not a static one, unlike the Send
+  page's) uses the primary, secondary, tertiary, quaternary, negative and help binds, so the
+  **quinary** is free; the client uses that bind on keyboard screens of its own, so it is a real
+  key there.
+
+Which mail is being looked at comes from `MAIL_INBOX:GetOpenMailId()` and
+`ZO_MailInbox_Gamepad:GetActiveMailId()` — both return a value out of a table, so neither is the
+kind of call §9 is about.
+
+
+## 11. How much saved-variable room is left, and who to ask
+
+**From source.** The console's add-on storage allowance is readable, but the calls are **methods
+on the add-on manager**, not global functions -- which is the only thing about them that catches
+anybody out:
+
+```lua
+local manager = GetAddOnManager()
+manager:GetTotalUserAddOnSavedVariablesDiskCapacityMB()   -- the whole allowance
+manager:GetTotalUserAddOnSavedVariablesDiskUsageMB()      -- what every add-on is using
+manager:GetUserAddOnSavedVariablesDiskUsageMB(addOnIndex) -- what one add-on is using
+manager:GetTotalUnusedAddOnSavedVariablesDiskUsageMB()    -- left behind by add-ons since removed
+```
+
+The client's own gamepad add-on manager uses them exactly this way
+(`pregameandingame/addons/gamepad/zo_addonmanager_gamepad.lua`), and its
+`SI_GAMEPAD_ADDON_MENU_DISK_USAGE_FORMATTER` reads "Disk Usage: <<1>> MB/<<2>> MB".
+
+The `addOnIndex` is the manager's own enumeration index, so it comes from the same walk of
+`GetNumAddOns` / `GetAddOnInfo` that already reads this add-on's version out of its title.
+
+**The figures are what is on disk.** They move when the game writes saved variables out -- at a
+reload or a logout -- not as letters are saved, so there is nothing to poll: reading them when
+the mail window opens is enough.
+
+Where the line goes: on the button prompts' own row. `ZO_KeybindStripControl` is a top-level
+control 55 pixels tall spanning the bottom of `GuiRoot`, so anchoring `RIGHT` to its `RIGHT`
+puts the line beside the prompts at whatever height the strip is. It has to be drawn above the
+strip, though -- `ZO_KeybindStripGamepadBackground` is a full-width texture along that row, and
+anything at the mail screen's own draw tier ends up behind it.
+
+The line is a fragment on the mail scene rather than on a tab, which puts it on the inbox and
+the send page too, and takes it away with the mail window.
+
 ---
 
 ## Measured
@@ -402,3 +557,28 @@ that is the interface in use; the keyboard tab is the same code path with differ
     more needs doing.
     It fails → it does, and the command has to write the text only while the Send page is the
     tab in front of you, leaving the attachments to a tab change like the buttons do.
+
+---
+
+## To measure, stage 5 (the kept box)
+
+14. **Open a mail in the inbox. Is there a "重要に保存" keybind, and does pressing it say it was
+    kept?**
+    Yes → the inbox strip took the appended entry, and the copy is being made.
+    No keybind → the descriptor name is wrong for this client; `/pbmail keep save` does the same
+    thing and says whether the copy itself works.
+
+15. **Open the Kept tab, pick the mail, and read it.**
+    Sender, subject and the body appear beside the list, laid out like the mail window's own →
+    done. (1.3.0 drew this into a tooltip the scene does not carry and showed nothing; 1.4.0
+    used the right tooltip; 1.5.0 builds the pane instead.)
+    The old tooltip box appears instead of the pane → the pane failed to build and the fallback
+    took over; everything still reads, and what to fix is the control creation.
+    Nothing at all → press **Read it**, which puts the whole letter in chat; if that has the
+    body, the copy is right and only the drawing is wrong.
+    Body empty in both → the copy was taken before the client had fetched it, and
+    `IsReadMailInfoReady` is not the guard it looks like.
+
+16. **Let a kept mail's original expire (or delete it), then look at the Kept tab again.**
+    Still there → the copy is genuinely independent of the mail. This is the point of the box,
+    and it is the one thing that cannot be checked in an afternoon.

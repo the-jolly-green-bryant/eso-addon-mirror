@@ -55,7 +55,7 @@ local PALETTE = {
   { r = 0.30, g = 0.65, b = 0.98 }, { r = 0.45, g = 0.45, b = 0.95 }, { r = 0.70, g = 0.40, b = 0.95 },
   { r = 0.95, g = 0.40, b = 0.80 }, { r = 0.80, g = 0.65, b = 0.45 }, { r = 0.92, g = 0.92, b = 0.90 },
 }
-local PlaySound = zui.PlaySound
+local Sound = Verdant.Sound
 local FILL_TEXTURE = "EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_fill.dds"
 
 
@@ -150,7 +150,7 @@ local function build_flyout()
     else
       e:SetText(GetString(VERDANT_ASSIGN_NEW))
       e:SetColor(0.85, 0.70, 0.36, 1)
-      e:SetHandler("OnMouseUp",    function() PlaySound(SOUNDS.DIALOG_ACCEPT); open_newcat() end)
+      e:SetHandler("OnMouseUp",    function() Sound.play("click"); open_newcat() end)
       e:SetHandler("OnMouseEnter", function(self) self:SetColor(1, 1, 1, 1) end)
       e:SetHandler("OnMouseExit",  function(self) self:SetColor(0.85, 0.70, 0.36, 1) end)
     end
@@ -193,19 +193,19 @@ function M.on_newcat_swatch(i)
   if not PALETTE[i] then return end
   newcat_color = i
   for k = 1, #swatches do swatches[k].rim:SetHidden(k ~= i) end
-  PlaySound(SOUNDS.DEFAULT_CLICK)
+  Sound.play("click")
 end
 
 function M.on_newcat_create()
   local name = tostring(controls.newcat_edit:GetText() or ""):gsub("^%s+", ""):gsub("%s+$", "")
   if name == "" then
-    PlaySound(SOUNDS.NEGATIVE_CLICK)
+    Sound.play("deny")
     return
   end
   local c   = PALETTE[newcat_color] or PALETTE[1]
   local key = SkillColors.custom_key(name)
   if not SkillColors.add_group(key, name, c.r, c.g, c.b) then
-    PlaySound(SOUNDS.NEGATIVE_CLICK)
+    Sound.play("deny")
     return
   end
   local sv = Verdant.SavedVars
@@ -214,7 +214,7 @@ function M.on_newcat_create()
     sv.custom_groups[key] = { label = name, r = c.r, g = c.g, b = c.b }
   end
   log:info("custom group", key, name)
-  PlaySound(SOUNDS.DIALOG_ACCEPT)
+  Sound.play("confirm")
   controls.newcat:SetHidden(true)
   build_flyout()
   if newcat_for then
@@ -227,7 +227,7 @@ end
 function M.on_newcat_cancel()
   newcat_for = nil
   controls.newcat:SetHidden(true)
-  PlaySound(SOUNDS.DIALOG_DECLINE)
+  Sound.play("discard")
 end
 
 function M.open_newcat_for_test(id)
@@ -314,7 +314,7 @@ function M.on_scroll(delta)
   local before = scroll_off
   scroll_off = scroll_off + dir
   M.refresh()
-  if scroll_off ~= before then PlaySound(SOUNDS.DEFAULT_CLICK) end
+  if scroll_off ~= before then Sound.play("click") end
 end
 
 local CONFIRM_W       = 420

@@ -1,0 +1,12 @@
+## Title: Poppy's Hardmode Reminder
+## Description: Standalone hardmode reminders for listed Veteran encounters.
+## Author: Poppy's friends
+## Version: 0.4.0
+## AddOnVersion: 400
+## APIVersion: 101050 101051
+
+Warning.lua
+Encounters.lua
+DLCEncounters.lua
+Reminder.lua
+PoppysHardmodeReminder.lua

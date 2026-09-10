@@ -3,10 +3,10 @@ local Verdant = Verdant
 
 Verdant.Settings = {}
 local M = Verdant.Settings
+local Sound = Verdant.Sound
 
 local api = Verdant.zenimax.api
 local zui = Verdant.zenimax.ui
-local PlaySound = zui.PlaySound
 local zc  = Verdant.zenimax.constants
 local Scene = Verdant.zenimax.scene
 local GetUIMousePosition = api.GetUIMousePosition
@@ -116,22 +116,14 @@ end
 
 local function profile_label_for(id)
   if is_user_profile(id) then return "* " .. user_profile_name(id) end
-  if id == "solo"     then return GetString(VERDANT_PROFILE_SOLO)     end
-  if id == "dungeons" then return GetString(VERDANT_PROFILE_DUNGEONS) end
-  if id == "trials"   then return GetString(VERDANT_PROFILE_TRIALS)   end
-  if id == "pvp"      then return GetString(VERDANT_PROFILE_PVP)      end
   if id == "custom"   then return GetString(VERDANT_PROFILE_CUSTOM)   end
   return id
 end
 
 local PROFILES = {
-  { id = "solo",     rate = 1000, heal = 5000, shield = 10000, sample = 1000, twindow = 60  },
-  { id = "dungeons", rate = 500,  heal = 5000, shield = 7000,  sample = 1000, twindow = 180 },
-  { id = "trials",   rate = 1000, heal = 5000, shield = 7000,  sample = 1000, twindow = 600 },
-  { id = "pvp",      rate = 200,  heal = 3000, shield = 5000,  sample = 200,  twindow = 30  },
-  { id = "custom"    },
+  { id = "custom" },
 }
-local PROFILE_DEFAULT = "solo"
+local PROFILE_DEFAULT = "custom"
 
 local function user_profiles()
   local sv = Verdant.SavedVars
@@ -291,7 +283,7 @@ local function show_confirm(kind, title, msg, yes, no)
   controls.confirm_yes:SetText(GetString(yes))
   controls.confirm_no:SetText(GetString(no))
   controls.confirm:SetHidden(false)
-  PlaySound(SOUNDS.NEGATIVE_CLICK)
+  Sound.play("deny")
 end
 
 local function ask_heavy(prev_sample, prev_twindow)
@@ -324,15 +316,12 @@ local function mark_custom()
   end
 end
 
-local function apply_profile(id)
-  local p = profile_by_id(id)
-  if not p or not p.rate then return false end
-
-  current_rate    = p.rate
-  current_heal    = p.heal
-  current_shield  = p.shield
-  current_sample  = p.sample
-  current_twindow = p.twindow
+local function apply_values(rate, heal, shield, sample, twindow)
+  current_rate    = rate
+  current_heal    = heal
+  current_shield  = shield
+  current_sample  = sample
+  current_twindow = twindow
 
   persist("rate_ms",          current_rate)
   persist("heal_window_ms",   current_heal)
@@ -344,7 +333,12 @@ local function apply_profile(id)
   Verdant.Metrics.set_window(current_heal)
   Verdant.Metrics.set_shield_window(current_shield)
   reinit_buffer()
+end
 
+local function apply_profile(id)
+  local p = profile_by_id(id)
+  if not p or not p.rate then return false end
+  apply_values(p.rate, p.heal, p.shield, p.sample, p.twindow)
   current_profile = id
   persist_profile(id)
   log:info("profile ->", profile_label_for(id))
@@ -395,12 +389,12 @@ function M.toggle()
     Scene.show_top_level(win)
     refresh_all_sliders()
     M.refresh_unknown_count()
-    PlaySound(SOUNDS.ARMORY_OPEN)
+    Sound.play("open")
   else
     Scene.hide_top_level(win)
     controls.confirm:SetHidden(true)
     confirm.kind = nil
-    PlaySound(SOUNDS.ADVENTURE_ZONE_OVERVIEW_CLOSED)
+    Sound.play("close")
   end
 end
 
@@ -437,7 +431,7 @@ function M.on_sounds_click()
   sv.settings.sounds = now
   controls.sounds_btn:SetText(now and GetString(VERDANT_SETTINGS_SOUNDS_ON)
                                    or GetString(VERDANT_SETTINGS_SOUNDS_OFF))
-  if now then PlaySound(SOUNDS.DIALOG_ACCEPT) end
+  if now then Sound.play("confirm") end
 end
 
 function M.on_bars_click()
@@ -479,6 +473,17 @@ function M.on_autosave_click()
   sv.settings.session_autosave = now
   controls.autosave_btn:SetText(now and GetString(VERDANT_SETTINGS_AUTOSAVE_ON)
                                     or GetString(VERDANT_SETTINGS_AUTOSAVE_OFF))
+end
+
+local function autostop_label(on)
+  return on and GetString(VERDANT_SETTINGS_AUTOSTOP_ON) or GetString(VERDANT_SETTINGS_AUTOSTOP_OFF)
+end
+
+function M.on_autostop_click()
+  local now = not Verdant.AutoRecord.get_auto_stop()
+  Verdant.AutoRecord.set_auto_stop(now)
+  controls.autostop_btn:SetText(autostop_label(now))
+  Sound.play(now and "on" or "off")
 end
 
 function M.on_gdm_click()
@@ -682,7 +687,7 @@ function M.on_confirm_yes()
   local kind = confirm.kind
   confirm.kind = nil
   controls.confirm:SetHidden(true)
-  PlaySound(SOUNDS.DIALOG_ACCEPT)
+  Sound.play("confirm")
   if kind == "pdelete" then delete_profile_now() end
 end
 
@@ -690,7 +695,7 @@ function M.on_confirm_no()
   local kind = confirm.kind
   confirm.kind = nil
   controls.confirm:SetHidden(true)
-  PlaySound(SOUNDS.DIALOG_DECLINE)
+  Sound.play("discard")
   if kind == "heavy" then
     current_sample  = confirm.prev_sample
     current_twindow = confirm.prev_twindow
@@ -740,7 +745,9 @@ end
 
 function M.on_reset_click()
   log:info("reset to defaults")
-  apply_profile(PROFILE_DEFAULT)
+  apply_values(RATE_DEFAULT, HEAL_DEFAULT, SHIELD_DEFAULT, SAMPLE_DEFAULT, TWINDOW_DEFAULT)
+  current_profile = "custom"
+  persist_profile("custom")
 
   current_vpalpha = VPALPHA_DEFAULT
   persist_temporal("viewport_alpha_pct", current_vpalpha)
@@ -753,6 +760,8 @@ function M.on_reset_click()
     sv.settings.triage_theta = nil
     sv.settings.session_autosave = false
     controls.autosave_btn:SetText(GetString(VERDANT_SETTINGS_AUTOSAVE_OFF))
+    Verdant.AutoRecord.set_auto_stop(false)
+    controls.autostop_btn:SetText(autostop_label(false))
     sv.settings.light_mode = false
     sv.settings.light_alpha_pct = nil
     controls.light_btn:SetText(GetString(VERDANT_SETTINGS_LIGHT_OFF))
@@ -872,6 +881,7 @@ function M.init()
   controls.autorec_btn    = VerdantSettingsPanelAutoRecBtn
   controls.gdm_btn        = VerdantSettingsPanelGdmBtn
   controls.autosave_btn   = VerdantSettingsPanelAutosaveBtn
+  controls.autostop_btn   = VerdantSettingsPanelAutoStopBtn
   controls.pname_edit     = VerdantSettingsPanelPNameBoxEdit
   controls.psave_btn      = VerdantSettingsPanelPSaveBtn
   controls.pdelete_btn    = VerdantSettingsPanelPDeleteBtn
@@ -880,6 +890,7 @@ function M.init()
   zui.tooltip(controls.pdelete_btn,   VERDANT_TIP_PDELETE)
   zui.tooltip(controls.autorec_btn,   VERDANT_TIP_AUTOREC)
   zui.tooltip(controls.autosave_btn,  VERDANT_TIP_AUTOSAVE)
+  zui.tooltip(controls.autostop_btn,  VERDANT_TIP_AUTOSTOP)
   zui.tooltip(controls.light_btn,     VERDANT_TIP_LIGHT)
   zui.tooltip(controls.shielddir_btn, VERDANT_TIP_SHIELDDIR)
   zui.tooltip(controls.gdm_btn,       VERDANT_TIP_GDM)
@@ -940,6 +951,7 @@ function M.init()
     and GetString(VERDANT_SETTINGS_GDM_ON) or GetString(VERDANT_SETTINGS_GDM_OFF))
   controls.autosave_btn:SetText((sv.settings.session_autosave == true)
     and GetString(VERDANT_SETTINGS_AUTOSAVE_ON) or GetString(VERDANT_SETTINGS_AUTOSAVE_OFF))
+  controls.autostop_btn:SetText(autostop_label(sv.settings.auto_stop == true))
   controls.light_btn:SetText((sv.settings.light_mode == true)
     and GetString(VERDANT_SETTINGS_LIGHT_ON) or GetString(VERDANT_SETTINGS_LIGHT_OFF))
   current_lighta = LIGHTA_PRESETS[nearest_idx(LIGHTA_PRESETS, sv.settings.light_alpha_pct or LIGHTA_DEFAULT)]

@@ -1,10 +1,9 @@
 {
-  "archive_error": "ESOUI returned an empty response",
-  "archive_path": "addons/maniclarke8-gmail.com/Poppy-s-Hardmode-Reminder__4824",
+  "archive_format": "zip",
+  "archive_path": "addons/AnythingGeneric/Poppy-s-Hardmode-Reminder__4824",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archive_status": "unavailable",
-  "archived": false,
-  "author": "maniclarke8@gmail.com",
+  "archived": true,
+  "author": "AnythingGeneric",
   "canonical_id": "esoui:4824",
   "category_id": "159",
   "compatibility": [
@@ -19,7 +18,7 @@
     "PoppysHardmodeReminder"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4824/",
-  "fingerprint": "16d76889834914d3063fbbc6df021524e9c89152b5b1a7ae3139691038d2f20f",
+  "fingerprint": "82e65f8462750bfc104452b85566aedd6b79f9dba0a7d1debe84ef305d2b4e9b",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw17335.png"
   ],
@@ -29,9 +28,9 @@
   "source_id": "4824",
   "source_url": "https://www.esoui.com/downloads/info4824-PoppysHardmodeReminder.html",
   "stats": {
-    "downloads": 2,
+    "downloads": 5,
     "favorites": 1,
-    "monthly_downloads": 0
+    "monthly_downloads": 3
   },
   "title": "Poppy's Hardmode Reminder",
   "updated_at": 1788938540000,

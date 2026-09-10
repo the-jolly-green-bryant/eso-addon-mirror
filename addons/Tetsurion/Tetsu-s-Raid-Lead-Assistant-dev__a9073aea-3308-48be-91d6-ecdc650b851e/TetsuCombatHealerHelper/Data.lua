@@ -500,8 +500,11 @@ local function AbilityNameOf(abilityId)
     return CleanName(name)
 end
 
+local descCache = {}
 local function AbilityDescOf(abilityId)
     if not abilityId or abilityId == 0 then return "" end
+    local hit = descCache[abilityId]
+    if hit ~= nil then return hit end
     local blob = ""
     if GetAbilityDescription then
         local ok, d = pcall(GetAbilityDescription, abilityId)
@@ -511,7 +514,11 @@ local function AbilityDescOf(abilityId)
         local ok, d = pcall(GetAbilityEffectDescription, abilityId)
         if ok and d then blob = blob .. " " .. tostring(d) end
     end
-    return CleanName(blob)
+    blob = CleanName(blob)
+    if blob ~= "" then
+        descCache[abilityId] = blob
+    end
+    return blob
 end
 
 local function LooksLikeBanner(name)
@@ -519,17 +526,33 @@ local function LooksLikeBanner(name)
     return name:find("banner", 1, true) or name:find("знам", 1, true)
 end
 
+local idToKey = {}
+local nameToKey = {}
+local needleList = {}
+local idSkip = {}
+local EMPTY_KEYS = {}
+
+function T.IsJunkAbility(abilityId)
+    return abilityId and abilityId ~= 0 and idSkip[abilityId] and true or false
+end
+
+function T.TrimJunkIds()
+    idSkip = {}
+    descCache = {}
+end
+
 local function KeysInText(name)
-    if not name or name == "" then return nil end
+    if not name or name == "" or not needleList then return nil end
     local found, hitLen = {}, 0
     local best
     for i = 1, #needleList do
-        local needle = needleList[i][1]
-        if needle ~= "" and name:find(needle, 1, true) then
-            found[needleList[i][2]] = true
+        local row = needleList[i]
+        local needle = row and row[1]
+        if type(needle) == "string" and needle ~= "" and name:find(needle, 1, true) then
+            found[row[2]] = true
             if #needle > hitLen then
                 hitLen = #needle
-                best = needleList[i][2]
+                best = row[2]
             end
         end
     end
@@ -560,10 +583,6 @@ end
 
 -- O(1) after first sighting. The old scanner allocated dozens of strings
 -- per EVENT_EFFECT_CHANGED and ran on every combat tick.
-local idToKey = {}
-local nameToKey = {}
-local needleList = {}
-
 function T.BuildLookupIndex()
     needleList = {}
     idToKey = {}
@@ -616,8 +635,97 @@ end
 
 T.BuildLookupIndex()
 
+-- Official BuffType enum (API 100028+). Scribing IDs often have no
+-- NameNeedles hit; the type still says MINOR_COURAGE.
+local buffTypeToKey = {}
+local function BuildBuffTypeMap()
+    buffTypeToKey = {}
+    local pairsMap = {
+        { "BUFF_TYPE_MINOR_COURAGE", "minorCourage" },
+        { "BUFF_TYPE_MAJOR_COURAGE", "majorCourage" },
+        { "BUFF_TYPE_MINOR_SLAYER", "minorSlayer" },
+        { "BUFF_TYPE_MAJOR_SLAYER", "majorSlayer" },
+        { "BUFF_TYPE_MINOR_FORCE", "minorForce" },
+        { "BUFF_TYPE_MAJOR_FORCE", "majorForce" },
+        { "BUFF_TYPE_MINOR_BERSERK", "minorBerserk" },
+        { "BUFF_TYPE_MAJOR_BERSERK", "majorBerserk" },
+        { "BUFF_TYPE_MINOR_RESOLVE", "minorResolve" },
+        { "BUFF_TYPE_MAJOR_RESOLVE", "majorResolve" },
+        { "BUFF_TYPE_MINOR_VITALITY", "minorVitality" },
+        { "BUFF_TYPE_MAJOR_VITALITY", "majorVitality" },
+        { "BUFF_TYPE_MINOR_BRUTALITY", "minorBrutality" },
+        { "BUFF_TYPE_MAJOR_BRUTALITY", "majorBrutality" },
+        { "BUFF_TYPE_MINOR_SORCERY", "minorSorcery" },
+        { "BUFF_TYPE_MAJOR_SORCERY", "majorSorcery" },
+        { "BUFF_TYPE_MINOR_SAVAGERY", "minorSavagery" },
+        { "BUFF_TYPE_MAJOR_SAVAGERY", "majorSavagery" },
+        { "BUFF_TYPE_MINOR_PROPHECY", "minorProphecy" },
+        { "BUFF_TYPE_MAJOR_PROPHECY", "majorProphecy" },
+        { "BUFF_TYPE_MINOR_INTELLECT", "minorIntellect" },
+        { "BUFF_TYPE_MAJOR_INTELLECT", "majorIntellect" },
+        { "BUFF_TYPE_MINOR_ENDURANCE", "minorEndurance" },
+        { "BUFF_TYPE_MAJOR_ENDURANCE", "majorEndurance" },
+        { "BUFF_TYPE_MINOR_HEROISM", "minorHeroism" },
+        { "BUFF_TYPE_MAJOR_HEROISM", "majorHeroism" },
+        { "BUFF_TYPE_MINOR_BREACH", "minorBreach" },
+        { "BUFF_TYPE_MAJOR_BREACH", "majorBreach" },
+        { "BUFF_TYPE_MINOR_FRACTURE", "minorFracture" },
+        { "BUFF_TYPE_MAJOR_FRACTURE", "majorFracture" },
+        { "BUFF_TYPE_MINOR_VULNERABILITY", "minorVulnerability" },
+        { "BUFF_TYPE_MAJOR_VULNERABILITY", "majorVulnerability" },
+        { "BUFF_TYPE_MINOR_BRITTLE", "minorBrittle" },
+        { "BUFF_TYPE_MAJOR_BRITTLE", "majorBrittle" },
+        { "BUFF_TYPE_MINOR_COWARDICE", "minorCowardice" },
+        { "BUFF_TYPE_MAJOR_COWARDICE", "majorCowardice" },
+        { "BUFF_TYPE_MINOR_MAIM", "minorMaim" },
+        { "BUFF_TYPE_MAJOR_MAIM", "majorMaim" },
+        { "BUFF_TYPE_MINOR_DEFILE", "minorDefile" },
+        { "BUFF_TYPE_MAJOR_DEFILE", "majorDefile" },
+        { "BUFF_TYPE_MINOR_EXPEDITION", "minorExpedition" },
+        { "BUFF_TYPE_MAJOR_EXPEDITION", "majorExpedition" },
+        { "BUFF_TYPE_MINOR_FORTITUDE", "minorFortitude" },
+        { "BUFF_TYPE_MAJOR_FORTITUDE", "majorFortitude" },
+        { "BUFF_TYPE_MINOR_MENDING", "minorMending" },
+        { "BUFF_TYPE_MAJOR_MENDING", "majorMending" },
+        { "BUFF_TYPE_MINOR_PROTECTION", "minorProtection" },
+        { "BUFF_TYPE_MAJOR_PROTECTION", "majorProtection" },
+        { "BUFF_TYPE_MINOR_TOUGHNESS", "minorToughness" },
+        { "BUFF_TYPE_MAJOR_TOUGHNESS", "majorToughness" },
+        { "BUFF_TYPE_MINOR_AEGIS", "minorAegis" },
+        { "BUFF_TYPE_MAJOR_AEGIS", "majorAegis" },
+        { "BUFF_TYPE_MINOR_EVASION", "minorEvasion" },
+        { "BUFF_TYPE_MAJOR_EVASION", "majorEvasion" },
+        { "BUFF_TYPE_MINOR_MAGICKASTEAL", "minorMagickasteal" },
+        { "BUFF_TYPE_MINOR_MAGICKA_STEAL", "minorMagickasteal" },
+    }
+    local G = _G
+    for i = 1, #pairsMap do
+        local constName, key = pairsMap[i][1], pairsMap[i][2]
+        local v = G and G[constName]
+        if type(v) == "number" and v ~= 0 then
+            buffTypeToKey[v] = key
+        end
+    end
+end
+BuildBuffTypeMap()
+
+local function KeyFromBuffType(abilityId)
+    if not abilityId or abilityId == 0 or not GetAbilityBuffType then return nil end
+    local ok, bt = pcall(GetAbilityBuffType, abilityId)
+    if not ok or type(bt) ~= "number" or bt == 0 then return nil end
+    return buffTypeToKey[bt]
+end
+
 function T.LookupKeyForAbilityId(abilityId, effectName)
+    if abilityId and abilityId ~= 0 and idSkip[abilityId] then
+        return nil
+    end
     if abilityId and abilityId ~= 0 then
+        local typed = KeyFromBuffType(abilityId)
+        if typed then
+            idToKey[abilityId] = typed
+            return typed
+        end
         local cached = idToKey[abilityId]
         if cached ~= nil then
             if cached == false then return nil end
@@ -667,9 +775,8 @@ function T.LookupKeyForAbilityId(abilityId, effectName)
             end
             return hitKey
         end
-        if not LooksLikeBanner(name) then
-            nameToKey[name] = false
-        end
+        -- Do not store nameToKey[name]=false: that kept every unique
+        -- combat name alive until ReloadUI.
     end
     if LooksLikeBanner(name) or LooksLikeBanner(AbilityNameOf(abilityId)) then
         local desc = AbilityDescOf(abilityId)
@@ -678,12 +785,18 @@ function T.LookupKeyForAbilityId(abilityId, effectName)
             if abilityId and abilityId ~= 0 then idToKey[abilityId] = best end
             return best
         end
+        return nil
     end
-    -- Never negative-cache an abilityId when the name was empty.
+    if abilityId and abilityId ~= 0 and name ~= "" then
+        idSkip[abilityId] = true
+    end
     return nil
 end
 
 function T.KeysFromAbility(abilityId, effectName)
+    if abilityId and abilityId ~= 0 and idSkip[abilityId] then
+        return EMPTY_KEYS
+    end
     local keys = {}
     local primary = T.LookupKeyForAbilityId(abilityId, effectName)
     if primary then keys[primary] = true end

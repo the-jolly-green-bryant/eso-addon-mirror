@@ -36,7 +36,7 @@ local strings = {
 	SI_PBSMX_ERROR_NEED_NUMBER = "どの下書きですか？ /pbmail list の番号を指定してください。",
 	SI_PBSMX_ERROR_NO_SUCH = "%s %s は存在しません。一覧で確認してください。",
 	SI_PBSMX_NOUN_DRAFT = "下書き",
-	SI_PBSMX_NOUN_SENT = "送信済み",
+	SI_PBSMX_NOUN_SENT = "送信済みの記録",
 	SI_PBSMX_ERROR_UNKNOWN = "コマンド '%s' は知りません。",
 
 	-- ---- ヘルプ ------------------------------------------------------------------------
@@ -61,14 +61,14 @@ local strings = {
 	SI_PBSMX_PREVIEW_NO_BODY = "（本文なし）",
 	SI_PBSMX_PREVIEW_ATTACHMENTS = "添付 (%d):",
 
-	SI_PBSMX_DELETE_TITLE = "この下書きを削除しますか？",
+	SI_PBSMX_DELETE_TITLE = "この<<1>>を削除しますか？",
 	SI_PBSMX_DELETE_PROMPT = "<<1>>\n\n元に戻せません。",
 
 	-- ---- チャットが出ていないときのために、画面に出す一言 ------------------------------
 	SI_PBSMX_ALERT_SAVED = "下書き %s として保存しました",
 	SI_PBSMX_ALERT_LOADED = "下書きを作成画面に戻しました",
 	SI_PBSMX_ALERT_LOADED_WITH_NOTES = "作成画面に戻しました -- %d 件戻せないものがあります（チャット参照）",
-	SI_PBSMX_ALERT_DELETED = "下書きを削除しました",
+	SI_PBSMX_ALERT_DELETED = "%s を削除しました",
 	SI_PBSMX_ERROR_NO_DIALOG = "確認ダイアログが使えないため、削除していません。/pbmail delete <n> をお使いください。",
 
 	SI_PBSMX_WHERE_TABS = "下書きタブ -- キーボード: %s, ゲームパッド: %s",
@@ -100,6 +100,74 @@ local strings = {
 
 	SI_PBSMX_GO_TO_SEND = "作成画面に入れました。送信タブに切り替えて、内容を確認してから送信してください。",
 	SI_PBSMX_ALERT_GO_TO_SEND = "送信タブに切り替えてください",
+
+	-- ---- 重要ボックス ------------------------------------------------------------------
+	SI_PBSMX_TAB_KEPT = "重要",
+	SI_PBSMX_NOUN_KEPT = "重要メール",
+	SI_PBSMX_KEPT_EMPTY = "保存された重要メールはありません。受信箱でメールを開き「重要に保存」を押すと、期限のない場所に写しが保存されます。",
+	SI_PBSMX_KEEP_ENTRY = "重要に保存",
+	SI_PBSMX_KEYBIND_REPLY = "差出人に返信",
+
+	SI_PBSMX_KEPT = "重要 %s として保存しました -- %s",
+	SI_PBSMX_ALERT_KEPT = "重要 %s として保存しました",
+	SI_PBSMX_KEPT_ATTACHMENTS_WARNING = "保存されるのは「本文」です。「添付」は保存できません（アドオンにアイテムを置く場所はありません）。添付はメールの期限が切れる前に必ず受け取ってください。",
+
+	SI_PBSMX_ERROR_NO_MAIL_OPEN = "メールが開かれていません。受信箱でメールを選んでください。",
+	SI_PBSMX_ERROR_GUILD_MAIL = "このクライアントにはギルドメール用のAPIがないため、保存できません。",
+	SI_PBSMX_ERROR_ALREADY_KEPT = "このメールは既に重要 %s として保存されています。",
+	SI_PBSMX_ERROR_MAIL_NOT_READY = "本文の取得が終わっていません。メールを開いて本文が表示されてから、もう一度お試しください。",
+
+	SI_PBSMX_LIMIT_KEPT = "重要の保存件数",
+	SI_PBSMX_LIMIT_KEPT_TOOLTIP = "重要メールを何件まで保存するか。上限に達した場合は保存を断ります（古いものを勝手に捨てることはありません。期限切れから守ると決めたメールだからです）。この値を下げても既存の保存は消えません。端数を指定したい場合は /pbmail max keep <n> を使ってください。",
+
+	SI_PBSMX_HELP_KEEP = "/pbmail keep [save | load <n> | read <n> | delete <n>] -- 期限切れから守ったメール",
+	SI_PBSMX_DESCRIBE_FROM = "%s ← %s",
+	SI_PBSMX_PREVIEW_FROM = "差出人: %s",
+
+	SI_PBSMX_KEYBIND_READ = "全文を表示",
+	SI_PBSMX_ALERT_READ = "全文をチャットに表示しました",
+	SI_PBSMX_PICK_ONE = "上から選ぶと本文が表示されます。",
+	SI_PBSMX_ERROR_GUILD_MAIL_GONE = "そのギルドメールは既に存在しないため、保存できません。",
+	SI_PBSMX_PREVIEW_GUILD = "ギルド: %s",
+
+	-- ---- 一覧の横のペイン（クライアント側の語が取れないときの予備）
+	SI_PBSMX_VIEW_TO = "宛先",
+	SI_PBSMX_VIEW_FROM = "差出人",
+	SI_PBSMX_VIEW_SUBJECT = "件名",
+	SI_PBSMX_VIEW_BODY = "本文",
+	SI_PBSMX_VIEW_ATTACHED = "添付",
+	SI_PBSMX_VIEW_NOTHING_ATTACHED = "なし",
+	SI_PBSMX_VIEW_GOLD = "送金",
+	SI_PBSMX_VIEW_COD = "代金引換",
+	SI_PBSMX_VIEW_NO_GOLD = "なし",
+
+	-- ---- 作成中の扱い ------------------------------------------------------------------
+	SI_PBSMX_SECTION_WRITING = "メールを書いている間",
+
+	SI_PBSMX_AUTOSAVE = "作成中のメールを自動保存する間隔",
+	SI_PBSMX_AUTOSAVE_TOOLTIP = "作成画面の内容を何秒ごとに保存するか。クラッシュや離席で書きかけが消えないようにするためのものです。0で無効。保存されるのは常に1件で、同じ下書きが更新され続けます（毎回増えることはありません）。自分で保存した下書きと区別できる名前が付き、送信するか作成画面をクリアすると消えます。端数を指定したい場合は /pbmail autosave <秒|off> を使ってください。",
+	SI_PBSMX_AUTOSAVE_NAME = "（作成中）",
+	SI_PBSMX_AUTOSAVE_EVERY = "作成中のメールを %d 秒ごとに保存します。",
+	SI_PBSMX_AUTOSAVE_OFF = "作成中のメールは保存しません。",
+
+	SI_PBSMX_ONSEND = "送信したら元の下書きを削除する",
+	SI_PBSMX_ONSEND_TOOLTIP = "下書きから作成画面に戻したメールを送信したとき、元の下書きを削除します（下書きは「まだ送っていない手紙」なので）。オフにすると残ります。どちらの場合も、送った内容は送信済みボックスに記録されます。",
+	SI_PBSMX_ONSEND_ON = "送信したら、元の下書きを削除します。",
+	SI_PBSMX_ONSEND_OFF = "送信しても、元の下書きは残します。",
+	SI_PBSMX_DRAFT_SENT = "送信したので、元の下書きを削除しました -- %s",
+
+	SI_PBSMX_ERROR_NEED_SECONDS = "間隔を指定してください（%d 秒まで、または off）。",
+	SI_PBSMX_ERROR_ON_OR_OFF = "on か off を指定してください。",
+
+	SI_PBSMX_HELP_AUTOSAVE = "/pbmail autosave [秒|off] -- 作成中メールの自動保存",
+	SI_PBSMX_HELP_ONSEND = "/pbmail onsend [on|off] -- 送信したら元の下書きを削除",
+
+	-- ---- 保存領域の空き ----------------------------------------------------------------
+	SI_PBSMX_STORAGE_FREE = "アドオン保存領域 空き %s MB / %s MB",
+	SI_PBSMX_STORAGE_USED = "アドオン保存領域 使用 %s MB",
+	SI_PBSMX_STORAGE_MINE = "（本アドオン %s MB）",
+	SI_PBSMX_STORAGE_UNKNOWN = "このクライアントはアドオン保存領域の空きを返しません。",
+	SI_PBSMX_HELP_DISK = "/pbmail disk -- アドオン保存領域の空き容量",
 }
 
 for stringId, stringValue in pairs(strings) do

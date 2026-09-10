@@ -62,10 +62,26 @@ function sent:Watch()
 	end
 
 	local page = compose:Read()
-	-- The last copy that had anything on it, not simply the last copy. The client blanks the
-	-- page as part of sending, and a blank copy would overwrite the one we are about to need.
-	if page and not self:IsBlank(page) then
-		self.outgoing = page
+	if not page then
+		return
+	end
+
+	-- A blank page is not a copy worth keeping -- the client blanks the page as part of
+	-- sending, and that copy would overwrite the one we are about to need -- but it is worth
+	-- noticing: somebody clearing the page is done with what was on it.
+	if self:IsBlank(page) then
+		if addon.ui then
+			addon.ui:PageCleared()
+		end
+		return
+	end
+
+	self.outgoing = page
+
+	-- The same copy the sent box needs is the copy the drafts box saves. Taken here rather
+	-- than on a watcher of its own, because there is no reason to read the page twice.
+	if addon.drafts then
+		addon.drafts:AutoSave(page)
 	end
 end
 
@@ -119,6 +135,17 @@ function sent:Record(recipient)
 	end
 
 	local entry = self:Add(page)
+
+	-- The letter went, so nothing about it is in progress any more: the auto-saved copy goes,
+	-- and so does the draft it was written from, if that is what the player asked for.
+	if addon.drafts then
+		addon.drafts:ForgetAutoDraft()
+	end
+	if addon.ui then
+		addon.ui:LetterSent()
+		addon.ui:CountChanged()
+	end
+
 	return entry
 end
 

@@ -17,7 +17,24 @@ local ROW = 24
 local NAME_W = 84
 
 local function Now()
-    return GetGameTimeMilliseconds()
+    if GetGameTimeMilliseconds then
+        return GetGameTimeMilliseconds()
+    end
+    return 0
+end
+
+local function EndMs(timeStarted, timeEnding)
+    local start = tonumber(timeStarted) or 0
+    local stop = tonumber(timeEnding) or 0
+    if stop <= 0 or (stop - start) <= 0.05 then
+        return 0
+    end
+    local nowS = GetFrameTimeSeconds and GetFrameTimeSeconds() or (Now() / 1000)
+    local remain = stop - nowS
+    if remain <= 0.25 then
+        return 0
+    end
+    return Now() + math.floor(remain * 1000)
 end
 
 local function Vars()
@@ -164,8 +181,9 @@ end
 
 local function BossHas(tag, key)
     local bag = bossFx[tag]
-    if not bag or not bag[key] then return false end
+    if not bag then return false end
     local t = bag[key]
+    if t == nil then return false end
     if t == 0 then return true end
     return t > Now()
 end
@@ -186,9 +204,7 @@ function P.OnBossEffect(_, changeType, _slot, effectName, unitTag, beginTime, en
     local gained = (changeType == EFFECT_RESULT_GAINED or changeType == EFFECT_RESULT_UPDATED)
     if EFFECT_RESULT_FULL_REFRESH and changeType == EFFECT_RESULT_FULL_REFRESH then gained = true end
     if gained then
-        local endMs = 0
-        if endTime and endTime > 0 then endMs = math.floor(endTime * 1000) end
-        bossFx[unitTag][key] = endMs
+        bossFx[unitTag][key] = EndMs(beginTime, endTime)
     elseif changeType == EFFECT_RESULT_FADED then
         bossFx[unitTag][key] = nil
     end

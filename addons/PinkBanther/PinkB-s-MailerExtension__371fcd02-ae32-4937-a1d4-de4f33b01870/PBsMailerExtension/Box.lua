@@ -70,6 +70,9 @@ Box.__index = Box
 -- config.defaultMax  how many letters it holds until somebody says otherwise
 -- config.rolling  true drops the oldest to make room; false refuses
 -- config.nounId   what to call ONE of its letters in a sentence -- "deleted draft 3".
+-- config.loadLabelId  what the "put it on the page" action is called in this box. Sending a
+--                     draft again and answering a letter somebody sent you are not the same
+--                     act, and the button should not claim they are.
 -- config.titleId   what to call the BOX -- "Drafts -- 3 of 50". Two words and not one because
 --                  a count needs the box's name and a number needs the letter's, and forcing
 --                  either into the other's sentence reads like a machine wrote it. Every
@@ -81,6 +84,7 @@ function addon.NewBox(config)
 		rolling = config.rolling and true or false,
 		nounId = config.nounId,
 		titleId = config.titleId,
+		loadLabelId = config.loadLabelId or SI_PBSMX_KEYBIND_LOAD,
 	}, Box)
 end
 
@@ -90,6 +94,10 @@ end
 
 function Box:Title()
 	return GetString(self.titleId)
+end
+
+function Box:LoadLabel()
+	return GetString(self.loadLabelId)
 end
 
 -- ---------------------------------------------------------------------------------------
@@ -207,6 +215,52 @@ function Box:Add(page, name)
 	return page, nil
 end
 
+-- The number in a list is a position and shifts when something is removed; entry.id is the
+-- stable one, handed out by a counter shared across all three boxes. Anything that has to hold
+-- on to a letter across time -- "the draft this page came from" -- holds the id.
+function Box:FindById(id)
+	if not id then
+		return nil, nil
+	end
+	for index, entry in ipairs(self:All()) do
+		if entry.id == id then
+			return entry, index
+		end
+	end
+	return nil, nil
+end
+
+function Box:DeleteById(id)
+	local entry, index = self:FindById(id)
+	if not entry then
+		return nil
+	end
+	return self:Delete(index)
+end
+
+-- Replaces what a letter says while keeping which letter it is: its id, its position in the
+-- box and its name all stay. This is what an auto-save writes into, so a page saved every
+-- minute is one draft that keeps up rather than sixty drafts.
+function Box:Update(entry, page)
+	local index = self:IndexOf(entry)
+	if not index then
+		return nil
+	end
+
+	local stamp, label = Now()
+
+	entry.to = page.to
+	entry.subject = page.subject
+	entry.body = page.body
+	entry.gold = page.gold
+	entry.cod = page.cod
+	entry.attachments = page.attachments
+	entry.stamp = stamp
+	entry.savedAt = label
+
+	return entry
+end
+
 function Box:Delete(index)
 	local entry = self:At(index)
 	if not entry then
@@ -273,7 +327,16 @@ function Box:Describe(entry, omitDate)
 		title = GetString(SI_PBSMX_NO_SUBJECT)
 	end
 
-	local to = (entry.to and entry.to ~= "") and entry.to or GetString(SI_PBSMX_NO_ADDRESSEE)
+	-- Which way the arrow points. A letter that arrived came FROM somebody, and drawing it the
+	-- same way as one you are about to send reads as though you had written it.
+	local other, shape
+	if entry.received then
+		other = (entry.from and entry.from ~= "") and entry.from or GetString(SI_PBSMX_NO_ADDRESSEE)
+		shape = SI_PBSMX_DESCRIBE_FROM
+	else
+		other = (entry.to and entry.to ~= "") and entry.to or GetString(SI_PBSMX_NO_ADDRESSEE)
+		shape = SI_PBSMX_DESCRIBE
+	end
 
 	local parts = {}
 	local attachments = #(entry.attachments or {})
@@ -290,7 +353,7 @@ function Box:Describe(entry, omitDate)
 		parts[#parts + 1] = entry.savedAt
 	end
 
-	local line = Format(SI_PBSMX_DESCRIBE, title, to)
+	local line = Format(shape, title, other)
 	if #parts > 0 then
 		line = line .. "  [" .. table.concat(parts, ", ") .. "]"
 	end
@@ -306,7 +369,10 @@ end
 -- stopped being a preview.
 -- ---------------------------------------------------------------------------------------
 
-local BODY_PREVIEW_CHARACTERS = 300
+-- Long enough that a whole mail usually fits -- the point of the kept box is reading the letter
+-- again, and a preview that stops after two sentences does not do that. Anything past it is cut
+-- off rather than run off the screen, and the read command prints the whole thing.
+local BODY_PREVIEW_CHARACTERS = 1000
 
 function Box:Preview(entry)
 	if not entry then
@@ -315,7 +381,16 @@ function Box:Preview(entry)
 
 	local lines = {}
 
-	lines[#lines + 1] = Format(SI_PBSMX_PREVIEW_TO, (entry.to and entry.to ~= "") and entry.to or GetString(SI_PBSMX_NO_ADDRESSEE))
+	if entry.received then
+		lines[#lines + 1] = Format(SI_PBSMX_PREVIEW_FROM, (entry.from and entry.from ~= "") and entry.from or GetString(SI_PBSMX_NO_ADDRESSEE))
+		-- A guild mail comes from the guild, but somebody in it pressed send, and that is who a
+		-- reply would reach.
+		if entry.fromGuild and entry.fromCharacter and entry.fromCharacter ~= "" then
+			lines[#lines + 1] = Format(SI_PBSMX_PREVIEW_GUILD, entry.fromCharacter)
+		end
+	else
+		lines[#lines + 1] = Format(SI_PBSMX_PREVIEW_TO, (entry.to and entry.to ~= "") and entry.to or GetString(SI_PBSMX_NO_ADDRESSEE))
+	end
 	lines[#lines + 1] = Format(SI_PBSMX_PREVIEW_SUBJECT, (entry.subject and entry.subject ~= "") and entry.subject or GetString(SI_PBSMX_NO_SUBJECT))
 
 	local body = entry.body or ""

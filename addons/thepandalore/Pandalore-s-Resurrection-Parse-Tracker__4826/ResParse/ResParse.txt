@@ -1,0 +1,10 @@
+## Title: ResParse
+## Description: Synchronized group resurrection scoresheet for participating ResParse clients.
+## Author: thepandalore
+## Version: 0.3.0
+## APIVersion: 101050
+## SavedVariables: ResParseSavedVariables
+## DependsOn: LibAddonMenu-2.0 LibGroupBroadcast
+
+Bootstrap.lua
+ResParse.lua

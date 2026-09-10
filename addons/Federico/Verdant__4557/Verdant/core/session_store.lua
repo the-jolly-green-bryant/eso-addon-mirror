@@ -75,10 +75,13 @@ local start_zone  = ""
 local start_group = 0
 local start_diff  = 0
 
+local start_kind = nil
+
 function M.on_session_start()
   start_zone  = api.GetUnitZone("player") or ""
   start_group = api.GetGroupSize() or 0
   start_diff  = api.GetCurrentZoneDungeonDifficulty and api.GetCurrentZoneDungeonDifficulty() or 0
+  start_kind  = Verdant.ContentKind and Verdant.ContentKind.detect() or nil
 end
 
 local function lib_root()
@@ -252,6 +255,7 @@ function M.capture(cooperative)
       api = api.GetAPIVersion(),
       locked = false,
       difficulty = start_diff or 0,
+      kind = start_kind,
       player_slot = T.player_slot(),
       sum = {
         avg = math_floor(tb_sum.avg_ems + 0.5),
@@ -307,11 +311,15 @@ end
 
 local autosave_co = nil
 local autosave_frames = 0
+local manual_pending = false
 
 local function autosave_finish(session)
   Verdant.zenimax.events.unregister_update("VerdantAutosave")
   autosave_co = nil
+  if M.on_save_end then M.on_save_end(session ~= nil) end
   if session then
+    if manual_pending then session.head.manual = true end
+    manual_pending = false
     M.store(session)
     if log then
       log:info("session autosaved: zone=", session.head.zone,
@@ -336,13 +344,26 @@ local function autosave_step()
   end
 end
 
-function M.on_session_stop()
-  local sv = Verdant.SavedVars
-  if not (sv and sv.settings and sv.settings.session_autosave) then return end
+local function begin_capture()
   M.finish_autosave()
   autosave_frames = 0
   autosave_co = coroutine.create(function() return M.capture(true) end)
   Verdant.zenimax.events.register_update("VerdantAutosave", 1, autosave_step)
+  if M.on_save_begin then M.on_save_begin() end
+end
+
+function M.on_session_stop()
+  local sv = Verdant.SavedVars
+  if not (sv and sv.settings and sv.settings.session_autosave) then return end
+  manual_pending = false
+  begin_capture()
+end
+
+function M.save_now()
+  if Verdant.TemporalBuffer.count() == 0 then return false end
+  begin_capture()
+  manual_pending = true
+  return true
 end
 
 function M.autosave_pending()

@@ -90,18 +90,42 @@ function M.iterate(fn)
   end
 end
 
+function M.at(i)
+  local n = state.count
+  if i < 1 or i > n then return nil end
+  local cap = state.capacity
+  local oldest = (n >= cap) and state.write or 1
+  return state.data[((oldest - 1 + i - 1) % cap) + 1]
+end
+
 function M.count()        return state.count     end
 function M.capacity()     return state.capacity  end
 function M.is_recording() return state.recording end
 
 function M.start_recording()
   state.recording = true
+  if Vermilion.Logo and Vermilion.Logo.set_recording then Vermilion.Logo.set_recording(true) end
   log:info("start_recording")
 end
 
 function M.stop_recording()
   state.recording = false
+  if Vermilion.Logo and Vermilion.Logo.set_recording then Vermilion.Logo.set_recording(false) end
   log:info("stop_recording: count=", state.count, "/", state.capacity)
+end
+
+local EMPTY_SHARES = { count = 0 }
+
+function M.load_session(samples)
+  M.clear()
+  for i = 1, #samples do
+    local s = samples[i]
+    M.push(s.t, s.eDPS, s.ShDPS, s.crit, s.noncrit,
+           s.eg or EMPTY_SHARES, s.ea or EMPTY_SHARES,
+           s.dg or EMPTY_SHARES, s.da or EMPTY_SHARES)
+  end
+  state.recording = false
+  log:info("session loaded: samples=", #samples)
 end
 
 function M.clear()

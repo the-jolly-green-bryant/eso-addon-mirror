@@ -100,6 +100,61 @@
             </Controls>
         </Button>
 
+        <!-- Virtual Template for Compact Tab Buttons -->
+        <Button name="AetherChat_CompactTabTemplate" virtual="true" mouseEnabled="true">
+            <Dimensions x="50" y="24" />
+            <Controls>
+                <Backdrop name="$(parent)BG" alpha="0.45" centerColor="141414" edgeColor="3A3A3A">
+                    <AnchorFill />
+                    <Edge edgeSize="1" />
+                </Backdrop>
+                <Backdrop name="$(parent)SelBG" alpha="0.35" centerColor="E5B558" edgeColor="FFD700" hidden="true">
+                    <AnchorFill />
+                    <Edge edgeSize="1" />
+                </Backdrop>
+                <Texture name="$(parent)Icon" textureFile="/esoui/art/inventory/inventory_tabicon_misc_up.dds">
+                    <Dimensions x="16" y="16" />
+                    <Anchor point="LEFT" offsetX="4" offsetY="0" />
+                </Texture>
+                <Label name="$(parent)Label" font="ZoFontGameSmall" color="E0E0E0" wrapMode="ELLIPSIS" maxLineCount="1" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT" offsetX="3" offsetY="0" />
+                    <Anchor point="RIGHT" offsetX="-4" offsetY="0" />
+                </Label>
+                <Button name="$(parent)CloseBtn" mouseEnabled="true" hidden="true">
+                    <Dimensions x="14" y="14" />
+                    <Anchor point="RIGHT" offsetX="-2" offsetY="0" />
+                    <Textures normal="/esoui/art/buttons/edit_cancel_up.dds"
+                              pressed="/esoui/art/buttons/edit_cancel_down.dds"
+                              mouseOver="/esoui/art/buttons/edit_cancel_over.dds" />
+                </Button>
+                <Backdrop name="$(parent)Badge" edgeColor="E5B558" centerColor="B81414" hidden="true" tier="HIGH">
+                    <Dimensions x="15" y="15" />
+                    <Anchor point="TOPRIGHT" offsetX="3" offsetY="-3" />
+                    <Edge edgeSize="1" />
+                    <Controls>
+                        <Label name="$(parent)Count" font="ZoFontGameSmall" text="0" color="FFFFFF" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+                            <AnchorFill />
+                        </Label>
+                    </Controls>
+                </Backdrop>
+            </Controls>
+        </Button>
+
+        <!-- Virtual Template for Checkbox Item in Tab Options Dialog -->
+        <Control name="AetherChat_CheckboxItemTemplate" virtual="true" mouseEnabled="true">
+            <Dimensions x="235" y="24" />
+            <Controls>
+                <Button name="$(parent)Check" inherits="ZO_CheckButton">
+                    <Dimensions x="24" y="24" />
+                    <Anchor point="LEFT" offsetX="0" offsetY="0" />
+                </Button>
+                <Label name="$(parent)Label" font="ZoFontGame" color="FFFFFF" maxLineCount="1" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+                    <Dimensions x="202" y="24" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Check" relativePoint="RIGHT" offsetX="6" offsetY="0" />
+                </Label>
+            </Controls>
+        </Control>
+
         <!-- Main Messenger Window (Skyrim / Tamriel Authentic Frame & Edge Resizable) -->
         <TopLevelControl name="AetherChat_MessengerWindow" movable="true" mouseEnabled="true" clampedToScreen="true" hidden="true">
             <Dimensions x="940" y="520" />
@@ -189,20 +244,26 @@
                     </Controls>
                 </Button>
 
+                <!-- Toggle Interface Mode Button (Standard <-> Ultra-Compact) -->
+                <Button name="$(parent)ModeBtn" mouseEnabled="true">
+                    <Dimensions x="24" y="24" />
+                    <Anchor point="TOPRIGHT" offsetX="-156" offsetY="10" />
+                    <Textures normal="/esoui/art/buttons/switch_up.dds"
+                              pressed="/esoui/art/buttons/switch_down.dds"
+                              mouseOver="/esoui/art/buttons/switch_mouseOver.dds"
+                              disabled="/esoui/art/buttons/switch_disabled.dds" />
+                </Button>
+
                 <!-- Live Chat Search Box -->
                 <Backdrop name="$(parent)SearchBox" edgeColor="3A3A3A" centerColor="0D1117" alpha="0.9" mouseEnabled="true" tier="HIGH">
                     <Dimensions x="175" y="24" />
-                    <Anchor point="TOPRIGHT" offsetX="-158" offsetY="10" />
+                    <Anchor point="TOPRIGHT" offsetX="-186" offsetY="10" />
                     <Edge edgeSize="1" />
                     <Controls>
                         <Texture name="$(parent)Icon" textureFile="/esoui/art/tradinghouse/tradinghouse_browse_tabicon_up.dds" mouseEnabled="true">
                             <Dimensions x="16" y="16" />
                             <Anchor point="LEFT" offsetX="6" offsetY="0" />
                         </Texture>
-                        <EditBox name="$(parent)Edit" inherits="ZO_DefaultEditForBackdrop" font="ZoFontGameSmall" maxInputCharacters="60" mouseEnabled="true">
-                            <Anchor point="TOPLEFT" relativeTo="$(parent)Icon" relativePoint="TOPRIGHT" offsetX="6" offsetY="-2" />
-                            <Anchor point="BOTTOMRIGHT" offsetX="-22" offsetY="2" />
-                        </EditBox>
                         <Button name="$(parent)ClearBtn" mouseEnabled="true" hidden="true">
                             <Dimensions x="14" y="14" />
                             <Anchor point="RIGHT" offsetX="-4" offsetY="0" />
@@ -210,8 +271,59 @@
                                       pressed="/esoui/art/buttons/edit_cancel_down.dds"
                                       mouseOver="/esoui/art/buttons/edit_cancel_over.dds" />
                         </Button>
+                        <EditBox name="$(parent)Edit" font="ZoFontGameSmall" maxInputCharacters="60" mouseEnabled="true">
+                            <Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT" offsetX="8" offsetY="0" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)ClearBtn" relativePoint="LEFT" offsetX="-4" offsetY="0" />
+                            <Dimensions y="20" />
+                        </EditBox>
                     </Controls>
                 </Backdrop>
+
+                <!-- Ultra-Compact Header with Tab Strip -->
+                <Control name="$(parent)CompactHeader" hidden="true" mouseEnabled="true">
+                    <Anchor point="TOPLEFT" offsetX="4" offsetY="4" />
+                    <Anchor point="TOPRIGHT" offsetX="-4" offsetY="4" />
+                    <Dimensions y="30" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" edgeColor="3A3A3A" centerColor="121212" alpha="0.5" mouseEnabled="true">
+                            <AnchorFill />
+                            <Edge edgeSize="1" />
+                        </Backdrop>
+                        <Button name="$(parent)CloseBtn" mouseEnabled="true">
+                            <Dimensions x="20" y="20" />
+                            <Anchor point="RIGHT" offsetX="-4" offsetY="0" />
+                            <Textures normal="/esoui/art/buttons/edit_cancel_up.dds"
+                                      pressed="/esoui/art/buttons/edit_cancel_down.dds"
+                                      mouseOver="/esoui/art/buttons/edit_cancel_over.dds" />
+                        </Button>
+                        <Button name="$(parent)SettingsBtn" mouseEnabled="true">
+                            <Dimensions x="20" y="20" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)CloseBtn" relativePoint="LEFT" offsetX="-4" offsetY="0" />
+                            <Textures normal="/esoui/art/chatwindow/chat_options_up.dds"
+                                      pressed="/esoui/art/chatwindow/chat_options_down.dds"
+                                      mouseOver="/esoui/art/chatwindow/chat_options_over.dds" />
+                        </Button>
+                        <Button name="$(parent)ModeBtn" mouseEnabled="true">
+                            <Dimensions x="20" y="20" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)SettingsBtn" relativePoint="LEFT" offsetX="-4" offsetY="0" />
+                            <Textures normal="/esoui/art/buttons/switch_up.dds"
+                                      pressed="/esoui/art/buttons/switch_down.dds"
+                                      mouseOver="/esoui/art/buttons/switch_mouseOver.dds"
+                                      disabled="/esoui/art/buttons/switch_disabled.dds" />
+                        </Button>
+                        <Button name="$(parent)SearchBtn" mouseEnabled="true">
+                            <Dimensions x="20" y="20" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)ModeBtn" relativePoint="LEFT" offsetX="-4" offsetY="0" />
+                            <Textures normal="/esoui/art/tradinghouse/tradinghouse_browse_tabicon_up.dds"
+                                      pressed="/esoui/art/tradinghouse/tradinghouse_browse_tabicon_down.dds"
+                                      mouseOver="/esoui/art/tradinghouse/tradinghouse_browse_tabicon_over.dds" />
+                        </Button>
+                        <Control name="$(parent)TabsStrip" mouseEnabled="true">
+                            <Anchor point="TOPLEFT" offsetX="2" offsetY="3" />
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)SearchBtn" relativePoint="BOTTOMLEFT" offsetX="-4" offsetY="-3" />
+                        </Control>
+                    </Controls>
+                </Control>
 
                 <!-- Top Horizontal Divider (Flush across whole window) -->
                 <Texture name="$(parent)TopDivider" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds">
@@ -591,6 +703,259 @@
                 <Button name="$(parent)BottomCloseBtn" inherits="ZO_DefaultButton" text="Fermer">
                     <Dimensions x="110" y="26" />
                     <Anchor point="BOTTOM" offsetY="-10" />
+                </Button>
+            </Controls>
+        </TopLevelControl>
+
+        <!-- Dedicated Tab Options Dialog (Native ZOS Modal for Custom Chat Tabs) -->
+        <TopLevelControl name="AetherChat_TabOptionsDialog" movable="true" mouseEnabled="true" clampedToScreen="true" hidden="true" tier="HIGH">
+            <Dimensions x="520" y="650" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+            <Controls>
+                <!-- Sleek Dark Slate Stone Backdrop with Gold Border -->
+                <Backdrop name="$(parent)BG" edgeColor="E5B558" centerColor="0D131C" alpha="0.96">
+                    <AnchorFill />
+                    <Edge edgeSize="1" />
+                </Backdrop>
+
+                <!-- Header Icon & Title -->
+                <Texture name="$(parent)Icon" textureFile="/esoui/art/collections/collections_tabIcon_itemSets_up.dds">
+                    <Dimensions x="24" y="24" />
+                    <Anchor point="TOPLEFT" offsetX="20" offsetY="14" />
+                </Texture>
+                <Label name="$(parent)Title" font="ZoFontWinH2" color="E5B558" text="OPTIONS D'ONGLET DE DIALOGUE">
+                    <Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT" offsetX="10" offsetY="0" />
+                </Label>
+                <Button name="$(parent)CloseBtn" inherits="ZO_CloseButton">
+                    <Anchor point="TOPRIGHT" offsetX="-12" offsetY="10" />
+                </Button>
+                <Texture name="$(parent)Div1" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds">
+                    <Dimensions x="480" y="2" />
+                    <Anchor point="TOPLEFT" offsetX="20" offsetY="44" />
+                </Texture>
+
+                <!-- Tab Name Input Field & Icon Selector Row -->
+                <Label name="$(parent)NameLabel" font="ZoFontHeader2" color="E5B558" text="NOM D'ONGLET">
+                    <Anchor point="TOPLEFT" offsetX="20" offsetY="54" />
+                </Label>
+                <Backdrop name="$(parent)NameBG" edgeColor="4A4A4A" centerColor="141414" alpha="0.9" mouseEnabled="true">
+                    <Dimensions x="270" y="28" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)NameLabel" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="4" />
+                    <Edge edgeSize="1" />
+                    <Controls>
+                        <EditBox name="$(parent)Edit" inherits="ZO_DefaultEditForBackdrop" font="ZoFontGame" color="FFFFFF" maxInputCharacters="20" mouseEnabled="true">
+                            <AnchorFill offsetX="8" offsetY="2" />
+                        </EditBox>
+                    </Controls>
+                </Backdrop>
+
+                <Label name="$(parent)IconLabel" font="ZoFontHeader2" color="E5B558" text="ICÔNE">
+                    <Anchor point="TOPLEFT" offsetX="310" offsetY="54" />
+                </Label>
+                <Control name="$(parent)IconContainer">
+                    <Anchor point="TOPLEFT" offsetX="310" offsetY="76" />
+                    <Dimensions x="175" y="60" />
+                    <Controls>
+                        <!-- Row 1: Icons 1 to 5 -->
+                        <Button name="$(parent)Btn1" mouseEnabled="true">
+                            <Dimensions x="26" y="26" />
+                            <Anchor point="TOPLEFT" offsetX="2" offsetY="0" />
+                            <Textures normal="/esoui/art/collections/collections_tabIcon_itemSets_up.dds"
+                                      pressed="/esoui/art/collections/collections_tabIcon_itemSets_down.dds"
+                                      mouseOver="/esoui/art/collections/collections_tabIcon_itemSets_up.dds" />
+                        </Button>
+                        <Button name="$(parent)Btn2" mouseEnabled="true">
+                            <Dimensions x="26" y="26" />
+                            <Anchor point="LEFT" relativeTo="$(parent)Btn1" relativePoint="RIGHT" offsetX="8" offsetY="0" />
+                            <Textures normal="/esoui/art/bank/bank_tabicon_gold_up.dds"
+                                      pressed="/esoui/art/bank/bank_tabicon_gold_up.dds"
+                                      mouseOver="/esoui/art/bank/bank_tabicon_gold_up.dds" />
+                        </Button>
+                        <Button name="$(parent)Btn3" mouseEnabled="true">
+                            <Dimensions x="26" y="26" />
+                            <Anchor point="LEFT" relativeTo="$(parent)Btn2" relativePoint="RIGHT" offsetX="8" offsetY="0" />
+                            <Textures normal="/esoui/art/battlegrounds/battlegrounds_tabicon_battlegrounds_up.dds"
+                                      pressed="/esoui/art/battlegrounds/battlegrounds_tabicon_battlegrounds_up.dds"
+                                      mouseOver="/esoui/art/battlegrounds/battlegrounds_tabicon_battlegrounds_up.dds" />
+                        </Button>
+                        <Button name="$(parent)Btn4" mouseEnabled="true">
+                            <Dimensions x="26" y="26" />
+                            <Anchor point="LEFT" relativeTo="$(parent)Btn3" relativePoint="RIGHT" offsetX="8" offsetY="0" />
+                            <Textures normal="/esoui/art/treeicons/reconstruction_tabicon_arenagroup_up.dds"
+                                      pressed="/esoui/art/treeicons/reconstruction_tabicon_arenagroup_up.dds"
+                                      mouseOver="/esoui/art/treeicons/reconstruction_tabicon_arenagroup_up.dds" />
+                        </Button>
+                        <Button name="$(parent)Btn5" mouseEnabled="true">
+                            <Dimensions x="26" y="26" />
+                            <Anchor point="LEFT" relativeTo="$(parent)Btn4" relativePoint="RIGHT" offsetX="8" offsetY="0" />
+                            <Textures normal="/esoui/art/lfg/lfg_veterandungeon_up.dds"
+                                      pressed="/esoui/art/lfg/lfg_veterandungeon_up.dds"
+                                      mouseOver="/esoui/art/lfg/lfg_veterandungeon_up.dds" />
+                        </Button>
+
+                        <!-- Row 2: Icons 6 to 10 -->
+                        <Button name="$(parent)Btn6" mouseEnabled="true">
+                            <Dimensions x="26" y="26" />
+                            <Anchor point="TOPLEFT" offsetX="2" offsetY="30" />
+                            <Textures normal="/esoui/art/mail/mail_tabicon_compose_up.dds"
+                                      pressed="/esoui/art/mail/mail_tabicon_compose_down.dds"
+                                      mouseOver="/esoui/art/mail/mail_tabicon_compose_up.dds" />
+                        </Button>
+                        <Button name="$(parent)Btn7" mouseEnabled="true">
+                            <Dimensions x="26" y="26" />
+                            <Anchor point="LEFT" relativeTo="$(parent)Btn6" relativePoint="RIGHT" offsetX="8" offsetY="0" />
+                            <Textures normal="/esoui/art/journal/journal_tabicon_cadwell_up.dds"
+                                      pressed="/esoui/art/journal/journal_tabicon_cadwell_down.dds"
+                                      mouseOver="/esoui/art/journal/journal_tabicon_cadwell_up.dds" />
+                        </Button>
+                        <Button name="$(parent)Btn8" mouseEnabled="true">
+                            <Dimensions x="26" y="26" />
+                            <Anchor point="LEFT" relativeTo="$(parent)Btn7" relativePoint="RIGHT" offsetX="8" offsetY="0" />
+                            <Textures normal="/esoui/art/inventory/inventory_tabicon_crafting_up.dds"
+                                      pressed="/esoui/art/inventory/inventory_tabicon_crafting_up.dds"
+                                      mouseOver="/esoui/art/inventory/inventory_tabicon_crafting_up.dds" />
+                        </Button>
+                        <Button name="$(parent)Btn9" mouseEnabled="true">
+                            <Dimensions x="26" y="26" />
+                            <Anchor point="LEFT" relativeTo="$(parent)Btn8" relativePoint="RIGHT" offsetX="8" offsetY="0" />
+                            <Textures normal="/esoui/art/bank/bank_tabicon_telvar_up.dds"
+                                      pressed="/esoui/art/bank/bank_tabicon_telvar_up.dds"
+                                      mouseOver="/esoui/art/bank/bank_tabicon_telvar_up.dds" />
+                        </Button>
+                        <Button name="$(parent)Btn10" mouseEnabled="true">
+                            <Dimensions x="26" y="26" />
+                            <Anchor point="LEFT" relativeTo="$(parent)Btn9" relativePoint="RIGHT" offsetX="8" offsetY="0" />
+                            <Textures normal="/esoui/art/tribute/tribute_tabicon_tribute_up.dds"
+                                      pressed="/esoui/art/tribute/tribute_tabicon_tribute_up.dds"
+                                      mouseOver="/esoui/art/tribute/tribute_tabicon_tribute_up.dds" />
+                        </Button>
+
+                        <Backdrop name="$(parent)Highlight" edgeColor="E5B558" centerColor="00000000" alpha="1.0" hidden="true">
+                            <Dimensions x="30" y="30" />
+                            <Edge edgeSize="2" />
+                            <Anchor point="CENTER" relativeTo="$(parent)Btn1" relativePoint="CENTER" />
+                        </Backdrop>
+                    </Controls>
+                </Control>
+
+                <!-- Filters Section (2 Columns) -->
+                <Label name="$(parent)FiltersLabel" font="ZoFontHeader2" color="E5B558" text="FILTRES">
+                    <Anchor point="TOPLEFT" offsetX="20" offsetY="148" />
+                </Label>
+                <Texture name="$(parent)Div2" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds">
+                    <Dimensions x="480" y="2" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)FiltersLabel" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="3" />
+                </Texture>
+
+                <!-- Filters Column 1 (Left) -->
+                <Control name="$(parent)FiltSay" inherits="AetherChat_CheckboxItemTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Div2" relativePoint="BOTTOMLEFT" offsetX="4" offsetY="6" />
+                </Control>
+                <Control name="$(parent)FiltWhisper" inherits="AetherChat_CheckboxItemTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)FiltSay" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
+                </Control>
+                <Control name="$(parent)FiltEmote" inherits="AetherChat_CheckboxItemTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)FiltWhisper" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
+                </Control>
+                <Control name="$(parent)FiltZone" inherits="AetherChat_CheckboxItemTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)FiltEmote" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
+                </Control>
+                <Control name="$(parent)FiltZoneFR" inherits="AetherChat_CheckboxItemTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)FiltZone" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
+                </Control>
+                <Control name="$(parent)FiltZoneJP" inherits="AetherChat_CheckboxItemTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)FiltZoneFR" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
+                </Control>
+                <Control name="$(parent)FiltZoneES" inherits="AetherChat_CheckboxItemTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)FiltZoneJP" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
+                </Control>
+
+                <!-- Filters Column 2 (Right) -->
+                <Control name="$(parent)FiltYell" inherits="AetherChat_CheckboxItemTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Div2" relativePoint="BOTTOMLEFT" offsetX="245" offsetY="6" />
+                </Control>
+                <Control name="$(parent)FiltParty" inherits="AetherChat_CheckboxItemTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)FiltYell" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
+                </Control>
+                <Control name="$(parent)FiltNPC" inherits="AetherChat_CheckboxItemTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)FiltParty" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
+                </Control>
+                <Control name="$(parent)FiltZoneEN" inherits="AetherChat_CheckboxItemTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)FiltNPC" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
+                </Control>
+                <Control name="$(parent)FiltZoneDE" inherits="AetherChat_CheckboxItemTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)FiltZoneEN" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
+                </Control>
+                <Control name="$(parent)FiltZoneRU" inherits="AetherChat_CheckboxItemTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)FiltZoneDE" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
+                </Control>
+                <Control name="$(parent)FiltZoneZH" inherits="AetherChat_CheckboxItemTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)FiltZoneRU" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
+                </Control>
+
+                <!-- Channels Section (Guilds 1 to 5) -->
+                <Label name="$(parent)ChannelsLabel" font="ZoFontHeader2" color="E5B558" text="CANAUX">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)FiltZoneES" relativePoint="BOTTOMLEFT" offsetX="-4" offsetY="10" />
+                </Label>
+                <Texture name="$(parent)Div3" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds">
+                    <Dimensions x="480" y="2" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)ChannelsLabel" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="3" />
+                </Texture>
+
+                <!-- Guilds Left Column (1, 3, 5) -->
+                <Control name="$(parent)FiltGuild1" inherits="AetherChat_CheckboxItemTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Div3" relativePoint="BOTTOMLEFT" offsetX="4" offsetY="6" />
+                </Control>
+                <Control name="$(parent)FiltOfficer1" inherits="AetherChat_CheckboxItemTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)FiltGuild1" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
+                </Control>
+                <Control name="$(parent)FiltGuild3" inherits="AetherChat_CheckboxItemTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)FiltOfficer1" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="6" />
+                </Control>
+                <Control name="$(parent)FiltOfficer3" inherits="AetherChat_CheckboxItemTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)FiltGuild3" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
+                </Control>
+                <Control name="$(parent)FiltGuild5" inherits="AetherChat_CheckboxItemTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)FiltOfficer3" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="6" />
+                </Control>
+                <Control name="$(parent)FiltOfficer5" inherits="AetherChat_CheckboxItemTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)FiltGuild5" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
+                </Control>
+
+                <!-- Guilds Right Column (2, 4) -->
+                <Control name="$(parent)FiltGuild2" inherits="AetherChat_CheckboxItemTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Div3" relativePoint="BOTTOMLEFT" offsetX="245" offsetY="6" />
+                </Control>
+                <Control name="$(parent)FiltOfficer2" inherits="AetherChat_CheckboxItemTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)FiltGuild2" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
+                </Control>
+                <Control name="$(parent)FiltGuild4" inherits="AetherChat_CheckboxItemTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)FiltOfficer2" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="6" />
+                </Control>
+                <Control name="$(parent)FiltOfficer4" inherits="AetherChat_CheckboxItemTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)FiltGuild4" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
+                </Control>
+
+                <!-- Bottom Action Buttons -->
+                <Texture name="$(parent)Div4" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds">
+                    <Dimensions x="480" y="2" />
+                    <Anchor point="BOTTOMLEFT" offsetX="20" offsetY="-48" />
+                </Texture>
+                <Button name="$(parent)DefaultBtn" inherits="ZO_DefaultButton" text="Réglages par défaut">
+                    <Dimensions x="150" y="28" />
+                    <Anchor point="BOTTOMLEFT" offsetX="20" offsetY="-14" />
+                </Button>
+                <Button name="$(parent)SaveBtn" inherits="ZO_DefaultButton" text="Enregistrer">
+                    <Dimensions x="110" y="28" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-20" offsetY="-14" />
+                </Button>
+                <Button name="$(parent)CancelBtn" inherits="ZO_DefaultButton" text="Annuler">
+                    <Dimensions x="95" y="28" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)SaveBtn" relativePoint="BOTTOMLEFT" offsetX="-8" offsetY="0" />
+                </Button>
+                <Button name="$(parent)DeleteBtn" inherits="ZO_DefaultButton" text="Supprimer">
+                    <Dimensions x="105" y="28" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)CancelBtn" relativePoint="BOTTOMLEFT" offsetX="-8" offsetY="0" />
                 </Button>
             </Controls>
         </TopLevelControl>

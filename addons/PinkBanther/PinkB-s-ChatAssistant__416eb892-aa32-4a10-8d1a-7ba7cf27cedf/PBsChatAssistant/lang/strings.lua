@@ -1,6 +1,11 @@
 local strings = {
 	SI_PBSCHATASSISTANT_CHANNEL_LABEL = "Channel: %s",
 	SI_PBSCHATASSISTANT_OFFICER_SUFFIX = " (Officer)",
+	SI_PBSCHATASSISTANT_HUDCHANNEL = "L2+L3 changes channel",
+	SI_PBSCHATASSISTANT_HUDCHANNEL_TOOLTIP = "On the HUD, hold L2 and press L3 to move the outgoing channel on. L2 is only read, never rebound, and L3 is reassigned solely while L2 is held.",
+	SI_PBSCHATASSISTANT_DEFAULT_CHANNEL = "Channel at login",
+	SI_PBSCHATASSISTANT_DEFAULT_CHANNEL_TOOLTIP = "The channel to start a session on. Applied once, shortly after entering the world, and never again -- switching afterwards is left alone. Channels you cannot currently use are skipped.",
+	SI_PBSCHATASSISTANT_DEFAULT_CHANNEL_NONE = "Leave unchanged",
 	SI_KEYBINDINGS_CATEGORY_PBSCHATASSISTANT = "PB’s ChatAssistant",
 	SI_BINDING_NAME_PBSCHATASSISTANT_START_CHAT = "Open Chat",
 	SI_BINDING_NAME_PBSCHATASSISTANT_CHANNEL_NEXT = "Next Chat Channel",

@@ -286,8 +286,8 @@ function AetherChat.FormatLootLogLine(itemLink, quantity, looterName, isSelf)
     -- 1. Currency drop (gold)
     if tonumber(strLink) then
         local goldIcon = zo_iconTextFormat("/esoui/art/currency/currency_gold.dds", 22, 22, "", false)
-        local recipient = isPersonal and ((LootLog and LootLog.self and LootLog.self.you) or "|c57F287Vous|r") or string.format("|c38BDF8%s|r", looterName or "Groupe")
-        return string.format("|H0:lootlog|h[Loot Log]|h %s%s |c57F287Pièces d'or|r → %s", goldIcon, strLink, recipient)
+        local recipient = isPersonal and ((LootLog and LootLog.self and LootLog.self.you) or L('LOOT_YOU') or "|c57F287Vous|r") or string.format("|c38BDF8%s|r", looterName or L('CH_PARTY') or "Groupe")
+        return string.format("|H0:lootlog|h[Loot Log]|h %s%s %s → %s", goldIcon, strLink, L('LOOT_GOLD_COINS') or "|c57F287Pièces d'or|r", recipient)
     end
 
     -- 2. Indicator (LootLog exact method: uncollectedColor + zo_iconFormatInheritColor)
@@ -540,7 +540,7 @@ local function FireGuildStoreSaleAlert(mailIdStr, attachedMoney, soldItem)
     -- 1. Center Screen Announcement (CSA) + Sound
     if CENTER_SCREEN_ANNOUNCE then
         local params = CENTER_SCREEN_ANNOUNCE:CreateMessageParams(CSA_CATEGORY_SMALL_TEXT, SOUNDS.TRADING_HOUSE_SEARCH_SUCCESS)
-        params:SetText('|c57F287[Vente] |r' .. csaText)
+        params:SetText(string.format('|c57F287[%s] |r%s', L('SALES_TAG') or 'Vente', csaText))
         CENTER_SCREEN_ANNOUNCE:AddMessageWithParams(params)
     else
         ZO_Alert(UI_ALERT_CATEGORY_ALERT, SOUNDS.TRADING_HOUSE_SEARCH_SUCCESS, csaText)
@@ -548,7 +548,7 @@ local function FireGuildStoreSaleAlert(mailIdStr, attachedMoney, soldItem)
 
     -- 2. Post in General & Sales channel
     local timeStr = GetTimeString():sub(1, 5)
-    local author = 'Boutique'
+    local author = L('SALES_STORE_AUTHOR') or 'Boutique'
     History.AddMessage('general', author, msgText, timeStr, 0, false, false, nil)
 
     if AetherChat.Messenger and AetherChat.Messenger.OnMessageReceived then
@@ -951,6 +951,7 @@ function ChatEngine.OnChatMessage(eventCode, channelType, fromName, text, isCust
     local author = nil
     local channelKey = nil
     local msgText = text
+    local zoneLang = nil
 
     if isWhisper then
         local otherPlayer = nil
@@ -982,7 +983,6 @@ function ChatEngine.OnChatMessage(eventCode, channelType, fromName, text, isCust
             author = (fromDisplayName and fromDisplayName ~= '') and fromDisplayName or CleanName(fromName)
         end
 
-        local zoneLang = nil
         -- Add clean language tag for zone channels
         if channelType == CHAT_CHANNEL_ZONE_LANGUAGE_2 then
             msgText = "|c38BDF8[FR]|r " .. text
@@ -1034,7 +1034,7 @@ function ChatEngine.OnChatMessage(eventCode, channelType, fromName, text, isCust
     -- ========= KEYWORD SOUND ALERT CHECK =========
     local _, keywordMatched = ChatEngine.ApplyKeywordHighlight(msgText)
 
-    History.AddMessage(channelKey, author, msgText, timeStr, 0, isSelf, isWhisper, zoneLang)
+    History.AddMessage(channelKey, author, msgText, timeStr, 0, isSelf, isWhisper, zoneLang, channelKey)
 
     -- Play keyword alert sound if matched (only for messages from others)
     if keywordMatched and not isSelf then
@@ -1050,7 +1050,20 @@ function ChatEngine.OnChatMessage(eventCode, channelType, fromName, text, isCust
     end
 
     if AetherChat.Messenger and AetherChat.Messenger.OnMessageReceived then
-        AetherChat.Messenger.OnMessageReceived(channelKey, author, msgText, isSelf, isWhisper, zoneLang)
+        AetherChat.Messenger.OnMessageReceived(channelKey, author, msgText, isSelf, isWhisper, zoneLang, channelKey)
+    end
+
+    -- Route to Custom Tabs configured by player
+    if AetherChat.CustomTabs and AetherChat.CustomTabs.GetTabs then
+        local customTabs = AetherChat.CustomTabs.GetTabs()
+        for tabId, tabData in pairs(customTabs) do
+            if AetherChat.CustomTabs.MatchesMessage(tabData, channelType, channelKey, zoneLang) then
+                History.AddMessage(tabId, author, msgText, timeStr, 0, isSelf, isWhisper, zoneLang, channelKey)
+                if AetherChat.Messenger and AetherChat.Messenger.OnMessageReceived then
+                    AetherChat.Messenger.OnMessageReceived(tabId, author, msgText, isSelf, isWhisper, zoneLang, channelKey)
+                end
+            end
+        end
     end
 end
 

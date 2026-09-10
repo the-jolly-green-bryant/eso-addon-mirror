@@ -10,7 +10,7 @@
 			</Controls>
 			<Controls>
 				<Label name="$(parent)LabelMain" width="64" height="64 " font="" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT">
-					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" offsetX="4" offsetY="4"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" offsetX="-3" offsetY="0"/>
 				</Label>
 			</Controls>
 			<Controls>

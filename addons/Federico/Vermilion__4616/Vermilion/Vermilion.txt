@@ -1,9 +1,9 @@
 ## Title: Vermilion
 ## Description: Real-time damage-dealer analytics — eDPS, shield-cracking and skill-line breakdown
 ## Author: Federico Vergelli
-## Version: 0.9.1
-## AddOnVersion: 4
-## APIVersion: 101049 101050
+## Version: 1.0.1
+## AddOnVersion: 6
+## APIVersion: 101051 101050
 ## SavedVariables: VermilionSavedVars
 
 # This Add-on is not created by, affiliated with, or sponsored by ZeniMax Media Inc. or its affiliates.
@@ -21,12 +21,14 @@ core/gc.lua
 lib/mem/buffer_pool.lua
 lib/mem/ring_buffer.lua
 lib/mem/event.lua
+lib/vsf.lua
 zenimax/constants.lua
 zenimax/api.lua
 zenimax/ui.lua
 zenimax/savedvars.lua
 zenimax/events.lua
 zenimax/scene.lua
+core/sound.lua
 lib/plot/style.lua
 lib/plot/primitives.lua
 lib/plot/pool.lua
@@ -40,6 +42,7 @@ core/skill_colors.lua
 core/damage_type_colors.lua
 core/metrics.lua
 observability/diagnostics.lua
+observability/trace.lua
 pipeline/acquisition.lua
 pipeline/filter.lua
 pipeline/processing.lua
@@ -47,13 +50,21 @@ pipeline/presentation.lua
 pipeline/pipeline.lua
 core/probe.lua
 core/temporal_buffer.lua
+core/content_kind.lua
+core/session_store.lua
+core/debuff_tracker.lua
+core/auto_record.lua
 core/visibility.lua
 ui/settings.xml
 ui/settings.lua
+ui/contrib.lua
+ui/debuffs.lua
 ui/graph.xml
 ui/graph.lua
 ui/assign.xml
 ui/assign.lua
+ui/library.xml
+ui/library.lua
 ui/logo.xml
 ui/logo.lua
 Vermilion.lua

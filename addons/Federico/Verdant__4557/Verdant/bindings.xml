@@ -10,6 +10,15 @@
       <Action name="VERDANT_RECORD">
         <Down>Verdant.Graph.toggle_record()</Down>
       </Action>
+      <Action name="VERDANT_SAVE">
+        <Down>Verdant.Graph.on_save_click()</Down>
+      </Action>
+      <Action name="VERDANT_NEXT_VIEW">
+        <Down>Verdant.Graph.step_view(1)</Down>
+      </Action>
+      <Action name="VERDANT_PREV_VIEW">
+        <Down>Verdant.Graph.step_view(-1)</Down>
+      </Action>
     </Category>
   </Layer>
 </Bindings>

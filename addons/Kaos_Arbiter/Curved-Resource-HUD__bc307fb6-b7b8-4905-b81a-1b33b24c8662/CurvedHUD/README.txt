@@ -1,4 +1,4 @@
-Curved Resource HUD 1.0.7
+Curved Resource HUD 1.1.2
 
 Upload CurvedHUD as one folder with CurvedHUD.addon at its root.
 The package contains exactly one .addon manifest, as required by the console uploader.
@@ -18,7 +18,29 @@ If neither library loads, the HUD still renders. Chat commands:
 frame; while hidden, ESO's self-buff row moves down into the available space.
 
 Expected startup chat line:
-  [CurvedHUD] Loaded 1.0.7; HUD, shield, and trackers created
+  [CurvedHUD] Loaded 1.1.2; HUD, shield, and trackers created
+
+1.1.2 makes Soul Burst tracking script-aware. When Anchorite's Potency is
+equipped, the tracker follows its separate five-second Soul Gem/Ultimate
+lockout, ignores the damage-shield and Minor Courage durations, and does not
+restart on ineligible casts. Without Anchorite's Potency, Soul Burst uses its
+API-reported effect duration or the character's configured fallback duration.
+
+1.1.1 refines the consolidated settings hierarchy so only the seven primary
+category headers are blue. Individual classes, skill lines, and item-set
+families retain their own collapsed submenus with standard-colored titles.
+
+1.1.0 consolidates CurvedHUD into one settings entry. Seven blue category
+headers organize ordinary-colored collapsed LibVotans submenus for global HUD
+and appearance, buffs, individual classes, weapon lines, guild and other skill
+lines, armor skills, and item-set families. The session-safe HUD reuse,
+one-time settings registration, and scene-callback protections remain in place.
+
+1.0.8 fixes session accumulation during rapid character changes. CurvedHUD now
+reuses its existing HUD controls, settings definitions, and scene callbacks
+instead of recreating them for every character. Initial registration is also
+distributed across fresh frames so it cannot exhaust ESO's shared add-on CPU
+allowance while other add-ons are loading.
 
 1.0.7 removes CurvedHUD's late settings registration. Its LibVotans pages now
 register during the normal add-on initialization phase, matching established

@@ -75,6 +75,8 @@ local function ReadManifestVersion()
 	for index = 1, manager:GetNumAddOns() do
 		local name, title = manager:GetAddOnInfo(index)
 		if name == addon.name and title then
+			-- Kept for the disk figures below, which are asked for by add-on index.
+			addon.addOnIndex = index
 			local plain = title:gsub("|c%x%x%x%x%x%x", ""):gsub("|r", "")
 			return plain:match("([%d]+[%d%.]*)%s*$") or ""
 		end
@@ -137,6 +139,87 @@ addon.Print = Print
 addon.Format = Format
 
 -- ---------------------------------------------------------------------------------------
+-- How much room is left for saved data
+--
+-- On console every add-on's saved variables share one allowance, and three boxes of letters is
+-- a thing that grows. The client will tell us where that stands -- but through the add-on
+-- manager, as methods, not as global functions:
+--
+--     AddOnManager:GetTotalUserAddOnSavedVariablesDiskCapacityMB()
+--     AddOnManager:GetTotalUserAddOnSavedVariablesDiskUsageMB()
+--     AddOnManager:GetUserAddOnSavedVariablesDiskUsageMB(addOnIndex)
+--
+-- The numbers are what is on disk, so they move when the game writes saved variables out --
+-- at a reload or a logout -- and not while a letter is being saved. There is nothing to poll.
+-- ---------------------------------------------------------------------------------------
+
+local LOW_STORAGE_FRACTION = 0.1
+
+function addon:Storage()
+	local manager = GetAddOnManager and GetAddOnManager()
+	if not manager or not manager.GetTotalUserAddOnSavedVariablesDiskUsageMB then
+		return nil
+	end
+
+	local ok, capacity, used, mine = pcall(function()
+		local capacityMB = manager.GetTotalUserAddOnSavedVariablesDiskCapacityMB
+			and manager:GetTotalUserAddOnSavedVariablesDiskCapacityMB() or 0
+		local usedMB = manager:GetTotalUserAddOnSavedVariablesDiskUsageMB() or 0
+		local mineMB
+		if self.addOnIndex and manager.GetUserAddOnSavedVariablesDiskUsageMB then
+			mineMB = manager:GetUserAddOnSavedVariablesDiskUsageMB(self.addOnIndex)
+		end
+		return capacityMB, usedMB, mineMB
+	end)
+
+	if not ok then
+		return nil
+	end
+
+	capacity = capacity or 0
+	used = used or 0
+
+	local free = capacity > 0 and (capacity - used) or nil
+	if free and free < 0 then
+		free = 0
+	end
+
+	return {
+		capacity = capacity,
+		used = used,
+		mine = mine,
+		free = free,
+		low = free ~= nil and capacity > 0 and (free / capacity) < LOW_STORAGE_FRACTION,
+	}
+end
+
+local function MB(value)
+	return string.format("%.1f", value or 0)
+end
+
+-- One line, for the bottom of the mail window and for the command. Nil when the client will
+-- not answer, so the line is left out rather than drawn saying nothing.
+function addon:StorageLine()
+	local storage = self:Storage()
+	if not storage then
+		return nil, false
+	end
+
+	local text
+	if storage.free then
+		text = Format(SI_PBSMX_STORAGE_FREE, MB(storage.free), MB(storage.capacity))
+	else
+		text = Format(SI_PBSMX_STORAGE_USED, MB(storage.used))
+	end
+
+	if storage.mine then
+		text = text .. " " .. Format(SI_PBSMX_STORAGE_MINE, MB(storage.mine))
+	end
+
+	return text, storage.low
+end
+
+-- ---------------------------------------------------------------------------------------
 -- Limits
 --
 -- Both are settings, and these are only where they start. The ceiling is the same for both
@@ -148,6 +231,7 @@ addon.Format = Format
 -- one at a time on purpose; the sent box fills by itself, so it starts with more room.
 addon.DEFAULT_MAX_DRAFTS = 50
 addon.DEFAULT_MAX_SENT = 100
+addon.DEFAULT_MAX_KEPT = 100
 addon.LIMIT_CEILING = 1000
 addon.LIMIT_FLOOR = 1
 
@@ -160,10 +244,19 @@ local DEFAULTS = {
 	nextId = 1,
 	drafts = {},
 	sent = {},
+	kept = {},
 	limits = {
 		drafts = 50,
 		sent = 100,
+		kept = 100,
 	},
+
+	-- A draft is a letter you have not sent yet, so sending it is the end of it. Off for
+	-- anybody who would rather keep the wording around.
+	deleteDraftOnSend = true,
+
+	-- How often the letter being written is saved, in seconds. 0 is off.
+	autoSaveSeconds = 60,
 }
 
 addon.DEFAULTS = DEFAULTS
@@ -192,9 +285,53 @@ local function Words(argumentString)
 	return words
 end
 
+addon.AUTOSAVE_MAX = 600
+addon.AUTOSAVE_STEP = 30
+
+function addon:AutoSaveSeconds()
+	local sv = self.sv
+	local value = sv and sv.autoSaveSeconds
+	if type(value) ~= "number" then
+		return DEFAULTS.autoSaveSeconds
+	end
+	return value
+end
+
+function addon:SetAutoSaveSeconds(value)
+	value = math.floor(tonumber(value) or 0)
+	if value < 0 then
+		value = 0
+	elseif value > self.AUTOSAVE_MAX then
+		value = self.AUTOSAVE_MAX
+	end
+	if self.sv then
+		self.sv.autoSaveSeconds = value
+	end
+	if value == 0 and self.drafts then
+		self.drafts:ForgetAutoDraft()
+	end
+	return value
+end
+
+function addon:DeleteDraftOnSend()
+	local sv = self.sv
+	if not sv or sv.deleteDraftOnSend == nil then
+		return DEFAULTS.deleteDraftOnSend
+	end
+	return sv.deleteDraftOnSend
+end
+
+function addon:SetDeleteDraftOnSend(value)
+	if self.sv then
+		self.sv.deleteDraftOnSend = value and true or false
+	end
+	return self:DeleteDraftOnSend()
+end
+
 function addon:PrintLimits()
-	Print(Format(SI_PBSMX_LIMIT_STATUS, self.drafts:Title(), #self.drafts:All(), self.drafts:Max()))
-	Print(Format(SI_PBSMX_LIMIT_STATUS, self.sent:Title(), #self.sent:All(), self.sent:Max()))
+	for _, box in ipairs({ self.drafts, self.sent, self.kept }) do
+		Print(Format(SI_PBSMX_LIMIT_STATUS, box:Title(), #box:All(), box:Max()))
+	end
 end
 
 function addon:PrintHelp()
@@ -204,7 +341,11 @@ function addon:PrintHelp()
 	Line(GetString(SI_PBSMX_HELP_LOAD))
 	Line(GetString(SI_PBSMX_HELP_DELETE))
 	Line(GetString(SI_PBSMX_HELP_SENT))
+	Line(GetString(SI_PBSMX_HELP_KEEP))
 	Line(GetString(SI_PBSMX_HELP_MAX))
+	Line(GetString(SI_PBSMX_HELP_AUTOSAVE))
+	Line(GetString(SI_PBSMX_HELP_ONSEND))
+	Line(GetString(SI_PBSMX_HELP_DISK))
 	Line(GetString(SI_PBSMX_HELP_WHERE))
 end
 
@@ -246,9 +387,22 @@ function addon:BoxCommand(box, command, words, first)
 		return true
 	end
 
+	if command == "read" then
+		local index, problem = self:Pick(box, words[first])
+		if not index then
+			Print(problem)
+			return true
+		end
+		self.ui:Read(box, index)
+		return true
+	end
+
 	if command == "delete" then
 		if (words[first] or ""):lower() == "all" then
 			local removed = box:DeleteAll()
+			if self.ui then
+				self.ui:CountChanged()
+			end
 			Print(Format(SI_PBSMX_DELETED_ALL, box:Title(), removed))
 			return true
 		end
@@ -258,6 +412,9 @@ function addon:BoxCommand(box, command, words, first)
 			return true
 		end
 		local entry = box:Delete(index)
+		if self.ui then
+			self.ui:CountChanged()
+		end
 		Print(Format(SI_PBSMX_DELETED, box:Noun(), index, box:Describe(entry)))
 		return true
 	end
@@ -280,7 +437,7 @@ function addon:HandleCommand(argumentString)
 	--
 	-- Checked rather than assumed: a client that failed to load one file should say so once,
 	-- not throw an error every time somebody types a command.
-	if (command == "save" or command == "load" or command == "sent") and not self.ui then
+	if (command == "save" or command == "load" or command == "sent" or command == "keep") and not self.ui then
 		Print(GetString(SI_PBSMX_ERROR_NOT_LOADED))
 		return
 	end
@@ -310,6 +467,25 @@ function addon:HandleCommand(argumentString)
 		return
 	end
 
+	-- The kept box, like the sent box, hangs off one word so the drafts commands keep the
+	-- shapes they already had.
+	if command == "keep" then
+		local sub = (words[2] or ""):lower()
+		if sub == "" or sub == "list" then
+			self:PrintList(self.kept, SI_PBSMX_KEPT_EMPTY)
+			return
+		end
+		if sub == "save" or sub == "this" then
+			self.ui:Keep()
+			return
+		end
+		if not self:BoxCommand(self.kept, sub, words, 3) then
+			Print(Format(SI_PBSMX_ERROR_UNKNOWN, sub))
+			self:PrintHelp()
+		end
+		return
+	end
+
 	if self:BoxCommand(self.drafts, command, words, 2) then
 		return
 	end
@@ -324,6 +500,7 @@ function addon:HandleCommand(argumentString)
 		end
 
 		local box = (which == "drafts" and self.drafts) or (which == "sent" and self.sent)
+			or (which == "keep" and self.kept) or (which == "kept" and self.kept)
 		if not box then
 			Print(GetString(SI_PBSMX_ERROR_WHICH_BOX))
 			return
@@ -343,6 +520,39 @@ function addon:HandleCommand(argumentString)
 			Print(Format(box.rolling and SI_PBSMX_LIMIT_OVER_ROLLING or SI_PBSMX_LIMIT_OVER_KEPT,
 				#box:All(), applied))
 		end
+		return
+	end
+
+	if command == "autosave" then
+		local word = (words[2] or ""):lower()
+		if word ~= "" then
+			local seconds = (word == "off" or word == "0") and 0 or tonumber(word)
+			if not seconds then
+				Print(Format(SI_PBSMX_ERROR_NEED_SECONDS, self.AUTOSAVE_MAX))
+				return
+			end
+			self:SetAutoSaveSeconds(seconds)
+		end
+		local seconds = self:AutoSaveSeconds()
+		Print(seconds > 0 and Format(SI_PBSMX_AUTOSAVE_EVERY, seconds) or GetString(SI_PBSMX_AUTOSAVE_OFF))
+		return
+	end
+
+	if command == "onsend" then
+		local word = (words[2] or ""):lower()
+		if word == "on" or word == "off" then
+			self:SetDeleteDraftOnSend(word == "on")
+		elseif word ~= "" then
+			Print(GetString(SI_PBSMX_ERROR_ON_OR_OFF))
+			return
+		end
+		Print(self:DeleteDraftOnSend() and GetString(SI_PBSMX_ONSEND_ON) or GetString(SI_PBSMX_ONSEND_OFF))
+		return
+	end
+
+	if command == "disk" or command == "storage" then
+		local line = self:StorageLine()
+		Print(line or GetString(SI_PBSMX_STORAGE_UNKNOWN))
 		return
 	end
 

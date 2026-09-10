@@ -121,12 +121,14 @@ function M.start_recording()
   log:info("start_recording")
   if Verdant.Triage then Verdant.Triage.on_session_start() end
   if Verdant.SessionStore then Verdant.SessionStore.on_session_start() end
+  if Verdant.Logo and Verdant.Logo.set_recording then Verdant.Logo.set_recording(true) end
 end
 
 function M.stop_recording()
   state.recording = false
   log:info("stop_recording: count=", state.count, "/", state.capacity)
   if Verdant.Triage then Verdant.Triage.on_session_stop() end
+  if Verdant.Logo and Verdant.Logo.set_recording then Verdant.Logo.set_recording(false) end
 end
 
 local summary_scratch = {

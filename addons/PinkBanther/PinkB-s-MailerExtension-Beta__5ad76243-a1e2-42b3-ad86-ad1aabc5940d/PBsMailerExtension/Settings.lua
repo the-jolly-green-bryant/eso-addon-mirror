@@ -71,8 +71,6 @@ function addon:InitSettings()
 		}
 	)
 
-	AddHeading(settings, LibHarvensAddonSettings, GetString(SI_PBSMX_SECTION_LIMITS))
-
 	AddLimitSlider(settings, LibHarvensAddonSettings, self.drafts,
 		GetString(SI_PBSMX_LIMIT_DRAFTS), GetString(SI_PBSMX_LIMIT_DRAFTS_TOOLTIP),
 		self.DEFAULT_MAX_DRAFTS)
@@ -80,6 +78,48 @@ function addon:InitSettings()
 	AddLimitSlider(settings, LibHarvensAddonSettings, self.sent,
 		GetString(SI_PBSMX_LIMIT_SENT), GetString(SI_PBSMX_LIMIT_SENT_TOOLTIP),
 		self.DEFAULT_MAX_SENT)
+
+	AddHeading(settings, LibHarvensAddonSettings, GetString(SI_PBSMX_SECTION_WRITING))
+
+	settings:AddSetting(
+		{
+			type = LibHarvensAddonSettings.ST_SLIDER,
+			label = GetString(SI_PBSMX_AUTOSAVE),
+			tooltip = GetString(SI_PBSMX_AUTOSAVE_TOOLTIP),
+			min = 0,
+			max = self.AUTOSAVE_MAX,
+			step = self.AUTOSAVE_STEP,
+			default = self.DEFAULTS.autoSaveSeconds,
+			format = "%d",
+			getFunction = function()
+				return self:AutoSaveSeconds()
+			end,
+			setFunction = function(value)
+				self:SetAutoSaveSeconds(value)
+			end
+		}
+	)
+
+	settings:AddSetting(
+		{
+			type = LibHarvensAddonSettings.ST_CHECKBOX,
+			label = GetString(SI_PBSMX_ONSEND),
+			tooltip = GetString(SI_PBSMX_ONSEND_TOOLTIP),
+			default = self.DEFAULTS.deleteDraftOnSend,
+			getFunction = function()
+				return self:DeleteDraftOnSend()
+			end,
+			setFunction = function(value)
+				self:SetDeleteDraftOnSend(value)
+			end
+		}
+	)
+
+	AddHeading(settings, LibHarvensAddonSettings, GetString(SI_PBSMX_SECTION_LIMITS))
+
+	AddLimitSlider(settings, LibHarvensAddonSettings, self.kept,
+		GetString(SI_PBSMX_LIMIT_KEPT), GetString(SI_PBSMX_LIMIT_KEPT_TOOLTIP),
+		self.DEFAULT_MAX_KEPT)
 
 	return true
 end

@@ -32,7 +32,17 @@ local defaultAccountVars = {
     consFoodWarn = 5,
     consPotWarn = 10,
     consPotCombat = false,
+    consShowFood = true,
+    consShowPot = true,
     consFoodSound = false,
+    consPotSound = false,
+    consEndSoundId = "alert",
+    consMsgEnabled = false,
+    consMsgFood = false,
+    consMsgPot = false,
+    consMsgX = 0,
+    consMsgY = -200,
+    consMsgScale = 100,
     timerEnabled = false,
     timerDungeon = true,
     timerTrial = true,
@@ -93,6 +103,20 @@ local function OnAddOnLoaded(_, addonName)
     if T.savedVars.timerGoal == nil then T.savedVars.timerGoal = true end
     if T.savedVars.timerOffsetY == nil then T.savedVars.timerOffsetY = -280 end
     if T.savedVars.timerScale == nil then T.savedVars.timerScale = 100 end
+    if T.savedVars.consShowFood == nil then T.savedVars.consShowFood = true end
+    if T.savedVars.consShowPot == nil then T.savedVars.consShowPot = true end
+    if T.savedVars.consPotSound == nil then T.savedVars.consPotSound = false end
+    if T.savedVars.consEndSoundId == nil then T.savedVars.consEndSoundId = "alert" end
+    if T.savedVars.consAlertRev == nil then
+        T.savedVars.consFoodSound = false
+        T.savedVars.consPotSound = false
+        T.savedVars.consMsgEnabled = false
+        T.savedVars.consMsgFood = false
+        T.savedVars.consMsgPot = false
+        T.savedVars.consAlertRev = 1
+    end
+    if T.savedVars.consMsgY == nil then T.savedVars.consMsgY = -200 end
+    if T.savedVars.consMsgScale == nil then T.savedVars.consMsgScale = 100 end
 
     if T.RegisterSettings then
         T.RegisterSettings()

@@ -1,0 +1,9 @@
+## Title: Dark Convergence Tracker
+## Author: CodeWarrior82
+## Description: Tracks the cooldown of the Dark Convergence set.
+## APIVersion: 101050
+## DependsOn: LibAddonMenu-2.0>=42 LibChatMessage
+## SavedVariables: dctAddonVars
+
+darkConvergenceTracker.lua
+darkConvergenceTracker.xml

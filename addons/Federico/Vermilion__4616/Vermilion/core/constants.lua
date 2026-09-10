@@ -3,10 +3,16 @@ local Vermilion = Vermilion
 
 Vermilion.Constants = {
   ADDON_NAME    = "Vermilion",
-  VERSION       = "0.9.1",
+  VERSION       = "1.0.1",
   SLASH_COMMAND = "/vermilion",
 
+  DEV           = false,
+  MODE          = "",
   DEBUG         = false,
+
+  PIXEL_GRID      = true,
+  GRAPH_DEFAULT_W = 420,
+  GRAPH_DEFAULT_H = 312,
 
   SV_TABLE   = "VermilionSavedVars",
   SV_VERSION = 1,
@@ -66,3 +72,5 @@ Vermilion.Constants = {
     ["graph.sample_tick"]                 = 15.0,
   },
 }
+
+Vermilion.Constants.DEBUG = (Vermilion.Constants.DEV == true and Vermilion.Constants.MODE == "DEBUG")

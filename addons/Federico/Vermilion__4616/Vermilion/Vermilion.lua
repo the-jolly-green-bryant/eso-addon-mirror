@@ -24,7 +24,43 @@ local function on_slash(input)
 
 
   if DEBUG then
-    if cmd == "on" then
+    if cmd == "trace" then
+      local sub = string_match(string_lower(input), "^%s*%S+%s+(%S+)") or ""
+      if sub == "start" then Vermilion.Trace.start()
+      elseif sub == "stop" then Vermilion.Trace.stop()
+      elseif sub == "save" then Vermilion.Trace.save(Vermilion.SavedVars)
+      elseif sub == "clear" then Vermilion.Trace.clear(Vermilion.SavedVars) d("[trace] cleared")
+      elseif sub == "auto" then
+        local on = not Vermilion.Trace.auto_enabled(Vermilion.SavedVars)
+        Vermilion.Trace.set_auto(Vermilion.SavedVars, on)
+        d("[trace] auto-trace while recording: " .. (on and "ON" or "OFF"))
+      else
+        local ring = Vermilion.SavedVars.traces
+        d("[trace] " .. Vermilion.Trace.status_line()
+          .. "  auto=" .. (Vermilion.Trace.auto_enabled(Vermilion.SavedVars) and "ON" or "OFF")
+          .. "  staged=" .. tostring(ring and #ring or 0) .. "/3"
+          .. "  (subcmd: start | stop | save | clear | auto)")
+      end
+      return
+    elseif cmd == "sound" then
+      Vermilion.Sound.audition(string_match(input, "^%s*%S+%s*(.*)$"))
+      return
+    elseif cmd == "autorec" then
+      for _, line in ipairs(Vermilion.AutoRecord.report_lines()) do d("[Vm] " .. line) end
+      return
+    elseif cmd == "grid" then
+      local on = not Vermilion.Graph.pixel_grid()
+      Vermilion.Graph.set_pixel_grid(on)
+      d("[Vm] pixel grid: " .. (on and "on" or "off"))
+      return
+    elseif cmd == "sessions" then
+      for _, line in ipairs(Vermilion.SessionStore.report_lines()) do d("[Vm] " .. line) end
+      return
+    elseif cmd == "flush" then
+      d("[Vm] writing SavedVariables to disk")
+      Vermilion.zenimax.api.ReloadUI()
+      return
+    elseif cmd == "on" then
       Vermilion.Probe.set_enabled(true)
       d("[Vm] " .. GetString(VERMILION_PROBE_ON))
       return
@@ -118,9 +154,14 @@ local function on_slash(input)
     Vermilion.Graph.toggle() ; return
   end
 
+  if cmd == "lib" then
+    Vermilion.Library.toggle() ; return
+  end
+
   if cmd == "help" then
     d(GetString(VERMILION_HELP_HEADER))
     d(GetString(VERMILION_HELP_GRAPH))
+    d(GetString(VERMILION_HELP_LIB))
     d(GetString(VERMILION_HELP_HELP))
     return
   end
@@ -147,10 +188,14 @@ local function on_addon_loaded()
   if C.DEBUG then Vermilion.Probe.init() end
   Vermilion.GC.init()          -- GC pacing (ported): smooth the incremental collector
   Vermilion.Pipeline.init()
+  Vermilion.SessionStore.init()
+  Vermilion.Trace.init()
   Vermilion.Logo.init()
   Vermilion.Settings.init()
   Vermilion.Graph.init()
+  Vermilion.AutoRecord.init()
   Vermilion.Assign.init()
+  Vermilion.Library.init()
   Vermilion.Visibility.init()
 
   SLASH_COMMANDS[C.SLASH_COMMAND] = on_slash

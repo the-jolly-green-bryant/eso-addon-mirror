@@ -46,8 +46,16 @@ local DEFAULTS = {
     floatingIconPos = nil,
     windowPos = nil,
     windowDimensions = { width = 940, height = 520 },
+    interfaceMode = 'standard',
+    compactDimensions = { width = 450, height = 270 },
+    compactPos = nil,
     history = {},
     channelOrder = {},
+    customTabs = {},
+    customTabOrder = {},
+    gamepadCancelOnMove = true,
+    gamepadCancelOnCombat = true,
+    gamepadUseKeyboardChat = true,
     processedSalesMails = {},  -- persisted across sessions to avoid double-fire
 }
 
@@ -97,6 +105,10 @@ function Settings.Initialize()
 
     if not Settings.data.windowDimensions then
         Settings.data.windowDimensions = { width = 940, height = 520 }
+    end
+
+    if not Settings.data.compactDimensions then
+        Settings.data.compactDimensions = { width = 450, height = 270 }
     end
 
     -- Prune expired history messages on startup
@@ -150,7 +162,7 @@ function Settings.RegisterLAM()
         name = "AetherChat",
         displayName = "|cE5B558AETHER|r|cFFFFFFCHAT|r",
         author = "|cE5B558@AlexQuiet|r",
-        version = "1.2.6",
+        version = "1.3.0",
         registerForRefresh = true,
         registerForDefaults = true,
     }
@@ -170,11 +182,11 @@ function Settings.RegisterLAM()
     }
 
     local themeChoices = {
-        'Skyrim Dragonborn (Givre & Souffle de Dragon)',
-        'Dwemer Gold (Machines & Bronze Antique)',
-        'Nordic Emerald (Forêts de Bordeciel & Jade)',
-        'Crimson Brotherhood (Confrérie Noire & Sanctuaire)',
-        'Dark Glass (Moderne Épuré)',
+        L('THEME_SKYRIM'),
+        L('THEME_DWEMER'),
+        L('THEME_EMERALD'),
+        L('THEME_CRIMSON'),
+        L('THEME_DARK'),
     }
 
     local themeKeys = {
@@ -186,13 +198,13 @@ function Settings.RegisterLAM()
     }
 
     local soundChoices = {
-        'Carillon Céleste (Point Champion - Fort & Cristallin)',
-        'Notification Nette (Ding Moderne & Clair)',
-        'Fanfare Dorée (Succès / Triomphe)',
-        'Résonance Magique (Cloche Mystique)',
-        'Gong de Combat (Cloche de Défi)',
-        'Harmonie de Quête (Cors & Cloches)',
-        'Chuchotement Discret (Son d\'origine ESO)',
+        L('SOUND_CHAMPION'),
+        L('SOUND_DING'),
+        L('SOUND_ACHIEVEMENT'),
+        L('SOUND_BELL'),
+        L('SOUND_GONG'),
+        L('SOUND_QUEST'),
+        L('SOUND_DEFAULT'),
     }
 
     local soundKeys = {
@@ -206,11 +218,11 @@ function Settings.RegisterLAM()
     }
 
     local retentionChoices = {
-        '1 jour (24h) / 1 day',
-        '3 jours (72h) / 3 days',
-        '1 semaine (7 jours) / 1 week',
-        '1 mois (30 jours) / 1 month',
-        'Illimité (Jamais) / Unlimited',
+        L('RETENTION_1DAY'),
+        L('RETENTION_3DAYS'),
+        L('RETENTION_1WEEK'),
+        L('RETENTION_1MONTH'),
+        L('RETENTION_UNLIMITED'),
     }
 
     local retentionValues = {
@@ -650,6 +662,27 @@ function Settings.RegisterLAM()
             name = L('SET_GEN_HEADER'),
         },
         {
+            type = "dropdown",
+            name = L('SET_MODE_LABEL'),
+            tooltip = L('SET_MODE_TT'),
+            choices = {
+                L('MODE_STANDARD_NAME'),
+                L('MODE_COMPACT_NAME'),
+            },
+            choicesValues = {
+                'standard',
+                'compact',
+            },
+            getFunc = function() return Settings.Get('interfaceMode', 'standard') end,
+            setFunc = function(value)
+                Settings.Set('interfaceMode', value)
+                if AetherChat.Messenger and AetherChat.Messenger.SetInterfaceMode then
+                    AetherChat.Messenger.SetInterfaceMode(value)
+                end
+            end,
+            default = 'standard',
+        },
+        {
             type = "slider",
             name = L('SET_WINDOW_ALPHA'),
             tooltip = L('SET_WINDOW_ALPHA_TT'),
@@ -688,6 +721,54 @@ function Settings.RegisterLAM()
             end,
             default = false,
         },
+        -- ===================== GAMEPAD / MANETTE =====================
+        {
+            type = "header",
+            name = L('SET_GAMEPAD_HEADER'),
+        },
+        {
+            type = "checkbox",
+            name = L('SET_GAMEPAD_CANCEL_MOVE'),
+            tooltip = L('SET_GAMEPAD_CANCEL_MOVE_TT'),
+            getFunc = function() return Settings.Get('gamepadCancelOnMove', true) end,
+            setFunc = function(value) Settings.Set('gamepadCancelOnMove', value) end,
+            default = true,
+        },
+        {
+            type = "checkbox",
+            name = L('SET_GAMEPAD_CANCEL_COMBAT'),
+            tooltip = L('SET_GAMEPAD_CANCEL_COMBAT_TT'),
+            getFunc = function() return Settings.Get('gamepadCancelOnCombat', true) end,
+            setFunc = function(value) Settings.Set('gamepadCancelOnCombat', value) end,
+            default = true,
+        },
+        {
+            type = "checkbox",
+            name = L('SET_GAMEPAD_USE_KEYBOARD_CHAT'),
+            tooltip = L('SET_GAMEPAD_USE_KEYBOARD_CHAT_TT'),
+            getFunc = function()
+                if GAMEPAD_SETTING_USE_KEYBOARD_CHAT and GetSetting then
+                    if GetSetting_Bool then
+                        return GetSetting_Bool(SETTING_TYPE_GAMEPAD, GAMEPAD_SETTING_USE_KEYBOARD_CHAT)
+                    else
+                        local val = GetSetting(SETTING_TYPE_GAMEPAD, GAMEPAD_SETTING_USE_KEYBOARD_CHAT)
+                        return (val == "1" or val == "true" or val == 1 or val == true)
+                    end
+                end
+                return Settings.Get('gamepadUseKeyboardChat', true)
+            end,
+            setFunc = function(value)
+                Settings.Set('gamepadUseKeyboardChat', value)
+                if GAMEPAD_SETTING_USE_KEYBOARD_CHAT and SetSetting then
+                    SetSetting(SETTING_TYPE_GAMEPAD, GAMEPAD_SETTING_USE_KEYBOARD_CHAT, value and "1" or "0")
+                end
+                if AetherChat.Messenger and AetherChat.Messenger.ApplyNativeGamepadChatHidden then
+                    AetherChat.Messenger.ApplyNativeGamepadChatHidden(value)
+                end
+            end,
+            default = true,
+        },
+
         {
             type = "header",
             name = L('SET_ACTIONS_HEADER'),
@@ -721,6 +802,9 @@ function Settings.RegisterLAM()
                 Settings.Set('floatingIconPos', { x = 60, y = 60 })
                 Settings.Set('windowPos', nil)
                 Settings.Set('windowDimensions', { width = 940, height = 520 })
+                Settings.Set('interfaceMode', 'standard')
+                Settings.Set('compactPos', nil)
+                Settings.Set('compactDimensions', { width = 450, height = 270 })
                 Settings.Set('sidebarCollapsed', false)
                 Settings.Set('backdropAlpha', 95)
                 if AetherChat_MinBar then

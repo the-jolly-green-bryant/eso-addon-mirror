@@ -5,14 +5,12 @@
                      hidden="true"
                      clampedToScreen="true"
                      movable="true"
-                     mouseEnabled="true"
-                     keyboardEnabled="true">
+                     mouseEnabled="true">
 
       <Dimensions x="440" y="470"/>
       <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="120" offsetY="0"/>
 
       <OnMouseWheel>Verdant.Library.on_scroll(delta)</OnMouseWheel>
-      <OnKeyDown>Verdant.Library.on_key(key)</OnKeyDown>
 
       <Controls>
 

@@ -1,0 +1,96 @@
+<GuiXml>
+    <!--
+        PB's MailerExtension: the pane beside the list, in the gamepad mail window.
+
+        This is the inbox's own mail view (ingame/mail/gamepad/mailinbox_gamepad.xml) copied:
+        the same virtual templates, the same anchors, the same 15 pixel gaps, the same 115 and
+        15 insets at the bottom. Only the C.O.D. notice is left out, and the address heading is
+        left without text because it says either "to" or "from" depending on which box is being
+        looked at.
+
+        It is XML and not Lua for one reason, learned the hard way over three versions: anchors
+        declared in XML replace, while SetAnchor adds and a control may only have two. And a
+        row's height is worked out by the time an XML layout is resolved, while the same pieces
+        built in Lua measured zero, so every field landed on top of its own heading. The client
+        writes this in XML; so does this.
+
+        (No double hyphens anywhere in here: XML comments may not contain them.)
+    -->
+    <Controls>
+        <Control name="PBsMailerExtension_MailView_Gamepad" virtual="true">
+            <Controls>
+                <Label name="$(parent)AddressLabel" inherits="ZO_Mail_Gamepad_Label">
+                    <Anchor point="TOPLEFT"/>
+                    <Anchor point="TOPRIGHT"/>
+                </Label>
+                <Backdrop name="$(parent)AddressField" inherits="ZO_Mail_Gamepad_LabelBox">
+                    <Anchor point="TOPRIGHT"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)AddressLabel" relativePoint="BOTTOMLEFT"/>
+                </Backdrop>
+
+                <Label name="$(parent)SubjectLabel" text="SI_GAMEPAD_MAIL_SUBJECT_LABEL" inherits="ZO_Mail_Gamepad_Label">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)AddressField" relativePoint="BOTTOMLEFT" offsetY="15"/>
+                </Label>
+                <Backdrop name="$(parent)SubjectField" inherits="ZO_Mail_Gamepad_LabelBox">
+                    <Anchor point="TOPRIGHT"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)SubjectLabel" relativePoint="BOTTOMLEFT"/>
+                </Backdrop>
+
+                <Label name="$(parent)BodyLabel" text="SI_GAMEPAD_MAIL_BODY_LABEL" inherits="ZO_Mail_Gamepad_Label">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)SubjectField" relativePoint="BOTTOMLEFT" offsetY="15"/>
+                </Label>
+                <Control name="$(parent)Body" inherits="ZO_Mail_Gamepad_Scrollable_LabelBox">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)BodyLabel" relativePoint="BOTTOMLEFT"/>
+                    <Anchor point="BOTTOMRIGHT" offsetY="-115"/>
+                </Control>
+
+                <Control name="$(parent)AttachmentsBox">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Body" relativePoint="BOTTOMLEFT" offsetY="15"/>
+                    <Anchor point="BOTTOMRIGHT" offsetY="-15"/>
+                    <Controls>
+                        <Label name="$(parent)MoneyLabel" inherits="ZO_Mail_Gamepad_Label">
+                            <Anchor point="TOPLEFT"/>
+                        </Label>
+                        <Label name="$(parent)Money" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED">
+                            <!-- NOTE: font is set in the money format options in lua, as in the client's own -->
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)MoneyLabel" relativePoint="BOTTOMLEFT" offsetY="3"/>
+                        </Label>
+                        <Label name="$(parent)NoMoney" inherits="ZO_Mail_Gamepad_Value">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)MoneyLabel" relativePoint="BOTTOMLEFT" offsetY="3"/>
+                        </Label>
+
+                        <Label name="$(parent)AttachmentsLabel" text="SI_MAIL_ATTACHMENTS_HEADER" inherits="ZO_Mail_Gamepad_Label">
+                            <Anchor point="TOPLEFT" relativePoint="TOP"/>
+                        </Label>
+                        <Label name="$(parent)NoAttachments" text="SI_GAMEPAD_MAIL_INBOX_NO_ATTACHMENTS" inherits="ZO_Mail_Gamepad_Value">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)AttachmentsLabel" relativePoint="BOTTOMLEFT" offsetY="3"/>
+                        </Label>
+                        <Control name="$(parent)AttachmentsBase" hidden="true">
+                            <!-- Slots are anchored to this in Lua, as the client anchors its own -->
+                            <Dimensions x="0" y="55"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)AttachmentsLabel" relativePoint="BOTTOMLEFT" offsetY="3"/>
+                        </Control>
+                    </Controls>
+                </Control>
+            </Controls>
+        </Control>
+
+        <!--
+            The line along the bottom of the mail window, on the same row as the button prompts
+            and to the right of them. It is right aligned and wide enough for the longest form
+            of the text, so what it says ends at the same inset the mail window uses.
+
+            The face comes from ZO_Mail_Gamepad_Label for its size; its colour does not. That
+            template is grey, for a heading on the window's own dark panel, and this sits on the
+            keybind strip's background where grey disappears. The colour is set in Lua.
+        -->
+        <Control name="PBsMailerExtension_Storage_Gamepad" virtual="true">
+            <Dimensions x="900" y="32"/>
+            <Controls>
+                <Label name="$(parent)Text" inherits="ZO_Mail_Gamepad_Label" horizontalAlignment="RIGHT" verticalAlignment="CENTER">
+                    <AnchorFill/>
+                </Label>
+            </Controls>
+        </Control>
+    </Controls>
+</GuiXml>

@@ -40,10 +40,17 @@ local SCENE_GROUP = "mailSceneGroup"
 -- than inherited, so this file needs no XML of its own.
 local PANEL_WIDTH, PANEL_HEIGHT, PANEL_OFFSET_Y = 930, 690, 32
 
-local ROWS_PER_PAGE = 12
+-- Eight rows rather than twelve, and the space that buys goes to the letter itself. A box of
+-- kept mail whose bodies cannot be read is a box of subject lines; the same panel is worth
+-- having on the other two, where it shows what a draft actually says before it goes back on
+-- the page.
+local ROWS_PER_PAGE = 8
 local ROW_HEIGHT = 34
 local ROWS_TOP = 64
 local PADDING = 10
+
+local BODY_TOP_GAP = 16
+local BODY_HEIGHT = 250
 
 local COLOUR_ROW = "C5C29E"
 local COLOUR_SELECTED = "FFD100"
@@ -121,10 +128,23 @@ function Screen:BuildWindow()
 		self.rows[index] = row
 	end
 
-	self.footer = Label(window, self.windowName .. "Footer", "ZoFontGame", PANEL_WIDTH - PADDING * 2)
-	self.footer:SetAnchor(TOPLEFT, window, TOPLEFT, PADDING, ROWS_TOP + ROWS_PER_PAGE * ROW_HEIGHT + PADDING)
+	local listBottom = ROWS_TOP + ROWS_PER_PAGE * ROW_HEIGHT
 
-	self.loadButton = Button(window, self.windowName .. "Load", GetString(SI_PBSMX_KEYBIND_LOAD), function()
+	self.footer = Label(window, self.windowName .. "Footer", "ZoFontGame", PANEL_WIDTH - PADDING * 2)
+	self.footer:SetAnchor(TOPLEFT, window, TOPLEFT, PADDING, listBottom + PADDING)
+
+	-- The letter itself. A plain multi-line label: the body already arrives with its own line
+	-- breaks, and what does not fit is cut off by the label rather than by us, so nothing has
+	-- to guess at a character count.
+	self.body = Label(window, self.windowName .. "Body", "ZoFontGame", PANEL_WIDTH - PADDING * 2)
+	self.body:SetAnchor(TOPLEFT, window, TOPLEFT, PADDING, listBottom + PADDING + BODY_TOP_GAP + 12)
+	self.body:SetHeight(BODY_HEIGHT)
+	self.body:SetVerticalAlignment(TEXT_ALIGN_TOP)
+	if self.body.SetWrapMode and TEXT_WRAP_MODE_ELLIPSIS then
+		self.body:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
+	end
+
+	self.loadButton = Button(window, self.windowName .. "Load", self.box:LoadLabel(), function()
 		if self.selected then
 			ui:RequestLoad(self.box, self.selected)
 		end
@@ -213,7 +233,14 @@ function Screen:Refresh()
 		end
 	end
 
-	self.footer:SetText(Paint(COLOUR_DIM, Format(SI_PBSMX_PAGE_OF, self.page, pages)))
+	-- The page number on the left, how much room is left for saved data on the right of the
+	-- same line. The keyboard window has no bottom strip of its own to put it in.
+	local line, low = addon:StorageLine()
+	self.footer:SetText(Paint(COLOUR_DIM, Format(SI_PBSMX_PAGE_OF, self.page, pages)) ..
+		(line and ("   " .. (low and ("|cC74A4A" .. line .. "|r") or Paint(COLOUR_DIM, line))) or ""))
+
+	local chosen = self.selected and all[self.selected] or nil
+	self.body:SetText(chosen and self.box:Preview(chosen) or Paint(COLOUR_DIM, GetString(SI_PBSMX_PICK_ONE)))
 	self.previousButton:SetHidden(pages < 2)
 	self.nextButton:SetHidden(pages < 2)
 
@@ -319,8 +346,22 @@ keyboard.sent = NewScreen({
 	},
 })
 
+keyboard.kept = NewScreen({
+	box = addon.kept,
+	sceneName = "pbMailerKept",
+	windowName = "PBsMailerExtensionKeptWindow",
+	titleId = SI_PBSMX_TAB_KEPT,
+	emptyId = SI_PBSMX_KEPT_EMPTY,
+	icons =
+	{
+		normal = "EsoUI/Art/Collections/collections_tabIcon_itemSets_up.dds",
+		pressed = "EsoUI/Art/Collections/collections_tabIcon_itemSets_down.dds",
+		highlight = "EsoUI/Art/Collections/collections_tabIcon_itemSets_over.dds",
+	},
+})
+
 function keyboard:Screens()
-	return { self.drafts, self.sent }
+	return { self.drafts, self.sent, self.kept }
 end
 
 -- ---------------------------------------------------------------------------------------
@@ -342,6 +383,33 @@ function keyboard:AddSaveKeybind()
 		keybind = "UI_SHORTCUT_TERTIARY",
 		callback = function()
 			ui:Save("")
+		end,
+	})
+
+	return true
+end
+
+-- The inbox strip carries the primary, secondary, tertiary, quaternary, negative and help
+-- binds; the quinary is the free one, and the client uses it on keyboard screens of its own
+-- (the store window, the fence, the inventory), so it is a real key here.
+function keyboard:AddKeepKeybind()
+	-- The inbox's strip is its "selection" descriptor -- the one added while a mail is picked
+	-- out -- not a static one like the Send page's.
+	local descriptor = MAIL_INBOX and (MAIL_INBOX.selectionKeybindStripDescriptor or MAIL_INBOX.staticKeybindStripDescriptor)
+	if not descriptor then
+		return false
+	end
+
+	table.insert(descriptor,
+	{
+		name = GetString(SI_PBSMX_KEEP_ENTRY),
+		keybind = "UI_SHORTCUT_QUINARY",
+		callback = function()
+			ui:Keep()
+			self.kept:Refresh()
+		end,
+		visible = function()
+			return addon.kept:ActiveMailId() ~= nil
 		end,
 	})
 
@@ -376,6 +444,7 @@ function keyboard:Initialize()
 	end
 
 	self:AddSaveKeybind()
+	self:AddKeepKeybind()
 
 	return true
 end

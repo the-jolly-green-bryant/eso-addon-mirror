@@ -108,7 +108,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Group Keys](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/Group-Keys__4580) | M0R | PC / Mac | 1.0 |
 | [Group Kill Feed](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/Group-Kill-Feed__e281d0bf-a7b6-4b0c-b4ff-78e38a6ed2f6) | SugaComa | Console | — |
 | [Group Kill Feed (only tested on console)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/Group-Kill-Feed-only-tested-on-console__4285) | SugaComa | PC / Mac | 1.3.5 |
-| [Group Log](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/Group-Log__4316) | atharti | PC / Mac | 2.0 |
+| [Group Log](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/Group-Log__4316) | atharti | PC / Mac | 2.1 |
 | [Group Loot](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Temeez/Group-Loot__1027) | Temeez | PC / Mac | 0.9.7 |
 | [Group Loot Notifier](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Hoft/Group-Loot-Notifier__1618) | Hoft | PC / Mac | 2.17 |
 | [Group Mementos](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PvPenny/Group-Mementos__4766) | PvPenny | PC / Mac | 2.3.3 |

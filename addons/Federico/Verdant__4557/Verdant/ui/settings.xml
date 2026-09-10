@@ -202,8 +202,17 @@
                 font="ZoFontGameSmall"
                 inherits="ZO_DefaultButton">
           <Anchor point="TOPLEFT" offsetX="14" offsetY="324"/>
-          <Dimensions x="272" y="22"/>
+          <Dimensions x="132" y="22"/>
           <OnClicked>Verdant.Settings.on_autosave_click()</OnClicked>
+        </Button>
+
+        <Button name="$(parent)AutoStopBtn"
+                mouseEnabled="true"
+                font="ZoFontGameSmall"
+                inherits="ZO_DefaultButton">
+          <Anchor point="TOPLEFT" offsetX="154" offsetY="324"/>
+          <Dimensions x="132" y="22"/>
+          <OnClicked>Verdant.Settings.on_autostop_click()</OnClicked>
         </Button>
 
         <Button name="$(parent)LightBtn"
