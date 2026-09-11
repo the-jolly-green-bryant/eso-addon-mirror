@@ -41,6 +41,22 @@ local function Vars()
     return T.savedVars
 end
 
+local function SetTextIf(ctrl, s)
+    if T.SetTextIf then
+        T.SetTextIf(ctrl, s)
+        return
+    end
+    if ctrl then ctrl:SetText(s) end
+end
+
+local function SetHiddenIf(ctrl, hidden)
+    if T.SetHiddenIf then
+        T.SetHiddenIf(ctrl, hidden)
+        return
+    end
+    if ctrl then ctrl:SetHidden(hidden) end
+end
+
 local function ApplyFont(label)
     if not label or not label.SetFont then return end
     local fonts = { "ZoFontGamepadBold22", "ZoFontGamepad22", "ZoFontGameBold", "ZoFontGame" }
@@ -99,16 +115,27 @@ local function PaintDot(ring, fill, glow, mode, rgb)
     rgb = rgb or COL_BUFF
     local a = (mode == 0 and 0.45) or (mode == 1 and 0.70) or 1
     local size = (mode == 1 and 9) or 16
-    fill:SetDimensions(size, size)
     local r, g, b = 0, 0, 0
     if mode ~= 0 then
         r, g, b = rgb[1], rgb[2], rgb[3]
     end
     if fill.SetCenterColor then
-        fill:SetCenterColor(r, g, b, a)
+        if T.SetCenterColorIf then
+            T.SetCenterColorIf(fill, r, g, b, a)
+        else
+            fill:SetCenterColor(r, g, b, a)
+        end
         if fill.SetEdgeColor then fill:SetEdgeColor(0, 0, 0, 0) end
     else
-        fill:SetColor(r, g, b, a)
+        if T.SetColorIf then
+            T.SetColorIf(fill, r, g, b, a)
+        else
+            fill:SetColor(r, g, b, a)
+        end
+    end
+    if fill._sz ~= size then
+        fill:SetDimensions(size, size)
+        fill._sz = size
     end
 end
 
@@ -195,18 +222,25 @@ function P.OnBossEffect(_, changeType, _slot, effectName, unitTag, beginTime, en
     elseif unitTag == "reticleover" then
         local vars = Vars()
         if vars and vars.debuffOnTarget == false then return end
+        if T.IsDebuffTarget and not T.IsDebuffTarget("reticleover") then return end
     else
         return
     end
-    local key = T.MatchPairKey and T.MatchPairKey(abilityId, effectName)
-    if not key then return end
+    local keys = T.KeysFromAbility and T.KeysFromAbility(abilityId, effectName)
+    if not keys or not next(keys) then return end
+    if T.HasWatchedKey and not T.HasWatchedKey(keys) then return end
     bossFx[unitTag] = bossFx[unitTag] or {}
     local gained = (changeType == EFFECT_RESULT_GAINED or changeType == EFFECT_RESULT_UPDATED)
     if EFFECT_RESULT_FULL_REFRESH and changeType == EFFECT_RESULT_FULL_REFRESH then gained = true end
-    if gained then
-        bossFx[unitTag][key] = EndMs(beginTime, endTime)
-    elseif changeType == EFFECT_RESULT_FADED then
-        bossFx[unitTag][key] = nil
+    local endMs = gained and EndMs(beginTime, endTime) or nil
+    for key in pairs(keys) do
+        if not T.IsWatchedKey or T.IsWatchedKey(key) then
+            if gained then
+                bossFx[unitTag][key] = endMs
+            elseif changeType == EFFECT_RESULT_FADED then
+                bossFx[unitTag][key] = nil
+            end
+        end
     end
 end
 
@@ -215,28 +249,51 @@ function P.ScanBoss(tag)
     if not DoesUnitExist or not DoesUnitExist(tag) then
         return
     end
-    local fresh = {}
+    local bag = bossFx[tag]
+    local keepImm = bag and bag.offBalanceImm
+    if bag then
+        for k in pairs(bag) do
+            bag[k] = nil
+        end
+    else
+        bag = {}
+        bossFx[tag] = bag
+    end
     local okN, n = pcall(GetNumBuffs, tag)
     if not okN or not n then return end
     for i = 1, n do
         local ok, name, _s, ending, _sl, _st, _ic, _bt, _et, _at, _se, id = pcall(GetUnitBuffInfo, tag, i)
         if ok then
-            local key = T.MatchPairKey and T.MatchPairKey(id, name)
-            if key then
+            local keys = T.KeysFromAbility and T.KeysFromAbility(id, name)
+            if keys and next(keys) and (not T.HasWatchedKey or T.HasWatchedKey(keys)) then
                 local endMs = 0
                 if ending and ending > 0 then endMs = math.floor(ending * 1000) end
-                fresh[key] = endMs
+                for key in pairs(keys) do
+                    if not T.IsWatchedKey or T.IsWatchedKey(key) then
+                        bag[key] = endMs
+                    end
+                end
             end
         end
     end
-    if fresh.offBalanceImm or fresh.offBalance then
-        bossFx[tag] = fresh
-    else
-        local old = bossFx[tag] or {}
-        if old.offBalanceImm and old.offBalanceImm > Now() and not fresh.offBalance then
-            fresh.offBalanceImm = old.offBalanceImm
+    if not bag.offBalanceImm and not bag.offBalance and keepImm and keepImm > Now() then
+        bag.offBalanceImm = keepImm
+    end
+end
+
+function P.PruneBossFx(live)
+    local keep = {}
+    if live then
+        for i = 1, #live do
+            if live[i] and live[i].tag then
+                keep[live[i].tag] = true
+            end
         end
-        bossFx[tag] = fresh
+    end
+    for tag in pairs(bossFx) do
+        if not keep[tag] then
+            bossFx[tag] = nil
+        end
     end
 end
 
@@ -392,19 +449,9 @@ local function LiveBosses()
         end
     end
     local allowTarget = not Vars() or Vars().debuffOnTarget ~= false
-    if allowTarget and #list == 0 and DoesUnitExist and DoesUnitExist("reticleover") then
-        local monster = false
-        if IsUnitMonster then
-            local okM, m = pcall(IsUnitMonster, "reticleover")
-            monster = okM and m
-        elseif GetUnitType then
-            local okT, typ = pcall(GetUnitType, "reticleover")
-            monster = okT and typ and typ ~= 0
-        end
-        if monster then
-            local name = GetUnitName and GetUnitName("reticleover") or "Target"
-            list[1] = { tag = "reticleover", name = name, target = true, idx = 0 }
-        end
+    if allowTarget and #list == 0 and T.IsDebuffTarget and T.IsDebuffTarget("reticleover") then
+        local name = GetUnitName and GetUnitName("reticleover") or "Target"
+        list[1] = { tag = "reticleover", name = name, target = true, idx = 0 }
     end
     if #list > MAX_BOSS then
         local cut = {}
@@ -495,7 +542,7 @@ function P.Refresh()
                     if r then
                         r.row:ClearAnchors()
                         r.row:SetAnchor(TOPLEFT, root, TOPLEFT, 0, y)
-                        r.name:SetText(PairLabel(pair.id))
+                        SetTextIf(r.name, PairLabel(pair.id))
                         local m1, m2 = CountPair(pair)
                         PaintDot(r.d1.ring, r.d1.fill, r.d1.glow, m1, COL_BUFF)
                         PaintDot(r.d2.ring, r.d2.fill, r.d2.glow, m2, COL_BUFF)
@@ -514,6 +561,9 @@ function P.Refresh()
     end
 
     local bosses = showDeb and LiveBosses() or {}
+    if P.PruneBossFx then
+        P.PruneBossFx(showDeb and bosses or {})
+    end
     if showDeb then
         if #bosses < 1 then
             bosses = { { tag = "_empty", name = (T.L and T.L.NO_BOSS) or "Out", idx = 0, empty = true } }
@@ -531,7 +581,7 @@ function P.Refresh()
                 blk.block:SetAnchor(TOPLEFT, root, TOPLEFT, 0, 0)
                 blk.block:SetHidden(false)
                 local panelWord = (T.L and T.L.DEBUFFS_SHORT) or "Debuffs"
-                blk.title:SetText(panelWord)
+                SetTextIf(blk.title, panelWord)
                 blk.h1:SetHidden(true)
                 blk.h2:SetHidden(true)
                 if blk.obH then blk.obH:SetHidden(true) end
@@ -545,19 +595,19 @@ function P.Refresh()
                         if h then
                             h:ClearAnchors()
                             h:SetAnchor(TOPLEFT, blk.block, TOPLEFT, x, 20)
-                            h:SetText(BossColTitle(bosses[b]))
+                            SetTextIf(h, BossColTitle(bosses[b]))
                             h:SetHidden(false)
                         end
                         if mj then
                             mj:ClearAnchors()
                             mj:SetAnchor(TOPLEFT, blk.block, TOPLEFT, x, 36)
-                            mj:SetText("Mj")
+                            SetTextIf(mj, "Mj")
                             mj:SetHidden(false)
                         end
                         if mn then
                             mn:ClearAnchors()
                             mn:SetAnchor(TOPLEFT, blk.block, TOPLEFT, x + COL, 36)
-                            mn:SetText("Mn")
+                            SetTextIf(mn, "Mn")
                             mn:SetHidden(false)
                         end
                     else
@@ -584,13 +634,13 @@ function P.Refresh()
                                 if onl then
                                     onl:ClearAnchors()
                                     onl:SetAnchor(TOPLEFT, blk.block, TOPLEFT, x, ry)
-                                    onl:SetText("On")
+                                    SetTextIf(onl, "On")
                                     onl:SetHidden(false)
                                 end
                                 if iml then
                                     iml:ClearAnchors()
                                     iml:SetAnchor(TOPLEFT, blk.block, TOPLEFT, x + COL, ry)
-                                    iml:SetText("Imm")
+                                    SetTextIf(iml, "Imm")
                                     iml:SetHidden(false)
                                 end
                             end
@@ -598,7 +648,7 @@ function P.Refresh()
                         end
                         r.row:ClearAnchors()
                         r.row:SetAnchor(TOPLEFT, blk.block, TOPLEFT, 0, ry)
-                        r.name:SetText(PairLabel(pair.id))
+                        SetTextIf(r.name, PairLabel(pair.id))
                         LayoutBossDots(r, nBoss, pair.single or pair.onOnly)
                         for b = 1, nBoss do
                             local col = r.cols[b]

@@ -33,6 +33,57 @@ local function Now()
     return 0
 end
 
+local function SetTextIf(ctrl, s)
+    if T.SetTextIf then
+        T.SetTextIf(ctrl, s)
+        return
+    end
+    if not ctrl then return end
+    if ctrl._tetsuText == s then return end
+    ctrl._tetsuText = s
+    ctrl:SetText(s)
+end
+
+local function SetHiddenIf(ctrl, hidden)
+    if T.SetHiddenIf then
+        T.SetHiddenIf(ctrl, hidden)
+        return
+    end
+    if ctrl then ctrl:SetHidden(hidden) end
+end
+
+local function SetCenterColorIf(ctrl, r, g, b, a)
+    if T.SetCenterColorIf then
+        T.SetCenterColorIf(ctrl, r, g, b, a)
+        return
+    end
+    if ctrl and ctrl.SetCenterColor then
+        ctrl:SetCenterColor(r, g, b, a)
+    end
+end
+
+local function SetColorIf(ctrl, r, g, b, a)
+    if T.SetColorIf then
+        T.SetColorIf(ctrl, r, g, b, a)
+        return
+    end
+    if ctrl and ctrl.SetColor then
+        ctrl:SetColor(r, g, b, a)
+    end
+end
+
+local layoutDirty = true
+local lastGroupSig = ""
+local lastColSig = ""
+local tagsBuf = {}
+local combatNameTag = {}
+
+function H.InvalidateLayout()
+    layoutDirty = true
+    lastGroupSig = ""
+    lastColSig = ""
+end
+
 -- ZOS (buffdebuffstyles.lua): timeStarted/timeEnding are GetFrameTimeSeconds.
 -- permanent = (timeEnding - timeStarted) == 0. A toggle often has
 -- start == end == "now", not end == 0. Comparing end*1000 to
@@ -477,8 +528,9 @@ function H.OnEffectChanged(_, changeType, _slot, effectName, unitTag, beginTime,
     if not unitTag or unitTag == "" then return end
     if T.IsJunkAbility and T.IsJunkAbility(abilityId) then return end
     local keys = T.KeysFromAbility and T.KeysFromAbility(abilityId, effectName) or nil
-    local key = T.LookupKeyForAbilityId(abilityId, effectName)
-    if not key and not (keys and next(keys)) then return end
+    if not keys or not next(keys) then return end
+    if T.HasWatchedKey and not T.HasWatchedKey(keys) then return end
+    local key = nil
     local gained = (changeType == EFFECT_RESULT_GAINED or changeType == EFFECT_RESULT_UPDATED)
     if EFFECT_RESULT_FULL_REFRESH and changeType == EFFECT_RESULT_FULL_REFRESH then
         gained = true
@@ -522,23 +574,30 @@ local function StripGender(name)
     return zo_strlower((tostring(name):gsub("%^.*", "")))
 end
 
-local function TagForCombatName(targetName)
-    local want = StripGender(targetName)
-    if want == "" then return nil end
-    local found
+local function RebuildCombatNameMap()
+    for k in pairs(combatNameTag) do
+        combatNameTag[k] = nil
+    end
     local function consider(tag)
         if not tag then return end
-        if StripGender(GetUnitName and GetUnitName(tag) or "") == want then
-            found = tag
-        elseif StripGender(GetUnitDisplayName and GetUnitDisplayName(tag) or "") == want then
-            found = tag
-        end
+        local n1 = StripGender(GetUnitName and GetUnitName(tag) or "")
+        if n1 ~= "" then combatNameTag[n1] = tag end
+        local n2 = StripGender(GetUnitDisplayName and GetUnitDisplayName(tag) or "")
+        if n2 ~= "" then combatNameTag[n2] = tag end
     end
     consider("player")
     if T.EachGroupTag then
         T.EachGroupTag(consider)
     end
-    return found
+end
+
+local function TagForCombatName(targetName)
+    local want = StripGender(targetName)
+    if want == "" then return nil end
+    local hit = combatNameTag[want]
+    if hit then return hit end
+    RebuildCombatNameMap()
+    return combatNameTag[want]
 end
 
 local HEAL_RESULTS = {}
@@ -549,17 +608,15 @@ HealResult(ACTION_RESULT_HEAL)
 HealResult(ACTION_RESULT_HEAL_CRIT)
 HealResult(ACTION_RESULT_HOT_TICK)
 HealResult(ACTION_RESULT_HOT_TICK_CRITICAL)
-HealResult(ACTION_RESULT_EFFECT_GAINED)
-HealResult(ACTION_RESULT_EFFECT_GAINED_DURATION)
 
 function H.OnCombatEvent(_, result, isError, abilityName, _g, _slot, _srcName, _srcType, targetName, _tgtType, _hit, _pwr, _dmg, _log, _sid, _tid, abilityId)
     if isError then return end
-    -- Never call LookupKeyForAbilityId(id, nil): empty name used to poison the cache.
     local hit = abilityId and T.IsIllustrious and T.IsIllustrious[abilityId]
     if not hit then
-        if result and next(HEAL_RESULTS) and not HEAL_RESULTS[result] then
+        if not result or not HEAL_RESULTS[result] then
             return
         end
+        -- Name walk only on real heal/HoT ticks, never on raw EFFECT_GAINED.
         hit = abilityName and T.TextMatchesNeedles and T.TextMatchesNeedles(abilityName, "illustrious")
     end
     if not hit then return end
@@ -581,8 +638,9 @@ function H.OnCombatState(_, inCombat)
             pcall(T.TrimJunkIds)
         end
         if collectgarbage then
-            pcall(collectgarbage, "step", 120)
+            pcall(collectgarbage, "step", 300)
         end
+        RebuildCombatNameMap()
         if H.ScanGroupBuffs then
             H.ScanGroupBuffs()
         end
@@ -626,7 +684,10 @@ function H.RefreshAll()
         end
     end
 
-    local tags = {}
+    local tags = tagsBuf
+    for i = #tags, 1, -1 do
+        tags[i] = nil
+    end
     if T.EachGroupTag then
         T.EachGroupTag(function(tag)
             if UnitPresent(tag) then
@@ -636,6 +697,10 @@ function H.RefreshAll()
     else
         tags[1] = "player"
     end
+    local groupSig = tostring(#tags)
+    for i = 1, #tags do
+        groupSig = groupSig .. ":" .. (tags[i] or "")
+    end
     if vars.sortByRole ~= false then
         table.sort(tags, function(a, b)
             local ra = UnitRoleRank(a)
@@ -644,11 +709,12 @@ function H.RefreshAll()
             return (UnitLabel(a) or "") < (UnitLabel(b) or "")
         end)
     end
+    lastGroupSig = groupSig
 
     local n = #tags
     if hudTitle then
         local title = (T.L and T.L.HEAL_SHORT) or "Heal"
-        hudTitle:SetText(string.format("%s  %d", title, n > 0 and n or 1))
+        SetTextIf(hudTitle, string.format("%s  %d", title, n > 0 and n or 1))
     end
 
     local ox = vars.hudOffsetX or 0
@@ -697,13 +763,13 @@ function H.RefreshAll()
             local x = x0 + (i - 1) * COL_W
             lab:ClearAnchors()
             lab:SetAnchor(TOPLEFT, root, TOPLEFT, x, 18)
-            lab:SetText(short)
+            SetTextIf(lab, short)
             lab:SetHidden(false)
             local cnt = hudCount[c]
             if cnt then
                 cnt:ClearAnchors()
                 cnt:SetAnchor(TOPLEFT, root, TOPLEFT, x, 34)
-                cnt:SetText(string.format("%d/%d", have, tot > 0 and tot or 0))
+                SetTextIf(cnt, string.format("%d/%d", have, tot > 0 and tot or 0))
                 if tot > 0 and have < tot then
                     cnt:SetColor(1.0, 0.62, 0.28, 1)
                 else
@@ -720,11 +786,11 @@ function H.RefreshAll()
         end
         if not used then
             if hudHeader[c] then
-                hudHeader[c]:SetText("")
+                SetTextIf(hudHeader[c], "")
                 hudHeader[c]:SetHidden(true)
             end
             if hudCount[c] then
-                hudCount[c]:SetText("")
+                SetTextIf(hudCount[c], "")
                 hudCount[c]:SetHidden(true)
             end
         end
@@ -752,27 +818,27 @@ function H.RefreshAll()
             )
             local inPuddle = (not dead) and UnitHasKey(tags[i], "illustrious")
             if r.cut then
-                r.cut:SetHidden(not cutOn)
-                r.cut:SetText(cutOn and "✖" or "")
+                SetHiddenIf(r.cut, not cutOn)
+                SetTextIf(r.cut, cutOn and "✖" or "")
             end
             if r.ih then
-                r.ih:SetHidden(not inPuddle)
+                SetHiddenIf(r.ih, not inPuddle)
             end
             local nameX = 8
             if cutOn then nameX = 18 end
             if inPuddle then nameX = nameX + 10 end
             r.name:SetAnchor(LEFT, r.row, LEFT, nameX, 0)
-            r.name:SetText(label)
+            SetTextIf(r.name, label)
             if dead then
-                r.name:SetColor(0.50, 0.52, 0.50, 0.85)
+                SetColorIf(r.name, 0.50, 0.52, 0.50, 0.85)
             elseif lowHp then
-                r.name:SetColor(1.0, 0.28, 0.24, 1)
+                SetColorIf(r.name, 1.0, 0.28, 0.24, 1)
             elseif inPuddle then
-                r.name:SetColor(1.0, 0.86, 0.20, 1)
+                SetColorIf(r.name, 1.0, 0.86, 0.20, 1)
             elseif IsSelf(tags[i]) then
-                r.name:SetColor(0.55, 0.95, 0.75, 1)
+                SetColorIf(r.name, 0.55, 0.95, 0.75, 1)
             else
-                r.name:SetColor(0.93, 0.95, 0.90, 1)
+                SetColorIf(r.name, 0.93, 0.95, 0.90, 1)
             end
             for c = 1, 5 do
                 local d = r.dots[c]
@@ -797,25 +863,30 @@ function H.RefreshAll()
                     d.fill:SetHidden(false)
                     local rgb = T.ColumnColor and T.ColumnColor(c) or COL_HEAL
                     if mode == 0 then
-                        if d.glow then d.glow:SetHidden(true) end
+                        if d.glow then SetHiddenIf(d.glow, true) end
                         if d.fill.SetCenterColor then
-                            d.fill:SetCenterColor(0, 0, 0, 0.45)
+                            SetCenterColorIf(d.fill, 0, 0, 0, 0.45)
                         else
-                            d.fill:SetColor(0, 0, 0, 0.45)
+                            SetColorIf(d.fill, 0, 0, 0, 0.45)
                         end
-                        d.fill:SetDimensions(16, 16)
+                        if d._sz ~= 16 then
+                            d.fill:SetDimensions(16, 16)
+                            d._sz = 16
+                        end
                     else
                         local a = (mode == 1) and 0.55 or 1
                         if d.fill.SetCenterColor then
-                            d.fill:SetCenterColor(rgb[1], rgb[2], rgb[3], a)
+                            SetCenterColorIf(d.fill, rgb[1], rgb[2], rgb[3], a)
                         else
-                            d.fill:SetColor(rgb[1], rgb[2], rgb[3], a)
+                            SetColorIf(d.fill, rgb[1], rgb[2], rgb[3], a)
                         end
-                        d.fill:SetDimensions(mode == 1 and 12 or 16, mode == 1 and 12 or 16)
+                        local sz = mode == 1 and 12 or 16
+                        if d._sz ~= sz then
+                            d.fill:SetDimensions(sz, sz)
+                            d._sz = sz
+                        end
                         if d.glow then
-                            -- Never use the circular ability highlight. It reads as a
-                            -- colored aura around a sharp square on console.
-                            d.glow:SetHidden(true)
+                            SetHiddenIf(d.glow, true)
                         end
                     end
                 end
@@ -830,9 +901,6 @@ function H.RefreshAll()
         local w = NAME_W + 16 + math.max(1, #liveCols) * COL_W
         root:SetDimensions(w, math.max(78, 60 + rowI * ROW_H + 6))
     end
-    if T.Panels and T.Panels.Refresh then
-        pcall(T.Panels.Refresh)
-    end
 end
 
 
@@ -840,41 +908,45 @@ local function ScanUnitBuffs(unitTag)
     if type(GetNumBuffs) ~= "function" or type(GetUnitBuffInfo) ~= "function" then
         return
     end
-    local fresh = {}
+    local ck = CovKey(unitTag)
+    if not ck then return end
+    local bag = coverage[ck]
+    local stickyIH = bag and bag.illustrious
+    if bag then
+        for k in pairs(bag) do
+            bag[k] = nil
+        end
+    else
+        bag = {}
+        coverage[ck] = bag
+    end
     local okN, n = pcall(GetNumBuffs, unitTag)
     if okN and n and n > 0 then
         for i = 1, n do
             local ok, buffName, timeStarted, timeEnding, _slot, _stacks, _icon, _bt, _et, _at, _st, abilityId =
                 pcall(GetUnitBuffInfo, unitTag, i)
             if ok then
-                local endMs = EndMs(timeStarted, timeEnding)
                 local keys = T.KeysFromAbility and T.KeysFromAbility(abilityId, buffName)
-                if keys then
-                    for mapped in pairs(keys) do
-                        fresh[mapped] = endMs
-                    end
-                else
-                    local mapped = T.LookupKeyForAbilityId(abilityId, buffName)
-                    if mapped then
-                        fresh[mapped] = endMs
+                if keys and next(keys) then
+                    if not T.HasWatchedKey or T.HasWatchedKey(keys) then
+                        local endMs = EndMs(timeStarted, timeEnding)
+                        for mapped in pairs(keys) do
+                            if not T.IsWatchedKey or T.IsWatchedKey(mapped) then
+                                bag[mapped] = endMs
+                            end
+                        end
                     end
                 end
             end
         end
     end
-    local ck = CovKey(unitTag)
-    if not ck then return end
-    local old = coverage[ck]
-    if old and old.illustrious then
-        local sticky = old.illustrious
-        if sticky ~= 0 and sticky > Now() and not fresh.illustrious then
-            fresh.illustrious = sticky
-        end
+    if stickyIH and stickyIH ~= 0 and stickyIH > Now() and not bag.illustrious then
+        bag.illustrious = stickyIH
     end
-    coverage[ck] = fresh
 end
 
 function H.ScanGroupBuffs()
+    RebuildCombatNameMap()
     for k in pairs(liveUnits) do
         liveUnits[k] = nil
     end
@@ -897,15 +969,8 @@ function H.ScanGroupBuffs()
             pcall(T.Panels.ScanBoss, "boss" .. i)
         end
         local allowTarget = not Vars() or Vars().debuffOnTarget ~= false
-        if allowTarget and DoesUnitExist and DoesUnitExist("reticleover") then
-            local monster = true
-            if IsUnitMonster then
-                local okM, m = pcall(IsUnitMonster, "reticleover")
-                monster = okM and m
-            end
-            if monster then
-                pcall(T.Panels.ScanBoss, "reticleover")
-            end
+        if allowTarget and T.IsDebuffTarget and T.IsDebuffTarget("reticleover") then
+            pcall(T.Panels.ScanBoss, "reticleover")
         end
     end
 end
@@ -916,15 +981,25 @@ function H.Start()
     EVENT_MANAGER:UnregisterForUpdate(PANEL_NAME)
     EnsureHud()
     H.ScanGroupBuffs()
-    EVENT_MANAGER:RegisterForUpdate(UPDATE_NAME, 300, function()
+    EVENT_MANAGER:RegisterForUpdate(UPDATE_NAME, 400, function()
         pcall(H.RefreshAll)
     end)
-    EVENT_MANAGER:RegisterForUpdate(SCAN_NAME, 1000, function()
+    EVENT_MANAGER:RegisterForUpdate(SCAN_NAME, 2000, function()
         pcall(H.ScanGroupBuffs)
     end)
-    EVENT_MANAGER:RegisterForUpdate(PANEL_NAME, 300, function()
+    EVENT_MANAGER:RegisterForUpdate(PANEL_NAME, 700, function()
         if T.Panels and T.Panels.Refresh then
             pcall(T.Panels.Refresh)
+        end
+    end)
+    EVENT_MANAGER:UnregisterForUpdate("TetsuCHH_GC")
+    EVENT_MANAGER:RegisterForUpdate("TetsuCHH_GC", 30000, function()
+        if InCombat() then return end
+        if T.TrimJunkIds then
+            pcall(T.TrimJunkIds)
+        end
+        if collectgarbage then
+            pcall(collectgarbage, "step", 300)
         end
     end)
     H.RefreshAll()

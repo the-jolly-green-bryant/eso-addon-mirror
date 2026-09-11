@@ -1,0 +1,39 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/its_wifey/TemplarMastery__4827",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "its_wifey",
+  "canonical_id": "esoui:4827",
+  "category_id": "56",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    }
+  ],
+  "content_id": "esoui:4827",
+  "deleted": false,
+  "directories": [
+    "TemplarMastery"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4827/",
+  "fingerprint": "08e38f924f2c553c8402bca457644f68d80205305cdd6cd5fb02c9531914655e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17346.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17347.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4827",
+  "source_url": "https://www.esoui.com/downloads/info4827-TemplarMastery.html",
+  "stats": {
+    "downloads": 3,
+    "favorites": 0,
+    "monthly_downloads": 0
+  },
+  "title": "TemplarMastery",
+  "updated_at": 1789103172000,
+  "version": "1.2"
+}

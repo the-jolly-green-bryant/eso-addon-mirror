@@ -25,7 +25,11 @@ local function Dropdown(settings, label, tooltip, defaultKey, getter, setter)
         setFunction = function(control, itemName, itemData)
             local key = (itemData and itemData.data) or "off"
             setter(key)
-            if T.Hud then T.Hud.RefreshAll() end
+            if T.OnSettingsChanged then
+                T.OnSettingsChanged()
+            elseif T.Hud then
+                T.Hud.RefreshAll()
+            end
         end,
     })
 end
@@ -39,7 +43,7 @@ function T.RegisterSettings()
 
     local settings = LibHarven:AddAddon(L.TITLE, { allowRefresh = true, allowDefaults = true })
     if not settings then return end
-    settings.version = "1.7.11"
+    settings.version = "1.9.1"
     settings.author = "Tetsurion"
 
     settings:AddSetting({
@@ -347,7 +351,11 @@ function T.RegisterSettings()
                 end,
                 setFunction = function(val)
                     vars["buffPair_" .. id] = val and true or false
-                    if T.Panels then T.Panels.Refresh() end
+                    if T.OnSettingsChanged then
+                        T.OnSettingsChanged()
+                    elseif T.Panels then
+                        T.Panels.Refresh()
+                    end
                 end,
             })
         end
@@ -394,7 +402,11 @@ function T.RegisterSettings()
                 end,
                 setFunction = function(val)
                     vars["debuffPair_" .. id] = val and true or false
-                    if T.Panels then T.Panels.Refresh() end
+                    if T.OnSettingsChanged then
+                        T.OnSettingsChanged()
+                    elseif T.Panels then
+                        T.Panels.Refresh()
+                    end
                 end,
             })
         end

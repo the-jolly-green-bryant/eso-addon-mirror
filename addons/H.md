@@ -54,6 +54,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Healers Group Frame 1.3 - Purge Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Bleifish/Healers-Group-Frame-1.3---Purge-Tracker__2392) | Bleifish | PC / Mac | 1.3 |
 | [Healers Group Frame Improved](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wheels/Healers-Group-Frame-Improved__1861) | Wheels | PC / Mac | 1.5.1 |
 | [Healing Buff Uptime](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/satuve/Healing-Buff-Uptime__c68c0503-c262-44d6-97a9-d2e8ee77ee72) | satuve | Console | — |
+| [HealingMeter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/its_wifey/HealingMeter__4828) | its_wifey | PC / Mac | 1.0 |
 | [HearLightAttack](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Azibura/HearLightAttack__3852) | Azibura | PC / Mac | 1.0.2 |
 | [HearthHome Filter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tanelornian/HearthHome-Filter__2282) | Tanelornian | PC / Mac | 1.0.2.7 |
 | [Heat Shock Tracker (former Stagger)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/B7TxSpeed/Heat-Shock-Tracker-former-Stagger__4270) | B7TxSpeed | PC / Mac | 1.3 |

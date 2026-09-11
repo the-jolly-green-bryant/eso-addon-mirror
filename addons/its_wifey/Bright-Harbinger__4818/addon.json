@@ -1,9 +1,8 @@
 {
-  "archive_error": "ESOUI returned an empty response",
+  "archive_format": "zip",
   "archive_path": "addons/its_wifey/Bright-Harbinger__4818",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archive_status": "unavailable",
-  "archived": false,
+  "archived": true,
   "author": "its_wifey",
   "canonical_id": "esoui:4818",
   "category_id": "56",
@@ -19,7 +18,7 @@
     "BrightHarbinger"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4818/",
-  "fingerprint": "e1072ba2551455759e8a99051182d3fcb448f9e0ba38bd1d6fb0b7582c4c637f",
+  "fingerprint": "d789e5e115d456fce9f5825a9082bf16a412ffa3f1ad4013977a6a05916e4544",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw17316.png",
     "https://cdn-eso.mmoui.com/preview/pvw17315.png"
@@ -30,11 +29,11 @@
   "source_id": "4818",
   "source_url": "https://www.esoui.com/downloads/info4818-BrightHarbinger.html",
   "stats": {
-    "downloads": 2,
-    "favorites": 1,
-    "monthly_downloads": 1
+    "downloads": 13,
+    "favorites": 2,
+    "monthly_downloads": 11
   },
   "title": "Bright Harbinger",
-  "updated_at": 1788837730000,
-  "version": "1.4"
+  "updated_at": 1789105451000,
+  "version": "1.5"
 }

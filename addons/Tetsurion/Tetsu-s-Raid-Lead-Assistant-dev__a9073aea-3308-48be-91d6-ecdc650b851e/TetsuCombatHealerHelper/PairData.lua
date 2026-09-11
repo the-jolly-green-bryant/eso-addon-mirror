@@ -112,6 +112,9 @@ end
 if T.BuildLookupIndex then
     T.BuildLookupIndex()
 end
+if T.RebuildWatchSet then
+    T.RebuildWatchSet()
+end
 
 local function Lower(s)
     if not s then return "" end

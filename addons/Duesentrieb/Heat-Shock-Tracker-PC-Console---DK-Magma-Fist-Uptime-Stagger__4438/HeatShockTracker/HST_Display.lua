@@ -4,10 +4,8 @@ local HST = HeatShockTracker
 -- CREATE INTERFACE ELEMENTS
 ---------------------------------------------------------------------------
 function HST.CreateGuiElements()
-    local wm = WINDOW_MANAGER
-
     -- PARENT
-    HST.PARENT = wm:CreateTopLevelWindow(HST.NAME .. "Control")
+    HST.PARENT = WINDOW_MANAGER:CreateTopLevelWindow(HST.NAME .. "Control")
     HST.PARENT:SetDimensions(HST.SV.iconSize, HST.SV.iconSize)
     HST.PARENT:SetClampedToScreen(true)
     HST.PARENT:SetMovable(not HST.SV.isLocked)
@@ -19,42 +17,45 @@ function HST.CreateGuiElements()
         HST.SV.offsetY = HST.PARENT:GetTop()
     end)
 
-    -- BACKGROUND
-    HST.BG = wm:CreateControl("$(parent)_BG", HST.PARENT, CT_BACKDROP)
-    HST.BG:SetAnchor(TOPLEFT, HST.PARENT, TOPLEFT)
+    HST.CONTAINER = WINDOW_MANAGER:CreateControl("$(parent)_Container", HST.PARENT, CT_CONTROL)
+    HST.CONTAINER:SetDimensions(HST.SV.iconSize, HST.SV.iconSize)
+    HST.CONTAINER:SetAnchor(CENTER, HST.PARENT, CENTER)
+
+    HST.BG = WINDOW_MANAGER:CreateControl("$(parent)_BG", HST.CONTAINER, CT_BACKDROP)
+    HST.BG:SetAnchor(TOPLEFT, HST.CONTAINER, TOPLEFT)
     HST.BG:SetDimensions(HST.SV.iconSize, HST.SV.iconSize)
     local r, g, b, a = unpack(HST.SV.ColorStack0)
     HST.BG:SetCenterColor(r, g, b, a)
     HST.BG:SetEdgeColor(0, 0, 0, 1)
     HST.BG:SetEdgeTexture("", 1, 1, HST.SV.edgeThickness, 0)
 
-    -- ABILITY ICON (STAGGER ICON FROM SLOT ID SHOULD WORK)
-    HST.ICON = wm:CreateControl("$(parent)_Icon", HST.PARENT, CT_TEXTURE)
-    HST.ICON:SetAnchor(CENTER, HST.PARENT, CENTER)
+    -- ABILITY ICON
+    HST.ICON = WINDOW_MANAGER:CreateControl("$(parent)_Icon", HST.CONTAINER, CT_TEXTURE)
+    HST.ICON:SetAnchor(CENTER, HST.CONTAINER, CENTER)
     local innerSize = math.max(1, HST.SV.iconSize - (HST.SV.borderThickness * 2))
     HST.ICON:SetDimensions(innerSize, innerSize)
     HST.ICON:SetTexture(GetAbilityIcon(HST.SLOT_ID))
     HST.ICON:SetDesaturation(HST.SV.iconDesaturation / 100)
 
-    -- REMAINING DURATION (CENTER)
-    HST.DURATION = wm:CreateControl("$(parent)_Duration", HST.PARENT, CT_LABEL)
+    -- REMAINING DURATION
+    HST.DURATION = WINDOW_MANAGER:CreateControl("$(parent)_Duration", HST.CONTAINER, CT_LABEL)
     HST.DURATION:SetColor(unpack(HST.SV.TextColorStacks))
     HST.DURATION:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     HST.DURATION:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     HST.UpdateTimerPosition()
 
-    -- STACK COUNT (TOP RIGHT)
-    HST.STACK_LABEL = wm:CreateControl("$(parent)_Stacks", HST.PARENT, CT_LABEL)
+    -- STACK COUNT
+    HST.STACK_LABEL = WINDOW_MANAGER:CreateControl("$(parent)_Stacks", HST.CONTAINER, CT_LABEL)
     HST.STACK_LABEL:SetColor(unpack(HST.SV.TextColorStacks))
-    HST.STACK_LABEL:SetAnchor(TOPRIGHT, HST.PARENT, TOPRIGHT, -7, 4)
+    HST.STACK_LABEL:SetAnchor(TOPRIGHT, HST.CONTAINER, TOPRIGHT, -7, 4)
 
-    -- UPTIME PERCENTAGE (TOP LET)
-    HST.UPTIME_LABEL = wm:CreateControl("$(parent)_Uptime", HST.PARENT, CT_LABEL)
+    -- UPTIME PERCENTAGE
+    HST.UPTIME_LABEL = WINDOW_MANAGER:CreateControl("$(parent)_Uptime", HST.CONTAINER, CT_LABEL)
     HST.UPTIME_LABEL:SetColor(unpack(HST.SV.TextColorStacks))
-    HST.UPTIME_LABEL:SetAnchor(TOPLEFT, HST.PARENT, TOPLEFT, 7, 4)
+    HST.UPTIME_LABEL:SetAnchor(TOPLEFT, HST.CONTAINER, TOPLEFT, 7, 4)
 
-    -- BOSS LABEL (ABOVE TRACKER)
-    HST.BOSS_LABEL = wm:CreateControl("$(parent)_BossLabel", HST.PARENT, CT_LABEL)
+    -- BOSS LABEL
+    HST.BOSS_LABEL = WINDOW_MANAGER:CreateControl("$(parent)_BossLabel", HST.CONTAINER, CT_LABEL)
     HST.BOSS_LABEL:SetColor(unpack(HST.SV.TextColorBoss))
     HST.BOSS_LABEL:SetText("BOSS")
     HST.BOSS_LABEL:SetHidden(HST.SV.isHideBossLabel)
@@ -68,11 +69,10 @@ end
 ---------------------------------------------------------------------------
 function HST.UpdateTimerPosition()
     HST.DURATION:ClearAnchors()
-
     if HST.SV.isHideUptime and HST.SV.isHideStacks then
-        HST.DURATION:SetAnchor(CENTER, HST.PARENT, CENTER, 0, HST.SV.offsetYTimer - HST.Default.offsetYTimer)
+        HST.DURATION:SetAnchor(CENTER, HST.CONTAINER, CENTER, 0, HST.SV.offsetYTimer - HST.Default.offsetYTimer)
     else
-        HST.DURATION:SetAnchor(CENTER, HST.PARENT, CENTER, 0, HST.SV.offsetYTimer)
+        HST.DURATION:SetAnchor(CENTER, HST.CONTAINER, CENTER, 0, HST.SV.offsetYTimer)
     end
 end
 
@@ -81,7 +81,7 @@ end
 ---------------------------------------------------------------------------
 function HST.UpdateBossPosition()
     HST.BOSS_LABEL:ClearAnchors()
-    HST.BOSS_LABEL:SetAnchor(BOTTOM, HST.PARENT, TOP, 0, HST.SV.offsetYBoss)
+    HST.BOSS_LABEL:SetAnchor(BOTTOM, HST.CONTAINER, TOP, 0, HST.SV.offsetYBoss)
 end
 
 ---------------------------------------------------------------------------
@@ -144,15 +144,84 @@ function HST.PlayAnimation()
 end
 
 ---------------------------------------------------------------------------
+-- ATTENTION SHAKE ANIMATION
+---------------------------------------------------------------------------
+function HST.TriggerAttentionShake()
+    local threshold = HST.SV.shakeThreshold
+    local maxIntensity = HST.SV.shakeIntensity
+
+    if not HST.SV.isEnabledShake or maxIntensity == 0 or threshold <= 0 then return end
+
+    local currentTime = GetGameTimeMilliseconds()
+    local remainingTime = math.max(0, (HST.StackEndTimes[1] - currentTime) / 1000)
+
+    if remainingTime > 0 and remainingTime <= threshold then
+        local progress = 1 - (remainingTime / threshold)
+        local currentIntensity = maxIntensity * progress
+
+        if not HST.shakeTimeline then
+            HST.shakeTimeline = ANIMATION_MANAGER:CreateTimeline()
+            local delay = 1000 / 30
+
+            HST.shakeAnim1 = HST.shakeTimeline:InsertAnimation(ANIMATION_TRANSLATE, HST.CONTAINER, 0)
+            HST.shakeAnim1:SetDuration(delay)
+
+            HST.shakeAnim2 = HST.shakeTimeline:InsertAnimation(ANIMATION_TRANSLATE, HST.CONTAINER, delay)
+            HST.shakeAnim2:SetDuration(delay)
+
+            HST.shakeAnim3 = HST.shakeTimeline:InsertAnimation(ANIMATION_TRANSLATE, HST.CONTAINER, 2 * delay)
+            HST.shakeAnim3:SetDuration(delay)
+
+            HST.shakeTimeline:SetHandler("OnStop", function()
+                HST.TriggerAttentionShake()
+            end)
+        end
+
+        local angle1 = math.random() * math.pi * 2
+        local rX1 = math.cos(angle1) * currentIntensity
+        local rY1 = math.sin(angle1) * currentIntensity
+
+        local angle2 = math.random() * math.pi * 2
+        local rX2 = math.cos(angle2) * currentIntensity
+        local rY2 = math.sin(angle2) * currentIntensity
+
+        HST.shakeAnim1:SetTranslateOffsets(0, 0, rX1, rY1)
+        HST.shakeAnim2:SetTranslateOffsets(rX1, rY1, rX2, rY2)
+        HST.shakeAnim3:SetTranslateOffsets(rX2, rY2, 0, 0)
+
+        HST.shakeTimeline:PlayFromStart()
+    end
+end
+
+
+---------------------------------------------------------------------------
 -- UPDATE LAYOUT AND COLORS
 ---------------------------------------------------------------------------
 function HST.UpdateVisuals()
     local currentTime = GetGameTimeMilliseconds()
 
-    -- UPDATE BORDER COLOR BASED ON CURRENT STACKS
+    -- CALC REM. TIME
+    local remainingTime = math.max(0, (HST.StackEndTimes[1] - currentTime) / 1000)
+    local percentage = 100 / (HST.DURATION_MS / 1000) * remainingTime
+
+    -- ATTENTION SHAKE TRIGGER
+    if HST.SV.isEnabledShake and HST.SV.shakeIntensity > 0 and remainingTime <= HST.SV.shakeThreshold and remainingTime > 0 then
+        if not HST.shakeTimeline or not HST.shakeTimeline:IsPlaying() then
+            HST.TriggerAttentionShake()
+        end
+    end
+
+    -- STACK COLOR ARRAY
     local colorArray = HST.SV["ColorStack" .. HST.currentStacks] or HST.SV.ColorStack0
-    local r, g, b, a = unpack(colorArray)
-    HST.BG:SetCenterColor(r, g, b, a)
+
+    -- BORDER COLOR
+    if HST.SV.isDynamicBorderColor then
+        local dynamicColor = HST.GetPercentageColor(percentage)
+        HST.BG:SetCenterColor(unpack(dynamicColor))
+    else
+        local r, g, b, a = unpack(colorArray)
+        HST.BG:SetCenterColor(r, g, b, a)
+    end
 
     if HST.SV.edgeThickness == 0 then
         -- HIDE EDGE WHNN SET TO 0
@@ -160,11 +229,6 @@ function HST.UpdateVisuals()
     else
         HST.BG:SetEdgeColor(0, 0, 0, 1)
     end
-
-    -- CALCULATE REMAINING TIME
-    local remainingTime = math.max(0, (HST.StackEndTimes[1] - currentTime) / 1000)
-    local percentage = 100 / (HST.DURATION_MS / 1000) * remainingTime
-
 
     -- SET TEXT (WILL SHOW 0 IF NO TIME REMAINING)
     if remainingTime > 0 then
@@ -190,7 +254,12 @@ function HST.UpdateVisuals()
     end
 
     if HST.SV.isColoredBossLabel then
-        HST.BOSS_LABEL:SetColor(unpack(colorArray))
+        if HST.SV.isDynamicBorderColor then
+            local dynamicColor = HST.GetPercentageColor(percentage)
+            HST.BOSS_LABEL:SetColor(unpack(dynamicColor))
+        else
+            HST.BOSS_LABEL:SetColor(unpack(colorArray))
+        end
     else
         HST.BOSS_LABEL:SetColor(unpack(HST.SV.TextColorBoss))
     end
@@ -212,6 +281,9 @@ end
 function HST.SetDefaultPosition()
     HST.PARENT:ClearAnchors()
     HST.PARENT:SetAnchor(CENTER, GuiRoot, CENTER, 0, HST.Default.offsetY)
-    HST.SV.offsetX = HST.PARENT:GetLeft()
-    HST.SV.offsetY = HST.PARENT:GetTop()
+
+    zo_callLater(function()
+        HST.SV.offsetX = HST.PARENT:GetLeft()
+        HST.SV.offsetY = HST.PARENT:GetTop()
+    end, 100)
 end

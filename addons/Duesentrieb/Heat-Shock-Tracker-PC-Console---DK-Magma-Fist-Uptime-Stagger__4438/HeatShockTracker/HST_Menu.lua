@@ -16,8 +16,8 @@ function HST.CreateSettings()
         type = "panel",
         name = panelName,
         displayName = "|cFF7F00Heat Shock|r |cFFFFFFTracker|r",
-        author = "|cFF7F00" .. HST.AUTHOR .. "|r |cFFFFFF[EU]|r",
-        version = HST.VERSION,
+        author = "|cFF7F00" .. HST.AUTHOR .. "|r |cFFFFFF[PC/EU]|r",
+        version = string.format("%s-%04d", HST.VERSION, HST.ADDONVERSION),
         registerForRefresh = true,
         registerForDefaults = true,
     }
@@ -184,6 +184,7 @@ function HST.CreateSettings()
                     setFunc = function(value)
                         HST.SV.iconSize = value
                         HST.PARENT:SetDimensions(value, value)
+                        HST.CONTAINER:SetDimensions(value, value)
                         HST.BG:SetDimensions(value, value)
                         local innerSize = math.max(1, value - (HST.SV.borderThickness * 2))
                         HST.ICON:SetDimensions(innerSize, innerSize)
@@ -245,13 +246,24 @@ function HST.CreateSettings()
                 -- TIMER
                 { type = "header", name = "|cFFBF7FCenter Timer|r" },
                 {
-                    type = "checkbox", name = "Colored Timer (Green to Red)",
+                    type = "checkbox", name = "Dynamic Timer Color",
                     getFunc = function() return HST.SV.isColoredTimer end,
                     setFunc = function(value)
                         HST.SV.isColoredTimer = value
                         HST.UpdateVisuals()
                     end,
                     default = HST.Default.isColoredTimer,
+                    disabled = function() return not HST.SV.enableAddon end,
+                },
+                {
+                    type = "checkbox", name = "Dynamic Border Color",
+                    tooltip = "Changes the border color dynamically based on remaining time instead of current stacks.",
+                    getFunc = function() return HST.SV.isDynamicBorderColor end,
+                    setFunc = function(value)
+                        HST.SV.isDynamicBorderColor = value
+                        HST.UpdateVisuals()
+                    end,
+                    default = HST.Default.isDynamicBorderColor,
                     disabled = function() return not HST.SV.enableAddon end,
                 },
                 {
@@ -281,8 +293,7 @@ function HST.CreateSettings()
                     getFunc = function() return HST.SV.offsetYTimer end,
                     setFunc = function(value)
                         HST.SV.offsetYTimer = value
-                        HST.DURATION:ClearAnchors()
-                        HST.DURATION:SetAnchor(CENTER, HST.PARENT, CENTER, 0, value)
+                        HST.UpdateTimerPosition()
                     end,
                     default = HST.Default.offsetYTimer,
                     disabled = function() return not HST.SV.enableAddon end,
@@ -412,7 +423,16 @@ function HST.CreateSettings()
                     default = HST.Default.fontSizeUptime,
                     disabled = function() return not HST.SV.enableAddon end,
                 },
+            },
+        },
 
+        ---------------------------------------------------------------------------
+        -- SUBMENU: ATTENTION SHAKE
+        ---------------------------------------------------------------------------
+        {
+            type = "submenu",
+            name = "|cFF7F00ANIMATION & SHAKE|r",
+            controls = {
                 -- ANIMATION
                 { type = "header", name = "|cFFBF7FAnimation|r" },
                 {
@@ -426,7 +446,7 @@ function HST.CreateSettings()
                 },
                 {
                     type = "slider",
-                    name = "Animation Scale (%)",
+                    name = "Animation Scale [%]",
                     tooltip = "How large the text grows during the animation (100% = no change).",
                     min = 100, max = 200, step =  10,
                     getFunc = function() return HST.SV.animationScale end,
@@ -436,7 +456,7 @@ function HST.CreateSettings()
                 },
                 {
                     type = "slider",
-                    name = "Animation Duration (ms)",
+                    name = "Animation Duration [ms]",
                     tooltip = "Total duration of the pulse animation in milliseconds.",
                     min = 100, max = 500, step = 10,
                     getFunc = function() return HST.SV.animationDuration end,
@@ -454,6 +474,38 @@ function HST.CreateSettings()
                     end,
                     disabled = function() return not HST.SV.enableAddon or not HST.SV.isEnabledAnimation end,
                     width = "half",
+                },
+
+                -- ATTENTION SHAKE
+                { type = "header", name = "|cFFBF7FAttention Shake|r" },
+                {
+                    type = "checkbox",
+                    name = "Enable Attention Shake",
+                    tooltip = "Shakes the tracker when the debuff is about to expire.",
+                    getFunc = function() return HST.SV.isEnabledShake end,
+                    setFunc = function(value) HST.SV.isEnabledShake = value end,
+                    default = HST.Default.isEnabledShake,
+                    disabled = function() return not HST.SV.enableAddon end,
+                },
+                {
+                    type = "slider",
+                    name = "Time Threshold [sec]",
+                    tooltip = "Remaining time when the shake effect should begin.",
+                    min = 0, max = 7, step = 0.5, decimals = 1,
+                    getFunc = function() return HST.SV.shakeThreshold end,
+                    setFunc = function(value) HST.SV.shakeThreshold = value end,
+                    default = HST.Default.shakeThreshold,
+                    disabled = function() return not HST.SV.enableAddon or not HST.SV.isEnabledShake end,
+                },
+                {
+                    type = "slider",
+                    name = "Shake Intensity",
+                    tooltip = "Effect close to 0 seconds. 0 = Disabled.",
+                    min = 0, max = 16, step = 1,
+                    getFunc = function() return HST.SV.shakeIntensity end,
+                    setFunc = function(value) HST.SV.shakeIntensity = value end,
+                    default = HST.Default.shakeIntensity,
+                    disabled = function() return not HST.SV.enableAddon or not HST.SV.isEnabledShake end,
                 },
             },
         },

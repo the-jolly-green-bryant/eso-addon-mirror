@@ -79,18 +79,22 @@ local function RegisterEvents()
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_PLAYER_ACTIVATED, Refresh)
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_GROUP_MEMBER_JOINED, Refresh)
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_GROUP_MEMBER_LEFT, function()
-        if T.Hud then T.Hud.RefreshAll() end
+        if T.Hud then
+            if T.Hud.InvalidateLayout then T.Hud.InvalidateLayout() end
+            if T.Hud.ScanGroupBuffs then T.Hud.ScanGroupBuffs() end
+            T.Hud.RefreshAll()
+        end
     end)
     -- IH is a ground HoT: ticks often use ids that are not the skill id.
     -- Ability-id filters on EVENT_COMBAT_EVENT miss those on console.
     -- Listen to heal results only (not every swing), then match id or name.
+    -- EFFECT_GAINED* is every buff apply in the instance, not a heal.
+    -- 12-man trial door: thousands of those per minute, Lua Mem +5MB/2s.
     local healResults = {
         ACTION_RESULT_HOT_TICK,
         ACTION_RESULT_HOT_TICK_CRITICAL,
         ACTION_RESULT_HEAL,
         ACTION_RESULT_HEAL_CRIT,
-        ACTION_RESULT_EFFECT_GAINED,
-        ACTION_RESULT_EFFECT_GAINED_DURATION,
     }
     local registered = false
     if REGISTER_FILTER_COMBAT_RESULT then
@@ -108,13 +112,9 @@ local function RegisterEvents()
             end
         end
     end
-    if not registered then
-        EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_COMBAT_EVENT, function(...)
-            if T.Hud and T.Hud.OnCombatEvent then
-                T.Hud.OnCombatEvent(...)
-            end
-        end)
-    end
+    -- No unfiltered EVENT_COMBAT_EVENT fallback. On a 12-man door that
+    -- is every swing in the instance and was the +5MB/2s pool spike.
+    -- Illustrious then comes from EFFECT_CHANGED + the group scan.
     if EVENT_GROUP_UPDATE then
         EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_GROUP_UPDATE, Refresh)
     end
@@ -169,6 +169,9 @@ local function OnAddOnLoaded(_, addonName)
         T.savedVars.hudLayout17 = true
     end
 
+    if T.RebuildWatchSet then
+        T.RebuildWatchSet()
+    end
     if T.RegisterSettings then
         T.RegisterSettings()
     end

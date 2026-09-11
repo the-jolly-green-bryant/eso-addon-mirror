@@ -1,0 +1,9 @@
+## Title: Is It Taunted
+## Author: RipleyZephyer
+## Version: 1.9.10
+## APIVersion: 101046
+## Description: A simple taunt tracking addon for console tanks - track group taunts!
+## SavedVariables: IsItTauntedSavedVars
+## OptionalDependsOn: LibAddonMenu-2.0
+
+IsItTaunted.lua

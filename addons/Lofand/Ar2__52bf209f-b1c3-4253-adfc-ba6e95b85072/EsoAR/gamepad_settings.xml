@@ -1,0 +1,9 @@
+<GuiXml>
+  <Controls>
+    <!-- Native gamepad settings screen: same parametric list the game's own
+         gamepad menus use, so D-pad / stick / A / X / Y all work. -->
+    <TopLevelControl name="EsoAR_GamepadSettings" inherits="ZO_Gamepad_ParametricList_Screen" hidden="true">
+      <OnInitialized>EsoAR_GamepadSettings_OnInitialized(self)</OnInitialized>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

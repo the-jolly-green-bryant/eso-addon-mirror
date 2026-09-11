@@ -60,7 +60,10 @@ function HST.OnCombatState()
         HST.PARENT:SetMouseEnabled(not HST.SV.isLocked)
     end
 
+    EVENT_MANAGER:UnregisterForUpdate(HST.NAME .. "HideDelay")
+
     if HST.isCombat then
+        HST.isCombatEnd = false
         local currentTime = GetGameTimeMilliseconds()
         HST.timeFightStart, HST.timeFightUpdate = currentTime, currentTime
 
@@ -69,26 +72,33 @@ function HST.OnCombatState()
         end
 
         EVENT_MANAGER:RegisterForUpdate(HST.NAME .. "Update", HST.TIME_UPDATE, HST.OnUpdateHandler)
+        HST.UpdateIsEquipped()
     else
         EVENT_MANAGER:UnregisterForUpdate(HST.NAME .. "Update")
         HST.SendChatSummary()
 
-        -- RESET WHEN COMBAT ENDS
-        ZO_ClearTable(HST.ActiveDebuffs)
-        ZO_ClearTable(HST.TargetEndTimes)
-        ZO_ClearTable(HST.BossUnits)
+        HST.isCombatEnd = true
 
-        HST.currentStacks = 0
-        HST.counterCasts = 0
+        EVENT_MANAGER:RegisterForUpdate(HST.NAME .. "HideDelay", 2500, function()
+            EVENT_MANAGER:UnregisterForUpdate(HST.NAME .. "HideDelay")
+            HST.isCombatEnd = false
 
-        for i = 1, HST.MAX_STACKS do
-            HST.StackEndTimes[i] = 0
-        end
+            -- RESET WHEN COMBAT ENDS
+            ZO_ClearTable(HST.ActiveDebuffs)
+            ZO_ClearTable(HST.TargetEndTimes)
+            ZO_ClearTable(HST.BossUnits)
 
-        HST.UpdateVisuals()
+            HST.currentStacks = 0
+            HST.counterCasts = 0
+
+            for i = 1, HST.MAX_STACKS do
+                HST.StackEndTimes[i] = 0
+            end
+
+            HST.UpdateVisuals()
+            HST.UpdateIsEquipped()
+        end)
     end
-
-    HST.UpdateIsEquipped()
 end
 
 ---------------------------------------------------------------------------
@@ -357,6 +367,7 @@ function HST.UpdateIsEquipped()
         HST.PARENT:SetHidden(false)
         return
     end
+
     -- CHECK IF HUD IS HIDDEN (MENU?)
     local isHudHidden = not (SCENE_MANAGER:GetScene("hud"):IsShowing() or SCENE_MANAGER:GetScene("hudui"):IsShowing())
 
@@ -364,7 +375,8 @@ function HST.UpdateIsEquipped()
         HST.PARENT:SetHidden(true)
     else
         -- COMBAT/EQUIP
-        HST.PARENT:SetHidden(not HST.isEquipped or (HST.SV.isOnlyCombat and not HST.isCombat))
+        local isActiveState = HST.isCombat or HST.isCombatEnd
+        HST.PARENT:SetHidden(not HST.isEquipped or (HST.SV.isOnlyCombat and not isActiveState))
     end
 end
 

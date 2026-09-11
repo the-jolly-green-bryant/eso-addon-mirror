@@ -180,7 +180,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [AlphaScry (Leads, Antiquities, Filter)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/mesota/AlphaScry-Leads-Antiquities-Filter__2689) | mesota | PC / Mac | 1.0.0 |
 | [AlphaStyle (Outfit, Mount, Pet, Collectibles)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/mesota/AlphaStyle-Outfit-Mount-Pet-Collectibles__2411) | mesota | PC / Mac | 1.0.0 |
 | [AlreadyListed](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/svammy/AlreadyListed__66e34000-1a7c-4b71-9c6b-18742fa714c5) | svammy | Console | — |
-| [ALT — Addon Loading Times](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/ALT-Addon-Loading-Times__4613) | atharti | PC / Mac | 1.8 |
+| [ALT — Addon Loading Times](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/ALT-Addon-Loading-Times__4613) | atharti | PC / Mac | 1.9 |
 | [Alternate Death Recap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shienar/Alternate-Death-Recap__4454) | Shienar | PC / Mac | 3.3 |
 | [AlternateDeathRecap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shienar/AlternateDeathRecap__9e55edc2-32f8-4c75-b87c-e921fd53e9cf) | Shienar | Console | — |
 | [Alternative Attribute Bars](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/buldezir/Alternative-Attribute-Bars__3056) | buldezir | PC / Mac | 1.0.16 |
@@ -215,10 +215,11 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Antiquity Tooltip Fix](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DakJaniels/Antiquity-Tooltip-Fix__4792) | DakJaniels | PC / Mac | 1 |
 | [AOEHelper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/m00nyONE/AOEHelper__3342) | m00nyONE | PC / Mac | 1.2.2 |
 | [AP Meter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ghostbane/AP-Meter__1792) | ghostbane | PC / Mac | 2.0.4 |
+| [Ar2](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lofand/Ar2__52bf209f-b1c3-4253-adfc-ba6e95b85072) | Lofand | Console | — |
 | [arabic](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lofand/arabic__c8823ab9-749b-4180-ad52-c15b1363d974) | Lofand | Console | — |
 | [arabic new text](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lofand/arabic-new-text__6ca61801-549f-44fd-b20a-9b655530c6bc) | Lofand | Console | — |
 | [Arcanist Crux Job Gauge](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ViciousTomato/Arcanist-Crux-Job-Gauge__3661) | ViciousTomato | PC / Mac | 1.1 |
-| [Arcanist Mastery Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/its_wifey/Arcanist-Mastery-Tracker__4823) | its_wifey | PC / Mac | 1.2 |
+| [Arcanist Mastery Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/its_wifey/Arcanist-Mastery-Tracker__4823) | its_wifey | PC / Mac | 1.3.0 |
 | [Arcanum Artis GuildHall](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Niwasaka/Arcanum-Artis-GuildHall__3013) | Niwasaka | PC / Mac | 1.22.0 |
 | [Arch's Enhanced Crafting](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Architecture/Arch-s-Enhanced-Crafting__1443) | Architecture | PC / Mac | 2.1.1 |
 | [Arch's Enhanced Gamepad](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Architecture/Arch-s-Enhanced-Gamepad__1645) | Architecture | PC / Mac | 1.0.8 |

@@ -453,13 +453,16 @@ local CYR_UP = {
     ["Ы"]="ы",["Ь"]="ь",["Э"]="э",["Ю"]="ю",["Я"]="я",
 }
 
+-- Reused buffer so FoldName does not allocate a new table per call.
+local foldBuf = {}
+
 local function FoldName(s)
     if not s or s == "" then return "" end
-    local out, i, n = {}, 1, #s
+    local i, n, outN = 1, #s, 0
     while i <= n do
         local a = s:byte(i)
         if not a then break end
-        local nxt = i
+        local nxt
         if a < 0x80 then
             nxt = i
         elseif a < 0xE0 then
@@ -477,20 +480,69 @@ local function FoldName(s)
         else
             ch = CYR_UP[ch] or ch
         end
-        out[#out + 1] = ch
+        outN = outN + 1
+        foldBuf[outN] = ch
         i = nxt + 1
     end
-    return table.concat(out)
+    for j = outN + 1, #foldBuf do
+        foldBuf[j] = nil
+    end
+    return table.concat(foldBuf, "", 1, outN)
 end
+
+local cleanMemo = {}
+local cleanMemoN = 0
+local CLEAN_MEMO_CAP = 96
 
 local function CleanName(text)
     if not text or text == "" then return "" end
-    text = tostring(text)
-    text = text:gsub("|c%x%x%x%x%x%x%x%x", "")
-    text = text:gsub("|r", "")
-    text = text:gsub("|t.-|t", "")
-    text = text:gsub("%^.*", "")
-    return FoldName(text)
+    local hit = cleanMemo[text]
+    if hit then return hit end
+    local raw = tostring(text)
+    raw = raw:gsub("|c%x%x%x%x%x%x%x%x", "")
+    raw = raw:gsub("|r", "")
+    raw = raw:gsub("|t.-|t", "")
+    raw = raw:gsub("%^.*", "")
+    raw = FoldName(raw)
+    if cleanMemoN < CLEAN_MEMO_CAP then
+        cleanMemo[text] = raw
+        cleanMemoN = cleanMemoN + 1
+    end
+    return raw
+end
+
+function T.SetTextIf(ctrl, s)
+    if not ctrl then return end
+    if ctrl._tetsuText == s then return end
+    ctrl._tetsuText = s
+    ctrl:SetText(s)
+end
+
+function T.SetHiddenIf(ctrl, hidden)
+    if not ctrl then return end
+    if ctrl._tetsuHidden == hidden then return end
+    ctrl._tetsuHidden = hidden
+    ctrl:SetHidden(hidden)
+end
+
+function T.SetColorIf(ctrl, r, g, b, a)
+    if not ctrl or not ctrl.SetColor then return end
+    a = a or 1
+    if ctrl._tr == r and ctrl._tg == g and ctrl._tb == b and ctrl._ta == a then
+        return
+    end
+    ctrl._tr, ctrl._tg, ctrl._tb, ctrl._ta = r, g, b, a
+    ctrl:SetColor(r, g, b, a)
+end
+
+function T.SetCenterColorIf(ctrl, r, g, b, a)
+    if not ctrl or not ctrl.SetCenterColor then return end
+    a = a or 1
+    if ctrl._cr == r and ctrl._cg == g and ctrl._cb == b and ctrl._ca == a then
+        return
+    end
+    ctrl._cr, ctrl._cg, ctrl._cb, ctrl._ca = r, g, b, a
+    ctrl:SetCenterColor(r, g, b, a)
 end
 
 local function AbilityNameOf(abilityId)
@@ -501,6 +553,9 @@ local function AbilityNameOf(abilityId)
 end
 
 local descCache = {}
+local descCacheN = 0
+local DESC_CACHE_CAP = 32
+
 local function AbilityDescOf(abilityId)
     if not abilityId or abilityId == 0 then return "" end
     local hit = descCache[abilityId]
@@ -515,8 +570,9 @@ local function AbilityDescOf(abilityId)
         if ok and d then blob = blob .. " " .. tostring(d) end
     end
     blob = CleanName(blob)
-    if blob ~= "" then
+    if blob ~= "" and descCacheN < DESC_CACHE_CAP then
         descCache[abilityId] = blob
+        descCacheN = descCacheN + 1
     end
     return blob
 end
@@ -526,29 +582,256 @@ local function LooksLikeBanner(name)
     return name:find("banner", 1, true) or name:find("знам", 1, true)
 end
 
+-- idToKey[id] = primary string key (or nil)
+-- keySetById[id] = immutable { [key]=true } set, or EMPTY_KEYS
+-- false is never stored in nameToKey (that kept every combat name alive).
 local idToKey = {}
+local keySetById = {}
 local nameToKey = {}
+local nameToKeyN = 0
+local NAME_TO_KEY_CAP = 80
 local needleList = {}
 local idSkip = {}
+local idSkipOrder = {}
+local idSkipN = 0
+local ID_SKIP_CAP = 600
 local EMPTY_KEYS = {}
+local SINGLETONS = {}
+local watchSet = nil
+
+local function Singleton(key)
+    local s = SINGLETONS[key]
+    if not s then
+        s = { [key] = true }
+        SINGLETONS[key] = s
+    end
+    return s
+end
+
+local function FreezeKeySet(keys)
+    if not keys then return EMPTY_KEYS end
+    local n, only = 0, nil
+    for k in pairs(keys) do
+        n = n + 1
+        only = k
+        if n > 1 then
+            return keys
+        end
+    end
+    if n == 0 then return EMPTY_KEYS end
+    return Singleton(only)
+end
+
+local function RememberNameKey(name, key)
+    if not name or name == "" or not key then return end
+    if nameToKey[name] ~= nil then return end
+    if nameToKeyN >= NAME_TO_KEY_CAP then return end
+    nameToKey[name] = key
+    nameToKeyN = nameToKeyN + 1
+end
 
 function T.IsJunkAbility(abilityId)
     return abilityId and abilityId ~= 0 and idSkip[abilityId] and true or false
 end
 
-function T.TrimJunkIds()
-    idSkip = {}
-    descCache = {}
+local function ShrinkSkip()
+    if idSkipN <= ID_SKIP_CAP then return end
+    local drop = math.floor(ID_SKIP_CAP / 2)
+    for i = 1, drop do
+        local old = idSkipOrder[i]
+        if old then idSkip[old] = nil end
+    end
+    local keep = 0
+    for i = drop + 1, idSkipN do
+        keep = keep + 1
+        idSkipOrder[keep] = idSkipOrder[i]
+    end
+    for i = keep + 1, idSkipN do
+        idSkipOrder[i] = nil
+    end
+    idSkipN = keep
 end
 
-local function KeysInText(name)
-    if not name or name == "" or not needleList then return nil end
-    local found, hitLen = {}, 0
-    local best
+local function MarkSkip(abilityId)
+    if not abilityId or abilityId == 0 or idSkip[abilityId] then return end
+    idSkip[abilityId] = true
+    idSkipN = idSkipN + 1
+    idSkipOrder[idSkipN] = abilityId
+    if idSkipN > ID_SKIP_CAP then
+        ShrinkSkip()
+    end
+end
+
+-- Never wipe cleanMemo / positive idToKey: that re-parses names.
+function T.TrimJunkIds()
+    ShrinkSkip()
+end
+
+function T.RebuildWatchSet()
+    local w = {
+        illustrious = true,
+        healCut = true,
+        majorDefile = true,
+        minorDefile = true,
+        prayer = true,
+        minorBerserk = true,
+        minorResolve = true,
+        berserk = true,
+        resolve = true,
+    }
+    local vars = T.savedVars
+    if vars then
+        for i = 1, 5 do
+            local key = vars["hudBuff" .. i]
+            if T.ResolveSlotKey then
+                key = T.ResolveSlotKey(key)
+            end
+            if key and key ~= "off" then
+                w[key] = true
+            end
+        end
+    end
+    local function addKeys(list)
+        if not list then return end
+        for i = 1, #list do
+            if list[i] then w[list[i]] = true end
+        end
+    end
+    if T.RaidBuffPairs then
+        for i = 1, #T.RaidBuffPairs do
+            local pair = T.RaidBuffPairs[i]
+            if not T.PairEnabled or T.PairEnabled("buff", pair.id) then
+                addKeys(pair.keysMaj)
+                addKeys(pair.keysMin)
+            end
+        end
+    end
+    if T.BossDebuffPairs then
+        for i = 1, #T.BossDebuffPairs do
+            local pair = T.BossDebuffPairs[i]
+            if not T.PairEnabled or T.PairEnabled("debuff", pair.id) then
+                addKeys(pair.keysMaj)
+                addKeys(pair.keysMin)
+            end
+        end
+    end
+    watchSet = w
+end
+
+function T.IsWatchedKey(key)
+    if not key then return false end
+    if not watchSet then return true end
+    return watchSet[key] == true
+end
+
+function T.HasWatchedKey(keys)
+    if not keys then return false end
+    if not watchSet then
+        return next(keys) ~= nil
+    end
+    for k in pairs(keys) do
+        if watchSet[k] then return true end
+    end
+    return false
+end
+
+function T.OnSettingsChanged()
+    T.RebuildWatchSet()
+    if T.Hud then
+        if T.Hud.InvalidateLayout then T.Hud.InvalidateLayout() end
+        if T.Hud.RefreshAll then T.Hud.RefreshAll() end
+        if T.Hud.ScanGroupBuffs then T.Hud.ScanGroupBuffs() end
+    end
+    if T.Panels and T.Panels.Refresh then
+        T.Panels.Refresh()
+    end
+end
+
+-- Target-mode unit: combat dummy / hostile trash, not harvest critters.
+local CRITTER_NEEDLE = {
+    "бабочк", "butterfly", "torchbug", "светля", "fleshfl", "куриц", "chicken",
+    "frog", "лягуш", "lizard", "ящериц", "rabbit", "кролик", "rat", "крыс",
+    "fox", "лис", "deer", "олен", "squirrel", "белк", "bee", "пчел",
+    "wasp", "ос ", "оса", "жук", "beetle", "ant ", "мурав",
+}
+local DUMMY_NEEDLE = {
+    "dummy", "кукл", "манекен", "тренировоч", "мишень", "target dummy",
+}
+
+local function FoldSimple(s)
+    if not s or s == "" then return "" end
+    s = tostring(s):gsub("%^.*", "")
+    s = s:gsub("[A-Z]", function(c) return string.char(c:byte() + 32) end)
+    return s
+end
+
+local function NameHas(list, name)
+    if name == "" then return false end
+    for i = 1, #list do
+        if name:find(list[i], 1, true) then return true end
+    end
+    return false
+end
+
+function T.IsDebuffTarget(tag)
+    if not tag or tag == "" then return false end
+    if DoesUnitExist and not DoesUnitExist(tag) then return false end
+    if IsUnitPlayer and IsUnitPlayer(tag) then return false end
+    local raw = GetUnitName and GetUnitName(tag) or ""
+    local name = FoldSimple(raw)
+    if NameHas(DUMMY_NEEDLE, name) then return true end
+    if NameHas(CRITTER_NEEDLE, name) then return false end
+    if GetUnitReaction then
+        local ok, r = pcall(GetUnitReaction, tag)
+        if ok and r then
+            if UNIT_REACTION_FRIENDLY and r == UNIT_REACTION_FRIENDLY then return false end
+            if UNIT_REACTION_NPC_FRIEND and r == UNIT_REACTION_NPC_FRIEND then return false end
+            if UNIT_REACTION_NPC_ALLY and r == UNIT_REACTION_NPC_ALLY then return false end
+            if UNIT_REACTION_PLAYER_ALLY and r == UNIT_REACTION_PLAYER_ALLY then return false end
+            if UNIT_REACTION_COMPANION and r == UNIT_REACTION_COMPANION then return false end
+        end
+    end
+    local maxHp = 0
+    if GetUnitPower then
+        local pt = POWERTYPE_HEALTH or COMBAT_MECHANIC_FLAGS_HEALTH
+        if pt then
+            local ok, cur, maxv = pcall(GetUnitPower, tag, pt)
+            if ok and type(maxv) == "number" then maxHp = maxv end
+        end
+    end
+    -- House dummy often is not IsUnitMonster but has a huge health pool.
+    if maxHp >= 5000 then
+        if IsUnitAttackable then
+            local okA, a = pcall(IsUnitAttackable, tag)
+            if okA and a then return true end
+        end
+        if GetUnitReaction then
+            local ok, r = pcall(GetUnitReaction, tag)
+            if ok and UNIT_REACTION_HOSTILE and r == UNIT_REACTION_HOSTILE then
+                return true
+            end
+        end
+        -- Housing practice dummy: high HP, may report as furniture.
+        if GetCurrentHouseId and GetCurrentHouseId() ~= 0 then
+            return true
+        end
+        if GetCurrentZoneHouseId and GetCurrentZoneHouseId() ~= 0 then
+            return true
+        end
+        return true
+    end
+    return false
+end
+
+local function KeysInText(name, into)
+    if not name or name == "" or not needleList then return into, nil end
+    local found = into
+    local hitLen, best = 0, nil
     for i = 1, #needleList do
         local row = needleList[i]
         local needle = row and row[1]
         if type(needle) == "string" and needle ~= "" and name:find(needle, 1, true) then
+            if not found then found = {} end
             found[row[2]] = true
             if #needle > hitLen then
                 hitLen = #needle
@@ -586,6 +869,7 @@ end
 function T.BuildLookupIndex()
     needleList = {}
     idToKey = {}
+    keySetById = {}
     local deferred = {
         healCut = true,
         vigor = true,
@@ -595,10 +879,12 @@ function T.BuildLookupIndex()
     local function assign(key, ids)
         if type(ids) ~= "table" then return end
         local mapped = AliasKey(key)
+        local set = Singleton(mapped)
         for i = 1, #ids do
             local id = ids[i]
             if id and idToKey[id] == nil then
                 idToKey[id] = mapped
+                keySetById[id] = set
             end
         end
     end
@@ -716,98 +1002,126 @@ local function KeyFromBuffType(abilityId)
     return buffTypeToKey[bt]
 end
 
-function T.LookupKeyForAbilityId(abilityId, effectName)
-    if abilityId and abilityId ~= 0 and idSkip[abilityId] then
-        return nil
+-- Tracker semantics = 1.7.9:
+--   1) GetAbilityBuffType wins on EVERY event (scribing / same id, new type).
+--   2) id cache is only a fallback when type is 0. Never lock the first type.
+--   3) Never mark an id empty-forever. Empty name is not a miss.
+--   4) Banner always re-reads the cached description and unions keys.
+-- Memory: no extra tables on the type-only path; scratch set is reused;
+-- name/needles run only when type is nil; desc parse is memoized.
+local keyScratch = {}
+
+local function WipeScratch()
+    for k in pairs(keyScratch) do
+        keyScratch[k] = nil
     end
+    return keyScratch
+end
+
+local function RawLooksLikeBanner(raw)
+    if not raw or raw == "" then return false end
+    raw = tostring(raw)
+    if raw:find("banner", 1, true) or raw:find("Banner", 1, true) or raw:find("BANNER", 1, true) then
+        return true
+    end
+    if raw:find("знам", 1, true) or raw:find("Знам", 1, true) then
+        return true
+    end
+    return false
+end
+
+function T.LookupKeyForAbilityId(abilityId, effectName)
     if abilityId and abilityId ~= 0 then
         local typed = KeyFromBuffType(abilityId)
         if typed then
-            idToKey[abilityId] = typed
             return typed
         end
-        local cached = idToKey[abilityId]
-        if cached ~= nil then
-            if cached == false then return nil end
-            return cached
-        end
         if T.IsPrayer and T.IsPrayer[abilityId] then
-            idToKey[abilityId] = "prayer"
             return "prayer"
         end
         if T.IsIllustrious and T.IsIllustrious[abilityId] then
-            idToKey[abilityId] = "illustrious"
             return "illustrious"
         end
+        local cached = idToKey[abilityId]
+        if cached then
+            return cached
+        end
     end
+
     local name = CleanName(effectName)
     if name == "" then
         name = AbilityNameOf(abilityId)
     end
-    if name ~= "" then
-        local cached = nameToKey[name]
-        if cached ~= nil then
-            if abilityId and abilityId ~= 0 then idToKey[abilityId] = cached end
-            if cached == false then
-                -- Banner aura names are not a Maj/Min key. Fall through to
-                -- the description so "Magical Banner" still yields Courage.
-            else
-                return cached
-            end
-        end
-        if name:find("immun", 1, true) and (name:find("off", 1, true) or name:find("равновес", 1, true) or name:find("gleichgewicht", 1, true)) then
-            nameToKey[name] = "offBalanceImm"
-            if abilityId and abilityId ~= 0 then idToKey[abilityId] = "offBalanceImm" end
-            return "offBalanceImm"
-        end
-        local hitKey, hitLen = nil, 0
-        for i = 1, #needleList do
-            local needle = needleList[i][1]
-            if needle ~= "" and name:find(needle, 1, true) and #needle > hitLen then
-                hitKey = needleList[i][2]
-                hitLen = #needle
-            end
-        end
-        if hitKey then
-            nameToKey[name] = hitKey
-            if abilityId and abilityId ~= 0 and idToKey[abilityId] == nil then
-                idToKey[abilityId] = hitKey
-            end
-            return hitKey
-        end
-        -- Do not store nameToKey[name]=false: that kept every unique
-        -- combat name alive until ReloadUI.
+    if name == "" then
+        return nil
     end
-    if LooksLikeBanner(name) or LooksLikeBanner(AbilityNameOf(abilityId)) then
+
+    local named = nameToKey[name]
+    if named then
+        if abilityId and abilityId ~= 0 and idToKey[abilityId] == nil then
+            idToKey[abilityId] = named
+        end
+        return named
+    end
+
+    if name:find("immun", 1, true) and (name:find("off", 1, true) or name:find("равновес", 1, true) or name:find("gleichgewicht", 1, true)) then
+        RememberNameKey(name, "offBalanceImm")
+        if abilityId and abilityId ~= 0 then idToKey[abilityId] = "offBalanceImm" end
+        return "offBalanceImm"
+    end
+
+    local hitKey, hitLen = nil, 0
+    for i = 1, #needleList do
+        local needle = needleList[i][1]
+        if needle ~= "" and name:find(needle, 1, true) and #needle > hitLen then
+            hitKey = needleList[i][2]
+            hitLen = #needle
+        end
+    end
+    if hitKey then
+        RememberNameKey(name, hitKey)
+        if abilityId and abilityId ~= 0 and idToKey[abilityId] == nil then
+            idToKey[abilityId] = hitKey
+        end
+        return hitKey
+    end
+
+    if LooksLikeBanner(name) or RawLooksLikeBanner(effectName) then
         local desc = AbilityDescOf(abilityId)
         local _, best = KeysInText(desc)
         if best then
             if abilityId and abilityId ~= 0 then idToKey[abilityId] = best end
             return best
         end
-        return nil
     end
-    if abilityId and abilityId ~= 0 and name ~= "" then
-        idSkip[abilityId] = true
-    end
+    -- 1.7.9: never negative-cache an abilityId when the name was empty
+    -- or when we simply did not recognize it yet.
     return nil
 end
 
 function T.KeysFromAbility(abilityId, effectName)
-    if abilityId and abilityId ~= 0 and idSkip[abilityId] then
-        return EMPTY_KEYS
-    end
-    local keys = {}
+    local keys = WipeScratch()
     local primary = T.LookupKeyForAbilityId(abilityId, effectName)
-    if primary then keys[primary] = true end
-    local name = CleanName(effectName)
-    if name == "" then name = AbilityNameOf(abilityId) end
-    if LooksLikeBanner(name) then
+    if primary then
+        keys[primary] = true
+    end
+    local banner = RawLooksLikeBanner(effectName)
+    if not banner then
+        local name = CleanName(effectName)
+        if name == "" then name = AbilityNameOf(abilityId) end
+        banner = LooksLikeBanner(name)
+    end
+    if banner then
         local desc = AbilityDescOf(abilityId)
         local found = KeysInText(desc)
         if found then
-            for k in pairs(found) do keys[k] = true end
+            for k in pairs(found) do
+                keys[k] = true
+            end
         end
+    end
+    if not next(keys) then
+        return EMPTY_KEYS
     end
     return keys
 end

@@ -1,7 +1,7 @@
 RidinDirty = {
 	name = "RidinDirty",
 	author = "@sinnereso",
-	version = "2026.09.09",
+	version = "2026.09.11",
 	svName = "RidinDirtyVars",
 	svVersion = 1,
 	tradeTable = {},
@@ -189,6 +189,101 @@ local function PassengerStateChange(eventCode, isMounted)
 	end
 	if mountedState == MOUNTED_STATE_MOUNT_RIDER and hasEnabledGroupMount then zo_callLater(function() PassengerStateChange() end, 1000) end
 end
+
+local function CheckBankMemory()
+	local missingItems = ZO_DeepTableCopy(RidinDirty.savedVariables["Banked Memory"])
+	for i, v in pairs(RidinDirty.savedVariables["Banked Memory"]) do
+		if i ~= nil and i ~= "version" then
+			for slotIndex = 0, GetBagSize(BAG_BANK) - 1 do
+				itemId = GetItemId(BAG_BANK, slotIndex)
+				itemLink = GetItemLink(BAG_BANK, slotIndex, LINK_STYLE_BRACKETS)
+				if itemId ~= nil then missingItems[itemId] = nil end
+			end
+			if IsESOPlusSubscriber() then
+				for slotIndex = 0, GetBagSize(BAG_SUBSCRIBER_BANK) - 1 do
+					itemId = GetItemId(BAG_SUBSCRIBER_BANK, slotIndex)
+					itemLink = GetItemLink(BAG_SUBSCRIBER_BANK, slotIndex, LINK_STYLE_BRACKETS)
+					if itemId ~= nil then missingItems[itemId] = nil end
+				end
+			end
+		end
+	end
+	local missingMessage = false
+	for i, v in pairs(missingItems) do
+		if i ~= nil and i ~= "version" and i ~= "default" then
+			if not missingMessage then missingMessage = true df("--- Items Missing From Bank ---") end
+			df(rdLogo .. tostring(v))
+		end
+	end
+end
+
+local function SaveBankMemory()
+	ESO_Dialogs["BANK_MEMORY_SAVE_CONFIRM_DIALOG"] = {
+		canQueue = true,
+		title = {
+			text = "Confirm SAVE Bank Inventory",
+		},
+		mainText = {
+			text = "Are you sure you want to continue?",
+		},
+		buttons = {
+			[1] = {
+				text = SI_DIALOG_CONFIRM,
+				callback = function(dialog)
+					for slotIndex = 0, GetBagSize(BAG_BANK) - 1 do
+						itemId = GetItemId(BAG_BANK, slotIndex)
+						itemLink = GetItemLink(BAG_BANK, slotIndex, LINK_STYLE_BRACKETS)
+						if itemId ~= nil then RidinDirty.bankedMemory[itemId] = itemLink end
+					end
+					if IsESOPlusSubscriber() then
+						for slotIndex = 0, GetBagSize(BAG_SUBSCRIBER_BANK) - 1 do
+							itemId = GetItemId(BAG_SUBSCRIBER_BANK, slotIndex)
+							itemLink = GetItemLink(BAG_SUBSCRIBER_BANK, slotIndex, LINK_STYLE_BRACKETS)
+							if itemId ~= nil then RidinDirty.bankedMemory[itemId] = itemLink end
+						end
+					end
+					ZO_Alert(UI_ALERT_CATEGORY_ALERT, "PlayerAction_NotEnoughMoney", "Bank inventory saved.")
+				end,
+			},
+			[2] = {
+				text = SI_DIALOG_CANCEL,
+				callback = function(dialog)
+					--df(rdLogo .. "Current bank inventory NOT saved!")
+				end,
+			},
+		},
+	}
+	ZO_Dialogs_ShowDialog("BANK_MEMORY_SAVE_CONFIRM_DIALOG")
+end
+
+local function ClearBankMemory()
+	ESO_Dialogs["BANK_MEMORY_RESET_CONFIRM_DIALOG"] = {
+		canQueue = true,
+		title = {
+			text = "Confirm RESET Bank Memory",
+		},
+		mainText = {
+			text = "Are you sure you want to continue?",
+		},
+		buttons = {
+			[1] = {
+				text = SI_DIALOG_CONFIRM,
+				callback = function(dialog)
+					RidinDirty.bankedMemory = ZO_SavedVars:NewAccountWide( RidinDirty.svName, 2, "Banked Memory", defaultBankedVars )
+					zo_callLater(function() ReloadUI() end, 500)
+					ZO_Alert(UI_ALERT_CATEGORY_ALERT, "PlayerAction_NotEnoughMoney", "Bank memory reset.")
+				end,
+			},
+			[2] = {
+				text = SI_DIALOG_CANCEL,
+				callback = function(dialog)
+					--df(rdLogo .. "Current bank inventory NOT saved!")
+				end,
+			},
+		},
+	}
+	ZO_Dialogs_ShowDialog("BANK_MEMORY_RESET_CONFIRM_DIALOG")
+end
 --local statusControl = control:GetNamedChild("StatusTexture")--("StatusIcon")--("Status")
 --if not statusControl then return end
 --df(nameText .. " - " .. tostring(statusControl:IsHidden()))--statusControl:SetHidden(true)
@@ -227,9 +322,9 @@ local function NeedsAndPrice(control, slot)
 	local TTCStackPrice = (TTCPrice * itemData.stackCount)
 	if purchasePrice and RidinDirty.savedVariables.traderEnhance then
 		local originalPrice = SellPriceControl:GetText()--purchasePrice
-		if purchasePrice > (TTCStackPrice * 1.25) then
+		if purchasePrice > (TTCStackPrice * 1.2) then
 			SellPriceControl:SetText("|cFFA2A2" .. originalPrice .. "|r")
-		elseif purchasePrice < (TTCStackPrice * 0.9) and TRADING_HOUSE:GetCurrentMode() ~= ZO_TRADING_HOUSE_MODE_LISTINGS then
+		elseif purchasePrice < (TTCStackPrice * 0.95) and TRADING_HOUSE:GetCurrentMode() ~= ZO_TRADING_HOUSE_MODE_LISTINGS then
 			SellPriceControl:SetText("|c7BF1A8" .. originalPrice .. "|r")
 		end
 	elseif TRADING_HOUSE:GetCurrentMode() ~= ZO_TRADING_HOUSE_MODE_BROWSE and TRADING_HOUSE:GetCurrentMode() ~= ZO_TRADING_HOUSE_MODE_LISTINGS then
@@ -676,6 +771,33 @@ local function RDInitializeControls()
 				getFunc = function() return RidinDirty.savedVariables.withdrawAmount end,
 				setFunc = function(value) RidinDirty.savedVariables.withdrawAmount = (value) end,
 				disabled = function() return not RidinDirty.savedVariables.withdrawOne end,
+				width = "half",
+			},
+			{
+				type = "checkbox",
+				name = "Auto Check Bank Memory",
+				tooltip = "Compares the current bank inventory to the saved bank inventory when opening the bank",
+				getFunc = function() return RidinDirty.savedVariables.checkBankMemory end,
+				setFunc = function(value) RidinDirty.savedVariables.checkBankMemory = (value) end,
+				warning = "Could cause minor stutter opening bank due to the imediate full scan. Requires Bank Manager",
+				disabled = function() return not RidinDirty.savedVariables.bankManager end,
+				width = "full",
+			},
+			{
+				type = "button",
+				name = "RESET BANK MEMORY",
+				tooltip = "Completely clears bank memory & reloads UI",
+				func = function() ClearBankMemory() end,
+				disabled = function() return not RidinDirty.savedVariables.checkBankMemory end,
+				isDangerous = true,
+				width = "half",
+			},
+			{
+				type = "button",
+				name = "SAVE BANK MEMORY",
+				tooltip = "Saves current bank inventory to memory for comparison when opening bank",
+				func = function() SaveBankMemory() end,
+				disabled = function() return not RidinDirty.savedVariables.checkBankMemory end,
 				width = "half",
 			},
 			{
@@ -1667,7 +1789,7 @@ end
 ------ AUTO BANK & STORAGE STACKER --
 ---------------------------------------------
 local function BankBalances(eventCode, bankBag, carriedGold, carriedAP, carriedTelvar, carriedVoucher, moveGold, moveAP, moveTelvar, moveVoucher)
-	if not RidinDirty.savedVariables.balanceDisplay then return end
+	--if not RidinDirty.savedVariables.balanceDisplay then return end
 	local bankedCurrencies = (rdLogo .. "Balances:")
 	local curbankGold = GetBankedCurrencyAmount(CURT_MONEY)
 	local curbankAP = GetBankedCurrencyAmount(CURT_ALLIANCE_POINTS)
@@ -1756,12 +1878,17 @@ local function DepositCurrency(eventCode, bankBag)
 			df(rdLogo .. "Deposited: " .. "|t16:16:/esoui/art/currency/currency_writvoucher.dds|t" .. "|cFFEECC" .. ZO_LocalizeDecimalNumber(carriedVoucher) .. "|r")
 		end
 	end
-	BankBalances(eventCode, bankBag, carriedGold, carriedAP, carriedTelvar, carriedVoucher, moveGold, moveAP, moveTelvar, moveVoucher)
+	if RidinDirty.savedVariables.balanceDisplay then
+		BankBalances(eventCode, bankBag, carriedGold, carriedAP, carriedTelvar, carriedVoucher, moveGold, moveAP, moveTelvar, moveVoucher)
+	end
+	if RidinDirty.savedVariables.checkBankMemory then
+		CheckBankMemory()
+	end
 end
 
 local function BankManager(eventCode, bankBag)
 	if bankBag ~= BAG_BANK and not RidinDirty.savedVariables.storageManager then return end
-	if HasWritQuest() then ZO_Alert(UI_ALERT_CATEGORY_ALERT, "PlayerAction_NotEnoughMoney", "Auto deposit disabled while writ quests active.") BankBalances(eventCode, bankBag) return end--<< CRAFTING WRIT COMPATIBILITY
+	if HasWritQuest() then ZO_Alert(UI_ALERT_CATEGORY_ALERT, "PlayerAction_NotEnoughMoney", "Auto deposit disabled while writ quests active.") return end--<< CRAFTING WRIT COMPATIBILITY
 	local bankCache = SHARED_INVENTORY:GetOrCreateBagCache(bankBag)
 	local bagCache  = SHARED_INVENTORY:GetOrCreateBagCache(BAG_BACKPACK)
 	if (RidinDirty.savedVariables.bankManager and bankBag == BAG_BANK) or (RidinDirty.savedVariables.storageManager and bankBag ~= BAG_BANK) then
@@ -2792,11 +2919,10 @@ end
 --taunt=ABILITY_TYPE_SETTARGET=7, 
 local function CombatReticle()
 	local target = "reticleover"
-	local playerTaunt = false
 	if DoesUnitExist(target) and not IsUnitPlayer(target) then
 		local tauntEnding, immuneEnding, playerTaunt = 0, 0, false
 		for buff = 1, GetNumBuffs(target) do
-			local buffName, timeStarted, timeEnding, _, stackCount, _, buffType, effectType, abilityType, statusType, abilityId, _, playerCast  = GetUnitBuffInfo(target, buff)
+			local buffName, timeStarted, timeEnding, _, stackCount, _, buffType, effectType, abilityType, statusType, abilityId, _, playerCast = GetUnitBuffInfo(target, buff)
 			if abilityType == 7 then
 				tauntEnding = timeEnding
 				if playerCast then playerTaunt = true end
@@ -2804,7 +2930,6 @@ local function CombatReticle()
 			if abilityId == 52788 then immuneEnding = timeEnding end
 		end
 		if immuneEnding ~= 0 then
-			local timeLeft = zo_roundToNearest(immuneEnding - GetFrameTimeSeconds(), 1)
 			RidinDirty.TauntCounter.label:SetColor(128,0,0,1)
 			RidinDirty.TauntCounter.label:SetText("IMMUNE")
 			RidinDirty.Combat:SetAlpha(0)
@@ -3263,6 +3388,7 @@ local function AddOnLoaded(eventCode, addOnName)
 		storageAll = false,
 		withdrawOne = false,
 		withdrawAmount = 25,
+		checkBankMemory = false,
 		goldDeposit = false,
 		noDeposit = "|ccc0000*DISABLED*|r",
 		goldReserve = 10000,
@@ -3310,13 +3436,14 @@ local function AddOnLoaded(eventCode, addOnName)
 	}
 	local defaultAddonVars = {
 	}
+	local defaultBankedVars = {
+	}
 	RidinDirty.savedVariables = ZO_SavedVars:NewAccountWide( RidinDirty.svName, RidinDirty.svVersion, nil, defaultAccountVars )
 	RidinDirty.charVariables = ZO_SavedVars:NewAccountWide( RidinDirty.svName, RidinDirty.svVersion, GetUnitName("player"), defaultCharVars )
 	RidinDirty.junkMemory = ZO_SavedVars:NewAccountWide( RidinDirty.svName, RidinDirty.svVersion, "Junk Memory", defaultJunkVars )
 	RidinDirty.addonMemory = ZO_SavedVars:NewAccountWide( RidinDirty.svName, RidinDirty.svVersion, "Addon Memory", defaultAddonVars )
-	if RidinDirty.savedVariables.skipBelowAVT then RidinDirty.savedVariables.bombSensitivity = 200 end
-	RidinDirty.savedVariables.autoRecharge = nil
-	RidinDirty.savedVariables.skipBelowAVT = nil--<< SAVE
+	RidinDirty.bankedMemory = ZO_SavedVars:NewAccountWide( RidinDirty.svName, RidinDirty.svVersion, "Banked Memory", defaultBankedVars )
+	--RidinDirty.savedVariables.skipBelowAVT = nil--<< SAVE
 	--RidinDirty.charVariables.veterancyPoints = nil--<< SAVE
 	--RidinDirty.charVariables.veterancyRank = nil--<< SAVE
 	RDInitializeControls()

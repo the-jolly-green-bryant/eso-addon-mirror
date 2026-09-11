@@ -196,6 +196,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Console Fonts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/priom/Console-Fonts__2540) | priom | PC / Mac | 0.8 |
 | [Console Hide UI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Console-Hide-UI__89f44de6-a710-4680-8553-b1fc04735bbd) | code65536 | Console | — |
 | [Console Metrics](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vixen_Hunny/Console-Metrics__1e7d3c7d-1680-4f93-b82c-8c4601d3b449) | Vixen_Hunny | Console | — |
+| [ConsoleCPQoL](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/thewizadt/ConsoleCPQoL__751c7402-5cb7-4469-afc8-469584372b40) | thewizadt | Console | — |
 | [ConspicuousQuestMarkers](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Sharlikran/ConspicuousQuestMarkers__2265) | Sharlikran | PC / Mac | 1.23 |
 | [Constellations](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Solinur/Constellations__1736) | Solinur | PC / Mac | 1.1.6 |
 | [ContainerPeek](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Sparq/ContainerPeek__1126) | Sparq | PC / Mac | 1.1.0 |
@@ -305,7 +306,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Customizable Bars (Discontinued)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Beholder/Customizable-Bars-Discontinued__4472) | Beholder | PC / Mac | 1.3 |
 | [CustomKillFeed](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/CustomKillFeed__3770) | Masteroshi430 | PC / Mac | 2026.07.06 |
 | [Cute Zodiac Icons - icon pack for OdySupportIcons](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/def-venom/Cute-Zodiac-Icons---icon-pack-for-OdySupportIcons__3400) | def venom | PC / Mac | 1.001 |
-| [Cutthroat's Focus/MAJOR VULNERABILITY Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/its_wifey/Cutthroat-s-Focus-MAJOR-VULNERABILITY-Tracker__4820) | its_wifey | PC / Mac | 1.3 |
+| [Cutthroat's Focus/MAJOR VULNERABILITY Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/its_wifey/Cutthroat-s-Focus-MAJOR-VULNERABILITY-Tracker__4820) | its_wifey | PC / Mac | 1.4 |
 | [CyrHUD](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Sasky/CyrHUD__559) | Sasky | PC / Mac | 2026.07.20 |
 | [Cyrillic Chat Filter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Revived-AddOns/Cyrillic-Chat-Filter__2328) | Revived AddOns | PC / Mac | 5 |
 | [Cyro Quest Manager](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/scobster007/Cyro-Quest-Manager__4208) | scobster007 | PC / Mac | 2.1 |

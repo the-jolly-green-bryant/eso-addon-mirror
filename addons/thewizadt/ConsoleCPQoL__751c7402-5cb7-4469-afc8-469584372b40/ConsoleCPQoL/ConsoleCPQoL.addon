@@ -1,0 +1,8 @@
+## Title: Console CP QoL
+## Author: wizzzzzz
+## Version: 1.0
+## APIVersion: 101041
+## OptionalDependsOn: 
+## SavedVariables: ConsoleCPQoL_SavedVariables
+
+ConsoleCPQoL.lua

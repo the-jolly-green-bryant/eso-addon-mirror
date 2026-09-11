@@ -2,80 +2,119 @@ local ADDON_NAME = "MyCrystalFragmentsProcUI"
 
 MyCrystalFragmentsProcUI = MyCrystalFragmentsProcUI or {}
 
+------------------------------------------------------------
+-- 監視する Ability ID
+------------------------------------------------------------
 local WATCH_LIST = {
-    [203447] = true,  -- Bound Armaments Proc (stackCount >= 4 only)
-    [23231] = true,   -- Hurricane
-    [46327] = true,   -- Crystal Fragments Ready
+    [203447] = true, -- Bound Armaments Proc
+    [23231] = true, -- Hurricane
+    [46327] = true, -- Crystal Fragments Ready
 }
 
-local BuffTable = {}   -- abilityId → buffData
-local BuffBars  = {}   -- abilityId → barControl
+------------------------------------------------------------
+-- 中央アイコン設定
+------------------------------------------------------------
+local ICON_SIZE = 90
+local DISPLAY_TIME = 800 -- ms
 
 ------------------------------------------------------------
--- MyTauntTimer と同じバー高さ
+-- Bound Armaments の前回スタック数
 ------------------------------------------------------------
-local function AutoBarHeight(fontSize)
-    return math.floor(fontSize + 6)
-end
+local lastBoundArmamentsStacks = 0
 
 ------------------------------------------------------------
--- UI: Main container
+-- 中央アイコン UI
+------------------------------------------------------------
+local centerIcon = nil
+
+------------------------------------------------------------
+-- 通知番号（古い通知が新しい通知を消さないように）
+------------------------------------------------------------
+local notificationSerial = 0
+
+
+------------------------------------------------------------
+-- UI作成
 ------------------------------------------------------------
 local function CreateUI()
-    local ui = WINDOW_MANAGER:CreateTopLevelWindow("MyCFProcUI_UI")
-    ui:SetDimensions(300, 400)
-    ui:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 1200, 300)
+
+    local ui = WINDOW_MANAGER:CreateTopLevelWindow("MyCrystalFragmentsProcUI_CenterIcon")
+
+    ui:SetDimensions(ICON_SIZE, ICON_SIZE)
+
+    --------------------------------------------------------
+    -- 画面中央
+    --------------------------------------------------------
+    ui:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
+
+    --------------------------------------------------------
+    -- 最前面に近いレイヤー
+    --------------------------------------------------------
     ui:SetDrawLayer(DL_OVERLAY)
+
+    --------------------------------------------------------
+    -- ★ 旧バージョンと同じ：親ウィンドウは常に表示
+    --------------------------------------------------------
     ui:SetHidden(false)
-    MyCrystalFragmentsProcUI.ui = ui
+
+    --------------------------------------------------------
+    -- アイコン（子）
+    --------------------------------------------------------
+    local icon = WINDOW_MANAGER:CreateControl(
+        "MyCrystalFragmentsProcUI_CenterIconTexture",
+        ui,
+        CT_TEXTURE
+    )
+
+    icon:SetDimensions(ICON_SIZE, ICON_SIZE)
+    icon:SetAnchorFill(ui)
+    icon:SetHidden(true)
+
+    --------------------------------------------------------
+    -- 描画対象は icon（CT_TEXTURE）
+    --------------------------------------------------------
+    centerIcon = icon
 end
 
+
 ------------------------------------------------------------
--- UI: Create a bar
+-- 中央アイコン表示
 ------------------------------------------------------------
-local function CreateBar(abilityId)
-    local parent = MyCrystalFragmentsProcUI.ui
+local function ShowCenterIcon(iconTexture)
 
-    local fontSize = 18
-    local barHeight = AutoBarHeight(fontSize)
-    local iconSize = barHeight
+    if not centerIcon then return end
 
-    local row = WINDOW_MANAGER:CreateControl(nil, parent, CT_CONTROL)
-    row:SetDimensions(300, barHeight)
+    --------------------------------------------------------
+    -- iconTexture が nil / 空 / 非文字列なら無視
+    --------------------------------------------------------
+    if not iconTexture or type(iconTexture) ~= "string" or iconTexture == "" then
+        return
+    end
 
-    local icon = WINDOW_MANAGER:CreateControl(nil, row, CT_TEXTURE)
-    icon:SetDimensions(iconSize, iconSize)
-    icon:SetAnchor(LEFT, row, LEFT, 0, 0)
+    notificationSerial = notificationSerial + 1
+    local serial = notificationSerial
 
-    local bar = WINDOW_MANAGER:CreateControl(nil, row, CT_STATUSBAR)
-    bar:SetDimensions(250, barHeight)
-    bar:SetMinMax(0, 1)
-    bar:SetValue(1)
-    bar:SetAnchor(LEFT, icon, RIGHT, 4, 0)
+    centerIcon:SetTexture(iconTexture)
+    centerIcon:SetAlpha(1)
+    centerIcon:SetHidden(false)
 
-    bar.bg = WINDOW_MANAGER:CreateControl(nil, bar, CT_BACKDROP)
-    bar.bg:SetAnchorFill(bar)
-    bar.bg:SetCenterColor(0, 0, 0, 0.4)
-    bar.bg:SetEdgeColor(0, 0, 0, 0)
-
-    row.icon = icon
-    row.bar  = bar
-
-    BuffBars[abilityId] = row
+    --------------------------------------------------------
+    -- DISPLAY_TIME 後に消す
+    --------------------------------------------------------
+    zo_callLater(function()
+        if serial ~= notificationSerial then
+            return
+        end
+        centerIcon:SetHidden(true)
+    end, DISPLAY_TIME)
 end
 
-------------------------------------------------------------
--- UI: Update bar
-------------------------------------------------------------
-local function UpdateBar(row, data, remain)
-    row.icon:SetTexture(data.icon)
-    row.bar:SetValue(remain / data.duration)
-end
 
 ------------------------------------------------------------
 -- EVENT_EFFECT_CHANGED
 ------------------------------------------------------------
-local function OnEffectChanged(eventCode,
+local function OnEffectChanged(
+    eventCode,
     changeType,
     effectSlot,
     effectName,
@@ -91,100 +130,95 @@ local function OnEffectChanged(eventCode,
     unitName,
     unitId,
     abilityId,
-    sourceType)
+    sourceType
+)
 
-    -- abilityId フィルタはコード側で行う
+    --------------------------------------------------------
+    -- 監視対象以外は無視
+    --------------------------------------------------------
     if not WATCH_LIST[abilityId] then return end
+
+    --------------------------------------------------------
+    -- プレイヤー自身のみ
+    --------------------------------------------------------
     if unitTag ~= "player" then return end
 
-    -- Bound Armaments Proc: stackCount < 4 のときは非表示
-    if abilityId == 203447 and stackCount < 4 then
-        BuffTable[abilityId] = nil
-        if BuffBars[abilityId] then
-            BuffBars[abilityId]:SetHidden(true)
-            BuffBars[abilityId] = nil
+
+    --------------------------------------------------------
+    -- Bound Armaments Proc（203447）
+    --------------------------------------------------------
+    if abilityId == 203447 then
+
+        local stacks = stackCount or 0
+
+        -- バフ消滅
+        if changeType == EFFECT_RESULT_FADED then
+            lastBoundArmamentsStacks = 0
+            return
+        end
+
+        -- 3 → 4 の瞬間だけ通知
+        if stacks >= 4 and lastBoundArmamentsStacks < 4 then
+            ShowCenterIcon(iconName)
+        end
+
+        lastBoundArmamentsStacks = stacks
+        return
+    end
+
+
+    --------------------------------------------------------
+    -- Hurricane（23231）
+    -- バフが切れた瞬間に通知
+    --------------------------------------------------------
+    if abilityId == 23231 then
+        if changeType == EFFECT_RESULT_FADED then
+            ShowCenterIcon(iconName)
         end
         return
     end
 
-    -- ★ UPDATED を処理する（Bound Armaments のスタック増加は UPDATED）
-    if changeType == EFFECT_RESULT_GAINED or changeType == EFFECT_RESULT_UPDATED then
-        BuffTable[abilityId] = {
-            abilityId = abilityId,
-            icon = iconName,
-            beginTime = beginTime,
-            endTime = endTime,
-            duration = endTime - beginTime,
-            stackCount = stackCount,
-        }
 
-        if not BuffBars[abilityId] then
-            CreateBar(abilityId)
+    --------------------------------------------------------
+    -- Crystal Fragments Ready（46327）
+    -- Proc 発生時に通知
+    --------------------------------------------------------
+    if abilityId == 46327 then
+        if changeType == EFFECT_RESULT_GAINED then
+            ShowCenterIcon(iconName)
         end
-    end
-
-    if changeType == EFFECT_RESULT_FADED then
-        BuffTable[abilityId] = nil
-        if BuffBars[abilityId] then
-            BuffBars[abilityId]:SetHidden(true)
-            BuffBars[abilityId] = nil
-        end
+        return
     end
 end
 
-------------------------------------------------------------
--- UI Update（残り時間順）
-------------------------------------------------------------
-local function UpdateUI()
-    local now = GetFrameTimeSeconds()
-    local sorted = {}
-
-    for abilityId, data in pairs(BuffTable) do
-        if now < data.endTime then
-            table.insert(sorted, {abilityId=abilityId, data=data})
-        else
-            BuffTable[abilityId] = nil
-            if BuffBars[abilityId] then BuffBars[abilityId]:SetHidden(true) end
-        end
-    end
-
-    table.sort(sorted, function(a, b)
-        return a.data.endTime < b.data.endTime
-    end)
-
-    local y = 0
-    for _, entry in ipairs(sorted) do
-        local abilityId = entry.abilityId
-        local data = entry.data
-        local remain = data.endTime - now
-
-        local row = BuffBars[abilityId]
-        if row then
-            row:SetHidden(false)
-            row:ClearAnchors()
-            row:SetAnchor(TOPLEFT, MyCrystalFragmentsProcUI.ui, TOPLEFT, 0, y)
-            UpdateBar(row, data, remain)
-            y = y + AutoBarHeight(18) + 2
-        end
-    end
-end
 
 ------------------------------------------------------------
--- Init
+-- AddOn Loaded
 ------------------------------------------------------------
-local function OnAddOnLoaded(event, addonName)
+local function OnAddOnLoaded(eventCode, addonName)
+
     if addonName ~= ADDON_NAME then return end
 
     CreateUI()
 
-    EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_EFFECT_CHANGED, OnEffectChanged)
+    EVENT_MANAGER:RegisterForEvent(
+        ADDON_NAME,
+        EVENT_EFFECT_CHANGED,
+        OnEffectChanged
+    )
 
-    -- abilityId フィルタは使わない（不安定なため）
-    -- コード側で abilityId を判定する
+    lastBoundArmamentsStacks = 0
+    notificationSerial = 0
 
-    EVENT_MANAGER:RegisterForUpdate(ADDON_NAME .. "_Update", 100, UpdateUI)
-
-    d("MyCrystalFragmentsProcUI Loaded (no filters, stackCount logic OK)")
+    d("MyCrystalFragmentsProcUI Loaded")
 end
 
-EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_ADD_ON_LOADED, OnAddOnLoaded)
+
+------------------------------------------------------------
+-- AddOn Loaded 登録
+------------------------------------------------------------
+EVENT_MANAGER:RegisterForEvent(
+    ADDON_NAME,
+    EVENT_ADD_ON_LOADED,
+    OnAddOnLoaded
+)

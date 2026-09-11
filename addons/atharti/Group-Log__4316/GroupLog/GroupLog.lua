@@ -8,6 +8,7 @@ GL.name = "GroupLog"
 local Group = {}
 
 local enableMessages = false
+local inBG = false
 
 local ROLE_ICONS = {
 	[LFG_ROLE_TANK] = "|t16:16:/esoui/art/lfg/lfg_icon_tank.dds|t",
@@ -35,6 +36,12 @@ end
 function GL.RebuildGroup()
 	if IsUnitGrouped("player") then
 	   enableMessages = true
+	end
+
+	if IsActiveWorldBattleground() then
+	   inBG = true
+	else
+	   inBG = false
 	end
 
 	ZO_ClearTable(Group)
@@ -71,7 +78,7 @@ function GL.OnGroupMemberJoined(_, memberCharacterName, memberDisplayName, isLoc
 		d(ARROW_JOIN .. GROUP_ICON)
 	else
 		local role = nil
-		if IsActiveWorldBattleground() then
+		if inBG then
 			role = LFG_ROLE_DPS
 		else
 			role = Group[charName].role
@@ -102,7 +109,8 @@ function GL.OnGroupMemberLeft(_, memberCharacterName, reason, isLocalPlayer, _, 
 	end
 
 	local role = nil
-	if IsActiveWorldBattleground() then
+
+	if inBG then
 		role = LFG_ROLE_DPS
 	else
 		role = Group[charName].role
@@ -134,6 +142,11 @@ function GL.OnGroupMemberRoleChanged(_, unitTag, newRole)
 	end
 
 	local oldRole = Group[charName].role
+
+	if not oldRole or oldRole == 0 then
+		Group[charName].role = newRole
+		return
+	end
 
 	if newRole == oldRole then
 		return

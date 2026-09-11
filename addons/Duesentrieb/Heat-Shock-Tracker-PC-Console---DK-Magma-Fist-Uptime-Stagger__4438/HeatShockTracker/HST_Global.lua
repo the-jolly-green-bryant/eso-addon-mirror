@@ -1,7 +1,8 @@
 HeatShockTracker = {
     NAME = "HeatShockTracker",
     AUTHOR = "@Duesentrieb",
-    VERSION = "20260715-0001",
+    ADDONVERSION = 0003,
+    VERSION = "20260910",
     CHAT = "|cFF7F00[HST]|r",
 
     -- UI ELEMENTS
@@ -32,6 +33,7 @@ HeatShockTracker = {
     isEquipped = false,
     isForceShow = false,
     isMenuPreview = false,
+    isCombatEnd = false,
     isConsole = false,
 
     -- TRACKING VARIABLES
@@ -77,7 +79,7 @@ HeatShockTracker = {
 
         -- TRACKING
         trackingMode = 1,
-        isOnlyTrackPlayer = true,
+        isOnlyTrackPlayer = false,
 
         -- DIMENSIONS / DESIGN
         iconSize = 70,
@@ -90,35 +92,41 @@ HeatShockTracker = {
         fontSizeTimer = 40,
         offsetYTimer = 12,
         isColoredTimer = true,
-        TextColorTimer = {1, 1, 1, 1},
+        isDynamicBorderColor = false,
+        TextColorTimer = { 1, 1, 1, 1 },
 
         -- ANIMATION
         isEnabledAnimation = true,
         animationDuration = 300,
         animationScale = 150,
 
+        -- ATTENTION SHAKE
+        isEnabledShake = true,
+        shakeThreshold = 3.5,
+        shakeIntensity = 8,
+
         -- BOSS LABEL
         isHideBossLabel = false,
         fontSizeBoss = 22,
         offsetYBoss = 12,
         isColoredBossLabel = true,
-        TextColorBoss = {1, 1, 1, 1},
+        TextColorBoss = { 1, 1, 1, 1 },
 
         -- STACKS
         isHideStacks = false,
         fontSizeStacks = 22,
-        TextColorStacks = {1, 1, 1, 1},
+        TextColorStacks = { 1, 1, 1, 1 },
 
         -- UPTIME
         isHideUptime = false,
         fontSizeUptime = 22,
-        TextColorUptime = {1, 1, 1, 1},
+        TextColorUptime = { 1, 1, 1, 1 },
 
         -- BORDER COLORS
-        ColorStack0 = {1, 0, 0, 1},
-        ColorStack1 = {1, 0.5, 0, 1},
-        ColorStack2 = {1, 1, 0, 1},
-        ColorStack3 = {0, 1, 0, 1},
+        ColorStack0 = { 1, 0, 0, 1 },
+        ColorStack1 = { 1, 0.5, 0, 1 },
+        ColorStack2 = { 1, 1, 0, 1 },
+        ColorStack3 = { 0, 1, 0, 1 },
 
         -- UI
         offsetX = 0,
@@ -126,7 +134,7 @@ HeatShockTracker = {
         isLocked = false,
 
         -- CHAT
-        isEnabledChat = true,
+        isEnabledChat = false,
         minFightTime = 60,
     },
 

@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/PinkBanther/PinkB-s-ChatWindowCustomizer__095b24d1-d035-4472-ae1d-9da85c61cb99",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "PinkBanther",
+  "canonical_id": "bethesda:095b24d1-d035-4472-ae1d-9da85c61cb99",
+  "content_id": "095b24d1-d035-4472-ae1d-9da85c61cb99",
+  "deleted": false,
+  "fingerprint": "6e8bdae8dd2148e2857ee53d62b37f85614cd0958deaa0b7a1f22f3d81bca6a4",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "095b24d1-d035-4472-ae1d-9da85c61cb99",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/095b24d1-d035-4472-ae1d-9da85c61cb99",
+  "title": "PinkB's ChatWindowCustomizer"
+}

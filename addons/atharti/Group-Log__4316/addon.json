@@ -18,7 +18,7 @@
     "GroupLog"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4316/",
-  "fingerprint": "61d3580efca44e8518aad69b169233f0480f1c9ae0257140a93a9ba5b52e260e",
+  "fingerprint": "7f1b1b1da9844ff6ed0bc1190e130fa51d7773a2d1b60de34b6c47b35c7c87e6",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw15987.png"
   ],
@@ -28,11 +28,11 @@
   "source_id": "4316",
   "source_url": "https://www.esoui.com/downloads/info4316-GroupLog.html",
   "stats": {
-    "downloads": 1212,
+    "downloads": 1279,
     "favorites": 8,
-    "monthly_downloads": 76
+    "monthly_downloads": 128
   },
   "title": "Group Log",
-  "updated_at": 1788626571000,
-  "version": "2.0"
+  "updated_at": 1789028581000,
+  "version": "2.1"
 }

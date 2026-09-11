@@ -13,8 +13,8 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [PairsWellWithCheese](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/thisbeaurielle/PairsWellWithCheese__4458) | thisbeaurielle | PC / Mac | 0.2.8 |
 | [Palantir - with toggle button](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/manavortex/Palantir---with-toggle-button__925) | manavortex | PC / Mac | 1.0a |
 | [Pale Order Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Phinix/Pale-Order-Tracker__3370) | Phinix | PC / Mac | 1.0 |
-| [Pandalore's Coral Aerie Guide Companion](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/thepandalore/Pandalore-s-Coral-Aerie-Guide-Companion__4825) | thepandalore | PC / Mac | 1.0.0 |
-| [Pandalore's Resurrection Parse Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/thepandalore/Pandalore-s-Resurrection-Parse-Tracker__4826) | thepandalore | PC / Mac | 0.3.1 |
+| [Pandalore's Coral Aerie Guide Companion](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/thepandalore/Pandalore-s-Coral-Aerie-Guide-Companion__4825) | thepandalore | PC / Mac | 1.0.2 |
+| [Pandalore's Resurrection Parse Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/thepandalore/Pandalore-s-Resurrection-Parse-Tracker__4826) | thepandalore | PC / Mac | 0.3.2 |
 | [Panel setting for Do I Keep It For Alts?](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Khrill/Panel-setting-for-Do-I-Keep-It-For-Alts__1090) | Khrill | PC / Mac | 1.7.0 |
 | [PantherXP](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rynzaii/PantherXP__3404) | Rynzaii | PC / Mac | v2.1.0 |
 | [PapaCrown Fixed and Improved](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/triase/PapaCrown-Fixed-and-Improved__1544) | triase | PC / Mac | 1.6.5 |
@@ -89,6 +89,8 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [PinkB's ChatAssistant(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-ChatAssistant-Beta__8409de55-043d-4bcc-8876-395671fdc7b5) | PinkBanther | Console | — |
 | [PinkB's ChatFilter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-ChatFilter__f4b50a99-0e05-4748-95a8-d062f94401f3) | PinkBanther | Console | — |
 | [PinkB's ChatFilter(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-ChatFilter-Beta__f84f4752-ff0e-42c9-b73d-d5ea97508b03) | PinkBanther | Console | — |
+| [PinkB's ChatWindowCustomizer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-ChatWindowCustomizer__095b24d1-d035-4472-ae1d-9da85c61cb99) | PinkBanther | Console | — |
+| [PinkB's ChatWindowCustomizer(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-ChatWindowCustomizer-Beta__f06dec51-6718-4699-841e-ae9898433a01) | PinkBanther | Console | — |
 | [PinkB's CraftMaterialAssistant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-CraftMaterialAssistant__c7f082bc-03e0-4e0c-b82b-d7903e5101ad) | PinkBanther | Console | — |
 | [PinkB's CraftMaterialAssistant(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-CraftMaterialAssistant-Beta__bb9043ae-169f-4492-8abb-7d3111e97820) | PinkBanther | Console | — |
 | [PinkB's CyrodiilAlert](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-CyrodiilAlert__da931320-7488-4ce0-83a2-100180a2f3f2) | PinkBanther | Console | — |

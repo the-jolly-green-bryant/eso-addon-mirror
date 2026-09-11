@@ -2537,7 +2537,7 @@ local function CreateSettings()
                 name = DISPLAY_NAME,
                 displayName = DISPLAY_NAME,
                 author = "WifeyRytic",
-                version = "1.2",
+                version = "1.3",
                 registerForRefresh = true,
                 registerForDefaults = true,
             }
@@ -3714,6 +3714,13 @@ local function OnAddonLoaded(
         ADDON_NAME .. "_Combat",
         EVENT_COMBAT_EVENT,
         OnCombatEvent
+    )
+
+    EVENT_MANAGER:AddFilterForEvent(
+        ADDON_NAME .. "_Combat",
+        EVENT_COMBAT_EVENT,
+        REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE,
+        COMBAT_UNIT_TYPE_PLAYER
     )
 
     EVENT_MANAGER:RegisterForEvent(

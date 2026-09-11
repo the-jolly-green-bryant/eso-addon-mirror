@@ -628,7 +628,7 @@ local function CreateSettings()
 
         author = "WifeyRytic",
 
-        version = "1.0",
+        version = "1.1",
 
         registerForRefresh = true,
         registerForDefaults = true,

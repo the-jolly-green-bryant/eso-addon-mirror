@@ -1,0 +1,39 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/its_wifey/HealingMeter__4828",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "its_wifey",
+  "canonical_id": "esoui:4828",
+  "category_id": "150",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    }
+  ],
+  "content_id": "esoui:4828",
+  "deleted": false,
+  "directories": [
+    "HealingMeter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4828/",
+  "fingerprint": "694974884b33d9189b59a21e234db4dbbbd25c3486380c3c8f60110b93b8fa33",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17349.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17348.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4828",
+  "source_url": "https://www.esoui.com/downloads/info4828-HealingMeter.html",
+  "stats": {
+    "downloads": 0,
+    "favorites": 0,
+    "monthly_downloads": 0
+  },
+  "title": "HealingMeter",
+  "updated_at": 1789109118000,
+  "version": "1.0"
+}
