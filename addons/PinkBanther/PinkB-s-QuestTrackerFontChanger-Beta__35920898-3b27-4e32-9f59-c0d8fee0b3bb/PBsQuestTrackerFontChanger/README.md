@@ -4,7 +4,7 @@ Adjusts the fonts of the HUD trackers stacked down the top right of the screen i
 Scrolls Online on console.
 
 - **Author:** PinkBanther
-- **Version:** 1.1.0
+- **Version:** 1.2.0
 - **Requires:** `LibHarvensAddonSettings` >= 20106
 
 ## What it does
@@ -32,11 +32,17 @@ them three different fonts:
 | **Quest name size** | 10–72. The name at the top of the tracker. |
 | **Step description size** | 10–72. The line under the name saying what this stage is about. Not every quest step has one. |
 | **Objective size** | 10–72. What you actually have to do, and any counters. |
+| **Horizontal / vertical position** | ±1000. A nudge from wherever the game puts the panel; 0/0 leaves it alone. |
+| **Panel scale** | 50–200%. The whole tracker drawn bigger or smaller, in proportion. |
 
 In gamepad mode the game's own sizes are 27 for the quest name, 22 for the step description
 and **34 for the objective lines** — the objectives are drawn *larger* than the quest name.
 That is the game's design, not a mistake, and one slider for all three would flatten it. Set
 all three to the same number if you want them uniform. In keyboard mode all three are 18.
+
+Position and scale are the quest tracker's alone, but the panels below it come along:
+`ZO_ZoneStoryTracker` is anchored to the quest container, Golden Pursuits to the zone story and
+the house panel to Golden Pursuits, so the column keeps its shape and follows the move.
 
 ### Golden Pursuits
 
@@ -198,6 +204,33 @@ Until a label has been seen, the sliders fall back to the numbers in the font na
 34 for the quest tracker, 27 / 34 for each of the two HUD panels, and 18 for everything in
 keyboard mode).
 
+### Moving and scaling the panel
+
+`ZO_FocusedQuestTrackerPanel` is the top-level control the whole tracker hangs off, and it is
+anchored **only in XML** — `TOPRIGHT` to `ZO_DynamicEventsTracker_TL`. Nothing in
+`questtracker.lua` re-anchors it: `CreatePlatformAnchors` and `ApplyPlatformStyle` only place
+the timer, the quest container and the tree, all relative to the panel. Nothing sets its scale
+either — `SetScale` appears nowhere in the file. So both are ours to own, and nothing fights us
+for them once written.
+
+The position is stored as a **nudge from the game's own anchor**, not as an absolute screen
+position. The game's anchor is captured once per session before anything is written, so 0/0 is
+genuinely "leave it alone", re-applying never accumulates, and a ZOS change to the default
+position is inherited rather than overwritten.
+
+Scale is free. Unlike a font size it does not make the client build anything, so it costs
+nothing on console — which makes it the cheap way to make the tracker bigger if the memory
+warnings above are a worry.
+
+This is the one place the add-on writes to a control the game did not just hand it, and it
+hooks nothing to do so — writing to a control directly is the safe side of the line. All of
+`ClearAnchors`, `SetAnchor` and `SetScale` are marked *protected-attributes* in the
+documentation, but so are `SetHidden`, `SetDimensions` and `SetAlpha`, which every add-on calls
+on ordinary controls; the marker gates controls whose attributes the client has protected, not
+the functions themselves. Unverified on a PS5 all the same, so every one of these calls goes
+through a deferred, isolated tick: if the client does refuse one, it takes the position with it
+and leaves the fonts, the spacing and the settings panel standing.
+
 ### Where the spacing numbers live
 
 Two different places, which is why this is done in two places:
@@ -257,9 +290,12 @@ Chat commands:
 /pbquest house <n>              both house tracker sizes
 /pbquest house <part> <n>       one part: name | detail
 /pbquest size <n>               every size in every tracker
+/pbquest pos <x> <y>            nudge the quest tracker from where the game puts it
+/pbquest pos reset              put it back
+/pbquest scale <50-200>         draw the whole quest tracker bigger or smaller
 /pbquest on | off               every section
 /pbquest <section> on | off     one section: quest | pursuit | house
-/pbquest reset                  back to the game's own fonts
+/pbquest reset                  back to the game's own fonts and layout
 ```
 
 `/pbqt` is the same command.

@@ -1,0 +1,18 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+; The Elder Scrolls(R) and related logos are registered trademarks or trademarks of ZeniMax Media Inc.
+; in the United States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Dark Mode
+## Description: Console / gamepad only dark theme. Turns the gold HUD and menu borders (compass, action bar, buffs, attribute bars, window rails, tooltips, dialogs) black and darkens panel backgrounds. No dependencies required.
+## Author: YoZo
+## Version: 1.0.0
+## AddOnVersion: 10000
+## APIVersion: 101050
+## SavedVariables: DarkModeConsoleSV
+
+DarkModeConsole.lua
+DarkModeConsole_Settings.lua
+DarkModeConsole_Textures.lua
+
+

@@ -4,7 +4,7 @@ TetsuCombatTools.L = {
     TITLE = "|cFFD700Tetsu's|r Combat Tools",
 
     INFO_LABEL = "Info",
-    INFO_TT = "Gamepad combat HUD. Skills, combat lamp, food and potion, veteran run timer.\nGold / bugs: mail @Tetsurion.",
+    INFO_TT = "Gamepad combat HUD. Skills, combat lamp, food and potion, veteran run timer, set link.\nGold / bugs: mail @Tetsurion.",
 
     SKILL_ENABLE = "Skill Tracking",
     SKILL_ENABLE_TT = "Show the last pressed bar skills and a GCD bar. Ultimate is always included.",
@@ -34,8 +34,10 @@ TetsuCombatTools.L = {
     SKILL_HIDE = "Hide after (sec)",
     SKILL_HIDE_TT = "Used after combat ends (combat mode) and after the last press (after-press mode). Default 8.",
 
+    SKILL_BAR = "Skill icons",
+    SKILL_BAR_TT = "History strip. Off = hide icons; GCD can stay and still follows X/Y.",
     SKILL_GCD = "GCD bar",
-    SKILL_GCD_TT = "Yellow/red bar under the icons. Off = icons only.",
+    SKILL_GCD_TT = "Yellow/red bar. Works with icons off. Same X/Y as the skill strip.",
 
     SKILL_WEAVE = "Weave frames",
     SKILL_WEAVE_TT = "Green frame if a light attack was pressed before the skill, red if not. Off = plain frames. Light-attack icons stay separate.",
@@ -106,7 +108,10 @@ TetsuCombatTools.L = {
     CONS_MSG = "End text in instances",
     CONS_MSG_TT = "Short line when food or potion ends. Only in dungeon / trial / arena / archive / PvP. Never overland.",
     CONS_MSG_FOOD_ON = "Food end text",
-    CONS_MSG_FOOD_ON_TT = "On = show “Food ended” in instances for 60 seconds. Position is the X/Y below.",
+    CONS_MSG_FOOD_ENTER = "Text on enter",
+    CONS_MSG_FOOD_ENTER_TT = "On by default. 10s “No food” when you enter a dungeon / trial / arena / archive without food. Independent from the end text.",
+
+    CONS_MSG_FOOD_ON_TT = "On = “Food ended” for 60s when the buff drops, and “No food” for 10s when you enter a dungeon/trial/arena without food.",
     CONS_MSG_POT_ON = "Potion end text",
     CONS_MSG_POT_ON_TT = "On = show “Potion ended”. Same X as food, one line lower.",
     CONS_MSG_X = "Text offset X",
@@ -116,6 +121,7 @@ TetsuCombatTools.L = {
     CONS_MSG_SCALE = "Text scale %",
     CONS_MSG_SCALE_TT = "Size of the end warning text.",
     CONS_MSG_FOOD = "Food ended",
+    CONS_MSG_FOOD_MISS = "No food",
     CONS_MSG_POT = "Potion ended",
     CONS_MSG_BOTH = "Food and potion ended",
     CONS_PREVIEW = "Preview",
@@ -143,4 +149,18 @@ TetsuCombatTools.L = {
     TIMER_PREVIEW = "Preview",
     TIMER_PREVIEW_TT = "Shows the clock for 10 seconds even in town, including over the settings menu, so you can set X/Y.",
     TIMER_PREVIEW_BTN = "Show 10s",
+
+    LINK_ENABLE = "Set Link",
+    LINK_GROUP = "Always group chat",
+    LINK_GROUP_TT = "On = switch to party/raid and put the links there. Off = keep the channel already open in the chat menu. Default on.",
+    LINK_ENABLE_TT = "Hold R3 in the full Text Chat menu to put one piece of each worn set into the chat box. 2+ pieces or a mythic. Does not send by itself. Not in a group = /say.",
+    LINK_SECTION = "Set Link",
+    LINK_SECTION_TT = "No extra options. Toggle is on the first page.",
+    LINK_HELP = "Hold R3 in full Text Chat.",
+    LINK_HELP_TT = "Social → Text Chat. Hold R3 ~0.6s. Links drop into the input. You still press Send. One piece per set with 2+ equipped, plus mythic. Not in a group = /say.",
+    LINK_HOLD = "Hold R3: sets",
+    LINK_EMPTY = "No sets to link.",
+    LINK_TEST = "Insert now",
+    LINK_TEST_TT = "Puts the same links into chat input without opening the chat menu.",
+    LINK_TEST_BTN = "Link sets",
 }

@@ -144,6 +144,9 @@ addon.sections = {
 	{
 		key = "quest",
 		kind = "pool",
+		-- Only this section can be moved and scaled. The other two panels anchor to the quest
+		-- tracker, so they come along with it -- see ApplyPanelLayout.
+		hasLayout = true,
 		headingId = "SI_PBSQTFC_SECTION_QUEST",
 		noteId = "SI_PBSQTFC_SECTION_QUEST_NOTE",
 		enabledId = "SI_PBSQTFC_QUEST_ENABLED",
@@ -332,6 +335,25 @@ addon.styles = {
 addon.MIN_SIZE = 10
 addon.MAX_SIZE = 72
 
+-- Where the quest tracker sits, and how big the whole panel is drawn.
+--
+-- Offsets are a nudge from wherever the game puts the panel, not an absolute screen position:
+-- 0/0 is "leave it alone", which keeps the untouched case genuinely untouched and survives ZOS
+-- moving the default. The range is wider than any screen because the panel can be pushed off
+-- one edge deliberately to park it.
+addon.MIN_OFFSET = -1000
+addon.MAX_OFFSET = 1000
+addon.OFFSET_STEP = 5
+addon.MIN_SCALE = 50
+addon.MAX_SCALE = 200
+addon.SCALE_STEP = 5
+
+addon.layoutDefaults = {
+	offsetX = 0,
+	offsetY = 0,
+	scale = 100,
+}
+
 -- Each section carries its own switch, face and outline: they are separate pieces of UI, and
 -- a house name big enough to read across a courtyard is not a quest tracker anyone wants.
 --
@@ -350,7 +372,7 @@ addon.sectionDefaults = {
 }
 
 addon.accountDefaults = {
-	quest = { enabled = true, face = "", style = "", sizes = { Gamepad = {}, Keyboard = {} } },
+	quest = { enabled = true, face = "", style = "", sizes = { Gamepad = {}, Keyboard = {} }, layout = { Gamepad = {}, Keyboard = {} } },
 	pursuit = { enabled = true, face = "", style = "", sizes = { Gamepad = {}, Keyboard = {} } },
 	house = { enabled = true, face = "", style = "", sizes = { Gamepad = {}, Keyboard = {} } },
 	measured = { Gamepad = {}, Keyboard = {} },
@@ -385,7 +407,32 @@ function addon:Settings(sectionKey)
 	end
 	settings.sizes.Gamepad = settings.sizes.Gamepad or {}
 	settings.sizes.Keyboard = settings.sizes.Keyboard or {}
+	if self.sectionByKey[sectionKey] and self.sectionByKey[sectionKey].hasLayout then
+		if type(settings.layout) ~= "table" then
+			settings.layout = { Gamepad = {}, Keyboard = {} }
+		end
+		settings.layout.Gamepad = settings.layout.Gamepad or {}
+		settings.layout.Keyboard = settings.layout.Keyboard or {}
+	end
 	return settings
+end
+
+-- The position and scale for the platform on screen. Per platform for the same reason the
+-- sizes are: the two HUDs are laid out differently, so a nudge that is right in one is wrong
+-- in the other.
+function addon:Layout(sectionKey, platform)
+	platform = platform or self:Platform()
+	local stored = self:Settings(sectionKey).layout[platform]
+	return {
+		offsetX = tonumber(stored.offsetX) or self.layoutDefaults.offsetX,
+		offsetY = tonumber(stored.offsetY) or self.layoutDefaults.offsetY,
+		scale = tonumber(stored.scale) or self.layoutDefaults.scale,
+	}
+end
+
+function addon:SetLayoutValue(sectionKey, field, value, platform)
+	platform = platform or self:Platform()
+	self:Settings(sectionKey).layout[platform][field] = value
 end
 
 function addon:SettingsForRole(roleKey)
@@ -803,6 +850,130 @@ function addon:HookQuestTracker()
 	return true
 end
 
+-- ---------------------------------------------------------------------------------------
+-- Where the quest tracker sits, and how big it is drawn
+--
+-- ZO_FocusedQuestTrackerPanel is the top-level control the whole tracker hangs off, and it is
+-- anchored **only in XML** -- TOPRIGHT to ZO_DynamicEventsTracker_TL. Nothing in
+-- questtracker.lua re-anchors it: CreatePlatformAnchors and ApplyPlatformStyle only ever place
+-- the timer, the quest container and the tree, all relative to the panel. Nothing sets its
+-- scale either; SetScale appears nowhere in the file. So both are ours to own, and nothing
+-- fights us for them once written.
+--
+-- This is the one part of the add-on that writes to a control the game did not just hand us,
+-- and it does not hook anything to do it -- writing to a control directly is the safe half of
+-- the line that "never wrap client UI code" draws. ClearAnchors / SetAnchor / SetScale are all
+-- marked *protected-attributes* in the documentation, but so are SetHidden, SetDimensions and
+-- SetAlpha, which every add-on calls on ordinary controls; the marker gates controls whose
+-- attributes the client has protected, not the function itself. Unverified on a PS5 all the
+-- same, which is why every call here goes through RequestLayout: a deferred, isolated tick, so
+-- if the client does refuse one of them it takes the position with it and leaves the fonts,
+-- the settings panel and everything else standing.
+--
+-- The panels below inherit the move. ZO_ZoneStoryTracker anchors to
+-- ZO_FocusedQuestTrackerPanelContainerQuestContainer, Golden Pursuits to the zone story, and
+-- the house panel to Golden Pursuits, so the column keeps its shape and follows the tracker.
+-- ---------------------------------------------------------------------------------------
+
+function addon:QuestPanel()
+	local tracker = self:QuestTracker()
+	return tracker and tracker.trackerPanel or nil
+end
+
+-- The anchor the game gave the panel, captured once per session before anything is written.
+--
+-- Offsets are stored as a nudge from this rather than as an absolute position, so 0/0 really is
+-- the game's own layout and a ZOS change to the default is inherited rather than overwritten.
+function addon:CapturePanelAnchor(panel)
+	if self.panelAnchor then
+		return true
+	end
+	if type(panel.GetAnchor) ~= "function" then
+		return false
+	end
+
+	local ok, isValid, point, relativeTo, relativePoint, offsetX, offsetY, constrains = pcall(panel.GetAnchor, panel, 0)
+	if not ok or not isValid then
+		return false
+	end
+
+	self.panelAnchor = {
+		point = point,
+		relativeTo = relativeTo,
+		relativePoint = relativePoint,
+		offsetX = offsetX or 0,
+		offsetY = offsetY or 0,
+		constrains = constrains,
+	}
+	return true
+end
+
+-- True when the panel would sit anywhere other than where the game puts it.
+function addon:LayoutDiffers()
+	local section = self.sectionByKey.quest
+	if not section.hasLayout or not self:Settings("quest").enabled then
+		return false
+	end
+	local layout = self:Layout("quest")
+	return layout.offsetX ~= self.layoutDefaults.offsetX
+		or layout.offsetY ~= self.layoutDefaults.offsetY
+		or layout.scale ~= self.layoutDefaults.scale
+end
+
+-- Moves and scales the panel, or puts it back.
+--
+-- Written unconditionally against the captured anchor rather than only when something differs,
+-- because that is also the restore path: with the section off, or the sliders at their
+-- defaults, the numbers computed here are exactly the game's own and the panel goes home.
+-- Nothing is actually called unless the target differs from what the control already has.
+function addon:ApplyPanelLayout()
+	local panel = self:QuestPanel()
+	if not panel then
+		return false
+	end
+	if not self:CapturePanelAnchor(panel) then
+		return false
+	end
+
+	local base = self.panelAnchor
+	local applying = self:LayoutDiffers()
+	local layout = applying and self:Layout("quest") or self.layoutDefaults
+
+	local targetX = base.offsetX + layout.offsetX
+	local targetY = base.offsetY + layout.offsetY
+
+	local okAnchor, isValid, _, _, _, currentX, currentY = pcall(panel.GetAnchor, panel, 0)
+	if not okAnchor or not isValid or currentX ~= targetX or currentY ~= targetY then
+		panel:ClearAnchors()
+		panel:SetAnchor(base.point, base.relativeTo, base.relativePoint, targetX, targetY, base.constrains)
+	end
+
+	local targetScale = layout.scale / 100
+	local okScale, currentScale = pcall(panel.GetScale, panel)
+	if not okScale or math.abs((currentScale or 1) - targetScale) > 0.0001 then
+		panel:SetScale(targetScale)
+	end
+
+	self.layoutApplied = { x = targetX, y = targetY, scale = targetScale }
+	return true
+end
+
+-- Every route to ApplyPanelLayout goes through here.
+--
+-- One frame's delay costs nothing -- a slider being dragged still looks live -- and it buys the
+-- isolation described above: the call runs on its own stack rather than inside a settings
+-- handler, a slash command or the add-on's own start-up, so a refusal cannot take any of those
+-- down with it.
+function addon:RequestLayout()
+	if zo_callLater then
+		zo_callLater(function()
+			addon:ApplyPanelLayout()
+		end, 0)
+	else
+		self:ApplyPanelLayout()
+	end
+end
+
 -- Re-draws the quest tracker with the current settings.
 --
 -- ApplyPlatformStyle first, always. It is the tracker's own public method for putting the
@@ -945,6 +1116,9 @@ function addon:Refresh(sectionKey)
 		if sectionKey == nil or sectionKey == section.key then
 			if section.kind == "pool" then
 				self:RefreshQuest()
+				if section.hasLayout then
+					self:RequestLayout()
+				end
 			else
 				self:RefreshHudTracker(section)
 			end
@@ -960,6 +1134,9 @@ function addon:ResetSection(sectionKey)
 	-- The measurements are kept: they are what the client draws, not a setting, and throwing
 	-- them away would only put the sliders back on the unscaled fallback numbers.
 	settings.sizes = { Gamepad = {}, Keyboard = {} }
+	if self.sectionByKey[sectionKey].hasLayout then
+		settings.layout = { Gamepad = {}, Keyboard = {} }
+	end
 	self:Refresh(sectionKey)
 end
 
@@ -1019,6 +1196,14 @@ function addon:PrintStatus()
 		Line("  [%s] tracker=%s hooked=%s enabled=%s face=%q style=%q", section.key,
 			found, tostring(hooked[section.key] or false),
 			tostring(settings.enabled), tostring(settings.face), tostring(settings.style))
+		if section.hasLayout then
+			local layout = self:Layout(section.key)
+			Line("    layout: x=%s y=%s scale=%s%% differs=%s", tostring(layout.offsetX),
+				tostring(layout.offsetY), tostring(layout.scale), tostring(self:LayoutDiffers()))
+			local applied = self.layoutApplied
+			Line("      applied=%s base=%s", applied and string.format("%s/%s @%.2f", tostring(applied.x), tostring(applied.y), applied.scale) or "never",
+				self.panelAnchor and string.format("%s/%s", tostring(self.panelAnchor.offsetX), tostring(self.panelAnchor.offsetY)) or "not captured")
+		end
 		for _, role in ipairs(section.roles) do
 			Line("    %s: size=%s default=%s ratio=%.2f differs=%s", role.key,
 				tostring(self:SizeFor(role.key)), tostring(self:DefaultSize(role.key)),
@@ -1068,10 +1253,13 @@ local function Usage()
 	Line("  %s pursuit <part> <n>     -- one part: name | detail", SLASH)
 	Line("  %s house <n>              -- both house tracker sizes", SLASH)
 	Line("  %s house <part> <n>       -- one part: name | detail", SLASH)
-	Line("  %s size <n>               -- every size in both", SLASH)
+	Line("  %s size <n>               -- every size in every tracker", SLASH)
+	Line("  %s pos <x> <y>            -- nudge the quest tracker from where the game puts it", SLASH)
+	Line("  %s pos reset              -- put it back", SLASH)
+	Line("  %s scale <%d-%d>         -- draw the whole quest tracker bigger or smaller", SLASH, addon.MIN_SCALE, addon.MAX_SCALE)
 	Line("  %s on | off               -- every section", SLASH)
 	Line("  %s <section> on | off     -- one section only: quest | pursuit | house", SLASH)
-	Line("  %s reset                  -- back to the game's own fonts", SLASH)
+	Line("  %s reset                  -- back to the game's own fonts and layout", SLASH)
 	Line("  (%s is the same command)", SHORT_SLASH)
 end
 
@@ -1157,7 +1345,41 @@ local function OnSlash(argumentString)
 		return
 	end
 
-	if command == "size" then
+	if command == "pos" then
+		local second = (args[2] or ""):lower()
+		if second == "reset" then
+			addon:SetLayoutValue("quest", "offsetX", nil)
+			addon:SetLayoutValue("quest", "offsetY", nil)
+			addon:RequestLayout()
+			Line("quest tracker position: back to the game's own")
+			return
+		end
+
+		local x, y = tonumber(args[2]), tonumber(args[3])
+		if not x or not y then
+			Line("usage: %s pos <x> <y>   (%d to %d, + is right and down)", SLASH, addon.MIN_OFFSET, addon.MAX_OFFSET)
+			Line("       %s pos reset", SLASH)
+			return
+		end
+		x = math.max(addon.MIN_OFFSET, math.min(addon.MAX_OFFSET, math.floor(x)))
+		y = math.max(addon.MIN_OFFSET, math.min(addon.MAX_OFFSET, math.floor(y)))
+		addon:SetLayoutValue("quest", "offsetX", x)
+		addon:SetLayoutValue("quest", "offsetY", y)
+		addon:Settings("quest").enabled = true
+		addon:RequestLayout()
+		Line("quest tracker position: %d / %d from the game's own", x, y)
+	elseif command == "scale" then
+		local scale = tonumber(args[2])
+		if not scale then
+			Line("usage: %s scale <%d-%d>   (100 is the game's own)", SLASH, addon.MIN_SCALE, addon.MAX_SCALE)
+			return
+		end
+		scale = math.max(addon.MIN_SCALE, math.min(addon.MAX_SCALE, math.floor(scale)))
+		addon:SetLayoutValue("quest", "scale", scale)
+		addon:Settings("quest").enabled = true
+		addon:RequestLayout()
+		Line("quest tracker scale: %d%%", scale)
+	elseif command == "size" then
 		local size = tonumber(args[2])
 		if not size then
 			Line("usage: %s size <%d-%d>", SLASH, addon.MIN_SIZE, addon.MAX_SIZE)

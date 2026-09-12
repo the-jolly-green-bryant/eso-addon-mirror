@@ -65,7 +65,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Tel Var Saver](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/EHansonn/Tel-Var-Saver__3664) | EHansonn | PC / Mac | 1.9 |
 | [Teleport - general purpose teleporting tool](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Schrodi/Teleport---general-purpose-teleporting-tool__2781) | Schrodi | PC / Mac | 1.1.3 |
 | [Teleport Tool](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/deagl0r/Teleport-Tool__1333) | deagl0r | PC / Mac | 1.24.0.0 |
-| [TemplarMastery](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/its_wifey/TemplarMastery__4827) | its_wifey | PC / Mac | 1.2 |
+| [TemplarMastery](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/its_wifey/TemplarMastery__4827) | its_wifey | PC / Mac | 1.3 |
 | [TESO Ingame Messenger - TIM (for Update 6)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Migoda/TESO-Ingame-Messenger---TIM-for-Update-6__944) | Migoda | PC / Mac | 5.52 |
 | [test](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/satuve/test__3735024b-209d-4fab-966c-339f5adffcb5) | satuve | Console | — |
 | [test](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sirinsidiator/test__081b2e52-b426-454f-9be3-3a9a4aa5678f) | sirinsidiator | Console | — |

@@ -18,10 +18,11 @@
     "WifeyRyticMagmaTracker"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4821/",
-  "fingerprint": "3195aa5d8d8e554c794aa1e1fbdcd83bbab49093d781fef5160db7cca196b01b",
+  "fingerprint": "e45f8ddc5ba6162eee44de1462c28006994955ec9ea357233b50781f047bb7c3",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw17321.png",
-    "https://cdn-eso.mmoui.com/preview/pvw17323.png"
+    "https://cdn-eso.mmoui.com/preview/pvw17323.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17356.png"
   ],
   "platform": "pc",
   "published": true,
@@ -29,11 +30,11 @@
   "source_id": "4821",
   "source_url": "https://www.esoui.com/downloads/info4821-WifeyRyticsMagmaShellTracker.html",
   "stats": {
-    "downloads": 12,
+    "downloads": 20,
     "favorites": 0,
-    "monthly_downloads": 9
+    "monthly_downloads": 17
   },
   "title": "WifeyRytic's Magma Shell Tracker",
-  "updated_at": 1789104716000,
-  "version": "1.1"
+  "updated_at": 1789193679000,
+  "version": "1.2"
 }

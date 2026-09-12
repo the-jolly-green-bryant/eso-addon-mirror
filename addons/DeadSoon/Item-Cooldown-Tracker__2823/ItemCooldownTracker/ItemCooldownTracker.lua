@@ -320,7 +320,7 @@ ICDT.trackableItemList = {
 		name = ICDT.loc.items.styleDeadKeeper,
 		itemIds = range(194514, 194527),
 		overwriteTimestamp = false,
-		containers = {197819},
+		containers = {197818, 197819},
 		conditions = {
 			onlyFromContainer = true,
 		},
@@ -329,7 +329,7 @@ ICDT.trackableItemList = {
 		name = ICDT.loc.items.styleKindred,
 		itemIds = range(194541, 194554),
 		overwriteTimestamp = false,
-		containers = {197818, 197820},
+		containers = {197820},
 		conditions = {
 			onlyFromContainer = true,	-- could also drop from bosses in Bastion Nymic (*)
 		},
@@ -361,6 +361,17 @@ ICDT.trackableItemList = {
 		itemIds = range(212119, 212132),
 		overwriteTimestamp = false,
 		containers = {217731, 217732},
+		conditions = {
+			onlyFromContainer = true,
+		},
+	},
+
+	-- Season 1
+	["styleKoldaneCartel"] = {
+		name = ICDT.loc.items.styleKoldaneCartel,
+		itemIds = range(223948, 223961),
+		overwriteTimestamp = false,
+		containers = {225207},
 		conditions = {
 			onlyFromContainer = true,
 		},
@@ -540,6 +551,29 @@ ICDT.trackableItemList = {
 		overwriteTimestamp = false,
 		conditions = {
 			onlyInZone = {1514},
+		},
+	},
+
+	-- OTHER TYPE OF FRAGMENTS
+
+	-- Season 1
+	-- Parched Stone
+	["fragParchedStone"] = {
+		name = ICDT.loc.prefix.season1 .. zo_strformat("<<C:1>>", GetCollectibleName(14400)) .. ICDT.loc.suffix.otherFragment,
+		itemIds = {225219},
+		overwriteTimestamp = false,
+		conditions = {
+			onlyInZone = {3},
+		},
+	},
+
+	-- Bitten Chew Bone
+	["fragChewBone"] = {
+		name = ICDT.loc.prefix.season1 .. zo_strformat("<<C:1>>", GetCollectibleName(14773)) .. ICDT.loc.suffix.otherFragment,
+		itemIds = {225220},
+		overwriteTimestamp = false,
+		conditions = {
+			onlyInZone = {41},
 		},
 	},
 

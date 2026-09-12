@@ -1,5 +1,6 @@
 -- GERMAN LANGUAGE LOCALIZATION
 ICDT.loc.suffix.publicDungeonFragment = " (OV Fragment)"
+ICDT.loc.suffix.otherFragment = " (Fragment)"
 
 -- Items
 ICDT.loc.items.transmutRewardCyrodiil = ICDT.loc.prefix.pvp .. "Intakte Transmutationsgeode ('Gerechter Lohn')"
@@ -28,6 +29,7 @@ ICDT.loc.items.styleKindred = ICDT.loc.prefix.necrom .. "Konkordie der Sippe Sti
 ICDT.loc.items.styleShardBorn = ICDT.loc.prefix.goldRoad .. "Scherbensaat Stilseiten (Westauen)"
 ICDT.loc.items.styleWestWealdLegion = ICDT.loc.prefix.goldRoad .. "Westauen-Legion Stilseiten (Westauen)"
 ICDT.loc.items.styleTideBorn = ICDT.loc.prefix.wormCult1 .. "Gezeitengeborenen Stilseiten (Sonnenwende)"
+ICDT.loc.items.styleKoldaneCartel = ICDT.loc.prefix.season1 .. "Koldane-Kartell Stilseiten (Dolchsturz-Unterschlupf)"
 
 
 -- Settings
@@ -70,7 +72,8 @@ ICDT.loc.settings.itemDescriptionDetailed =
 		"Necrom: |cd5b526Konkordie der Sippe Stilseiten|r\nDu hast die Chance, eine Stilseite zu erhalten, wenn du die tägliche Quest des Questgebers 'Ordinatorin Tandasea' auf Telvanni abschließt. Zusätzlich können die Stilseiten von Anführern in 'Bastion Nymon' droppen.\n\n" ..
 		"Gold Road: |cd5b526Scherbensaat Stilseiten|r\nDu hast die Chance, eine Stilseite zu erhalten, wenn du die täglichen Quests (Gewölbe oder Weltenboss) der Questgeber 'Kommandant Salerius' oder 'Leutnant Agrance' in Westauen abschließt.\n\n" ..
 		"Gold Road: |cd5b526Westauen-Legion Stilseiten|r\nDu hast die Chance, eine Stilseite zu erhalten, wenn du die tägliche Quest der Questgeberin 'Legionärin Jaida' in Westauen abschließt.\n\n" ..
-		"Worm Cult 1: |cd5b526Gezeitengeborenen Stilseiten|r\nDu hast die Chance, eine Stilseite zu erhalten, wenn du die täglichen Quests (Gewölbe oder Weltenboss) der Questgeber 'Lector Volonaro' oder 'Morlia' in Sonnenwende abschließt.\n\n"
+		"Worm Cult 1: |cd5b526Gezeitengeborenen Stilseiten|r\nDu hast die Chance, eine Stilseite zu erhalten, wenn du die täglichen Quests (Gewölbe oder Weltenboss) der Questgeber 'Lector Volonaro' oder 'Morlia' in Sonnenwende abschließt.\n\n" ..
+		"Season 1: |cd5b526Koldane-Kartell Stilseiten|r\nDu hast die Chance, eine Stilseite zu erhalten, wenn du die tägliche Quest des Wiederbeschaffungsbretts (Josseline Madier) im Dolchsturz-Unterschlupf abschließt.\n\n"
 
 
 -- Chat output

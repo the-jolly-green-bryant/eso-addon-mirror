@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/PinkBanther/PinkB-s-LuaMemoryMonitor-Beta__ae47138d-8a74-4929-b2e2-acb03b38eb43",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "PinkBanther",
+  "canonical_id": "bethesda:ae47138d-8a74-4929-b2e2-acb03b38eb43",
+  "content_id": "ae47138d-8a74-4929-b2e2-acb03b38eb43",
+  "deleted": false,
+  "fingerprint": "0867f1c7b9b079fbc1f81258f52546dbaf15106fdf1b54738dbe5fa8f3341236",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "ae47138d-8a74-4929-b2e2-acb03b38eb43",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/ae47138d-8a74-4929-b2e2-acb03b38eb43",
+  "title": "PinkB's LuaMemoryMonitor(Beta)"
+}

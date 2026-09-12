@@ -57,6 +57,15 @@ HUD右上に縦に並ぶトラッカーのフォントを調整するアドオ�
 　家の名前／詳細行（愛称と所有者・人数・タグ）の2種類。
 　ゲーム側が詳細の3行を同じフォントで描画しているため、スライダーは1本にまとめてあります。
 
+■ クエストトラッカーの位置と大きさ
+
+・表示位置の変更（横・縦、ゲーム標準位置からのずらし量）
+　0でゲーム標準のままです。「黄金の追跡」「ハウス情報」はゲーム側でクエストトラッカーに
+　接続されているため、一緒に移動し、縦の並びは保たれます。
+・表示倍率の変更（50〜200%）
+　クエストトラッカー全体を、文字・アイコンごと比率を保って拡大縮小します。
+　フォント構築が発生しないため、コンソールでもコストがかかりません。
+
 ■ すべてに共通
 
 ・書体の変更
@@ -103,6 +112,9 @@ HUD右上に縦に並ぶトラッカーのフォントを調整するアドオ�
 　/pbquest house <数値>           ハウス情報の2種類すべて
 　/pbquest house <部分> <数値>    個別に設定（name / detail）
 　/pbquest size <数値>            すべてのトラッカーのすべて
+　/pbquest pos <x> <y>            クエストトラッカーの位置をずらす
+　/pbquest pos reset              位置を元に戻す
+　/pbquest scale <50-200>         クエストトラッカー全体の表示倍率
 　/pbquest on | off               すべての適用／解除
 　/pbquest <欄> on | off          欄ごと（quest / pursuit / house）
 　/pbquest reset                  ゲーム本来のフォントに戻す
@@ -136,6 +148,14 @@ The panel under that while you are in a house, yours or someone else's on a home
 - Text size (10–72), for the house name and for the details under it: the nickname and owner,
   the visitor count, and the House Tours tags. The game draws all three detail lines with one
   font, so they share one slider.
+
+■ Quest tracker position and size
+
+- Position (horizontal and vertical), as a nudge from wherever the game puts the panel. 0
+  leaves it alone. Golden Pursuits and the house panel are anchored to the quest tracker by the
+  game, so they follow it and the column keeps its shape.
+- Panel scale, 50–200%. The whole tracker bigger or smaller, text and icons in proportion. It
+  makes the client build nothing, so it costs nothing on console.
 
 ■ Both
 
@@ -179,6 +199,9 @@ Chat commands:
   /pbquest house <n>              both house tracker sizes
   /pbquest house <part> <n>       one part: name | detail
   /pbquest size <n>               every size in every tracker
+  /pbquest pos <x> <y>            nudge the quest tracker from its default position
+  /pbquest pos reset              put it back
+  /pbquest scale <50-200>         draw the whole quest tracker bigger or smaller
   /pbquest on | off               every section
   /pbquest <section> on | off     one section: quest | pursuit | house
   /pbquest reset                  back to the game's own fonts
@@ -192,4 +215,4 @@ LibHarvensAddonSettings
 
 ## Version
 
-1.1.0
+1.2.0

@@ -159,6 +159,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Mudcrab Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/snay/Mudcrab-Tracker__4312) | snay | PC / Mac | 0.1.4 |
 | [Muffin's Utility Tree](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Muffins714/Muffin-s-Utility-Tree__4797) | Muffins714 | PC / Mac | 1.0 |
 | [Muffin’s Set & Recipe Tracker for Gamepad](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Muffins714/Muffin-s-Set-Recipe-Tracker-for-Gamepad__4090) | Muffins714 | PC / Mac | 1.6.1 |
+| [Multi Class Ability Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Cerbin/Multi-Class-Ability-Tracker__4831) | Cerbin | PC / Mac | 0.1.0 |
 | [Mundus](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/probo11/Mundus__2698) | probo11 | PC / Mac | 5.0 |
 | [MundusMap Revived](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Marazota/MundusMap-Revived__3069) | Marazota | PC / Mac | 0.28 |
 | [Murder Hotkey](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/pineapple_aule/Murder-Hotkey__3155) | pineapple_aule | PC / Mac | 0.1 |

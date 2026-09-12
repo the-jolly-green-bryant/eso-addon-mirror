@@ -11,6 +11,7 @@ local defaultAccountVars = {
     skillShow = "combat",
     skillHideAfter = 8,
     skillLightAttacks = false,
+    skillShowBar = true,
     skillShowGcd = true,
     skillShowWeave = true,
     statusEnabled = true,
@@ -39,6 +40,7 @@ local defaultAccountVars = {
     consEndSoundId = "alert",
     consMsgEnabled = false,
     consMsgFood = false,
+    consMsgFoodEnter = true,
     consMsgPot = false,
     consMsgX = 0,
     consMsgY = -200,
@@ -51,6 +53,8 @@ local defaultAccountVars = {
     timerOffsetX = 0,
     timerOffsetY = -280,
     timerScale = 100,
+    linkEnabled = true,
+    linkForceGroup = true,
 }
 
 local function OnAddOnLoaded(_, addonName)
@@ -67,6 +71,7 @@ local function OnAddOnLoaded(_, addonName)
     if T.savedVars.skillSlots == nil then T.savedVars.skillSlots = 6 end
     if T.savedVars.skillShow == nil then T.savedVars.skillShow = "combat" end
     if T.savedVars.skillHideAfter == nil then T.savedVars.skillHideAfter = 8 end
+    if T.savedVars.skillShowBar == nil then T.savedVars.skillShowBar = true end
     if T.savedVars.skillShowGcd == nil then T.savedVars.skillShowGcd = true end
     if T.savedVars.skillShowWeave == nil then T.savedVars.skillShowWeave = true end
     if T.savedVars.statusEnabled == nil then T.savedVars.statusEnabled = true end
@@ -115,6 +120,10 @@ local function OnAddOnLoaded(_, addonName)
         T.savedVars.consMsgPot = false
         T.savedVars.consAlertRev = 1
     end
+    if T.savedVars.consEnterRev == nil then
+        T.savedVars.consMsgFoodEnter = true
+        T.savedVars.consEnterRev = 1
+    end
     if T.savedVars.consMsgY == nil then T.savedVars.consMsgY = -200 end
     if T.savedVars.consMsgScale == nil then T.savedVars.consMsgScale = 100 end
 
@@ -130,8 +139,14 @@ local function OnAddOnLoaded(_, addonName)
     if T.ConsStart then
         T.ConsStart()
     end
+    if T.savedVars.linkEnabled == nil then T.savedVars.linkEnabled = true end
+    if T.savedVars.linkForceGroup == nil then T.savedVars.linkForceGroup = true end
+
     if T.TimerStart then
         T.TimerStart()
+    end
+    if T.LinkStart then
+        T.LinkStart()
     end
 end
 

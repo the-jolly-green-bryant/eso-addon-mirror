@@ -1,13 +1,15 @@
 local appName = "mechAcuityTracker"
 local mechAbilityID = 99204
+local abilityIDspare = 0
 local timeCooldown = 25
 local timeLeftStack = 4
 local previousStacks = 0
 local buffRunning = false
 local trackingCooldown = false
-local picPath = "esoui/art/icons/ability_templar_toppling_charge.dds"
---local picPath = GetAbilityIcon(mechAbilityID)--gear_clockwork_medium_head_a.dds
+local picPath = "esoui/art/icons/gear_clockwork_medium_head_a.dds"
+local picPathBase = GetAbilityIcon(abilityIDspare)--gear_clockwork_medium_head_b.dds
 local iconText = zo_iconTextFormat(picPath, 80, 80, " ")
+local iconTextBase = zo_iconTextFormat(picPathBase, 80, 80, " ")
 local isLoaded = false
 local isMenuOpen = false
 
@@ -273,7 +275,7 @@ local function onAddOnLoaded(event, name)
     EVENT_MANAGER:UnregisterForEvent(appName, EVENT_ADD_ON_LOADED)
 
 	--notify that add-on has been loaded
-	zo_callLater(function() printMessage("add-on successfully loaded") end, 500)
+	zo_callLater(function() printMessage("add-on loaded") end, 500)
 
 	--load saved variables
     mechAcuityTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("mechAddonVars", 1, "Settings", mechAcuityTracker.defaults, GetUnitName("player"))
@@ -286,9 +288,11 @@ local function onAddOnLoaded(event, name)
     --setup text field areas
     matrack:SetMovable(true)
     matrackIcon:SetFont("$(GAMEPAD_MEDIUM_FONT)|$(GP_54)|soft-shadow-thick")
+    matrackIconBase:SetFont("$(GAMEPAD_MEDIUM_FONT)|$(GP_54)|soft-shadow-thick")
     matrackLabelMain:SetFont("$(GAMEPAD_BOLD_FONT)|$(GP_54)|soft-shadow-thick")
     matrackLabelCorner:SetFont("$(GAMEPAD_BOLD_FONT)|$(GP_42)|soft-shadow-thick")
     matrackIcon:SetText(iconText)
+    matrackIconBase:SetText(iconTextBase)
     matrackLabelMain:SetText("")
     matrackLabelMain:SetColor(255, 0, 0, 255)
     matrackLabelCorner:SetText("")

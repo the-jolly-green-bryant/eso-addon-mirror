@@ -18,7 +18,7 @@
     "CyrodiilMapLabels"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4361/",
-  "fingerprint": "4eecf3b6f38bc040c619c6c1bc33ba50d2a38d507296db3a5f6543614cdf4ea3",
+  "fingerprint": "3a99f46acc46a2a4af9dda5f13b6c1db0923fdbcc20c5c72ce779bc3f782bdaa",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw17081.png",
     "https://cdn-eso.mmoui.com/preview/pvw17082.png",
@@ -32,11 +32,11 @@
   "source_id": "4361",
   "source_url": "https://www.esoui.com/downloads/info4361-CyrodiilMapLabelsFixSeasonZero.html",
   "stats": {
-    "downloads": 851,
-    "favorites": 2,
-    "monthly_downloads": 191
+    "downloads": 984,
+    "favorites": 4,
+    "monthly_downloads": 307
   },
   "title": "Cyrodiil Map Labels (Fix: Season Zero)",
-  "updated_at": 1787696638000,
-  "version": "1.8"
+  "updated_at": 1789148978000,
+  "version": "1.8.1"
 }

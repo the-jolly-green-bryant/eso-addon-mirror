@@ -1,5 +1,5 @@
 local appName = "esoReport"
-
+local buffRunning = false
 esoReport = {}
 
 --print message to chat box
@@ -26,7 +26,7 @@ local function combatReport(eventCode, result, isError, abilityName, abilityGrap
     --    return
     --end
 
-    printMessage("---------------")
+    printMessage(" ")
     printMessage("combatReport")
     printMessage(zo_strformat("eventCode- <<1>>", eventCode))
     printMessage(zo_strformat("result- <<1>>", result))
@@ -41,27 +41,17 @@ local function combatReport(eventCode, result, isError, abilityName, abilityGrap
     printMessage(zo_strformat("sourceUnitId- <<1>>", sourceUnitId))
     --printMessage(zo_strformat("targetUnitId- <<1>>", targetUnitId))
     printMessage(zo_strformat("abilityId- <<1>>", abilityId))
-    printMessage("---------------")
+    printMessage(" ")
 end
 
 
 local function effectReport(eventCode, changeType, effectSlot, effectName, unitTag, beginTime, endTime, stackCount, iconName, buffType, 
     effectType, abilityType, statusEffectType, unitName, unitID, abilityID)
 
-    local nameTmp = GetUnitName("player")
-
-    --if nameTmp ~= cleanName(unitName) then
-   --     return
-    --end
-
     --(changeType)	 -- 1 is gained, 2 is gone, 3 is update
 	--(effectType)	 -- 1 is debuff, 0 is buff
-
-    printMessage("---------------")
+    printMessage(" ")
     printMessage("effectReport")
-    --printMessage(zo_strformat("eventCode- <<1>>", eventCode))
-    --printMessage(zo_strformat("changeType- <<1>>", changeType))
-
     if changeType == 1 then
         printMessage("gained effect")
     elseif changeType == 2 then
@@ -71,30 +61,25 @@ local function effectReport(eventCode, changeType, effectSlot, effectName, unitT
     else
         printMessage(zo_strformat("changeType- <<1>>", changeType))
     end
-
-    --printMessage(zo_strformat("effectSlot- <<1>>", effectSlot))
     printMessage(zo_strformat("effectName- <<1>>", effectName))
-    --printMessage(zo_strformat("unitTag- <<1>>", unitTag))
-    --printMessage(zo_strformat("beginTime- <<1>>", beginTime))
-    --printMessage(zo_strformat("endTime- <<1>>", endTime))
-    printMessage(zo_strformat("stackCount- <<1>>", stackCount))
-    printMessage(zo_strformat("iconName- <<1>>", iconName))
-    --printMessage(zo_strformat("buffType- <<1>>", buffType))
-    --printMessage(zo_strformat("effectType- <<1>>", effectType))
-    --printMessage(zo_strformat("abilityType- <<1>>", abilityType))
-    --printMessage(zo_strformat("statusEffectType- <<1>>", statusEffectType))
     printMessage(zo_strformat("unitName- <<1>>", unitName))
-    --printMessage(zo_strformat("unitID- <<1>>", unitID))
+    printMessage(zo_strformat("unitID- <<1>>", unitID))
     printMessage(zo_strformat("abilityID- <<1>>", abilityID))
-    printMessage("---------------")
+    printMessage(zo_strformat("buffType- <<1>>", buffType))
+    printMessage(" ")
+
+
+    
 end
 
 --register for notifications 
 local function registerAlerts()
     EVENT_MANAGER:RegisterForEvent("effectReport", EVENT_EFFECT_CHANGED, effectReport)
-    --EVENT_MANAGER:AddFilterForEvent("effectReport", EVENT_EFFECT_CHANGED, REGISTER_FILTER_ABILITY_ID, 60230)
-    EVENT_MANAGER:RegisterForEvent("combatReport", EVENT_COMBAT_EVENT, combatReport)
-    --EVENT_MANAGER:AddFilterForEvent("combatReport", EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, 60230)
+    EVENT_MANAGER:AddFilterForEvent("effectReport", EVENT_EFFECT_CHANGED, REGISTER_FILTER_ABILITY_ID, 163102)
+    EVENT_MANAGER:RegisterForEvent("effectReport2", EVENT_EFFECT_CHANGED, effectReport)
+    EVENT_MANAGER:AddFilterForEvent("effectReport2", EVENT_EFFECT_CHANGED, REGISTER_FILTER_ABILITY_ID, 163108)
+    --EVENT_MANAGER:RegisterForEvent("combatReport", EVENT_COMBAT_EVENT, combatReport)
+    --EVENT_MANAGER:AddFilterForEvent("combatReport", EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, 126597)
 end
 
 --an addon has loaded

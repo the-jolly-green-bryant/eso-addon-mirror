@@ -1,0 +1,78 @@
+<GuiXml>
+	<!-- The ranking window. It is drawn on the HUD the way the client draws its own /addonmem
+	     readout (ZO_AddOnMemoryDisplay in hudwarnings.xml): a fragment added to HUD_SCENE and
+	     HUD_UI_SCENE, and nothing in it takes input. On console a control that wants input
+	     takes every gamepad button away from the game while it is up (measured in PB's
+	     ChatAssistant), so the window is driven from chat commands and the settings instead.
+
+	     Each column is one multi-line label in the same font, so the rows line up without a
+	     control per row. Positions and sizes are fixed; nothing waits on a measured height.
+	     The summary has room for four lines: memory, add-ons not measured, held scan, freeing. -->
+	<Controls>
+		<TopLevelControl name="PBsLuaMemoryMonitorWindow" hidden="true">
+			<Dimensions x="880" y="768"/>
+			<Anchor point="LEFT" relativeTo="GuiRoot" relativePoint="LEFT" offsetX="60"/>
+			<Controls>
+				<Texture name="$(parent)Bg" color="000000" alpha="0.78">
+					<AnchorFill/>
+				</Texture>
+
+				<Label name="$(parent)Title" font="ZoFontGamepadBold27" wrapMode="ELLIPSIS">
+					<Dimensions x="840" y="36"/>
+					<Anchor point="TOPLEFT" offsetX="20" offsetY="12"/>
+				</Label>
+				<Label name="$(parent)Summary" font="ZoFontGamepad20" verticalAlignment="TOP">
+					<Dimensions x="840" y="120"/>
+					<Anchor point="TOPLEFT" offsetX="20" offsetY="54"/>
+				</Label>
+
+				<Label name="$(parent)HeadName" font="ZoFontGamepadBold20" wrapMode="ELLIPSIS">
+					<Dimensions x="350" y="28"/>
+					<Anchor point="TOPLEFT" offsetX="20" offsetY="180"/>
+				</Label>
+				<Label name="$(parent)HeadHeld" font="ZoFontGamepadBold20" horizontalAlignment="RIGHT" wrapMode="ELLIPSIS">
+					<Dimensions x="120" y="28"/>
+					<Anchor point="TOPLEFT" offsetX="380" offsetY="180"/>
+				</Label>
+				<Label name="$(parent)HeadChange" font="ZoFontGamepadBold20" horizontalAlignment="RIGHT" wrapMode="ELLIPSIS">
+					<Dimensions x="110" y="28"/>
+					<Anchor point="TOPLEFT" offsetX="510" offsetY="180"/>
+				</Label>
+				<Label name="$(parent)HeadSv" font="ZoFontGamepadBold20" horizontalAlignment="RIGHT" wrapMode="ELLIPSIS">
+					<Dimensions x="110" y="28"/>
+					<Anchor point="TOPLEFT" offsetX="630" offsetY="180"/>
+				</Label>
+				<Label name="$(parent)HeadInit" font="ZoFontGamepadBold20" horizontalAlignment="RIGHT" wrapMode="ELLIPSIS">
+					<Dimensions x="110" y="28"/>
+					<Anchor point="TOPLEFT" offsetX="750" offsetY="180"/>
+				</Label>
+
+				<Label name="$(parent)Name" font="ZoFontGamepad20" verticalAlignment="TOP">
+					<Dimensions x="350" y="500"/>
+					<Anchor point="TOPLEFT" offsetX="20" offsetY="214"/>
+				</Label>
+				<Label name="$(parent)Held" font="ZoFontGamepad20" horizontalAlignment="RIGHT" verticalAlignment="TOP">
+					<Dimensions x="120" y="500"/>
+					<Anchor point="TOPLEFT" offsetX="380" offsetY="214"/>
+				</Label>
+				<Label name="$(parent)Change" font="ZoFontGamepad20" horizontalAlignment="RIGHT" verticalAlignment="TOP">
+					<Dimensions x="110" y="500"/>
+					<Anchor point="TOPLEFT" offsetX="510" offsetY="214"/>
+				</Label>
+				<Label name="$(parent)Sv" font="ZoFontGamepad20" horizontalAlignment="RIGHT" verticalAlignment="TOP">
+					<Dimensions x="110" y="500"/>
+					<Anchor point="TOPLEFT" offsetX="630" offsetY="214"/>
+				</Label>
+				<Label name="$(parent)Init" font="ZoFontGamepad20" horizontalAlignment="RIGHT" verticalAlignment="TOP">
+					<Dimensions x="110" y="500"/>
+					<Anchor point="TOPLEFT" offsetX="750" offsetY="214"/>
+				</Label>
+
+				<Label name="$(parent)Footer" font="ZoFontGamepad18" wrapMode="ELLIPSIS">
+					<Dimensions x="840" y="28"/>
+					<Anchor point="TOPLEFT" offsetX="20" offsetY="728"/>
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

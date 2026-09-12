@@ -65,6 +65,16 @@ local function SkillOn()
     return v and v.skillEnabled ~= false
 end
 
+local function BarOn()
+    local v = Vars()
+    return SkillOn() and (not v or v.skillShowBar ~= false)
+end
+
+local function GcdOn()
+    local v = Vars()
+    return SkillOn() and (not v or v.skillShowGcd ~= false)
+end
+
 local function WeaveOn()
     local v = Vars()
     return not (v and v.skillShowWeave == false)
@@ -206,13 +216,19 @@ local function Layout()
     local n = SlotCount()
     local size = math.floor(48 * sc + 0.5)
     local gap = math.floor(4 * sc + 0.5)
+    local showBar = not v or v.skillShowBar ~= false
     local showGcd = not v or v.skillShowGcd ~= false
     local gcdH = 0
     if showGcd then
         gcdH = math.max(3, math.floor(5 * sc + 0.5))
     end
     local width = n * size + (n - 1) * gap
-    local height = size + (showGcd and (4 + gcdH) or 0)
+    local height
+    if showBar then
+        height = size + (showGcd and (4 + gcdH) or 0)
+    else
+        height = showGcd and gcdH or 1
+    end
 
     root:ClearAnchors()
     -- 0,0 = screen center / reticle. +Y down, -Y up.
@@ -223,7 +239,7 @@ local function Layout()
         local ic = icons[i]
         local fr = frames[i]
         if ic and fr then
-            if i <= n then
+            if showBar and i <= n then
                 fr:SetHidden(false)
                 ic:SetHidden(false)
                 local x = (i - 1) * (size + gap)
@@ -266,6 +282,13 @@ local function PaintFrame(fr, col)
 end
 
 local function PaintHistory()
+    if not BarOn() then
+        for i = 1, MAX_SLOTS do
+            if frames[i] then frames[i]:SetHidden(true) end
+            if icons[i] then icons[i]:SetHidden(true) end
+        end
+        return
+    end
     local n = SlotCount()
     local count = #history
     for i = 1, n do
@@ -301,7 +324,7 @@ end
 local function PaintGcd()
     if not gcdFill or not gcdBg then return end
     local v = Vars()
-    if v and v.skillShowGcd == false then
+    if not GcdOn() then
         gcdFill:SetHidden(true)
         gcdBg:SetHidden(true)
         return

@@ -1,0 +1,16 @@
+## Title: |c07A121LibTarget|
+## Description: LibTarget send information for |cC20009non-boss mobs.|
+## Author: |c07A121Fyeur|
+## Version: 1.0
+## IsLibrary: true
+## APIVersion: 101049
+## DependsOn: LibGroupBroadcast
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder Scrolls  and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+LibTarget.lua
+Swaping.lua

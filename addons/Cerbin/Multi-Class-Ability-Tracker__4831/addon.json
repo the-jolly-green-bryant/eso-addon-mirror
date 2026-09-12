@@ -1,0 +1,44 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/Cerbin/Multi-Class-Ability-Tracker__4831",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Cerbin",
+  "canonical_id": "esoui:4831",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4831",
+  "deleted": false,
+  "directories": [
+    "MultiClassAbilityTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4831/",
+  "fingerprint": "c53ec5f92328ea741a29257028832b2acb2f8cc3027cb7dbdd334ffde1a602b6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17350.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17351.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17352.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4831",
+  "source_url": "https://www.esoui.com/downloads/info4831-MultiClassAbilityTracker.html",
+  "stats": {
+    "downloads": 12,
+    "favorites": 1,
+    "monthly_downloads": 4
+  },
+  "title": "Multi Class Ability Tracker",
+  "updated_at": 1789158992000,
+  "version": "0.1.0"
+}

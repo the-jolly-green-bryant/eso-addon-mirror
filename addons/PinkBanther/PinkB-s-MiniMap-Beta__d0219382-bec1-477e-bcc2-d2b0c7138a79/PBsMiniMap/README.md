@@ -18,9 +18,10 @@ the world (and the housing/collectible data behind them) before culling them dow
 priority wayshrines, and any work that happens underneath an add-on's Lua frame is billed to
 that pool. The add-on gets force-unloaded.
 
-Bisecting the original narrowed the trigger to its `InitMiniMap` layer. This version skips that
-layer entirely (`initLevel = 2`, the default) and keeps only what is needed to hold the map on
-the HUD, so the full Tamriel view stays within the limit.
+Bisecting the original narrowed the trigger to its `InitMiniMap` layer. This version does not
+contain that layer at all -- it was kept behind a debug switch for a while and has since been
+removed -- and keeps only what is needed to hold the map on the HUD, so the full Tamriel view
+stays within the limit.
 
 ## What it does
 
@@ -51,19 +52,18 @@ Settings live under **PB's MiniMap** (LibHarvensAddonSettings).
 | Zoom: buildings & cities | Zoom on subzone maps, which are much smaller |
 | Zoom: dungeons | Zoom in dungeons and trials |
 | Zoom: battlegrounds | Zoom in battlegrounds |
+| Zoom: Imperial City | Zoom in the Imperial City districts; Cyrodiil uses the outdoors setting |
 | Show mini map now | Live preview inside the settings screen |
 | Re-apply layout | Force the layout to be re-asserted |
-| Debug: init level | Diagnostic. **2 is the working configuration**; 3+ reproduces the memory crash |
-| Debug: minimap part | Diagnostic, only meaningful at init level 3+ |
-| Debug: log to chat | Print the memory / map-state trail to chat (off by default) |
+| Debug: log to chat | Print the memory / map-state trail to chat (locked, off by default) |
 
-> The `Debug:` entries are kept deliberately: they are how the crash was isolated, and they
-> make it possible to re-bisect quickly if a future game update changes the picture.
+> The one remaining debug entry is kept deliberately. Its snapshot line -- anchor, size, hook
+> state, installed and drawn zoom, dormancy flips -- is what turned several rounds of guessing
+> about display bugs into a single line of evidence.
 
 ## Requirements
 
 - `LibHarvensAddonSettings` >= 20106
-- `LibAsync` >= 30001
 
 ## Releasing
 

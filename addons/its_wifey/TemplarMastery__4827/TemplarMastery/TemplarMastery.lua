@@ -6,7 +6,7 @@ TemplarMastery = {}
 local TM = TemplarMastery
 
 TM.name = "TemplarMastery"
-TM.version = "1.2"
+TM.version = "1.3"
 
 TM.MASTERY = {
     bastion   = 263585,
@@ -88,12 +88,23 @@ function TM:IsUnlockedPreview()
     return not self.sv.locked
 end
 
+-- Trackers should only be visible on the normal HUD/HUD UI scenes.
+-- This keeps them out of inventory, map, character, settings, etc.
+function TM:IsMenuOpen()
+    if not SCENE_MANAGER or not SCENE_MANAGER.GetCurrentScene then return false end
+    local scene = SCENE_MANAGER:GetCurrentScene()
+    if not scene or not scene.GetName then return false end
+    local name = scene:GetName()
+    return name ~= "hud" and name ~= "hudui"
+end
+
 function TM:IsTesting(key)
     return (self.testUntil[key] or 0) > Now()
 end
 
 function TM:CanDisplayNormal()
     if not self.sv.enabled then return false end
+    if self:IsMenuOpen() then return false end
     if self.sv.hideOutOfCombat and not self:IsInCombat() then return false end
     return true
 end
@@ -403,6 +414,14 @@ end
 
 function TM:Update()
     if not self.sv.enabled then
+        self:HideAll()
+        return
+    end
+
+    -- Hide all tracker controls while any game menu/scene is open.
+    -- This check must happen before unlock-preview logic so previews cannot
+    -- force themselves back on top of menus.
+    if self:IsMenuOpen() then
         self:HideAll()
         return
     end
@@ -788,11 +807,18 @@ function TM:Initialize()
     self:RegisterTracking()
     self:RegisterSlash()
 
+    -- Update immediately when entering/leaving inventory, map, settings, etc.
+    if SCENE_MANAGER and SCENE_MANAGER.RegisterCallback then
+        SCENE_MANAGER:RegisterCallback("CurrentSceneChanged", function()
+            TM:Update()
+        end)
+    end
+
     zo_callLater(function()
         TM:ScanSelectedMasteries()
     end,1000)
 
-    d("|cFFD700Templar Mastery ♥ v1.2 loaded.|r Type /tm scan")
+    d("|cFFD700Templar Mastery ♥ v1.3 loaded.|r Type /tm scan")
 end
 
 local function Loaded(eventCode,addonName)

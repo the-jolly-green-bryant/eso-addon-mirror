@@ -1,16 +1,16 @@
 {
-  "archive_path": "addons/lesse83/CraftMaterialAssistant__96d1c172-661c-4739-960f-fcf660401298",
+  "archive_path": "addons/lesse83/CraftMaterialAssistant-Beta__96d1c172-661c-4739-960f-fcf660401298",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
   "archived": true,
   "author": "lesse83",
   "canonical_id": "bethesda:96d1c172-661c-4739-960f-fcf660401298",
   "content_id": "96d1c172-661c-4739-960f-fcf660401298",
   "deleted": false,
-  "fingerprint": "68fc76c27d2e916d3aacb98d8d857e54bf332153404c75a688189896162ac858",
+  "fingerprint": "47d8b2a5b24be7ec075a7f5cff0151248057dff8cb3ce9fce0c35e07c99fcd41",
   "platform": "console",
   "published": true,
   "source": "bethesda",
   "source_id": "96d1c172-661c-4739-960f-fcf660401298",
   "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/96d1c172-661c-4739-960f-fcf660401298",
-  "title": "CraftMaterialAssistant"
+  "title": "CraftMaterialAssistant (Beta)"
 }

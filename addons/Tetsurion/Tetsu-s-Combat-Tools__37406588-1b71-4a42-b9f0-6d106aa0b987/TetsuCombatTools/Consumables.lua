@@ -34,6 +34,7 @@ local potIconHold = nil
 local previewUntil = 0
 local foodMsgUntil = 0
 local potMsgUntil = 0
+local foodMsgKind = "end"
 
 local SOUND_KEYS = {
     duel = { SOUNDS_KEY = "DUEL_START", fallback = "Duel_Start" },
@@ -44,6 +45,7 @@ local SOUND_KEYS = {
 
 local PREVIEW_SEC = 8
 local FOOD_MSG_SEC = 60
+local FOOD_ENTER_MSG_SEC = 10
 local POT_MSG_SEC = 6
 
 local function Vars()
@@ -73,6 +75,11 @@ end
 local function FoodMsgOn()
     local v = Vars()
     return ConsOn() and v and v.consMsgFood == true
+end
+
+local function FoodEnterMsgOn()
+    local v = Vars()
+    return ConsOn() and v and v.consMsgFoodEnter ~= false
 end
 
 local function PotMsgOn()
@@ -195,6 +202,27 @@ local function InInstance()
     if IsInImperialCity then
         local ok, v = pcall(IsInImperialCity)
         if ok and v then return true end
+    end
+    return false
+end
+
+-- Dungeon / trial / arena / archive. Not Cyro or BG.
+local function InPveInstance()
+    if IsUnitInDungeon then
+        local ok, v = pcall(IsUnitInDungeon, "player")
+        if ok and v then return true end
+    end
+    if IsPlayerInRaid then
+        local ok, v = pcall(IsPlayerInRaid)
+        if ok and v then return true end
+    end
+    if IsPlayerInEndlessDungeon then
+        local ok, v = pcall(IsPlayerInEndlessDungeon)
+        if ok and v then return true end
+    end
+    if GetCurrentEndlessDungeonId then
+        local ok, id = pcall(GetCurrentEndlessDungeonId)
+        if ok and tonumber(id) and tonumber(id) > 0 then return true end
     end
     return false
 end
@@ -545,6 +573,7 @@ local function ShowEndMsg(kind)
             if PreviewLive() then
                 foodMsgUntil = previewUntil
             else
+                foodMsgKind = "end"
                 foodMsgUntil = now + FOOD_MSG_SEC * 1000
             end
         end
@@ -568,6 +597,24 @@ local function NotifyEnded(kind)
         PlayEndSound()
     end
     ShowEndMsg(kind)
+end
+
+local function ShowMissingFoodOnEnter()
+    if not FoodEnterMsgOn() then return end
+    if PreviewLive() then return end
+    if not InPveInstance() then return end
+    if Scan() then return end
+    foodMsgKind = "missing"
+    foodMsgUntil = NowMs() + FOOD_ENTER_MSG_SEC * 1000
+end
+
+local function ScheduleEnterFoodCheck()
+    EVENT_MANAGER:UnregisterForUpdate(ADDON .. "EnterFood")
+    EVENT_MANAGER:RegisterForUpdate(ADDON .. "EnterFood", 800, function()
+        EVENT_MANAGER:UnregisterForUpdate(ADDON .. "EnterFood")
+        ShowMissingFoodOnEnter()
+        if T.ConsRefresh then T.ConsRefresh() end
+    end)
 end
 
 local function DummyFood()
@@ -618,11 +665,22 @@ local function Paint()
     end
 
     local now = NowMs()
-    local foodLive = FoodMsgOn() and foodMsgUntil > now
+    local foodLive = foodMsgUntil > now
+    if foodLive then
+        if foodMsgKind == "missing" then
+            foodLive = FoodEnterMsgOn()
+        else
+            foodLive = FoodMsgOn()
+        end
+    end
     local potLive = PotMsgOn() and potMsgUntil > now
     if foodMsgLab then
         if foodLive then
-            foodMsgLab:SetText(L("CONS_MSG_FOOD", "Food ended"))
+            if foodMsgKind == "missing" then
+                foodMsgLab:SetText(L("CONS_MSG_FOOD_MISS", "No food"))
+            else
+                foodMsgLab:SetText(L("CONS_MSG_FOOD", "Food ended"))
+            end
             foodMsgLab:SetColor(1, 0.82, 0.28, 1)
             foodMsgLab:SetHidden(false)
         else
@@ -754,6 +812,7 @@ function T.ConsStart()
     end)
     EVENT_MANAGER:RegisterForEvent(ADDON, EVENT_PLAYER_ACTIVATED, function()
         T.ConsRefresh()
+        ScheduleEnterFoodCheck()
     end)
     if EVENT_ACTIVE_QUICKSLOT_CHANGED then
         EVENT_MANAGER:RegisterForEvent(ADDON .. "Qs", EVENT_ACTIVE_QUICKSLOT_CHANGED, function()
@@ -776,4 +835,5 @@ function T.ConsStart()
     end
     Build()
     T.ConsRefresh()
+    ScheduleEnterFoodCheck()
 end

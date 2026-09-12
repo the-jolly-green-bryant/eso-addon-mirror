@@ -1,3 +1,6 @@
+Version 0.8.3 (2026/09/11)
+* Added castByPlayer return field to CheckUnitForEffect
+
 Version 0.8.2 (2026/09/01)
 * Improved edge case handling with IdentifyGroupUnitTag and IdentifyGroupUnitId
 

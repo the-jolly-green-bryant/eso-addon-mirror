@@ -299,6 +299,50 @@ Only the anchors that place one row against another are touched. `TOP_LEVEL_*`, 
 and `HEADER_*` place the panel itself on the screen, and scaling those would move the panel
 rather than tighten it.
 
+## 6c. The panel can be moved and scaled, and nothing fights back
+
+**From source.** `ZO_FocusedQuestTrackerPanel` is the top-level control for the whole tracker
+and `questtracker.xml` is the only place it is ever anchored:
+
+```xml
+<TopLevelControl name="ZO_FocusedQuestTrackerPanel">
+    <Dimensions x="275"/>
+    <Anchor point="TOPRIGHT" relativeTo="ZO_DynamicEventsTracker_TL" relativePoint="BOTTOMRIGHT"/>
+```
+
+Grepping `trackerPanel` through `questtracker.lua` turns up event registrations, the fragment
+and one `ZO_Anchor:New(..., self.trackerPanel, ...)` for the quest timer — the panel is the
+*target* of that anchor, never re-anchored itself. `CreatePlatformAnchors` and
+`ApplyPlatformStyle` place the timer, the quest container and the tree, all relative to the
+panel. `SetScale` appears nowhere in the file at all.
+
+So position and scale are unclaimed: written once, they stay written, and no rebuild, zone
+change or platform switch puts them back. That also means there is no pristine value to
+re-read later, so the game's anchor is captured once per session before anything is written and
+the setting is stored as a nudge from it. 0/0 is then genuinely "leave it alone", re-applying
+cannot accumulate, and a ZOS change to the default position is inherited rather than
+overwritten.
+
+**The column follows.** `ZO_ZoneStoryTracker` anchors to
+`ZO_FocusedQuestTrackerPanelContainerQuestContainer`, `ZO_PromotionalEventTracker_TL` to the
+zone story and `ZO_HouseInformationTrackerTopLevel` to Golden Pursuits, so moving the quest
+tracker moves all of them and the column keeps its shape. That is why the position is one
+setting rather than three.
+
+### On `protected-attributes`
+
+`ClearAnchors`, `SetAnchor` and `SetScale` all carry that marker in `ESOUIDocumentation.txt`.
+So do `SetHidden`, `SetDimensions`, `SetAlpha`, `SetWidth`, `SetHeight` and `SetParent` — 33
+entries in total, and they are the functions every add-on calls on ordinary controls all day.
+The marker gates controls whose *attributes* the client has protected, not the function itself;
+it is not the `private` case that kills the running chunk.
+
+That reasoning is not a measurement, though, and the documentation's markers are not an
+authority on what may be called. So every one of these calls is made from `RequestLayout`, on
+its own deferred tick rather than inside a settings handler, a slash command or start-up. If
+the client does refuse one, the refusal takes the position and scale with it and leaves the
+fonts, the spacing and the settings panel standing.
+
 ## 7. Cost on console
 
 The rule inherited from PB's NamePlateChanger, measured there on PS5: **size is free, face is
@@ -369,7 +413,15 @@ visible bug rather than a subtle one, so they are the things to look at first on
    not touching; set them to 60 and check the gaps have not become a chasm. The scaling is
    linear in the size ratio, which is the obvious rule but not necessarily the prettiest one at
    the ends of the range.
-8. **Does the Golden Pursuits heading keep its icon aligned?** `ApplyPlatformStyle` anchors the
+8. **Do `SetAnchor` and `SetScale` work on the panel at all?** This is the first thing to look
+   at, and `/pbquest status` answers it: the `layout:` line says what was asked for and the
+   `applied=` line says what was written. If the panel has not moved and `applied=never`, the
+   calls were refused and section 6c's reasoning about *protected-attributes* is wrong.
+9. **Does scaling the panel move the ones anchored to it?** The panels below are anchored to a
+   control *inside* the scaled panel, so they should follow its scaled rectangle -- but whether
+   the client resolves an anchor against the scaled or unscaled rect is not something the
+   source answers. Set the scale to 150% and look at where Golden Pursuits lands.
+10. **Does the Golden Pursuits heading keep its icon aligned?** `ApplyPlatformStyle` anchors the
    icon to the left of the header label with a fixed `HEADER_ICON_SIZE` / `HEADER_ICON_OFFSET`.
    The icon is not resized here, so a much larger heading may sit taller than its 48-point
    icon. That is cosmetic, but worth a look before deciding it is fine.

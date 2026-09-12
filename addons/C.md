@@ -136,7 +136,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Clutch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Apogee/Clutch__2302) | Apogee | PC / Mac | 0.9.1 |
 | [CobbDialogueLogger](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DavidJCobb/CobbDialogueLogger__2560) | DavidJCobb | PC / Mac | 1 |
 | [Code's Combat Alerts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Code-s-Combat-Alerts__fe065445-3217-4a76-8932-23a0a1c9c16c) | code65536 | Console | — |
-| [Code's Combat Alerts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Code-s-Combat-Alerts__1855) | code65536 | PC / Mac | 2.6.4 |
+| [Code's Combat Alerts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Code-s-Combat-Alerts__1855) | code65536 | PC / Mac | 2.6.5 |
 | [Cogs Assistants](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/coginthemachine/Cogs-Assistants__4687) | coginthemachine | PC / Mac | 0.1.5 |
 | [Collect Them All](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Springpeace2575/Collect-Them-All__75167780-fb8c-479c-86be-c0a208443b97) | Springpeace2575 | Console | — |
 | [CollectablesTesting](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/brossin13/CollectablesTesting__9cb042d4-e427-4f0c-9c9c-48e1a355c970) | brossin13 | Console | — |
@@ -182,6 +182,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Companion's Containers](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/Companion-s-Containers__4143) | atharti | PC / Mac | 1.8 |
 | [CompanionFix](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sinnereso/CompanionFix__3677) | sinnereso | PC / Mac | 2026.03.10 |
 | [CompanionInfo](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SkOODaT/CompanionInfo__3093) | SkOODaT | PC / Mac | 101032.1 |
+| [CompanionPerkTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/thewizadt/CompanionPerkTracker__2ba17e7a-2f45-4f82-a82a-681663f5063e) | thewizadt | Console | — |
 | [CompanionRapportToChat](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tim99/CompanionRapportToChat__3113) | tim99 | PC / Mac | 5 |
 | [Companions Companion (Rapport+)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/AnotherORC/Companions-Companion-Rapport__3474) | AnotherORC | PC / Mac | v2.4.0 |
 | [Companions Companion (Rapport+) - Updated!](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Molusco_Aquatico/Companions-Companion-Rapport---Updated__4125) | Molusco_Aquatico | PC / Mac | 1.1.0 |
@@ -254,7 +255,8 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Crafting Writ Assistant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Argusus/Crafting-Writ-Assistant__1121) | Argusus | PC / Mac | .34b |
 | [CraftingDailyNotification](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Eswagrom/CraftingDailyNotification__4808) | Eswagrom | PC / Mac | 1.0 |
 | [CraftingHouse](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PrimeRibeye/CraftingHouse__3492) | PrimeRibeye | PC / Mac | 1.4 |
-| [CraftMaterialAssistant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/lesse83/CraftMaterialAssistant__96d1c172-661c-4739-960f-fcf660401298) | lesse83 | Console | — |
+| [CraftMaterialAssistant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/lesse83/CraftMaterialAssistant__949980bd-b411-4102-82d7-4e64ba17bc3a) | lesse83 | Console | — |
+| [CraftMaterialAssistant (Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/lesse83/CraftMaterialAssistant-Beta__96d1c172-661c-4739-960f-fcf660401298) | lesse83 | Console | — |
 | [CraftStore](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rhyono/CraftStore__1590) | Rhyono | PC / Mac | 3.05 |
 | [CRAFTY Stocklist - The craftbag stock watchlist for your crafting profession](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/rp12439_3/CRAFTY-Stocklist---The-craftbag-stock-watchlist-for-your-crafting-profession__3116) | rp12439_3 | PC / Mac | V2.65 |
 | [Criminal](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/napalmskull/Criminal__3765) | napalmskull | PC / Mac | 1.0.1 |
@@ -318,7 +320,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Cyrodiil Alerts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/codeWarrior82/Cyrodiil-Alerts__37bd7159-8611-4d29-8767-08434d4fe209) | codeWarrior82 | Console | — |
 | [Cyrodiil Ayleid Wells](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Odylon/Cyrodiil-Ayleid-Wells__3117) | Odylon | PC / Mac | 1.0.0 |
 | [Cyrodiil Map Labels (10.3.5)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Neurowise/Cyrodiil-Map-Labels-10.3.5__4065) | Neurowise | PC / Mac | 1.01 |
-| [Cyrodiil Map Labels (Fix: Season Zero)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sshogrin/Cyrodiil-Map-Labels-Fix-Season-Zero__4361) | sshogrin | PC / Mac | 1.8 |
+| [Cyrodiil Map Labels (Fix: Season Zero)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sshogrin/Cyrodiil-Map-Labels-Fix-Season-Zero__4361) | sshogrin | PC / Mac | 1.8.1 |
 | [Cyrodiil Mission Share](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/aldericon/Cyrodiil-Mission-Share__1836) | aldericon | PC / Mac | 12.0 |
 | [Cyrodiil Score Viewer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tdenc/Cyrodiil-Score-Viewer__3166) | tdenc | PC / Mac | 0.5.0 |
 | [CyroQuickslots](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Gerrit/CyroQuickslots__3134) | Gerrit | PC / Mac | 1.31.1 |

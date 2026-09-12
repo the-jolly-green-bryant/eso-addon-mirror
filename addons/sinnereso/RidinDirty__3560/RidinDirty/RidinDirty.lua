@@ -776,10 +776,10 @@ local function RDInitializeControls()
 			{
 				type = "checkbox",
 				name = "Auto Check Bank Memory",
-				tooltip = "Compares the current bank inventory to the saved bank inventory when opening the bank",
+				tooltip = "Compares the current bank inventory to the saved bank memory when opening the bank",
 				getFunc = function() return RidinDirty.savedVariables.checkBankMemory end,
 				setFunc = function(value) RidinDirty.savedVariables.checkBankMemory = (value) end,
-				warning = "Could cause minor stutter opening bank due to the imediate full scan. Requires Bank Manager",
+				warning = "Can cause minor stutter opening banks due to the full missing item scan. Requires Bank Manager. Temporarily disables while crafting writ active",
 				disabled = function() return not RidinDirty.savedVariables.bankManager end,
 				width = "full",
 			},
@@ -795,7 +795,7 @@ local function RDInitializeControls()
 			{
 				type = "button",
 				name = "SAVE BANK MEMORY",
-				tooltip = "Saves current bank inventory to memory for comparison when opening bank",
+				tooltip = "Saves current bank inventory to memory for comparison when opening banks",
 				func = function() SaveBankMemory() end,
 				disabled = function() return not RidinDirty.savedVariables.checkBankMemory end,
 				width = "half",
@@ -1882,7 +1882,7 @@ local function DepositCurrency(eventCode, bankBag)
 		BankBalances(eventCode, bankBag, carriedGold, carriedAP, carriedTelvar, carriedVoucher, moveGold, moveAP, moveTelvar, moveVoucher)
 	end
 	if RidinDirty.savedVariables.checkBankMemory then
-		CheckBankMemory()
+		zo_callLater(function() CheckBankMemory() end, 500)
 	end
 end
 

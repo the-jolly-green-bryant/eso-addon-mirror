@@ -10,6 +10,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [WarCry](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/m00nyONE/WarCry__3191) | m00nyONE | PC / Mac | 1.2.0 |
 | [Ward Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ratparol101/Ward-Helper__1676) | @ratparol101 | PC / Mac | 1.1a |
 | [Ward Shield Reminder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Supplier/Ward-Shield-Reminder__2456) | Supplier | PC / Mac | 1.1 |
+| [WardenMastery](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/its_wifey/WardenMastery__4832) | its_wifey | PC / Mac | 1.0 |
 | [WareGuild - Guild Banks Manager](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MelanAster/WareGuild---Guild-Banks-Manager__3877) | MelanAster | PC / Mac | 0.23 |
 | [Warhorn Timer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/uta.karas/Warhorn-Timer__1964) | uta.karas | PC / Mac | 1.31.1 |
 | [WarHorn Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/codeWarrior82/WarHorn-Tracker__d978b81f-b679-4aa8-b9a2-6d1b0511c3b3) | codeWarrior82 | Console | — |
@@ -56,7 +57,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Who Pulled - Shows Who Was First To Attack!](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Duesentrieb/Who-Pulled---Shows-Who-Was-First-To-Attack__4328) | Duesentrieb | PC / Mac | 20251229-0001 |
 | [Whoison?](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/broekman/Whoison__4079) | broekman | PC / Mac | 1.0.0 |
 | [Wide Tooltips](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tagaris/Wide-Tooltips__3785) | Tagaris | PC / Mac | 1.0.1 |
-| [WifeyRytic's Magma Shell Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/its_wifey/WifeyRytic-s-Magma-Shell-Tracker__4821) | its_wifey | PC / Mac | 1.1 |
+| [WifeyRytic's Magma Shell Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/its_wifey/WifeyRytic-s-Magma-Shell-Tracker__4821) | its_wifey | PC / Mac | 1.2 |
 | [WIIt](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/user562x/WIIt__836b1e5f-ac9c-4e14-bb7f-7697ca3d6707) | user562x | Console | — |
 | [Wiki Links](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kawamonkey/Wiki-Links__3005) | kawamonkey | PC / Mac | 1.0 |
 | [Wild Hunt Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FAR747/Wild-Hunt-Helper__2709) | FAR747 | PC / Mac | 1.0.3 |
@@ -77,6 +78,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [World Map Wayshrines Controller Updated](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Simon_111/World-Map-Wayshrines-Controller-Updated__3889) | Simon_111 | PC / Mac | 1.9.1 |
 | [World of Warcraft Chat Colors](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Faustus/World-of-Warcraft-Chat-Colors__631) | Faustus | PC / Mac | 1.2.2 |
 | [WPamA (What Pledges at my Alts)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ForgottenLight/WPamA-What-Pledges-at-my-Alts__1190) | ForgottenLight | PC / Mac | 2.6.7 |
+| [Wretched Vitality Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/codeWarrior82/Wretched-Vitality-Tracker__af0511e3-aa4e-4d26-8665-e486da04c1cd) | codeWarrior82 | Console | — |
 | [Writ Style Price](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/bulton-fr/Writ-Style-Price__2818) | bulton-fr | PC / Mac | 1.0.0 |
 | [Writ2Style - Find Motifs for Master Writs](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MelanAster/Writ2Style---Find-Motifs-for-Master-Writs__3849) | MelanAster | PC / Mac | 2.02 |
 | [Writcraft API 100018](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/retired_adventurer/Writcraft-API-100018__1603) | retired_adventurer | PC / Mac | 100018 |

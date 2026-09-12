@@ -1,25 +1,25 @@
 local NAME = "AntiClankerAddonConsortiumUpdateChecker"
-local VERSION = 13
+local VERSION = 15
 
 if type(_G[NAME]) == "number" and _G[NAME] >= VERSION then return end
 _G[NAME] = VERSION
 
 local KNOWN_VERSIONS = {
     -- Kyzeragon
-    ["CrutchAlerts"]          = 22500,
-    ["KyzderpsDerps"]         = 1520,
+    ["CrutchAlerts"]          = 22501,
+    ["KyzderpsDerps"]         = 1530,
 
     -- code65536
     ["CharacterKnowledge"]    = 301020,
     ["CollectiblesTracker"]   = 306000,
-    ["CombatAlerts"]          = 206040,
+    ["CombatAlerts"]          = 206050,
     ["GroupBuffPanels"]       = 203030,
     ["ItemBrowser"]           = 407010,
     ["LootLog"]               = 409060,
     ["Raidificator"]          = 407030,
 
     -- M0R_Gaming
-    ["M0RMarkers"]            = 222,
+    ["M0RMarkers"]            = 223,
 
     -- DakJaniels
     ["LuiExtended"]           = 7263,
@@ -56,6 +56,18 @@ local function GetSV(addonName, createIfNecessary)
     end
 end
 
+local function SetEnablementState(enabled)
+    local newState = GetTimeStamp() + (enabled and BitLShift(1, 33) or 0)
+    local am = GetAddOnManager()
+    for i = 1, am:GetNumAddOns() do
+        local addonName, _, _, _, addonEnabled = am:GetAddOnInfo(i)
+        if addonEnabled and KNOWN_VERSIONS[addonName] then
+            local sv = GetSV(addonName, true)
+            sv.enabled = newState
+        end
+    end
+end
+
 local function GetEnablementState()
     local lastStateSeen = true
     local lastStateTime = 0
@@ -69,19 +81,15 @@ local function GetEnablementState()
             end
         end
     end
-    return lastStateSeen
-end
 
-local function SetEnablementState(enabled)
-    local newState = GetTimeStamp() + (enabled and BitLShift(1, 33) or 0)
-    local am = GetAddOnManager()
-    for i = 1, am:GetNumAddOns() do
-        local addonName, _, _, _, addonEnabled = am:GetAddOnInfo(i)
-        if addonEnabled and KNOWN_VERSIONS[addonName] then
-            local sv = GetSV(addonName, true)
-            sv.enabled = newState
-        end
+    -- Continuity with legacy ACACUpdateCheckDisabled
+    if (lastStateTime == 0 and ACACUpdateCheckDisabled ~= nil) then
+        ACACUpdateCheckDisabled = nil
+        SetEnablementState(false)
+        return false
     end
+
+    return lastStateSeen
 end
 
 local function CheckVersions()
@@ -164,12 +172,6 @@ EVENT_MANAGER:UnregisterForEvent(NAME, EVENT_PLAYER_ACTIVATED) -- In case we are
 
 EVENT_MANAGER:RegisterForEvent(NAME, EVENT_PLAYER_ACTIVATED, function()
     CreateSettingsMenu()
-
-    -- Continuity with ACACUpdateCheckDisabled
-    if (ACACUpdateCheckDisabled ~= nil) then
-        ACACUpdateCheckDisabled = nil
-        SetEnablementState(false)
-    end
 
     if (GetEnablementState()) then
         zo_callLater(CheckVersions, 6000)

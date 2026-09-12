@@ -1,8 +1,8 @@
 ## Title: Templar Mastery
 ## Description: Tracks Templar Class Mastery procs, timers, and active states.
 ## Author: WifeyRytic
-## Version: 1.2
-## AddOnVersion: 3
+## Version: 1.3
+## AddOnVersion: 4
 ## APIVersion: 101050 101051
 ## SavedVariables: TemplarMasterySavedVariables
 ## OptionalDependsOn: LibAddonMenu-2.0>=43

@@ -1,6 +1,5 @@
 2026.09.11
-- Minor tweak to trader enhancements. Adjusted the deal %'s to 95%good & 120%bad in the auction house.
-- Minor settings panel description adjustments.
+- Added slight delay to the missing bank item processing to make opening the bank feel a little more fluid.
 ** POSSIBLE FUTURE OPTIONS **
 - Auto com res?
 

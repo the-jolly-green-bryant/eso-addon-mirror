@@ -25,6 +25,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Dark Convergence Timer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SaintAres97/Dark-Convergence-Timer__2709a81d-caea-4f77-a89d-0d83661bf7ee) | SaintAres97 | Console | — |
 | [Dark Convergence Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/codeWarrior82/Dark-Convergence-Tracker__8dff29ed-8886-46e4-ad37-c73add153c3f) | codeWarrior82 | Console | — |
 | [Dark Convergence Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Irreverend/Dark-Convergence-Tracker__4770) | Irreverend | PC / Mac | 1.0.1 |
+| [Dark Mode](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rogue0rbit/Dark-Mode__148076b2-9d29-46c7-aff5-da6dad6bc20d) | Rogue0rbit | Console | — |
 | [Dark Mode ESO](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rogue0rbit/Dark-Mode-ESO__34dd2c26-eade-48fc-a1d0-4838faaeae0e) | Rogue0rbit | Console | — |
 | [Darker Tamriel Tomes](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/Darker-Tamriel-Tomes__4523) | Masteroshi430 | PC / Mac | 2026.07.17 |
 | [Darker Tamriel Tomes for PerfectPixel (DarkTamrielTomesUI)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Trobo/Darker-Tamriel-Tomes-for-PerfectPixel-DarkTamrielTomesUI__4713) | Trobo | PC / Mac | 20260718 |

@@ -163,9 +163,9 @@ end
 function Public.CheckUnitForEffect( unitTag, effectAbilityId )
 	local count = GetNumBuffs(unitTag)
 	for i = 1, count do
-		local _, timeStarted, timeEnding, _, stackCount, _, _, _, _, _, abilityId = GetUnitBuffInfo(unitTag, i)
+		local _, timeStarted, timeEnding, _, stackCount, _, _, _, _, _, abilityId, _, castByPlayer = GetUnitBuffInfo(unitTag, i)
 		if (abilityId == effectAbilityId) then
-			return timeStarted, timeEnding, stackCount
+			return timeStarted, timeEnding, stackCount, castByPlayer
 		end
 	end
 	return nil

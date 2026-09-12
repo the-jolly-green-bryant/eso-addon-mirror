@@ -15,6 +15,11 @@ local function SkillOff()
     return not (v and v.skillEnabled ~= false)
 end
 
+local function SkillBarOff()
+    local v = Vars()
+    return SkillOff() or (v and v.skillShowBar == false)
+end
+
 local function StatusOff()
     local v = Vars()
     return not (v and v.statusEnabled ~= false)
@@ -35,6 +40,11 @@ local function StatusSoundOff()
     return StatusOff() or not (v and v.statusSound ~= false)
 end
 
+local function LinkOff()
+    local v = Vars()
+    return not (v and v.linkEnabled ~= false)
+end
+
 local function ConsOff()
     local v = Vars()
     return not (v and v.consEnabled ~= false)
@@ -53,7 +63,7 @@ end
 local function ConsMsgOff()
     local v = Vars()
     if ConsOff() then return true end
-    return not (v and (v.consMsgFood == true or v.consMsgPot == true))
+    return not (v and (v.consMsgFood == true or v.consMsgPot == true or v.consMsgFoodEnter == true))
 end
 
 local function ConsEndSoundOff()
@@ -108,7 +118,7 @@ function T.RegisterSettings()
         allowDefaults = true,
     })
     if not settings then return end
-    settings.version = "1.3.12"
+    settings.version = "1.4.3"
     settings.author = "Tetsurion"
 
     settings:AddSetting({
@@ -171,6 +181,20 @@ function T.RegisterSettings()
         setFunction = function(val)
             vars.timerEnabled = val and true or false
             if T.TimerRefresh then T.TimerRefresh() end
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarven.ST_CHECKBOX,
+        label = L("LINK_ENABLE", "Set Link"),
+        tooltip = L("LINK_ENABLE_TT", ""),
+        default = true,
+        getFunction = function()
+            return vars.linkEnabled ~= false
+        end,
+        setFunction = function(val)
+            vars.linkEnabled = val and true or false
+            if T.LinkRefresh then T.LinkRefresh() end
         end,
     })
 
@@ -290,6 +314,21 @@ function T.RegisterSettings()
 
     settings:AddSetting({
         type = LibHarven.ST_CHECKBOX,
+        label = L("SKILL_BAR", "Skill icons"),
+        tooltip = L("SKILL_BAR_TT", ""),
+        default = true,
+        disable = SkillOff,
+        getFunction = function()
+            return vars.skillShowBar ~= false
+        end,
+        setFunction = function(val)
+            vars.skillShowBar = val and true or false
+            if T.SkillRefresh then T.SkillRefresh() end
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarven.ST_CHECKBOX,
         label = L("SKILL_GCD", "GCD bar"),
         tooltip = L("SKILL_GCD_TT", ""),
         default = true,
@@ -308,7 +347,7 @@ function T.RegisterSettings()
         label = L("SKILL_WEAVE", "Weave frames"),
         tooltip = L("SKILL_WEAVE_TT", ""),
         default = true,
-        disable = SkillOff,
+        disable = SkillBarOff,
         getFunction = function()
             return vars.skillShowWeave ~= false
         end,
@@ -323,7 +362,7 @@ function T.RegisterSettings()
         label = L("SKILL_LA", "Show light attacks"),
         tooltip = L("SKILL_LA_TT", ""),
         default = false,
-        disable = SkillOff,
+        disable = SkillBarOff,
         getFunction = function()
             return vars.skillLightAttacks == true
         end,
@@ -729,6 +768,21 @@ function T.RegisterSettings()
 
     settings:AddSetting({
         type = LibHarven.ST_CHECKBOX,
+        label = L("CONS_MSG_FOOD_ENTER", "Text on enter"),
+        tooltip = L("CONS_MSG_FOOD_ENTER_TT", ""),
+        default = true,
+        disable = ConsOff,
+        getFunction = function()
+            return vars.consMsgFoodEnter ~= false
+        end,
+        setFunction = function(val)
+            vars.consMsgFoodEnter = val and true or false
+            if T.ConsRefresh then T.ConsRefresh() end
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarven.ST_CHECKBOX,
         label = L("CONS_MSG_POT_ON", "Potion end text"),
         tooltip = L("CONS_MSG_POT_ON_TT", ""),
         default = false,
@@ -942,6 +996,47 @@ function T.RegisterSettings()
             disable = TimerOff,
             clickHandler = function()
                 if T.TimerPreview then T.TimerPreview() end
+            end,
+        })
+    end
+
+    settings:AddSetting({
+        type = LibHarven.ST_SECTION,
+        label = L("LINK_SECTION", "Set Link"),
+        tooltip = L("LINK_SECTION_TT", ""),
+    })
+
+    settings:AddSetting({
+        type = LibHarven.ST_CHECKBOX,
+        label = L("LINK_GROUP", "Always group chat"),
+        tooltip = L("LINK_GROUP_TT", ""),
+        default = true,
+        disable = LinkOff,
+        getFunction = function()
+            return vars.linkForceGroup ~= false
+        end,
+        setFunction = function(val)
+            vars.linkForceGroup = val and true or false
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarven.ST_LABEL,
+        label = L("LINK_HELP", "Hold R3 in the full Text Chat menu."),
+        tooltip = L("LINK_HELP_TT", ""),
+        canSelect = true,
+        disable = LinkOff,
+    })
+
+    if LibHarven.ST_BUTTON then
+        settings:AddSetting({
+            type = LibHarven.ST_BUTTON,
+            label = L("LINK_TEST", "Insert now"),
+            tooltip = L("LINK_TEST_TT", ""),
+            buttonText = L("LINK_TEST_BTN", "Link sets"),
+            disable = LinkOff,
+            clickHandler = function()
+                if T.LinkBuild then T.LinkBuild() end
             end,
         })
     end

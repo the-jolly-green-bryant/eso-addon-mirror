@@ -1,0 +1,40 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/Fyeur/LibTarget__4830",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Fyeur",
+  "canonical_id": "esoui:4830",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4830",
+  "deleted": false,
+  "directories": [
+    "LibTarget"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4830/",
+  "fingerprint": "6a15a0f52b3993323e1732f9094f92777c80c2bda9ac50598696d26fec7038db",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4830",
+  "source_url": "https://www.esoui.com/downloads/info4830-LibTarget.html",
+  "stats": {
+    "downloads": 19,
+    "favorites": 0,
+    "monthly_downloads": 14
+  },
+  "title": "LibTarget",
+  "updated_at": 1789151337000,
+  "version": "1.0.0"
+}

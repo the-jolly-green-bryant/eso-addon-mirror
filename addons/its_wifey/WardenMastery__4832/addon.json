@@ -1,0 +1,40 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/its_wifey/WardenMastery__4832",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "its_wifey",
+  "canonical_id": "esoui:4832",
+  "category_id": "164",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    }
+  ],
+  "content_id": "esoui:4832",
+  "deleted": false,
+  "directories": [
+    "WardenMastery"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4832/",
+  "fingerprint": "b5709341fca2ebf9aba31423d4e066f806e26c8e71e253563e66eef28aa83f78",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17353.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17354.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17355.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4832",
+  "source_url": "https://www.esoui.com/downloads/info4832-WardenMastery.html",
+  "stats": {
+    "downloads": 2,
+    "favorites": 0,
+    "monthly_downloads": 1
+  },
+  "title": "WardenMastery",
+  "updated_at": 1789167424000,
+  "version": "1.0"
+}

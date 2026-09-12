@@ -1,6 +1,6 @@
 WhereIsIt = {}
 WhereIsIt.name = "WhereIsIt"
-WhereIsIt.version = "1.2"
+WhereIsIt.version = "1.3"
 
 --------------------------------------------------
 -- Utility Functions
@@ -70,6 +70,258 @@ local function ResolveCategoryOrder(itemLink)
         return CATEGORY_FALLBACK_ORDER
     end
     return PickCategoryOrder(GetItemLinkFilterTypeInfo(itemLink))
+end
+
+--------------------------------------------------
+-- In-Game Groups
+--------------------------------------------------
+local GROUP_PACK        = 1
+local GROUP_WEAPONS     = 2
+local GROUP_APPAREL     = 3
+local GROUP_ACCESSORIES = 4
+
+local PACK_SUPPLIES     = 1
+local PACK_MATERIALS    = 2
+local PACK_SLOTTABLE    = 3
+local PACK_FURNISHINGS  = 4
+local PACK_COMPANION    = 5
+
+WhereIsIt.GROUP_PACK        = GROUP_PACK
+WhereIsIt.GROUP_WEAPONS     = GROUP_WEAPONS
+WhereIsIt.GROUP_APPAREL     = GROUP_APPAREL
+WhereIsIt.GROUP_ACCESSORIES = GROUP_ACCESSORIES
+
+WhereIsIt.PACK_SUPPLIES     = PACK_SUPPLIES
+WhereIsIt.PACK_MATERIALS    = PACK_MATERIALS
+WhereIsIt.PACK_SLOTTABLE    = PACK_SLOTTABLE
+WhereIsIt.PACK_FURNISHINGS  = PACK_FURNISHINGS
+WhereIsIt.PACK_COMPANION    = PACK_COMPANION
+
+WhereIsIt.COMPANION_WORN_LOCATION = "Companion Worn"
+
+local EQUIP_TYPE_GROUP = {}
+
+local function RegisterEquipGroup(equipType, group)
+    if equipType == nil then return end
+    EQUIP_TYPE_GROUP[equipType] = group
+end
+
+RegisterEquipGroup(EQUIP_TYPE_MAIN_HAND, GROUP_WEAPONS)
+RegisterEquipGroup(EQUIP_TYPE_OFF_HAND,  GROUP_WEAPONS)
+RegisterEquipGroup(EQUIP_TYPE_ONE_HAND,  GROUP_WEAPONS)
+RegisterEquipGroup(EQUIP_TYPE_TWO_HAND,  GROUP_WEAPONS)
+
+RegisterEquipGroup(EQUIP_TYPE_HEAD,      GROUP_APPAREL)
+RegisterEquipGroup(EQUIP_TYPE_CHEST,     GROUP_APPAREL)
+RegisterEquipGroup(EQUIP_TYPE_SHOULDERS, GROUP_APPAREL)
+RegisterEquipGroup(EQUIP_TYPE_WAIST,     GROUP_APPAREL)
+RegisterEquipGroup(EQUIP_TYPE_HAND,      GROUP_APPAREL)
+RegisterEquipGroup(EQUIP_TYPE_LEGS,      GROUP_APPAREL)
+RegisterEquipGroup(EQUIP_TYPE_FEET,      GROUP_APPAREL)
+
+RegisterEquipGroup(EQUIP_TYPE_COSTUME,   GROUP_ACCESSORIES)
+RegisterEquipGroup(EQUIP_TYPE_NECK,      GROUP_ACCESSORIES)
+RegisterEquipGroup(EQUIP_TYPE_RING,      GROUP_ACCESSORIES)
+
+
+local function CollectFilterTypes(set, ...)
+    for i = 1, select("#", ...) do
+        local filterType = select(i, ...)
+        if filterType ~= nil then set[filterType] = true end
+    end
+    return set
+end
+
+local function ItemFilterSet(itemLink)
+    if not itemLink or itemLink == "" or not GetItemLinkFilterTypeInfo then
+        return {}
+    end
+
+    local ok, set = pcall(function()
+        return CollectFilterTypes({}, GetItemLinkFilterTypeInfo(itemLink))
+    end)
+
+    if not ok or type(set) ~= "table" then return {} end
+    return set
+end
+
+local function ClassifyItem(itemLink, location)
+    if not itemLink or itemLink == "" then
+        return GROUP_PACK, PACK_SUPPLIES
+    end
+
+    local filters = ItemFilterSet(itemLink)
+
+    if location ~= WhereIsIt.COMPANION_WORN_LOCATION
+       and ITEMFILTERTYPE_COMPANION and filters[ITEMFILTERTYPE_COMPANION] then
+        return GROUP_PACK, PACK_COMPANION
+    end
+
+    local equipType = GetItemLinkEquipType and GetItemLinkEquipType(itemLink)
+    local group     = equipType and EQUIP_TYPE_GROUP[equipType]
+    if group then return group, nil end
+
+    if ITEMFILTERTYPE_CRAFTING and filters[ITEMFILTERTYPE_CRAFTING] then
+        return GROUP_PACK, PACK_MATERIALS
+    end
+
+    if ITEMFILTERTYPE_QUICKSLOT and filters[ITEMFILTERTYPE_QUICKSLOT] then
+        return GROUP_PACK, PACK_SLOTTABLE
+    end
+
+    if ITEMFILTERTYPE_FURNISHING and filters[ITEMFILTERTYPE_FURNISHING] then
+        return GROUP_PACK, PACK_FURNISHINGS
+    end
+
+    return GROUP_PACK, PACK_SUPPLIES
+end
+
+WhereIsIt.ClassifyItem = ClassifyItem
+
+--------------------------------------------------
+-- Item Category Names
+--------------------------------------------------
+local function FurnitureCategoryName(itemLink)
+    if not (GetItemLinkFurnitureDataId and GetFurnitureDataCategoryInfo and GetFurnitureCategoryInfo) then
+        return nil
+    end
+
+    local ok, name = pcall(function()
+        local dataId = GetItemLinkFurnitureDataId(itemLink)
+        if not dataId or dataId == 0 then return nil end
+
+        local categoryId = GetFurnitureDataCategoryInfo(dataId)
+        if not categoryId then return nil end
+
+        local categoryName = GetFurnitureCategoryInfo(categoryId)
+        if categoryName and categoryName ~= "" then return categoryName end
+        return nil
+    end)
+
+    if ok then return name end
+    return nil
+end
+
+local function FormatCategoryHeader(name)
+    if not name or name == "" then return nil end
+
+    if zo_strformat and SI_INVENTORY_HEADER then
+        local ok, formatted = pcall(zo_strformat, SI_INVENTORY_HEADER, name)
+        if ok and type(formatted) == "string" and formatted ~= "" then
+            return formatted
+        end
+    end
+
+    return name
+end
+
+local function ItemCategoryName(itemLink)
+    if not itemLink or itemLink == "" then return nil end
+
+    local itemType = GetItemLinkItemType and GetItemLinkItemType(itemLink)
+
+    if ITEMTYPE_FURNISHING and itemType == ITEMTYPE_FURNISHING then
+        local furnitureName = FurnitureCategoryName(itemLink)
+        if furnitureName then return FormatCategoryHeader(furnitureName) end
+    end
+
+    local Describe = rawget(_G, "ZO_InventoryUtils_Gamepad_GetBestItemCategoryDescription")
+    if type(Describe) == "function" then
+        local itemData = {
+            itemLink      = itemLink,
+            itemType      = itemType,
+            equipType     = GetItemLinkEquipType and GetItemLinkEquipType(itemLink),
+            actorCategory = GetItemLinkActorCategory and GetItemLinkActorCategory(itemLink),
+        }
+
+        local ok, name = pcall(Describe, itemData)
+        if ok and type(name) == "string" and name ~= "" then
+            return FormatCategoryHeader(name)
+        end
+    end
+
+    if itemType ~= nil then
+        local ok, name = pcall(GetString, "SI_ITEMTYPE", itemType)
+        if ok and type(name) == "string" and name ~= "" then
+            return FormatCategoryHeader(name)
+        end
+    end
+
+    return nil
+end
+
+WhereIsIt.ItemCategoryName = ItemCategoryName
+
+function WhereIsIt.EnsureClassified(item)
+    if type(item) ~= "table" then return GROUP_PACK, PACK_SUPPLIES end
+
+    if item.group == nil then
+        item.group, item.packSub = ClassifyItem(item.itemLink, item.location)
+    end
+
+    if item.catName == nil then
+        item.catName = ItemCategoryName(item.itemLink) or false
+    end
+
+    return item.group, item.packSub
+end
+
+--------------------------------------------------
+-- Classification Migration
+--------------------------------------------------
+local CLASSIFY_VERSION = 2
+
+local function ForEachItemTable(sv, callback)
+    if not sv then return end
+
+    for _, character in pairs(sv.characters or {}) do
+        callback(character.items)
+    end
+
+    local account = sv.account or {}
+    callback(account.craftBag)
+    callback(account.bank)
+    callback(account.furnitureVault)
+
+    for _, guild in pairs(account.guildBanks or {}) do
+        callback(guild.items)
+    end
+
+    for _, companion in pairs(account.companions or {}) do
+        callback(companion.items)
+    end
+
+    for _, chest in pairs(account.houseChests or {}) do
+        callback(chest.items)
+    end
+end
+
+function WhereIsIt:MigrateClassification()
+    local sv = self.savedVariables
+    if not sv then return end
+    if sv.classifyVersion == CLASSIFY_VERSION then return end
+
+    ForEachItemTable(sv, function(items)
+        if type(items) ~= "table" then return end
+        for _, item in pairs(items) do
+            if type(item) == "table" then
+                item.group   = nil
+                item.packSub = nil
+            end
+        end
+    end)
+
+    sv.classifyVersion = CLASSIFY_VERSION
+end
+
+function WhereIsIt.CategoryNameFor(item)
+    if type(item) ~= "table" then return nil end
+
+    WhereIsIt.EnsureClassified(item)
+
+    local name = item.catName
+    if name == false or name == "" then return nil end
+    return name
 end
 
 --------------------------------------------------
@@ -162,7 +414,7 @@ local function ScanSlotIntoTable(bagId, slotIndex, tbl, location, index)
     if count <= 0 then return end
 
     local itemName = ZO_CachedStrFormat(SI_TOOLTIP_ITEM_NAME, rawName)
-    local itemLink = GetItemLink(bagId, slotIndex)
+    local itemLink = GetItemLink(bagId, slotIndex, LINK_STYLE_BRACKETS)
     local hasLink  = itemLink and itemLink ~= ""
     local trait    = hasLink and GetItemLinkTraitInfo(itemLink) or 0
     local quality  = hasLink and GetItemLinkDisplayQuality(itemLink) or nil
@@ -179,6 +431,7 @@ local function ScanSlotIntoTable(bagId, slotIndex, tbl, location, index)
         tbl[key].count = tbl[key].count + count
         tbl[key].slots = (tbl[key].slots or 1) + 1
     else
+        local group, packSub = ClassifyItem(itemLink, location)
         tbl[key] = {
             displayName = itemName,
             count       = count,
@@ -187,6 +440,9 @@ local function ScanSlotIntoTable(bagId, slotIndex, tbl, location, index)
             quality     = quality,
             slots       = 1,
             catOrder    = ResolveCategoryOrder(itemLink),
+            group       = group,
+            packSub     = packSub,
+            catName     = ItemCategoryName(itemLink) or false,
         }
     end
 
@@ -677,6 +933,8 @@ local function OnAddonLoaded(event, addonName)
     for _, character in pairs(WhereIsIt.savedVariables.characters or {}) do
         character.companion = nil
     end
+
+    WhereIsIt:MigrateClassification()
 
     EVENT_MANAGER:RegisterForEvent(
         WhereIsIt.name .. "_Activate",

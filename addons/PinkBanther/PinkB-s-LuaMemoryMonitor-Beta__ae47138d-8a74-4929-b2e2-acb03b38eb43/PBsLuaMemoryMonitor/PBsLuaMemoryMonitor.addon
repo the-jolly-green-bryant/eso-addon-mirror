@@ -1,0 +1,24 @@
+## To release a new version, edit the version in the two lines below and nothing else.
+## Title: |cFF69B4PB’s LuaMemoryMonitor|r 0.4.0
+## Author: |cFF69B4PinkBanther|r
+## Description: Shows how much memory each add-on uses, ranked in a window on the HUD: what its saved variables and its start-up took, measured while add-ons load, and an estimate of what it holds now. /pbmem shows and hides the window.
+## Version: 0.4.0
+## APIVersion: 101050 101051
+## OptionalDependsOn: LibHarvensAddonSettings>=20106
+## SavedVariables: PBsLuaMemoryMonitor_Data
+
+## The settings library is optional: without it the panel is missing and /pbmem still does
+## everything. Loading after it costs nothing -- the client runs every add-on's files before the
+## first load event, so the events are seen whatever the load order.
+## Main.lua comes first so the first reading is taken before the rest of this add-on loads.
+
+Main.lua
+lang/strings.lua
+lang/$(language).lua
+Scan.lua
+Window.xml
+Window.lua
+GC.lua
+Settings.lua
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls© and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.

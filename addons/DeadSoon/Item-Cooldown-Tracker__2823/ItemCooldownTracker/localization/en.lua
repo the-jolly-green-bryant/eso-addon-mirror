@@ -24,10 +24,12 @@ ICDT.loc.prefix.firesong = "12. Firesong: "
 ICDT.loc.prefix.necrom = "13. Necrom: "
 ICDT.loc.prefix.goldRoad = "14. Gold Road: "
 ICDT.loc.prefix.wormCult1 = "15. Worm Cult 1: "
+ICDT.loc.prefix.season1 = "16. Season 1: "
 
 
 -- ENGLISH LANGUAGE LOCALIZATION
 ICDT.loc.suffix.publicDungeonFragment = " (PD Fragment)"
+ICDT.loc.suffix.otherFragment = " (Fragment)"
 
 -- Items
 ICDT.loc.items.transmutRewardCyrodiil = ICDT.loc.prefix.pvp .. "Uncracked Transmutation Geode ('Rewards for the Worthy')"
@@ -56,6 +58,7 @@ ICDT.loc.items.styleKindred = ICDT.loc.prefix.necrom .. "Kindred's Concord Style
 ICDT.loc.items.styleShardBorn = ICDT.loc.prefix.goldRoad .. "Shardborn Style Pages (West Weald)"
 ICDT.loc.items.styleWestWealdLegion = ICDT.loc.prefix.goldRoad .. "West Weald Legion Style Pages (West Weald)"
 ICDT.loc.items.styleTideBorn = ICDT.loc.prefix.wormCult1 .. "Tide-Born Style Pages (Solstice)"
+ICDT.loc.items.styleKoldaneCartel = ICDT.loc.prefix.season1 .. "Koldane Cartel Style Pages (Daggerfall Thieves Den)"
 
 
 -- Settings
@@ -98,7 +101,8 @@ ICDT.loc.settings.itemDescriptionDetailed =
 		"Necrom: |cd5b526Kindred's Concord Style Pages|r\nYou have a chance to receive a style page by completing the daily quest from the quest giver 'Ordinator Tandasea' in Telvanni. Also, the stype pages can drop from bosses in 'Bastion Nymic'.\n\n" ..
 		"Gold Road: |cd5b526Shardborn Concord Style Pages|r\nYou have a chance to receive a style page by completing the daily quests (delve or world boss) from the quest givers 'Commandant Salerius' or 'Lieutenant Agrance' in West Weald.\n\n" ..
 		"Gold Road: |cd5b526West Weald Legion Style Pages|r\nYou have a chance to receive a style page by completing the daily quest from the quest giver 'Legionairy Jaida' in West Weald.\n\n" ..
-		"Worm Cult 1: |cd5b526Tide-Born Style Pages|r\nYou have a chance to receive a style page by completing the daily quests (delve or world boss) from the quest givers 'Lector Volonaro' or 'Morlia' in Solstice.\n\n"
+		"Worm Cult 1: |cd5b526Tide-Born Style Pages|r\nYou have a chance to receive a style page by completing the daily quests (delve or world boss) from the quest givers 'Lector Volonaro' or 'Morlia' in Solstice.\n\n" ..
+		"Season 1: |cd5b526Koldane Cartel Style Pages|r\nYou have a chance to receive a style page by completing the daily quest from the Reacquisition Board (Josseline Madier) in the Daggerfall Outlaws Refuge.\n\n"
 
 
 -- Chat output

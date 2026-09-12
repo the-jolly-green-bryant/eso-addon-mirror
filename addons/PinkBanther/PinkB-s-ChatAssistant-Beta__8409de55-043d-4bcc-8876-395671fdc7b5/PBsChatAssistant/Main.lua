@@ -130,7 +130,7 @@ local CATCHER_CONTROL_NAMES = {
 -- Reported by /pbchat rather than announced at login. It was announced while the add-on was
 -- being built, because a build behaving unlike its code was the hardest thing to diagnose from
 -- inside the game. That is worth a command, not a line of chat on every login.
-local VERSION = "1.15.0"
+local VERSION = "1.15.1"
 
 -- How long the catcher waits for the box to close before coming back anyway.
 local RESUME_DEADLINE_SECONDS = 120
@@ -435,7 +435,7 @@ function addon:GetSelectableChannels()
 	return GetCyclableChannels()
 end
 
--- Applied once, when the player enters the world, and never on opening the chat box.
+-- Applied once, at login, and never on opening the chat box or after a zone change.
 --
 -- Per-open would fight the feature it sits beside: L2+L3 chooses the channel on the HUD, before
 -- the box opens, so re-imposing a default at that moment would throw the choice away every time.
@@ -1323,7 +1323,25 @@ local function OnAddOnLoaded(_, name)
 	-- The cost is that the buttons are dead while the player is at the keyboard, and that the
 	-- first key of a session opens the box whatever key it was. /pbchat follow off and
 	-- /pbchat trigger off turn those two off separately.
-	em:RegisterForEvent(addon.name, EVENT_PLAYER_ACTIVATED, function()
+	-- The login channel, applied exactly once.
+	--
+	-- EVENT_PLAYER_ACTIVATED fires after every loading screen, not only at login, and 1.15.0 never
+	-- unregistered it, so every zone change put the player back on the default channel and threw
+	-- away whatever they had switched to. Two guards now:
+	--
+	--   initial  The event's own flag for the first activation after login. A zone change reports
+	--            false and is ignored.
+	--   unregister  The handler removes itself on first use, so nothing later in this load can
+	--            reach it however the flag behaves.
+	--
+	-- Its own namespace, so unregistering it cannot take any other PLAYER_ACTIVATED handler with it.
+	local DEFAULT_CHANNEL_EVENT = addon.name .. "DefaultChannel"
+	em:RegisterForEvent(DEFAULT_CHANNEL_EVENT, EVENT_PLAYER_ACTIVATED, function(_, initial)
+		em:UnregisterForEvent(DEFAULT_CHANNEL_EVENT, EVENT_PLAYER_ACTIVATED)
+		addon:Log("player activated, initial %s", tostring(initial))
+		if initial == false then
+			return
+		end
 		zo_callLater(function()
 			addon:ApplyDefaultChannel()
 		end, DEFAULT_CHANNEL_DELAY_MS)

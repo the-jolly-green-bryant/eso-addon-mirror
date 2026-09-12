@@ -1,3 +1,13 @@
+Version 2.6.5 (2026/09/11)
+* As requested, added a dodge timer for Seething Vile Leap in Ossein Cage if
+  Ossein Cage Helper is not active
+* Changed the default for the "Ignore Reflective Scales for tanks" setting in
+  Ossein Cage to Off
+* As requested, added an option to change the bridge exit point markers for the
+  Taleria encounter in Dreadsail Reef to match the exit points of enemy
+  channeler mages instead of the exit points of player characters
+* Fixed a double-alert issue with the Cinder Shot alert in Dreadsail Reef
+
 Version 2.6.4 (2026/09/05)
 * Restored a heavy attack notification in Dreadsail Reef that was
   unintentionally lost during the 2.5.0 overhaul

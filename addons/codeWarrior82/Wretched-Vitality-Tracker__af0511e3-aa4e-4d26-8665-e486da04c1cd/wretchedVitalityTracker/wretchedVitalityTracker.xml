@@ -1,0 +1,29 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="wvtrack">
+            <Dimensions x="154" y="128"/>
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="1060" offsetY="720"/>
+
+            <Controls>
+				<!-- BOTTOM ROW - ICONS -->
+                <Label name="$(parent)IconMajor" width="64" height="64" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" level="1">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+                </Label>
+
+                <Label name="$(parent)IconMinor" width="64" height="64" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" level="1">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="90" offsetY="0"/>
+                </Label>
+
+                <!-- TOP ROW - LABELS -->
+                <Label name="$(parent)LabelMajor" width="64" height="64" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" level="2">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="8" offsetY="0"/>
+                </Label>
+
+				<Label name="$(parent)LabelMinor" width="64" height="64" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" level="2">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="98" offsetY="0"/>
+                </Label>
+            </Controls>
+
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

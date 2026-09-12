@@ -183,10 +183,15 @@ Module.DATA = {
 			[166042] = COLOR_BR_G, -- Nematocyst Cloud
 			[166044] = COLOR_BR_P, -- Suffocating Waves
 		},
-		locations = {
+		locationsA = {	-- Allies
 			[COLOR_BR_Y] = { 171930, 36126, 31714 },
 			[COLOR_BR_G] = { 170016, 36126, 27519 },
 			[COLOR_BR_P] = { 167440, 36126, 31439 },
+		},
+		locationsE = {	-- Enemies
+			[COLOR_BR_Y] = { 171816, 36126, 31833 },
+			[COLOR_BR_G] = { 170711, 36126, 27252 },
+			[COLOR_BR_P] = { 166977, 36126, 31339 },
 		},
 	},
 	maelstrom = 166292,
@@ -605,7 +610,7 @@ function Module:ProcessCombatEvents( result, isError, abilityName, abilityGraphi
 		elseif (result == ACTION_RESULT_EFFECT_FADED) then
 			CA2.ScreenBorderDisable("u34target")
 		end
-	elseif (result == ACTION_RESULT_BEGIN and targetType == COMBAT_UNIT_TYPE_PLAYER and abilityId == DATA.cinderShot) then
+	elseif (result == ACTION_RESULT_BEGIN and targetType == COMBAT_UNIT_TYPE_PLAYER and abilityId == DATA.cinderShot and hitValue > 2000) then
 		CA1.Alert(nil, zo_strformat(SI_LCA_TARGET_YOU, LCA.GetAbilityName(abilityId)), 0xFF9900FF, nil, 1500)
 		LCA.PlaySounds("FRIEND_INVITE_RECEIVED", 3)
 	elseif (result == ACTION_RESULT_EFFECT_GAINED and targetType == COMBAT_UNIT_TYPE_PLAYER and abilityId == DATA.marksman.target) then
@@ -884,10 +889,12 @@ function Module:GetSettingsControls( )
 		},
 		--------------------
 		{
-			type = "checkbox",
+			type = "dropdown",
 			name = self:GetString("bridgeExitMarkers"),
+			choices = { GetString(SI_CHECK_BUTTON_OFF), GetString(SI_TARGETTYPE1), GetString(SI_TARGETTYPE0) },
+			choicesValues = { false, true, 2 },
 			getFunc = function() return self:GetSetting("bridgeExitMarkers") end,
-			setFunc = function(enabled) self:SetSetting("bridgeExitMarkers", enabled) end,
+			setFunc = function(mode) self:SetSetting("bridgeExitMarkers", mode) end,
 		},
 		--------------------
 		{
@@ -953,15 +960,19 @@ do
 	end
 
 	function Module:ToggleBridgeLocation( color, enable )
-		if (enable and not Elements[color] and DATA.bridge.locations[color] and self:GetSetting("bridgeExitMarkers")) then
-			Elements[color] = GetCanvas():PlaceTexture({
-				pos = DATA.bridge.locations[color],
-				texture = "world-teardrop-down",
-				size = 160,
-				elevation = 90,
-				color = BitAnd(color, 0xFFFFFF99),
-				playerFacing = true,
-			})
+		if (enable and not Elements[color]) then
+			local mode = self:GetSetting("bridgeExitMarkers")
+			local locations = DATA.bridge[mode == true and "locationsA" or "locationsE"]
+			if (mode and locations[color]) then
+				Elements[color] = GetCanvas():PlaceTexture({
+					pos = locations[color],
+					texture = "world-teardrop-down",
+					size = 160,
+					elevation = 90,
+					color = BitAnd(color, 0xFFFFFF99),
+					playerFacing = true,
+				})
+			end
 		elseif (not enable and Elements[color]) then
 			Canvas:RemoveElement(Elements[color])
 			Elements[color] = nil

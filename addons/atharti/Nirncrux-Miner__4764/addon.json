@@ -18,7 +18,7 @@
     "NirncruxMiner"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4764/",
-  "fingerprint": "9bd0263cb84d82f3abf48d0ff10910a18cf836da88a73d7df11bcfd57f64f501",
+  "fingerprint": "ac3f9893b90b1cc341e6430f7b663170efa8a2650be4124efec7e1e9f5ae4afe",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16946.png"
   ],
@@ -28,11 +28,11 @@
   "source_id": "4764",
   "source_url": "https://www.esoui.com/downloads/info4764-NirncruxMiner.html",
   "stats": {
-    "downloads": 77,
-    "favorites": 4,
-    "monthly_downloads": 77
+    "downloads": 146,
+    "favorites": 5,
+    "monthly_downloads": 74
   },
   "title": "Nirncrux Miner",
-  "updated_at": 1786455932000,
-  "version": "1.2"
+  "updated_at": 1789138807000,
+  "version": "1.3"
 }

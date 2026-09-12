@@ -2,13 +2,12 @@
 ## |cRRGGBB...|r in Title and Author colours them in the in-game add-on list; the version
 ## is read back through that markup, so it can sit inside or outside the colour.
 ## The settings panel takes its version from ## Title; the name itself is fixed in Main.lua.
-## Title: |cFF69B4PB’s MiniMap|r 2.0.18
+## Title: |cFF69B4PB’s MiniMap|r 2.1.0
 ## Author: |cFF69B4PinkBanther|r
 ## Description: A lightweight minimap for console. Keeps the game's own world map parked on the HUD at a size and position you choose, and hands it straight back when you open the full map. Based on Votan's Minimap by votan, with thanks -- rebuilt so it stays inside the console add-on memory limit.
-## Version: 2.0.18
+## Version: 2.1.0
 ## APIVersion: 101050 101051
-## DependsOn: LibHarvensAddonSettings>=20106 LibAsync>=30001
-## OptionalDependsOn: LibGPS>=73 TweakIt TrueExploration LibDebugLogger
+## DependsOn: LibHarvensAddonSettings>=20106
 ## SavedVariables: PBsMiniMap_Data
 
 ## Credit: Based on "Votan's Minimap" by votan (https://www.esoui.com/downloads/info1399-VotansMinimap.html).
@@ -21,6 +20,4 @@ lang/$(language).lua
 
 Main.lua
 Settings.lua
-PinSizes.lua
-Styles.lua
 

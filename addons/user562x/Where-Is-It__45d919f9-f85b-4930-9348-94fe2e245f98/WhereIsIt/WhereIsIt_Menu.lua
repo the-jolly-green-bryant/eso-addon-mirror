@@ -291,11 +291,221 @@ local WORN_LOCATIONS = {
     ["Companion Worn"] = true,
 }
 
+--------------------------------------------------
+-- In-Game Groups
+--------------------------------------------------
+local ICON_PACK        = "EsoUI/Art/Inventory/Gamepad/gp_inventory_icon_all.dds"
+local ICON_SUPPLIES    = "EsoUI/Art/Inventory/Gamepad/gp_inventory_icon_all.dds"
+local ICON_MATERIALS   = "EsoUI/Art/Inventory/Gamepad/gp_inventory_icon_materials.dds"
+local ICON_SLOTTABLE   = "EsoUI/Art/Inventory/Gamepad/gp_inventory_icon_quickslot.dds"
+local ICON_FURNISHINGS = "EsoUI/Art/Crafting/Gamepad/gp_crafting_menuIcon_furnishings.dds"
+local ICON_COMPANIONS  = "EsoUI/Art/Inventory/Gamepad/gp_inventory_icon_companionItems.dds"
+local ICON_WEAPONS     = "EsoUI/Art/CharacterWindow/gearSlot_mainHand.dds"
+local ICON_APPAREL     = "EsoUI/Art/CharacterWindow/gearSlot_chest.dds"
+local ICON_ACCESSORIES = "EsoUI/Art/CharacterWindow/gearSlot_neck.dds"
+
+local function Const(name)
+    return rawget(_G, name)
+end
+
+local function ClientString(stringId, fallback)
+    if stringId and type(GetString) == "function" then
+        local ok, text = pcall(GetString, stringId)
+        if ok and type(text) == "string" and text ~= "" then return text end
+    end
+    return fallback
+end
+
+local function EnumString(prefix, value, fallback)
+    if value ~= nil and type(GetString) == "function" then
+        local ok, text = pcall(GetString, prefix, value)
+        if ok and type(text) == "string" and text ~= "" then return text end
+    end
+    return fallback
+end
+
+local GROUP_PACK        = WhereIsIt.GROUP_PACK        or 1
+local GROUP_WEAPONS     = WhereIsIt.GROUP_WEAPONS     or 2
+local GROUP_APPAREL     = WhereIsIt.GROUP_APPAREL     or 3
+local GROUP_ACCESSORIES = WhereIsIt.GROUP_ACCESSORIES or 4
+
+local PACK_SUPPLIES     = WhereIsIt.PACK_SUPPLIES     or 1
+local PACK_MATERIALS    = WhereIsIt.PACK_MATERIALS    or 2
+local PACK_SLOTTABLE    = WhereIsIt.PACK_SLOTTABLE    or 3
+local PACK_FURNISHINGS  = WhereIsIt.PACK_FURNISHINGS  or 4
+local PACK_COMPANION    = WhereIsIt.PACK_COMPANION    or 5
+
+local EQUIP_GROUP_ORDER = { GROUP_WEAPONS, GROUP_APPAREL, GROUP_ACCESSORIES }
+local PACK_ORDER        = { PACK_SUPPLIES, PACK_MATERIALS, PACK_SLOTTABLE, PACK_FURNISHINGS, PACK_COMPANION }
+
+local GROUP_VISUAL_CATEGORY = {
+    [GROUP_WEAPONS]     = Const("EQUIP_SLOT_VISUAL_CATEGORY_WEAPONS"),
+    [GROUP_APPAREL]     = Const("EQUIP_SLOT_VISUAL_CATEGORY_APPAREL"),
+    [GROUP_ACCESSORIES] = Const("EQUIP_SLOT_VISUAL_CATEGORY_ACCESSORIES"),
+}
+
+local GROUP_FALLBACK_LABEL = {
+    [GROUP_WEAPONS]     = "Weapons",
+    [GROUP_APPAREL]     = "Apparel",
+    [GROUP_ACCESSORIES] = "Accessories",
+}
+
+local GROUP_ICON = {
+    [GROUP_WEAPONS]     = ICON_WEAPONS,
+    [GROUP_APPAREL]     = ICON_APPAREL,
+    [GROUP_ACCESSORIES] = ICON_ACCESSORIES,
+}
+
+local PACK_FILTER_TYPE = {
+    [PACK_MATERIALS]   = ITEMFILTERTYPE_CRAFTING,
+    [PACK_SLOTTABLE]   = ITEMFILTERTYPE_QUICKSLOT,
+    [PACK_FURNISHINGS] = ITEMFILTERTYPE_FURNISHING,
+    [PACK_COMPANION]   = ITEMFILTERTYPE_COMPANION,
+}
+
+local PACK_FALLBACK_LABEL = {
+    [PACK_SUPPLIES]    = "Supplies",
+    [PACK_MATERIALS]   = "Materials",
+    [PACK_SLOTTABLE]   = "Slottable Items",
+    [PACK_FURNISHINGS] = "Furnishings",
+    [PACK_COMPANION]   = "Companion Items",
+}
+
+local PACK_ICON = {
+    [PACK_SUPPLIES]    = ICON_SUPPLIES,
+    [PACK_MATERIALS]   = ICON_MATERIALS,
+    [PACK_SLOTTABLE]   = ICON_SLOTTABLE,
+    [PACK_FURNISHINGS] = ICON_FURNISHINGS,
+    [PACK_COMPANION]   = ICON_COMPANIONS,
+}
+
+local groupLabelCache = {}
+
+local function PackLabel()
+    if not groupLabelCache.pack then
+        groupLabelCache.pack = ClientString(Const("SI_GAMEPAD_INVENTORY_PACK_CATEGORY_HEADER"), "Pack")
+    end
+    return groupLabelCache.pack
+end
+
+local function AllLabel()
+    if not groupLabelCache.all then
+        groupLabelCache.all = EnumString("SI_ITEMFILTERTYPE", ITEMFILTERTYPE_ALL, "All")
+    end
+    return groupLabelCache.all
+end
+
+local function GroupLabel(group)
+    local cached = groupLabelCache[group]
+    if cached then return cached end
+
+    local label = EnumString("SI_EQUIPSLOTVISUALCATEGORY",
+        GROUP_VISUAL_CATEGORY[group], GROUP_FALLBACK_LABEL[group] or "Items")
+
+    groupLabelCache[group] = label
+    return label
+end
+
+local packLabelCache = {}
+
+local function PackSubLabel(sub)
+    local cached = packLabelCache[sub]
+    if cached then return cached end
+
+    local label
+    if sub == PACK_SUPPLIES then
+        label = ClientString(Const("SI_INVENTORY_SUPPLIES"), PACK_FALLBACK_LABEL[sub])
+    else
+        label = EnumString("SI_ITEMFILTERTYPE", PACK_FILTER_TYPE[sub], PACK_FALLBACK_LABEL[sub])
+    end
+
+    label = label or "Items"
+    packLabelCache[sub] = label
+    return label
+end
+
+local function Classify(item)
+    if WhereIsIt and type(WhereIsIt.EnsureClassified) == "function" then
+        local ok, group, packSub = pcall(WhereIsIt.EnsureClassified, item)
+        if ok then return group, packSub end
+    end
+    return GROUP_PACK, PACK_SUPPLIES
+end
+
+local function EquipGroupFilter(group)
+    return function(item)
+        return Classify(item) == group
+    end
+end
+
+local function PackSubFilter(sub)
+    return function(item)
+        local group, packSub = Classify(item)
+        return group == GROUP_PACK and (packSub or PACK_SUPPLIES) == sub
+    end
+end
+
+local function TallyGroups(tables)
+    local tally = {
+        packSubs  = {},
+        groups    = {},
+        hasPack   = false,
+        itemCount = 0,
+        slotCount = 0,
+        wornCount = 0,
+    }
+
+    for i = 1, #(tables or {}) do
+        local tbl = tables[i]
+        if type(tbl) == "table" then
+            for _, item in pairs(tbl) do
+                local group, packSub = Classify(item)
+
+                if group == GROUP_PACK then
+                    tally.hasPack = true
+                    tally.packSubs[packSub or PACK_SUPPLIES] = true
+                else
+                    tally.groups[group] = true
+                end
+
+                local slots = tonumber(item.slots) or 1
+                tally.itemCount = tally.itemCount + (tonumber(item.count) or 0)
+                if WORN_LOCATIONS[item.location or ""] then
+                    tally.wornCount = tally.wornCount + slots
+                else
+                    tally.slotCount = tally.slotCount + slots
+                end
+            end
+        end
+    end
+
+    return tally
+end
+
+local function ItemSectionName(item)
+    if WhereIsIt and type(WhereIsIt.CategoryNameFor) == "function" then
+        local ok, name = pcall(WhereIsIt.CategoryNameFor, item)
+        if ok and type(name) == "string" and name ~= "" then return name end
+    end
+    return CategoryLabel(item.catOrder or 10)
+end
+
 local function SortItems(list)
+    local sectionCache = {}
+
+    local function Section(item)
+        local cached = sectionCache[item]
+        if cached == nil then
+            cached = ItemSectionName(item) or ""
+            sectionCache[item] = cached
+        end
+        return cached
+    end
+
     table.sort(list, function(a, b)
-        local orderA = a.catOrder or 10
-        local orderB = b.catOrder or 10
-        if orderA ~= orderB then return orderA < orderB end
+        local sectionA = zo_strlower(Section(a))
+        local sectionB = zo_strlower(Section(b))
+        if sectionA ~= sectionB then return sectionA < sectionB end
         local nameA = zo_strlower(a.displayName or "")
         local nameB = zo_strlower(b.displayName or "")
         if nameA ~= nameB then return nameA < nameB end
@@ -303,15 +513,25 @@ local function SortItems(list)
     end)
 end
 
-local function CollectItems(tables, locationFilter)
+local function CollectItems(tables, filter)
+    local isFunction = type(filter) == "function"
+
     local list = {}
     for i = 1, #tables do
         local tbl = tables[i]
         if type(tbl) == "table" then
             for _, item in pairs(tbl) do
-                if not locationFilter or item.location == locationFilter then
-                    list[#list + 1] = item
+                local keep
+                if isFunction then
+                    local ok, result = pcall(filter, item)
+                    keep = ok and result
+                elseif filter then
+                    keep = item.location == filter
+                else
+                    keep = true
                 end
+
+                if keep then list[#list + 1] = item end
             end
         end
     end
@@ -399,6 +619,51 @@ local function HookCenteredTooltip()
 end
 
 --------------------------------------------------
+-- Marked Items
+--------------------------------------------------
+local MARK_PREFIX = "|cFFCC00*|r "
+
+local markedItems = {}
+local markedSet   = {}
+
+local MarkStatusMessage
+
+local function IsMarked(item)
+    return item ~= nil and markedSet[item] == true
+end
+
+local function MarkedCount()
+    return #markedItems
+end
+
+local function RemoveMark(item)
+    if not (item and markedSet[item]) then return end
+    markedSet[item] = nil
+    for i = 1, #markedItems do
+        if markedItems[i] == item then
+            table.remove(markedItems, i)
+            return
+        end
+    end
+end
+
+local function ToggleMark(item)
+    if not item then return end
+    if markedSet[item] then
+        RemoveMark(item)
+    else
+        markedSet[item] = true
+        markedItems[#markedItems + 1] = item
+    end
+end
+
+local function ClearMarks()
+    if #markedItems == 0 then return end
+    markedItems = {}
+    markedSet   = {}
+end
+
+--------------------------------------------------
 -- Lazy Page Population
 --------------------------------------------------
 local function FindControlIndex(control)
@@ -445,6 +710,8 @@ end
 local function ApplyPageHeader(state)
     local config = state and state.headerConfig
     if not config then return end
+
+    config.messageText = MarkStatusMessage and MarkStatusMessage() or nil
 
     if (state.pageCount or 1) > 1 then
         config.titleText = string.format("%s  (%d/%d)", state.pageName or "", state.pageIndex or 1, state.pageCount)
@@ -493,6 +760,7 @@ local function ClearPageHeader(state)
     if not config then return end
 
     config.titleText       = state.pageName
+    config.messageText     = nil
     config.data1HeaderText = nil
     config.data1Text       = nil
     config.data2HeaderText = nil
@@ -515,6 +783,7 @@ local function BuildPageRows(pageId, state)
 
     local options       = {}
     local sectionStarts = {}
+    local rowItems      = {}
     local leading       = 0
 
     if pageIndex > 1 and not pageKeybinds then
@@ -531,12 +800,13 @@ local function BuildPageRows(pageId, state)
         leading = leading + 1
     end
 
-    local currentOrder, group
+    local singleCategory = state.singleCategory
+    local currentSection, group
 
     for i = first, last do
-        local item  = items[i]
-        local order = item.catOrder or 10
-        local label = string.format("|c%s%s|r  |c888888x%s|r",
+        local item    = items[i]
+        local section = ItemSectionName(item) or ""
+        local label   = string.format("|c%s%s|r  |c888888x%s|r",
             QualityHex(item.quality),
             item.displayName or "",
             FormatCount(item.count))
@@ -545,22 +815,27 @@ local function BuildPageRows(pageId, state)
             label = label .. "  |c777777" .. item.where .. "|r"
         end
 
-        if order ~= currentOrder then
-            currentOrder = order
+        if not singleCategory and section ~= currentSection then
+            currentSection = section
             sectionStarts[#sectionStarts + 1] = leading + (i - first) + 1
             group = {
                 type    = "section",
-                name    = CategoryLabel(order),
+                name    = section,
                 align   = "leftFlush",
                 options = {},
             }
             options[#options + 1] = group
         end
 
-        local rows = group.options
+        rowItems[leading + (i - first) + 1] = item
+
+        local rows = singleCategory and options or group.options
         rows[#rows + 1] = {
             type    = "button",
-            name    = function() return label end,
+            name    = function()
+                if IsMarked(item) then return MARK_PREFIX .. label end
+                return label
+            end,
             tooltip = function()
                 pendingItem = item
                 return ""
@@ -583,9 +858,10 @@ local function BuildPageRows(pageId, state)
         }
     end
 
-    local compiled = LCM():ConvertOptions(options)
+    local compiled  = LCM():ConvertOptions(options)
+    local rowAction = singleCategory and "Select" or "Next Category"
     for i = 1, #compiled do
-        compiled[i].buttonText = "Next Category"
+        compiled[i].buttonText = rowAction
     end
     if leading > 0 and compiled[1] then
         compiled[1].buttonText = "Select"
@@ -595,13 +871,24 @@ local function BuildPageRows(pageId, state)
     end
 
     state.sectionStarts = sectionStarts
+    state.rowItems      = rowItems
     state.firstShown    = first
     state.lastShown     = last
 
     return compiled
 end
 
-local function PopulatePage(submenu, pageId, getTables, locationFilter)
+local function AttachRowItems(controls, rowItems)
+    if type(controls) ~= "table" or type(rowItems) ~= "table" then return end
+    for i = 1, #controls do
+        local control = controls[i]
+        if type(control) == "table" then
+            control.whereIsItItem = rowItems[i]
+        end
+    end
+end
+
+local function PopulatePage(submenu, pageId, getTables, filter)
     local state = pageState[pageId]
     if not state or state.rowCount > 0 then return end
 
@@ -610,11 +897,12 @@ local function PopulatePage(submenu, pageId, getTables, locationFilter)
 
     state.submenu = submenu
 
-    local items = CollectItems(getTables() or {}, locationFilter)
+    local items = CollectItems(getTables() or {}, filter)
     state.items      = items
     state.entryCount = #items
 
     local totalItems, bagSlots, wornSlots = 0, 0, 0
+    local firstSection, mixedSections = nil, false
     for i = 1, #items do
         local item  = items[i]
         local slots = tonumber(item.slots) or 1
@@ -624,7 +912,15 @@ local function PopulatePage(submenu, pageId, getTables, locationFilter)
         else
             bagSlots = bagSlots + slots
         end
+
+        local section = ItemSectionName(item) or ""
+        if firstSection == nil then
+            firstSection = section
+        elseif section ~= firstSection then
+            mixedSections = true
+        end
     end
+    state.singleCategory = not mixedSections
     state.itemCount = totalItems
     state.slotCount = bagSlots
     state.wornCount = wornSlots
@@ -637,7 +933,8 @@ local function PopulatePage(submenu, pageId, getTables, locationFilter)
     local compiled = BuildPageRows(pageId, state)
 
     local ok = pcall(function()
-        menu:AddControls(compiled, submenuIndex + 2)
+        local controls = menu:AddControls(compiled, submenuIndex + 2)
+        AttachRowItems(controls, state.rowItems)
         menu:RemoveControls(submenuIndex + 1, 1)
     end)
 
@@ -672,7 +969,8 @@ GoToPage = function(pageId, target)
     if newCount == 0 then return end
 
     local ok = pcall(function()
-        menu:AddControls(compiled, submenuIndex + 1)
+        local controls = menu:AddControls(compiled, submenuIndex + 1)
+        AttachRowItems(controls, state.rowItems)
         menu:RemoveControls(submenuIndex + 1 + newCount, oldCount)
     end)
 
@@ -700,6 +998,7 @@ local function DepopulatePage(submenu, pageId)
     local count = state.rowCount
     state.rowCount      = 0
     state.sectionStarts = nil
+    state.rowItems      = nil
     state.items         = nil
     state.submenu       = nil
     state.pageIndex     = 1
@@ -719,7 +1018,7 @@ local function DepopulatePage(submenu, pageId)
     end, 0)
 end
 
-local function ItemPage(pageId, name, icon, getTables, locationFilter, label)
+local function ItemPage(pageId, name, icon, getTables, filter, label)
     local titleName    = (type(label) == "string" and label) or name
     local headerConfig = { titleText = titleName }
 
@@ -736,9 +1035,102 @@ local function ItemPage(pageId, name, icon, getTables, locationFilter, label)
         icon          = icon,
         childrenAlign = "leftFlush",
         header        = headerConfig,
-        onEnter       = function(submenu) PopulatePage(submenu, pageId, getTables, locationFilter) end,
+        onEnter       = function(submenu) PopulatePage(submenu, pageId, getTables, filter) end,
         onExit        = function(submenu) DepopulatePage(submenu, pageId) end,
         options       = { SeedRow() },
+    }
+end
+
+--------------------------------------------------
+-- Grouped Pages
+--------------------------------------------------
+local INCLUDE_ALL = true
+
+local function BuildGroupedOptions(idPrefix, getTables, includeAll)
+    local tally   = TallyGroups(getTables() or {})
+    local options = {}
+
+    if includeAll and (tally.hasPack or next(tally.groups) ~= nil) then
+        options[#options + 1] = ItemPage(
+            idPrefix .. ":all",
+            AllLabel(),
+            ICON_LIST,
+            getTables,
+            nil)
+    end
+
+    if tally.hasPack then
+        local packPages = {}
+
+        for i = 1, #PACK_ORDER do
+            local sub = PACK_ORDER[i]
+            if tally.packSubs[sub] then
+                packPages[#packPages + 1] = ItemPage(
+                    idPrefix .. ":pack:" .. sub,
+                    PackSubLabel(sub),
+                    PACK_ICON[sub],
+                    getTables,
+                    PackSubFilter(sub))
+            end
+        end
+
+        if #packPages > 0 then
+            options[#options + 1] = {
+                type    = "submenu",
+                name    = PackLabel(),
+                icon    = ICON_PACK,
+                header  = { titleText = PackLabel() },
+                options = packPages,
+            }
+        end
+    end
+
+    for i = 1, #EQUIP_GROUP_ORDER do
+        local group = EQUIP_GROUP_ORDER[i]
+        if tally.groups[group] then
+            options[#options + 1] = ItemPage(
+                idPrefix .. ":group:" .. group,
+                GroupLabel(group),
+                GROUP_ICON[group],
+                getTables,
+                EquipGroupFilter(group))
+        end
+    end
+
+    return options, tally
+end
+
+local function GroupedSource(idPrefix, name, icon, getTables, label, includeAll)
+    local options, tally = BuildGroupedOptions(idPrefix, getTables, includeAll)
+    if #options == 0 then return nil end
+
+    local headerConfig = { titleText = (type(label) == "string" and label) or name }
+
+    if tally.slotCount == 0 and tally.wornCount > 0 then
+        headerConfig.data1HeaderText = "Worn"
+        headerConfig.data1Text       = FormatCount(tally.wornCount)
+        headerConfig.data2HeaderText = "Items"
+        headerConfig.data2Text       = FormatCount(tally.itemCount)
+    else
+        headerConfig.data1HeaderText = "Slots"
+        headerConfig.data1Text       = FormatCount(tally.slotCount)
+        if tally.wornCount > 0 then
+            headerConfig.data2HeaderText = "Worn"
+            headerConfig.data2Text       = FormatCount(tally.wornCount)
+            headerConfig.data3HeaderText = "Items"
+            headerConfig.data3Text       = FormatCount(tally.itemCount)
+        else
+            headerConfig.data2HeaderText = "Items"
+            headerConfig.data2Text       = FormatCount(tally.itemCount)
+        end
+    end
+
+    return {
+        type    = "submenu",
+        name    = label or name,
+        icon    = icon,
+        header  = headerConfig,
+        options = options,
     }
 end
 
@@ -834,6 +1226,8 @@ local function AddMatches(results, tbl, where, query)
                 slots       = item.slots,
                 location    = where,
                 where       = where,
+                group       = item.group,
+                packSub     = item.packSub,
             }
         end
     end
@@ -1001,7 +1395,7 @@ local function BuildCharacterSection()
         local charName = data.name or ("Char " .. charId)
 
         if HasEntries(data.items) then
-            options[#options + 1] = ItemPage(
+            local section = GroupedSource(
                 "char:" .. charId,
                 charName,
                 ICON_INVENTORY,
@@ -1010,8 +1404,10 @@ local function BuildCharacterSection()
                     if not current then return {} end
                     return { current.items }
                 end,
-                nil,
-                AllianceColored(charName, data.alliance))
+                AllianceColored(charName, data.alliance),
+                INCLUDE_ALL)
+
+            if section then options[#options + 1] = section end
         end
     end
 
@@ -1047,7 +1443,7 @@ local function BuildCompanionSection()
         local key  = keys[i]
         local data = account.companions[key]
         if HasEntries(data.items) then
-            options[#options + 1] = ItemPage(
+            local section = GroupedSource(
                 "companion:" .. key,
                 data.name or key,
                 ICON_COMPANION,
@@ -1056,7 +1452,11 @@ local function BuildCompanionSection()
                     current = current and current[key]
                     if not current then return {} end
                     return { current.items }
-                end)
+                end,
+                nil,
+                INCLUDE_ALL)
+
+            if section then options[#options + 1] = section end
         end
     end
 
@@ -1115,7 +1515,7 @@ local function BuildGuildSection()
         local guildId   = guildIds[i]
         local guildName = guildBanks[guildId].name or "Guild Bank"
 
-        options[#options + 1] = ItemPage(
+        local section = GroupedSource(
             "guild:" .. guildId,
             guildName,
             ICON_GUILD,
@@ -1125,9 +1525,13 @@ local function BuildGuildSection()
                 if not current then return {} end
                 return { current.items }
             end,
-            nil,
-            AllianceColored(guildName, GuildAlliance(guildId)))
+            AllianceColored(guildName, GuildAlliance(guildId)),
+            INCLUDE_ALL)
+
+        if section then options[#options + 1] = section end
     end
+
+    if #options == 0 then return nil end
 
     return {
         type    = "submenu",
@@ -1168,7 +1572,7 @@ local function BuildChestPagesByHouse(chests)
         local chestPages = {}
         for j = 1, #list do
             local key = list[j].key
-            chestPages[#chestPages + 1] = ItemPage(
+            local section = GroupedSource(
                 "chest:" .. key,
                 list[j].name,
                 ICON_HOUSE,
@@ -1177,15 +1581,21 @@ local function BuildChestPagesByHouse(chests)
                     current = current and current[key]
                     if not current then return {} end
                     return { current.items }
-                end)
+                end,
+                nil,
+                INCLUDE_ALL)
+
+            if section then chestPages[#chestPages + 1] = section end
         end
 
-        houseSubmenus[#houseSubmenus + 1] = {
-            type    = "submenu",
-            name    = houseName,
-            icon    = ICON_HOUSE,
-            options = chestPages,
-        }
+        if #chestPages > 0 then
+            houseSubmenus[#houseSubmenus + 1] = {
+                type    = "submenu",
+                name    = houseName,
+                icon    = ICON_HOUSE,
+                options = chestPages,
+            }
+        end
     end
 
     return houseSubmenus
@@ -1295,8 +1705,8 @@ local function BuildOptions()
     end
 
     if IsTracked("bank") and account and HasEntries(account.bank) then
-        Append(ItemPage("bank", "Bank", ICON_BANK,
-            function() return { SV().account.bank } end))
+        Append(GroupedSource("bank", "Bank", ICON_BANK,
+            function() return { SV().account.bank } end, nil, INCLUDE_ALL))
     end
 
     Append(BuildGuildSection())
@@ -1425,7 +1835,7 @@ local function SelectedSliderData()
     return data
 end
 
-local function SliderKeybindName(globalName, fallback)
+local function LcmKeybindName(globalName, fallback)
     local stringId = rawget(_G, globalName)
     if stringId and type(GetString) == "function" then
         local text = GetString(stringId)
@@ -1439,7 +1849,7 @@ local function BuildShoulderKeybind(direction, pageName, stringName, sliderFallb
         alignment    = KEYBIND_STRIP_ALIGN_RIGHT,
         name         = function()
             if SelectedSliderData() then
-                return SliderKeybindName(stringName, sliderFallback)
+                return LcmKeybindName(stringName, sliderFallback)
             end
             return pageName
         end,
@@ -1467,6 +1877,285 @@ local function BuildShoulderKeybind(direction, pageName, stringName, sliderFallb
     }
 end
 
+--------------------------------------------------
+-- Link to Chat
+--------------------------------------------------
+local function InOurMenu()
+    local lcm = LCM()
+    return menu ~= nil and lcm ~= nil and lcm.currentMenu == menu
+end
+
+local function SelectedItem()
+    if not InOurMenu() then return nil end
+
+    local list = LCM().list
+    if not (list and list.GetSelectedData) then return nil end
+
+    local ok, data = pcall(list.GetSelectedData, list)
+    if not ok or type(data) ~= "table" then return nil end
+
+    local item = data.whereIsItItem
+    if type(item) ~= "table" then return nil end
+
+    local itemLink = item.itemLink
+    if type(itemLink) ~= "string" or itemLink == "" then return nil end
+
+    return item
+end
+
+local function SetPageMessage(text)
+    local state  = activePageId and pageState[activePageId]
+    local config = state and state.headerConfig
+    if not config then return end
+
+    config.messageText = text
+
+    local lcm = LCM()
+    if lcm and lcm.RefreshSceneHeader then
+        pcall(function() lcm:RefreshSceneHeader() end)
+    end
+end
+
+local function RefreshRowsAndKeybinds()
+    if menu and menu.UpdateControls then
+        pcall(function() menu:UpdateControls() end)
+    end
+
+    local lcm = LCM()
+    if lcm and lcm.scrollList and lcm.scrollList.RefreshKeybinds then
+        pcall(function() lcm.scrollList:RefreshKeybinds() end)
+    end
+end
+
+local function CanLinkToChat()
+    if type(IsChatSystemAvailableForCurrentPlatform) ~= "function" then return false end
+    local ok, available = pcall(IsChatSystemAvailableForCurrentPlatform)
+    return ok and available == true
+end
+
+local function ChatHudEnabled()
+    local settingType = rawget(_G, "SETTING_TYPE_UI")
+    local settingId   = rawget(_G, "UI_SETTING_GAMEPAD_CHAT_HUD_ENABLED")
+    if not (settingType and settingId) then return nil end
+    if type(GetSetting_Bool) ~= "function" then return nil end
+
+    local ok, value = pcall(GetSetting_Bool, settingType, settingId)
+    if not ok then return nil end
+    return value == true
+end
+
+local function PushToChat(text)
+    local chatSystem = type(ZO_GetChatSystem) == "function" and ZO_GetChatSystem() or CHAT_SYSTEM
+
+    if ChatHudEnabled() == false then
+        if not (chatSystem and type(chatSystem.StartTextEntry) == "function") then return false end
+
+        if type(chatSystem.Maximize) == "function" then
+            pcall(chatSystem.Maximize, chatSystem)
+        end
+
+        local NO_CHANNEL, NO_TARGET, DONT_SHOW_HUD_WINDOW = nil, nil, true
+        return pcall(chatSystem.StartTextEntry, chatSystem, text, NO_CHANNEL, NO_TARGET, DONT_SHOW_HUD_WINDOW)
+    end
+
+    if type(StartChatInput) == "function" then
+        if pcall(StartChatInput, text) then return true end
+    end
+
+    if chatSystem and type(chatSystem.StartTextEntry) == "function" then
+        return pcall(chatSystem.StartTextEntry, chatSystem, text)
+    end
+
+    return false
+end
+
+local function LinkKeybindName()
+    local base = "Link to Chat"
+
+    local stringId = rawget(_G, "SI_ITEM_ACTION_LINK_TO_CHAT")
+    if stringId then
+        local ok, text = pcall(GetString, stringId)
+        if ok and type(text) == "string" and text ~= "" then base = text end
+    end
+
+    local count = MarkedCount()
+    if count > 0 then return string.format("%s (%d)", base, count) end
+    return base
+end
+
+local function WithBracketStyle(itemLink)
+    local bracketStyle = rawget(_G, "LINK_STYLE_BRACKETS")
+    if type(bracketStyle) ~= "number" then return itemLink end
+
+    local converted, replaced = itemLink:gsub("^|H%d+:", "|H" .. bracketStyle .. ":", 1)
+    if replaced == 1 then return converted end
+    return itemLink
+end
+
+local function FormatItemLink(itemLink)
+    local formatted = itemLink
+    if zo_strformat and SI_TOOLTIP_ITEM_NAME then
+        local ok, text = pcall(zo_strformat, SI_TOOLTIP_ITEM_NAME, itemLink)
+        if ok and type(text) == "string" and text ~= "" then formatted = text end
+    end
+    return WithBracketStyle(formatted)
+end
+
+local function ChatInputLimit()
+    local chatSystem = type(ZO_GetChatSystem) == "function" and ZO_GetChatSystem() or CHAT_SYSTEM
+    local textEntry  = chatSystem and chatSystem.textEntry
+
+    if textEntry and type(textEntry.GetEditControl) == "function" then
+        local ok, editControl = pcall(textEntry.GetEditControl, textEntry)
+        if ok and editControl and type(editControl.GetMaxInputChars) == "function" then
+            local gotMax, maxChars = pcall(editControl.GetMaxInputChars, editControl)
+            if gotMax and type(maxChars) == "number" and maxChars > 0 then
+                return maxChars
+            end
+        end
+    end
+
+    local constant = rawget(_G, "MAX_TEXT_CHAT_INPUT_CHARACTERS")
+    if type(constant) == "number" and constant > 0 then return constant end
+
+    return 350
+end
+
+local function BuildLinkText()
+    local maxChars = ChatInputLimit()
+
+    local source
+    if MarkedCount() > 0 then
+        source = markedItems
+    else
+        local item = SelectedItem()
+        source = item and { item } or {}
+    end
+
+    local parts, sent, length = {}, {}, 0
+    for i = 1, #source do
+        local item     = source[i]
+        local itemLink = item and item.itemLink
+        if type(itemLink) == "string" and itemLink ~= "" then
+            local formatted = FormatItemLink(itemLink)
+            local addition  = (#parts > 0) and (" " .. formatted) or formatted
+            if length + #addition > maxChars then break end
+
+            parts[#parts + 1] = formatted
+            sent[#sent + 1]   = item
+            length = length + #addition
+        end
+    end
+
+    return table.concat(parts, " "), sent
+end
+
+MarkStatusMessage = function()
+    local marked = MarkedCount()
+    if marked == 0 then return nil end
+
+    local _, fits = BuildLinkText()
+    return string.format("|cFFCC00Marked %d - Link %d|r", marked, #fits)
+end
+
+local function LcmDefaultsAvailable()
+    local lcm = LCM()
+    local current = lcm and lcm.currentMenu
+    return current ~= nil and current.hasDefaults == true and current.enableDefaults == true
+end
+
+local function LcmResetAvailable()
+    local lcm = LCM()
+    local current = lcm and lcm.currentMenu
+    if not (current and current.enableReset) then return false end
+    if type(current.resetFunction) ~= "function" then return false end
+
+    local list = lcm.list
+    return list ~= nil and list.currentSubmenu == nil
+end
+
+local function ShowLcmDialog(dialogName)
+    if type(ZO_Dialogs_ShowGamepadDialog) ~= "function" then return end
+    pcall(ZO_Dialogs_ShowGamepadDialog, dialogName)
+end
+
+local function MarkKeybindItem()
+    if not CanLinkToChat() then return nil end
+    return SelectedItem()
+end
+
+local function LinkKeybindActive()
+    if not (CanLinkToChat() and InOurMenu()) then return false end
+    return MarkedCount() > 0 or SelectedItem() ~= nil
+end
+
+local function BuildMarkKeybind()
+    return {
+        alignment    = KEYBIND_STRIP_ALIGN_LEFT,
+        name         = function()
+            local item = MarkKeybindItem()
+            if item then
+                if IsMarked(item) then return "Unmark" end
+                return "Mark"
+            end
+            return LcmKeybindName("SI_OPTIONS_DEFAULTS", "Defaults")
+        end,
+        keybind      = "UI_SHORTCUT_SECONDARY",
+        visible      = function()
+            if MarkKeybindItem() then return true end
+            return LcmDefaultsAvailable()
+        end,
+        callback     = function()
+            local item = MarkKeybindItem()
+            if not item then
+                if LcmDefaultsAvailable() then
+                    ShowLcmDialog("LibConsoleMenu_Defaults")
+                end
+                return
+            end
+
+            ToggleMark(item)
+            RefreshRowsAndKeybinds()
+            SetPageMessage(MarkStatusMessage())
+        end,
+    }
+end
+
+local function BuildLinkKeybind()
+    return {
+        alignment    = KEYBIND_STRIP_ALIGN_LEFT,
+        name         = function()
+            if LinkKeybindActive() then return LinkKeybindName() end
+            return LcmKeybindName("SI_CHAT_CONFIG_RESET", "Reset")
+        end,
+        keybind      = "UI_SHORTCUT_TERTIARY",
+        visible      = function()
+            if LinkKeybindActive() then return true end
+            return LcmResetAvailable()
+        end,
+        callback     = function()
+            if not LinkKeybindActive() then
+                if LcmResetAvailable() then
+                    ShowLcmDialog("LibConsoleMenu_ResetAddon")
+                end
+                return
+            end
+
+            local formatted, sent = BuildLinkText()
+            if formatted == "" then return end
+
+            if not PushToChat(formatted) then return end
+
+            for i = 1, #sent do
+                RemoveMark(sent[i])
+            end
+
+            RefreshRowsAndKeybinds()
+            SetPageMessage(MarkStatusMessage())
+        end,
+    }
+end
+
 local function InstallPageKeybinds()
     if pageKeybinds then return end
 
@@ -1479,6 +2168,8 @@ local function InstallPageKeybinds()
         -1, "Previous Page", "SI_LCM_SLIDER_LARGE_DECREASE", "Large Decrease", 2)
     descriptor[#descriptor + 1] = BuildShoulderKeybind(
         1, "Next Page", "SI_LCM_SLIDER_LARGE_INCREASE", "Large Increase", 1)
+    descriptor[#descriptor + 1] = BuildMarkKeybind()
+    descriptor[#descriptor + 1] = BuildLinkKeybind()
 
     pageKeybinds = true
 end
@@ -1546,6 +2237,11 @@ local function HookPreselect()
     preselectHooked = true
 
     lcm.scene:RegisterCallback("StateChange", function(_, newState)
+        if newState == SCENE_HIDDEN then
+            ClearMarks()
+            return
+        end
+
         if newState ~= SCENE_SHOWING or not pendingSelect then return end
         pendingSelect = false
         InstallPageKeybinds()

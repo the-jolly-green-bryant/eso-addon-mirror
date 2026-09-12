@@ -22,7 +22,7 @@ Module.DEFAULT_SETTINGS = {
 	groupPanel = true,
 	scalesChat = true,
 	scalesBorder = 0xFF990099,
-	scalesNoTanks = true,
+	scalesNoTanks = false,
 }
 
 Module.DATA = {
@@ -51,6 +51,8 @@ Module.DATA = {
 		232726, -- 1500 cast time, usafe
 		232723, -- 433 cast time, unsafe
 	},
+	seethingLeapCast = 245208,
+	seethingLeapDamage = 245213,
 }
 local DATA = Module.DATA
 local Vars
@@ -89,6 +91,8 @@ function Module:Initialize( )
 	self.vars = {
 		lastBarrage = 0,
 		scales = { },
+		seethingLeapPrev = 0,
+		seethingLeapId = 0,
 	}
 	Vars = self.vars
 
@@ -203,7 +207,7 @@ function Module:ProcessCombatEvents( result, isError, abilityName, abilityGraphi
 
 	-- Boss 2
 	elseif (result == ACTION_RESULT_EFFECT_GAINED and targetType == COMBAT_UNIT_TYPE_PLAYER and hitValue > 100 and DATA.twinsHeavyProjectile[abilityId]) then
-		CA2.UpdateNightbladeCutthroatExclusionStopTime(GetGameTimeMilliseconds() + hitValue)
+		CA2.UpdateNightbladeCutthroatExclusionStopTime(GetGameTimeMilliseconds() + hitValue + 100)
 	elseif (sourceType == COMBAT_UNIT_TYPE_PLAYER and hitValue == 1 and LCA.DAMAGE_EVENTS[result] and Vars.scales[targetUnitId] and not (LCA.isTank and self:GetSetting("scalesNoTanks"))) then
 		if (self:GetSetting("scalesChat")) then
 			CA2.ChatMessage(zo_strformat("[<<1>>] <<2>>", LCA.GetAbilityName(DATA.scalesNameId), LCA.GetAbilityName(abilityId)))
@@ -217,7 +221,14 @@ function Module:ProcessCombatEvents( result, isError, abilityName, abilityGraphi
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == DATA.frenzy[3] and targetType == COMBAT_UNIT_TYPE_PLAYER) then
 		CA2.SetNightbladeCutthroatExclusion(GetGameTimeMilliseconds() + hitValue)
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == DATA.frenzy[4] and targetType == COMBAT_UNIT_TYPE_PLAYER) then
-		CA2.UpdateNightbladeCutthroatExclusionStopTime(GetGameTimeMilliseconds() + hitValue)
+		CA2.UpdateNightbladeCutthroatExclusionStopTime(GetGameTimeMilliseconds() + hitValue + 100)
+	elseif (result == ACTION_RESULT_BEGIN and abilityId == DATA.seethingLeapCast and not CA2.IsModuleLoaded("OCH_U46")) then
+		local currentTime = GetGameTimeMilliseconds()
+		if (currentTime - Vars.seethingLeapPrev > 4000) then
+			-- TODO: In the future after migrating to the new timer widget, instead of discarding second cast, use it to fine-tune the duration from the first cast's timer
+			Vars.seethingLeapPrev = currentTime
+			Vars.seethingLeapId = CA1.AlertCast(DATA.seethingLeapDamage, nil, hitValue * 2, { -2, 1 })
+		end
 	end
 end
 

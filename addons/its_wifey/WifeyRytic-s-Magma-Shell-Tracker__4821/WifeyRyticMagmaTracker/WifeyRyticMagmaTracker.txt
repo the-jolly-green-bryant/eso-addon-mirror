@@ -1,9 +1,9 @@
-## Title: WifeyRytic's Magma Shell Tracker
+## Title: WifeyRytic's Magma Tracker
 ## Author: WifeyRytic
-## Version: 1.1
-## AddOnVersion: 2
+## Version: 1.2
+## AddOnVersion: 3
 ## APIVersion: 101050 101051
-## Description: Tracks Magma Shell duration with a customizable final countdown.
+## Description: Tracks your own Magma Armor, Magma Shell, or Corrosive Armor with a customizable final countdown.
 ## DependsOn: LibAddonMenu-2.0>=43
 ## SavedVariables: WifeyRyticMagmaTrackerSavedVariables
 

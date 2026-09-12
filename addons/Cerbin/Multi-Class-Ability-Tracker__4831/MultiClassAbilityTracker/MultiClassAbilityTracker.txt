@@ -1,0 +1,15 @@
+## Title: Multi-Class Ability Tracker
+## Author: CerbinTalYalas
+## Version: 0.1.0
+## APIVersion: 101050
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: MCAT_SavedVars
+
+## Description: Unifies tracking for class-specific ability stacks (Arcanist Crux, NB Grim Focus, etc.)
+
+src/Utils.lua
+src/Abilities.lua
+src/Settings.lua
+src/Tracker.lua
+src/Interface.lua
+src/Init.lua

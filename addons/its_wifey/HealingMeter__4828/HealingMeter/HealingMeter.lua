@@ -1,6 +1,6 @@
 local ADDON_NAME = "HealingMeter"
 local DISPLAY_NAME = "Healing Meter"
-local VERSION = "1.0"
+local VERSION = "1.1"
 
 local HM = {}
 local sv
@@ -26,13 +26,17 @@ local FONT_CHOICES = {
     ["Antique"] = "$(ANTIQUE_FONT)",
 }
 
+local PRACTICE_IDLE_TIMEOUT = 3.0
+
 local stats = {
     effective = 0,
     overheal = 0,
     raw = 0,
     startTime = 0,
     endTime = 0,
+    lastHealTime = 0,
     active = false,
+    practice = false,
     hasData = false,
 }
 
@@ -61,7 +65,21 @@ end
 
 local function GetElapsed()
     if stats.startTime <= 0 then return 0 end
-    local finish = stats.active and GetFrameTimeSeconds() or stats.endTime
+
+    local finish
+    if stats.active then
+        -- During out-of-combat practice, time advances only when healing is
+        -- actually landing. This prevents the timer/HPS denominator from
+        -- continuing to grow after the user's HoTs have finished.
+        if stats.practice and stats.lastHealTime > 0 then
+            finish = stats.lastHealTime
+        else
+            finish = GetFrameTimeSeconds()
+        end
+    else
+        finish = stats.endTime
+    end
+
     return math.max(0, finish - stats.startTime)
 end
 
@@ -72,7 +90,9 @@ local function ResetStats(startNow)
     stats.hasData = false
     stats.startTime = startNow and GetFrameTimeSeconds() or 0
     stats.endTime = 0
+    stats.lastHealTime = 0
     stats.active = startNow and true or false
+    stats.practice = false
 end
 
 local function GetFontDescriptor(size)
@@ -102,8 +122,17 @@ local function ApplyAppearance()
     end
 end
 
+local function IsMenuOpen()
+    if not SCENE_MANAGER then return false end
+    local scene = SCENE_MANAGER:GetCurrentScene()
+    if not scene then return false end
+    local name = scene:GetName()
+    return name ~= "hud" and name ~= "hudui"
+end
+
 local function ShouldShow()
     if not sv or not sv.enabled or not sv.showMeter then return false end
+    if IsMenuOpen() then return false end
     if sv.unlocked then return true end
     if sv.hideOutOfCombat and not IsUnitInCombat("player") then return false end
     return true
@@ -254,8 +283,16 @@ local function OnCombatEvent(
     if sourceType ~= COMBAT_UNIT_TYPE_PLAYER then return end
     if not IsHealingResult(result) then return end
 
-    -- Only count while the player is in an active combat encounter.
-    if not stats.active then return end
+    -- Healing Meter also supports out-of-combat practice. If healing starts
+    -- while no combat session is active, begin a fresh practice session
+    -- automatically. The Hide Out of Combat setting controls visibility only;
+    -- it never disables healing collection.
+    if not stats.active then
+        ResetStats(true)
+        stats.practice = not IsUnitInCombat("player")
+    end
+
+    stats.lastHealTime = GetFrameTimeSeconds()
 
     local effective = math.max(0, tonumber(hitValue) or 0)
     local over = math.max(0, tonumber(overflow) or 0)
@@ -270,9 +307,19 @@ local function OnCombatState(eventCode, inCombat)
     if not sv.enabled then return end
 
     if inCombat then
-        ResetStats(true)
+        -- IMPORTANT: do not convert an already-running out-of-combat practice
+        -- session into a combat session. Some healing casts can briefly make
+        -- ESO report combat state even when the user is only practicing.
+        -- Keeping practice=true means its clock remains tied to actual heal
+        -- events and stops when the healing stops.
+        if not (stats.active and stats.practice) then
+            ResetStats(true)
+            stats.practice = false
+        end
     else
-        if stats.active then
+        -- Only real combat sessions end from EVENT_PLAYER_COMBAT_STATE.
+        -- Practice sessions are ended by healing inactivity in OnUpdate.
+        if stats.active and not stats.practice then
             stats.endTime = GetFrameTimeSeconds()
             stats.active = false
         end
@@ -282,7 +329,29 @@ end
 
 local function OnUpdate()
     if not sv or not sv.enabled then return end
-    if stats.active then UpdateDisplay() end
+
+    if stats.active and stats.practice then
+        local now = GetFrameTimeSeconds()
+        if stats.lastHealTime > 0 and (now - stats.lastHealTime) >= PRACTICE_IDLE_TIMEOUT then
+            -- No healing has landed for a few seconds, so the practice
+            -- rotation is over. Freeze the result at the final heal tick,
+            -- not several seconds later.
+            stats.endTime = stats.lastHealTime
+            stats.active = false
+            stats.practice = false
+        end
+    end
+
+    if stats.active then
+        UpdateDisplay()
+    elseif stats.hasData then
+        -- Keep LAST FIGHT values and visibility current after practice/combat.
+        UpdateDisplay()
+    else
+        -- Keep visibility synced while idle so the meter returns immediately
+        -- after closing a game menu.
+        RefreshVisibility()
+    end
 end
 
 local function ResetCommand()
@@ -351,7 +420,7 @@ local function CreateSettings()
         {
             type = "checkbox",
             name = "Hide Out of Combat",
-            tooltip = "Hides the meter when you are not in combat. Turn this off if you want the last fight to stay visible.",
+            tooltip = "Hides the meter when you are not in combat. Healing is still tracked in the background for practice; turn this off to watch out-of-combat healing live.",
             getFunc = function() return sv.hideOutOfCombat end,
             setFunc = function(v) sv.hideOutOfCombat = v RefreshVisibility() end,
             default = defaults.hideOutOfCombat,
@@ -454,6 +523,12 @@ local function OnAddonLoaded(eventCode, addonName)
         250,
         OnUpdate
     )
+
+    if SCENE_MANAGER then
+        SCENE_MANAGER:RegisterCallback("CurrentSceneChanged", function()
+            RefreshVisibility()
+        end)
+    end
 
     SLASH_COMMANDS["/hmreset"] = ResetCommand
     SLASH_COMMANDS["/hmunlock"] = ToggleUnlock

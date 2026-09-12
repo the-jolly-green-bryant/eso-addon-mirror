@@ -1,0 +1,36 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/sshogrin/PetZone-Fix-Season-One__4829",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "sshogrin",
+  "canonical_id": "esoui:4829",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    }
+  ],
+  "content_id": "esoui:4829",
+  "deleted": false,
+  "directories": [
+    "PetZone"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4829/",
+  "fingerprint": "8b2fba697d212b0e49505932934e0388aac29e73cd72d5935c752278ef2c3fd7",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4829",
+  "source_url": "https://www.esoui.com/downloads/info4829-PetZoneFixSeasonOne.html",
+  "stats": {
+    "downloads": 2,
+    "favorites": 0,
+    "monthly_downloads": 1
+  },
+  "title": "PetZone (Fix:Season One)",
+  "updated_at": 1789150327000,
+  "version": "3.4"
+}

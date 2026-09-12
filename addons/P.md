@@ -69,6 +69,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Pet Health Bars](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ace-r/Pet-Health-Bars__2246) | Ace'r | PC / Mac | 1.1 |
 | [PetKennel](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ziggr/PetKennel__2428) | ziggr | PC / Mac | 5.1.5 |
 | [PetZone](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Brotanks/PetZone__2415) | Brotanks | PC / Mac | 3.3 |
+| [PetZone (Fix:Season One)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sshogrin/PetZone-Fix-Season-One__4829) | sshogrin | PC / Mac | 3.4 |
 | [PhaeroX Container Magic](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PhaeroX/PhaeroX-Container-Magic__2003) | PhaeroX | PC / Mac | 1.0.5 |
 | [PhaeroX Friends](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PhaeroX/PhaeroX-Friends__2285) | PhaeroX | PC / Mac | 1.0.4 |
 | [PhaeroX Info Panel](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PhaeroX/PhaeroX-Info-Panel__1656) | PhaeroX | PC / Mac | 1.0.17 |
@@ -91,12 +92,16 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [PinkB's ChatFilter(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-ChatFilter-Beta__f84f4752-ff0e-42c9-b73d-d5ea97508b03) | PinkBanther | Console | — |
 | [PinkB's ChatWindowCustomizer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-ChatWindowCustomizer__095b24d1-d035-4472-ae1d-9da85c61cb99) | PinkBanther | Console | — |
 | [PinkB's ChatWindowCustomizer(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-ChatWindowCustomizer-Beta__f06dec51-6718-4699-841e-ae9898433a01) | PinkBanther | Console | — |
+| [PinkB's ConsoleHudCustomizer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-ConsoleHudCustomizer__51bd8b59-40b0-4e2f-b31d-527bb63f0bfc) | PinkBanther | Console | — |
+| [PinkB's ConsoleHudCustomizer(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-ConsoleHudCustomizer-Beta__23fd4e21-b28d-4af9-badd-3e009f4cb75b) | PinkBanther | Console | — |
 | [PinkB's CraftMaterialAssistant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-CraftMaterialAssistant__c7f082bc-03e0-4e0c-b82b-d7903e5101ad) | PinkBanther | Console | — |
 | [PinkB's CraftMaterialAssistant(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-CraftMaterialAssistant-Beta__bb9043ae-169f-4492-8abb-7d3111e97820) | PinkBanther | Console | — |
 | [PinkB's CyrodiilAlert](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-CyrodiilAlert__da931320-7488-4ce0-83a2-100180a2f3f2) | PinkBanther | Console | — |
 | [PinkB's CyrodiilAlert(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-CyrodiilAlert-Beta__233a612c-6650-451b-80d8-b1862f95c90a) | PinkBanther | Console | — |
 | [PinkB's DiceExtension](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-DiceExtension__c8c74e10-f091-4e38-b894-20bb194c9b87) | PinkBanther | Console | — |
 | [PinkB's DiceExtension(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-DiceExtension-Beta__4e8c5fa9-767a-4036-87fe-ba872cd76529) | PinkBanther | Console | — |
+| [PinkB's LuaMemoryMonitor](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-LuaMemoryMonitor__f4878125-abb0-49bd-b8d3-ca06c9ad746a) | PinkBanther | Console | — |
+| [PinkB's LuaMemoryMonitor(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-LuaMemoryMonitor-Beta__ae47138d-8a74-4929-b2e2-acb03b38eb43) | PinkBanther | Console | — |
 | [PinkB's MailerExtension](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-MailerExtension__371fcd02-ae32-4937-a1d4-de4f33b01870) | PinkBanther | Console | — |
 | [PinkB's MailerExtension(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-MailerExtension-Beta__5ad76243-a1e2-42b3-ad86-ad1aabc5940d) | PinkBanther | Console | — |
 | [PinkB's MiniMap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-MiniMap__d636a31f-9393-47d7-b16f-8d932870cff3) | PinkBanther | Console | — |

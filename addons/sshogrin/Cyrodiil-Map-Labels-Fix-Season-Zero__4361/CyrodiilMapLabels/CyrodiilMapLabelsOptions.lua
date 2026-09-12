@@ -9,7 +9,7 @@ CyrodiilMapLabelsAddon = {
 }
 
 CyrodiilMapLabelsDefaults = {
-    version = "1.8.0",
+    version = "1.8.1",
     variableVersion = 1,
     datasetChoice = "Long Names",
     useAllianceColors = true,
@@ -206,4 +206,22 @@ EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_ADD_ON_LOADED, function(_, addo
         end
         zo_callLater(function() CyrodiilMapLabelsAddon.UpdateLabels() end, 500)
     end
+    -- Fixes map zone browsing: Fires when the map view changes to a different zone
+CALLBACK_MANAGER:RegisterCallback("OnWorldMapChanged", function()
+    CyrodiilMapLabelsAddon.UpdateLabels()
+end)
+
+-- Fixes map scene changes: Clears labels completely when closing the map
+WORLD_MAP_SCENE:RegisterCallback("StateChange", function(oldState, newState)
+    if newState == SCENE_HIDING then
+        -- Run your cleanup code loop directly
+        for _, labelPair in pairs(labels) do
+            if labelPair.shadow then labelPair.shadow:SetHidden(true) end
+            if labelPair.main then labelPair.main:SetHidden(true) end
+        end
+    elseif newState == SCENE_SHOWING then
+        CyrodiilMapLabelsAddon.UpdateLabels()
+    end
+end)
+
 end)

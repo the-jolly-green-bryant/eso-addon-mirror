@@ -34,8 +34,10 @@ TetsuCombatTools.L = {
     SKILL_HIDE = "Ausblenden nach (Sek)",
     SKILL_HIDE_TT = "Nach Kampfende (Kampfmodus) und nach dem letzten Skill (Nach-Druck-Modus). Standard 8.",
 
+    SKILL_BAR = "Skill-Symbole",
+    SKILL_BAR_TT = "Historie. Aus = keine Symbole; GCD bleibt und folgt X/Y.",
     SKILL_GCD = "GCD-Balken",
-    SKILL_GCD_TT = "Gelb/roter Balken unter den Symbolen. Aus = nur Symbole.",
+    SKILL_GCD_TT = "Gelb/roter Balken. Geht auch ohne Symbole. Gleiche X/Y.",
 
     SKILL_WEAVE = "Weave-Rahmen",
     SKILL_WEAVE_TT = "Grüner Rahmen, wenn vorher ein Leichtangriff gedrückt wurde, sonst rot. Aus = normale Rahmen. Leichtangriff-Symbole bleiben getrennt.",
@@ -106,6 +108,9 @@ TetsuCombatTools.L = {
     CONS_MSG = "Ende-Text in Instanzen",
     CONS_MSG_TT = "Kurze Zeile wenn Essen oder Trank endet. Nur Dungeon / Prüfung / Arena / Archiv / PvP. Nicht in der offenen Welt.",
     CONS_MSG_FOOD_ON = "Essen-Ende-Text",
+    CONS_MSG_FOOD_ENTER = "Text beim Betreten",
+    CONS_MSG_FOOD_ENTER_TT = "Standard an. 10s „Kein Essen“ beim Betreten von Dungeon / Prüfung / Arena / Archiv ohne Essen.",
+
     CONS_MSG_FOOD_ON_TT = "An = „Essen beendet“ in Instanzen für 60 Sekunden. Position ist X/Y unten.",
     CONS_MSG_POT_ON = "Trank-Ende-Text",
     CONS_MSG_POT_ON_TT = "An = „Trank beendet“. Gleiches X wie Essen, eine Zeile tiefer.",
@@ -116,6 +121,7 @@ TetsuCombatTools.L = {
     CONS_MSG_SCALE = "Textgröße %",
     CONS_MSG_SCALE_TT = "Größe des Ende-Warntexts.",
     CONS_MSG_FOOD = "Essen beendet",
+    CONS_MSG_FOOD_MISS = "Kein Essen",
     CONS_MSG_POT = "Trank beendet",
     CONS_MSG_BOTH = "Essen und Trank beendet",
     CONS_PREVIEW = "Vorschau",
@@ -143,4 +149,18 @@ TetsuCombatTools.L = {
     TIMER_PREVIEW = "Vorschau",
     TIMER_PREVIEW_TT = "Zeigt die Uhr 10 Sekunden auch in der Stadt, auch über dem Einstellungsmenü, zum Setzen von X/Y.",
     TIMER_PREVIEW_BTN = "10 Sek. zeigen",
+
+    LINK_ENABLE = "Set-Link",
+    LINK_GROUP = "Immer Gruppenchat",
+    LINK_GROUP_TT = "An = auf Gruppe/Schlachtzug wechseln. Aus = aktueller Kanal im Chatmenü. Standard an.",
+    LINK_ENABLE_TT = "R3 in der vollen Text-Chat-Ansicht halten. Ohne Gruppe = /say.",
+    LINK_SECTION = "Set-Link",
+    LINK_SECTION_TT = "Keine Extra-Optionen. Schalter auf der ersten Seite.",
+    LINK_HELP = "R3 im vollen Text-Chat halten.",
+    LINK_HELP_TT = "Sozial → Text-Chat. R3 ~0,6s halten. Ohne Gruppe = /say.",
+    LINK_HOLD = "R3 halten: Sets",
+    LINK_EMPTY = "Keine Sets zum Verlinken.",
+    LINK_TEST = "Jetzt einfügen",
+    LINK_TEST_TT = "Dieselben Links ins Chatfeld, ohne Chatmenü.",
+    LINK_TEST_BTN = "Sets linken",
 }

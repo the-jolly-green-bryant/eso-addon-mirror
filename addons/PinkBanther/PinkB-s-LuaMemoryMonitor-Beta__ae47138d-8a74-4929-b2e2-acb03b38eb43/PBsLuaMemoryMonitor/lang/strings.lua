@@ -1,0 +1,85 @@
+local strings = {
+	-- ---- Window ------------------------------------------------------------------------
+	SI_PBSLMM_COL_NAME = "Add-on",
+	SI_PBSLMM_COL_HELD = "Held (est.)",
+	SI_PBSLMM_COL_CHANGE = "Change",
+	SI_PBSLMM_COL_SV = "Saved vars",
+	SI_PBSLMM_COL_INIT = "Start-up",
+
+	SI_PBSLMM_SUMMARY_MEMORY = "Add-on memory %s / %s MB (at login %s MB)   Lua total %s MB",
+	SI_PBSLMM_ROW_FILES = "File loading (not per add-on)",
+	SI_PBSLMM_ROW_OTHER = "Other (system, not yet freed...)",
+	SI_PBSLMM_ROW_TOTAL = "Total = add-on memory",
+	SI_PBSLMM_SUMMARY_NO_EVENT = "Not measured: %s",
+	SI_PBSLMM_SCAN_NONE = "Held: not scanned yet",
+	SI_PBSLMM_SCAN_RUNNING = "Held: scanning...",
+	SI_PBSLMM_SCAN_DONE = "Held: %d objects in %.1f s",
+	SI_PBSLMM_SCAN_TRUNCATED = " (stopped at the limit)",
+	SI_PBSLMM_FOOTER = "Page %d/%d, sorted by %s     %s  scan | sort | next | detail <name>",
+
+	-- ---- Chat --------------------------------------------------------------------------
+	SI_PBSLMM_LOADED = "%s loaded -- %s shows the window",
+	SI_PBSLMM_NOT_READY = "Not ready yet -- try again once you are in the game",
+	SI_PBSLMM_HELP = "%s: show or hide the window | %s scan: measure again | %s sort [held|change|sv|init] | %s next: next page | %s detail <name>: what an add-on's figure is made of | %s gc: free memory now",
+	SI_PBSLMM_COLLECT_DONE = "Memory freed in %d ms: Lua total %s -> %s MB, add-on memory %s -> %s MB",
+	SI_PBSLMM_COLLECT_FAILED = "Could not free memory: %s",
+	SI_PBSLMM_SUMMARY_COLLECT = "Last freed: Lua total %s, add-on memory %s (%d ms)",
+	SI_PBSLMM_SUMMARY_COLLECT_NONE = "Freeing memory: not run yet",
+	SI_PBSLMM_DETAIL_HEAD = "%s: held %s, saved vars %s, start-up %s",
+	SI_PBSLMM_DETAIL_ROOT = "    %s  %s  (%s)",
+	SI_PBSLMM_BY_EVENT = "appeared at its load",
+	SI_PBSLMM_BY_NAME = "matched by name",
+	SI_PBSLMM_DETAIL_MORE = "    ... and %d more",
+	SI_PBSLMM_DETAIL_NONE = "No add-on matches \"%s\"",
+	SI_PBSLMM_DETAIL_NO_ROOTS = "    No globals found for it",
+	SI_PBSLMM_DETAIL_WAIT = "Measuring -- try again in a moment",
+
+	-- ---- Settings ----------------------------------------------------------------------
+	SI_PBSLMM_SETTINGS_EXPLANATION = "Ranks add-ons by the memory they use, in a window on the HUD. The window is not drawn while a menu is open: what you change here shows when you return to the game.",
+	SI_PBSLMM_SECTION_WINDOW = "Window",
+	SI_PBSLMM_SHOW = "Show the window",
+	SI_PBSLMM_SHOW_TOOLTIP = "Shows the ranking on the HUD. The same as typing /pbmem in chat.",
+	SI_PBSLMM_SORT = "Sort by",
+	SI_PBSLMM_SORT_TOOLTIP = "Held: what each add-on holds now (estimated). Change: how much that has grown since the first measurement after login. Saved vars and Start-up: what loading its saved variables and its own start-up took (measured).",
+	SI_PBSLMM_AUTO_SCAN = "Measure held memory again",
+	SI_PBSLMM_AUTO_SCAN_TOOLTIP = "How often the held memory is measured again while the window is shown. Each measurement is spread over a few frames. Off: only when you ask (the button below, or /pbmem scan).",
+	SI_PBSLMM_AUTO_OFF = "Off",
+	SI_PBSLMM_AUTO_SECONDS = "every %d s",
+	SI_PBSLMM_AUTO_MINUTES = "every %d min",
+	SI_PBSLMM_BANNER = "Message at login",
+	SI_PBSLMM_BANNER_TOOLTIP = "Says in chat that the add-on is loaded, and how to show the window.",
+
+	SI_PBSLMM_SECTION_LOOK = "Position and look",
+	SI_PBSLMM_POSITION_X = "Distance from the left",
+	SI_PBSLMM_POSITION_X_TOOLTIP = "How far the window's left edge is from the left edge of the screen.",
+	SI_PBSLMM_POSITION_Y = "Distance from the top",
+	SI_PBSLMM_POSITION_Y_TOOLTIP = "How far the window's top edge is from the top of the screen.",
+	SI_PBSLMM_RESET_POSITION = "Back to the default position",
+	SI_PBSLMM_RESET_POSITION_TOOLTIP = "Puts the window back at the left of the screen, centred top to bottom.",
+	SI_PBSLMM_RESET_POSITION_BUTTON = "Reset",
+	SI_PBSLMM_BG_ALPHA = "Background opacity",
+	SI_PBSLMM_BG_ALPHA_TOOLTIP = "How dark the window's background is. 0 leaves only the text.",
+
+	SI_PBSLMM_SECTION_COLLECT = "Freeing memory",
+	SI_PBSLMM_COLLECT_EVERY = "Free memory regularly",
+	SI_PBSLMM_COLLECT_EVERY_TOOLTIP = "Runs Lua's garbage collector in full at this interval, giving back the memory of data that no add-on uses any more (part of the Other row). Each run stalls the game for a moment -- 74 ms measured on a PS5 -- so a long interval is best. Off: only when you ask.",
+	SI_PBSLMM_COLLECT_IN_COMBAT = "Also during combat",
+	SI_PBSLMM_COLLECT_IN_COMBAT_TOOLTIP = "Off: a run that falls in combat waits until combat ends, so the stall never lands in a fight.",
+	SI_PBSLMM_COLLECT_NOW = "Free memory now",
+	SI_PBSLMM_COLLECT_NOW_TOOLTIP = "Runs the garbage collector in full once, and says in chat how much it gave back. The same as /pbmem gc.",
+	SI_PBSLMM_COLLECT_NOW_BUTTON = "Free",
+
+	SI_PBSLMM_SECTION_ACTIONS = "Actions",
+	SI_PBSLMM_SCAN_NOW = "Measure held memory now",
+	SI_PBSLMM_SCAN_NOW_TOOLTIP = "Measures what each add-on holds now. The same as /pbmem scan.",
+	SI_PBSLMM_SCAN_NOW_BUTTON = "Measure",
+	SI_PBSLMM_NEXT_PAGE = "Next page of the ranking",
+	SI_PBSLMM_NEXT_PAGE_TOOLTIP = "The window shows 15 add-ons at a time. The same as /pbmem next.",
+	SI_PBSLMM_NEXT_PAGE_BUTTON = "Next",
+	SI_PBSLMM_COMMANDS_HINT = "The same from chat: /pbmem shows or hides the window; /pbmem scan, /pbmem sort, /pbmem next; /pbmem detail <name> lists what an add-on's figure is made of; /pbmem gc frees memory now.",
+}
+
+for stringId, stringValue in pairs(strings) do
+	ZO_CreateStringId(stringId, stringValue)
+	SafeAddVersion(stringId, 1)
+end

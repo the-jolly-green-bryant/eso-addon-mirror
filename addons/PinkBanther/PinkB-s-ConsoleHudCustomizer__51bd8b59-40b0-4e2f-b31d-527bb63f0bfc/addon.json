@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/PinkBanther/PinkB-s-ConsoleHudCustomizer__51bd8b59-40b0-4e2f-b31d-527bb63f0bfc",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "PinkBanther",
+  "canonical_id": "bethesda:51bd8b59-40b0-4e2f-b31d-527bb63f0bfc",
+  "content_id": "51bd8b59-40b0-4e2f-b31d-527bb63f0bfc",
+  "deleted": false,
+  "fingerprint": "2db60353e1c0027cba182372e2bf97eb72f42b2a2d8a780f96d4d55ea231c76b",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "51bd8b59-40b0-4e2f-b31d-527bb63f0bfc",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/51bd8b59-40b0-4e2f-b31d-527bb63f0bfc",
+  "title": "PinkB's ConsoleHudCustomizer"
+}

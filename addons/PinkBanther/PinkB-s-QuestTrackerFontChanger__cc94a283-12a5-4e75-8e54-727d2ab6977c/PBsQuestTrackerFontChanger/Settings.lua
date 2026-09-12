@@ -46,6 +46,51 @@ local function AddHeading(settings, LibHarvensAddonSettings, stringId)
 	)
 end
 
+-- Where the panel sits and how big it is drawn -- the quest tracker only.
+--
+-- Offsets are a nudge from the game's own position rather than an absolute one, so 0/0 is
+-- "leave it alone" and the slider's default is the same do-nothing value as every other row
+-- here. Positive is right and down, which is the direction the anchor offsets already run in.
+--
+-- Scale is the whole panel at once: text, icons and the keybind button keep their proportions,
+-- and unlike a font size it costs the client nothing to build.
+local function AddLayoutRows(self, settings, LibHarvensAddonSettings, section)
+	if not section.hasLayout then
+		return
+	end
+
+	local rows = {
+		{ field = "offsetX", stringId = "SI_PBSQTFC_POS_X", tooltipId = "SI_PBSQTFC_POS_X_TOOLTIP", min = self.MIN_OFFSET, max = self.MAX_OFFSET, step = self.OFFSET_STEP, unit = "" },
+		{ field = "offsetY", stringId = "SI_PBSQTFC_POS_Y", tooltipId = "SI_PBSQTFC_POS_Y_TOOLTIP", min = self.MIN_OFFSET, max = self.MAX_OFFSET, step = self.OFFSET_STEP, unit = "" },
+		{ field = "scale", stringId = "SI_PBSQTFC_SCALE", tooltipId = "SI_PBSQTFC_SCALE_TOOLTIP", min = self.MIN_SCALE, max = self.MAX_SCALE, step = self.SCALE_STEP, unit = "%" },
+	}
+
+	for _, row in ipairs(rows) do
+		local field = row.field
+		settings:AddSetting(
+			{
+				type = LibHarvensAddonSettings.ST_SLIDER,
+				label = GetString(_G[row.stringId]),
+				tooltip = GetString(_G[row.tooltipId]),
+				min = row.min,
+				max = row.max,
+				step = row.step,
+				default = self.layoutDefaults[field],
+				format = "%d",
+				unit = row.unit,
+				getFunction = function()
+					return self:Layout(section.key)[field]
+				end,
+				setFunction = function(value)
+					self:SetLayoutValue(section.key, field, value)
+					self:Settings(section.key).enabled = true
+					self:RequestLayout()
+				end
+			}
+		)
+	end
+end
+
 -- Every section gets the same shape: what it is, a switch, one size slider per font the game
 -- uses there, then the typeface and outline that apply to all of them.
 local function AddSection(self, settings, LibHarvensAddonSettings, section)
@@ -125,6 +170,8 @@ local function AddSection(self, settings, LibHarvensAddonSettings, section)
 			end
 		}
 	)
+
+	AddLayoutRows(self, settings, LibHarvensAddonSettings, section)
 
 	settings:AddSetting(
 		{

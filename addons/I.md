@@ -115,7 +115,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [ItalianScrollsOnline](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/dusty82/ItalianScrollsOnline__5d612b95-1149-48f4-b359-2aaee406bd86) | dusty82 | Console | — |
 | [Item Alert](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/TheJoltman/Item-Alert__3954) | TheJoltman | PC / Mac | 1.1.2 |
 | [Item Condition Alert](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tridman/Item-Condition-Alert__240) | tridman | PC / Mac | 1.5.10 |
-| [Item Cooldown Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DeadSoon/Item-Cooldown-Tracker__2823) | @DeadSoon | PC / Mac | 5.1 |
+| [Item Cooldown Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DeadSoon/Item-Cooldown-Tracker__2823) | @DeadSoon | PC / Mac | 5.2 |
 | [Item Finder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rhyono/Item-Finder__1541) | Rhyono | PC / Mac | 1.31 |
 | [Item Finder (PTS)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rhyono/Item-Finder-PTS__1980) | Rhyono | PC / Mac | 1.31 |
 | [Item Quality as Text](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Cavalier07/Item-Quality-as-Text__745) | Cavalier07 | PC / Mac | 1.3.0 |
