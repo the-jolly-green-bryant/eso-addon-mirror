@@ -35,6 +35,7 @@ local HUD_HEIGHT_MAX = 1080
 local HUD_DEFAULT_WIDTH = 490
 local HUD_DEFAULT_HEIGHT = 280
 local HUD_APPLY_DELAY_MS = 50
+local ZONE_REFRESH_DELAY_MS = 500
 local MAX_GUILD_CHAT_COLORS = 5
 local CHAT_LINK_PATTERN = "|H.-|h.-|h"
 local ANNOTATION_DEBUG_DISPLAY_NAME = "@NQOLDebug"
@@ -90,6 +91,8 @@ local defaults = {
         filterWttWts = false,
         filterZoneItems = false,
         filterFriendStatus = false,
+        silenceInDungeons = false,
+        silenceInTrials = false,
         annotateMissingItems = {
             enabled = false,
             whisperMessage = DEFAULT_MISSING_ITEM_WHISPER_MESSAGE,
@@ -126,6 +129,9 @@ local originalGamepadChatMaximize
 local originalGamepadChatHideWhenDeactivated
 local formattingChatChannelMessage = false
 local wrappedRouterFormatters = {}
+local guildChatSilenced = false
+local guildChatSilenceInitialized = false
+local guildChatSilenceEventsRegistered = false
 
 local Clamp = NQOL.Util.Clamp
 local Round = NQOL.Util.Round
@@ -167,6 +173,8 @@ local function GetSettings()
     NQOL.Settings.Boolean(settings, defaultSettings, "filterWttWts")
     NQOL.Settings.Boolean(settings, defaultSettings, "filterZoneItems")
     NQOL.Settings.Boolean(settings, defaultSettings, "filterFriendStatus")
+    NQOL.Settings.Boolean(settings, defaultSettings, "silenceInDungeons")
+    NQOL.Settings.Boolean(settings, defaultSettings, "silenceInTrials")
     local annotateMissingItems = NQOL.Settings.EnsureTable(settings, "annotateMissingItems")
     NQOL.Settings.Boolean(annotateMissingItems, defaultSettings.annotateMissingItems, "enabled")
     NQOL.Settings.Default(annotateMissingItems, defaultSettings.annotateMissingItems, "whisperMessage")
@@ -345,6 +353,96 @@ local function GetGuildIndexForMessageType(messageType)
     end
 
     return nil
+end
+
+local function GetPlayerZoneId()
+    if not GetUnitZoneIndex or not GetZoneId then
+        return nil
+    end
+
+    local zoneIndex = GetUnitZoneIndex("player")
+    local zoneId = tonumber(zoneIndex and GetZoneId(zoneIndex))
+    return zoneId and zoneId > 0 and zoneId or nil
+end
+
+local function IsFourPlayerDungeonZone(zoneId)
+    local data = NQOL.Data and NQOL.Data.DungeonAchievements
+    return data ~= nil
+        and ((type(data.dungeons) == "table" and data.dungeons[zoneId] ~= nil)
+            or (type(data.dlcDungeons) == "table" and data.dlcDungeons[zoneId] ~= nil))
+end
+
+local function IsTrialZone(zoneId)
+    local data = NQOL.Data and NQOL.Data.DungeonAchievements
+    return data ~= nil and type(data.trials) == "table" and data.trials[zoneId] ~= nil
+end
+
+local function ShouldSilenceGuildChat()
+    local settings = GetSettings()
+    local zoneId = GetPlayerZoneId()
+    if not zoneId then
+        return nil
+    end
+
+    return (settings.silenceInDungeons and IsFourPlayerDungeonZone(zoneId))
+        or (settings.silenceInTrials and IsTrialZone(zoneId))
+end
+
+local function RefreshGuildChatSilenceState()
+    local shouldSilence = ShouldSilenceGuildChat()
+    if shouldSilence == nil then
+        return
+    end
+
+    shouldSilence = shouldSilence == true
+    local shouldAnnounce = (guildChatSilenceInitialized and guildChatSilenced ~= shouldSilence)
+        or (not guildChatSilenceInitialized and shouldSilence)
+
+    guildChatSilenced = shouldSilence
+    guildChatSilenceInitialized = true
+
+    if shouldAnnounce and NQOL.Chat and NQOL.Chat.Message then
+        local messageKey = shouldSilence
+            and "features.chat.guild_chat_silenced"
+            or "features.chat.guild_chat_restored"
+        NQOL.Chat.Message(NQOL.L(messageKey))
+    end
+end
+
+local function QueueGuildChatSilenceRefresh()
+    if zo_callLater then
+        zo_callLater(RefreshGuildChatSilenceState, ZONE_REFRESH_DELAY_MS)
+    else
+        RefreshGuildChatSilenceState()
+    end
+end
+
+local function UpdateGuildChatSilenceEventRegistration()
+    if not EVENT_MANAGER then
+        return
+    end
+
+    local settings = GetSettings()
+    local shouldRegister = settings.silenceInDungeons or settings.silenceInTrials
+    local namespace = EVENT_NAMESPACE .. "_GuildSilence"
+
+    if shouldRegister and not guildChatSilenceEventsRegistered then
+        guildChatSilenceEventsRegistered = true
+        if EVENT_PLAYER_ACTIVATED then
+            EVENT_MANAGER:RegisterForEvent(namespace, EVENT_PLAYER_ACTIVATED, QueueGuildChatSilenceRefresh)
+        end
+        if EVENT_ZONE_CHANGED then
+            EVENT_MANAGER:RegisterForEvent(namespace, EVENT_ZONE_CHANGED, QueueGuildChatSilenceRefresh)
+        end
+    elseif not shouldRegister and guildChatSilenceEventsRegistered then
+        guildChatSilenceEventsRegistered = false
+        if EVENT_PLAYER_ACTIVATED then
+            EVENT_MANAGER:UnregisterForEvent(namespace, EVENT_PLAYER_ACTIVATED)
+        end
+        if EVENT_ZONE_CHANGED then
+            EVENT_MANAGER:UnregisterForEvent(namespace, EVENT_ZONE_CHANGED)
+        end
+    end
 end
 
 local function IsOfficerMessageType(messageType)
@@ -825,6 +923,10 @@ end
 local function ShouldFilterMessage(message, rawText, messageType)
     if restoringHistory then
         return false
+    end
+
+    if guildChatSilenced and GetGuildIndexForMessageType(messageType) then
+        return true
     end
 
     local settings = GetSettings()
@@ -1393,6 +1495,7 @@ function ChatFeature.Initialize()
     if EVENT_MANAGER and EVENT_PLAYER_ACTIVATED then
         EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE .. "_TimestampState", EVENT_PLAYER_ACTIVATED, SyncNativeTimestampState)
     end
+    UpdateGuildChatSilenceEventRegistration()
     InstallChatHooks()
     RefreshHud()
 end
@@ -1551,6 +1654,34 @@ end
 
 function ChatFeature.SetFilterFriendStatus(value)
     GetSettings().filterFriendStatus = value == true
+end
+
+function ChatFeature.GetSilenceInDungeons()
+    return GetSettings().silenceInDungeons
+end
+
+function ChatFeature.SetSilenceInDungeons(value)
+    GetSettings().silenceInDungeons = value == true
+    UpdateGuildChatSilenceEventRegistration()
+    RefreshGuildChatSilenceState()
+end
+
+function ChatFeature.GetSilenceInDungeonsDefault()
+    return defaults.chat.silenceInDungeons
+end
+
+function ChatFeature.GetSilenceInTrials()
+    return GetSettings().silenceInTrials
+end
+
+function ChatFeature.SetSilenceInTrials(value)
+    GetSettings().silenceInTrials = value == true
+    UpdateGuildChatSilenceEventRegistration()
+    RefreshGuildChatSilenceState()
+end
+
+function ChatFeature.GetSilenceInTrialsDefault()
+    return defaults.chat.silenceInTrials
 end
 
 function ChatFeature.GetAnnotateMissingItemsEnabled()
@@ -1791,6 +1922,22 @@ end
 
 function ChatFeature.GetFilterFriendStatusTooltip()
     return NQOL.L("features.chat.filter_friend_status_tooltip")
+end
+
+function ChatFeature.GetSilenceInDungeonsLabel()
+    return NQOL.L("features.chat.silence_in_dungeons_label")
+end
+
+function ChatFeature.GetSilenceInDungeonsTooltip()
+    return NQOL.L("features.chat.silence_in_dungeons_tooltip")
+end
+
+function ChatFeature.GetSilenceInTrialsLabel()
+    return NQOL.L("features.chat.silence_in_trials_label")
+end
+
+function ChatFeature.GetSilenceInTrialsTooltip()
+    return NQOL.L("features.chat.silence_in_trials_tooltip")
 end
 
 function ChatFeature.GetAnnotateMissingItemsEnabledLabel()

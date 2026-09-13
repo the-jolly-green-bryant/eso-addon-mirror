@@ -492,7 +492,7 @@ end
 
 local cleanMemo = {}
 local cleanMemoN = 0
-local CLEAN_MEMO_CAP = 96
+local CLEAN_MEMO_CAP = 400
 
 local function CleanName(text)
     if not text or text == "" then return "" end
@@ -554,7 +554,7 @@ end
 
 local descCache = {}
 local descCacheN = 0
-local DESC_CACHE_CAP = 32
+local DESC_CACHE_CAP = 80
 
 local function AbilityDescOf(abilityId)
     if not abilityId or abilityId == 0 then return "" end
@@ -589,7 +589,7 @@ local idToKey = {}
 local keySetById = {}
 local nameToKey = {}
 local nameToKeyN = 0
-local NAME_TO_KEY_CAP = 80
+local NAME_TO_KEY_CAP = 200
 local needleList = {}
 local idSkip = {}
 local idSkipOrder = {}
@@ -771,6 +771,48 @@ local function NameHas(list, name)
         if name:find(list[i], 1, true) then return true end
     end
     return false
+end
+
+function T.IsInPlayerHouse()
+    if type(GetCurrentZoneHouseId) == "function" then
+        local ok, id = pcall(GetCurrentZoneHouseId)
+        if ok and type(id) == "number" and id > 0 then
+            return true
+        end
+    end
+    return false
+end
+
+function T.IsTrainingDummy(tag)
+    if not tag or tag == "" then return false end
+    if DoesUnitExist and not DoesUnitExist(tag) then return false end
+    if IsUnitPlayer and IsUnitPlayer(tag) then return false end
+    local raw = GetUnitName and GetUnitName(tag) or ""
+    local name = FoldSimple(raw)
+    if NameHas(DUMMY_NEEDLE, name) then return true end
+    if not T.IsInPlayerHouse() then return false end
+    if NameHas(CRITTER_NEEDLE, name) then return false end
+    local maxHp = 0
+    if GetUnitPower then
+        local pt = POWERTYPE_HEALTH or COMBAT_MECHANIC_FLAGS_HEALTH
+        if pt then
+            local ok, cur, maxv = pcall(GetUnitPower, tag, pt)
+            if ok and type(maxv) == "number" then maxHp = maxv end
+        end
+    end
+    if maxHp < 5000 then return false end
+    if IsUnitAttackable then
+        local okA, a = pcall(IsUnitAttackable, tag)
+        if okA and a then return true end
+    end
+    return false
+end
+
+function T.AllowDummyReticle()
+    local vars = T.savedVars
+    if not vars or vars.dummyDebuffs ~= true then return false end
+    if not T.IsInPlayerHouse() then return false end
+    return T.IsTrainingDummy("reticleover")
 end
 
 function T.IsDebuffTarget(tag)
@@ -1030,7 +1072,7 @@ local function RawLooksLikeBanner(raw)
     return false
 end
 
-function T.LookupKeyForAbilityId(abilityId, effectName)
+function T.LookupKeyForAbilityId(abilityId, effectName, learn)
     if abilityId and abilityId ~= 0 then
         local typed = KeyFromBuffType(abilityId)
         if typed then
@@ -1094,14 +1136,61 @@ function T.LookupKeyForAbilityId(abilityId, effectName)
             return best
         end
     end
-    -- 1.7.9: never negative-cache an abilityId when the name was empty
-    -- or when we simply did not recognize it yet.
+    -- Empty name is not a miss (1.7.9). A named miss may be skipped so
+    -- combat events do not FoldName the same trash id forever.
+    if learn ~= false and abilityId and abilityId ~= 0 and name ~= "" and not LooksLikeBanner(name) then
+        MarkSkip(abilityId)
+    end
     return nil
 end
 
-function T.KeysFromAbility(abilityId, effectName)
+local bannerSetById = {}
+
+local function CacheBannerSet(abilityId, keys)
+    if not abilityId or abilityId == 0 or not keys then return end
+    if bannerSetById[abilityId] then return end
+    local frozen = {}
+    local n = 0
+    for k in pairs(keys) do
+        frozen[k] = true
+        n = n + 1
+    end
+    if n > 0 then
+        bannerSetById[abilityId] = frozen
+    end
+end
+
+-- learn=false (events): BuffType + already-known ids only. No CleanName,
+-- no GetAbilityName, no description. Permanents refresh every tick;
+-- parsing them again is what filled the pool after timer-less tracking.
+-- learn=true (group/boss scan ~2s): full 1.7.9 identify-once.
+function T.KeysFromAbility(abilityId, effectName, learn)
+    if abilityId and abilityId ~= 0 and idSkip[abilityId] then
+        return EMPTY_KEYS
+    end
+
+    if learn ~= true then
+        local keys = WipeScratch()
+        if abilityId and abilityId ~= 0 then
+            local typed = KeyFromBuffType(abilityId)
+            if typed then keys[typed] = true end
+            if T.IsPrayer and T.IsPrayer[abilityId] then keys.prayer = true end
+            if T.IsIllustrious and T.IsIllustrious[abilityId] then keys.illustrious = true end
+            local cached = idToKey[abilityId]
+            if cached then keys[cached] = true end
+            local bannerKeys = bannerSetById[abilityId]
+            if bannerKeys then
+                for k in pairs(bannerKeys) do keys[k] = true end
+            end
+        end
+        if not next(keys) then
+            return EMPTY_KEYS
+        end
+        return keys
+    end
+
     local keys = WipeScratch()
-    local primary = T.LookupKeyForAbilityId(abilityId, effectName)
+    local primary = T.LookupKeyForAbilityId(abilityId, effectName, true)
     if primary then
         keys[primary] = true
     end
@@ -1119,6 +1208,7 @@ function T.KeysFromAbility(abilityId, effectName)
                 keys[k] = true
             end
         end
+        CacheBannerSet(abilityId, keys)
     end
     if not next(keys) then
         return EMPTY_KEYS

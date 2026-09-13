@@ -7,7 +7,7 @@
                      movable="true"
                      mouseEnabled="true">
 
-      <Dimensions x="600" y="346"/>
+      <Dimensions x="600" y="374"/>
 
       <OnMoveStop>Vermilion.Settings.on_move_stop()</OnMoveStop>
 
@@ -292,29 +292,38 @@
           <OnClicked>Vermilion.Settings.on_light_click()</OnClicked>
         </Button>
 
+        <Button name="$(parent)KillsBtn"
+                mouseEnabled="true"
+                font="ZoFontGameSmall"
+                inherits="ZO_DefaultButton">
+          <Anchor point="TOPLEFT" offsetX="314" offsetY="274"/>
+          <Dimensions x="272" y="22"/>
+          <OnClicked>Vermilion.Settings.on_kills_click()</OnClicked>
+        </Button>
+
         <Label name="$(parent)LightAlphaTitle"
                font="ZoFontGameSmall"
                horizontalAlignment="LEFT"
                verticalAlignment="CENTER">
-          <Anchor point="TOPLEFT" offsetX="314" offsetY="274"/>
+          <Anchor point="TOPLEFT" offsetX="314" offsetY="302"/>
           <Dimensions x="160" y="12"/>
         </Label>
         <Label name="$(parent)LightAlphaLabel"
                font="ZoFontGameSmall"
                horizontalAlignment="RIGHT"
                verticalAlignment="CENTER">
-          <Anchor point="TOPLEFT" offsetX="506" offsetY="274"/>
+          <Anchor point="TOPLEFT" offsetX="506" offsetY="302"/>
           <Dimensions x="80" y="12"/>
         </Label>
         <Control name="$(parent)SliderTrackLightAlpha" mouseEnabled="true">
-          <Anchor point="TOPLEFT" offsetX="314" offsetY="289"/>
+          <Anchor point="TOPLEFT" offsetX="314" offsetY="317"/>
           <Dimensions x="272" y="14"/>
           <OnMouseUp>Vermilion.Settings.on_lightalpha_track_click(self)</OnMouseUp>
         </Control>
 
         <Texture name="$(parent)SepColumns">
           <Anchor point="TOPLEFT" offsetX="300" offsetY="46"/>
-          <Dimensions x="1" y="260"/>
+          <Dimensions x="1" y="288"/>
         </Texture>
 
         <Button name="$(parent)ResetBtn"

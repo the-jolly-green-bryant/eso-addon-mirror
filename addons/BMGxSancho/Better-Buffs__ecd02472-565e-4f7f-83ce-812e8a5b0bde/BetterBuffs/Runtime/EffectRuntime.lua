@@ -19,6 +19,11 @@ function Runtime:Initialize()
     self.autoCapabilities = { setsById={}, setsByName={}, abilitiesById={}, abilitiesByName={} }
     self.autoCapabilityGeneration = 0
     self.autoVisibilityGeneration = 0
+    self.lastAutoGroupState = {}
+    self.lastSemanticState = {}
+    self.updateKeys = {}
+    self.effectEventRegistered = false
+    self.filteredCombatEventNames = {}
     for key in pairs(BB.Registry.byKey) do
         self.active[key] = {}
         self.intelligence[key] = NewIntelligence()
@@ -31,12 +36,71 @@ function Runtime:IsObserved(key)
     return key == "MAJOR_SLAYER" and BB.saved and BB.saved.ui and BB.saved.ui.slayerMissAlert and BB.saved.ui.slayerMissAlert.enabled == true
 end
 
+function Runtime:HandleFilteredCombatEvent(_, result, isError, abilityName, abilityGraphic, abilityActionSlotType,
+        sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType, log,
+        sourceUnitId, targetUnitId, abilityId, overflow)
+    self:OnCombatEvent(result, sourceName, targetName, sourceUnitId, targetUnitId, abilityId)
+end
+
+function Runtime:RegisterFilteredCombatEvents()
+    if next(self.filteredCombatEventNames or {}) then return end
+    self.filteredCombatEventNames = {}
+    local ids = {}
+    local function collect(map)
+        for abilityId in pairs(map or {}) do
+            abilityId = tonumber(abilityId)
+            if abilityId and abilityId > 0 then ids[abilityId] = true end
+        end
+    end
+    collect(BB.Registry.byCombatEventId)
+    collect(BB.Registry.coverageTriggerByAbilityId)
+    collect(BB.Registry.releaseByAbilityId)
+
+    for abilityId in pairs(ids) do
+        local name = "BetterBuffsCombatAbility" .. tostring(abilityId)
+        self.filteredCombatEventNames[name] = true
+        EVENT_MANAGER:RegisterForEvent(name, EVENT_COMBAT_EVENT, function(...)
+            Runtime:HandleFilteredCombatEvent(...)
+        end)
+        EVENT_MANAGER:AddFilterForEvent(name, EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, abilityId)
+    end
+end
+
+function Runtime:UnregisterFilteredCombatEvents()
+    for name in pairs(self.filteredCombatEventNames or {}) do
+        EVENT_MANAGER:UnregisterForEvent(name, EVENT_COMBAT_EVENT)
+    end
+    self.filteredCombatEventNames = {}
+end
+
+function Runtime:HasAnyObservedEffect()
+    for key in pairs(BB.Registry.byKey) do
+        if self:IsObserved(key) then return true end
+    end
+    return false
+end
+
+function Runtime:RefreshEffectEventSubscription()
+    if not self.enabled then return end
+    local shouldRegister = self:HasAnyObservedEffect()
+    if shouldRegister and not self.effectEventRegistered then
+        EVENT_MANAGER:RegisterForEvent(EVENT_NAME, EVENT_EFFECT_CHANGED, function(_, ...)
+            Runtime:OnEffectChanged(...)
+        end)
+        self.effectEventRegistered = true
+    elseif not shouldRegister and self.effectEventRegistered then
+        EVENT_MANAGER:UnregisterForEvent(EVENT_NAME, EVENT_EFFECT_CHANGED)
+        self.effectEventRegistered = false
+    end
+end
+
 function Runtime:SetEnabled(value)
     value = value == true
     if value == self.enabled then return end
     self.enabled = value
     if value then
-        EVENT_MANAGER:RegisterForEvent(EVENT_NAME, EVENT_EFFECT_CHANGED, function(_, ...) Runtime:OnEffectChanged(...) end)
+        self:RefreshEffectEventSubscription()
+        self:RegisterFilteredCombatEvents()
         EVENT_MANAGER:RegisterForEvent(PLAYER_EVENT_NAME, EVENT_PLAYER_ACTIVATED, function()
             zo_callLater(function() if Runtime.enabled then Runtime:SynchronizePlayerEffects() end end, 250)
         end)
@@ -51,6 +115,8 @@ function Runtime:SetEnabled(value)
         if BB.Context and BB.Context.inCombat then self:StartEncounter() end
     else
         EVENT_MANAGER:UnregisterForEvent(EVENT_NAME, EVENT_EFFECT_CHANGED)
+        self.effectEventRegistered = false
+        self:UnregisterFilteredCombatEvents()
         EVENT_MANAGER:UnregisterForEvent(PLAYER_EVENT_NAME, EVENT_PLAYER_ACTIVATED)
         EVENT_MANAGER:UnregisterForEvent(EQUIPMENT_EVENT_NAME, EVENT_INVENTORY_SINGLE_SLOT_UPDATE)
         EVENT_MANAGER:UnregisterForEvent(ACTION_SLOT_EVENT_NAME, EVENT_ACTION_SLOT_UPDATED)
@@ -137,6 +203,7 @@ function Runtime:RefreshAutoProviderCapabilities()
             self:RefreshEffect(key, now)
         end
     end
+    self:RefreshEffectEventSubscription()
     if BB.UI then BB.UI:RefreshAll(true) end
 end
 
@@ -198,12 +265,19 @@ end
 
 function Runtime:ScheduleAutoVisibilityRefresh(definition)
     if not definition or definition.autoGroupEffect ~= true or not BB.UI then return end
+    local relevant = self:HasAutoGroupState(definition.key)
+    if self.lastAutoGroupState[definition.key] == relevant then return end
+    self.lastAutoGroupState[definition.key] = relevant
+
+    -- Multiple recipients can change in one burst. Coalesce them into one UI
+    -- structural refresh rather than creating a delayed callback on every timer
+    -- tick for every AUTO group effect.
     self.autoVisibilityGeneration = (self.autoVisibilityGeneration or 0) + 1
     local generation = self.autoVisibilityGeneration
     zo_callLater(function()
         if not Runtime.enabled or Runtime.autoVisibilityGeneration ~= generation then return end
         BB.UI:RefreshAll(true)
-    end, 50)
+    end, 25)
 end
 
 function Runtime:IsRequiredItemEquipped(definition)
@@ -384,12 +458,17 @@ function Runtime:ReconcileGroupBuff(definition)
 end
 
 function Runtime:StartUpdate()
+    if not self:RebuildUpdateKeys(EffectNow()) then
+        self:StopUpdate()
+        return
+    end
     if self.updateRunning then return end
     self.updateRunning = true
     EVENT_MANAGER:RegisterForUpdate(UPDATE_NAME, BB.Constants.BAR_UPDATE_MS, function() Runtime:Update() end)
 end
 
 function Runtime:StopUpdate()
+    self.updateKeys = {}
     if not self.updateRunning then return end
     self.updateRunning = false
     EVENT_MANAGER:UnregisterForUpdate(UPDATE_NAME)
@@ -397,6 +476,17 @@ end
 
 function Runtime:OnTrackingChanged(key)
     if not self:IsObserved(key) then self:ClearEffect(key) end
+    self:RefreshEffectEventSubscription()
+    if self:NeedsUpdate() then self:StartUpdate() else self:StopUpdate() end
+end
+
+function Runtime:RefreshObservationRequirements()
+    if not self.enabled then return end
+    for key in pairs(BB.Registry.byKey) do
+        if not self:IsObserved(key) then self:ClearEffect(key) end
+    end
+    self:RefreshEffectEventSubscription()
+    if self:NeedsUpdate() then self:StartUpdate() else self:StopUpdate() end
 end
 
 function Runtime:StartEncounter()
@@ -531,6 +621,9 @@ function Runtime:ClearEffect(key)
     self.intelligence[key] = NewIntelligence()
     self.missingVisibleUntil[key] = nil
     self.lastSnapshots[key] = nil
+    self.lastSemanticState[key] = nil
+    self.lastAutoGroupState[key] = nil
+    self.updateKeys[key] = nil
     if BB.UI then BB.UI:ClearEffect(key) end
 end
 
@@ -538,25 +631,35 @@ function Runtime:ClearAll()
     for key in pairs(self.active) do self:ClearEffect(key) end
 end
 
-function Runtime:NeedsUpdate()
-    local now = EffectNow()
-    for key,targets in pairs(self.active) do
-        local definition=BB.Registry.byKey[key]
-        if definition and self:IsObserved(key) then
-            for _,data in pairs(targets) do
-                local endTime = tonumber(data.endTime)
-                if endTime and endTime ~= math.huge and endTime > now then return true end
-            end
-            local intel = self.intelligence[key]
-            if intel then
-                if (intel.providerCooldownUntil or 0) > now then return true end
-                for _,untilTime in pairs(intel.recipientCooldowns or {}) do if untilTime > now then return true end end
-                for _,cooldown in pairs(intel.targetCooldowns or {}) do if (cooldown.untilTime or 0) > now then return true end end
-            end
-            if (self.missingVisibleUntil[key] or 0) > now then return true end
-        end
+function Runtime:KeyNeedsUpdate(key, now)
+    now = now or EffectNow()
+    local definition = BB.Registry.byKey[key]
+    if not definition or not self:IsObserved(key) then return false end
+    for _,data in pairs(self.active[key] or {}) do
+        local endTime = tonumber(data.endTime)
+        if endTime and endTime ~= math.huge and endTime > now then return true end
     end
-    return false
+    local intel = self.intelligence[key]
+    if intel then
+        if (intel.providerCooldownUntil or 0) > now then return true end
+        for _,untilTime in pairs(intel.recipientCooldowns or {}) do if untilTime > now then return true end end
+        for _,cooldown in pairs(intel.targetCooldowns or {}) do if (cooldown.untilTime or 0) > now then return true end end
+    end
+    return (self.missingVisibleUntil[key] or 0) > now
+end
+
+function Runtime:RebuildUpdateKeys(now)
+    now = now or EffectNow()
+    local keys = {}
+    for key in pairs(BB.Registry.byKey) do
+        if self:KeyNeedsUpdate(key, now) then keys[key] = true end
+    end
+    self.updateKeys = keys
+    return next(keys) ~= nil
+end
+
+function Runtime:NeedsUpdate()
+    return self:RebuildUpdateKeys(EffectNow())
 end
 
 function Runtime:UpsertEffect(definition, targetKey, displayTarget, unitTag, unitName, unitId,
@@ -1072,25 +1175,66 @@ function Runtime:OnBossContextChanged()
     if self:NeedsUpdate() then self:StartUpdate() else self:StopUpdate() end
 end
 
-function Runtime:RefreshEffect(key,now,application)
+function Runtime:GetSemanticSignature(snapshot)
+    if not snapshot then return "nil" end
+    return table.concat({
+        snapshot.active and "1" or "0",
+        tostring(snapshot.availability or ""),
+        tostring(snapshot.covered or 0),
+        tostring(snapshot.target or 0),
+        tostring(snapshot.targetName or ""),
+        tostring(snapshot.stackCount or 0),
+        tostring(snapshot.locked or 0),
+        tostring(snapshot.ready or 0),
+        snapshot.providerKnown and "1" or "0",
+    }, "|")
+end
+
+function Runtime:RefreshEffect(key,now,application,timerTick)
     local definition=BB.Registry.byKey[key]
     if not definition then return end
     if not self:IsObserved(key) then self:ClearEffect(key); return end
     local snapshot = self:GetSnapshot(key,now)
     self.lastSnapshots[key] = snapshot
-    if self:IsObserved(key) then
+
+    -- Timer ticks only need to advance the presentation state. Analytics, Stats,
+    -- API consumers and AUTO structural visibility are updated when the semantic
+    -- state changes, not five times per second merely because a countdown moved.
+    local signature = self:GetSemanticSignature(snapshot)
+    local semanticChanged = self.lastSemanticState[key] ~= signature
+    self.lastSemanticState[key] = signature
+
+    if BB.UI then BB.UI:UpdateEffect(definition,snapshot) end
+    if not timerTick or semanticChanged or application then
         if BB.Analytics then BB.Analytics:Observe(key,snapshot,now,application) end
-        if BB.UI then BB.UI:UpdateEffect(definition,snapshot) end
         if BB.Stats and (definition.affectsPenetration or definition.criticalDamageTaken or definition.criticalDamagePerStack) then BB.Stats:Refresh() end
         if BB.API then BB.API:Fire(application and "EFFECT_ACTIVATED" or "EFFECT_CHANGED", key, snapshot) end
+        self:ScheduleAutoVisibilityRefresh(definition)
     end
-    self:ScheduleAutoVisibilityRefresh(definition)
 end
 
 function Runtime:Update()
     if not self.enabled then self:StopUpdate(); return end
     local now=EffectNow()
-    for key in pairs(self.active) do if self:IsObserved(key) then self:RefreshEffect(key,now) end end
-    BB.UI:RefreshAll(false)
-    if not self:NeedsUpdate() then self:StopUpdate() end
+    local visibleTypes = {}
+    local keys = self.updateKeys or {}
+
+    for key in pairs(keys) do
+        if self:IsObserved(key) then
+            self:RefreshEffect(key,now,false,true)
+            if BB:IsEffectVisible(key) then
+                local definition = BB.Registry.byKey[key]
+                if definition then visibleTypes[definition.effectType] = true end
+            end
+        end
+        if not self:KeyNeedsUpdate(key,now) then keys[key]=nil end
+    end
+
+    -- Do not touch HUD controls for HIDDEN-only runtime state or while a non-HUD
+    -- scene is open. When visible timers exist, refresh only the affected panel.
+    if BB.UI and (not BB.IsGameplayHUDSceneActive or BB:IsGameplayHUDSceneActive()) then
+        for effectType in pairs(visibleTypes) do BB.UI:RefreshPanel(effectType,false) end
+    end
+
+    if next(keys) == nil then self:StopUpdate() end
 end

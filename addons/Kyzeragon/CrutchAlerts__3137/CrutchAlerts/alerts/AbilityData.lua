@@ -189,6 +189,8 @@ Crutch.testing = {
     [35451] = true, -- Shadow Image
 
     [132571] = true, -- Thunderous Leap (Yandir)
+
+    [245208] = true, -- Seething Vile Leap
 }
 
 ---------------------------------------------------------------------
@@ -335,7 +337,7 @@ Crutch.others = {
         [136965] = true, -- Sanguine Grasp
         [134050] = true, -- Wrath of Tides
         [133546] = true, -- Gargoyle's Curse
-        -- [132571] = true, -- Thunderous Leap (Yandir)
+        [132571] = true, -- Thunderous Leap (Yandir)
     },
 
     -- Lucent Citadel
@@ -385,6 +387,7 @@ Crutch.others = {
         [234722] = true, -- Val Exit Leap AL
         [233466] = true, -- Valneer Leap AL
         [233489] = true, -- Valnner Leap UPPER AL
+        [245208] = true, -- Seething Vile Leap
     },
 
     -- Rockgrove

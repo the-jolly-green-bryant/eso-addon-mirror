@@ -23,12 +23,15 @@
 		</Category>
 	</Layer>
 	<!-- L2 is read through its analog API and is NEVER declared as an action.
-         This layer exists only on HUD while L2 is held; otherwise L3 is untouched. -->
-	<Layer name="PBsChatAssistantHUDChannelLayer" allowFallthrough="true">
+         This layer exists only on HUD while L2 is held; otherwise D-pad Right is untouched. -->
+	<Layer name="PBsChatAssistantHUDChannelRightLayer" allowFallthrough="true">
 		<Category>
-			<Action name="PBSCHATASSISTANT_HUD_CHANNEL_L3" inheritsBindFrom="UI_SHORTCUT_LEFT_STICK" hideAction="true" rebindable="false" preventAutomaticInputModeChange="true">
-				<Down>return PBS_CHAT_ASSISTANT_HUD_CHANNEL:OnL3Down()</Down>
-				<Up>return PBS_CHAT_ASSISTANT_HUD_CHANNEL:OnL3Up()</Up>
+            <!-- UI direction and gameplay quest cycling are distinct actions.
+                 Block the gameplay action explicitly while this layer is attached. -->
+            <BlockAction name="ASSIST_NEXT_TRACKED_QUEST"/>
+			<Action name="PBSCHATASSISTANT_HUD_CHANNEL_RIGHT" inheritsBindFrom="UI_SHORTCUT_INPUT_RIGHT" hideAction="true" rebindable="false" preventAutomaticInputModeChange="true">
+				<Down>return PBS_CHAT_ASSISTANT_HUD_CHANNEL:OnRightDown()</Down>
+				<Up>return PBS_CHAT_ASSISTANT_HUD_CHANNEL:OnRightUp()</Up>
 			</Action>
 		</Category>
 	</Layer>

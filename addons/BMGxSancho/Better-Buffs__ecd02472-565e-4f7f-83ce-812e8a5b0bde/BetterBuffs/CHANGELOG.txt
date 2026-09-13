@@ -1,4 +1,18 @@
+Better Buffs v0.3.17
+
+Performance stabilization:
+- HIDDEN effects are runtime-dormant unless an enabled live consumer (Current Pen/Crit Damage) explicitly requires them.
+- Removed the unfiltered EVENT_COMBAT_EVENT subscription from Combat Context.
+- Death cleanup now uses combat-result-filtered callbacks only.
+- Gear/provider combat events now use ability-ID-filtered registrations for the small set of relevant IDs.
+- Resolved Better Buffs debuff events establish trash-target ownership without scanning unrelated combat events.
+- The 200 ms timer updater processes only effects with active time-dependent state, not the complete observed registry.
+- Removed repeated AUTO visibility callback churn; structural UI refresh occurs only when AUTO relevance actually changes.
+- Timer ticks update Analytics/Stats/API only on semantic state transitions, not on every countdown tick.
+- Hidden-only runtime state no longer refreshes HUD panels.
+
 Better Buffs v0.3.16
+
 - Added dedicated Gear Set trackers for Turning Tide and Archdruid Devyric.
 - Turning Tide uses verified provider/cooldown event 167059 and hostile proc 167062.
 - Archdruid Devyric uses provider/cooldown event 176813 and confirmed hostile proc 176816.

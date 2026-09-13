@@ -391,6 +391,137 @@ function addon:SetAllowPanPastMapEdge(allow)
 	end
 end
 
+-- The Shadow Cleft HUD report has valid, non-symbolic coordinates but shown=false.
+-- This flag controls the native pin's visibility, not whether the coordinates exist.
+-- Accept that discrepancy only on the player's own map; another floor/parent map
+-- or a symbolic entrance must never be treated as the player's actual location.
+function addon:IsLitePlayerPositionUsable(x, y, shown, symbolic)
+	return not symbolic and type(x) == "number" and type(y) == "number"
+		and x > 0 and x < 1 and y > 0 and y < 1
+		and (shown or DoesCurrentMapMatchMapForPlayerLocation())
+end
+
+function addon:RepairLitePlayerPinVisibility()
+	if self.dormant or not self.account or not self.account.enableMap
+		or (self.initLevel or 0) >= 3 or not ZO_WorldMap or ZO_WorldMap:IsHidden()
+		or IsWorldMapInFront() or IsWorldMapShownElsewhere() then
+		return
+	end
+	local x, y, _, shown, symbolic = GetMapPlayerPosition("player")
+	if shown or not self:IsLitePlayerPositionUsable(x, y, shown, symbolic) then
+		return
+	end
+	local pin = self.pinManager and self.pinManager:GetPlayerPin()
+	if not pin then return end
+	pin:SetOriginalPosition(x, y)
+	pin:SetIsSymbolicPosition(false)
+	-- SetLocation also restores the Background texture's visibility and geometry.
+	pin:SetLocation(x, y)
+	pin:SetRotation(GetPlayerCameraHeading())
+	pin:SetHidden(false)
+end
+
+function addon:InitLitePlayerPinVisibilityHook()
+	local original
+	original = HookHotPath(ZO_WorldMapPins_Manager, "UpdateMovingPins", function(manager, ...)
+		local result = original(manager, ...)
+		-- Repair in the SAME update that hid the pin. A 100ms timer alone loses to
+		-- the next native update and produces missing frames or flicker.
+		if manager == addon.pinManager then
+			addon:RepairLitePlayerPinVisibility()
+		end
+		return result
+	end)
+end
+
+-- Votan's UpdatePinsForMapSizeChange raises the player pin's parent as well as
+-- its textures. ESO gives non-clickable pin parents level 0 in SetData; raising
+-- only the Background child does not restore the parent's ordering against
+-- other map controls. Keep this correction confined to the HUD.
+function addon:RestoreLitePlayerPinDrawLevel()
+	local saved = self.litePlayerPinDrawLevel
+	if saved then
+		if saved.control:GetDrawLevel() == saved.applied then
+			saved.control:SetDrawLevel(saved.original)
+		end
+		self.litePlayerPinDrawLevel = nil
+	end
+end
+
+function addon:ApplyLitePlayerPinDrawLevel()
+	if self.dormant or not self.account or not self.account.enableMap or IsWorldMapShownElsewhere() then
+		self:RestoreLitePlayerPinDrawLevel()
+		return
+	end
+	local pin = self.pinManager and self.pinManager:GetPlayerPin()
+	local control = pin and pin:GetControl()
+	local data = ZO_MapPin.PIN_DATA[MAP_PIN_TYPE_PLAYER]
+	if not control or not data or type(data.level) ~= "number" then
+		return
+	end
+	local level = zo_max(data.level, 1)
+	local saved = self.litePlayerPinDrawLevel
+	if saved and saved.control ~= control then
+		self:RestoreLitePlayerPinDrawLevel()
+		saved = nil
+	end
+	local current = control:GetDrawLevel()
+	if not saved then
+		saved = {control = control, original = current, applied = level}
+		self.litePlayerPinDrawLevel = saved
+	elseif current ~= saved.applied then
+		-- SetData or another add-on may have reset the parent since the last sample.
+		saved.original = current
+	end
+	if current ~= level then
+		control:SetDrawLevel(level)
+	end
+	saved.applied = level
+end
+
+-- Preserve the last HUD sample so opening Settings does not replace the evidence
+-- with the (working) full-screen map state. One small sample per second, no pin scan.
+function addon:CaptureLitePlayerPinDiagnostic()
+	if self.dormant or self.litePreviewAdded or IsWorldMapShownElsewhere()
+		or not ZO_WorldMap or ZO_WorldMap:IsHidden() then
+		return
+	end
+	local now = GetFrameTimeMilliseconds()
+	if now < (self.nextPlayerPinDiagnosticMs or 0) then return end
+	self.nextPlayerPinDiagnosticMs = now + 1000
+	local x, y, _, shown, symbolic = GetMapPlayerPosition("player")
+	local pin = self.pinManager and self.pinManager:GetPlayerPin()
+	local control = pin and pin:GetControl()
+	local background = control and control:GetNamedChild("Background")
+	local px, py = 0, 0
+	local cx, cy = ZO_WorldMapScroll:GetCenter()
+	if control then px, py = control:GetCenter() end
+	self.playerPinDiagnostic = {
+		string.format("v%s t=%.1f map=%s (%s) floor=%s", self.version, now / 1000,
+			tostring(GetMapName()), tostring(GetCurrentMapId()), tostring(GetMapFloorInfo())),
+		string.format("pos=%.4f,%.4f shown=%s symbolic=%s ownMap=%s world=%s follow=%s", x, y,
+			tostring(shown), tostring(symbolic), tostring(DoesCurrentMapMatchMapForPlayerLocation()),
+			tostring(DoesCurrentMapShowPlayerWorld()), tostring(self.followSkip)),
+		control and string.format("pin hidden=%s alpha=%.2f level=%d size=%.1fx%.1f offset=%.1f,%.1f",
+			tostring(control:IsHidden()), control:GetAlpha(), control:GetDrawLevel(),
+			control:GetWidth(), control:GetHeight(), px - cx, py - cy) or "pin missing",
+		background and string.format("texture hidden=%s alpha=%.2f layer=%d level=%d texture=%s",
+			tostring(background:IsHidden()), background:GetAlpha(), background:GetDrawLayer(),
+			background:GetDrawLevel(), tostring(background:GetTextureFileName())) or "texture missing",
+	}
+end
+
+function addon:PrintLitePlayerPinDiagnostic()
+	local lines = self.playerPinDiagnostic
+	if not lines then
+		d(GetString(SI_PBSMINIMAP_PIN_DIAGNOSTIC_EMPTY))
+		return
+	end
+	for i = 1, #lines do
+		d("[PBsMiniMap] " .. lines[i])
+	end
+end
+
 -- Swapping a hook in or out means writing a saved function into a shared slot, and that slot
 -- does not belong to this add-on alone.
 --
@@ -447,6 +578,7 @@ function addon:SetDormant(value)
 	self.dormantFlips = (self.dormantFlips or 0) + 1
 
 	if value then
+		self:RestoreLitePlayerPinDrawLevel()
 		-- The standard map owns the window now, so nothing of ours is waiting to settle.
 		self.settleTicks = 0
 
@@ -1528,6 +1660,7 @@ function addon:Initialize()
 	local lastMapTile
 	local lastContainerW, lastContainerH = -1, -1
 	local forceMapResync = false
+	local nextMapResyncMs = 0
 	function addon:ResetFollowState()
 		lastPlayerX, lastPlayerY = -1, -1
 		lastMapTile = nil
@@ -1541,6 +1674,7 @@ function addon:Initialize()
 	-- without an event.
 	function addon:RequestMapResync()
 		forceMapResync = true
+		nextMapResyncMs = 0
 	end
 
 	-- Switching the map is two steps, not one.
@@ -2052,8 +2186,15 @@ function addon:Initialize()
 			disturbed = true
 		end
 
-		if forceMapResync or not DoesCurrentMapMatchMapForPlayerLocation() then
+		-- Retry missing/invalid positions, but do not continually reload the correct map
+		-- solely because its visibility flag is false (observed in the Shadow Cleft).
+		local x, y, _, shown, symbolic = GetMapPlayerPosition("player")
+		local now = GetFrameTimeMilliseconds()
+		local needsMap = not DoesCurrentMapMatchMapForPlayerLocation()
+			or not self:IsLitePlayerPositionUsable(x, y, shown, symbolic)
+		if forceMapResync or (needsMap and now >= nextMapResyncMs) then
 			forceMapResync = false
+			nextMapResyncMs = now + 1000
 			ApplyMapToPlayer()
 			lastMapTile = GetMapTileTexture()
 			lastPlayerX, lastPlayerY = -1, -1
@@ -2104,7 +2245,25 @@ function addon:Initialize()
 			disturbed = true
 		end
 
-		local x, y = GetMapPlayerPosition("player")
+		x, y, _, shown, symbolic = GetMapPlayerPosition("player")
+		if not self:IsLitePlayerPositionUsable(x, y, shown, symbolic) then
+			-- Do not pan to a loading sentinel or a parent-map entrance marker. Leave the
+			-- position dirty so recovery also recentres a player who has not moved.
+			lastPlayerX, lastPlayerY = -1, -1
+			self.followSkip = "noposition"
+			return
+		end
+		-- If a scene/map transition left the pin hidden, restore just this pin using
+		-- the same operations as UpdateMovingPins.
+		-- The position check also accepts the own-map visibility discrepancy above.
+		local playerPin = self.pinManager and self.pinManager:GetPlayerPin()
+		if playerPin and playerPin:IsHidden() then
+			playerPin:SetOriginalPosition(x, y)
+			playerPin:SetIsSymbolicPosition(symbolic)
+			playerPin:SetLocation(x, y)
+			playerPin:SetRotation(GetPlayerCameraHeading())
+			playerPin:SetHidden(false)
+		end
 		local moved = x and (zo_abs(x - lastPlayerX) >= 0.00005 or zo_abs(y - lastPlayerY) >= 0.00005)
 		if (moved or disturbed) and x then
 			lastPlayerX, lastPlayerY = x, y
@@ -2137,6 +2296,7 @@ function addon:Initialize()
 	end
 
 	function addon:InitLiteHooks()
+		self:InitLitePlayerPinVisibilityHook()
 		-- Our focus offsets are deliberately unclamped, but the pan machinery clamps again on
 		-- its own unless this is set. Captured here so dormancy can hand the original value
 		-- back to the standard map.
@@ -2306,6 +2466,8 @@ function addon:Initialize()
 				self:ApplyLiteAlpha()
 				self:ApplyLiteBorder()
 				self:ApplyLiteDrawOrder()
+				self:ApplyLitePlayerPinDrawLevel()
+				self:CaptureLitePlayerPinDiagnostic()
 				local mapVisible = ZO_WorldMap and not ZO_WorldMap:IsHidden()
 				if mapVisible and not self.dormant and self.account and self.account.hideMapLabels then
 					self:SweepMapLabelsIfDue()
@@ -2570,6 +2732,11 @@ local function InitMemoryWatchdog()
 			ZO_WorldMapContainer and zo_round(select(1, ZO_WorldMapContainer:GetDimensions())) or -1,
 			ZO_WorldMapContainer and zo_round(select(2, ZO_WorldMapContainer:GetDimensions())) or -1
 		)
+		local _, _, _, shown, symbolic = GetMapPlayerPosition("player")
+		local playerPin = addon.pinManager and addon.pinManager:GetPlayerPin()
+		state = state .. string.format(" mapId=%s floor=%s playerShown=%s symbolic=%s pinHidden=%s",
+			tostring(GetCurrentMapId()), tostring(GetMapFloorInfo()), Bool(shown), Bool(symbolic),
+			playerPin and Bool(playerPin:IsHidden()) or "missing")
 		return used, state
 	end
 

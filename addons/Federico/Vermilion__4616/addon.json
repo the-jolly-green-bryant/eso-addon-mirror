@@ -26,7 +26,7 @@
     "Vermilion"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4616/",
-  "fingerprint": "6bf6653c22587f2afc561199935b7e6d00c39136da2220a0702b2ed137f9d605",
+  "fingerprint": "2a6a3fb7adb0348b95832d6052dbcbc897cbef5893b39034eb01ca02ab2cd6a9",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16226.png",
     "https://cdn-eso.mmoui.com/preview/pvw16233.png",
@@ -34,6 +34,7 @@
     "https://cdn-eso.mmoui.com/preview/pvw17341.png",
     "https://cdn-eso.mmoui.com/preview/pvw17342.png",
     "https://cdn-eso.mmoui.com/preview/pvw17343.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17357.png",
     "https://cdn-eso.mmoui.com/preview/pvw16249.png",
     "https://cdn-eso.mmoui.com/preview/pvw16231.png",
     "https://cdn-eso.mmoui.com/preview/pvw16230.png",
@@ -47,11 +48,11 @@
   "source_id": "4616",
   "source_url": "https://www.esoui.com/downloads/info4616-Vermilion.html",
   "stats": {
-    "downloads": 135,
+    "downloads": 150,
     "favorites": 2,
-    "monthly_downloads": 16
+    "monthly_downloads": 32
   },
   "title": "Vermilion",
-  "updated_at": 1789001023000,
-  "version": "1.0.1"
+  "updated_at": 1789246897000,
+  "version": "1.2.1"
 }

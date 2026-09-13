@@ -34,6 +34,9 @@ M.GetZoneNameByIndex      = GetZoneNameByIndex
 
 M.GetSlotName                            = GetSlotName
 M.GetSlotBoundId                         = GetSlotBoundId
+M.GetSlotAbilityCost                     = GetSlotAbilityCost
+M.GetActiveHotbarCategory                = GetActiveHotbarCategory
+M.GetUnitPower                           = GetUnitPower
 M.GetAbilityName                         = GetAbilityName
 M.GetAbilityIcon                         = GetAbilityIcon
 M.GetSpecificSkillAbilityKeysByAbilityId = GetSpecificSkillAbilityKeysByAbilityId

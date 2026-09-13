@@ -1,9 +1,9 @@
 ## Title: Tiradil's Guild Assistant
 ## Author: @AlcholicVader
-## Version: 1.3.2
-## AddOnVersion: 7
+## Version: 1.5.2
+## AddOnVersion: 22
 ## APIVersion: 101050 101051
-## SavedVariables: TiradilRoster_SavedVariables GuildLedger_SavedVars TiradilInactiveWatch_SavedVars TiradilRosterColumn_SavedVars TiradilGuildAssistant_SavedVars
+## SavedVariables: TiradilRoster_SavedVariables GuildLedger_SavedVars TiradilInactiveWatch_SavedVars TiradilRosterColumn_SavedVars TiradilGuildAssistant_SavedVars TiradilTrialLog_SavedVars
 ## DependsOn: LibHistoire LibAddonMenu-2.0 LibGuildRoster LibCustomMenu
 
 TiradilLocalization.lua
@@ -12,9 +12,13 @@ TiradilGuildAssistant.xml
 TiradilRoster.xml
 GuildLedger.xml
 TiradilInactiveWatch.xml
+TiradilTrader.xml
+TiradilTrialLog.xml
 TiradilRoster.lua
 GuildLedger.lua
 TiradilInactiveWatch.lua
+TiradilTrader.lua
+TiradilTrialLog.lua
 TiradilGuildButton.lua
 TiradilRosterColumn.lua
 TiradilGuildAssistant.lua

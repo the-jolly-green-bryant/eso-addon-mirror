@@ -1,8 +1,8 @@
 ## Title: |cFFD700Tetsu's|r Raid Lead Assistant
 ## Author: Tetsurion
 ## Description: Raid lead HUD for PS5: healer tracker, group buff coverage, boss debuffs.
-## Version: 1.9.1
-## AddOnVersion: 10901
+## Version: 1.9.3
+## AddOnVersion: 10903
 ## APIVersion: 101050 101051
 ## SavedVariables: TetsuCombatHealerHelperSavedVars
 ## DependsOn: LibHarvensAddonSettings

@@ -1,6 +1,6 @@
 {
   "archive_format": "zip",
-  "archive_path": "addons/Shinni/Lore-Book-Locations-3D-Compass-Map-Pins__4756",
+  "archive_path": "addons/Shinni/LoreBook-Locations-3D-Compass-Map-Pins__4756",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
   "archived": true,
   "author": "Shinni",
@@ -22,7 +22,7 @@
     "LoreLibrary"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4756/",
-  "fingerprint": "c3f089a91547d4ed77172ae630615ae33acbe1b7222fa247bda0c80c5ba12043",
+  "fingerprint": "2b8909f0bc4a253124e3658be0b0591a4168060efbe2cb8839709ee204bb47be",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16926.png",
     "https://cdn-eso.mmoui.com/preview/pvw16928.png",
@@ -34,11 +34,11 @@
   "source_id": "4756",
   "source_url": "https://www.esoui.com/downloads/info4756-LoreBookLocations3DCompassMapPins.html",
   "stats": {
-    "downloads": 2067,
+    "downloads": 2185,
     "favorites": 9,
-    "monthly_downloads": 1691
+    "monthly_downloads": 1752
   },
-  "title": "Lore Book Locations (3D, Compass, Map Pins)",
+  "title": "LoreBook Locations (3D, Compass, Map Pins)",
   "updated_at": 1789189202000,
   "version": "1.0.52"
 }

@@ -31,7 +31,7 @@ function addon:InitSettings()
 	settings.author = self.author
 	settings.version = self.version
 
-	-- L2+L3 on the HUD. Reaches the same setting as /pbchat hudchannel.
+	-- L2+D-pad Right on the HUD. Reaches the same setting as /pbchat hudchannel.
 	settings:AddSetting(
 		{
 			type = LibHarvensAddonSettings.ST_CHECKBOX,

@@ -1,8 +1,8 @@
 local strings = {
 	SI_PBSCHATASSISTANT_CHANNEL_LABEL = "Channel: %s",
 	SI_PBSCHATASSISTANT_OFFICER_SUFFIX = " (Officer)",
-	SI_PBSCHATASSISTANT_HUDCHANNEL = "L2+L3 changes channel",
-	SI_PBSCHATASSISTANT_HUDCHANNEL_TOOLTIP = "On the HUD, hold L2 and press L3 to move the outgoing channel on. L2 is only read, never rebound, and L3 is reassigned solely while L2 is held.",
+	SI_PBSCHATASSISTANT_HUDCHANNEL = "L2+D-pad Right changes channel",
+	SI_PBSCHATASSISTANT_HUDCHANNEL_TOOLTIP = "On the HUD, hold L2 and press D-pad Right to move the outgoing channel on. L2 is read without rebinding. Quest cycling is blocked during the chord. Press L2 slightly before Right.",
 	SI_PBSCHATASSISTANT_DEFAULT_CHANNEL = "Channel at login",
 	SI_PBSCHATASSISTANT_DEFAULT_CHANNEL_TOOLTIP = "The channel to start a session on. Applied once, shortly after entering the world, and never again -- switching afterwards is left alone. Channels you cannot currently use are skipped.",
 	SI_PBSCHATASSISTANT_DEFAULT_CHANNEL_NONE = "Leave unchanged",

@@ -1,0 +1,42 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/alabuzya/QuestArrow__4833",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "alabuzya",
+  "canonical_id": "esoui:4833",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4833",
+  "deleted": false,
+  "directories": [
+    "QuestArrow"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4833/",
+  "fingerprint": "1fd71eb565724b16865e9e8379eac03c4b8d81ed5637ff49e4d03b0b523e8a41",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17358.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4833",
+  "source_url": "https://www.esoui.com/downloads/info4833-QuestArrow.html",
+  "stats": {
+    "downloads": 2,
+    "favorites": 0,
+    "monthly_downloads": 0
+  },
+  "title": "QuestArrow",
+  "updated_at": 1789247296000,
+  "version": "0.2.1"
+}

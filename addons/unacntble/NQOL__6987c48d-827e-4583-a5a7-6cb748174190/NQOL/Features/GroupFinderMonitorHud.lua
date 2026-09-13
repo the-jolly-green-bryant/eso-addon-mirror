@@ -282,7 +282,7 @@ local function RenderRow(row, data, width, y, rowHeight, fontChoice, textColor)
     end
     if data.leader and data.leader ~= "" then
         local leader = data.leader
-        local organizerChampionPoints = FormatChampionPoints(data.organizerChampionPoints)
+        local organizerChampionPoints = FormatChampionPoints(data.organizerChampionPoints, false)
         if organizerChampionPoints ~= "" then leader = string.format("%s %s", leader, organizerChampionPoints) end
         details = details ~= "" and string.format("%s · %s", leader, details) or leader
     end

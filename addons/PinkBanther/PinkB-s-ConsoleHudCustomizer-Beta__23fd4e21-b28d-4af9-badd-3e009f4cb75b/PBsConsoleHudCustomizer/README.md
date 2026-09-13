@@ -52,6 +52,8 @@ gives it the same size so the pair still lines up.
 - **Standard** — the game's own bars, untouched. Nothing is built and nothing runs.
 - **Square** — each bar as a flat rectangle: a dark track, and a solid block in that power's own
   colour, with the game's own resource numbers lifted over it.
+- **MURA-HIGE NEO Style** — uses the same width and height settings as MURA-HIGE Style,
+  with health, magicka and stamina all filling from left to right. Health is one continuous bar.
 - **MURA-HIGE Style** — the same rectangle, drawn at a **width and a height in pixels**: the two
   extra sliders in each bar's section, live only in this style. Choosing it is enough — the bars
   are drawn at the game's own size until you change one. The percentage slider is greyed out here,
@@ -118,9 +120,11 @@ only appears for a slot whose effect is still running and disappears again when 
 is always there, so both sets can be read at a glance. If you want only this one, turn the game's
 Back Row setting off.
 
-**When there is no second set, the row hides itself.** The Oakensoul Ring and anything else that
-locks you to one bar, or a character too low to have earned the weapon swap yet: the row goes on
-its own and comes back when the lock does, without touching your setting.
+**The row follows your display setting, even while weapon swapping is temporarily locked.**
+The Oakensoul Ring is an exception: equipping it in either ring slot hides the row; removing
+it restores your saved display choice without changing that setting. It inherits
+visibility from the action bar rather than individual front slots, so hiding a front slot cannot
+hide its back slot. Special hotbars without an opposite weapon set still hide the row.
 
 ### Countdown and target count
 
@@ -138,19 +142,24 @@ smaller than the bar's, so a smaller number often reads better there.
 Until you move one of the row's two sliders it **follows the bar's**, so one size for both stays
 one slider. **Match the other set to this bar** puts it back to following.
 
-The countdown starts the moment you cast, from the length the game gives the ability, and an
-effect of that cast takes over from it — but only if that effect is about as long as the ability
-is. One cast can put several effects on the world, and the longest, or the only one the client
-reports, is often not the ability's own. If the same effect
-lands on another target later, the countdown runs to whichever ends last.
+The countdown starts at the player's cast (placement for aimed ground abilities).
+For **channeled abilities**, `GetAbilityCastInfo` supplies the channel time; effect notifications
+cannot replace it with a passive buff's duration. Ordinary cast time is not treated as effect
+duration. For **ordinary lasting abilities**, `GetAbilityDuration` supplies the initial duration.
+An effect can refine that duration only when its ability ID, normalized name or icon matches
+and its duration is within the allowed tolerance. Matching is heuristic, not proof of causality.
 
-The countdown is **the effect your cast produced**. When you press a slot, the effects that appear
-in the moment after it are that slot's, and the one that is counted down is the one whose length
-matches what the game says that ability lasts — so Power of the Light shows its 6 seconds rather
-than the 20 of the Major Breach it also applies, and Blue Betty shows its 22-second buff all the
-way out rather than handing over to the five-second thing the netch does. The same ability on both weapon sets shows the same number on both, because it is one effect: a
-cast is on record against the ability, not just the slot it was made from. For a slot whose effect
-this add-on has not seen cast at all, the game's own number is used instead.
+If the ability duration is unknown, only an effect with an ID, name or icon match is accepted;
+the longest effect after a press is no longer used as a guess. If no match arrives, the countdown
+stays hidden, including when the client's slot timer reports a passive. Known channels with no
+reported channel time also stay hidden. No per-ability duration or effect-ID table is used.
+Effects whose ID, name and icon all differ from the skill may therefore have no countdown when
+the skill itself reports no duration.
+
+Later targets and periodic refreshes do not restart the cast countdown. After expiry, a lingering
+client timer cannot revive it. Casting again updates both slotted copies of the ability. For a
+slot with no recorded cast, the game's own number remains the fallback. Channel interruption
+tracking is not yet implemented; a channel currently counts to its expected end.
 
 The target count has no API behind it: it is counted from the effects you and anything of yours
 apply -- a pet's count too, which matters for the netch, the familiars, the bear and the shade — the same effect
@@ -198,6 +207,7 @@ which is the quickest way to check the two agree.
 /pbhud text [back] timer|count <n> size of the text on the skill bar (12-48)
 /pbhud timers addon|both|game      whose countdown goes on the front bar
 /pbhud slots                       what is on each slot, and why
+/pbhud trace [on|off|clear]        record what the game sends as an ability is cast
 /pbhud backbar [on|off|empty|<n>]  the other weapon set's row
 /pbhud skillbar on|off             whether the skill bar is this add-on's to touch
 /pbhud on | off                    switch every change on or off
@@ -207,6 +217,13 @@ which is the quickest way to check the two agree.
 
 `<bar>` is `health`, `magicka`, `stamina` or `skillbar` (`hp`, `mag`, `stam`, `bar` also work).
 `/pbhc` is the same command.
+
+`trace` is for working out why an ability's countdown is wrong, and the settings panel has the
+same two buttons under **Measurement** so it can be used without a keyboard. Start it, cast the
+ability -- for one that is aimed, place it once and cancel it once -- then show the record: every
+press, ground-targeting circle, effect and combat event the game sent, in order, with the time
+each arrived. It records nothing until it is started, stops when the record is shown, and changes
+nothing on the screen either way.
 
 ## How it works
 
@@ -225,11 +242,17 @@ controls**, and lets the bars carry on running their own code:
 - **The gaps** are the same anchors the client writes in `ApplyAnchor` (`LEFT` on the previous
   button's `RIGHT`), with the quickslot moved off the hidden weapon swap marker and onto the
   first ability.
-- **The countdown** is read from the client: `GetActionSlotEffectTimeRemaining(slot, hotbar)`,
-  which answers for either weapon set.
+- **The countdown** uses a fixed cast origin with the ability/effect duration. The client
+  `GetActionSlotEffectTimeRemaining(slot, hotbar)` is a fallback for slots without a recorded cast.
 - **The other set's row and the text** are controls of this add-on's own, laid out in
-  `Controls.xml` and parented to the `ActionButton` they belong to, so the action bar fades and
-  hides them with itself.
+  `Controls.xml`. The back row is parented to the action bar and anchored to the corresponding
+  buttons; the front text is parented to its button.
+- **Gamepad icon sizes** keep the configured front scale on the action bar and local scale 1
+  on its slots, icons and FlipCards. After bounce and weapon swap animations stop, dimensions
+  return to 61 (abilities) or 67 (ultimate), and cached swap endpoints are updated to the same
+  size. The separate back row keeps its own scale. This also repairs scale-only drift without
+  a UI reload. The client's [swap animation setup](https://github.com/esoui/esoui/blob/master/esoui/ingame/actionbar/actionbutton.lua)
+  caches the FlipCard dimensions, so restoring only the visible icon is insufficient.
 
 These controls run combat code — power updates, the attribute visualiser, the warners — on every
 frame of a fight, and an add-on frame near client code is how private-function errors start. See

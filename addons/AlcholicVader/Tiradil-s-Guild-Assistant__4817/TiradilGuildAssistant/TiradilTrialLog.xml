@@ -1,0 +1,139 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="TiradilTrialLogFrame" hidden="true" mouseEnabled="true" movable="true" clampedToScreen="true" tier="HIGH" resizeHandleSize="8">
+            <DimensionConstraints minX="700" minY="560" />
+            <Dimensions x="700" y="620" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
+
+            <Controls>
+                <Backdrop name="$(parent)Bg" inheritAlpha="false" mouseEnabled="true">
+                    <AnchorFill />
+                    <Edge file="EsoUI/Art/Tooltips/UI-Border.dds" edgeFileWidth="128" edgeFileHeight="16" />
+                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" />
+                    <OnMouseDown>
+                        if button == MOUSE_BUTTON_INDEX_LEFT then
+                            self:GetParent():StartMoving()
+                        end
+                    </OnMouseDown>
+                    <OnMouseUp>
+                        self:GetParent():StopMovingOrResizing()
+                    </OnMouseUp>
+                </Backdrop>
+
+                <Backdrop name="$(parent)ColorWash" centerColor="70000000" edgeColor="00000000" mouseEnabled="false">
+                    <AnchorFill />
+                </Backdrop>
+
+                <Control name="$(parent)Header">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="3" offsetY="15" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-3" offsetY="15" />
+                    <Dimensions y="45" />
+                    <Controls>
+                        <Label name="$(parent)Title" font="ZoFontHeader3" color="FFB800" text="TRIAL ATTENDANCE LOG" horizontalAlignment="CENTER">
+                            <Dimensions x="600" y="0" />
+                            <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="0" />
+                            <OnInitialized>
+                                self:SetText(TiradilL10n.Get("TRIALLOG_WINDOW_TITLE"))
+                            </OnInitialized>
+                        </Label>
+                        <Button name="$(parent)CloseBtn">
+                            <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+                            <Dimensions x="28" y="28" />
+                            <Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+                                     pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+                                     mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"/>
+                            <OnClicked>
+                                TiradilTrialLogFrame:SetHidden(true)
+                            </OnClicked>
+                        </Button>
+                        <Texture name="$(parent)Divider" textureFile="EsoUI/Art/Miscellaneous/horizontalDivider.dds">
+                            <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+                            <Dimensions y="4" />
+                        </Texture>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)FilterArea" hidden="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Header" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="14" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Header" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="14" />
+                    <Dimensions y="32" />
+                    <Controls>
+                        <Label name="$(parent)GuildLabel" font="ZoFontGameSmall" color="A0A0A0" verticalAlignment="CENTER">
+                            <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
+                            <OnInitialized>
+                                self:SetText(TiradilL10n.Get("TRIALLOG_GUILD_LABEL"))
+                            </OnInitialized>
+                        </Label>
+                        <Control name="$(parent)GuildCombo" inherits="ZO_ComboBox">
+                            <Dimensions x="260" y="26" />
+                            <Anchor point="LEFT" relativeTo="$(parent)GuildLabel" relativePoint="RIGHT" offsetX="10" offsetY="0" />
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)Body">
+                    <Dimensions y="450" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Header" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="14" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Header" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="14" />
+
+                    <Controls>
+                        <Label name="$(parent)ComingSoon" font="ZoFontHeader3" color="FFB800" text="Coming Soon - Currently Under Development" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+                            <Dimensions x="600" y="0" />
+                            <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="0" />
+                            <OnInitialized>
+                                self:SetText(TiradilL10n.Get("TRIALLOG_COMING_SOON"))
+                            </OnInitialized>
+                        </Label>
+                        <Label name="$(parent)Hint" font="ZoFontGameSmall" color="A0A0A0" wrapMode="ELLIPSIS" hidden="true">
+                            <Dimensions x="640" y="0" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="18" offsetY="0" />
+                            <OnInitialized>
+                                self:SetText(TiradilL10n.Get("TRIALLOG_HINT"))
+                            </OnInitialized>
+                        </Label>
+                        <Label name="$(parent)None" font="ZoFontGameSmall" color="A0A0A0" hidden="true">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Hint" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="14" />
+                        </Label>
+                        <Control name="$(parent)List" inherits="ZO_ScrollList" hidden="true">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Hint" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="14" />
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-18" offsetY="0" />
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)Footer">
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="18" offsetY="-18" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-18" offsetY="-18" />
+                    <Dimensions y="28" />
+                    <Controls>
+                        <Label name="$(parent)Status" font="ZoFontGameSmall" color="A0A0A0" horizontalAlignment="LEFT" verticalAlignment="CENTER" wrapMode="ELLIPSIS" hidden="true">
+                            <Dimensions x="280" y="0" />
+                            <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
+                        </Label>
+                        <Button name="$(parent)ShareBtn" inherits="ZO_DefaultButton" hidden="true">
+                            <Dimensions x="190" y="28" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+                            <OnInitialized>
+                                self:SetText(TiradilL10n.Get("TRIALLOG_BTN_SHARE"))
+                            </OnInitialized>
+                            <OnClicked>
+                                TiradilTrialLog.ShareLatestToOfficerChat()
+                            </OnClicked>
+                        </Button>
+                        <Button name="$(parent)LogBtn" inherits="ZO_DefaultButton" hidden="true">
+                            <Dimensions x="190" y="28" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)ShareBtn" relativePoint="LEFT" offsetX="-10" offsetY="0" />
+                            <OnInitialized>
+                                self:SetText(TiradilL10n.Get("TRIALLOG_BTN_LOG"))
+                            </OnInitialized>
+                            <OnClicked>
+                                TiradilTrialLog.LogCurrentGroup()
+                            </OnClicked>
+                        </Button>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

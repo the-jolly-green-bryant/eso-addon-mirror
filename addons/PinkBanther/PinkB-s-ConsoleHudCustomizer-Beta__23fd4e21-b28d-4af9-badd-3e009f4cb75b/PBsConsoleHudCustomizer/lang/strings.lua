@@ -16,10 +16,11 @@ local strings = {
 	-- ---- The look of the resource bars ---------------------------------------------------
 	SI_PBSCHC_SECTION_STYLE = "The look of the bars",
 	SI_PBSCHC_STYLE = "Bar style",
-	SI_PBSCHC_STYLE_TOOLTIP = "Standard is the game's own bars, untouched. Square draws each bar as a flat rectangle -- a dark track and a solid block of the power's own colour -- with the game's arrow-shaped frame and background put away, at the size the game draws it. MURA-HIGE Style is the same rectangle at a width and a height of your own, set below. Either way the bars themselves are left in place and still doing their work, so damage shields, armour changes and the low-health warning all still show on top.",
+	SI_PBSCHC_STYLE_TOOLTIP = "Standard is the game's own bars, untouched. Square draws each bar as a flat rectangle -- a dark track and a solid block of the power's own colour -- with the game's arrow-shaped frame and background put away, at the size the game draws it. MURA-HIGE Style is the same rectangle at a width and a height of your own, set below. MURA-HIGE NEO Style uses the same size settings, with health, magicka and stamina all filling from left to right. In these styles the bars themselves are left in place and still doing their work, so damage shields, armour changes and the low-health warning all still show on top.",
 	SI_PBSCHC_STYLE_STANDARD = "Standard",
 	SI_PBSCHC_STYLE_PLAIN = "Square",
 	SI_PBSCHC_STYLE_ROUNDED = "MURA-HIGE Style",
+	SI_PBSCHC_STYLE_NEO = "MURA-HIGE NEO Style",
 	SI_PBSCHC_PLAIN_OPACITY = "How solid",
 	SI_PBSCHC_PLAIN_OPACITY_TOOLTIP = "How solid the rectangles are. 100% hides the game's own fill completely; below that it shows through, which is one way to keep a little of the original look.",
 	SI_PBSCHC_PLAIN_BORDER = "Draw an outline",
@@ -41,9 +42,9 @@ local strings = {
 	SI_PBSCHC_SKILLBAR_ENABLED = "Let this add-on touch the skill bar",
 	SI_PBSCHC_SKILLBAR_ENABLED_TOOLTIP = "Turn this off to hand the skill bar back to the game, and to any other add-on that lays it out. Its position and size, the spacing along it, the other weapon set's row, the countdown and target count on the icons and the shade over a skill in use are all put back and stay off; the settings are kept for when you turn it on again. The health, magicka and stamina bars are not affected.",
 	SI_PBSCHC_BAR_WIDTH = "<<1>>: bar width",
-	SI_PBSCHC_BAR_WIDTH_TOOLTIP = "How wide the bar is drawn, in pixels. MURA-HIGE Style only: that style draws the bar itself, so it can be given a size. The other styles scale the game's own bar instead, because the width of those controls is the game's to write. The game's own is 224.",
+	SI_PBSCHC_BAR_WIDTH_TOOLTIP = "How wide the bar is drawn, in pixels. MURA-HIGE Style and MURA-HIGE NEO Style only: that style draws the bar itself, so it can be given a size. The other styles scale the game's own bar instead, because the width of those controls is the game's to write. The game's own is 224.",
 	SI_PBSCHC_BAR_HEIGHT = "<<1>>: bar height",
-	SI_PBSCHC_BAR_HEIGHT_TOOLTIP = "How tall the bar is drawn, in pixels. MURA-HIGE Style only. The game's own is 17.",
+	SI_PBSCHC_BAR_HEIGHT_TOOLTIP = "How tall the bar is drawn, in pixels. MURA-HIGE Style and MURA-HIGE NEO Style only. The game's own is 17.",
 
 	-- ---- The gaps along the skill bar ----------------------------------------------------
 	SI_PBSCHC_SECTION_GAPS = "Spacing along the skill bar",
@@ -107,6 +108,15 @@ local strings = {
 	SI_PBSCHC_RESET = "Reset everything",
 	SI_PBSCHC_RESET_TOOLTIP = "Put all three bars back where the game draws them, at the game's own size.",
 	SI_PBSCHC_RESET_BUTTON = "Reset",
+
+	SI_PBSCHC_SECTION_TRACE = "Measurement",
+	SI_PBSCHC_TRACE_HINT = "For working out why an ability's countdown is wrong. Press Start, cast the ability once -- for one that is aimed, place it once and cancel it once -- then press Show: what the game sent, and when, is written into the chat window. It records nothing until Start is pressed and stops again at Show, and it changes nothing on the screen either way.",
+	SI_PBSCHC_TRACE_START = "Record a cast",
+	SI_PBSCHC_TRACE_START_TOOLTIP = "Start writing down every press, ground-targeting circle, effect and combat event of the abilities you cast from now on.",
+	SI_PBSCHC_TRACE_START_BUTTON = "Start",
+	SI_PBSCHC_TRACE_SHOW = "Show what was recorded",
+	SI_PBSCHC_TRACE_SHOW_TOOLTIP = "Stop recording and write the whole record into the chat window, oldest first, with the time each line arrived.",
+	SI_PBSCHC_TRACE_SHOW_BUTTON = "Show",
 
 	SI_PBSCHC_GAME_SETTINGS_HINT = "Whether the numbers are shown on the bars, and whether the bars fade out when nothing is happening, are the game's own settings under Settings > Interface. An add-on cannot change those, so set them there.",
 

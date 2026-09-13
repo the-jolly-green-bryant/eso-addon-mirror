@@ -1,5 +1,5 @@
-2026.09.11
-- Added slight delay to the missing bank item processing to make opening the bank feel a little more fluid.
+2026.09.13
+- Completely re-wrote the bank missing items check with such incredible awesomeness that theres no more jitter as all, so I also removed the manual check since no more need.
 ** POSSIBLE FUTURE OPTIONS **
 - Auto com res?
 

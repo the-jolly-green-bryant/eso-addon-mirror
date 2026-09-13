@@ -1,0 +1,6 @@
+<GuiXml>
+	<Controls>
+		<Texture name="LL_WorldPin" virtual="true" />
+		<TopLevelControl name="LL_WorldPins" layer="0" level="0" />
+	</Controls>
+</GuiXml>

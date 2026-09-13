@@ -363,6 +363,21 @@ end
 -- With no second set, a row showing one is a row of nothing useful, so it goes away on its own.
 -- ---------------------------------------------------------------------------------------
 
+-- Match the equipped ring's icon, as FancyActionBar+ does. The worn slots make
+-- this independent of inventory contents, item quality and localized item names.
+local OAKENSOUL_ICON = "esoui/art/icons/u34_mythic_oakensoul_ring.dds"
+
+function addon:OakensoulEquipped()
+	if type(GetItemInfo) ~= "function" or BAG_WORN == nil then return false end
+	local function Matches(slot)
+		if slot == nil then return false end
+		local ok, icon = pcall(GetItemInfo, BAG_WORN, slot)
+		return ok and type(icon) == "string"
+			and icon:lower():gsub("^/", "") == OAKENSOUL_ICON
+	end
+	return Matches(EQUIP_SLOT_RING1) or Matches(EQUIP_SLOT_RING2)
+end
+
 function addon:WeaponSwapState()
 	if type(GetUnitLevel) == "function" and type(GetWeaponSwapUnlockedLevel) == "function" then
 		local okLevel, level = pcall(GetUnitLevel, "player")
@@ -382,4 +397,85 @@ end
 
 function addon:WeaponSwapAvailable()
 	return (self:WeaponSwapState())
+end
+
+-- The front bar's size belongs to its physical controls, not to either weapon set.
+-- Keep the user scale on ZO_ActionBar1 only; slot, FlipCard and Icon use local scale 1.
+-- The separate back row applies BackBarScale to its own controls in Timers.lua.
+local function Playing(timeline)
+	return timeline and type(timeline.IsPlaying) == "function" and timeline:IsPlaying()
+end
+
+local function RestoreScale(control, scale)
+	if control and type(control.GetScale) == "function" and control:GetScale() ~= scale then
+		return addon:Write("skill icon scale", control.SetScale, control, scale)
+	end
+	return false
+end
+
+local function RestoreSize(control, size)
+	if not control or type(control.GetDimensions) ~= "function" then return false end
+	local width, height = control:GetDimensions()
+	if math.abs(width - size) > 0.01 or math.abs(height - size) > 0.01 then
+		return addon:Write("skill icon", control.SetDimensions, control, size, size)
+	end
+	return false
+end
+
+-- ApplySwapAnimationStyle reads FlipCard's current dimensions and stores them in the
+-- timeline. Fixing the control alone leaves a stale endpoint to be replayed on the
+-- next swap. Write canonical local dimensions to the idle timeline as well, without
+-- invoking the client's ApplyStyle (which also updates protected combat state).
+local function RestoreSwapSize(timeline, size)
+	if not timeline or type(timeline.GetFirstAnimation) ~= "function"
+		or type(timeline.GetLastAnimation) ~= "function" then return false end
+	local first, last = timeline:GetFirstAnimation(), timeline:GetLastAnimation()
+	if not first or not last then return false end
+	local ok = addon:Write("skill swap size", first.SetStartAndEndWidth, first, size, size)
+	ok = addon:Write("skill swap size", first.SetStartAndEndHeight, first, size, 0) and ok
+	ok = addon:Write("skill swap size", last.SetStartAndEndWidth, last, size, size) and ok
+	return addon:Write("skill swap size", last.SetStartAndEndHeight, last, 0, size) and ok
+end
+
+function skillbar:RepairIcons()
+	if not addon:SkillBarAllowed() or type(IsInGamepadPreferredMode) ~= "function"
+		or not IsInGamepadPreferredMode() or type(ZO_ActionBar_GetButton) ~= "function" then
+		return
+	end
+	RestoreScale(addon:Control(addon.actionBar), addon:ScalePercent(addon.actionBar) / 100)
+	self.iconStates = self.iconStates or {}
+	local hotbar = type(GetActiveHotbarCategory) == "function" and GetActiveHotbarCategory() or nil
+	for slot = FIRST_SLOT, ULTIMATE_SLOT do
+		local ok, button = pcall(ZO_ActionBar_GetButton, slot)
+		if ok and button then
+			local state = self.iconStates[slot]
+			if not state or state.button ~= button then
+				state = { button = button, dirty = true }
+				self.iconStates[slot] = state
+			end
+			if state.hotbar ~= hotbar then state.dirty = true end
+			state.hotbar = hotbar
+			if Playing(button.bounceAnimation) or Playing(button.iconBounceAnimation)
+				or Playing(button.hotbarSwapAnimation) then
+				-- Animation owns these dimensions until it finishes or is interrupted.
+				state.dirty = true
+			else
+				local size = slot == ULTIMATE_SLOT and (ZO_GAMEPAD_ULTIMATE_BUTTON_SIZE or 67)
+					or (ZO_GAMEPAD_ACTION_BUTTON_SIZE or 61)
+				local slotControl = button.slot or self:Button(slot)
+				RestoreScale(slotControl, 1)
+				RestoreScale(button.flipCard, 1)
+				RestoreScale(button.icon, 1)
+				RestoreSize(slotControl, size + 3)
+				local frameChanged = RestoreSize(button.flipCard, size)
+				RestoreSize(button.icon, size)
+				if state.dirty or frameChanged or state.timeline ~= button.hotbarSwapAnimation then
+					if RestoreSwapSize(button.hotbarSwapAnimation, size) then
+						state.timeline = button.hotbarSwapAnimation
+						state.dirty = false
+					end
+				end
+			end
+		end
+	end
 end

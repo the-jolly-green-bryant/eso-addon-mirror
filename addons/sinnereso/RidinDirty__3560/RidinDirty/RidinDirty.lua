@@ -1,7 +1,7 @@
 RidinDirty = {
 	name = "RidinDirty",
 	author = "@sinnereso",
-	version = "2026.09.11",
+	version = "2026.09.13",
 	svName = "RidinDirtyVars",
 	svVersion = 1,
 	tradeTable = {},
@@ -191,33 +191,28 @@ local function PassengerStateChange(eventCode, isMounted)
 end
 
 local function CheckBankMemory()
-	local missingItems = ZO_DeepTableCopy(RidinDirty.savedVariables["Banked Memory"])
+	local displayMessage = true
+	local itemFound = false
 	for i, v in pairs(RidinDirty.savedVariables["Banked Memory"]) do
-		if i ~= nil and i ~= "version" then
+		if i ~= nil and i ~= "version" and i ~= "default" then
 			for slotIndex = 0, GetBagSize(BAG_BANK) - 1 do
-				itemId = GetItemId(BAG_BANK, slotIndex)
-				itemLink = GetItemLink(BAG_BANK, slotIndex, LINK_STYLE_BRACKETS)
-				if itemId ~= nil then missingItems[itemId] = nil end
+				if i == GetItemId(BAG_BANK, slotIndex) then itemFound = true break end
 			end
 			if IsESOPlusSubscriber() then
 				for slotIndex = 0, GetBagSize(BAG_SUBSCRIBER_BANK) - 1 do
-					itemId = GetItemId(BAG_SUBSCRIBER_BANK, slotIndex)
-					itemLink = GetItemLink(BAG_SUBSCRIBER_BANK, slotIndex, LINK_STYLE_BRACKETS)
-					if itemId ~= nil then missingItems[itemId] = nil end
+					if i == GetItemId(BAG_SUBSCRIBER_BANK, slotIndex) then itemFound = true break end
 				end
 			end
+			if not itemFound then
+				if displayMessage then displayMessage = false df("--- Items Missing From Bank ---") end
+				df(rdLogo .. tostring(v))
+			end
 		end
-	end
-	local missingMessage = false
-	for i, v in pairs(missingItems) do
-		if i ~= nil and i ~= "version" and i ~= "default" then
-			if not missingMessage then missingMessage = true df("--- Items Missing From Bank ---") end
-			df(rdLogo .. tostring(v))
-		end
+		itemFound = false
 	end
 end
 
-local function SaveBankMemory()
+local function SaveBankMemory()--BAG_FURNITURE_VAULT
 	ESO_Dialogs["BANK_MEMORY_SAVE_CONFIRM_DIALOG"] = {
 		canQueue = true,
 		title = {
@@ -270,8 +265,8 @@ local function ClearBankMemory()
 				text = SI_DIALOG_CONFIRM,
 				callback = function(dialog)
 					RidinDirty.bankedMemory = ZO_SavedVars:NewAccountWide( RidinDirty.svName, 2, "Banked Memory", defaultBankedVars )
-					zo_callLater(function() ReloadUI() end, 500)
 					ZO_Alert(UI_ALERT_CATEGORY_ALERT, "PlayerAction_NotEnoughMoney", "Bank memory reset.")
+					zo_callLater(function() ReloadUI() end, 500)
 				end,
 			},
 			[2] = {
@@ -723,6 +718,26 @@ local function RDInitializeControls()
 		controls = {
 			{
 				type = "checkbox",
+				name = "Custom Withdrawls",
+				tooltip = "Adds popup withdraw 1 and withdraw (custom amount) from all storages if stack size permits",
+				getFunc = function() return RidinDirty.savedVariables.withdrawOne end,
+				setFunc = function(value) RidinDirty.WithdrawOneToggle(value) end,
+				width = "half",
+			},
+			{
+				type = "slider",
+				name = "Custom Withdraw Amount",
+				tooltip = "Amount for custom withdraw option from all storages if stack size permits",
+				min = 5,
+				max = 50,
+				step = 5,
+				getFunc = function() return RidinDirty.savedVariables.withdrawAmount end,
+				setFunc = function(value) RidinDirty.savedVariables.withdrawAmount = (value) end,
+				disabled = function() return not RidinDirty.savedVariables.withdrawOne end,
+				width = "half",
+			},
+			{
+				type = "checkbox",
 				name = "Bank Manager",
 				tooltip = "Fills select existing stacks in bank. Does not stack foods, drinks, potions, poisons, soul gems or tools",
 				getFunc = function() return RidinDirty.savedVariables.bankManager end,
@@ -755,40 +770,18 @@ local function RDInitializeControls()
 			},
 			{
 				type = "checkbox",
-				name = "Custom Withdrawls",
-				tooltip = "Adds popup withdraw 1 and withdraw (custom amount) from all storages if stack size permits",
-				getFunc = function() return RidinDirty.savedVariables.withdrawOne end,
-				setFunc = function(value) RidinDirty.WithdrawOneToggle(value) end,
-				width = "half",
-			},
-			{
-				type = "slider",
-				name = "Custom Withdraw Amount",
-				tooltip = "Amount for custom withdraw option from all storages if stack size permits",
-				min = 5,
-				max = 50,
-				step = 5,
-				getFunc = function() return RidinDirty.savedVariables.withdrawAmount end,
-				setFunc = function(value) RidinDirty.savedVariables.withdrawAmount = (value) end,
-				disabled = function() return not RidinDirty.savedVariables.withdrawOne end,
-				width = "half",
-			},
-			{
-				type = "checkbox",
-				name = "Auto Check Bank Memory",
-				tooltip = "Compares the current bank inventory to the saved bank memory when opening the bank",
+				name = "Check Missing Items",
+				tooltip = "Automatically compares the current bank inventory to the saved bank memory when opening the bank. Currently ONLY works for the bank",
 				getFunc = function() return RidinDirty.savedVariables.checkBankMemory end,
 				setFunc = function(value) RidinDirty.savedVariables.checkBankMemory = (value) end,
-				warning = "Can cause minor stutter opening banks due to the full missing item scan. Requires Bank Manager. Temporarily disables while crafting writ active",
+				warning = "Requires Bank Manager. Temporarily disables while crafting writ active",
 				disabled = function() return not RidinDirty.savedVariables.bankManager end,
-				width = "full",
 			},
 			{
 				type = "button",
 				name = "RESET BANK MEMORY",
 				tooltip = "Completely clears bank memory & reloads UI",
 				func = function() ClearBankMemory() end,
-				disabled = function() return not RidinDirty.savedVariables.checkBankMemory end,
 				isDangerous = true,
 				width = "half",
 			},
@@ -797,7 +790,6 @@ local function RDInitializeControls()
 				name = "SAVE BANK MEMORY",
 				tooltip = "Saves current bank inventory to memory for comparison when opening banks",
 				func = function() SaveBankMemory() end,
-				disabled = function() return not RidinDirty.savedVariables.checkBankMemory end,
 				width = "half",
 			},
 			{
@@ -1788,7 +1780,7 @@ end
 ---------------------------------------------
 ------ AUTO BANK & STORAGE STACKER --
 ---------------------------------------------
-local function BankBalances(eventCode, bankBag, carriedGold, carriedAP, carriedTelvar, carriedVoucher, moveGold, moveAP, moveTelvar, moveVoucher)
+local function BankBalances(eventCode, bagId, carriedGold, carriedAP, carriedTelvar, carriedVoucher, moveGold, moveAP, moveTelvar, moveVoucher)
 	--if not RidinDirty.savedVariables.balanceDisplay then return end
 	local bankedCurrencies = (rdLogo .. "Balances:")
 	local curbankGold = GetBankedCurrencyAmount(CURT_MONEY)
@@ -1814,7 +1806,7 @@ local function BankBalances(eventCode, bankBag, carriedGold, carriedAP, carriedT
 	if bankedCurrencies ~= (rdLogo .. "Balances:") then df(bankedCurrencies) end
 end
 
-local function DepositCurrency(eventCode, bankBag)
+local function DepositCurrency(eventCode, bagId)
 	local moveGold = false
 	local moveAP = false
 	local moveTelvar = false
@@ -1879,24 +1871,24 @@ local function DepositCurrency(eventCode, bankBag)
 		end
 	end
 	if RidinDirty.savedVariables.balanceDisplay then
-		BankBalances(eventCode, bankBag, carriedGold, carriedAP, carriedTelvar, carriedVoucher, moveGold, moveAP, moveTelvar, moveVoucher)
+		BankBalances(eventCode, bagId, carriedGold, carriedAP, carriedTelvar, carriedVoucher, moveGold, moveAP, moveTelvar, moveVoucher)
 	end
 	if RidinDirty.savedVariables.checkBankMemory then
-		zo_callLater(function() CheckBankMemory() end, 500)
+		CheckBankMemory()
 	end
 end
 
-local function BankManager(eventCode, bankBag)
-	if bankBag ~= BAG_BANK and not RidinDirty.savedVariables.storageManager then return end
+local function BankManager(eventCode, bagId)
+	if bagId ~= BAG_BANK and not RidinDirty.savedVariables.storageManager then return end
 	if HasWritQuest() then ZO_Alert(UI_ALERT_CATEGORY_ALERT, "PlayerAction_NotEnoughMoney", "Auto deposit disabled while writ quests active.") return end--<< CRAFTING WRIT COMPATIBILITY
-	local bankCache = SHARED_INVENTORY:GetOrCreateBagCache(bankBag)
+	local bankCache = SHARED_INVENTORY:GetOrCreateBagCache(bagId)
 	local bagCache  = SHARED_INVENTORY:GetOrCreateBagCache(BAG_BACKPACK)
-	if (RidinDirty.savedVariables.bankManager and bankBag == BAG_BANK) or (RidinDirty.savedVariables.storageManager and bankBag ~= BAG_BANK) then
+	if (RidinDirty.savedVariables.bankManager and bagId == BAG_BANK) or (RidinDirty.savedVariables.storageManager and bagId ~= BAG_BANK) then
 		for bankSlot, bankSlotData in pairs(bankCache) do
-			local bankStack, bankMaxStack = GetSlotStackSize(bankBag, bankSlot)
+			local bankStack, bankMaxStack = GetSlotStackSize(bagId, bankSlot)
 			if bankStack > 0 and bankStack < bankMaxStack then
 				for bagSlot, bagSlotData in pairs(bagCache) do
-					if ((bankBag == BAG_BANK and not RidinDirty.savedVariables.bankALL) or (bankBag ~= BAG_BANK and not RidinDirty.savedVariables.storageAll))
+					if ((bagId == BAG_BANK and not RidinDirty.savedVariables.bankALL) or (bagId ~= BAG_BANK and not RidinDirty.savedVariables.storageAll))
 						and (bankSlotData.itemType == ITEMTYPE_FOOD or bankSlotData.itemType == ITEMTYPE_DRINK or bankSlotData.itemType == ITEMTYPE_POTION
 						or bankSlotData.itemType == ITEMTYPE_POISON or bankSlotData.itemType == ITEMTYPE_SOUL_GEM or bankSlotData.itemType == ITEMTYPE_TOOL
 						or bankSlotData.itemType == ITEMTYPE_AVA_REPAIR or bankSlotData.itemType == ITEMTYPE_RECALL_STONE or bankSlotData.itemType == ITEMTYPE_SIEGE) then break end
@@ -1905,9 +1897,9 @@ local function BankManager(eventCode, bankBag)
 						local bagItemLink = GetItemLink(BAG_BACKPACK, bagSlot, LINK_STYLE_DEFAULT)
 						local quantity = zo_min(bagStack, bankMaxStack - bankStack)
 						if IsProtectedFunction("RequestMoveItem") then
-							CallSecureProtected("RequestMoveItem", BAG_BACKPACK, bagSlot, bankBag, bankSlot, quantity)
+							CallSecureProtected("RequestMoveItem", BAG_BACKPACK, bagSlot, bagId, bankSlot, quantity)
 						else
-							RequestMoveItem(BAG_BACKPACK, bagSlot, bankBag, bankSlot, quantity)
+							RequestMoveItem(BAG_BACKPACK, bagSlot, bagId, bankSlot, quantity)
 						end
 						df(zo_strformat(rdLogo .. "Deposited: [<<1>>/<<2>>] <<t:3>>", quantity, bagStack, bagItemLink))
 						local bankStack = bankStack + quantity
@@ -1922,12 +1914,12 @@ local function BankManager(eventCode, bankBag)
 	if IsESOPlusSubscriber() then
 		local subBankCache = SHARED_INVENTORY:GetOrCreateBagCache(BAG_SUBSCRIBER_BANK)
 		local subBagCache  = SHARED_INVENTORY:GetOrCreateBagCache(BAG_BACKPACK)
-		if (RidinDirty.savedVariables.bankManager and bankBag == BAG_BANK) then
+		if (RidinDirty.savedVariables.bankManager and bagId == BAG_BANK) then
 			for bankSlot, bankSlotData in pairs(subBankCache) do
 				local bankStack, bankMaxStack = GetSlotStackSize(BAG_SUBSCRIBER_BANK, bankSlot)
 				if bankStack > 0 and bankStack < bankMaxStack then
 					for bagSlot, bagSlotData in pairs(subBagCache) do
-						if (bankBag == BAG_BANK and not RidinDirty.savedVariables.bankALL)
+						if (bagId == BAG_BANK and not RidinDirty.savedVariables.bankALL)
 							and (bankSlotData.itemType == ITEMTYPE_FOOD or bankSlotData.itemType == ITEMTYPE_DRINK or bankSlotData.itemType == ITEMTYPE_POTION
 							or bankSlotData.itemType == ITEMTYPE_POISON or bankSlotData.itemType == ITEMTYPE_SOUL_GEM or bankSlotData.itemType == ITEMTYPE_TOOL
 							or bankSlotData.itemType == ITEMTYPE_AVA_REPAIR or bankSlotData.itemType == ITEMTYPE_RECALL_STONE or bankSlotData.itemType == ITEMTYPE_SIEGE) then break end
@@ -1951,8 +1943,8 @@ local function BankManager(eventCode, bankBag)
 			end
 		end
 	end
-	if bankBag ~= BAG_BANK then return end
-	DepositCurrency(eventCode, bankBag)
+	if bagId ~= BAG_BANK then return end
+	DepositCurrency(eventCode, bagId)
 end
 ---------------------------------------------
 ----- WITHDRAW 1 and CUSTOM POPUP MENU --
@@ -2920,23 +2912,25 @@ end
 local function CombatReticle()
 	local target = "reticleover"
 	if DoesUnitExist(target) and not IsUnitPlayer(target) then
-		local tauntEnding, immuneEnding, playerTaunt = 0, 0, false
+		local tauntEnd, immuneEnd, playerTaunt = 0, 0, false
 		for buff = 1, GetNumBuffs(target) do
-			local buffName, timeStarted, timeEnding, _, stackCount, _, buffType, effectType, abilityType, statusType, abilityId, _, playerCast = GetUnitBuffInfo(target, buff)
-			if abilityType == 7 then
-				tauntEnding = timeEnding
+			local buffName, timeStarted, timeEnd, _, stackCount, _, buffType, effectType, abilityType, statusType, abilityId, _, playerCast = GetUnitBuffInfo(target, buff)
+			if abilityId == 52788 then
+				immuneEnd = timeEnd
+				break
+			elseif abilityType == 7 then
+				tauntEnd = timeEnd
 				if playerCast then playerTaunt = true end
 			end
-			if abilityId == 52788 then immuneEnding = timeEnding end
 		end
-		if immuneEnding ~= 0 then
+		if immuneEnd ~= 0 then
 			RidinDirty.TauntCounter.label:SetColor(128,0,0,1)
 			RidinDirty.TauntCounter.label:SetText("IMMUNE")
 			RidinDirty.Combat:SetAlpha(0)
 			RidinDirty.TauntCounter:SetAlpha(1)
 			return
-		elseif tauntEnding ~= 0 then
-			local timeLeft = zo_roundToNearest(tauntEnding - GetFrameTimeSeconds(), 1)
+		elseif tauntEnd ~= 0 then
+			local timeLeft = zo_roundToNearest(tauntEnd - GetFrameTimeSeconds(), 1)
 			if playerTaunt then
 				if timeLeft <= 3 then
 					RidinDirty.TauntCounter.label:SetColor(128,128,0,1)

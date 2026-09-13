@@ -3,7 +3,7 @@ local BB = BetterBuffs
 
 BB.name = "BetterBuffs"
 BB.displayName = "Better Buffs"
-BB.version = "0.3.16"
+BB.version = "0.3.17"
 BB.savedVariableVersion = 2
 
 local displayDefaults = {
@@ -183,23 +183,39 @@ function BB:IsEffectAutoRelevant(key)
     return effect.autoGroupEffect == true and self.Runtime and self.Runtime:HasAutoGroupState(key) or false
 end
 
--- Observation is broader than presentation. AUTO group-awareness effects must be
--- observed even before the first application so the application itself can make
--- the tile relevant. HIDDEN remains an absolute HUD override but may still be
--- observed internally for analytics/intelligence.
+-- Observation is intentionally narrower than presentation relevance. AUTO
+-- group-awareness effects must be observed before their first application so the
+-- application itself can make the tile relevant. HIDDEN, however, is a genuine
+-- runtime-off state unless another enabled Better Buffs feature explicitly
+-- consumes that effect (for example Current Pen/Crit Damage in the Stats Module).
+-- This prevents a user with every effect HIDDEN from paying the cost of tracking
+-- the entire raid effect registry simply because those definitions support AUTO.
+function BB:IsEffectRequiredByLiveConsumer(key)
+    local effect = self.Registry and self.Registry.byKey[key]
+    if not effect then return false end
+
+    local stats = self.saved and self.saved.ui and self.saved.ui.stats
+    local statsVisible = stats and stats.visibility == "SELF"
+    if statsVisible and (effect.affectsPenetration or effect.criticalDamageTaken or effect.criticalDamagePerStack) then
+        return true
+    end
+    return false
+end
+
 function BB:ShouldObserveEffect(key)
     if not self.saved or not self.saved.enabled then return false end
     local mode = self:GetEffectVisibilityMode(key)
     if mode == VISIBILITY_ALWAYS then return true end
     local effect = self.Registry and self.Registry.byKey[key]
     if not effect then return false end
+    if mode == VISIBILITY_HIDDEN then return self:IsEffectRequiredByLiveConsumer(key) end
     if effect.autoGroupEffect == true then return true end
     return self:IsEffectAutoTracked(key)
 end
 
 -- Presentation preference and runtime observation are deliberately separate.
--- HIDDEN is absolute for the HUD, while the runtime may still observe an
--- automatically relevant provider so analytics/intelligence can remain correct.
+-- HIDDEN is absolute for the HUD and is runtime-dormant unless an enabled live
+-- consumer explicitly requires the effect state.
 function BB:IsEffectVisible(key)
     if not self.saved or not self.saved.enabled then return false end
     local mode = self:GetEffectVisibilityMode(key)

@@ -53,7 +53,7 @@ local function GetThisWeekStartEpoch()
     local midnightUTC = nowEpoch - (utc.hour * 3600 + utc.min * 60 + utc.sec)
     local daysSinceTuesday = (utc.wday - 3) % 7
     local tuesdayMidnightUTC = midnightUTC - daysSinceTuesday * 86400
-    local resetEpoch = tuesdayMidnightUTC + 14 * 3600 -- 17:00 TR (UTC+3) = 14:00 UTC
+    local resetEpoch = tuesdayMidnightUTC + 14 * 3600
     if resetEpoch > nowEpoch then
         resetEpoch = resetEpoch - 7 * 86400
     end
@@ -77,7 +77,7 @@ end
 TiradilRoster.events = { {}, {}, {}, {}, {}, {}, {}, {} }
 TiradilRoster.currentTab = 1
 TiradilRoster.currentSearch = ""
-TiradilRoster.currentGuildFilter = nil -- nil = All
+TiradilRoster.currentGuildFilter = nil
 TiradilRoster.currentDateFilter = "All"
 TiradilRoster.statsMode = false
 
@@ -396,7 +396,6 @@ function TiradilRoster.Initialize()
 
     InitializeList()
     ConfigureGuildFilterButtons()
-    SLASH_COMMANDS["/roster"] = SlashCommand_Roster
 
     TiradilRosterWindow:SetMovable(true)
 

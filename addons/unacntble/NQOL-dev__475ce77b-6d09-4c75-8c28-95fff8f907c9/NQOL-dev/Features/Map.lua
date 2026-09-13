@@ -7,6 +7,7 @@ local defaults = {
     map = {
         freeport = false,
         freeportFallback = "auto",
+        freeportFailedPlayers = {},
         bypassFastTravelConfirmation = false,
         showDungeons = false,
         showTrials = false,
@@ -34,6 +35,7 @@ local function GetSettings()
 
     NQOL.Settings.Default(settings, defaultSettings, "freeport")
     NQOL.Settings.Default(settings, defaultSettings, "freeportFallback")
+    NQOL.Settings.EnsureTable(settings, "freeportFailedPlayers")
     NQOL.Settings.Default(settings, defaultSettings, "bypassFastTravelConfirmation")
     NQOL.Settings.Default(settings, defaultSettings, "showDungeons")
     NQOL.Settings.Default(settings, defaultSettings, "showTrials")
@@ -231,6 +233,10 @@ end
 
 function Map.GetFreeportFallbackChoiceNames()
     return FREEPORT_FALLBACK_CHOICE_NAMES
+end
+
+function Map.GetFreeportFailedPlayers()
+    return GetSettings().freeportFailedPlayers
 end
 
 function Map.GetBypassFastTravelConfirmation()

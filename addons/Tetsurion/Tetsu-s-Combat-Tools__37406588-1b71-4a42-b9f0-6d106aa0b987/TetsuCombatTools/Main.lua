@@ -26,6 +26,7 @@ local defaultAccountVars = {
     statusTextScale = 100,
     statusSound = true,
     statusSoundId = "duel",
+    statusSoundVolume = 2,
     consEnabled = true,
     consOffsetX = 0,
     consOffsetY = 220,
@@ -140,6 +141,7 @@ local function OnAddOnLoaded(_, addonName)
         T.ConsStart()
     end
     if T.savedVars.linkEnabled == nil then T.savedVars.linkEnabled = true end
+    if T.savedVars.statusSoundVolume == nil then T.savedVars.statusSoundVolume = 2 end
     if T.savedVars.linkForceGroup == nil then T.savedVars.linkForceGroup = true end
 
     if T.TimerStart then

@@ -218,15 +218,13 @@ end
 function P.OnBossEffect(_, changeType, _slot, effectName, unitTag, beginTime, endTime, _s, _i, _bt, _et, _at, _st, _un, _uid, abilityId)
     if not unitTag then return end
     if unitTag:find("^boss") then
-        -- ok
+        -- official boss bar only
     elseif unitTag == "reticleover" then
-        local vars = Vars()
-        if vars and vars.debuffOnTarget == false then return end
-        if T.IsDebuffTarget and not T.IsDebuffTarget("reticleover") then return end
+        if not T.AllowDummyReticle or not T.AllowDummyReticle() then return end
     else
         return
     end
-    local keys = T.KeysFromAbility and T.KeysFromAbility(abilityId, effectName)
+    local keys = T.KeysFromAbility and T.KeysFromAbility(abilityId, effectName, false)
     if not keys or not next(keys) then return end
     if T.HasWatchedKey and not T.HasWatchedKey(keys) then return end
     bossFx[unitTag] = bossFx[unitTag] or {}
@@ -264,7 +262,7 @@ function P.ScanBoss(tag)
     for i = 1, n do
         local ok, name, _s, ending, _sl, _st, _ic, _bt, _et, _at, _se, id = pcall(GetUnitBuffInfo, tag, i)
         if ok then
-            local keys = T.KeysFromAbility and T.KeysFromAbility(id, name)
+            local keys = T.KeysFromAbility and T.KeysFromAbility(id, name, true)
             if keys and next(keys) and (not T.HasWatchedKey or T.HasWatchedKey(keys)) then
                 local endMs = 0
                 if ending and ending > 0 then endMs = math.floor(ending * 1000) end
@@ -278,6 +276,17 @@ function P.ScanBoss(tag)
     end
     if not bag.offBalanceImm and not bag.offBalance and keepImm and keepImm > Now() then
         bag.offBalanceImm = keepImm
+    end
+end
+
+function P.ClearBossFx()
+    for tag, bag in pairs(bossFx) do
+        if type(bag) == "table" then
+            for k in pairs(bag) do
+                bag[k] = nil
+            end
+        end
+        bossFx[tag] = nil
     end
 end
 
@@ -448,9 +457,8 @@ local function LiveBosses()
             end
         end
     end
-    local allowTarget = not Vars() or Vars().debuffOnTarget ~= false
-    if allowTarget and #list == 0 and T.IsDebuffTarget and T.IsDebuffTarget("reticleover") then
-        local name = GetUnitName and GetUnitName("reticleover") or "Target"
+    if #list == 0 and T.AllowDummyReticle and T.AllowDummyReticle() then
+        local name = GetUnitName and GetUnitName("reticleover") or "Dummy"
         list[1] = { tag = "reticleover", name = name, target = true, idx = 0 }
     end
     if #list > MAX_BOSS then

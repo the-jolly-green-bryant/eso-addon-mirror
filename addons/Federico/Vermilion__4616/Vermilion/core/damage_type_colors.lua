@@ -23,6 +23,8 @@ put(zc.DAMAGE_TYPE_EARTH,    0.55, 0.40, 0.25)
 put(zc.DAMAGE_TYPE_DROWN,    0.25, 0.45, 0.55)
 put(zc.DAMAGE_TYPE_GENERIC,  0.70, 0.70, 0.70)
 put(zc.DAMAGE_TYPE_NONE,     0.50, 0.50, 0.50)
+DTC.SHIELD = -1
+put(DTC.SHIELD,              0.85, 0.40, 0.75)
 
 local FALLBACK = { r = 0.70, g = 0.70, b = 0.70, a = 0.90 }
 
@@ -42,6 +44,7 @@ nm(zc.DAMAGE_TYPE_EARTH,   "Earth")    nm(zc.DAMAGE_TYPE_MAGIC,    "Magic")
 nm(zc.DAMAGE_TYPE_DROWN,   "Drown")    nm(zc.DAMAGE_TYPE_DISEASE,  "Disease")
 nm(zc.DAMAGE_TYPE_POISON,  "Poison")   nm(zc.DAMAGE_TYPE_BLEED,    "Bleed")
 nm(zc.DAMAGE_TYPE_NONE,    "None")
+nm(DTC.SHIELD,             "Shield")
 
 function DTC.name(dt)
   return DT_NAMES[dt] or "Unknown"

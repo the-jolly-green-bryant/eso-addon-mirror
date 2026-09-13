@@ -3,222 +3,239 @@ local ADDON_NAME = "MyCrystalFragmentsProcUI"
 MyCrystalFragmentsProcUI = MyCrystalFragmentsProcUI or {}
 
 ------------------------------------------------------------
--- 監視する Ability ID
+-- Ability IDs
 ------------------------------------------------------------
-local WATCH_LIST = {
-    [203447] = true, -- Bound Armaments Proc
-    [23231] = true, -- Hurricane
-    [46327] = true, -- Crystal Fragments Ready
-}
+local ABILITY_HURRICANE = 23231
+local ABILITY_BOUND_ARMAMENTS = 203447
+local ABILITY_CRYSTAL_FRAGMENTS = 46327
 
 ------------------------------------------------------------
--- 中央アイコン設定
+-- UI settings
 ------------------------------------------------------------
-local ICON_SIZE = 90
-local DISPLAY_TIME = 800 -- ms
+local ICON_SIZE = 60
+local DISPLAY_TIME = 500 -- ms (Bound / Crystal)
+local HURRICANE_COUNTDOWN_TIME = 3 -- seconds
 
 ------------------------------------------------------------
--- Bound Armaments の前回スタック数
+-- Bound Armaments stack tracking
 ------------------------------------------------------------
 local lastBoundArmamentsStacks = 0
 
 ------------------------------------------------------------
--- 中央アイコン UI
+-- Icon controls
 ------------------------------------------------------------
-local centerIcon = nil
+local iconHurricaneUI, iconHurricane, labelHurricane = nil, nil, nil
+local iconHurricaneButton = nil
+
+local iconBoundUI, iconBound, labelBound = nil, nil, nil
+local iconBoundButton = nil
+
+local iconCrystalUI, iconCrystal = nil, nil
+local iconCrystalButton = nil
 
 ------------------------------------------------------------
--- 通知番号（古い通知が新しい通知を消さないように）
+-- Create a single icon UI (with optional label)
 ------------------------------------------------------------
-local notificationSerial = 0
-
-
-------------------------------------------------------------
--- UI作成
-------------------------------------------------------------
-local function CreateUI()
-
-    local ui = WINDOW_MANAGER:CreateTopLevelWindow("MyCrystalFragmentsProcUI_CenterIcon")
-
+local function CreateIcon(name, offsetY, withLabel)
+    local ui = WINDOW_MANAGER:CreateTopLevelWindow(name)
     ui:SetDimensions(ICON_SIZE, ICON_SIZE)
 
-    --------------------------------------------------------
-    -- 画面中央
-    --------------------------------------------------------
-    ui:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
-
-    --------------------------------------------------------
-    -- 最前面に近いレイヤー
-    --------------------------------------------------------
+    ui:SetAnchor(TOP, GuiRoot, TOP, 0, offsetY)
     ui:SetDrawLayer(DL_OVERLAY)
+    ui:SetHidden(true)
 
-    --------------------------------------------------------
-    -- ★ 旧バージョンと同じ：親ウィンドウは常に表示
-    --------------------------------------------------------
-    ui:SetHidden(false)
-
-    --------------------------------------------------------
-    -- アイコン（子）
-    --------------------------------------------------------
-    local icon = WINDOW_MANAGER:CreateControl(
-        "MyCrystalFragmentsProcUI_CenterIconTexture",
-        ui,
-        CT_TEXTURE
-    )
-
+    local icon = WINDOW_MANAGER:CreateControl(name .. "_Texture", ui, CT_TEXTURE)
     icon:SetDimensions(ICON_SIZE, ICON_SIZE)
     icon:SetAnchorFill(ui)
-    icon:SetHidden(true)
+    icon:SetHidden(false)
 
-    --------------------------------------------------------
-    -- 描画対象は icon（CT_TEXTURE）
-    --------------------------------------------------------
-    centerIcon = icon
-end
-
-
-------------------------------------------------------------
--- 中央アイコン表示
-------------------------------------------------------------
-local function ShowCenterIcon(iconTexture)
-
-    if not centerIcon then return end
-
-    --------------------------------------------------------
-    -- iconTexture が nil / 空 / 非文字列なら無視
-    --------------------------------------------------------
-    if not iconTexture or type(iconTexture) ~= "string" or iconTexture == "" then
-        return
+    local label = nil
+    if withLabel then
+        label = WINDOW_MANAGER:CreateControl(name .. "_Label", ui, CT_LABEL)
+        label:SetFont("$(BOLD_FONT)|30|outline")
+        label:SetColor(1, 1, 1, 1)
+        label:SetAnchor(CENTER, ui, CENTER, 0, 0)
+        label:SetText("")
     end
 
-    notificationSerial = notificationSerial + 1
-    local serial = notificationSerial
-
-    centerIcon:SetTexture(iconTexture)
-    centerIcon:SetAlpha(1)
-    centerIcon:SetHidden(false)
+    --------------------------------------------------------
+    -- Hurricane → B ボタン
+    --------------------------------------------------------
+    if name == "MyCF_Hurricane" then
+        local button = WINDOW_MANAGER:CreateControl(name .. "_Button", ui, CT_TEXTURE)
+        button:SetDimensions(24, 24)
+        button:SetAnchor(BOTTOMRIGHT, ui, BOTTOMRIGHT, -2, -2)
+        button:SetTexture("EsoUI/Art/Buttons/Gamepad/Xbox/nav_xbone_b.dds")
+        button:SetHidden(true)
+        iconHurricaneButton = button
+    end
 
     --------------------------------------------------------
-    -- DISPLAY_TIME 後に消す
+    -- Bound Armaments → X ボタン
     --------------------------------------------------------
-    zo_callLater(function()
-        if serial ~= notificationSerial then
-            return
-        end
-        centerIcon:SetHidden(true)
-    end, DISPLAY_TIME)
+    if name == "MyCF_Bound" then
+        local button = WINDOW_MANAGER:CreateControl(name .. "_Button", ui, CT_TEXTURE)
+        button:SetDimensions(24, 24)
+        button:SetAnchor(BOTTOMRIGHT, ui, BOTTOMRIGHT, -2, -2)
+        button:SetTexture("EsoUI/Art/Buttons/Gamepad/Xbox/nav_xbone_x.dds")
+        button:SetHidden(true)
+        iconBoundButton = button
+    end
+
+    --------------------------------------------------------
+    -- Crystal Fragments → RB ボタン
+    --------------------------------------------------------
+    if name == "MyCF_Crystal" then
+        local button = WINDOW_MANAGER:CreateControl(name .. "_Button", ui, CT_TEXTURE)
+        button:SetDimensions(24, 24)
+        button:SetAnchor(BOTTOMRIGHT, ui, BOTTOMRIGHT, -2, -2)
+        button:SetTexture("EsoUI/Art/Buttons/Gamepad/Xbox/nav_xbone_rb.dds")
+        button:SetHidden(true)
+        iconCrystalButton = button
+    end
+
+    return ui, icon, label
 end
 
+------------------------------------------------------------
+-- Create all 3 icons
+------------------------------------------------------------
+local function CreateUI()
+    iconHurricaneUI, iconHurricane, labelHurricane = CreateIcon("MyCF_Hurricane", 200, true)
+    iconBoundUI,     iconBound,     labelBound     = CreateIcon("MyCF_Bound",     260, true)
+    iconCrystalUI,   iconCrystal                   = CreateIcon("MyCF_Crystal",   320, false)
+end
+
+------------------------------------------------------------
+-- Show icon (generic)
+------------------------------------------------------------
+local function ShowIcon(ui, icon, label, texture, text)
+    if not ui or not icon then return end
+    if not texture or type(texture) ~= "string" or texture == "" then return end
+
+    icon:SetTexture(texture)
+    ui:SetHidden(false)
+    ui:SetAlpha(1)
+
+    if label then
+        label:SetText(text or "")
+    end
+
+    zo_callLater(function()
+        ui:SetHidden(true)
+    end, DISPLAY_TIME)
+end
 
 ------------------------------------------------------------
 -- EVENT_EFFECT_CHANGED
 ------------------------------------------------------------
 local function OnEffectChanged(
-    eventCode,
-    changeType,
-    effectSlot,
-    effectName,
-    unitTag,
-    beginTime,
-    endTime,
-    stackCount,
-    iconName,
-    buffType,
-    effectType,
-    abilityType,
-    statusEffectType,
-    unitName,
-    unitId,
-    abilityId,
-    sourceType
+    eventCode, changeType, effectSlot, effectName, unitTag,
+    beginTime, endTime, stackCount, iconName,
+    buffType, effectType, abilityType, statusEffectType,
+    unitName, unitId, abilityId, sourceType
 )
 
-    --------------------------------------------------------
-    -- 監視対象以外は無視
-    --------------------------------------------------------
-    if not WATCH_LIST[abilityId] then return end
-
-    --------------------------------------------------------
-    -- プレイヤー自身のみ
-    --------------------------------------------------------
     if unitTag ~= "player" then return end
 
+    --------------------------------------------------------
+    -- Hurricane（終了3秒前から3秒間表示）
+    --------------------------------------------------------
+    if abilityId == ABILITY_HURRICANE then
+        if changeType == EFFECT_RESULT_GAINED then
+            MyCrystalFragmentsProcUI.hurricaneEnd = endTime
+            MyCrystalFragmentsProcUI.hurricaneIcon = iconName
+            MyCrystalFragmentsProcUI.hurricaneActive = true
+        end
+
+        if changeType == EFFECT_RESULT_FADED then
+            MyCrystalFragmentsProcUI.hurricaneActive = false
+            iconHurricaneUI:SetHidden(true)
+            if iconHurricaneButton then iconHurricaneButton:SetHidden(true) end
+        end
+
+        return
+    end
 
     --------------------------------------------------------
-    -- Bound Armaments Proc（203447）
+    -- Bound Armaments（スタックした瞬間に通知）
     --------------------------------------------------------
-    if abilityId == 203447 then
-
+    if abilityId == ABILITY_BOUND_ARMAMENTS then
         local stacks = stackCount or 0
 
-        -- バフ消滅
         if changeType == EFFECT_RESULT_FADED then
             lastBoundArmamentsStacks = 0
             return
         end
 
-        -- 3 → 4 の瞬間だけ通知
-        if stacks >= 4 and lastBoundArmamentsStacks < 4 then
-            ShowCenterIcon(iconName)
+        if stacks > lastBoundArmamentsStacks then
+            ShowIcon(iconBoundUI, iconBound, labelBound, iconName, tostring(stacks))
+
+            if iconBoundButton then
+                iconBoundButton:SetHidden(false)
+            end
         end
 
         lastBoundArmamentsStacks = stacks
         return
     end
 
-
     --------------------------------------------------------
-    -- Hurricane（23231）
-    -- バフが切れた瞬間に通知
+    -- Crystal Fragments Ready（Proc発生）
     --------------------------------------------------------
-    if abilityId == 23231 then
-        if changeType == EFFECT_RESULT_FADED then
-            ShowCenterIcon(iconName)
-        end
-        return
-    end
-
-
-    --------------------------------------------------------
-    -- Crystal Fragments Ready（46327）
-    -- Proc 発生時に通知
-    --------------------------------------------------------
-    if abilityId == 46327 then
+    if abilityId == ABILITY_CRYSTAL_FRAGMENTS then
         if changeType == EFFECT_RESULT_GAINED then
-            ShowCenterIcon(iconName)
+            ShowIcon(iconCrystalUI, iconCrystal, nil, iconName)
+
+            if iconCrystalButton then
+                iconCrystalButton:SetHidden(false)
+            end
         end
         return
     end
 end
 
+------------------------------------------------------------
+-- Update (for Hurricane countdown)
+------------------------------------------------------------
+local function OnUpdate()
+    if not MyCrystalFragmentsProcUI.hurricaneActive then return end
+    if not MyCrystalFragmentsProcUI.hurricaneEnd then return end
+
+    local now = GetFrameTimeSeconds()
+    local remain = MyCrystalFragmentsProcUI.hurricaneEnd - now
+
+    if remain <= HURRICANE_COUNTDOWN_TIME and remain > 0 then
+        local count = math.ceil(remain)
+
+        iconHurricane:SetTexture(MyCrystalFragmentsProcUI.hurricaneIcon)
+        labelHurricane:SetText(tostring(count))
+        iconHurricaneUI:SetHidden(false)
+
+        if iconHurricaneButton then
+            iconHurricaneButton:SetHidden(false)
+        end
+
+        if remain <= 0 then
+            iconHurricaneUI:SetHidden(true)
+            if iconHurricaneButton then iconHurricaneButton:SetHidden(true) end
+            MyCrystalFragmentsProcUI.hurricaneActive = false
+        end
+    end
+end
 
 ------------------------------------------------------------
 -- AddOn Loaded
 ------------------------------------------------------------
-local function OnAddOnLoaded(eventCode, addonName)
-
+local function OnAddOnLoaded(event, addonName)
     if addonName ~= ADDON_NAME then return end
 
     CreateUI()
 
-    EVENT_MANAGER:RegisterForEvent(
-        ADDON_NAME,
-        EVENT_EFFECT_CHANGED,
-        OnEffectChanged
-    )
-
-    lastBoundArmamentsStacks = 0
-    notificationSerial = 0
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_EFFECT_CHANGED, OnEffectChanged)
+    EVENT_MANAGER:RegisterForUpdate(ADDON_NAME .. "_Update", 100, OnUpdate)
 
     d("MyCrystalFragmentsProcUI Loaded")
 end
 
-
-------------------------------------------------------------
--- AddOn Loaded 登録
-------------------------------------------------------------
-EVENT_MANAGER:RegisterForEvent(
-    ADDON_NAME,
-    EVENT_ADD_ON_LOADED,
-    OnAddOnLoaded
-)
+EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_ADD_ON_LOADED, OnAddOnLoaded)

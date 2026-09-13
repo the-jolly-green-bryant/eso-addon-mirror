@@ -1,8 +1,8 @@
 ## Title: Vermilion
 ## Description: Real-time damage-dealer analytics — eDPS, shield-cracking and skill-line breakdown
 ## Author: Federico Vergelli
-## Version: 1.0.1
-## AddOnVersion: 6
+## Version: 1.2.1
+## AddOnVersion: 10
 ## APIVersion: 101051 101050
 ## SavedVariables: VermilionSavedVars
 
@@ -53,12 +53,16 @@ core/temporal_buffer.lua
 core/content_kind.lua
 core/session_store.lua
 core/debuff_tracker.lua
+core/ultimate.lua
+core/kills.lua
+core/heat.lua
 core/auto_record.lua
 core/visibility.lua
 ui/settings.xml
 ui/settings.lua
 ui/contrib.lua
 ui/debuffs.lua
+ui/targets.lua
 ui/graph.xml
 ui/graph.lua
 ui/assign.xml

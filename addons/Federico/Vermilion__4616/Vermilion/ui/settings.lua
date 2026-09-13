@@ -439,6 +439,25 @@ local function light_label(on)
   return on and GetString(VERMILION_SETTINGS_LIGHT_ON) or GetString(VERMILION_SETTINGS_LIGHT_OFF)
 end
 
+local function kills_label(on)
+  return on and GetString(VERMILION_SETTINGS_KILLS_ON) or GetString(VERMILION_SETTINGS_KILLS_OFF)
+end
+
+function M.kill_markers()
+  local sv = Vermilion.SavedVars
+  return not (sv and sv.settings and sv.settings.kill_markers == false)
+end
+
+function M.on_kills_click()
+  local sv = Vermilion.SavedVars
+  sv.settings = sv.settings or {}
+  local now = not M.kill_markers()
+  sv.settings.kill_markers = now
+  controls.kills_btn:SetText(kills_label(now))
+  Sound.play(now and "on" or "off")
+  if Vermilion.Graph and Vermilion.Graph.rerender then Vermilion.Graph.rerender() end
+end
+
 function M.on_light_click()
   local sv = Vermilion.SavedVars
   sv.settings = sv.settings or {}
@@ -656,6 +675,8 @@ function M.on_reset_click()
     sv.settings.light_mode = false
     sv.settings.light_alpha_pct = nil
     controls.light_btn:SetText(light_label(false))
+    sv.settings.kill_markers = nil
+    controls.kills_btn:SetText(kills_label(true))
     Vermilion.Graph.set_light_enabled(false)
   end
   current_lighta = LIGHTA_DEFAULT
@@ -746,6 +767,7 @@ function M.init()
   controls.autostop_btn   = VermilionSettingsPanelAutoStopBtn
   controls.sounds_btn     = VermilionSettingsPanelSoundsBtn
   controls.light_btn      = VermilionSettingsPanelLightBtn
+  controls.kills_btn      = VermilionSettingsPanelKillsBtn
   controls.title_lighta   = VermilionSettingsPanelLightAlphaTitle
   controls.label_lighta   = VermilionSettingsPanelLightAlphaLabel
   controls.track_lighta   = VermilionSettingsPanelSliderTrackLightAlpha
@@ -762,6 +784,7 @@ function M.init()
   zui.tooltip(controls.autostop_btn, VERMILION_TIP_AUTOSTOP)
   zui.tooltip(controls.sounds_btn,   VERMILION_TIP_SOUNDS)
   zui.tooltip(controls.light_btn,    VERMILION_TIP_LIGHT)
+  zui.tooltip(controls.kills_btn,    VERMILION_TIP_KILLS)
   zui.tooltip(controls.unknown_btn,  VERMILION_TIP_UNKNOWN)
   zui.tooltip(controls.logo_btn,     VERMILION_TIP_LOGO)
   zui.tooltip(controls.reset_btn,    VERMILION_TIP_RESET)
@@ -807,6 +830,7 @@ function M.init()
   controls.autostop_btn:SetText(autostop_label(sv.settings.auto_stop == true))
   controls.sounds_btn:SetText(sounds_label(sounds_on()))
   controls.light_btn:SetText(light_label(sv.settings.light_mode == true))
+  controls.kills_btn:SetText(kills_label(M.kill_markers()))
   current_lighta = LIGHTA_PRESETS[nearest_idx(LIGHTA_PRESETS, sv.settings.light_alpha_pct or LIGHTA_DEFAULT)]
 
   profile_combo = ZO_ComboBox_ObjectFromContainer(controls.profile_combo)

@@ -22,6 +22,7 @@ local CH_SHIELD = -1
 
 local ctx = nil
 local acc = {}
+local acc_abs = {}
 local acc_dt = {}
 local ids = { n = 0 }
 local seen = {}
@@ -42,6 +43,8 @@ local function strings()
     type     = GetString(VERMILION_CONTRIB_HEAD_TYPE),
     value    = GetString(VERMILION_CONTRIB_HEAD_VALUE),
     shield   = GetString(VERMILION_CONTRIB_TYPE_SHIELD),
+    cracked  = GetString(VERMILION_REPORT_SHIELDED),
+    absorbed = GetString(VERMILION_CONTRIB_ABSORBED),
     more     = GetString(VERMILION_CONTRIB_MORE),
     scrolled = GetString(VERMILION_CONTRIB_SCROLLED),
     est      = GetString(VERMILION_CONTRIB_TIP_EST),
@@ -55,10 +58,11 @@ local function entry_for(id, ch)
   local e = entries[key]
   if not e then
     local SC = Vermilion.SkillColors
-    local g = SC.group_of(id)
+    local g = (id > 0) and SC.group_of(id) or "shield"
     local c = SC.group_color(g)
     e = { id = id, ch = ch, v = 0, r = c.r, g = c.g, b = c.b,
-          icon = SC.ability_icon(id), name = SC.ability_name(id) }
+          icon = (id > 0) and SC.ability_icon(id) or ((ctx and ctx.type_icon) and ctx.type_icon(CH_SHIELD) or ""),
+          name = (id > 0) and SC.ability_name(id) or strings().cracked }
     entries[key] = e
   end
   return e
@@ -74,10 +78,10 @@ local function row_for(e)
   if not r then
     local DTC = Vermilion.DamageTypeColors
     local tc = (e.ch == CH_SHIELD) and C_SHIELD or DTC.lookup(e.ch)
-    r = { name = e.name, icon = e.icon, ch = e.ch, v = 0, n = 0, gen = -1, disp = -1, text = "",
+    r = { name = e.name, icon = e.icon, ch = e.ch, v = 0, abs = 0, n = 0, gen = -1, disp = -1, text = "",
           r = e.r, g = e.g, b = e.b, tr = tc.r, tg = tc.g, tb = tc.b,
           type = (e.ch == CH_SHIELD) and strings().shield or (DTC.name(e.ch) or "Damage"),
-          hov_pct = -1, hov_disp = -1, hov_n = -1, hov = "" }
+          hov_pct = -1, hov_disp = -1, hov_n = -1, hov_abs = -1, hov = "" }
     bucket[e.name] = r
   end
   return r
@@ -92,13 +96,14 @@ local function note(id, dt)
   ids.n = ids.n + 1
   ids[ids.n] = key
   acc[key] = 0
+  acc_abs[key] = 0
   acc_dt[key] = dt
 end
 
 local function aggregate()
   local TB = Vermilion.TemporalBuffer
   local n = TB.count()
-  for i = 1, ids.n do acc[ids[i]] = 0 end
+  for i = 1, ids.n do acc[ids[i]] = 0; acc_abs[ids[i]] = 0 end
   totals.damage, totals.shield = 0, 0
   local t0, t_prev = 0, 0
   for i = 1, n do
@@ -114,28 +119,14 @@ local function aggregate()
         totals.shield = totals.shield + sv
         local da = s.dtype_abilities
         local dn = da.count or 0
+        local eos = dv + sv
         for k = 1, dn do
           local ab = da[k]
           local dtype = ab.key or 0
           note(ab.id, dtype)
           local key = ab.id * 64 + (dtype + 1)
-          acc[key] = acc[key] + math_floor(ab.share * 1000 + 0.5) / 1000 * dv
-        end
-        if sv > 0 then
-          local ea = s.eos_abilities
-          local eos = dv + sv
-          for k = 1, (ea.count or 0) do
-            local ab = ea[k]
-            local damaging = false
-            for j = 1, dn do
-              if da[j].id == ab.id then damaging = true break end
-            end
-            if not damaging then
-              note(ab.id, CH_SHIELD)
-              local key = ab.id * 64 + (CH_SHIELD + 1)
-              acc[key] = acc[key] + math_floor(ab.share * 1000 + 0.5) / 1000 * eos
-            end
-          end
+          acc[key] = acc[key] + math_floor(ab.share * 1000 + 0.5) / 1000 * eos
+          acc_abs[key] = acc_abs[key] + math_floor((ab.abs or 0) * 1000 + 0.5) / 1000 * eos
         end
       end
     end
@@ -154,11 +145,13 @@ local function aggregate()
       if r.gen ~= gen then
         r.gen = gen
         r.v = 0
+        r.abs = 0
         r.n = 0
         on = on + 1
         order[on] = r
       end
       r.v = r.v + v
+      r.abs = r.abs + acc_abs[key]
       r.n = r.n + 1
     end
   end
@@ -305,6 +298,13 @@ function M.render()
     end
     local fill = seg(c, x_name, by, bw, L.BAR_H, e.r, e.g, e.b, 0.92)
     fill:SetDrawLevel(4)
+    if e.abs > 0 and e.v > 0 then
+      local aw = math_floor(bw * e.abs / e.v + 0.5)
+      if aw >= 1 and aw < bw then
+        local tail = seg(c, x_name + bw - aw, by, aw, L.BAR_H, C_SHIELD.r, C_SHIELD.g, C_SHIELD.b, 0.92)
+        tail:SetDrawLevel(5)
+      end
+    end
 
     hit.n = hit.n + 1
     hit.y0[hit.n] = y
@@ -339,13 +339,18 @@ function M.hover(mx, my)
           if c.rerender then c.rerender() end
         end
         local S = strings()
-        local tot = (e.ch == CH_SHIELD) and totals.shield or totals.damage
+        local tot = totals.damage + totals.shield
         local pct = (tot > 0) and math_floor(e.v / tot * 100 + 0.5) or 0
-        if e.hov_pct ~= pct or e.hov_disp ~= e.disp or e.hov_n ~= e.n then
-          e.hov_pct, e.hov_disp, e.hov_n = pct, e.disp, e.n
-          e.hov = string_format("|c%02x%02x%02x%s|r  ·  %s  ·  %d%%  ·  %s%s",
+        local abs_disp = math_floor(e.abs)
+        if e.hov_pct ~= pct or e.hov_disp ~= e.disp or e.hov_n ~= e.n or e.hov_abs ~= abs_disp then
+          e.hov_pct, e.hov_disp, e.hov_n, e.hov_abs = pct, e.disp, e.n, abs_disp
+          e.hov = string_format("|c%02x%02x%02x%s|r  ·  %s  ·  %d%%%s  ·  %s%s",
             math_floor(e.tr * 255 + 0.5), math_floor(e.tg * 255 + 0.5), math_floor(e.tb * 255 + 0.5),
-            e.type, e.text, pct, S.est,
+            e.type, e.text, pct,
+            (abs_disp > 0 and e.ch ~= CH_SHIELD) and string_format("  ·  |c%02x%02x%02x%s %s|r",
+              math_floor(C_SHIELD.r * 255 + 0.5), math_floor(C_SHIELD.g * 255 + 0.5), math_floor(C_SHIELD.b * 255 + 0.5),
+              c.fmt_val(e.abs), S.absorbed) or "",
+            S.est,
             (e.n > 1) and string_format(S.parts, e.n) or "")
         end
         c.show_card(e, e.name, e.hov, totals.span, mx, my, c.type_icon and c.type_icon(e.ch) or nil)

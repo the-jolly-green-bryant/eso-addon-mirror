@@ -1,4 +1,7 @@
 local strings = {
+	SI_PBSMINIMAP_PIN_DIAGNOSTIC = "Report player marker",
+	SI_PBSMINIMAP_PIN_DIAGNOSTIC_TOOLTIP = "Print the last minimap player-marker state to chat. After the marker disappears, open Settings directly without opening the full map, then press this button.",
+	SI_PBSMINIMAP_PIN_DIAGNOSTIC_EMPTY = "No minimap sample yet. Return to the HUD for a few seconds, then open Settings again.",
 	SI_KEYBINDINGS_CATEGORY_PBSMINIMAP = "Mini Map",
 	SI_PBSMINIMAP_MINI_MAP_TOOLTIP = "Enable Mini Map feature of in-build map.",
 	SI_PBSMINIMAP_APPLY_BUTTON = "Apply",

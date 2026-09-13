@@ -4,20 +4,20 @@ local GL = GuildLedger
 GL.name = "GuildLedger"
 
 GL.selectedGuildIndex = 1
-GL.selectedTimeframe = "week" -- 'week', 'last_week', 'week_before_last', '3_weeks_ago', '4_weeks_ago', 'last_month', '2_weeks', '30'
+GL.selectedTimeframe = "week"
 
-GL.bankEvents = {}   -- GL.bankEvents[guildIndex] = { {time=, type=, amount=, kioskName=}, ... }
-GL.traderEvents = {} -- GL.traderEvents[guildIndex] = { {time=, price=, tax=}, ... }
-GL.guildNames = {}   -- GL.guildNames[guildIndex] = "Guild Adi"
+GL.bankEvents = {}
+GL.traderEvents = {}
+GL.guildNames = {}
 
-local REFUND_SYNC_GRACE = 45 * 60 -- reset sonrasi refund'un gelmesi icin guvenlik payi
+local REFUND_SYNC_GRACE = 12 * 3600
 
 local function GetNextResetAfterTime(t)
     local utc = os.date("!*t", t)
     local midnightUTC = t - (utc.hour * 3600 + utc.min * 60 + utc.sec)
     local daysSinceTuesday = (utc.wday - 3) % 7
     local tuesdayMidnightUTC = midnightUTC - daysSinceTuesday * 86400
-    local resetEpoch = tuesdayMidnightUTC + 14 * 3600 -- Sali 14:00 UTC (17:00 TR)
+    local resetEpoch = tuesdayMidnightUTC + 14 * 3600
     if resetEpoch <= t then
         resetEpoch = resetEpoch + 7 * 86400
     end
@@ -28,44 +28,62 @@ local function GetPrevResetAtOrBeforeTime(t)
     return GetNextResetAfterTime(t) - 7 * 86400
 end
 
-local function GetConfirmedWonBids(bankList)
+local function NormalizeKioskName(name)
+    if not name then return "?" end
+    return string.lower((string.gsub(name, "^%s*(.-)%s*$", "%1")))
+end
+
+function GL.GetConfirmedWonBids(bankList)
     local now = os.time()
 
-    local positions = {} -- positions["<cycle>|<name>"] = { amount, firstBidTime, lastBidTime, cycle, name }
+    local positions = {}
     local order = {}
     for i = 1, #bankList do
         local e = bankList[i]
         if e.type == GUILD_HISTORY_BANKED_CURRENCY_EVENT_KIOSK_BID then
-            local name = e.kioskName or "?"
+            local name = NormalizeKioskName(e.kioskName)
             local cycle = GetNextResetAfterTime(e.time)
             local key = cycle .. "|" .. name
             local pos = positions[key]
             if not pos then
-                pos = { amount = 0, firstBidTime = e.time, lastBidTime = e.time, cycle = cycle, name = name }
+                pos = { amount = 0, firstBidTime = e.time, lastBidTime = e.time, cycle = cycle, name = e.kioskName or "?" }
                 positions[key] = pos
                 table.insert(order, key)
             end
-            pos.amount = pos.amount + e.amount
+            pos.amount = pos.amount + math.abs(e.amount)
             if e.time < pos.firstBidTime then pos.firstBidTime = e.time end
             if e.time > pos.lastBidTime then pos.lastBidTime = e.time end
         end
     end
 
-    local refundedInCycle = {} -- refundedInCycle["<cycle>|<name>"] = true
+    local refundedByNameInCycle = {}
+    local refundedAmountsInCycle = {}
     for i = 1, #bankList do
         local e = bankList[i]
         if e.type == GUILD_HISTORY_BANKED_CURRENCY_EVENT_KIOSK_BID_REFUND then
-            local name = e.kioskName or "?"
+            local name = NormalizeKioskName(e.kioskName)
             local cycle = GetPrevResetAtOrBeforeTime(e.time)
-            refundedInCycle[cycle .. "|" .. name] = true
+            refundedByNameInCycle[cycle .. "|" .. name] = true
+            refundedAmountsInCycle[cycle] = refundedAmountsInCycle[cycle] or {}
+            refundedAmountsInCycle[cycle][math.abs(e.amount)] = true
         end
     end
 
     local won = {}
+    local lost = {}
     local pendingTotal = 0
     for _, key in ipairs(order) do
         local pos = positions[key]
-        if not refundedInCycle[key] then
+        local refundedByName = refundedByNameInCycle[key]
+        local refundedByAmount = refundedAmountsInCycle[pos.cycle] and refundedAmountsInCycle[pos.cycle][pos.amount]
+        if refundedByName or refundedByAmount then
+            table.insert(lost, {
+                time = pos.firstBidTime,
+                amount = pos.amount,
+                kioskName = pos.name,
+                periodTime = pos.cycle,
+            })
+        else
             local confirmedAt = pos.cycle + REFUND_SYNC_GRACE
             if now >= confirmedAt then
                 table.insert(won, {
@@ -76,18 +94,63 @@ local function GetConfirmedWonBids(bankList)
                     periodTime = pos.cycle,
                 })
             else
-                -- Henuz reset+guvenlik payi gecmemis - kazanip kazanmadigi
-                -- belli degil, halen guild bankasindan dusulmus durumda.
                 pendingTotal = pendingTotal + pos.amount
             end
         end
     end
 
-    return won, pendingTotal
+    return won, pendingTotal, lost
+end
+
+function GL.ComputeTraderStatsForGuild(guildIndex, minTime, maxTime)
+    local totalGuildTax = 0
+    local totalTraderCost = 0
+    local wonBidsInPeriod = {}
+    local bidPlacementsInPeriod = {}
+    local lostBidsInPeriod = {}
+
+    local bankList = GL.bankEvents[guildIndex] or {}
+    for i = 1, #bankList do
+        local e = bankList[i]
+        if e.time >= minTime and e.time < maxTime then
+            if e.type == GUILD_HISTORY_BANKED_CURRENCY_EVENT_KIOSK_PURCHASED then
+                totalTraderCost = totalTraderCost + e.amount
+            elseif e.type == GUILD_HISTORY_BANKED_CURRENCY_EVENT_KIOSK_BID then
+                table.insert(bidPlacementsInPeriod, e)
+            end
+        end
+    end
+
+    local wonBids, _, lostBids = GL.GetConfirmedWonBids(bankList)
+    for i = 1, #wonBids do
+        local b = wonBids[i]
+        if b.periodTime >= minTime and b.periodTime < maxTime then
+            totalTraderCost = totalTraderCost + b.amount
+            table.insert(wonBidsInPeriod, b)
+        end
+    end
+    for i = 1, #lostBids do
+        local b = lostBids[i]
+        if b.periodTime >= minTime and b.periodTime < maxTime then
+            table.insert(lostBidsInPeriod, b)
+        end
+    end
+
+    local traderList = GL.traderEvents[guildIndex] or {}
+    for i = 1, #traderList do
+        local e = traderList[i]
+        if e.time >= minTime and e.time < maxTime then
+            totalGuildTax = totalGuildTax + e.tax
+        end
+    end
+
+    return totalGuildTax, totalTraderCost, wonBidsInPeriod, bidPlacementsInPeriod, lostBidsInPeriod
 end
 
 local TEXT_ROW_TYPE = 1
 local TEXT_ROW_HEIGHT = 20
+local TEXT_ROW_TYPE_WRAP = 2
+local TEXT_ROW_HEIGHT_WRAP = 34
 
 local function SetupTextRow(control, data)
     control:GetNamedChild("Label"):SetText(data.text)
@@ -100,6 +163,11 @@ local function InitializeTextList(listControl, templateName, rowHeight)
     ZO_ScrollList_AddDataType(listControl, TEXT_ROW_TYPE, templateName, rowHeight, SetupTextRow)
 end
 
+local function EnableWrapRows(listControl)
+    if not listControl then return end
+    ZO_ScrollList_AddDataType(listControl, TEXT_ROW_TYPE_WRAP, "GuildLedgerTextRowTemplateWrap", TEXT_ROW_HEIGHT_WRAP, SetupTextRow)
+end
+
 local function PopulateTextList(listControl, lines)
     if not listControl then return end
     local dataList = ZO_ScrollList_GetDataList(listControl)
@@ -107,7 +175,13 @@ local function PopulateTextList(listControl, lines)
         dataList[i] = nil
     end
     for i = 1, #lines do
-        table.insert(dataList, ZO_ScrollList_CreateDataEntry(TEXT_ROW_TYPE, { text = lines[i] }))
+        local entry = lines[i]
+        if type(entry) == "table" then
+            local rowType = entry.wrap and TEXT_ROW_TYPE_WRAP or TEXT_ROW_TYPE
+            table.insert(dataList, ZO_ScrollList_CreateDataEntry(rowType, { text = entry.text }))
+        else
+            table.insert(dataList, ZO_ScrollList_CreateDataEntry(TEXT_ROW_TYPE, { text = entry }))
+        end
     end
     ZO_ScrollList_Commit(listControl)
 end
@@ -131,11 +205,11 @@ function GL.GetTierName(guildIndex, tierIndex)
 end
 
 local DEFAULT_RANK_SETTINGS = {
-    { salesThreshold = 6000000, donationThreshold = 200000 }, -- Legend
-    { salesThreshold = 5000000, donationThreshold = 100000 }, -- Diamond
-    { salesThreshold = 1500000, donationThreshold = 60000 },  -- Gold
-    { salesThreshold = 750000,  donationThreshold = 30000 },  -- Silver
-    { salesThreshold = 400000,  donationThreshold = 15000 },  -- Bronze
+    { salesThreshold = 6000000, donationThreshold = 200000 },
+    { salesThreshold = 5000000, donationThreshold = 100000 },
+    { salesThreshold = 1500000, donationThreshold = 60000 },
+    { salesThreshold = 750000,  donationThreshold = 30000 },
+    { salesThreshold = 400000,  donationThreshold = 15000 },
 }
 
 local function NormalizeDisplayName(name)
@@ -185,7 +259,7 @@ local function GetThisWeekStartEpoch()
     local midnightUTC = nowEpoch - (utc.hour * 3600 + utc.min * 60 + utc.sec)
     local daysSinceTuesday = (utc.wday - 3) % 7
     local tuesdayMidnightUTC = midnightUTC - daysSinceTuesday * 86400
-    local resetEpoch = tuesdayMidnightUTC + 14 * 3600 -- 17:00 TR (UTC+3) = 14:00 UTC
+    local resetEpoch = tuesdayMidnightUTC + 14 * 3600
     if resetEpoch > nowEpoch then
         resetEpoch = resetEpoch - 7 * 86400
     end
@@ -194,6 +268,7 @@ end
 
 function GL.GetPeriodLabelFor(timeframe)
     if timeframe == "week" then return TiradilL10n.Get("PERIOD_THIS_WEEK")
+    elseif timeframe == "last_2_weeks" then return TiradilL10n.Get("PERIOD_LAST_2_WEEKS")
     elseif timeframe == "last_week" then return TiradilL10n.Get("PERIOD_LAST_WEEK")
     elseif timeframe == "week_before_last" then return TiradilL10n.Get("PERIOD_2_WEEKS_AGO")
     elseif timeframe == "3_weeks_ago" then return TiradilL10n.Get("PERIOD_3_WEEKS_AGO")
@@ -244,10 +319,13 @@ end
 
 function GL.GetTimeframeRangeFor(timeframe)
     local now = os.time()
-    local minTime, maxTime = 0, now + 86400 -- Guvenlik icin yarin
+    local minTime, maxTime = 0, now + 86400
 
     if timeframe == "week" then
         minTime = GetThisWeekStartEpoch()
+
+    elseif timeframe == "last_2_weeks" then
+        minTime = GetThisWeekStartEpoch() - (7 * 86400)
 
     elseif timeframe == "last_week" then
         local thisWeekStart = GetThisWeekStartEpoch()
@@ -270,7 +348,7 @@ function GL.GetTimeframeRangeFor(timeframe)
         maxTime = thisWeekStart - (21 * 86400)
 
     elseif timeframe == "last_month" then
-        local dateTbl = os.date("!*t", now) -- Mevcut UTC tarihi
+        local dateTbl = os.date("!*t", now)
         local currentYear = dateTbl.year
         local currentMonth = dateTbl.month
 
@@ -296,7 +374,7 @@ function GL.GetTimeframeRangeFor(timeframe)
         maxTime = startOfCurrentMonth
 
     elseif timeframe == "this_month" then
-        local dateTbl = os.date("!*t", now) -- Mevcut UTC tarihi
+        local dateTbl = os.date("!*t", now)
         local secondsIntoCurrentMonth = ((dateTbl.day - 1) * 86400) + (dateTbl.hour * 3600) + (dateTbl.min * 60) + dateTbl.sec
         minTime = now - secondsIntoCurrentMonth
 
@@ -344,17 +422,17 @@ local function GetEUDstInfo()
     end
 
     local marchLast = EpochForMonthDay(3, 31)
-    local marchLastWday = tonumber(os.date("!%w", marchLast)) -- 0=Pazar
-    local dstStart = marchLast - (marchLastWday * 86400) + 3600 -- o Pazar 01:00 UTC
+    local marchLastWday = tonumber(os.date("!%w", marchLast))
+    local dstStart = marchLast - (marchLastWday * 86400) + 3600
 
     local octLast = EpochForMonthDay(10, 31)
     local octLastWday = tonumber(os.date("!%w", octLast))
-    local dstEnd = octLast - (octLastWday * 86400) + 3600 -- o Pazar 01:00 UTC
+    local dstEnd = octLast - (octLastWday * 86400) + 3600
 
     if now >= dstStart and now < dstEnd then
-        return 2, "CEST" -- yaz saati
+        return 2, "CEST"
     else
-        return 1, "CET" -- kis saati
+        return 1, "CET"
     end
 end
 
@@ -377,12 +455,18 @@ function GL.Initialize()
     }
     GL.savedVars = GuildLedger_SavedVars
     GL.savedVars.bankCache = GL.savedVars.bankCache or {}
+    GL.savedVars.bankAnchor = GL.savedVars.bankAnchor or {}
+    for guildIdStr, cached in pairs(GL.savedVars.bankCache) do
+        if not GL.savedVars.bankAnchor[guildIdStr] then
+            GL.savedVars.bankAnchor[guildIdStr] = { amount = cached.amount, time = cached.time }
+        end
+    end
     GL.savedVars.personalNotes = GL.savedVars.personalNotes or {}
     GL.selectedGuildIndex = GL.savedVars.selectedGuildIndex or 1
     GL.selectedTimeframe = GL.savedVars.selectedTimeframe or "week"
     GL.trackingStartedAt = os.time()
     if GL.savedVars.screenNotifications == nil then
-        GL.savedVars.screenNotifications = true -- varsayilan: acik
+        GL.savedVars.screenNotifications = true
     end
     if GL.selectedTimeframe == 7 or GL.selectedTimeframe == "7" then
         GL.selectedTimeframe = "week"
@@ -440,7 +524,6 @@ function GL.Initialize()
     GL.SetupUI()
     GL.RegisterLAMSettings()
     
-    SLASH_COMMANDS["/ledger"] = function() GL.ToggleUI() end
     SLASH_COMMANDS["/gl"] = function() GL.ToggleUI() end
     SLASH_COMMANDS["/guildledger"] = function() GL.ToggleUI() end
 
@@ -454,6 +537,7 @@ function GL.SetupUI()
     InitializeTextList(GuildLedgerFrameBodyDonationsPanelDonorsList, "GuildLedgerTextRowTemplateLarge", 26)
     InitializeTextList(GuildLedgerFrameBodyDonationsPanelSellersList, "GuildLedgerTextRowTemplateLarge", 26)
     InitializeTextList(GuildLedgerFrameBodyBidsPanelList)
+    EnableWrapRows(GuildLedgerFrameBodyBidsPanelList)
     InitializeTextList(GuildLedgerFrameKiosksPanelList)
     InitializeTextList(GuildLedgerFrameRanksPanelList, "GuildLedgerTextRowTemplateLarge", 26)
     InitializeTextList(GuildLedgerFrameSearchPanelList, "GuildLedgerTextRowTemplateLarge", 22)
@@ -513,6 +597,7 @@ function GL.BuildPeriodCombo()
     local options = {
         { name = TiradilL10n.Get("PERIOD_THIS_WEEK"), value = "week" },
         { name = TiradilL10n.Get("PERIOD_LAST_WEEK"), value = "last_week" },
+        { name = TiradilL10n.Get("PERIOD_LAST_2_WEEKS"), value = "last_2_weeks" },
         { name = TiradilL10n.Get("PERIOD_2_WEEKS_AGO"), value = "week_before_last" },
         { name = TiradilL10n.Get("PERIOD_3_WEEKS_AGO"), value = "3_weeks_ago" },
         { name = TiradilL10n.Get("PERIOD_4_WEEKS_AGO"), value = "4_weeks_ago" },
@@ -587,6 +672,13 @@ function GL.ShowPanel(panelName)
     kiosks:SetHidden(panelName ~= "kiosks")
     ranks:SetHidden(panelName ~= "ranks")
     if search then search:SetHidden(panelName ~= "search") end
+
+    local searchBtn = GuildLedgerFrameFooterSearchBtn
+    local ranksBtn = GuildLedgerFrameFooterRanksBtn
+    local kiosksBtn = GuildLedgerFrameFooterKiosksBtn
+    if searchBtn then searchBtn:SetState(panelName == "search" and BSTATE_PRESSED or BSTATE_NORMAL, false) end
+    if ranksBtn then ranksBtn:SetState(panelName == "ranks" and BSTATE_PRESSED or BSTATE_NORMAL, false) end
+    if kiosksBtn then kiosksBtn:SetState(panelName == "kiosks" and BSTATE_PRESSED or BSTATE_NORMAL, false) end
 
     if panelName == "kiosks" then
         GL.RefreshKiosks()
@@ -704,6 +796,7 @@ function GL.BuildSearchPanelPeriodCombo()
     local options = {
         { name = TiradilL10n.Get("PERIOD_THIS_WEEK"), value = "week" },
         { name = TiradilL10n.Get("PERIOD_LAST_WEEK"), value = "last_week" },
+        { name = TiradilL10n.Get("PERIOD_LAST_2_WEEKS"), value = "last_2_weeks" },
         { name = TiradilL10n.Get("PERIOD_2_WEEKS_AGO"), value = "week_before_last" },
         { name = TiradilL10n.Get("PERIOD_3_WEEKS_AGO"), value = "3_weeks_ago" },
         { name = TiradilL10n.Get("PERIOD_4_WEEKS_AGO"), value = "4_weeks_ago" },
@@ -930,7 +1023,7 @@ function GL.RegisterLAMSettings()
         name = TiradilL10n.Get("SUITE_TITLE"),
         displayName = TiradilL10n.Get("SUITE_TITLE"),
         author = "@AlcholicVader",
-        version = "1.0",
+        version = "1.5.2",
         registerForRefresh = true,
     }
     LAM:RegisterAddonPanel("TiradilSuiteRankSettingsPanel", panelData)
@@ -1004,6 +1097,24 @@ function GL.RegisterLAMSettings()
                 else
                     TiradilRosterColumn_SavedVars = TiradilRosterColumn_SavedVars or { selectedTimeframe = "week" }
                     TiradilRosterColumn_SavedVars.rankColumnEnabled = value
+                end
+            end,
+            width = "full",
+        },
+        {
+            type = "checkbox",
+            reference = "TGA_LAM_ShowLastLoginColumn",
+            name = function() return TiradilL10n.Get("LAM_SHOW_LAST_LOGIN_COLUMN_NAME") end,
+            tooltip = function() return TiradilL10n.Get("LAM_SHOW_LAST_LOGIN_COLUMN_TOOLTIP") end,
+            getFunc = function()
+                return TiradilRosterColumn_SavedVars == nil or TiradilRosterColumn_SavedVars.lastLoginColumnEnabled ~= false
+            end,
+            setFunc = function(value)
+                if TiradilRosterColumn and TiradilRosterColumn.SetLastLoginColumnEnabled then
+                    TiradilRosterColumn.SetLastLoginColumnEnabled(value)
+                else
+                    TiradilRosterColumn_SavedVars = TiradilRosterColumn_SavedVars or { selectedTimeframe = "week" }
+                    TiradilRosterColumn_SavedVars.lastLoginColumnEnabled = value
                 end
             end,
             width = "full",
@@ -1248,7 +1359,7 @@ function GL.RegisterLAMSettings()
     LAM:RegisterOptionControls("TiradilSuiteRankSettingsPanel", optionsData)
 end
 
-local legendTop3Cache = {} -- legendTop3Cache["guildIndex|timeframe|sellersN|donorsN"] = { set=, sales=, donations=, builtAt= }
+local legendTop3Cache = {}
 local LEGEND_TOP3_CACHE_TTL_SECONDS = 15
 
 local function ComputeTopNNames(amountMap, n)
@@ -1434,6 +1545,34 @@ function GL.SetTimeframe(tf)
     end
 end
 
+function GL.RefreshLAMTooltips()
+    local function SetTooltip(refName, text)
+        local widget = _G[refName]
+        if widget and widget.data then
+            widget.data.tooltipText = text
+        end
+    end
+
+    SetTooltip("TGA_LAM_LanguageDropdown", TiradilL10n.Get("LAM_LANGUAGE_TOOLTIP"))
+    SetTooltip("TGA_LAM_ShowContribColumn", TiradilL10n.Get("LAM_SHOW_CONTRIB_COLUMN_TOOLTIP"))
+    SetTooltip("TGA_LAM_ShowRankColumn", TiradilL10n.Get("LAM_SHOW_RANK_COLUMN_TOOLTIP"))
+    SetTooltip("TGA_LAM_ShowLastLoginColumn", TiradilL10n.Get("LAM_SHOW_LAST_LOGIN_COLUMN_TOOLTIP"))
+    SetTooltip("TGA_LAM_ScreenNotif", TiradilL10n.Get("LAM_SCREEN_NOTIF_TOOLTIP"))
+    SetTooltip("TGA_LAM_MailSubject", TiradilL10n.Get("LAM_MAIL_SUBJECT_TOOLTIP"))
+    SetTooltip("TGA_LAM_MailBody", TiradilL10n.Get("LAM_MAIL_BODY_TOOLTIP"))
+    SetTooltip("TGA_LAM_GuildDropdown", TiradilL10n.Get("LAM_GUILD_TOOLTIP"))
+    SetTooltip("TGA_LAM_KickThresholdSlider", TiradilL10n.Get("LAM_KICK_THRESHOLD_TOOLTIP"))
+    SetTooltip("TGA_LAM_LegendModeDropdown", TiradilL10n.Get("LAM_LEGEND_MODE_TOOLTIP"))
+    SetTooltip("TGA_LAM_TopSellersSlider", TiradilL10n.Get("LAM_LEGEND_TOP_SELLERS_COUNT_TOOLTIP"))
+    SetTooltip("TGA_LAM_TopDonorsSlider", TiradilL10n.Get("LAM_LEGEND_TOP_DONORS_COUNT_TOOLTIP"))
+
+    for i = 1, #RANK_TIERS do
+        SetTooltip("TGA_LAM_TierName_" .. i, TiradilL10n.Get("LAM_TIER_NAME_TOOLTIP"))
+        SetTooltip("TGA_LAM_SalesThreshold_" .. i, TiradilL10n.Get("LAM_SALES_THRESHOLD_TOOLTIP") .. GL.GetTierName(GL.settingsGuildIndex, i))
+        SetTooltip("TGA_LAM_DonationThreshold_" .. i, TiradilL10n.Get("LAM_DONATION_THRESHOLD_TOOLTIP") .. GL.GetTierName(GL.settingsGuildIndex, i))
+    end
+end
+
 function GL.ToggleUI()
     local frame = GuildLedgerFrame
     if frame then
@@ -1548,6 +1687,45 @@ function GL.TryStartTracking()
     d("|c4DDB4DGuildLedger:|r " .. zo_strformat(TiradilL10n.Get("CHAT_TRACKING_STARTED"), tostring(numGuilds)))
 end
 
+function GL.GetCurrentTraderInfo(guildIndexFilter)
+    local results = {}
+    for guildIndex = 1, 5 do
+        if not guildIndexFilter or guildIndexFilter == guildIndex then
+            local list = GL.bankEvents[guildIndex]
+            if list then
+                local guildName = GL.guildNames[guildIndex] or ("Guild " .. guildIndex)
+                local all = {}
+
+                for i = 1, #list do
+                    local e = list[i]
+                    if e.type == GUILD_HISTORY_BANKED_CURRENCY_EVENT_KIOSK_PURCHASED then
+                        table.insert(all, { time = e.time, amount = e.amount, kioskName = e.kioskName })
+                    end
+                end
+
+                local wonBids = GL.GetConfirmedWonBids(list)
+                for i = 1, #wonBids do
+                    local b = wonBids[i]
+                    table.insert(all, { time = b.time, amount = b.amount, kioskName = b.kioskName })
+                end
+
+                table.sort(all, function(a, b) return a.time > b.time end)
+
+                if all[1] then
+                    table.insert(results, {
+                        guildIndex = guildIndex,
+                        guildName = guildName,
+                        kioskName = all[1].kioskName,
+                        since = all[1].time,
+                        amount = all[1].amount,
+                    })
+                end
+            end
+        end
+    end
+    return results
+end
+
 function GL.RefreshKiosks()
     local all = {}
     for guildIndex = 1, 5 do
@@ -1568,7 +1746,7 @@ function GL.RefreshKiosks()
                 end
             end
 
-            local wonBids = GetConfirmedWonBids(list)
+            local wonBids = GL.GetConfirmedWonBids(list)
             for i = 1, #wonBids do
                 local b = wonBids[i]
                 table.insert(all, {
@@ -1613,6 +1791,43 @@ function GL.RefreshKiosks()
     PopulateTextList(GuildLedgerFrameKiosksPanelList, lines)
 end
 
+local TGA_BANK_ANCHOR_CONFIRM_DIALOG = "TIRADIL_GL_CONFIRM_BANK_ANCHOR"
+
+local function GetBankAnchorConfirmDialog()
+    if not ESO_Dialogs[TGA_BANK_ANCHOR_CONFIRM_DIALOG] then
+        ESO_Dialogs[TGA_BANK_ANCHOR_CONFIRM_DIALOG] = {
+            canQueue = true,
+            title = { text = "" },
+            mainText = { text = "" },
+            buttons = {
+                [1] = { text = SI_DIALOG_CONFIRM, callback = function(dialog) end },
+                [2] = { text = SI_DIALOG_CANCEL },
+            },
+        }
+    end
+    return ESO_Dialogs[TGA_BANK_ANCHOR_CONFIRM_DIALOG]
+end
+
+function GL.ShowBankAnchorConfirmation(guildId, guildName, bankGold)
+    if GL.pendingBankConfirmationGuildId == guildId then
+        return
+    end
+    GL.pendingBankConfirmationGuildId = guildId
+
+    local dialog = GetBankAnchorConfirmDialog()
+    dialog.title.text = TiradilL10n.Get("BANK_ANCHOR_CONFIRM_TITLE")
+    dialog.mainText.text = zo_strformat(TiradilL10n.Get("BANK_ANCHOR_CONFIRM_TEXT"), guildName or "?", FormatGold(bankGold))
+    dialog.buttons[1].callback = function()
+        GL.savedVars.bankAnchor[tostring(guildId)] = { amount = bankGold, time = os.time() }
+        GL.pendingBankConfirmationGuildId = nil
+        GL.RefreshData()
+    end
+    dialog.buttons[2].callback = function()
+        GL.pendingBankConfirmationGuildId = nil
+    end
+    ZO_Dialogs_ShowDialog(TGA_BANK_ANCHOR_CONFIRM_DIALOG)
+end
+
 function GL.RefreshData()
     local frame = GuildLedgerFrame
     if not frame or frame:IsHidden() then return end
@@ -1626,17 +1841,81 @@ function GL.RefreshData()
     local guildName = GetGuildName(guildId)
 
     local bankGoldText
-    local knownBankGold = nil -- canli veya cache'den bilinen en son deger (yoksa nil)
-    local bankGoldSuffix = "" -- "(last seen X)" gibi ek bilgi, Available Guild Funds'a da eklenir
+    local knownBankGold = nil
+    local bankGoldSuffix = ""
+
+    local function ComputeEstimateFromAnchor(anchorData)
+        local delta = 0
+        local bankList2 = GL.bankEvents[GL.selectedGuildIndex] or {}
+        for i = 1, #bankList2 do
+            local e = bankList2[i]
+            if e.time > anchorData.time then
+                if e.type == GUILD_HISTORY_BANKED_CURRENCY_EVENT_DEPOSITED then
+                    delta = delta + e.amount
+                elseif e.type == GUILD_HISTORY_BANKED_CURRENCY_EVENT_WITHDRAWN then
+                    delta = delta - e.amount
+                elseif e.type == GUILD_HISTORY_BANKED_CURRENCY_EVENT_KIOSK_PURCHASED then
+                    delta = delta - e.amount
+                elseif e.type == GUILD_HISTORY_BANKED_CURRENCY_EVENT_KIOSK_BID then
+                    delta = delta - e.amount
+                elseif e.type == GUILD_HISTORY_BANKED_CURRENCY_EVENT_KIOSK_BID_REFUND then
+                    delta = delta + e.amount
+                end
+            end
+        end
+        local traderList2 = GL.traderEvents[GL.selectedGuildIndex] or {}
+        for i = 1, #traderList2 do
+            local e = traderList2[i]
+            if e.time > anchorData.time then
+                delta = delta + (e.tax or 0)
+            end
+        end
+        return anchorData.amount + delta, delta
+    end
+
     local bankOk, bankGold = pcall(GetGuildBankedMoney, guildId)
     if bankOk and bankGold and bankGold > 0 then
-        bankGoldText = FormatGold(bankGold)
-        knownBankGold = bankGold
-        GL.savedVars.bankCache[tostring(guildId)] = {
-            amount = bankGold,
-            time = os.time(),
-        }
-    else
+        local now2 = os.time()
+        local lastSeen = GL.lastBankReadingSeen
+        local looksCrossContaminated = lastSeen
+            and lastSeen.amount == bankGold
+            and lastSeen.guildId ~= guildId
+            and (now2 - lastSeen.time) < 5
+        GL.lastBankReadingSeen = { amount = bankGold, guildId = guildId, time = now2 }
+
+        if not looksCrossContaminated then
+            local guildIdStr = tostring(guildId)
+            local existingAnchor = GL.savedVars.bankAnchor[guildIdStr]
+            local needsConfirmation = true
+
+            if existingAnchor then
+                local expected = ComputeEstimateFromAnchor(existingAnchor)
+                local diff = math.abs(bankGold - expected)
+                local tolerance = math.max(10000, expected * 0.02)
+                needsConfirmation = diff > tolerance
+            end
+
+            if needsConfirmation then
+                pcall(GL.ShowBankAnchorConfirmation, guildId, guildName, bankGold)
+            else
+                GL.savedVars.bankAnchor[guildIdStr] = { amount = bankGold, time = now2 }
+            end
+        end
+    end
+
+    local anchor = GL.savedVars.bankAnchor[tostring(guildId)]
+    if anchor then
+        local estimate, delta = ComputeEstimateFromAnchor(anchor)
+        knownBankGold = estimate
+        bankGoldText = FormatGold(knownBankGold)
+        if delta ~= 0 then
+            local dateStr = os.date("%d.%m %H:%M", anchor.time)
+            bankGoldSuffix = string.format(" (%s %s)", TiradilL10n.Get("BANK_GOLD_CALCULATED_SINCE"), dateStr)
+            bankGoldText = bankGoldText .. bankGoldSuffix
+        end
+    end
+
+    if not knownBankGold then
         local cached = GL.savedVars.bankCache[tostring(guildId)]
         if cached then
             local dateStr = os.date("%d.%m %H:%M", cached.time)
@@ -1651,11 +1930,8 @@ function GL.RefreshData()
     local now = os.time()
     local minTime, maxTime = GetTimeframeRange()
 
-    local totalSalesVolume = 0
-    local totalGuildTax = 0
     local totalDeposits = 0
     local totalWithdrawals = 0
-    local totalTraderBidsNet = 0
 
     local bankList = GL.bankEvents[GL.selectedGuildIndex] or {}
     for i = 1, #bankList do
@@ -1665,26 +1941,19 @@ function GL.RefreshData()
                 totalDeposits = totalDeposits + e.amount
             elseif e.type == GUILD_HISTORY_BANKED_CURRENCY_EVENT_WITHDRAWN then
                 totalWithdrawals = totalWithdrawals + e.amount
-            elseif e.type == GUILD_HISTORY_BANKED_CURRENCY_EVENT_KIOSK_PURCHASED then
-                totalTraderBidsNet = totalTraderBidsNet + e.amount
             end
         end
     end
 
-    local wonBids, currentTraderBidsTotal = GetConfirmedWonBids(bankList)
-    for i = 1, #wonBids do
-        local b = wonBids[i]
-        if b.periodTime >= minTime and b.periodTime < maxTime then
-            totalTraderBidsNet = totalTraderBidsNet + b.amount
-        end
-    end
+    local totalGuildTax, totalTraderBidsNet = GL.ComputeTraderStatsForGuild(GL.selectedGuildIndex, minTime, maxTime)
+    local currentTraderBidsTotal = select(2, GL.GetConfirmedWonBids(bankList))
 
+    local totalSalesVolume = 0
     local traderList = GL.traderEvents[GL.selectedGuildIndex] or {}
     for i = 1, #traderList do
         local e = traderList[i]
         if e.time >= minTime and e.time < maxTime then
             totalSalesVolume = totalSalesVolume + e.price
-            totalGuildTax = totalGuildTax + e.tax
         end
     end
 
@@ -1711,16 +1980,8 @@ function GL.RefreshData()
         GuildLedgerFrameBodyStatsColumnRow6Value:SetText("0 Gold")
     end
 
-    -- "Current Trader Bids": HENUZ SONUCLANMAMIS (reset+guvenlik payi gecmemis)
-    -- bid'lerin toplami - bunlar bankadan dusulmus ama kaybederse iade
-    -- edilecek, kazanirsa kalici gidere donusecek. Net Kar/Zarar'a KATILMAZ,
-    -- sadece bilgi amacli gosterilir.
     GuildLedgerFrameBodyStatsColumnRow7Value:SetText(FormatGold(currentTraderBidsTotal or 0))
 
-    -- "Available Guild Funds" = Bank Gold + Current Trader Bids - SADECE Bank
-    -- Gold CANLI okunduysa hesaplanir. Bank Gold cache'den (bayat) geliyorsa,
-    -- iki farkli zaman noktasini karistirmamak icin Bank Gold ile AYNI metni
-    -- gosterir (yanlis bir toplam UYDURULMAZ).
     if knownBankGold then
         GuildLedgerFrameBodyStatsColumnRow8Value:SetText(FormatGold(knownBankGold + (currentTraderBidsTotal or 0)) .. bankGoldSuffix)
     else
@@ -1734,6 +1995,17 @@ function GL.RefreshData()
     else
         netLabel:SetText(netIcon .. "|cFF6B6B" .. FormatGold(netProfit) .. " (" .. TiradilL10n.Get("NET_LOSS_LABEL") .. ")|r")
     end
+
+    zo_callLater(function()
+        local statsColumn = GuildLedgerFrameBodyStatsColumn
+        local netValue = GuildLedgerFrameBodyStatsColumnNetValue
+        if statsColumn and netValue then
+            local contentHeight = (netValue:GetBottom() or 0) - (statsColumn:GetTop() or 0) + 16
+            if contentHeight > 0 then
+                statsColumn:SetHeight(contentHeight)
+            end
+        end
+    end, 0)
 
     if GL.selectedTimeframe == "week" then
         GuildLedgerFrameFooterStatus:SetText(string.format("[%s] - This Week's data (since Tuesday %s) calculated.", guildName, GetResetTimeLabel()))
@@ -1830,7 +2102,7 @@ function GL.RefreshSellersPanel(traderList, minTime, maxTime)
 
     table.sort(order, function(a, b) return sellerData[a].total > sellerData[b].total end)
 
-    local sellerColorHex = "B366F0" -- guvenli fallback (eski mor), TiradilRoster yuklenemediyse kullanilir
+    local sellerColorHex = "B366F0"
     if TiradilRoster and TiradilRoster.GetGuildColor then
         local ok, r, g, b = pcall(TiradilRoster.GetGuildColor, GL.selectedGuildIndex)
         if ok and r then
@@ -1884,7 +2156,7 @@ function GL.RefreshBidsPanel(bankList, minTime, maxTime)
             table.insert(confirmedInPeriod, e)
         end
     end
-    local wonBidsForPanel = GetConfirmedWonBids(bankList)
+    local wonBidsForPanel = GL.GetConfirmedWonBids(bankList)
     for i = 1, #wonBidsForPanel do
         local b = wonBidsForPanel[i]
         if b.periodTime >= minTime and b.periodTime < maxTime then
@@ -1901,8 +2173,10 @@ function GL.RefreshBidsPanel(bankList, minTime, maxTime)
         for i = 1, #confirmedInPeriod do
             local b = confirmedInPeriod[i]
             local dateStr = os.date("%d.%m.%y", b.time)
-            table.insert(lines, string.format("|cA0A0A0%s|r  %s: %s",
-                dateStr, b.kioskName or "?", FormatGold(b.amount)))
+            table.insert(lines, {
+                text = string.format("|cA0A0A0%s|r  %s: %s", dateStr, b.kioskName or "?", FormatGold(b.amount)),
+                wrap = true,
+            })
         end
     end
 

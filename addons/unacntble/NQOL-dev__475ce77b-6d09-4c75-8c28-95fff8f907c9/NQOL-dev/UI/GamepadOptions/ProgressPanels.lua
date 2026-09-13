@@ -218,6 +218,8 @@ function GamepadOptions.BuildChatOptionsData()
         GamepadOptions.BuildChatFilterWttWtsOption(),
         GamepadOptions.BuildChatFilterZoneItemsOption(),
         GamepadOptions.BuildChatFilterFriendStatusOption(),
+        GamepadOptions.BuildChatSilenceInDungeonsOption(),
+        GamepadOptions.BuildChatSilenceInTrialsOption(),
         GamepadOptions.WithHeader(GamepadOptions.BuildChatWhisperColorOption(), NQOL.L("ui.headers.colors_88d5e4c")),
         GamepadOptions.BuildChatGuildColorsEntry(),
         GamepadOptions.WithHeader(GamepadOptions.BuildChatRemindersEntry(), NQOL.L("ui.headers.reminders_ae8c393")),

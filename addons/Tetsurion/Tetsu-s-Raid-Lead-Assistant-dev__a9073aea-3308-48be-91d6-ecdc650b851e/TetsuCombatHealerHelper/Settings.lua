@@ -43,7 +43,7 @@ function T.RegisterSettings()
 
     local settings = LibHarven:AddAddon(L.TITLE, { allowRefresh = true, allowDefaults = true })
     if not settings then return end
-    settings.version = "1.9.1"
+    settings.version = "1.9.3"
     settings.author = "Tetsurion"
 
     settings:AddSetting({
@@ -379,13 +379,16 @@ function T.RegisterSettings()
     })
     settings:AddSetting({
         type = LibHarvensAddonSettings.ST_CHECKBOX,
-        label = L.DEBUFF_ON_TARGET or "Debuffs on reticle target",
-        tooltip = L.DEBUFF_ON_TARGET_TT or "On = also show the enemy under the crosshair when there is no boss bar. Off = official bosses only.",
-        default = true,
-        getFunction = function() return vars.debuffOnTarget ~= false end,
+        label = L.DUMMY_DEBUFFS or "Dummy debuffs (houses)",
+        tooltip = L.DUMMY_DEBUFFS_TT or "Off by default. On = in a player house, show the boss-debuff panel on a training dummy under the crosshair. Dungeons and trials stay bosses-only.",
+        default = false,
+        getFunction = function() return vars.dummyDebuffs == true end,
         setFunction = function(val)
-            vars.debuffOnTarget = val and true or false
-            if T.Panels then T.Panels.Refresh() end
+            vars.dummyDebuffs = val and true or false
+            if T.Panels then
+                if val == false and T.Panels.ClearBossFx then T.Panels.ClearBossFx() end
+                T.Panels.Refresh()
+            end
             if T.Hud and T.Hud.ScanGroupBuffs then T.Hud.ScanGroupBuffs() end
         end,
     })

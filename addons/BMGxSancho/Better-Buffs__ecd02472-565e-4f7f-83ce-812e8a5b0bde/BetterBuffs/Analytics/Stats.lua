@@ -253,6 +253,7 @@ function Stats:SetVisibility(mode)
     if not saved then return end
     if mode ~= "SELF" and mode ~= "GROUP" and mode ~= "HIDDEN" then return end
     saved.visibility = mode
+    if BB.Runtime and BB.Runtime.RefreshObservationRequirements then BB.Runtime:RefreshObservationRequirements() end
     self:Refresh()
 end
 

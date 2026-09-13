@@ -34,12 +34,42 @@ local DESC = {
     { name = "id",  width = 4 },
     { name = "key", width = 1 },
     { name = "sh",  width = 2, scale = 1000 },
+    { name = "ab",  width = 2, scale = 1000 },
+  },
+  targets = {
+    { name = "si",  width = 2 },
+    { name = "id",  width = 4 },
+    { name = "key", width = 2 },
+    { name = "tt",  width = 1 },
+    { name = "sh",  width = 2, scale = 1000 },
+    { name = "ab",  width = 2, scale = 1000 },
+  },
+  kills = {
+    { name = "t",   width = 4 },
+    { name = "id",  width = 4 },
+    { name = "key", width = 2 },
+    { name = "aid", width = 4 },
+  },
+  ult = {
+    { name = "t", width = 4 },
+    { name = "v", width = 2 },
+  },
+  ultu = {
+    { name = "t",   width = 4 },
+    { name = "bar", width = 1 },
+  },
+  ulta = {
+    { name = "t",    width = 4 },
+    { name = "bar",  width = 1 },
+    { name = "id",   width = 4 },
+    { name = "cost", width = 2 },
   },
 }
 
 M.DESC = DESC
-M.CH_SKILL = 0
-M.CH_DTYPE = 1
+M.CH_SKILL  = 0
+M.CH_DTYPE  = 1
+M.CH_SHIELD = 2
 
 local log
 local api
@@ -115,7 +145,19 @@ function M.capture(cooperative)
     for a = 1, n do
       local e = abilities[a]
       ability_recs[#ability_recs + 1] = {
-        si = si, ch = ch, id = e.id or 0, key = key_of(e.key == nil and "other" or e.key), sh = e.share or 0,
+        si = si, ch = ch, id = e.id or 0, key = key_of(e.key == nil and "other" or e.key), sh = e.share or 0, ab = e.abs or 0,
+      }
+    end
+  end
+
+  local target_recs = {}
+  local function harvest_targets(si, targets)
+    if si > 4095 then return end
+    local n = (targets and targets.count) or 0
+    for a = 1, n do
+      local e = targets[a]
+      target_recs[#target_recs + 1] = {
+        si = si, id = e.id or 0, key = key_of(e.name or ""), tt = e.ttype or 0, sh = e.share or 0, ab = e.abs or 0,
       }
     end
   end
@@ -138,6 +180,8 @@ function M.capture(cooperative)
     harvest(i, 1, s.dtype_groups)
     harvest_abilities(i, 0, s.eos_abilities)
     harvest_abilities(i, 1, s.dtype_abilities)
+    harvest_abilities(i, 2, s.shield_abilities)
+    harvest_targets(i, s.targets)
     if ye and i % ye == 0 then coroutine_yield() end
   end
   local function series_get(r, name)
@@ -164,6 +208,43 @@ function M.capture(cooperative)
       if rel < 0 then rel = 0 end
       steps[#steps + 1] = { b = i - 1, t = rel, c = rec.step_c[k] }
     end
+  end
+
+  local K = Vermilion.Kills
+  local kill_recs = {}
+  for i = 1, K.count() do
+    local kt, kuid, kname, kaid = K.get(i)
+    local rel = kt - t0
+    if rel < 0 then rel = 0 end
+    kill_recs[i] = { t = rel, id = kuid, key = key_of(kname or ""), aid = kaid }
+  end
+
+  local U = Vermilion.Ultimate
+  local ust, usv, usn = U.steps()
+  local ult_recs = {}
+  for i = 1, usn do
+    local v = math_floor(usv[i] + 0.5)
+    if v < 0 then v = 0 end
+    if v > 65535 then v = 65535 end
+    local rel = ust[i] - t0
+    if rel < 0 then rel = 0 end
+    ult_recs[i] = { t = rel, v = v }
+  end
+  local uut, uub, uun = U.used()
+  local ultu_recs = {}
+  for i = 1, uun do
+    local rel = uut[i] - t0
+    if rel < 0 then rel = 0 end
+    ultu_recs[i] = { t = rel, bar = uub[i] or 1 }
+  end
+  local uat, uab, uai, uac, uan = U.abilities()
+  local ulta_recs = {}
+  for i = 1, uan do
+    local rel = uat[i] - t0
+    if rel < 0 then rel = 0 end
+    local cost = uac[i] or 0
+    if cost > 65535 then cost = 65535 end
+    ulta_recs[i] = { t = rel, bar = uab[i] or 1, id = uai[i], cost = cost }
   end
 
   local total_damage, total_shield, total_crit, hits = Vermilion.Metrics.totals()
@@ -209,6 +290,11 @@ function M.capture(cooperative)
       steps     = vsf.pack(steps, DESC.steps, nil, ye),
       shares    = vsf.pack(share_recs, DESC.shares, nil, ye),
       abilities = vsf.pack(ability_recs, DESC.abilities, nil, ye),
+      targets   = vsf.pack(target_recs, DESC.targets, nil, ye),
+      kills     = vsf.pack(kill_recs, DESC.kills, nil, ye),
+      ult       = vsf.pack(ult_recs, DESC.ult, nil, ye),
+      ultu      = vsf.pack(ultu_recs, DESC.ultu, nil, ye),
+      ulta      = vsf.pack(ulta_recs, DESC.ulta, nil, ye),
     },
   }
   return session

@@ -130,7 +130,7 @@ local CATCHER_CONTROL_NAMES = {
 -- Reported by /pbchat rather than announced at login. It was announced while the add-on was
 -- being built, because a build behaving unlike its code was the hardest thing to diagnose from
 -- inside the game. That is worth a command, not a line of chat on every login.
-local VERSION = "1.15.1"
+local VERSION = "1.16.2"
 
 -- How long the catcher waits for the box to close before coming back anyway.
 local RESUME_DEADLINE_SECONDS = 120
@@ -430,14 +430,14 @@ end
 --
 -- No guard on the chat box being closed here. That guard belongs to the arrow keys alone, where
 -- it stops an open box losing its text cursor; a bound button has nothing to take.
--- The same list the arrows and L2+L3 walk, for the settings panel to offer.
+-- The same list the arrows and L2+D-pad Right walk, for the settings panel to offer.
 function addon:GetSelectableChannels()
 	return GetCyclableChannels()
 end
 
 -- Applied once, at login, and never on opening the chat box or after a zone change.
 --
--- Per-open would fight the feature it sits beside: L2+L3 chooses the channel on the HUD, before
+-- Per-open would fight the feature it sits beside: L2+D-pad Right chooses the channel on the HUD, before
 -- the box opens, so re-imposing a default at that moment would throw the choice away every time.
 -- Once per session is what "default" means here -- where messages start, not where they are
 -- forced back to.
@@ -1050,9 +1050,9 @@ function addon:PrintBinds()
 	-- or the source itself is unbound on this platform, in which case inheriting it was always
 	-- going to inherit nothing.
 	local actions = {
-		"PBSCHATASSISTANT_HUD_CHANNEL_L3",
-		"UI_SHORTCUT_LEFT_STICK",
-		"UI_SHORTCUT_LEFT_TRIGGER",
+		"PBSCHATASSISTANT_HUD_CHANNEL_RIGHT",
+		"UI_SHORTCUT_INPUT_RIGHT",
+		"ASSIST_NEXT_TRACKED_QUEST",
 		"PBSCHATASSISTANT_CHANNEL_NEXT",
 		"PBSCHATASSISTANT_START_CHAT",
 	}
@@ -1180,7 +1180,7 @@ function addon:InitSlashCommand()
 			self:ApplyCatcher()
 			Print("Enter capture OFF (catcher %s) -- gamepad buttons back", tostring(IsCatcherShown()))
 		elseif command == "forcelayer" then
-			Print("force layer is disabled; hold L2 on the HUD to enable the L3 channel shortcut")
+			Print("force layer is disabled; hold L2 on the HUD to enable the D-pad Right channel shortcut")
 		elseif command == "hudstatus" then
 			if PBS_CHAT_ASSISTANT_HUD_CHANNEL then PBS_CHAT_ASSISTANT_HUD_CHANNEL:PrintStatus() end
 		elseif command == "layers" then
@@ -1190,7 +1190,7 @@ function addon:InitSlashCommand()
 		elseif command == "hudchannel" or command == "entrychannel" then
 			self.sv.hudChannelEnabled = (argument ~= "off")
 			if PBS_CHAT_ASSISTANT_HUD_CHANNEL then PBS_CHAT_ASSISTANT_HUD_CHANNEL:Update() end
-			Print("HUD L2+L3 channel switching %s", self.sv.hudChannelEnabled and "on" or "off")
+			Print("HUD L2+D-pad Right channel switching %s", self.sv.hudChannelEnabled and "on" or "off")
 		elseif command == "channel" then
 			self.sv.channelKeys = (argument ~= "off")
 			Print("channel keys %s", self.sv.channelKeys and "on" or "off")

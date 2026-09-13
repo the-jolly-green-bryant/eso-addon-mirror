@@ -1,0 +1,671 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="TiradilTraderFrame" hidden="true" mouseEnabled="true" movable="true" clampedToScreen="true" tier="HIGH" resizeHandleSize="8">
+            <DimensionConstraints minX="1000" minY="900" />
+            <Dimensions x="1000" y="900" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
+
+            <Controls>
+                <Backdrop name="$(parent)Bg" inheritAlpha="false" mouseEnabled="true">
+                    <AnchorFill />
+                    <Edge file="EsoUI/Art/Tooltips/UI-Border.dds" edgeFileWidth="128" edgeFileHeight="16" />
+                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" />
+                    <OnMouseDown>
+                        if button == MOUSE_BUTTON_INDEX_LEFT then
+                            self:GetParent():StartMoving()
+                        end
+                    </OnMouseDown>
+                    <OnMouseUp>
+                        self:GetParent():StopMovingOrResizing()
+                    </OnMouseUp>
+                </Backdrop>
+
+                <Backdrop name="$(parent)ColorWash" centerColor="70000000" edgeColor="00000000" mouseEnabled="false">
+                    <AnchorFill />
+                </Backdrop>
+
+                <Control name="$(parent)Header">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="3" offsetY="15" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-3" offsetY="15" />
+                    <Dimensions y="45" />
+                    <Controls>
+                        <Label name="$(parent)Title" font="ZoFontHeader3" color="FFB800" text="TRADER ANALYTICS" horizontalAlignment="CENTER">
+                            <Dimensions x="780" y="0" />
+                            <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="0" />
+                            <OnInitialized>
+                                self:SetText(TiradilL10n.Get("TRADER_WINDOW_TITLE"))
+                            </OnInitialized>
+                        </Label>
+                        <Button name="$(parent)CloseBtn">
+                            <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+                            <Dimensions x="28" y="28" />
+                            <Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+                                     pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+                                     mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"/>
+                            <OnClicked>
+                                TiradilTraderFrame:SetHidden(true)
+                            </OnClicked>
+                        </Button>
+                        <Texture name="$(parent)Divider" textureFile="EsoUI/Art/Miscellaneous/horizontalDivider.dds">
+                            <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+                            <Dimensions y="4" />
+                        </Texture>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)FilterArea" hidden="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Header" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="14" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Header" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="14" />
+                    <Dimensions y="32" />
+                    <Controls>
+                        <Label name="$(parent)PeriodLabel" font="ZoFontGameSmall" color="A0A0A0" verticalAlignment="CENTER">
+                            <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="18" offsetY="0" />
+                            <OnInitialized>
+                                self:SetText(TiradilL10n.Get("TRADER_PERIOD_LABEL"))
+                            </OnInitialized>
+                        </Label>
+                        <Control name="$(parent)PeriodCombo" inherits="ZO_ComboBox">
+                            <Dimensions x="220" y="26" />
+                            <Anchor point="LEFT" relativeTo="$(parent)PeriodLabel" relativePoint="RIGHT" offsetX="10" offsetY="0" />
+                        </Control>
+                        <Label name="$(parent)GuildLabel" font="ZoFontGameSmall" color="A0A0A0" verticalAlignment="CENTER">
+                            <Anchor point="LEFT" relativeTo="$(parent)PeriodCombo" relativePoint="RIGHT" offsetX="24" offsetY="0" />
+                            <OnInitialized>
+                                self:SetText(TiradilL10n.Get("TRADER_GUILD_LABEL"))
+                            </OnInitialized>
+                        </Label>
+                        <Control name="$(parent)GuildCombo" inherits="ZO_ComboBox">
+                            <Dimensions x="220" y="26" />
+                            <Anchor point="LEFT" relativeTo="$(parent)GuildLabel" relativePoint="RIGHT" offsetX="10" offsetY="0" />
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)Body" hidden="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)FilterArea" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="14" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Footer" relativePoint="TOPRIGHT" offsetX="0" offsetY="-14" />
+
+                    <Controls>
+                        <Control name="$(parent)RoiColumn">
+                            <Dimensions y="130" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+
+                            <Controls>
+                                <Label name="$(parent)Row1Label" font="ZoFontHeader4" color="FFFFFF" text="Total Trader Revenue (Tax)">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="36" offsetY="10" />
+                                    <OnInitialized>
+                                        self:SetText(TiradilL10n.Get("TRADER_ROW_REVENUE"))
+                                    </OnInitialized>
+                                </Label>
+                                <Label name="$(parent)Row1Value" font="ZoFontHeader4" color="4DDB4D" text="0 Gold" wrapMode="ELLIPSIS" horizontalAlignment="RIGHT">
+                                    <Dimensions x="400" y="24" />
+                                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-36" offsetY="10" />
+                                </Label>
+
+                                <Label name="$(parent)Row2Label" font="ZoFontHeader4" color="FFFFFF" text="Total Trader Cost (Rent + Bids)">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Row1Label" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
+                                    <OnInitialized>
+                                        self:SetText(TiradilL10n.Get("TRADER_ROW_COST"))
+                                    </OnInitialized>
+                                </Label>
+                                <Label name="$(parent)Row2Value" font="ZoFontHeader4" color="FF6B6B" text="0 Gold" wrapMode="ELLIPSIS" horizontalAlignment="RIGHT">
+                                    <Dimensions x="400" y="24" />
+                                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Row1Value" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="2" />
+                                </Label>
+
+                                <Backdrop name="$(parent)Divider" centerColor="40FFFFFF" edgeColor="00000000">
+                                    <Dimensions x="0" y="1" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Row2Value" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="6" />
+                                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Row2Value" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="6" />
+                                </Backdrop>
+
+                                <Label name="$(parent)NetLabel" font="ZoFontHeader3" color="EDC25D" text="NET TRADER ROI">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Divider" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="8" />
+                                    <OnInitialized>
+                                        self:SetText(TiradilL10n.Get("TRADER_NET_ROI"))
+                                    </OnInitialized>
+                                </Label>
+                                <Label name="$(parent)NetValue" font="ZoFontHeader3" color="FFFFFF" text="0 Gold" wrapMode="ELLIPSIS" horizontalAlignment="RIGHT">
+                                    <Dimensions x="400" y="26" />
+                                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Divider" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="8" />
+                                </Label>
+
+                                <Label name="$(parent)SubtitleLabel" font="ZoFontGameSmall" color="A0A0A0" text="" horizontalAlignment="CENTER">
+                                    <Dimensions x="800" y="0" />
+                                    <Anchor point="TOP" relativeTo="$(parent)NetValue" relativePoint="BOTTOM" offsetX="0" offsetY="10" />
+                                </Label>
+                            </Controls>
+                        </Control>
+
+                        <Control name="$(parent)HistoryColumn">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)RoiColumn" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="16" />
+                            <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+                            <Dimensions x="430" y="0" />
+
+                            <Controls>
+                                <Label name="$(parent)Title" font="ZoFontWinH4" color="FFB800" text="TRADER HISTORY (all guilds)">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="18" offsetY="0" />
+                                    <OnInitialized>
+                                        self:SetText(TiradilL10n.Get("TRADER_HISTORY_TITLE"))
+                                    </OnInitialized>
+                                </Label>
+                                <Label name="$(parent)None" font="ZoFontGameSmall" color="A0A0A0" text="">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="10" />
+                                </Label>
+                                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="8" />
+                                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-18" offsetY="0" />
+                                </Control>
+                            </Controls>
+                        </Control>
+
+                        <Control name="$(parent)BidsColumn">
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)RoiColumn" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="16" />
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+                            <Dimensions x="430" y="0" />
+
+                            <Controls>
+                                <Label name="$(parent)Title" font="ZoFontWinH4" color="FFB800" text="RECENT BIDS (all guilds)">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+                                    <OnInitialized>
+                                        self:SetText(TiradilL10n.Get("TRADER_BIDS_TITLE"))
+                                    </OnInitialized>
+                                </Label>
+                                <Label name="$(parent)None" font="ZoFontGameSmall" color="A0A0A0" text="">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="10" />
+                                </Label>
+                                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="8" />
+                                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-18" offsetY="0" />
+                                </Control>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)Footer">
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="18" offsetY="-18" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-18" offsetY="-18" />
+                    <Dimensions y="28" />
+                    <Controls>
+                        <Label name="$(parent)Status" font="ZoFontGameSmall" color="A0A0A0" horizontalAlignment="LEFT" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+                            <Dimensions x="600" y="0" />
+                            <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
+                        </Label>
+                        <Button name="$(parent)RefreshBtn" inherits="ZO_DefaultButton">
+                            <Dimensions x="100" y="28" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+                            <OnInitialized>
+                                self:SetText(TiradilL10n.Get("BTN_REFRESH"))
+                            </OnInitialized>
+                            <OnClicked>
+                                TiradilTrader.RefreshCurrentView()
+                            </OnClicked>
+                        </Button>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)DonationsPanel">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Header" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="14" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Footer" relativePoint="TOPRIGHT" offsetX="0" offsetY="-14" />
+                    <Controls>
+                        <Backdrop name="$(parent)Bg" inheritAlpha="false">
+                            <AnchorFill />
+                            <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" />
+                            <Edge file="EsoUI/Art/Tooltips/UI-Border.dds" edgeFileWidth="128" edgeFileHeight="16" />
+                        </Backdrop>
+                        <Backdrop name="$(parent)ColorWash" centerColor="70000000" edgeColor="00000000" mouseEnabled="false">
+                            <AnchorFill />
+                        </Backdrop>
+
+                        <Label name="$(parent)Title" font="ZoFontHeader3" color="FFB800" text="DONATIONS OVERVIEW" horizontalAlignment="CENTER">
+                            <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="12" />
+                            <OnInitialized>
+                                self:SetText(TiradilL10n.Get("TRADER_DONATIONS_TITLE"))
+                            </OnInitialized>
+                        </Label>
+
+                        <Label name="$(parent)ChartCaption" font="ZoFontGameSmall" color="A0A0A0" text="Weekly trend (last 8 weeks)">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="18" offsetY="52" />
+                            <OnInitialized>
+                                self:SetText(TiradilL10n.Get("TRADER_CHART_CAPTION"))
+                            </OnInitialized>
+                        </Label>
+
+                        <Label name="$(parent)ChartHint" font="ZoFontGameSmall" color="787878" text="Click a legend item below to show/hide it.">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)ChartCaption" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="4" />
+                            <OnInitialized>
+                                self:SetText(TiradilL10n.Get("TRADER_CHART_HINT"))
+                            </OnInitialized>
+                        </Label>
+
+                        <Control name="$(parent)ChartControlsRow">
+                            <Dimensions x="920" y="26" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)ChartHint" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="10" />
+                            <Controls>
+                                <Label name="$(parent)ChartTypeLabel" font="ZoFontGameSmall" color="A0A0A0" verticalAlignment="CENTER">
+                                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
+                                    <OnInitialized>
+                                        self:SetText(TiradilL10n.Get("TRADER_CHART_TYPE_LABEL"))
+                                    </OnInitialized>
+                                </Label>
+                                <Control name="$(parent)ChartTypeCombo" inherits="ZO_ComboBox">
+                                    <Dimensions x="220" y="26" />
+                                    <Anchor point="LEFT" relativeTo="$(parent)ChartTypeLabel" relativePoint="RIGHT" offsetX="10" offsetY="0" />
+                                </Control>
+                                <Label name="$(parent)ChartMetricLabel" font="ZoFontGameSmall" color="A0A0A0" verticalAlignment="CENTER">
+                                    <Anchor point="LEFT" relativeTo="$(parent)ChartTypeCombo" relativePoint="RIGHT" offsetX="24" offsetY="0" />
+                                    <OnInitialized>
+                                        self:SetText(TiradilL10n.Get("TRADER_CHART_METRIC_LABEL"))
+                                    </OnInitialized>
+                                </Label>
+                                <Control name="$(parent)ChartMetricCombo" inherits="ZO_ComboBox">
+                                    <Dimensions x="220" y="26" />
+                                    <Anchor point="LEFT" relativeTo="$(parent)ChartMetricLabel" relativePoint="RIGHT" offsetX="10" offsetY="0" />
+                                </Control>
+                                <Label name="$(parent)ChartGuildLabel" font="ZoFontGameSmall" color="A0A0A0" verticalAlignment="CENTER" hidden="true">
+                                    <Anchor point="LEFT" relativeTo="$(parent)ChartTypeCombo" relativePoint="RIGHT" offsetX="24" offsetY="0" />
+                                    <OnInitialized>
+                                        self:SetText(TiradilL10n.Get("TRADER_GUILD_LABEL"))
+                                    </OnInitialized>
+                                </Label>
+                                <Control name="$(parent)ChartGuildCombo" inherits="ZO_ComboBox" hidden="true">
+                                    <Dimensions x="220" y="26" />
+                                    <Anchor point="LEFT" relativeTo="$(parent)ChartGuildLabel" relativePoint="RIGHT" offsetX="10" offsetY="0" />
+                                </Control>
+                            </Controls>
+                        </Control>
+
+                        <Control name="$(parent)ChartArea">
+                            <Dimensions x="920" y="240" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)ChartControlsRow" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="14" />
+                            <Controls>
+                                <Backdrop name="$(parent)Baseline" centerColor="60FFFFFF" edgeColor="00000000">
+                                    <Dimensions x="820" y="2" />
+                                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="100" offsetY="0" />
+                                </Backdrop>
+
+                                <Backdrop name="$(parent)GridUp1" centerColor="30FFFFFF" edgeColor="00000000">
+                                    <Dimensions x="810" y="1" />
+                                    <Anchor point="LEFT" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="-400" offsetY="-25" />
+                                </Backdrop>
+                                <Label name="$(parent)GridUp1Label" font="ZoFontGameSmall" color="787878" text="" horizontalAlignment="RIGHT">
+                                    <Dimensions x="70" y="0" />
+                                    <Anchor point="RIGHT" relativeTo="$(parent)GridUp1" relativePoint="LEFT" offsetX="-6" offsetY="0" />
+                                </Label>
+                                <Backdrop name="$(parent)GridDown1" centerColor="30FFFFFF" edgeColor="00000000">
+                                    <Dimensions x="810" y="1" />
+                                    <Anchor point="LEFT" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="-400" offsetY="25" />
+                                </Backdrop>
+                                <Label name="$(parent)GridDown1Label" font="ZoFontGameSmall" color="787878" text="" horizontalAlignment="RIGHT">
+                                    <Dimensions x="70" y="0" />
+                                    <Anchor point="RIGHT" relativeTo="$(parent)GridDown1" relativePoint="LEFT" offsetX="-6" offsetY="0" />
+                                </Label>
+                                <Backdrop name="$(parent)GridUp2" centerColor="30FFFFFF" edgeColor="00000000">
+                                    <Dimensions x="810" y="1" />
+                                    <Anchor point="LEFT" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="-400" offsetY="-50" />
+                                </Backdrop>
+                                <Label name="$(parent)GridUp2Label" font="ZoFontGameSmall" color="787878" text="" horizontalAlignment="RIGHT">
+                                    <Dimensions x="70" y="0" />
+                                    <Anchor point="RIGHT" relativeTo="$(parent)GridUp2" relativePoint="LEFT" offsetX="-6" offsetY="0" />
+                                </Label>
+                                <Backdrop name="$(parent)GridDown2" centerColor="30FFFFFF" edgeColor="00000000">
+                                    <Dimensions x="810" y="1" />
+                                    <Anchor point="LEFT" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="-400" offsetY="50" />
+                                </Backdrop>
+                                <Label name="$(parent)GridDown2Label" font="ZoFontGameSmall" color="787878" text="" horizontalAlignment="RIGHT">
+                                    <Dimensions x="70" y="0" />
+                                    <Anchor point="RIGHT" relativeTo="$(parent)GridDown2" relativePoint="LEFT" offsetX="-6" offsetY="0" />
+                                </Label>
+                                <Backdrop name="$(parent)GridUp3" centerColor="30FFFFFF" edgeColor="00000000">
+                                    <Dimensions x="810" y="1" />
+                                    <Anchor point="LEFT" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="-400" offsetY="-75" />
+                                </Backdrop>
+                                <Label name="$(parent)GridUp3Label" font="ZoFontGameSmall" color="787878" text="" horizontalAlignment="RIGHT">
+                                    <Dimensions x="70" y="0" />
+                                    <Anchor point="RIGHT" relativeTo="$(parent)GridUp3" relativePoint="LEFT" offsetX="-6" offsetY="0" />
+                                </Label>
+                                <Backdrop name="$(parent)GridDown3" centerColor="30FFFFFF" edgeColor="00000000">
+                                    <Dimensions x="810" y="1" />
+                                    <Anchor point="LEFT" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="-400" offsetY="75" />
+                                </Backdrop>
+                                <Label name="$(parent)GridDown3Label" font="ZoFontGameSmall" color="787878" text="" horizontalAlignment="RIGHT">
+                                    <Dimensions x="70" y="0" />
+                                    <Anchor point="RIGHT" relativeTo="$(parent)GridDown3" relativePoint="LEFT" offsetX="-6" offsetY="0" />
+                                </Label>
+                                <Backdrop name="$(parent)GridUp4" centerColor="30FFFFFF" edgeColor="00000000">
+                                    <Dimensions x="810" y="1" />
+                                    <Anchor point="LEFT" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="-400" offsetY="-100" />
+                                </Backdrop>
+                                <Label name="$(parent)GridUp4Label" font="ZoFontGameSmall" color="787878" text="" horizontalAlignment="RIGHT">
+                                    <Dimensions x="70" y="0" />
+                                    <Anchor point="RIGHT" relativeTo="$(parent)GridUp4" relativePoint="LEFT" offsetX="-6" offsetY="0" />
+                                </Label>
+                                <Backdrop name="$(parent)GridDown4" centerColor="30FFFFFF" edgeColor="00000000">
+                                    <Dimensions x="810" y="1" />
+                                    <Anchor point="LEFT" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="-400" offsetY="100" />
+                                </Backdrop>
+                                <Label name="$(parent)GridDown4Label" font="ZoFontGameSmall" color="787878" text="" horizontalAlignment="RIGHT">
+                                    <Dimensions x="70" y="0" />
+                                    <Anchor point="RIGHT" relativeTo="$(parent)GridDown4" relativePoint="LEFT" offsetX="-6" offsetY="0" />
+                                </Label>
+
+                                <Backdrop name="$(parent)Week1Slot1Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="-382" offsetY="0" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Week1Slot2Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="-366" offsetY="0" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Week1Slot3Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="-350" offsetY="0" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Week1Slot4Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="-334" offsetY="0" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Week1Slot5Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="-318" offsetY="0" />
+                                </Backdrop>
+                                <Label name="$(parent)Week1Label" font="ZoFontGameSmall" color="A0A0A0" text="" horizontalAlignment="CENTER">
+                                    <Dimensions x="90" y="0" />
+                                    <Anchor point="TOP" relativeTo="$(parent)Baseline" relativePoint="BOTTOM" offsetX="-350" offsetY="106" />
+                                </Label>
+
+                                <Backdrop name="$(parent)Week2Slot1Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="-282" offsetY="0" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Week2Slot2Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="-266" offsetY="0" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Week2Slot3Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="-250" offsetY="0" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Week2Slot4Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="-234" offsetY="0" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Week2Slot5Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="-218" offsetY="0" />
+                                </Backdrop>
+                                <Label name="$(parent)Week2Label" font="ZoFontGameSmall" color="A0A0A0" text="" horizontalAlignment="CENTER">
+                                    <Dimensions x="90" y="0" />
+                                    <Anchor point="TOP" relativeTo="$(parent)Baseline" relativePoint="BOTTOM" offsetX="-250" offsetY="106" />
+                                </Label>
+
+                                <Backdrop name="$(parent)Week3Slot1Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="-182" offsetY="0" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Week3Slot2Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="-166" offsetY="0" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Week3Slot3Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="-150" offsetY="0" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Week3Slot4Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="-134" offsetY="0" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Week3Slot5Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="-118" offsetY="0" />
+                                </Backdrop>
+                                <Label name="$(parent)Week3Label" font="ZoFontGameSmall" color="A0A0A0" text="" horizontalAlignment="CENTER">
+                                    <Dimensions x="90" y="0" />
+                                    <Anchor point="TOP" relativeTo="$(parent)Baseline" relativePoint="BOTTOM" offsetX="-150" offsetY="106" />
+                                </Label>
+
+                                <Backdrop name="$(parent)Week4Slot1Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="-82" offsetY="0" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Week4Slot2Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="-66" offsetY="0" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Week4Slot3Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="-50" offsetY="0" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Week4Slot4Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="-34" offsetY="0" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Week4Slot5Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="-18" offsetY="0" />
+                                </Backdrop>
+                                <Label name="$(parent)Week4Label" font="ZoFontGameSmall" color="A0A0A0" text="" horizontalAlignment="CENTER">
+                                    <Dimensions x="90" y="0" />
+                                    <Anchor point="TOP" relativeTo="$(parent)Baseline" relativePoint="BOTTOM" offsetX="-50" offsetY="106" />
+                                </Label>
+
+                                <Backdrop name="$(parent)Week5Slot1Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="18" offsetY="0" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Week5Slot2Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="34" offsetY="0" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Week5Slot3Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="50" offsetY="0" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Week5Slot4Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="66" offsetY="0" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Week5Slot5Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="82" offsetY="0" />
+                                </Backdrop>
+                                <Label name="$(parent)Week5Label" font="ZoFontGameSmall" color="A0A0A0" text="" horizontalAlignment="CENTER">
+                                    <Dimensions x="90" y="0" />
+                                    <Anchor point="TOP" relativeTo="$(parent)Baseline" relativePoint="BOTTOM" offsetX="50" offsetY="106" />
+                                </Label>
+
+                                <Backdrop name="$(parent)Week6Slot1Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="118" offsetY="0" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Week6Slot2Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="134" offsetY="0" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Week6Slot3Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="150" offsetY="0" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Week6Slot4Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="166" offsetY="0" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Week6Slot5Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="182" offsetY="0" />
+                                </Backdrop>
+                                <Label name="$(parent)Week6Label" font="ZoFontGameSmall" color="A0A0A0" text="" horizontalAlignment="CENTER">
+                                    <Dimensions x="90" y="0" />
+                                    <Anchor point="TOP" relativeTo="$(parent)Baseline" relativePoint="BOTTOM" offsetX="150" offsetY="106" />
+                                </Label>
+
+                                <Backdrop name="$(parent)Week7Slot1Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="218" offsetY="0" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Week7Slot2Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="234" offsetY="0" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Week7Slot3Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="250" offsetY="0" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Week7Slot4Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="266" offsetY="0" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Week7Slot5Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="282" offsetY="0" />
+                                </Backdrop>
+                                <Label name="$(parent)Week7Label" font="ZoFontGameSmall" color="A0A0A0" text="" horizontalAlignment="CENTER">
+                                    <Dimensions x="90" y="0" />
+                                    <Anchor point="TOP" relativeTo="$(parent)Baseline" relativePoint="BOTTOM" offsetX="250" offsetY="106" />
+                                </Label>
+
+                                <Backdrop name="$(parent)Week8Slot1Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="318" offsetY="0" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Week8Slot2Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="334" offsetY="0" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Week8Slot3Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="350" offsetY="0" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Week8Slot4Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="366" offsetY="0" />
+                                </Backdrop>
+                                <Backdrop name="$(parent)Week8Slot5Bar" centerColor="4DDB4DCC" edgeColor="00000000">
+                                    <Dimensions x="13" y="2" />
+                                    <Anchor point="BOTTOM" relativeTo="$(parent)Baseline" relativePoint="CENTER" offsetX="382" offsetY="0" />
+                                </Backdrop>
+                                <Label name="$(parent)Week8Label" font="ZoFontGameSmall" color="A0A0A0" text="" horizontalAlignment="CENTER">
+                                    <Dimensions x="90" y="0" />
+                                    <Anchor point="TOP" relativeTo="$(parent)Baseline" relativePoint="BOTTOM" offsetX="350" offsetY="106" />
+                                </Label>
+                            </Controls>
+                        </Control>
+
+                        <Control name="$(parent)ChartLegend">
+                            <Dimensions x="920" y="24" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)ChartArea" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="8" />
+                            <Controls>
+                                <Button name="$(parent)Legend1" font="ZoFontGameSmall" hidden="true">
+                                    <Dimensions x="150" y="22" />
+                                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
+                                    <OnClicked>
+                                        TiradilTrader.ToggleChartLegendItem(1)
+                                    </OnClicked>
+                                </Button>
+                                <Button name="$(parent)Legend2" font="ZoFontGameSmall" hidden="true">
+                                    <Dimensions x="150" y="22" />
+                                    <Anchor point="LEFT" relativeTo="$(parent)Legend1" relativePoint="RIGHT" offsetX="10" offsetY="0" />
+                                    <OnClicked>
+                                        TiradilTrader.ToggleChartLegendItem(2)
+                                    </OnClicked>
+                                </Button>
+                                <Button name="$(parent)Legend3" font="ZoFontGameSmall" hidden="true">
+                                    <Dimensions x="150" y="22" />
+                                    <Anchor point="LEFT" relativeTo="$(parent)Legend2" relativePoint="RIGHT" offsetX="10" offsetY="0" />
+                                    <OnClicked>
+                                        TiradilTrader.ToggleChartLegendItem(3)
+                                    </OnClicked>
+                                </Button>
+                                <Button name="$(parent)Legend4" font="ZoFontGameSmall" hidden="true">
+                                    <Dimensions x="150" y="22" />
+                                    <Anchor point="LEFT" relativeTo="$(parent)Legend3" relativePoint="RIGHT" offsetX="10" offsetY="0" />
+                                    <OnClicked>
+                                        TiradilTrader.ToggleChartLegendItem(4)
+                                    </OnClicked>
+                                </Button>
+                                <Button name="$(parent)Legend5" font="ZoFontGameSmall" hidden="true">
+                                    <Dimensions x="150" y="22" />
+                                    <Anchor point="LEFT" relativeTo="$(parent)Legend4" relativePoint="RIGHT" offsetX="10" offsetY="0" />
+                                    <OnClicked>
+                                        TiradilTrader.ToggleChartLegendItem(5)
+                                    </OnClicked>
+                                </Button>
+                            </Controls>
+                        </Control>
+
+                        <Backdrop name="$(parent)ContributorsDivider" centerColor="40FFFFFF" edgeColor="00000000">
+                            <Dimensions x="920" y="1" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)ChartLegend" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="16" />
+                        </Backdrop>
+
+                        <Control name="$(parent)ContributorsControlsRow">
+                            <Dimensions x="920" y="26" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)ContributorsDivider" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="14" />
+                            <Controls>
+                                <Label name="$(parent)PeriodLabel" font="ZoFontGameSmall" color="A0A0A0" verticalAlignment="CENTER">
+                                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
+                                    <OnInitialized>
+                                        self:SetText(TiradilL10n.Get("TRADER_PERIOD_LABEL"))
+                                    </OnInitialized>
+                                </Label>
+                                <Control name="$(parent)PeriodCombo" inherits="ZO_ComboBox">
+                                    <Dimensions x="180" y="26" />
+                                    <Anchor point="LEFT" relativeTo="$(parent)PeriodLabel" relativePoint="RIGHT" offsetX="10" offsetY="0" />
+                                </Control>
+                                <Label name="$(parent)MetricLabel" font="ZoFontGameSmall" color="A0A0A0" verticalAlignment="CENTER">
+                                    <Anchor point="LEFT" relativeTo="$(parent)PeriodCombo" relativePoint="RIGHT" offsetX="24" offsetY="0" />
+                                    <OnInitialized>
+                                        self:SetText(TiradilL10n.Get("TRADER_CHART_METRIC_LABEL"))
+                                    </OnInitialized>
+                                </Label>
+                                <Control name="$(parent)MetricCombo" inherits="ZO_ComboBox">
+                                    <Dimensions x="180" y="26" />
+                                    <Anchor point="LEFT" relativeTo="$(parent)MetricLabel" relativePoint="RIGHT" offsetX="10" offsetY="0" />
+                                </Control>
+                                <Label name="$(parent)GuildLabel" font="ZoFontGameSmall" color="A0A0A0" verticalAlignment="CENTER">
+                                    <Anchor point="LEFT" relativeTo="$(parent)MetricCombo" relativePoint="RIGHT" offsetX="24" offsetY="0" />
+                                    <OnInitialized>
+                                        self:SetText(TiradilL10n.Get("TRADER_GUILD_LABEL"))
+                                    </OnInitialized>
+                                </Label>
+                                <Control name="$(parent)GuildCombo" inherits="ZO_ComboBox">
+                                    <Dimensions x="180" y="26" />
+                                    <Anchor point="LEFT" relativeTo="$(parent)GuildLabel" relativePoint="RIGHT" offsetX="10" offsetY="0" />
+                                </Control>
+                            </Controls>
+                        </Control>
+
+                        <Label name="$(parent)TotalLabel" font="ZoFontHeader4" color="FFFFFF" text="Total Donations (selected period)">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)ContributorsControlsRow" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="16" />
+                            <OnInitialized>
+                                self:SetText(TiradilL10n.Get("TRADER_DONATIONS_TOTAL_LABEL"))
+                            </OnInitialized>
+                        </Label>
+                        <Label name="$(parent)TotalValue" font="ZoFontHeader4" color="4DDB4D" text="0 Gold" horizontalAlignment="RIGHT">
+                            <Dimensions x="300" y="0" />
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-18" offsetY="0" />
+                            <Anchor point="TOP" relativeTo="$(parent)TotalLabel" relativePoint="TOP" offsetX="0" offsetY="0" />
+                        </Label>
+
+                        <Label name="$(parent)DonorsTitle" font="ZoFontWinH4" color="FFB800" text="TOP DONORS (selected period)">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)TotalLabel" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="16" />
+                            <OnInitialized>
+                                self:SetText(TiradilL10n.Get("TRADER_TOP_DONORS_TITLE"))
+                            </OnInitialized>
+                        </Label>
+                        <Label name="$(parent)DonorsNone" font="ZoFontGameSmall" color="A0A0A0" text="">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)DonorsTitle" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="10" />
+                        </Label>
+                        <Control name="$(parent)DonorsList" inherits="ZO_ScrollList">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)DonorsTitle" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="10" />
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-18" offsetY="-12" />
+                        </Control>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

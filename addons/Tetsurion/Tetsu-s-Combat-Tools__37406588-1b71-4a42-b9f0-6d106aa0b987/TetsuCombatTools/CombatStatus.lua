@@ -16,12 +16,47 @@ local textLab
 local built = false
 local lastCombat = false
 local soundReady = false
+local previewUntil = 0
 
 local SOUND_KEYS = {
-    duel = { SOUNDS_KEY = "DUEL_START", fallback = "Duel_Start" },
-    alert = { SOUNDS_KEY = "GENERAL_ALERT_ERROR", fallback = "General_Alert_Error" },
-    notify = { SOUNDS_KEY = "NEW_NOTIFICATION", fallback = "New_Notification" },
-    discover = { SOUNDS_KEY = "OBJECTIVE_DISCOVERED", fallback = "Objective_Discovered" },
+    duel     = { key = "DUEL_START",                      fb = "Duel_Start" },
+    alert    = { key = "GENERAL_ALERT_ERROR",             fb = "General_Alert_Error" },
+    notify   = { key = "NEW_NOTIFICATION",                fb = "New_Notification" },
+    discover = { key = "OBJECTIVE_DISCOVERED",            fb = "Objective_Discovered" },
+    kill     = { key = "DEATH_RECAP_KILLING_BLOW_SHOWN",  fb = "Death_Recap_Killing_Blow_Shown" },
+    rune     = { key = "ENCHANTING_POTENCY_RUNE_PLACED",  fb = "Enchanting_Potency_Rune_Placed" },
+    glyph    = { key = "ENCHANTING_WEAPON_GLYPH_REMOVED", fb = "Enchanting_Weapon_Glyph_Removed" },
+    quest    = { key = "QUEST_OBJECTIVE_INCREMENT",       fb = "Quest_Objective_Increment" },
+    level    = { key = "LEVEL_UP",                        fb = "Level_Up" },
+    mail     = { key = "NEW_MAIL",                        fb = "New_Mail" },
+    skill    = { key = "SKILL_GAINED",                    fb = "Skill_Gained" },
+    lock     = { key = "LOCKPICKING_SUCCESS",             fb = "Lockpicking_Success" },
+    ready    = { key = "GROUP_READY_CHECK_INITIATED",     fb = "Group_Ready_Check_Initiated" },
+    tick     = { key = "COUNTDOWN_TICK",                  fb = "Countdown_Tick" },
+    bgmin    = { key = "BATTLEGROUND_ONE_MINUTE_WARNING", fb = "Battleground_One_Minute_Warning" },
+    bggo     = { key = "BATTLEGROUND_COUNTDOWN_FINISH",   fb = "Battleground_Countdown_Finish" },
+    trialok  = { key = "RAID_TRIAL_COMPLETED",            fb = "Raid_Trial_Completed" },
+    trialno  = { key = "RAID_TRIAL_FAILED",               fb = "Raid_Trial_Failed" },
+    achieve  = { key = "ACHIEVEMENT_AWARDED",             fb = "Achievement_Awarded" },
+    sky      = { key = "SKYSHARD_GAINED",                 fb = "Skyshard_Gained" },
+    qdone    = { key = "QUEST_COMPLETED",                 fb = "Quest_Completed" },
+    qacc     = { key = "QUEST_ACCEPTED",                  fb = "Quest_Accepted" },
+    champ    = { key = "CHAMPION_POINTS_COMMITTED",       fb = "Champion_Points_Committed" },
+    abil     = { key = "ABILITY_UNLOCKED",                fb = "Ability_Unlocked" },
+    coll     = { key = "COLLECTIBLE_UNLOCKED",            fb = "Collectible_Unlocked" },
+    book     = { key = "BOOK_ACQUIRED",                   fb = "Book_Acquired" },
+    ess      = { key = "ENCHANTING_ESSENCE_RUNE_PLACED",  fb = "Enchanting_Essence_Rune_Placed" },
+    asp      = { key = "ENCHANTING_ASPECT_RUNE_PLACED",   fb = "Enchanting_Aspect_Rune_Placed" },
+    alc      = { key = "ALCHEMY_SOLVENT_PLACED",          fb = "Alchemy_Solvent_Placed" },
+    friend   = { key = "FRIEND_INVITE_RECEIVED",          fb = "Friend_Invite_Received" },
+    gjoin    = { key = "GROUP_JOIN",                      fb = "Group_Join" },
+    kos      = { key = "JUSTICE_NOW_KOS",                 fb = "Justice_Now_KOS" },
+    lbreak   = { key = "LOCKPICKING_BREAK",               fb = "Lockpicking_Break" },
+    kick     = { key = "INSTANCE_KICK_WARNING",           fb = "Instance_Kick_Warning" },
+    fanfare  = { key = "LEVEL_UP_REWARD_FANFARE",         fb = "Level_Up_Reward_Fanfare" },
+    medal    = { key = "BATTLEGROUND_MEDAL_RECEIVED",     fb = "Battleground_Medal_Received" },
+    spt      = { key = "SKILL_POINT_GAINED",              fb = "Skill_Point_Gained" },
+    map      = { key = "MAP_LOCATION_DISCOVERED",         fb = "Map_Location_Discovered" },
 }
 
 local function Vars()
@@ -96,24 +131,43 @@ local function IconAlpha()
     return p / 100
 end
 
-local function FightColor()
-    if InCombat() then return COL_FIGHT end
-    return COL_PEACE
+local function NowMs()
+    if GetGameTimeMilliseconds then
+        return GetGameTimeMilliseconds()
+    end
+    return GetFrameTimeMilliseconds and GetFrameTimeMilliseconds() or 0
+end
+
+local function PreviewLive()
+    return previewUntil > NowMs()
+end
+
+local function FightNow()
+    return PreviewLive() or InCombat()
 end
 
 local function PlayStartSound()
-    if not SoundOn() then return end
     local v = Vars()
-    local key = v and v.statusSoundId or "duel"
-    local spec = SOUND_KEYS[key] or SOUND_KEYS.duel
-    local played = false
-    if SOUNDS and spec.SOUNDS_KEY and SOUNDS[spec.SOUNDS_KEY] then
-        played = pcall(PlaySound, SOUNDS[spec.SOUNDS_KEY])
+    if not v then return end
+    -- Preview / dropdown preview ignore the "sound on combat start" mute
+    -- only when called from T.PlayStatusSound; live combat still uses SoundOn.
+    local vol = tonumber(v.statusSoundVolume)
+    if vol == nil then vol = 2 end
+    if vol < 1 then return end
+    if vol > 5 then vol = 5 end
+    local spec = SOUND_KEYS[v.statusSoundId] or SOUND_KEYS.duel
+    local payload = nil
+    if SOUNDS and spec.key and SOUNDS[spec.key] then
+        payload = SOUNDS[spec.key]
+    elseif spec.fb then
+        payload = spec.fb
     end
-    if not played and spec.fallback and PlaySound then
-        pcall(PlaySound, spec.fallback)
+    if not payload or not PlaySound then return end
+    for _ = 1, vol do
+        pcall(PlaySound, payload)
     end
 end
+T.PlayStatusSound = PlayStartSound
 
 local function AttachFragment(control)
     if not control then return end
@@ -187,7 +241,7 @@ local function LayoutText()
 end
 
 local function Paint()
-    local fight = InCombat()
+    local fight = FightNow()
     local col = fight and COL_FIGHT or COL_PEACE
     local a = IconAlpha()
     if iconBg then
@@ -208,12 +262,13 @@ local function Paint()
 end
 
 local function ApplyShown()
-    local hud = WorldHudOpen()
+    local prev = PreviewLive()
+    local hud = WorldHudOpen() or prev
     if iconRoot then
-        iconRoot:SetHidden(not (IconOn() and hud))
+        iconRoot:SetHidden(not ((IconOn() or prev) and hud and StatusOn()))
     end
     if textRoot then
-        textRoot:SetHidden(not (TextOn() and hud))
+        textRoot:SetHidden(not ((TextOn() or prev) and hud and StatusOn()))
     end
 end
 
@@ -268,12 +323,34 @@ end
 
 local function OnCombat(_, inCombat)
     inCombat = inCombat and true or false
-    if inCombat and not lastCombat and soundReady then
+    if inCombat and not lastCombat and soundReady and SoundOn() then
         PlayStartSound()
     end
     lastCombat = inCombat
     Paint()
     ApplyShown()
+end
+
+function T.StatusPreview()
+    if not StatusOn() then
+        return
+    end
+    previewUntil = NowMs() + 8000
+    if not built then
+        Build()
+    end
+    if SoundOn() then
+        PlayStartSound()
+    end
+    T.StatusRefresh()
+    EVENT_MANAGER:UnregisterForUpdate(ADDON .. "Prev")
+    EVENT_MANAGER:RegisterForUpdate(ADDON .. "Prev", 200, function()
+        if not PreviewLive() then
+            EVENT_MANAGER:UnregisterForUpdate(ADDON .. "Prev")
+            previewUntil = 0
+            T.StatusRefresh()
+        end
+    end)
 end
 
 function T.StatusRefresh()

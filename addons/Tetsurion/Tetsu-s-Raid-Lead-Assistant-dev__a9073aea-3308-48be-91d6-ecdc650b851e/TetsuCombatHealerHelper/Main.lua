@@ -20,7 +20,7 @@ local defaultAccountVars = {
     hudDotStyle = "solid",
     showRaidPanel = true,
     showBossPanel = true,
-    debuffOnTarget = true,
+    dummyDebuffs = false,
     showPairPanels = true,
     pairOffsetX = 0,
     pairOffsetY = 0,
@@ -73,6 +73,13 @@ local function RegisterEvents()
         end
     end)
     EVENT_MANAGER:AddFilterForEvent(ADDON_NAME .. "EffBoss", EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG_PREFIX, "boss")
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "EffDummy", EVENT_EFFECT_CHANGED, function(...)
+        if not T.AllowDummyReticle or not T.AllowDummyReticle() then return end
+        if T.Panels and T.Panels.OnBossEffect then
+            T.Panels.OnBossEffect(...)
+        end
+    end)
+    EVENT_MANAGER:AddFilterForEvent(ADDON_NAME .. "EffDummy", EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG, "reticleover")
     if EVENT_BOSSES_CHANGED then
         EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_BOSSES_CHANGED, Refresh)
     end

@@ -1,0 +1,22 @@
+<Bindings>
+    <!-- Only Left is intercepted. Never inherit L2 or the block action.
+         Keep the layer attached across HUD/screenshot transitions for Left Up. -->
+    <Layer name="PBsScreenshotModeShortcutTriggerLayer" allowFallthrough="true">
+        <Category>
+            <Action name="PBSSCREENSHOTMODE_TRIGGER" inheritsBindFrom="UI_SHORTCUT_INPUT_LEFT" hideAction="true" rebindable="false" preventAutomaticInputModeChange="true">
+                <Down>return PBS_SCREENSHOT_MODE_SHORTCUT:OnTriggerDown()</Down>
+                <Up>return PBS_SCREENSHOT_MODE_SHORTCUT:OnTriggerUp()</Up>
+            </Action>
+        </Category>
+    </Layer>
+    <!-- Extend the native blocking layer so its filter cannot swallow sheathe.
+         Inherit the game's hold binding instead of timing a raw Left press. -->
+    <Layer name="ScreenshotMode" allowFallthrough="false">
+        <Category>
+            <Action name="PBSSCREENSHOTMODE_SHEATHE" inheritsBindFrom="SHEATHE_WEAPON_TOGGLE" hideAction="true" rebindable="false" preventAutomaticInputModeChange="true">
+                <Down>return PBS_SCREENSHOT_MODE_SHORTCUT:OnScreenshotSheathe()</Down>
+                <Up>return true</Up>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

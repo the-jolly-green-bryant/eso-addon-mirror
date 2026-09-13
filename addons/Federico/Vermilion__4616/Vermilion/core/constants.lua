@@ -3,7 +3,7 @@ local Vermilion = Vermilion
 
 Vermilion.Constants = {
   ADDON_NAME    = "Vermilion",
-  VERSION       = "1.0.1",
+  VERSION       = "1.2.1",
   SLASH_COMMAND = "/vermilion",
 
   DEV           = false,
@@ -42,7 +42,7 @@ Vermilion.Constants = {
 
   METRICS = {
     DAMAGE_WINDOW_MS = 5000,
-    SHIELD_WINDOW_MS = 30000,
+    SHIELD_WINDOW_MS = 5000,
   },
 
   POOL = {

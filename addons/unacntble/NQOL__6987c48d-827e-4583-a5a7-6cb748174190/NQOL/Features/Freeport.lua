@@ -16,6 +16,8 @@ local MOVEMENT_UPDATE_NAMESPACE = EVENT_NAMESPACE .. "_Movement"
 local GUILD_SCAN_UPDATE_NAMESPACE = EVENT_NAMESPACE .. "_GuildScan"
 local GUILD_SCAN_BATCH_SIZE = 40
 local PAID_FALLBACK_DIALOG_NAME = "NQOL_FREEPORT_PAID_FALLBACK_CONFIRM"
+local FAILED_PLAYER_CACHE_LIMIT = 5
+local FAILED_PLAYER_CACHE_TTL_SECONDS = 30 * 60
 
 local hookAttempts = 0
 local hooksInstalled = false
@@ -31,6 +33,7 @@ local paidFallbackDialogRegistered = false
 local activeRunId = 0
 local localDisplayName
 local TryNextCandidate
+local failureCacheCleanupGeneration = 0
 
 local function Chat(message)
     NQOL.Chat.Message(message, NQOL.L("common.feature.freeport"))
@@ -86,6 +89,168 @@ local function FormatZoneName(zoneName)
     end
 
     return zoneName
+end
+
+local function GetCurrentTimestamp()
+    if type(GetTimeStamp) ~= "function" then
+        return nil
+    end
+
+    local timestamp = tonumber(GetTimeStamp())
+    if not timestamp then
+        return nil
+    end
+
+    return timestamp
+end
+
+local function GetFailedPlayers()
+    local map = NQOL.Features and NQOL.Features.Map
+    if not map or type(map.GetFreeportFailedPlayers) ~= "function" then
+        return nil
+    end
+
+    return map.GetFreeportFailedPlayers()
+end
+
+local function HasValidArea(entry)
+    return (type(entry.zoneId) == "number" and entry.zoneId > 0)
+        or (type(entry.zoneName) == "string" and entry.zoneName ~= "")
+end
+
+local function PruneFailedPlayers(now)
+    local failedPlayers = GetFailedPlayers()
+    if type(failedPlayers) ~= "table" then
+        return nil
+    end
+
+    local retained = {}
+    local seenDisplayNames = {}
+    for index = #failedPlayers, 1, -1 do
+        local entry = failedPlayers[index]
+        local failedAt = type(entry) == "table" and tonumber(entry.failedAt) or nil
+        local age = now and failedAt and now - failedAt or nil
+        if type(entry) == "table"
+            and type(entry.displayName) == "string"
+            and entry.displayName ~= ""
+            and not seenDisplayNames[entry.displayName]
+            and failedAt
+            and HasValidArea(entry)
+            and (not now or (age >= 0 and age < FAILED_PLAYER_CACHE_TTL_SECONDS))
+        then
+            entry.failedAt = failedAt
+            seenDisplayNames[entry.displayName] = true
+            retained[#retained + 1] = entry
+            if #retained == FAILED_PLAYER_CACHE_LIMIT then
+                break
+            end
+        end
+    end
+
+    for key in pairs(failedPlayers) do
+        failedPlayers[key] = nil
+    end
+
+    local writeIndex = 1
+    for readIndex = #retained, 1, -1 do
+        failedPlayers[writeIndex] = retained[readIndex]
+        writeIndex = writeIndex + 1
+    end
+
+    return failedPlayers
+end
+
+local function ScheduleFailureCacheCleanup()
+    failureCacheCleanupGeneration = failureCacheCleanupGeneration + 1
+    local generation = failureCacheCleanupGeneration
+    local now = GetCurrentTimestamp()
+    local failedPlayers = PruneFailedPlayers(now)
+    if not now or not failedPlayers or #failedPlayers == 0 or type(zo_callLater) ~= "function" then
+        return
+    end
+
+    local nextExpiry = failedPlayers[1].failedAt + FAILED_PLAYER_CACHE_TTL_SECONDS
+    for index = 2, #failedPlayers do
+        nextExpiry = math.min(nextExpiry, failedPlayers[index].failedAt + FAILED_PLAYER_CACHE_TTL_SECONDS)
+    end
+
+    local delayMs = math.max(math.ceil((nextExpiry - now) * 1000), 1)
+    zo_callLater(function()
+        if failureCacheCleanupGeneration ~= generation then
+            return
+        end
+
+        ScheduleFailureCacheCleanup()
+    end, delayMs)
+end
+
+local function IsSameArea(left, right)
+    if type(left.zoneId) == "number" and left.zoneId > 0
+        and type(right.zoneId) == "number" and right.zoneId > 0
+    then
+        return left.zoneId == right.zoneId
+    end
+
+    return type(left.zoneName) == "string"
+        and left.zoneName ~= ""
+        and type(right.zoneName) == "string"
+        and right.zoneName ~= ""
+        and left.zoneName == right.zoneName
+end
+
+local function IsFailedPlayerCached(candidate)
+    local now = GetCurrentTimestamp()
+    if not now then
+        return false
+    end
+
+    local failedPlayers = GetFailedPlayers()
+    if not failedPlayers then
+        return false
+    end
+
+    for _, entry in ipairs(failedPlayers) do
+        local age = now - entry.failedAt
+        if age >= 0
+            and age < FAILED_PLAYER_CACHE_TTL_SECONDS
+            and entry.displayName == candidate.displayName
+            and IsSameArea(entry, candidate)
+        then
+            return true
+        end
+    end
+
+    return false
+end
+
+local function RememberFailedPlayer(candidate)
+    local now = GetCurrentTimestamp()
+    if not now or type(candidate) ~= "table" or not HasValidArea(candidate) then
+        return
+    end
+
+    local failedPlayers = PruneFailedPlayers(now)
+    if not failedPlayers then
+        return
+    end
+
+    for index = #failedPlayers, 1, -1 do
+        if failedPlayers[index].displayName == candidate.displayName then
+            table.remove(failedPlayers, index)
+        end
+    end
+
+    failedPlayers[#failedPlayers + 1] = {
+        displayName = candidate.displayName,
+        zoneId = candidate.zoneId,
+        zoneName = candidate.zoneName,
+        failedAt = now,
+    }
+    while #failedPlayers > FAILED_PLAYER_CACHE_LIMIT do
+        table.remove(failedPlayers, 1)
+    end
+
+    ScheduleFailureCacheCleanup()
 end
 
 local function GetZoneIdFromZoneIndex(zoneIndex)
@@ -209,6 +374,10 @@ local function AddCandidate(candidates, seenDisplayNames, candidate)
         return
     end
 
+    if IsFailedPlayerCached(candidate) then
+        return
+    end
+
     seenDisplayNames[candidate.displayName] = true
     candidates[#candidates + 1] = candidate
 end
@@ -242,6 +411,8 @@ local function AddFriendCandidates(target, candidates, seenDisplayNames)
             if hasCharacter and IsMatchingZone(target, zoneId, zoneName) then
                 AddCandidate(candidates, seenDisplayNames, {
                     displayName = displayName,
+                    zoneId = zoneId,
+                    zoneName = FormatZoneName(zoneName),
                     jump = function()
                         JumpToFriend(displayName)
                     end,
@@ -258,6 +429,8 @@ local function AddGuildCandidate(target, candidates, seenDisplayNames, guildId, 
         if hasCharacter and IsMatchingZone(target, zoneId, zoneName) then
             AddCandidate(candidates, seenDisplayNames, {
                 displayName = displayName,
+                zoneId = zoneId,
+                zoneName = FormatZoneName(zoneName),
                 jump = function()
                     JumpToGuildMember(displayName)
                 end,
@@ -573,6 +746,7 @@ local function OnSocialError(_, errorCode)
     activeRun.lastErrorCode = errorCode or 0
     local runId = activeRun.id
     local candidate = activeRun.currentCandidate
+    RememberFailedPlayer(candidate)
 
     zo_callLater(function()
         local currentRun = Freeport.activeRun
@@ -706,6 +880,7 @@ local function StartFreeport(target)
     end
 
     CloseMap()
+    PruneFailedPlayers(GetCurrentTimestamp())
 
     activeRunId = activeRunId + 1
     UnregisterTravelEvents()
@@ -964,6 +1139,7 @@ end
 
 function Freeport.Initialize()
     localDisplayName = GetDisplayName and GetDisplayName() or nil
+    ScheduleFailureCacheCleanup()
     Freeport.RefreshAvailabilityEvents()
     InstallHooks()
 end

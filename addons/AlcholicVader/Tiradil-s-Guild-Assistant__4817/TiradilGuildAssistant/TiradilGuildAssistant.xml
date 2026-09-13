@@ -1,8 +1,8 @@
 <GuiXml>
     <Controls>
         <TopLevelControl name="TiradilGuildAssistantWindow" hidden="true" mouseEnabled="true" movable="true" clampedToScreen="true" tier="HIGH" resizeHandleSize="8">
-            <DimensionConstraints minX="360" minY="280" />
-            <Dimensions x="360" y="280" />
+            <DimensionConstraints minX="360" minY="420" />
+            <Dimensions x="360" y="420" />
             <Anchor point="CENTER" />
 
             <Controls>
@@ -33,6 +33,26 @@
                     <OnClicked>
                         TiradilGuildAssistantWindow:SetHidden(true)
                     </OnClicked>
+                </Button>
+
+                <Button name="$(parent)GuideBtn">
+                    <Dimensions x="48" y="48" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="8" offsetY="8" />
+                    <Textures
+                        normal="EsoUI/Art/miscellaneous/help_icon.dds"
+                        pressed="EsoUI/Art/miscellaneous/help_icon.dds"
+                        mouseOver="EsoUI/Art/miscellaneous/help_icon.dds"
+                    />
+                    <OnClicked>
+                        TiradilSuite.ToggleGuide()
+                    </OnClicked>
+                    <OnMouseEnter>
+                        InitializeTooltip(InformationTooltip, self, TOPLEFT, 0, 4, BOTTOMLEFT)
+                        SetTooltipText(InformationTooltip, TiradilL10n.Get("GUIDE_BTN_TOOLTIP"))
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        ClearTooltip(InformationTooltip)
+                    </OnMouseExit>
                 </Button>
 
                 <Button name="$(parent)RosterBtn" inherits="ZO_DefaultButton">
@@ -67,6 +87,76 @@
                         TiradilInactiveWatch.ToggleWindow()
                     </OnClicked>
                 </Button>
+
+                <Button name="$(parent)TraderBtn" inherits="ZO_DefaultButton">
+                    <Dimensions x="260" y="55" />
+                    <Anchor point="TOP" relativeTo="$(parent)InactiveWatchBtn" relativePoint="BOTTOM" offsetY="15" />
+                    <OnInitialized>
+                        self:SetText(TiradilL10n.Get("BTN_TRADER_ANALYTICS"))
+                    </OnInitialized>
+                    <OnClicked>
+                        TiradilTrader.ToggleWindow()
+                    </OnClicked>
+                </Button>
+
+                <Button name="$(parent)TrialLogBtn" inherits="ZO_DefaultButton">
+                    <Dimensions x="260" y="55" />
+                    <Anchor point="TOP" relativeTo="$(parent)TraderBtn" relativePoint="BOTTOM" offsetY="15" />
+                    <OnInitialized>
+                        self:SetText(TiradilL10n.Get("BTN_TRIAL_LOG"))
+                    </OnInitialized>
+                    <OnClicked>
+                        TiradilTrialLog.ToggleWindow()
+                    </OnClicked>
+                </Button>
+            </Controls>
+        </TopLevelControl>
+
+        <TopLevelControl name="TiradilGuideFrame" hidden="true" mouseEnabled="true" movable="true" clampedToScreen="true" tier="HIGH" resizeHandleSize="8">
+            <DimensionConstraints minX="700" minY="500" />
+            <Dimensions x="700" y="650" />
+            <Anchor point="LEFT" relativeTo="GuiRoot" relativePoint="LEFT" offsetX="30" offsetY="0" />
+
+            <Controls>
+                <Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop" mouseEnabled="true">
+                    <OnMouseDown>
+                        if button == MOUSE_BUTTON_INDEX_LEFT then
+                            self:GetParent():StartMoving()
+                        end
+                    </OnMouseDown>
+                    <OnMouseUp>
+                        self:GetParent():StopMovingOrResizing()
+                    </OnMouseUp>
+                </Backdrop>
+
+                <Backdrop name="$(parent)ColorWash" centerColor="70000000" edgeColor="00000000" mouseEnabled="false">
+                    <AnchorFill />
+                </Backdrop>
+
+                <Label name="$(parent)Title" font="ZoFontWinH3" color="FFB800" text="TIRADIL'S GUILD ASSISTANT - GUIDE" horizontalAlignment="CENTER">
+                    <Dimensions x="600" y="0" />
+                    <Anchor point="TOP" relativeTo="$(parent)" offsetY="15" />
+                    <OnInitialized>
+                        self:SetText(TiradilL10n.Get("GUIDE_WINDOW_TITLE"))
+                    </OnInitialized>
+                </Label>
+
+                <Button name="$(parent)Close" inherits="ZO_CloseButton">
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" offsetX="-5" offsetY="5" />
+                    <OnClicked>
+                        TiradilGuideFrame:SetHidden(true)
+                    </OnClicked>
+                </Button>
+
+                <Backdrop name="$(parent)Divider" centerColor="40FFFFFF" edgeColor="00000000">
+                    <Dimensions x="640" y="1" />
+                    <Anchor point="TOP" relativeTo="$(parent)Title" relativePoint="BOTTOM" offsetY="16" />
+                </Backdrop>
+
+                <Control name="$(parent)List" inherits="ZO_ScrollContainer">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Divider" relativePoint="BOTTOMLEFT" offsetX="18" offsetY="14" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-30" offsetY="-18" />
+                </Control>
             </Controls>
         </TopLevelControl>
     </Controls>

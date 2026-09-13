@@ -55,11 +55,17 @@ Settings live under **PB's MiniMap** (LibHarvensAddonSettings).
 | Zoom: Imperial City | Zoom in the Imperial City districts; Cyrodiil uses the outdoors setting |
 | Show mini map now | Live preview inside the settings screen |
 | Re-apply layout | Force the layout to be re-asserted |
+| Report player marker | Print the last HUD marker state to chat for troubleshooting |
 | Debug: log to chat | Print the memory / map-state trail to chat (locked, off by default) |
 
 > The one remaining debug entry is kept deliberately. Its snapshot line -- anchor, size, hook
 > state, installed and drawn zoom, dormancy flips -- is what turned several rounds of guessing
 > about display bugs into a single line of evidence.
+
+If the player marker disappears, open Settings directly without opening the full map and
+press **Report player marker**. It prints four lines captured on the HUD, including map ID,
+position validity, marker offset from the viewport centre, opacity, and draw level. This
+button works with debug logging off; opening Settings does not replace the HUD sample.
 
 ## Requirements
 

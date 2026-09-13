@@ -527,7 +527,7 @@ end
 function H.OnEffectChanged(_, changeType, _slot, effectName, unitTag, beginTime, endTime, _stacks, _icon, _buffType, _effectType, _abilityType, _status, _unitName, _unitId, abilityId, _sourceType)
     if not unitTag or unitTag == "" then return end
     if T.IsJunkAbility and T.IsJunkAbility(abilityId) then return end
-    local keys = T.KeysFromAbility and T.KeysFromAbility(abilityId, effectName) or nil
+    local keys = T.KeysFromAbility and T.KeysFromAbility(abilityId, effectName, false) or nil
     if not keys or not next(keys) then return end
     if T.HasWatchedKey and not T.HasWatchedKey(keys) then return end
     local key = nil
@@ -634,6 +634,9 @@ end
 
 function H.OnCombatState(_, inCombat)
     if inCombat == false then
+        if T.Panels and T.Panels.ClearBossFx then
+            pcall(T.Panels.ClearBossFx)
+        end
         if T.TrimJunkIds then
             pcall(T.TrimJunkIds)
         end
@@ -926,7 +929,7 @@ local function ScanUnitBuffs(unitTag)
             local ok, buffName, timeStarted, timeEnding, _slot, _stacks, _icon, _bt, _et, _at, _st, abilityId =
                 pcall(GetUnitBuffInfo, unitTag, i)
             if ok then
-                local keys = T.KeysFromAbility and T.KeysFromAbility(abilityId, buffName)
+                local keys = T.KeysFromAbility and T.KeysFromAbility(abilityId, buffName, true)
                 if keys and next(keys) then
                     if not T.HasWatchedKey or T.HasWatchedKey(keys) then
                         local endMs = EndMs(timeStarted, timeEnding)
@@ -968,8 +971,7 @@ function H.ScanGroupBuffs()
         for i = 1, 8 do
             pcall(T.Panels.ScanBoss, "boss" .. i)
         end
-        local allowTarget = not Vars() or Vars().debuffOnTarget ~= false
-        if allowTarget and T.IsDebuffTarget and T.IsDebuffTarget("reticleover") then
+        if T.AllowDummyReticle and T.AllowDummyReticle() then
             pcall(T.Panels.ScanBoss, "reticleover")
         end
     end

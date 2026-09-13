@@ -1102,6 +1102,7 @@ local function Usage()
 	Line("  %s shade [on|off|up|down|<n>] -- the shade over a skill while its effect runs", SLASH)
 	Line("  %s slots                  -- what is on each slot, and why", SLASH)
 	Line("  %s effects                -- the last effect events the game sent", SLASH)
+	Line("  %s trace [on|off|clear]  -- record what the game sends as an ability is cast", SLASH)
 	Line("  %s plain                  -- what the plain look is really doing", SLASH)
 	Line("  %s backbar [on|off|empty|<scale>] -- the other weapon set's row", SLASH)
 	Line("  %s skillbar on|off        -- whether the skill bar is this add-on's to touch", SLASH)
@@ -1125,6 +1126,10 @@ local function OnSlash(argumentString)
 	elseif command == "effects" then
 		if addon.timers then
 			addon.timers:PrintLog()
+		end
+	elseif command == "trace" then
+		if addon.trace then
+			addon.trace:Command(args[2])
 		end
 	elseif command == "plain" then
 		if addon.plain then
@@ -1219,7 +1224,7 @@ local function OnSlash(argumentString)
 			style = "rounded"
 		end
 		if not addon:SetBarStyle(style) then
-			Line("usage: %s style standard|plain|rounded", SLASH)
+			Line("usage: %s style standard|plain|rounded|neo", SLASH)
 			return
 		end
 		account.enabled = true

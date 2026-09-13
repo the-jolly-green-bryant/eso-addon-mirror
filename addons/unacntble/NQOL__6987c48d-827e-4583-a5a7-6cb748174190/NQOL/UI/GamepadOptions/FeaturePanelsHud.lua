@@ -133,6 +133,16 @@ function GamepadOptions.BuildChatFilterFriendStatusOption()
     return GamepadOptions.BuildCheckboxOption(CHAT_PANEL_ID, 15, chat.GetFilterFriendStatusLabel(), chat.GetFilterFriendStatusTooltip(), chat.GetFilterFriendStatus, chat.SetFilterFriendStatus)
 end
 
+function GamepadOptions.BuildChatSilenceInDungeonsOption()
+    local chat = NQOL.Features.Chat
+    return GamepadOptions.BuildCheckboxOption(CHAT_PANEL_ID, 19, chat.GetSilenceInDungeonsLabel(), chat.GetSilenceInDungeonsTooltip(), chat.GetSilenceInDungeons, chat.SetSilenceInDungeons, nil, chat.GetSilenceInDungeonsDefault)
+end
+
+function GamepadOptions.BuildChatSilenceInTrialsOption()
+    local chat = NQOL.Features.Chat
+    return GamepadOptions.BuildCheckboxOption(CHAT_PANEL_ID, 20, chat.GetSilenceInTrialsLabel(), chat.GetSilenceInTrialsTooltip(), chat.GetSilenceInTrials, chat.SetSilenceInTrials, nil, chat.GetSilenceInTrialsDefault)
+end
+
 function GamepadOptions.BuildChatWhisperColorOption()
     local chat = NQOL.Features.Chat
     return GamepadOptions.BuildColorOption(CHAT_PANEL_ID, 12, chat.GetWhisperColorLabel(), chat.GetWhisperColorTooltip(), chat.GetWhisperColor, chat.SetWhisperColor)

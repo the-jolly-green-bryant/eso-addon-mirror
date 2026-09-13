@@ -48,6 +48,10 @@ local STRINGS = {
         NATIVE_TOOLTIP_DONATION_TOTAL = "Total Donations: <<1>>",
         NATIVE_TOOLTIP_SALE_TOTAL = "Total Sales: <<1>>",
         NATIVE_TOOLTIP_LAST_LINE = "Last: <<1>> (<<2>> ago)",
+        TIME_UNIT_DAY = "d",
+        TIME_UNIT_HOUR = "h",
+        TIME_UNIT_MINUTE = "m",
+        COL_LAST_LOGIN = "Away",
     },
     tr = {
         WINDOW_TITLE = "Katkisiz Uyeler",
@@ -96,6 +100,10 @@ local STRINGS = {
         NATIVE_TOOLTIP_DONATION_TOTAL = "Bagis Toplam: <<1>>",
         NATIVE_TOOLTIP_SALE_TOTAL = "Satis Toplam: <<1>>",
         NATIVE_TOOLTIP_LAST_LINE = "Son: <<1>> (<<2>> once)",
+        TIME_UNIT_DAY = "g",
+        TIME_UNIT_HOUR = "sa",
+        TIME_UNIT_MINUTE = "dk",
+        COL_LAST_LOGIN = "Uzakta",
     },
     de = {
         WINDOW_TITLE = "Mitglieder ohne Beitrag",
@@ -144,6 +152,10 @@ local STRINGS = {
         NATIVE_TOOLTIP_DONATION_TOTAL = "Spenden Gesamt: <<1>>",
         NATIVE_TOOLTIP_SALE_TOTAL = "Verkaeufe Gesamt: <<1>>",
         NATIVE_TOOLTIP_LAST_LINE = "Zuletzt: <<1>> (vor <<2>>)",
+        TIME_UNIT_DAY = "T",
+        TIME_UNIT_HOUR = "Std",
+        TIME_UNIT_MINUTE = "Min",
+        COL_LAST_LOGIN = "Abwesend",
     },
     es = {
         WINDOW_TITLE = "Miembros Sin Contribuir",
@@ -192,6 +204,10 @@ local STRINGS = {
         NATIVE_TOOLTIP_DONATION_TOTAL = "Total Donaciones: <<1>>",
         NATIVE_TOOLTIP_SALE_TOTAL = "Total Ventas: <<1>>",
         NATIVE_TOOLTIP_LAST_LINE = "Ultimo: <<1>> (hace <<2>>)",
+        TIME_UNIT_DAY = "d",
+        TIME_UNIT_HOUR = "h",
+        TIME_UNIT_MINUTE = "min",
+        COL_LAST_LOGIN = "Ausente",
     },
     pl = {
         WINDOW_TITLE = "Czlonkowie Bez Wkladu",
@@ -240,6 +256,10 @@ local STRINGS = {
         NATIVE_TOOLTIP_DONATION_TOTAL = "Suma Darowizn: <<1>>",
         NATIVE_TOOLTIP_SALE_TOTAL = "Suma Sprzedazy: <<1>>",
         NATIVE_TOOLTIP_LAST_LINE = "Ostatnia: <<1>> (<<2>> temu)",
+        TIME_UNIT_DAY = "d",
+        TIME_UNIT_HOUR = "g",
+        TIME_UNIT_MINUTE = "min",
+        COL_LAST_LOGIN = "Nieobecny",
     },
     ru = {
         WINDOW_TITLE = "Участники без вклада",
@@ -288,6 +308,10 @@ local STRINGS = {
         NATIVE_TOOLTIP_DONATION_TOTAL = "Всего пожертвований: <<1>>",
         NATIVE_TOOLTIP_SALE_TOTAL = "Всего продаж: <<1>>",
         NATIVE_TOOLTIP_LAST_LINE = "Последнее: <<1>> (<<2>> назад)",
+        TIME_UNIT_DAY = "д",
+        TIME_UNIT_HOUR = "ч",
+        TIME_UNIT_MINUTE = "мин",
+        COL_LAST_LOGIN = "Отсутствует",
     },
     it = {
         WINDOW_TITLE = "Membri Senza Contributi",
@@ -336,6 +360,10 @@ local STRINGS = {
         NATIVE_TOOLTIP_DONATION_TOTAL = "Totale Donazioni: <<1>>",
         NATIVE_TOOLTIP_SALE_TOTAL = "Totale Vendite: <<1>>",
         NATIVE_TOOLTIP_LAST_LINE = "Ultimo: <<1>> (<<2>> fa)",
+        TIME_UNIT_DAY = "g",
+        TIME_UNIT_HOUR = "h",
+        TIME_UNIT_MINUTE = "min",
+        COL_LAST_LOGIN = "Assente",
     },
     pt = {
         WINDOW_TITLE = "Membros Sem Contribuicao",
@@ -384,6 +412,10 @@ local STRINGS = {
         NATIVE_TOOLTIP_DONATION_TOTAL = "Total de Doacoes: <<1>>",
         NATIVE_TOOLTIP_SALE_TOTAL = "Total de Vendas: <<1>>",
         NATIVE_TOOLTIP_LAST_LINE = "Ultimo: <<1>> (ha <<2>>)",
+        TIME_UNIT_DAY = "d",
+        TIME_UNIT_HOUR = "h",
+        TIME_UNIT_MINUTE = "min",
+        COL_LAST_LOGIN = "Ausente",
     },
 }
 

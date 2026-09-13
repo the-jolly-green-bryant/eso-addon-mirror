@@ -9,6 +9,7 @@ local M = Vermilion.Pipeline.Filter
 
 local bump = Vermilion.Diagnostics.bump   -- no-op in release (DEBUG=false)
 local KIND_DAMAGE_OUT = Vermilion.Constants.ABILITY_KIND.DAMAGE_OUT
+local UNIT_SELF = Vermilion.zenimax.constants.COMBAT_UNIT_TYPE_PLAYER
 
 --* I left it this way for research purposes, 
 --* the main filter right now is a simple source-attribution guard r <=> (k != K OR f(i) > 0).
@@ -17,6 +18,10 @@ local KIND_DAMAGE_OUT = Vermilion.Constants.ABILITY_KIND.DAMAGE_OUT
 function M.allow(ev)
   if ev.kind == KIND_DAMAGE_OUT and (ev.source_unit_id or 0) <= 0 then
     bump("filter.dropped_env")
+    return false
+  end
+  if ev.target_type == UNIT_SELF then
+    bump("filter.dropped_self")
     return false
   end
   return true

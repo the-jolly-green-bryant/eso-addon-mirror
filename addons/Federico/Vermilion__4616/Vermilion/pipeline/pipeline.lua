@@ -70,12 +70,76 @@ local function run_stages(ev, accepted_key)
   end
 end
 
+local PAIR_MS     = 50
+local PENDING_CAP = 8
+local pending   = {}
+local pending_n = 0
+
+local function ingest_pending(i)
+  local ev = pending[i]
+  pending[i] = pending[pending_n]
+  pending[pending_n] = nil
+  pending_n = pending_n - 1
+  run_stages(ev, "engine.shield.accepted")
+end
+
+function M.flush_pending(now_ms, force)
+  local i = 1
+  while i <= pending_n do
+    if force or (now_ms - pending[i].t) >= PAIR_MS then
+      bump("engine.shield.unpaired")
+      ingest_pending(i)
+    else
+      i = i + 1
+    end
+  end
+end
+
+function M.drop_pending()
+  for i = 1, pending_n do
+    release(pending[i])
+    pending[i] = nil
+  end
+  pending_n = 0
+end
+
+function M.pending_count() return pending_n end
+
+function M.pending_amount()
+  local sum = 0
+  for i = 1, pending_n do sum = sum + (pending[i].amount or 0) end
+  return sum
+end
+
+local function hold_pending(ev, t)
+  M.flush_pending(t)
+  if pending_n >= PENDING_CAP then ingest_pending(1) end
+  pending_n = pending_n + 1
+  pending[pending_n] = ev
+end
+
+local function pair_pending(t, targetUnitId, abilityId, damageType)
+  local i = 1
+  while i <= pending_n do
+    local p = pending[i]
+    if p.target_unit_id == targetUnitId and (t - p.t) < PAIR_MS then
+      p.attack_id    = abilityId or 0
+      p.attack_dtype = damageType or 0
+      bump("engine.shield.paired")
+      ingest_pending(i)
+    else
+      i = i + 1
+    end
+  end
+end
+
 function M.dispatch_damage_out(result, isError, _name, _g, _slot,
                                _src, _sourceType, _tgt, targetType, hit,
                                _pt, _dt, _log, sourceUnitId, targetUnitId, abilityId)
   prof_enter("pipeline.combat_event")
   bump("engine.damage.in")
   if isError then bump("engine.damage.dropped_error") prof_exit("pipeline.combat_event") return end
+  if pending_n > 0 then pair_pending(now(), targetUnitId, abilityId, _dt) end
   if (hit or 0) <= 0 then bump("engine.damage.dropped_noise") prof_exit("pipeline.combat_event") return end
   if not Vermilion.Mode.uses("damage") then
     bump("engine.damage.dropped_mode") prof_exit("pipeline.combat_event") return
@@ -83,7 +147,7 @@ function M.dispatch_damage_out(result, isError, _name, _g, _slot,
 
   local t = now()
   prof_enter("pipeline.combat_event.acquisition")
-  local ev = Acquisition.acquire_damage_out(t, hit, targetUnitId, targetType, abilityId, result, sourceUnitId, _dt)
+  local ev = Acquisition.acquire_damage_out(t, hit, targetUnitId, targetType, abilityId, result, sourceUnitId, _dt, _tgt)
   prof_exit("pipeline.combat_event.acquisition")
   run_stages(ev, "engine.damage.accepted")
   prof_exit("pipeline.combat_event")
@@ -102,9 +166,11 @@ function M.dispatch_shield_out(result, isError, _name, _g, _slot,
 
   local t = now()
   prof_enter("pipeline.combat_event.acquisition")
-  local ev = Acquisition.acquire_shield_out(t, hit, targetUnitId, targetType, abilityId, result, sourceUnitId)
+  local ev = Acquisition.acquire_shield_out(t, hit, targetUnitId, targetType, abilityId, result, sourceUnitId, _tgt)
   prof_exit("pipeline.combat_event.acquisition")
-  run_stages(ev, "engine.shield.accepted")
+  if not ev then bump("engine.pool.exhausted")
+  elseif not Filter.allow(ev) then bump("engine.shield.dropped_filter") release(ev)
+  else hold_pending(ev, t) end
   prof_exit("pipeline.combat_event")
 end
 
@@ -143,6 +209,17 @@ function M.init()
     REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
   E.add_filter("Vermilion_E_ShieldOut", EVENT_COMBAT_EVENT,
     REGISTER_FILTER_IS_ERROR, false)
+
+  local function on_kill_event(_r, _err, _name, _g, _slot, _src, _st, tgt, _tt, _hit, _pt, _dt, _log, _suid, targetUnitId, abilityId)
+    Vermilion.Kills.on_kill(now(), targetUnitId, tgt, abilityId)
+  end
+  local kill_results = { C.ACTION_RESULT_DIED_XP or 2262, C.ACTION_RESULT_KILLING_BLOW or 2265 }
+  for i = 1, #kill_results do
+    local name = "Vermilion_E_Kill" .. i
+    E.register(name, EVENT_COMBAT_EVENT, on_kill_event)
+    E.add_filter(name, EVENT_COMBAT_EVENT, REGISTER_FILTER_COMBAT_RESULT, kill_results[i])
+    E.add_filter(name, EVENT_COMBAT_EVENT, REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
+  end
 
   E.register("Vermilion_E_EffectPlayer", EVENT_EFFECT_CHANGED, M.dispatch_effect_player_src)
   E.add_filter("Vermilion_E_EffectPlayer", EVENT_EFFECT_CHANGED,

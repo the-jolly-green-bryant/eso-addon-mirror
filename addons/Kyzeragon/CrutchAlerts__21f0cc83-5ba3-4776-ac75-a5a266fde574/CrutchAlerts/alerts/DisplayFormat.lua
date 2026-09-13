@@ -8,7 +8,7 @@ local C = Crutch.Constants
 -- 
 -- DingIA: 0 = no ding, 1 = Uppercut/Power Bash ding in IA only, 2 = ding in IA only
 -- Result: 0 = any, 1 = BEGIN only, 2 = GAINED only, 3 = NOT DURATION
--- Type: 0 = normal alert, 1 = secondary, 2 = prevent overwrite, 3 = always display even if already displaying (show multiple)
+-- Type: 0 = normal alert, 1 = secondary (unused), 2 = prevent overwrite, 3 = always display even if already displaying (show multiple)
 -- HideTimer: 0 = false, 1 = true
 -- Color: 0 = white, 1 = ...
 -- Timer: actual number, or 0 for auto detect
@@ -87,6 +87,7 @@ Crutch.format = {
     [134023] =    100, -- Meteor (Vrol)
     [140941] =    400, -- Instability
     [140944] =    400, -- Instability (HM)
+    [132571] = 20504.15, -- Thunderous Leap (Yandir)
 
 -- Lucent Citadel
     [214203] = 500, -- Bleak Annihilation
@@ -139,6 +140,7 @@ Crutch.format = {
     [234683] = {info = 31103, text = "Blazing Flame Atronach"}, -- Radiance (Blazing Flame Atronach)
     [234680] = {info = 31403, text = "Sparking Cold-Flame Atronach"}, -- Radiance (Sparking Cold-Flame Atronach)
     [C.ID.SEEKING_SURGE_DROPPED] = 31503, -- Seeking Surge called from OsseinCage.lua
+    [245208] = 20503, -- Seething Vile Leap
 
 -- Rockgrove
     [152688] = 2.5, -- Cinder Cleave (Havocrel Annihilator)

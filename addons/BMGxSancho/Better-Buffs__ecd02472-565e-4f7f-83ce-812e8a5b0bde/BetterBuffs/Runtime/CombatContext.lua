@@ -41,9 +41,19 @@ function Context:Initialize()
         if BB.Runtime then BB.Runtime:OnBossContextChanged() end
         if not Context.inCombat then Context:ScheduleEncounterResolution(500) end
     end)
-    EVENT_MANAGER:RegisterForEvent(EVENT_NAME, EVENT_COMBAT_EVENT, function(_, ...)
-        Context:OnCombatEvent(...)
-    end)
+    -- Never subscribe Combat Context to ESO's full combat-event stream. Trial
+    -- combat can generate an enormous number of callbacks per second. Context only
+    -- needs death events for target cleanup; provider/proc ability events are
+    -- registered separately by EffectRuntime with ability-ID filters.
+    local function registerDeathEvent(name, result)
+        if result == nil then return end
+        EVENT_MANAGER:RegisterForEvent(name, EVENT_COMBAT_EVENT, function(_, ...)
+            Context:OnCombatEvent(...)
+        end)
+        EVENT_MANAGER:AddFilterForEvent(name, EVENT_COMBAT_EVENT, REGISTER_FILTER_COMBAT_RESULT, result)
+    end
+    registerDeathEvent(EVENT_NAME .. "Died", ACTION_RESULT_DIED)
+    registerDeathEvent(EVENT_NAME .. "DiedXP", ACTION_RESULT_DIED_XP)
 end
 
 function Context:ClearHostileActors()
@@ -170,36 +180,24 @@ end
 function Context:OnCombatEvent(result, isError, abilityName, abilityGraphic, abilityActionSlotType,
         sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType, log,
         sourceUnitId, targetUnitId, abilityId, overflow)
-    if result == ACTION_RESULT_DIED or result == ACTION_RESULT_DIED_XP then
-        local targetIsLocal = self:IsLocalPlayer(nil, targetUnitId, targetName)
-        local targetIsGroup = self:IsGroupedPlayer(nil, targetUnitId, targetName)
-        local targetIsBoss = self:IsBossActor(nil, targetUnitId, targetName)
+    -- This callback is registered with combat-result filters and therefore owns
+    -- death cleanup only. EffectRuntime owns the small set of provider/proc combat
+    -- events through ability-ID-filtered registrations.
+    if result ~= ACTION_RESULT_DIED and result ~= ACTION_RESULT_DIED_XP then return end
 
-        if targetIsGroup then
-            if BB.Runtime then BB.Runtime:RemoveBuffTarget(targetUnitId, targetName) end
-            if targetIsLocal and BB.Runtime then BB.Runtime:OnLocalPlayerDeath() end
-            self:ScheduleEncounterResolution(500)
-            return
-        end
+    local targetIsLocal = self:IsLocalPlayer(nil, targetUnitId, targetName)
+    local targetIsGroup = self:IsGroupedPlayer(nil, targetUnitId, targetName)
+    local targetIsBoss = self:IsBossActor(nil, targetUnitId, targetName)
 
-        if BB.Runtime then BB.Runtime:RemoveHostileTarget(targetUnitId, targetName) end
-        if targetIsBoss then self:ScheduleEncounterResolution(750) end
+    if targetIsGroup then
+        if BB.Runtime then BB.Runtime:RemoveBuffTarget(targetUnitId, targetName) end
+        if targetIsLocal and BB.Runtime then BB.Runtime:OnLocalPlayerDeath() end
+        self:ScheduleEncounterResolution(500)
         return
     end
 
-    -- Intelligence events such as recipient cooldowns can continue while the local
-    -- player is dead but the group encounter remains active. Forward the event to
-    -- the canonical runtime before applying the local-combat actor-discovery guard.
-    if BB.Runtime then BB.Runtime:OnCombatEvent(result, sourceName, targetName, sourceUnitId, targetUnitId, abilityId) end
-    if not self.inCombat then return end
-    self:RefreshBossActors()
-    local sourceIsGroup = self:IsGroupedPlayer(nil, sourceUnitId, sourceName)
-    local targetIsGroup = self:IsGroupedPlayer(nil, targetUnitId, targetName)
-    if sourceIsGroup and not targetIsGroup and not self:IsBossActor(nil,targetUnitId,targetName) then
-        self:RegisterTrashActor(targetUnitId,targetName)
-    elseif targetIsGroup and not sourceIsGroup and not self:IsBossActor(nil,sourceUnitId,sourceName) then
-        self:RegisterTrashActor(sourceUnitId,sourceName)
-    end
+    if BB.Runtime then BB.Runtime:RemoveHostileTarget(targetUnitId, targetName) end
+    if targetIsBoss then self:ScheduleEncounterResolution(750) end
 end
 
 function Context:CanTrackEffect(definition, unitTag, unitId, unitName, allowCorrelatedPreCombatTarget)
@@ -250,7 +248,18 @@ function Context:CanTrackEffect(definition, unitTag, unitId, unitName, allowCorr
         return isBoss, isBoss and "BOSS" or "NON_BOSS_TARGET"
     end
     local isTrash = self:IsTrashActor(unitId,unitName)
-    return isTrash, isTrash and "TRASH" or "UNOWNED_TRASH_TARGET"
+    if isTrash then return true,"TRASH" end
+
+    -- The resolved Better Buffs debuff event itself is sufficient evidence of a
+    -- hostile encounter target when no boss unit exists. This replaces the old
+    -- full-combat-stream actor discovery path and means unrelated damage/heal
+    -- events never need to enter Better Buffs just to discover trash ownership.
+    local hasIdentity = ValidUnitId(unitId) or BB:NormalizeText(unitName) ~= ""
+    if hasIdentity and not self:IsGroupedPlayer(unitTag,unitId,unitName) then
+        self:RegisterTrashActor(unitId,unitName)
+        return true,"TRASH"
+    end
+    return false,"UNOWNED_TRASH_TARGET"
 end
 
 function Context:ResolveAccount(unitTag, unitName, unitId)

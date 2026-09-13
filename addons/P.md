@@ -112,6 +112,8 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [PinkB's Omikuji(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-Omikuji-Beta__20cda1ba-c4a4-4f82-9dcb-81e274222d9e) | PinkBanther | Console | — |
 | [PinkB's QuestTrackerFontChanger](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-QuestTrackerFontChanger__cc94a283-12a5-4e75-8e54-727d2ab6977c) | PinkBanther | Console | — |
 | [PinkB's QuestTrackerFontChanger(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-QuestTrackerFontChanger-Beta__35920898-3b27-4e32-9f59-c0d8fee0b3bb) | PinkBanther | Console | — |
+| [PinkB's ScreenshotModeShortcut](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-ScreenshotModeShortcut__f092f755-7f1e-43bf-b184-f2a9871a86ea) | PinkBanther | Console | — |
+| [PinkB's ScreenshotModeShortcut(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-ScreenshotModeShortcut-Beta__c3b0724d-c60e-44de-9244-7cdc9f20c868) | PinkBanther | Console | — |
 | [PinKiller](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni/PinKiller__190) | Shinni | PC / Mac | 2.5 |
 | [PinKiller](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni42/PinKiller__b141aa03-f456-45eb-b8b9-eee57c6d78d9) | Shinni42 | Console | — |
 | [Pit's Zenkosh Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Pit_Eso/Pit-s-Zenkosh-Tracker__4723) | Pit_Eso | PC / Mac | 1.0.0 |
@@ -215,6 +217,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [PvP Ranks and Veterancy: Update 50](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Sufia_Heolcyn/PvP-Ranks-and-Veterancy-Update-50__4640) | Sufia_Heolcyn | PC / Mac | 3.01 |
 | [Pvp Ready Emotes](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Architectofmusic/Pvp-Ready-Emotes__2d86078c-b982-4ffc-a7f0-7905e41c2354) | Architectofmusic | Console | — |
 | [PvP Skill Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DarkSoules/PvP-Skill-Tracker__3905) | DarkSoules | PC / Mac | 1.3 |
+| [PvP Target Info](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Bucketmore/PvP-Target-Info__a5490d07-2b02-4714-bf07-a18820977a3c) | Bucketmore | Console | — |
 | [PvP UA!](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/user562x/PvP-UA__a453b6d3-5eb9-42cb-812d-605c297e8e87) | user562x | Console | — |
 | [PvP-erformance](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/StaticWave/PvP-erformance__4730) | StaticWave | PC / Mac | v1.0.7 |
 | [PvPCooldownTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vixen_Hunny/PvPCooldownTracker__b3a44425-48ff-494d-bbfe-64c8be868720) | Vixen_Hunny | Console | — |

@@ -682,5 +682,42 @@ function addon:InitSettings()
 		}
 	)
 
+	-- ---- Measurement -----------------------------------------------------------------------
+	-- Two buttons rather than a slash command, because "/pbhud trace on" on a console means the
+	-- on-screen keyboard, and the whole point of this is that a measurement should cost the
+	-- player nothing. It registers nothing until Start is pressed (Trace.lua).
+	AddHeading(settings, LibHarvensAddonSettings, GetString(SI_PBSCHC_SECTION_TRACE))
+	AddLabel(settings, LibHarvensAddonSettings, "SI_PBSCHC_TRACE_HINT")
+
+	settings:AddSetting(
+		{
+			type = LibHarvensAddonSettings.ST_BUTTON,
+			label = GetString(SI_PBSCHC_TRACE_START),
+			tooltip = GetString(SI_PBSCHC_TRACE_START_TOOLTIP),
+			buttonText = GetString(SI_PBSCHC_TRACE_START_BUTTON),
+			clickHandler = function()
+				if self.trace then
+					self.trace:Command("clear")
+					self.trace:Command("on")
+				end
+			end
+		}
+	)
+
+	settings:AddSetting(
+		{
+			type = LibHarvensAddonSettings.ST_BUTTON,
+			label = GetString(SI_PBSCHC_TRACE_SHOW),
+			tooltip = GetString(SI_PBSCHC_TRACE_SHOW_TOOLTIP),
+			buttonText = GetString(SI_PBSCHC_TRACE_SHOW_BUTTON),
+			clickHandler = function()
+				if self.trace then
+					self.trace:Command("off")
+					self.trace:Command("")
+				end
+			end
+		}
+	)
+
 	AddLabel(settings, LibHarvensAddonSettings, "SI_PBSCHC_GAME_SETTINGS_HINT")
 end

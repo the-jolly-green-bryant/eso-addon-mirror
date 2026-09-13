@@ -77,20 +77,70 @@ local function TimerOff()
     return not (v and v.timerEnabled == true)
 end
 
+local SOUND_LABEL = {
+    duel = { "SOUND_DUEL", "Duel start" },
+    alert = { "SOUND_ALERT", "Alert" },
+    notify = { "SOUND_NOTIFY", "Notification" },
+    discover = { "SOUND_DISCOVER", "Objective found" },
+    kill = { "SOUND_KILL", "Killing blow" },
+    rune = { "SOUND_RUNE", "Potency rune" },
+    glyph = { "SOUND_GLYPH", "Glyph removed" },
+    quest = { "SOUND_QUEST", "Quest tick" },
+    level = { "SOUND_LEVEL", "Level up" },
+    mail = { "SOUND_MAIL", "New mail" },
+    skill = { "SOUND_SKILL", "Skill gained" },
+    lock = { "SOUND_LOCK", "Lock success" },
+    ready = { "SOUND_READY", "Ready check" },
+    tick = { "SOUND_TICK", "Countdown tick" },
+    bgmin = { "SOUND_BGMIN", "Battleground 1 min" },
+    bggo = { "SOUND_BGGO", "Battleground start" },
+    trialok = { "SOUND_TRIALOK", "Trial complete" },
+    trialno = { "SOUND_TRIALNO", "Trial failed" },
+    achieve = { "SOUND_ACHIEVE", "Achievement" },
+    sky = { "SOUND_SKY", "Skyshard" },
+    qdone = { "SOUND_QDONE", "Quest complete" },
+    qacc = { "SOUND_QACC", "Quest accepted" },
+    champ = { "SOUND_CHAMP", "Champion commit" },
+    abil = { "SOUND_ABIL", "Ability unlocked" },
+    coll = { "SOUND_COLL", "Collectible" },
+    book = { "SOUND_BOOK", "Book acquired" },
+    ess = { "SOUND_ESS", "Essence rune" },
+    asp = { "SOUND_ASP", "Aspect rune" },
+    alc = { "SOUND_ALC", "Alchemy solvent" },
+    friend = { "SOUND_FRIEND", "Friend invite" },
+    gjoin = { "SOUND_GJOIN", "Group join" },
+    kos = { "SOUND_KOS", "Kill on sight" },
+    lbreak = { "SOUND_LBREAK", "Lockpick break" },
+    kick = { "SOUND_KICK", "Instance kick" },
+    fanfare = { "SOUND_FANFARE", "Level fanfare" },
+    medal = { "SOUND_MEDAL", "Battleground medal" },
+    spt = { "SOUND_SPT", "Skill point" },
+    map = { "SOUND_MAP", "Map discovered" },
+}
+
+local SOUND_ORDER = {
+    "duel", "kill", "alert", "notify", "discover", "ready", "tick",
+    "level", "fanfare", "mail", "skill", "spt", "abil",
+    "qacc", "qdone", "quest", "achieve", "sky", "map",
+    "trialok", "trialno", "bgmin", "bggo", "medal",
+    "rune", "ess", "asp", "glyph", "alc",
+    "lock", "lbreak", "friend", "gjoin", "kos", "kick",
+    "coll", "book", "champ",
+}
+
 local function SoundItems()
-    return {
-        { name = L("SOUND_DUEL", "Duel start"), data = "duel" },
-        { name = L("SOUND_ALERT", "Alert"), data = "alert" },
-        { name = L("SOUND_NOTIFY", "Notification"), data = "notify" },
-        { name = L("SOUND_DISCOVER", "Objective found"), data = "discover" },
-    }
+    local items = {}
+    for i = 1, #SOUND_ORDER do
+        local id = SOUND_ORDER[i]
+        local spec = SOUND_LABEL[id]
+        items[#items + 1] = { name = L(spec[1], spec[2]), data = id }
+    end
+    return items
 end
 
 local function SoundLabel(id)
-    if id == "alert" then return L("SOUND_ALERT", "Alert") end
-    if id == "notify" then return L("SOUND_NOTIFY", "Notification") end
-    if id == "discover" then return L("SOUND_DISCOVER", "Objective found") end
-    return L("SOUND_DUEL", "Duel start")
+    local spec = SOUND_LABEL[id or "duel"] or SOUND_LABEL.duel
+    return L(spec[1], spec[2])
 end
 
 local function ShowItems()
@@ -118,7 +168,7 @@ function T.RegisterSettings()
         allowDefaults = true,
     })
     if not settings then return end
-    settings.version = "1.4.3"
+    settings.version = "1.5.0"
     settings.author = "Tetsurion"
 
     settings:AddSetting({
@@ -202,6 +252,36 @@ function T.RegisterSettings()
         type = LibHarven.ST_SECTION,
         label = L("SKILL_SECTION", "Skill Tracking"),
         tooltip = L("SKILL_SECTION_TT", ""),
+    })
+
+    settings:AddSetting({
+        type = LibHarven.ST_CHECKBOX,
+        label = L("SKILL_BAR", "Skill icons"),
+        tooltip = L("SKILL_BAR_TT", ""),
+        default = true,
+        disable = SkillOff,
+        getFunction = function()
+            return vars.skillShowBar ~= false
+        end,
+        setFunction = function(val)
+            vars.skillShowBar = val and true or false
+            if T.SkillRefresh then T.SkillRefresh() end
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarven.ST_CHECKBOX,
+        label = L("SKILL_GCD", "GCD bar"),
+        tooltip = L("SKILL_GCD_TT", ""),
+        default = true,
+        disable = SkillOff,
+        getFunction = function()
+            return vars.skillShowGcd ~= false
+        end,
+        setFunction = function(val)
+            vars.skillShowGcd = val and true or false
+            if T.SkillRefresh then T.SkillRefresh() end
+        end,
     })
 
     settings:AddSetting({
@@ -308,36 +388,6 @@ function T.RegisterSettings()
         end,
         setFunction = function(val)
             vars.skillHideAfter = tonumber(val) or 8
-            if T.SkillRefresh then T.SkillRefresh() end
-        end,
-    })
-
-    settings:AddSetting({
-        type = LibHarven.ST_CHECKBOX,
-        label = L("SKILL_BAR", "Skill icons"),
-        tooltip = L("SKILL_BAR_TT", ""),
-        default = true,
-        disable = SkillOff,
-        getFunction = function()
-            return vars.skillShowBar ~= false
-        end,
-        setFunction = function(val)
-            vars.skillShowBar = val and true or false
-            if T.SkillRefresh then T.SkillRefresh() end
-        end,
-    })
-
-    settings:AddSetting({
-        type = LibHarven.ST_CHECKBOX,
-        label = L("SKILL_GCD", "GCD bar"),
-        tooltip = L("SKILL_GCD_TT", ""),
-        default = true,
-        disable = SkillOff,
-        getFunction = function()
-            return vars.skillShowGcd ~= false
-        end,
-        setFunction = function(val)
-            vars.skillShowGcd = val and true or false
             if T.SkillRefresh then T.SkillRefresh() end
         end,
     })
@@ -562,8 +612,40 @@ function T.RegisterSettings()
         end,
         setFunction = function(control, itemName, itemData)
             vars.statusSoundId = (itemData and itemData.data) or "duel"
+            if T.PlayStatusSound then T.PlayStatusSound() end
         end,
     })
+
+    settings:AddSetting({
+        type = LibHarven.ST_SLIDER,
+        label = L("STATUS_SOUND_VOL", "Sound volume"),
+        tooltip = L("STATUS_SOUND_VOL_TT", ""),
+        min = 0,
+        max = 5,
+        step = 1,
+        default = 2,
+        disable = StatusSoundOff,
+        getFunction = function()
+            return tonumber(vars.statusSoundVolume) or 2
+        end,
+        setFunction = function(val)
+            vars.statusSoundVolume = tonumber(val) or 2
+            if T.PlayStatusSound then T.PlayStatusSound() end
+        end,
+    })
+
+    if LibHarven.ST_BUTTON then
+        settings:AddSetting({
+            type = LibHarven.ST_BUTTON,
+            label = L("STATUS_PREVIEW", "Preview"),
+            tooltip = L("STATUS_PREVIEW_TT", ""),
+            buttonText = L("STATUS_PREVIEW_BTN", "Show 8s"),
+            disable = StatusOff,
+            clickHandler = function()
+                if T.StatusPreview then T.StatusPreview() end
+            end,
+        })
+    end
 
     settings:AddSetting({
         type = LibHarven.ST_SECTION,

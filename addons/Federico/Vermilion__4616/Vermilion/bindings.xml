@@ -16,6 +16,12 @@
       <Action name="VERMILION_PREV_VIEW">
         <Down>Vermilion.Graph.step_view(-1)</Down>
       </Action>
+      <Action name="VERMILION_PREV_SESSION">
+        <Down>Vermilion.Graph.step_session(-1)</Down>
+      </Action>
+      <Action name="VERMILION_NEXT_SESSION">
+        <Down>Vermilion.Graph.step_session(1)</Down>
+      </Action>
     </Category>
   </Layer>
 </Bindings>

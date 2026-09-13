@@ -1,9 +1,6 @@
 -- Главная таблица аддона
-NecroCat = NecroCat or {
-    name    = "NecroCat",
-    author  = "Soul_Hagans",
-    version = "1.9.9",
-}
+NecroCat = NecroCat or {}
+NecroCat.name    = "NecroCat"
 
 local NC = NecroCat
 NC.lastWhisperTime = 0 
@@ -98,33 +95,44 @@ end
 
 -- Автоматический отзыв и возврат небоевых питомцев в триалах
 function NC.CheckTrialPets()
-    if not NC.savedVars.dismissPetsInTrials then return end
+    if not NC.savedVars or not NC.savedVars.dismissPetsInTrials then return end
 
-    -- Проверяем ID текущей зоны через нашу внешнюю базу данных
+    local charId = GetCurrentCharacterId()
+    NC.savedVars.storedPets = NC.savedVars.storedPets or {}
+
     local zoneId = GetZoneId(GetUnitZoneIndex("player"))
     local isInTrial = (zoneId and NC.TrialZoneIds and NC.TrialZoneIds[zoneId]) or (IsRaidInProgress and IsRaidInProgress())
 
     if isInTrial then
-        local activePetId = GetActiveCollectibleByType(COLLECTIBLE_CATEGORY_TYPE_VANITY_PET)
-        if activePetId and activePetId > 0 then
-            NC.savedVars.storedPetId = activePetId
-            zo_callLater(function()
-                if GetActiveCollectibleByType(COLLECTIBLE_CATEGORY_TYPE_VANITY_PET) == activePetId then
-                    UseCollectible(activePetId)
-                    d("|c66f2ff[NecroCat]|r Небоевой питомец отозван на время триала.")
-                end
-            end, 1500)
-        end
+        -- Ждем 2.5 сек, чтобы игра на 100% прогрузила коллекцию даже на медленном ПК
+        zo_callLater(function()
+            if IsUnitInCombat("player") or IsUnitDead("player") then return end
+            
+            local activePetId = GetActiveCollectibleByType(COLLECTIBLE_CATEGORY_TYPE_VANITY_PET)
+            if activePetId and activePetId > 0 then
+                NC.savedVars.storedPets[charId] = activePetId
+                UseCollectible(activePetId)
+                d("|c66f2ff[NecroCat]|r Небоевой питомец отозван на время триала.")
+            end
+        end, 2500)
     else
-        local storedPet = NC.savedVars.storedPetId
+        -- В домах призыв блокируется игрой: не трогаем пета и сохраняем запись в памяти!
+        local isInHouse = (GetCurrentZoneHouseId and GetCurrentZoneHouseId() ~= 0)
+        if isInHouse then return end
+
+        local storedPet = NC.savedVars.storedPets[charId] or NC.savedVars.storedPetId
         if storedPet and storedPet > 0 then
             zo_callLater(function()
+                if IsUnitInCombat("player") or IsUnitDead("player") then return end
+                if GetCurrentZoneHouseId and GetCurrentZoneHouseId() ~= 0 then return end
+
                 if GetActiveCollectibleByType(COLLECTIBLE_CATEGORY_TYPE_VANITY_PET) == 0 then
                     UseCollectible(storedPet)
                     d("|c66f2ff[NecroCat]|r Питомец призван обратно.")
                 end
+                NC.savedVars.storedPets[charId] = nil
                 NC.savedVars.storedPetId = 0
-            end, 2000)
+            end, 2500)
         end
     end
 end
@@ -274,30 +282,35 @@ function NC.FindSoulGem(priority)
     return normalSlot or crownSlot
 end
 
+-- Надежное распознавание кронных ремнаборов
+local function IsCrownRepairKit(itemId, specializedType)
+    return (itemId == 61079) or (itemId == 61421)
+        or (specializedType == SPECIALIZED_ITEMTYPE_TOOL_REPAIR_KIT_CROWN)
+        or (specializedType == SPECIALIZED_ITEMTYPE_REPAIR_KIT_CROWN)
+end
+
+
 function NC.FindRepairKit(priority)
     local normalSlot, crownSlot = nil, nil
     local bagSize = GetBagSize(BAG_BACKPACK)
 
     for slotIndex = 0, bagSize - 1 do
-        local itemType, specializedType = GetItemType(BAG_BACKPACK, slotIndex)
-        -- В ESO походные ремнаборы имеют базовый тип ITEMTYPE_TOOL («Инструмент»)
-        if itemType == ITEMTYPE_TOOL or itemType == ITEMTYPE_REPAIR_KIT or specializedType == SPECIALIZED_ITEMTYPE_TOOL_REPAIR_KIT then
-            local link = GetItemLink(BAG_BACKPACK, slotIndex)
+        local link = GetItemLink(BAG_BACKPACK, slotIndex)
+        if link and link ~= "" then
             local itemId = GetItemLinkItemId(link)
-
             -- Отсекаем отмычки (ID 30357)
-            if itemId ~= 30357 then
-                local isCrown = (itemId == 61421) 
-                    or (specializedType == SPECIALIZED_ITEMTYPE_TOOL_REPAIR_KIT_CROWN) 
-                    or (specializedType == SPECIALIZED_ITEMTYPE_REPAIR_KIT_CROWN)
+            if itemId and itemId > 0 and itemId ~= 30357 then
+                local itemType, specializedType = GetItemType(BAG_BACKPACK, slotIndex)
 
-                if isCrown then
+                -- 1. Кронный ремнабор ищем прямо по ID 61079 / 61421 и типам кроны
+                if IsCrownRepairKit(itemId, specializedType) then
                     if not crownSlot then crownSlot = slotIndex end
-                else
+
+                -- 2. Обычный ремнабор ищем строго среди инструментов (исключая рецепты)
+                elseif itemType ~= ITEMTYPE_RECIPE and (itemType == ITEMTYPE_TOOL or itemType == ITEMTYPE_REPAIR_KIT or specializedType == SPECIALIZED_ITEMTYPE_TOOL_REPAIR_KIT or itemId == 44879) then
                     if not normalSlot then normalSlot = slotIndex end
                 end
 
-                -- Нашли оба варианта — дальше сумку можно не перебирать
                 if normalSlot and crownSlot then break end
             end
         end
@@ -352,16 +365,23 @@ function NC.OnWornSlotUpdate(eventCode, bagId, slotIndex)
                     local kitSlot = NC.FindRepairKit(NC.savedVars.autoRepairKitsPriority or 2)
                     if kitSlot then
                         local kitLink = GetItemLink(BAG_BACKPACK, kitSlot)
-                        local itemId = GetItemLinkItemId(kitLink)
+                        local kitItemId = GetItemLinkItemId(kitLink)
+                        local _, kitSpecializedType = GetItemType(BAG_BACKPACK, kitSlot)
 
-                        -- Если это кронный ремнабор (ID 61421), используем его только вне боя (в бою UseItem запрещен игрой)
-                        if itemId == 61421 then
-                            if not IsUnitInCombat("player") then
+                        local isCrown = IsCrownRepairKit(kitItemId, kitSpecializedType)
+
+                        if isCrown then
+                            local now = GetFrameTimeSeconds()
+                            NC.lastCrownRepairTime = NC.lastCrownRepairTime or 0
+                            -- Защита от спама: кронный набор чинит сразу всё снаряжение, используем 1 раз за 3 сек
+                            if (now - NC.lastCrownRepairTime > 3) and not IsUnitInCombat("player") then
+                                NC.lastCrownRepairTime = now
                                 if IsProtectedFunction("UseItem") then
                                     CallSecureProtected("UseItem", BAG_BACKPACK, kitSlot)
                                 else
                                     UseItem(BAG_BACKPACK, kitSlot)
                                 end
+                                d("|c66f2ff[NecroCat]|r Всё снаряжение починено кронным ремнабором.")
                             end
                         else
                             RepairItemWithRepairKit(BAG_WORN, slotIndex, BAG_BACKPACK, kitSlot)
@@ -603,6 +623,1190 @@ end
 ---------------------------------------------------------
 
 ---------------------------------------------------------
+-- МОДУЛЬ: ДОЛГИЕ БАФФЫ (ЕДА И СВИТКИ)
+---------------------------------------------------------
+
+NC.LongBuffControls = {}
+
+local function ShowBuffTooltip(control, buffData)
+    if not buffData or not buffData.name then return end
+    InitializeTooltip(InformationTooltip, control, TOP, 0, 5)
+    InformationTooltip:AddLine(zo_strformat("<<1>>", buffData.name), "ZoFontWinH4", 1, 0.85, 0.2)
+
+    if buffData.abilityId and buffData.abilityId > 0 then
+        local desc = GetAbilityDescription(buffData.abilityId)
+        if desc and desc ~= "" then
+            InformationTooltip:AddLine(zo_strformat("<<1>>", desc), "ZoFontGameSmall", 1, 1, 1)
+        end
+    end
+
+    if buffData.stackCount and buffData.stackCount > 1 then
+        InformationTooltip:AddLine(string.format("Стаки: |cFFFF22%d|r", buffData.stackCount), "ZoFontGameSmall", 0.9, 0.9, 0.9)
+    end
+
+    if buffData.isPermanent then
+        InformationTooltip:AddLine("|c00FF00Постоянный эффект|r", "ZoFontGameSmall")
+    elseif buffData.remain and buffData.remain > 0 then
+        local hours = math.floor(buffData.remain / 3600)
+        local mins = math.floor((buffData.remain % 3600) / 60)
+        local secs = math.floor(buffData.remain % 60)
+        local timeStr = ""
+        if hours > 0 then
+            timeStr = string.format("%d ч %d мин", hours, mins)
+        elseif mins > 0 then
+            timeStr = string.format("%d мин %d сек", mins, secs)
+        else
+            timeStr = string.format("%.1f сек", buffData.remain)
+        end
+        InformationTooltip:AddLine(string.format("Осталось: |c66F2FF%s|r", timeStr), "ZoFontGameSmall")
+    end
+end
+
+local function FormatBuffTime(seconds)
+    if seconds <= 0 then return "" end
+    local hours = math.floor(seconds / 3600)
+    local mins = math.floor((seconds % 3600) / 60)
+    local secs = math.floor(seconds % 60)
+
+    if hours > 0 then
+        return string.format("%d:%02d", hours, mins)
+    else
+        return string.format("%d:%02d", mins, secs)
+    end
+end
+
+function NC.UpdateLongBuffsUI()
+    if not NC.LongBuffsFrame or not NC.LongBuffsFragment then return end
+    local sv = NC.savedVars
+    if not sv then return end
+
+    local unlocked = sv.longBuffsUnlocked
+    local size = sv.longBuffsSize or 36
+    local isVertical = (sv.longBuffsOrientation == 1)
+    local numSlots = 5
+    local spacing = 4
+    local totalLength = (size * numSlots) + (spacing * (numSlots - 1))
+
+    NC.LongBuffsFrame:SetMovable(unlocked)
+    NC.LongBuffsFrame:SetMouseEnabled(unlocked)
+    NC.LongBuffsPreview:SetHidden(not unlocked)
+
+    if isVertical then
+        NC.LongBuffsFrame:SetDimensions(size, totalLength)
+    else
+        NC.LongBuffsFrame:SetDimensions(totalLength, size)
+    end
+
+    if sv.longBuffsEnabled then
+        HUD_SCENE:AddFragment(NC.LongBuffsFragment)
+        HUD_UI_SCENE:AddFragment(NC.LongBuffsFragment)
+    else
+        HUD_SCENE:RemoveFragment(NC.LongBuffsFragment)
+        HUD_UI_SCENE:RemoveFragment(NC.LongBuffsFragment)
+        NC.LongBuffsFrame:SetHidden(true)
+        return
+    end
+
+    NC.UpdateLongBuffs()
+end
+
+local function GetOrCreateBuffControl(index)
+    if NC.LongBuffControls[index] then
+        return NC.LongBuffControls[index]
+    end
+
+    local size = NC.savedVars.longBuffsSize or 36
+    local parent = NC.LongBuffsFrame
+
+    local ctrl = WINDOW_MANAGER:CreateControl("NecroCat_LongBuff" .. index, parent, CT_CONTROL)
+    ctrl:SetDimensions(size, size)
+
+    local icon = WINDOW_MANAGER:CreateControl("$(parent)Icon", ctrl, CT_TEXTURE)
+    icon:SetAnchorFill(ctrl)
+    icon:SetDrawLayer(DL_CONTROLS)
+
+    -- Черная плашка на слое OVERLAY (всегда поверх текстуры баффа)
+    local labelBg = WINDOW_MANAGER:CreateControl("$(parent)LabelBg", ctrl, CT_BACKDROP)
+    labelBg:SetAnchor(BOTTOMLEFT, ctrl, BOTTOMLEFT, 0, 0)
+    labelBg:SetAnchor(BOTTOMRIGHT, ctrl, BOTTOMRIGHT, 0, 0)
+    labelBg:SetHeight(14)
+    labelBg:SetCenterColor(0, 0, 0, 0.75)
+    labelBg:SetEdgeColor(0, 0, 0, 0.9)
+    labelBg:SetDrawLayer(DL_OVERLAY)
+    labelBg:SetDrawLevel(1)
+
+    local label = WINDOW_MANAGER:CreateControl("$(parent)Label", ctrl, CT_LABEL)
+    label:SetAnchor(CENTER, labelBg, CENTER, 0, 0)
+    label:SetFont("ZoFontWinH5")
+    label:SetColor(1, 1, 1, 1)
+    label:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    label:SetDrawLayer(DL_OVERLAY)
+    label:SetDrawLevel(2)
+
+    local buffData = {
+        control = ctrl,
+        icon    = icon,
+        label   = label,
+        labelBg = labelBg,
+    }
+
+    ctrl:SetHandler("OnMouseEnter", function(self)
+        ShowBuffTooltip(self, buffData.data)
+    end)
+    ctrl:SetHandler("OnMouseExit", function()
+        ClearTooltip(InformationTooltip)
+    end)
+
+    NC.LongBuffControls[index] = buffData
+    return buffData
+end
+
+function NC.UpdateLongBuffs()
+    if not NC.LongBuffsFrame or not NC.savedVars or not NC.savedVars.longBuffsEnabled then return end
+
+    local activeBuffs = {}
+    local isUnlocked = NC.savedVars.longBuffsUnlocked
+
+    -- В режиме настройки показываем 5 образцовых долгих баффов
+    if isUnlocked then
+        activeBuffs = {
+            { icon = "EsoUI/Art/Icons/ability_buff_major_sorcery.dds", remain = 7140, isPermanent = false, stackCount = 0, timeStarted = 1, slot = 1 },
+            { icon = "EsoUI/Art/Icons/ability_buff_major_prophecy.dds", remain = 3540, isPermanent = false, stackCount = 0, timeStarted = 2, slot = 2 },
+            { icon = "EsoUI/Art/Icons/ability_buff_major_vitality.dds", remain = 1180, isPermanent = false, stackCount = 0, timeStarted = 3, slot = 3 },
+            { icon = "EsoUI/Art/Icons/ability_buff_major_courage.dds", remain = 0, isPermanent = true, stackCount = 0, timeStarted = 4, slot = 4 },
+            { icon = "EsoUI/Art/Icons/ability_buff_major_resolve.dds", remain = 0, isPermanent = true, stackCount = 0, timeStarted = 5, slot = 5 },
+        }
+    else
+        local numBuffs = GetNumBuffs("player")
+        local now = GetFrameTimeSeconds()
+
+        for i = 1, numBuffs do
+            local buffName, timeStarted, timeEnding, buffSlot, stackCount, iconFilename, buffType, effectType, abilityType, statusEffectType, abilityId = GetUnitBuffInfo("player", i)
+
+            if effectType == BUFF_EFFECT_TYPE_BUFF and iconFilename and iconFilename ~= "" then
+                local isPermanent = (timeEnding == 0) or (timeEnding <= timeStarted)
+                local totalDuration = isPermanent and 0 or (timeEnding - timeStarted)
+                local remain = isPermanent and 0 or (timeEnding - now)
+
+                -- Фильтр: бафф изначально длится >= 120 сек (еда, свитки) или вечный
+                if (not isPermanent and totalDuration >= 120 and remain > 0) or (isPermanent and NC.savedVars.longBuffsShowPermanent) then
+                    table.insert(activeBuffs, {
+                        name        = buffName,
+                        icon        = iconFilename,
+                        remain      = remain,
+                        isPermanent = isPermanent,
+                        timeStarted = timeStarted or 0,
+                        slot        = buffSlot or 0,
+                        abilityId   = abilityId or 0,
+                        stackCount  = stackCount or 0,
+                    })
+                end
+            end
+        end
+    end
+
+    -- Сортировка: сначала временные (еда), затем вечные; внутри — по порядку появления
+    table.sort(activeBuffs, function(a, b)
+        if a.isPermanent ~= b.isPermanent then
+            return not a.isPermanent
+        end
+        return a.timeStarted < b.timeStarted
+    end)
+
+    local size = NC.savedVars.longBuffsSize or 36
+    local isVertical = (NC.savedVars.longBuffsOrientation == 1)
+    local growthMode = NC.savedVars.longBuffsGrowth or 1
+    local spacing = 4
+
+    -- Определяем направление роста (Прямой или Обратный)
+    local isReverse = false
+    if growthMode == 2 then
+        isReverse = false
+    elseif growthMode == 3 then
+        isReverse = true
+    else
+        -- Режим Авто: определяем по положению на экране
+        local cx, cy = NC.LongBuffsFrame:GetCenter()
+        local sw, sh = GuiRoot:GetDimensions()
+        if isVertical then
+            isReverse = (cy and cy > (sh / 2))
+        else
+            isReverse = (cx and cx > (sw / 2))
+        end
+    end
+
+    local isUnlocked = NC.savedVars.longBuffsUnlocked
+    for i, buff in ipairs(activeBuffs) do
+        local ctrlData = GetOrCreateBuffControl(i)
+        ctrlData.data = buff
+        ctrlData.control:SetMouseEnabled(not isUnlocked)
+        ctrlData.control:SetDimensions(size, size)
+        ctrlData.control:ClearAnchors()
+
+        if i == 1 then
+            -- Первый бафф крепится к соответствующему краю рамки
+            if isVertical then
+                if isReverse then
+                    ctrlData.control:SetAnchor(BOTTOM, NC.LongBuffsFrame, BOTTOM, 0, 0)
+                else
+                    ctrlData.control:SetAnchor(TOP, NC.LongBuffsFrame, TOP, 0, 0)
+                end
+            else
+                if isReverse then
+                    ctrlData.control:SetAnchor(RIGHT, NC.LongBuffsFrame, RIGHT, 0, 0)
+                else
+                    ctrlData.control:SetAnchor(LEFT, NC.LongBuffsFrame, LEFT, 0, 0)
+                end
+            end
+        else
+            -- Последующие баффы строятся цепочкой
+            local prevCtrl = NC.LongBuffControls[i - 1].control
+            if isVertical then
+                if isReverse then
+                    ctrlData.control:SetAnchor(BOTTOM, prevCtrl, TOP, 0, -spacing)
+                else
+                    ctrlData.control:SetAnchor(TOP, prevCtrl, BOTTOM, 0, spacing)
+                end
+            else
+                if isReverse then
+                    ctrlData.control:SetAnchor(RIGHT, prevCtrl, LEFT, -spacing, 0)
+                else
+                    ctrlData.control:SetAnchor(LEFT, prevCtrl, RIGHT, spacing, 0)
+                end
+            end
+        end
+
+        ctrlData.icon:SetTexture(buff.icon)
+
+        if buff.isPermanent then
+            ctrlData.label:SetText("")
+            ctrlData.label:SetHidden(true)
+            if ctrlData.labelBg then ctrlData.labelBg:SetHidden(true) end
+        else
+            ctrlData.label:SetText(FormatBuffTime(buff.remain))
+            ctrlData.label:SetHidden(false)
+            if ctrlData.labelBg then ctrlData.labelBg:SetHidden(false) end
+        end
+
+        ctrlData.control:SetHidden(false)
+    end
+
+    -- Прячем лишние контролы
+    for i = #activeBuffs + 1, #NC.LongBuffControls do
+        NC.LongBuffControls[i].control:SetHidden(true)
+    end
+end
+
+function NC.CreateLongBuffsUI()
+    if NC.LongBuffsFrame then return end
+
+    local size = NC.savedVars.longBuffsSize or 36
+
+    local frame = WINDOW_MANAGER:CreateTopLevelWindow("NecroCat_LongBuffsFrame")
+    frame:SetDimensions(size, size)
+    frame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, NC.savedVars.longBuffsLeft or 500, NC.savedVars.longBuffsTop or 300)
+    frame:SetMovable(NC.savedVars.longBuffsUnlocked)
+    frame:SetMouseEnabled(NC.savedVars.longBuffsUnlocked)
+    frame:SetClampedToScreen(true)
+
+    -- Полупрозрачная направляющая подложка (видна только при настройке)
+    local preview = WINDOW_MANAGER:CreateControl("$(parent)Preview", frame, CT_BACKDROP)
+    preview:SetAnchorFill(frame)
+    preview:SetCenterColor(0, 0, 0, 0.4)
+    preview:SetEdgeColor(0.2, 0.8, 1, 0.8)
+    preview:SetDrawLayer(DL_BACKGROUND)
+
+    preview:SetHidden(not NC.savedVars.longBuffsUnlocked)
+
+    frame:SetHandler("OnMoveStop", function(self)
+        self:ClearAnchors()
+        self:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, self:GetLeft(), self:GetTop())
+        NC.savedVars.longBuffsLeft = self:GetLeft()
+        NC.savedVars.longBuffsTop = self:GetTop()
+    end)
+
+    frame:SetHidden(true)
+
+    NC.LongBuffsFrame        = frame
+    NC.LongBuffsPreview      = preview
+    NC.LongBuffsPreviewLabel = previewLabel
+    NC.LongBuffsFragment     = ZO_SimpleSceneFragment:New(frame)
+
+    NC.UpdateLongBuffsUI()
+end
+
+---------------------------------------------------------
+-- МОДУЛЬ: КОРОТКИЕ БАФФЫ ИГРОКА
+---------------------------------------------------------
+
+NC.ShortBuffControls = {}
+
+local function FormatShortBuffTime(seconds)
+    if seconds <= 0 then return "" end
+    if seconds >= 60 then
+        local mins = math.floor(seconds / 60)
+        local secs = math.floor(seconds % 60)
+        return string.format("%d:%02d", mins, secs)
+    elseif seconds >= 5 then
+        return string.format("%d", math.ceil(seconds))
+    else
+        return string.format("%.1f", seconds)
+    end
+end
+
+function NC.UpdateShortBuffsUI()
+    if not NC.ShortBuffsFrame or not NC.ShortBuffsFragment then return end
+    local sv = NC.savedVars
+    if not sv then return end
+
+    local unlocked = sv.shortBuffsUnlocked
+    local size = sv.shortBuffsSize or 36
+    local isVertical = (sv.shortBuffsOrientation == 1)
+    local numSlots = 5
+    local spacing = 4
+    local totalLength = (size * numSlots) + (spacing * (numSlots - 1))
+
+    NC.ShortBuffsFrame:SetMovable(unlocked)
+    NC.ShortBuffsFrame:SetMouseEnabled(unlocked)
+    NC.ShortBuffsPreview:SetHidden(not unlocked)
+
+    if isVertical then
+        NC.ShortBuffsFrame:SetDimensions(size, totalLength)
+    else
+        NC.ShortBuffsFrame:SetDimensions(totalLength, size)
+    end
+
+    if sv.shortBuffsEnabled then
+        HUD_SCENE:AddFragment(NC.ShortBuffsFragment)
+        HUD_UI_SCENE:AddFragment(NC.ShortBuffsFragment)
+    else
+        HUD_SCENE:RemoveFragment(NC.ShortBuffsFragment)
+        HUD_UI_SCENE:RemoveFragment(NC.ShortBuffsFragment)
+        NC.ShortBuffsFrame:SetHidden(true)
+        return
+    end
+
+    NC.UpdateShortBuffs()
+end
+
+local function GetOrCreateShortBuffControl(index)
+    if NC.ShortBuffControls[index] then
+        return NC.ShortBuffControls[index]
+    end
+
+    local size = NC.savedVars.shortBuffsSize or 36
+    local parent = NC.ShortBuffsFrame
+
+    local ctrl = WINDOW_MANAGER:CreateControl("NecroCat_ShortBuff" .. index, parent, CT_CONTROL)
+    ctrl:SetDimensions(size, size)
+
+    local icon = WINDOW_MANAGER:CreateControl("$(parent)Icon", ctrl, CT_TEXTURE)
+    icon:SetAnchorFill(ctrl)
+    icon:SetDrawLayer(DL_CONTROLS)
+
+    -- Черная плашка под таймер
+    local labelBg = WINDOW_MANAGER:CreateControl("$(parent)LabelBg", ctrl, CT_BACKDROP)
+    labelBg:SetAnchor(BOTTOMLEFT, ctrl, BOTTOMLEFT, 0, 0)
+    labelBg:SetAnchor(BOTTOMRIGHT, ctrl, BOTTOMRIGHT, 0, 0)
+    labelBg:SetHeight(14)
+    labelBg:SetCenterColor(0, 0, 0, 0.75)
+    labelBg:SetEdgeColor(0, 0, 0, 0.9)
+    labelBg:SetDrawLayer(DL_OVERLAY)
+    labelBg:SetDrawLevel(1)
+
+    local label = WINDOW_MANAGER:CreateControl("$(parent)Label", ctrl, CT_LABEL)
+    label:SetAnchor(CENTER, labelBg, CENTER, 0, 0)
+    label:SetFont("ZoFontWinH5")
+    label:SetColor(1, 1, 1, 1)
+    label:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    label:SetDrawLayer(DL_OVERLAY)
+    label:SetDrawLevel(2)
+
+    -- Метка количества стаков способности (например, x5)
+    local stackLabel = WINDOW_MANAGER:CreateControl("$(parent)Stack", ctrl, CT_LABEL)
+    stackLabel:SetAnchor(TOPRIGHT, ctrl, TOPRIGHT, -1, 1)
+    stackLabel:SetFont("ZoFontGameBold")
+    stackLabel:SetColor(1, 0.85, 0.2, 1)
+    stackLabel:SetDrawLayer(DL_OVERLAY)
+    stackLabel:SetDrawLevel(3)
+    stackLabel:SetHidden(true)
+
+    local buffData = {
+        control    = ctrl,
+        icon       = icon,
+        label      = label,
+        labelBg    = labelBg,
+        stackLabel = stackLabel,
+    }
+
+    ctrl:SetHandler("OnMouseEnter", function(self)
+        ShowBuffTooltip(self, buffData.data)
+    end)
+    ctrl:SetHandler("OnMouseExit", function()
+        ClearTooltip(InformationTooltip)
+    end)
+
+    NC.ShortBuffControls[index] = buffData
+    return buffData
+end
+
+function NC.UpdateShortBuffs()
+    if not NC.ShortBuffsFrame or not NC.savedVars or not NC.savedVars.shortBuffsEnabled then return end
+
+    local activeBuffs = {}
+    local isUnlocked = NC.savedVars.shortBuffsUnlocked
+
+    -- В режиме настройки показываем 5 образцовых коротких боевых баффов
+    if isUnlocked then
+        activeBuffs = {
+            { icon = "EsoUI/Art/Icons/ability_buff_major_brutality.dds", remain = 23.5, stackCount = 0, timeStarted = 1, slot = 1 },
+            { icon = "EsoUI/Art/Icons/ability_buff_major_berserk.dds", remain = 14.0, stackCount = 0, timeStarted = 2, slot = 2 },
+            { icon = "EsoUI/Art/Icons/ability_buff_minor_force.dds", remain = 8.2, stackCount = 0, timeStarted = 3, slot = 3 },
+            { icon = "EsoUI/Art/Icons/ability_buff_major_expedition.dds", remain = 4.1, stackCount = 3, timeStarted = 4, slot = 4 },
+            { icon = "EsoUI/Art/Icons/ability_buff_minor_evasion.dds", remain = 1.8, stackCount = 0, timeStarted = 5, slot = 5 },
+        }
+    else
+        local numBuffs = GetNumBuffs("player")
+        local now = GetFrameTimeSeconds()
+
+        for i = 1, numBuffs do
+            local buffName, timeStarted, timeEnding, buffSlot, stackCount, iconFilename, buffType, effectType, abilityType, statusEffectType, abilityId = GetUnitBuffInfo("player", i)
+
+            if effectType == BUFF_EFFECT_TYPE_BUFF and iconFilename and iconFilename ~= "" then
+                local isPermanent = (timeEnding == 0) or (timeEnding <= timeStarted)
+                local totalDuration = isPermanent and 0 or (timeEnding - timeStarted)
+                local remain = isPermanent and 0 or (timeEnding - now)
+
+                -- Фильтр: баффы, которые ИЗНАЧАЛЬНО длятся < 120 сек (еда сюда не попадет никогда!)
+                if not isPermanent and totalDuration > 0 and totalDuration < 120 and remain > 0 then
+                    table.insert(activeBuffs, {
+                        name        = buffName,
+                        icon        = iconFilename,
+                        remain      = remain,
+                        stackCount  = stackCount or 0,
+                        timeStarted = timeStarted or 0,
+                        slot        = buffSlot or 0,
+                        abilityId   = abilityId or 0,
+                    })
+                end
+            end
+        end
+    end
+
+    -- Сортировка: строго по порядку появления (не прыгают при тиканье)
+    table.sort(activeBuffs, function(a, b)
+        local timeA = a.timeStarted or 0
+        local timeB = b.timeStarted or 0
+        if timeA ~= timeB then
+            return timeA < timeB
+        end
+        return (a.slot or 0) < (b.slot or 0)
+    end)
+
+    local size = NC.savedVars.shortBuffsSize or 36
+    local isVertical = (NC.savedVars.shortBuffsOrientation == 1)
+    local growthMode = NC.savedVars.shortBuffsGrowth or 1
+    local spacing = 4
+
+    -- Направление роста
+    local isReverse = false
+    if growthMode == 2 then
+        isReverse = false
+    elseif growthMode == 3 then
+        isReverse = true
+    else
+        local cx, cy = NC.ShortBuffsFrame:GetCenter()
+        local sw, sh = GuiRoot:GetDimensions()
+        if isVertical then
+            isReverse = (cy and cy > (sh / 2))
+        else
+            isReverse = (cx and cx > (sw / 2))
+        end
+    end
+
+    local isUnlocked = NC.savedVars.shortBuffsUnlocked
+    for i, buff in ipairs(activeBuffs) do
+        local ctrlData = GetOrCreateShortBuffControl(i)
+        ctrlData.data = buff
+        ctrlData.control:SetMouseEnabled(not isUnlocked)
+        ctrlData.control:SetDimensions(size, size)
+        ctrlData.control:ClearAnchors()
+
+        if i == 1 then
+            if isVertical then
+                if isReverse then
+                    ctrlData.control:SetAnchor(BOTTOM, NC.ShortBuffsFrame, BOTTOM, 0, 0)
+                else
+                    ctrlData.control:SetAnchor(TOP, NC.ShortBuffsFrame, TOP, 0, 0)
+                end
+            else
+                if isReverse then
+                    ctrlData.control:SetAnchor(RIGHT, NC.ShortBuffsFrame, RIGHT, 0, 0)
+                else
+                    ctrlData.control:SetAnchor(LEFT, NC.ShortBuffsFrame, LEFT, 0, 0)
+                end
+            end
+        else
+            local prevCtrl = NC.ShortBuffControls[i - 1].control
+            if isVertical then
+                if isReverse then
+                    ctrlData.control:SetAnchor(BOTTOM, prevCtrl, TOP, 0, -spacing)
+                else
+                    ctrlData.control:SetAnchor(TOP, prevCtrl, BOTTOM, 0, spacing)
+                end
+            else
+                if isReverse then
+                    ctrlData.control:SetAnchor(RIGHT, prevCtrl, LEFT, -spacing, 0)
+                else
+                    ctrlData.control:SetAnchor(LEFT, prevCtrl, RIGHT, spacing, 0)
+                end
+            end
+        end
+
+        ctrlData.icon:SetTexture(buff.icon)
+        ctrlData.label:SetText(FormatShortBuffTime(buff.remain))
+        ctrlData.label:SetHidden(false)
+        ctrlData.labelBg:SetHidden(false)
+
+        if buff.stackCount > 1 then
+            ctrlData.stackLabel:SetText(tostring(buff.stackCount))
+            ctrlData.stackLabel:SetHidden(false)
+        else
+            ctrlData.stackLabel:SetHidden(true)
+        end
+
+        ctrlData.control:SetHidden(false)
+    end
+
+    -- Прячем неиспользуемые контролы
+    for i = #activeBuffs + 1, #NC.ShortBuffControls do
+        NC.ShortBuffControls[i].control:SetHidden(true)
+    end
+end
+
+function NC.CreateShortBuffsUI()
+    if NC.ShortBuffsFrame then return end
+
+    local size = NC.savedVars.shortBuffsSize or 36
+
+    local frame = WINDOW_MANAGER:CreateTopLevelWindow("NecroCat_ShortBuffsFrame")
+    frame:SetDimensions(size, size)
+    frame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, NC.savedVars.shortBuffsLeft or 500, NC.savedVars.shortBuffsTop or 500)
+    frame:SetMovable(NC.savedVars.shortBuffsUnlocked)
+    frame:SetMouseEnabled(NC.savedVars.shortBuffsUnlocked)
+    frame:SetClampedToScreen(true)
+    frame:SetHidden(true)
+
+    -- Полупрозрачная направляющая подложка
+    local preview = WINDOW_MANAGER:CreateControl("$(parent)Preview", frame, CT_BACKDROP)
+    preview:SetAnchorFill(frame)
+    preview:SetCenterColor(0, 0, 0, 0.4)
+    preview:SetEdgeColor(0.2, 0.8, 1, 0.8)
+    preview:SetDrawLayer(DL_BACKGROUND)
+    preview:SetHidden(not NC.savedVars.shortBuffsUnlocked)
+
+    frame:SetHandler("OnMoveStop", function(self)
+        self:ClearAnchors()
+        self:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, self:GetLeft(), self:GetTop())
+        NC.savedVars.shortBuffsLeft = self:GetLeft()
+        NC.savedVars.shortBuffsTop = self:GetTop()
+    end)
+
+    NC.ShortBuffsFrame    = frame
+    NC.ShortBuffsPreview  = preview
+    NC.ShortBuffsFragment = ZO_SimpleSceneFragment:New(frame)
+
+    NC.UpdateShortBuffsUI()
+end
+
+---------------------------------------------------------
+-- МОДУЛЬ: ДЕБАФФЫ НА ИГРОКЕ
+---------------------------------------------------------
+
+NC.PlayerDebuffControls = {}
+
+function NC.UpdatePlayerDebuffsUI()
+    if not NC.PlayerDebuffsFrame or not NC.PlayerDebuffsFragment then return end
+    local sv = NC.savedVars
+    if not sv then return end
+
+    local unlocked = sv.playerDebuffsUnlocked
+    local size = sv.playerDebuffsSize or 36
+    local isVertical = (sv.playerDebuffsOrientation == 1)
+    local numSlots = 5
+    local spacing = 4
+    local slotHeight = size + 14 -- Высота с учетом таймера под иконкой
+
+    NC.PlayerDebuffsFrame:SetMovable(unlocked)
+    NC.PlayerDebuffsFrame:SetMouseEnabled(unlocked)
+    NC.PlayerDebuffsPreview:SetHidden(not unlocked)
+
+    if isVertical then
+        local totalHeight = (slotHeight * numSlots) + (spacing * (numSlots - 1))
+        NC.PlayerDebuffsFrame:SetDimensions(size, totalHeight)
+    else
+        local totalWidth = (size * numSlots) + (spacing * (numSlots - 1))
+        NC.PlayerDebuffsFrame:SetDimensions(totalWidth, slotHeight)
+    end
+
+    if sv.playerDebuffsEnabled then
+        HUD_SCENE:AddFragment(NC.PlayerDebuffsFragment)
+        HUD_UI_SCENE:AddFragment(NC.PlayerDebuffsFragment)
+    else
+        HUD_SCENE:RemoveFragment(NC.PlayerDebuffsFragment)
+        HUD_UI_SCENE:RemoveFragment(NC.PlayerDebuffsFragment)
+        NC.PlayerDebuffsFrame:SetHidden(true)
+        return
+    end
+
+    NC.UpdatePlayerDebuffs()
+end
+
+local function GetOrCreatePlayerDebuffControl(index)
+    if NC.PlayerDebuffControls[index] then
+        return NC.PlayerDebuffControls[index]
+    end
+
+    local size = NC.savedVars.playerDebuffsSize or 36
+    local parent = NC.PlayerDebuffsFrame
+
+    -- Контейнер вмещает иконку + таймер под ней
+    local ctrl = WINDOW_MANAGER:CreateControl("NecroCat_PlayerDebuff" .. index, parent, CT_CONTROL)
+    ctrl:SetDimensions(size, size + 14)
+
+    -- Иконка дебаффа
+    local icon = WINDOW_MANAGER:CreateControl("$(parent)Icon", ctrl, CT_TEXTURE)
+    icon:SetAnchor(TOPLEFT, ctrl, TOPLEFT, 0, 0)
+    icon:SetDimensions(size, size)
+    icon:SetDrawLayer(DL_CONTROLS)
+
+    -- Черная плашка СНИЗУ ПОД иконкой
+    local labelBg = WINDOW_MANAGER:CreateControl("$(parent)LabelBg", ctrl, CT_BACKDROP)
+    labelBg:SetAnchor(TOPLEFT, icon, BOTTOMLEFT, 0, 0)
+    labelBg:SetAnchor(BOTTOMRIGHT, ctrl, BOTTOMRIGHT, 0, 0)
+    labelBg:SetCenterColor(0, 0, 0, 0.75)
+    labelBg:SetEdgeColor(0, 0, 0, 0)
+    labelBg:SetDrawLayer(DL_OVERLAY)
+    labelBg:SetDrawLevel(1)
+
+    local label = WINDOW_MANAGER:CreateControl("$(parent)Label", ctrl, CT_LABEL)
+    label:SetAnchor(CENTER, labelBg, CENTER, 0, 0)
+    label:SetFont("ZoFontWinH5")
+    label:SetColor(1, 0.4, 0.4, 1)
+    label:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    label:SetDrawLayer(DL_OVERLAY)
+    label:SetDrawLevel(2)
+
+    -- Стаки в правом верхнем углу иконки
+    local stackLabel = WINDOW_MANAGER:CreateControl("$(parent)Stack", ctrl, CT_LABEL)
+    stackLabel:SetAnchor(TOPRIGHT, icon, TOPRIGHT, -1, 1)
+    stackLabel:SetFont("ZoFontGameSmall")
+    stackLabel:SetColor(1, 0.9, 0.2, 1)
+    stackLabel:SetDrawLayer(DL_OVERLAY)
+    stackLabel:SetDrawLevel(3)
+    stackLabel:SetHidden(true)
+
+    local debuffData = {
+        control    = ctrl,
+        icon       = icon,
+        label      = label,
+        labelBg    = labelBg,
+        stackLabel = stackLabel,
+    }
+
+    ctrl:SetHandler("OnMouseEnter", function(self)
+        ShowBuffTooltip(self, debuffData.data)
+    end)
+    ctrl:SetHandler("OnMouseExit", function()
+        ClearTooltip(InformationTooltip)
+    end)
+
+    NC.PlayerDebuffControls[index] = debuffData
+    return debuffData
+end
+
+function NC.UpdatePlayerDebuffs()
+    if not NC.PlayerDebuffsFrame or not NC.savedVars or not NC.savedVars.playerDebuffsEnabled then return end
+
+    local activeDebuffs = {}
+    local isUnlocked = NC.savedVars.playerDebuffsUnlocked
+
+    -- Если включен режим настройки — показываем 5 образцовых дебаффов
+    if isUnlocked then
+        activeDebuffs = {
+            { icon = "EsoUI/Art/Icons/ability_debuff_stun.dds", remain = 8.2, stackCount = 0, isPermanent = false },
+            { icon = "EsoUI/Art/Icons/ability_debuff_snare.dds", remain = 5.4, stackCount = 3, isPermanent = false },
+            { icon = "EsoUI/Art/Icons/ability_debuff_major_defile.dds", remain = 3.0, stackCount = 0, isPermanent = false },
+            { icon = "EsoUI/Art/Icons/ability_debuff_major_breach.dds", remain = 12.0, stackCount = 0, isPermanent = false },
+            { icon = "EsoUI/Art/Icons/ability_debuff_minor_vulnerability.dds", remain = 1.5, stackCount = 0, isPermanent = false },
+        }
+    else
+        local numBuffs = GetNumBuffs("player")
+        local now = GetFrameTimeSeconds()
+
+        for i = 1, numBuffs do
+            local buffName, timeStarted, timeEnding, buffSlot, stackCount, iconFilename, buffType, effectType, abilityType, statusEffectType, abilityId = GetUnitBuffInfo("player", i)
+
+            -- Фильтр: строго отрицательные дебаффы игрока
+            if effectType == BUFF_EFFECT_TYPE_DEBUFF and iconFilename and iconFilename ~= "" then
+                local isPermanent = (timeEnding == 0) or (timeEnding <= timeStarted)
+                local remain = isPermanent and 0 or (timeEnding - now)
+
+                table.insert(activeDebuffs, {
+                    name        = buffName,
+                    icon        = iconFilename,
+                    remain      = remain,
+                    isPermanent = isPermanent,
+                    stackCount  = stackCount or 0,
+                    timeStarted = timeStarted or 0,
+                    slot        = buffSlot or 0,
+                    abilityId   = abilityId or 0,
+                })
+            end
+        end
+    end
+
+    -- Сортировка дебаффов: по порядку получения
+    table.sort(activeDebuffs, function(a, b)
+        if a.isPermanent ~= b.isPermanent then
+            return not a.isPermanent
+        end
+        local timeA = a.timeStarted or 0
+        local timeB = b.timeStarted or 0
+        if timeA ~= timeB then
+            return timeA < timeB
+        end
+        return (a.slot or 0) < (b.slot or 0)
+    end)
+
+    local size = NC.savedVars.playerDebuffsSize or 36
+    local isVertical = (NC.savedVars.playerDebuffsOrientation == 1)
+    local growthMode = NC.savedVars.playerDebuffsGrowth or 1
+    local spacing = 4
+
+    local isReverse = false
+    if growthMode == 2 then
+        isReverse = false
+    elseif growthMode == 3 then
+        isReverse = true
+    else
+        local cx, cy = NC.PlayerDebuffsFrame:GetCenter()
+        local sw, sh = GuiRoot:GetDimensions()
+        if isVertical then
+            isReverse = (cy and cy > (sh / 2))
+        else
+            isReverse = (cx and cx > (sw / 2))
+        end
+    end
+
+    for i, debuff in ipairs(activeDebuffs) do
+        local ctrlData = GetOrCreatePlayerDebuffControl(i)
+        ctrlData.data = debuff
+        ctrlData.control:SetMouseEnabled(not isUnlocked)
+        ctrlData.control:SetDimensions(size, size + 14)
+        ctrlData.icon:SetDimensions(size, size)
+        ctrlData.control:ClearAnchors()
+
+        if i == 1 then
+            if isVertical then
+                if isReverse then
+                    ctrlData.control:SetAnchor(BOTTOM, NC.PlayerDebuffsFrame, BOTTOM, 0, 0)
+                else
+                    ctrlData.control:SetAnchor(TOP, NC.PlayerDebuffsFrame, TOP, 0, 0)
+                end
+            else
+                if isReverse then
+                    ctrlData.control:SetAnchor(RIGHT, NC.PlayerDebuffsFrame, RIGHT, 0, 0)
+                else
+                    ctrlData.control:SetAnchor(LEFT, NC.PlayerDebuffsFrame, LEFT, 0, 0)
+                end
+            end
+        else
+            local prevCtrl = NC.PlayerDebuffControls[i - 1].control
+            if isVertical then
+                if isReverse then
+                    ctrlData.control:SetAnchor(BOTTOM, prevCtrl, TOP, 0, -spacing)
+                else
+                    ctrlData.control:SetAnchor(TOP, prevCtrl, BOTTOM, 0, spacing)
+                end
+            else
+                if isReverse then
+                    ctrlData.control:SetAnchor(RIGHT, prevCtrl, LEFT, -spacing, 0)
+                else
+                    ctrlData.control:SetAnchor(LEFT, prevCtrl, RIGHT, spacing, 0)
+                end
+            end
+        end
+
+        ctrlData.icon:SetTexture(debuff.icon)
+
+        if debuff.isPermanent then
+            ctrlData.label:SetText("")
+            ctrlData.label:SetHidden(true)
+            ctrlData.labelBg:SetHidden(true)
+        else
+            ctrlData.label:SetText(FormatShortBuffTime(debuff.remain))
+            ctrlData.label:SetHidden(false)
+            ctrlData.labelBg:SetHidden(false)
+        end
+
+        if debuff.stackCount > 1 then
+            ctrlData.stackLabel:SetText(tostring(debuff.stackCount))
+            ctrlData.stackLabel:SetHidden(false)
+        else
+            ctrlData.stackLabel:SetHidden(true)
+        end
+
+        ctrlData.control:SetHidden(false)
+    end
+
+    for i = #activeDebuffs + 1, #NC.PlayerDebuffControls do
+        NC.PlayerDebuffControls[i].control:SetHidden(true)
+    end
+end
+
+function NC.CreatePlayerDebuffsUI()
+    if NC.PlayerDebuffsFrame then return end
+
+    local size = NC.savedVars.playerDebuffsSize or 36
+
+    local frame = WINDOW_MANAGER:CreateTopLevelWindow("NecroCat_PlayerDebuffsFrame")
+    frame:SetDimensions(size, size)
+    frame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, NC.savedVars.playerDebuffsLeft or 500, NC.savedVars.playerDebuffsTop or 550)
+    frame:SetMovable(NC.savedVars.playerDebuffsUnlocked)
+    frame:SetMouseEnabled(NC.savedVars.playerDebuffsUnlocked)
+    frame:SetClampedToScreen(true)
+    frame:SetHidden(true)
+
+    -- Тревожная полупрозрачная темно-красная направляющая
+    local preview = WINDOW_MANAGER:CreateControl("$(parent)Preview", frame, CT_BACKDROP)
+    preview:SetAnchorFill(frame)
+    preview:SetCenterColor(0.4, 0, 0, 0.4)
+    preview:SetEdgeColor(1, 0.2, 0.2, 0.85)
+    preview:SetDrawLayer(DL_BACKGROUND)
+    preview:SetHidden(not NC.savedVars.playerDebuffsUnlocked)
+
+    frame:SetHandler("OnMoveStop", function(self)
+        self:ClearAnchors()
+        self:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, self:GetLeft(), self:GetTop())
+        NC.savedVars.playerDebuffsLeft = self:GetLeft()
+        NC.savedVars.playerDebuffsTop = self:GetTop()
+    end)
+
+    NC.PlayerDebuffsFrame    = frame
+    NC.PlayerDebuffsPreview  = preview
+    NC.PlayerDebuffsFragment = ZO_SimpleSceneFragment:New(frame)
+
+    NC.UpdatePlayerDebuffsUI()
+end
+
+function NC.TestPlayerDebuff()
+    if not NC.PlayerDebuffsFrame then return end
+    local ctrlData = GetOrCreatePlayerDebuffControl(1)
+    local size = NC.savedVars.playerDebuffsSize or 36
+    ctrlData.control:SetDimensions(size, size)
+    ctrlData.control:ClearAnchors()
+    ctrlData.control:SetAnchor(TOPLEFT, NC.PlayerDebuffsFrame, TOPLEFT, 0, 0)
+    ctrlData.icon:SetTexture("EsoUI/Art/Icons/ability_debuff_stun.dds")
+    ctrlData.label:SetText("5.4")
+    ctrlData.label:SetHidden(false)
+    ctrlData.labelBg:SetHidden(false)
+    ctrlData.stackLabel:SetText("x3")
+    ctrlData.stackLabel:SetHidden(false)
+    ctrlData.control:SetHidden(false)
+    d("|c66f2ff[NecroCat]|r Тестовый дебафф показан на 8 секунд!")
+    zo_callLater(function()
+        if ctrlData and ctrlData.control then
+            ctrlData.control:SetHidden(true)
+        end
+    end, 8000)
+end
+
+---------------------------------------------------------
+-- МОДУЛЬ: СПИДРАН И РЕЙДОВЫЙ ТАЙМЕР
+---------------------------------------------------------
+
+-- Красивое форматирование времени для таймера (ММ:СС или Ч:ММ:СС)
+function NC.FormatRaidTimer(seconds)
+    if not seconds or seconds < 0 then seconds = 0 end
+    local hours = math.floor(seconds / 3600)
+    local mins = math.floor((seconds % 3600) / 60)
+    local secs = math.floor(seconds % 60)
+
+    if hours > 0 then
+        return string.format("%d:%02d:%02d", hours, mins, secs)
+    else
+        return string.format("%02d:%02d", mins, secs)
+    end
+end
+
+-- Получение целевого времени спидрана для текущей зоны
+function NC.GetCurrentSpeedrunTarget()
+    local zoneIndex = GetUnitZoneIndex("player")
+    local zoneId = GetZoneId(zoneIndex)
+    if zoneId and NC.SpeedrunParTimes[zoneId] then
+        return NC.SpeedrunParTimes[zoneId]
+    end
+    -- Для обычных 4-man данжей стандартное время спидрана — 20 минут (1200 сек)
+    if IsUnitInDungeon("player") then
+        return 1200
+    end
+    return nil
+end
+
+NC.dungeonStartTime = 0
+NC.isDungeonTimerActive = false
+
+function NC.UpdateSpeedrunHudUI()
+    if not NC.SpeedrunFrame or not NC.SpeedrunFragment then return end
+    local sv = NC.savedVars
+    if not sv then return end
+
+    local unlocked = sv.speedrunHudUnlocked
+    NC.SpeedrunFrame:SetMovable(unlocked)
+    NC.SpeedrunFrame:SetMouseEnabled(unlocked)
+
+    if sv.speedrunHudEnabled then
+        HUD_SCENE:AddFragment(NC.SpeedrunFragment)
+        HUD_UI_SCENE:AddFragment(NC.SpeedrunFragment)
+    else
+        HUD_SCENE:RemoveFragment(NC.SpeedrunFragment)
+        HUD_UI_SCENE:RemoveFragment(NC.SpeedrunFragment)
+        NC.SpeedrunFrame:SetHidden(true)
+        return
+    end
+
+    NC.UpdateSpeedrunHud()
+end
+
+local function SafeFormatTimer(seconds)
+    if not seconds or seconds < 0 then seconds = 0 end
+    local s = math.floor(seconds)
+    local hours = math.floor(s / 3600)
+    local mins = math.floor((s % 3600) / 60)
+    local secs = math.floor(s % 60)
+    if hours > 0 then
+        return string.format("%d:%02d:%02d", hours, mins, secs)
+    else
+        return string.format("%02d:%02d", mins, secs)
+    end
+end
+
+local function SafeFormatScore(num)
+    if not num or num <= 0 then return "0" end
+    local formatted = tostring(math.floor(num))
+    while true do  
+        local k
+        formatted, k = string.gsub(formatted, "^(-?%d+)(%d%d%d)", '%1,%2')
+        if k == 0 then break end
+    end
+    return formatted
+end
+
+function NC.UpdateSpeedrunHud()
+    if not NC.SpeedrunFrame or not NC.savedVars or not NC.savedVars.speedrunHudEnabled then return end
+
+    local sv = NC.savedVars
+    local isUnlocked = sv.speedrunHudUnlocked
+
+    local ICON_TIME  = "|t20:20:esoui/art/miscellaneous/timer_32.dds|t"
+    local ICON_VIT   = "|t20:20:esoui/art/trials/vitalitydepletion.dds|t"
+    local ICON_SCORE = "|t20:20:esoui/art/trials/trialpoints_veryhigh.dds|t"
+
+    -- Режим настройки: показываем полный тестовый виджет
+    if isUnlocked then
+        NC.SpeedrunFrame:SetHidden(false)
+        NC.SpeedrunTimerLabel:SetText(string.format("%s |c66f2ff14:25|r |cAAAAAA/ 30:00|r", ICON_TIME))
+        NC.SpeedrunVitalityLabel:SetText(string.format("%s |c00FF0036/36|r", ICON_VIT))
+        NC.SpeedrunVitalityLabel:SetHidden(false)
+        NC.SpeedrunScoreLabel:SetText(string.format("%s |cFFD700125,400|r", ICON_SCORE))
+        NC.SpeedrunScoreLabel:SetHidden(false)
+        NC.SpeedrunFrame:SetDimensions(310, 28)
+        return
+    end
+
+    -- Проверяем, находимся ли мы в данже, триале или арене
+    local isInDungeon = IsUnitInDungeon("player")
+    local isRaid = (IsRaidInProgress and IsRaidInProgress()) or (GetRaidDuration and GetRaidDuration() > 0)
+
+    if not isInDungeon and not isRaid then
+        NC.SpeedrunFrame:SetHidden(true)
+        return
+    end
+
+    -- Прячем таймер в меню Esc / настройках (если не включен режим перемещения)
+    if not isUnlocked and not (HUD_SCENE:IsShowing() or HUD_UI_SCENE:IsShowing()) then
+        NC.SpeedrunFrame:SetHidden(true)
+        return
+    end
+
+    -- Проверка фильтра сложности (только ветеран, если включено)
+    if sv.speedrunHudVetOnly then
+        local isVet = (GetCurrentZoneDungeonDifficulty and GetCurrentZoneDungeonDifficulty() == DUNGEON_DIFFICULTY_VETERAN) 
+                   or (GetGroupDifficulty and GetGroupDifficulty() == DUNGEON_DIFFICULTY_VETERAN)
+        if not isVet then
+            NC.SpeedrunFrame:SetHidden(true)
+            return
+        end
+    end
+
+    local targetTime = NC.GetCurrentSpeedrunTarget and NC.GetCurrentSpeedrunTarget()
+    local elapsed = 0
+    local hasRaidStats = false
+    local score = 0
+    local currentRevives, maxRevives = 0, 0
+
+    if isRaid then
+        elapsed = (GetRaidDuration and GetRaidDuration() or 0) / 1000 -- игра отдает миллисекунды
+        score = GetRaidScore and GetRaidScore() or 0
+        if GetRaidReviveCounters then
+            currentRevives, maxRevives = GetRaidReviveCounters()
+            hasRaidStats = (maxRevives and maxRevives > 0)
+        end
+    elseif isInDungeon and sv.dungeonStartTimeStamp and sv.dungeonStartTimeStamp > 0 then
+        elapsed = GetTimeStamp() - sv.dungeonStartTimeStamp
+    end
+
+    -- Формируем строку времени
+    local timeStr = SafeFormatTimer(elapsed)
+    local isOvertime = targetTime and (elapsed > targetTime)
+
+    if targetTime then
+        local targetStr = SafeFormatTimer(targetTime)
+        if isOvertime then
+            NC.SpeedrunTimerLabel:SetText(string.format("%s |cFF3333%s|r |c888888/ %s|r", ICON_TIME, timeStr, targetStr))
+        else
+            NC.SpeedrunTimerLabel:SetText(string.format("%s |c66f2ff%s|r |cAAAAAA/ %s|r", ICON_TIME, timeStr, targetStr))
+        end
+    else
+        NC.SpeedrunTimerLabel:SetText(string.format("%s |c66f2ff%s|r", ICON_TIME, timeStr))
+    end
+
+    local zoneIndex = GetUnitZoneIndex("player")
+    local zoneId = GetZoneId(zoneIndex)
+    -- Строгая проверка: Триал только если он ЕСТЬ в реестре триалов NC.TrialZoneIds
+    local isTrialZone = (zoneId and NC.TrialZoneIds and NC.TrialZoneIds[zoneId] == true)
+
+    -- Определяем базовые жизни по зоне: Краглорн = 24, БРП = 15, DLC-триалы = 36
+    local defaultMaxRevives = 36
+    if zoneId == 636 or zoneId == 638 or zoneId == 639 then
+        defaultMaxRevives = 24
+    elseif zoneId == 1082 then
+        defaultMaxRevives = 15
+    end
+
+    -- Если мы в Триале или на Арене — показываем панель с Жизнями и Очками
+    if isRaid or isTrialZone or hasRaidStats then
+        local effectiveMax = (maxRevives and maxRevives > 0) and maxRevives or defaultMaxRevives
+        local effectiveCur = (maxRevives and maxRevives > 0) and currentRevives or defaultMaxRevives
+        local vitColor = "|c00FF00"
+
+        if effectiveCur < effectiveMax then
+            vitColor = (effectiveCur <= (effectiveMax * 0.3)) and "|cFF3333" or "|cFFFF22"
+        end
+
+        local effectiveScore = (score and score > 0) and score or (effectiveCur * 1000)
+
+        NC.SpeedrunVitalityLabel:SetText(string.format("%s %s%d/%d|r", ICON_VIT, vitColor, effectiveCur, effectiveMax))
+        NC.SpeedrunVitalityLabel:SetHidden(false)
+
+        NC.SpeedrunScoreLabel:SetText(string.format("%s |cFFFFFF%s|r", ICON_SCORE, SafeFormatScore(effectiveScore)))
+        NC.SpeedrunScoreLabel:SetHidden(false)
+
+        NC.SpeedrunFrame:SetDimensions(310, 28)
+    else
+        -- В 4-man данжах плотный чистый таймер без жизней и очков
+        NC.SpeedrunVitalityLabel:SetHidden(true)
+        NC.SpeedrunScoreLabel:SetHidden(true)
+        NC.SpeedrunFrame:SetDimensions(155, 28)
+    end
+
+    NC.SpeedrunFrame:SetHidden(false)
+end
+
+function NC.CreateSpeedrunHudUI()
+    if NC.SpeedrunFrame then return end
+
+    local frame = WINDOW_MANAGER:CreateTopLevelWindow("NecroCat_SpeedrunFrame")
+    frame:SetDimensions(290, 28)
+    frame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, NC.savedVars.speedrunHudLeft or 500, NC.savedVars.speedrunHudTop or 80)
+    frame:SetMovable(NC.savedVars.speedrunHudUnlocked)
+    frame:SetMouseEnabled(NC.savedVars.speedrunHudUnlocked)
+    frame:SetClampedToScreen(true)
+    frame:SetHidden(true)
+
+    -- Аккуратная темная полупрозрачная полосочка без рамок
+    local bg = WINDOW_MANAGER:CreateControl("$(parent)BG", frame, CT_BACKDROP)
+    bg:SetAnchorFill(frame)
+    bg:SetCenterColor(0, 0, 0, 0.55)
+    bg:SetEdgeColor(0, 0, 0, 0)
+
+    -- Таймер слева
+    local timerLabel = WINDOW_MANAGER:CreateControl("$(parent)Timer", frame, CT_LABEL)
+    timerLabel:SetAnchor(LEFT, frame, LEFT, 10, 0)
+    timerLabel:SetFont("ZoFontWinH4")
+
+    -- Жизни цепочкой строго через 16px после таймера
+    local vitLabel = WINDOW_MANAGER:CreateControl("$(parent)Vitality", frame, CT_LABEL)
+    vitLabel:SetAnchor(LEFT, timerLabel, RIGHT, 16, 0)
+    vitLabel:SetFont("ZoFontWinH4")
+
+    -- Очки цепочкой строго через 16px после жизней
+    local scoreLabel = WINDOW_MANAGER:CreateControl("$(parent)Score", frame, CT_LABEL)
+    scoreLabel:SetAnchor(LEFT, vitLabel, RIGHT, 16, 0)
+    scoreLabel:SetFont("ZoFontWinH4")
+
+    frame:SetHandler("OnMoveStop", function(self)
+        self:ClearAnchors()
+        self:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, self:GetLeft(), self:GetTop())
+        NC.savedVars.speedrunHudLeft = self:GetLeft()
+        NC.savedVars.speedrunHudTop = self:GetTop()
+    end)
+
+    NC.SpeedrunFrame         = frame
+    NC.SpeedrunTimerLabel    = timerLabel
+    NC.SpeedrunVitalityLabel = vitLabel
+    NC.SpeedrunScoreLabel    = scoreLabel
+    NC.SpeedrunFragment      = ZO_SimpleSceneFragment:New(frame)
+
+    NC.UpdateSpeedrunHudUI()
+end
+
+-- Автоматическое управление записью логов боя (Encounter Log)
+function NC.CheckAutoEncounterLog()
+    if not NC.savedVars or not NC.savedVars.autoEncounterLog then return end
+
+    local isInDungeon = IsUnitInDungeon("player")
+    local isRaid = (IsRaidInProgress and IsRaidInProgress()) or (GetRaidDuration and GetRaidDuration() > 0)
+    local zoneId = GetZoneId(GetUnitZoneIndex("player"))
+    local isTrialZone = (zoneId and NC.TrialZoneIds and NC.TrialZoneIds[zoneId])
+
+    local inCombatZone = isInDungeon or isRaid or isTrialZone
+
+    local isVet = (GetCurrentZoneDungeonDifficulty and GetCurrentZoneDungeonDifficulty() == DUNGEON_DIFFICULTY_VETERAN) 
+               or (GetGroupDifficulty and GetGroupDifficulty() == DUNGEON_DIFFICULTY_VETERAN)
+
+    local shouldLog = false
+    if inCombatZone then
+        if NC.savedVars.autoEncounterLogVetOnly then
+            shouldLog = isVet
+        else
+            shouldLog = true
+        end
+    end
+
+    local isCurrentlyLogging = IsEncounterLogEnabled()
+
+    if shouldLog and not isCurrentlyLogging then
+        SetEncounterLogEnabled(true)
+        d("|c66f2ff[NecroCat]|r Запись логов боя (|c00FF00Encounter Log|r) автоматически |c00FF00ВКЛЮЧЕНА|r.")
+    elseif not shouldLog and isCurrentlyLogging then
+        SetEncounterLogEnabled(false)
+        d("|c66f2ff[NecroCat]|r Запись логов боя автоматически |cFF5555ВЫКЛЮЧЕНА|r.")
+    end
+end
+
+---------------------------------------------------------
 -- МОДУЛЬ: СЧЕТЧИК СУНДУКОВ ЗОНЫ / ДАНЖА (УНИВЕРСАЛЬНЫЙ)
 ---------------------------------------------------------
 
@@ -814,23 +2018,6 @@ NC.GuildIcons = {
     [766278] = "NecroCat/imgs/gym.dds", 
 }
 
-NC.TrialZoneIds = {
-    [636]  = true, -- Hel Ra Citadel (Цитадель Хель-Ра)
-    [638]  = true, -- Aetherian Archive (Этерианский Архив)
-    [639]  = true, -- Sanctum Ophidia (Санктум-Офидия)
-    [725]  = true, -- Maw of Lorkhaj (Пасть Лоркаджа)
-    [975]  = true, -- Halls of Fabrication (Залы Фабрикации)
-    [1000] = true, -- Asylum Sanctorium (Изоляционный Санктуарий)
-    [1051] = true, -- Cloudrest (Клаудрест)
-    [1121] = true, -- Sunspire (Солнечный Шпиль)
-    [1196] = true, -- Kyne's Aegis (Эгида Кин)
-    [1263] = true, -- Rockgrove (Каменная Роща)
-    [1344] = true, -- Dreadsail Reef (Риф Зловещих Парусов)
-    [1427] = true, -- Sanity's Edge (Грань Безумия)
-    [1478] = true, -- Lucent Citadel (Цитадель Люцентов)
-    [1548] = true, -- Ossein Cage (Костяная Клетка)
-    [1565] = true, -- Opulent Ordeal (Платиновое горнило)
-}
 
 -- [NEW MODULE] Guild Bank Switcher UI (с поддержкой нашего порядка)
 function NC.UpdateGuildBankButtons()
@@ -1292,8 +2479,6 @@ local function InitializeMenu()
         type                = "panel",
         name                = "NecroCatMenu",
         displayName         = "|c66f2ffCastle of Necro cat|r",
-        author              = NC.author,
-        version             = NC.version,
         registerForDefaults = true,
     }
 
@@ -1926,12 +3111,320 @@ local function InitializeMenu()
                 },
             },
         },
+
+        -- =====================================================
+        -- 7. ПОДМЕНЮ: БАФФЫ И ДЕБАФФЫ
+        -- =====================================================
+        {
+            type = "submenu",
+            name = "|c66f2ff7. Баффы и Дебаффы|r",
+            tooltip = "Настройки отображения баффов еды, свитков опыта и других эффектов",
+            controls = {
+                { type = "header", name = "Панель долгих баффов (Еда, Свитки)" },
+                {
+                    type = "checkbox",
+                    name = "Включить панель",
+                    getFunc = function() return NC.savedVars.longBuffsEnabled end,
+                    setFunc = function(v) 
+                        NC.savedVars.longBuffsEnabled = v 
+                        if NC.UpdateLongBuffsUI then NC.UpdateLongBuffsUI() end
+                    end,
+                },
+                {
+                    type = "checkbox",
+                    name = "Разблокировать для перемещения",
+                    tooltip = "Показывает полупрозрачную рамку, которую можно перетащить мышкой в любое удобное место",
+                    getFunc = function() return NC.savedVars.longBuffsUnlocked end,
+                    setFunc = function(v) 
+                        NC.savedVars.longBuffsUnlocked = v 
+                        if NC.UpdateLongBuffsUI then NC.UpdateLongBuffsUI() end
+                    end,
+                },
+                {
+                    type = "dropdown",
+                    name = "Ориентация панели",
+                    choices = { "Вертикально", "Горизонтально" },
+                    choicesValues = { 1, 2 },
+                    getFunc = function() return NC.savedVars.longBuffsOrientation or 1 end,
+                    setFunc = function(v) 
+                        NC.savedVars.longBuffsOrientation = v 
+                        if NC.UpdateLongBuffsUI then NC.UpdateLongBuffsUI() end
+                    end,
+                },
+                {
+                    type = "dropdown",
+                    name = "Направление роста",
+                    tooltip = "Выберите, в какую сторону будут выстраиваться новые баффы",
+                    choices = { 
+                        "Авто (по краю экрана)", 
+                        "Прямой (Вправо / Вниз)", 
+                        "Обратный (Влево / Вверх)" 
+                    },
+                    choicesValues = { 1, 2, 3 },
+                    getFunc = function() return NC.savedVars.longBuffsGrowth or 1 end,
+                    setFunc = function(v) 
+                        NC.savedVars.longBuffsGrowth = v 
+                        if NC.UpdateLongBuffs then NC.UpdateLongBuffs() end
+                    end,
+                },
+                {
+                    type = "slider",
+                    name = "Размер иконок (px)",
+                    min = 20, max = 64, step = 2,
+                    getFunc = function() return NC.savedVars.longBuffsSize or 36 end,
+                    setFunc = function(v) 
+                        NC.savedVars.longBuffsSize = v 
+                        if NC.UpdateLongBuffsUI then NC.UpdateLongBuffsUI() end
+                    end,
+                },
+                {
+                    type = "checkbox",
+                    name = "Показывать постоянные баффы",
+                    tooltip = "Отображать вечные эффекты без таймера (камень Мундуса, пассивки, вампиризм)",
+                    getFunc = function() return NC.savedVars.longBuffsShowPermanent end,
+                    setFunc = function(v) 
+                        NC.savedVars.longBuffsShowPermanent = v 
+                        if NC.UpdateLongBuffs then NC.UpdateLongBuffs() end
+                    end,
+                },
+                {
+                    type = "button",
+                    name = "Сбросить позицию",
+                    func = function()
+                        NC.savedVars.longBuffsLeft = 500
+                        NC.savedVars.longBuffsTop  = 300
+                        if NC.LongBuffsFrame then
+                            NC.LongBuffsFrame:ClearAnchors()
+                            NC.LongBuffsFrame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 500, 300)
+                        end
+                    end,
+                },
+
+                { type = "header", name = "Панель коротких баффов (Боевые)" },
+                {
+                    type = "checkbox",
+                    name = "Включить панель",
+                    getFunc = function() return NC.savedVars.shortBuffsEnabled end,
+                    setFunc = function(v) 
+                        NC.savedVars.shortBuffsEnabled = v 
+                        if NC.UpdateShortBuffsUI then NC.UpdateShortBuffsUI() end
+                    end,
+                },
+                {
+                    type = "checkbox",
+                    name = "Разблокировать для перемещения",
+                    tooltip = "Показывает полупрозрачную направляющую, которую можно перетащить мышкой (например, над панелью способностей)",
+                    getFunc = function() return NC.savedVars.shortBuffsUnlocked end,
+                    setFunc = function(v) 
+                        NC.savedVars.shortBuffsUnlocked = v 
+                        if NC.UpdateShortBuffsUI then NC.UpdateShortBuffsUI() end
+                    end,
+                },
+                {
+                    type = "dropdown",
+                    name = "Ориентация панели",
+                    choices = { "Вертикально", "Горизонтально" },
+                    choicesValues = { 1, 2 },
+                    getFunc = function() return NC.savedVars.shortBuffsOrientation or 2 end,
+                    setFunc = function(v) 
+                        NC.savedVars.shortBuffsOrientation = v 
+                        if NC.UpdateShortBuffsUI then NC.UpdateShortBuffsUI() end
+                    end,
+                },
+                {
+                    type = "dropdown",
+                    name = "Направление роста",
+                    tooltip = "Выберите, в какую сторону будут выстраиваться новые баффы",
+                    choices = { 
+                        "Авто (по краю экрана)", 
+                        "Прямой (Вправо / Вниз)", 
+                        "Обратный (Влево / Вверх)" 
+                    },
+                    choicesValues = { 1, 2, 3 },
+                    getFunc = function() return NC.savedVars.shortBuffsGrowth or 1 end,
+                    setFunc = function(v) 
+                        NC.savedVars.shortBuffsGrowth = v 
+                        if NC.UpdateShortBuffs then NC.UpdateShortBuffs() end
+                    end,
+                },
+                {
+                    type = "slider",
+                    name = "Размер иконок (px)",
+                    min = 20, max = 64, step = 2,
+                    getFunc = function() return NC.savedVars.shortBuffsSize or 36 end,
+                    setFunc = function(v) 
+                        NC.savedVars.shortBuffsSize = v 
+                        if NC.UpdateShortBuffsUI then NC.UpdateShortBuffsUI() end
+                    end,
+                },
+                {
+                    type = "button",
+                    name = "Сбросить позицию коротких баффов",
+                    func = function()
+                        NC.savedVars.shortBuffsLeft = 500
+                        NC.savedVars.shortBuffsTop  = 500
+                        if NC.ShortBuffsFrame then
+                            NC.ShortBuffsFrame:ClearAnchors()
+                            NC.ShortBuffsFrame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 500, 500)
+                        end
+                    end,
+                },
+
+                { type = "header", name = "Панель дебаффов на игроке (Опасности)" },
+                {
+                    type = "checkbox",
+                    name = "Включить панель",
+                    getFunc = function() return NC.savedVars.playerDebuffsEnabled end,
+                    setFunc = function(v) 
+                        NC.savedVars.playerDebuffsEnabled = v 
+                        if NC.UpdatePlayerDebuffsUI then NC.UpdatePlayerDebuffsUI() end
+                    end,
+                },
+                {
+                    type = "checkbox",
+                    name = "Разблокировать для перемещения",
+                    tooltip = "Показывает полупрозрачную темно-красную направляющую, которую можно перетащить мышкой (например, под свое здоровье)",
+                    getFunc = function() return NC.savedVars.playerDebuffsUnlocked end,
+                    setFunc = function(v) 
+                        NC.savedVars.playerDebuffsUnlocked = v 
+                        if NC.UpdatePlayerDebuffsUI then NC.UpdatePlayerDebuffsUI() end
+                    end,
+                },
+                {
+                    type = "dropdown",
+                    name = "Ориентация панели",
+                    choices = { "Вертикально", "Горизонтально" },
+                    choicesValues = { 1, 2 },
+                    getFunc = function() return NC.savedVars.playerDebuffsOrientation or 2 end,
+                    setFunc = function(v) 
+                        NC.savedVars.playerDebuffsOrientation = v 
+                        if NC.UpdatePlayerDebuffsUI then NC.UpdatePlayerDebuffsUI() end
+                    end,
+                },
+                {
+                    type = "dropdown",
+                    name = "Направление роста",
+                    tooltip = "Выберите, в какую сторону будут выстраиваться новые дебаффы",
+                    choices = { 
+                        "Авто (по краю экрана)", 
+                        "Прямой (Вправо / Вниз)", 
+                        "Обратный (Влево / Вверх)" 
+                    },
+                    choicesValues = { 1, 2, 3 },
+                    getFunc = function() return NC.savedVars.playerDebuffsGrowth or 1 end,
+                    setFunc = function(v) 
+                        NC.savedVars.playerDebuffsGrowth = v 
+                        if NC.UpdatePlayerDebuffs then NC.UpdatePlayerDebuffs() end
+                    end,
+                },
+                {
+                    type = "slider",
+                    name = "Размер иконок (px)",
+                    min = 20, max = 64, step = 2,
+                    getFunc = function() return NC.savedVars.playerDebuffsSize or 36 end,
+                    setFunc = function(v) 
+                        NC.savedVars.playerDebuffsSize = v 
+                        if NC.UpdatePlayerDebuffsUI then NC.UpdatePlayerDebuffsUI() end
+                    end,
+                },
+                {
+                    type = "button",
+                    name = "Сбросить позицию дебаффов игрока",
+                    func = function()
+                        NC.savedVars.playerDebuffsLeft = 500
+                        NC.savedVars.playerDebuffsTop  = 550
+                        if NC.PlayerDebuffsFrame then
+                            NC.PlayerDebuffsFrame:ClearAnchors()
+                            NC.PlayerDebuffsFrame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 500, 550)
+                        end
+                    end,
+                },
+            },
+        },
+
+        -- =====================================================
+        -- 8. ПОДМЕНЮ: ДАНЖИ И ТРИАЛЫ
+        -- =====================================================
+        {
+            type = "submenu",
+            name = "|c66f2ff8. Данжи и Триалы|r",
+            tooltip = "Настройки таймера спидрана, жизней, авто-логов и полезных рейдовых функций",
+            controls = {
+                { type = "header", name = "Рейдовый виджет и Спидран" },
+                {
+                    type = "checkbox",
+                    name = "Включить виджет спидрана",
+                    tooltip = "Отображает в триалах, на аренах и в данжах время забега, оставшиеся жизни и счет",
+                    getFunc = function() return NC.savedVars.speedrunHudEnabled end,
+                    setFunc = function(v) 
+                        NC.savedVars.speedrunHudEnabled = v 
+                        if NC.UpdateSpeedrunHudUI then NC.UpdateSpeedrunHudUI() end
+                    end,
+                },
+                {
+                    type = "checkbox",
+                    name = "Разблокировать для перемещения",
+                    tooltip = "Показывает тестовый рейдовый виджет с жизнями и очками, который можно перетащить мышкой в удобное место",
+                    getFunc = function() return NC.savedVars.speedrunHudUnlocked end,
+                    setFunc = function(v) 
+                        NC.savedVars.speedrunHudUnlocked = v 
+                        if NC.UpdateSpeedrunHudUI then NC.UpdateSpeedrunHudUI() end
+                    end,
+                },
+                {
+                    type = "checkbox",
+                    name = "Показывать только на ветеране",
+                    tooltip = "Если включено, виджет будет появляться только в ветеранских данжах, триалах и аренах (где критичны спидраны и ачивки)",
+                    getFunc = function() return NC.savedVars.speedrunHudVetOnly end,
+                    setFunc = function(v) 
+                        NC.savedVars.speedrunHudVetOnly = v 
+                        if NC.UpdateSpeedrunHud then NC.UpdateSpeedrunHud() end
+                    end,
+                },
+                {
+                    type = "button",
+                    name = "Сбросить позицию виджета",
+                    func = function()
+                        NC.savedVars.speedrunHudLeft = 500
+                        NC.savedVars.speedrunHudTop  = 80
+                        if NC.SpeedrunFrame then
+                            NC.SpeedrunFrame:ClearAnchors()
+                            NC.SpeedrunFrame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 500, 80)
+                        end
+                    end,
+                },
+                { type = "header", name = "Авто-логи боя (Encounter Log)" },
+                {
+                    type = "checkbox",
+                    name = "Включить авто-запись логов",
+                    tooltip = "Автоматически включает запись логов боя (Encounter.log) при входе в подземелья, триалы и арены, и выключает при выходе",
+                    getFunc = function() return NC.savedVars.autoEncounterLog end,
+                    setFunc = function(v) 
+                        NC.savedVars.autoEncounterLog = v 
+                        if NC.CheckAutoEncounterLog then NC.CheckAutoEncounterLog() end
+                    end,
+                },
+                {
+                    type = "checkbox",
+                    name = "Записывать только на ветеране",
+                    tooltip = "Если включено, логи будут записываться только на ветеранской сложности (чтобы не забивать диск лишними файлами)",
+                    getFunc = function() return NC.savedVars.autoEncounterLogVetOnly end,
+                    setFunc = function(v) 
+                        NC.savedVars.autoEncounterLogVetOnly = v 
+                        if NC.CheckAutoEncounterLog then NC.CheckAutoEncounterLog() end
+                    end,
+                },
+            },
+        },
     }
+
+    if NecroCat.Minimap and NecroCat.Minimap.GetMenuOptions then
+        table.insert(optionsTable, NecroCat.Minimap.GetMenuOptions())
+    end
 
     NC.settingsPanel = LAM:RegisterAddonPanel("NecroCatMenu", panelData)
     LAM:RegisterOptionControls("NecroCatMenu", optionsTable)
 end
-
 ---------------------------------------------------------
 -- 5. ИНВАЙТ И МЕНЮ
 ---------------------------------------------------------
@@ -2324,19 +3817,30 @@ function NC.OnInventorySlotUpdateForAutoBind(eventCode, bagId, slotIndex, isNewI
     local itemLink = GetItemLink(bagId, slotIndex)
     if not itemLink or itemLink == "" then return end
 
-    local hasSet, setName, _, _, _, setId = GetItemLinkSetInfo(itemLink)
-    if not hasSet or not setName or setName == "" then return end
+    -- РУБЕЖ 1: Наглухо блокируем любые скрафченные предметы
+    if IsItemLinkCrafted(itemLink) or (IsItemCrafted and IsItemCrafted(bagId, slotIndex)) then
+        return
+    end
+
+    -- РУБЕЖ 2: Проверяем, входит ли этот сет вообще в коллекцию наклеек (Stickerbook)
+    if not IsItemLinkSetCollectionPiece(itemLink) then
+        return
+    end
+
+    -- Если вещь уже привязана — пропускаем
+    if IsItemBound(bagId, slotIndex) then
+        return
+    end
 
     local pieceId = GetItemLinkItemId(itemLink)
     if not pieceId or pieceId <= 0 then return end
 
-    -- Если вещь еще не открыта в наклейках (Stickerbook)
+    -- Если этой вещи действительно еще нет в коллекции наклеек — привязываем
     if not IsItemSetCollectionPieceUnlocked(pieceId) then
-        if not IsItemBound(bagId, slotIndex) then
-            BindItem(bagId, slotIndex)
-        end
+        BindItem(bagId, slotIndex)
 
-        if NC.savedVars.showAutoBindToast then
+        local _, setName, _, _, _, setId = GetItemLinkSetInfo(itemLink)
+        if NC.savedVars.showAutoBindToast and setName and setName ~= "" then
             NC.ShowSetToast(itemLink, setId, setName)
         end
     end
@@ -2426,7 +3930,52 @@ function NC.OnAddOnLoaded(eventCode, addOnName)
         customColorIcons        = false,
         showBgZoneIcon          = false,
         playerHouses            = {},
+        minimap                 = {},
+
+        -- Модуль: Долгие баффы (Еда и свитки)
+        longBuffsEnabled         = true,
+        longBuffsShowPermanent   = false,
+        longBuffsOrientation     = 1, -- 1: Вертикально, 2: Горизонтально
+        longBuffsGrowth          = 1, -- 1: Авто, 2: Прямой (Вправо/Вниз), 3: Обратный (Влево/Вверх)
+        longBuffsSize            = 36,
+        longBuffsLeft            = 500,
+        longBuffsTop             = 300,
+        longBuffsUnlocked        = false,
+
+        -- Модуль: Короткие боевые баффы игрока
+        shortBuffsEnabled        = false,
+        shortBuffsOrientation    = 2, -- 1: Вертикально, 2: Горизонтально
+        shortBuffsGrowth         = 1, -- 1: Авто, 2: Прямой (Вправо/Вниз), 3: Обратный (Влево/Вверх)
+        shortBuffsSize           = 36,
+        shortBuffsLeft           = 500,
+        shortBuffsTop            = 500,
+        shortBuffsUnlocked       = false,
+
+        -- Модуль: Дебаффы на игроке
+        playerDebuffsEnabled     = false,
+        playerDebuffsOrientation = 2, -- 1: Вертикально, 2: Горизонтально
+        playerDebuffsGrowth      = 1, -- 1: Авто, 2: Прямой (Вправо/Вниз), 3: Обратный (Влево/Вверх)
+        playerDebuffsSize        = 36,
+        playerDebuffsLeft        = 500,
+        playerDebuffsTop         = 550,
+        playerDebuffsUnlocked    = false,
+
+        -- Модуль: Спидран и Рейдовый таймер
+        speedrunHudEnabled       = false,
+        speedrunHudLeft          = 500,
+        speedrunHudTop           = 80,
+        speedrunHudUnlocked      = false,
+        speedrunHudVetOnly       = true,
+        dungeonStartTimeStamp    = 0,
+        dungeonStartZoneId       = 0,
+
+        -- Авто-запись логов боя (Encounter Log)
+        autoEncounterLog         = false,
+        autoEncounterLogVetOnly  = true,
     }, GetWorldName())
+    
+    
+    
     -- Бесшовная миграция старой настройки банка со слота на ID
     if (not NC.savedVars.guildBankDefaultGuildId or NC.savedVars.guildBankDefaultGuildId == 0) and NC.savedVars.guildBankDefaultIndex and NC.savedVars.guildBankDefaultIndex > 0 then
         NC.savedVars.guildBankDefaultGuildId = GetGuildId(NC.savedVars.guildBankDefaultIndex)
@@ -2506,9 +4055,118 @@ function NC.OnAddOnLoaded(eventCode, addOnName)
     NC.CreateSetToastUI()
     NC.UpdateAggroMarker()
     NC.CreateChestCounterUI()
+    NC.CreateLongBuffsUI()
+    NC.CreateShortBuffsUI()
+    NC.CreatePlayerDebuffsUI()
+    NC.CreateSpeedrunHudUI()
+
+    -- Отслеживание событий триала
+    EVENT_MANAGER:RegisterForEvent(NC.name .. "_TrialStart", EVENT_RAID_TRIAL_STARTED, function()
+        if NC.UpdateSpeedrunHud then NC.UpdateSpeedrunHud() end
+    end)
+    EVENT_MANAGER:RegisterForEvent(NC.name .. "_TrialComplete", EVENT_RAID_TRIAL_COMPLETE, function()
+        if NC.UpdateSpeedrunHud then NC.UpdateSpeedrunHud() end
+    end)
+    EVENT_MANAGER:RegisterForEvent(NC.name .. "_TrialFailed", EVENT_RAID_TRIAL_FAILED, function()
+        if NC.UpdateSpeedrunHud then NC.UpdateSpeedrunHud() end
+    end)
+    EVENT_MANAGER:RegisterForEvent(NC.name .. "_TrialRevives", EVENT_RAID_REVIVE_COUNTER_UPDATE, function()
+        if NC.UpdateSpeedrunHud then NC.UpdateSpeedrunHud() end
+    end)
+
+    -- Вспомогательная функция старта таймера данжа
+    local function StartDungeonTimerIfReady(forceStart)
+        local isRaid = (IsRaidInProgress and IsRaidInProgress()) or (GetRaidDuration and GetRaidDuration() > 0)
+        if IsUnitInDungeon("player") and not isRaid then
+            local sv = NC.savedVars
+            if sv and (not sv.dungeonStartTimeStamp or sv.dungeonStartTimeStamp == 0) then
+                local currentZoneId = GetZoneId(GetUnitZoneIndex("player"))
+                local targetSubzone = NC.DungeonStartSubzones and NC.DungeonStartSubzones[currentZoneId]
+
+                -- Если для данжа задана подзона (Тюрьма ИГ, Путь Жертвоприношений и т.д.),
+                -- бой на входе игнорируем, ждем именно перехода за порог или босса!
+                if forceStart or not targetSubzone or (GetUnitName and GetUnitName("boss1") ~= "") then
+                    sv.dungeonStartTimeStamp = GetTimeStamp()
+                    sv.dungeonStartZoneId = currentZoneId
+                end
+            end
+        end
+    end
+
+    -- 1. Старт по первому бою (для обычных данжей)
+    EVENT_MANAGER:RegisterForEvent(NC.name .. "_DungeonCombat", EVENT_PLAYER_COMBAT_STATE, function(eventCode, inCombat)
+        if inCombat then
+            StartDungeonTimerIfReady(false)
+        end
+    end)
+
+    EVENT_MANAGER:RegisterForEvent(NC.name .. "_GroupDungeonCombat", EVENT_UNIT_COMBAT_STATE_CHANGED, function(eventCode, unitTag, inCombat)
+        if inCombat and (unitTag == "player" or string.find(unitTag, "^group")) then
+            StartDungeonTimerIfReady(false)
+        end
+    end)
+
+    -- 2. Старт по переходу в подзону (принудительный старт: Бастион, Ущелье Запаха Крови и т.д.)
+    EVENT_MANAGER:RegisterForEvent(NC.name .. "_DungeonSubzone", EVENT_ZONE_CHANGED, function(eventCode, zoneName, subZoneName, newSubzone, zoneId, subZoneId)
+        local currentZoneId = GetZoneId(GetUnitZoneIndex("player"))
+        local targetSubzone = NC.DungeonStartSubzones and NC.DungeonStartSubzones[currentZoneId]
+        if targetSubzone and subZoneId == targetSubzone then
+            StartDungeonTimerIfReady(true)
+        end
+    end)
+
+    -- 3. Особый крюк для Нечестивой Могилы (Unhallowed Grave ID 1153)
+    EVENT_MANAGER:RegisterForEvent(NC.name .. "_UnhallowedGraveHook", EVENT_COMBAT_EVENT, function(eventCode, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId)
+        if abilityId == 131774 and result == ACTION_RESULT_EFFECT_GAINED then
+            StartDungeonTimerIfReady(true)
+        end
+    end)
+    EVENT_MANAGER:AddFilterForEvent(NC.name .. "_UnhallowedGraveHook", EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, 131774)
+
+    -- Сброс таймера только при выходе из данжа в другую зону
+    EVENT_MANAGER:RegisterForEvent(NC.name .. "_DungeonZoneChange", EVENT_PLAYER_ACTIVATED, function()
+        local sv = NC.savedVars
+        if sv then
+            local currentZoneId = GetZoneId(GetUnitZoneIndex("player"))
+            if not IsUnitInDungeon("player") or (sv.dungeonStartZoneId and sv.dungeonStartZoneId > 0 and sv.dungeonStartZoneId ~= currentZoneId) then
+                sv.dungeonStartTimeStamp = 0
+                sv.dungeonStartZoneId = 0
+            end
+        end
+        if NC.UpdateSpeedrunHud then NC.UpdateSpeedrunHud() end
+    end)
+
+    -- Отслеживание изменений баффов и дебаффов игрока
+    EVENT_MANAGER:RegisterForEvent(NC.name .. "_BuffsChanged", EVENT_EFFECT_CHANGED, function(eventCode, changeType, effectSlot, effectName, unitTag)
+        if unitTag == "player" then
+            if NC.UpdateLongBuffs then NC.UpdateLongBuffs() end
+            if NC.UpdateShortBuffs then NC.UpdateShortBuffs() end
+            if NC.UpdatePlayerDebuffs then NC.UpdatePlayerDebuffs() end
+        end
+    end)
+    EVENT_MANAGER:AddFilterForEvent(NC.name .. "_BuffsChanged", EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG, "player")
+
+    -- Быстрый таймер обновления боевых секунд и спидрана (раз в 100 мс)
+    EVENT_MANAGER:RegisterForUpdate(NC.name .. "_BuffsTimer", 100, function()
+        local sv = NC.savedVars
+        if not sv then return end
+
+        if sv.longBuffsEnabled and not sv.longBuffsUnlocked and NC.UpdateLongBuffs then
+            NC.UpdateLongBuffs()
+        end
+        if sv.shortBuffsEnabled and not sv.shortBuffsUnlocked and NC.UpdateShortBuffs then
+            NC.UpdateShortBuffs()
+        end
+        if sv.playerDebuffsEnabled and not sv.playerDebuffsUnlocked and NC.UpdatePlayerDebuffs then
+            NC.UpdatePlayerDebuffs()
+        end
+        if sv.speedrunHudEnabled and not sv.speedrunHudUnlocked and NC.UpdateSpeedrunHud then
+            NC.UpdateSpeedrunHud()
+        end
+    end)
+
     EVENT_MANAGER:RegisterForEvent(NC.name .. "_LockpickSuccess", EVENT_LOCKPICK_SUCCESS, NC.OnLockpickSuccessForChestCounter)
     EVENT_MANAGER:RegisterForEvent(NC.name .. "_ClientInteract", EVENT_CLIENT_INTERACT_RESULT, NC.OnClientInteractResultForChestCounter)
-    EVENT_MANAGER:RegisterForEvent(NC.name .. "_LootUpdated", EVENT_LOOT_UPDATED, NC.OnLootUpdatedForChestCounter)
 
     -- Регистрация авто-привязки сетов со скоростным фильтром (только новые вещи в рюкзаке)
     EVENT_MANAGER:RegisterForEvent(NC.name .. "_AutoBind", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, NC.OnInventorySlotUpdateForAutoBind)
@@ -2553,6 +4211,11 @@ function NC.OnAddOnLoaded(eventCode, addOnName)
         NC.UpdateAggroMarker()
         NC.CheckZoneChangeForChestCounter()
         NC.CheckAllWornGear()
+
+        -- Авто-проверка логов боя при входе/выходе из зон
+        if NC.CheckAutoEncounterLog then
+            zo_callLater(NC.CheckAutoEncounterLog, 1500)
+        end
     end)
 
     -- Авто-проверка починки и зарядки при выходе из боя и после воскрешения
@@ -2650,29 +4313,69 @@ function NC.SetDiffVeteran()    NC.SetDifficulty(OVERLAND_DIFFICULTY_TYPE_VETERA
 ---------------------------------------------------------
 -- МОДУЛЬ: ИКОНКА БГ В СПИСКАХ ДРУЗЕЙ И ГИЛЬДИИ
 ---------------------------------------------------------
-function NC.HookBattlegroundZoneIcons()
-    local function ApplyBgIcon(control, data)
-        if not NC.savedVars or not NC.savedVars.showBgZoneIcon then return end
-        if not control or not control.zoneLabel or not data then return end
+NecroCat = NecroCat or {}
+local NC = NecroCat
 
-        local zoneId = data.zoneId
-        if zoneId and zoneId > 0 then
-            local bgId = GetZoneBattlegroundId(zoneId)
-            if bgId and bgId > 0 then
-                local currentText = control.zoneLabel:GetText()
-                if currentText and not string.find(currentText, "poi_battlefield_complete") then
-                    control.zoneLabel:SetText("|t18:18:EsoUI/Art/Icons/poi/poi_battlefield_complete.dds|t " .. currentText)
+NC.BgZoneNames = nil
+
+-- Реестр всех ID Полей Сражений
+local BG_ZONE_IDS = { 
+    508, 509, 510, 511, 512, 513, 514, 515, 516, 517, 518, 520,
+    1481, 1482, 1483, 1484, 1485, 1487, 1488 
+}
+
+local function BuildBattlegroundNamesCache()
+    if NC.BgZoneNames then return end
+    NC.BgZoneNames = {}
+
+    for _, zoneId in ipairs(BG_ZONE_IDS) do
+        local name = GetZoneNameById(zoneId)
+        if name and name ~= "" then
+            local clean = string.lower(zo_strformat("<<1>>", name))
+            table.insert(NC.BgZoneNames, clean)
+        end
+    end
+end
+
+function NC.HookBattlegroundZoneIcons()
+    BuildBattlegroundNamesCache()
+
+    local function ApplyBgIcon(manager, control, data)
+        local sv = NecroCat.savedVars or (NC and NC.savedVars)
+        if sv and sv.showBgZoneIcon == false then return end
+        if not control or not data or type(data) ~= "table" then return end
+
+        local zoneLabel = control:GetNamedChild("Zone")
+        if not zoneLabel or not zoneLabel.GetText then return end
+
+        local rawZone = data.formattedZone or data.zone or zoneLabel:GetText()
+        if not rawZone or type(rawZone) ~= "string" or rawZone == "" then return end
+
+        local cleanZone = string.lower(zo_strformat("<<1>>", rawZone):gsub("|c%x%x%x%x%x%x", ""):gsub("|r", ""))
+
+        -- Мягкий поиск: проверяем, содержится ли точное название БГ внутри строки
+        local isBG = false
+        if NC.BgZoneNames then
+            for _, bgName in ipairs(NC.BgZoneNames) do
+                if bgName ~= "" and string.find(cleanZone, bgName, 1, true) then
+                    isBG = true
+                    break
                 end
+            end
+        end
+
+        if isBG then
+            local currentText = zoneLabel:GetText()
+            if currentText and not string.find(currentText, "poi_battlefield_complete") then
+                zoneLabel:SetText("|t16:16:EsoUI/Art/Icons/poi/poi_battlefield_complete.dds|t " .. currentText)
             end
         end
     end
 
-    -- 1. Хук для Списка друзей (O)
     if FRIENDS_LIST and FRIENDS_LIST.SetupRow then
         ZO_PostHook(FRIENDS_LIST, "SetupRow", ApplyBgIcon)
     end
 
-    -- 2. Хук для Списка гильдии (G)
     if GUILD_ROSTER_KEYBOARD and GUILD_ROSTER_KEYBOARD.SetupRow then
         ZO_PostHook(GUILD_ROSTER_KEYBOARD, "SetupRow", ApplyBgIcon)
     end
@@ -2717,6 +4420,11 @@ function NC.ApplyCustomIcons()
     RedirectTexture("esoui/art/guild/gamepad/gp_ownership_icon_guildtrader.dds", "NecroCat/imgs/icons/guildtrader64.dds")
     RedirectTexture("esoui/art/guild/ownership_icon_guildtrader.dds", "NecroCat/imgs/icons/guildtrader128.dds")
     RedirectTexture("esoui/art/guild/ownership_icon_keep.dds", "NecroCat/imgs/icons/alliancewarowned.dds")
+
+    -- 5. Иконки Чемпионской системы (ЧП)
+    RedirectTexture("esoui/art/champion/champion_icon.dds", "NecroCat/imgs/icons/cpsmall.dds")
+    RedirectTexture("esoui/art/champion/champion_icon_32.dds", "NecroCat/imgs/icons/cpsmall32.dds")
+    RedirectTexture("esoui/art/champion/gamepad/gp_champion_icon.dds", "NecroCat/imgs/icons/cpsmall.dds")
 end
 
 EVENT_MANAGER:RegisterForEvent(NC.name, EVENT_ADD_ON_LOADED, NC.OnAddOnLoaded)

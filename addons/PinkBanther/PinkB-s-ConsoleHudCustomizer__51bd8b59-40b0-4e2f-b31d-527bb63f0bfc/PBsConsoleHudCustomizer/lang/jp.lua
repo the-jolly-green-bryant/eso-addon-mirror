@@ -16,10 +16,11 @@ local strings = {
 	-- ---- バーの見た目 --------------------------------------------------------------------
 	SI_PBSCHC_SECTION_STYLE = "バーの見た目",
 	SI_PBSCHC_STYLE = "バーのスタイル",
-	SI_PBSCHC_STYLE_TOOLTIP = "「標準」はゲーム本来のバーのままです。「四角」は各バーを平坦な長方形で描きます（暗いトラックと、そのリソース本来の色で塗られた四角）。大きさはゲーム本来のままで、倍率で調整します。「MURA-HIGE Style」は同じ四角を、下で指定した幅と高さで描きます。どちらもゲーム側の矢印型の枠と背景を一時的に非表示にしますが、バー自体はそのまま残して動かしているので、ダメージシールドや防御力変化、瀕死の警告表示は今までどおり上に表示されます。",
+	SI_PBSCHC_STYLE_TOOLTIP = "「標準」はゲーム本来のバーのままです。「四角」は各バーを平坦な長方形で描きます（暗いトラックと、そのリソース本来の色で塗られた四角）。大きさはゲーム本来のままで、倍率で調整します。「MURA-HIGE Style」は同じ四角を、下で指定した幅と高さで描きます。「MURA-HIGE NEO Style」は同じ幅・高さの設定で、体力・マジカ・スタミナすべてが左から右へ満ちます。これらのスタイルはゲーム側の矢印型の枠と背景を一時的に非表示にしますが、バー自体はそのまま残して動かしているので、ダメージシールドや防御力変化、瀕死の警告表示は今までどおり上に表示されます。",
 	SI_PBSCHC_STYLE_STANDARD = "標準",
 	SI_PBSCHC_STYLE_PLAIN = "四角",
 	SI_PBSCHC_STYLE_ROUNDED = "MURA-HIGE Style",
+	SI_PBSCHC_STYLE_NEO = "MURA-HIGE NEO Style",
 	SI_PBSCHC_PLAIN_OPACITY = "不透明度",
 	SI_PBSCHC_PLAIN_OPACITY_TOOLTIP = "四角をどれだけ濃く描くかです。100%でゲーム本来の塗りを完全に隠します。下げると下のバーが透けるため、元の見た目を少し残したい場合に使えます。",
 	SI_PBSCHC_PLAIN_BORDER = "枠線を描く",
@@ -41,9 +42,9 @@ local strings = {
 	SI_PBSCHC_SKILLBAR_ENABLED = "スキルバーをこのアドオンで制御する",
 	SI_PBSCHC_SKILLBAR_ENABLED_TOOLTIP = "オフにすると、スキルバーをゲーム本体（および他のアドオン）に完全に明け渡します。位置・大きさ・間隔・裏バー・アイコン上の残り時間と対象数・使用中スキルの網掛けをすべて元に戻し、以後何も書き込みません（設定内容は残るので、オンに戻せば再び適用されます）。体力・マジカ・スタミナのバーには影響しません。",
 	SI_PBSCHC_BAR_WIDTH = "<<1>>：バーの幅",
-	SI_PBSCHC_BAR_WIDTH_TOOLTIP = "バーを描く幅（ピクセル）です。MURA-HIGE Style専用です。このスタイルはバーそのものを描くためサイズを直接指定できます。他のスタイルはゲーム本来のバーを拡大縮小する方式です（それらのコントロールの幅はゲーム側が書き換えるため）。ゲーム本来は224です。",
+	SI_PBSCHC_BAR_WIDTH_TOOLTIP = "バーを描く幅（ピクセル）です。MURA-HIGE StyleとMURA-HIGE NEO Style専用です。このスタイルはバーそのものを描くためサイズを直接指定できます。他のスタイルはゲーム本来のバーを拡大縮小する方式です（それらのコントロールの幅はゲーム側が書き換えるため）。ゲーム本来は224です。",
 	SI_PBSCHC_BAR_HEIGHT = "<<1>>：バーの高さ",
-	SI_PBSCHC_BAR_HEIGHT_TOOLTIP = "バーを描く高さ（ピクセル）です。MURA-HIGE Style専用です。ゲーム本来は17です。",
+	SI_PBSCHC_BAR_HEIGHT_TOOLTIP = "バーを描く高さ（ピクセル）です。MURA-HIGE StyleとMURA-HIGE NEO Style専用です。ゲーム本来は17です。",
 
 	-- ---- スキルバーの間隔 ----------------------------------------------------------------
 	SI_PBSCHC_SECTION_GAPS = "スキルバーの間隔",
@@ -107,6 +108,15 @@ local strings = {
 	SI_PBSCHC_RESET = "すべて初期設定に戻す",
 	SI_PBSCHC_RESET_TOOLTIP = "3本とも、ゲーム本来の位置と大きさに戻します。",
 	SI_PBSCHC_RESET_BUTTON = "戻す",
+
+	SI_PBSCHC_SECTION_TRACE = "計測",
+	SI_PBSCHC_TRACE_HINT = "スキルのカウントダウンがおかしい原因を調べるための機能です。「開始」を押してから対象のスキルを1回使い、範囲指定スキルなら「設置する」「キャンセルする」を1回ずつ行い、「表示」を押してください。ゲームから届いた情報と、その時刻がチャット欄に出力されます。「開始」を押すまで何も記録せず、「表示」で記録を止めます。画面表示には一切影響しません。",
+	SI_PBSCHC_TRACE_START = "使用時の動作を記録する",
+	SI_PBSCHC_TRACE_START_TOOLTIP = "これ以降に使用したスキルについて、ボタン入力・範囲指定の円・効果・戦闘イベントをすべて記録します。",
+	SI_PBSCHC_TRACE_START_BUTTON = "開始",
+	SI_PBSCHC_TRACE_SHOW = "記録を表示する",
+	SI_PBSCHC_TRACE_SHOW_TOOLTIP = "記録を止めて、届いた順に時刻付きでチャット欄に出力します。",
+	SI_PBSCHC_TRACE_SHOW_BUTTON = "表示",
 
 	SI_PBSCHC_GAME_SETTINGS_HINT = "バーに数値を表示するか、戦闘していないときにバーを薄くするかはゲーム本体の設定です（設定 > インターフェース）。アドオンからは変更できないため、そちらで設定してください。",
 

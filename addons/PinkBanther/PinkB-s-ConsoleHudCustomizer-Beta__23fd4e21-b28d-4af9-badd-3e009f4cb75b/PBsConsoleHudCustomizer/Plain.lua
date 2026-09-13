@@ -43,7 +43,7 @@ addon.plain = plain
 --
 -- The key is still "rounded" because that is what an install has saved: the style was drawn with
 -- round ends until 1.10.0, and it earned nobody's affection.
-addon.BAR_STYLES = { "standard", "plain", "rounded" }
+addon.BAR_STYLES = { "standard", "plain", "rounded", "neo" }
 
 -- Nothing animates, so this only has to keep up with the numbers changing.
 local UPDATE_INTERVAL_MS = 100
@@ -167,12 +167,12 @@ function addon:PlainWanted()
 		return false
 	end
 	local style = self:BarStyle()
-	return style == "plain" or style == "rounded"
+	return style == "plain" or style == "rounded" or style == "neo"
 end
 
 -- MURA-HIGE Style: the one drawn at a size of its own.
 function addon:BarsAreMuraHige()
-	return self:BarStyle() == "rounded"
+	return self:BarStyle() == "rounded" or self:BarStyle() == "neo"
 end
 
 -- ---------------------------------------------------------------------------------------
@@ -312,7 +312,14 @@ function plain:AnchorOverlay(overlay, bar)
 		-- The health bar is two halves that meet in the middle, so each is half of what was
 		-- asked for and the pair is the whole.
 		if #bar.controls > 1 then
-			width = width / 2
+			if addon:BarStyle() == "neo" then
+				-- Health's native halves meet here. NEO draws one continuous bar,
+				-- centered at that same point, rather than two separate fills.
+				control:ClearAnchors()
+				control:SetAnchor(CENTER, Control(bar.controls[1].name), RIGHT, 0, 0)
+			else
+				width = width / 2
+			end
 		end
 		control:SetDimensions(width, height)
 		overlay.sizedWidth = width
@@ -558,7 +565,7 @@ function plain:UpdateOverlay(overlay, fraction)
 		return
 	end
 	fill:ClearAnchors()
-	if overlay.reverse then
+	if overlay.reverse and addon:BarStyle() ~= "neo" then
 		fill:SetAnchor(TOPRIGHT, control, TOPRIGHT, 0, 0)
 		fill:SetAnchor(BOTTOMRIGHT, control, BOTTOMRIGHT, 0, 0)
 	else
@@ -581,7 +588,11 @@ function plain:Update()
 				self:AnchorOverlay(overlay, bar)
 				self:ColourOverlay(bar, overlay)
 				self:BlankClientBar(bar, overlay, sized)
-				if fraction then
+				if addon:BarStyle() == "neo" and bar.key == "health" and not entry.reverse then
+					-- The left overlay now covers the full health bar. Keep the other
+					-- native half blanked, without drawing a duplicate track or border.
+					overlay.control:SetHidden(true)
+				elseif fraction then
 					self:UpdateOverlay(overlay, fraction)
 				else
 					overlay.control:SetHidden(true)

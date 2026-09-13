@@ -1,8 +1,8 @@
 local strings = {
 	SI_PBSCHATASSISTANT_CHANNEL_LABEL = "投稿先: %s",
 	SI_PBSCHATASSISTANT_OFFICER_SUFFIX = "（オフィサー）",
-	SI_PBSCHATASSISTANT_HUDCHANNEL = "L2＋L3で投稿先を切り替える",
-	SI_PBSCHATASSISTANT_HUDCHANNEL_TOOLTIP = "HUDでL2を押したままL3を押すと、投稿先チャンネルを順に切り替えます。L2は読み取るだけで割り当てを変えず、L3もL2を押している間だけ置き換えます。",
+	SI_PBSCHATASSISTANT_HUDCHANNEL = "L2＋十字キー右で投稿先を切り替える",
+	SI_PBSCHATASSISTANT_HUDCHANNEL_TOOLTIP = "HUDでL2を押したまま十字キー右を押すと、投稿先チャンネルを順に切り替えます。L2の防御は維持し、同時押し中は右のクエスト切り替えを抑制します。L2を少し先に押してください。",
 	SI_PBSCHATASSISTANT_DEFAULT_CHANNEL = "ログイン時の投稿先",
 	SI_PBSCHATASSISTANT_DEFAULT_CHANNEL_TOOLTIP = "セッション開始時の投稿先チャンネルです。ワールドに入った直後に一度だけ適用し、以降は切り替えても戻しません。現在使用できないチャンネルは適用しません。",
 	SI_PBSCHATASSISTANT_DEFAULT_CHANNEL_NONE = "変更しない",

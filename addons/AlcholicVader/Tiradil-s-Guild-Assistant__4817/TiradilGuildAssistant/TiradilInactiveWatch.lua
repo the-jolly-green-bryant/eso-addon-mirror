@@ -2,10 +2,10 @@
 TiradilInactiveWatch = {}
 local TIW = TiradilInactiveWatch
 
-TIW.selectedGuildFilter = nil -- nil = tum guildler
-TIW.currentThreshold = 30     -- gun
+TIW.selectedGuildFilter = nil
+TIW.currentThreshold = 30
 TIW.currentSearch = ""
-TIW.cachedRows = {}           -- son hesaplanan satirlar (arama/filtre bunun uzerinde calisir)
+TIW.cachedRows = {}
 
 local function HasRosterData()
     return TiradilRoster ~= nil and TiradilRoster.events ~= nil and TiradilRoster.events[3] ~= nil
@@ -144,7 +144,7 @@ function TIW.ScanGuilds()
                     local lastContribTime = contrib and contrib.lastContribTime or nil
 
                     local daysInGuild = nil
-                    local qualifiesbyTime = true -- varsayilan: dahil et (tarih bilinmiyorsa)
+                    local qualifiesbyTime = true
                     if joinTime then
                         daysInGuild = math.floor((now - joinTime) / 86400)
                         qualifiesbyTime = (now - joinTime) >= thresholdSeconds
@@ -165,9 +165,9 @@ function TIW.ScanGuilds()
                                 guildIndex = guildIndex,
                                 guildName = guildName,
                                 displayName = displayName,
-                                daysInGuild = daysInGuild, -- nil ise bilinmiyor
-                                lastContribTime = lastContribTime, -- nil ise hic kayit yok
-                                daysSinceContrib = daysSinceContrib, -- nil ise bilinmiyor
+                                daysInGuild = daysInGuild,
+                                lastContribTime = lastContribTime,
+                                daysSinceContrib = daysSinceContrib,
                                 totalDonations = totalDonations,
                                 totalSales = totalSales,
                             })
@@ -266,7 +266,7 @@ local function SetupRow(control, data)
     memberLabel:SetHandler("OnMouseExit", HideMemberNoteTooltip)
     local guildLabel = control:GetNamedChild("Guild")
     guildLabel:SetText(data.guildName or "")
-    guildLabel:SetColor(1, 1, 1, 1) -- varsayilana sifirla (renk uygulanamazsa beyaz kalsin)
+    guildLabel:SetColor(1, 1, 1, 1)
     ApplyGuildColor(guildLabel, data.guildIndex)
 
     local daysLabel = control:GetNamedChild("Days")
@@ -295,9 +295,9 @@ local function SetupRow(control, data)
     if data.daysSinceContrib then
         totalLabel:SetText(tostring(data.daysSinceContrib))
         if data.daysSinceContrib >= 60 then
-            totalLabel:SetColor(0.878, 0.439, 0.373, 1) -- kirmizimsi: cok uzun suredir katkisiz
+            totalLabel:SetColor(0.878, 0.439, 0.373, 1)
         elseif data.daysSinceContrib >= 30 then
-            totalLabel:SetColor(0.929, 0.761, 0.365, 1) -- sarimsi: orta
+            totalLabel:SetColor(0.929, 0.761, 0.365, 1)
         else
             totalLabel:SetColor(0.72, 0.72, 0.75, 1)
         end
@@ -626,5 +626,5 @@ function TIW.Initialize()
         TiradilInactiveWatchWindowGF0:SetState(BSTATE_PRESSED, false)
     end
     TIW.UpdateTotalColumnHeader()
-    TIW.currentTab = "watch" -- varsayilan sekme; ilk RefreshDisplay/RefreshKickList cagrisinda kullanilir
+    TIW.currentTab = "watch"
 end

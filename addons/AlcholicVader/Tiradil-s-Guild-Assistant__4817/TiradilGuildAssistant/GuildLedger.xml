@@ -9,6 +9,15 @@
             </Controls>
         </Control>
 
+        <Control name="GuildLedgerTextRowTemplateWrap" virtual="true">
+            <Dimensions x="800" y="34" />
+            <Controls>
+                <Label name="$(parent)Label" font="ZoFontGameSmall" horizontalAlignment="LEFT" verticalAlignment="CENTER" wrapMode="WRAP">
+                    <AnchorFill />
+                </Label>
+            </Controls>
+        </Control>
+
         <Control name="GuildLedgerTextRowTemplateLarge" virtual="true">
             <Dimensions x="800" y="26" />
             <Controls>
@@ -19,8 +28,8 @@
         </Control>
 
         <TopLevelControl name="GuildLedgerFrame" hidden="true" mouseEnabled="true" movable="true" clampedToScreen="true" tier="HIGH" resizeHandleSize="8">
-            <DimensionConstraints minX="940" minY="988" />
-            <Dimensions x="940" y="988" />
+            <DimensionConstraints minX="1050" minY="988" />
+            <Dimensions x="1050" y="988" />
             <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
             
             <Controls>
@@ -94,10 +103,11 @@
                                 </Backdrop>
 
                                 <Label name="$(parent)Row1Label" font="ZoFontHeader4" color="FFFFFF" text="Bank Gold">
+                                    <Dimensions y="24" />
                                     <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="36" offsetY="10" />
                                 </Label>
                                 <Label name="$(parent)Row1Value" font="ZoFontHeader4" color="FFFFFF" text="0 Gold" wrapMode="ELLIPSIS" horizontalAlignment="RIGHT">
-                                    <Dimensions x="400" y="0" />
+                                    <Dimensions x="650" y="24" />
                                     <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-36" offsetY="10" />
                                 </Label>
 
@@ -150,25 +160,26 @@
                                 </Label>
 
                                 <Label name="$(parent)Row8Label" font="ZoFontHeader4" color="EDC25D" text="Available Guild Funds">
+                                    <Dimensions y="24" />
                                     <Anchor point="TOPLEFT" relativeTo="$(parent)Row7Label" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
                                 </Label>
                                 <Label name="$(parent)Row8Value" font="ZoFontHeader4" color="EDC25D" text="0 Gold" wrapMode="ELLIPSIS" horizontalAlignment="RIGHT">
-                                    <Dimensions x="400" y="0" />
+                                    <Dimensions x="650" y="24" />
                                     <Anchor point="TOPRIGHT" relativeTo="$(parent)Row7Value" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="2" />
                                 </Label>
 
                                 <Backdrop name="$(parent)Divider" centerColor="40FFFFFF" edgeColor="00000000">
                                     <Dimensions x="0" y="1" />
-                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Row8Label" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
-                                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Row8Value" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="2" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Row8Label" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="8" />
+                                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Row8Value" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="8" />
                                 </Backdrop>
 
                                 <Label name="$(parent)NetLabel" font="ZoFontHeader3" color="EDC25D" text="NET PROFIT / LOSS">
-                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Divider" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="4" />
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Divider" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="8" />
                                 </Label>
                                 <Label name="$(parent)NetValue" font="ZoFontHeader3" color="FFFFFF" text="0 Gold" wrapMode="ELLIPSIS" horizontalAlignment="RIGHT">
-                                    <Dimensions x="400" y="0" />
-                                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Divider" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="14" />
+                                    <Dimensions x="650" y="0" />
+                                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Divider" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="8" />
                                 </Label>
 
                             </Controls>
@@ -263,7 +274,7 @@
                             <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="12" />
                         </Label>
                         <Control name="$(parent)List" inherits="ZO_ScrollList">
-                            <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="12" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="18" offsetY="52" />
                             <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-15" offsetY="-12" />
                         </Control>
                     </Controls>

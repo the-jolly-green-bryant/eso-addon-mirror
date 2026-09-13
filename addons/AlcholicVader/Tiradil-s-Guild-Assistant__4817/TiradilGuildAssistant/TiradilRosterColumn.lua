@@ -2,8 +2,8 @@
 local TRC = {}
 TiradilRosterColumn = TRC
 
-TRC.selectedTimeframe = "week" -- varsayilan: This Week (Ledger'daki varsayilanla ayni) - KATKI kolonu icin
-TRC.selectedRankTimeframe = "this_month" -- RANK kolonu icin AYRI, bagimsiz donem secimi
+TRC.selectedTimeframe = "week"
+TRC.selectedRankTimeframe = "this_month"
 
 local function GuildIdToIndex(guildId)
     local numGuilds = GetNumGuilds()
@@ -23,7 +23,7 @@ local function NormalizeName(name)
     return name
 end
 
-local contributionCache = {}      -- contributionCache[guildIndex] = { index = {...}, builtAt = time }
+local contributionCache = {}
 local CACHE_TTL_SECONDS = 15
 
 local function BuildContributionIndexForGuild(guildIndex)
@@ -37,9 +37,9 @@ local function BuildContributionIndexForGuild(guildIndex)
         local entry = index[key]
         if not entry then
             entry = {
-                donationHistory = {}, -- { {time, amount}, ... } - TUM gecmis
+                donationHistory = {},
                 saleHistory = {},
-                purchaseHistory = {}, -- uyenin guild trader'dan YAPTIGI alisverisler
+                purchaseHistory = {},
             }
             index[key] = entry
         end
@@ -108,7 +108,7 @@ local function GetMythicColorHex()
             mythicColorHex = string.format("%02X%02X%02X",
                 math.floor(color.r * 255 + 0.5), math.floor(color.g * 255 + 0.5), math.floor(color.b * 255 + 0.5))
         else
-            mythicColorHex = "E6A319" -- guvenlik: API beklenmedik sekilde basarisiz olursa dusecek yedek renk
+            mythicColorHex = "E6A319"
         end
     end
     return mythicColorHex
@@ -195,7 +195,7 @@ local function BuildHistoryTooltipText(history, label)
     return label .. "\n" .. table.concat(lines, "\n")
 end
 
-local logoffCache = {} -- logoffCache[guildId] = { index = { [normalizedName] = secsSinceLogoff }, builtAt = time }
+local logoffCache = {}
 local LOGOFF_CACHE_TTL_SECONDS = 30
 
 local function GetSecsSinceLogoff(guildId, displayName)
@@ -216,13 +216,13 @@ local function GetSecsSinceLogoff(guildId, displayName)
     return cached.index[NormalizeName(displayName)]
 end
 
-local joinTimeCache = {} -- joinTimeCache[guildIndex] = { index = { [normalizedName] = latestJoinTime }, builtAt = time }
+local joinTimeCache = {}
 local JOIN_TIME_CACHE_TTL_SECONDS = 30
 
 local function BuildJoinTimeIndexForGuild(guildIndex)
     local index = {}
     if not (TiradilRoster and TiradilRoster.events and TiradilRoster.events[3]) then
-        return index -- TiradilRoster yuklu degil/veri yok - bos index
+        return index
     end
     local joinedList = TiradilRoster.events[3]
     for i = 1, #joinedList do
@@ -409,15 +409,16 @@ end
 
 local function FormatRelativeTime(seconds)
     if not seconds or seconds < 0 then return "?" end
+    local L = TiradilIWL10n and TiradilIWL10n.Get or function(k) return k end
     local days = math.floor(seconds / 86400)
     local hours = math.floor((seconds % 86400) / 3600)
     local minutes = math.floor((seconds % 3600) / 60)
     if days > 0 then
-        return string.format("%dg %dh", days, hours)
+        return string.format("%d%s %d%s", days, L("TIME_UNIT_DAY"), hours, L("TIME_UNIT_HOUR"))
     elseif hours > 0 then
-        return string.format("%dh %ddk", hours, minutes)
+        return string.format("%d%s %d%s", hours, L("TIME_UNIT_HOUR"), minutes, L("TIME_UNIT_MINUTE"))
     else
-        return string.format("%ddk", minutes)
+        return string.format("%d%s", minutes, L("TIME_UNIT_MINUTE"))
     end
 end
 
@@ -592,7 +593,7 @@ end
 
 local function TryAddPeriodCombo(columnControl)
     if TiradilRosterColumnPeriodCombo then
-        return -- zaten eklenmis (ornegin reloadui sonrasi tekrar cagrilmis olabilir)
+        return
     end
     if not (columnControl and columnControl.GetHeader) then
         return
@@ -605,6 +606,7 @@ local function TryAddPeriodCombo(columnControl)
     combo:SetDimensions(225, 33)
     combo:ClearAnchors()
     combo:SetAnchor(TOPLEFT, header, BOTTOMLEFT, 0, ZO_GuildRosterListContents:GetHeight())
+    combo:SetHidden(TRC.savedVars and TRC.savedVars.enabled == false)
 
     local comboObj = ZO_ComboBox_ObjectFromContainer(combo)
     comboObj:SetSortsItems(false)
@@ -613,6 +615,7 @@ local function TryAddPeriodCombo(columnControl)
     local options = {
         { name = L("PERIOD_THIS_WEEK"), value = "week" },
         { name = L("PERIOD_LAST_WEEK"), value = "last_week" },
+        { name = L("PERIOD_LAST_2_WEEKS"), value = "last_2_weeks" },
         { name = L("PERIOD_2_WEEKS_AGO"), value = "week_before_last" },
         { name = L("PERIOD_3_WEEKS_AGO"), value = "3_weeks_ago" },
         { name = L("PERIOD_4_WEEKS_AGO"), value = "4_weeks_ago" },
@@ -643,6 +646,7 @@ local function TryAddPeriodCombo(columnControl)
     donationSummary:ClearAnchors()
     donationSummary:SetAnchor(TOPLEFT, combo, BOTTOMLEFT, 0, 4)
     donationSummary:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+    donationSummary:SetHidden(TRC.savedVars and TRC.savedVars.enabled == false)
 
     local sellerSummary = CreateControlFromVirtual("TiradilRosterColumnSellerSummary", ZO_GuildRoster, "ZO_KeyboardGuildRosterRowLabel")
     sellerSummary:SetFont("ZoFontGameSmall")
@@ -650,6 +654,7 @@ local function TryAddPeriodCombo(columnControl)
     sellerSummary:ClearAnchors()
     sellerSummary:SetAnchor(TOPLEFT, donationSummary, BOTTOMLEFT, 0, 2)
     sellerSummary:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+    sellerSummary:SetHidden(TRC.savedVars and TRC.savedVars.enabled == false)
 
     TRC.RefreshSummaryLabels()
 
@@ -663,7 +668,7 @@ end
 
 local function TryAddRankPeriodCombo(columnControl)
     if TiradilRosterColumnRankPeriodCombo then
-        return -- zaten eklenmis
+        return
     end
     if not (columnControl and columnControl.GetHeader) then
         return
@@ -673,9 +678,10 @@ local function TryAddRankPeriodCombo(columnControl)
     if not header then return end
 
     local combo = CreateControlFromVirtual("TiradilRosterColumnRankPeriodCombo", ZO_GuildRoster, "ZO_ComboBox")
-    combo:SetDimensions(110, 26)
+    combo:SetDimensions(85, 26)
     combo:ClearAnchors()
     combo:SetAnchor(TOP, header, BOTTOM, 0, ZO_GuildRosterListContents:GetHeight())
+    combo:SetHidden(TRC.savedVars and TRC.savedVars.rankColumnEnabled == false)
 
     local comboObj = ZO_ComboBox_ObjectFromContainer(combo)
     comboObj:SetSortsItems(false)
@@ -684,6 +690,7 @@ local function TryAddRankPeriodCombo(columnControl)
     local options = {
         { name = L("PERIOD_THIS_WEEK"), value = "week" },
         { name = L("PERIOD_LAST_WEEK"), value = "last_week" },
+        { name = L("PERIOD_LAST_2_WEEKS"), value = "last_2_weeks" },
         { name = L("PERIOD_2_WEEKS_AGO"), value = "week_before_last" },
         { name = L("PERIOD_3_WEEKS_AGO"), value = "3_weeks_ago" },
         { name = L("PERIOD_4_WEEKS_AGO"), value = "4_weeks_ago" },
@@ -708,8 +715,67 @@ local function TryAddRankPeriodCombo(columnControl)
     end
 end
 
-local rankCache = {}      -- rankCache[guildIndex] = { salesByMember = {}, donationsByMember = {}, builtAt = time }
+local rankCache = {}
 local RANK_CACHE_TTL_SECONDS = 15
+
+function TRC.RefreshLanguageDependentUI()
+    local L = TiradilL10n and TiradilL10n.Get or function(k) return k end
+
+    if TiradilRosterColumnPeriodCombo then
+        local comboObj = ZO_ComboBox_ObjectFromContainer(TiradilRosterColumnPeriodCombo)
+        comboObj:ClearItems()
+        comboObj:SetSortsItems(false)
+        local options = {
+            { name = L("PERIOD_THIS_WEEK"), value = "week" },
+            { name = L("PERIOD_LAST_WEEK"), value = "last_week" },
+            { name = L("PERIOD_LAST_2_WEEKS"), value = "last_2_weeks" },
+            { name = L("PERIOD_2_WEEKS_AGO"), value = "week_before_last" },
+            { name = L("PERIOD_3_WEEKS_AGO"), value = "3_weeks_ago" },
+            { name = L("PERIOD_4_WEEKS_AGO"), value = "4_weeks_ago" },
+            { name = L("PERIOD_LAST_MONTH"), value = "last_month" },
+            { name = L("PERIOD_THIS_MONTH"), value = "this_month" },
+            { name = L("PERIOD_LAST_30_DAYS"), value = "last_30_days" },
+            { name = L("PERIOD_ALL_TIME"), value = "all_time" },
+        }
+        local selectedEntry = nil
+        for _, opt in ipairs(options) do
+            local entry = comboObj:CreateItemEntry(opt.name, function()
+                TRC.SetTimeframe(opt.value)
+            end)
+            comboObj:AddItem(entry)
+            if opt.value == TRC.selectedTimeframe then selectedEntry = entry end
+        end
+        if selectedEntry then comboObj:SelectItem(selectedEntry, false) end
+    end
+
+    if TiradilRosterColumnRankPeriodCombo then
+        local comboObj = ZO_ComboBox_ObjectFromContainer(TiradilRosterColumnRankPeriodCombo)
+        comboObj:ClearItems()
+        comboObj:SetSortsItems(false)
+        local options = {
+            { name = L("PERIOD_THIS_WEEK"), value = "week" },
+            { name = L("PERIOD_LAST_WEEK"), value = "last_week" },
+            { name = L("PERIOD_LAST_2_WEEKS"), value = "last_2_weeks" },
+            { name = L("PERIOD_2_WEEKS_AGO"), value = "week_before_last" },
+            { name = L("PERIOD_3_WEEKS_AGO"), value = "3_weeks_ago" },
+            { name = L("PERIOD_4_WEEKS_AGO"), value = "4_weeks_ago" },
+            { name = L("PERIOD_LAST_MONTH"), value = "last_month" },
+            { name = L("PERIOD_THIS_MONTH"), value = "this_month" },
+            { name = L("PERIOD_LAST_30_DAYS"), value = "last_30_days" },
+        }
+        local selectedEntry = nil
+        for _, opt in ipairs(options) do
+            local entry = comboObj:CreateItemEntry(opt.name, function()
+                TRC.SetRankTimeframe(opt.value)
+            end)
+            comboObj:AddItem(entry)
+            if opt.value == TRC.selectedRankTimeframe then selectedEntry = entry end
+        end
+        if selectedEntry then comboObj:SelectItem(selectedEntry, false) end
+    end
+
+    pcall(TRC.RefreshSummaryLabels)
+end
 
 function TRC.SetRankTimeframe(timeframe)
     TRC.selectedRankTimeframe = timeframe
@@ -808,9 +874,9 @@ local function GetRankValue(guildId, data, rowIndex)
     local numTiers = (GuildLedger and GuildLedger.rankTiers and #GuildLedger.rankTiers) or 5
     local sortPrefix
     if tierIndex then
-        sortPrefix = string.format("%02d", (numTiers - tierIndex) + 1) -- tier 1 (Legend) -> en buyuk sayi
+        sortPrefix = string.format("%02d", (numTiers - tierIndex) + 1)
     else
-        sortPrefix = "00" -- rutbesiz -> en kucuk sayi, listenin dibine duser
+        sortPrefix = "00"
     end
     return sortPrefix .. "|" .. displayName .. "|" .. tostring(guildId)
 end
@@ -824,7 +890,7 @@ local function FormatRankValue(value)
 
     local tier, tierIndex = GetMemberRank(guildId, displayName)
     if not tier then
-        return "" -- rutbesi olmayan uyeler icin bos - "yok" yazisi yerine sessizce bos birak
+        return ""
     end
 
     local guildIndex = GuildIdToIndex(guildId)
@@ -849,15 +915,31 @@ local function TryAddColumn()
         TRC.savedVars.selectedTimeframe = "week"
     end
     if TRC.savedVars.enabled == nil then
-        TRC.savedVars.enabled = true -- eski kayitlarda alan yoksa varsayilan: acik
+        TRC.savedVars.enabled = true
     end
     if TRC.savedVars.rankColumnEnabled == nil then
         TRC.savedVars.rankColumnEnabled = true
     end
 
-    local rankColumn = LibGuildRoster:AddColumn({
+local function GetLastLoginValue(guildId, data, rowIndex)
+    local displayName = data.displayName or ""
+    local secs = GetSecsSinceLogoff(guildId, displayName)
+    if secs == nil then return "9999999999" end
+    return string.format("%010d", secs)
+end
+
+local function FormatLastLoginValue(rawValue)
+    local secs = tonumber(rawValue)
+    if not secs or secs >= 9999999999 then return "?" end
+    if secs <= 60 then
+        return "|c72FF80" .. (TiradilIWL10n and TiradilIWL10n.Get("NATIVE_TOOLTIP_ONLINE") or "Online") .. "|r"
+    end
+    return FormatRelativeTime(secs)
+end
+
+local rankColumn = LibGuildRoster:AddColumn({
         key = "TiradilRank",
-        width = 120,
+        width = 90,
         priority = 1,
         header = {
             align = TEXT_ALIGN_LEFT,
@@ -881,18 +963,42 @@ local function TryAddColumn()
             title = (TiradilIWL10n and TiradilIWL10n.Get("COL_LAST_CONTRIB")) or "Contribution",
             tooltip = false,
         },
-        disabled = not TRC.savedVars.enabled, -- Ayarlar panelindeki ac/kapa anahtari
+        disabled = not TRC.savedVars.enabled,
         row = {
             align = TEXT_ALIGN_LEFT,
             data = GetContributionValue,
             format = FormatContributionValue,
-            mouseEnabled = function() return true end, -- OnMouseEnter/Exit icin SART
+            mouseEnabled = function() return true end,
             OnMouseEnter = OnCellMouseEnter,
             OnMouseExit = OnCellMouseExit,
         },
     })
 
-    TRC.contributionColumn = column -- Ayarlar panelinden acip kapatabilmek icin sakla
+    TRC.contributionColumn = column
+
+    if TRC.savedVars.lastLoginColumnEnabled == nil then
+        TRC.savedVars.lastLoginColumnEnabled = true
+    end
+
+    local lastLoginColumn = LibGuildRoster:AddColumn({
+        key = "TiradilLastLogin",
+        width = 110,
+        priority = 1,
+        header = {
+            align = TEXT_ALIGN_LEFT,
+            title = (TiradilIWL10n and TiradilIWL10n.Get("COL_LAST_LOGIN")) or "Last Login",
+            tooltip = false,
+        },
+        disabled = not TRC.savedVars.lastLoginColumnEnabled,
+        row = {
+            align = TEXT_ALIGN_LEFT,
+            data = GetLastLoginValue,
+            format = FormatLastLoginValue,
+        },
+    })
+    TRC.lastLoginColumn = lastLoginColumn
+
+    pcall(TRC.RefreshColumnHeaders)
 
     if LibGuildRoster.OnRosterReady then
         LibGuildRoster:OnRosterReady(function()
@@ -902,6 +1008,23 @@ local function TryAddColumn()
     end
 end
 
+function TRC.RefreshColumnHeaders()
+    local L = TiradilIWL10n and TiradilIWL10n.Get or function(k) return k end
+
+    local function RefreshOne(column, key, titleKey, fallback)
+        if not (column and column.GetHeader) then return end
+        local header = column:GetHeader()
+        if not header then return end
+        local title = L(titleKey)
+        if not title or title == titleKey then title = fallback end
+        pcall(ZO_SortHeader_Initialize, header, title, key, ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+    end
+
+    RefreshOne(TRC.rankColumn, "TiradilRank", "COL_RANK", "Rank")
+    RefreshOne(TRC.contributionColumn, "TiradilContribution", "COL_LAST_CONTRIB", "Contribution")
+    RefreshOne(TRC.lastLoginColumn, "TiradilLastLogin", "COL_LAST_LOGIN", "Away")
+end
+
 function TRC.SetColumnEnabled(enabled)
     TRC.savedVars = TRC.savedVars or (TiradilRosterColumn_SavedVars or { selectedTimeframe = "week" })
     TRC.savedVars.enabled = enabled
@@ -909,6 +1032,15 @@ function TRC.SetColumnEnabled(enabled)
 
     if TRC.contributionColumn and TRC.contributionColumn.IsDisabled then
         TRC.contributionColumn:IsDisabled(not enabled)
+    end
+    if TiradilRosterColumnPeriodCombo then
+        TiradilRosterColumnPeriodCombo:SetHidden(not enabled)
+    end
+    if TiradilRosterColumnDonationSummary then
+        TiradilRosterColumnDonationSummary:SetHidden(not enabled)
+    end
+    if TiradilRosterColumnSellerSummary then
+        TiradilRosterColumnSellerSummary:SetHidden(not enabled)
     end
     if LibGuildRoster and LibGuildRoster.Refresh then
         LibGuildRoster:Refresh()
@@ -922,6 +1054,22 @@ function TRC.SetRankColumnEnabled(enabled)
 
     if TRC.rankColumn and TRC.rankColumn.IsDisabled then
         TRC.rankColumn:IsDisabled(not enabled)
+    end
+    if TiradilRosterColumnRankPeriodCombo then
+        TiradilRosterColumnRankPeriodCombo:SetHidden(not enabled)
+    end
+    if LibGuildRoster and LibGuildRoster.Refresh then
+        LibGuildRoster:Refresh()
+    end
+end
+
+function TRC.SetLastLoginColumnEnabled(enabled)
+    TRC.savedVars = TRC.savedVars or (TiradilRosterColumn_SavedVars or { selectedTimeframe = "week" })
+    TRC.savedVars.lastLoginColumnEnabled = enabled
+    TiradilRosterColumn_SavedVars = TRC.savedVars
+
+    if TRC.lastLoginColumn and TRC.lastLoginColumn.IsDisabled then
+        TRC.lastLoginColumn:IsDisabled(not enabled)
     end
     if LibGuildRoster and LibGuildRoster.Refresh then
         LibGuildRoster:Refresh()

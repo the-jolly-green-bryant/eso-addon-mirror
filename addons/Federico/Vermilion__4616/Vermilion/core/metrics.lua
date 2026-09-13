@@ -15,6 +15,11 @@ local log = Vermilion.Log.for_module("metrics")
 local SkillColors
 local DamageTypeColors
 
+local KEY_SHIELD = "shield"
+local DT_SHIELD  = -1
+M.KEY_SHIELD = KEY_SHIELD
+M.DT_SHIELD  = DT_SHIELD
+
 local CRIT_DMG, CRIT_DOT
 
 local function is_crit(e)
@@ -99,7 +104,13 @@ function M.ingest_shield_out(ev)
 end
 
 function M.eDPS(now_ms)  return damage_out_buf:sum(now_ms, "amount") / (W_MS / 1000)        end
-function M.ShDPS(now_ms) return shield_out_buf:sum(now_ms, "amount") / (W_SHIELD_MS / 1000) end
+local function pending_shield()
+  local P = Vermilion.Pipeline
+  if P and P.pending_amount then return P.pending_amount() end
+  return 0
+end
+
+function M.ShDPS(now_ms) return (shield_out_buf:sum(now_ms, "amount") + pending_shield()) / (W_SHIELD_MS / 1000) end
 function M.EOS(now_ms)   return M.eDPS(now_ms) + M.ShDPS(now_ms)                            end
 
 function M.crit_split(now_ms)
@@ -145,7 +156,8 @@ local function accumulate(now_ms, buckets)
     local amt = e.amount or 0
     if amt > 0 then
       local r = amt / wss
-      local g = SkillColors.group_of(e.ability_id)
+      local aid = e.attack_id or 0
+      local g = (aid > 0) and SkillColors.group_of(aid) or KEY_SHIELD
       buckets[g] = (buckets[g] or 0) + r
       total = total + r
     end
@@ -200,10 +212,12 @@ end
 
 local ab_amt = {}
 local ab_grp = {}
+local ab_abs = {}
 
 function M.eos_abilities_into(out, now_ms)
   for k in pairs(ab_amt) do ab_amt[k] = nil end
   for k in pairs(ab_grp) do ab_grp[k] = nil end
+  for k in pairs(ab_abs) do ab_abs[k] = nil end
   local ws    = W_MS / 1000
   local wss   = W_SHIELD_MS / 1000
   local total = 0
@@ -226,10 +240,11 @@ function M.eos_abilities_into(out, now_ms)
     local e   = shield_out_buf.entries[i]
     local amt = e.amount or 0
     if amt > 0 then
-      local id = e.ability_id or 0
+      local id = e.attack_id or 0
       local r  = amt / wss
       ab_amt[id] = (ab_amt[id] or 0) + r
-      if ab_grp[id] == nil then ab_grp[id] = SkillColors.group_of(id) end
+      ab_abs[id] = (ab_abs[id] or 0) + r
+      if ab_grp[id] == nil then ab_grp[id] = (id > 0) and SkillColors.group_of(id) or KEY_SHIELD end
       total = total + r
     end
   end
@@ -243,6 +258,7 @@ function M.eos_abilities_into(out, now_ms)
       local g = ab_grp[id] or "other"
       local c = SkillColors.group_color(g)
       slot.id = id; slot.share = amt / total; slot.key = g
+      slot.abs = (ab_abs[id] or 0) / total
       slot.r = c.r; slot.g = c.g; slot.b = c.b; slot.a = c.a
     end
     sort_shares_desc(out, n)
@@ -256,6 +272,7 @@ local dt_buckets = {}
 function M.dtype_groups_into(out, now_ms)
   for k in pairs(dt_buckets) do dt_buckets[k] = nil end
   local ws    = W_MS / 1000
+  local wss   = W_SHIELD_MS / 1000
   local total = 0
   damage_out_buf:trim(now_ms)
   for i = damage_out_buf.head, damage_out_buf.tail do
@@ -264,6 +281,17 @@ function M.dtype_groups_into(out, now_ms)
     if amt > 0 then
       local r  = amt / ws
       local dt = e.damage_type or 0
+      dt_buckets[dt] = (dt_buckets[dt] or 0) + r
+      total = total + r
+    end
+  end
+  shield_out_buf:trim(now_ms)
+  for i = shield_out_buf.head, shield_out_buf.tail do
+    local e   = shield_out_buf.entries[i]
+    local amt = e.amount or 0
+    if amt > 0 then
+      local r  = amt / wss
+      local dt = ((e.attack_id or 0) > 0) and (e.attack_dtype or 0) or DT_SHIELD
       dt_buckets[dt] = (dt_buckets[dt] or 0) + r
       total = total + r
     end
@@ -287,11 +315,14 @@ end
 
 local dta_amt = {}
 local dta_dt  = {}
+local dta_abs = {}
 
 function M.dtype_abilities_into(out, now_ms)
   for k in pairs(dta_amt) do dta_amt[k] = nil end
   for k in pairs(dta_dt)  do dta_dt[k]  = nil end
+  for k in pairs(dta_abs) do dta_abs[k] = nil end
   local ws    = W_MS / 1000
+  local wss   = W_SHIELD_MS / 1000
   local total = 0
   damage_out_buf:trim(now_ms)
   for i = damage_out_buf.head, damage_out_buf.tail do
@@ -305,6 +336,19 @@ function M.dtype_abilities_into(out, now_ms)
       total = total + r
     end
   end
+  shield_out_buf:trim(now_ms)
+  for i = shield_out_buf.head, shield_out_buf.tail do
+    local e   = shield_out_buf.entries[i]
+    local amt = e.amount or 0
+    if amt > 0 then
+      local id = e.attack_id or 0
+      local r  = amt / wss
+      dta_amt[id] = (dta_amt[id] or 0) + r
+      dta_abs[id] = (dta_abs[id] or 0) + r
+      if dta_dt[id] == nil then dta_dt[id] = (id > 0) and (e.attack_dtype or 0) or DT_SHIELD end
+      total = total + r
+    end
+  end
   local n = 0
   if total > 0 then
     for id, amt in pairs(dta_amt) do
@@ -314,7 +358,90 @@ function M.dtype_abilities_into(out, now_ms)
       local dt = dta_dt[id] or 0
       local c  = DamageTypeColors.lookup(dt)
       slot.id = id; slot.share = amt / total; slot.key = dt
+      slot.abs = (dta_abs[id] or 0) / total
       slot.r = c.r; slot.g = c.g; slot.b = c.b; slot.a = c.a
+    end
+    sort_shares_desc(out, n)
+  end
+  out.count = n
+  return n
+end
+
+local sh_amt = {}
+
+function M.shield_abilities_into(out, now_ms)
+  for k in pairs(sh_amt) do sh_amt[k] = nil end
+  local total = 0
+  shield_out_buf:trim(now_ms)
+  for i = shield_out_buf.head, shield_out_buf.tail do
+    local e   = shield_out_buf.entries[i]
+    local amt = e.amount or 0
+    if amt > 0 then
+      local id = e.ability_id or 0
+      sh_amt[id] = (sh_amt[id] or 0) + amt
+      total = total + amt
+    end
+  end
+  local n = 0
+  if total > 0 then
+    local c = SkillColors.group_color(KEY_SHIELD)
+    for id, amt in pairs(sh_amt) do
+      n = n + 1
+      local slot = out[n]
+      if not slot then slot = {}; out[n] = slot end
+      slot.id = id; slot.share = amt / total; slot.key = KEY_SHIELD; slot.abs = amt / total
+      slot.r = c.r; slot.g = c.g; slot.b = c.b; slot.a = c.a
+    end
+    sort_shares_desc(out, n)
+  end
+  out.count = n
+  return n
+end
+
+local tg_amt, tg_abs, tg_name, tg_type = {}, {}, {}, {}
+
+function M.targets_into(out, now_ms)
+  for k in pairs(tg_amt)  do tg_amt[k]  = nil end
+  for k in pairs(tg_abs)  do tg_abs[k]  = nil end
+  for k in pairs(tg_name) do tg_name[k] = nil end
+  for k in pairs(tg_type) do tg_type[k] = nil end
+  local ws    = W_MS / 1000
+  local wss   = W_SHIELD_MS / 1000
+  local total = 0
+  damage_out_buf:trim(now_ms)
+  for i = damage_out_buf.head, damage_out_buf.tail do
+    local e   = damage_out_buf.entries[i]
+    local amt = e.amount or 0
+    if amt > 0 then
+      local id = e.target_unit_id or 0
+      local r  = amt / ws
+      tg_amt[id] = (tg_amt[id] or 0) + r
+      tg_name[id] = e.target_name
+      tg_type[id] = e.target_type
+      total = total + r
+    end
+  end
+  shield_out_buf:trim(now_ms)
+  for i = shield_out_buf.head, shield_out_buf.tail do
+    local e   = shield_out_buf.entries[i]
+    local amt = e.amount or 0
+    if amt > 0 then
+      local id = e.target_unit_id or 0
+      local r  = amt / wss
+      tg_amt[id] = (tg_amt[id] or 0) + r
+      tg_abs[id] = (tg_abs[id] or 0) + r
+      if tg_name[id] == nil then tg_name[id] = e.target_name; tg_type[id] = e.target_type end
+      total = total + r
+    end
+  end
+  local n = 0
+  if total > 0 then
+    for id, amt in pairs(tg_amt) do
+      n = n + 1
+      local slot = out[n]
+      if not slot then slot = {}; out[n] = slot end
+      slot.id = id; slot.name = tg_name[id] or ""; slot.ttype = tg_type[id] or 0
+      slot.share = amt / total; slot.abs = (tg_abs[id] or 0) / total
     end
     sort_shares_desc(out, n)
   end
@@ -325,6 +452,7 @@ end
 function M.reset()
   log:info("reset: damage=", damage_out_buf:size(), "shield=", shield_out_buf:size(),
            "pool_in_use=", event_pool:in_use())
+  if Vermilion.Pipeline and Vermilion.Pipeline.drop_pending then Vermilion.Pipeline.drop_pending() end
   damage_out_buf:reset()
   shield_out_buf:reset()
 end

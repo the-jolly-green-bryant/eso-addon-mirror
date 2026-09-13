@@ -444,7 +444,15 @@ function addon:InitSettings()
 		)
 	end
 
-	-- Diagnostics last: locked, and of no use in normal play.
+	settings:AddSetting({
+		type = LibHarvensAddonSettings.ST_BUTTON,
+		label = GetString(SI_PBSMINIMAP_PIN_DIAGNOSTIC),
+		buttonText = GetString(SI_PBSMINIMAP_PIN_DIAGNOSTIC),
+		tooltip = GetString(SI_PBSMINIMAP_PIN_DIAGNOSTIC_TOOLTIP),
+		clickHandler = function() self:PrintLitePlayerPinDiagnostic() end,
+	})
+
+	-- Continuous verbose logging remains locked; the button above reports only the last HUD sample.
 	settings:AddSetting(
 		{
 			type = LibHarvensAddonSettings.ST_CHECKBOX,
