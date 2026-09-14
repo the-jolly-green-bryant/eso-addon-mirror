@@ -19,6 +19,9 @@ L.SHOW_BAR_TT = "给所有消耗征兆的技能槽上色。0–1 层隐藏。不
 L.COMBAT_ONLY = "仅战斗中显示"
 L.COMBAT_ONLY_TT = "开＝脱战隐藏图标、数字和槽上色。菜单预览仍可用。"
 
+L.COLOR1 = "1 层颜色"
+L.COLOR1_TT = "图标和数字。默认绿。"
+
 L.COLOR2 = "2 层颜色"
 L.COLOR2_TT = "图标、数字和技能槽。默认黄。"
 

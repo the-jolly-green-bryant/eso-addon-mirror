@@ -243,6 +243,11 @@ local function createOptions()
             end,
             setFunc = function(value)
                 archdruidTracker.savedVariables.trackVuln = value
+				if not value then
+                    unRegisterAlertsVuln()
+                else
+                    registerAlertsVuln()
+                end
             end,
             default = archdruidTracker.defaults.trackVuln,
         },
@@ -297,7 +302,7 @@ local function onAddOnLoaded(event, name)
     EVENT_MANAGER:UnregisterForEvent(appName, EVENT_ADD_ON_LOADED)
 
 	--notify that add-on has been loaded
-	zo_callLater(function() printMessageTest("add-on successfully loaded") end, 500)
+	zo_callLater(function() printMessageTest("add-on loaded") end, 500)
 
 	--load saved variables
     archdruidTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("adtAddonVars", 1, "Settings", archdruidTracker.defaults, GetUnitName("player"))

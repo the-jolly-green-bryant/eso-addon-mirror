@@ -144,12 +144,10 @@ local function computeEncounterDisplayName(encounter, unitNames)
 end
 
 ---@class Scribe
----@field pushedToStorage boolean Whether the data has been pushed to storage
 ---@field instance InstanceStorage The current instance data (always compressed format)
 ---@field decodedAbilityInfo table<number, AbilityInfo> Decoded cache for active instance
 ---@field registry EncounterRegistry|nil Live ability/name registry for the active instance (v17+)
 local scribe = {
-    pushedToStorage = false,
     instance = {
         zone = "",
         isOverland = true,
@@ -185,11 +183,6 @@ local pendingEncounters = {}
 --- is absorbed here instead of incorrectly matching a nearby recorded encounter.
 ---@type DiscardedEncounterSink[]
 local discardedSinks = {}
-
--- Serializes finalize pipelines. Overlapping finalizes share the instance's
--- append-only registry, and interleaved _instanceData encodes could persist a
--- registry snapshot missing entries a just-stored encounter references.
-local finalizeMutex = LibEffect.Semaphore.New(1)
 
 ---Compute time overlap between two time ranges
 ---@param startA number Start of range A (seconds)
@@ -463,7 +456,6 @@ function scribe:Initialize()
         local lastInstance = history and history[#history]
         if lastInstance and lastInstance.left == false and not migrationPending(lastInstance) then
             self.instance = lastInstance
-            self.pushedToStorage = true
             -- Decode abilityInfo into cache (yields internally)
             local result = BattleScrolls.storage.DecodeInstanceFieldsAsync(lastInstance):Await()
             self.decodedAbilityInfo = result[1]
@@ -534,7 +526,6 @@ end
 ---Resets the scribe for a new instance
 function scribe:ResetForNewInstance()
     self.instance.left = true
-    self.pushedToStorage = false
     -- Reset decoded cache
     self.decodedAbilityInfo = {}
     self.registry = BattleScrolls.binaryStorage.newRegistry()
@@ -630,7 +621,6 @@ function scribe:ImportEncounterFromStateAsync()
     local capturedLocation = self.location
     ---@type BattleScrollsState|nil
     local capturedState = BattleScrolls.state:Snapshot()
-    local capturedPushedToStorage = self.pushedToStorage
 
     ---@class RawToDisplayEntry
     ---@field displayName string The display name for this unit
@@ -675,7 +665,10 @@ function scribe:ImportEncounterFromStateAsync()
     }
     table.insert(pendingEncounters, pendingEntry)
 
-    return finalizeMutex:WithPermit(LibEffect.Async(function()
+    -- Under the storage write mutex (see its declaration): serializes
+    -- finalizes against each other, the migration, the cleanup task and the
+    -- orphan prune, from the setup intern through the history push
+    return BattleScrolls.storage.writeMutex:WithPermit(LibEffect.Async(function()
         -- Finalize active effects on the state snapshot (moderate: up to ~600 effects)
         -- Pass lastDamageDoneMs so effect uptimes are consistent with fight duration
         BattleScrolls.effects.finalize(capturedState, capturedState.lastDamageDoneMs)
@@ -956,11 +949,12 @@ function scribe:ImportEncounterFromStateAsync()
         -- Remove pending entry now that the encounter is stored and shared data transferred
         removePendingEncounter(pendingEntry)
 
-        if not capturedPushedToStorage then
+        -- First encounter of the instance, or the instance was deleted from
+        -- the journal while this encounter was encoding: the fight happened,
+        -- so it re-enters the history as its own entry instead of vanishing
+        -- with the removed table
+        if not BattleScrolls.storage:IsInHistory(instance) then
             BattleScrolls.storage:PushInstance(instance)
-            if instance == self.instance then
-                self.pushedToStorage = true
-            end
         end
 
         BattleScrolls.gc:RequestGC(2)

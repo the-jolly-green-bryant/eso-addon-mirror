@@ -216,10 +216,8 @@ local function createOptions()
                 mechAcuityTracker.savedVariables.trackMech = value
                 if not value then
                     unRegisterAlerts()
-                    matrack:SetHidden(true)
                 else
                     registerAlerts()
-                    matrack:SetHidden(false)
                 end
             end,
             default = mechAcuityTracker.defaults.trackMech,

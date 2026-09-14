@@ -19,6 +19,9 @@ L.SHOW_BAR_TT = "Overlay auf jedem Skill, der Crux verbraucht. Bei 0–1 verstec
 L.COMBAT_ONLY = "Nur im Kampf"
 L.COMBAT_ONLY_TT = "An = Symbole, Ziffer und Balkenfarbe außerhalb des Kampfs aus. Vorschau im Menü bleibt."
 
+L.COLOR1 = "Farbe bei 1 Crux"
+L.COLOR1_TT = "Für Symbole und Ziffer. Standard grün."
+
 L.COLOR2 = "Farbe bei 2 Crux"
 L.COLOR2_TT = "Für Symbole, Ziffer und Balken. Standard gelb."
 

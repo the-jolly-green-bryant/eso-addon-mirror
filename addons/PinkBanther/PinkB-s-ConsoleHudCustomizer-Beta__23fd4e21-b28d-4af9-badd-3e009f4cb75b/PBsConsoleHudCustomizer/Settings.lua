@@ -199,6 +199,45 @@ function addon:InitSettings()
 		}
 	)
 
+	local borderItems, borderByKey = {}, {}
+	for _, key in ipairs(self.BORDER_COLOURS) do
+		local item = { name = GetString(_G["SI_PBSCHC_BORDER_" .. key:upper()]), data = key }
+		borderItems[#borderItems + 1] = item
+		borderByKey[key] = item
+	end
+	settings:AddSetting({
+		type = LibHarvensAddonSettings.ST_DROPDOWN,
+		label = GetString(SI_PBSCHC_BORDER_COLOUR),
+		tooltip = GetString(SI_PBSCHC_BORDER_COLOUR_TOOLTIP),
+		items = borderItems,
+		default = borderByKey.black.name,
+		getFunction = function() return borderByKey[self:PlainBorderColour()].name end,
+		setFunction = function(combobox, name, item)
+			self:SetPlainBorderColour(item.data)
+			self:Refresh()
+		end,
+	})
+
+	local alignItems, alignByKey = {}, {}
+	for _, key in ipairs(self.RESOURCE_TEXT_ALIGNMENTS) do
+		local item = { name = GetString(_G["SI_PBSCHC_RESOURCE_ALIGN_" .. key:upper()]), data = key }
+		alignItems[#alignItems + 1] = item
+		alignByKey[key] = item
+	end
+	settings:AddSetting({
+		type = LibHarvensAddonSettings.ST_DROPDOWN,
+		label = GetString(SI_PBSCHC_RESOURCE_ALIGN),
+		tooltip = GetString(SI_PBSCHC_RESOURCE_ALIGN_TOOLTIP),
+		items = alignItems,
+		default = alignByKey.left.name,
+		getFunction = function() return alignByKey[self:ResourceTextAlignment()].name end,
+		setFunction = function(combobox, name, item)
+			self:SetResourceTextAlignment(item.data)
+			self:Refresh()
+		end,
+		disable = function() return not self:BarsAreMuraHige() end,
+	})
+
 	-- ---- One section per bar, all three the same three rows --------------------------------
 	for _, bar in ipairs(self.elements) do
 		local barName = GetString(_G[bar.stringId])

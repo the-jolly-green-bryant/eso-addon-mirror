@@ -7,7 +7,7 @@
 
 ## Title: OSI_Icon_Pack_for_guilds_MEPTBbIE_and_KPYTbIE_CKEJIETbI.
 ## Author: |c39dfec@MËPTB|r & |cfa6efa@BOCKPECJIA|r
-## Version: 1.12
+## Version: 1.14
 ## APIVersion: 101049
 ## DependsOn: OdySupportIcons LibAddonMenu-2.0>=43 LibCustomMenu
 ## OptionalDependsOn: LibCustomIcons

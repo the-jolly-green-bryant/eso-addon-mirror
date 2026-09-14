@@ -19,6 +19,9 @@ L.SHOW_BAR_TT = "Calque sur chaque compétence qui dépense du Crux. Caché à 0
 L.COMBAT_ONLY = "Uniquement en combat"
 L.COMBAT_ONLY_TT = "On = icônes, chiffre et teinte hors combat. L’aperçu du menu reste."
 
+L.COLOR1 = "Couleur à 1 Crux"
+L.COLOR1_TT = "Icônes et chiffre. Vert par défaut."
+
 L.COLOR2 = "Couleur à 2 Crux"
 L.COLOR2_TT = "Icônes, chiffre et barre. Jaune par défaut."
 

@@ -182,10 +182,8 @@ local function createOptions()
                 rallyingCryTracker.savedVariables.trackRally = value
                 if not value then
                     unRegisterAlerts()
-                    rctrack:SetHidden(true)
                 else
                     registerAlerts()
-                    rctrack:SetHidden(false)
                 end
             end,
             default = rallyingCryTracker.defaults.trackRally,
@@ -241,7 +239,7 @@ local function onAddOnLoaded(event, name)
     EVENT_MANAGER:UnregisterForEvent(appName, EVENT_ADD_ON_LOADED)
 
 	--notify that add-on has been loaded
-	zo_callLater(function() printMessageTest("add-on successfully loaded") end, 500)
+	zo_callLater(function() printMessageTest("add-on loaded") end, 500)
 
 	--load saved variables
     rallyingCryTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("rctAddonVars", 1, "Settings", rallyingCryTracker.defaults, GetUnitName("player"))

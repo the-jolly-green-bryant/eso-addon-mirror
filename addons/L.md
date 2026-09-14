@@ -102,11 +102,11 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [LibCraftText](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ziggr/LibCraftText__2184) | ziggr | PC / Mac | 5.3.1 |
 | [LibCrypto](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/akamatsu02/LibCrypto__4010) | akamatsu02 | PC / Mac | 1.1 |
 | [LibCustomDialog](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MrPikPik/LibCustomDialog__2708) | MrPikPik | PC / Mac | 0.3 |
-| [LibCustomIcons](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/m00nyONE/LibCustomIcons__4161) | m00nyONE | PC / Mac | 2026-09-06 |
+| [LibCustomIcons](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/m00nyONE/LibCustomIcons__4161) | m00nyONE | PC / Mac | 2026-09-14 |
 | [LibCustomMenu](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/mYoda01/LibCustomMenu__fff7f7e3-b518-4545-9e96-a4f6c2a28dea) | mYoda01 | Console | — |
 | [LibCustomMenu](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/votan/LibCustomMenu__1146) | votan | PC / Mac | 7.3.0 |
 | [LibCustomNames](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/m00nyONE/LibCustomNames__5eaa0d91-47f8-4c5e-8673-db3ab518a752) | m00nyONE | Console | — |
-| [LibCustomNames](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/m00nyONE/LibCustomNames__4155) | m00nyONE | PC / Mac | 2026-09-06 |
+| [LibCustomNames](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/m00nyONE/LibCustomNames__4155) | m00nyONE | PC / Mac | 2026-09-14 |
 | [LibDailyReset](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/LibDailyReset__4424) | atharti | PC / Mac | 1.9 |
 | [LibDataEncode](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Solinur/LibDataEncode__3980) | Solinur | PC / Mac | 2 |
 | [LibDataPacker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/imPDA/LibDataPacker__4082) | imPDA | PC / Mac | v5 |
@@ -213,6 +213,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [LibNeuralNetworks - Machine Learning](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Drako-Ei/LibNeuralNetworks---Machine-Learning__3881) | Drako-Ei | PC / Mac | 1.0.0 |
 | [LibNotification](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sirinsidiator/LibNotification__1224) |  sirinsidiator | PC / Mac | 1.1.0 |
 | [LibNotification](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sirinsidiator/LibNotification__68111c3f-410f-4318-b9ec-582b8c68c374) | sirinsidiator | Console | — |
+| [LibNotify](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/codeWarrior82/LibNotify__2c6301b6-2c09-4282-9496-84ffcb7577ce) | codeWarrior82 | Console | — |
 | [LibObserve](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/akamatsu02/LibObserve__3922) | akamatsu02 | PC / Mac | 1.0 |
 | [LibPanicida](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Panicida/LibPanicida__4349) | Panicida | PC / Mac | 2.0.0 |
 | [LibPhinixFunctions](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Phinix/LibPhinixFunctions__2298) | Phinix | PC / Mac | 16 |
@@ -336,7 +337,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [LootWall](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vicodine/LootWall__1010) | Vicodine | PC / Mac | 0.7 |
 | [LootWall Ultimate 2018](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/redgabber/LootWall-Ultimate-2018__1988) | redgabber | PC / Mac | 1.0.8 |
 | [Lore Book Locations](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni42/Lore-Book-Locations__ca0d62e7-58ab-4ea4-9729-f139cb28a64d) | Shinni42 | Console | — |
-| [LoreBook Locations (3D, Compass, Map Pins)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni/LoreBook-Locations-3D-Compass-Map-Pins__4756) | Shinni | PC / Mac | 1.0.52 |
+| [LoreBook Locations (3D, Compass, Map Pins)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni/LoreBook-Locations-3D-Compass-Map-Pins__4756) | Shinni | PC / Mac | 1.0.54 |
 | [LoreBooks](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kyoma/LoreBooks__288) | Kyoma | PC / Mac | 107 |
 | [Lorebooks](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Sharlikran/Lorebooks__d324f223-1cd9-40d2-8e37-8cf302dde557) | Sharlikran | Console | — |
 | [LorebooksColoredLibrary](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tim99/LorebooksColoredLibrary__3168) | tim99 | PC / Mac | 4.1 |

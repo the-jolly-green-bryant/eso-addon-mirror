@@ -248,10 +248,8 @@ local function createOptions()
                 warmaskTracker.savedVariables.trackWarmask = value
                 if not value then
                     unRegisterAlerts()
-                    wmtAddonText:SetHidden(true)
                 else
                     registerAlerts()
-                    wmtAddonText:SetHidden(false)
                 end
             end,
             default = warmaskTracker.defaults.trackWarmask,
@@ -293,11 +291,6 @@ local function createOptions()
             end,
             setFunc = function(value)
                 warmaskTracker.savedVariables.trackWho = value
-                if not value then
-                    wmtAddonTextW:SetHidden(true)
-                else
-                    wmtAddonTextW:SetHidden(false)
-                end
             end,
             default = warmaskTracker.defaults.trackWho,
         },
@@ -338,11 +331,6 @@ local function createOptions()
             end,
             setFunc = function(value)
                 warmaskTracker.savedVariables.trackSelf = value
-                if not value then
-                    wmtAddonTextP:SetHidden(true)
-                else
-                    wmtAddonTextP:SetHidden(false)
-                end
             end,
             default = warmaskTracker.defaults.trackSelf,
         },
@@ -438,7 +426,7 @@ local function onAddOnLoaded(event, name)
     EVENT_MANAGER:UnregisterForEvent(appName, EVENT_ADD_ON_LOADED)
 
 	--notify that add-on has been loaded
-	zo_callLater(function() printMessageTest("add-on successfully loaded") end, 500)
+	zo_callLater(function() printMessageTest("add-on loaded") end, 500)
 
 	--load saved variables
     warmaskTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("wmtAddonVars", 1, "Settings", warmaskTracker.defaults, GetUnitName("player"))

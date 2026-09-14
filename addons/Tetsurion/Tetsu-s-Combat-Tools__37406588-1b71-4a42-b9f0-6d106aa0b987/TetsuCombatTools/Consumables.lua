@@ -37,10 +37,36 @@ local potMsgUntil = 0
 local foodMsgKind = "end"
 
 local SOUND_KEYS = {
-    duel = { SOUNDS_KEY = "DUEL_START", fallback = "Duel_Start" },
-    alert = { SOUNDS_KEY = "GENERAL_ALERT_ERROR", fallback = "General_Alert_Error" },
-    notify = { SOUNDS_KEY = "NEW_NOTIFICATION", fallback = "New_Notification" },
-    discover = { SOUNDS_KEY = "OBJECTIVE_DISCOVERED", fallback = "Objective_Discovered" },
+    duel     = { key = "DUEL_START",                      fb = "Duel_Start" },
+    alert    = { key = "GENERAL_ALERT_ERROR",             fb = "General_Alert_Error" },
+    notify   = { key = "NEW_NOTIFICATION",                fb = "New_Notification" },
+    discover = { key = "OBJECTIVE_DISCOVERED",            fb = "Objective_Discovered" },
+    kill     = { key = "DEATH_RECAP_KILLING_BLOW_SHOWN",  fb = "Death_Recap_Killing_Blow_Shown" },
+    rune     = { key = "ENCHANTING_POTENCY_RUNE_PLACED",  fb = "Enchanting_Potency_Rune_Placed" },
+    glyph    = { key = "ENCHANTING_WEAPON_GLYPH_REMOVED", fb = "Enchanting_Weapon_Glyph_Removed" },
+    mail     = { key = "NEW_MAIL",                        fb = "New_Mail" },
+    lock     = { key = "LOCKPICKING_SUCCESS",             fb = "Lockpicking_Success" },
+    tick     = { key = "COUNTDOWN_TICK",                  fb = "Countdown_Tick" },
+    bgmin    = { key = "BATTLEGROUND_ONE_MINUTE_WARNING", fb = "Battleground_One_Minute_Warning" },
+    bggo     = { key = "BATTLEGROUND_COUNTDOWN_FINISH",   fb = "Battleground_Countdown_Finish" },
+    trialok  = { key = "RAID_TRIAL_COMPLETED",            fb = "Raid_Trial_Completed" },
+    trialno  = { key = "RAID_TRIAL_FAILED",               fb = "Raid_Trial_Failed" },
+    achieve  = { key = "ACHIEVEMENT_AWARDED",             fb = "Achievement_Awarded" },
+    qdone    = { key = "QUEST_COMPLETED",                 fb = "Quest_Completed" },
+    qacc     = { key = "QUEST_ACCEPTED",                  fb = "Quest_Accepted" },
+    champ    = { key = "CHAMPION_POINTS_COMMITTED",       fb = "Champion_Points_Committed" },
+    coll     = { key = "COLLECTIBLE_UNLOCKED",            fb = "Collectible_Unlocked" },
+    book     = { key = "BOOK_ACQUIRED",                   fb = "Book_Acquired" },
+    ess      = { key = "ENCHANTING_ESSENCE_RUNE_PLACED",  fb = "Enchanting_Essence_Rune_Placed" },
+    asp      = { key = "ENCHANTING_ASPECT_RUNE_PLACED",   fb = "Enchanting_Aspect_Rune_Placed" },
+    alc      = { key = "ALCHEMY_SOLVENT_PLACED",          fb = "Alchemy_Solvent_Placed" },
+    friend   = { key = "FRIEND_INVITE_RECEIVED",          fb = "Friend_Invite_Received" },
+    gjoin    = { key = "GROUP_JOIN",                      fb = "Group_Join" },
+    kos      = { key = "JUSTICE_NOW_KOS",                 fb = "Justice_Now_KOS" },
+    lbreak   = { key = "LOCKPICKING_BREAK",               fb = "Lockpicking_Break" },
+    fanfare  = { key = "LEVEL_UP_REWARD_FANFARE",         fb = "Level_Up_Reward_Fanfare" },
+    medal    = { key = "BATTLEGROUND_MEDAL_RECEIVED",     fb = "Battleground_Medal_Received" },
+    spt      = { key = "SKILL_POINT_GAINED",              fb = "Skill_Point_Gained" },
 }
 
 local PREVIEW_SEC = 8
@@ -554,16 +580,30 @@ end
 
 local function PlayEndSound()
     local v = Vars()
-    local key = v and v.consEndSoundId or "alert"
-    local spec = SOUND_KEYS[key] or SOUND_KEYS.alert
-    local played = false
-    if SOUNDS and spec.SOUNDS_KEY and SOUNDS[spec.SOUNDS_KEY] then
-        played = pcall(PlaySound, SOUNDS[spec.SOUNDS_KEY])
+    if not v then return end
+    local vol = tonumber(v.consEndSoundVolume)
+    if vol == nil then vol = 2 end
+    if vol < 1 then return end
+    if vol > 5 then vol = 5 end
+    local id = v.consEndSoundId or "alert"
+    if id == "ready" or id == "level" or id == "skill" or id == "abil"
+        or id == "quest" or id == "sky" or id == "map" or id == "kick" then
+        id = "alert"
+        v.consEndSoundId = "alert"
     end
-    if not played and spec.fallback and PlaySound then
-        pcall(PlaySound, spec.fallback)
+    local spec = SOUND_KEYS[id] or SOUND_KEYS.alert
+    local payload = nil
+    if SOUNDS and spec.key and SOUNDS[spec.key] then
+        payload = SOUNDS[spec.key]
+    elseif spec.fb then
+        payload = spec.fb
+    end
+    if not payload or not PlaySound then return end
+    for _ = 1, vol do
+        pcall(PlaySound, payload)
     end
 end
+T.PlayConsEndSound = PlayEndSound
 
 local function ShowEndMsg(kind)
     if not PreviewLive() and not InInstance() then return end

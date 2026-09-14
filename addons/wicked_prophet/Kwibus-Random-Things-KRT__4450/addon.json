@@ -22,7 +22,7 @@
     "KwibusRandomThings"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4450/",
-  "fingerprint": "553d3e5880f32181d66c66841c223cdee6ce0340cddeb05f7feb8f4f5ec7d79a",
+  "fingerprint": "ca48c6a196e7e77526f9bb1531756869d9a055502dbb274406f98fb1c853a0e0",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw15486.png",
     "https://cdn-eso.mmoui.com/preview/pvw15487.png",
@@ -39,11 +39,11 @@
   "source_id": "4450",
   "source_url": "https://www.esoui.com/downloads/info4450-KwibusRandomThingsKRT.html",
   "stats": {
-    "downloads": 320,
+    "downloads": 365,
     "favorites": 3,
-    "monthly_downloads": 98
+    "monthly_downloads": 49
   },
   "title": "Kwibus Random Things (KRT)",
-  "updated_at": 1786805734000,
-  "version": "1.3.0"
+  "updated_at": 1789334576000,
+  "version": "1.3.2"
 }

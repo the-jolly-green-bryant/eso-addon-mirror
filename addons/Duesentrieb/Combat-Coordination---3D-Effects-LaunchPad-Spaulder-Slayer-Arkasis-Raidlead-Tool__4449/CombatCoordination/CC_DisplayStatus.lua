@@ -1,0 +1,270 @@
+local CC = CombatCoordination
+
+----------------------------------------------------------------------------------------------------
+-- MODULE VARS AND SVARS
+----------------------------------------------------------------------------------------------------
+local Module = {
+    name = "DisplayStatus",
+    Parent = nil,
+    Label = nil,
+    Icon = nil,
+    Background = nil,
+    Fragment = nil,
+
+    TimelineScale = nil,
+    AnimScaleUp = nil,
+    AnimScaleDown = nil,
+
+    isAnimationActive = false,
+
+    Default = {
+        offsetX = nil,
+        offsetY = nil,
+        width = 30,
+        height = 30,
+
+        animationMs = 500,
+
+        enableStatus = true,
+        statusScale = 1.0,
+        isVisible = true,
+    },
+    ---@type table|any
+    SV = {},
+}
+
+----------------------------------------------------------------------------------------------------
+-- CREATE UI ELEMENTS
+----------------------------------------------------------------------------------------------------
+function Module:Create()
+    if self.Parent then return end
+
+    if not self.SV.offsetX or not self.SV.offsetY then
+        self.SV.offsetX = 0
+        self.SV.offsetY = 0
+    end
+
+    local function HandleMouseUp(control, button, upInside, ctrl, alt, shift, command)
+        if button == MOUSE_BUTTON_INDEX_LEFT and upInside then
+
+            local deltaX = math.abs(self.SV.offsetX - self.Parent:GetLeft())
+            local deltaY = math.abs(self.SV.offsetY - self.Parent:GetTop())
+
+            if math.max(deltaX, deltaY) <= 1 then
+                self:PlayAnimation(1.5)
+
+                if not CC.DisplayPanel.SV.isVisible then
+                    CC.DisplayPanel:Toggle()
+                end
+            end
+        end
+    end
+
+    self.Parent = WINDOW_MANAGER:CreateTopLevelWindow("CC_DisplayStatus_Parent")
+    self.Parent:SetDimensions(self.SV.width, self.SV.height)
+    self.Parent:SetScale(self.SV.statusScale)
+    self.Parent:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, self.SV.offsetX or 0, self.SV.offsetY or 0)
+    self.Parent:SetClampedToScreen(true)
+    self.Parent:SetMouseEnabled(true)
+    self.Parent:SetMovable(true)
+    self.Parent:SetHidden(true)
+    self.Parent:SetDrawTier(DT_HIGH)
+    self.Parent:SetHandler("OnMoveStop", function() self:OnMoveStop() end)
+    self.Parent:SetHandler("OnMouseUp", HandleMouseUp)
+
+    self.Label = WINDOW_MANAGER:CreateControl("CC_DisplayStatus_Label", self.Parent, CT_LABEL)
+    self.Label:SetAnchor(CENTER, self.Parent, CENTER, 0, 0)
+    self.Label:SetFont("$(BOLD_FONT)|20|soft-shadow-thick")
+    self.Label:SetColor(1, 1, 0, 1)
+    self.Label:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    self.Label:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    self.Label:SetText("CC")
+
+    self.Background = WINDOW_MANAGER:CreateControl("CC_DisplayStatus_Background", self.Parent, CT_BACKDROP)
+    self.Background:SetAnchorFill()
+    self.Background:SetPixelRoundingEnabled(true)
+    self.Background:SetCenterColor(0, 0, 0, 0.75)
+    self.Background:SetEdgeColor(0.5, 0.5, 0, 1)
+    self.Background:SetEdgeTexture("", 1, 1, 2)
+
+    -- THX ExoY FOR TEACHING ME THIS
+    self.Fragment = ZO_HUDFadeSceneFragment:New(self.Parent)
+end
+
+----------------------------------------------------------------------------------------------------
+-- SHOW / HIDE / TOGGLE
+----------------------------------------------------------------------------------------------------
+function Module:Show()
+    if not self.Parent then self:Create() end
+
+    self.SV.isVisible = true
+    self.Parent:SetHidden(false)
+
+    if self.Fragment then
+        if not HUD_SCENE:HasFragment(self.Fragment) then
+            HUD_SCENE:AddFragment(self.Fragment)
+        end
+        if not HUD_UI_SCENE:HasFragment(self.Fragment) then
+            HUD_UI_SCENE:AddFragment(self.Fragment)
+        end
+    end
+end
+
+function Module:Hide()
+    if not self.Parent then return end
+
+    self.SV.isVisible = false
+        self.Parent:SetHidden(true)
+
+    if self.Fragment then
+        if HUD_SCENE:HasFragment(self.Fragment) then
+            HUD_SCENE:RemoveFragment(self.Fragment)
+        end
+        if HUD_UI_SCENE:HasFragment(self.Fragment) then
+            HUD_UI_SCENE:RemoveFragment(self.Fragment)
+        end
+    end
+end
+
+function Module:Toggle()
+    if not CC.SV.enableAddon or not self.SV.enableStatus then
+        d(CC.CHAT .. " |cFF0000Status icon is disabled.|r")
+        return
+    end
+
+    if self.SV.isVisible then
+        self:Hide()
+    else
+        self:Show()
+    end
+end
+
+----------------------------------------------------------------------------------------------------
+-- CUSTOM ENABLE
+----------------------------------------------------------------------------------------------------
+function Module:CustomEnable()
+    if not self.Parent then self:Create() end
+
+    if not CC.SV.enableAddon or not self.SV.enableStatus then
+        self:CustomDisable()
+        return
+    end
+
+    if self.SV.isVisible then
+        self:Show()
+    else
+        self:Hide()
+    end
+end
+
+----------------------------------------------------------------------------------------------------
+-- CUSTOM DISABLE
+----------------------------------------------------------------------------------------------------
+function Module:CustomDisable()
+    self:Hide()
+end
+
+----------------------------------------------------------------------------------------------------
+-- ON MOVE STOP
+----------------------------------------------------------------------------------------------------
+function Module:OnMoveStop()
+    zo_callLater(function()
+        if not self.Parent then return end
+        self.SV.offsetX = self.Parent:GetLeft()
+        self.SV.offsetY = self.Parent:GetTop()
+
+        self.Parent:ClearAnchors()
+        self.Parent:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, self.SV.offsetX, self.SV.offsetY)
+    end, 100)
+end
+
+----------------------------------------------------------------------------------------------------
+-- ANIMATION
+----------------------------------------------------------------------------------------------------
+function Module:PlayAnimation(endScale)
+    if not self.Parent then return end
+
+    local animationMs = self.SV.animationMs
+    local durationGrow =  math.floor(animationMs / 3)
+    local durationShrink = animationMs - durationGrow
+    endScale = math.max(1, endScale or 1.5)
+
+    -- CREATE TIMELINE AND ANIMATION IF NOT YET CREATE
+    if not self.TimelineScale then
+        self.TimelineScale = ANIMATION_MANAGER:CreateTimeline()
+
+        self.AnimScaleUp = self.TimelineScale:InsertAnimation(ANIMATION_SCALE, self.Label, 0)
+        self.AnimScaleUp:SetEasingFunction(ZO_LinearEase)
+
+        self.AnimScaleDown = self.TimelineScale:InsertAnimation(ANIMATION_SCALE, self.Label, 0)
+        self.AnimScaleDown:SetEasingFunction(ZO_LinearEase)
+
+        -- RESET ON STOP
+        self.TimelineScale:SetHandler('OnStop', function()
+            self.Label:SetScale(1.0)
+        end)
+    end
+
+    if self.TimelineScale:IsPlaying() then
+        self.TimelineScale:Stop()
+    end
+
+    -- SET NEW VALS
+    self.AnimScaleUp:SetScaleValues(1.0, endScale)
+    self.AnimScaleUp:SetDuration(durationGrow)
+
+    self.AnimScaleDown:SetScaleValues(endScale, 1.0)
+    self.AnimScaleDown:SetDuration(durationShrink)
+    self.TimelineScale:SetAnimationOffset(self.AnimScaleDown, durationGrow)
+
+    self.TimelineScale:PlayFromStart()
+end
+
+----------------------------------------------------------------------------------------------------
+-- UPDATE UI
+----------------------------------------------------------------------------------------------------
+function Module:Update()
+    if not self.Parent then return end
+
+    local counter = 0
+    local hasPlayer = false
+    local playerName = GetUnitDisplayName("player")
+
+    for displayName, GroupMember in pairs(CC.GroupData or {}) do
+        if displayName == playerName then hasPlayer = true end
+        if GroupMember.isAddonUser or displayName == playerName then
+            counter = counter + 1
+        end
+    end
+    if not hasPlayer then counter = counter + 1 end
+
+    local expectedSize = math.max(1, GetGroupSize())
+    if counter >= expectedSize then
+        self.Label:SetColor(0, 1, 0, 1)
+        self.Background:SetEdgeColor(0, 0.5, 0, 1)
+    else
+        self.Label:SetColor(1, 1, 0, 1)
+        self.Background:SetEdgeColor(0.5, 0.5, 0, 1)
+    end
+
+    self.Label:SetText(tostring(counter))
+end
+
+----------------------------------------------------------------------------------------------------
+-- RESET POSITION
+----------------------------------------------------------------------------------------------------
+function Module:ResetPosition()
+    self.SV.offsetX = 0
+    self.SV.offsetY = 0
+
+    if self.Parent then
+        self.Parent:ClearAnchors()
+        self.Parent:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, self.SV.offsetX, self.SV.offsetY)
+    end
+end
+
+----------------------------------------------------------------------------------------------------
+-- REGISTER MODULE
+----------------------------------------------------------------------------------------------------
+CC[Module.name] = Module
+table.insert(CC.Modules, Module)

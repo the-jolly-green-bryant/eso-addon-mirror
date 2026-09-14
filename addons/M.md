@@ -94,6 +94,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [MetaCheck](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ulrich/MetaCheck__2725) | Ulrich | PC / Mac | 1.0.2 |
 | [METERSKULL Port](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/mYoda01/METERSKULL-Port__36532469-e4dc-4cc3-b312-16b8a4bebc5b) | mYoda01 | Console | — |
 | [Meterskull: Armor, Power, Criticals, Penetration, Recoveries Meter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/bibik92/Meterskull-Armor-Power-Criticals-Penetration-Recoveries-Meter__3941) | bibik92 | PC / Mac | 1.5.7 |
+| [MeterskullConsole](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/j.hhh/MeterskullConsole__90fcc3e4-279e-4654-834d-5ed6e5dc9a32) | j.hhh | Console | — |
 | [Metu's SpareIdler](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MetuLiber_Ger/Metu-s-SpareIdler__227876bb-e9b1-439f-81fe-8f458ae351a8) | MetuLiber_Ger | Console | — |
 | [Miat's Battlegrounds Queue](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/dorrino/Miat-s-Battlegrounds-Queue__1701) | dorrino | PC / Mac | 0.01 |
 | [Miat's CastIcon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/dorrino/Miat-s-CastIcon__1807) | dorrino | PC / Mac | 1.11 |
@@ -182,6 +183,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [My Domain GuildHalls](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Verling/My-Domain-GuildHalls__3092) | Verling | PC / Mac | 1.0.7 |
 | [My Donation (Arkadius' Trade Tools Addon)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Verbalinkontinenz/My-Donation-Arkadius-Trade-Tools-Addon__2762) | Verbalinkontinenz | PC / Mac | 1.0.3 |
 | [My Little Journal](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lledos/My-Little-Journal__4802) | Lledos | PC / Mac | 1.01 |
+| [My UI-Tweaks](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/j.hhh/My-UI-Tweaks__b1bf0d35-ce24-4850-a553-507da6b0e5e5) | j.hhh | Console | — |
 | [MyAutoMarker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Unfounded_Puppy3/MyAutoMarker__097cf265-8ddc-4970-9836-914d69dbdc80) | Unfounded_Puppy3 | Console | — |
 | [MyCrystalFragmentsProcUI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Unfounded_Puppy3/MyCrystalFragmentsProcUI__d706fcf0-71fd-47e6-911a-fdacc426303a) | Unfounded_Puppy3 | Console | — |
 | [MyDebuffLog](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Unfounded_Puppy3/MyDebuffLog__eae4a86c-cd3b-44d0-81f9-5ca0caf0eb10) | Unfounded_Puppy3 | Console | — |

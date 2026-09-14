@@ -642,7 +642,8 @@ function BattleScrolls_Journal_Gamepad:ShowDeleteInstanceDialog()
     local storage = BattleScrolls.storage
     local utils = BattleScrolls.journal.utils
 
-    local instanceSize = storage:EstimateInstanceSize(instance)
+    -- Own and shared setups referenced by nothing else go with the instance
+    local instanceSize = storage:EstimateInstanceSize(instance) + storage:EstimateOrphanedSetupBytes(instance.encounters)
     local totalBytes = storage:EstimateSavedSize().totalBytes
     local limitBytes = storage:GetSizeLimitBytes()
     local usagePercent = limitBytes > 0 and (totalBytes / limitBytes * 100) or 0
@@ -679,7 +680,10 @@ function BattleScrolls_Journal_Gamepad:ShowDeleteEncounterDialog()
     local storage = BattleScrolls.storage
     local utils = BattleScrolls.journal.utils
 
-    local encounterSize = storage:EstimateEncounterSize(encounter)
+    -- The last encounter takes its instance with it; setups referenced by
+    -- nothing else go too
+    local encounterSize = (#instance.encounters == 1 and storage:EstimateInstanceSize(instance)
+        or storage:EstimateEncounterSize(encounter)) + storage:EstimateOrphanedSetupBytes({ encounter })
     local totalBytes = storage:EstimateSavedSize().totalBytes
     local limitBytes = storage:GetSizeLimitBytes()
     local usagePercent = limitBytes > 0 and (totalBytes / limitBytes * 100) or 0

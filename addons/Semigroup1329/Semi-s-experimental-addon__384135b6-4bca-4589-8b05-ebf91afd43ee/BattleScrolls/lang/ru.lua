@@ -1011,31 +1011,27 @@ for id, str in pairs(shareStrings) do
     SafeAddString(id, str, 1)
 end
 
--- Новые функции: переименование, рейдовый урон, воскрешения, цвет полосы, ульта, Крукс, З'ен
+-- Новые функции: переименование, урон группы, воскрешения, цвет полосы, ульта, Крукс, З'ен
 local featureStrings = {
     [BATTLESCROLLS_RENAME] = "Переименовать",
     [BATTLESCROLLS_RENAME_TEXT] = "Введите новое имя. Чтобы сбросить, введите исходное имя (<<1>>).",
 
-    [BATTLESCROLLS_TAB_RAID_DAMAGE] = "Урон рейда",
-    [BATTLESCROLLS_STAT_RAID_DAMAGE] = "Общий урон рейда",
-    [BATTLESCROLLS_STAT_RAID_DPS] = "УВС рейда",
+    [BATTLESCROLLS_TAB_GROUP_DAMAGE] = "Урон группы",
+    [BATTLESCROLLS_FILTER_GROUP_DAMAGE] = "Фильтр урона группы",
+    [BATTLESCROLLS_FILTER_OTHERS] = "Остальные",
+    [BATTLESCROLLS_TOOLTIP_GROUP_DAMAGE_SCOPE] = "Всё, что видел ваш игровой клиент: ваш урон (включая питомцев и компаньонов) плюс то, что он наблюдал у всех остальных поблизости. Игра не сообщает, кто нанёс остальное, поэтому «Остальные» — единый общий пул.",
 
     [BATTLESCROLLS_GROUP_COL_RES] = "Воскр",
 
     [BATTLESCROLLS_SETTINGS_BAR_COLOR] = "Цвет вашей полосы",
-    [BATTLESCROLLS_SETTINGS_BAR_COLOR_TEXT] = "Цвет вашей полосы в групповом счётчике «Цветные полосы». Передаётся согруппникам с Battle Scrolls — они тоже увидят вашу полосу в этом цвете.",
+    [BATTLESCROLLS_SETTINGS_BAR_COLOR_TEXT] = "Участники группы с дизайном «Шкалы» в Battle Scrolls видят вашу полосу в этом цвете, даже если вы используете другой дизайн или отключили свой групповой счётчик.",
     [BATTLESCROLLS_COLOR_DEFAULT] = "По умолчанию",
-    [BATTLESCROLLS_COLOR_RED] = "Красный",
-    [BATTLESCROLLS_COLOR_ORANGE] = "Оранжевый",
-    [BATTLESCROLLS_COLOR_GOLD] = "Золотой",
-    [BATTLESCROLLS_COLOR_GREEN] = "Зелёный",
-    [BATTLESCROLLS_COLOR_TEAL] = "Бирюзовый",
-    [BATTLESCROLLS_COLOR_CYAN] = "Голубой",
-    [BATTLESCROLLS_COLOR_BLUE] = "Синий",
-    [BATTLESCROLLS_COLOR_PURPLE] = "Фиолетовый",
-    [BATTLESCROLLS_COLOR_PINK] = "Розовый",
-    [BATTLESCROLLS_COLOR_WHITE] = "Белый",
-    [BATTLESCROLLS_COLOR_GREY] = "Серый",
+    [BATTLESCROLLS_COLOR_WHEEL] = "Тон и насыщенность",
+    [BATTLESCROLLS_COLOR_BRIGHTNESS] = "Яркость",
+    [BATTLESCROLLS_COLOR_HEX] = "HEX-код",
+    [BATTLESCROLLS_COLOR_HEX_INVALID] = "Введите шесть HEX-цифр, например #3EB6FF.",
+    [BATTLESCROLLS_COLOR_SAVE] = "Сохранить",
+    [BATTLESCROLLS_COLOR_SAVE_HINT] = "Ваша полоса будет этого цвета у всех, кто использует «Шкалы» в Battle Scrolls, независимо от вашего дизайна.",
 
     [BATTLESCROLLS_HEADER_ULTIMATE] = "Суперспособность",
     [BATTLESCROLLS_STAT_ULT_AT_ENTRY] = "Заряд при входе в бой",

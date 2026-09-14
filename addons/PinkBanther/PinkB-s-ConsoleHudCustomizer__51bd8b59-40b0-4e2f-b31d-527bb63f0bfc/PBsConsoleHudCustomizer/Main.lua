@@ -264,6 +264,8 @@ addon.accountDefaults = {
 	style = "standard",
 	plainOpacity = 100,
 	plainBorder = true,
+	plainBorderColour = "black",
+	resourceTextAlignment = "left",
 	-- The shade over a skill icon while its effect runs.
 	shade = {
 		enabled = true,
@@ -284,13 +286,29 @@ addon.accountDefaults = {
 -- Saved settings
 -- ---------------------------------------------------------------------------------------
 
+-- 1.1.0 called the countdown modes auto / always / never, for a setting that meant something
+-- slightly different. Carried over rather than reset, so nobody's choice is thrown away.
+local RENAMED_TIMER_MODES = { auto = "addon", always = "both", never = "game" }
+local DEFAULTED_GROUPS = { "text", "backBar", "shade" }
+
 -- The saved settings, repaired if a partial table came back from an older build. Never returns
 -- nil: every caller would otherwise need the same guard.
+--
+-- Repaired once, not on every call. It is called many times on every update of every loop, and
+-- until 1.27.1 it built two tables each time -- most of the garbage the skill bar and the watch
+-- made (FINDINGS 57). The repair runs again whenever the saved table, or any table in it the repair
+-- fills, is not the one it last repaired: a reset that swaps in an empty table is caught.
+local repaired = {}
 function addon:Account()
 	local account = self.account
 	if type(account) ~= "table" then
 		account = {}
 		self.account = account
+	end
+	if repaired.account == account and repaired.bars == account.bars and repaired.measured == account.measured
+		and repaired.spacing == account.spacing and repaired.text == account.text
+		and repaired.backBar == account.backBar and repaired.shade == account.shade then
+		return account
 	end
 	if account.enabled == nil then
 		account.enabled = true
@@ -326,11 +344,8 @@ function addon:Account()
 		end
 		account.liquidStrength = nil
 	end
-	-- 1.1.0 called these auto / always / never, for a setting that meant something slightly
-	-- different. Carried over rather than reset, so nobody's choice is thrown away.
-	local renamedModes = { auto = "addon", always = "both", never = "game" }
-	if type(account.text) == "table" and renamedModes[account.text.timerMode] then
-		account.text.timerMode = renamedModes[account.text.timerMode]
+	if type(account.text) == "table" and RENAMED_TIMER_MODES[account.text.timerMode] then
+		account.text.timerMode = RENAMED_TIMER_MODES[account.text.timerMode]
 	end
 
 	-- ZO_SavedVars copies the defaults into the saved table, so a default that is later thought
@@ -346,7 +361,7 @@ function addon:Account()
 		end
 		account.text.version = 2
 	end
-	for _, group in ipairs({ "text", "backBar", "shade" }) do
+	for _, group in ipairs(DEFAULTED_GROUPS) do
 		if type(account[group]) ~= "table" then
 			account[group] = {}
 		end
@@ -364,6 +379,8 @@ function addon:Account()
 			account.measured[bar.key] = {}
 		end
 	end
+	repaired.account, repaired.bars, repaired.measured, repaired.spacing = account, account.bars, account.measured, account.spacing
+	repaired.text, repaired.backBar, repaired.shade = account.text, account.backBar, account.shade
 	return account
 end
 
@@ -1218,13 +1235,13 @@ local function OnSlash(argumentString)
 	elseif command == "style" then
 		local style = (args[2] or ""):lower()
 		if style == "liquid" then
-			style = "plain"
+			style = "liquidflow"
 		end
 		if style == "round" or style == "mura" or style == "murahige" or style == "mura-hige" then
 			style = "rounded"
 		end
 		if not addon:SetBarStyle(style) then
-			Line("usage: %s style standard|plain|rounded|neo", SLASH)
+			Line("usage: %s style standard|plain|rounded|neo|liquid|crystal", SLASH)
 			return
 		end
 		account.enabled = true

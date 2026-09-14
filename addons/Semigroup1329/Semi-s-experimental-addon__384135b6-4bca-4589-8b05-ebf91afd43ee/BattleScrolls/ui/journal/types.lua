@@ -49,7 +49,7 @@ journal.StatsTab = {
     GROUP = 11,
     SETUP = 12,
     ACTIVITY = 13,
-    RAID_DAMAGE = 14,
+    GROUP_DAMAGE = 14,
 }
 
 -------------------------
@@ -58,7 +58,7 @@ journal.StatsTab = {
 ---@alias TabGroupKey "DAMAGE"|"HEALING"|"EFFECTS"
 
 journal.TabGroups = {
-    DAMAGE  = { journal.StatsTab.BOSS_DAMAGE_DONE, journal.StatsTab.DAMAGE_DONE, journal.StatsTab.RAID_DAMAGE },
+    DAMAGE  = { journal.StatsTab.BOSS_DAMAGE_DONE, journal.StatsTab.DAMAGE_DONE, journal.StatsTab.GROUP_DAMAGE },
     HEALING = { journal.StatsTab.HEALING_OUT, journal.StatsTab.SELF_HEALING, journal.StatsTab.HEALING_IN },
     EFFECTS = { journal.StatsTab.EFFECTS_PLAYER, journal.StatsTab.EFFECTS_BOSS, journal.StatsTab.EFFECTS_GROUP },
 }
@@ -76,7 +76,7 @@ end
 journal.SubViewLabels = {
     [journal.StatsTab.BOSS_DAMAGE_DONE] = "BATTLESCROLLS_TAB_BOSS_DAMAGE_DONE",
     [journal.StatsTab.DAMAGE_DONE] = "BATTLESCROLLS_TAB_DAMAGE_DONE",
-    [journal.StatsTab.RAID_DAMAGE] = "BATTLESCROLLS_TAB_RAID_DAMAGE",
+    [journal.StatsTab.GROUP_DAMAGE] = "BATTLESCROLLS_TAB_GROUP_DAMAGE",
     [journal.StatsTab.HEALING_OUT] = "BATTLESCROLLS_TAB_HEALING_OUT",
     [journal.StatsTab.SELF_HEALING] = "BATTLESCROLLS_TAB_SELF_HEALING",
     [journal.StatsTab.HEALING_IN] = "BATTLESCROLLS_TAB_HEALING_IN",
@@ -113,6 +113,8 @@ journal.EncounterTab = {
 journal.FilterConstants = {
     SELF_UNIT_ID = -1,           -- Special ID for self in healing filters
     SELF_DISPLAY_NAME = "__SELF__", -- Special key for self in effects filter
+    SIDE_SELF = "self",          -- Group Damage side: the player, their pets and companions
+    SIDE_OTHERS = "others",      -- Group Damage side: everyone else the client observed
 }
 
 -------------------------
@@ -260,6 +262,14 @@ journal.AbilityIconStyle = {
 ---@field targetFilter table<number, boolean>|nil Target unit filter (unitId -> true)
 ---@field sourceFilter table<number, boolean>|nil Source filter (unitId -> true)
 ---@field groupFilter table<string, boolean>|nil Group filter for effects (displayName -> true)
+---@field sourceSides JournalSourceSides|nil Group Damage side filter (nil = self and others)
+
+---Which side of the observed damage the Group Damage tab shows. The game never
+---reports unit ids for other players, so "others" is one pool and cannot be
+---split further.
+---@class JournalSourceSides
+---@field self boolean The player's own damage (pets and companions included)
+---@field others boolean Everything observed from other group members and their pets
 
 ---@alias NavigationMode
 ---| 1 # INSTANCES
@@ -282,7 +292,7 @@ journal.AbilityIconStyle = {
 ---| 11 # GROUP
 ---| 12 # SETUP
 ---| 13 # ACTIVITY
----| 14 # RAID_DAMAGE
+---| 14 # GROUP_DAMAGE
 
 ---@alias InstanceTab
 ---| 1 # ALL

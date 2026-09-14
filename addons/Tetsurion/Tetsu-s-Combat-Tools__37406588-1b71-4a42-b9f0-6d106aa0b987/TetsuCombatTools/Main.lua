@@ -39,6 +39,7 @@ local defaultAccountVars = {
     consFoodSound = false,
     consPotSound = false,
     consEndSoundId = "alert",
+    consEndSoundVolume = 2,
     consMsgEnabled = false,
     consMsgFood = false,
     consMsgFoodEnter = true,
@@ -113,6 +114,7 @@ local function OnAddOnLoaded(_, addonName)
     if T.savedVars.consShowPot == nil then T.savedVars.consShowPot = true end
     if T.savedVars.consPotSound == nil then T.savedVars.consPotSound = false end
     if T.savedVars.consEndSoundId == nil then T.savedVars.consEndSoundId = "alert" end
+    if T.savedVars.consEndSoundVolume == nil then T.savedVars.consEndSoundVolume = 2 end
     if T.savedVars.consAlertRev == nil then
         T.savedVars.consFoodSound = false
         T.savedVars.consPotSound = false

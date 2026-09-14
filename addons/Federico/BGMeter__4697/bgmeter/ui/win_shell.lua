@@ -59,6 +59,7 @@ local SETTINGS_SECTIONS = {
         { kind = "toggle", key = "show_standing",  label = "Standing / session panel" },
         { kind = "toggle", key = "show_awards",    label = "MVP / column leaders" },
         { kind = "toggle", key = "show_timeline",  label = "Match timeline chart" },
+        { kind = "toggle", key = "show_faces",     label = "Familiar faces" },
         { kind = "slider", key = "opacity",        label = "Background opacity",
           min = 0.60, max = 1.0, step = 0.01 },
     } },
@@ -555,7 +556,12 @@ function W.show_match(index)
     apply_visibility()
     if W.win:IsHidden() then return end
     W.render(true)
-    if Prefs.get("animate") then W.win:SetAlpha(0); Anim.value(0, 1, K.ANIM.window_fade_ms, function(v) W.win:SetAlpha(v) end)
+    if Prefs.get("animate") then
+        W.win:SetAlpha(0)
+        Anim.value(0, 1, K.ANIM.window_fade_ms, function(v) W.win:SetAlpha(v) end, function()
+            W.win:SetAlpha(1)
+            if W.repaint_chart then W.repaint_chart() end
+        end)
     else W.win:SetAlpha(1) end
     W._persist_hidden(false)
 end

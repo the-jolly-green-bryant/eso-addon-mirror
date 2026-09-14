@@ -1,0 +1,11 @@
+## Title: Affection Maxxing
+## Description: Before you turn in a daily quest, tells you whether your companion gains rapport or guild skill XP from it, or who to summon first.
+## Author: TheGodDrums
+## Version: 1.0.3
+## AddOnVersion: 10003
+## APIVersion: 101049 101050
+## SavedVariables: AffectionMaxxing_SV
+## OptionalDependsOn: LibAddonMenu-2.0
+
+AffectionMaxxing.lua
+Data.lua

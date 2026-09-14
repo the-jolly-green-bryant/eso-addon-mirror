@@ -93,6 +93,7 @@ local function processBuff()
         processingBuff = true
 
         local text = ""
+        local time = ""
 
         if stacks >= 5 then
             fmtrackLabelMain:SetColor(0, 255, 0, 255)
@@ -106,12 +107,20 @@ local function processBuff()
             text = string.format("  %d", stacks)
         end
 
+        if timeRemaining >= 10 then
+            time = string.format(" %d", timeRemaining)
+        else
+            time = string.format("  %d", timeRemaining)
+        end
+
         fmtrackLabelMain:SetText(text)
+        fmtrackLabelCorner:SetText(time)
 
         zo_callLater(function() processBuff() end, 1000)
     else
         processingBuff = false
         fmtrackLabelMain:SetText("")
+        fmtrackLabelCorner:SetText("")
     end
 end
 
@@ -181,10 +190,8 @@ local function createOptions()
                 FrenziedMomentumTracker.savedVariables.trackFren = value
                 if not value then
                     unRegisterAlerts()
-                    fmtrack:SetHidden(true)
                 else
                     registerAlerts()
-                    fmtrack:SetHidden(false)
                 end
             end,
             default = FrenziedMomentumTracker.defaults.trackFren,
@@ -240,7 +247,7 @@ local function onAddOnLoaded(event, name)
     EVENT_MANAGER:UnregisterForEvent(appName, EVENT_ADD_ON_LOADED)
 
 	--notify that add-on has been loaded
-	zo_callLater(function() printMessage("add-on successfully loaded") end, 500)
+	zo_callLater(function() printMessage("add-on loaded") end, 500)
 
 	--load saved variables
     FrenziedMomentumTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("fmtAddonVars", 1, "Settings", FrenziedMomentumTracker.defaults, GetUnitName("player"))
@@ -254,8 +261,10 @@ local function onAddOnLoaded(event, name)
     fmtrack:SetMovable(true)
     fmtrackIcon:SetFont("$(GAMEPAD_MEDIUM_FONT)|$(GP_54)|soft-shadow-thick")
     fmtrackLabelMain:SetFont("$(GAMEPAD_BOLD_FONT)|$(GP_61)|soft-shadow-thick")
+    fmtrackLabelCorner:SetFont("$(GAMEPAD_BOLD_FONT)|$(GP_27)|soft-shadow-thick")
     fmtrackIcon:SetText(iconText)
     fmtrackLabelMain:SetText("")
+    fmtrackLabelCorner:SetText("")
     --fmtrackLabelMain:SetColor(255, 255, 0, 255)
 
     setAnchorStartupIcon(FrenziedMomentumTracker.savedVariables.xAxisText, FrenziedMomentumTracker.savedVariables.yAxisText)

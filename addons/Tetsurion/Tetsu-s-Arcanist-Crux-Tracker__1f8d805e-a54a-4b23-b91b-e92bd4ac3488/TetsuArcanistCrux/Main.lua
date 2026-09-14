@@ -2,7 +2,7 @@ local ADDON_NAME = "TetsuArcanistCrux"
 TetsuArcanistCrux = TetsuArcanistCrux or {}
 local T = TetsuArcanistCrux
 
-T.VERSION = "1.0.14"
+T.VERSION = "1.0.15"
 
 local defaultAccountVars = {
     showIcons = true,
@@ -23,6 +23,7 @@ local defaultAccountVars = {
     iconAlpha3 = 100,
     numAlpha12 = 50,
     numAlpha3 = 100,
+    color1 = { 0.04, 0.78, 0.10, 1 },
     color2 = { 1.00, 0.85, 0.15, 1 },
     color3 = { 0.95, 0.18, 0.16, 1 },
     soundEnabled = true,
@@ -42,6 +43,7 @@ local function OnAddOnLoaded(_, addonName)
     )
 
     local v = T.savedVars
+    if type(v.color1) ~= "table" then v.color1 = { 0.04, 0.78, 0.10, 1 } end
     if type(v.color2) ~= "table" then v.color2 = { 1.00, 0.85, 0.15, 1 } end
     if type(v.color3) ~= "table" then v.color3 = { 0.95, 0.18, 0.16, 1 } end
     if v.defaultsRev == nil or v.defaultsRev < 2 then
@@ -67,7 +69,11 @@ local function OnAddOnLoaded(_, addonName)
     if v.iconLayout ~= "rowH" and v.iconLayout ~= "rowV" and v.iconLayout ~= "triangle" then
         v.iconLayout = "triangle"
     end
-    if v.soundId == nil then v.soundId = "kill" end
+    local droppedSounds = {
+        quest = true, level = true, skill = true, ready = true,
+        sky = true, abil = true, kick = true, map = true,
+    }
+    if v.soundId == nil or droppedSounds[v.soundId] then v.soundId = "kill" end
     if v.soundVolume == nil then v.soundVolume = 2 end
     if v.combatOnly == nil then v.combatOnly = true end
     if v.iconAlpha12 == nil then v.iconAlpha12 = 50 end

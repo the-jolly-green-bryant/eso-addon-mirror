@@ -1,0 +1,42 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/TheGodDrums/AffectionMaxxing__4834",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "TheGodDrums",
+  "canonical_id": "esoui:4834",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4834",
+  "deleted": false,
+  "directories": [
+    "AffectionMaxxing"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4834/",
+  "fingerprint": "04a13ffea2c2a0824b3ca624ce83b76769febe6e342242de6a80d0c858b0810c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17359.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4834",
+  "source_url": "https://www.esoui.com/downloads/info4834-AffectionMaxxing.html",
+  "stats": {
+    "downloads": 24,
+    "favorites": 2,
+    "monthly_downloads": 9
+  },
+  "title": "AffectionMaxxing",
+  "updated_at": 1789332177000,
+  "version": "1.0.3"
+}

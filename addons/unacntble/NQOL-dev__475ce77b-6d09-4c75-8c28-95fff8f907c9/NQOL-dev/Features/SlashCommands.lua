@@ -7,7 +7,9 @@ local FEATURE_NAME = NQOL.L("features.slash_commands.feature_name")
 local HELP_COMMAND = "/nqol"
 local COMMAND_PREFIX = "/nqol:"
 local GPS_LOG_COMMAND = "gpslog"
+local WRIT_STATUS_COMMAND = "writs-status"
 local gpsLogDescription = NQOL.L("features.slash_commands.gps_log")
+local writStatusDescription = NQOL.L("features.slash_commands.writ_status")
 
 local COMMANDS = {
     { "remount", NQOL.L("features.slash_commands.remain_mounted"), "Mounts", "GetRemainMounted", "SetRemainMounted" },
@@ -32,6 +34,7 @@ local COMMANDS = {
 NQOL.Lexicon.RegisterRefreshCallback(function()
     FEATURE_NAME = NQOL.L("features.slash_commands.feature_name")
     gpsLogDescription = NQOL.L("features.slash_commands.gps_log")
+    writStatusDescription = NQOL.L("features.slash_commands.writ_status")
     local keys = {
         "features.slash_commands.remain_mounted", "features.slash_commands.auto_eye",
         "features.slash_commands.auto_charge", "features.slash_commands.auto_repair",
@@ -108,6 +111,7 @@ local function ShowHelp()
     end
 
     Chat(NQOL.L("features.slash_commands.help_entry", COMMAND_PREFIX, GPS_LOG_COMMAND, gpsLogDescription))
+    Chat(NQOL.L("features.slash_commands.help_entry", COMMAND_PREFIX, WRIT_STATUS_COMMAND, writStatusDescription))
 end
 
 local function LogGPSCoordinates()
@@ -130,6 +134,19 @@ local function LogGPSCoordinates()
     NQOL.Chat.Message(NQOL.L("features.gps.plain_text_horizontal_format", xText, yText, zText), gps.GetName())
 end
 
+local function ShowWritStatus()
+    local writStatus = NQOL.Features and NQOL.Features.WritStatus
+    if not writStatus or type(writStatus.Show) ~= "function" then
+        Chat(NQOL.L("features.slash_commands.unavailable", writStatusDescription))
+        return
+    end
+
+    local shown = writStatus.Show()
+    if shown ~= true then
+        Chat(NQOL.L("features.slash_commands.unavailable", writStatusDescription))
+    end
+end
+
 local function Register(command, handler)
     if type(SLASH_COMMANDS) ~= "table" then
         return
@@ -146,6 +163,7 @@ function SlashCommands.Initialize()
     end
 
     Register(COMMAND_PREFIX .. GPS_LOG_COMMAND, LogGPSCoordinates)
+    Register(COMMAND_PREFIX .. WRIT_STATUS_COMMAND, ShowWritStatus)
 end
 
 NQOL.Features.SlashCommands = SlashCommands

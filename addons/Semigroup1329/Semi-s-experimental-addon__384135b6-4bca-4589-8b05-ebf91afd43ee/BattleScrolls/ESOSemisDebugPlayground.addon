@@ -1,8 +1,8 @@
 ## Title: Semi's Debug Playground
 ## Author: Semigroup1329
 ## APIVersion: 101049 101050
-## AddOnVersion: 502
-## Version: 0.0.502
+## AddOnVersion: 510
+## Version: 0.0.510
 ## IsLibrary: False
 ## DependsOn: LibGroupBroadcast LibAsync>=30100
 ## OptionalDependsOn: LibHarvensAddonSettings
@@ -109,6 +109,7 @@ ui/journal/control_pool.lua
 ui/journal/component_factory.lua
 ui/journal/entry_builder.lua
 ui/journal/tooltips.lua
+ui/journal/color_picker.lua
 ui/journal/renderers/damage.lua
 ui/journal/renderers/healing.lua
 ui/journal/renderers/effects.lua
@@ -143,6 +144,7 @@ trace/journallua.lua
 ui/journal/journal.xml
 trace/journalxml.lua
 ui/journal/dialogs.xml
+ui/journal/color_picker.xml
 trace/dialogs.lua
 
 ; UI - Onboarding

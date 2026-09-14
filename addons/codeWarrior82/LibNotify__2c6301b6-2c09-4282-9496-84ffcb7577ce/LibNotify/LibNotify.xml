@@ -1,0 +1,62 @@
+
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="libNotifyBox">
+			<Dimensions x="64" y="64"/>
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="1050" offsetY="200"/>
+			<Controls>
+				<Label name="$(parent)Notify1" width="64" height="64 " font="" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP"/>
+				</Label>
+			</Controls>
+			<Controls>
+				<Label name="$(parent)Notify2" width="64" height="64 " font="" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="40"/>
+				</Label>
+			</Controls>
+			<Controls>
+				<Label name="$(parent)Notify3" width="64" height="64 " font="" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="80"/>
+				</Label>
+			</Controls>
+			<Controls>
+				<Label name="$(parent)Notify4" width="64" height="64 " font="" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="120"/>
+				</Label>
+			</Controls>
+			<Controls>
+				<Label name="$(parent)Notify5" width="64" height="64 " font="" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="160"/>
+				</Label>
+			</Controls>
+			<Controls>
+				<Label name="$(parent)Notify6" width="64" height="64 " font="" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="200"/>
+				</Label>
+			</Controls>
+			<Controls>
+				<Label name="$(parent)Notify7" width="64" height="64 " font="" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="240"/>
+				</Label>
+			</Controls>
+			<Controls>
+				<Label name="$(parent)Notify8" width="64" height="64 " font="" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="280"/>
+				</Label>
+			</Controls>
+			<Controls>
+				<Label name="$(parent)Notify9" width="64" height="64 " font="" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="320"/>
+				</Label>
+			</Controls>
+			<Controls>
+				<Label name="$(parent)Notify10" width="64" height="64 " font="" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="360"/>
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>
+
+
+			

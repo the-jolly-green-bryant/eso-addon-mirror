@@ -429,13 +429,13 @@ local function make_row(i)
 
     r.container:SetHandler("OnMouseEnter", function()
         r.highlight:SetHidden(false)
-        if r.tip and ZO_Tooltips_ShowTextTooltip then
-            ZO_Tooltips_ShowTextTooltip(r.container, BOTTOM, r.tip)
+        if r.tip and U.card_show then
+            U.card_show(r.container, BOTTOM, r.tip)
         end
     end)
     r.container:SetHandler("OnMouseExit", function()
         r.highlight:SetHidden(true)
-        if ZO_Tooltips_HideTextTooltip then ZO_Tooltips_HideTextTooltip() end
+        if U.card_hide then U.card_hide() end
     end)
     r.container:SetHandler("OnMouseUp", function(_, _, upInside)
         if upInside and r.index then
@@ -549,6 +549,9 @@ local function build()
         mg = sv_menu()
         mg.w, mg.h = pw:GetWidth(), pw:GetHeight()
         apply_art_cover()
+        BGMeter.UI.faces.on_host_resized()
+        BGMeter.UI.arenas.on_host_resized()
+        BGMeter.UI.marks.on_host_resized()
         M.refresh()
     end)
     pw:SetHandler("OnMouseWheel", function(_, delta) M.scroll_to(offset - delta) end)
@@ -573,17 +576,18 @@ local function build()
     strip:SetHeight(3)
 
     panel.logo = P.icon(pw, K.LOGO)
-    panel.logo:SetDimensions(20, 20)
-    panel.logo:SetAnchor(TOPLEFT, pw, TOPLEFT, 16, 13)
+    panel.logo:SetDimensions(60, 60)
+    panel.logo:SetAnchor(TOPLEFT, pw, TOPLEFT, -15, -15)
+    if panel.logo.SetDrawLevel then panel.logo:SetDrawLevel(20) end
 
     panel.title = P.label(pw, S.FONT.title, K.COLOR.text)
     panel.title:SetText(K.TITLE .. "  ·  Registry")
-    panel.title:SetAnchor(LEFT, panel.logo, RIGHT, 8, 0)
+    panel.title:SetAnchor(LEFT, panel.logo, RIGHT, 2, 8)
 
     panel.close = mk_button(pw, TX.close, 20, function() M.hide_menu() end, "Close")
     panel.close:SetAnchor(TOPRIGHT, pw, TOPRIGHT, -14, 15)
 
-    panel.gear = mk_button(pw, TX.gear, 22, function() W.toggle_settings() end, "Settings")
+    panel.gear = mk_button(pw, TX.gear, 28, function() W.toggle_settings() end, "Settings")
     panel.gear:SetAnchor(RIGHT, panel.close, LEFT, -8, 0)
 
     local function make_stat(rowi, right, withIcon, withBar, link)
@@ -624,10 +628,10 @@ local function build()
                     st.claim:SetAnchor(TOPRIGHT, c, TOPRIGHT, -20, 3)
                     st.claim:SetHidden(true)
                     st.claim:SetHandler("OnMouseEnter", function(b)
-                        if ZO_Tooltips_ShowTextTooltip then ZO_Tooltips_ShowTextTooltip(b, BOTTOM, st.claim_tip or "") end
+                        if U.card_show then U.card_show(b, BOTTOM, st.claim_tip or "") end
                     end)
                     st.claim:SetHandler("OnMouseExit", function()
-                        if ZO_Tooltips_HideTextTooltip then ZO_Tooltips_HideTextTooltip() end
+                        if U.card_hide then U.card_hide() end
                     end)
                 end
             end
@@ -647,10 +651,10 @@ local function build()
             end
         end
         c:SetHandler("OnMouseEnter", function()
-            if st.tip and ZO_Tooltips_ShowTextTooltip then ZO_Tooltips_ShowTextTooltip(c, BOTTOM, st.tip) end
+            if st.tip and U.card_show then U.card_show(c, BOTTOM, st.tip) end
         end)
         c:SetHandler("OnMouseExit", function()
-            if ZO_Tooltips_HideTextTooltip then ZO_Tooltips_HideTextTooltip() end
+            if U.card_hide then U.card_hide() end
         end)
         return st
     end
@@ -716,15 +720,18 @@ local function build()
     panel.scroll.track = track
     panel.scroll.trackBg = P.rect(track, { 1, 1, 1, 0.06 })
     panel.scroll.trackBg:SetAnchorFill(track)
-    local thumb = P.rect(track, { K.COLOR.text_dim[1], K.COLOR.text_dim[2], K.COLOR.text_dim[3], 0.55 })
+    local thumb = BGMeter.zenimax.ui.create_control(nil, track, CT_CONTROL)
     thumb:SetAnchor(TOPLEFT, track, TOPLEFT, 0, 0)
     thumb:SetWidth(SCROLL_W)
     thumb:SetMouseEnabled(true)
+    local thumbTex = P.rect(thumb, { K.COLOR.text_dim[1], K.COLOR.text_dim[2], K.COLOR.text_dim[3], 0.55 })
+    thumbTex:SetAnchorFill(thumb)
     thumb:SetHandler("OnMouseDown", function() M.on_thumb_down() end)
     thumb:SetHandler("OnMouseUp", function() M.on_thumb_up() end)
-    thumb:SetHandler("OnMouseEnter", function() P.set_rect_color(thumb, { K.COLOR.text[1], K.COLOR.text[2], K.COLOR.text[3], 0.75 }) end)
-    thumb:SetHandler("OnMouseExit", function() if not drag.on then P.set_rect_color(thumb, { K.COLOR.text_dim[1], K.COLOR.text_dim[2], K.COLOR.text_dim[3], 0.55 }) end end)
+    thumb:SetHandler("OnMouseEnter", function() P.set_rect_color(thumbTex, { K.COLOR.text[1], K.COLOR.text[2], K.COLOR.text[3], 0.75 }) end)
+    thumb:SetHandler("OnMouseExit", function() if not drag.on then P.set_rect_color(thumbTex, { K.COLOR.text_dim[1], K.COLOR.text_dim[2], K.COLOR.text_dim[3], 0.55 }) end end)
     panel.scroll.thumb = thumb
+    panel.scroll.thumbTex = thumbTex
 
     panel.empty = P.label(panel.inset, S.FONT.small, K.COLOR.text_dim)
     panel.empty:SetText("no battlegrounds recorded yet\nqueue up below to record your first battle")
@@ -738,6 +745,9 @@ local function build()
     panel.footer:SetHeight(14)
     panel.footer:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     U.clamp_line(panel.footer)
+    BGMeter.UI.faces.init(pw)
+    BGMeter.UI.arenas.init(pw)
+    BGMeter.UI.marks.init(pw)
 
     built = true
 end
@@ -1041,7 +1051,7 @@ function M.on_thumb_up()
     if not drag.on then return end
     drag.on = false
     panel.win:SetHandler("OnUpdate", nil)
-    P.set_rect_color(panel.scroll.thumb, { K.COLOR.text_dim[1], K.COLOR.text_dim[2], K.COLOR.text_dim[3], 0.55 })
+    P.set_rect_color(panel.scroll.thumbTex, { K.COLOR.text_dim[1], K.COLOR.text_dim[2], K.COLOR.text_dim[3], 0.55 })
 end
 
 function M.window() return panel and panel.win end
@@ -1056,6 +1066,9 @@ function M.refresh()
     local count = H.count()
 
     refresh_panel()
+    BGMeter.UI.faces.refresh()
+    BGMeter.UI.arenas.refresh()
+    BGMeter.UI.marks.refresh()
 
     local w = panel.win:GetWidth()
     local h = panel.win:GetHeight()
@@ -1225,6 +1238,9 @@ function M.show_menu()
     populate_queue_sets()
     M.update_queue()
     M.refresh()
+    BGMeter.UI.faces.on_menu_shown()
+    BGMeter.UI.arenas.on_menu_shown()
+    BGMeter.UI.marks.on_menu_shown()
     local A = BGMeter.zenimax.api
     local C = BGMeter.zenimax.constants
     safe(A.query_bg_leaderboard, C.BATTLEGROUND_LEADERBOARD_TYPE_COMPETITIVE)
@@ -1238,6 +1254,7 @@ function M.hide_menu(silent)
     if not built then return end
     local was_visible = not panel.win:IsHidden()
     M.disarm_delete()
+    BGMeter.UI.Drawer.blur_all()
     panel.win:SetHidden(true)
     if not silent and was_visible then Sound.play("close") end
     queue_ticker_sync(false)

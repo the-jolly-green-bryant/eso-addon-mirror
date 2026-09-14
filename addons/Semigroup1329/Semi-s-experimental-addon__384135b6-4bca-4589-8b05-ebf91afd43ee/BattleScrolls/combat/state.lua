@@ -470,14 +470,16 @@ function state:ShouldReset()
         return false
     end
 
-    -- The encounter is the GROUP's fight: any member still in combat keeps
+    -- The encounter is the GROUP's fight: any online member still in combat keeps
     -- it open (the player may be dead or momentarily dropped from combat).
+    -- Ignore offline members so a stale combat flag cannot hold it open.
     -- Skipped in AvA/battlegrounds - a full PvP group is near-permanently
     -- in combat and would glue everything into one encounter.
     if not (IsPlayerInAvAWorld() or IsActiveWorldBattleground()) then
         for i = 1, GetGroupSize() do
             local groupTag = ZO_Group_GetUnitTagForGroupIndex(i)
-            if groupTag and not AreUnitsEqual(groupTag, "player") and IsUnitInCombat(groupTag) then
+            if groupTag and not AreUnitsEqual(groupTag, "player")
+                and IsUnitOnline(groupTag) and IsUnitInCombat(groupTag) then
                 -- BattleScrolls.log.Trace("ShouldReset: group member in combat")
                 return false
             end

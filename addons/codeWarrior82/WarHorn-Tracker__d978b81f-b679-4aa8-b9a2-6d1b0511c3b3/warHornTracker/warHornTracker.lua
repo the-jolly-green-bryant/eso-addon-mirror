@@ -207,10 +207,8 @@ local function createOptions()
                 warHornTracker.savedVariables.trackWh = value
                 if not value then
                     unRegisterAlerts()
-                    whtAddonText:SetHidden(true)
                 else
                     registerAlerts()
-                    whtAddonText:SetHidden(false)
                 end
             end,
             default = warHornTracker.defaults.trackWh,
@@ -264,7 +262,7 @@ local function onAddOnLoadedWht(event, name)
     EVENT_MANAGER:UnregisterForEvent(appName, EVENT_ADD_ON_LOADED)
 
 	--notify that add-on has been loaded
-	zo_callLater(function() printMessageTest("add-on successfully loaded") end, 500)
+	zo_callLater(function() printMessageTest("add-on loaded") end, 500)
 
 	--load saved variables
     warHornTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("whtAddonVars", 1, "Settings", warHornTracker.defaults, GetUnitName("player"))

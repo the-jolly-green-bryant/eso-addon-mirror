@@ -243,6 +243,11 @@ local function createOptions()
             end,
             setFunc = function(value)
                 turningTideTracker.savedVariables.trackVuln = value
+				if not value then
+                    unRegisterAlertsVuln()
+                else
+                    registerAlertsVuln()
+                end
             end,
             default = turningTideTracker.defaults.trackVuln,
         },
@@ -309,7 +314,7 @@ local function onAddOnLoaded(event, name)
     EVENT_MANAGER:UnregisterForEvent(appName, EVENT_ADD_ON_LOADED)
 
 	--notify that add-on has been loaded
-	zo_callLater(function() printMessage("add-on successfully loaded") end, 500)
+	zo_callLater(function() printMessage("add-on loaded") end, 500)
 
 	--load saved variables
     turningTideTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("turnAddonVars", 1, "Settings", turningTideTracker.defaults, GetUnitName("player"))

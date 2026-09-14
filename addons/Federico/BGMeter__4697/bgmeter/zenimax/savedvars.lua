@@ -25,6 +25,7 @@ local DEFAULTS = {
         show_standing  = true,
         show_awards    = true,
         show_timeline  = true,
+        show_faces     = true,
         show_launcher  = true,
         opacity        = 0.97,
         sort_key       = "damage",

@@ -362,6 +362,23 @@ function Capture.on_murderball(_, keepId, objectiveId, ctx, name, controlEvent, 
         tostring(pinType), tostring(keepId), tostring(objectiveId))
 end
 
+local function sample_players(tl, i, round)
+    local A = BGMeter.zenimax.api
+    local C = BGMeter.zenimax.constants
+    local n = safe(A.get_num_entries, round) or 0
+    if n <= 0 then return end
+    tl.p = tl.p or {}
+    for e = 1, n do
+        local charName, displayName = safe(A.get_entry_info, e, round)
+        local nm = clean_name(displayName or charName)
+        if nm then
+            local rec = tl.p[nm]
+            if not rec then rec = { d = {} }; tl.p[nm] = rec end
+            rec.d[i] = read_score(e, C.SCORE_TRACKER_TYPE_DAMAGE_DONE, round)
+        end
+    end
+end
+
 local function sample_scores()
     if not active or not active.timeline then return end
     local A = BGMeter.zenimax.api
@@ -380,6 +397,13 @@ local function sample_scores()
     tl.s1[i] = (teams[1] ~= nil and safe(A.get_team_score, round, teams[1])) or 0
     tl.s2[i] = (teams[2] ~= nil and safe(A.get_team_score, round, teams[2])) or 0
     tl.s3[i] = (teams[3] ~= nil and safe(A.get_team_score, round, teams[3])) or 0
+    if not tl.p_off then
+        local ok, err = pcall(sample_players, tl, i, round)
+        if not ok then
+            tl.p_off = true
+            BGMeter.Log.debug("player sampling disabled for this match: %s", tostring(err))
+        end
+    end
 end
 
 local function start_sampler()
@@ -487,7 +511,9 @@ function Capture.finalize()
     local Match = BGMeter.Match
 
     stop_sampler()
-    sample_scores()
+    local ok, err = pcall(sample_scores)
+    if not ok then BGMeter.Log.debug("final sample failed: %s", tostring(err)) end
+    pcall(Match.pack_timeline, active)
 
     active.endMs = safe(A.now_ms) or active.startMs
     active.capturedAt = safe(A.get_timestamp)

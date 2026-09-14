@@ -1081,6 +1081,246 @@ fallback for that one press, and the effect path -- which is where almost every 
 from -- is untouched. 1.12.x put a single latched flag in front of *every* press, so one
 unreachable branch silenced the entire add-on (§49).
 
+## 52. Liquid measured its bar in the wrong pixels (1.24.1)
+
+The Liquid style (1.24.0, written in another session) drew nothing on a PS5's health bar, lit only
+the middle of magicka and stamina, and spilled above and below all three. One cause for all of it:
+every distance was a fraction of the **status bar's height**, and a console's status bar is
+**64 high**, not 17.
+
+`ZO_PlayerAttributeStatusBar_Gamepad_Template` (`playerattributebartemplates.xml`) is
+`Dimensions y="64"` with the gamepad fill art, which carries transparent space above and below
+its coloured band; the container stays `237 x 23`, and the band the player sees is its 17, as on
+keyboard. With 64:
+
+| | worked out as | on a PS5 |
+| --- | --- | --- |
+| end inset | `max(height * 1.5, 6)` | **96** on each side |
+| magicka / stamina, full | `224 - 96 * 2` | **32 pixels**, in the middle |
+| each health half, full | `111 - 96 * 2` | **negative** -- hidden outright |
+| band | `height * 0.18` .. `height * 0.82` | **41 high** over a bar 17 high |
+
+A sine fade across every strip also put the brightness in a hump in the middle of whatever
+was left.
+
+**Why the tests passed.** The harness built every status bar 17 high -- the keyboard size -- so
+the insets came to 25 and everything fitted. The harness bars are 64 high now, and the old
+formula fails the new checks one by one: health draws nothing, magicka and stamina are narrow,
+the band leaves the bar.
+
+**What 1.24.1 does** (`plain:LiquidBounds`):
+
+- the band is `17/23` of the container's height, centred on the status bar, never taller than
+  the status bar itself, with a 12% margin inside it;
+- only the **pointed outer ends** are kept clear, by half the band, which is how far an arrow's
+  slope reaches in. Health's halves meet flat in the middle, so nothing is kept clear there, and
+  the right half's wave carries on from where the left half's stops;
+- the moving end of the fill keeps 2 pixels clear of the leading edge;
+- strips are full strength along the bar and fade in over three strips at an open end only.
+
+`/pbhud plain` prints, per status bar, the control's size, the band and the span the effect is
+drawn in, and whether it is shown -- the three numbers to read if a PS5 disagrees.
+
+## 53. Liquid that reads as liquid (1.25.0)
+
+1.24.1 put the effect in the right place, and it still looked like two white wires crossing a
+bar: thin hard lines at full strength, rings for bubbles, nothing that said *depth* or *surface*.
+What makes Diablo's orbs read as liquid, translated to a 17-pixel horizontal tube:
+
+| orb | here |
+| --- | --- |
+| dark depths | a shade over the lower 65% of the liquid, clear at the top, 50% black at the bottom |
+| swirling contents | six soft masses, four light and two dark, drifting both ways at different speeds and breathing; each is four quarters brightest at the centre corner, so it has no edges |
+| the surface | the end of the fill is a bright wobbling edge with a glow behind it; a change in the amount stirs it (6x the change, capped) and it settles over ~450 ms |
+| drain | what was just lost stays 150 ms as a pale trace, then drains at 0.9 of the bar per second |
+| bubbles | beads with a point of light, rising and fading out at the top |
+| the glass | a faint reflection along the top of the whole tube, and a glint that crosses it |
+
+**No art, and no lines.** The softness is `SetVertexColors`: a rectangle given a different alpha at
+each corner is interpolated across, so a quarter with alpha only at its inner corner falls off to
+nothing at the rim. A mass cut by the edge of the fill has its corner alphas worked out from where
+the cut corners really are, so it still fades rather than stopping hard.
+
+**Cheaper than what it replaced.** 43 textures per bar section against 84 (48 strips and 36 bubble
+dots), and no per-strip wave: the masses carry the motion.
+
+**Judged offline.** `test/preview_liquid.lua` runs the add-on in the harness through a hit, a
+refill and a drop, records every texture's rectangle and corner colours as the add-on wrote them,
+and writes a page that plays them back. The game's own fill art is not in the source, so it is
+drawn as its gradient; everything over it is the add-on's own output.
+
+**Tests that fail when they should.** Every piece is either "fill" (must stay inside what is
+filled) or "tube" (the glass and the drain; must stay inside the bar), and all must stay inside
+the band and clear of the points, at seven amounts and many moments. Moving the glass above the
+band, not cutting the currents to the fill, and turning the slosh off each fail the tests.
+
+## 54. See-through, and a square tube tried and put back (1.26.0 → 1.26.1)
+
+**See-through (kept).** The game's fill is written at 62% of its gradient's alpha (92% in 1.25.0)
+and every effect over it at 80% of its 1.25.0 strength (`LIQUID_EFFECT_ALPHA`).
+
+**The square tube (withdrawn).** 1.26.0 hid the game's arrow-ended frame and background for
+Liquid and drew a square frame of its own, on a reading of "the triangular ends do not fit" as a
+request to replace them. It was not what was wanted: the game's own frame stays. 1.26.1 is
+1.25.0's Liquid -- the game's frame and background, the half-band clearance at the pointed outer
+ends (§52) -- with the see-through values above. The outline switch and colour are Square's and
+MURA-HIGE's again, not Liquid's.
+
+## 55. An upright line at the full end (1.26.2)
+
+From the PS5: using a resource put an upright line at the bar's full end. A bar spends most of a
+fight regenerating a few percent short of full, so the moving end of the fill sits right beside
+the full end -- and Liquid drew the surface there as a straight upright line, beside a frame whose
+end is a point. The drain's far end (the old level, which is the full end whenever a resource is
+spent from full) was the same: an upright edge, only thinned to 30% rather than gone. And every
+soft piece -- the shade, the currents -- was cut off square wherever it met the end of the fill or
+a pointed end, which leaves a faint upright edge of its own.
+
+**One shape for every end.** The frame's pointed ends are a point at the middle of the band sloping
+back 45 degrees to the top and bottom (§52's half-band taper). The fill's moving end is given the
+same shape, pointing the way the fill moves -- towards the end it fills to, so a bar nearly full
+shows its surface parallel to that end. A row a distance `d` from the middle of the band stops `d`
+short of a pointed end and `d` short of the moving end.
+
+- **The surface and its glow** are drawn in seven rows, each stepped back by its own `d`: a `>` on
+  a bar that fills rightwards, a `<` on one that fills leftwards.
+- **The drain** is seven rows too, so both its ends -- the new level and the old -- have that shape,
+  and it fades to nothing at the old level instead of stopping there.
+- **Upright pieces** (the shade, the currents, the bubbles) stay inside the upright rectangle their
+  farthest row allows, and the shade and the currents fade to nothing over the last 5 pixels before
+  any cut, so none of them leaves a line. Health's halves meet in the middle, which is not a cut.
+- **The glass and the glint** stop where their own rows meet the pointed ends.
+
+59 textures per bar section (43 before): the rows cost 16.
+
+**Tests.** The containment rule is now the shape itself: every piece, at every amount and moment,
+stops `d` short of each pointed end and, if it belongs to the liquid, `d` short of the moving end.
+The surface must point the way its bar fills, the drain's far end must have the shape and nothing
+at it, and a soft piece at a cut must have nothing at that cut. Making the surface upright, making
+the drain's far end upright and solid, and taking the fade off the cuts each fail them. The
+preview now draws the game's fill inside its pointed shape and regenerates magicka up to full.
+
+## 56. Into the points, no flicker, and Crystal (1.27.0)
+
+Three from the PS5, one screenshot among them:
+
+1. **The effect did not reach the triangular points.** Every upright piece stopped where its
+   farthest row had to stop -- half the band short of each point -- so the triangles at both ends
+   stayed plain.
+2. **A line flickered at the point while a bar regenerated.** The surface line at the moving end
+   was drawn in rows stepped to the point's shape; a few percent short of full those rows were cut
+   against the point, appearing and disappearing frame to frame.
+3. **A Crystal style**, a cut crystal rather than a liquid.
+
+**One painter.** Liquid and Crystal now draw everything through `Painter:Quad`, which takes a
+rectangle, a colour and an alpha that is a number or a bilinear function of position, and cuts the
+rectangle into rows of the band (8) wherever a slope has to be followed. Each row reaches exactly
+as far as its own distance `d` from the middle of the band allows: `d + 1` short of a pointed end,
+and -- for the liquid itself -- `d` short of the moving end. The texture's per-corner colours are
+set from the alpha function at each piece's own corners, and a bilinear function is exact there,
+so a soft mass cut into rows looks the same as one uncut. Pieces come from a pool per bar section,
+built on demand and reused; what a frame does not use is hidden. Vertex colours carry the colour
+(`SetColor(1,1,1,1)` first), so a pooled texture keeps nothing of what it drew last frame.
+
+**No line, and nothing at the point.** Liquid has no surface line any more. The moving end is a
+glow that rises towards it, and the glow fades out between two band-widths and one band-width from
+the full end, so it is gone before the moving end gets anywhere near the point. The soft currents
+fade over 5 pixels before the moving end only; into the points they run to the shape.
+
+**Crystal.** The fill's gradient lifted towards white (22-28% and 45%) at 55% alpha. Over it,
+per 18 pixels along the whole bar (continuous across health's halves): an upper facet lit from a
+corner that alternates facet to facet and brightens and dims in turn, and a darker lower facet
+lit the opposite way; a one-pixel girdle line where they meet; a glare of 8 row pieces offset from
+one another so it leans, sweeping along every 3.6 seconds; five sparkles, each a 3x1 and a 1x3
+cross, placed from a hash of their cycle so they move on without jumping about mid-twinkle; and
+a reflection along the top.
+
+**Tests, mutation-checked.** For both styles, at ten amounts and many moments on every bar section:
+nothing crosses the band, the fill or an end's shape; both points of a full bar are lit; health's
+halves both reach the middle; no controls are created once warmed up. Liquid: a glow at the moving
+end that rises towards it, no surface line, no glow within 14 pixels of the point while
+regenerating to 99%, the slosh, the drain. Crystal: facets alternate, a facet's light changes,
+the glare leans, sparkles appear. Restoring the old upright limit at the points, removing the slope
+there, keeping the glow near full, and making the glare upright each fail them.
+
+## 57. Solid by default, no glare, and a memory audit (1.27.1)
+
+**From the PS5.** Crystal's sweeping glare is gone. Liquid and Crystal are no longer see-through by
+default: the body is the game's own alpha and the effects are at full strength, both scaled by the
+**How solid** slider (100% unless moved), which now applies to these styles as it does to Square.
+
+**Memory, measured.** `test/memory.lua` replaces the harness's stand-in controls with versions that
+reuse their tables -- on a console a control write is a C call and makes no Lua garbage -- so what it
+reports is the add-on's own. Before:
+
+| loop | runs | garbage per run | per second |
+| --- | --- | --- | --- |
+| Watch | 1 s | 10.9 KB | 11 KB |
+| Timers (skill bar) | 100 ms | 20.9 KB | 209 KB |
+| Plain, Liquid | 50 ms | 80 KB | 1.6 MB |
+| Plain, Crystal | 50 ms | 122 KB | 2.4 MB |
+
+and a long fight on a stream of new targets kept **504 KB** after 133,000 of them. Four causes:
+
+1. **`addon:Account()` built two tables on every call** -- the renamed timer modes and the list of
+   defaulted groups -- and ran its whole repair each time, and it is called many times per update of
+   every loop. The tables are module constants now, and the repair runs once, again only when the
+   saved table or one of the tables it fills is a different table.
+2. **The back row's shade built a wrapper table per slot per update** (`{ control, state }`). Kept on
+   the entry now.
+3. **The effect painter made closures**: two per rectangle for its row and piece helpers, one for
+   every alpha ramp, soft mass or corner gradient, and a new bounds table per bar section per frame.
+   The alpha is now numbers kept on the painter (`Alpha`, `Fade`, `Between`), the helpers are
+   methods, and each group reuses one bounds table.
+4. **A leak: `entry.gained` was never pruned.** `Prune` dropped expired targets from `entry.units`
+   but left their gain times, so an effect kept alive by recasting kept one entry for every target
+   it had ever touched. They go with their unit now, a moment after it (for as long as `Forget`
+   still asks).
+
+After:
+
+| | garbage per update | kept over a long run |
+| --- | --- | --- |
+| every style | 3.2 KB, all of it the 1 s watch | 0.0 KB |
+| a fight | 3.7 KB per cast with six effects | +0.1 KB after 20,000 new targets |
+
+**Controls are never freed**, so the effect pool is built whole when a style is chosen: 110 pieces
+per bar section, with every field the painter keeps set at once. Over 100,000 updates (about 80
+minutes) the most either style used in one frame was 86, and nothing was dropped. Built lazily, the
+pool crept up from 64 to 86 over that time.
+
+**Tests.** 5000 reads of the settings make no garbage; 1200 targets hit by a recast effect leave
+only the live ones held and no record of the rest; the pool is 110 and nothing is dropped; the
+slider thins the body and the effects together; no glare. Building a table in `Account()`, the old
+`Prune`, and ignoring the slider each fail them.
+
+## 58. The slider did not reach the bar (1.27.2)
+
+From the PS5: **How solid** did nothing useful for Liquid or Crystal.
+
+What 1.27.1 scaled by the slider was the alpha in the fill's `SetGradientColors` and the effects
+drawn over it. These styles keep the game's own dressing, and none of that was touched: the
+background (`BgContainer`, a dark solid texture), the three frame pieces, and the gloss on each
+status bar all stayed at full strength. Lowering the slider let the dark background show through the
+fill -- the bar went a little darker, and nothing behind it ever showed. The tests passed because
+they checked the number written into the gradient, not what stands between the player and the
+scene.
+
+1.27.2 applies the slider to the whole bar with `SetAlpha`: `BgContainer`, `FrameLeft`,
+`FrameCenter`, `FrameRight`, and each status bar (which takes its gloss child with it). The fill's
+gradient keeps its own alpha, so the fill is not thinned twice. The alpha is written whenever it
+differs from the slider, because the client sets `bgContainer:SetAlpha(1)` itself in
+`armordamage.lua` and `possession.lua`. Each control's alpha is noted before the first write and put
+back when the style changes or the bars are handed back. The low-health warner is left alone. Square
+and MURA-HIGE are not affected: they hide the game's dressing and thin their own rectangles.
+
+`/pbhud plain` prints, per status bar, `alpha: bar, background, frame (slider)`.
+
+**Tests** now check the alpha of every piece the player sees through, not the gradient: at 50% the
+background, frame and status bars are all 0.5, the fill's gradient alpha is unchanged, a background
+the client sets back to 1 is thinned again on the next update, everything is 1 again after a style
+change, and Square leaves them alone. Taking out the new alpha writes or the restore fails them.
+
 ---
 
 ## Still to measure on a PS5
@@ -1158,3 +1398,27 @@ unreachable branch silenced the entire add-on (§49).
     be full length, not short by the time spent aiming. Cancel one with ○ -- the icon must stay
     empty, and the ability ○ casts instead must count as it always did. `/pbhud slots` prints
     `circles held / placed / cancelled / given up on`: given-up-on should stay 0.
+21. **Does Liquid cover the whole bar and stay inside it?** Choose Liquid with all three bars
+    part-empty (in a fight). Health must show the effect on both halves and straight across the
+    middle; magicka and stamina along everything that is filled, not just the middle. Nothing may
+    show above or below the coloured band or past the pointed ends. `/pbhud plain` must read
+    `control 224x64` (or `111x64` for a health half); if it reads another height, the band is
+    worked out from the container and should still be right, but that is the number to report.
+22. **Does Liquid read as liquid on the HUD?** In a fight: the surface at the end of each bar should
+    shimmer and visibly slosh when you take a hit or drink a potion, the trace of lost health should
+    drain away behind it, the soft currents should be visible without being busy, and the liquid
+    should be see-through without looking washed out. If the masses
+    look like flat blocks rather than soft glows, per-corner colours (`SetVertexColors`) are not doing
+    what they do on PC, and that is the thing to report.
+23. **Do Liquid and Crystal fill the points, and stay inside them?** With a bar full, the effect
+    must reach into both triangular ends without touching the frame's line. Spend some magicka
+    and let it come back: nothing may flicker at the point as it refills.
+24. **Does Crystal read as crystal?** Alternating lit and shaded facets along the bar, a bright
+    line through it and small twinkling crosses, with no glare sweeping across. If the facets
+    look like flat stripes, per-corner colours are the thing to report, as in 22.
+25. **Does memory stay flat?** Choose Liquid or Crystal and fight for a while with an add-on memory
+    readout open: after the first seconds the add-on's figure must not climb.
+26. **Does How solid see-through Liquid and Crystal?** At 50% the whole bar -- background, frame and
+    fill -- must let the scene behind show through, and the effects must thin with it. `/pbhud plain`
+    must read `alpha: bar 0.50, background 0.50, frame 0.50`. If it reads 0.50 but the bar still looks
+    solid, the client is not honouring `SetAlpha` on these controls, and that is the thing to report.

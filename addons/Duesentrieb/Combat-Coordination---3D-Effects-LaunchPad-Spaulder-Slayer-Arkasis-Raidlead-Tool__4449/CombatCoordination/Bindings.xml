@@ -1,0 +1,85 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="|cFF7F00Combat|r |cFFFFFFCoordination|r">
+            <Action name="COMBATCOORDINATION_ADDONMENU_TOGGLE">
+                <Down>CombatCoordination.Keybinds.AddonMenuToggle()</Down>
+            </Action>
+
+            <Action name="COMBATCOORDINATION_ARKASISASSISTANT_TOGGLE">
+                <Down>CombatCoordination.Keybinds.ArkasisAssistantToggle()</Down>
+            </Action>
+
+            <Action name="COMBATCOORDINATION_DISPLAYPANEL_TOGGLE">
+                <Down>CombatCoordination.Keybinds.DisplayPanelToggle()</Down>
+            </Action>
+
+            <Action name="COMBATCOORDINATION_POINTER_TOGGLE">
+                <Down>CombatCoordination.Keybinds.PointerToggle()</Down>
+            </Action>
+
+            <Action name="COMBATCOORDINATION_FAST_TRAVEL_PRIMARY">
+                <Down>CombatCoordination.Keybinds.FastTravelPrimary()</Down>
+            </Action>
+
+            <Action name="COMBATCOORDINATION_PATHTRACKING_TOGGLE">
+                <Down>CombatCoordination.Keybinds.PathTrackingToggle()</Down>
+            </Action>
+
+            <Action name="COMBATCOORDINATION_PATHTRACKING_STOPALL">
+                <Down>CombatCoordination.Keybinds.PathTrackingStopAll()</Down>
+            </Action>
+
+            <Action name="COMBATCOORDINATION_EXITINSTANCE_REQUEST">
+                <Down>CombatCoordination.Keybinds.RequestExitInstance()</Down>
+            </Action>
+
+            <Action name="COMBATCOORDINATION_PORT_IN_PLEASE">
+                <Down>CombatCoordination.Keybinds.PortInPlease()</Down>
+            </Action>
+
+            <Action name="COMBATCOORDINATION_WIPE_PLEASE">
+                <Down>CombatCoordination.Keybinds.WipePlease()</Down>
+            </Action>
+
+            <Action name="COMBATCOORDINATION_RESET_INSTANCE">
+                <Down>CombatCoordination.Keybinds.ResetInstance()</Down>
+            </Action>
+
+            <Action name="COMBATCOORDINATION_SLAYERASSISTANT_TOGGLE">
+                <Down>CombatCoordination.Keybinds.SlayerAssistantToggle()</Down>
+            </Action>
+
+            <Action name="COMBATCOORDINATION_SPAULDER_TOGGLE">
+                <Down>CombatCoordination.Keybinds.SpaulderToggle()</Down>
+            </Action>
+
+            <Action name="COMBATCOORDINATION_SPAULDER_REINVITE">
+                <Down>CombatCoordination.Keybinds.SpaulderReinvite()</Down>
+            </Action>
+
+            <Action name="COMBATCOORDINATION_SPAULDER_KICK_REINVITE">
+                <Down>CombatCoordination.Keybinds.SpaulderKickReinvite()</Down>
+            </Action>
+
+            <Action name="COMBATCOORDINATION_BREAKTIMER_TOGGLE">
+                <Down>CombatCoordination.Keybinds.BreakTimerToggle()</Down>
+            </Action>
+
+            <Action name="COMBATCOORDINATION_PULLTIMER_TRASH">
+                <Down>CombatCoordination.Keybinds.PullTimerTrash()</Down>
+            </Action>
+
+            <Action name="COMBATCOORDINATION_PULLTIMER_BOSS">
+                <Down>CombatCoordination.Keybinds.PullTimerBoss()</Down>
+            </Action>
+
+            <Action name="COMBATCOORDINATION_PULLTIMER_PREBUFF">
+                <Down>CombatCoordination.Keybinds.PullTimerPrebuff()</Down>
+            </Action>
+
+            <Action name="COMBATCOORDINATION_PULLTIMER_CUSTOM">
+                <Down>CombatCoordination.Keybinds.PullTimerCustom()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

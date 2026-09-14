@@ -92,6 +92,7 @@ local function put(map, key, label)
 end
 
 C.OBJ_EVENT_INFLUENCE = OBJECTIVE_CONTROL_EVENT_AREA_INFLUENCE_CHANGED
+C.OBJ_STATE_INACTIVE  = OBJECTIVE_CONTROL_STATE_AREA_INACTIVE
 
 C.BG_STATE_LABEL = {}
 local function put_state(key, label)

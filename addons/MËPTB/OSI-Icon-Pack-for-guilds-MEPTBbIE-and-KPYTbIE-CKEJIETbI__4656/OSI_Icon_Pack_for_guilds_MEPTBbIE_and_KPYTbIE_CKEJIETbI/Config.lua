@@ -2,7 +2,7 @@ local function OnPlayerActivated(eventCode)
     if OSI and OSI.AddUniqueIconPack then
         local myIcons = {
             ["@BOCKPECJIA"] = "OSI_Icon_Pack_for_guilds_MEPTBbIE_and_KPYTbIE_CKEJIETbI/icons/nick.dds",
-            ["@AlextRaszaa"] = "OSI_Icon_Pack_for_guilds_MEPTBbIE_and_KPYTbIE_CKEJIETbI/icons/AlextRaszaa.dds",
+            ["@Lextra7"] = "OSI_Icon_Pack_for_guilds_MEPTBbIE_and_KPYTbIE_CKEJIETbI/icons/Lextra7.dds",
             ["@IngridBright"] = "OSI_Icon_Pack_for_guilds_MEPTBbIE_and_KPYTbIE_CKEJIETbI/icons/ingrid.dds",
             ["@MEPTBA"] = "OSI_Icon_Pack_for_guilds_MEPTBbIE_and_KPYTbIE_CKEJIETbI/icons/lusha.dds",
             ["@kpopklop"] = "OSI_Icon_Pack_for_guilds_MEPTBbIE_and_KPYTbIE_CKEJIETbI/icons/klop.dds",
@@ -14,6 +14,7 @@ local function OnPlayerActivated(eventCode)
 			["@TJIEHOCOC"] = "OSI_Icon_Pack_for_guilds_MEPTBbIE_and_KPYTbIE_CKEJIETbI/icons/raskumar.dds",
 			["@CKEJIET"] = "OSI_Icon_Pack_for_guilds_MEPTBbIE_and_KPYTbIE_CKEJIETbI/icons/CKEJIET.dds",
 			["@BO3HECJIACb"] = "OSI_Icon_Pack_for_guilds_MEPTBbIE_and_KPYTbIE_CKEJIETbI/icons/Mike.dds",
+			["@Tesenai"] = "OSI_Icon_Pack_for_guilds_MEPTBbIE_and_KPYTbIE_CKEJIETbI/icons/Tesenai.dds",
 			
         }
         

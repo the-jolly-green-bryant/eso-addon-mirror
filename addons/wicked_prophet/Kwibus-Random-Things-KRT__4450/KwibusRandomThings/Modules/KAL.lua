@@ -553,6 +553,9 @@ function KRT.KAL:GetLAMSubmenu()
                     else
                         EnsureLocalKickerWorkflow()
                     end
+                    if KRT.KWS and KRT.KWS.RefreshRows then
+                        KRT.KWS:RefreshRows()
+                    end
                 end,
                 width = "full",
             },

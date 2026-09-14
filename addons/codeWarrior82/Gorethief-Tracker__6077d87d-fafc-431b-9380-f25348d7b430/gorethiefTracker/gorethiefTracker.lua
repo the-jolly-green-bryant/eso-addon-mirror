@@ -5,6 +5,7 @@ local picPath = GetAbilityIcon(gorethiefAbilityID)
 local iconText = zo_iconTextFormat(picPath, 80, 80, " ")
 local isLoaded = false
 local isMenuOpen = false
+local buffRunning = false
 
 gorethiefTracker = {}
 
@@ -65,6 +66,49 @@ local function setAnchorIcon(x, y)
     gttrack:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, x, y)
 end
 
+--is buff active
+local function buffActive()
+    for i = 1, GetNumBuffs("player") do
+        local buffName, timeStarted, timeEnding, _, _, _, _, _, iconFilename, _, abilityId, _, _ = GetUnitBuffInfo("player", i)
+        
+        if abilityId == gorethiefAbilityID then
+            timeRemaining = timeEnding - GetFrameTimeSeconds()
+            return true
+        end
+    end
+    return false
+end
+
+
+local function trackStacks()
+    if buffActive() then
+
+        buffRunning = true
+
+        local time = timeRemaining
+
+        local text = ""
+
+        if time >= 10 then
+            text = string.format(" %d", time)
+        else
+            text = string.format("  %d", time)
+        end
+
+        if time > 0 then
+            gttrackLabelCorner:SetText(text)
+        else
+            gttrackLabelCorner:SetText("")
+        end
+
+        zo_callLater(function() trackStacks() end, 1000)
+    else
+        buffRunning = false
+        gttrackLabelCorner:SetText("")
+    end
+
+end
+
 --report when new effect is gained
 local function effectReport(eventCode, changeType, effectSlot, effectName, unitTag, beginTime, endTime, stackCount, iconName, buffType, 
     effectType, abilityType, statusEffectType, unitName, unitID, abilityID)
@@ -77,11 +121,10 @@ local function effectReport(eventCode, changeType, effectSlot, effectName, unitT
 
     if changeType == 2 then
         gttrackLabelMain:SetText("")
+        gttrackLabelCorner:SetText("")
 		--reset counter
         return
     end
-	
-	--gained a stack, start or reset counter to 30
 
     local text = ""
 
@@ -98,6 +141,10 @@ local function effectReport(eventCode, changeType, effectSlot, effectName, unitT
     end
     gttrackLabelMain:SetText(text)
 
+    if not buffRunning then
+        trackStacks()
+    end
+    
 end
 
 --register for notifications about archdruid proc
@@ -148,10 +195,8 @@ local function createOptions()
                 gorethiefTracker.savedVariables.trackGore = value
                 if not value then
                     unRegisterAlerts()
-                    gttrack:SetHidden(true)
                 else
                     registerAlerts()
-                    gttrack:SetHidden(false)
                 end
             end,
             default = gorethiefTracker.defaults.trackGore,
@@ -207,7 +252,7 @@ local function onAddOnLoaded(event, name)
     EVENT_MANAGER:UnregisterForEvent(appName, EVENT_ADD_ON_LOADED)
 
 	--notify that add-on has been loaded
-	zo_callLater(function() printMessageTest("add-on successfully loaded") end, 500)
+	zo_callLater(function() printMessageTest("add-on loaded") end, 500)
 
 	--load saved variables
     gorethiefTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("gttAddonVars", 1, "Settings", gorethiefTracker.defaults, GetUnitName("player"))
@@ -221,8 +266,10 @@ local function onAddOnLoaded(event, name)
     gttrack:SetMovable(true)
     gttrackIcon:SetFont("$(GAMEPAD_MEDIUM_FONT)|$(GP_54)|soft-shadow-thick")
     gttrackLabelMain:SetFont("$(GAMEPAD_BOLD_FONT)|$(GP_61)|soft-shadow-thick")
+    gttrackLabelCorner:SetFont("$(GAMEPAD_BOLD_FONT)|$(GP_27)|soft-shadow-thick")
     gttrackIcon:SetText(iconText)
     gttrackLabelMain:SetText("")
+    gttrackLabelCorner:SetText("")
     --gttrackLabelMain:SetColor(255, 255, 0, 255)
 
     setAnchorStartupIcon(gorethiefTracker.savedVariables.xAxisText, gorethiefTracker.savedVariables.yAxisText)

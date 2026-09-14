@@ -59,23 +59,17 @@ local function SoundItems()
         { name = L("SOUND_DISCOVER", "Objective found"), data = "discover" },
         { name = L("SOUND_RUNE", "Potency rune"), data = "rune" },
         { name = L("SOUND_GLYPH", "Glyph removed"), data = "glyph" },
-        { name = L("SOUND_QUEST", "Quest tick"), data = "quest" },
-        { name = L("SOUND_LEVEL", "Level up"), data = "level" },
         { name = L("SOUND_MAIL", "New mail"), data = "mail" },
-        { name = L("SOUND_SKILL", "Skill gained"), data = "skill" },
         { name = L("SOUND_LOCK", "Lock success"), data = "lock" },
-        { name = L("SOUND_READY", "Ready check"), data = "ready" },
         { name = L("SOUND_TICK", "Countdown tick"), data = "tick" },
         { name = L("SOUND_BGMIN", "Battleground 1 min"), data = "bgmin" },
         { name = L("SOUND_BGGO", "Battleground start"), data = "bggo" },
         { name = L("SOUND_TRIALOK", "Trial complete"), data = "trialok" },
         { name = L("SOUND_TRIALNO", "Trial failed"), data = "trialno" },
         { name = L("SOUND_ACHIEVE", "Achievement"), data = "achieve" },
-        { name = L("SOUND_SKY", "Skyshard"), data = "sky" },
         { name = L("SOUND_QDONE", "Quest complete"), data = "qdone" },
         { name = L("SOUND_QACC", "Quest accepted"), data = "qacc" },
         { name = L("SOUND_CHAMP", "Champion commit"), data = "champ" },
-        { name = L("SOUND_ABIL", "Ability unlocked"), data = "abil" },
         { name = L("SOUND_COLL", "Collectible"), data = "coll" },
         { name = L("SOUND_BOOK", "Book acquired"), data = "book" },
         { name = L("SOUND_ESS", "Essence rune"), data = "ess" },
@@ -85,11 +79,9 @@ local function SoundItems()
         { name = L("SOUND_GJOIN", "Group join"), data = "gjoin" },
         { name = L("SOUND_KOS", "Kill on sight"), data = "kos" },
         { name = L("SOUND_LBREAK", "Lockpick break"), data = "lbreak" },
-        { name = L("SOUND_KICK", "Instance kick"), data = "kick" },
         { name = L("SOUND_FANFARE", "Level fanfare"), data = "fanfare" },
         { name = L("SOUND_MEDAL", "Battleground medal"), data = "medal" },
         { name = L("SOUND_SPT", "Skill point"), data = "spt" },
-        { name = L("SOUND_MAP", "Map discovered"), data = "map" },
     }
 end
 
@@ -197,6 +189,21 @@ function T.RegisterSettings()
     })
 
     if LibHarven.ST_COLOR then
+        settings:AddSetting({
+            type = LibHarven.ST_COLOR,
+            label = L("COLOR1", "Color at 1 Crux"),
+            tooltip = L("COLOR1_TT", ""),
+            default = { 0.04, 0.78, 0.10, 1 },
+            getFunction = function()
+                return ColorGet(vars.color1, 0.04, 0.78, 0.10, 1)
+            end,
+            setFunction = function(r, g, b, a)
+                if type(vars.color1) ~= "table" then vars.color1 = {} end
+                ColorSet(vars.color1, r, g, b, a)
+                Refresh()
+            end,
+        })
+
         settings:AddSetting({
             type = LibHarven.ST_COLOR,
             label = L("COLOR2", "Color at 2 Crux"),

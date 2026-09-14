@@ -21,8 +21,14 @@ KRT.KWS = {
     selectedPlayers = {},
     selectedKicker = "",
     selectedLead = "",
+    leadHeader = nil,
+    kickerLabel = nil,
+    kickerControl = nil,
     kickerComboBox = nil,
+    leadLabel = nil,
+    leadControl = nil,
     leadComboBox = nil,
+    profilesHeader = nil,
     comboBox = nil,
     editBox = nil,
     kickBtn = nil,
@@ -116,6 +122,13 @@ end
 
 function KRT.KWS:PopulateLeadKickerDropdowns(members)
     if not self.kickerComboBox or not self.leadComboBox or not members then return end
+
+    if (not self.selectedLead or self.selectedLead == "") and KRT.sv and KRT.sv.kal and KRT.sv.kal.actualLead then
+        self.selectedLead = KRT.sv.kal.actualLead
+    end
+    if (not self.selectedKicker or self.selectedKicker == "") and KRT.sv and KRT.sv.kal and KRT.sv.kal.kickingPerson then
+        self.selectedKicker = KRT.sv.kal.kickingPerson
+    end
 
     KRT.DebounceNextFrame(ADDON_NAME .. "_PopulateDropdowns", function()
         if not self.kickerComboBox or not self.leadComboBox then return end
@@ -296,6 +309,7 @@ function KRT.KWS:CreateUI()
             leadHeader:SetFont("ZoFontWinH3")
             leadHeader:SetText("Lead Passing Settings")
             leadHeader:SetAnchor(TOPLEFT, win, TOPLEFT, 15, 400)
+            self.leadHeader = leadHeader
         end
 
         local kickerLabel = WM:CreateControl("$(parent)KickerLabel", win, CT_LABEL)
@@ -303,12 +317,14 @@ function KRT.KWS:CreateUI()
             kickerLabel:SetFont("ZoFontGame")
             kickerLabel:SetText("Kicker:")
             kickerLabel:SetAnchor(TOPLEFT, leadHeader, BOTTOMLEFT, 0, 8)
+            self.kickerLabel = kickerLabel
         end
 
         local kickerCtrl = WM:CreateControlFromVirtual("KwibusKickerComboBox", win, "ZO_ComboBox")
         if kickerCtrl and kickerLabel then
             kickerCtrl:SetDimensions(210, 24)
             kickerCtrl:SetAnchor(LEFT, kickerLabel, RIGHT, 10, 0)
+            self.kickerControl = kickerCtrl
             self.kickerComboBox = ZO_ComboBox_ObjectFromContainer(kickerCtrl)
             if self.kickerComboBox then
                 self.kickerComboBox:SetSortsItems(false)
@@ -320,12 +336,14 @@ function KRT.KWS:CreateUI()
             leadLabel:SetFont("ZoFontGame")
             leadLabel:SetText("Lead:")
             leadLabel:SetAnchor(TOPLEFT, kickerLabel, BOTTOMLEFT, 0, 12)
+            self.leadLabel = leadLabel
         end
 
         local leadCtrl = WM:CreateControlFromVirtual("KwibusLeadComboBox", win, "ZO_ComboBox")
         if leadCtrl and leadLabel then
             leadCtrl:SetDimensions(210, 24)
             leadCtrl:SetAnchor(LEFT, leadLabel, RIGHT, 22, 0)
+            self.leadControl = leadCtrl
             self.leadComboBox = ZO_ComboBox_ObjectFromContainer(leadCtrl)
             if self.leadComboBox then
                 self.leadComboBox:SetSortsItems(false)
@@ -339,6 +357,7 @@ function KRT.KWS:CreateUI()
             pTitle:SetFont("ZoFontWinH3")
             pTitle:SetText("Profiles")
             pTitle:SetAnchor(TOPLEFT, win, TOPLEFT, 15, 510)
+            self.profilesHeader = pTitle
         end
 
         local editBg = WM:CreateControlFromVirtual(nil, win, "ZO_EditBackdrop")
@@ -492,6 +511,25 @@ function KRT.KWS:RefreshRows()
 
     if not self.ui or self.ui:IsHidden() then return end
 
+    local isKalEnabled = KRT.sv and KRT.sv.kal and KRT.sv.kal.enabled
+
+    if self.leadHeader then self.leadHeader:SetHidden(not isKalEnabled) end
+    if self.kickerLabel then self.kickerLabel:SetHidden(not isKalEnabled) end
+    if self.kickerControl then self.kickerControl:SetHidden(not isKalEnabled) end
+    if self.leadLabel then self.leadLabel:SetHidden(not isKalEnabled) end
+    if self.leadControl then self.leadControl:SetHidden(not isKalEnabled) end
+
+    if self.profilesHeader then
+        self.profilesHeader:ClearAnchors()
+        if isKalEnabled then
+            self.profilesHeader:SetAnchor(TOPLEFT, self.ui, TOPLEFT, 15, 510)
+            self.ui:SetHeight(650)
+        else
+            self.profilesHeader:SetAnchor(TOPLEFT, self.ui, TOPLEFT, 15, 400)
+            self.ui:SetHeight(540)
+        end
+    end
+
     local isLeader = IsUnitGroupLeader("player")
     if self.kickBtn then
         self.kickBtn:SetEnabled((isLeader or SV().debug) and not self.isProcessing)
@@ -532,7 +570,9 @@ function KRT.KWS:RefreshRows()
 
     table.sort(members, SortGroupMembers)
 
-    self:PopulateLeadKickerDropdowns(members)
+    if isKalEnabled then
+        self:PopulateLeadKickerDropdowns(members)
+    end
 
     for i = 1, 12 do
         local row = self.rows[i]
@@ -703,6 +743,15 @@ end
 function KRT.KWS:Initialize()
     SV()
     self.myDisplayNameLower = string.lower(GetDisplayName() or "")
+
+    if KRT.sv and KRT.sv.kal then
+        if KRT.sv.kal.actualLead then
+            self.selectedLead = KRT.sv.kal.actualLead
+        end
+        if KRT.sv.kal.kickingPerson then
+            self.selectedKicker = KRT.sv.kal.kickingPerson
+        end
+    end
 
     RegisterOverwriteDialog()
     self:CreateUI()

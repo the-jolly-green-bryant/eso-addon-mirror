@@ -155,7 +155,13 @@ local function PlayStartSound()
     if vol == nil then vol = 2 end
     if vol < 1 then return end
     if vol > 5 then vol = 5 end
-    local spec = SOUND_KEYS[v.statusSoundId] or SOUND_KEYS.duel
+    local id = v.statusSoundId
+    if id == "ready" or id == "level" or id == "skill" or id == "abil"
+        or id == "quest" or id == "sky" or id == "map" or id == "kick" then
+        id = "duel"
+        v.statusSoundId = "duel"
+    end
+    local spec = SOUND_KEYS[id] or SOUND_KEYS.duel
     local payload = nil
     if SOUNDS and spec.key and SOUNDS[spec.key] then
         payload = SOUNDS[spec.key]

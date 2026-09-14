@@ -1009,29 +1009,25 @@ ZO_CreateStringId("BATTLESCROLLS_MEMDIAG_TEST_USAGE", "/bsmemtest [cancel|report
 ZO_CreateStringId("BATTLESCROLLS_RENAME", "Rename")
 ZO_CreateStringId("BATTLESCROLLS_RENAME_TEXT", "Enter a new name. Enter the original name (<<1>>) to reset it.")
 
--- Raid damage tab
-ZO_CreateStringId("BATTLESCROLLS_TAB_RAID_DAMAGE", "Raid Damage")
-ZO_CreateStringId("BATTLESCROLLS_STAT_RAID_DAMAGE", "Total Raid Damage")
-ZO_CreateStringId("BATTLESCROLLS_STAT_RAID_DPS", "Raid DPS")
+-- Group damage tab (everything the client observed: self + others, one pool)
+ZO_CreateStringId("BATTLESCROLLS_TAB_GROUP_DAMAGE", "Group Damage")
+ZO_CreateStringId("BATTLESCROLLS_FILTER_GROUP_DAMAGE", "Filter Group Damage")
+ZO_CreateStringId("BATTLESCROLLS_FILTER_OTHERS", "Others")
+ZO_CreateStringId("BATTLESCROLLS_TOOLTIP_GROUP_DAMAGE_SCOPE", "Everything your game client saw: your damage (pets and companions included) plus what it observed from everyone else nearby. The game does not report who dealt the rest, so Others is one pool.")
 
 -- Group table resurrection column
 ZO_CreateStringId("BATTLESCROLLS_GROUP_COL_RES", "Res")
 
 -- Group bar color preference
 ZO_CreateStringId("BATTLESCROLLS_SETTINGS_BAR_COLOR", "Your Bar Color")
-ZO_CreateStringId("BATTLESCROLLS_SETTINGS_BAR_COLOR_TEXT", "The color of your own bar in the Colorful Bars group meter. Shared with group members running Battle Scrolls, so they see your bar in this color too.")
+ZO_CreateStringId("BATTLESCROLLS_SETTINGS_BAR_COLOR_TEXT", "Group members using Battle Scrolls with the Bars design see your bar in this color. This works even if you use another design or turn off your own group meter.")
 ZO_CreateStringId("BATTLESCROLLS_COLOR_DEFAULT", "Default")
-ZO_CreateStringId("BATTLESCROLLS_COLOR_RED", "Red")
-ZO_CreateStringId("BATTLESCROLLS_COLOR_ORANGE", "Orange")
-ZO_CreateStringId("BATTLESCROLLS_COLOR_GOLD", "Gold")
-ZO_CreateStringId("BATTLESCROLLS_COLOR_GREEN", "Green")
-ZO_CreateStringId("BATTLESCROLLS_COLOR_TEAL", "Teal")
-ZO_CreateStringId("BATTLESCROLLS_COLOR_CYAN", "Cyan")
-ZO_CreateStringId("BATTLESCROLLS_COLOR_BLUE", "Blue")
-ZO_CreateStringId("BATTLESCROLLS_COLOR_PURPLE", "Purple")
-ZO_CreateStringId("BATTLESCROLLS_COLOR_PINK", "Pink")
-ZO_CreateStringId("BATTLESCROLLS_COLOR_WHITE", "White")
-ZO_CreateStringId("BATTLESCROLLS_COLOR_GREY", "Grey")
+ZO_CreateStringId("BATTLESCROLLS_COLOR_WHEEL", "Hue and saturation")
+ZO_CreateStringId("BATTLESCROLLS_COLOR_BRIGHTNESS", "Brightness")
+ZO_CreateStringId("BATTLESCROLLS_COLOR_HEX", "Hex code")
+ZO_CreateStringId("BATTLESCROLLS_COLOR_HEX_INVALID", "Enter six hex digits, for example #3EB6FF.")
+ZO_CreateStringId("BATTLESCROLLS_COLOR_SAVE", "Save")
+ZO_CreateStringId("BATTLESCROLLS_COLOR_SAVE_HINT", "Your bar will use this color in everyone’s Battle Scrolls Bars meter, whatever design you use.")
 
 -- Ultimate tracking (Activity tab)
 ZO_CreateStringId("BATTLESCROLLS_HEADER_ULTIMATE", "Ultimate")

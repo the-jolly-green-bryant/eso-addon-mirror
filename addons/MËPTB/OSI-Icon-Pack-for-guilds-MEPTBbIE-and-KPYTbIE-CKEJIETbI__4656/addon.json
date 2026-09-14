@@ -22,7 +22,7 @@
     "OSI_Icon_Pack_for_guilds_MEPTBbIE_and_KPYTbIE_CKEJIETbI"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4656/",
-  "fingerprint": "da2c8ba67fbb526e5599b54823297259ff77c0a41906332265198eee306be19a",
+  "fingerprint": "1cc73e806da578a095c559941645c1119b313f7bd9ab53ef2661a9fa832ef5a2",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16431.jpg"
   ],
@@ -32,11 +32,11 @@
   "source_id": "4656",
   "source_url": "https://www.esoui.com/downloads/info4656-OSIIconPackforguildsMEPTBbIEandKPYTbIECKEJIETbI.html",
   "stats": {
-    "downloads": 78,
+    "downloads": 107,
     "favorites": 2,
-    "monthly_downloads": 17
+    "monthly_downloads": 38
   },
   "title": "OSI Icon Pack for guilds MEPTBbIE and KPYTbIE CKEJIETbI",
-  "updated_at": 1787648812000,
-  "version": "1.13"
+  "updated_at": 1789317766000,
+  "version": "1.14"
 }

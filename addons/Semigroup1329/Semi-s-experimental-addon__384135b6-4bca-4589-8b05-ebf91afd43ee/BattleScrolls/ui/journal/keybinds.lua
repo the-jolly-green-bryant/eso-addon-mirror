@@ -594,7 +594,7 @@ function keybinds.initializeKeybindStripDescriptors(journalUI)
                 -- Only show on tabs that support filtering
                 return journalUI.selectedTab == STATS_TAB.DAMAGE_DONE
                     or journalUI.selectedTab == STATS_TAB.BOSS_DAMAGE_DONE
-                    or journalUI.selectedTab == STATS_TAB.RAID_DAMAGE
+                    or journalUI.selectedTab == STATS_TAB.GROUP_DAMAGE
                     or journalUI.selectedTab == STATS_TAB.DAMAGE_TAKEN
                     or journalUI.selectedTab == STATS_TAB.HEALING_OUT
                     or journalUI.selectedTab == STATS_TAB.HEALING_IN
@@ -850,7 +850,10 @@ function keybinds.initializeKeybindStripDescriptors(journalUI)
                 local targetData = journalUI.settingsList:GetTargetData()
                 return targetData ~= nil and (targetData.toggleFunction ~= nil or targetData.callback ~= nil)
             end,
-            sound = SOUNDS.DEFAULT_CLICK,
+            sound = function()
+                local targetData = journalUI.settingsList:GetTargetData()
+                return targetData and targetData.sound or SOUNDS.DEFAULT_CLICK
+            end,
         },
         {
             keybind = "UI_SHORTCUT_NEGATIVE",

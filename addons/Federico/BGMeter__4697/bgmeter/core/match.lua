@@ -119,21 +119,28 @@ function Match.flag_lanes(m, tspan)
             local t = math.min(math.max(ob.t[i] or 0, 0), tspan)
             local evl = CZ.OBJ_EVENT_LABEL[ob.ev[i]] or (ob.ev[i] == -1 and "initial") or "?"
             local own = ob.own[i] or 0
+            local absent = evl == "deactivated" or evl == "hidden" or ob.st[i] == CZ.OBJ_STATE_INACTIVE
             local ep = cur_ep[li]
-            if not ep then
-                local w0 = (packed or seen[li]) and t or 0
+            if absent then
+                if ep then
+                    close_seg(ep, t)
+                    ep.cur, ep.w1 = nil, t
+                    cur_ep[li] = nil
+                end
+                ep = nil
+            elseif not ep then
                 ep = { letter = tostring(info.letter), name = info.name, li = li,
-                       segs = {}, ticks = {}, cur = 0, t0 = w0, w0 = w0, w1 = nil }
+                       segs = {}, ticks = {}, cur = 0, t0 = t, w0 = t, w1 = nil }
                 episodes[#episodes + 1] = ep
                 cur_ep[li] = ep
                 seen[li] = true
             end
-            if evl == "initial" then
+            if ep and evl == "initial" then
                 if own ~= ep.cur then
                     close_seg(ep, t)
                     ep.cur, ep.t0 = own, t
                 end
-            elseif evl == "captured" or evl == "recaptured" then
+            elseif ep and (evl == "captured" or evl == "recaptured") then
                 if own ~= ep.cur then
                     close_seg(ep, t)
                     ep.cur, ep.t0 = own, t
@@ -141,15 +148,11 @@ function Match.flag_lanes(m, tspan)
                 else
                     ep.ticks[#ep.ticks + 1] = { t = t, own = own, kind = "def" }
                 end
-            elseif evl == "neutral" then
+            elseif ep and evl == "neutral" then
                 if ep.cur ~= 0 then
                     close_seg(ep, t)
                     ep.cur, ep.t0 = 0, t
                 end
-            elseif evl == "deactivated" then
-                close_seg(ep, t)
-                ep.cur, ep.w1 = nil, t
-                cur_ep[li] = nil
             end
         end
     end
@@ -177,10 +180,6 @@ function Match.flag_lanes(m, tspan)
             end
         end
         for _, lane in ipairs(lanes) do
-            if #lane.segs == 0 and #lane.ticks == 0 then
-                lane.segs[1] = { t0 = 0, t1 = tspan, own = 0 }
-                lane.covered = tspan
-            end
             if lane.covered > tspan then lane.covered = tspan end
         end
         return lanes
@@ -341,6 +340,95 @@ function Match.relic_lanes(m, tspan)
     return lanes
 end
 
+local CHUNK = 1500
+
+function Match.pack_series(arr, n)
+    local parts, prev = {}, 0
+    for i = 1, n do
+        local v = arr[i]
+        if v == nil then v = prev end
+        local d = v - prev
+        parts[i] = (d == 0) and "" or tostring(math.floor(d + 0.5))
+        prev = v
+    end
+    local s = table.concat(parts, ",")
+    local chunks = {}
+    for i = 1, #s, CHUNK do chunks[#chunks + 1] = s:sub(i, i + CHUNK - 1) end
+    return chunks
+end
+
+function Match.unpack_series(chunks, n)
+    if type(chunks) == "table" and type(chunks[1]) ~= "string" then return chunks end
+    local s = type(chunks) == "string" and chunks or table.concat(chunks or {})
+    local out, prev, i = {}, 0, 0
+    for tok in (s .. ","):gmatch("([^,]*),") do
+        i = i + 1
+        local d = tonumber(tok) or 0
+        prev = prev + d
+        out[i] = prev
+        if n and i >= n then break end
+    end
+    for k = i + 1, (n or i) do out[k] = prev end
+    return out
+end
+
+function Match.pack_timeline(m)
+    local tl = m and m.timeline
+    if not tl or not tl.p or not tl.t then return 0 end
+    local n, packed = #tl.t, 0
+    for _, rec in pairs(tl.p) do
+        if type(rec.d) == "table" then
+            rec.s = Match.pack_series(rec.d, n)
+            rec.d = nil
+            packed = packed + 1
+        end
+        rec.h = nil
+    end
+    return packed
+end
+
+function Match.damage_race(m)
+    local tl = m and m.timeline
+    if not tl or not tl.p or not tl.t or #tl.t < 2 then return nil end
+    local n = #tl.t
+    local team_of, mine = {}, nil
+    for _, r in ipairs(m.battle or {}) do
+        local nm = r.displayName or r.charName
+        if nm then
+            nm = (nm:gsub("%^.*$", ""))
+            team_of[nm] = r.team
+            if r.isLocal then mine = nm end
+        end
+    end
+    local series, teams, seen, maxv = {}, {}, {}, 0
+    local decoded = {}
+    for nm, rec in pairs(tl.p) do
+        decoded[nm] = rec.d or Match.unpack_series(rec.s, n)
+        local team = team_of[nm]
+        if team then
+            if not seen[team] then seen[team] = true; teams[#teams + 1] = team; series[team] = {} end
+            local row = series[team]
+            local src = decoded[nm]
+            for i = 1, n do
+                row[i] = (row[i] or 0) + (src[i] or 0)
+            end
+        end
+    end
+    if #teams == 0 then return nil end
+    table.sort(teams)
+    for _, team in ipairs(teams) do
+        local row = series[team]
+        for i = 1, n do if row[i] > maxv then maxv = row[i] end end
+    end
+    local own = nil
+    if mine and decoded[mine] then
+        own = {}
+        for i = 1, n do own[i] = decoded[mine][i] or 0 end
+    end
+    if maxv <= 0 then return nil end
+    return { n = n, teams = teams, series = series, mine = own, max = maxv }
+end
+
 function Match.combat_momentum(killfeed, tspan, windowMs, stepMs)
     if not killfeed or #killfeed < 4 or not tspan or tspan <= 0 then return nil end
     windowMs = windowMs or 60000
@@ -386,7 +474,7 @@ function Match.combat_momentum(killfeed, tspan, windowMs, stepMs)
         if s.mag > maxMag then maxMag = s.mag end
     end
     if #segs == 0 then return nil end
-    return segs, maxMag
+    return segs, maxMag, samples
 end
 
 function Match.lead_stats(tl)

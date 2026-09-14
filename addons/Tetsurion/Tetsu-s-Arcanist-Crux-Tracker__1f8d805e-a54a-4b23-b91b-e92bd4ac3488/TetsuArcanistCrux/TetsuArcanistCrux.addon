@@ -1,8 +1,8 @@
 ## Title: |cFFD700Tetsu's|r Arcanist Crux Tracker
 ## Author: Tetsurion
 ## Description: Console-first Crux stacks: icons, number, Fatecarver slot tint, sound at 3.
-## Version: 1.0.14
-## AddOnVersion: 10014
+## Version: 1.0.15
+## AddOnVersion: 10015
 ## APIVersion: 101050 101051
 ## SavedVariables: TetsuArcanistCruxSavedVars
 ## DependsOn: LibHarvensAddonSettings

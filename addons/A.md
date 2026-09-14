@@ -130,6 +130,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Aetherius Badge Filter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sirinsidiator/Aetherius-Badge-Filter__1354) | sirinsidiator | PC / Mac | 1.11.0 |
 | [Aetherius GuildHalls](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MecHaN1ck/Aetherius-GuildHalls__2813) | MecHaN1ck | PC / Mac | V0.0.6 |
 | [Aethluna Antiquarian's Eye Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/luocangli/Aethluna-Antiquarian-s-Eye-Helper__4646) | luocangli | PC / Mac | 1.1.1 |
+| [AffectionMaxxing](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/TheGodDrums/AffectionMaxxing__4834) | TheGodDrums | PC / Mac | 1.0.3 |
 | [AgonyWarning](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Citats/AgonyWarning__4028) | Citats | PC / Mac | 1.0 |
 | [Ags Invididual Item Price Filter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/be.ste/Ags-Invididual-Item-Price-Filter__2928) | be.ste | PC / Mac | 1.0.1 |
 | [AGS-SortOrder - MasterMerchant Deal](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Red_Freak/AGS-SortOrder---MasterMerchant-Deal__2518) | Red_Freak | PC / Mac | 0.0.2 |

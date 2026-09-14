@@ -566,7 +566,7 @@ function chronicler.computeTabVisibility(decodedEncounter)
             or decodedEncounter.crux ~= nil
             or decodedEncounter.zen ~= nil
             or (decodedEncounter.resurrections or 0) > 0,
-        hasRaidDamage = not ZO_IsTableEmpty(decodedEncounter.damageByUnitIdGroup),
+        hasGroupDamage = not ZO_IsTableEmpty(decodedEncounter.damageByUnitIdGroup),
     }
 end
 
@@ -579,7 +579,7 @@ local function getVisibleSubViews(groupKey, tabVis)
     local visibilityChecks = {
         [STATS_TAB.BOSS_DAMAGE_DONE] = tabVis.dealtDamageToBosses,
         [STATS_TAB.DAMAGE_DONE] = tabVis.dealtDamage,
-        [STATS_TAB.RAID_DAMAGE] = tabVis.hasRaidDamage,
+        [STATS_TAB.GROUP_DAMAGE] = tabVis.hasGroupDamage,
         [STATS_TAB.HEALING_OUT] = tabVis.hasHealingOutToGroup,
         [STATS_TAB.SELF_HEALING] = tabVis.hasSelfHealing,
         [STATS_TAB.HEALING_IN] = tabVis.hasHealingInFromGroup,

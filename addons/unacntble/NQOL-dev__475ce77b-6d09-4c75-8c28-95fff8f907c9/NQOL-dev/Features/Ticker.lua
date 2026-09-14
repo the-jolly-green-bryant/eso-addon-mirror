@@ -21,6 +21,10 @@ local MAIL_ICON = "EsoUI/Art/MenuBar/Gamepad/gp_playermenu_icon_mail.dds"
 local CLOCK_ICON_FILE = "nqol_clock.dds"
 local FOOD_DRINK_ICON = "EsoUI/Art/Crafting/provisioner_indexIcon_meat_up.dds"
 local SOUL_GEM_FALLBACK_ICON = "EsoUI/Art/Inventory/inventory_tabIcon_Craftbag_enchanting_up.dds"
+local ALL_XP_BONUS_ICON = "EsoUI/Art/Icons/Icon_Experience.dds"
+local MONSTER_KILL_XP_BONUS_ICON = "EsoUI/Art/TargetMarkers/Gamepad/Target_White_Skull.dds"
+local PLAYER_KILL_XP_BONUS_ICON = "EsoUI/Art/MenuBar/Gamepad/gp_playerMenu_icon_allianceWar.dds"
+local ESO_PLUS_XP_BONUS_ICON = "EsoUI/Art/Market/Gamepad/gp_ESOPlus_Chalice_WHITE_64.dds"
 local GAMEPLAY_SCENES = {
     hud = true,
     siegeBar = true,
@@ -123,6 +127,7 @@ local foodDrinkTimerValue
 
 local ICON_COLORS = {
     alliancePoints = { 0.85, 0.39, 1.00, 1 },
+    allXpBonus = { 1.00, 0.80, 0.22, 1 },
     armourDurability = { 0.92, 0.82, 0.58, 1 },
     autoInviteMode = { 0.50, 0.84, 1.00, 1 },
     bagSpace = { 0.62, 0.78, 1.00, 1 },
@@ -133,13 +138,16 @@ local ICON_COLORS = {
     cpXp = { 1.00, 0.55, 0.18, 1 },
     crownGems = { 0.50, 0.95, 0.95, 1 },
     endeavorSeals = { 0.55, 0.72, 1.00, 1 },
+    esoPlusXpBonus = { 1.00, 0.80, 0.22, 1 },
     foodDrinkTimer = { 1.00, 0.42, 0.78, 1 },
     fps = { 0.30, 0.95, 0.44, 1 },
     gold = { 1.00, 0.80, 0.22, 1 },
     latency = { 0.45, 0.82, 1.00, 1 },
     mailCount = { 0.96, 0.70, 0.26, 1 },
     memoryUsage = { 1.00, 0.42, 0.30, 1 },
+    monsterKillXpBonus = { 1.00, 0.80, 0.22, 1 },
     mountFeedTimer = { 0.72, 0.52, 0.32, 1 },
+    playerKillXpBonus = { 1.00, 0.80, 0.22, 1 },
     soulGems = { 0.82, 0.48, 1.00, 1 },
     tamrielTime = { 0.78, 0.58, 0.26, 1 },
     telVarStones = { 0.64, 1.00, 0.42, 1 },
@@ -451,6 +459,35 @@ local function GetCpOrLevelXpValue()
     return FormatNumber(GetUnitXP("player") or 0) .. "/" .. FormatNumber(GetUnitXPMax("player") or 0)
 end
 
+local function GetAdvancedStatPercentValue(statType)
+    if not GetAdvancedStatValue or statType == nil then
+        return nil
+    end
+
+    local _, _, percentValue = GetAdvancedStatValue(statType)
+    if percentValue == nil then
+        return nil
+    end
+
+    if zo_strformat and SI_STAT_VALUE_PERCENT then
+        return zo_strformat(SI_STAT_VALUE_PERCENT, percentValue)
+    end
+
+    return tostring(percentValue) .. "%"
+end
+
+local function CreateXpBonusEntry(key, labelKey, tooltipKey, statType, icon)
+    return {
+        key = key,
+        label = NQOL.L(labelKey),
+        tooltip = NQOL.L(tooltipKey),
+        icon = icon,
+        getValue = function()
+            return GetAdvancedStatPercentValue(statType)
+        end,
+    }
+end
+
 local function IsFoodOrDrinkBuffAbility(abilityId)
     local lib = LibFoodDrinkBuff or LIB_FOOD_DRINK_BUFF
     if not lib or not abilityId or abilityId == 0 then
@@ -652,6 +689,13 @@ local entryDefinitions = {
         CURT_ALLIANCE_POINTS,
         CURRENCY_LOCATION_CHARACTER
     ),
+    CreateXpBonusEntry(
+        "allXpBonus",
+        "features.ticker.all_xp_bonus",
+        "features.ticker.all_xp_bonus_tooltip",
+        ADVANCED_STAT_DISPLAY_TYPE_ALL_XP,
+        ALL_XP_BONUS_ICON
+    ),
     {
         key = "armourDurability",
         label = NQOL.L("features.ticker.armour_durability_46cb791"),
@@ -721,6 +765,13 @@ local entryDefinitions = {
         hideIconWhenMissing = true,
         getValue = GetCpOrLevelXpValue,
     },
+    CreateXpBonusEntry(
+        "esoPlusXpBonus",
+        "features.ticker.eso_plus_xp_bonus",
+        "features.ticker.eso_plus_xp_bonus_tooltip",
+        ADVANCED_STAT_DISPLAY_TYPE_SUBSCRIBER_ALL_XP,
+        ESO_PLUS_XP_BONUS_ICON
+    ),
     CreateCurrencyEntry(
         "crownGems",
         "features.ticker.currency.crown_gems",
@@ -798,6 +849,13 @@ local entryDefinitions = {
             return string.format("%.1f/%d MB", GetTotalUserAddOnMemoryPoolUsageMB() or 0, GetTotalUserAddOnMemoryPoolCapacityMB() or 0)
         end,
     },
+    CreateXpBonusEntry(
+        "monsterKillXpBonus",
+        "features.ticker.monster_kill_xp_bonus",
+        "features.ticker.monster_kill_xp_bonus_tooltip",
+        ADVANCED_STAT_DISPLAY_TYPE_MONSTER_KILL_XP,
+        MONSTER_KILL_XP_BONUS_ICON
+    ),
     {
         key = "mailCount",
         label = NQOL.L("features.ticker.mail_count_64acf2a"),
@@ -817,6 +875,13 @@ local entryDefinitions = {
             return FormatMilliseconds(GetTimeUntilCanBeTrained() or 0)
         end,
     },
+    CreateXpBonusEntry(
+        "playerKillXpBonus",
+        "features.ticker.player_kill_xp_bonus",
+        "features.ticker.player_kill_xp_bonus_tooltip",
+        ADVANCED_STAT_DISPLAY_TYPE_PLAYER_KILL_XP,
+        PLAYER_KILL_XP_BONUS_ICON
+    ),
     {
         key = "soulGems",
         label = NQOL.L("features.ticker.soul_gems_93a52f5"),
@@ -907,6 +972,7 @@ end)
 NQOL.Lexicon.RegisterRefreshCallback(function()
     local keys = {
         armourDurability = { "features.ticker.armour_durability_46cb791", "features.ticker.shows_the_lowest_equipped_armor_durability_hides_whe_e1703b5" },
+        allXpBonus = { "features.ticker.all_xp_bonus", "features.ticker.all_xp_bonus_tooltip" },
         autoInviteMode = { "features.ticker.auto_invite_mode_0b70d75", "features.ticker.shows_the_current_grouping_auto_invite_mode_ab7d773" },
         bagSpace = { "features.ticker.bag_space_91d1a8c", "features.ticker.shows_used_and_total_backpack_slots_973d506" },
         challengeDifficulty = { "features.ticker.challenge_difficulty_dc6ccb7", "features.ticker.shows_this_character_s_selected_challenge_difficulty_ea76d12" },
@@ -914,13 +980,16 @@ NQOL.Lexicon.RegisterRefreshCallback(function()
         clock12 = { "features.ticker.clock12", "features.ticker.clock12_tooltip" },
         cp = { "features.ticker.cp_f19057b", "features.ticker.shows_the_account_s_current_champion_points_or_this__d485fb9" },
         cpXp = { "features.ticker.cp_xp_85779db", "features.ticker.shows_champion_xp_progress_or_level_xp_before_champi_bf38c0c" },
+        esoPlusXpBonus = { "features.ticker.eso_plus_xp_bonus", "features.ticker.eso_plus_xp_bonus_tooltip" },
         foodDrinkTimer = { "features.ticker.food_drink_timer", "features.ticker.food_drink_timer_tooltip" },
         fps = { "features.ticker.fps_fce204a", "features.ticker.shows_current_frames_per_second_ff66e76" },
         gold = { "features.ticker.gold_amount_7afd1ac", "features.ticker.shows_this_character_s_carried_gold_52d8a95" },
         latency = { "features.ticker.latency_3e39972", "features.ticker.shows_current_connection_latency_af9f590" },
         memoryUsage = { "features.ticker.memory_usage_530f6dd", "features.ticker.shows_used_and_available_add_on_memory_498e68d" },
+        monsterKillXpBonus = { "features.ticker.monster_kill_xp_bonus", "features.ticker.monster_kill_xp_bonus_tooltip" },
         mailCount = { "features.ticker.mail_count_64acf2a", "features.ticker.shows_unread_mail_when_new_mail_is_waiting_a3239b6" },
         mountFeedTimer = { "features.ticker.mount_feed_timer_f8b529a", "features.ticker.shows_time_until_this_character_can_train_riding_aga_8a9b569" },
+        playerKillXpBonus = { "features.ticker.player_kill_xp_bonus", "features.ticker.player_kill_xp_bonus_tooltip" },
         soulGems = { "features.ticker.soul_gems_93a52f5", "features.ticker.shows_filled_soul_gems_in_the_backpack_6321f4d" },
         tamrielTime = { "features.ticker.tamriel_time_eb46349", "features.ticker.shows_the_current_tamriel_time_in_24_hour_format_77f9d47" },
         vampireLevel = { "features.ticker.vampire_level_47fd8ae", "features.ticker.shows_this_character_s_current_vampire_stage_9c7d8b8" },

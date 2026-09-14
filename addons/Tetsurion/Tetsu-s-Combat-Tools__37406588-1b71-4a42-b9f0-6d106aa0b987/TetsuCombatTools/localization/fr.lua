@@ -85,6 +85,8 @@ TetsuCombatTools.L = {
     CONS_POT_SOUND_TT = "Desactive par defaut. Meme son que la nourriture.",
     CONS_END_SOUND = "Son de fin",
     CONS_END_SOUND_TT = "Un son integre pour la fin de nourriture et de potion.",
+    CONS_END_SOUND_VOL = "Volume du son de fin",
+    CONS_END_SOUND_VOL_TT = "Combien de fois empiler le son (0 = muet, 5 = plus fort).",
     CONS_MSG = "Texte de fin en instance",
     CONS_MSG_TT = "Ligne courte quand nourriture ou potion se termine. Donjon / epreuve / arene / archive / JcJ seulement.",
     CONS_MSG_FOOD_ON = "Texte fin de nourriture",

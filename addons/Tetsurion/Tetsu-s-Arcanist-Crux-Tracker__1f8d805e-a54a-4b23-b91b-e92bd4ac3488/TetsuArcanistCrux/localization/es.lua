@@ -19,6 +19,9 @@ L.SHOW_BAR_TT = "Capa en cada habilidad que gasta Crux. Oculta con 0–1. No rec
 L.COMBAT_ONLY = "Solo en combate"
 L.COMBAT_ONLY_TT = "On = iconos, cifra y tinte se ocultan fuera de combate. La vista previa del menú sigue."
 
+L.COLOR1 = "Color a 1 Crux"
+L.COLOR1_TT = "Iconos y cifra. Verde por defecto."
+
 L.COLOR2 = "Color a 2 Crux"
 L.COLOR2_TT = "Iconos, cifra y barra. Amarillo por defecto."
 

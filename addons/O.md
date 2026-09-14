@@ -42,7 +42,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Optimal Weave](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/VollständigerName/Optimal-Weave__4211) | VollständigerName | PC / Mac | 1.17.0 |
 | [Opulent Ordeal Navigator (OON)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/donlup/Opulent-Ordeal-Navigator-OON__4647) | donlup | PC / Mac | 0.1.1 |
 | [Orgeborn](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lledos/Orgeborn__4278) | Lledos | PC / Mac | 1.0 |
-| [OSI Icon Pack for guilds MEPTBbIE and KPYTbIE CKEJIETbI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MËPTB/OSI-Icon-Pack-for-guilds-MEPTBbIE-and-KPYTbIE-CKEJIETbI__4656) | MËPTB | PC / Mac | 1.13 |
+| [OSI Icon Pack for guilds MEPTBbIE and KPYTbIE CKEJIETbI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MËPTB/OSI-Icon-Pack-for-guilds-MEPTBbIE-and-KPYTbIE-CKEJIETbI__4656) | MËPTB | PC / Mac | 1.14 |
 | [Ossein Assist](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/goron_spice/Ossein-Assist__fea36b82-af6d-4ba4-803b-94703baf934a) | goron_spice | Console | — |
 | [Ossein Cage Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wondernuts/Ossein-Cage-Helper__4127) | Wondernuts | PC / Mac | 0.6.0 |
 | [Otter Icons For Ody's](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/mr_coops/Otter-Icons-For-Ody-s__3540) | mr_coops | PC / Mac | 2 |

@@ -100,6 +100,8 @@ TetsuCombatTools.L = {
     CONS_POT_SOUND_TT = "Standard aus. Gleicher Ton wie beim Essen — unten wählen.",
     CONS_END_SOUND = "Ende-Ton",
     CONS_END_SOUND_TT = "Ein eingebauter Ton für Essen- und Trank-Ende.",
+    CONS_END_SOUND_VOL = "Lautstärke Endton",
+    CONS_END_SOUND_VOL_TT = "Wie oft der Ton gestapelt wird (0 = still, 5 = am lautesten).",
     CONS_MSG = "Ende-Text in Instanzen",
     CONS_MSG_TT = "Kurze Zeile wenn Essen oder Trank endet. Nur Dungeon / Prüfung / Arena / Archiv / PvP. Nicht in der offenen Welt.",
     CONS_MSG_FOOD_ON = "Essen-Ende-Text",

@@ -297,6 +297,24 @@ local function renderDpsMeterGroupSettings(list, settings, defaults, onRefresh, 
     }
     list:AddEntry("ZO_GamepadOptionsCheckboxRowWithHeader", groupEnabledData)
 
+    -- This preference controls how others see you, independently of your own meter.
+    local r, g, b = BattleScrolls.dpsMeterUtils.ColorFromName(BattleScrolls.utils.GetUndecoratedDisplayName())
+    -- Use a tintable texture: the gamepad font does not render the square glyph.
+    local swatch = ZO_ColorDef:New(r, g, b):Colorize(zo_iconFormatInheritColor("EsoUI/Art/Dye/Gamepad/dye_square.dds", 24, 24))
+    list:AddEntry("ZO_GamepadOptionsLabelRow", {
+        text = string.format("%s %s", GetString(BATTLESCROLLS_SETTINGS_BAR_COLOR), swatch),
+        sound = SOUNDS.NONE, -- The picker plays the native dialog opening sound.
+        tooltip = textTooltip(GetString(BATTLESCROLLS_SETTINGS_BAR_COLOR), GetString(BATTLESCROLLS_SETTINGS_BAR_COLOR_TEXT)),
+        onSelected = function()
+            -- A preview from a preceding design/size setting must not cover this control.
+            local meter = BattleScrolls.dpsMeter
+            if meter and meter.isPreviewActive then meter:EndPreview() end
+        end,
+        callback = function()
+            journal.colorPicker:show(onRefresh)
+        end,
+    })
+
     -- Only show group meter settings when enabled
     local groupEnabled = settings and settings.dpsMeterGroupEnabled ~= false
     if not groupEnabled then return end
@@ -387,48 +405,6 @@ local function renderDpsMeterGroupSettings(list, settings, defaults, onRefresh, 
             }
             list:AddEntry("ZO_GamepadHorizontalListRow", settingData)
         end
-    end
-
-    -- Own bar color for the colorful bars design (shared to group, protocol 435)
-    if currentGroupDesignId == "bars" then
-        local colorValues = { "", "FF5A5A", "FF9432", "FFC93C", "5AD25A", "2FD5C8", "3EB6FF", "4C6EFF", "9B59F6", "FF6EC7", "F0F0F0", "9D9D9D" }
-        local colorNameIds = {
-            BATTLESCROLLS_COLOR_DEFAULT, BATTLESCROLLS_COLOR_RED, BATTLESCROLLS_COLOR_ORANGE,
-            BATTLESCROLLS_COLOR_GOLD, BATTLESCROLLS_COLOR_GREEN, BATTLESCROLLS_COLOR_TEAL,
-            BATTLESCROLLS_COLOR_CYAN, BATTLESCROLLS_COLOR_BLUE, BATTLESCROLLS_COLOR_PURPLE,
-            BATTLESCROLLS_COLOR_PINK, BATTLESCROLLS_COLOR_WHITE, BATTLESCROLLS_COLOR_GREY,
-        }
-        local colorStrings = {}
-        for i, hex in ipairs(colorValues) do
-            local name = GetString(colorNameIds[i])
-            if hex == "" then
-                colorStrings[i] = name
-            else
-                colorStrings[i] = string.format("|c%s■|r %s", hex, name)
-            end
-        end
-        local barColorData = {
-            text = GetString(BATTLESCROLLS_SETTINGS_BAR_COLOR),
-            valid = colorValues,
-            valueStrings = colorStrings,
-            tooltip = textTooltip(GetString(BATTLESCROLLS_SETTINGS_BAR_COLOR), GetString(BATTLESCROLLS_SETTINGS_BAR_COLOR_TEXT)),
-            getFunction = function()
-                return settings and settings.groupBarColor or ""
-            end,
-            setFunction = function(value)
-                local newValue = value ~= "" and value or nil
-                if settings and settings.groupBarColor ~= newValue then
-                    settings.groupBarColor = newValue
-                    if BattleScrolls.prefsShare then
-                        BattleScrolls.prefsShare:OnColorChanged()
-                    end
-                    if BattleScrolls.dpsMeter then
-                        BattleScrolls.dpsMeter:ShowPreview()
-                    end
-                end
-            end,
-        }
-        list:AddEntry("ZO_GamepadHorizontalListRow", barColorData)
     end
 
     -- Group position dropdown (only shown when personal is also enabled)

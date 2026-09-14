@@ -1,6 +1,6 @@
 {
   "archive_format": "zip",
-  "archive_path": "addons/Duesentrieb/Combat-Coordination---3D-Ground-Effects-LaunchPad-Slayer-Arkasis-Raidlead-Tools__4449",
+  "archive_path": "addons/Duesentrieb/Combat-Coordination---3D-Effects-LaunchPad-Spaulder-Slayer-Arkasis-Raidlead-Tool__4449",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
   "archived": true,
   "author": "Duesentrieb",
@@ -54,25 +54,26 @@
     "CombatCoordination"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4449/",
-  "fingerprint": "6973b7677faa256f22717d2d7791c2216bbf2aa6bff5703994e6b928e5453266",
+  "fingerprint": "f2f73a776f8aaf16ba979eba93361ae5fd1e58779bd3504d9eb32e4396067afb",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16950.png",
     "https://cdn-eso.mmoui.com/preview/pvw16949.png",
     "https://cdn-eso.mmoui.com/preview/pvw16951.png",
     "https://cdn-eso.mmoui.com/preview/pvw16953.png",
-    "https://cdn-eso.mmoui.com/preview/pvw17000.png"
+    "https://cdn-eso.mmoui.com/preview/pvw17000.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17361.png"
   ],
   "platform": "pc",
   "published": true,
   "source": "esoui",
   "source_id": "4449",
-  "source_url": "https://www.esoui.com/downloads/info4449-CombatCoordination-3DGroundEffectsLaunchPadSlayerArkasisRaidleadTools.html",
+  "source_url": "https://www.esoui.com/downloads/info4449-CombatCoordination-3DEffectsLaunchPadSpaulderSlayerArkasisRaidleadTools.html",
   "stats": {
-    "downloads": 702,
+    "downloads": 778,
     "favorites": 7,
-    "monthly_downloads": 370
+    "monthly_downloads": 326
   },
-  "title": "Combat Coordination - 3D Ground Effects, LaunchPad, Slayer & Arkasis, Raidlead Tools",
-  "updated_at": 1788450840000,
-  "version": "20260903-0007"
+  "title": "Combat Coordination - 3D Effects, LaunchPad, Spaulder, Slayer, Arkasis, Raidlead Tools",
+  "updated_at": 1789333954000,
+  "version": "20260913-0008"
 }

@@ -119,13 +119,18 @@ local SOUND_LABEL = {
 }
 
 local SOUND_ORDER = {
-    "duel", "kill", "alert", "notify", "discover", "ready", "tick",
-    "level", "fanfare", "mail", "skill", "spt", "abil",
-    "qacc", "qdone", "quest", "achieve", "sky", "map",
+    "duel", "kill", "alert", "notify", "discover", "tick",
+    "fanfare", "mail", "spt",
+    "qacc", "qdone", "achieve",
     "trialok", "trialno", "bgmin", "bggo", "medal",
     "rune", "ess", "asp", "glyph", "alc",
-    "lock", "lbreak", "friend", "gjoin", "kos", "kick",
+    "lock", "lbreak", "friend", "gjoin", "kos",
     "coll", "book", "champ",
+}
+
+local SOUND_REMOVED = {
+    ready = true, level = true, skill = true, abil = true,
+    quest = true, sky = true, map = true, kick = true,
 }
 
 local function SoundItems()
@@ -139,6 +144,9 @@ local function SoundItems()
 end
 
 local function SoundLabel(id)
+    if SOUND_REMOVED[id] then
+        id = "duel"
+    end
     local spec = SOUND_LABEL[id or "duel"] or SOUND_LABEL.duel
     return L(spec[1], spec[2])
 end
@@ -168,7 +176,7 @@ function T.RegisterSettings()
         allowDefaults = true,
     })
     if not settings then return end
-    settings.version = "1.5.0"
+    settings.version = "1.5.2"
     settings.author = "Tetsurion"
 
     settings:AddSetting({
@@ -830,6 +838,25 @@ function T.RegisterSettings()
         end,
         setFunction = function(control, itemName, itemData)
             vars.consEndSoundId = (itemData and itemData.data) or "alert"
+            if T.PlayConsEndSound then T.PlayConsEndSound() end
+        end,
+    })
+
+    settings:AddSetting({
+        type = LibHarven.ST_SLIDER,
+        label = L("CONS_END_SOUND_VOL", "End sound volume"),
+        tooltip = L("CONS_END_SOUND_VOL_TT", ""),
+        min = 0,
+        max = 5,
+        step = 1,
+        default = 2,
+        disable = ConsEndSoundOff,
+        getFunction = function()
+            return tonumber(vars.consEndSoundVolume) or 2
+        end,
+        setFunction = function(val)
+            vars.consEndSoundVolume = tonumber(val) or 2
+            if T.PlayConsEndSound then T.PlayConsEndSound() end
         end,
     })
 

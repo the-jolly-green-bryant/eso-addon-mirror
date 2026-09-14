@@ -11,6 +11,7 @@ local DEFAULTS = { isi = {
     enableReposition = false,
     showArmorWeights = true,
     showArmorTraits = true,
+    colorCodedTraits = false,
     showAbilityWarning = true,
     showMissingGearWarning = true,
     showLocationTags = true,
@@ -56,6 +57,34 @@ local ROW_H = 21
 local STAT_COLOR = {0.925, 0.925, 1.000, 1}
 local GREEN = {0.36, 1.00, 0.36, 1}
 local RED = {1.00, 0.36, 0.36, 1}
+
+-- Trait Hex Colors (with resilient fallbacks for ESO enum variants)
+local TRAIT_HEX_COLORS = {
+    -- Core Meta Traits (High Visibility)
+    [ITEM_TRAIT_TYPE_ARMOR_DIVINES or ITEM_TRAIT_TYPE_DIVINES or 18]         = "FFD700", -- Radiant Gold
+    [ITEM_TRAIT_TYPE_ARMOR_INFUSED or ITEM_TRAIT_TYPE_INFUSED or 16]         = "00E5FF", -- Arcane Cyan
+    [ITEM_TRAIT_TYPE_ARMOR_STURDY or ITEM_TRAIT_TYPE_STURDY or 11]           = "FF9900", -- Amber Orange
+    [ITEM_TRAIT_TYPE_ARMOR_REINFORCED or ITEM_TRAIT_TYPE_REINFORCED or 13]   = "80C8FF", -- Steel Ice Blue
+    [ITEM_TRAIT_TYPE_ARMOR_WELL_FITTED or ITEM_TRAIT_TYPE_WELL_FITTED or 14] = "00FF66", -- Neon Green
+
+    -- Niche Combat
+    [ITEM_TRAIT_TYPE_ARMOR_IMPENETRABLE or ITEM_TRAIT_TYPE_IMPENETRABLE or 12]     = "FF3344", -- Crimson Red
+    [ITEM_TRAIT_TYPE_ARMOR_INVIGORATING or ITEM_TRAIT_TYPE_INVIGORATING or 25]     = "C678DD", -- Soft Orchid Purple
+    [ITEM_TRAIT_TYPE_ARMOR_NIRNHONED or ITEM_TRAIT_TYPE_NIRNHONED or 26]           = "C85A32", -- Copper Maroon
+
+    -- Progression / Economy (Muted)
+    [ITEM_TRAIT_TYPE_ARMOR_TRAINING or ITEM_TRAIT_TYPE_TRAINING or 15]   = "98C379", -- Muted Olive
+    [ITEM_TRAIT_TYPE_ARMOR_INTRICATE or ITEM_TRAIT_TYPE_INTRICATE or 20] = "828997", -- Slate Gray
+    [ITEM_TRAIT_TYPE_ARMOR_ORNATE or ITEM_TRAIT_TYPE_ORNATE or 19]       = "A07A48", -- Muted Bronze
+}
+
+local function ColorizeTrait(traitType, text)
+    local hex = TRAIT_HEX_COLORS[traitType]
+    if hex then
+        return string.format("|c%s%s|r", hex, text)
+    end
+    return text
+end
 
 -- Slots
 local ARMOR_SLOTS = {
@@ -573,6 +602,9 @@ function KRT.ISI:UpdateOverlay()
             for _, t in ipairs(traitsList) do
                 if t.count and t.count > 0 then
                     local label = (distinct <= 2) and GetArmorTraitNameFull(t.traitType) or GetArmorTraitShort(t.traitType)
+                    if SV().colorCodedTraits ~= false then
+                        label = ColorizeTrait(t.traitType, label)
+                    end
                     parts[#parts + 1] = string.format("%dx %s", t.count, label)
                     shown = shown + 1
                     if distinct > 2 and shown >= 4 then break end
@@ -888,6 +920,19 @@ function KRT.ISI:GetLAMSubmenu()
                 type = "submenu",
                 name = "Color Options",
                 controls = {
+                    {
+                        type = "checkbox",
+                        name = "Color-coded armour traits",
+                        tooltip = "Applies distinct thematic colors to equipped armor trait labels.",
+                        getFunc = function() 
+                            if SV().colorCodedTraits == nil then return true else return SV().colorCodedTraits end 
+                        end,
+                        setFunc = function(value) 
+                            SV().colorCodedTraits = value 
+                            self:UpdateOverlay() 
+                        end,
+                        disabled = function() return not SV().enabled or not SV().showArmorTraits end,
+                    },
                     {
                         type = "colorpicker",
                         name = "Monster Set Color",

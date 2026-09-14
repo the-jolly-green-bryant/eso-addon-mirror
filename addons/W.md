@@ -30,7 +30,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [WeaveDelays](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ThePsiioniic/WeaveDelays__1428d8ab-7f1f-4741-833a-93180287dd09) | ThePsiioniic | Console | — |
 | [Weaving Metronome](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FiNk3F13/Weaving-Metronome__c1b4f7e7-7899-4d68-ab6a-6ce46c563cc5) | FiNk3F13 | Console | — |
 | [Well Eater](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/esorochinskiy/Well-Eater__3378) | esorochinskiy | PC / Mac | 1.2.0 |
-| [Werewolf Rave](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Erickson9610/Werewolf-Rave__4739) | Erickson9610 | PC / Mac | 1.3.3 |
+| [Werewolf Rave](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Erickson9610/Werewolf-Rave__4739) | Erickson9610 | PC / Mac | 1.3.5 |
 | [Werewolf Timer Bar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/maximoz/Werewolf-Timer-Bar__2911) | maximoz | PC / Mac | 2.6 |
 | [Werewolf Timer Bar Updated](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PhnxZ/Werewolf-Timer-Bar-Updated__3814) | PhnxZ | PC / Mac | 3.05 |
 | [Werewolf Timer Icon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/maximoz/Werewolf-Timer-Icon__2912) | maximoz | PC / Mac | 2.6 |

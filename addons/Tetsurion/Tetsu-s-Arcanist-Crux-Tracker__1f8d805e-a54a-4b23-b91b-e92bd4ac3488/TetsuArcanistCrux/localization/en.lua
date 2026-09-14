@@ -18,6 +18,9 @@ TetsuArcanistCrux.L = {
     COMBAT_ONLY = "Only in combat",
     COMBAT_ONLY_TT = "On = icons, number and bar tint hide out of combat. Preview from this menu still works.",
 
+    COLOR1 = "Color at 1 Crux",
+    COLOR1_TT = "Icons and number use this at 1 stack. Default green.",
+
     COLOR2 = "Color at 2 Crux",
     COLOR2_TT = "Icons, number and bar overlay use this at 2 stacks. Default yellow.",
 

@@ -289,7 +289,9 @@ local function migrateEncounter(encounter, instance, staged)
 end
 
 ---Migrates one instance transactionally. Commits only when every encounter
----verified; otherwise the instance is left untouched.
+---verified; otherwise the instance is left untouched. Runs under the storage
+---write mutex: the setups interned along the way are referenced only once
+---the instance commits, and a prune in between would drop them.
 ---@param instance InstanceWithIndex
 ---@param totals MigrationTotals
 ---@return boolean committed
@@ -402,7 +404,10 @@ local function runMigrationAsync()
 
         for _, instance in ipairs(pending) do
             waitOutCombat()
-            if not migrateInstance(instance, totals) then
+            local migrated = BattleScrolls.storage.writeMutex:WithPermit(LibEffect.Async(function()
+                return migrateInstance(instance, totals)
+            end)):Await()
+            if not migrated then
                 -- Not user-facing: nothing actionable, the old format
                 -- stays readable. Details are in the Warn log.
                 instance._migrationFailed = true

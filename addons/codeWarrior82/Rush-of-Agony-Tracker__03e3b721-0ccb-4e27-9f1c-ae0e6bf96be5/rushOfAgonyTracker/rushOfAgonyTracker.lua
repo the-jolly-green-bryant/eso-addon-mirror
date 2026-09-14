@@ -152,10 +152,8 @@ local function createOptions()
                 rushOfAgonyTracker.savedVariables.trackRush = value
                 if not value then
                     unRegisterAlerts()
-                    roatrack:SetHidden(true)
                 else
                     registerAlerts()
-                    roatrack:SetHidden(false)
                 end
             end,
             default = rushOfAgonyTracker.defaults.trackRush,
@@ -211,7 +209,7 @@ local function onAddOnLoaded(event, name)
     EVENT_MANAGER:UnregisterForEvent(appName, EVENT_ADD_ON_LOADED)
 
 	--notify that add-on has been loaded
-	zo_callLater(function() printMessage("add-on successfully loaded") end, 500)
+	zo_callLater(function() printMessage("add-on loaded") end, 500)
 
 	--load saved variables
     rushOfAgonyTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("roatAddonVars", 1, "Settings", rushOfAgonyTracker.defaults, GetUnitName("player"))

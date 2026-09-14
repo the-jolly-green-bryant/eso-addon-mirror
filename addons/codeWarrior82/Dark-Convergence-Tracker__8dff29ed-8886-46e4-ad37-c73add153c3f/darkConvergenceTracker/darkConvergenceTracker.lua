@@ -152,10 +152,8 @@ local function createOptions()
                 darkConvergenceTracker.savedVariables.trackDark = value
                 if not value then
                     unRegisterAlerts()
-                    dctrack:SetHidden(true)
                 else
                     registerAlerts()
-                    dctrack:SetHidden(false)
                 end
             end,
             default = darkConvergenceTracker.defaults.trackDark,
@@ -211,7 +209,7 @@ local function onAddOnLoaded(event, name)
     EVENT_MANAGER:UnregisterForEvent(appName, EVENT_ADD_ON_LOADED)
 
 	--notify that add-on has been loaded
-	zo_callLater(function() printMessage("add-on successfully loaded") end, 500)
+	zo_callLater(function() printMessage("add-on loaded") end, 500)
 
 	--load saved variables
     darkConvergenceTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("dctAddonVars", 1, "Settings", darkConvergenceTracker.defaults, GetUnitName("player"))

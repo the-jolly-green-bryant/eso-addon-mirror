@@ -245,6 +245,7 @@ BattleScrolls = BattleScrolls or {}
 ---@field savedVariables StorageData
 ---@field defaults StorageData
 ---@field cleanupTask Fiber|nil Currently running cleanup fiber (nil if none)
+---@field writeMutex Semaphore Serializes structural writes to the history and the setup pools; see the field's initializer
 ---@field sizePresets table<string, SizePreset> Available memory size presets
 ---@field sizePresetOrder string[] Ordered list of size preset keys
 ---@field asyncSpeedPresets table<string, AsyncSpeedPreset> Available async speed presets
@@ -253,6 +254,15 @@ BattleScrolls = BattleScrolls or {}
 ---@field meterPresetOrder string[] Ordered list of meter preset keys
 local storage = {
     cleanupTask = nil,
+    -- Held by every multi-frame write to the history and the setup pools: the
+    -- finalize (intern -> encode -> insert -> push), a migration instance
+    -- commit, the cleanup task's eviction and the orphan prune. Overlapping
+    -- finalizes would share an instance's append-only registry and could
+    -- persist a registry snapshot missing entries a stored encounter needs;
+    -- a prune between an intern and its insert would drop the pool entry the
+    -- encounter is about to reference. Everything here is CPU-bound, so a
+    -- queued fiber is reordered behind the holder rather than stalled.
+    writeMutex = LibEffect.Semaphore.New(1),
 }
 
 BattleScrolls.storage = storage
@@ -584,6 +594,139 @@ function storage:PushInstance(instance)
     table.insert(self.savedVariables.history, instance)
 end
 
+---@class SetupReferences
+---@field own table<number, boolean> Own-pool hashes referenced
+---@field shared table<string, table<number, boolean>> Shared-pool hashes referenced, by display name
+
+---Adds the setup pool references an encounter holds: its own setup hash and
+---the (display name, hash) pairs of its shared entries, binary (v17+) or plain.
+---@param encounter CompactEncounter
+---@param refs SetupReferences
+local function collectSetupReferences(encounter, refs)
+    if encounter._setupHash then
+        refs.own[encounter._setupHash] = true
+    end
+    if encounter.sharedData then
+        for _, entry in ipairs(encounter.sharedData) do
+            local hash = entry.data and entry.data.setupHash
+            if hash then
+                refs.shared[entry.displayName] = refs.shared[entry.displayName] or {}
+                refs.shared[entry.displayName][hash] = true
+            end
+        end
+    end
+    if encounter._shared then
+        for _, entry in ipairs(encounter._shared) do
+            if entry.h then
+                refs.shared[entry.d] = refs.shared[entry.d] or {}
+                refs.shared[entry.d][entry.h] = true
+            end
+        end
+    end
+end
+
+---References held by every encounter in the history except the excluded ones
+---@param history Instance[]|nil
+---@param excluded table<CompactEncounter, boolean>|nil Encounters about to be removed
+---@return SetupReferences
+local function remainingSetupReferences(history, excluded)
+    ---@type SetupReferences
+    local refs = { own = {}, shared = {} }
+    for _, instance in ipairs(history or {}) do
+        for _, enc in ipairs(instance.encounters) do
+            if not (excluded and excluded[enc]) then
+                collectSetupReferences(enc, refs)
+            end
+        end
+    end
+    return refs
+end
+
+---Removes the setup pool entries no remaining encounter references. Runs
+---after every deletion, manual or by the limit, so a delete frees what the
+---dialog promised. Callers hold writeMutex (the cleanup task directly, manual
+---deletes through PruneOrphanedSetupsAsync): an encounter still encoding has
+---interned its setup but does not reference it from the history yet.
+function storage:PruneOrphanedSetups()
+    local sv = self.savedVariables
+    local refs = remainingSetupReferences(sv.history)
+    local shared = sv.sharedSetups
+    if shared then
+        for displayName, hashMap in pairs(shared) do
+            local refHashes = refs.shared[displayName]
+            if not refHashes then
+                shared[displayName] = nil
+            else
+                for hash in pairs(hashMap) do
+                    if not refHashes[hash] then
+                        hashMap[hash] = nil
+                    end
+                end
+                if not next(hashMap) then
+                    shared[displayName] = nil
+                end
+            end
+        end
+    end
+    local own = sv.ownSetups
+    if own then
+        for hash in pairs(own) do
+            if not refs.own[hash] then
+                own[hash] = nil
+            end
+        end
+    end
+end
+
+---Prunes once the write mutex is free: at once when nothing is encoding,
+---otherwise after the in-flight finalize or migration commit has put its
+---encounters in the history
+function storage:PruneOrphanedSetupsAsync()
+    self.writeMutex:WithPermit(LibEffect.Async(function()
+        self:PruneOrphanedSetups()
+    end)):Run()
+end
+
+---Gauge bytes of the setup pool entries that only the given encounters
+---reference, which deleting them lets PruneOrphanedSetups release
+---@param encounters CompactEncounter[]
+---@return number bytes
+function storage:EstimateOrphanedSetupBytes(encounters)
+    local sv = self.savedVariables
+    ---@type table<CompactEncounter, boolean>
+    local excluded = {}
+    ---@type SetupReferences
+    local wanted = { own = {}, shared = {} }
+    for _, enc in ipairs(encounters) do
+        excluded[enc] = true
+        collectSetupReferences(enc, wanted)
+    end
+    local kept = remainingSetupReferences(sv.history, excluded)
+    local bytes = 0
+    local own = sv.ownSetups
+    if own then
+        for hash in pairs(wanted.own) do
+            if own[hash] and not kept.own[hash] then
+                bytes = bytes + payloadModelBytes(own[hash])
+            end
+        end
+    end
+    local shared = sv.sharedSetups
+    if shared then
+        for displayName, hashes in pairs(wanted.shared) do
+            local pool, keptHashes = shared[displayName], kept.shared[displayName]
+            if pool then
+                for hash in pairs(hashes) do
+                    if pool[hash] and not (keptHashes and keptHashes[hash]) then
+                        bytes = bytes + payloadModelBytes(pool[hash])
+                    end
+                end
+            end
+        end
+    end
+    return bytes * BattleScrolls.sizeModel.GAUGE_PER_CHUNK_BYTE
+end
+
 ---Async version of CleanupIfNecessary
 ---Cancels any previous cleanup task and starts a new one
 function storage:CleanupIfNecessaryAsync()
@@ -599,7 +742,7 @@ function storage:CleanupIfNecessaryAsync()
         return
     end
 
-    self.cleanupTask = LibEffect.Async(function()
+    self.cleanupTask = self.writeMutex:WithPermit(LibEffect.Async(function()
         -- Sum sizes (yields per instance); the setup pools and the other saved
         -- roots count against the limit too, but only instances are evicted.
         -- Setups orphaned by an eviction are pruned below, a bonus the
@@ -646,75 +789,9 @@ function storage:CleanupIfNecessaryAsync()
             -- BattleScrolls.log.Info(string.format("Cleaned up %d old instance(s)",
             --     #indicesToRemove))
 
-            -- Prune orphaned shared setups: scan remaining encounters for referenced (displayName, setupHash) pairs
-            local storedSetups = self.savedVariables.sharedSetups
-            if storedSetups and next(storedSetups) then
-                ---@type table<string, table<number, boolean>>
-                local referenced = {}
-                for _, instance in ipairs(history) do
-                    for _, enc in ipairs(instance.encounters) do
-                        if enc.sharedData then
-                            for _, entry in ipairs(enc.sharedData) do
-                                local hash = entry.data and entry.data.setupHash
-                                if hash then
-                                    if not referenced[entry.displayName] then
-                                        referenced[entry.displayName] = {}
-                                    end
-                                    referenced[entry.displayName][hash] = true
-                                end
-                            end
-                        end
-                        -- v17+: binary shared entries keep the hash plain as .h
-                        if enc._shared then
-                            for _, entry in ipairs(enc._shared) do
-                                if entry.h then
-                                    if not referenced[entry.d] then
-                                        referenced[entry.d] = {}
-                                    end
-                                    referenced[entry.d][entry.h] = true
-                                end
-                            end
-                        end
-                    end
-                end
-                -- Remove unreferenced entries
-                for displayName, hashMap in pairs(storedSetups) do
-                    local refHashes = referenced[displayName]
-                    if not refHashes then
-                        storedSetups[displayName] = nil
-                    else
-                        for hash in pairs(hashMap) do
-                            if not refHashes[hash] then
-                                hashMap[hash] = nil
-                            end
-                        end
-                        if not next(hashMap) then
-                            storedSetups[displayName] = nil
-                        end
-                    end
-                end
-            end
-
-            -- Prune orphaned own setups (referenced by _setupHash on v17+ encounters)
-            local ownPool = self.savedVariables.ownSetups
-            if ownPool and next(ownPool) then
-                ---@type table<number, boolean>
-                local ownReferenced = {}
-                for _, instance in ipairs(history) do
-                    for _, enc in ipairs(instance.encounters) do
-                        if enc._setupHash then
-                            ownReferenced[enc._setupHash] = true
-                        end
-                    end
-                end
-                for hash in pairs(ownPool) do
-                    if not ownReferenced[hash] then
-                        ownPool[hash] = nil
-                    end
-                end
-            end
+            self:PruneOrphanedSetups()
         end
-    end):Ensure(function()
+    end)):Ensure(function()
         self.cleanupTask = nil
     end):Run()
 end
@@ -874,6 +951,7 @@ function storage:DeleteInstance(instanceIndex)
                 BattleScrolls.scribe:OnInstanceRemoved(instance)
             end
             table.remove(history, i)
+            self:PruneOrphanedSetupsAsync()
             BattleScrolls.gc:RequestGC(2)
             return true
         end
@@ -905,8 +983,10 @@ function storage:DeleteEncounter(instance, encounter)
                         break
                     end
                 end
+                self:PruneOrphanedSetupsAsync()
                 return true, true
             end
+            self:PruneOrphanedSetupsAsync()
             return true, false
         end
     end
@@ -930,6 +1010,10 @@ end
 ---Interns the player's own setup in the ownSetups pool, keyed by the 16-bit
 ---setup hash. Returns true when the encounter can reference the pool entry;
 ---false on a hash collision with a different setup (caller keeps it inline).
+---
+---Called under writeMutex, which the caller keeps until the referencing
+---encounter is in the history; the prune takes the same mutex, so the entry
+---cannot be removed while the encode yields in between.
 ---@param hash number
 ---@param setup PlayerSetup
 ---@return boolean pooled
@@ -955,6 +1039,18 @@ function storage:InternOwnSetup(hash, setup)
     end
     pool[hash] = { v = version, c = chunks }
     return true
+end
+
+---Whether the instance table is currently in the history (by reference)
+---@param instance Instance
+---@return boolean
+function storage:IsInHistory(instance)
+    for _, inst in ipairs(self.savedVariables.history) do
+        if inst == instance then
+            return true
+        end
+    end
+    return false
 end
 
 ---Resolves a pooled own setup by hash.

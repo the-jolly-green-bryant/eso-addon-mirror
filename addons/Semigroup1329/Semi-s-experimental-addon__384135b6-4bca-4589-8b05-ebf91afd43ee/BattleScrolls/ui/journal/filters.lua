@@ -16,12 +16,14 @@ local StatsTab = journal.StatsTab
 local FilterConstants = journal.FilterConstants
 local SELF_UNIT_ID = FilterConstants.SELF_UNIT_ID
 local SELF_DISPLAY_NAME = FilterConstants.SELF_DISPLAY_NAME
+local SIDE_SELF = FilterConstants.SIDE_SELF
+local SIDE_OTHERS = FilterConstants.SIDE_OTHERS
 
 local filters = {}
 
 ---@type table<number|string, boolean> Temporary filter state while dialog is open (unitId/displayName -> selected)
 local pendingFilterState = {}
----@type table<number, boolean> Temporary source filter state (sourceUnitId -> selected)
+---@type table<number|string, boolean> Temporary source filter state (sourceUnitId or Group Damage side -> selected)
 local pendingSourceFilterState = {}
 ---@type table[] Cached parametric list entries for dialog
 local cachedParametricList = {}
@@ -39,8 +41,8 @@ function filters.getDialogTitle(journalUI)
         return GetString(BATTLESCROLLS_FILTER_DAMAGE_DONE)
     elseif selectedTab == StatsTab.BOSS_DAMAGE_DONE then
         return GetString(BATTLESCROLLS_FILTER_BOSS_DAMAGE)
-    elseif selectedTab == StatsTab.RAID_DAMAGE then
-        return GetString(BATTLESCROLLS_FILTER_BY_TARGET)
+    elseif selectedTab == StatsTab.GROUP_DAMAGE then
+        return GetString(BATTLESCROLLS_FILTER_GROUP_DAMAGE)
     elseif selectedTab == StatsTab.DAMAGE_TAKEN then
         return GetString(BATTLESCROLLS_FILTER_BY_SOURCE)
     elseif selectedTab == StatsTab.HEALING_OUT then
@@ -76,6 +78,9 @@ function filters.initializePending(journalUI)
         currentMainFilter = currentSourceFilter
     elseif journalUI.selectedTab == StatsTab.EFFECTS_GROUP then
         currentMainFilter = currentGroupFilter
+    elseif journalUI.selectedTab == StatsTab.GROUP_DAMAGE then
+        -- No stored filter means the tab's own default (bosses only), not everything
+        currentMainFilter = currentTargetFilter or filters.defaultGroupDamageTargets(journalUI)
     else
         currentMainFilter = currentTargetFilter
     end
@@ -104,18 +109,37 @@ function filters.initializePending(journalUI)
                 end
             end
         end
+    elseif journalUI.selectedTab == StatsTab.GROUP_DAMAGE then
+        local sides = tabFilters.sourceSides
+        pendingSourceFilterState[SIDE_SELF] = sides == nil or sides.self
+        pendingSourceFilterState[SIDE_OTHERS] = sides == nil or sides.others
     end
     BattleScrolls.gc:RequestGC(2)
 end
 
----Resets all pending filters to selected
-function filters.resetPending()
+---Resets all pending filters to the tab's default: everything selected, except
+---the Group Damage targets, which default to bosses only
+---@param journalUI BattleScrolls_Journal_Gamepad
+function filters.resetPending(journalUI)
+    local defaultTargets = journalUI.selectedTab == StatsTab.GROUP_DAMAGE
+        and filters.defaultGroupDamageTargets(journalUI) or nil
     for id in pairs(pendingFilterState) do
-        pendingFilterState[id] = true
+        pendingFilterState[id] = defaultTargets == nil or defaultTargets[id] == true
     end
     for id in pairs(pendingSourceFilterState) do
         pendingSourceFilterState[id] = true
     end
+end
+
+---The Group Damage tab's default target selection: the encounter's bosses, or
+---nil (everything) when it has none. Shared by the dialog and the renderer so
+---an unset filter and a freshly reset one mean the same thing.
+---@param journalUI BattleScrolls_Journal_Gamepad
+---@return table<number, boolean>|nil
+function filters.defaultGroupDamageTargets(journalUI)
+    local encounter = journalUI.decodedEncounter
+    if not encounter then return nil end
+    return journal.renderers.damage.defaultGroupDamageTargets(encounter)
 end
 
 ---Applies pending filter state to journal
@@ -135,6 +159,29 @@ function filters.applyPending(journalUI)
         for id, selected in pairs(pendingFilterState) do
             if selected then
                 mainFilter[id] = true
+            end
+        end
+    end
+
+    -- Group Damage: an unset filter means bosses only, so "everything" has to be
+    -- stored explicitly and a selection equal to the default is stored as unset
+    if journalUI.selectedTab == StatsTab.GROUP_DAMAGE then
+        local defaultTargets = filters.defaultGroupDamageTargets(journalUI)
+        if defaultTargets then
+            local matchesDefault = true
+            for id, selected in pairs(pendingFilterState) do
+                if selected ~= (defaultTargets[id] == true) then
+                    matchesDefault = false
+                    break
+                end
+            end
+            if matchesDefault then
+                mainFilter = nil
+            elseif allMainSelected then
+                mainFilter = {}
+                for id in pairs(pendingFilterState) do
+                    mainFilter[id] = true
+                end
             end
         end
     end
@@ -165,13 +212,20 @@ function filters.applyPending(journalUI)
         tabFilters.sourceFilter = sourceFilter
     elseif journalUI.selectedTab == StatsTab.DAMAGE_TAKEN or journalUI.selectedTab == StatsTab.HEALING_IN then
         tabFilters.sourceFilter = mainFilter
-    elseif journalUI.selectedTab == StatsTab.HEALING_OUT or journalUI.selectedTab == StatsTab.RAID_DAMAGE then
+    elseif journalUI.selectedTab == StatsTab.HEALING_OUT then
         tabFilters.targetFilter = mainFilter
+    elseif journalUI.selectedTab == StatsTab.GROUP_DAMAGE then
+        tabFilters.targetFilter = mainFilter
+        local selfOn = pendingSourceFilterState[SIDE_SELF] == true
+        local othersOn = pendingSourceFilterState[SIDE_OTHERS] == true
+        if not (selfOn and othersOn) then
+            tabFilters.sourceSides = { self = selfOn, others = othersOn }
+        end
     elseif journalUI.selectedTab == StatsTab.EFFECTS_GROUP then
         tabFilters.groupFilter = mainFilter
     end
 
-    local hasFilters = tabFilters.targetFilter or tabFilters.sourceFilter or tabFilters.groupFilter
+    local hasFilters = tabFilters.targetFilter or tabFilters.sourceFilter or tabFilters.groupFilter or tabFilters.sourceSides
     journalUI:SetFiltersForTab(journalUI.selectedTab, hasFilters and tabFilters or nil)
     BattleScrolls.gc:RequestGC(2)
 end
@@ -214,7 +268,7 @@ end
 
 ---@class FilterableSource
 ---@field id number|nil Single source unit ID (for self)
----@field ids number[]|nil Array of source unit IDs (for grouped non-self sources)
+---@field ids (number|string)[]|nil Array of source unit IDs (for grouped non-self sources) or Group Damage side keys
 ---@field name string Display name
 ---@field isSelf boolean Whether this is the player
 
@@ -262,6 +316,22 @@ function filters.getFilterableSources(journalUI)
     end)
 
     return sources
+end
+
+---The Group Damage tab's two sources: the player (pets and companions included)
+---and everyone else, which the game reports as one unattributed pool
+---@param journalUI BattleScrolls_Journal_Gamepad
+---@return FilterableSource[]
+function filters.getGroupDamageSides(journalUI)
+    local encounter = journalUI.decodedEncounter
+    if not encounter then
+        return {}
+    end
+    local selfDisplayName = BattleScrolls.utils.GetUndecoratedDisplayName() .. " " .. GetString(BATTLESCROLLS_ENCOUNTER_SELF_SUFFIX)
+    return {
+        { ids = { SIDE_SELF }, name = selfDisplayName, isSelf = true },
+        { ids = { SIDE_OTHERS }, name = GetString(BATTLESCROLLS_FILTER_OTHERS), isSelf = false },
+    }
 end
 
 ---@class FilterableUnit
@@ -335,7 +405,7 @@ function filters.getFilterableUnits(journalUI)
         end
         return groupUnitsByName(bossTargets, nil, nil)
 
-    elseif selectedTab == StatsTab.RAID_DAMAGE then
+    elseif selectedTab == StatsTab.GROUP_DAMAGE then
         local targets = {}
         for _, damageTable in ipairs({ encounter.damageByUnitId, encounter.damageByUnitIdGroup }) do
             for _, byTarget in pairs(damageTable or {}) do
@@ -345,7 +415,20 @@ function filters.getFilterableUnits(journalUI)
                 end
             end
         end
-        return groupUnitsByName(targets, nil, nil)
+        -- Bosses lead the list: they are the default selection
+        local units = groupUnitsByName(targets, nil, nil)
+        local bossTargets = journal.renderers.damage.defaultGroupDamageTargets(encounter) or {}
+        local function isBossUnit(unit)
+            return bossTargets[unit.ids[1]] == true
+        end
+        table.sort(units, function(a, b)
+            local aBoss, bBoss = isBossUnit(a), isBossUnit(b)
+            if aBoss ~= bBoss then
+                return aBoss
+            end
+            return a.name < b.name
+        end)
+        return units
 
     elseif selectedTab == StatsTab.DAMAGE_TAKEN then
         local sources = {}
@@ -412,9 +495,14 @@ function filters.buildDialogEntries(journalUI)
     local parametricList = {}
     local selectedTab = journalUI.selectedTab
 
-    -- For Damage Done tabs, add source entries first
+    -- Damage Done tabs filter by source unit, Group Damage by side (self / others)
+    local sources
     if selectedTab == StatsTab.DAMAGE_DONE or selectedTab == StatsTab.BOSS_DAMAGE_DONE then
-        local sources = filters.getFilterableSources(journalUI)
+        sources = filters.getFilterableSources(journalUI)
+    elseif selectedTab == StatsTab.GROUP_DAMAGE then
+        sources = filters.getGroupDamageSides(journalUI)
+    end
+    if sources then
         if #sources > 1 then
             for i, source in ipairs(sources) do
                 local sourceIds = source.ids or { source.id }
@@ -481,7 +569,7 @@ function filters.buildDialogEntries(journalUI)
         }
 
         if i == 1 then
-            if selectedTab == StatsTab.DAMAGE_DONE then
+            if selectedTab == StatsTab.DAMAGE_DONE or selectedTab == StatsTab.GROUP_DAMAGE then
                 entry.header = GetString(BATTLESCROLLS_FILTER_DAMAGE_DONE_TO)
             elseif selectedTab == StatsTab.BOSS_DAMAGE_DONE then
                 entry.header = GetString(BATTLESCROLLS_FILTER_BOSS_TARGET)
@@ -535,7 +623,7 @@ function filters.showDialog(journalUI)
             CleanupDialogState()
         end,
         onReset = function()
-            filters.resetPending()
+            filters.resetPending(journalUI)
         end,
         resetText = GetString(BATTLESCROLLS_FILTER_RESET),
     })

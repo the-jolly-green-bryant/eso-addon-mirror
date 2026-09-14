@@ -1,7 +1,8 @@
 ---@diagnostic disable: undefined-field, inject-field -- the ESO Control/ZO_* API stubs are too incomplete for field checking in UI code
 -----------------------------------------------------------
 -- Damage Renderer
--- Renders damage-related tabs (Boss Damage Done, Damage Done, Damage Taken)
+-- Renders damage-related tabs (Boss Damage Done, Damage Done, Group Damage,
+-- Damage Taken)
 --
 -- Receives a JournalRenderContext and populates the list.
 -- All functions are stateless - filters come from context.
@@ -189,8 +190,9 @@ end
 ---@param abilityInfo table<number, AbilityInfo>
 ---@param unitNames table<number, string>
 ---@param headerText string
+---@param bareNames boolean|nil Label every row by ability alone (no "(Source)" suffix for pets and companions)
 ---@return Effect
-local function displayAbilityBreakdownAsync(list, abilityEntries, durationSec, abilityInfo, unitNames, headerText)
+local function displayAbilityBreakdownAsync(list, abilityEntries, durationSec, abilityInfo, unitNames, headerText, bareNames)
     return LibEffect.Async(function()
         if #abilityEntries == 0 then
             return
@@ -259,7 +261,7 @@ local function displayAbilityBreakdownAsync(list, abilityEntries, durationSec, a
             local rawSourceName = unitNames[entry.sourceUnitId]
             local isPlayer = rawSourceName and playerNames[rawSourceName]
 
-            if entry.abilityId == DAMAGE_SHIELDED_ABILITY_ID then
+            if entry.abilityId == DAMAGE_SHIELDED_ABILITY_ID or bareNames then
                 baseName = zo_strformat("<<C:1>>", abilityName)
             elseif not isPlayer and rawSourceName then
                 local unitName = zo_strformat(SI_UNIT_NAME, rawSourceName)
@@ -912,57 +914,62 @@ function DamageRenderer.renderDamageDone(ctx)
     end)
 end
 
----Renders raid damage tab: damage from every observed source (self, group
----members, their pets) to all targets. Only target id, ability id and amount
----are reliable for non-personal sources — no crit/DoT/AoE composition here
----beyond what the per-ability tick stats carry.
----@param ctx JournalRenderContext
----@return Effect
-function DamageRenderer.renderRaidDamage(ctx)
+---The Group Damage tab's default target selection: the encounter's bosses,
+---or nil (everything) when it has none. The filter dialog uses the same
+---default, so an unset filter and a freshly reset one show the same rows.
+---@param encounter DecodedEncounter
+---@return table<number, boolean>|nil
+function DamageRenderer.defaultGroupDamageTargets(encounter)
+    local bosses = encounter.bossesUnits
+    if not bosses or #bosses == 0 then return nil end
+    local targets = {}
+    for _, unitId in ipairs(bosses) do
+        targets[unitId] = true
+    end
+    return targets
+end
+
+---The damage tables the Group Damage tab reads: the personal map (player,
+---pets, companions) and the observed map (everyone else, one unattributed
+---pool), each included only when its side is selected.
+---@param encounter DecodedEncounter
+---@param sides JournalSourceSides|nil nil = both sides
+---@return table<number, table<number, DamageDoneStorage>>[] damageTables
+---@return boolean includeSelf
+---@return boolean includeOthers
+local function groupDamageTables(encounter, sides)
+    local includeSelf = sides == nil or sides.self
+    local includeOthers = sides == nil or sides.others
+    local damageTables = {}
+    if includeSelf then
+        table.insert(damageTables, encounter.damageByUnitId or {})
+    end
+    if includeOthers then
+        table.insert(damageTables, encounter.damageByUnitIdGroup or {})
+    end
+    return damageTables, includeSelf, includeOthers
+end
+
+---Sums the Group Damage tables under the target filter (async with yields)
+---@param encounter DecodedEncounter
+---@param damageTables table<number, table<number, DamageDoneStorage>>[]
+---@param targetFilter table<number, boolean>|nil
+---@return Effect<{ total: number, personal: number }>
+local function sumGroupDamageAsync(encounter, damageTables, targetFilter)
     return LibEffect.Async(function()
-        local encounter = ctx.encounter
-        local list = ctx.list
-        local abilityInfo = ctx.abilityInfo
-        local unitNames = ctx.unitNames or {}
-        local durationSec = ctx.durationSec
-        local targetFilter = ctx.filters.targetFilter
-
-        if durationSec <= 0 then durationSec = 1 end
-
-        local damageTables = { encounter.damageByUnitId or {}, encounter.damageByUnitIdGroup or {} }
         local computeTotal = Arithmancer.ComputeDamageTotal
-
-        -- Totals + per-source aggregation in one pass
-        local raidTotal = 0
-        local bySourceName = {}
-        local sourceOrder = {}
-        local playerNames = {
-            [GetRawUnitName("player")] = true,
-            [coreUtils.GetUndecoratedDisplayName()] = true,
-        }
-        local selfName = coreUtils.GetUndecoratedDisplayName()
+        local total, personal = 0, 0
         local count = 0
         for _, damageTable in ipairs(damageTables) do
-            for sourceUnitId, byTarget in pairs(damageTable) do
+            local isPersonal = damageTable == encounter.damageByUnitId
+            for _, byTarget in pairs(damageTable) do
                 for targetUnitId, damageData in pairs(byTarget) do
                     if not targetFilter or targetFilter[targetUnitId] then
-                        local total = computeTotal(damageData)
-                        raidTotal = raidTotal + total
-
-                        local rawName = unitNames[sourceUnitId]
-                        local sourceName
-                        if rawName and playerNames[rawName] then
-                            sourceName = selfName
-                        elseif rawName then
-                            sourceName = zo_strformat(SI_UNIT_NAME, rawName)
-                        else
-                            sourceName = GetString(BATTLESCROLLS_UNKNOWN)
+                        local amount = computeTotal(damageData)
+                        total = total + amount
+                        if isPersonal then
+                            personal = personal + amount
                         end
-                        if not bySourceName[sourceName] then
-                            bySourceName[sourceName] = 0
-                            table.insert(sourceOrder, sourceName)
-                        end
-                        bySourceName[sourceName] = bySourceName[sourceName] + total
                     end
                     count = count + 1
                     if count % YIELD_INTERVAL == 0 then
@@ -971,50 +978,66 @@ function DamageRenderer.renderRaidDamage(ctx)
                 end
             end
         end
+        return { total = total, personal = personal }
+    end)
+end
+
+---Renders the Group Damage tab: everything the client observed, the player's
+---own damage (pets and companions included) plus the pool the game reports
+---for everyone else. Ability rows merge both sides under bare names; there is
+---no per-source view because other players never carry a unit id in combat
+---events, so "others" cannot be split.
+---@param ctx JournalRenderContext
+---@return Effect
+function DamageRenderer.renderGroupDamage(ctx)
+    return LibEffect.Async(function()
+        local encounter = ctx.encounter
+        local list = ctx.list
+        local abilityInfo = ctx.abilityInfo
+        local unitNames = ctx.unitNames or {}
+        local durationSec = ctx.durationSec
+        local targetFilter = ctx.filters.targetFilter or DamageRenderer.defaultGroupDamageTargets(encounter)
+        local damageTables, includeSelf, includeOthers = groupDamageTables(encounter, ctx.filters.sourceSides)
+
+        if durationSec <= 0 then durationSec = 1 end
+
+        local sums = sumGroupDamageAsync(encounter, damageTables, targetFilter):Await()
+        local groupTotal = sums.total
 
         -- Summary
         EntryBuilder.addEntry(list, {
-            label = GetString(BATTLESCROLLS_STAT_RAID_DAMAGE),
-            sublabel = ZO_CommaDelimitNumber(raidTotal),
+            label = GetString(BATTLESCROLLS_STAT_GROUP_DAMAGE),
+            sublabel = ZO_CommaDelimitNumber(groupTotal),
             icon = STAT_ICONS.GROUP_DAMAGE,
             header = GetString(BATTLESCROLLS_STAT_SUMMARY),
+            tooltip = { type = "text", title = GetString(BATTLESCROLLS_STAT_GROUP_DAMAGE), text = GetString(BATTLESCROLLS_TOOLTIP_GROUP_DAMAGE_SCOPE) },
         })
         EntryBuilder.addEntry(list, {
-            label = GetString(BATTLESCROLLS_STAT_RAID_DPS),
-            sublabel = ZO_CommaDelimitNumber(math.floor(raidTotal / durationSec)),
+            label = GetString(BATTLESCROLLS_STAT_GROUP_DPS),
+            sublabel = ZO_CommaDelimitNumber(math.floor(groupTotal / durationSec)),
             icon = STAT_ICONS.GROUP_DPS,
         })
+        if includeSelf and includeOthers and groupTotal > 0 then
+            EntryBuilder.addEntry(list, {
+                label = GetString(BATTLESCROLLS_STAT_GROUP_SHARE),
+                sublabel = string.format("%.1f%%", sums.personal / groupTotal * 100),
+                icon = STAT_ICONS.SHARE,
+            })
+        end
         LibEffect.Yield():Await()
 
-        -- By Source (the raid-wide damage meter)
-        table.sort(sourceOrder, function(a, b)
-            return bySourceName[a] > bySourceName[b]
-        end)
-        local isFirst = true
-        for i, sourceName in ipairs(sourceOrder) do
-            if i > DETAILED_UNIT_LIMIT then break end
-            EntryBuilder.addEntry(list, {
-                label = sourceName,
-                sublabel = utils.formatDamageWithPercent(bySourceName[sourceName], raidTotal, durationSec),
-                header = isFirst and GetString(BATTLESCROLLS_HEADER_BY_SOURCE) or nil,
-            })
-            isFirst = false
-            if i % YIELD_INTERVAL == 0 then
-                LibEffect.Yield():Await()
+        -- By Ability (both sides merged under bare names)
+        local abilityEntries = {}
+        for _, damageTable in ipairs(damageTables) do
+            local entries = buildAbilityEntriesAsync(damageTable, targetFilter, nil):Await()
+            for _, entry in ipairs(entries) do
+                table.insert(abilityEntries, entry)
             end
         end
-        LibEffect.Yield():Await()
-
-        -- By Ability (across all sources; non-player sources labeled by name)
-        local abilityEntries = buildAbilityEntriesAsync(damageTables[1], targetFilter, nil):Await()
-        local groupEntries = buildAbilityEntriesAsync(damageTables[2], targetFilter, nil):Await()
-        for _, entry in ipairs(groupEntries) do
-            table.insert(abilityEntries, entry)
-        end
-        displayAbilityBreakdownAsync(list, abilityEntries, durationSec, abilityInfo, unitNames, GetString(BATTLESCROLLS_HEADER_BY_ABILITY)):Await()
+        displayAbilityBreakdownAsync(list, abilityEntries, durationSec, abilityInfo, unitNames, GetString(BATTLESCROLLS_HEADER_BY_ABILITY), true):Await()
 
         -- By Target
-        displayTargetBreakdownAsync(list, damageTables, raidTotal, durationSec, unitNames, targetFilter, nil, encounter, ctx.arithmancer):Await()
+        displayTargetBreakdownAsync(list, damageTables, groupTotal, durationSec, unitNames, targetFilter, nil, encounter, ctx.arithmancer):Await()
     end)
 end
 
@@ -1496,102 +1519,59 @@ function DamageRenderer.buildDamageDonePanelSpec(ctx)
     })
 end
 
----Builds panel spec for Raid Damage tab (all sources combined)
+---Builds panel spec for the Group Damage tab (both sides merged)
 ---@param ctx { arithmancer: table, encounter: table, durationS: number, unitNames: table, filters: table, abilityInfo: table }
 ---@return PanelSpec
-function DamageRenderer.buildRaidDamagePanelSpec(ctx)
+function DamageRenderer.buildGroupDamagePanelSpec(ctx)
     return {
         layout = "three-column",
         build = function(q2, q3, q4)
             local filters = ctx.filters or {}
-            local targetFilter = filters.targetFilter
             local encounter = ctx.encounter
             local durationS = ctx.durationS
             local unitNames = ctx.unitNames or {}
+            local targetFilter = filters.targetFilter or DamageRenderer.defaultGroupDamageTargets(encounter)
+            local damageTables, includeSelf, includeOthers = groupDamageTables(encounter, filters.sourceSides)
 
-            local damageTables = { encounter.damageByUnitId or {}, encounter.damageByUnitIdGroup or {} }
-            local computeTotal = Arithmancer.ComputeDamageTotal
-
-            -- Raid total + per-source totals in one pass
-            local raidTotal = 0
-            local personalTotal = 0
-            local bySourceName = {}
-            local sourceOrder = {}
-            local playerNames = {
-                [GetRawUnitName("player")] = true,
-                [coreUtils.GetUndecoratedDisplayName()] = true,
-            }
-            local selfName = coreUtils.GetUndecoratedDisplayName()
-            local iterations = 0
-            for tableIndex, damageTable in ipairs(damageTables) do
-                for sourceUnitId, byTarget in pairs(damageTable) do
-                    for targetUnitId, damageData in pairs(byTarget) do
-                        if not targetFilter or targetFilter[targetUnitId] then
-                            local total = computeTotal(damageData)
-                            raidTotal = raidTotal + total
-                            if tableIndex == 1 then
-                                personalTotal = personalTotal + total
-                            end
-
-                            local rawName = unitNames[sourceUnitId]
-                            local sourceName
-                            if rawName and playerNames[rawName] then
-                                sourceName = selfName
-                            elseif rawName then
-                                sourceName = zo_strformat(SI_UNIT_NAME, rawName)
-                            else
-                                sourceName = GetString(BATTLESCROLLS_UNKNOWN)
-                            end
-                            if not bySourceName[sourceName] then
-                                bySourceName[sourceName] = 0
-                                table.insert(sourceOrder, sourceName)
-                            end
-                            bySourceName[sourceName] = bySourceName[sourceName] + total
-                        end
-                        iterations = iterations + 1
-                        if iterations % YIELD_INTERVAL == 0 then
-                            LibEffect.YieldWithGC():Await()
-                        end
-                    end
-                end
-            end
+            local sums = sumGroupDamageAsync(encounter, damageTables, targetFilter):Await()
+            local groupTotal = sums.total
 
             -- Q2: Summary
-            local share = raidTotal > 0 and (personalTotal / raidTotal * 100) or 0
+            local shareRow
+            if includeSelf and includeOthers and groupTotal > 0 then
+                shareRow = q2:StatRow(GetString(BATTLESCROLLS_OVERVIEW_SHARE), utils.formatPercent(sums.personal / groupTotal * 100))
+            end
             local summarySection = q2:Section(GetString(BATTLESCROLLS_OVERVIEW_SUMMARY),
-                q2:StatRow(GetString(BATTLESCROLLS_STAT_RAID_DPS), utils.formatNumber(raidTotal / math.max(durationS, 1))),
-                q2:StatRow(GetString(BATTLESCROLLS_OVERVIEW_TOTAL), utils.formatNumber(raidTotal)),
-                q2:StatRow(GetString(BATTLESCROLLS_OVERVIEW_SHARE), utils.formatPercent(share))
+                q2:StatRow(GetString(BATTLESCROLLS_STAT_GROUP_DPS), utils.formatNumber(groupTotal / math.max(durationS, 1))),
+                q2:StatRow(GetString(BATTLESCROLLS_OVERVIEW_TOTAL), utils.formatNumber(groupTotal)),
+                shareRow
             )
             q2:mount(SECTION_GAP, 0, summarySection)
             LibEffect.Yield():Await()
 
-            -- Q3: Top abilities across the raid
+            -- Q3: Top abilities across both sides
             local maxAbilities = q3:maxItems(ROW_CONTENT.ABILITY_BAR, 10)
             local topAbilities = DamageRenderer.extractTopAbilitiesAsync(damageTables, targetFilter, nil, maxAbilities):Await()
             if #topAbilities > 0 then
                 local topValue = topAbilities[1].total
                 local abilityBars = {}
                 for _, ability in ipairs(topAbilities) do
-                    abilityBars[#abilityBars + 1] = q3:AbilityBar(ability, topValue, raidTotal, durationS)
+                    abilityBars[#abilityBars + 1] = q3:AbilityBar(ability, topValue, groupTotal, durationS)
                 end
                 local q3Section = q3:Section(GetString(BATTLESCROLLS_OVERVIEW_TOP_ABILITIES), abilityBars)
                 q3:mount(SECTION_GAP, Q3_INSET, q3Section)
             end
             LibEffect.YieldWithGC():Await()
 
-            -- Q4: By source (raid members and their pets)
-            table.sort(sourceOrder, function(a, b)
-                return bySourceName[a] > bySourceName[b]
-            end)
-            local maxSources = q4:maxItems(ROW_CONTENT.STAT_ROW, 10)
-            if #sourceOrder > 0 then
-                local sourceRows = {}
-                for i, sourceName in ipairs(sourceOrder) do
-                    if i > maxSources then break end
-                    sourceRows[#sourceRows + 1] = q4:StatRow(sourceName, utils.formatTargetDPS(bySourceName[sourceName], durationS))
+            -- Q4: Targets
+            local maxTargets = q4:maxItems(ROW_CONTENT.STAT_ROW, 10)
+            local targets = DamageRenderer.extractTargetBreakdownAsync(damageTables, unitNames, targetFilter, nil, maxTargets):Await()
+            if #targets > 0 then
+                local targetRows = {}
+                for _, target in ipairs(targets) do
+                    targetRows[#targetRows + 1] = q4:StatRow(target.name, utils.formatTargetDPS(target.total, durationS))
                 end
-                local q4Section = q4:Section(GetString(BATTLESCROLLS_OVERVIEW_SOURCES), sourceRows)
+                local q4Section = q4:Section(GetString(BATTLESCROLLS_OVERVIEW_TARGETS), targetRows)
                 q4:mount(SECTION_GAP, Q3_INSET, q4Section)
             end
         end

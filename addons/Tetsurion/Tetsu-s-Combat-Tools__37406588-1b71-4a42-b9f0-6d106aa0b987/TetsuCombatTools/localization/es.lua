@@ -85,6 +85,8 @@ TetsuCombatTools.L = {
     CONS_POT_SOUND_TT = "Desactivado por defecto. El mismo sonido que la comida.",
     CONS_END_SOUND = "Sonido de fin",
     CONS_END_SOUND_TT = "Un sonido integrado para el fin de comida y pocion.",
+    CONS_END_SOUND_VOL = "Volumen del sonido final",
+    CONS_END_SOUND_VOL_TT = "Cuántas veces se apila el sonido (0 = silencio, 5 = más alto).",
     CONS_MSG = "Texto de fin en instancias",
     CONS_MSG_TT = "Linea corta cuando acaba comida o pocion. Solo mazmorra / prueba / arena / archivo / JcJ.",
     CONS_MSG_FOOD_ON = "Texto fin de comida",

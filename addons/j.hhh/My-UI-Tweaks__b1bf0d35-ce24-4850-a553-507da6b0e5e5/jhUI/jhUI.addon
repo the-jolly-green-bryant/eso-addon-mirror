@@ -1,0 +1,9 @@
+## Title: jh UI
+## Description: Minimal console UI addon with LibAddonMenu-2.0 support. Optional features: normal player attribute-bar width and hiding the vanilla target frame.
+## Version: 3.1.0
+## AddOnVersion: 310
+## APIVersion: 101050
+## Author: OpenAI
+## OptionalDependsOn: LibAddonMenu-2.0
+
+jhUI.lua

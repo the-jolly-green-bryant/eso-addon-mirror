@@ -197,6 +197,9 @@ local function ColorOf(count)
         return v.color2
     end
     if count >= 1 then
+        if v and type(v.color1) == "table" then
+            return v.color1
+        end
         return COL_ONE
     end
     return COL_IDLE

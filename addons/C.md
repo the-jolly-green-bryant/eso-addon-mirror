@@ -149,7 +149,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Combat Alerts Extended](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DrSova/Combat-Alerts-Extended__3439) | DrSova | PC / Mac | 1.0.5 |
 | [Combat Auras (Ability Timers)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Darianopolis/Combat-Auras-Ability-Timers__2408) | Darianopolis | PC / Mac | v1.5.2 |
 | [Combat Cloud Updated](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/2Weak2Live/Combat-Cloud-Updated__2568) | 2Weak2Live | PC / Mac | 0.96 |
-| [Combat Coordination - 3D Ground Effects, LaunchPad, Slayer & Arkasis, Raidlead Tools](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Duesentrieb/Combat-Coordination---3D-Ground-Effects-LaunchPad-Slayer-Arkasis-Raidlead-Tools__4449) | Duesentrieb | PC / Mac | 20260903-0007 |
+| [Combat Coordination - 3D Effects, LaunchPad, Spaulder, Slayer, Arkasis, Raidlead Tools](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Duesentrieb/Combat-Coordination---3D-Effects-LaunchPad-Spaulder-Slayer-Arkasis-Raidlead-Tool__4449) | Duesentrieb | PC / Mac | 20260913-0008 |
 | [Combat Crosshair](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Turbo1/Combat-Crosshair__2760) | Turbo1 | PC / Mac | 1.5 |
 | [Combat FPS Booster](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tetsurion/Combat-FPS-Booster__3daa21d2-07bf-4ab5-bd84-fc58fb9dbdc7) | Tetsurion | Console | — |
 | [Combat Indicator](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Crabby654/Combat-Indicator__1543) | Crabby654 | PC / Mac | 1.8.7 |

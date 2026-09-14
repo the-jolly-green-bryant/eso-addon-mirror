@@ -2,7 +2,6 @@ local appName = "aeriesCryTracker"
 local aeriesAbilityID = 227605
 local eaglesAbilityID = 226887
 local timeRemaining = 0
-local procTime = 12
 local picPath = GetAbilityIcon(aeriesAbilityID)
 local iconText = zo_iconTextFormat(picPath, 80, 80, " ")
 local isLoaded = false
@@ -14,11 +13,21 @@ aeriesCryTracker = {}
 aeriesCryTracker.defaults = {
     trackAeries = true,
     trackEagles = true,
+    notifyAeries = true,
     yAxisTextAeries = 930,
     xAxisTextAeries = 1300,
     yAxisTextEagles = 500,
     xAxisTextEagles = 1100
 }
+
+--check if libNotify is available
+local function isLibAvailable()
+    if LibNotify and type(LibNotify.notifyForAddonPlease) == "function" then
+        return true
+    else 
+        return false
+    end
+end
 
 --print message to chat box
 local function printMessage(msg)
@@ -82,6 +91,9 @@ local function processBuff()
     else
         buffRunning = false
         actrackLabelMain:SetText("")
+        if isLibAvailable() and aeriesCryTracker.savedVariables.notifyAeries then
+            LibNotify.notifyForAddonPlease(appName, aeriesAbilityID, "Aerie's Call ended" , true)
+        end
     end
 end
 
@@ -233,12 +245,8 @@ local function createOptions()
                 aeriesCryTracker.savedVariables.trackEagles = value
                 if not value then
                     unRegisterAlerts()
-                    actrack:SetHidden(true)
-                    emtrack:SetHidden(true)
                 else
                     registerAlerts()
-                    actrack:SetHidden(false)
-                    emtrack:SetHidden(false)
                 end
             end,
             default = aeriesCryTracker.defaults.trackAeries,
@@ -280,14 +288,6 @@ local function createOptions()
             end,
             setFunc = function(value)
                 aeriesCryTracker.savedVariables.trackEagles = value
-                if not value then
-                    --unRegisterAlertsEagles()
-                    emtrack:SetHidden(true)
-                else
-                    --registerAlertsEagles()
-                    emtrack:SetText("")
-                    emtrack:SetHidden(true)
-                end
             end,
             default = aeriesCryTracker.defaults.trackEagles,
         },
@@ -320,6 +320,18 @@ local function createOptions()
             default = aeriesCryTracker.defaults.yAxisTextEagles,
         },
         {
+            type = "checkbox",
+            name = "Notification",
+            tooltip = "Displays a notification and plays a sound when the Aerie's Call buff finishes.\nThe sound can be changed in the LibNotify Add-on options.",
+            getFunc = function()
+                return aeriesCryTracker.savedVariables.notifyAeries
+            end,
+            setFunc = function(value)
+                aeriesCryTracker.savedVariables.notifyAeries = value
+            end,
+            default = aeriesCryTracker.defaults.notifyAeries,
+        },
+        {
             type = "divider",
             height = 0,
             width = "full",
@@ -342,7 +354,7 @@ local function onAddOnLoaded(event, name)
     EVENT_MANAGER:UnregisterForEvent(appName, EVENT_ADD_ON_LOADED)
 
 	--notify that add-on has been loaded
-	zo_callLater(function() printMessage("add-on successfully loaded") end, 500)
+	zo_callLater(function() printMessage("add-on loaded") end, 500)
 
 	--load saved variables
     aeriesCryTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("aeriesAddonVars", 1, "Settings", aeriesCryTracker.defaults, GetUnitName("player"))

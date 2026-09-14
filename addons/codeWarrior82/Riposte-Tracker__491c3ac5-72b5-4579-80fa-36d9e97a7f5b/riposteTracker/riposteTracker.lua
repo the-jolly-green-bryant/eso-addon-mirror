@@ -173,10 +173,8 @@ local function createOptions()
                 riposteTracker.savedVariables.trackRip = value
                 if not value then
                     unRegisterAlerts()
-                    riptrack:SetHidden(true)
                 else
                     registerAlerts()
-                    riptrack:SetHidden(false)
                 end
             end,
             default = riposteTracker.defaults.trackRip,

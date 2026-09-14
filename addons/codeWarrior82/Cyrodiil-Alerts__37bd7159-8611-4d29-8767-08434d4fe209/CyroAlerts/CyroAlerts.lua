@@ -51,7 +51,7 @@ function appStart.OnAddOnLoaded(event, name)
     appStart.savedVariables = ZO_SavedVars:NewCharacterIdSettings("cyrodiilAlertsSavedVariables", 1, "Settings", appStart.defaults, GetUnitName("player"))
 
     --notify that addon has been loaded
-    zo_callLater(function() functions.printMessage("add-on successfully loaded") end, 500)
+    zo_callLater(function() functions.printMessage("add-on loaded") end, 500)
 
     --load text positions from saved vars
     cyroText:SetMovable(true)

@@ -116,16 +116,14 @@ end
 
 --when UI opens
 local function onMenuOpened()
-    if feedingFrenzyTracker.savedVariables.trackFF then
-        isMenuOpen = true
-        ffAddon:SetHidden(true)
-    end
+    isMenuOpen = true
+    ffAddon:SetHidden(true)
 end
 
 --when UI closes
 local function onMenuClosed()
+	isMenuOpen = false
     if feedingFrenzyTracker.savedVariables.trackFF then
-        isMenuOpen = false
         ffAddon:SetHidden(false)
     end
 end
@@ -208,10 +206,8 @@ local function createOptions()
                 feedingFrenzyTracker.savedVariables.trackFF = value
                 if not value then
                     unRegisterAlerts()
-                    ffAddon:SetHidden(true)
                 else
                     registerAlerts()
-                    ffAddon:SetHidden(false)
                 end
             end,
             default = feedingFrenzyTracker.defaults.trackFF,
@@ -267,7 +263,7 @@ local function onAddOnLoaded(event, name)
     EVENT_MANAGER:UnregisterForEvent(appName, EVENT_ADD_ON_LOADED)
 
 	--notify that add-on has been loaded
-	zo_callLater(function() printMessage("add-on successfully loaded") end, 500)
+	zo_callLater(function() printMessage("add-on loaded") end, 500)
 	
 	--load saved variables
     feedingFrenzyTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("feedAddonVars", 1, "Settings", feedingFrenzyTracker.defaults, GetUnitName("player"))

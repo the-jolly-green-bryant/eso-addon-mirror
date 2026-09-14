@@ -210,10 +210,8 @@ local function createOptions()
                 essenceThiefTracker.savedVariables.trackEssence = value
                 if not value then
                     unRegisterAlerts()
-                    ettrack:SetHidden(true)
                 else
                     registerAlerts()
-                    ettrack:SetHidden(false)
                 end
             end,
             default = essenceThiefTracker.defaults.trackEssence,
@@ -269,7 +267,7 @@ local function onAddOnLoaded(event, name)
     EVENT_MANAGER:UnregisterForEvent(appName, EVENT_ADD_ON_LOADED)
 
 	--notify that add-on has been loaded
-	zo_callLater(function() printMessage("add-on successfully loaded") end, 500)
+	zo_callLater(function() printMessage("add-on loaded") end, 500)
 
 	--load saved variables
     essenceThiefTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("ettAddonVars", 1, "Settings", essenceThiefTracker.defaults, GetUnitName("player"))

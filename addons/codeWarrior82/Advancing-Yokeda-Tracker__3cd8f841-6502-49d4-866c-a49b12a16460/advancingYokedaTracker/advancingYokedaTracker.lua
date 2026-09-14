@@ -191,10 +191,8 @@ local function createOptions()
                 advancingYokedaTracker.savedVariables.trackAdv = value
                 if not value then
                     unRegisterAlerts()
-                    advAddonText:SetHidden(true)
                 else
                     registerAlerts()
-                    advAddonText:SetHidden(false)
                 end
             end,
             default = advancingYokedaTracker.defaults.trackAdv,
@@ -248,7 +246,7 @@ local function onAddOnLoadedAdv(event, name)
     EVENT_MANAGER:UnregisterForEvent(appName, EVENT_ADD_ON_LOADED)
 
 	--notify that add-on has been loaded
-	zo_callLater(function() printMessageTest("add-on successfully loaded") end, 500)
+	zo_callLater(function() printMessageTest("add-on loaded") end, 500)
 
 	--load saved variables
     advancingYokedaTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("aytAddonVars", 1, "Settings", advancingYokedaTracker.defaults, GetUnitName("player"))

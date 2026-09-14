@@ -29,7 +29,7 @@ local TX = {
     gear   = { n = "EsoUI/Art/MenuBar/menuBar_mainMenu_over.dds", p = "EsoUI/Art/MenuBar/menuBar_mainMenu_down.dds", o = "EsoUI/Art/MenuBar/menuBar_mainMenu_over.dds" },
     prev   = { n = "EsoUI/Art/Buttons/large_leftArrow_up.dds",  p = "EsoUI/Art/Buttons/large_leftArrow_down.dds",  o = "EsoUI/Art/Buttons/large_leftArrow_over.dds" },
     nextb  = { n = "EsoUI/Art/Buttons/large_rightArrow_up.dds", p = "EsoUI/Art/Buttons/large_rightArrow_down.dds", o = "EsoUI/Art/Buttons/large_rightArrow_over.dds" },
-    satchel = { n = "EsoUI/Art/Inventory/inventory_tabIcon_Craftbag_up.dds", p = "EsoUI/Art/Inventory/inventory_tabIcon_Craftbag_down.dds", o = "EsoUI/Art/Inventory/inventory_tabIcon_Craftbag_over.dds" },
+    satchel = { n = "EsoUI/Art/Help/help_tabIcon_itemAssistance_up.dds", p = "EsoUI/Art/Help/help_tabIcon_itemAssistance_down.dds", o = "EsoUI/Art/Help/help_tabIcon_itemAssistance_over.dds" },
 }
 
 local MAP_ART = {
@@ -64,16 +64,72 @@ local function make_clickable(control, fn)
     control:SetHandler("OnMouseUp", function(_, _, upInside) if upInside then fn() end end)
 end
 
+local card = nil
+
+local function card_build()
+    if card then return card end
+    local wm = BGMeter.zenimax.ui.wm
+    local root = wm:CreateTopLevelWindow("BGMeterHoverCard")
+    root:SetDrawTier(DT_HIGH)
+    if DL_OVERLAY then root:SetDrawLayer(DL_OVERLAY) end
+    root:SetDrawLevel(5000)
+    root:SetClampedToScreen(true)
+    root:SetMouseEnabled(false)
+    root:SetHidden(true)
+    local bg = P.rect(root, { K.COLOR.bg[1], K.COLOR.bg[2], K.COLOR.bg[3], 0.96 })
+    bg:SetAnchorFill(root)
+    P.frame(root):SetAnchorFill(root)
+    local strip = P.rect(root, K.COLOR.accent)
+    strip:SetAnchor(TOPLEFT, root, TOPLEFT, 4, 4)
+    strip:SetAnchor(BOTTOMLEFT, root, BOTTOMLEFT, 4, -4)
+    strip:SetWidth(2)
+    local text = P.label(root, S.FONT.small, K.COLOR.text)
+    text:SetAnchor(TOPLEFT, root, TOPLEFT, 14, 8)
+    text:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+    text:SetVerticalAlignment(TEXT_ALIGN_TOP)
+    if text.SetMaxLineCount then text:SetMaxLineCount(8) end
+    card = { root = root, text = text }
+    return card
+end
+
+local CARD_MAX_W = 340
+
+function U.card_show(anchor, side, message)
+    if not message or message == "" or not anchor then return end
+    local c = card_build()
+    c.text:SetWidth(CARD_MAX_W)
+    c.text:SetText(message)
+    local tw = math.min(CARD_MAX_W, (c.text:GetTextWidth() or 0) + 2)
+    c.text:SetWidth(tw)
+    local th = c.text:GetTextHeight() or 14
+    c.root:SetDimensions(tw + 28, th + 16)
+    c.root:ClearAnchors()
+    if side == TOP then c.root:SetAnchor(BOTTOM, anchor, TOP, 0, -6)
+    elseif side == LEFT then c.root:SetAnchor(RIGHT, anchor, LEFT, -6, 0)
+    elseif side == RIGHT then c.root:SetAnchor(LEFT, anchor, RIGHT, 6, 0)
+    else c.root:SetAnchor(TOP, anchor, BOTTOM, 0, 6) end
+    c.root:SetHidden(false)
+    if c.root.BringWindowToTop then c.root:BringWindowToTop() end
+    U.card_last = message
+end
+
+function U.card_hide()
+    if card then card.root:SetHidden(true) end
+    U.card_last = nil
+end
+
+function U.card_control() return card and card.root or nil end
+
 W.tips = {}
 function W.tip_dynamic(control)
     control:SetMouseEnabled(true)
     control:SetHandler("OnMouseEnter", function()
         local t = W.tips[control]
         BGMeter.Log.debug("tip enter: %s (text=%s)", tostring(control:GetName()), t and "yes" or "no")
-        if t and t ~= "" and ZO_Tooltips_ShowTextTooltip then ZO_Tooltips_ShowTextTooltip(control, BOTTOM, t) end
+        if t and t ~= "" and U.card_show then U.card_show(control, BOTTOM, t) end
     end)
     control:SetHandler("OnMouseExit", function()
-        if ZO_Tooltips_HideTextTooltip then ZO_Tooltips_HideTextTooltip() end
+        if U.card_hide then U.card_hide() end
     end)
 end
 function W.tip_static(control, text) W.tips[control] = text; W.tip_dynamic(control) end
@@ -83,8 +139,8 @@ local function mk_button(parent, tx, size, onclick, tipText)
     b:SetDimensions(size, size)
     b:SetHandler("OnClicked", function() onclick() end)
     if tipText then
-        b:SetHandler("OnMouseEnter", function() if ZO_Tooltips_ShowTextTooltip then ZO_Tooltips_ShowTextTooltip(b, BOTTOM, tipText) end end)
-        b:SetHandler("OnMouseExit", function() if ZO_Tooltips_HideTextTooltip then ZO_Tooltips_HideTextTooltip() end end)
+        b:SetHandler("OnMouseEnter", function() if U.card_show then U.card_show(b, BOTTOM, tipText) end end)
+        b:SetHandler("OnMouseExit", function() if U.card_hide then U.card_hide() end end)
     end
     return b
 end

@@ -118,10 +118,10 @@
                 <Backdrop name="$(parent)Track" centerColor="0F0F0FFF" edgeColor="00000000" level="1">
                     <AnchorFill/>
                 </Backdrop>
-                <Backdrop name="$(parent)Fill" centerColor="FFFFFFFF" edgeColor="00000000" level="2">
+                <Texture name="$(parent)Fill" color="FFFFFFFF" level="2">
                     <Anchor point="TOPLEFT"/>
                     <Anchor point="BOTTOMLEFT"/>
-                </Backdrop>
+                </Texture>
                 <!--
                     An outline, drawn as four thin rectangles rather than a backdrop's own edge:
                     an edge needs an edge texture, and this add-on ships no art. Shown or hidden
