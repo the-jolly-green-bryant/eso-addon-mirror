@@ -87,7 +87,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Tetsu's Daily Writ Precrafter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tetsurion/Tetsu-s-Daily-Writ-Precrafter__c68e0837-b325-48b9-94fd-702d8071849f) | Tetsurion | Console | — |
 | [Tetsu's Housing FPS Booster](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tetsurion/Tetsu-s-Housing-FPS-Booster__febdb84e-a3d4-46d5-b70c-e9b1e491be5f) | Tetsurion | Console | — |
 | [Tetsu's Quite Zone](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tetsurion/Tetsu-s-Quite-Zone__ea28fcab-28b2-43ca-addc-2547aa85a38f) | Tetsurion | Console | — |
-| [Tetsu's Raid Lead Assistant(dev)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tetsurion/Tetsu-s-Raid-Lead-Assistant-dev__a9073aea-3308-48be-91d6-ecdc650b851e) | Tetsurion | Console | — |
+| [Tetsu's Raid Lead Assistant development](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tetsurion/Tetsu-s-Raid-Lead-Assistant-development__a9073aea-3308-48be-91d6-ecdc650b851e) | Tetsurion | Console | — |
 | [Text Trials Guide](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Splat/Text-Trials-Guide__2461) | Splat | PC / Mac | 1.2.8 |
 | [TG's Group Trackers](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/TaTerGoTcha/TG-s-Group-Trackers__cd045612-ec90-4885-be99-f35f328691f8) | TaTerGoTcha | Console | — |
 | [Thank A Healer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tevnar/Thank-A-Healer__2958) | Tevnar | PC / Mac | 1.0.0 |

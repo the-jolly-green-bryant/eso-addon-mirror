@@ -1,10 +1,10 @@
 ## Title: Caro's Pre-Crafter
 ## Description: Pre-craft provisioning and alchemy items for writs (level 50).
-## APIVersion: 101037 101038
-## Version: 2.3.1
+## APIVersion: 101050 101051
+## Version: 2.3.2
 ## Author: |c1d6dadIrniben|r
 ## SavedVariables: CarosPreCrafterSavedVariables
-## DependsOn: LibAddonMenu-2.0>=34 LibCustomMenu>=713
+## DependsOn: LibAddonMenu-2.0>=43 LibCustomMenu>=730
 ## OptionalDependsOn: LibPrice CraftStoreFixedAndImproved LibLazyCrafting AwesomeGuildStore
 
 ##

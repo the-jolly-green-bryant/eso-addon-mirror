@@ -1,11 +1,11 @@
 -- Enchant+ integration adapted from the user-supplied EnchantPlus.lua.
 -- Shared by Suite grid cells and native backpack/equipped-item context menus.
+-- v0.29.517 - direct backpack glyph scan + native Enchant row/height collapse.
 EASEnchantPlus = {}
 local EP = EASEnchantPlus
 local eventName = "EAS_EnchantPlus"
 
 local function ItemIdentity(bag, slot)
-    -- ESO returns opaque id64 values; compare their value, not object identity.
     return Id64ToString(GetItemUniqueId(bag, slot))
 end
 
@@ -34,8 +34,6 @@ function EP.ClearInventoryTooltips()
     if ComparativeTooltip2 then ClearTooltip(ComparativeTooltip2) end
 end
 
--- Pick a free rectangle outside BOTH the root menu and glyph submenu.
--- This also handles the submenu opening to the left near the screen edge.
 function EP.TooltipPlacement(left, top, right, bottom, width, height, screenW, screenH)
     local gap, margin = 12, 8
     local spaces = {
@@ -69,7 +67,6 @@ function EP.PositionGlyphTooltip(control)
         end
     end
     include(ZO_Menu)
-    -- LibCustomMenu owns the submenu's placement; use its actual bounds.
     include(rawget(_G, "LibCustomMenuSubmenu"))
     local parent = control:GetParent()
     if parent and parent ~= GuiRoot and parent ~= ZO_Menu then include(parent) end
@@ -89,7 +86,6 @@ function EP.ShowGlyphTooltip(control, link)
     InitializeTooltip(ItemTooltip, GuiRoot, TOPLEFT, 0, 0, TOPLEFT)
     ItemTooltip:SetLink(link)
     EP.PositionGlyphTooltip(control)
-    -- Tooltip height may settle after the current layout pass. No polling.
     local serial = EP.tooltipSerial
     zo_callLater(function()
         if EP.tooltipOwner == control and EP.tooltipSerial == serial then
@@ -98,28 +94,54 @@ function EP.ShowGlyphTooltip(control, link)
     end, 0)
 end
 
+local function AddGlyphCandidate(glyphs, seen, targetBag, targetSlot, glyphBag, glyphSlot)
+    if glyphBag == nil or glyphSlot == nil then return end
+    if type(CanItemTakeEnchantment) ~= "function" then return end
+    local ok, compatible = pcall(CanItemTakeEnchantment, targetBag, targetSlot, glyphBag, glyphSlot)
+    if not ok or compatible ~= true then return end
+
+    local uniqueId = ItemIdentity(glyphBag, glyphSlot)
+    local key = tostring(glyphBag) .. ":" .. tostring(glyphSlot) .. ":" .. tostring(uniqueId)
+    if seen[key] then return end
+    seen[key] = true
+
+    glyphs[#glyphs + 1] = {
+        bag = glyphBag,
+        slot = glyphSlot,
+        link = GetItemLink(glyphBag, glyphSlot),
+        name = GetItemName(glyphBag, glyphSlot),
+        id = uniqueId,
+        quality = GetItemDisplayQuality(glyphBag, glyphSlot),
+    }
+end
+
 function EP.BuildGlyphEntries(bag, index)
     if not SupportsTarget(bag, index) then return {} end
     local targetId = ItemIdentity(bag, index)
-    local itemList = PLAYER_INVENTORY:GenerateListOfVirtualStackedItems(
-        INVENTORY_BACKPACK,
-        function(glyphBag, glyphSlot)
-            return CanItemTakeEnchantment(bag, index, glyphBag, glyphSlot)
-        end
-    )
-    local glyphs = {}
-    for _, itemInfo in pairs(itemList or {}) do
-        local glyphBag, glyphSlot = itemInfo.bag, itemInfo.index
-        if glyphBag ~= nil and glyphSlot ~= nil and CanItemTakeEnchantment(bag, index, glyphBag, glyphSlot) then
-            glyphs[#glyphs + 1] = {
-                bag = glyphBag, slot = glyphSlot,
-                link = GetItemLink(glyphBag, glyphSlot),
-                name = GetItemName(glyphBag, glyphSlot),
-                id = ItemIdentity(glyphBag, glyphSlot),
-                quality = GetItemDisplayQuality(glyphBag, glyphSlot),
-            }
+    local glyphs, seen = {}, {}
+
+    if type(GetBagSize) == "function" then
+        local bagSize = tonumber(GetBagSize(BAG_BACKPACK)) or 0
+        for glyphSlot = 0, math.max(0, bagSize - 1) do
+            AddGlyphCandidate(glyphs, seen, bag, index, BAG_BACKPACK, glyphSlot)
         end
     end
+
+    if PLAYER_INVENTORY and type(PLAYER_INVENTORY.GenerateListOfVirtualStackedItems) == "function" then
+        local ok, itemList = pcall(PLAYER_INVENTORY.GenerateListOfVirtualStackedItems,
+            PLAYER_INVENTORY,
+            INVENTORY_BACKPACK,
+            function(glyphBag, glyphSlot)
+                local valid, compatible = pcall(CanItemTakeEnchantment, bag, index, glyphBag, glyphSlot)
+                return valid and compatible == true
+            end)
+        if ok then
+            for _, itemInfo in pairs(itemList or {}) do
+                AddGlyphCandidate(glyphs, seen, bag, index, itemInfo.bag, itemInfo.index)
+            end
+        end
+    end
+
     table.sort(glyphs, function(a, b)
         if a.quality ~= b.quality then return a.quality > b.quality end
         if a.name ~= b.name then return a.name < b.name end
@@ -135,7 +157,6 @@ function EP.BuildGlyphEntries(bag, index)
                 and CanItemTakeEnchantment(bag, index, entry.bag, entry.slot)
         end
         local function DoEnchant()
-            -- Inventory can change while a submenu or confirmation is open.
             if not StillValid() then return end
             if type(IsProtectedFunction) == "function" and IsProtectedFunction("EnchantItem") then
                 CallSecureProtected("EnchantItem", bag, index, entry.bag, entry.slot)
@@ -150,11 +171,8 @@ function EP.BuildGlyphEntries(bag, index)
             label = color:Colorize(name .. " (" .. rarity .. ")"),
             normalColor = color,
             tooltip = function(control, inside)
-                if inside then
-                    EP.ShowGlyphTooltip(control, entry.link)
-                else
-                    EP.ClearGlyphTooltip(control)
-                end
+                if inside then EP.ShowGlyphTooltip(control, entry.link)
+                else EP.ClearGlyphTooltip(control) end
             end,
             callback = function()
                 EP.ClearGlyphTooltip()
@@ -183,53 +201,59 @@ function EP.AddMenu(bag, index)
     return true
 end
 
--- Filter the finished gear menu, without wrapping the native action builder or
--- changing any native OnSelect callback. Controls stay in their owning pools.
-function EP.RemoveNativeEnchantEntry()
-    local menu = ZO_Menu
-    if not menu or not menu.items then return end
-    local enchantName = GetString(SI_ITEM_ACTION_ENCHANT)
-    local removed = false
-    for i = #menu.items, 1, -1 do
-        local entry = menu.items[i]
-        local item = entry.item
-        if item and item.nameLabel and item.nameLabel:GetText() == enchantName then
-            item:SetHidden(true)
-            if entry.checkbox then entry.checkbox:SetHidden(true) end
-            table.remove(menu.items, i)
-            removed = true
+-- Hide only ESO's plain Enchant row and remove its contribution from the menu's
+-- stored height. ESO's ShowMenu() later adds menu.height + spacing*(#items-1),
+-- so compensate for both the removed row and its otherwise-still-counted gap.
+-- The entry remains in the table, preserving every other native/addon callback
+-- and index; the adjustment is marked so the deferred pass cannot subtract twice.
+function EP.SuppressNativeEnchantEntry()
+    local menu = rawget(_G, "ZO_Menu")
+    if not menu or type(menu.items) ~= "table" then return end
+    local enchantName = type(GetString) == "function" and GetString(SI_ITEM_ACTION_ENCHANT) or "Enchant"
+    for _, entry in ipairs(menu.items) do
+        local item = entry and entry.item
+        local label = item and item.nameLabel
+        local text = label and type(label.GetText) == "function" and label:GetText() or nil
+        if text == enchantName then
+            if not entry._easEnchantCollapsed029517 then
+                local originalHeight = tonumber(item.storedHeight)
+                if not originalHeight and type(item.GetHeight) == "function" then
+                    originalHeight = tonumber(item:GetHeight())
+                end
+                originalHeight = math.max(0, originalHeight or 0)
+                local originalPad = math.max(0, tonumber(entry.itemYPad) or 0)
+                local spacing = math.max(0, tonumber(menu.spacing) or 0)
+
+                -- UpdateMenuDimensions already added row height + itemYPad.
+                -- Because the hidden entry stays in #menu.items, ShowMenu will
+                -- also count one extra spacing interval; remove that here too.
+                menu.height = math.max(0, (tonumber(menu.height) or 0) - originalHeight - originalPad - spacing)
+                entry._easEnchantCollapsed029517 = true
+            end
+
+            if item.SetHidden then item:SetHidden(true) end
+            if item.SetMouseEnabled then item:SetMouseEnabled(false) end
+            if item.SetHeight then item:SetHeight(0) end
+            item.storedHeight = 0
+            entry.itemYPad = 0
+            if entry.checkbox then
+                if entry.checkbox.SetHidden then entry.checkbox:SetHidden(true) end
+                if entry.checkbox.SetMouseEnabled then entry.checkbox:SetMouseEnabled(false) end
+                if entry.checkbox.SetHeight then entry.checkbox:SetHeight(0) end
+            end
         end
     end
-    if not removed then return end
-    -- Re-anchor remaining rows and indices, including custom submenu controls.
-    local previous = menu
-    menu.height = 0
-    for i, entry in ipairs(menu.items) do
-        local item, checkbox = entry.item, entry.checkbox
-        item.menuIndex = i
-        item:ClearAnchors()
-        local anchor = checkbox or item
-        if checkbox then checkbox.menuIndex = i; checkbox:ClearAnchors() end
-        if previous == menu then
-            anchor:SetAnchor(TOPLEFT, menu, TOPLEFT, menu.menuPad, menu.menuPad + (entry.itemYPad or 0))
-        else
-            anchor:SetAnchor(TOPLEFT, previous, BOTTOMLEFT, 0, menu.spacing + (entry.itemYPad or 0))
-        end
-        if checkbox then item:SetAnchor(TOPLEFT, checkbox, TOPRIGHT, 0, 0) end
-        previous = anchor
-        menu.height = menu.height + (item.storedHeight or item:GetHeight()) + (entry.itemYPad or 0)
-    end
-    menu.nextAnchor = previous
-    menu.currentIndex = #menu.items + 1
 end
 
 function EP.ContextMenuCallback(inventorySlot)
     if not inventorySlot then return end
     local bag, index = ZO_Inventory_GetBagAndIndex(inventorySlot)
-    -- Only append Enchant+. Do not delete/re-anchor ESO's native menu entries:
-    -- touching the stock item pool can contaminate protected callbacks such as
-    -- TryUseItem -> UseItem on current ESO clients.
-    EP.AddMenu(bag, index)
+    if EP.AddMenu(bag, index) then
+        EP.SuppressNativeEnchantEntry()
+        if type(zo_callLater) == "function" then
+            zo_callLater(function() EP.SuppressNativeEnchantEntry() end, 0)
+        end
+    end
 end
 
 function EP.OnAddonLoaded(_, addonName)
@@ -242,7 +266,6 @@ function EP.OnAddonLoaded(_, addonName)
     SecurePostHook("ClearMenu", function()
         if EP.tooltipOwner then EP.ClearGlyphTooltip() end
     end)
-
 end
 
 EVENT_MANAGER:RegisterForEvent(eventName, EVENT_ADD_ON_LOADED, EP.OnAddonLoaded)

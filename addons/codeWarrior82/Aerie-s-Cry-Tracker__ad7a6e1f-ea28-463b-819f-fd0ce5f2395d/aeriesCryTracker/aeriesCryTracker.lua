@@ -13,11 +13,11 @@ aeriesCryTracker = {}
 aeriesCryTracker.defaults = {
     trackAeries = true,
     trackEagles = true,
-    notifyAeries = true,
-    yAxisTextAeries = 930,
-    xAxisTextAeries = 1300,
-    yAxisTextEagles = 500,
-    xAxisTextEagles = 1100
+    notify = false,
+    yAxisTextAeries = 760,
+    xAxisTextAeries = 750,
+    yAxisTextEagles = 660,
+    xAxisTextEagles = 420
 }
 
 --check if libNotify is available
@@ -91,8 +91,8 @@ local function processBuff()
     else
         buffRunning = false
         actrackLabelMain:SetText("")
-        if isLibAvailable() and aeriesCryTracker.savedVariables.notifyAeries then
-            LibNotify.notifyForAddonPlease(appName, aeriesAbilityID, "Aerie's Call ended" , true)
+        if isLibAvailable() and aeriesCryTracker.savedVariables.notify then
+            LibNotify.notifyForAddonPlease(appName, aeriesAbilityID, "Aerie's Call ended")
         end
     end
 end
@@ -322,14 +322,14 @@ local function createOptions()
         {
             type = "checkbox",
             name = "Notification",
-            tooltip = "Displays a notification and plays a sound when the Aerie's Call buff finishes.\nThe sound can be changed in the LibNotify Add-on options.",
+            tooltip = "Displays a notification and plays a sound when the Aerie's Call buff finishes.\nThe settings for the notification can be changed in the LibNotify Add-on options.",
             getFunc = function()
-                return aeriesCryTracker.savedVariables.notifyAeries
+                return aeriesCryTracker.savedVariables.notify
             end,
             setFunc = function(value)
-                aeriesCryTracker.savedVariables.notifyAeries = value
+                aeriesCryTracker.savedVariables.notify = value
             end,
-            default = aeriesCryTracker.defaults.notifyAeries,
+            default = aeriesCryTracker.defaults.notify,
         },
         {
             type = "divider",

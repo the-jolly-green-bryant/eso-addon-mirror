@@ -10,10 +10,12 @@ local cspsD = CSPS.cspsD
 local currentClassSkillLines = {1,2,3}
 local otherClassSkills = {}
 local hasAnySubclasses, tooManySubclasses, twoSubclassesFromOneClass = false, false, false
-local classMasteryIndex = false
-local firstClassMasteryIndex = false
-local numClassMasteries = 0
-local craftedAbilites = false
+
+local skillLineIdsToExclude = { -- racial skill lines can be handled by line index. vengeance skills will be marked and hidden in the tree.
+		[71] = true, -- emperor
+
+	}
+CSPS.skillLineIdsToExclude = skillLineIdsToExclude	
 
 local respecCooldown = false
 
@@ -30,33 +32,6 @@ local mechanicFlagColors = {
 	[COMBAT_MECHANIC_FLAGS_ULTIMATE] =  cpColors[4],
 	[COMBAT_MECHANIC_FLAGS_WEREWOLF] =  cpColors[5],
 }
-
-local function checkClassMasteries(doNotSumUp)
-	if not classMasteryIndex then return end
-	local lineData = skillTable[1][classMasteryIndex]
-	local oldNumClassMasteries = numClassMasteries
-	numClassMasteries = 0
-	local refreshLine = false
-	for skillIndex, skillData in ipairs(lineData) do
-		if skillData.purchased then 
-			if numClassMasteries == 2 then
-				skillData.purchased = false
-				refreshLine = true
-			else
-				numClassMasteries = numClassMasteries + 1
-			end
-		end
-	end
-	if numClassMasteries == oldNumClassMasteries and not refreshLine then return end
-	for skillLineIndex, skillData in ipairs(lineData) do
-		skillData:setPoints()
-	end
-	if doNotSumUp then return end
-	lineData:sumUpSkills()
-	skillTable[1]:sumUpSkills()
-end
-
-CSPS.checkClassMasteries = checkClassMasteries
 
 local function checkCustomStyles()
 	local numChanges = 0
@@ -97,13 +72,6 @@ local function everythingScripted(scripts)
 	return true
 end
 
-local function getCraftedAbilityIndices(craftedAbilityId)
-	if not craftedAbilites or not craftedAbilites[craftedAbilityId] then return GetSkillAbilityIndicesFromCraftedAbilityId(craftedAbilityId) end
-	return unpack(craftedAbilites[craftedAbilityId])
-end
-
-CSPS.getCraftedAbilityIndices = getCraftedAbilityIndices
-
 local function checkCraftedAbilites()
 	local neededInk = 0
 	local canCraftAll = true
@@ -111,7 +79,7 @@ local function checkCraftedAbilites()
 	local combinationsToScribe = {}
 	for i=1, GetNumCraftedAbilities() do
 		local craftedId = GetCraftedAbilityIdAtIndex(i)
-		local skillType, skillLineIndex, skillIndex = getCraftedAbilityIndices(craftedId)
+		local skillType, skillLineIndex, skillIndex = GetSkillAbilityIndicesFromCraftedAbilityId(craftedId)
 		local skEntry = skillTable[skillType][skillLineIndex][skillIndex]
 		if #skEntry.scripts == 3 and everythingScripted(skEntry.scripts) then
 			if IsScribableScriptCombinationForCraftedAbility(craftedId, unpack(skEntry.scripts)) then
@@ -379,7 +347,7 @@ function CSPS.hbSkillMenu(myBar, slotIndex)
 	for skillType, typeData in ipairs(CSPS.skillTable) do
 		local typeContent = {}
 		for skillLineIndex, lineData in ipairs(typeData) do
-			if not lineData.emperor and not lineData.vengeance and (skillType ~= 1 or hf.entryInTable(currentClassSkillLines, skillLineIndex)) then
+			if not skillLineIdsToExclude[lineData.zo_data.id] and not lineData.vengeance and (skillType ~= 1 or hf.entryInTable(currentClassSkillLines, skillLineIndex)) then
 				local anySkillsInLine = false
 				for skillIndex, skillData in ipairs(lineData) do
 					if skillData.purchased and not skillData.passive and skillData.hb[myBar] ~= slotIndex then
@@ -530,11 +498,8 @@ function CSPS.minusClickSkill(theSkill, ctrl, alt, shift)
 	end
 
 	theSkill:setPoints()
-	
-	if theSkill.lineData.classMastery then checkClassMasteries(true) end
 	theSkill.lineData:sumUpSkills()
 	theSkill.typeData:sumUpSkills()
-	
 	
 	refreshSkillPointSum()
 	CSPS.hbPopulate()
@@ -559,7 +524,7 @@ function CSPS.removeSkillLine(skTyp, skLin, noRefresh)
 				if skillData.purchased then
 					skillData.purchased = false
 					skillData:setPoints()
-					if skillData.hb and not skillData.purchased then
+					if not skillData.purchased then
 						for myBar = 1, 3 do
 							if skillData.hb[myBar] ~= nil then CSPS.hbSkillRemove(myBar, skillData.hb[myBar]) end
 						end	
@@ -569,7 +534,6 @@ function CSPS.removeSkillLine(skTyp, skLin, noRefresh)
 			skillLine:sumUpSkills()
 		end
 	end
-	if skTyp == 1 then checkClassMasteries(true) end
 	typeData:sumUpSkills()
 	refreshSkillPointSum()
 	if noRefresh then return end
@@ -615,7 +579,6 @@ function CSPS.plusClickSkill(theSkill, ctrl, alt, shift)
 		end
 	end
 	theSkill:setPoints()
-	if theSkill.lineData.classMastery then checkClassMasteries(true) end
 	theSkill.lineData:sumUpSkills()
 	theSkill.typeData:sumUpSkills()
 
@@ -681,7 +644,6 @@ local function setPointsPassive(self)
 	local pointMulti = self.type == 1 and self.line > 3 and 2 or 1
 	
 	self.maxRaMo = self.rank >= maxRank
-	
 	self.rank = self.rank <= maxRank and self.rank or maxRank
 	self.rank = self.rank > 0 and self.rank or 1
 	points = points + self.rank - 1
@@ -727,22 +689,9 @@ local function setPointsPassive(self)
 	return points * pointMulti
 end
 
-local function setPointsClassMastery(self)
-	local lineUnlocked = not hasAnySubclasses and HasMaxRankInAllClassSkillLines()
-	self.maxRaMo = numClassMasteries >= 2 or self.rank == 1
-	self.pointsToSpend = 0
-	self.rank = self.purchased and 1 or 0
-	self.points = self.rank
-	
-	if not lineUnlocked then self.error = ec.lineNotActive return end
-	if self.purchased and self.zo_data:GetPointAllocator():IsPurchased() then self.error = ec.correct return end
-end
-
 local function setPoints(self)
 	self.error = nil
 	self.freePoints = 0
-	
-	if self.lineData.classMastery then setPointsClassMastery(self) return end
 	
 	if not self.purchased then 
 		self.points = 0 
@@ -759,6 +708,7 @@ local function setPoints(self)
 			return 
 		end  
 	end
+	
 	self.points = not self.craftedId and (self.passive and setPointsPassive(self) or setPointsActive(self)) or 0
 end
 
@@ -769,7 +719,7 @@ local function sumUpSkills(self)
 	local errorSums = {0,0,0,0,0,0,0,0}
 	local freePoints = 0
 	for i, v in ipairs(self) do
-		points = not v.classMastery and v.points and points + v.points or points
+		points = v.points and points + v.points or points
 		pointsToSpend = v.pointsToSpend and pointsToSpend + v.pointsToSpend or pointsToSpend
 		if v.error then 
 			errorSums[v.error] = errorSums[v.error] or 0
@@ -786,14 +736,10 @@ local function sumUpSkills(self)
 	self.points = points
 	self.pointsToSpend = pointsToSpend
 	self.errorSums = errorSums
-	if not self.classMastery then return end
-	self.active = not hasAnySubclasses
-	self.locked = not HasMaxRankInAllClassSkillLines()
 end
 
 function CSPS.createSkillTable()
 	cspsD("Creating skill table")
-	craftedAbilites = {} --helper function because GetSkillAbilityIndicesFromCraftedAbilityId is not working properly after language changes...
 	skillTable.sumUpSkills = sumUpSkills
 	for skillType=1, #skillTypes do
 		skillTable[skillType] = {sumUpSkills = sumUpSkills}
@@ -813,13 +759,6 @@ function CSPS.createSkillTable()
 			
 			if zoSkillLineData.IsClassMastery and zoSkillLineData:IsClassMastery() then --TODO first can be deleted after up50 goes live
 				skillLineData.classMastery = true
-				firstClassMasteryIndex = firstClassMasteryIndex or skillLineIndex
-				if zoSkillLineData:GetClassId() == GetUnitClassId("player") then
-					skillLineData.activeClassMastery = true
-					classMasteryIndex = skillLineIndex
-				end
-			elseif skillLineData.id == 71 then --emperor skill line
-				skillLineData.emperor = true
 			elseif zoSkillLineData.lastRankXP == 0 and zoSkillLineData.nextRankXP == 0 then
 				skillLineData.vengeance = true
 			end
@@ -863,7 +802,6 @@ function CSPS.createSkillTable()
 					skEntry.name = zo_strformat("<<C:1>>", GetCraftedAbilityDisplayName(zoSkillData.craftedAbilityId))
 					skEntry.texture = GetCraftedAbilityIcon(zoSkillData.craftedAbilityId)
 					skEntry.scripts = {}
-					craftedAbilites[zoSkillData.craftedAbilityId] = {skillType, skillLineIndex, skillIndex}
 				else
 					skEntry.name = baseData:GetFormattedName()
 					skEntry.texture = baseData:GetIcon()		
@@ -879,7 +817,7 @@ function CSPS.createSkillTable()
 				skEntry.auxListIndex = 0
 				skEntry.maxRaMo = false
 				skEntry.rank = 1
-				skEntry.hb = not skEntry.passive and {} or nil
+				skEntry.hb = {}
 				skEntry.purchased = false
 			end
 			skillLineData:sumUpSkills()
@@ -908,7 +846,6 @@ function CSPS.resetSkills()
 		end
 		skillTypeData:sumUpSkills()
 	end			
-	checkClassMasteries()
 	refreshSkillPointSum()
 end
 
@@ -929,7 +866,6 @@ end
 
 function CSPS.readCurrentSkills()
 	cspsD("Reading current skills")
-	if IsCurrentCampaignVengeanceRuleset() then return end
 	local subclasses = {}
 	if #skillTable == 0 then CSPS.createSkillTable() end	
 	for skillType, skillTypeData in ipairs(skillTable) do
@@ -956,8 +892,7 @@ function CSPS.readCurrentSkills()
 		skillTypeData:sumUpSkills()
 	end			
 	CSPS.setSubClasses(subclasses)
-	checkClassMasteries()
-	refreshSkillPointSum(true)
+	refreshSkillPointSum()
 end
 
 function CSPS.hbLinkToSkills(hbTables)
@@ -1130,8 +1065,6 @@ local function applySkillsGo(callOnSuccess, callOnFail, shouldRespec, ignoreStyl
 		CSPS.cspsD(lineChangeSuccess and "Lines changed successfully" or "Faild to change lines")
 		--if not lineChangeSuccess then return end
 	end
-	local doClassMasteriesLater = not hasAnySubclasses and hf.anyEntryNotFalse(futureLines) and {} or false
-	cspsD(doClassMasteriesLater and "Do class masteries later" or "no need to do class masteries later")
 	--SKILLS_WINDOW:RefreshSkillPointInfo()
 	-- /script SCENE_MANAGER:Show("skills") StartSkillRespecFromUI() d(SKILLS_AND_ACTION_BAR_MANAGER:GetSkillPointAllocationMode()) d(SKILL_POINT_ALLOCATION_MODE_FULL) SKILL_POINT_ALLOCATION_MANAGER:ClearPointsOnAllSkillLines()
 	if SKILLS_AND_ACTION_BAR_MANAGER:GetSkillPointAllocationMode() == SKILL_POINT_ALLOCATION_MODE_FULL then
@@ -1161,23 +1094,12 @@ local function applySkillsGo(callOnSuccess, callOnFail, shouldRespec, ignoreStyl
 			CSPS.refreshSkillSumsAndErrors()  
 			CSPS.refreshTree() 
 			if respecResult == RESPEC_RESULT_SUCCESS then
-				local delay = 0
 				applyStyles()
-				if doClassMasteriesLater then
-					delay = 210
-					zo_callLater(function()
-						cspsD("Trying to apply class masteries with delay")
-						for _, skillData in pairs(doClassMasteriesLater) do
-							cspsD("Allocating points in classMastery...")
-							skillData.zo_data:GetPointAllocator():Purchase()
-						end
-					end, delay)
-				end
 				zo_callLater(function() 
 					CSPS.refreshSkillSumsAndErrors()  
 					CSPS.refreshTree() 
 					callOnSuccess() 
-				end, 420 + delay)
+				end, 420)
 			else
 				cspsD("Respec result was not a success: "..respecResult)
 				callOnFail()
@@ -1196,25 +1118,14 @@ local function applySkillsGo(callOnSuccess, callOnFail, shouldRespec, ignoreStyl
 		end)	
 	end
 	local changedAnything = didReset or false
-	if not hasAnySubclasses then futureLines[classMasteryIndex] = true end
 	for skillType, typeData in ipairs(skillTable) do
 		for skillLineIndex, lineData in ipairs(typeData) do
-			if skillType == 1 and skillLineIndex == classMasteryIndex then 
-				cspsD("Checking class mastery line") 
-			end
-			if lineData.zo_data:IsActive() or skillType == 1 and futureLines[skillLineIndex] and lineChangeSuccess then
-				if skillType == 1 and skillLineIndex == classMasteryIndex then cspsD("Checking class mastery line skills") end
+			if lineData.zo_data:IsActive() or skillType == 1 and futureLines[lineIndex] and lineChangeSuccess then
 				for skillIndex, skillData in ipairs(lineData) do
 					local allocator = skillData.zo_data:GetPointAllocator()
 					if skillData.purchased then
-						if not allocator:IsPurchased() then 
-							changedAnything = true 
-							allocator:Purchase() 
-							if skillType == 1 and skillLineIndex == classMasteryIndex and doClassMasteriesLater then
-								cspsD("Inserting class mastery into table for later")
-								table.insert(doClassMasteriesLater, skillData)
-							end
-						end
+						
+						if not allocator:IsPurchased() then changedAnything = true allocator:Purchase() end
 						if skillData.passive then
 							skillData.rank = skillData.rank or 0
 							local j = not didReset and skillData.zo_data:GetCurrentSkillProgressionKey() or 1
@@ -1603,19 +1514,8 @@ function CSPS.setSubClass(index, subclass)
 	CSPS.setSubClasses(subclasses)
 end	
 
-local function refreshClassMasteryLine()
-	if not classMasteryIndex then return end
-	local lineData = skillTable[1][classMasteryIndex]
-	for _, skEntry in ipairs(lineData) do
-		skEntry:setPoints()
-	end
-	lineData:sumUpSkills()
-	skillTable[1]:sumUpSkills()
-end
-
 function CSPS.setSubClasses(subclasses, removeOthers)
 	table.sort(subclasses)
-	local hadAnySubclasses = hasAnySubclasses
 	hasAnySubclasses = false
 	local lineInBuild = {}
 	tooManySubclasses = true
@@ -1635,8 +1535,6 @@ function CSPS.setSubClasses(subclasses, removeOthers)
 			end
 		end
 	end
-	
-	if hadAnySubclasses ~= hasAnySubclasses then refreshClassMasteryLine() end
 	
 	if removeOthers then
 		for i,v in pairs(currentClassSkillLines) do
@@ -1668,12 +1566,12 @@ function CSPS.setSubClasses(subclasses, removeOthers)
 	if removedHbItem then CSPS.hbPopulate() end
 end
 
-function CSPS.getClassMasterySkillLineIndex()
-	return classMasteryIndex, firstClassMasteryIndex
+function CSPS.ocs()
+	return otherClassSkills
 end
 
 function CSPS.getSubClasses(index)
-	return index and (index <= 3 and currentClassSkillLines[index] or otherClassSkills[index]) or index or currentClassSkillLines
+	return index and (index <= 3 and currentClassSkillLines[index] or otherClassSkills[index]) or currentClassSkillLines
 end
 
 function CSPS.hasAnySubclasses()

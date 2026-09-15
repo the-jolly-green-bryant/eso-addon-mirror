@@ -1,11 +1,13 @@
 ## Title: |c66f2ffZoneAchievements|r
-## APIVersion: 101050
-## Version: 2.0.4
-## AddOnVersion: 20004
+## APIVersion: 101050 101051
+## Version: 2.0.5
+## AddOnVersion: 20005
 ## Author: |cff6401Soul_Hagans|r
 ## Description: Shows achievements for current zone
 ## SavedVariables: ZoneAchievements_SavedVars
 
+locales/en.lua
+locales/ru.lua
 ZA_Data.lua
 ZoneAchievements.lua
 Bindings.xml

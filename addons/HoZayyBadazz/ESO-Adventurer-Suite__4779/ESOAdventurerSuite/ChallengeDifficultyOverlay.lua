@@ -26,6 +26,12 @@ local function anchorWindow(control, leftKey, topKey, defaultX, defaultY)
     end
 end
 
+local function setHiddenIfChanged(control, hidden)
+    if not control or type(control.IsHidden) ~= "function" or type(control.SetHidden) ~= "function" then return end
+    local ok, current = pcall(control.IsHidden, control)
+    if not ok or current ~= hidden then pcall(control.SetHidden, control, hidden) end
+end
+
 function O:GetShownDifficulty()
     local value = safe(GetOverlandDifficulty, nil)
     if value == nil and EPC.OverlandDifficulty then
@@ -36,7 +42,6 @@ function O:GetShownDifficulty()
     end
     return tonumber(value)
 end
-
 
 function O:IsInDungeon()
     return safe(IsUnitInDungeon, false, "player") == true
@@ -60,11 +65,10 @@ function O:Anchor()
     anchorWindow(self.frame, "overlandDifficultyOverlayLeft", "overlandDifficultyOverlayTop", 0, 205)
 end
 
-function O:ApplyDrawOrder()
+function O:ApplyDrawOrder(force)
     if not self.frame then return end
-    -- v0.29.340: the adaptive quest overlays can use DT_HIGH and grow across
-    -- nearby HUD space. Keep Automatic Difficulty above all normal Suite HUD
-    -- cards in gameplay as well as HUD Layout Mode so it never gets buried.
+    if not force and self.drawOrderApplied029560 then return end
+    self.drawOrderApplied029560 = true
     pcall(function()
         if self.frame.SetTopLevel then self.frame:SetTopLevel(true) end
         if self.frame.SetDrawTier then self.frame:SetDrawTier(DT_HIGH or DT_MEDIUM) end
@@ -72,7 +76,9 @@ function O:ApplyDrawOrder()
         if self.frame.SetDrawLevel then self.frame:SetDrawLevel(9000) end
         if self.icon and self.icon.SetDrawLayer then self.icon:SetDrawLayer(DL_OVERLAY or DL_CONTROLS) end
         if self.icon and self.icon.SetDrawLevel then self.icon:SetDrawLevel(9010) end
-        if self.frame.BringWindowToTop then self.frame:BringWindowToTop() end
+        -- v0.29.560: do not BringWindowToTop on the periodic pulse. Doing that
+        -- every 800ms causes a visible blink on some HUD compositions.
+        if force and self.frame.BringWindowToTop then self.frame:BringWindowToTop() end
     end)
 end
 
@@ -98,8 +104,12 @@ function O:Create()
 
     self.frame = frame
     self.icon = icon
+    self.lastVisible029560 = nil
+    self.lastTexture029560 = nil
+    self.lastScale029560 = nil
+    self.drawOrderApplied029560 = false
     self:Anchor()
-    self:ApplyDrawOrder()
+    self:ApplyDrawOrder(true)
 end
 
 function O:IsSuiteOpen()
@@ -111,16 +121,13 @@ function O:IsSuiteOpen()
     return false
 end
 
-function O:Refresh()
+function O:Refresh(force)
     if not self.frame or not EPC.saved then return end
 
     local overlayEnabled = EPC.saved.overlandDifficultyShowOverlay == true
     local autoEnabled = EPC.saved.overlandDifficultyEnabled == true
     local inDungeon = self:IsInDungeon()
 
-    -- Gameplay-only behavior: hide with normal ESO menus and while the
-    -- Tamriel Codex/Suite is open. HUD layout mode is the only preview
-    -- exception so the icon can still be positioned.
     local suppressed = false
     if self.layoutMode ~= true then
         if EPC.IsGameplayHudSuppressed and EPC:IsGameplayHudSuppressed() then suppressed = true end
@@ -128,10 +135,6 @@ function O:Refresh()
     end
 
     local texture = nil
-
-    -- Dungeon difficulty has no reliable matching Challenge Difficulty symbol.
-    -- Hide this overlay completely while inside a dungeon/trial and restore the
-    -- normal overland symbol automatically after returning to the open world.
     if not inDungeon then
         if self.layoutMode == true then
             local value = self:GetShownDifficulty() or 0
@@ -148,10 +151,25 @@ function O:Refresh()
         end
     end
 
-    self.frame:SetScale(tonumber(EPC.saved.overlandDifficultyOverlayScale) or 1.0)
-    if texture then self.icon:SetTexture(texture) end
-    self:ApplyDrawOrder()
-    self.frame:SetHidden(texture == nil)
+    local scale = tonumber(EPC.saved.overlandDifficultyOverlayScale) or 1.0
+    if force or self.lastScale029560 ~= scale then
+        self.lastScale029560 = scale
+        self.frame:SetScale(scale)
+    end
+    if texture and (force or texture ~= self.lastTexture029560) then
+        self.lastTexture029560 = texture
+        self.icon:SetTexture(texture)
+    elseif not texture then
+        self.lastTexture029560 = nil
+    end
+
+    self:ApplyDrawOrder(force == true)
+
+    local show = texture ~= nil
+    if force or self.lastVisible029560 ~= show then
+        self.lastVisible029560 = show
+        setHiddenIfChanged(self.frame, not show)
+    end
 end
 
 function O:SetLayoutMode(active)
@@ -159,9 +177,11 @@ function O:SetLayoutMode(active)
     if self.frame then
         self.frame:SetMouseEnabled(self.layoutMode)
         self.frame:SetMovable(self.layoutMode)
-        self:ApplyDrawOrder()
+        self.drawOrderApplied029560 = false
+        self:ApplyDrawOrder(true)
     end
-    self:Refresh()
+    self.lastVisible029560 = nil
+    self:Refresh(true)
 end
 
 function O:ResetPosition()
@@ -176,16 +196,18 @@ function O:Initialize()
     self:Create()
     local prefix = (EPC.name or "EAS") .. "_ChallengeDifficultyOverlay"
     if EVENT_PLAYER_ACTIVATED then
-        EVENT_MANAGER:RegisterForEvent(prefix .. "_Activated", EVENT_PLAYER_ACTIVATED, function() self:Refresh() end)
+        EVENT_MANAGER:RegisterForEvent(prefix .. "_Activated", EVENT_PLAYER_ACTIVATED, function() self:Refresh(true) end)
     end
     if EVENT_OVERLAND_DIFFICULTY_CHANGED then
-        EVENT_MANAGER:RegisterForEvent(prefix .. "_Difficulty", EVENT_OVERLAND_DIFFICULTY_CHANGED, function() self:Refresh() end)
+        EVENT_MANAGER:RegisterForEvent(prefix .. "_Difficulty", EVENT_OVERLAND_DIFFICULTY_CHANGED, function() self:Refresh(true) end)
     end
     if EVENT_ZONE_CHANGED then
-        EVENT_MANAGER:RegisterForEvent(prefix .. "_Zone", EVENT_ZONE_CHANGED, function(_, unitTag) if not unitTag or unitTag == "player" then self:Refresh() end end)
+        EVENT_MANAGER:RegisterForEvent(prefix .. "_Zone", EVENT_ZONE_CHANGED, function(_, unitTag) if not unitTag or unitTag == "player" then self:Refresh(true) end end)
     elseif EVENT_ZONE_UPDATE then
-        EVENT_MANAGER:RegisterForEvent(prefix .. "_Zone", EVENT_ZONE_UPDATE, function() self:Refresh() end)
+        EVENT_MANAGER:RegisterForEvent(prefix .. "_Zone", EVENT_ZONE_UPDATE, function() self:Refresh(true) end)
     end
-    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Pulse", 800, function() self:Refresh() end)
-    self:Refresh()
+    -- Keep a slow safety pulse, but it is now state-aware and no longer changes
+    -- draw order/visibility unless something actually changed.
+    EVENT_MANAGER:RegisterForUpdate(prefix .. "_Pulse", 1000, function() self:Refresh(false) end)
+    self:Refresh(true)
 end

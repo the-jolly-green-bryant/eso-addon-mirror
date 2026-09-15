@@ -1,78 +1,14 @@
 -- ZoneAchievements.lua (полная версия с вкладками, историей, разделителем и лестницей испытаний)
 local ADDON_NAME = "ZoneAchievements"
-local ZA = {}
-ZA.Cache = {}
-ZA.RecentUpdates = {}
+ZoneAchievements = ZoneAchievements or {}
+local ZA = ZoneAchievements
+local L = ZA.L or {}
+
+ZA.Cache = ZA.Cache or {}
+ZA.RecentUpdates = ZA.RecentUpdates or {}
 ZA.CurrentTab = "zone" -- Активная вкладка по умолчанию
 
--- ================= ЛОКАЛИЗАЦИЯ (СЛОВАРЬ) =================
-local lang = GetCVar("language.2")
-local L = {}
-
-if lang == "ru" then
-    L.lockedZone = "Заблокированная зона"
-    L.unknown = "Неизвестно"
-    L.recentTag = "  |cFFD700[НОВОЕ]|r"
-    L.completed = "|c00FF00Достижение выполнено!|r"
-    L.progress = "Прогресс: |cFFFF00%d / %d|r"
-    L.testTitle = "|c39DB92[ZA-Test] Перетащи меня!|r"
-    L.dragMe = "Зажми левую кнопку мыши для переноса"
-    -- Вкладки и история
-    L.tabZone = "Зона"
-    L.tabHistory = "История"
-    L.historyTitle = "История активности (24ч)"
-    L.justNow = "Только что"
-    L.minutesAgo = "%d мин. назад"
-    L.hoursAgo = "%d ч. назад"
-    -- Особые испытания и разделители
-    L.specialHeader = "——— Главные испытания ———"
-    L.otherHeader = "——— Прочие достижения ———"
-    L.tagVet = "|c9370DB[ВЕТ]|r "
-    L.tagSpeed = "|c00FFFF[СПИДРАН]|r "
-    L.tagNoDeath = "|cE6E6FA[НЕУМИРАЙКА]|r "
-    L.tagHM = "|cFF4500[ХМ]|r "
-    L.tagTrifecta = "|cFFD700[ТРИФЕКТА]|r "
-    L.menuSetVet = "Пометить: [Вет]"
-    L.menuSetSpeed = "Пометить: [Спидран]"
-    L.menuSetNoDeath = "Пометить: [Неумирайка]"
-    L.menuSetHM = "Пометить: [ХМ]"
-    L.menuSetTrifecta = "Пометить: [Трифекта]"
-    L.menuClearTag = "Убрать особую метку"
-else
-    -- Английский по умолчанию
-    L.lockedZone = "Locked Zone"
-    L.unknown = "Unknown"
-    L.recentTag = "  |cFFD700[NEW]|r"
-    L.completed = "|c00FF00Achievement Completed!|r"
-    L.progress = "Progress: |cFFFF00%d / %d|r"
-    L.testTitle = "|c39DB92[ZA-Test] Drag Me!|r"
-    L.dragMe = "Hold Left Mouse Button to drag"
-    -- Вкладки и история
-    L.tabZone = "Zone"
-    L.tabHistory = "History"
-    L.historyTitle = "Activity History (24h)"
-    L.justNow = "Just now"
-    L.minutesAgo = "%d m ago"
-    L.hoursAgo = "%d h ago"
-    -- Особые испытания и разделители
-    L.specialHeader = "——— Major Challenges ———"
-    L.otherHeader = "——— Other Achievements ———"
-    L.tagVet = "|c9370DB[VET]|r "
-    L.tagSpeed = "|c00FFFF[SPEED]|r "
-    L.tagNoDeath = "|cE6E6FA[NO-DEATH]|r "
-    L.tagHM = "|cFF4500[HM]|r "
-    L.tagTrifecta = "|cFFD700[TRIFECTA]|r "
-    L.menuSetVet = "Tag as: [Vet]"
-    L.menuSetSpeed = "Tag as: [Speedrun]"
-    L.menuSetNoDeath = "Tag as: [No-Death]"
-    L.menuSetHM = "Tag as: [HM]"
-    L.menuSetTrifecta = "Tag as: [Trifecta]"
-    L.menuClearTag = "Remove special tag"
-end
-
 local ZA_EXPECTED = _G["ZA_Names"] or {}
-
-ZO_CreateStringId("SI_BINDING_NAME_TOGGLE_ZONEACH_WINDOW", "Открыть/закрыть окно ZoneAchievements")
 
 -- Вспомогательный массив для отслеживания созданных строк
 local createdRows = {}
@@ -97,10 +33,12 @@ end
 -- Получаем информацию об ачивке
 function ZA:GetAchievementInfo(achievementId)
     local name, description, points, icon, completed, earned, category, hidden = GetAchievementInfo(achievementId)
+    local cleanName = name and zo_strformat("<<1>>", name) or (L and L.unknown or "Unknown")
+    local cleanDesc = description and zo_strformat("<<1>>", description) or ""
     return {
         id = achievementId,
-        name = name or "Неизвестно",
-        desc = description or "",
+        name = cleanName,
+        desc = cleanDesc,
         points = points or 0,
         icon = icon or "/esoui/art/icons/icon_missing.dds",
         completed = completed or false,
@@ -572,8 +510,11 @@ function ZA:ShowZoneAchievementsWindow()
             end
         end
 
-        -- Лестница сложности: 1.ВЕТ -> 2.СПИДРАН -> 3.НЕУМИРАЙКА -> 4.ХМ (+1,+2,+3) -> 5.ТРИФЕКТА
-        local typeWeight = { ["VET"] = 1, ["SPEED"] = 2, ["NODEATH"] = 3, ["HM"] = 4, ["TRIFECTA"] = 5 }
+        -- Лестница сложности: 1.ВЕТ -> 2.СПИДРАН -> 3.НЕУМИРАЙКА -> 4.ХМ (+1,+2,+3) -> 5.ТРИФЕКТА -> 6.НЕВЗГОДЫ (1..3)
+        local typeWeight = { 
+            ["VET"] = 1, ["SPEED"] = 2, ["NODEATH"] = 3, ["HM"] = 4, ["TRIFECTA"] = 5,
+            ["MISFORTUNE_1"] = 6, ["MISFORTUNE_2"] = 7, ["MISFORTUNE_3"] = 8 
+        }
         table.sort(specialList, function(a, b)
             local sTypeA = self:GetAchievementSpecialType(a.info.id)
             local sTypeB = self:GetAchievementSpecialType(b.info.id)
@@ -653,6 +594,9 @@ function ZA:ShowZoneAchievementsWindow()
                         AddMenuItem(L.menuSetNoDeath, function() ZA:SetAchievementSpecialType(achInfo.id, "NODEATH") end)
                         AddMenuItem(L.menuSetHM, function() ZA:SetAchievementSpecialType(achInfo.id, "HM") end)
                         AddMenuItem(L.menuSetTrifecta, function() ZA:SetAchievementSpecialType(achInfo.id, "TRIFECTA") end)
+                        AddMenuItem(L.menuSetMisfortune1, function() ZA:SetAchievementSpecialType(achInfo.id, "MISFORTUNE_1") end)
+                        AddMenuItem(L.menuSetMisfortune2, function() ZA:SetAchievementSpecialType(achInfo.id, "MISFORTUNE_2") end)
+                        AddMenuItem(L.menuSetMisfortune3, function() ZA:SetAchievementSpecialType(achInfo.id, "MISFORTUNE_3") end)
                         AddMenuItem(L.menuClearTag, function() ZA:SetAchievementSpecialType(achInfo.id, nil) end)
                         ShowMenu(control)
                     else
@@ -692,6 +636,12 @@ function ZA:ShowZoneAchievementsWindow()
                 specialTag = L.tagHM
             elseif sType == "TRIFECTA" then
                 specialTag = L.tagTrifecta
+            elseif sType == "MISFORTUNE_1" then
+                specialTag = L.tagMisfortune1
+            elseif sType == "MISFORTUNE_2" then
+                specialTag = L.tagMisfortune2
+            elseif sType == "MISFORTUNE_3" then
+                specialTag = L.tagMisfortune3
             end
 
             local nameText = specialTag .. "|c" .. statusColor .. achInfo.name .. "|r"
@@ -1149,6 +1099,10 @@ function ZA:RecordRecentUpdate(achievementId)
 end
 
 local function OnAchievementUpdated(eventCode, achievementId)
+    -- Игнорируем фоновые проверки предметов для уже выполненных ачивок
+    local completed = select(5, GetAchievementInfo(achievementId))
+    if completed then return end
+
     ZA:RecordRecentUpdate(achievementId)
     ZA:AddSneezeToHistory(achievementId)
     ZA:ShowToastNotification(achievementId, false)

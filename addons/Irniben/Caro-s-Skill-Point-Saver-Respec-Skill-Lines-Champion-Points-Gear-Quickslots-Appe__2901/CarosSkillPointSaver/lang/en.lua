@@ -415,6 +415,12 @@ local L = {}
 	L.CSPS_MorphLocked = "Morph not unlocked"
 	L.CSPS_LineNotActive = "Inactive skill line"
 	
+	-- 6.something
+	
+	L.CSPS_UPGRADE_PASSIVESMISSING = "The current character is missing the passives to upgrade this item efficiently."
+	L.CSPS_UPGRADE_PASSIVESMISSING_ANYWAY = "The item will be crafted anyway but this will cost more materials (can be changed in the settings)."
+	L.CSPS_UPGRADE_PASSIVESMISSING_DONT = "The item won't be crafted (can be changed in the settings)."
+	
 for stringId, stringValue in pairs(L) do
 	ZO_CreateStringId(stringId, stringValue)
 end

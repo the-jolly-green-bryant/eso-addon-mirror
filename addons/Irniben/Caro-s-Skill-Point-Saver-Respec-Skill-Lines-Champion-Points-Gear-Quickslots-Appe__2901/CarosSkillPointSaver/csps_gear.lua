@@ -22,6 +22,9 @@ local ttAddLine = CSPS.helperFunctions.ttAddLine
 
 local theGear = {}
 
+local RECON_PROBLEM_LEVEL = 1
+local RECON_PROBLEM_UPGRADE = 2
+
 local gearSlots = {
 	EQUIP_SLOT_HEAD, EQUIP_SLOT_SHOULDERS,EQUIP_SLOT_CHEST, EQUIP_SLOT_HAND, EQUIP_SLOT_WAIST, EQUIP_SLOT_LEGS, EQUIP_SLOT_FEET, 
 	EQUIP_SLOT_NECK, EQUIP_SLOT_RING1, EQUIP_SLOT_RING2,
@@ -277,7 +280,7 @@ function CSPSGearSelectorPoisonList:Setup( )
 end
 
 local poisonSelection = {}
-local usePoisonEffectNames = false
+local usePoisonEffectNames = true
 
 function CSPSGearSelectorPoisonList:BuildMasterList()
 	self.masterList = {}
@@ -1346,9 +1349,9 @@ local function findSetItem(mySlot, findNew, includeDifferences)
 		fitsExactly[bagId] = {}
 		couldFit[bagId] = {}
 	end
-	cspsD("Looking for item for slot "..mySlot)
+	--cspsD("Looking for item for slot "..mySlot)
 	for _, bagId in pairs(bagIds) do
-		cspsD("Looking for item in bag "..bagId)
+		--cspsD("Looking for item in bag "..bagId)
 		local isBackpack = bagId == BAG_BACKPACK 
 		
 		local lastFitBag = lastFits and lastFits[isBackpack]
@@ -1356,7 +1359,7 @@ local function findSetItem(mySlot, findNew, includeDifferences)
 		if lastFitBag and lastFitBag.itemLink == GetItemLink(lastFitBag.bagId, lastFitBag.slotIndex, 1) then
 			if not uniqueIdToFind or not foundNotUnique or isBackpack then
 				fitsExactly[lastFitBag.bagId] = {lastFitBag}
-				cspsD("Found exact item in list of items found in previous search.")
+				--cspsD("Found exact item in list of items found in previous search.")
 				return fitsExactly, couldFit
 			end
 		else
@@ -1375,7 +1378,7 @@ local function findSetItem(mySlot, findNew, includeDifferences)
 					for _, otherBag in pairs(bagIds) do
 						if otherBag ~= bagId then fitsExactly[otherBag] = {} end
 					end
-					cspsD("Found exact item with unique id.")
+					--cspsD("Found exact item with unique id.")
 					return fitsExactly, couldFit, true -- third parameter to indicated we found the unique item
 				end
 			end
@@ -1387,7 +1390,7 @@ local function findSetItem(mySlot, findNew, includeDifferences)
 						if fit2 then
 							table.insert(fitsExactly[bagId], {slotIndex = slotIndex, itemLink = itemLink})
 							lastFits[isBackpack] = {slotIndex = slotIndex, itemLink = itemLink, bagId = bagId}
-							cspsD("Found exact potion, stop search and return lists.")
+							--cspsD("Found exact potion, stop search and return lists.")
 							return fitsExactly, couldFit
 						else
 						
@@ -1405,7 +1408,7 @@ local function findSetItem(mySlot, findNew, includeDifferences)
 							table.insert(fitsExactly[bagId], {slotIndex = slotIndex, itemLink = itemLink})
 							lastFits[isBackpack] = {slotIndex = slotIndex, itemLink = itemLink, bagId = bagId}
 							if not uniqueIdToFind then 
-								cspsD("Found exact item, stop search and return lists.")
+								--cspsD("Found exact item, stop search and return lists.")
 								return fitsExactly, couldFit 
 							elseif not isBackpack then
 								foundNotUnique = true 
@@ -1434,7 +1437,7 @@ local function findSetItem(mySlot, findNew, includeDifferences)
 			end
 		end
 	end
-	cspsD("Search complete. Return lists.")
+	--cspsD("Search complete. Return lists.")
 	return fitsExactly, couldFit
 end
 
@@ -1563,6 +1566,7 @@ local function showSetItemTooltip(control, setId, gearSlot, itemType,  traitType
 	end
 	
 	myTable.recon = nil
+	myTable.craft = nil
 	
 	if not (setIdFits and enchantFits and qualityFits and typeFits and traitFits) or myTable.itemUniqueID and myTable.itemUniqueID ~= Id64ToString(GetItemUniqueId(BAG_WORN, gearSlot)) then 
 		
@@ -1982,7 +1986,6 @@ local function NodeSetupGear(node, control, data, open, userRequested, enabled)
 		control.retrieveItem = nil
 		control.equipItem = nil
 		control.couldFits = nil
-		if theGear[mySlot] then theGear[mySlot].recon = nil theGear[mySlot].craft = nil end
 		ZO_Tooltips_HideTextTooltip()
 	end
 	
@@ -2015,6 +2018,7 @@ local function NodeSetupGear(node, control, data, open, userRequested, enabled)
 		end)
 	control.ctrIcon:SetHandler("OnMouseUp", function(_, mouseButton, upInside)
 		if not upInside then return end
+		if not theGear[mySlot] then return end
 		if gearSlotsJewelry[mySlot] then
 			showVCatMenu("quality", mySlot, control)
 			return
@@ -2465,7 +2469,7 @@ end
 
 local function findNextReconItem()
 	for i,v in pairs(craftingRequests) do
-		if v.recon and v.LLCdata.autocraft then return i, v end
+		if v.recon and v.LLCdata.autocraft and (not craftedItems[i] or not craftedItems[i].uniqueId) then return i, v end
 	end
 end
 
@@ -2491,14 +2495,83 @@ local function finishedItem(index, data, bagId, slotIndex, doNotRefresh)
 	craftedItems[data.reference] = {bagId = bagId, slotIndex = slotIndex, data = data, uniqueId = data.uniqueId}
 	if not doNotRefresh then CSPS.visualCraftList:RefreshVisible() end
 end
-		
+
+local enchantQueue = {}
+local nextEnchantItem = false
+local workingRecon = false
+
+local function workEnchantQueue()
+	if #enchantQueue == 0 then cspsD("No enchant queue") EVENT_MANAGER:UnregisterForEvent(CSPS.name.."_CraftingStopped", EVENT_INTERACTION_ENDED) return end
+	if nextEnchantItem or workingRecon or ZO_CraftingUtils_IsPerformingCraftProcess() or LibLazyCrafting.isCurrentlyCrafting[1] then cspsD("Currently crafting") return end
+	local function enchantNext()
+		nextEnchantItem = enchantQueue[1]
+		if not nextEnchantItem then 
+			cspsD("No more items")
+			EVENT_MANAGER:UnregisterForEvent(CSPS.name.."_CraftingStopped", EVENT_INTERACTION_ENDED)
+			EVENT_MANAGER:UnregisterForEvent(CSPS.name.."_EnchantDone", EVENT_INVENTORY_SINGLE_SLOT_UPDATE)
+			return 
+		end
+		EnchantItem(nextEnchantItem.bagId, nextEnchantItem.slotIndex, nextEnchantItem.glyphBag, nextEnchantItem.glyphSlot)
+	end
+	EVENT_MANAGER:RegisterForEvent(CSPS.name.."_EnchantDone", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, 
+		function(_, eBagId, eSlotIndex, _, _, eReason, eStackChange)
+			if not nextEnchantItem or eStackChange ~= 0 or eBagId ~= nextEnchantItem.bagId or eSlotIndex ~= nextEnchantItem.slotIndex then 
+				--cspsD("Not the slot change expected")
+				return 
+			end
+			if GetItemLinkFinalEnchantId(GetItemLink(eBagId, eSlotIndex)) ~= nextEnchantItem.enchantId then
+				cspsD("Enchantment failed")
+				cspsD(eBagId)
+				cspsD(eSlotIndex)
+				cspsD(GetItemLinkFinalEnchantId(GetItemLink(eBagId, eSlotIndex)))
+				cspsD(nextEnchantItem)
+				EVENT_MANAGER:UnregisterForEvent(CSPS.name.."_EnchantDone", EVENT_INVENTORY_SINGLE_SLOT_UPDATE)
+				CSPS.visualCraftList:RefreshData()
+				return
+			end
+			cspsD("Enchantment successful")
+			finishedItem(nextEnchantItem.index, nextEnchantItem.svData, eBagId, eSlotIndex)
+			table.remove(enchantQueue, 1)
+			enchantNext()
+		end)
+	EVENT_MANAGER:AddFilterForEvent(CSPS.name.."_EnchantDone", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, REGISTER_FILTER_IS_NEW_ITEM, false)
+	cspsD("Working enchant queue")
+	enchantNext()
+end
+
+local function findUniqueItem(uniqueIdToFind)
+	for _, bagId in pairs({BAG_BACKPACK, BAG_BANK, BAG_SUBSCRIBER_BANK}) do
+		for slotIndex=0,GetBagSize(bagId) do
+			local oneItemId = GetItemId(bagId, slotIndex) ~= 0 and Id64ToString(GetItemUniqueId(bagId, slotIndex))
+			if oneItemId and oneItemId == uniqueIdToFind then 
+				return bagId, slotIndex, uniqueIdToFind
+			end
+		end
+	end
+end
+
+local function enchantThis(bagId, slotIndex, glyphBag, glyphSlot, index, svData, enchantId)
+	table.insert(enchantQueue, {bagId = bagId, slotIndex = slotIndex, glyphBag = glyphBag, glyphSlot = glyphSlot, index = index, svData = svData, enchantId = enchantId})
+	cspsD("Item added to enchant queue, tyring to work queue and registering for update")
+	EVENT_MANAGER:RegisterForEvent(CSPS.name.."_CraftingStopped", EVENT_INTERACTION_ENDED, function(_, craftingType) if craftingType == INTERACTION_CRAFT then workEnchantQueue() end end)
+	workEnchantQueue()
+end
+
 local function workRecon()
-	if not LLC or not findNextReconItem() then return end--and GetInteractionType() == INTERACTION_RETRAIT then 
-	local currentReconReference, currentReconItem = false, false
-	EVENT_MANAGER:RegisterForEvent(CSPS.name.."_ReconstructionEnded", EVENT_INTERACTION_ENDED, function()
+	if workingRecon then cspsD("Already working recon queue") return end
+	
+	local function stopWorkingRecon()
 		EVENT_MANAGER:UnregisterForEvent(CSPS.name.."_ReconstructionEnded", EVENT_INTERACTION_ENDED)
 		EVENT_MANAGER:UnregisterForEvent(CSPS.name.."_ReconstructResponse", EVENT_RECONSTRUCT_RESPONSE)
 		EVENT_MANAGER:UnregisterForEvent(CSPS.name.."_ReconNewItem", EVENT_INVENTORY_SINGLE_SLOT_UPDATE)
+		workingRecon = false
+		workEnchantQueue()
+	end
+	workingRecon = true
+	if not LLC or not findNextReconItem() then stopWorkingRecon() return end
+	local currentReconReference, currentReconItem = false, false
+	EVENT_MANAGER:RegisterForEvent(CSPS.name.."_ReconstructionEnded", EVENT_INTERACTION_ENDED, function()
+		stopWorkingRecon()
 	end)
 	ZO_RETRAIT_STATION_KEYBOARD.tabs:SelectFragment(ZO_RETRAIT_STATION_KEYBOARD.reconstructTab.categoryName)
 	local itemData = false
@@ -2510,29 +2583,45 @@ local function workRecon()
 	local function reconNextPiece()
 		cspsD("Trying to find next item")
 		currentReconReference, currentReconItem = findNextReconItem()
-		if not currentReconItem then cspsD("Nothing more to reconstruct") return end
+		if not currentReconItem then cspsD("Nothing more to reconstruct") stopWorkingRecon() return end
 		reconData = currentReconItem.recon
 		svData = CSPS.savedVariables.craftList[currentReconItem.index]
 		expectedItemLink = svData and svData.link
-		if not expectedItemLink then return end
+		if not expectedItemLink then CSPS.post("Unexpected error. No itemLink for reconItem.") stopWorkingRecon() return end
 		local quality = reconData.itemQuality
+		quality = quality == ITEM_DISPLAY_QUALITY_MYTHIC_OVERRIDE and ITEM_FUNCTIONAL_QUALITY_LEGENDARY or quality
 		quality = (CSPS.isUpgradeSkillLeveled(expectedItemLink) or CSPS.savedVariables.settings.upgradeAnyway) and quality or getItemSetMinQuality(reconData.setId)
 		cspsD("Expected item: "..expectedItemLink)
+		itemData = false
+		success = false
 		RequestItemReconstruction(reconData.pieceId, reconData.traitType, quality, reconData.currencyType)
 	end
 	local function processPiece()
 		cspsD("Processing item")
 		local uniqueId = Id64ToString(GetItemUniqueId(itemData.bagId, itemData.slotIndex))
-		local finished = true		
-		if not createEnchantRequest(svData, uniqueId, expectedItemLink, itemData.bagId, itemData.slotIndex, setAuto) then
+		local finished = true	
+		local glyphBag, glyphSlot = false, false
+		if svData.waitingForGear then
+			glyphBag, glyphSlot = findUniqueItem(svData.waitingForGear)
+			if not glyphBag then svData.waitingForGear = nil end
+		end
+		if not svData.waitingForGear and not createEnchantRequest(svData, uniqueId, expectedItemLink, itemData.bagId, itemData.slotIndex, setAuto) then
 			CSPS.post(GS(CSPS_WaitingForEnchant))
 			finished = false
 		end
 		finished = createUpgradeRequest(svData, uniqueId, itemData.bagId, itemData.slotIndex, reconData.itemQuality) and finished
 		
 		if finished then
-			finishedItem(index, svData, itemData.bagId, itemData.slotIndex)	
+			if svData.waitingForGear then
+				craftedItems[svData.reference].uniqueId = uniqueId
+				svData.waitingForGear = nil
+				enchantThis(itemData.bagId, itemData.slotIndex, glyphBag, glyphSlot, currentReconItem.index, svData, GetItemLinkFinalEnchantId(expectedItemLink))
+				
+			else
+				finishedItem(currentReconItem.index, svData, itemData.bagId, itemData.slotIndex)	
+			end
 		else
+			
 			CSPS.visualCraftList:RefreshVisible()
 		end
 		reconNextPiece()
@@ -2563,7 +2652,13 @@ end
 
 EVENT_MANAGER:RegisterForEvent(CSPS.name.."_RetraitInteract", EVENT_RETRAIT_STATION_INTERACT_START, function() workRecon() end)
 
-local function switchAutoCraft(data)	
+local function checkItemLinkLevelForRecon(itemLink)
+	local level = GetItemLinkRequiredLevel(itemLink)
+	local cpLevel = GetItemLinkRequiredChampionPoints(itemLink)
+	return level ~= math.floor(myLevel/2)*2 or cpLevel ~= myCPLevel 
+end
+
+local function switchAutoCraft(data)
 	if not LLC then return end
 	cspsD("Switching autocraft for "..data.link)
 	local requestTable = craftingRequests["CSPS-"..data.index]
@@ -2582,10 +2677,9 @@ local function switchAutoCraft(data)
 	
 	if not data.recon or not requestTable or not requestTable.autocraft then return end
 	
-	local level = GetItemLinkRequiredLevel(data.link)
-	local cpLevel = GetItemLinkRequiredChampionPoints(data.link)
-	local warnLevel = false
-	if level ~= math.floor(myLevel/2)*2 or cpLevel ~= myCPLevel then
+	
+	local warnLevel = checkItemLinkLevelForRecon(data.link)
+	if warnLevel then
 		CSPS.post(string.format(GS(CSPS_ReconLevel), myLevel, myCPLevel))
 		warnLevel = true
 	end
@@ -2648,17 +2742,6 @@ local function showStyleMenu(svData)
 	ShowMenu()
 end
 
-local function findUniqueItem(uniqueIdToFind)
-	for _, bagId in pairs({BAG_BACKPACK, BAG_BANK, BAG_SUBSCRIBER_BANK}) do
-		for slotIndex=0,GetBagSize(bagId) do
-			local oneItemId = GetItemId(bagId, slotIndex) ~= 0 and Id64ToString(GetItemUniqueId(bagId, slotIndex))
-			if oneItemId and oneItemId == uniqueIdToFind then 
-				return bagId, slotIndex, uniqueIdToFind
-			end
-		end
-	end
-end
-
 local function checkCraftedItemUnique(svData)
 	local uniqueId = svData.uniqueId or svData.waitingForEnchantment or svData.waitingForUpgrade
 	if not uniqueId then return false end
@@ -2690,6 +2773,7 @@ function craftListClass:SetupItemRow( control, data )
 	local ctrInd = GetControl(control, "Indicator")
 	local ctrBag = GetControl(control, "BagIcon")
 	ctrInd.nonRecolorable = true
+	ctrBag.nonRecolorable = true
 	local ctrMarker = GetControl(control, "BG2")
 	ctrMarker:SetTexture(data.recon and "esoui/art/battlegrounds/battlegrounds_scoreboard_highlightstrip_orange.dds" or "esoui/art/battlegrounds/battlegrounds_scoreboard_highlightstrip_purple.dds")
 	ctrMarker.nonRecolorable = true
@@ -2712,6 +2796,10 @@ function craftListClass:SetupItemRow( control, data )
 		local atDestination = forMe and inBag or not forMe and not inBag
 		ctrBag:SetTexture(inBag and "esoui/art/tooltips/icon_bag.dds" or  "esoui/art/tooltips/icon_bank.dds")
 		ctrBag:SetColor((atDestination and CSPS.colors.green or CSPS.colors.orange):UnpackRGB())
+		ctrBag:SetHidden(false)
+	elseif data.reconProblem then
+		ctrBag:SetTexture("esoui/art/inventory/newitem_icon.dds")
+		ctrBag:SetColor(CSPS.colors.red:UnpackRGB())
 		ctrBag:SetHidden(false)
 	else
 		ctrBag:SetHidden(true)
@@ -2739,52 +2827,6 @@ function craftListClass:SetupItemRow( control, data )
 	
 end
 
-local enchantQueue = {}
-local nextEnchantItem = false
-
-local function workEnchantQueue()
-	if #enchantQueue == 0 then cspsD("No enchant queue") EVENT_MANAGER:UnregisterForEvent(CSPS.name.."_CraftingStopped", EVENT_INTERACTION_ENDED) return end
-	if nextEnchantItem or ZO_CraftingUtils_IsPerformingCraftProcess() or LibLazyCrafting.isCurrentlyCrafting[1] then cspsD("Currently crafting") return end
-	local function enchantNext()
-		nextEnchantItem = enchantQueue[1]
-		if not nextEnchantItem then 
-			cspsD("No more items")
-			EVENT_MANAGER:UnregisterForEvent(CSPS.name.."_CraftingStopped", EVENT_INTERACTION_ENDED)
-			return 
-		end
-		EnchantItem(nextEnchantItem.bagId, nextEnchantItem.slotIndex, nextEnchantItem.glyphBag, nextEnchantItem.glyphSlot)
-	end
-	EVENT_MANAGER:RegisterForEvent(CSPS.name.."_EnchantDone", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, 
-		function(_, eBagId, eSlotIndex, _, _, eReason, eStackChange)
-			if not nextEnchantItem or eStackChange ~= 0 or eBagId ~= nextEnchantItem.bagId or eSlotIndex ~= nextEnchantItem.slotIndex then 
-				cspsD("Not the slot change expected")
-				return 
-			end
-			if GetItemLinkFinalEnchantId(GetItemLink(eBagId, eSlotIndex)) ~= nextEnchantItem.enchantId then
-				cspsD("Enchantment failed")
-				EVENT_MANAGER:UnregisterForEvent(CSPS.name.."_EnchantDone", EVENT_INVENTORY_SINGLE_SLOT_UPDATE)
-				return
-			end
-			cspsD("Enchantment successful")
-			finishedItem(nextEnchantItem.index, nextEnchantItem.svData, eBagId, eSlotIndex)
-			table.remove(enchantQueue, 1)
-			enchantNext()
-		end)
-	EVENT_MANAGER:AddFilterForEvent(CSPS.name.."_EnchantDone", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, REGISTER_FILTER_IS_NEW_ITEM, false)
-	cspsD("Working enchant queue")
-	enchantNext()
-end
-
-local function enchantThis(bagId, slotIndex, glyphBag, glyphSlot, index, svData, enchantId)
-	table.insert(enchantQueue, {bagId = bagId, slotIndex = slotIndex, glyphBag = glyphBag, glyphSlot = glyphSlot, index = index, svData = svData, enchantId = enchantId})
-	cspsD("Item added to enchant queue, tyring to work queue and registering for update")
-	EVENT_MANAGER:RegisterForEvent(CSPS.name.."_CraftingStopped", EVENT_INTERACTION_ENDED, function(_, craftingType) if craftingType == INTERACTION_CRAFT then workEnchantQueue() end end)
-	workEnchantQueue()
-end
-
-
-
-
 function CSPS.setupLLC()
 	if not LibLazyCrafting or LibLazyCrafting.version < 4.035 then return end
 	LLC = LibLazyCrafting:AddRequestingAddon("CSPS", true, function(event, craftingType, result) 
@@ -2799,12 +2841,12 @@ function CSPS.setupLLC()
 				if not myRequest then cspsD("Crafting request not found: "..v.reference) return end
 				
 				if myRequest.glyph then
-					local uniqueId = Id64ToString(GetItemUniqueId(myRequest.bagId, myRequest.slotIndex))
 					if not v.waitingForEnchantment then 
-						v.waitingForGear = uniqueId
+						v.waitingForGear =  Id64ToString(GetItemUniqueId(result.bag, result.slot))
 						cspsD("Glyph created, no gear yet")
 						return
 					end
+					local uniqueId = Id64ToString(GetItemUniqueId(myRequest.bagId, myRequest.slotIndex))
 					cspsD("Glyph created, looking for original item")
 					if uniqueId ~= v.waitingForEnchantment then 
 						-- TODO what happens if the item has been moved or destroyed
@@ -2821,7 +2863,7 @@ function CSPS.setupLLC()
 				if v.waitingForGear then 
 					local glyphBag, glyphSlot = findUniqueItem(v.waitingForGear)
 					if glyphBag then
-						enchantThis(result.bag, result.slot, i, v, GetItemLinkFinalEnchantId(v.link))
+						enchantThis(result.bag, result.slot, glyphBag, glyphSlot, i, v, GetItemLinkFinalEnchantId(v.link))
 						return
 					end
 					cspsD("Waiting for gear - glyph not found. Glyph back on the table...")
@@ -2831,6 +2873,7 @@ function CSPS.setupLLC()
 					finishedItem(i, v, result.bag, result.slot)
 				else
 					craftingRequests[v.reference] = nil
+					CSPS.visualCraftList:RefreshData()
 				end
 				return
 			end
@@ -2861,9 +2904,6 @@ function CSPS.craftListRowMouseEnter(control)
 	
 	ttAddLine(reqCP and reqCP > 0 and string.format("|t28:28:esoui/art/champion/champion_icon_32.dds|t %s", reqCP) or reqLevel)
 	
-	if LLC and control.data.recon and (myCPLevel ~= reqCP or math.floor(myLevel/2)*2 ~= reqLevel) then
-		ttAddLine(string.format(GS(CSPS_ReconLevel), myLevel, myCPLevel), nil, ZO_ERROR_COLOR)
-	end
 	if not LLC then
 		ttAddLine(GS(CSPS_LLC_NEEDED), nil, ZO_ERROR_COLOR)
 		return
@@ -2880,6 +2920,20 @@ function CSPS.craftListRowMouseEnter(control)
 			ttAddLine(ZO_ERROR_COLOR:Colorize(GS(SI_TRADESKILLRESULT120)))
 		end
 		ttAddLine(table.concat({control.data.recon.currencyFormatted, upgradeCostFormatted}, ", "))
+		if control.data.reconProblem then
+			for _, problemId in pairs(control.data.reconProblem) do
+				if problemId == RECON_PROBLEM_LEVEL then
+					ttAddLine(string.format(GS(CSPS_ReconLevel), myLevel, myCPLevel), nil, ZO_ERROR_COLOR)
+				elseif problemId == RECON_PROBLEM_UPGRADE then
+					ttAddLine(GS(CSPS_UPGRADE_PASSIVESMISSING), nil, ZO_ERROR_COLOR)
+					if CSPS.savedVariables.settings.upgradeAnyway then					
+						ttAddLine(GS(CSPS_UPGRADE_PASSIVESMISSING_ANYWAY), nil, ZO_ERROR_COLOR)
+					else
+						ttAddLine(GS(CSPS_UPGRADE_PASSIVESMISSING_DONT), nil, ZO_ERROR_COLOR)
+					end
+				end
+			end
+		end
 	end
 	local reference = control.data.svData.reference
 	for i=1, 2 do
@@ -2944,16 +2998,23 @@ end
 --SI_SMITHING_CONSOLIDATED_STATION_ADD_SET_DIALOG_SELECT_ALL
 --SI_CRAFTING_CLEAR_SELECTIONS
 
+local function cancelCraftingRequest(reference)
+	if not reference then return end
+	-- enchantment could be in line on LLC even for recon
+	if LLC then 
+		LLC:cancelItemByReference(reference) 
+		LLC:cancelItemByReference(reference.."e") 
+	end
+	craftingRequests[reference] = nil
+	craftingRequests[reference.."e"] = nil
+end
+
 function CSPS.craftListRowMouseUp(control, button, upInside)
 	if not upInside then return end
 	if button == 2 then
 		ClearMenu()
 		AddCustomMenuItem(GS(SI_ABILITY_ACTION_CLEAR_SLOT), function() 
-			if control.data.svData.reference then 
-				-- enchantment could be in line on LLC even for recon
-				if LLC then LLC:cancelItemByReference(control.data.svData.reference) end
-				craftingRequests[control.data.svData.reference] = nil
-			end
+			cancelCraftingRequest(control.data.svData.reference)
 			CSPS.savedVariables.craftList[control.data.index] = nil
 			CSPS.visualCraftList:RefreshData()
 			end)
@@ -3024,7 +3085,15 @@ function craftListClass:BuildMasterList()
 			if not v.uniqueId and not v.waitingForEnchantment and not v.waitingForUpgrade then
 				createCraftRequest(v, v.link, i, v.recon, forceNew)
 			end
-			table.insert(self.masterList, {link = v.link, recon = v.recon, svData = v, index = i})
+			local reconProblem = false
+			if v.recon then
+				reconProblem = {}
+				if checkItemLinkLevelForRecon(v.link) then table.insert(reconProblem, RECON_PROBLEM_LEVEL) end
+				if not CSPS.isUpgradeSkillLeveled(v.link) and getItemSetMinQuality(v.recon.setId) < v.recon.itemQuality then 
+					table.insert(reconProblem, RECON_PROBLEM_UPGRADE) 
+				end
+			end
+			table.insert(self.masterList, {link = v.link, recon = v.recon, svData = v, index = i, reconProblem = reconProblem and #reconProblem > 0 and reconProblem or nil})
 		end
 	end
 	
@@ -3053,9 +3122,9 @@ function CSPS.showCraftList()
 		clWin:SetHandler("OnEffectivelyShown",  function() 
 			EVENT_MANAGER:RegisterForEvent("CSPS_BANK_CRAFTED", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, 
 				function(_, eBagId, eSlotIndex, _, _, eReason, eStackChange)
-					cspsD("Inventory slot update")					
+					--cspsD("Inventory slot update")					
 					if eStackChange ~= -1 then return end
-					cspsD("Stack change is -1")
+					--cspsD("Stack change is -1")
 					if not waitingForRefresh then
 						waitingForRefresh = true
 						zo_callLater(function()	CSPS.visualCraftList:RefreshData() waitingForRefresh = false end, 420)

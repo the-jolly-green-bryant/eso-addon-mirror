@@ -1,16 +1,16 @@
 {
-  "archive_path": "addons/Tetsurion/Tetsu-s-Raid-Lead-Assistant-dev__a9073aea-3308-48be-91d6-ecdc650b851e",
+  "archive_path": "addons/Tetsurion/Tetsu-s-Raid-Lead-Assistant-development__a9073aea-3308-48be-91d6-ecdc650b851e",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
   "archived": true,
   "author": "Tetsurion",
   "canonical_id": "bethesda:a9073aea-3308-48be-91d6-ecdc650b851e",
   "content_id": "a9073aea-3308-48be-91d6-ecdc650b851e",
   "deleted": false,
-  "fingerprint": "9e2c5cae0a49e4a344a9c16fcf561d7370ce3fae01abd4f76411b055616b5fa0",
+  "fingerprint": "54f0f8e480ce161855d18801726adec3ec256a121afef90d8d55fb7cf9378167",
   "platform": "console",
   "published": true,
   "source": "bethesda",
   "source_id": "a9073aea-3308-48be-91d6-ecdc650b851e",
   "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/a9073aea-3308-48be-91d6-ecdc650b851e",
-  "title": "Tetsu's Raid Lead Assistant(dev)"
+  "title": "Tetsu's Raid Lead Assistant development"
 }

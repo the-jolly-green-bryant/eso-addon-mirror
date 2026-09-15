@@ -1,0 +1,34 @@
+## To release a new version, edit the version in the two lines below and nothing else.
+## |cRRGGBB...|r in Title and Author colours them in the in-game add-on list; the version
+## is read back through that markup, so it can sit inside or outside the colour.
+## Title: |cFF69B4PB’s Translate|r 1.0.2
+## Author: |cFF69B4PinkBanther|r
+## Description: Shows a Japanese translation under English chat messages -- your own and other players'. Translation runs entirely inside the add-on, with a built-in dictionary of everyday English, chat shorthand, ESO terms and Cyrodiil PvP calls and a small grammar that reorders English into Japanese, so the result is a rough literal rendering. /jp <text> translates a line for you alone; /pbtr add english = 日本語 adds your own words.
+## Version: 1.0.2
+## APIVersion: 101050 101051
+## OptionalDependsOn: LibHarvensAddonSettings>=20106
+## SavedVariables: PBsTranslate_Data
+
+lang/strings.lua
+lang/$(language).lua
+
+Conjugate.lua
+Lexicon.lua
+Tokenizer.lua
+Grammar.lua
+JaToEn.lua
+
+dict/Core.lua
+dict/Nouns.lua
+dict/Adjectives.lua
+dict/Verbs.lua
+dict/Expressions.lua
+dict/ESO.lua
+dict/Cyrodiil.lua
+dict/Irregular.lua
+
+Main.lua
+Settings.lua
+Outgoing.lua
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls© and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.

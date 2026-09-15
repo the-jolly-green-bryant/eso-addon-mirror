@@ -1,3 +1,6 @@
+Version 0.8.4 (2026/09/14)
+* Fixed an issue with the initial visibility state of LCA.GroupPanel
+
 Version 0.8.3 (2026/09/11)
 * Added castByPlayer return field to CheckUnitForEffect
 

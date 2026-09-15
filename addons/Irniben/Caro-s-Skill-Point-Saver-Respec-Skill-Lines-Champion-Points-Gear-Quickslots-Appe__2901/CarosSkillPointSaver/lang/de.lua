@@ -405,6 +405,12 @@ local L = {}
 	L.CSPS_MorphLocked = "Veränderung nicht freigeschaltet"
 	L.CSPS_LineNotActive = "Inaktive Fertigkeitslinie"
 	
+	-- 6.something
+	
+	L.CSPS_UPGRADE_PASSIVESMISSING = "Dem aktuellen Charakter fehlen die benötigten passiven Fähigkeiten um den Gegenstand günstig aufzuwerten."
+	L.CSPS_UPGRADE_PASSIVESMISSING_ANYWAY = "Der Gegenstand wird trotzdem hergestellt, dies kostet aber entsprechend mehr Materialien (kann in den Einstellungen geändert werden)."
+	L.CSPS_UPGRADE_PASSIVESMISSING_DONT = "Der Gegenstand wird nicht hergestellt (kann in den Einstellungen geändert werden)."
+	
 for stringId, stringValue in pairs(L) do
 	SafeAddString(_G[stringId], stringValue, 0)
 end

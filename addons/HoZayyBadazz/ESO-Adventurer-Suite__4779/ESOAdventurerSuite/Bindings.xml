@@ -37,7 +37,19 @@
             <Action name="ESO_ADVENTURER_SUITE_PREBUFF_SIEGE_SHIELD">
                 <Down>return ESOAdventurerSuite_LoadoutPrebuffSiegeShield()</Down>
             </Action>
-</Category>
+            <Action name="ESO_ADVENTURER_SUITE_GF_OVERLAY">
+                <Down>ESOAdventurerSuite_GroupFinderPlusToggleOverlay()</Down>
+            </Action>
+            <Action name="ESO_ADVENTURER_SUITE_GF_CATEGORY">
+                <Down>ESOAdventurerSuite_GroupFinderPlusCycleCategory()</Down>
+            </Action>
+            <Action name="ESO_ADVENTURER_SUITE_GF_MODE">
+                <Down>ESOAdventurerSuite_GroupFinderPlusSwitchMode()</Down>
+            </Action>
+            <Action name="ESO_ADVENTURER_SUITE_GF_RECREATE">
+                <Down>ESOAdventurerSuite_GroupFinderPlusRecreate()</Down>
+            </Action>
+        </Category>
         <Category name="SI_BINDING_NAME_ESO_ADVENTURER_SUITE_ANTIQUITIES_CATEGORY">
             <Action name="ESO_ADVENTURER_SUITE_ANTIQUITY_LEAD_FINDER">
                 <Down>ESOAdventurerSuite_ToggleAntiquityLeadFinder()</Down>
@@ -57,7 +69,6 @@
             </Action>
         </Category>
     </Layer>
-
 
     <!--
       While LibAddonMenu is open, ESO's normal GENERAL binding layer is not
@@ -137,9 +148,4 @@
             </Action>
         </Category>
     </Layer>
-
-
-
-
-
 </Bindings>

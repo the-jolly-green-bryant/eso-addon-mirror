@@ -183,6 +183,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [My Domain GuildHalls](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Verling/My-Domain-GuildHalls__3092) | Verling | PC / Mac | 1.0.7 |
 | [My Donation (Arkadius' Trade Tools Addon)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Verbalinkontinenz/My-Donation-Arkadius-Trade-Tools-Addon__2762) | Verbalinkontinenz | PC / Mac | 1.0.3 |
 | [My Little Journal](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lledos/My-Little-Journal__4802) | Lledos | PC / Mac | 1.01 |
+| [My Trackers](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/j.hhh/My-Trackers__4b0c0d15-66db-4be0-b76a-b9817a229cfd) | j.hhh | Console | — |
 | [My UI-Tweaks](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/j.hhh/My-UI-Tweaks__b1bf0d35-ce24-4850-a553-507da6b0e5e5) | j.hhh | Console | — |
 | [MyAutoMarker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Unfounded_Puppy3/MyAutoMarker__097cf265-8ddc-4970-9836-914d69dbdc80) | Unfounded_Puppy3 | Console | — |
 | [MyCrystalFragmentsProcUI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Unfounded_Puppy3/MyCrystalFragmentsProcUI__d706fcf0-71fd-47e6-911a-fdacc426303a) | Unfounded_Puppy3 | Console | — |

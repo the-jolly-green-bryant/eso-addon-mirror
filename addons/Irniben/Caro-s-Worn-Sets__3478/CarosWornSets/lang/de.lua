@@ -31,6 +31,7 @@ local L = {}
 	
 	L.CaroWS_bar0 = "Frontbar"
 	L.CaroWS_bar1 = "Backbar"
+	L.CaroWS_bar8 = "Werwolf"
 	
 	L.CaroWS_LAM_ShowInInventory = "Zeige im Inventar"
 	L.CaroWS_LAM_ShowInBank = "Zeige in der Bank"

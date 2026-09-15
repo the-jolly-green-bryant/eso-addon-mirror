@@ -111,5 +111,15 @@ end
 
 function CSPS.isUpgradeSkillLeveled(craft)
 	local craft = type(craft) == "number" and craft or GetItemLinkCraftingSkillType(craft)
-	return GetSmithingGuaranteedImprovementItemAmount(craft, ITEM_FUNCTIONAL_QUALITY_LEGENDARY) > 8
+	local passives = {
+		[CRAFTING_TYPE_BLACKSMITHING] = 48166,
+		[CRAFTING_TYPE_JEWELRYCRAFTING] = 103648,
+		[CRAFTING_TYPE_CLOTHIER] = 48196,
+		[CRAFTING_TYPE_WOODWORKING] =  48175,
+	}
+	local myPassive = craft and passives[craft]
+	if not myPassive then return false end
+	local _, _, _, _, _, _, _, rank = GetSkillAbilityInfo(GetSpecificSkillAbilityKeysByAbilityId(myPassive))
+	return rank >= 3
 end
+

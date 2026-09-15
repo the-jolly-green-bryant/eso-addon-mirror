@@ -1,18 +1,19 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Irniben/Caro-s-Pre-Crafter__3143",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Irniben",
   "canonical_id": "esoui:3143",
   "category_id": "40",
   "compatibility": [
     {
-      "name": "Necrom",
-      "version": "9.0.0"
+      "name": "Season One",
+      "version": "12.1.0"
     },
     {
-      "name": "Scribes of Fate",
-      "version": "8.3.5"
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
     }
   ],
   "content_id": "esoui:3143",
@@ -21,7 +22,7 @@
     "CarosPreCrafter"
   ],
   "download_url": "https://www.esoui.com/downloads/dl3143/",
-  "fingerprint": "ebfd01403839d7c16f3c5b0b04a05e6b3635569e43dc67a8b342666e8eed64fc",
+  "fingerprint": "c39610ab68bf8906a7a4f12fdd8d988de0d111f8e95ee96b3b3aadcf99ee0b37",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw10656.png",
     "https://cdn-eso.mmoui.com/preview/pvw11233.png",
@@ -37,11 +38,11 @@
   "source_id": "3143",
   "source_url": "https://www.esoui.com/downloads/info3143-CarosPre-Crafter.html",
   "stats": {
-    "downloads": 13248,
+    "downloads": 13290,
     "favorites": 23,
-    "monthly_downloads": 35
+    "monthly_downloads": 21
   },
   "title": "Caro's Pre-Crafter",
-  "updated_at": 1683190830000,
-  "version": "2.3.1"
+  "updated_at": 1789459650000,
+  "version": "2.3.2"
 }

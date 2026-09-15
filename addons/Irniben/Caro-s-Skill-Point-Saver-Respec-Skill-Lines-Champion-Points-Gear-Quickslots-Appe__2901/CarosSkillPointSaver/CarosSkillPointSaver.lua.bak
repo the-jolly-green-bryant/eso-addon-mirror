@@ -2,6 +2,7 @@ CSPS = {
 	name = "CarosSkillPointSaver",
 	tabEx = false,
 	skillTable = {},
+	currentClassSkillLines = {1,2,3},
 	applyCP = false,
 	applyCPc = {false, false, false},
 	cp = {table = {}, bar = {{},{},{}}, sums = {0,0,0}}, -- will be filled in csps_cp2.lua
@@ -41,7 +42,6 @@ CSPS = {
 	currentProfile = 0,
 	profileToLoad = 0,
 	unsavedChanges = false,
-	secSpace = string.char(194, 160),
 }
 
 local GS = GetString
@@ -112,10 +112,7 @@ local hf = {
 			if fillTable[i] == nil then fillTable[i] = fillWithEmptyTables and {} or fillValue end
 		end
 	end,
-	ttAddLine = function(text, font, r, g, b)
-		if type(r) == "table" then r,g,b = r:UnpackRGB() end
-		InformationTooltip:AddLine(text, font or "ZoFontGame", r,g,b, CENTER, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_CENTER, true)
-	end,
+	
 }
 
 CSPS.helperFunctions = hf
@@ -166,15 +163,7 @@ function CSPS.isMagOrStam()
 	return magStam
 end
 
-function CSPS.moveItem(sourceBag, sourceSlot, destBag, destSlot, stackSize)
-	if GetInteractionType() ~= INTERACTION_BANK then return false end
-	if IsProtectedFunction("RequestMoveItem") then
-		CallSecureProtected("RequestMoveItem", sourceBag, sourceSlot, destBag, destSlot or FindFirstEmptySlotInBag(destBag), stackSize or 1)
-		return true
-	end
-	RequestMoveItem(control.retrieveItem[1], sourceBag, sourceSlot, destBag, destSlot or FindFirstEmptySlotInBag(destBag), stackSize or 1)
-	return true
-end
+
 
 -- Initializing the addon on load
 
@@ -193,7 +182,9 @@ function CSPS:Initialize()
 	} 
 	local svProfile = GetWorldName()
 	
-	CSPS.canDoGear = LibSets and true or false
+	CSPS.doGear = LibSets and true or false
+	CSPSWindowBuildGearProfiles:SetHidden(not CSPS.doGear)
+	if not CSPS.doGear then CSPSWindowBuildGearProfiles:SetWidth(0) end
 	
 	CSPS.savedVariables = ZO_SavedVars:NewAccountWide(svName, svVersion, svNamesSpace, svDefaults, svProfile, nil) -- savedvars account wide, server dependent
 	-- CSPS.kaiserFranz: id for the emperor skill line (named after emperor Franz, the 52nd of his name)
@@ -229,11 +220,6 @@ function CSPS:Initialize()
 	for i, v in pairs(mySettings.moduleExclude) do
 		CSPS.moduleExclude[i] = v
 	end
-	
-	CSPS.moduleExclude.gear = not CSPS.canDoGear or CSPS.moduleExclude.gear
-	
-	CSPSWindowBuildGearProfiles:SetHidden(CSPS.moduleExclude.gear)
-	if CSPS.moduleExclude.gear then CSPSWindowBuildGearProfiles:SetWidth(0) end
 	
 	-- if no skills have been saved yet for this char, save everything once
 	if CSPS.currentCharData.werte == nil then
@@ -301,7 +287,7 @@ function CSPS:Initialize()
 	
 	mySettings.accountWideShiftKey = mySettings.accountWideShiftKey or 7
 	
-	--CSPS.initConnect() now happens in player activated in subprofiles
+	CSPS.initConnect()
 	
 	CSPS.showElement("modules")
 
@@ -329,9 +315,10 @@ function CSPS:Initialize()
 	CSPS.toggleCPCustomIcons()
 	CSPSWindowBtnApplyAll:SetHidden(not mySettings.showApplyAll)
 	
-	if not CSPS.moduleExclude.gear then 	
-		CSPS.setGearMarkerOption(CSPS.savedVariables.settings.showGearMarkers)
-		CSPS.setGearMarkerOptionData(CSPS.savedVariables.settings.showGearMarkerDataBased)
+	CSPS.setGearMarkerOption(CSPS.savedVariables.settings.showGearMarkers)
+	CSPS.setGearMarkerOptionData(CSPS.savedVariables.settings.showGearMarkerDataBased)
+	
+	if CSPS.doGear then 
 		CSPS.setupGearMarkers()
 	end
 	
@@ -360,12 +347,14 @@ function CSPS.showBuild(initOpen)
 	CSPS.hbPopulate()
 	CSPS.readCurrentQS()
 	CSPS.outfits.read()
-	if not CSPS.treeIsReady then CSPS.createTree() end
+	if not CSPS.tabEx then 
+		CSPS.createTable() 
+	end
 	
 	cp.updateSidebarIcons()
 	cp.updateSlottedMarks()
 	
-	if not CSPS.moduleExclude.gear then
+	if CSPS.doGear then
 		CSPS.getCurrentGear()
 	end
 	
@@ -391,7 +380,7 @@ function CSPS.saveBuildGo(useAuxProfile)
 	local cpComp = cp.compress(cp.table) 
 	local cpHbComp = cp.hotBarCompress(cp.bar)
 	local gearComp, gearCompUnique = nil
-	if  not CSPS.moduleExclude.gear  then
+	if CSPS.doGear then
 		gearComp, gearCompUnique = CSPS.buildGearString()
 	end
 	
@@ -461,7 +450,7 @@ function CSPS.saveBuildGo(useAuxProfile)
 	
 	CSPS.currentCharData.profiles = CSPS.profiles
 	
-	if not CSPS.moduleExclude.gear  then 
+	if CSPS.doGear then 
 		CSPS.buildGearMarkerTable()
 	end
 
@@ -546,7 +535,7 @@ function CSPS.compressLists()
 	local anythingScripted = false
 	for i=1, GetNumCraftedAbilities() do
 		local craftedId = GetCraftedAbilityIdAtIndex(i)
-		local skillType, skillLineIndex, skillIndex = CSPS.getCraftedAbilityIndices(craftedId)
+		local skillType, skillLineIndex, skillIndex = GetSkillAbilityIndicesFromCraftedAbilityId(craftedId)
 		local skEntry = skillTable[skillType][skillLineIndex][skillIndex]
 		if skEntry and skEntry.scripts then
 			local hasScripts = false
@@ -564,7 +553,14 @@ function CSPS.compressLists()
 		
 	crafted = anythingScripted and table.concat(crafted, ",") or nil
 	
-	local subclasses = CSPS.hasAnySubclasses() and table.concat(CSPS.getSubClassIds(), ",")
+	local subclasses = false
+	if CSPS.currentClassSkillLines[1] ~= 1 or CSPS.currentClassSkillLines[2] ~= 2 or CSPS.currentClassSkillLines[3] ~= 3 then
+		subclasses = {}
+		for i, v in pairs(CSPS.currentClassSkillLines) do
+			table.insert(subclasses, GetSkillLineId(1, v))
+		end
+		subclasses = table.concat(subclasses, ",")
+	end
 	
 	local scribeStyleSubclass = table.concat(
 		{
@@ -605,7 +601,7 @@ function CSPS.skTableExtract(progTab, passTab, ignoreClass, changeSilent, crafte
 			end
 		else
 			subClassTab = {}
-			for i, v in pairs(CSPS.getSubClasses()) do
+			for i, v in pairs(CSPS.currentClassSkillLines) do
 				table.insert(subClassTab, v)
 				isSubClassInBuild[v] = true
 			end
@@ -634,14 +630,13 @@ function CSPS.skTableExtract(progTab, passTab, ignoreClass, changeSilent, crafte
 				end
 			end
 		end	
-		local classMasteryIndex = CSPS.getClassMasterySkillLineIndex()
 		for listIndex, myList in pairs(passTab) do
 			local thisList = {SplitString(",", myList)}
 			for passInd, skPass in pairs(thisList) do --extract all the skills without progressionIndices (passives)
 				local myId, l = SplitString(":", skPass)
 				myId, l = tonumber(myId), tonumber(l)
 				local i, j, k = GetSpecificSkillAbilityKeysByAbilityId(myId) 
-				if i ~= 1 or isSubClassInBuild[j] or j==classMasteryIndex or ignoreClass or CSPS.savedVariables.settings.showAllClassSkills then
+				if i ~= 1 or isSubClassInBuild[j] or ignoreClass or CSPS.savedVariables.settings.showAllClassSkills then
 					if i == 7 and j > 1 then racialChange = true j = 1 end -- If racial skills just change to the current race
 					if IsSkillAbilityPassive(i,j,k) then
 						local _, maxRank = GetSkillAbilityUpgradeInfo(i, j, k)
@@ -649,7 +644,7 @@ function CSPS.skTableExtract(progTab, passTab, ignoreClass, changeSilent, crafte
 							if l > maxRank then
 								l = maxRank
 								local myName = GetSkillAbilityInfo(i,j,k)
-								cspsPost(zo_strformat(GS(CSPS_LoadingError), myName))
+								d(string.format("[CSPS] %s", zo_strformat(GS(CSPS_LoadingError), myName)))
 							end
 						end
 						table.insert(upgrades, {i, j, k, l})
@@ -706,24 +701,23 @@ function CSPS.populateSkills(morphs, upgrades, keepOld, crafted, styles, subclas
 			subClassesInBuild[v] = true
 		end
 		if keepOld and not CSPS.savedVariables.settings.showAllClassSkills then
-			for i, v in pairs(CSPS.getSubClasses()) do
+			for i, v in pairs(CSPS.currentClassSkillLines) do
 				if not subClassesInBuild[v] then CSPS.removeSkillLine(1, v) end
 			end
 		end
-		CSPS.setSubClasses(subclasses)
+		CSPS.currentClassSkillLines = subclasses
 	else
 		subClassesInBuild = {true,true,true}
 		if keepOld and not CSPS.savedVariables.settings.showAllClassSkills then	
-			for i, v in pairs(CSPS.getSubClasses()) do
+			for i, v in pairs(CSPS.currentClassSkillLines) do
 				if v > 3 then CSPS.removeSkillLine(1, v) end
 			end
 		elseif not keepOld then
-			CSPS.setSubClasses({1,2,3})
+			CSPS.currentClassSkillLines = {1,2,3}
 		end
 		
 	end
-	local classMasteryIndex = CSPS.getClassMasterySkillLineIndex()
-	subClassesInBuild[classMasteryIndex] = true
+	
 	local function fillSkill(auxListIndex, skillData, isActive)
 		local skillType, skillLineIndex, skillIndex, rankOrMorph = unpack(skillData)
 		if skillType == 1 and not subClassesInBuild[skillLineIndex] and not CSPS.savedVariables.settings.showAllClassSkills then return end
@@ -756,17 +750,17 @@ function CSPS.populateSkills(morphs, upgrades, keepOld, crafted, styles, subclas
 	if crafted then
 		for craftedId, scripts in pairs(crafted) do
 			if craftedId then
-				local skillType, skillLineIndex, skillIndex = CSPS.getCraftedAbilityIndices(craftedId)
+				local skillType, skillLineIndex, skillIndex = GetSkillAbilityIndicesFromCraftedAbilityId(craftedId)
 				skillTable[skillType][skillLineIndex][skillIndex].scripts = {unpack(scripts)}
 			end
 		end
 	end
-	CSPS.checkClassMasteries()
+	
 	CSPS.refreshSkillSumsAndErrors()
 end
 
 function CSPS.hbExtract(hbComp, classId, subClasses)
-	local subClasses = subClasses or CSPS.getSubClasses()
+	local subClasses = subClasses or CSPS.currentClassSkillLines
 	local hbTables = {{},{},{}}
 	hbComp = hbComp or ""
 	if hbComp ~= "" and hbComp ~= "-" then
@@ -786,7 +780,7 @@ function CSPS.hbExtract(hbComp, classId, subClasses)
 						elseif string.gsub(aSkill, "%d", "") == "c" then
 							local myCraftedAbId = string.gsub(aSkill, "%D", "")
 							myCraftedAbId = tonumber(myCraftedAbId)
-							skTyp, skLin, skId = CSPS.getCraftedAbilityIndices(myCraftedAbId)
+							skTyp, skLin, skId = GetSkillAbilityIndicesFromCraftedAbilityId(myCraftedAbId)
 						else
 							local myAbId = tonumber(aSkill)
 							skTyp, skLin, skId = GetSpecificSkillAbilityKeysByAbilityId(myAbId)
@@ -873,13 +867,13 @@ function CSPS.loadBuild(useAuxProfile, givenTable)
 	CSPS.hbLinkToSkills(CSPS.hbTables)
 	CSPS.hbPopulate()
 	CSPS.attrExtract(attrComp)
-	if not CSPS.treeIsReady then CSPS.createTree() end
+	if not CSPS.tabEx then CSPS.createTable() end
 	
 	cp.updateSidebarIcons()
 	
 	cp.updateSlottedMarks()
 	
-	if not CSPS.moduleExclude.gear then
+	if CSPS.doGear and not CSPS.moduleExclude.gear then
 		CSPS.setTheGear(CSPS.extractGearString(gearComp, gearCompUnique))
 	end
 	
@@ -892,6 +886,7 @@ function CSPS.loadBuild(useAuxProfile, givenTable)
 end
 
 function CSPS.canRespecFromUI()
+	if GetAPIVersion() < 101049 then return false end
 	
 	if IsCurrentCampaignVengeanceRuleset() then 
 		return false, GS("SI_RESPECRESULT", RESPEC_RESULT_IN_VENGEANCE) 
@@ -910,14 +905,7 @@ end
 
 
 function CSPS.text(arg)
-	if type(arg) == "table" then
-		for i, v in pairs(arg) do
-			if type(v) ~= "string" then return end
-		end
-		arg = table.concat(arg, "\n")
-	elseif type(arg) ~= "string" then 
-		return 
-	end
+	if type(arg) ~= "string" then return end
 	CSPS.toggleImportExport(true)
 	CSPSWindowImportExportTextEdit:SetText(arg)
 end

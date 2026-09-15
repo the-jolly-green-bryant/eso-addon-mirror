@@ -650,6 +650,12 @@
 					  <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, RIGHT, GetString(CSPS_Tooltiptext_SkIcon))</OnMouseEnter>
 					  <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>	
 				</Texture>	
+				<Button name="$(parent)BtnApply" hidden="true">
+					<Dimensions y="25" x="25" />
+					<Anchor point="CENTER" relativePoint="CENTER" relativeTo="$(parent)Points" />
+					<OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+					<Textures normal="ESOUI/art/buttons/accept_up.dds" pressed="ESOUI/art/buttons/accept_down.dds" mouseOver="ESOUI/art/buttons/accept_over.dds" />
+				</Button>
 			</Controls>
 			
 		</Control>

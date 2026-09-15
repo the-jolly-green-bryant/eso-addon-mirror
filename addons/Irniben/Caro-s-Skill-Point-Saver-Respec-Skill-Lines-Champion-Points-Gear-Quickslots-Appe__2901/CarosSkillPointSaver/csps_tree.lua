@@ -30,7 +30,7 @@ local TREE_SECTION_OUTFIT = 9
 local sectionNodes = {}
 
 local errorColors = { -- ec = {correct = 1, wrongMorph = 2, rankHigher = 3, skillLocked = 4, rankLocked = 5, morphLocked = 6, lineNotActive = 7}, >>> + 1
-	colTbl.white,	
+	colTbl.white,	--0
 	colTbl.green,  
 	colTbl.red,
 	colTbl.orange, 
@@ -225,8 +225,10 @@ end
 
 local function setupCraftedAbility(mySkill, control)
 	local emptyScripts = {"esoui/art/skills/scribing_primary_dragging.dds", "esoui/art/skills/scribing_secondary_dragging.dds", "esoui/art/skills/scribing_tertiary_dragging.dds"}
+	local scriptsFull = true
 	for scribingSlot=1, 3 do
 		local scriptTexture = mySkill.scripts[scribingSlot] and tonumber(mySkill.scripts[scribingSlot]) ~= 0 and GetCraftedAbilityScriptIcon(mySkill.scripts[scribingSlot]) or emptyScripts[scribingSlot]
+		if not mySkill.scripts[scribingSlot] or mySkill.scripts[scribingSlot] == 0 then scriptsFull = false end
 		local ctrScript = control:GetNamedChild("Script"..scribingSlot)
 		ctrScript:SetTexture(scriptTexture)
 		ctrScript:SetHandler("OnMouseEnter", function() 
@@ -288,6 +290,17 @@ local function setupCraftedAbility(mySkill, control)
 				end
 			end
 		end)
+	end
+	local btnApply = GetControl(control, "BtnApply")
+	if GetCraftingInteractionType() == CRAFTING_TYPE_SCRIBING and scriptsFull and (not mySkill.error or mySkill.error == 0) then
+		btnApply:SetHidden(false)
+		btnApply:SetHandler("OnClicked", function(_,_,ctrl,alt,shift) CSPS.applyCraftedAbilities(function() CSPS.refreshSkillSumsAndErrors() CSPS.refreshTree() end, mySkill.craftedId) end)
+		btnApply:SetHandler("OnMouseEnter", function() 
+			local combinationsToScribe, neededInk, _, notCraftable = CSPS.checkCraftedAbilites(mySkill.craftedId)
+			ZO_Tooltips_ShowTextTooltip(btnApply, RIGHT, string.format("%s (|t26:26:%s|t %s/%s)", GS(SI_SCRIBING_PERFORM_SCRIBE_KEYBIND), GetItemLinkIcon(GetScribingInkItemLink()), neededInk, GetItemLinkInventoryCount(GetScribingInkItemLink(), INVENTORY_COUNT_BAG_OPTION_BACKPACK_AND_BANK_AND_CRAFT_BAG)))
+		end)
+	else
+		btnApply:SetHidden(true)
 	end
 end
 

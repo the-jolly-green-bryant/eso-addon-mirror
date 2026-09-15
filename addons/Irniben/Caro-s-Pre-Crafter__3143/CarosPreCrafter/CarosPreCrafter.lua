@@ -65,6 +65,7 @@ local potionOptions = { -- all the ingredient options (besides the solvent). the
 
 }
 
+
 local poisonOptions = {
 	[76829] = { -- poison magicka 
 		{30148, 30151}, {30148, 30152}, {30148, 30154}, {30148, 77589},
@@ -91,12 +92,13 @@ local poisonOptions = {
 		{30164, 30166}, {30164, 77585}, {30166, 77585}},
 }
 
+
 local alchemyAlternatives = { -- Different itemlinks that all work for the daily writs
 	[44812] = {132608, 134400, 131840, 137472, 132096, 133888, 131072}, -- health savage
 	--[44815] = {262144, 265216,}, -- magicka savage (if ever needed)
 	[54339] = {66304,65536,66816,}, -- health
 	[76827] = {131072,132608,134400,131840,137472,132096,133888,}, --poison helath
-	[76829] = {262144,265216,}, -- poison magicka
+	[76829] = {262144,}, -- poison magicka -- 265216 not working as of update 51
 	[76831] = {393216,396800,}, -- poison stamina
 	[76826] = {65536,66816,}, -- poison health drain
 	[54340] = {196608}, -- magicka
@@ -104,6 +106,355 @@ local alchemyAlternatives = { -- Different itemlinks that all work for the daily
 	[44809] = {393216, 396800}, --savage stamina (level 1)
 }
 
+if GetAPIVersion() >= 101051 then
+	potionOptions = {
+	  [44809] = { --Essence of Ravage Stamina
+		 {30149, 30155}, {30149, 30156}, {30149, 77587}, {30151, 30155}, {30151, 30156},
+		 {30151, 77587}, {30155, 77587}, {30156, 77587},
+	  },
+	  [54339] = { --Essence of health
+		 {30148, 30155}, {30148, 30160}, {30148, 30163}, {30148, 30164}, {30148, 30166},
+		 {30148, 77585}, {30148, 150672}, {30155, 30160}, {30155, 30164}, {30155, 30166},
+		 {30155, 77585}, {30155, 150672}, {30160, 30163}, {30160, 30164}, {30160, 30166},
+		 {30160, 77585}, {30160, 150672}, {30163, 30164}, {30163, 30166}, {30163, 77585},
+		 {30163, 150672}, {30164, 30166}, {30164, 77585}, {30164, 150672}, {30166, 150672},
+		 {77585, 150672},
+	  },
+	  [44812] = { --Essence of Ravage Health
+		 {30149, 30151}, {30149, 30152}, {30149, 30161}, {30149, 30165}, {30149, 77590},
+		 {30149, 150670}, {30151, 30152}, {30151, 30161}, {30151, 30165}, {30151, 77590},
+		 {30151, 150670}, {30152, 30165}, {30152, 77590}, {30152, 150670}, {30161, 30165},
+		 {30161, 77590}, {30161, 150670}, {30165, 77590}, {30165, 150670},
+	  },
+	  [54341] = { --Essence of stamina
+		 {30157, 30163}, {30157, 30164}, {30157, 150731}, {30157, 224359}, {30162, 30163},
+		 {30162, 30164}, {30162, 150731}, {30162, 224359}, {30163, 150731}, {30163, 224359},
+		 {30164, 150731}, {30164, 224359},
+	  },
+	  [54340] = { --Essence of Magicka
+		 {30158, 30160}, {30158, 30161}, {30158, 30164}, {30158, 150670}, {30158, 150671},
+		 {30160, 30161}, {30160, 150670}, {30160, 150671}, {30161, 30164}, {30161, 150671},
+		 {30164, 150670}, {30164, 150671}, {150670, 150671},
+	  },
+	}
+	poisonOptions = {
+	  [76831] = { --Damage Stamina Poison IX
+		 {30149, 30155}, {30149, 30156}, {30149, 77587}, {30151, 30155}, {30151, 30156},
+		 {30151, 77587}, {30155, 77587}, {30156, 77587},
+	  },
+	  [76829] = { --Damage Magicka Poison IX
+		 {30148, 30151}, {30148, 30152}, {30148, 30154}, {30148, 150669}, {30151, 30154},
+		 {30151, 150669}, {30152, 30154}, {30152, 150669},
+	  },
+	  [76826] = { --Drain Health Poison IX
+		 {30148, 30155}, {30148, 30160}, {30148, 30163}, {30148, 30164}, {30148, 30166},
+		 {30148, 77585}, {30148, 150672}, {30155, 30160}, {30155, 30164}, {30155, 30166},
+		 {30155, 77585}, {30155, 150672}, {30160, 30163}, {30160, 30164}, {30160, 30166},
+		 {30160, 77585}, {30160, 150672}, {30163, 30164}, {30163, 30166}, {30163, 77585},
+		 {30163, 150672}, {30164, 30166}, {30164, 77585}, {30164, 150672}, {30166, 150672},
+		 {77585, 150672},
+	  },
+	  [76827] = { --Damage Health Poison IX
+		 {30149, 30151}, {30149, 30152}, {30149, 30161}, {30149, 30165}, {30149, 77590},
+		 {30149, 150670}, {30151, 30152}, {30151, 30161}, {30151, 30165}, {30151, 77590},
+		 {30151, 150670}, {30152, 30165}, {30152, 77590}, {30152, 150670}, {30161, 30165},
+		 {30161, 77590}, {30161, 150670}, {30165, 77590}, {30165, 150670},
+	  },
+	}
+	alchemyAlternatives = {
+	 [54339] = {65536, 66304, 66816}, --Essence of health
+	 [54340] = {196608}, --Essence of Magicka
+	 [54341] = {327680}, --Essence of stamina
+	 [44809] = {393216}, --Essence of Ravage Stamina
+	 [76826] = {65536, 66304, 66816}, --Drain Health Poison IX
+	 [76827] = {132608, 131072, 132096, 131840}, --Damage Health Poison IX
+	 [44812] = {132608, 131072, 132096, 131840}, --Essence of Ravage Health
+	 [76829] = {262144}, --Damage Magicka Poison IX
+	 [76831] = {393216}, --Damage Stamina Poison IX
+	}
+end
+
+-- 
+-- /script xyz = CarosPreCrafter.getPossibleCombinationsFromLink("|H1:item:76829:308:50:0:0:0:0:0:0:0:0:0:0:0:0:36:1:0:0:0:0|h|h") bla = {} for i, v in pairs(xyz) do if not v.reagent3.slotIndex then table.insert(bla, v.reagent1.slotIndex.." - "..v.reagent2.slotIndex) end end d(table.concat(bla, ", "))
+
+function CarosPreCrafter.devGetOptions()
+	-- this function is for my own use if zos changes reagents. only works together with Caro's Skill Point Saver
+	local myText = {}
+		
+	for firstId, _ in pairs(poisonOptions) do 
+		local possibleCombinations = {}
+		table.insert(myText, "["..firstId.."] = { --"..GetItemLinkName(string.format(alchemyStringMaxLevel, firstId, 0)))
+		for i, secondId in pairs(alchemyAlternatives[firstId] or {0}) do
+			local itemLink = string.format(alchemyStringMaxLevel, firstId, secondId)
+
+			local myCombinations = CarosPreCrafter.getPossibleCombinationsFromLink(itemLink)
+			if myCombinations then
+				for j, w in pairs(myCombinations) do
+					if not w.reagent3.slotIndex then
+						table.insert(myText, "{"..w.reagent1.slotIndex..", "..w.reagent2.slotIndex.."},")
+					end
+				end
+			else
+				d(itemLink.." no longer possible")
+			end
+		end
+		table.insert(myText, "},")
+	end
+	CSPS.text(table.concat(myText, "\n"))
+	--d(string.format(alchemyStringMaxLevel, i, alchemyAlternatives[i][1])..": "..string.format(strIL, v[2]).." + "..string.format(strIL, v[3]))
+end
+
+
+function CarosPreCrafter.getAllPossibleWritCombinations(doAlternatives)
+	-- this function is for my own use if zos changes reagents. only works together with Caro's Skill Point Saver
+	local potions = {}
+	local poisons = {}
+	local alternatives = {}
+	local checked = {}
+	local myText = {}
+	local function checkTable(solvent, myTable, checkTable)
+		
+		local reg1 = GetNextVirtualBagSlotId()
+		while reg1 do
+			local reg2 = GetNextVirtualBagSlotId()
+			while reg2 do
+				local itemLink = GetAlchemyResultingItemLink(5, solvent, 5, reg1, 5, reg2)
+				local id1 = GetItemLinkItemId(itemLink)
+				if id1 ~= 0 and (not checkTable or checkTable[id1]) then
+					local id2 = tonumber(string.match(itemLink, ":(%d+)|")) or 0
+					checked[id1] = checked[id1] or {}
+					myTable[id1] = myTable[id1] or {}
+					alternatives[id1] = alternatives[id1] or {GetItemLinkName(alchemyStringMaxLevel:format(id1,0))}
+					local isNew = true
+					for j, w in pairs(myTable[id1]) do
+						if (w[1] == reg1 and w[2] == reg2) or (w[1] == reg2 and w[2] == reg1) then
+							isNew = false
+						end
+					end
+					if isNew then table.insert(myTable[id1], {reg1, reg2}) end
+					if not checked[id1][id2] then
+						checked[id1][id2] = true
+						table.insert(alternatives[id1], id2)
+					end
+				end
+				reg2 = GetNextVirtualBagSlotId(reg2)
+			end
+			reg1 = GetNextVirtualBagSlotId(reg1)
+		end
+		for i, v in pairs(myTable) do
+			table.insert(myText, "  ["..i.."] = { --"..GetItemLinkName(alchemyStringMaxLevel:format(i, 0)))
+			local auxTable = {}
+			for j, w in pairs(v) do 
+				table.insert(auxTable, "{"..w[1]..", "..w[2].."},")
+				if #auxTable > 4 then
+					table.insert(myText, "     "..table.concat(auxTable, " "))
+					auxTable = {}
+				end
+			end
+			if #auxTable > 0 then table.insert(myText, "     "..table.concat(auxTable, " ")) end
+			table.insert(myText, "  },")
+		end
+	end
+	table.insert(myText, "potionOptions = {")
+	checkTable(64501, potions, potionOptions) -- lorkhans tears
+	table.insert(myText, "}")
+	table.insert(myText, "poisonOptions = {")
+	checkTable(75365, poisons, poisonOptions) -- alkahest
+	table.insert(myText, "}")
+	if doAlternatives then 
+		myText = {}
+		table.insert(myText, "alchemyAlternatives = {")
+		for i, v in pairs(alternatives) do
+			local auxTable = {}
+			for j, w in pairs(v) do
+				if j > 1 then table.insert(auxTable, w) end
+			end
+			table.insert(myText, " ["..i.."] = {"..table.concat(auxTable, ", ").."}, --"..v[1])
+		end
+		table.insert(myText, "}")
+	end
+	
+	CSPS.text(table.concat(myText, "\n"))
+	
+	return potions, poisons, alternatives
+end
+
+function CarosPreCrafter.checkPoisonNamesForCSPS()
+	local traitNames = CSPS.getAlternatePoisonName(0, true)
+	local function getPoisonEffects(myTable)
+		local effectNumbers = {}
+		local counter = 0
+		local returnValue = false
+		for i, v in pairs(myTable) do
+			for j, w in pairs(v) do
+				effectNumbers[w] = effectNumbers[w] or 0
+				effectNumbers[w] = effectNumbers[w] + 1
+				if effectNumbers[w] > 1 then
+					counter = counter + 1
+					if counter > 1 then return false end
+					returnValue = w
+				end
+			end
+		end
+		return returnValue
+	end
+	local poisons = {}
+	local checked = {}
+	local effects = {}
+	local reg1 = GetNextVirtualBagSlotId()
+	while reg1 do
+		if GetItemType(5, reg1) == ITEMTYPE_REAGENT then
+			local t1, _, _, _, _, t2, _, _, _, _, t3, _, _, _, _, t4, _, _, _, _ = GetAlchemyItemTraits(5, reg1)
+			local r1t = {t1,t2,t3,t4}
+			local reg2 = GetNextVirtualBagSlotId()
+			while reg2 do
+				if GetItemType(5, reg2) == ITEMTYPE_REAGENT then
+					local t1, _, _, _, _, t2, _, _, _, _, t3, _, _, _, _, t4, _, _, _, _ = GetAlchemyItemTraits(5, reg2)
+					local r2t = {t1,t2,t3,t4}
+					local poisonEffect = getPoisonEffects({r1t, r2t})
+					if poisonEffect and not checked[poisonEffect] then
+						local itemLink = GetAlchemyResultingItemLink(5, 75365, 5, reg1, 5, reg2)
+						local id1 = GetItemLinkItemId(itemLink)
+						if id1 ~= 0 then
+							local id2 = tonumber(string.match(itemLink, ":(%d+)|"))
+							checked[poisonEffect] = true
+							local effectId = math.floor(id2 / 65536) % 256
+							effects[effectId] = {poisonEffect or "-", traitNames[effectId] or "-"}
+						end
+					end
+				end	
+				reg2 = GetNextVirtualBagSlotId(reg2)
+			end
+		end	
+		reg1 = GetNextVirtualBagSlotId(reg1)
+	end
+	for i, v in pairs(effects) do d(i..") "..v[1].." = "..v[2]) end
+	return effects
+end
+
+function CarosPreCrafter.getAllPoisonsForCSPS(nameList, startIndex, endIndex)
+	local function getPoisonEffects(myTable)
+		local effectNumbers = {}
+		local returnTable = {}
+		for i, v in pairs(myTable) do
+			for j, w in pairs(v) do
+				effectNumbers[w] = effectNumbers[w] or 0
+				effectNumbers[w] = effectNumbers[w] + 1
+			end
+		end
+		for i, v in pairs(effectNumbers) do
+			if v > 1 and nameList[i] then
+				table.insert(returnTable, nameList[i])
+			end
+		end
+		return returnTable
+	end
+
+	local poisons = {}
+	local checked = {}
+	local effects = {}
+	local reg1 = GetNextVirtualBagSlotId()
+	while reg1 do
+		if GetItemType(5, reg1) == ITEMTYPE_REAGENT then
+			local t1, _, _, _, _, t2, _, _, _, _, t3, _, _, _, _, t4, _, _, _, _ = GetAlchemyItemTraits(5, reg1)
+			local r1t = {t1,t2,t3,t4}
+			local reg2 = GetNextVirtualBagSlotId()
+			while reg2 do
+				if GetItemType(5, reg2) == ITEMTYPE_REAGENT then
+					local t1, _, _, _, _, t2, _, _, _, _, t3, _, _, _, _, t4, _, _, _, _ = GetAlchemyItemTraits(5, reg2)
+					local r2t = {t1,t2,t3,t4}
+					local itemLink = GetAlchemyResultingItemLink(5, 75365, 5, reg1, 5, reg2)
+					local id1 = GetItemLinkItemId(itemLink)
+					if id1 ~= 0 then
+						local id2 = tonumber(string.match(itemLink, ":(%d+)|")) or 0
+						checked[id1] = checked[id1] or {}
+						if not checked[id1][id2] then
+							checked[id1][id2] = true
+							poisons[id1] = poisons[id1] or {}
+							table.insert(poisons[id1], id2)
+							if nameList then
+								effects[id2] = getPoisonEffects({r1t, r2t})
+							end
+						end
+					end
+					local reg3 = GetNextVirtualBagSlotId()
+					while reg3 do
+						if GetItemType(5, reg3) == ITEMTYPE_REAGENT then
+							local itemLink = GetAlchemyResultingItemLink(5, 75365, 5, reg1, 5, reg2, 5, reg3)
+							local id1 = GetItemLinkItemId(itemLink)
+							if id1 ~= 0 then
+								local id2 = tonumber(string.match(itemLink, ":(%d+)|")) or 0
+								checked[id1] = checked[id1] or {}
+								if not checked[id1][id2] then
+									checked[id1][id2] = true
+									poisons[id1] = poisons[id1] or {}
+									table.insert(poisons[id1], id2)
+									if nameList then
+										effects[id2] = getPoisonEffects({r1t, r2t})
+									end
+								end
+							end
+						end
+						reg3 = GetNextVirtualBagSlotId(reg3)
+					end
+				end	
+				reg2 = GetNextVirtualBagSlotId(reg2)
+			end
+		end	
+		reg1 = GetNextVirtualBagSlotId(reg1)
+	end
+	local myText = {}
+	local auxIndex = 1
+	for i, v in pairs(poisons) do
+		if auxIndex >= (startIndex or 0) and auxIndex <= (endIndex or 999) then 
+			table.insert(myText, "["..i.."] = {"..table.concat(v, ",").."},")
+		end
+		auxIndex = auxIndex + 1
+	end
+	CSPS.text(table.concat(myText, "\n"))
+	return poisons, myText, effects
+end
+
+--/script SetCVar("language.2", "en")
+function CarosPreCrafter.getAllReagentTraits()
+	local reagentSlotIndex = GetNextVirtualBagSlotId()
+	local checked = {}
+	local traits = {}
+	local function checkTrait(trait)
+		if checked[trait] then return end
+		checked[trait] = true 
+		table.insert(traits, trait)		
+	end
+	while reagentSlotIndex do
+		local t1, _, _, _, _, t2, _, _, _, _, t3, _, _, _, _, t4, _, _, _, _ = GetAlchemyItemTraits(5, reagentSlotIndex)
+		
+		local r1t = {t1,t2,t3,t4}
+
+		for i, v in pairs(r1t) do checkTrait(v) end
+		
+		local reg2 = GetNextVirtualBagSlotId()
+		while reg2 do
+			if reagentSlotIndex ~= reg2 then
+				local commonTraits = {}
+				local tt1, _, _, _, _, tt2, _, _, _, _, tt3, _, _, _, _, tt4, _, _, _, _ = GetAlchemyItemTraits(5, reg2)
+				local r2t = {tt1,tt2,tt3,tt4}
+				for i, v in pairs(r1t) do
+					for j, w in pairs(r2t) do
+						if v == w then table.insert(commonTraits, v) end
+					end
+				end
+				if #commonTraits > 1 then d(GetItemLink(5, reagentSlotIndex).. " - "..GetItemLink(5, reg2)) end
+			end
+			reg2 = GetNextVirtualBagSlotId(reg2)
+		end
+		
+		reagentSlotIndex = GetNextVirtualBagSlotId(reagentSlotIndex)
+	end
+	return traits
+end
+
+-- /script xyz = CarosPreCrafter.getAllReagentTraits() bla = {} for i, v in pairs(xyz) do local found = false for j=1,9999999 do if GetAbilityName(j) == v then bla[v] = j found = true break end  end if not found then d(v.." not found") end end
+-- /script for j=1,9999999 do local a = GetAbilityName(j) if string.find(a, "force") then d(j.." - "..a) end end
 --local potWritsLevMax = {54341,44812, 54340, 54339} --not needed
 --local potWritLev1 = {54341, 54340, 54339, 44809}
 

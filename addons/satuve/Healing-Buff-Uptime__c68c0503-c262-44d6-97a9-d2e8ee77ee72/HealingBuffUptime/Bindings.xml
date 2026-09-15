@@ -1,0 +1,21 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="Healing Buff Uptime">
+            <Action name="HBU_TOGGLE_MOVE_MODE">
+                <Down>HealingBuffUptime:ToggleMoveMode()</Down>
+            </Action>
+            <Action name="HBU_MOVE_UP">
+                <Down>HealingBuffUptime:MoveMiniWindowBy(0, -1)</Down>
+            </Action>
+            <Action name="HBU_MOVE_DOWN">
+                <Down>HealingBuffUptime:MoveMiniWindowBy(0, 1)</Down>
+            </Action>
+            <Action name="HBU_MOVE_LEFT">
+                <Down>HealingBuffUptime:MoveMiniWindowBy(-1, 0)</Down>
+            </Action>
+            <Action name="HBU_MOVE_RIGHT">
+                <Down>HealingBuffUptime:MoveMiniWindowBy(1, 0)</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

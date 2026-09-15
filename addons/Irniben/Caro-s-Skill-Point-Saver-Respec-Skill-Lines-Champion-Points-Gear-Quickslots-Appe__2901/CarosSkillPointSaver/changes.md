@@ -1,4 +1,10 @@
 [LIST]
+[*] v. 6.1.7
+[LIST]
+[*] FIXED: Some problems with gear-crafting where multiple instances of the same item would be reconstructed and crafting glyphs first would lead to items not being enchanted.
+[*] QoL: Button behind scribed skills to craft them directly when at a scribing station
+[*] UPDATED: Updated poison options for update 101051.
+[/LIST]
 [*] v. 6.1.6
 [LIST]
 [*] FIXED: Class masteries are now applied after changing skilllines to pure-class.

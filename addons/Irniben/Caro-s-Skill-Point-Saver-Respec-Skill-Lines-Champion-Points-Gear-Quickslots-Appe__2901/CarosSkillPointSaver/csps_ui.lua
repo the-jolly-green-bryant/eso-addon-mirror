@@ -892,6 +892,9 @@ function CSPS.OnWindowShow()
 			end)
 		EVENT_MANAGER:RegisterForEvent(CSPS.name.."OpenBank", EVENT_OPEN_BANK, function(_, bagId) if bagId == BAG_BANK then CSPS.refreshTree() end end)
 	end
+	EVENT_MANAGER:RegisterForEvent(CSPS.name.."CraftingSkillInteract", EVENT_CRAFTING_STATION_INTERACT,
+		function (_, craftingType, _, craftMode) if craftingType == CRAFTING_TYPE_SCRIBING then CSPS.refreshTree() end end)
+	EVENT_MANAGER:RegisterForEvent(CSPS.name.."CraftingInteractEnded", EVENT_INTERACTION_ENDED, function(_, interType) if interType ~= INTERACTION_CRAFT then return end CSPS.refreshTree() end)
 end
 
 function CSPS.OnWindowHide()
@@ -900,6 +903,8 @@ function CSPS.OnWindowHide()
 	if CSPS.savedVariables.settings.keepLastBuild then CSPS.saveBuildGo(true) end
 	EVENT_MANAGER:UnregisterForEvent(CSPS.name.."GearChange", EVENT_INVENTORY_SINGLE_SLOT_UPDATE)
 	EVENT_MANAGER:UnregisterForEvent(CSPS.name.."OpenBank", EVENT_OPEN_BANK)
+	EVENT_MANAGER:UnregisterForEvent(CSPS.name.."CraftingSkillInteract", EVENT_CRAFTING_STATION_INTERACT)
+	EVENT_MANAGER:UnregisterForEvent(CSPS.name.."CraftingInteractEnded", EVENT_INTERACTION_ENDED)
 end
 
 function CSPS.setTransparencyBG(value)

@@ -1,0 +1,9 @@
+## Title: Warmasktracker by JH
+## Description: Huntsman Warmask tracker with direct left-stick x/y movement for ESO Console.
+## Author: JH
+## Version: 2.0.5-console.8
+## APIVersion: 101051 101050
+## SavedVariables: WarmasktrackerByJHData
+## OptionalDependsOn: LibAddonMenu-2.0
+
+WarmasktrackerByJH.lua

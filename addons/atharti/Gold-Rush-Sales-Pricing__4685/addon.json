@@ -1,6 +1,6 @@
 {
   "archive_format": "zip",
-  "archive_path": "addons/atharti/Gold-Rush-Trading-Pricing__4685",
+  "archive_path": "addons/atharti/Gold-Rush-Sales-Pricing__4685",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
   "archived": true,
   "author": "atharti",
@@ -18,7 +18,7 @@
     "GoldRush"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4685/",
-  "fingerprint": "161ba42b066b89f45158630a0bbca98962d235fffab0edb36431db0a22641948",
+  "fingerprint": "3d2aa0de74585e597f1e598a1a7c6b881f507b5fd581960aafd9a2b29c8c4645",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16590.png",
     "https://cdn-eso.mmoui.com/preview/pvw16591.png"
@@ -27,13 +27,13 @@
   "published": true,
   "source": "esoui",
   "source_id": "4685",
-  "source_url": "https://www.esoui.com/downloads/info4685-GoldRushTradingPricing.html",
+  "source_url": "https://www.esoui.com/downloads/info4685-GoldRushSalesPricing.html",
   "stats": {
-    "downloads": 444,
-    "favorites": 6,
-    "monthly_downloads": 217
+    "downloads": 613,
+    "favorites": 7,
+    "monthly_downloads": 192
   },
-  "title": "Gold Rush \u2014 Trading & Pricing",
-  "updated_at": 1786882858000,
-  "version": "2.1"
+  "title": "Gold Rush \u2014 Sales & Pricing",
+  "updated_at": 1789372441000,
+  "version": "2.3"
 }

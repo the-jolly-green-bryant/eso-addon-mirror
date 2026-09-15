@@ -17,15 +17,19 @@ local function safe(fn, fallback, ...)
     return a,b,c,d,e,f
 end
 
-local function formatMs(ms)
-    ms = math.max(0, num(ms, 0))
-    if ms <= 0 then return "0" end
-    local seconds = math.ceil(ms / 1000)
-    local h = math.floor(seconds / 3600)
-    local m = math.floor((seconds % 3600) / 60)
-    local s = seconds % 60
-    if h > 0 then return string.format("%d:%02d:%02d", h, m, s) end
-    return string.format("%02d:%02d", m, s)
+local function setHiddenIfChanged(control, hidden)
+    if not control or type(control.IsHidden) ~= "function" or type(control.SetHidden) ~= "function" then return end
+    local ok, current = pcall(control.IsHidden, control)
+    if not ok or current ~= hidden then pcall(control.SetHidden, control, hidden) end
+end
+
+local function setTextIfChanged(control, text, cacheOwner, cacheKey)
+    if not control then return end
+    text = tostring(text or "")
+    if cacheOwner[cacheKey] ~= text then
+        cacheOwner[cacheKey] = text
+        control:SetText(text)
+    end
 end
 
 function S:Create()
@@ -49,9 +53,62 @@ function S:Create()
     local title = wm:CreateControl("EPC_StableTrainingTimer_Title", frame, CT_LABEL)
     title:SetFont("ZoFontGameBold")
     title:SetColor(0.91, 0.70, 0.28, 1)
-    title:SetAnchorFill(frame)
-    title:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    title:SetAnchor(LEFT, frame, LEFT, 14, 0)
+    title:SetDimensions(70, 34)
+    title:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
     title:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    title:SetText("STABLE")
+
+    -- v0.29.564: compact fixed-position timer.  Each component still owns its
+    -- own anchor so proportional-font reflow cannot move the hour, but the
+    -- fields are packed tightly enough to read as one normal H:MM:SS string.
+    local timeRoot = wm:CreateControl("EPC_StableTrainingTimer_TimeRoot", frame, CT_CONTROL)
+    timeRoot:SetAnchor(RIGHT, frame, RIGHT, -12, 0)
+    timeRoot:SetDimensions(68, 34)
+
+    local hour = wm:CreateControl("EPC_StableTrainingTimer_Hour", timeRoot, CT_LABEL)
+    hour:SetFont("ZoFontGameBold")
+    hour:SetDimensions(16, 34)
+    hour:SetAnchor(LEFT, timeRoot, LEFT, 0, 0)
+    hour:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+    hour:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+
+    local colon1 = wm:CreateControl("EPC_StableTrainingTimer_Colon1", timeRoot, CT_LABEL)
+    colon1:SetFont("ZoFontGameBold")
+    colon1:SetDimensions(5, 34)
+    colon1:SetAnchor(LEFT, hour, RIGHT, 0, 0)
+    colon1:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    colon1:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    colon1:SetText(":")
+
+    local minute = wm:CreateControl("EPC_StableTrainingTimer_Minute", timeRoot, CT_LABEL)
+    minute:SetFont("ZoFontGameBold")
+    minute:SetDimensions(20, 34)
+    minute:SetAnchor(LEFT, colon1, RIGHT, 0, 0)
+    minute:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    minute:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+
+    local colon2 = wm:CreateControl("EPC_StableTrainingTimer_Colon2", timeRoot, CT_LABEL)
+    colon2:SetFont("ZoFontGameBold")
+    colon2:SetDimensions(5, 34)
+    colon2:SetAnchor(LEFT, minute, RIGHT, 0, 0)
+    colon2:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    colon2:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    colon2:SetText(":")
+
+    local second = wm:CreateControl("EPC_StableTrainingTimer_Second", timeRoot, CT_LABEL)
+    second:SetFont("ZoFontGameBold")
+    second:SetDimensions(20, 34)
+    second:SetAnchor(LEFT, colon2, RIGHT, 0, 0)
+    second:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    second:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+
+    local status = wm:CreateControl("EPC_StableTrainingTimer_Status", timeRoot, CT_LABEL)
+    status:SetFont("ZoFontGameBold")
+    status:SetAnchorFill(timeRoot)
+    status:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+    status:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    status:SetHidden(true)
 
     frame:SetHandler("OnMoveStop", function(control)
         if EPC.saved then
@@ -61,6 +118,10 @@ function S:Create()
     end)
 
     self.frame, self.bg, self.title = frame, bg, title
+    self.timeRoot, self.hour, self.colon1, self.minute, self.colon2, self.second, self.status = timeRoot, hour, colon1, minute, colon2, second, status
+    self.lastVisible029560 = nil
+    self.lastColorKey029560 = nil
+    self.lastTimeMode029563 = nil
 end
 
 function S:IsMaxed()
@@ -71,33 +132,83 @@ function S:IsMaxed()
         and num(speed,0) >= num(maxSpeed,0)
 end
 
+local function applyColor(self, colorKey)
+    if colorKey == self.lastColorKey029560 then return end
+    self.lastColorKey029560 = colorKey
+    local r, g, b
+    if colorKey == "READY" then r, g, b = 0.25, 0.72, 0.40
+    else r, g, b = 0.91, 0.70, 0.28 end
+    for _, control in ipairs({self.title, self.hour, self.colon1, self.minute, self.colon2, self.second, self.status}) do
+        if control then control:SetColor(r, g, b, 1) end
+    end
+end
+
+local function setCountdownMode(self, active)
+    local mode = active and "COUNTDOWN" or "STATUS"
+    if self.lastTimeMode029563 == mode then return end
+    self.lastTimeMode029563 = mode
+    setHiddenIfChanged(self.status, active)
+    for _, control in ipairs({self.hour, self.colon1, self.minute, self.colon2, self.second}) do
+        setHiddenIfChanged(control, not active)
+    end
+end
+
+local function applyStatus(self, text, colorKey)
+    setCountdownMode(self, false)
+    setTextIfChanged(self.status, text, self, "lastStatusText029563")
+    applyColor(self, colorKey)
+end
+
+local function applyCountdown(self, ms)
+    setCountdownMode(self, true)
+    ms = math.max(0, num(ms, 0))
+    local totalSeconds = math.ceil(ms / 1000)
+    local h = math.floor(totalSeconds / 3600)
+    local m = math.floor((totalSeconds % 3600) / 60)
+    local s = totalSeconds % 60
+
+    if h > 0 then
+        setTextIfChanged(self.hour, tostring(h), self, "lastHour029563")
+        setHiddenIfChanged(self.hour, false)
+        setHiddenIfChanged(self.colon1, false)
+    else
+        setTextIfChanged(self.hour, "", self, "lastHour029563")
+        setHiddenIfChanged(self.hour, true)
+        setHiddenIfChanged(self.colon1, true)
+    end
+    setTextIfChanged(self.minute, string.format("%02d", m), self, "lastMinute029563")
+    setTextIfChanged(self.second, string.format("%02d", s), self, "lastSecond029563")
+    applyColor(self, "WAIT")
+end
+
 function S:Refresh()
     if not self.frame or not EPC.saved then return end
     local show = EPC.saved.showStableTimer ~= false
     if self.layoutMode == true then show = true
     elseif EPC.OverlayModeAllows then show = show and EPC:OverlayModeAllows("stableTimerVisibility") end
     if show and self.layoutMode ~= true and EPC.IsGameplayHudSuppressed and EPC:IsGameplayHudSuppressed() then show = false end
-    self.frame:SetHidden(not show)
+
+    if self.lastVisible029560 ~= show then
+        self.lastVisible029560 = show
+        setHiddenIfChanged(self.frame, not show)
+    end
     if not show then return end
 
     if type(GetTimeUntilCanBeTrained) ~= "function" then
-        self.title:SetText("STABLE  --")
+        applyStatus(self, "--", "WAIT")
         return
     end
 
     if self:IsMaxed() then
-        self.title:SetColor(0.25, 0.72, 0.40, 1)
-        self.title:SetText("STABLE  MAX")
+        applyStatus(self, "MAX", "READY")
         return
     end
 
     local timeMs = num(safe(GetTimeUntilCanBeTrained, 0), 0)
     if timeMs <= 0 then
-        self.title:SetColor(0.25, 0.72, 0.40, 1)
-        self.title:SetText("STABLE  0")
+        applyStatus(self, "0", "READY")
     else
-        self.title:SetColor(0.91, 0.70, 0.28, 1)
-        self.title:SetText("STABLE  " .. formatMs(timeMs))
+        applyCountdown(self, timeMs)
     end
 end
 
@@ -106,6 +217,7 @@ function S:SetLayoutMode(active)
     if not self.frame then return end
     self.frame:SetMouseEnabled(self.layoutMode)
     self.frame:SetMovable(self.layoutMode)
+    self.lastVisible029560 = nil
     self:Refresh()
 end
 

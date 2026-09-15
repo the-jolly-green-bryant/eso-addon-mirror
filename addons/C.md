@@ -33,9 +33,9 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Caro's Enchantment Learner](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Orejana/Caro-s-Enchantment-Learner__3059) | Orejana | PC / Mac | 1.0.0 |
 | [Caro's Last Online Workaround](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Irniben/Caro-s-Last-Online-Workaround__2967) | Irniben | PC / Mac | 0.1.1 |
 | [Caro's Loot List](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Irniben/Caro-s-Loot-List__2898) | Irniben | PC / Mac | 3.14 |
-| [Caro's Pre-Crafter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Irniben/Caro-s-Pre-Crafter__3143) | Irniben | PC / Mac | 2.3.1 |
-| [Caro's Skill Point Saver (Respec Skill Lines, Champion Points, Gear, Quickslots, Appearances)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Irniben/Caro-s-Skill-Point-Saver-Respec-Skill-Lines-Champion-Points-Gear-Quickslots-Appe__2901) | Irniben | PC / Mac | 6.1.6 |
-| [Caro's Worn Sets](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Irniben/Caro-s-Worn-Sets__3478) | Irniben | PC / Mac | 1.1.3 |
+| [Caro's Pre-Crafter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Irniben/Caro-s-Pre-Crafter__3143) | Irniben | PC / Mac | 2.3.2 |
+| [Caro's Skill Point Saver (Respec Skill Lines, Champion Points, Gear, Quickslots, Appearances)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Irniben/Caro-s-Skill-Point-Saver-Respec-Skill-Lines-Champion-Points-Gear-Quickslots-Appe__2901) | Irniben | PC / Mac | 6.1.7 |
+| [Caro's Worn Sets](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Irniben/Caro-s-Worn-Sets__3478) | Irniben | PC / Mac | 1.1.4 |
 | [CASE - Character Addon Settings Editor](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/CASE---Character-Addon-Settings-Editor__4036) | atharti | PC / Mac | 6.4 |
 | [Cashier](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tarlac/Cashier__2040) | Tarlac | PC / Mac | 1.35 |
 | [Cast Skill IDs (CastIDs)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wendiga/Cast-Skill-IDs-CastIDs__4183) | Wendiga | PC / Mac | 1.1 |

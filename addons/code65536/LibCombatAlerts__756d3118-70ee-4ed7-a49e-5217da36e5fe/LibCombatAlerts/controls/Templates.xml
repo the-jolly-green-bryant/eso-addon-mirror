@@ -8,7 +8,7 @@
 
 		<!-- LCA_GroupPanel -->
 
-		<TopLevelControl name="LCA_GroupPanel" virtual="true" inherits="LCA_MoveableControl">
+		<TopLevelControl name="LCA_GroupPanel" hidden="true" virtual="true" inherits="LCA_MoveableControl">
 			<Controls>
 				<Texture name="$(parent)Icon">
 					<Anchor point="TOPLEFT" />

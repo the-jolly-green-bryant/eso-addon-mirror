@@ -41,6 +41,7 @@ local jewelryTraitIndices = {
 	[29] = 8,
 	[31] = 9,
 }
+
 local weaponResearchLines = {
 	[WEAPONTYPE_AXE] = {CRAFTING_TYPE_BLACKSMITHING, 1},
 	[WEAPONTYPE_HAMMER] = {CRAFTING_TYPE_BLACKSMITHING, 2},
@@ -580,6 +581,7 @@ local function cpcSetupLLC()
 	local styleTable = {true, true, true, true, true, true, true, true, true} -- just 1-9 for the standard racial styles
 	LLC = LibLazyCrafting:AddRequestingAddon(CarosPreCrafter.name, true, 
 		function(result, station, craftedItem) 
+			d(craftedItem)
 			local itemData = craftedItem and craftedItem.reference and itemsInLLCQueueByReference[craftedItem.reference]
 			if result == "success" and itemData then
 				cpcD(craftedItem)
@@ -885,9 +887,25 @@ function CarosPreCrafter.setupResearchCrafting()
 					end
 					
 					-- if there are less lines not in research than items to be crafted fill with items from the queued list
+					local linesTakenFromQueued = {}
+					local function getNextItemFromQueued()
+						if #craftData.priorityQueued == 0 then return false end
+						local item = false
+						for queuedEntryIndex, queuedEntryData in pairs(craftData.priorityQueued) do
+							if not linesTakenFromQueued[queuedEntryData.lineIndex] then
+								linesTakenFromQueued[queuedEntryData.lineIndex] = true
+								item = queuedEntryData
+								table.remove(craftData.priorityQueued, queuedEntryIndex)
+								return item
+							end
+						end
+						linesTakenFromQueued = {}
+						return getNextItemFromQueued()
+					end
 					for missingEntry=1, CarosPreCrafter.sV.researchItemsToPrecraft - #craftData.priorityOpen do
-						if not craftData.priorityQueued[missingEntry] then break end
-						table.insert(craftData.priorityOpen, craftData.priorityQueued[missingEntry])
+						local item = getNextItemFromQueued()
+						if not item then break end
+						table.insert(craftData.priorityOpen, item)
 					end
 					
 					if charData.doNirn then -- fill empty spots with nirn (only if all other lines are busy)
@@ -928,9 +946,15 @@ function CarosPreCrafter.setupResearchCrafting()
 						if openItem.nirn then 
 							addItemToChar(openItem.lineIndex, 9)
 						else
+							local didDuplicateForThisLine = false
 							for _, traitIndex in pairs(craftData.lines[openItem.lineIndex]) do
 								addItemToChar(openItem.lineIndex, traitIndex)
-								if doDuplicates > 0 then doDuplicates = doDuplicates - 1 else break end
+								if doDuplicates > 0 and not didDuplicateForThisLine then 
+									didDuplicateForThisLine = true 
+									doDuplicates = doDuplicates - 1 
+								else 
+									break 
+								end
 							end
 						end
 						

@@ -4,7 +4,7 @@ ESO ADVENTURER SUITE - OWNERSHIP NOTICE
 Project: ESO Adventurer Suite
 Author / Copyright Owner: HoZayyBadazz
 Copyright: (c) 2026 HoZayyBadazz. All Rights Reserved.
-Release: 0.29.198
+Release: 0.29.682
 
 This package is source-visible because ESO add-ons are installed locally for the game client to load them. Source visibility is not permission to copy, republish, redistribute, rebrand, sell, or claim authorship of this project.
 
@@ -12,5 +12,7 @@ Private personal-use modifications are permitted. Public distribution of this ad
 
 See LICENSE.txt for the complete license terms.
 
-THIRD-PARTY REFERENCE DATA
+THIRD-PARTY REFERENCE DATA / FEATURE REFERENCES
 The Antiquity known dig-spawn reference table in AntiquityKnownDigSpawns.lua was derived from the user-provided ScrySpy 1.44 location dataset. Original ScrySpy author: Sharlikran. ESO Adventurer Suite uses the location observations as reference data for Antiquity spawn matching; ScrySpy code is not required at runtime.
+
+The Group Finder Plus feature set was reimplemented for ESO Adventurer Suite after reviewing a user-provided GroupFinderPlus package credited in that package to @Atharti. ESO Adventurer Suite does not require the standalone GroupFinderPlus addon, its SavedVariables, its manifest, or its custom texture files at runtime.

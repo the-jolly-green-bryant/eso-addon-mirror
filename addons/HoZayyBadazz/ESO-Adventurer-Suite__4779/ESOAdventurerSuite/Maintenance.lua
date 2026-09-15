@@ -3,6 +3,7 @@
 -- Proprietary source. Unauthorized redistribution, republication, rebranding,
 -- or public distribution of modified/derivative versions is prohibited.
 -- Private personal-use modifications are permitted. See LICENSE.txt.
+-- v0.29.631 - do not scan inventory/gear on dense trial combat-start frames.
 
 local EPC = ESOProgressionCoach
 EPC.Maintenance = EPC.Maintenance or {}
@@ -79,9 +80,6 @@ function M:RechargeEquipped(forceEnabled)
 
     local threshold = tonumber(EPC.saved.autoRechargeThreshold) or 90
     local charged, skippedNoGem = 0, 0
-
-    -- BAG_WORN slot indices are equip slots. Scanning the bag instead of a hard-coded
-    -- weapon list also catches future weapon-slot changes without an addon update.
     for slot = 0, bagSize(BAG_WORN) - 1 do
         local okChargeable, chargeable = pcall(IsItemChargeable, BAG_WORN, slot)
         if okChargeable and chargeable == true then
@@ -110,8 +108,6 @@ function M:RepairEquipped(forceEnabled)
 
     local threshold = tonumber(EPC.saved.autoRepairThreshold) or 90
     local repaired, skippedNoKit = 0, 0
-
-    -- Durability tells us what is actually repairable, including equipped shields.
     for slot = 0, bagSize(BAG_WORN) - 1 do
         local okDurability, hasDurability = pcall(DoesItemHaveDurability, BAG_WORN, slot)
         if okDurability and hasDurability == true then
@@ -165,6 +161,15 @@ end
 
 function M:OnCombatState(inCombat)
     if not EPC.saved or EPC.saved.autoMaintenance == false then return end
+
+    -- A trial pull is the worst possible frame for backpack/gear scans. Repairs
+    -- and recharge checks still run at combat end; only the combat-start scan is
+    -- skipped for 8+ player groups.
+    if inCombat and type(GetGroupSize) == "function" then
+        local ok, size = pcall(GetGroupSize)
+        if ok and (tonumber(size) or 0) >= 8 then return end
+    end
+
     if inCombat and EPC.saved.autoMaintenanceOnCombatStart == false then return end
     if (not inCombat) and EPC.saved.autoMaintenanceOnCombatEnd == false then return end
 

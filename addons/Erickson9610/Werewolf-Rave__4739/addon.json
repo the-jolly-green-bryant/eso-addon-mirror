@@ -8,6 +8,10 @@
   "category_id": "114",
   "compatibility": [
     {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
     }
@@ -15,10 +19,10 @@
   "content_id": "esoui:4739",
   "deleted": false,
   "directories": [
-    "WerewolfRave-1.3.3"
+    "WerewolfRave-1.3.5"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4739/",
-  "fingerprint": "7a926556019d4e01356b3dc0ce8895b1f0b0a375a43d0b51ad69aab59ad7de93",
+  "fingerprint": "7597c19e938c77c5f8097fcee3604c5212573afb9ef33c3891731baa95005719",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16863.png",
     "https://cdn-eso.mmoui.com/preview/pvw16862.png",
@@ -31,11 +35,11 @@
   "source_id": "4739",
   "source_url": "https://www.esoui.com/downloads/info4739-WerewolfRave.html",
   "stats": {
-    "downloads": 41,
+    "downloads": 88,
     "favorites": 0,
-    "monthly_downloads": 40
+    "monthly_downloads": 22
   },
   "title": "Werewolf Rave",
-  "updated_at": 1785657765000,
-  "version": "1.3.3"
+  "updated_at": 1789374627000,
+  "version": "1.3.5"
 }

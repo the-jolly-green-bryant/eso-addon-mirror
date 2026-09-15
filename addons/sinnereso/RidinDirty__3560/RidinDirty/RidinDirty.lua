@@ -1,7 +1,7 @@
 RidinDirty = {
 	name = "RidinDirty",
 	author = "@sinnereso",
-	version = "2026.09.13",
+	version = "2026.09.14",
 	svName = "RidinDirtyVars",
 	svVersion = 1,
 	tradeTable = {},
@@ -204,7 +204,7 @@ local function CheckBankMemory()
 				end
 			end
 			if not itemFound then
-				if displayMessage then displayMessage = false df("--- Items Missing From Bank ---") end
+				if displayMessage then displayMessage = false df("--- Missing From Bank ---") end
 				df(rdLogo .. tostring(v))
 			end
 		end
@@ -212,7 +212,7 @@ local function CheckBankMemory()
 	end
 end
 
-local function SaveBankMemory()--BAG_FURNITURE_VAULT
+local function SaveBankMemory()
 	ESO_Dialogs["BANK_MEMORY_SAVE_CONFIRM_DIALOG"] = {
 		canQueue = true,
 		title = {
@@ -225,16 +225,18 @@ local function SaveBankMemory()--BAG_FURNITURE_VAULT
 			[1] = {
 				text = SI_DIALOG_CONFIRM,
 				callback = function(dialog)
+					ZO_ClearTable(RidinDirty.savedVariables["Banked Memory"])
+					RidinDirty.bankedMemory["version"] = 1
 					for slotIndex = 0, GetBagSize(BAG_BANK) - 1 do
 						itemId = GetItemId(BAG_BANK, slotIndex)
 						itemLink = GetItemLink(BAG_BANK, slotIndex, LINK_STYLE_BRACKETS)
-						if itemId ~= nil then RidinDirty.bankedMemory[itemId] = itemLink end
+						if itemId ~= nil and itemId ~= 0 then RidinDirty.bankedMemory[itemId] = itemLink end
 					end
 					if IsESOPlusSubscriber() then
 						for slotIndex = 0, GetBagSize(BAG_SUBSCRIBER_BANK) - 1 do
 							itemId = GetItemId(BAG_SUBSCRIBER_BANK, slotIndex)
 							itemLink = GetItemLink(BAG_SUBSCRIBER_BANK, slotIndex, LINK_STYLE_BRACKETS)
-							if itemId ~= nil then RidinDirty.bankedMemory[itemId] = itemLink end
+							if itemId ~= nil and itemId ~= 0 then RidinDirty.bankedMemory[itemId] = itemLink end
 						end
 					end
 					ZO_Alert(UI_ALERT_CATEGORY_ALERT, "PlayerAction_NotEnoughMoney", "Bank inventory saved.")
@@ -243,41 +245,11 @@ local function SaveBankMemory()--BAG_FURNITURE_VAULT
 			[2] = {
 				text = SI_DIALOG_CANCEL,
 				callback = function(dialog)
-					--df(rdLogo .. "Current bank inventory NOT saved!")
 				end,
 			},
 		},
 	}
 	ZO_Dialogs_ShowDialog("BANK_MEMORY_SAVE_CONFIRM_DIALOG")
-end
-
-local function ClearBankMemory()
-	ESO_Dialogs["BANK_MEMORY_RESET_CONFIRM_DIALOG"] = {
-		canQueue = true,
-		title = {
-			text = "Confirm RESET Bank Memory",
-		},
-		mainText = {
-			text = "Are you sure you want to continue?",
-		},
-		buttons = {
-			[1] = {
-				text = SI_DIALOG_CONFIRM,
-				callback = function(dialog)
-					RidinDirty.bankedMemory = ZO_SavedVars:NewAccountWide( RidinDirty.svName, 2, "Banked Memory", defaultBankedVars )
-					ZO_Alert(UI_ALERT_CATEGORY_ALERT, "PlayerAction_NotEnoughMoney", "Bank memory reset.")
-					zo_callLater(function() ReloadUI() end, 500)
-				end,
-			},
-			[2] = {
-				text = SI_DIALOG_CANCEL,
-				callback = function(dialog)
-					--df(rdLogo .. "Current bank inventory NOT saved!")
-				end,
-			},
-		},
-	}
-	ZO_Dialogs_ShowDialog("BANK_MEMORY_RESET_CONFIRM_DIALOG")
 end
 --local statusControl = control:GetNamedChild("StatusTexture")--("StatusIcon")--("Status")
 --if not statusControl then return end
@@ -770,7 +742,7 @@ local function RDInitializeControls()
 			},
 			{
 				type = "checkbox",
-				name = "Check Missing Items",
+				name = "Check Bank Memory",
 				tooltip = "Automatically compares the current bank inventory to the saved bank memory when opening the bank. Currently ONLY works for the bank",
 				getFunc = function() return RidinDirty.savedVariables.checkBankMemory end,
 				setFunc = function(value) RidinDirty.savedVariables.checkBankMemory = (value) end,
@@ -779,18 +751,9 @@ local function RDInitializeControls()
 			},
 			{
 				type = "button",
-				name = "RESET BANK MEMORY",
-				tooltip = "Completely clears bank memory & reloads UI",
-				func = function() ClearBankMemory() end,
-				isDangerous = true,
-				width = "half",
-			},
-			{
-				type = "button",
 				name = "SAVE BANK MEMORY",
-				tooltip = "Saves current bank inventory to memory for comparison when opening banks",
+				tooltip = "Saves current bank inventory to memory for comparison when opening the bank",
 				func = function() SaveBankMemory() end,
-				width = "half",
 			},
 			{
 				type = "header",
@@ -3437,7 +3400,7 @@ local function AddOnLoaded(eventCode, addOnName)
 	RidinDirty.junkMemory = ZO_SavedVars:NewAccountWide( RidinDirty.svName, RidinDirty.svVersion, "Junk Memory", defaultJunkVars )
 	RidinDirty.addonMemory = ZO_SavedVars:NewAccountWide( RidinDirty.svName, RidinDirty.svVersion, "Addon Memory", defaultAddonVars )
 	RidinDirty.bankedMemory = ZO_SavedVars:NewAccountWide( RidinDirty.svName, RidinDirty.svVersion, "Banked Memory", defaultBankedVars )
-	--RidinDirty.savedVariables.skipBelowAVT = nil--<< SAVE
+	--RidinDirty.savedVariables.lowStack = nil--<< SAVE
 	--RidinDirty.charVariables.veterancyPoints = nil--<< SAVE
 	--RidinDirty.charVariables.veterancyRank = nil--<< SAVE
 	RDInitializeControls()

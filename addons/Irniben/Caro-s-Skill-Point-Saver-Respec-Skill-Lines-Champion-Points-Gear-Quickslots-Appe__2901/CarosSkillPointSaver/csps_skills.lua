@@ -105,7 +105,7 @@ end
 
 CSPS.getCraftedAbilityIndices = getCraftedAbilityIndices
 
-local function checkCraftedAbilites()
+local function checkCraftedAbilites(singleAbId)
 	local neededInk = 0
 	local canCraftAll = true
 	local notCraftable = 0
@@ -114,7 +114,7 @@ local function checkCraftedAbilites()
 		local craftedId = GetCraftedAbilityIdAtIndex(i)
 		local skillType, skillLineIndex, skillIndex = getCraftedAbilityIndices(craftedId)
 		local skEntry = skillTable[skillType][skillLineIndex][skillIndex]
-		if #skEntry.scripts == 3 and everythingScripted(skEntry.scripts) then
+		if #skEntry.scripts == 3 and everythingScripted(skEntry.scripts) and (not singleAbId or singleAbId == craftedId) then
 			if IsScribableScriptCombinationForCraftedAbility(craftedId, unpack(skEntry.scripts)) and canCraftAbility(craftedId, skEntry.scripts) then
 				local costToScribe = GetCostToScribeScripts(craftedId, unpack(skEntry.scripts))
 				neededInk = neededInk + costToScribe
@@ -127,6 +127,7 @@ local function checkCraftedAbilites()
 	end
 	return combinationsToScribe, neededInk, canCraftAll, notCraftable
 end
+CSPS.checkCraftedAbilites = checkCraftedAbilites
 
 function CSPS.showApplySkillsTT(self)
 	if twoSubclassesFromOneClass or tooManySubclasses then
@@ -1316,9 +1317,9 @@ EVENT_MANAGER:RegisterForEvent(CSPS.name.."_AttrRespecCooldown", EVENT_ATTRIBUTE
 
 EVENT_MANAGER:RegisterForEvent(CSPS.name.."_SkillRespecCooldown", EVENT_SKILL_RESPEC_RESULT, startRespecCooldown)
 
-local function applyCraftedAbilities(callAfterScribing)
+local function applyCraftedAbilities(callAfterScribing, singleAbId)
 	if CSPS.moduleExclude.skills then return end
-	local combinationsToScribe, neededInk = checkCraftedAbilites()
+	local combinationsToScribe, neededInk = checkCraftedAbilites(singleAbId)
 	callAfterScribing = callAfterScribing or function() end
 	if #combinationsToScribe == 0 then CSPS.post(GS(CSPS_NothingToScribe)) callAfterScribing() return false end
 	if not IsScribingEnabled()  then CSPS.post(GS(SI_COLLECTIBLEUNLOCKSTATE0)) callAfterScribing() return false end
@@ -1354,6 +1355,8 @@ local function applyCraftedAbilities(callAfterScribing)
 	end)
 	scribeNext()
 end
+
+CSPS.applyCraftedAbilities = applyCraftedAbilities
 -- GetNumPointsAllocatedInSkillLine
 -- GetPointAllocator():GetMorphSlot() / GetRank() / IsPurchased()
 

@@ -1,10 +1,10 @@
 ## Title: Caro's Worn Sets
-## APIVersion: 101049 101050
-## Version: 1.1.3
-## AddOnVersion: 113
+## APIVersion: 101050 101051
+## Version: 1.1.4
+## AddOnVersion: 114
 ## Author: |c1d6dadIrniben|r
 ## SavedVariables: CarosWornSetsSavedVariables
-## DependsOn: LibAddonMenu-2.0>=41 LibCustomMenu>=730
+## DependsOn: LibAddonMenu-2.0>=43 LibCustomMenu>=730
 ##
 ## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
 ## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.

@@ -24,6 +24,7 @@ local L = {}
 	
 	L.CaroWS_bar0 = "front bar"
 	L.CaroWS_bar1 = "back bar"
+	L.CaroWS_bar8 = "werewolf"
 	
 	L.CaroWS_LAM_ResetPosition = "Move window to center"
 	

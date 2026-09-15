@@ -2,7 +2,7 @@
 ## Author: CodeWarrior82
 ## Description: Simple Library for my other add-ons to use to display special notifications on screen.
 ## APIVersion: 101050
-## DependsOn: LibChatMessage
+## DependsOn: LibChatMessage LibAddonMenu-2.0>=42
 ## SavedVariables: libNotifyAddonVars
 
 LibNotify.lua

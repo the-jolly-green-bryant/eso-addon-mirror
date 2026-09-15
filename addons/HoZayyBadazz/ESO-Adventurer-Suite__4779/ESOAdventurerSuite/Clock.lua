@@ -35,6 +35,13 @@ local function formatClock12()
     if h12 == 0 then h12 = 12 end
     return string.format("%d:%02d %s", h12, m, suffix)
 end
+
+local function setHiddenIfChanged(control, hidden)
+    if not control or type(control.IsHidden) ~= "function" or type(control.SetHidden) ~= "function" then return end
+    local ok, current = pcall(control.IsHidden, control)
+    if not ok or current ~= hidden then pcall(control.SetHidden, control, hidden) end
+end
+
 function C:Create()
     local frame = wm:CreateTopLevelWindow("EAS_Clock")
     frame:SetDimensions(128, 34)
@@ -80,6 +87,8 @@ function C:Create()
     end)
 
     self.frame, self.bg, self.label, self.hint = frame, bg, label, hint
+    self.lastVisible029560 = nil
+    self.lastText029560 = nil
 end
 
 function C:Refresh()
@@ -90,9 +99,21 @@ function C:Refresh()
     if show and self.layoutMode ~= true and EPC.IsGameplayHudSuppressed and EPC:IsGameplayHudSuppressed() then
         show = false
     end
-    self.frame:SetHidden(not show)
+
+    -- v0.29.560: never re-toggle visibility every timer tick. Repeated SetHidden
+    -- calls on a top-level window can visibly blink when scene/HUD reconciliation
+    -- lands in the same frame.
+    if self.lastVisible029560 ~= show then
+        self.lastVisible029560 = show
+        setHiddenIfChanged(self.frame, not show)
+    end
     if not show then return end
-    self.label:SetText(formatClock12())
+
+    local text = formatClock12()
+    if text ~= self.lastText029560 then
+        self.lastText029560 = text
+        self.label:SetText(text)
+    end
 end
 
 function C:SetLayoutMode(active)
@@ -100,7 +121,8 @@ function C:SetLayoutMode(active)
     if not self.frame then return end
     self.frame:SetMouseEnabled(self.layoutMode)
     self.frame:SetMovable(self.layoutMode)
-    if self.hint then self.hint:SetHidden(not self.layoutMode) end
+    if self.hint then setHiddenIfChanged(self.hint, not self.layoutMode) end
+    self.lastVisible029560 = nil
     self:Refresh()
 end
 
@@ -117,9 +139,6 @@ function C:Initialize()
     self:Create()
     self:Refresh()
     EVENT_MANAGER:RegisterForUpdate(EPC.name .. "_Clock", 1000, function()
-        -- The clock is deliberately cheap: refresh once per second so visibility and
-        -- the minute rollover never feel delayed. Scene/UI changes also wake it
-        -- immediately through the responsive-overlay reconciliation path.
         self:Refresh()
     end)
 end

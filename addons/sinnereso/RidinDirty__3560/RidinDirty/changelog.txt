@@ -1,5 +1,5 @@
-2026.09.13
-- Completely re-wrote the bank missing items check with such incredible awesomeness that theres no more jitter as all, so I also removed the manual check since no more need.
+2026.09.14
+- Minor tweak to reset and save bank memory functions and fix for handling empty slots. Save now also clears and saves without needing to reloadui.
 ** POSSIBLE FUTURE OPTIONS **
 - Auto com res?
 

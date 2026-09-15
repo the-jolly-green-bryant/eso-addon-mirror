@@ -24,10 +24,14 @@ local  myGearSlots = {
     -- EQUIP_SLOT_COSTUME,
   }
 
-local ignoreEmpty = {
-    [EQUIP_SLOT_BACKUP_POISON] = true,
-    [EQUIP_SLOT_POISON] = true,
-} 
+local ignoreEmpty = {}
+
+local function resetIgnoreEmpty() 
+	ignoreEmpty = {
+		[EQUIP_SLOT_BACKUP_POISON] = true,
+		[EQUIP_SLOT_POISON] = true,
+	}
+end
 
 local isTwoHanded = {
     [WEAPONTYPE_FIRE_STAFF] = true,
@@ -99,7 +103,7 @@ function CarosWornSets:Initialize()
 	EVENT_MANAGER:RegisterForEvent(CarosWornSets.name.."HotbarChange", EVENT_ACTION_SLOTS_ALL_HOTBARS_UPDATED, function() if not waitingForUpdate then CarosWornSets.ShowWornSets() end end)
 	
 	EVENT_MANAGER:AddFilterForEvent(CarosWornSets.name.."InventoryChange", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, REGISTER_FILTER_BAG_ID, BAG_WORN)
- 
+	EVENT_MANAGER:RegisterForEvent(CarosWornSets.name.."WerewolfChange", EVENT_WEREWOLF_STATE_CHANGED, function() if not waitingForUpdate then CarosWornSets.ShowWornSets() end end)
 	
 	     
     --menu:RegisterContextMenu(AddItem, menu.CATEGORY_PRIMARY)
@@ -453,30 +457,42 @@ function CarosWornSets:Initialize()
 		CarosWornSetsIndicator:SetHidden(true)
 	end)
 	
+end--|H1:ability:39105|h|h
+
+local function checkWerewolfBar(hbWarnings)
+	local hbManager = ACTION_BAR_ASSIGNMENT_MANAGER:GetHotbar(HOTBAR_CATEGORY_WEREWOLF) 
+	for i = 1, 6 do
+		local slotData = hbManager:GetSlotData(ACTION_BAR_FIRST_NORMAL_SLOT_INDEX + i)
+		if not slotData:IsEmpty() and not slotData.skillData.skillLineData.isWerewolf then
+			table.insert(hbWarnings, string.format("%s (%s)", GS(SI_RESPECRESULT6),GS("CaroWS_bar", HOTBAR_CATEGORY_WEREWOLF)))
+			return
+		end
+	end 
 end
 
 local function checkHotbars()
 	
-	local hotBarCats = {HOTBAR_CATEGORY_PRIMARY, HOTBAR_CATEGORY_BACKUP} -- HOTBAR_CATEGORY_WEREWOLF,
+	local hotBarCats = {HOTBAR_CATEGORY_PRIMARY, HOTBAR_CATEGORY_BACKUP}
 	local hbWarnings = {}
 	
 	if not CarosWornSets.savedVariables.hotbars then return hbWarnings end
 	
+	if IsPlayerInWerewolfForm() then checkWerewolfBar(hbWarnings) return hbWarnings end
+		
     for barIndex, barCategory in pairs(hotBarCats) do
 		
 		local hbManager = ACTION_BAR_ASSIGNMENT_MANAGER:GetHotbar(barCategory) 
         for i = 1, 6 do
 			local slotData = hbManager:GetSlotData(ACTION_BAR_FIRST_NORMAL_SLOT_INDEX + i)
-            local skillData = slotData and slotData:GetPlayerSkillData()
-			if skillData then 
-				if not CanAbilityBeUsedFromHotbar(skillData:GetPointAllocatorProgressionData():GetAbilityId(), barCategory) then 
-					table.insert(hbWarnings, string.format("%s (%s)", GS(SI_RESPECRESULT6),GS("CaroWS_bar", barCategory)))
-					break
-				end
+			if not slotData:IsEmpty() and not slotData:IsUsable() then 
+				
+				table.insert(hbWarnings, string.format("%s (%s)", GS(SI_RESPECRESULT6),GS("CaroWS_bar", barCategory)))
+				break
 			end
 		end
 			
     end
+	if GetPlayerCurseType() == CURSE_TYPE_WEREWOLF then checkWerewolfBar(hbWarnings) end
 	return hbWarnings
 end
 
@@ -503,7 +519,14 @@ local function IsItemSet(itemLink)
 end
 
 
-
+local function setOakensoulIgnore()
+	local activeBar = GetActiveHotbarCategory()
+	
+	if activeBar == HOTBAR_CATEGORY_PRIMARY then ignoreEmpty[EQUIP_SLOT_BACKUP_MAIN] = true ignoreEmpty[EQUIP_SLOT_BACKUP_OFF] = true return end
+	if activeBar == HOTBAR_CATEGORY_BACKUP then ignoreEmpty[EQUIP_SLOT_MAIN_HAND] = true ignoreEmpty[EQUIP_SLOT_OFF_HAND] = true return end	
+	
+	
+end
 
 function CarosWornSets.ShowWornSets()
 	waitingForUpdate = false
@@ -514,12 +537,15 @@ function CarosWornSets.ShowWornSets()
 	local setNeeded = {}
 	local ringOfMara = false
 	local emptySlots = {}
+	local isEmpty = {}
 	local enchantWarning = {}
 	local warnLevel = {}
 	local frontBar = {[EQUIP_SLOT_MAIN_HAND] = true, [EQUIP_SLOT_OFF_HAND] = true}
 	local backBar = {[EQUIP_SLOT_BACKUP_MAIN] = true, [EQUIP_SLOT_BACKUP_OFF] = true}
 	local twoHandedSlots = {}
 	local lms = {[1] = 0, [2] = 0, [3] = 0}
+	resetIgnoreEmpty() 
+	local oakensoul	= false
 	
 	local function getSlotName(gearSlot, isWeapon, twoHanded)
 		local slotName = ""
@@ -538,11 +564,11 @@ function CarosWornSets.ShowWornSets()
 		end
 		return zo_strformat("<<C:1>>", GS("SI_EQUIPSLOT", gearSlot))
 	end
-	
+		
 	for _, gearSlot in ipairs(myGearSlots) do
 		local itemLink = GetItemLink(BAG_WORN, gearSlot, LINK_STYLE_DEFAULT)
 		if itemLink == "" then
-			if not ignoreEmpty[gearSlot] then table.insert(emptySlots, gearSlot) end
+			if not ignoreEmpty[gearSlot] then table.insert(emptySlots, gearSlot) isEmpty[gearSlot] = true end
 		else
 			local hasSetInfo, itemSetId, neededNumber = IsItemSet(itemLink)
 			local weaponType = GetItemWeaponType(BAG_WORN, gearSlot)
@@ -551,6 +577,7 @@ function CarosWornSets.ShowWornSets()
 			lms[armorType] = lms[armorType] + 1
 			local isRingOfMara = false
 			if GetItemLinkItemId(itemLink) == 44904 then ringOfMara = GetItemName(BAG_WORN, gearSlot) isRingOfMara = true end
+			if itemSetId == 658 then oakensoul = true end
 			if isTwoHanded[weaponType] and gearSlot == EQUIP_SLOT_MAIN_HAND then 
 				ignoreEmpty[EQUIP_SLOT_OFF_HAND] = true
 				twoHandedSlots[EQUIP_SLOT_MAIN_HAND] = true
@@ -638,6 +665,7 @@ function CarosWornSets.ShowWornSets()
 	table.sort(currentlyWornSets, function(a,b) return a > b end)
 	if ringOfMara then table.insert(currentlyWornSets, zo_strformat("|cd50035 1x <<C:1>>", ringOfMara)) end
 	local emptySlotsTexts = {}
+	if oakensoul then setOakensoulIgnore() end
 	if #emptySlots > 5 then
 		table.insert(currentlyWornSets, orange:Colorize(string.format("%s: %sx", GS(SI_QUICKSLOTS_EMPTY), #emptySlots)))
 	elseif #emptySlots > 0 then
