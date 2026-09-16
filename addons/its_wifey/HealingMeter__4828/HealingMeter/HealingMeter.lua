@@ -1,6 +1,6 @@
 local ADDON_NAME = "HealingMeter"
 local DISPLAY_NAME = "Healing Meter"
-local VERSION = "1.1"
+local VERSION = "1.2"
 
 local HM = {}
 local sv
@@ -122,28 +122,25 @@ local function ApplyAppearance()
     end
 end
 
-local function IsMenuOpen()
-    if not SCENE_MANAGER then return false end
-    local scene = SCENE_MANAGER:GetCurrentScene()
-    if not scene then return false end
-    local name = scene:GetName()
-    return name ~= "hud" and name ~= "hudui"
-end
-
 local function ShouldShow()
     if not sv or not sv.enabled or not sv.showMeter then return false end
-    if IsMenuOpen() then return false end
     if sv.unlocked then return true end
     if sv.hideOutOfCombat and not IsUnitInCombat("player") then return false end
     return true
 end
 
 local function RefreshVisibility()
-    if HM.window then
-        HM.window:SetHidden(not ShouldShow())
-        HM.window:SetMouseEnabled(sv.unlocked)
-        HM.dragHint:SetHidden(not sv.unlocked)
+    if not HM.window then return end
+
+    local hidden = not ShouldShow()
+    if HM.fragment and HM.fragment.SetHiddenForReason then
+        HM.fragment:SetHiddenForReason("HealingMeterVisibility", hidden, 0, 0)
+    else
+        HM.window:SetHidden(hidden)
     end
+
+    HM.window:SetMouseEnabled(sv.unlocked)
+    HM.dragHint:SetHidden(not sv.unlocked)
 end
 
 local function UpdateDisplay()
@@ -266,23 +263,12 @@ local function CreateUI()
     UpdateDisplay()
 end
 
-local function IsHealingResult(result)
-    return result == ACTION_RESULT_HEAL
-        or result == ACTION_RESULT_CRITICAL_HEAL
-        or result == ACTION_RESULT_HOT_TICK
-        or result == ACTION_RESULT_HOT_TICK_CRITICAL
-end
-
 local function OnCombatEvent(
     eventCode, result, isError, abilityName, abilityGraphic,
     abilityActionSlotType, sourceName, sourceType, targetName,
     targetType, hitValue, powerType, damageType, log,
     sourceUnitId, targetUnitId, abilityId, overflow
 )
-    if not sv.enabled then return end
-    if sourceType ~= COMBAT_UNIT_TYPE_PLAYER then return end
-    if not IsHealingResult(result) then return end
-
     -- Healing Meter also supports out-of-combat practice. If healing starts
     -- while no combat session is active, begin a fresh practice session
     -- automatically. The Hide Out of Combat setting controls visibility only;
@@ -366,6 +352,59 @@ local function ToggleUnlock()
     UpdateDisplay()
 end
 
+local HEAL_ACTION_RESULTS = {
+    ACTION_RESULT_HEAL,
+    ACTION_RESULT_CRITICAL_HEAL,
+    ACTION_RESULT_HOT_TICK,
+    ACTION_RESULT_HOT_TICK_CRITICAL,
+}
+
+local function RegisterTracking()
+    if HM.trackingRegistered then return end
+    HM.trackingRegistered = true
+
+    for i, actionResult in ipairs(HEAL_ACTION_RESULTS) do
+        local eventName = ADDON_NAME .. "_Combat_" .. tostring(i)
+        EVENT_MANAGER:RegisterForEvent(eventName, EVENT_COMBAT_EVENT, OnCombatEvent)
+        EVENT_MANAGER:AddFilterForEvent(
+            eventName,
+            EVENT_COMBAT_EVENT,
+            REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER,
+            REGISTER_FILTER_COMBAT_RESULT, actionResult
+        )
+    end
+
+    EVENT_MANAGER:RegisterForEvent(
+        ADDON_NAME .. "_CombatState",
+        EVENT_PLAYER_COMBAT_STATE,
+        OnCombatState
+    )
+
+    EVENT_MANAGER:RegisterForUpdate(
+        ADDON_NAME .. "_Update",
+        250,
+        OnUpdate
+    )
+end
+
+local function UnregisterTracking()
+    if not HM.trackingRegistered then return end
+    HM.trackingRegistered = false
+
+    for i = 1, #HEAL_ACTION_RESULTS do
+        EVENT_MANAGER:UnregisterForEvent(
+            ADDON_NAME .. "_Combat_" .. tostring(i),
+            EVENT_COMBAT_EVENT
+        )
+    end
+
+    EVENT_MANAGER:UnregisterForEvent(
+        ADDON_NAME .. "_CombatState",
+        EVENT_PLAYER_COMBAT_STATE
+    )
+    EVENT_MANAGER:UnregisterForUpdate(ADDON_NAME .. "_Update")
+end
+
 local function CreateSettings()
     local LAM = LibAddonMenu2
     if not LAM then return end
@@ -389,12 +428,13 @@ local function CreateSettings()
             getFunc = function() return sv.enabled end,
             setFunc = function(v)
                 sv.enabled = v
-                if not v then
-                    stats.active = false
-                    HM.window:SetHidden(true)
+                if v then
+                    RegisterTracking()
                 else
-                    RefreshVisibility()
+                    UnregisterTracking()
+                    stats.active = false
                 end
+                RefreshVisibility()
             end,
             default = defaults.enabled,
             width = "full",
@@ -499,35 +539,16 @@ local function OnAddonLoaded(eventCode, addonName)
     CreateUI()
     CreateSettings()
 
-    EVENT_MANAGER:RegisterForEvent(
-        ADDON_NAME .. "_Combat",
-        EVENT_COMBAT_EVENT,
-        OnCombatEvent
-    )
+    -- Let ESO's HUD scene system hide/show the meter around menus instead of
+    -- listening to every scene change globally.
+    if ZO_HUDFadeSceneFragment and HUD_SCENE and HUD_UI_SCENE then
+        HM.fragment = ZO_HUDFadeSceneFragment:New(HM.window, nil, 0)
+        HUD_SCENE:AddFragment(HM.fragment)
+        HUD_UI_SCENE:AddFragment(HM.fragment)
+    end
 
-    EVENT_MANAGER:AddFilterForEvent(
-        ADDON_NAME .. "_Combat",
-        EVENT_COMBAT_EVENT,
-        REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE,
-        COMBAT_UNIT_TYPE_PLAYER
-    )
-
-    EVENT_MANAGER:RegisterForEvent(
-        ADDON_NAME .. "_CombatState",
-        EVENT_PLAYER_COMBAT_STATE,
-        OnCombatState
-    )
-
-    EVENT_MANAGER:RegisterForUpdate(
-        ADDON_NAME .. "_Update",
-        250,
-        OnUpdate
-    )
-
-    if SCENE_MANAGER then
-        SCENE_MANAGER:RegisterCallback("CurrentSceneChanged", function()
-            RefreshVisibility()
-        end)
+    if sv.enabled then
+        RegisterTracking()
     end
 
     SLASH_COMMANDS["/hmreset"] = ResetCommand

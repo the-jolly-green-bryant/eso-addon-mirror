@@ -184,6 +184,37 @@ T.AdjectiveDesu = AdjectiveDesu
 --   kind  "n" | "i" | "na"
 function T.Copula(word, kind, form)
 	form = form or {}
+	if form.mode == "imperative" and kind ~= "rel" then
+		if kind == "i" then
+			local stem = (word == "いい" and "よい" or word):sub(1, -4)
+			return stem .. (form.negative and "くならないでください" or "くなってください")
+		end
+		return word .. (form.negative and "でいないでください" or "でいてください")
+	end
+	if kind ~= "rel" and (form.mode == "must" or form.mode == "have_to" or form.mode == "should" or form.mode == "need") then
+		local isI = kind == "i"
+		local stem = isI and ((word == "いい" and "よい" or word):sub(1, -4)) or word
+		local plain = isI and word or (word .. "である")
+		local result
+		if form.mode == "must" or form.mode == "have_to" then
+			if form.negative and form.mode == "must" then
+				result = stem .. (isI and "くてはいけません" or "であってはいけません")
+			elseif form.negative then
+				result = stem .. (isI and "くなくてもいいです" or "でなくてもいいです")
+			else
+				result = stem .. (isI and "くなければなりません" or "でなければなりません")
+			end
+		elseif form.mode == "should" then
+			if isI then
+				result = (form.negative and (stem .. "くない") or word) .. "ほうがいいです"
+			else
+				result = plain .. (form.negative and "べきではありません" or "べきです")
+			end
+		else
+			result = plain .. (form.negative and "必要はありません" or "必要があります")
+		end
+		return form.plain and T.ToPlain(result) or result
+	end
 	if (form.plain or form.conditional) and kind == "rel" then
 		return T.ToPlain(T.RelativePredicate(word, form))
 	end
@@ -289,6 +320,17 @@ local PoliteOnlyModes = { imperative = true, request = true, lets = true }
 
 function T.Predicate(entry, form)
 	form = form or {}
+	if form.aspect and entry.class and entry.class ~= "i" and entry.class ~= "na" and entry.class ~= "rel" then
+		local nested = {}
+		for key, value in pairs(form) do nested[key] = value end
+		nested.aspect = nil
+		local ja = form.aspect == "passive" and (T.PassiveStem(entry.ja, entry.class) .. "る")
+			or (TeForm(entry.ja, entry.class) .. "いる")
+		return T.Predicate({ja = ja, class = "1"}, nested)
+	end
+	if form.conditional and form.mode == "can" then
+		return T.PlainPredicate({ja = PotentialStem(entry.ja, entry.class) .. "る", class = "1"}, form)
+	end
 	if form.plain and form.mode and not PoliteOnlyModes[form.mode] and entry.class ~= "i" and entry.class ~= "na" then
 		local polite = T.Predicate(entry, { past = form.past, negative = form.negative, mode = form.mode })
 		return ToPlain(polite)
@@ -302,6 +344,8 @@ function T.Predicate(entry, form)
 
 	if mode == "progressive" then
 		return Masu(TeForm(word, class) .. "い", past, negative)
+	elseif mode == "want_person" then
+		return TeForm(word, class) .. AdjectiveDesu("ほしい", past, negative)
 	elseif mode == "want" then
 		local stem = Stem(word, class)
 		if past and negative then
@@ -334,19 +378,26 @@ function T.Predicate(entry, form)
 			if mode == "must" then
 				return TeForm(word, class) .. "はいけません"
 			end
-			return NaiStem(word, class) .. "なくてもいいです"
+			return NaiStem(word, class) .. (past and "なくてもよかったです" or "なくてもいいです")
 		end
 		return NaiStem(word, class) .. (past and "なければなりませんでした" or "なければなりません")
 	elseif mode == "should" then
-		return word .. (negative and "べきではありません" or "べきです")
+		return word .. (past and (negative and "べきではありませんでした" or "べきでした") or (negative and "べきではありません" or "べきです"))
 	elseif mode == "need" then
-		return word .. (negative and "必要はありません" or "必要があります")
+		return word .. (past and (negative and "必要はありませんでした" or "必要がありました") or (negative and "必要はありません" or "必要があります"))
 	elseif mode == "try" then
 		return Masu(TeForm(word, class) .. "み", past, negative)
 	elseif mode == "intend" then
 		return word .. (negative and "つもりはありません" or "つもりです")
 	elseif mode == "maybe" then
-		return (negative and (NaiStem(word, class) .. "ない") or word) .. "かもしれません"
+		return T.PlainPredicate(entry, {past = past, negative = negative}) .. "かもしれません"
+	elseif mode == "could_perfect" then
+		return ToPlain(Masu(PotentialStem(word, class), true, false))
+			.. (negative and "はずがありません" or "かもしれません")
+	elseif mode == "deduction" then
+		return T.PlainPredicate(entry, {past = past, negative = negative}) .. "に違いありません"
+	elseif mode == "counterfactual" then
+		return T.PlainPredicate(entry, {past = past, negative = negative}) .. "でしょう"
 	elseif mode == "likes" then
 		return word .. (negative and "のは好きではありません" or "のが好きです")
 	elseif mode == "experience" then

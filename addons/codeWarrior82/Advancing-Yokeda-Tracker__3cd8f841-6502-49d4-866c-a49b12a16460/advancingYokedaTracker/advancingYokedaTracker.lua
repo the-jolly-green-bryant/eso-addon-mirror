@@ -13,6 +13,8 @@ advancingYokedaTracker = {}
 
 advancingYokedaTracker.defaults = {
     trackAdv = true,
+	notify = false,
+	notifyStart = true,
     yAxisText = 930,
     xAxisText = 1400,
 }
@@ -26,6 +28,15 @@ end
 --clean player names
 local function cleanName(str)
     return str:sub(1, -4)
+end
+
+--check if LibNotify is available
+local function isLibAvailable()
+    if LibNotify and type(LibNotify.notifyForAddonPlease) == "function" then
+        return true
+    else 
+		return false
+    end
 end
 
 --is adv yokeda buff active
@@ -81,7 +92,18 @@ local function effectReport( _,  changeType,  _,  _,  unitTag, beginTime, endTim
 	-- 1 = EFFECT_RESULT_GAINED
 	-- 2 = EFFECT_RESULT_FADED
 	-- 3 = EFFECT_RESULT_UPDATED
-	if changeType == EFFECT_RESULT_FADED then stackCount = 0 end
+	if changeType == EFFECT_RESULT_FADED then 
+		stackCount = 0 
+		if isLibAvailable() and advancingYokedaTracker.savedVariables.notify then
+            LibNotify.notifyForAddonPlease(appName, advBuffID, "Advancing Yokeda ended")
+        end
+	end
+
+	if changeType == EFFECT_RESULT_GAINED then 
+		if isLibAvailable() and advancingYokedaTracker.savedVariables.notifyStart then
+            LibNotify.notifyForAddonPlease(appName, advBuffID, "Advancing Yokeda Started")
+        end
+	end
 
 	if abilityId == nil then return end
 
@@ -128,7 +150,6 @@ end
 local function onMenuOpened()
 	isMenuOpen = true
 	advAddonText:SetHidden(true)
-    end
 end
 
 --when UI closes
@@ -225,6 +246,30 @@ local function createOptions()
             end,
             default = advancingYokedaTracker.defaults.yAxisText,
         },
+		{
+            type = "checkbox",
+            name = "Notification Start",
+            tooltip = "Displays a notification and plays a sound when the Advancing Yokeda buff starts.\nThe settings for the notification can be changed in the LibNotify Add-on options.",
+            getFunc = function()
+                return advancingYokedaTracker.savedVariables.notifyStart
+            end,
+            setFunc = function(value)
+                advancingYokedaTracker.savedVariables.notifyStart = value
+            end,
+            default = advancingYokedaTracker.defaults.notifyStart,
+        },
+		{
+            type = "checkbox",
+            name = "Notification End",
+            tooltip = "Displays a notification and plays a sound when the Advancing Yokeda buff finishes.\nThe settings for the notification can be changed in the LibNotify Add-on options.",
+            getFunc = function()
+                return advancingYokedaTracker.savedVariables.notify
+            end,
+            setFunc = function(value)
+                advancingYokedaTracker.savedVariables.notify = value
+            end,
+            default = advancingYokedaTracker.defaults.notify,
+        },
         {
             type = "divider",
             height = 0,
@@ -260,9 +305,9 @@ local function onAddOnLoadedAdv(event, name)
     advAddonText:SetMovable(true)
     advAddonTextIcon:SetFont("$(GAMEPAD_MEDIUM_FONT)|$(GP_54)|soft-shadow-thick")
     advAddonTextIcon:SetText(iconText)
-    advAddonTextLabelTime:SetFont("$(GAMEPAD_BOLD_FONT)|$(GP_54)|soft-shadow-thick")
+    advAddonTextLabelTime:SetFont("$(GAMEPAD_BOLD_FONT)|$(GP_61)|soft-shadow-thick")
     advAddonTextLabelTime:SetText("")
-    advAddonTextLabelStacks:SetFont("$(GAMEPAD_BOLD_FONT)|$(GP_25)|soft-shadow-thick")
+    advAddonTextLabelStacks:SetFont("$(GAMEPAD_BOLD_FONT)|$(GP_34)|soft-shadow-thick")
     advAddonTextLabelStacks:SetText("")
     setAnchorStartupIcon(advancingYokedaTracker.savedVariables.xAxisText, advancingYokedaTracker.savedVariables.yAxisText)
 

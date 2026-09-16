@@ -170,16 +170,12 @@ local function RefreshProcUI()
                     displayName = string.format("%s %d", displayName, data.stackCount)
                 end
                 row.nameLabel:SetFont(PTI.UI.RowFont("proc"))
-                -- v1.4.24で追加、v1.4.25で修正: 当初は「登録経路(手動/自動)」で
-                -- 色分けしていたが、手動登録した効果が実際はデバフだった場合に
-                -- 黄色のままで紛らわしいとの指摘があったため、実際の効果種別
-                -- (バフ/デバフ)そのもので色分けするように変更した。
-                -- バフ=黄色、デバフ=明るい赤(DEBUFFパネルと同系色)。
-                if data.isDebuff then
-                    row.nameLabel:SetColor(1.00, 0.40, 0.40, 1)
-                else
-                    row.nameLabel:SetColor(1, 0.85, 0.2, 1)
-                end
+                -- v1.4.26で修正: v1.4.24/25で試した色分け(登録経路→実際の
+                -- バフ/デバフ種別)は「ややこしい」との指摘のため撤去し、
+                -- v1.4.23までの単色(黄色)表示に戻した。ScanActiveProcs側の
+                -- isDebuffフィールド自体は無害なので残してあるが、表示上は
+                -- 使わない。
+                row.nameLabel:SetColor(1, 0.85, 0.2, 1)
                 row.nameLabel:SetText(displayName)
 
                 row.timeLabel:SetFont(PTI.UI.RowFont("proc"))

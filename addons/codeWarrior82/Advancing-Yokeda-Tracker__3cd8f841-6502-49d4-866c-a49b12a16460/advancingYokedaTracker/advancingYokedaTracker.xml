@@ -10,12 +10,12 @@
 			</Controls>
 			<Controls>
 				<Label name="$(parent)LabelTime" width="64" height="64 " font="" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT">
-					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="15"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" offsetX="-3" offsetY="5"/>
 				</Label>
 			</Controls>
 			<Controls>
 				<Label name="$(parent)LabelStacks" width="64" height="64 " font="" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT">
-					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" offsetX="62" offsetY="13"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" offsetX="58" offsetY="13"/>
 				</Label>
 			</Controls>
 		</TopLevelControl>

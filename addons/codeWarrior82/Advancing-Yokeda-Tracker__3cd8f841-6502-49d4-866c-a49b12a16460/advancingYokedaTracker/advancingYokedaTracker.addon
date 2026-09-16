@@ -2,7 +2,7 @@
 ## Author: CodeWarrior82
 ## Description: Tracks the Berserking Warrior buff
 ## APIVersion: 101050
-## DependsOn: LibAddonMenu-2.0>=42 LibChatMessage
+## DependsOn: LibAddonMenu-2.0>=42 LibChatMessage LibNotify
 ## SavedVariables: aytAddonVars
 
 advancingYokedaTracker.lua

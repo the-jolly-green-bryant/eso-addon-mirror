@@ -1,16 +1,16 @@
 {
-  "archive_path": "addons/j.hhh/MeterskullConsole__90fcc3e4-279e-4654-834d-5ed6e5dc9a32",
+  "archive_path": "addons/j.hhh/Meterskull-Console__90fcc3e4-279e-4654-834d-5ed6e5dc9a32",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
   "archived": true,
   "author": "j.hhh",
   "canonical_id": "bethesda:90fcc3e4-279e-4654-834d-5ed6e5dc9a32",
   "content_id": "90fcc3e4-279e-4654-834d-5ed6e5dc9a32",
   "deleted": false,
-  "fingerprint": "eea0ea246d8958f992004ab9039ea947769314f88b24b533dfb87590242e8094",
+  "fingerprint": "dcef9b1f901c8200f5b77dfe7ae22b316c5f6f265242820d1107d15f818d1c82",
   "platform": "console",
   "published": true,
   "source": "bethesda",
   "source_id": "90fcc3e4-279e-4654-834d-5ed6e5dc9a32",
   "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/90fcc3e4-279e-4654-834d-5ed6e5dc9a32",
-  "title": "MeterskullConsole"
+  "title": "Meterskull Console"
 }

@@ -19,9 +19,10 @@ local DESTINATIONS = {
     {
         key = "master_crafting_area",
         name = "Master Crafting Area",
-        owner = "@FlaccidGamer",
+        owner = "@ValoAven",
         houseName = "Coldharbour Surreal Estate",
         houseId = 47,
+        houseLink = "|H1:housing:47:@ValoAven|h|h",
     },
 }
 

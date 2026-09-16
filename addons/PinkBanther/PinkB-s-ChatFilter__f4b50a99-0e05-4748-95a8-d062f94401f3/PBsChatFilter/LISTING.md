@@ -13,14 +13,14 @@ PB's ChatFilter
 ## Overview (JP)
 
 読みたいギルドのチャットだけをチャット欄に残します。5つのギルドチャンネルと5つの役員
-チャンネルを1つの欄で受け止める必要はありません。ギルドリンク付きの勧誘メッセージを
-隠すオプションもあります。ギルド以外のチャンネルには一切触れません。
+チャンネルを1つの欄で受け止める必要はありません。ギルドリンク付きの勧誘メッセージと、
+NPCの会話を隠すオプションもあります。それ以外のチャンネルには一切触れません。
 
 ## Overview (EN)
 
 Keeps the guild chat you actually read and drops the rest. Five guild channels and five
-officer channels do not all have to land in one window. There is an option to hide guild
-recruitment adverts as well. No other channel is touched.
+officer channels do not all have to land in one window. Guild recruitment adverts and NPC
+speech can be hidden too, each on its own switch. No other channel is touched.
 
 ---
 
@@ -63,11 +63,23 @@ recruitment adverts as well. No other channel is touched.
 リンクを含まない、ただの文章としての勧誘は対象外です。通常の会話と区別する材料が
 文面しかなく、文面での照合は会話まで巻き込んで消し始めるためです。
 
+■ NPCの会話の非表示（任意・初期はオフ）
+
+衛兵の挨拶、銀行員の一言、戦闘中の敵の叫びなど、NPC側の発言は専用の4チャンネル
+（発言・叫び・ウィスパー・エモート）で届きます。この4つがNPC発言のすべてです。
+ウィスパーやギルドへの招待をチャット欄の上へ押し流しているのは、たいていこれです。
+
+・プレイヤーの発言には一切影響しません。NPCかどうかはチャンネルで決まるため、
+　判定を誤ることがありません。
+・字幕は別のUIです。オンにしても画面上ではNPCは今までどおり喋ります
+　（チャット欄に残らなくなるだけです）。
+
 ■ 触れないもの
 
-ゾーン、say、yell、ウィスパー、グループ、エモート、NPCの発言、各種システムメッセージ、
-他のアドオンの出力。これらはチャンネルを見た時点で素通しします。処理の分岐がそもそも
-ありません（勧誘フィルタをオンにした場合のみ、リンクの有無だけを見ます）。
+ゾーン、say、yell、ウィスパー、グループ、エモート、各種システムメッセージ、
+他のアドオンの出力。これらはチャンネルを見た時点で素通しします（勧誘フィルタを
+オンにした場合のみ、リンクの有無だけを見ます）。NPCの発言も、上のオプションを
+オンにしない限り同じく素通しです。
 
 ■ 動作の特徴
 
@@ -109,6 +121,7 @@ recruitment adverts as well. No other channel is touched.
 　/pbfilter own on | off           自分の発言を常に表示
 　/pbfilter recruit on | off       ギルドリンクを含むメッセージを非表示
 　/pbfilter recruit whisper on|off ウィスパーも対象にする
+　/pbfilter npc on | off           NPCの会話を非表示
 　/pbfilter banner on | off        ログイン時に状態を表示
 　/pbfilter reset                  設定をすべて破棄
 　（/pbcf でも同じ）
@@ -149,12 +162,25 @@ An advert typed as plain text with no link in it is not affected. Nothing tells 
 apart from ordinary chat except its wording, and matching on wording is how a filter starts
 eating conversations.
 
+■ NPC speech (optional, off by default)
+
+What the world says to itself — a guard's greeting, a banker's line, a mob shouting as it pulls
+— arrives on four channels of its own: speech, shouts, whispers and emotes. Those four are the
+whole of it. They are also the bulk of what pushes a whisper or a guild invite off the top of
+the window.
+
+- Nothing said by a player is affected. Whether a line is an NPC's is decided by the channel it
+  came in on, so there is nothing to get wrong.
+- The subtitles are a separate piece of UI. Turn this on and the world still speaks on screen;
+  it just stops filling the chat log.
+
 ■ What it never touches
 
-Zone, say, yell, whisper, group, emote, NPC speech, every system message, and every other
-add-on's output. The filter looks at the channel, sees it is not a guild channel, and hands the
-message straight on — there is no second code path for them to fall down. (With the
-recruitment option on, those channels are checked for a guild link and nothing else.)
+Zone, say, yell, whisper, group, emote, every system message, and every other add-on's output.
+The filter looks at the channel, sees it is not a guild channel, and hands the message straight
+on — there is no second code path for them to fall down. (With the recruitment option on, those
+channels are checked for a guild link and nothing else.) NPC speech passes the same way unless
+the option above is switched on.
 
 ■ How it behaves
 
@@ -194,6 +220,7 @@ Chat commands:
   /pbfilter own on | off           always show your own messages
   /pbfilter recruit on | off       hide messages that link a guild
   /pbfilter recruit whisper on|off and in whispers too
+  /pbfilter npc on | off           hide what NPCs say
   /pbfilter banner on | off        print the state at login
   /pbfilter reset                  forget every choice
   (/pbcf is the same command)
@@ -207,7 +234,7 @@ without it)
 
 ## Version
 
-1.2.0
+1.3.0
 
 ---
 

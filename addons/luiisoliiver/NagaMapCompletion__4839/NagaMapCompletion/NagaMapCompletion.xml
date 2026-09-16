@@ -1,0 +1,5 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="NagaMapCompletionRoot" hidden="true" mouseEnabled="false" />
+    </Controls>
+</GuiXml>

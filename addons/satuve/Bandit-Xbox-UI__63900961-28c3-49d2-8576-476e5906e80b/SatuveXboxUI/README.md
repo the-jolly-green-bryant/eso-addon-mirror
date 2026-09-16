@@ -92,3 +92,9 @@ The original package includes an MIT-style permission notice. This fork keeps th
 - LibAddonMenu-2.0 remains listed as an optional/recommended dependency.
 - Minimap size values are normalized, saved and applied directly to every existing Minimap control.
 - Minimap resizing no longer rebuilds event and scene callbacks.
+
+## Next controller layout and minimap candidate
+
+The Misc page now has Frame Edit Mode for D-Pad selection, two-stick positioning, preview, save, and cancel. The Bandit minimap settings now drive a native ESO map-mode adapter instead of the old shared-scroll viewport. Existing settings and SavedVariables are retained. See XBOX_TEST_CHECKLIST.md and RELEASE_NOTES_NEXT.md. This candidate still needs testing on an actual Xbox before release.
+
+The map behavior was researched against Votan's Minimap 2.2.2, but its release package provides no code-reuse license. This adapter was written independently; standalone Votan should not be enabled alongside this Bandit minimap because both use ESO's world map.

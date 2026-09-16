@@ -47,6 +47,23 @@ local function addCentroid(fight)
         end
         i = i + 1
     end
+    -- Lokkestiiz is atronachs only. Second pass so pads still sit on the platform.
+    if n < 1 then
+        i = 1
+        while i <= #ents do
+            local e = ents[i]
+            local kind = e and e.kind
+            if e and (kind == "trash" or kind == "mini") then
+                local tr = e.track
+                if type(tr) == "table" and tr[1] and tr[1].x ~= nil then
+                    sx = sx + (tr[1].x or 0)
+                    sz = sz + (tr[1].z or 0)
+                    n = n + 1
+                end
+            end
+            i = i + 1
+        end
+    end
     if n < 1 then return 0, 0 end
     return sx / n, sz / n
 end
@@ -423,6 +440,228 @@ local function applyNahviintaas(fight, rec)
     end
 end
 
+local function inFly(wins, t)
+    if type(wins) ~= "table" then return false end
+    local i = 1
+    while i <= #wins do
+        local w = wins[i]
+        if t >= (w.t0 or 0) and t < (w.t1 or 0) then return true end
+        i = i + 1
+    end
+    return false
+end
+
+-- Self-consistent with RemainHp: fly starts when grounded HP hits pct.
+-- hold = seconds, or a table of per-flight holds.
+local function hpFlyWindows(fight, pcts, hold)
+    local dur = tonumber(fight.durationSec) or 0
+    local holds, flyTot = {}, 0
+    local i = 1
+    while i <= #pcts do
+        local h
+        if type(hold) == "table" then
+            h = hold[i] or 16
+        else
+            h = hold or 16
+        end
+        holds[i] = h
+        flyTot = flyTot + h
+        i = i + 1
+    end
+    local ground = dur - flyTot
+    if ground < 1 then ground = 1 end
+    local wins, flown = {}, 0
+    i = 1
+    while i <= #pcts do
+        local t0 = ground * (1 - (pcts[i] / 100)) + flown
+        if t0 < 1 then t0 = 1 end
+        wins[#wins + 1] = { t0 = t0, t1 = t0 + holds[i] }
+        flown = flown + holds[i]
+        i = i + 1
+    end
+    return wins
+end
+
+-- Path XYZ only if it actually looks like the aerials (count + duration).
+-- Yol/Lok hover in place; log hops are too short, so fall back to HP windows.
+local function pickFlyWindows(fight, pcts, hold)
+    local path = flyWindows(fight)
+    local need = #pcts
+    local minDur = 8
+    if type(hold) == "number" then
+        minDur = hold * 0.5
+    elseif type(hold) == "table" and hold[1] then
+        minDur = (hold[1] or 16) * 0.4
+    end
+    local ok = 0
+    if type(path) == "table" then
+        local i = 1
+        while i <= #path do
+            local w = path[i]
+            if ((w.t1 or 0) - (w.t0 or 0)) >= minDur then
+                ok = ok + 1
+            end
+            i = i + 1
+        end
+    end
+    if ok >= need then return path end
+    return hpFlyWindows(fight, pcts, hold)
+end
+
+local function tagYou(fight, t0, t1)
+    if type(fight._tags) ~= "table" then fight._tags = {} end
+    fight._tags[#fight._tags + 1] = { t0 = t0, t1 = t1, ids = { "_you" }, you = true }
+end
+
+local function spawnWaveTimes(fight, needle, mergeSec)
+    local times = {}
+    local ents = fight.entities
+    if type(ents) ~= "table" then return times end
+    local i = 1
+    while i <= #ents do
+        local e = ents[i]
+        local lab = string.lower(tostring((e and e.label) or "") .. " " .. tostring((e and e.id) or ""))
+        if e and lab:find(needle, 1, true) then
+            local t0 = 0
+            if type(e.track) == "table" and e.track[1] then
+                t0 = tonumber(e.track[1].t) or 0
+            end
+            times[#times + 1] = t0
+        end
+        i = i + 1
+    end
+    table.sort(times)
+    local waves = {}
+    i = 1
+    while i <= #times do
+        local t = times[i]
+        local last = waves[#waves]
+        if not last or (t - last) > (mergeSec or 12) then
+            waves[#waves + 1] = t
+        end
+        i = i + 1
+    end
+    return waves
+end
+
+local function applyYolnahkriin(fight, rec)
+    fight._flyWindows = pickFlyWindows(fight, { 75, 50, 25 }, 16)
+    fight._groundPark = groundPark(fight)
+    local cx, cz = addCentroid(fight)
+    if fight._groundPark then
+        cx, cz = fight._groundPark.x or cx, fight._groundPark.z or cz
+    end
+    fight._arena = { x = cx, z = cz }
+    local pads = {
+        { id = "_stack_a", kind = "stack", x = cx - 4.2, z = cz + 0.5, slot = 1, label = "A" },
+        { id = "_stack_b", kind = "stack", x = cx + 4.2, z = cz + 0.5, slot = 2, label = "B" },
+    }
+    local rim = { { -8.5, 8.5 }, { 8.5, 8.5 }, { 8.5, -8.5 }, { -8.5, -8.5 } }
+    local i = 1
+    while i <= 4 do
+        pads[#pads + 1] = {
+            id = "_rim_" .. i, kind = "safe",
+            x = cx + rim[i][1], z = cz + rim[i][2], slot = 8, label = "RIM",
+        }
+        i = i + 1
+    end
+    fight._pads = pads
+
+    local cues = {}
+    local wins = fight._flyWindows
+    i = 1
+    while i <= #wins do
+        local w = wins[i]
+        cues[#cues + 1] = { t = w.t0, dur = 8, kind = "fly", text = "FLY!" }
+        cues[#cues + 1] = { t = (w.t0 or 0) + 2, dur = 12, kind = "rim", text = "RIM!", slot = 8 }
+        local tLand = w.t1 or 0
+        if tLand > (w.t0 or 0) + 1 then
+            cues[#cues + 1] = { t = tLand, dur = 4, kind = "land", text = "LAND!" }
+            cues[#cues + 1] = { t = tLand + 4, dur = 6, kind = "burn", text = "BURN IRON!" }
+        end
+        i = i + 1
+    end
+
+    local dur = tonumber(fight.durationSec) or 0
+    local t = 14
+    local slot = 1
+    while t + 6 < dur do
+        if not inFly(wins, t) then
+            cues[#cues + 1] = { t = t, dur = 6, kind = "stack", text = "STACK!", slot = slot }
+            tagYou(fight, t, t + 6)
+            slot = (slot == 1) and 2 or 1
+        end
+        t = t + 34
+    end
+
+    table.sort(cues, function(a, b) return (a.t or 0) < (b.t or 0) end)
+    fight._cues = cues
+end
+
+local function applyLokkestiiz(fight, rec)
+    -- Aerials are long (two atro sets + Storm Fury). Holds cover beamDelay + beam.
+    fight._flyWindows = pickFlyWindows(fight, { 80, 50, 20 }, { 48, 16, 40 })
+    fight._groundPark = groundPark(fight)
+    local cx, cz = addCentroid(fight)
+    if fight._groundPark then
+        cx, cz = fight._groundPark.x or cx, fight._groundPark.z or cz
+    end
+    fight._arena = { x = cx, z = cz }
+    -- Tombs spawn on the back edge, opposite the dragon.
+    local pads = {
+        { id = "_tomb_1", kind = "soak", x = cx - 5.0, z = cz + 7.0, slot = 1, label = "T1" },
+        { id = "_tomb_2", kind = "soak", x = cx,       z = cz + 8.0, slot = 2, label = "T2" },
+        { id = "_tomb_3", kind = "soak", x = cx + 5.0, z = cz + 7.0, slot = 3, label = "T3" },
+    }
+    fight._pads = pads
+
+    local cues = {}
+    local wins = fight._flyWindows
+    local beamDelay = { 40, 5, 30 }
+    local i = 1
+    while i <= #wins do
+        local w = wins[i]
+        cues[#cues + 1] = { t = w.t0, dur = 8, kind = "fly", text = "FLY!" }
+        local tLand = w.t1 or 0
+        local tBlock = (w.t0 or 0) + (beamDelay[i] or 12)
+        if tBlock > tLand - 3 then
+            tBlock = (w.t0 or 0) + 4
+            if tBlock > tLand - 3 then tBlock = tLand - 6 end
+        end
+        if tBlock < (w.t0 or 0) then tBlock = w.t0 or 0 end
+        cues[#cues + 1] = { t = tBlock, dur = 6, kind = "block", text = "BLOCK!" }
+        if tLand > (w.t0 or 0) + 1 then
+            cues[#cues + 1] = { t = tLand, dur = 4, kind = "land", text = "LAND!" }
+        end
+        i = i + 1
+    end
+
+    local dur = tonumber(fight.durationSec) or 0
+    local t = 12
+    local slot = 1
+    while t + 8 < dur do
+        if not inFly(wins, t) then
+            cues[#cues + 1] = { t = t, dur = 8, kind = "tomb", text = "TOMB!", slot = slot }
+            tagYou(fight, t, t + 8)
+            slot = slot + 1
+            if slot > 3 then slot = 1 end
+        end
+        t = t + 24
+    end
+
+    -- Kill storms (shock traps); OT walks frost through the traps.
+    local storms = spawnWaveTimes(fight, "storm atronach", 12)
+    i = 1
+    while i <= #storms do
+        cues[#cues + 1] = { t = storms[i], dur = 5, kind = "storm", text = "KILL STORM!" }
+        cues[#cues + 1] = { t = storms[i] + 5, dur = 5, kind = "frost", text = "FROST THRU!" }
+        i = i + 1
+    end
+
+    table.sort(cues, function(a, b) return (a.t or 0) < (b.t or 0) end)
+    fight._cues = cues
+end
+
 Holodeck.Recipes.nahviintaas = {
     match = "nahviintaas",
     hpClock = "grounded-minus-fly",
@@ -433,6 +672,18 @@ Holodeck.Recipes.nahviintaas = {
         { pct = 33, kind = "execute", text = "TAKE IT OUT!", dur = 6 },
     },
     apply = applyNahviintaas,
+}
+
+Holodeck.Recipes.yolnahkriin = {
+    match = "yolnahkriin",
+    hpClock = "grounded-minus-fly",
+    apply = applyYolnahkriin,
+}
+
+Holodeck.Recipes.lokkestiiz = {
+    match = "lokkestiiz",
+    hpClock = "grounded-minus-fly",
+    apply = applyLokkestiiz,
 }
 
 function Holodeck.ApplyRecipe(fight)
@@ -467,14 +718,20 @@ function Holodeck.LookupActorLook(label, id, kind)
     local s = string.lower(tostring(label or "") .. " " .. tostring(id or ""))
     if s == " " or s == "" then return nil end
     if s:find("will of", 1, true) or s:find("rage of", 1, true) then return nil end
+    if s:find("iron servant", 1, true) then
+        return { color = { 0.78, 0.52, 0.32 }, short = "Iron", important = true, sizeM = 1.32 }
+    end
+    if s:find("lava", 1, true) then
+        return { color = { 1.00, 0.32, 0.08 }, short = "Lava", important = true, sizeM = 1.05 }
+    end
     if s:find("flame atronach", 1, true) then
         return lookOf("fire", "Atro", true, 0.88)
     end
     if s:find("frost atronach", 1, true) then
-        return lookOf("frost", "Atro", true, 0.88)
+        return lookOf("frost", "Frost", true, 0.95)
     end
     if s:find("storm atronach", 1, true) then
-        return lookOf("storm", "Atro", true, 0.88)
+        return lookOf("storm", "Storm", true, 0.95)
     end
     if s:find("frost well", 1, true) then
         return lookOf("frost", "Well", true, 0.95)

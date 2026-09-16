@@ -25,6 +25,12 @@ local strings = {
 	SI_PBSCF_RECRUIT_WHISPER = "ウィスパーも対象にする",
 	SI_PBSCF_RECRUIT_WHISPER_TOOLTIP = "ウィスパーでの勧誘も実際にありますが、ウィスパーは相手が直接あなたに話しかけてきたものです。黙って消えてしまう方が、勧誘を1件読むより損失が大きいため、ここをオンにしない限りウィスパーには触れません。",
 
+	SI_PBSCF_SECTION_NPC = "NPCの会話",
+	SI_PBSCF_SECTION_NPC_NOTE = "衛兵の挨拶、銀行員の一言、戦闘中の敵の叫びなど、NPC側の発言は専用の4チャンネルで届きます。ウィスパーやギルドへの招待をチャット欄の上に押し流しているのは、たいていこれです。字幕は別のUIなので、オンにしても画面上ではNPCは今までどおり喋ります（チャット欄に残らなくなるだけです）。",
+
+	SI_PBSCF_NPC = "NPCの会話を非表示",
+	SI_PBSCF_NPC_TOOLTIP = "NPCの発言・叫び・ウィスパー・エモートをチャット欄から取り除きます。プレイヤーの発言には影響しません。",
+
 	SI_PBSCF_SECTION_GENERAL = "全般",
 	SI_PBSCF_RESET = "すべて表示に戻す",
 	SI_PBSCF_RESET_TOOLTIP = "このパネルの設定をすべて破棄し、アドオンを入れていない状態と同じ表示に戻します。",
@@ -39,6 +45,7 @@ local strings = {
 	SI_PBSCF_STATUS_NOT_INSTALLED = "チャットフックが入っていません -- チャットには一切手を触れていません",
 	SI_PBSCF_STATUS_OWN = "自分の発言は常に表示: %s",
 	SI_PBSCF_STATUS_RECRUIT = "ギルドリンクを含むメッセージ: %s（ウィスパーも %s） -- 今セッションの非表示: %d 件",
+	SI_PBSCF_STATUS_NPC = "NPCの会話: %s -- 今セッションの非表示: %d 件",
 	SI_PBSCF_STATUS_NO_GUILDS = "ギルドに所属していません",
 	SI_PBSCF_STATUS_GUILD_LINE = "%d. %s -- ギルド %s, 役員 %s",
 	SI_PBSCF_STATUS_HIDDEN_LINE = "     今セッションの非表示: ギルド %d 件, 役員 %d 件",
@@ -65,6 +72,7 @@ local strings = {
 	SI_PBSCF_HELP_OWN = "/pbfilter own on | off -- 自分の発言を常に表示",
 	SI_PBSCF_HELP_RECRUIT = "/pbfilter recruit on | off -- ギルドリンクを含むメッセージを非表示",
 	SI_PBSCF_HELP_RECRUIT_WHISPER = "/pbfilter recruit whisper on | off -- ウィスパーも対象にする",
+	SI_PBSCF_HELP_NPC = "/pbfilter npc on | off -- NPCの会話を非表示",
 	SI_PBSCF_HELP_BANNER = "/pbfilter banner on | off -- ログイン時に状態を表示",
 	SI_PBSCF_HELP_RESET = "/pbfilter reset -- 設定をすべて破棄",
 }

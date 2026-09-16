@@ -14,9 +14,10 @@
 -- =============================================================================
 local WarmasktrackerByJH = {
     name = "WarmasktrackerByJH",
-    version = "2.0.5-console.8",
+    version = "2.0.5-console.9",
     settings = {
         enabled = true,  -- Default: reminder enabled
+        onlyWhenEquipped = true, -- Only show tracker while Huntsman Warmask is equipped
         debugMode = false,  -- Default: debug disabled
         showOutsideCombat = false,
         toggleTimer = true,
@@ -504,9 +505,10 @@ CheckConditions = function()
         return false
     end
     
-    -- Check helmet equipment
-    if not CheckWarmaskEquipped() then
-        Debug("Wrong helmet or no helmet")
+    -- Check helmet equipment. Console option can make this gate mandatory.
+    local warmaskEquipped = CheckWarmaskEquipped()
+    if HWRSV.onlyWhenEquipped and not warmaskEquipped then
+        Debug("Huntsman Warmask not equipped - tracker hidden")
         HideWarning()
         HideIconAndTimer()
         return false
@@ -815,6 +817,18 @@ local function BuildOptionalLAMMenu()
             setFunc = function(value)
                 HWRSV.enabled = value
                 if value then CheckConditions() else HideWarning(); HideIconAndTimer() end
+            end,
+            width = "full",
+        },
+        {
+            type = "checkbox",
+            name = "Only show when Warmask is equipped",
+            tooltip = "When enabled, icon, timer and warning are hidden unless Huntsman Warmask is equipped.",
+            getFunc = function() return HWRSV.onlyWhenEquipped ~= false end,
+            setFunc = function(value)
+                HWRSV.onlyWhenEquipped = value
+                CheckWarmaskEquipped()
+                CheckConditions()
             end,
             width = "full",
         },

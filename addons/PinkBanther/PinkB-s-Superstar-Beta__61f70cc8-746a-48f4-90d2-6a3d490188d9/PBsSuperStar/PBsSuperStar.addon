@@ -1,0 +1,12 @@
+## Title: |cFF69B4PB'S SUPERSTAR|r 0.2.2
+## Author: |cFF69B4PinkBanther|r
+## Description: キャラクターの装備・詳細ステータス・星座・CP・スキルを一画面に表示します。
+## Version: 0.2.2
+## AddOnVersion: 202
+## APIVersion: 101050
+
+Data.lua
+UI.lua
+PBsSuperStar.lua
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls© and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.

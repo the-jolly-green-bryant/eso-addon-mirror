@@ -197,6 +197,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [True Exploration](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni42/True-Exploration__a095f0da-9f45-4dde-a150-2c9b09ba7317) | Shinni42 | Console | — |
 | [True Flag Capture Mover](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Toudidef/True-Flag-Capture-Mover__4c1cca0d-7e48-40ed-bd8f-1c87ac158341) | Toudidef | Console | — |
 | [True Options Pannel Mover](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Toudidef/True-Options-Pannel-Mover__e432e963-6c1d-4e4c-b9b9-491f51ff8d07) | Toudidef | Console | — |
+| [True PvP Ratio](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Toudidef/True-PvP-Ratio__309e8628-9a7c-45a6-8a1d-c87738ff8757) | Toudidef | Console | — |
 | [True Reticle 2.0](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Toudidef/True-Reticle-2.0__2e985373-cd04-4a3e-855f-4f8a4ada4d76) | Toudidef | Console | — |
 | [True Synergies Mover](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Toudidef/True-Synergies-Mover__d16fe7aa-9938-433f-bac9-3a808f810ae7) | Toudidef | Console | — |
 | [TrueExploration](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni/TrueExploration__500) | Shinni | PC / Mac | 1.10 |

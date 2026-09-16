@@ -215,16 +215,24 @@ end
 --------------------------------------------------------------------------
 
 -- バフ側: 数字が小さいほど優先度が高い(上位表示)
--- v1.4.7で修正: ESOのシステムアップデートにより、以前は物理耐性(Resolve)と
--- 呪文耐性(Ward)に分かれていた防御バフが、現在は「Resolve」に統合され、
--- 物理・呪文の両方の耐性が同時に上がる仕様になった。単体の"Ward"という
--- 効果はもう存在しないためキーワードから外し、日本語版での呼び名
--- "不屈"(Resolve)を追加した。
+-- v1.4.29で修正: 実際のツールチップ確認により、日本語版での呼び名の対応関係に
+-- 誤りがあったことが判明。
+--   ・"不屈"は防御(Resolve)ではなく回復・生存系(Fortitude、体力再生+効果)
+--   ・防御(Resolve)の日本語名は"強固"
+-- という対応が正しいため、"不屈"を①防御から外し②回復・生存へ移動、
+-- ①防御には正しい呼び名"強固"を追加した。あわせて②回復・生存に
+-- "治癒力"(Mending)、"耐久"(Endurance)、"知力"(Intellect)、
+-- "頑強"(Toughness)の日本語名も追加している(英語表記のみでは日本語版
+-- クライアントの表示名に一致せず、検知はされるが分類が「その他」行きに
+-- なっていたため)。
+-- 対応表: Resolve→強固 / Protection→防護 / Evasion→回避 (以上①防御)
+--         Vitality→生命力 / Mending→治癒力 / Fortitude→不屈 /
+--         Endurance→耐久 / Intellect→知力 / Toughness→頑強 (以上②回復・生存)
 local BUFF_CATEGORY_ORDER = {
     -- ① 防御・ダメージ軽減
-    { rank = 1, keywords = { "Resolve", "不屈", "Evasion", "Protection" } },
+    { rank = 1, keywords = { "Resolve", "強固", "Evasion", "回避", "Protection", "防護" } },
     -- ② 回復・生存
-    { rank = 2, keywords = { "Vitality", "Mending", "Fortitude", "Endurance", "Intellect", "Lifesteal", "Toughness" } },
+    { rank = 2, keywords = { "Vitality", "生命力", "Mending", "治癒力", "Fortitude", "不屈", "Endurance", "耐久", "Intellect", "知力", "Lifesteal", "Toughness", "頑強" } },
     -- ③ 攻撃力・与ダメージ強化
     { rank = 3, keywords = { "Brutality", "Sorcery", "Berserk", "Courage", "Slayer", "Empower" } },
     -- ④ クリティカル関連
@@ -245,7 +253,8 @@ local DEBUFF_CATEGORY_ORDER = {
     -- ③ 攻撃力・与ダメージ低下
     { rank = 3, keywords = { "Maim", "Cowardice", "Uncertainty" } },
     -- ⑤ 強力なDoT
-    { rank = 5, keywords = { "Poison", "Disease", "Burning", "Bleed", "Deep Wound", "Sundered" } },
+    -- v1.4.27で追加: DKリワーク(U49)の新DoT「Wildfire Embers」用に"Embers"を追加。
+    { rank = 5, keywords = { "Poison", "Disease", "Burning", "Bleed", "Deep Wound", "Sundered", "Embers" } },
 }
 local DEBUFF_CC_RANK = 4    -- ④ CC・行動阻害(statusEffectTypeで判定)
 local DEBUFF_OTHER_RANK = 6 -- ⑥ その他の戦闘系(上記に該当しない重要デバフ)
@@ -340,6 +349,92 @@ function PTI.Target.GetWatchListSorted(kind)
 end
 
 --------------------------------------------------------------------------
+-- v1.4.27/v1.4.28で追加: クラスリワーク対応(初回のみ自動登録)
+--
+-- Major/Minorも(強)/(弱)も名乗らないため自動検知の対象外になる、
+-- しかし戦闘判断上重要な新効果を、初回起動時にだけ手動登録リストへ
+-- 追加する。AbilityIdはesoui.com配布のLuiData(v7227)から確認したもの。
+-- 版を追うごとに追加できるよう、SEED_STEPSに版数ごとのリストを積み
+-- 上げていく方式にしている(sv.seedVersionより新しい版だけを適用し、
+-- 適用後は最も新しい版数まで一気に引き上げる)。
+--
+-- v1(v1.4.27): DKリワーク(U49) / ウェアウルフリワーク(U50)の固有効果
+-- v2(v1.4.28): 全7クラス共通の「クラスマスタリー・アビリティ」(U49〜U50頃に
+--   全クラスへ追加された新パッシブ群、各クラス5種)のうち、(強)/(弱)を
+--   名乗らずMajor/Minorキーワードに引っかからない自己強化バフ。
+--   (強)/(弱)を名乗るもの(前線からの指揮の狂戦士(強)/防護(強)、
+--   氷河の執念が使う勇壮(強)等)は既存の自動検知で拾えるため対象外。
+--
+-- 名前はGetAbilityNameで実機のゲーム内表示言語(日本語)から取り直す
+-- ため、ここでの名前は「見つからなかった場合の保険」に過ぎない。
+-- 一度追加した後にユーザーが手動で削除しても、その版数は適用済み扱いに
+-- なるため再追加されない。
+--------------------------------------------------------------------------
+local SEED_STEPS = {
+    {
+        version = 1,
+        buffs = {
+            { id = 122658, name = "Seething Fury" },      -- DK: Molten Whipのスタックバフ(U49)
+            { id = 267744, name = "Blood Hunger" },       -- WW: Roar系モーフの吸血スタック(U50)
+            { id = 268571, name = "Insatiable Hunger" },  -- WW: デボア発動中の回復状態(U50)
+            { id = 267425, name = "Enduring Rampage" },   -- WW: Rampageアルティメットのモーフ(U50)
+        },
+        debuffs = {
+            { id = 263208, name = "Wildfire Embers" }, -- DK: 継続ダメージ持続効果(U49)
+        },
+    },
+    {
+        version = 2,
+        buffs = {
+            { id = 263220, name = "Resolute Defense" },        -- DK: 堅固な防御(ガード累積バフ)
+            { id = 263247, name = "Lead from the Front" },     -- DK: 前線からの指揮(発動マーカー)
+            { id = 29463,  name = "Landslide" },                -- DK: 地滑り(スタックバフ, rank1)
+            { id = 44984,  name = "Landslide" },                -- DK: 地滑り(スタックバフ, rank2)
+            { id = 263603, name = "Nocturnal Inspiration" },   -- NB: ノクターナルの閃き
+            { id = 263606, name = "Cutthroat's Focus" },       -- NB: 殺し屋の集中
+            { id = 263871, name = "Font of Power" },           -- ソーサラー: 力の泉
+            { id = 263873, name = "Calculated Defense" },      -- ソーサラー: 計算された防御
+            { id = 263587, name = "Bright Harbinger" },        -- テンプラー: 輝く導き手
+            { id = 263588, name = "Judgment's Brand" },        -- テンプラー: 審判の烙印
+            { id = 263521, name = "Glacial Obstinance" },      -- ウォーデン: 氷河の執念
+            { id = 263509, name = "Cycle Unending" },          -- ネクロマンサー: 終わらない循環
+            { id = 263448, name = "Nothing Wasted" },          -- ネクロマンサー: 無駄なし
+            { id = 263316, name = "Abyssal Emergence" },       -- アルカニスト: 深淵からの登場
+        },
+        debuffs = {},
+    },
+}
+
+local function SeedReworkWatchEntries()
+    local currentVersion = PTI.sv.seedVersion or 0
+    local highestApplied = currentVersion
+
+    local function seedInto(kind, list)
+        local t = GetWatchTable(kind)
+        for _, entry in ipairs(list) do
+            if t[entry.id] == nil then
+                -- 実機のゲーム内表示名が取れればそちらを使う(日本語版なら
+                -- 日本語名になる)。取れない場合は上記の仮名称のままにする。
+                local resolvedName = GetAbilityName and GetAbilityName(entry.id)
+                t[entry.id] = { name = (resolvedName ~= nil and resolvedName ~= "") and resolvedName or entry.name, enabled = true }
+            end
+        end
+    end
+
+    for _, step in ipairs(SEED_STEPS) do
+        if step.version > currentVersion then
+            seedInto("buff", step.buffs)
+            seedInto("debuff", step.debuffs)
+            if step.version > highestApplied then highestApplied = step.version end
+        end
+    end
+
+    if highestApplied ~= currentVersion then
+        PTI.sv.seedVersion = highestApplied
+    end
+end
+
+--------------------------------------------------------------------------
 -- ① プレイヤー判定
 --
 -- reticleoverが「存在し、かつプレイヤーである」場合だけ有効な対象として
@@ -347,9 +442,22 @@ end
 -- 通用口・壁・扉・篝火などの相互作用可能なオブジェクトはそもそも
 -- reticleoverのユニットとして存在しない(DoesUnitExistがfalse)か、
 -- 存在してもプレイヤーではないため、いずれにせよここで弾かれる。
---------------------------------------------------------------------------
+--
+-- v1.4.26で追加: シロディールでは味方プレイヤーもターゲットできてしまう
+-- ため、「プレイヤーであること」だけでは味方も対象に含まれてしまう。
+-- 設定でON/OFFを切り替えられるようにした(PTI.sv.targetEnemyOnly、既定OFF)。
+--   OFF(既定・従来通り): プレイヤーなら味方でも反応する
+--   ON: GetUnitReactionが敵対(UNIT_REACTION_HOSTILE)の時だけ反応する
+-- GetUnitReactionは1回のAPI呼び出しのみで、ループや追加のメモリ確保は
+-- 発生しないため、負荷・メモリ使用量への影響はない。
 local function IsValidEnemyTarget()
-    return DoesUnitExist("reticleover") and IsUnitPlayer("reticleover")
+    if not (DoesUnitExist("reticleover") and IsUnitPlayer("reticleover")) then
+        return false
+    end
+    if PTI.sv.targetEnemyOnly then
+        return GetUnitReaction("reticleover") == UNIT_REACTION_HOSTILE
+    end
+    return true
 end
 
 --------------------------------------------------------------------------
@@ -360,6 +468,16 @@ end
 -- 保持する。キーがAbilityIdなので同じ効果が重複して入ることはない。
 --------------------------------------------------------------------------
 local targetEffects = {}
+
+-- v1.4.31で追加: ターゲット取得直後、ESO側の効果データ(GetUnitBuffInfo)が
+-- まだ完全に同期されていない一瞬に初期スキャンが走ってしまい、本来ついている
+-- はずのBUFFが0件のまま取りこぼされることがある(実機確認済み。カーソルを
+-- 一度外して再度合わせると表示されることから、読み込みのタイムラグが原因と
+-- 判明)。対策として、ターゲット変更時に即時スキャンへ加えて150ms後にもう
+-- 一度だけ保険のスキャンを行う。ループ・毎フレーム処理ではなく単発タイマー
+-- 1つだけで、対象が既に切り替わっていれば何もせず捨てる(世代番号で判定)。
+local RESCAN_RETRY_DELAY_MS = 150
+local targetGeneration = 0
 
 -- 効果1件について、現在の設定(自動検知/手動登録)で重要と判定されるかどうかを返す。
 -- 重要でなくなった場合(手動登録が削除された等)も呼び出し元でtargetEffectsから
@@ -624,6 +742,10 @@ local cachedTargetName = "---"
 local cachedBuffEntries = {}
 local cachedDebuffEntries = {}
 
+-- v1.4.32で追加: 非戦闘中はUI①②③を非表示にするための戦闘状態追跡。
+-- 検知(targetEffects等)には一切関与せず、表示のON/OFFにのみ使う。
+local isInCombat = false
+
 -- ⑥UI描画のデバッグログ用。OnUpdateは0.1秒ごとに走るため、内容が変わって
 -- いない限りログを出さないようにして、デバッグON中でもチャットが埋まり
 -- すぎないようにする。
@@ -631,6 +753,17 @@ local lastRenderDebugSignature = nil
 
 local function OnUpdate()
     if not PTI.sv.enabled then
+        PTI.UI.SetWindowVisible("buff")
+        PTI.UI.SetWindowVisible("debuff")
+        return
+    end
+
+    -- v1.4.32で追加: 非戦闘中はUI①②③を非表示にする(既定ON)。
+    -- BuildEntryArrays/RenderEntriesまで丸ごとスキップするため、非戦闘中の
+    -- 負荷軽減にもなる。ただしtargetEffectsの更新(RescanCurrentTargetEffects/
+    -- OnReticleEffectChanged)はこことは無関係にバックグラウンドで動き続ける
+    -- ため、検知そのものには一切影響しない。
+    if PTI.sv.combatOnly and not isInCombat and not PTI.sv.previewMode then
         PTI.UI.SetWindowVisible("buff")
         PTI.UI.SetWindowVisible("debuff")
         return
@@ -860,11 +993,50 @@ end
 -- targetEffectsの初期スキャンをやり直す(イベント駆動の効果検知は
 -- 「変化」にしか反応できないため、切り替わった瞬間の状態はここで
 -- 明示的に読み直す必要がある)。
+--
+-- v1.4.31で追加: 即時スキャンに加えて、150ms後に保険のスキャンを
+-- 1回だけ追加でスケジュールする(取得直後のデータ未同期対策)。
+-- targetGenerationを進めておき、遅延スキャンが発火する時点で対象が
+-- 既に変わっていれば(=世代番号が一致しなければ)何もしない。
+-- タイマーは単発(zo_callLater)で、ループや毎フレーム処理は発生しない。
 local function OnReticleTargetChanged()
+    targetGeneration = targetGeneration + 1
+    local myGeneration = targetGeneration
     RescanCurrentTargetEffects()
+    zo_callLater(function()
+        if myGeneration ~= targetGeneration then return end
+        -- zo_callLaterの内部実装はコールバック側でエラーが起きた場合に
+        -- タイマーが解除されず暴走する既知の仕様があるため、pcallで保護する。
+        local ok, err = pcall(RescanCurrentTargetEffects)
+        if not ok then
+            d("|cFF5555[PvPTargetInfo]|r 保険スキャンでエラー: " .. tostring(err))
+        end
+    end, RESCAN_RETRY_DELAY_MS)
 end
 
 function PTI.Target.Initialize()
+    -- v1.4.32で追加: 非戦闘中はUI①②③を非表示にする設定用に、プレイヤーの
+    -- 戦闘状態を追跡する。検知ロジックとは無関係で、表示のON/OFFにのみ使う。
+    local function OnCombatStateChanged(eventCode, inCombat)
+        isInCombat = inCombat
+        if PTI.UI then PTI.UI.hiddenByCombat = PTI.sv.combatOnly and not isInCombat end
+        if PTI.UI and PTI.UI.RefreshVisibility then PTI.UI.RefreshVisibility() end
+    end
+    isInCombat = IsUnitInCombat and IsUnitInCombat("player") or false
+    if PTI.UI then PTI.UI.hiddenByCombat = PTI.sv.combatOnly and not isInCombat end
+    EVENT_MANAGER:RegisterForEvent(PTI.name .. "CombatState", EVENT_PLAYER_COMBAT_STATE, OnCombatStateChanged)
+
+    -- v1.4.30で修正: SeedReworkWatchEntries()内で万一エラーが起きた場合、
+    -- 従来はここでInitialize()全体が止まり、この後に続くEVENT_EFFECT_CHANGED /
+    -- EVENT_RETICLE_TARGET_CHANGED / OnUpdateの登録が一切行われず、
+    -- ①②(敵バフ/デバフ)自体が丸ごと動かなくなる恐れがあった。
+    -- pcallで囲み、エラーが起きても必ず後続の初期化(イベント登録)が
+    -- 実行されるようにした(切り分けやすいようエラー内容はチャットに出す)。
+    local seedOk, seedErr = pcall(SeedReworkWatchEntries)
+    if not seedOk then
+        d("|cFF5555[PvPTargetInfo]|r クラスリワーク自動登録(SeedReworkWatchEntries)でエラー: " .. tostring(seedErr))
+    end
+
     -- 状態異常(CC)の定数が実際にいくつ解決できたかを起動時に1回だけ報告する。
     -- ここが0件だと「Major/Minor」以外のCC系デバフの自動検知が丸ごと
     -- 機能しなくなるため、実戦ログでチャットが埋まる心配がない起動時のみ、

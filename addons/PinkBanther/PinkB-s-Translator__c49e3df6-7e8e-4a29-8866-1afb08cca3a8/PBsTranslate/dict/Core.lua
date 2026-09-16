@@ -38,6 +38,7 @@ anybody=誰か
 everyone=みんな
 everybody=みんな
 nobody=誰も
+no one=誰も
 something=何か
 anything=何か
 everything=全部

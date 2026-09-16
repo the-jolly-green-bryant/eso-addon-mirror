@@ -2,10 +2,18 @@ local appName = "LibNotify"
 local notifyInProgress = false
 local colourStartup
 local colourSet
-
---add option to move notification box
---add option into each add-on for text only with no picture
---add a notify in progress que
+local notify1 = false
+local notify2 = false
+local notify3 = false
+local notify4 = false
+local abilityIdStore1 = 0
+local abilityIdStore2 = 0
+local abilityIdStore3 = 0
+local abilityIdStore4 = 0
+local messageStore1 = ""
+local messageStore2 = ""
+local messageStore3 = ""
+local messageStore4 = ""
 
 LibNotify = {}
 
@@ -13,9 +21,10 @@ LibNotify.savedVariables = {}
 
 LibNotify.defaults = {
 playSound = true,
+showIcon = true,
 textColor = { 0, 1, 0, 1 },
 type = "Scrolling",
-sound = "ANTIQUITIES_FANFARE_FAILURE",
+sound = "DUEL_START",
 yAxisBox = 200,
 xAxisBox = 1050,
 yAxisStatic = 500,
@@ -118,18 +127,79 @@ end
 --display static notify
 local function displayMessageStatic(message)
     libNotifyNotifyStatic:SetText(message)
-    zo_callLater(function () libNotifyNotifyStatic:SetText("") end, 2000)
+    zo_callLater(function () libNotifyNotifyStatic:SetText("") notifyInProgress = false if notify1 or notify2 or notify3 or notify4 then LibNotify.doDisplayQue() end end, 1700)
 end
 
 --display scrolling notify
 local function displayMessageScrolling(message)
     libNotifyBoxNotify6:SetText(message)
-    zo_callLater(function () libNotifyBoxNotify6:SetText("") libNotifyBoxNotify5:SetText(message) end, 300)
-    zo_callLater(function () libNotifyBoxNotify5:SetText("") libNotifyBoxNotify4:SetText(message) end, 600)
-    zo_callLater(function () libNotifyBoxNotify4:SetText("") libNotifyBoxNotify3:SetText(message) end, 900)
-    zo_callLater(function () libNotifyBoxNotify3:SetText("") libNotifyBoxNotify2:SetText(message) end, 1200)
-    zo_callLater(function () libNotifyBoxNotify2:SetText("") libNotifyBoxNotify1:SetText(message) end, 1500)
-    zo_callLater(function () libNotifyBoxNotify1:SetText("") end, 2000)
+    zo_callLater(function () libNotifyBoxNotify6:SetText("") libNotifyBoxNotify5:SetText(message) end, 200)
+    zo_callLater(function () libNotifyBoxNotify5:SetText("") libNotifyBoxNotify4:SetText(message) end, 400)
+    zo_callLater(function () libNotifyBoxNotify4:SetText("") libNotifyBoxNotify3:SetText(message) end, 600)
+    zo_callLater(function () libNotifyBoxNotify3:SetText("") libNotifyBoxNotify2:SetText(message) end, 800)
+    zo_callLater(function () libNotifyBoxNotify2:SetText("") libNotifyBoxNotify1:SetText(message) end, 1000)
+    zo_callLater(function () libNotifyBoxNotify1:SetText("") notifyInProgress = false zo_callLater(function () if notify1 or notify2 or notify3 or notify4 then LibNotify.doDisplayQue() end end, 200) end, 1700)
+end
+
+--display notification function
+local function doDisplay()
+
+    notifyInProgress = true
+
+    local picPath
+    local iconText
+    local abilityIDfinal
+    local messageFinal
+
+    if notify1 then
+        notify1 = false
+        --load first variables
+        abilityIDfinal = abilityIdStore1
+        messageFinal = messageStore1
+    elseif notify2 then
+        notify2 = false
+        --load second variables
+        abilityIDfinal = abilityIdStore2
+        messageFinal = messageStore2
+    elseif notify3 then
+        notify3 = false
+        --load third variables
+        abilityIDfinal = abilityIdStore3
+        messageFinal = messageStore3
+    elseif notify4 then
+        notify4 = false
+        --load fourth variables
+        abilityIDfinal = abilityIdStore4
+        messageFinal = messageStore4
+    end
+
+    --show ability icon at start of notification text or not
+    if LibNotify.savedVariables.showIcon then
+        picPath = GetAbilityIcon(abilityIDfinal)
+        iconText = zo_iconTextFormat(picPath, 50, 50, messageFinal)
+    else
+        iconText = messageFinal
+    end
+
+    --if play sound
+    if LibNotify.savedVariables.playSound then doSound(LibNotify.savedVariables.sound) end
+
+    --decide scrolling or static then display notification
+    if LibNotify.savedVariables.type == "Scrolling" then
+        displayMessageScrolling(iconText)
+    elseif LibNotify.savedVariables.type == "Static" then
+        displayMessageStatic(iconText)
+    end
+end
+
+--notification que
+function LibNotify.doDisplayQue()
+
+    if not notifyInProgress and notify1 or not notifyInProgress and notify2 or not notifyInProgress and notify3 or not notifyInProgress and notify4 then
+        doDisplay()
+    else
+        zo_callLater(function () LibNotify.doDisplayQue() end, 500)
+    end
 end
 
 --run notification process when another add-on calls
@@ -138,33 +208,31 @@ function LibNotify.notifyForAddonPlease(addonName, abilityID, message)
     --if not listed add-on tries to access notify service, quit
     if not isAddonValid(addonName) then printMessage("Restricted Access") return end
 
-    local picPath
-    local iconText
-
-    --if abilityID is not 0 then display picture, otherwise display just message
-    if abilityID ~= 0 then
-        picPath = GetAbilityIcon(abilityID)
-        iconText = zo_iconTextFormat(picPath, 50, 50, message)
-    else
-        iconText = message
+    if not notify1 then
+        notify1 = true
+        --save first variables
+        abilityIdStore1 = abilityID
+        messageStore1 = message
+    elseif not notify2 then
+        notify2 = true
+        --save second variables
+        abilityIdStore2 = abilityID
+        messageStore2 = message
+    elseif not notify3 then
+        notify3 = true
+        --save third variables
+        abilityIdStore3 = abilityID
+        messageStore3 = message
+    elseif not notify4 then
+        notify4 = true
+        --save fourth variables
+        abilityIdStore4 = abilityID
+        messageStore4 = message
     end
-
-    --if play sound
-    if LibNotify.savedVariables.playSound then doSound(LibNotify.savedVariables.sound) end
 
     --display the message
-    if LibNotify.savedVariables.type == "Scrolling" then
-        displayMessageScrolling(iconText)
-    elseif LibNotify.savedVariables.type == "Static" then
-        displayMessageStatic(iconText)
-    end
+    LibNotify.doDisplayQue()
 end
-
-
-
-
-
-
 
 --when finished moving around screen in options
 local function setupTextSlotsBlankStatic()
@@ -194,6 +262,22 @@ local function setupTextSlotsExampleBox()
     libNotifyBoxNotify4:SetText("example notify")
     libNotifyBoxNotify5:SetText("example notify")
     libNotifyBoxNotify6:SetText("Start here")
+end
+
+--change scrolling anchor to move text around the screen in options
+local function setAnchorBox(x, y)  
+    setupTextSlotsExampleBox()
+	zo_callLater(function () setupTextSlotsBlankBox() end, 2000)
+    libNotifyBox:ClearAnchors()
+    libNotifyBox:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, x, y)
+end
+
+--change static anchor to move text around the screen in options
+local function setAnchorStatic(x, y)  
+    setupTextSlotsExampleStatic()
+	zo_callLater(function () setupTextSlotsBlankStatic() end, 2000)
+    libNotify:ClearAnchors()
+    libNotify:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, x, y)
 end
 
 --when add-on first starts
@@ -232,6 +316,18 @@ local function setupTextSlots()
     libNotifyNotifyStatic:SetText("")
 end
 
+--set anchors for scrolling notification at start up
+local function setAnchorStartupBox(x, y)  
+    libNotifyBox:ClearAnchors()
+    libNotifyBox:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, x, y)
+end
+
+--set anchors for static notification at start up
+local function setAnchorStartupStatic(x, y)  
+    libNotify:ClearAnchors()
+    libNotify:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, x, y)
+end
+
 --setup options menu
 local function createOptions()
 
@@ -267,6 +363,62 @@ local function createOptions()
             setFunc = function(var) LibNotify.savedVariables.type = var end,
         },
         {
+            type = "slider",
+            name = "Scrolling x Position",
+            tooltip = "Adjust the left and right position of the on screen Scrolling notification.",
+            min = 0, max = 1700, step = 10,
+            getFunc = function()
+                return LibNotify.savedVariables.xAxisBox
+            end,
+            setFunc = function(value)
+                LibNotify.savedVariables.xAxisBox = value
+                setAnchorBox(LibNotify.savedVariables.xAxisBox, LibNotify.savedVariables.yAxisBox)
+            end,
+            default = LibNotify.defaults.xAxisBox,
+        },
+        {
+            type = "slider",
+            name = "Scrolling y Position",
+            tooltip = "Adjust the left and right position of the on screen Scrolling notification.",
+            min = 0, max = 1000, step = 10,
+            getFunc = function()
+                return LibNotify.savedVariables.yAxisBox
+            end,
+            setFunc = function(value)
+                LibNotify.savedVariables.yAxisBox = value
+                setAnchorBox(LibNotify.savedVariables.xAxisBox, LibNotify.savedVariables.yAxisBox)
+            end,
+            default = LibNotify.defaults.yAxisBox,
+        },
+        {
+            type = "slider",
+            name = "Static x Position",
+            tooltip = "Adjust the left and right position of the on screen Static notification.",
+            min = 0, max = 1700, step = 10,
+            getFunc = function()
+                return LibNotify.savedVariables.xAxisStatic
+            end,
+            setFunc = function(value)
+                LibNotify.savedVariables.xAxisStatic = value
+                setAnchorStatic(LibNotify.savedVariables.xAxisStatic, LibNotify.savedVariables.yAxisStatic)
+            end,
+            default = LibNotify.defaults.xAxisStatic,
+        },
+        {
+            type = "slider",
+            name = "Static y Position",
+            tooltip = "Adjust the left and right position of the on screen Static notification.",
+            min = 0, max = 1000, step = 10,
+            getFunc = function()
+                return LibNotify.savedVariables.yAxisStatic
+            end,
+            setFunc = function(value)
+                LibNotify.savedVariables.yAxisStatic = value
+                setAnchorStatic(LibNotify.savedVariables.xAxisStatic, LibNotify.savedVariables.yAxisStatic)
+            end,
+            default = LibNotify.defaults.yAxisStatic,
+        },
+        {
             type = "colorpicker",
             name = "Text colour",
             tooltip = "Change the colour of the notification text.",
@@ -288,6 +440,18 @@ local function createOptions()
                 libNotifyNotifyStatic:SetText("Notification")
                 zo_callLater(function () libNotifyNotifyStatic:SetText("") end, 2000)
              end,
+        },
+        {
+            type = "checkbox",
+            name = "Show Icon",
+            tooltip = "Shows the icon of the buff that you are being notified about at the start of the notification.",
+            getFunc = function()
+                return LibNotify.savedVariables.showIcon
+            end,
+            setFunc = function(value)
+                LibNotify.savedVariables.showIcon = value
+            end,
+            default = LibNotify.defaults.showIcon,
         },
         {
             type = "checkbox",
@@ -340,9 +504,12 @@ local function libLoaded(event, name)
     EVENT_MANAGER:UnregisterForEvent(appName, EVENT_ADD_ON_LOADED)
     --load saved variables
     LibNotify.savedVariables = ZO_SavedVars:NewCharacterIdSettings("libNotifyAddonVars", 1, "Settings", LibNotify.defaults, GetUnitName("player"))
-
+    --load saved var colour for text
     colourStartup = ZO_ColorDef:New(unpack(LibNotify.savedVariables.textColor))
 
+    --set anchor points of notification locations from saved vars at start up
+    setAnchorStartupBox(LibNotify.savedVariables.xAxisBox, LibNotify.savedVariables.yAxisBox)
+    setAnchorStartupStatic(LibNotify.savedVariables.xAxisStatic, LibNotify.savedVariables.yAxisStatic)
     --setup each text slot
     setupTextSlots()
     --setup options menu

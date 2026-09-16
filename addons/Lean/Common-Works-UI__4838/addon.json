@@ -1,0 +1,47 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/Lean/Common-Works-UI__4838",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Lean",
+  "canonical_id": "esoui:4838",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    }
+  ],
+  "content_id": "esoui:4838",
+  "deleted": false,
+  "directories": [
+    "CommonWorksUI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4838/",
+  "fingerprint": "ca7a18abc056f30ba5be9d73bdc42bc281199f75e2299cab665f42011f46f71f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17368.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17369.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17370.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17371.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17372.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17373.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17374.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17375.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17376.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17377.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4838",
+  "source_url": "https://www.esoui.com/downloads/info4838-CommonWorksUI.html",
+  "stats": {
+    "downloads": 14,
+    "favorites": 1,
+    "monthly_downloads": 1
+  },
+  "title": "Common Works UI",
+  "updated_at": 1789509128000,
+  "version": "1.0"
+}

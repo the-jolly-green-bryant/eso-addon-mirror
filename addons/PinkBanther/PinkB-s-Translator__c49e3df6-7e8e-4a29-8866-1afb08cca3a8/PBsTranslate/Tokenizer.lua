@@ -24,6 +24,9 @@ local T = PBsTranslate
 -- than the possessive). "def" is not here: in Cyrodiil it means defend, and dict/Cyrodiil.lua
 -- has it.
 local NORMALIZE = {
+	-- Basic chat spellings use existing words so verbs and modifiers still compose.
+	w8 = "wait", gr8 = "great", rly = "really", prolly = "probably",
+	plox = "please", srs = "serious", m8 = "mate",
 	im = "i am", ive = "i have", youre = "you are", theyre = "they are",
 	dont = "do not", doesnt = "does not", didnt = "did not", isnt = "is not", arent = "are not",
 	wasnt = "was not", werent = "were not", cant = "can not", cannot = "can not",
@@ -63,6 +66,14 @@ end
 -- One word as typed, possibly with an apostrophe, into one or more word tokens.
 local function PushWord(tokens, orig)
 	local lower = T.Lower(orig)
+
+	-- Double contractions: couldn't've / I'd've / shouldn't've.
+	local compound = lower:match("^(.+'.+)'ve$")
+	if compound then
+		PushWord(tokens, compound)
+		PushWords(tokens, "have", orig)
+		return
+	end
 
 	local head, tail = lower:match("^(.-)'([A-Za-z]*)$")
 	if head and head ~= "" then
@@ -145,7 +156,7 @@ function T.Tokenize(text)
 		elseif c:match("[ \t\r\n]") then
 			i = i + 1
 		elseif c:match("[A-Za-z]") then
-			local word = text:match("^[A-Za-z][A-Za-z0-9]*'[A-Za-z]+", i) or text:match("^[A-Za-z][A-Za-z0-9]*", i)
+			local word = text:match("^[A-Za-z][A-Za-z0-9]*'[A-Za-z]+'[Vv][Ee]", i) or text:match("^[A-Za-z][A-Za-z0-9]*'[A-Za-z]+", i) or text:match("^[A-Za-z][A-Za-z0-9]*", i)
 			PushWord(tokens, word)
 			i = i + #word
 		elseif c:match("[0-9]") then
@@ -167,6 +178,13 @@ function T.Tokenize(text)
 			local mark = run:find("?", 1, true) and "?" or run:sub(1, 1)
 			tokens[#tokens + 1] = { kind = "punct", v = mark }
 			i = i + #run
+		elseif text:sub(i, i + 2) == "—" or text:sub(i, i + 2) == "–" then
+			-- A typed dash separates calls; do not turn it into a noun/object.
+			tokens[#tokens + 1] = { kind = "punct", v = ";" }
+			i = i + 3
+		elseif c == "-" and text:sub(i - 1, i - 1):match("%s") and text:sub(i + 1, i + 1):match("%s") then
+			tokens[#tokens + 1] = { kind = "punct", v = ";" }
+			i = i + 1
 		elseif c == "-" and #tokens > 0 and tokens[#tokens].kind == "word" and text:sub(i + 1, i + 1):match("[A-Za-z]") then
 			-- well-known, re-roll: read as two words.
 			i = i + 1
@@ -181,5 +199,38 @@ function T.Tokenize(text)
 		end
 	end
 
+	-- Resolve ambiguous contracted auxiliaries only with a following participle.
+	-- Keep "I'd go" as would and "he's tired" as is; "I'd left" is had.
+	for index, token in ipairs(tokens) do
+		local previous = tokens[index - 1]
+		local original = previous and previous.orig and previous.orig:lower() or ""
+		local contractionD = token.w == "would" and original:match("'d$")
+		local contractionS = token.w == "is" and original:match("'s$")
+		if contractionD or contractionS then
+			local k = index + 1
+			local perfectAdverb = false
+			while tokens[k] and tokens[k].kind == "word" and
+				(tokens[k].w == "already" or tokens[k].w == "just" or tokens[k].w == "never" or tokens[k].w == "not") do
+				if tokens[k].w ~= "not" then perfectAdverb = true end
+				k = k + 1
+			end
+			local nextToken = tokens[k]
+			if nextToken and nextToken.kind == "word" then
+				local entry, infl = T.Lookup(nextToken.w)
+				local irregular = T.irregular[nextToken.w]
+				local participle = nextToken.w == "been" or infl == "past" or irregular and irregular.inflection == "past"
+				-- 's + adjective is usually a state, even if a verb has the same spelling.
+				local adjective = entry and (entry.pos == "a" or entry.alts and entry.alts.a)
+				local following = tokens[k + 1]
+				local hasObject = following and following.kind == "word" and
+					(following.w == "me" or following.w == "you" or following.w == "him" or following.w == "her"
+					or following.w == "us" or following.w == "them" or following.w == "the" or following.w == "a")
+				local perfectEvidence = nextToken.w == "been" or nextToken.w == "gone" or perfectAdverb or hasObject
+				if participle and (contractionD or nextToken.w == "gone" or nextToken.w == "been" or not adjective and perfectEvidence) then
+					token.w = contractionD and "had" or "has"
+				end
+			end
+		end
+	end
 	return tokens
 end

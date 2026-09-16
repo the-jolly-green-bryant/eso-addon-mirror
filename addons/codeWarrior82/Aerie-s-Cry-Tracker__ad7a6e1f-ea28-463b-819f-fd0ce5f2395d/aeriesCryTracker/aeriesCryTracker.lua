@@ -14,6 +14,7 @@ aeriesCryTracker.defaults = {
     trackAeries = true,
     trackEagles = true,
     notify = false,
+	notifyStart = true,
     yAxisTextAeries = 760,
     xAxisTextAeries = 750,
     yAxisTextEagles = 660,
@@ -92,7 +93,7 @@ local function processBuff()
         buffRunning = false
         actrackLabelMain:SetText("")
         if isLibAvailable() and aeriesCryTracker.savedVariables.notify then
-            LibNotify.notifyForAddonPlease(appName, aeriesAbilityID, "Aerie's Call ended")
+            LibNotify.notifyForAddonPlease(appName, aeriesAbilityID, "Aerie's Cry ended")
         end
     end
 end
@@ -112,7 +113,10 @@ local function effectReport(eventCode, changeType, effectSlot, effectName, unitT
     if nameTmp ~= cleanName(unitName) or changeType ~= 1 or abilityID ~= aeriesAbilityID then
         return
     end
-
+	
+	if isLibAvailable() and aeriesCryTracker.savedVariables.notifyStart then
+		LibNotify.notifyForAddonPlease(appName, aeriesAbilityID, "Aerie's Cry Started")
+    end
     processBuff()
 
 end
@@ -319,10 +323,22 @@ local function createOptions()
             end,
             default = aeriesCryTracker.defaults.yAxisTextEagles,
         },
+		{
+            type = "checkbox",
+            name = "Notification Start",
+            tooltip = "Displays a notification and plays a sound when the Aerie's Cry buff starts.\nThe settings for the notification can be changed in the LibNotify Add-on options.",
+            getFunc = function()
+                return aeriesCryTracker.savedVariables.notifyStart
+            end,
+            setFunc = function(value)
+                aeriesCryTracker.savedVariables.notifyStart = value
+            end,
+            default = aeriesCryTracker.defaults.notifyStart,
+        },
         {
             type = "checkbox",
-            name = "Notification",
-            tooltip = "Displays a notification and plays a sound when the Aerie's Call buff finishes.\nThe settings for the notification can be changed in the LibNotify Add-on options.",
+            name = "Notification End",
+            tooltip = "Displays a notification and plays a sound when the Aerie's Cry buff finishes.\nThe settings for the notification can be changed in the LibNotify Add-on options.",
             getFunc = function()
                 return aeriesCryTracker.savedVariables.notify
             end,

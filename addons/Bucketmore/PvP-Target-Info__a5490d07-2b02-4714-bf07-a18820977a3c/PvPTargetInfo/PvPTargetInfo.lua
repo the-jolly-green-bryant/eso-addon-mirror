@@ -45,6 +45,77 @@
       - 自動検知キーワードや手動登録リストを設定画面/コマンドで変更した
         際に、現在のターゲットへ即座に再反映されるようにした。
 
+    v1.4.32で対応:
+      - BG/シロディールの混雑時にBUFF取得・表示が遅くなる件を調査。
+        GetNumBuffs/GetUnitBuffInfo/初期スキャン/EVENT_EFFECT_CHANGED/
+        150ms遅延スキャン/Seed/UI更新頻度を確認したが、いずれもv1.4.23と
+        処理内容は同一で、重複処理も無い。最も疑わしいのは検知コードでは
+        なくデバッグ表示(pipelineTrace)そのもので、③④⑤ログは重要度に
+        関わらず効果の出入りのたびに必ずd()でチャット出力しており、
+        ⑥UI描画ログと違って重複抑制が無いため、集団戦で効果の出入りが
+        増えるほどd()呼び出しが増える(実機での比較テストでは/pti debug
+        offの状態で行うことを推奨)。
+      - 追加要望として、非戦闘中はUI①②③を非表示にし、戦闘開始時のみ
+        表示する機能を追加(/pti combatonly on||off、既定ON)。既存の
+        hiddenBySceneと同じ仕組みで表示可否のみを制御しており、
+        targetEffects/EvaluateEffect等の検知ロジックには一切触れていない。
+        非戦闘中はBuildEntryArrays/RenderEntriesまで丸ごとスキップする
+        ため、非戦闘中の負荷軽減にもなる(検知イベント自体は表示に関係なく
+        バックグラウンドで動き続ける)。
+
+    v1.4.31で対応:
+      - 実機検証の結果、原因は「敵のみ表示」設定でも判定ロジックでもなく、
+        ターゲット取得の瞬間、ESO側の効果データ(GetUnitBuffInfo)がまだ
+        完全に同期されておらず、初期スキャンがBUFFを0件のまま読んでしまう
+        タイミング問題と判明(カーソルを一度外して再度合わせると表示され
+        ることから特定)。
+      - OnReticleTargetChangedで従来通りの即時スキャンに加えて、150ms後に
+        保険のスキャンを1回だけ追加(zo_callLaterによる単発タイマー、
+        ループ・毎フレーム処理なし)。ターゲット変更のたびに世代番号を
+        進め、遅延スキャンが発火する時点で対象が既に変わっていれば
+        (世代番号が一致しなければ)何もせず捨てるため、古い対象の
+        データで上書きすることはない。
+      - zo_callLaterはコールバック内でエラーが起きるとタイマーが解除
+        されず暴走する既知の仕様があるため、保険スキャンの呼び出しは
+        pcallで保護した。
+      - 検知・判定(EvaluateEffect/IsAutoImportant等)・UI描画ロジックは
+        一切変更していない。
+
+    v1.4.30で対応:
+      - 「敵BUFFだけ表示されなくなった(DEBUFFは正常)」との報告を受けて
+        v1.4.23(正常動作)とv1.4.29(不具合あり)を全ファイル diff で比較。
+        BUFF/DEBUFFの検知・表示ロジック自体(IsAutoImportant、
+        EvaluateEffect、UpsertTargetEffect、RescanCurrentTargetEffects、
+        OnReticleEffectChanged)は両バージョンで完全に同一で、実際に
+        ESO APIのモックを使って動作を再現するテストでも差異が出なかった
+        (BUFF_CATEGORY_ORDERの分類変更は表示順にのみ影響し、表示可否とは
+        無関係)。
+      - 唯一のリスク箇所として、v1.4.27/28で追加したクラスリワーク対応の
+        自動登録処理(SeedReworkWatchEntries)がPTI.Target.Initialize()の
+        先頭で無防備に呼ばれており、万一ここでエラーが起きると
+        EVENT_EFFECT_CHANGED等の登録自体が丸ごと行われなくなる作りに
+        なっていた。pcallで保護し、エラーが起きても①②の初期化が
+        必ず続行されるように修正(ただし通常のテストではここでの
+        エラーは再現できておらず、根本原因の断定には至っていない)。
+      - 実機でしか判断できない可能性(ESO側のバフ可視性・端末側の
+        アドオン更新不具合等)が残るため、直らない場合は実際に消えている
+        BUFFについて /pti debug ON の状態でのログ、または /pti learn target
+        のログを確認してほしい。
+
+    v1.4.26で対応:
+      - シロディールで味方プレイヤーをターゲットしても①②(敵の重要バフ/
+        デバフ)が反応してしまう不具合を修正。従来のIsValidEnemyTarget
+        (PvPTargetInfo_Target.lua)は「プレイヤーであること」しか見ておらず、
+        敵味方を判定していなかった。設定でON/OFFを切り替えられるように
+        した(「①②の対象を敵プレイヤーのみに限定する」、既定OFF=従来通り)。
+        ONにするとGetUnitReactionで敵対(UNIT_REACTION_HOSTILE)と判定された
+        相手だけを対象にする。チャットコマンド /pti enemyonly on||off
+        (引数省略で現在値を表示)でも切替可能。
+        GetUnitReactionは1回のAPI呼び出しのみで、新規ループや追加の
+        メモリ確保は発生しないため、負荷・メモリ使用量への影響はない。
+      - Condition欄の色分け(v1.4.24/25)は「ややこしい」との指摘のため撤去し、
+        v1.4.23までの単色(黄色)表示に戻した。
+
     v1.4.25で修正: Condition欄の色分け基準を「登録経路(手動/自動)」から
       「実際の効果種別(バフ/デバフ)」に変更した。バフ=黄色、デバフ=明るい
       赤(DEBUFFパネルと同系色)。手動登録した効果が実際はデバフだった
@@ -311,7 +382,7 @@ PvPTargetInfo = PvPTargetInfo or {}
 local PTI = PvPTargetInfo
 
 PTI.name = "PvPTargetInfo"
-PTI.version = "1.4.25"
+PTI.version = "1.4.32"
 
 local SV_VERSION = 2
 
@@ -320,6 +391,14 @@ local defaults = {
     enabled = true,
     previewMode = false, -- ONの間は3パネルにサンプルデータを表示する(設定画面の手動プレビュー)
     holdDuration = 1.0, -- ターゲット解除後にパネルを保持する秒数
+
+    -- v1.4.26で追加: シロディールでは味方プレイヤーもターゲットできてしまう
+    -- ため、ONにすると敵プレイヤー(GetUnitReactionが敵対)だけを対象にする。
+    -- 既定はOFF(従来通り、プレイヤーなら味方でも反応)。
+    targetEnemyOnly = false,
+    -- v1.4.32で追加: 非戦闘中はUI①②③を非表示にし、戦闘開始時のみ表示する。
+    -- 検知ロジック自体には影響しない、表示可否のみの設定。
+    combatOnly = true,
 
     -- 重要バフ/デバフの自動検知(修正改定3)。既定でON。
     -- v1.4.11で英語/日本語の個別トグルを試したが、意味がないとのことで
@@ -382,6 +461,14 @@ local defaults = {
     -- 個別にenabledをfalseにすることで、登録は残したまま一時的に非表示にできる。
     watchedBuffs = {},
     watchedDebuffs = {},
+
+    -- v1.4.27で追加: クラス/ウェアウルフのリワークで登場した、Major/Minorを
+    -- 名乗らない(＝自動検知に引っかからない)重要な新効果を、初回起動時
+    -- だけ自動で手動登録リストに追加するための版数。PTI.Target.lua側で
+    -- 「seedVersionが現在の値未満なら追加してから値を更新する」処理を行う。
+    -- 一度追加した後にユーザーが手動で削除した場合は、以後seedVersionが
+    -- 更新済みのため再追加されない(ユーザーの選択を尊重する)。
+    seedVersion = 0,
 
     procConfig = {
         idsText = "", -- AbilityIdをカンマ区切りで並べた形式("id,id,...")。名前はGetAbilityNameで自動取得する
@@ -458,6 +545,8 @@ local function PrintHelp()
     d("  /pti watch buff||debuff on||off <id>                    - 登録済み項目の表示ON/OFF切替(削除はしない)")
     d("  /pti watch buff||debuff list||clear                     - 重要リストの確認/全削除")
     d("  /pti auto on||off                                      - 重要バフ/デバフの自動検知を切替(既定ON)")
+    d("  /pti enemyonly on||off                                 - ①②の対象を敵プレイヤーのみに限定(既定OFF、省略で現在値表示)")
+    d("  /pti combatonly on||off                                - 非戦闘中は①②③を非表示にする(既定ON、省略で現在値表示)")
     d("  /pti preview on||off                                   - プレビュー表示(サンプルデータ)を切替")
     d("  /pti show || hide                                      - アドオン全体の表示切替")
 end
@@ -746,6 +835,39 @@ local function OnSlashCommand(args)
             d("|c55CCFF[PvPTargetInfo]|r 自動検知: OFF (登録した効果のみ表示します)")
         else
             d("|c55CCFF[PvPTargetInfo]|r 例: /pti auto on||off")
+        end
+    elseif cmd == "enemyonly" then
+        -- v1.4.26で追加: シロディールで味方をターゲットしても①②が反応
+        -- してしまう件への対応。ONにすると敵プレイヤー(GetUnitReactionが
+        -- 敵対)だけを対象にする。既定はOFF(従来通り)。
+        local sub = rest:lower()
+        if sub == "on" then
+            PTI.sv.targetEnemyOnly = true
+            if PTI.Target and PTI.Target.ForceRefresh then PTI.Target.ForceRefresh() end
+            d("|c55CCFF[PvPTargetInfo]|r 敵プレイヤーのみ対象: ON (味方をターゲットしても①②は反応しません)")
+        elseif sub == "off" then
+            PTI.sv.targetEnemyOnly = false
+            if PTI.Target and PTI.Target.ForceRefresh then PTI.Target.ForceRefresh() end
+            d("|c55CCFF[PvPTargetInfo]|r 敵プレイヤーのみ対象: OFF (従来通り、プレイヤーなら味方でも反応します)")
+        else
+            d(string.format("|c55CCFF[PvPTargetInfo]|r 現在: %s (例: /pti enemyonly on||off)",
+                PTI.sv.targetEnemyOnly and "ON" or "OFF"))
+        end
+    elseif cmd == "combatonly" then
+        -- v1.4.32で追加: 非戦闘中はUI①②③を非表示にし、戦闘開始時のみ
+        -- 表示する。検知ロジックには影響しない、表示可否のみの設定。
+        local sub = rest:lower()
+        if sub == "on" then
+            PTI.sv.combatOnly = true
+            if PTI.UI and PTI.UI.RefreshVisibility then PTI.UI.RefreshVisibility() end
+            d("|c55CCFF[PvPTargetInfo]|r 戦闘中のみ表示: ON (非戦闘中は①②③を隠します)")
+        elseif sub == "off" then
+            PTI.sv.combatOnly = false
+            if PTI.UI and PTI.UI.RefreshVisibility then PTI.UI.RefreshVisibility() end
+            d("|c55CCFF[PvPTargetInfo]|r 戦闘中のみ表示: OFF (非戦闘中も常に表示します)")
+        else
+            d(string.format("|c55CCFF[PvPTargetInfo]|r 現在: %s (例: /pti combatonly on||off)",
+                PTI.sv.combatOnly and "ON" or "OFF"))
         end
     elseif cmd == "preview" then
         local sub = rest:lower()

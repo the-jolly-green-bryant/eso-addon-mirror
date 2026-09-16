@@ -963,7 +963,7 @@ function addon:OnHudShowing()
 	if self.timers then
 		self.timers:OnHudStateChange(true)
 	end
-	if self.plain then
+	if self.plain and not self.plainFollowsBars then
 		self.plain:OnHudStateChange(true)
 	end
 end
@@ -973,7 +973,24 @@ function addon:OnHudHidden()
 	if self.timers then
 		self.timers:OnHudStateChange(false)
 	end
-	if self.plain then
+	if self.plain and not self.plainFollowsBars then
+		self.plain:OnHudStateChange(false)
+	end
+end
+
+-- The bars' own fragment, for the styles drawn on them. It is a fade: SHOWING is the first frame of
+-- a 250 ms fade-in, and SHOWN is its end. Waiting for the HUD's SHOWN meant the bars faded in as
+-- the game draws them and changed style afterwards, which read as a flash every time a menu closed
+-- (1.27.3, FINDINGS 59). The same fragment is shown with the siege bar, where the HUD's is not.
+function addon:OnBarsFragment(state)
+	if not self.plain then
+		return
+	end
+	if state == SCENE_FRAGMENT_SHOWING or state == SCENE_FRAGMENT_SHOWN then
+		if self:BarsReady() then
+			self.plain:OnHudStateChange(true)
+		end
+	elseif state == SCENE_FRAGMENT_HIDDEN then
 		self.plain:OnHudStateChange(false)
 	end
 end
@@ -1412,6 +1429,13 @@ local function RegisterHud()
 			addon:OnHudHidden()
 		end
 	end)
+	local bars = PLAYER_ATTRIBUTE_BARS_FRAGMENT
+	if bars and type(bars.RegisterCallback) == "function" then
+		bars:RegisterCallback("StateChange", function(_, newState)
+			addon:OnBarsFragment(newState)
+		end)
+		addon.plainFollowsBars = true
+	end
 	return true
 end
 

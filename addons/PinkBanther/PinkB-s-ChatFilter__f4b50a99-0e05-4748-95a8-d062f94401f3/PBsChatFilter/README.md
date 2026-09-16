@@ -1,7 +1,7 @@
 # PB’s ChatFilter
 
-Shows guild chat only from the guilds you choose, and hides guild recruitment adverts, on
-**The Elder Scrolls Online**.
+Shows guild chat only from the guilds you choose, and can hide guild recruitment adverts and
+NPC speech, on **The Elder Scrolls Online**.
 
 - **Author:** PinkBanther
 
@@ -16,10 +16,13 @@ extra zone channels:
 
 This add-on is that filter, for the guild channels.
 
-**Only guild channels are affected.** Zone, say, yell, whisper, group, emote, the NPC channels
-and every system message are left exactly as they were. The filter looks at the channel, sees
-it is not a guild channel, and hands the message straight on — there is no second code path for
-them to fall down.
+**Only guild channels are affected by default.** Zone, say, yell, whisper, group, emote, the NPC
+channels and every system message are left exactly as they were. The filter looks at the
+channel, sees it is not a guild channel, and hands the message straight on — there is no second
+code path for them to fall down.
+
+Two optional rules reach past that, and both ship off: **guild recruitment adverts** and **NPC
+speech**, each described below.
 
 ## Guild recruitment adverts
 
@@ -50,6 +53,30 @@ Turn it on in the panel, or with `/pbfilter recruit on`. Three things stay exemp
 such a message that tells it apart from ordinary chat except its wording, and matching on
 wording is how a filter starts eating conversations.
 
+## NPC speech
+
+Optional, and **off** until you switch it on.
+
+What the world says to itself — a guard's greeting, a banker's line, a mob shouting as it pulls
+— arrives on four channels of its own:
+
+| channel | what it carries |
+| --- | --- |
+| `CHAT_CHANNEL_MONSTER_SAY` | ordinary NPC speech |
+| `CHAT_CHANNEL_MONSTER_YELL` | shouts |
+| `CHAT_CHANNEL_MONSTER_WHISPER` | an NPC speaking only to you |
+| `CHAT_CHANNEL_MONSTER_EMOTE` | *the guard coughs* |
+
+Those four are the whole of it — `chatdata.lua`'s `ChannelInfo` has no other non-player speaking
+channel. Hiding them needs no exemptions, because nothing on them ever comes from a person:
+there is no own-message case and no guild to identify.
+
+`/pbfilter npc on`, or the checkbox in the panel. NPC lines are the bulk of what pushes a
+whisper or a guild invite off the top of a console chat window, which is the reason to have it.
+
+**The subtitles are a separate piece of UI** (`EVENT_SHOW_SUBTITLE`) and are not affected. Turn
+this on and the world still speaks on screen — it just stops filling the chat log.
+
 ## Setup
 
 Install it and reload the UI. Nothing is filtered until you switch a guild off, so a fresh
@@ -64,8 +91,8 @@ One section per guild, two switches in it: **Guild chat** and **Officer chat**. 
 separate channels and get separate switches, so you can follow the officer channel of a guild
 whose main chat you have muted, or the other way round.
 
-Below the guild list is **Guild recruitment**, described above. Above it are the two switches
-that apply to everything:
+Below the guild list are **Guild recruitment** and **NPC speech**, both described above. Above
+the list are the two switches that apply to everything:
 
 - **Filter guild chat** — the master switch. Turn it off to see every guild channel again for a
   while without losing the choices below it.
@@ -91,6 +118,7 @@ reload the UI to redraw it; the chat command always reads the current list.
 /pbfilter own on | off           always show your own messages
 /pbfilter recruit on | off       hide messages that link a guild
 /pbfilter recruit whisper on|off and in whispers too
+/pbfilter npc on | off           hide what NPCs say
 /pbfilter banner on | off        print the status at login
 /pbfilter reset                  forget every choice
 /pbfilter help                   this list
@@ -100,8 +128,8 @@ The guild numbers are the ones the game itself uses — guild 2 is `/g2`, and th
 second row of the settings panel is about.
 
 The bare `/pbfilter` is the measurement: it names each guild, says whether its two channels are
-shown, counts what it has hidden this session, and does the same for recruitment adverts. If
-you are not sure the add-on is doing anything, those counts are the answer.
+shown, counts what it has hidden this session, and does the same for recruitment adverts and NPC
+speech. If you are not sure the add-on is doing anything, those counts are the answer.
 
 ## How it works
 

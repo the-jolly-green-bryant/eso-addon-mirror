@@ -3,7 +3,7 @@
 --
 -- English chat, with a Japanese line under it.
 --
--- An add-on cannot reach the network, so there is no translation service to ask. Everything
+-- An add-on cannot reach an external translation service. Translation runs entirely
 -- happens in this folder: a dictionary of a couple of thousand English words, chat shorthand
 -- and ESO terms (dict/), and a small rule-based grammar that turns English word order into
 -- Japanese word order (Tokenizer.lua, Grammar.lua, Conjugate.lua). The result is a rough,
@@ -63,7 +63,7 @@ local function ReadManifestVersion()
 		local name, title = manager:GetAddOnInfo(index)
 		if name == addon.name and title then
 			local plain = title:gsub("|c%x%x%x%x%x%x", ""):gsub("|r", "")
-			return plain:match("([%d]+[%d%.]*)%s*$") or ""
+			return plain:match("([%d]+[%d%.]*%-[%w%.%-]+)%s*$") or plain:match("([%d]+[%d%.]*)%s*$") or ""
 		end
 	end
 	return ""
@@ -872,6 +872,9 @@ local function OnAddOnLoaded(_, name)
 		if addon.InitSettings then
 			addon:InitSettings()
 		end
+	end)
+	Step("dictionary sharing", function()
+		if addon.InitSharing then addon:InitSharing() end
 	end)
 	em:RegisterForEvent(addon.name, EVENT_PLAYER_ACTIVATED, OnPlayerActivated)
 end

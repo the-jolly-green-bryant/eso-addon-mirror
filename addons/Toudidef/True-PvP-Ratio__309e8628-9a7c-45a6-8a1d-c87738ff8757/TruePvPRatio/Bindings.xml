@@ -1,0 +1,9 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="True PvP Ratio">
+            <Action name="TRUE_PVP_RATIO_TOGGLE">
+                <Down>TruePvPRatio:ToggleUI()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

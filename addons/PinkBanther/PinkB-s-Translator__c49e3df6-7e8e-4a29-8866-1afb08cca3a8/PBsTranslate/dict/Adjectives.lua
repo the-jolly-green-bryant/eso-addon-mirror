@@ -1048,3 +1048,40 @@ off cd=使用可能な/na
 pay to win=課金ゲーの/na
 free to play=無料で遊べる/na
 ]])
+
+D("a", [[
+outnumbered=数で劣勢/na
+]])
+
+-- Slang.net chat vocabulary (2026-09-16); sources and exclusions: SLANG_SOURCES.md
+D("a", [[
+horribad=ひどい/i
+terribad=ひどい/i
+janky=低品質/na
+busted=強すぎる/na
+imba=強すぎる/na
+sussy=怪しい/i
+sketchy=怪しい/i
+dog water=役立たず/na
+adorbs=かわいい/i
+amped=興奮した/na
+awks=気まずい/i
+cray=めちゃくちゃ/na
+crz=めちゃくちゃ/na
+goated=史上最高/na
+legit=本物/na
+lorge=大きい/i
+smol=小さくてかわいい/i
+perf=完璧/na
+ridic=ばかばかしい/i
+uncrtn=不確か/na
+delish=おいしい/i
+stpd=ばか/na
+trbl=ひどい/i
+hq=高品質/na
+atbge=趣味は悪いが出来はすばらしい/i
+bussin=すごくいい/i
+blursed=いいのか悪いのか分からない/i
+cozy vibes=居心地がいい/i
+gagged=言葉が出ない/i
+]])

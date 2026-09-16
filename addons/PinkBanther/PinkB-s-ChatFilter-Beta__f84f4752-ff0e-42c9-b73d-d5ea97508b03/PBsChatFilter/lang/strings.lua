@@ -25,6 +25,12 @@ local strings = {
 	SI_PBSCF_RECRUIT_WHISPER = "Including whispers",
 	SI_PBSCF_RECRUIT_WHISPER_TOOLTIP = "Whisper recruitment is real, but a whisper is a person addressing you directly and losing one silently is worse than reading an advert. So whispers are left alone unless you ask for this.",
 
+	SI_PBSCF_SECTION_NPC = "NPC speech",
+	SI_PBSCF_SECTION_NPC_NOTE = "What the world says to itself -- a guard's greeting, a banker's line, a mob shouting as it pulls -- arrives on four channels of its own, and is the bulk of what pushes a whisper or a guild invite off the top of the chat window. The subtitles are a separate piece of UI: turn this on and the world still speaks on screen, just not in the chat log.",
+
+	SI_PBSCF_NPC = "Hide NPC speech",
+	SI_PBSCF_NPC_TOOLTIP = "Hides everything spoken by NPCs in the chat window: their speech, shouts, whispers and emotes. Nothing said by a player is affected.",
+
 	SI_PBSCF_SECTION_GENERAL = "General",
 	SI_PBSCF_RESET = "Show everything again",
 	SI_PBSCF_RESET_TOOLTIP = "Clears every choice on this panel and puts the chat window back the way it is without the add-on.",
@@ -39,6 +45,7 @@ local strings = {
 	SI_PBSCF_STATUS_NOT_INSTALLED = "the chat hook is NOT installed -- no chat is being touched",
 	SI_PBSCF_STATUS_OWN = "own messages always shown: %s",
 	SI_PBSCF_STATUS_RECRUIT = "guild recruitment links: %s (in whispers %s) -- hidden this session: %d",
+	SI_PBSCF_STATUS_NPC = "NPC speech: %s -- hidden this session: %d",
 	SI_PBSCF_STATUS_NO_GUILDS = "you are not in any guild",
 	SI_PBSCF_STATUS_GUILD_LINE = "%d. %s -- guild %s, officer %s",
 	SI_PBSCF_STATUS_HIDDEN_LINE = "     hidden this session: %d guild, %d officer",
@@ -65,6 +72,7 @@ local strings = {
 	SI_PBSCF_HELP_OWN = "/pbfilter own on | off -- always show your own messages",
 	SI_PBSCF_HELP_RECRUIT = "/pbfilter recruit on | off -- hide messages that link a guild",
 	SI_PBSCF_HELP_RECRUIT_WHISPER = "/pbfilter recruit whisper on | off -- and in whispers too",
+	SI_PBSCF_HELP_NPC = "/pbfilter npc on | off -- hide what NPCs say",
 	SI_PBSCF_HELP_BANNER = "/pbfilter banner on | off -- print the status at login",
 	SI_PBSCF_HELP_RESET = "/pbfilter reset -- forget every choice",
 }

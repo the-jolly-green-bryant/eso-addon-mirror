@@ -1,0 +1,9 @@
+## Title: Alkoshtracker by JH
+## Description: Minimal tracker for Roar of Alkosh / Line-Breaker. You can move the Icon by typing /atmove and lock it in place with /atmove.
+## Author: JH
+## Version: 1.7.0-console.1
+## APIVersion: 101051 101050
+## SavedVariables: AlkoshTrackerSV
+## OptionalDependsOn: LibAddonMenu-2.0
+
+AlkoshTracker.lua

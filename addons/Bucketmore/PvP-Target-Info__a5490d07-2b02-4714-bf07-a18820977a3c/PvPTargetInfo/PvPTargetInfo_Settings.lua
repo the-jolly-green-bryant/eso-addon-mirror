@@ -258,6 +258,19 @@ function PTI.Settings.Initialize()
             end,
         },
         {
+            -- v1.4.26で追加: シロディールでは味方プレイヤーもターゲットできて
+            -- しまうため、既定では①②(敵の重要バフ/デバフ)が味方に対しても
+            -- 反応していた。ONにすると敵プレイヤーだけに絞れる。
+            type = "checkbox",
+            name = "①②の対象を敵プレイヤーのみに限定する",
+            tooltip = "OFF(既定・従来通り)はプレイヤーなら味方でも①②が反応します。ONにすると、GetUnitReactionで敵対関係と判定された相手だけを対象にします(味方をターゲットしても反応しなくなります)。",
+            getFunc = function() return PTI.sv.targetEnemyOnly end,
+            setFunc = function(value)
+                PTI.sv.targetEnemyOnly = value
+                if PTI.Target and PTI.Target.ForceRefresh then PTI.Target.ForceRefresh() end
+            end,
+        },
+        {
             type = "slider",
             name = "ターゲット解除後にパネルを保持する秒数 (0.1秒単位)",
             tooltip = "敵からカーソルが外れた後も、指定した秒数だけ直前の情報を表示し続けます。動きの激しいPvPでパネルがチラつくのを防ぐための設定です。",

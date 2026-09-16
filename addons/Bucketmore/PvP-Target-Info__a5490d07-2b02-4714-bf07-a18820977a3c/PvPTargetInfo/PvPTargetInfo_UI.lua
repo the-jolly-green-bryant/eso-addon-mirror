@@ -332,7 +332,10 @@ function PTI.UI.SetWindowVisible(key)
     if not entry or not sv then return end
 
     local hiddenByScene = PTI.UI.hiddenByScene and not PTI.sv.previewMode
-    local shouldShow = PTI.sv.enabled and not hiddenByScene and sv.enabled ~= false
+    -- v1.4.32で追加: 非戦闘中はUI①②③を非表示にする設定(既存の
+    -- hiddenBySceneと同じ仕組みで、検知ロジックには一切触れない)。
+    local hiddenByCombat = PTI.UI.hiddenByCombat and not PTI.sv.previewMode
+    local shouldShow = PTI.sv.enabled and not hiddenByScene and not hiddenByCombat and sv.enabled ~= false
     entry.window:SetHidden(not shouldShow)
 end
 

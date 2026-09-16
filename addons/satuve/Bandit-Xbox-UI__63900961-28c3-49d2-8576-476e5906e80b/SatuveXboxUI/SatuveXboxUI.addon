@@ -47,6 +47,7 @@ BUI_Buffs.lua
 proctemplate.xml
 BUI_Actions.lua
 BUI_MiniMap.lua
+SXUI_MinimapCore.lua
 BUI_QuickSlots.lua
 BUI_StatShare.lua
 BUI_OnScreen.lua
@@ -59,6 +60,7 @@ BUI_CustomBar.lua
 BUI_Meters.lua
 BUI_Markers.lua
 SXUI_ChampionPriority.lua
+SXUI_FrameEditor.lua
 BUI_Initialize.lua
 
 lang\en.lua

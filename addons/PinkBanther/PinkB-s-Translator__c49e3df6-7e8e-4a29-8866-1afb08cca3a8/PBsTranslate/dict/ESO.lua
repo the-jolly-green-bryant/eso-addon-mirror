@@ -669,3 +669,355 @@ omw=向かっています
 be there soon=すぐ行きます
 on my way=向かっています
 ]])
+
+-- A ground-effect warning, not a reference to an alliance.
+D("adv", [[
+in the red=赤い範囲内に
+]])
+
+-- Community chat expansion (2026-09-16). Sources and scope: SLANG_SOURCES.md [eso].
+D("n", [[
+pvx=PvEとPvPの両方
+lowbie=低レベルキャラクター
+lowbies=低レベルキャラクター
+mule=倉庫キャラクター
+bank alt=倉庫キャラクター
+rngeesus=乱数の神様
+rngeezus=乱数の神様
+randoms=野良メンバー
+pre made=固定グループ
+pug run=野良での攻略
+pug raid=野良レイド
+pug tank=野良タンク
+pug healer=野良ヒーラー
+fake tank=タンク役を偽ったプレイヤー
+fake healer=ヒーラー役を偽ったプレイヤー
+fake heal=ヒーラー役を偽ったプレイヤー
+random normal=ランダムノーマルダンジョン
+random vet=ランダムベテランダンジョン
+random veteran=ランダムベテランダンジョン
+rnd=ランダムノーマルダンジョン
+rnds=ランダムノーマルダンジョン
+random daily=デイリーのランダムダンジョン
+vet pledges=ベテランの誓い
+normal pledges=ノーマルの誓い
+non dlc=非DLC
+base game dungeon=ベースゲームのダンジョン
+dlcs=DLC
+normals=ノーマル難易度
+achiev=実績
+achieves=実績
+achis=実績
+cheevos=実績
+achievement run=実績狙いの攻略
+trifecta run=トリフェクタ狙いの攻略
+no death run=ノーデス狙いの攻略
+nodeath=ノーデス
+speed clear=高速クリア
+speedclear=高速クリア
+mt=メインタンク
+ot=サブタンク
+maintank=メインタンク
+offtank=サブタンク
+pocket healer=専属ヒーラー
+pocket heal=専属ヒール
+pocket heals=専属ヒール
+heal check=回復力チェック
+healer check=回復力チェック
+mit check=ダメージ軽減チェック
+mitigation check=ダメージ軽減チェック
+hard enrage=時間切れの強制全滅
+soft enrage=時間経過での難化
+enrage timer=時間切れまでの制限時間
+burn phase=集中攻撃フェーズ
+execute phase=低体力時のとどめフェーズ
+cleave damage=対象の周囲も巻き込むダメージ
+st damage=単体ダメージ
+aoe damage=範囲ダメージ
+pad damage=意味の薄い火力の水増し
+trash mobs=雑魚敵
+trash pull=雑魚のまとめ戦闘
+add wave=追加の敵の出現
+boss cleave=ボスの巻き込み攻撃
+gcd=グローバルクールダウン
+icd=内部クールダウン
+internal cooldown=内部クールダウン
+animation cancel=モーションキャンセル
+animation cancelling=モーションキャンセル
+animation canceling=モーションキャンセル
+ani canceling=モーションキャンセル
+ani cancelling=モーションキャンセル
+light attack weaving=軽攻撃を挟む操作
+heavy attack build=重攻撃中心のビルド
+ha build=重攻撃中心のビルド
+one bar build=ワンバービルド
+onebar=ワンバー
+one bar=ワンバー
+pet sorc=ペットソーサラー
+petsorc=ペットソーサラー
+magsorc=マジカソーサラー
+stamsorc=スタミナソーサラー
+magplar=マジカテンプラー
+stamplar=スタミナテンプラー
+magblade=マジカナイトブレイド
+stamblade=スタミナナイトブレイド
+magdk=マジカドラゴンナイト
+stamdk=スタミナドラゴンナイト
+magden=マジカウォーデン
+stamden=スタミナウォーデン
+magcro=マジカネクロマンサー
+stamcro=スタミナネクロマンサー
+magarc=マジカアルカニスト
+stamarc=スタミナアルカニスト
+healden=ヒーラーウォーデン
+bow build=弓ビルド
+bow bow=両バー弓のビルド
+bowbow=両バー弓のビルド
+snb=片手武器と盾
+sword and shield=片手武器と盾
+destro=破壊杖
+resto=回復杖
+desto=破壊杖
+spammable=連発する主力スキル
+spammables=連発する主力スキル
+stat stick=能力値を得るための装備
+proc set=条件で効果が発動するセット
+proc sets=条件で効果が発動するセット
+body set=防具枠で揃えるセット
+frontbar=表バー
+backbar=裏バー
+fb=表バー
+]])
+
+-- Community chat expansion (2026-09-16). Sources and scope: SLANG_SOURCES.md [raid].
+D("n", [[
+prog=攻略練習
+progression group=攻略練習グループ
+prog group=攻略練習グループ
+prog run=攻略練習の回
+fresh prog=最初からの攻略練習
+blind prog=予習なしの攻略練習
+reclear=クリア済みコンテンツの再攻略
+reclear run=クリア済みコンテンツの再攻略
+farm run=周回
+farm group=周回グループ
+learning run=練習の回
+learning group=練習グループ
+practice run=練習の回
+training run=練習の回
+clear run=クリアを目指す回
+first clear=初クリア
+first timer=初挑戦の人
+first timers=初挑戦の人
+parse=ダミー相手の火力測定
+parsing=ダミー相手の火力測定
+parse dummy=火力測定用ダミー
+trial dummy=試練用の火力測定ダミー
+target dummy=練習用ダミー
+raid comp=レイド編成
+group comp=グループ編成
+team comp=チーム編成
+comp=編成
+strat=攻略方法
+strats=攻略方法
+raidwide=全体攻撃
+tankbuster=タンク向けの大ダメージ攻撃
+tank buster=タンク向けの大ダメージ攻撃
+tank swap=タンク交代
+tank swap mechanic=タンク交代ギミック
+aggro reset=敵の狙いのリセット
+threat drop=敵の狙いが外れること
+body pull=接近による敵の釣り
+chain pull=休みなく敵を釣ること
+face pull=不用意な接近で敵を釣ること
+proxy aggro=接近による敵の反応
+heal aggro=回復で敵に狙われること
+heal over time=継続回復
+healing over time=継続回復
+damage over time=継続ダメージ
+single target=単体対象
+single target damage=単体ダメージ
+splash damage=周囲への巻き込みダメージ
+splash heal=周囲への回復
+hot uptime=継続回復の維持率
+dot uptime=継続ダメージの維持率
+buff uptime=強化効果の維持率
+uptime=効果や攻撃を維持できる時間
+boss uptime=ボスを攻撃できる時間
+downtime=攻撃できない時間
+]])
+
+-- Community chat expansion (2026-09-16). Sources and scope: SLANG_SOURCES.md [raid].
+D("x", [[
+first time here=ここは初めてです
+]])
+
+-- Community chat expansion (2026-09-16). Sources and scope: SLANG_SOURCES.md [trade].
+D("n", [[
+boe=装備時に譲渡不可
+bop=取得時に譲渡制限
+bind on equip=装備時に譲渡不可
+bind on pickup=取得時に譲渡制限
+cod=代金引換
+cash on delivery=代金引換
+price check=相場確認
+pricecheck=相場確認
+vendor trash=店売り用の不要品
+vendor junk=店売り用の不要品
+gold sink=ゲーム内通貨の回収要素
+listing fee=出品手数料
+trading fee=取引手数料
+full stack=最大数までまとまったアイテム
+stack price=1スタックあたりの価格
+unit price=1個あたりの価格
+price per unit=1個あたりの価格
+price per stack=1スタックあたりの価格
+my mats=素材は自分が用意
+your mats=素材はそちらで用意
+]])
+
+-- Community chat expansion (2026-09-16). Sources and scope: SLANG_SOURCES.md [trade].
+D("x", [[
+mats included=素材込み
+mats provided=素材持参
+have mats=素材は持っています
+lf crafter=クラフターを探しています
+looking for crafter=クラフターを探しています
+lfw=クラフトの依頼募集中
+ltb=購入希望
+obo=価格相談可
+or best offer=価格相談可
+pst offer=希望価格をささやいてください
+pst offers=希望価格をささやいてください
+wts carry=キャリー代行を売ります
+]])
+
+-- Conjugatable readings for negation and modal verbs; fixed calls below remain the defaults.
+D("v", [[
+hard stack=同じ位置に密集する/s
+soft stack=間隔を空けて集合する/s
+stack tightly=同じ位置に密集する/s
+stack loosely=間隔を空けて集合する/s
+burn boss=ボスに火力を集中する/s
+burn the boss=ボスに火力を集中する/s
+nuke boss=ボスに火力を集中する/s
+nuke the boss=ボスに火力を集中する/s
+focus adds=追加の敵を優先する/s
+ignore adds=追加の敵を無視する/s
+ignore the adds=追加の敵を無視する/s
+stop dps=攻撃を止める/1
+hold dps=攻撃を止めて待つ/5
+save ults=アルティメットを温存する/s
+save ult=アルティメットを温存する/s
+]])
+
+-- Community chat expansion (2026-09-16). Sources and scope: SLANG_SOURCES.md [calls].
+D("x", [[
+lf7m=あと7人募集
+lf9m=あと9人募集
+lf11m=あと11人募集
+lf1 tank=タンクをあと1人募集
+lf1 healer=ヒーラーをあと1人募集
+lf1 dd=火力役をあと1人募集
+lf1 dps=火力役をあと1人募集
+lf2 dd=火力役をあと2人募集
+lf2 dps=火力役をあと2人募集
+exp only=経験者のみ
+experienced only=経験者のみ
+link achievement=実績をリンクしてください
+link achiev=実績をリンクしてください
+link ach=実績をリンクしてください
+link parse=火力測定結果を見せてください
+need quest=クエストをやりたいです
+need the quest=クエストをやりたいです
+doing quest=クエスト中です
+questing here=ここでクエスト中です
+first time=初めてです
+first run=初挑戦です
+new here=ここは初めてです
+new to this=これは初めてです
+new to tanking=タンクは不慣れです
+new to healing=ヒーラーは不慣れです
+still learning=まだ練習中です
+learning mechs=ギミックを練習中です
+explain mechs=ギミックを説明してください
+anyone need=欲しい人はいますか
+free to take=自由に持っていってください
+all yours=どうぞ持っていってください
+wait for quest=クエストが終わるまで待ってください
+wait for healer=ヒーラーを待ってください
+wait for group=グループを待ってください
+wait for everyone=全員を待ってください
+do not rush=急がないでください
+hard stack=同じ位置にぴったり重なって集合
+soft stack=少し間隔を空けて集合
+stack tightly=同じ位置にぴったり重なって集合
+stack loosely=少し間隔を空けて集合
+spread loosely=少し間隔を空けて散開
+burn boss=ボスに火力を集中
+burn the boss=ボスに火力を集中
+nuke boss=ボスに火力を集中
+nuke the boss=ボスに火力を集中
+focus adds=追加の敵を優先
+kill adds first=追加の敵を先に倒して
+ignore adds=追加の敵は無視
+ignore the adds=追加の敵は無視
+stop dps=攻撃を止めて
+hold dps=攻撃を止めて待って
+save ults=アルティメットを温存
+save ult=アルティメットを温存
+ults ready=アルティメット準備OK
+ult ready=アルティメット準備OK
+ult up=アルティメット使用可能
+ults up=アルティメット使用可能
+ult down=アルティメット使用不可
+ults down=アルティメット使用不可
+rezzing=蘇生中
+resing=蘇生中
+rezz please=蘇生してください
+res please=蘇生してください
+need rez=蘇生してください
+need res=蘇生してください
+rez inc=今から蘇生します
+res inc=今から蘇生します
+wipe it=一度全滅してやり直そう
+reset fight=戦闘をやり直そう
+reset the fight=戦闘をやり直そう
+nice pull=いい挑戦でした
+good pull=いい挑戦でした
+one more pull=もう一度挑戦
+last pull=最後の挑戦
+food check=食事バフを確認して
+repair break=修理休憩
+gear broken=装備が壊れています
+brb repair=修理して戻ります
+brb repairs=修理して戻ります
+relogging=ログインし直しています
+reloggin=ログインし直しています
+dced=切断されました
+dc would=切断されました
+disconnected=切断されました
+got dc=切断されました
+i dced=切断されました
+brb relog=ログインし直して戻ります
+stuck in combat=戦闘状態が解除されません
+can not bar swap=武器バーを切り替えられません
+lagging hard=ラグがひどいです
+rubber banding=ラグで位置が引き戻されます
+packet loss=通信パケットの欠落
+high ping=通信遅延が大きい状態
+ping spike=通信遅延の急増
+skill delay=スキル発動の遅延
+skills not firing=スキルが発動しません
+]])
+
+-- Explicit short negative calls (no + action).
+D("x", [[
+no hard stack=密集しないでください
+no soft stack=間隔を空けた集合はしないでください
+]])
+
+-- Ground-effect escape call; verb reading preserves negation and modal forms.
+D("v", [[
+get out of red=赤い範囲から出る/1
+]])

@@ -514,6 +514,7 @@ unkillable=倒せない/i
 ]])
 
 D("v", [[
+hk=砦の修理・味方の回復・防衛維持を行う/5
 bone=全滅させる/1/を
 push=攻める/1
 push in=攻め込む/5
@@ -719,4 +720,99 @@ on my way=向かっている途中
 on the way=向かっている途中
 good fight=よい戦いでした
 nice fight=よい戦いでした
+]])
+
+-- Conjugatable readings for negation and modal verbs; fixed calls below remain the defaults.
+D("v", [[
+ult dump=アルティメットを一斉に使う/5
+ulti dump=アルティメットを一斉に使う/5
+ultimate dump=アルティメットを一斉に使う/5
+dump ults=アルティメットを一斉に使う/5
+dump ult=アルティメットを使う/5
+break los=障害物で敵の射線を切る/5
+burn siege=敵の攻城兵器を燃やす/5
+burn their siege=敵の攻城兵器を燃やす/5
+hold block=防御し続ける/1
+push together=一緒に突撃する/s
+push as one=足並みを揃えて突撃する/s
+]])
+
+-- Community chat expansion (2026-09-16). Sources and scope: SLANG_SOURCES.md [pvp].
+D("x", [[
+ult dump=アルティメットを一斉に使って
+ulti dump=アルティメットを一斉に使って
+ultimate dump=アルティメットを一斉に使って
+dump ults=アルティメットを一斉に使って
+dump ult=アルティメットを使って
+bomb inc=範囲バースト攻撃が来る
+bomb incoming=範囲バースト攻撃が来る
+bomber inc=ボマーが来る
+ball inc=ボールグループが来る
+ball group inc=ボールグループが来る
+negate down=魔法無効化フィールドを設置した
+negate up=魔法無効化フィールドを展開中
+push together=一緒に突撃して
+push as one=足並みを揃えて突撃して
+stay on crown=リーダーから離れないで
+tight on crown=リーダーにぴったり集合
+back on crown=リーダーの位置に戻って
+do not chase=深追いしないで
+stop chasing=深追いをやめて
+peel for healer=ヒーラーを狙う敵を引き離して
+peel for healers=ヒーラーを狙う敵を引き離して
+peel for me=私を狙う敵を引き離して
+hold block=防御し続けて
+break los=障害物で敵の射線を切って
+stay in los=射線が通る位置にいて
+out of los=射線が通っていません
+los them=障害物で敵の射線を切って
+rez at camp=前線キャンプで復活して
+res at camp=前線キャンプで復活して
+camp on cooldown=キャンプ復活はクールダウン中
+camp cd=キャンプ復活のクールダウン
+siege cap=攻城兵器の設置上限
+siege capped=攻城兵器が設置上限に達した
+burn siege=敵の攻城兵器を燃やして
+burn their siege=敵の攻城兵器を燃やして
+]])
+
+D("n", [[
+backcap=手薄な後方拠点の占領
+back cap=手薄な後方拠点の占領
+backcapping=手薄な後方拠点を占領中
+resource flip=資源拠点の占領
+rss flip=資源拠点の占領
+no cp=チャンピオンポイント無効
+nocp=チャンピオンポイント無効
+smallscale=少人数戦
+outnumbering=人数有利
+outnumbered fight=人数不利の戦闘
+outnumbered fights=人数不利の戦闘
+zerg surfing=大集団に便乗する戦い方
+zerg surfer=大集団に便乗するプレイヤー
+faction stack=陣営全体の大集合
+crosshealing=味方同士での相互回復
+cross healing=味方同士での相互回復
+heal stacking=回復効果の重ねがけ
+perma block=常時防御
+permablock=常時防御
+permablocker=常時防御するプレイヤー
+perma stun=行動不能が続く状態
+permastun=行動不能が続く状態
+cc immunity=行動妨害への耐性時間
+cc immune=行動妨害が効かない状態
+snare immunity=鈍足への耐性
+immovable pot=行動妨害耐性ポーション
+immov pot=行動妨害耐性ポーション
+detection pot=隠密看破ポーション
+detect pot=隠密看破ポーション
+detect pots=隠密看破ポーション
+siege shield=攻城兵器シールド
+meatbags down=ミートバッグ・カタパルトを設置した
+]])
+
+-- Explicit short negative calls (no + action).
+D("x", [[
+no ult dump=アルティメットを一斉に使わないでください
+no ulti dump=アルティメットを一斉に使わないでください
 ]])

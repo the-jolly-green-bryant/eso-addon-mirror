@@ -43,6 +43,7 @@ local g_lastHeading = -1
 local g_headingCos = 1
 local g_headingSin = 0
 local g_lastRefreshTime = 0
+local g_currentMapTexture = ""
 
 local function ReleaseAllTiles()
     for _, tile in ipairs(g_TextureTiles) do
@@ -134,13 +135,15 @@ local function UpdateTilesOnRotate(playerX, playerY, heading)
     end
 end
 
-function minimap.RefreshMap()
+function minimap.RefreshMap(force)
     local now = GetGameTimeMilliseconds()
-    if now - g_lastRefreshTime < 80 then return end
+    if not force and (now - g_lastRefreshTime < 80) then return end
     g_lastRefreshTime = now
 
     local numX, numY = GetMapNumTiles()
     if not numX or not numY or numX == 0 or numY == 0 then return end
+
+    g_currentMapTexture = GetMapTileTexture(1) or ""
 
     g_tileCountX = numX
     g_tileCountY = numY
@@ -252,7 +255,7 @@ function minimap.UpdatePlayerPosition(forceUpdate)
     if not locName or locName == "" then
         locName = GetMapName and GetMapName() or ""
     end
-    NecroCat_Location_Name:SetText(locName or "")
+    NecroCat_Location_Name:SetText(locName and zo_strformat("<<C:1>>", locName) or "")
 
     -- 3. Отдельный индикатор Ветеранки в правом нижнем углу
     local isDungeon = (GetMapContentType() == MAP_CONTENT_DUNGEON) 
@@ -271,8 +274,12 @@ local function OnUpdate()
         return 
     end
 
-    if SetMapToPlayerLocation() == SET_MAP_RESULT_MAP_CHANGED then	
-        CALLBACK_MANAGER:FireCallbacks("OnWorldMapChanged")			
+    local mapResult = SetMapToPlayerLocation()
+    local currentTile = GetMapTileTexture(1)
+
+    if mapResult == SET_MAP_RESULT_MAP_CHANGED or (currentTile and currentTile ~= "" and currentTile ~= g_currentMapTexture) then
+        minimap.RefreshMap(true)
+        CALLBACK_MANAGER:FireCallbacks("OnWorldMapChanged")
     else
         minimap.UpdatePlayerPosition(false)
     end
@@ -427,7 +434,7 @@ EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_Loaded", EVENT_ADD_ON_LOADED, O
 CALLBACK_MANAGER:RegisterCallback("OnWorldMapChanged", function(wasNavigateIn)
     if minimap.settings and minimap.settings.enabled then
         if wasNavigateIn == nil then
-            minimap.RefreshMap()						
+            minimap.RefreshMap(true)						
         end				
     end
 end)
@@ -437,10 +444,10 @@ if WORLD_MAP_SCENE then
         if newState == SCENE_HIDDEN and minimap.settings and minimap.settings.enabled then
             zo_callLater(function()
                 SetMapToPlayerLocation()
-                -- Сразу восстанавливаем плотную альфу и размеры окна
+                g_lastRefreshTime = 0
                 minimap.ApplyLayout()
                 minimap.RefreshMap()
-            end, 80)
+            end, 100)
         end
     end)
 end
@@ -457,19 +464,21 @@ if GAMEPAD_WORLD_MAP_SCENE then
 end
 
 EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_Activated", EVENT_PLAYER_ACTIVATED, function()
-    zo_callLater(function()
-        if minimap.settings and minimap.settings.enabled then
-            minimap.RefreshMap()
-        end
-    end, 250)
+    if WORLD_MAP_QUEST_BREADCRUMBS and WORLD_MAP_QUEST_BREADCRUMBS.RefreshAllQuests then
+        WORLD_MAP_QUEST_BREADCRUMBS:RefreshAllQuests()
+    end
+    if minimap.settings and minimap.settings.enabled then
+        minimap.RefreshMap()
+    end
 end)
 
 EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_ZoneChanged", EVENT_ZONE_CHANGED, function()
-    zo_callLater(function()
-        if minimap.settings and minimap.settings.enabled then
-            minimap.RefreshMap()
-        end
-    end, 250)
+    if WORLD_MAP_QUEST_BREADCRUMBS and WORLD_MAP_QUEST_BREADCRUMBS.RefreshAllQuests then
+        WORLD_MAP_QUEST_BREADCRUMBS:RefreshAllQuests()
+    end
+    if minimap.settings and minimap.settings.enabled then
+        minimap.RefreshMap()
+    end
 end)
 
 -- =========================================================================

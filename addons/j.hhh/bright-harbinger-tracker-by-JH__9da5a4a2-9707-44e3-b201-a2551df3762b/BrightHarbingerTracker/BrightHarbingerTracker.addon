@@ -1,0 +1,10 @@
+## Title: Bright Harbinger Tracker by JH
+## Author: JH
+## Version: 1.0.14
+## AddOnVersion: 1140
+## APIVersion: 101050 101051
+## Description: Bright Harbinger tracker with gamepad positioning and cooldown timer.
+## SavedVariables: BrightHarbingerTrackerSavedVariables
+## DependsOn: LibAddonMenu-2.0
+
+BrightHarbingerTracker.lua

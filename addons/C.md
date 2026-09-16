@@ -36,7 +36,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Caro's Pre-Crafter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Irniben/Caro-s-Pre-Crafter__3143) | Irniben | PC / Mac | 2.3.2 |
 | [Caro's Skill Point Saver (Respec Skill Lines, Champion Points, Gear, Quickslots, Appearances)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Irniben/Caro-s-Skill-Point-Saver-Respec-Skill-Lines-Champion-Points-Gear-Quickslots-Appe__2901) | Irniben | PC / Mac | 6.1.7 |
 | [Caro's Worn Sets](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Irniben/Caro-s-Worn-Sets__3478) | Irniben | PC / Mac | 1.1.4 |
-| [CASE - Character Addon Settings Editor](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/CASE---Character-Addon-Settings-Editor__4036) | atharti | PC / Mac | 6.4 |
+| [CASE - Character Addon Settings Editor](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/CASE---Character-Addon-Settings-Editor__4036) | atharti | PC / Mac | 6.5 |
 | [Cashier](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tarlac/Cashier__2040) | Tarlac | PC / Mac | 1.35 |
 | [Cast Skill IDs (CastIDs)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wendiga/Cast-Skill-IDs-CastIDs__4183) | Wendiga | PC / Mac | 1.1 |
 | [CasualClean](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Th3rtythr33/CasualClean__c75df85c-f9c0-4e54-a0f3-d5173e44a850) | Th3rtythr33 | Console | — |
@@ -168,6 +168,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [CombatTopHealthbar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/CombatTopHealthbar__3324) | Masteroshi430 | PC / Mac | 2026.07.07 |
 | [CombatZone](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/VarietyIX/CombatZone__2061) | VarietyIX | PC / Mac | 1.9 |
 | [Coming Back Home](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Saleand/Coming-Back-Home__1920) | Saleand | PC / Mac | 1.5.1 |
+| [Common Works UI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lean/Common-Works-UI__4838) | Lean | PC / Mac | 1.0 |
 | [Community Leveling Guides](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Hydra9268/Community-Leveling-Guides__2062) | Hydra9268 | PC / Mac | 1157 |
 | [Comp's Pot Swapper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Complicative/Comp-s-Pot-Swapper__3634) | Complicative | PC / Mac | 1.1.2 |
 | [Comp's Quickslot Swapper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Complicative/Comp-s-Quickslot-Swapper__3635) | Complicative | PC / Mac | 1.0.0 |

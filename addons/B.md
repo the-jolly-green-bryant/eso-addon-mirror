@@ -141,6 +141,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Breda's Magnificent Mead Reminder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SimpsForBreda/Breda-s-Magnificent-Mead-Reminder__3521) | SimpsForBreda | PC / Mac | v1.69420 |
 | [Brief Thief](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/mutiny/Brief-Thief__1588) | mutiny | PC / Mac | 3.1 |
 | [Bright Harbinger](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/its_wifey/Bright-Harbinger__4818) | its_wifey | PC / Mac | 1.5 |
+| [bright harbinger tracker by JH](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/j.hhh/bright-harbinger-tracker-by-JH__9da5a4a2-9707-44e3-b201-a2551df3762b) | j.hhh | Console | — |
 | [BSC-CompanionInfo Extension](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DoonerSeraph/BSC-CompanionInfo-Extension__3151) | DoonerSeraph | PC / Mac | 2.0.5 |
 | [BSCs-AdvancedAchievementsInfo](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BloodStainCHild/BSCs-AdvancedAchievementsInfo__4277) | BloodStainCHild | PC / Mac | 2.0.7 |
 | [BSCs-AdvancedPotions](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BloodStainCHild/BSCs-AdvancedPotions__3716) | BloodStainCHild | PC / Mac | 1.0.1 |

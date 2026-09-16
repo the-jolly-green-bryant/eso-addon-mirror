@@ -1,10 +1,10 @@
 ## Title: Healing Meter
 ## Author: WifeyRytic
-## Version: 1.1
-## AddOnVersion: 2
+## Version: 1.2
+## AddOnVersion: 3
 ## APIVersion: 101050 101051
 ## Description: Live personal healing meter for effective healing, overhealing, raw healing, HPS, Raw HPS, overheal percentage, and fight time.
 ## SavedVariables: HealingMeterSavedVariables
-## OptionalDependsOn: LibAddonMenu-2.0>=43
+## OptionalDependsOn: LibAddonMenu-2.0
 
 HealingMeter.lua

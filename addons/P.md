@@ -114,6 +114,8 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [PinkB's QuestTrackerFontChanger(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-QuestTrackerFontChanger-Beta__35920898-3b27-4e32-9f59-c0d8fee0b3bb) | PinkBanther | Console | — |
 | [PinkB's ScreenshotModeShortcut](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-ScreenshotModeShortcut__f092f755-7f1e-43bf-b184-f2a9871a86ea) | PinkBanther | Console | — |
 | [PinkB's ScreenshotModeShortcut(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-ScreenshotModeShortcut-Beta__c3b0724d-c60e-44de-9244-7cdc9f20c868) | PinkBanther | Console | — |
+| [PinkB's Superstar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-Superstar__f00e5b13-5452-4284-98f7-2bdbe3caff63) | PinkBanther | Console | — |
+| [PinkB's Superstar(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-Superstar-Beta__61f70cc8-746a-48f4-90d2-6a3d490188d9) | PinkBanther | Console | — |
 | [PinkB's Translator](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-Translator__c49e3df6-7e8e-4a29-8866-1afb08cca3a8) | PinkBanther | Console | — |
 | [PinkB's Translator(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-Translator-Beta__cf0aea14-ea0e-49d3-89c4-1987b725c79e) | PinkBanther | Console | — |
 | [PinKiller](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni/PinKiller__190) | Shinni | PC / Mac | 2.5 |

@@ -1,0 +1,26 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="SI_BINDING_NAME_CW_CATEGORY">
+            <Action name="CW_TOGGLE">
+                <Down>CommonWorksUI.TogglePanel()</Down>
+            </Action>
+            <!-- Hold to open; release to select a build. -->
+            <Action name="CW_LT_WHEEL">
+                <Down>CommonWorksUI.LarvalTearWheelDown()</Down>
+                <Up>CommonWorksUI.LarvalTearWheelUp()</Up>
+            </Action>
+        </Category>
+    </Layer>
+    <!-- ZO_RadialMenu holds this layer while open. Return false with one page
+         to pass mouse-wheel input through to camera zoom. -->
+    <Layer name="SI_KEYBINDINGS_LAYER_CW_LT_WHEEL">
+        <Category name="SI_BINDING_NAME_CW_CATEGORY">
+            <Action name="CW_LT_PAGE_PREV">
+                <Down>return CommonWorksUI.LarvalTearWheelPage(-1)</Down>
+            </Action>
+            <Action name="CW_LT_PAGE_NEXT">
+                <Down>return CommonWorksUI.LarvalTearWheelPage(1)</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

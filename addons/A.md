@@ -167,6 +167,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [AlignGrid](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Crabby654/AlignGrid__1292) | Crabby654 | PC / Mac | 1.4.4 |
 | [Alik'r Dolmen Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haipahaipa/Alik-r-Dolmen-Helper__2399) | haipahaipa | PC / Mac | v0.1.0 |
 | [Alkosh Timer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Eldibabalo/Alkosh-Timer__e1b107d5-082e-4ed1-9cfc-81b9a42e0528) | Eldibabalo | Console | — |
+| [alkoshtracker by jh](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/j.hhh/alkoshtracker-by-jh__bbcaa320-b3ca-4c85-ba00-3d61f3f60360) | j.hhh | Console | — |
 | [All The Collectibles](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DakJaniels/All-The-Collectibles__4638) | DakJaniels | PC / Mac | 2.1 |
 | [AllAP](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ace-r/AllAP__2086) | Ace'r | PC / Mac | 1.3.3 |
 | [AllAP](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ace.r/AllAP__c0c82f16-9b5b-4707-bf96-be0f3c78a77a) | Ace.r | Console | — |

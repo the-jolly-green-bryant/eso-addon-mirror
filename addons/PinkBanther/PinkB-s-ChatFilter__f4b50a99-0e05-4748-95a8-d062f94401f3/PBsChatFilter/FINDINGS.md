@@ -111,6 +111,25 @@ ZO_LinkHandler_InsertLinkAndSubmit(link)
 チャンネル種別のうち、ウィスパー（`CHAT_CHANNEL_WHISPER` / `CHAT_CHANNEL_WHISPER_SENT`）と
 ギルドチャンネルはこの規則の対象外にしてある。理由は README と `Main.lua` の冒頭コメントに。
 
+## NPCの発言
+
+NPC側の発言は `chatdata.lua` の `ChannelInfo` に4件だけある:
+
+| チャンネル | 書式 |
+| --- | --- |
+| `CHAT_CHANNEL_MONSTER_SAY` | `SI_CHAT_MONSTER_MESSAGE_SAY` |
+| `CHAT_CHANNEL_MONSTER_YELL` | `SI_CHAT_MONSTER_MESSAGE_YELL` |
+| `CHAT_CHANNEL_MONSTER_WHISPER` | `SI_CHAT_MONSTER_MESSAGE_WHISPER` |
+| `CHAT_CHANNEL_MONSTER_EMOTE` | `SI_CHAT_MONSTER_EMOTE` |
+
+いずれも `playerLinkable = false` / `channelLinkable = false` / `formatMessage = true`。
+`MultiLevelEventToCategoryMappings[EVENT_CHAT_MESSAGE_CHANNEL]` にもこの4つが登録されている。
+プレイヤー側の say / yell / whisper / emote とは別チャンネルなので、
+**チャンネルを見るだけでNPCかどうかが確定する**（文面の判定は不要で、誤判定の余地もない）。
+
+字幕（`EVENT_SHOW_SUBTITLE`）は別系統で、`CHAT_ROUTER` には登録されていない。
+このフィルタは字幕に影響しない。
+
 ## 使えるギルド API
 
 | API | 内容 |

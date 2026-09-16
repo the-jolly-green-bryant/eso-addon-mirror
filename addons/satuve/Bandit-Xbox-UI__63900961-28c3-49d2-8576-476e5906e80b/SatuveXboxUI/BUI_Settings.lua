@@ -112,6 +112,8 @@ local function MenuOptions_Init()	--Menu options
 		func		=function() BUI.Menu.MoveFrames(true) end,
 		reference	="BUI_MenuButton_Move",
 	},
+	--Dedicated controller layout editor. Mouse Move remains available.
+	{type="button", name="Frame Edit Mode", func=function() if BUI.FrameEditor then BUI.FrameEditor:Open() end end},
 	--Reset Default Frames
 	{	type		="button",
 		name		="ResetPositions",

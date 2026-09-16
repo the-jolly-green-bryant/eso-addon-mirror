@@ -174,6 +174,30 @@ function addon:InitSettings()
 		}
 	)
 
+	AddHeading(settings, LibHarvensAddonSettings, GetString(SI_PBSCF_SECTION_NPC))
+
+	settings:AddSetting(
+		{
+			type = LibHarvensAddonSettings.ST_LABEL,
+			label = GetString(SI_PBSCF_SECTION_NPC_NOTE)
+		}
+	)
+
+	settings:AddSetting(
+		{
+			type = LibHarvensAddonSettings.ST_CHECKBOX,
+			label = GetString(SI_PBSCF_NPC),
+			tooltip = GetString(SI_PBSCF_NPC_TOOLTIP),
+			default = self.DEFAULTS.npc,
+			getFunction = function()
+				return self.sv.npc
+			end,
+			setFunction = function(value)
+				self.sv.npc = value
+			end
+		}
+	)
+
 	AddHeading(settings, LibHarvensAddonSettings, GetString(SI_PBSCF_SECTION_GENERAL))
 
 	settings:AddSetting(

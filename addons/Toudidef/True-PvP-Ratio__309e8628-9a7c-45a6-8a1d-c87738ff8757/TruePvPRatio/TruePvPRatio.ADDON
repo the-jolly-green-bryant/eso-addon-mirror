@@ -1,0 +1,10 @@
+## Title: True PvP Ratio
+## Description:|cff5900Description|r
+Calculates and displays your PvP Ratio for all your characters.
+## Author: |cff5900To|r|cb56648u|r|c906c6cd|r|c6a7391i|r|c1581fcef|r
+## Version: 1.0
+## APIVersion: 101050
+## SavedVariables: TruePvPRatio_Data
+
+Bindings.xml
+TruePvPRatio.lua

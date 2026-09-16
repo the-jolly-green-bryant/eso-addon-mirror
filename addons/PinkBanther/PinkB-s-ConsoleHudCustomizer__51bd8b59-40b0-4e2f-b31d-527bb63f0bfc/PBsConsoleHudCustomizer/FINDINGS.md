@@ -1321,6 +1321,105 @@ background, frame and status bars are all 0.5, the fill's gradient alpha is unch
 the client sets back to 1 is thinned again on the next update, everything is 1 again after a style
 change, and Square leaves them alone. Taking out the new alpha writes or the restore fails them.
 
+## 59. A flash every time a menu closed (1.27.3)
+
+From the PS5: closing a menu, Liquid or Crystal bars flickered for a moment.
+
+**Why.** The bars are shown by their own fragment, `PLAYER_ATTRIBUTE_BARS_FRAGMENT`, a
+`ZO_HUDFadeSceneFragment`: `SHOWING` is the first frame of a 250 ms fade-in (`DEFAULT_HUD_DURATION`)
+and `SHOWN` is its end. The add-on did two things wrong around it:
+
+1. On the HUD's `HIDDEN` it **stopped the style and put the game's own look back** -- colours,
+   alphas, frame, and the effect hidden.
+2. It started again only on the **HUD's** `SHOWN`, after its own fade.
+
+So every time a menu closed, the bars faded in as the game draws them, and then changed. And
+whatever the amount did in the menu -- a bar regenerating to full -- arrived all at once on the
+first update as a slosh and a drain.
+
+**What 1.27.3 does.**
+
+- Hiding **pauses**: the update loop stops and the look stays on the bars, which are hidden anyway.
+  Only a change of style or the add-on being switched off takes the look away. A setting changed in
+  the menu is applied straight away to the hidden bars, so they come back showing it.
+- The styles drawn on the bars follow **the bars' own fragment**, and resume on its `SHOWING`, the
+  first frame of the fade. The HUD fragment still drives positions and the skill bar. The same
+  fragment is shown with the siege bar, where the HUD's is not, so the style now runs there too.
+- On resuming, the caches of what was last written are dropped, so anything the client put back
+  while the bars were hidden is written again.
+- Liquid treats a gap of more than 500 ms between updates as the bars having been hidden: no slosh
+  and no drain for what changed out of sight.
+
+**Tests.** Hidden, the loop pauses and the effect, the fill's colour and the whole-bar alpha stay; a
+setting changed while hidden is applied at once; the first frame of the bars' fade has the style
+running; a style changed while hidden still puts the game's look back; no drain for a drop made out
+of sight, while the same drop in view does leave one. Restoring on hide, resuming only on the HUD's
+`SHOWN`, and dropping the gap reset each fail them.
+
+## 60. Held back until the style is on them (1.27.4)
+
+From the PS5, after 1.27.3: still a brief flicker coming back from a menu, and a request to keep
+the bars hidden until they are drawn.
+
+What 1.27.3 could not account for is not known -- the client may put something of its own back as
+the bars show, after the add-on's first draw. Rather than guess again, the bars are held back:
+
+- **Held** when they are hidden (the pause, §59): each of the three containers the add-on finds
+  showing is set hidden.
+- **Shown** once the style has been drawn on them twice with the loop running again -- the draw on
+  the first frame of the bars' fade (`SHOWING`) and the next update, about 50 ms later, a fifth of
+  the way through the 250 ms fade. The bars appear already in the style, partway into their own fade.
+- **Failsafe**: a separate 100 ms check shows them 600 ms after the fade began, whatever happens.
+- **Stop** (Standard chosen, or the add-on switched off, even in the menu) shows them at once.
+- A draw made for a setting changed in the menu is not counted: it does not bring them back early.
+- Only a container this add-on hid is shown again.
+
+**Why the containers' hidden flag.** It is the one thing on these bars the client never writes:
+`PLAYER_ATTRIBUTE_BARS_FRAGMENT` shows and fades the group above them (`ZO_PlayerAttribute`,
+`SetHidden(false)` then an alpha animation, and its `SHOWING` callback runs before that `Show`), and
+the contextual fading plays `PlayerAttributeBarAnimation` on each container's alpha. Nothing in
+`playerattributebars` or the attribute visualiser sets or reads the containers' hidden state; the
+modules hide only their own child overlays.
+
+Every drawn style is held, not only Liquid and Crystal: they come back the same way. Standard is
+never held.
+
+`/pbhud plain` prints the last return: how many milliseconds into the fade the bars were shown, after
+how many draws, whether the failsafe did it, and how many returns there have been.
+
+**Tests**, mutation-checked: held on hide for Liquid, Crystal and Square; still held after the first
+draw; shown after the second; the failsafe cleared; a menu-time setting does not show them; the
+failsafe shows them after 600 ms and not at 300; Standard chosen or the add-on switched off in the
+menu shows them; Standard is never held; a bar hidden by someone else stays hidden. No hold, revealing
+on the first draw, counting menu-time draws, no failsafe, and a Stop that does not reveal each fail.
+
+## 61. Only the outer ends come to a point (1.27.5)
+
+From the PS5: in Liquid and Crystal, stamina's left end was drawn as a triangle rather than square.
+
+Mine. §52 measured the taper at a pointed end and §56 drew every effect to it, but the shape was
+applied to **both** ends of every single bar. Only the ends facing away from the middle of the
+screen are pointed (`playerattributebars.xml`):
+
+| | left end | right end |
+| --- | --- | --- |
+| health | `ZO_PlayerAttributeFrameLeftArrow` | `ZO_PlayerAttributeFrameRightArrow` |
+| magicka | `ZO_PlayerAttributeFrameLeftArrow` | `ZO_PlayerAttributeFrameRight` (flat, 4 x 23; 6 x 64 on a console) |
+| stamina | `ZO_PlayerAttributeFrameLeft` (flat) | `ZO_PlayerAttributeFrameRightArrow` |
+
+So stamina's left end and magicka's right end were being cut back by half the band -- a triangle of
+bare fill at the end the bar fills from, which is the end that is always full. Health was right,
+because both of its ends are arrows and its halves meet flat in the middle already.
+
+The three bars carry `pointedLeft` and `pointedRight` now, and `LiquidBounds` takes them from
+there; a half of health is still flat where it meets the other half. A flat end gets no taper and
+no tip inset: the effect runs to the very edge of the fill.
+
+**Tests.** The shapes themselves are checked, and at each flat end -- just inside the top, at the
+middle, and just inside the bottom of the band -- the effect must come within half a pixel of the
+edge; a taper leaves the top and bottom short by half the band. Putting both ends back to pointed
+fails it on magicka and stamina in both styles. The preview draws each bar's real shape too.
+
 ---
 
 ## Still to measure on a PS5
@@ -1422,3 +1521,12 @@ change, and Square leaves them alone. Taking out the new alpha writes or the res
     fill -- must let the scene behind show through, and the effects must thin with it. `/pbhud plain`
     must read `alpha: bar 0.50, background 0.50, frame 0.50`. If it reads 0.50 but the bar still looks
     solid, the client is not honouring `SetAlpha` on these controls, and that is the thing to report.
+27. **Are the flat ends square?** Stamina's left end and magicka's right end are flat, not pointed:
+    the effect must fill them squarely, right to the edge, while the outer ends still follow their
+    arrow.
+28. **Do the bars come back from a menu without a flash?** Open and close the main menu a few times,
+    with a bar part-empty and with it regenerating: the bars must appear already in the style, with
+    no glimpse of the game's own look. `/pbhud plain` then reads `last return from a menu: bars shown
+    ~50 ms into the fade, after 2 draw(s)`. If it still flickers, send that line: "by the failsafe", or
+    a time far from 50, says the loop did not run as expected; a normal line says the flicker comes
+    after the bars are shown, and that is the next thing to look at.

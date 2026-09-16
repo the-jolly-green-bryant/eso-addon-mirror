@@ -1,0 +1,39 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc.
+
+## Title: |cEBE4B8Common Works|r
+## Author: Common Works
+## Version: 1.0
+## APIVersion: 101050
+## SavedVariables: CommonWorksUI_SV
+## DependsOn: LibAddonMenu-2.0>=43 LibCustomMenu>=730
+## OptionalDependsOn: LibMediaProvider>=1 UndauntedPledgesUtilities>=1 TamrielTradeCentre>=1 AwesomeGuildStore>=1 WritWorthy>=1 DolgubonsLazyWritCreator>=1 LoreBooks>=1 CrutchAlerts>=1 LarvalTear>=1 LibCombat>=1 BeamMeUp>=1
+## Description: Replacement quest tracker: Undaunted pledges, guild and zone dailies, Tamriel Tomes, your activity queue, and in Cyrodiil, the keeps and resources currently under attack. Various alerts for PVP, ability alerts, QoL changes, and integrations.
+
+; Credit and thanks to the authors of WritWorthy, Dolgubon's Lazy Writ Crafter,
+; LoreBooks, CrutchAlerts, AwesomeGuildStore, Tamriel Trade Centre, Undaunted
+; Pledges Utilities, LarvalTear, LibAddonMenu-2.0, LibCustomMenu, LibMediaProvider
+; and Solinur, whose LibCombat feeds the light attack tracker and whose
+; SimpleCastbar is where its weave grading comes from.
+
+Localization.lua
+Bindings.xml
+Themes.lua
+Core.lua
+QuestTracker.lua
+Alerts.lua
+QoL.lua
+UI.lua
+HudWidgets.lua
+GuildStore.lua
+GuildStoreIgnore.lua
+PurchaseLog.lua
+DungeonFinder.lua
+WritBridge.lua
+LoreBookPins.lua
+ChatAlerts.lua
+LarvalTear.lua
+LightAttack.lua
+Settings.lua
+SettingsUI.lua

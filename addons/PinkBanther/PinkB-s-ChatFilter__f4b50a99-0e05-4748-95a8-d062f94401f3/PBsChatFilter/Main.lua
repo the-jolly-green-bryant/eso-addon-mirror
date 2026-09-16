@@ -74,6 +74,23 @@
 -- ours.
 --
 -- ---------------------------------------------------------------------------------------
+-- THE OTHER THING OUTSIDE GUILD CHAT: NPC SPEECH
+-- ---------------------------------------------------------------------------------------
+--
+-- What the world says to itself -- a guard's greeting, a banker's line, a mob shouting as it
+-- pulls -- arrives on four channels of its own: CHAT_CHANNEL_MONSTER_SAY, _YELL, _WHISPER and
+-- _EMOTE. They are the whole of it; chatdata.lua's ChannelInfo has no other non-player
+-- speaking channel. Hiding them is one table lookup and needs no exemptions, because nothing
+-- on them ever comes from a person: there is no own-message case and no guild to identify.
+--
+-- Off by default, like everything else here. The chat window is where you also read the
+-- things that scroll past once -- a whisper, a guild invite -- and NPC lines are the bulk of
+-- what pushes those off the top.
+--
+-- The subtitles are a separate piece of UI (EVENT_SHOW_SUBTITLE) and are not affected: turn
+-- this on and the world still speaks on screen, just not in the chat log.
+--
+-- ---------------------------------------------------------------------------------------
 -- WHICH GUILD A CHANNEL IS
 -- ---------------------------------------------------------------------------------------
 --
@@ -235,6 +252,23 @@ end
 DeclareWhisperChannel(CHAT_CHANNEL_WHISPER)
 DeclareWhisperChannel(CHAT_CHANNEL_WHISPER_SENT)
 
+-- The channels the world speaks on. Written out by hand for the same reason the guild
+-- channels are: the enum's numbers are not documented, and a table cannot drift.
+local NPC_CHANNELS = {}
+
+local function DeclareNpcChannel(channel)
+	if type(channel) == "number" then
+		NPC_CHANNELS[channel] = true
+	end
+end
+
+DeclareNpcChannel(CHAT_CHANNEL_MONSTER_SAY)
+DeclareNpcChannel(CHAT_CHANNEL_MONSTER_YELL)
+DeclareNpcChannel(CHAT_CHANNEL_MONSTER_WHISPER)
+DeclareNpcChannel(CHAT_CHANNEL_MONSTER_EMOTE)
+
+addon.npcChannels = NPC_CHANNELS
+
 -- ---------------------------------------------------------------------------------------
 -- Guild links
 --
@@ -287,6 +321,9 @@ local DEFAULTS = {
 	-- reach stops at the guild channels until you say otherwise.
 	recruit = false,
 	recruitWhisper = false,
+	-- NPC speech. Off, so the add-on still reaches no further than the guild channels until
+	-- it is told to.
+	npc = false,
 	-- No login banner. It is here because a build behaving unlike its code is the hardest
 	-- thing to diagnose from inside the game, and one line at EVENT_PLAYER_ACTIVATED settles
 	-- which build is actually running. Off by default: /pbfilter says the same thing on
@@ -301,6 +338,7 @@ addon.DEFAULTS = DEFAULTS
 -- working?" without a guildmate having to be asked to say something twice.
 addon.hidden = {}
 addon.hiddenRecruit = 0
+addon.hiddenNpc = 0
 
 local function GuildKey(guildId)
 	return tostring(guildId)
@@ -464,6 +502,12 @@ function addon:ShouldShow(channel, fromName, text, fromDisplayName)
 		return false
 	end
 
+	-- The world talking. No exemptions apply: nothing on these channels comes from a person.
+	if self.sv.npc and NPC_CHANNELS[channel] then
+		self.hiddenNpc = self.hiddenNpc + 1
+		return false
+	end
+
 	-- Everything else. Ordered cheapest test first: the switch, then the string search, and
 	-- only then the two exemptions, so a message on a quiet install is one table lookup and a
 	-- boolean.
@@ -579,6 +623,7 @@ function addon:PrintStatus()
 	Print(GetString(SI_PBSCF_STATUS_OWN), OnOff(self.sv.keepOwn))
 	Print(GetString(SI_PBSCF_STATUS_RECRUIT), OnOff(self.sv.recruit), OnOff(self.sv.recruitWhisper),
 		self.hiddenRecruit)
+	Print(GetString(SI_PBSCF_STATUS_NPC), OnOff(self.sv.npc), self.hiddenNpc)
 
 	local guilds = self:GuildList()
 	if #guilds == 0 then
@@ -614,6 +659,7 @@ function addon:PrintHelp()
 		SI_PBSCF_HELP_OWN,
 		SI_PBSCF_HELP_RECRUIT,
 		SI_PBSCF_HELP_RECRUIT_WHISPER,
+		SI_PBSCF_HELP_NPC,
 		SI_PBSCF_HELP_BANNER,
 		SI_PBSCF_HELP_RESET,
 	}) do
@@ -653,6 +699,7 @@ function addon:ResetSettings()
 	self.sv.keepOwn = DEFAULTS.keepOwn
 	self.sv.recruit = DEFAULTS.recruit
 	self.sv.recruitWhisper = DEFAULTS.recruitWhisper
+	self.sv.npc = DEFAULTS.npc
 end
 
 -- The guild sitting at a channel index right now, or nil with a complaint already printed.
@@ -772,6 +819,18 @@ function addon:HandleCommand(argumentString)
 		self:RefreshPanel()
 		Print(GetString(SI_PBSCF_STATUS_RECRUIT), OnOff(self.sv.recruit),
 			OnOff(self.sv.recruitWhisper), self.hiddenRecruit)
+		return
+	end
+
+	if command == "npc" then
+		local value = ParseSwitch(words[2] or "")
+		if value == nil then
+			Print(GetString(SI_PBSCF_ERROR_ON_OR_OFF))
+			return
+		end
+		self.sv.npc = value
+		self:RefreshPanel()
+		Print(GetString(SI_PBSCF_STATUS_NPC), OnOff(self.sv.npc), self.hiddenNpc)
 		return
 	end
 

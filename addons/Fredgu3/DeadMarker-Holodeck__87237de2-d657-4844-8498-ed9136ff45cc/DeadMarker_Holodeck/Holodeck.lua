@@ -10,6 +10,7 @@
 -- New trial recipes belong in a sibling manifest .lua (new 200), not more
 -- `local function` here. Fold tunables into CFG / TEX, not new locals.
 --
+-- 0.0.58: vSS Yol (STACK/RIM/BURN IRON) + Lok (TOMB/BLOCK/KILL STORM); HP freeze on fly
 -- 0.0.57: Nav QA — park landed boss, LAND!, portal after hide, plant facing, no BASH upstairs
 -- 0.0.56: Recipes.lua parse fix (while/then) — 0.0.55 did not load
 -- 0.0.55: /hd help card on the legend (scale / rot / flip)
@@ -57,7 +58,7 @@
 local Holodeck = Holodeck or {}
 Holodeck.name        = "DeadMarker_Holodeck"
 Holodeck.displayName = "Holodeck"
-Holodeck.version     = "0.0.57"
+Holodeck.version     = "0.0.58"
 
 Holodeck.Fights = Holodeck.Fights or {}
 function Holodeck.RegisterFight(fight)
@@ -474,7 +475,8 @@ local function RefineKind(kind, label, id)
         or blob:find("lieutenant", 1, true) or blob:find("deadraiser", 1, true)
         or blob:find("overseer", 1, true) or blob:find("colossus", 1, true)
         or blob:find("miniboss", 1, true)
-        or (blob:find("alkosh", 1, true) and blob:find("fate", 1, true)) then
+        or (blob:find("alkosh", 1, true) and blob:find("fate", 1, true))
+        or blob:find("iron servant", 1, true) then
         return "mini"
     end
     return kind
@@ -1619,17 +1621,22 @@ local function CueAt(fight, tSec)
     local cues = FightCues(fight)
     if type(cues) ~= "table" then return nil end
     tSec = tonumber(tSec) or 0
+    local best, bestT0, bestLeft = nil, -1, 0
     local i = 1
     while i <= #cues do
         local c = cues[i]
         if type(c) == "table" then
             local t0 = tonumber(c.t) or 0
             local t1 = t0 + (tonumber(c.dur) or CFG.PORTAL_HOLD_SEC)
-            if tSec >= t0 and tSec < t1 then return c, t1 - tSec end
+            if tSec >= t0 and tSec < t1 and t0 >= bestT0 then
+                best = c
+                bestT0 = t0
+                bestLeft = t1 - tSec
+            end
         end
         i = i + 1
     end
-    return nil
+    return best, bestLeft
 end
 
 local function HideSwapBanner()
@@ -1922,6 +1929,16 @@ Holodeck.HpTriggers = {
         { pct = 40, label = "Fly" },
         { pct = 33, label = "Execute" },
     },
+    yolnahkriin = {
+        { pct = 75, label = "Fly" },
+        { pct = 50, label = "Fly" },
+        { pct = 25, label = "Fly" },
+    },
+    lokkestiiz = {
+        { pct = 80, label = "Fly" },
+        { pct = 50, label = "Fly" },
+        { pct = 20, label = "Fly" },
+    },
 }
 
 function Holodeck.HideBossHpBars()
@@ -1991,6 +2008,10 @@ function Holodeck.UpdateBossHpBars(tSec)
         trig = Holodeck.HpTriggers.zhajhassa
     elseif key:find("nahviintaas", 1, true) then
         trig = Holodeck.HpTriggers.nahviintaas
+    elseif key:find("yolnahkriin", 1, true) then
+        trig = Holodeck.HpTriggers.yolnahkriin
+    elseif key:find("lokkestiiz", 1, true) then
+        trig = Holodeck.HpTriggers.lokkestiiz
     end
 
     local b = 1

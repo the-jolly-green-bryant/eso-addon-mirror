@@ -43,3 +43,15 @@ icon behavior was cross-checked against ESO's public progression/collectible API
 and the publicly documented Action Bar Skill Styles / Fancy Action Bar+ behavior.
 No Fancy Action Bar+ or Action Bar Skill Styles files, artwork, or bundled runtime
 dependency are redistributed by ESO Adventurer Suite.
+
+MARKET PRICE / GUILD TRADER REFERENCES
+The Suite Market Price Checker optionally reads runtime pricing data exposed by
+separately installed LibEsoHubPrices and Tamriel Trade Centre. Those addons and
+their generated price tables remain separate third-party software/data and are
+not redistributed as Suite-owned code.
+
+Factual Guild Trader kiosk/location observations used to translate TTC
+KioskLocationID values into readable travel destinations were cross-checked
+against the user-supplied Tamriel Trade Center / HarvestMap / ESO-Hub Auto-Updater
+v6.0 by @APHONlC. The updater's source code, executable logic, artwork, and files
+are not bundled, modified, mirrored, or executed by ESO Adventurer Suite.

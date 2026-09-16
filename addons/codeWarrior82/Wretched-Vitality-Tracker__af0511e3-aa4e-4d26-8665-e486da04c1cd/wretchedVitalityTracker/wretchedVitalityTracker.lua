@@ -16,6 +16,8 @@ wretchedVitalityTracker = {}
 
 wretchedVitalityTracker.defaults = {
     trackWretch = true,
+	notify = true,
+	notifyStart = false,
     yAxisText = 720,
     xAxisText = 1060
 }
@@ -29,6 +31,15 @@ end
 --clean player names
 local function cleanName(str)
     return str:sub(1, -4)
+end
+
+--check if LibNotify is available
+local function isLibAvailable()
+    if LibNotify and type(LibNotify.notifyForAddonPlease) == "function" then
+        return true
+    else 
+		return false
+    end
 end
 
 --when UI opens
@@ -106,6 +117,9 @@ local function processBuffMajor()
     else
         trackingWretchedMajor = false
         wvtrackLabelMajor:SetText("")
+		if isLibAvailable() and wretchedVitalityTracker.savedVariables.notify then
+            LibNotify.notifyForAddonPlease(appName, majorAbilityID, "Wretched Major ended")
+        end
     end
 end
 
@@ -146,6 +160,9 @@ local function processBuffMinor()
     else
         trackingWretchedMinor = false
         wvtrackLabelMinor:SetText("")
+		if isLibAvailable() and wretchedVitalityTracker.savedVariables.notify then
+            LibNotify.notifyForAddonPlease(appName, minorAbilityID, "Wretched Minor ended")
+        end
     end
 end
 
@@ -175,9 +192,16 @@ local function effectReport(eventCode, changeType, effectSlot, effectName, unitT
         end
     end
 
+
     if abilityID == majorAbilityID and not trackingWretchedMajor then
+	if isLibAvailable() and wretchedVitalityTracker.savedVariables.notifyStart then
+		LibNotify.notifyForAddonPlease(appName, majorAbilityID, "Wretched Major Started")
+	end
         processBuffMajor()
     elseif abilityID == minorAbilityID and not trackingWretchedMinor then
+	if isLibAvailable() and wretchedVitalityTracker.savedVariables.notifyStart then
+		LibNotify.notifyForAddonPlease(appName, minorAbilityID, "Wretched Minor Started")
+	end
         processBuffMinor()
     end
 
@@ -234,10 +258,8 @@ local function createOptions()
                 wretchedVitalityTracker.savedVariables.trackWretch = value
                 if not value then
                     unRegisterAlerts()
-                    wvtrack:SetHidden(true)
                 else
                     registerAlerts()
-                    wvtrack:SetHidden(false)
                 end
             end,
             default = wretchedVitalityTracker.defaults.trackWretch,
@@ -269,6 +291,30 @@ local function createOptions()
                 setAnchorIcon(wretchedVitalityTracker.savedVariables.xAxisText, wretchedVitalityTracker.savedVariables.yAxisText)
             end,
             default = wretchedVitalityTracker.defaults.yAxisText,
+        },
+		{
+            type = "checkbox",
+            name = "Notification Start",
+            tooltip = "Displays a notification and plays a sound when the Wretched Vitality buff starts.\nThe settings for the notification can be changed in the LibNotify Add-on options.",
+            getFunc = function()
+                return wretchedVitalityTracker.savedVariables.notifyStart
+            end,
+            setFunc = function(value)
+                wretchedVitalityTracker.savedVariables.notifyStart = value
+            end,
+            default = wretchedVitalityTracker.defaults.notifyStart,
+        },
+		{
+            type = "checkbox",
+            name = "Notification End",
+            tooltip = "Displays a notification and plays a sound when the Wretched Vitality buff finishes.\nThe settings for the notification can be changed in the LibNotify Add-on options.",
+            getFunc = function()
+                return wretchedVitalityTracker.savedVariables.notify
+            end,
+            setFunc = function(value)
+                wretchedVitalityTracker.savedVariables.notify = value
+            end,
+            default = wretchedVitalityTracker.defaults.notify,
         },
         {
             type = "divider",

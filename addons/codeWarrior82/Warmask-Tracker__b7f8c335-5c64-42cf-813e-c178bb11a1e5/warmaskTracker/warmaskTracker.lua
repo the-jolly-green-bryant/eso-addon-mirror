@@ -20,6 +20,9 @@ warmaskTracker.defaults = {
     trackWarmask = true,
     trackWho = false,
     trackSelf = false,
+	notify = true,
+	notifyStart = true,
+	
     yAxisText = 930,
     xAxisText = 1300,
     yAxisTextW = 720,
@@ -443,8 +446,8 @@ local function onAddOnLoaded(event, name)
     wmtAddonTextP:SetMovable(true)
     wmtAddonTextLabelMini:SetMovable(true)
     wmtAddonTextIcon:SetFont("$(GAMEPAD_MEDIUM_FONT)|$(GP_54)|soft-shadow-thick")
-    wmtAddonTextLabel:SetFont("$(GAMEPAD_BOLD_FONT)|$(GP_42)|soft-shadow-thick")
-    wmtAddonTextLabelMini:SetFont("$(GAMEPAD_BOLD_FONT)|$(GP_22)|soft-shadow-thick")
+    wmtAddonTextLabel:SetFont("$(GAMEPAD_BOLD_FONT)|$(GP_54)|soft-shadow-thick")
+    wmtAddonTextLabelMini:SetFont("$(GAMEPAD_BOLD_FONT)|$(GP_34)|soft-shadow-thick")
     wmtAddonTextWLabel:SetFont("$(GAMEPAD_MEDIUM_FONT)|$(GP_42)|soft-shadow-thick")
     wmtAddonTextPLabel:SetFont("$(GAMEPAD_MEDIUM_FONT)|$(GP_42)|soft-shadow-thick")
     wmtAddonTextIcon:SetText(iconText)
