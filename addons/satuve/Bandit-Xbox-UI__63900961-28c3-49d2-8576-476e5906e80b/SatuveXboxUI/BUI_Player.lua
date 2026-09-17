@@ -180,8 +180,22 @@ function BUI.Player:UpdateAttribute(unitTag, powerType, powerValue, powerMax, po
 	-- Prefer effectiveMax whenever it is valid so the custom bars match the character sheet.
 	local displayMax=(powerEffectiveMax and powerEffectiveMax > 0) and powerEffectiveMax or powerMax or 0
 	local pct=displayMax > 0 and math.max(math.floor((powerValue or 0)*100/displayMax+.5)/100,0) or 0
-	--Update the database object
-	if unitTag~='reticleover' then data[power]={current=powerValue or 0,max=displayMax,pct=pct} end
+	-- Update the database object in place. The Xbox fallback refresh runs often,
+	-- so replacing this table on every unchanged tick creates avoidable garbage.
+	local current=powerValue or 0
+	local unchanged=false
+	if unitTag~='reticleover' then
+		local state=data[power]
+		unchanged=state and state.current==current and state.max==displayMax and state.pct==pct
+		if state then
+			state.current=current
+			state.max=displayMax
+			state.pct=pct
+		else
+			data[power]={current=current,max=displayMax,pct=pct}
+		end
+	end
+	if unchanged then return end
 	--Update frames
 	local shield=data.shield.current or 0
 	local trauma=data.trauma.current or 0

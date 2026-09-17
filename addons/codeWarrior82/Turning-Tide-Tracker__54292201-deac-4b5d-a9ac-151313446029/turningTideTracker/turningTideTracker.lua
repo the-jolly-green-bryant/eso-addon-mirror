@@ -7,12 +7,14 @@ local isLoaded = false
 local procTime = 15
 local vulnTime = 10
 local isMenuOpen = false
-
+local needToNotify = true
 turningTideTracker = {}
 
 turningTideTracker.defaults = {
     trackTurn = true,
-    trackVuln = true,--change to false for release
+    trackVuln = true,
+	notifyReady = true,
+	notifyVuln = true,
     yAxisText = 930,
     xAxisText = 1300
 }
@@ -48,6 +50,15 @@ local function cleanName(str)
     return str:sub(1, -4)
 end
 
+--check if LibNotify is available
+local function isLibAvailable()
+    if LibNotify and type(LibNotify.notifyForAddonPlease) == "function" then
+        return true
+    else 
+		return false
+    end
+end
+
 --is debuff major
 local function isVulnActive(abilityID)
 	return turningTideTracker.majorEffects[abilityID]
@@ -76,6 +87,7 @@ local function processFlowingWater()
         EVENT_MANAGER:UnregisterForUpdate("turningFlowUpdate")
         ttAddonTextLabelTime:SetText("")
         procTime = 15
+		needToNotify = true
     end
 
 end
@@ -98,6 +110,9 @@ local function processVuln()
         EVENT_MANAGER:UnregisterForUpdate("turnUpdateVuln")
         ttAddonTextLabelVuln:SetText("")
         vulnTime = 10
+		if isLibAvailable() and turningTideTracker.savedVariables.notifyVuln then
+            LibNotify.notifyForAddonPlease(appName, flowingWaterID, "Major Vuln ended")
+        end
     end
 
 end
@@ -135,6 +150,10 @@ local function combatReport(eventCode, result, isError, abilityName, abilityGrap
     local nameTmp = GetUnitName("player")
 
     if(abilityId == flowingWaterID) then
+		if isLibAvailable() and turningTideTracker.savedVariables.notifyReady and needToNotify then
+			needToNotify = false
+            LibNotify.notifyForAddonPlease(appName, flowingWaterID, "Flowing Water Ready")
+        end	
         processFlowingWater()
     end
 end
@@ -219,13 +238,12 @@ local function createOptions()
         {
             type = "checkbox",
             name = "Track Buff and Cooldown",
-            tooltip = "Displays a timer while the Flowing Water buff is active.",
+            tooltip = "Displays a timer while the Flowing Water buff is active.\nDisabling this option will also disable tracking the Major Vulnerability debuff.",
             getFunc = function()
                 return turningTideTracker.savedVariables.trackTurn
             end,
             setFunc = function(value)
                 turningTideTracker.savedVariables.trackTurn = value
-                turningTideTracker.savedVariables.trackVuln = value
                 if not value then
                     unRegisterAlerts()
                 else
@@ -237,7 +255,7 @@ local function createOptions()
         {
             type = "checkbox",
             name = "Track Debuff",
-            tooltip = "Displays a timer that tracks the Turning Tide Major Vulnerability debuff.",
+            tooltip = "Displays a timer that tracks the Turning Tide Major Vulnerability debuff.\nTo track the Major Vulnerability debuff tracking for the buff and cooldown needs to be enabled.",
             getFunc = function()
                 return turningTideTracker.savedVariables.trackVuln
             end,
@@ -279,6 +297,30 @@ local function createOptions()
             end,
             default = turningTideTracker.defaults.yAxisText,
         },
+		{
+            type = "checkbox",
+            name = "Notification Ready",
+            tooltip = "Displays a notification and plays a sound when the Flowing Water buff is ready for you to bash.\nThe settings for the notification can be changed in the LibNotify Add-on options.",
+            getFunc = function()
+                return turningTideTracker.savedVariables.notifyReady
+            end,
+            setFunc = function(value)
+                turningTideTracker.savedVariables.notifyReady = value
+            end,
+            default = turningTideTracker.defaults.notifyReady,
+        },
+		{
+            type = "checkbox",
+            name = "Notification Vuln",
+            tooltip = "Displays a notification and plays a sound when the Major Vulnerability debuff finishes.\nThe settings for the notification can be changed in the LibNotify Add-on options.",
+            getFunc = function()
+                return turningTideTracker.savedVariables.notifyVuln
+            end,
+            setFunc = function(value)
+                turningTideTracker.savedVariables.notifyVuln = value
+            end,
+            default = turningTideTracker.defaults.notifyVuln,
+        },
         {
             type = "divider",
             height = 0,
@@ -313,8 +355,14 @@ local function onAddOnLoaded(event, name)
     --unregister for notifications of add-on loaded
     EVENT_MANAGER:UnregisterForEvent(appName, EVENT_ADD_ON_LOADED)
 
-	--notify that add-on has been loaded
-	zo_callLater(function() printMessage("add-on loaded") end, 500)
+	--notify about new library
+	if not isLibAvailable() then
+		zo_callLater(function() printMessage("add-on Disabled") printMessage("Please install LibNotify from the browse add-ons menu") end, 500)
+		return
+	else
+		--notify that add-on has been loaded
+		zo_callLater(function() printMessage("add-on loaded") end, 500)
+	end
 
 	--load saved variables
     turningTideTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("turnAddonVars", 1, "Settings", turningTideTracker.defaults, GetUnitName("player"))

@@ -4,11 +4,21 @@ local Editor = BUI.FrameEditor
 Editor.registry = Editor.registry or {}
 Editor.order = Editor.order or {}
 Editor.pendingPositions = Editor.pendingPositions or {}
+Editor.debugEnabled = Editor.debugEnabled == true
 local UPDATE_NAME = "SXUI_FrameEditorMove"
 local SAFE_INSET = 32
 local DEADZONE = 0.18
 local FINE_SPEED = 65
 local FAST_SPEED = 520
+local SELECT_STICK_THRESHOLD = 0.55
+local SELECT_STICK_RELEASE = 0.20
+
+local function RefreshModalKeybinds()
+    if Editor.keybindStateIndex and Editor.keybindDescriptor and rawget(_G, "KEYBIND_STRIP")
+        and KEYBIND_STRIP.UpdateKeybindButtonGroup then
+        KEYBIND_STRIP:UpdateKeybindButtonGroup(Editor.keybindDescriptor, Editor.keybindStateIndex)
+    end
+end
 
 local function Copy(value)
     if type(value) ~= "table" then return value end
@@ -20,6 +30,26 @@ end
 local function KeyIs(key, name)
     local expected = rawget(_G, name)
     return expected ~= nil and key == expected
+end
+
+local function IsPrimaryGamepadKey(key)
+    return KeyIs(key, "KEY_GAMEPAD_BUTTON_1") or KeyIs(key, "KEY_GAMEPAD_A")
+end
+
+local function IsNegativeGamepadKey(key)
+    return KeyIs(key, "KEY_GAMEPAD_BUTTON_2") or KeyIs(key, "KEY_GAMEPAD_B")
+end
+
+function Editor:SetDebug(enabled)
+    self.debugEnabled = enabled == true
+end
+
+function Editor:Debug(message)
+    if not self.active or not self.debugEnabled then return end
+    local printer = rawget(_G, "d")
+    if type(printer) == "function" then
+        printer("[Satuve Frame Editor] " .. tostring(message))
+    end
 end
 
 local function ControlFor(entry)
@@ -55,6 +85,7 @@ local function RegisterStandardFrames()
         {"BUI_Attackers", "Attackers", "Attackers", "Attackers"},
         {"BUI_Targets", "Combat Targets", "Targets", "Combat Targets"},
         {"BUI_Minimap", "Minimap", "MiniMap", "Minimap"},
+        {"ZO_ActionBar1", "Skills / Action Bar", "ActionSlots", "Skills / Action Bar"},
     }
     for _, item in ipairs(specs) do
         local id, label, preference, preview = unpack(item)
@@ -178,6 +209,146 @@ function Editor:CreateWindow()
     highlight:SetHidden(true)
     self.highlight = highlight
     win:SetHandler("OnKeyDown", function(_, key) return Editor:OnKeyDown(key) end)
+
+    self.keybindDescriptor = {
+        alignment = rawget(_G, "KEYBIND_STRIP_ALIGN_LEFT"),
+        {
+            name = function()
+                if Editor.mode == "move" then return "Place Frame" end
+                if Editor.mode == "preview" then return "Save Layout" end
+                return "Move Frame"
+            end,
+            keybind = "UI_SHORTCUT_PRIMARY",
+            visible = function() return Editor.active end,
+            callback = function()
+                Editor:Debug("A keybind callback; mode=" .. tostring(Editor.mode))
+                Editor:PrimaryAction()
+            end,
+        },
+        {
+            name = function()
+                if Editor.mode == "move" then return "Cancel Move" end
+                if Editor.mode == "preview" then return "Reposition" end
+                return "Back"
+            end,
+            keybind = "UI_SHORTCUT_NEGATIVE",
+            visible = function() return Editor.active end,
+            callback = function()
+                Editor:Debug("B keybind callback; mode=" .. tostring(Editor.mode))
+                Editor:BackAction()
+            end,
+        },
+        {
+            name = "Frame Editor Up",
+            keybind = "UI_SHORTCUT_INPUT_UP",
+            ethereal = true,
+            visible = function() return Editor.active end,
+            callback = function() Editor:SelectDirection(0, -1) end,
+        },
+        {
+            name = "Frame Editor Down",
+            keybind = "UI_SHORTCUT_INPUT_DOWN",
+            ethereal = true,
+            visible = function() return Editor.active end,
+            callback = function() Editor:SelectDirection(0, 1) end,
+        },
+        {
+            name = "Frame Editor Left",
+            keybind = "UI_SHORTCUT_INPUT_LEFT",
+            ethereal = true,
+            visible = function() return Editor.active end,
+            callback = function() Editor:SelectDirection(-1, 0) end,
+        },
+        {
+            name = "Frame Editor Right",
+            keybind = "UI_SHORTCUT_INPUT_RIGHT",
+            ethereal = true,
+            visible = function() return Editor.active end,
+            callback = function() Editor:SelectDirection(1, 0) end,
+        },
+    }
+end
+
+function Editor:SuspendUnderlyingInput()
+    self.suspendedGamepadOptions = nil
+    self.keybindStateIndex = nil
+    self.modalKeybindsActive = false
+    self.uiShortcutsLayerName = nil
+    self.pushedUIShortcutsLayer = false
+
+    -- Some console extension menus do not keep ESO's UI shortcut layer active
+    -- after their list is hidden. Without it, D-Pad/A/B never reach KEYBIND_STRIP.
+    local layerId = rawget(_G, "SI_KEYBINDINGS_LAYER_USER_INTERFACE_SHORTCUTS")
+    local layerName = layerId and type(GetString) == "function" and GetString(layerId) or nil
+    if layerName and type(IsActionLayerActiveByName) == "function" and type(PushActionLayerByName) == "function" then
+        local ok, active = pcall(IsActionLayerActiveByName, layerName)
+        if ok and not active then
+            local pushed = pcall(PushActionLayerByName, layerName)
+            if pushed then
+                self.uiShortcutsLayerName = layerName
+                self.pushedUIShortcutsLayer = true
+            end
+        end
+    end
+
+    local strip = rawget(_G, "KEYBIND_STRIP")
+    if strip and strip.PushKeybindGroupState then
+        self.keybindStateIndex = strip:PushKeybindGroupState()
+        if self.keybindDescriptor and strip.AddKeybindButtonGroup then
+            strip:AddKeybindButtonGroup(self.keybindDescriptor, self.keybindStateIndex)
+            self.modalKeybindsActive = true
+        end
+    end
+
+    local options = rawget(_G, "GAMEPAD_OPTIONS")
+    if not options or not options.GetCurrentList or not options.DeactivateCurrentList then return end
+    local list = options:GetCurrentList()
+    if not list then return end
+
+    self.suspendedGamepadOptions = {
+        owner = options,
+        list = list,
+        primaryActionActive = options.isPrimaryActionActive,
+    }
+    if options.DeactivateSelectedControl then options:DeactivateSelectedControl() end
+    options:DeactivateCurrentList()
+end
+
+function Editor:RestoreUnderlyingInput()
+    local suspended = self.suspendedGamepadOptions
+    self.suspendedGamepadOptions = nil
+
+    -- Tear down the editor's modal state completely before returning focus to
+    -- the settings list. This prevents the release of B/A from reaching both.
+    local strip = rawget(_G, "KEYBIND_STRIP")
+    if self.keybindStateIndex and strip then
+        if self.keybindDescriptor and strip.RemoveKeybindButtonGroup then
+            strip:RemoveKeybindButtonGroup(self.keybindDescriptor, self.keybindStateIndex)
+        end
+        if strip.PopKeybindGroupState then strip:PopKeybindGroupState() end
+    end
+    self.keybindStateIndex = nil
+    self.modalKeybindsActive = false
+
+    if self.pushedUIShortcutsLayer and self.uiShortcutsLayerName and type(RemoveActionLayerByName) == "function" then
+        pcall(RemoveActionLayerByName, self.uiShortcutsLayerName)
+    end
+    self.uiShortcutsLayerName = nil
+    self.pushedUIShortcutsLayer = false
+
+    if suspended then
+        local options = suspended.owner
+        local sameList = options and options.GetCurrentList and options:GetCurrentList() == suspended.list
+        local showing = true
+        if options and options.IsShowing then
+            local ok, result = pcall(options.IsShowing, options)
+            showing = not ok or result
+        end
+        if sameList and showing and options.ActivateCurrentList then
+            options.isPrimaryActionActive = suspended.primaryActionActive
+            options:ActivateCurrentList()
+        end
+    end
 end
 
 function Editor:RefreshHighlight()
@@ -193,12 +364,13 @@ function Editor:RefreshHighlight()
     local prefix = self.mode == "move" and "MOVE: " or self.mode == "preview" and "TEST LAYOUT" or "SELECT: "
     self.title:SetText(prefix .. (self.mode == "preview" and "" or entry.spec.name))
     if self.mode == "move" then
-        self.helpText:SetText("Left Stick: fine move   •   Right Stick: fast move   •   B: place   •   View: cancel")
+        self.helpText:SetText("Left Stick: fine move   •   Right Stick: fast move   •   A: place   •   B: cancel move   •   View: cancel layout")
     elseif self.mode == "preview" then
         self.helpText:SetText("A: Save Layout   •   B: Reposition   •   View: cancel")
     else
-        self.helpText:SetText("D-Pad: select frame   •   A: move   •   Menu: test layout   •   View: cancel")
+        self.helpText:SetText("D-Pad / Left Stick: select frame   •   A: move   •   B: back   •   Menu: test layout   •   View: cancel")
     end
+    RefreshModalKeybinds()
 end
 
 function Editor:SelectDirection(dx, dy)
@@ -235,11 +407,39 @@ local function Axis(name)
     return (value > 0 and 1 or -1) * (math.abs(value) - DEADZONE) / (1 - DEADZONE)
 end
 
-function Editor:MoveTick()
-    if not self.active or self.mode ~= "move" then
+function Editor:InputTick()
+    if not self.active then
         EVENT_MANAGER:UnregisterForUpdate(UPDATE_NAME)
         return
     end
+    if self.mode == "move" then
+        self.selectAxisHeld = false
+        self:MoveTick()
+        return
+    end
+    if self.mode ~= "select" then
+        self.selectAxisHeld = false
+        return
+    end
+
+    local x, y = Axis("GetGamepadLeftStickX"), Axis("GetGamepadLeftStickY")
+    local magnitude = math.max(math.abs(x), math.abs(y))
+    if self.selectAxisHeld then
+        if magnitude <= SELECT_STICK_RELEASE then self.selectAxisHeld = false end
+        return
+    end
+    if magnitude < SELECT_STICK_THRESHOLD then return end
+
+    self.selectAxisHeld = true
+    if math.abs(x) >= math.abs(y) then
+        self:SelectDirection(x > 0 and 1 or -1, 0)
+    else
+        self:SelectDirection(0, y > 0 and -1 or 1)
+    end
+end
+
+function Editor:MoveTick()
+    if not self.active or self.mode ~= "move" then return end
     local lx, ly = Axis("GetGamepadLeftStickX"), Axis("GetGamepadLeftStickY")
     local rx, ry = Axis("GetGamepadRightStickX"), Axis("GetGamepadRightStickY")
     if lx == 0 and ly == 0 and rx == 0 and ry == 0 then return end
@@ -249,23 +449,53 @@ function Editor:MoveTick()
     dt = math.max(0, math.min(0.05, tonumber(dt) or 0.016))
     local x = position.x + (lx * FINE_SPEED + rx * FAST_SPEED) * dt
     local y = position.y - (ly * FINE_SPEED + ry * FAST_SPEED) * dt
+    local previousX, previousY = position.x, position.y
     position.x, position.y = Clamp(entry.control, x, y)
     SetSessionPosition(entry.control, position)
+    if not self.moveDebugLogged then
+        self:Debug(string.format(
+            "Stick movement received; frame=%s delta=(%.2f, %.2f)",
+            entry.spec.name, position.x - previousX, position.y - previousY))
+        self.moveDebugLogged = true
+    end
     self:RefreshHighlight()
 end
 
 function Editor:EnterMove()
     if self.mode ~= "select" then return end
+    local entry = self.visible and self.visible[self.selection]
+    if not entry or not self.pendingPositions[entry.spec.id] then return end
+    self.grabStartPosition = Copy(self.pendingPositions[entry.spec.id])
+    self.moveDebugLogged = false
     self.mode = "move"
-    EVENT_MANAGER:UnregisterForUpdate(UPDATE_NAME)
-    EVENT_MANAGER:RegisterForUpdate(UPDATE_NAME, 16, function() Editor:MoveTick() end)
+    self.selectAxisHeld = false
+    self:Debug("Entered movement mode; frame=" .. tostring(entry.spec.name))
     self:RefreshHighlight()
 end
 
 function Editor:Place()
     if self.mode ~= "move" then return end
-    EVENT_MANAGER:UnregisterForUpdate(UPDATE_NAME)
+    local entry = self.visible and self.visible[self.selection]
+    self.grabStartPosition = nil
+    self.moveDebugLogged = false
+    self.selectAxisHeld = false
     self.mode = "select"
+    self:Debug("Confirmed frame position; frame=" .. tostring(entry and entry.spec.name))
+    self:RefreshHighlight()
+end
+
+function Editor:CancelMove()
+    if self.mode ~= "move" then return end
+    local entry = self.visible and self.visible[self.selection]
+    if entry and self.grabStartPosition then
+        self.pendingPositions[entry.spec.id] = Copy(self.grabStartPosition)
+        SetSessionPosition(entry.control, self.pendingPositions[entry.spec.id])
+    end
+    self.grabStartPosition = nil
+    self.moveDebugLogged = false
+    self.selectAxisHeld = false
+    self.mode = "select"
+    self:Debug("Cancelled frame movement; frame=" .. tostring(entry and entry.spec.name))
     self:RefreshHighlight()
 end
 
@@ -326,6 +556,7 @@ end
 function Editor:Close(saved)
     if not self.active then return end
     EVENT_MANAGER:UnregisterForUpdate(UPDATE_NAME)
+    self:Debug(saved and "Closing and saving layout" or "Closing and restoring layout")
     for _, entry in ipairs(self.visible) do
         if entry.previewControl then entry.previewControl:SetHidden(true) end
         RestoreControl(entry)
@@ -339,11 +570,15 @@ function Editor:Close(saved)
     end
     self.highlight:SetHidden(true)
     self.window:SetHidden(true)
+    self:RestoreUnderlyingInput()
     if self.settingsWasShown and rawget(_G, "BUI_SettingsWindow") then BUI_SettingsWindow:SetHidden(false) end
     if self.uiModeWasOff and SCENE_MANAGER and not WINDOW_MANAGER:IsSecureRenderModeEnabled() then
         SCENE_MANAGER:SetInUIMode(false)
     end
     self.active, self.mode, self.visible, self.selection = false, nil, nil, nil
+    self.grabStartPosition = nil
+    self.moveDebugLogged = false
+    self.selectAxisHeld = false
     self.pendingPositions = {}
     self.originalPositions = {}
     if BUI.Frames and BUI.Frames.SetupPlayer then BUI.Frames:SetupPlayer() end
@@ -364,22 +599,48 @@ function Editor:Cancel()
     self:Close(false)
 end
 
+function Editor:PrimaryAction()
+    if not self.active then return end
+    if self.mode == "preview" then self:Save()
+    elseif self.mode == "move" then self:Place()
+    elseif self.mode == "select" then self:EnterMove() end
+end
+
+function Editor:BackAction()
+    if not self.active then return end
+    if self.mode == "preview" then self:Reposition()
+    elseif self.mode == "move" then self:CancelMove()
+    else self:Cancel() end
+end
+
 function Editor:OnKeyDown(key)
     if not self.active then return false end
+
+    -- With the modal keybind group installed, ESO must translate A/B into
+    -- UI_SHORTCUT_PRIMARY/NEGATIVE. Consuming the raw key here prevents the
+    -- keybind strip callback from running.
+    if IsPrimaryGamepadKey(key) or IsNegativeGamepadKey(key) then
+        if self.modalKeybindsActive then
+            self:Debug((IsPrimaryGamepadKey(key) and "A" or "B") .. " raw key passed to ESO keybind strip")
+            return false
+        end
+        if IsPrimaryGamepadKey(key) then self:PrimaryAction() else self:BackAction() end
+        return true
+    end
+
     if KeyIs(key, "KEY_GAMEPAD_BACK") or KeyIs(key, "KEY_GAMEPAD_BACK_HOLD") or KeyIs(key, "KEY_ESCAPE") then
         self:Cancel()
     elseif self.mode == "preview" then
-        if KeyIs(key, "KEY_GAMEPAD_BUTTON_1") or KeyIs(key, "KEY_ENTER") then self:Save()
-        elseif KeyIs(key, "KEY_GAMEPAD_BUTTON_2") then self:Reposition() end
+        if KeyIs(key, "KEY_ENTER") then self:PrimaryAction() end
     elseif self.mode == "move" then
-        if KeyIs(key, "KEY_GAMEPAD_BUTTON_2") then self:Place() end
+        if KeyIs(key, "KEY_ENTER") then self:PrimaryAction() end
     else
-        if KeyIs(key, "KEY_GAMEPAD_BUTTON_1") or KeyIs(key, "KEY_ENTER") then self:EnterMove()
+        if KeyIs(key, "KEY_ENTER") then self:PrimaryAction()
         elseif KeyIs(key, "KEY_GAMEPAD_START") then self:Preview()
-        elseif KeyIs(key, "KEY_GAMEPAD_DPAD_UP") or KeyIs(key, "KEY_UPARROW") then self:SelectDirection(0, -1)
-        elseif KeyIs(key, "KEY_GAMEPAD_DPAD_DOWN") or KeyIs(key, "KEY_DOWNARROW") then self:SelectDirection(0, 1)
-        elseif KeyIs(key, "KEY_GAMEPAD_DPAD_LEFT") or KeyIs(key, "KEY_LEFTARROW") then self:SelectDirection(-1, 0)
-        elseif KeyIs(key, "KEY_GAMEPAD_DPAD_RIGHT") or KeyIs(key, "KEY_RIGHTARROW") then self:SelectDirection(1, 0) end
+        elseif KeyIs(key, "KEY_UPARROW") or KeyIs(key, "KEY_GAMEPAD_DPAD_UP") then self:SelectDirection(0, -1)
+        elseif KeyIs(key, "KEY_DOWNARROW") or KeyIs(key, "KEY_GAMEPAD_DPAD_DOWN") then self:SelectDirection(0, 1)
+        elseif KeyIs(key, "KEY_LEFTARROW") or KeyIs(key, "KEY_GAMEPAD_DPAD_LEFT") then self:SelectDirection(-1, 0)
+        elseif KeyIs(key, "KEY_RIGHTARROW") or KeyIs(key, "KEY_GAMEPAD_DPAD_RIGHT") then self:SelectDirection(1, 0) end
     end
     return true
 end
@@ -415,9 +676,14 @@ function Editor:Open()
     self.settingsWasShown = rawget(_G, "BUI_SettingsWindow") and not BUI_SettingsWindow:IsHidden()
     if self.settingsWasShown then BUI_SettingsWindow:SetHidden(true) end
     if self.uiModeWasOff and not WINDOW_MANAGER:IsSecureRenderModeEnabled() then SCENE_MANAGER:SetInUIMode(true) end
+    self:SuspendUnderlyingInput()
+    self.selectAxisHeld = false
+    EVENT_MANAGER:UnregisterForUpdate(UPDATE_NAME)
+    EVENT_MANAGER:RegisterForUpdate(UPDATE_NAME, 16, function() Editor:InputTick() end)
     self.window:SetHidden(false)
     if self.window.TakeFocus then self.window:TakeFocus() end
+    local selected = self.visible[self.selection]
+    self:Debug("Opened; selected frame=" .. tostring(selected and selected.spec.name))
     self:RefreshHighlight()
     return true
 end
-

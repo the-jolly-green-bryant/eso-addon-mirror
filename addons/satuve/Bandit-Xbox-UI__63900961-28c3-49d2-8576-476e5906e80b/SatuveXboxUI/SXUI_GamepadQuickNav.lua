@@ -29,6 +29,25 @@ local function IsCurrentList(menu, list)
     return menu.currentList == list
 end
 
+local function IsMenuShowing(menu)
+    if not menu then return false end
+    if type(menu.IsShowing) == "function" then
+        local ok, result = pcall(menu.IsShowing, menu)
+        if ok then return result == true end
+    end
+    local scene = menu.scene
+    if scene and type(scene.IsShowing) == "function" then
+        local ok, result = pcall(scene.IsShowing, scene)
+        if ok then return result == true end
+    end
+    local control = menu.control
+    if control and type(control.IsHidden) == "function" then
+        local ok, hidden = pcall(control.IsHidden, control)
+        if ok then return hidden == false end
+    end
+    return false
+end
+
 local function SetCurrentList(menu, list)
     if not menu or not list or type(menu.SetCurrentList) ~= "function" then return false end
     local ok = pcall(menu.SetCurrentList, menu, list)
@@ -87,8 +106,14 @@ function QuickNav.Install()
         -- guaranteed to be called by every ESO menu build for a shoulder-only
         -- press, while the lightweight update makes LB/RB transfer reliable.
         if EVENT_MANAGER and EVENT_MANAGER.RegisterForUpdate then
-            EVENT_MANAGER:RegisterForUpdate("SXUI_GamepadQuickNavPoll", 20, function()
-                ProcessQuickNav(rawget(_G, "MAIN_MENU_GAMEPAD"))
+            EVENT_MANAGER:RegisterForUpdate("SXUI_GamepadQuickNavPoll", 50, function()
+                local activeMenu = rawget(_G, "MAIN_MENU_GAMEPAD")
+                if IsMenuShowing(activeMenu) then
+                    ProcessQuickNav(activeMenu)
+                else
+                    QuickNav.leftLatched = false
+                    QuickNav.rightLatched = false
+                end
             end)
         end
         QuickNav.hooked = true

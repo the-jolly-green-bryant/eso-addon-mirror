@@ -1,9 +1,9 @@
 ## Title: |c7851a9Muffin's|r Utility Tree
 ## APIVersion: 101050 101051
 ## Author: |c7851a9Muffins714|r
-## Description: QoL tools for Gamepad like craft bag quality sorter, custom multi stack splitter and ReloadUI button. Unused branches can be completely turn off.
+## Description: QoL tools for Gamepad like craft bag quality sorter, custom multi stack splitter, personal bank stacker and ReloadUI button. Unused branches can be completely turn off.
 ## SavedVariables: MUTGlobalSavedVars
-## Version: 1.0
+## Version: 1.1
 ## DependsOn: LibAddonMenu-2.0>=43
 
 ; Localization
@@ -18,6 +18,9 @@ QualitySorter.lua
 ; Multi Stack Splitter
 StackSplitter.lua
 StackSplitterDialog.xml
+
+; Bank Stack All
+BankStackAll.lua
 
 ; Settings
 MUTMenu.lua

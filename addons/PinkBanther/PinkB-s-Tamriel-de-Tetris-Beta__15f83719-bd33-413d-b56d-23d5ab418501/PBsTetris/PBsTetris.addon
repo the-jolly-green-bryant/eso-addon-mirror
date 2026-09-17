@@ -1,0 +1,23 @@
+## Title: |cFF69B4PB's Tamriel de Tetris|r 1.13.0
+## Author: |cFF69B4PinkBanther|r
+## Description: Stone-themed falling-block puzzle with solo score attack and group duels.
+## Version: 1.13.0
+## AddOnVersion: 11300
+## APIVersion: 101050 101051
+## OptionalDependsOn: LibGroupBroadcast
+## SavedVariables: PBsTetrisSavedVariables
+
+SHA256.lua
+Engine.lua
+Match.lua
+Transport.lua
+Audio.lua
+UI.lua
+Menu.lua
+Main.lua
+Bindings.xml
+assets/stone.dds
+assets/flake.dds
+assets/sanctuary.dds
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.

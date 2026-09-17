@@ -158,7 +158,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Mudballed - Memento Counter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kyzeragon/Mudballed---Memento-Counter__3218) | Kyzeragon | PC / Mac | 1.0.2 |
 | [Mudcrab Counter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/TwinLamps/Mudcrab-Counter__4383) | TwinLamps | PC / Mac | 1.1 |
 | [Mudcrab Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/snay/Mudcrab-Tracker__4312) | snay | PC / Mac | 0.1.4 |
-| [Muffin's Utility Tree](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Muffins714/Muffin-s-Utility-Tree__4797) | Muffins714 | PC / Mac | 1.0 |
+| [Muffin's Utility Tree](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Muffins714/Muffin-s-Utility-Tree__4797) | Muffins714 | PC / Mac | 1.1 |
 | [Muffin’s Set & Recipe Tracker for Gamepad](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Muffins714/Muffin-s-Set-Recipe-Tracker-for-Gamepad__4090) | Muffins714 | PC / Mac | 1.6.1 |
 | [Multi Class Ability Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Cerbin/Multi-Class-Ability-Tracker__4831) | Cerbin | PC / Mac | 0.1.0 |
 | [Mundus](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/probo11/Mundus__2698) | probo11 | PC / Mac | 5.0 |
@@ -184,7 +184,6 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [My Donation (Arkadius' Trade Tools Addon)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Verbalinkontinenz/My-Donation-Arkadius-Trade-Tools-Addon__2762) | Verbalinkontinenz | PC / Mac | 1.0.3 |
 | [My Little Journal](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lledos/My-Little-Journal__4802) | Lledos | PC / Mac | 1.01 |
 | [My Trackers](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/j.hhh/My-Trackers__4b0c0d15-66db-4be0-b76a-b9817a229cfd) | j.hhh | Console | — |
-| [My UI-Tweaks](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/j.hhh/My-UI-Tweaks__b1bf0d35-ce24-4850-a553-507da6b0e5e5) | j.hhh | Console | — |
 | [MyAutoMarker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Unfounded_Puppy3/MyAutoMarker__097cf265-8ddc-4970-9836-914d69dbdc80) | Unfounded_Puppy3 | Console | — |
 | [MyCrystalFragmentsProcUI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Unfounded_Puppy3/MyCrystalFragmentsProcUI__d706fcf0-71fd-47e6-911a-fdacc426303a) | Unfounded_Puppy3 | Console | — |
 | [MyDebuffLog](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Unfounded_Puppy3/MyDebuffLog__eae4a86c-cd3b-44d0-81f9-5ca0caf0eb10) | Unfounded_Puppy3 | Console | — |

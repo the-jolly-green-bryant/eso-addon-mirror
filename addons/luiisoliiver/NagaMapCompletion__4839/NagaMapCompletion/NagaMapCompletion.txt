@@ -1,9 +1,11 @@
-## Title: NagaMapCompletion
+## Title: |cE0B050NagaMapCompletion|r
 ## APIVersion: 101050 101051
-## Version: 0.8.1
-## Author: NAGA
-## Description: Zone Story progress panel and colored map Locations with % tooltips. Click a zone in /nmc to open its map.
-## AddOnVersion: 14
+## Version: 1.2.5
+## Author: N A G A
+## Description: Tracks Zone Story completion. Colors the map Locations list, shows collected progress, panel with filters/search/favorites, and an optional HUD button for the current zone.
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: NagaMapCompletionSV
+## AddOnVersion: 31
 
 NagaMapCompletion.xml
 NagaMapCompletion.lua

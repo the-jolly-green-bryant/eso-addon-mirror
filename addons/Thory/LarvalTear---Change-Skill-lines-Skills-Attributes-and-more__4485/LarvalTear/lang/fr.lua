@@ -174,9 +174,7 @@ LTM_LOCALIZATION["fr"] = {
     -- QuickSettings: Food Helper
     SI_LTM_QUICK_SETTINGS_FOOD_AUTO_EAT = "Consommer automatiquement",
     SI_LTM_QUICK_SETTINGS_FOOD_AUTO_EAT_TOOLTIP = "Active l'utilisation automatique de la nourriture ou boisson sélectionnée.",
-    SI_LTM_QUICK_SETTINGS_FOOD_REGISTER_ACTIVE = "Enregistrer le consommable actif",
-    SI_LTM_QUICK_SETTINGS_FOOD_REGISTER_ACTIVE_TOOLTIP = "Enregistre le bonus de nourriture ou de boisson actuellement actif si un objet correspondant existe dans votre sac.",
-    SI_LTM_QUICK_SETTINGS_FOOD_EMPTY = "Aucun consommable enregistré. Déposez de la nourriture ou une boisson ici, ou enregistrez le consommable actif.",
+    SI_LTM_QUICK_SETTINGS_FOOD_EMPTY = "Aucun consommable enregistré. Déposez de la nourriture ou une boisson ici pour l’enregistrer.",
     SI_LTM_QUICK_SETTINGS_FOOD_ACTIVE_TOOLTIP = "Utilise ce consommable comme cible de consommation automatique.",
     SI_LTM_QUICK_SETTINGS_FOOD_REGISTERED = "Consommable enregistré : {itemName}",
     SI_LTM_QUICK_SETTINGS_FOOD_REPLACED = "Consommable mis à jour : {itemName}",
@@ -572,10 +570,7 @@ LTM_LOCALIZATION["fr"] = {
     SI_LTM_ERROR_REASON_FOOD_INVALID_SLOT = "Impossible de lire l'emplacement d'inventaire sélectionné.",
     SI_LTM_ERROR_REASON_FOOD_INVALID_ITEM = "Déposez un aliment ou une boisson.",
     SI_LTM_ERROR_REASON_FOOD_ITEM_API_UNAVAILABLE = "L'API des consommables est indisponible.",
-    SI_LTM_ERROR_REASON_FOOD_UNSUPPORTED_ITEM = "Cet aliment ou cette boisson n'est pas encore pris en charge.",
     SI_LTM_ERROR_REASON_FOOD_SAVEDVARS_UNAVAILABLE = "Les réglages des consommables sont indisponibles.",
-    SI_LTM_ERROR_REASON_FOOD_NO_ACTIVE_BUFF = "Aucun bonus actif de nourriture ou de boisson n'a été trouvé.",
-    SI_LTM_ERROR_REASON_FOOD_MATCHING_ITEM_NOT_FOUND = "Aucun aliment ou boisson correspondant n'a été trouvé dans votre sac.",
 
     -- Wait Messages
     SI_LTM_WAIT_SERVER_BUSY = "En attente de l'acceptation de la modification par le serveur.",

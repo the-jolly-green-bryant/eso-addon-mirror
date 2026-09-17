@@ -3,7 +3,7 @@
 ## DependsOn: LibAddonMenu-2.0>=41
 ## SavedVariables: NirnsteelUI_Account NirnsteelUI_Servers NirnsteelUI_Character
 ## Author: |cFFFF00Wrynch|r
-## Version: 2.1.1
+## Version: 3.0.1
 ## Description: UI feedback and polish for ESO.
 
 ui/loot_history.xml
@@ -13,11 +13,15 @@ modules/bar_visuals.lua
 modules/level_visuals.lua
 modules/target_frame.lua
 modules/adventure_camera.lua
+modules/immersive_teleport.lua
 modules/experience_tracker.lua
 modules/resource_bars.lua
 modules/group_frames.lua
 modules/cast_bar.lua
 modules/synergy_alert.lua
+modules/achievement_alert.lua
+modules/werewolf_rage.lua
+modules/quest_tracker.lua
 modules/compass.lua
 modules/minimap.lua
 Bindings.xml

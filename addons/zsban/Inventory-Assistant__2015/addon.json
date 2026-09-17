@@ -1,0 +1,41 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/zsban/Inventory-Assistant__2015",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "zsban",
+  "canonical_id": "esoui:2015",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:2015",
+  "deleted": false,
+  "directories": [
+    "locales",
+    "ui"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2015/",
+  "fingerprint": "dfffdfcf2961a7f2fcfbe8eb38ad53634cbd08ebc0a4310d597c9b034b0efe64",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2015",
+  "source_url": "https://www.esoui.com/downloads/info2015-InventoryAssistant.html",
+  "stats": {
+    "downloads": 14779,
+    "favorites": 41,
+    "monthly_downloads": 7
+  },
+  "title": "Inventory Assistant",
+  "updated_at": 1789594200000,
+  "version": "1.18.260916-beta"
+}

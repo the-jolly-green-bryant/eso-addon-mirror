@@ -267,7 +267,3 @@ end
 function ProfileFacade:ReplaceFoodCardFromBagSlot(cardId, bagId, slotIndex)
     return FoodHelper:CreateOrReplaceFromBagSlot(bagId, slotIndex, cardId)
 end
-
-function ProfileFacade:RegisterCurrentActiveFood()
-    return FoodHelper:RegisterCurrentActiveFood()
-end

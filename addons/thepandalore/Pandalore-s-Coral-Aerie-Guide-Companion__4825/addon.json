@@ -22,7 +22,7 @@
     "PandaloresCoralAerieCompanion"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4825/",
-  "fingerprint": "e4f28f349aefa33a5968313e3c08937fef72f55fb7ee2c9632f43227126b1a41",
+  "fingerprint": "d2c0d05a977513fc7466394c2bdcb26a63aa04e0470137086795166a07a2bb49",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw17336.png",
     "https://cdn-eso.mmoui.com/preview/pvw17337.png",
@@ -34,11 +34,11 @@
   "source_id": "4825",
   "source_url": "https://www.esoui.com/downloads/info4825-PandaloresCoralAerieGuideCompanion.html",
   "stats": {
-    "downloads": 12,
+    "downloads": 30,
     "favorites": 1,
-    "monthly_downloads": 10
+    "monthly_downloads": 27
   },
   "title": "Pandalore's Coral Aerie Guide Companion",
-  "updated_at": 1789114946000,
-  "version": "1.0.2"
+  "updated_at": 1789597157000,
+  "version": "1.1.0"
 }

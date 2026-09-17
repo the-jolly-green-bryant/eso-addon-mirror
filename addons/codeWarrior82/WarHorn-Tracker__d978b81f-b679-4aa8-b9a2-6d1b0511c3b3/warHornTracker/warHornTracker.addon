@@ -3,6 +3,7 @@
 ## Description: Tracks both buffs from the Warhorn ultimate
 ## APIVersion: 101050
 ## DependsOn: LibAddonMenu-2.0>=42 LibChatMessage
+## OptionalDependsOn: LibNotify
 ## SavedVariables: whtAddonVars
 
 warHornTracker.lua

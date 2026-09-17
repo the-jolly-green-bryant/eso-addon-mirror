@@ -1,6 +1,10 @@
 -- Create a local shortcut for global
 local MUT = MuffinsUtilityTree
 
+--[[ TODO
+See if it's possible to add quality sorter to the listing page
+so when we sell something in the Guild Trader we can organize it by quality
+]]
 ---------------------------------------------------------------------------------------------
 -- Craft Bag quality sort
 ---------------------------------------------------------------------------------------------

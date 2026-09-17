@@ -3,6 +3,7 @@
 ## Description: Tracks the buff time and cooldown of the Rallying Cry buff.
 ## APIVersion: 101050
 ## DependsOn: LibAddonMenu-2.0>=42 LibChatMessage
+## OptionalDependsOn: LibNotify
 ## SavedVariables: rctAddonVars
 
 rallyingCryTracker.lua

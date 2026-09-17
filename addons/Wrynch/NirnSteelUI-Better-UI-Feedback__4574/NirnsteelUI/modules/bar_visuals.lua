@@ -107,25 +107,69 @@ local function CreateLabel(parent, alignment)
     return label
 end
 
+-- Plain vertex gradients keep shadows soft without stretching a decorative
+-- frame texture. Pieces are reused when sliders or frame dimensions change.
+local function ApplyShadow(control, width, height, opacity, inside)
+    control:SetHidden(opacity <= 0)
+    if opacity <= 0 then return end
+    local size = math.min(inside and 3 or 4, width / 2, height / 2)
+    local pieces
+    if inside then
+        pieces = {
+            { 0, 0, width, size, 1, 1, 0, 0 },
+            { 0, height - size, width, size, 0, 0, 1, 1 },
+            { 0, 0, size, height, 1, 0, 1, 0 },
+            { width - size, 0, size, height, 0, 1, 0, 1 },
+        }
+    else
+        pieces = {
+            { 0, -size, width, size, 0, 0, 1, 1 },
+            { 0, height, width, size, 1, 1, 0, 0 },
+            { -size, 0, size, height, 0, 1, 0, 1 },
+            { width, 0, size, height, 1, 0, 1, 0 },
+            { -size, -size, size, size, 0, 0, 0, 1 },
+            { width, -size, size, size, 0, 0, 1, 0 },
+            { -size, height, size, size, 0, 1, 0, 0 },
+            { width, height, size, size, 1, 0, 0, 0 },
+        }
+    end
+    local vertices = { VERTEX_POINTS_TOPLEFT, VERTEX_POINTS_TOPRIGHT,
+        VERTEX_POINTS_BOTTOMLEFT, VERTEX_POINTS_BOTTOMRIGHT }
+    control.pieces = control.pieces or {}
+    for i, piece in ipairs(pieces) do
+        local texture = control.pieces[i]
+        if not texture then
+            texture = WINDOW_MANAGER:CreateControl(nil, control, CT_TEXTURE)
+            texture:SetMouseEnabled(false)
+            texture:SetDrawLayer(inside and DL_OVERLAY or DL_BACKGROUND)
+            texture:SetDrawLevel(inside and 2 or 0)
+            control.pieces[i] = texture
+        end
+        texture:ClearAnchors()
+        texture:SetAnchor(TOPLEFT, control, TOPLEFT, piece[1], piece[2])
+        texture:SetDimensions(piece[3], piece[4])
+        for j, vertex in ipairs(vertices) do
+            texture:SetVertexColors(vertex, 0, 0, 0, piece[j + 4] * opacity)
+        end
+    end
+end
+
 function BarVisuals:Create(parent, name, options)
     options = options or {}
     local frame = WINDOW_MANAGER:CreateControl(name, parent, CT_CONTROL)
     frame:SetDimensions(options.width or 1, options.height or 1)
 
-    frame.outerShadow = WINDOW_MANAGER:CreateControl(nil, frame, CT_BACKDROP)
-    frame.outerShadow:SetAnchor(TOPLEFT, frame, TOPLEFT, -3, -3)
-    frame.outerShadow:SetAnchor(BOTTOMRIGHT, frame, BOTTOMRIGHT, 3, 3)
-    frame.outerShadow:SetCenterColor(0, 0, 0, 0)
-    frame.outerShadow:SetEdgeColor(0, 0, 0, 0)
-    frame.outerShadow:SetEdgeTexture(EDGE_FRAME_TEXTURE, 128, 16, 4, 0)
+    frame.outerShadow = WINDOW_MANAGER:CreateControl(nil, frame, CT_CONTROL)
+    frame.outerShadow:SetAnchorFill(frame)
     frame.outerShadow:SetDrawLayer(DL_BACKGROUND)
 
     frame.border = WINDOW_MANAGER:CreateControl(nil, frame, CT_BACKDROP)
     frame.border:SetAnchorFill(frame)
     frame.border:SetCenterColor(0, 0, 0, 0)
     frame.border:SetEdgeColor(0, 0, 0, 1)
-    frame.border:SetEdgeTexture(EDGE_FRAME_TEXTURE, 128, 16, 1, 0)
-    frame.border:SetDrawLayer(DL_BACKGROUND)
+    frame.border:SetEdgeTexture("", 1, 1, 1, 0)
+    frame.border:SetDrawLayer(DL_OVERLAY)
+    frame.border:SetDrawLevel(5)
 
     frame.track = WINDOW_MANAGER:CreateControl(nil, frame, CT_BACKDROP)
     frame.track:SetAnchorFill(frame)
@@ -153,11 +197,8 @@ function BarVisuals:Create(parent, name, options)
     frame.patternBar:SetDrawLevel(1)
     frame.patternBar:SetHidden(true)
 
-    frame.innerShadow = WINDOW_MANAGER:CreateControl(nil, frame, CT_BACKDROP)
+    frame.innerShadow = WINDOW_MANAGER:CreateControl(nil, frame, CT_CONTROL)
     frame.innerShadow:SetAnchorFill(frame.track)
-    frame.innerShadow:SetCenterColor(0, 0, 0, 0)
-    frame.innerShadow:SetEdgeColor(0, 0, 0, 0)
-    frame.innerShadow:SetEdgeTexture(EDGE_FRAME_TEXTURE, 128, 16, 2, 0)
     frame.innerShadow:SetDrawLayer(DL_OVERLAY)
     frame.innerShadow:SetDrawLevel(0)
 
@@ -334,6 +375,40 @@ function BarVisuals:ApplyPattern(frame)
     frame.patternBar:SetHidden((frame.nirnsteelCurrent or 0) <= 0 or width <= 0)
 end
 
+function BarVisuals:ApplyRpgBorder(frame, enabled, width, height, alpha)
+    if not enabled and not frame.rpgBorder then return end
+    if not frame.rpgBorder then
+        frame.rpgBorder = {}
+        local art = Nirnsteel_UI:GetAssetPath("ui/borders/")
+        for _,name in ipairs({"top","bottom","left","right"}) do
+            local c = WINDOW_MANAGER:CreateControl(nil,frame,CT_TEXTURE)
+            c:SetTexture(art .. ((name == "top" or name == "bottom") and "rail_dxt5.dds" or "cap_dxt5.dds"))
+            c:SetMouseEnabled(false)
+            c:SetDrawLayer(DL_OVERLAY)
+            c:SetDrawLevel(2)
+            frame.rpgBorder[name] = c
+        end
+    end
+    for _,c in pairs(frame.rpgBorder) do c:SetHidden(not enabled); c:SetAlpha(alpha or 1) end
+    if not enabled then return end
+    local capWidth = math.max(10,math.min(16,height*.5))
+    for _,name in ipairs({"top","bottom","left","right"}) do
+        local c = frame.rpgBorder[name]
+        c:ClearAnchors()
+        if name == "top" or name == "bottom" then
+            local anchor = name == "top" and TOP or BOTTOM
+            c:SetAnchor(anchor,frame,anchor,0,name == "top" and -2 or 2)
+            c:SetDimensions(math.max(1,width-4),4)
+            c:SetTextureCoords(0,1,name == "top" and 0 or 1,name == "top" and 1 or 0)
+        else
+            local anchor = name == "left" and LEFT or RIGHT
+            c:SetAnchor(anchor,frame,anchor,name == "left" and -4 or 4,0)
+            c:SetDimensions(capWidth,height+8)
+            c:SetTextureCoords(name == "left" and 0 or 1,name == "left" and 1 or 0,0,1)
+        end
+    end
+end
+
 function BarVisuals:ApplyStyle(frame, style)
     if not frame then
         return
@@ -343,43 +418,35 @@ function BarVisuals:ApplyStyle(frame, style)
     frame.nirnsteelStyle = style
     local width = math.max(tonumber(style.width) or frame:GetWidth(), 1)
     local height = math.max(tonumber(style.height) or frame:GetHeight(), 1)
-    local borderWidth = Clamp(style.borderWidth or 0, 0, 12)
-    local cornerSize = Clamp(style.cornerSize or 0, 0, 16)
+    local borderWidth = Clamp(style.borderWidth or 0, 0, math.min(12, (width - 1) / 2, (height - 1) / 2))
     local innerShadowAlpha = Clamp(style.innerShadowAlpha or 0, 0, 1)
     local outerShadowAlpha = Clamp(style.outerShadowAlpha or 0, 0, 1)
     local alpha = Clamp(style.alpha or 1, 0, 1)
     local textureInfo = style.textureInfo or BarVisuals.Textures.genericTall
 
     frame:SetDimensions(width, height)
+    self:ApplyRpgBorder(frame,style.rpgBorder == true,width,height,alpha)
     frame.layoutWidth = width
     frame.layoutHeight = height
     frame.contentWidth = math.max(width - (borderWidth * 2), 1)
     frame.contentHeight = math.max(height - (borderWidth * 2), 1)
 
-    frame.outerShadow:SetHidden(outerShadowAlpha <= 0)
-    frame.outerShadow:ClearAnchors()
-    frame.outerShadow:SetAnchor(TOPLEFT, frame, TOPLEFT, -math.max(borderWidth + 2, 3), -math.max(borderWidth + 2, 3))
-    frame.outerShadow:SetAnchor(BOTTOMRIGHT, frame, BOTTOMRIGHT, math.max(borderWidth + 2, 3), math.max(borderWidth + 2, 3))
-    frame.outerShadow:SetEdgeColor(0, 0, 0, outerShadowAlpha)
-    frame.outerShadow:SetCenterColor(0, 0, 0, outerShadowAlpha * 0.20)
-    frame.outerShadow:SetEdgeTexture(EDGE_FRAME_TEXTURE, 128, 16, math.max(cornerSize, 1), 0)
+    ApplyShadow(frame.outerShadow, width, height, outerShadowAlpha * alpha * 0.65, false)
 
     frame.border:SetHidden(borderWidth <= 0)
-    frame.border:SetEdgeColor(0, 0, 0, 1)
+    frame.border:SetEdgeColor(0, 0, 0, alpha)
     frame.border:SetCenterColor(0, 0, 0, 0)
-    frame.border:SetEdgeTexture(EDGE_FRAME_TEXTURE, 128, 16, math.max(cornerSize, 1), 0)
+    frame.border:SetEdgeTexture("", 1, 1, borderWidth, 0)
 
     frame.track:ClearAnchors()
     frame.track:SetAnchor(TOPLEFT, frame, TOPLEFT, borderWidth, borderWidth)
     frame.track:SetAnchor(BOTTOMRIGHT, frame, BOTTOMRIGHT, -borderWidth, -borderWidth)
     local trackR, trackG, trackB, trackA = ReadColor(style.trackColor, 0.01, 0.01, 0.01, 0.55)
     frame.track:SetCenterColor(trackR, trackG, trackB, trackA * alpha)
-    frame.track:SetEdgeTexture(EDGE_FRAME_TEXTURE, 128, 16, math.max(cornerSize - borderWidth, 1), 0)
+    frame.track:SetEdgeTexture("", 1, 1, 0)
+    frame.track:SetEdgeColor(0, 0, 0, 0)
 
-    frame.innerShadow:SetHidden(innerShadowAlpha <= 0)
-    frame.innerShadow:SetCenterColor(0, 0, 0, innerShadowAlpha * 0.16)
-    frame.innerShadow:SetEdgeColor(0, 0, 0, innerShadowAlpha)
-    frame.innerShadow:SetEdgeTexture(EDGE_FRAME_TEXTURE, 128, 16, math.max(cornerSize - borderWidth, 1), 0)
+    ApplyShadow(frame.innerShadow, frame.contentWidth, frame.contentHeight, innerShadowAlpha * alpha * 0.55, true)
 
     ConfigureStatusBar(frame.bar, textureInfo)
     ConfigureStatusBar(frame.lossTrail, textureInfo)

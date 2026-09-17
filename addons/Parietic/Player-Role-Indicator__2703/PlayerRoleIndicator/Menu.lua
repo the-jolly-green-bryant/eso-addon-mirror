@@ -1,6 +1,6 @@
 PlayerRoleIndicator = PlayerRoleIndicator or {}
+local PRI = PlayerRoleIndicator
 local LAM2 = LibAddonMenu2
-local noteVisable = false
 local roleSettingsDirty = false
 
 local roleIconChoices = {
@@ -87,7 +87,11 @@ local roleIconChoices = {
 	"/esoui/art/zonestories/completiontypeicon_worldevents.dds",
 }
 
-function PlayerRoleIndicator.createSubmenu(role, roleSV, roleDefault)
+local function unpackColour(colour)
+	return colour.r, colour.g, colour.b, colour.a
+end
+
+function PRI.createSubmenu(role, roleSV, roleDefault)
 	local submenu = {
 		[1] = {
 			type = "checkbox",
@@ -97,8 +101,8 @@ function PlayerRoleIndicator.createSubmenu(role, roleSV, roleDefault)
 			end,
 			setFunc = function(newValue)
 				roleSV.show = newValue
-				PlayerRoleIndicator.UpdateRoleSwitch()
-				PlayerRoleIndicator.UpdateAllIconVisuals()
+				PRI.UpdateRoleSwitch()
+				PRI.UpdateAllIconVisuals()
 			end,
 			default = roleDefault.show,
 		},
@@ -110,8 +114,8 @@ function PlayerRoleIndicator.createSubmenu(role, roleSV, roleDefault)
 			end,
 			setFunc = function(newValue)
 				roleSV.showOnAlive = newValue
-				PlayerRoleIndicator.UpdateRoleSwitch()
-				PlayerRoleIndicator.UpdateAllIconVisuals()
+				PRI.UpdateRoleSwitch()
+				PRI.UpdateAllIconVisuals()
 			end,
 			disabled = function()
 				return not roleSV.show
@@ -122,49 +126,33 @@ function PlayerRoleIndicator.createSubmenu(role, roleSV, roleDefault)
 			type = "colorpicker",
 			name = string.format("Colour of alive %s icons", role),
 			getFunc = function()
-				return roleSV.colourAlive.r, roleSV.colourAlive.g, roleSV.colourAlive.b, roleSV.colourAlive.a
+				return unpackColour(roleSV.colourAlive)
 			end,
 			setFunc = function(r, g, b, a)
-				roleSV.colourAlive.r = r
-				roleSV.colourAlive.g = g
-				roleSV.colourAlive.b = b
-				roleSV.colourAlive.a = a
-				PlayerRoleIndicator.UpdateRoleSwitch()
-				PlayerRoleIndicator.UpdateAllIconVisuals()
+				roleSV.colourAlive = { r = r, g = g, b = b, a = a }
+				PRI.UpdateRoleSwitch()
+				PRI.UpdateAllIconVisuals()
 			end,
 			disabled = function()
 				return not (roleSV.show and roleSV.showOnAlive)
 			end,
-			default = {
-				r = roleDefault.colourAlive.r,
-				g = roleDefault.colourAlive.g,
-				b = roleDefault.colourAlive.b,
-				a = roleDefault.colourAlive.a,
-			},
+			default = roleDefault.colourAlive,
 		},
 		[4] = {
 			type = "colorpicker",
 			name = string.format("Colour of dead %s icons", role),
 			getFunc = function()
-				return roleSV.colourDead.r, roleSV.colourDead.g, roleSV.colourDead.b, roleSV.colourDead.a
+				return unpackColour(roleSV.colourDead)
 			end,
 			setFunc = function(r, g, b, a)
-				roleSV.colourDead.r = r
-				roleSV.colourDead.g = g
-				roleSV.colourDead.b = b
-				roleSV.colourDead.a = a
-				PlayerRoleIndicator.UpdateRoleSwitch()
-				PlayerRoleIndicator.UpdateAllIconVisuals()
+				roleSV.colourDead = { r = r, g = g, b = b, a = a }
+				PRI.UpdateRoleSwitch()
+				PRI.UpdateAllIconVisuals()
 			end,
 			disabled = function()
 				return not roleSV.show
 			end,
-			default = {
-				r = roleDefault.colourDead.r,
-				g = roleDefault.colourDead.g,
-				b = roleDefault.colourDead.b,
-				a = roleDefault.colourDead.a,
-			},
+			default = roleDefault.colourDead,
 		},
 		[5] = {
 			type = "iconpicker",
@@ -178,8 +166,8 @@ function PlayerRoleIndicator.createSubmenu(role, roleSV, roleDefault)
 			end,
 			setFunc = function(newValue)
 				roleSV.texturePath = newValue
-				PlayerRoleIndicator.UpdateRoleSwitch()
-				PlayerRoleIndicator.UpdateAllIconVisuals()
+				PRI.UpdateRoleSwitch()
+				PRI.UpdateAllIconVisuals()
 			end,
 			disabled = function()
 				return not roleSV.show
@@ -194,8 +182,8 @@ function PlayerRoleIndicator.createSubmenu(role, roleSV, roleDefault)
 			end,
 			setFunc = function(newValue)
 				roleSV.iconSizeMultiplier = newValue
-				PlayerRoleIndicator.UpdateRoleSwitch()
-				PlayerRoleIndicator.UpdateAllIconVisuals()
+				PRI.UpdateRoleSwitch()
+				PRI.UpdateAllIconVisuals()
 			end,
 			min = 0.25,
 			max = 2,
@@ -212,12 +200,12 @@ function PlayerRoleIndicator.createSubmenu(role, roleSV, roleDefault)
 end
 
 local function getCustomRoleSV(i)
-	return PlayerRoleIndicator.savedVariables.customRole[i] or PlayerRoleIndicator.default.customDefault
+	return PRI.savedVariables.customRole[i] or PRI.default.customDefault
 end
 
 local function SyncCustomRoleVisibility()
-	local n = PlayerRoleIndicator.savedVariables.customNum
-	for i = 1, PlayerRoleIndicator.customMax do
+	local n = PRI.savedVariables.customNum
+	for i = 1, PRI.customMax do
 		local ctrl = _G["PRI_CustomRoleSubmenu_" .. i]
 		if ctrl then
 			ctrl:SetHidden(i > n)
@@ -225,28 +213,28 @@ local function SyncCustomRoleVisibility()
 	end
 end
 
-function PlayerRoleIndicator.createCustomRoles()
-	local default = PlayerRoleIndicator.default.customDefault
+function PRI.createCustomRoles()
+	local default = PRI.default.customDefault
 	local submenu = {
 		[1] = {
 			type = "checkbox",
 			name = "Use custom roles",
 			getFunc = function()
-				return PlayerRoleIndicator.savedVariables.useCustom
+				return PRI.savedVariables.useCustom
 			end,
 			setFunc = function(newValue)
-				PlayerRoleIndicator.savedVariables.useCustom = newValue
+				PRI.savedVariables.useCustom = newValue
 			end,
-			default = PlayerRoleIndicator.default.useCustom,
+			default = PRI.default.useCustom,
 		},
 		[2] = {
 			type = "slider",
 			name = "Number of custom roles",
 			getFunc = function()
-				return PlayerRoleIndicator.savedVariables.customNum
+				return PRI.savedVariables.customNum
 			end,
 			setFunc = function(newValue)
-				local sv = PlayerRoleIndicator.savedVariables
+				local sv = PRI.savedVariables
 				if newValue > sv.customNum then
 					for i = sv.customNum + 1, newValue do
 						if not sv.customRole[i] then
@@ -278,30 +266,30 @@ function PlayerRoleIndicator.createCustomRoles()
 				roleSettingsDirty = true
 			end,
 			min = 0,
-			max = PlayerRoleIndicator.customMax,
+			max = PRI.customMax,
 			disabled = function()
-				return not PlayerRoleIndicator.savedVariables.useCustom
+				return not PRI.savedVariables.useCustom
 			end,
-			default = PlayerRoleIndicator.default.customNum,
+			default = PRI.default.customNum,
 		},
 		[3] = {
 			type = "button",
 			name = "Forget deleted roles",
 			func = function()
-				local sv = PlayerRoleIndicator.savedVariables
+				local sv = PRI.savedVariables
 				for i = #sv.customRole, sv.customNum + 1, -1 do
 					table.remove(sv.customRole, i)
 				end
 			end,
 			disabled = function()
-				return not PlayerRoleIndicator.savedVariables.useCustom
+				return not PRI.savedVariables.useCustom
 			end,
 			isDangerous = true,
 			warning = "This will permanently erase all custom role settings above the current count. Cannot be undone!",
 		},
 	}
 
-	for i = 1, PlayerRoleIndicator.customMax do
+	for i = 1, PRI.customMax do
 		local controls = {
 			{
 				type = "editbox",
@@ -310,7 +298,7 @@ function PlayerRoleIndicator.createCustomRoles()
 					return getCustomRoleSV(i).name
 				end,
 				setFunc = function(newValue)
-					local sv = PlayerRoleIndicator.savedVariables.customRole[i]
+					local sv = PRI.savedVariables.customRole[i]
 					if sv then
 						sv.name = newValue
 						roleSettingsDirty = true
@@ -326,11 +314,11 @@ function PlayerRoleIndicator.createCustomRoles()
 					return getCustomRoleSV(i).show
 				end,
 				setFunc = function(newValue)
-					local sv = PlayerRoleIndicator.savedVariables.customRole[i]
+					local sv = PRI.savedVariables.customRole[i]
 					if sv then
 						sv.show = newValue
-						PlayerRoleIndicator.UpdateRoleSwitch()
-						PlayerRoleIndicator.UpdateAllIconVisuals()
+						PRI.UpdateRoleSwitch()
+						PRI.UpdateAllIconVisuals()
 						roleSettingsDirty = true
 					end
 				end,
@@ -343,11 +331,11 @@ function PlayerRoleIndicator.createCustomRoles()
 					return getCustomRoleSV(i).showOnAlive
 				end,
 				setFunc = function(newValue)
-					local sv = PlayerRoleIndicator.savedVariables.customRole[i]
+					local sv = PRI.savedVariables.customRole[i]
 					if sv then
 						sv.showOnAlive = newValue
-						PlayerRoleIndicator.UpdateRoleSwitch()
-						PlayerRoleIndicator.UpdateAllIconVisuals()
+						PRI.UpdateRoleSwitch()
+						PRI.UpdateAllIconVisuals()
 						roleSettingsDirty = true
 					end
 				end,
@@ -360,18 +348,14 @@ function PlayerRoleIndicator.createCustomRoles()
 				type = "colorpicker",
 				name = "Colour of alive icons for this role",
 				getFunc = function()
-					local c = getCustomRoleSV(i).colourAlive
-					return c.r, c.g, c.b, c.a
+					return unpackColour(getCustomRoleSV(i).colourAlive)
 				end,
 				setFunc = function(r, g, b, a)
-					local sv = PlayerRoleIndicator.savedVariables.customRole[i]
+					local sv = PRI.savedVariables.customRole[i]
 					if sv then
-						sv.colourAlive.r = r
-						sv.colourAlive.g = g
-						sv.colourAlive.b = b
-						sv.colourAlive.a = a
-						PlayerRoleIndicator.UpdateRoleSwitch()
-						PlayerRoleIndicator.UpdateAllIconVisuals()
+						sv.colourAlive = { r = r, g = g, b = b, a = a }
+						PRI.UpdateRoleSwitch()
+						PRI.UpdateAllIconVisuals()
 						roleSettingsDirty = true
 					end
 				end,
@@ -379,41 +363,27 @@ function PlayerRoleIndicator.createCustomRoles()
 					local sv = getCustomRoleSV(i)
 					return not (sv.show and sv.showOnAlive)
 				end,
-				default = {
-					r = default.colourAlive.r,
-					g = default.colourAlive.g,
-					b = default.colourAlive.b,
-					a = default.colourAlive.a,
-				},
+				default = default.colourAlive,
 			},
 			{
 				type = "colorpicker",
 				name = "Colour of dead icons for this role",
 				getFunc = function()
-					local c = getCustomRoleSV(i).colourDead
-					return c.r, c.g, c.b, c.a
+					return unpackColour(getCustomRoleSV(i).colourDead)
 				end,
 				setFunc = function(r, g, b, a)
-					local sv = PlayerRoleIndicator.savedVariables.customRole[i]
+					local sv = PRI.savedVariables.customRole[i]
 					if sv then
-						sv.colourDead.r = r
-						sv.colourDead.g = g
-						sv.colourDead.b = b
-						sv.colourDead.a = a
-						PlayerRoleIndicator.UpdateRoleSwitch()
-						PlayerRoleIndicator.UpdateAllIconVisuals()
+						sv.colourDead = { r = r, g = g, b = b, a = a }
+						PRI.UpdateRoleSwitch()
+						PRI.UpdateAllIconVisuals()
 						roleSettingsDirty = true
 					end
 				end,
 				disabled = function()
 					return not getCustomRoleSV(i).show
 				end,
-				default = {
-					r = default.colourDead.r,
-					g = default.colourDead.g,
-					b = default.colourDead.b,
-					a = default.colourDead.a,
-				},
+				default = default.colourDead,
 			},
 			{
 				type = "iconpicker",
@@ -426,11 +396,11 @@ function PlayerRoleIndicator.createCustomRoles()
 					return getCustomRoleSV(i).texturePath
 				end,
 				setFunc = function(newValue)
-					local sv = PlayerRoleIndicator.savedVariables.customRole[i]
+					local sv = PRI.savedVariables.customRole[i]
 					if sv then
 						sv.texturePath = newValue
-						PlayerRoleIndicator.UpdateRoleSwitch()
-						PlayerRoleIndicator.UpdateAllIconVisuals()
+						PRI.UpdateRoleSwitch()
+						PRI.UpdateAllIconVisuals()
 						roleSettingsDirty = true
 					end
 				end,
@@ -446,11 +416,11 @@ function PlayerRoleIndicator.createCustomRoles()
 					return getCustomRoleSV(i).iconSizeMultiplier or 1
 				end,
 				setFunc = function(newValue)
-					local sv = PlayerRoleIndicator.savedVariables.customRole[i]
+					local sv = PRI.savedVariables.customRole[i]
 					if sv then
 						sv.iconSizeMultiplier = newValue
-						PlayerRoleIndicator.UpdateRoleSwitch()
-						PlayerRoleIndicator.UpdateAllIconVisuals()
+						PRI.UpdateRoleSwitch()
+						PRI.UpdateAllIconVisuals()
 						roleSettingsDirty = true
 					end
 				end,
@@ -468,10 +438,10 @@ function PlayerRoleIndicator.createCustomRoles()
 				type = "button",
 				name = "Clear players",
 				func = function()
-					local sv = PlayerRoleIndicator.savedVariables.customRole[i]
+					local sv = PRI.savedVariables.customRole[i]
 					if sv then
 						sv.players = {}
-						CALLBACK_MANAGER:FireCallbacks(PlayerRoleIndicator.EVENT.CUSTOM_ROLE_CHANGED, nil)
+						CALLBACK_MANAGER:FireCallbacks(PRI.EVENT.CUSTOM_ROLE_CHANGED, nil)
 					end
 				end,
 				tooltip = "Will remove all players from this role.",
@@ -489,7 +459,7 @@ function PlayerRoleIndicator.createCustomRoles()
 			reference = "PRI_CustomRoleSubmenu_" .. i,
 			controls = controls,
 			disabled = function()
-				return not PlayerRoleIndicator.savedVariables.useCustom
+				return not PRI.savedVariables.useCustom
 			end,
 		})
 	end
@@ -497,128 +467,126 @@ function PlayerRoleIndicator.createCustomRoles()
 	return submenu
 end
 
-function PlayerRoleIndicator.CreateSettingsWindow()
+function PRI.CreateSettingsWindow()
 	local panelData = {
 		type = "panel",
 		name = "Player role indicator",
 		displayName = "Player role indicator",
 		author = "|c18fff9Parietic|r",
-		version = PlayerRoleIndicator.version,
-		website = "https://www.esoui.com/downloads/info2703-PlayerRoleIndicator.html",
-		feedback = "https://www.esoui.com/downloads/info2703-PlayerRoleIndicator.html#comments",
+		version = PRI.version,
+		website = "https://www.esoui.com/downloads/info2703-PRI.html",
+		feedback = "https://www.esoui.com/downloads/info2703-PRI.html#comments",
 		slashCommand = "/pri",
 		registerForRefresh = true,
 		registerForDefaults = true,
 	}
-	PlayerRoleIndicator.settingsPanel = LAM2:RegisterAddonPanel("Player_role_indicator", panelData)
+	PRI.settingsPanel = LAM2:RegisterAddonPanel("Player_role_indicator", panelData)
 
 	local optionsData = {
 		[1] = {
 			type = "slider",
 			name = "Icon size",
 			getFunc = function()
-				return PlayerRoleIndicator.savedVariables.iconSize
+				return PRI.savedVariables.iconSize
 			end,
 			setFunc = function(newValue)
-				PlayerRoleIndicator.savedVariables.iconSize = newValue
-				PlayerRoleIndicator.UpdateRoleSwitch()
-				PlayerRoleIndicator.UpdateAllIconVisuals()
+				PRI.savedVariables.iconSize = newValue
+				PRI.UpdateRoleSwitch()
+				PRI.UpdateAllIconVisuals()
 			end,
 			min = 1,
 			max = 128,
-			default = PlayerRoleIndicator.default.iconSize,
+			default = PRI.default.iconSize,
 		},
 		[2] = {
 			type = "slider",
 			name = "Dead player icon offset",
 			getFunc = function()
-				return PlayerRoleIndicator.savedVariables.yOffsetDead
+				return PRI.savedVariables.yOffsetDead
 			end,
 			setFunc = function(newValue)
-				PlayerRoleIndicator.savedVariables.yOffsetDead = newValue
+				PRI.savedVariables.yOffsetDead = newValue
 			end,
 			min = 0,
 			max = 500,
 			tooltip = "The vertical offset for the icon displayed over dead players.",
-			default = PlayerRoleIndicator.default.yOffsetDead,
+			default = PRI.default.yOffsetDead,
 		},
 		[3] = {
 			type = "slider",
 			name = "Alive player icon offset",
 			getFunc = function()
-				return PlayerRoleIndicator.savedVariables.yOffsetAlive
+				return PRI.savedVariables.yOffsetAlive
 			end,
 			setFunc = function(newValue)
-				PlayerRoleIndicator.savedVariables.yOffsetAlive = newValue
+				PRI.savedVariables.yOffsetAlive = newValue
 			end,
 			min = 0,
 			max = 500,
 			tooltip = "The vertical offset for the icon displayed over alive players.",
-			default = PlayerRoleIndicator.default.yOffsetAlive,
+			default = PRI.default.yOffsetAlive,
 		},
 		[4] = {
+			type = "slider",
+			name = "Scale icons with distance",
+			tooltip = "At 0, icons always appear the same size regardless of distance."
+				.. " At 1, icons shrink and grow with distance from the camera, like a 3D object in the world."
+				.. " Values in-between blend between the two.",
+			getFunc = function()
+				return PRI.savedVariables.scaleWithDistance
+			end,
+			setFunc = function(newValue)
+				PRI.savedVariables.scaleWithDistance = newValue
+			end,
+			min = 0,
+			max = 1,
+			step = 0.05,
+			decimals = 2,
+			default = PRI.default.scaleWithDistance,
+		},
+		[5] = {
 			type = "checkbox",
 			name = "Use different colours for players resurrection status",
 			getFunc = function()
-				return PlayerRoleIndicator.savedVariables.useRezColour
+				return PRI.savedVariables.useRezColour
 			end,
 			setFunc = function(newValue)
-				PlayerRoleIndicator.savedVariables.useRezColour = newValue
-				PlayerRoleIndicator.UpdateAllIconVisuals()
+				PRI.savedVariables.useRezColour = newValue
+				PRI.UpdateAllIconVisuals()
 			end,
-			default = PlayerRoleIndicator.default.useRezColour,
-		},
-		[5] = {
-			type = "colorpicker",
-			name = "Colour of players with resurrection pending",
-			getFunc = function()
-				local colour = PlayerRoleIndicator.savedVariables.rezPendingColour
-				return colour.r, colour.g, colour.b, colour.a
-			end,
-			setFunc = function(r, g, b, a)
-				local colour = PlayerRoleIndicator.savedVariables.rezPendingColour
-				colour.r = r
-				colour.g = g
-				colour.b = b
-				colour.a = a
-				PlayerRoleIndicator.UpdateAllIconVisuals()
-			end,
-			disabled = function()
-				return not PlayerRoleIndicator.savedVariables.useRezColour
-			end,
-			default = {
-				r = PlayerRoleIndicator.default.rezPendingColour.r,
-				g = PlayerRoleIndicator.default.rezPendingColour.g,
-				b = PlayerRoleIndicator.default.rezPendingColour.b,
-				a = PlayerRoleIndicator.default.rezPendingColour.a,
-			},
+			default = PRI.default.useRezColour,
 		},
 		[6] = {
 			type = "colorpicker",
-			name = "Colour of players being resurrected",
+			name = "Colour of players with resurrection pending",
 			getFunc = function()
-				local colour = PlayerRoleIndicator.savedVariables.rezingColour
-				return colour.r, colour.g, colour.b, colour.a
+				return unpackColour(PRI.savedVariables.rezPendingColour)
 			end,
 			setFunc = function(r, g, b, a)
-				local colour = PlayerRoleIndicator.savedVariables.rezingColour
-				colour.r = r
-				colour.g = g
-				colour.b = b
-				colour.a = a
-				PlayerRoleIndicator.UpdateAllIconVisuals()
+				PRI.savedVariables.rezPendingColour = { r = r, g = g, b = b, a = a }
+				PRI.UpdateAllIconVisuals()
 			end,
 			disabled = function()
-				return not PlayerRoleIndicator.savedVariables.useRezColour
+				return not PRI.savedVariables.useRezColour
 			end,
-			default = {
-				r = PlayerRoleIndicator.default.rezingColour.r,
-				g = PlayerRoleIndicator.default.rezingColour.g,
-				b = PlayerRoleIndicator.default.rezingColour.b,
-				a = PlayerRoleIndicator.default.rezingColour.a,
-			},
+			default = PRI.default.rezPendingColour,
 		},
 		[7] = {
+			type = "colorpicker",
+			name = "Colour of players being resurrected",
+			getFunc = function()
+				return unpackColour(PRI.savedVariables.rezingColour)
+			end,
+			setFunc = function(r, g, b, a)
+				PRI.savedVariables.rezingColour = { r = r, g = g, b = b, a = a }
+				PRI.UpdateAllIconVisuals()
+			end,
+			disabled = function()
+				return not PRI.savedVariables.useRezColour
+			end,
+			default = PRI.default.rezingColour,
+		},
+		[8] = {
 			type = "submenu",
 			name = "Notifications",
 			icon = "/esoui/art/tutorial/gamepad/achievement_categoryicon_quests.dds",
@@ -632,41 +600,39 @@ function PlayerRoleIndicator.CreateSettingsWindow()
 					type = "checkbox",
 					name = "Use notifications",
 					getFunc = function()
-						return PlayerRoleIndicator.savedVariables.useNote
+						return PRI.savedVariables.useNote
 					end,
 					setFunc = function(newValue)
-						PlayerRoleIndicator.savedVariables.useNote = newValue
+						PRI.savedVariables.useNote = newValue
 					end,
-					default = PlayerRoleIndicator.default.useNote,
+					default = PRI.default.useNote,
 				},
 				[3] = {
 					type = "checkbox",
 					name = "Unlock and show notification panel",
 					getFunc = function()
-						return noteVisable
+						return PRI.noteUnlocked
 					end,
 					setFunc = function(newValue)
-						local c = PlayerRoleIndicatorWindowNotePanel
-						c:SetMouseEnabled(newValue)
-						c:SetMovable(newValue)
+						PRI.notePanel:SetMouseEnabled(newValue)
+						PRI.notePanel:SetMovable(newValue)
 
-						for i = 1, PlayerRoleIndicator.noteNum, 1 do
-							local label = c:GetNamedChild(string.format("Note%u", i))
-							local labelIcon = label:GetNamedChild("Icon")
+						for i = 1, PRI.noteNum, 1 do
+							local label, icon = PRI.GetNoteLabel(i)
 							label:SetHidden(not newValue)
-							labelIcon:SetHidden(not newValue)
+							icon:SetHidden(not newValue)
 						end
 
 						if not newValue then
-							PlayerRoleIndicator.savedVariables.notePos.x = c:GetLeft()
-							PlayerRoleIndicator.savedVariables.notePos.y = c:GetTop()
-							PlayerRoleIndicator.UpdateAllNoteSize()
+							PRI.savedVariables.notePos.x = PRI.notePanel:GetLeft()
+							PRI.savedVariables.notePos.y = PRI.notePanel:GetTop()
+							PRI.UpdateAllNoteSize()
 						end
 
-						noteVisable = newValue
+						PRI.noteUnlocked = newValue
 					end,
 					disabled = function()
-						return not PlayerRoleIndicator.savedVariables.useNote
+						return not PRI.savedVariables.useNote
 					end,
 					default = false,
 				},
@@ -674,114 +640,98 @@ function PlayerRoleIndicator.CreateSettingsWindow()
 					type = "slider",
 					name = "Notification scale",
 					getFunc = function()
-						return PlayerRoleIndicator.savedVariables.noteSize
+						return PRI.savedVariables.noteSize
 					end,
 					setFunc = function(newValue)
-						PlayerRoleIndicator.savedVariables.noteSize = newValue
-						PlayerRoleIndicator.UpdateAllNoteSize()
+						PRI.savedVariables.noteSize = newValue
+						PRI.UpdateAllNoteSize()
 					end,
 					min = 0.1,
 					max = 4,
 					step = 0.1,
 					decimals = 1,
 					disabled = function()
-						return not PlayerRoleIndicator.savedVariables.useNote
+						return not PRI.savedVariables.useNote
 					end,
-					default = PlayerRoleIndicator.default.noteSize,
+					default = PRI.default.noteSize,
 				},
 				[5] = {
 					type = "slider",
 					name = "Notification duration",
 					getFunc = function()
-						return PlayerRoleIndicator.savedVariables.noteDuration
+						return PRI.savedVariables.noteDuration
 					end,
 					setFunc = function(newValue)
-						PlayerRoleIndicator.savedVariables.noteDuration = newValue
+						PRI.savedVariables.noteDuration = newValue
 					end,
 					min = 1,
 					max = 10,
 					disabled = function()
-						return not PlayerRoleIndicator.savedVariables.useNote
+						return not PRI.savedVariables.useNote
 					end,
-					default = PlayerRoleIndicator.default.noteDuration,
+					default = PRI.default.noteDuration,
 				},
 				[6] = {
 					type = "checkbox",
 					name = "Use account name",
 					getFunc = function()
-						return PlayerRoleIndicator.savedVariables.noteUseAccountName
+						return PRI.savedVariables.noteUseAccountName
 					end,
 					setFunc = function(newValue)
-						PlayerRoleIndicator.savedVariables.noteUseAccountName = newValue
+						PRI.savedVariables.noteUseAccountName = newValue
 					end,
 					disabled = function()
-						return not PlayerRoleIndicator.savedVariables.useNote
+						return not PRI.savedVariables.useNote
 					end,
-					default = PlayerRoleIndicator.default.noteUseAccountName,
+					default = PRI.default.noteUseAccountName,
 				},
 				[7] = {
 					type = "checkbox",
 					name = "Use role icon in notification",
 					getFunc = function()
-						return PlayerRoleIndicator.savedVariables.noteUseIcon
+						return PRI.savedVariables.noteUseIcon
 					end,
 					setFunc = function(newValue)
-						PlayerRoleIndicator.savedVariables.noteUseIcon = newValue
+						PRI.savedVariables.noteUseIcon = newValue
 					end,
 					disabled = function()
-						return not PlayerRoleIndicator.savedVariables.useNote
+						return not PRI.savedVariables.useNote
 					end,
-					default = PlayerRoleIndicator.default.noteUseIcon,
+					default = PRI.default.noteUseIcon,
 				},
 			},
 		},
-		[8] = {
+		[9] = {
 			type = "submenu",
 			name = "leader",
 			icon = "/esoui/art/compass/groupleader.dds",
-			controls = PlayerRoleIndicator.createSubmenu(
-				"leader",
-				PlayerRoleIndicator.savedVariables.leader,
-				PlayerRoleIndicator.default.leader
-			),
-		},
-		[9] = {
-			type = "submenu",
-			name = "tanks",
-			icon = "/esoui/art/tutorial/gamepad/gp_lfg_tank.dds",
-			controls = PlayerRoleIndicator.createSubmenu(
-				"tanks",
-				PlayerRoleIndicator.savedVariables.tank,
-				PlayerRoleIndicator.default.tank
-			),
+			controls = PRI.createSubmenu("leader", PRI.savedVariables.leader, PRI.default.leader),
 		},
 		[10] = {
 			type = "submenu",
-			name = "healers",
-			icon = "/esoui/art/tutorial/gamepad/gp_lfg_healer.dds",
-			controls = PlayerRoleIndicator.createSubmenu(
-				"healers",
-				PlayerRoleIndicator.savedVariables.healer,
-				PlayerRoleIndicator.default.healer
-			),
+			name = "tanks",
+			icon = "/esoui/art/tutorial/gamepad/gp_lfg_tank.dds",
+			controls = PRI.createSubmenu("tanks", PRI.savedVariables.tank, PRI.default.tank),
 		},
 		[11] = {
 			type = "submenu",
-			name = "damage dealers",
-			icon = "/esoui/art/tutorial/gamepad/gp_lfg_dps.dds",
-			controls = PlayerRoleIndicator.createSubmenu(
-				"damage dealers",
-				PlayerRoleIndicator.savedVariables.dps,
-				PlayerRoleIndicator.default.dps
-			),
+			name = "healers",
+			icon = "/esoui/art/tutorial/gamepad/gp_lfg_healer.dds",
+			controls = PRI.createSubmenu("healers", PRI.savedVariables.healer, PRI.default.healer),
 		},
 		[12] = {
 			type = "submenu",
-			name = "Custom roles",
-			icon = "/esoui/art/tutorial/gamepad/gp_lfg_world.dds",
-			controls = PlayerRoleIndicator.createCustomRoles(),
+			name = "damage dealers",
+			icon = "/esoui/art/tutorial/gamepad/gp_lfg_dps.dds",
+			controls = PRI.createSubmenu("damage dealers", PRI.savedVariables.dps, PRI.default.dps),
 		},
 		[13] = {
+			type = "submenu",
+			name = "Custom roles",
+			icon = "/esoui/art/tutorial/gamepad/gp_lfg_world.dds",
+			controls = PRI.createCustomRoles(),
+		},
+		[14] = {
 			type = "submenu",
 			name = "Shadow of the Fallen",
 			icon = GetAbilityIcon(102271), --Icon for "Shadow of the Fallen" buff
@@ -797,36 +747,28 @@ function PlayerRoleIndicator.CreateSettingsWindow()
 					type = "checkbox",
 					name = "Enable colour indicator for Shadow of the Fallen",
 					getFunc = function()
-						return PlayerRoleIndicator.savedVariables.showShade
+						return PRI.savedVariables.showShade
 					end,
 					setFunc = function(newValue)
-						PlayerRoleIndicator.savedVariables.showShade = newValue
-						PlayerRoleIndicator.UpdateRoleSwitch()
-						PlayerRoleIndicator.UpdateAllIconVisuals()
+						PRI.savedVariables.showShade = newValue
+						PRI.UpdateRoleSwitch()
+						PRI.UpdateAllIconVisuals()
 					end,
-					default = PlayerRoleIndicator.default.showShade,
+					default = PRI.default.showShade,
 				},
 				[3] = {
 					type = "colorpicker",
 					name = "Colour of icon while shade is alive",
 					getFunc = function()
-						return PlayerRoleIndicator.savedVariables.shadeColour.r,
-							PlayerRoleIndicator.savedVariables.shadeColour.g,
-							PlayerRoleIndicator.savedVariables.shadeColour.b,
-							PlayerRoleIndicator.savedVariables.shadeColour.a
+						return PRI.savedVariables.shadeColour.r,
+							PRI.savedVariables.shadeColour.g,
+							PRI.savedVariables.shadeColour.b,
+							PRI.savedVariables.shadeColour.a
 					end,
 					setFunc = function(r, g, b, a)
-						PlayerRoleIndicator.savedVariables.shadeColour.r = r
-						PlayerRoleIndicator.savedVariables.shadeColour.g = g
-						PlayerRoleIndicator.savedVariables.shadeColour.b = b
-						PlayerRoleIndicator.savedVariables.shadeColour.a = a
+						PRI.savedVariables.shadeColour = { r = r, g = g, b = b, a = a }
 					end,
-					default = {
-						r = PlayerRoleIndicator.default.shadeColour.r,
-						g = PlayerRoleIndicator.default.shadeColour.g,
-						b = PlayerRoleIndicator.default.shadeColour.b,
-						a = PlayerRoleIndicator.default.shadeColour.a,
-					},
+					default = PRI.default.shadeColour,
 				},
 			},
 		},
@@ -834,14 +776,14 @@ function PlayerRoleIndicator.CreateSettingsWindow()
 	LAM2:RegisterOptionControls("Player_role_indicator", optionsData)
 
 	CALLBACK_MANAGER:RegisterCallback("LAM-PanelControlsCreated", function(panel)
-		if panel == PlayerRoleIndicator.settingsPanel then
+		if panel == PRI.settingsPanel then
 			SyncCustomRoleVisibility()
 		end
 	end)
 	CALLBACK_MANAGER:RegisterCallback("LAM-PanelClosed", function(panel)
-		if panel == PlayerRoleIndicator.settingsPanel and roleSettingsDirty then
+		if panel == PRI.settingsPanel and roleSettingsDirty then
 			roleSettingsDirty = false
-			CALLBACK_MANAGER:FireCallbacks(PlayerRoleIndicator.EVENT.CUSTOM_ROLE_CHANGED, nil)
+			CALLBACK_MANAGER:FireCallbacks(PRI.EVENT.CUSTOM_ROLE_CHANGED, nil)
 		end
 	end)
 end

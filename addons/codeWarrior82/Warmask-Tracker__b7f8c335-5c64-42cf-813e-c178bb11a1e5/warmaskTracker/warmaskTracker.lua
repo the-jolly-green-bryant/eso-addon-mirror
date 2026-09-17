@@ -7,12 +7,9 @@ local picPath = GetAbilityIcon(markOfHircineID)
 local iconText = zo_iconTextFormat(picPath, 80, 80, " ")
 local isLoaded = false
 local isMenuOpen = false
---[[
-todo:
-
-
-
-]]
+local needToNotify = true
+local needToNotifyStart = true
+local needToNotifyEnd = true
 
 warmaskTracker = {}
 
@@ -20,9 +17,11 @@ warmaskTracker.defaults = {
     trackWarmask = true,
     trackWho = false,
     trackSelf = false,
-	notify = true,
-	notifyStart = true,
-	
+	notifyEnd = false,--ends
+	notifyStart = false,--starts
+	notifyReapply = true,--when ready to re apply
+	notifyEndYou = false,--ends on you -- needs to have if tracked true
+	notifyStartYou = true,--starts on you
     yAxisText = 930,
     xAxisText = 1300,
     yAxisTextW = 720,
@@ -32,9 +31,23 @@ warmaskTracker.defaults = {
 }
 
 --print message to chat box
-local function printMessageTest(msg)
+local function printMessage(msg)
 	local chat = LibChatMessage(appName, "MA")
 	chat:Print(msg)
+end
+
+--clean player names
+local function cleanName(str)
+    return str:sub(1, -4)
+end
+
+--check if LibNotify is available
+local function isLibAvailable()
+    if LibNotify and type(LibNotify.notifyForAddonPlease) == "function" then
+        return true
+    else 
+		return false
+    end
 end
 
 --is warmask buff active
@@ -61,11 +74,6 @@ local function debuffActive()
         end
     end
     return false
-end
-
---clean player names
-local function cleanName(str)
-    return str:sub(1, -4)
 end
 
 --handle who has debuff
@@ -95,25 +103,33 @@ end
 --handle if player has buff
 local function processBuff()
     if buffActive() then
-        local text = string.format(" %d", timeRemaining)
-        local time = timeRemaining - 50
+        local text
+		local textM
+		local time = timeRemaining - 50
 
-        --[[if time == 10 then
-            wmtAddonTextLabelMini:ClearAnchors()
-            wmtAddonTextLabelMini:ClearAnchors():SetAnchor(TOPLEFT, wmtAddonText, TOPLEFT, 58, -5)
-        else
-            wmtAddonTextLabelMini:ClearAnchors()
-            wmtAddonTextLabelMini:ClearAnchors():SetAnchor(TOPLEFT, wmtAddonText, TOPLEFT, 60, -5)
-        end--]]
-
-        local textM = string.format(" %d", time)
-
+		if time >= 10 then
+			textM = string.format("%d", time)
+		else
+			textM = string.format(" %d", time)
+		end
+		
+		if timeRemaining >= 10 then
+			text = string.format(" %d", timeRemaining)
+		else
+			text = string.format("  %d", timeRemaining)
+		end
+		
         wmtAddonTextLabel:SetText(text)
 
         if time >= 0 then
             wmtAddonTextLabelMini:SetText(textM)
         else
             wmtAddonTextLabelMini:SetText("")
+			--here, debuff can be re applied----------------------------------------------------------------
+			if isLibAvailable() and warmaskTracker.savedVariables.notifyReapply and needToNotify then
+				needToNotify = false 
+				LibNotify.notifyForAddonPlease(appName, markOfHircineID, "Hircine's Mark Ready")
+			end
         end
 
         zo_callLater(function() processBuff() end, 1000)
@@ -121,6 +137,12 @@ local function processBuff()
         wmtAddonTextLabel:SetText("")
         wmtAddonTextLabelMini:SetText("")
         wmtAddonTextWLabel:SetText("")
+		--here, your buff has ended-----------------------------------------------------------------------
+		needToNotifyStart = true
+		if isLibAvailable() and warmaskTracker.savedVariables.notifyEnd and needToNotifyEnd then
+			needToNotifyEnd = false
+            LibNotify.notifyForAddonPlease(appName, markOfHircineID, "Hircine's Mark ended")
+        end
     end
 end
 
@@ -145,10 +167,19 @@ local function combatReport(eventCode, result, isError, abilityName, abilityGrap
             --player self has debuff
             if debuffActive() then
                 wmtAddonTextPLabel:SetText(cleanName(sourceName) .. "|cFF0000 is targeting you|r")
+				--here, debuff start on you
             else
                 wmtAddonTextPLabel:SetText("")
+				--here, debuff ended on you
             end
         else
+			--here, your buff has started-----------------------------------------------------------------------
+			needToNotify = true
+			if isLibAvailable() and warmaskTracker.savedVariables.notifyStart and needToNotifyStart then
+				needToNotifyEnd = true
+				needToNotifyStart = false
+				LibNotify.notifyForAddonPlease(appName, markOfHircineID, "Hircine's Mark Started")
+			end
             processDebuff(targetType, targetName)
         end
     end
@@ -365,6 +396,42 @@ local function createOptions()
             end,
             default = warmaskTracker.defaults.yAxisTextP,
         },
+		{
+            type = "checkbox",
+            name = "Notification Start",
+            tooltip = "Displays a notification and plays a sound when you have placed Hircine's Mark on a target.\nThe settings for the notification can be changed in the LibNotify Add-on options.",
+            getFunc = function()
+                return warmaskTracker.savedVariables.notifyStart
+            end,
+            setFunc = function(value)
+                warmaskTracker.savedVariables.notifyStart = value
+            end,
+            default = warmaskTracker.defaults.notifyStart,
+        },
+		{
+            type = "checkbox",
+            name = "Notification Re-apply",
+            tooltip = "Displays a notification and plays a sound when the Hircine's Mark is ready to be re-applied to a new target.\nThe settings for the notification can be changed in the LibNotify Add-on options.",
+            getFunc = function()
+                return warmaskTracker.savedVariables.notifyReapply
+            end,
+            setFunc = function(value)
+                warmaskTracker.savedVariables.notifyReapply = value
+            end,
+            default = warmaskTracker.defaults.notifyReapply,
+        },
+		{
+            type = "checkbox",
+            name = "Notification End",
+            tooltip = "Displays a notification and plays a sound when the Hircine's Mark you have placed on a target ends.\nThe settings for the notification can be changed in the LibNotify Add-on options.",
+            getFunc = function()
+                return warmaskTracker.savedVariables.notifyEnd
+            end,
+            setFunc = function(value)
+                warmaskTracker.savedVariables.notifyEnd = value
+            end,
+            default = warmaskTracker.defaults.notifyEnd,
+        },
         {
             type = "divider",
             height = 0,
@@ -428,8 +495,14 @@ local function onAddOnLoaded(event, name)
     --unregister for notifications of add-on loaded
     EVENT_MANAGER:UnregisterForEvent(appName, EVENT_ADD_ON_LOADED)
 
-	--notify that add-on has been loaded
-	zo_callLater(function() printMessageTest("add-on loaded") end, 500)
+	--notify about new library
+	if not isLibAvailable() then
+		zo_callLater(function() printMessage("add-on Disabled") printMessage("Please install LibNotify from the browse add-ons menu") end, 500)
+		return
+	else
+		--notify that add-on has been loaded
+		zo_callLater(function() printMessage("add-on loaded") end, 500)
+	end
 
 	--load saved variables
     warmaskTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("wmtAddonVars", 1, "Settings", warmaskTracker.defaults, GetUnitName("player"))
@@ -437,7 +510,7 @@ local function onAddOnLoaded(event, name)
 
 	--notify if tracking is disabled
 	if not warmaskTracker.savedVariables.trackWarmask then
-		zo_callLater(function() printMessageTest("tracking disabled") end, 600)
+		zo_callLater(function() printMessage("tracking disabled") end, 600)
 	end
 
     --organise on screen text

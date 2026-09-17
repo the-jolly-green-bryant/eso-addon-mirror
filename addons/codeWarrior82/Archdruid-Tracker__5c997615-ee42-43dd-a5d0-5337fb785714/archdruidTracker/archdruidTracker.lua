@@ -12,7 +12,9 @@ archdruidTracker = {}
 
 archdruidTracker.defaults = {
     trackArch = true,
-    trackVuln = false,
+    trackVuln = true,
+	notifyEnd = true,
+	notifyVuln = true,
     yAxisText = 930,
     xAxisText = 1300
 }
@@ -38,7 +40,7 @@ archdruidTracker.majorEffects = {
 }
 
 --print message to chat box
-local function printMessageTest(msg)
+local function printMessage(msg)
 	local chat = LibChatMessage(appName, "MA")
 	chat:Print(msg)
 end
@@ -46,6 +48,15 @@ end
 --clean player names
 local function cleanName(str)
     return str:sub(1, -4)
+end
+
+--check if LibNotify is available
+local function isLibAvailable()
+    if LibNotify and type(LibNotify.notifyForAddonPlease) == "function" then
+        return true
+    else 
+		return false
+    end
 end
 
 --is debuff major
@@ -69,6 +80,9 @@ local function processProc()
         EVENT_MANAGER:UnregisterForUpdate("archdruidUpdate")
         archAddonTextLabelTime:SetText("")
         procTime = 15
+		if isLibAvailable() and archdruidTracker.savedVariables.notifyEnd then
+            LibNotify.notifyForAddonPlease(appName, bearProcID, "Archdruid Ready")
+        end	
     end
 
     procTime = procTime - 1
@@ -85,6 +99,9 @@ local function processVuln()
         EVENT_MANAGER:UnregisterForUpdate("archdruidUpdateVuln")
         archAddonTextLabelVuln:SetText("")
         vulnTime = 7
+		if isLibAvailable() and archdruidTracker.savedVariables.notifyVuln then
+            LibNotify.notifyForAddonPlease(appName, bearProcID, "Major Vuln ended")
+        end
     end
 
     vulnTime = vulnTime - 1
@@ -131,8 +148,9 @@ end
 --register for notifications about archdruid vulnerability proc
 local function registerAlertsVuln()
     EVENT_MANAGER:RegisterForEvent("archVulnDebuff", EVENT_COMBAT_EVENT, combatReportVuln)
+	EVENT_MANAGER:AddFilterForEvent("archVulnDebuff", EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, 176815)--major vulnerability abilityId, archdruid
 end
-
+--poss 176815 106754 
 --unregister for notifications about archdruid vulnerability proc
 local function unRegisterAlertsVuln()
     EVENT_MANAGER:UnregisterForEvent("archVulnDebuff", EVENT_COMBAT_EVENT)
@@ -219,13 +237,12 @@ local function createOptions()
         {
             type = "checkbox",
             name = "Track Cooldown",
-            tooltip = "Displays a timer while the Archdruid cooldown is active.",
+            tooltip = "Displays a timer while the Archdruid cooldown is active.\nDisabling this option will also disable tracking the Major Vulnerability debuff.",
             getFunc = function()
                 return archdruidTracker.savedVariables.trackArch
             end,
             setFunc = function(value)
                 archdruidTracker.savedVariables.trackArch = value
-                archdruidTracker.savedVariables.trackVuln = value
                 if not value then
                     unRegisterAlerts()
                 else
@@ -237,7 +254,7 @@ local function createOptions()
         {
             type = "checkbox",
             name = "Track Debuff",
-            tooltip = "Displays a smaller timer that tracks the Archdruid Major Vulnerability debuff.",
+            tooltip = "Displays a smaller timer that tracks the Archdruid Major Vulnerability debuff.\nTo track the Major Vulnerability debuff tracking for the cooldown needs to be enabled.",
             getFunc = function()
                 return archdruidTracker.savedVariables.trackVuln
             end,
@@ -279,6 +296,30 @@ local function createOptions()
             end,
             default = archdruidTracker.defaults.yAxisText,
         },
+		{
+            type = "checkbox",
+            name = "Notification Vuln",
+            tooltip = "Displays a notification and plays a sound when the Major Vulnerability debuff has finished.\nThe settings for the notification can be changed in the LibNotify Add-on options.",
+            getFunc = function()
+                return archdruidTracker.savedVariables.notifyVuln
+            end,
+            setFunc = function(value)
+                archdruidTracker.savedVariables.notifyVuln = value
+            end,
+            default = archdruidTracker.defaults.notifyVuln,
+        },
+		{
+            type = "checkbox",
+            name = "Notification End",
+            tooltip = "Displays a notification and plays a sound when the Archdruid cooldown finishes and the set is ready to proc again.\nThe settings for the notification can be changed in the LibNotify Add-on options.",
+            getFunc = function()
+                return archdruidTracker.savedVariables.notifyEnd
+            end,
+            setFunc = function(value)
+                archdruidTracker.savedVariables.notifyEnd = value
+            end,
+            default = archdruidTracker.defaults.notifyEnd,
+        },
         {
             type = "divider",
             height = 0,
@@ -301,15 +342,21 @@ local function onAddOnLoaded(event, name)
     --unregister for notifications of add-on loaded
     EVENT_MANAGER:UnregisterForEvent(appName, EVENT_ADD_ON_LOADED)
 
-	--notify that add-on has been loaded
-	zo_callLater(function() printMessageTest("add-on loaded") end, 500)
+	--notify about new library
+	if not isLibAvailable() then
+		zo_callLater(function() printMessage("add-on Disabled") printMessage("Please install LibNotify from the browse add-ons menu") end, 500)
+		return
+	else
+		--notify that add-on has been loaded
+		zo_callLater(function() printMessage("add-on loaded") end, 500)
+	end
 
 	--load saved variables
     archdruidTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("adtAddonVars", 1, "Settings", archdruidTracker.defaults, GetUnitName("player"))
 
 	--notify if tracking is disabled
 	if not archdruidTracker.savedVariables.trackArch then
-		zo_callLater(function() printMessageTest("tracking disabled") end, 600)
+		zo_callLater(function() printMessage("tracking disabled") end, 600)
 	end
 
     --setup text field areas

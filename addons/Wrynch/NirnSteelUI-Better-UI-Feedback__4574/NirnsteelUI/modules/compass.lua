@@ -6,190 +6,164 @@ local Nirnsteel_UI = Nirnsteel_UI
 local CompassModule = {}
 Nirnsteel_UI.Compass = CompassModule
 
-local COMPASS_TEXTURE = "EsoUI/Art/Compass/compass.dds"
-
-local KEYBOARD_HEIGHT = 39
-local GAMEPAD_HEIGHT = 24
-local KEYBOARD_END_CAP_WIDTH = 18
-local GAMEPAD_END_CAP_WIDTH = 14
-
-local KEYBOARD_CENTER_COORDS = { 0.78125, 1, 0, 0.609375 }
-local KEYBOARD_LEFT_COORDS = { 0, 0.28125, 0, 0.609375 }
-local KEYBOARD_RIGHT_COORDS = { 0.28125, 0, 0, 0.609375 }
-local GAMEPAD_CENTER_COORDS = { 0.78125, 1, 0, 0.75 }
-local GAMEPAD_LEFT_COORDS = { 0, 0.4375, 0, 0.75 }
-local GAMEPAD_RIGHT_COORDS = { 0.4375, 0, 0, 0.75 }
-
 local function IsModuleEnabled()
     return not Nirnsteel_UI.Settings or Nirnsteel_UI.Settings:IsCompassEnabled()
 end
 
 local function ShouldHideCompass()
-    return Nirnsteel_UI.Settings and Nirnsteel_UI.Settings:ShouldHardcoreHideCompass()
+    return Nirnsteel_UI.Settings and Nirnsteel_UI.Settings:ShouldHardcoreHideCompass() == true
 end
 
-local function ApplyTextureCoords(control, coords)
-    if control and coords then
-        control:SetTextureCoords(coords[1], coords[2], coords[3], coords[4])
-    end
-end
-
-local function ApplyColor(control, r, g, b, a)
-    if control then
-        control:SetColor(r, g, b, a)
-    end
-end
-
-local function SafeSetTexture(control, texture)
-    if control then
-        control:SetTexture(texture)
-    end
-end
-
-local function SafeSetDimensions(control, width, height)
-    if control then
-        control:SetDimensions(width, height)
-    end
-end
-
-local function SetOverlayHidden(center, name, hidden)
-    local overlay = center and center:GetNamedChild(name)
-    if overlay then
-        overlay:SetHidden(hidden)
-    end
+local function BossBarIsVisible()
+    if not COMPASS_FRAME or not COMPASS_FRAME:GetBossBarActive() then return false end
+    local reasons = COMPASS_FRAME.bossBarHiddenReasons
+    return not reasons or not reasons:IsHidden()
 end
 
 function CompassModule:ApplyCardinalStyle()
     if COMPASS and COMPASS.SetCardinalDirections then
-        local font = IsInGamepadPreferredMode() and "ZoFontGamepadBold34" or "ZoFontHeader3"
-        COMPASS:SetCardinalDirections(font)
+        local size = IsInGamepadPreferredMode() and 26 or 21
+        COMPASS:SetCardinalDirections("$(ANTIQUE_FONT)|" .. size .. "|soft-shadow-thick")
+    end
+end
+
+function CompassModule:CreateArtwork(container)
+    if self.artwork then return end
+    self.artwork = {}
+    local art = Nirnsteel_UI:GetAssetPath("ui/compass/")
+    for _, name in ipairs({ "rail", "left", "right", "heading" }) do
+        -- Follow the native compass fade, including the transition to the boss bar.
+        -- Pins live on the MEDIUM tier; all frame art stays behind them.
+        local texture = WINDOW_MANAGER:CreateControl(nil, ZO_Compass, CT_TEXTURE)
+        texture:SetDrawTier(DT_LOW)
+        texture:SetDrawLayer(DL_BACKGROUND)
+        texture:SetDrawLevel(1)
+        texture:SetMouseEnabled(false)
+        local file = name == "rail" and "rail_v3_dxt5.dds"
+            or name == "heading" and "heading_v3_dxt5.dds" or "cap_v4_dxt5.dds"
+        texture:SetTexture(art .. file)
+        self.artwork[name] = texture
+    end
+
+    -- Anchor to the actual pin viewport, not a guessed height or another skin's
+    -- backdrop. Two anchors follow native width and platform changes.
+    local rail = self.artwork.rail
+    rail:SetAnchor(TOPLEFT, container, TOPLEFT, 0, 0)
+    rail:SetAnchor(BOTTOMRIGHT, container, BOTTOMRIGHT, 0, 0)
+    for _, name in ipairs({ "left", "right" }) do
+        local cap = self.artwork[name]
+        local edge = name == "left" and TOPLEFT or TOPRIGHT
+        local bottom = name == "left" and BOTTOMLEFT or BOTTOMRIGHT
+        local join = name == "left" and TOPRIGHT or TOPLEFT
+        local bottomJoin = name == "left" and BOTTOMRIGHT or BOTTOMLEFT
+        cap:SetWidth(20)
+        cap:SetAnchor(join, container, edge, 0, 0)
+        cap:SetAnchor(bottomJoin, container, bottom, 0, 0)
+        cap:SetTextureCoords(name == "left" and 0 or 1, name == "left" and 1 or 0, 0, 1)
+    end
+    -- A fixed bearing marker below the rail leaves the native location label clear.
+    local heading = self.artwork.heading
+    heading:SetDimensions(16, 12)
+    heading:SetAnchor(TOP, container, BOTTOM, 0, -4)
+end
+
+function CompassModule:ApplyStockStyle()
+    for _, texture in pairs(self.artwork or {}) do texture:SetHidden(true) end
+    if not self.nativeHidden then return end
+    for control, hidden in pairs(self.nativeHidden) do control:SetHidden(hidden) end
+    self.nativeHidden = nil
+    if COMPASS and COMPASS.SetCardinalDirections then
+        COMPASS:SetCardinalDirections(IsInGamepadPreferredMode() and "ZoFontGamepadBold34" or "ZoFontHeader4")
     end
 end
 
 function CompassModule:ApplyNirnsteelStyle()
     local frame = ZO_CompassFrame
-    if not frame or not IsModuleEnabled() or ShouldHideCompass() then
+    local container = ZO_Compass and ZO_Compass:GetNamedChild("Container")
+    local center = frame and frame:GetNamedChild("Center")
+    local left = frame and frame:GetNamedChild("Left")
+    local right = frame and frame:GetNamedChild("Right")
+    if not container or not center or not left or not right then
+        self:ApplyStockStyle()
         return
     end
 
-    local center = frame:GetNamedChild("Center")
-    local left = frame:GetNamedChild("Left")
-    local right = frame:GetNamedChild("Right")
-    local gamepadMode = IsInGamepadPreferredMode()
-    local bossBarActive = COMPASS_FRAME and COMPASS_FRAME.GetBossBarActive and COMPASS_FRAME:GetBossBarActive()
-    local height = gamepadMode and GAMEPAD_HEIGHT or KEYBOARD_HEIGHT
-    local endCapWidth = gamepadMode and GAMEPAD_END_CAP_WIDTH or KEYBOARD_END_CAP_WIDTH
-
-    SafeSetTexture(center, COMPASS_TEXTURE)
-    SafeSetTexture(left, COMPASS_TEXTURE)
-    SafeSetTexture(right, COMPASS_TEXTURE)
-
-    if gamepadMode then
-        ApplyTextureCoords(center, GAMEPAD_CENTER_COORDS)
-        ApplyTextureCoords(left, GAMEPAD_LEFT_COORDS)
-        ApplyTextureCoords(right, GAMEPAD_RIGHT_COORDS)
-    else
-        ApplyTextureCoords(center, KEYBOARD_CENTER_COORDS)
-        ApplyTextureCoords(left, KEYBOARD_LEFT_COORDS)
-        ApplyTextureCoords(right, KEYBOARD_RIGHT_COORDS)
+    if not self.nativeHidden then
+        self.nativeHidden = {}
+        local function Remember(control)
+            if control then self.nativeHidden[control] = control:IsHidden() end
+        end
+        Remember(center)
+        Remember(left)
+        Remember(right)
+        Remember(center:GetNamedChild("TopMungeOverlay"))
+        Remember(center:GetNamedChild("BottomMungeOverlay"))
     end
-
-    SafeSetDimensions(left, endCapWidth, height)
-    SafeSetDimensions(right, endCapWidth, height)
-    if not bossBarActive then
-        frame:SetHeight(height)
-    end
-
-    ApplyColor(center, 0.02, 0.018, 0.014, 0.88)
-    ApplyColor(left, 0.72, 0.66, 0.48, 0.95)
-    ApplyColor(right, 0.72, 0.66, 0.48, 0.95)
-
-    SetOverlayHidden(center, "TopMungeOverlay", false)
-    SetOverlayHidden(center, "BottomMungeOverlay", false)
-
+    -- The boss bar reuses these textures. Leave native atlas UVs, color, alpha,
+    -- anchors and dimensions untouched; restore only the visibility we own.
+    for control in pairs(self.nativeHidden) do control:SetHidden(true) end
+    self:CreateArtwork(container)
+    for _, texture in pairs(self.artwork) do texture:SetHidden(false) end
     self:ApplyCardinalStyle()
 end
 
-function CompassModule:ApplyStockStyle()
-    if COMPASS_FRAME and self.originalApplyStyle then
-        self.restoringStockStyle = true
-        self.originalApplyStyle(COMPASS_FRAME)
-        self.restoringStockStyle = false
-    end
-
-    if COMPASS_FRAME and COMPASS_FRAME.UpdateWidth then
-        COMPASS_FRAME:UpdateWidth()
-    end
-end
-
 function CompassModule:Apply()
-    if COMPASS_FRAME and COMPASS_FRAME.SetCompassHidden then
-        COMPASS_FRAME:SetCompassHidden(ShouldHideCompass() == true)
-    end
-
-    if ShouldHideCompass() then
-        return
-    end
-
-    if IsModuleEnabled() then
+    if self.applying then return end
+    self.applying = true
+    if IsModuleEnabled() and not ShouldHideCompass() and not BossBarIsVisible() then
         self:ApplyNirnsteelStyle()
     else
         self:ApplyStockStyle()
     end
+    self.applying = false
 end
 
 function CompassModule:InstallHooks()
-    if self.hooksInstalled or not COMPASS_FRAME then
-        return
+    if not self.frameHooksInstalled and COMPASS_FRAME then
+        ZO_PostHook(COMPASS_FRAME, "ApplyStyle", function()
+            -- Platform templates update the munge visibility. Remember that new
+            -- state instead of the state hidden by the previous skin pass.
+            local center = ZO_CompassFrame and ZO_CompassFrame:GetNamedChild("Center")
+            if self.nativeHidden and center then
+                for _, name in ipairs({ "TopMungeOverlay", "BottomMungeOverlay" }) do
+                    local overlay = center:GetNamedChild(name)
+                    if overlay then self.nativeHidden[overlay] = overlay:IsHidden() end
+                end
+            end
+            self:Apply()
+        end)
+        ZO_PostHook(COMPASS_FRAME, "RefreshVisible", function() self:Apply() end)
+        self.frameHooksInstalled = true
     end
-
-    local originalApplyStyle = COMPASS_FRAME.ApplyStyle
-    if not originalApplyStyle then
-        return
+    if not self.compassHooksInstalled and COMPASS then
+        ZO_PostHook(COMPASS, "ApplyKeyboardStyle", function() self:Apply() end)
+        ZO_PostHook(COMPASS, "ApplyGamepadStyle", function() self:Apply() end)
+        self.compassHooksInstalled = true
     end
-
-    self.originalApplyStyle = originalApplyStyle
-    COMPASS_FRAME.ApplyStyle = function(frame, ...)
-        local result = originalApplyStyle(frame, ...)
-        if not CompassModule.restoringStockStyle then
-            CompassModule:Apply()
-        end
-        return result
-    end
-
-    self.hooksInstalled = true
 end
 
 function CompassModule:RegisterEvents()
-    if self.eventsRegistered then
-        return
+    if self.eventsRegistered then return end
+    for _, event in ipairs({ EVENT_PLAYER_ACTIVATED, EVENT_SCREEN_RESIZED, EVENT_GAMEPAD_PREFERRED_MODE_CHANGED }) do
+        EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, event, function()
+            zo_callLater(function() self:RefreshSettings() end, 50)
+        end)
     end
-
-    EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_PLAYER_ACTIVATED, function()
-        self:InstallHooks()
-        zo_callLater(function() self:Apply() end, 250)
-    end)
-    EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_SCREEN_RESIZED, function()
-        zo_callLater(function() self:Apply() end, 50)
-    end)
-    EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_GAMEPAD_PREFERRED_MODE_CHANGED, function()
-        zo_callLater(function() self:Apply() end, 50)
-    end)
-
     self.eventsRegistered = true
 end
 
 function CompassModule:RefreshSettings()
     self:RegisterEvents()
     self:InstallHooks()
+    if COMPASS_FRAME then
+        local hidden = ShouldHideCompass() == true
+        if COMPASS_FRAME.compassHidden ~= hidden then COMPASS_FRAME:SetCompassHidden(hidden) end
+    end
     self:Apply()
 end
 
 local function OnAddOnLoaded(_, addonName)
-    if addonName ~= ADDON_NAME then
-        return
-    end
-
+    if addonName ~= ADDON_NAME then return end
     EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE .. "_Loaded", EVENT_ADD_ON_LOADED)
     CompassModule:RefreshSettings()
     zo_callLater(function() CompassModule:RefreshSettings() end, 1000)

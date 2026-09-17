@@ -2,10 +2,10 @@
   <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
   	<Category name="|c215895Lykeion's |ccc922fAutoLoot+">
       <Action name="MSAL_TOGGLE">
-        <Down>SLASH_COMMANDS["/lalt"]()</Down>
+        <Down>MuchSmarterAutoLoot.ToggleAddon()</Down>
       </Action>
       <Action name="MSAL_MENU">
-        <Down>SLASH_COMMANDS["/lals"]()</Down>
+        <Down>MuchSmarterAutoLoot.OpenSettingPanel()</Down>
       </Action>
       <Action name="MSAL_DESTROY">
         <Down>MuchSmarterAutoLoot.Destroy(self)</Down>

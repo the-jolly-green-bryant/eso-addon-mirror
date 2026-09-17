@@ -186,9 +186,10 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Alternate Death Recap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shienar/Alternate-Death-Recap__4454) | Shienar | PC / Mac | 3.3 |
 | [AlternateDeathRecap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shienar/AlternateDeathRecap__9e55edc2-32f8-4c75-b87c-e921fd53e9cf) | Shienar | Console | — |
 | [Alternative Attribute Bars](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/buldezir/Alternative-Attribute-Bars__3056) | buldezir | PC / Mac | 1.0.16 |
+| [Alternative Attribute Bars (PS5)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/j.hhh/Alternative-Attribute-Bars-PS5__e522328f-332e-4144-96c3-273d59d58ab6) | j.hhh | Console | — |
 | [Alternative Boss Bar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/buldezir/Alternative-Boss-Bar__3052) | buldezir | PC / Mac | 1.0.19 |
 | [Alternative Buffs/Debuffs](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/buldezir/Alternative-Buffs-Debuffs__3875) | buldezir | PC / Mac | 1.0.3 |
-| [Alternative Group Frames](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/buldezir/Alternative-Group-Frames__3053) | buldezir | PC / Mac | 1.3.32 |
+| [Alternative Group Frames](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/buldezir/Alternative-Group-Frames__3053) | buldezir | PC / Mac | 1.4.33 |
 | [Alternative Group Frames](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Copper0/Alternative-Group-Frames__21f64968-c492-4b43-82ff-b7b1f25c7500) | Copper0 | Console | — |
 | [Always Logging](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Eurymachos/Always-Logging__4081) | Eurymachos | PC / Mac | v3.1.12.1.0 |
 | [AlwaysCompass: Never Get Lost Again](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Mouton/AlwaysCompass-Never-Get-Lost-Again__4107) | Mouton | PC / Mac | 0.0.2 |
@@ -221,7 +222,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [arabic](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lofand/arabic__c8823ab9-749b-4180-ad52-c15b1363d974) | Lofand | Console | — |
 | [arabic new text](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lofand/arabic-new-text__6ca61801-549f-44fd-b20a-9b655530c6bc) | Lofand | Console | — |
 | [Arcanist Crux Job Gauge](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ViciousTomato/Arcanist-Crux-Job-Gauge__3661) | ViciousTomato | PC / Mac | 1.1 |
-| [Arcanist Mastery Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/its_wifey/Arcanist-Mastery-Tracker__4823) | its_wifey | PC / Mac | 1.3.0 |
+| [Arcanist Mastery Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/its_wifey/Arcanist-Mastery-Tracker__4823) | its_wifey | PC / Mac | 1.4 |
 | [Arcanum Artis GuildHall](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Niwasaka/Arcanum-Artis-GuildHall__3013) | Niwasaka | PC / Mac | 1.22.0 |
 | [Arch's Enhanced Crafting](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Architecture/Arch-s-Enhanced-Crafting__1443) | Architecture | PC / Mac | 2.1.1 |
 | [Arch's Enhanced Gamepad](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Architecture/Arch-s-Enhanced-Gamepad__1645) | Architecture | PC / Mac | 1.0.8 |
@@ -296,7 +297,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Auto Abandon Not Killing Spree Contracts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Furious_Sniper/Auto-Abandon-Not-Killing-Spree-Contracts__4481) | Furious_Sniper | PC / Mac | 1.1 |
 | [Auto Accept Duel](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/GhostGat/Auto-Accept-Duel__3468) | GhostGat | PC / Mac | 1.0 |
 | [Auto Banish Pets/Assistants/Companions](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tdenc/Auto-Banish-Pets-Assistants-Companions__3099) | tdenc | PC / Mac | 0.8.0 |
-| [Auto Category - Revised](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shadowfen/Auto-Category---Revised__2300) | Shadowfen | PC / Mac | 4.6.14 |
+| [Auto Category - Revised](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shadowfen/Auto-Category---Revised__2300) | Shadowfen | PC / Mac | 4.6.15 |
 | [Auto Category - Revised plugin for CraftStore FoA](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/rufusredbeard/Auto-Category---Revised-plugin-for-CraftStore-FoA__2535) | rufusredbeard | PC / Mac | 2.17 |
 | [Auto Category - Revised plugin for Research Assistant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Saenic/Auto-Category---Revised-plugin-for-Research-Assistant__2742) | Saenic | PC / Mac | 1.0 |
 | [Auto Complete](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Dolgubon/Auto-Complete__e1ed5f61-10b6-43bf-baaf-3da81a8c26a3) | Dolgubon | Console | — |

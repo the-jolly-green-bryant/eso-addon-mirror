@@ -17,6 +17,8 @@ mechAcuityTracker = {}
 
 mechAcuityTracker.defaults = {
     trackMech = true,
+	notify = true,
+	notifyStart = true,
     yAxisText = 930,
     xAxisText = 1400
 }
@@ -30,6 +32,15 @@ end
 --clean player names
 local function cleanName(str)
     return str:sub(1, -4)
+end
+
+--check if LibNotify is available
+local function isLibAvailable()
+    if LibNotify and type(LibNotify.notifyForAddonPlease) == "function" then
+        return true
+    else 
+		return false
+    end
 end
 
 --when UI opens
@@ -89,6 +100,9 @@ end
 local function trackBuff()
     if buffActive() then
         buffRunning = true
+		if isLibAvailable() and mechAcuityTracker.savedVariables.notifyStart then
+            LibNotify.notifyForAddonPlease(appName, mechAbilityID, "Mechanical Acuity Started")
+        end
         zo_callLater(function() trackBuff() end, 1000)
     else
         buffRunning = false
@@ -114,6 +128,9 @@ local function trackCooldown()
         EVENT_MANAGER:UnregisterForUpdate("mechCool")
         matrackLabelMain:SetText("")
         timeCooldown = 25
+		if isLibAvailable() and mechAcuityTracker.savedVariables.notify then
+            LibNotify.notifyForAddonPlease(appName, mechAbilityID, "Mechanical Acuity Ready")
+        end
     end
 
     timeCooldown = timeCooldown - 1
@@ -133,6 +150,9 @@ local function effectReport(eventCode, changeType, effectSlot, effectName, unitT
         --GAINED- happens once when you first get the buff 
         buffRunning = true
         matrackLabelCorner:SetText(zo_strformat("<<1>>", stackCount))
+		if isLibAvailable() and mechAcuityTracker.savedVariables.notifyStart then
+            LibNotify.notifyForAddonPlease(appName, mechAbilityID, "Mechanical Acuity Started")
+        end
 
     elseif changeType == 2 then
         --LOST- happens once at the end
@@ -250,6 +270,30 @@ local function createOptions()
             end,
             default = mechAcuityTracker.defaults.yAxisText,
         },
+		{
+            type = "checkbox",
+            name = "Notification Start",
+            tooltip = "Displays a notification and plays a sound when the Mechanical Acuity buff starts.\nThe settings for the notification can be changed in the LibNotify Add-on options.",
+            getFunc = function()
+                return mechAcuityTracker.savedVariables.notifyStart
+            end,
+            setFunc = function(value)
+                mechAcuityTracker.savedVariables.notifyStart = value
+            end,
+            default = mechAcuityTracker.defaults.notifyStart,
+        },
+		{
+            type = "checkbox",
+            name = "Notification End",
+            tooltip = "Displays a notification and plays a sound when the echanical Acuity buff cooldown is finished and the set is ready to proc again.\nThe settings for the notification can be changed in the LibNotify Add-on options.",
+            getFunc = function()
+                return mechAcuityTracker.savedVariables.notify
+            end,
+            setFunc = function(value)
+                mechAcuityTracker.savedVariables.notify = value
+            end,
+            default = mechAcuityTracker.defaults.notify,
+        },
         {
             type = "divider",
             height = 0,
@@ -272,8 +316,14 @@ local function onAddOnLoaded(event, name)
     --unregister for notifications of add-on loaded
     EVENT_MANAGER:UnregisterForEvent(appName, EVENT_ADD_ON_LOADED)
 
-	--notify that add-on has been loaded
-	zo_callLater(function() printMessage("add-on loaded") end, 500)
+	--notify about new library
+	if not isLibAvailable() then
+		zo_callLater(function() printMessage("add-on Disabled") printMessage("Please install LibNotify from the browse add-ons menu") end, 500)
+		return
+	else
+		--notify that add-on has been loaded
+		zo_callLater(function() printMessage("add-on loaded") end, 500)
+	end
 
 	--load saved variables
     mechAcuityTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("mechAddonVars", 1, "Settings", mechAcuityTracker.defaults, GetUnitName("player"))
@@ -292,7 +342,7 @@ local function onAddOnLoaded(event, name)
     matrackIcon:SetText(iconText)
     matrackIconBase:SetText(iconTextBase)
     matrackLabelMain:SetText("")
-    matrackLabelMain:SetColor(255, 0, 0, 255)
+    --matrackLabelMain:SetColor(255, 0, 0, 255)
     matrackLabelCorner:SetText("")
     matrackLabelCorner:SetColor(0, 255, 0, 255)
 

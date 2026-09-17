@@ -1,27 +1,28 @@
-Pandalore's Coral Aerie Guide Companion 1.0.2
+Pandalore's Coral Aerie Guide Companion 1.1.0
 Author: thepandalore
 Build profile: RELEASE
 
 AI-ASSISTED DEVELOPMENT DISCLOSURE
 ----------------------------------
-Source review, refactoring, test generation, and audit documentation for this
-release were performed with OpenAI tooling under maintainer direction. The
-maintainer remains responsible for in-client validation, maintenance, and the
-public release.
+Code development, source review, refactoring, test generation, and audit
+documentation for this release were performed with OpenAI tooling under
+maintainer direction. The maintainer remains responsible for in-client
+validation, maintenance, and the public release.
 
 STATUS
 ------
-Version 1.0.2 is the ESOUI-readiness hardening release built from the final
-re-audited 1.0.1 common core. It removes locale-dependent boss-name matching,
-keeps the CrutchAlerts 2.24.0 minimum only after inspecting that release's exact
-source API, and makes the experimental path-distance predictor a separate
-opt-in feature that is disabled by default.
+Version 1.1.0 is the mechanic-expansion release built from the live 1.0.2
+baseline. It adds Maligalig incoming Yaghra Larva Popper guidance, a Building
+Static SAFE TO JUMP reset cue, and identity-specific Varallion gryphon entry
+guidance. It also replaces the original cumulative-distance Mind Link predictor
+with an explicitly experimental recent-movement model that freezes at Mark of
+the Sea BEGIN and presents two primary candidates plus one uncertainty candidate.
+The predictor remains separately opt-in and disabled by default.
 
-The source/package has been reviewed against ESO live API 101050 documentation,
-current ESOUI release guidance, the exact CrutchAlerts 2.24.0 release source,
-and a recorded veteran Coral Aerie encounter. Offline regression, static-policy,
-syntax, archive-integrity, and round-trip checks do not replace the native
-in-client acceptance cases listed under LIVE VALIDATION REQUIRED.
+The new mechanic IDs and timing relationships are grounded in two independent
+veteran Coral Aerie HM encounter captures. Encounter-log evidence establishes
+correlation and timing but does not by itself prove native Lua event delivery;
+new 1.1.0 surfaces therefore remain in the live-acceptance matrix below.
 
 PURPOSE AND ACTIVATION
 ----------------------
@@ -40,19 +41,21 @@ guarantee.
 
 REQUIRED DEPENDENCIES
 ---------------------
-- CrutchAlerts 2.24.0+ (AddOnVersion 22400+).
+- CrutchAlerts 2.26.0+ (AddOnVersion 22600+).
 - LibUnits2 1.03+ (AddOnVersion 103+).
 - LibAddonMenu-2.0 r43+ (AddOnVersion 43+).
 
 OPTIONAL DEPENDENCY
 -------------------
-- LibDebugLogger AddOnVersion 180+.
+- LibDebugLogger (optional; tested with AddOnVersion 180+).
 
-The CrutchAlerts floor is intentional. The exact 2.24.0 release source at commit
-`ec81872bcf135711bff01e4300db5014d01940a9` was inspected for every Crutch API
-PCAGC calls: SetAttachedIconForUnit, RemoveAttachedIconForUnit,
-RemoveAllAttachedIcons, Drawing.CreateGroundCircle, and
-Drawing.RemoveWorldTexture.
+The CrutchAlerts floor is intentional. The exact supplied 2.26.0 release archive
+(AddOnVersion 22600; ZIP SHA-256
+`3ecc85575f4f96ff9343a6678e11ed74a4d6a5d9985c578c22e69bc422b2e061`) was
+inspected for every Crutch API PCAGC calls: SetAttachedIconForUnit,
+RemoveAttachedIconForUnit, RemoveAllAttachedIcons, Drawing.CreateGroundCircle,
+and Drawing.RemoveWorldTexture. The attached-icon API still accepts PCAGC's
+Space API options, and the chevron texture path used by PCAGC is present.
 
 INSTALLATION / SAVED SETTINGS
 -----------------------------
@@ -61,18 +64,33 @@ Install to:
   .../Elder Scrolls Online/live/AddOns/PandaloresCoralAerieCompanion/
 
 PandaloresCoralAerieGuideCompanionSaved is the sole account-wide settings table
-used by 1.0.2. The pre-PCAGC MarkOfTheSeaTrackerSaved migration source remains
+used by 1.1.0. The pre-PCAGC MarkOfTheSeaTrackerSaved migration source remains
 retired. Existing PCAGC settings are preserved because the active ZO_SavedVars
 version remains 1. Presentation/settings state is validated and normalized at
-load before it is passed to UI controls. New 1.0.2 predictor enablement defaults
-to false when absent from existing SavedVariables.
+load before it is passed to UI controls. New 1.1.0 mechanic toggles default to enabled when absent from existing
+SavedVariables; the experimental predictor remains disabled by default.
 
 MALIGALIG
 ---------
-Building Static (162279) is tracked from the local player's effect state using
-EVENT_EFFECT_CHANGED and the native stackCount value. LEAVE NOW appears when
-the configurable threshold is reached; the default threshold is 6. The warning
-clears when the effect fades.
+Building Static:
+- 162279 is tracked from the local player's EVENT_EFFECT_CHANGED state using the
+  native stackCount value.
+- LEAVE NOW appears when the configurable threshold is reached; default 6.
+- SAFE TO JUMP is shown only when 162279 fades after at least 7.5 seconds without
+  a refresh, matching the approximately eight-second normal reset observed in the
+  HM captures. Short phase/teardown fades do not produce the cue.
+
+Incoming bomb-crab guidance:
+- 160007 Toxic Ire ACTION_RESULT_BEGIN identifies an individual Yaghra Larva
+  Popper source and its selected group target.
+- Repeated Toxic Ire observations from the same source unit are deduplicated.
+- Targeted players receive an orange attached chevron and BOMB INCOMING text.
+- 159208 Toxic Burst shortens the remaining guidance lifetime for the matching
+  source; a bounded fallback lifetime prevents stale state if no terminal signal
+  is observed.
+- This release does not claim a moving crab-to-player floor tether. The encounter
+  log proves source/target correlation but not a persistent hostile unitTag/world
+  position contract suitable for that renderer.
 
 SARYDIL - HEALER UI
 -------------------
@@ -109,23 +127,41 @@ Mark of the Sea / Mind Link / Tether:
   effect updates do not restart that timer.
 - The later Mark forecast remains final observed beam fade +17 seconds.
 
-Experimental path-distance predictor:
+Experimental recent-movement predictor:
 - Disabled by default and separately opt-in under the Varallion arrow settings.
 - It is not required for authoritative Mark/Mind Link arrows or timers.
-- When enabled before a prediction window, it samples grouped players' raw 3D
-  world positions and accumulates traveled segment distance rather than simple
-  displacement from origin. On the first Varallion cycle, sampling begins when
-  the early locale-neutral Varallion signal establishes context, so movement
-  between the combat edge and that first signal is intentionally not inferred.
-- Purple chevrons mark the two living eligible players with the lowest measured
-  path distance.
-- Death removes a player from live eligibility without erasing accumulated
-  distance; a resurrected player can re-enter the candidate set.
-- Zone/world-position discontinuities are not added as movement distance.
-- Enabling the predictor in the middle of an already-running forecast does not
-  create a partial-window prediction; it begins with the next prediction window.
-- Authoritative Mark begins stop prediction before authoritative Mind Link
-  indicators render.
+- While a prediction window is active, PCAGC keeps a rolling 10-second history
+  of horizontal raw-world X/Z movement for continuously observed group members.
+- At authoritative 149224 ACTION_RESULT_BEGIN it freezes a fixed seven-second
+  pre-Mark scoring window. The seven-second constant is deliberately rounded
+  inside the 5-8 second low-mobility region supported by the current HM dataset;
+  it is not presented as the server's exact selection rule.
+- The two lowest recent movers receive full purple prediction chevrons; rank
+  three receives a smaller/dimmer uncertainty chevron. Rank four is unmarked.
+- Death is not a hard selection disqualifier. A dead player can remain ranked if
+  positional observation remains sufficiently continuous. Observation gaps or
+  insufficient window coverage reduce eligibility rather than being interpreted
+  as zero movement.
+- Zone/world-position discontinuities are never added as travel distance.
+- Prediction freezes at Mark BEGIN; movement during the Mark cast does not alter
+  the current ranking.
+- 149225/149227 remain authoritative. Their first observed endpoint removes all
+  predictive chevrons immediately, and both endpoints are compared against the
+  frozen ranking for diagnostic logging.
+- Enabling the predictor in the middle of an already-running window waits for the
+  next complete prediction window.
+
+Gryphon entry guidance:
+- Four checker effects observed at friendly gryphon Takeoff identify the incoming
+  gryphon without localized-name matching:
+    163185 Iliata    -> LEFT
+    163184 Ofallo    -> ENTRANCE
+    163188 Mafremare -> RIGHT
+    163597 Kargaeda  -> EXIT
+- The corresponding direction and gryphon identity are displayed for a bounded
+  3.5-second entry window. Fixed 3D entry-position markers are not claimed in
+  1.1.0 because the logs do not provide the CrutchAlerts raw-world coordinates
+  needed to place them without inference.
 
 World markers:
 - Four configurable fixed Varallion safe-zone circles use CrutchAlerts world
@@ -136,13 +172,16 @@ World markers:
 - Release capability validation requires only the world-drawing calls this
   release actually invokes.
 
-EVENT / PERFORMANCE MODEL IN 1.0.2
+EVENT / PERFORMANCE MODEL IN 1.1.0
 ----------------------------------
-Stateful mechanics use nine separate ability-filtered EVENT_EFFECT_CHANGED
-registrations. Building Static is additionally filtered to unitTag "player".
+Stateful mechanics use thirteen separate ability-filtered EVENT_EFFECT_CHANGED
+registrations. Building Static remains additionally filtered to unitTag "player".
+The four added effect filters are the Varallion gryphon checker IDs.
 
-Combat BEGIN observations use three separate EVENT_COMBAT_EVENT registrations,
+Combat BEGIN observations use five separate EVENT_COMBAT_EVENT registrations,
 each filtered by both ability ID and ACTION_RESULT_BEGIN:
+- 160007: Toxic Ire incoming Popper target.
+- 159208: Toxic Burst transition for bounded Popper guidance cleanup.
 - 149224: Mark of the Sea authoritative start.
 - 158553: early Varallion context signal observed in the encounter capture.
 - 158778: early Varallion context signal observed in the encounter capture.
@@ -151,9 +190,10 @@ These native filters reject unrelated traffic before it reaches PCAGC's Lua
 callbacks. No FPS, CPU, latency, or frame-time claim is inferred from callback
 counts or source size.
 
-The update callback exists only while dynamic work is pending: enabled path
-sampling, forecast/Mark-now presentation, or Tether timing. Recovery/static
-display state does not maintain an idle polling loop.
+The update callback exists only while dynamic work is pending: enabled predictor
+sampling, forecast/Mark-now presentation, Tether timing, bounded Maligalig timed
+guidance, or bounded gryphon entry guidance. Static display state does not keep
+an idle polling loop alive.
 
 SETTINGS
 --------
@@ -161,9 +201,9 @@ Open Settings > Addons > Pandalore's Coral Aerie Guide Companion.
 Slash shortcut: /pcagc
 
 User settings cover notification position/width/alignment/fonts/colors,
-Maligalig threshold, Sarydil healer indicators/humor, Varallion safe-zone circles,
-authoritative Mind Link arrows, and the separately opt-in experimental path
-predictor. Predictor scale/color controls are disabled unless both the master
+Maligalig threshold/bomb-crab/SAFE TO JUMP guidance, Sarydil healer
+indicators/humor, Varallion gryphon guidance and safe-zone circles, authoritative
+Mind Link arrows, and the separately opt-in experimental predictor. Predictor scale/color controls are disabled unless both the master
 arrow option and the predictor itself are enabled.
 
 PERSISTENCE
@@ -175,10 +215,10 @@ preferences shared across megaservers; no gameplay score/progress data is stored
 
 DEFERRED FEATURES
 -----------------
-- Varallion gryphon-entry markers / entry-position handling.
-- Maligalig Yaghra Larva Popper / Toxic Burst floor tether. The recorded
-  encounter confirms Toxic Burst 159208 -> 168115, but public behavior remains
-  deferred until its desired target/rendering contract is finalized.
+- Moving Maligalig crab-to-player world tether: target identity is now supported,
+  but a stable hostile-unit world-position contract still requires live/API proof.
+- Fixed 3D Varallion gryphon entry markers: direction identity is supported in
+  1.1.0; raw-world entry coordinates remain deliberately un-inferred.
 
 LIVE VALIDATION REQUIRED
 ------------------------
@@ -189,18 +229,27 @@ Before public upload, validate in the ESO client:
 - Native EVENT_COMBAT_EVENT ACTION_RESULT_BEGIN delivery for Varallion 158553
   and/or 158778 on fresh pulls, including first-forecast anchoring to the true
   combat edge rather than to the later signal timestamp.
-- Building Static 162279 stackCount behavior and threshold timing on the player.
+- Building Static 162279 stackCount behavior, LEAVE NOW threshold timing, and
+  SAFE TO JUMP only after a normal approximately eight-second reset; verify short
+  phase/teardown fades do not trigger it.
+- Toxic Ire 160007 native ACTION_RESULT_BEGIN delivery with sourceUnitId and
+  targetUnitId/name sufficient to resolve the intended group target; verify
+  repeated casts from one Popper dedupe and arrows clean up after Burst/timeout.
 - Sarydil target identity, overlapping Ignited/Aperture state, Pinpoint, healer
   role gating, and attached-icon cleanup through death/wipe/role changes.
 - Varallion Mark, endpoint, beam, wipe/reload, Tether, and recurrence sequencing.
+- Gryphon checker 163184/163185/163188/163597 native effect delivery and the
+  LEFT/ENTRANCE/RIGHT/EXIT identity mapping during actual Takeoff/entry.
 - Safe-zone circle placement after Varallion context detection and complete
   cleanup after wipe, PTE, zone exit, addon disable, and reload.
 - Mid-combat /reloadui recovery, including any EFFECT_RESULT_FULL_REFRESH events.
-- CrutchAlerts attached-icon and ground-circle behavior at the 2.24.0 minimum
-  and on the current release. Source compatibility is proven; native integration
-  remains an in-client check.
-- Experimental predictor behavior only after explicit opt-in: stationary/block
-  walking, jogging/sprinting, roll-dodge, death/resurrection, and roster churn.
+- CrutchAlerts attached-icon and ground-circle behavior at the 2.26.0 minimum.
+  Source compatibility is proven from the supplied 2.26.0 release archive; native
+  integration remains an in-client check.
+- Experimental predictor behavior only after explicit opt-in: seven-second
+  freeze at 149224 BEGIN, ranks 1-2 primary and rank 3 uncertainty rendering,
+  stationary/block-walking, jogging/sprinting, roll-dodge, death/resurrection,
+  insufficient coverage, and roster churn.
 - Keyboard/gamepad settings and preview behavior where applicable.
 - If performance claims are desired, measure actual client profiler/frame-time
   behavior with the addon disabled/enabled. Offline callback tests are not an

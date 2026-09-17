@@ -31,6 +31,8 @@ local DEFAULT_SETTINGS =
     identityHeight = 20,
     rowSpacing = 6,
     columnSpacing = 14,
+    trialMembersPerColumn = 0,
+    compactTrials = false,
     opacity = 100,
     sortMode = "role",
     displayNameMode = "displayName",
@@ -39,6 +41,8 @@ local DEFAULT_SETTINGS =
     healthTextPosition = "left",
     showClassIcon = true,
     showRoleIcon = true,
+    classIconSize = 16,
+    roleIconSize = 16,
     showLeaderIcon = true,
     showShields = true,
     showDeathAnimation = true,
@@ -46,6 +50,7 @@ local DEFAULT_SETTINGS =
     showGuildIcon = false,
     showLevel = true,
     showLevelStyle = true,
+    levelTextSize = 13,
     showRecoveryRhythm = false,
     glossEnabled = true,
     patternEnabled = true,
@@ -57,7 +62,7 @@ local DEFAULT_SETTINGS =
     lossTrailEnabled = false,
     lowHealthGlowEnabled = true,
     borderWidth = 1,
-    cornerSize = 2,
+    rpgBorder = true,
     innerShadowAlpha = 55,
     outerShadowAlpha = 75,
     textFontKey = "gameSmall",
@@ -138,6 +143,17 @@ local function GetSetting(key)
         return DEFAULT_SETTINGS[key]
     end
     return value
+end
+
+local function IsCompactTrial()
+    return GetSetting("compactTrials") == true and #(GroupFrames.roster or {}) > 4
+end
+
+local function GetRowDimensions()
+    if IsCompactTrial() then
+        return math.min(Clamp(GetSetting("width"), 180, 420), 220), 18, 16
+    end
+    return Clamp(GetSetting("width"), 180, 420), Clamp(GetSetting("identityHeight"), 16, 32), Clamp(GetSetting("healthHeight"), 12, 42)
 end
 
 local function IsEnabled()
@@ -487,17 +503,17 @@ local function BuildBarStyle(data, width, height, companion)
         width = width,
         height = height,
         alpha = Clamp(GetSetting("opacity"), 10, 100) / 100,
-        borderWidth = Clamp(GetSetting("borderWidth"), 0, 8),
-        cornerSize = Clamp(GetSetting("cornerSize"), 0, 12),
+        borderWidth = IsCompactTrial() and 1 or Clamp(GetSetting("borderWidth"), 0, 8),
+        rpgBorder = not IsCompactTrial() and GetSetting("rpgBorder") == true,
         innerShadowAlpha = Clamp(GetSetting("innerShadowAlpha"), 0, 100) / 100,
         outerShadowAlpha = Clamp(GetSetting("outerShadowAlpha"), 0, 100) / 100,
         textureInfo = textureInfo,
-        trackColor = { r = 0.008, g = 0.009, b = 0.012, a = companion and 0.58 or 0.68 },
+        trackColor = { r = 0.008, g = 0.009, b = 0.012, a = IsCompactTrial() and 0.86 or companion and 0.58 or 0.68 },
         fillStartColor = startColor,
         fillEndColor = endColor,
-        glossEnabled = GetSetting("glossEnabled") ~= false,
+        glossEnabled = not IsCompactTrial() and GetSetting("glossEnabled") ~= false,
         glossOpacity = companion and 0.08 or 0.13,
-        patternEnabled = GetSetting("patternEnabled") == true,
+        patternEnabled = not IsCompactTrial() and GetSetting("patternEnabled") == true,
         patternTexture = patternTexture,
         patternOpacity = Clamp(GetSetting("patternOpacity"), 0, 100) / 100 * (companion and 0.65 or 1),
         patternScale = Clamp(GetSetting("patternScale"), 24, 256),
@@ -509,11 +525,12 @@ local function BuildBarStyle(data, width, height, companion)
         shieldGlowEnabled = GetSetting("shieldGlowEnabled") ~= false,
         shieldGlowColor = CopyColor(GetSetting("shieldGlowColor"), DEFAULT_SETTINGS.shieldGlowColor),
         shieldGlowOpacity = Clamp(GetSetting("shieldGlowOpacity"), 0, 100) / 100,
-        font = BuildFont(GetSetting("textFontKey"), companion and 12 or GetSetting("healthTextSize"), outline),
+        font = BuildFont(GetSetting("textFontKey"), (companion or IsCompactTrial()) and 12 or GetSetting("healthTextSize"), outline),
         textColor = { r = 0.96, g = 0.94, b = 0.88 },
         textOpacity = Clamp(GetSetting("textOpacity"), 10, 100) / 100,
-        textInset = companion and 4 or Clamp(GetSetting("textInset"), 0, 24),
-        textVerticalOffset = companion and 0 or 1,
+        textInset = (companion or IsCompactTrial()) and 4 or Clamp(GetSetting("textInset"), 0, 24),
+        -- Optically center the compact font's digits within the thin health bar.
+        textVerticalOffset = IsCompactTrial() and 2 or companion and 0 or 1,
         lowGlowEnabled = not companion and GetSetting("feedbackEnabled") == true and GetSetting("lowHealthGlowEnabled") ~= false,
         lowGlowThreshold = 0.35,
         lowGlowColor = color,
@@ -530,7 +547,7 @@ local function FormatHealth(data)
     elseif not data.healthAvailable or data.maximumHealth <= 0 then
         return "--"
     end
-    local mode = GetSetting("healthTextMode")
+    local mode = IsCompactTrial() and "percent" or GetSetting("healthTextMode")
     local number = ZO_AbbreviateAndLocalizeNumber and ZO_AbbreviateAndLocalizeNumber(data.currentHealth, NUMBER_ABBREVIATION_PRECISION_TENTHS, USE_LOWERCASE_NUMBER_SUFFIXES) or tostring(data.currentHealth)
     local percent = string.format("%d%%", zo_round((data.currentHealth / data.maximumHealth) * 100))
     if mode == "percent" then
@@ -545,7 +562,7 @@ local function SetBarText(frame, text)
     frame.leftLabel:SetHidden(true)
     frame.centerLabel:SetHidden(true)
     frame.rightLabel:SetHidden(true)
-    local position = GetSetting("healthTextPosition")
+    local position = IsCompactTrial() and "right" or GetSetting("healthTextPosition")
     local label = position == "center" and frame.centerLabel or position == "right" and frame.rightLabel or frame.leftLabel
     label:SetText(text)
     label:SetHidden(false)
@@ -724,8 +741,9 @@ end
 local function ApplyLevelBadge(row, data)
     local width, tierIndex = LevelVisuals:Apply(row.levelBadge, data,
     {
-        shown = GetSetting("showLevel") ~= false,
+        shown = not IsCompactTrial() and GetSetting("showLevel") ~= false,
         styled = GetSetting("showLevelStyle") ~= false,
+        fontSize = Clamp(GetSetting("levelTextSize"), 10, 17),
         playOnTierUpgrade = row.sameIdentity == true,
         previousTier = row.levelTier,
     })
@@ -739,9 +757,11 @@ local function ApplyLevelBadge(row, data)
 end
 
 local function AnchorIdentity(row, data, width, identityHeight)
-    local leftOffset = 0
+    local leftOffset = IsCompactTrial() and 3 or 0
     local centerY = identityHeight * 0.5
-    local iconCenterY = centerY - 2
+    local iconCenterY = IsCompactTrial() and centerY or centerY - 2
+    local roleIconSize = IsCompactTrial() and 14 or Clamp(GetSetting("roleIconSize"), 10, 28)
+    local classIconSize = Clamp(GetSetting("classIconSize"), 10, 28)
     local levelCenterY = centerY + 1
     local function AnchorLeft(control, visible, controlWidth, verticalPosition)
         control:SetHidden(not visible)
@@ -756,23 +776,27 @@ local function AnchorIdentity(row, data, width, identityHeight)
     if roleVisible and ZO_GetRoleIcon then
         row.roleIcon:SetTexture(ZO_GetRoleIcon(data.role))
     end
-    AnchorLeft(row.roleIcon, roleVisible, STATUS_ICON_SIZE, iconCenterY)
-    local classVisible = GetSetting("showClassIcon") ~= false and data.classIcon ~= nil
+    row.roleIcon:SetDimensions(roleIconSize, roleIconSize)
+    AnchorLeft(row.roleIcon, roleVisible, roleIconSize, iconCenterY)
+    local classVisible = not IsCompactTrial() and GetSetting("showClassIcon") ~= false and data.classIcon ~= nil
     if classVisible then
         row.classIcon:SetTexture(data.classIcon)
     end
-    AnchorLeft(row.classIcon, classVisible, STATUS_ICON_SIZE, iconCenterY)
+    row.classIcon:SetDimensions(classIconSize, classIconSize)
+    AnchorLeft(row.classIcon, classVisible, classIconSize, iconCenterY)
 
     local levelWidth = ApplyLevelBadge(row, data)
     AnchorLeft(row.levelControl, levelWidth > 0, levelWidth, levelCenterY)
 
-    local rightOffset = 0
+    local rightOffset = IsCompactTrial() and 3 or 0
     local function AnchorRight(control, visible)
+        local iconSize = IsCompactTrial() and 14 or STATUS_ICON_SIZE
+        control:SetDimensions(iconSize, iconSize)
         control:SetHidden(not visible)
         if visible then
             control:ClearAnchors()
             control:SetAnchor(RIGHT, row.player, TOPRIGHT, -rightOffset, centerY)
-            rightOffset = rightOffset + STATUS_ICON_SIZE + 2
+            rightOffset = rightOffset + iconSize + 3
         end
     end
 
@@ -781,8 +805,8 @@ local function AnchorIdentity(row, data, width, identityHeight)
         row.leaderIcon:SetTexture(GetModeKey() == "gamepad" and "EsoUI/Art/UnitFrames/Gamepad/gp_Group_Leader.dds" or "EsoUI/Art/UnitFrames/groupIcon_leader.dds")
     end
     AnchorRight(row.leaderIcon, leaderVisible)
-    AnchorRight(row.guildBadge, GetSetting("showGuildIcon") == true and #data.sharedGuilds > 0)
-    AnchorRight(row.friendBadge, GetSetting("showFriendIcon") == true and data.friend)
+    AnchorRight(row.guildBadge, not IsCompactTrial() and GetSetting("showGuildIcon") == true and #data.sharedGuilds > 0)
+    AnchorRight(row.friendBadge, not IsCompactTrial() and GetSetting("showFriendIcon") == true and data.friend)
 
     local readyTexture = data.readyVote and READY_CHECK_ICONS[data.readyVote]
     if readyTexture then
@@ -802,6 +826,7 @@ local function AnchorIdentity(row, data, width, identityHeight)
 end
 
 local function ApplyRowLayout(row, data, width, identityHeight, healthHeight)
+    if IsCompactTrial() then width, identityHeight, healthHeight = GetRowDimensions() end
     local mainHeight = identityHeight + healthHeight
     row.player:SetDimensions(width, mainHeight)
     row.health:ClearAnchors()
@@ -810,7 +835,7 @@ local function ApplyRowLayout(row, data, width, identityHeight, healthHeight)
 
     row.deadBackdrop:ClearAnchors()
     row.deadBackdrop:SetAnchor(RIGHT, row.health, RIGHT, -2, 0)
-    row.deadBackdrop:SetHidden(not data.dead)
+    row.deadBackdrop:SetHidden(IsCompactTrial() or not data.dead)
     AnchorIdentity(row, data, width, identityHeight)
 
     local totalHeight = mainHeight
@@ -840,9 +865,9 @@ end
 local function UpdateUnitAlpha(row, data)
     local alpha = 1
     if not data.online then
-        alpha = 0.35
+        alpha = IsCompactTrial() and 0.65 or 0.35
     elseif not data.inRange then
-        alpha = 0.40
+        alpha = IsCompactTrial() and 0.60 or 0.40
     end
     row.player:SetAlpha(alpha)
     if data.companion then
@@ -852,9 +877,10 @@ local function UpdateUnitAlpha(row, data)
 end
 
 local function UpdateRowValues(row, data, smooth)
-    local animateHealth = smooth and data.healthAvailable
-    BarVisuals:SetValue(row.health, data.currentHealth, data.maximumHealth, animateHealth, animateHealth)
-    BarVisuals:SetShield(row.health, GetSetting("showShields") ~= false and data.shield or 0, data.maximumHealth, smooth)
+    local inactive = IsCompactTrial() and (data.dead or not data.online)
+    local animateHealth = smooth and data.healthAvailable and not inactive
+    BarVisuals:SetValue(row.health, inactive and 0 or data.currentHealth, data.maximumHealth, animateHealth, animateHealth)
+    BarVisuals:SetShield(row.health, not inactive and GetSetting("showShields") ~= false and data.shield or 0, data.maximumHealth, smooth and not inactive)
     SetBarText(row.health, FormatHealth(data))
     if data.companion then
         local animateCompanionHealth = smooth and data.companion.healthAvailable
@@ -897,7 +923,7 @@ local function ConfigureRow(row, data, width, identityHeight, healthHeight)
     row.data = data
     row.player.unitTag = data.unitTag
     row.nameLabel:SetText(GetDisplayText(data))
-    row.nameLabel:SetFont(BuildFont(GetSetting("textFontKey"), GetSetting("nameTextSize"), GetSetting("textOutline")))
+    row.nameLabel:SetFont(BuildFont(GetSetting("textFontKey"), IsCompactTrial() and 14 or GetSetting("nameTextSize"), GetSetting("textOutline")))
     row.nameLabel:SetColor(0.92, 0.93, 0.96, Clamp(GetSetting("textOpacity"), 10, 100) / 100)
     if data.companion then
         local companionFallback = SI_UNIT_FRAME_NAME_COMPANION and GetString(SI_UNIT_FRAME_NAME_COMPANION) or "Companion"
@@ -916,7 +942,7 @@ end
 
 function GroupFrames:BuildRoster()
     local roster = {}
-    local previewSize = self.settingsPreviewActive and 4 or self.debugPreviewSize
+    local previewSize = self.settingsPreviewActive and (GetSetting("compactTrials") == true and 12 or 4) or self.debugPreviewSize
     if previewSize then
         for index = 1, previewSize do
             roster[index] = BuildPreviewMember(index, previewSize)
@@ -967,11 +993,14 @@ function GroupFrames:ApplyLayout()
     local memberCount = #roster
     local columns = memberCount <= 4 and 1 or memberCount <= 12 and 2 or 3
     local rowsPerColumn = math.max(math.ceil(memberCount / columns), 1)
-    local width = Clamp(GetSetting("width"), 180, 420)
-    local identityHeight = Clamp(GetSetting("identityHeight"), 16, 32)
-    local healthHeight = Clamp(GetSetting("healthHeight"), 12, 42)
-    local rowSpacing = Clamp(GetSetting("rowSpacing"), 0, 24)
-    local columnSpacing = Clamp(GetSetting("columnSpacing"), 0, 40)
+    local trialMembersPerColumn = math.floor(Clamp(GetSetting("trialMembersPerColumn"), 0, MAX_GROUP_ROWS))
+    if memberCount > 4 and trialMembersPerColumn > 0 then
+        rowsPerColumn = trialMembersPerColumn
+        columns = math.ceil(memberCount / rowsPerColumn)
+    end
+    local width, identityHeight, healthHeight = GetRowDimensions()
+    local rowSpacing = IsCompactTrial() and 4 or Clamp(GetSetting("rowSpacing"), 0, 24)
+    local columnSpacing = IsCompactTrial() and 10 or Clamp(GetSetting("columnSpacing"), 0, 40)
     local columnHeights = {}
     local maximumHeight = 1
 
@@ -1117,11 +1146,33 @@ function GroupFrames:RefreshAllUnitStates()
     end
 end
 
+local STOCK_FRAME_TABLES = { "groupFrames", "raidFrames", "companionRaidFrames" }
+
+function GroupFrames:ApplyStockFrameHideReason(manager, hidden)
+    for _, key in ipairs(STOCK_FRAME_TABLES) do
+        for _, frame in pairs(manager[key] or {}) do
+            frame:SetHiddenForReason(STOCK_HIDE_REASON, hidden)
+        end
+    end
+end
+
 function GroupFrames:SetStockFramesHidden(hidden)
     hidden = hidden == true
     if UNIT_FRAMES and UNIT_FRAMES.SetGroupAndRaidFramesHiddenForReason then
+        -- The fragment's visibility can change independently of individual frames.
+        -- Keep a reason on every cached variant, including inactive raid frames.
+        if self.stockHookManager ~= UNIT_FRAMES and ZO_PostHook and UNIT_FRAMES.CreateFrame then
+            local manager = UNIT_FRAMES
+            ZO_PostHook(manager, "CreateFrame", function()
+                if self.stockFramesHidden and IsEnabled() then
+                    self:ApplyStockFrameHideReason(manager, true)
+                end
+            end)
+            self.stockHookManager = manager
+        end
         UNIT_FRAMES:SetGroupAndRaidFramesHiddenForReason(STOCK_HIDE_REASON, hidden)
         self.stockFramesHidden = hidden
+        self:ApplyStockFrameHideReason(UNIT_FRAMES, hidden)
     elseif not hidden then
         self.stockFramesHidden = false
     end

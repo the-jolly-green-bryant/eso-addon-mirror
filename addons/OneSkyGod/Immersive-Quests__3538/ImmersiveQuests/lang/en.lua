@@ -5515,56 +5515,56 @@ ImmersiveQuests.localization = {
 -- 		=========================================================================
 --		  Bal Foyen Main
 -- 		=========================================================================
-		[GetQuestName(4023)] = { -- "If By Sea"						-- Mouch30
-			["Get to the Dhalmora Watchtower"] =
-				{appendText=". The Dunmeri architecture is a sharp contrast against the Argonian mud houses."},
-			["Search the Watchtower"] =
-				{appendText=". Even though the place has been ransacked, there might be some valuable information in the mess."},
-			["Get Kindlepitch Powder at Fort Zeren"] =
-				{appendText=", a large Dark Elf garrison located in the south, just beyond the swampy fields. The ledger mentioned a quartermaster who could help..."},
-			["Get Kindlepitch Powder at the Foyen Dockyards"] =
-				{appendText=", on the northern coast. Another quartermaster there should be able to assist, as long as you don't spook her."},
-			["Head to the Signal Fires"] =
-				{appendText=" using the underground tunnel, near the eastern cliffs of the Foyen docks. The kindlepitch radiates with a gentle warmth, felt even through all the layers of your pack."},
-			["Light the East Fire"] =
-				{appendText=", overlooking the eastern shore."},
-			["Light the West Fire"] =
-				{appendText=", accessible by crossing the wooden bridge to the southeast. Covenant soldiers stand guard near the signal fires to make sure no one interferes with their plan."},
-			["Return to Dhalmora"] =
-				{appendText=". The southern path is clear of enemies and provides a safe way to return back to the village."},
-			["Talk to Aera Earth-Turner"] =
-				{appendText=", standing near the Dhalmora Hall of Merchants."},
-		},
-		[GetQuestName(4041)] = { -- "Crossroads"					-- Mouch30
-			["Help Rana at the Docks"] =
-				{appendText=", to the north of Dhalmora. Captain Rana and her soldiers are certainly capable, but the docks are too exposed on all sides. Dockworkers and fisherfolk are trying to escape using the northern bridge, and might need assistance."},
-			["Help Darj at the Fort"] =
-				{appendText=" to the west of Dhalmora. The fort is large and well equipped, but the villagers can't fight, and the Covenant is hitting hard...The defense is likely being coordinated from the keep."},
-			["Talk to Eleven-Skips"] =
-				{appendText=", hunched up against the eastern side of the bridge leading to the Foyen docks. Blood pools underneath him, and the sound of a frenzied battle rises and falls like tidal waves."},
-			["Talk to Darj the Hunter"] =
-				{appendText=", in the Fort Zeren Keep — the westernmost building. The keep is full of injured soldiers and scared civilians."},
-		},
-		[GetQuestName(4028)] = { -- "Breaking the Tide"				-- Mouch30
-			["Free Fishermen"] =
-				{appendText=" from the windmill. The ever-turning sails can be seen from the bridge, directly west. Fire has already started climbing along the walls."},
-			["Assist Sergeant Seyne at the Docks"] =
-				{appendText=" on the northern shore."},
-			["Defend Fisherfolk"] =
-				{appendText=" keeping the attention of the Covenant on you, while the citizens escape."},
-			["Find Trynhild and Rana"] =
-				{appendText=". The overwhelming attacks must have forced them to hide."},
-			["Talk to Trynhild"] =
-				{appendText=", catching her breath in a shed, on the western side of the docks."},
-			["Look for Captain Rana"] =
-				{appendText=" at the northern end of the docks, and assist her with her plan."},
-			["Talk to Captain Rana"] =
-				{appendText=" on the ship at the northern end of the docks."},
-			["Kill the Covenant Commander"] =
-				{appendText=" hiding in the hold of King Casimir's Pride, docked at the northern end of the docks. It's time the Covenant paid for their crimes."},
-			["Talk to Centurion"] =
-				{appendText=" in his quarters of the Velvet Lash — the boat moored in the center of the docks. The Pact held strong, and the docks are safe. No word has come from the fort yet..."},
-		},
+[GetQuestName(4023)] = { --"If By Sea"--mouch30
+        ["Get to the Dhalmora Watchtower"] =
+            {appendText=". The Dunmeri architecture is a sharp contrast against the Argonian mud houses."},
+        ["Search the Watchtower"] =
+            {appendText=". Even though the place has been ransacked, there might be some valuable information in the mess."},
+        ["Get Kindlepitch Powder at Fort Zeren"] =
+            {appendText=", a large Dark Elf garrison located in the south, just beyond the swampy fields. The ledger mentioned a quartermaster who could help..."},
+        ["Get Kindlepitch Powder at the Foyen Dockyards"] =
+            {appendText=", on the northern coast. Another quartermaster there should be able to assist, as long as you don't spook her."},
+        ["Head to the Signal Fires"] =
+            {appendText=" using the underground tunnel, near the eastern cliffs of the Foyen docks. The kindlepitch radiates with a gentle warmth, felt even through all the layers of your pack."},
+        ["Light the East Fire"] =
+            {appendText=""},
+        ["Light the West Fire"] =
+            {appendText=", Both strategically placed on the eastern shore at the end of the path leading north out of Dhalmora. Covenant soldiers stand guard near the signal fires to make sure no one interferes with their plan."},
+        ["Return to Dhalmora"] =
+            {appendText=". The southern path is clear of enemies and provides a safe way to return back to the village."},
+        ["Talk to Aera Earth-Turner"] =
+            {appendText=", standing near the Dhalmora Hall of Merchants."},
+    },
+[GetQuestName(4041)] = { --"Crossroads"--mouch30
+        ["Help Rana at the Docks"] =
+            {appendText=". She's trying to send the dock workers and villagers down to Dhalmora via the river road leading south out of the docks. See if any of them need help along the way."},
+        ["Help Darj at the Fort"] =
+            {appendText=" to the west of Dhalmora. The fort is large and well equipped, but the villagers can't fight, and the Covenant is hitting hard...The defense is likely being coordinated from the keep."},
+        ["Talk to Eleven-Skips"] =
+            {appendText=", hunched up against the eastern side of the bridge leading to the Foyen docks. Blood pools underneath him, and the sound of a frenzied battle rises and falls like tidal waves."},
+        ["Talk to Darj the Hunter"] =
+            {appendText=", in the Fort Zeren Keep — the westernmost building. The keep is full of injured soldiers and scared civilians."},
+    },
+[GetQuestName(4028)] = { --"Breaking the Tide"-- Mouch30
+        ["Free Fishermen"] =
+            {appendText=" from the windmill. The ever-turning sails can be seen for miles around, standing tall on the outskirts of the docks, for now. Fire has already started climbing along the walls."},
+        ["Assist Sergeant Seyne at the Docks"] =
+            {appendText=" on the northern shore."},
+        ["Defend Fisherfolk"] =
+            {appendText=" keeping the attention of the Covenant on you, while the citizens escape."},
+        ["Find Trynhild and Rana"] =
+            {appendText=". The overwhelming attacks must have forced them to hide."},
+        ["Talk to Trynhild"] =
+            {appendText=", catching her breath in a shed, on the western side of the docks."},
+        ["Look for Captain Rana"] =
+            {appendText=" at the northern end of the docks, and assist her with her plan."},
+        ["Talk to Captain Rana"] =
+            {appendText=" on the ship at the northern end of the docks."},
+        ["Kill the Covenant Commander"] =
+            {appendText=" hiding in the hold of King Casimir's Pride, docked at the northern end of the docks. It's time the Covenant paid for their crimes."},
+        ["Talk to Centurion"] =
+            {appendText=" in his quarters of the Velvet Lash — the boat moored in the center of the docks. The Pact held strong, and the docks are safe. No word has come from the fort yet..."},
+    },
 		[GetQuestName(4026)] = { -- "Zeren in Peril"				-- Mouch30
 			["Defend Fort Zeren"] =
 				{appendText=", the sprawling citadel in the south. The Covenant soldiers have breached the walls, threatening the wounded refugees."},
@@ -6134,50 +6134,53 @@ ImmersiveQuests.localization = {
 			["Talk to Captain Llaari"] =
 				{appendText=", housed in the largest building of the fort's courtyard."},
 		},
-		[GetQuestName(3590)] = { -- "Through the Aftermath"			-- Mouch30
-			["Talk to Furon Rii 1"] =
-				{appendText=", a Dark Elf mage, at the northern camp of the Starved Plains.", stepTextKey="Furon Rii and Reesa disagree on what to do with the army haunting Starved Plain. Sergeant Rhorlak asked me to start by talking to Furon Rii, to hear his plan."},
-			["Use the Pendant on a Weakened Spirit"] =
-				{appendText=".  A black miasma boils inside the clear stone, indicating a dark form of magic."},
-			["Talk to Furon Rii 2"] =
-				{appendText=" back at the northern camp of the Starved Plain. The dead Chimer shuffles dutifully behind you.", stepTextKey="I've bound one of the dead soldiers. I need to lead the soldier's spirit to Furon Rii."},
-			["Talk to Reesa 1"] =
-				{appendText=" at the northern camp of the Starved Plain. She wears a worried look on her face, disturbed by the success of the binding spell.", stepTextKey="I've tried the plan proposed by the Rii brothers. An Argonian named Reesa tried to get my attention as I finished talking to Furon. I should see what she has to say."},
-			["Use the Talisman on a Weakened Spirit"] =
-				{appendText=". It is a carefully crafted charm, adorned with colorful plumage and blessed with light magic."},
-			["Talk to Reesa 2"] =
-				{appendText=" at the northern camp of the Starved Plain. The ghost soldier dissipated, but not before thanking you.", stepTextKey="I need to tell Reesa that the Argonian Talisman was able to release the spirit."},
-			["Talk to Sergeant Rhorlak"] =
-				{appendText=" at the northern camp of the Starved Plain. A decision needs to be made - either the spirits are enslaved to protect Davon's Watch, or released from their eternal suffering."},
-			["Choose Furon Rii's Plan"] =
-				{appendText=""},
-			["Choose Reesa's Plan"] =
-				{appendText=""},
-			["Talk to Reesa 3"] =
-				{appendText=" at the northern camp of the Starved Plain. It's time to give these spirits the peace they deserve.", stepTextKey="I've decided to help the spectral army move on to Aetherius. I must speak to Reesa about my next step."},
-			["Collect General Radrathren's Relic"] =
-				{appendText=" - a thick and heavy pendant inlaid with black stones - from a burial mound in the northeast field of the Starved Plain."},
-			["Collect Captain Andrana's Relic"] =
-				{appendText=" - a tiny silver blade with a richly engraved hilt - from a burial mound in the center of the battlefield."},
-			["Collect Captain Rysari's Relic"] =
-				{appendText=" - an ivory trinket on a thin, silver chain - from a burial mound in the eastern part of the Starved Plain."},
-			["Complete the Ritual 1"] =
-				{appendText=" by joining Reesa at the ruins located in the center of the Starved Plain.", stepTextKey="I'm to meet Reesa at the Daedric ruins. We must perform a ritual and confront the spirit of General Radrathren."},
-			["Talk to Reesa 4"] =
-				{appendText=" on the platform of the Daedric ruins in the center of the Starved Plain. When General Radrathren was defeated, he disappeared in a flash of golden light, and the restless spirits around the field have ceased their fighting.", stepTextKey="I need to talk to Reesa and see if our attempt worked."},
-			["Talk to Giron Rii"] =
-				{appendText=" at the northern camp of the Starved Plain. With all these invading forces and incoming foes, an undead army is the perfect solution."},
-			["Collect General Radrathren's Skull"] =
-				{appendText=" from a burial mound in the northeast field of the Starved Plain."},
-			["Collect Captain Andrana's Skull"] =
-				{appendText=" from a burial mound in the center of the battlefield."},
-			["Collect Captain Rysari's Skull"] =
-				{appendText=" from a burial mound in the eastern part of the Starved Plain."},
-			["Complete the Ritual 2"] =
-				{appendText=" by joining Furon Rii at the ruins located in the center of the Starved Plain.", stepTextKey="I must meet Furon Rii at the Daedric tower. We'll perform a ritual there and confront the spirit of General Radrathren."},
-			["Talk to Furon Rii 3"] =
-				{appendText=" on the platform of the Daedric ruins in the center of the Starved Plain. When General Radrathren was defeated, a pillar of red and black magic thrust into the sky, sending shockwaves throughout the air. The spirits all around have stopped fighting, now waiting for their next command.", stepTextKey="We performed the ritual and confronted the spirit of General Radrathren. I should speak to Furon Rii once again."},
-		},
+
+
+[GetQuestName(3590)] = { --"Through the Aftermath"-- Mouch30
+		["Talk to Furon Rii 1"] =
+			{appendText=", a Dark Elf mage, at the northern camp of the Starved Plains.", stepTextKey="Furon Rii and Reesa disagree on what to do with the army haunting Starved Plain. Sergeant Rhorlak asked me to start by talking to Furon Rii, to hear his plan."},
+		["Use the Pendant on a Weakened Spirit"] =
+			{appendText=".  A black miasma boils inside the clear stone, indicating a dark form of magic."},
+		["Talk to Furon Rii 2"] =
+			{appendText=" back at the northern camp of the Starved Plain. The dead Chimer shuffles dutifully behind you.", stepTextKey="I've bound one of the dead soldiers. I need to lead the soldier's spirit to Furon Rii."},
+		["Talk to Reesa 1"] =
+			{appendText=" at the northern camp of the Starved Plain. She wears a worried look on her face, disturbed by the success of the binding spell.", stepTextKey="I've tried the plan proposed by the Rii brothers. An Argonian named Reesa tried to get my attention as I finished talking to Furon. I should see what she has to say."},
+		["Use the Talisman on a Weakened Spirit"] =
+			{appendText=". It is a carefully crafted charm, adorned with colorful plumage and blessed with light magic."},
+		["Talk to Reesa 2"] =
+			{appendText=" at the northern camp of the Starved Plain. The ghost soldier dissipated, but not before thanking you.", stepTextKey="I need to tell Reesa that the Argonian Talisman was able to release the spirit."},
+		["Talk to Sergeant Rhorlak"] =
+			{appendText=" at the northern camp of the Starved Plain. A decision needs to be made - either the spirits are enslaved to protect Davon's Watch, or released from their eternal suffering."},
+		["Choose Furon Rii's Plan"] =
+			{appendText=""},
+		["Choose Reesa's Plan"] =
+			{appendText=""},
+		["Talk to Reesa 3"] =
+			{appendText=" at the northern camp of the Starved Plain. It's time to give these spirits the peace they deserve.", stepTextKey="I've decided to help the spectral army move on to Aetherius. I must speak to Reesa about my next step."},
+		["Collect General Radrathren's Relic"] =
+			{appendText=" - a thick and heavy pendant inlaid with black stones - from a burial mound in the northwest field of the Starved Plain."},
+		["Collect Captain Andrana's Relic"] =
+			{appendText=" - a tiny silver blade with a richly engraved hilt - from a burial mound in the center of the battlefield."},
+		["Collect Captain Rysari's Relic"] =
+			{appendText=" - an ivory trinket on a thin, silver chain - from a burial mound in the eastern part of the Starved Plain."},
+		["Complete the Ritual 1"] =
+			{appendText=" by joining Reesa at the ruins located in the center of the Starved Plain.", stepTextKey="I'm to meet Reesa at the Daedric ruins. We must perform a ritual and confront the spirit of General Radrathren."},
+		["Talk to Reesa 4"] =
+			{appendText=" on the platform of the Daedric ruins in the center of the Starved Plain. When General Radrathren was defeated, he disappeared in a flash of golden light, and the restless spirits around the field have ceased their fighting.", stepTextKey="I need to talk to Reesa and see if our attempt worked."},
+		["Talk to Giron Rii"] =
+			{appendText=" at the northern camp of the Starved Plain. With all these invading forces and incoming foes, an undead army is the perfect solution."},
+		["Collect General Radrathren's Skull"] =
+			{appendText=" from a burial mound in the northeast field of the Starved Plain."},
+		["Collect Captain Andrana's Skull"] =
+			{appendText=" from a burial mound in the center of the battlefield."},
+		["Collect Captain Rysari's Skull"] =
+			{appendText=" from a burial mound in the eastern part of the Starved Plain."},
+		["Complete the Ritual 2"] =
+			{appendText=" by joining Furon Rii at the ruins located in the center of the Starved Plain.", stepTextKey="I must meet Furon Rii at the Daedric tower. We'll perform a ritual there and confront the spirit of General Radrathren."},
+		["Talk to Furon Rii 3"] =
+			{appendText=" on the platform of the Daedric ruins in the center of the Starved Plain. When General Radrathren was defeated, a pillar of red and black magic thrust into the sky, sending shockwaves throughout the air. The spirits all around have stopped fighting, now waiting for their next command.", stepTextKey="We performed the ritual and confronted the spirit of General Radrathren. I should speak to Furon Rii once again."},
+	},
+
 		[GetQuestName(3591)] = { -- "The Venom of Ahknara"			-- Mouch30
 			["Get Blinding Light Flasks"] =
 				{appendText=" - these tall, slender bottles contain concentrated candlelight spells that create a bright flash, unraveling any stealth magic around."},
@@ -33988,6 +33991,502 @@ ImmersiveQuests.localization = {
             {appendText=", where I last saw her, in Rinmawen's Plaza in central Alinor."},
     },
 
+-- ==================================================================================================================================================
+--	Southern Elsweyr																														Undaunted
+-- ==================================================================================================================================================
+
+-- 		=========================================================================
+--		  Southern Elsweyr - Prologue 
+-- 		=========================================================================
+
+
+[GetQuestName(6395)] = { --"The Dragonguard's Legacy" --Jordakai
+
+    ["Talk to Kasura 1"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "",
+            [ALLIANCE_EBONHEART_PACT] = ""
+        },
+        stepTextKey = "Kasura requested that I meet her in one of the nearby cities. I should head there now.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " in Vulkhel Guard, the southern port city of Auridon. When in the Altmer city, she conducts business at the Vulkhel Guard Manor & Treasury. Afterwards, she peruses the books up in the west wing of the building.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " in Daggerfall, the southern port city of Glenumbra. When visiting the Breton city, she often visits The Rosy Lion tavern, near the city's wayshrine.",
+            [ALLIANCE_EBONHEART_PACT] = " in Davon's Watch, the northeastern, coastal city of Stonefalls. When visiting the Indoril Dunmer city, she often stays at The Watch House tavern, across from the bank."
+        }
+    },
+    ["Read Kasura's Notes"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "Up in the west wing of the Vulkhel Guard Manor & Treasury building at the southern port city of Auridon, I found Kasura looking at some books. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "Upstairs in The Rosy Lion tavern in Daggerfall, the southern city of Stonefalls, I found Kasura looking at some paintings. ",
+            [ALLIANCE_EBONHEART_PACT] = "In The Watch House tavern in Davon's Watch, the northeastern city of Stonefalls, I found Kasura in the sleeping area on the main floor. "
+        },
+        stepTextKey = "Kasura asked me to search a Dragonguard tomb, but the entrance is currently hidden. I should read her notes for more information.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " on the desk by the bookshelf she is studying. \n\nBesides giving me a Dragonguard Seal, she marked my map as to where I should start searching for the ancient site.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " on the emply bookshelf by the drum. \n\nBesides giving me a Dragonguard Seal, she marked my map as to where I should start searching for the ancient site.",
+            [ALLIANCE_EBONHEART_PACT] = " lying on the bed by her. \n\nBesides giving me a Dragonguard Seal, she marked my map as to where I should start searching for the ancient site."
+        }
+    },
+    ["Find the Northern Glyph"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "After the last Reman emperor was killed, the Dragonguard disbanded and how they hunted dragons was lost. At a tomb, ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "After the last Reman emperor was killed, the Dragonguard disbanded and how they hunted dragons was lost. At a tomb, ",
+            [ALLIANCE_EBONHEART_PACT] = "After the last Reman emperor was killed, the Dragonguard disbanded and how they hunted dragons was lost. At a tomb, "
+        },
+        stepTextKey = "Kasura says I must first activate three glyphs to determine which glyphs in a series will reveal the entrance to the tomb. I should head to the spots she marked on my map and activate these glyphs. I can consult her notes for more information.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " at Tanzelwil, northwest of Vulkhel Guard. Near where the trails converge east of the large western circular ruin, there is a ruined pillar, just east of the entrance to Inner Tanzelwil. The square gray stone is at the foot of that pillar, on the platform that partially extends southeast. Unseal and examine it.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " in the Shrieking Scar, northwest of a fisherman's island and south of the Wyrd's waterfall. It is up above the western road at the edge of an overlook near a large green-leaf maple tree. The square gray stone is on a mossy rock ledge, where a young autumnal sapling grows. Unseal and examine it.",
+            [ALLIANCE_EBONHEART_PACT] = ". The square sandstone is on the ground, outside of the dark stone wall around the first circular plaza entered from the road north of Othrenis. Unsealed and examine it."
+        }
+    },
+    ["Find the Eastern Glyph"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "After the last Reman emperor was killed, the Dragonguard disbanded and how they hunted dragons was lost. At a tomb, ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "After the last Reman emperor was killed, the Dragonguard disbanded and how they hunted dragons was lost. At a tomb, ",
+            [ALLIANCE_EBONHEART_PACT] = "After the last Reman emperor was killed, the Dragonguard disbanded and how they hunted dragons was lost. At a tomb, "
+        },
+        stepTextKey = "Kasura says I must first activate three glyphs to determine which glyphs in a series will reveal the entrance to the tomb. I should head to the spots she marked on my map and activate these glyphs. I can consult her notes for more information.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " in the north part of the eastern circular Ayleid ruins. The gray stone tile lies in the grass by a wall with the remains of an archway, north of a ritual site with four altars. It is not in the arched ruin, but to its left. Unseal and examine the glyph.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " near the Scar's northern road, midway along its longest stretch. The gray stone tile lies by a small bush between boulders, near skull torches and the skeletal remains of harpy meals. A small cave with an aerie is around the back of the taller boulder. Unseal and examine the glyph.",
+            [ALLIANCE_EBONHEART_PACT] = ". The sandstone tile lies behind the northern tower of the eastern ritual site with three colored columns of light. Unsealed and examine the glyph."
+        }
+    },
+    ["Find the Southern Glyph"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "After the last Reman emperor was killed, the Dragonguard disbanded and how they hunted dragons was lost. At a tomb, ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "After the last Reman emperor was killed, the Dragonguard disbanded and how they hunted dragons was lost. At a tomb, ",
+            [ALLIANCE_EBONHEART_PACT] = "After the last Reman emperor was killed, the Dragonguard disbanded and how they hunted dragons was lost. At a tomb, "
+        },
+        stepTextKey = "Kasura says I must first activate three glyphs to determine which glyphs in a series will reveal the entrance to the tomb. I should head to the spots she marked on my map and activate these glyphs. I can consult her notes for more information.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " in Tanzelwil's southwestern ritual site. The square, gray stone lies near ivy and a fern, beside the circular platform surrounding an altar where a priestess left her journal. Unseal the glyph and examine it. \n\nI should speak with Kasura again before I leave the tavern. Once outside, I should check my map to find the hidden sites in the ancient Ayleid ruins of Tanzelwil in southwestern Auridon, northwest of the city of Vulkhel Guard and east of the coastal Seabloom Villa residence.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " up a trail in the southern cliffs. The square, gray stone lies in front of a tall boulder, at the roots of two aspens, one tall and straight and the other forked into three branches. Up and around the back of the boulder is a harpy aerie in a small cave. Unseal the glyph and examine it. \n\nI should speak with Kasura again before I leave the tavern. Once outside, I should check my map to find the hidden sites in the harpy-infested cliffs of Shrieking Scar, north of Daggerfall, southwest of the Beldama Wyrd Tree, and far south of the western Farwatch Wayshrine.",
+            [ALLIANCE_EBONHEART_PACT] = ". At the southern burial tower of Othrenis, behind the obelisk to the right on the platform between the sets of stairs, an ancient sandstone tile rests. Unseal the glyph and examine it. \n\nI should speak with Kasura again before I leave the tavern. Once outside Davon's Watch, I should check my map to find the burial shrines of Othrenis in the southeastern mountains, southwest of the city and south of the lava flows of Ash Mountain."
+        }
+    },
+    ["Reveal the Tomb Entrance"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "In the Ayleid ruins of Tanzelwil in southwestern Auridon, I found the Dragonguard glyphs of Blades, Honor, and Bravery. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "In the Shrieking Scar of southwestern Glenumbra, I searched the harpy-infested cliffs and found the Dragonguard glyphs of Blades, Honor, and Bravery. ",
+            [ALLIANCE_EBONHEART_PACT] = "In the southeastern mountains of Stonefalls, I searched the burial shrines of Othrenis and found the Dragonguard glyphs of Blades, Honor, and Bravery. "
+        },
+        stepTextKey = "I know which three glyphs will reveal the entrance to the Dragonguard tomb. I should head to the spot marked on my map now.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " near the east-west lower valley trail, east of the long Ayleid bridge, by a large, red-leaf tree. Behind it by the rocks is a patch of bare ground.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ", near a harpy aerie in a small cave on the northern trail. Just west of several piles of harpy meal remains, there is an alcove of boulders with a patch of bare ground.",
+            [ALLIANCE_EBONHEART_PACT] = " at Othrenis, in a bare patch of ground beneath tall, intertwined mushrooms, just west of the first circular plaza."
+        }
+    },
+    ["Reveal the Tomb Door"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "At the Ayleid ruins of Tanzelwil in southwestern Auridon, along the east-west, lower valley trail, east of the long Ayleid bridge, there is a large, red-leaf tree. Behind it by the rocks in a patch of bare ground, I found a set of nine glyphs. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "At Shrieking Scar in southwestern Glenumbra, near a harpy aerie in a small cave on the northern trail, I found a set of nine glyphs in an alcove of boulders, just west of several piles of harpy meal remains. ",
+            [ALLIANCE_EBONHEART_PACT] = "At Othrenis in the southeastern mountains of Stonefalls, just west of the first cicular plaza in a bare patch of ground beneath tall, intertwined mushrooms, I found a set of nine glyphs. "
+        },
+        stepTextKey = "I know which three glyphs will reveal the entrance to the tomb, but I need to determine the proper order to activate them in.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ". Perhaps Kasura's Notes can help.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ". Perhaps Kasura's Notes can help.",
+            [ALLIANCE_EBONHEART_PACT] = ". Perhaps Kasura's Notes can help."
+        }
+    },
+    ["Search the Dragonguard Tomb"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "At the Ayleid ruins of Tanzelwil in southwestern Auridon, along the east-west lower valley trail, east of the long Ayleid bridge, there is a large, red-leaf tree. Behind it by the rocks, ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "At Shrieking Scar in southwestern Glenumbra, near a harpy aerie in a small cave on the northern trail, in an alcove of boulders just west of several piles of harpy meal remains, ",
+            [ALLIANCE_EBONHEART_PACT] = "At Othrenis in the southeastern mountains of Stonefalls, in a bare patch of ground beneath tall, intertwined mushrooms, just west of the first circular plaza, "
+        },
+        stepTextKey = "I activated the proper glyphs and revealed the tomb's door. I should enter and search for anything that appears useful.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " beneath the trapdoor.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " beneath the trapdoor.",
+            [ALLIANCE_EBONHEART_PACT] = " beneath the trapdoor."
+        }
+    },
+    ["Talk to Kasura 2"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "At the Ayleid ruins of Tanzelwil in southwestern Auridon, along the east-west lower valley trail, east of the long Ayleid bridge, there is a large, red-leaf tree. Behind it by the rocks, I entered the tomb. There, ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "At Shrieking Scar in southwestern Glenumbra, near a harpy aerie in a small cave on the northern trail, in an alcove of boulders just west of several piles of harpy meal remains, I entered the tomb. There, ",
+            [ALLIANCE_EBONHEART_PACT] = "At Othrenis in the southeastern mountains of Stonefalls, beneath the tall, intertwined mushrooms west of the first circular plaza, I entered the tomb. There, "
+        },
+        stepTextKey = "I found a map to a Dragonguard sanctuary. I should exit the tomb, find Kasura, and let her know what I discovered.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " near the Dragonguard Tomb.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " near the Dragonguard Tomb.",
+            [ALLIANCE_EBONHEART_PACT] = " near the Dragonguard Tomb."
+        }
+    },
+    ["Travel to the Valley of Blades 1"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "Near the Dragonguard Tomb at the Ayleid ruins of Tanzelwil in southwestern Auridon, Kasura met me and brought horses for a journey. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "Near the Dragonguard Tomb at the Shrieking Scar in southwestern Glenumbra, Kasura met me and brought horses for a journey. ",
+            [ALLIANCE_EBONHEART_PACT] = "Near the Dragonguard Tomb at Othrenis in southeastern Stonefalls, Kasura met me and brought horses for a journey. "
+        },
+        stepTextKey = "Kasura wants me to accompany her to the Abbey of Blades, located in the Valley of Blades, to present the maps we found to her former student.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " on Peri, the armored white horse. \n\nTravel to the Valley of Blades from Auridon is by horse. Peri, an armored white steed, is usually with Kasura, but may be kept by the long dock for large ships at the port in Vulkhel Guard.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " on Peri, the armored white horse. \n\nTravel to the Valley of Blades from Glenumbra is by horse. Peri, an armored white steed, is usually with Kasura, but may be kept near Bazgara'a Horses in Daggerfall.",
+            [ALLIANCE_EBONHEART_PACT] = " on Peri, the armored white horse. \n\nTravel to the Valley of Blades from Stonefalls is by horse. Peri, an armored white steed, is usually with Kasura, but may be kept near Davon's Fine Steeds in Davon's Watch."
+        }
+    },
+    ["Talk to Kasura's Student"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "From Auridon, ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "From Glenumbra, ",
+            [ALLIANCE_EBONHEART_PACT] = "From Stonefalls, "
+        },
+        stepTextKey = "I arrived at the Abbey of Blades in the Dragontail Mountains. Kasura wants me to present the maps we found to her former student.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " near the tall, southern towers. \n\nTravel to the Valley of Blades from Auridon is by horse. Peri, an armored white steed, is usually with Kasura, but may be kept by the long dock for large ships at the port in Vulkhel Guard.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " near the tall, southern towers. \n\nTravel to the Valley of Blades from Glenumbra is by horse. Peri, an armored white steed, is usually with Kasura, but may be kept near Bazgara'a Horses in Daggerfall.",
+            [ALLIANCE_EBONHEART_PACT] = " near the tall, southern towers. \n\nTravel to the Valley of Blades from Stonefalls is by horse. Peri, an armored white steed, is usually with Kasura, but may be kept near Davon's Fine Steeds in Davon's Watch."
+        }
+    },
+    ["Talk to Kasura 3"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "At the abbey in the Valley of Blades, I found out that ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "At the abbey in the Valley of Blades, I found out that ",
+            [ALLIANCE_EBONHEART_PACT] = "At the abbey in the Valley of Blades, I found out that "
+        },
+        stepTextKey = "Kasura's former student is Sai Sahan, one-time captain of the emperor's Dragonguard. While he studies the maps we brought him, he wants me to talk to Kasura and study a device known as the grappling bow.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " in front of the northeastern building. \n\nTravel to the Valley of Blades from Auridon is by horse. Peri, an armored white steed, is usually with Kasura, but may be kept by the long dock for large ships at the port in Vulkhel Guard.", stepTextKey="Kasura's former student is Sai Sahan, one-time captain of the emperor's Dragonguard. While he studies the maps we brought him, he wants me to talk to Kasura and study a device known as the grappling bow.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " in front of the northeastern building. \n\nTravel to the Valley of Blades from Glenumbra is by horse. Peri, an armored white steed, is usually with Kasura, but may be kept near Bazgara'a Horses in Daggerfall.",
+            [ALLIANCE_EBONHEART_PACT] = " in front of the northeastern building. \n\nTravel to the Valley of Blades from Stonefalls is by horse. Peri, an armored white steed, is usually with Kasura, but may be kept near Davon's Fine Steeds in Davon's Watch."
+        }
+    },
+    ["Gather the Grappling Bow"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "In front of the northeastern building at the abbey in the Valley of Blades, I spoke with Sai Sahan's mentor again. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "In front of the northeastern building at the abbey in the Valley of Blades, I spoke with Sai Sahan's mentor again. ",
+            [ALLIANCE_EBONHEART_PACT] = "In front of the northeastern building at the abbey in the Valley of Blades, I spoke with Sai Sahan's mentor again. "
+        },
+        stepTextKey = "Kasura asked me to acquire the grappling bow from behind the statue near the stables.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " and return to Kasura. The statue is up on the eastern terrace. \n\nTravel to the Valley of Blades from Auridon is by horse. Peri, an armored white steed, is usually with Kasura, but may be kept by the long dock for large ships at the port in Vulkhel Guard.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " and return to Kasura. The statue is up on the eastern terrace. \n\nTravel to the Valley of Blades from Glenumbra is by horse. Peri, an armored white steed, is usually with Kasura, but may be kept near Bazgara'a Horses in Daggerfall.",
+            [ALLIANCE_EBONHEART_PACT] = " and return to Kasura. The statue is up on the eastern terrace. \n\nTravel to the Valley of Blades from Stonefalls is by horse. Peri, an armored white steed, is usually with Kasura, but may be kept near Davon's Fine Steeds in Davon's Watch."
+        }
+    },
+    ["Talk to Kasura 4"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "At the Valley of Blades, on the terrace with a statue, ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "At the Valley of Blades, on the terrace with a statue, ",
+            [ALLIANCE_EBONHEART_PACT] = "At the Valley of Blades, on the terrace with a statue, "
+        },
+        stepTextKey = "I obtained the grappling bow. I should speak to Kasura about what to do next.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ". She should be in the courtyard. \n\nTravel to the Valley of Blades from Auridon is by horse. Peri, an armored white steed, is usually with Kasura, but may be kept by the long dock for large ships at the port in Vulkhel Guard.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ". She should be in the courtyard. \n\nTravel to the Valley of Blades from Glenumbra is by horse. Peri, an armored white steed, is usually with Kasura, but may be kept near Bazgara'a Horses in Daggerfall.",
+            [ALLIANCE_EBONHEART_PACT] = ". She should be in the courtyard. \n\nTravel to the Valley of Blades from Stonefalls is by horse. Peri, an armored white steed, is usually with Kasura, but may be kept near Davon's Fine Steeds in Davon's Watch."
+        }
+    },
+    ["Light the Brazier"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "In the courtyard of the Abbey of Blades, ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "In the courtyard of the Abbey of Blades, ",
+            [ALLIANCE_EBONHEART_PACT] = "In the courtyard of the Abbey of Blades, "
+        },
+        stepTextKey = "Kasura challenged me to light a brazier on top of the training hall roof by using the grappling bow. This will test my skill with the Dragonguard device.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " at the front corner of the roof of the tall, eastern building. The first grappling post is on the smaller, northern building. From there, more grappling posts can be used to reach the training hall's roof. \n\nTravel to the Valley of Blades from Auridon is by horse. Peri, an armored white steed, is usually with Kasura, but may be kept by the long dock for large ships at the port in Vulkhel Guard.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " at the front corner of the roof of the tall, eastern building. The first grappling post is on the smaller, northern building. From there, more grappling posts can be used to reach the training hall's roof. \n\nTravel to the Valley of Blades from Glenumbra is by horse. Peri, an armored white steed, is usually with Kasura, but may be kept near Bazgara'a Horses in Daggerfall.",
+            [ALLIANCE_EBONHEART_PACT] = " at the front corner of the roof of the tall, eastern building. The first grappling post is on the smaller, northern building. From there, more grappling posts can be used to reach the training hall's roof. \n\nTravel to the Valley of Blades from Stonefalls is by horse. Peri, an armored white steed, is usually with Kasura, but may be kept near Davon's Fine Steeds in Davon's Watch."
+        }
+    },
+    ["Talk to Sai Sahan 1"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "At the abbey in the Valley of Blades, ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "At the abbey in the Valley of Blades, ",
+            [ALLIANCE_EBONHEART_PACT] = "At the abbey in the Valley of Blades, "
+        },
+        stepTextKey = "I lit the brazier on the roof of the training hall. I should return to Sai Sahan and see if he's deciphered the maps.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ". He should be near the stables. \n\nTravel to the Valley of Blades from Auridon is by horse. Peri, an armored white steed, is usually with Kasura, but may be kept by the long dock for large ships at the port in Vulkhel Guard.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ". He should be near the stables. \n\nTravel to the Valley of Blades from Glenumbra is by horse. Peri, an armored white steed, is usually with Kasura, but may be kept near Bazgara'a Horses in Daggerfall.",
+            [ALLIANCE_EBONHEART_PACT] = ". He should be near the stables. \n\nTravel to the Valley of Blades from Stonefalls is by horse. Peri, an armored white steed, is usually with Kasura, but may be kept near Davon's Fine Steeds in Davon's Watch."
+        }
+    },
+    ["Explore Wind Scour Temple"] = {
+	appendStepText="At the abbey in the Valley of Blades, ",
+	stepTextKey="Sai Sahan finished studying one of the maps and now knows the location of the Wind Scour Temple. Its entrance lies within HoonDing's Watch in Alik'r. I can ride the horse Sai provided or make my own way there.",
+	appendText=" beneath the ruins of HoonDing's Watch. It's entrance is at the base of the tallest platform accessible by stairs, up in the southeastern part of the ruins. The trapdoor is nestled against the base of the platform's eastern supporting wall. A standing brazier is far above the entrance. \n\nThe sprawling ruins of HoonDing's Watch are near its wayshrine in the southeastern desert. It is south of the city of Kozanset and northeast of the city of Bergama."
+    },
+    ["Talk to Sai Sahan 2"] = {
+	appendStepText="In southeast Alik'r Desert, beneath the southeastern part of the ruins of HoonDing's Watch, we found a trapdoor at the base of the tallest platform. ",
+	stepTextKey="We entered Wind Scour Temple, but its archives appear to be unreachable. I should see what Sai thinks about the situation.",
+	appendText=" in the temple."
+    },
+    ["Light the Braziers in the Proper Order"] = {
+	appendStepText="In southeast Alik'r Desert, beneath the southeastern part of the ruins of HoonDing's Watch, we found a trapdoor at the base of the tallest platform. Inside Wind Scour Temple, ",
+	stepTextKey="Sai Sahan believes that we must light the braziers in a specific order to reach the archives. I should read the plaques in front of the statues to see if they offer any clues.",
+	appendText="."
+    },
+    ["Use the Grappling Bow to Reach the Archives 1"] = {
+	appendStepText="In southeast Alik'r Desert, beneath the southeastern part of the ruins of HoonDing's Watch, we found a trapdoor at the base of its tallest platform and entered Wind Scour Temple. We found statues of four Grandmasters, with braziers. ",
+	stepTextKey="Once I lit the braziers in the proper order, a grappling point lifted out of the floor. I can use it to reach the Dragonguard archives.",
+	appendText=" up at the west end of the temple."
+    },
+    ["Search the Dragonguard Archives 1"] = {
+	appendStepText="In southeast Alik'r Desert, beneath the southeastern part of the ruins of HoonDing's Watch, we entered Wind Scour Temple through its trapdoor at the base of the ruin's tallest platform. Using the grappling bow, ",
+	stepTextKey="I made my way to the Dragonguard archives. Now, I must search the tomes to see if there's anything that can help us fight against Dragons.",
+	appendText="."
+    },
+    ["Talk to Sai Sahan 3"] = {
+	appendStepText="In southeast Alik'r Desert, beneath the southeastern part of the ruins of HoonDing's Watch, we entered Wind Scour Temple through its trapdoor at the base of the ruin's tallest platform. ",
+	stepTextKey="I found a journal about an artifact called the Horn of Ja'darri in the Dragonguard archives. I should tell Sai what I learned.",
+	appendText=" down by the statues of the Grandmasters."
+    },
+    ["Travel to Storm Talon Temple"] = {
+	appendStepText="In the archives at Wind Scour Temple, I found a journal and gave it to Sai Sahan. ",
+	stepTextKey="Sai believes the Horn of Ja'darri would help us fight back against the Dragon invasion. The journal states the Dragonhorn may be in Storm Talon Temple. We'll find its entrance within Aphren's Hold in Stormhaven. I should head there next.",
+	appendText=" in Stormhaven, across the river northeast of Wayrest. In Aphren's Hold, there is a tower that seems untouched by ruin, the eastern tower. The ancient temple's entrance is likely through a trapdoor."
+    },
+    ["Talk to Sai Sahan 4"] = {
+	appendStepText="In Stormhaven, across the river northeast of Wayrest, in the eastern tower of Aphren's Hold, we entered Storm Talon Temple through a trapdoor. ",
+	stepTextKey="Sai and I discovered ruins covered with grappling points. I should see what he thinks about all this.",
+	appendText="."
+    },
+    ["Use the Grappling Bow to Reach the Archives 2"] = {
+	appendStepText="In Stormhaven, across the river northeast of Wayrest, in the eastern tower of Aphren's Hold, we entered Storm Talon Temple through a trapdoor. The temple grounds are divided by deep chasms. ",
+	stepTextKey="I need to use my grappling bow to reach the Dragonguard archives. I  should be careful where I grapple to, as there may be only one path forward.",
+	appendText=" at the far eastern area of the temple."
+    },
+    ["Search the Dragonguard Archives 2"] = {
+	appendStepText="In Stormhaven, across the river northeast of Wayrest, in the eastern tower of Aphren's Hold, we entered Storm Talon Temple through a trapdoor. To cross the chasms, ",
+	stepTextKey="I used the grappling bow to reach the Dragonguard archives. I don't see any relics nearby, but I should try to find more clues about the Horn of Ja'darri.",
+	appendText="."
+    },
+    ["Talk to Sai Sahan 5"] = {
+	appendStepText="In Stormhaven, across the river northeast of Wayrest, in the eastern tower of Aphren's Hold, we entered Storm Talon Temple through a trapdoor. In the archives, ",
+	stepTextKey="I found a second journal written by the Dragonguard commander who sought the Horn of Ja'darri. They believe it can be found in Dark Water Temple in Eastmarch. I should let Sai Sahan know what the journal says.",
+	appendText=" about the journal entry regarding the Dragonhorn. There should be a grappling path along the southern area back to the west."
+    },
+    ["Find Dark Water Temple"] = {
+	appendStepText="In the archives of Stone Talon Temple, there was a second journal. ",
+	stepTextKey="The journal we found indicates the Dark Water Temple is located south of Windhelm, in Eastmarch. I should travel there and try to find the entrance.",
+	appendText=" in Eastmarch, southeast of Windhelm and east of Kynegrove, at the foot of the mountain just north of Icehammer's Vault. As with the other Dragonguard temples, the entrance should be a trapdoor in the ground. Perhaps there will be a clue to help find the hidden entry."
+    },
+    ["Enter Dark Water Temple"] = {
+	appendStepText="In Eastmarch, southeast of Windhelm and east of Kynegrove, at the foot of the mountains north of Icehammer's Vault, I noticed an illuminated altar with a dragon skull and ",
+	stepTextKey="I found the entrance to Dark Water Temple. I should head inside.",
+	appendText=" through the trapdoor just southeast of the dragon skull altar."
+    },
+    ["Find Sai Sahan"] = {
+	appendStepText="In Eastmarch, southeast of Windhelm and east of Kynegrove, in the mountains north of Icehammer's Vault, I entered a trapdoor near an altar with a dragon skull. ",
+	stepTextKey="I found a cave system leading down. Sai Sahan must be farther along. I should see if I can find him.",
+	appendText=". The Dragonguard grappling bow has been essential for navigating these temples."
+    },
+    ["Find a Way to Reach the Sanctuary"] = {
+	appendStepText="In Eastmarch, southeast of Windhelm and east of Kynegrove, in the mountains north of Icehammer's Vault, I entered a trapdoor near an altar with a dragon skull. ",
+	stepTextKey="Like the other two sanctuaries, there doesn't seem to be an obvious way forward. I should search the bookshelves near the entrance for clues.",
+	appendText=" across the watery chasm. In the common area there are several shelves containing Dragonguard Archives."
+    },
+    ["Gather the Dragonbone Powder"] = {
+	appendStepText="In Eastmarch, southeast of Windhelm and east of Kynegrove, in the mountains north of Icehammer's Vault, I entered a trapdoor near a dragon skull altar. In Dark Water Temple, ",
+	stepTextKey="I found a letter with a riddle describing a path over the chasm. Meanwhile, Sai Sahan has discovered a grappling point leading to an urn. I should use my grappling bow to reach the urn and search it.",
+	appendText=" from the urn. The grappling point post is near the blue crystal, above the common area."
+    },
+    ["Use Dragonbone Powder on the Altar"] = {
+	appendStepText="In Eastmarch, southeast of Windhelm and east of Kynegrove, in the mountains north of Icehammer's Vault, I entered Dark Water Temple through a trapdoor near a dragon skull altar. ",
+	stepTextKey="The letter said I should take the dust of \"our fallen foe\" and \"offer it to the altar.\" I should try using the Dragonbone powder on the altar and see if a pathway is revealed.",
+	appendText=" with the dragon skulls at the edge of the chasm."
+    },
+    ["Follow the Powder Trail"] = {
+	appendStepText="In Eastmarch, southeast of Windhelm and east of Kynegrove, and north of Icehammer's Vault, I entered Dark Water Temple through a trapdoor near a dragon skull altar. ",
+	stepTextKey="The Dragonbone powder revealed an invisible path over the water. If I follow the trail revealed by the powder, I should be able to travel deeper into the sanctuary.",
+	appendText=" across the chasm."
+    },
+    ["Search for Clues About the Horn of Ja'darri"] = {
+	appendStepText="In Eastmarch, southeast of Windhelm and east of Kynegrove, and north of Icehammer's Vault, I entered Dark Water Temple through a trapdoor near a dragon skull altar. After crossing the chasm, ",
+	stepTextKey="I found the Dark Water Temple's archives, but there's no sign of the Horn of Ja'darri. I should see if I can find any information about the Dragonhorn.",
+	appendText=" in the archives."
+    },
+    ["Talk to Sai Sahan 6"] = {
+	appendStepText="In Eastmarch, east of Kynegrove, I entered Dark Water Temple through a trapdoor near a dragon skull altar. ",
+	stepTextKey="I found another journal written by the Dragonguard commander who long ago sought the Horn of Ja'darri. It says that the horn was stolen by a Dragon, whose lair is in Southern Elsweyr. I should let Sai know this new information.",
+	appendText="."
+    },
+
+    ["Travel to the Valley of Blades 2"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "At Dark Water Temple in Eastmarch, we learned that the Dragonhorn was stolen by a dragon. Its lair is in Southern Elsweyr. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "At Dark Water Temple in Eastmarch, we learned that the Dragonhorn was stolen by a dragon. Its lair is in Southern Elsweyr. ",
+            [ALLIANCE_EBONHEART_PACT] = "At Dark Water Temple in Eastmarch, we learned that the Dragonhorn was stolen by a dragon. Its lair is in Southern Elsweyr. "
+        },
+        stepTextKey = "Sai Sahan wants to return to the Abbey of Blades to plan and check in with Kasura. I should meet him there.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " on the white horse, Peri. \n\nTravel to the Valley of Blades from Auridon is by horse. Peri, an armored white steed, is usually with Sai or Kasura, but may be kept by the long dock for large ships at the port in Vulkhel Guard.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " on the white horse, Peri. \n\nTravel to the Valley of Blades from Glenumbra is by horse. Peri, an armored white steed, is usually with Sai or Kasura, but may be kept near Bazgara'a Horses in Daggerfall.",
+            [ALLIANCE_EBONHEART_PACT] = " on the white steed, Peri. \n\nTravel to the Valley of Blades from Stonefalls is by horse. Peri, an armored white steed, is usually with Sai or Kasura, but may be kept near Davon's Fine Steeds in Davon's Watch."
+        }
+    },
+    ["Talk to Kasura 5"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "I have returned to the abbey in the Valley of Blades. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "I have returned to the abbey in the Valley of Blades. ",
+            [ALLIANCE_EBONHEART_PACT] = "I have returned to the abbey in the Valley of Blades. "
+        },
+        stepTextKey = "I should let Kasura know what we discovered in the Dragonguard sanctuaries.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " in the courtyard. \n\nTravel to the Valley of Blades from Auridon is by horse. Peri, an armored white steed, is usually with Sai or Kasura, but may be kept by the long dock for large ships at the port in Vulkhel Guard.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " in the courtyard. \n\nTravel to the Valley of Blades from Glenumbra is by horse. Peri, an armored white steed, is usually with Sai or Kasura, but may be kept near Bazgara'a Horses in Daggerfall.",
+            [ALLIANCE_EBONHEART_PACT] = " in the courtyard. \n\nTravel to the Valley of Blades from Stonefalls is by horse. Peri, an armored white steed, is usually with Sai or Kasura, but may be kept near Davon's Fine Steeds in Davon's Watch."
+        }
+    },
+    ["Talk to Sai Sahan 7"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "In the courtyard of the abbey in the Valley of Blades, I spoke with Kasura. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "In the courtyard of the abbey in the Valley of Blades, I spoke with Kasura. ",
+            [ALLIANCE_EBONHEART_PACT] = "In the courtyard of the abbey in the Valley of Blades, I spoke with Kasura. "
+        },
+        stepTextKey = "Sai Sahan has returned to the Abbey of Blades. I should speak to him about our next step in finding the Horn of Ja'darri.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ". \n\nTravel to the Valley of Blades from Auridon is by horse. Peri, an armored white steed, is usually with Sai or Kasura, but may be kept by the long dock for large ships at the port in Vulkhel Guard.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ". \n\nTravel to the Valley of Blades from Glenumbra is by horse. Peri, an armored white steed, is usually with Sai or Kasura, but may be kept near Bazgara'a Horses in Daggerfall.",
+            [ALLIANCE_EBONHEART_PACT] = ". \n\nTravel to the Valley of Blades from Stonefalls is by horse. Peri, an armored white steed, is usually with Sai or Kasura, but may be kept near Davon's Fine Steeds in Davon's Watch."
+        }
+    },
+},
+
+
+
+[GetQuestName(6398)] = { --"The Horn of Ja'darri" --Jordakai
+    ["Talk to Sai Sahan 1"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "I spoke with Hinzuur by the Sisters of the Sands Inn at Sentinel, the northwestern city of the Alik'r Desert. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "I spoke with Hinzuur by the Sisters of the Sands Inn at Sentinel, the northwestern city of the Alik'r Desert. ",
+            [ALLIANCE_EBONHEART_PACT] = "I spoke with Hinzuur by the Sisters of the Sands Inn at Sentinel, the northwestern city of the Alik'r Desert. "
+        },
+        stepTextKey = "Sai Sahan requested that I meet him at the Abbey of Blades. I should head there now.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ". \n\nTravel to the Valley of Blades from Auridon is by horse. Peri, an armored white steed, is usually with Sai or Kasura, but may be kept by the long dock for large ships at the port in Vulkhel Guard. \n\nOr there is a large ship leaving Sentinel, heading for Eastmarch. Peri may also be stationed at the Kynesgrove Wayshrine, southwest of Windhelm.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ". \n\nTravel to the Valley of Blades from Glenumbra is by horse. Peri, an armored white steed, is usually with Sai or Kasura, but may be kept near Bazgara'a Horses in Daggerfall. \n\nOr there is a large ship leaving Sentinel, heading for Eastmarch. Peri may also be stationed at the Kynesgrove Wayshrine, southwest of Windhelm.",
+            [ALLIANCE_EBONHEART_PACT] = ". \n\nTravel to the Valley of Blades from Stonefalls is by horse. Peri, an armored white steed, is usually with Sai or Kasura, but may be kept near Davon's Fine Steeds in Davon's Watch. \n\nOr there is a large ship leaving Sentinel, heading for Eastmarch. Peri may also be stationed at the Kynesgrove Wayshrine, southwest of Windhelm."
+        }
+    },
+    ["Travel to Vahlokzin's Lair"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "At the Valley of Blades, ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "At the Valley of Blades, ",
+            [ALLIANCE_EBONHEART_PACT] = "At the Valley of Blades, "
+        },
+        stepTextKey = "Sai Sahan has prepared horses to take us to the nearest port. From there, a chartered ship will take us to Southern Elsweyr. I should let Sai know when I'm ready to depart or simply use the horse he provided.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " with Sai Sahan. \n\nIn the Valley of Blades, the exquisitely armored bay horse, Pivott, is at the stables, ready to ride for the journey to the dragon's lair. \n\nTravel to the Valley of Blades from Auridon is by horse. Peri, an armored white steed, is usually with Sai or Kasura, but may be kept by the long dock for large ships at the port in Vulkhel Guard.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " with Sai Sahan. \n\nIn the Valley of Blades, the exquisitely armored bay horse, Pivott, is at the stables, ready to ride for the journey to the dragon's lair. \n\nTravel to the Valley of Blades from Glenumbra is by horse. Peri, an armored white steed, is usually with Sai or Kasura, but may be kept near Bazgara'a Horses in Daggerfall.",
+            [ALLIANCE_EBONHEART_PACT] = " with Sai Sahan. \n\nIn the Valley of Blades, the exquisitely armored bay horse, Pivott, is at the stables, ready to ride for the journey to the dragon's lair. \n\nTravel to the Valley of Blades from Stonefalls is by horse. Peri, an armored white steed, is usually with Sai or Kasura, but may be kept near Davon's Fine Steeds in Davon's Watch."
+        }
+    },
+    ["Enter Vahlokzin's Lair"] = {
+	appendStepText="",
+	stepTextKey="We arrived at the dormant volcano that serves as the lair of the Dragon Vahlokzin. We should tread carefully as we search for the Horn of Ja'darri.",
+	appendText=" to the north, down in the valley through ancient, ornate doors."
+    },
+    ["Explore Vahlokzin's Lair"] = {
+	appendStepText="",
+	stepTextKey="The inside of the dormant volcano appears to be an abandoned kwama mine. Whoever formed this mine and imported the kwama is long gone, but a flourishing kwama colony remains. We should continue to search for the Dragonhorn.",
+	appendText=", searching all areas for clues as to where the Dragonguard relic may be. First, in the kwama cavern with its menacing sculptures of ancient Khajiiti warriors, and then into the tunnel and caverns beyond."
+    },
+    ["Survive the Swarm"] = {
+	appendStepText="From the sky above us, ",
+	stepTextKey="Vahlokzin's powerful roars have stirred the kwama into a violent frenzy. I must defeat the kwama swarm to survive.",
+	appendText=" of kwama in the dragon's lair."
+    },
+    ["Reach the Summit"] = {
+	appendStepText="Vahlokzin, the Dragonhorn's thief, hovered above us as we fought the frenzied kwama in the dragon's lair. ",
+	stepTextKey="We need to press on and find the Horn of Ja'darri. Since Vahlokzin uses kwama as a form of defense, we need to keep an eye out for more of the creatures as we make our way toward the summit.",
+	appendText=" in Vahlokzin's Domain."
+    },
+    ["Lower the Drawbridge"] = {
+	appendStepText="Not far from northern summit of Vahlokzin's Lair, we encountered a challenge. ",
+	stepTextKey="A raised drawbridge blocks our path. I should figure out how to use the nearby pulleys to lower the drawbridge.",
+	appendText=". Others must have lowered the bridge in the past. Perhaps someone left instructions or notes nearby."
+    },
+    ["Reach the Horn of Ja'darri"] = {
+	appendStepText="I lowered the drawbridges near the northern end of Vahlokzin's Lair. ",
+	stepTextKey="A path to the summit stretches ahead, where the Horn of Ja'darri awaits us. We should keep going forward.",
+	appendText="."
+    },
+    ["Take the Horn of Ja'darri"] = {
+	appendStepText="At the northern end of Vahlokzin's Lair, we crossed the bridge. ",
+	stepTextKey="We reached the summit of the dormant volcano and found the Horn of Ja'darri. I should take it.",
+	appendText=" from the altar."
+    },
+    ["Give the Dragonhorn to Sai Sahan"] = {
+	appendStepText="In the northern area of Vahlokzin's Lair, ",
+	stepTextKey="I acquired the Horn of Ja'darri. I should give it to Sai Sahan.",
+	appendText=" at the altar."
+    },
+    ["Defeat Vahlokzin"] = {
+	appendStepText="",
+	stepTextKey="Sai Sahan and I must work together in order to defeat the Dragon Vahlokzin.",
+	appendText="."
+    },
+
+    ["Return to the Valley of Blades"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "",
+            [ALLIANCE_EBONHEART_PACT] = ""
+        },
+        stepTextKey = "The Dragon Vahlokzin is dead and we have the Horn of Ja'darri. I should return to the Abbey of Blades, located in the Valley of Blades, and inform Kasura of our success.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ". There is a supply tunnel at the north end of the northern courtyard where the dragon fell. It should lead back towards the wagon at the lair's southern entrance. \n\nTravel to the Valley of Blades from Auridon is by horse. Peri, an armored white steed, is usually with Sai or Kasura, but may be kept by the long dock for large ships at the port in Vulkhel Guard.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ". There is a supply tunnel at the north end of the northern courtyard where the dragon fell. It should lead back towards the wagon at the lair's southern entrance. \n\nTravel to the Valley of Blades from Glenumbra is by horse. Peri, an armored white steed, is usually with Sai or Kasura, but may be kept near Bazgara'a Horses in Daggerfall.",
+            [ALLIANCE_EBONHEART_PACT] = ". There is a supply tunnel at the north end of the northern courtyard where the dragon fell. It should lead back towards the wagon at the lair's southern entrance. \n\nTravel to the Valley of Blades from Stonefalls is by horse. Peri, an armored white steed, is usually with Sai or Kasura, but may be kept near Davon's Fine Steeds in Davon's Watch."
+        }
+    },
+    ["Talk to Kasura"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "After Sai Sahan and I found the Horn of Ja'darri and defeated the dragon Vahlokzin, ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "After Sai Sahan and I found the Horn of Ja'darri and defeated the dragon Vahlokzin, ",
+            [ALLIANCE_EBONHEART_PACT] = "After Sai Sahan and I found the Horn of Ja'darri and defeated the dragon Vahlokzin, "
+        },
+        stepTextKey = "I returned to the Abbey of Blades. I should inform Kasura about what we accomplished.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " in the courtyard. \n\nTravel to the Valley of Blades from Auridon is by horse. Peri, an armored white steed, is usually with Sai or Kasura, but may be kept by the long dock for large ships at the port in Vulkhel Guard.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " in the courtyard. \n\nTravel to the Valley of Blades from Glenumbra is by horse. Peri, an armored white steed, is usually with Sai or Kasura, but may be kept near Bazgara'a Horses in Daggerfall.",
+            [ALLIANCE_EBONHEART_PACT] = " in the courtyard. \n\nTravel to the Valley of Blades from Stonefalls is by horse. Peri, an armored white steed, is usually with Sai or Kasura, but may be kept near Davon's Fine Steeds in Davon's Watch."
+        }
+    },
+
+    ["Talk to Sai Sahan 2"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "I was speaking with Kasura in the courtyard. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "I was speaking with Kasura in the courtyard. ",
+            [ALLIANCE_EBONHEART_PACT] = "I was speaking with Kasura in the courtyard. "
+        },
+        stepTextKey = "Sai Sahan has returned to the Abbey of Blades. I should speak to him.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ". \n\nTravel to the Valley of Blades from Auridon is by horse. Peri, an armored white steed, is usually with Sai or Kasura, but may be kept by the long dock for large ships at the port in Vulkhel Guard.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ". \n\nTravel to the Valley of Blades from Glenumbra is by horse. Peri, an armored white steed, is usually with Sai or Kasura, but may be kept near Bazgara'a Horses in Daggerfall.",
+            [ALLIANCE_EBONHEART_PACT] = ". \n\nTravel to the Valley of Blades from Stonefalls is by horse. Peri, an armored white steed, is usually with Sai or Kasura, but may be kept near Davon's Fine Steeds in Davon's Watch."
+        }
+    },
+    ["Talk to Sai Sahan 3"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "",
+            [ALLIANCE_EBONHEART_PACT] = ""
+        },
+        stepTextKey = "With the Horn of Ja'darri in his possession, Sai Sahan plans to fight back against the Dragons invading Elsweyr. But first, he must plan for what comes next. I should speak to him about that.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " in the courtyard of the abbey at the Valley of Blades. \n\nTravel to the Valley of Blades from Auridon is by horse. Peri, an armored white steed, is usually with Sai or Kasura, but may be kept by the long dock for large ships at the port in Vulkhel Guard.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " in the courtyard of the abbey at the Valley of Blades. \n\nTravel to the Valley of Blades from Glenumbra is by horse. Peri, an armored white steed, is usually with Sai or Kasura, but may be kept near Bazgara'a Horses in Daggerfall.",
+            [ALLIANCE_EBONHEART_PACT] = " in the courtyard of the abbey at the Valley of Blades. \n\nTravel to the Valley of Blades from Stonefalls is by horse. Peri, an armored white steed, is usually with Sai or Kasura, but may be kept near Davon's Fine Steeds in Davon's Watch."
+        }
+    },
+},
+
+
+-- 		=========================================================================
+--		  Southern Elsweyr - Main Quest 
+-- 		=========================================================================
+
 
 
 -- ==================================================================================================================================================
@@ -40582,6 +41081,2726 @@ ImmersiveQuests.localization = {
         ["Talk to Alvur Baren"] =
             {appendText=" at the Mages Guild in Elden Root in Grahtwood, Wayrest in Stormhaven, or Mournhold in Deshaan."},
     },
+
+-- ==================================================================================================================================================
+--	Season One																															Undaunted
+-- ==================================================================================================================================================
+-- 		=========================================================================
+--		  THIEVES GUILD GLENUMBRA
+-- 		=========================================================================
+
+	[GetQuestName(7168)] = { --"The Codex Caper" --Jordakai
+		[1] = 
+			{appendStepText="In Glenumbra. ", stepTextKey="I'm supposed to meet Quen in Daggerfall. She told me she'd be waiting in the square behind the Rosy Lion Inn."},
+		["Meet Quen in Daggerfall"] =
+			{appendText=", near the city's wayshrine. She also mentioned an information broker she knows there, Skeever Nivo.", stepTextKey="I'm supposed to meet Quen in Daggerfall. She told me she'd be waiting in the square behind the Rosy Lion Inn."},
+		[2] = 
+			{appendStepText="In Glenumbra. ", stepTextKey="I'm supposed to meet Quen in Daggerfall. She told me she'd be waiting in the square behind the Rosy Lion Inn."},
+		["Talk to Skeever Nivo"] =
+			{appendText=", outside the inn.", stepTextKey="I'm supposed to meet Quen in Daggerfall. She told me she'd be waiting in the square behind the Rosy Lion Inn."},
+		[3] = 
+			{appendStepText="In the southern port city of Daggerfall in Glenumbra, I was passing by The Rosy Lion Inn when I caught something out of the corner of my eye. Was that Quen? Indeed, ", stepTextKey="Skeever Nivo wants me to misdirect the Lion Guard captain looking for Quen."},
+		["Talk to Captain Sansonne"] =
+			{appendText=", on the road near the Daggerfall Wayshrine on the north side of the inn."},
+		[4] = 
+			{appendStepText="Near the Daggerfall Wayshrine, I spoke with the Lion Guard officer looking for Quen. ", stepTextKey="I sent Captain Sansonne on his way. Now Skeever Nivo wants me to meet Quen at the Rosy Lion Inn."},
+		["Find Quen in the Inn"] =
+			{appendText="."},
+		[5] = 
+			{appendStepText="Near the Daggerfall Wayshrine, I spoke with the Lion Guard officer looking for Quen. ", stepTextKey="I sent Captain Sansonne on his way. Now Skeever Nivo wants me to meet Quen at the Rosy Lion Inn."},
+		["Talk to Quen 1"] =
+			{appendText=" by the inn's room for rent.", stepTextKey="I sent Captain Sansonne on his way. Now Skeever Nivo wants me to meet Quen at the Rosy Lion Inn."},
+		[6] = 
+			{appendStepText="In speaking with her at The Rosy Lion Inn of Daggerfall, I found out ", stepTextKey="Quen wants me to collect a map left for her in a jewelry box upstairs."},
+		["Find the Map for Quen"] =
+			{appendText=" in an upstairs room of the inn."},
+		[7] = 
+			{appendStepText="I retrieved the map at The Rosy Lion Inn. ", stepTextKey="I should meet Quen outside Lord Yvierry's estate on the north side of Daggerfall, give her the map, and discuss how we go about stealing the Codex Voernet."},
+		["Meet Quen at Yvierry Estate"] =
+			{appendText="'s gate. The large manor house rises over the cliffs on the city's north side, near the wayshrine. \n\nBefore I leave the inn, I should speak with Quen's contact, Basil Menant. He should be at the desk near the inn's rental room where he and Quen were meeting."},
+		[8] = 
+			{appendStepText="I retrieved the map at The Rosy Lion Inn. ", stepTextKey="I should meet Quen outside Lord Yvierry's estate on the north side of Daggerfall, give her the map, and discuss how we go about stealing the Codex Voernet."},
+		["Talk to Quen 2"] =
+			{appendText=" at the gate of the Yvierry Estate.", stepTextKey="I should meet Quen outside Lord Yvierry's estate on the north side of Daggerfall, give her the map, and discuss how we go about stealing the Codex Voernet."},
+		[9] = 
+			{appendStepText="I met Quen at the gate of the Yvierry Estate in Daggerfall. ", stepTextKey="I should pick the lock of the gate so we can enter the estate grounds."},
+		["Break into the Estate Courtyard"] =
+			{appendText="."},
+		[10] = 
+			{appendStepText="At the Yvierry Estate, ", stepTextKey="Quen and I got past the locked gate. I should meet her at the larder door on the south corner of the house so we can break into the manor."},
+		["Enter the Larder"] =
+			{appendText=". The map shows the entry is at the southern corner of the manor house."},
+		[11] = 
+			{appendStepText="At the Yvierry Estate's manor, ", stepTextKey="Quen and I broke into the larder. I should follow her to see what our next move is."},
+		["Follow Quen"] =
+			{appendText="."},
+		[12] = 
+			{appendStepText="In the manor house of Yvierry Estate in Daggerfall, ", stepTextKey="Quen and I overheard some Koldane Cartel thugs talking about the house strongroom keys. I should discuss what we heard with her."},
+		["Talk to Quen 3"] =
+			{appendText=" inside the larder entry in the southwest corner of the manor.", stepTextKey="Quen and I overheard some Koldane Cartel thugs talking about the house strongroom keys. I should discuss what we heard with her."},
+		[13] = 
+			{appendStepText="Quen and I will split up. Upstairs in the northernmost chamber of the manor, ", stepTextKey="I should search for the strongroom key in Lord Yvierry's bedchamber. Quen encourages discretion, not wanting to reveal our presence to the cartel or estate staff."},
+		["Enter Lord Yvierry's Bedchamber"] =
+			{appendText=", upstairs in the northern area of the manor. Then head to the strongroom near the banquet hall.", stepTextKey="I should search for the strongroom key in Lord Yvierry's bedchamber. Quen encourages discretion, not wanting to reveal our presence to the cartel or estate staff."},
+		[14] = 
+			{appendStepText="Upstairs in the northernmost chamber of the manor, ", stepTextKey="I should search for the strongroom key in Lord Yvierry's bedchamber. Quen encourages discretion, not wanting to reveal our presence to the cartel or estate staff."},
+		["Search For the Key"] =
+			{appendText=" in desks, coffers or jewelry boxes.", stepTextKey="I should search for the strongroom key in Lord Yvierry's bedchamber. Quen encourages discretion, not wanting to reveal our presence to the cartel or estate staff."},
+		[15] = 
+			{appendStepText="In the northern bedchamber in the manor house of Yvierry Estate, ", stepTextKey="I found one of the keys to the strongroom. I should meet Quen near the manor's banquet hall."},
+		["Meet Quen"] =
+			{appendText=" by the strongroom at the east end of the banquet hall, just south of the master bedchamber."},
+		[16] = 
+			{appendStepText="In the Yvierry manor's northeast, just east of the banquet hall, we met at the entry to the strongroom. ", stepTextKey="Quen and I need to turn our strongroom keys at the same time to unlock the door."},
+		["Open the Strongroom"] =
+			{appendText="."},
+		[17] = 
+			{appendStepText="In the Yvierry manor's northeastern area, ", stepTextKey="Quen and I opened the strongroom. We should search for the Codex Voernet and anything else that catches our attention."},
+		["Enter the Strongroom"] =
+			{appendText="."},
+		[18] = 
+			{appendStepText="In the Yvierry manor's northeastern area, ", stepTextKey="Quen and I opened the strongroom. We should search for the Codex Voernet and anything else that catches our attention."},
+		["Find Treasures in the Strongroom"] =
+			{appendText=", an ornate coffer and the Codex Voernet."},
+		[19] = 
+			{appendStepText="In the Yvierry manor's northeastern strongroom, ", stepTextKey="I found the Codex Voernet and an amulet called the Prowler's Talisman. I should talk to Quen about what we uncovered."},
+		["Talk to Quen 4"] =
+			{appendText=" in the strongroom.", stepTextKey="I found the Codex Voernet and an amulet called the Prowler's Talisman. I should talk to Quen about what we uncovered."},
+		[20] = 
+			{appendStepText="In the Yvierry manor's northeastern strongroom, we found the codex. ", stepTextKey="Quen thinks it would be risky to go back the way we came. We should use the side passage leading out of the strongroom and slip away from the estate unseen."},
+		["Use Side Passage"] = 
+			{appendText=" through a sliding panel in the strongroom's southeast corner.", stepTextKey="Quen thinks it would be risky to go back the way we came. We should use the side passage leading out of the strongroom and slip away from the estate unseen."},
+		[21] = 
+			{appendStepText="In the Yvierry manor's northeastern strongroom, we found the codex. ", stepTextKey="Quen thinks it would be risky to go back the way we came. We should use the side passage leading out of the strongroom and slip away from the estate unseen."},
+		["Spy on Meeting"] = 
+			{appendText=".", stepTextKey="Quen thinks it would be risky to go back the way we came. We should use the side passage leading out of the strongroom and slip away from the estate unseen."},
+		[22] = 
+			{appendStepText="", stepTextKey="The Koldane Cartel murdered Lord Yvierry and started looting the manor. Quen slipped away with the codex. Now I need to escape too. Fortunately, the cartel doesn't know we're here."},
+		["Exit the Estate Before the Cartel Finds You"] =
+			{appendText="."},
+		[23] = 
+			{appendStepText="", stepTextKey="A Koldane Cartel enforcer caught me before I could get away. I awoke to find myself tied up. I need to figure out how to escape."},
+		["Escape Confinement"] =
+			{appendText=", exiting through the gallery, the southern, octagonal room."},
+		[24] = 
+			{appendStepText="I entered the manor's southern, octagonal room. ", stepTextKey="A Koldane Cartel enforcer confronted me in the estate's gallery. I have to defeat her to escape."},
+		["Defeat Enforcer Urfan"] =
+			{appendText="."},
+		[25] = 
+			{appendStepText="In the manor's octagonal gallery, ", stepTextKey="I defeated the cartel enforcer. I should exit immediately."},
+		["Exit the Estate"] =
+			{appendText=" and go to the Daggerfall Outlaws Refuge."},
+		[26] = 
+			{appendStepText="Much to the delight of Skeever Nivo, ", stepTextKey="I escaped Yvierry Estate. I should make my way to the Thieves Den in the Daggerfall Outlaws Refuge and catch up with Quen."},
+		["Go to the Thieves Den"] =
+			{appendText="."},
+		[27] = 
+			{appendStepText="In the Daggerfall Outlaws Refuge, ", stepTextKey="I made it to the Thieves Den. Basil wants to talk to me."},
+		["Talk to Basil Menant"] =
+			{appendText="."},
+		[28] = 
+			{appendStepText="In the Thieves Den at the Daggerfall Outlaws Refuge, ", stepTextKey="I should talk to Quen and wrap up our caper."},
+		["Talk to Quen 5"] =
+			{appendText=".", stepTextKey="I should talk to Quen and wrap up our caper."},
+		[29] = 
+			{appendStepText="", stepTextKey="Quen appreciates my help with today's caper. She said I did an excellent job remaining discreet and looks forward to my help in the future. I should conclude my business with her."},
+		["Talk to Quen 6"] =
+			{appendText=" in the Thieves Den at the Daggerfall Outlaws Refuge.", stepTextKey="Quen appreciates my help with today's caper. She said I did an excellent job remaining discreet and looks forward to my help in the future. I should conclude my business with her."},
+	},
+
+	[GetQuestName(7169)] = { --"Three Thieves in Daggerfall" --Jordakai
+		[1] = 
+			{appendStepText="In Daggerfall, the southern city of Glenumbra, I spoke with our information broker. ", stepTextKey="Skeever Nivo said I should talk to Quen in the Thieves Den, inside the Daggerfall Outlaws Refuge."},
+		["Find Quen in the Thieves Den"] =
+			{appendText="."},
+		[2] = 
+			{appendStepText="In Daggerfall, the southern city of Glenumbra, I spoke with our information broker. ", stepTextKey="Skeever Nivo said I should talk to Quen in the Thieves Den, inside the Daggerfall Outlaws Refuge."},
+		["Talk to Quen 1"] =
+			{appendText=".", stepTextKey="Skeever Nivo said I should talk to Quen in the Thieves Den, inside the Daggerfall Outlaws Refuge."},
+		[3] = 
+			{appendStepText="In Glenumbra, at the Thieves Den in the Daggerfall Outlaws Refuge, Quen asked a favor. ", stepTextKey="I should talk with the gang leaders about how they can help advance Quen's plan to find the Nowhere Vault using the Codex Voernet."},
+		["Talk to Seline Menant 1"] =
+			{appendText=", Basil's daughter and head of House Menant. She may have contacts at the bank.\n", stepTextKey="I should talk with the gang leaders about how they can help advance Quen's plan to find the Nowhere Vault using the Codex Voernet."},
+		["Talk to Edwane the Hawk 1"] =
+			{appendText=", leader of the Streethawks. Get his thoughts on working with the Mages Guild.\n", stepTextKey="I should talk with the gang leaders about how they can help advance Quen's plan to find the Nowhere Vault using the Codex Voernet."},
+		["Talk to Abrasia"] =
+			{appendText=", of the Roadsworn gang, about the Koldane Cartel.", stepTextKey="I should talk with the gang leaders about how they can help advance Quen's plan to find the Nowhere Vault using the Codex Voernet."},
+		[4] = 
+			{appendStepText="At the Thieves Den in the Daggerfall Outlaws Refuge, ", stepTextKey="I need to decide which gang leader to work with first."},
+		["Choose Gang Leader to Help First"] =
+			{appendText=": Seline Menant, Edwane the Hawk, or Abrasia."},
+		[5] = 
+			{appendStepText="At the Thieves Den in the Daggerfall Outlaws Refuge, I spoke with the leader of the Roadsworn gang. ", stepTextKey="Abrasia wants me to meet her in the dungeon below Ilessan Tower. She has a plan for how to learn more about what the Koldane Cartel is up to."},
+		["Meet Abrasia in Ilessan Tower"] =
+			{appendText=" in southern Glenumbra. The ruin is by the waterfall and stream outside the east gate of Daggerfall. She is likely in the northwestern area of the underground dungeon."},
+		[6] = 
+			{appendStepText="Near Daggerfall's east gate in southern Glenumbra, I met Abrasia northwestern area in the Ilessan Tower dungeon. ", stepTextKey="Abrasia wants to see my skills in action against the Red Rook bandits. She asked me to plant three fake notes hinting at mutiny, and retrieve cartel correspondence from the bandit captain's desk."},
+		["Find Cartel Correspondence"] =
+			{appendText=" in the Lower Dungeon, entered through the nearby door. The northeastern chamber would be a good spot for a bandit leader to work.\n"},
+		["Place Fake Notes"] =
+			{appendText="\nGood places in the Lower Dungeon can be found at:\n • A table in a tent in the southeast corner,\n • A cot in a small tent in the northwest corner, and\n • A table up on a platform next to a cargo crate near the entrance."},
+		[7] = 
+			{appendStepText="Near Daggerfall in southern Glenumbra, in the dungeon underneath the Ilessan Tower ruin, ", stepTextKey="I completed my task for Abrasia. I should meet her outside the Daggerfall gate and talk about what to do next."},
+		["Talk to Abrasia by the Daggerfall Gate"] =
+			{appendText=". She is by a rotted tree stump near the festive platforms."},
+		[8] = 
+			{appendStepText="", stepTextKey="Edwane told me me to meet him outside the Daggerfall Mages Guildhall. We need to go over our plan for stealing the research notes."},
+		["Meet Edwane Outside the Mages Guildhall"] =
+			{appendText=" in Glenumbra's southern city.", stepTextKey="Edwane told me me to meet him outside the Daggerfall Mages Guildhall. We need to go over our plan for stealing the research notes."},
+		[9] = 
+			{appendStepText="", stepTextKey="Edwane told me me to meet him outside the Daggerfall Mages Guildhall. We need to go over our plan for stealing the research notes."},
+		["Talk to Edwane the Hawk 2"] =
+			{appendText=". He is on the south side outside the Daggerfall Mages Guild.", stepTextKey="Edwane told me me to meet him outside the Daggerfall Mages Guildhall. We need to go over our plan for stealing the research notes."},
+		[10] = 
+			{appendStepText="", stepTextKey="Edwane learned that the research notes we're looking for are being delivered to Master Guyard by a Telvanni emissary. He suggests I observe and perhaps eavesdrop before doing anything hasty."},
+		["Eavesdrop on the Mages"] =
+			{appendText=" after herding them into a better position behind the guildhall.\n • Use the dog treats Edwane provided at a spot on the paved intersection near the base of the stairs leading up to the castle.\n • Then go north and use the drunkard distraction near the table and bench at the crenellated wall.\n • Then have Edwane create a distraction near the lamppost by a bench.\n • Finally, hide in a nearby barrel under a tall tree and listen to the conversation."},
+		[11] = 
+			{appendStepText="Eavesdropping on a couple of mages behind the Mages Guildhall of Daggerfall in southern Glenumbra, ", stepTextKey="I learned the research notes are now in the possession of Master Guyard's assistant, Rozenn. I should find her inside the guildhall and pickpocket the notes."},
+		["Find Assistant Rozenn"] =
+			{appendText=" after speaking with Edwane the Hawk behind the guildhall. She should be in the Mages Guild Repository."},
+		[12] = 
+			{appendStepText="Eavesdropping on a couple of mages behind the Mages Guildhall of Daggerfall in southern Glenumbra, ", stepTextKey="I learned the research notes are now in the possession of Master Guyard's assistant, Rozenn. I should find her inside the guildhall and pickpocket the notes."},
+		["Pickpocket the Research Notes"] =
+			{appendText=" from Rozenn. She may be with some guards."},
+		[13] = 
+			{appendStepText="In the Mages Guild Repository of Daggerfall in southern Glenumbra, I found Rozenn and ", stepTextKey="I got the research notes. Now I should talk to Edwane about what to do next. He told me he'd be waiting for me outside the Mages Guildhall."},
+		["Talk to Edwane the Hawk 3"] =
+			{appendText=" at the bottom of the steps in front of the guildhall.", stepTextKey="I got the research notes. Now I should talk to Edwane about what to do next. He told me he'd be waiting for me outside the Mages Guildhall."},
+		[14] = 
+			{appendStepText="At the southern port city of Glenumbra, ", stepTextKey="Seline wants me to meet her inside the Bank of Daggerfall to go over the plan on how to retrieve the heirloom key from Lord Yvierry's vault."},
+		["Meet Seline at the Bank of Daggerfall"] =
+			{appendText=" by Tradesman's Square in the south part of town."},
+		[15] = 
+			{appendStepText="At the southern port city of Glenumbra, ", stepTextKey="Seline wants me to meet her inside the Bank of Daggerfall to go over the plan on how to retrieve the heirloom key from Lord Yvierry's vault."},
+		["Talk to Seline Menant 2"] =
+			{appendText=" by the bank's fireplace.", stepTextKey="Seline wants me to meet her inside the Bank of Daggerfall to go over the plan on how to retrieve the heirloom key from Lord Yvierry's vault."},
+		[16] = 
+			{appendStepText="In the Bank of Daggerfall at the southern port city of Glenumbra, I met with the leader of House Menant. ", stepTextKey="Seline asked me to sneak into the bank office upstairs and retrieve the debt-bond contracts from two safeboxes."},
+		["Reach Bank's Second Floor"] =
+			{appendText=", locate the safeboxes in the Bank Office, and avoid any guards."},
+		[17] = 
+			{appendStepText="In the Bank of Daggerfall, ", stepTextKey="Seline asked me to sneak into the bank office upstairs and retrieve the debt-bond contracts from two safeboxes."},
+		["Find Debt-Bond Contracts"] =
+			{appendText=""},
+		[18] = 
+			{appendStepText="In the Bank of Daggerfall at the southern port city of Glenumbra, I found the safeboxes upstairs in the Bank Office. ", stepTextKey="I got the debt-bond contracts. Now I should sneak down to the bank's lower level and meet Seline at the vault."},
+		["Reach the Bank Lower Level"] =
+			{appendText="."},
+		[19] = 
+			{appendStepText="In the Bank of Daggerfall in the southern port city of Glenumbra, ", stepTextKey="I got the debt-bond contracts. Now I should sneak down to the bank's lower level and meet Seline at the vault."},
+		["Meet Seline Menant at the Vault"] =
+			{appendText=". She is at the end of a crooked, dusty hallway. The passage is entered at the west end of the lower area."},
+		[20] = 
+			{appendStepText="In the lower level of the Bank of Daggerfall, I followed a dusty hallway. ", stepTextKey="I met Seline by a secret access to the bank's vault. She's opening a panel to let me slip inside."},
+		["Wait for Seline to Open Panel"] =
+			{appendText="."},
+		[21] = 
+			{appendStepText="On the lower level of the Bank of Daggerfall, ", stepTextKey="Seline opened the vault's hidden access to let me in, but the door closed behind me. She needs me to retrieve Lord Yvierry's heirloom key while she returns upstairs."},
+		["Enter the Vault"] =
+			{appendText=" and find the key."},
+		[22] = 
+			{appendStepText="On the lower level of the Bank of Daggerfall, ", stepTextKey="Seline opened the vault's hidden access to let me in, but the door closed behind me. She needs me to retrieve Lord Yvierry's heirloom key while she returns upstairs."},
+		["Take the Nowhere Key"] =
+			{appendText=" from the altar below the large Dwemer relic."},
+		[23] = 
+			{appendStepText="At the Bank of Daggerfall, I retrieved the key from the vault. Now, ", stepTextKey="I should leave the bank through the secret exit Seline told me about."},
+		["Exit the Bank Vault"] =
+			{appendText=" by dropping through a hole in the floor beyond the eastern doorway."},
+		[24] = 
+			{appendStepText="At the Bank of Daggerfall in Glenumbra's southern port city, ", stepTextKey="I completed my task with Seline. I should speak with her about what to do next."},
+		["Talk to Seline Menant 3"] =
+			{appendText=" on the crenellated wall southwest of Bazgara's Horses, along the way to the city's southern docks.", stepTextKey="I completed my task with Seline. I should speak with her about what to do next."},
+		[25] = 
+			{appendStepText="In and around Daggerfall in southern Glenumbra, ", stepTextKey="I completed jobs with Abrasia, Seline, and Edwane. I should return to the thieves den and tell Quen what we found out."},
+		["Return to the Thieves Den"] =
+			{appendText=" in the Daggerfall Outlaws Refuge. Quen should be in the Thieves Den Map Room."},
+		[26] = 
+			{appendStepText="In and around Daggerfall in southern Glenumbra, ", stepTextKey="I completed jobs with Abrasia, Seline, and Edwane. I should return to the thieves den and tell Quen what we found out."},
+		["Talk to Quen 2"] =
+			{appendText=" at the Thieves Den in the Daggerfall Outlaws Refuge. She should be in the Thieves Den Map Room.", stepTextKey="I completed jobs with Abrasia, Seline, and Edwane. I should return to the thieves den and tell Quen what we found out."},
+		[27] = 
+			{appendStepText="Around Daggerfall in southern Glenumbra, ", stepTextKey="I finished helping the three gang leaders that make up Quen's developing Thieves Guild. I should check in with Quen and see what else she wanted to discuss with me."},
+		["Talk to Quen 3"] =
+			{appendText=", away from the others, in the Thieves Den at the Daggerfall Outlaws Refuge.", stepTextKey="I finished helping the three gang leaders that make up Quen's developing Thieves Guild. I should check in with Quen and see what else she wanted to discuss with me."},
+	},
+
+	[GetQuestName(7442)] = { --"Codex and Cartel" --Jordakai
+		[1] = 
+			{appendStepText="In Daggerfall, the southern city of Glenumbra, I spoke with our information broker. ", stepTextKey="Quen is waiting to speak with me in the Daggerfall Outlaws Refuge thieves den."},
+		["Talk to Quen 1"] =
+			{appendText=".", stepTextKey="Quen is waiting to speak with me in the Daggerfall Outlaws Refuge thieves den."},
+		[2] = 
+			{appendStepText="In the Daggerfall Outlaws Refuge, ", stepTextKey="I need to find the three gang leaders in the thieves den map room and join their discussion. Quen wants to see if Abrasia, Seline, and Edwane have any ideas about how we should proceed to learn more about the codex and the cartel."},
+		["Meet with the Gang Leaders"] =
+			{appendText="."},
+		[3] = 
+			{appendStepText="In the Thieves Den at the Daggerfall Outlaws Refuge, Quen asked me to meet with the others. ", stepTextKey="As I entered the map room and heard the end of another heated discussion among the gang leaders, Basil called me aside for a quick conversation. I should talk to him."},
+		["Talk to Basil Menant 1"] =
+			{appendText=" of House Menant.", stepTextKey="As I entered the map room and heard the end of another heated discussion among the gang leaders, Basil called me aside for a quick conversation. I should talk to him."},
+		[4] = 
+			{appendStepText="In the Thieves Den at the Daggerfall Outlaws Refuge, ", stepTextKey="Basil asked me to tell Quen and the others about Librarian Henard's connection to Dresan Keep, and suggest a plan of action."},
+		["Talk to Quen 2"] =
+			{appendText=" in the map room.", stepTextKey="Basil asked me to tell Quen and the others about Librarian Henard's connection to Dresan Keep, and suggest a plan of action."},
+		[5] = 
+			{appendStepText="At the Thieves Den, ", stepTextKey="Basil Menant told me that Librarian Henard kept a hidden library at Dresan Keep. I agreed to meet Abrasia and Quen there to try to find it and gain more research about the Nowhere Vault and the Codex Voernet."},
+		["Meet Abrasia and Quen at Dresan Keep"] =
+			{appendText=", a ruin west of the port city of Aldcroft on the east coast of Glenumbra. \n\nBefore leaving for the old keep, the three gang leaders may have some thoughts to share."},
+		[6] = 
+			{appendStepText="West of the eastern city of Aldcroft in Glenumbra, ", stepTextKey="I met Abrasia and Quen at Dresan Keep. Abrasia indicated that she already looked around a bit. I should talk to her about what she found."},
+		["Talk to Abrasia 1"] =
+			{appendText=" near the ruins. She and Quen are standing underneath a tall tree overlooking a waterfall.", stepTextKey="I met Abrasia and Quen at Dresan Keep. Abrasia indicated that she already looked around a bit. I should talk to her about what she found."},
+		[7] = 
+			{appendStepText="West of Aldcroft in central Glenumbra, ", stepTextKey="Abrasia told me she found no signs of a library among the ruins of Dresan Keep, but she suspects there are cellars or dungeons to explore. We should look for a way down."},
+		["Investigate the Area"] =
+			{appendText=". Perhaps there is a trapdoor in a crumbling tower, or a way through an old crypt, or down an old well. There must be a way to get into the cellars or dungeons of the old keep."},
+		[8] = 
+			{appendStepText="At Dresan Keep, west of Aldcroft in central Glenumbra, we found a possibility. ", stepTextKey="The old well in the courtyard appears to be our way to get into the space beneath the ruins. I need to jump down into the well."},
+		["Enter the Well"] =
+			{appendText=" in the courtyard of the old keep."},
+		[9] = 
+			{appendStepText="At Dresan Keep, west of Aldcroft in central Glenumbra, we found a possibility. ", stepTextKey="The old well in the courtyard appears to be our way to get into the space beneath the ruins. I need to jump down into the well."},
+		["Look for Clues About the Hidden Library"] =
+			{appendText=" in the dungeon underneath the old keep."},
+		[10] = 
+			{appendStepText="West of Aldcroft in central Glenumbra, we dropped down an old well. ", stepTextKey="We found a way to the dungeons beneath Dresan Keep. According to Librarian Henard's research, books written by an author named Mathiery are important in some way. I should see if I can find any."},
+		["Find Books Written by Mathiery"] =
+			{appendText=" \n\nThere are bookshelves everywhere."},
+		[11] = 
+			{appendStepText="We entered the dungeon below Dresan Keep in central Glenumbra through an old well. Among the bookshelves, ", stepTextKey="I recovered three books by Lucius Mathiery. Now I need to find a way into Henard's hidden library. The illusory bookstands Quen discovered could be important."},
+		["Find a Way Into the Hidden Library"] =
+			{appendText=". In one of the rooms, Quen is at a stone table with places for three books."},
+		[12] = 
+			{appendStepText="In the dungeon of Dresan Keep in central Glenumbra, after entering through the old well, we found three books and a place for each. Then, ", stepTextKey="I solved the book-stand puzzle and a secret door opened nearby. I should investigate."},
+		["Enter the Hidden Library"] =
+			{appendText="."},
+		[13] = 
+			{appendStepText="In the dungeon of Dresan Keep in central Glenumbra, ", stepTextKey="I solved the book-stand puzzle and a secret door opened nearby. I should investigate."},
+		["Explore the Hidden Library"] =
+			{appendText="."},
+		[14] = 
+			{appendStepText="In the dungeon of the old keep west of Aldcroft in central Glenumbra, we found a hidden door. ", stepTextKey="The secret passage beneath Dresan Keep led to a hidden library, just as we hoped. We found a muttering Skaafin inside. I should talk to him."},
+		["Deal with the Skaafin"] =
+			{appendText="."},
+		[15] = 
+			{appendStepText="In the dungeon of Dresan Keep in central Glenumbra, we found a secret passage. ", stepTextKey="This appears to be the right spot. I should examine the writings and relics Librarian Henard concealed here. The secret to deciphering the Codex Voernet and finding the Nowhere Vault may be close at hand."},
+		["Examine Librarian Henard's Collection"] =
+			{appendText=" \n\nEach collection is protected. There must be clues to help solve Henard's puzzles and gain access to the knowledge he treasured."},
+		[16] = 
+			{appendStepText="In the dungeon of Dresan Keep in central Glenumbra, I solved Librarian Henard's puzzles. ", stepTextKey="I collected everything I could find. Now it's time to exit the hidden library."},
+		["Exit the Hidden Library"] =
+			{appendText="."},
+		[17] = 
+			{appendStepText="", stepTextKey="The Koldane Cartel found us at Dresan Keep. I need to protect the books and relic we found and prevent the cartel from taking them from us."},
+		["Protect the Lens and Books"] =
+			{appendText="."},
+		[18] = 
+			{appendStepText="In the secret library underneath Dresan Keep in central Glenumbra, we were ambushed, but it failed. ", stepTextKey="We defeated the Koldane Cartel ambushers. Now Abrasia wants to talk to me about our next step."},
+		["Talk to Abrasia 2"] =
+			{appendText=".", stepTextKey="We defeated the Koldane Cartel ambushers. Now Abrasia wants to talk to me about our next step."},
+		[19] = 
+			{appendStepText="", stepTextKey="I should proceed with the next part of the plan and join Seline and Edwane at Lion Guard Redoubt so we can talk to the cartel prisoner, Cogwine."},
+		["Meet Seline and Edwane at Lion Guard Redoubt"] =
+			{appendText=" in northwestern Glenumbra."},
+		[20] = 
+			{appendStepText="", stepTextKey="I should proceed with the next part of the plan and join Seline and Edwane at Lion Guard Redoubt so we can talk to the cartel prisoner, Cogwine."},
+		["Talk to Edwane the Hawk"] =
+			{appendText=". He is standing under a large tree on the south side of the fortification."},
+		[21] = 
+			{appendStepText="I spoke with Edwane by a large tree on the south side of the Lion Guard Redoubt's fortification in northwestern Glenumbra. Then, ", stepTextKey="Seline turned up dressed in a Lion Guard uniform. She says her plan is better than Edwane's. I should find out what she suggests."},
+		["Talk to Seline Menant 1"] =
+			{appendText=" to see what she has in mind.", stepTextKey="Seline turned up dressed in a Lion Guard uniform. She says her plan is better than Edwane's. I should find out what she suggests."},
+		[22] = 
+			{appendStepText="In northwestern Glenumbra, ", stepTextKey="I need to go into the Lion Guard camp. Seline and Edwane will follow."},
+		["Enter Lion Guard Redoubt"] =
+			{appendText=". If needed, a Lion Guard uniform from a soldier's trunk could be a good disguise."},
+		[23] = 
+			{appendStepText="", stepTextKey="The dungeon under the old tower in Lion Guard Redoubt is a restricted area. I should find a way inside by either sneaking past the guard or talking my way in."},
+		["Reach the Restricted Tower"] =
+			{appendText=" in the northwest area of the camp. If a guard uniform disguise is desired, soldier's trunks are in some of the tents. Or perhaps the guards would let a Daggerfall hero just walk right in."},
+		[24] = 
+			{appendStepText="At Lion Guard Redoubt in northwestern Glenumbra, I entered the northwestern tower at the camp. ", stepTextKey="I need to find the cell where the Lion Guard is holding the prisoner Cogwine, an agent of the Koldane Cartel. I should talk to him to find out what he knows about the cartel and their interest in the Nowhere Vault."},
+		["Talk to Marten Cogwine"] =
+			{appendText=". Perhaps there are a couple of interesting documents here, too."},
+		[25] = 
+			{appendStepText="At the tower in Lion Guard Redoubt in northwestern Glenumbra, ", stepTextKey="Seline found me in the dungeon and said we need to leave. I should talk to her and find out what's going on."},
+		["Talk to Seline Menant 2"] =
+			{appendText=".", stepTextKey="Seline found me in the dungeon and said we need to leave. I should talk to her and find out what's going on."},
+		[26] = 
+			{appendStepText="At Lion Guard Redoubt in northwestern Glenumbra, ", stepTextKey="Seline asked me to warn the Lion Guard that her father is in danger. I need to speak with Lieutenant Renoit."},
+		["Leave the Tower"] =
+			{appendText=". The lieutenant should be near the center of the camp."},
+		[27] = 
+			{appendStepText="At Lion Guard Redoubt in northwestern Glenumbra, ", stepTextKey="Seline asked me to warn the Lion Guard that her father is in danger. I need to speak with Lieutenant Renoit."},
+		["Talk to Lieutenant Renoit"] =
+			{appendText="."},
+		[28] = 
+			{appendStepText="In southeastern Glenumbra, east of Daggerfall, ", stepTextKey="I need to find Basil near Deleyn's Mill. According to Seline, House Menant has a hideout in a cave there."},
+		["Go to the Menant Hideout"] =
+			{appendText=" in the hills south of the village."},
+		[29] = 
+			{appendStepText="In southeastern Glenumbra, east of Daggerfall, ", stepTextKey="I need to find Basil near Deleyn's Mill. According to Seline, House Menant has a hideout in a cave there."},
+		["Find Basil Menant"] =
+			{appendText=" in his hideout."},
+		[30] = 
+			{appendStepText="Near Deleyn's Mill in southeastern Glenumbra, I entered the Menant hideout. ", stepTextKey="I found Basil and he's in trouble. I need to deal with the Koldane Cartel and help him before it's too late. Luckily, the Lion Guard is here, too."},
+		["Help Basil Menant"] =
+			{appendText=" survive the cartel's attack."},
+		[31] = 
+			{appendStepText="In his hideout near Deleyn's Mill in southeastern Glenumbra, ", stepTextKey="Basil called for me. He appears to be gravely wounded. I should speak with him."},
+		["Talk to Basil Menant 2"] =
+			{appendText=".", stepTextKey="Basil called for me. He appears to be gravely wounded. I should speak with him."},
+		[32] = 
+			{appendStepText="In the Menant hideout near Deleyn's Mill in southeastern Glenumbra, ", stepTextKey="I need to talk to the Lion Guard commander, Captain Sansonne. He wants an explanation for what happened here."},
+		["Talk to Captain Sansonne"] =
+			{appendText="."},
+		[33] = 
+			{appendStepText="I spoke with Captain Sansonne at Basil's hideout in southeastern Glenumbra. ", stepTextKey="I should return to the thieves den. I need to share the documents I recovered from Lion Guard Redoubt, tell them about Basil, and pass along my idea about Captain Sansonne."},
+		["Return to the Thieves Den"] =
+			{appendText=" in the Daggerfall Outlaws Refuge after speaking with Captain Sansonne. Quen and the leaders will probably be in the map room."},
+		[34] = 
+			{appendStepText="In the Daggerfall Outlaws Refuge, ", stepTextKey="I should return to the thieves den. I need to share the documents I recovered from Lion Guard Redoubt, tell them about Basil, and pass along my idea about Captain Sansonne."},
+		["Turn In the Documents"] =
+			{appendText=", placing them on the table by Quen."},
+		[35] = 
+			{appendStepText="I left the Menants at the hideout in southeastern Glenumbra and made my way to the Daggerfall Outlaws Refuge. ", stepTextKey="I returned to the thieves den. Quen wants to speak with me about what happened today."},
+		["Talk to Quen 3"] =
+			{appendText=" in the map room.", stepTextKey="I returned to the thieves den. Quen wants to speak with me about what happened today."},
+		[36] = 
+			{appendStepText="I returned to the Thieves Den at the Daggerfall Outlaws Refuge. ", stepTextKey="In light of what happened to Basil, I should talk to Quen about the state of this fledgling Thieves Guild."},
+		["Talk to Quen 4"] =
+			{appendText=" in the map room.", stepTextKey="In light of what happened to Basil, I should talk to Quen about the state of this fledgling Thieves Guild."},
+	},
+
+	[GetQuestName(7453)] = { --"A Guild Grows In Glenumbra" --Jordakai
+		[1] = 
+			{appendStepText="In Daggerfall, the southern city of Glenumbra, I spoke with our information broker. ", stepTextKey="Nivo said that Quen is waiting to work out her next caper. I should head to the thieves den in the Daggerfall Outlaws Refuge and speak to her."},
+		["Talk to Quen 1"] =
+			{appendText=". She is probably in the den's map room.", stepTextKey="Nivo said that Quen is waiting to work out her next caper. I should head to the thieves den in the Daggerfall Outlaws Refuge and speak to her."},
+		[2] = 
+			{appendStepText="In Daggerfall, the southern city of Glenumbra, I found Quen in the map room of the Thieves Den in the Daggerfall Outlaws Refuge. ", stepTextKey="I should talk to Quen and see what she has in mind to set the trap for the Koldane Cartel."},
+		["Talk to Quen 2"] =
+			{appendText=".", stepTextKey="I should talk to Quen and see what she has in mind to set the trap for the Koldane Cartel."},
+		[3] = 
+			{appendStepText="I spoke with Quen at the Thieves Den in the Daggerfall Outlaws Refuge. ", stepTextKey="Quen's rudimentary idea involves luring the Koldane Cartel into a trap so the Lion Guard can arrest them. She asked me to convince the others to work with Captain Sansonne and have them develop the specifics of the plan. I should start with Seline."},
+		["Talk to Seline"] =
+			{appendText=" Menant. She is with Abrasia and Edwane in the map room."},
+		[4] = 
+			{appendStepText="I spoke with Seline Menant at the Thieves Den in the Daggerfall Outlaws Refuge. ", stepTextKey="Seline agreed to go along with the plan to use the Lion Guard to deal with the Koldane Cartel. I need to speak to Rols Boron on the Daggerfall docks to collect a favor he owes her so he'll let us use his warehouse to set our trap."},
+		["Talk to Rols Boron 1"] =
+			{appendText=", a Breton merchant. He should be on one of the large ships at Daggerfall's western docks.", stepTextKey="Seline agreed to go along with the plan to use the Lion Guard to deal with the Koldane Cartel. I need to speak to Rols Boron on the Daggerfall docks to collect a favor he owes her so he'll let us use his warehouse to set our trap."},
+		[5] = 
+			{appendStepText="On the deck of The Lydia at the western Daggerfall docks, I met with the merchant Seline mentioned. ", stepTextKey="Rols Boron will only let Seline borrow his warehouse if I steal two valuable items for him. He gave me a list of items he wants. I need to acquire two of them for him."},
+		["Steal Valuable Items"] =
+			{appendText=" \n\nRols left a list of suitable items on the nearby cargo crane. \n\nI will take the list with me as I will need it to find the locations of the items Rols wants."},
+		[6] = 
+			{appendStepText="On the deck of The Lydia at the western Daggerfall docks, I met with the merchant Seline mentioned. ", stepTextKey="Rols Boron will only let Seline borrow his warehouse if I steal a valuable item for him. He gave me a list of items he wants. I need to acquire one of them for him."},
+		["Steal Valuable Item"] =
+			{appendText=". \n\nRols left a list of suitable items on the nearby cargo crane. \n\nI will take the list with me as I will need it to find the locations of the items Rols wants."},
+		[7] = 
+			{appendStepText="Using the list I had, ", stepTextKey="I acquired the valuables Rols Boron requested. I should meet him on the ship at the Daggerfall docks to conclude our business and secure the use of his warehouse for our developing plan to deal with the Koldane Cartel."},
+		["Talk to Rols Boron 2"] =
+			{appendText=" on The Lydia, the ship at the western docks of the city.", stepTextKey="I acquired the valuables Rols Boron requested. I should meet him on the ship at the Daggerfall docks to conclude our business and secure the use of his warehouse for our developing plan to deal with the Koldane Cartel."},
+		[8] = 
+			{appendStepText="At the western docks in Daggerfall, onboard The Lydia, ", stepTextKey="Quen arrived as I finished my business with Rols Boron. I should see what she wants."},
+		["Talk to Quen 3"] =
+			{appendText=" on the deck of the ship, near its gangway.", stepTextKey="Quen arrived as I finished my business with Rols Boron. I should see what she wants."},
+		[9] = 
+			{appendStepText="At the Daggerfall docks, I spoke with my partner. ", stepTextKey="Quen discovered that the codex writes itself. It includes recent entries about the Nowhere Keys, including who currently has some! While she continues to decipher the codex, I need to convince Captain Sansonne to help us with our trap."},
+		["Find Captain Sansonne"] =
+			{appendText=". The Lion Guard officer is at a small camp east of Daggerfall, just beyond the Baelborne Rock Wayshrine in southern Glenumbra."},
+		[10] = 
+			{appendStepText="At the Daggerfall docks, I spoke with my partner. ", stepTextKey="Quen discovered that the codex writes itself. It includes recent entries about the Nowhere Keys, including who currently has some! While she continues to decipher the codex, I need to convince Captain Sansonne to help us with our trap."},
+		["Talk to Captain Sansonne"] =
+			{appendText=" at the small camp east of Daggerfall, just beyond the Baelborne Rock Wayshrine in southern Glenumbra."},
+		[11] = 
+			{appendStepText="", stepTextKey="Now that Captain Sansonne is on board, Quen wants me to find Edwane along the road to Aldcroft and get him to contribute to our developing plan to take down the Koldane Cartel."},
+		["Find Edwane Along the Road to Aldcroft"] =
+			{appendText=", the eastern port city of Glenumbra."},
+		[12] = 
+			{appendStepText="Near the bridge west of Glenumbra's eastern port city of Aldcroft, ", stepTextKey="I found Edwane. Now I should talk to him about the plan and find out what he's doing out here."},
+		["Talk to Edwane 1"] =
+			{appendText=" the Hawk.", stepTextKey="I found Edwane. Now I should talk to him about the plan and find out what he's doing out here."},
+		[13] = 
+			{appendStepText="I met with Edwane the Hawk on the road west of Glenumbra's eastern port city of Aldcroft. ", stepTextKey="Before Edwane agrees to go along with our plan, I need to rescue Gorbert and Carso from Lady Birien's estate. While the Streethawks distract the militia's main force, I need to sneak by whatever remains and get inside the estate."},
+		["Infiltrate the Birien Estate"] =
+			{appendText=". It lies south across the inlet from Aldcroft. There should be a broken section of wall on the north side that I can climb over."},
+		[14] = 
+			{appendStepText="South of Aldcroft in eastern Glenumbra, I climbed over the Birien Estate's wall. ", stepTextKey="I'm inside the estate. Now I just need to find a way into the manor and locate the dungeon cells where Gorbert and Carso are being held."},
+		["Sneak Into Birien Manor"] =
+			{appendText=". The front entrance is guarded, but a cellar entrance or side door may be clear."},
+		[15] = 
+			{appendStepText="South of Aldcroft in eastern Glenumbra, I entered the Birien Estate's manor through the wine cellar. ", stepTextKey="I located Gorbert in the dungeon of Lady Birien's manor. I should unlock the cell door and set him free."},
+		["Free Gorbert"] =
+			{appendText=" from his cell in the dungeon."},
+		[16] = 
+			{appendStepText="South of Aldcroft in eastern Glenumbra, I entered the Birien Estate's manor through the wine cellar. I entered the dungeon. ", stepTextKey="Gorbert is free, but looks nervous. I should talk to him and let him know Edwane sent me. And I should find out where Carso is being held."},
+		["Talk to Gorbert 1"] =
+			{appendText=" in his cell in the Birien dungeon. There are other prisoners in the dungeon, too.", stepTextKey="Gorbert is free, but looks nervous. I should talk to him and let him know Edwane sent me. And I should find out where Carso is being held."},
+		[17] = 
+			{appendStepText="South of Aldcroft in eastern Glenumbra, I entered the Birien Estate's manor through the wine cellar. I entered the dungeon. ", stepTextKey="Gorbert's headed outside to meet Edwane. Now I need to reach the kennels and set Carso free. Gorbert suggested I go through the kitchen and grab something to use to keep the other dogs in the kennel quiet."},
+		["Enter the Birien Kennels"] =
+			{appendText=" and find Edwane's dog, Carso. Other dogs are in the kennels, too. \n\nThe kennels are in the northeast and the kitchen is upstairs to the far south. Pork ribs on the table should do the trick for the dogs."},
+		[18] = 
+			{appendStepText="South of Aldcroft in eastern Glenumbra, I entered the Birien Estate's manor through the wine cellar, the dungeon, and then on to the kennels. ", stepTextKey="Other dogs in the kennel start barking when I enter the area. I need to find a way to keep them quiet before the militia comes to investigate. Gorbert suggested the dogs would settle down if I give them a treat."},
+		["Free Carso"] =
+			{appendText="."},
+		[19] = 
+			{appendStepText="South of Aldcroft in eastern Glenumbra, I entered the Birien Estate's manor through the wine cellar, the dungeon, and then on to the kennels. ", stepTextKey="The barking of the dogs alerted the kennel master. I need to leave the kennels until the dogs settle down and the kennel master departs before I can attempt to free Carso."},
+		["Leave the Kennels"] =
+			{appendText="."},
+		[20] = 
+			{appendStepText="Inside Birien Estate's manor, I found the kennels and ", stepTextKey="I freed Carso. Now I need to lead him back to Edwane. I can either take the escape tunnel in the dungeon of Lady Birien's estate, or head out through the main estate and try to avoid any remaining militia."},
+		["Lead Carso Out of the Estate"] =
+			{appendText=".\n\nThe dungeon has a trapdoor to the outdoors. Edwane should be on the shore south of the estate."},
+		[21] = 
+			{appendStepText="South of the eastern city of Aldcroft in Glenumbra, I found Edwane the Hawk on the shore south of the Birien Estate. ", stepTextKey="Carso and Gorbert have been reunited with Edwane. Now Edwane wants me to talk to Gorbert."},
+		["Talk to Gorbert 2"] =
+			{appendText=".", stepTextKey="Carso and Gorbert have been reunited with Edwane. Now Edwane wants me to talk to Gorbert."},
+		[22] = 
+			{appendStepText="South of Aldcroft in eastern Glenumbra, on the shore south of the Birien Estate, ", stepTextKey="Gorbert told us that the Koldane Cartel has established a new enclave on Dourstone Island. They're storing loot, records, plans, and supplies there. I should consult with Edwane to wrap up the details of his part in the plan we're preparing."},
+		["Talk to Edwane 2"] =
+			{appendText=" the Hawk.", stepTextKey="Gorbert told us that the Koldane Cartel has established a new enclave on Dourstone Island. They're storing loot, records, plans, and supplies there. I should consult with Edwane to wrap up the details of his part in the plan we're preparing."},
+		[23] = 
+			{appendStepText="I was with Edwane, Gorbert, and Carso on the shore near Birien Estate, south of Aldcroft in eastern Glenumbra. ", stepTextKey="As I finished talking with Gorbert and Edwane, Abrasia arrived. Now I can get her to agree to the plan and suggest the final piece of our trap—the bait."},
+		["Talk to Abrasia 1"] =
+			{appendText=", leader of the Roadsworn gang.", stepTextKey="As I finished talking with Gorbert and Edwane, Abrasia arrived. Now I can get her to agree to the plan and suggest the final piece of our trap—the bait."},
+		[24] = 
+			{appendStepText="", stepTextKey="Abrasia suggested stealing something from the cartel that they just stole to use as tempting bait in our trap, the Wolf's Paw Sapphire. It should be at the cartel's new enclave on Dourstone Island. I should meet her there."},
+		["Meet Abrasia at Dourstone Island"] =
+			{appendText=", off the eastern coast of Glenumbra, not far from Aldcroft. She headed for the small islet northwest of the main island."},
+		[25] = 
+			{appendStepText="Off the eastern coast of Glenumbra, not far from Aldcroft, is Dourstone Island. On the small islet northwest of the main island, ", stepTextKey="I met up with Abrasia. Now to talk to her before we make our way into the Koldane Cartel's new enclave."},
+		["Talk to Abrasia 2"] =
+			{appendText=" by the ruin.", stepTextKey="I met up with Abrasia. Now to talk to her before we make our way into the Koldane Cartel's new enclave."},
+		[26] = 
+			{appendStepText="I met with Abrasia on Dourstone Island, off the eastern coast of Glenumbra. ", stepTextKey="The last item we need to set our trap for the Koldane Cartel is here on their island enclave. We need to burn their supplies, destroy their weapon stores, and grab the Wolf's Paw Sapphire to use as bait in our trap."},
+		["Burn Koldane Cartel Supplies"] =
+			{appendText=" in the west area of the island by pouring oil for Abrasia to ignite.\n"},
+		["Destroy Koldane Cartel Weapons"] =
+			{appendText=" on the southeast beach of the island.\n"},
+		["Steal the Wolf's Paw Sapphire"] =
+			{appendText=" from the lockbox at the top of the northern tower ruin."},
+		[27] = 
+			{appendStepText="At Dourstone Island off the eastern coast of Glenumbra, ", stepTextKey="Abrasia and I destroyed supplies and weapon stores in the Koldane Cartel island enclave, and I recovered the Wolf's Paw Sapphire to use as bait in our trap. I should talk to Abrasia and see if she found anything else while we were in there."},
+		["Talk to Abrasia 3"] =
+			{appendText=" on the small northwestern islet at Dourstone.", stepTextKey="Abrasia and I destroyed supplies and weapon stores in the Koldane Cartel island enclave, and I recovered the Wolf's Paw Sapphire to use as bait in our trap. I should talk to Abrasia and see if she found anything else while we were in there."},
+		[28] = 
+			{appendStepText="In the southern port city of Glenumbra, at the Daggerfall Outlaws Refuge, ", stepTextKey="I need to return to the Thieves Den and let Quen know that the three gang leaders are all on board with our plan to lure the cartel into a trap and let the Lion Guard deal with them."},
+		["Talk to Quen 4"] =
+			{appendText=".", stepTextKey="I need to return to the Thieves Den and let Quen know that the three gang leaders are all on board with our plan to lure the cartel into a trap and let the Lion Guard deal with them."},
+		[29] = 
+			{appendStepText="", stepTextKey="I should talk to Quen and let her know that Captain Sansonne has also agreed to work with us on our plan to deal with the Koldane Cartel."},
+		["Talk to Quen 5"] =
+			{appendText=" at the Thieves Den in the Daggerfall Outlaws Refuge.", stepTextKey="I should talk to Quen and let her know that Captain Sansonne has also agreed to work with us on our plan to deal with the Koldane Cartel."},
+	},
+
+	[GetQuestName(7419)] = { --"Wolf Trap" --Jordakai
+		[1] = 
+			{appendStepText="In Daggerfall, the southern city of Glenumbra, I spoke with our information broker. ", stepTextKey="Skeever Nivo told me that our mutual friend wants to meet with me at the thieves den in the Outlaws Refuge. I should go see if Quen is ready to proceed with the plan."},
+		["Talk to Quen 1"] =
+			{appendText=". She may be speaking with Rennah Brel in the central area of the den.", stepTextKey="Skeever Nivo told me that our mutual friend wants to meet with me at the thieves den in the Outlaws Refuge. I should go see if Quen is ready to proceed with the plan."},
+		[2] = 
+			{appendStepText="At the Daggerfall Outlaws Refuge in southern Glenumbra, I met with Quen in the Thieves Den. ", stepTextKey="Quen gave me one last mission before we trigger the trap for the Koldane Cartel. I need to leak the location of the bait to Bryggid Silver-Eye. I should find her in a cartel den west of Crosswych."},
+		["Find the Koldane Cartel Den"] =
+			{appendText=" in northern Glenumbra. It is east of the Crosswych Wayshrine and west of the Crosswych Inn."},
+		[3] = 
+			{appendStepText="In northern Glenumbra, on the west side of Crosswych, ", stepTextKey="I found a rundown farm house west of Crosswych just like Quen said. There are signs of cartel activity around the house. I should find the hidden entrance inside."},
+		["Enter the Koldane Cartel Den"] =
+			{appendText=" through the trapdoor in the old house."},
+		[4] = 
+			{appendStepText="I found a trapdoor for the hideout in an old farmhouse on the west side of Crosswych in northern Glenumbra. ", stepTextKey="I slipped inside the Koldane Cartel den. Now I need to find Bryggid Silver-Eye and leak the location of the cartel ledger and the Wolf's Paw Sapphire. Using stealth would likely impress her as a fellow thief."},
+		["Find Bryggid Silver-Eye"] =
+			{appendText="."},
+		[5] = 
+			{appendStepText="I found a trapdoor for the hideout in an old farmhouse on the west side of Crosswych in northern Glenumbra. Then, ", stepTextKey="I found Bryggid Silver-Eye, but she isn't too pleased to see me. I need to convince her to take the bait and have the cartel go after the items in the warehouse. I should talk to her and convince her the information I'm offering is legitimate."},
+		["Talk to Bryggid Silver-Eye"] =
+			{appendText=" in her office."},
+		[6] = 
+			{appendStepText="At Crosswych in northern Glenumbra, I met with Bryggid, one of the cartel's ranking members. ", stepTextKey="Bryggid Silver-Eye has taken the bait. She agreed to investigate the warehouse with cartel people, including Gavin Koldane. I should find Quen north of Dwynnarth Ruins and tell her what happened."},
+		["Find Quen"] =
+			{appendText=" by the road north of the Ayleid ruins, south of the Burial Grounds, and southwest of Crosswych. There's a ladder in Bryggid's office that leads outside."},
+		[7] = 
+			{appendStepText="In northern Glenumbra, by the road north of the Ayleid ruins, south of the Burial Grounds, and southwest of Crosswych, ", stepTextKey="I found Quen just where she said I would. Now to tell her about my meeting with Bryggid Silver-Eye and find out what I need to do next."},
+		["Talk to Quen 2"] =
+			{appendText=".", stepTextKey="I found Quen just where she said I would. Now to tell her about my meeting with Bryggid Silver-Eye and find out what I need to do next."},
+		[8] = 
+			{appendStepText="", stepTextKey="We're ready to spring the trap. I need to inform Abrasia and her Roadsworn near Cambray Pass, and also get word to Captain Sansonne and the Lion Guard. Quen thinks he may be in that area as well."},
+		["Find the Roadsworn Camp"] =
+			{appendText=" by the road below the cliffs, southeast of Camlorn in northwest Glenumbra."},
+		[9] = 
+			{appendStepText="Southeast of Camlorn in northwest Glenumbra, I spotted a gathering by the road below the cliffs. ", stepTextKey="When I arrived at the Roadsworn camp, I found Captain Sansonne berating them. He noticed me and insisted we talk. I should tell him that the warehouse trap is ready and that he should meet us there."},
+		["Talk to Captain Sansonne 1"] =
+			{appendText=".", stepTextKey="When I arrived at the Roadsworn camp, I found Captain Sansonne berating them. He noticed me and insisted we talk. I should tell him that the warehouse trap is ready and that he should meet us there."},
+		[10] = 
+			{appendStepText="I met with the Lion Guard captain by the road southeast of Camlorn in northwest Glenumbra. Abrasia left Gharelin the Fox with the captain. ", stepTextKey="Everything's in place for our trap to deal with the Koldane Cartel. If it goes according to plan, Captain Sansonne will arrest Gavin Koldane and remove him as a problem. I should go to the warehouse in Eagle's Brook to get ready."},
+		["Go to Rols Boron's Warehouse"] =
+			{appendText=" in Eagle's Brook, the village just west of Camlorn."},
+		[11] = 
+			{appendStepText="After meeting with the captain, I headed for the village just west of Camlorn in northwestern Glenumbra. ", stepTextKey="Quen said I should meet Rennah outside the warehouse near Eagle's Brook to get an update on the preparations. I should look around for her."},
+		["Find Rennah"] =
+			{appendText=" near the largest building at Eagle's Brook."},
+		[12] = 
+			{appendStepText="I headed for the largest building in the village of Eagle's Brook, just west of Camlorn in northwestern Glenumbra. ", stepTextKey="I found Rennah and signs of an attack. I should talk to her and find out what happened here."},
+		["Talk to Rennah"] =
+			{appendText=" Brel."},
+		[13] = 
+			{appendStepText="At the warehouse in Eagle's Brook in northwestern Glenumbra, ", stepTextKey="Rennah told me the Koldane Cartel knew about our trap and turned the tables on us. They struck first, killing many of our allies. I need to get into warehouse and help anyone still alive inside. I should use the grapple bow to reach an upper window."},
+		["Find a Way Into the Warehouse"] =
+			{appendText="."},
+		[14] = 
+			{appendStepText="At the warehouse in Eagle's Brook in northwest Glenumbra, I used the grapple bow, then ", stepTextKey="I snuck into the warehouse and found Edwane's loyal dog, Carso. If he's here, then Edwane must be nearby. I should search around for any of my other allies."},
+		["Search for Allies"] =
+			{appendText=" in this maze of a warehouse. The grapple bow may come in handy."},
+		[15] = 
+			{appendStepText="At the warehouse in Eagle's Brook in northwest Glenumbra, I used the grapple bow and entered the upper level of the building. After entering the lower storage area, ", stepTextKey="Carso led me to his imprisoned master, Edwane. I should pick the cell door's lock and release him. Carso carries spare lockpicks if I need some."},
+		["Free Edwane the Hawk"] =
+			{appendText=" from the southern storage room on the warehouse's lower level."},
+		[16] = 
+			{appendStepText="At the warehouse in Eagle's Brook in northwest Glenumbra, I used the grapple bow and entered the upper level of the building. After entering the lower storage area, ", stepTextKey="I freed Edwane who gratefully reunited with his dog, Carso. I still need to find the rest of our allies and stop the Koldane Cartel. I should talk to Edwane and learn what he knows about what's going on here."},
+		["Talk to Edwane the Hawk"] =
+			{appendText=" in the lower level's southern storage room."},
+		[17] = 
+			{appendStepText="At the warehouse in Eagle's Brook in northwest Glenumbra, I used the grapple bow and entered the lower storage area. There I freed Edwane and learned that ", stepTextKey="Edwane overheard Gavin Koldane order his people into the caves beneath the warehouse. My ally thinks Koldane dragged Seline with him. A cartel thug named Alcedo Natius guards the entrance. I need to deal with him to reach the caves."},
+		["Find a Way into the Underground Caves"] =
+			{appendText=". There should be an entrance at the north end of this lower storage area."},
+		[18] = 
+			{appendStepText="At the warehouse in Eagle's Brook in northwest Glenumbra, I used the grapple bow and entered the upper level of the building. After entering the lower storage area, ", stepTextKey="Edwane and I tracked down Alcedo Natius and defeated him. I searched him and found a key into the underground caves. I should get down there and find Koldane, Seline, and Captain Sansonne."},
+		["Enter the Underground Caves"] =
+			{appendText=" through the trapdoor at the north end of the lower storage area."},
+		[19] = 
+			{appendStepText="At the warehouse in Eagle's Brook in northwest Glenumbra, I used the grapple bow and entered the upper level of the building. After going to the north end of the lower storage area, ", stepTextKey="Edwane and I entered the caves beneath the warehouse. Some sort of smuggling operation, maybe? This is where Koldane ordered his people to go. I need to start my search for the cartel leader and Seline Menant."},
+		["Search for Seline Menant and Gavin Koldane"] =
+			{appendText=" in this central storage cave."},
+		[20] = 
+			{appendStepText="", stepTextKey="We found Captain Sansonne caught in a net and dangling high above. I need to find a way up to the platform and release the Lion Guard officer from his predicament."},
+		["Free Captain Sansonne"] =
+			{appendText="."},
+		[21] = 
+			{appendStepText="At the warehouse in Eagle's Brook in northwest Glenumbra, I used the grapple bow and entered the upper level of the building. After entering the lower storage area, I went north into the caverns. Using the grapple bow, I reached the captain's trap. Then, ", stepTextKey="I set Captain Sansonne free. I should talk to him to learn what happened here and where Koldane took Seline."},
+		["Talk to Captain Sansonne 2"] =
+			{appendText=" on the uppermost platform where he had been trapped.", stepTextKey="I set Captain Sansonne free. I should talk to him to learn what happened here and where Koldane took Seline."},
+		[22] = 
+			{appendStepText="At the warehouse in Eagle's Brook in northwest Glenumbra, I used the grapple bow to enter and went to the lower level smuggler caves. After I freed him, ", stepTextKey="Captain Sansonne told us that Gavin Koldane headed deeper into the caves with Seline Menant. He ordered Edwane and I to follow him."},
+		["Pursue Gavin Koldane"] =
+			{appendText=" down the western passage to the Warehouse Back Cave."},
+		[23] = 
+			{appendStepText="At the warehouse in Eagle's Brook in northwest Glenumbra, I used the grapple bow to enter and went to the western smuggler cave. ", stepTextKey="We finally tracked down Gavin Koldane along with Bryggid Silver-Eye. They captured Seline Menant and want her to give up her Nowhere Key. Captain Sansonne wants us to stay quiet and assess the situation. I should wait and see what occurs."},
+		["Assess the Situation"] =
+			{appendText=" by crouching by the railing to observe."},
+		[24] = 
+			{appendStepText="At the warehouse in Eagle's Brook in northwest Glenumbra, I used the grapple bow to enter and went to the western smuggler cave. ", stepTextKey="Seline was about to hand her Nowhere Key over to Koldane, but Abrasia grabbed it instead and ran off. Koldane gave chase in a rage, and Captain Sansonne followed him. I need to deal with Bryggid Silver-Eye before I can free Seline and follow them."},
+		["Kill Bryggid Silver-Eye"] =
+			{appendText="."},
+		[25] = 
+			{appendStepText="At the warehouse in Eagle's Brook in northwest Glenumbra, I used the grapple bow to enter and went to the western smuggler cave. ", stepTextKey="I defeated the Koldane Cartel's lieutenant, Bryggid Silver-Eye. Now to help Seline and set her free."},
+		["Free Seline Menant"] =
+			{appendText=" from her chain."},
+		[26] = 
+			{appendStepText="At the warehouse in Eagle's Brook in northwest Glenumbra, I used the grapple bow to enter and went to the western smuggler cave. I freed Seline. ", stepTextKey="One of Roadsworn wants to talk. I should find out what Gharelin the Fox has to say before I go after Gavin Koldane and the others."},
+		["Talk to Gharelin the Fox"] =
+			{appendText="."},
+		[27] = 
+			{appendStepText="", stepTextKey="One of the Roadsworn let me know that Abrasia never told them about her plan to steal a Nowhere Key. He claimed to have no idea where she went. I should catch up with Seline and Captain Sansonne to see if they had any luck."},
+		["Leave the Underground Caves"] =
+			{appendText=" through the passage."},
+		[28] = 
+			{appendStepText="On a platform above the coastal waters north of Eagle's Brook in Glenumbra, ", stepTextKey="I found Captain Sansonne arguing with Seline. Koldane and Abrasia are nowhere to be seen. I should talk to Seline to find out what happened."},
+		["Talk to Seline Menant"] =
+			{appendText="."},
+		[29] = 
+			{appendStepText="", stepTextKey="Although Abrasia stole our Nowhere Key, Seline and Edwane have plans to get more. I should go back to Quen at the thieves den and let her know what happened."},
+		["Return to the Daggerfall Thieves Den"] =
+			{appendText=" in the Daggerfall Outlaws Refuge at Glenumbra's southern port city."},
+		[30] = 
+			{appendStepText="In the southern city of Glenumbra, I returned to the Daggerfall Outlaws Refuge. ", stepTextKey="I found Quen at the thieves den. I should tell her about Abrasia's betrayal and losing the key."},
+		["Talk to Quen 3"] =
+			{appendText=".", stepTextKey="I found Quen at the thieves den. I should tell her about Abrasia's betrayal and losing the key."},
+		[31] = 
+			{appendStepText="", stepTextKey="Though the cartel turned the tables on our trap at the warehouse, we still retain valuable information, and Seline, Edwane and Captain Sansonne were all rescued. Time to plan our next steps."},
+		["Talk to Quen 4"] =
+			{appendText=" in the Thieves Den at the Daggerfall Outlaws Refuge.", stepTextKey="Though the cartel turned the tables on our trap at the warehouse, we still retain valuable information, and Seline, Edwane and Captain Sansonne were all rescued. Time to plan our next steps."},
+	},
+
+	[GetQuestName(7427)] = { --"The Nowhere Keys" --Jordakai
+		[1] = 
+			{appendStepText="In Daggerfall, the southern city of Glenumbra, I spoke with our information broker. ", stepTextKey="Skeever Nivo found me in his suspicious way. Said that I should find Quen at the thieves den beneath Daggerfall."},
+		["Talk to Quen 1"] =
+			{appendText=".", stepTextKey="Skeever Nivo found me in his suspicious way. Said that I should find Quen at the thieves den beneath Daggerfall."},
+		[2] = 
+			{appendStepText="", stepTextKey="After the warehouse debacle, Edwane told me that his Streethawks may have located a Nowhere Key somewhere in the Dwynnarth Ruins in northern Glenumbra. I should meet him there to hunt down the key."},
+		["Meet Edwane the Hawk by the Dwynnarth Ruins"] =
+			{appendText=" in northern Glenumbra. The Ayleid ruin is northeast of the North Hag Fen Wayshrine, southwest of the Burial Grounds, and west of the Burial Mounds Wayshrine."},
+		[3] = 
+			{appendStepText="At the Ayleid ruins of Dwynnarth in northern Glenumbra, ", stepTextKey="I found Edwane the Hawk. I should talk to him about what we need to do here to find the Nowhere Key."},
+		["Talk to Edwane the Hawk 1"] =
+			{appendText=".", stepTextKey="I found Edwane the Hawk. I should talk to him about what we need to do here to find the Nowhere Key."},
+		[4] = 
+			{appendStepText="In northern Glenumbra, I met Edwane at the Dwynnarth Ruins. ", stepTextKey="Edwane told me about a dead Breton general named Gavendier. While alive, she found one of Voernet's keys and was buried with it. Her spirit still wanders Dwynnarth Ruins. I should ask her about the key's location."},
+		["Find General Gavendier"] =
+			{appendText="'s spirit in Dwynnarth Crypts of the Ayleid ruin."},
+		[5] = 
+			{appendStepText="In northern Glenumbra, I met Edwane at the Dwynnarth Ruins. ", stepTextKey="Edwane told me about a dead Breton general named Gavendier. While alive, she found one of Voernet's keys and was buried with it. Her spirit still wanders Dwynnarth Ruins. I should ask her about the key's location."},
+		["Talk to General Gavendier"] =
+			{appendText="'s golden spirit."},
+		[6] = 
+			{appendStepText="In northern Glenumbra, ", stepTextKey="I found the spirit of General Gavendier patrolling Dwynnarth Ruins. She told me that a graverobber named Branach Firstblood stole a Nowhere Key from her entombed body. I should find Branach and recover the key."},
+		["Enter the Dwynnarth Crypts"] =
+			{appendText="."},
+		[7] = 
+			{appendStepText="In northern Glenumbra, ", stepTextKey="General Gavendier's spirit joined me in the crypts below Dwynnarth Ruins. Somewhere down here lurks Branach Firstblood. I should find him and steal back the general's Nowhere Key."},
+		["Find Branach Firstblood"] =
+			{appendText=".\n"},
+		["Steal the Nowhere Key"] =
+			{appendText="."},
+		[8] = 
+			{appendStepText="", stepTextKey="My pickpocket attempt failed. My last chance to get this Nowhere Key is to run Branach Firstblood down and take it from him by force."},
+		["Loot the Nowhere Key"] =
+			{appendText=".\n"},
+		["Kill Branach Firstblood"] =
+			{appendText="."},
+		[9] = 
+			{appendStepText="", stepTextKey="Despite the help of General Gavendier's spirit, I wasn't able to acquire the Nowhere Key. Branach Firstblood ran off before I could take it from him. I should find Edwane outside and tell him the bad news."},
+		["Talk to Edwane the Hawk 2"] =
+			{appendText=" outside the entrance to the crypts of Dwynnarth Ruins in northern Glenumbra.", stepTextKey="Despite the help of General Gavendier's spirit, I wasn't able to acquire the Nowhere Key. Branach Firstblood ran off before I could take it from him. I should find Edwane outside and tell him the bad news."},
+		[10] = 
+			{appendStepText="", stepTextKey="I finished following up on the information Edwane obtained. Now it's time to find Seline and help her with her search. She told me to meet her in Daggerfall's Market District. I should head there to try to find a Nowhere Key."},
+		["Find Seline in the Daggerfall Market District"] =
+			{appendText=".", stepTextKey="I finished following up on the information Edwane obtained. Now it's time to find Seline and help her with her search. She told me to meet her in Daggerfall's Market District. I should head there to try to find a Nowhere Key."},
+		[11] = 
+			{appendStepText="I returned to the southern port city in Glenumbra. ", stepTextKey="As I was heading for the Daggerfall Market District, Abrasia surprised me from the shadows and asked to talk. I should see what she has to say about what happened at the warehouse."},
+		["Talk to Abrasia"] =
+			{appendText="."},
+		[12] = 
+			{appendStepText="The Roadworn leader found me in Glenumbra's southern city. ", stepTextKey="Abrasia claims that she stole our Nowhere Key because she thought Koldane would kill us and take it. She argued that it was better to keep it out of his hands. I should track down Seline to tell her all this."},
+		["Meet Seline in the Daggerfall Market District"] =
+			{appendText=". She is probably in a more private place, like behind the cathedral, near the lake."},
+		[13] = 
+			{appendStepText="", stepTextKey="Abrasia claims that she stole our Nowhere Key because she thought Koldane would kill us and take it. She argued that it was better to keep it out of his hands. I should track down Seline to tell her all this."},
+		["Talk to Seline Menant 1"] =
+			{appendText=". She is on the boardwalk at the lake behind the city's cathedral.", stepTextKey="Abrasia claims that she stole our Nowhere Key because she thought Koldane would kill us and take it. She argued that it was better to keep it out of his hands. I should track down Seline to tell her all this."},
+		[14] = 
+			{appendStepText="In southern Glenumbra, I spoke with Seline Menant at the lake behind Daggerfall's cathedral. ", stepTextKey="Seline believes she knows a way into the hidden stash of Magpie Ravik, an elusive thief in Daggerfall. It seems Ravik keeps a Nowhere Key somewhere inside. I should help Seline find the entrance in Themond Mine."},
+		["Search Themond Mine"] =
+			{appendText=" at the lake in the city's southwest."},
+		[15] = 
+			{appendStepText="Inside Themond Mine in the southwest corner of Daggerfall, the southern port city of Glenumbra, Seline and I explored. ", stepTextKey="Somewhere within Themond Mine is the entrance to Magpie Ravik's stash. Once we find it, I should quietly slip in so we can search for the Nowhere Key."},
+		["Find the Entrance to Ravik's Stash"] =
+			{appendText=" by climbing the rope by the platform near the mine's waterfall."},
+		[16] = 
+			{appendStepText="Inside Themond Mine in the southwest corner of Daggerfall, the southern port city of Glenumbra, Seline and I found a rope to climb up to a higher platform near the waterfall. ", stepTextKey="Somewhere within Themond Mine is the entrance to Magpie Ravik's stash. Once we find it, I should quietly slip in so we can search for the Nowhere Key."},
+		["Enter Ravik's Stash"] =
+			{appendText="."},
+		[17] = 
+			{appendStepText="Inside Themond Mine in the southwest corner of Daggerfall, the southern port city of Glenumbra, Seline and I climbed a rope up to a higher platform near the waterfall. ", stepTextKey="Seline and I found what was supposed to be the entrance into Magpie Ravik's stash. Unfortunately, someone barricaded it so we couldn't get in. I should help Seline find another way inside."},
+		["Find Another Way into Ravik's Stash"] =
+			{appendText=" by climbing up to Lynan Falls."},
+		[18] = 
+			{appendStepText="Inside Themond Mine in the southwest corner of Daggerfall, the southern port city of Glenumbra, Seline and I climbed a rope up to a higher platform near the waterfall. Then we climbed up to Lynan Falls and found a cave. ", stepTextKey="We came upon a whirlpool and Seline seemed to recognize it as an entrance and dove in. I should follow her."},
+		["Follow Seline into the Whirlpool"] =
+			{appendText="."},
+		[19] = 
+			{appendStepText="Inside Themond Mine in the southwest corner of Daggerfall, the southern port city of Glenumbra, Seline and I climbed a rope up to a higher platform near the waterfall. Then we climbed up to Lynan Falls and found a whirlpool. ", stepTextKey="The whirlpool washed Seline and I into an underground stream. We're both unharmed if a bit soggy. Luckily, this appears to be the entrance into Ravik's stash. I should follow the stream deeper inside."},
+		["Follow the Underground Stream"] =
+			{appendText="."},
+		[20] = 
+			{appendStepText="Inside Themond Mine in the southwest corner of Daggerfall, the southern port city of Glenumbra, Seline and I climbed a rope up to a higher platform near the waterfall. Then we climbed up to Lynan Falls and found a whirlpool. ", stepTextKey="As Seline and I crept down the stream, we heard voices discussing the Koldane Cartel paying off Daggerfall guards. Before we head into Ravik's stash, I should talk to Seline."},
+		["Talk to Seline Menant 2"] =
+			{appendText=".", stepTextKey="As Seline and I crept down the stream, we heard voices discussing the Koldane Cartel paying off Daggerfall guards. Before we head into Ravik's stash, I should talk to Seline."},
+		[21] = 
+			{appendStepText="Inside Themond Mine in the southwest corner of Daggerfall, the southern port city of Glenumbra, Seline and I climbed a rope up to a higher platform near the waterfall. Then we climbed up to Lynan Falls, found a whirlpool, and then went through a gate. ", stepTextKey="There's a lot of stolen goods in Ravik's stash, but Seline is confident the Nowhere Key is here somewhere. I just have to find it."},
+		["Find the Nowhere Key"] =
+			{appendText=" at Ravik's Stash at the eastern end of Ravik's Pool."},
+		[22] = 
+			{appendStepText="Inside Themond Mine in the southwest corner of Daggerfall, the southern port city of Glenumbra, Seline and I climbed up to a higher platform near the waterfall and up again to Lynan Falls. Through a whirlpool, and finally, we reached the eastern end of Ravik's Pool. ", stepTextKey="Seline and I found a pool of acid protecting an important-looking lockbox. She believes it holds the Nowhere Key we came for. I should open the sluice gates to drain the acid."},
+		["Open the Sluice Gates"] =
+			{appendText="\n\nPulling the Sluice Levers should open the gates in this easternmost chamber of Ravik's Pool."},
+		[23] = 
+			{appendStepText="Inside Themond Mine in the southwest corner of Daggerfall, the southern port city of Glenumbra, Seline and I climbed up to a higher platform near the waterfall and up again to Lynan Falls. Through a whirlpool, and finally, we reached the eastern end of Ravik's Pool. ", stepTextKey="The acid drained away from the lockbox. I should open the box and hopefully find the Nowhere Key inside."},
+		["Take the Nowhere Key"] =
+			{appendText=" from the chest."},
+		[24] = 
+			{appendStepText="", stepTextKey="I took the Nowhere Key from the lockbox and need to get out of Ravik's stash. I should slip through the open sluice gates to escape."},
+		["Escape Ravik's Stash"] =
+			{appendText="."},
+		[25] = 
+			{appendStepText="", stepTextKey="I'm out of Ravik's stash with the Nowhere Key. Now I have to elude the Daggerfall guards that the cartel paid to catch me. I should find my way back to the thieves den quickly."},
+		["Escape with the Nowhere Key"] =
+			{appendText=". Daggerfall's guards are on high alert. There is a drain on the river in the city's eastern wall, southeast of Daggerfall Millworks. If the river grate doesn't work, there is a new entrance to the outlaws refuge behind the tailor's shop, west of the Bank of Daggerfall."},
+		[26] = 
+			{appendStepText="", stepTextKey="I need to get back to the thieves den in the Daggerfall Outlaws Refuge to check in after attempting to acquire the Nowhere Keys."},
+		["Return to the Thieves Den"] =
+			{appendText="."},
+--0keys
+		[27] = 
+			{appendStepText="I returned to the Thieves Den at the Daggerfall Outlaws Refuge in southern Glenumbra. ", stepTextKey="I couldn't recover any Nowhere Keys, but it sounds like Edwane found a solution. I should talk to him."},
+		["Talk to Edwane the Hawk 3"] =
+			{appendText=".", stepTextKey="I couldn't recover any Nowhere Keys, but it sounds like Edwane found a solution. I should talk to him."},
+--1key
+		[28] = 
+			{appendStepText="I returned to the Thieves Den at the Daggerfall Outlaws Refuge in southern Glenumbra. ", stepTextKey="We acquired a Nowhere Key and now have a way into Sage Voernet's Nowhere Vault. I should talk to Quen about what comes next."},
+		["Talk to Quen 2"] =
+			{appendText=".", stepTextKey="We acquired a Nowhere Key and now have a way into Sage Voernet's Nowhere Vault. I should talk to Quen about what comes next."},
+--0Keys
+		[29] = 
+			{appendStepText="I returned to the Thieves Den at the Daggerfall Outlaws Refuge in southern Glenumbra. I learned that ", stepTextKey="Edwane recovered a Nowhere Key after I failed to acquire any, and Quen discovered the location of the Nowhere Vault. I should ask her about what's next."},
+		["Talk to Quen 3"] =
+			{appendText=".", stepTextKey="Edwane recovered a Nowhere Key after I failed to acquire any, and Quen discovered the location of the Nowhere Vault. I should ask her about what's next."},
+--Key1acquired
+		[30] = 
+			{appendStepText="", stepTextKey="With the help of General Gavendier's spirit, I acquired a Nowhere Key from the cultist, Branach Firstblood. Edwane will be pleased to know his information yielded a positive result. I should go find him outside the crypt and talk to him."},
+		["Talk to Edwane the Hawk 4"] =
+			{appendText=" outside the entrance to the crypts of Dwynnarth Ruins in northern Glenumbra.", stepTextKey="With the help of General Gavendier's spirit, I acquired a Nowhere Key from the cultist, Branach Firstblood. Edwane will be pleased to know his information yielded a positive result. I should go find him outside the crypt and talk to him."},
+--2keys
+		[31] = 
+			{appendStepText="In the Daggerfall Outlaws Refuge in Glenumbra's southern port city. ", stepTextKey="I made it back to the thieves den. I should catch up with Seline about what happened at Ravik's stash."},
+		["Talk to Seline Menant 3"] =
+			{appendText=".", stepTextKey="I made it back to the thieves den. I should catch up with Seline about what happened at Ravik's stash."},
+--1key
+		[32] = 
+			{appendStepText="", stepTextKey="We acquired a Nowhere Key and know the location of the Nowhere Vault. I should talk to Quen about what comes next."},
+		["Talk to Quen 4"] =
+			{appendText=" in the Thieves Den at the Daggerfall Outlaws Refuge.", stepTextKey="We acquired a Nowhere Key and know the location of the Nowhere Vault. I should talk to Quen about what comes next."},
+--2keys
+		[33] = 
+			{appendStepText="", stepTextKey="We acquired two Nowhere Keys and know the location of the Nowhere Vault. I should talk to Quen about what comes next."},
+		["Talk to Quen 5"] =
+			{appendText=" in the Thieves Den at the Daggerfall Outlaws Refuge.", stepTextKey="We acquired two Nowhere Keys and know the location of the Nowhere Vault. I should talk to Quen about what comes next."},
+	},
+
+	[GetQuestName(7426)] = { --"Racing Into Nowhere" --Jordakai
+		[1] = 
+			{appendStepText="In Daggerfall, the southern city of Glenumbra, I spoke with our information broker. ", stepTextKey="Skeever Nivo told me that Quen wants to talk to me in the thieves den. Sounds like we're ready to enter the Nowhere Vault and pull off a spectacular heist. I should head for the Daggerfall thieves den and talk to her."},
+		["Find Quen in the Thieves Den"] =
+			{appendText=" at the Daggerfall Outlaws Refuge."},
+		[2] = 
+			{appendStepText="I returned to the Daggerfall Outlaws Refuge in Glenumbra's southern port city and ", stepTextKey="I've arrived at the thieves den. I should speak to Quen."},
+		["Talk to Quen 1"] =
+			{appendText=".", stepTextKey="I've arrived at the thieves den. I should speak to Quen."},
+		[3] = 
+			{appendStepText="I met with Quen in the Thieves Den at the Daggerfall Outlaws Refuge. ", stepTextKey="Quen secured transportation to the Nowhere Vault via ship. She hired someone named Skeel-Kasi to take us there. I should meet him on the coast west of Eagle's Brook."},
+		["Find Skeel-Kasi"] =
+			{appendText=", an Argonian with the boat we need. He should be waiting on the northwestern coast of Glenumbra."},
+		[4] = 
+			{appendStepText="On the northwestern coast of Glenumbra, west of Eagle's Brook and near the Ayleid ruin of Enduum, ", stepTextKey="I found Skeel-Kasi along with Captain Sansonne and his Lion Guard at the specified spot. Quen asked me to speak to Captain Sansonne to calm tensions between the Lion Guard and thieves."},
+		["Talk to Captain Sansonne 1"] =
+			{appendText=" of the Lion Guard.", stepTextKey="I found Skeel-Kasi along with Captain Sansonne and his Lion Guard at the specified spot. Quen asked me to speak to Captain Sansonne to calm tensions between the Lion Guard and thieves."},
+		[5] = 
+			{appendStepText="On the northwestern coast of Glenumbra, west of Eagle's Brook and near the Ayleid ruin of Enduum, ", stepTextKey="I informed Captain Sansonne about the plan to apprehend Gavin Koldane. We should now board Skeel-Kasi's vessel and travel to Sage's Isle."},
+		["Travel to Sage's Isle"] =
+			{appendText="."},
+		[6] = 
+			{appendStepText="We sailed with Skeel-Kasi from the northwestern shore of Glenumbra between Enduum and Eagle's Brook. ", stepTextKey="We landed on Sage's Isle, but we're not the first to arrive. Cartel ships are anchored off the coast. Carso found prints that point inland. I should follow them to see if they lead to the vault's entrance."},
+		["Explore Sage's Isle"] =
+			{appendText=", heading north."},
+		[7] = 
+			{appendStepText="We sailed with Skeel-Kasi from the northwestern shore of Glenumbra between Enduum and Eagle's Brook. ", stepTextKey="We followed the trail of footprints deep into the island until we reached a set of ruins. We found a doorway into an underground area. I should go through to see where it leads."},
+		["Enter the Sage's Isle Ruins"] =
+			{appendText="."},
+		[8] = 
+			{appendStepText="From the northwestern shore of Glenumbra we sailed to Sage's Isle. ", stepTextKey="We entered ancient ruins beneath the surface of the island. Quen believes the entrance to the Nowhere Vault is down here. I should explore until I find it."},
+		["Explore the Sage's Isle Ruins"] =
+			{appendText="."},
+		[9] = 
+			{appendStepText="From the northwestern shore of Glenumbra we sailed to Sage's Isle and entered the ruins. ", stepTextKey="There appears to be more than one path deeper into the ruins. Quen suggests we split up to cover more ground. I should choose if I want to explore with Edwane or Seline."},
+		["Choose an Ally"] =
+			{appendText="."},
+		[10] = 
+			{appendStepText="From the northwestern shore of Glenumbra we sailed to Sage's Isle and entered the ruins. ", stepTextKey="Quen believes the entrance to the Nowhere Vault is within these ruins. I should make my way through them with my ally until I find it."},
+		["Find the Vault Entrance"] =
+			{appendText="."},
+		[11] = 
+			{appendStepText="From the northwestern shore of Glenumbra we sailed to Sage's Isle and entered the ruins. ", stepTextKey="We caught up with Koldane and his cartel just in time to watch them enter the Nowhere Vault and see the door close behind them. I need to use a Nowhere Key to open the vault door for me and my allies."},
+		["Present the Nowhere Key"] =
+			{appendText=" at the glowing symbol on the dais."},
+		[12] = 
+			{appendStepText="From the northwestern shore of Glenumbra we sailed to Sage's Isle and entered the ruins. We found the Nowhere Vault entrance. ", stepTextKey="As I presented Nowhere Key at the glowing rune, I saw lights emerge from nearby pylons in a specific sequence. I need to replicate the sequence to open the vault door."},
+		["Complete the Ritual"] =
+			{appendText="\n\nCartel corpses imply Koldane used trial and error with the crystals."},
+		[13] = 
+			{appendStepText="From the northwestern shore of Glenumbra we sailed to Sage's Isle. Deep in the ancient ruins, ", stepTextKey="I opened the door that leads into the Nowhere Vault. We should all step through to catch up to Koldane."},
+		["Enter the Nowhere Vault"] =
+			{appendText="."},
+		[14] = 
+			{appendStepText="From the northwestern shore of Glenumbra we sailed to Sage's Isle. In its ruins, we found and entered the Nowhere Vault. ", stepTextKey="I stepped into a large chamber with multiple levels and many doors, but none of my allies are in sight. A vision of a strange man appeared before me. I should speak with him."},
+		["Talk to Sage Voernet's Memorium 1"] =
+			{appendText=".", stepTextKey="I stepped into a large chamber with multiple levels and many doors, but none of my allies are in sight. A vision of a strange man appeared before me. I should speak with him."},
+		[15] = 
+			{appendStepText="From the northwestern shore of Glenumbra we sailed to Sage's Isle. In its ruins, I entered the Nowhere Vault. ", stepTextKey="Seline, Edwane, Quen, and I were all separated when we entered the Nowhere Vault. I see several doors leading out of the area I am in. I should explore the vault and try to meet back up with my allies."},
+		["Explore the Nowhere Vault 1"] =
+			{appendText=", beginning with the arched portal in the Nexus chamber.", stepTextKey="Seline, Edwane, Quen, and I were all separated when we entered the Nowhere Vault. I see several doors leading out of the area I am in. I should explore the vault and try to meet back up with my allies."},
+		[16] = 
+			{appendStepText="From the northwestern shore of Glenumbra we sailed to Sage's Isle. In its ruins, I entered the Nowhere Vault, used a portal, and then ", stepTextKey="I found Edwane trapped in a dangerous situation. I should speak to him and figure out how I can help him."},
+		["Talk to Edwane the Hawk"] =
+			{appendText=" near the west end of the Dwemer Maze's floor below."},
+		[17] = 
+			{appendStepText="From the northwestern shore of Glenumbra we sailed to Sage's Isle. In its ruins, I entered the Nowhere Vault and used a portal. In the Dwemer Maze, ", stepTextKey="I should examine the Dwemer device before me and see if there's a way to disable the lightning barrier that blocks Edwane's path forward."},
+		["Use the Dwemer Device 1"] =
+			{appendText=" on the southwestern balcony.", stepTextKey="I should examine the Dwemer device before me and see if there's a way to disable the lightning barrier that blocks Edwane's path forward."},
+		[18] = 
+			{appendStepText="From the northwestern shore of Glenumbra we sailed to Sage's Isle. In its ruins, I entered the Nowhere Vault and used a portal to enter a Dwemer Maze. ", stepTextKey="Examining the Dwemer device revealed that I can disable the lightning barrier by turning a nearby valve. I should find the valve and turn it."},
+		["Disable the Lightning Barrier"] =
+			{appendText=" using the valve wheel on the southwestern balcony."},
+		[19] = 
+			{appendStepText="From the northwestern shore of Glenumbra we sailed to Sage's Isle. In its ruins, I entered the Nowhere Vault and used a portal to enter a Dwemer Maze. ", stepTextKey="I disabled the lightning barrier. I should inform Edwane it's safe to cross now."},
+		["Use the Dwemer Device 2"] =
+			{appendText=" on the southwestern balcony.", stepTextKey="I disabled the lightning barrier. I should inform Edwane it's safe to cross now."},
+		[20] = 
+			{appendStepText="From the northwestern shore of Glenumbra we sailed to Sage's Isle. In its ruins, I entered the Nowhere Vault and used a portal to enter a Dwemer Maze. ", stepTextKey="I helped Edwane get past the lightning barrier, but there are more obstacles in his path. I should see if I can find another Dwemer device so I can help him get through the labyrinth."},
+		["Find the Next Dwemer Device 1"] =
+			{appendText=" on the next balcony to the east.", stepTextKey="I helped Edwane get past the lightning barrier, but there are more obstacles in his path. I should see if I can find another Dwemer device so I can help him get through the labyrinth."},
+		[21] = 
+			{appendStepText="From the northwestern shore of Glenumbra we sailed to Sage's Isle. In its ruins, I entered the Nowhere Vault and used a portal to enter a Dwemer Maze. ", stepTextKey="I found another Dwemer device overlooking a spinning blade that's blocking Edwane's path. Abrasia appeared and warned me that this obstacle needs to be dealt with carefully. I should examine the Dwemer device to learn more."},
+		["Use the Dwemer Device 3"] =
+			{appendText=" on the southeastern balcony.", stepTextKey="I found another Dwemer device overlooking a spinning blade that's blocking Edwane's path. Abrasia appeared and warned me that this obstacle needs to be dealt with carefully. I should examine the Dwemer device to learn more."},
+		[22] = 
+			{appendStepText="From the northwestern shore of Glenumbra we sailed to Sage's Isle. In its ruins, I entered the Nowhere Vault and used a portal to enter a Dwemer Maze. ", stepTextKey="Examining the Dwemer device revealed that I can disable the whirling blade barrier by turning a nearby valve. I should find the valve and turn it."},
+		["Disable the Whirling Blade Barrier"] =
+			{appendText=" using the valve wheel on the southeastern balcony."},
+		[23] = 
+			{appendStepText="From the northwestern shore of Glenumbra we sailed to Sage's Isle. In its ruins, I entered the Nowhere Vault and used a portal to enter a Dwemer Maze. ", stepTextKey="I disabled the whirling blade barrier. I should inform Edwane it's safe to cross now."},
+		["Use the Dwemer Device 4"] =
+			{appendText=" on the southeastern balcony.", stepTextKey="I disabled the whirling blade barrier. I should inform Edwane it's safe to cross now."},
+		[24] = 
+			{appendStepText="From the northwestern shore of Glenumbra we sailed to Sage's Isle. In its ruins, I entered the Nowhere Vault and used a portal to enter a Dwemer Maze. ", stepTextKey="I helped Edwane get past the blade barrier, but there may be more obstacles in his path. I should move on and try to meet up with him on the far side."},
+		["Explore the Nowhere Vault 2"] =
+			{appendText=".", stepTextKey="I helped Edwane get past the blade barrier, but there may be more obstacles in his path. I should move on and try to meet up with him on the far side."},
+		[25] = 
+			{appendStepText="From the northwestern shore of Glenumbra we sailed to Sage's Isle. In its ruins, I entered the Nowhere Vault and used a portal to enter a Dwemer Maze. ", stepTextKey="Defeating the Dwemer construct opened the way forward. I should press on and try and find the next Dwemer device to help Edwane proceed."},
+		["Find the Next Dwemer Device 2"] =
+			{appendText=" on the northeastern balcony.", stepTextKey="Defeating the Dwemer construct opened the way forward. I should press on and try and find the next Dwemer device to help Edwane proceed."},
+		[26] = 
+			{appendStepText="From the northwestern shore of Glenumbra we sailed to Sage's Isle. In its ruins, I entered the Nowhere Vault and used a portal to enter a Dwemer Maze. ", stepTextKey="I found another Dwemer device overlooking the same blade as before. I should examine it and find out what needs to be done to get Edwane past it safely."},
+		["Use the Dwemer Device 5"] =
+			{appendText=" on the northeastern balcony.", stepTextKey="I found another Dwemer device overlooking the same blade as before. I should examine it and find out what needs to be done to get Edwane past it safely."},
+		[27] = 
+			{appendStepText="From the northwestern shore of Glenumbra we sailed to Sage's Isle. In its ruins, I entered the Nowhere Vault and used a portal to enter a Dwemer Maze. ", stepTextKey="Dwemer constructs are crossing the bridge to reach Edwane! I should enable the blade device so that it destroys them before they reach him."},
+		["Enable the Whirling Blade Barrier"] =
+			{appendText=" using the valve wheel on the northeastern balcony."},
+		[28] = 
+			{appendStepText="", stepTextKey="The spinning blade managed to destroy the advancing constructs before they reached Edwane. I should tell him it is safe to cross now."},
+		["Use the Dwemer Device 6"] =
+			{appendText="", stepTextKey="The spinning blade managed to destroy the advancing constructs before they reached Edwane. I should tell him it is safe to cross now."},
+		[29] = 
+			{appendStepText="From the northwestern shore of Glenumbra we sailed to Sage's Isle. In its ruins, I entered the Nowhere Vault and used a portal. ", stepTextKey="I should continue to explore the Nowhere Vault until I find my allies."},
+		["Explore the Nowhere Vault 3"] =
+			{appendText=" using a portal to reach the next area.", stepTextKey="I should continue to explore the Nowhere Vault until I find my allies."},
+		[30] = 
+			{appendStepText="From the northwestern shore of Glenumbra we sailed to Sage's Isle. In its ruins, I entered the Nowhere Vault, used a portal to the Dwemer Maze, then another portal. ", stepTextKey="I found myself in a grand gallery with several relics on display. Seline is overlooking the display from a balcony up above. I should ask her what we need to do in here."},
+		["Talk to Seline Menant"] =
+			{appendText="."},
+		[31] = 
+			{appendStepText="From the northwestern shore of Glenumbra we sailed to Sage's Isle. In its ruins, I entered the Nowhere Vault, a portal to the Dwemer Maze, and another portal to the Relic Gallery. ", stepTextKey="I need to pick out the sage's true staff from among the staves displayed in this gallery. It needs to match the image floating above the gallery's pool."},
+		["Find the True Staff"] =
+			{appendText="."},
+		[32] = 
+			{appendStepText="From the northwestern shore of Glenumbra we sailed to Sage's Isle. In its ruins, I entered the Nowhere Vault, a portal to the Dwemer Maze, and another portal to the Relic Gallery. ", stepTextKey="I made a mistake and a guardian has been summoned to defend the gallery. I should defeat it before resuming my search for the correct relics."},
+		["Defeat the Gallery Guardian"] =
+			{appendText="."},
+		[33] = 
+			{appendStepText="From the northwestern shore of Glenumbra we sailed to Sage's Isle. In its ruins, I entered the Nowhere Vault, a portal to the Dwemer Maze, and another portal to the Relic Gallery. ", stepTextKey="I need to pick out the sage's true crown from among the crowns displayed in this gallery. It needs to match the image floating above the gallery's pool."},
+		["Find the True Crown"] =
+			{appendText="."},
+		[34] = 
+			{appendStepText="From the northwestern shore of Glenumbra we sailed to Sage's Isle. In its ruins, I entered the Nowhere Vault, a portal to the Dwemer Maze, and another portal to the Relic Gallery. ", stepTextKey="I need to pick out the sage's true tome from among the books displayed in this gallery. It needs to match the image floating above the gallery's pool."},
+		["Find the True Tome"] =
+			{appendText="."},
+		[35] = 
+			{appendStepText="From the northwestern shore of Glenumbra we sailed to Sage's Isle. In its ruins, I entered the Nowhere Vault. Portals led me to a Dwemer Maze, a Relic Gallery and now a Khajiiti ruin. ", stepTextKey="I found Quen in a large hall. I should speak to her and see what we need to do in this chamber."},
+		["Talk to Quen 2"] =
+			{appendText=" up on a walkway to the north.", stepTextKey="I found Quen in a large hall. I should speak to her and see what we need to do in this chamber."},
+		[36] = 
+			{appendStepText="From the northwestern shore of Glenumbra we sailed to Sage's Isle. In its ruins, I entered the Nowhere Vault. Portals led me to a Dwemer Maze, a Relic Gallery and now a Khajiiti ruin. ", stepTextKey="Quen believes we need to trigger a series of wheels to open the gates barring each of us from progressing through the vault. Looks like I also need to fight through whatever creatures are guarding my side of the hall."},
+		["Open the First Gate"] =
+			{appendText=" by turning a wheel."},
+		[37] = 
+			{appendStepText="From the northwestern shore of Glenumbra we sailed to Sage's Isle. In its ruins, I entered the Nowhere Vault. Portals led me to a Dwemer Maze, a Relic Gallery and now a Khajiiti ruin. ", stepTextKey="Quen and I managed to open the first gate. I should continue forward and open the second gate in the same manner."},
+		["Open the Second Gate"] =
+			{appendText=" by turning a wheel."},
+		[38] = 
+			{appendStepText="From the northwestern shore of Glenumbra we sailed to Sage's Isle. In its ruins, I entered the Nowhere Vault. Portals led me to a Dwemer Maze, a Relic Gallery and now a Khajiiti ruin. ", stepTextKey="Quen and I managed to open the second gate. I should continue forward and open the third and last gate in the same manner."},
+		["Open the Third Gate"] =
+			{appendText=" by turning a wheel."},
+		[39] = 
+			{appendStepText="From the northwestern shore of Glenumbra we sailed to Sage's Isle. In its ruins, I entered the Nowhere Vault. Portals led me to a Dwemer Maze, a Relic Gallery and now a Khajiiti ruin. We are in the Nexus again. ", stepTextKey="I rejoined my allies and we're one step closer to finding the Thieves' Moon. Seline suggests we go through the portal straight ahead."},
+		["Go Through the Portal"] =
+			{appendText=" to the Nowhere Vault Antechamber."},
+		[40] = 
+			{appendStepText="From the northwestern shore of Glenumbra we sailed to Sage's Isle. In its ruins, I entered the Nowhere Vault. Portals led me to a Dwemer Maze, a Relic Gallery and now a Khajiiti ruin and then the Antechamber. ", stepTextKey="We found Abrasia fighting with Koldane. He demanded she hand over her Nowhere Key. We should fight the Koldane Cartel thugs and rescue her."},
+		["Defeat the Koldane Cartel Thugs"] =
+			{appendText="."},
+		[41] = 
+			{appendStepText="From the northwestern shore of Glenumbra we sailed to Sage's Isle. In its ruins, I entered the Nowhere Vault. Portals led me to a Dwemer Maze, a Relic Gallery and now a Khajiiti ruin and then the Antechamber. ", stepTextKey="After we defeated some of his cartel thugs, Koldane ordered the rest of his pack to surround us. We need to find a way to escape this ambush."},
+		["Escape the Koldane Cartel Ambush"] =
+			{appendText=" by using a Nowhere Key."},
+		[42] = 
+			{appendStepText="From the northwestern shore of Glenumbra we sailed to Sage's Isle. In its ruins, I entered the Nowhere Vault. Portals led me to a Dwemer Maze, a Relic Gallery and now a Khajiiti ruin and then the Antechamber. ", stepTextKey="Abrasia told me to use the Nowhere Keys and we were transported to another part of the vault complex, but in the process we were separated from the others. We hear fighting up ahead. I need to hurry and find my allies again."},
+		["Reach Gavin Koldane"] =
+			{appendText=" in the Vault of the Thieves Moon."},
+		[43] = 
+			{appendStepText="From the northwestern shore of Glenumbra we sailed to Sage's Isle ruins. In the Nowhere Vault, we used portals and are at the Vault of the Thieves Moon. ", stepTextKey="We reached Gavin Koldane, who has fully transformed into a werewolf! Other cartel thugs and werewolves are with him, and I spotted Quen hiding near the Thieves' Moon. I need to deal with Koldane and hope the others can survive in the meantime."},
+		["Defeat Gavin Koldane"] =
+			{appendText="."},
+		[44] = 
+			{appendStepText="", stepTextKey="Nearing defeat, Koldane and his remaining pack unleashed a horrifying howl that crippled me and my allies. Quen fought through the howl to the Thieves' Moon and tossed it to me. I should catch it and use it against Koldane."},
+		["Catch the Thieves' Moon"] =
+			{appendText=" at the green spot on the dais."},
+		[45] = 
+			{appendStepText="", stepTextKey="Quen managed to throw the Thieves' Moon to me. When I caught it, the world froze. I sense this is my opportunity to use the Thieves' Moon and finally defeat Koldane and his cartel."},
+		["Use the Thieves' Moon"] =
+			{appendText=" at the dais."},
+		[46] = 
+			{appendStepText="", stepTextKey="The Thieves' Moon broke when I used its power against Koldane, but I think something of it remains. I should speak to Quen and tell her we won't leave empty handed."},
+		["Talk to Quen 3"] =
+			{appendText=" in the Vault of the Thieves Moon.", stepTextKey="The Thieves' Moon broke when I used its power against Koldane, but I think something of it remains. I should speak to Quen and tell her we won't leave empty handed."},
+		[47] = 
+			{appendStepText="In the Vault of the Thieves Moon, ", stepTextKey="Koldane and his cartel have been defeated and the Thieves' Moon, or what's left with it, is in our hands. Sage Voernet's Memorium has reappeared and offered to help us depart the Nowhere Vault."},
+		["Talk to Sage Voernet's Memorium 2"] =
+			{appendText=" before leaving.", stepTextKey="Koldane and his cartel have been defeated and the Thieves' Moon, or what's left with it, is in our hands. Sage Voernet's Memorium has reappeared and offered to help us depart the Nowhere Vault."},
+		[48] = 
+			{appendStepText="", stepTextKey="Sage Voernet's Memorium created a portal that will take us out of his vault."},
+		["Exit the Vault of Sage Voernet"] =
+			{appendText="."},
+		[49] = 
+			{appendStepText="", stepTextKey="Sage Voernet sent us back to the beach on Sage's Isle. I should speak to Captain Sansonne and hand over Gavin Koldane as promised."},
+		["Talk to Captain Sansonne 2"] =
+			{appendText=".", stepTextKey="Sage Voernet sent us back to the beach on Sage's Isle. I should speak to Captain Sansonne and hand over Gavin Koldane as promised."},
+		[50] = 
+			{appendStepText="", stepTextKey="Gavin Koldane is now in the custody of Captain Sansonne and the Lion Guard. We should make our way back to the thieves den in Daggerfall to discuss what comes next."},
+		["Return to the Thieves Den"] =
+			{appendText=" at the Daggerfall Outlaws Refuge in Glenumbra's southern port city."},
+		[51] = 
+			{appendStepText="", stepTextKey="We returned to the thieves den in Daggerfall. Quen wants to talk to me. I should see what she needs."},
+		["Talk to Quen 4"] =
+			{appendText=".", stepTextKey="We returned to the thieves den in Daggerfall. Quen wants to talk to me. I should see what she needs."},
+		[52] = 
+			{appendStepText="I returned to the Thieves Den in the Daggerfall Outlaws Refuge in southern Glenumbra. ", stepTextKey="The three gangs of Daggerfall have decided to become a new Thieves Guild and they asked me to help them decide on who should be the leader of their new guild."},
+		["Choose the Leader of the Thieves Guild"] =
+			{appendText=" of Daggerfall."},
+		[53] = 
+			{appendStepText="In the Thieves Den at the Daggerfall Outlaws Refuge in southern Glenumbra, ", stepTextKey="I selected Edwane the Hawk to be the leader of the Daggerfall Thieves Guild. I should tell Quen about my decision."},
+		["Talk to Quen 5"] =
+			{appendText=".", stepTextKey="I selected Edwane the Hawk to be the leader of the Daggerfall Thieves Guild. I should tell Quen about my decision."},
+		[54] = 
+			{appendStepText="In the Thieves Den at the Daggerfall Outlaws Refuge in southern Glenumbra, ", stepTextKey="I selected Edwane the Hawk to be the leader of the Daggerfall Thieves Guild. I should ask Quen if there's anything else we need to do."},
+		["Talk to Quen 6"] =
+			{appendText=".", stepTextKey="I selected Edwane the Hawk to be the leader of the Daggerfall Thieves Guild. I should ask Quen if there's anything else we need to do."},
+		[55] = 
+			{appendStepText="In the Thieves Den at the Daggerfall Outlaws Refuge in southern Glenumbra, ", stepTextKey="I selected Seline Menant to be the leader of the Daggerfall Thieves Guild. I should tell Quen about my decision."},
+		["Talk to Quen 7"] =
+			{appendText=".", stepTextKey="I selected Seline Menant to be the leader of the Daggerfall Thieves Guild. I should tell Quen about my decision."},
+		[56] = 
+			{appendStepText="In the Thieves Den at the Daggerfall Outlaws Refuge in southern Glenumbra, ", stepTextKey="I selected Seline Menant to be the leader of the Daggerfall Thieves Guild. I should ask Quen if there's anything else we need to do."},
+		["Talk to Quen 8"] =
+			{appendText=".", stepTextKey="I selected Seline Menant to be the leader of the Daggerfall Thieves Guild. I should ask Quen if there's anything else we need to do."},
+		[57] = 
+			{appendStepText="In the Thieves Den at the Daggerfall Outlaws Refuge in southern Glenumbra, ", stepTextKey="I selected Abrasia to be the leader of the Daggerfall Thieves Guild. I should tell Quen about my decision."},
+		["Talk to Quen 9"] =
+			{appendText=".", stepTextKey="I selected Abrasia to be the leader of the Daggerfall Thieves Guild. I should tell Quen about my decision."},
+		[58] = 
+			{appendStepText="In the Thieves Den at the Daggerfall Outlaws Refuge in southern Glenumbra, ", stepTextKey="I selected Abrasia to be the leader of the Daggerfall Thieves Guild. I should ask Quen if there's anything else we need to do."},
+		["Talk to Quen 10"] =
+			{appendText=".", stepTextKey="I selected Abrasia to be the leader of the Daggerfall Thieves Guild. I should ask Quen if there's anything else we need to do."},
+	},
+
+	[GetQuestName(7484)] = { --"Quenneth Lumena's Warrant" --Jordakai
+		[1] = 
+			{appendStepText="Captain Sansonne met me at the Daggerfall Outlaws Refuge in the southern port city in Glenumbra. ", stepTextKey="I need to warn Quen about the severe change to her warrant and figure out a plan to get her to safety."},
+		["Talk to Quen 1"] =
+			{appendText=" in the refuge.", stepTextKey="I need to warn Quen about the severe change to her warrant and figure out a plan to get her to safety."},
+		[2] = 
+			{appendStepText="", stepTextKey="Quen wants to tackle the problem head on and go to Abah's Landing to dig into who placed the warrant and why. I should meet her above the Glyph Shop that overlooks the palace."},
+		["Meet Quen In Abah's Landing"] =
+			{appendText=" in Hew's Bane. The shop is called \"This One Sells Glyphs\" and it is on the promenade of the city, next to the bank."},
+		[3] = 
+			{appendStepText="", stepTextKey="Quen wants to tackle the problem head on and go to Abah's Landing to dig into who placed the warrant and why. I should meet her above the Glyph Shop that overlooks the palace."},
+		["Talk to the Iron Wheel Soldier"] =
+			{appendText=" at the foot of the stairs in \"This One Sells Glyphs\", the enchanter's shop at Abah's Landing in Hew's Bane."},
+		[4] = 
+			{appendStepText="", stepTextKey="An odd Iron Wheel soldier stopped to ask me about Quen. It was almost like he was trying to give me a warning for her. I should tell Quen about this right away."},
+		["Talk to Quen at the Palace Overlook"] =
+			{appendText=", on the ledge atop the enchanter's shop, next door to the bank on the promenade of Abah's Landing in Hew's Bane."},
+		[5] = 
+			{appendStepText="In Hew's Bane, I spoke with Quen atop the Abah's Landing enchanter's shop. ", stepTextKey="We need to search the Warehouse District to figure out more about this Lord Damar and why he's put a warrant on Quen. I should head there and search for clues."},
+		["Search the Warehouse District for Clues"] =
+			{appendText=". A good place to start would be the buildings at the west side docks, near the ship that sails to Summerset. Once in the District, search docked ships for manifests or other clues."},
+		[6] = 
+			{appendStepText="At the southwestern end of the docks at Abah's Landing in Hew's Bane. We boarded Lord Damar's ship. ", stepTextKey="We discovered that Lord Damar blamed Quen simply so he could lure her out to get his hands on one of her father's forgeries. We should search the nearby warehouse and see if we can find him."},
+		["Search Silver-Claw's Warehouse"] =
+			{appendText=" adjacent to Lord Damar's ship at the south end of the western docks of Abah's Landing in Hew's Bane. It has three entrances, with the eastern door around a corner. There should be an office upstairs."},
+		[7] = 
+			{appendStepText="At the southwestern end of the docks at Abah's Landing in Hew's Bane. We boarded Lord Damar's ship. ", stepTextKey="We discovered that Lord Damar blamed Quen simply so he could lure her out to get his hands on one of her father's forgeries. We should search the nearby warehouse and see if we can find him."},
+		["Confront Thavil"] =
+			{appendText=" at the upstairs office in the warehouse."},
+		[8] = 
+			{appendStepText="At the harbor of Abah's Landing in Hew's Bane, we entered Silver-Claw's Warehouse, the southernmost building on the west side docks. We spoke with a Redguard called Thavil who claimed to be a customer of Lord Damar. ", stepTextKey="We discovered that Lord Damar is likely hiding in an Iron Wheel fortress known as No Shira Citadel. I should talk to Quen about our next move."},
+		["Talk to Quen 2"] =
+			{appendText=" at the office area in the warehouse.", stepTextKey="We discovered that Lord Damar is likely hiding in an Iron Wheel fortress known as No Shira Citadel. I should talk to Quen about our next move."},
+		[9] = 
+			{appendStepText="In Hew's Bane, ", stepTextKey="I need to meet Quen at the No Shira Citadel, south of Abah's Landing, so we can find Lord Damar."},
+		["Meet Quen at No Shira Citadel"] =
+			{appendText=", home of the Iron Wheel mercenaries. She should be at the camp near the main entrance.", stepTextKey="I need to meet Quen at the No Shira Citadel, south of Abah's Landing, so we can find Lord Damar."},
+		[10] = 
+			{appendStepText="In Hew's Bane, ", stepTextKey="I need to meet Quen at the No Shira Citadel, south of Abah's Landing, so we can find Lord Damar."},
+		["Talk to Quen 3"] =
+			{appendText=" at the camp by the entrance to No Shira Citadel.", stepTextKey="I need to meet Quen at the No Shira Citadel, south of Abah's Landing, so we can find Lord Damar."},
+		[11] = 
+			{appendStepText="In southeastern Hew's Bane, south of Abah's Landing, I met Quen by the citadel's entrance. ", stepTextKey="We need to infiltrate No Shira Citadel and find Lord Damar. Quen thinks he might be deep in the citadel, inside one of their headquarters building."},
+		["Find Damar in No Shira Citadel"] =
+			{appendText=". The headquarters should be in the back area, far to the east. The entrance is likely secluded, at the base of a tower. The Officer's Chamber should be far from the entrance."},
+		[12] = 
+			{appendStepText="At the Iron Wheel headquarters of No Shira Citadel in southeastern Hew's Bane, we entered the Officer's Chamber. ", stepTextKey="We found Lord Damar in one of the Iron Wheel offices. It's time to confront him and figure out how to clear Quen's warrant."},
+		["Confront Lord Damar"] =
+			{appendText="."},
+		[13] = 
+			{appendStepText="At the Iron Wheel headquarters of No Shira Citadel in southeastern Hew's Bane, we entered the Officer's Chamber. ", stepTextKey="When Lord Damar called for the Iron Wheels, turned out it was really the Daggerfall Thieves Guild in disguise! They neutralized Damar and now Abrasia wants to speak to me. I should talk to her."},
+		["Talk to Abrasia"] =
+			{appendText="."},
+		[14] = 
+			{appendStepText="", stepTextKey="Someone alerted the guild to Quen's predicament and is waiting to talk to us back in the Daggerfall thieves den. We should head there and see what this is all about."},
+		["Return to the Daggerfall Thieves Den"] =
+			{appendText=" at the Daggerfall Outlaws Refuge in southern Glenumbra."},
+		[15] = 
+			{appendStepText="Quen and I returned to the den at the Daggerfall Outlaws Refuge in southern Glenumbra. ", stepTextKey="Someone alerted the guild to Quen's predicament and is waiting to talk to us back in the Daggerfall thieves den. We should head there and see what this is all about."},
+		["Talk to Saroldo"] =
+			{appendText="."},
+		[16] = 
+			{appendStepText="At the Thieves Den in the Daggerfall Outlaws Refuge in southern Glenumbra, I met Saroldo, Quen's father. ", stepTextKey="While Quen spends time with her father, I should see if the others returned from Abah's Landing and speak to them."},
+		["Talk to Your Allies"] =
+			{appendText="\n\nThey should be in the outlaws refuge."},
+		[17] = 
+			{appendStepText="At the southern port city in Glenumbra, ", stepTextKey="I need to find Quen down by the docks and see how she's doing after her talk with her father."},
+		["Talk to Quen at the Daggerfall Docks"] =
+			{appendText=" on the city's west, near The Lydia."},
+		[18] = 
+			{appendStepText="I met Quen at the western docks of this southern port city in Glenumbra. We talked. ", stepTextKey="Quen's decided to let her father stay. She's going to speak to him. I should meet her at the den."},
+		["Return to the Thieves Den 1"] =
+			{appendText=" in the Daggerfall Outlaws Refuge.", stepTextKey="Quen's decided to let her father stay. She's going to speak to him. I should meet her at the den."},
+		[19] = 
+			{appendStepText="I met Quen at the western docks of this southern port city in Glenumbra. We talked. ", stepTextKey="Quen's decided to let her father stay. She's going to speak to him. I should meet her at the den."},
+		["Talk to Quen at the Thieves Den 1"] =
+			{appendText=" in the Daggerfall Outlaws Refuge.", stepTextKey="Quen's decided to let her father stay. She's going to speak to him. I should meet her at the den."},
+		[20] = 
+			{appendStepText="I met with Quen and her father in the den at the Daggerfall Outlaws Refuge in southern Glenumbra. ", stepTextKey="Now that Quen decided that her father could stay and the Daggerfall Thieves Guild has been established, I should check in with her and find out if there's anything else we need to do."},
+		["Talk to Quen 4"] =
+			{appendText=".", stepTextKey="Now that Quen decided that her father could stay and the Daggerfall Thieves Guild has been established, I should check in with her and find out if there's anything else we need to do."},
+		[21] = 
+			{appendStepText="I met Quen at the western docks of this southern port city in Glenumbra. We talked. ", stepTextKey="Quen's decided to send her father away. She believes she's gotten this far on her own and is better off that way. I should meet her at the den."},
+		["Return to the Thieves Den 2"] =
+			{appendText=" in the Daggerfall Outlaws Refuge.", stepTextKey="Quen's decided to send her father away. She believes she's gotten this far on her own and is better off that way. I should meet her at the den."},
+		[22] = 
+			{appendStepText="I met Quen at the western docks of this southern port city in Glenumbra. We talked. ", stepTextKey="Quen's decided to send her father away. She believes she's gotten this far on her own and is better off that way. I should meet her at the den."},
+		["Talk to Quen at the Thieves Den 2"] =
+			{appendText=" in the Daggerfall Outlaws Refuge.", stepTextKey="Quen's decided to send her father away. She believes she's gotten this far on her own and is better off that way. I should meet her at the den."},
+		[23] = 
+			{appendStepText="I met with Quen in the den at the Daggerfall Outlaws Refuge in southern Glenumbra. ", stepTextKey="Now that Quen decided to send her father away and the Daggerfall Thieves Guild has been established, I should check in with her and find out if there's anything else we need to do."},
+		["Talk to Quen 5"] =
+			{appendText=".", stepTextKey="Now that Quen decided to send her father away and the Daggerfall Thieves Guild has been established, I should check in with her and find out if there's anything else we need to do."},
+	},
+
+-- 		=========================================================================
+--		  Thieves Guild Glenumbra Dalies
+-- 		=========================================================================
+
+	[GetQuestName(7496)] = { --"The Quill Pen" --Jordakai
+		[1] = 
+			{appendStepText="At the Thieves Den in the Daggerfall Outlaws Refuge, I checked the Reacquisition Board. ", stepTextKey="I need to recover a Fancy Quill Pen from Red Rooks in Ilessan Tower."},
+		["Retrieve Fancy Quill Pen"] =
+			{appendText=" from a Red Rook bandit. \n\nThe ruined tower is by the waterfall and stream outside the east gate of Daggerfall. Red Rook bandits inhabit the dungeon underneath the tower."},
+		[2] = 
+			{appendStepText="East of Daggerfall in southern Glenumbra, I entered the dungeon beneath the ruin. ", stepTextKey="I recovered the Fancy Quill Pen from Ilessan Tower. I should return to Josseline Madier to receive my payment."},
+		["Talk to Josseline Madier"] =
+			{appendText=" in the Thieves Den at the Daggerfall Outlaws Refuge."},
+	},
+
+	[GetQuestName(7497)] = { --"The Ancestral Bow" --Jordakai
+		[1] = 
+			{appendStepText="At the Thieves Den in the Daggerfall Outlaws Refuge, I checked the Reacquisition Board. ", stepTextKey="I need to recover an Heirloom Bow from skeletons in the ruins of Enduum."},
+		["Retrieve Heirloom Bow"] =
+			{appendText=" from a skeleton.\n\nThe Ayleid ruin of Enduum is on the western coast of Glenumbra, north of Daggerfall and west of the village of Eagle's Brook. Two ships are in the waters west of the ruin."},
+		[2] = 
+			{appendStepText="At the Ayleid ruin on the western coast of Glenumbra, ", stepTextKey="I recovered the Heirloom Bow from Enduum. I should return to Josseline Madier to receive my payment."},
+		["Talk to Josseline Madier"] =
+			{appendText=" in the Thieves Den at the Daggerfall Outlaws Refuge."},
+	},
+
+	[GetQuestName(7499)] = { --"The Family Jewels" --Jordakai
+		[1] = 
+			{appendStepText="At the Thieves Den in the Daggerfall Outlaws Refuge, I checked the Reacquisition Board. ", stepTextKey="I need to recover Costume Jewelry from skeletons in Westtry."},
+		["Retrieve Costume Jewelry"] =
+			{appendText=" by hunting skeletons near the buildings of the troubled hamlet.\n\nWesttry is a village at the west end of a lake in central Glenumbra, north of Daggerfall and over the mountain northeast of the Wyrd Tree."},
+		[2] = 
+			{appendStepText="In central Glenumbra at the west end of a lake, ", stepTextKey="I recovered the Costume Jewelry from Westtry. I should return to Josseline Madier to receive my payment."},
+		["Talk to Josseline Madier"] =
+			{appendText=" in the Thieves Den at the Daggerfall Outlaws Refuge."},
+	},
+
+
+	[GetQuestName(7498)] = { --"The Missing Tooth" --Jordakai
+		[1] = 
+			{appendStepText="At the Thieves Den in the Daggerfall Outlaws Refuge, I checked the Reacquisition Board. ", stepTextKey="I need to recover an Animal Tooth from harpies near Shrieking Scar."},
+		["Retrieve Animal Tooth"] =
+			{appendText=". \n\nThe harpy-infested cliffs known as Shrieking Scar are in southwestern Glenumbra, near the coast north of Daggerfall."},
+		[2] = 
+			{appendStepText="In southwestern Glenumbra, ", stepTextKey="I recovered the Animal Tooth from Shrieking Scar. I should return to Josseline Madier to receive my payment."},
+		["Talk to Josseline Madier"] =
+			{appendText=" in the Thieves Den at the Daggerfall Outlaws Refuge."},
+	},
+
+
+-- ==================================================================================================================================================
+--	SHEOGORATH TAKES A HOLIDAY																													Undaunted
+-- ==================================================================================================================================================
+
+	[GetQuestName(7418)] = { --"Sheogorath Takes a Holiday" --Jordakai
+		[1] = 
+			{appendStepText="I met the Khajiit near the well by the guildhall in Bandaari Trading Post in northeastern Malabal Tor. ", stepTextKey="I agreed to guard Sheogorath while he takes a holiday, but Noth has some sort of test for me first. I should talk to her and see what this is about."},
+		["Answer Noth's Questions"] =
+			{appendText="."},
+		[2] = 
+			{appendStepText="", stepTextKey="Noth is going to prepare for Shegorath's arrival at a place called the Shivering Shack in Stormhaven. I should meet her there once I'm ready."},
+		["Meet Noth at the Shivering Shack"] =
+			{appendText=", settled on a hill northwest of Wayrest. It is southeast of Firebrand Keep and east of the keep's wayshrine. There are other places in other directions near the shack, too."},
+		[3] = 
+			{appendStepText="In Stormhaven, northwest of Wayrest, southeast of Firebrand Keep and east of a wayshrine, I hiked up a small hill where ", stepTextKey="I met Noth outside the Shivering Shack. She asked me to follow her inside. I should enter the small dwelling."},
+		["Enter the Shivering Shack"] =
+			{appendText="."},
+		[4] = 
+			{appendStepText="After hiking up the hill east of the Firebrand Keep Wayshrine in northern Stormhaven, ", stepTextKey="I entered the Shivering Shack and found myself in a strange abode that appears to be bigger on the inside than it was from the outside. I should talk to Noth and see what she has to say."},
+		["Talk to Noth the Unhinged"] =
+			{appendText="."},
+		[5] = 
+			{appendStepText="", stepTextKey="Noth asked me to perform a ritual to summon Sheogorath to Nirn. I need to read the tome to acquire its magic and pet the chicken. She says this will create an offering to summon Sheogorath."},
+		["Perform the Summoning Ritual"] =
+			{appendText="\n\nThe ritual tome and chicken are near the statue of His Madness in the entry hall."},
+		[6] = 
+			{appendStepText="In the Shivering Shack on the hill east of the Firebrand Keep Wayshrine in northern Stormhaven, I had begun the ritual. ", stepTextKey="The tomeshell absconded with the chicken. Noth and I need to chase it down and bring them back to the shrine to complete the summoning ritual."},
+		["Chase the Tomeshell"] =
+			{appendText=". It fled to the lounge, west of the shrine's main hall."},
+		[7] = 
+			{appendStepText="In the cottage on the hill east of the Firebrand Keep Wayshrine in northern Stormhaven, I followed the fleeing tomeshell into the lounge. ", stepTextKey="The tomeshell left a trail of pages that lead deeper into the Shivering Shack. I should follow them."},
+		["Find the Tomeshell"] =
+			{appendText=" by following its glowing pages and then searching the northern chamber."},
+		[8] = 
+			{appendStepText="In the cottage on the hill east of the Firebrand Keep Wayshrine in northern Stormhaven, I followed the fleeing tomeshell to the large, northern room of the cottage. ", stepTextKey="I found the tomeshell hiding inside a bookshelf. I should grab it before he tries to get away again and return to the ritual site to summon Sheogorath."},
+		["Retrieve the Tomeshell"] =
+			{appendText="."},
+		[9] = 
+			{appendStepText="In the Shivering Shack on the hill east of the Firebrand Keep Wayshrine in northern Stormhaven, ", stepTextKey="I need to return to the ritual room, place the tomeshell, pet the chicken, present the offering, and summon Sheogorath."},
+		["Return to the Ritual Site"] =
+			{appendText=" through the eastern hall and storeroom."},
+		[10] = 
+			{appendStepText="In the Shivering Shack on the hill east of the Firebrand Keep Wayshrine in northern Stormhaven, ", stepTextKey="I need to return to the ritual room, place the tomeshell, pet the chicken, present the offering, and summon Sheogorath."},
+		["Perform the Ritual"] =
+			{appendText="\n"},
+		[11] = 
+			{appendStepText="In the Shivering Shack on the hill east of the Firebrand Keep Wayshrine in northern Stormhaven, ", stepTextKey="I completed the ritual and summoned Sheogorath, the Daedric Prince of Madness. I should speak to him and offer my services as a guide and protector for his Nirn holiday."},
+		["Talk to Sheogorath 1"] =
+			{appendText=".", stepTextKey="I completed the ritual and summoned Sheogorath, the Daedric Prince of Madness. I should speak to him and offer my services as a guide and protector for his Nirn holiday."},
+		[12] = 
+			{appendStepText="In the Shivering Shack on the hill east of the Firebrand Keep Wayshrine in northern Stormhaven, I summoned the Mad God. ", stepTextKey="Sheogorath is going to show me how a Daedric Prince becomes a mortal. I should watch and pay close attention."},
+		["Witness Sheogorath's Spectacle"] =
+			{appendText=" and then speak with him again."},
+		[13] = 
+			{appendStepText="In the Shivering Shack on the hill east of the Firebrand Keep Wayshrine in northern Stormhaven, I summoned the Mad God. ", stepTextKey="After Sheogorath placed his power in the vessel, the tomeshell swooped in and made off with it. I should speak to Sheogorath and see what he'd like to do next."},
+		["Talk to Sheogorath 2"] =
+			{appendText=".", stepTextKey="After Sheogorath placed his power in the vessel, the tomeshell swooped in and made off with it. I should speak to Sheogorath and see what he'd like to do next."},
+		[14] = 
+			{appendStepText="", stepTextKey="Sheogorath is eager to start his holiday. He wants to begin by sampling cheese in Eastmarch, near Windhelm's Hall of the Dead. I should meet him there."},
+		["Meet Sheogorath in Windhelm"] =
+			{appendText=", the northern city. He should be near the guild traders, east of the wayshrine."},
+		[15] = 
+			{appendStepText="In northern Eastmarch, ", stepTextKey="I arrived in Windhelm to find Sheogorath upset and speaking to a cheesemonger. I should talk to Sheogorath and find out what's going on here."},
+		["Talk to Sheogorath 3"] =
+			{appendText=" at the cheesemonger's stand near the guild traders.", stepTextKey="I arrived in Windhelm to find Sheogorath upset and speaking to a cheesemonger. I should talk to Sheogorath and find out what's going on here."},
+		[16] = 
+			{appendStepText="I met Sheogorath in Windhelm, the northern city of Eastmarch. ", stepTextKey="It seems skeevers have overrun the portion of the crypt where they age the Fest Eidar. I agreed to meet Sheogorath inside the Hall of the Dead and retrieve the Fest Eidar from a vault within Valorhorn Crypt."},
+		["Meet Sheogorath in the Hall of the Dead"] =
+			{appendText=", north of the city's Fighters Guild."},
+		[17] = 
+			{appendStepText="I met Sheogorath in Windhelm, the northern city of Eastmarch. ", stepTextKey="It seems skeevers have overrun the portion of the crypt where they age the Fest Eidar. I agreed to meet Sheogorath inside the Hall of the Dead and retrieve the Fest Eidar from a vault within Valorhorn Crypt."},
+		["Find the Valorhorn Crypt"] =
+			{appendText=". Its entrance is through a door with an urn at the east end of the small, northern chamber of the Hall of the Dead."},
+		[18] = 
+			{appendStepText="I met Sheogorath in Windhelm, the northern city of Eastmarch. Now, ", stepTextKey="I need to search the Hall of the Dead and find the Fest Eidar for Sheogorath. The cheese should be inside a vault located within Valorhorn Crypt."},
+		["Find the Fest Eidar"] =
+			{appendText="."},
+		[19] = 
+			{appendStepText="In Windhelm, the northern city of Eastmarch, we entered the Hall of the Dead, found the Valorhorn Crypt and entered the Fest Eidar Vault. ", stepTextKey="A giant Daedrat prowls the vault! I must slay it and protect Sheogorath before he can sample the Fest Eidar."},
+		["Kill the Giant Daedrat"] =
+			{appendText="."},
+		[20] = 
+			{appendStepText="I met Sheogorath in Windhelm, the northern city of Eastmarch. After entering the Hall of the Dead and the Valorhorn Crypt, in the Fest Eidar Vault, ", stepTextKey="I killed the giant Daedrat. However, Sheogorath left the vault in a foul mood. He ordered me to take the Fest Eidar and meet him back outside."},
+		["Take the Fest Eidar"] =
+			{appendText=" slice from the table at the west end of the vault."},
+		[21] = 
+			{appendStepText="In Windhelm, the northern city of Eastmarch, ", stepTextKey="I secured the Fest Eidar for Sheogorath. I should meet him back outside and talk to him."},
+		["Talk to Sheogorath Outside the Hall of the Dead"] =
+			{appendText=", just north of the Fighters Guild."},
+		[22] = 
+			{appendStepText="", stepTextKey="Sheogorath believes someone is responsible for sending the Daedrats to ruin his holiday. I should speak to him about what comes next."},
+		["Talk to Sheogorath 4"] =
+			{appendText=". He is near the Hall of the Dead in Windhelm, the northern city of Eastmarch.", stepTextKey="Sheogorath believes someone is responsible for sending the Daedrats to ruin his holiday. I should speak to him about what comes next."},
+	},
+
+	[GetQuestName(7440)] = { --"Madness Comes to Wayrest" --Jordakai
+		[1] = 
+			{appendStepText="Back to Stormhaven, then ", stepTextKey="I should head to Wayrest and look for Sheogorath near the Wayrest Market District."},
+		["Meet Sheogorath Near the Wayrest Merchant District"] =
+			{appendText=". He mentioned an Orc cheesemonger, Othuk."},
+		[2] = 
+			{appendStepText="Back in Stormhaven, ", stepTextKey="I should head to Wayrest and look for Sheogorath near the Wayrest Market District."},
+		["Approach Sheogorath"] =
+			{appendText=" and speak with him. He is near the stairs to Wayrest Castle."},
+		[3] = 
+			{appendStepText="I found His Madness near the castle in Wayrest, the southern port city of Stormhaven. ", stepTextKey="Sheogorath said Othuk's cheese stall is near a bridge in the market district. I should search for the stall and talk to Othuk to acquire the cheese for Sheogorath."},
+		["Talk to Othuk the Merchant"] =
+			{appendText="."},
+		[4] = 
+			{appendStepText="In Stormhaven, at the market in Wayrest, we found the Orc at his cheese stand. ", stepTextKey="The merchant Othuk told me that a group called the Plunderers stole his cheese. They left a trail of spattered tomatoes behind in their escape. I should follow the trail and track them down."},
+		["Follow the Tomato Trail"] =
+			{appendText=". Along the way, others may know more about the thieves."},
+		[5] = 
+			{appendStepText="In Stormhaven, at the stables in Wayrest, ", stepTextKey="I found a note dropped by one of the thieves that mentions they might be headed for Fisherman's Island. I should talk to Sheogorath about what I discovered."},
+		["Talk to Sheogorath 1"] =
+			{appendText=".", stepTextKey="I found a note dropped by one of the thieves that mentions they might be headed for Fisherman's Island. I should talk to Sheogorath about what I discovered."},
+		[6] = 
+			{appendStepText="We found a note near the stables at the southern port city of Wayrest in Stormhaven. ", stepTextKey="Sheogorath, angry, headed off to follow the Plunderers on his own. I should head toward Fisherman's Island and try to catch up with Sheogorath and the cheese thieves."},
+		["Search for the Plunderers"] =
+			{appendText=". Fisherman's Island is in the inlet on the city's east side, south of the stone bridge. Dro-Dara Plantation is farther east."},
+		[7] = 
+			{appendStepText="East of Wayrest in Stormhaven, ", stepTextKey="I found Sheogorath chasing the tomeshell at Dro-Dara Plantation. I should speak to him and find out what's going on here."},
+		["Talk to Sheogorath 2"] =
+			{appendText=" at the southwestern farmhouse.", stepTextKey="I found Sheogorath chasing the tomeshell at Dro-Dara Plantation. I should speak to him and find out what's going on here."},
+		[8] = 
+			{appendStepText="East of Wayrest in Stormhaven, I caught up with Sheogorath. ", stepTextKey="We found the Plunderer's hideout at the Dro-Dara Plantation. Sheogorath saw the tomeshell fly inside as well and wants to give chase. I should follow him into the hideout."},
+		["Enter the Plunderer's Hideout"] =
+			{appendText=" in the cellar of the southwestern farmhouse."},
+		[9] = 
+			{appendStepText="At the Dro-Dara Plantation, east of Wayrest in Stormhaven, we entered the Plunderer's Hideout cellar. ", stepTextKey="Sheogorath found the Wayrest Cremant in the hideout and is rushing to grab it! I should hurry to catch up with him."},
+		["Take the Wayrest Cremant"] =
+			{appendText="."},
+		[10] = 
+			{appendStepText="In the Plunderer's Hideout beneath the farmhouse at the Dro-Dara Plantation, east of Wayrest in Stormhaven, Sheogorath spotted the Wayrest Cremant. ", stepTextKey="The cheese was a trap! Sheogorath was snatched away, but I can hear him deeper inside. I need follow his voice, search the hideout, and rescue him from the Plunderers."},
+		["Find Sheogorath"] =
+			{appendText=" in the warehouse, or perhaps beyond."},
+		[11] = 
+			{appendStepText="In the Plunderer's Hideout beneath the farmhouse at the Dro-Dara Plantation, east of Wayrest in Stormhaven, I went through the warehouse and entered the trove room. ", stepTextKey="Plunder King Endelrin has somehow gained the power to summon Sheogorath's own scamps and turn them against us. I must defeat them before I can rescue Sheogorath."},
+		["Defeat the Traitorous Scamps"] =
+			{appendText=" in the trove room."},
+		[12] = 
+			{appendStepText="In the Plunderer's Hideout beneath the farmhouse at the Dro-Dara Plantation, east of Wayrest in Stormhaven, I went through the warehouse and entered the trove room. ", stepTextKey="I killed the scamps and Plunder King Endelrin doesn't seem inclined to make any additional trouble. I should destroy the binding device and set Sheogorath free."},
+		["Free Sheogorath"] =
+			{appendText="."},
+		[13] = 
+			{appendStepText="In the Plunderer's Hideout beneath the farmhouse at the Dro-Dara Plantation, east of Wayrest in Stormhaven, I went through the warehouse and entered the trove room. ", stepTextKey="I freed Sheogorath and Plunder King Endelrin seems disinclined to keep fighting. Sheogorath wants me to interrogate him and find out why he attempted to ruin Sheogorath's holiday."},
+		["Interrogate the Plunder King"] =
+			{appendText="."},
+		[14] = 
+			{appendStepText="In the Plunderer's Hideout beneath the farmhouse at the Dro-Dara Plantation, east of Wayrest in Stormhaven, I went through the warehouse and entered the trove room. ", stepTextKey="The tomeshell revealed itself from behind Plunder King Endelrin! I should closely observe its actions."},
+		["Observe the Plunder King"] =
+			{appendText="."},
+		[15] = 
+			{appendStepText="I rescued Sheogorath at the Dro-Dara Plantation, east of Wayrest in Stormhaven. ", stepTextKey="The Plunder King told me that a Daedra named Lazaki orchestrated this kidnapping just before the tomeshell transformed him into cheese and took off. Sheogorath furiously marched outside. I should follow and talk to him there."},
+		["Meet Sheogorath Outside the Cellar"] =
+			{appendText=" of the farmhouse."},
+		[16] = 
+			{appendStepText="I rescued Sheogorath at the Dro-Dara Plantation, east of Wayrest in Stormhaven. ", stepTextKey="The Plunder King told me that a Daedra named Lazaki orchestrated this kidnapping just before the tomeshell transformed him into cheese and took off. Sheogorath furiously marched outside. I should follow and talk to him there."},
+		["Talk to Sheogorath 3"] =
+			{appendText=" by the southwestern farmhouse."},
+		[17] = 
+			{appendStepText="East of Wayrest in Stormhaven, I spoke with the God of Madness again. ", stepTextKey="Sheogorath seems both enraged and proud to learn that his lieutenant Lazaki's betrayed him. I should ask him if this means his holiday is over."},
+		["Talk to Sheogorath 4"] =
+			{appendText=" by the southwestern farmhouse at Dro-Dara Plantation.", stepTextKey="Sheogorath seems both enraged and proud to learn that his lieutenant Lazaki's betrayed him. I should ask him if this means his holiday is over."},
+	},
+
+
+	[GetQuestName(7436)] = { --"A Taste of the Finer Things" --Jordakai
+		[1] = 
+			{appendStepText="", stepTextKey="Noth wants me to meet her at the Shivering Shack to check on Sheogorath and discuss the problem with the tomeshell and the Mad God's stolen power."},
+		["Go to the Shivering Shack"] =
+			{appendText=". The cottage is up on a hill east of the Firebrand Keep Wayshrine in northern Stormhaven, northwest of Wayrest."},
+		[2] = 
+			{appendStepText="At the Shivering Shack, up on the hill east of the Firebrand Keep Wayshrine in northern Stormhaven, I found the Mad God. ", stepTextKey="Sheogorath definitely seems upset. I should talk to him."},
+		["Talk to Sheogorath 1"] =
+			{appendText=". Noth is here, too.", stepTextKey="Sheogorath definitely seems upset. I should talk to him."},
+		[3] = 
+			{appendStepText="", stepTextKey="Sheogorath wants to visit the Annual Artisan Cheese Festival in Vvardenfell and he asked me to accompany him as his bodyguard. If Lazaki springs another trap, I need to make sure Sheogorath isn't injured—or worse."},
+		["Go to the Cheese Festival"] =
+			{appendText=". The outdoor event is being held on a hilltop south of the northeastern town of Vos."},
+		[4] = 
+			{appendStepText="I arrived in Vvardenfell and headed to a hilltop south of the northeastern town of Vos. Now, ", stepTextKey="I need to meet Sheogorath at the cheese festival and see what he wants me to do."},
+		["Talk to Sheogorath 2"] =
+			{appendText=".", stepTextKey="I need to meet Sheogorath at the cheese festival and see what he wants me to do."},
+		[5] = 
+			{appendStepText="At the Cheese Festival in Vvardenfell, south of the northeastern town of Vos, I found His Madness speaking with Othuk, the Orc cheesemonger. ", stepTextKey="Sheogorath asked me to select the cheese for him to sample at the festival."},
+		["Sample the Cheese"] =
+			{appendText="\n\nTuintormur, an Altmer merchant, may have a cheese worthy of His Madness. And Vazalas, a Khajiit, should have something appropriate. Then to find another fine fromage, perhaps something Redoran."},
+		[6] = 
+			{appendStepText="At the Cheese Festival in Vvardenfell, south of the northeastern town of Vos, ", stepTextKey="Sheogorath sampled all the cheeses, but something is wrong. I should check on Sheogorath."},
+		["Talk to Sheogorath 3"] =
+			{appendText=" at the northern merchant tent.", stepTextKey="Sheogorath sampled all the cheeses, but something is wrong. I should check on Sheogorath."},
+		[7] = 
+			{appendStepText="At the Cheese Festival in Vvardenfell, south of the northeastern town of Vos, ", stepTextKey="Sheogorath thinks he's been poisoned. He insists we tour the local cheese cave so he can find the ingredients he needs to concoct an antidote."},
+		["Go to Curd Cave Cheesery"] =
+			{appendText=", down the hill and northwest of the festival tents."},
+		[8] = 
+			{appendStepText="Downhill northwest of the Cheese Festival in Vvardenfell and south of the northeastern town of Vos, we entered the cave. ", stepTextKey="Sheogorath said we could find ingredients to make an antidote in Curd Cave Cheesery. I should talk to him to see what he needs."},
+		["Talk to Sheogorath 4"] =
+			{appendText=".", stepTextKey="Sheogorath said we could find ingredients to make an antidote in Curd Cave Cheesery. I should talk to him to see what he needs."},
+		[9] = 
+			{appendStepText="Northwest of the Cheese Festival in Vvardenfell and south of the northeastern town of Vos, we entered the cave. ", stepTextKey="Sheogorath thinks the ingredients he requires to make an antidote can be found in the Curd Cave Cheesery. I should search the cave for the mold he needs. I need to find some stinky, soothing, and full-bodied cheeses."},
+		["Find Ingredients"] =
+			{appendText="\n\nThere should be a couple of specialty cheeses in the storage area and another in the production area."},
+		[10] = 
+			{appendStepText="Northwest of the Cheese Festival in Vvardenfell and south of the northeastern town of Vos, we entered the Curd Cave Cheesery. ", stepTextKey="After gathering the three moldy cheeses, Sheogorath told me to melt them in the nearby cauldron to make the antidote."},
+		["Make the Antidote"] =
+			{appendText=" using the cauldron in the production area."},
+		[11] = 
+			{appendStepText="Northwest of the Cheese Festival in Vvardenfell and south of the northeastern town of Vos, we entered the Curd Cave Cheesery. In the production area, ", stepTextKey="I melted the three moldy cheeses in the cauldron as Sheogorath directed. Now to give him the unpleasant smelling concoction."},
+		["Give Sheogorath the Antidote"] =
+			{appendText="."},
+		[12] = 
+			{appendStepText="Northwest of the Cheese Festival in Vvardenfell and south of the northeastern town of Vos, I made an antidote at the Curd Cave Cheesery. ", stepTextKey="The antidote helped, but Sheogorath isn't fully healed. He needs his staff and his power back. He thinks his staff may be in the cave somewhere. I should help him look for it."},
+		["Look for Sheogorath's Staff"] =
+			{appendText=" in the production area."},
+		[13] = 
+			{appendStepText="Northwest of the Cheese Festival in Vvardenfell and south of the northeastern town of Vos, I made an antidote at the Curd Cave Cheesery. ", stepTextKey="The antidote helped, but Sheogorath isn't fully healed. He needs his staff and his power back. He thinks his staff may be in the cave somewhere. I should help him look for it."},
+		["Examine the Crumpled Paper"] =
+			{appendText=" on the ground by a stool and candelabra near the north end of the production area."},
+		[14] = 
+			{appendStepText="Northwest of the Cheese Festival in Vvardenfell and south of the northeastern town of Vos, in the production area of the Curd Cave Cheesery, ", stepTextKey="I found a receipt from the Violet Vvardvark Tavern in the cave. I should discuss its contents with Sheogorath."},
+		["Talk to Sheogorath 5"] =
+			{appendText=".", stepTextKey="I found a receipt from the Violet Vvardvark Tavern in the cave. I should discuss its contents with Sheogorath."},
+		[15] = 
+			{appendStepText="In northeastern Vvardenfell, near the town of Vos, we found a crumpled receipt at the Curd Cave Cheesery. ", stepTextKey="Sheogorath wants to meet me at the Violet Vvardvark Tavern to continue the search for his staff. According to the receipt, the tavern is located just east of Vos."},
+		["Meet Sheogorath at the Violet Vvardvark"] =
+			{appendText=". The tavern is near the shore northeast of the cheesery, across from the Telvanni mushroom tower of Tel Mora."},
+		[16] = 
+			{appendStepText="At the water's edge southeast of the town of Vos in northeastern Vvardenfell, ", stepTextKey="I made it to the Violet Vvardvark Tavern and met Sheogorath there, but the place is brimming with madness. I should speak to him and see if he knows what's going on here."},
+		["Talk to Sheogorath 6"] =
+			{appendText=".", stepTextKey="I made it to the Violet Vvardvark Tavern and met Sheogorath there, but the place is brimming with madness. I should speak to him and see if he knows what's going on here."},
+	},
+
+	[GetQuestName(7448)] = { --"A Madcap Mystery" --Jordakai
+		[1] = 
+			{appendStepText="I spoke with Noth the Unhinged. ", stepTextKey="Sheogorath is waiting for me at the Violet Vvardvark Tavern in Vvardenfell, east of Vos. I should find him there and see what he needs."},
+		["Talk to Sheogorath 1"] =
+			{appendText=" in the tavern. It is near the northeastern town's docks.", stepTextKey="Sheogorath is waiting for me at the Violet Vvardvark Tavern in Vvardenfell, east of Vos. I should find him there and see what he needs."},
+		[2] = 
+			{appendStepText="In northeastern Vvardenfell, just southeast of Vos, I met with the Mad God at the tavern. ", stepTextKey="Sheogorath thinks the barkeep might know something about where we can find Othuk and his staff. I need to convince the barkeep to speak with me."},
+		["Talk to the Barkeep 1"] =
+			{appendText=".", stepTextKey="Sheogorath thinks the barkeep might know something about where we can find Othuk and his staff. I need to convince the barkeep to speak with me."},
+		[3] = 
+			{appendStepText="In the tavern near the northeastern town of Vos in Vvardenfell, I spoke with Ubeq. ", stepTextKey="The barkeep can't remember much about Othuk because of the madness swirling around us. He told me to talk to his server about someone named Eduard, who might have seen more."},
+		["Talk to the Server"] =
+			{appendText=" in the tavern. Her name is Canodia."},
+		[4] = 
+			{appendStepText="In the tavern near Vos in northeastern Vvardenfell, ", stepTextKey="Server Canodia said something horrible happened to Eduard. He fled the tavern during a gruesome transformation of some sort. I should investigate the area surrounding the Daedric ruins to the south to see if I can find him."},
+		["Find Eduard"] =
+			{appendText=". He is likely up near the top of the island with the ruin, southeast of Vos."},
+		[5] = 
+			{appendStepText="In the tavern near Vos in northeastern Vvardenfell, ", stepTextKey="Server Canodia said something horrible happened to Eduard. He fled the tavern during a gruesome transformation of some sort. I should investigate the area surrounding the Daedric ruins to the south to see if I can find him."},
+		["Talk to the Dragon Frog 1"] =
+			{appendText=", up near the south end of the island.", stepTextKey="Server Canodia said something horrible happened to Eduard. He fled the tavern during a gruesome transformation of some sort. I should investigate the area surrounding the Daedric ruins to the south to see if I can find him."},
+		[6] = 
+			{appendStepText="At the south end of the island southwest of the northeastern town of Vos in Vvardenfell, I found the lost tavern server. ", stepTextKey="Eduard has been transformed into a dragon frog. I need to find something to help him remember who he was before the transformation. Sheogorath arrived, however, and I should talk to him first."},
+		["Talk to Sheogorath 2"] =
+			{appendText=".", stepTextKey="Eduard has been transformed into a dragon frog. I need to find something to help him remember who he was before the transformation. Sheogorath arrived, however, and I should talk to him first."},
+		[7] = 
+			{appendStepText="We found Eduard the dragon frog in northeastern Vvardenfell. ", stepTextKey="Sheogorath suggested I look for a physical piece of Eduard to help him remember who he was. I should check the area to see if any parts of his body still remain."},
+		["Search the Daedric Ruin"] =
+			{appendText=" on the island southeast of Vos."},
+		[8] = 
+			{appendStepText="", stepTextKey="Sheogorath suggested I look for a physical piece of Eduard to help him remember who he was. I should check the area to see if any parts of his body still remain."},
+		["Search for a Piece of Eduard"] =
+			{appendText=" from a festering morsel mound at the Daedric ruin on the island southeast of Vos."},
+		[9] = 
+			{appendStepText="At the Daedric ruin on the island southeast of Vos in northeastern Vvardenfell, ", stepTextKey="I found Eduard's foot, still in his boot. I should return it to the dragon frog to see if it helps him remember."},
+		["Talk to the Dragon Frog 2"] =
+			{appendText=" up at the south end of the island.", stepTextKey="I found Eduard's foot, still in his boot. I should return it to the dragon frog to see if it helps him remember."},
+		[10] = 
+			{appendStepText="", stepTextKey="The dragon frog remembered Othuk had the staff and ordered a large amount of stinky cheese. He also mentioned something about a camp Othuk was heading to, but he lost his memory before he could say where. I should see if the barkeep knows more."},
+		["Return to the Violet Vvardvark"] =
+			{appendText=" tavern, southeast of Vos in northeastern Vvardenfell."},
+		[11] = 
+			{appendStepText="I returned to the tavern near Vos in northeastern Vvardenfell. ", stepTextKey="I found out what happened to Eduard and I have some information on Othuk that might help the barkeep remember more. I should speak to him."},
+		["Talk to the Barkeep 2"] =
+			{appendText=", Ubeq.", stepTextKey="I found out what happened to Eduard and I have some information on Othuk that might help the barkeep remember more. I should speak to him."},
+		[12] = 
+			{appendStepText="In northeastern Vvardenfell, near Vos, I spoke with Ubeq at the Violet Vvardvark tavern. ", stepTextKey="The barkeep said Othuk was headed to Pulk. Maybe his camp is somewhere near there. I should inform Sheogorath about what I learned."},
+		["Talk to Sheogorath 3"] =
+			{appendText=" in the tavern.", stepTextKey="The barkeep said Othuk was headed to Pulk. Maybe his camp is somewhere near there. I should inform Sheogorath about what I learned."},
+		[13] = 
+			{appendStepText="Pulk lies near the first large bend in the road when heading south from the northeastern town of Vos in Vvardenfell. ", stepTextKey="I suspect that Othuk has a camp somewhere between the tavern and Pulk. I should find the camp and meet Sheogorath there."},
+		["Find Othuk's Camp"] =
+			{appendText=". The Orc likely camped south of the Violet Vvardvark on the east side of the inlet so as to be close to the festival, the cheesery cave, and the tavern. He could then travel southwest to reach Pulk."},
+		[14] = 
+			{appendStepText="Pulk lies near the first large bend in the road when heading south from the northeastern town of Vos in Vvardenfell. ", stepTextKey="I suspect that Othuk has a camp somewhere between the tavern and Pulk. I should find the camp and meet Sheogorath there."},
+		["Investigate the Camp"] =
+			{appendText=" that is southeast of Vos and south of the Violet Vvardvark on the east side of the inlet. Pulk is to the southwest."},
+		[15] = 
+			{appendStepText="Southeast of Vos in northeastern Vvardenfell, at his camp on the east side of the inlet, ", stepTextKey="I found a note from Othuk. According to it, his plan is to meet Lazaki in a secret area within Pulk and give him Sheogorath's staff. We just have to find it first. Sheogorath may be able to help."},
+		["Talk to Sheogorath 4"] =
+			{appendText=" at Othuk's camp.", stepTextKey="I found a note from Othuk. According to it, his plan is to meet Lazaki in a secret area within Pulk and give him Sheogorath's staff. We just have to find it first. Sheogorath may be able to help."},
+		[16] = 
+			{appendStepText="Southeast of Vos in northeastern Vvardenfell, I found Othuk's camp on the east side of the inlet. ", stepTextKey="The madness from Sheogorath's vessel is leaking out as the tomeshell flies by. It seems to be drawn to Sheogorath's staff. Sheogorath told me to follow the trail since it should lead us to Othuk."},
+		["Follow the Tomeshell's Trail"] =
+			{appendText=" of wispy violet up in the air, southwest from Othuk's camp, towards the large bend in the road and into Pulk."},
+		[17] = 
+			{appendStepText="The tomeshell trail led us to a cave south of Vos near the large bend in the road in eastern Vvardenfell. ", stepTextKey="We made our way to Pulk. I should look for Othuk's somewhere within the cave."},
+		["Find Othuk"] =
+			{appendText=" in his hideout behind the waterfall in Pulk's far eastern cavern."},
+		[18] = 
+			{appendStepText="At Pulk, the cave south of Vos near the large bend in the road in eastern Vvardenfell, we entered Othuk's hideout behind the waterfall in the far eastern cavern. ", stepTextKey="I interrupted Othuk and Lazaki's meeting. Now, Lazaki wants a fight. I have to defeat him."},
+		["Defeat Lazaki"] =
+			{appendText="."},
+		[19] = 
+			{appendStepText="At Pulk, the cave south of Vos near the large bend in the road in eastern Vvardenfell, we entered Othuk's hideout behind the waterfall in the far eastern cavern. ", stepTextKey="After I defeated Lazaki, Othuk cowered with the staff. I should talk to him and retrieve the staff."},
+		["Talk to Othuk"] =
+			{appendText="."},
+		[20] = 
+			{appendStepText="At Pulk, the cave south of Vos near the large bend in the road in eastern Vvardenfell, we entered Othuk's hideout behind the waterfall in the far eastern cavern. I defeated Lazaki. Now, ", stepTextKey="I should see what Sheogorath does now that I retrieved his staff from Othuk."},
+		["Observe Sheogorath"] =
+			{appendText="."},
+		[21] = 
+			{appendStepText="South of Vos near the large bend in the road in eastern Vvardenfell, ", stepTextKey="Sheogorath is waiting for me outside of Pulk. He called me over awaiting his staff. I should talk to him."},
+		["Talk to Sheogorath 5"] =
+			{appendText=". There is an exit to the west leading to Pulk's tunnels to get outside.", stepTextKey="Sheogorath is waiting for me outside of Pulk. He called me over awaiting his staff. I should talk to him."},
+		[22] = 
+			{appendStepText="At Pulk, south of Vos near the large bend in the road in eastern Vvardenfell, I found the Mad God waiting for me. ", stepTextKey="I returned the staff to Sheogorath after he doled out justice to Othuk. I should talk to him to see what his plans are next."},
+		["Talk to Sheogorath 6"] =
+			{appendText=".", stepTextKey="I returned the staff to Sheogorath after he doled out justice to Othuk. I should talk to him to see what his plans are next."},
+	},
+
+
+	[GetQuestName(7449)] = { --"Chasing Madness" --Jordakai
+		[1] = 
+			{appendStepText="", stepTextKey="I should meet Sheogorath at the Shivering Shack in Stormhaven."},
+		["Go to the Shivering Shack"] =
+			{appendText=". The cottage is up on a hill east of Firebrand Keep Wayshrine in northern Stormhaven, northwest of Wayrest."},
+		[2] = 
+			{appendStepText="East of Firebrand Keep Wayshrine in northern Stormhaven, ", stepTextKey="I arrived at the Shivering Shack just in time to see Sheogorath's power escape from its vessel. It manifested as a being that calls itself Maddy. Sheogorath wants me to talk to Maddy and figure out what's happening."},
+		["Talk to Maddy"] =
+			{appendText="."},
+		[3] = 
+			{appendStepText="East of Firebrand Keep Wayshrine in northern Stormhaven, I entered the Shivering Shack and witnessed Sheogorath's power escape its vessel. ", stepTextKey="I talked to Maddy, the manifestation of Sheogorath's madness and power. Maddy opened a portal and fled. I should talk to Sheogorath and see what he thinks."},
+		["Talk to Sheogorath 1"] =
+			{appendText=".", stepTextKey="I talked to Maddy, the manifestation of Sheogorath's madness and power. Maddy opened a portal and fled. I should talk to Sheogorath and see what he thinks."},
+		[4] = 
+			{appendStepText="In the Shivering Shack, east of Firebrand Keep Wayshrine in northern Stormhaven, ", stepTextKey="Maddy fled through a portal. Sheogorath and I should follow him if we're going to restore the Mad God's power."},
+		["Follow Maddy through the Portal"] =
+			{appendText="."},
+		[5] = 
+			{appendStepText="I'm in an Ayleid site on the northwestern coast. ", stepTextKey="Maddy's portal led to Enduum, a ruin in Glenumbra. Sheogorath gave me his staff so I could gather up the Daedric power Maddy leaves in his wake."},
+		["Gather Power Motes in Enduum"] =
+			{appendText=" using the Staff of Sheogorath."},
+		[6] = 
+			{appendStepText="On the northwestern coast of Glenumbra, in the Ayleid ruin of Enduum, ", stepTextKey="I gathered a mote of Sheogorath's power that was left behind by the manifestation of madness that calls itself Maddy. Now Sheogorath wants to talk to me."},
+		["Talk to Sheogorath 2"] =
+			{appendText=".", stepTextKey="I gathered a mote of Sheogorath's power that was left behind by the manifestation of madness that calls itself Maddy. Now Sheogorath wants to talk to me."},
+		[7] = 
+			{appendStepText="At the Ayleid site on the northwestern coast of Glenumbra, I spoke with the Mad God. ", stepTextKey="Sheogorath suggests I track down the manifestation of madness that calls itself Maddy in the ruins of Enduum. If I follow the motes of power leaking from Maddy, they should lead us right to the strange creature."},
+		["Track Sheogorath's Motes of Power"] =
+			{appendText=" through the ruins, using his staff to collect them. Maddy's erratic trail will likely go north through the western areas first and then circle around to the south in the eastern areas. Then into an alcove in the small central chamber."},
+		[8] = 
+			{appendStepText="On the northwestern coast of Glenumbra, we followed the power motes through the Ayleid ruins. ", stepTextKey="We found Maddy in the depths of Enduum. Sheogorath wants me to capture the manifestation of madness so he can reclaim his power."},
+		["Confront Maddy 1"] =
+			{appendText=" perched up by a statue.", stepTextKey="We found Maddy in the depths of Enduum. Sheogorath wants me to capture the manifestation of madness so he can reclaim his power."},
+		[9] = 
+			{appendStepText="In the small central chamber of Enduum, the Ayleid ruin on the northwestern coast of Glenumbra, ", stepTextKey="Maddy disappeared. I should talk to Sheogorath about what we should do next."},
+		["Talk to Sheogorath 3"] =
+			{appendText=".", stepTextKey="Maddy disappeared. I should talk to Sheogorath about what we should do next."},
+		[10] = 
+			{appendStepText="", stepTextKey="The manifested madness called Maddy said it wanted to visit the cheese plunderers next. We should go to the Dro-Dara Plantation in Stormhaven and try to track Maddy down before Sheogorath succumbs to the poison."},
+		["Return to the Plunderers' Camp"] =
+			{appendText=" on Fisherman's Island, east of the southern port city of Wayrest. In Enduum, using the Staff of Sheogorath on the remaining power mote will open a portal to Maddy."},
+		[11] = 
+			{appendStepText="We are east of Wayrest in southern Stormhaven. ", stepTextKey="We arrived at the Dro-Dara Plantation and must begin our search for Maddy anew. Perhaps one of the locals has seen the strange creature."},
+		["Explore the Area"] =
+			{appendText=" and Fisherman's Island."},
+		[12] = 
+			{appendStepText="We are east of Wayrest in southern Stormhaven. ", stepTextKey="We arrived at the Dro-Dara Plantation and must begin our search for Maddy anew. Perhaps one of the locals has seen the strange creature."},
+		["Talk to Plunderer Finildel"] =
+			{appendText=" on Fisherman's Island."},
+		[13] = 
+			{appendStepText="We are east of Wayrest in southern Stormhaven. ", stepTextKey="We discovered that some of the plunderers at Dro-Dara have been transformed by Maddy's presence. I must gather up the motes of power affecting them to restore them to normal."},
+		["Extract Motes of Power from Plunderers"] =
+			{appendText="\n\nFinildel said his comrades transformed into barnyard animals. They should be nearby, on the island and by the tents at the plantation."},
+		[14] = 
+			{appendStepText="At Dro-Dara Plantation, east of Wayrest in southern Stormhaven, ", stepTextKey="Maddy entered the basement hideout used by Endelrin's Plunderers. I need to find the manifestation of madness before Sheogorath succumbs to the poison."},
+		["Search the Plunderer's Hideout"] =
+			{appendText=" in the cellar underneath the southwestern farmhouse."},
+		[15] = 
+			{appendStepText="At Dro-Dara Plantation, east of Wayrest in southern Stormhaven, ", stepTextKey="Maddy entered the basement hideout used by Endelrin's Plunderers. I need to find the manifestation of madness before Sheogorath succumbs to the poison."},
+		["Confront Maddy 2"] =
+			{appendText=" in the secret stash room of the Plunderer's Hideout.", stepTextKey="Maddy entered the basement hideout used by Endelrin's Plunderers. I need to find the manifestation of madness before Sheogorath succumbs to the poison."},
+		[16] = 
+			{appendStepText="At Dro-Dara Plantation, east of Wayrest in southern Stormhaven, we entered a secret stash cabinet in the hideout under the farmhouse and found another room. But ", stepTextKey="Maddy eluded us again. I should talk to Sheogorath."},
+		["Talk to Sheogorath 4"] =
+			{appendText=" in the secret room of the Plunderer's Hideout.", stepTextKey="Maddy eluded us again. I should talk to Sheogorath."},
+		[17] = 
+			{appendStepText="", stepTextKey="The madness called Maddy appears to be revisiting former sites of Sheogorath's mortal holiday. I should look for the manifestation of madness at the Vvardenfell Cheese Festival."},
+		["Return to the Cheese Festival in Vvardenfell"] =
+			{appendText=", south of the northeastern town of Vos, using the portal to Maddy."},
+		[18] = 
+			{appendStepText="We arrived at the Cheese Festival south of the northeastern town of Vos in Vvardenfell. ", stepTextKey="Sheogorath asked me to retrieve more motes of his power. They're scattered around in the afflicted festival-goers in the area nearby."},
+		["Extract Motes of Power from Festival-Goers"] =
+			{appendText="\n\nThe Staff of Sheogorath should be useful in collecting the motes near the tents and northward."},
+		[19] = 
+			{appendStepText="South of Vos in northeastern Vvardenfell, I gathered more power motes. ", stepTextKey="Sheogorath think that Maddy is heading for the Curd Cave Cheesery. I should try to find the manifestation of madness in there."},
+		["Track Maddy"] =
+			{appendText=" in the cheesery cave."},
+		[20] = 
+			{appendStepText="In the Curd Cave Cheesery south of Vos in northeastern Vvardenfell, we reached the production area. But ", stepTextKey="Maddy slipped away again. I should talk to Sheogorath."},
+		["Talk to Sheogorath 5"] =
+			{appendText=".", stepTextKey="Maddy slipped away again. I should talk to Sheogorath."},
+		[21] = 
+			{appendStepText="", stepTextKey="Maddy got away again. Sheogorath thinks the manifestation of madness might be heading home, to his Daedric domain. I should use his staff to open a portal to the Shivering Shack so we can discuss next steps."},
+		["Return to the Shivering Shack"] =
+			{appendText=", the cottage up on the hill east of Firebrand Keep Wayshrine in northern Stormhaven, northwest of Wayrest. The staff can open a portal while in the cheesery, if desired."},
+		[22] = 
+			{appendStepText="Northwest of Wayrest and east of Firebrand Keep Wayshrine in northern Stormhaven, ", stepTextKey="I returned to the Shivering Shack. Now I should talk to Sheogorath."},
+		["Find Sheogorath"] =
+			{appendText="."},
+		[23] = 
+			{appendStepText="Northwest of Wayrest and east of Firebrand Keep Wayshrine in northern Stormhaven, ", stepTextKey="I returned to the Shivering Shack. Now I should talk to Sheogorath."},
+		["Talk to Sheogorath 6"] =
+			{appendText=" by the fireplace in the western room.", stepTextKey="I returned to the Shivering Shack. Now I should talk to Sheogorath."},
+		[24] = 
+			{appendStepText="In northern Stormhaven, east of Firebrand Keep Wayshrine and northwest of Wayrest, I found Sheogorath in the Shivering Shack, by the fireplace in its western room. ", stepTextKey="I should talk to Sheogorath about how we can follow Maddy to the Shivering Isles."},
+		["Talk to Sheogorath 7"] =
+			{appendText=".", stepTextKey="I should talk to Sheogorath about how we can follow Maddy to the Shivering Isles.", stepTextKey="I should talk to Sheogorath about how we can follow Maddy to the Shivering Isles."},
+	},
+
+	[GetQuestName(7444)] = { --"The Last Laugh" --Jordakai
+		[1] = 
+			{appendStepText="", stepTextKey="Noth told me Sheogorath needs my help to go after Maddy, who has slipped away to the Shivering Isles. I should meet Sheogorath at the Shivering Shack in Stormhaven."},
+		["Go to the Shivering Shack"] =
+			{appendText=", the cottage up on the hill in the north, east of Firebrand Keep Wayshrine and northwest of Wayrest."},
+		[2] = 
+			{appendStepText="I went to the Shivering Shack in northern Stormhaven, east of Firebrand Keep Wayshrine. ", stepTextKey="I found Sheogorath. I should speak to him."},
+		["Talk to Sheogorath 1"] =
+			{appendText=".", stepTextKey="I found Sheogorath. I should speak to him."},
+		[3] = 
+			{appendStepText="", stepTextKey="I need to meet Sheogorath at the Arcane Collection in the Wayrest Mages Guild. He wants to find a forbidden spell we can use to travel to the Shivering Isles to reclaim his power from Maddy."},
+		["Go to the Wayrest Mages Guildhall"] =
+			{appendText=" at Stormhaven's southern port city."},
+		[4] = 
+			{appendStepText="", stepTextKey="I need to meet Sheogorath at the Arcane Collection in the Wayrest Mages Guild. He wants to find a forbidden spell we can use to travel to the Shivering Isles to reclaim his power from Maddy."},
+		["Enter the Arcane Collection"] =
+			{appendText=""},
+		[5] = 
+			{appendStepText="I entered The Arcane Collection chamber in the Wayrest Mages Guild in southern Stormhaven. ", stepTextKey="I should help Sheogorath search the Arcane Collection for a tome or scroll containing a spell to open a portal to the Shivering Isles."},
+		["Find a Spell to Reach the Shivering Isles"] =
+			{appendText="."},
+		[6] = 
+			{appendStepText="In The Arcane Collection at the Wayrest Mages Guild in southern Stormhaven, ", stepTextKey="I found a book that appeared to be just gibberish, but Sheogorath seemed delighted. I should give it to him."},
+		["Talk to Sheogorath 2"] =
+			{appendText=".", stepTextKey="I found a book that appeared to be just gibberish, but Sheogorath seemed delighted. I should give it to him."},
+		[7] = 
+			{appendStepText="I found a book in The Arcane Collection at the Wayrest Mages Guild in southern Stormhaven. ", stepTextKey="Sheogorath can read the book. It contains a spell that will allow us to reach the Shivering Isles. I need to gather the components to cast the spell."},
+		["Find Cornflower Dust"] =
+			{appendText="."},
+		["Find Roofwater Wine"] =
+			{appendText="."},
+		[8] = 
+			{appendStepText="In The Arcane Collection at the Wayrest Mages Guild in southern Stormhaven, ", stepTextKey="I gathered the components for the portal spell. Now all that remains is to cast it."},
+		["Cast the Spell"] =
+			{appendText=". Perhaps Sheogorath knows more about this spell."},
+		[9] = 
+			{appendStepText="In The Arcane Collection at the Wayrest Mages Guild in southern Stormhaven, I mixed the ingredients in the basin. ", stepTextKey="The spell worked and opened a portal to the Shivering Isles. I need to journey there to help Sheogorath reclaim his power from Maddy."},
+		["Enter the Shivering Isles"] =
+			{appendText=" through the portal."},
+		[10] = 
+			{appendStepText="The portal in The Arcane Collection at the Wayrest Mages Guild in southern Stormhaven worked. ", stepTextKey="We arrived in the Shivering Isles, the Oblivion realm of Sheogorath, the Daedric Prince of Madness. I shoiuld talk to Sheogorath to see if he knows where we can find Maddy."},
+		["Talk to Sheogorath 3"] =
+			{appendText=".", stepTextKey="We arrived in the Shivering Isles, the Oblivion realm of Sheogorath, the Daedric Prince of Madness. I shoiuld talk to Sheogorath to see if he knows where we can find Maddy."},
+		[11] = 
+			{appendStepText="The portal in The Arcane Collection at the Wayrest Mages Guild in southern Stormhaven worked. In the Shivering Isles, ", stepTextKey="Sheogorath's rogue power appeared. Sheogorath wants me to chase Maddy down so he can reclaim his mantle of power."},
+		["Find and Confront Maddy"] =
+			{appendText="."},
+		[12] = 
+			{appendStepText="The portal in The Arcane Collection at the Wayrest Mages Guild in southern Stormhaven worked. In the Shivering Isles, we chased Maddy. ", stepTextKey="We caught up to Maddy and he summoned the Gatekeeper Colossus, a massive flesh atronach, to stop us. I need to deal with it."},
+		["Defeat Gatekeeper Colossus"] =
+			{appendText="."},
+		[13] = 
+			{appendStepText="We used the portal in The Arcane Collection at the Wayrest Mages Guild in Stormhaven to reach the Shivering Isles. ", stepTextKey="The flesh atronach was actually poor Noth, transformed by Maddy. Maddy is gaining more control of Sheogorath's power. Fortunately the transformation wore off before I actually injured Noth. I should talk to her and she what else she knows."},
+		["Talk to Noth the Unhinged 1"] =
+			{appendText=" at the circular plaza.", stepTextKey="The flesh atronach was actually poor Noth, transformed by Maddy. Maddy is gaining more control of Sheogorath's power. Fortunately the transformation wore off before I actually injured Noth. I should talk to her and she what else she knows."},
+		[14] = 
+			{appendStepText="We used the portal in The Arcane Collection at the Wayrest Mages Guild in Stormhaven to reach the Shivering Isles. ", stepTextKey="Noth had some useful information about where we might find Maddy and get back some of Sheogorath's power. It has something to do with a cathedral that's not a cathedral. And goats."},
+		["Head Deeper into the Shivering Isles"] =
+			{appendText="."},
+		[15] = 
+			{appendStepText="We used the portal in The Arcane Collection at the Wayrest Mages Guild in Stormhaven to reach the Shivering Isles. ", stepTextKey="We found the strange ghostly goats that Noth mentioned. Sheogorath says they contain some of Sheogorath's missing power. If I chase them down and tire them out, I should be able to use the staff to reclaim the power."},
+		["Gather Power from the Ghostly Goats"] =
+			{appendText=" using the Staff of Sheogorath."},
+		[16] = 
+			{appendStepText="We used the portal in The Arcane Collection at the Wayrest Mages Guild in Stormhaven to reach the Shivering Isles. ", stepTextKey="Gathering the power from the goats has restored some of Sheogorath's energy and delayed the effects of the poison. I should talk to him."},
+		["Talk to Sheogorath 4"] =
+			{appendText=".", stepTextKey="Gathering the power from the goats has restored some of Sheogorath's energy and delayed the effects of the poison. I should talk to him."},
+		[17] = 
+			{appendStepText="We used the portal in The Arcane Collection at the Wayrest Mages Guild in Stormhaven to reach the Shivering Isles. ", stepTextKey="Noth mentioned some shrines to Sheogorath ahead at the Cathedral of Madness. We must press on before Sheogorath fully succumbs to the poison."},
+		["Follow Noth into the Bog of Disappoinment"] =
+			{appendText=", to the north."},
+		[18] = 
+			{appendStepText="We used the portal in The Arcane Collection at the Wayrest Mages Guild in Stormhaven to reach the Shivering Isles. ", stepTextKey="Noth mentioned some shrines to Sheogorath ahead at the Cathedral of Madness. We must press on before Sheogorath fully succumbs to the poison."},
+		["Talk to Noth the Unhinged 2"] =
+			{appendText=" by the big tree in the Bog of Disappointment."},
+		[19] = 
+			{appendStepText="We used the portal in The Arcane Collection at the Wayrest Mages Guild in Stormhaven to reach the Shivering Isles. ", stepTextKey="Noth says that Maddy hid things within the blobs in the swamp. I need to recover a lute, a book, and a dagger from the blobs. Noth thinks they may be the key to reaching Maddy."},
+		["Find Objects Hidden in the Blobs"] =
+			{appendText=" around the Bog of Disappointment. Noth knows where to find the small blobs."},
+		[20] = 
+			{appendStepText="We used the portal in The Arcane Collection at the Wayrest Mages Guild in Stormhaven to reach the Shivering Isles. In the Bog of Disappointment, ", stepTextKey="Noth learned something that may help us reach Maddy. Now that I found the items in the blobs, I should talk to her."},
+		["Talk to Noth the Unhinged 3"] =
+			{appendText=".", stepTextKey="Noth learned something that may help us reach Maddy. Now that I found the items in the blobs, I should talk to her."},
+		[21] = 
+			{appendStepText="We used the portal in The Arcane Collection at the Wayrest Mages Guild in Stormhaven to reach the Shivering Isles. ", stepTextKey="We need to find the shrines that Noth mentioned. She called it a Cathedral of Madness, but it may not be an actual building. Who knows, things are pretty strange in the Shivering Isles."},
+		["Reach the Cathedral of Madness"] =
+			{appendText="."},
+		[22] = 
+			{appendStepText="We used the portal in The Arcane Collection at the Wayrest Mages Guild in Stormhaven to reach the Shivering Isles. We entered the cathedral area. ", stepTextKey="We found an impassible barrier Noth mentioned. Maddy is hiding behind it. We found items that may get us past the barrier. I should talk to Sheogorath about these items."},
+		["Talk to Sheogorath 5"] =
+			{appendText=" about the lute, the book, and the dagger.", stepTextKey="We found an impassible barrier Noth mentioned. Maddy is hiding behind it. We found items that may get us past the barrier. I should talk to Sheogorath about these items."},
+		[23] = 
+			{appendStepText="We used the portal in The Arcane Collection at the Wayrest Mages Guild in Stormhaven to reach the Shivering Isles. ", stepTextKey="We found the shrines. They power a barrier that keeps us from reaching Maddy. I need to figure out how to remove or get around the barrier."},
+		["Remove the Shrine Barrier"] =
+			{appendText=" by placing the lute, book, and dagger at their shrines."},
+		[24] = 
+			{appendStepText="We used the portal in The Arcane Collection at the Wayrest Mages Guild in Stormhaven to reach the Shivering Isles. ", stepTextKey="I conquered the barrier. Now to find the madness called Maddy and resolve this situation."},
+		["Find Maddy"] =
+			{appendText="."},
+		[25] = 
+			{appendStepText="We used the portal in The Arcane Collection at the Wayrest Mages Guild in Stormhaven to reach the Shivering Isles. ", stepTextKey="Maddy is making a final stand here. I need to deal with him one way or another."},
+		["Defeat Maddy"] =
+			{appendText="."},
+		[26] = 
+			{appendStepText="We used the portal in The Arcane Collection at the Wayrest Mages Guild in Stormhaven to reach the Shivering Isles. ", stepTextKey="I did as Sheogorath asked and defeated Maddy. Now I should speak to the manifestation of power and see what it truly wants."},
+		["Talk to Maddy"] =
+			{appendText="."},
+		[27] = 
+			{appendStepText="We used the portal in The Arcane Collection at the Wayrest Mages Guild in Stormhaven to reach the Shivering Isles. Now, ", stepTextKey="Maddy seems more like a mischevious child than a terrible creature. He wants to stay, living and playing in the Shivering Isles, and wants Sheogorath to let him keep a small amount of power. I'm not sure how Sheogorath will feel about that."},
+		["Talk to Sheogorath 6"] =
+			{appendText=".", stepTextKey="Maddy seems more like a mischevious child than a terrible creature. He wants to stay, living and playing in the Shivering Isles, and wants Sheogorath to let him keep a small amount of power. I'm not sure how Sheogorath will feel about that."},
+		[28] = 
+			{appendStepText="We used the portal in The Arcane Collection at the Wayrest Mages Guild in Stormhaven to reach the Shivering Isles. ", stepTextKey="Sheogorath was not inclined to allow even a shred of Maddy to remain here in the Shivering Isles after all the trouble he caused. The Mad God is going to take his power back."},
+		["Wait for Sheogorath 1"] =
+			{appendText=".", stepTextKey="Sheogorath was not inclined to allow even a shred of Maddy to remain here in the Shivering Isles after all the trouble he caused. The Mad God is going to take his power back."},
+		[29] = 
+			{appendStepText="We used the portal in The Arcane Collection at the Wayrest Mages Guild in Stormhaven to reach the Shivering Isles. ", stepTextKey="Sheogorath, on the verge of getting his power fully restored seemed amused at the notion of Maddy having a place within the Shivering Isles. He will take the bulk of his power back, but leave a little bit behind."},
+		["Wait for Sheogorath 2"] =
+			{appendText=".", stepTextKey="Sheogorath, on the verge of getting his power fully restored seemed amused at the notion of Maddy having a place within the Shivering Isles. He will take the bulk of his power back, but leave a little bit behind."},
+		[30] = 
+			{appendStepText="", stepTextKey="Sheogorath has been restored to his princely state, and Maddy has been dealt with. Sheogorath's holiday is finally at a close, and it is time to leave the Shivering Isles."},
+		["Leave the Shivering Isles"] =
+			{appendText=" through the portal."},
+		[31] = 
+			{appendStepText="I returned to the Shivering Shack on the hill in northern Stormhaven, east of Firebrand Keep Wayshrine. ", stepTextKey="I should talk to Noth and finally conclude my business with the Prince of Madness."},
+		["Talk to Noth 1"] =
+			{appendText=" the Unhinged, outside the shack.", stepTextKey="I should talk to Noth and finally conclude my business with the Prince of Madness."},
+		[32] = 
+			{appendStepText="", stepTextKey="Sheogorath has regained his power, and, more importantly, Nirn is spared the effects of his uncontrolled madness. I should speak with Noth."},
+		["Talk to Noth 2"] =
+			{appendText=" the Unhinged outside the Shivering Shack, on the hill east of Firebrand Keep Wayshrine in northern Stormhaven.", stepTextKey="Sheogorath has regained his power, and, more importantly, Nirn is spared the effects of his uncontrolled madness. I should speak with Noth."},
+	},
+-- ==================================================================================================================================================
+--	Miscellaneous Quests																														Undaunted
+-- ==================================================================================================================================================
+
+[GetQuestName(4961)] = { --"Hircine's Gift" --Jordakai --Update49
+
+--CrownStore
+    ["Find a Shrine of Hircine"] = {
+	appendStepText="In my travels, ",
+	stepTextKey="I should seek out a shrine of Hircine. There's someone there I should speak with.",
+	appendText=". Travelers speak of hearing wolf howls and seeing a bare-chested Altmer out in the wilds. \n • Near Auridon's northern city of Firsthold, two guards on night duty gave chase to a bare-chested mer, losing him in the woods near the western sea. A lone howl was too close for comfort and the guards returned to their posts. Perhaps a shrine is on a low rock outcropping above the beach by the trail leading to Mehrunes' Spite, northwest of the Greenwater Wayshrine. \n • One tale says refugees spotted an Altmer hunter disappear during a full moon when a werewolf appeared in northeast Glenumbra, south of the Burial Grounds and north of Aldcroft. There may be a shrine in a rocky cove northeast of the Hag Fen Wayshrine and northwest of the coastal island of Mesanthano's Tower. \n • It is said that wolf howls frightened an Argonian merchant's pack guar. She thought she saw an Altmer hunting under a blood moon sky in northern Stonefalls. If true, a shrine may be east of the Sulfur Pools Wayshrine, nestled in the sloping outcroppings above and west of Vivec's Antlers, far west of the northern coastal city of Ebonheart."
+    },
+
+--HircineShrine
+    ["Talk to Firralthel"] = {
+	appendStepText="In the wilds, I spotted a bare-chested, Altmer hunter. As I approached, I realized ",
+	stepTextKey="I found a shrine of Hircine. There was a werewolf waiting for me. I should talk to him to learn more.",
+	appendText=". It appears some traveler's tales are true. \n\n • Near Auridon's northern city of Firsthold, two guards on night duty gave chase to a bare-chested mer, losing him in the woods near the western sea. A lone howl was too close for comfort and the guards returned to their posts. Perhaps a shrine is on a low rock outcropping above the beach by the trail leading to Mehrunes' Spite, northwest of the Greenwater Wayshrine. \n • One tale says refugees spotted an Altmer hunter disappear during a full moon when a werewolf appeared in northeast Glenumbra, south of the Burial Grounds and north of Aldcroft. There may be a shrine in a rocky cove northeast of the Hag Fen Wayshrine and northwest of the coastal island of Mesanthano's Tower. \n • It is said that wolf howls frightened an Argonian merchant's pack guar. She thought she saw an Altmer hunting under a blood moon sky in northern Stonefalls. If true, a shrine may be east of the Sulfur Pools Wayshrine, nestled in the sloping outcroppings above and west of Vivec's Antlers, far west of the northern coastal city of Ebonheart."
+    },
+
+--FullMoonWerewolfBite
+    ["Find the Packmaster"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "",
+            [ALLIANCE_EBONHEART_PACT] = ""
+        },
+        stepTextKey = "I was urged to seek out a packmaster in the wild and complete my journey to becoming a werewolf.\n\nIf I wish to be cured, I can also seek out a priest in the city.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ", Songamdir, to receive Hircine's blessing. He will be at Hircine's Ritual Site in the northeast of Reaper's March, northwest of the Dawnshadow residence and near a dolmen. The shrine is northwest of the split in the roads down in a narrow valley's north end against the cliffs. \n",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ", Songamdir, to receive Hircine's blessing. He will be at Hircine's Ritual Site in Bangkorai, far east of Evermore on the eastern shore of a large lake, just northeast of a small island. \n",
+            [ALLIANCE_EBONHEART_PACT] = ", Songamdir, to receive Hircine's blessing. He will be at Hircine's Ritual Site in The Rift on an overlook east of the Hunter's Glade residence and beyond a giant's camp. \n"
+        }
+    },
+    ["Ask a Priest to Cure You 1"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "",
+            [ALLIANCE_EBONHEART_PACT] = ""
+        },
+        stepTextKey = "I was urged to seek out a packmaster in the wild and complete my journey to becoming a werewolf.\n\nIf I wish to be cured, I can also seek out a priest in the city.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " of Hircine's curse, Sanies Lupinus. A high-ranking Imperial priest, Prelate Sabinus, often visits the crafting area of the Rawl'kha Mages Guild in Reaper's March.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " of Hircine's curse, Sanies Lupinus. A high-ranking Imperial priest, Prelate Sabinus, often visits the Evermore Mages Guild in Bangkorai. He is usually in the eastern wing on the main floor.",
+            [ALLIANCE_EBONHEART_PACT] = " of Hircine's curse, Sanies Lupinus. A high-ranking Imperial priest, Prelate Sabinus, often visits the Riften Mages Guild in The Rift. He is usually upstairs."
+        }
+    },
+    ["Wait to Be Cured"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "At the Rawl'kha Mages Guild in central Reaper's March, I donated gold to Prelate Sabinus. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "At the Evermore Mages Guild in northeastern Bangkorai, I donated gold to Prelate Sabinus. ",
+            [ALLIANCE_EBONHEART_PACT] = "At the Riften Mages Guild in the eastern area of The Rift, I donated gold to Prelate Sabinus. "
+        },
+	stepTextKey = "I must wait for Prelate Sabinus to cure me.",
+	appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " of Sanies Lupinus by this priest of Arkay.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " of Sanies Lupinus by this priest of Arkay.",
+            [ALLIANCE_EBONHEART_PACT] = " of Sanies Lupinus by this priest of Arkay."
+        }
+    },
+    ["Talk to Priest"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "At the Rawl'kha Mages Guild in central Reaper's March, I donated gold to Prelate Sabinus to be cured. ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "At the Evermore Mages Guild in northeastern Bangkorai, I donated gold to Prelate Sabinus to be cured.",
+            [ALLIANCE_EBONHEART_PACT] = "At the Riften Mages Guild in the eastern area of The Rift, I donated gold to Prelate Sabinus to be cured. "
+        },
+	stepTextKey = "I must speak to the priest to complete the purification ritual.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = " of Arkay, Prelate Sabinus.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = " of Arkay, Prelate Sabinus.",
+            [ALLIANCE_EBONHEART_PACT] = " of Arkay, Prelate Sabinus."
+        }
+    },
+    ["Enter Hircine's Realm 1"] = {
+        appendStepText = {
+            [ALLIANCE_ALDMERI_DOMINION] = "I decided to seek Hircine's blessing and embrace his gift. At Hircine's Ritual Site down in a narrow valley's north end against the cliffs in the northeast of Reaper's March, northwest of the Dawnshadow residence and near a dolmen, ",
+            [ALLIANCE_DAGGERFALL_COVENANT] = "I decided to seek Hircine's blessing and embrace his gift. At Hircine's Ritual Site east of Evermore on the eastern shore of a large lake, just northeast of a small island, ",
+            [ALLIANCE_EBONHEART_PACT] = "I decided to seek Hircine's blessing and embrace his gift. At Hircine's Ritual Site on an overlook east of the Hunter's Glade residence and beyond a giant's camp, "
+        },
+        stepTextKey = "I found the packmaster, Songamdir, in the wild. He opened a portal to Hircine's realm. To become a werewolf, I must enter the portal and present myself to Hircine.",
+        appendText = {
+            [ALLIANCE_ALDMERI_DOMINION] = ", The Great Hunt, through the portal at the ritual site.",
+            [ALLIANCE_DAGGERFALL_COVENANT] = ", The Great Hunt, through the portal at the ritual site.",
+            [ALLIANCE_EBONHEART_PACT] = ", The Great Hunt, through the portal at the ritual site."
+        }
+    },
+
+--PlayerBite
+    ["Enter Hircine's Realm 2"] = {
+	appendStepText="",
+	stepTextKey="A werewolf has bitten me. If I step into Hircine's realm and prove myself worthy, I can become a werewolf.\n\nIf I wish to be cured, I can instead seek out a priest in the city.",
+	appendText=" to take part in The Great Hunt. The Hunting Grounds are through the portal at the shrine. \n\nIn Reaper's March, it's in the northeast, down in a narrow valley's north end against the cliffs, northwest of the Dawnshadow residence and near a dolmen. \nIn Bangkorai, it's east of Evermore on the eastern shore of a large lake, just northeast of a small island. \nIn The Rift, it's on an overlook east of the Hunter's Glade residence and beyond a giant's camp. \n"
+    },
+    ["Ask a Priest to Cure You 2"] = {
+	appendStepText="",
+	stepTextKey="A werewolf has bitten me. If I step into Hircine's realm and prove myself worthy, I can become a werewolf.\n\nIf I wish to be cured, I can instead seek out a priest in the city.",
+	appendText=". A high-ranking Imperial priest, Prelate Sabinus, often visits the Mages Guilds at Rawl'kwa in Reaper's March, at Evermore in Bangkorai, and at Riften in The Rift. He will probably want some gold."
+    },
+
+--TheHuntingGroundInstance
+    ["Wait for Songamdir to Introduce You"] = {
+	appendStepText="Bitten by a werewolf, I chose to embrace Hircine's Gift. He is the Master of Beasts, strong and cunning, The Huntsman. I seek his blessings of strength and shape, to be a great hunter. Many would see this as a curse, but the Lord of the Hunt has seen fit to bless me. It is the reason ",
+	stepTextKey="I have entered Hircine's realm. I must follow Songamdir's lead.",
+	appendText=" at the altar in the northern area of The Hunting Grounds."
+    },
+    ["Use Tribute to Hircine"] = {
+	appendStepText="Bitten by a werewolf, I chose to embrace Hircine's Gift. He is the Master of Beasts, strong and cunning, The Huntsman. I seek his blessings of strength and shape, to be a great hunter. Many would see this as a curse, but the Lord of the Hunt has seen fit to bless me. It is the reason ",
+	stepTextKey="I have entered Hircine's realm. I must follow Songamdir's lead.",
+	appendText=" at his altar in the northern area of The Hunting Grounds. It is time to approach the Wolf Father."
+    },
+    ["Listen to Hircine 1"] = {
+	appendStepText="At Hircine's altar in the northern area of The Hunting Grounds, I have been introduced by the packmaster and offered my tribute to the Lord of the Hunt. ",
+	stepTextKey="When Songamdir touched the statue of Hircine, Hircine's voice began to emanate from the stone. I must listen to what he has to say.",
+	appendText=", the Master of the Chase."
+    },
+    ["Collect a Tribute for Songamdir"] = {
+	appendStepText="",
+	stepTextKey="Hircine has turned me into a werewolf! He has instructed me to roam his hunting ground and bring down a monster worthy of my new pack.",
+	appendText=" and the pack. \n\nThe great beast I kill must feed the pack and honor the Lord of the Hunt."
+    },
+    ["Howl to Summon Your Pack"] = {
+	appendStepText="As a werewolf in The Hunting Grounds, ",
+	stepTextKey="I have killed a great beast. I must howl to attract my pack, so that we may feast together.",
+	appendText=", invite them to the feast!"
+    },
+    ["Wait for Your Pack to Feed"] = {
+	appendStepText="As a werewolf I killed a worthy monster and howled in Hircine's Hunting Grounds. ",
+	stepTextKey="My pack approaches. I must allow them to feed on the fresh kill.",
+	appendText="."
+    },
+    ["Feed With Your Pack"] = {
+	appendStepText="In The Hunting Grounds, I killed a worthy monster and howled to invite my pack to feast. ",
+	stepTextKey="My pack has accepted my tribute. Now I must feast with them to join the pack.",
+	appendText=". \n\nWhen I finish feeding, I will return to Hircine's altar in the northern part of his realm."
+    },
+    ["Listen to Hircine 2"] = {
+	appendStepText="In The Hunting Grounds, I returned to Hircine's altar. My new strength and shape have blessed me to kill, to feast with my pack, to be a werewolf. Now, ",
+	stepTextKey="Hircine speaks once more. I must listen to complete my initiation.",
+	appendText=", Wolf Father."
+    },
+    ["Bow to Hircine's Statue"] = {
+	appendStepText="In The Hunting Grounds, I have learned to be a werewolf. Now, ",
+	stepTextKey="I must bow to Hircine's statue to complete my initiation into his pack of werewolves.",
+	appendText=" at his altar and receive Hircine's Gift. \n\nIn Reaper's March, it's in the northeast, down in a narrow valley's north end against the cliffs, northwest of the Dawnshadow residence and near a dolmen. \nIn Bangkorai, it's east of Evermore on the eastern shore of a large lake, just northeast of a small island. \nIn The Rift, it's on an overlook east of the Hunter's Glade residence and beyond a giant's camp."
+    },
+},
+
+
+[GetQuestName(4964)] = { --"Scion of the Blood Matron" --Jordakai --Update49
+
+--PlayerBiteRitualSite
+	[1] = 
+		{appendStepText="I read a ceremonial scroll at the altar of the ritual shrine. ", stepTextKey="I can either enter the Blood Matron's crypt and become a vampire or seek a priest of Arkay for the cure."},
+	["Enter the Blood Matron's Crypt 1"] =
+		{appendText=" through the portal at the altar of the ancient ritual site. \n• In Reaper's March, a graystone altar is secluded behind the middle ruin by the low cliffs on the northern side of Ushmal's Rest. It is north of the north-central town of Pa'alat and southeast of the northern city of Arenthia. \n• In Bangkorai, a graystone altar is in a cleft of the boulders by the crossroads southeast of Evermore and northeast of Peylyn Graveyard. \n• In The Rift, a graystone altar is north of Linelle Skullcarver's Camp in a rocky alcove at the edge of a mountain meadow, in the far northeast. It is east of Fallowstone Hall and northeast of Shor's Stone. \n", stepTextKey="I can either enter the Blood Matron's crypt and become a vampire or seek a priest of Arkay for the cure."},
+	["Talk to Priest of Arkay 1"] =
+		{appendText=". The Imperial Prelate Sabinus visits the Mages Guilds at Rawl'kha in Reaper's March, at Evermore in Bangkorai, and at Riften in The Rift. He will probably want gold to cure the Noxiphilic Sanguivoria.", stepTextKey="I can either enter the Blood Matron's crypt and become a vampire or seek a priest of Arkay for the cure."},
+
+--CrownStoreQuestStarter
+	[2] = 
+		{appendStepText="", stepTextKey="I should seek out a shrine of Molag Bal. There's a vampire of interest waiting there for me. I should see what I can learn from her."},
+	["Find a Shrine of Molag Bal"] =
+		{appendText=". Travelers whisper of seeing a female vampire standing by a new Shrine in a remote place. Each tale says she watches, but does not attack. \n• In Auridon, the vampire was seen at a shrine protected by three towering boulders in the woods, northeast of the Ayleid ruin of Tanzewil, northwest of Ondil and the Tanzewil Wayshrine, and northwest of Vulkhel Guard. \n• In Glenumbra, she was by a mountainside trail on the northwest side of Cath Betraud in the far north. Northeast of Lion Guard Wayshrine and west of Crosswych Village Wayshrine, the shrine was not far from the Par Molag Workshop. \n• In Stonefalls, a sighting placed the vampire and her shrine in the northwest, secluded in the rocks northeast of Fort Virak Wayshrine.", stepTextKey="I should seek out a shrine of Molag Bal. There's a vampire of interest waiting there for me. I should see what I can learn from her."},
+
+--AzisaShrineMolagBalandVorundil
+	[3] = 
+		{appendStepText="I received a vampire's kiss. Now, ", stepTextKey="I can either find Rahaja and become a vampire or look for a priest of Arkay and receive the cure."},
+	["Talk to Rahaja 1"] =
+		{appendText=". There are rumors of travelers seeing a lone, female vampire appearing from time to time. \n• In Auridon, the vampire was seen west of the Ilumavir Dolmen, up on a high coastal overlook on the southwest coast by the island with a tall tower, northwest of Vulkhel Guard. \n• In Glenumbra, the vampire appeared near a painter's perch above the southeastern coast, south of Delyn Mill and east of Daggerfall's Harborage. \n• In Stonefalls, a sighting placed the vampire at a campsite atop a low cliff overlooking the curve of road, southeast of Davon's Watch. \n", stepTextKey="I can either find Rahaja and become a vampire or look for a priest of Arkay and receive the cure."},
+	["Talk to Priest of Arkay 2"] =
+			{appendText=". The Imperial Prelate Sabinus visits the Mages Guilds at Rawl'kha in Reaper's March, at Evermore in Bangkorai, and at Riften in The Rift. He will probably want gold to cure the Noxiphilic Sanguivoria.", stepTextKey="I can either find Rahaja and become a vampire or look for a priest of Arkay and receive the cure."},
+
+--GetCured
+	[4] = 
+		{appendStepText="I decided not to become a vampire. At a Mages Guild, I donated gold to Prelate Sabinus to be cured. ", stepTextKey="I must wait for Prelate Sabinus to cure me."},
+	["Wait to Be Cured"] =
+		{appendText=" of Noxiphilic Sanguivoria by this priest of Arkay."},
+	[5] = 
+		{appendStepText="I decided not to become a vampire. At a Mages Guild, I donated gold to Prelate Sabinus to be cured. ", stepTextKey="I must speak to the priest to complete the purification ritual."},
+	["Talk to Priest"] =
+			{appendText=" of Arkay, Prelate Sabinus. \n\nHe prefers to visit the Mages Guilds at Rawl'kha in Reaper's March, at Evermore in Bangkorai, and at Riften in The Rift.", stepTextKey="I must speak to the priest to complete the purification ritual."},
+
+--RahajaPortal
+	[6] = 
+		{appendStepText="I decided not to reject the vampire's kiss I received. After speaking with her, Rahaja opened a portal for me. To embrace my new life, ", stepTextKey="I must enter the Crypt of Lamae Bal."},
+	["Enter the Blood Matron's Crypt 2"] =
+		{appendText=" to become a vampire. \n\n• In Auridon, the portal is west of the Ilumavir Dolmen, up on a high coastal overlook on the southwest coast by the island with a tall tower, northwest of Vulkhel Guard. \n• In Glenumbra, the portal is near the painter's perch above the southeastern coast, south of Delyn Mill and east of Daggerfall's Harborage. \n• In Stonefalls, the portal is at the campsite atop a low cliff overlooking the curve of road, southeast of Davon's Watch.", stepTextKey="I must enter the Crypt of Lamae Bal."},
+
+--SoloInstance
+	[7] = 
+		{appendStepText="Within the Blood Matron's Crypt ", stepTextKey="I should talk to Rahaja."},
+	["Talk to Rahaja 2"] =
+		{appendText=". She stands near the tables in the entry chamber.", stepTextKey="I should talk to Rahaja."},
+	[8] = 
+		{appendStepText="In the Blood Matron's Crypt, Rahaja explained what I must do. First, ", stepTextKey="I need to drink from the Basin of Suffering to learn about Lamae Bal, the mother of all vampires."},
+	["Learn about Lamae's Past 1"] =
+		{appendText=". Three skulls mark the Basin of Suffering in the chamber's northeast.", stepTextKey="I need to drink from the Basin of Suffering to learn about Lamae Bal, the mother of all vampires."},
+	[9] = 
+		{appendStepText="At the Basin of Suffering in the Blood Matron's Crypt, I drank and saw a vision of Lamae Bal, a defiled priestess of Arkay. Now, ", stepTextKey="I must curse the symbol of Molag Bal."},
+	["Profane the Symbol of Molag Bal"] =
+		{appendText=" at the southeastern column of the entry chamber, near the tables."},
+	[10] = 
+		{appendStepText="In the Blood Matron's Crypt, ", stepTextKey="I need to drink from the Basin of Loss to continue learning about Lamae Bal, the mother of all vampires."},
+	["Learn about Lamae's Past 2"] =
+			{appendText=". Three skulls mark the Basin of Loss in the chamber's northwest.", stepTextKey="I need to drink from the Basin of Loss to continue learning about Lamae Bal, the mother of all vampires."},
+	[11] = 
+		{appendStepText="At the Basin of Loss in the Blood Matron's Crypt, I drank and saw a vision of Lamae Bal, praying to Arkay and being forsaken. ", stepTextKey="I must curse the symbol of Arkay."},
+	["Profane the Symbol of Arkay"] =
+		{appendText=" at the southwestern column of the entry chamber, near the tables."},
+	[12] = 
+		{appendStepText="I drank of the basins and witnessed her suffering and her loss. I have profaned the symbols of Molag Bal and Arkay. Now ", stepTextKey="I must submit to Lamae Bal, Blood Matron, in the pool in the center of her crypt."},
+	["Submit to the Blood Matron"] =
+		{appendText=" by kneeling in the center of the pool."},
+	[13] = 
+		{appendStepText="In the entry chamber of the Blood Matron's Crypt, I was given a new life and new powers. With Lamae Bal's gift, ", stepTextKey="I must journey deeper into this ruin in search of prey."},
+	["Travel Deeper into the Crypt"] =
+		{appendText=" through the northeastern tunnels into the caverns beyond the entry chamber."},
+	[14] = 
+		{appendStepText="In the caverns and tunnels of the Blood Matron's Crypt, I must sneak up behind my prey and use Lamae Bal's gifts. ", stepTextKey="I must prey upon Molag Bal's cultists."},
+	["Use Eviscerate on a Worm Cult Initiate"] =
+		{appendText=" near a campfire to the south at the bottom of the cavern with a waterfall."},
+	[15] = 
+		{appendStepText="In the cavern with a waterfall of the Blood Matron's Crypt, I must sneak up behind my prey and use Lamae Bal's gifts. ", stepTextKey="I must drain the life from Molag Bal's cultists."},
+	["Use Vampiric Drain on a Worm Cult Acolyte"] =
+		{appendText=" at a campfire up on a platform in the cavern's northwest."},
+	[16] = 
+		{appendStepText="Near the cavern with a waterfall in the Blood Matron's Crypt, I must sneak up behind my prey and use Lamae Bal's gifts. ", stepTextKey="I must manipulate the minds of Molag Bal's cultists."},
+	["Use Mesmerize on a Worm Cult Enforcer"] =
+		{appendText=" in the western tunnel leaving the cavern."},
+	[17] = 
+		{appendStepText="In the Blood Matron's Crypt, I am using Lamae Bal's gifts of power. Next, ", stepTextKey="I must prey upon Molag Bal's cultists using my horrifying new form."},
+	["Kill Worm Cultists as a Blood Scion"] =
+		{appendText=" in the crypt's western cavern."},
+	[18] = 
+		{appendStepText="In the caverns, I have experienced the power of Lamae Bal's gifts. Now, ", stepTextKey="I must leave the tunnels and return to the Blood Matron."},
+	["Return to the Blood Matron"] =
+		{appendText=" in the pool of her crypt's main chamber."},
+	[19] = 
+		{appendStepText="In the pool of her crypt's main chamber, ", stepTextKey="I must talk to the Blood Matron."},
+	["Talk to Lamae Bal"] =
+		{appendText="."},
+},
+
+        [GetQuestName(5949)] = { --"For Glory" --Jordakai
+        [1] = 
+            {appendStepText="", stepTextKey="I should speak to Battlemaster Rivyn to learn more information."},
+        ["Talk to Battlemaster Rivyn 1"] =
+            {appendText=". He often visits the Gladiator Quarters, many with tents and colorful banners, at Vulkhel Guard in Auridon, Daggerfall in Glenumbra, Davon's Watch in Stonefalls, and other major cities throughout Tamriel."},
+        [2] = 
+            {appendStepText="Gladiator's Quarters, many with tents and colorful banners can be found at Vulkhel Guard in Auridon, Daggerfall in Glenumbra, Davon's Watch in Stonefalls, and other major cities throughout Tamriel. \n\nAt a Gladiator's Quarters, Battlemaster Rivyn said ", stepTextKey="I should compete in a Battleground game."},
+        ["Complete a Battleground"] =
+            {appendText=". Battlemaster Rivyn can explain the available games of Deathmatch, Capture the Relic, Chaos Ball, Crazy King, and Domination \n\nSelect the Group & Activity Finder's Battlegrounds option. \n\nAn adventurer may choose: \n • 8 vs 8 Standard 10-49 - Solo, or \n • 8 vs 8 Standard 10-49 - Group. \n\nA Champion adventurer may choose: \n • 4 vs 4 Competitive - Solo, or \n • 4 vs 4 Competitive - Group, or \n • 8 vs 8 Competitive - Solo, or \n • 8 vs 8 Competitive - Group."},
+        [3] = 
+            {appendStepText="", stepTextKey="I should speak to Battlemaster Rivyn for my reward."},
+        ["Talk to Battlemaster Rivyn 2"] =
+            {appendText=". He often visits the Gladiator's Quarters, many with tents and colorful banners, at Vulkhel Guard in Auridon, Daggerfall in Glenumbra, Davon's Watch in Stonefalls, and other major cities throughout Tamriel."}
+    },
+
+
+
+[GetQuestName(7363)] = { --"Those Who Would Rule" --Jordakai
+	[1] = 
+		{appendStepText="", stepTextKey="I should seek out the Curator in Fargrave's Shambles to see how I might assist in The Night Market."},
+	["Find the Curator in Fargrave"] =
+		{appendText="'s northwestern Shambles at the Starlit Plaza. The Dremora is standing on a small dais with a table and chair, southeast of the plaza's crafting stations."},
+	[2] = 
+		{appendStepText="At Starlit Plaza in the northwestern Shambles of Fargrave, ", stepTextKey="I should talk to the three patrons to learn about each of their factions."},
+	["Talk to the Patrons"] =
+		{appendText=" \n\n • The Glittering Goad reside in the plaza's southwest. The entry stairs are marked by a golden banner with a gavel and ring standing on a gem. Their patron, the Dremora Tachien, lounges on her throne between piles of gold and treasures. She may recommend speaking with Nymisasha, an Orc, across from her throne. He is the faction's merchant. \n • The Thousand Eyes are nestled in caverns in the northwest, their dimly lit entry marked by a banner of aquamarine. Daedrats with linked tails create a symbol hinting at the faction's legions. The elderly Daedrat, Molto the Whisperer, leads the faction. His Maormer assistant, Melandir, stands by him in the dim glow at the northern curve of the tunnel between natural openings to the outside world. She may speak of a crow perched on a stack of books, Fennell, the faction's shopkeeper. \n • The Ruckus have taken over the northeastern area of the plaza. A dirty banner the color of dried blood stands at the faction entrance. A defiant fist grips a giant fang, symbolizing the rising power of Kharakhal Moon-Eye, their patron. A battle-scarred Senche-raht, he rests on a platform at the northeast end of the faction's area. He may speak of his trader, the Pahmar-raht Najirra. She is near the entrance."},
+	[3] = 
+		{appendStepText="In their areas around the plaza in the Shambles of northwestern Fargrave, ", stepTextKey="I spoke to each of the faction patrons. The Curator said he'd wait for me in the Starlit Plaza to see if I made a choice of which faction to join."},
+	["Find the Curator in the Starlit Plaza"] =
+		{appendText=". The Dremora is by his table on a dais, southeast of the crafting stations."},
+	[4] = 
+		{appendStepText="In their areas around the plaza in the Shambles of northwestern Fargrave, ", stepTextKey="I spoke to each of the faction patrons. The Curator said he'd wait for me in the Starlit Plaza to see if I made a choice of which faction to join."},
+	["Talk to the Curator"] =
+		{appendText=". The Dremora is by his table on a dais, southeast of the crafting stations."},
+	[5] = 
+		{appendStepText="Three factions surround Starlit Plaza in the Shambles of northwestern Fargrave. I can join only one. ", stepTextKey="Once I decide which faction to join, I should go to their banner and pledge my fealty to it. Each of the patrons mentioned a vendor who works exclusively with their faction. If I need something to inform my decision, I could talk to the vendors."},
+	["Pledge Fealty to Your Chosen Faction"] =
+		{appendText=". Each faction's banner is near the entrance to its area. \n • Glittering Goad, their golden banner displays a gavel and ring standing on a gem. \n • Thousand Eyes, their aquamarine banner shows tail-tied Daedrats. \n • Ruckus, their defiant, dried-blood banner with its raised fist grasping a fang. \n\nTo pledge fealty, one must stand close to the chosen faction's banner."},
+	[6] = 
+		{appendStepText="In the northwestern Shambles of Fargrave, I stood before the golden banner with gavel, ring and gem. ", stepTextKey="I should tell Tachien that I pledged to represent the Glittering Goad in the Night Market."},
+	["Talk to Tachien"] =
+		{appendText=". The Dremora relaxes on her throne between piles of gold and treasures, up in her faction's domain."},
+	[7] = 
+		{appendStepText="In the northwestern Shambles of Fargrave, I stood before the aquamarine banner with its linked Daedrats. ", stepTextKey="I should tell Molto and Melandir that I pledged to represent the Thousand Eyes in the Night Market."},
+	["Talk to Melandir"] =
+		{appendText=", Molto's Sea Elf assistant. She is in the dim light at the northern curve of their cavern, between natural openings to the outside world."},
+	[8] = 
+		{appendStepText="In the northwestern Shambles of Fargrave, I stood before the dried-blood banner with the defiant fist and fang. ", stepTextKey="I should tell Kharakhal Moon-Eye that I pledged to represent the Ruckus in the Night Market."},
+	["Talk to Kharakhal Moon-Eye"] =
+		{appendText=", the battle-scarred Senche-raht, on his platform at the northeast end of his faction's area."},
+},
+
+	[GetQuestName(7513)] = { --"Favor for Lady Arabelle" --Jordakai
+--KillDelveBossRivenspire
+		[1] = 
+			{appendStepText="", stepTextKey="The included notes highlight an increase in deadly encounters at the caves and chambers of Rivenspire. To fulfill this favor for Lady Arabelle, I need to defeat one of the powerful foes found within the delves of that region."},
+		["Kill a Delve Boss in Rivenspire"] =
+			{appendText=":\n • Crestshade Mine in western Rivenspire, northeast of Crestshade and east of Ravenwatch Castle.\n • Flylead Catacombs in western Rivenspire, northwest of Tamrith Camp and southwest of Crestshade.\n • Tribulation Crypt in southeastern Riverspire, east of Hoarfrost Downs, and north of Sanguine Barrows.\n • Orc's Finger ruins in northeastern Rivenspire, south of Northpointr near the east coast.\n • Erokii Ruins, an Ayleid site on the northern shore, far west of Northpoint near the Staging Grounds Wayshrine.\n • Hildune's Secret Refuge under a dilapidated house in Northsalt Village, just west of Northpoint.", stepTextKey="The included notes highlight an increase in deadly encounters at the caves and chambers of Rivenspire. To fulfill this favor for Lady Arabelle, I need to defeat one of the powerful foes found within the delves of that region."},
+		[2] = 
+			{appendStepText="", stepTextKey="At Lady Arabelle's request, I entered a delve and defeated the powerful foe within. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Aldcroft 1"] =
+			{appendText=", the port city in eastern Glenumbra. The Post is near the Fighters Guild and the city's wayshrine.", stepTextKey="At Lady Arabelle's request, I entered a delve and defeated the powerful foe within. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+--KoeglinVillageSupplies
+		[3] = 
+			{appendStepText="", stepTextKey="The included report indicates supplies, including seeds obtained from the druids of High Isle and intended for the farmers of Koeglin Village, were waylaid by Daedric cultists. To fulfill this favor for Lady Arabelle, I must recover the supplies."},
+		["Retrieve Supplies from a Farm Near Koeglin Village"] =
+			{appendText="\n\nBags of supplies are at Nurin Farm, east of the village and just beyond the town's wayshrine in western Stormhaven.", stepTextKey="The included report indicates supplies, including seeds obtained from the druids of High Isle and intended for the farmers of Koeglin Village, were waylaid by Daedric cultists. To fulfill this favor for Lady Arabelle, I must recover the supplies."},
+		[4] = 
+			{appendStepText="In western Stormhaven, at the Nurin Farm near Koeglin Village, ", stepTextKey="I recovered the stolen supplies. The included report indicates that I can drop them off at a chest set aside for their delivery in Koeglin Village. The locals will be expecting them."},
+		["Deliver Supplies to Koeglin Village"] =
+			{appendText=". The Supply Cache chest is near a shed on the east side of the village docks.", stepTextKey="I recovered the stolen supplies. The included report indicates that I can drop them off at a chest set aside for their delivery in Koeglin Village. The locals will be expecting them."},
+		[5] = 
+			{appendStepText="", stepTextKey="At Lady Arabelle's request, I recovered the missing items for the villagers. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Aldcroft 2"] =
+			{appendText=", the port city in eastern Glenumbra. The Post is near the Fighters Guild and the city's wayshrine.", stepTextKey="At Lady Arabelle's request, I recovered the missing items for the villagers. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+--SignetAldcroft
+		[6] = 
+			{appendStepText="", stepTextKey="The included report describes a signet, a Cumberland family heirloom. Its previous bearer was a noble who may have been slain by werewolves near Aldcroft. To fulfill this favor for Lady Arabelle, I should slay werewolves and recover the lost signet."},
+		["Recover a Lost Royal Signet Near Aldcroft"] =
+			{appendText=" in Glenumbra, likely from a werewolf near the first bridge on the road north out of town.", stepTextKey="The included report describes a signet, a Cumberland family heirloom. Its previous bearer was a noble who may have been slain by werewolves near Aldcroft. To fulfill this favor for Lady Arabelle, I should slay werewolves and recover the lost signet."},
+		[7] = 
+			{appendStepText="", stepTextKey="I did as Lady Arabelle requested, and have what she sought in-hand. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Aldcroft"] =
+			{appendText=", the port city in eastern Glenumbra. The Post is near the Fighters Guild and the city's wayshrine.", stepTextKey="I did as Lady Arabelle requested, and have what she sought in-hand. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+--GetGargoyleEyeLostCity
+		[8] = 
+			{appendStepText="", stepTextKey="According to the included report, Lady Arabelle seeks a unique treasure from the Lost City of the Na-Totambu. A bribe to \"encourage\" a dignitary to divulge secure information. To fulfill this favor for Lady Arabelle, I must recover a gargoyle's eye."},
+		["Get a Gargoyle's Eye from the Lost City of the Na-Totambu"] =
+			{appendText=" in Alik'r Desert. A good place to start is in the northeastern cavern ruin.\n\nThe ancient ruin is entered through a trapdoor by the side of the road in the eastern desert, northwest of the city of Kozanset and southeast of the coastal city of Tava's Blessing.", stepTextKey="According to the included report, Lady Arabelle seeks a unique treasure from the Lost City of the Na-Totambu. A bribe to \"encourage\" a dignitary to divulge secure information. To fulfill this favor for Lady Arabelle, I must recover a gargoyle's eye."},
+		[9] = 
+			{appendStepText="", stepTextKey="I retrieved an important item at Lady Arabelle's request. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Aldcroft"] =
+			{appendText=", the port city in eastern Glenumbra. The Post is near the Fighters Guild and the city's wayshrine.", stepTextKey="I retrieved an important item at Lady Arabelle's request. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+--HelpShortTailNorthpoint
+		[10] = 
+			{appendStepText="", stepTextKey="The included report speaks of an odd request from Short-Tail, a guar wrangler at the city of Northpoint in Rivenspire. To fulfill this favor for Lady Arabelle, I should find the Argonian near the city's marketplace."},
+		["Help Short-Tail at Northpoint in Rivenspire"] =
+			{appendText=". The Argonian may be looking for something or someone, behind Urbyn House, north of the Marketplace in this northeastern city.", stepTextKey="The included report speaks of an odd request from Short-Tail, a guar wrangler at the city of Northpoint in Rivenspire. To fulfill this favor for Lady Arabelle, I should find the Argonian near the city's marketplace."},
+		[11] = 
+			{appendStepText="", stepTextKey="I helped Short-Tail with her wayward guar at Northpoint. I should return to the Freerunners Post message board at Aldcroft to see if she has any additional news for me."},
+		["Return to Aldcroft for News from Short-Tail"] =
+			{appendText=", perhaps a letter tacked to the Post board. Aldcroft is the port city in eastern Glenumbra.", stepTextKey="I helped Short-Tail with her wayward guar at Northpoint. I should return to the Freerunners Post message board at Aldcroft to see if she has any additional news for me."},
+		[12] = 
+			{appendStepText="", stepTextKey="I assisted someone at Lady Arabelle's request. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Aldcroft"] =
+			{appendText=", the port city in eastern Glenumbra. The Post is near the Fighters Guild and the city's wayshrine.", stepTextKey="I assisted someone at Lady Arabelle's request. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+--KillOgresShinjisScarp
+		[13] = 
+			{appendStepText="", stepTextKey="The included report details deaths caused by Ogres near Shinji's Scarp in Stormhaven. Despite efforts to drive them off, they continue to prey on unsuspecting travelers. I must slay several of these Ogres to fulfill this favor for Lady Arabelle."},
+		["Kill Ogres near Shinji's Scarp in Stormhaven"] =
+			{appendText="\n\nShinji's Scarp is a village near the northeastern mountains. It is east of Wind Keep Wayshrine and northwest of Weeping Giant Wayshrine.", stepTextKey="The included report details deaths caused by Ogres near Shinji's Scarp in Stormhaven. Despite efforts to drive them off, they continue to prey on unsuspecting travelers. I must slay several of these Ogres to fulfill this favor for Lady Arabelle."},
+		[14] = 
+			{appendStepText="", stepTextKey="At Lady Arabelle's request, I made the outlying regions of the Daggerfall Covenant safer. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Aldcroft"] =
+			{appendText=", the port city in eastern Glenumbra. The Post is near the Fighters Guild and the city's wayshrine.", stepTextKey="At Lady Arabelle's request, I made the outlying regions of the Daggerfall Covenant safer. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+--KillWorldBossStormhaven
+		[15] = 
+			{appendStepText="", stepTextKey="The included report outlines a number of powerful foes preying on the people of Stormhaven. To fulfill this favor for Lady Arabelle, who recommends gathering some allies for this task, I need to slay these terrible creatures."},
+		["Kill a World Boss in Stormhaven"] =
+			{appendText=":\n • Abandoned Farm is northeast of Wayrest and west of Aphiron's Hold.\n • Dreugh Waters is a small, foul-water lake, northwest of the port city of Wayrest.\n • Spider Nest is up in the westside tower ruin at the main gate to Rivenspire in northwestern Stormhaven.\n • Mudcrab Beach is by a shipwreck on the large southwestern island with an Ayleid ruin and a dolmen.\n • Scrag's Larder is a secluded spot up in the northeastern mountains, east of Shinji's Scarp.\n • Ancient Altar is in the far east, east of Weeping Giant and up the hill north of the Stormhaven side of the bay bridge to Bangkorai.", stepTextKey="The included report outlines a number of powerful foes preying on the people of Stormhaven. To fulfill this favor for Lady Arabelle, who recommends gathering some allies for this task, I need to slay these terrible creatures."},
+		[16] = 
+			{appendStepText="", stepTextKey="At Lady Arabelle's request, I took to the field and defeated a powerful foe threatening the citizenry. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Aldcroft"] =
+			{appendText=", the port city in eastern Glenumbra. The Post is near the Fighters Guild and the city's wayshrine.", stepTextKey="At Lady Arabelle's request, I took to the field and defeated a powerful foe threatening the citizenry. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+--AidSansiAlikrDesert
+		[17] = 
+			{appendStepText="", stepTextKey="According to the included report, Lady Arabelle received a request from the scandalous rogue Jakarn to help a friend of his at a mine in the Alik'r Desert. To complete this favor, I should seek out someone named Samsi af-Bazra at the Badwater Mine."},
+		["Aid Samsi at the Badwater Mine in Alik'r Desert"] =
+			{appendText=". She is by the mine's entrance in the dunes southeast of the northwestern city of Sentinel.", stepTextKey="According to the included report, Lady Arabelle received a request from the scandalous rogue Jakarn to help a friend of his at a mine in the Alik'r Desert. To complete this favor, I should seek out someone named Samsi af-Bazra at the Badwater Mine."},
+		[18] = 
+			{appendStepText="", stepTextKey="I resolved the issue at Badwater Mine. I should return to the Freerunners Post message board at Aldcroft to see if there is any additional news for me."},
+		["Return to Aldcroft for News from the Alik'r Desert"] =
+			{appendText=", perhaps a letter tacked to the Post board. Aldcroft is the port city in eastern Glenumbra.", stepTextKey="I resolved the issue at Badwater Mine. I should return to the Freerunners Post message board at Aldcroft to see if there is any additional news for me."},
+		[19] = 
+			{appendStepText="", stepTextKey="At Lady Arabelle's request, I sought out Jakarn's friend in Alik'r Desert. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Aldcroft"] =
+			{appendText=", the port city in eastern Glenumbra. The Post is near the Fighters Guild and the city's wayshrine.", stepTextKey="At Lady Arabelle's request, I sought out Jakarn's friend in Alik'r Desert. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+--ScoutFarrangelLandingStormhaven
+		[20] = 
+			{appendStepText="", stepTextKey="According to the included report, Lady Arabelle received news that Farangel's Landing in Stormhaven is overrun. To fulfill this favor for the Lady, I should head for the docks to gain a clear idea of what's going on."},
+		["Scout Farangel's Landing in Stormhaven"] =
+			{appendText=", on the southern shores of the Iliac Bay, southwest of the port city of Wayrest.", stepTextKey="According to the included report, Lady Arabelle received news that Farangel's Landing in Stormhaven is overrun. To fulfill this favor for the Lady, I should head for the docks to gain a clear idea of what's going on."},
+		[21] = 
+			{appendStepText="", stepTextKey="At Lady Arabelle's request, I took note of the Midnight Union's forces and distribution at Farangel's Landing. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Aldcroft"] =
+			{appendText=", the port city in eastern Glenumbra. The Post is near the Fighters Guild and the city's wayshrine.", stepTextKey="At Lady Arabelle's request, I took note of the Midnight Union's forces and distribution at Farangel's Landing. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+--EndVampireAssaultShornhelm
+		[22] = 
+			{appendStepText="", stepTextKey="According to the included report, Lady Arabelle has been made aware of an ongoing blood fiend plot targeting the noble families of Rivenspire. To fullfill this favor I should head to an area near Shornhelm and put a stop to this vampiric assault."},
+		["End the Vampire Assaults Near Shornhelm"] =
+			{appendText=", southeast of the central city and northeast of Hinault Farm.", stepTextKey="According to the included report, Lady Arabelle has been made aware of an ongoing blood fiend plot targeting the noble families of Rivenspire. To fullfill this favor I should head to an area near Shornhelm and put a stop to this vampiric assault."},
+		[23] = 
+			{appendStepText="", stepTextKey="At Lady Arabelle's request, I put a stop to the vampire trap near Shornhelm. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Aldcroft"] =
+			{appendText=", the port city in eastern Glenumbra. The Post is near the Fighters Guild and the city's wayshrine.", stepTextKey="At Lady Arabelle's request, I put a stop to the vampire trap near Shornhelm. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+--KillDelveBossBangkorai
+		[24] = 
+			{appendStepText="", stepTextKey="The included notes highlight an increase in deadly encounters at the caves and chambers of Bangkorai. To fulfill this favor for Lady Arabelle, I need to defeat one of the powerful foes found within the delves of that region."},
+		["Kill a Delve Boss in Bangkorai"] =
+			{appendText=":\n• Crypt of the Exiles is at the south end of Pelin Graveyard, south of the northern city of Evermore. It is north of Bangkorai Garrison Wayshrine.\n• Klathzgar is a Dwemer ruin in the southeastern mountains, near a massive stone arch over the road, south of Old Tower Wayshrine and far south of Bangkorai Garrison.\n• Rubble Butte is an Ayleid ruin north of the southwestern city of Hallin's Stand.\n• Torog's Spite, an old iron mine southwest of Murcien's Hamlet and across the water northwest of Evermore.\n• Troll's Toothpick is at the ruins east of Troll's Pick Wayshrine in the northeast, north of Kerbol's Hollow.\n• Viridian Watch underground complex entered at the short tower ruin on the eastern shore of Viridian Lake. It is east across the lake from Viridian Watch Wayshrine and northeast of Bangkorai Garrison.", stepTextKey="The included notes highlight an increase in deadly encounters at the caves and chambers of Bangkorai. To fulfill this favor for Lady Arabelle, I need to defeat one of the powerful foes found within the delves of that region."},
+		[25] = 
+			{appendStepText="", stepTextKey="At Lady Arabelle's request, I entered a delve and defeated the powerful foe within. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Aldcroft"] =
+			{appendText=", the port city in eastern Glenumbra. The Post is near the Fighters Guild and the city's wayshrine.", stepTextKey="At Lady Arabelle's request, I entered a delve and defeated the powerful foe within. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+--RecoverRemediesBergama
+		[26] = 
+			{appendStepText="", stepTextKey="The included report details remedies obtained from the druids of High Isle. They were intended to save lives in the remote village of Bergama, but were stolen in transit. To fulfill this favor for Lady Arabelle, I must recover the remedies."},
+		["Recover Remedies for Bergama from Ogre's Bluff"] =
+			{appendText="\nThe druidic remedies are among the damaged crates and carts down by a shallow lake, east of this southern city of Alik'r Desert.", stepTextKey="The included report details remedies obtained from the druids of High Isle. They were intended to save lives in the remote village of Bergama, but were stolen in transit. To fulfill this favor for Lady Arabelle, I must recover the remedies."},
+		[27] = 
+			{appendStepText="", stepTextKey="I recovered the lost remedies. The included report says I can drop them off at a chest set aside for their delivery in the village of Bergama. The locals have urgent need of them."},
+		["Deliver Remedies to Bergama"] =
+			{appendText=". There is a chest set aside at the southeastern area of the city's central plaza, east of the pillory platform.", stepTextKey="I recovered the lost remedies. The included report says I can drop them off at a chest set aside for their delivery in the village of Bergama. The locals have urgent need of them."},
+		[28] = 
+			{appendStepText="", stepTextKey="At Lady Arabelle's request, I recovered the missing items for the villagers. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Aldcroft"] =
+			{appendText=", the port city in eastern Glenumbra. The Post is near the Fighters Guild and the city's wayshrine.", stepTextKey="At Lady Arabelle's request, I recovered the missing items for the villagers. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+--RecoverCourtDocsCrestshade
+		[29] = 
+			{appendStepText="", stepTextKey="The included report outlines a sheaf of critical court documents lost when couriers passing through Crestshade were slain. These documents contain sensitive information. To fulfill this favor for Lady Arabelle, I must recover the court documents."},
+		["Recover Court Documents in Crestshade"] =
+			{appendText="\nWest of the central city of Shornhelm, and south of Ravenwatch Castle in western Rivenspire, this city has suffered from recent events.", stepTextKey="The included report outlines a sheaf of critical court documents lost when couriers passing through Crestshade were slain. These documents contain sensitive information. To fulfill this favor for Lady Arabelle, I must recover the court documents."},
+		[30] = 
+			{appendStepText="", stepTextKey="I did as Lady Arabelle requested, and have what she sought in-hand. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Aldcroft"] =
+			{appendText=", the port city in eastern Glenumbra. The Post is near the Fighters Guild and the city's wayshrine.", stepTextKey="I did as Lady Arabelle requested, and have what she sought in-hand. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+--GetDiplomatEmblemOgrimObsidianScar
+		[31] = 
+			{appendStepText="", stepTextKey="The included report outlines the death of a diplomat, a personal friend of Prince Azah. They were slain by the brutal fists of the Ogrim in Obsidian Scar. To fulfill this favor for Lady Arabelle, I must recover the diplomat's emblem."},
+		["Get a Diplomat's Emblem from Obsidian Scar Ogrim"] =
+			{appendText=" in the southern area of the underground complex. The Scar's entrance is among ruins in the mountains of central Rivenspire, northeast of Shornhelm, north of Hoarfrost Downs, and southwest of Fell's Run.", stepTextKey="The included report outlines the death of a diplomat, a personal friend of Prince Azah. They were slain by the brutal fists of the Ogrim in Obsidian Scar. To fulfill this favor for Lady Arabelle, I must recover the diplomat's emblem."},
+		[32] = 
+			{appendStepText="", stepTextKey="I retrieved an important item at Lady Arabelle's request. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Aldcroft"] =
+			{appendText=", the port city in eastern Glenumbra. The Post is near the Fighters Guild and the city's wayshrine.", stepTextKey="I retrieved an important item at Lady Arabelle's request. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+--DestroyHarpyFlockBergama
+		[33] = 
+			{appendStepText="", stepTextKey="According to this report, the townspeople of Bergama have been threatened by a harpy flock migrating through the region. To fulfill this favor for Lady Arabelle, I need to find their nesting grounds north of the village and deal with the problem."},
+		["Destroy the Harpy Flock Threatening Bergama"] =
+			{appendText=", the southern city of Alik'r Desert. The flock has been spotted north of the city's wayshrine and south of the Artisan's Oasis.", stepTextKey="According to this report, the townspeople of Bergama have been threatened by a harpy flock migrating through the region. To fulfill this favor for Lady Arabelle, I need to find their nesting grounds north of the village and deal with the problem."},
+		[34] = 
+			{appendStepText="", stepTextKey="At Lady Arabelle's request, I destroyed the harpy flock threatening Bergama. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Aldcroft"] =
+			{appendText=", the port city in eastern Glenumbra. The Post is near the Fighters Guild and the city's wayshrine.", stepTextKey="At Lady Arabelle's request, I destroyed the harpy flock threatening Bergama. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+--KillDarkWitnessesMurciensHamlet
+		[35] = 
+			{appendStepText="", stepTextKey="The report indicates that a Reach clan called the Dark Witnesses assaults Murcien's Hamlet in Bangkorai. A veteran of the Three Banners War sent a personal request for aid to Lady Arabelle. To fulfill this favor I must slay Reach warriors nearby."},
+		["Kill Dark Witnesses at Murcien's Hamlet"] =
+			{appendText="\n\nMurcien's Hamlet is across the water, north of the northern city of Evermore.", stepTextKey="The report indicates that a Reach clan called the Dark Witnesses assaults Murcien's Hamlet in Bangkorai. A veteran of the Three Banners War sent a personal request for aid to Lady Arabelle. To fulfill this favor I must slay Reach warriors nearby."},
+		[36] = 
+			{appendStepText="", stepTextKey="At Lady Arabelle's request, I made the outlying regions of the Daggerfall Covenant safer. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Aldcroft"] =
+			{appendText=", the port city in eastern Glenumbra. The Post is near the Fighters Guild and the city's wayshrine.", stepTextKey="At Lady Arabelle's request, I made the outlying regions of the Daggerfall Covenant safer. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+--KillWorldBossAlikrDesert
+		[37] = 
+			{appendStepText="", stepTextKey="According to the included report, the Alik'r Desert is haunted by several powerful and violent foes. To fulfill this favor for Lady Arabelle, who recommends gathering some allies for this task, I need to slay these terrible creatures."},
+		["Kill a World Boss in Alik'r Desert"] =
+			{appendText=":\n • Forsaken Hearts Cave is in the north-central high mountains west across the bay from Tava's Blessing. It is northwest of the Hollow Waste dolmen and west of the Aswala Stables Wayshrine.\n • Giant Camp is in the cliffs, north of the central town of Leki's Blade.\n • Hag Camp is at the base of the eastern cliffs, due north of Kozanset and west of the Satakalaam Wayshrine.\n • King's Rest, an ancient Yokudan ruin, is down at the water's edge in the northwestern area of the Motalion Necropolis. The necropolis is at the far northeastern city of Satakalaam.\n • Lesser Circle is a clearing ringed by pillars and cliffs, southeast of Sentinel below the western edge of the central ruins of Tu'whacca's Throne.\n • Lost Caravan is south of the road, south of the Divad's Chagrin Mine Wayshrine and west of the southern city of Bergama.", stepTextKey="According to the included report, the Alik'r Desert is haunted by several powerful and violent foes. To fulfill this favor for Lady Arabelle, who recommends gathering some allies for this task, I need to slay these terrible creatures."},
+		[38] = 
+			{appendStepText="", stepTextKey="At Lady Arabelle's request, I took to the field and defeated a powerful foe threatening the citizenry. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Aldcroft"] =
+			{appendText=", the port city in eastern Glenumbra. The Post is near the Fighters Guild and the city's wayshrine.", stepTextKey="At Lady Arabelle's request, I took to the field and defeated a powerful foe threatening the citizenry. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+--HelpGendinoraFindBrotherNedras
+		[39] = 
+			{appendStepText="", stepTextKey="A plea from Gendinora of Northsalt Village in Rivenspire fills this report, a request to find her missing brother Nedras. He was last seen east of Oldgate, near the Westmark Moor Dolmen. To fulfill this favor for Lady Arabelle, I should seek him out."},
+		["Help Gendinora Find Her Brother Nedras"] =
+			{appendText=". Though she lives in the northern village, he is far to the south.", stepTextKey="A plea from Gendinora of Northsalt Village in Rivenspire fills this report, a request to find her missing brother Nedras. He was last seen east of Oldgate, near the Westmark Moor Dolmen. To fulfill this favor for Lady Arabelle, I should seek him out."},
+		[40] = 
+			{appendStepText="", stepTextKey="Though the story ended sadly, I helped Gendinora find her missing brother. I should return to the Freerunners Post message board at Aldcroft to see if she has any additional news for me."},
+		["Return to Aldcroft for News from Gendinora"] =
+			{appendText=", perhaps a letter tacked to the Post board.", stepTextKey="Though the story ended sadly, I helped Gendinora find her missing brother. I should return to the Freerunners Post message board at Aldcroft to see if she has any additional news for me."},
+		[41] = 
+			{appendStepText="", stepTextKey="I assisted someone at Lady Arabelle's request. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Aldcroft"] =
+			{appendText=", the port city in eastern Glenumbra. The Post is near the Fighters Guild and the city's wayshrine.", stepTextKey="I assisted someone at Lady Arabelle's request. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+--HelpVictorelleRivenspire
+		[42] = 
+			{appendStepText="", stepTextKey="Lady Arabelle's report includes a pessimistic request for aid from Vyctorelle of Shornhelm. Her beloved, Klaandor Axe-Bearer, has gone missing. He was last seen along the Rivenspire coast, north of Veawend Ede. I should seek him out."},
+		["Help Vyctorelle Find Klaandor Axe-Bearer"] =
+			{appendText=". Vaewend Ede is a workshop in an Ayleid ruin far west of the northeastern city of Northpoint. Klaandor may have a camp on the shore between Vaewend Ede and the Westwind Lighthouse. There may be a journal to read.", stepTextKey="Lady Arabelle's report includes a pessimistic request for aid from Vyctorelle of Shornhelm. Her beloved, Klaandor Axe-Bearer, has gone missing. He was last seen along the Rivenspire coast, north of Veawend Ede. I should seek him out."},
+		[43] = 
+			{appendStepText="", stepTextKey="I suppose, after a fashion, I helped Vyctorelle in the matter of her missing beloved. I should return to the Freerunners Post message board at Aldcroft to see if she has any additional news for me."},
+		["Return to Aldcroft for News From Vyctorelle"] =
+			{appendText=", perhaps a letter tacked to the Post board.", stepTextKey="I suppose, after a fashion, I helped Vyctorelle in the matter of her missing beloved. I should return to the Freerunners Post message board at Aldcroft to see if she has any additional news for me."},
+		[44] = 
+			{appendStepText="", stepTextKey="I assisted someone at Lady Arabelle's request. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Aldcroft 19"] =
+			{appendText=", the port city in eastern Glenumbra. The Post is near the Fighters Guild and the city's wayshrine.", stepTextKey="I assisted someone at Lady Arabelle's request. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+--PersonalRequestStormhaven
+		[45] = 
+			{appendStepText="I returned to Aldcroft in eastern Glenumbra. ", stepTextKey="Lady Arabelle is grateful for the services I provided to High Rock and Hammerfell, according to this final report. She's left a letter pinned to the Freerunners Post message board. I should read the letter to see what else she has to say."},
+		["Examine Lady Arabelle's Note"] =
+			{appendText=" on the board.", stepTextKey="Lady Arabelle is grateful for the services I provided to High Rock and Hammerfell, according to this final report. She's left a letter pinned to the Freerunners Post message board. I should read the letter to see what else she has to say."},
+		[46] = 
+			{appendStepText="", stepTextKey="According to her letter, Lady Arabelle fears for the life of a dear friend, Lord Rihad at-Tura of the at-Tura estate. She sent a Ring of Daggers cadre to investigate. I should seek out their rendezvous point near Soulshriven Tower in Stormhaven."},
+		["Find the Rendezvous Spot Near Soulshriven Tower"] =
+			{appendText=", southwest of the southern port city of Wayrest.", stepTextKey="According to her letter, Lady Arabelle fears for the life of a dear friend, Lord Rihad at-Tura of the at-Tura estate. She sent a Ring of Daggers cadre to investigate. I should seek out their rendezvous point near Soulshriven Tower in Stormhaven."},
+		[47] = 
+			{appendStepText="In southwestern Stormhaven, I went to the Soulshriven Wayshrine, southwest of Wayrest. ", stepTextKey="Near the base of the stairs leading up the tower, I found a pair of bodies belonging to the Ring of Daggers cadre. I can see more at the top of the stairs. I should follow this trail to see where it leads."},
+		["Follow the Trail of Bodies to Uncover the Truth"] =
+			{appendText=" at Soulshriven Tower.", stepTextKey="Near the base of the stairs leading up the tower, I found a pair of bodies belonging to the Ring of Daggers cadre. I can see more at the top of the stairs. I should follow this trail to see where it leads."},
+		[48] = 
+			{appendStepText="At Soulshriven Tower in southwestern Stormhaven, ", stepTextKey="I followed the trail of bodies to the base of the tower. Their captain lies dead. Beside him is a logbook, torn and blood spattered. I should read it to see if I can learn anything."},
+		["Examine the Torn Logbook"] =
+			{appendText=".", stepTextKey="I followed the trail of bodies to the base of the tower. Their captain lies dead. Beside him is a logbook, torn and blood spattered. I should read it to see if I can learn anything."},
+		[49] = 
+			{appendStepText="In the Soulshriven Tower ruin in southwestern Stormhaven, I found the scout captain's book near his body. ", stepTextKey="According to the logbook, the Ring of Daggers scouts were slain by a Daedric warrior associated with a Supernal Dreamers plot in the region. I should seek the location called out by the dead captain and end this threat."},
+		["Stop the Daedric Assassin Near at-Tura Estate"] =
+			{appendText=". They should still be on the peninsula, southwest of the tower and south of the estate.", stepTextKey="According to the logbook, the Ring of Daggers scouts were slain by a Daedric warrior associated with a Supernal Dreamers plot in the region. I should seek the location called out by the dead captain and end this threat."},
+		[51] = 
+			{appendStepText="", stepTextKey="At Lady Arabelle's request, I put an end to a Daedric threat and avenged the dead Ring of Daggers scouts. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Aldcroft 20"] =
+			{appendText=", the port city in eastern Glenumbra. The Post is near the Fighters Guild and the city's wayshrine.", stepTextKey="At Lady Arabelle's request, I put an end to a Daedric threat and avenged the dead Ring of Daggers scouts. I should return to the Freerunners Post message board in Aldcroft and place proof that I completed the favor in the lockbox."},
+	},
+
+	[GetQuestName(7469)] = { --"Favor for Holgunn One-Eye" --Jordakai
+--KillDelveBossShadowfen
+		[1] = 
+			{appendStepText="", stepTextKey="People have reported deadly encounters with powerful hostiles in the delves of Shadowfen. I should clear one of the delves of Shadowfen to fulfill this favor request from Holgunn One-Eye."},
+		["Kill Delve Boss in Shadowfen"] =
+			{appendText=" at one of the following:\n • Black Maw in northwestern Shadowfen, near the water northwest of Stormhold.\n • Broken Tusk, a Daedric shrine is across the large eastern river, east of Bogmother and northeast of Forsaken Hamlet.\n • Gandranen Ruins in central Shadowfen, north of Hissimir and west of the Hatching Pools Wayshrine.\n • Atanaz Ruins, across the large, eastern river in the hills east of Alten Corimont.\n • Onkobra Kwama Mine, just southwest of the Percolating Mire Wayshrine, south of Alten Corimont.\n • Chid-Moska Ruins south of Loriasel and southwest of Hissimir in southwestern Shadowfen.", stepTextKey="People have reported deadly encounters with powerful hostiles in the delves of Shadowfen. I should clear one of the delves of Shadowfen to fulfill this favor request from Holgunn One-Eye."},
+		[2] = 
+			{appendStepText="", stepTextKey="At Holgunn's request, I entered a delve and defeated the powerful foe within. I should return to the Freerunners Post message board in Ebonheart and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Ebonheart 1"] =
+			{appendText=", the northern coastal city of Stonefalls. The Post is by the city's wayshrine.", stepTextKey="At Holgunn's request, I entered a delve and defeated the powerful foe within. I should return to the Freerunners Post message board in Ebonheart and place proof that I completed the favor in the lockbox."},
+--DeliverMammothSteakEastmarch
+		[3] = 
+			{appendStepText="", stepTextKey="Holgunn reports that a failed mammoth hunt has left those in Joruun's Stand at risk of going hungry. I should collect the steaks gifted on behalf of Prince Irnskar from the ice chest near the favor board."},
+		["Collect Mammoth Steak 1"] =
+			{appendText=".", stepTextKey="Holgunn reports that a failed mammoth hunt has left those in Joruun's Stand at risk of going hungry. I should collect the steaks gifted on behalf of Prince Irnskar from the ice chest near the favor board."},
+		[4] = 
+			{appendStepText="", stepTextKey="Holgunn reports that a failed mammoth hunt has left those in Joruun's Stand at risk of going hungry. He needs someone to deliver mammoth steaks gifted on behalf of Prince Irnskar to Jorunn's Stand in Eastmarch."},
+		["Deliver Mammoth Steak to Jorunn's Stand"] =
+			{appendText=" in the southeastern Eastmarch. There is a Mammoth Meat Ice Chest in the noble's tent near the entrance of the fort. Bare-chested Thane Theggi Gap-Tooth stands guard.", stepTextKey="Holgunn reports that a failed mammoth hunt has left those in Joruun's Stand at risk of going hungry. He needs someone to deliver mammoth steaks gifted on behalf of Prince Irnskar to Jorunn's Stand in Eastmarch."},
+		[5] = 
+			{appendStepText="", stepTextKey="At Holgunn's request, I delivered the mammoth to the people of Tamriel. I should return to the Freerunners Post message board in Ebonheart and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Ebonheart 2"] =
+			{appendText=", the northern coastal city of Stonefalls. The Post is by the city's wayshrine.", stepTextKey="At Holgunn's request, I delivered the mammoth to the people of Tamriel. I should return to the Freerunners Post message board in Ebonheart and place proof that I completed the favor in the lockbox."},
+--DeliverDrinksDavonsWatch
+		[6] = 
+			{appendStepText="", stepTextKey="Holgunn wants to boost the morale of Pact soldiers in long-term posts by sending them care parcels of drinks from across Tamriel. I should make or gather libations that I think these soldiers will enjoy, then deliver them to the specified box."},
+		["Deliver Drinks to the Ice Chest"] =
+			{appendText=" of the Society of the Steadfast Charity. It is near Davon's Fine Steeds at Davon's Watch in northeastern Stonefalls.", stepTextKey="Holgunn wants to boost the morale of Pact soldiers in long-term posts by sending them care parcels of drinks from across Tamriel. I should make or gather libations that I think these soldiers will enjoy, then deliver them to the specified box."},
+		[7] = 
+			{appendStepText="", stepTextKey="At Holgunn's request, I gathered and delivered morale-boosting treats. I should return to the Freerunners Post message board in Ebonheart and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Ebonheart 3"] =
+			{appendText=", the northern coastal city in Stonefalls. The Post is by the city's wayshrine.", stepTextKey="At Holgunn's request, I gathered and delivered morale-boosting treats. I should return to the Freerunners Post message board in Ebonheart and place proof that I completed the favor in the lockbox."},
+--FeedHungryCatsWindhelm
+		[8] = 
+			{appendStepText="", stepTextKey="Holgunn received reports of underfed stray cats roaming the chilly streets of Windhelm. They help keep the vermin out, so it's important to keep the cats around. I should collect the cat food from the ice chest by the job board and feed them."},
+		["Take Chilled Chunk Salmon from the Ice Chest 1"] =
+			{appendText=".", stepTextKey="Holgunn received reports of underfed stray cats roaming the chilly streets of Windhelm. They help keep the vermin out, so it's important to keep the cats around. I should collect the cat food from the ice chest by the job board and feed them."},
+		[9] = 
+			{appendStepText="", stepTextKey="Holgunn received reports of underfed stray cats roaming the chilly streets of Windhelm. They help keep the vermin out, so it's important to keep the cats around. I should feed any I see in Windhelm."},
+		["Feed Hungry Cats in Windhelm"] =
+			{appendText=", the northern city of Eastmarch. The cats are by the runic standing stones, south of Stormcrag Armorer's Hall on the east side of the city.", stepTextKey="Holgunn received reports of underfed stray cats roaming the chilly streets of Windhelm. They help keep the vermin out, so it's important to keep the cats around. I should feed any I see in Windhelm."},
+		[10] = 
+			{appendStepText="", stepTextKey="At Holgunn's request, I took on a mission to stabilize the morale of the people. I should return to the Freerunners Post message board in Ebonheart and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Ebonheart 4"] =
+			{appendText=", the northern coastal city in Stonefalls. The Post is by the city's wayshrine.", stepTextKey="At Holgunn's request, I took on a mission to stabilize the morale of the people. I should return to the Freerunners Post message board in Ebonheart and place proof that I completed the favor in the lockbox."},
+--HelpMizrali
+		[11] = 
+			{appendStepText="", stepTextKey="Holgunn received a missive from a Khajiit named Mizrali requesting help with an urgent matter. I should find her at the Pilgrim's Rest Inn in Ivarstead to learn more."},
+		["Help Mizrali in the Rift"] =
+			{appendText="'s westernmost village of Ivarstead. At the inn, she is upstairs with her patient.", stepTextKey="Holgunn received a missive from a Khajiit named Mizrali requesting help with an urgent matter. I should find her at the Pilgrim's Rest Inn in Ivarstead to learn more."},
+		[12] = 
+			{appendStepText="", stepTextKey="I helped Mizrali with her problem. I should return to the board to see if she has any further news for me on her issue."},
+		["Read the Letter from Mizrali"] =
+			{appendText=" on the counter by the keg at the Post at Ebonheart in Stonefalls.", stepTextKey="I helped Mizrali with her problem. I should return to the board to see if she has any further news for me on her issue."},
+		[13] = 
+			{appendStepText="", stepTextKey="I assisted someone at Holgunn's request. I should return to the Freerunners Post message board in Ebonheart and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Ebonheart 5"] =
+			{appendText=", the northern coastal city in Stonefalls. The Post is by the city's wayshrine.", stepTextKey="I assisted someone at Holgunn's request. I should return to the Freerunners Post message board in Ebonheart and place proof that I completed the favor in the lockbox."},
+--KillDwemerConstructsEP
+		[14] = 
+			{appendStepText="", stepTextKey="Holgunn reports a troubling increase in attacks by Dwemer constructs. They are found all over Tamriel, but Holgunn says there are plenty to be dismantled at Avanchnzel in the Rift. I should thin their numbers in Pact territory to complete this favor."},
+		["Kill Dwemer Constructs in Pact Territory"] =
+			{appendText="\nSome Dwemer ruins are:\n • Inner Sea Armature, west of Davon's Watch in northeastern Stonefalls.\n • Lower Bthanual in central Deshaan, west of Mournhold.\n • Mzithumz in northern Deshaan, north of Mournhold.\n • Mzulft, east of Cragwallow in eastern Eastmarch.\n • Avanchnzel, south of Honrich Tower in the southern area of The Rift.", stepTextKey="Holgunn reports a troubling increase in attacks by Dwemer constructs. They are found all over Tamriel, but Holgunn says there are plenty to be dismantled at Avanchnzel in the Rift. I should thin their numbers in Pact territory to complete this favor."},
+		[15] = 
+			{appendStepText="", stepTextKey="At Holgunn's request, I destroyed threatening creatures across Tamriel. I should return to the Freerunners Post message board in Ebonheart and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Ebonheart 6"] =
+			{appendText=", the northern coastal city in Stonefalls. The Post is by the city's wayshrine.", stepTextKey="At Holgunn's request, I destroyed threatening creatures across Tamriel. I should return to the Freerunners Post message board in Ebonheart and place proof that I completed the favor in the lockbox."},
+--KillWorldBossShadowfen
+		[16] = 
+			{appendStepText="", stepTextKey="Holgunn received concerns about powerful hostiles that have taken residence in Shadowfen. He recommends facing them with a group, but either way I should slay one of these hostiles to prove it can be done."},
+		["Kill a World Boss in Shadowfen"] =
+			{appendText=":\n •  Bitterroot Cave is in the southern swamps, east of Hissimir.\n •  Captain Bones' Shipwreck is a small camp on the far bank of the eastern river, east of Forsaken Hamlet.\n •  Haynekhtnamet's Lair is on the riverbank, southeast of Bogmother, northeast of Ten-Maur-Wolk on the narrow eastern river.\n •  Nen Ria is a small Ayleid ruin in the western swamps, southeast of Stillrise Village and west of Mud Tree Village.\n •  Slaver Camp is in the southwest, northwest of Hissimir and east of the Loriasel Ayleid ruins.\n •  Xal Thak is an ancient Argonian ruin at the southern edge of the southeastern city of Alten Corimont.", stepTextKey="Holgunn received concerns about powerful hostiles that have taken residence in Shadowfen. He recommends facing them with a group, but either way I should slay one of these hostiles to prove it can be done."},
+		[17] = 
+			{appendStepText="", stepTextKey="At Holgunn's request, I took to the field and defeated a powerful foe threatening the citizenry. I should return to the Freerunners Post message board in Ebonheart and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Ebonheart 7"] =
+			{appendText=", the northern coastal city in Stonefalls. The Post is by the city's wayshrine.", stepTextKey="At Holgunn's request, I took to the field and defeated a powerful foe threatening the citizenry. I should return to the Freerunners Post message board in Ebonheart and place proof that I completed the favor in the lockbox."},
+--CatchLongfinStonefalls
+		[18] = 
+			{appendStepText="", stepTextKey="Holgunn reports the Society of the Steadfast has seen low participation in its campaign to feed the hungry in Stonefalls. He needs someone to catch longfin from the coast of Stonefalls to lead by example and contribute to this charitable cause."},
+		["Catch Longfin in Stonefalls"] =
+			{appendText="\n\nFishing spots can be found in the Inner Sea along the northern coast.", stepTextKey="Holgunn reports the Society of the Steadfast has seen low participation in its campaign to feed the hungry in Stonefalls. He needs someone to catch longfin from the coast of Stonefalls to lead by example and contribute to this charitable cause."},
+		[19] = 
+			{appendStepText="", stepTextKey="Holgunn reports the Society of the Steadfast has seen low participation in its campaign to feed the hungry in Stonefalls. He needs someone to catch longfin from the coast of Stonefalls to lead by example and contribute to this charitable cause."},
+		["Deliver Longfin to Charity Chest"] =
+			{appendText=". It is near Davon's Fine Steeds at Davon's Watch in northeastern Stonefalls.", stepTextKey="Holgunn reports the Society of the Steadfast has seen low participation in its campaign to feed the hungry in Stonefalls. He needs someone to catch longfin from the coast of Stonefalls to lead by example and contribute to this charitable cause."},
+		[20] = 
+			{appendStepText="", stepTextKey="At Holgunn's request, I caught fish and donated it to the Society of the Steadfast's campaign to feed the hungry. I should return to the Freerunners Post message board in Ebonheart and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Ebonheart 8"] =
+			{appendText=", the northern coastal city in Stonefalls. The Post is by the city's wayshrine.", stepTextKey="At Holgunn's request, I caught fish and donated it to the Society of the Steadfast's campaign to feed the hungry. I should return to the Freerunners Post message board in Ebonheart and place proof that I completed the favor in the lockbox."},
+--ScoutDaggersPointStonefalls
+		[21] = 
+			{appendStepText="", stepTextKey="Holgunn received word of invaders at Dagger's Point in Stonefalls. He needs someone to venture out to the remote camp to investigate the specifics, then report back on what threats have made it to shore."},
+		["Scout out Dagger's Point in Stonefalls"] =
+			{appendText=" by entering the camp on the seashore near a ship, west of Ebonheart beyond Vivec's Antlers.", stepTextKey="Holgunn received word of invaders at Dagger's Point in Stonefalls. He needs someone to venture out to the remote camp to investigate the specifics, then report back on what threats have made it to shore."},
+		[22] = 
+			{appendStepText="", stepTextKey="At Holgunn's request I surveyed the area around Dagger's Point, noting the state and any threats. I should return to the Freerunners Post message board in Ebonheart and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Ebonheart 9"] =
+			{appendText=", the northern coastal city in Stonefalls. The Post is by the city's wayshrine.", stepTextKey="At Holgunn's request I surveyed the area around Dagger's Point, noting the state and any threats. I should return to the Freerunners Post message board in Ebonheart and place proof that I completed the favor in the lockbox."},
+--DestroyShalkNestStonefalls
+		[23] = 
+			{appendStepText="", stepTextKey="Residents contending with an eruption in Senie reported a nest of great shalk menacing the village. Holgunn needs someone to destroy the nest before it can make things worse for the survivors in Stonefalls."},
+		["Destroy the Shalk Nest"] =
+			{appendText=" on the north side of the road, northeast of Othrenis Wayshrine and southwest of the burned, eastern village of Senie.", stepTextKey="Residents contending with an eruption in Senie reported a nest of great shalk menacing the village. Holgunn needs someone to destroy the nest before it can make things worse for the survivors in Stonefalls."},
+		[24] = 
+			{appendStepText="", stepTextKey="I destroyed the great shalk nest near the village of Senie. I should return to Holgunn's lockbox and provide proof that I completed this request."},
+		["Bring Proof to the Freerunners Post at Ebonheart 10"] =
+			{appendText=", the northern coastal city in Stonefalls. The Post is by the city's wayshrine.", stepTextKey="I destroyed the great shalk nest near the village of Senie. I should return to Holgunn's lockbox and provide proof that I completed this request."},
+--KillDelveBossEastmarch
+		[25] = 
+			{appendStepText="", stepTextKey="People have reported deadly encounters with powerful hostiles in the delves of Eastmarch. I should clear one of the delves of Eastmarch to fulfill this favor request from Holgunn One-Eye."},
+		["Kill Delve Boss in Eastmarch"] =
+			{appendText=" where the Nords build wooden door entrances for their mountain caverns:\n •  The Bastard's Tomb is an ancient burial site in the southeastern mountains, due east of Jorunn's Stand Wayshrine and northeast of the road to The Rift.\n •  The Chill Hollow is east of Windhelm, beyond Lower Yorgrim, up in the far northeastern mountains.\n •  The Frigid Grotto is northwest of Fort Amol and north of Lost Mine Cave in the snowy southwestern mountains.\n •  Icehammer's Vault is east of Kynesgrove and north of Cragwallow in the eastern mountains.\n •  Old Sord's Cave is on the south side of the southern road, northeast of Mistwatch, south of Wittestadr, and southwest of the Logging Camp Wayshrine.\n •  Stormcrag Crypt is in the southeast, south of Jorunn's Stand Wayshrine, on the west side of the road to The Rift.", stepTextKey="People have reported deadly encounters with powerful hostiles in the delves of Eastmarch. I should clear one of the delves of Eastmarch to fulfill this favor request from Holgunn One-Eye."},
+		[26] = 
+			{appendStepText="", stepTextKey="At Holgunn's request, I entered a delve and defeated the powerful foe within. I should return to the Freerunners Post message board in Ebonheart and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Ebonheart 11"] =
+			{appendText=", the northern coastal city in Stonefalls. The Post is by the city's wayshrine.", stepTextKey="At Holgunn's request, I entered a delve and defeated the powerful foe within. I should return to the Freerunners Post message board in Ebonheart and place proof that I completed the favor in the lockbox."},
+--DeliverMammothSteakIvarstead
+		[27] = 
+			{appendStepText="", stepTextKey="Holgunn reports that a failed mammoth hunt has left those in Ivarstead at risk of going hungry. I should collect the steaks gifted on behalf of Prince Irnskar from the ice chest near the favor board."},
+		["Collect Mammoth Steak 2"] =
+			{appendText=".", stepTextKey="Holgunn reports that a failed mammoth hunt has left those in Ivarstead at risk of going hungry. I should collect the steaks gifted on behalf of Prince Irnskar from the ice chest near the favor board."},
+		[28] = 
+			{appendStepText="", stepTextKey="Holgunn reports that a failed mammoth hunt has left those in Ivarstead at risk of going hungry. He needs someone to deliver mammoth steaks gifted on behalf of Prince Irnskar to the Horker's Tusk Tavern in Ivarstead."},
+		["Deliver Mammoth Steak to the Horker's Tusk Tavern"] =
+			{appendText=" at the village in The Rift's far northwest. Place the steaks in the chest there.", stepTextKey="Holgunn reports that a failed mammoth hunt has left those in Ivarstead at risk of going hungry. He needs someone to deliver mammoth steaks gifted on behalf of Prince Irnskar to the Horker's Tusk Tavern in Ivarstead."},
+		[29] = 
+			{appendStepText="", stepTextKey="At Holgunn's request, I delivered the mammoth to the people of Tamriel. I should return to the Freerunners Post message board in Ebonheart and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Ebonheart 12"] =
+			{appendText=", the northern coastal city in Stonefalls. The Post is by the city's wayshrine.", stepTextKey="At Holgunn's request, I delivered the mammoth to the people of Tamriel. I should return to the Freerunners Post message board in Ebonheart and place proof that I completed the favor in the lockbox."},
+--MakeGatherCheeseDavonsWatch
+		[30] = 
+			{appendStepText="", stepTextKey="Holgunn wants to boost the morale of Pact soldiers in long-term posts by sending them care parcels of artisan cheese from across Tamriel. I should make or gather cheese that I think these soldiers will enjoy, then deliver them to the specified box."},
+		["Make or Gather Cheese"] =
+			{appendText="\nCook a tasty meal using cheese, such as:\n • Alik'r Beets with Goat Cheese\n • Apple-Eidar Cheese Salad\n • Carrot Cheesecake\n • Cheese Pork Schnitzel\n • Cheesemonger's Salad\n • Chevre-Radish Salad with Pumpkin Seeds\n • Creamcheese Frosted Gorapple Cake\n • Crispy Cheddar Chicken\n • Drunken Goat Cheese with Radishes\n • Eidar Banana-Radish Vichyssoise\n • Eidar Radish Salad\n • Elsweyr Fondue\n • Every-Morndas Casserole\n • Falkreath Meat Loaf\n • Firsthold Fruit and Cheese Plate\n • Fresh Apples and Eidar Cheese\n • Jagga-Drenched \"Mud Ball\"\n • Khajiiti Sweet-Stuffed Duck\n • Kwama Egg Omelet\n • Melon-Baked Parmesan Pork\n • Melon-Chevre Salad\n • Necrom Beetle-Cheese Poutine\n • Ordinator's Beetle-Cheese Soup\n • Parmesan Eels in Watermelon\n • Port Hunding Cheese Fries\n • Pumpkin Cheesecake\n • Rabbit Haunch with Cheese Grits\n • Seared Slaughterfish with Mammoth Cheese\n • The Skald-King's Patty Melt\n • Solstheim Elk and Scuttle\n • Stormhold Baked Bananas\n • Stuffed Venison Haunch\n • Taneth Chili Cheese Corn\n • Whiterun Cheese-Baked Trout", stepTextKey="Holgunn wants to boost the morale of Pact soldiers in long-term posts by sending them care parcels of artisan cheese from across Tamriel. I should make or gather cheese that I think these soldiers will enjoy, then deliver them to the specified box."},
+		[31] = 
+			{appendStepText="", stepTextKey="Holgunn wants to boost the morale of Pact soldiers in long-term posts by sending them care parcels of artisan cheese from across Tamriel. I should make or gather cheese that I think these soldiers will enjoy, then deliver them to the specified box."},
+		["Deliver Cheese to the Ice Chest"] =
+			{appendText=". The Society of the Steadfast Charity chest is near Davon's Fine Steeds at Davon's Watch in northeastern Stonefalls.", stepTextKey="Holgunn wants to boost the morale of Pact soldiers in long-term posts by sending them care parcels of artisan cheese from across Tamriel. I should make or gather cheese that I think these soldiers will enjoy, then deliver them to the specified box."},
+		[32] = 
+			{appendStepText="", stepTextKey="At Holgunn's request, I gathered and delivered morale-boosting treats. I should return to the Freerunners Post message board in Ebonheart and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Ebonheart 13"] =
+			{appendText=", the northern coastal city in Stonefalls. The Post is by the city's wayshrine.", stepTextKey="At Holgunn's request, I gathered and delivered morale-boosting treats. I should return to the Freerunners Post message board in Ebonheart and place proof that I completed the favor in the lockbox."},
+--FeedHungryCatsMournhold
+		[33] = 
+			{appendStepText="", stepTextKey="I must collect the cat food Holgunn's subbordinates gathered from the ice chest by the job board."},
+		["Take Chilled Chunk Salmon from the Ice Chest 2"] =
+			{appendText=".", stepTextKey="I must collect the cat food Holgunn's subbordinates gathered from the ice chest by the job board."},
+		[34] = 
+			{appendStepText="", stepTextKey="Holgunn received reports of underfed stray cats roaming the streets of Mournhold. He requested that I feed them, saying it's important to keep the cats around or else they'll have a vermin problem, which is far worse."},
+		["Feed Hungry Cats in Mournhold"] =
+			{appendText=", the central city of Deshaan. Some are on the wall above and east of the Fighters Guild, southwest of the wayshrine.", stepTextKey="Holgunn received reports of underfed stray cats roaming the streets of Mournhold. He requested that I feed them, saying it's important to keep the cats around or else they'll have a vermin problem, which is far worse."},
+		[35] = 
+			{appendStepText="", stepTextKey="At Holgunn's request, I took on a mission to stabilize the morale of the people. I should return to the Freerunners Post message board in Ebonheart and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Ebonheart 14"] =
+			{appendText=", the northern coastal city in Stonefalls. The Post is by the city's wayshrine.", stepTextKey="At Holgunn's request, I took on a mission to stabilize the morale of the people. I should return to the Freerunners Post message board in Ebonheart and place proof that I completed the favor in the lockbox."},
+--HelpGathotarShadowfen
+		[36] = 
+			{appendStepText="", stepTextKey="Holgunn received a request for aid in a scholarly endeavor. I should find a Nord named Gathotar south of the Chid-Moska Ruins in Shadowfen."},
+		["Help Gathotar in Shadowfen"] =
+			{appendText=". Chid-Moska is in the southern swamps, southwest of Hissimir and south of Loriasel Wayshrine. The Nord is waiting at the dilapidated bridge to Blackwood, at the southeast end of the ancient ruin.", stepTextKey="Holgunn received a request for aid in a scholarly endeavor. I should find a Nord named Gathotar south of the Chid-Moska Ruins in Shadowfen."},
+		[37] = 
+			{appendStepText="", stepTextKey="I helped Gathotar with his problem. I should return to the board to see if he has any further news for me on his issue."},
+		["Read the Letter from Gathotar"] =
+			{appendText=" on the counter by the keg at the Post at Ebonheart in Stonefalls.", stepTextKey="I helped Gathotar with his problem. I should return to the board to see if he has any further news for me on his issue."},
+		[38] = 
+			{appendStepText="", stepTextKey="I assisted someone at Holgunn's request. I should return to the Freerunners Post message board in Ebonheart and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Ebonheart 15"] =
+			{appendText=", the northern coastal city in Stonefalls. The Post is by the city's wayshrine.", stepTextKey="I assisted someone at Holgunn's request. I should return to the Freerunners Post message board in Ebonheart and place proof that I completed the favor in the lockbox."},
+--KillGhostsEP
+		[39] = 
+			{appendStepText="", stepTextKey="Holgunn reports a troubling increase in attacks by ghosts and spirits. They are found all over Tamriel, but Holgunn says there are a concentration of them at Selfora in Deshaan. I should thin their numbers in Pact territory to complete this favor."},
+		["Kill Ghosts in Pact Territory"] =
+			{appendText="\nThere are many places haunted by ghosts in Stonefalls, Deshaan, Shadowfen, Eastmarch, and The Rift.\n\nNotable haunted burial sites include:\n •  The Forgotten Crypts in western Deshaan, southeast of the village of Quarantine Serk.\n •  The Hall of the Dead in Windhelm, the northern city of Eastmarch.", stepTextKey="Holgunn reports a troubling increase in attacks by ghosts and spirits. They are found all over Tamriel, but Holgunn says there are a concentration of them at Selfora in Deshaan. I should thin their numbers in Pact territory to complete this favor."},
+		[40] = 
+			{appendStepText="", stepTextKey="At Holgunn's request, I destroyed threatening creatures across Tamriel. I should return to the Freerunners Post message board in Ebonheart and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Ebonheart 16"] =
+			{appendText=", the northern coastal city in Stonefalls. The Post is by the city's wayshrine.", stepTextKey="At Holgunn's request, I destroyed threatening creatures across Tamriel. I should return to the Freerunners Post message board in Ebonheart and place proof that I completed the favor in the lockbox."},
+--KillWorldBossStonefalls
+		[41] = 
+			{appendStepText="", stepTextKey="Holgunn received concerns about powerful hostiles that have taken residence in Stonefalls. He recommends facing them with a group, but either way I should slay one of these hostiles to prove it can be done."},
+		["Kill a World Boss in Stonefalls"] =
+			{appendText=":\n •  The Brahma's Grove is in the south, just west of the southern Fort Arand and far south of the coastal city of Ebonheart.\n •  Cave of Memories is a Dunmer burial site northwest of the western settlement of Heimlyn Keep. Ulath Ashlanders camp at the entrance.\n •  The Matron's Clutch is at a shipwreck off the coast west of the northern city of Ebonheart.\n •  Shipwreck Strand is a shipwreck on the beach west of the northeastern city of Davon's Watch.\n •  Shivering Shrine, a Daedric ruin, is atop a mountain north of the southwestern city of Kragenmoor.\n •  Strifeswarm Hive is a kwama mine south of the northeastern city of Davon's Watch and east of the burned town of Senie.", stepTextKey="Holgunn received concerns about powerful hostiles that have taken residence in Stonefalls. He recommends facing them with a group, but either way I should slay one of these hostiles to prove it can be done."},
+		[42] = 
+			{appendStepText="", stepTextKey="At Holgunn's request, I took to the field and defeated a powerful foe threatening the citizenry. I should return to the Freerunners Post message board in Ebonheart and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Ebonheart 17"] =
+			{appendText=", the northern coastal city in Stonefalls. The Post is by the city's wayshrine.", stepTextKey="At Holgunn's request, I took to the field and defeated a powerful foe threatening the citizenry. I should return to the Freerunners Post message board in Ebonheart and place proof that I completed the favor in the lockbox."},
+--ExterminateInvasiveWildlife
+		[43] = 
+			{appendStepText="", stepTextKey="Residents in Eastmarsh have reported strange creatures they've never seen threatening local wildlife. Holgunn suspects Stonefalls creatures may be encroaching their territory. He needs these destroyed before they spread."},
+		["Exterminate Invasive Wildlife"] =
+			{appendText=" near The Chill Hollow, east of the northern city of Windhelm in Eastmarch.", stepTextKey="Residents in Eastmarsh have reported strange creatures they've never seen threatening local wildlife. Holgunn suspects Stonefalls creatures may be encroaching their territory. He needs these destroyed before they spread."},
+		[44] = 
+			{appendStepText="", stepTextKey="I exterminated the invasive wildlife encroaching Eastmarch's residents. I should return to Holgunn's lockbox and provide proof that I completed his request."},
+		["Bring Proof to the Freerunners Post at Ebonheart 18"] =
+			{appendText=", the northern coastal city in Stonefalls. The Post is by the city's wayshrine.", stepTextKey="I exterminated the invasive wildlife encroaching Eastmarch's residents. I should return to Holgunn's lockbox and provide proof that I completed his request."},
+--HelpSurielShadowfen
+		[45] = 
+			{appendStepText="", stepTextKey="Holgunn received a note from an unknown source requesting aid on behalf of a missing Breton named Suriel. I should search for her in southeast Shadowfen and see what I can do to help."},
+		["Help Suriel in Shadowfen"] =
+			{appendText=". She is likely near the river east of Camp Crystal Abattoir and southeast of the city of Alten Corimont.", stepTextKey="Holgunn received a note from an unknown source requesting aid on behalf of a missing Breton named Suriel. I should search for her in southeast Shadowfen and see what I can do to help."},
+		[46] = 
+			{appendStepText="", stepTextKey="I helped Suriel with her problem. I should return to the board to see if she has any further news for me on her issue."},
+		["Read the Letter from Suriel"] =
+			{appendText=" on the counter by the keg at the Post at Ebonheart in Stonefalls.", stepTextKey="I helped Suriel with her problem. I should return to the board to see if she has any further news for me on her issue."},
+		[47] = 
+			{appendStepText="", stepTextKey="I assisted someone at Holgunn's request. I should return to the Freerunners Post message board in Ebonheart and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Ebonheart 19"] =
+			{appendText=", the northern coastal city in Stonefalls. The Post is by the city's wayshrine.", stepTextKey="I assisted someone at Holgunn's request. I should return to the Freerunners Post message board in Ebonheart and place proof that I completed the favor in the lockbox."},
+--HolgunnDocuments
+		[48] = 
+			{appendStepText="", stepTextKey="Holgunn needs someone to recover Pact documents stolen from a courier headed to him. The courier was attacked by bandits that he says headed east off the road between Fort Greenwall and Riften after robbing him. I should search for them there."},
+		["Find the Lost Courier"] =
+			{appendText=" in the eastern wilds of The Rift. It is likely the courier headed towards the mountains, northeast of the eastern city of Riften, east of the bandit-infested fort and beyond the giant camp.", stepTextKey="Holgunn needs someone to recover Pact documents stolen from a courier headed to him. The courier was attacked by bandits that he says headed east off the road between Fort Greenwall and Riften after robbing him. I should search for them there."},
+		[49] = 
+			{appendStepText="In the eastern wilds of The Rift, northeast of Riften, ", stepTextKey="I found a wagon that matches the description of details about the bandits that robbed Holgunn's courier. I should search the wagon for clues about what happened."},
+		["Inspect the Wagon"] =
+			{appendText="'s charred remains.", stepTextKey="I found a wagon that matches the description of details about the bandits that robbed Holgunn's courier. I should search the wagon for clues about what happened."},
+		[50] = 
+			{appendStepText="In the eastern wilds of The Rift, northeast of Riften, ", stepTextKey="I found the trail for the bandits that robbed Holgunn's courier leading away from a broken wagon. I should examine any items I find along the trail for clues."},
+		["Follow the Trail"] =
+			{appendText=" to the southeast, near the shrine on the overhang.", stepTextKey="I found the trail for the bandits that robbed Holgunn's courier leading away from a broken wagon. I should examine any items I find along the trail for clues."},
+		[51] = 
+			{appendStepText="In the eastern wilds of The Rift, northeast of Riften, ", stepTextKey="I found the trail for the bandits that robbed Holgunn's courier leading away from a broken wagon. I should examine any items I find along the trail for clues."},
+		["Follow The Trail Further"] =
+			{appendText=", heading downhill to the southeast to a birch grove, closer to the mountains.", stepTextKey="I found the trail for the bandits that robbed Holgunn's courier leading away from a broken wagon. I should examine any items I find along the trail for clues."},
+		[52] = 
+			{appendStepText="In the eastern wilds of The Rift, northeast of Riften, ", stepTextKey="I found the trail for the bandits that robbed Holgunn's courier leading away from a broken wagon. I should examine any items I find along the trail for clues."},
+		["Follow The Trail Even Further"] =
+			{appendText=", continuing southeast to the east side of a circular road in a camp. There should be a cave entrance nearby.", stepTextKey="I found the trail for the bandits that robbed Holgunn's courier leading away from a broken wagon. I should examine any items I find along the trail for clues."},
+		[53] = 
+			{appendStepText="I reached a cave entrance far east of the city of Riften in the eastern mountains of The Rift. ", stepTextKey="The trail of the bandits that robbed Holgunn's courier ended in a burned body outside of a mine. Ashen footsteps lead from the body into the mine. I should follow the trail to see if I can still recover Holgunn's stolen parcel."},
+		["Search for the Stolen Courier Pack"] =
+			{appendText=" in the Lost Prospect mine or beyond.", stepTextKey="The trail of the bandits that robbed Holgunn's courier ended in a burned body outside of a mine. Ashen footsteps lead from the body into the mine. I should follow the trail to see if I can still recover Holgunn's stolen parcel."},
+		[54] = 
+			{appendStepText="In the eastern mountains, far east of the city of Riften in The Rift, I traveled through the Lost Prospect mine and emerged on a plateau, an ancient ritual site. ", stepTextKey="I followed the trail of the bandits that robbed Holgunn's courier to an assailant that killed and robbed them. A pack that matches the courier's description of what they stole is here, but the papers are scattered. I should retrieve them."},
+		["Retrieve Holgunn's Missing Documents"] =
+			{appendText=".", stepTextKey="I followed the trail of the bandits that robbed Holgunn's courier to an assailant that killed and robbed them. A pack that matches the courier's description of what they stole is here, but the papers are scattered. I should retrieve them."},
+		["Retrieve the Courier's Backpack"] =
+			{appendText=".", stepTextKey="I followed the trail of the bandits that robbed Holgunn's courier to an assailant that killed and robbed them. A pack that matches the courier's description of what they stole is here, but the papers are scattered. I should retrieve them."},
+		["Retrieve Holgunn's Missing Letter"] =
+			{appendText=".", stepTextKey="I followed the trail of the bandits that robbed Holgunn's courier to an assailant that killed and robbed them. A pack that matches the courier's description of what they stole is here, but the papers are scattered. I should retrieve them."},
+		[55] = 
+			{appendStepText="", stepTextKey="I retrieved the missing Pact documents for Holgunn. I should return to Holgunn's lockbox and provide proof I completed his request."},
+		["Bring Proof to the Freerunners Post at Ebonheart 20"] =
+			{appendText=", the northern coastal city in Stonefalls. The Post is by the city's wayshrine.", stepTextKey="I retrieved the missing Pact documents for Holgunn. I should return to Holgunn's lockbox and provide proof I completed his request."},
+	},
+
+	[GetQuestName(7477)] = { --"Favor for Battlereeve Urcelmo" --Jordakai
+--SweetrollsWillowgrove
+		[1] = 
+			{appendStepText="", stepTextKey="This report details the losses felt by families in Willowgrove during the Three Banners War. Battlereeve Urcelmo requests sweetrolls be delivered to the village. A remembrance of not just a sacrifice made but moments well lived."},
+		["Take Sweetrolls from the Ice Chest 1"] =
+			{appendText=" at the Freerunners Post Board near the wayshrine at Skywatch, the eastern port city of Auridon.", stepTextKey="This report details the losses felt by families in Willowgrove during the Three Banners War. Battlereeve Urcelmo requests sweetrolls be delivered to the village. A remembrance of not just a sacrifice made but moments well lived."},
+		[2] = 
+			{appendStepText="", stepTextKey="Battlereeve Urcelmo seeks to memorialize a band of soldiers who lost their lives in the Three Banners War. To fulfill this favor for the Battlereeve, I must bring the included sweetrolls to Willowgrove village in Reaper's March."},
+		["Deliver Sweetrolls to Willowgrove in Reaper's March"] =
+			{appendText=", in the southeastern area of the region. Place the sweetrolls in the Dominion Contribution Chest by Ianwaen at a cooking fire.", stepTextKey="Battlereeve Urcelmo seeks to memorialize a band of soldiers who lost their lives in the Three Banners War. To fulfill this favor for the Battlereeve, I must bring the included sweetrolls to Willowgrove village in Reaper's March."},
+		[3] = 
+			{appendStepText="", stepTextKey="At the battlereeve's request, I passed on a delivery of sweets to the people of Tamriel. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Skywatch 1"] =
+			{appendText=" in Auridon. It is near the city's wayshrine and the open-air Sky's Edge Tavern.", stepTextKey="At the battlereeve's request, I passed on a delivery of sweets to the people of Tamriel. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+--WorldBossMalabalTor
+		[4] = 
+			{appendStepText="", stepTextKey="The included report outlines a number of powerful foes preying on the people of Malabal Tor. Battlereeve Urcelmo asks that I gather a group of warriors brave enough to tackle this threat head on."},
+		["Kill a World Boss in Malabal Tor"] =
+			{appendText=":\n • Bitterpoint Strand, a sandbar island north of the western port city of Velyn Harbor.\n • Dugan's Knoll, a hill at the foot of a cliff northeast of Ilayas Ruins, and northeast of Velyn Harbor.\n • Bone Grappler's Nest on a small peninsula in the lake south of Tanglehaven and west of Bloodtoil Wayshrine in the south.\n • Jagged Grotto on the northern coast, north of the central village of Vulkwasten.\n • River Edge, a small campsite on the river bank near a bridge, below and east of the central city of Silvenar.\n • Windshriek Strand, a beach on the northwestern coast, northwest of Wilding Run, and far northwest from the northern town of Baandari Trading Post.", stepTextKey="The included report outlines a number of powerful foes preying on the people of Malabal Tor. Battlereeve Urcelmo asks that I gather a group of warriors brave enough to tackle this threat head on."},
+		[5] = 
+			{appendStepText="", stepTextKey="At the battlereeve's request, I took to the field and defeated a powerful foe threatening the citizenry. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Skywatch 2"] =
+			{appendText=" in Auridon. It is near the city's wayshrine and the open-air Sky's Edge Tavern.", stepTextKey="At the battlereeve's request, I took to the field and defeated a powerful foe threatening the citizenry. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+--FeedHungryCatsSkywatch
+		[6] = 
+			{appendStepText="", stepTextKey="The included report describes the battlereeve's hope to curry political favor through simple acts. A way to stabilize the region in this time of war. He asks I retrieve the chilled chunk salmon from the nearby ice chest."},
+		["Take Chilled Chunk Salmon from the Ice Chest"] =
+			{appendText=" at the Post.", stepTextKey="The included report describes the battlereeve's hope to curry political favor through simple acts. A way to stabilize the region in this time of war. He asks I retrieve the chilled chunk salmon from the nearby ice chest."},
+		[7] = 
+			{appendStepText="", stepTextKey="The included report describes the battlereeve's hope to curry political favor through simple acts. A way to stabilize the region in this time of war. To fulfill this favor for the battlereeve, I must feed the cats of Skywatch."},
+		["Feed Hungry Cats in Skywatch"] =
+			{appendText=", the eastern port city of Auridon. There are cats at the city's northwestern wall by Tuunerol's House, northeast of the bank.", stepTextKey="The included report describes the battlereeve's hope to curry political favor through simple acts. A way to stabilize the region in this time of war. To fulfill this favor for the battlereeve, I must feed the cats of Skywatch."},
+		[8] = 
+			{appendStepText="", stepTextKey="At the battlereeve's request, I took on a mission to stabilize the morale of the people. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Skywatch 3"] =
+			{appendText=" in Auridon. It is near the city's wayshrine and the open-air Sky's Edge Tavern.", stepTextKey="At the battlereeve's request, I took on a mission to stabilize the morale of the people. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+--SweetTreats
+		[9] = 
+			{appendStepText="", stepTextKey="The Battlereeve's hopes to improve morale among the citizens of Tamriel. To fulfill this favor I need to make or procure sweets. Many types will do, such as Mistral Banana Bread or Grape Preserves."},
+		["Buy or Gather Sweet Treats"] =
+			{appendText="\n\nA good cooking fire or a chef may be helpful.", stepTextKey="The Battlereeve's hopes to improve morale among the citizens of Tamriel. To fulfill this favor I need to make or procure sweets. Many types will do, such as Mistral Banana Bread or Grape Preserves."},
+		[10] = 
+			{appendStepText="", stepTextKey="The Battlereeve's hopes to improve morale among the citizens of Tamriel. To fulfill this favor I need to make or procure sweets. Many types will do, such as Mistral Banana Bread or Grape Preserves."},
+		["Deliver Sweets to Ice Chest"] =
+			{appendText=", a special basket for Dominion Contributions at the Freerunners Post of Skywatch, the eastern city in Auridon.", stepTextKey="The Battlereeve's hopes to improve morale among the citizens of Tamriel. To fulfill this favor I need to make or procure sweets. Many types will do, such as Mistral Banana Bread or Grape Preserves."},
+		[11] = 
+			{appendStepText="", stepTextKey="At the battlereeve's request, I gathered and delivered morale-boosting treats. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Skywatch 4"] =
+			{appendText=" in Auridon. It is near the city's wayshrine and the open-air Sky's Edge Tavern.", stepTextKey="At the battlereeve's request, I gathered and delivered morale-boosting treats. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+--HelpJurakdarMoonmont
+		[12] = 
+			{appendStepText="", stepTextKey="The included report describes some kind of disturbance near Moonmont in Reaper's March. The battlereeve wants me to seek out Jurak-dar, who apparently lurks near the temple."},
+		["Help Jurak-dar in Moonmont"] =
+			{appendText=" at the south end of Reaper's March. The robed Khajiit stands by a broken stonework at a tree, up behind and just southwest of the ancient temple.", stepTextKey="The included report describes some kind of disturbance near Moonmont in Reaper's March. The battlereeve wants me to seek out Jurak-dar, who apparently lurks near the temple."},
+		[13] = 
+			{appendStepText="", stepTextKey="I resolved the issue at Moonmont. I should return to the Freerunners Post message board at Skywatch to see if there's any additional news."},
+		["Examine the Letter from Jurak-dar"] =
+			{appendText=" on the table by the keg at the Freerunners Post board at Skywatch in Auridon.", stepTextKey="I resolved the issue at Moonmont. I should return to the Freerunners Post message board at Skywatch to see if there's any additional news."},
+		[14] = 
+			{appendStepText="", stepTextKey="I assisted someone at the battlereeve's request. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Skywatch 5"] =
+			{appendText=" in Auridon. It is near the city's wayshrine and the open-air Sky's Edge Tavern.", stepTextKey="I assisted someone at the battlereeve's request. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+--KillDelveBossReapersMarch
+		[15] = 
+			{appendStepText="", stepTextKey="The included report highlights an increase in deadly encounters at the caves and chambers of Reaper's March. To fulfill this favor for the battlereeve, I need to defeat one of the powerful foes found within the delves of that region."},
+		["Kill a Delve Boss in Reaper's March"] =
+			{appendText=":\n • Claw's Strike, a ruined Khajiiti temple, is southwest of the city of Rawl'Kha and north of the Do'Krin Monastery.\n • Fardir's Folly is at an Ayleid ruin, north of Fort Sphinxmoth in the region's far northeast.\n • Jode's Light is a Khajiit temple ruin, west of the northeastern city of Dune.\n • Kuna's Delve is a mine, south of the northern city of Arenthia.\n • Thibaut's Cairn, a crypt east of the central village of Vinedusk.\n • Weeping Wind Cave is northeast of Willowgrove in southeastern Reaper's March.", stepTextKey="The included report highlights an increase in deadly encounters at the caves and chambers of Reaper's March. To fulfill this favor for the battlereeve, I need to defeat one of the powerful foes found within the delves of that region."},
+		[16] = 
+			{appendStepText="", stepTextKey="At the battlereeve's request, I entered a delve and defeated the powerful foe within. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Skywatch 6"] =
+			{appendText=" in Auridon. It is near the city's wayshrine and the open-air Sky's Edge Tavern.", stepTextKey="At the battlereeve's request, I entered a delve and defeated the powerful foe within. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+--BaitCliffDartersWoodhearth
+		[17] = 
+			{appendStepText="", stepTextKey="According to the included report, the battlereeve hopes to use a natural solution to solve a vermin infestation. I should start by pulling the cliff darter bait from the nearby ice chest."},
+		["Take Cliff Darter Bait from the Ice Chest"] =
+			{appendText=" near the Post board at Skywatch in Auridon.", stepTextKey="According to the included report, the battlereeve hopes to use a natural solution to solve a vermin infestation. I should start by pulling the cliff darter bait from the nearby ice chest."},
+		[18] = 
+			{appendStepText="", stepTextKey="To fulfill this favor for Battlereeve Urcelmo, I need to bring some cliff darter bait to Woodhearth in hopes it will naturally resolve a vermin infestation."},
+		["Bait Cliff Darters in Woodhearth"] =
+			{appendText=", the southwestern city in Greenshade. The winged creatures seem to congregate by a roadside lamppost, west of the city's armorers at Blade and Song and Maiden's Guard.", stepTextKey="To fulfill this favor for Battlereeve Urcelmo, I need to bring some cliff darter bait to Woodhearth in hopes it will naturally resolve a vermin infestation."},
+		[19] = 
+			{appendStepText="", stepTextKey="At the battlereeve's request, I took on a mission to stabilize the morale of the people. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Skywatch 7"] =
+			{appendText=" in Auridon. It is near the city's wayshrine and the open-air Sky's Edge Tavern.", stepTextKey="At the battlereeve's request, I took on a mission to stabilize the morale of the people. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+--KillWorldBossAuridon
+		[20] = 
+			{appendStepText="", stepTextKey="Reports are flooding in of powerful fes terrorizing the people of Auridon. Battlereeve Urcelmo asks that I gather a group of warriors brave enough to tackle this threat head on for the sake of the people."},
+		["Kill a World Boss in Auridon"] =
+			{appendText=":\n • Heretic's Summons is a small Daedric ruin on the eastern shore, north of the city of Skywatch.\n • Heritance Proving Ground is a camp on the northeastern shore, north of the College of Aldmeri Propriety.\n • Nestmother's Den is in a cavern, east of the northwestern city of Greenwater Cove.\n • Seaside Scarp Camp is on the western coast near Seabloom Villa, west of Tanzelwil.\n • Soulfire Plateau is an Altmer compound overlooking the eastern sea, southeast of Phaer and northeast of Silsailen.\n • Wreck of the Raptor, a haunted shipwreck on the western coast near Smuggler's Cove, west of the Mathiesen Wayshrine and southwest of Shattered Grove.", stepTextKey="Reports are flooding in of powerful fes terrorizing the people of Auridon. Battlereeve Urcelmo asks that I gather a group of warriors brave enough to tackle this threat head on for the sake of the people."},
+		[21] = 
+			{appendStepText="", stepTextKey="At the battlereeve's request, I took to the field and defeated a powerful foe threatening the citizenry. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Skywatch 8"] =
+			{appendText=" in Auridon. It is near the city's wayshrine and the open-air Sky's Edge Tavern.", stepTextKey="At the battlereeve's request, I took to the field and defeated a powerful foe threatening the citizenry. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+--SweetrollsTanglehavenMalabalTor
+		[22] = 
+			{appendStepText="", stepTextKey="This report from Battlereeve Urcelmo notes losses felt by civilians in Malabal Tor. He hopes to offer them a glimmer of hope in the form of tasty treats. I should take the sweetrolls out of the nearby ice chest."},
+		["Take Sweetrolls from the Ice Chest 2"] =
+			{appendText=" at the Freerunners Post Board near the wayshrine at Skywatch, the eastern port city of Auridon.", stepTextKey="This report from Battlereeve Urcelmo notes losses felt by civilians in Malabal Tor. He hopes to offer them a glimmer of hope in the form of tasty treats. I should take the sweetrolls out of the nearby ice chest."},
+		[23] = 
+			{appendStepText="", stepTextKey="The battlereeve feels the losses of a village in Malabal Tor. He sent sweetrolls to be distributed to the people of the village with hope for a better tomorrow. To fulfill this favor, I need to deliver the sweetrolls to Tanglehaven."},
+		["Deliver Sweetrolls to Tanglehaven in Malabal Tor"] =
+			{appendText=". They are expected at the Cook's Hut in this southern village on the island, southwest of the central city of Vulkwasten.", stepTextKey="The battlereeve feels the losses of a village in Malabal Tor. He sent sweetrolls to be distributed to the people of the village with hope for a better tomorrow. To fulfill this favor, I need to deliver the sweetrolls to Tanglehaven."},
+		[24] = 
+			{appendStepText="", stepTextKey="At the battlereeve's request, I passed on a delivery of sweets to the people of Tamriel. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Skywatch 9"] =
+			{appendText=" in Auridon. It is near the city's wayshrine and the open-air Sky's Edge Tavern.", stepTextKey="At the battlereeve's request, I passed on a delivery of sweets to the people of Tamriel. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+--DestroyWolfPackMalabalTor
+		[25] = 
+			{appendStepText="", stepTextKey="Residents report a pack of werewolves wreaking havoc in the jungles of Malabal Tor. Battlereeve Urcelmo asks that I track down the pack and cull them before they kill more innocents."},
+		["Destroy the Wolf Pack"] =
+			{appendText=" in southwestern Malabal Tor. The pack was seen near a small lake, southeast of Velyn Harbor and southwest of Dra'bul.", stepTextKey="Residents report a pack of werewolves wreaking havoc in the jungles of Malabal Tor. Battlereeve Urcelmo asks that I track down the pack and cull them before they kill more innocents."},
+		[26] = 
+			{appendStepText="", stepTextKey="At the request of Battlereeve Urcelmo I ventured into the jungle and destroyed the ravenous werewolf pack. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Skywatch 10"] =
+			{appendText=" in Auridon. It is near the city's wayshrine and the open-air Sky's Edge Tavern.", stepTextKey="At the request of Battlereeve Urcelmo I ventured into the jungle and destroyed the ravenous werewolf pack. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+--DeliverSweetrollsMarbrukGreenshade
+		[27] = 
+			{appendStepText="", stepTextKey="The report describes losses felt by the people of Greenshade. Despite the distance from the Summerset Isles, the battlereeve hopes sweets will mark hope for a brighter future. I should take the sweetrolls out of the ice chest."},
+		["Take Sweetrolls from the Ice Chest 3"] =
+			{appendText=" at the Freerunners Post Board near the wayshrine at Skywatch, the eastern port city of Auridon.", stepTextKey="The report describes losses felt by the people of Greenshade. Despite the distance from the Summerset Isles, the battlereeve hopes sweets will mark hope for a brighter future. I should take the sweetrolls out of the ice chest."},
+		[28] = 
+			{appendStepText="", stepTextKey="The battlereeve feels the losses of the people of Greenshade. He sent along sweetrolls to be distributed to the people, with hope for a better tomorrow. To fulfill this favor, I need to deliver the sweetrolls to Marbruk."},
+		["Deliver Sweetrolls to Marbruk in Greenshade"] =
+			{appendText=". A chest is upstairs in The Parchment and Horn tavern of this eastern city.", stepTextKey="The battlereeve feels the losses of the people of Greenshade. He sent along sweetrolls to be distributed to the people, with hope for a better tomorrow. To fulfill this favor, I need to deliver the sweetrolls to Marbruk."},
+		[29] = 
+			{appendStepText="", stepTextKey="At the battlereeve's request, I passed on a delivery of sweets to the people of Tamriel. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Skywatch 11"] =
+			{appendText=" in Auridon. It is near the city's wayshrine and the open-air Sky's Edge Tavern.", stepTextKey="At the battlereeve's request, I passed on a delivery of sweets to the people of Tamriel. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+--HelpCaptainKhammoMalabalTor
+		[30] = 
+			{appendStepText="", stepTextKey="The battlereeve received a respectful missive from a Redguard Captain named Khammo requesting aid in Malabal Tor. I should find him on Horseshoe Island."},
+		["Help Captain Khammo on Horseshoe Island"] =
+			{appendText=" on the northern coast.", stepTextKey="The battlereeve received a respectful missive from a Redguard Captain named Khammo requesting aid in Malabal Tor. I should find him on Horseshoe Island."},
+		[31] = 
+			{appendStepText="", stepTextKey="I helped Captain Khammo with his problem. I should return to the Freerunners Post message board at Skywatch to see if there's any additional news."},
+		["Examine the Letter from Captain Khammo"] =
+			{appendText=" on the counter by the keg at the Freerunners Post board at Skywatch in Auridon.", stepTextKey="I helped Captain Khammo with his problem. I should return to the Freerunners Post message board at Skywatch to see if there's any additional news."},
+		[32] = 
+			{appendStepText="", stepTextKey="I assisted someone at the battlereeve's request. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Skywatch 12"] =
+			{appendText=" in Auridon. It is near the city's wayshrine and the open-air Sky's Edge Tavern.", stepTextKey="I assisted someone at the battlereeve's request. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+--KillDelveBossGrahtwood
+		[33] = 
+			{appendStepText="", stepTextKey="The included report highlights an increase in deadly encounters at the caves and chambers of Grahtwood. To fulfill this favor for the battlereeve, I need to defeat one of the powerful foes found within the delves of that region."},
+		["Kill a Delve Boss in Grahtwood"] =
+			{appendText=":\n • Burroot Kwama Mine by a small pond fed by a cascading river at the northwestern edge of Elden Root.\n • Mobar Mine is just outside the southern wall of the central tree-city of Elden Root.\n • Ne Salas is an Ayleid ruin atop a hill, south of Elden Root, west of the southeastern port town of Haven, and north of Gray Mire Wayshrine.\n • The Scuttle Pit is a cave in the eastern wilds, east of Elden Root and north of Haven.\n • Vinedeath Cave is in the eastern hills northeast of Elden Root, beyond the Elden Root Temple Wayshrine.\n • Wormroot Depths is an Ayleid ruin in the far northwest, northwest of Redfur Trading Post by the northern road to Malabal Tor.", stepTextKey="The included report highlights an increase in deadly encounters at the caves and chambers of Grahtwood. To fulfill this favor for the battlereeve, I need to defeat one of the powerful foes found within the delves of that region."},
+		[34] = 
+			{appendStepText="", stepTextKey="At the battlereeve's request, I entered a delve and defeated the powerful foe within. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Skywatch 13"] =
+			{appendText=" in Auridon. It is near the city's wayshrine and the open-air Sky's Edge Tavern.", stepTextKey="At the battlereeve's request, I entered a delve and defeated the powerful foe within. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+--FeedHungryDogsRawlkha
+		[35] = 
+			{appendStepText="", stepTextKey="The included report describes the battlereeve's hope to buoy the morale of the citizens by aiding the strays of Rawl'kha. He asks I retrieve the tenderized mean from from the nearby ice chest."},
+		["Take Tenderized Meat Chunks from the Ice Chest"] =
+			{appendText=" at the Freerunners Post Board near the wayshrine at Skywatch, the eastern port city of Auridon.", stepTextKey="The included report describes the battlereeve's hope to buoy the morale of the citizens by aiding the strays of Rawl'kha. He asks I retrieve the tenderized mean from from the nearby ice chest."},
+		[36] = 
+			{appendStepText="", stepTextKey="The included report describes the battlereeve's hope to buoy the morale of the citizens by aiding the strays of Rawl'kha. To fulfill this favor for the battlereeve, I must feed the dogs of the city."},
+		["Feed Hungry Dogs in Rawl'kha"] =
+			{appendText=", the central city of Reaper's March. A few have gathered by the campfire just south of the Mages Guild.", stepTextKey="The included report describes the battlereeve's hope to buoy the morale of the citizens by aiding the strays of Rawl'kha. To fulfill this favor for the battlereeve, I must feed the dogs of the city."},
+		[37] = 
+			{appendStepText="", stepTextKey="At the battlereeve's request, I took on a mission to stabilize the morale of the people. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Skywatch 14"] =
+			{appendText=" in Auridon. It is near the city's wayshrine and the open-air Sky's Edge Tavern.", stepTextKey="At the battlereeve's request, I took on a mission to stabilize the morale of the people. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+--EliminateBloodfiendsDolmenGrahtwood
+		[38] = 
+			{appendStepText="", stepTextKey="The report relays harrowing stories of bloodfiends hunting citizens around the Tarlain Heights dolmen in Grahtwood. Battlereeve Urcelmo wants the creatures thoroughly eliminated."},
+		["Eliminate the Bloodfiends"] =
+			{appendText=" lurking up to the southeast of Faltonia's Mine and northwest of Tarlain Heights Dolmen. The dolmen is southeast of the northwestern village of Redfur Trading Post and northwest of Elden Root.", stepTextKey="The report relays harrowing stories of bloodfiends hunting citizens around the Tarlain Heights dolmen in Grahtwood. Battlereeve Urcelmo wants the creatures thoroughly eliminated."},
+		[39] = 
+			{appendStepText="", stepTextKey="At the request of Battlereeve Urcelmo, I hunted and destroyed bloodfiends in Grahtwood. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Skywatch 15"] =
+			{appendText=" in Auridon. It is near the city's wayshrine and the open-air Sky's Edge Tavern.", stepTextKey="At the request of Battlereeve Urcelmo, I hunted and destroyed bloodfiends in Grahtwood. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+--KillDelveBossMalabalTor
+		[40] = 
+			{appendStepText="", stepTextKey="The included report highlights an increase in deadly encounters at the caves and chambers of Malabal Tor. To fulfill this favor for the battlereeve, I need to defeat one of the powerful foes found within the delves of that region."},
+		["Kill a Delve Boss in Malabal Tor"] =
+			{appendText=":\n • Black Vine Ruins is an Ayleid site on the river near a villa, west of the northeastern town of Baandari Trading Post.\n • Dead Man's Drop is a mine on the coast northeast of Velyn Harbor and east of Fuller's Break.\n • Hoarvor Pit is under a tall tree along the westbound road southwest of the central city of Vulkwasten.\n • Roots of Silvenar is on the south side of the eastern city of Silvenar. The cavern's entrance is near a small ship on the river.\n • Shael Ruins is an underground Ayleid site in southeastern Malabal Tor. Its entrance is on the river at the bottom of a waterfall, north of the bridge to Grahtwood and south of Abamath Wayshrine.\n • Tomb of the Apostates is in a cave at the west end of the trail out of the southern village of Tanglehaven.", stepTextKey="The included report highlights an increase in deadly encounters at the caves and chambers of Malabal Tor. To fulfill this favor for the battlereeve, I need to defeat one of the powerful foes found within the delves of that region."},
+		[41] = 
+			{appendStepText="", stepTextKey="At the battlereeve's request, I entered a delve and defeated the powerful foe within. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Skywatch 16"] =
+			{appendText=" in Auridon. It is near the city's wayshrine and the open-air Sky's Edge Tavern.", stepTextKey="At the battlereeve's request, I entered a delve and defeated the powerful foe within. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+--KillPlantCreatures
+		[42] = 
+			{appendStepText="", stepTextKey="According to this report, attacks from plant creatures cause concern across the continent. To fulfill this favor for the battlereeve, I need to seek out and destroy them. A particular cluster can be found at Rootwater Grove in Greenshade."},
+		["Kill Plant Creatures"] =
+			{appendText="\n\nRootwater Grove is just east of the western city of Woodhearth.", stepTextKey="According to this report, attacks from plant creatures cause concern across the continent. To fulfill this favor for the battlereeve, I need to seek out and destroy them. A particular cluster can be found at Rootwater Grove in Greenshade."},
+		[43] = 
+			{appendStepText="", stepTextKey="At the request of Battlereeve Urcelmo, I hunted and destroyed plant creatures frenzied by the Green Surge. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Skywatch 17"] =
+			{appendText=" in Auridon. It is near the city's wayshrine and the open-air Sky's Edge Tavern.", stepTextKey="At the request of Battlereeve Urcelmo, I hunted and destroyed plant creatures frenzied by the Green Surge. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+--HelpYinzHeiBelarata
+		[44] = 
+			{appendStepText="", stepTextKey="The report details a request for aid passed along to Battlereeve Urcelmo from an Argonian named Yinz-Hei. They want help with a research project. I should find them northeast of Belarata in Malabal Tor."},
+		["Help Yinz-Hei in Belarata"] =
+			{appendText=". They are on the riverbank near a waterfall, across the river from an Orcish longhouse, and northeast of the southern Ayleid ruin.\nBelarata sits southwest of the eastern village of Valeguard and northwest of the southeastern Wood Orc stronghold of Jathsogur.", stepTextKey="The report details a request for aid passed along to Battlereeve Urcelmo from an Argonian named Yinz-Hei. They want help with a research project. I should find them northeast of Belarata in Malabal Tor."},
+		[45] = 
+			{appendStepText="", stepTextKey="I provided aid to the eccentric Yinz-Hei. I should return to the Freerunners Post message board at Skywatch to see if there's any additional news."},
+		["Examine the Letter from Yinz-Hei"] =
+			{appendText=" on the table by the keg at the Freerunners Post board at Skywatch in Auridon.", stepTextKey="I provided aid to the eccentric Yinz-Hei. I should return to the Freerunners Post message board at Skywatch to see if there's any additional news."},
+		[46] = 
+			{appendStepText="", stepTextKey="I assisted someone at the battlereeve's request. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Skywatch 18"] =
+			{appendText=" in Auridon. It is near the city's wayshrine and the open-air Sky's Edge Tavern.", stepTextKey="I assisted someone at the battlereeve's request. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+--DeliverDrinksSkywatch
+		[47] = 
+			{appendStepText="", stepTextKey="The included report describes the battlereeve's commitment to the morale of the Skywatch citizenry. To fulfill this favor, I need to make or procure alcoholic beverages. Many types will do, such as Bog-Iron Ale or Kaveh Stout."},
+		["Deliver Alcoholic Drinks to Ice Chest"] =
+			{appendText=". A Dominion Contributions basket is available by the Post board. Cooking fires and brewers are at some taverns.", stepTextKey="The included report describes the battlereeve's commitment to the morale of the Skywatch citizenry. To fulfill this favor, I need to make or procure alcoholic beverages. Many types will do, such as Bog-Iron Ale or Kaveh Stout."},
+		[48] = 
+			{appendStepText="", stepTextKey="At the battlereeve's request, I gathered and delivered morale-boosting treats. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+		["Bring Proof to the Freerunners Post at Skywatch 19"] =
+			{appendText=" in Auridon. It is near the city's wayshrine and the open-air Sky's Edge Tavern.", stepTextKey="At the battlereeve's request, I gathered and delivered morale-boosting treats. I should return to the Freerunners Post message board in Skywatch and place proof that I completed the favor in the lockbox."},
+--MissingDiscWillowgrove
+		[49] = 
+			{appendStepText="", stepTextKey="Battlereeve Urcelmo received a disturbing report from Telenger regarding a stolen resonance disc from a Mages Guild hall. Telenger traced the disc to Willow Grove in Reaper's March. I need to search the area for clues to its whereabouts."},
+		["Search for Clues About the Missing Disc"] =
+			{appendText=" up on the ridge, south of the southeastern Bosmer village. With Telenger involved, there is likely some magical anomaly or manifestation coming from the disc.", stepTextKey="Battlereeve Urcelmo received a disturbing report from Telenger regarding a stolen resonance disc from a Mages Guild hall. Telenger traced the disc to Willow Grove in Reaper's March. I need to search the area for clues to its whereabouts."},
+		[50] = 
+			{appendStepText="On the southern ridge above the Bosmer village in southeastern Reaper's March, I found a note regarding the resonant disc at a warded camp. ", stepTextKey="The disc was shattered when a mage attempted to use it in a ritual. According to his notes, I should find the fragments across Willow Grove and seek out the powerful atronach that seems to be exerting some influence on the disc."},
+		["Gather Disc Fragments"] =
+			{appendText="\nThe fragments should all be up on the ridge south of the village. From the warded campsite, check to the east, the southeast, the south near the cavern, and the southwest.\n\nLying on the ground near rocks, the disc fragments have pale blue runic symbols. Each is small enough to be held in one hand.", stepTextKey="The disc was shattered when a mage attempted to use it in a ritual. According to his notes, I should find the fragments across Willow Grove and seek out the powerful atronach that seems to be exerting some influence on the disc."},
+		[51] = 
+			{appendStepText="In southeastern Reaper's March, on the ridge south of Willowgrove, I found the disc fragments. ", stepTextKey="When I gathered the final disc fragment, a magical pulse of energy flew toward a nearby cave. This must be the hiding place of the atronach linked to the disc. I need to destroy it before I can safely return the disc fragments."},
+		["Enter the Grotto and Defeat the Iron Atronach"] =
+			{appendText=" within the Willowgrove Cavern, south of the village.", stepTextKey="When I gathered the final disc fragment, a magical pulse of energy flew toward a nearby cave. This must be the hiding place of the atronach linked to the disc. I need to destroy it before I can safely return the disc fragments."},
+		[52] = 
+			{appendStepText="", stepTextKey="At the request of the battlereeve, I gathered the fragments of the stolen resonance disc and defeated the Atronach guardian. I should return to the message board in Skywatch and place proof in the Freerunners Post lockbox."},
+		["Bring Proof to the Freerunners Post at Skywatch 20"] =
+			{appendText=" in Auridon. It is near the city's wayshrine and the open-air Sky's Edge Tavern.", stepTextKey="At the request of the battlereeve, I gathered the fragments of the stolen resonance disc and defeated the Atronach guardian. I should return to the message board in Skywatch and place proof in the Freerunners Post lockbox."},
+	},
+
 -- ==================================================================================================================================================
 --	Undaunted																															Undaunted
 -- ==================================================================================================================================================
@@ -40763,7 +43982,157 @@ ImmersiveQuests.localization = {
 		["Talk to Votary Nahlia 4"] =
 			{appendText=", who is still at the altar in the Eyevea Scholarium. She has much to tell the Mages Guild and is possibly composing herself.", stepTextKey="Nahlia is going to return to the Mages Guild and get their advice on what to do next. I should speak to her about her plans."},
 	},
-	-- The Wing of the Indrik
+	[GetQuestName(7197)] = { --"The Wing of the Indrik"  --Cyberjanet
+		[1] = 
+			{appendStepText="It's an art that was lost when Eyevea was stolen by the Mad God Sheogorath. The secret Scholarium library hidden inside that island was completely forgotten. ", stepTextKey="If anyone can help me learn about Scribing and the Luminaries, it's the Crow. I should speak with her about next steps."},
+		["Talk to the Crow 1"] =
+			{appendText=" perched on the pedestal near the door to the Wing of the Indrik. It's on the lower floor of the main hall, clearly visible from the balcony with the altar.", stepTextKey="If anyone can help me learn about Scribing and the Luminaries, it's the Crow. I should speak with her about next steps."},
+		[2] = 
+			{appendStepText="A Crow on the lower floor of this secret Scholarium inside Eyevea is eager to help. ", stepTextKey="The Crow said Ulfsild left echoes behind for whoever would follow in her footsteps. There should be an Echo in the main hall to start me on my path."},
+		["Find the Echo of Introduction"] =
+			{appendText=", a purple glowing wisp hovering above a small pedestal."},
+		[3] = 
+			{appendStepText="On the lower floor of the Scholarium inside Eyevea, ", stepTextKey="I found a pedestal with one of Ulfsild's echoes. I should listen to what it has to say."},
+		["Listen to the Echo of Introduction"] =
+			{appendText=". Activating the purple wisp above the pedestal summoned a magical blue hologram of a female Nord in mages robes."},
+		[4] = 
+			{appendStepText="I activated an echo on the lower floor of this library inside Eyevea, and an image of Ulfsild appeared. ", stepTextKey="Ulfsild's echo mentioned something called the True-Sight Lens, which should be awaiting me in the library's east wing. I should search for it."},
+		["Find the True-Sight Lens"] =
+			{appendText=". The exit to the east wing is next to the stairs leading to the Wing of the Dragon.\n\nTurn right at a pile of dusty old books, and continue on past the stairs, through two arches, into the room with the merchant.\n\nThe True-Sight Lens looks like a miniature telescope in an intricate carrying device. It's on a pedestal similar to the one where you found the echo of Ulfsild."},
+		[5] = 
+			{appendStepText="Her Crow familiar has pointed me to clues, or echoes, that Ulfsild left in this forgotten island in Eyevea. First I had to find a tool to see her magic. ", stepTextKey="The True-Sight lens was right where the echo of Ulfsild said it would be. I should bring it to the Crow to see what comes next."},
+		["Talk to the Crow 2"] =
+			{appendText=" after activating the echo of the True-Sight Lens that appeared when you picked up the lens.\n\nThe Crow is perched on a wooden lectern by the stairs to the door of the Wing of the Indrik, in the lower main hall.", stepTextKey="The True-Sight lens was right where the echo of Ulfsild said it would be. I should bring it to the Crow to see what comes next."},
+		[6] = 
+			{appendStepText="Ulfsild's Crow familiar is helping me find information and resources left in this forgotten island in Eyevea. ", stepTextKey="The Crow instructed me to read the Fable of the Indrik. The text should be somewhere right here in the Scholarium Main Hall."},
+		["Read the Fable"] =
+			{appendText=". The book is on a small table in front of a cluttered bookshelf in the lower main hall, between the Wing of the Indrik and the Wing of the Netch."},
+		[7] = 
+			{appendStepText="Ulfsild's Crow familiar is helping me understand what Ulfsild left in this forgotten island in Eyevea, and directed me to read a book. ", stepTextKey="I've read the Fable of the Indrik. Now the Crow wants me to look through Lens of True-Sight at a focal point."},
+		["Peer Through the Lens Within a Focal Point"] =
+			{appendText=". Reading the book triggered a glowing blue circle on the floor of the lower Scholarium hall. That must be the focal point the Crow was talking about."},
+		[8] = 
+			{appendStepText="Ulfsild's Crow familiar is helping me understand what Ulfsild left in this forgotten island in Eyevea. I had to read a book, then use the True-Sight Lens I found. ", stepTextKey="By looking through the True-Sight Lens, I've revealed annotations within the Fable of the Indrik. I should read the book again and see what Ulfsild had to say."},
+		["Read the Annotated Fable"] =
+			{appendText=" on the small table in front of a cluttered bookshelf between the Wing of the Indrik and the Wing of the Netch."},
+		[9] = 
+			{appendStepText="Ulfsild's Crow familiar is helping me understand what Ulfsild left in this forgotten island in Eyevea. I found a True-Sight Lens and used it to find hidden information she wrote. ", stepTextKey="I read the Fable of the Indrik and viewed the annotations left by Ulfsild. I should talk to the Crow about what comes next."},
+		["Talk to the Crow 3"] =
+			{appendText=", perched on the wooden lectern at the stairs leading to the Wing of the Indrik.", stepTextKey="I read the Fable of the Indrik and viewed the annotations left by Ulfsild. I should talk to the Crow about what comes next."},
+		[10] = 
+			{appendStepText="A Crow showed me how to read the secrets written into the Fable of the Indrik. ", stepTextKey="According to the fable, our search for the Indrik starts in Auridon. I should meet the Crow at the standing stone of the Lady."},
+		["Meet the Crow in Auridon"] =
+			{appendText=". The mundus stone known as the Lady is to the north of Vulkhel Guard, the capital of Auridon. Follow the road north out of Vulkhel Guard, turn left just before the Impresario's tent, and continue on past the jester tent and a street lamp. Turn left off the road after the next street lamp, by a shack, and you will soon see a pool with a cherry blossom tree and the Lady stone in the center. The crow is perched at one end of the bridge railing."},
+		[11] = 
+			{appendStepText="The Scholarium was founded by the mage Ulfsild. Her Crow familiar has become my mentor, and asked me to meet up in Auridon. ", stepTextKey="The Crow landed near the standing stone and seems eager to talk. I should see what comes next."},
+		["Talk to the Crow 4"] =
+			{appendText=", perched on the railing of the bridge crossing the pool around the Lady mundus stone north of Vulkhel Guard.", stepTextKey="The Crow landed near the standing stone and seems eager to talk. I should see what comes next."},
+		[12] = 
+			{appendStepText="The Indrik's Fable takes place in Auridon. ", stepTextKey="To enter the Indrik's domain I need to open its door. To do that, I need to form a key. I need to use the True-Sight Lens at focal points in the area to reveal wards, dispel them, and unveil the hidden key fragment nearby."},
+		["Dispel the First Set of Indrik Wards"] =
+			{appendText="\n\nThere are glowing blue circles on the ground around the edges of the pool containing the Lady mundus stone and some cherry trees at its center.\n\nOnce you have used the True-Sight Lens, look around for a glowing blue and white sigil. It could be up in the air, down low, anywhere, but is quite distinctive.\n\nApproach it until you are able to dispel it. You don't need to be very close."},
+		[13] = 
+			{appendStepText="The Scholarium was founded by the mage Ulfsild. Her Crow familiar has become my mentor, and met me in Auridon to explain how to find the protected key fragments for the door to the Wing of the Indrik. ", stepTextKey="The wards are dispelled and the first key fragment has been revealed."},
+		["Take the First Indrik Key Fragment"] =
+			{appendText=", floating near the pool surrounding the Lady mundus stone."},
+		[14] = 
+			{appendStepText="I have followed the notes in the annotated Indrik's Fable to reach the Lady mundus stone in Auridon, and dispelled protective wards with the help of the True-Sight Lens. ", stepTextKey="With the first fragment of the Indrik's key in my possession, the Crow wants to speak to me once more."},
+		["Talk to the Crow 5"] =
+			{appendText=" perched on a rock at the edge of the pool surrounding the Lady mundus stone.", stepTextKey="With the first fragment of the Indrik's key in my possession, the Crow wants to speak to me once more."},
+		[15] = 
+			{appendStepText="Ulfsild's familiar, a Crow, directed me to Auridon and showed me how to dispel the wards protecting the key fragments. Now ", stepTextKey="I'm on my own, the Crow has returned to the Scholarium. I need to find the set of wards hiding the second Indrik key fragment. I can use the fable in my pack as a guide."},
+		["Find the Second Set of Indrik Wards"] =
+			{appendText=". The Crow left you at the Lady mundus stone north of Vulkhel Guard. From the bridge, you could take the path west, past the large tree with cherry blossoms, until you reach the Windy Glade wayshrine. From there, follow the path north, past the horse and wagon, until you reach a crossroads.\n\nOr you could take the opposite, shorter path from the bridge, leading to a road. Turn left, and continue to the crossroads.\n\nAt the crossroads, you can see the Phaer wayshrine across the bridge. Keep that wayshrine and the river on your right and head northwest until you reach a fork. Take the right hand path toward the Tanzelwil wayshrine.\n\nStairs enclosed by stone slabs will get you to the delve area. Bear right and up some stairs to find the entrance. Once inside, follow the tunnel until you see the first of the glowing blue circles that indicate a focal point."},
+		[16] = 
+			{appendStepText="", stepTextKey="I'm on my own, the Crow has returned to the Scholarium. I need to find the set of wards hiding the second Indrik key fragment. I can use the fable in my pack as a guide."},
+		["Dispel the Second Set of Indrik Wards"] =
+			{appendText="\n\nUse the True-Sight Lens in the glowing blue circle on the floor of Onsil's Delve, then look around for a glowing sigil. Approach the nearest one until you are able to dispel it."},
+		[17] = 
+			{appendStepText="I came to Auridon to find the key leading to the Wing of the Indrik. The key fragments are protected by hidden magic. I have one key fragment and am searching for the second. ", stepTextKey="The wards are dispelled and the second key fragment has been revealed."},
+		["Take the Second Indrik Key Fragment"] =
+			{appendText=", glowing blue above the landing of the stairs leading deeper into Onsil's Delve."},
+		[18] = 
+			{appendStepText="I came to Auridon to find the key leading to the Wing of the Indrik. The key is divided into three fragments. ", stepTextKey="With the first and second key fragments collected, I continue my journey for more Indrik wards. I should use the fable as a reference to see where to search next."},
+		["Find the Third Set of Indrik Wards"] =
+			{appendText=". After leaving Onsil's Delve, make your way back to Tanzelwil wayshrine, then continue south to the crossroads. Cross the bridge that leads to Phaer wayshrine, then make your way east towards the sea.\n\nFollow the shoreline, keeping the sea on your right, until you reach a walled island."},
+		[19] = 
+			{appendStepText="I came to Auridon to find the key leading to the Wing of the Indrik. The key is divided into three fragments. ", stepTextKey="With the first and second key fragments collected, I continue my journey for more Indrik wards. I should use the fable as a reference to see where to search next."},
+		["Dispel the Third Set of Indrik Wards"] =
+			{appendText="\n\nLook for the glowing blue circles within the ruined walls of Buraniim Isle, on the east coast of Auridon offshore of Mathiisen Manor. Use the True-Sight Lens in the focal circles, then look for the bright sigils it reveals. Approach them until you are close enough to dispel them."},
+		[20] = 
+			{appendStepText="I came to Auridon to find the key leading to the Wing of the Indrik. The key is divided into three fragments protected by hidden magic, and I have found two. ", stepTextKey="The wards are dispelled and the third key fragment has been revealed."},
+		["Take the Third Indrik Key Fragment"] =
+			{appendText=", floating in a blue glow near the inactive Ayleid well at the center of Buraniim Isle on the east coast of Auridon."},
+		[21] = 
+			{appendStepText="I came to Auridon to find the key leading to the Wing of the Indrik. ", stepTextKey="I collected the fragments and formed the key to the Indrik's door. To enter the Wing of the Indrik, I should make for the final location indicated in Ulfsild's annotations."},
+		["Reveal the Indrik's Door"] =
+			{appendText=". The Crow left you at the Lady mundus stone north of Vulkhel Guard. The Windy Glade wayshrine is west of that, past the large tree with cherry blossoms. You may have passed it during your search for more key fragments.\n\nFrom the Windy Glade wayshrine, continue west, past a pool of water on your left. You may hear a dolmen nearby. Continue on to the seashore. A rocky island with a lighthouse is just across the water.\n\nFrom the ramp next to the ship, you can see the island clearly. There's a house on the summit. Cross the water to a natural stone arch, then follow a stone and sand path uphill, where you will find a focal point.\n\nUse the Lens of True-Sight at the focal point."},
+		[22] = 
+			{appendStepText="The fable in my backpack was full of clues. I wouldn't have found the island off the southwest of Auridon without it. And look! ", stepTextKey="The door to the Wing of the Indrik has been revealed. Now to head inside and meet my first Luminary face to face."},
+		["Travel to the Wing of the Indrik 1"] =
+			{appendText=" using the magical door revealed by the focal point and the Lens of True-Sight.", stepTextKey="The door to the Wing of the Indrik has been revealed. Now to head inside and meet my first Luminary face to face."},
+		[23] = 
+			{appendStepText="", stepTextKey="The door to the Wing of the Indrik has been revealed. Now to head inside and meet my first Luminary face to face."},
+		["Talk to the Indrik 1"] =
+			{appendText=" on the stone platform in his sunny wing. The vegetation is reminiscent of Auridon, where I found the magical door leading here.", stepTextKey="The door to the Wing of the Indrik has been revealed. Now to head inside and meet my first Luminary face to face."},
+		[24] = 
+			{appendStepText="An eventful journey through Auridon, collecting key fragments that revealed and opened a magical door on the summit of a rocky island west of Windy Gale wayshrine, has led me into the Indrik's sanctum. ", stepTextKey="The Indrik has asked that I place the Fable on a dais near a door. This will connect the path from his wing back to the Scholarium once more."},
+		["Place Ulfsild's Fable on the Dais"] =
+			{appendText=", a white marble pedestal very near the arch leading to the door into the Scholarium."},
+		[25] = 
+			{appendStepText="The mystic library, the Scholarium, is hidden in Eyevea. The Wing of the Indrik has been hidden and forgotten inside it for millennia. Now that has changed. ", stepTextKey="The Wing of the Indrik is connected back to the Scholarium. I should speak to the Indrik again to learn what comes next."},
+		["Talk to the Indrik 2"] =
+			{appendText=" waiting on the platform in his sanctum, the Wing of the Indrik.", stepTextKey="The Wing of the Indrik is connected back to the Scholarium. I should speak to the Indrik again to learn what comes next."},
+		[26] = 
+			{appendStepText="The first step was to find the key to the Wing of the Indrik, and reopen the door between it and the Scholarium. ", stepTextKey="The Indrik wants me to complete a few challenges to prove my commitment. I should review the challenges he's set out."},
+		["Read the Challenges of the Indrik"] =
+			{appendText=". He has conjured a scroll next to him, on the platform in his Wing of the Indrik.\n\nHis sanctum looks so much like Auridon, it's hard to believe it's hidden in Eyevea."},
+		[27] = 
+			{appendStepText="The first step was unlocking the door to the Wing of the Indrik and meeting that luminary. ", stepTextKey="To prove my worth, the Indrik has presented me a number of challenges. I need to complete two from the list. I can decide which tasks I wish to take on and prove myself worthy of the Luminary's power."},
+		["Complete Challenges"] =
+			{appendText="\n\nI should consult the list of challenges the Indrik gave me. They are based in Auridon, where I journeyed to find the key to the Wing of the Indrik. Votary Nahlia has not yet returned to the Scholarium, so I cannot discuss them with her.\n\nI passed a daedric anchor on the way to the rocky island west of Windy Glade. And there were many undead at Ondril's Delve, where I found the second key fragment. A vile being of superior strength almost certainly resides inside that delve, too.\n\nFacing off other champions sounds like a trip to the Battlegrounds."},
+		[28] = 
+			{appendStepText="The first step was unlocking the door to the Wing of the Indrik, one of five secret pocket domains in this hidden island of Eyevea. I met the Indrik, who challenged me to prove my worth. ", stepTextKey="I've completed the challenges set out by the Indrik. Time to return to the Luminary and see what comes next."},
+		["Travel to the Wing of the Indrik 2"] =
+			{appendText=". The door from the Scholarium now works! The crow watches from the lectern below.", stepTextKey="I've completed the challenges set out by the Indrik. Time to return to the Luminary and see what comes next."},
+		[29] = 
+			{appendStepText="The first step was meeting the Indrik, a luminary who will grant his power if I can prove my worth. ", stepTextKey="The Indrik has asked me to track down a fawn chased by a hunter, trapped in a wisp of its power. The Luminary told me that the southern Auridon cave called Del's Claim would be the place to pick up the trail."},
+		["Track the Blessed Indrik Fawn"] =
+			{appendText=". Del's Claim is close to the Vulkhel Guard wayshrine. Follow the north road out, through the arch, then take the first left turn. Continue past the jester tent to a wooden shack with wheelbarrows and barrels. A wooden pathway leads to the delve entrance.\n\nOnce inside, follow the tunnel to a focal point and use the Lens of True-Sight to reveal the fawn. Follow it and continue in that direction to the next focal point, and continue in the same manner. Following the fawn will lead to a portal to the next part of the chase. If anything goes wrong, return to the previous focal point and start again.\n\nThe portal leads to the middle of an out-of-the-way delve in northeastern Murkmire, called Xul-Thaxis, which would have taken many weeks to find otherwise! Continue looking for focal points and following the fawn. There is a clear route through Xul-Thaxis to the focal point that reveals the next portal, which leads to the middle of Direnni Acropolis in Summerset. These portals save so much time!\n\nIn Direnni, using the focal point will reveal a hunter in pursuit of the fawn. Follow him through the door, then follow the path to the next focal point. Follow the hunter and his hounds through the door and onward, over a large bridge and stairs leading up."},
+		[30] = 
+			{appendStepText="The first step was meeting the Indrik and completing its challenges. Now I have a special task to find a fawn trapped in its power, by following focal points through three delves.\n\n", stepTextKey="I've found the indrik fawn. The Indrik has asked me to dispel its power from the beast, releasing it from this burden placed upon it."},
+		["Free the Blessed Indrik Fawn"] =
+			{appendText=". Use the True-Sight Lens in the focal point that appeared after defeating the hunter, and dispel the magical symbol that appears."},
+		[31] = 
+			{appendStepText="The first step was meeting the Indrik and completing its challenges. Then I had to save a fawn trapped in its power, by following focal points through three delves.\n\n", stepTextKey="The indrik fawn has been freed of the Luminary's power. It's time to return to the wing of the Indrik."},
+		["Return to the Wing of the Indrik"] =
+			{appendText=". The Indrik has created a portal at the end of the route through three delves starting at Del's Claim in Auridon.\n\nThe door from the Scholarium under Eyevea remains open too. The crow is perched on the wooden lectern just below it."},
+		[32] = 
+			{appendStepText="I opened the door to the Wing of the Indrik, and completed the challenges the luminary gave me. ", stepTextKey="As a show of favor, the Indrik has given me its sigil, a representation of its re-commitment to the Scholarium. I need to gather the sigil if I'm to learn more about Scribing."},
+		["Take the Sigil of the Indrik"] =
+			{appendText=", which has appeared on the platform in the center of the Indrik's sanctum.\n\nThe door leads from, and to, the Scholarium hidden in Eyevea. But there's no saying where this magical pocket domain really lies."},
+		[33] = 
+			{appendStepText="I opened the door to the Wing of the Indrik and completed the challenges the luminary gave me to earn its sigil. ", stepTextKey="With the Indrik's sigil in hand I should return to the Scribing Altar. Infusing the altar with the power of the Indrik will enhance my connection with scripts and grimoires around the world."},
+		["Amplify the Altar"] =
+			{appendText=". Leave the Wing of the Indrik through the door leading into the Scholarium, a mystic library in Eyevea. The Altar is on the balcony overlooking the main hall.\n\nUse the sigil to activate the Fountain of the Indrik on the extreme left of the altar, matching the position of the door in the lower room."},
+		[34] = 
+			{appendStepText="It's been quite the journey into this hidden corner of Eyevea. First the discovery, then unlocking The Wing of the Indrik and using the luminary's sigil to amplify the Scribing Altar. Now, ", stepTextKey="Nahlia and a group from the Mages Guild has returned to the Scholarium. I should find her and see how her meeting with the Guild went."},
+		["Find Votary Nahlia"] =
+			{appendText=", downstairs in the east wing of this mystic library in Eyevea. The exit leading down is opposite the exit with the ladder. Nahlia is down the stairs and to the right, next to the large counter."},
+		[35] = 
+			{appendStepText="", stepTextKey="Nahlia and a group from the Mages Guild has returned to the Scholarium. I should find her and see how her meeting with the Guild went."},
+		["Talk to Chronicler Firandil"] =
+			{appendText=" behind the counter, downstairs in the east wing. It looks like a shop is being set up here."},
+		[36] = 
+			{appendStepText="It's been quite the journey into this hidden corner of Eyevea. First the discovery of the Scholarium, then unlocking The Wing of the Indrik, then amplifying the Altar with the Indrik's power.\n\n", stepTextKey="I should speak to Nahlia and catch her up on my adventures."},
+		["Talk to Votary Nahlia 1"] =
+			{appendText=", next to the counter of the shop being set up in the east wing of this mystic library.", stepTextKey="I should speak to Nahlia and catch her up on my adventures."},
+		[37] = 
+			{appendStepText="", stepTextKey="My first adventure with a Luminary has reached an end. I should talk to Nahlia and prepare for my next journey."},
+		["Talk to Votary Nahlia 2"] =
+			{appendText=" in the east wing of the Scholarium, next to the counter of the newly-formed shop in this mystic library in Eyevea.", stepTextKey="My first adventure with a Luminary has reached an end. I should talk to Nahlia and prepare for my next journey."},
+	},
+
 	-- The Wing of the Netch
 	-- The Wing of the Gryphon
 	-- The Wing of the Crow
@@ -40772,7 +44141,9 @@ ImmersiveQuests.localization = {
 -- ==================================================================================================================================================
 --	Subclassing																															Subclassing
 -- ==================================================================================================================================================
-	[GetQuestName(7325)] = { -- "A Study in Discipline"				-- Cyberjanet
+
+
+[GetQuestName(7325)] = { --"A Study in Discipline"				-- Cyberjanet
         [1] = 
             {appendStepText="She has Adventure Camps in major cities all over Tamriel, with a signature red flag and a white, black, and gold sigil.\n\nIn Reaper's March, her camp is in the northeast, just under the bridge at the Dune wayshrine. In the Rift, it's in the central city of Riften, next to the wayshrine. In northwest Bangkorai, look for The Stalls, a small market area to the west of the Evermore Wayshrine.\n\n", stepTextKey="I should speak to Bahtra at-Hunding and learn what she wishes to teach me."},
         ["Talk to Bahtra at-Hunding 1"] =

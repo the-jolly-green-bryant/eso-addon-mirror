@@ -1,5 +1,5 @@
 SATUVE XBOX UI - GAMEPAD MENU INTEGRATION
-Version 1.1.64-reloadui-init-fix
+Version 1.7.9
 
 CHANGES
 1. Native ESO main menu focus transfer:
@@ -24,8 +24,8 @@ LibGamepad must be installed and enabled for the Bandit UI controller settings
 tree. Find it under ESO's Extensions / Manage My Extensions area.
 The Side Panel Settings button opens the same controller panel directly.
 LibGamepad is a required manifest dependency for this console-focused package.
-LibAddonMenu-2.0 remains optional and recommended for the classic settings
-path and fallback.
+LibAddonMenu-2.0 is also required because LibGamepad uses its option data and
+controller integration. Install the newest Xbox versions of both libraries.
 
 3. Minimap controller settings:
    - Minimap is now added as a submenu inside the single Bandit UI panel.
@@ -76,3 +76,31 @@ initialization burst into four one-shot stages. Scene fragments, global template
 hooks, action-bar OnShow hooks, menu registration and event registration are now
 guarded against duplicate installation. LibGamepad registration also handles the
 case where PLAYER_ACTIVATED already fired. No layout or SavedVariables changed.
+
+1.1.65: Added modal controller ownership for Frame Edit Mode, native minimap
+scene recovery, lower-allocation player resource refreshes, a 12-report cap for
+unsaved session history, add-on-specific delayed callback names, and a scoped
+native template guard to reduce conflicts with other UI add-ons.
+
+1.7.6: Fixed Frame Edit Mode A-button activation. The editor now lets ESO's
+exclusive keybind strip receive physical A/B buttons, A grabs and places frames,
+B cancels the current movement, and the Skills / Action Bar is available as a
+controller-editable frame. Modal menu isolation and keybind cleanup are retained.
+
+1.7.7: Fixed D-Pad frame selection on Xbox by registering Frame Edit Mode with
+ESO's native directional-input manager and movement controller. Controller
+directions are consumed while the modal editor is open and released before the
+settings list is restored. Minimap controller options also use native gamepad
+slider rows again so size, opacity, pin scale and zoom steps apply immediately.
+
+1.7.8: Removed the Frame Editor's DIRECTIONAL_INPUT/GetXY path because it can
+reach ESO's private IsKeyDown function from an insecure add-on call stack. D-Pad
+selection now uses ethereal entries in the editor's exclusive keybind strip.
+The settings list remains deactivated while editing and is restored on exit.
+
+1.7.9: Frame Edit Mode now restores the UI Shortcuts action layer when a console
+extension menu did not leave it active and supports left-stick frame selection as
+an independent fallback. Minimap numeric settings are finite controller value
+lists so value changes always reach the original setters. LibGamepad 1.0.7+ and
+LibAddonMenu-2.0 r41+ are required; install the newest Xbox versions available.
+ContextMenuBridge is not a replacement.

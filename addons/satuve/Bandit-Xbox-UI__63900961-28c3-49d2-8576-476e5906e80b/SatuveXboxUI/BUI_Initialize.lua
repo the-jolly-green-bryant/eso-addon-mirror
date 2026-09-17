@@ -8,7 +8,7 @@ local function OnUIError(eventCode,errorString)
 		--d(errorString)
 		ZO_UIErrors_HideCurrent()
 	elseif not BUI.Vars.DeveloperMode and string.match(errorString,BUI.name) then
-		local ver=tostring(BUI.Version) local l=string.len(ver) while l<5 do ver=ver.."0" l=string.len(ver) end
+		local ver=tostring((SatuveXboxUI and SatuveXboxUI.version) or BUI.Version)
 		ZO_UIErrorsTextEdit:SetText(BUI.DisplayName.." v:"..ver.."\n"..errorString)
 		ZO_UIErrorsTextEdit:SetCursorPosition(1)
 	end

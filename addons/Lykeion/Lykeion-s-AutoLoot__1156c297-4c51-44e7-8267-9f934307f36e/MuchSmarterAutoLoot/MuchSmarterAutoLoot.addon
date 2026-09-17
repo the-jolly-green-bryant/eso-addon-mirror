@@ -2,8 +2,8 @@
 ## Author: |c215895L|c3E6284y|c5A6B73k|c777562e|c937F51i|cB08840o|cCC922Fn|r
 ## Description: An AutoLoot manager makes your looting more comfortable. Inspired by Agathorn's Smarter AutoLoot.
 ## APIVersion: 101051
-## Version: 8.2.0
-## AddOnVersion: 80200
+## Version: 8.3.0
+## AddOnVersion: 80300
 ## SavedVariables: MSAL_VARS
 ## PCDependsOn: LibAddonMenu-2.0>=41
 ## ConsoleDependsOn: LibAddonMenu-2.0>=41 LibHarvensAddonSettings>=20002
@@ -12,6 +12,7 @@
 i18n/en.lua
 i18n/$(language).lua
 AutoLootPlus.lua
+AutoLootPlus_Settings.lua
 AutoLootPlus.xml
 bindings.xml
 

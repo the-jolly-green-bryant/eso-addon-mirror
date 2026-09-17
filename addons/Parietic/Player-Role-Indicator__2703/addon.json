@@ -1,14 +1,15 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Parietic/Player-Role-Indicator__2703",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Parietic",
   "canonical_id": "esoui:2703",
   "category_id": "95",
   "compatibility": [
     {
-      "name": "Season Zero",
-      "version": "11.3.0"
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
     }
   ],
   "content_id": "esoui:2703",
@@ -17,7 +18,7 @@
     "PlayerRoleIndicator"
   ],
   "download_url": "https://www.esoui.com/downloads/dl2703/",
-  "fingerprint": "bf1780e59b2a72ac58e2bf419d7bc91802823d135829be280a741430e7779864",
+  "fingerprint": "88fba243be338b4cce4ff832444ae725ea9d4fded03b125ef67501f47fc6ae5c",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw9197.png",
     "https://cdn-eso.mmoui.com/preview/pvw9195.png",
@@ -29,11 +30,11 @@
   "source_id": "2703",
   "source_url": "https://www.esoui.com/downloads/info2703-PlayerRoleIndicator.html",
   "stats": {
-    "downloads": 63973,
-    "favorites": 85,
-    "monthly_downloads": 899
+    "downloads": 65540,
+    "favorites": 86,
+    "monthly_downloads": 877
   },
   "title": "Player Role Indicator",
-  "updated_at": 1773455454000,
-  "version": "1.3.2"
+  "updated_at": 1789596549000,
+  "version": "1.4.0.27"
 }

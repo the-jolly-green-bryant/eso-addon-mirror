@@ -6,17 +6,19 @@ local iconText = zo_iconTextFormat(picPath, 80, 80, " ")
 local isLoaded = false
 local isMenuOpen = false
 local buffRunning = false
+local readyToNotify = true
 
 gorethiefTracker = {}
 
 gorethiefTracker.defaults = {
     trackGore = true,
+	notify = true,
     yAxisText = 930,
     xAxisText = 1400
 }
 
 --print message to chat box
-local function printMessageTest(msg)
+local function printMessage(msg)
 	local chat = LibChatMessage(appName, "MA")
 	chat:Print(msg)
 end
@@ -24,6 +26,15 @@ end
 --clean player names
 local function cleanName(str)
     return str:sub(1, -4)
+end
+
+--check if LibNotify is available
+local function isLibAvailable()
+    if LibNotify and type(LibNotify.notifyForAddonPlease) == "function" then
+        return true
+    else 
+		return false
+    end
 end
 
 --when UI opens
@@ -123,10 +134,18 @@ local function effectReport(eventCode, changeType, effectSlot, effectName, unitT
         gttrackLabelMain:SetText("")
         gttrackLabelCorner:SetText("")
 		--reset counter
+		readyToNotify = true
         return
     end
 
     local text = ""
+
+	if stackCount == 9 and readyToNotify then
+		readyToNotify = false
+		if isLibAvailable() and gorethiefTracker.savedVariables.notify then
+            LibNotify.notifyForAddonPlease(appName, gorethiefAbilityID, "Gorethief Ready")
+        end
+	end
 
 	if stackCount >= 9 then
 		gttrackLabelMain:SetColor(0, 255, 0, 255)
@@ -229,6 +248,18 @@ local function createOptions()
             end,
             default = gorethiefTracker.defaults.yAxisText,
         },
+		{
+            type = "checkbox",
+            name = "Notification",
+            tooltip = "Displays a notification and plays a sound when the Gorethief proc is ready to use.\nThe settings for the notification can be changed in the LibNotify Add-on options.",
+            getFunc = function()
+                return gorethiefTracker.savedVariables.notify
+            end,
+            setFunc = function(value)
+                gorethiefTracker.savedVariables.notify = value
+            end,
+            default = gorethiefTracker.defaults.notify,
+        },
         {
             type = "divider",
             height = 0,
@@ -251,15 +282,21 @@ local function onAddOnLoaded(event, name)
     --unregister for notifications of add-on loaded
     EVENT_MANAGER:UnregisterForEvent(appName, EVENT_ADD_ON_LOADED)
 
-	--notify that add-on has been loaded
-	zo_callLater(function() printMessageTest("add-on loaded") end, 500)
+	--notify about new library
+	if not isLibAvailable() then
+		zo_callLater(function() printMessage("add-on Disabled") printMessage("Please install LibNotify from the browse add-ons menu") end, 500)
+		return
+	else
+		--notify that add-on has been loaded
+		zo_callLater(function() printMessage("add-on loaded") end, 500)
+	end
 
 	--load saved variables
     gorethiefTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("gttAddonVars", 1, "Settings", gorethiefTracker.defaults, GetUnitName("player"))
 
 	--notify if tracking is disabled
 	if not gorethiefTracker.savedVariables.trackGore then
-		zo_callLater(function() printMessageTest("tracking disabled") end, 600)
+		zo_callLater(function() printMessage("tracking disabled") end, 600)
 	end
 
     --setup text field areas

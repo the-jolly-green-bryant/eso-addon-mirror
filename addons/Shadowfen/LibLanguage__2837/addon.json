@@ -1,11 +1,16 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Shadowfen/LibLanguage__2837",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Shadowfen",
   "canonical_id": "esoui:2837",
   "category_id": "53",
   "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
     {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
@@ -69,7 +74,7 @@
     "LibLanguage"
   ],
   "download_url": "https://www.esoui.com/downloads/dl2837/",
-  "fingerprint": "a1438322047d193ad68c384e1156df9e368262a8cdb9694b29d9a2242327b935",
+  "fingerprint": "9b0ff9807401b3a3e94d1526345fbdebf5d0d19875273019b8195b5e226630f2",
   "images": [],
   "platform": "pc",
   "published": true,
@@ -77,11 +82,11 @@
   "source_id": "2837",
   "source_url": "https://www.esoui.com/downloads/info2837-LibLanguage.html",
   "stats": {
-    "downloads": 177512,
+    "downloads": 179520,
     "favorites": 19,
-    "monthly_downloads": 1432
+    "monthly_downloads": 1036
   },
   "title": "LibLanguage",
-  "updated_at": 1781033203000,
-  "version": "46"
+  "updated_at": 1789603325000,
+  "version": "48"
 }

@@ -17,7 +17,7 @@
 
 local ADDON_NAME = "PandaloresCoralAerieCompanion"
 local DISPLAY_NAME = "Pandalore's Coral Aerie Guide Companion"
-local VERSION = "1.0.2"
+local VERSION = "1.1.0"
 local LAM_PANEL_ID = "PCAGCOptions"
 local EVENT_NAMESPACE = "PCAGC"
 local UI_NAMESPACE = "PCAGC"
@@ -52,19 +52,23 @@ local PCAGC = {
 
     arrows = {},
 
-    -- Experimental movement-ranking predictor. The first selection window can
-    -- begin sampling only after locale-neutral Varallion context is observed;
-    -- the first forecast itself remains anchored to the true combat edge. Later
-    -- windows run from final Mind Link tether fade to the next 149224 BEGIN.
-    -- Distances are accumulated from successive
-    -- GetUnitRawWorldPosition samples and are never persisted.
+    -- Experimental movement-ranking predictor. Sampling is rolling and silent;
+    -- a short pre-Mark window is frozen at authoritative 149224 BEGIN. The two
+    -- lowest recent movers are primary candidates and rank three is rendered as
+    -- an uncertainty candidate until authoritative endpoints arrive.
     pathTrackingActive = false,
+    pathTrackingStartedMs = nil,
     pathSamples = {},
+    frozenPrediction = nil,
     predictionArrows = {},
 
     -- Maligalig Building Static is local-player effect state. The native
     -- EVENT_EFFECT_CHANGED stackCount is authoritative for the displayed count.
     staticStacks = 0,
+    lastStaticRefreshMs = nil,
+    safeToJumpUntilMs = nil,
+    incomingBombs = {},
+    maligaligBombArrows = {},
 
     -- Sarydil state is tracked for the whole group but rendered only on the
     -- local healer UI. Purge targets retain per-ability membership so one fade
@@ -76,8 +80,11 @@ local PCAGC = {
     sarydilPurgeArrows = {},
     sarydilPinpointArrow = nil,
 
-    -- Varallion world markers use fixed safe-zone coordinates only.
+    -- Varallion world markers use fixed safe-zone coordinates only. Gryphon
+    -- entry guidance is text/direction based until fixed world entry coordinates
+    -- are independently proven for the CrutchAlerts drawing surface.
     safeZoneMarkerKeys = {},
+    gryphonGuidance = nil,
 
     -- Ephemeral runtime diagnostics. Nothing here is written to SavedVariables.
     lastTrackedEvent = "none",
@@ -109,6 +116,24 @@ local CONFIG = {
     UPDATE_INTERVAL_MS = 100,
     MARK_DEBOUNCE_MS = 5000,     -- debounce duplicate 149224 ACTION_RESULT_BEGIN events
 
+    -- Experimental Mind Link predictor. Seven seconds is a deliberately rounded
+    -- value inside the 5-8s low-mobility region supported by the current HM logs;
+    -- it is not presented as an exact server-selection rule.
+    PREDICTOR_HISTORY_MS = 10000,
+    PREDICTOR_SCORE_WINDOW_MS = 7000,
+    PREDICTOR_MIN_COVERAGE = 0.75,
+    PREDICTOR_ALT_SCALE = 0.62,
+    PREDICTOR_ALT_ALPHA = 0.48,
+
+    -- Maligalig timed guidance.
+    SAFE_TO_JUMP_MIN_QUIET_MS = 7500,
+    SAFE_TO_JUMP_DISPLAY_MS = 2500,
+    BOMB_GUIDANCE_MS = 5000,
+    BOMB_BURST_REMAIN_MS = 1200,
+
+    -- Friendly gryphon Takeoff is ~2.2s in the captured HM logs. Keep the entry
+    -- direction visible slightly beyond that transition without making it stale.
+    GRYPHON_GUIDANCE_MS = 3500,
 
     DEFAULT_TOP_OFFSET = 210,
     MIN_FRAME_HEIGHT = 120,
@@ -119,7 +144,9 @@ local CONFIG = {
     -- CrutchAlerts owns both the renderer and this texture.
     ARROW_TEXTURE = "CrutchAlerts/assets/shape/chevron.dds",
     ARROW_PRIORITY = 520,          -- just above CrutchAlerts mechanic priorities 500/510
-    PREDICTION_ARROW_PRIORITY = 519, -- below real Mind Link arrows; normally removed before they appear
+    PREDICTION_ARROW_PRIORITY = 519, -- below real Mind Link arrows; removed when endpoints become authoritative
+    PREDICTION_ALT_ARROW_PRIORITY = 517,
+    MALIGALIG_BOMB_ARROW_PRIORITY = 516,
     SARYDIL_PURGE_ARROW_PRIORITY = 518,
     SARYDIL_PINPOINT_ARROW_PRIORITY = 521,
     ARROW_SIZE = 100,              -- legacy arg; Space options control rendered scale
@@ -152,6 +179,8 @@ local DEFAULTS = {
     predictorArrowColor = {r = 0.60, g = 0.15, b = 1.00, a = 1.00},
 
     maligaligLeaveStacks = 6,
+    maligaligBombGuidanceEnabled = true,
+    maligaligSafeToJumpEnabled = true,
 
     sarydilPurgeArrowSpaceSize = 0.65,
     sarydilPurgeArrowColor = {r = 1.00, g = 0.82, b = 0.00, a = 1.00},
@@ -162,6 +191,7 @@ local DEFAULTS = {
     varallionSafeZonesEnabled = true,
     varallionSafeZoneRadius = 1.00,
     varallionSafeZoneColor = {r = 0.20, g = 1.00, b = 0.45, a = 0.90},
+    varallionGryphonGuidanceEnabled = true,
 
     schemaVersion = 1,
 }
@@ -186,6 +216,8 @@ local VARALLION_KEY = "varallion"
 local IDS = {
     -- Maligalig
     BUILDING_STATIC = 162279,
+    TOXIC_IRE = 160007,
+    TOXIC_BURST = 159208,
 
     -- Sarydil
     PINPOINT_A = 167569,
@@ -205,6 +237,19 @@ local IDS = {
     BEAM_A = 167437,
     BEAM_B = 167462,
 
+    -- Varallion gryphon identity checkers observed at friendly Takeoff.
+    GRYPHON_OFALLO = 163184,
+    GRYPHON_ILIATA = 163185,
+    GRYPHON_MAFREMARE = 163188,
+    GRYPHON_KARGAEDA = 163597,
+
+}
+
+local GRYPHON_CHECKERS = {
+    [IDS.GRYPHON_ILIATA] = {name = "Iliata", entry = "LEFT"},
+    [IDS.GRYPHON_OFALLO] = {name = "Ofallo", entry = "ENTRANCE"},
+    [IDS.GRYPHON_MAFREMARE] = {name = "Mafremare", entry = "RIGHT"},
+    [IDS.GRYPHON_KARGAEDA] = {name = "Kargaeda", entry = "EXIT"},
 }
 
 
@@ -223,6 +268,8 @@ local ICON_NAME_A = ADDON_NAME .. "_MindLinkA"
 local ICON_NAME_B = ADDON_NAME .. "_MindLinkB"
 local PREDICTION_ICON_NAME_A = ADDON_NAME .. "_PathPredictionA"
 local PREDICTION_ICON_NAME_B = ADDON_NAME .. "_PathPredictionB"
+local PREDICTION_ICON_NAME_C = ADDON_NAME .. "_PathPredictionC"
+local MALIGALIG_BOMB_ICON_NAME = ADDON_NAME .. "_MaligaligBomb"
 local SARYDIL_PURGE_ICON_NAME = ADDON_NAME .. "_SarydilPurge"
 local SARYDIL_PINPOINT_ICON_NAME = ADDON_NAME .. "_SarydilPinpoint"
 
@@ -231,6 +278,10 @@ local function IsSarydilAbility(abilityId)
         or abilityId == IDS.PINPOINT_B
         or abilityId == IDS.PURGE_IGNITE
         or abilityId == IDS.PURGE_APERTURE
+end
+
+local function IsGryphonCheckerAbility(abilityId)
+    return GRYPHON_CHECKERS[abilityId] ~= nil
 end
 
 
@@ -668,14 +719,25 @@ function PCAGC:OnUpdate()
     -- the underlying mechanic state. Unlocking is blocked during combat.
     if self.unlocked then return end
 
-    if not self.runtimeLoaded or not self.encounterActive then
+    if not self.runtimeLoaded then
         self:StopUpdate()
         return
     end
 
-    -- Path sampling is the only intentionally continuous combat work. It runs
-    -- only during an active prediction window.
-    self:UpdatePathTracking()
+    -- Timed non-Varallion guidance shares the existing 100 ms updater so it can
+    -- expire deterministically without introducing independent update loops.
+    self:UpdateMaligaligTimedState(nowMs)
+    self:UpdateVarallionGryphonTimedState(nowMs)
+
+    local timedGuidanceActive = self:HasMaligaligTimedWork(nowMs) or self:HasVarallionGryphonTimedWork(nowMs)
+    if not self.encounterActive and not timedGuidanceActive then
+        self:StopUpdate()
+        return
+    end
+
+    -- Predictor sampling is intentionally silent until 149224 BEGIN freezes a
+    -- short pre-Mark ranking.
+    self:UpdatePathTracking(nowMs)
 
     if self.beamAActive or self.beamBActive then
         if self.tetherDeadlineMs then
@@ -715,10 +777,12 @@ function PCAGC:OnUpdate()
         self:HideMark()
     end
 
-    -- If no countdown/tether/path state needs periodic work, leave the static
-    -- Mind Link text entirely event-driven and stop the 100 ms callback.
+    timedGuidanceActive = self:HasMaligaligTimedWork(nowMs) or self:HasVarallionGryphonTimedWork(nowMs)
+
+    -- If no countdown/tether/path/timed-guidance state needs periodic work,
+    -- leave static presentation entirely event-driven.
     if not self.pathTrackingActive and not self.beamAActive and not self.beamBActive
-        and not self.markNowUntilMs and not self.nextMarkDeadlineMs then
+        and not self.markNowUntilMs and not self.nextMarkDeadlineMs and not timedGuidanceActive then
         self:StopUpdate()
     end
 end
@@ -851,7 +915,7 @@ function PCAGC:RemoveAllArrows()
     self:RemoveArrow("A")
     self:RemoveArrow("B")
 
-    -- Unit tags can change during zoning/group changes. CrutchAlerts 2.24.0+
+    -- Unit tags can change during zoning/group changes. CrutchAlerts 2.26.0+
     -- exposes catch-all cleanup, so remove addon-owned icons by unique name.
     CrutchAlerts.RemoveAllAttachedIcons(ICON_NAME_A)
     CrutchAlerts.RemoveAllAttachedIcons(ICON_NAME_B)
@@ -900,17 +964,18 @@ function PCAGC:RefreshActiveArrows()
     if self.targetA then self:ShowArrow("A", self.targetA) end
     if self.targetB then self:ShowArrow("B", self.targetB) end
 
-    if self.pathTrackingActive and self.saved.predictorEnabled then
-        self:RefreshPathPredictionArrows()
+    if self.frozenPrediction and self.saved.predictorEnabled then
+        self:RenderFrozenPredictionArrows()
     end
 end
 
 ---------------------------------------------------------------------
--- EXPERIMENTAL PATH-DISTANCE PREDICTOR
+-- EXPERIMENTAL RECENT-MOVEMENT PREDICTOR
 ---------------------------------------------------------------------
 local function PredictionIconNameForSlot(slot)
     if slot == "A" then return PREDICTION_ICON_NAME_A end
-    return PREDICTION_ICON_NAME_B
+    if slot == "B" then return PREDICTION_ICON_NAME_B end
+    return PREDICTION_ICON_NAME_C
 end
 
 function PCAGC:RemovePredictionArrow(slot)
@@ -927,32 +992,34 @@ end
 function PCAGC:RemoveAllPredictionArrows()
     self:RemovePredictionArrow("A")
     self:RemovePredictionArrow("B")
+    self:RemovePredictionArrow("C")
 
     CrutchAlerts.RemoveAllAttachedIcons(PREDICTION_ICON_NAME_A)
     CrutchAlerts.RemoveAllAttachedIcons(PREDICTION_ICON_NAME_B)
+    CrutchAlerts.RemoveAllAttachedIcons(PREDICTION_ICON_NAME_C)
 end
 
-function PCAGC:RefreshPredictionArrowAppearance()
-    self:RemoveAllPredictionArrows()
-    if self.saved.arrowsEnabled and self.saved.predictorEnabled and self.pathTrackingActive then
-        self:RefreshPathPredictionArrows()
-    end
-end
-
-function PCAGC:ShowPredictionArrow(slot, unitTag)
+function PCAGC:ShowPredictionArrow(slot, unitTag, alternate)
     if not self.saved.arrowsEnabled or not self.saved.predictorEnabled or not unitTag or unitTag == "" then
         return
     end
 
     local existing = self.predictionArrows[slot]
-    if existing and existing.unitTag == unitTag then return end
+    if existing and existing.unitTag == unitTag and existing.alternate == alternate then return end
     self:RemovePredictionArrow(slot)
 
-    local color = ColorAsArray(self.saved.predictorArrowColor)
+    local base = self.saved.predictorArrowColor
+    local color = {
+        base.r,
+        base.g,
+        base.b,
+        alternate and math.min(base.a or 1, CONFIG.PREDICTOR_ALT_ALPHA) or (base.a or 1),
+    }
+    local size = math.max(0.30, self.saved.predictorArrowSpaceSize * (alternate and CONFIG.PREDICTOR_ALT_SCALE or 1))
     local spaceOptions = {
         texture = {
             path = CONFIG.ARROW_TEXTURE,
-            size = self.saved.predictorArrowSpaceSize,
+            size = size,
             color = color,
         },
     }
@@ -960,7 +1027,7 @@ function PCAGC:ShowPredictionArrow(slot, unitTag)
     CrutchAlerts.SetAttachedIconForUnit(
         unitTag,
         PredictionIconNameForSlot(slot),
-        CONFIG.PREDICTION_ARROW_PRIORITY,
+        alternate and CONFIG.PREDICTION_ALT_ARROW_PRIORITY or CONFIG.PREDICTION_ARROW_PRIORITY,
         CONFIG.ARROW_TEXTURE,
         CONFIG.ARROW_SIZE,
         color,
@@ -968,60 +1035,25 @@ function PCAGC:ShowPredictionArrow(slot, unitTag)
         nil,
         spaceOptions
     )
-    self.predictionArrows[slot] = {unitTag = unitTag}
+    self.predictionArrows[slot] = {unitTag = unitTag, alternate = alternate == true}
 end
 
-function PCAGC:GetRankedPathSamples(eligibleOnly)
-    local ranked = {}
-    for _, sample in pairs(self.pathSamples) do
-        local eligible = sample.unitTag and sample.unitTag ~= ""
-        if eligibleOnly then
-            eligible = eligible
-                and sample.present == true
-                and sample.continuous == true
-                and DoesUnitExist(sample.unitTag)
-                and not IsUnitDead(sample.unitTag)
-        end
-        if eligible then
-            ranked[#ranked + 1] = sample
-        end
-    end
+function PCAGC:RenderFrozenPredictionArrows()
+    self:RemoveAllPredictionArrows()
+    if not self.saved.arrowsEnabled or not self.saved.predictorEnabled then return end
+    if not self.frozenPrediction or not self.frozenPrediction.ranked then return end
 
-    table.sort(ranked, function(a, b)
-        if a.distanceCm == b.distanceCm then
-            return (a.order or 999) < (b.order or 999)
-        end
-        return a.distanceCm < b.distanceCm
-    end)
-
-    return ranked
+    local ranked = self.frozenPrediction.ranked
+    if ranked[1] then self:ShowPredictionArrow("A", ranked[1].unitTag, false) end
+    if ranked[2] then self:ShowPredictionArrow("B", ranked[2].unitTag, false) end
+    if ranked[3] then self:ShowPredictionArrow("C", ranked[3].unitTag, true) end
 end
 
-function PCAGC:RefreshPathPredictionArrows()
-    if not self.pathTrackingActive or not self.saved.arrowsEnabled or not self.saved.predictorEnabled then
+function PCAGC:RefreshPredictionArrowAppearance()
+    if self.frozenPrediction then
+        self:RenderFrozenPredictionArrows()
+    else
         self:RemoveAllPredictionArrows()
-        return
-    end
-
-    -- Death does not break observation continuity: a resurrected player can
-    -- re-enter the candidate ranking with the path accumulated in this window.
-    -- Group departure/re-entry does break continuity because movement while the
-    -- player was absent is unknowable; that sample is excluded until the next
-    -- prediction window.
-    local ranked = self:GetRankedPathSamples(true)
-    local first = ranked[1]
-    local second = ranked[2]
-
-    if first then
-        self:ShowPredictionArrow("A", first.unitTag)
-    else
-        self:RemovePredictionArrow("A")
-    end
-
-    if second then
-        self:ShowPredictionArrow("B", second.unitTag)
-    else
-        self:RemovePredictionArrow("B")
     end
 end
 
@@ -1031,30 +1063,53 @@ local function PathIdentityForUnitTag(unitTag)
     return displayName
 end
 
-local function SetSamplePosition(sample, zoneId, x, y, z, order, unitTag)
+local function SetSamplePosition(sample, zoneId, x, y, z, order, unitTag, nowMs)
     sample.zoneId = zoneId
     sample.lastX = x
     sample.lastY = y
     sample.lastZ = z
+    sample.lastSampleMs = nowMs
     sample.order = order
     sample.unitTag = unitTag
 end
 
+local function AppendPathStep(sample, nowMs, distanceCm)
+    sample.steps = sample.steps or {}
+    sample.stepHead = sample.stepHead or 1
+    sample.steps[#sample.steps + 1] = {t = nowMs, d = distanceCm}
+
+    local oldest = nowMs - CONFIG.PREDICTOR_HISTORY_MS
+    while sample.steps[sample.stepHead] and sample.steps[sample.stepHead].t < oldest do
+        sample.stepHead = sample.stepHead + 1
+    end
+
+    -- Compact occasionally so long fights do not retain discarded array slots.
+    if sample.stepHead > 64 then
+        local compact = {}
+        for i = sample.stepHead, #sample.steps do
+            compact[#compact + 1] = sample.steps[i]
+        end
+        sample.steps = compact
+        sample.stepHead = 1
+    end
+end
+
 function PCAGC:StartPathTracking(nowMs)
-    -- Prediction is an explicit opt-in. Enabling it after a window has started
+    -- Prediction is explicit opt-in. Enabling it after a window has started
     -- waits for the next window rather than ranking an incomplete sample.
     if not self.saved.predictorEnabled then
         self:RemoveAllPredictionArrows()
+        self.frozenPrediction = nil
         return
     end
 
-    -- Duplicate EFFECT_FADED notifications must not erase distance already
-    -- accumulated for the current selection window.
     if self.pathTrackingActive then return end
 
-    self.pathTrackingActive = true
     local trackingStartMs = nowMs or GetGameTimeMilliseconds()
+    self.pathTrackingActive = true
+    self.pathTrackingStartedMs = trackingStartMs
     self.pathSamples = {}
+    self.frozenPrediction = nil
     self:RemoveAllPredictionArrows()
 
     local trackedCount = 0
@@ -1073,26 +1128,29 @@ function PCAGC:StartPathTracking(nowMs)
                     lastX = x,
                     lastY = y,
                     lastZ = z,
-                    distanceCm = 0,
+                    lastSampleMs = trackingStartMs,
                     present = true,
                     continuous = true,
+                    steps = {},
+                    stepHead = 1,
                 }
                 trackedCount = trackedCount + 1
             end
         end
     end
 
-    self:RefreshPathPredictionArrows()
-    self:LogInfo("Path-distance tracking started at %d for %d continuously observed group members", trackingStartMs, trackedCount)
+    self:LogInfo("Recent-movement tracking started at %d for %d continuously observed group members", trackingStartMs, trackedCount)
     self:EnsureUpdate()
 end
 
-function PCAGC:UpdatePathTracking()
+function PCAGC:UpdatePathTracking(nowMs)
     if not self.pathTrackingActive then return end
     if not self.saved.predictorEnabled then
         self:StopPathTracking()
         return
     end
+
+    nowMs = nowMs or GetGameTimeMilliseconds()
 
     for _, sample in pairs(self.pathSamples) do
         sample.seenNow = false
@@ -1107,8 +1165,7 @@ function PCAGC:UpdatePathTracking()
             if zoneId and zoneId ~= 0 and x and y and z then
                 local sample = self.pathSamples[identity]
                 if not sample then
-                    -- Joining after the window began cannot be ranked fairly;
-                    -- preserve it for diagnostics but exclude it as a candidate.
+                    -- Joining after the window began cannot be ranked fairly.
                     sample = {
                         unitTag = unitTag,
                         displayName = identity,
@@ -1117,29 +1174,48 @@ function PCAGC:UpdatePathTracking()
                         lastX = x,
                         lastY = y,
                         lastZ = z,
-                        distanceCm = 0,
+                        lastSampleMs = nowMs,
                         present = true,
                         continuous = false,
+                        steps = {},
+                        stepHead = 1,
                     }
                     self.pathSamples[identity] = sample
                 elseif sample.present ~= true then
-                    -- A returning member has an observation gap. Re-anchor but
-                    -- do not pretend its unseen movement was zero.
+                    -- Observation gaps remain disqualifying for this cycle. Re-anchor
+                    -- without turning unseen movement into zero movement.
                     sample.present = true
                     sample.continuous = false
-                    SetSamplePosition(sample, zoneId, x, y, z, i, unitTag)
+                    SetSamplePosition(sample, zoneId, x, y, z, i, unitTag, nowMs)
                 elseif sample.zoneId == zoneId then
+                    -- GetUnitRawWorldPosition uses Y as elevation. The encounter-log
+                    -- model that outperformed cumulative path was horizontal X/Y log
+                    -- movement, so live scoring deliberately uses raw-world X/Z only.
                     local dx = x - sample.lastX
-                    local dy = y - sample.lastY
                     local dz = z - sample.lastZ
-                    sample.distanceCm = sample.distanceCm + zo_sqrt((dx * dx) + (dy * dy) + (dz * dz))
-                    SetSamplePosition(sample, zoneId, x, y, z, i, unitTag)
+                    local distanceCm = zo_sqrt((dx * dx) + (dz * dz))
+                    AppendPathStep(sample, nowMs, distanceCm)
+                    SetSamplePosition(sample, zoneId, x, y, z, i, unitTag, nowMs)
                 else
-                    -- A zone discontinuity is not player travel. Re-anchor the
-                    -- sample without adding an artificial teleport distance.
-                    SetSamplePosition(sample, zoneId, x, y, z, i, unitTag)
+                    -- Zone discontinuity is not travel.
+                    sample.continuous = false
+                    SetSamplePosition(sample, zoneId, x, y, z, i, unitTag, nowMs)
                 end
                 sample.seenNow = true
+            else
+                local sample = self.pathSamples[identity]
+                if sample and IsUnitDead(unitTag) then
+                    -- Death is not a selection disqualifier. If the client stops
+                    -- exposing corpse coordinates, preserve the last known position
+                    -- and record zero horizontal movement rather than creating an
+                    -- artificial observation gap solely because the player is dead.
+                    AppendPathStep(sample, nowMs, 0)
+                    sample.unitTag = unitTag
+                    sample.order = i
+                    sample.lastSampleMs = nowMs
+                    sample.present = true
+                    sample.seenNow = true
+                end
             end
         end
     end
@@ -1147,50 +1223,230 @@ function PCAGC:UpdatePathTracking()
     for _, sample in pairs(self.pathSamples) do
         if not sample.seenNow then
             sample.present = false
+            sample.continuous = false
         end
         sample.seenNow = nil
     end
+end
 
-    self:RefreshPathPredictionArrows()
+function PCAGC:GetRecentMovementScore(sample, freezeMs)
+    local cutoff = freezeMs - CONFIG.PREDICTOR_SCORE_WINDOW_MS
+    local distanceCm = 0
+    local peakStepCm = 0
+    local firstT = nil
+    local lastT = nil
+    local sampleCount = 0
+
+    for i = sample.stepHead or 1, #(sample.steps or {}) do
+        local step = sample.steps[i]
+        if step.t >= cutoff and step.t <= freezeMs then
+            distanceCm = distanceCm + (step.d or 0)
+            if (step.d or 0) > peakStepCm then peakStepCm = step.d or 0 end
+            firstT = firstT or step.t
+            lastT = step.t
+            sampleCount = sampleCount + 1
+        end
+    end
+
+    local coverageMs = 0
+    if firstT and lastT then
+        coverageMs = math.max(0, lastT - firstT + CONFIG.UPDATE_INTERVAL_MS)
+    end
+    local coverage = math.min(1, coverageMs / CONFIG.PREDICTOR_SCORE_WINDOW_MS)
+
+    return distanceCm, peakStepCm, sampleCount, coverage
+end
+
+function PCAGC:FreezePathPrediction(nowMs)
+    if not self.pathTrackingActive or not self.saved.predictorEnabled then
+        self:StopPathTracking()
+        return
+    end
+
+    nowMs = nowMs or GetGameTimeMilliseconds()
+    self:UpdatePathTracking(nowMs)
+
+    local ranked = {}
+    for _, sample in pairs(self.pathSamples) do
+        local distanceCm, peakStepCm, sampleCount, coverage = self:GetRecentMovementScore(sample, nowMs)
+        local eligible = sample.unitTag and sample.unitTag ~= ""
+            and sample.present == true
+            and sample.continuous == true
+            and coverage >= CONFIG.PREDICTOR_MIN_COVERAGE
+
+        if eligible then
+            ranked[#ranked + 1] = {
+                unitTag = sample.unitTag,
+                displayName = sample.displayName,
+                order = sample.order,
+                distanceCm = distanceCm,
+                peakStepCm = peakStepCm,
+                sampleCount = sampleCount,
+                coverage = coverage,
+                aliveAtFreeze = not IsUnitDead(sample.unitTag),
+            }
+        else
+            self:LogDebug(
+                "Predictor excluded %s: present=%s continuous=%s coverage=%.2f",
+                tostring(sample.displayName), tostring(sample.present), tostring(sample.continuous), coverage
+            )
+        end
+    end
+
+    table.sort(ranked, function(a, b)
+        if a.distanceCm == b.distanceCm then
+            return (a.order or 999) < (b.order or 999)
+        end
+        return a.distanceCm < b.distanceCm
+    end)
+
+    self.frozenPrediction = {timeMs = nowMs, ranked = ranked}
+    self.pathTrackingActive = false
+    self.pathTrackingStartedMs = nil
+    self.pathSamples = {}
+
+    local parts = {}
+    for i = 1, #ranked do
+        local candidate = ranked[i]
+        parts[#parts + 1] = string.format(
+            "%d:%s=%.2fm peak=%.2fm coverage=%.2f alive=%s",
+            i,
+            tostring(candidate.displayName),
+            (candidate.distanceCm or 0) / 100,
+            (candidate.peakStepCm or 0) / 100,
+            candidate.coverage or 0,
+            tostring(candidate.aliveAtFreeze)
+        )
+    end
+    if #parts > 0 then
+        self:LogInfo("Frozen experimental Mind Link ranking: %s", table.concat(parts, ", "))
+    else
+        self:LogWarn("Frozen experimental Mind Link ranking had no sufficiently covered candidates")
+    end
+
+    self:RenderFrozenPredictionArrows()
+end
+
+function PCAGC:GetFrozenPredictionRank(displayName)
+    if not self.frozenPrediction or not self.frozenPrediction.ranked then return nil end
+    for i, candidate in ipairs(self.frozenPrediction.ranked) do
+        if candidate.displayName == displayName then return i end
+    end
+    return nil
+end
+
+function PCAGC:EvaluateFrozenPrediction()
+    if not self.frozenPrediction or not self.targetA or not self.targetB then return end
+    local rankA = self:GetFrozenPredictionRank(self.targetA.displayName)
+    local rankB = self:GetFrozenPredictionRank(self.targetB.displayName)
+    local exact = rankA and rankB and rankA <= 2 and rankB <= 2 or false
+    local envelope = rankA and rankB and rankA <= 3 and rankB <= 3 or false
+
+    self:LogInfo(
+        "Experimental predictor result: A=%s rank=%s B=%s rank=%s primaryExact=%s top3Envelope=%s",
+        tostring(self.targetA.displayName), tostring(rankA or "none"),
+        tostring(self.targetB.displayName), tostring(rankB or "none"),
+        tostring(exact), tostring(envelope)
+    )
 end
 
 function PCAGC:StopPathTracking()
-    if self.pathTrackingActive then
-        local ranked = self:GetRankedPathSamples(false)
-        local eligible = self:GetRankedPathSamples(true)
-        local parts = {}
-        for i = 1, #ranked do
-            local sample = ranked[i]
-            parts[#parts + 1] = string.format(
-                "%d:%s=%.2fm",
-                i,
-                tostring(sample.displayName),
-                (sample.distanceCm or 0) / 100
-            )
-        end
-        if #parts > 0 then
-            self:LogInfo("Final path ranking: %s", table.concat(parts, ", "))
-        end
-        self:LogInfo(
-            "Final living path candidates: A=%s B=%s",
-            eligible[1] and tostring(eligible[1].displayName) or "none",
-            eligible[2] and tostring(eligible[2].displayName) or "none"
-        )
-    end
-
     self.pathTrackingActive = false
+    self.pathTrackingStartedMs = nil
     self.pathSamples = {}
+    self.frozenPrediction = nil
     self:RemoveAllPredictionArrows()
 end
 
 ---------------------------------------------------------------------
 -- MALIGALIG / SARYDIL
 ---------------------------------------------------------------------
+function PCAGC:RemoveAllMaligaligBombArrows()
+    local unitTags = {}
+    for unitTag in pairs(self.maligaligBombArrows or {}) do
+        unitTags[#unitTags + 1] = unitTag
+    end
+    for _, unitTag in ipairs(unitTags) do
+        CrutchAlerts.RemoveAttachedIconForUnit(unitTag, MALIGALIG_BOMB_ICON_NAME)
+    end
+    CrutchAlerts.RemoveAllAttachedIcons(MALIGALIG_BOMB_ICON_NAME)
+    self.maligaligBombArrows = {}
+end
+
+function PCAGC:RefreshMaligaligBombArrows()
+    self:RemoveAllMaligaligBombArrows()
+    if not self.saved or not self.saved.maligaligBombGuidanceEnabled or not self.saved.arrowsEnabled then return end
+    if self.currentBossKey ~= MALIGALIG_KEY then return end
+
+    local targets = {}
+    for _, entry in pairs(self.incomingBombs or {}) do
+        local target = entry.target
+        if target then
+            self:ReconcileTargetUnitTag(target)
+            if target.unitTag and target.unitTag ~= "" then
+                targets[target.unitTag] = true
+            end
+        end
+    end
+
+    local color = {1.00, 0.38, 0.05, 1.00}
+    local spaceOptions = {
+        texture = {
+            path = CONFIG.ARROW_TEXTURE,
+            size = math.max(0.55, self.saved.arrowSpaceSize * 0.82),
+            color = color,
+        },
+    }
+
+    for unitTag in pairs(targets) do
+        CrutchAlerts.SetAttachedIconForUnit(
+            unitTag,
+            MALIGALIG_BOMB_ICON_NAME,
+            CONFIG.MALIGALIG_BOMB_ARROW_PRIORITY,
+            CONFIG.ARROW_TEXTURE,
+            CONFIG.ARROW_SIZE,
+            color,
+            false,
+            nil,
+            spaceOptions
+        )
+        self.maligaligBombArrows[unitTag] = true
+    end
+end
+
 function PCAGC:ResetMaligaligState()
     self.staticStacks = 0
+    self.lastStaticRefreshMs = nil
+    self.safeToJumpUntilMs = nil
+    self.incomingBombs = {}
+    self:RemoveAllMaligaligBombArrows()
     if self.currentBossKey == MALIGALIG_KEY then
         self:HideBossAlerts()
     end
+end
+
+function PCAGC:GetMaligaligBombSummary()
+    local counts = {}
+    local playerDisplayName = GetUnitDisplayName("player") or ""
+    local localCount = 0
+
+    for _, entry in pairs(self.incomingBombs or {}) do
+        local target = entry.target
+        if target then
+            local name = target.displayName or "?"
+            counts[name] = (counts[name] or 0) + 1
+            if target.unitTag == "player" or (playerDisplayName ~= "" and name == playerDisplayName) then
+                localCount = localCount + 1
+            end
+        end
+    end
+
+    local names = {}
+    for name, count in pairs(counts) do
+        names[#names + 1] = count > 1 and string.format("%s x%d", name, count) or name
+    end
+    table.sort(names)
+    return localCount, table.concat(names, " / ")
 end
 
 function PCAGC:RefreshMaligaligUI()
@@ -1210,8 +1466,100 @@ function PCAGC:RefreshMaligaligUI()
         self.ui.bossDetail:SetHidden(true)
         self.ui.bossAside:SetHidden(true)
         self:LayoutBossAlerts(true, false, false)
-    else
-        self:HideBossAlerts()
+        return
+    end
+
+    if self.saved.maligaligBombGuidanceEnabled and next(self.incomingBombs or {}) then
+        local localCount, summary = self:GetMaligaligBombSummary()
+        self:EnsureNotificationSurface()
+        self:HideMark()
+        self:HideLinkUI()
+        self.ui.bossAlert:SetText("BOMB INCOMING")
+        self.ui.bossAlert:SetColor(1.00, 0.38, 0.05, 1.00)
+        self.ui.bossAlert:SetHidden(false)
+        if localCount > 0 then
+            self.ui.bossDetail:SetText(localCount > 1 and string.format("YOU x%d", localCount) or "YOU")
+        else
+            self.ui.bossDetail:SetText(summary ~= "" and summary or "GROUP")
+        end
+        self.ui.bossDetail:SetColor(1.00, 0.72, 0.15, 1.00)
+        self.ui.bossDetail:SetHidden(false)
+        self.ui.bossAside:SetHidden(true)
+        self:LayoutBossAlerts(true, true, false)
+        return
+    end
+
+    local nowMs = GetGameTimeMilliseconds()
+    if self.saved.maligaligSafeToJumpEnabled and self.safeToJumpUntilMs and nowMs < self.safeToJumpUntilMs then
+        self:EnsureNotificationSurface()
+        self:HideMark()
+        self:HideLinkUI()
+        self.ui.bossAlert:SetText("SAFE TO JUMP")
+        self.ui.bossAlert:SetColor(0.20, 1.00, 0.45, 1.00)
+        self.ui.bossAlert:SetHidden(false)
+        self.ui.bossDetail:SetHidden(true)
+        self.ui.bossAside:SetHidden(true)
+        self:LayoutBossAlerts(true, false, false)
+        return
+    end
+
+    self:HideBossAlerts()
+end
+
+function PCAGC:HandleToxicIre(sourceUnitId, targetUnitId, targetName)
+    if not self.saved.maligaligBombGuidanceEnabled then return end
+    local sourceKey = sourceUnitId and sourceUnitId ~= 0 and ("id:" .. tostring(sourceUnitId)) or nil
+    if not sourceKey then return end
+
+    local nowMs = GetGameTimeMilliseconds()
+    local target = self:ResolveEffectTarget("", targetUnitId, targetName)
+    self.incomingBombs[sourceKey] = {
+        sourceUnitId = sourceUnitId,
+        target = target,
+        expiresMs = nowMs + CONFIG.BOMB_GUIDANCE_MS,
+    }
+    self:LogInfo("Maligalig Toxic Ire: crab=%s target=%s", tostring(sourceUnitId), tostring(target.displayName))
+    self:RefreshMaligaligBombArrows()
+    self:RefreshMaligaligUI()
+    self:EnsureUpdate()
+end
+
+function PCAGC:HandleToxicBurst(sourceUnitId)
+    local sourceKey = sourceUnitId and sourceUnitId ~= 0 and ("id:" .. tostring(sourceUnitId)) or nil
+    local entry = sourceKey and self.incomingBombs[sourceKey] or nil
+    if not entry then return end
+    entry.expiresMs = math.min(entry.expiresMs or math.huge, GetGameTimeMilliseconds() + CONFIG.BOMB_BURST_REMAIN_MS)
+    self:EnsureUpdate()
+end
+
+function PCAGC:HasMaligaligTimedWork(nowMs)
+    if self.currentBossKey ~= MALIGALIG_KEY then return false end
+    nowMs = nowMs or GetGameTimeMilliseconds()
+    if self.safeToJumpUntilMs and nowMs < self.safeToJumpUntilMs then return true end
+    return next(self.incomingBombs or {}) ~= nil
+end
+
+function PCAGC:UpdateMaligaligTimedState(nowMs)
+    if self.currentBossKey ~= MALIGALIG_KEY then return end
+    local changed = false
+
+    if self.safeToJumpUntilMs and nowMs >= self.safeToJumpUntilMs then
+        self.safeToJumpUntilMs = nil
+        changed = true
+    end
+
+    local expired = {}
+    for key, entry in pairs(self.incomingBombs or {}) do
+        if not entry.expiresMs or nowMs >= entry.expiresMs then expired[#expired + 1] = key end
+    end
+    for _, key in ipairs(expired) do
+        self.incomingBombs[key] = nil
+        changed = true
+    end
+
+    if changed then
+        self:RefreshMaligaligBombArrows()
+        self:RefreshMaligaligUI()
     end
 end
 
@@ -1447,12 +1795,26 @@ function PCAGC:FindPurgeTargetEntry(unitTag, unitId, unitName)
 end
 
 function PCAGC:HandleMaligaligEffect(changeType, stackCount)
+    local nowMs = GetGameTimeMilliseconds()
     if IsEffectPresent(changeType) then
         local stacks = tonumber(stackCount) or 0
         self.staticStacks = math.max(0, math.floor(stacks))
+        if self.staticStacks > 0 then
+            self.lastStaticRefreshMs = nowMs
+            self.safeToJumpUntilMs = nil
+        end
         self:LogDebug("Maligalig Building Static stacks=%d", self.staticStacks)
     elseif changeType == EFFECT_RESULT_FADED then
+        local quietMs = self.lastStaticRefreshMs and (nowMs - self.lastStaticRefreshMs) or 0
         self.staticStacks = 0
+        self.lastStaticRefreshMs = nil
+        if self.saved.maligaligSafeToJumpEnabled and quietMs >= CONFIG.SAFE_TO_JUMP_MIN_QUIET_MS then
+            self.safeToJumpUntilMs = nowMs + CONFIG.SAFE_TO_JUMP_DISPLAY_MS
+            self:LogInfo("Maligalig Building Static reset after %dms: SAFE TO JUMP", quietMs)
+            self:EnsureUpdate()
+        else
+            self.safeToJumpUntilMs = nil
+        end
     else
         return
     end
@@ -1531,6 +1893,75 @@ end
 
 
 ---------------------------------------------------------------------
+-- VARALLION GRYPHON ENTRY GUIDANCE
+---------------------------------------------------------------------
+function PCAGC:ClearVarallionGryphonGuidance()
+    self.gryphonGuidance = nil
+    if self.currentBossKey == VARALLION_KEY then
+        self:HideBossAlerts()
+    end
+end
+
+function PCAGC:RefreshVarallionGryphonGuidance()
+    if self.currentBossKey ~= VARALLION_KEY or not self.ui then return end
+    if self.unlocked or not self.inCombat or not self.saved.varallionGryphonGuidanceEnabled then
+        self:HideBossAlerts()
+        return
+    end
+
+    local guidance = self.gryphonGuidance
+    local nowMs = GetGameTimeMilliseconds()
+    if not guidance or not guidance.expiresMs or nowMs >= guidance.expiresMs then
+        self:HideBossAlerts()
+        return
+    end
+
+    self:EnsureNotificationSurface()
+    self.ui.bossAlert:SetText("GRYPHON INCOMING")
+    self.ui.bossAlert:SetColor(0.20, 0.90, 1.00, 1.00)
+    self.ui.bossAlert:SetHidden(false)
+    self.ui.bossDetail:SetText(guidance.entry)
+    self.ui.bossDetail:SetColor(1.00, 1.00, 1.00, 1.00)
+    self.ui.bossDetail:SetHidden(false)
+    self.ui.bossAside:SetText(guidance.name)
+    self.ui.bossAside:SetColor(0.72, 0.88, 1.00, 1.00)
+    self.ui.bossAside:SetHidden(false)
+    self:LayoutBossAlerts(true, true, true)
+end
+
+function PCAGC:HandleVarallionGryphonChecker(abilityId, changeType)
+    if changeType ~= EFFECT_RESULT_GAINED then return end
+    local info = GRYPHON_CHECKERS[abilityId]
+    if not info then return end
+
+    local nowMs = GetGameTimeMilliseconds()
+    self.gryphonGuidance = {
+        abilityId = abilityId,
+        name = info.name,
+        entry = info.entry,
+        expiresMs = nowMs + CONFIG.GRYPHON_GUIDANCE_MS,
+    }
+    self:LogInfo("Varallion gryphon checker %d: %s -> %s", abilityId, info.name, info.entry)
+    self:RefreshVarallionGryphonGuidance()
+    self:EnsureUpdate()
+end
+
+function PCAGC:HasVarallionGryphonTimedWork(nowMs)
+    if self.currentBossKey ~= VARALLION_KEY then return false end
+    if not self.gryphonGuidance or not self.gryphonGuidance.expiresMs then return false end
+    nowMs = nowMs or GetGameTimeMilliseconds()
+    return nowMs < self.gryphonGuidance.expiresMs
+end
+
+function PCAGC:UpdateVarallionGryphonTimedState(nowMs)
+    if self.currentBossKey ~= VARALLION_KEY or not self.gryphonGuidance then return end
+    if not self.gryphonGuidance.expiresMs or nowMs >= self.gryphonGuidance.expiresMs then
+        self.gryphonGuidance = nil
+        self:HideBossAlerts()
+    end
+end
+
+---------------------------------------------------------------------
 -- VARALLION WORLD MARKERS
 ---------------------------------------------------------------------
 function PCAGC:RemoveWorldMarkerKey(key)
@@ -1591,6 +2022,7 @@ function PCAGC:SetBossContext(bossKey, source)
     local previous = self.currentBossKey
     if previous == VARALLION_KEY then
         if self.encounterActive then self:ResetEncounter() end
+        self:ClearVarallionGryphonGuidance()
         self:ClearVarallionWorldMarkers()
     end
     if previous == MALIGALIG_KEY then self:ResetMaligaligState() end
@@ -1728,6 +2160,7 @@ function PCAGC:ResetEncounter()
     self.lastAcceptedMarkMs = nil
 
     self:StopPathTracking()
+    self:ClearVarallionGryphonGuidance()
     self:ClearLinkState(true)
     self:HideMark()
     if not self.unlocked then
@@ -1742,6 +2175,20 @@ function PCAGC:OnCombatEvent(eventCode, result, isError, abilityName, abilityGra
                             sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType,
                             combatEventLog, sourceUnitId, targetUnitId, abilityId, overflow)
     if result ~= ACTION_RESULT_BEGIN then return end
+
+    if abilityId == IDS.TOXIC_IRE then
+        if not self:EnsureBossMechanicContext(MALIGALIG_KEY) then return end
+        self.lastTrackedEvent = string.format("%d (%s), source=%s target=%s", abilityId, NormalizedName(abilityName), tostring(sourceUnitId), NormalizedName(targetName))
+        self:HandleToxicIre(sourceUnitId, targetUnitId, targetName)
+        return
+    end
+
+    if abilityId == IDS.TOXIC_BURST then
+        if not self:EnsureBossMechanicContext(MALIGALIG_KEY) then return end
+        self.lastTrackedEvent = string.format("%d (%s), source=%s", abilityId, NormalizedName(abilityName), tostring(sourceUnitId))
+        self:HandleToxicBurst(sourceUnitId)
+        return
+    end
 
     if abilityId == IDS.VARALLION_SIGNAL_SLICE or abilityId == IDS.VARALLION_SIGNAL_OBLITERATE then
         if not self:EnsureBossMechanicContext(VARALLION_KEY) then return end
@@ -1773,7 +2220,7 @@ function PCAGC:OnCombatEvent(eventCode, result, isError, abilityName, abilityGra
 
     self.lastAcceptedMarkMs = nowMs
     self:LogInfo("149224 ACTION_RESULT_BEGIN accepted as Mark start at %d", nowMs)
-    self:StopPathTracking()
+    self:FreezePathPrediction(nowMs)
     self:ClearLinkState(true)
     self:BeginMarkNow(nowMs)
 end
@@ -1798,6 +2245,13 @@ function PCAGC:OnEffectChanged(eventCode, changeType, effectSlot, effectName, un
         return
     end
 
+    if IsGryphonCheckerAbility(abilityId) then
+        if not self:EnsureEncounterFromMechanic() then return end
+        self.lastTrackedEvent = string.format("%d (%s), effect=%s, gryphon-checker", abilityId, NormalizedName(effectName), tostring(changeType))
+        self:HandleVarallionGryphonChecker(abilityId, changeType)
+        return
+    end
+
     if abilityId ~= IDS.LINK_A and abilityId ~= IDS.LINK_B
         and abilityId ~= IDS.BEAM_A and abilityId ~= IDS.BEAM_B then return end
 
@@ -1817,20 +2271,24 @@ function PCAGC:OnEffectChanged(eventCode, changeType, effectSlot, effectName, un
 
     if abilityId == IDS.LINK_A and IsEffectPresent(changeType) then
         if not self.targetA then
+            self:RemoveAllPredictionArrows()
             self.targetA = self:ResolveEffectTarget(unitTag, unitId, unitName)
             self:LogInfo("Mind Link endpoint A: %s", tostring(self.targetA.displayName))
             self:ShowMindLink()
             self:ShowArrow("A", self.targetA)
+            self:EvaluateFrozenPrediction()
         end
         return
     end
 
     if abilityId == IDS.LINK_B and IsEffectPresent(changeType) then
         if not self.targetB then
+            self:RemoveAllPredictionArrows()
             self.targetB = self:ResolveEffectTarget(unitTag, unitId, unitName)
             self:LogInfo("Mind Link endpoint B: %s", tostring(self.targetB.displayName))
             self:ShowMindLink()
             self:ShowArrow("B", self.targetB)
+            self:EvaluateFrozenPrediction()
         end
         return
     end
@@ -1903,6 +2361,10 @@ local EFFECT_ABILITY_IDS = {
     IDS.LINK_B,
     IDS.BEAM_A,
     IDS.BEAM_B,
+    IDS.GRYPHON_OFALLO,
+    IDS.GRYPHON_ILIATA,
+    IDS.GRYPHON_MAFREMARE,
+    IDS.GRYPHON_KARGAEDA,
 }
 
 function PCAGC:RegisterEffectAbility(abilityId, playerOnly)
@@ -1922,6 +2384,8 @@ function PCAGC:RegisterCombatAbility(abilityId, suffix)
 end
 
 function PCAGC:RegisterMechanicEvents()
+    self:RegisterCombatAbility(IDS.TOXIC_IRE, "ToxicIre")
+    self:RegisterCombatAbility(IDS.TOXIC_BURST, "ToxicBurst")
     self:RegisterCombatAbility(IDS.MARK_CAST, "MarkCast")
     self:RegisterCombatAbility(IDS.VARALLION_SIGNAL_SLICE, "VarallionSlice")
     self:RegisterCombatAbility(IDS.VARALLION_SIGNAL_OBLITERATE, "VarallionObliterate")
@@ -1932,6 +2396,8 @@ function PCAGC:RegisterMechanicEvents()
 end
 
 function PCAGC:UnregisterMechanicEvents()
+    EM:UnregisterForEvent(EVENT_NAMESPACE .. "_Combat_ToxicIre", EVENT_COMBAT_EVENT)
+    EM:UnregisterForEvent(EVENT_NAMESPACE .. "_Combat_ToxicBurst", EVENT_COMBAT_EVENT)
     EM:UnregisterForEvent(EVENT_NAMESPACE .. "_Combat_MarkCast", EVENT_COMBAT_EVENT)
     EM:UnregisterForEvent(EVENT_NAMESPACE .. "_Combat_VarallionSlice", EVENT_COMBAT_EVENT)
     EM:UnregisterForEvent(EVENT_NAMESPACE .. "_Combat_VarallionObliterate", EVENT_COMBAT_EVENT)
@@ -1950,6 +2416,7 @@ function PCAGC:OnGroupUpdate()
     -- before reconciling them so a tag reassignment cannot leave an icon on the
     -- wrong player. Text identity remains keyed by @displayName where available.
     self:RemoveAllArrows()
+    self:RemoveAllMaligaligBombArrows()
     self:RemoveAllSarydilPurgeArrows()
     self:RemoveSarydilPinpointArrow()
 
@@ -1969,12 +2436,26 @@ function PCAGC:OnGroupUpdate()
     end
     self:RefreshPinpointTarget()
 
-    if self.currentBossKey == SARYDIL_KEY then
+    for _, entry in pairs(self.incomingBombs or {}) do
+        if entry.target then self:ReconcileTargetUnitTag(entry.target) end
+    end
+
+    if self.frozenPrediction and self.frozenPrediction.ranked then
+        for _, candidate in ipairs(self.frozenPrediction.ranked) do
+            candidate.unitTag = FindGroupMemberByDisplayName(candidate.displayName) or ""
+        end
+    end
+
+    if self.currentBossKey == MALIGALIG_KEY then
+        self:RefreshMaligaligBombArrows()
+        self:RefreshMaligaligUI()
+    elseif self.currentBossKey == SARYDIL_KEY then
         self:RefreshSarydilRendering()
     elseif self.currentBossKey == VARALLION_KEY then
         self:RefreshLinkNames()
         if self.targetA then self:ShowArrow("A", self.targetA) end
         if self.targetB then self:ShowArrow("B", self.targetB) end
+        if self.frozenPrediction then self:RenderFrozenPredictionArrows() end
     end
 end
 
@@ -2158,7 +2639,7 @@ function PCAGC:RegisterSettings()
         displayName = DISPLAY_NAME,
         author = "thepandalore",
         version = VERSION,
-        keywords = "Coral Aerie Maligalig Sarydil Varallion purge Pinpoint Mark Mind Link Tether",
+        keywords = "Coral Aerie Maligalig bomb crab jump Sarydil Varallion gryphon purge Pinpoint Mark Mind Link Tether predictor",
         slashCommand = "/pcagc",
         registerForRefresh = true,
         registerForDefaults = true,
@@ -2274,6 +2755,35 @@ function PCAGC:RegisterSettings()
             width = "full",
         },
         {
+            type = "checkbox",
+            name = "Incoming bomb-crab guidance",
+            tooltip = "Use Toxic Ire targeting to warn about incoming Yaghra Larva Poppers and mark the targeted group member. Repeated targeting from the same crab is deduplicated.",
+            getFunc = function() return PCAGC.saved.maligaligBombGuidanceEnabled end,
+            setFunc = function(value)
+                PCAGC.saved.maligaligBombGuidanceEnabled = value == true
+                if not PCAGC.saved.maligaligBombGuidanceEnabled then
+                    PCAGC.incomingBombs = {}
+                    PCAGC:RemoveAllMaligaligBombArrows()
+                end
+                PCAGC:RefreshMaligaligUI()
+            end,
+            default = DEFAULTS.maligaligBombGuidanceEnabled,
+            width = "full",
+        },
+        {
+            type = "checkbox",
+            name = "SAFE TO JUMP notification",
+            tooltip = "Show SAFE TO JUMP when Building Static fades after a normal approximately eight-second no-refresh interval. Short teardown/phase fades are ignored.",
+            getFunc = function() return PCAGC.saved.maligaligSafeToJumpEnabled end,
+            setFunc = function(value)
+                PCAGC.saved.maligaligSafeToJumpEnabled = value == true
+                if not PCAGC.saved.maligaligSafeToJumpEnabled then PCAGC.safeToJumpUntilMs = nil end
+                PCAGC:RefreshMaligaligUI()
+            end,
+            default = DEFAULTS.maligaligSafeToJumpEnabled,
+            width = "full",
+        },
+        {
             type = "header",
             name = "Sarydil - Healer UI",
             width = "full",
@@ -2364,6 +2874,22 @@ function PCAGC:RegisterSettings()
         {
             type = "header",
             name = "Varallion - World Markers",
+            width = "full",
+        },
+        {
+            type = "checkbox",
+            name = "Gryphon entry guidance",
+            tooltip = "Show LEFT / ENTRANCE / RIGHT / EXIT guidance from the identity-specific gryphon checker effect observed at friendly Takeoff.",
+            getFunc = function() return PCAGC.saved.varallionGryphonGuidanceEnabled end,
+            setFunc = function(value)
+                PCAGC.saved.varallionGryphonGuidanceEnabled = value == true
+                if not PCAGC.saved.varallionGryphonGuidanceEnabled then
+                    PCAGC:ClearVarallionGryphonGuidance()
+                else
+                    PCAGC:RefreshVarallionGryphonGuidance()
+                end
+            end,
+            default = DEFAULTS.varallionGryphonGuidanceEnabled,
             width = "full",
         },
         {
@@ -2546,13 +3072,13 @@ function PCAGC:RegisterSettings()
         },
         {
             type = "header",
-            name = "Mind Link Predictor Arrows",
+            name = "Experimental Mind Link Predictor",
             width = "full",
         },
         {
             type = "checkbox",
             name = "Enable Mind Link target predictor",
-            tooltip = "Opt-in toggle for predictive chevrons based on cumulative minimum path distance preceding the Mind Link selection event. This is separate from authoritative Mind Link arrows. Enabling takes effect with the next prediction window. Null path accumulation persists through death, and untimely resurrections may present an appearance of faulty logic. All-player comparable path accumulation may also present an appearance of faulty logic.",
+            tooltip = "Experimental, opt-in Mind Link prediction. PCAGC ranks recent horizontal movement in a fixed pre-Mark window, freezes the ranking at 149224 BEGIN, shows two primary purple candidates plus a smaller third uncertainty candidate, and immediately yields to authoritative Mind Link endpoints. This is probabilistic and disabled by default.",
             getFunc = function() return PCAGC.saved.predictorEnabled end,
             setFunc = function(value)
                 PCAGC.saved.predictorEnabled = value == true
@@ -2567,7 +3093,7 @@ function PCAGC:RegisterSettings()
         {
             type = "slider",
             name = "Predictor arrow scale",
-            tooltip = "Rendered scale for the path-distance prediction chevrons. This does not change the real Mind Link arrows.",
+            tooltip = "Rendered scale for the two primary experimental prediction chevrons. The third uncertainty candidate is intentionally smaller/dimmer. This does not change authoritative Mind Link arrows.",
             min = 0.40,
             max = 1.50,
             step = 0.05,
@@ -2584,7 +3110,7 @@ function PCAGC:RegisterSettings()
         {
             type = "colorpicker",
             name = "Predictor arrow color",
-            tooltip = "Color for the experimental least-path prediction chevrons only.",
+            tooltip = "Color for experimental recent-movement prediction chevrons only.",
             getFunc = function()
                 local c = PCAGC.saved.predictorArrowColor
                 return c.r, c.g, c.b, c.a
@@ -2669,8 +3195,11 @@ function PCAGC:NormalizeSavedVariables()
 
     saved.arrowsEnabled = NormalizeBoolean(saved.arrowsEnabled, DEFAULTS.arrowsEnabled)
     saved.predictorEnabled = NormalizeBoolean(saved.predictorEnabled, DEFAULTS.predictorEnabled)
+    saved.maligaligBombGuidanceEnabled = NormalizeBoolean(saved.maligaligBombGuidanceEnabled, DEFAULTS.maligaligBombGuidanceEnabled)
+    saved.maligaligSafeToJumpEnabled = NormalizeBoolean(saved.maligaligSafeToJumpEnabled, DEFAULTS.maligaligSafeToJumpEnabled)
     saved.sarydilHumorEnabled = NormalizeBoolean(saved.sarydilHumorEnabled, DEFAULTS.sarydilHumorEnabled)
     saved.varallionSafeZonesEnabled = NormalizeBoolean(saved.varallionSafeZonesEnabled, DEFAULTS.varallionSafeZonesEnabled)
+    saved.varallionGryphonGuidanceEnabled = NormalizeBoolean(saved.varallionGryphonGuidanceEnabled, DEFAULTS.varallionGryphonGuidanceEnabled)
     saved.schemaVersion = 1
 
     saved.arrowSpaceSize = ClampNumber(saved.arrowSpaceSize, 0.40, 1.50, DEFAULTS.arrowSpaceSize)
@@ -2697,6 +3226,12 @@ function PCAGC:Initialize()
     self.varallionSeen = false
     self.combatStartMs = nil
     self.staticStacks = 0
+    self.lastStaticRefreshMs = nil
+    self.safeToJumpUntilMs = nil
+    self.incomingBombs = {}
+    self.maligaligBombArrows = {}
+    self.gryphonGuidance = nil
+    self.frozenPrediction = nil
     self.purgeTargets = {}
     self.pinpointEffects = {}
     self.pinpointSequence = 0

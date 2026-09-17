@@ -36,9 +36,18 @@ warHornTracker.isSturdyHorn = {
 }
 
 --print message to chat box
-local function printMessageTest(msg)
+local function printMessage(msg)
 	local chat = LibChatMessage(appName, "MA")
 	chat:Print(msg)
+end
+
+--check if LibNotify is available
+local function isLibAvailable()
+    if LibNotify and type(LibNotify.notifyForAddonPlease) == "function" then
+        return true
+    else 
+		return false
+    end
 end
 
 --is warhorn is not active
@@ -261,8 +270,14 @@ local function onAddOnLoadedWht(event, name)
     --unregister for notifications of add-on loaded
     EVENT_MANAGER:UnregisterForEvent(appName, EVENT_ADD_ON_LOADED)
 
-	--notify that add-on has been loaded
-	zo_callLater(function() printMessageTest("add-on loaded") end, 500)
+	--notify about new library
+	if not isLibAvailable() then
+		zo_callLater(function() printMessage("add-on Disabled") printMessage("Please install LibNotify from the browse add-ons menu") end, 500)
+		return
+	else
+		--notify that add-on has been loaded
+		zo_callLater(function() printMessage("add-on loaded") end, 500)
+	end
 
 	--load saved variables
     warHornTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("whtAddonVars", 1, "Settings", warHornTracker.defaults, GetUnitName("player"))
@@ -270,7 +285,7 @@ local function onAddOnLoadedWht(event, name)
 
 	--notify if tracking is disabled
 	if not warHornTracker.savedVariables.trackWh then
-		zo_callLater(function() printMessageTest("tracking disabled") end, 600)
+		zo_callLater(function() printMessage("tracking disabled") end, 600)
 	end
 	
     --setup text field areas

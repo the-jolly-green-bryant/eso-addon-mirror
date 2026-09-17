@@ -12,6 +12,9 @@ essenceThiefTracker = {}
 
 essenceThiefTracker.defaults = {
     trackEssence = true,
+	notify = true,
+	notifyStart = true,
+	notifyProc = true,
     yAxisText = 930,
     xAxisText = 1300
 }
@@ -25,6 +28,15 @@ end
 --clean player names
 local function cleanName(str)
     return str:sub(1, -4)
+end
+
+--check if LibNotify is available
+local function isLibAvailable()
+    if LibNotify and type(LibNotify.notifyForAddonPlease) == "function" then
+        return true
+    else 
+		return false
+    end
 end
 
 --when UI opens
@@ -102,6 +114,9 @@ local function processBuff()
 
         zo_callLater(function() processBuff() end, 1000)
     else
+		if isLibAvailable() and essenceThiefTracker.savedVariables.notify then
+            LibNotify.notifyForAddonPlease(appName, essenceAbilityID, "Essence Thief ended")
+        end
         ettrackLabelMain:SetText("")
     end
 end
@@ -136,7 +151,10 @@ local function processCooldown()
     else
         EVENT_MANAGER:UnregisterForUpdate("essenceUpdate")
         ettrackLabelCorner:SetText("")
-        procTime = 15
+        procTime = 10
+		if isLibAvailable() and essenceThiefTracker.savedVariables.notifyProc then
+            LibNotify.notifyForAddonPlease(appName, essenceAbilityID, "Essence Pool Ready")
+        end
     end
 
     procTime = procTime - 1
@@ -154,6 +172,9 @@ local function combatReport(eventCode, result, isError, abilityName, abilityGrap
     end
 
     procTime = 10
+	if isLibAvailable() and essenceThiefTracker.savedVariables.notifyStart then
+		LibNotify.notifyForAddonPlease(appName, essenceAbilityID, "Collect Essence Pool")
+	end
     processCooldown()
 
 end
@@ -244,6 +265,42 @@ local function createOptions()
             end,
             default = essenceThiefTracker.defaults.yAxisText,
         },
+		{
+            type = "checkbox",
+            name = "Notification Collect",
+            tooltip = "Displays a notification and plays a sound when an Essence Thief pool is created and ready to be collected.\nThe settings for the notification can be changed in the LibNotify Add-on options.",
+            getFunc = function()
+                return essenceThiefTracker.savedVariables.notifyStart
+            end,
+            setFunc = function(value)
+                essenceThiefTracker.savedVariables.notifyStart = value
+            end,
+            default = essenceThiefTracker.defaults.notifyStart,
+        },
+		{
+            type = "checkbox",
+            name = "Notification End",
+            tooltip = "Displays a notification and plays a sound when the Essence Thief buff finishes.\nThe settings for the notification can be changed in the LibNotify Add-on options.",
+            getFunc = function()
+                return essenceThiefTracker.savedVariables.notify
+            end,
+            setFunc = function(value)
+                essenceThiefTracker.savedVariables.notify = value
+            end,
+            default = essenceThiefTracker.defaults.notify,
+        },
+		{
+            type = "checkbox",
+            name = "Notification Ready",
+            tooltip = "Displays a notification and plays a sound when a new Essence Thief pool can be created.\nThe settings for the notification can be changed in the LibNotify Add-on options.",
+            getFunc = function()
+                return essenceThiefTracker.savedVariables.notifyProc
+            end,
+            setFunc = function(value)
+                essenceThiefTracker.savedVariables.notifyProc = value
+            end,
+            default = essenceThiefTracker.defaults.notifyProc,
+        },
         {
             type = "divider",
             height = 0,
@@ -266,8 +323,14 @@ local function onAddOnLoaded(event, name)
     --unregister for notifications of add-on loaded
     EVENT_MANAGER:UnregisterForEvent(appName, EVENT_ADD_ON_LOADED)
 
-	--notify that add-on has been loaded
-	zo_callLater(function() printMessage("add-on loaded") end, 500)
+	--notify about new library
+	if not isLibAvailable() then
+		zo_callLater(function() printMessage("add-on Disabled") printMessage("Please install LibNotify from the browse add-ons menu") end, 500)
+		return
+	else
+		--notify that add-on has been loaded
+		zo_callLater(function() printMessage("add-on loaded") end, 500)
+	end
 
 	--load saved variables
     essenceThiefTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("ettAddonVars", 1, "Settings", essenceThiefTracker.defaults, GetUnitName("player"))

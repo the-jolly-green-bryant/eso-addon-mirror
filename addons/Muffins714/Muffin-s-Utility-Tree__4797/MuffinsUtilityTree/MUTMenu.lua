@@ -137,6 +137,27 @@ function MUT.CreateSettingsMenu(defaults)
             default = defaults.qualitySortEnabled,
             width   = "full",
         },
+        ---------------------------------------------------------------------------------------------
+        -- Bank Stack All submenu
+        ---------------------------------------------------------------------------------------------
+        {
+            type = "header",
+            name = GetString(MUT_HEADER_BANK_STACK_ALL),
+        },
+        {
+            type    = "checkbox",
+            name    = GetString(MUT_BANK_STACK_ALL_ENABLED),
+            tooltip = GetString(MUT_BANK_STACK_ALL_TOOLTIP),
+            getFunc = function() return GetSettings().bankStackAllEnabled end,
+            setFunc = function(state)
+                GetSettings().bankStackAllEnabled = state
+                if MUT.SetBankStackAllEnabled then
+                    MUT.SetBankStackAllEnabled(state)
+                end
+            end,
+            default = defaults.bankStackAllEnabled,
+            width   = "full",
+        },
     }
 
     LAM:RegisterOptionControls(MUT.name, options)

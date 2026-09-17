@@ -174,9 +174,7 @@ LTM_LOCALIZATION["jp"] = {
     -- QuickSettings: Food Helper
     SI_LTM_QUICK_SETTINGS_FOOD_AUTO_EAT = "Auto Eat",
     SI_LTM_QUICK_SETTINGS_FOOD_AUTO_EAT_TOOLTIP = "選択中の Food Card を自動で使用します。",
-    SI_LTM_QUICK_SETTINGS_FOOD_REGISTER_ACTIVE = "現在のFoodを登録",
-    SI_LTM_QUICK_SETTINGS_FOOD_REGISTER_ACTIVE_TOOLTIP = "現在有効な食事/飲み物 buff に対応するアイテムがバックパックにある場合、Food Card として登録します。",
-    SI_LTM_QUICK_SETTINGS_FOOD_EMPTY = "Food Card はありません。食事/飲み物をここへドラッグするか、現在のFoodを登録してください。",
+    SI_LTM_QUICK_SETTINGS_FOOD_EMPTY = "Food Card はありません。食事/飲み物をここへドラッグして登録してください。",
     SI_LTM_QUICK_SETTINGS_FOOD_ACTIVE_TOOLTIP = "この Food Card を Auto Eat の対象にします。",
     SI_LTM_QUICK_SETTINGS_FOOD_REGISTERED = "Food Card 登録: {itemName}",
     SI_LTM_QUICK_SETTINGS_FOOD_REPLACED = "Food Card 更新: {itemName}",
@@ -572,10 +570,7 @@ LTM_LOCALIZATION["jp"] = {
     SI_LTM_ERROR_REASON_FOOD_INVALID_SLOT = "選択中のインベントリ slot を読み取れませんでした。",
     SI_LTM_ERROR_REASON_FOOD_INVALID_ITEM = "食事または飲み物アイテムをドロップしてください。",
     SI_LTM_ERROR_REASON_FOOD_ITEM_API_UNAVAILABLE = "Food item API を利用できません。",
-    SI_LTM_ERROR_REASON_FOOD_UNSUPPORTED_ITEM = "この食事/飲み物はまだ対応していません。",
     SI_LTM_ERROR_REASON_FOOD_SAVEDVARS_UNAVAILABLE = "Food Helper 設定を利用できません。",
-    SI_LTM_ERROR_REASON_FOOD_NO_ACTIVE_BUFF = "有効な食事/飲み物 buff が見つかりません。",
-    SI_LTM_ERROR_REASON_FOOD_MATCHING_ITEM_NOT_FOUND = "対応する食事/飲み物アイテムがバックパックに見つかりません。",
 
     -- Wait Messages
     SI_LTM_WAIT_SERVER_BUSY = "サーバーが変更を受け付けるのを待っています。",

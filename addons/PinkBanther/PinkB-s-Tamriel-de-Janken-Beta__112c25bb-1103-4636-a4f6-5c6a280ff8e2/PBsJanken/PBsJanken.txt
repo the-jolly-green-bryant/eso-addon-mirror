@@ -1,0 +1,21 @@
+## Title: PB's Tamriel de Janken
+## Description: Gamepad-friendly rock-paper-scissors with a group member.
+## Author: PB
+## Version: 1.0.9
+## AddOnVersion: 10009
+## APIVersion: 101050
+## OptionalDependsOn: LibGroupBroadcast
+## SavedVariables: PBsJyankenSavedVariables
+
+Strings.lua
+SHA256.lua
+Game.lua
+Transport.lua
+Textures.lua
+UI.lua
+Main.lua
+
+assets/rock.dds
+assets/paper.dds
+assets/scissors.dds
+assets/hidden.dds

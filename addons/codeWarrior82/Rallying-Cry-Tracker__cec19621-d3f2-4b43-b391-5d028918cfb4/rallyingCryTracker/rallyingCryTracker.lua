@@ -5,17 +5,21 @@ local picPath = GetAbilityIcon(rallyingAbilityID)
 local iconText = zo_iconTextFormat(picPath, 80, 80, " ")
 local isLoaded = false
 local isMenuOpen = false
+local readyToNotify = true
 
 rallyingCryTracker = {}
 
 rallyingCryTracker.defaults = {
     trackRally = true,
+	notify = false,
+	notifyStart = true,
+	notifyProc = true,	
     yAxisText = 930,
     xAxisText = 1400
 }
 
 --print message to chat box
-local function printMessageTest(msg)
+local function printMessage(msg)
 	local chat = LibChatMessage(appName, "MA")
 	chat:Print(msg)
 end
@@ -23,6 +27,15 @@ end
 --clean player names
 local function cleanName(str)
     return str:sub(1, -4)
+end
+
+--check if LibNotify is available
+local function isLibAvailable()
+    if LibNotify and type(LibNotify.notifyForAddonPlease) == "function" then
+        return true
+    else 
+		return false
+    end
 end
 
 --when UI opens
@@ -110,6 +123,10 @@ local function processBuff()
             rctrackLabelCorner:SetText(textM)
         else
             rctrackLabelCorner:SetText("")
+			if isLibAvailable() and rallyingCryTracker.savedVariables.notifyStart and readyToNotify then
+				readyToNotify = false
+				LibNotify.notifyForAddonPlease(appName, rallyingAbilityID, "Rallying Cry Proc Ready")
+			end
         end
 
         zo_callLater(function() processBuff() end, 1000)
@@ -125,10 +142,21 @@ local function effectReport(eventCode, changeType, effectSlot, effectName, unitT
 
     local nameTmp = GetUnitName("player")
 
+	if changeType == 2 then
+		if isLibAvailable() and rallyingCryTracker.savedVariables.notify then
+            LibNotify.notifyForAddonPlease(appName, rallyingAbilityID, "Rallying Cry ended")
+        end
+	end 
+
     if nameTmp ~= cleanName(unitName) or changeType ~= 1 or abilityID ~= rallyingAbilityID then
         return
     end
-
+	
+	readyToNotify = true
+	
+	if isLibAvailable() and rallyingCryTracker.savedVariables.notifyStart then
+		LibNotify.notifyForAddonPlease(appName, rallyingAbilityID, "Rallying Cry Started")
+	end
     processBuff()
 
 end
@@ -216,6 +244,42 @@ local function createOptions()
             end,
             default = rallyingCryTracker.defaults.yAxisText,
         },
+		{
+            type = "checkbox",
+            name = "Notification Start",
+            tooltip = "Displays a notification and plays a sound when the Rallying Cry buff starts.\nThe settings for the notification can be changed in the LibNotify Add-on options.",
+            getFunc = function()
+                return rallyingCryTracker.savedVariables.notifyStart
+            end,
+            setFunc = function(value)
+                rallyingCryTracker.savedVariables.notifyStart = value
+            end,
+            default = rallyingCryTracker.defaults.notifyStart,
+        },
+		{
+            type = "checkbox",
+            name = "Notification End",
+            tooltip = "Displays a notification and plays a sound when the Rallying Cry buff finishes.\nThe settings for the notification can be changed in the LibNotify Add-on options.",
+            getFunc = function()
+                return rallyingCryTracker.savedVariables.notify
+            end,
+            setFunc = function(value)
+                rallyingCryTracker.savedVariables.notify = value
+            end,
+            default = rallyingCryTracker.defaults.notify,
+        },
+		{
+            type = "checkbox",
+            name = "Notification Ready",
+            tooltip = "Displays a notification and plays a sound when the Rallying Cry buff is ready to proc again.\nThe settings for the notification can be changed in the LibNotify Add-on options.",
+            getFunc = function()
+                return rallyingCryTracker.savedVariables.notifyProc
+            end,
+            setFunc = function(value)
+                rallyingCryTracker.savedVariables.notifyProc = value
+            end,
+            default = rallyingCryTracker.defaults.notifyProc,
+        },
         {
             type = "divider",
             height = 0,
@@ -238,15 +302,21 @@ local function onAddOnLoaded(event, name)
     --unregister for notifications of add-on loaded
     EVENT_MANAGER:UnregisterForEvent(appName, EVENT_ADD_ON_LOADED)
 
-	--notify that add-on has been loaded
-	zo_callLater(function() printMessageTest("add-on loaded") end, 500)
+	--notify about new library
+	if not isLibAvailable() then
+		zo_callLater(function() printMessage("add-on Disabled") printMessage("Please install LibNotify from the browse add-ons menu") end, 500)
+		return
+	else
+		--notify that add-on has been loaded
+		zo_callLater(function() printMessage("add-on loaded") end, 500)
+	end
 
 	--load saved variables
     rallyingCryTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("rctAddonVars", 1, "Settings", rallyingCryTracker.defaults, GetUnitName("player"))
 
 	--notify if tracking is disabled
 	if not rallyingCryTracker.savedVariables.trackRally then
-		zo_callLater(function() printMessageTest("tracking disabled") end, 600)
+		zo_callLater(function() printMessage("tracking disabled") end, 600)
 	end
 
     --setup text field areas

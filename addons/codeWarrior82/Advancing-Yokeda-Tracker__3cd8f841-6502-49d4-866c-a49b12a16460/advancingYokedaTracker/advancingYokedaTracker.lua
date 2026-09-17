@@ -20,7 +20,7 @@ advancingYokedaTracker.defaults = {
 }
 
 --print message to chat box
-local function printMessageTest(msg)
+local function printMessage(msg)
 	local chat = LibChatMessage(appName, "MA")
 	chat:Print(msg)
 end
@@ -57,7 +57,7 @@ local function processAdvBuff()
     if buffActive() then
         local text = string.format(" %d", timeRemaining)
 
-        --printMessageTest(text)
+        --printMessage(text)
         advAddonTextLabelTime:SetText(text)
         
         zo_callLater(function() processAdvBuff() end, 1000)
@@ -290,15 +290,21 @@ local function onAddOnLoadedAdv(event, name)
     --unregister for notifications of add-on loaded
     EVENT_MANAGER:UnregisterForEvent(appName, EVENT_ADD_ON_LOADED)
 
-	--notify that add-on has been loaded
-	zo_callLater(function() printMessageTest("add-on loaded") end, 500)
+	--notify about new library
+	if not isLibAvailable() then
+		zo_callLater(function() printMessage("add-on Disabled") printMessage("Please install LibNotify from the browse add-ons menu") end, 500)
+		return
+	else
+		--notify that add-on has been loaded
+		zo_callLater(function() printMessage("add-on loaded") end, 500)
+	end
 
 	--load saved variables
     advancingYokedaTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("aytAddonVars", 1, "Settings", advancingYokedaTracker.defaults, GetUnitName("player"))
 
 	--notify if tracking is disabled
 	if not advancingYokedaTracker.savedVariables.trackAdv then
-		zo_callLater(function() printMessageTest("tracking disabled") end, 600)
+		zo_callLater(function() printMessage("tracking disabled") end, 600)
 	end
 
     --setup text field areas

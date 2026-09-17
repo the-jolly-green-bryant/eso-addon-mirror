@@ -7,11 +7,13 @@ local isLoaded = false
 local isMenuOpen = false
 local frenzyCooldown = 19
 local courageTime = 20
+local needToNotify = true
 
 feedingFrenzyTracker = {}
 
 feedingFrenzyTracker.defaults = {
     trackFF = true,
+	notify = true,
     yAxisText = 930,
     xAxisText = 1400
 }
@@ -25,6 +27,15 @@ end
 --clean player names
 local function cleanName(str)
     return str:sub(1, -4)
+end
+
+--check if LibNotify is available
+local function isLibAvailable()
+    if LibNotify and type(LibNotify.notifyForAddonPlease) == "function" then
+        return true
+    else 
+		return false
+    end
 end
 
 local function processCourage()
@@ -86,6 +97,10 @@ local function processFrenzy()
         EVENT_MANAGER:UnregisterForUpdate("updateFrenzy")
         ffAddonLabelSynergy:SetText("")
         frenzyCooldown = 19
+		if isLibAvailable() and feedingFrenzyTracker.savedVariables.notify and needToNotify then
+			needToNotify = false
+            LibNotify.notifyForAddonPlease(appName, frenzyAbilityID, "Feeding Frenzy Ready")
+        end
     end
 end
 
@@ -100,10 +115,11 @@ local function combatReport(eventCode, changeType, effectSlot, effectName, unitT
     --d(changeType)	 -- 1 is gained, 2 is gone, 3 is update
 
     if changeType == 1 then
-        --gained frenzy, only first time using if no frenzy is active 
+        --gained frenzy, only first time when no frenzy is active 
         return
     elseif changeType == 2 then
         --frenzy finished
+		needToNotify = true
         return
     elseif changeType == 3 and nameTmp == cleanName(unitName) then
         --here start 20 second timer that refreshes each time you
@@ -240,6 +256,18 @@ local function createOptions()
             end,
             default = feedingFrenzyTracker.defaults.yAxisText,
         },
+		{
+            type = "checkbox",
+            name = "Notification",
+            tooltip = "Displays a notification and plays a sound when the cooldown on Feeding Frenzy has finished and you are able to take the synergy again.\nThe settings for the notification can be changed in the LibNotify Add-on options.",
+            getFunc = function()
+                return feedingFrenzyTracker.savedVariables.notify
+            end,
+            setFunc = function(value)
+                feedingFrenzyTracker.savedVariables.notify = value
+            end,
+            default = feedingFrenzyTracker.defaults.notify,
+        },
         {
             type = "divider",
             height = 0,
@@ -262,8 +290,14 @@ local function onAddOnLoaded(event, name)
     --unregister for notifications of add-on loaded
     EVENT_MANAGER:UnregisterForEvent(appName, EVENT_ADD_ON_LOADED)
 
-	--notify that add-on has been loaded
-	zo_callLater(function() printMessage("add-on loaded") end, 500)
+	--notify about new library
+	if not isLibAvailable() then
+		zo_callLater(function() printMessage("add-on Disabled") printMessage("Please install LibNotify from the browse add-ons menu") end, 500)
+		return
+	else
+		--notify that add-on has been loaded
+		zo_callLater(function() printMessage("add-on loaded") end, 500)
+	end
 	
 	--load saved variables
     feedingFrenzyTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("feedAddonVars", 1, "Settings", feedingFrenzyTracker.defaults, GetUnitName("player"))

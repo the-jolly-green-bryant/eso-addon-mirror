@@ -1,3 +1,13 @@
+[COLOR="DeepSkyBlue"]48[/COLOR]:
+[LIST]
+[*] Fix nilDefault error from last update.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]47[/COLOR]:
+[LIST]
+[*] Updated to correspond to the LibSFUtil 77 LoadLanguage implementation.
+[/LIST]
+
 [COLOR="DeepSkyBlue"]46[/COLOR]:
 [LIST]
 [*] API bump.

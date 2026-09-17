@@ -9,7 +9,7 @@ local MUT = MuffinsUtilityTree
 -- AddOn information
 MUT.name = "MuffinsUtilityTree"
 MUT.prefix = "MUT"
-MUT.version = "1.0"
+MUT.version = "1.1"
 MUT.author = "|c7851a9Muffins714|r"
 MUT.website = ""
 
@@ -23,6 +23,9 @@ local defaults = {
 
     -- Reload UI
     reloadUIEnabled = false,
+
+    -- Bank Stack All
+    bankStackAllEnabled = false,
 }
 
 ----------------------------------------------------------------------------
@@ -144,6 +147,7 @@ function MUT.OnAddOnLoaded(event, addonName)
     zo_callLater(function()
         MUT_Initialize_QualitySorter() -- Quality Sorter
         MUT_Initialize_MultiSplitter() -- Stack Splitter
+        MUT_Initialize_BankStackAll()  -- Bank Stack All
     end, 100)
 end
 

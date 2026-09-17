@@ -1,0 +1,23 @@
+## Title: |cFF69B4PB's Tamriel de Janken|r 1.0.9
+## Author: |cFF69B4PinkBanther|r
+## Description: Gamepad-friendly rock-paper-scissors with a group member.
+## Version: 1.0.9
+## AddOnVersion: 10009
+## APIVersion: 101050
+## OptionalDependsOn: LibGroupBroadcast
+## SavedVariables: PBsJyankenSavedVariables
+
+Strings.lua
+SHA256.lua
+Game.lua
+Transport.lua
+Textures.lua
+UI.lua
+Main.lua
+
+assets/rock.dds
+assets/paper.dds
+assets/scissors.dds
+assets/hidden.dds
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls© and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.

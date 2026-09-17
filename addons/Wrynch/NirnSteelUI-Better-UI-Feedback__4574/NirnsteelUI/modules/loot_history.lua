@@ -22,7 +22,8 @@ local STOCK_GAMEPAD_LOOT_HISTORY_ANCHOR_OFFSET_Y = -120
 local STOCK_GAMEPAD_LOOT_HISTORY_CONTROL_OFFSET_Y = -120
 local LOOT_SOUND_THROTTLE_MS = 90
 local SEQUENTIAL_REVEAL_DELAY_MS = 260
-local LOOT_ENTRY_SPACING_Y = -1
+local LOOT_ENTRY_SPACING_Y = 5
+local STOCK_LOOT_ENTRY_SPACING_Y = -1
 local STOCK_CONTAINER_SHOW_TIME_MS = 3600
 local STOCK_PERSISTENT_CONTAINER_SHOW_TIME_MS = 7000
 local DEBUG_MIX_ITEM_COUNT = 7
@@ -213,6 +214,23 @@ local function IsLootHistoryModuleEnabled()
     return not Nirnsteel_UI.Settings or Nirnsteel_UI.Settings:IsLootHistoryEnabled()
 end
 
+local function IsLegacyStyleEnabled()
+    return Nirnsteel_UI.Settings and Nirnsteel_UI.Settings.GetLootHistory
+        and Nirnsteel_UI.Settings:GetLootHistory().legacyStyle == true
+end
+
+local function GetLegacyTemplateName(descriptor)
+    return (descriptor.templateName:gsub("Nirnsteel_LootHistory_", "Nirnsteel_LootHistory_Legacy_"))
+end
+
+local function GetEntryTemplateName(descriptor)
+    return IsLegacyStyleEnabled() and GetLegacyTemplateName(descriptor) or descriptor.templateName
+end
+
+local function GetEntrySpacing()
+    return IsLegacyStyleEnabled() and STOCK_LOOT_ENTRY_SPACING_Y or LOOT_ENTRY_SPACING_Y
+end
+
 local function SafeSetColor(control, colorDef, alpha)
     if control and colorDef then
         local r, g, b = colorDef:UnpackRGB()
@@ -248,6 +266,9 @@ end
 
 local function PlayRarityPulse(control, data)
     local timelineName = GetPulseTimelineName(data)
+    if control.nirnsteelLegacyStyle then
+        timelineName = timelineName:gsub("Nirnsteel_LootHistory_", "Nirnsteel_LootHistory_Legacy_")
+    end
     if control.rarityPulseTimelineName ~= timelineName then
         control.rarityPulseTimelineName = timelineName
         control.rarityPulseTimeline = ANIMATION_MANAGER:CreateTimelineFromVirtual(timelineName, control)
@@ -268,7 +289,7 @@ local function QueueRarityPulse(control, data)
     end, 160)
 end
 
-local function ApplyVisualStyle(control, data)
+local function ApplyLegacyVisualStyle(control, data)
     local _, glowAlpha, frameAlpha = GetEntryQualityStyle(data)
 
     if data and data.color then
@@ -292,6 +313,64 @@ local function ApplyVisualStyle(control, data)
 
     if control.glass then
         control.glass:SetColor(1, 1, 1, 0.14)
+    end
+
+    if control.rarityGlow and control.rarityBurst then
+        QueueRarityPulse(control, data)
+    end
+end
+
+local function PositionStatusIcon(control)
+    -- All secondary markers (craft bag, leads, collections, stolen items, etc.)
+    -- share this control. Keep them independent of the item's scale animation.
+    local statusIcon = control.statusIcon
+    statusIcon:SetParent(control)
+    statusIcon:ClearAnchors()
+    -- The left wing reaches 38px from center; a 20px marker needs its
+    -- center another 14px left to leave a visible 4px gap.
+    statusIcon:SetAnchor(CENTER, control.iconFrame, CENTER, -52, -2)
+    statusIcon:SetDimensions(20, 20)
+    statusIcon:SetDrawTier(DT_MEDIUM)
+    statusIcon:SetDrawLayer(DL_OVERLAY)
+end
+
+local function ApplyVisualStyle(control, data)
+    if control.nirnsteelLegacyStyle then
+        ApplyLegacyVisualStyle(control, data)
+        return
+    end
+    PositionStatusIcon(control)
+    local _, glowAlpha = GetEntryQualityStyle(data)
+
+    if data and data.color then
+        SafeSetColor(control.rarityGlow, data.color, glowAlpha)
+        SafeSetColor(control.rarityBurst, data.color, glowAlpha)
+        SafeSetColor(control.rarityAccent, data.color, 0.85)
+    elseif control.rarityGlow then
+        control.rarityGlow:SetColor(1, 1, 1, glowAlpha)
+        control.rarityBurst:SetColor(1, 1, 1, glowAlpha)
+        control.rarityAccent:SetColor(0.65, 0.72, 0.80, 0.65)
+    end
+
+    local r, g, b = 0.72, 0.64, 0.45
+    if data and data.color then
+        r, g, b = data.color:UnpackRGB()
+    end
+    for _, inlay in ipairs(control.ornamentInlays) do
+        inlay:SetCenterColor(r * 0.75 + 0.25, g * 0.75 + 0.22, b * 0.75 + 0.16, 0.85)
+    end
+
+    if control.background then
+        if data and data.backgroundColor then
+            local r, g, b = data.backgroundColor:UnpackRGB()
+            control.background:SetColor(r, g, b, 0.86)
+        else
+            control.background:SetColor(0.055 + r * 0.055, 0.045 + g * 0.055, 0.035 + b * 0.055, 0.88)
+        end
+    end
+
+    if control.glass then
+        control.glass:SetColor(1, 0.86, 0.62, 0.10)
     end
 
     if control.rarityGlow and control.rarityBurst then
@@ -497,14 +576,14 @@ local function RestoreStockHistory(lootHistory, descriptor)
     if lootHistory.lootStream then
         RestoreSequentialReveal(lootHistory.lootStream)
         lootHistory.lootStream.anchor = ZO_Anchor:New(descriptor.stockPoint, GuiRoot, descriptor.stockPoint, descriptor.stockAnchorOffsetX, descriptor.stockAnchorOffsetY)
-        lootHistory.lootStream:SetAdditionalEntrySpacingY(LOOT_ENTRY_SPACING_Y)
+        lootHistory.lootStream:SetAdditionalEntrySpacingY(STOCK_LOOT_ENTRY_SPACING_Y)
         lootHistory.lootStream:SetContainerShowTime(STOCK_CONTAINER_SHOW_TIME_MS)
     end
 
     if lootHistory.lootStreamPersistent then
         RestoreSequentialReveal(lootHistory.lootStreamPersistent)
         lootHistory.lootStreamPersistent.anchor = ZO_Anchor:New(descriptor.stockPoint, GuiRoot, descriptor.stockPoint, descriptor.stockAnchorOffsetX, descriptor.stockAnchorOffsetY)
-        lootHistory.lootStreamPersistent:SetAdditionalEntrySpacingY(LOOT_ENTRY_SPACING_Y)
+        lootHistory.lootStreamPersistent:SetAdditionalEntrySpacingY(STOCK_LOOT_ENTRY_SPACING_Y)
         lootHistory.lootStreamPersistent:SetContainerShowTime(STOCK_PERSISTENT_CONTAINER_SHOW_TIME_MS)
     end
 
@@ -521,7 +600,7 @@ function LootHistory:ApplySettingsToHistory(lootHistory, descriptor)
         return true
     end
 
-    lootHistory.entryTemplate = descriptor.templateName
+    lootHistory.entryTemplate = GetEntryTemplateName(descriptor)
     ApplyLootHistoryAnchor(lootHistory)
 
     local position = GetLootHistoryPosition()
@@ -529,14 +608,14 @@ function LootHistory:ApplySettingsToHistory(lootHistory, descriptor)
         InstallSequentialReveal(lootHistory.lootStream)
         lootHistory.lootStream.anchor = ZO_Anchor:New(BOTTOMRIGHT, GuiRoot, CENTER, position.x, position.y)
         lootHistory.lootStream:SetContainerShowTime(3100)
-        lootHistory.lootStream:SetAdditionalEntrySpacingY(LOOT_ENTRY_SPACING_Y)
+        lootHistory.lootStream:SetAdditionalEntrySpacingY(GetEntrySpacing())
     end
 
     if lootHistory.lootStreamPersistent then
         InstallSequentialReveal(lootHistory.lootStreamPersistent)
         lootHistory.lootStreamPersistent.anchor = ZO_Anchor:New(BOTTOMRIGHT, GuiRoot, CENTER, position.x, position.y)
         lootHistory.lootStreamPersistent:SetContainerShowTime(5600)
-        lootHistory.lootStreamPersistent:SetAdditionalEntrySpacingY(LOOT_ENTRY_SPACING_Y)
+        lootHistory.lootStreamPersistent:SetAdditionalEntrySpacingY(GetEntrySpacing())
     end
 
     ApplyMoverState()
@@ -583,24 +662,26 @@ function LootHistory:PatchHistory(lootHistory, descriptor)
 
     local normalPatched = CopyTemplateBehavior(lootHistory.lootStream, descriptor.templateName, descriptor.stockTemplateName)
     local persistentPatched = CopyTemplateBehavior(lootHistory.lootStreamPersistent, descriptor.templateName, descriptor.stockTemplateName)
-    if not normalPatched or not persistentPatched then
+    local legacyNormalPatched = CopyTemplateBehavior(lootHistory.lootStream, GetLegacyTemplateName(descriptor), descriptor.stockTemplateName)
+    local legacyPersistentPatched = CopyTemplateBehavior(lootHistory.lootStreamPersistent, GetLegacyTemplateName(descriptor), descriptor.stockTemplateName)
+    if not normalPatched or not persistentPatched or not legacyNormalPatched or not legacyPersistentPatched then
         return false
     end
 
-    lootHistory.entryTemplate = descriptor.templateName
+    lootHistory.entryTemplate = GetEntryTemplateName(descriptor)
     InstallExperienceFilter()
     ApplyLootHistoryAnchor(lootHistory)
 
     if lootHistory.lootStream then
         InstallSequentialReveal(lootHistory.lootStream)
         lootHistory.lootStream:SetContainerShowTime(3100)
-        lootHistory.lootStream:SetAdditionalEntrySpacingY(LOOT_ENTRY_SPACING_Y)
+        lootHistory.lootStream:SetAdditionalEntrySpacingY(GetEntrySpacing())
     end
 
     if lootHistory.lootStreamPersistent then
         InstallSequentialReveal(lootHistory.lootStreamPersistent)
         lootHistory.lootStreamPersistent:SetContainerShowTime(5600)
-        lootHistory.lootStreamPersistent:SetAdditionalEntrySpacingY(LOOT_ENTRY_SPACING_Y)
+        lootHistory.lootStreamPersistent:SetAdditionalEntrySpacingY(GetEntrySpacing())
     end
 
     lootHistory.nirnsteelPatched = true
@@ -650,12 +731,57 @@ function LootHistory:StartPatchWhenReady()
     end)
 end
 
-function Nirnsteel_UI_LootHistory_Entry_OnInitialized(control)
-    ZO_LootHistory_Shared_OnInitialized(control)
+-- Native geometry keeps the metalwork crisp at every loot-history scale.
+local function CreateLootOrnament(parent, width, height, x, y, points, color, level)
+    local shape = WINDOW_MANAGER:CreateControl(nil, parent, CT_POLYGON)
+    shape:SetDimensions(width, height)
+    shape:SetAnchor(CENTER, parent, CENTER, x, y)
+    shape:SetMouseEnabled(false)
+    shape:SetDrawLayer(DL_BACKGROUND)
+    shape:SetDrawLevel(level + 10)
+    shape:SetPointLayout(POLYGON_POINT_LAYOUT_CLOCKWISE)
+    shape:SetSmoothingEnabled(false)
+    for _, point in ipairs(points) do
+        shape:AddPoint(point[1], point[2])
+    end
+    shape:SetCenterColor(unpack(color))
+    return shape
+end
+
+local function InitializeVisualControls(control)
     control.rarityGlow = control:GetNamedChild("RarityGlow")
     control.rarityBurst = control:GetNamedChild("RarityBurst")
     control.glass = control:GetNamedChild("Glass")
     control.iconFrame = control:GetNamedChild("IconFrame")
+    control.rarityAccent = control:GetNamedChild("RarityAccent")
+    local frame = control.iconFrame
+    local wingOffsetX = 33
+    PositionStatusIcon(control)
+    local shield = { {0.18, 0}, {0.82, 0}, {1, 0.18}, {1, 0.77}, {0.5, 1}, {0, 0.77}, {0, 0.18} }
+    local diamond = { {0.5, 0}, {1, 0.5}, {0.5, 1}, {0, 0.5} }
+    CreateLootOrnament(frame, 62, 62, 0, 2, shield, {0.01, 0.012, 0.015, 0.8}, 0)
+    CreateLootOrnament(frame, 58, 58, 0, 0, shield, {0.52, 0.44, 0.29, 1}, 1)
+    CreateLootOrnament(frame, 54, 54, 0, 0, shield, {0.17, 0.20, 0.22, 1}, 2)
+    CreateLootOrnament(frame, 48, 48, 0, -1, shield, {0.025, 0.032, 0.038, 1}, 3)
+    control.ornamentInlays = {}
+    for _, y in ipairs({ -27, 26 }) do
+        table.insert(control.ornamentInlays,
+            CreateLootOrnament(frame, 7, 7, 0, y, diamond, {1, 0.8, 0.4, 1}, 4))
+    end
+    -- Small swept wings connect the shield to the ribbon, without boxing the row.
+    for _, side in ipairs({ -1, 1 }) do
+        local wing = { {0, 0.5}, {1, 0}, {0.75, 0.5}, {1, 1} }
+        if side == 1 then
+            wing = { {0, 0}, {1, 0.5}, {0, 1}, {0.25, 0.5} }
+        end
+        table.insert(control.ornamentInlays,
+            CreateLootOrnament(frame, 10, 25, side * wingOffsetX, 0, wing, {0.7, 0.6, 0.4, 1}, 2))
+    end
+end
+
+function Nirnsteel_UI_LootHistory_Entry_OnInitialized(control)
+    ZO_LootHistory_Shared_OnInitialized(control)
+    InitializeVisualControls(control)
 end
 
 function Nirnsteel_UI_LootHistory_GamepadEntry_OnInitialized(control)
@@ -663,6 +789,24 @@ function Nirnsteel_UI_LootHistory_GamepadEntry_OnInitialized(control)
     if ZO_LootHistory_GamepadEntry_OnInitialized then
         ZO_LootHistory_GamepadEntry_OnInitialized(control)
     end
+    InitializeVisualControls(control)
+end
+
+function Nirnsteel_UI_LootHistory_Legacy_Entry_OnInitialized(control)
+    ZO_LootHistory_Shared_OnInitialized(control)
+    control.nirnsteelLegacyStyle = true
+    control.rarityGlow = control:GetNamedChild("RarityGlow")
+    control.rarityBurst = control:GetNamedChild("RarityBurst")
+    control.glass = control:GetNamedChild("Glass")
+    control.iconFrame = control:GetNamedChild("IconFrame")
+end
+
+function Nirnsteel_UI_LootHistory_Legacy_GamepadEntry_OnInitialized(control)
+    ZO_LootHistory_Shared_OnInitialized(control)
+    if ZO_LootHistory_GamepadEntry_OnInitialized then
+        ZO_LootHistory_GamepadEntry_OnInitialized(control)
+    end
+    control.nirnsteelLegacyStyle = true
     control.rarityGlow = control:GetNamedChild("RarityGlow")
     control.rarityBurst = control:GetNamedChild("RarityBurst")
     control.glass = control:GetNamedChild("Glass")

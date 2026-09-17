@@ -1,0 +1,17 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## APIVersion: 101050
+## Title: Alternative Attribute Bars
+## Description: Fully customizable Console/Gamepad attribute bars with independent positioning, native/custom colors, selectable full ESO Basegame or Alternative Attribute Bars frame style and live exact resource values.
+## Author: |c943810BulDeZir|r, j.hhh
+## Version: 2.9-console-value-y
+## AddOnVersion: 290
+## SavedVariables: AltAttributesSavedVariables
+## OptionalDependsOn: LibAddonMenu-2.0 LibGamepad LibHarvensAddonSettings LibVotans Azurah
+
+AltAttributes.lua
+AltAttributes.xml

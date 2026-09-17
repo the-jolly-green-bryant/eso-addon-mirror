@@ -11,6 +11,8 @@ local DEFAULT_SETTINGS =
 {
     enabled = true,
     unlocked = false,
+    layout = "pyramid",
+    attachMountStamina = true,
     scale = 109,
     barHeight = 25,
     rowSpacing = 5,
@@ -46,7 +48,7 @@ local DEFAULT_SETTINGS =
     shieldPulseEnabled = true,
     lowResourceGlowEnabled = true,
     borderWidth = 0,
-    cornerSize = 2,
+    rpgBorder = true,
     innerShadowAlpha = 60,
     outerShadowAlpha = 100,
     textFontKey = "gameSmall",
@@ -326,7 +328,7 @@ local function ApplyFrameStyle(frame, width, height)
         height = height,
         alpha = GetConfiguredAlpha(),
         borderWidth = borderWidth,
-        cornerSize = ClampNumber(GetSettingValue("cornerSize"), 0, 12),
+        rpgBorder = GetSettingValue("rpgBorder") == true,
         innerShadowAlpha = ClampNumber(GetSettingValue("innerShadowAlpha"), 0, 100) / 100,
         outerShadowAlpha = ClampNumber(GetSettingValue("outerShadowAlpha"), 0, 100) / 100,
         textureInfo = BarVisuals.Textures.genericTall,
@@ -620,11 +622,24 @@ function ResourceBars:ComputeLayoutMetrics()
     local pyramidGap = colGap
     local bottomTotalWidth = magickaWidth + staminaWidth + pyramidGap
     local layoutWidth = hideHealth and bottomTotalWidth or math.max(healthWidth, bottomTotalWidth)
+    local layoutHeight = hideHealth and barHeight or (barHeight * 2) + rowGap
+    local layout = GetSettingValue("layout")
+    if layout == "linear" then
+        layoutWidth = bottomTotalWidth + (hideHealth and 0 or healthWidth + colGap)
+        layoutHeight = barHeight
+    elseif layout == "stacked" then
+        layoutWidth = math.max(hideHealth and 0 or healthWidth, magickaWidth, staminaWidth)
+        local rows = hideHealth and 2 or 3
+        layoutHeight = (barHeight * rows) + (rowGap * (rows - 1))
+    else
+        layout = "pyramid"
+    end
 
     return {
+        layout = layout,
         barHeight = barHeight,
         width = layoutWidth,
-        height = hideHealth and barHeight or (barHeight * 2) + rowGap,
+        height = layoutHeight,
         rowGap = rowGap,
         hideHealth = hideHealth,
         pyramid = {
@@ -683,6 +698,21 @@ function ResourceBars:ApplyLayoutGeometry()
     local magicka = self.bars.magicka
     local stamina = self.bars.stamina
     local healthCenterX = 0
+    local resourceRowY = metrics.hideHealth and 0 or metrics.barHeight + metrics.rowGap
+    local magickaX = -((p.staminaWidth + p.gap) * 0.5)
+    local staminaX = (p.magickaWidth + p.gap) * 0.5
+    local staminaY = resourceRowY
+    if metrics.layout == "linear" then
+        resourceRowY = 0
+        staminaY = 0
+        magickaX = (p.magickaWidth - metrics.width) * 0.5
+        staminaX = (metrics.width - p.staminaWidth) * 0.5
+        healthCenterX = (p.magickaWidth - p.staminaWidth) * 0.5
+    elseif metrics.layout == "stacked" then
+        magickaX = 0
+        staminaX = 0
+        staminaY = resourceRowY + metrics.barHeight + metrics.rowGap
+    end
 
     health:SetHidden(metrics.hideHealth)
     health:SetDimensions(p.healthWidth, metrics.barHeight)
@@ -690,19 +720,17 @@ function ResourceBars:ApplyLayoutGeometry()
     health:ClearAnchors()
     health:SetAnchor(TOP, root, TOP, healthCenterX, 0)
 
-    local resourceRowY = metrics.hideHealth and 0 or metrics.barHeight + metrics.rowGap
-
     magicka:SetHidden(false)
     magicka:SetDimensions(p.magickaWidth, metrics.barHeight)
     self:UpdateLabelLayout(magicka, p.magickaWidth, metrics.barHeight)
     magicka:ClearAnchors()
-    magicka:SetAnchor(TOP, root, TOP, healthCenterX - ((p.staminaWidth + p.gap) * 0.5), resourceRowY)
+    magicka:SetAnchor(TOP, root, TOP, magickaX, resourceRowY)
 
     stamina:SetHidden(false)
     stamina:SetDimensions(p.staminaWidth, metrics.barHeight)
     self:UpdateLabelLayout(stamina, p.staminaWidth, metrics.barHeight)
     stamina:ClearAnchors()
-    stamina:SetAnchor(TOP, root, TOP, healthCenterX + ((p.magickaWidth + p.gap) * 0.5), resourceRowY)
+    stamina:SetAnchor(TOP, root, TOP, staminaX, staminaY)
 
     for _, key in ipairs(BAR_ORDER) do
         local state = self.state and self.state[key]
@@ -716,6 +744,33 @@ function ResourceBars:ApplyLayoutGeometry()
                 HideFrameFeedback(self.bars[key])
             end
         end
+    end
+end
+
+function ResourceBars:ApplyMountStaminaAnchor()
+    local mount = ZO_PlayerAttribute and ZO_PlayerAttribute:GetNamedChild("MountStamina")
+    if not mount then
+        return
+    end
+
+    if IsModuleEnabled() and GetSettingValue("attachMountStamina") ~= false then
+        if not self.mountStaminaAnchors then
+            self.mountStaminaAnchors = {}
+            for index = 0, mount:GetNumAnchors() - 1 do
+                local valid, point, relativeTo, relativePoint, offsetX, offsetY, constraints = mount:GetAnchor(index)
+                if valid then
+                    table.insert(self.mountStaminaAnchors, { point, relativeTo, relativePoint, offsetX, offsetY, constraints })
+                end
+            end
+        end
+        mount:ClearAnchors()
+        mount:SetAnchor(TOPLEFT, self.bars.stamina, BOTTOMLEFT, 0, GetRowSpacing())
+    elseif self.mountStaminaAnchors then
+        mount:ClearAnchors()
+        for _, anchor in ipairs(self.mountStaminaAnchors) do
+            mount:SetAnchor(unpack(anchor, 1, 6))
+        end
+        self.mountStaminaAnchors = nil
     end
 end
 
@@ -740,6 +795,7 @@ function ResourceBars:ApplyLayout()
     mover:ClearAnchors()
     mover:SetAnchor(CENTER, GuiRoot, CENTER, position.x, position.y)
     mover:SetHidden(not IsModuleUnlocked())
+    self:ApplyMountStaminaAnchor()
 end
 
 function ResourceBars:SetStockPlayerBarsHidden(hidden)

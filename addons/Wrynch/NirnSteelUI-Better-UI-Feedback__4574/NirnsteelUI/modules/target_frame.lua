@@ -83,6 +83,7 @@ local EXECUTE_ICON_TEXTURES =
 local DEFAULT_SETTINGS =
 {
     enabled = true,
+    bossDecoration = true,
     unlocked = false,
     scale = 100,
     width = 300,
@@ -102,7 +103,7 @@ local DEFAULT_SETTINGS =
     shieldPulseEnabled = true,
     lowResourceGlowEnabled = true,
     borderWidth = 0,
-    cornerSize = 2,
+    rpgBorder = true,
     innerShadowAlpha = 60,
     outerShadowAlpha = 100,
     textFontKey = "gameSmall",
@@ -474,6 +475,17 @@ local function IsPlayerTargetTagAvailable()
     return DoesTargetUnitExist(PLAYER_UNIT_TAG)
 end
 
+local function IsBossTarget(unitTag, isPlayer)
+    if isPlayer or not AreUnitsEqual then return false end
+    for index = 1, tonumber(MAX_BOSSES) or 0 do
+        local bossTag = "boss" .. index
+        if DoesTargetUnitExist(bossTag) and SafeUnitCall(AreUnitsEqual, unitTag, bossTag) == true then
+            return true
+        end
+    end
+    return false
+end
+
 local function ReadTargetData()
     local primaryExists = DoesTargetUnitExist(UNIT_TAG)
     local playerExists = IsPlayerTargetTagAvailable()
@@ -507,6 +519,7 @@ local function ReadTargetData()
         fallbackMetadataUnitTag = fallbackMetadataUnitTag,
         name = name,
         isPlayer = isPlayer,
+        isBoss = IsBossTarget(unitTag, isPlayer),
         classId = classId,
         className = className or "",
         classIcon = isPlayer and GetClassTexture(classId) or nil,
@@ -533,7 +546,7 @@ local function GetTargetFingerprint(data)
         tostring(data.classId), tostring(data.classIcon), tostring(data.level),
         tostring(data.champion), tostring(data.championPoints), tostring(data.current), tostring(data.maximum),
         tostring(data.shield), tostring(data.dead), tostring(data.attackable), tostring(data.alliance),
-        tostring(data.marker),
+        tostring(data.marker), tostring(data.isBoss),
     }, "\31")
 end
 
@@ -630,6 +643,118 @@ local function CreateCenteredLabel(parent, wrapMode)
     label:SetWrapMode(wrapMode or TEXT_WRAP_MODE_ELLIPSIS)
     label:SetMaxLineCount(1)
     return label
+end
+
+local function GetBossCrestGap(data, barHeight)
+    local ratio = data.maximum and data.maximum > 0 and data.current / data.maximum or 1
+    if GetSetting("showExecuteIcon") ~= false and not data.dead and (data.current or 0) > 0
+        and data.attackable and ratio <= Clamp(GetSetting("executeThreshold"), 18, 33) / 100 then
+        local iconSize = EXECUTE_ICON_SIZE * Clamp(GetSetting("executeIconScale"), 50, 200) / 100
+        return math.max(0, (iconSize - barHeight) * 0.5 + 2)
+    end
+    return 0
+end
+
+local function GetBossBracketWidth(barHeight)
+    return Clamp(barHeight * 0.42, 10, 18)
+end
+
+local function CreateBossPolygon(parent, points, color)
+    local control = WINDOW_MANAGER:CreateControl(nil, parent, CT_POLYGON)
+    control:SetMouseEnabled(false)
+    control:SetPointLayout(POLYGON_POINT_LAYOUT_CLOCKWISE)
+    control:SetSmoothingEnabled(false)
+    for _, point in ipairs(points) do control:AddPoint(point[1], point[2]) end
+    control:SetBorderDirection(POLYGON_BORDER_DIRECTION_IN)
+    control:SetBorderThickness(0, 0, 1)
+    control:SetCenterColor(unpack(color))
+    control:SetBorderColor(0.25, 0.31, 0.35, 1)
+    control:SetDrawLayer(DL_OVERLAY)
+    control:SetDrawLevel(7)
+    return control
+end
+
+function TargetFrame:UpdateBossDecoration(data, barHeight)
+    local visible = data and data.isBoss == true and not data.isPlayer and GetSetting("bossDecoration") ~= false
+    -- Boss brackets replace the ordinary iron caps; the shared rails remain.
+    local ironBorder = GetSetting("rpgBorder") == true
+    if self.health and self.health.rpgBorder then
+        self.health.rpgBorder.left:SetHidden(not ironBorder or visible)
+        self.health.rpgBorder.right:SetHidden(not ironBorder or visible)
+    end
+    if not visible then
+        if self.bossDecoration then self.bossDecoration:SetHidden(true) end
+        return
+    end
+    if not self.bossDecoration then
+        local ornaments = WINDOW_MANAGER:CreateControl(nil, self.root, CT_CONTROL)
+        ornaments:SetAnchorFill(self.health)
+        ornaments:SetMouseEnabled(false)
+        -- Match NirnSteel's cool silver highlights and blue-steel recesses.
+        -- Midtone cap faces read as metal rather than black outlined tabs.
+        local steel = { 0.20, 0.25, 0.28, 1 }
+        local silver = { 0.57, 0.64, 0.68, 1 }
+        local recessedSteel = { 0.07, 0.10, 0.12, 1 }
+        -- Convex forged plates avoid the pinched silhouette of the old caps.
+        local cap = { {0.35,0}, {1,0.08}, {1,0.92}, {0.35,1}, {0,0.78}, {0,0.22} }
+        local rightCap = { {0,0.08}, {0.65,0}, {1,0.22}, {1,0.78}, {0.65,1}, {0,0.92} }
+        ornaments.left = CreateBossPolygon(ornaments,
+            cap, silver)
+        ornaments.right = CreateBossPolygon(ornaments,
+            rightCap, silver)
+        ornaments.leftInset = CreateBossPolygon(ornaments.left, cap, steel)
+        ornaments.rightInset = CreateBossPolygon(ornaments.right, rightCap, steel)
+        ornaments.leftInset:SetAnchor(CENTER, ornaments.left, CENTER, 0, 0)
+        ornaments.rightInset:SetAnchor(CENTER, ornaments.right, CENTER, 0, 0)
+        ornaments.leftInset:SetDrawLevel(8)
+        ornaments.rightInset:SetDrawLevel(8)
+        local facet = { {0.5,0}, {1,0.5}, {0.5,1}, {0,0.5} }
+        ornaments.leftFacet = CreateBossPolygon(ornaments.left, facet, silver)
+        ornaments.rightFacet = CreateBossPolygon(ornaments.right, facet, silver)
+        ornaments.leftFacet:SetAnchor(CENTER, ornaments.left, CENTER, 0, 0)
+        ornaments.rightFacet:SetAnchor(CENTER, ornaments.right, CENTER, 0, 0)
+        ornaments.leftFacet:SetDrawLevel(9)
+        ornaments.rightFacet:SetDrawLevel(9)
+        ornaments.rail = CreateBossPolygon(ornaments,
+            { {0,0}, {1,0}, {1,1}, {0,1} }, silver)
+        ornaments.rail:SetAnchor(TOP, self.health, BOTTOM, 0, 0)
+        local crest = { {0,0}, {1,0}, {0.90,0.45}, {0.64,0.70},
+            {0.5,1}, {0.36,0.70}, {0.10,0.45} }
+        ornaments.crest = CreateBossPolygon(ornaments,
+            crest, silver)
+        ornaments.crest:SetDimensions(72, 24)
+        ornaments.crestInset = CreateBossPolygon(ornaments.crest, crest, recessedSteel)
+        ornaments.crestInset:SetDimensions(64, 19)
+        ornaments.crestInset:SetAnchor(TOP, ornaments.crest, TOP, 0, 1)
+        ornaments.crestInset:SetDrawLevel(8)
+        ornaments.skull = WINDOW_MANAGER:CreateControl(nil, ornaments.crest, CT_TEXTURE)
+        ornaments.skull:SetDimensions(18, 18)
+        ornaments.skull:SetAnchor(TOP, ornaments.crest, TOP, 0, 1)
+        ornaments.skull:SetTexture(EXECUTE_ICON_TEXTURES.whiteSkull)
+        ornaments.skull:SetColor(0.83, 0.82, 0.75, 1)
+        ornaments.skull:SetDrawLayer(DL_OVERLAY)
+        ornaments.skull:SetDrawLevel(9)
+        ornaments.skull:SetMouseEnabled(false)
+        self.bossDecoration = ornaments
+    end
+    local ornaments = self.bossDecoration
+    ornaments.crest:ClearAnchors()
+    ornaments.crest:SetAnchor(TOP, self.health, BOTTOM, 0, GetBossCrestGap(data, barHeight))
+    local bracketWidth = GetBossBracketWidth(barHeight)
+    ornaments.rail:SetHidden(ironBorder)
+    ornaments.rail:SetDimensions(Clamp(GetSetting("width"), 180, 700), 1)
+    ornaments.leftInset:SetDimensions(bracketWidth - 4, barHeight + 2)
+    ornaments.rightInset:SetDimensions(bracketWidth - 4, barHeight + 2)
+    ornaments.left:SetDimensions(bracketWidth, barHeight + 8)
+    ornaments.right:SetDimensions(bracketWidth, barHeight + 8)
+    ornaments.leftFacet:SetDimensions(3, 4)
+    ornaments.rightFacet:SetDimensions(3, 4)
+    ornaments.left:ClearAnchors()
+    ornaments.right:ClearAnchors()
+    ornaments.left:SetAnchor(RIGHT, self.health, LEFT, 0, 0)
+    ornaments.right:SetAnchor(LEFT, self.health, RIGHT, 0, 0)
+    ornaments:SetAlpha(Clamp(GetSetting("opacity"), 10, 100) / 100)
+    ornaments:SetHidden(false)
 end
 
 function TargetFrame:GetRoot()
@@ -756,17 +881,22 @@ function TargetFrame:ApplyLayout(data)
         Clamp(GetSetting("nameTextSize"), 10, 36) + 4,
         self.levelBadge and self.levelBadge.height or 22)
     local totalHeight = identityHeight + HEADER_BAR_GAP + barHeight
+    local decorated = data and data.isBoss == true and not data.isPlayer and GetSetting("bossDecoration") ~= false
+    local sidePadding = decorated and GetBossBracketWidth(barHeight)
+        or (GetSetting("rpgBorder") == true and 4 or 0)
+    totalHeight = totalHeight + (decorated and (24 + GetBossCrestGap(data, barHeight))
+        or (GetSetting("rpgBorder") == true and 4 or 0))
 
     root:SetScale(scale)
-    root:SetDimensions(width, totalHeight)
+    root:SetDimensions(width + sidePadding * 2, totalHeight)
     self.identity:ClearAnchors()
-    self.identity:SetAnchor(TOPLEFT, root, TOPLEFT, 0, 0)
+    self.identity:SetAnchor(TOPLEFT, root, TOPLEFT, sidePadding, 0)
     self.identity:SetDimensions(width, identityHeight)
     self.health:ClearAnchors()
-    self.health:SetAnchor(TOPLEFT, root, TOPLEFT, 0, identityHeight + HEADER_BAR_GAP)
+    self.health:SetAnchor(TOPLEFT, root, TOPLEFT, sidePadding, identityHeight + HEADER_BAR_GAP)
     local mover = self:GetMover()
     mover:SetScale(scale)
-    mover:SetDimensions(width, totalHeight)
+    mover:SetDimensions(width + sidePadding * 2, totalHeight)
     self:ApplyPosition()
     return width, barHeight
 end
@@ -780,7 +910,7 @@ function TargetFrame:ApplyStyle(width, barHeight, color)
         height = barHeight,
         alpha = Clamp(GetSetting("opacity"), 10, 100) / 100,
         borderWidth = Clamp(GetSetting("borderWidth"), 0, 8),
-        cornerSize = Clamp(GetSetting("cornerSize"), 0, 12),
+        rpgBorder = GetSetting("rpgBorder") == true,
         innerShadowAlpha = Clamp(GetSetting("innerShadowAlpha"), 0, 100) / 100,
         outerShadowAlpha = Clamp(GetSetting("outerShadowAlpha"), 0, 100) / 100,
         textureInfo = BarVisuals.Textures.genericTall,
@@ -816,6 +946,7 @@ function TargetFrame:ApplyStyle(width, barHeight, color)
     local textAlpha = Clamp(GetSetting("textOpacity"), 10, 100) / 100
     self.nameLabel:SetFont(BuildFont("nameTextSize"))
     self.nameLabel:SetColor(textColor.r, textColor.g, textColor.b, textAlpha)
+    self:UpdateBossDecoration(self.currentData, barHeight)
 end
 
 function TargetFrame:UpdateIdentity(data)
@@ -1081,6 +1212,7 @@ end
 function TargetFrame:ApplyTargetData(data, instant)
     self.currentData = data
     if not data then
+        self:UpdateBossDecoration(nil)
         self:ResetTargetState()
         self.lastLiveData = nil
         self.currentFingerprint = nil
@@ -1126,6 +1258,11 @@ function TargetFrame:RefreshTarget(instant, retainOnMissing)
     local data
     if self.settingsPreviewActive or self.debugPreviewMode then
         data = GetPreviewData(self.debugPreviewMode ~= "npc")
+        if self.settingsPreviewActive and self.previewBoss then
+            data = GetPreviewData(false)
+            data.name = "The Walking Nightmare"
+            data.isBoss = true
+        end
     elseif IsUnlocked() then
         local liveData = ReadTargetData()
         if liveData then
@@ -1334,10 +1471,16 @@ end
 
 function TargetFrame:SetSettingsPreviewActive(active)
     self.settingsPreviewActive = active == true or nil
+    if not active then self.previewBoss = nil end
     if active then
         self.debugPreviewMode = nil
     end
     self:ResetTargetState()
+    self:RefreshTarget(true)
+end
+
+function TargetFrame:SetBossPreview(active)
+    self.previewBoss = active == true or nil
     self:RefreshTarget(true)
 end
 

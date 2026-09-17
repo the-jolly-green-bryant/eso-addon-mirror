@@ -1189,7 +1189,7 @@ CreateFoodHelperPanel = function(self, parent, titleLabel)
     local autoEatTextLabel = WINDOW_MANAGER:CreateControl("$(parent)AutoEatLabel", header, CT_LABEL)
     autoEatTextLabel:ClearAnchors()
     autoEatTextLabel:SetAnchor(LEFT, autoEatCheckbox, RIGHT, 6, FOOD_AUTO_EAT_LABEL_OFFSET_Y)
-    autoEatTextLabel:SetAnchor(RIGHT, header, RIGHT, -210, FOOD_AUTO_EAT_LABEL_OFFSET_Y)
+    autoEatTextLabel:SetAnchor(RIGHT, header, RIGHT, 0, FOOD_AUTO_EAT_LABEL_OFFSET_Y)
     autoEatTextLabel:SetHeight(FOOD_AUTO_EAT_CHECKBOX_SIZE)
     autoEatTextLabel:SetFont("ZoFontGame")
     autoEatTextLabel:SetColor(0.96, 0.94, 0.84, 1.0)
@@ -1201,15 +1201,6 @@ CreateFoodHelperPanel = function(self, parent, titleLabel)
     end
     SetControlDrawOrder(autoEatTextLabel, DT_HIGH, DL_CONTROLS, 4)
     self.foodAutoEatLabel = autoEatTextLabel
-
-    local registerButton = CreateButton(header, "$(parent)RegisterActiveFood", GetText("quick_settings.food_helper.register_active"), 190, function()
-        self:RegisterCurrentActiveFood()
-    end)
-    registerButton:ClearAnchors()
-    registerButton:SetAnchor(TOPRIGHT, header, TOPRIGHT, 0, 0)
-    SetTextTooltip(registerButton, GetText("quick_settings.food_helper.register_active.tooltip"))
-    SetControlDrawOrder(registerButton, DT_HIGH, DL_CONTROLS, 4)
-    self.foodRegisterActiveButton = registerButton
 
     local emptyLabel = WINDOW_MANAGER:CreateControl("$(parent)EmptyLabel", panel, CT_LABEL)
     emptyLabel:ClearAnchors()
@@ -1248,12 +1239,6 @@ HandleFoodHelperResult = function(self, card, err, successKey)
         reason = Log.LocalizeErrorReason(err),
     }))
     return false
-end
-
-function QuickSettings:RegisterCurrentActiveFood()
-    local card, err = QuickslotProfileFacade:RegisterCurrentActiveFood()
-
-    HandleFoodHelperResult(self, card, err, "quick_settings.food_helper.registered")
 end
 
 CreateFoodCardFromCursor = function(self)

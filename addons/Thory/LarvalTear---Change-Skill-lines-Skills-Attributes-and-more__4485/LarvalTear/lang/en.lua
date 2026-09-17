@@ -174,9 +174,7 @@ LTM_LOCALIZATION["en"] = {
     -- QuickSettings: Food Helper
     SI_LTM_QUICK_SETTINGS_FOOD_AUTO_EAT = "Auto Eat",
     SI_LTM_QUICK_SETTINGS_FOOD_AUTO_EAT_TOOLTIP = "Enable automatic food or drink use for the selected Food Card.",
-    SI_LTM_QUICK_SETTINGS_FOOD_REGISTER_ACTIVE = "Register Active Food",
-    SI_LTM_QUICK_SETTINGS_FOOD_REGISTER_ACTIVE_TOOLTIP = "Register the currently active food or drink buff if a matching item exists in your backpack.",
-    SI_LTM_QUICK_SETTINGS_FOOD_EMPTY = "No Food Cards. Drag food or drink here, or register the current active food.",
+    SI_LTM_QUICK_SETTINGS_FOOD_EMPTY = "No Food Cards. Drag food or drink here to register it.",
     SI_LTM_QUICK_SETTINGS_FOOD_ACTIVE_TOOLTIP = "Use this Food Card as the Auto Eat target.",
     SI_LTM_QUICK_SETTINGS_FOOD_REGISTERED = "Registered Food Card: {itemName}",
     SI_LTM_QUICK_SETTINGS_FOOD_REPLACED = "Updated Food Card: {itemName}",
@@ -572,10 +570,7 @@ LTM_LOCALIZATION["en"] = {
     SI_LTM_ERROR_REASON_FOOD_INVALID_SLOT = "Could not read the selected inventory slot.",
     SI_LTM_ERROR_REASON_FOOD_INVALID_ITEM = "Drop a food or drink item.",
     SI_LTM_ERROR_REASON_FOOD_ITEM_API_UNAVAILABLE = "Food item API is unavailable.",
-    SI_LTM_ERROR_REASON_FOOD_UNSUPPORTED_ITEM = "This food or drink is not supported yet.",
     SI_LTM_ERROR_REASON_FOOD_SAVEDVARS_UNAVAILABLE = "Food Helper settings are unavailable.",
-    SI_LTM_ERROR_REASON_FOOD_NO_ACTIVE_BUFF = "No active food or drink buff was found.",
-    SI_LTM_ERROR_REASON_FOOD_MATCHING_ITEM_NOT_FOUND = "No matching food or drink item was found in your backpack.",
 
     -- Wait Messages
     SI_LTM_WAIT_SERVER_BUSY = "Waiting for the server to accept the change.",

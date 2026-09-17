@@ -3,6 +3,7 @@ local strings = {
     MUT_HEADER_RELOAD_UI               = "RELOAD UI SETTINGS",
     MUT_HEADER_MULTI_SPLITTER          = "MULTI SPLITTER SETTING",
     MUT_HEADER_QUALITY_SORTER          = "QUALITY SORTER SETTING",
+    MUT_HEADER_BANK_STACK_ALL          = "BANK STACKER SETTING",
 
     -- Reload UI
     MUT_RELOAD_UI                      = "Reload UI Button",
@@ -17,7 +18,7 @@ local strings = {
 
     -- Multi Split action + dialog
     MUT_MULTI_SPLITTER_ACTION_NAME     = "Multi Split",
-    MUT_MULTI_SPLITTER_TITLE           = "Multi Split",
+    MUT_MULTI_SPLITTER_TITLE           = "Multi Split Item",
     MUT_MULTI_SPLITTER_PROMPT          = "Choose the size of each new stack",
     MUT_MULTI_SPLITTER_ERROR           = "Multi Split: only %d free slots available, need %d, splitting what can fit.",
 
@@ -30,6 +31,13 @@ local strings = {
     MUT_QUALITY_SORTER_KEYBIND_OFF     = "Sort by Quality",
     MUT_QUALITY_SORTER_KEYBIND_DESC    = "Sort: Highest First",
     MUT_QUALITY_SORTER_KEYBIND_ASC     = "Sort: Lowest First",
+
+    -- Bank Stack All
+    MUT_BANK_STACK_ALL                 = "Stack All",
+    MUT_BANK_STACK_ALL_ENABLED         = "Use Stack All?",
+    MUT_BANK_STACK_ALL_TOOLTIP         = "Works with personal bank and house coffers"
+
+
 }
 
 for stringId, stringValue in pairs(strings) do

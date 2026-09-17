@@ -1,0 +1,41 @@
+{
+  "archive_error": "ESOUI returned an empty response",
+  "archive_path": "addons/GrimGrin/GrimUi__4841",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archive_status": "unavailable",
+  "archived": false,
+  "author": "GrimGrin",
+  "canonical_id": "esoui:4841",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    }
+  ],
+  "content_id": "esoui:4841",
+  "deleted": false,
+  "directories": [
+    "GrimUI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4841/",
+  "fingerprint": "3a020244c09a5cd15151d459260efa800fce922259ece0b048872f3ddf878fa0",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17401.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17395.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17394.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4841",
+  "source_url": "https://www.esoui.com/downloads/info4841-GrimUi.html",
+  "stats": {
+    "downloads": 8,
+    "favorites": 1,
+    "monthly_downloads": 5
+  },
+  "title": "GrimUi",
+  "updated_at": 1789622853000,
+  "version": "2.0"
+}

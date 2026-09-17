@@ -2,7 +2,8 @@
 ## Author: CodeWarrior82
 ## Description: Tracks the cooldown of the Rush of Agony set.
 ## APIVersion: 101050
-## DependsOn: LibAddonMenu-2.0>=42 LibChatMessage
+## DependsOn: LibAddonMenu-2.0>=42 LibChatMessage 
+## OptionalDependsOn: LibNotify
 ## SavedVariables: roatAddonVars
 
 rushOfAgonyTracker.lua

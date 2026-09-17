@@ -827,13 +827,14 @@ function BUI.TimeStamp(now)
 end
 
 function BUI.CallLater(name,ms,func,opt1,opt2)
+	local updateName="SXUI_CallLater_"..name
 	if ms then
-		EVENT_MANAGER:RegisterForUpdate("CallLater_"..name, ms,
+		EVENT_MANAGER:RegisterForUpdate(updateName, ms,
 		function()
-			EVENT_MANAGER:UnregisterForUpdate("CallLater_"..name)
+			EVENT_MANAGER:UnregisterForUpdate(updateName)
 			func(opt1,opt2)
 		end)
 	else
-		EVENT_MANAGER:UnregisterForUpdate("CallLater_"..name)
+		EVENT_MANAGER:UnregisterForUpdate(updateName)
 	end
 end

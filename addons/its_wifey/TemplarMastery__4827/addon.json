@@ -18,10 +18,10 @@
     "TemplarMastery"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4827/",
-  "fingerprint": "883ff4133acc94f7e977191549394162de14e7716aff0fa93c2ad1621565f5ae",
+  "fingerprint": "c8c17ea9015997e29c5cedf7b929f89fcb00c75bec0045c810c5fbfd0dc69ae4",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw17346.png",
-    "https://cdn-eso.mmoui.com/preview/pvw17347.png"
+    "https://cdn-eso.mmoui.com/preview/pvw17393.png"
   ],
   "platform": "pc",
   "published": true,
@@ -29,11 +29,11 @@
   "source_id": "4827",
   "source_url": "https://www.esoui.com/downloads/info4827-TemplarMastery.html",
   "stats": {
-    "downloads": 15,
+    "downloads": 42,
     "favorites": 0,
-    "monthly_downloads": 9
+    "monthly_downloads": 42
   },
   "title": "TemplarMastery",
-  "updated_at": 1789173366000,
-  "version": "1.3"
+  "updated_at": 1789589334000,
+  "version": "1.4"
 }

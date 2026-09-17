@@ -1088,9 +1088,9 @@ local function Settings_Init()
 			name=minimapName,
 			order=9,
 			options=MenuOptions,
-			-- LibGamepad does not reliably forward controller left/right events
-			-- for LAM sliders on every version. Convert only the Minimap sliders
-			-- to numeric dropdowns with the same min/max/step values.
+			-- Convert numeric sliders to finite controller value lists. This avoids
+			-- Xbox slider-template variants that display correctly but ignore D-Pad
+			-- changes; the original numeric setFunc still runs immediately.
 			controllerSafeSliders=true,
 		})
 	end

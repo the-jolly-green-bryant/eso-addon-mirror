@@ -2,6 +2,7 @@
 local PingConfirmed=0
 local StatShare_Code=74
 local DamageTimeout=5000
+local MAX_SESSION_REPORTS=12
 local ReportToShow, LastSection, LastTarget, TargetBuffsIsExpanded
 local BuffsSection=true
 local BUFF_W=355
@@ -1663,6 +1664,35 @@ local function SetupStatsCurrent(n,now)
 	}
 end
 
+local function TrimSessionReports()
+	local unsaved=0
+	for i=1,BUI.ReportN-1 do
+		local report=BUI.Stats.Current[i]
+		if report and not report.Saved then unsaved=unsaved+1 end
+	end
+	while unsaved>MAX_SESSION_REPORTS do
+		local removed=false
+		for i=1,BUI.ReportN-1 do
+			local report=BUI.Stats.Current[i]
+			if report and not report.Saved then
+				table.remove(BUI.Stats.Current,i)
+				BUI.ReportN=BUI.ReportN-1
+				if ReportToShow then
+					if ReportToShow>i then
+						ReportToShow=ReportToShow-1
+					elseif ReportToShow==i then
+						ReportToShow=math.max(1,math.min(i,BUI.ReportN-1))
+					end
+				end
+				unsaved=unsaved-1
+				removed=true
+				break
+			end
+		end
+		if not removed then break end
+	end
+end
+
 function BUI.Stats.Reset(now)
 	now=now or GetGameTimeMilliseconds()
 	--Save bosses names
@@ -1684,6 +1714,9 @@ function BUI.Stats.Reset(now)
 		BUI.ReportN=BUI.ReportN+1
 --		if BUI.Vars.DeveloperMode then d(BUI.TimeStamp().."New report ("..BUI.ReportN..") initialized") end
 	end
+	-- Keep completed, unsaved combat history bounded on memory-constrained clients.
+	-- Reports the player explicitly saved are never removed here.
+	TrimSessionReports()
 	--Setup variables
 --	BUI.Stats.RevivedTime	=now
 	BUI.Stats.lastPing	=0

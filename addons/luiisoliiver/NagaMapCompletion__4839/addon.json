@@ -74,10 +74,12 @@
     "NagaMapCompletion"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4839/",
-  "fingerprint": "a5544546a0f0513674e8469299666803a834a697fade42e012a0b58cc7259b8a",
+  "fingerprint": "85c55e486746592c0d0d52e6db9cb8b813ddb9b96c80f20a5202275c9e124a5a",
   "images": [
-    "https://cdn-eso.mmoui.com/preview/pvw17379.png",
-    "https://cdn-eso.mmoui.com/preview/pvw17380.png"
+    "https://cdn-eso.mmoui.com/preview/pvw17399.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17400.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17397.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17398.png"
   ],
   "platform": "pc",
   "published": true,
@@ -85,11 +87,11 @@
   "source_id": "4839",
   "source_url": "https://www.esoui.com/downloads/info4839-NagaMapCompletion.html",
   "stats": {
-    "downloads": 14,
+    "downloads": 26,
     "favorites": 1,
-    "monthly_downloads": 0
+    "monthly_downloads": 22
   },
   "title": "NagaMapCompletion",
-  "updated_at": 1789523508000,
-  "version": "8.1"
+  "updated_at": 1789607588000,
+  "version": "12.5"
 }

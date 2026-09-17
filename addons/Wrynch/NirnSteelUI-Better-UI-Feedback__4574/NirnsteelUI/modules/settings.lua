@@ -5,11 +5,30 @@ local SAVED_VARS_VERSION = 1
 Nirnsteel_UI = Nirnsteel_UI or {}
 local Nirnsteel_UI = Nirnsteel_UI
 
+function Nirnsteel_UI:GetAssetPath(relativePath)
+    if not self.assetRoot and GetAddOnManager then
+        local manager = GetAddOnManager()
+        for index = 1, manager:GetNumAddOns() do
+            if manager:GetAddOnInfo(index) == ADDON_NAME then
+                local directory = manager:GetAddOnRootDirectoryPath(index)
+                -- Texture names are relative to AddOns, not Lua's user:/ mount.
+                directory = directory:gsub("\\", "/"):gsub("^[Uu][Ss][Ee][Rr]:/[Aa][Dd][Dd][Oo][Nn][Ss]/", "")
+                self.assetRoot = directory:gsub("/+$", "") .. "/"
+                break
+            end
+        end
+    end
+    return (self.assetRoot or "NirnsteelUI/") .. relativePath
+end
+
 local Settings = {}
 Nirnsteel_UI.Settings = Settings
 
 local MODULE_MENU_ICONS =
 {
+    ["Quest Tracker"] = "EsoUI/Art/AddOns/Gamepad/gp_mod_listing_category_mapandcompass.dds",
+    ["Werewolf Rage"] = "/esoui/art/armory/buildicons/buildicon_44.dds",
+    ["Achievement Alert"] = Nirnsteel_UI:GetAssetPath("ui/achievement/iron_trophy_dxt5.dds"),
     ["Action Bar"] = "EsoUI/Art/AddOns/Gamepad/gp_mod_listing_category_abilitybar.dds",
     ["Adventure Camera"] = "EsoUI/Art/Options/Gamepad/gp_options_camera.dds",
     ["Cast Bar"] = "EsoUI/Art/AddOns/Gamepad/gp_mod_listing_category_castbarsandcooldowns.dds",
@@ -232,6 +251,8 @@ local GROUP_FRAMES_DEFAULTS =
     identityHeight = 20,
     rowSpacing = 6,
     columnSpacing = 14,
+    trialMembersPerColumn = 0,
+    compactTrials = false,
     opacity = 100,
     sortMode = "role",
     displayNameMode = "displayName",
@@ -240,6 +261,8 @@ local GROUP_FRAMES_DEFAULTS =
     healthTextPosition = "left",
     showClassIcon = true,
     showRoleIcon = true,
+    classIconSize = 16,
+    roleIconSize = 16,
     showLeaderIcon = true,
     showShields = true,
     showDeathAnimation = true,
@@ -247,6 +270,7 @@ local GROUP_FRAMES_DEFAULTS =
     showGuildIcon = false,
     showLevel = true,
     showLevelStyle = true,
+    levelTextSize = 13,
     showRecoveryRhythm = false,
     glossEnabled = true,
     patternEnabled = true,
@@ -257,8 +281,8 @@ local GROUP_FRAMES_DEFAULTS =
     feedbackIntensity = 80,
     lossTrailEnabled = false,
     lowHealthGlowEnabled = true,
+    rpgBorder = true,
     borderWidth = 1,
-    cornerSize = 2,
     innerShadowAlpha = 55,
     outerShadowAlpha = 75,
     textFontKey = "gameSmall",
@@ -295,6 +319,7 @@ local GROUP_FRAMES_DEFAULTS =
 
 local TARGET_FRAME_DEFAULTS =
 {
+    bossDecoration = true,
     enabled = true,
     unlocked = false,
     scale = 100,
@@ -314,8 +339,8 @@ local TARGET_FRAME_DEFAULTS =
     fullResourcePulseEnabled = true,
     shieldPulseEnabled = true,
     lowResourceGlowEnabled = true,
+    rpgBorder = true,
     borderWidth = 0,
-    cornerSize = 2,
     innerShadowAlpha = 60,
     outerShadowAlpha = 100,
     textFontKey = "gameSmall",
@@ -370,7 +395,8 @@ local MINIMAP_DEFAULTS =
     mapOpacity = 95, frameOpacity = 100, borderThickness = 2, shadow = true,
     borderColor = { r = 0.64, g = 0.72, b = 0.77 },
     accentColor = { r = 0.90, g = 0.74, b = 0.40 },
-    showLocation = true, showCardinals = true, showCoordinates = false,
+    showLocation = true, locationNamePosition = "top", showCardinals = true, showCoordinates = false,
+    zoneTextSize = 14,
     zoom = 2.5, markerScale = 100, playerScale = 110,
     combatBehavior = "show", combatOpacity = 40,
     clickThrough = false, wheelZoom = true, tooltips = true,
@@ -383,6 +409,14 @@ local ACCOUNT_DEFAULTS =
     debugMode = false,
     modules =
     {
+        questTracker = { enabled = true, unlocked = false, position = false, titleSize = 23, textSize = 17, spacing = 7 },
+        werewolfRage = { enabled = true, scale = 100, opacity = 100, showValue = true, showReady = true, unlocked = false, x = 0, y = 170 },
+        achievementAlert =
+        {
+            enabled = true, scale = 100, opacity = 100, duration = 6,
+            sound = true, showPoints = true,
+            x = 0, y = -220,
+        },
         synergyAlert =
         {
             enabled = true,
@@ -394,6 +428,7 @@ local ACCOUNT_DEFAULTS =
         lootHistory =
         {
             enabled = true,
+            legacyStyle = false,
             unlocked = false,
             scale = 100,
             soundsEnabled = true,
@@ -453,8 +488,13 @@ local ACCOUNT_DEFAULTS =
         actionBarFrames =
         {
             enabled = true,
+            frameStyle = "rpg",
             skillUseShrinkEnabled = true,
             globalCooldownEnabled = true,
+        },
+        immersiveTeleport =
+        {
+            enabled = false,
         },
         adventureCamera =
         {
@@ -509,6 +549,8 @@ local ACCOUNT_DEFAULTS =
         {
             enabled = true,
             unlocked = false,
+            layout = "pyramid",
+            attachMountStamina = true,
             scale = 109,
             barHeight = 25,
             rowSpacing = 5,
@@ -543,8 +585,8 @@ local ACCOUNT_DEFAULTS =
             fullResourcePulseEnabled = true,
             shieldPulseEnabled = true,
             lowResourceGlowEnabled = true,
+            rpgBorder = true,
             borderWidth = 0,
-            cornerSize = 2,
             innerShadowAlpha = 60,
             outerShadowAlpha = 100,
             textFontKey = "gameSmall",
@@ -1240,7 +1282,7 @@ function Settings:SetLootHistoryValue(key, value)
     end
 
     self:GetLootHistory()[key] = value
-    if key == "scale" and Nirnsteel_UI.LootHistory then
+    if (key == "scale" or key == "legacyStyle") and Nirnsteel_UI.LootHistory then
         Nirnsteel_UI.LootHistory:RefreshSettings()
     end
 end
@@ -1375,6 +1417,111 @@ function Settings:SetKillSoundValue(key, value)
     if Nirnsteel_UI.KillSound then
         Nirnsteel_UI.KillSound:RefreshSettings()
     end
+end
+
+function Settings:GetAchievementAlert()
+    return self.account.modules.achievementAlert
+end
+
+function Settings:GetWerewolfRage()
+    return self.account.modules.werewolfRage
+end
+
+function Settings:GetQuestTracker()
+    return self.account.modules.questTracker
+end
+
+function Settings:GetQuestTrackerOptions()
+    local controls = {}
+    local function Option(key,name,kind,minimum,maximum)
+        controls[#controls+1] = {
+            type=kind,name=name,min=minimum,max=maximum,step=1,
+            getFunc=function() return self:GetQuestTracker()[key] end,
+            setFunc=function(value)
+                if minimum then value=ClampNumber(value,minimum,maximum) end
+                self:GetQuestTracker()[key]=value
+                if Nirnsteel_UI.QuestTracker then Nirnsteel_UI.QuestTracker:RefreshSettings() end
+            end,
+            default=ACCOUNT_DEFAULTS.modules.questTracker[key],
+        }
+    end
+    Option("enabled","Enable Quest Tracker Style","checkbox")
+    Option("unlocked","Unlock Quest Log","checkbox")
+    controls[#controls].tooltip = "Show a drag handle to move the quest log. Lock it again to keep the saved position. The current position is used until you move it."
+    Option("titleSize","Quest Title Size","slider",18,30)
+    Option("textSize","Objective Text Size","slider",14,24)
+    Option("spacing","Objective Spacing","slider",5,14)
+    return controls
+end
+
+function Settings:GetWerewolfRageOptions()
+    local controls = {}
+    local function Option(key,name,kind,minimum,maximum,step)
+        controls[#controls+1] = {
+            type=kind,name=name,min=minimum,max=maximum,step=step,
+            getFunc=function() return self:GetWerewolfRage()[key] end,
+            setFunc=function(value)
+                if minimum then value=ClampNumber(value,minimum,maximum) end
+                self:GetWerewolfRage()[key]=value
+                if Nirnsteel_UI.WerewolfRage then Nirnsteel_UI.WerewolfRage:RefreshSettings() end
+            end,
+            default=ACCOUNT_DEFAULTS.modules.werewolfRage[key],
+        }
+    end
+    Option("enabled","Enable Werewolf Rage","checkbox")
+    Option("showValue","Show Rage Value","checkbox")
+    Option("showReady","Show Rampage Ready Text","checkbox")
+    Option("unlocked","Unlock Position","checkbox")
+    Option("scale","Scale (%)","slider",60,160,5)
+    Option("opacity","Opacity (%)","slider",20,100,5)
+    controls[#controls+1]={type="button",name="Preview Rage Build-up",func=function()
+        if Nirnsteel_UI.WerewolfRage then Nirnsteel_UI.WerewolfRage:Preview() end
+    end,disabled=function() return not self:GetWerewolfRage().enabled end}
+    controls[#controls+1]={type="button",name="Reset Position",func=function()
+        self:GetWerewolfRage().x,self:GetWerewolfRage().y=0,170
+        if Nirnsteel_UI.WerewolfRage then Nirnsteel_UI.WerewolfRage:RefreshSettings() end
+    end}
+    return controls
+end
+
+function Settings:SetAchievementAlertValue(key, value)
+    local ranges = { scale = {60, 160}, opacity = {20, 100}, duration = {3, 12}, x = {-1600, 1600}, y = {-900, 900} }
+    if ranges[key] then value = ClampNumber(value, ranges[key][1], ranges[key][2]) end
+    self:GetAchievementAlert()[key] = value
+    if Nirnsteel_UI.AchievementAlert then Nirnsteel_UI.AchievementAlert:RefreshSettings() end
+end
+
+function Settings:GetAchievementAlertOptions()
+    local controls = {}
+    local function AddOption(key, name, kind, minimum, maximum, step)
+        controls[#controls + 1] = {
+            type = kind, name = name, min = minimum, max = maximum, step = step,
+            getFunc = function() return self:GetAchievementAlert()[key] end,
+            setFunc = function(value) self:SetAchievementAlertValue(key, value) end,
+            default = ACCOUNT_DEFAULTS.modules.achievementAlert[key],
+        }
+    end
+    AddOption("enabled", "Enable Achievement Alert", "checkbox")
+    AddOption("sound", "Play Achievement Sound", "checkbox")
+    AddOption("showPoints", "Show Achievement Points", "checkbox")
+    AddOption("scale", "Scale (%)", "slider", 60, 160, 5)
+    AddOption("opacity", "Opacity (%)", "slider", 20, 100, 5)
+    AddOption("duration", "Duration (seconds)", "slider", 3, 12, 1)
+    AddOption("x", "Horizontal Position", "slider", -1600, 1600, 10)
+    AddOption("y", "Vertical Position", "slider", -900, 900, 10)
+    controls[#controls + 1] = {
+        type = "button", name = "Preview Achievement",
+        func = function() if Nirnsteel_UI.AchievementAlert then Nirnsteel_UI.AchievementAlert:Preview() end end,
+        disabled = function() return not self:GetAchievementAlert().enabled end,
+    }
+    controls[#controls + 1] = {
+        type = "button", name = "Reset Position",
+        func = function()
+            self:SetAchievementAlertValue("x", 0)
+            self:SetAchievementAlertValue("y", -220)
+        end,
+    }
+    return controls
 end
 
 function Settings:GetSynergyAlert()
@@ -1652,6 +1799,17 @@ function Settings:SetActionBarGlobalCooldownEnabled(value)
     self:GetActionBarFrames().globalCooldownEnabled = value
     if Nirnsteel_UI.ActionBarFrames then
         Nirnsteel_UI.ActionBarFrames:RefreshSettings()
+    end
+end
+
+function Settings:IsImmersiveTeleportEnabled()
+    return self.account.modules.immersiveTeleport.enabled
+end
+
+function Settings:SetImmersiveTeleportEnabled(value)
+    self.account.modules.immersiveTeleport.enabled = value
+    if Nirnsteel_UI.ImmersiveTeleport then
+        Nirnsteel_UI.ImmersiveTeleport:RefreshSettings()
     end
 end
 
@@ -2437,6 +2595,17 @@ function Settings:BuildGroupFramesOptions()
     Slider("Identity Line Height", "identityHeight", "Set how much room names, levels, and icons get above each bar.", 16, 32, 1)
     Slider("Row Spacing", "rowSpacing", nil, 0, 24, 1)
     Slider("Column Spacing", "columnSpacing", nil, 0, 40, 1)
+    Checkbox("Compact Trial Design", "compactTrials", "Use smaller frames for groups larger than four: name, role, health percentage, shields, and essential status indicators. Hides levels, class/social icons, patterns, and iron ornaments. Small parties keep your normal design. Preview shows 12 members when enabled.")
+    local trialLayoutChoices = { "Automatic (Default)", "2 Columns / 6 Members", "3 Columns / 4 Members", "4 Columns / 3 Members", "1 Column / 12 Members" }
+    local trialLayoutValues = { 0, 6, 4, 3, 12 }
+    local currentMembers = self:GetGroupFrames().trialMembersPerColumn
+    if currentMembers and currentMembers ~= 0 and currentMembers ~= 6 and currentMembers ~= 4 and currentMembers ~= 3 and currentMembers ~= 12 then
+        trialLayoutChoices[#trialLayoutChoices + 1] = string.format("Custom / %s Members per Column", tostring(currentMembers))
+        trialLayoutValues[#trialLayoutValues + 1] = currentMembers
+    end
+    Dropdown("Trial Layout", "trialMembersPerColumn",
+        "Choose a layout for 12-player Trials. Each column fills with the listed number of members; the number of columns adjusts to your group size. Groups of 4 or fewer keep one column. Automatic preserves the original layout.",
+        trialLayoutChoices, trialLayoutValues)
     Slider("Opacity", "opacity", nil, 10, 100, 1)
 
     Header("Roster & Names")
@@ -2444,15 +2613,15 @@ function Settings:BuildGroupFramesOptions()
         { "By Role", "By Name", "By Level", "By Class" }, { "role", "name", "level", "class" })
     Dropdown("Display Name", "displayNameMode", "Choose which player name to show and use for name sorting.",
         { "@ID", "Character Name" }, { "displayName", "characterName" })
-    Description("Companions remain attached beneath their owner and do not participate in player sorting.")
 
     Header("Identity & Status Icons")
     Checkbox("Show Class Icon", "showClassIcon", nil)
     Checkbox("Show Role Icon", "showRoleIcon", "Show each player's chosen group role. It may not match their current build.")
+    Slider("Class Icon Size", "classIconSize", "Set the class icon size in pixels.", 10, 28, 1)
+    Slider("Role Icon Size", "roleIconSize", "Set the role icon size in pixels.", 10, 28, 1)
     Checkbox("Show Group Leader Icon", "showLeaderIcon", nil)
     Checkbox("Show Friend Icon", "showFriendIcon", nil)
     Checkbox("Show Shared Guild Icon", "showGuildIcon", nil)
-    Description("Ready-check votes and target markers are always retained as core group status information.")
 
     Header("Health & Colors")
     Dropdown("Health Display", "healthTextMode", nil,
@@ -2491,6 +2660,7 @@ function Settings:BuildGroupFramesOptions()
     end)
 
     Header("Bar Appearance")
+    Checkbox("NirnSteel Iron Borders", "rpgBorder")
     Checkbox("Gloss", "glossEnabled", nil)
     Checkbox("Bar Pattern", "patternEnabled", nil)
     Dropdown("Pattern", "patternKey", nil,
@@ -2502,7 +2672,6 @@ function Settings:BuildGroupFramesOptions()
     Slider("Pattern Scale", "patternScale", nil, 24, 256, 4,
         function() return Disabled() or self:GetGroupFrames().patternEnabled ~= true end)
     Slider("Black Border Width", "borderWidth", nil, 0, 8, 1)
-    Slider("Corner Rounding", "cornerSize", "Round the frame corners. ESO's fills may still look square.", 0, 12, 1)
     Slider("Inner Shadow", "innerShadowAlpha", nil, 0, 100, 1)
     Slider("Outer Shadow", "outerShadowAlpha", nil, 0, 100, 1)
     Dropdown("Text Font", "textFontKey", nil,
@@ -2551,7 +2720,9 @@ function Settings:BuildGroupFramesOptions()
 
     Header("Level Text")
     Checkbox("Show Level", "showLevel", "Show each character's level or earned Champion Points.")
-    Checkbox("Level Style", "showLevelStyle", "Add tier colors and special effects at CP 2000+. Turn it off for plain white level text.",
+    Slider("Level Text Size", "levelTextSize", "Set the level and Champion Point text size in pixels.", 10, 17, 1,
+        function() return Disabled() or self:GetGroupFrames().showLevel == false end)
+    Checkbox("Level Style", "showLevelStyle", "Add tier colors and special effects at CP 1800+. Turn it off for plain white level text.",
         function() return Disabled() or self:GetGroupFrames().showLevel == false end)
 
     return controls
@@ -2727,6 +2898,7 @@ function Settings:BuildTargetFrameOptions()
     end)
 
     Header("Bar Appearance")
+    Checkbox("NirnSteel Iron Borders", "rpgBorder")
     Checkbox("Gloss", "glossEnabled")
     Checkbox("Fill Pattern", "barPatternEnabled")
     Dropdown("Fill Pattern Type", "barPatternKey", nil,
@@ -2738,7 +2910,6 @@ function Settings:BuildTargetFrameOptions()
     Slider("Fill Pattern Scale", "barPatternScale", nil, 24, 512, 4,
         function() return Disabled() or self:GetTargetFrame().barPatternEnabled ~= true end)
     Slider("Black Border Width", "borderWidth", nil, 0, 8, 1)
-    Slider("Corner Rounding", "cornerSize", "Round the frame corners. ESO's fills may still look square.", 0, 12, 1)
     Slider("Inner Shadow", "innerShadowAlpha", nil, 0, 100, 1)
     Slider("Outer Shadow", "outerShadowAlpha", nil, 0, 100, 1)
 
@@ -2807,9 +2978,24 @@ function Settings:BuildTargetFrameOptions()
         width = "half",
     })
 
+    Header("Boss Appearance")
+    Checkbox("Boss decoration", "bossDecoration", "Add silver steel end caps and a winged skull crest to recognized boss targets.")
+    Add(
+    {
+        type = "checkbox",
+        name = "Preview boss",
+        tooltip = "Show a boss while this settings section is open. This preview is not saved.",
+        getFunc = function() return Nirnsteel_UI.TargetFrame and Nirnsteel_UI.TargetFrame.previewBoss == true end,
+        setFunc = function(value)
+            if Nirnsteel_UI.TargetFrame then Nirnsteel_UI.TargetFrame:SetBossPreview(value) end
+        end,
+        disabled = Disabled,
+        width = "half",
+    })
+
     Header("Level Text")
     Checkbox("Show Level", "showLevel", "Show the target's level or effective Champion Points.")
-    Checkbox("Level Style", "showLevelStyle", "Add tier colors and special effects at CP 2000+. Turn it off for plain white level text.",
+    Checkbox("Level Style", "showLevelStyle", "Add tier colors and special effects at CP 1800+. Turn it off for plain white level text.",
         function() return Disabled() or self:GetTargetFrame().showLevel == false end)
 
     return controls
@@ -2867,6 +3053,13 @@ function Settings:BuildMinimapControls()
     end
     Add("checkbox", "Frame Shadow", "shadow")
     Add("checkbox", "Location Name", "showLocation")
+    Add("dropdown", "Location Name Position", "locationNamePosition", {
+        choices = { "Top", "Bottom" }, choicesValues = { "top", "bottom" },
+        disabled = function() return not self:GetMinimap().showLocation end,
+    })
+    Slider("Zone Text Size", "zoneTextSize", 10, 32, 1, {
+        tooltip = "Set the minimap zone name text size in pixels.",
+    })
     Add("checkbox", "Cardinal Directions", "showCardinals")
     Add("checkbox", "Player Coordinates", "showCoordinates", { tooltip = "Show normalized map coordinates as percentages, not world distances." })
     Header("Navigation")
@@ -2923,7 +3116,6 @@ function Settings:RegisterAddonMenu()
         name = ADDON_DISPLAY_NAME,
         displayName = ADDON_DISPLAY_NAME,
         author = "Wrynch",
-        version = "2.1.0",
         registerForRefresh = true,
         registerForDefaults = true,
     }
@@ -2936,9 +3128,32 @@ function Settings:RegisterAddonMenu()
         },
         {
             type = "submenu",
+            name = "Quest Tracker",
+            controls = self:GetQuestTrackerOptions(),
+        },
+        {
+            type = "submenu",
+            name = "Werewolf Rage",
+            controls = self:GetWerewolfRageOptions(),
+        },
+        {
+            type = "submenu",
+            name = "Achievement Alert",
+            controls = self:GetAchievementAlertOptions(),
+        },
+        {
+            type = "submenu",
             name = "Misc",
             controls =
             {
+                {
+                    type = "checkbox",
+                    name = "Immersive Teleport",
+                    tooltip = "Hide the UI and use the character panel camera with Left Composition during teleport animations. Restore the normal camera and UI when travel completes or is canceled.",
+                    getFunc = function() return self:IsImmersiveTeleportEnabled() end,
+                    setFunc = function(value) self:SetImmersiveTeleportEnabled(value) end,
+                    default = ACCOUNT_DEFAULTS.modules.immersiveTeleport.enabled,
+                },
                 { type = "header", name = "Synergy Alert" },
                 {
                     type = "checkbox",
@@ -3023,6 +3238,15 @@ function Settings:RegisterAddonMenu()
                     getFunc = function() return self:IsLootHistoryEnabled() end,
                     setFunc = function(value) self:SetLootHistoryEnabled(value) end,
                     default = ACCOUNT_DEFAULTS.modules.lootHistory.enabled,
+                },
+                {
+                    type = "checkbox",
+                    name = "Legacy Style",
+                    tooltip = "Use Nirnsteel's original loot history appearance, before the ornamental shield design. Applies to new loot entries.",
+                    getFunc = function() return self:GetLootHistory().legacyStyle == true end,
+                    setFunc = function(value) self:SetLootHistoryValue("legacyStyle", value) end,
+                    disabled = function() return not self:IsLootHistoryEnabled() end,
+                    default = ACCOUNT_DEFAULTS.modules.lootHistory.legacyStyle,
                 },
                 {
                     type = "checkbox",
@@ -3230,7 +3454,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "slider",
                     name = "Critical Font Size",
-                    min = 48,
+                    min = 24,
                     max = 128,
                     step = 1,
                     getFunc = function() return self:GetDamageNumbers().critFontSize end,
@@ -4058,6 +4282,19 @@ function Settings:RegisterAddonMenu()
                     default = ACCOUNT_DEFAULTS.modules.actionBarFrames.enabled,
                 },
                 {
+                    type = "dropdown",
+                    name = "Frame Style",
+                    choices = { "NirnSteel", "Original", "None" },
+                    choicesValues = { "rpg", "original", "none" },
+                    getFunc = function() return self:GetActionBarFrames().frameStyle or "rpg" end,
+                    setFunc = function(value)
+                        self:GetActionBarFrames().frameStyle = value
+                        if Nirnsteel_UI.ActionBarFrames then Nirnsteel_UI.ActionBarFrames:RefreshSettings() end
+                    end,
+                    disabled = function() return not self:IsActionBarFramesEnabled() end,
+                    default = ACCOUNT_DEFAULTS.modules.actionBarFrames.frameStyle,
+                },
+                {
                     type = "checkbox",
                     name = "Shrink Used Skills",
                     getFunc = function() return self:IsActionBarSkillUseShrinkEnabled() end,
@@ -4304,7 +4541,7 @@ function Settings:RegisterAddonMenu()
                 {
                     type = "checkbox",
                     name = "Enable Compass Frame",
-                    tooltip = "Give ESO's compass a darker Nirnsteel frame.",
+                    tooltip = "Frame the native compass with silver rails, forged steel end pieces, a center bearing marker, and antique direction lettering.",
                     getFunc = function() return self:IsCompassEnabled() end,
                     setFunc = function(value) self:SetCompassEnabled(value) end,
                     default = ACCOUNT_DEFAULTS.modules.compass.enabled,
@@ -4587,6 +4824,26 @@ function Settings:RegisterAddonMenu()
                     default = ACCOUNT_DEFAULTS.modules.resourceBars.unlocked,
                 },
                 {
+                    type = "dropdown",
+                    name = "Layout",
+                    tooltip = "Pyramid: health above magicka and stamina. Linear: magicka, health, stamina in one row. Stacked: health, magicka, stamina from top to bottom.",
+                    choices = { "Pyramid", "Linear", "Stacked" },
+                    choicesValues = { "pyramid", "linear", "stacked" },
+                    getFunc = function() return self:GetResourceBars().layout end,
+                    setFunc = function(value) self:SetResourceBarsValue("layout", value) end,
+                    disabled = function() return not self:IsResourceBarsEnabled() end,
+                    default = ACCOUNT_DEFAULTS.modules.resourceBars.layout,
+                },
+                {
+                    type = "checkbox",
+                    name = "Attach Mount Stamina",
+                    tooltip = "Attach ESO's mount stamina bar below the character's stamina bar in any layout. The mount bar keeps its normal appearance and mounted visibility.",
+                    getFunc = function() return self:GetResourceBars().attachMountStamina end,
+                    setFunc = function(value) self:SetResourceBarsValue("attachMountStamina", value) end,
+                    disabled = function() return not self:IsResourceBarsEnabled() end,
+                    default = ACCOUNT_DEFAULTS.modules.resourceBars.attachMountStamina,
+                },
+                {
                     type = "slider",
                     name = "Scale",
                     min = 70,
@@ -4673,6 +4930,13 @@ function Settings:RegisterAddonMenu()
                     setFunc = function(value) self:SetResourceBarsValue("opacity", value) end,
                     disabled = function() return not self:IsResourceBarsEnabled() end,
                     default = ACCOUNT_DEFAULTS.modules.resourceBars.opacity,
+                },
+                {
+                    type = "checkbox",
+                    name = "NirnSteel Iron Borders",
+                    getFunc = function() return self:GetResourceBars().rpgBorder == true end,
+                    setFunc = function(value) self:SetResourceBarsValue("rpgBorder", value) end,
+                    default = ACCOUNT_DEFAULTS.modules.resourceBars.rpgBorder,
                 },
                 {
                     type = "checkbox",
@@ -4816,18 +5080,6 @@ function Settings:RegisterAddonMenu()
                     setFunc = function(value) self:SetResourceBarsValue("borderWidth", value) end,
                     disabled = function() return not self:IsResourceBarsEnabled() end,
                     default = ACCOUNT_DEFAULTS.modules.resourceBars.borderWidth,
-                },
-                {
-                    type = "slider",
-                    name = "Corner Rounding",
-                    tooltip = "Round the frame corners. ESO's fills may still look square.",
-                    min = 0,
-                    max = 12,
-                    step = 1,
-                    getFunc = function() return self:GetResourceBars().cornerSize end,
-                    setFunc = function(value) self:SetResourceBarsValue("cornerSize", value) end,
-                    disabled = function() return not self:IsResourceBarsEnabled() end,
-                    default = ACCOUNT_DEFAULTS.modules.resourceBars.cornerSize,
                 },
                 {
                     type = "slider",

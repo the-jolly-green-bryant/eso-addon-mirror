@@ -689,7 +689,7 @@ function ExperienceTracker:AnchorRankLabel(label, verticalOffset)
     label:ClearAnchors()
     label:SetDimensions(root.rankLabelWidth or root.badge:GetWidth(), root.rankLabelHeight or root.badge:GetHeight())
     if root.rankHasIcon then
-        label:SetAnchor(TOP, root.badge, TOP, 0, 1 + verticalOffset)
+        label:SetAnchor(RIGHT, root.badge, RIGHT, -6, verticalOffset)
     else
         label:SetAnchor(CENTER, root.badge, CENTER, 0, verticalOffset)
     end
@@ -706,16 +706,17 @@ function ExperienceTracker:ApplyLayout()
     local mode = self.currentMode or "xp"
     local levelText = self.currentLevelText or "45"
     local badgeSize = math.max(40, height - 12)
-    local badgeWidth = math.max(badgeSize, GetLevelTextWidthHint(levelText) + 12)
+    local iconSize = 14
+    local rankHasIcon = mode == "cp" and ShouldShowChampionIcon()
+    local iconSpace = rankHasIcon and (iconSize + 6) or 0
+    local badgeWidth = math.max(badgeSize, GetLevelTextWidthHint(levelText) + 12 + iconSpace)
     local contentX = pad + badgeWidth + math.max(11, math.floor(height * 0.18))
     local contentWidth = math.max(150, width - contentX - pad)
     local headerHeight = 16
     local barHeight = math.max(9, math.floor(height * 0.18))
     local contentTop = math.floor((height - headerHeight - barHeight - 18) * 0.5)
     local barTop = contentTop + headerHeight + 4
-    local iconSize = 14
     local hideBackground = ShouldHideBackground()
-    local rankHasIcon = mode == "cp" and ShouldShowChampionIcon()
 
     root:SetDimensions(width, height)
     root:SetScale(scale)
@@ -759,8 +760,8 @@ function ExperienceTracker:ApplyLayout()
     root.divider:SetAnchor(LEFT, root, LEFT, contentX - 6, 0)
     root.divider:SetHidden(hideBackground)
 
-    root.rankLabelWidth = badgeWidth
-    root.rankLabelHeight = rankHasIcon and math.max(24, badgeSize - iconSize + 1) or badgeSize
+    root.rankLabelWidth = rankHasIcon and (badgeWidth - iconSpace - 12) or badgeWidth
+    root.rankLabelHeight = badgeSize
     root.rankHasIcon = rankHasIcon
     self:AnchorRankLabel(root.levelLabel, 0)
     root.levelLabel:SetFont(string.format("$(BOLD_FONT)|%d|soft-shadow-thin", GetLevelFontSize(levelText, mode)))
@@ -773,7 +774,7 @@ function ExperienceTracker:ApplyLayout()
 
     root.icon:ClearAnchors()
     root.icon:SetDimensions(iconSize, iconSize)
-    root.icon:SetAnchor(BOTTOM, root.badge, BOTTOM, 0, -3)
+    root.icon:SetAnchor(LEFT, root.badge, LEFT, 6, 0)
 
     root.progressLabel:ClearAnchors()
     root.progressLabel:SetDimensions(contentWidth, 13)

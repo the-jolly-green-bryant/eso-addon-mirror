@@ -18,18 +18,12 @@
     "ArcanistMasteryTracker"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4823/",
-  "fingerprint": "fc6bd086d709711bb0628f9fd003642a02fe01cd7a703225dd22a1da19c34b38",
+  "fingerprint": "d0fed7a9f2923265a6ca9b2e5df59ddca19c2cef3dc0e1d5f705ced600479742",
   "images": [
-    "https://cdn-eso.mmoui.com/preview/pvw17329.png",
-    "https://cdn-eso.mmoui.com/preview/pvw17330.png",
-    "https://cdn-eso.mmoui.com/preview/pvw17331.png",
-    "https://cdn-eso.mmoui.com/preview/pvw17332.png",
-    "https://cdn-eso.mmoui.com/preview/pvw17333.png",
-    "https://cdn-eso.mmoui.com/preview/pvw17324.png",
-    "https://cdn-eso.mmoui.com/preview/pvw17325.png",
-    "https://cdn-eso.mmoui.com/preview/pvw17326.png",
-    "https://cdn-eso.mmoui.com/preview/pvw17327.png",
-    "https://cdn-eso.mmoui.com/preview/pvw17328.png"
+    "https://cdn-eso.mmoui.com/preview/pvw17387.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17388.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17389.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17390.png"
   ],
   "platform": "pc",
   "published": true,
@@ -37,11 +31,11 @@
   "source_id": "4823",
   "source_url": "https://www.esoui.com/downloads/info4823-ArcanistMasteryTracker.html",
   "stats": {
-    "downloads": 22,
+    "downloads": 48,
     "favorites": 0,
-    "monthly_downloads": 19
+    "monthly_downloads": 46
   },
   "title": "Arcanist Mastery Tracker",
-  "updated_at": 1789105542000,
-  "version": "1.3.0"
+  "updated_at": 1789582802000,
+  "version": "1.4"
 }

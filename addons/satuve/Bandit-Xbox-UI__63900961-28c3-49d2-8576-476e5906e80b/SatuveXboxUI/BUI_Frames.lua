@@ -1028,9 +1028,10 @@ function BUI.Frames:Initialize()
 	-- Xbox-PC: refresh player resources in real time instead of relying only on slower events.
 	-- This keeps health, magicka, stamina, shield and trauma nearly instant.
 	EVENT_MANAGER:UnregisterForUpdate("SXUI_PlayerRealtime")
-	EVENT_MANAGER:RegisterForUpdate("SXUI_PlayerRealtime",50,function()
+	EVENT_MANAGER:RegisterForUpdate("SXUI_PlayerRealtime",100,function()
 		if not BUI or not BUI.init or not BUI.init.Frames then return end
 		if not BUI.Vars or not BUI.Vars.PlayerFrame then return end
+		if type(IsPlayerActivated)=="function" and not IsPlayerActivated() then return end
 		BUI.Player:UpdateAttribute('player', POWERTYPE_HEALTH, nil, nil, nil)
 		BUI.Player:UpdateAttribute('player', POWERTYPE_MAGICKA, nil, nil, nil)
 		BUI.Player:UpdateAttribute('player', POWERTYPE_STAMINA, nil, nil, nil)

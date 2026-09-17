@@ -494,11 +494,23 @@ function BUI.Frames.ZO_Frame_reposition()
 		end
 	end
 
-	local block={ZO_CompassFrame_Keyboard_Template=true,ZO_CompassFrame_Gamepad_Template=true,ZO_PlayerProgressTemplate=true,ZO_PlayerChampionProgressTemplate=true,ZO_GamepadPlayerProgressTemplate=true,ZO_GamepadPlayerChampionProgressTemplate=true}	--ZO_ActionButton_Keyboard_Template=true
+	local protectedTemplateControls={
+		ZO_CompassFrame_Keyboard_Template="ZO_CompassFrame",
+		ZO_CompassFrame_Gamepad_Template="ZO_CompassFrame",
+		ZO_PlayerProgressTemplate="ZO_PlayerProgress",
+		ZO_PlayerChampionProgressTemplate="ZO_PlayerProgress",
+		ZO_GamepadPlayerProgressTemplate="ZO_PlayerProgress",
+		ZO_GamepadPlayerChampionProgressTemplate="ZO_PlayerProgress",
+	}
 	if not hookState.applyTemplateInstalled then
 		hookState.applyTemplateInstalled=true
 		local ZO_ApplyTemplateToControl=ApplyTemplateToControl
-		ApplyTemplateToControl=function(control, templateName) if block[templateName] then return else ZO_ApplyTemplateToControl(control,templateName) end end
+		ApplyTemplateToControl=function(control, templateName)
+			local controlName=protectedTemplateControls[templateName]
+			local ownsPosition=controlName and BUI.Vars and BUI.Vars[controlName]
+			if ownsPosition and control==rawget(_G,controlName) then return end
+			return ZO_ApplyTemplateToControl(control,templateName)
+		end
 	end
 	for name in pairs(BUI.DefaultFrames) do
 		local var=BUI.Vars[name]
@@ -525,7 +537,7 @@ function BUI.Frames.ZO_Frame_reposition()
 			if BUI.Vars[name] then
 				ZO_ActionBar1:ClearAnchors() ZO_ActionBar1:SetAnchor(BUI.Vars[name][1],GuiRoot,BUI.Vars[name][2],BUI.Vars[name][3],BUI.Vars[name][4])
 			end
-			ZO_ActionBar1KeybindBG:SetHidden(true)
+			if ZO_ActionBar1KeybindBG then ZO_ActionBar1KeybindBG:SetHidden(true) end
 		end)
 	end
 end
@@ -533,7 +545,7 @@ end
 function BUI.Themes_Initialize()		
 	BUI.abilityframe=BUI.Vars.Theme<=3 and "/esoui/art/actionbar/abilityframe64_up.dds" or "/SatuveXboxUI/textures/theme/abilityframe64_up.dds"
 	--Hide keybinds background
-	ZO_ActionBar1KeybindBG:SetHidden(true)
+	if ZO_ActionBar1KeybindBG then ZO_ActionBar1KeybindBG:SetHidden(true) end
 	--Change default frames
 	BUI.Frames.ZO_PlayerAttribute_toggle()
 	if BUI.Vars.RepositionFrames then BUI.Frames.ZO_PlayerAttribute_reposition() end

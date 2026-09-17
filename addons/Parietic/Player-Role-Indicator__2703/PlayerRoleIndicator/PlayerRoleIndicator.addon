@@ -5,30 +5,43 @@
 ## Title: Player role indicator
 ## Description: A simple addon that adds role indicators above grouped players and notifies grouped player deaths + resurrections.
 ## Author: Parietic, Glande-Pas
-## APIVersion: 101049
-## AddOnVersion: 132
-## Version: 1.3.2
-## DependsOn: LibAddonMenu-2.0>=41 LibCustomMenu>=730
+## APIVersion: 101050
+## AddOnVersion: 140
+## Version: 1.4.0.27
+## DependsOn: LibAddonMenu-2.0>=43 LibCustomMenu>=730
 ## SavedVariables: PlayerRoleIndicatorVars
 
-Matrix.lua
 Menu.lua
 Main.lua
 PlayerRoleIndicator.xml
 
 ##Change log:
+##Version 1.4.0:
+##- Rewrote Icon placement using native 3D render-space API to improve performance
+##- Icons and notifications created on demand (control pool) to lighten load time work
+##- Reduced polling: role, death and debuff state now event-driven and cached
+##- Added new option to see the icons scale down with distance
+##- Public API: `PlayerRoleIndicator.GetRole(unitTag)`
+##	- Returns a snapshot table describing the role currently assigned/displayed for unitTag:
+##    `{ name, show, showOnAlive, icon = { texturePath, iconSizeMultiplier, colourAlive, colourDead } }`
+##	- icon.texturePath/iconSizeMultiplier/colourAlive/colourDead describe the icon this addon would draw for that role.
+##	- The 'sv' field on the returned table is a deprecated alias for 'icon'; use 'icon' going forward.
+##
+##Version 1.3.2:
+##- Bugfix: Reducing globals pollution should not cause crashing
+##
 ##Version 1.3.1:
-##- Public API: PlayerRoleIndicator.AddCustomRoleMenuItems(accountName, addItemFunc, onChangedFunc)
+##- Public API: `PlayerRoleIndicator.AddCustomRoleMenuItems(accountName, addItemFunc, onChangedFunc)`
 ##	- Allows other addons to inject custom role "Add to / Remove from" items into any right-click menu.
-##	- accountName: the player's @AccountName (as returned by GetUnitDisplayName).
-##	- addItemFunc(label, callback): function used to add each menu item; defaults to AddMenuItem.
+##	- accountName: the player's @AccountName (as returned by `GetUnitDisplayName()`).
+##	- `addItemFunc(label, callback)`: function used to add each menu item; defaults to AddMenuItem.
 ##	  Pass AddCustomMenuItem (LibCustomMenu) for context menus built with that library.
 ##	- onChangedFunc(): optional callback invoked after each role assignment change.
-##- Public API: PlayerRoleIndicator.EVENT.CUSTOM_ROLE_CHANGED
+##- Public API: `PlayerRoleIndicator.EVENT.CUSTOM_ROLE_CHANGED`
 ##	- CALLBACK_MANAGER event string fired whenever custom role assignments change.
-##	- Subscribe with: CALLBACK_MANAGER:RegisterCallback(PlayerRoleIndicator.EVENT.CUSTOM_ROLE_CHANGED, func)
+##	- Subscribe with: `CALLBACK_MANAGER:RegisterCallback(PlayerRoleIndicator.EVENT.CUSTOM_ROLE_CHANGED, func)`
 ##	- Fired in addition to the onChangedFunc parameter of AddCustomRoleMenuItems.
-##	- Signature: func(accountName)
+##	- Signature: `func(accountName)`
 ##	  - accountName: the @AccountName of the affected player, or nil when a bulk
 ##	    change was made through the settings panel (e.g. "Clear players", "Forget deleted roles").
 ##- Avoid requiring reload UI on settings changes
@@ -40,7 +53,7 @@ PlayerRoleIndicator.xml
 ##- Massively increase available icons for custom roles
 ##
 ##Version 1.2.1:
-##- Using new API function GetUnitRawWorldPosition(string unitTag), should fix addon not working in some areas
+##- Using new API function `GetUnitRawWorldPosition(string unitTag)`, should fix addon not working in some areas
 ##
 ##Version 1.2.0:
 ##- New dependency, LibCustomMenu.
@@ -50,7 +63,7 @@ PlayerRoleIndicator.xml
 ##	- Colour, show dead/resection and icon used come from settings of each respective role.
 ##	- Duration, location and size can be customized.
 ##	- Notifications can be turned off.
-##-Added custom roles.
+##- Added custom roles.
 ##	- Name can be customized.
 ##	- Has same setting options as other roles.
 ##	- To add players to said custom role you can right click players in the group menu.
@@ -58,10 +71,10 @@ PlayerRoleIndicator.xml
 ##- Minor bug fixes
 ##
 ##Version 1.1.6:
-##-Minor bug fixes.
+##- Minor bug fixes.
 ##
 ##Version 1.1.5:
-##-Major improvements to icon positioning. Different FOV/Resolution/UI scaling/Aspect ratio should no longer cause issues.
+##- Major improvements to icon positioning. Different FOV/Resolution/UI scaling/Aspect ratio should no longer cause issues.
 ##
 ##Version 1.1.4:
 ##- Minor bug fixes.

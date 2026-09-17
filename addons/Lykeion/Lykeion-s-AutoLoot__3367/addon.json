@@ -18,7 +18,7 @@
     "MuchSmarterAutoLoot"
   ],
   "download_url": "https://www.esoui.com/downloads/dl3367/",
-  "fingerprint": "10d7e19f95044f77272074310fdf9ec9263cc832ffc879264a9e2b4e13923e23",
+  "fingerprint": "141a9f3d6b874df6a5f1991ba61a2bb0af38468173d253dd07ebc083f6061b5c",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16269.png",
     "https://cdn-eso.mmoui.com/preview/pvw16266.png",
@@ -34,11 +34,11 @@
   "source_id": "3367",
   "source_url": "https://www.esoui.com/downloads/info3367-LykeionsAutoLoot.html",
   "stats": {
-    "downloads": 184978,
+    "downloads": 185896,
     "favorites": 98,
-    "monthly_downloads": 1376
+    "monthly_downloads": 1115
   },
   "title": "Lykeion's AutoLoot+",
-  "updated_at": 1787505944000,
-  "version": "8.2.0"
+  "updated_at": 1789599227000,
+  "version": "8.3.0"
 }

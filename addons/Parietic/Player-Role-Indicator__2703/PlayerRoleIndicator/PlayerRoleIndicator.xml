@@ -4,5 +4,7 @@
 		 <Anchor point="CENTER"  relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
 		 <OnInitialized>self:SetDimensions(GuiRoot:GetWidth(),GuiRoot:GetHeight())</OnInitialized>
       </TopLevelControl>
+
+      <Texture name="PlayerRoleIndicatorIconTemplate" virtual="true" hidden="true"/>
    </Controls>
 </GuiXml>

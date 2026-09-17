@@ -8,12 +8,12 @@
   "category_id": "162",
   "compatibility": [
     {
-      "name": "Season Zero Pt.2",
-      "version": "12.0.0"
+      "name": "Season One",
+      "version": "12.1.0"
     },
     {
-      "name": "Season Zero",
-      "version": "11.3.0"
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
     }
   ],
   "content_id": "esoui:4797",
@@ -22,10 +22,10 @@
     "MuffinsUtilityTree"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4797/",
-  "fingerprint": "b9eda2faa9c079a0539ff4d91b6bca9665b4d17685e463a4302c2383208e2fcf",
+  "fingerprint": "715421eb3a977ce29ba52ccdf3d6cc4fa75aff5e44ce5f96dcbf3fcfcba24f02",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw17149.png",
-    "https://cdn-eso.mmoui.com/preview/pvw17150.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17396.png",
     "https://cdn-eso.mmoui.com/preview/pvw17151.png"
   ],
   "platform": "pc",
@@ -34,11 +34,11 @@
   "source_id": "4797",
   "source_url": "https://www.esoui.com/downloads/info4797-MuffinsUtilityTree.html",
   "stats": {
-    "downloads": 20,
+    "downloads": 97,
     "favorites": 0,
-    "monthly_downloads": 0
+    "monthly_downloads": 92
   },
   "title": "Muffin's Utility Tree",
-  "updated_at": 1787799458000,
-  "version": "1.0"
+  "updated_at": 1789601110000,
+  "version": "1.1"
 }

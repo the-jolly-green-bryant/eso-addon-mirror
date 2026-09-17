@@ -10,7 +10,7 @@ local PI, TAU = math.pi, math.pi * 2
 local UPDATE_MS, MAP_CHECK_MS = 33, 1000
 local INSET, HEADER, FOOTER = 14, 30, 28
 local ICONS = {
-    player = "EsoUI/Art/MapPins/UI-WorldMapPlayerPip_white.dds",
+    player = "EsoUI/Art/MapPins/UI-WorldMapPlayerPip.dds",
     group = "EsoUI/Art/MapPins/UI-WorldMapGroupPip.dds",
     leader = "EsoUI/Art/Compass/groupLeader.dds",
     waypoint = "EsoUI/Art/MapPins/UI_Worldmap_pin_customDestination_white.dds",
@@ -19,6 +19,7 @@ local ICONS = {
 }
 local RECT = { {0, 0}, {1, 0}, {1, 1}, {0, 1} }
 local ARROW = { {0.5, 0}, {1, 1}, {0, 1} }
+local WAYPOINT_ARROW = { {0.5, 0}, {1, 1}, {0.5, 0.73}, {0, 1} }
 local CIRCLE = {}
 for i = 0, 95 do
     local a = i * TAU / 96
@@ -36,6 +37,14 @@ local function ValidPoint(x, y)
     return Finite(x) and Finite(y) and x >= 0 and x <= 1 and y >= 0 and y <= 1
 end
 local function Color(c, a) return c.r, c.g, c.b, a or 1 end
+local function WaypointColor()
+    -- Use the world map's blue, including the user's accessibility override.
+    local layout = ZO_MapPin and ZO_MapPin.PIN_DATA and ZO_MapPin.PIN_DATA[MAP_PIN_TYPE_PLAYER_WAYPOINT]
+    local tint = layout and layout.tint
+    if type(tint) == "function" then tint = tint() end
+    if tint and tint.UnpackRGBA then return tint:UnpackRGBA() end
+    return 0.38, 0.78, 0.90, 1
+end
 local function CleanName(name) return zo_strformat("<<1>>", name or "") end
 
 -- Screen-space angles are clockwise; ESO camera/texture headings are counterclockwise.
@@ -188,8 +197,13 @@ function Minimap:CreateView()
     self.status = Label(self.viewport, "Map unavailable", 14, 45)
     self.player = Control(self.pins, CT_TEXTURE, 25)
     self.player:SetTexture(ICONS.player)
-    self.player:SetColor(0.96, 0.98, 1, 1)
-    self.waypointArrow = Polygon(self.pins, ARROW, 23)
+    self.player:SetColor(1, 1, 1, 1)
+    self.waypointArrow = Polygon(self.pins, WAYPOINT_ARROW, 23)
+    self.waypointArrow:SetCenterColor(0.64, 0.72, 0.77, 1)
+    self.waypointArrow:SetBorderColor(0.025, 0.035, 0.047, 1)
+    self.waypointArrow:SetBorderThickness(1.5, 0, 1)
+    self.waypointInset = Polygon(self.waypointArrow, WAYPOINT_ARROW, 24)
+    self.waypointInset:SetCenterColor(WaypointColor())
     self.waypointArrow:SetHidden(true)
     self.toolbar = Control(root, CT_CONTROL, 50)
     self.buttons = {}
@@ -250,12 +264,13 @@ function Minimap:NormalizeSettings()
     local s = Settings()
     local ranges = {
         diameter = {180, 500, 280}, width = {220, 600, 340}, height = {160, 500, 240}, questTrackerOffset = {0, 600, 0},
-        mapOpacity = {0, 100, 95}, frameOpacity = {0, 100, 100}, borderThickness = {1, 6, 2},
+        mapOpacity = {0, 100, 95}, frameOpacity = {0, 100, 100}, borderThickness = {1, 6, 2}, zoneTextSize = {10, 32, 14},
         zoom = {1, 12, 2.5}, markerScale = {75, 200, 100}, playerScale = {75, 175, 110}, combatOpacity = {0, 100, 40},
     }
     for key, range in pairs(ranges) do s[key] = Clamp(s[key], range[1], range[2], range[3]) end
     if s.shape ~= "rectangle" then s.shape = "circle" end
     if s.orientation ~= "rotating" then s.orientation = "north" end
+    if s.locationNamePosition ~= "bottom" then s.locationNamePosition = "top" end
     if s.questMode ~= "all" then s.questMode = "tracked" end
     if s.combatBehavior ~= "hide" and s.combatBehavior ~= "dim" then s.combatBehavior = "show" end
     for _, key in ipairs({ "borderColor", "accentColor" }) do
@@ -289,6 +304,8 @@ local function SameAnchors(a, b)
 end
 
 function Minimap:ApplyQuestTrackerOffset()
+    local tracker = Nirnsteel_UI.QuestTracker
+    if tracker and tracker:HasCustomPosition() then return end
     local panel = ZO_FocusedQuestTrackerPanel
     if not panel then return end
     local offset = Settings().enabled and Settings().questTrackerOffset or 0
@@ -348,15 +365,17 @@ function Minimap:Layout()
         f.bevel:SetBorderColor(Color(s.borderColor))
         f.inner:SetBorderColor(0.13, 0.19, 0.22, 1)
     end
-    Place(self.title, self.viewport, w + 16, 24, 0, -h / 2 - 22)
+    local titleY = s.locationNamePosition == "bottom" and h / 2 + 22 or -h / 2 - 22
+    Place(self.title, self.viewport, w + 16, 24, 0, titleY)
+    self.title:SetFont("$(BOLD_FONT)|" .. s.zoneTextSize .. "|soft-shadow-thick")
     Place(self.coordinates, self.viewport, w, 20, 0, h / 2 + 20)
     Place(self.status, self.viewport, w - 30, 40)
     Place(self.toolbar, self.viewport, 88, 24, 0, h / 2 + 20)
     self.title:SetHidden(not s.showLocation and not self.preview and not s.unlocked)
     self.coordinates:SetHidden(not s.showCoordinates)
-    Place(self.player, self.viewport, 22 * s.playerScale / 100, 22 * s.playerScale / 100)
+    Place(self.player, self.viewport, 16 * s.playerScale / 100, 16 * s.playerScale / 100)
     self.north:SetCenterColor(Color(s.accentColor))
-    self.waypointArrow:SetCenterColor(Color(s.accentColor))
+    self.waypointInset:SetCenterColor(WaypointColor())
     self:RefreshClip()
 end
 
@@ -378,9 +397,11 @@ function Minimap:RefreshClip()
     self:ClipControl(self.terrain)
     self:ClipControl(self.pins)
     for _, c in ipairs(self.tilePool) do self:ClipControl(c) end
+    for _, c in ipairs(self.digSitePool or {}) do self:ClipControl(c) end
     for _, pin in ipairs(self.pinPool) do self:ClipControl(pin.icon); self:ClipControl(pin.area) end
     self:ClipControl(self.player)
     self:ClipControl(self.waypointArrow)
+    self:ClipControl(self.waypointInset)
 end
 
 function Minimap:LayoutCompass()
@@ -415,6 +436,7 @@ function Minimap:InvalidateMap()
     self.mapReady, self.mapKey, self.angle = false, nil, nil
     self.available = false
     self.staticPins = {}
+    self.digSites = {}
     self.staticDirty, self.nextMapCheck = true, 0
     if self.root then
         self.terrain:SetHidden(true)
@@ -478,7 +500,83 @@ function Minimap:RefreshMap()
         self.mapKey, self.mapReady, self.staticDirty = key, true, true
         self.mapName = CleanName(GetMapName())
     end
+    self:RefreshDigSites()
     return true
+end
+
+-- Read the same map-space borders as the native world map, without borrowing
+-- its controls or requiring the world map to have been opened first.
+function Minimap:RefreshDigSites()
+    self.digSites = {}
+    if not GetNumInProgressAntiquities then return end
+    local seen = {}
+    for antiquity = 1, GetNumInProgressAntiquities() do
+        for site = 1, GetNumDigSitesForInProgressAntiquity(antiquity) do
+            local id = GetInProgressAntiquityDigSiteId(antiquity, site)
+            if not seen[id] then
+                seen[id] = true
+                local _, _, shown = GetDigSiteNormalizedCenterPosition(id)
+                if shown then
+                    local coordinates = { GetDigSiteNormalizedBorderPoints(id) }
+                    local points, minX, minY, maxX, maxY = {}, 1, 1, 0, 0
+                    local valid = #coordinates >= 6 and #coordinates % 2 == 0
+                    for i = 1, #coordinates, 2 do
+                        local x, y = coordinates[i], coordinates[i + 1]
+                        if not ValidPoint(x, y) then valid = false; break end
+                        points[#points + 1] = {x, y}
+                        minX, minY = math.min(minX, x), math.min(minY, y)
+                        maxX, maxY = math.max(maxX, x), math.max(maxY, y)
+                    end
+                    if valid and maxX > minX and maxY > minY then
+                        for _, p in ipairs(points) do
+                            p[1], p[2] = (p[1] - minX) / (maxX - minX), (p[2] - minY) / (maxY - minY)
+                        end
+                        self.digSites[#self.digSites + 1] = {
+                            points = points, x = (minX + maxX) / 2, y = (minY + maxY) / 2,
+                            width = maxX - minX, height = maxY - minY,
+                            tracked = IsDigSiteAssociatedWithTrackedAntiquity(id),
+                        }
+                    end
+                end
+            end
+        end
+    end
+end
+
+function Minimap:DrawDigSites()
+    self.digSitePool = self.digSitePool or {}
+    local count = 0
+    if not self.preview then
+        for i, site in ipairs(self.digSites or {}) do
+            local polygon = self.digSitePool[i]
+            if not polygon then
+                polygon = Polygon(self.pins, {}, 9)
+                polygon:SetBorderThickness(1.25, 1.25, 1)
+                self.digSitePool[i] = polygon
+            end
+            if polygon.digSitePointCount ~= #site.points then
+                polygon:ClearPoints()
+                for _, p in ipairs(site.points) do polygon:AddPoint(p[1], p[2]) end
+                polygon.digSitePointCount = #site.points
+            end
+            local x, y = self:Project(site.x, site.y)
+            PlaceRotatedPolygon(polygon, self.viewport, site.points,
+                site.width * self.span, site.height * self.span, x, y, self.angle)
+            local fill = site.tracked and ZO_MAP_PIN_TRACKED_DIG_SITE_COLOR or ZO_MAP_PIN_DIG_SITE_COLOR
+            -- Native color constants can be opaque; keep terrain readable on
+            -- our standalone polygon without fading its outline along with it.
+            local r, g, b = 0.3, 0.8, 0.9
+            if fill then r, g, b = fill:UnpackRGBA() end
+            polygon:SetCenterColor(r, g, b, site.tracked and 0.14 or 0.09)
+            r, g, b = 0.2, 0.9, 1
+            if ZO_MAP_PIN_DIG_SITE_BORDER_COLOR then r, g, b = ZO_MAP_PIN_DIG_SITE_BORDER_COLOR:UnpackRGBA() end
+            polygon:SetBorderColor(r, g, b, 0.85)
+            self:ClipControl(polygon)
+            polygon:SetHidden(false)
+            count = i
+        end
+    end
+    for i = count + 1, #self.digSitePool do self.digSitePool[i]:SetHidden(true) end
 end
 
 local function AddPin(list, kind, x, y, icon, name, radius, areaColor)
@@ -605,7 +703,7 @@ function Minimap:DrawPin(data, index)
         pin.icon:SetTexture(data.icon)
         if data.color then pin.icon:SetColor(unpack(data.color))
         elseif data.kind == "objective" or data.kind == "quest" then pin.icon:SetColor(1, 1, 1, 1)
-        elseif data.kind == "waypoint" then pin.icon:SetColor(Color(Settings().accentColor))
+        elseif data.kind == "waypoint" then pin.icon:SetColor(WaypointColor())
         elseif data.kind == "group" then pin.icon:SetColor(0.54, 0.83, 0.95, 1)
         else pin.icon:SetColor(0.94, 0.96, 0.95, 1) end
         pin.icon:SetDrawLevel(data.kind == "objective" and (data.aura and 23 or 24) or data.kind == "waypoint" and 23 or data.kind == "group" and 22 or data.kind == "quest" and 21 or 20)
@@ -613,8 +711,11 @@ function Minimap:DrawPin(data, index)
         pin.visible = true
     elseif data.kind == "waypoint" and Settings().waypointEdge then
         x, y = self:EdgePoint(x, y, size / 2 + 3)
-        PlaceRotatedPolygon(self.waypointArrow, self.viewport, ARROW, size * 0.7, size * 0.85,
+        PlaceRotatedPolygon(self.waypointArrow, self.viewport, WAYPOINT_ARROW, size * 0.8, size,
             x, y, math.atan2(y, x) + PI / 2)
+        PlaceRotatedPolygon(self.waypointInset, self.viewport, WAYPOINT_ARROW, size * 0.46, size * 0.66,
+            x, y, math.atan2(y, x) + PI / 2)
+        self.waypointInset:SetCenterColor(WaypointColor())
         self.waypointArrow:SetHidden(false)
         pin.x, pin.y, pin.visible, pin.edge = x, y, true, true
     end
@@ -662,6 +763,7 @@ function Minimap:DrawBattlegroundPins(index)
 end
 
 function Minimap:DrawPins()
+    self:DrawDigSites()
     local index = 1
     self.waypointArrow:SetHidden(true)
     for _, data in ipairs(self.staticPins) do index = self:DrawPin(data, index) end
@@ -727,7 +829,7 @@ function Minimap:Render(elapsed)
         tile:SetTextureRotation(-self.angle, 0.5, 0.5)
     end
     local playerX, playerY = self:Project(x, y)
-    Place(self.player, self.viewport, 22 * Settings().playerScale / 100, 22 * Settings().playerScale / 100, playerX, playerY)
+    Place(self.player, self.viewport, 16 * Settings().playerScale / 100, 16 * Settings().playerScale / 100, playerX, playerY)
     self.player:SetTextureRotation(heading - self.angle, 0.5, 0.5)
     self:DrawPins()
     self:LayoutCompass()

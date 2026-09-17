@@ -258,16 +258,15 @@ function PTI.Settings.Initialize()
             end,
         },
         {
-            -- v1.4.26で追加: シロディールでは味方プレイヤーもターゲットできて
-            -- しまうため、既定では①②(敵の重要バフ/デバフ)が味方に対しても
-            -- 反応していた。ONにすると敵プレイヤーだけに絞れる。
+            -- v1.4.26で追加、v1.4.36で一度撤去、v1.4.37で表示専用フィルタとして復活。
+            -- 検知・キャッシュ構築(RescanCurrentTargetEffects/OnReticleEffectChanged)
+            -- には一切関与せず、OnUpdate内で①②の表示可否だけを決める独立判定。
             type = "checkbox",
             name = "①②の対象を敵プレイヤーのみに限定する",
-            tooltip = "OFF(既定・従来通り)はプレイヤーなら味方でも①②が反応します。ONにすると、GetUnitReactionで敵対関係と判定された相手だけを対象にします(味方をターゲットしても反応しなくなります)。",
+            tooltip = "OFF(既定・従来通り)はプレイヤーなら味方でも①②が反応します。ONにすると、GetUnitReactionで敵対関係と判定された相手の時だけ①②を表示します(味方をターゲットしても表示されなくなります)。あくまで表示のON/OFFのみの設定で、BUFF/DEBUFFの検知・分類ロジックそのものには影響しません。",
             getFunc = function() return PTI.sv.targetEnemyOnly end,
             setFunc = function(value)
                 PTI.sv.targetEnemyOnly = value
-                if PTI.Target and PTI.Target.ForceRefresh then PTI.Target.ForceRefresh() end
             end,
         },
         {

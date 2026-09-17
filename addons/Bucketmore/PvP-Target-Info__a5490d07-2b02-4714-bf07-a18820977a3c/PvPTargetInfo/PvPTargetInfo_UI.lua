@@ -62,6 +62,13 @@ local TITLE_COLORS = {
 }
 
 PTI.UI.windows = PTI.UI.windows or {}
+-- v1.4.33で追加: UI③(Condition)は「実際に発動中のCondition/Procが
+-- 1件もない」状態がデフォルト。Procs.luaの最初のTickが動く前(ロード直後の
+-- 一瞬)や、万一Procsモジュールの初期化に失敗した場合でも空のパネルが
+-- 一瞬でも見えてしまわないよう、安全側の初期値としてtrueにしておく。
+if PTI.UI.hiddenByEmptyProc == nil then
+    PTI.UI.hiddenByEmptyProc = true
+end
 
 local function SVFor(key)
     return PTI.sv[SV_KEY[key]]
@@ -317,9 +324,11 @@ end
 
 -- key のウィンドウを、全体の有効設定・そのウィンドウ自身の有効設定・
 -- 現在のシーン(メニュー/マップが開いているか)だけで表示/非表示にする。
--- 中身(登録済みバフの有無等)は一切条件にしない — 空の時はTarget.lua/
--- Procs.lua側がヒント行を表示するため、パネル自体は常に見える
--- (ユーザーが位置を見失わないようにするため)。
+-- UI①(buff)・UI②(debuff)は中身(登録済みバフの有無等)を一切条件にしない
+-- — 空の時はTarget.lua側がヒント行を表示するため、パネル自体は常に
+-- 見える(ユーザーが位置を見失わないようにするため)。
+-- UI③(proc/Condition)だけは例外で、v1.4.33よりhiddenByEmptyProc
+-- (下記参照)によって中身の有無を表示条件にしている。
 --
 -- v1.4.9で修正: sv.previewMode(位置調整用のプレビュー表示)がONの間だけは、
 -- メニュー/マップが開いていても隠さない例外にした。これにより「設定画面を
@@ -332,10 +341,20 @@ function PTI.UI.SetWindowVisible(key)
     if not entry or not sv then return end
 
     local hiddenByScene = PTI.UI.hiddenByScene and not PTI.sv.previewMode
-    -- v1.4.32で追加: 非戦闘中はUI①②③を非表示にする設定(既存の
+    -- v1.4.32で追加: 非戦闘中はUI①②を非表示にする設定(既存の
     -- hiddenBySceneと同じ仕組みで、検知ロジックには一切触れない)。
-    local hiddenByCombat = PTI.UI.hiddenByCombat and not PTI.sv.previewMode
-    local shouldShow = PTI.sv.enabled and not hiddenByScene and not hiddenByCombat and sv.enabled ~= false
+    -- v1.4.33で修正: UI③(Condition)は戦闘中かどうかを表示条件にしない
+    -- (Condition自身の「今バフが実際に付与されているか」だけで判定する
+    -- ため)、この設定の対象から外す。
+    local hiddenByCombat = (key ~= "proc") and PTI.UI.hiddenByCombat and not PTI.sv.previewMode
+    -- v1.4.33で追加: UI③専用。登録したCondition/Procが実際に自分へ
+    -- 付与されている時だけ表示するため、Procs.lua側が「今表示すべき
+    -- 中身が1件もない」と判断した場合にこのフラグを立ててもらう。
+    -- previewMode中は従来の他フラグと同様にバイパスする(設定画面での
+    -- 位置調整用サンプル表示を優先するため)。
+    local hiddenByNoActiveCondition = (key == "proc") and PTI.UI.hiddenByEmptyProc and not PTI.sv.previewMode
+    local shouldShow = PTI.sv.enabled and not hiddenByScene and not hiddenByCombat
+        and not hiddenByNoActiveCondition and sv.enabled ~= false
     entry.window:SetHidden(not shouldShow)
 end
 

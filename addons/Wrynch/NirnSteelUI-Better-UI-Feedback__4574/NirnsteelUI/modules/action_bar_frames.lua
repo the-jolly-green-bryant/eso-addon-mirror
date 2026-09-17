@@ -29,6 +29,21 @@ local function IsGlobalCooldownEnabled()
     return Nirnsteel_UI.Settings and Nirnsteel_UI.Settings:IsActionBarGlobalCooldownEnabled()
 end
 
+local function GetFrameStyle()
+    local settings = Nirnsteel_UI.Settings
+    local style = settings and settings:GetActionBarFrames().frameStyle or "rpg"
+    return (style == "original" or style == "none") and style or "rpg"
+end
+
+local function GetStyledFrame(pressed)
+    local style = GetFrameStyle()
+    if style == "none" then return NO_TEXTURE end
+    if style == "rpg" then
+        return Nirnsteel_UI:GetAssetPath("ui/actionbar/nirnsteel_socket_v3_dxt5.dds")
+    end
+    return pressed and PRESSED_FRAME or NORMAL_FRAME
+end
+
 local function IsUltimateReady(button)
     if not button or not ZO_ActionBar_IsUltimateSlot(button:GetSlot(), button:GetHotbarCategory()) then
         return false
@@ -55,6 +70,16 @@ local function IsQuickslotConsumableOnCooldown(button)
 end
 
 local function GetOverlayTexture(button)
+    local style = GetFrameStyle()
+    if style == "none" then return nil end
+    if style == "rpg" then
+        -- Ultimate readiness has its own full-size frame and halo.
+        if ZO_ActionBar_IsUltimateSlot(button:GetSlot(), button:GetHotbarCategory()) then return nil end
+        if IsQuickslotConsumableOnCooldown(button) or IsUltimateReady(button) then
+            return Nirnsteel_UI:GetAssetPath("ui/actionbar/socket_glow_dxt5.dds")
+        end
+        return nil
+    end
     if IsQuickslotConsumableOnCooldown(button) then
         return TOGGLED_FRAME
     end
@@ -80,7 +105,7 @@ end
 
 local function GetSetupNormalFrame(normalFrame)
     if IsModuleEnabled() and IsStockActionFrame(normalFrame) then
-        return NORMAL_FRAME
+        return GetStyledFrame(false)
     end
 
     return normalFrame
@@ -89,11 +114,11 @@ end
 local function GetSetupPressedFrame(pressedFrame)
     if IsModuleEnabled() then
         if pressedFrame == STOCK_PRESSED_FRAME then
-            return PRESSED_FRAME
+            return GetStyledFrame(true)
         elseif pressedFrame == STOCK_NORMAL_FRAME then
-            return NORMAL_FRAME
+            return GetStyledFrame(false)
         elseif pressedFrame == NO_TEXTURE then
-            return PRESSED_FRAME
+            return GetStyledFrame(true)
         end
     end
 
@@ -164,16 +189,104 @@ function ActionBarFrames:ApplyGlobalCooldown(button)
     end
 end
 
+function ActionBarFrames:UpdateSkillFrame(button, enabled)
+    local frame = button.NirnsteelSkillFrame
+    if not enabled then
+        if frame then frame:SetHidden(true) end
+        return
+    end
+    if not frame then
+        frame = WINDOW_MANAGER:CreateControl(nil, button.slot, CT_TEXTURE)
+        frame:SetAnchor(CENTER, button.slot, CENTER, 0, 0)
+        frame:SetTexture(Nirnsteel_UI:GetAssetPath("ui/actionbar/nirnsteel_socket_v3_dxt5.dds"))
+        frame:SetMouseEnabled(false)
+        frame:SetDrawTier(DT_HIGH)
+        frame:SetDrawLayer(DL_OVERLAY)
+        frame:SetDrawLevel(4)
+        button.NirnsteelSkillFrame = frame
+    end
+    -- Draw the metal outside the 47px icon, instead of squeezing it into
+    -- the native 50px button texture. Slot positions and hit targets stay native.
+    local size = button.slot:GetWidth() + 4
+    frame:SetDimensions(size, size)
+    frame:SetHidden(false)
+end
+
+function ActionBarFrames:UpdateUltimateFrame(button, enabled)
+    local decoration = button.slot:GetNamedChild("Decoration")
+    if decoration then
+        if enabled then
+            if button.NirnsteelDecorationAlpha == nil then
+                button.NirnsteelDecorationAlpha = decoration:GetAlpha()
+            end
+            decoration:SetAlpha(0)
+        elseif button.NirnsteelDecorationAlpha ~= nil then
+            decoration:SetAlpha(button.NirnsteelDecorationAlpha)
+            button.NirnsteelDecorationAlpha = nil
+        end
+    end
+    local art = button.NirnsteelUltimateArt
+    if not enabled then
+        if art then
+            art.frame:SetHidden(true)
+            art.halo:SetHidden(true)
+            art.halo:SetHandler("OnUpdate", nil)
+            art.ready = false
+        end
+        return
+    end
+    if not art then
+        art = {}
+        for _, key in ipairs({ "halo", "frame" }) do
+            local texture = WINDOW_MANAGER:CreateControl(nil, button.slot, CT_TEXTURE)
+            texture:SetAnchor(CENTER, button.slot, CENTER, 0, 0)
+            texture:SetMouseEnabled(false)
+            texture:SetDrawTier(DT_HIGH)
+            texture:SetDrawLayer(DL_OVERLAY)
+            texture:SetDrawLevel(key == "halo" and 3 or 4)
+            art[key] = texture
+        end
+        art.halo:SetTexture(Nirnsteel_UI:GetAssetPath("ui/actionbar/ultimate_halo_v3_dxt5.dds"))
+        button.NirnsteelUltimateArt = art
+    end
+    local size = button.slot:GetWidth() + 14
+    art.frame:SetDimensions(size, size)
+    art.halo:SetDimensions(size + 14, size + 14)
+    local ready = IsUltimateReady(button)
+    art.frame:SetTexture(Nirnsteel_UI:GetAssetPath(ready
+        and "ui/actionbar/ultimate_ready_v3_dxt5.dds" or "ui/actionbar/ultimate_iron_v3_dxt5.dds"))
+    art.frame:SetHidden(false)
+    art.halo:SetHidden(not ready)
+    if ready ~= art.ready then
+        art.halo:SetHandler("OnUpdate", nil)
+        if ready then
+            local start = GetFrameTimeMilliseconds()
+            art.halo:SetAlpha(0.65)
+            art.halo:SetHandler("OnUpdate", function(control)
+                local phase = (GetFrameTimeMilliseconds() - start) / 1800 * math.pi * 2
+                control:SetAlpha(0.65 + 0.20 * math.sin(phase))
+            end)
+        end
+        art.ready = ready
+    end
+end
+
 function ActionBarFrames:ApplyToButton(button)
     if not button or not button.button then
         return
     end
 
     local moduleEnabled = IsModuleEnabled()
-    button.button:SetNormalTexture(moduleEnabled and NORMAL_FRAME or GetStockNormalFrameTexture())
-    button.button:SetPressedTexture(moduleEnabled and PRESSED_FRAME or GetStockPressedFrameTexture())
+    local iron = moduleEnabled and GetFrameStyle() == "rpg"
+    local ironUltimate = iron and ZO_ActionBar_IsUltimateSlot(button:GetSlot(), button:GetHotbarCategory())
+    button.button:SetNormalTexture(iron and NO_TEXTURE or moduleEnabled and GetStyledFrame(false) or GetStockNormalFrameTexture())
+    button.button:SetPressedTexture(iron and NO_TEXTURE or moduleEnabled and GetStyledFrame(true) or GetStockPressedFrameTexture())
+    self:UpdateSkillFrame(button, iron and not ironUltimate)
+    self:UpdateUltimateFrame(button, ironUltimate)
 
     if button.status then
+        local iron = moduleEnabled and GetFrameStyle() == "rpg"
+        button.status:SetColor(1, iron and 0.78 or 1, iron and 0.42 or 1, 1)
         local overlayTexture = moduleEnabled and GetOverlayTexture(button)
         if overlayTexture then
             button.status:SetTexture(overlayTexture)

@@ -3,6 +3,7 @@
 ## Description: Tracks the stacks and cooldown of the Mechanical Acuity set.
 ## APIVersion: 101050
 ## DependsOn: LibAddonMenu-2.0>=42 LibChatMessage
+## OptionalDependsOn: LibNotify
 ## SavedVariables: mechAddonVars
 
 mechAcuityTracker.lua

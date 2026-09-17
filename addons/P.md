@@ -13,7 +13,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [PairsWellWithCheese](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/thisbeaurielle/PairsWellWithCheese__4458) | thisbeaurielle | PC / Mac | 0.2.8 |
 | [Palantir - with toggle button](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/manavortex/Palantir---with-toggle-button__925) | manavortex | PC / Mac | 1.0a |
 | [Pale Order Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Phinix/Pale-Order-Tracker__3370) | Phinix | PC / Mac | 1.0 |
-| [Pandalore's Coral Aerie Guide Companion](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/thepandalore/Pandalore-s-Coral-Aerie-Guide-Companion__4825) | thepandalore | PC / Mac | 1.0.2 |
+| [Pandalore's Coral Aerie Guide Companion](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/thepandalore/Pandalore-s-Coral-Aerie-Guide-Companion__4825) | thepandalore | PC / Mac | 1.1.0 |
 | [Pandalore's Resurrection Parse Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/thepandalore/Pandalore-s-Resurrection-Parse-Tracker__4826) | thepandalore | PC / Mac | 0.3.2 |
 | [Panel setting for Do I Keep It For Alts?](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Khrill/Panel-setting-for-Do-I-Keep-It-For-Alts__1090) | Khrill | PC / Mac | 1.7.0 |
 | [PantherXP](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rynzaii/PantherXP__3404) | Rynzaii | PC / Mac | v2.1.0 |
@@ -116,6 +116,10 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [PinkB's ScreenshotModeShortcut(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-ScreenshotModeShortcut-Beta__c3b0724d-c60e-44de-9244-7cdc9f20c868) | PinkBanther | Console | — |
 | [PinkB's Superstar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-Superstar__f00e5b13-5452-4284-98f7-2bdbe3caff63) | PinkBanther | Console | — |
 | [PinkB's Superstar(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-Superstar-Beta__61f70cc8-746a-48f4-90d2-6a3d490188d9) | PinkBanther | Console | — |
+| [PinkB's Tamriel de Janken](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-Tamriel-de-Janken__d20dffae-5fe1-494b-b70d-0c0a5967bf72) | PinkBanther | Console | — |
+| [PinkB's Tamriel de Janken(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-Tamriel-de-Janken-Beta__112c25bb-1103-4636-a4f6-5c6a280ff8e2) | PinkBanther | Console | — |
+| [PinkB's Tamriel de Tetris](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-Tamriel-de-Tetris__e8b21bff-aae1-4a24-b91b-8c49cd6acfd6) | PinkBanther | Console | — |
+| [PinkB's Tamriel de Tetris(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-Tamriel-de-Tetris-Beta__15f83719-bd33-413d-b56d-23d5ab418501) | PinkBanther | Console | — |
 | [PinkB's Translator](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-Translator__c49e3df6-7e8e-4a29-8866-1afb08cca3a8) | PinkBanther | Console | — |
 | [PinkB's Translator(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-Translator-Beta__cf0aea14-ea0e-49d3-89c4-1987b725c79e) | PinkBanther | Console | — |
 | [PinKiller](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni/PinKiller__190) | Shinni | PC / Mac | 2.5 |
@@ -129,7 +133,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [PL Patch for MiniMap by Fyrakin](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/EmiruTegryfon/PL-Patch-for-MiniMap-by-Fyrakin__2264) | EmiruTegryfon | PC / Mac | 3.42 |
 | [PL Patch for Quick Enchanter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/EmiruTegryfon/PL-Patch-for-Quick-Enchanter__1925) | EmiruTegryfon | PC / Mac | 0.44.0 |
 | [PL Patch for Undiscovered](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/EmiruTegryfon/PL-Patch-for-Undiscovered__1870) | EmiruTegryfon | PC / Mac | 0.1.0 |
-| [Player Role Indicator](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Parietic/Player-Role-Indicator__2703) | Parietic | PC / Mac | 1.3.2 |
+| [Player Role Indicator](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Parietic/Player-Role-Indicator__2703) | Parietic | PC / Mac | 1.4.0.27 |
 | [Player Status](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Jodynn/Player-Status__2152) | Jodynn | PC / Mac | 1.7.1 |
 | [PlayerQueue](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Coorbin/PlayerQueue__2207) | Coorbin | PC / Mac | 1.1 |
 | [PlayTime](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/hamgatan/PlayTime__4643) | hamgatan | PC / Mac | 1.0.1 |
