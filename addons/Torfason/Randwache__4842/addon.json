@@ -1,0 +1,46 @@
+{
+  "archive_error": "ESOUI returned an empty response",
+  "archive_path": "addons/Torfason/Randwache__4842",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archive_status": "unavailable",
+  "archived": false,
+  "author": "Torfason",
+  "canonical_id": "esoui:4842",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4842",
+  "deleted": false,
+  "directories": [
+    "Randwache"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4842/",
+  "fingerprint": "fffaf2df6326d30efdc69a72c4e25e45d13367514f506b377df80a6c050a0d1b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17402.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17403.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17404.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17405.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4842",
+  "source_url": "https://www.esoui.com/downloads/info4842-Randwache.html",
+  "stats": {
+    "downloads": 15,
+    "favorites": 0,
+    "monthly_downloads": 13
+  },
+  "title": "Randwache",
+  "updated_at": 1789709965000,
+  "version": "1.0.3"
+}

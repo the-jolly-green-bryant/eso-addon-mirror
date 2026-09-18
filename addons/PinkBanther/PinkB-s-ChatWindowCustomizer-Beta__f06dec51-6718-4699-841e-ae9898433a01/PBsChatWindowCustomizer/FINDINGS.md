@@ -149,6 +149,85 @@ before makes it build one font — `.slug` vector text, so no atlas, but still c
 uses the same one, and while the size equals the game's the add-on writes the game's own
 descriptor or nothing at all.
 
+## 8. The 20-second minimise, and the one function worth calling
+
+`ZO_GAMEPAD_CHAT_SYSTEM_SECONDS_VISIBLE_UNPINNED` is 20. The chat control's `OnUpdate`
+(`ZO_GamepadChatSystem:Initialize`) compares `GetFrameTimeSeconds()` with a **file-local**
+`g_expirationTime` and, past it, calls `GamepadChatContainer:HandleVisibleTimeExpired` ->
+`ZO_GamepadChatSystem:Minimize`, which fades the background and the input line to nothing, hides
+the input box and channel name, and hides the message area.
+
+That expiry is written in exactly one place:
+
+```lua
+function ZO_GamepadChatSystem:StartVisibilityTimer()
+    local secondsToExpire = ZO_GAMEPAD_CHAT_SYSTEM_SECONDS_VISIBLE_UNPINNED
+    g_expirationTime = GetFrameTimeSeconds() + secondsToExpire
+end
+```
+
+One assignment, no closure created, nothing shown or built -- so calling it does not put an
+add-on frame anywhere that matters (§6), and it is the only way to reach a file-local. Pushed
+every ten seconds against a twenty-second expiry, the client's `Minimize` never runs.
+
+A minimise that already happened -- at login (`LoadChatFromSettings` ends with `Minimize`), or
+from a menu -- is undone with control writes: the message area shown, and the background's alpha
+put back to 1, stopping the `ZO_AlphaAnimation` first if it is still fading. `chat.isMinimized`
+is set to false as data so the client agrees with what is on screen: `MINIMIZE_CHAT_FRAGMENT`
+reads it when a menu opens and maximises again on the way out, and
+`ZO_GamepadChatSystem:StartNewChatNotification` is only for a window that cannot be seen.
+
+The input line is deliberately left as the game has it.
+
+Switching the option off pushes the expiry one last time rather than minimising the window here,
+so the client's own timer minimises it in its own way.
+
+Things that turn out not to need handling: `GamepadChatContainer:FadeOutLines`,
+`ZO_GamepadChatSystem:FadeOutWindowContainers` and `SetPinnedAndFaded` have **no callers
+anywhere in esoui**, and nothing listens for `GamepadChatSystemActiveOnScreen`. Lines therefore
+never fade on their own.
+
+## 8b. The chat is drawn on the HUD and nowhere else
+
+`ZO_GamepadChatSystem:IsHidden` answers hidden unless `HUD_FRAGMENT:IsShowing()` (and the
+player's `UI_SETTING_GAMEPAD_CHAT_HUD_ENABLED` is on), and `SharedChatSystem:RefreshVisibility`
+is the only thing that turns that answer into a `SetHidden`:
+
+```lua
+function SharedChatSystem:RefreshVisibility()
+    self.control:SetHidden(self:IsHidden())
+end
+```
+
+Its callers are few and all known: `ZO_HUDFragment:UpdateVisibility` (every scene transition, and
+player death), the chat's own `OnPlayerActivated`, the gamepad-mode and keyboard-chat setting
+changes, and `SetHUDEnabled`. So the control's hidden state only changes at those moments, and
+writing `SetHidden(false)` after them is enough -- no polling for the common case.
+
+Three places do it: the HUD fragment's state change (for any state other than shown, which is
+the HUD going away), the scene manager's `"SceneStateChanged"` (menu to menu never touches the
+HUD fragment), and `zo_callLater` 50 ms later, because `MINIMIZE_CHAT_FRAGMENT` belongs to the
+same transition and nothing orders the two fragments. The ten-second push from §8 is the backstop
+for anything else. Both registrations are our function stored beside the client's, nothing
+wrapped.
+
+`hudEnabled` is read but never written: a player who has switched the chat off in Settings >
+Social is not meant to have a window at all, so nothing is forced there.
+
+Switching the option off calls `RefreshVisibility` rather than copying its rule -- one
+`SetHidden`, no closure, so the same reasoning as the timer in §8.
+
+## 9. Draw order
+
+`ZO_ChatWindowTopLevelTemplate` is `tier="MEDIUM" level="ZO_MEDIUM_TIER_KEYBOARD_CHAT_WINDOW"`,
+and that constant is 30 (`commonconstants.lua`). A top-level window is drawn by tier, then by
+level within the tier, so the chat sits above the HUD -- most of which is `DT_LOW` -- and below
+what the client puts at `DT_HIGH`: keybind strips (100-120), tooltips (140), alerts (145),
+announcements (20).
+
+`GetDrawTier` / `GetDrawLevel` exist, so the pair is read off the control with the anchor and put
+back on reset. `DT_PARENT` is not offered: it is meaningless for a top-level window.
+
 ---
 
 ## Still to measure on a PS5
@@ -173,3 +252,19 @@ descriptor or nothing at all.
    §6b.
 6. **Does the text survive changing Small / Medium / Large?** Set a size here, change the game's
    setting, return to the HUD. The chat must come back at the add-on's size.
+7. **Does the window really stay up?** Switch on "keep the window on screen" and leave the
+   character standing for a minute without a message arriving. If it minimises anyway, the
+   expiry is being written from somewhere this add-on cannot see, and `/pbchatwin status` prints
+   the state to say which of the two halves gave way -- `messages=` or `background alpha=`.
+8. **And come back after a menu?** Open a menu and close it: the window must be up again. The
+   HUD show is what puts it right.
+9. **Does switching it off let the game minimise it again?** Switch off and wait 20 seconds
+   without a message. It must fade as it always did.
+10. **Is it up in menus, and does it go away again?** Switch on "show it in menus too", open the
+   map and the inventory: the window must be there, with its messages. Switch it off and open a
+   menu: it must go. If it flickers on the way in, the 50 ms re-assert is too early for this
+   client.
+11. **Is it readable over a menu?** This is why the draw order is there; if a gamepad panel
+   covers it, "in front of the interface" is the answer.
+12. **Do the tiers do what they say?** With "in front of the interface", whatever was covering
+   the chat must be behind it. `status` prints the tier and level the control really has.

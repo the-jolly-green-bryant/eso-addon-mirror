@@ -8,6 +8,7 @@ The controller settings libraries are installed and enabled separately:
 
 - **Required and shown by ESO under Required Add-Ons:** LibGamepad AddOnVersion 107 (1.0.7) or newer
 - **Required:** LibAddonMenu-2.0 r41 or newer
+- **Required for the Minimap:** Votan's Minimap 2.2.2, LibAsync 3.1.4 or newer, and LibHarvensAddonSettings 2.1.6 or newer
 
 Open the controller settings through ESO's **Extensions / Manage My Extensions** area and select **Bandit UI**. The Side Panel settings button also opens this controller panel directly. Both libraries are required manifest dependencies for this console-focused package. Install the newest Xbox versions available; the manifest accepts LibGamepad AddOnVersion 107+ and LibAddonMenu-2.0 AddOnVersion 41+.
 
@@ -31,7 +32,7 @@ Thank you to the Bandits UI authors and contributors for the original foundation
 
 ## Installation
 
-Extract the folder `SatuveXboxUI` into the add-on directory used by your ESO Xbox-server PC client. Do not install it alongside an enabled copy of the original Bandits User Interface because both still use parts of the internal `BUI` Lua namespace.
+Install and enable Votan's Minimap, LibAsync and LibHarvensAddonSettings first. Then extract the folder `SatuveXboxUI` into the add-on directory used by your ESO Xbox-server PC client. Do not install it alongside an enabled copy of the original Bandits User Interface because both still use parts of the internal `BUI` Lua namespace.
 
 ## Xbox memory and add-on compatibility
 
@@ -40,6 +41,111 @@ Extract the folder `SatuveXboxUI` into the add-on directory used by your ESO Xbo
 - Avoid enabling overlapping unit-frame, action-bar, reticle, or minimap modules from AUI, LUI Extended, or another full UI add-on at the same time. Disable the overlapping module in one add-on before testing the other.
 - The runtime now keeps at most 12 completed unsaved combat reports. Reports explicitly saved by the player remain available.
 - The packaged textures occupy about 8 MiB when decoded to RGBA if every texture were resident at once. The largest curved-frame textures are only referenced when the curved-frame option is enabled, so leave that option off on memory-constrained systems unless it is needed.
+
+## Version 1.9.16
+
+- Removes the insecure sidebar call path through `DIRECTIONAL_INPUT:GetX/GetY` that caused ESO to reject its internal `IsKeyDown` call.
+- Keeps the corrected `mainMenuGamepad` scene integration while routing Left, Up, Down and Right through native keybind-strip callbacks.
+- Refreshes those callbacks when the existing `BUI_Panel` becomes visible or hidden.
+- Retains dynamic sidebar selection, existing mouse actions, A/Back hints and normal-menu restoration.
+- Leaves all Combat Log and Statistics files unchanged.
+
+## Version 1.9.15
+
+- Connects the existing far-left icon sidebar to ESO's actual `mainMenuGamepad` scene.
+- D-Pad Left pauses the normal menu list and enters sidebar focus; Up/Down moves through the visible actionable icons.
+- Controller A invokes each icon's existing mouse action, while Right or B restores the normal menu selection and input.
+- Uses ESO's native directional-input manager only while the main gamepad menu is open, with no custom update loop.
+- Leaves all Combat Log and Statistics files unchanged.
+
+## Version 1.9.14
+
+- Routes mouse close actions through one complete Combat Log cleanup path.
+- Keeps controller B hierarchical while the top-right mouse X closes the full report.
+- Synchronizes controller state after mouse Equipment, Uptimes and target-detail actions.
+- Makes the existing native keybind strip contextual for report, detail and auxiliary levels.
+
+## Version 1.9.13
+
+- Tracks whether the Combat Log itself enabled Game Camera UI mode and releases it only when owned.
+- Closes the complete gamepad menu stack before opening the Combat Log.
+- Adds temporary open/close Camera UI state messages for in-game verification.
+- Leaves the restored V1 navigation and controller mapping unchanged.
+
+## Version 1.9.12
+
+- Restores the confirmed V1 Combat Log controller navigation based on direct `OnKeyDown` and `TakeFocus()` handling.
+- Keeps the corrected 2x2 focus-frame edge texture and direct Combat Log menu entry.
+- Removes the later Combat Log action-layer, binding and diagnostic experiments while preserving unrelated newer features.
+
+## Version 1.9.11
+
+- Adds the Votan Minimap to the existing Move Frames editor as a selectable Minimap frame.
+- D-Pad movement updates a temporary editor handle; confirming writes the center offset to Votan's native account.x and account.y position.
+- Cancelling restores the uncommitted position, while leaving Move Frames restores the native Minimap at the confirmed position.
+- The full world-map control is not moved or resized.
+
+## Version 1.7.19
+
+- Uses Votan's Minimap as the required owner of ESO's native hidden Minimap.
+- Removes Satuve's separate viewport/reparenting renderer, so only one Minimap system controls the world map.
+- Keeps the Satuve Xbox settings sliders and forwards size, transparency, title, pin scale and zoom values to Votan.
+- A size value of 200 produces a 200x200 visible map area; the full map keeps its normal size and opacity.
+- Requires VotansMiniMap, LibAsync and LibHarvensAddonSettings; their source is not bundled in Satuve Xbox UI.
+
+## Version 1.7.18
+
+- Displays the native ESO map through the dedicated `BUI_MinimapViewport` clipping window.
+- Keeps the complete map renderer active internally while hiding every tile, pin, frame, and floor control outside the selected Minimap square.
+- Restores the normal native map hierarchy when the full world map opens.
+- Reuses the existing 250 ms player-follow update to correct the viewport only if ESO changes its parent, dimensions, or root visibility.
+
+## Version 1.7.17
+
+- Fixes the native ESO gamepad map overriding the selected Minimap dimensions with its large gamepad layout size.
+- Sizes both the Minimap root and the native scroll viewport, so the rendered map is clipped to the selected 200-500 px square.
+- Reapplies the Minimap layout after ESO refreshes the map; full world-map mode restores its normal native layout.
+
+## Version 1.7.16
+
+- Makes the Minimap size setting a direct pixel value: 200 is 200x200 px and 500 is 500x500 px.
+- Applies size changes immediately to the visible Minimap instead of relying on the general map reinitialization path while the controller settings menu is open.
+- Keeps the existing 200-500 range and 20 px controller step to avoid an unnecessarily large controller value list.
+
+## Version 1.7.15
+
+- Removes the duplicate `Frame Edit Mode` settings button.
+- The original localized `Move Frames` button is now the single entry point for mouse, pointer, D-Pad, A, B, modal menu hiding, and frame-position saving.
+- Renames the editor keybind label to `Exit Move Frames` so the menu and active mode use one name.
+## Version 1.7.14
+
+- Fixes the Frame Editor selection border failing to initialize because ESO requires power-of-two edge texture dimensions.
+- Uses a valid 8x2 edge texture configuration and cleans up the modal menu/input state if editor activation ever fails.
+## Version 1.7.13
+
+- Adds a visible gold frame selection controlled by D-Pad Up/Down/Left/Right.
+- A switches the selected frame into movement mode; D-Pad nudges it and A confirms its new position.
+- B cancels the current unconfirmed movement, while B again or View exits and restores the Bandit settings screen.
+- Uses editor keybinds plus the focused overlay fallback and does not call ESO's protected `DIRECTIONAL_INPUT:GetXY()` path.
+- Keeps the 1.7.12 modal menu hiding and the 1.7.11 native Minimap slider path.
+## Version 1.7.12
+
+- Frame Edit Mode now hides the ESO Gamepad options control, its shared left background, and its settings tooltip while keeping the options scene alive for controller pointer support.
+- Suspends the complete settings keybind set, including Defaults and LibGamepad's Reload UI entry, so only the editor exit action remains visible.
+- The overlay consumes only Escape/View itself; A and directional input remain available to the controller pointer and Bandit's original hold-A drag controls.
+- On exit, the same settings list, visibility, keybinds, selected-row A action, and tooltip are restored through ESO's native selection handler.
+## Version 1.7.11
+
+- Restores native ESO Gamepad slider rows for every Minimap numeric setting.
+- D-Pad left/right now uses the same controller slider path as the other Bandit settings and applies the original Minimap setFunc immediately.
+- Keeps the console-safe slider callback that bypasses ESO's protected SetSetting call.
+
+## Version 1.7.10
+
+- Restored the proven Bandit `MoveFrames` path from the last confirmed movable 1.1.64 build for both Move and Frame Edit Mode.
+- Removed the editor-owned keybind-state stack, extra action layer, focus takeover and stick polling that could also block the controller pointer/A drag path.
+- While moving frames, only the underlying ESO settings list and its A/back/trigger keybind groups are suspended. A remains available to grab and drag frames; B exits the mode and restores the exact previous list when it is still open.
+- Retains the 1.7.9 controller-safe Minimap value lists.
 
 ## Version 1.7.9
 
@@ -139,6 +245,6 @@ The original package includes an MIT-style permission notice. This fork keeps th
 
 ## Controller layout and native minimap
 
-The Misc page has Frame Edit Mode for D-Pad selection, two-stick positioning, preview, save, and cancel. The Bandit minimap settings drive a native ESO map-mode adapter instead of the old shared-scroll viewport. Existing settings and SavedVariables are retained. See `XBOX_TEST_CHECKLIST.md` and `RELEASE_NOTES_1.7.7.md`. Real Xbox acceptance testing remains recommended.
+The Misc page has Frame Edit Mode using Bandit’s proven movable-control path: point at a frame, hold A to drag it, release A to place it, and press B to exit. The Bandit minimap settings drive a native ESO map-mode adapter instead of the old shared-scroll viewport. Existing settings and SavedVariables are retained. See `XBOX_TEST_CHECKLIST.md` and `RELEASE_NOTES_1.7.10.md`. Real Xbox acceptance testing remains recommended.
 
 The map behavior was researched against Votan's Minimap 2.2.2, but its release package provides no code-reuse license. This adapter was written independently; standalone Votan should not be enabled alongside this Bandit minimap because both use ESO's world map.

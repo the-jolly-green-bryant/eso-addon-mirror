@@ -100,6 +100,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [PinkB's CyrodiilAlert(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-CyrodiilAlert-Beta__233a612c-6650-451b-80d8-b1862f95c90a) | PinkBanther | Console | — |
 | [PinkB's DiceExtension](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-DiceExtension__c8c74e10-f091-4e38-b894-20bb194c9b87) | PinkBanther | Console | — |
 | [PinkB's DiceExtension(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-DiceExtension-Beta__4e8c5fa9-767a-4036-87fe-ba872cd76529) | PinkBanther | Console | — |
+| [PinkB's LibDebugLogger](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-LibDebugLogger__0b8ba311-219e-4207-ba00-2876c16ec5b5) | PinkBanther | Console | — |
 | [PinkB's LuaMemoryMonitor](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-LuaMemoryMonitor__f4878125-abb0-49bd-b8d3-ca06c9ad746a) | PinkBanther | Console | — |
 | [PinkB's LuaMemoryMonitor(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-LuaMemoryMonitor-Beta__ae47138d-8a74-4929-b2e2-acb03b38eb43) | PinkBanther | Console | — |
 | [PinkB's MailerExtension](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-MailerExtension__371fcd02-ae32-4937-a1d4-de4f33b01870) | PinkBanther | Console | — |
@@ -122,6 +123,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [PinkB's Tamriel de Tetris(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-Tamriel-de-Tetris-Beta__15f83719-bd33-413d-b56d-23d5ab418501) | PinkBanther | Console | — |
 | [PinkB's Translator](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-Translator__c49e3df6-7e8e-4a29-8866-1afb08cca3a8) | PinkBanther | Console | — |
 | [PinkB's Translator(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-Translator-Beta__cf0aea14-ea0e-49d3-89c4-1987b725c79e) | PinkBanther | Console | — |
+| [PinkB's WarTable(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-WarTable-Beta__0e2f2124-0a27-485c-9912-c57878e87090) | PinkBanther | Console | — |
 | [PinKiller](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni/PinKiller__190) | Shinni | PC / Mac | 2.5 |
 | [PinKiller](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni42/PinKiller__b141aa03-f456-45eb-b8b9-eee57c6d78d9) | Shinni42 | Console | — |
 | [Pit's Zenkosh Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Pit_Eso/Pit-s-Zenkosh-Tracker__4723) | Pit_Eso | PC / Mac | 1.0.0 |

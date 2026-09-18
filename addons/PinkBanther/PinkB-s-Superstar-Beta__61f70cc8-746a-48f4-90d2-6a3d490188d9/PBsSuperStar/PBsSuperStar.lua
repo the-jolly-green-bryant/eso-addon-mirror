@@ -4,6 +4,37 @@ function P:Open()
     SCENE_MANAGER:Push(self.sceneName)
 end
 
+-- While the screen is open the game's keybind strip (戻る・再取得・…) is made shorter and moved
+-- down, so it sits below the description pane rather than over it. KEYBIND_STRIP:SetStyle is
+-- the strip's own public way to restyle it; the previous style comes back when the screen
+-- closes, and only if nothing else has restyled the strip in the meantime.
+local STRIP_DROP = 30
+function P:CompactKeybindStrip()
+    if self.savedStripStyle or not (KEYBIND_STRIP and KEYBIND_STRIP.GetStyle and KEYBIND_STRIP.SetStyle) then return end
+    local style = KEYBIND_STRIP:GetStyle()
+    if not style then return end
+    local compact = {}
+    for key, value in pairs(style) do compact[key] = value end
+    compact.nameFont = "ZoFontGamepad27"
+    compact.yAnchorOffset = (style.yAnchorOffset or 0) + STRIP_DROP
+    self.savedStripStyle, self.compactStripStyle = style, compact
+    KEYBIND_STRIP:SetStyle(compact)
+    local background = ZO_KeybindStripGamepadBackground
+    if background then
+        self.savedStripHeight = background:GetHeight()
+        background:SetHeight(math.max(0, self.savedStripHeight - STRIP_DROP))
+    end
+end
+
+function P:RestoreKeybindStrip()
+    if not self.savedStripStyle then return end
+    if KEYBIND_STRIP:GetStyle() == self.compactStripStyle then KEYBIND_STRIP:SetStyle(self.savedStripStyle) end
+    if self.savedStripHeight and ZO_KeybindStripGamepadBackground then
+        ZO_KeybindStripGamepadBackground:SetHeight(self.savedStripHeight)
+    end
+    self.savedStripStyle, self.compactStripStyle, self.savedStripHeight = nil, nil, nil
+end
+
 function P:InstallMenu()
     if self.menuInstalled or not ZO_MENU_ENTRIES then return end
     for _, entry in ipairs(ZO_MENU_ENTRIES) do
@@ -36,6 +67,7 @@ function P:Initialize()
     local binds = U:Keybinds()
     self.scene:RegisterCallback("StateChange", function(_, state)
         if state == SCENE_SHOWING then
+            self:CompactKeybindStrip()
             KEYBIND_STRIP:AddKeybindButtonGroup(binds)
             U:BeginCreate(function()
                 U:Resize()
@@ -51,6 +83,7 @@ function P:Initialize()
             U:PauseCreate()
             EVENT_MANAGER:UnregisterForUpdate(self.name .. "Refresh")
             KEYBIND_STRIP:RemoveKeybindButtonGroup(binds)
+            self:RestoreKeybindStrip()
         end
     end)
     self:InstallMenu()

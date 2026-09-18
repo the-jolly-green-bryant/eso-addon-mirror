@@ -6,8 +6,10 @@
             <Anchor point="TOP" relativeTo="GuiRoot" relativePoint="TOP" offsetX="0" offsetY="60" />
             <OnMoveStop> TamrielCalendar.OnMoveStop(self) </OnMoveStop>
             <Controls>
-                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="0.8"><AnchorFill /></Backdrop>
-                <Label name="TamrielCalendarLabel" font="ZoFontGameShadow" color="E6D080" horizontalAlignment="CENTER" verticalAlignment="CENTER"><AnchorFill /></Label>
+                <Backdrop name="$(parent)BG"><AnchorFill /></Backdrop>
+                <Label name="TamrielCalendarLabel" font="ZoFontGameShadow" color="E6D080" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+                    <Anchor point="CENTER" />
+                </Label>
             </Controls>
         </TopLevelControl>
 

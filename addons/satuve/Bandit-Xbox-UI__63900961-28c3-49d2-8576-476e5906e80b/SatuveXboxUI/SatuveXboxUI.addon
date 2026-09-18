@@ -1,16 +1,17 @@
 ## Title: |c4B8BFESatuve|r Xbox UI
 ## Description: Xbox-server PC interface fork with controller settings and minimap. Based on Bandits User Interface.
 ## Author: Satuve (Xbox adaptation); original Bandits UI by secretrob and Hoft
-## Version: 1.7.9
-## APIVersion: 101050
+## Version: 1.9.16
+## APIVersion: 101050 101051
 ## SavedVariables: SATUVE_XBOX_UI_VARS SATUVE_XBOX_UI_REPORTS SATUVE_XBOX_UI_CP_CHAR
-## DependsOn: LibGamepad>=107 LibAddonMenu-2.0>=41
+## DependsOn: LibGamepad>=107 LibAddonMenu-2.0>=41 VotansMiniMap LibAsync>=30001 LibHarvensAddonSettings>=20106
 ## OptionalDependsOn: LibStub LibDebugLogger
 
 ; Satuve Xbox UI is a modified fork of Bandits User Interface.
 ; Controller settings require LibGamepad AddOnVersion 107 (1.0.7) or newer.
 ; LibGamepad 1.0.7+ and LibAddonMenu-2.0 r41+ are required controller-menu dependencies.
 ; LibGamepadContextMenuBridge is a separate optional library and is not a replacement.
+; VotansMiniMap 2.2.2 owns the native minimap; LibAsync and LibHarvensAddonSettings are required by it.
 ; Xbox adaptation and maintenance: Satuve.
 ; Thanks and original credit: secretrob, Hoft, and the Bandits UI contributors.
 ; Originally based in part on Foundry Tactical Combat by Atropos.
@@ -41,13 +42,13 @@ SXUI_GamepadQuickNav.lua
 BUI_Settings.lua
 BUI_Player.lua
 BUI_Statistics.lua
+BUI_Statistics_Gamepad.lua
 BUI_Regrouper.lua
 BUI_Reticle.lua
 BUI_Buffs.lua
 proctemplate.xml
 BUI_Actions.lua
 BUI_MiniMap.lua
-SXUI_MinimapCore.lua
 BUI_QuickSlots.lua
 BUI_StatShare.lua
 BUI_OnScreen.lua

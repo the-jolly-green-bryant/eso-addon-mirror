@@ -60,7 +60,6 @@ ZO_CreateStringId("MSAL_STOLEN_TREASURE_FILTER_LOGIN_REMINDER","Der Qualitätsfi
 ZO_CreateStringId("MSAL_LOGIN_REMINDER","Startup Info")
 ZO_CreateStringId("MSAL_LOGIN_REMINDER_TOOLTIP","Wenn aktiviert, zeigt das Addon einmal täglich beim Start die Addon-Informationen und die von ihm verwendeten sensiblen Berechtigungen an")
 ZO_CreateStringId("MSAL_AUTOBIND_TOOLTIP","Wenn diese Option aktiviert ist, werden die Items des Sets |cdb8e0bNicht gesammelt und Nicht auf der Blackliste|r beim Plündern automatisch gebunden")
-ZO_CreateStringId("MSAL_AUTOBIND_TOOLTIP_CONSOLE","Wenn diese Option aktiviert ist, werden die Items des Sets |cdb8e0bNicht Gesammelt|r beim Plündern automatisch gebunden")
 ZO_CreateStringId("MSAL_ADD_ITEM","Füge %s Items hinzu")
 ZO_CreateStringId("MSAL_REMOVE_ITEM","Prüfe/Entferne %s Items")
 ZO_CreateStringId("MSAL_REMOVE_SELECTED_ITEM","Ausgewähltes %s-Element entfernen")

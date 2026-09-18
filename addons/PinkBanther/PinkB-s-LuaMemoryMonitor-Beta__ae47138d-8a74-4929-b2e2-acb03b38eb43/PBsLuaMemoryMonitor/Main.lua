@@ -64,6 +64,14 @@ PBS_LUA_MEMORY_MONITOR = addon
 addon.ReadKB = ReadKB
 addon.ReadPoolMB = ReadPoolMB
 
+function addon.ReadPoolCapacityMB()
+	if type(GetTotalUserAddOnMemoryPoolCapacityMB) ~= "function" then
+		return nil
+	end
+	local ok, mb = pcall(GetTotalUserAddOnMemoryPoolCapacityMB)
+	return ok and type(mb) == "number" and mb > 0 and mb or nil
+end
+
 -- Typographic apostrophe (U+2019), not ASCII ', like the other PB's add-ons.
 local DISPLAY_NAME = "PB’s LuaMemoryMonitor"
 addon.slash = "/pbluamem"
@@ -269,6 +277,8 @@ local DEFAULTS = {
 	banner = true,
 	collectEvery = 0,
 	collectInCombat = false,
+	collectAbove = 0,
+	clearWarning = false,
 	-- x, y: absent until the window is moved; Window.lua works out the default.
 }
 
@@ -404,6 +414,8 @@ local function OnPlayerActivated()
 	end
 	if addon.ApplyCollectTimer then
 		addon:ApplyCollectTimer()
+		addon:ApplyWatch()
+		addon:ApplyWarningHandler()
 	end
 	if addon.sv.banner ~= false then
 		addon.Say(string.format(GetString(SI_PBSLMM_LOADED), addon.title, addon.shortSlash))

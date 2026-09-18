@@ -27,6 +27,17 @@ function CMA:CreateSettingsMenu()
             setFunc = function(v) self.db.enableAddon = v end
         },
         {
+            type = "checkbox",
+            name = "Use character specific settings",
+            tooltip = "Turn on for character specific settings. If turned off, it will use the account wide settings.",
+            warning = "Changing the state will immediately trigger an UI reload.",
+            getFunc = function() return self.dbCharSpecific.useCharacterSettings end,
+            setFunc = function(v)
+                self.dbCharSpecific.useCharacterSettings = v
+                ReloadUI() 
+            end
+        },
+        {
             type = "submenu",
             name = "General Options",
             controls = {

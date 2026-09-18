@@ -249,11 +249,7 @@ local function Header(stringId, sorted)
 end
 
 function addon:SummaryText()
-	local capacity
-	if type(GetTotalUserAddOnMemoryPoolCapacityMB) == "function" then
-		local ok, value = pcall(GetTotalUserAddOnMemoryPoolCapacityMB)
-		capacity = ok and value or nil
-	end
+	local capacity = self.ReadPoolCapacityMB()
 	local heap = self.ReadKB()
 	local lines = {
 		string.format(GetString(SI_PBSLMM_SUMMARY_MEMORY), self.FormatMB(self.ReadPoolMB()), self.FormatMB(capacity),
@@ -295,7 +291,12 @@ function addon:SummaryText()
 	else
 		collect = GetString(SI_PBSLMM_SUMMARY_COLLECT_NONE)
 	end
-	lines[#lines + 1] = collect .. "  (" .. self:AutoScanLabel(self.sv.collectEvery) .. ")"
+	local how = self:AutoScanLabel(self.sv.collectEvery)
+	local above = tonumber(self.sv.collectAbove) or 0
+	if above > 0 then
+		how = how .. ", " .. string.format(GetString(SI_PBSLMM_SUMMARY_ABOVE), above)
+	end
+	lines[#lines + 1] = collect .. "  (" .. how .. ")"
 	return table.concat(lines, "\n")
 end
 

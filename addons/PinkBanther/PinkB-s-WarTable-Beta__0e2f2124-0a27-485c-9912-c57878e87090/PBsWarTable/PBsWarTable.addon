@@ -1,0 +1,68 @@
+## Title: PinkB's War Table
+## Author: PinkBanther
+## Description: 三旗の戦卓 ― 帝位と星霜 ― / The Three Banners War Table. Three COM levels, local play and group duels.
+## Version: 0.10.4
+## AddOnVersion: 1004
+## APIVersion: 101050 101051
+## SavedVariables: PBsWarTableSavedVariables
+## OptionalDependsOn: LibGroupBroadcast
+
+Config.lua
+Factions.lua
+Opening.lua
+Engine.lua
+Scroll.lua
+Cards/Registry.lua
+Cards/Charge.lua
+Cards/Stealth.lua
+Cards/Siege.lua
+Cards/Revive.lua
+Cards/Horn.lua
+SHA256.lua
+Wire.lua
+Match.lua
+Transport.lua
+AI.lua
+Search.lua
+Solo.lua
+Theme.lua
+Records.lua
+Tutorial.lua
+Typography.lua
+Presentation.lua
+FactionUI.lua
+Assets.lua
+Transition.lua
+Movement.lua
+UI.lua
+Menu.lua
+Main.lua
+Bindings.xml
+assets/soldier.dds
+assets/scout.dds
+assets/guardian.dds
+assets/charge.dds
+assets/stealth.dds
+assets/siege.dds
+assets/revive.dds
+assets/horn.dds
+assets/flag.dds
+assets/crest.dds
+assets/elder_scroll.dds
+assets/alliance_dominion.dds
+assets/alliance_covenant.dds
+assets/alliance_pact.dds
+assets/sun.dds
+assets/gate.dds
+assets/map_tile.dds
+assets/board_material.dds
+assets/trident.dds
+assets/frame.dds
+assets/war_room.dds
+assets/soldier_wood.dds
+assets/scout_wood.dds
+assets/guardian_wood.dds
+assets/card_material.dds
+assets/button_material.dds
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.

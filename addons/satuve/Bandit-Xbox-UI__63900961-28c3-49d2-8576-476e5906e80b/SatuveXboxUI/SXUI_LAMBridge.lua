@@ -664,6 +664,31 @@ local function BuildDirectGamepadOptions(options, controllerSafeSliders)
     return result
 end
 
+local function OpenCombatLogFromGamepadMenu()
+    local function OpenReport()
+        if BUI and BUI.Stats and type(BUI.Stats.Toggle) == "function" then
+            BUI.Stats.Toggle()
+        end
+    end
+
+    -- Return all the way to the base scene. HideCurrentScene only leaves the
+    -- options panel and exposes the game menu beneath it.
+    local sceneManager = rawget(_G, "SCENE_MANAGER")
+    if sceneManager and type(sceneManager.ShowBaseScene) == "function" then
+        sceneManager:ShowBaseScene()
+        if type(zo_callLater) == "function" then
+            zo_callLater(OpenReport, 100)
+        else
+            OpenReport()
+        end
+    elseif sceneManager and type(sceneManager.HideCurrentScene) == "function" then
+        sceneManager:HideCurrentScene()
+        OpenReport()
+    else
+        OpenReport()
+    end
+end
+
 local function RegisterDirectGrouped(panelName)
     local lib = GetLibGamepad()
     if not lib or not lib.RegisterSubmenu or Bridge.directRegistered[panelName] then return false end
@@ -684,6 +709,18 @@ local function RegisterDirectGrouped(panelName)
     end)
 
     local rootOptions = {}
+
+    -- A direct, controller-selectable entry before "1. Base Options". This is
+    -- an action rather than another settings submenu: pressing A closes the
+    -- settings scene and opens the existing statistics/combat-log window.
+    local combatLogEntry = CreateDirectSimpleOption({
+        type = "button",
+        name = "Log",
+        tooltip = "PanelStatistics",
+        func = OpenCombatLogFromGamepadMenu,
+    }, false)
+    if combatLogEntry then rootOptions[#rootOptions + 1] = combatLogEntry end
+
     for _, section in ipairs(sections) do
         local children = BuildDirectGamepadOptions(section.options or {}, section.controllerSafeSliders == true)
         if #children > 0 and lib.CreateNestedSubmenuEntry then

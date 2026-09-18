@@ -11,7 +11,8 @@ local DEFAULTS = { isi = {
     enableReposition = false,
     showArmorWeights = true,
     showArmorTraits = true,
-    colorCodedTraits = false,
+    colorCodedTraits = true,
+    hasForcedTraitColoringOnce = false,
     showAbilityWarning = true,
     showMissingGearWarning = true,
     showLocationTags = true,
@@ -723,6 +724,11 @@ function KRT.ISI:UpdateOverlay()
 end
 
 function KRT.ISI:Initialize()
+    if not SV().hasForcedTraitColoringOnce then
+        SV().colorCodedTraits = true
+        SV().hasForcedTraitColoringOnce = true
+    end
+
     self:UpdateOverlay()
 
     local function OnInventoryUpdate()

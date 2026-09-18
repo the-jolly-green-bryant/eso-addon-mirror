@@ -4,7 +4,7 @@ Puts your character's equipment, detailed statistics, Champion Points and skills
 in the gamepad UI of **The Elder Scrolls Online** on console (PS5 / Xbox Series X|S).
 
 - **Author:** PinkBanther
-- **Version:** 0.2.8 (API 101050)
+- **Version:** 0.2.13 (API 101050)
 - **Libraries:** none
 
 Open it from **ステータス超詳細** in the gamepad main menu, between **Character** and **Skills**.
@@ -28,34 +28,46 @@ This is those three menus on one screen, kept live while you look at it.
 - **Equipment** — armour, accessories, front and back bar weapons, poisons, costume. Select a
   piece and it shows quality, required level, trait, enchantment, durability, weapon power or
   armour value, charges, and its set with each bonus tier.
-- **Statistics** — the three base attributes, attribute points, every detailed statistic
-  category the API exposes, and the effects currently running on you (Mundus, food, and the
-  rest).
+- **Header numbers** — maximum Magicka, Health and Stamina with attribute points and combat
+  regeneration, and spell and weapon power, critical, penetration and resistance. Critical is
+  the rating followed by the chance it gives in brackets, converted with
+  `GetCriticalStrikeChance` as the game's own stats screen does. These are shown only here and
+  are not repeated in any list.
+- **Build** — what the Armory saves as a build: the twelve slotted Champion Points under their
+  constellations, coloured blue, red and green, then the three class skill lines currently
+  selected (subclassed ones marked サブ), Class Mastery, the Mundus stone and the curse (vampirism or lycanthropy, named with the game's own `SI_CURSETYPE` string).
+- **Statistics** — every detailed statistic category the API exposes, from コアアビリティ on,
+  and the effects currently running on you (Mundus, food, and the rest).
 - **Champion Points** — twelve slots, spent and unspent points per constellation, and per star
   the points invested, the cap and the description, distinguishing slotted, unslotted, passive
   and inactive.
-- **Class Mastery** — the Class Mastery passives you have bought, with their ranks, and the
+- **Class Mastery** (in the build) — the Class Mastery passives you have bought, with their ranks, and the
   class mastery points they are bought with. These are a separate currency from skill points,
   and the game reports their skill lines as undiscovered until a class line reaches max rank,
   so they are listed whatever the client says about discovery. Every class in the game has a
   Class Mastery line reporting its own pool of points, and none of them may be added up:
   Class Mastery is selectable only while all of your active class skill lines are your own
   class's, so the block counts nothing at all while you are subclassed.
-- **Skills** — six slots on each bar, each icon with the skill's name written under it plus whatever special bar is in use, your active,
-  ultimate and passive abilities, line rank, skill rank and unspent points. Scribing skills are
-  listed too.
+- **Skills** — six slots on each bar, each icon with the skill's name written under it, plus
+  whatever special bar is in use, your active, ultimate and passive abilities, line rank, skill
+  rank and unspent points. Scribing skills are listed too.
 
-Nothing scrolls. A band across the top always shows the character, the three attribute
-columns, both skill bars, the combat numbers, the skill and Champion Point totals and the Class
-Mastery line. Everything below it belongs to the area you have selected with D-pad left and
-right, and holds **all** of that area's entries at once.
+No list scrolls. A band across the top always shows the character, the three attribute
+columns, both skill bars, the combat numbers and the skill and Champion Point totals. Everything
+below it belongs to the area you have selected with D-pad left and right — 装備, ビルド,
+詳細ステータス, 星座・CPパッシブ, スキル — and holds **all** of that area's entries at once.
 
-Equipment and the detailed statistics share one page: the seventeen equipment slots keep the
-left of the screen as narrow rows carrying the trait, enchantment and set count, and the
-statistics fill the three columns beside them — 96 entries. D-pad left and right moves the
-focus between the two without changing the page. Champion Points and skills each take the whole
-width instead: a grid of seven columns by thirty-two rows, 224 entries, filled column by column.
-The description of whatever is selected sits at the foot of the screen.
+The first page is equipment and the build together: the seventeen equipment slots keep the left
+of the screen as rows carrying the trait, enchantment and set count, and the build sits beside
+them in two columns of large cells — slotted CP in the first, a blank row between constellations,
+and Class Mastery, Mundus and curse in the second. The first page uses 20-point type or larger
+throughout, since neither list is long. D-pad left and right moves the focus between the two without changing the page. The
+detailed statistics, Champion Points and skills each take the whole width: a grid of seven
+columns by thirty-two rows, 224 entries, filled column by column.
+
+The description of whatever is selected sits at the foot of the screen, in a window of whole
+lines. When it is longer than the window, its title says 説明 1/3 and L2/R2 turns it one window at
+a time — never by part of a line.
 
 The one thing that does not fit is 全項目, which adds every unearned Champion Point star and
 skill: past what a page holds the area pages, and its title says which range is on screen.
@@ -66,17 +78,16 @@ skill: past what a page holds the area pages, and its title says which range is 
 | --- | --- |
 | choose an area, then an entry | D-pad left/right, up/down |
 | jump a whole column of entries | L1 / R1 — LB / RB |
+| the rest of a long description | L2 / R2 — LT / RT |
 | refresh now | the 再取得 button on the screen |
 | show unearned CP and skills too | the 取得済み / 全項目 button |
 | back to the menu | ○ / B (follows your back-button setting) |
 
-D-pad left and right move between the four areas — equipment, detailed statistics, CP and
-skills. Everything but equipment lists its entries bottom right, so the attributes, equipment
-and CP summaries stay on screen while you read them. Long lists and descriptions scroll in
-place, and a name that had to be truncated is spelled out in the detail pane below.
+A name that had to be truncated in the grid is spelled out in the description's title.
 
-CP colours follow the constellation; item name colours follow quality. **クリ値 in the combat
-numbers is the Critical rating, not a percentage.**
+CP colours follow the constellation. Item name colours are the game's own quality colours
+(`GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, quality)`), so Mythic items are
+orange as they are everywhere else in the game.
 
 While the screen is open it re-reads everything every 1.5 seconds, and stops when you close it.
 The numbers reflect the bar you have drawn and the buffs you have now. It does not estimate the
@@ -96,6 +107,54 @@ goes through Bethesda's developer Uploader — build a candidate with `python3 t
 then follow the console development environment and the Uploader's instructions. Nothing here
 has been uploaded or published. See the
 [official console Uploader notes](https://help.elderscrollsonline.com/app/answers/detail/a_id/69621/).
+
+## 0.2.13: the selected class skill lines
+
+The build's second column now opens with クラススキルライン: the class skill lines currently
+selected, each with its rank, and サブ in front of the rank for a line taken from another class.
+They sit directly above Class Mastery because Class Mastery depends on them — it is available only
+while all of them are your own class's. If a column ever has more entries than rows, its blank
+separator rows are dropped before any entry is.
+
+## 0.2.12: larger type in the header band
+
+The band across the top had room to spare, so its type went up: the character line from 21 to
+24, the Magicka / Health / Stamina rows from 19 to 23 on 36-point rows with larger icons, the
+combat numbers from 18 to 21, the skill and Champion Point totals from 21 to 24, the tab titles
+from 20 to 22. The skill bar icons went from 32 to 36 points and their names from 13 to 15. The
+band is still the same height, so nothing below it moved.
+
+## 0.2.11: the keybind strip moves out of the way
+
+The game's keybind strip — 戻る, 再取得, 取得済み / 全項目 — sat over the last lines of the
+description. While this screen is open the strip now uses a compact copy of its own style: labels
+at `ZoFontGamepad27` instead of 34, anchored 30 points lower, with its background 30 points
+shorter. `KEYBIND_STRIP:SetStyle` is the strip's own public way to restyle it. The previous style
+and background height come back when the screen closes, and the style is only put back if
+nothing else has changed it in the meantime.
+
+## 0.2.10: larger type on the first page
+
+The build no longer borrows the 14-point grid cells. It has 34 cells of its own, two columns of
+seventeen 34-point rows, with 20-point names, section titles in bold, icons for Mundus and the
+Class Mastery passives, and a blank row between sections. Seventeen rows is exactly what three
+constellations of four slots need with a gap between each. The equipment rows went up too: the
+item name from 18 to 21, the slot from 17 to 20, the trait line from 12 to 15.
+
+## 0.2.9: the first page is the build
+
+- The fourteen numbers the header band already shows — maximums, regeneration, power, critical,
+  penetration, resistance — and the attribute points it also shows are no longer listed again.
+- コアアビリティ and every category after it, with the active effects, moved to a page of their
+  own, 詳細ステータス.
+- The first page's right side is the build instead: slotted CP by constellation in blue, red and
+  green again, Class Mastery, Mundus and curse. Class Mastery left the header band, since it is
+  now on the page shown first.
+- クリ値 is followed by the critical chance in brackets.
+- The description pane turns with L2/R2 when the text is longer than it, a window of whole lines
+  at a time.
+- Mythic items are orange: item colours now come from the game rather than a table that stopped
+  at Legendary.
 
 ## 0.2.8: equipment and the statistics on one page
 
@@ -215,6 +274,7 @@ On-device checklist, still to be completed:
 - equipment, attributes, CP, Class Mastery and skills match the game's own screens
 - at 720p and with the largest UI scale, the description pane's last line and the controls hint are
   fully drawn and clear of the keybind strip
+- the keybind strip is back to its usual size and position in the menus after closing the screen
 - the 14-point grid cells are legible on a TV at a normal viewing distance, and skill names of
   ordinary length are not truncated in a 190-point cell
 - the bar skill names fit their 138-point slot, or are cut short enough to still identify

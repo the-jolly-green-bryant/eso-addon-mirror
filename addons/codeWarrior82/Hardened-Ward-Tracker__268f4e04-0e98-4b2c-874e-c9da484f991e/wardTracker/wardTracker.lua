@@ -55,6 +55,7 @@ function WardCheck(eventCode, changeType, effectSlot, effectName, unitTag, begin
 			--		 where more than one shield is added to player
 			local existingShieldStr = (GetUnitAttributeVisualizerEffectInfo("player",ATTRIBUTE_VISUAL_POWER_SHIELDING,STAT_MITIGATION,ATTRIBUTE_HEALTH,POWERTYPE_HEALTH))
 			if existingShieldStr == nil and isInCombat then
+				PlaySound(SOUNDS.DUEL_START)
 				wardTrackAddonTextIcon:SetText("Shield DOWN Re-Cast!")
 				wardTrackAddonTextIcon:SetColor(255, 0, 0, 255)
 				wardTrackAddonText:SetHidden(false)
@@ -73,6 +74,7 @@ function WardCheck(eventCode, changeType, effectSlot, effectName, unitTag, begin
 			if wardThreshold == nil then return end
 			if wardThreshold >= shieldStr and isInCombat then
 				wardTrackAddonTextIcon:SetColor(255, 0, 0, 255)
+				PlaySound(SOUNDS.DUEL_START)
 				wardTrackAddonTextIcon:SetText("Shield LOW Re-Cast!")
 				wardTrackAddonText:SetHidden(false)
 			end
@@ -161,7 +163,7 @@ local function onAddOnLoadedWard(event, name)
     EVENT_MANAGER:UnregisterForEvent(appName, EVENT_ADD_ON_LOADED)
 
 	--notify that add-on has been loaded
-	zo_callLater(function() printMessageTest("add-on successfully loaded") end, 500)
+	zo_callLater(function() printMessageTest("add-on loaded") end, 500)
 
     --load saved variables
     --wardTracker.savedVariables = ZO_SavedVars:NewCharacterIdSettings("wardTrackAddonVars", 1, "Settings", wardTracker.defaults, GetUnitName("player"))

@@ -1,5 +1,5 @@
 local ADDON_NAME = "KwibusRandomThings"
-local ADDON_VERSION = "1.3.2"
+local ADDON_VERSION = "1.3.3"
 
 local EM = EVENT_MANAGER
 

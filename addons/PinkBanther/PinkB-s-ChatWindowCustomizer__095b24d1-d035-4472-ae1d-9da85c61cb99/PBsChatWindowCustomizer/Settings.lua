@@ -198,6 +198,100 @@ function addon:InitSettings()
 		}
 	)
 
+	-- ---- Showing -------------------------------------------------------------------------
+	AddHeading(settings, LibHarvensAddonSettings, "SI_PBSCWC_SECTION_SHOWING")
+
+	settings:AddSetting(
+		{
+			type = LibHarvensAddonSettings.ST_CHECKBOX,
+			label = GetString(SI_PBSCWC_ALWAYS_VISIBLE),
+			tooltip = GetString(SI_PBSCWC_ALWAYS_VISIBLE_TOOLTIP),
+			default = false,
+			getFunction = function()
+				return self:Account().alwaysVisible
+			end,
+			setFunction = function(value)
+				self:Account().alwaysVisible = value
+				if value then
+					self:Account().enabled = true
+				end
+				self:Refresh()
+			end
+		}
+	)
+
+	settings:AddSetting(
+		{
+			type = LibHarvensAddonSettings.ST_CHECKBOX,
+			label = GetString(SI_PBSCWC_IN_MENUS),
+			tooltip = GetString(SI_PBSCWC_IN_MENUS_TOOLTIP),
+			default = false,
+			getFunction = function()
+				return self:Account().inMenus
+			end,
+			setFunction = function(value)
+				self:Account().inMenus = value
+				if value then
+					self:Account().enabled = true
+				end
+				self:Refresh()
+				-- Switching this on keeps the window up as well, which is the row above.
+				if settings.UpdateControls then
+					settings:UpdateControls()
+				end
+			end
+		}
+	)
+
+	local tierItems = {}
+	local tierItemByKey = {}
+	for _, tier in ipairs(self.tiers) do
+		local item = { name = GetString(_G[tier.stringId]), data = tier.key }
+		tierItems[#tierItems + 1] = item
+		tierItemByKey[tier.key] = item
+	end
+
+	settings:AddSetting(
+		{
+			type = LibHarvensAddonSettings.ST_DROPDOWN,
+			label = GetString(SI_PBSCWC_TIER),
+			tooltip = GetString(SI_PBSCWC_TIER_TOOLTIP),
+			items = tierItems,
+			default = tierItemByKey[self:GameDraw().tier].name,
+			getFunction = function()
+				local item = tierItemByKey[self:Draw().tier] or tierItemByKey[self.GAME_DRAW_FALLBACK.tier]
+				return item.name
+			end,
+			setFunction = function(combobox, name, item)
+				self:SetDrawValue("tier", item.data)
+				self:Account().enabled = true
+				self:Refresh()
+			end
+		}
+	)
+
+	settings:AddSetting(
+		{
+			type = LibHarvensAddonSettings.ST_SLIDER,
+			label = GetString(SI_PBSCWC_LEVEL),
+			tooltip = GetString(SI_PBSCWC_LEVEL_TOOLTIP),
+			min = self.MIN_DRAW_LEVEL,
+			max = self.MAX_DRAW_LEVEL,
+			step = 5,
+			default = self:GameDraw().level,
+			format = "%d",
+			unit = "",
+			getFunction = function()
+				return self:Draw().level
+			end,
+			setFunction = function(value)
+				self:SetDrawValue("level", addon.Round(value))
+				self:Account().enabled = true
+				self:Refresh()
+			end
+		}
+	)
+
 	-- ---- Both ----------------------------------------------------------------------------
 	AddHeading(settings, LibHarvensAddonSettings, "SI_PBSCWC_SECTION_GENERAL")
 

@@ -1,0 +1,44 @@
+{
+  "archive_error": "ESOUI returned an empty response",
+  "archive_path": "addons/Torfason/Atlas__4845",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archive_status": "unavailable",
+  "archived": false,
+  "author": "Torfason",
+  "canonical_id": "esoui:4845",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4845",
+  "deleted": false,
+  "directories": [
+    "Atlas"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4845/",
+  "fingerprint": "681d4c17484499cd5acd6a412b2bd2a94c98592fa4c4518ece7c89df3a8c3f7e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17409.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17408.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4845",
+  "source_url": "https://www.esoui.com/downloads/info4845-Atlas.html",
+  "stats": {
+    "downloads": 13,
+    "favorites": 1,
+    "monthly_downloads": 7
+  },
+  "title": "Atlas",
+  "updated_at": 1789721846000,
+  "version": "0.7.3"
+}

@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/PinkBanther/PinkB-s-LibDebugLogger__0b8ba311-219e-4207-ba00-2876c16ec5b5",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "PinkBanther",
+  "canonical_id": "bethesda:0b8ba311-219e-4207-ba00-2876c16ec5b5",
+  "content_id": "0b8ba311-219e-4207-ba00-2876c16ec5b5",
+  "deleted": false,
+  "fingerprint": "c63c8a018771ed9d85f5b3592be9d82b5b046a92c1e3f532fee1157f50f07dd2",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "0b8ba311-219e-4207-ba00-2876c16ec5b5",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/0b8ba311-219e-4207-ba00-2876c16ec5b5",
+  "title": "PinkB's LibDebugLogger"
+}

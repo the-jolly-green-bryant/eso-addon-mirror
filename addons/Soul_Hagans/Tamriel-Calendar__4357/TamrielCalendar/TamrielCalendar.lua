@@ -2,72 +2,8 @@ TamrielCalendar = TamrielCalendar or {}
 local TC = TamrielCalendar
 TC.name = "TamrielCalendar"
 
--- 1. СТРОКИ
-ZO_CreateStringId("SI_BINDING_NAME_TC_TOGGLE_UI", "Показать/Скрыть плашку")
-ZO_CreateStringId("SI_BINDING_NAME_TC_TOGGLE_WINDOW", "Открыть большой календарь")
-
--- 2. ЛОКАЛИЗАЦИЯ
-local LStrings = {
-    ru = {
-        days = {"Сандас", "Морндас", "Тирдас", "Миддас", "Турдас", "Фредас", "Лоредас"},
-        shortDays = {"Сн", "Мн", "Тд", "Мд", "Тр", "Фр", "Лр"},
-        months = {"Утренней звезды", "Восхода солнца", "Первоцвета", "Руки дождя", "Второго зерна", "Середины года", "Высокого солнца", "Последнего зерна", "Огня очага", "Начала морозов", "Заката солнца", "Вечерней звезды"},
-        realMonths = {"Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"},
-        signs = {"Ритуал", "Любовник", "Лорд", "Маг", "Тени", "Конь", "Ученик", "Воин", "Леди", "Башня", "Атронах", "Вор", "Змей"},
-        moonPhases = {"Новолуние", "Растущий серп", "Первая четверть", "Растущая луна", "Полнолуние", "Убывающая луна", "Последняя четверть", "Убывающий серп"},
-        yearSuffix = "год 2-й эры", monthPrefix = "Месяц", signPrefix = "Знак:", stripFormat = "%s, %d %s %d г. | %s | %02d:%02d",
-        titleHoliday = "День праздника (Лор):", btnPrev = "Назад", btnNext = "Вперед",
-        hNames = { nl="Фестиваль Новой жизни", hd="День Сердец (Сангвин)", aj="Юбилей ESO", jd="День Шута", zz="День Зенитара", my="Середина года (Пелинал)", wf="Фестиваль Ведьм", ud="День Воина (Неустрашимые)", ol="Старая жизнь" }
-    },
-    en = {
-        days = {"Sundas", "Morndas", "Tirdas", "Middas", "Turdas", "Fredas", "Loredas"},
-        shortDays = {"Su", "Mo", "Tu", "We", "Th", "Fr", "Lo"},
-        months = {"Morning Star", "Sun's Dawn", "First Seed", "Rain's Hand", "Second Seed", "Midyear", "Sun's Height", "Last Seed", "Hearthfire", "Frostfall", "Sun's Dusk", "Evening Star"},
-        realMonths = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"},
-        signs = {"Ritual", "Lover", "Lord", "Mage", "Shadow", "Steed", "Apprentice", "Warrior", "Lady", "Tower", "Atronach", "Thief", "Serpent"},
-        moonPhases = {"New Moon", "Waxing Crescent", "First Quarter", "Waxing Gibbous", "Full Moon", "Waning Gibbous", "Last Quarter", "Waning Crescent"},
-        yearSuffix = "year of 2nd Era", monthPrefix = "Month of", signPrefix = "Sign:", stripFormat = "%s, %d %s %d | %s | %02d:%02d",
-        titleHoliday = "Holiday (Lore):", btnPrev = "Prev", btnNext = "Next",
-        hNames = { nl="New Life Festival", hd="Heart's Day (Sanguine)", aj="ESO Anniversary", jd="Jester's Day", zz="Zenithar's Day", my="Midyear (Pelinal)", wf="Witches Festival", ud="Warrior's Day", ol="Old Life" }
-    },
-    de = {
-        days = {"Sandas", "Morndas", "Tirdas", "Middas", "Turdas", "Fredas", "Loredas"}, shortDays = {"Sa", "Mo", "Ti", "Mi", "Tu", "Fr", "Lo"},
-        months = {"Morgenstern", "Sonnendämmerung", "Erstsaat", "Regenhand", "Zweitsaat", "Mittjahr", "Sonnenerhöhung", "Letzte Saat", "Herzfeuer", "Eisfall", "Sonnenuntergang", "Abendstern"},
-        realMonths = {"Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"},
-        signs = {"Das Ritual", "Die Liebenden", "Der Fürst", "Der Magier", "Der Schatten", "Das Ross", "Der Lehrling", "Der Krieger", "Die Fürstin", "Der Turm", "Der Atronach", "Die Diebin", "Die Schlange"},
-        moonPhases = {"Neumond", "Zunehmende Sichel", "Erstes Viertel", "Zunehmender Mond", "Vollmond", "Abnehmender Mond", "Letztes Viertel", "Abnehmende Sichel"},
-        yearSuffix = "Jahr der 2. Ära", monthPrefix = "Monat", signPrefix = "Sternzeichen:", stripFormat = "%s, %d. %s %d | %s | %02d:%02d",
-        titleHoliday = "Feiertag:", btnPrev = "Zurück", btnNext = "Weiter",
-        hNames = { nl="Neujahrsfest", hd="Herztag", aj="ESO-Jubiläum", jd="Tag der Narren", zz="Tag von Zenithar", my="Mittjahr-Feier", wf="Hexenfest", ud="Kriegerfest" }
-    },
-    fr = {
-        days = {"Sandaas", "Morndaas", "Tirdaas", "Middaas", "Turdaas", "Fredaas", "Loredaas"}, shortDays = {"Sa", "Mo", "Ti", "Mi", "Tu", "Fr", "Lo"},
-        months = {"Étoile du matin", "Clair de ciel", "Premier semer", "Pluie de main", "Deuxième semer", "Mi-l'an", "Haut zénith", "Dernier semer", "Âtrefeu", "Soufflegivre", "Sommeil du soleil", "Étoile du soir"},
-        realMonths = {"Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"},
-        signs = {"Le Rituel", "L'Amant", "Le Seigneur", "Le Mage", "L'Ombre", "Le Destrier", "L'Apprenti", "Le Guerrier", "La Dame", "La Tour", "L'Atronach", "Le Voleur", "Le Serpent"},
-        moonPhases = {"Nouvelle lune", "Premier croissant", "Premier quartier", "Lune gibbeuse", "Pleine lune", "Lune décroissante", "Dernier quartier", "Dernier croissant"},
-        yearSuffix = "2ème Ère", monthPrefix = "Mois de", signPrefix = "Signe:", stripFormat = "%s, %d %s %d | %s | %02d:%02d",
-        titleHoliday = "Jour férié:", btnPrev = "Précédent", btnNext = "Suivant",
-        hNames = { nl="Nouvelle vie", hd="Jour du Coeur", aj="Jubilé ESO", jd="Jour de la Farce", zz="Jour de Zenithar", wf="Festival des Sorcières" }
-    },
-    es = {
-        days = {"Sandas", "Morndas", "Tirdas", "Middas", "Turdas", "Fredas", "Loredas"}, shortDays = {"Sa", "Mo", "Ti", "Mi", "Tu", "Fr", "Lo"},
-        months = {"Estrella del Alba", "Amanecer", "Semilla Primera", "Mano de Lluvia", "Segunda Semilla", "Mitad del Año", "Cénit del Sol", "Última Semilla", "Fuego del Hogar", "Helada", "Ocaso", "Estrella del Sur"},
-        realMonths = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"},
-        signs = {"El Ritual", "El Amante", "El Señor", "El Mago", "La Sombra", "El Corcel", "El Aprendiz", "El Guerrero", "La Dama", "La Tower", "El Atromach", "El Ladrón", "El Serpiente"},
-        moonPhases = {"Luna nueva", "Luna creciente", "Cuarto creciente", "Gibosa creciente", "Luna llena", "Gibosa menguante", "Cuarto menguante", "Luna menguante"},
-        yearSuffix = "2.ª Era", monthPrefix = "Mes de", signPrefix = "Signo:", stripFormat = "%s, %d de %s %d | %s | %02d:%02d",
-        titleHoliday = "Festividad:", btnPrev = "Anterior", btnNext = "Siguiente",
-        hNames = { nl="Nueva Vida", hd="Día del Corazón", aj="Aniversario ESO", jd="Día del Bufón", my="Midyear", wf="Festival de las Brujas" }
-    }
-}
--- DE, FR, ES наследуют из EN в Initialize
-
+local L = TC.L
 local HolidayDates = { [1]={[1]="nl"}, [2]={[16]="hd"}, [4]={[4]="aj",[28]="jd"}, [5]={[16]="zz"}, [6]={[16]="my"}, [10]={[13]="wf"}, [11]={[20]="ud"}, [12]={[30]="ol"} }
-
-local lang = GetCVar("language.2")
-if not LStrings[lang] then lang = "en" end
-local L = LStrings[lang]
 
 TC.viewDate = os.date("*t")
 local signFileNames = {"Ritual", "Lover", "Lord", "Mage", "Shadow", "Steed", "Apprentice", "Warrior", "Lady", "Tower", "Atronach", "Thief", "Serpent"}
@@ -88,7 +24,43 @@ function TC.GetMoonPhaseName(cycleDays, offset)
     return L.moonPhases[phaseIndex] or L.moonPhases[1]
 end
 
--- 4. УПРАВЛЕНИЕ ОКНОМ
+-- 4. УПРАВЛЕНИЕ ОКНОМ И ПЛАШКОЙ
+function TC.GetFontString()
+    local sv = TC.savedVars
+    local fontPath = sv.fontPath or "$(BOLD_FONT)"
+    local fontSize = sv.fontSize or 18
+    local fontStyle = sv.fontStyle or "soft-shadow-thick"
+    if fontStyle and fontStyle ~= "" then
+        return string.format("%s|%d|%s", fontPath, fontSize, fontStyle)
+    else
+        return string.format("%s|%d", fontPath, fontSize)
+    end
+end
+
+function TC.ApplyVisualSettings()
+    if not TamrielCalendarControl then return end
+    local sv = TC.savedVars
+
+    if not sv.autoWidth then
+        TamrielCalendarControl:SetWidth(sv.stripWidth)
+    end
+    TamrielCalendarControl:SetHeight(sv.stripHeight)
+    TamrielCalendarControl:SetMovable(not sv.stripLocked)
+    
+    -- Гладкий фон без сжимающихся полос
+    local alpha = sv.stripAlpha or 0.8
+    TamrielCalendarControlBG:SetEdgeTexture("", 8, 1, 1)
+    TamrielCalendarControlBG:SetCenterColor(0, 0, 0, alpha)
+    TamrielCalendarControlBG:SetEdgeColor(0.25, 0.25, 0.25, alpha)
+
+    -- Шрифт и цвет текста
+    local fontString = TC.GetFontString()
+    TamrielCalendarLabel:SetFont(fontString)
+    if sv.textColor then
+        TamrielCalendarLabel:SetColor(sv.textColor.r, sv.textColor.g, sv.textColor.b, sv.textColor.a or 1)
+    end
+end
+
 function TC.ChangeMonth(delta)
     local m = TC.viewDate.month + delta
     local y = TC.viewDate.year
@@ -99,10 +71,42 @@ end
 
 function TC.UpdateUI()
     if not TamrielCalendarControl or TamrielCalendarControl:IsHidden() then return end
+    local sv = TC.savedVars
     local date = os.date("*t")
     local h, m = TC.GetTamrielTime()
     local tamYear = 582 + (date.year - 2014)
-    TamrielCalendarLabel:SetText(string.format(L.stripFormat, L.days[date.wday], date.day, L.months[date.month], tamYear, L.signs[date.month], h, m))
+
+    local dateParts = {}
+    if sv.showDayOfWeek then
+        table.insert(dateParts, L.days[date.wday])
+    end
+    if sv.showDate then
+        table.insert(dateParts, string.format("%d %s", date.day, L.months[date.month]))
+    end
+    if sv.showYear then
+        table.insert(dateParts, string.format("%d %s", tamYear, L.yearSuffix or ""))
+    end
+
+    local finalSections = {}
+    if #dateParts > 0 then
+        table.insert(finalSections, table.concat(dateParts, ", "))
+    end
+    if sv.showSign then
+        local sPrefix = L.signPrefix and (L.signPrefix .. " ") or ""
+        table.insert(finalSections, sPrefix .. L.signs[date.month])
+    end
+    if sv.showTime then
+        table.insert(finalSections, string.format("%02d:%02d", h, m))
+    end
+
+    TamrielCalendarLabel:SetText(table.concat(finalSections, " | "))
+
+    -- Автоматическая подгонка ширины под текст
+    if sv.autoWidth then
+        local textWidth = TamrielCalendarLabel:GetTextWidth()
+        local padding = 30
+        TamrielCalendarControl:SetWidth(math.max(120, textWidth + padding))
+    end
 end
 
 function TC.UpdateWindowContent()
@@ -188,15 +192,27 @@ end
 
 function TC.Initialize(eventCode, addOnName)
     if addOnName ~= TC.name then return end
-    TC.savedVars = ZO_SavedVars:NewAccountWide("TamrielCalendarVars", 2, nil, {stripHidden = false, positions = {}}, GetWorldName())
-    
-    -- Наследование недостающих строк
-    for langKey, tbl in pairs(LStrings) do
-        if langKey ~= "en" then
-            for k,v in pairs(LStrings.en) do if not tbl[k] then tbl[k] = v end end
-            for k,v in pairs(LStrings.en.hNames) do if not tbl.hNames[k] then tbl.hNames[k] = v end end
-        end
-    end
+    EVENT_MANAGER:UnregisterForEvent(TC.name, EVENT_ADD_ON_LOADED)
+
+    local defaults = {
+        stripHidden = false,
+        positions = {},
+        autoWidth = true,
+        stripWidth = 650,
+        stripHeight = 32,
+        stripAlpha = 0.8,
+        stripLocked = false,
+        fontPath = "EsoUI/Common/Fonts/Univers67.otf",
+        fontSize = 18,
+        fontStyle = "soft-shadow-thick",
+        showDayOfWeek = true,
+        showDate = true,
+        showYear = true,
+        showSign = true,
+        showTime = true,
+    }
+
+    TC.savedVars = ZO_SavedVars:NewAccountWide("TamrielCalendarVars", 2, nil, defaults, GetWorldName())
 
     for _, ctrl in pairs({TamrielCalendarControl, TamrielCalendarWindow}) do
         local n = ctrl:GetName()
@@ -206,6 +222,9 @@ function TC.Initialize(eventCode, addOnName)
         end
     end
     
+    TC.ApplyVisualSettings()
+    TC.RegisterSettings()
+
     TamrielCalendarControl:SetHidden(TC.savedVars.stripHidden)
     EVENT_MANAGER:RegisterForUpdate(TC.name, 1000, TC.UpdateUI)
     

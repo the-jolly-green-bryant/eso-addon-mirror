@@ -188,6 +188,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Alternative Attribute Bars](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/buldezir/Alternative-Attribute-Bars__3056) | buldezir | PC / Mac | 1.0.16 |
 | [Alternative Attribute Bars (PS5)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/j.hhh/Alternative-Attribute-Bars-PS5__e522328f-332e-4144-96c3-273d59d58ab6) | j.hhh | Console | — |
 | [Alternative Boss Bar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/buldezir/Alternative-Boss-Bar__3052) | buldezir | PC / Mac | 1.0.19 |
+| [Alternative Boss Bar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/j.hhh/Alternative-Boss-Bar__ab71c694-e122-4792-9268-fe2c2595f986) | j.hhh | Console | — |
 | [Alternative Buffs/Debuffs](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/buldezir/Alternative-Buffs-Debuffs__3875) | buldezir | PC / Mac | 1.0.3 |
 | [Alternative Group Frames](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/buldezir/Alternative-Group-Frames__3053) | buldezir | PC / Mac | 1.4.33 |
 | [Alternative Group Frames](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Copper0/Alternative-Group-Frames__21f64968-c492-4b43-82ff-b7b1f25c7500) | Copper0 | Console | — |
@@ -282,6 +283,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [AsylumTracker.LangPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Maxim_ZG/AsylumTracker.LangPatch__2847) | Maxim_ZG | PC / Mac | 2.1.6 |
 | [AT Finisher (Finish Him !!!) - Ascending Tide](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rhyono/AT-Finisher-Finish-Him---Ascending-Tide__1979) | Rhyono | PC / Mac | 1.1.8 |
 | [ATHGuild](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/cptnn3m0/ATHGuild__2738) | cptnn3m0 | PC / Mac | 0.0.19 |
+| [Atlas](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Torfason/Atlas__4845) | Torfason | PC / Mac | 0.7.3 |
 | [Atlas - Mounts (WIP)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Mitsarugi/Atlas---Mounts-WIP__1502) | Mitsarugi | PC / Mac | 0.1a |
 | [Atronach refresh](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Risers/Atronach-refresh__2607) | Risers | PC / Mac | 1.0.0 |
 | [Auction Looter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/jhessin/Auction-Looter__3588) | jhessin | PC / Mac | 1.0 |

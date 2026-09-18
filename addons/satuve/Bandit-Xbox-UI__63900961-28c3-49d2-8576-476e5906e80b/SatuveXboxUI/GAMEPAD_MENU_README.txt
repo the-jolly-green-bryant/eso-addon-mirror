@@ -104,3 +104,14 @@ an independent fallback. Minimap numeric settings are finite controller value
 lists so value changes always reach the original setters. LibGamepad 1.0.7+ and
 LibAddonMenu-2.0 r41+ are required; install the newest Xbox versions available.
 ContextMenuBridge is not a replacement.
+
+1.7.10: Restored the confirmed-working Bandit MoveFrames implementation for the
+Move and Frame Edit Mode buttons. The guard now deactivates only the underlying
+ESO settings list and removes only its A/back/trigger keybind groups. It does not
+push a modal keybind state, add an action layer, take focus or poll controller
+sticks. Xbox pointer movement and A-drag stay available; B exits and restores the
+previous options list when it is still open. The safe Minimap value lists remain.
+
+1.7.11: Minimap size, transparency, pin scale and zoom settings now use
+ESO's native Gamepad slider rows again. D-Pad left/right reaches the addon's
+console-safe slider callback and applies the original Bandit setFunc immediately.

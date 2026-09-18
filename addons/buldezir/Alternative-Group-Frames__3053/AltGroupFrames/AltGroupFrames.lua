@@ -321,8 +321,8 @@ function UnitFrame:GetIconPath()
 	end
 	if PRI ~= nil then
 		local role = PRI.GetRole(self.unitTag)
-		if role ~= nil and role.name and role.show and role.showOnAlive and role.sv.texturePath ~= nil then
-			return role.sv.texturePath
+		if role ~= nil and role.name and role.show and role.showOnAlive and role.icon.texturePath ~= nil then
+			return role.icon.texturePath
 		end
 	end
 	if ODY ~= nil then

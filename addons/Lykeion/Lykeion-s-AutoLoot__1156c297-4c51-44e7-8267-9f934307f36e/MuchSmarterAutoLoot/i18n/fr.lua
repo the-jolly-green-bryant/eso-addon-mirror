@@ -61,7 +61,6 @@ ZO_CreateStringId("MSAL_STOLEN_TREASURE_FILTER_LOGIN_REMINDER","Le filtre de qua
 ZO_CreateStringId("MSAL_LOGIN_REMINDER","Rappel à la Connexion")
 ZO_CreateStringId("MSAL_LOGIN_REMINDER_TOOLTIP","Lorsqu'elle est activée, l'addon affiche une fois par jour au démarrage les informations de l'addon et les permissions sensibles qu'il utilise")
 ZO_CreateStringId("MSAL_AUTOBIND_TOOLTIP","Lorsque cette option est activée, les équipements |cdb8e0bnon collecté et non inscrit sur la liste noire|r seront automatiquement liés")
-ZO_CreateStringId("MSAL_AUTOBIND_TOOLTIP_CONSOLE","Lorsque cette option est activée, les équipements |cdb8e0bnon collecté|r seront automatiquement liés")
 ZO_CreateStringId("MSAL_ADD_ITEM","Ajouter à la %s")
 ZO_CreateStringId("MSAL_REMOVE_ITEM","Vérifier / Retirer de la %s")
 ZO_CreateStringId("MSAL_REMOVE_SELECTED_ITEM","Retirer l'élément %s sélectionné")

@@ -16,7 +16,7 @@ SatuveXboxUI is a replacement for Bandits User Interface. Do not enable both add
 
 ## Fixed in version 1.1.65
 
-- Frame Edit Mode now suspends the underlying gamepad list and takes its own keybind state. D-Pad and A no longer reach hidden settings, and closing the editor restores the previous list and keybinds.
+- Frame Edit Mode uses Bandit’s proven movable-control path. It deactivates the underlying gamepad list and removes only that menu’s A/back/trigger keybind groups, leaving Xbox pointer movement and A-drag available. B exits and restores the previous list when appropriate.
 - The permanent LB/RB fallback poll now runs at 50 ms and only processes input while the native gamepad main menu is visible. Hidden scenes cannot change focus through this poll.
 - The player-resource fallback now runs at 100 ms, pauses before player activation, updates existing state tables in place, and skips frame redraws when values are unchanged.
 - Completed unsaved combat history is capped at 12 reports per session. Explicitly saved reports are preserved.

@@ -1,8 +1,8 @@
 ## To release a new version, edit the version in the two lines below and nothing else.
-## Title: |cFF69B4PB’s LuaMemoryMonitor|r 0.4.0
+## Title: |cFF69B4PB’s LuaMemoryMonitor|r 0.5.0
 ## Author: |cFF69B4PinkBanther|r
 ## Description: Shows how much memory each add-on uses, ranked in a window on the HUD: what its saved variables and its start-up took, measured while add-ons load, and an estimate of what it holds now. /pbmem shows and hides the window.
-## Version: 0.4.0
+## Version: 0.5.0
 ## APIVersion: 101050 101051
 ## OptionalDependsOn: LibHarvensAddonSettings>=20106
 ## SavedVariables: PBsLuaMemoryMonitor_Data

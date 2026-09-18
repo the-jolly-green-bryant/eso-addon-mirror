@@ -74,24 +74,32 @@ function D.Equipment()
     return rows
 end
 
+-- The numbers the header band shows: maximums, regeneration, the combat table and attribute
+-- points. They are listed nowhere else, so a value appears on screen exactly once.
+function D.Basics()
+    local values = {}
+    for _, key in ipairs({"HEALTH_MAX", "MAGICKA_MAX", "STAMINA_MAX", "HEALTH_REGEN_COMBAT", "MAGICKA_REGEN_COMBAT",
+        "STAMINA_REGEN_COMBAT", "POWER", "SPELL_POWER", "CRITICAL_STRIKE", "SPELL_CRITICAL",
+        "PHYSICAL_PENETRATION", "SPELL_PENETRATION", "PHYSICAL_RESIST", "SPELL_RESIST"}) do
+        local id = _G["STAT_" .. key]
+        if id then values[key] = GetPlayerStat(id, STAT_BONUS_OPTION_APPLY_BONUS) end
+    end
+    for _, key in ipairs({"HEALTH", "MAGICKA", "STAMINA"}) do
+        values["attr" .. key] = GetAttributeSpentPoints(_G["ATTRIBUTE_" .. key])
+    end
+    return values
+end
+
+-- A critical rating with the chance it gives, as the game's own stats screen converts it.
+function D.Critical(rating)
+    if not rating then return "—" end
+    if not GetCriticalStrikeChance then return number(rating) end
+    return number(rating) .. string.format(" (%.1f%%)", GetCriticalStrikeChance(rating))
+end
+
+-- Everything from the first advanced category (コアアビリティ) on, and every active effect.
 function D.Stats()
     local rows = {}
-    local basics = {
-        {"HEALTH_MAX", "最大体力"}, {"MAGICKA_MAX", "最大マジカ"}, {"STAMINA_MAX", "最大スタミナ"},
-        {"HEALTH_REGEN_COMBAT", "体力再生（戦闘）"}, {"MAGICKA_REGEN_COMBAT", "マジカ再生（戦闘）"},
-        {"STAMINA_REGEN_COMBAT", "スタミナ再生（戦闘）"}, {"POWER", "武器ダメージ"}, {"SPELL_POWER", "呪文ダメージ"},
-        {"CRITICAL_STRIKE", "武器クリティカル値"}, {"SPELL_CRITICAL", "呪文クリティカル値"},
-        {"PHYSICAL_PENETRATION", "物理貫通"}, {"SPELL_PENETRATION", "呪文貫通"},
-        {"PHYSICAL_RESIST", "物理耐性"}, {"SPELL_RESIST", "呪文耐性"},
-    }
-    for _, stat in ipairs(basics) do
-        local id = _G["STAT_" .. stat[1]]
-        if id then row(rows, stat[1], stat[2], number(GetPlayerStat(id, STAT_BONUS_OPTION_APPLY_BONUS)), "現在の武器バー・有効な効果を反映した値です。クリティカル値はレーティングです。") end
-    end
-    header(rows, "attributes", "能力ポイント")
-    for _, a in ipairs({{"HEALTH", "体力"}, {"MAGICKA", "マジカ"}, {"STAMINA", "スタミナ"}}) do
-        row(rows, "attr" .. a[1], a[2], GetAttributeSpentPoints(_G["ATTRIBUTE_" .. a[1]]))
-    end
     for c = 1, GetNumAdvancedStatCategories() do
         local category = GetAdvancedStatsCategoryId(c)
         local name, count = GetAdvancedStatCategoryInfo(category)
@@ -116,6 +124,75 @@ function D.Stats()
         local remaining = ends > 0 and ("残り " .. math.max(0, math.ceil(ends - GetFrameTimeSeconds())) .. " 秒") or "時間制限なし"
         row(rows, "buff" .. ability .. ":" .. i, (mundus[i] and "ムンダス：" or "") .. clean(name), stacks > 1 and ("×" .. stacks) or "", remaining .. "\n" .. GetAbilityDescription(ability), icon)
     end
+    return rows
+end
+
+local function group(rows, key, name, value, detail)
+    row(rows, key, name, value, detail or name)
+    rows[#rows].header = true
+    return rows[#rows]
+end
+
+function D.Build(mastery, classLines)
+    local rows = {}
+    local first, last = GetAssignableChampionBarStartAndEndSlots()
+    local order, slots = {}, {}
+    for slot = first, last do
+        local discipline = GetRequiredChampionDisciplineIdForSlot(slot, HOTBAR_CATEGORY_CHAMPION)
+        if not slots[discipline] then slots[discipline] = {}; order[#order + 1] = discipline end
+        table.insert(slots[discipline], slot)
+    end
+    -- gapBefore leaves a blank row between sections; breakBefore starts the next column.
+    for n, discipline in ipairs(order) do
+        local kind = GetChampionDisciplineType(discipline)
+        local title = group(rows, "cpgroup" .. discipline, clean(GetChampionDisciplineName(discipline)), GetNumSpentChampionPoints(discipline))
+        title.discipline, title.gapBefore = kind, n > 1
+        for _, slot in ipairs(slots[discipline]) do
+            local id = GetSlotBoundId(slot, HOTBAR_CATEGORY_CHAMPION)
+            if id and id > 0 then
+                local points = GetNumPointsSpentOnChampionSkill(id)
+                row(rows, "cpslot" .. slot, GetChampionSkillName(id), points, GetChampionSkillDescription(id, points))
+            else
+                row(rows, "cpslot" .. slot, "スロット " .. (slot - first + 1) .. "：未装備", "", "このスロットにはCPが装備されていません。")
+            end
+            rows[#rows].discipline = kind
+        end
+    end
+
+    -- The selected class skill lines head the second column, directly above Class Mastery,
+    -- which depends on them.
+    classLines = classLines or {}
+    group(rows, "classLines", "クラススキルライン", "", "現在選択しているクラススキルラインです。").breakBefore = true
+    for n, line in ipairs(classLines) do
+        row(rows, "classLine" .. n, line.name, (line.own and "" or "サブ ") .. "R" .. line.rank,
+            line.own and "自分のクラスのスキルラインです。" or "サブクラスで選択しているスキルラインです。")
+    end
+    if #classLines == 0 then row(rows, "classLineNone", "なし", "", "") end
+
+    mastery = mastery or {}
+    group(rows, "mastery", "クラスマスタリー", mastery.subclassed and "選択不可" or string.format("取得 %d / 保有 %d", #mastery, mastery.points or 0),
+        "クラスマスタリーは、有効なクラススキルラインがすべて自分のクラスのときだけ選択できます。").gapBefore = true
+    for n, entry in ipairs(mastery) do
+        row(rows, "mastery" .. n, entry.name, "R" .. entry.rank, entry.detail, entry.icon)
+    end
+    if mastery.subclassed then
+        row(rows, "masteryNone", "サブクラス使用中", "", "自分のクラスのスキルラインだけの構成で選択できます。")
+    elseif #mastery == 0 then
+        row(rows, "masteryNone", (mastery.lines or 0) > 0 and "取得したパッシブなし" or "未解放", "", "")
+    end
+
+    group(rows, "mundus", "ムンダス", "").gapBefore = true
+    local mundus = {GetUnitActiveMundusStoneBuffIndices("player")}
+    for _, i in ipairs(mundus) do
+        local name, _, _, _, _, icon, _, _, _, _, ability = GetUnitBuffInfo("player", i)
+        row(rows, "mundus" .. i, name, "", GetAbilityDescription(ability), icon)
+    end
+    if #mundus == 0 then row(rows, "mundusNone", "なし", "", "ムンダスストーンの効果を受けていません。") end
+
+    local curse = GetPlayerCurseType and GetPlayerCurseType() or CURSE_TYPE_NONE
+    local curseName = (curse and curse ~= CURSE_TYPE_NONE) and clean(GetString("SI_CURSETYPE", curse)) or "なし"
+    group(rows, "curse", "呪い", "").gapBefore = true
+    row(rows, "curseType", curseName, "", "吸血症・人狼症の状態です。")
     return rows
 end
 
@@ -183,6 +260,9 @@ function D.Skills(showAll)
     -- (ZO_SkillsDataManager:DeactivateClassMasterySkillLinesForRespec).
     local masteryLines, activeClasses = {}, {}
     local activeClassLines, ownClassLines = 0, 0
+    -- The (up to three) class skill lines currently selected, own class or subclassed.
+    local classLines = {}
+    rows.classLines = classLines
     for t = 1, GetNumSkillTypes() do
         for l = 1, GetNumSkillLines(t) do
             local lineId = GetSkillLineId(t, l)
@@ -192,10 +272,12 @@ function D.Skills(showAll)
             if classMastery then
                 masteryLine = {classId = classId, points = masteryPoints(lineId), entries = {}}
                 masteryLines[#masteryLines + 1] = masteryLine
-            elseif classId and classId > 0 and activeLine then
+            elseif classId and classId > 0 and activeLine and (not SKILL_TYPE_CLASS or t == SKILL_TYPE_CLASS) then
                 activeClasses[classId] = true
                 activeClassLines = activeClassLines + 1
-                if not IsPlayerClassSkillLineById or IsPlayerClassSkillLineById(lineId) then ownClassLines = ownClassLines + 1 end
+                local own = not IsPlayerClassSkillLineById or IsPlayerClassSkillLineById(lineId)
+                if own then ownClassLines = ownClassLines + 1 end
+                classLines[#classLines + 1] = {name = clean(GetSkillLineNameById(lineId)), rank = rank, own = own}
             end
             -- Class Mastery lines read as undiscovered until a class line is at max rank.
             if discovered or showAll or classMastery then
@@ -210,7 +292,8 @@ function D.Skills(showAll)
                         local kind = passive and "パッシブ" or (ultimate and "ULT" or "アクティブ")
                         row(entries, "skill" .. t .. ":" .. l .. ":" .. s, name, purchased and ("R" .. abilityRank) or "未取得", kind .. (activeLine and "" or " / ライン非アクティブ") .. "\n" .. description, icon)
                         if masteryLine and purchased then
-                            masteryLine.entries[#masteryLine.entries + 1] = {name = clean(name), rank = abilityRank, icon = icon, line = clean(GetSkillLineNameById(lineId))}
+                            masteryLine.entries[#masteryLine.entries + 1] = {name = clean(name), rank = abilityRank, icon = icon, detail = description,
+                                line = clean(GetSkillLineNameById(lineId))}
                         end
                     end
                 end
@@ -240,13 +323,18 @@ function D.Identity()
         "   Lv " .. GetUnitLevel("player") .. "   CP " .. GetUnitChampionPoints("player") .. "   " .. clean(GetUnitTitle("player"))
 end
 
+local function safely(collector, ...)
+    local ok, result = pcall(collector, ...)
+    if ok then return result end
+    return {{key = "error", name = "情報を取得できません", value = "", detail = tostring(result)}}
+end
+
+-- Areas: 1 equipment, 2 build summary (both on the first page), 3 detailed statistics,
+-- 4 Champion Points, 5 skills. One failing collector never blanks the others.
 function D.Collect(showAll)
-    local columns = {}
-    for i, collector in ipairs({D.Equipment, D.Stats, D.Champion, D.Skills}) do
-        local ok, result = pcall(collector, showAll)
-        if ok then columns[i] = result else
-            columns[i] = {{key = "error", name = "情報を取得できません", value = "", detail = tostring(result)}}
-        end
-    end
+    local skills = safely(D.Skills, showAll)
+    local columns = {safely(D.Equipment), safely(D.Build, skills.mastery, skills.classLines), safely(D.Stats), safely(D.Champion, showAll), skills}
+    local ok, basics = pcall(D.Basics)
+    columns.basics = ok and basics or {}
     return columns
 end

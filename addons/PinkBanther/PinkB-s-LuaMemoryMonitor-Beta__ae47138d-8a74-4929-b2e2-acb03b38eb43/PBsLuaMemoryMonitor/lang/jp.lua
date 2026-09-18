@@ -68,6 +68,12 @@ local strings = {
 	SI_PBSLMM_COLLECT_NOW = "今すぐメモリを解放",
 	SI_PBSLMM_COLLECT_NOW_TOOLTIP = "ガベージコレクションを1回完全に実行し、解放できた量をチャットに表示します。/pbmem gc と同じです。",
 	SI_PBSLMM_COLLECT_NOW_BUTTON = "解放",
+	SI_PBSLMM_PERCENT = "%d%%",
+	SI_PBSLMM_SUMMARY_ABOVE = "%d%%超で解放",
+	SI_PBSLMM_COLLECT_ABOVE = "使用率がこの値を超えたら解放",
+	SI_PBSLMM_COLLECT_ABOVE_TOOLTIP = "ゲームは、アドオンメモリが残り少なくなると警告を出し（上限100MBに対して約77MBで表示）、使い切るとアドオンを無効化します。使用率がここで指定した割合を超えると自動でメモリを解放し、使用率を下げて警告が出ないようにします。解放できるのは、どこからも使われなくなったメモリだけです。アドオンが実際にそれだけ使っている場合は、それでも警告が出ます。警告そのものはゲーム本体が表示しており、アドオンからは止められません。",
+	SI_PBSLMM_CLEAR_WARNING = "ゲームのメモリ通知を消す",
+	SI_PBSLMM_CLEAR_WARNING_TOOLTIP = "ゲームがアドオンメモリ不足の通知を出したとき、その通知を消し、同時にメモリを解放します。対象はお知らせ一覧に入る通知で、画面中央に出る警告ウィンドウではありません。そちらはゲーム本体が表示しているため、アドオンからは止められません。",
 
 	SI_PBSLMM_SECTION_ACTIONS = "操作",
 	SI_PBSLMM_SCAN_NOW = "保持量を今すぐ計測",

@@ -16,6 +16,8 @@ local OPACITY_STEP = 5
 local AUTO_SCAN_CHOICES = { 0, 30, 60, 300 }
 -- A full collection stalls the game for a moment, so nothing shorter than a minute is offered.
 local COLLECT_CHOICES = { 0, 60, 300, 600 }
+-- Shares of the add-on memory limit. The game's own warning comes at about 77 of 100 MB.
+local COLLECT_ABOVE_CHOICES = { 0, 50, 60, 65, 70 }
 
 local function AddSection(settings, LibHarvensAddonSettings, stringId)
 	settings:AddSetting({
@@ -221,6 +223,15 @@ function addon:InitSettings()
 		function() return self.sv.collectEvery end,
 		function(seconds) self:SetCollectEvery(seconds) end)
 
+	local aboveItems = {}
+	for _, percent in ipairs(COLLECT_ABOVE_CHOICES) do
+		aboveItems[#aboveItems + 1] = { name = self:PercentLabel(percent), data = percent }
+	end
+	AddDropdown(settings, LibHarvensAddonSettings, SI_PBSLMM_COLLECT_ABOVE, SI_PBSLMM_COLLECT_ABOVE_TOOLTIP,
+		aboveItems, 0,
+		function() return self.sv.collectAbove end,
+		function(percent) self:SetCollectAbove(percent) end)
+
 	settings:AddSetting({
 		type = LibHarvensAddonSettings.ST_CHECKBOX,
 		label = GetString(SI_PBSLMM_COLLECT_IN_COMBAT),
@@ -231,6 +242,19 @@ function addon:InitSettings()
 		end,
 		setFunction = function(value)
 			self.sv.collectInCombat = value
+		end,
+	})
+
+	settings:AddSetting({
+		type = LibHarvensAddonSettings.ST_CHECKBOX,
+		label = GetString(SI_PBSLMM_CLEAR_WARNING),
+		tooltip = GetString(SI_PBSLMM_CLEAR_WARNING_TOOLTIP),
+		default = false,
+		getFunction = function()
+			return self.sv.clearWarning == true
+		end,
+		setFunction = function(value)
+			self:SetClearWarning(value)
 		end,
 	})
 

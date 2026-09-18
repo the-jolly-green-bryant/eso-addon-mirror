@@ -1,7 +1,8 @@
 -- PB's ChatWindowCustomizer
 -- Author: PinkBanther
 --
--- Moves and resizes the chat window on the HUD, and changes the size of the text in it.
+-- Moves and resizes the chat window on the HUD, changes the size of the text in it, keeps it on
+-- screen instead of fading away, and decides what it is drawn over.
 --
 -- On console the HUD chat is the gamepad chat system, GAMEPAD_CHAT_SYSTEM, and the game gives
 -- the player no say in where it sits or how big it is: GamepadChatContainer:LoadSettings pins
@@ -22,8 +23,18 @@
 --   message text     the font on each chat tab's TextBuffer, in the same "face|size|style"
 --                    form the game builds in GetChatFontFormatString, with the size as a
 --                    number instead of one of the three $(GP_n) steps.
+--   draw order       the tier and level of the same control. The game draws the chat at
+--                    MEDIUM / 30: over the HUD, under keybind strips and tooltips.
+--   where it shows   the client draws the chat on the HUD and nowhere else (IsHidden), so the
+--                    window is shown again after its RefreshVisibility has hidden it, for
+--                    players who want to read chat with a menu open.
+--   staying up       the chat minimises itself 20 seconds after the last message. The expiry
+--                    behind that is a file-local only StartVisibilityTimer writes, so keeping
+--                    it in the future stops the minimise; the message area and the
+--                    background's alpha put right what an earlier minimise did.
 --
--- All three are writes to controls and fields. Nothing in the chat is hooked or wrapped, and
+-- All of it is writes to controls and fields, with two exceptions -- StartVisibilityTimer and
+-- RefreshVisibility, each of which is one assignment or one SetHidden and nothing else. Nothing in the chat is hooked or wrapped, and
 -- no chat code is called: the chat is the one piece of UI where every message the player sends
 -- goes through the client's own closures, and an add-on frame anywhere near those is how a
 -- private-function error is born. See FINDINGS.md, "Why nothing is hooked".
@@ -182,6 +193,54 @@ addon.FALLBACK_FONT_SIZE = 20
 
 addon.LAYOUT_KEYS = { "corner", "x", "y", "width", "height" }
 
+-- ---------------------------------------------------------------------------------------
+-- Draw order
+--
+-- A top-level window is drawn by tier first, then by level within that tier. The chat is
+-- MEDIUM / 30 (ZO_ChatWindowTopLevelTemplate, ZO_MEDIUM_TIER_KEYBOARD_CHAT_WINDOW), which puts
+-- it above the HUD -- most of the HUD is LOW -- and under the things the client puts at HIGH:
+-- keybind strips, tooltips, announcements, alerts.
+--
+-- So LOW is "let the HUD draw over the chat", MEDIUM is the game's own, and HIGH is "over
+-- almost everything". The level is the order inside the chosen tier, and the client's own
+-- numbers for the two tiers worth sharing with are in commonconstants.lua: at MEDIUM, the
+-- keybind strip is 10 and a dialog 20; at HIGH, tooltips are 140 and alerts 145.
+-- ---------------------------------------------------------------------------------------
+
+addon.tiers = {
+	{ key = "low", constName = "DT_LOW", command = "low", stringId = "SI_PBSCWC_TIER_LOW" },
+	{ key = "medium", constName = "DT_MEDIUM", command = "medium", stringId = "SI_PBSCWC_TIER_MEDIUM" },
+	{ key = "high", constName = "DT_HIGH", command = "high", stringId = "SI_PBSCWC_TIER_HIGH" },
+}
+
+addon.tierByKey = {}
+addon.tierByCommand = {}
+for _, tier in ipairs(addon.tiers) do
+	addon.tierByKey[tier.key] = tier
+	addon.tierByCommand[tier.command] = tier
+end
+
+function addon:TierValue(tier)
+	return _G[tier.constName]
+end
+
+function addon:TierForValue(value)
+	for _, tier in ipairs(self.tiers) do
+		if value ~= nil and self:TierValue(tier) == value then
+			return tier
+		end
+	end
+	return nil
+end
+
+-- The game's own, and only a fallback: the real pair is read off the control before the first
+-- write, like the anchor.
+addon.GAME_DRAW_FALLBACK = { tier = "medium", level = 30 }
+
+addon.MIN_DRAW_LEVEL = 0
+addon.MAX_DRAW_LEVEL = 200
+addon.DRAW_KEYS = { "tier", "level" }
+
 -- Every value the player can change is stored only once they change it. An empty table means
 -- "the game's own", which is what makes an untouched install cost nothing.
 --
@@ -190,9 +249,12 @@ addon.LAYOUT_KEYS = { "corner", "x", "y", "width", "height" }
 addon.accountDefaults = {
 	enabled = true,
 	preview = true,
+	alwaysVisible = false,
+	inMenus = false,
 	layout = {},
+	draw = {},
 	text = {},
-	measured = { layout = {}, fontSize = {} },
+	measured = { layout = {}, fontSize = {}, draw = {} },
 }
 
 -- ---------------------------------------------------------------------------------------
@@ -216,6 +278,15 @@ function addon:Account()
 	if type(account.layout) ~= "table" then
 		account.layout = {}
 	end
+	if account.alwaysVisible == nil then
+		account.alwaysVisible = false
+	end
+	if account.inMenus == nil then
+		account.inMenus = false
+	end
+	if type(account.draw) ~= "table" then
+		account.draw = {}
+	end
 	if type(account.text) ~= "table" then
 		account.text = {}
 	end
@@ -227,6 +298,9 @@ function addon:Account()
 	end
 	if type(account.measured.fontSize) ~= "table" then
 		account.measured.fontSize = {}
+	end
+	if type(account.measured.draw) ~= "table" then
+		account.measured.draw = {}
 	end
 	return account
 end
@@ -454,6 +528,20 @@ function addon:CaptureGameLayout(chat)
 			original.constraints = { minWidth, minHeight, maxWidth, maxHeight }
 		end
 	end
+	if type(control.GetDrawTier) == "function" then
+		local okTier, tierValue = pcall(control.GetDrawTier, control)
+		local okLevel, levelValue = pcall(control.GetDrawLevel, control)
+		if okTier and okLevel then
+			original.draw = { tier = tierValue, level = levelValue }
+			local tier = self:TierForValue(tierValue)
+			if tier and type(levelValue) == "number" then
+				self:Account().measured.draw = { tier = tier.key, level = Round(levelValue) }
+				self.gameDrawSource = "measured"
+			else
+				self.gameDrawSource = "fallback (tier not one of the three)"
+			end
+		end
+	end
 	self.original = original
 
 	-- Translated into this add-on's terms only when it is the shape the game uses today: one
@@ -592,6 +680,249 @@ function addon:ApplyLayout()
 	self.layoutWritten = true
 	self.lastLayout = layout
 	return true
+end
+
+-- ---------------------------------------------------------------------------------------
+-- Writing the draw order
+--
+-- Two writes on the same control as the layout, and read back off it first, so switching the
+-- option off puts the client's own tier and level back rather than this build's idea of them.
+-- ---------------------------------------------------------------------------------------
+
+function addon:GameDraw()
+	local measured = self:Account().measured.draw
+	local fallback = self.GAME_DRAW_FALLBACK
+	local tier = self.tierByKey[measured.tier] and measured.tier or fallback.tier
+	local level = type(measured.level) == "number" and Round(measured.level) or fallback.level
+	return { tier = tier, level = level }
+end
+
+function addon:Draw()
+	local saved = self:Account().draw
+	local game = self:GameDraw()
+	return {
+		tier = self.tierByKey[saved.tier] and saved.tier or game.tier,
+		level = type(saved.level) == "number" and Clamp(Round(saved.level), self.MIN_DRAW_LEVEL, self.MAX_DRAW_LEVEL) or game.level,
+	}
+end
+
+function addon:EffectiveDraw()
+	if self:Account().enabled then
+		return self:Draw()
+	end
+	return self:GameDraw()
+end
+
+function addon:SetDrawValue(key, value)
+	self:Account().draw[key] = value
+end
+
+function addon:DrawDiffers()
+	if not self:Account().enabled then
+		return false
+	end
+	local want, game = self:Draw(), self:GameDraw()
+	return want.tier ~= game.tier or want.level ~= game.level
+end
+
+-- True when the control already has this tier and level, so a HUD show does not rewrite the
+-- same two numbers every time the player closes a menu.
+function addon:DrawInPlace(control, draw)
+	local tier = self.tierByKey[draw.tier]
+	local okTier, tierValue = pcall(control.GetDrawTier, control)
+	local okLevel, levelValue = pcall(control.GetDrawLevel, control)
+	return okTier and okLevel and tierValue == self:TierValue(tier) and Round(levelValue or -1) == draw.level
+end
+
+function addon:ApplyDraw()
+	local ready, chat = self:ChatReady()
+	if not ready then
+		return false
+	end
+	local control = chat.control
+
+	if not self:DrawDiffers() then
+		if self.drawWritten then
+			local original = self.original and self.original.draw
+			if original then
+				self:Write("draw", control.SetDrawTier, control, original.tier)
+				self:Write("draw", control.SetDrawLevel, control, original.level)
+			end
+			self.drawWritten = false
+		end
+		return true
+	end
+
+	if not self:CaptureGameLayout(chat) then
+		return false
+	end
+
+	local draw = self:Draw()
+	local tier = self.tierByKey[draw.tier]
+	if self.drawWritten and self:DrawInPlace(control, draw) then
+		return true
+	end
+	self:Write("draw", control.SetDrawTier, control, self:TierValue(tier))
+	self:Write("draw", control.SetDrawLevel, control, draw.level)
+	self.drawWritten = true
+	return true
+end
+
+-- ---------------------------------------------------------------------------------------
+-- Keeping the window on screen
+--
+-- The console chat minimises itself 20 seconds after the last message
+-- (ZO_GAMEPAD_CHAT_SYSTEM_SECONDS_VISIBLE_UNPINNED): an OnUpdate on the chat control compares
+-- GetFrameTimeSeconds() with a file-local expiry, and past it calls
+-- GamepadChatContainer:HandleVisibleTimeExpired -> ZO_GamepadChatSystem:Minimize, which hides
+-- the message area and fades the background to nothing.
+--
+-- That expiry is only ever set by ZO_GamepadChatSystem:StartVisibilityTimer, whose whole body is
+--
+--   g_expirationTime = GetFrameTimeSeconds() + ZO_GAMEPAD_CHAT_SYSTEM_SECONDS_VISIBLE_UNPINNED
+--
+-- so keeping it in the future is enough to stop the minimise ever happening, and pushing it is
+-- the one chat call this add-on makes: it writes a number, creates no closure and touches no
+-- screen. Nothing else in the client reads or clears it.
+--
+-- Two writes put right what a minimise that already happened did -- the message area is shown
+-- again and the background's alpha restored. The input line is deliberately left alone: the game
+-- hides its box and channel name while minimised, and a permanently visible input line reads as
+-- though the player were typing.
+--
+-- Switching the option off pushes the expiry one last time instead of minimising the window
+-- ourselves, so the game's own timer takes it from there and minimises it as it always would.
+-- ---------------------------------------------------------------------------------------
+
+local VISIBILITY_PUSH_MS = 10000
+
+-- Long enough for the rest of a scene transition to have run, short enough not to be seen.
+local MENU_REASSERT_MS = 50
+
+function addon:AlwaysVisible()
+	local account = self:Account()
+	if not account.enabled then
+		return false
+	end
+	-- Showing it in menus means keeping it up: a window that appears in a menu and then
+	-- minimises itself twenty seconds later is worse than either behaviour on its own.
+	return account.alwaysVisible == true or account.inMenus == true
+end
+
+-- Whether the window should also be on screen where the game hides it outright.
+--
+-- ZO_GamepadChatSystem:IsHidden is "only on the HUD": it answers hidden unless HUD_FRAGMENT is
+-- showing, and RefreshVisibility is the one thing that turns that answer into
+-- control:SetHidden. Never forced while the player has the chat switched off in the game's own
+-- settings -- hudEnabled is that setting -- because then the window is not meant to be there at
+-- all.
+function addon:ShowInMenus()
+	local account = self:Account()
+	if not (account.enabled and account.inMenus == true) then
+		return false
+	end
+	local chat = self:Chat()
+	return chat ~= nil and chat.hudEnabled == true
+end
+
+-- The two controls a minimise leaves hidden or transparent.
+function addon:VisibilityControls(chat)
+	local container = chat.primaryContainer
+	local windowContainer = container and container.windowContainer
+	local background = type(chat.control.GetNamedChild) == "function" and chat.control:GetNamedChild("Bg") or nil
+	return windowContainer, background
+end
+
+function addon:PushVisibilityTimer(chat)
+	if type(chat.StartVisibilityTimer) ~= "function" then
+		return false
+	end
+	return self:Write("visibility timer", chat.StartVisibilityTimer, chat)
+end
+
+function addon:ApplyVisibility()
+	local ready, chat = self:ChatReady()
+	if not ready then
+		return false
+	end
+
+	if not self:AlwaysVisible() then
+		if self.visibilityWritten then
+			-- Hand the window back to the game's own timer rather than minimising it here: the
+			-- client then does it in its own time, in its own way. RefreshVisibility is the
+			-- other chat call this add-on makes, and for the same reason as the timer: its whole
+			-- body is control:SetHidden(self:IsHidden()), so it decides where the window belongs
+			-- by the client's own rules -- game setting and HUD included -- without this add-on
+			-- having to copy them.
+			if type(chat.RefreshVisibility) == "function" then
+				self:Write("visibility", chat.RefreshVisibility, chat)
+			end
+			self:PushVisibilityTimer(chat)
+			if EVENT_MANAGER and type(EVENT_MANAGER.UnregisterForUpdate) == "function" then
+				EVENT_MANAGER:UnregisterForUpdate(self.name .. "Visible")
+			end
+			self.visibilityWritten = false
+		end
+		return true
+	end
+
+	local windowContainer, background = self:VisibilityControls(chat)
+
+	if not self.visibilityWritten then
+		self.originalVisibility = {
+			hidden = windowContainer and windowContainer:IsHidden(),
+			alpha = background and type(background.GetAlpha) == "function" and background:GetAlpha() or nil,
+		}
+		if EVENT_MANAGER and type(EVENT_MANAGER.RegisterForUpdate) == "function" then
+			EVENT_MANAGER:RegisterForUpdate(self.name .. "Visible", VISIBILITY_PUSH_MS, function()
+				addon:KeepVisible()
+			end)
+		end
+		self.visibilityWritten = true
+	end
+
+	self:KeepVisible()
+	return true
+end
+
+-- Pushes the expiry and puts right anything a minimise got in first with. Runs every ten
+-- seconds while the option is on, and writes only what is not already so.
+function addon:KeepVisible()
+	local ready, chat = self:ChatReady()
+	if not ready or not self:AlwaysVisible() then
+		return
+	end
+
+	self:PushVisibilityTimer(chat)
+
+	-- The client hides the whole control when the HUD goes away; shown again here, after its
+	-- RefreshVisibility has had its say. A hidden control gets no OnUpdate, so this is also what
+	-- starts the chat's own visibility timer ticking in a menu -- which the push above answers.
+	if self:ShowInMenus() and chat.control:IsHidden() then
+		self:Write("visibility", chat.control.SetHidden, chat.control, false)
+	end
+
+	local windowContainer, background = self:VisibilityControls(chat)
+	if windowContainer and windowContainer:IsHidden() then
+		self:Write("message area", windowContainer.SetHidden, windowContainer, false)
+	end
+	if background and type(background.GetAlpha) == "function" then
+		local ok, alpha = pcall(background.GetAlpha, background)
+		if ok and type(alpha) == "number" and alpha < 1 then
+			-- The fade is an animation on this control; stopped first, or it would put the
+			-- alpha back to where it was heading.
+			local fade = chat.fadeBackground
+			if fade and type(fade.IsPlaying) == "function" and fade:IsPlaying() then
+				self:Write("background fade", fade.Stop, fade)
+			end
+			self:Write("background", background.SetAlpha, background, 1)
+		end
+	end
+
+	-- The client's own idea of the state, so its next Minimize / Maximize agrees with what is on
+	-- screen: MINIMIZE_CHAT_FRAGMENT reads it when a menu opens and maximises again on the way
+	-- out, and the new-message notification is only for a window that cannot be seen.
+	chat.isMinimized = false
 end
 
 -- ---------------------------------------------------------------------------------------
@@ -802,6 +1133,8 @@ end
 
 function addon:Refresh()
 	self:ApplyLayout()
+	self:ApplyDraw()
+	self:ApplyVisibility()
 	self:ApplyFont()
 	if self.preview then
 		self.preview:Update()
@@ -816,9 +1149,16 @@ function addon:ResetFont()
 	self:Account().text = {}
 end
 
+function addon:ResetDraw()
+	self:Account().draw = {}
+end
+
 function addon:ResetToDefaults()
 	self:ResetLayout()
+	self:ResetDraw()
 	self:ResetFont()
+	self:Account().alwaysVisible = false
+	self:Account().inMenus = false
 	self:Refresh()
 end
 
@@ -839,6 +1179,15 @@ function addon:OnHudShowing()
 	end
 	if self.layoutWritten or self:LayoutDiffers() then
 		self:ApplyLayout()
+	end
+	if self.drawWritten or self:DrawDiffers() then
+		self:ApplyDraw()
+	end
+	-- A menu minimises the chat through MINIMIZE_CHAT_FRAGMENT, and the fragment maximises it
+	-- again on the way out only if it was the one that minimised it. This is the moment to make
+	-- sure the window really is back.
+	if self:AlwaysVisible() or self.visibilityWritten then
+		self:ApplyVisibility()
 	end
 end
 
@@ -885,7 +1234,8 @@ function addon:PrintStatus()
 	Line("|cFF69B4%s|r", self.title)
 	Line("  chat: found=%s loaded=%s buffers=%d  screen=%dx%d",
 		tostring(chat ~= nil), tostring(ready), self:ForEachChatBuffer(function() end), Round(rootWidth), Round(rootHeight))
-	Line("  enabled=%s preview=%s", tostring(account.enabled), tostring(account.preview))
+	Line("  enabled=%s preview=%s alwaysVisible=%s inMenus=%s", tostring(account.enabled), tostring(account.preview),
+		tostring(account.alwaysVisible), tostring(account.inMenus))
 
 	Line("  layout:  %s  differs=%s written=%s", DescribeLayout(self:Clamped(self:Layout())),
 		tostring(self:LayoutDiffers()), tostring(self.layoutWritten == true))
@@ -911,6 +1261,33 @@ function addon:PrintStatus()
 				Line("  on screen limits: %s-%s x %s-%s", tostring(minWidth), tostring(maxWidth), tostring(minHeight), tostring(maxHeight))
 			end
 		end
+	end
+
+	local draw = self:Draw()
+	local gameDraw = self:GameDraw()
+	Line("  draw: tier=%s level=%d  differs=%s written=%s", tostring(draw.tier), draw.level,
+		tostring(self:DrawDiffers()), tostring(self.drawWritten == true))
+	Line("  game's: tier=%s level=%d  (%s)", tostring(gameDraw.tier), gameDraw.level,
+		self.gameDrawSource or "from an earlier session or the fallback")
+
+	if chat then
+		local control = chat.control
+		local okTier, tierValue = pcall(control.GetDrawTier, control)
+		local okLevel, levelValue = pcall(control.GetDrawLevel, control)
+		local tier = okTier and self:TierForValue(tierValue)
+		Line("  on screen draw: tier=%s level=%s", tier and tier.key or tostring(okTier and tierValue),
+			okLevel and tostring(Round(levelValue)) or "?")
+
+		local windowContainer, background = self:VisibilityControls(chat)
+		local ok, alpha = false, nil
+		if background and type(background.GetAlpha) == "function" then
+			ok, alpha = pcall(background.GetAlpha, background)
+		end
+		Line("  on screen visibility: window=%s minimized=%s messages=%s background alpha=%s",
+			tostring(not chat.control:IsHidden()), tostring(chat.isMinimized),
+			windowContainer and tostring(not windowContainer:IsHidden()) or "?",
+			ok and string.format("%.2f", alpha) or "?")
+		Line("  chat on HUD (the game's own setting)=%s", tostring(chat.hudEnabled))
 	end
 
 	Line("  text: size=%d default=%d setting=%s differs=%s written=%s", self:FontSize(), self:DefaultFontSize(),
@@ -939,9 +1316,13 @@ local function Usage()
 	Line("  %s corner tl|tr|bl|br -- which corner (keeps the window where it is)", SLASH)
 	Line("  %s size <w> <h>     -- width and height", SLASH)
 	Line("  %s font <n>         -- message text size (%d-%d)", SLASH, addon.MIN_FONT_SIZE, addon.MAX_FONT_SIZE)
+	Line("  %s always on | off  -- keep the window on screen instead of fading after 20s", SLASH)
+	Line("  %s menus on | off   -- show it in menus too, not only on the HUD", SLASH)
+	Line("  %s tier low|medium|high  -- draw the window under or over the rest of the UI", SLASH)
+	Line("  %s level <n>        -- order within that tier (%d-%d)", SLASH, addon.MIN_DRAW_LEVEL, addon.MAX_DRAW_LEVEL)
 	Line("  %s on | off         -- switch every change on or off", SLASH)
 	Line("  %s preview          -- show or hide the preview frame", SLASH)
-	Line("  %s reset [pos|font] -- back to the game's own", SLASH)
+	Line("  %s reset [pos|font|draw] -- back to the game's own", SLASH)
 	Line("  (%s is the same command)", SHORT_SLASH)
 end
 
@@ -1010,6 +1391,50 @@ local function OnSlash(argumentString)
 		account.enabled = true
 		addon:Refresh()
 		Line("text size: %d", addon:FontSize())
+	elseif command == "always" then
+		local what = (args[2] or ""):lower()
+		if what ~= "on" and what ~= "off" then
+			Line("usage: %s always on | off", SLASH)
+			return
+		end
+		account.alwaysVisible = what == "on"
+		if account.alwaysVisible then
+			account.enabled = true
+		end
+		addon:Refresh()
+		Line("always visible: %s", what)
+	elseif command == "menus" or command == "menu" then
+		local what = (args[2] or ""):lower()
+		if what ~= "on" and what ~= "off" then
+			Line("usage: %s menus on | off", SLASH)
+			return
+		end
+		account.inMenus = what == "on"
+		if account.inMenus then
+			account.enabled = true
+		end
+		addon:Refresh()
+		Line("shown in menus: %s", what)
+	elseif command == "tier" then
+		local tier = addon.tierByCommand[(args[2] or ""):lower()]
+		if not tier then
+			Line("usage: %s tier low | medium | high", SLASH)
+			return
+		end
+		addon:SetDrawValue("tier", tier.key)
+		account.enabled = true
+		addon:Refresh()
+		Line("draw tier: %s (level %d)", tier.key, addon:Draw().level)
+	elseif command == "level" then
+		local values = Numbers(args, 2, 1)
+		if not values then
+			Line("usage: %s level <%d-%d>", SLASH, addon.MIN_DRAW_LEVEL, addon.MAX_DRAW_LEVEL)
+			return
+		end
+		addon:SetDrawValue("level", Clamp(Round(values[1]), addon.MIN_DRAW_LEVEL, addon.MAX_DRAW_LEVEL))
+		account.enabled = true
+		addon:Refresh()
+		Line("draw level: %d (tier %s)", addon:Draw().level, addon:Draw().tier)
 	elseif command == "on" or command == "off" then
 		account.enabled = command == "on"
 		addon:Refresh()
@@ -1029,6 +1454,10 @@ local function OnSlash(argumentString)
 			addon:ResetFont()
 			addon:Refresh()
 			Line("reset -- the chat text is back to the game's own size")
+		elseif what == "draw" or what == "tier" or what == "level" then
+			addon:ResetDraw()
+			addon:Refresh()
+			Line("reset -- the window is drawn in the game's own order again")
 		else
 			addon:ResetToDefaults()
 			Line("reset -- the chat window and its text are back to the game's own")
@@ -1106,6 +1535,30 @@ local function RegisterHud()
 	fragment:RegisterCallback("StateChange", function(_, newState)
 		if newState == SCENE_FRAGMENT_SHOWN then
 			addon:OnHudShowing()
+		elseif addon:ShowInMenus() then
+			-- The HUD going away is where the client hides the chat, and where
+			-- MINIMIZE_CHAT_FRAGMENT minimises it. Both are undone here -- and again a moment
+			-- later, because the two fragments belong to the same transition and nothing says
+			-- which of them runs first.
+			addon:ApplyVisibility()
+			Later(function()
+				addon:KeepVisible()
+			end, MENU_REASSERT_MS)
+		end
+	end)
+	return true
+end
+
+-- Menu to menu never touches the HUD fragment, and a scene that hides the chat for its own
+-- reasons would otherwise be waiting on the ten-second check. Registered on the scene manager's
+-- own callback list, beside the client's.
+local function RegisterScenes()
+	if not SCENE_MANAGER or type(SCENE_MANAGER.RegisterCallback) ~= "function" then
+		return false
+	end
+	SCENE_MANAGER:RegisterCallback("SceneStateChanged", function(_, _, newState)
+		if newState == SCENE_SHOWN and addon:ShowInMenus() then
+			addon:KeepVisible()
 		end
 	end)
 	return true
@@ -1124,6 +1577,7 @@ local function OnAddOnLoaded(_, loadedName)
 	SLASH_COMMANDS[SHORT_SLASH] = OnSlash
 
 	addon.hudRegistered = RegisterHud()
+	addon.scenesRegistered = RegisterScenes()
 
 	if addon.InitSettings then
 		addon:InitSettings()

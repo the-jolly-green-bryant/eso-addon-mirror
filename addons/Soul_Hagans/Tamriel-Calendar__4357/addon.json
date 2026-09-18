@@ -30,7 +30,7 @@
     "TamrielCalendar"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4357/",
-  "fingerprint": "6031e4da403cc2f059c00c91e859d7c4bef7197a57cb27790cec56acb28988c3",
+  "fingerprint": "eda1de2a0765f6874cc13a0579b544e91ae378461a81dd944c0d607908d1bdf1",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw15098.png",
     "https://cdn-eso.mmoui.com/preview/pvw15097.png",
@@ -43,11 +43,11 @@
   "source_id": "4357",
   "source_url": "https://www.esoui.com/downloads/info4357-TamrielCalendar.html",
   "stats": {
-    "downloads": 491,
-    "favorites": 0,
-    "monthly_downloads": 40
+    "downloads": 558,
+    "favorites": 1,
+    "monthly_downloads": 80
   },
   "title": "Tamriel Calendar",
-  "updated_at": 1787471687000,
-  "version": "2.3.2"
+  "updated_at": 1789647825000,
+  "version": "2.4.0"
 }

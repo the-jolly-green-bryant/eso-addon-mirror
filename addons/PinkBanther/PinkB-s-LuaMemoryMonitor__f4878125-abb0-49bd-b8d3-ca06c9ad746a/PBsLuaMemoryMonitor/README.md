@@ -4,7 +4,7 @@ Shows how much memory each add-on uses, ranked in a window on the HUD, so the he
 be found — in The Elder Scrolls Online on console.
 
 - **Author:** PinkBanther
-- **Version:** 0.4.0
+- **Version:** 0.5.0
 - **Optional:** `LibHarvensAddonSettings` >= 20106 (for the settings panel; the chat commands
   work without it)
 
@@ -48,7 +48,9 @@ With LibHarvensAddonSettings installed, the add-on has a panel under the add-on 
 | **Distance from the left / top** | Where the window sits; **Reset** puts it back at the left, centred. |
 | **Background opacity** | 0–100 %. |
 | **Free memory regularly** | Runs Lua's garbage collector in full: off (default), every minute, 5 or 10 minutes. Each run stalls the game for a moment (74 ms measured on a PS5). |
+| **Free memory over this usage** | Off (default), or 50/60/65/70 % of the add-on memory limit: over that share, memory is freed automatically, which keeps the game's own low-memory warning away. |
 | **Also during combat** | Off (default): a run that falls in combat waits until combat ends. |
+| **Clear the game's memory notification** | Off (default): clears the game's low-memory notice and frees memory when it arrives. The warning box in the middle of the screen comes from the game itself and cannot be stopped by an add-on. |
 | **Free memory now** | Same as `/pbmem gc`; says in chat how much it gave back. |
 | **Measure held memory now**, **Next page of the ranking** | Same as `/pbmem scan` and `/pbmem next`. |
 

@@ -68,6 +68,12 @@ local strings = {
 	SI_PBSLMM_COLLECT_NOW = "Free memory now",
 	SI_PBSLMM_COLLECT_NOW_TOOLTIP = "Runs the garbage collector in full once, and says in chat how much it gave back. The same as /pbmem gc.",
 	SI_PBSLMM_COLLECT_NOW_BUTTON = "Free",
+	SI_PBSLMM_PERCENT = "%d%%",
+	SI_PBSLMM_SUMMARY_ABOVE = "over %d%%",
+	SI_PBSLMM_COLLECT_ABOVE = "Free memory over this usage",
+	SI_PBSLMM_COLLECT_ABOVE_TOOLTIP = "The game warns when the add-on memory runs low (at about 77 of its 100 MB) and disables add-ons if it runs out. Once this share of the limit is in use, memory is freed automatically, which keeps the usage down and the warning away. Only memory nothing uses any more can be given back: if the add-ons really need that much, the warning still comes. The warning itself is shown by the game and cannot be stopped by an add-on.",
+	SI_PBSLMM_CLEAR_WARNING = "Clear the game\'s memory notification",
+	SI_PBSLMM_CLEAR_WARNING_TOOLTIP = "When the game gives notice that add-on memory is low, clear that notice and free memory at once. This is the notification in the notices list, not the warning box in the middle of the screen: that one comes from the game itself and no add-on can stop it.",
 
 	SI_PBSLMM_SECTION_ACTIONS = "Actions",
 	SI_PBSLMM_SCAN_NOW = "Measure held memory now",

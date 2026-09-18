@@ -338,8 +338,13 @@ local PanelContent={
 
 local function UI_Init()
 	local eventFrames={ZO_SharedRightPanelBackground,ZO_TopBar,ZO_GameMenu_InGame}
+	local function RefreshGamepadSidebarInput()
+		local sidebarNav=SatuveXboxUI and SatuveXboxUI.SidebarGamepad
+		if sidebarNav and sidebarNav.RefreshKeybinds then sidebarNav:RefreshKeybinds() end
+	end
 	if not BUI.Vars.SidePanel.Enable then
 		if BUI_Panel then BUI_Panel:SetHidden(true) end
+		RefreshGamepadSidebarInput()
 		return
 	end
 	local w,space,div,i,total,last=32,4,0,0,0
@@ -362,6 +367,7 @@ local function UI_Init()
 			end
 		end
 		BUI_Panel:SetHidden(false)
+		RefreshGamepadSidebarInput()
 	end
 
 	local control=BUI_Panel or WINDOW_MANAGER:CreateTopLevelWindow("BUI_Panel")
@@ -411,6 +417,8 @@ local function UI_Init()
 			button:SetColor(unpack(color_on))
 			button:SetMouseEnabled(true)
 			button:SetHandler("OnMouseEnter", function(self)
+				local sidebarNav=SatuveXboxUI and SatuveXboxUI.SidebarGamepad
+				if sidebarNav and sidebarNav.active then sidebarNav:Deactivate(true) end
 				self:SetColor(.9,.9,.8,1)
 				if data.tooltip then
 					local tip=(type(data.tooltip)=="string" and data.tooltip or data.tooltip())
@@ -451,6 +459,7 @@ local function UI_Init()
 	control:ClearAnchors()
 	control:SetAnchor(TOPLEFT,GuiRoot,TOPLEFT,8,top)
 	control:SetHidden(not BUI.inMenu)
+	RefreshGamepadSidebarInput()
 	local panelHeight=(w+space)*i-(w-8)*div
 	control:SetDimensions(w,math.min(panelHeight,rootHeight-top-40))
 	total=i
@@ -466,6 +475,7 @@ local function UI_Init()
 				else
 					BUI_Panel:SetHidden(true)
 					if BUI_Panel.context then BUI_Panel.context:SetHidden(true) end
+					RefreshGamepadSidebarInput()
 				end
 			end)
 		else
@@ -477,6 +487,7 @@ local function UI_Init()
 			RegisterEvent(false)
 			BUI_Panel:SetHidden(true)
 			if BUI_Panel.context then BUI_Panel.context:SetHidden(true) end
+			RefreshGamepadSidebarInput()
 		end)
 		frame:SetHandler('OnEffectivelyHidden',function()if BUI.Vars.SidePanel.Enable then RegisterEvent(true) end end)
 	end

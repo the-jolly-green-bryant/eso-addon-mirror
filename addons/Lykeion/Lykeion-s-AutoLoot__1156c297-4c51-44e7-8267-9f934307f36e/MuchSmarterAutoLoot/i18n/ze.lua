@@ -61,7 +61,6 @@ ZO_CreateStringId("MSAL_STOLEN_TREASURE_FILTER_LOGIN_REMINDER","赃物宝藏品�
 ZO_CreateStringId("MSAL_LOGIN_REMINDER","启动提示")
 ZO_CreateStringId("MSAL_LOGIN_REMINDER_TOOLTIP","启用时，插件会每天一次在启动时提示插件信息及其正在使用的敏感权限")
 ZO_CreateStringId("MSAL_AUTOBIND_TOOLTIP","启用此选项时，搜刮的|cdb8e0b未收藏且未在黑名单上|r的套装装备将会被自动绑定")
-ZO_CreateStringId("MSAL_AUTOBIND_TOOLTIP_CONSOLE","启用此选项时，搜刮的|cdb8e0b未收藏|r的套装装备将会被自动绑定")
 ZO_CreateStringId("MSAL_ADD_ITEM","新增%s项")
 ZO_CreateStringId("MSAL_REMOVE_ITEM","检查 / 移除%s项")
 ZO_CreateStringId("MSAL_REMOVE_SELECTED_ITEM","移除选中的%s项")

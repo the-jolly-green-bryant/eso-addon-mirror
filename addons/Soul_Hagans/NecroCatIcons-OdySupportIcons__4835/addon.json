@@ -22,7 +22,7 @@
     "NecroCatIcons"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4835/",
-  "fingerprint": "9e6ed461b42a3fc186fdfb670cfff438b9b8afe74159459acac6a5a68afa9609",
+  "fingerprint": "47f1e06a0e9044813540dd8b56ff04e7b9e4456782b98ee218e04814cf5aca91",
   "images": [],
   "platform": "pc",
   "published": true,
@@ -30,11 +30,11 @@
   "source_id": "4835",
   "source_url": "https://www.esoui.com/downloads/info4835-NecroCatIconsOdySupportIcons.html",
   "stats": {
-    "downloads": 6,
+    "downloads": 24,
     "favorites": 0,
-    "monthly_downloads": 4
+    "monthly_downloads": 18
   },
   "title": "NecroCatIcons  (OdySupportIcons)",
-  "updated_at": 1789392732000,
-  "version": "1.5.1"
+  "updated_at": 1789649858000,
+  "version": "1.5.3"
 }

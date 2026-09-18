@@ -17,7 +17,7 @@ function CMA:DetermineItemAction(bag, slotIndex)
     -- handle the categories only having an on|off state
     if itemType == ITEMTYPE_FURNISHING_MATERIAL then
         return self.simpleMaterialDecisionMap[self.db.bankFurnishingMaterials]
-    elseif itemType == ITEMTYPE_BAIT then
+    elseif itemType == ITEMTYPE_LURE then
         return self.simpleMaterialDecisionMap[self.db.bankBait]
     elseif itemType == ITEMTYPE_RAW_MATERIAL then
         return self.simpleMaterialDecisionMap[self.db.bankRawMaterials]

@@ -6,7 +6,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 
 | Add-on | Author | Platform | Version |
 | --- | --- | --- | --- |
-| [NagaMapCompletion](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/luiisoliiver/NagaMapCompletion__4839) | luiisoliiver | PC / Mac | 12.5 |
+| [Naga Mapa Completo](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/luiisoliiver/Naga-Mapa-Completo__4839) | luiisoliiver | PC / Mac | 2.8.9 |
 | [Nail Down GUI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/manavortex/Nail-Down-GUI__1460) | manavortex | PC / Mac | 0.1b |
 | [name](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/wsollers/name__a2b82a6f-4da6-492b-9132-52354a645321) | wsollers | Console | — |
 | [Name Language Ninja - Translation assistant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinntarou/Name-Language-Ninja---Translation-assistant__2667) | Shinntarou | PC / Mac | 1.1.17 |
@@ -18,7 +18,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Near's Script Tooltips](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/notnear/Near-s-Script-Tooltips__3895) | notnear | PC / Mac | 1.0.1 |
 | [Neat Experience Info](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/qhil/Neat-Experience-Info__1581) | qhil | PC / Mac | 1.15.1 |
 | [NecroCat](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Soul_Hagans/NecroCat__4174) | Soul_Hagans | PC / Mac | 2.0.6 |
-| [NecroCatIcons  (OdySupportIcons)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Soul_Hagans/NecroCatIcons-OdySupportIcons__4835) | Soul_Hagans | PC / Mac | 1.5.1 |
+| [NecroCatIcons  (OdySupportIcons)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Soul_Hagans/NecroCatIcons-OdySupportIcons__4835) | Soul_Hagans | PC / Mac | 1.5.3 |
 | [NecromancerTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PersistentMemory/NecromancerTracker__2795) | PersistentMemory | PC / Mac | 1.3.3.1 |
 | [Ned's Group Manager](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ned919x/Ned-s-Group-Manager__4f86b7c8-8fb6-432c-a1b9-2004263244ab) | Ned919x | Console | — |
 | [Neli's Misfits Guild Hub](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kylecwhite1/Neli-s-Misfits-Guild-Hub__3215) | kylecwhite1 | PC / Mac | 9.0 |

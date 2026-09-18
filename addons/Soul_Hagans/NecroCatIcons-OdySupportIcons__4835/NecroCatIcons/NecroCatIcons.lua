@@ -36,6 +36,9 @@ local ICONS = {
     ["FoxyAnezka"]   = "NecroCatIcons/imgs/FoxyAnezka.dds",
     ["Wildmile98"]   = "NecroCatIcons/imgs/Wildmile98.dds",
     ["ArCrass"]      = "NecroCatIcons/imgs/ArCrass.dds",
+    ["UrgonianStuffs"]      = "NecroCatIcons/imgs/UrgonianStuffs.dds",
+    ["s0lnywko"]            = "NecroCatIcons/imgs/s0lnywko.dds",
+    ["Kilert007"]           = "NecroCatIcons/imgs/Kilert007.dds",
 }
 
 -- 2. Привязка иконок к аккаунтам по умолчанию
@@ -58,6 +61,9 @@ local DEFAULT_USERS = {
     ["@FoxyAnezka"]         = ICONS["FoxyAnezka"],
     ["@Wildmile98"]         = ICONS["Wildmile98"],
     ["@ArCrass"]            = ICONS["ArCrass"],
+    ["@ArgonianStuffs"]     = ICONS["UrgonianStuffs"],
+    ["@upuckiss"]           = ICONS["s0lnywko"],
+    ["@Kilert007"]          = ICONS["Kilert007"],
 }
 
 -- 3. Регистрация в OSI

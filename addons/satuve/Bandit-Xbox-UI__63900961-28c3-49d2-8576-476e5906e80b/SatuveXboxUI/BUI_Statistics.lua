@@ -60,9 +60,58 @@ BUI.Stats.Defaults={
 	StatsTransparent		=true,
 	StatsSplitElements	=true,
 	StatsBuffs			=true,
+	StatsGamepadNavigation=true,
+	StatsLargeGamepadUI	=true,
+	StatsAutoGamepadNavigation=true,
 	Reports			={},
 }
 BUI:JoinTables(BUI.Defaults,BUI.Stats.Defaults)
+
+local REPORT_SCALE_MIN,REPORT_SCALE_MAX=1,1.75
+
+local function NormalizeReportScale(value)
+	value=tonumber(value) or 1
+	value=math.max(REPORT_SCALE_MIN,math.min(REPORT_SCALE_MAX,value))
+	return math.floor(value*20+.5)/20
+end
+
+-- Scale the complete report tree once at its root. This keeps the original
+-- layout arithmetic intact and includes tabs, pooled rows, scroll containers,
+-- buffs, equipment and uptimes without maintaining duplicate dimensions.
+function BUI.Stats.ApplyReportScale()
+	local ui=_G["BUI_Report"]
+	if not ui then return end
+	local desired=NormalizeReportScale(BUI.Vars and BUI.Vars.ReportScale)
+	if BUI.Vars then BUI.Vars.ReportScale=desired end
+	local width=math.max(ui:GetWidth() or 0,1)
+	local height=math.max(ui:GetHeight() or 0,1)
+	local einfo=_G["BUI_Report_Einfo"]
+	local uptimes=_G["BUI_Report_Uptimes"]
+	if einfo and not einfo:IsHidden() then height=height+math.max(einfo:GetHeight() or 0,0)
+	elseif uptimes and not uptimes:IsHidden() then height=height+math.max(uptimes:GetHeight() or 0,0) end
+	local rootWidth,rootHeight=GuiRoot:GetDimensions()
+	local fitWidth=(math.max(rootWidth or width,1)-12)/width
+	local fitHeight=(math.max(rootHeight or height,1)-36)/height
+	-- Never make the legacy/default presentation smaller than it was. Larger
+	-- requested scales are reduced only when the current expanded layout cannot
+	-- reasonably fit inside GuiRoot.
+	local effective=math.max(1,math.min(desired,fitWidth,fitHeight))
+	ui:SetScale(effective)
+	ui.ReportScale=desired
+	ui.EffectiveReportScale=effective
+	if ui.SetClampedToScreen then ui:SetClampedToScreen(true) end
+end
+
+function BUI.Stats.SetReportScale(value)
+	if not BUI.Vars then return end
+	BUI.Vars.ReportScale=NormalizeReportScale(value)
+	BUI.Stats.ApplyReportScale()
+end
+
+function BUI.Stats.HasUptimes()
+	local report=BUI.Stats.Current and ReportToShow and BUI.Stats.Current[ReportToShow]
+	return report and type(report.Uptimes)=="table" and next(report.Uptimes)~=nil
+end
 local SLOTS={
 EQUIP_SLOT_HEAD,
 EQUIP_SLOT_SHOULDERS,
@@ -147,7 +196,8 @@ function BUI.Stats.Minimeter_Init()		--MINI DAMAGE METER
 	--esoui/art/icons/poi/poi_battlefield_complete.dds
 	damage:SetMouseEnabled(true)
 	damage:SetHandler("OnMouseDown", function(self,button)
-		if button==1 then BUI.Stats.Toggle()
+		if button==1 then
+			if type(BUI.Stats.ToggleReportFromMouse)=="function" then BUI.Stats.ToggleReportFromMouse() else BUI.Stats.Toggle() end
 		elseif button==2 then BUI.Stats.Post()
 		elseif button==3 then BUI.Stats.Reset()
 		end
@@ -173,7 +223,9 @@ function BUI.Stats.Minimeter_Init()		--MINI DAMAGE METER
 	--esoui/art/icons/poi/poi_battlefield_complete.dds
 	GroupDps:SetMouseEnabled(true)
 	GroupDps:SetHandler("OnMouseDown", function(self,button)
-		if button==1 then LastSection="Group" BUI.Stats.Toggle()
+		if button==1 then
+			LastSection="Group"
+			if type(BUI.Stats.ToggleReportFromMouse)=="function" then BUI.Stats.ToggleReportFromMouse() else BUI.Stats.Toggle() end
 		elseif button==2 then
 			CHAT_SYSTEM.textEntry:SetText("/p"..BUI.GroupDPS_text)
 			CHAT_SYSTEM:Maximize() CHAT_SYSTEM.textEntry:Open() CHAT_SYSTEM.textEntry:FadeIn()
@@ -218,6 +270,7 @@ local function EquipmentInfo()
 	if BUI_Report_Einfo and not BUI_Report_Einfo:IsHidden() then
 		BUI_Report_Einfo:SetHidden(true)
 		BUI_Report_Ebutton:SetTextureRotation(0)
+		BUI.Stats.ApplyReportScale()
 		return
 	end
 	BUI_Report_Ebutton:SetTextureRotation(math.pi)
@@ -443,10 +496,15 @@ local function EquipmentInfo()
 		end
 	end
 --]]
+	BUI.Stats.ApplyReportScale()
+end
+
+function BUI.Stats.ToggleEquipmentInfo()
+	if BUI_Report and not BUI_Report:IsHidden() then EquipmentInfo() end
 end
 
 function BUI.Stats.Analistics_Init()	--ANALYTICS WINDOW
-	local fs,s=BUI.Vars.StatsFontSize,1	--BUI.Vars.ReportScale
+	local fs=BUI.Vars.StatsFontSize
 	local buf=BUI.Vars.StatsBuffs and BUFF_W or 0
 	local w=720+((BUI.language=="en" or BUI.Vars.ActionsPrecise)and 50 or 0)
 	local head=(fs-4)*1.358*2
@@ -471,53 +529,56 @@ function BUI.Stats.Analistics_Init()	--ANALYTICS WINDOW
 
 	ui.top		=BUI.UI.Statusbar("BUI_Report_Header",				ui,		{w+20+buf,30},	{TOPLEFT,TOPLEFT,0,0},			{.5,.5,.5,.7}, nil, false)
 	ui.top:SetGradientColors(0.4,0.4,0.4,0.7,0,0,0,0) ui.top:SetDrawLayer(0)
-	ui.title		=BUI.UI.Label(	"BUI_Report_Title",				ui.top,	{w,head},		{TOPLEFT,BOTTOMLEFT,10*s,0},		BUI.UI.Font("esobold",fs,true), {1,1,1,1}, {0,1}, BUI.Loc("DReport"), false)
+	ui.title		=BUI.UI.Label(	"BUI_Report_Title",				ui.top,	{w,head},		{TOPLEFT,BOTTOMLEFT,10,0},		BUI.UI.Font("esobold",fs,true), {1,1,1,1}, {0,1}, BUI.Loc("DReport"), false)
 	--Character summary
-	BUI.UI.Label(	"BUI_Report_Summary",	ui,	{220,head*1.2},	{TOPLEFT,TOPLEFT,(w+20-10-220)*s,30},	BUI.UI.Font("standard",fs-4,true), {1,1,1,1}, {0,0}, "", false)
+	BUI.UI.Label(	"BUI_Report_Summary",	ui,	{220,head*1.2},	{TOPLEFT,TOPLEFT,w+20-10-220,30},	BUI.UI.Font("standard",fs-4,true), {1,1,1,1}, {0,0}, "", false)
 	--Buttons right
-	ui.close		=BUI.UI.Button(	"BUI_Report_Close",				ui,		{34,34},		{TOPRIGHT,TOPRIGHT,5*s,5*s},	BSTATE_NORMAL, nil, nil, nil, nil, nil, false)
+	ui.close		=BUI.UI.Button(	"BUI_Report_Close",				ui,		{34,34},		{TOPRIGHT,TOPRIGHT,5,5},	BSTATE_NORMAL, nil, nil, nil, nil, nil, false)
 	ui.close:SetNormalTexture('/esoui/art/buttons/closebutton_up.dds')
 	ui.close:SetMouseOverTexture('/esoui/art/buttons/closebutton_mouseover.dds')
-	ui.close:SetHandler("OnClicked", function() PlaySound("Click") BUI.Stats.Toggle() end)
-	BUI.UI.SimpleButton("BUI_Report_Help", ui, {26,26}, {TOP,TOPRIGHT,-45,3*s}, "/esoui/art/miscellaneous/help_icon.dds", false, nil, BUI.Loc("ReportDesc"))
-	BUI.UI.SimpleButton("BUI_Report_Transparent", ui, {26,26}, {TOP,TOPRIGHT,-75,3*s}, "/esoui/art/inventory/inventory_icon_visible.dds", false,
+	ui.close:SetHandler("OnClicked", function()
+		PlaySound("Click")
+		if type(BUI.Stats.CloseCombatReportCompletely)=="function" then BUI.Stats.CloseCombatReportCompletely() else BUI.Stats.Toggle() end
+	end)
+	BUI.UI.SimpleButton("BUI_Report_Help", ui, {26,26}, {TOP,TOPRIGHT,-45,3}, "/esoui/art/miscellaneous/help_icon.dds", false, nil, BUI.Loc("ReportDesc"))
+	BUI.UI.SimpleButton("BUI_Report_Transparent", ui, {26,26}, {TOP,TOPRIGHT,-75,3}, "/esoui/art/inventory/inventory_icon_visible.dds", false,
 		function()
 			BUI.Vars.StatsTransparent=not BUI.Vars.StatsTransparent
 			BUI_Report_Backdrop:SetCenterColor(0,0,0,BUI.Vars.StatsTransparent and 0.7 or 1)
 			if BUI_Report_Einfo then BUI_Report_Einfo:SetCenterColor(0,0,0,BUI.Vars.StatsTransparent and 0.7 or 1) end
 		end)
 	--Buttons left
-	ui.box		=BUI.UI.Button(	"BUI_Report_Box",					ui.top,	{30,30},		{TOPLEFT,TOPLEFT,5*s,3*s},	BSTATE_NORMAL, nil, nil, nil, nil, nil, false)
+	ui.box		=BUI.UI.Button(	"BUI_Report_Box",					ui.top,	{30,30},		{TOPLEFT,TOPLEFT,5,3},	BSTATE_NORMAL, nil, nil, nil, nil, nil, false)
 	ui.box:SetNormalTexture('/esoui/art/tradinghouse/tradinghouse_listings_tabicon_up.dds')
 	ui.box:SetMouseOverTexture('/esoui/art/tradinghouse/tradinghouse_listings_tabicon_over.dds')
-	BUI.UI.SimpleButton("BUI_Report_Save", ui.top, {24,24}, {LEFT,LEFT,40*s,3*s}, 2, false, BUI.Stats.SaveReport)
-	BUI.UI.SimpleButton("BUI_Report_Del", ui.top, {24,24}, {LEFT,LEFT,40+25*1*s,3*s}, 4, false, function()BUI.Stats.ClearReport(ReportToShow)end)
-	BUI.UI.SimpleButton("BUI_Report_Prev", ui.top, {24,24}, {LEFT,LEFT,40+25*2*s,3*s}, 0, false, function()BUI.Stats.NextReport(true)end)
-	BUI.UI.SimpleButton("BUI_Report_Next", ui.top, {24,24}, {LEFT,LEFT,40+25*3*s,3*s}, 1, false, function()BUI.Stats.NextReport(false)end)
-	BUI.UI.Label("BUI_Report_Count",ui.top,{60,fs},{LEFT,LEFT,40+25*4*s,0},BUI.UI.Font("standard",fs-2,true), {1,1,1,1}, {0,1}, "", false)
+	BUI.UI.SimpleButton("BUI_Report_Save", ui.top, {24,24}, {LEFT,LEFT,40,3}, 2, false, BUI.Stats.SaveReport)
+	BUI.UI.SimpleButton("BUI_Report_Del", ui.top, {24,24}, {LEFT,LEFT,40+25,3}, 4, false, function()BUI.Stats.ClearReport(ReportToShow)end)
+	BUI.UI.SimpleButton("BUI_Report_Prev", ui.top, {24,24}, {LEFT,LEFT,40+25*2,3}, 0, false, function()BUI.Stats.NextReport(true)end)
+	BUI.UI.SimpleButton("BUI_Report_Next", ui.top, {24,24}, {LEFT,LEFT,40+25*3,3}, 1, false, function()BUI.Stats.NextReport(false)end)
+	BUI.UI.Label("BUI_Report_Count",ui.top,{60,fs},{LEFT,LEFT,40+25*4,0},BUI.UI.Font("standard",fs-2,true), {1,1,1,1}, {0,1}, "", false)
 	--Tabs
 	ui.tabs		=BUI.UI.Control("BUI_Report_Tabs", ui.top, {350,30}, {TOP,TOP,0,0})
 --	local tabs		=BUI.UI.Texture("BUI_Report_TabsBg", ui.tabs, {512,32}, {CENTER,CENTER,0,0}, "/SatuveXboxUI/textures/tabs1.dds") tabs:SetColor(.7,.7,.5,.3)
-	ui.dbutton		=BUI.UI.Button(	"BUI_Report_Dbutton",				ui.tabs,	{70,24},		{LEFT,LEFT,70*0*s,0},		BSTATE_DISABLED, BUI.UI.Font("esobold",fs-2,true), {1,1}, {.7,.7,.5,1}, nil, {1,1,1,1}, false)
+	ui.dbutton		=BUI.UI.Button(	"BUI_Report_Dbutton",				ui.tabs,	{70,24},		{LEFT,LEFT,0,0},		BSTATE_DISABLED, BUI.UI.Font("esobold",fs-2,true), {1,1}, {.7,.7,.5,1}, nil, {1,1,1,1}, false)
 	ui.dbutton:SetText(BUI.Loc("Damage")) ui.dbutton:SetHandler("OnClicked", function(self) PlaySound("Click") BUI.Stats.SetupReport("Damage",self) end)
 	ui.dbutton.tab	=BUI.UI.Texture(nil, ui.dbutton, {128,32}, {CENTER,CENTER,0,0}, "/SatuveXboxUI/textures/tab.dds") ui.dbutton.tab:SetColor(.21,.21,.15,1)
-	ui.hbutton		=BUI.UI.Button(	"BUI_Report_Hbutton",				ui.tabs,	{70,24},		{LEFT,LEFT,70*1*s,0},		BSTATE_NORMAL, BUI.UI.Font("esobold",fs-2,true), {1,1}, {.7,.7,.5,1}, nil, {1,1,1,1}, false)
+	ui.hbutton		=BUI.UI.Button(	"BUI_Report_Hbutton",				ui.tabs,	{70,24},		{LEFT,LEFT,70,0},		BSTATE_NORMAL, BUI.UI.Font("esobold",fs-2,true), {1,1}, {.7,.7,.5,1}, nil, {1,1,1,1}, false)
 	ui.hbutton:SetText(BUI.Loc("Healing")) ui.hbutton:SetHandler("OnClicked", function(self) PlaySound("Click") BUI.Stats.SetupReport("Healing",self) end)
 	ui.hbutton.tab	=BUI.UI.Texture(nil, ui.hbutton, {128,32}, {CENTER,CENTER,0,0}, "/SatuveXboxUI/textures/tab.dds") ui.hbutton.tab:SetColor(.21,.21,.15,1)
-	ui.rbutton		=BUI.UI.Button(	"BUI_Report_Rbutton",				ui.tabs,	{70,24},		{LEFT,LEFT,70*2*s,0},		BSTATE_NORMAL, BUI.UI.Font("esobold",fs-2,true), {1,1}, {.7,.7,.5,1}, nil, {1,1,1,1}, false)
+	ui.rbutton		=BUI.UI.Button(	"BUI_Report_Rbutton",				ui.tabs,	{70,24},		{LEFT,LEFT,70*2,0},		BSTATE_NORMAL, BUI.UI.Font("esobold",fs-2,true), {1,1}, {.7,.7,.5,1}, nil, {1,1,1,1}, false)
 	ui.rbutton:SetText(BUI.Loc("Power")) ui.rbutton:SetHandler("OnClicked", function(self) PlaySound("Click") BUI.Stats.SetupReport("Power",self) end)
 	ui.rbutton.tab	=BUI.UI.Texture(nil, ui.rbutton, {128,32}, {CENTER,CENTER,0,0}, "/SatuveXboxUI/textures/tab.dds") ui.rbutton.tab:SetColor(.21,.21,.15,1)
-	ui.ibutton		=BUI.UI.Button(	"BUI_Report_Ibutton",				ui.tabs,	{70,24},		{LEFT,LEFT,70*3*s,0},		BSTATE_NORMAL, BUI.UI.Font("esobold",fs-2,true), {1,1}, {.7,.7,.5,1}, nil, {1,1,1,1}, false)
+	ui.ibutton		=BUI.UI.Button(	"BUI_Report_Ibutton",				ui.tabs,	{70,24},		{LEFT,LEFT,70*3,0},		BSTATE_NORMAL, BUI.UI.Font("esobold",fs-2,true), {1,1}, {.7,.7,.5,1}, nil, {1,1,1,1}, false)
 	ui.ibutton:SetText(BUI.Loc("STATISTICS_Incoming")) ui.ibutton:SetHandler("OnClicked", function(self) PlaySound("Click") BUI.Stats.SetupReport("Incoming",self) end)
 	ui.ibutton.tab	=BUI.UI.Texture(nil, ui.ibutton, {128,32}, {CENTER,CENTER,0,0}, "/SatuveXboxUI/textures/tab.dds") ui.ibutton.tab:SetColor(.21,.21,.15,1)
-	ui.gbutton		=BUI.UI.Button(	"BUI_Report_Gbutton",				ui.tabs,	{70,24},		{LEFT,LEFT,70*4*s,0},		BSTATE_NORMAL, BUI.UI.Font("esobold",fs-2,true), {1,1}, {.7,.7,.5,1}, nil, {1,1,1,1}, false)
+	ui.gbutton		=BUI.UI.Button(	"BUI_Report_Gbutton",				ui.tabs,	{70,24},		{LEFT,LEFT,70*4,0},		BSTATE_NORMAL, BUI.UI.Font("esobold",fs-2,true), {1,1}, {.7,.7,.5,1}, nil, {1,1,1,1}, false)
 	ui.gbutton:SetText(BUI.Loc("STATISTICS_Group")) ui.gbutton:SetHandler("OnClicked", function(self) PlaySound("Click") BUI.Stats.SetupGroupReport() end)
 	ui.gbutton.tab	=BUI.UI.Texture(nil, ui.gbutton, {128,32}, {CENTER,CENTER,0,0}, "/SatuveXboxUI/textures/tab.dds") ui.gbutton.tab:SetColor(.21,.21,.15,1)
 	--Abilitys Detail
-	local abilities	=BUI.UI.Control(	"BUI_Report_Ability",				ui,		{w,fs*1.5},		{LEFT,LEFT,10*s,0},			true)
-	local header	=BUI.UI.Control(	"BUI_Report_Ability_Header",			abilities,	{w-20,fs*1.3},	{TOPLEFT,TOPLEFT,10*s,0},		false)
+	local abilities	=BUI.UI.Control(	"BUI_Report_Ability",				ui,		{w,fs*1.5},		{LEFT,LEFT,10,0},			true)
+	local header	=BUI.UI.Control(	"BUI_Report_Ability_Header",			abilities,	{w-20,fs*1.3},	{TOPLEFT,TOPLEFT,10,0},		false)
 	header.bg		=BUI.UI.Backdrop(	"BUI_Report_Ability_BG",			header,	{w-20,fs*1.3},	{TOPLEFT,TOPLEFT,0,0},			{.4,.4,.4,.3}, {0,0,0,0}, nil, false)
-	header.name		=BUI.UI.Label(	"BUI_Report_Ability_Name",			header,	{220,fs*1.5},	{LEFT,LEFT,30*s,0},			BUI.UI.Font("esobold",fs,true), {1,1,1,1}, {0,1}, BUI.Loc("Ability"), false)
+	header.name		=BUI.UI.Label(	"BUI_Report_Ability_Name",			header,	{220,fs*1.5},	{LEFT,LEFT,30,0},			BUI.UI.Font("esobold",fs,true), {1,1,1,1}, {0,1}, BUI.Loc("Ability"), false)
 --	header.uses		=BUI.UI.Label(	"BUI_Report_Ability_Uses",			header,	{30,fs*1.5},	{LEFT,RIGHT,0,0,header.name},		BUI.UI.Font("esobold",fs,true), {1,1,1,1}, {0,1}, "#", false)
 	header.total	=BUI.UI.Label(	"BUI_Report_Ability_Total",			header,	{130,fs*1.5},	{LEFT,RIGHT,0,0,header.name},		BUI.UI.Font("esobold",fs,true), {1,1,1,1}, {0,1}, BUI.Loc("Damage"), false)
 	header.dps		=BUI.UI.Label(	"BUI_Report_Ability_DPS",			header,	{70,fs*1.5},	{LEFT,RIGHT,0,0,header.total},	BUI.UI.Font("esobold",fs,true), {1,1,1,1}, {0,1}, BUI.Loc("DPS"), false)
@@ -530,7 +591,7 @@ function BUI.Stats.Analistics_Init()	--ANALYTICS WINDOW
 	end
 --	header.min		=BUI.UI.Label(	"BUI_Report_Ability_Min",			header,	{70,fs*1.5},	{LEFT,RIGHT,0,0,header.perc},		BUI.UI.Font("esobold",fs,true), {1,1,1,1}, {0,1}, "Min", true)
 	abilities.header	=header
-	abilities.content	=BUI.UI.Control(	"BUI_Report_Content",				abilities,	{w-10,fs*1.5},	{TOPLEFT,TOPLEFT,10*s,fs*1.5},	false)
+	abilities.content	=BUI.UI.Control(	"BUI_Report_Content",				abilities,	{w-10,fs*1.5},	{TOPLEFT,TOPLEFT,10,fs*1.5},	false)
 	local scroll	=BUI.UI.Scroll(abilities.content)
 	abilities.list	=BUI.UI.Control(	"BUI_Report_List",				scroll,	{w-10,fs*1.5},	{TOP,TOP,0,0},				false)
 	ui.abilities	=abilities
@@ -544,43 +605,49 @@ function BUI.Stats.Analistics_Init()	--ANALYTICS WINDOW
 	ui.foot:SetAnchor(TOPLEFT,ui,BOTTOMLEFT,0,-24)
 	ui.foot:SetAnchor(BOTTOMRIGHT,ui,BOTTOMRIGHT,0,0)
 		--EquipmentInfo
-	ui.ebutton		=BUI.UI.Texture("BUI_Report_Ebutton", ui.foot, {fs,fs}, {LEFT,LEFT,10*s,0}, "/esoui/art/icons/mapkey/mapkey_groupmember.dds")
+	ui.ebutton		=BUI.UI.Texture("BUI_Report_Ebutton", ui.foot, {fs,fs}, {LEFT,LEFT,10,0}, "/esoui/art/icons/mapkey/mapkey_groupmember.dds")
 	ui.ebutton:SetColor(156/256,147/256,117/256,1)
 	ui.ebutton:SetMouseEnabled(true)
-	ui.ebutton:SetHandler("OnMouseDown", function(self) PlaySound("Click")EquipmentInfo()end)
+	ui.ebutton:SetHandler("OnMouseDown", function()
+		if type(BUI.Stats.ToggleReportAuxFromMouse)=="function" then BUI.Stats.ToggleReportAuxFromMouse("equipment")
+		else PlaySound("Click") EquipmentInfo() end
+	end)
 	ui.ebutton:SetHandler("OnMouseEnter", function(self)self:SetColor(.9,.9,.8,1)end)
 	ui.ebutton:SetHandler("OnMouseExit", function(self)self:SetColor(156/256,147/256,117/256,1)end)
 	ui.ebutton:SetDrawTier(DT_HIGH)
     ui.ebutton:SetDrawLayer(DL_CONTROLS)
-	BUI.UI.Label(	"BUI_Report_eDescription",	ui.foot,	{180,fs*1.5},		{LEFT,LEFT,(20+fs)*s,0},	BUI.UI.Font("standard",fs,true), {.8,.8,.6,1}, {0,1}, BUI.Loc("ReportEinfo"), false)
+	BUI.UI.Label(	"BUI_Report_eDescription",	ui.foot,	{180,fs*1.5},		{LEFT,LEFT,20+fs,0},	BUI.UI.Font("standard",fs,true), {.8,.8,.6,1}, {0,1}, BUI.Loc("ReportEinfo"), false)
 		--Uptimes
-	ui.ubase		=BUI.UI.Control("BUI_Report_Ubutton_Base", ui.foot, {200,24}, {TOPLEFT,TOPLEFT,200*s,0}, true)
+	ui.ubase		=BUI.UI.Control("BUI_Report_Ubutton_Base", ui.foot, {200,24}, {TOPLEFT,TOPLEFT,200,0}, true)
 	ui.ubutton		=BUI.UI.Texture("BUI_Report_Ubutton", ui.ubase, {fs,fs}, {LEFT,LEFT,0,0}, "/esoui/art/icons/mapkey/mapkey_groupmember.dds")
 	ui.ubutton:SetColor(156/256,147/256,117/256,1)
 	ui.ubutton:SetMouseEnabled(true)
-	ui.ubutton:SetHandler("OnMouseDown", function(self) PlaySound("Click")BUI.Stats.SetupUptimes()end)
+	ui.ubutton:SetHandler("OnMouseDown", function()
+		if type(BUI.Stats.ToggleReportAuxFromMouse)=="function" then BUI.Stats.ToggleReportAuxFromMouse("uptimes")
+		else PlaySound("Click") BUI.Stats.SetupUptimes() end
+	end)
 	ui.ubutton:SetHandler("OnMouseEnter", function(self)self:SetColor(.9,.9,.8,1)end)
 	ui.ubutton:SetHandler("OnMouseExit", function(self)self:SetColor(156/256,147/256,117/256,1)end)
 	ui.ubutton:SetDrawTier(DT_HIGH)
     ui.ubutton:SetDrawLayer(DL_CONTROLS)
-	BUI.UI.Label(	"BUI_Report_uDescription",	ui.ubase,	{180,fs*1.5},		{LEFT,LEFT,(10+fs)*s,0},	BUI.UI.Font("standard",fs,true), {.8,.8,.6,1}, {0,1}, BUI.Loc("STATISTICS_Uptimes"), false)
+	BUI.UI.Label(	"BUI_Report_uDescription",	ui.ubase,	{180,fs*1.5},		{LEFT,LEFT,10+fs,0},	BUI.UI.Font("standard",fs,true), {.8,.8,.6,1}, {0,1}, BUI.Loc("STATISTICS_Uptimes"), false)
 
-	BUI.UI.Label(	"BUI_Report_Version",		ui.foot,	{345,fs*1.5},	{RIGHT,RIGHT,-10*s,0},		BUI.UI.Font("standard",fs,true), {.8,.8,.6,1}, {2,1}, ""	, false)
+	BUI.UI.Label(	"BUI_Report_Version",		ui.foot,	{345,fs*1.5},	{RIGHT,RIGHT,-10,0},		BUI.UI.Font("standard",fs,true), {.8,.8,.6,1}, {2,1}, ""	, false)
 	--Buffs
 	if BUI.Vars.StatsBuffs then
 		--Elements
-		BUI.UI.Label(	"BUI_Report_Elements",	ui,	{300,(fs-4)*1.6*3},	{TOPRIGHT,TOPRIGHT,-40*s,7*s},	BUI.UI.Font("standard",fs-4,true), {1,1,1,1}, {0,0}, "", false)
+		BUI.UI.Label(	"BUI_Report_Elements",	ui,	{300,(fs-4)*1.6*3},	{TOPRIGHT,TOPRIGHT,-40,7},	BUI.UI.Font("standard",fs-4,true), {1,1,1,1}, {0,0}, "", false)
 		--Buffs
-		local control	=BUI.UI.Control(	"BUI_Report_BuffsUp_Control",		ui,		{345,fs*1.5},	{TOPRIGHT,TOPRIGHT,-10*s,(30+head)*s},	false)
+		local control	=BUI.UI.Control(	"BUI_Report_BuffsUp_Control",		ui,		{345,fs*1.5},	{TOPRIGHT,TOPRIGHT,-10,30+head},	false)
 		control.bg		=BUI.UI.Backdrop(	"BUI_Report_BuffsUp_BG",		control,	{345,fs*1.5},	{TOP,TOP,0,0},				{.3,.3,.3,.7}, {0,0,0,1}, BUI.Textures["grainy"], false)
-		control.name	=BUI.UI.Label(	"BUI_Report_BuffsUp_Name",		control,	{190,fs*1.5},	{LEFT,LEFT,10*s,0,control},		BUI.UI.Font("esobold",fs,true), {1,1,1,1}, {0,1}, BUI.Loc("ReportPBHeader"), false)
+		control.name	=BUI.UI.Label(	"BUI_Report_BuffsUp_Name",		control,	{190,fs*1.5},	{LEFT,LEFT,10,0,control},		BUI.UI.Font("esobold",fs,true), {1,1,1,1}, {0,1}, BUI.Loc("ReportPBHeader"), false)
 		--Buffs Headers
 		local BuffsUp	=BUI.UI.Control(	"BUI_Report_BuffsUp",			control,	{345,fs*1.5*2},	{TOPLEFT,BOTTOMLEFT,0,0},		true)
 		BuffsUp.namesH	=BUI.UI.Label(	"BUI_Report_BuffsUp_NamesHeader",	BuffsUp,	{240,fs*1.5},	{TOPLEFT,TOPLEFT,0,0},			BUI.UI.Font("esobold",fs,true), {1,1,1,1}, {1,1}, BUI.Loc("ReportBuffHeader")	, false)
 		BuffsUp.timeH	=BUI.UI.Label(	"BUI_Report_BuffsUp_TimeHeader",	BuffsUp,	{50,fs*1.5},	{LEFT,RIGHT,0,0,BuffsUp.namesH},	BUI.UI.Font("esobold",fs,true), {1,1,1,1}, {1,1}, BUI.Loc("ReportTimeHeader")	, false)
 		BuffsUp.percH	=BUI.UI.Label(	"BUI_Report_BuffsUp_PercentHeader",	BuffsUp,	{50,fs*1.5},	{LEFT,RIGHT,0,0,BuffsUp.timeH},	BUI.UI.Font("esobold",fs,true), {1,1,1,1}, {1,1}, BUI.Loc("STATISTICS_Up")	, false)
 		--Buffs List
-		local list		=BUI.UI.Control(	"BUI_Report_BuffsUp_Content",		BuffsUp,	{345,20},		{TOPLEFT,TOPLEFT,0,(fs*1.5/2+10)*s},		false)
+		local list		=BUI.UI.Control(	"BUI_Report_BuffsUp_Content",		BuffsUp,	{345,20},		{TOPLEFT,TOPLEFT,0,fs*1.5/2+10},		false)
 		local scroll	=BUI.UI.Scroll(list)
 		BuffsUp.names	=BUI.UI.Label(	"BUI_Report_BuffsUp_Names",		scroll,	{240,20},		{TOPLEFT,TOPLEFT,0,0},			BUI.UI.Font("standard",fs,true), {1,1,1,1}, {0,0}, ""	, false)
 		BuffsUp.time	=BUI.UI.Label(	"BUI_Report_BuffsUp_Time",		scroll,	{50,20},		{LEFT,RIGHT,0,0,BuffsUp.names},	BUI.UI.Font("standard",fs,true), {1,1,1,1}, {0,0}, ""	, false)
@@ -595,8 +662,14 @@ function BUI.Stats.Analistics_Init()	--ANALYTICS WINDOW
 	if (BUI.Stats.TargetPool==nil) then BUI.Stats.TargetPool=ZO_ObjectPool:New(BUI.Stats.CreateTarget, function(object)object:SetHidden(true)end) end
 	if (BUI.Stats.AbilityPool==nil) then BUI.Stats.AbilityPool=ZO_ObjectPool:New(BUI.Stats.CreateAbility, function(object)object:SetHidden(true)end) end
 
-	ui:SetMouseEnabled(true) ui:SetMovable(true) ui:SetScale(s)
-	BUI_Report:RegisterForEvent(EVENT_NEW_MOVEMENT_IN_UI_MODE,function() if not BUI_Report:IsHidden() then BUI.Stats.Toggle() end end)
+	ui:SetMouseEnabled(true) ui:SetMovable(true)
+	if ui.SetKeyboardEnabled then ui:SetKeyboardEnabled(true) end
+	BUI.Stats.ApplyReportScale()
+	BUI_Report:RegisterForEvent(EVENT_NEW_MOVEMENT_IN_UI_MODE,function()
+		if not BUI_Report:IsHidden() then
+			if type(BUI.Stats.CloseCombatReportCompletely)=="function" then BUI.Stats.CloseCombatReportCompletely() else BUI.Stats.Toggle() end
+		end
+	end)
 end
 
 local function PostGroupDps(name)
@@ -649,31 +722,38 @@ local function PostGroupDps(name)
 end
 
 function BUI.Stats.CreateTarget()
-	local fs,s=BUI.Vars.StatsFontSize,1	--BUI.Vars.ReportScale
+	local fs=BUI.Vars.StatsFontSize
 	local w=720+((BUI.language=="en" or BUI.Vars.ActionsPrecise)and 50 or 0)
 	local i	=BUI.Stats.TargetPool:GetNextControlId()
 	local parent=BUI_Report
 	--Create target
-	local control	=BUI.UI.Control(	"BUI_Report_Target"..i,			parent,		{w,fs*1.5},				{LEFT,LEFT,10*s,0},		false)
+	local control	=BUI.UI.Control(	"BUI_Report_Target"..i,			parent,		{w,fs*1.5},				{LEFT,LEFT,10,0},		false)
 	control.bg		=BUI.UI.Backdrop(	"BUI_Report_Target"..i.."_BG",	control,		{w,fs*1.5},				{TOP,TOP,0,0},			{.3,.3,.3,.7}, {0,0,0,1}, BUI.Textures["grainy"], false)
-	control.name	=BUI.UI.Label(	"BUI_Report_Target"..i.."_Name",	control.bg,		{220,fs*1.5},			{LEFT,LEFT,10*s,0},		BUI.UI.Font("esobold",fs,true), {1,1,1,1}, {0,1}, BUI.Loc("ReportTargetName"), false)
+	control.name	=BUI.UI.Label(	"BUI_Report_Target"..i.."_Name",	control.bg,		{220,fs*1.5},			{LEFT,LEFT,10,0},		BUI.UI.Font("esobold",fs,true), {1,1,1,1}, {0,1}, BUI.Loc("ReportTargetName"), false)
 	control.total	=BUI.UI.Label(	"BUI_Report_Target"..i.."_Total",	control.name,	{220,fs*1.5},			{LEFT,RIGHT,0,0},			BUI.UI.Font("esobold",fs,true), {1,1,1,1}, {0,1}, "", false)	--BUI.Loc("ReportTotalDamage")
-	control.dps		=BUI.UI.Label(	"BUI_Report_Target"..i.."_DPS",	control.bg,		{100,fs*1.5},			{RIGHT,RIGHT,-fs*6*s,0},	BUI.UI.Font("esobold",fs,true), {1,1,1,1}, {0,1}, "", false)	--"DPS"
+	control.dps		=BUI.UI.Label(	"BUI_Report_Target"..i.."_DPS",	control.bg,		{100,fs*1.5},			{RIGHT,RIGHT,-fs*6,0},	BUI.UI.Font("esobold",fs,true), {1,1,1,1}, {0,1}, "", false)	--"DPS"
 	--Expand button
-	control.expand	=BUI.UI.Button(	"BUI_Report_Target"..i.."_Expand",	control,		{fs,fs},				{RIGHT,RIGHT,-10*s,0,control.bg},	BSTATE_NORMAL, nil, nil, nil, nil, nil, false)
+	control.expand	=BUI.UI.Button(	"BUI_Report_Target"..i.."_Expand",	control,		{fs,fs},				{RIGHT,RIGHT,-10,0,control.bg},	BSTATE_NORMAL, nil, nil, nil, nil, nil, false)
 	control.expand:SetNormalTexture('/esoui/art/buttons/pointsplus_up.dds')
 	control.expand:SetMouseOverTexture('/esoui/art/buttons/pointsplus_over.dds')
 	control.expand:SetPressedTexture('/esoui/art/buttons/pointsminus_up.dds')
 	control.expand:SetPressedMouseOverTexture('/esoui/art/buttons/pointsminus_over.dds')
 	control.expand:SetDisabledTexture('/esoui/art/buttons/pointsplus_disabled.dds')
 	control.expand:SetDisabledPressedTexture('/esoui/art/buttons/pointsminus_disabled.dds')
-	control.expand:SetHandler("OnClicked", function(self) PlaySound("Click") BUI.Stats.ExpandTarget(self) end)
+	control.expand:SetHandler("OnClicked", function(self)
+		if type(BUI.Stats.ExpandTargetFromMouse)=="function" then BUI.Stats.ExpandTargetFromMouse(self)
+		else PlaySound("Click") BUI.Stats.ExpandTarget(self) end
+	end)
 	--Target buff button
 	control.targetbuffs=BUI.UI.Button(	"BUI_Report_Target"..i.."_Debuff",	control,		{fs*1.2,fs*1.2},			{RIGHT,LEFT,0,0,control.expand},	BSTATE_NORMAL, nil, nil, nil, nil, nil, not BUI.Vars.StatsBuffs)
 	control.targetbuffs:SetNormalTexture('/esoui/art/tutorial/smithing_rightarrow_up.dds')
 	control.targetbuffs:SetPressedTexture('/esoui/art/tutorial/smithing_leftarrow_up.dds')
 	control.targetbuffs.state="collapsed"
-	control.targetbuffs:SetHandler("OnClicked", function(self) PlaySound("Click") BUI.Stats.ExpandTargetBuffs(self) end)
+	control.targetbuffs:SetHandler("OnClicked", function(self)
+		PlaySound("Click")
+		BUI.Stats.ExpandTargetBuffs(self)
+		if BUI.Stats.Gamepad and BUI.Stats.Gamepad.active then BUI.Stats.Gamepad:RefreshHighlight() end
+	end)
 	--Post button
 	control.post	=BUI.UI.Button(	"BUI_Report_Target"..i.."_Post",	control,		{fs*1.5,fs*1.5},			{RIGHT,LEFT,0,0,control.targetbuffs},	BSTATE_NORMAL, nil, nil, nil, nil, nil, false)
 	control.post:SetNormalTexture('/esoui/art/chatwindow/chat_notification_up.dds')
@@ -683,22 +763,22 @@ function BUI.Stats.CreateTarget()
 	--Store some data
 	control.state	="collapsed"
 	--DeBuffs Backdrop
-	control.d		=BUI.UI.Control(	"BUI_Report_DeBuffs"..i,			control,		{345,fs*1.5},	{TOPLEFT,TOPRIGHT,10*s,0},	true)
+	control.d		=BUI.UI.Control(	"BUI_Report_DeBuffs"..i,			control,		{345,fs*1.5},	{TOPLEFT,TOPRIGHT,10,0},	true)
 	control.d.bg	=BUI.UI.Backdrop(	"BUI_Report_DeBuffs"..i.."_BG",		control.d,		{345,fs*1.5},		{TOP,TOP,0,0},			{.3,.3,.3,.7}, {0,0,0,1}, BUI.Textures["grainy"], false)
-	control.d.name	=BUI.UI.Label(	"BUI_Report_DeBuffs"..i.."_Name",		control.d,		{190,fs*1.5},	{LEFT,LEFT,10*s,0},		BUI.UI.Font("esobold",fs,true), {1,1,1,1}, {0,1}, BUI.Loc("ReportTBHeader"), false)
+	control.d.name	=BUI.UI.Label(	"BUI_Report_DeBuffs"..i.."_Name",		control.d,		{190,fs*1.5},	{LEFT,LEFT,10,0},		BUI.UI.Font("esobold",fs,true), {1,1,1,1}, {0,1}, BUI.Loc("ReportTBHeader"), false)
 	--DeBuffs Headers
 	control.d.header	=BUI.UI.Control(	"BUI_Report_DeBuffs"..i.."_Header",		control.d,		{345,fs*1.5*2},	{TOPLEFT,BOTTOMLEFT,0,0},	false)
 	control.d.namesH	=BUI.UI.Label(	"BUI_Report_DeBuffs"..i.."_NamesHeader",	control.d.header,	{240,fs*1.5},	{TOPLEFT,TOPLEFT,0,0},		BUI.UI.Font("esobold",fs,true), {1,1,1,1}, {1,1}, BUI.Loc("ReportBuffHeader")	, false)
 	control.d.timeH	=BUI.UI.Label(	"BUI_Report_DeBuffs"..i.."_TimeHeader",	control.d.namesH,	{50,fs*1.5},	{LEFT,RIGHT,0,0},			BUI.UI.Font("esobold",fs,true), {1,1,1,1}, {1,1}, BUI.Loc("ReportTimeHeader")	, false)
 	control.d.percH	=BUI.UI.Label(	"BUI_Report_DeBuffs"..i.."_PercHeader",	control.d.timeH,	{50,fs*1.5},	{LEFT,RIGHT,0,0},			BUI.UI.Font("esobold",fs,true), {1,1,1,1}, {1,1}, BUI.Loc("STATISTICS_Up")	, false)
 	--Buffs List
-	control.d.content	=BUI.UI.Control(	"BUI_Report_DeBuffsUp"..i.."_Content",	control.d.header,	{345,20},		{TOPLEFT,TOPLEFT,0,(fs*1.5/2+10)*s},		false)
+	control.d.content	=BUI.UI.Control(	"BUI_Report_DeBuffsUp"..i.."_Content",	control.d.header,	{345,20},		{TOPLEFT,TOPLEFT,0,fs*1.5/2+10},		false)
 	local scroll	=BUI.UI.Scroll(control.d.content)
 	control.d.names	=BUI.UI.Label(	"BUI_Report_DeBuffsUp"..i.."_Names",	scroll,		{240,20},		{TOPLEFT,TOPLEFT,0,0},BUI.UI.Font("standard",fs,true), {1,1,1,1}, {0,0}, ""	, false)
 	control.d.time	=BUI.UI.Label(	"BUI_Report_DeBuffsUp"..i.."_Time",		scroll,		{50,20},		{LEFT,RIGHT,0,0,control.d.names},	BUI.UI.Font("standard",fs,true), {1,1,1,1}, {0,0}, ""	, false)
 	control.d.perc	=BUI.UI.Label(	"BUI_Report_DeBuffsUp"..i.."_Perc",		scroll,		{50,20},		{LEFT,RIGHT,0,0,control.d.time},	BUI.UI.Font("standard",fs,true), {1,1,1,1}, {0,0}, ""	, false)
 	--Summary
-	control.d.summary	=BUI.UI.Label(	"BUI_Report_Target"..i.."_Summary",		control.d,		{345,(fs-4)*1.36*3},	{BOTTOMLEFT,TOPLEFT,20*s,0},	BUI.UI.Font("standard",fs-4,true), {1,1,1,1}, {0,0}, "", false)
+	control.d.summary	=BUI.UI.Label(	"BUI_Report_Target"..i.."_Summary",		control.d,		{345,(fs-4)*1.36*3},	{BOTTOMLEFT,TOPLEFT,20,0},	BUI.UI.Font("standard",fs-4,true), {1,1,1,1}, {0,0}, "", false)
 	return control
 end
 
@@ -881,9 +961,44 @@ local function SetupTargetBuffs(control)
 	parent.perc:SetHeight(h)
 end
 
+local reportEnabledCameraUIMode=false
+
+local function ReportCameraUIModeActive()
+	return type(IsGameCameraUIModeActive)=="function" and IsGameCameraUIModeActive() or false
+end
+
+local function ReportCameraDebug(label,before,after)
+	local logger=rawget(_G,"d")
+	if type(logger)~="function" then return end
+	logger(label)
+	logger("CameraUI before = "..tostring(before))
+	logger("CameraUI after = "..tostring(after))
+end
+
+local function AcquireReportCameraUIMode()
+	local before=ReportCameraUIModeActive()
+	if not before then
+		SetGameCameraUIMode(true)
+		reportEnabledCameraUIMode=true
+	else
+		reportEnabledCameraUIMode=false
+	end
+	ReportCameraDebug("REPORT OPEN",before,ReportCameraUIModeActive())
+end
+
+function BUI.Stats.ReleaseReportCameraUIMode()
+	local before=ReportCameraUIModeActive()
+	if reportEnabledCameraUIMode then
+		SetGameCameraUIMode(false)
+		reportEnabledCameraUIMode=false
+	end
+	ReportCameraDebug("REPORT CLOSE",before,ReportCameraUIModeActive())
+end
+
 function BUI.Stats.Toggle(redraw)
 	if not BUI.init.Stats or not BUI.Vars.EnableStats then return end
-	if redraw~=true then redraw=BUI_Report:IsHidden() ReportToShow=BUI.ReportN end
+	local reportWasHidden=BUI_Report:IsHidden()
+	if redraw~=true then redraw=reportWasHidden ReportToShow=BUI.ReportN end
 	--Hide additional info
 	if BUI_Report_Einfo and not BUI_Report_Einfo:IsHidden() then
 		BUI_Report_Einfo:SetHidden(true)
@@ -922,11 +1037,12 @@ function BUI.Stats.Toggle(redraw)
 			BUI_Report_Next:SetDisabled(nil)
 		end
 		BUI_Report_Count:SetText("("..ReportToShow.."/"..BUI.ReportN..")")
-		SetGameCameraUIMode(true)
+		if reportWasHidden then AcquireReportCameraUIMode() end
 	end
 	--Toggle visibility
 	SatuveUI:SetHidden(redraw)
 	BUI_Report:SetHidden(not redraw)
+	BUI.Stats.ApplyReportScale()
 end
 
 local function CharacterSummary(target)
@@ -971,6 +1087,7 @@ local function TogleBuffsSection(context)
 	BUI_Report_Header:SetWidth(w+20+buf)
 --	BUI_Report_Foot:SetWidth(w+20+buf)
 	if BUI_Report_Einfo_Champion then BUI_Report_Einfo_Champion:SetHidden(not (BUI.Vars.StatsBuffs and BuffsSection)) end
+	BUI.Stats.ApplyReportScale()
 end
 
 local function IsDoT(id)
@@ -1050,11 +1167,12 @@ local function GetAbilityUptime(id,ab_name,target)
 end
 --	/script d(BUI.Stats.Current[BUI.ReportN].Uptimes)
 function BUI.Stats.SetupUptimes()		--Uptimes
-	local Report=BUI.Stats.Current[ReportToShow] if not Report or not Report.Uptimes then return end
+	local Report=BUI.Stats.Current[ReportToShow] if not Report or type(Report.Uptimes)~="table" or next(Report.Uptimes)==nil then return end
 
 	if BUI_Report_Uptimes and not BUI_Report_Uptimes:IsHidden() then
 		BUI_Report_Uptimes:SetHidden(true)
 		BUI_Report_Ubutton:SetTextureRotation(0)
+		BUI.Stats.ApplyReportScale()
 		return
 	end
 	BUI_Report_Ubutton:SetTextureRotation(math.pi)
@@ -1062,7 +1180,7 @@ function BUI.Stats.SetupUptimes()		--Uptimes
 		BUI_Report_Einfo:SetHidden(true)
 		BUI_Report_Ebutton:SetTextureRotation(0)
 	end
-	local fs,s=BUI.Vars.StatsFontSize,1	--BUI.Vars.ReportScale
+	local fs=BUI.Vars.StatsFontSize
 	local w=BUI_Report:GetWidth()-20	--720+((BUI.language=="en" or BUI.Vars.ActionsPrecise)and 50 or 0)+BUFF_W
 	local head=40
 	local ui=BUI_Report_Uptimes or WINDOW_MANAGER:CreateControl("BUI_Report_Uptimes", BUI_Report, CT_BACKDROP)
@@ -1083,7 +1201,7 @@ function BUI.Stats.SetupUptimes()		--Uptimes
 		ui.line:SetColor(.7,.7,.5,.3)
 		ui.line:SetThickness(2)
 		ui.line:SetHidden(false)
-		ui.title=BUI.UI.Label("BUI_Report_Uptimes_Title", ui, {230,fs*1.5}, {TOPLEFT,TOPLEFT,10*s,0}, BUI.UI.Font("esobold",fs,true), {1,1,1,1}, {0,1}, "", false)
+		ui.title=BUI.UI.Label("BUI_Report_Uptimes_Title", ui, {230,fs*1.5}, {TOPLEFT,TOPLEFT,10,0}, BUI.UI.Font("esobold",fs,true), {1,1,1,1}, {0,1}, "", false)
 	end
 	--Start
 	local ElementColor={[0]={.2,.2,.2,.7},[1]={.5,.5,.5,.7},[2]={.7,.7,.7,.7},[3]={.7,.2,.2,.7},[4]={1,1,1,.7},[5]={.5,.5,.5,.7},[6]={.7,.7,1,.7},[7]={.7,.7,.2,.7},[8]={.3,.3,.7,.7},[9]={.5,.5,.5,.7},[10]={.7,.2,.7,.7},[11]={.2,.7,.2,.7}}
@@ -1158,10 +1276,11 @@ function BUI.Stats.SetupUptimes()		--Uptimes
 		end
 		ui:SetAnchor(BOTTOMRIGHT,BUI_Report,BOTTOMRIGHT,0,head+row*h)
 		ui.title:SetText(BUI.Loc("STATISTICS_Uptimes_For").." "..ZO_FormatTime(fighttime/1000,SI_TIME_FORMAT_TIMESTAMP))
+		BUI.Stats.ApplyReportScale()
 		if ui:GetBottom()>GuiRoot:GetBottom() then
 			BUI_Report:ClearAnchors()
 			BUI_Report:SetAnchor(TOP,GuiRoot,TOP,0,0)
-			local delta=ui:GetBottom()-GuiRoot:GetBottom()
+			local delta=(ui:GetBottom()-GuiRoot:GetBottom())/(BUI_Report.EffectiveReportScale or 1)
 			if delta>0 and BUI_Report.expanded then
 				if BUI.Vars.StatsBuffs then
 					BUI_Report_BuffsUp_Content:SetHeight(BUI_Report_BuffsUp_Content:GetHeight()-delta)
@@ -1171,9 +1290,11 @@ function BUI.Stats.SetupUptimes()		--Uptimes
 				BUI_Report:SetHeight(BUI_Report:GetHeight()-delta)
 			end
 		end
+		BUI.Stats.ApplyReportScale()
 		return
 	end
 	ui:SetHidden(true)
+	BUI.Stats.ApplyReportScale()
 end
 --	/script BUI.Stats.SetupUptimes()
 function BUI.Stats.SetupReport(context,header_button)	--Setup player report
@@ -1181,10 +1302,10 @@ function BUI.Stats.SetupReport(context,header_button)	--Setup player report
 --	BUI.Stats.AbilityPool:ReleaseAllObjects()
 	local Report=BUI.Stats.Current[ReportToShow]
 	if not Report then return end
-	local fs,s=BUI.Vars.StatsFontSize,1	--BUI.Vars.ReportScale
+	local fs=BUI.Vars.StatsFontSize
 	--HeaderButtons
 	ResetHeaderButtons() if header_button then header_button:SetState(BSTATE_DISABLED) end
-	BUI_Report_Ubutton_Base:SetHidden(context~="Damage" or not Report.Uptimes)
+	BUI_Report_Ubutton_Base:SetHidden(context~="Damage" or not BUI.Stats.HasUptimes())
 	BUI_Report_Ability:SetHidden(true)
 	if BUI_Report_PostDeathTotal then BUI_Report_PostDeathTotal:SetHidden(true) end
 	--Compute index of targets
@@ -1222,6 +1343,7 @@ function BUI.Stats.SetupReport(context,header_button)	--Setup player report
 		--Get a control from the pool
 		local control,objectKey=BUI.Stats.TargetPool:AcquireObject()
 		control.id=objectKey
+		control.reportIndex=i
 		--Assign data
 		local target=targets[i]
 		control.target=target.name
@@ -1272,6 +1394,7 @@ function BUI.Stats.SetupReport(context,header_button)	--Setup player report
 		control=_G["BUI_Report_Elements"] if control~=nil then control:SetHidden(true) end
 		BUI_Report_Title:SetText(BUI.Loc("DReport"))
 		BUI_Report:SetHeight(200)
+		BUI.Stats.ApplyReportScale()
 		return
 	else
 		local targetName=(#targets==0) and "" or (#targets>1) and targets[2].name or targets[1].name
@@ -1324,6 +1447,7 @@ function BUI.Stats.SetupReport(context,header_button)	--Setup player report
 
 	BUI_Report_Version:SetText((Report.Acc or "").." "..(Report.ESOVersion or ""))
 	BUI.Stats.ExpandTarget(#targets>1 and BUI_Report_Target2_Expand or BUI_Report_Target1_Expand)
+	BUI.Stats.ApplyReportScale()
 end
 
 local function CollapseAll()
@@ -1361,11 +1485,12 @@ function BUI.Stats.ExpandTargetBuffs(self)
 		TargetBuffsIsExpanded=false
 		parent.d:SetHidden(true)
 	end
+	BUI.Stats.ApplyReportScale()
 end
 
 function BUI.Stats.ExpandTarget(self)
 	--Get data
-	local fs,s=BUI.Vars.StatsFontSize,1	--BUI.Vars.ReportScale
+	local fs=BUI.Vars.StatsFontSize
 	local parent	=self:GetParent()
 	local state		=parent.state
 	local target	=parent.target
@@ -1387,7 +1512,7 @@ function BUI.Stats.ExpandTarget(self)
 		--Set the button state
 		oldButton:SetState(BSTATE_DISABLED)
 		--Expand the parent container
-		oldParent:SetHeight(fs*1.5/s)
+		oldParent:SetHeight(fs*1.5)
 		container:SetHidden(true)
 		--Restore the button state
 		oldButton:SetState(BSTATE_NORMAL)
@@ -1436,6 +1561,7 @@ function BUI.Stats.ExpandTarget(self)
 			--Get a control from the pool
 			local control,objectKey=BUI.Stats.AbilityPool:AcquireObject()
 			control.id=objectKey
+			control.reportIndex=i
 			--Compute data
 --			local fighttime	=math.max(zo_round((Report.endTime-Report.startTime)/10)/100,1)
 			local fighttime	=math.max((Report.endTime-Report.startTime)/1000,1)
@@ -1465,7 +1591,7 @@ function BUI.Stats.ExpandTarget(self)
 			end
 			--Set Anchors
 			control:ClearAnchors() control:SetAnchor(unpack(anchor))
-			anchor={TOP,control,BOTTOM,0,3*s}
+			anchor={TOP,control,BOTTOM,0,3}
 			control:SetHidden(false)
 		end
 
@@ -1482,7 +1608,7 @@ function BUI.Stats.ExpandTarget(self)
 		--Expand the parent container
 		parent:SetHeight((math.min(#abilities,14)+2)*(fs*1.5+3))
 		container:ClearAnchors()
-		container:SetAnchor(TOP,parent,TOP,0,(fs*1.5)*s)
+		container:SetAnchor(TOP,parent,TOP,0,fs*1.5)
 		container:SetHidden(false)
 		container.content:SetHeight(math.min(#abilities,14)*(fs*1.5+3))
 		container.list:SetHeight(#abilities*(fs*1.5+3))
@@ -1497,14 +1623,24 @@ function BUI.Stats.ExpandTarget(self)
 	local bottom=BUI_Report_Title:GetBottom()
 	for _,control in pairs(BUI.Stats.TargetPool.m_Active) do bottom=math.max(bottom,control:GetBottom()) end
 	if BUI.Vars.StatsBuffs then
-		bottom=math.max(bottom,math.min(BUI_Report_BuffsUp_Names:GetBottom(),BUI_Report_BuffsUp_Content:GetTop()+17*fs*1.335))
-		bottom=math.max(bottom,math.min(parent.d.names:GetBottom(),parent.d.content:GetTop()+17*fs*1.335))
-		BUI_Report_BuffsUp_Content:SetHeight((bottom-BUI_Report_BuffsUp_Content:GetTop())/s)
-		parent.d.content:SetHeight((bottom-parent.d.content:GetTop())/s)
+		local layoutScale=BUI_Report.EffectiveReportScale or 1
+		bottom=math.max(bottom,math.min(BUI_Report_BuffsUp_Names:GetBottom(),BUI_Report_BuffsUp_Content:GetTop()+17*fs*1.335*layoutScale))
+		bottom=math.max(bottom,math.min(parent.d.names:GetBottom(),parent.d.content:GetTop()+17*fs*1.335*layoutScale))
+		BUI_Report_BuffsUp_Content:SetHeight((bottom-BUI_Report_BuffsUp_Content:GetTop())/layoutScale)
+		parent.d.content:SetHeight((bottom-parent.d.content:GetTop())/layoutScale)
 	end
-	local h=(bottom-BUI_Report:GetTop())/s
+	local h=(bottom-BUI_Report:GetTop())/(BUI_Report.EffectiveReportScale or 1)
 	BUI_Report:SetHeight(h+26)
-	BUI_Report.expanded=parent
+	BUI_Report.expanded=not container:IsHidden() and parent or nil
+	BUI.Stats.ApplyReportScale()
+end
+
+function BUI.Stats.CollapseExpandedTarget()
+	local parent=BUI_Report and BUI_Report.expanded
+	if not parent or not parent.expand or not BUI_Report_Ability or BUI_Report_Ability:IsHidden() then return false end
+	BUI.Stats.ExpandTarget(parent.expand)
+	BUI_Report.expanded=nil
+	return true
 end
 
 function BUI.Stats.SetupGroupReport()	--Setup group report
@@ -1521,9 +1657,9 @@ function BUI.Stats.SetupGroupReport()	--Setup group report
 	BUI_Report_Ubutton_Base:SetHidden(true)
 	BUI_Report_Ability:SetHidden(true)
 	TogleBuffsSection()
-	local GroupData=Report.GroupDPS if not GroupData or not GroupData.Total then BUI_Report_Title:SetText(BUI.Loc("NoDamage")) BUI_Report:SetHeight(200) return end
+	local GroupData=Report.GroupDPS if not GroupData or not GroupData.Total then BUI_Report_Title:SetText(BUI.Loc("NoDamage")) BUI_Report:SetHeight(200) BUI.Stats.ApplyReportScale() return end
 	local roles={["Damage"]="/esoui/art/lfg/gamepad/lfg_roleicon_dps.dds",["Tank"]="/esoui/art/lfg/gamepad/lfg_roleicon_tank.dds",["Healer"]="/esoui/art/lfg/gamepad/lfg_roleicon_healer.dds"}
-	local fs,s=BUI.Vars.StatsFontSize,1	--BUI.Vars.ReportScale
+	local fs=BUI.Vars.StatsFontSize
 	local container=BUI_Report_Ability
 	--Release existing objects
 	BUI.Stats.AbilityPool:ReleaseAllObjects()
@@ -1552,6 +1688,7 @@ function BUI.Stats.SetupGroupReport()	--Setup group report
 --		local hide		=average=="~" and role~=LFG_ROLE_DPS
 		--Get a control from the pool
 		local control,objectKey=BUI.Stats.AbilityPool:AcquireObject() control.id=objectKey
+		control.reportIndex=i
 		--Set data
 		control.bg:SetWidth(control.name:GetWidth()*(name=="Total" and 0 or damage/highest))
 		control.icon:SetTexture(icon)
@@ -1573,7 +1710,7 @@ function BUI.Stats.SetupGroupReport()	--Setup group report
 		end
 		--Set Anchors
 		control:ClearAnchors() control:SetAnchor(unpack(anchor))
-		anchor={TOP,control,BOTTOM,0,3*s}
+		anchor={TOP,control,BOTTOM,0,3}
 		control:SetHidden(false)
 	end
 	--Death total
@@ -1602,10 +1739,10 @@ function BUI.Stats.SetupGroupReport()	--Setup group report
 	container:ClearAnchors()
 	container:SetAnchor(TOP,parent,TOP,0,fs*1.5)
 	container:SetHidden(false)
-	container.content:SetHeight(math.min(#members,11)*(fs*1.5+3)/s)
-	container.list:SetHeight(#members*(fs*1.5+3)/s)
+	container.content:SetHeight(math.min(#members,11)*(fs*1.5+3))
+	container.list:SetHeight(#members*(fs*1.5+3))
 	--Resizing
-	local h=(container.content:GetBottom()-BUI_Report:GetTop())/s
+	local h=(container.content:GetBottom()-BUI_Report:GetTop())/(BUI_Report.EffectiveReportScale or 1)
 	BUI_Report:SetHeight(h+30)
 --	BUI_Report_Backdrop:SetHeight(h+26)
 --	BUI_Report_Border:SetHeight(h+2-30)
@@ -1622,6 +1759,7 @@ function BUI.Stats.SetupGroupReport()	--Setup group report
 	table.sort(targets,BUI.Stats.SortDamage)
 	--Modify headers
 	if #targets>0 then BUI_Report_Title:SetText(targets[1].name..(#targets>1 and "+"..#targets-1 or "")) end
+	BUI.Stats.ApplyReportScale()
 end
 
 function BUI.Stats.SortDamage(x,y)

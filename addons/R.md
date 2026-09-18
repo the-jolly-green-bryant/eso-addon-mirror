@@ -49,6 +49,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [RandoMote](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Springpeace2575/RandoMote__17d96254-a61a-4bb4-9409-d369f44e867f) | Springpeace2575 | Console | — |
 | [RandoMote (Dev)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Springpeace2575/RandoMote-Dev__b1a7539b-4888-4ad6-b04c-28000d99976d) | Springpeace2575 | Console | — |
 | [Randomote - Automatic/Manual Random Emotes \| New & Extended Personalities!](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/scorpius2k1/Randomote---Automatic-Manual-Random-Emotes-New-Extended-Personalities__3461) | scorpius2k1 | PC / Mac | 1.3 |
+| [Randwache](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Torfason/Randwache__4842) | Torfason | PC / Mac | 1.0.3 |
 | [RankIcons](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ragingpix3l/RankIcons__2744) | ragingpix3l | PC / Mac | 0.05 |
 | [Rare Fish Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/katkat42/Rare-Fish-Tracker__665) | katkat42 | PC / Mac | 1.43.0 |
 | [Rare Fish Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Treuce/Rare-Fish-Tracker__4303) | Treuce | PC / Mac | 1.42.8 |

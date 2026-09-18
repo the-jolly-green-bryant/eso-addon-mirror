@@ -7,10 +7,12 @@
 ## APIVersion: 101050
 ## Title: Alternative Group Frames
 ## Author: |c943810BulDeZir|r, Glande-Pas
-## Version: 1.3.32
-## AddOnVersion: 13
+## Version: 1.4.33
+## AddOnVersion: 14
 ## SavedVariables: AltGroupFramesSavedVariables
 ## DependsOn: LibAddonMenu-2.0>=43
+## OptionalDependsOn: PlayerRoleIndicator>=140
+## OptionalDependsOn: OdySupportIcons  # Does not define AddOnVersion
 
 AltGroupFrames.lua
 AltGroupFramesSettings.lua

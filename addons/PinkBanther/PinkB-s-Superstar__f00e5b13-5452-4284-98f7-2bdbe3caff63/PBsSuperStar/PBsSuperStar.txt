@@ -1,8 +1,8 @@
 ## Title: PB'S SUPERSTAR
 ## Description: キャラクターの装備・詳細ステータス・星座・CP・スキルを一画面に表示します。
 ## Author: PB
-## Version: 0.2.8
-## AddOnVersion: 208
+## Version: 0.2.13
+## AddOnVersion: 213
 ## APIVersion: 101050
 
 Data.lua

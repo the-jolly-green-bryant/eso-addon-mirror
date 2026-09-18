@@ -1,28 +1,37 @@
 TruePvPRatio = {
     name = "TruePvPRatio",
-    version = "1.7",
+    version = "2.6",
     savedVars = nil,
-    wasInPremadeGroup = false,
     uiCreated = false,
+    wasInPremadeGroup = false,
 }
 
 -- Textes de l'interface
 ZO_CreateStringId("SI_BINDING_NAME_TRUE_PVP_RATIO_TOGGLE", "Toggle True PvP Ratio")
 local L_GLOBAL_RATIO = "GLOBAL ACCOUNT RATIO: "
-local L_ALLIANCE_KILLS = "ALLIANCE KILLS & DEATHS"
 local L_TITLE = "TRUE PVP RATIO"
 
 -- Couleurs officielles des alliances (Hex)
 local ALLIANCE_COLORS = {
-    [ALLIANCE_ALDMERI_DOMINION] = "fde617", -- Jaune
-    [ALLIANCE_DAGGERFALL_COVENANT] = "1581fc", -- Bleu
-    [ALLIANCE_EBONHEART_PACT] = "ad0000", -- Rouge
+    [ALLIANCE_ALDMERI_DOMINION] = "d4aa15", -- Jaune
+    [ALLIANCE_DAGGERFALL_COVENANT] = "135da8", -- Bleu
+    [ALLIANCE_EBONHEART_PACT] = "a62828", -- Rouge
 }
 
--- Mémoire anti-doublon pour les événements envoyés en double par le serveur
-local recentEvents = {}
+-- Couleurs et Suffixes des Classes
+local CLASS_STYLES = {
+    [1]   = { text = "DK",    color = "9c0000" }, -- Rouge sang léger foncé
+    [2]   = { text = "SORC",  color = "5d38a6" }, -- Mauve foncé
+    [3]   = { text = "NB",    color = "404040" }, -- Gris foncé
+    [4]   = { text = "WARD",  color = "00c997" }, -- Turquoise
+    [5]   = { text = "NECRO", color = "9cffe8" }, -- Turquoise pâle
+    [6]   = { text = "TEMP",  color = "ffdc40" }, -- Jaune vif
+    [117] = { text = "ARC",   color = "33FF00" }, -- Vert flash
+}
 
--- Calcul du ratio 
+local recentEvents = {}
+local resolvedAllianceCache = {}
+
 local function GetRatio(k, d)
     if d == 0 then return (k > 0) and k or 0 end
     return k / d
@@ -32,7 +41,6 @@ local function FormatRatio(k, d)
     return string.format("%.2f", GetRatio(k, d))
 end
 
--- Création des données par défaut
 local function GetDefaults()
     return {
         global = {
@@ -47,7 +55,6 @@ local function GetDefaults()
     }
 end
 
--- Nettoyage des personnages supprimés
 local function CleanupDeletedCharacters()
     local validChars = {}
     for i = 1, GetNumCharacters() do
@@ -62,14 +69,12 @@ local function CleanupDeletedCharacters()
     end
 end
 
--- Mise à jour du statut de groupe (Différencie BG Solo / BG Groupe)
 local function UpdatePremadeGroupStatus()
     if not IsActiveWorldBattleground() then
         TruePvPRatio.wasInPremadeGroup = (GetGroupSize() > 1)
     end
 end
 
--- Détection INFAILLIBLE de la zone PvP actuelle
 local function GetCurrentPvPZone()
     if IsActiveWorldBattleground() then
         return "BG"
@@ -77,76 +82,112 @@ local function GetCurrentPvPZone()
     
     local zoneId = GetZoneId(GetUnitZoneIndex("player"))
     if zoneId == 181 then
-        return "CYR" -- Cyrodiil
+        return "CYR"
     elseif zoneId == 584 or zoneId == 643 then
-        return "IC" -- Cité Impériale ou Égouts
+        return "IC"
     end
     
-    return "CYR" -- Fallback par défaut
+    return "CYR"
 end
 
--- Ajouter un Kill
-local function AddKill(zone, victimAlliance)
+local function OnReticleTargetChanged()
+    if not DoesUnitExist("reticleover") or not IsUnitPlayer("reticleover") then return end
+    
+    local rawName = GetUnitName("reticleover")
+    if not rawName or rawName == "" then return end
+    
+    local charName = zo_strformat("<<1>>", rawName)
+    local alliance = GetUnitAlliance("reticleover")
+    
+    if alliance == ALLIANCE_ALDMERI_DOMINION or alliance == ALLIANCE_EBONHEART_PACT or alliance == ALLIANCE_DAGGERFALL_COVENANT then
+        resolvedAllianceCache[charName] = alliance
+    end
+end
+
+local function AddKill(zone, enemyAlliance, enemyCharName)
     local charName = zo_strformat("<<1>>", GetUnitName("player"))
     local sv = TruePvPRatio.savedVars
-    local charData = sv.characters[charName]
+    local charData = sv and sv.characters and sv.characters[charName]
+    if not charData then return end
 
     sv.global.kills = sv.global.kills + 1
-    if sv.global.alliances[victimAlliance] then
-        sv.global.alliances[victimAlliance].kills = sv.global.alliances[victimAlliance].kills + 1
+    
+    local realAlliance = nil
+    if zone == "CYR" or zone == "IC" then
+        realAlliance = enemyAlliance
+    elseif zone == "BG" then
+        realAlliance = resolvedAllianceCache[enemyCharName]
+    end
+
+    if realAlliance and sv.global.alliances[realAlliance] then
+        sv.global.alliances[realAlliance].kills = sv.global.alliances[realAlliance].kills + 1
     end
 
     charData.kills = charData.kills + 1
+    charData.currentKillStreak = (charData.currentKillStreak or 0) + 1
+    if charData.currentKillStreak > (charData.maxKillStreak or 0) then charData.maxKillStreak = charData.currentKillStreak end
+    if charData.currentKillStreak > (sv.global.maxKillStreak or 0) then sv.global.maxKillStreak = charData.currentKillStreak end
+
     if zone == "CYR" then
         charData.cyrodiil.kills = charData.cyrodiil.kills + 1
+        charData.cyrodiil.currentStreak = (charData.cyrodiil.currentStreak or 0) + 1
+        if charData.cyrodiil.currentStreak > (charData.cyrodiil.maxStreak or 0) then charData.cyrodiil.maxStreak = charData.cyrodiil.currentStreak end
     elseif zone == "IC" then
         charData.ic.kills = charData.ic.kills + 1
+        charData.ic.currentStreak = (charData.ic.currentStreak or 0) + 1
+        if charData.ic.currentStreak > (charData.ic.maxStreak or 0) then charData.ic.maxStreak = charData.ic.currentStreak end
     elseif zone == "BG" then
         if TruePvPRatio.wasInPremadeGroup then
             charData.bgGroup.kills = charData.bgGroup.kills + 1
+            charData.bgGroup.currentStreak = (charData.bgGroup.currentStreak or 0) + 1
+            if charData.bgGroup.currentStreak > (charData.bgGroup.maxStreak or 0) then charData.bgGroup.maxStreak = charData.bgGroup.currentStreak end
         else
             charData.bgSolo.kills = charData.bgSolo.kills + 1
+            charData.bgSolo.currentStreak = (charData.bgSolo.currentStreak or 0) + 1
+            if charData.bgSolo.currentStreak > (charData.bgSolo.maxStreak or 0) then charData.bgSolo.maxStreak = charData.bgSolo.currentStreak end
         end
-    end
-
-    -- Gestion du Killstreak
-    charData.currentKillStreak = (charData.currentKillStreak or 0) + 1
-    if charData.currentKillStreak > (charData.maxKillStreak or 0) then
-        charData.maxKillStreak = charData.currentKillStreak
-    end
-    if charData.currentKillStreak > (sv.global.maxKillStreak or 0) then
-        sv.global.maxKillStreak = charData.currentKillStreak
     end
 end
 
--- Ajouter une Mort
-local function AddDeath(zone, killerAlliance)
+local function AddDeath(zone, enemyAlliance, enemyCharName)
     local charName = zo_strformat("<<1>>", GetUnitName("player"))
     local sv = TruePvPRatio.savedVars
-    local charData = sv.characters[charName]
+    local charData = sv and sv.characters and sv.characters[charName]
+    if not charData then return end
 
     sv.global.deaths = sv.global.deaths + 1
-    if sv.global.alliances[killerAlliance] then
-        sv.global.alliances[killerAlliance].deaths = sv.global.alliances[killerAlliance].deaths + 1
+    
+    local realAlliance = nil
+    if zone == "CYR" or zone == "IC" then
+        realAlliance = enemyAlliance
+    elseif zone == "BG" then
+        realAlliance = resolvedAllianceCache[enemyCharName]
+    end
+
+    if realAlliance and sv.global.alliances[realAlliance] then
+        sv.global.alliances[realAlliance].deaths = sv.global.alliances[realAlliance].deaths + 1
     end
 
     charData.deaths = charData.deaths + 1
+    charData.currentKillStreak = 0
+
     if zone == "CYR" then
         charData.cyrodiil.deaths = charData.cyrodiil.deaths + 1
+        charData.cyrodiil.currentStreak = 0
     elseif zone == "IC" then
         charData.ic.deaths = charData.ic.deaths + 1
+        charData.ic.currentStreak = 0
     elseif zone == "BG" then
         if TruePvPRatio.wasInPremadeGroup then
             charData.bgGroup.deaths = charData.bgGroup.deaths + 1
+            charData.bgGroup.currentStreak = 0
         else
             charData.bgSolo.deaths = charData.bgSolo.deaths + 1
+            charData.bgSolo.currentStreak = 0
         end
     end
-
-    charData.currentKillStreak = 0
 end
 
--- Événement de Mort PvP
 local function OnPvPKillFeedDeath(eventCode, killLocation, killerDisplayName, killerCharName, killerAlliance, killerRank, victimDisplayName, victimCharName, victimAlliance, victimRank)
     local myAccount = GetUnitDisplayName("player")
     local myCharName = zo_strformat("<<1>>", GetUnitName("player"))
@@ -171,56 +212,12 @@ local function OnPvPKillFeedDeath(eventCode, killLocation, killerDisplayName, ki
     local zone = GetCurrentPvPZone()
 
     if isKiller then
-        AddKill(zone, victimAlliance)
+        AddKill(zone, victimAlliance, victimFormatted)
     elseif isVictim then
-        AddDeath(zone, killerAlliance)
+        AddDeath(zone, killerAlliance, killerFormatted)
     end
 end
 
--- Événement de Fin de Champ de Bataille (Victoire / Défaite)
-local function OnBattlegroundStateChanged(eventCode, previousState, currentState)
-    -- Se déclenche quand le panneau final des scores apparaît
-    if currentState == BATTLEGROUND_STATE_POSTGAME and previousState ~= BATTLEGROUND_STATE_POSTGAME then
-        local myAlliance = GetUnitBattlegroundAlliance("player")
-        if not myAlliance or myAlliance == 0 then return end
-        
-        local myScore = GetCurrentBattlegroundScore(myAlliance)
-        local isWinner = true
-        
-        -- On compare notre score avec ceux des autres alliances
-        local allBGAlliances = { BATTLEGROUND_ALLIANCE_FIRE_DRAKES, BATTLEGROUND_ALLIANCE_PIT_DAEMONS, BATTLEGROUND_ALLIANCE_STORM_LORDS }
-        for _, bgAllianceId in ipairs(allBGAlliances) do
-            if bgAllianceId ~= myAlliance then
-                local otherScore = GetCurrentBattlegroundScore(bgAllianceId)
-                if otherScore > myScore then
-                    isWinner = false
-                    break
-                end
-            end
-        end
-        
-        local charName = zo_strformat("<<1>>", GetUnitName("player"))
-        local sv = TruePvPRatio.savedVars
-        local charData = sv.characters[charName]
-        if not charData then return end
-        
-        if TruePvPRatio.wasInPremadeGroup then
-            if isWinner then
-                charData.bgGroup.wins = (charData.bgGroup.wins or 0) + 1
-            else
-                charData.bgGroup.losses = (charData.bgGroup.losses or 0) + 1
-            end
-        else
-            if isWinner then
-                charData.bgSolo.wins = (charData.bgSolo.wins or 0) + 1
-            else
-                charData.bgSolo.losses = (charData.bgSolo.losses or 0) + 1
-            end
-        end
-    end
-end
-
--- Création de l'interface Gamepad
 function TruePvPRatio:BuildUI()
     if self.uiCreated then return end
 
@@ -232,41 +229,109 @@ function TruePvPRatio:BuildUI()
 
     local bg = WINDOW_MANAGER:CreateControl("TruePvPRatio_UI_BG", tlw, CT_BACKDROP)
     bg:SetAnchorFill()
-    bg:SetCenterColor(0, 0, 0, 0.9)
+    bg:SetCenterColor(0, 0, 0, 0.95)
     bg:SetEdgeColor(0, 0, 0, 0)
 
+    -- Titre Principal
     local title = WINDOW_MANAGER:CreateControl("TruePvPRatio_UI_Title", tlw, CT_LABEL)
     title:SetFont("ZoFontGamepad42")
-    title:SetAnchor(TOP, tlw, TOP, 0, 80)
+    title:SetAnchor(TOP, tlw, TOP, 0, 40)
     title:SetText(L_TITLE)
     title:SetColor(1, 1, 1, 1)
 
+    -- Stats Globales (Haut Gauche)
     self.globalLabel = WINDOW_MANAGER:CreateControl("TruePvPRatio_UI_Global", tlw, CT_LABEL)
     self.globalLabel:SetFont("ZoFontGamepad34")
-    self.globalLabel:SetAnchor(TOP, title, BOTTOM, 0, 20)
+    self.globalLabel:SetAnchor(TOPLEFT, tlw, TOPLEFT, 40, 90)
     self.globalLabel:SetColor(1, 0.8, 0, 1) 
 
+    -- Tableau des Alliances (Haut Droite)
+    local rightPanelX = -60
+    local startY = 40
+    
     local allianceTitle = WINDOW_MANAGER:CreateControl("TruePvPRatio_UI_Alliances_Title", tlw, CT_LABEL)
     allianceTitle:SetFont("ZoFontGamepad34")
-    allianceTitle:SetAnchor(TOPRIGHT, tlw, TOPRIGHT, -100, 250)
-    allianceTitle:SetText(L_ALLIANCE_KILLS)
+    allianceTitle:SetAnchor(TOPRIGHT, tlw, TOPRIGHT, rightPanelX, startY)
+    allianceTitle:SetText("Cyrodiil / IC\nKills/Deaths")
+    allianceTitle:SetColor(0.7, 0.7, 0.7, 1)
     
     self.adLabel = WINDOW_MANAGER:CreateControl("TruePvPRatio_UI_AD", tlw, CT_LABEL)
     self.adLabel:SetFont("ZoFontGamepad27")
-    self.adLabel:SetAnchor(TOPRIGHT, allianceTitle, BOTTOMRIGHT, 0, 30)
-    self.adLabel:SetColor(1, 1, 0, 1) 
+    self.adLabel:SetAnchor(TOPRIGHT, allianceTitle, BOTTOMRIGHT, 0, 15)
+    self.adLabel:SetColor(0.83, 0.67, 0.08, 1) 
     
     self.dcLabel = WINDOW_MANAGER:CreateControl("TruePvPRatio_UI_DC", tlw, CT_LABEL)
     self.dcLabel:SetFont("ZoFontGamepad27")
-    self.dcLabel:SetAnchor(TOPRIGHT, self.adLabel, BOTTOMRIGHT, 0, 20)
-    self.dcLabel:SetColor(0.2, 0.6, 1, 1) 
+    self.dcLabel:SetAnchor(TOPRIGHT, self.adLabel, BOTTOMRIGHT, 0, 10)
+    self.dcLabel:SetColor(0.07, 0.36, 0.66, 1) 
     
     self.epLabel = WINDOW_MANAGER:CreateControl("TruePvPRatio_UI_EP", tlw, CT_LABEL)
     self.epLabel:SetFont("ZoFontGamepad27")
-    self.epLabel:SetAnchor(TOPRIGHT, self.dcLabel, BOTTOMRIGHT, 0, 20)
-    self.epLabel:SetColor(1, 0.2, 0.2, 1) 
+    self.epLabel:SetAnchor(TOPRIGHT, self.dcLabel, BOTTOMRIGHT, 0, 10)
+    self.epLabel:SetColor(0.65, 0.16, 0.16, 1) 
 
-    self.charLabels = {}
+    -- En-têtes du Tableau
+    local function CreateHeader(name, text, offsetX, width, align)
+        local lbl = WINDOW_MANAGER:CreateControl(name, tlw, CT_LABEL)
+        lbl:SetFont("ZoFontGamepad27")
+        lbl:SetColor(0.5, 0.5, 0.5, 1)
+        lbl:SetAnchor(BOTTOMLEFT, tlw, TOPLEFT, offsetX, 310)
+        lbl:SetDimensions(width, 60)
+        lbl:SetHorizontalAlignment(align)
+        lbl:SetVerticalAlignment(TEXT_ALIGN_BOTTOM)
+        lbl:SetText(text)
+        return lbl
+    end
+
+    CreateHeader("TruePvPRatio_H1", "Characters", 40, 240, TEXT_ALIGN_LEFT)
+    CreateHeader("TruePvPRatio_H2", "Global", 280, 220, TEXT_ALIGN_CENTER)
+    CreateHeader("TruePvPRatio_H3", "Cyrodiil", 500, 220, TEXT_ALIGN_CENTER)
+    CreateHeader("TruePvPRatio_H4", "Imperial City", 720, 220, TEXT_ALIGN_CENTER)
+    CreateHeader("TruePvPRatio_H5", "BG (Solo)", 940, 220, TEXT_ALIGN_CENTER)
+    CreateHeader("TruePvPRatio_H6", "BG (Grp)", 1160, 220, TEXT_ALIGN_CENTER)
+
+    -- ==========================================
+    -- CREATION DE LA ZONE DE DEFILEMENT (SCROLL)
+    -- ==========================================
+    self.scrollContainer = WINDOW_MANAGER:CreateControl("TruePvPRatio_UI_Scroll", tlw, CT_SCROLL)
+    self.scrollContainer:SetAnchor(TOPLEFT, tlw, TOPLEFT, 0, 330)
+    self.scrollContainer:SetAnchor(BOTTOMRIGHT, tlw, BOTTOMRIGHT, 0, -20)
+    self.scrollContainer:SetMouseEnabled(true)
+    
+    self.scrollChild = WINDOW_MANAGER:CreateControl("TruePvPRatio_UI_ScrollChild", self.scrollContainer, CT_CONTROL)
+    self.scrollChild:SetAnchor(TOPLEFT)
+    self.scrollChild:SetWidth(GuiRoot:GetWidth())
+
+    -- Défilement Manette (Joystick Droit)
+    tlw:SetHandler("OnUpdate", function()
+        if not tlw:IsHidden() and IsInGamepadPreferredMode() then
+            local y = DIRECTIONAL_INPUT:GetY(ZO_DI_RIGHT_STICK)
+            if y ~= 0 then
+                local delta = GetFrameDeltaSeconds()
+                local currentScroll = self.scrollContainer:GetVerticalScroll()
+                local speed = 1200 * delta
+                local newScroll = currentScroll - (y * speed)
+                
+                local maxScroll = math.max(0, self.scrollChild:GetHeight() - self.scrollContainer:GetHeight())
+                if newScroll < 0 then newScroll = 0 end
+                if newScroll > maxScroll then newScroll = maxScroll end
+                
+                self.scrollContainer:SetVerticalScroll(newScroll)
+            end
+        end
+    end)
+
+    -- Défilement Clavier/Souris (Molette)
+    self.scrollContainer:SetHandler("OnMouseWheel", function(_, delta)
+        local currentScroll = self.scrollContainer:GetVerticalScroll()
+        local newScroll = currentScroll - (delta * 60)
+        local maxScroll = math.max(0, self.scrollChild:GetHeight() - self.scrollContainer:GetHeight())
+        if newScroll < 0 then newScroll = 0 end
+        if newScroll > maxScroll then newScroll = maxScroll end
+        self.scrollContainer:SetVerticalScroll(newScroll)
+    end)
+
+    self.charRows = {}
 
     self.scene = ZO_Scene:New("truePvPRatioGamepad", SCENE_MANAGER)
     self.scene:AddFragment(ZO_FadeSceneFragment:New(tlw))
@@ -292,11 +357,10 @@ function TruePvPRatio:BuildUI()
     self.uiCreated = true
 end
 
--- Remplissage des données
 function TruePvPRatio:UpdateUI()
     local sv = self.savedVars
 
-    self.globalLabel:SetText(L_GLOBAL_RATIO .. FormatRatio(sv.global.kills, sv.global.deaths) .. "  (K:"..sv.global.kills.." / D:"..sv.global.deaths..") | Max Streak: " .. (sv.global.maxKillStreak or 0))
+    self.globalLabel:SetText(L_GLOBAL_RATIO .. FormatRatio(sv.global.kills, sv.global.deaths) .. "  (K "..sv.global.kills.." / D "..sv.global.deaths..") | Streak  " .. (sv.global.maxKillStreak or 0))
 
     local ad = sv.global.alliances[ALLIANCE_ALDMERI_DOMINION]
     local dc = sv.global.alliances[ALLIANCE_DAGGERFALL_COVENANT]
@@ -321,17 +385,51 @@ function TruePvPRatio:UpdateUI()
         return a.ratio > b.ratio
     end)
 
-    for _, lbl in ipairs(self.charLabels) do
-        lbl:SetHidden(true)
+    for _, row in ipairs(self.charRows) do
+        row.name:SetHidden(true)
+        row.global:SetHidden(true)
+        row.cyr:SetHidden(true)
+        row.ic:SetHidden(true)
+        row.bgSolo:SetHidden(true)
+        row.bgGrp:SetHidden(true)
     end
 
+    -- Limite de sécurité max à 20 (Le maximum absolu du jeu)
+    local numDisplayed = 0
+
     for i, charInfo in ipairs(sortedChars) do
-        local lbl = self.charLabels[i]
-        if not lbl then
-            lbl = WINDOW_MANAGER:CreateControl("TruePvPRatio_UI_Char_"..i, self.uiWindow, CT_LABEL)
-            lbl:SetFont("ZoFontGamepad27")
-            lbl:SetAnchor(TOPLEFT, self.uiWindow, TOPLEFT, 80, 200 + (i * 45))
-            table.insert(self.charLabels, lbl)
+        if i > 20 then break end 
+        numDisplayed = numDisplayed + 1
+
+        local row = self.charRows[i]
+        local yOffset = (i - 1) * 75 -- Maintenant c'est relatif au parent ScrollChild
+
+        if not row then
+            row = {}
+            row.name = WINDOW_MANAGER:CreateControl("TruePvPRatio_Row_"..i.."_Name", self.scrollChild, CT_LABEL)
+            row.name:SetFont("ZoFontGamepad27")
+            row.name:SetAnchor(TOPLEFT, self.scrollChild, TOPLEFT, 40, yOffset + 5)
+            row.name:SetDimensions(240, 75)
+            row.name:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+            row.name:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+            
+            local function CreateStatCell(idx, x)
+                local lbl = WINDOW_MANAGER:CreateControl("TruePvPRatio_Row_"..i.."_C"..idx, self.scrollChild, CT_LABEL)
+                lbl:SetFont("ZoFontGamepad27")
+                lbl:SetAnchor(TOPLEFT, self.scrollChild, TOPLEFT, x, yOffset)
+                lbl:SetDimensions(220, 75)
+                lbl:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+                lbl:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+                return lbl
+            end
+            
+            row.global = CreateStatCell(2, 280)
+            row.cyr = CreateStatCell(3, 500)
+            row.ic = CreateStatCell(4, 720)
+            row.bgSolo = CreateStatCell(5, 940)
+            row.bgGrp = CreateStatCell(6, 1160)
+            
+            table.insert(self.charRows, row)
         end
         
         local d = charInfo.data
@@ -341,35 +439,34 @@ function TruePvPRatio:UpdateUI()
             nameColor = ALLIANCE_COLORS[d.alliance]
         end
 
-        local iconStr = ""
-        if d.classId then
-            local _, _, _, _, _, _, _, _, gamepadIcon = GetClassInfo(d.classId)
-            if gamepadIcon and gamepadIcon ~= "" then
-                iconStr = zo_iconFormat(gamepadIcon, 34, 34) .. " "
-            end
+        local classPrefix = ""
+        if d.classId and CLASS_STYLES[d.classId] then
+            local cStyle = CLASS_STYLES[d.classId]
+            classPrefix = string.format("|c%s[%s]|r\n", cStyle.color, cStyle.text)
         end
 
-        -- Affichage avec tirets "-" au lieu de "|" et ajout des W/L pour les BG
-        local text = string.format("%s|c%s%s|r |cAAAAAA(K: %d / D: %d | Ratio: %s | Max Streak: %d)|r - Cyr: %s - IC: %s - BG Solo: %s (%dW/%dL) - BG Grp: %s (%dW/%dL)", 
-            iconStr,
-            nameColor,
-            charInfo.name,
-            d.kills,
-            d.deaths,
-            FormatRatio(d.kills, d.deaths),
-            d.maxKillStreak or 0,
-            FormatRatio(d.cyrodiil.kills, d.cyrodiil.deaths),
-            FormatRatio(d.ic.kills, d.ic.deaths),
-            FormatRatio(d.bgSolo.kills, d.bgSolo.deaths),
-            d.bgSolo.wins or 0,
-            d.bgSolo.losses or 0,
-            FormatRatio(d.bgGroup.kills, d.bgGroup.deaths),
-            d.bgGroup.wins or 0,
-            d.bgGroup.losses or 0
-        )
-        lbl:SetText(text)
-        lbl:SetHidden(false)
+        row.name:SetText(classPrefix .. "|c" .. nameColor .. charInfo.name .. "|r")
+
+        local function FormatCell(k, deaths, streak)
+            return string.format("|cFFFFFFK %d / D %d|r\n|cAAAAAARatio %s | Streak %d|r", k, deaths, FormatRatio(k, deaths), streak or 0)
+        end
+
+        row.global:SetText(FormatCell(d.kills, d.deaths, d.maxKillStreak))
+        row.cyr:SetText(FormatCell(d.cyrodiil.kills, d.cyrodiil.deaths, d.cyrodiil.maxStreak))
+        row.ic:SetText(FormatCell(d.ic.kills, d.ic.deaths, d.ic.maxStreak))
+        row.bgSolo:SetText(FormatCell(d.bgSolo.kills, d.bgSolo.deaths, d.bgSolo.maxStreak))
+        row.bgGrp:SetText(FormatCell(d.bgGroup.kills, d.bgGroup.deaths, d.bgGroup.maxStreak))
+
+        row.name:SetHidden(false)
+        row.global:SetHidden(false)
+        row.cyr:SetHidden(false)
+        row.ic:SetHidden(false)
+        row.bgSolo:SetHidden(false)
+        row.bgGrp:SetHidden(false)
     end
+
+    -- Mise à jour de la hauteur totale du conteneur de scroll pour la manette/molette
+    self.scrollChild:SetHeight(numDisplayed * 75)
 end
 
 function TruePvPRatio:ToggleUI()
@@ -380,7 +477,6 @@ function TruePvPRatio:ToggleUI()
     end
 end
 
--- Raccourci Dynamique
 local isCampaignSceneActive = false
 local isRefreshingKeybind = false
 local campaignKeybindBtn = {
@@ -415,13 +511,11 @@ local function RegisterCampaignMenuKeybind()
     SecurePostHook(KEYBIND_STRIP, "AddKeybindButtonGroup", RefreshCampaignKeybind)
 end
 
--- Initialisation
 function TruePvPRatio:Initialize()
     self.savedVars = ZO_SavedVars:NewAccountWide("TruePvPRatio_Data", 1, nil, GetDefaults())
     
     CleanupDeletedCharacters()
 
-    -- Compatibilité des sauvegardes : Initialise les victoires/défaites s'ils n'existent pas
     if not self.savedVars.global.maxKillStreak then
         self.savedVars.global.maxKillStreak = 0
     end
@@ -429,10 +523,22 @@ function TruePvPRatio:Initialize()
     for cName, cData in pairs(self.savedVars.characters) do
         cData.maxKillStreak = cData.maxKillStreak or 0
         cData.currentKillStreak = cData.currentKillStreak or 0
-        cData.bgSolo.wins = cData.bgSolo.wins or 0
-        cData.bgSolo.losses = cData.bgSolo.losses or 0
-        cData.bgGroup.wins = cData.bgGroup.wins or 0
-        cData.bgGroup.losses = cData.bgGroup.losses or 0
+        
+        if not cData.cyrodiil then cData.cyrodiil = {kills = 0, deaths = 0} end
+        cData.cyrodiil.maxStreak = cData.cyrodiil.maxStreak or 0
+        cData.cyrodiil.currentStreak = cData.cyrodiil.currentStreak or 0
+        
+        if not cData.ic then cData.ic = {kills = 0, deaths = 0} end
+        cData.ic.maxStreak = cData.ic.maxStreak or 0
+        cData.ic.currentStreak = cData.ic.currentStreak or 0
+        
+        if not cData.bgSolo then cData.bgSolo = {kills = 0, deaths = 0} end
+        cData.bgSolo.maxStreak = cData.bgSolo.maxStreak or 0
+        cData.bgSolo.currentStreak = cData.bgSolo.currentStreak or 0
+        
+        if not cData.bgGroup then cData.bgGroup = {kills = 0, deaths = 0} end
+        cData.bgGroup.maxStreak = cData.bgGroup.maxStreak or 0
+        cData.bgGroup.currentStreak = cData.bgGroup.currentStreak or 0
     end
 
     local charName = zo_strformat("<<1>>", GetUnitName("player"))
@@ -442,10 +548,10 @@ function TruePvPRatio:Initialize()
     if not self.savedVars.characters[charName] then
         self.savedVars.characters[charName] = {
             kills = 0, deaths = 0, maxKillStreak = 0, currentKillStreak = 0,
-            cyrodiil = {kills = 0, deaths = 0},
-            ic = {kills = 0, deaths = 0},
-            bgSolo = {kills = 0, deaths = 0, wins = 0, losses = 0},
-            bgGroup = {kills = 0, deaths = 0, wins = 0, losses = 0},
+            cyrodiil = {kills = 0, deaths = 0, maxStreak = 0, currentStreak = 0},
+            ic = {kills = 0, deaths = 0, maxStreak = 0, currentStreak = 0},
+            bgSolo = {kills = 0, deaths = 0, maxStreak = 0, currentStreak = 0},
+            bgGroup = {kills = 0, deaths = 0, maxStreak = 0, currentStreak = 0},
             classId = currentClassId,
             alliance = currentAlliance,
         }
@@ -455,7 +561,7 @@ function TruePvPRatio:Initialize()
     end
 
     EVENT_MANAGER:RegisterForEvent(self.name, EVENT_PVP_KILL_FEED_DEATH, OnPvPKillFeedDeath)
-    EVENT_MANAGER:RegisterForEvent(self.name, EVENT_BATTLEGROUND_STATE_CHANGED, OnBattlegroundStateChanged)
+    EVENT_MANAGER:RegisterForEvent(self.name, EVENT_RETICLE_TARGET_CHANGED, OnReticleTargetChanged)
     EVENT_MANAGER:RegisterForEvent(self.name, EVENT_GROUP_UPDATE, UpdatePremadeGroupStatus)
     EVENT_MANAGER:RegisterForEvent(self.name, EVENT_GROUP_MEMBER_JOINED, UpdatePremadeGroupStatus)
     EVENT_MANAGER:RegisterForEvent(self.name, EVENT_GROUP_MEMBER_LEFT, UpdatePremadeGroupStatus)

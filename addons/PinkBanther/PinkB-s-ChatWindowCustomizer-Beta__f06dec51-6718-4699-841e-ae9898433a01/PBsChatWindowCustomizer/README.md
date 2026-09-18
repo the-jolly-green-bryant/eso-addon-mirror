@@ -1,10 +1,11 @@
 # PB's ChatWindowCustomizer
 
-Moves and resizes the chat window on the HUD, and changes the size of the text in it, in The
-Elder Scrolls Online on console.
+Moves and resizes the chat window on the HUD, changes the size of the text in it, keeps it on
+screen instead of fading away, and decides what it is drawn over, in The Elder Scrolls Online on
+console.
 
 - **Author:** PinkBanther
-- **Version:** 1.0.1
+- **Version:** 1.2.0
 - **Optional:** `LibHarvensAddonSettings` >= 20106 (for the settings panel; the chat commands
   work without it)
 
@@ -22,6 +23,10 @@ Small / Medium / Large. This add-on makes all of that adjustable:
 | **Width** | 200 up to the width of the screen. The game's own limit is 300–550. |
 | **Height** | 100 up to the height of the screen. The game's own limit is 170–380. |
 | **Message text size** | 10–48. |
+| **Keep the window on screen** | Off by default. On, the window does not minimise after 20 seconds. |
+| **Show it in menus too** | Off by default. On, the window stays up in menus, not only on the HUD. |
+| **Drawn** | Behind the interface / normal (the game's own) / in front of the interface. |
+| **Order within that layer** | 0–200. The game gives the chat 30. |
 
 Every setting starts at the game's own value, read off the real chat window rather than assumed,
 and **nothing is changed until you move something**. Installed and left alone, the add-on is
@@ -58,6 +63,47 @@ back the next time the HUD comes up.
 Only the **messages** change size. The input line keeps the game's size, because its box is a
 fixed 30 high and larger text would be cut off.
 
+### Keeping the window on screen
+
+The console chat minimises itself 20 seconds after the last message: the messages go and the
+background fades to nothing until something new arrives. **Keep the window on screen** stops
+that, for as long as you are on the HUD.
+
+The **input line is not affected** — it still appears only when you start typing, which is what
+the game does. Switching the option off hands the window back to the game's own 20-second timer
+rather than minimising it here, so it disappears the way it always did.
+
+A menu still minimises the chat, because the game does that itself through
+`MINIMIZE_CHAT_FRAGMENT`; the window is back up by the time the HUD is.
+
+### Menus
+
+The game draws the chat on the HUD and nowhere else: open the map, the inventory or any menu and
+the window goes away. **Show it in menus too** keeps it on screen there, for reading chat while
+you are in a menu.
+
+- It is still not somewhere you can type from a menu — input there belongs to the menu.
+- **Keep the window on screen** comes on with it: a window that appeared in a menu and then faded
+  out twenty seconds later would be worse than either behaviour on its own.
+- If a menu covers the window, set **Drawn** to in front of the interface.
+- Nothing is forced while you have the chat switched off under Settings > Social. That setting is
+  the game's answer to whether the window should be there at all.
+
+### Draw order
+
+A top-level window is drawn by tier first, then by level within it. The game draws the chat at
+**MEDIUM / 30**: over the HUD, under the client's keybind strips, tooltips and announcements. So
+
+| | |
+| --- | --- |
+| **Behind the interface** | Under the rest of the UI — anything overlapping wins. |
+| **Normal** | The game's own. |
+| **In front of the interface** | Over almost everything. Pick this if something covers the chat. |
+
+**Order within that layer** only matters against things in the same tier: higher goes on top. For
+reference, at the game's normal tier the keybind strip is 10 and a dialog 20; in front, tooltips
+are 140 and alerts 145.
+
 ## Chat commands
 
 ```
@@ -67,9 +113,13 @@ fixed 30 high and larger text would be cut off.
 /pbchatwin corner tl|tr|bl|br  which corner (keeps the window where it is)
 /pbchatwin size <w> <h>        width and height
 /pbchatwin font <n>            message text size (10-48)
+/pbchatwin always on | off     keep the window on screen, or hand it back to the game
+/pbchatwin menus on | off      show it in menus too, not only on the HUD
+/pbchatwin tier low|medium|high  draw it under or over the rest of the UI
+/pbchatwin level <n>           order within that tier (0-200)
 /pbchatwin on | off            switch every change on or off
 /pbchatwin preview             show or hide the preview frame
-/pbchatwin reset [pos|font]    back to the game's own
+/pbchatwin reset [pos|font|draw]  back to the game's own
 ```
 
 `/pbcw` is the same command.
@@ -88,6 +138,19 @@ fields**, and lets the chat carry on running its own code:
   constraints set to match.
 - **The text** is the font on each chat tab's `TextBuffer`, in the same `face|size|style` form
   the game builds in `GetChatFontFormatString`, with a number where the game has `$(GP_n)`.
+- **The draw order** is `SetDrawTier` / `SetDrawLevel` on that same control.
+- **Showing it in menus** is `SetHidden(false)` on the control, written after the client's own
+  `RefreshVisibility` has hidden it — on the HUD fragment's state change, on a scene change, and
+  once more a frame later, because the fragment that minimises the chat belongs to the same
+  transition and nothing says which of the two runs first.
+- **Keeping the window up** is the one place a chat function is called:
+  `ZO_GamepadChatSystem:StartVisibilityTimer`, whose whole body is
+  `g_expirationTime = GetFrameTimeSeconds() + 20`. It writes a number, creates no closure and
+  touches no screen. Pushed every ten seconds while the option is on, which is what stops the
+  client's own `Minimize` ever running; the message area and the background's alpha are plain
+  control writes that undo a minimise that already happened. Switching the option off calls
+  `RefreshVisibility`, whose whole body is `control:SetHidden(self:IsHidden())`, so the window
+  goes back where the client's own rules say it belongs rather than where this add-on guesses.
 
 The chat is where every message the player sends goes through the client's own code, and an
 add-on frame near that code is how private-function errors start — see FINDINGS.md.
@@ -99,6 +162,9 @@ back.
 ## What it does not touch
 
 - **The input line's text size** — see above.
+- **The input line's visibility** — the game hides its box and channel name while the chat is
+  minimised, and that is left alone: a permanently visible input line reads as though you were
+  typing.
 - **Whether the chat is shown on the HUD** — the game's setting under Settings > Social. The
   add-on can read it but `SetSetting` is private.
 - **The keyboard chat** on PC, which already has its own move, resize and text size.

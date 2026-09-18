@@ -1,0 +1,37 @@
+; SPDX-FileCopyrightText: 2025 sirinsidiator
+; SPDX-FileCopyrightText: 2026 PinkBanther
+;
+; SPDX-License-Identifier: Artistic-2.0
+;
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+; All rights reserved
+;
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+;
+; Modified by PinkBanther: the log is kept in a fixed size ring buffer and is no longer
+; written to saved variables, which cuts the memory the library holds to about a tenth.
+; See LogHandler.lua for the details. Not endorsed by or affiliated with sirinsidiator.
+
+## Title: LibDebugLogger
+## Author: sirinsidiator |cff6600(modified by PinkBanther)|r
+## Version: 3.0.0-pb2
+## APIVersion: 101050
+## AddOnVersion: 401
+## IsLibrary: true
+; the log itself is no longer persisted; it lives in a ring buffer for the session only
+## SavedVariables: LibDebugLoggerSettings
+
+StartUp.lua
+
+Constants.lua
+Logger.lua
+Settings.lua
+StartUpConfig.lua
+LogHandler.lua
+
+Callbacks.lua
+API.lua
+Compatibility.lua
+
+Initialization.lua

@@ -58,6 +58,9 @@ one keeps growing after login.
 ・保持量の自動再計測の間隔（しない／30秒／1分／5分）
 ・ウィンドウの位置、背景の濃さ
 ・ログイン時のメッセージのオン／オフ
+・使用率がこの値を超えたら解放（しない／50／60／65／70%）
+　アドオンメモリの使用率が高くなったときに自動で解放し、ゲームの警告が
+　出ないようにします。
 ・定期的なメモリ解放（しない／1分／5分／10分）
 　使われなくなったデータのメモリを、ガベージコレクションで解放します。
 　実行時にゲームが一瞬止まるため、初期設定はオフです。
@@ -115,6 +118,8 @@ shown under the list:
 - How often held memory is measured again: off, 30 s, 1 min or 5 min
 - Window position and background opacity
 - Message at login on or off
+- Free memory over this usage: off, or 50/60/65/70 % of the add-on memory limit. Frees memory
+  automatically when usage gets high, to keep the game's own low-memory warning away.
 - Free memory regularly: off, every 1, 5 or 10 minutes. Runs the garbage collector to give back
   the memory of data no longer used. Each run stalls the game for a moment, so it is off by
   default, and a run that falls in combat waits until combat ends (can be changed).

@@ -1,24 +1,41 @@
 local P = PBsSuperStar
-P.UI = { column = 1, selected = {1, 1, 1, 1}, offsets = {0, 0, 0, 0}, showAll = false }
+P.UI = { column = 1, selected = {1, 1, 1, 1, 1}, offsets = {0, 0, 0, 0, 0}, showAll = false }
 local U = P.UI
 local W, H = 2000, 1040
 local GOLD = {0.88, 0.78, 0.48, 1}
 local WHITE = {0.92, 0.92, 0.88, 1}
 local MUTED = {0.62, 0.65, 0.69, 1}
 local BLUE, RED, GREEN = {0.35, 0.8, 1, 1}, {1, 0.42, 0.43, 1}, {0.48, 0.95, 0.43, 1}
-local TITLES = {"装備", "詳細ステータス", "星座・CPパッシブ", "スキル"}
-local QUALITY = {[0] = MUTED, [1] = WHITE, [2] = GREEN, [3] = BLUE, [4] = {0.76, 0.5, 0.96, 1}, [5] = GOLD}
+-- Areas 1 and 2 share the first page; the others each take the full width.
+local TITLES = {"装備", "ビルド", "詳細ステータス", "星座・CPパッシブ", "スキル"}
+local AREAS = #TITLES
+-- Fallback only: the game's own quality colours are used when the client provides them,
+-- which is what makes a Mythic item orange rather than white.
+local QUALITY = {[0] = MUTED, [1] = WHITE, [2] = GREEN, [3] = BLUE, [4] = {0.76, 0.5, 0.96, 1}, [5] = GOLD, [6] = {1, 0.55, 0.12, 1}}
+local function qualityColor(quality)
+    if quality and GetInterfaceColor and INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS then
+        return {GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, quality)}
+    end
+    return QUALITY[quality] or WHITE
+end
+local function disciplineColor(kind)
+    if kind == CHAMPION_DISCIPLINE_TYPE_COMBAT then return BLUE end
+    if kind == CHAMPION_DISCIPLINE_TYPE_CONDITIONING then return RED end
+    if kind == CHAMPION_DISCIPLINE_TYPE_WORLD then return GREEN end
+end
 local BUILD_UPDATE = P.name .. "BuildUI"
 -- The whole of a list is on screen at once: a grid of small cells for the three text areas,
--- and full-width rows for equipment, which carries an icon and two lines of its own.
+-- and rows for equipment, which carries an icon and a trait line of its own.
 local GRID_COLUMNS, GRID_ROWS = 7, 32
 local GRID_X, GRID_Y, GRID_W, GRID_H = 40, 308, 275, 18
 local GEAR_ROWS, GEAR_Y, GEAR_H, GEAR_W = 17, 308, 34, 1094
--- Equipment and the detailed statistics share one page: equipment keeps the left of the
--- screen, and the statistics fill the grid's last three columns beside it.
-local STATS_BASE, STATS_COLUMNS = 4, 3
-local BAR_X, BAR_PITCH = 534, 141
-local DETAIL_Y, DETAIL_SPACE = 932, 100
+-- Equipment and the build share the first page: equipment keeps the left of the screen, and
+-- the build, which is short, gets two columns of large cells of its own beside it.
+local BUILD_X, BUILD_Y, BUILD_W, BUILD_H, BUILD_ROWS, BUILD_COLUMNS = 1140, 308, 412, 34, 17, 2
+local MEDIUM, BOLD = "$(GAMEPAD_MEDIUM_FONT)|20|soft-shadow-thin", "$(GAMEPAD_BOLD_FONT)|20|soft-shadow-thin"
+local BAR_X, BAR_PITCH = 566, 140
+local COMBAT_X, COMBAT_W = {1486, 1582, 1762, 1858}, {92, 176, 92, 100}
+local DETAIL_Y, DETAIL_SPACE = 932, 96
 local function label(parent, x, y, w, h, size)
     local c = WINDOW_MANAGER:CreateControl(nil, parent, CT_LABEL)
     c:SetAnchor(TOPLEFT, parent, TOPLEFT, x, y)
@@ -59,7 +76,7 @@ end
 
 function U:PageSize(column)
     if column == 1 then return GEAR_ROWS end
-    if column == 2 then return STATS_COLUMNS * GRID_ROWS end
+    if column == 2 then return BUILD_COLUMNS * BUILD_ROWS end
     return GRID_COLUMNS * GRID_ROWS
 end
 function U:Resize()
@@ -88,38 +105,37 @@ function U:BuildTasks()
     task(function()
         self.nav = {}
         for i, title in ipairs(TITLES) do
-            self.nav[i] = line(root, 964 + (i - 1) * 250, 38, 246, 30, 21)
+            self.nav[i] = line(root, 844 + (i - 1) * 224, 36, 220, 32, 22)
             self.nav[i]:SetText(title)
         end
-        self.identity = line(root, 42, 90, 1300, 28, 21)
-        self.status = line(root, 1400, 96, 560, 20, 14)
+        self.identity = line(root, 42, 88, 1300, 32, 24)
+        self.status = line(root, 1430, 94, 530, 22, 16)
         self.status:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
         self.status:SetColor(unpack(MUTED))
-        self.points = line(root, 1400, 240, 560, 28, 21)
+        self.points = line(root, 1430, 226, 530, 32, 24)
         self.points:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
-        self.cpTotal = line(root, 1400, 268, 560, 28, 21)
+        self.cpTotal = line(root, 1430, 260, 530, 32, 24)
         self.cpTotal:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
-        self.masteryLine = line(root, 44, 244, 900, 22, 15)
     end)
     task(function()
         self.resources = {}
         -- Right-aligned columns; a single spaced string cannot line up in a proportional font.
-        local columns = {{"spent", 186, 58, "配分"}, {"max", 250, 100, "最大値"}, {"regen", 356, 104, "戦闘中の再生"}}
+        local columns = {{"spent", 196, 60, "配分"}, {"max", 262, 118, "最大値"}, {"regen", 386, 120, "戦闘中の再生"}}
         for _, column in ipairs(columns) do
-            local head = line(root, column[2], 124, column[3], 18, 14)
+            local head = line(root, column[2], 124, column[3], 20, 16)
             head:SetText(column[4])
             head:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
             head:SetColor(unpack(MUTED))
         end
         for i, resource in ipairs({{"magicka", "マジカ", BLUE}, {"health", "体力", RED}, {"stamina", "スタミナ", GREEN}}) do
-            local y = 142 + (i - 1) * 30
-            local img = texture(root, 44, y + 1, 24)
+            local y = 148 + (i - 1) * 36
+            local img = texture(root, 44, y + 2, 28)
             img:SetTexture("EsoUI/Art/CharacterWindow/Gamepad/gp_characterSheet_" .. resource[1] .. "Icon.dds")
-            local name = line(root, 76, y, 104, 26, 19)
+            local name = line(root, 80, y, 112, 32, 23)
             name:SetText(resource[2]); name:SetColor(unpack(resource[3]))
             local values = {}
             for _, column in ipairs(columns) do
-                values[column[1]] = line(root, column[2], y, column[3], 26, 19)
+                values[column[1]] = line(root, column[2], y, column[3], 32, 23)
                 values[column[1]]:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
             end
             self.resources[i] = values
@@ -132,33 +148,33 @@ function U:BuildTasks()
         local barIndex = b
         task(function()
             local b = barIndex
-            local y = 128 + (b - 1) * 58
+            local y = 126 + (b - 1) * 66
             self.bars[b] = {slots = {}, names = {}}
-            self.bars[b].title = line(root, 480, y + 6, 50, 24, 17)
+            self.bars[b].title = line(root, 516, y + 6, 48, 28, 20)
             for s = 1, 6 do
                 local x = BAR_X + (s - 1) * BAR_PITCH + (s == 6 and 8 or 0)
-                background(root, x - 1, y - 1, 34, 34, 0.3, 0.32, 0.35, 0.7)
-                self.bars[b].slots[s] = texture(root, x, y, 32)
+                background(root, x - 1, y - 1, 38, 38, 0.3, 0.32, 0.35, 0.7)
+                self.bars[b].slots[s] = texture(root, x, y, 36)
                 -- The icon alone does not say which skill it is; the name goes under it.
-                self.bars[b].names[s] = line(root, x - 4, y + 34, 138, 18, 13)
+                self.bars[b].names[s] = line(root, x - 2, y + 38, 138, 22, 15)
                 self.bars[b].names[s]:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
             end
         end)
     end
     task(function()
-        for i, title in ipairs({"威力", "クリ値", "貫通", "耐性"}) do
-            local head = line(root, 1470 + (i - 1) * 124, 124, 116, 18, 13)
+        for i, title in ipairs({"威力", "クリ値（率）", "貫通", "耐性"}) do
+            local head = line(root, COMBAT_X[i], 124, COMBAT_W[i], 20, 15)
             head:SetText(title)
             head:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
             head:SetColor(unpack(MUTED))
         end
         self.offense = {}
         for i, color in ipairs({BLUE, GREEN}) do
-            local y = 146 + (i - 1) * 30
-            line(root, 1406, y, 58, 26, 18):SetText(i == 1 and "呪文" or "武器")
+            local y = 148 + (i - 1) * 36
+            line(root, 1430, y, 52, 30, 21):SetText(i == 1 and "呪文" or "武器")
             self.offense[i] = {}
             for j = 1, 4 do
-                self.offense[i][j] = line(root, 1470 + (j - 1) * 124, y, 116, 26, 19)
+                self.offense[i][j] = line(root, COMBAT_X[j], y, COMBAT_W[j], 30, 21)
                 self.offense[i][j]:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
                 self.offense[i][j]:SetColor(unpack(color))
             end
@@ -166,7 +182,7 @@ function U:BuildTasks()
     end)
     task(function()
         background(root, 36, 302, 1928, 1, 0.65, 0.67, 0.73, 0.3)
-        self.listTitle = line(root, 44, 270, 900, 26, 17)
+        self.listTitle = line(root, 44, 266, 900, 28, 19)
         -- One highlight, moved to the selected entry, instead of one behind every row.
         self.highlight = background(root, GRID_X, GRID_Y, GRID_W, GRID_H, 0.35, 0.37, 0.43, 0.32)
         self.gear = {}
@@ -178,16 +194,30 @@ function U:BuildTasks()
             local n = rowIndex
             local y = GEAR_Y + (n - 1) * GEAR_H
             local r = {}
-            r.slot = line(root, 44, y + 5, 118, 24, 17)
-            r.icon = texture(root, 168, y + 5, 24)
-            r.level = line(root, 198, y + 7, 78, 22, 15)
-            r.name = line(root, 284, y + 4, 420, 24, 18)
-            r.subline = line(root, 712, y + 8, 268, 20, 12)
+            r.slot = line(root, 44, y + 4, 122, 27, 20)
+            r.icon = texture(root, 170, y + 4, 26)
+            r.level = line(root, 202, y + 6, 84, 24, 17)
+            r.name = line(root, 292, y + 3, 440, 28, 21)
+            r.subline = line(root, 742, y + 7, 262, 22, 15)
             r.subline:SetColor(unpack(MUTED))
-            r.set = line(root, 986, y + 7, 118, 22, 15)
+            r.set = line(root, 1008, y + 6, 96, 24, 17)
             r.set:SetColor(unpack(GREEN))
             r.set:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
             self.gear[n] = r
+        end)
+    end
+    task(function() self.buildCells = {} end)
+    for first = 1, BUILD_COLUMNS * BUILD_ROWS, 6 do
+        local start = first
+        task(function()
+            for n = start, math.min(start + 5, BUILD_COLUMNS * BUILD_ROWS) do
+                local x = BUILD_X + math.floor((n - 1) / BUILD_ROWS) * BUILD_W
+                local y = BUILD_Y + ((n - 1) % BUILD_ROWS) * BUILD_H
+                local cell = {icon = texture(root, x + 2, y + 5, 24), name = line(root, x + 32, y + 4, 276, 27, 20),
+                    value = line(root, x + 312, y + 5, 92, 26, 19)}
+                cell.value:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+                self.buildCells[n] = cell
+            end
         end)
     end
     for first = 1, GRID_COLUMNS * GRID_ROWS, 9 do
@@ -208,16 +238,17 @@ function U:BuildTasks()
         self.detailTitle = line(root, 44, 904, 1080, 26, 20)
         self.detailTitle:SetColor(unpack(GOLD))
         local hint = line(root, 1160, 908, 804, 22, 14)
-        hint:SetText("十字キー左右：領域   上下：項目   L1/R1・LB/RB：列を移動")
+        hint:SetText("十字キー左右：領域   上下：項目   L1/R1：列を移動   L2/R2：説明の続き")
         hint:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
         hint:SetColor(unpack(MUTED))
-        -- As many whole lines as the space below holds: nothing scrolls, nothing is
-        -- half-drawn, and the text cannot run past the bottom of the window.
-        self.detail = label(root, 44, DETAIL_Y, 1910, 0, 16)
+        -- A window of whole lines over the full text. L2/R2 moves it by exactly one window,
+        -- so the continuation is reachable and no line is ever drawn cut in half.
+        self.detailScroll = WINDOW_MANAGER:CreateControl("PBsSuperStarDetailScroll", root, CT_SCROLL)
+        self.detailScroll:SetAnchor(TOPLEFT, root, TOPLEFT, 44, DETAIL_Y)
+        self.detail = label(self.detailScroll, 0, 0, 1880, 0, 16)
         local lineHeight = math.floor(self.detail.GetFontHeight and self.detail:GetFontHeight() or 20)
-        local lines = math.max(1, math.floor(DETAIL_SPACE / lineHeight))
-        self.detail:SetMaxLineCount(lines)
-        self.detail:SetHeight(lines * lineHeight)
+        self.detailPage = math.max(1, math.floor(DETAIL_SPACE / lineHeight)) * lineHeight
+        self.detailScroll:SetDimensions(1910, self.detailPage)
     end)
 end
 
@@ -264,13 +295,13 @@ end
 function U:Refresh()
     if not self.ready then return end
     local keys = {}
-    for i = 1, 4 do
+    for i = 1, AREAS do
         local old = self.data and self.data[i][self.selected[i]]
         keys[i] = old and old.key
     end
     self.data = P.Data.Collect(self.showAll)
     self.maps = {}
-    for i = 1, 4 do
+    for i = 1, AREAS do
         self.maps[i] = index(self.data[i])
         for n, entry in ipairs(self.data[i]) do
             if entry.key == keys[i] then self.selected[i] = n; break end
@@ -285,8 +316,8 @@ function U:Refresh()
 end
 
 function U:RenderOverview()
-    local stats, skills = self.maps[2], self.maps[4]
-    local function value(key) return stats[key] and stats[key].value or "—" end
+    local basics, skills = self.data.basics or {}, self.maps[5]
+    local function value(key) return P.Data.Number(basics[key]) end
     for i, key in ipairs({"MAGICKA", "HEALTH", "STAMINA"}) do
         local values = self.resources[i]
         values.spent:SetText(value("attr" .. key))
@@ -304,13 +335,10 @@ function U:RenderOverview()
         end
     end
     for i, keys in ipairs({{"SPELL_POWER", "SPELL_CRITICAL", "SPELL_PENETRATION", "SPELL_RESIST"}, {"POWER", "CRITICAL_STRIKE", "PHYSICAL_PENETRATION", "PHYSICAL_RESIST"}}) do
-        for j, key in ipairs(keys) do self.offense[i][j]:SetText(value(key)) end
+        for j, key in ipairs(keys) do
+            self.offense[i][j]:SetText(j == 2 and P.Data.Critical(basics[key]) or value(key))
+        end
     end
-    -- Class Mastery passives: bought with their own points, so they are counted separately.
-    local mastery = self.data[4].mastery or {}
-    self.masteryLine:SetText(mastery.subclassed and "クラスマスタリー：サブクラス使用中は選択不可"
-        or string.format("クラスマスタリー　取得 %d / 保有ポイント %d", #mastery, mastery.points or 0))
-    self.masteryLine:SetColor(unpack(mastery.subclassed and MUTED or GOLD))
 end
 
 function U:RenderGear(entries, offset)
@@ -320,22 +348,67 @@ function U:RenderGear(entries, offset)
         icon(r.icon, entry and entry.icon)
         r.level:SetText(entry and entry.level or "")
         r.name:SetText(entry and (entry.itemName or entry.name) or "")
-        r.name:SetColor(unpack(entry and QUALITY[entry.quality] or WHITE))
+        r.name:SetColor(unpack(entry and qualityColor(entry.quality) or WHITE))
         r.set:SetText(entry and entry.setText or "")
         r.subline:SetText(entry and entry.subline or "")
     end
 end
 
--- base is the first grid column the list may use; the cells outside it are cleared.
-function U:RenderGrid(entries, offset, base, columns)
-    local first, last = base * GRID_ROWS, (base + columns) * GRID_ROWS
-    for n, cell in ipairs(self.cells) do
-        local entry = entries and n > first and n <= last and entries[offset + n - first]
-        cell.name:SetText(entry and entry.name or "")
-        cell.name:SetColor(unpack(entry and entry.header and GOLD or WHITE))
-        cell.value:SetText(entry and entry.value or "")
-        cell.value:SetColor(unpack(entry and entry.header and GOLD or MUTED))
+-- Places entries column by column into capacity cells of the given column height. An entry
+-- marked breakBefore starts a new column; gapBefore leaves one empty row above it, except at
+-- the top of a column. Returns the entry for each cell, and the cell for each entry.
+local function place(entries, offset, capacity, rows, gaps)
+    local placed, cellFor, cursor, complete = {}, {}, 0, true
+    for n = offset + 1, entries and #entries or 0 do
+        local entry = entries[n]
+        local row = cursor % rows
+        if entry.breakBefore and row ~= 0 then cursor = cursor + rows - row
+        elseif gaps and entry.gapBefore and row ~= 0 and row < rows - 1 then cursor = cursor + 1 end
+        cursor = cursor + 1
+        if cursor > capacity then complete = false; break end
+        placed[cursor], cellFor[n] = entry, cursor
     end
+    return placed, cellFor, complete
+end
+-- The blank rows are dropped rather than lose an entry when they would not all fit.
+local function layout(entries, offset, capacity, rows)
+    local placed, cellFor, complete = place(entries, offset, capacity, rows, true)
+    if complete then return placed, cellFor end
+    placed, cellFor = place(entries, offset, capacity, rows, false)
+    return placed, cellFor
+end
+local function colors(entry)
+    local color = entry and (disciplineColor(entry.discipline) or (entry.header and GOLD)) or WHITE
+    return color, entry and (entry.discipline or entry.header) and color or MUTED
+end
+
+function U:RenderGrid(entries, offset)
+    local placed, cellFor = layout(entries, offset, #self.cells, GRID_ROWS)
+    for n, cell in ipairs(self.cells) do
+        local entry = placed[n]
+        local nameColor, valueColor = colors(entry)
+        cell.name:SetText(entry and entry.name or "")
+        cell.name:SetColor(unpack(nameColor))
+        cell.value:SetText(entry and entry.value or "")
+        cell.value:SetColor(unpack(valueColor))
+    end
+    return cellFor
+end
+
+function U:RenderBuild(entries, offset)
+    local placed, cellFor = layout(entries, offset, #self.buildCells, BUILD_ROWS)
+    for n, cell in ipairs(self.buildCells) do
+        local entry = placed[n]
+        local nameColor, valueColor = colors(entry)
+        local font = entry and entry.header and BOLD or MEDIUM
+        if cell.font ~= font then cell.name:SetFont(font); cell.font = font end
+        icon(cell.icon, entry and entry.icon)
+        cell.name:SetText(entry and entry.name or "")
+        cell.name:SetColor(unpack(nameColor))
+        cell.value:SetText(entry and entry.value or "")
+        cell.value:SetColor(unpack(valueColor))
+    end
+    return cellFor
 end
 
 -- Everything fits on one screen in normal use; paging is the fallback for 全項目.
@@ -356,7 +429,7 @@ function U:HighlightCell(position)
 end
 
 function U:Render()
-    for i = 1, 4 do
+    for i = 1, AREAS do
         self.nav[i]:SetColor(unpack(i == self.column and GOLD or MUTED))
     end
     local merged = self.column <= 2
@@ -364,42 +437,54 @@ function U:Render()
     local page = self:PageSize(self.column)
     local offset = self:Offset(self.column)
     self:RenderOverview()
+    local cellFor
     if merged then
         self:RenderGear(self.data[1], self:Offset(1))
-        self:RenderGrid(self.data[2], self:Offset(2), STATS_BASE, STATS_COLUMNS)
+        cellFor = self:RenderBuild(self.data[2], self:Offset(2))
+        self:RenderGrid(nil, 0)
     else
         self:RenderGear(nil, 0)
-        self:RenderGrid(entries, offset, 0, GRID_COLUMNS)
+        self:RenderBuild(nil, 0)
+        cellFor = self:RenderGrid(entries, offset)
     end
     local title = string.format("%s   %d / %d", TITLES[self.column], selected, #entries)
     if #entries > page then title = title .. string.format("（%d〜%d を表示）", offset + 1, math.min(offset + page, #entries)) end
     self.listTitle:SetText(title)
     local position = selected - offset
-    if position >= 1 and position <= page and #entries > 0 then
-        if self.column == 1 then
-            self.highlight:SetDimensions(GEAR_W, GEAR_H)
-            self.highlight:SetAnchor(TOPLEFT, self.root, TOPLEFT, 36, GEAR_Y + (position - 1) * GEAR_H)
-        elseif self.column == 2 then
-            self:HighlightCell(STATS_BASE * GRID_ROWS + position)
-        else
-            self:HighlightCell(position)
-        end
+    if self.column == 1 and position >= 1 and position <= page then
+        self.highlight:SetDimensions(GEAR_W, GEAR_H)
+        self.highlight:SetAnchor(TOPLEFT, self.root, TOPLEFT, 36, GEAR_Y + (position - 1) * GEAR_H)
+        self.highlight:SetHidden(false)
+    elseif self.column == 2 and cellFor[selected] then
+        local n = cellFor[selected]
+        self.highlight:SetDimensions(BUILD_W - 4, BUILD_H)
+        self.highlight:SetAnchor(TOPLEFT, self.root, TOPLEFT,
+            BUILD_X + math.floor((n - 1) / BUILD_ROWS) * BUILD_W, BUILD_Y + ((n - 1) % BUILD_ROWS) * BUILD_H)
+        self.highlight:SetHidden(false)
+    elseif self.column ~= 1 and cellFor[selected] then
+        self:HighlightCell(cellFor[selected])
         self.highlight:SetHidden(false)
     else
         self.highlight:SetHidden(true)
     end
     local entry = entries[selected]
-    self.detailTitle:SetText(entry and (entry.name .. "   " .. entry.value) or "詳細")
+    local key = self.column .. ":" .. (entry and entry.key or "")
     local text = entry and entry.detail or "この項目に表示できる情報はありません。"
-    if text ~= self.detailText then
-        self.detailText = text
+    if key ~= self.detailKey or text ~= self.detailText then
+        if key ~= self.detailKey then self.detailScroll:SetVerticalScroll(0) end
+        self.detailKey, self.detailText = key, text
         self.detail:SetText(text)
+        self.detail:SetHeight(self.detail:GetTextHeight())
     end
+    local pages = math.max(1, math.ceil(self.detail:GetHeight() / self.detailPage))
+    local current = math.floor(self.detailScroll:GetVerticalScroll() / self.detailPage) + 1
+    self.detailTitle:SetText((entry and (entry.name .. "   " .. entry.value) or "詳細") ..
+        (pages > 1 and string.format("   （説明 %d/%d・L2/R2で続き）", current, pages) or ""))
 end
 
 function U:MoveColumn(delta)
     if not self.ready then return end
-    self.column = (self.column - 1 + delta) % 4 + 1
+    self.column = (self.column - 1 + delta) % AREAS + 1
     self:Render()
 end
 function U:MoveRow(delta)
@@ -407,9 +492,18 @@ function U:MoveRow(delta)
     self.selected[self.column] = math.max(1, math.min(#self.data[self.column], self.selected[self.column] + delta))
     self:Render()
 end
+-- Turns the description by one whole window of lines.
+function U:PageDetail(delta)
+    if not self.ready then return end
+    local pages = math.max(1, math.ceil(self.detail:GetHeight() / self.detailPage))
+    local current = math.floor(self.detailScroll:GetVerticalScroll() / self.detailPage)
+    local target = math.max(0, math.min(pages - 1, current + delta))
+    self.detailScroll:SetVerticalScroll(target * self.detailPage)
+    self:Render()
+end
 function U:MoveGridColumn(delta)
     if not self.ready then return end
-    self:MoveRow(delta * (self.column == 1 and GEAR_ROWS or GRID_ROWS))
+    self:MoveRow(delta * (self.column == 1 and GEAR_ROWS or (self.column == 2 and BUILD_ROWS) or GRID_ROWS))
 end
 function U:Keybinds()
     local group = {alignment = KEYBIND_STRIP_ALIGN_LEFT}
@@ -425,5 +519,7 @@ function U:Keybinds()
     bind("UI_SHORTCUT_INPUT_DOWN", "次の項目", function() self:MoveRow(1) end, true)
     bind("UI_SHORTCUT_LEFT_SHOULDER", "前の列", function() self:MoveGridColumn(-1) end, true)
     bind("UI_SHORTCUT_RIGHT_SHOULDER", "次の列", function() self:MoveGridColumn(1) end, true)
+    bind("UI_SHORTCUT_LEFT_TRIGGER", "説明を戻す", function() self:PageDetail(-1) end, true)
+    bind("UI_SHORTCUT_RIGHT_TRIGGER", "説明の続き", function() self:PageDetail(1) end, true)
     return group
 end

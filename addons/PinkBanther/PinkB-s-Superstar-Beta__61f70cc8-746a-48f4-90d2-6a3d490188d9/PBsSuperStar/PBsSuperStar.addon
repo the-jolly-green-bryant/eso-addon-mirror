@@ -1,8 +1,8 @@
-## Title: |cFF69B4PB'S SUPERSTAR|r 0.2.8
+## Title: |cFF69B4PB'S SUPERSTAR|r 0.2.13
 ## Author: |cFF69B4PinkBanther|r
 ## Description: キャラクターの装備・詳細ステータス・星座・CP・スキルを一画面に表示します。
-## Version: 0.2.8
-## AddOnVersion: 208
+## Version: 0.2.13
+## AddOnVersion: 213
 ## APIVersion: 101050
 
 Data.lua
