@@ -61,7 +61,6 @@ ZO_CreateStringId("MSAL_STOLEN_TREASURE_FILTER_LOGIN_REMINDER","Stolen Treasure 
 ZO_CreateStringId("MSAL_LOGIN_REMINDER","Startup Info")
 ZO_CreateStringId("MSAL_LOGIN_REMINDER_TOOLTIP","When enabled, the addon will once per day show the addon info and the sensitive permissions it is using at startup")
 ZO_CreateStringId("MSAL_AUTOBIND_TOOLTIP","When enabled, the |cdb8e0bNot Collected and Not-Blacklisted|r set items will be autobound when looted")
-ZO_CreateStringId("MSAL_AUTOBIND_TOOLTIP_CONSOLE","When enabled, the |cdb8e0bNot Collected|r set items will be autobound when looted")
 ZO_CreateStringId("MSAL_ADD_ITEM","Add %s Item")
 ZO_CreateStringId("MSAL_REMOVE_ITEM","Check / Remove %s Item")
 ZO_CreateStringId("MSAL_REMOVE_SELECTED_ITEM","Remove Selected %s Item")

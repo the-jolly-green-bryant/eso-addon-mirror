@@ -41,8 +41,12 @@ ZO_CreateStringId("ZONESETS_TRADE_PUT_REQUESTED", "Requested (%d)")
 ZO_CreateStringId("ZONESETS_TRADE_DUMP_EXTRA", "Extra Loot (%d)")
 ZO_CreateStringId("ZONESETS_TRADE_NO_ITEMS", "No matching items for trade")
 ZO_CreateStringId("ZONESETS_TRADE_FILLED_MSG", "|c39DB92[ZoneSets]|r Added to trade: %d items")
-ZO_CreateStringId("ZONESETS_AUTO_BIND_ON", "Auto: ON")
-ZO_CreateStringId("ZONESETS_AUTO_BIND_OFF", "Auto: OFF")
+ZO_CreateStringId("ZONESETS_AUTO_BIND_ON", "Auto-Bind: ON")
+ZO_CreateStringId("ZONESETS_AUTO_BIND_OFF", "Auto-Bind: OFF")
+ZO_CreateStringId("ZONESETS_GROUP_TOAST_ON", "Group: ON")
+ZO_CreateStringId("ZONESETS_GROUP_TOAST_OFF", "Group: OFF")
+ZO_CreateStringId("ZONESETS_NEEDED_IN_COLL", "Needed for collection")
+ZO_CreateStringId("ZONESETS_GROUP_LOOTED_COUNT", "Looted needed items: %d")
 
 
 -- Hotkey

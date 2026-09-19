@@ -2725,6 +2725,21 @@ local function SXUI_StopLinkedMove(frame)
 	frame.SXUI_LinkedMove=nil
 end
 
+-- BUI_RaidFrame alone uses one canonical persistent coordinate system:
+-- its actual top-left corner relative to GuiRoot's top-left corner.
+function BUI.Menu.SaveRaidFrameAnchor(control)
+	if not control or not BUI.Vars or type(control.GetLeft)~="function" or type(control.GetTop)~="function" then return false end
+	if not GuiRoot or type(GuiRoot.GetLeft)~="function" or type(GuiRoot.GetTop)~="function" then return false end
+	local frameLeft,frameTop=control:GetLeft(),control:GetTop()
+	local rootLeft,rootTop=GuiRoot:GetLeft(),GuiRoot:GetTop()
+	if type(frameLeft)~="number" or type(frameTop)~="number" or type(rootLeft)~="number" or type(rootTop)~="number" then return false end
+	local x,y=frameLeft-rootLeft,frameTop-rootTop
+	BUI.Vars.BUI_RaidFrame={TOPLEFT,TOPLEFT,x,y}
+	control:ClearAnchors()
+	control:SetAnchor(TOPLEFT,GuiRoot,TOPLEFT,x,y)
+	return true
+end
+
 -- Xbox adaptation: reliable drag/save linkage for every movable BUI frame.
 local function SXUI_SetFrameMoveLinked(frame, move, saveName, anchorPoint, onConfirm)
 	if not frame then return end
@@ -2855,7 +2870,7 @@ function BUI.Menu.MoveFrames(move)
 		local function AddFrame(frame,saveName,anchorPoint,isDefault,onConfirm,onCancel)
 			if frame then table.insert(frames,frame) SXUI_RegisterMovableFrame(frame,saveName,anchorPoint,isDefault,onConfirm,onCancel) end
 		end
-		if BUI.Vars.RaidFrames then AddFrame(BUI_RaidFrame) end
+		if BUI.Vars.RaidFrames then AddFrame(BUI_RaidFrame,nil,nil,false,BUI.Menu.SaveRaidFrameAnchor) end
 		if BUI.Vars.PlayerFrame then AddFrame(BUI_PlayerFrame) end
 		if BUI.Vars.TargetFrame then AddFrame(BUI_TargetFrame) end
 		if BUI.Vars.PlayerBuffs then AddFrame(BUI_BuffsP) end
@@ -2959,10 +2974,7 @@ function BUI.Menu:SaveAnchor(control,anchor,name,anchorPoint,widget_side,widget_
 	frame=control:GetName() if BUI.Vars.FrameHorisontal and frame=="BUI_PlayerFrame" then frame="BUI_HPlayerFrame" end
 	name=name or frame
 	if frame=="BUI_RaidFrame" then
-		offsetX=point==128 and offsetX or((point==3 or point==6) and offsetX-GuiRoot:GetWidth()/2 or GuiRoot:GetWidth()/2+offsetX-w)
-		offsetY=point==128 and offsetY or((point==3 or point==9) and offsetY-GuiRoot:GetHeight()/2 or GuiRoot:GetHeight()/2+offsetY-h)
-		offsetX=math.floor(offsetX*10)/10 offsetY=math.floor(offsetY*10)/10
-		BUI.Vars[frame]={TOPLEFT,CENTER,offsetX,offsetY}
+		BUI.Menu.SaveRaidFrameAnchor(control)
 	else
 --		local anchor_name={[BOTTOM]="BOTTOM",[BOTTOMLEFT]="BOTTOMLEFT",[BOTTOMRIGHT]="BOTTOMRIGHT",[CENTER]="CENTER",[LEFT]="LEFT",[NONE]="NONE",[RIGHT]="RIGHT",[TOP]="TOP",[TOPLEFT]="TOPLEFT",[TOPRIGHT]="TOPRIGHT"}
 --		d(frame..": "..anchor_name[point]..", "..anchor_name[relativePoint]..", "..offsetX.. ", "..offsetY)

@@ -3,7 +3,7 @@
 -----------------------------------------------------------------------------------------------------------------------------------
 IA_InventoryAssistant = ZO_Object:Subclass ( )
 IA_InventoryAssistant.name = "InventoryAssistant"
-IA_InventoryAssistant.version = "1.18.260916-beta"
+IA_InventoryAssistant.version = "1.19.260917-beta"
 -----------------------------------------------------------------------------------------------------------------------------------
 -- DEFAULT SETTINGS
 -----------------------------------------------------------------------------------------------------------------------------------
@@ -137,6 +137,25 @@ local function ScanBagSlot ( bagId, slotIndex, epoch, charId )
   end
 end
 -----------------------------------------------------------------------------------------------------------------------------------
+local function ApplyQueuedItemActions ( item, actionQueue )
+  if actionQueue and actionQueue.lock [ item.uniqueId ] and item.bagId and item.slotIndex then
+    SetItemIsPlayerLocked ( item.bagId, item.slotIndex, true )
+    if IsItemPlayerLocked ( item.bagId, item.slotIndex ) == true then
+      actionQueue.lock [ item.uniqueId ] = nil
+      item.locked = true
+    end
+--  d ( m_strformat( "%s  |c666666(%s)|r  lock applied", item.link, item.traitTypeName ) )
+  end
+  if actionQueue and actionQueue.unlock [ item.uniqueId ] and item.bagId and item.slotIndex then
+    SetItemIsPlayerLocked ( item.bagId, item.slotIndex, false )
+    if IsItemPlayerLocked ( item.bagId, item.slotIndex ) == false then
+      actionQueue.unlock [ item.uniqueId ] = nil
+      item.locked = false
+    end
+--  d ( m_strformat( "%s  |c666666(%s)|r  unlock applied", item.link, item.traitTypeName ) )
+  end
+end
+-----------------------------------------------------------------------------------------------------------------------------------
 local function ScanBag ( inventory, bagId, charId, actionQueue )
   local epoch = GetTimeStamp ( )
 
@@ -158,24 +177,24 @@ local function ScanBag ( inventory, bagId, charId, actionQueue )
     for slotIndex = 0, bagSize - 1 do
       local item = ScanBagSlot ( bagId, slotIndex, epoch, charId )
       if item then 
-        if actionQueue and actionQueue.lock [ item.uniqueId ] and item.bagId and item.slotIndex then
-          SetItemIsPlayerLocked ( item.bagId, item.slotIndex, true )
-          actionQueue.lock [ item.uniqueId ] = nil
-          item.locked = true
---          d ( m_strformat( "%s  |c666666(%s)|r  lock applied", item.link, item.traitTypeName ) )
-        end
-        if actionQueue and actionQueue.unlock [ item.uniqueId ] and item.bagId and item.slotIndex then
-          SetItemIsPlayerLocked ( item.bagId, item.slotIndex, false )
-          actionQueue.unlock [ item.uniqueId ] = nil
-          item.locked = false
---          d ( m_strformat( "%s  |c666666(%s)|r  unlock applied", item.link, item.traitTypeName ) )
-        end
+        ApplyQueuedItemActions ( item, actionQueue )
 --        table.insert ( inventory, item )
         inventory [ index ] = item
         index = index + 1
       end
     end
   end
+end
+-----------------------------------------------------------------------------------------------------------------------------------
+local function BuildInventoryIndex ( inventory )
+  local index = { }
+  for arrayIndex, item in ipairs ( inventory ) do
+    if not index [ item.bagId ] then
+      index [ item.bagId ] = { }
+    end
+    index [ item.bagId ] [ item.slotIndex ] = arrayIndex
+  end
+  return index
 end
 -----------------------------------------------------------------------------------------------------------------------------------
 local function ScanGroupMemberNames ( groupMembers )
@@ -792,6 +811,7 @@ function IA_InventoryAssistant:Initialize ( control )
       self.dirtyFlags = { }
       self.dirtyDebounceMs = 250
       self.dirtyLogPending = false
+      self.currentCharacterInventoryIndex = nil
 
       self.groupMembers = { }
       ScanGroupMemberNames ( self.groupMembers )
@@ -804,19 +824,19 @@ function IA_InventoryAssistant:Initialize ( control )
       self:InitializeWindow ( control )
       self:InitializeHooks ( control )
       
-      EH:RegisterForEvent ( self.name, EVENT_PLAYER_ACTIVATED, function ( ) self:Reload ( ) end )
-      EH:RegisterForEvent ( self.name, EVENT_PLAYER_DEACTIVATED, function ( ... ) self:Rescan ( ) end )
+      EH:RegisterForEvent ( self.name, EVENT_PLAYER_ACTIVATED, function ( ) self:Rescan ( ); self:Refresh ( --[[reload]] true, --[[preserveScrollPosition]] false ) end )
+
       EH:RegisterForEvent ( self.name, EVENT_LOOT_RECEIVED, function ( ... ) self:OnLootReceived ( ... ) end )
       EH:RegisterForEvent ( self.name, EVENT_GROUP_MEMBER_JOINED, function ( ... ) self:OnGroupChanged ( ... ) end )
       EH:RegisterForEvent ( self.name, EVENT_GROUP_MEMBER_LEFT, function ( ... ) self:OnGroupChanged ( ... ) end )
       EH:RegisterForEvent ( self.name, EVENT_INVENTORY_SINGLE_SLOT_UPDATE, function ( ... ) self:OnInventorySingleSlotUpdate ( ... ) end )
       EH:RegisterForEvent ( self.name, EVENT_ITEM_SET_COLLECTION_UPDATED, function ( ... ) self:OnItemSetCollectionUpdated ( ... ) end )
       EH:RegisterForEvent ( self.name, EVENT_OPEN_BANK, function ( ... ) self:OnOpenBank ( ... ) end )
-      EH:RegisterForEvent ( self.name, EVENT_CLOSE_BANK, function ( ... ) self:OnCloseBank ( ... ) end )
       EH:RegisterForEvent ( self.name, EVENT_GUILD_BANK_ITEMS_READY, function ( ... ) self:OnGuildBankItemsReady ( ... ) end )
       EH:RegisterForEvent ( self.name, EVENT_GUILD_BANK_ITEM_ADDED, function ( ... ) self:OnGuildBankItemAdded ( ... ) end )
       EH:RegisterForEvent ( self.name, EVENT_GUILD_BANK_ITEM_REMOVED, function ( ... ) self:OnGuildBankItemRemoved ( ... ) end )
       EH:RegisterForEvent ( self.name, EVENT_GUILD_BANK_UPDATED_QUANTITY, function ( ... ) self:OnGuildBankUpdatedQuantity ( ... ) end )
+      EH:RegisterForEvent ( self.name, EVENT_GUILD_SELF_LEFT_GUILD, function ( ... ) self:OnGuildSelfLeftGuild ( ... ) end )
 
       SLASH_COMMANDS[ "/ia" ] = function ( ... ) self:HandleSlashCommand ( ... ) end
     end )
@@ -833,12 +853,12 @@ function IA_InventoryAssistant:InitializeWindow ( control )
   self.searchbox = self.window:GetNamedChild ( "WindowCanvasSearchBox" )
   self.searchbox:SetHandler ( "OnTextChanged", function ( ) 
     if not self.window:IsControlHidden ( ) then
-      self:Refresh ( false ) 
+      self:Refresh ( --[[reload]] false, --[[preserveScrollPosition]] false )
     end      
   end )
   self.searchbox:SetHandler ( "OnEnter", function ( )
     if not self.window:IsControlHidden ( ) then
-      self:Refresh ( false ) 
+      self:Refresh ( --[[reload]] false, --[[preserveScrollPosition]] false )
     end      
   end )
   self.searchbox:SetHandler ( "OnEscape", function ( ) 
@@ -934,7 +954,7 @@ function IA_InventoryAssistant:InitializeHooks ( control )
       originalPopupSetLink ( tooltip, itemLink, ... )
       updateSearchFilter ( itemLink )
       if self.window:IsControlHidden ( ) and IsShiftKeyDown ( ) then
-        self:ToggleWindow ( false )
+        self:ToggleWindow ( --[[grabFocus]] false )
       end
   end
 
@@ -969,7 +989,7 @@ function IA_InventoryAssistant:InitializeSettingsMenu ( )
     self.settings.guildBankId = 0
   end
 
-  self:SaveGuildBankSnapshot ( )
+  self:RescanGuildBank ( )
 
   self.settingsPanel = LAM:RegisterAddonPanel ( self.name, {
     type = "panel",
@@ -998,7 +1018,7 @@ function IA_InventoryAssistant:InitializeSettingsMenu ( )
       if self.settings.guildBankId == guildId then return end
 
       self.settings.guildBankId = guildId
-      self:RefreshGuildBank ( )
+      self:RescanAndRefreshGuildBank ( )
     end,
     width = "full",
   } )
@@ -1015,7 +1035,7 @@ function IA_InventoryAssistant:InitializeSettingsMenu ( )
     setFunc = function ( value )
       self.settings.onlyUncollected, self.onlyUncollected = value, value
       if not self.window:IsControlHidden ( ) then
-        self:Refresh ( false )
+        self:Refresh ( --[[reload]] false, --[[preserveScrollPosition]] false )
       end
     end,
     width = "full",
@@ -1028,7 +1048,7 @@ function IA_InventoryAssistant:InitializeSettingsMenu ( )
     setFunc = function ( value )
       self.settings.onlyDuplicates, self.onlyDuplicates = value, value
       if not self.window:IsControlHidden ( ) then
-        self:Refresh ( false )
+        self:Refresh ( --[[reload]] false, --[[preserveScrollPosition]] false )
       end
     end,
     width = "full",
@@ -1041,7 +1061,7 @@ function IA_InventoryAssistant:InitializeSettingsMenu ( )
     setFunc = function ( value ) 
       self.settings.onlyMarkedItems, self.onlyMarkedItems = value, value
       if not self.window:IsControlHidden ( ) then
-        self:Refresh ( false )
+        self:Refresh ( --[[reload]] false, --[[preserveScrollPosition]] false )
       end
     end,
     width = "full",
@@ -1054,7 +1074,7 @@ function IA_InventoryAssistant:InitializeSettingsMenu ( )
     setFunc = function ( value ) 
       self.settings.showFCOISGearSetMarkers, self.showFCOISGearSetMarkers = value, value
       if not self.window:IsControlHidden ( ) then
-        self:Refresh ( false )
+        self:Refresh ( --[[reload]] false, --[[preserveScrollPosition]] false )
       end
     end,
     width = "full",
@@ -1067,7 +1087,7 @@ function IA_InventoryAssistant:InitializeSettingsMenu ( )
     setFunc = function ( value ) 
       self.settings.showFCOISDynamicMarkers, self.showFCOISDynamicMarkers = value, value
       if not self.window:IsControlHidden ( ) then
-        self:Refresh ( false )
+        self:Refresh ( --[[reload]] false, --[[preserveScrollPosition]] false )
       end
     end,
     width = "full",
@@ -1080,7 +1100,7 @@ function IA_InventoryAssistant:InitializeSettingsMenu ( )
     setFunc = function ( value ) 
       self.settings.onlyLoots, self.onlyLoots = value, value
       if not self.window:IsControlHidden ( ) then
-        self:Refresh ( false )
+        self:Refresh ( --[[reload]] false, --[[preserveScrollPosition]] false )
       end
     end,
     width = "full",
@@ -1093,7 +1113,7 @@ function IA_InventoryAssistant:InitializeSettingsMenu ( )
     setFunc = function ( value ) 
       self.settings.groupLoots, self.groupLoots = value, value
       if not self.window:IsControlHidden ( ) then
-        self:Refresh ( true )
+        self:Refresh ( --[[reload]] true, --[[preserveScrollPosition]] false )
       end
     end,
     width = "full",
@@ -1106,7 +1126,7 @@ function IA_InventoryAssistant:InitializeSettingsMenu ( )
     setFunc = function ( value ) 
       self.settings.showCrafted, self.showCrafted = value, value
       if not self.window:IsControlHidden ( ) then
-        self:Refresh ( false )
+        self:Refresh ( --[[reload]] false, --[[preserveScrollPosition]] false )
       end
     end,
     width = "full",
@@ -1119,7 +1139,7 @@ function IA_InventoryAssistant:InitializeSettingsMenu ( )
     setFunc = function ( value ) 
       self.settings.showBuyable, self.showBuyable = value, value
       if not self.window:IsControlHidden ( ) then
-        self:Refresh ( false )
+        self:Refresh ( --[[reload]] false, --[[preserveScrollPosition]] false )
       end
     end,
     width = "full",
@@ -1132,7 +1152,7 @@ function IA_InventoryAssistant:InitializeSettingsMenu ( )
     setFunc = function ( value ) 
       self.settings.showBound, self.showBound = value, value
       if not self.window:IsControlHidden ( ) then
-        self:Refresh ( false )
+        self:Refresh ( --[[reload]] false, --[[preserveScrollPosition]] false )
       end
     end,
     width = "full",
@@ -1145,7 +1165,7 @@ function IA_InventoryAssistant:InitializeSettingsMenu ( )
     setFunc = function ( value ) 
       self.settings.showMonsterSets, self.showMonsterSets = value, value
       if not self.window:IsControlHidden ( ) then
-        self:Refresh ( false )
+        self:Refresh ( --[[reload]] false, --[[preserveScrollPosition]] false )
       end
     end,
     width = "full",
@@ -1158,7 +1178,7 @@ function IA_InventoryAssistant:InitializeSettingsMenu ( )
     setFunc = function ( value ) 
       self.settings.showNonSetItems, self.showNonSetItems = value, value
       if not self.window:IsControlHidden ( ) then
-        self:Refresh ( false )
+        self:Refresh ( --[[reload]] false, --[[preserveScrollPosition]] false )
       end
     end,
     width = "full",
@@ -1176,7 +1196,7 @@ function IA_InventoryAssistant:InitializeSettingsMenu ( )
     setFunc = function ( value ) 
       self.settings.showItemLevels, self.showItemLevels = value, value
       if not self.window:IsControlHidden ( ) then
-        self:Refresh ( false )
+        self:Refresh ( --[[reload]] false, --[[preserveScrollPosition]] false )
       end
     end,
     width = "full",
@@ -1189,7 +1209,7 @@ function IA_InventoryAssistant:InitializeSettingsMenu ( )
     setFunc = function ( value ) 
       self.settings.showEnchants, self.showEnchants = value, value
       if not self.window:IsControlHidden ( ) then
-        self:Refresh ( false )
+        self:Refresh ( --[[reload]] false, --[[preserveScrollPosition]] false )
       end
     end,
     width = "full",
@@ -1233,10 +1253,13 @@ function IA_InventoryAssistant:MarkDirty ( flag )
 end
 -----------------------------------------------------------------------------------------------------------------------------------
 function IA_InventoryAssistant:ScheduleDirtyLogFlush ( )
-  if self.dirtyLogPending then return end
-
-  self.dirtyLogPending = true
   local updateId = self.name .. "_DirtyLogFlush"
+  if self.dirtyLogPending then
+    EVENT_MANAGER:UnregisterForUpdate ( updateId )
+  else
+    self.dirtyLogPending = true
+  end
+
   EVENT_MANAGER:RegisterForUpdate ( updateId, self.dirtyDebounceMs, function ( )
     EVENT_MANAGER:UnregisterForUpdate ( updateId )
     self.dirtyLogPending = false
@@ -1253,26 +1276,129 @@ function IA_InventoryAssistant:FlushDirtyFlagsLog ( )
   if dirty.house then table.insert ( labels, "house" ) end
   if dirty.collection then table.insert ( labels, "collection" ) end
 
-  if #labels > 0 then
+--  if #labels > 0 then
 --    d ( m_strformat ( "IA dirty flags: %s", table.concat ( labels, ", " ) ) )
-  end
+--  end
 
   self.dirtyFlags = { }
 
   if self.window and not self.window:IsControlHidden ( ) then
     local inventoryChanged = dirty.inventory or dirty.bank or dirty.house
-    self:Refresh ( inventoryChanged, true )
+    self.async:Cancel ( )
+    self:Refresh ( --[[reload]] inventoryChanged, --[[preserveScrollPosition]] true )
   end
+end
+-----------------------------------------------------------------------------------------------------------------------------------
+function IA_InventoryAssistant:IsActiveStorageBag ( bagId )
+  if not IsBankOpen ( ) then return false end
+
+  local bankingBag = GetBankingBag ( )
+  if bankingBag == BAG_BANK then
+    return bagId == BAG_BANK or bagId == BAG_SUBSCRIBER_BANK
+  end
+
+  return bagId == bankingBag
+end
+-----------------------------------------------------------------------------------------------------------------------------------
+function IA_InventoryAssistant:RescanCurrentCharacter ( )
+  local currentCharId = zo_strformat ( "<<1>>", GetCurrentCharacterId ( ) )
+  local bag = { }
+  ScanBag ( bag, BAG_WORN, currentCharId, self.settings.actionQueue )
+  ScanBag ( bag, BAG_BACKPACK, currentCharId, self.settings.actionQueue )
+  self.settings.inventories [ currentCharId ] = bag
+  self.currentCharacterInventoryIndex = {
+    characterId = currentCharId,
+    inventory = bag,
+    slots = BuildInventoryIndex ( bag ),
+  }
+end
+-----------------------------------------------------------------------------------------------------------------------------------
+function IA_InventoryAssistant:UpdateCurrentCharacterSlot ( bagId, slotIndex )
+  local currentCharId = zo_strformat ( "<<1>>", GetCurrentCharacterId ( ) )
+  local inventory = self.settings.inventories [ currentCharId ]
+  if not inventory then
+    self:RescanCurrentCharacter ( )
+    return
+  end
+
+  local currentIndex = self.currentCharacterInventoryIndex
+  if not currentIndex or currentIndex.characterId ~= currentCharId or currentIndex.inventory ~= inventory then
+    currentIndex = {
+      characterId = currentCharId,
+      inventory = inventory,
+      slots = BuildInventoryIndex ( inventory ),
+    }
+    self.currentCharacterInventoryIndex = currentIndex
+  end
+
+  local bagIndex = currentIndex.slots [ bagId ]
+  local itemIndex = bagIndex and bagIndex [ slotIndex ]
+  local item = ScanBagSlot ( bagId, slotIndex, GetTimeStamp ( ), currentCharId )
+
+  if item then
+    ApplyQueuedItemActions ( item, self.settings.actionQueue )
+  end
+
+  if itemIndex then
+    if item then
+      inventory [ itemIndex ] = item
+    else
+      local lastIndex = #inventory
+      local lastItem = inventory [ lastIndex ]
+      if itemIndex ~= lastIndex then
+        inventory [ itemIndex ] = lastItem
+        currentIndex.slots [ lastItem.bagId ] [ lastItem.slotIndex ] = itemIndex
+      end
+      inventory [ lastIndex ] = nil
+      bagIndex [ slotIndex ] = nil
+    end
+  elseif item then
+    if not bagIndex then
+      bagIndex = { }
+      currentIndex.slots [ bagId ] = bagIndex
+    end
+    local newIndex = #inventory + 1
+    inventory [ newIndex ] = item
+    bagIndex [ slotIndex ] = newIndex
+  end
+end
+-----------------------------------------------------------------------------------------------------------------------------------
+function IA_InventoryAssistant:RescanBank ( )
+  local bank = { }
+  ScanBag ( bank, BAG_BANK, nil, self.settings.actionQueue )
+  ScanBag ( bank, BAG_SUBSCRIBER_BANK, nil, self.settings.actionQueue )
+  self.settings.inventories [ "bank" ] = bank
+end
+-----------------------------------------------------------------------------------------------------------------------------------
+function IA_InventoryAssistant:RescanHouseBank ( bagId )
+  local chest = { }
+  local previousChest = self.settings.inventories [ "chest" ] or { }
+
+  for _, item in ipairs ( previousChest ) do
+    if item.bagId ~= bagId then
+      table.insert ( chest, item )
+    end
+  end
+
+  ScanBag ( chest, bagId, nil, self.settings.actionQueue )
+  self.settings.inventories [ "chest" ] = chest
 end
 -----------------------------------------------------------------------------------------------------------------------------------
 function IA_InventoryAssistant:OnInventorySingleSlotUpdate ( eventCode, bagId, slotIndex, isNewItem, itemSoundCategory, updateReason, stackCountChange )
 --  d ( m_strformat ( "IA event: EVENT_INVENTORY_SINGLE_SLOT_UPDATE (bag=%s slot=%s reason=%s stackDelta=%s)", tostring ( bagId ), tostring ( slotIndex ), tostring ( updateReason ), tostring ( stackCountChange ) ) )
   if bagId == BAG_BACKPACK or bagId == BAG_WORN then
+    self:UpdateCurrentCharacterSlot ( bagId, slotIndex )
     self:MarkDirty ( "inventory" )
   elseif bagId == BAG_BANK or bagId == BAG_SUBSCRIBER_BANK then
-    self:MarkDirty ( "bank" )
+    if self:IsActiveStorageBag ( bagId ) then
+      self:RescanBank ( )
+      self:MarkDirty ( "bank" )
+    end
   elseif bagId >= BAG_HOUSE_BANK_ONE and bagId <= BAG_HOUSE_BANK_TEN then
-    self:MarkDirty ( "house" )
+    if self:IsActiveStorageBag ( bagId ) then
+      self:RescanHouseBank ( bagId )
+      self:MarkDirty ( "house" )
+    end
   end
 end
 -----------------------------------------------------------------------------------------------------------------------------------
@@ -1281,34 +1407,42 @@ function IA_InventoryAssistant:OnItemSetCollectionUpdated ( eventCode )
   self:MarkDirty ( "collection" )
 end
 -----------------------------------------------------------------------------------------------------------------------------------
-function IA_InventoryAssistant:OnOpenBank ( eventCode )
+function IA_InventoryAssistant:OnOpenBank ( eventCode, bankBag )
 --  d ( "IA event: EVENT_OPEN_BANK" )
-  self:MarkDirty ( "bank" )
+  if bankBag == BAG_BANK then
+    self:RescanBank ( )
+    self:MarkDirty ( "bank" )
+  elseif bankBag >= BAG_HOUSE_BANK_ONE and bankBag <= BAG_HOUSE_BANK_TEN then
+    self:RescanHouseBank ( bankBag )
+    self:MarkDirty ( "house" )
+  end
 end
 -----------------------------------------------------------------------------------------------------------------------------------
-function IA_InventoryAssistant:OnCloseBank ( eventCode )
---  d ( "IA event: EVENT_CLOSE_BANK" )
-  self:MarkDirty ( "bank" )
+function IA_InventoryAssistant:OnGuildSelfLeftGuild ( eventCode, guildId )
+  if guildId == self.settings.guildBankId then
+    self.async:Cancel ( )
+    self:RescanAndRefreshGuildBank ( )
+  end
 end
 -----------------------------------------------------------------------------------------------------------------------------------
 function IA_InventoryAssistant:OnGuildBankItemsReady ( eventCode )
 --  d ( "IA event: EVENT_GUILD_BANK_ITEMS_READY" )
-  self:RefreshGuildBank ( )
+  self:RescanAndRefreshGuildBank ( )
 end
 -----------------------------------------------------------------------------------------------------------------------------------
 function IA_InventoryAssistant:OnGuildBankItemAdded ( eventCode, slotIndex )
 --  d ( m_strformat ( "IA event: EVENT_GUILD_BANK_ITEM_ADDED (slot=%s)", tostring ( slotIndex ) ) )
-  self:RefreshGuildBank ( )
+  self:RescanAndRefreshGuildBank ( )
 end
 -----------------------------------------------------------------------------------------------------------------------------------
 function IA_InventoryAssistant:OnGuildBankItemRemoved ( eventCode, slotIndex )
 --  d ( m_strformat ( "IA event: EVENT_GUILD_BANK_ITEM_REMOVED (slot=%s)", tostring ( slotIndex ) ) )
-  self:RefreshGuildBank ( )
+  self:RescanAndRefreshGuildBank ( )
 end
 -----------------------------------------------------------------------------------------------------------------------------------
 function IA_InventoryAssistant:OnGuildBankUpdatedQuantity ( eventCode, slotIndex )
 --  d ( m_strformat ( "IA event: EVENT_GUILD_BANK_UPDATED_QUANTITY (slot=%s)", tostring ( slotIndex ) ) )
-  self:RefreshGuildBank ( )
+  self:RescanAndRefreshGuildBank ( )
 end
 -----------------------------------------------------------------------------------------------------------------------------------
 function IA_InventoryAssistant:OnLootReceived ( eventCode, lootedBy, itemLink, quantity, itemSound, lootType, selfLoot )
@@ -1343,7 +1477,8 @@ function IA_InventoryAssistant:ToggleWindow ( grabFocus )
   self.window:SetHidden( not self.window:IsControlHidden ( ) )
   if not self.window:IsControlHidden ( ) then
 --    self.async:Call( function ( )
-      self:Refresh ( true )
+      self:Rescan ( )
+      self:Refresh ( --[[reload]] true, --[[preserveScrollPosition]] false )
 --	end )
     if grabFocus then
       self.searchbox:TakeFocus ( )
@@ -1358,26 +1493,28 @@ function IA_InventoryAssistant:ToggleWindow ( grabFocus )
   end
 end
 -----------------------------------------------------------------------------------------------------------------------------------
-function IA_InventoryAssistant:SaveGuildBankSnapshot ( )
-  local guildId = self.settings.guildBankId
-  local snapshotChanged = false
+function IA_InventoryAssistant:IsGuildMember ( guildId )
+  if guildId == 0 then return false end
 
-  if guildId == 0 then
-    snapshotChanged = self.settings.inventories [ "guild" ] ~= nil or self.settings.guildBankSnapshotId ~= 0
-    self.settings.inventories [ "guild" ] = nil
-    self.settings.guildBankSnapshotId = 0
-    return snapshotChanged
-  end
-
-  local guildFound = false
   for guildIndex = 1, GetNumGuilds ( ) do
     if GetGuildId ( guildIndex ) == guildId then
-      guildFound = true
-      break
+      return true
     end
   end
 
-  if not guildFound then
+  return false
+end
+-----------------------------------------------------------------------------------------------------------------------------------
+function IA_InventoryAssistant:RescanGuildBank ( )
+  local guildId = self.settings.guildBankId
+  local snapshotChanged = false
+
+  if guildId ~= 0 and not self:IsGuildMember ( guildId ) then
+    self.settings.guildBankId = 0
+    guildId = 0
+  end
+
+  if guildId == 0 then
     snapshotChanged = self.settings.inventories [ "guild" ] ~= nil or self.settings.guildBankSnapshotId ~= 0
     self.settings.inventories [ "guild" ] = nil
     self.settings.guildBankSnapshotId = 0
@@ -1401,11 +1538,11 @@ function IA_InventoryAssistant:SaveGuildBankSnapshot ( )
   return true
 end
 -----------------------------------------------------------------------------------------------------------------------------------
-function IA_InventoryAssistant:RefreshGuildBank ( )
-  local snapshotChanged = self:SaveGuildBankSnapshot ( )
+function IA_InventoryAssistant:RescanAndRefreshGuildBank ( )
+  local snapshotChanged = self:RescanGuildBank ( )
 
   if snapshotChanged and self.window and not self.window:IsControlHidden ( ) then
-    self:Refresh ( true, true )
+    self:Refresh ( --[[reload]] true, --[[preserveScrollPosition]] true )
   end
 end
 -----------------------------------------------------------------------------------------------------------------------------------
@@ -1416,27 +1553,16 @@ function IA_InventoryAssistant:Rescan ( )
     self.settings.characters [ charId ] = zo_strformat( "<<1>>", name )
 	end
 
-	local currentCharId = zo_strformat( "<<1>>", GetCurrentCharacterId ( ) )
+  self:RescanCurrentCharacter ( )
 
-  local bag = { }
-  ScanBag ( bag, BAG_WORN, currentCharId, self.settings.actionQueue )
-  ScanBag ( bag, BAG_BACKPACK, currentCharId, self.settings.actionQueue )
-  self.settings.inventories [ currentCharId ] = bag
-  
-  local bank = { }
-  ScanBag ( bank, BAG_BANK, nil, self.settings.actionQueue )
-  ScanBag ( bank, BAG_SUBSCRIBER_BANK, nil, self.settings.actionQueue )
-  self.settings.inventories [ "bank" ] = bank
-  
-  if IsOwnerOfCurrentHouse ( ) then 
-    local chest = { }
-    for bag = BAG_HOUSE_BANK_ONE, BAG_HOUSE_BANK_TEN do
-      if IsCollectibleUnlocked ( GetCollectibleForHouseBankBag ( bag ) ) then 
-        ScanBag ( chest, bag, nil, self.settings.actionQueue )
-      end
+  if IsBankOpen ( ) then
+    local bankingBag = GetBankingBag ( )
+    if bankingBag == BAG_BANK then
+      self:RescanBank ( )
+    elseif bankingBag >= BAG_HOUSE_BANK_ONE and bankingBag <= BAG_HOUSE_BANK_TEN then
+      self:RescanHouseBank ( bankingBag )
     end
-    self.settings.inventories [ "chest" ] = chest
-  end 
+  end
   
   if self.settings.inventories [ "grouploot" ] then
     local grouploots = { }
@@ -1455,6 +1581,14 @@ function IA_InventoryAssistant:Reload ( suppressProgress )
   local sets = { }
   local materials = { }
   local others = { }
+  local selectedGuildId = self.settings.guildBankId
+  local selectedGuildIsMember = selectedGuildId ~= 0 and self:IsGuildMember ( selectedGuildId )
+
+  if selectedGuildId ~= 0 and not selectedGuildIsMember then
+    self.settings.guildBankId = 0
+    self.settings.inventories [ "guild" ] = nil
+    self.settings.guildBankSnapshotId = 0
+  end
 
   local function ShowLoadProgress ( text )
     if suppressProgress then return end
@@ -1464,16 +1598,8 @@ function IA_InventoryAssistant:Reload ( suppressProgress )
     list:RefreshData ( )
   end
     
-  local c = self.async:Call( function ( ) 
-    stopwatch_start ( "Rescanning current character and bank" )
-    
-    ShowLoadProgress ( "Rescanning current character and bank" )
+  local c = self.async:Call( function ( ) end )
 
-    self:Rescan ( )
-    
-    stopwatch_stop ( "Rescanning current character and bank" )
-  end )
-      
   c:Then( function ( )
     local loadText = "Loading inventories "
     ShowLoadProgress ( loadText )
@@ -1488,7 +1614,7 @@ function IA_InventoryAssistant:Reload ( suppressProgress )
           
           loadText = loadText .. "."
           ShowLoadProgress ( loadText )
-          LoadInventory ( self.settings.inventories[ k ], static, sets, materials, others )
+          LoadInventory ( self.settings.inventories[ k ], --[[static]] static, sets, materials, others )
           
           stopwatch_stop ( "Loading inventory of " .. self.settings.characters[ k ] .. " " .. (static and "static" or "dynamic") )
         end )
@@ -1500,7 +1626,7 @@ function IA_InventoryAssistant:Reload ( suppressProgress )
         
         loadText = loadText .. "."
         ShowLoadProgress ( loadText )
-        LoadInventory ( self.settings.inventories[ "bank" ], false, sets, materials, others )
+        LoadInventory ( self.settings.inventories[ "bank" ], --[[static]] false, sets, materials, others )
         
         stopwatch_stop ( "Loading bank inventory" )
       end )
@@ -1511,20 +1637,20 @@ function IA_InventoryAssistant:Reload ( suppressProgress )
         
         loadText = loadText .. "."
         ShowLoadProgress ( loadText )
-        LoadInventory ( self.settings.inventories[ "chest" ], false, sets, materials, others )
+        LoadInventory ( self.settings.inventories[ "chest" ], --[[static]] false, sets, materials, others )
         
         stopwatch_stop ( "Loading house chest inventory" )
       end )
     end
-    if self.settings.guildBankId ~= 0
-       and self.settings.guildBankSnapshotId == self.settings.guildBankId
+    if selectedGuildIsMember
+       and self.settings.guildBankSnapshotId == selectedGuildId
        and self.settings.inventories[ "guild" ] then
       c:Call( function ( )
         stopwatch_start ( "Loading guild bank inventory" )
         
         loadText = loadText .. "."
         ShowLoadProgress ( loadText )
-        LoadInventory ( self.settings.inventories[ "guild" ], false, sets, materials, others )
+        LoadInventory ( self.settings.inventories[ "guild" ], --[[static]] false, sets, materials, others )
         
         stopwatch_stop ( "Loading guild bank inventory" )
       end )
@@ -1535,7 +1661,7 @@ function IA_InventoryAssistant:Reload ( suppressProgress )
         
         loadText = loadText .. "."
         ShowLoadProgress ( loadText )
-        LoadInventory ( self.settings.inventories[ "grouploot" ], false, sets, materials, others )
+        LoadInventory ( self.settings.inventories[ "grouploot" ], --[[static]] false, sets, materials, others )
         
         stopwatch_stop ( "Loading group loots" )
       end )
@@ -1639,7 +1765,8 @@ function IA_InventoryAssistant:Refresh ( reload, preserveScrollPosition )
   
   local c
   if reload then 
-    c = self:Reload ( preserveScrollPosition )
+    local suppressProgress = preserveScrollPosition == true
+    c = self:Reload ( suppressProgress )
   else 
     c = self.async:Call( function ( ) end )
   end
@@ -1707,23 +1834,19 @@ function IA_InventoryAssistant:Refresh ( reload, preserveScrollPosition )
 		local isUncollected = IsItemLinkSetCollectionPiece ( item.link ) and not IsItemSetCollectionPieceUnlocked( GetItemLinkItemId ( item.link ) ) or false
         
         local include1 = true
-        local p = 0
+        local setNameLower = item.setName:lower ( )
         for k,w in ipairs ( set_search_keywords ) do
-          if include1 then
-            p = item.setName:lower( ):find ( w, p + 1, true )
-            if ( not p ) then
-              include1 = false
-            end
+          if not setNameLower:find ( w, 1, true ) then
+            include1 = false
+            break
           end
         end
         local include2 = true
-        p = 0
+        local itemNameLower = item.name:lower ( )
         for k,w in ipairs ( name_search_keywords ) do
-          if include2 then
-            p = item.name:lower( ):find ( w, p + 1, true )
-            if ( not p ) then
-              include2 = false
-            end
+          if not itemNameLower:find ( w, 1, true ) then
+            include2 = false
+            break
           end
         end
         
@@ -1860,23 +1983,19 @@ function IA_InventoryAssistant:Refresh ( reload, preserveScrollPosition )
           local isBuyable = ( GetItemLinkBindType ( v.link ) ~= BIND_TYPE_ON_PICKUP and GetItemLinkBindType ( v.link ) ~= BIND_TYPE_ON_PICKUP_BACKPACK )
           
           local include1 = true
-          local p = 0
+          local setNameLower = v1:lower ( )
           for k,w in ipairs ( set_search_keywords ) do
-            if include1 then
-              p = v1:lower( ):find ( w, p + 1, true )
-              if ( not p ) then
-                include1 = false
-              end
+            if not setNameLower:find ( w, 1, true ) then
+              include1 = false
+              break
             end
           end
           local include2 = true
-          p = 0
+          local itemNameLower = v.name:lower ( )
           for k,w in ipairs ( name_search_keywords ) do
-            if include2 then
-              p = v.name:lower( ):find ( w, p + 1, true )
-              if ( not p ) then
-                include2 = false
-              end
+            if not itemNameLower:find ( w, 1, true ) then
+              include2 = false
+              break
             end
           end
 

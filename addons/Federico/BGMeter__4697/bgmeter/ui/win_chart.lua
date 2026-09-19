@@ -47,18 +47,87 @@ local function lane_pin(b, i)
     return ic
 end
 
+local function mark_label(b, i)
+    local lbl = b.mark_labels[i]
+    if not lbl then
+        lbl = P.label(b.chart, S.FONT.small, K.COLOR.text_dim)
+        lbl:SetHeight(12)
+        b.mark_labels[i] = lbl
+    end
+    return lbl
+end
+
 local VP_LEFT  = (VERTEX_POINTS_TOPLEFT or 1) + (VERTEX_POINTS_BOTTOMLEFT or 4)
 local VP_RIGHT = (VERTEX_POINTS_TOPRIGHT or 2) + (VERTEX_POINTS_BOTTOMRIGHT or 8)
+local VP_T = (VERTEX_POINTS_TOPLEFT or 1) + (VERTEX_POINTS_TOPRIGHT or 2)
+local VP_B = (VERTEX_POINTS_BOTTOMLEFT or 4) + (VERTEX_POINTS_BOTTOMRIGHT or 8)
 
 local function grad_rect(pool, parent, x0, x1, y, h, c0, a0, c1, a1)
     if x1 - x0 < 1 then return nil end
     local r = pool:acquire()
+    r:ClearAnchors()
     r:SetAnchor(TOPLEFT, parent, TOPLEFT, x0, y)
     r:SetDimensions(x1 - x0, h)
     r:SetVertexColors(VP_LEFT, c0[1], c0[2], c0[3], a0)
     r:SetVertexColors(VP_RIGHT, c1[1], c1[2], c1[3], a1)
     r:SetHidden(false)
     return r
+end
+
+local function vgrad_rect(pool, parent, x, y0, y1, w, c, a_top, a_bottom)
+    if y1 - y0 < 1 or w < 1 then return nil end
+    local r = pool:acquire()
+    r:ClearAnchors()
+    r:SetAnchor(TOPLEFT, parent, TOPLEFT, x, y0)
+    r:SetDimensions(w, y1 - y0)
+    r:SetVertexColors(VP_T, c[1], c[2], c[3], a_top)
+    r:SetVertexColors(VP_B, c[1], c[2], c[3], a_bottom)
+    r:SetHidden(false)
+    return r
+end
+
+local function flat_rect(pool, parent, x, y, w, h, color)
+    if w < 1 or h < 1 then return nil end
+    local r = pool:acquire()
+    r:ClearAnchors()
+    r:SetAnchor(TOPLEFT, parent, TOPLEFT, x, y)
+    r:SetDimensions(w, h)
+    P.set_rect_color(r, color)
+    r:SetHidden(false)
+    return r
+end
+
+local function hit_rect(b, parent, x, y, w, h, tip)
+    local hit = b.hit_pool:acquire()
+    hit:ClearAnchors()
+    hit:SetAnchor(TOPLEFT, parent, TOPLEFT, x, y)
+    hit:SetDimensions(math.max(1, w), math.max(1, h))
+    hit:SetHidden(false)
+    W.tips[hit] = tip
+    return hit
+end
+
+local function polyline(b, line_pool, dot_pool, parent, px, py, n, color, thick, alpha)
+    if b.lines_ok and line_pool then
+        for i = 2, n do
+            local ln = line_pool:acquire()
+            ln:ClearAnchors()
+            ln:SetAnchor(TOPLEFT, parent, TOPLEFT, px(i - 1), py(i - 1))
+            ln:SetAnchor(TOPRIGHT, parent, TOPLEFT, px(i), py(i))
+            ln:SetColor(color[1], color[2], color[3], alpha)
+            if ln.SetThickness then ln:SetThickness(thick) end
+            ln:SetHidden(false)
+        end
+    else
+        for i = 1, n do
+            local dot = dot_pool:acquire()
+            dot:ClearAnchors()
+            dot:SetAnchor(TOPLEFT, parent, TOPLEFT, px(i), py(i))
+            dot:SetDimensions(thick + 1, thick + 1)
+            P.set_rect_color(dot, { color[1], color[2], color[3], alpha })
+            dot:SetHidden(false)
+        end
+    end
 end
 
 function SEC.occupation(b, occ, neutralPct, stats, w)
@@ -71,23 +140,15 @@ function SEC.occupation(b, occ, neutralPct, stats, w)
         local tc = S.team_color(e.team)
         local seg_w = math.floor(e.pct * bw + 0.5)
         if seg_w > 1 then
-            local r = b.occ_pool:acquire()
-            r:SetAnchor(TOPLEFT, b.occ, TOPLEFT, x, 18)
-            r:SetDimensions(seg_w, 10)
-            P.set_rect_color(r, { tc[1], tc[2], tc[3], 0.80 })
-            r:SetHidden(false)
+            flat_rect(b.occ_pool, b.occ, x, 18, seg_w, 10, { tc[1], tc[2], tc[3], 0.80 })
             x = x + seg_w
         end
         parts[#parts + 1] = string.format("|c%s%s %d%%|r",
             hexc(tc), team_name(e.team), math.floor(e.pct * 100 + 0.5))
     end
     if x < bw then
-        local r = b.occ_pool:acquire()
-        r:SetAnchor(TOPLEFT, b.occ, TOPLEFT, x, 18)
-        r:SetDimensions(bw - x, 10)
         local nc = neutral_color()
-        P.set_rect_color(r, { nc[1], nc[2], nc[3], K.ALPHA.ribbon_neutral })
-        r:SetHidden(false)
+        flat_rect(b.occ_pool, b.occ, x, 18, bw - x, 10, { nc[1], nc[2], nc[3], K.ALPHA.ribbon_neutral })
         if neutralPct and neutralPct >= 0.005 then
             local nl = "neutral"
             if stats and stats.mode == "relic" then nl = "at base"
@@ -127,7 +188,7 @@ local function lane_label(lane)
     return lane.name or ("flag " .. tostring(lane.letter))
 end
 
-function SEC.ribbon(b, lanes, ribbon_h, tspan, w, y_off, gt)
+function SEC.ribbon(b, lanes, ribbon_h, tspan, w, y_off, gt, mine)
     b.ribbon:ClearAnchors()
     b.ribbon:SetAnchor(BOTTOMLEFT, b.container, BOTTOMLEFT, 0, -y_off)
     b.ribbon:SetAnchor(BOTTOMRIGHT, b.container, BOTTOMRIGHT, 0, -y_off)
@@ -144,34 +205,22 @@ function SEC.ribbon(b, lanes, ribbon_h, tspan, w, y_off, gt)
             local x0, x1 = rx(seg.t0), rx(seg.t1)
             if x1 > x0 then
                 if seg.own and seg.own ~= 0 then
-                    local tc = S.team_color(seg.own)
+                    local tc = (mine and seg.who == mine) and K.COLOR.you or S.team_color(seg.own)
                     local fa = K.ALPHA.ribbon_fill
                     if x1 - x0 > TIP * 2 then
-                        local r = b.ribbon_pool:acquire()
-                        r:SetAnchor(TOPLEFT, b.ribbon, TOPLEFT, x0, y)
-                        r:SetDimensions(x1 - x0 - TIP, lh)
-                        P.set_rect_color(r, { tc[1], tc[2], tc[3], fa })
-                        r:SetHidden(false)
+                        flat_rect(b.ribbon_pool, b.ribbon, x0, y, x1 - x0 - TIP, lh, { tc[1], tc[2], tc[3], fa })
                         grad_rect(b.ribbon_pool, b.ribbon, x1 - TIP, x1, y, lh, tc, fa, tc, fa * 0.12)
                     else
                         grad_rect(b.ribbon_pool, b.ribbon, x0, x1, y, lh, tc, fa, tc, fa * 0.35)
                     end
                 else
                     local nc = neutral_color()
-                    local r = b.ribbon_pool:acquire()
-                    r:SetAnchor(TOPLEFT, b.ribbon, TOPLEFT, x0, y)
-                    r:SetDimensions(x1 - x0, lh)
-                    P.set_rect_color(r, { nc[1], nc[2], nc[3], K.ALPHA.ribbon_neutral })
-                    r:SetHidden(false)
+                    flat_rect(b.ribbon_pool, b.ribbon, x0, y, x1 - x0, lh, { nc[1], nc[2], nc[3], K.ALPHA.ribbon_neutral })
                 end
             end
         end
         for _, ly in ipairs({ y - 1, y + lh }) do
-            local ln = b.ribbon_pool:acquire()
-            ln:SetAnchor(TOPLEFT, b.ribbon, TOPLEFT, 0, ly)
-            ln:SetDimensions(w - 6, 1)
-            P.set_rect_color(ln, { edge[1], edge[2], edge[3], 0.16 })
-            ln:SetHidden(false)
+            flat_rect(b.ribbon_pool, b.ribbon, 0, ly, w - 6, 1, { edge[1], edge[2], edge[3], 0.16 })
         end
         for _, tick in ipairs(lane.ticks) do
             local ic = b.pin_pool:acquire()
@@ -216,7 +265,8 @@ function SEC.ribbon(b, lanes, ribbon_h, tspan, w, y_off, gt)
             local tx = math.max(half, math.min(rx(tick.t), w - 6 - half))
             ic:SetAnchor(CENTER, b.ribbon, TOPLEFT, tx, y + math.floor(lh / 2))
             ic:SetHidden(false)
-            local hit = b.tick_hit_pool:acquire()
+            local hit = b.hit_pool:acquire()
+            hit:ClearAnchors()
             hit:SetAnchorFill(ic)
             hit:SetHidden(false)
             W.tips[hit] = tip
@@ -261,18 +311,10 @@ function SEC.momentum(b, m, tl, n, tspan, w, mom_h, mom_off, lead, tdm_line, cmo
         local peak = math.max(3, math.ceil(math.max(cmomMax or 1, 1) * 0.75))
         local top, bar_h = 18, 10
         local nc = neutral_color()
-        local base = b.mom_pool:acquire()
-        base:SetAnchor(TOPLEFT, b.mom, TOPLEFT, 0, top)
-        base:SetDimensions(w - 6, bar_h)
-        P.set_rect_color(base, { nc[1], nc[2], nc[3], 0.10 })
-        base:SetHidden(false)
+        flat_rect(b.mom_pool, b.mom, 0, top, w - 6, bar_h, { nc[1], nc[2], nc[3], 0.10 })
         local edge = K.COLOR.text_dim
         for _, ly in ipairs({ top - 1, top + bar_h }) do
-            local ln = b.mom_pool:acquire()
-            ln:SetAnchor(TOPLEFT, b.mom, TOPLEFT, 0, ly)
-            ln:SetDimensions(w - 6, 1)
-            P.set_rect_color(ln, { edge[1], edge[2], edge[3], 0.16 })
-            ln:SetHidden(false)
+            flat_rect(b.mom_pool, b.mom, 0, ly, w - 6, 1, { edge[1], edge[2], edge[3], 0.16 })
         end
         local samples = W._derived and W._derived.cmomS
         local denom = math.max(cmomMax or 1, 1)
@@ -302,12 +344,7 @@ function SEC.momentum(b, m, tl, n, tspan, w, mom_h, mom_off, lead, tdm_line, cmo
             local x0, x1 = mx(sg.t0), mx(sg.t1)
             if x1 > x0 and sg.team then
                 local tc = S.team_color(sg.team)
-                local hit = b.tick_hit_pool:acquire()
-                hit:ClearAnchors()
-                hit:SetAnchor(TOPLEFT, b.mom, TOPLEFT, x0, top)
-                hit:SetDimensions(x1 - x0, bar_h)
-                hit:SetHidden(false)
-                W.tips[hit] = string.format("%s +%d kills", team_name(sg.team), sg.mag)
+                hit_rect(b, b.mom, x0, top, x1 - x0, bar_h, string.format("%s +%d kills", team_name(sg.team), sg.mag))
                 if sg.mag >= peak and (x1 - x0) >= 26 then
                     local ic = b.pin_pool:acquire()
                     ic:SetTexture("EsoUI/Art/DeathRecap/deathRecap_killingBlow_icon.dds")
@@ -339,18 +376,14 @@ function SEC.momentum(b, m, tl, n, tspan, w, mom_h, mom_off, lead, tdm_line, cmo
             local margin = best - second
             local x0, x1 = mx(tl.t[i - 1] or 0), mx(tl.t[i] or 0)
             if x1 > x0 then
-                local r = b.mom_pool:acquire()
-                r:SetAnchor(TOPLEFT, b.mom, TOPLEFT, x0, 18)
-                r:SetDimensions(x1 - x0, 10)
                 if bestTeam and margin > 0 then
                     local tc = S.team_color(bestTeam)
                     local a = 0.15 + 0.60 * math.min(1, margin / maxLead)
-                    P.set_rect_color(r, { tc[1], tc[2], tc[3], a })
+                    flat_rect(b.mom_pool, b.mom, x0, 18, x1 - x0, 10, { tc[1], tc[2], tc[3], a })
                 else
                     local nc = neutral_color()
-                    P.set_rect_color(r, { nc[1], nc[2], nc[3], 0.10 })
+                    flat_rect(b.mom_pool, b.mom, x0, 18, x1 - x0, 10, { nc[1], nc[2], nc[3], 0.10 })
                 end
-                r:SetHidden(false)
             end
         end
     end
@@ -388,42 +421,125 @@ function SEC.momentum(b, m, tl, n, tspan, w, mom_h, mom_off, lead, tdm_line, cmo
     b.momStats:SetText(table.concat(sp, "    "))
 end
 
-function SEC.race(b, race, tl, n, tspan, w, race_h, race_off)
+function SEC.race(b, race, smooth, tl, n, tspan, w, race_h, race_off)
     b.race:ClearAnchors()
     b.race:SetAnchor(BOTTOMLEFT, b.container, BOTTOMLEFT, 0, -race_off)
     b.race:SetAnchor(BOTTOMRIGHT, b.container, BOTTOMRIGHT, 0, -race_off)
     b.race:SetHeight(race_h)
     b.race:SetHidden(false)
-    W.tips[b.raceTitle] = "Damage dealt over the match, one line per team.\nYour own damage runs in gold."
+    W.tips[b.raceTitle] = "Damage dealt over the match, one line per team.\nYour own damage runs in gold.\nLines are lightly smoothed; the floor fill follows each team."
     local plot_h = race_h - 20
+    local floor_y = 16 + plot_h
+    local count = math.min(n, race.n)
     local function px(i) return math.floor((math.min(tl.t[i] or 0, tspan) / tspan) * (w - 6) + 0.5) end
-    local function py(arr, i) return 16 + math.floor((1 - (arr[i] or 0) / race.max) * plot_h + 0.5) end
-    local function draw(arr, color, thick, alpha)
-        if b.lines_ok then
-            for i = 2, math.min(n, race.n) do
-                local ln = b.line_pool:acquire()
-                ln:ClearAnchors()
-                ln:SetAnchor(TOPLEFT, b.race, TOPLEFT, px(i - 1), py(arr, i - 1))
-                ln:SetAnchor(TOPRIGHT, b.race, TOPLEFT, px(i), py(arr, i))
-                ln:SetColor(color[1], color[2], color[3], alpha)
-                if ln.SetThickness then ln:SetThickness(thick) end
-                ln:SetHidden(false)
-            end
-        else
-            for i = 1, math.min(n, race.n) do
-                local dot = b.dot_pool:acquire()
-                dot:ClearAnchors()
-                dot:SetAnchor(TOPLEFT, b.race, TOPLEFT, px(i), py(arr, i))
-                dot:SetDimensions(2, 2)
-                P.set_rect_color(dot, { color[1], color[2], color[3], alpha })
-                dot:SetHidden(false)
-            end
+    local function py_of(arr)
+        return function(i) return 16 + math.floor((1 - (arr[i] or 0) / race.max) * plot_h + 0.5) end
+    end
+    for _, team in ipairs(race.teams) do
+        local tc = S.team_color(team)
+        local py = py_of(smooth[team])
+        for i = 2, count do
+            local x0, x1 = px(i - 1), px(i)
+            local top = math.min(py(i - 1), py(i))
+            vgrad_rect(b.race_pool, b.race, x0, top, floor_y, x1 - x0, tc, K.ALPHA.race_fill, 0)
         end
     end
     for _, team in ipairs(race.teams) do
-        draw(race.series[team], S.team_color(team), 2, 0.9)
+        local py = py_of(smooth[team])
+        if b.lines_ok then
+            polyline(b, b.race_line_pool, b.race_pool, b.race, px, py, count, S.team_color(team), 5, K.ALPHA.race_halo)
+        end
     end
-    if race.mine then draw(race.mine, K.COLOR.you, 1, 0.95) end
+    for _, team in ipairs(race.teams) do
+        polyline(b, b.race_line_pool, b.race_pool, b.race, px, py_of(smooth[team]), count, S.team_color(team), 2, 0.9)
+    end
+    if race.mine and smooth.mine then
+        polyline(b, b.race_line_pool, b.race_pool, b.race, px, py_of(smooth.mine), count, K.COLOR.you, 1, 0.95)
+    end
+end
+
+function SEC.kills(b, kp, tspan, w, kills_h, kills_off)
+    b.kills:ClearAnchors()
+    b.kills:SetAnchor(BOTTOMLEFT, b.container, BOTTOMLEFT, 0, -kills_off)
+    b.kills:SetAnchor(BOTTOMRIGHT, b.container, BOTTOMRIGHT, 0, -kills_off)
+    b.kills:SetHeight(kills_h)
+    b.kills:SetHidden(false)
+    local top, bottom = 16, kills_h - 3
+    local plot_h = bottom - top
+    local bw = w - 6
+    local bin_w = bw / kp.bins
+    local gap = (bin_w >= 8) and 2 or 1
+    local nteams = #kp.teams
+    local mirrored = (nteams == 2)
+    local mid = top + math.floor(plot_h / 2)
+    local edge = K.COLOR.text_dim
+    local legend = {}
+    for _, team in ipairs(kp.teams) do
+        local tot = 0
+        for _, c in pairs(kp.counts[team]) do tot = tot + c end
+        legend[#legend + 1] = string.format("|c%s%s %d|r", hexc(S.team_color(team)), team_name(team), tot)
+    end
+    b.killsLegend:SetText(table.concat(legend, "  ·  "))
+    if mirrored then
+        flat_rect(b.kills_pool, b.kills, 0, mid, bw, 1, { edge[1], edge[2], edge[3], 0.22 })
+    else
+        flat_rect(b.kills_pool, b.kills, 0, bottom, bw, 1, { edge[1], edge[2], edge[3], 0.22 })
+    end
+    local half = math.max(1, math.floor(plot_h / 2) - 1)
+    for bin = 1, kp.bins do
+        local x0 = math.floor((bin - 1) * bin_w + 0.5)
+        local x1 = math.floor(bin * bin_w + 0.5)
+        local inner = math.max(1, x1 - x0 - gap)
+        local parts = {}
+        for ti, team in ipairs(kp.teams) do
+            local c = kp.counts[team][bin] or 0
+            local tc = S.team_color(team)
+            if c > 0 then
+                if mirrored then
+                    local hgt = math.max(1, math.floor(half * c / kp.max + 0.5))
+                    if ti == 1 then
+                        flat_rect(b.kills_pool, b.kills, x0, mid - hgt, inner, hgt, { tc[1], tc[2], tc[3], 0.75 })
+                    else
+                        flat_rect(b.kills_pool, b.kills, x0, mid + 1, inner, hgt, { tc[1], tc[2], tc[3], 0.75 })
+                    end
+                else
+                    local slot = math.max(1, math.floor(inner / nteams))
+                    local hgt = math.max(1, math.floor(plot_h * c / kp.max + 0.5))
+                    flat_rect(b.kills_pool, b.kills, x0 + (ti - 1) * slot, bottom - hgt, math.max(1, slot - 1), hgt, { tc[1], tc[2], tc[3], 0.75 })
+                end
+            end
+            parts[#parts + 1] = string.format("|c%s%s %d|r", hexc(tc), team_name(team), c)
+        end
+        local t0 = (bin - 1) * kp.binMs
+        local t1 = math.min(bin * kp.binMs, tspan)
+        hit_rect(b, b.kills, x0, top, x1 - x0, plot_h + 2,
+            string.format("%s - %s\n%s", F.duration(t0), F.duration(t1), table.concat(parts, "  ·  ")))
+    end
+end
+
+function SEC.clear_chart(b)
+    b.dot_pool:release_all()
+    if b.line_pool then b.line_pool:release_all() end
+    if b.race_line_pool then b.race_line_pool:release_all() end
+    b.race_pool:release_all()
+    b.skull_pool:release_all()
+    b.ribbon_pool:release_all()
+    b.pin_pool:release_all()
+    b.hit_pool:release_all()
+    b.occ_pool:release_all()
+    b.mom_pool:release_all()
+    b.kills_pool:release_all()
+    for _, lbl in ipairs(b.ribbon_letters) do lbl:SetHidden(true) end
+    for _, ic in ipairs(b.lane_pins) do ic:SetHidden(true) end
+    for _, lbl in ipairs(b.mark_labels) do lbl:SetHidden(true) end
+    b.chart:SetHidden(true)
+    b.ribbon:SetHidden(true)
+    b.race:SetHidden(true)
+    b.occ:SetHidden(true)
+    b.mom:SetHidden(true)
+    b.kills:SetHidden(true)
+    b.bloodiest:SetHidden(true)
+    W.chart_state = nil
 end
 
 function W.repaint_chart()
@@ -432,28 +548,53 @@ function W.repaint_chart()
     if m then SEC.timeline(m) end
 end
 
+local function derive(m, tl, tspan, gt)
+    local Match = BGMeter.Match
+    local dc = { m = m, tspan = tspan }
+    dc.lanes = Match.flag_lanes(m, tspan)
+    dc.relicMode = false
+    if not dc.lanes and Match.relic_lanes then
+        dc.lanes = Match.relic_lanes(m, tspan)
+        dc.relicMode = dc.lanes ~= nil
+    end
+    if dc.lanes then
+        dc.occ, dc.neutralPct = Match.flag_occupation(dc.lanes, tspan)
+        dc.fstats = Match.flag_stats(dc.lanes)
+        if dc.fstats then dc.fstats.mode = dc.relicMode and (gt == "murderball" and "ball" or "relic") or nil end
+        if dc.relicMode and dc.occ then
+            local held = 0
+            for _, e in ipairs(dc.occ) do held = held + e.pct end
+            dc.neutralPct = math.max(0, 1 - held)
+        end
+        if dc.occ and #dc.occ == 0 then dc.occ = nil end
+    end
+    dc.lead = Match.lead_stats(tl)
+    dc.bm = Match.bloodiest_minute(m.killfeed)
+    dc.cmom, dc.cmomMax, dc.cmomS = Match.combat_momentum(m.killfeed, tspan)
+    dc.race = Match.damage_race(m)
+    if dc.race then
+        dc.raceSmooth = {}
+        for _, team in ipairs(dc.race.teams) do
+            dc.raceSmooth[team] = Match.smooth3(dc.race.series[team], dc.race.n)
+        end
+        if dc.race.mine then dc.raceSmooth.mine = Match.smooth3(dc.race.mine, dc.race.n) end
+    end
+    dc.kp = Match.kill_pressure(m.killfeed, tspan)
+    dc.rounds = Match.round_marks(tl)
+    dc.mine = Match.local_name(m)
+    return dc
+end
+
+local function minute_step(tspan)
+    if tspan <= 8 * 60000 then return 60000 end
+    if tspan <= 20 * 60000 then return 120000 end
+    return 300000
+end
+
 function SEC.timeline(m)
     local b = W.battle
-    b.dot_pool:release_all()
-    if b.line_pool then b.line_pool:release_all() end
-    b.skull_pool:release_all()
-    b.ribbon_pool:release_all()
-    b.pin_pool:release_all()
-    b.tick_hit_pool:release_all()
-    for _, lbl in ipairs(b.ribbon_letters) do lbl:SetHidden(true) end
-    for _, ic in ipairs(b.lane_pins) do ic:SetHidden(true) end
-    b.ribbon:SetHidden(true)
-    b.race:SetHidden(true)
-    b.occ_pool:release_all()
-    b.occ:SetHidden(true)
-    b.mom_pool:release_all()
-    b.mom:SetHidden(true)
-    b.bloodiest:SetHidden(true)
-    W.chart_state = nil
-    if not timeline_ok(m) then
-        b.chart:SetHidden(true)
-        return
-    end
+    SEC.clear_chart(b)
+    if not timeline_ok(m) then return end
 
     local tl = m.timeline
     local n = #tl.t
@@ -462,28 +603,7 @@ function SEC.timeline(m)
 
     local dc = W._derived
     if not dc or dc.m ~= m or dc.tspan ~= tspan then
-        dc = { m = m, tspan = tspan }
-        dc.lanes = BGMeter.Match.flag_lanes(m, tspan)
-        dc.relicMode = false
-        if not dc.lanes and BGMeter.Match.relic_lanes then
-            dc.lanes = BGMeter.Match.relic_lanes(m, tspan)
-            dc.relicMode = dc.lanes ~= nil
-        end
-        if dc.lanes then
-            dc.occ, dc.neutralPct = BGMeter.Match.flag_occupation(dc.lanes, tspan)
-            dc.fstats = BGMeter.Match.flag_stats(dc.lanes)
-            if dc.fstats then dc.fstats.mode = dc.relicMode and (gt == "murderball" and "ball" or "relic") or nil end
-            if dc.relicMode and dc.occ then
-                local held = 0
-                for _, e in ipairs(dc.occ) do held = held + e.pct end
-                dc.neutralPct = math.max(0, 1 - held)
-            end
-            if dc.occ and #dc.occ == 0 then dc.occ = nil end
-        end
-        dc.lead = BGMeter.Match.lead_stats(tl)
-        dc.bm = BGMeter.Match.bloodiest_minute(m.killfeed)
-        dc.cmom, dc.cmomMax, dc.cmomS = BGMeter.Match.combat_momentum(m.killfeed, tspan)
-        dc.race = BGMeter.Match.damage_race(m)
+        dc = derive(m, tl, tspan, gt)
         W._derived = dc
     end
     local lanes, relicMode = dc.lanes, dc.relicMode
@@ -502,11 +622,13 @@ function SEC.timeline(m)
     local tdm_line = (not lanes) and lead ~= nil
     local mom_h = (dc.cmom or lead) and (tdm_line and 46 or 28) or 0
 
-    local race_h = dc.race and 48 or 0
+    local race_h = (dc.race and Prefs.get("show_race")) and L.race_h or 0
+    local kills_h = (dc.kp and Prefs.get("show_kills")) and L.kills_h or 0
     local rows_h = 24 + #m.battle * L.row_h
     local cont_h = b.container:GetHeight()
-    local function fits(extra) return cont_h - rows_h >= L.chart_h + race_h + extra + 8 end
-    if race_h > 0 and cont_h - rows_h < L.chart_h + race_h + mom_h + ribbon_h + occ_h + 8 then race_h = 0 end
+    local function fits(extra) return cont_h - rows_h >= L.chart_h + extra + 8 end
+    if kills_h > 0 and not fits(race_h + mom_h + ribbon_h + occ_h + kills_h) then kills_h = 0 end
+    if race_h > 0 and not fits(race_h + mom_h + ribbon_h + occ_h) then race_h = 0 end
     if lanes and mom_h > 0 and not fits(mom_h + ribbon_h + occ_h) then
         mom_h, tdm_line = 0, false
     end
@@ -522,13 +644,11 @@ function SEC.timeline(m)
     if mom_h > 0 and not fits(mom_h + ribbon_h + occ_h) then
         mom_h, tdm_line = 0, false
     end
-    if not fits(0) then
-        b.chart:SetHidden(true)
-        return
-    end
+    if not fits(0) then return end
     local rib_off = (occ_h > 0) and (occ_h + 2) or 0
     local mom_off = rib_off + ((ribbon_h > 0) and (ribbon_h + 2) or 0)
-    local race_off = mom_off + ((mom_h > 0) and (mom_h + 2) or 0)
+    local kills_off = mom_off + ((mom_h > 0) and (mom_h + 2) or 0)
+    local race_off = kills_off + ((kills_h > 0) and (kills_h + 2) or 0)
     local chart_off = race_off + ((race_h > 0) and (race_h + 2) or 0)
     b.chart:SetHidden(false)
     b.chart:ClearAnchors()
@@ -552,6 +672,28 @@ function SEC.timeline(m)
     local function px(i) return math.floor((tl.t[i] / tspan) * (w - 6) + 0.5) end
     local function py(arr, i) return 14 + math.floor((1 - (arr[i] or 0) / maxScore) * plot_h + 0.5) end
 
+    local grid = K.COLOR.text_dim
+    flat_rect(b.dot_pool, b.chart, 0, 14, w - 6, 1, { grid[1], grid[2], grid[3], K.ALPHA.chart_grid })
+    flat_rect(b.dot_pool, b.chart, 0, 14 + math.floor(plot_h / 2), w - 6, 1, { grid[1], grid[2], grid[3], K.ALPHA.chart_grid })
+    local step = minute_step(tspan)
+    local tmark = step
+    while tmark < tspan do
+        local x = math.floor((tmark / tspan) * (w - 6) + 0.5)
+        local big = (tmark % (step * 5) == 0)
+        flat_rect(b.dot_pool, b.chart, x, h - (big and 5 or 3), 1, big and 5 or 3, { grid[1], grid[2], grid[3], 0.30 })
+        tmark = tmark + step
+    end
+    b.chartMax:SetText(F.abbrev(maxScore))
+
+    local legend = {}
+    for s = 1, 3 do
+        local team = tl.teams and tl.teams[s]
+        if team and smax[s] > 0 then
+            legend[#legend + 1] = string.format("|c%s%s|r", hexc(S.team_color(team)), team_name(team))
+        end
+    end
+    b.chartLegend:SetText(table.concat(legend, "  ·  "))
+
     for i = 2, n do
         local best, second, bestS = 0, 0, nil
         for s = 1, 3 do
@@ -567,16 +709,7 @@ function SEC.timeline(m)
             local top = math.min(py(series[bestS], i - 1), py(series[bestS], i))
             local bottom = secS and math.max(py(series[secS], i - 1), py(series[secS], i)) or (14 + plot_h)
             if bottom > top then
-                local tc = S.team_color(tl.teams[bestS])
-                local VP_T = (VERTEX_POINTS_TOPLEFT or 1) + (VERTEX_POINTS_TOPRIGHT or 2)
-                local VP_B = (VERTEX_POINTS_BOTTOMLEFT or 4) + (VERTEX_POINTS_BOTTOMRIGHT or 8)
-                local area = b.dot_pool:acquire()
-                area:ClearAnchors()
-                area:SetAnchor(TOPLEFT, b.chart, TOPLEFT, px(i - 1), top)
-                area:SetDimensions(math.max(1, px(i) - px(i - 1)), bottom - top)
-                area:SetVertexColors(VP_T, tc[1], tc[2], tc[3], 0.30)
-                area:SetVertexColors(VP_B, tc[1], tc[2], tc[3], 0.03)
-                area:SetHidden(false)
+                vgrad_rect(b.dot_pool, b.chart, px(i - 1), top, bottom, math.max(1, px(i) - px(i - 1)), S.team_color(tl.teams[bestS]), 0.30, 0.03)
             end
         end
     end
@@ -585,27 +718,23 @@ function SEC.timeline(m)
         local arr = series[s]
         local team = tl.teams and tl.teams[s]
         if arr and smax[s] > 0 and team then
-            local tc = S.team_color(team)
-            if b.lines_ok then
-                for i = 2, n do
-                    local ln = b.line_pool:acquire()
-                    ln:ClearAnchors()
-                    ln:SetAnchor(TOPLEFT, b.chart, TOPLEFT, px(i - 1), py(arr, i - 1))
-                    ln:SetAnchor(TOPRIGHT, b.chart, TOPLEFT, px(i), py(arr, i))
-                    ln:SetColor(tc[1], tc[2], tc[3], 0.95)
-                    if ln.SetThickness then ln:SetThickness(2) end
-                    ln:SetHidden(false)
-                end
-            else
-                for i = 1, n do
-                    local dot = b.dot_pool:acquire()
-                    dot:ClearAnchors()
-                    dot:SetAnchor(TOPLEFT, b.chart, TOPLEFT, px(i), py(arr, i))
-                    dot:SetDimensions(3, 3)
-                    P.set_rect_color(dot, { tc[1], tc[2], tc[3], 0.95 })
-                    dot:SetHidden(false)
-                end
+            polyline(b, b.line_pool, b.dot_pool, b.chart, px, function(i) return py(arr, i) end, n, S.team_color(team), 2, 0.95)
+        end
+    end
+
+    if dc.rounds then
+        for ri, mk in ipairs(dc.rounds) do
+            local x = px(mk.i)
+            local y = 4
+            while y < h - 6 do
+                flat_rect(b.dot_pool, b.chart, x, y, 1, 3, { grid[1], grid[2], grid[3], 0.45 })
+                y = y + 6
             end
+            local lbl = mark_label(b, ri)
+            lbl:SetText("R" .. tostring(mk.r))
+            lbl:ClearAnchors()
+            lbl:SetAnchor(TOPLEFT, b.chart, TOPLEFT, x + 3, 2)
+            lbl:SetHidden(false)
         end
     end
 
@@ -641,12 +770,13 @@ function SEC.timeline(m)
     end
 
     if race_h > 0 then
-        SEC.race(b, dc.race, tl, n, tspan, w, race_h, race_off)
-    else
-        b.race:SetHidden(true)
+        SEC.race(b, dc.race, dc.raceSmooth, tl, n, tspan, w, race_h, race_off)
+    end
+    if kills_h > 0 then
+        SEC.kills(b, dc.kp, tspan, w, kills_h, kills_off)
     end
     if lanes then
-        SEC.ribbon(b, lanes, ribbon_h, tspan, w, rib_off, gt)
+        SEC.ribbon(b, lanes, ribbon_h, tspan, w, rib_off, gt, dc.mine)
     end
     if occ then
         SEC.occupation(b, occ, neutralPct, fstats, w)
@@ -655,7 +785,7 @@ function SEC.timeline(m)
         SEC.momentum(b, m, tl, n, tspan, w, mom_h, mom_off, lead, tdm_line, dc.cmom, dc.cmomMax)
     end
 
-    W.chart_state = { tl = tl, n = n, w = w, smax = smax, lanes = lanes, kf = m.killfeed }
+    W.chart_state = { tl = tl, n = n, w = w, smax = smax, lanes = lanes, kf = m.killfeed, mine = dc.mine }
 end
 
 local function chart_hover_poll()
@@ -682,7 +812,7 @@ local function chart_hover_poll()
     b.cursor:SetAnchor(TOPLEFT, b.chart, TOPLEFT, x, 2)
     b.cursor:SetHidden(false)
 
-    local parts = { "team score  ·  t " .. F.duration(tl.t[idx]) }
+    local parts = { "team score  ·  t " .. F.duration(tl.t[idx]) .. ((tl.r and tl.r[idx] and (W._derived and W._derived.rounds)) and ("  ·  round " .. tostring(tl.r[idx])) or "") }
     local series = { tl.s1, tl.s2, tl.s3 }
     for s = 1, 3 do
         local team = tl.teams and tl.teams[s]
@@ -704,8 +834,12 @@ local function chart_hover_poll()
             local label = (hit and hit.name) or lane_label(lane)
             if own ~= 0 then
                 local tc = S.team_color(own)
+                local holder = team_name(own)
+                if hit and hit.who then
+                    if hit.who == st.mine then tc, holder = K.COLOR.you, "you" else holder = hit.who end
+                end
                 parts[#parts + 1] = string.format("|c%s%s  %s|r",
-                    hexc(tc), label, team_name(own))
+                    hexc(tc), label, holder)
             elseif hit or not lane.covered then
                 parts[#parts + 1] = string.format("|c8c8c95%s  neutral|r", label)
             end
@@ -738,6 +872,7 @@ local function chart_hover_poll()
     if U.card_show then
         U.card_show(b.chart, TOP, table.concat(parts, "\n"))
     end
+    if BGMeter.UI.map and BGMeter.UI.map.is_open() then BGMeter.UI.map.set_time(want_t, true) end
 end
 
 function W._chart_hover_start()

@@ -5,6 +5,12 @@ local Capture = {}
 
 local SAMPLE_NAME = "BGMeterScoreSample"
 local SAMPLE_MS   = 5000
+local POS_NAME    = "BGMeterPosSample"
+local POS_MS      = 3000
+local ME_NAME     = "BGMeterMeSample"
+local ME_MS       = 1000
+local MAX_PINS    = 8
+local MAX_ME      = 1500
 
 local active = nil
 local baseline = nil
@@ -369,14 +375,118 @@ local function sample_players(tl, i, round)
     if n <= 0 then return end
     tl.p = tl.p or {}
     for e = 1, n do
-        local charName, displayName = safe(A.get_entry_info, e, round)
+        local charName, displayName, team = safe(A.get_entry_info, e, round)
         local nm = clean_name(displayName or charName)
         if nm then
             local rec = tl.p[nm]
             if not rec then rec = { d = {} }; tl.p[nm] = rec end
             rec.d[i] = read_score(e, C.SCORE_TRACKER_TYPE_DAMAGE_DONE, round)
+            if team and team ~= 0 then rec.tm = team end
         end
     end
+end
+
+local function q(v)
+    if type(v) ~= "number" then return nil end
+    return math.floor(math.max(0, math.min(1, v)) * 1000 + 0.5)
+end
+
+local function read_map()
+    local A = BGMeter.zenimax.api
+    if safe(A.map_matches_player) == false then
+        if safe(A.world_map_showing) then return nil end
+        safe(A.set_map_to_player)
+        if safe(A.map_matches_player) == false then return nil end
+    end
+    local nx, ny = safe(A.get_map_num_tiles)
+    nx, ny = tonumber(nx) or 0, tonumber(ny) or 0
+    if nx <= 0 or ny <= 0 or nx * ny > 36 then return nil end
+    local tex = {}
+    for i = 1, nx * ny do
+        tex[i] = safe(A.get_map_tile_texture, i) or ""
+    end
+    return { id = safe(A.get_current_map_id), name = clean_name(safe(A.get_map_name)), nx = nx, ny = ny, tex = tex }
+end
+
+local function pin_slot(tl, keepId, objectiveId, ctx)
+    local key = obj_key(keepId, objectiveId)
+    local idx = tl.pinIdx[key]
+    if idx then return idx end
+    if #tl.pin >= MAX_PINS then return nil end
+    local A = BGMeter.zenimax.api
+    local C = BGMeter.zenimax.constants
+    local name, otype = safe(A.get_objective_info, keepId, objectiveId, ctx)
+    idx = #tl.pin + 1
+    tl.pin[idx] = { keepId = keepId, objectiveId = objectiveId, name = clean_name(name),
+                    kind = (otype == C.OBJECTIVE_CAPTURE_AREA) and "area" or "carry", x = {}, y = {}, ty = {} }
+    tl.pinIdx[key] = idx
+    return idx
+end
+
+local function sample_positions()
+    if not active or not active.timeline then return end
+    local A = BGMeter.zenimax.api
+    local tl = active.timeline
+    if not tl.pt then
+        tl.pt, tl.pos, tl.pin, tl.pinIdx = {}, {}, {}, {}
+    end
+    local i = #tl.pt + 1
+    if i > 900 then return end
+    local now = (safe(A.now_ms) or 0) - (active.startMs or 0)
+    if i > 1 and tl.pt[i - 1] == now then return end
+    tl.pt[i] = now
+    local function put(name, x, y, inMap)
+        if not name or x == nil or inMap == false then return end
+        local rec = tl.pos[name]
+        if not rec then rec = { x = {}, y = {} }; tl.pos[name] = rec end
+        rec.x[i], rec.y[i] = q(x), q(y)
+    end
+    local px, py, _, pin = safe(A.get_map_player_position, "player")
+    put(active.localName, px, py, pin)
+    local n = safe(A.get_group_size) or 0
+    for g = 1, math.min(n, 8) do
+        local tag = safe(A.get_group_unit_tag, g)
+        if tag then
+            local nm = clean_name(safe(A.get_unit_name, tag))
+            if nm and nm ~= active.localName then
+                local gx, gy, _, gin = safe(A.get_map_player_position, tag)
+                put(nm, gx, gy, gin)
+            end
+        end
+    end
+    for _, rec in pairs(tl.pos) do
+        if rec.x[i] == nil then rec.x[i], rec.y[i] = 0, 0 end
+    end
+    local nobj = safe(A.get_num_objectives) or 0
+    for o = 1, math.min(nobj, MAX_PINS) do
+        local keepId, objectiveId, ctx = safe(A.get_objective_ids, o)
+        if keepId and objectiveId and safe(A.is_bg_objective, keepId, objectiveId, ctx) then
+            local idx = pin_slot(tl, keepId, objectiveId, ctx)
+            if idx then
+                local ty, ox, oy = safe(A.get_objective_pin_info, keepId, objectiveId, ctx)
+                local pin = tl.pin[idx]
+                pin.x[i], pin.y[i], pin.ty[i] = q(ox) or 0, q(oy) or 0, ty or 0
+            end
+        end
+    end
+    if not active.map or not active.map.tex or active.map.tex[1] == "" then
+        active.map = read_map() or active.map
+    end
+end
+
+local function sample_me()
+    if not active or not active.timeline then return end
+    local A = BGMeter.zenimax.api
+    local tl = active.timeline
+    if not tl.mt then tl.mt, tl.mx, tl.my = {}, {}, {} end
+    local i = #tl.mt + 1
+    if i > MAX_ME then return end
+    local now = (safe(A.now_ms) or 0) - (active.startMs or 0)
+    if i > 1 and tl.mt[i - 1] == now then return end
+    local px, py = safe(A.get_map_player_position, "player")
+    local qx, qy = q(px), q(py)
+    if not qx or not qy then return end
+    tl.mt[i], tl.mx[i], tl.my[i] = now, qx, qy
 end
 
 local function sample_scores()
@@ -408,10 +518,17 @@ end
 
 local function start_sampler()
     BGMeter.zenimax.events.register_update(SAMPLE_NAME, SAMPLE_MS, sample_scores)
+    BGMeter.zenimax.events.register_update(POS_NAME, POS_MS, function()
+        local ok, err = pcall(sample_positions)
+        if not ok then BGMeter.Log.debug("position sampling failed: %s", tostring(err)) end
+    end)
+    BGMeter.zenimax.events.register_update(ME_NAME, ME_MS, function() pcall(sample_me) end)
 end
 
 local function stop_sampler()
     BGMeter.zenimax.events.unregister_update(SAMPLE_NAME)
+    BGMeter.zenimax.events.unregister_update(POS_NAME)
+    BGMeter.zenimax.events.unregister_update(ME_NAME)
 end
 
 function Capture.begin()
@@ -425,6 +542,7 @@ function Capture.begin()
     active.name      = clean_name(active.bgId and safe(A.get_bg_name, active.bgId) or nil)
     active.gameType  = safe(A.get_bg_game_type)
     active.localTeam = safe(A.get_local_team)
+    active.localName = clean_name(safe(A.get_display_name)) or clean_name(safe(A.get_char_name))
     active.teamSize  = active.bgId and safe(A.get_bg_team_size, active.bgId) or nil
     if active.teamSize then active.competitive = (active.teamSize == 4) end
     active.timeline  = { t = {}, r = {}, s1 = {}, s2 = {}, s3 = {}, teams = team_list() }
@@ -443,10 +561,13 @@ function Capture.begin()
     }
     active.haul.vetStart = baseline.vet
 
+    active.map = read_map()
     start_sampler()
     sample_scores()
+    pcall(sample_positions)
 
     local C = BGMeter.zenimax.constants
+    if safe(A.get_bg_state) == C.BATTLEGROUND_STATE_RUNNING then active.runMs = active.startMs end
     BGMeter.Log.debug("match begin: bg=%s id=%s gameType=%s rounds=%s localTeam=%s teamSize=%s competitive=%s ap0=%d",
         tostring(active.name), tostring(active.bgId),
         tostring(C.GAME_TYPE_LABEL[active.gameType] or active.gameType),
@@ -497,12 +618,18 @@ function Capture.on_kill(_, killedChar, killedDisp, killedTeam, killerChar, kill
         kind = "death"
     end
     local t = (safe(A.now_ms) or 0) - (active.startMs or 0)
-    active.killfeed[#active.killfeed + 1] = {
+    local entry = {
         t = t, kind = kind,
         kn = killer, dn = killed,
         kt = killerTeam, dt = killedTeam,
         ty = killType,
     }
+    if kind then
+        local px, py = safe(A.get_map_player_position, "player")
+        local qx, qy = q(px), q(py)
+        if qx and qy then entry.x, entry.y = qx, qy end
+    end
+    active.killfeed[#active.killfeed + 1] = entry
 end
 
 function Capture.finalize()
@@ -513,9 +640,12 @@ function Capture.finalize()
     stop_sampler()
     local ok, err = pcall(sample_scores)
     if not ok then BGMeter.Log.debug("final sample failed: %s", tostring(err)) end
+    pcall(sample_positions)
+    pcall(sample_me)
     pcall(Match.pack_timeline, active)
 
     active.endMs = safe(A.now_ms) or active.startMs
+    active.playedMs = math.max(0, active.endMs - (active.runMs or active.startMs))
     active.capturedAt = safe(A.get_timestamp)
     active.result = read_result(active.localTeam)
 
@@ -545,6 +675,13 @@ end
 function Capture.rescan(reason)
     if not active then return end
     scan_objectives(reason)
+end
+
+function Capture.mark_running()
+    if not active or active.runMs then return end
+    local A = BGMeter.zenimax.api
+    active.runMs = safe(A.now_ms) or active.startMs
+    BGMeter.Log.debug("gates open at %s", BGMeter.Format.duration(active.runMs - (active.startMs or 0)))
 end
 
 function Capture.abort()

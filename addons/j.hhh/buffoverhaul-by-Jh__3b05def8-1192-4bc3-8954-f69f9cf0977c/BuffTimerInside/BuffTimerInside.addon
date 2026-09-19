@@ -1,0 +1,7 @@
+## Title: Buff Timer Inside
+## Description: Moves ESO's default buff/debuff timer into the icon and enables the built-in full-icon radial cooldown animation.
+## Author: ChatGPT + User
+## Version: 0.2.0-console
+## APIVersion: 101050
+
+BuffTimerInside.lua

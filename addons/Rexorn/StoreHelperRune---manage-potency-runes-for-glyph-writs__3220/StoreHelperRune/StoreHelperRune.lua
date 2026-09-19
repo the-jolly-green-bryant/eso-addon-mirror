@@ -1,6 +1,6 @@
 StoreHelperRune={
 		 author="Rexorn"
-		,version="0.22"
+		,version="0.23"
 		,variableVersion=1
 	}
 

@@ -3,7 +3,7 @@ local Transport = {}
 Transport.__index = Transport
 PBJ.Transport = Transport
 -- DEVELOPMENT ONLY: reserve a permanent ID with the LGB author before release.
-Transport.PROTOCOL_ID = 511
+Transport.PROTOCOL_ID = 461
 function Transport.Identity(name)
     local h=PBJ.SHA256(name)
     return tonumber(h:sub(1,8),16),tonumber(h:sub(9,16),16)

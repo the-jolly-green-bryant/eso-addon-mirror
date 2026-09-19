@@ -1,0 +1,10 @@
+## Title: PB'S ULTRA DETAILED STATS
+## Description: キャラクターの装備・詳細ステータス・星座・CP・スキルを一画面に表示します。
+## Author: PB
+## Version: 0.3.1
+## AddOnVersion: 301
+## APIVersion: 101050
+
+Data.lua
+UI.lua
+PBsUltraDetailedStats.lua

@@ -1,11 +1,16 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Rexorn/StoreHelperRune---manage-potency-runes-for-glyph-writs__3220",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Rexorn",
   "canonical_id": "esoui:3220",
   "category_id": "94",
   "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
     {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
@@ -21,7 +26,7 @@
     "StoreHelperRune"
   ],
   "download_url": "https://www.esoui.com/downloads/dl3220/",
-  "fingerprint": "b6a452fa5debf361f91259a5dceec6b268c9756343217544901e81c92255aed6",
+  "fingerprint": "78e6bee1353f48391df988d240587c91bcb59fddad4184d18aa5e860fe662e7e",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw10985.jpg",
     "https://cdn-eso.mmoui.com/preview/pvw10986.jpg"
@@ -32,11 +37,11 @@
   "source_id": "3220",
   "source_url": "https://www.esoui.com/downloads/info3220-StoreHelperRune-managepotencyrunesforglyphwrits.html",
   "stats": {
-    "downloads": 10474,
+    "downloads": 10523,
     "favorites": 5,
-    "monthly_downloads": 22
+    "monthly_downloads": 27
   },
   "title": "StoreHelperRune - manage potency runes for glyph writs",
-  "updated_at": 1780184271000,
-  "version": "0.22"
+  "updated_at": 1789773303000,
+  "version": "0.23"
 }

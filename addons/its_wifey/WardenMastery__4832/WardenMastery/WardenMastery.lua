@@ -1,4 +1,4 @@
--- Warden Mastery v1.0
+-- Warden Mastery v1.0.1 TEST
 -- Author: WifeyRytic
 -- Lua-only UI. No XML.
 
@@ -6,7 +6,7 @@ WardenMastery = {}
 local WM = WardenMastery
 
 WM.name = "WardenMastery"
-WM.version = "1.0"
+WM.version = "1.1"
 
 -- Confirmed Warden Class Mastery passive ability IDs.
 WM.MASTERY = {
@@ -53,6 +53,7 @@ WM.defaults = {
     hideOutOfCombat = false,
     locked = true,
     fontSize = 34,
+    iconSize = 48,
     showIcons = true,
 
     inactiveColor = {1.00, 0.15, 0.15, 1},
@@ -130,21 +131,9 @@ function WM:IsInCombat()
     return IsUnitInCombat("player")
 end
 
-function WM:IsMenuOpen()
-    if not SCENE_MANAGER or not SCENE_MANAGER.GetCurrentScene then
-        return false
-    end
-
-    local scene = SCENE_MANAGER:GetCurrentScene()
-    if not scene or not scene.GetName then
-        return false
-    end
-
-    local name = scene:GetName()
-    -- Only the normal gameplay HUD scenes are allowed to show trackers.
-    -- Inventory, map, character, skills, group, settings, game menu, etc.
-    -- all use other scenes and therefore hide every tracker.
-    return name ~= "hud" and name ~= "hudui"
+function WM:IsHUDShowing()
+    if not HUD_SCENE or not HUD_UI_SCENE then return false end
+    return HUD_SCENE:IsShowing() or HUD_UI_SCENE:IsShowing()
 end
 
 function WM:GetIcon(abilityId)
@@ -161,7 +150,7 @@ end
 
 function WM:CanDisplayNormal()
     if not self.sv.enabled then return false end
-    if self:IsMenuOpen() then return false end
+    if not self:IsHUDShowing() then return false end
     if self.sv.hideOutOfCombat and not self:IsInCombat() then return false end
     return true
 end
@@ -169,17 +158,36 @@ end
 function WM:ApplyPosition(key)
     local control = self.controls[key]
     if not control then return end
-
     local p = self.sv.positions[key]
+    local size = self.sv.iconSize or self.defaults.iconSize
+    local rowHeight = control:GetHeight() > 0 and control:GetHeight() or size
     control:ClearAnchors()
-    control:SetAnchor(CENTER, GuiRoot, CENTER, p.x, p.y)
+    -- Saved position is the icon center, so resizing never changes placement.
+    control:SetAnchor(TOPLEFT, GuiRoot, CENTER, p.x-(size/2), p.y-(rowHeight/2))
+end
+
+function WM:AddHUDFragment(control)
+    if not ZO_HUDFadeSceneFragment or not HUD_SCENE or not HUD_UI_SCENE then return end
+    local fragment = ZO_HUDFadeSceneFragment:New(control, nil, 0)
+    self.fragments[#self.fragments+1] = fragment
+    HUD_SCENE:AddFragment(fragment)
+    HUD_UI_SCENE:AddFragment(fragment)
+end
+
+function WM:SetIconState(key, active)
+    local control = self.controls[key]
+    if not control then return end
+    control.icon:SetDesaturation(active and 0 or 1)
+    if active then
+        control.icon:SetColor(1,1,1,1)
+    else
+        control.icon:SetColor(.55,.55,.55,1)
+    end
 end
 
 function WM:CreateTracker(key)
     local wm = WINDOW_MANAGER
-
     local control = wm:CreateTopLevelWindow("WardenMastery_" .. key)
-    control:SetDimensions(760, 66)
     control:SetClampedToScreen(true)
     control:SetDrawTier(DT_HIGH)
     control:SetDrawLayer(DL_OVERLAY)
@@ -194,22 +202,23 @@ function WM:CreateTracker(key)
     control.bg = bg
 
     local icon = wm:CreateControl(nil, control, CT_TEXTURE)
-    icon:SetDimensions(48,48)
-    icon:SetAnchor(LEFT, control, LEFT, 8, 0)
     icon:SetTexture(self:GetIcon(self.MASTERY[key]))
     control.icon = icon
 
+    local countdown = wm:CreateControl(nil, control, CT_LABEL)
+    countdown:SetAnchor(CENTER, icon, CENTER, 0, 0)
+    countdown:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    countdown:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    control.countdown = countdown
+
     local label = wm:CreateControl(nil, control, CT_LABEL)
-    label:SetAnchor(LEFT, icon, RIGHT, 12, 0)
-    label:SetAnchor(RIGHT, control, RIGHT, -8, 0)
-    label:SetHeight(64)
     label:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
     label:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     control.label = label
 
     control:SetHandler("OnMoveStop", function(c)
-        local cx = c:GetLeft() + c:GetWidth()/2
-        local cy = c:GetTop() + c:GetHeight()/2
+        local cx = c.icon:GetLeft() + c.icon:GetWidth()/2
+        local cy = c.icon:GetTop() + c.icon:GetHeight()/2
         WM.sv.positions[key].x = cx - GuiRoot:GetWidth()/2
         WM.sv.positions[key].y = cy - GuiRoot:GetHeight()/2
         WM:ApplyPosition(key)
@@ -217,39 +226,55 @@ function WM:CreateTracker(key)
 
     self.controls[key] = control
     self:ApplyPosition(key)
-
-    -- HUD scene fragments make the tracker automatically disappear while
-    -- inventory/map/character/settings/etc. scenes are open, and return on HUD.
-    if ZO_HUDFadeSceneFragment and HUD_SCENE then
-        local fragment = ZO_HUDFadeSceneFragment:New(control)
-        self.fragments[key] = fragment
-        HUD_SCENE:AddFragment(fragment)
-        if HUD_UI_SCENE then
-            HUD_UI_SCENE:AddFragment(fragment)
-        end
-    end
+    self:AddHUDFragment(control)
+    self:SetIconState(key, false)
 end
 
 function WM:CreateUI()
-    for _,key in ipairs(self.order) do
-        self:CreateTracker(key)
-    end
-    self:ApplyFont()
-    self:ApplyIcons()
+    for _,key in ipairs(self.order) do self:CreateTracker(key) end
+    self:ApplyLayout()
     self:SetLocked(self.sv.locked)
 end
 
-function WM:ApplyFont()
-    local font = string.format("$(BOLD_FONT)|%d|soft-shadow-thick", self.sv.fontSize)
-    for _,control in pairs(self.controls) do
+function WM:ApplyLayout()
+    local size = self.sv.iconSize or self.defaults.iconSize
+    local textSize = self.sv.fontSize or self.defaults.fontSize
+    local gap = math.max(8, math.floor(size*.15))
+    local textHeight = math.max(24, math.ceil(textSize*1.45))
+    local rowHeight = math.max(size, textHeight)
+    local textWidth = math.max(360, textSize*19)
+    local font = string.format("$(BOLD_FONT)|%d|soft-shadow-thick", textSize)
+    local countdownFont = string.format("$(BOLD_FONT)|%d|soft-shadow-thick", math.max(14,math.floor(size*.36)))
+
+    for _,key in ipairs(self.order) do
+        local control = self.controls[key]
+        control:SetDimensions(size + gap + textWidth, rowHeight)
+        control.icon:ClearAnchors()
+        control.icon:SetAnchor(LEFT, control, LEFT, 0, 0)
+        control.icon:SetDimensions(size,size)
+        control.icon:SetHidden(not self.sv.showIcons)
+        control.countdown:SetDimensions(size,size)
+        control.countdown:SetFont(countdownFont)
+        control.countdown:SetColor(1,1,1,1)
+        control.label:ClearAnchors()
+        if self.sv.showIcons then
+            control.label:SetAnchor(LEFT, control.icon, RIGHT, gap, 0)
+        else
+            control.label:SetAnchor(LEFT, control, LEFT, 0, 0)
+        end
+        control.label:SetDimensions(textWidth,textHeight)
         control.label:SetFont(font)
+        control.label:SetColor(1,1,1,1)
+        self:ApplyPosition(key)
     end
 end
 
+function WM:ApplyFont()
+    self:ApplyLayout()
+end
+
 function WM:ApplyIcons()
-    for _,control in pairs(self.controls) do
-        control.icon:SetHidden(not self.sv.showIcons)
-    end
+    self:ApplyLayout()
 end
 
 function WM:SetLocked(locked)
@@ -278,34 +303,55 @@ function WM:HideAll()
     end
 end
 
-function WM:SetDisplay(key, text, active, show)
+function WM:SetDisplay(key, text, active, show, countdown)
     local control = self.controls[key]
     if not control then return end
-
-    show = show
-        and self.sv.enabled
-        and self.sv.trackers[key]
-
+    show = show and self.sv.enabled and self.sv.trackers[key]
     control:SetHidden(not show)
     if not show then return end
-
-    control.label:SetText(text)
-
-    local c = active and self.sv.activeColor or self.sv.inactiveColor
-    control.label:SetColor(Color(c))
+    control.label:SetText(text or self.pretty[key])
+    control.countdown:SetText(countdown or "")
+    self:SetIconState(key, active)
 end
 
 function WM:GetPreviewText(key)
-    if key == "tundra" then
-        return self.pretty.tundra .. " — ACTIVE", true
-    elseif key == "wild" then
-        return self.pretty.wild .. " — +999", true
-    elseif key == "glacial" then
-        return self.pretty.glacial .. " — 10.0", true
-    elseif key == "green" then
-        return self.pretty.green .. " — 9%", true
-    elseif key == "bountiful" then
-        return self.pretty.bountiful .. " — 3.0", true
+    if key == "wild" then return self.pretty.wild .. " — +999", true end
+    if key == "green" then return self.pretty.green .. " — 9%", true end
+    return self.pretty[key], true
+end
+
+function WM:ApplyVisibleIconSpacing()
+    if not self.sv.locked then return end
+    local visible = {}
+    for _,key in ipairs(self.order) do
+        local c = self.controls[key]
+        if c and not c:IsHidden() then
+            visible[#visible+1] = {key=key, y=self.sv.positions[key].y}
+        end
+    end
+    if #visible < 2 then
+        if #visible == 1 then self:ApplyPosition(visible[1].key) end
+        return
+    end
+    table.sort(visible, function(a,b) return a.y < b.y end)
+    local minSep = math.max(self.sv.iconSize or self.defaults.iconSize,
+                            math.ceil((self.sv.fontSize or self.defaults.fontSize)*1.45)) + 4
+    local ys = {}
+    for i,v in ipairs(visible) do ys[i]=v.y end
+    for i=2,#ys do
+        if ys[i]-ys[i-1] < minSep then ys[i]=ys[i-1]+minSep end
+    end
+    local oldCenter=(visible[1].y+visible[#visible].y)/2
+    local newCenter=(ys[1]+ys[#ys])/2
+    local shift=oldCenter-newCenter
+    local size=self.sv.iconSize or self.defaults.iconSize
+    for i,v in ipairs(visible) do
+        local c=self.controls[v.key]
+        local rowHeight=c:GetHeight()>0 and c:GetHeight() or size
+        c:ClearAnchors()
+        c:SetAnchor(TOPLEFT,GuiRoot,CENTER,
+            self.sv.positions[v.key].x-(size/2),
+            (ys[i]+shift)-(rowHeight/2))
     end
 end
 
@@ -379,6 +425,7 @@ function WM:ScanSelectedMasteries()
             self.state.bountifulEnd = 0
         end
 
+        self:RefreshTrackingEvents()
         self:Update()
     end
 
@@ -584,23 +631,12 @@ end
 
 function WM:Update()
     if not self.sv or not self.controls.tundra then return end
+    if not self.sv.enabled or not self:IsHUDShowing() then self:HideAll(); return end
 
-    if not self.sv.enabled then
-        self:HideAll()
-        return
-    end
-
-    if self:IsMenuOpen() then
-        self:HideAll()
-        return
-    end
-
-    -- Unlock mode intentionally previews enabled trackers without requiring
-    -- combat or mastery selection, so the user can place all five.
     if not self.sv.locked then
         for _,key in ipairs(self.order) do
             local text,active = self:GetPreviewText(key)
-            self:SetDisplay(key, text, active, true)
+            self:SetDisplay(key, text, active, true, (key=="glacial" and "10") or (key=="bountiful" and "3") or "")
         end
         return
     end
@@ -608,185 +644,120 @@ function WM:Update()
     local canShow = self:CanDisplayNormal()
     local now = Now()
 
-    -- Tundra's Maw: red inactive / green active. No countdown.
     if self:IsSelected("tundra") then
         local active = self.state.tundraEnd > now
-        local text = self.pretty.tundra .. (active and " — ACTIVE" or " — INACTIVE")
-        self:SetDisplay("tundra", text, active, canShow)
-    else
-        self:SetDisplay("tundra", "", false, false)
-    end
+        self:SetDisplay("tundra", self.pretty.tundra, active, canShow, "")
+    else self:SetDisplay("tundra", "", false, false) end
 
-    -- Wild Adaptation: status count on the actual combat target, not reticle.
     if self:IsSelected("wild") then
         local count = self:PruneAndCount(self.state.wildTargetKey)
         local bonus = count * 333
         local active = count > 0
-        local text = active
-            and string.format("%s — +%d", self.pretty.wild, bonus)
-            or (self.pretty.wild .. " — INACTIVE")
-        self:SetDisplay("wild", text, active, canShow)
-    else
-        self:SetDisplay("wild", "", false, false)
-    end
+        local text = active and string.format("%s — +%d", self.pretty.wild, bonus) or self.pretty.wild
+        self:SetDisplay("wild", text, active, canShow, "")
+    else self:SetDisplay("wild", "", false, false) end
 
-    -- Glacial Obstinance: actual 10-second mastery buff countdown.
     if self:IsSelected("glacial") then
         local remaining = math.max(0, self.state.glacialEnd - now)
         local active = remaining > 0
-        local text = active
-            and string.format("%s — %.1f", self.pretty.glacial, remaining)
-            or (self.pretty.glacial .. " — DOWN")
-        self:SetDisplay("glacial", text, active, canShow)
-    else
-        self:SetDisplay("glacial", "", false, false)
-    end
+        self:SetDisplay("glacial", self.pretty.glacial, active, canShow, active and tostring(math.ceil(remaining)) or "")
+    else self:SetDisplay("glacial", "", false, false) end
 
-    -- Green-Keeper's Hide: statuses on the enemy currently attacking the player.
     if self:IsSelected("green") then
         local count = self:PruneAndCount(self.state.greenAttackerKey)
         local reduction = count * 3
         local active = count > 0
-        local text = string.format("%s — %d%%", self.pretty.green, reduction)
-        self:SetDisplay("green", text, active, canShow)
-    else
-        self:SetDisplay("green", "", false, false)
-    end
+        local text = active and string.format("%s — %d%%", self.pretty.green, reduction) or self.pretty.green
+        self:SetDisplay("green", text, active, canShow, "")
+    else self:SetDisplay("green", "", false, false) end
 
-    -- Bountiful Harvest: mastery-specific 3-second Major Heroism window.
     if self:IsSelected("bountiful") then
         local remaining = math.max(0, self.state.bountifulEnd - now)
         local active = remaining > 0
-        local text = active
-            and string.format("%s — %.1f", self.pretty.bountiful, remaining)
-            or (self.pretty.bountiful .. " — DOWN")
-        self:SetDisplay("bountiful", text, active, canShow)
-    else
-        self:SetDisplay("bountiful", "", false, false)
+        self:SetDisplay("bountiful", self.pretty.bountiful, active, canShow, active and tostring(math.ceil(remaining)) or "")
+    else self:SetDisplay("bountiful", "", false, false) end
+
+    self:ApplyVisibleIconSpacing()
+end
+
+local function UnregisterTrackingEvent(name, eventCode)
+    EVENT_MANAGER:UnregisterForEvent(name, eventCode)
+end
+
+local function RegisterCombatByAbility(tag, abilityId, callback, sourcePlayer)
+    local eventName = WM.name .. "_" .. tag
+    EVENT_MANAGER:RegisterForEvent(eventName, EVENT_COMBAT_EVENT, callback)
+    EVENT_MANAGER:AddFilterForEvent(eventName, EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, abilityId)
+    if sourcePlayer then
+        EVENT_MANAGER:AddFilterForEvent(eventName, EVENT_COMBAT_EVENT,
+            REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
     end
 end
 
-local function RegisterCombatByAbility(tag, abilityId, callback)
-    local eventName = WM.name .. "_" .. tag
+function WM:IsTracked(key)
+    return self.sv and self.sv.enabled and self.sv.trackers[key] and self:IsSelected(key)
+end
 
-    EVENT_MANAGER:RegisterForEvent(
-        eventName,
-        EVENT_COMBAT_EVENT,
-        callback
-    )
+function WM:RefreshTrackingEvents()
+    if not self.sv then return end
+    -- Production rule: mastery combat/effect listeners exist only while needed.
+    for abilityId in pairs(self.STATUS_BY_ID) do
+        UnregisterTrackingEvent(self.name.."_Status_"..tostring(abilityId), EVENT_COMBAT_EVENT)
+    end
+    UnregisterTrackingEvent(self.name.."_Tundra", EVENT_COMBAT_EVENT)
+    UnregisterTrackingEvent(self.name.."_Bountiful", EVENT_COMBAT_EVENT)
+    UnregisterTrackingEvent(self.name.."_Incoming", EVENT_COMBAT_EVENT)
+    UnregisterTrackingEvent(self.name.."_Glacial", EVENT_EFFECT_CHANGED)
 
-    EVENT_MANAGER:AddFilterForEvent(
-        eventName,
-        EVENT_COMBAT_EVENT,
-        REGISTER_FILTER_ABILITY_ID,
-        abilityId
-    )
+    if not self.sv.enabled then return end
 
-    EVENT_MANAGER:AddFilterForEvent(
-        eventName,
-        EVENT_COMBAT_EVENT,
-        REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE,
-        COMBAT_UNIT_TYPE_PLAYER
-    )
+    if self:IsTracked("wild") or self:IsTracked("green") then
+        for abilityId in pairs(self.STATUS_BY_ID) do
+            local id=abilityId
+            RegisterCombatByAbility("Status_"..tostring(id), id,
+                function(...) WM:OnStatusCombatEvent(...) end, true)
+        end
+    end
+    if self:IsTracked("tundra") then
+        RegisterCombatByAbility("Tundra", self.ID.tundraBrittle,
+            function(...) WM:OnTundraCombatEvent(...) end, true)
+    end
+    if self:IsTracked("bountiful") then
+        RegisterCombatByAbility("Bountiful", self.ID.bountifulHero,
+            function(...) WM:OnBountifulCombatEvent(...) end, true)
+    end
+    if self:IsTracked("green") then
+        local incomingEvent=self.name.."_Incoming"
+        EVENT_MANAGER:RegisterForEvent(incomingEvent, EVENT_COMBAT_EVENT,
+            function(...) WM:OnIncomingCombatEvent(...) end)
+        EVENT_MANAGER:AddFilterForEvent(incomingEvent, EVENT_COMBAT_EVENT,
+            REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
+    end
+    if self:IsTracked("glacial") then
+        local glacialEvent=self.name.."_Glacial"
+        EVENT_MANAGER:RegisterForEvent(glacialEvent, EVENT_EFFECT_CHANGED,
+            function(...) WM:OnGlacialEffectChanged(...) end)
+        EVENT_MANAGER:AddFilterForEvent(glacialEvent, EVENT_EFFECT_CHANGED,
+            REGISTER_FILTER_ABILITY_ID, self.ID.glacialBuff)
+        EVENT_MANAGER:AddFilterForEvent(glacialEvent, EVENT_EFFECT_CHANGED,
+            REGISTER_FILTER_UNIT_TAG, "player")
+    end
 end
 
 function WM:RegisterTracking()
-    if SCENE_MANAGER and SCENE_MANAGER.RegisterCallback then
-        SCENE_MANAGER:RegisterCallback("CurrentSceneChanged", function()
-            WM:Update()
+    EVENT_MANAGER:RegisterForEvent(self.name.."_CombatState", EVENT_PLAYER_COMBAT_STATE,
+        function(...) WM:OnCombatState(...) end)
+    EVENT_MANAGER:RegisterForUpdate(self.name.."_Update",100,function() WM:Update() end)
+    EVENT_MANAGER:RegisterForUpdate(self.name.."_MasteryRescan",500,function() WM:ScanSelectedMasteries() end)
+    EVENT_MANAGER:RegisterForEvent(self.name.."_Activated",EVENT_PLAYER_ACTIVATED,function()
+        zo_callLater(function() WM:ScanSelectedMasteries(); WM:RefreshTrackingEvents() end,500)
+    end)
+    if EVENT_SKILL_POINTS_CHANGED then
+        EVENT_MANAGER:RegisterForEvent(self.name.."_SkillPoints",EVENT_SKILL_POINTS_CHANGED,function()
+            zo_callLater(function() WM:ScanSelectedMasteries(); WM:RefreshTrackingEvents() end,250)
         end)
     end
-
-    -- One filtered registration per status effect. This avoids receiving the
-    -- entire combat-event firehose and follows ESOUI event-filter guidance.
-    for abilityId in pairs(self.STATUS_BY_ID) do
-        local id = abilityId
-        RegisterCombatByAbility(
-            "Status_" .. tostring(id),
-            id,
-            function(...) WM:OnStatusCombatEvent(...) end
-        )
-    end
-
-    RegisterCombatByAbility(
-        "Tundra",
-        self.ID.tundraBrittle,
-        function(...) WM:OnTundraCombatEvent(...) end
-    )
-
-    RegisterCombatByAbility(
-        "Bountiful",
-        self.ID.bountifulHero,
-        function(...) WM:OnBountifulCombatEvent(...) end
-    )
-
-    -- Incoming damage for Green-Keeper. Engine-side target filter keeps this
-    -- limited to combat events whose target is the local player.
-    local incomingEvent = self.name .. "_Incoming"
-    EVENT_MANAGER:RegisterForEvent(
-        incomingEvent,
-        EVENT_COMBAT_EVENT,
-        function(...) WM:OnIncomingCombatEvent(...) end
-    )
-    EVENT_MANAGER:AddFilterForEvent(
-        incomingEvent,
-        EVENT_COMBAT_EVENT,
-        REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE,
-        COMBAT_UNIT_TYPE_PLAYER
-    )
-
-    local glacialEvent = self.name .. "_Glacial"
-    EVENT_MANAGER:RegisterForEvent(
-        glacialEvent,
-        EVENT_EFFECT_CHANGED,
-        function(...) WM:OnGlacialEffectChanged(...) end
-    )
-    EVENT_MANAGER:AddFilterForEvent(
-        glacialEvent,
-        EVENT_EFFECT_CHANGED,
-        REGISTER_FILTER_ABILITY_ID,
-        self.ID.glacialBuff
-    )
-
-    EVENT_MANAGER:RegisterForEvent(
-        self.name .. "_CombatState",
-        EVENT_PLAYER_COMBAT_STATE,
-        function(...) WM:OnCombatState(...) end
-    )
-
-    EVENT_MANAGER:RegisterForUpdate(
-        self.name .. "_Update",
-        100,
-        function() WM:Update() end
-    )
-
-    EVENT_MANAGER:RegisterForUpdate(
-        self.name .. "_MasteryRescan",
-        500,
-        function() WM:ScanSelectedMasteries() end
-    )
-
-    EVENT_MANAGER:RegisterForEvent(
-        self.name .. "_Activated",
-        EVENT_PLAYER_ACTIVATED,
-        function()
-            zo_callLater(function()
-                WM:ScanSelectedMasteries()
-            end, 500)
-        end
-    )
-
-    if EVENT_SKILL_POINTS_CHANGED then
-        EVENT_MANAGER:RegisterForEvent(
-            self.name .. "_SkillPoints",
-            EVENT_SKILL_POINTS_CHANGED,
-            function()
-                zo_callLater(function()
-                    WM:ScanSelectedMasteries()
-                end, 250)
-            end
-        )
-    end
+    self:RefreshTrackingEvents()
 end
 
 function WM:CreateSettings()
@@ -814,6 +785,7 @@ function WM:CreateSettings()
             getFunc=function() return WM.sv.enabled end,
             setFunc=function(v)
                 WM.sv.enabled = v
+                WM:RefreshTrackingEvents()
                 if v then WM:Update() else WM:HideAll() end
             end,
             default=self.defaults.enabled,
@@ -844,38 +816,31 @@ function WM:CreateSettings()
         },
         {
             type="slider",
-            name="Text Size",
-            min=18,
-            max=80,
+            name="Mastery Text Size",
+            min=12,
+            max=40,
             step=1,
             getFunc=function() return WM.sv.fontSize end,
             setFunc=function(v)
                 WM.sv.fontSize = v
-                WM:ApplyFont()
+                WM:ApplyLayout()
+                WM:Update()
             end,
             default=self.defaults.fontSize,
         },
         {
-            type="colorpicker",
-            name="Inactive Color",
-            tooltip="Used when a selected mastery is down/inactive or at 0%.",
-            getFunc=function() return Color(WM.sv.inactiveColor) end,
-            setFunc=function(r,g,b,a)
-                WM.sv.inactiveColor = {r,g,b,a}
+            type="slider",
+            name="Icon Size",
+            min=28,
+            max=100,
+            step=1,
+            getFunc=function() return WM.sv.iconSize end,
+            setFunc=function(v)
+                WM.sv.iconSize = v
+                WM:ApplyLayout()
                 WM:Update()
             end,
-            default={r=1.00,g=0.15,b=0.15,a=1},
-        },
-        {
-            type="colorpicker",
-            name="Active Color",
-            tooltip="Used when a selected mastery is active.",
-            getFunc=function() return Color(WM.sv.activeColor) end,
-            setFunc=function(r,g,b,a)
-                WM.sv.activeColor = {r,g,b,a}
-                WM:Update()
-            end,
-            default={r=0.15,g=1.00,b=0.25,a=1},
+            default=self.defaults.iconSize,
         },
         {
             type="checkbox",
@@ -884,7 +849,8 @@ function WM:CreateSettings()
             getFunc=function() return WM.sv.showIcons end,
             setFunc=function(v)
                 WM.sv.showIcons = v
-                WM:ApplyIcons()
+                WM:ApplyLayout()
+                WM:Update()
             end,
             default=self.defaults.showIcons,
         },
@@ -911,6 +877,7 @@ function WM:CreateSettings()
                 if not v and WM.controls[k] then
                     WM.controls[k]:SetHidden(true)
                 end
+                WM:RefreshTrackingEvents()
                 WM:Update()
             end,
             default=true,
@@ -938,10 +905,12 @@ function WM:RegisterSlashCommands()
 
         if text == "on" then
             WM.sv.enabled = true
+            WM:RefreshTrackingEvents()
             WM:Update()
             d("|c66FF99Warden Mastery|r ON")
         elseif text == "off" then
             WM.sv.enabled = false
+            WM:RefreshTrackingEvents()
             WM:HideAll()
             d("|c66FF99Warden Mastery|r OFF")
         elseif text == "unlock" then
@@ -973,6 +942,9 @@ function WM:Initialize()
         self.defaults
     )
 
+    self.sv.iconSize = self.sv.iconSize or self.defaults.iconSize
+    self.sv.fontSize = zo_clamp(self.sv.fontSize or self.defaults.fontSize, 12, 40)
+
     self:CreateUI()
     self:ScanSelectedMasteries()
     self:CreateSettings()
@@ -984,7 +956,7 @@ function WM:Initialize()
         WM:Update()
     end, 750)
 
-    d("|c66FF99Warden Mastery v1.0 loaded.|r")
+    d("|c66FF99Warden Mastery v1.0.1 TEST loaded.|r")
 end
 
 local function OnAddonLoaded(eventCode, addonName)

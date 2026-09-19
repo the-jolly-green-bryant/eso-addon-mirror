@@ -42,6 +42,45 @@ Install and enable Votan's Minimap, LibAsync and LibHarvensAddonSettings first. 
 - The runtime now keeps at most 12 completed unsaved combat reports. Reports explicitly saved by the player remain available.
 - The packaged textures occupy about 8 MiB when decoded to RGBA if every texture were resident at once. The largest curved-frame textures are only referenced when the curved-frame option is enabled, so leave that option off on memory-constrained systems unless it is needed.
 
+## Version 1.9.26
+
+- Removes the remaining temporary Combat Log camera-state chat logging and diagnostic-only release artifact.
+- Keeps Combat Log controller input, focus, camera-mode ownership, mouse support and native keybind hints unchanged.
+- Keeps the final RaidFrame `TOPLEFT`/`TOPLEFT` persistence fix and legacy compatibility unchanged.
+
+## Version 1.9.25
+
+- Removes the temporary RaidFrame chat command, stored snapshots, geometry capture, initialization hooks and on-screen inspection panel.
+- Keeps the canonical `TOPLEFT`/`TOPLEFT` RaidFrame save and restore behavior and legacy-anchor compatibility unchanged.
+- Makes no functional changes to Move Frames or other UI systems.
+
+## Version 1.9.24
+
+- Forces the existing live player-resource renderer to repaint newly rebuilt PlayerFrame labels.
+- Prevents `Health`, `Magicka`, `Stamina` and `Pct%` construction labels from remaining visible after Move Frames, settings rebuilds or UI loading when the cached values did not change.
+- Initializes those six labels empty so placeholder words cannot flash during control creation.
+- Does not change resource calculations, PlayerFrame dimensions/positions, RaidFrame, Frame Editor movement, Combat Log, Sidebar, Custom Bar, Quick Menu or controller navigation.
+
+## Version 1.9.23
+
+- Restores a readable 26-pixel font size for the numeric health value inside `BUI_TargetFrame`.
+- Changes only `BUI_TargetFrame_HealthCurrent`; the TargetFrame dimensions, bar, name and position are unchanged.
+- Leaves RaidFrame, Frame Editor, Combat Log, Sidebar and Custom Bar behavior unchanged.
+
+## Version 1.9.22
+
+- Gives only `BUI_RaidFrame` a canonical `TOPLEFT` to `GuiRoot TOPLEFT` saved position.
+- Saves from direct `GetLeft()` and `GetTop()` screen geometry when movement is confirmed.
+- Restores the canonical format directly without passing through centre-relative coordinates.
+- Keeps older RaidFrame anchor formats on the existing legacy restore path until the user moves and confirms the frame again.
+- Leaves the general Frame Editor, other movable frames and controller navigation unchanged.
+
+## Version 1.9.17
+
+- Fixes only the Group Frame position saved by Move Frames.
+- Converts the editor's centre-based position to the Group Frame's persisted top-left anchor before saving.
+- Leaves Player Frame, Target Frame, Combat Log and controller navigation behavior unchanged.
+
 ## Version 1.9.16
 
 - Removes the insecure sidebar call path through `DIRECTIONAL_INPUT:GetX/GetY` that caused ESO to reject its internal `IsKeyDown` call.
@@ -69,7 +108,6 @@ Install and enable Votan's Minimap, LibAsync and LibHarvensAddonSettings first. 
 
 - Tracks whether the Combat Log itself enabled Game Camera UI mode and releases it only when owned.
 - Closes the complete gamepad menu stack before opening the Combat Log.
-- Adds temporary open/close Camera UI state messages for in-game verification.
 - Leaves the restored V1 navigation and controller mapping unchanged.
 
 ## Version 1.9.12

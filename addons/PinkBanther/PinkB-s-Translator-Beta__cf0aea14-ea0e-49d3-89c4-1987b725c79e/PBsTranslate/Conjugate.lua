@@ -132,6 +132,8 @@ T.Stem = Stem
 T.NaiStem = NaiStem
 T.TeForm = TeForm
 T.PotentialStem = PotentialStem
+T.KuruStem = KuruStem
+T.GODAN = GODAN
 
 -- ますの活用 on any masu stem.
 local function Masu(stem, past, negative)
@@ -457,6 +459,8 @@ local function PlainPast(word, class)
 	end
 	return word
 end
+
+T.PlainPast = PlainPast
 
 -- Plain (dictionary-register) forms, for the inside of a subordinate clause, where polite
 -- forms are wrong: 行くとき, 行ったら.

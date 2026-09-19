@@ -393,8 +393,8 @@ end
 ----------------------------------------------------------------------------------------------------
 function Module:OnEffectChanged(eventCode, changeType, effectSlot, effectName, unitTag, beginTime, endTime, stackCount, iconName, buffType, effectType, abilityType, statusEffectType, unitName, unitId, abilityId, sourceUnitType)
     -- SKILLBLOCKER
-    local ShouldBlock = CC.SkillBlocker.BlockableBuffs[abilityId]
-    if ShouldBlock then
+    local shouldBlock = CC.SkillBlocker.BlockableBuffs[abilityId]
+    if shouldBlock then
         if changeType == EFFECT_RESULT_GAINED or changeType == EFFECT_RESULT_UPDATED then
             local expireTimeMs = (endTime > 0) and (math.floor(endTime * 1000) + 500) or 0
             CC.SkillBlocker.PlayerBuffs[abilityId] = expireTimeMs

@@ -122,4 +122,17 @@ A.get_reward_claimed_state   = GetRewardTrackRewardClaimedState
 A.has_unclaimed_rewards      = HasUnclaimedRewardTrackRewards
 A.claim_all_rewards          = ClaimAllRewardTrackRewards
 
+A.get_map_player_position    = GetMapPlayerPosition
+A.set_map_to_player          = SetMapToPlayerLocation
+A.map_matches_player         = DoesCurrentMapMatchMapForPlayerLocation
+A.get_current_map_id         = GetCurrentMapId
+A.get_map_name               = GetMapName
+A.get_map_num_tiles          = GetMapNumTiles
+A.get_map_tile_texture       = GetMapTileTexture
+A.get_group_size             = GetGroupSize
+A.get_group_unit_tag         = GetGroupUnitTagByIndex
+A.get_unit_name              = GetUnitName
+A.get_objective_pin_info     = GetObjectivePinInfo
+A.world_map_showing          = ZO_WorldMap_IsWorldMapShowing
+
 BGMeter.zenimax.api = A

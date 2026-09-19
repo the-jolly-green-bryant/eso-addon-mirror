@@ -1,0 +1,13 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="SI_WEGESRUHE_BINDING_CATEGORY">
+            <Action name="WEGESRUHE_SHOW_HELP">
+                <Down>Wegesruhe:SetHelpMode(true)</Down>
+                <Up>Wegesruhe:SetHelpMode(false)</Up>
+            </Action>
+            <Action name="WEGESRUHE_TOGGLE">
+                <Down>Wegesruhe:ToggleEnabled()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

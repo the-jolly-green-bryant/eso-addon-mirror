@@ -272,7 +272,7 @@ function addon:OutgoingCommand(argumentString)
 		Report("locale: E3 letter=%s alnum=%s | A0 space=%s | 85 space=%s | C3 upper=%s lowerChanges=%s",
 			tostring(probe.alphaE3), tostring(probe.alnumE3), tostring(probe.spaceA0), tostring(probe.space85),
 			tostring(probe.upperC3), tostring(probe.lowerChangesC3))
-		local english, unknown = T.TranslateJaToEn("ケーキを食べたい")
+		local english, unknown = T.TranslateJaToEn("ホゲホゲ")
 		local valid = T.IsValidUTF8(english)
 		for _, piece in ipairs(unknown) do
 			valid = valid and T.IsValidUTF8(piece)

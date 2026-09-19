@@ -295,8 +295,8 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [StopIt!](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Bazgrim/StopIt__1580) | Bazgrim | PC / Mac | 0.56 |
 | [Stopwatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Gordias/Stopwatch__2398) | Gordias | PC / Mac | 1.1 |
 | [Storage stacker (updated CDG Bank Stacker with supporting house storage)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ivang/Storage-stacker-updated-CDG-Bank-Stacker-with-supporting-house-storage__4085) | ivang | PC / Mac | 0.1.1 |
-| [StoreHelper - maintain stocks of basic craft style mats](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rexorn/StoreHelper---maintain-stocks-of-basic-craft-style-mats__3195) | Rexorn | PC / Mac | 0.25 |
-| [StoreHelperRune - manage potency runes for glyph writs](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rexorn/StoreHelperRune---manage-potency-runes-for-glyph-writs__3220) | Rexorn | PC / Mac | 0.22 |
+| [StoreHelper - maintain stocks of basic craft style mats](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rexorn/StoreHelper---maintain-stocks-of-basic-craft-style-mats__3195) | Rexorn | PC / Mac | 0.26 |
+| [StoreHelperRune - manage potency runes for glyph writs](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rexorn/StoreHelperRune---manage-potency-runes-for-glyph-writs__3220) | Rexorn | PC / Mac | 0.23 |
 | [Story Saver](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/f1rex/Story-Saver__2976) | f1rex | PC / Mac | 18 |
 | [Stow It Auto-Sheather](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/RunningDuck/Stow-It-Auto-Sheather__862) | RunningDuck | PC / Mac | 3.2.7 |
 | [Stow Keybind](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/manavortex/Stow-Keybind__1900) | manavortex | PC / Mac | 1.0 |

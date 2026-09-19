@@ -444,11 +444,19 @@ function ShieldedBar:UpdateResourceNumbers(health, maxHealth, shield, trauma)
     local shieldValue = math.abs(tonumber(shield) or 0)
 
     -- Healing absorption has priority over a damage shield when both are active.
-    -- Keep spaces on both sides of + / - and do not wrap the effect in brackets.
+    -- Exact format keeps the existing + / - display. Abbreviated format uses brackets.
     if saved.showHealingAbsorption and traumaValue > 0 then
-        base = string.format("%s - %s", base, FormatEffectNumber(traumaValue, saved.healingAbsorptionValueFormat))
+        if saved.healingAbsorptionValueFormat == "abbreviated" then
+            base = string.format("%s [-%s]", base, FormatEffectNumber(traumaValue, "abbreviated"))
+        else
+            base = string.format("%s - %s", base, FormatEffectNumber(traumaValue, saved.healingAbsorptionValueFormat))
+        end
     elseif saved.showShield and shieldValue > 0 then
-        base = string.format("%s + %s", base, FormatEffectNumber(shieldValue, saved.shieldValueFormat))
+        if saved.shieldValueFormat == "abbreviated" then
+            base = string.format("%s [%s]", base, FormatEffectNumber(shieldValue, "abbreviated"))
+        else
+            base = string.format("%s + %s", base, FormatEffectNumber(shieldValue, saved.shieldValueFormat))
+        end
     end
 
     if percentMode == "after_value" and saved.textMode ~= "current_max_percent" then

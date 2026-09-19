@@ -1,6 +1,6 @@
 StoreHelper={panelName="StoreHelperPanel"
 		,author="Rexorn"
-		,version="0.25"
+		,version="0.26"
 		,variableVersion=1
 	}
 

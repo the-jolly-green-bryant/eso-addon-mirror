@@ -1,16 +1,16 @@
 {
-  "archive_path": "addons/PinkBanther/PinkB-s-Superstar__f00e5b13-5452-4284-98f7-2bdbe3caff63",
+  "archive_path": "addons/PinkBanther/PinkB-s-UltraDetailedStats__f00e5b13-5452-4284-98f7-2bdbe3caff63",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
   "archived": true,
   "author": "PinkBanther",
   "canonical_id": "bethesda:f00e5b13-5452-4284-98f7-2bdbe3caff63",
   "content_id": "f00e5b13-5452-4284-98f7-2bdbe3caff63",
   "deleted": false,
-  "fingerprint": "fc519ddfc7180b7b21b4b1ca49433c16d0d7aa0a0f2544df4e846b1fd2766d9b",
+  "fingerprint": "a05b2ba40ea4dd67c561d4cab2d7ca25fb804f78ba85912da3e3f4578026cea8",
   "platform": "console",
   "published": true,
   "source": "bethesda",
   "source_id": "f00e5b13-5452-4284-98f7-2bdbe3caff63",
   "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/f00e5b13-5452-4284-98f7-2bdbe3caff63",
-  "title": "PinkB's Superstar"
+  "title": "PinkB's UltraDetailedStats"
 }

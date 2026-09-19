@@ -34,9 +34,7 @@ local function sv_menu()
     return data.menu
 end
 
-function Drawer.hexc(c)
-    return string.format("%02x%02x%02x", math.floor(c[1] * 255 + 0.5), math.floor(c[2] * 255 + 0.5), math.floor(c[3] * 255 + 0.5))
-end
+Drawer.hexc = BGMeter.Format.hexc
 
 function Drawer.row_h() return ROW_H end
 
@@ -73,18 +71,19 @@ end
 local function make_row(self, i)
     local r = {}
     r.container = BGMeter.zenimax.ui.create_control(nil, self.drawer.list, CT_CONTROL)
-    r.container:SetHeight(ROW_H)
+    local rh = self.spec.row_h or ROW_H
+    r.container:SetHeight(rh)
     r.container:SetMouseEnabled(true)
     r.base, r.highlight = U.row_chrome(r.container)
     r.name = P.label(r.container, S.FONT.row, K.COLOR.text)
     r.name:SetAnchor(LEFT, r.container, LEFT, 12, 0)
     r.name:SetAnchor(RIGHT, r.container, RIGHT, -54, 0)
-    r.name:SetHeight(ROW_H)
+    r.name:SetHeight(rh)
     r.name:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
     U.clamp_line(r.name)
     r.count = P.label(r.container, S.FONT.row, K.COLOR.text)
     r.count:SetAnchor(RIGHT, r.container, RIGHT, -6, 0)
-    r.count:SetDimensions(46, ROW_H)
+    r.count:SetDimensions(46, rh)
     r.count:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
     if self.spec.row_make then self.spec.row_make(self, r) end
     r.container:SetHandler("OnMouseEnter", function()
@@ -105,7 +104,7 @@ end
 
 function Drawer:visible_rows()
     if not self.drawer then return 0 end
-    return math.max(0, math.floor(self.drawer.list:GetHeight() / (ROW_H + 2)))
+    return math.max(0, math.floor(self.drawer.list:GetHeight() / ((self.spec.row_h or ROW_H) + 2)))
 end
 
 function Drawer:max_offset()
@@ -167,8 +166,9 @@ function Drawer:refresh()
             r.face = e
             r.container:SetHidden(false)
             r.container:ClearAnchors()
-            r.container:SetAnchor(TOPLEFT, self.drawer.list, TOPLEFT, 0, (i - 1) * (ROW_H + 2))
-            r.container:SetAnchor(TOPRIGHT, self.drawer.list, TOPRIGHT, 0, (i - 1) * (ROW_H + 2))
+            local rh = self.spec.row_h or ROW_H
+            r.container:SetAnchor(TOPLEFT, self.drawer.list, TOPLEFT, 0, (i - 1) * (rh + 2))
+            r.container:SetAnchor(TOPRIGHT, self.drawer.list, TOPRIGHT, 0, (i - 1) * (rh + 2))
             self.spec.row_fill(self, r, e)
         else
             r.entry, r.face = nil, nil
@@ -177,6 +177,7 @@ function Drawer:refresh()
     end
     self.last_count, self.last_vis = #list, vis
     self:layout_scrollbar()
+    if self.spec.panel_refresh then self.spec.panel_refresh(self) end
     local foot
     if #list > vis then
         foot = string.format("%d-%d of %d  ·  scroll for more", self.offset + 1, math.min(#list, self.offset + vis), #list)
@@ -251,7 +252,9 @@ function Drawer:apply_open(open, silent)
         end
     end
     self.drawer.root:SetHidden(not open)
-    self.tab.icon:SetAlpha(open and 1 or 0.85)
+    local tex = open and (self.spec.icon_down or self.spec.icon) or self.spec.icon
+    self.tab.icon:SetNormalTexture(tex)
+    self.tab.icon._tex_normal = tex
     sv_menu()[self.key .. "_open"] = open and true or false
     if open then
         self.offset = 0
@@ -309,21 +312,22 @@ function Drawer:init(pw)
     local spec = self.spec
     local tab = { root = BGMeter.zenimax.ui.create_control(nil, pw, CT_CONTROL) }
     tab.root:SetDimensions(MEDAL, MEDAL)
-    tab.root:SetAnchor(CENTER, pw, TOPRIGHT, 0, MEDAL_Y0 + ((spec.index or 1) - 1) * MEDAL_STEP)
+    if spec.bottom then
+        tab.root:SetAnchor(CENTER, pw, BOTTOMRIGHT, 0, -(MEDAL_Y0 - 16) - ((spec.index or 1) - 1) * MEDAL_STEP)
+    else
+        tab.root:SetAnchor(CENTER, pw, TOPRIGHT, 0, MEDAL_Y0 + ((spec.index or 1) - 1) * MEDAL_STEP)
+    end
     tab.root:SetMouseEnabled(true)
     if tab.root.SetDrawLevel then tab.root:SetDrawLevel(10) end
     tab.icon = P.button(tab.root, spec.icon, spec.icon_down, spec.icon_over)
-    if tab.icon.SetMouseOverBlendMode and TEXTURE_BLEND_MODE_ADD then tab.icon:SetMouseOverBlendMode(TEXTURE_BLEND_MODE_ADD) end
     tab.icon:SetDimensions(MEDAL, MEDAL)
     tab.icon:SetAnchor(CENTER, tab.root, CENTER, 0, 0)
-    tab.icon:SetAlpha(0.85)
+    tab.icon._tex_normal = spec.icon
     tab.icon:SetHandler("OnClicked", function() self:toggle() end)
     tab.icon:SetHandler("OnMouseEnter", function()
-        tab.icon:SetAlpha(1)
         if U.card_show then U.card_show(tab.root, RIGHT, spec.title) end
     end)
     tab.icon:SetHandler("OnMouseExit", function()
-        tab.icon:SetAlpha(self:is_open() and 1 or 0.85)
         if U.card_hide then U.card_hide() end
     end)
     tab.root:SetHandler("OnMouseUp", function(_, button, upInside)
@@ -420,7 +424,29 @@ function Drawer:init(pw)
         bar_h = BAR_H - 4
     end
     local list_top = HEAD_H + bar_h + 8
-    local foot_h = FOOT_H + (spec.credit and 12 or 0)
+    if spec.list_heading then
+        drawer.heading = P.label(d, S.FONT.small, K.COLOR.gold)
+        drawer.heading:SetAnchor(TOPLEFT, d, TOPLEFT, PAD, list_top)
+        drawer.heading:SetAnchor(TOPRIGHT, d, TOPRIGHT, -PAD, list_top)
+        drawer.heading:SetHeight(14)
+        set_text(drawer.heading, spec.list_heading)
+        local rule = P.rect(d, { K.COLOR.gold[1], K.COLOR.gold[2], K.COLOR.gold[3], 0.22 })
+        rule:SetAnchor(TOPLEFT, d, TOPLEFT, PAD, list_top + 17)
+        rule:SetAnchor(TOPRIGHT, d, TOPRIGHT, -PAD, list_top + 17)
+        rule:SetHeight(1)
+        list_top = list_top + 24
+    end
+    local panel_h = spec.panel_h or 0
+    local foot_h = FOOT_H + (spec.credit and 12 or 0) + panel_h
+
+    if panel_h > 0 then
+        drawer.panel = BGMeter.zenimax.ui.create_control(nil, d, CT_CONTROL)
+        drawer.panel:SetAnchor(BOTTOMLEFT, d, BOTTOMLEFT, PAD, -(foot_h - panel_h))
+        drawer.panel:SetAnchor(BOTTOMRIGHT, d, BOTTOMRIGHT, -PAD, -(foot_h - panel_h))
+        drawer.panel:SetHeight(panel_h)
+        drawer.panel:SetMouseEnabled(true)
+        if spec.panel_build then spec.panel_build(self, drawer.panel, DRAWER_W - 2 * PAD) end
+    end
 
     drawer.list = BGMeter.zenimax.ui.create_control(nil, d, CT_CONTROL)
     drawer.list:SetAnchor(TOPLEFT, d, TOPLEFT, PAD, list_top)

@@ -149,7 +149,7 @@ function BUI.Target:Update(isTarget)
 	end
 end
 
-function BUI.Player:UpdateAttribute(unitTag, powerType, powerValue, powerMax, powerEffectiveMax)
+function BUI.Player:UpdateAttribute(unitTag, powerType, powerValue, powerMax, powerEffectiveMax, forcePlayerFrameRefresh)
 	--Translate the attribute
 	local power=Attributes[powerType]
 	local isGroup=false
@@ -195,13 +195,15 @@ function BUI.Player:UpdateAttribute(unitTag, powerType, powerValue, powerMax, po
 			data[power]={current=current,max=displayMax,pct=pct}
 		end
 	end
-	if unchanged then return end
+	-- SetupPlayer can force the normal runtime render for newly-created frame
+	-- controls even when the cached values themselves have not changed.
+	if unchanged and not forcePlayerFrameRefresh then return end
 	--Update frames
 	local shield=data.shield.current or 0
 	local trauma=data.trauma.current or 0
 	if BUI.init.Frames and powerType~=POWERTYPE_ULTIMATE then
 		BUI.Frames.Attribute(unitTag, power, powerValue or 0, displayMax, pct, shield, trauma)
-		if BUI.Vars.CurvedFrame~=0 and not isGroup then BUI.Curved.Attribute(unitTag, power, powerValue or 0, displayMax, pct, shield, trauma) end
+		if not unchanged and BUI.Vars.CurvedFrame~=0 and not isGroup then BUI.Curved.Attribute(unitTag, power, powerValue or 0, displayMax, pct, shield, trauma) end
 	end
 end
 

@@ -45,6 +45,95 @@
       - 自動検知キーワードや手動登録リストを設定画面/コマンドで変更した
         際に、現在のターゲットへ即座に再反映されるようにした。
 
+    v1.4.43で対応:
+      - 「①②の対象を敵プレイヤーのみに限定する」機能(targetEnemyOnly)を
+        完全撤去。v1.4.37〜v1.4.42にかけてGetUnitReaction系→IsUnitHostile→
+        AreUnitsCurrentlyAllied→BG専用分岐と実装を重ねたが、機能自体を
+        使わない方針となったため、設定項目・チャットコマンド(/pti enemyonly)・
+        判定関数(PassesEnemyOnlyDisplayFilter)・OnUpdate内のdisplayTarget
+        分岐・関連デバッグログを削除し、OnUpdateはv1.4.36以前と同じ
+        hasTargetのみで①②の表示可否を判定する形に戻した。IsValidEnemyTarget
+        (DoesUnitExist+IsUnitPlayerによるNPC除外)、BUFF/DEBUFFの検知・
+        キャッシュ・分類・優先順位・UI①②③の配置やCondition/Procは無変更。
+
+    v1.4.42で対応:
+      - 「①②の対象を敵プレイヤーのみに限定する」の敵味方判定に、
+        バトルグラウンド(BG)専用の分岐を追加。BG実機動画の実測で、
+        明確な敵プレイヤーに対してもAreUnitsCurrentlyAllied("player",
+        "reticleover")がtrue(味方)を返すことを確認した。ESOのBGは
+        参加時にランダム割り当てられる専用陣営(BATTLEGROUND_ALLIANCE_
+        FIRE_DRAKES/PIT_DAEMONS/STORM_LORDS)を持ち、通常の所属アライアンス
+        (AD/EP/DC)とは別物。AreUnitsCurrentlyAllied/GetUnitAlliance/
+        GetUnitReactionはいずれも元々の所属アライアンスしか見ないため、
+        BG内でたまたま元アライアンスが同じ相手だと敵チームでも味方と
+        誤判定されていた。IsActiveWorldBattleground()でBG中と判定した
+        場合のみ、GetUnitBattlegroundAlliance("player")と
+        GetUnitBattlegroundAlliance("reticleover")の一致比較に切り替え、
+        それ以外のゾーン(シロディール等)では従来通りAreUnitsCurrentlyAllied
+        を使う。どちらもESOUI Wikiの公開UnitTag関数一覧で実在を確認済み。
+        変更はPassesEnemyOnlyDisplayFilter()内のみで、IsUnitPlayer/
+        DoesUnitExistによる対象確認、検知・キャッシュ・BUFF/DEBUFF分類・
+        UI描画・Condition/Procには一切手を加えていない。
+
+    v1.4.41で対応:
+      - 「①②の対象を敵プレイヤーのみに限定する」の敵味方判定を、
+        GetUnitReaction系の比較(v1.4.37==HOSTILE/v1.4.39~=NEUTRAL/
+        v1.4.40==NEUTRAL)から AreUnitsCurrentlyAllied("player","reticleover")
+        に変更。GetUnitReactionを使う実装はいずれも実機で「敵BUFFが出ない」
+        「味方BUFFが出る」等、意図と食い違う結果になることが確認されたため、
+        プレイヤー対プレイヤーの純粋な所属関係を直接返すAreUnitsCurrentlyAllied
+        に切り替えた(ESOUI Wikiの公開UnitTag関数一覧で実在を確認済み)。
+        味方ならfalse、味方でなければtrueを返す単純な方式。IsUnitPlayer/
+        DoesUnitExistによる対象確認は維持し、IsUnitHostileのような未確認
+        関数は使用していない。変更はPassesEnemyOnlyDisplayFilter()内の
+        判定1箇所のみで、検知・キャッシュ・BUFF/DEBUFF分類・UI描画・
+        Condition/Procには一切手を加えていない。
+
+    v1.4.40で対応:
+      - 「①②の対象を敵プレイヤーのみに限定する」の敵味方判定を、
+        GetUnitReaction(reticleover) ~= UNIT_REACTION_NEUTRAL から
+        == UNIT_REACTION_NEUTRAL に変更(比較演算子の向きのみ反転)。
+        v1.4.39は実機で「敵BUFFが表示されず、味方BUFFがなぜか表示される」
+        という意図と逆の結果になることが確認された。ESOのプレイヤー対
+        プレイヤーのreticleoverでは、味方がFRIENDLY(中立ではない)、
+        まだ交戦していない敵がNEUTRAL(中立)という、NPCを想定した一般的な
+        感覚とは逆の値になっているためと考えられる。GetUnitReaction/
+        UNIT_REACTION_NEUTRALというAPI・定数自体は変更せず、
+        PassesEnemyOnlyDisplayFilter()内の比較演算子1文字のみの変更。
+        検知・キャッシュ・BUFF/DEBUFF分類・UI描画・Condition/Procには
+        一切手を加えていない。
+
+    v1.4.39で対応:
+      - 「①②の対象を敵プレイヤーのみに限定する」の敵味方判定を、
+        IsUnitHostile(reticleover) から
+        GetUnitReaction(reticleover) ~= UNIT_REACTION_NEUTRAL に変更。
+        v1.4.38のIsUnitHostileは、実機でv1.4.37と全く同じ「ONの間BUFFが
+        最後まで一切表示されない」症状をシロディール・バトルグラウンド両方で
+        再現したため中止。実在するESOのPvPアドオン実装例を確認したところ、
+        reticleoverの敵対判定にはUNIT_REACTION_HOSTILEとの厳密一致ではなく
+        UNIT_REACTION_NEUTRALでないことを見る方式が使われており、また
+        IsUnitHostileという単体関数はESOの公開APIには見当たらなかった
+        (存在しない関数呼び出しによるエラーでOnUpdateの残り処理が
+        毎回止まっていた可能性が高いと判断)。変更は
+        PassesEnemyOnlyDisplayFilter()内の判定1箇所のみで、IsUnitAttackable
+        等は追加せず、検知・キャッシュ・BUFF/DEBUFF分類・UI描画・
+        Condition/Procには一切手を加えていない。
+
+    v1.4.38で対応:
+      - 「①②の対象を敵プレイヤーのみに限定する」の敵味方判定方法を、
+        GetUnitReaction(reticleover)==UNIT_REACTION_HOSTILE から
+        IsUnitHostile(reticleover) に変更。v1.4.37の実装(検知パイプラインから
+        分離した表示専用フィルタ)のまま、比較式のみを差し替えた。
+        GetUnitReactionを使う実装は、置き場所を変えても(旧v1.4.26のゲート型/
+        新v1.4.37の表示専用型のどちらでも)シロディール・バトルグラウンド両方で
+        明確な敵プレイヤーに対してもUNIT_REACTION_HOSTILEを返さないケースが
+        実機検証で再現したため、原因は実装箇所ではなく比較式自体と特定。
+        IsUnitHostileはアライアンス関係の敵対判定に特化したAPIで、
+        戻り値も素直なbooleanになる。変更は
+        PvPTargetInfo_Target.luaのPassesEnemyOnlyDisplayFilter()内の
+        判定1箇所のみで、検知・キャッシュ・BUFF/DEBUFF分類・UI描画・
+        Condition/Procには一切手を加えていない。
+
     v1.4.37で対応:
       - v1.4.36で撤去した「①②の対象を敵プレイヤーのみに限定する」設定を、
         実装方式を変えて復活。旧実装はGetUnitReactionによる敵味方判定を
@@ -455,7 +544,7 @@ PvPTargetInfo = PvPTargetInfo or {}
 local PTI = PvPTargetInfo
 
 PTI.name = "PvPTargetInfo"
-PTI.version = "1.4.37"
+PTI.version = "1.4.43"
 
 local SV_VERSION = 2
 
@@ -464,11 +553,6 @@ local defaults = {
     enabled = true,
     previewMode = false, -- ONの間は3パネルにサンプルデータを表示する(設定画面の手動プレビュー)
     holdDuration = 1.0, -- ターゲット解除後にパネルを保持する秒数
-
-    -- v1.4.26で追加、v1.4.37で表示専用フィルタとして再実装。
-    -- ONの間、①②はGetUnitReactionが敵対と判定した相手の時だけ表示する
-    -- (検知・キャッシュ構築には影響しない、表示可否のみの設定)。既定OFF。
-    targetEnemyOnly = false,
 
     -- v1.4.32で追加: 非戦闘中はUI①②③を非表示にし、戦闘開始時のみ表示する。
     -- 検知ロジック自体には影響しない、表示可否のみの設定。
@@ -619,7 +703,6 @@ local function PrintHelp()
     d("  /pti watch buff||debuff on||off <id>                    - 登録済み項目の表示ON/OFF切替(削除はしない)")
     d("  /pti watch buff||debuff list||clear                     - 重要リストの確認/全削除")
     d("  /pti auto on||off                                      - 重要バフ/デバフの自動検知を切替(既定ON)")
-    d("  /pti enemyonly on||off                                 - ①②の対象を敵プレイヤーのみに限定(既定OFF、省略で現在値表示。表示のみに影響し検知は変えません)")
     d("  /pti combatonly on||off                                - 非戦闘中は①②を非表示にする(既定ON、省略で現在値表示。③は常にCondition発動状況で自動判定)")
     d("  /pti preview on||off                                   - プレビュー表示(サンプルデータ)を切替")
     d("  /pti show || hide                                      - アドオン全体の表示切替")
@@ -909,21 +992,6 @@ local function OnSlashCommand(args)
             d("|c55CCFF[PvPTargetInfo]|r 自動検知: OFF (登録した効果のみ表示します)")
         else
             d("|c55CCFF[PvPTargetInfo]|r 例: /pti auto on||off")
-        end
-    elseif cmd == "enemyonly" then
-        -- v1.4.37で復活: 検知・キャッシュ構築には関与しない、表示専用フィルタ
-        -- (PTI.sv.targetEnemyOnly)のON/OFF切替。値の反映はOnUpdate(0.1秒毎)
-        -- 側で自動的に読み直されるため、ここでの明示的な再スキャンは不要。
-        local sub = rest:lower()
-        if sub == "on" then
-            PTI.sv.targetEnemyOnly = true
-            d("|c55CCFF[PvPTargetInfo]|r 敵プレイヤーのみ表示: ON (味方をターゲットしても①②は表示されません)")
-        elseif sub == "off" then
-            PTI.sv.targetEnemyOnly = false
-            d("|c55CCFF[PvPTargetInfo]|r 敵プレイヤーのみ表示: OFF (従来通り、プレイヤーなら味方でも①②が表示されます)")
-        else
-            d(string.format("|c55CCFF[PvPTargetInfo]|r 現在: %s (例: /pti enemyonly on||off)",
-                PTI.sv.targetEnemyOnly and "ON" or "OFF"))
         end
     elseif cmd == "combatonly" then
         -- v1.4.32で追加: 非戦闘中はUI①②を非表示にし、戦闘開始時のみ

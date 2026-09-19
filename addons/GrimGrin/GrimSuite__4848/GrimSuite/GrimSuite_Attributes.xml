@@ -1,0 +1,72 @@
+<GuiXml>
+    <Controls>
+        <Control name="GS_AttributeBar" inherits="ZO_PlayerAttributeContainer" virtual="true">
+            <Controls>
+                <Control name="$(parent)BgContainer" inherits="ZO_PlayerAttributeBgContainer">
+                    <Anchor point="LEFT"/>
+                    <Anchor point="RIGHT"/>
+                    <Controls>
+                        <Texture name="$(parent)BgLeft" inherits="ZO_PlayerAttributeBgLeft"/>
+                        <Texture name="$(parent)BgRight" inherits="ZO_PlayerAttributeBgRightArrow"/>
+                        <Texture name="$(parent)BgCenter" inherits="ZO_PlayerAttributeBgCenter"/>
+                    </Controls>
+                </Control>
+
+                <StatusBar name="$(parent)Bar" inherits="ZO_PlayerAttributeStatusBar">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="3" offsetY="5"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-3" offsetY="-5"/>
+                    <OnInitialized>
+                        self.gloss = GSAttributeFakeGloss:New()
+                    </OnInitialized>
+                </StatusBar>
+
+                <Label name="$(parent)Text" horizontalAlignment="CENTER"/>
+                <Label name="$(parent)Percent" horizontalAlignment="CENTER"/>
+
+                <Texture name="$(parent)FrameLeft" inherits="ZO_PlayerAttributeFrameLeft"/>
+                <Texture name="$(parent)FrameRight" inherits="ZO_PlayerAttributeFrameRightArrow"/>
+                <Texture name="$(parent)FrameCenter" inherits="ZO_PlayerAttributeFrameCenter"/>
+            </Controls>
+        </Control>
+
+        <Control name="GS_AttributeBarReversed" inherits="ZO_PlayerAttributeContainer" virtual="true">
+            <Controls>
+                <Control name="$(parent)BgContainer" inherits="ZO_PlayerAttributeBgContainer">
+                    <Anchor point="LEFT"/>
+                    <Anchor point="RIGHT"/>
+                    <Controls>
+                        <Texture name="$(parent)BgLeft" inherits="ZO_PlayerAttributeBgLeftArrow"/>
+                        <Texture name="$(parent)BgRight" inherits="ZO_PlayerAttributeBgRight"/>
+                        <Texture name="$(parent)BgCenter" inherits="ZO_PlayerAttributeBgCenter"/>
+                    </Controls>
+                </Control>
+
+                <StatusBar name="$(parent)Bar" inherits="ZO_PlayerAttributeStatusBar" barAlignment="REVERSE">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="3" offsetY="5"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-3" offsetY="-5"/>
+                    <OnInitialized>
+                        self.gloss = GSAttributeFakeGloss:New()
+                    </OnInitialized>
+                </StatusBar>
+
+                <Label name="$(parent)Text" horizontalAlignment="CENTER"/>
+                <Label name="$(parent)Percent" horizontalAlignment="CENTER"/>
+
+                <Texture name="$(parent)FrameLeft" inherits="ZO_PlayerAttributeFrameLeftArrow"/>
+                <Texture name="$(parent)FrameRight" inherits="ZO_PlayerAttributeFrameRight"/>
+                <Texture name="$(parent)FrameCenter" inherits="ZO_PlayerAttributeFrameCenter"/>
+            </Controls>
+        </Control>
+
+        <StatusBar name="GS_AttributeShieldBar" level="550" inherits="ZO_PlayerAttributeStatusBar" virtual="true">
+            <OnInitialized>
+                self.gloss = GSAttributeFakeGloss:New()
+            </OnInitialized>
+        </StatusBar>
+
+        <TopLevelControl name="GrimSuiteAttributes">
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER"/>
+            <Dimensions x="500" y="120"/>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

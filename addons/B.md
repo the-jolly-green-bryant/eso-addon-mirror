@@ -65,7 +65,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [BetaScry](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Latetide/BetaScry__3783) | Latetide | PC / Mac | 1.0.0 |
 | [Better Antiquities Journal](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DH8Wolf/Better-Antiquities-Journal__2701) | DH8Wolf | PC / Mac | 0.3 |
 | [Better Bars](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BMGxSancho/Better-Bars__784b8f46-2797-426a-ab85-f1e5b4776b01) | BMGxSancho | Console | — |
-| [Better BG Sounds](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ToRUk72/Better-BG-Sounds__4807) | ToRUk72 | PC / Mac | 1.2 |
+| [Better BG Sounds](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ToRUk72/Better-BG-Sounds__4807) | ToRUk72 | PC / Mac | 2.0 |
 | [Better Buffs](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BMGxSancho/Better-Buffs__ecd02472-565e-4f7f-83ce-812e8a5b0bde) | BMGxSancho | Console | — |
 | [Better Difficulties](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kawamonkey/Better-Difficulties__3003) | kawamonkey | PC / Mac | 1.0.1 |
 | [Better Guard](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tmp/Better-Guard__3974) | tmp | PC / Mac | 2.8 |
@@ -78,7 +78,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [BetterSynergy - Synergy Text Hider](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SkullElf/BetterSynergy---Synergy-Text-Hider__4029) | SkullElf | PC / Mac | 1.4 |
 | [BetterUI :: Gamepad Interface Improvements](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/goobsnake/BetterUI-Gamepad-Interface-Improvements__2013) | goobsnake | PC / Mac | 3.06 |
 | [BGHelper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/NPViral/BGHelper__4527) | NPViral | PC / Mac | 3.0 |
-| [BGMeter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Federico/BGMeter__4697) | Federico | PC / Mac | 0.3.0 |
+| [BGMeter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Federico/BGMeter__4697) | Federico | PC / Mac | 0.4.0 |
 | [Bigger Chat Window](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Crabby654/Bigger-Chat-Window__657) | Crabby654 | PC / Mac | 1.6.3 |
 | [Bind As Junk](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Fluffiels/Bind-As-Junk__4608) | Fluffiels | PC / Mac | 1.03 |
 | [BindAll (Sticker Book Collector)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ownedbynico/BindAll-Sticker-Book-Collector__2825) | ownedbynico | PC / Mac | 1.5 |
@@ -167,6 +167,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Buff The Group (BTG)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/bitrock/Buff-The-Group-BTG__2759) | bitrock | PC / Mac | 3.5.0 |
 | [Buff Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/msetten/Buff-Tracker__0604268b-f390-4fac-aebe-67b9148c94f4) | msetten | Console | — |
 | [BuffDebuffBar+](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BLKx777/BuffDebuffBar__f47025d4-d5d3-4863-b0b0-1d9f57dd6c41) | BLKx777 | Console | — |
+| [buffoverhaul by Jh](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/j.hhh/buffoverhaul-by-Jh__3b05def8-1192-4bc3-8954-f69f9cf0977c) | j.hhh | Console | — |
 | [BuffsAndDebuffs](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Graham/BuffsAndDebuffs__3333) | Graham | PC / Mac | 1.3Pre |
 | [BuffTimers](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/coolmodi/BuffTimers__1278) | coolmodi | PC / Mac | 1.4 |
 | [BuffTimers2](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/uta.karas/BuffTimers2__1986) | uta.karas | PC / Mac | 2.31.1 |

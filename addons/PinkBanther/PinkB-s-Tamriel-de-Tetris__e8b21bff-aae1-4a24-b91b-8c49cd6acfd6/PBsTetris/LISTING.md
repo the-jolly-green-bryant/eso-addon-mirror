@@ -18,17 +18,19 @@ PB's Tamriel de Tetris
 ## Overview (JP)
 
 石を積む落ちものパズルです。ゲームパッドのメインメニューから開いて、ひとりで遊べます。同じ
-グループの相手を誘えば、ライン消去でおじゃまを送り合う対戦になります（両者に本アドオンと
-LibGroupBroadcastが必要）。レベル20からは20G。遊んでいるあいだのBGMは5種類から選べます。
-戦闘に入ると自動で閉じます。画面表示は日本語なので、日本語フォントが必要です。
+グループの相手を誘えば、ライン消去でおじゃまを送り合う対戦になります（両者に同じ版の本アドオン
+とLibGroupBroadcastが必要）。レベル20からは20G。積み上がるほど雪が強くなり、ラインは払われる
+ように消え、4ライン消しは金色に光ります。遊んでいるあいだのBGMは5種類から選べます。戦闘に入る
+と自動で閉じます。画面表示は日本語なので、日本語フォントが必要です。
 
 ## Overview (EN)
 
 A falling-block puzzle built out of stone. Open it from the gamepad main menu and play alone,
 or invite someone in your group and trade garbage rows with them -- a duel needs the same
-version of this add-on and LibGroupBroadcast on both sides. Level 20 and up is 20G. You can
-pick which of five in-game tracks plays while you are in the board, and the whole thing closes
-itself the moment you enter combat. The interface is Japanese and needs a Japanese font.
+version of this add-on and LibGroupBroadcast on both sides. Level 20 and up is 20G. The snow
+thickens as your stack climbs, cleared lines are swept away, and a four-line clear burns gold.
+You can pick which of five in-game tracks plays while you are on the board, and the whole thing
+closes itself the moment you enter combat. The interface is Japanese and needs a Japanese font.
 
 ---
 
@@ -40,14 +42,17 @@ itself the moment you enter combat. The interface is Japanese and needs a Japane
 
 ■ 開き方
 
-　　ソロ　　　メインメニュー →「ゲームセンターPX」→「タムリエル de テトリス」
+　　通常　　　メインメニューの「ヘルプ」と「オプション」のあいだ
+　　　　　　　→「ゲームセンターPX」→「タムリエル de テトリス」
 　　20G　　　 同じメニューの「タムリエル de テトリス（20G）」
 　　対戦　　　相手を選んでインタラクトメニュー →「タムリエル de テトリス」
 　　コマンド　/pbt　（/pbt 20g で20G）
 
+　開くと画面がいったん暗転してから盤面が現れます。暗転のあいだにブロックは落ちません。
+
 　対戦は、同じグループにいて、両者がオンラインで、どちらも戦闘中でないときに誘えます。相手
-　が承諾するとカウントダウンののち同時に始まります。LibGroupBroadcastがなくてもソロは遊べ
-　ます。
+　が承諾すると、開始の合意がとれてから12秒後に同時に始まります。LibGroupBroadcastがなくても
+　ひとりでは遊べます。
 
 ■ 操作
 
@@ -57,7 +62,9 @@ itself the moment you enter combat. The interface is Japanese and needs a Japane
 　　決定　　　　　　 右回転
 　　L1　　　　　　　 左回転
 　　R1　　　　　　　 BGMの切り替え
-　　戻る　　　　　　 ソロは一時停止、もう一度で閉じる。対戦中は降参して閉じる
+　　戻る　　　　　　 一時停止。もう一度で閉じる。対戦中は降参して閉じる
+
+　ハードドロップとホールドは画面下のボタン表示からも使えます。ホールドは固定までに1回です。
 
 　得点は1／2／3／4ライン同時消去で100／300／500／800×レベル。連続消去と4ライン消去の継続に
 　ボーナスがあります。10ライン消すごとにレベルが上がり、落下は0.85秒から段階的に速くなります。
@@ -68,18 +75,29 @@ itself the moment you enter combat. The interface is Japanese and needs a Japane
 　連続消去で最大4段、4ライン消去の継続で1段の追加です。自分の攻撃は受信済みのおじゃまと先に
 　相殺し、残りだけが相手へ飛びます。受けた段は次にブロックを固定したときに下から生えます。
 
-　相手の画面は送りません。表示するのは相手の高さと、相手が抱えているおじゃまの段数だけです。
-　通信は約1.5秒ごとの累積値なので、攻撃が相手に出るまでには少し遅れがあります。対戦中の一時
-　停止はありません。通信が15秒途切れたときは、勝敗を付けずに中止します。
+　対戦中は画面が左右に分かれ、左が自分、右が相手です。相手の盤面そのものは送らないので、右側
+　には相手の積み上がりの高さを同じ縮尺で示し、送った・受けた・相殺した段数を累計で表示します。
+　自分の「送った」と相手の「受けた」は一致します。
+
+　通信はESOのグループ通信を全アドオンで共有するため、攻撃が相手に届くまで数秒かかることがあり
+　ます。対戦中の一時停止はありません。通信が30秒途切れたときは、勝敗を付けずに中止します。
 
 ■ 20G
 
 　レベル20（190ライン）でソロも対戦も20Gに変わります。出現時・ホールド交換時・横移動と回転の
-　成功直後に、その場から接地位置まで落ちます。接地して0.5秒で固定、移動や回転による猶予の
-　延長は1ブロックにつき15回までです。ハードドロップはその場で即固定します。
+　成功直後に、その場から接地位置まで落ちます。接地して0.5秒で固定、移動や回転による猶予の延長は
+　1ブロックにつき15回までです。ハードドロップはその場で即固定します。
 
 　TGMの20Gの挙動を参考にした実装で、回転はこのアドオンのSRSのままです。ARS・IRS・段位・
 　レベル曲線の再現ではありません。
+
+■ 演出
+
+　・ラインは左から右へ払われるように消えます。4ライン同時消去は金色で、少し長く残ります。
+　・レベルが上がると盤面に「レベル 5」と出て、ESOのレベルアップ音が鳴ります。20Gに入ると
+　　そう併記します。
+　・盤面が高くなるほど雪が強くなります。空の盤面ではちらつく程度、天井が近いと吹雪です。
+　・ブロックの上を、ときどき斜めに光が走ります。
 
 ■ BGM
 
@@ -94,7 +112,7 @@ itself the moment you enter combat. The interface is Japanese and needs a Japane
 　選んだ曲はアカウント共通で覚えます。一時停止や画面を閉じたときは、遊び始める前の状態へ
 　戻します。他のアドオンやゲーム側が先に曲を差し替えていた場合は、それを奪いません。ESO本体
 　の音量設定には触れません。効果音はESO内蔵のものを移動・回転・ホールド・固定・ライン消去・
-　開始・勝敗に当ててあります。/pbt sound で切れます。
+　レベルアップ・開始・終了に当ててあります。/pbt sound で切れます。
 
 ■ 邪魔をしません
 
@@ -104,9 +122,9 @@ itself the moment you enter combat. The interface is Japanese and needs a Japane
 
 ■ 記録
 
-　自己ベストの得点と最大消去ライン数をアカウント共通で保存します。通常のソロと、最初から
+　自己ベストの得点と最大消去ライン数をアカウント共通で保存します。通常の挑戦と、最初から
 　20Gで始めたときの記録は別々です。盤面そのものはログアウトすると残りません。同じセッション
-　のあいだなら、閉じたソロは続きから再開します。
+　のあいだなら、閉じた盤面は続きから再開します。
 
 ■ 日本語フォントについて
 
@@ -114,10 +132,10 @@ itself the moment you enter combat. The interface is Japanese and needs a Japane
 
 ■ 既知の制限
 
-　Tスピンとパーフェクトクリアの専用ボーナスはありません。対戦は両者が同じバージョンである
-　必要があります。1.2.0で通信の仕様が変わったため、旧版とは対戦できません。
+　Tスピンとパーフェクトクリアの専用ボーナスはありません。対戦は両者が同じ版である必要があり
+　ます。1.15.0で通信IDを変更したため、それより前の版とは対戦できません。
 
-対戦には LibGroupBroadcast が必要です。ソロだけならライブラリは要りません。
+対戦には LibGroupBroadcast が必要です。ひとりで遊ぶだけならライブラリは要りません。
 
 ## Description (EN)
 
@@ -127,13 +145,17 @@ behind it were drawn for this add-on.
 
 ■ Opening it
 
-　　Solo　　　 main menu -> Game Centre PX -> Tamriel de Tetris
+　　Standard　 main menu, between Help and Options
+　　　　　　　 -> Game Centre PX -> Tamriel de Tetris
 　　20G　　　　the 20G entry in the same menu
 　　Duel　　　 target a player -> interact menu -> Tamriel de Tetris
 　　Command　　/pbt　(/pbt 20g for 20G)
 
-　You can invite someone who is in your group, online, and not in combat. They accept, both
-　boards count down, both start together. Solo works without LibGroupBroadcast.
+　The screen fades to black before the board appears. Nothing falls while it is dark.
+
+　You can invite someone who is in your group, online, and not in combat. Once they accept and
+　both boards have agreed on a start, both begin together twelve seconds later. Solo works
+　without LibGroupBroadcast.
 
 ■ Controls
 
@@ -143,7 +165,10 @@ behind it were drawn for this add-on.
 　　Accept　　　　　　　rotate right
 　　L1　　　　　　　　　rotate left
 　　R1　　　　　　　　　change the music
-　　Back　　　　　　　　pause solo, again to close. In a duel it forfeits and closes.
+　　Back　　　　　　　　pause, again to close. In a duel it forfeits and closes.
+
+　Hard drop and hold are also on the button prompts along the bottom. Hold works once per
+　piece until it locks.
 
 　One, two, three or four lines score 100 / 300 / 500 / 800 times your level, with a bonus for
 　clearing on consecutive pieces and for four-line clears back to back. Every ten lines raises
@@ -157,20 +182,34 @@ behind it were drawn for this add-on.
 　queued on your own board, and only the rest crosses over. Rows you were sent rise from the
 　bottom when you next lock a piece.
 
-　Your board is never sent. What your opponent sees is your stack height and how much garbage
-　you are holding. Traffic is a running total about every 1.5 seconds, so an attack takes a
-　moment to land. There is no pausing a duel. If the connection goes quiet for 15 seconds the
+　A duel splits the screen: your board on the left, your opponent on the right. Their board is
+　never sent, so the right half shows how high their stack stands, at the same scale as yours,
+　and running totals of what was sent, received and cancelled. Your "sent" matches their
+　"received".
+
+　The game's group channel is shared by every add-on you run, so an attack can take a few
+　seconds to land. There is no pausing a duel. If the connection goes quiet for 30 seconds the
 　duel is abandoned rather than awarded.
 
 ■ 20G
 
 　At level 20 -- 190 lines -- solo and duels both change to 20G. Pieces drop to the floor on
-　spawn, on a hold swap, and immediately after any move or rotation that lands. They lock half
-　a second after touching down, and a move or rotation buys more time only fifteen times per
-　piece. A hard drop locks where it is.
+　spawn, on a hold swap, and immediately after any move or rotation that lands. They lock half a
+　second after touching down, and a move or rotation buys more time only fifteen times per piece.
+　A hard drop locks where it is.
 
 　It follows TGM's 20G behaviour, but the rotation is still this add-on's SRS. It is not a
 　reproduction of ARS, IRS, the grade system or TGM's level curve.
+
+■ Effects
+
+　- Cleared lines are swept away from left to right. A four-line clear burns gold and lingers
+　  a moment longer.
+　- A level up puts "レベル 5" on the board with the game's own level-up sound, and says 20G
+　  alongside it when that is where you have arrived.
+　- The snow thickens as your stack climbs: a few flakes over an empty board, a blizzard
+　  near the ceiling.
+　- Every so often a glint runs diagonally across the blocks.
 
 ■ Music
 
@@ -186,7 +225,7 @@ behind it were drawn for this add-on.
 　way it was before you started, and if another add-on or the game had already taken the
 　music over, this one leaves it alone rather than fighting for it. Your ESO volume settings
 　are never touched. The sound effects are the game's own, on movement, rotation, hold, lock,
-　line clears, the start and the result. /pbt sound turns them off.
+　line clears, level ups, the start and the end. /pbt sound turns them off.
 
 ■ It gets out of the way
 
@@ -198,8 +237,8 @@ behind it were drawn for this add-on.
 ■ Records
 
 　Your best score and your longest line count are saved account-wide, kept separately for
-　ordinary solo and for games started in 20G. The board itself does not survive a logout,
-　though a solo game you closed resumes where you left it for the rest of the session.
+　standard games and for games started in 20G. The board itself does not survive a logout,
+　though a game you closed resumes where you left it for the rest of the session.
 
 ■ About the Japanese font
 
@@ -208,6 +247,6 @@ behind it were drawn for this add-on.
 ■ Known limitations
 
 　There are no dedicated T-spin or perfect-clear bonuses. Duelling requires the same version
-　on both sides; 1.2.0 changed the protocol, so it cannot duel older installs.
+　on both sides; 1.15.0 moved to a new protocol id, so it cannot duel older installs.
 
 LibGroupBroadcast is required for duels. Solo play needs no libraries.

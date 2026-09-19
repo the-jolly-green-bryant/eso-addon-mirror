@@ -1,11 +1,12 @@
 PBT=PBT or {}
 -- Protocol ids are one number per add-on, shared across everything a player has installed, and
--- whichever add-on declares one second is refused outright. 510 belongs to PB's Translate
--- (PBsTranslateDictionaryV1) and 511 to PB's Janken, so this one takes 509.
+-- whichever add-on declares one second is refused outright. 460-469 is PinkBanther's block on
+-- the LibGroupBroadcast id list: 460 is this, 461 PB's Janken and 462 PB's Translate. 509 and
+-- 510, used before, were both taken by other add-ons.
 -- BUILD must equal ## AddOnVersion in both manifests; package.py refuses to build otherwise.
 -- It rides on the wire so that two players on different versions are told so, instead of each
 -- silently discarding the other's packets as unreadable.
-local T={ID=509,BUILD=11300};T.__index=T;PBT.Transport=T
+local T={ID=460,BUILD=11500};T.__index=T;PBT.Transport=T
 -- Development ID, distinct from PBsJanken's 511. Reserve before public release.
 -- attack, height and terminal ride in one word rather than three narrow fields of their own.
 function T.Pack(packet) return (packet.attack or 0)*128+(packet.height or 0)*4+(packet.terminal or 0) end

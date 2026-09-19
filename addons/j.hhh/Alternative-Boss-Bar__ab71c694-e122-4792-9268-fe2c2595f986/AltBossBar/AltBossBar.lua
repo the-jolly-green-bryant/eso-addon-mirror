@@ -68,14 +68,6 @@ function ABB_BossBar:Initialize(bossTag, topLevelCtrl, previousBar)
     self.healthText = GetControl(healthControl, "Text")
     self.healthBar = GetControl(healthControl, "Bar")
     self.healthLeftBgBar = GetControl(healthControl, "LeftBgBar")
-    -- Deterministic replacement for the 18px reverse StatusBar on the left.
-    -- The original reverse StatusBar can render a varying internal texture edge
-    -- even when its control geometry is unchanged. A plain texture has no
-    -- StatusBar fill edge/sampling state.
-    self.healthLeftFill = WINDOW_MANAGER:CreateControl("ABB_LeftFill_" .. bossTag, healthControl, CT_TEXTURE)
-    self.healthLeftFill:SetTexture("EsoUI/Art/Miscellaneous/white.dds")
-    self.healthLeftFill:SetDrawLayer(DL_CONTROLS)
-    self.healthLeftFill:SetDrawLevel(1)
 
 
     -- Dedicated fill area. The visible frame remains completely independent.
@@ -272,9 +264,11 @@ function ABB_BossBar:OnPowerUpdate(sourceUnit, health, maxHealth, force)
     if sourceUnit ~= self.unitTag then
         return
     end
+
+    -- Original Alternative Boss Bar / ESO status-bar behavior.
     ZO_StatusBar_SmoothTransition(self.healthBar, health, maxHealth, force)
     self.healthLeftBgBar:SetValue((health > 0 and 1 or 0))
-    if self.healthLeftFill then self.healthLeftFill:SetHidden(health <= 0) end
+
     self:UpdateMechanicText(health, maxHealth)
 
     if health > 0 and not IsUnitDead(self.unitTag) then
@@ -291,7 +285,6 @@ function ABB_BossBar:OnUavUpdate(unitAttributeVisual, _, _, _, value1)
                 self.hasImmunity = true
                 ZO_StatusBar_SetGradientColor(self.healthBar, UNWAVERING_GRADIENT)
                 self.healthLeftBgBar:SetColor(UNWAVERING_COLOR_START:UnpackRGBA())
-                if self.healthLeftFill then self.healthLeftFill:SetColor(UNWAVERING_COLOR_START:UnpackRGBA()) end
             end
         else
             self:OnUavRemoval(unitAttributeVisual)
@@ -304,7 +297,6 @@ function ABB_BossBar:OnUavUpdate(unitAttributeVisual, _, _, _, value1)
                 self.hasShield = true
                 ZO_StatusBar_SetGradientColor(self.healthBar, OVERSHIELD_GRADIENT)
                 self.healthLeftBgBar:SetColor(OVERSHIELD_COLOR_START:UnpackRGBA())
-                if self.healthLeftFill then self.healthLeftFill:SetColor(OVERSHIELD_COLOR_START:UnpackRGBA()) end
             end
         else
             self:OnUavRemoval(unitAttributeVisual)
@@ -332,7 +324,6 @@ function ABB_BossBar:ResetColors()
     local gradient = {ZO_ColorDef:New(unpack(SETTINGS.HP_COLOR_START) ), ZO_ColorDef:New(unpack(SETTINGS.HP_COLOR_END))}
     ZO_StatusBar_SetGradientColor(self.healthBar, gradient)
     self.healthLeftBgBar:SetColor(gradient[1]:UnpackRGBA())
-    if self.healthLeftFill then self.healthLeftFill:SetColor(gradient[1]:UnpackRGBA()) end
 end
 
 function ABB_BossBar:ApplyAnchors()
@@ -357,28 +348,31 @@ function ABB_BossBar:ApplyStyle()
 end
 
 function ABB_BossBar:LockHealthFillGeometry()
-    -- FRAME / END CAPS ARE NEVER MODIFIED HERE.
+    -- FRAME / END CAPS ARE NOT MODIFIED.
+    --
+    -- Use the ORIGINAL PC split StatusBars, but scale their geometry together
+    -- with the decorative end caps. The original left split is 18 px at 100%.
+    -- When the frame height is enlarged, its end-cap width is enlarged too,
+    -- therefore the covered HP split must grow by the same factor.
     if not self.healthControl or not self.healthBar or not self.healthLeftBgBar then return end
 
     local heightScale = SETTINGS.HEIGHT_SCALE or 1.0
-    local nativeBarH = (self._abbNative and self._abbNative.barH) or self.healthBar:GetHeight()
-    local fillHeight = math.floor(nativeBarH * heightScale + 0.5)
-    local split = 18
+    local n = self._abbNative
+    if not n then return end
 
-    -- Disable only the problematic reverse StatusBar rendering.
-    self.healthLeftBgBar:SetHidden(true)
+    local fillHeight = math.floor(n.barH * heightScale + 0.5)
+    local splitWidth = math.floor(n.leftBarW * heightScale + 0.5)
 
-    -- Deterministic left fill: exact same original 18px region.
-    if self.healthLeftFill then
-        self.healthLeftFill:ClearAnchors()
-        self.healthLeftFill:SetAnchor(LEFT, self.healthControl, LEFT, 0, 0)
-        self.healthLeftFill:SetAnchor(RIGHT, self.healthControl, LEFT, split, 0)
-        self.healthLeftFill:SetHeight(fillHeight)
-    end
+    self.healthLeftBgBar:SetHidden(false)
+    self.healthLeftBgBar:SetAlpha(1)
+    self.healthLeftBgBar:ClearAnchors()
+    self.healthLeftBgBar:SetAnchor(LEFT, self.healthControl, LEFT, 0, 0)
+    self.healthLeftBgBar:SetAnchor(RIGHT, self.healthControl, LEFT, splitWidth, 0)
+    self.healthLeftBgBar:SetHeight(fillHeight)
 
-    -- Main HP StatusBar still starts at the original XML split.
+    self.healthBar:SetHidden(false)
     self.healthBar:ClearAnchors()
-    self.healthBar:SetAnchor(LEFT, self.healthControl, LEFT, split, 0)
+    self.healthBar:SetAnchor(LEFT, self.healthControl, LEFT, splitWidth, 0)
     self.healthBar:SetAnchor(RIGHT, self.healthControl, RIGHT, 0, 0)
     self.healthBar:SetHeight(fillHeight)
 end
@@ -509,12 +503,18 @@ local function ScaleBossBars()
 
         table.sort(bossOrder, function(a,b) return a.maxhp > b.maxhp end)
         for i, val in ipairs(bossOrder) do
-            bossBars[i]:RegisterUnit(val.tag)
-            bossBars[i].scaleX = zo_clamp(val.maxhp / highestHealthValue, 0.4, 1.0)
+            local bar = bossBars[i]
+            if bar then
+                bar:RegisterUnit(val.tag)
+                bar.scaleX = zo_clamp(val.maxhp / highestHealthValue, 0.4, 1.0)
+            end
         end
     else
         for i = 1, ABB_MAX_BOSSES do
-            bossBars[i].scaleX = 1.0
+            local bar = bossBars[i]
+            if bar then
+                bar.scaleX = 1.0
+            end
         end
     end
 end
@@ -547,12 +547,14 @@ end
 
 local function RefreshExtraBar()
     local i = ABB_MAX_BOSSES + 1
-    local isDummy = GetUnitType(bossBars[i].unitTag) == 12
-    if isDummy and DoesUnitExist(bossBars[i].unitTag) then
-        bossBars[i]:Refresh(forceReset)
-        bossBars[i]:Show()
+    local bar = bossBars[i]
+    if not bar then return end
+    local isDummy = GetUnitType(bar.unitTag) == 12
+    if isDummy and DoesUnitExist(bar.unitTag) then
+        bar:Refresh(forceReset)
+        bar:Show()
     else
-        bossBars[i]:Hide()
+        bar:Hide()
     end
 end
 

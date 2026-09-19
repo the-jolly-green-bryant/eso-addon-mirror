@@ -8,6 +8,8 @@ ZS.ChatQueue = nil
 ZS.PlayerRequests = {}
 ZS.ToastQueue = {}
 ZS.IsToastActive = false
+ZS.GroupToastQueue = {}
+ZS.IsGroupToastActive = false
 
 -- ================= ЛОКАЛИЗАЦИЯ (СЛОВАРЬ) =================
 local L = {
@@ -54,6 +56,10 @@ local L = {
     groupRequestsHeader = GetString(ZONESETS_GROUP_REQUESTS_HEADER),
     noGroupRequests = GetString(ZONESETS_NO_GROUP_REQUESTS),
     inBagTooltip = GetString(ZONESETS_IN_BAG_TOOLTIP),
+    groupToastOn = GetString(ZONESETS_GROUP_TOAST_ON),
+    groupToastOff = GetString(ZONESETS_GROUP_TOAST_OFF),
+    neededInColl = GetString(ZONESETS_NEEDED_IN_COLL),
+    groupLootedCount = GetString(ZONESETS_GROUP_LOOTED_COUNT),
 }
 
 local createdRows = {}
@@ -204,38 +210,6 @@ end
 
 -- ================= УМНЫЙ КОНВЕЙЕР ШЕПОТОВ И РАЗДАЧИ ЛУТА =================
 
-local slotNamesEN = {
-    [EQUIP_TYPE_HEAD] = "Helm", [EQUIP_TYPE_CHEST] = "Chest", [EQUIP_TYPE_LEGS] = "Legs",
-    [EQUIP_TYPE_SHOULDERS] = "Shoulders", [EQUIP_TYPE_FEET] = "Boots", [EQUIP_TYPE_HAND] = "Gloves",
-    [EQUIP_TYPE_WAIST] = "Belt", [EQUIP_TYPE_RING] = "Ring", [EQUIP_TYPE_NECK] = "Necklace",
-}
-local weaponNamesEN = {
-    [WEAPONTYPE_DAGGER] = "Dagger", [WEAPONTYPE_SWORD] = "1H Sword", [WEAPONTYPE_TWO_HANDED_SWORD] = "2H Sword",
-    [WEAPONTYPE_AXE] = "1H Axe", [WEAPONTYPE_TWO_HANDED_AXE] = "2H Axe", [WEAPONTYPE_HAMMER] = "1H Mace",
-    [WEAPONTYPE_TWO_HANDED_HAMMER] = "2H Mace", [WEAPONTYPE_BOW] = "Bow", [WEAPONTYPE_FIRE_STAFF] = "Inferno Staff",
-    [WEAPONTYPE_FROST_STAFF] = "Ice Staff", [WEAPONTYPE_LIGHTNING_STAFF] = "Lightning Staff",
-    [WEAPONTYPE_HEALING_STAFF] = "Resto Staff", [WEAPONTYPE_SHIELD] = "Shield",
-}
-
--- Преобразование ссылки в ультра-компактный английский вид [Set - Slot]
-local function FormatItemLinkToEnglish(itemLink)
-    if not itemLink or itemLink == "" then return itemLink end
-    local hasSet, setName, _, _, _, setId = GetItemLinkSetInfo(itemLink)
-    if not hasSet or not setId or setId <= 0 then return itemLink end
-
-    local rawSetName = setName or GetItemSetName(setId) or ""
-    local enSetName = string.match(rawSetName, "%((.-)%)")
-        or (RuESO and RuESO.Settings and RuESO.Settings.Data and RuESO.Settings.Data.Sets and RuESO.Settings.Data.Sets[setId])
-        or rawSetName
-
-    local equipType = GetItemLinkEquipType(itemLink)
-    local weaponType = GetItemLinkWeaponType(itemLink)
-    local enSlot = weaponNamesEN[weaponType] or slotNamesEN[equipType] or "Piece"
-
-    local compactName = string.format("%s - %s", enSetName, enSlot)
-    return string.gsub(itemLink, "|h.-|h", string.format("|h[%s]|h", compactName))
-end
-
 -- Поиск всех передаваемых дубликатов сетов в рюкзаке с группировкой (×2, ×3)
 function ZS:GetTradableDuplicatesInBag()
     local itemsMap = {}
@@ -252,8 +226,7 @@ function ZS:GetTradableDuplicatesInBag()
 
                 if hasSet and pieceId and pieceId > 0 and IsItemSetCollectionPieceUnlocked(pieceId) then
                     if not itemsMap[pieceId] then
-                        local compactLink = FormatItemLinkToEnglish(itemLink)
-                        itemsMap[pieceId] = { link = compactLink, count = 1 }
+                        itemsMap[pieceId] = { link = itemLink, count = 1 }
                         table.insert(itemsOrder, pieceId)
                     else
                         itemsMap[pieceId].count = itemsMap[pieceId].count + 1
@@ -574,30 +547,44 @@ closeBtn:SetPressedTexture("EsoUI/Art/Buttons/closebutton_down.dds")
 closeBtn:SetHandler("OnClicked", function() ZSWindow:SetHidden(true) end)
 
 local tabContainer = WINDOW_MANAGER:CreateControl("ZoneSets_TabContainer", ZSWindow, CT_CONTROL)
-tabContainer:SetDimensions(360, 30)
+tabContainer:SetDimensions(480, 30)
 tabContainer:SetAnchor(TOP, zoneLabel, BOTTOM, 0, 6)
 
 local tabZone = WINDOW_MANAGER:CreateControlFromVirtual("ZoneSets_TabZone", tabContainer, "ZO_DefaultTextButton")
 tabZone:SetText(L.tabZone)
-tabZone:SetDimensions(105, 25)
+tabZone:SetDimensions(85, 25)
 tabZone:SetAnchor(LEFT, tabContainer, LEFT, 0, 0)
 
 local tabHistory = WINDOW_MANAGER:CreateControlFromVirtual("ZoneSets_TabHistory", tabContainer, "ZO_DefaultTextButton")
 tabHistory:SetText(L.tabHistory)
-tabHistory:SetDimensions(105, 25)
-tabHistory:SetAnchor(LEFT, tabZone, RIGHT, 10, 0)
+tabHistory:SetDimensions(85, 25)
+tabHistory:SetAnchor(LEFT, tabZone, RIGHT, 4, 0)
 
 local btnAutoBind = WINDOW_MANAGER:CreateControlFromVirtual("ZoneSets_BtnAutoBind", tabContainer, "ZO_DefaultTextButton")
-btnAutoBind:SetDimensions(120, 25)
+btnAutoBind:SetDimensions(165, 25)
 btnAutoBind:SetAnchor(RIGHT, tabContainer, RIGHT, 0, 0)
 ZS.BtnAutoBind = btnAutoBind
+
+local btnGroupToast = WINDOW_MANAGER:CreateControlFromVirtual("ZoneSets_BtnGroupToast", tabContainer, "ZO_DefaultTextButton")
+btnGroupToast:SetDimensions(125, 25)
+btnGroupToast:SetAnchor(RIGHT, btnAutoBind, LEFT, -4, 0)
+ZS.BtnGroupToast = btnGroupToast
 
 function ZS:UpdateAutoBindVisuals()
     if not self.BtnAutoBind or not self.SavedVars then return end
     if self.SavedVars.autoBind then
-        self.BtnAutoBind:SetText(string.format("|c00FF00[%s]|r", L.autoBindOn or "Авто: ВКЛ"))
+        self.BtnAutoBind:SetText(string.format("|c00FF00[%s]|r", L.autoBindOn or "Auto-Bind: ON"))
     else
-        self.BtnAutoBind:SetText(string.format("|c777777[%s]|r", L.autoBindOff or "Авто: ВЫКЛ"))
+        self.BtnAutoBind:SetText(string.format("|c777777[%s]|r", L.autoBindOff or "Auto-Bind: OFF"))
+    end
+end
+
+function ZS:UpdateGroupToastVisuals()
+    if not self.BtnGroupToast or not self.SavedVars then return end
+    if self.SavedVars.groupToast then
+        self.BtnGroupToast:SetText(string.format("|c00FFFF[%s]|r", L.groupToastOn or "Группа: ВКЛ"))
+    else
+        self.BtnGroupToast:SetText(string.format("|c777777[%s]|r", L.groupToastOff or "Группа: ВЫКЛ"))
     end
 end
 
@@ -605,6 +592,14 @@ btnAutoBind:SetHandler("OnClicked", function()
     if ZS.SavedVars then
         ZS.SavedVars.autoBind = not ZS.SavedVars.autoBind
         ZS:UpdateAutoBindVisuals()
+        PlaySound(SOUNDS.DEFAULT_CLICK)
+    end
+end)
+
+btnGroupToast:SetHandler("OnClicked", function()
+    if ZS.SavedVars then
+        ZS.SavedVars.groupToast = not ZS.SavedVars.groupToast
+        ZS:UpdateGroupToastVisuals()
         PlaySound(SOUNDS.DEFAULT_CLICK)
     end
 end)
@@ -631,9 +626,11 @@ tabHistory:SetHandler("OnClicked", function()
     ZS:ShowWindow()
 end)
 
--- ================= ВСПЛЫВАЮЩЕЕ ОКНО (TOAST HUD) =================
+-- ================= ВСПЛЫВАЮЩИЕ ОКНА (TOAST HUD) =================
+
+-- 1. ЗОЛОТОЙ ТОСТ (Твой лут / Привязка)
 local ZSToast = WINDOW_MANAGER:CreateTopLevelWindow("ZoneSets_Toast")
-ZSToast:SetDimensions(360, 60)
+ZSToast:SetDimensions(430, 60)
 ZSToast:SetAnchor(TOP, GuiRoot, TOP, 0, 150)
 ZSToast:SetHidden(true)
 ZSToast:SetClampedToScreen(true)
@@ -654,16 +651,60 @@ toastIcon:SetTexture("/esoui/art/icons/icon_missing.dds")
 local toastTitle = WINDOW_MANAGER:CreateControl(nil, ZSToast, CT_LABEL)
 toastTitle:SetFont("ZoFontWinH4")
 toastTitle:SetAnchor(TOPLEFT, toastIcon, TOPRIGHT, 10, 2)
+toastTitle:SetAnchor(TOPRIGHT, ZSToast, TOPRIGHT, -10, 2)
 toastTitle:SetColor(1, 1, 1, 1)
+toastTitle:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
 
 local toastProgress = WINDOW_MANAGER:CreateControl(nil, ZSToast, CT_LABEL)
 toastProgress:SetFont("ZoFontGameSmall")
 toastProgress:SetAnchor(BOTTOMLEFT, toastIcon, BOTTOMRIGHT, 10, -2)
+toastProgress:SetAnchor(BOTTOMRIGHT, ZSToast, BOTTOMRIGHT, -10, -2)
 toastProgress:SetColor(0.9, 0.7, 0.2, 1)
+toastProgress:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
 
 ZSToast:SetHandler("OnMoveStop", function()
     if ZS.SavedVars then
         ZS.SavedVars.toastLeft, ZS.SavedVars.toastTop = ZSToast:GetLeft(), ZSToast:GetTop()
+    end
+end)
+
+-- 2. СИНИЙ ТОСТ (Лут группы)
+local ZSGroupToast = WINDOW_MANAGER:CreateTopLevelWindow("ZoneSets_GroupToast")
+ZSGroupToast:SetDimensions(430, 60)
+ZSGroupToast:SetAnchor(TOP, GuiRoot, TOP, 0, 220) -- по умолчанию чуть ниже золотого
+ZSGroupToast:SetHidden(true)
+ZSGroupToast:SetClampedToScreen(true)
+ZSGroupToast:SetMovable(true)
+ZSGroupToast:SetMouseEnabled(true)
+
+local gToastBg = WINDOW_MANAGER:CreateControl(nil, ZSGroupToast, CT_BACKDROP)
+gToastBg:SetAnchorFill()
+gToastBg:SetCenterColor(0, 0, 0, 0.85)
+gToastBg:SetEdgeColor(0.2, 0.7, 1.0, 1)
+gToastBg:SetEdgeTexture(nil, 1, 1, 1, 0)
+
+local gToastIcon = WINDOW_MANAGER:CreateControl(nil, ZSGroupToast, CT_TEXTURE)
+gToastIcon:SetDimensions(44, 44)
+gToastIcon:SetAnchor(LEFT, ZSGroupToast, LEFT, 8, 0)
+gToastIcon:SetTexture("/esoui/art/icons/icon_missing.dds")
+
+local gToastTitle = WINDOW_MANAGER:CreateControl(nil, ZSGroupToast, CT_LABEL)
+gToastTitle:SetFont("ZoFontWinH4")
+gToastTitle:SetAnchor(TOPLEFT, gToastIcon, TOPRIGHT, 10, 2)
+gToastTitle:SetAnchor(TOPRIGHT, ZSGroupToast, TOPRIGHT, -10, 2)
+gToastTitle:SetColor(1, 1, 1, 1)
+gToastTitle:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
+
+local gToastProgress = WINDOW_MANAGER:CreateControl(nil, ZSGroupToast, CT_LABEL)
+gToastProgress:SetFont("ZoFontGameSmall")
+gToastProgress:SetAnchor(BOTTOMLEFT, gToastIcon, BOTTOMRIGHT, 10, -2)
+gToastProgress:SetAnchor(BOTTOMRIGHT, ZSGroupToast, BOTTOMRIGHT, -10, -2)
+gToastProgress:SetColor(0.3, 0.9, 1.0, 1)
+gToastProgress:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
+
+ZSGroupToast:SetHandler("OnMoveStop", function()
+    if ZS.SavedVars then
+        ZS.SavedVars.groupToastLeft, ZS.SavedVars.groupToastTop = ZSGroupToast:GetLeft(), ZSGroupToast:GetTop()
     end
 end)
 
@@ -1043,248 +1084,6 @@ function ZS:ShowWindow()
             end
         end
 
-        -- === СЕКЦИЯ: ПРОСЬБЫ ГРУППЫ (НУЖНО ИМ) ===
-        local function CheckTradableInBag(targetPieceId)
-            if not targetPieceId or targetPieceId <= 0 then return false end
-            local bagSize = GetBagSize(BAG_BACKPACK)
-            for slotIndex = 0, bagSize - 1 do
-                local itemLink = GetItemLink(BAG_BACKPACK, slotIndex)
-                if itemLink and itemLink ~= "" then
-                    local isTradable = (not IsItemBound(BAG_BACKPACK, slotIndex)) or (IsItemBoPAndTradeable and IsItemBoPAndTradeable(BAG_BACKPACK, slotIndex))
-                    if isTradable then
-                        local pId = GetItemLinkItemId(itemLink)
-                        if pId == targetPieceId then
-                            return true
-                        end
-                    end
-                end
-            end
-            return false
-        end
-
-        local reqHeader = WINDOW_MANAGER:CreateControl(nil, scrollChild, CT_CONTROL)
-        reqHeader:SetWidth(blockWidth - 10)
-        reqHeader:SetHeight(28)
-
-        local reqLabel = WINDOW_MANAGER:CreateControl(nil, reqHeader, CT_LABEL)
-        reqLabel:SetFont("ZoFontWinH3")
-        reqLabel:SetAnchor(TOPLEFT, reqHeader, TOPLEFT, 4, 0)
-        reqLabel:SetText(L.groupRequestsHeader or "|c39DB92[Просьбы группы — нужно им]|r")
-
-        table.insert(rows, reqHeader)
-        table.insert(createdRows, reqHeader)
-
-        local hasAnyRequests = false
-        local now = GetTimeStamp()
-
-        if ZS.PlayerRequests then
-            for pName, pData in pairs(ZS.PlayerRequests) do
-                if pData.pieces then
-                    for pieceId, ts in pairs(pData.pieces) do
-                        if (now - ts) <= 7200 then
-                            hasAnyRequests = true
-
-                            local itemLink = GetItemSetCollectionPieceItemLink and GetItemSetCollectionPieceItemLink(pieceId, LINK_STYLE_BRACKETS)
-                            local hasSet, setName = GetItemLinkSetInfo(itemLink or "")
-                            local pItemName = (itemLink and itemLink ~= "") and zo_strformat("<<1>>", GetItemLinkName(itemLink)) or string.format("Item #%d", pieceId)
-                            local icon = (itemLink and itemLink ~= "") and GetItemLinkIcon(itemLink) or "/esoui/art/icons/icon_missing.dds"
-
-                            local rRow = WINDOW_MANAGER:CreateControl(nil, scrollChild, CT_BUTTON)
-                            rRow:SetWidth(blockWidth - 10)
-                            rRow:SetHeight(44)
-
-                            local rBg = WINDOW_MANAGER:CreateControl(nil, rRow, CT_BACKDROP)
-                            rBg:SetAnchorFill()
-                            rBg:SetCenterColor(0, 0, 0, 0.5)
-                            rBg:SetEdgeColor(0.2, 0.5, 0.3, 0.5)
-                            rBg:SetEdgeTexture(nil, 1, 1, 1, 0)
-                            rBg:SetMouseEnabled(false)
-
-                            local rIcon = WINDOW_MANAGER:CreateControl(nil, rRow, CT_TEXTURE)
-                            rIcon:SetDimensions(34, 34)
-                            rIcon:SetAnchor(LEFT, rRow, LEFT, 6, 0)
-                            rIcon:SetTexture(icon)
-                            rIcon:SetMouseEnabled(false)
-
-                            local hasItem = CheckTradableInBag(pieceId)
-                            local timeStr = ZS:FormatTimeElapsed(ts)
-
-                            local rName = WINDOW_MANAGER:CreateControl(nil, rRow, CT_LABEL)
-                            rName:SetFont("ZoFontWinH4")
-                            rName:SetAnchor(TOPLEFT, rIcon, TOPRIGHT, 8, 2)
-                            rName:SetText(string.format("|c00FFFF%s|r: %s", pName, pItemName))
-                            rName:SetMouseEnabled(false)
-
-                            local rSub = WINDOW_MANAGER:CreateControl(nil, rRow, CT_LABEL)
-                            rSub:SetFont("ZoFontGameSmall")
-                            rSub:SetAnchor(BOTTOMLEFT, rIcon, BOTTOMRIGHT, 8, -2)
-                            rSub:SetText(string.format("|cFFD700%s|r  |cAAAAAA(%s)|r", zo_strformat("<<1>>", setName or ""), timeStr))
-                            rSub:SetMouseEnabled(false)
-
-                            if hasItem then
-                                local checkMark = WINDOW_MANAGER:CreateControl(nil, rRow, CT_LABEL)
-                                checkMark:SetFont("ZoFontGameBold")
-                                checkMark:SetAnchor(RIGHT, rRow, RIGHT, -10, 0)
-                                checkMark:SetText("|t20:20:EsoUI/Art/Cadwell/check.dds|t")
-                                checkMark:SetMouseEnabled(true)
-                                checkMark:SetHandler("OnMouseEnter", function()
-                                    InitializeTooltip(InformationTooltip, checkMark, TOP, 0, -5)
-                                    SetTooltipText(InformationTooltip, L.inBagTooltip or "У вас в рюкзаке есть подходящий предмет для передачи!")
-                                end)
-                                checkMark:SetHandler("OnMouseExit", function()
-                                    ClearTooltip(InformationTooltip)
-                                end)
-                            end
-
-                            rRow:SetHandler("OnMouseEnter", function()
-                                rBg:SetCenterColor(0.2, 0.4, 0.8, 0.3)
-                                if itemLink and itemLink ~= "" then
-                                    local rCenterX = rRow:GetCenter()
-                                    local sCenterX = GuiRoot:GetWidth() / 2
-                                    if rCenterX and sCenterX and rCenterX < sCenterX then
-                                        InitializeTooltip(ItemTooltip, rRow, LEFT, 10, 0, RIGHT)
-                                    else
-                                        InitializeTooltip(ItemTooltip, rRow, RIGHT, -10, 0, LEFT)
-                                    end
-                                    ItemTooltip:SetLink(itemLink)
-                                end
-                            end)
-
-                            rRow:SetHandler("OnMouseExit", function()
-                                rBg:SetCenterColor(0, 0, 0, 0.5)
-                                ClearTooltip(ItemTooltip)
-                            end)
-
-                            rRow:SetHandler("OnMouseUp", function(_, button, upInside)
-                                if not upInside then return end
-                                if button == MOUSE_BUTTON_INDEX_LEFT and itemLink and itemLink ~= "" then
-                                    ZO_LinkHandler_InsertLink(itemLink)
-                                elseif button == MOUSE_BUTTON_INDEX_RIGHT and setName and setName ~= "" then
-                                    ZS:ShowItemSetInJournal(setName)
-                                end
-                            end)
-
-                            table.insert(rows, rRow)
-                            table.insert(createdRows, rRow)
-                        end
-                    end
-                end
-            end
-        end
-
-        if not hasAnyRequests then
-            local emptyRow = WINDOW_MANAGER:CreateControl(nil, scrollChild, CT_CONTROL)
-            emptyRow:SetWidth(blockWidth - 10)
-            emptyRow:SetHeight(24)
-
-            local emptyLbl = WINDOW_MANAGER:CreateControl(nil, emptyRow, CT_LABEL)
-            emptyLbl:SetFont("ZoFontGame")
-            emptyLbl:SetAnchor(TOPLEFT, emptyRow, TOPLEFT, 12, 0)
-            emptyLbl:SetColor(0.6, 0.6, 0.6, 1)
-            emptyLbl:SetText(L.noGroupRequests or "Никто в группе пока не просил сетовых вещей")
-
-            table.insert(rows, emptyRow)
-            table.insert(createdRows, emptyRow)
-        end
-
-        -- 2. СЕКЦИИ: МОЙ ТЕКУЩИЙ И ПРОШЛЫЙ ЗАХОД
-        local function RenderSessionBlock(titleText, itemsList, emptyText)
-            local secHeader = WINDOW_MANAGER:CreateControl(nil, scrollChild, CT_CONTROL)
-            secHeader:SetWidth(blockWidth - 10)
-            secHeader:SetHeight(28)
-
-            local secLabel = WINDOW_MANAGER:CreateControl(nil, secHeader, CT_LABEL)
-            secLabel:SetFont("ZoFontWinH3")
-            secLabel:SetAnchor(TOPLEFT, secHeader, TOPLEFT, 4, 0)
-            secLabel:SetText(titleText)
-
-            table.insert(rows, secHeader)
-            table.insert(createdRows, secHeader)
-
-            if #itemsList == 0 then
-                local emptyRow = WINDOW_MANAGER:CreateControl(nil, scrollChild, CT_CONTROL)
-                emptyRow:SetWidth(blockWidth - 10)
-                emptyRow:SetHeight(24)
-
-                local emptyLbl = WINDOW_MANAGER:CreateControl(nil, emptyRow, CT_LABEL)
-                emptyLbl:SetFont("ZoFontGame")
-                emptyLbl:SetAnchor(TOPLEFT, emptyRow, TOPLEFT, 12, 0)
-                emptyLbl:SetColor(0.6, 0.6, 0.6, 1)
-                emptyLbl:SetText(emptyText)
-
-                table.insert(rows, emptyRow)
-                table.insert(createdRows, emptyRow)
-            else
-                for _, item in ipairs(itemsList) do
-                    local hRow = WINDOW_MANAGER:CreateControl(nil, scrollChild, CT_BUTTON)
-                    hRow:SetWidth(blockWidth - 10)
-                    hRow:SetHeight(48)
-
-                    local hBg = WINDOW_MANAGER:CreateControl(nil, hRow, CT_BACKDROP)
-                    hBg:SetAnchorFill()
-                    hBg:SetCenterColor(0, 0, 0, 0.5)
-                    hBg:SetEdgeColor(0.4, 0.4, 0.4, 0.5)
-                    hBg:SetEdgeTexture(nil, 1, 1, 1, 0)
-                    hBg:SetMouseEnabled(false)
-
-                    local hIcon = WINDOW_MANAGER:CreateControl(nil, hRow, CT_TEXTURE)
-                    hIcon:SetDimensions(36, 36)
-                    hIcon:SetAnchor(LEFT, hRow, LEFT, 6, 0)
-                    hIcon:SetTexture(item.icon)
-                    hIcon:SetMouseEnabled(false)
-
-                    local hName = WINDOW_MANAGER:CreateControl(nil, hRow, CT_LABEL)
-                    hName:SetFont("ZoFontWinH4")
-                    hName:SetAnchor(TOPLEFT, hIcon, TOPRIGHT, 8, 2)
-                    hName:SetText(item.name)
-                    hName:SetColor(1, 1, 1, 1)
-                    hName:SetMouseEnabled(false)
-
-                    local timeStr = ZS:FormatTimeElapsed(item.timestamp)
-                    local hSub = WINDOW_MANAGER:CreateControl(nil, hRow, CT_LABEL)
-                    hSub:SetFont("ZoFontGameSmall")
-                    hSub:SetAnchor(BOTTOMLEFT, hIcon, BOTTOMRIGHT, 8, -2)
-                    hSub:SetText(string.format("|cFFD700%s|r (%d/%d)  |cAAAAAA(%s)|r", item.setName, item.done, item.total, timeStr))
-                    hSub:SetMouseEnabled(false)
-
-                    hRow:SetHandler("OnMouseEnter", function()
-                        hBg:SetCenterColor(0.2, 0.4, 0.8, 0.3)
-                        local rCenterX = hRow:GetCenter()
-                        local sCenterX = GuiRoot:GetWidth() / 2
-                        if rCenterX and sCenterX and rCenterX < sCenterX then
-                            InitializeTooltip(ItemTooltip, hRow, LEFT, 10, 0, RIGHT)
-                        else
-                            InitializeTooltip(ItemTooltip, hRow, RIGHT, -10, 0, LEFT)
-                        end
-                        if item.itemLink and item.itemLink ~= "" then
-                            ItemTooltip:SetLink(item.itemLink)
-                        end
-                    end)
-
-                    hRow:SetHandler("OnMouseExit", function()
-                        hBg:SetCenterColor(0, 0, 0, 0.5)
-                        ClearTooltip(ItemTooltip)
-                    end)
-
-                    hRow:SetHandler("OnMouseUp", function(_, button, upInside)
-                        if not upInside then return end
-                        if button == MOUSE_BUTTON_INDEX_LEFT then
-                            if item.itemLink and item.itemLink ~= "" then
-                                ZO_LinkHandler_InsertLink(item.itemLink)
-                            end
-                        elseif button == MOUSE_BUTTON_INDEX_RIGHT then
-                            ZS:ShowItemSetInJournal(item.setName)
-                        end
-                    end)
-
-                    table.insert(rows, hRow)
-                    table.insert(createdRows, hRow)
-                end
-            end
-        end
-
-        RenderSessionBlock(L.currentSession, historyData or {}, L.noCurrentItems)
-
     -- === ВКЛАДКА ЗОНЫ ===
     else
         local sets = self:GetZoneSets(zoneId, zoneName)
@@ -1497,6 +1296,7 @@ end
 
 -- ================= ПОКАЗ ТОСТОВ И ОБНОВЛЕНИЕ =================
 
+-- --- 1. ЛОГИКА ЗОЛОТОГО ТОСТА (СВОЙ ЛУТ) ---
 function ZS:ShowTestToast()
     EVENT_MANAGER:UnregisterForUpdate("ZS_Toast_Hide_Timer")
     toastIcon:SetTexture("/esoui/art/icons/icon_missing.dds")
@@ -1505,7 +1305,6 @@ function ZS:ShowTestToast()
     ZSToast:SetHidden(false)
 end
 
--- Обработка очереди всплывающих тостов
 function ZS:ProcessToastQueue()
     if self.IsToastActive then return end
     if not self.ToastQueue or #self.ToastQueue == 0 then
@@ -1516,18 +1315,17 @@ function ZS:ProcessToastQueue()
     self.IsToastActive = true
     local item = table.remove(self.ToastQueue, 1)
 
-    toastIcon:SetTexture(item.icon)
-    toastTitle:SetText(item.name)
+    toastIcon:SetTexture(item.icon or "/esoui/art/icons/icon_missing.dds")
+    toastTitle:SetText(item.name or "")
     
-    if item.total > 0 then
-        toastProgress:SetText(string.format(L.toastProgressFormat, item.setName, item.done, item.total))
+    if item.total and item.total > 0 then
+        toastProgress:SetText(string.format(L.toastProgressFormat or "%s (%d/%d)", item.setName, item.done, item.total))
     else
-        toastProgress:SetText(L.addedToColl)
+        toastProgress:SetText(L.addedToColl or "Добавлено в коллекцию")
     end
 
     ZSToast:SetHidden(false)
 
-    -- Если в очереди ещё кто-то ждет, показываем чуть бодрее (2.2 сек), если последний — полное время (4 сек)
     local duration = (#self.ToastQueue > 0) and 2200 or (self.SavedVars.toastDuration or 4000)
 
     local timerName = "ZS_Toast_Hide_Timer"
@@ -1539,7 +1337,6 @@ function ZS:ProcessToastQueue()
     end)
 end
 
--- Добавление нового предмета в очередь тостов напрямую по ссылке
 function ZS:ShowToastNotificationForItem(itemLink, setId)
     if not self.SavedVars or self.SavedVars.showToast == false or not itemLink then return end
 
@@ -1553,7 +1350,6 @@ function ZS:ShowToastNotificationForItem(itemLink, setId)
         if itemSetData then
             done = itemSetData:GetNumUnlockedPieces()
             total = itemSetData:GetNumPieces()
-            -- Если вещь еще не успела зарегистрироваться в базе, визуально прибавляем 1
             done = math.min(done + 1, total)
         end
     end
@@ -1567,6 +1363,114 @@ function ZS:ShowToastNotificationForItem(itemLink, setId)
     })
 
     self:ProcessToastQueue()
+end
+
+-- --- 2. ЛОГИКА СИНЕГО ТОСТА (ЛУТ ГРУППЫ) ---
+function ZS:ShowTestGroupToast()
+    EVENT_MANAGER:UnregisterForUpdate("ZS_GroupToast_Hide_Timer")
+    gToastIcon:SetTexture("/esoui/art/icons/icon_missing.dds")
+    gToastTitle:SetText(L.testTitle)
+    gToastProgress:SetText(L.dragMe)
+    ZSGroupToast:SetHidden(false)
+end
+
+function ZS:ProcessGroupToastQueue()
+    if self.IsGroupToastActive then return end
+    if not self.GroupToastQueue or #self.GroupToastQueue == 0 then
+        ZSGroupToast:SetHidden(true)
+        return
+    end
+
+    self.IsGroupToastActive = true
+    local item = table.remove(self.GroupToastQueue, 1)
+
+    gToastIcon:SetTexture(item.icon or "/esoui/art/icons/icon_missing.dds")
+    gToastTitle:SetText(item.name or "")
+    gToastProgress:SetText(item.subtitle or (L.neededInColl or "Нужно в коллекцию"))
+
+    ZSGroupToast:SetHidden(false)
+
+    local queueLen = #self.GroupToastQueue
+    local duration
+    if queueLen > 3 then
+        duration = 1000 -- 1 сек при завале
+    elseif queueLen > 0 then
+        duration = 1500 -- 1.5 сек при небольшой очереди
+    else
+        duration = 2200 -- одиночный тост группы
+    end
+
+    local timerName = "ZS_GroupToast_Hide_Timer"
+    EVENT_MANAGER:UnregisterForUpdate(timerName)
+    EVENT_MANAGER:RegisterForUpdate(timerName, duration, function()
+        EVENT_MANAGER:UnregisterForUpdate(timerName)
+        ZS.IsGroupToastActive = false
+        ZS:ProcessGroupToastQueue()
+    end)
+end
+
+ZS.PendingGroupToasts = {}
+
+function ZS:FlushGroupToastBuffer()
+    if not self.PendingGroupToasts or #self.PendingGroupToasts == 0 then return end
+
+    local totalPending = #self.PendingGroupToasts
+
+    -- 1. Единичные предметы (до 4 шт.)
+    if totalPending <= 4 then
+        for _, item in ipairs(self.PendingGroupToasts) do
+            table.insert(self.GroupToastQueue, {
+                icon = item.icon,
+                name = string.format("|c00FFFF%s|r: %s", item.player, item.name),
+                subtitle = string.format("|cFFD700%s|r  |c00FFFF• %s|r", item.setName, L.neededInColl or "Нужно в коллекцию"),
+            })
+        end
+
+    -- 2. Масс-лут триала (5+ шт.) — группируем по игрокам
+    else
+        local playersMap = {}
+        local playersOrder = {}
+
+        for _, item in ipairs(self.PendingGroupToasts) do
+            if not playersMap[item.player] then
+                playersMap[item.player] = { count = 0, lastIcon = item.icon }
+                table.insert(playersOrder, item.player)
+            end
+            playersMap[item.player].count = playersMap[item.player].count + 1
+        end
+
+        for _, pName in ipairs(playersOrder) do
+            local pData = playersMap[pName]
+            local countText = string.format(L.groupLootedCount or "Выбил нужных вещей: %d шт.", pData.count)
+            table.insert(self.GroupToastQueue, {
+                icon = pData.lastIcon,
+                name = string.format("|c00FFFF%s|r", pName),
+                subtitle = string.format("|c00FFFF%s|r", countText),
+            })
+        end
+    end
+
+    self.PendingGroupToasts = {}
+    self:ProcessGroupToastQueue()
+end
+
+function ZS:QueueGroupLootToast(player, itemName, setName, icon)
+    if not self.SavedVars or not self.SavedVars.groupToast or self.SavedVars.showToast == false then
+        return
+    end
+
+    table.insert(self.PendingGroupToasts, {
+        player = player,
+        name = itemName,
+        setName = setName,
+        icon = icon,
+    })
+
+    EVENT_MANAGER:UnregisterForUpdate("ZS_Group_Loot_Buffer")
+    EVENT_MANAGER:RegisterForUpdate("ZS_Group_Loot_Buffer", 350, function()
+        EVENT_MANAGER:UnregisterForUpdate("ZS_Group_Loot_Buffer")
+        ZS:FlushGroupToastBuffer()
+    end)
 end
 
 -- Просто обновляем окно аддона, если оно открыто в момент привязки
@@ -1681,6 +1585,9 @@ local function OnLootReceived(eventCode, receivedBy, itemName, quantity, itemSou
         itemLink = itemName,
         timestamp = GetTimeStamp(),
     })
+
+    -- Отправляем в синий тост уведомлений
+    ZS:QueueGroupLootToast(receiver, pName, zo_strformat("<<1>>", setName), icon)
 
     if not ZSWindow:IsHidden() and ZS.CurrentTab == "history" then
         ZS:ShowWindow()
@@ -1958,6 +1865,7 @@ local function InitializeSavedVars()
         toastDuration = 4000,
         showToast = true,
         autoBind = false,
+        groupToast = false,
         ZoneHistory = {},
         ZoneGroupLoot = {},
     }, GetWorldName())
@@ -1977,6 +1885,16 @@ local function InitializeSavedVars()
         else
             ZSToast:ClearAnchors()
             ZSToast:SetAnchor(TOP, GuiRoot, TOP, 0, 150)
+        end
+    end
+    
+    if ZSGroupToast then
+        if ZS.SavedVars.groupToastLeft and ZS.SavedVars.groupToastTop then
+            ZSGroupToast:ClearAnchors()
+            ZSGroupToast:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, ZS.SavedVars.groupToastLeft, ZS.SavedVars.groupToastTop)
+        else
+            ZSGroupToast:ClearAnchors()
+            ZSGroupToast:SetAnchor(TOP, GuiRoot, TOP, 0, 220)
         end
     end
 
@@ -2033,14 +1951,56 @@ local function RegisterSlashCommands()
 
         local cmd = args[1] or ""
 
-        if cmd == "test" then
+        -- 1. Настройка и перетаскивание ЗОЛОТОГО тоста (своего)
+        if cmd == "test" or cmd == "testgold" then
             if ZSToast:IsHidden() then
                 ZS:ShowTestToast()
-                d(L.testShown)
+                d("|cFFD700[ZoneSets]|r Золотой тост открыт для настройки. Перетащите мышкой!")
             else
                 ZSToast:SetHidden(true)
-                d(L.testSaved)
+                d("|cFFD700[ZoneSets]|r Позиция золотого тоста сохранена.")
             end
+
+        -- 2. Настройка и перетаскивание СИНЕГО тоста (группы)
+        elseif cmd == "testblue" or cmd == "testgroup" then
+            if ZSGroupToast:IsHidden() then
+                ZS:ShowTestGroupToast()
+                d("|c00FFFF[ZoneSets]|r Синий тост открыт для настройки. Перетащите мышкой!")
+            else
+                ZSGroupToast:SetHidden(true)
+                d("|c00FFFF[ZoneSets]|r Позиция синего тоста сохранена.")
+            end
+
+        -- 3. Тест триального масс-лута на синем окне (залп из 8 предметов)
+        elseif cmd == "testraid" or cmd == "testtrial" then
+            ZS.SavedVars.groupToast = true
+            ZS:UpdateGroupToastVisuals()
+            ZS:QueueGroupLootToast("Vasya_Pupkin", "Посох огня", "Скорбь", "/esoui/art/icons/gear_breton_staff_fire_a.dds")
+            ZS:QueueGroupLootToast("Vasya_Pupkin", "Шлем", "Скорбь", "/esoui/art/icons/gear_nord_heavy_head_a.dds")
+            ZS:QueueGroupLootToast("Elena_Healer", "Кольцо", "Олорима", "/esoui/art/icons/gear_jewelry_ring_1.dds")
+            ZS:QueueGroupLootToast("Elena_Healer", "Ожерелье", "Олорима", "/esoui/art/icons/gear_jewelry_necklace_1.dds")
+            ZS:QueueGroupLootToast("Elena_Healer", "Сапоги", "Олорима", "/esoui/art/icons/gear_altmer_light_feet_a.dds")
+            ZS:QueueGroupLootToast("Tank_Ivan", "Щит", "Йолнакрина", "/esoui/art/icons/gear_nord_shield_a.dds")
+            ZS:QueueGroupLootToast("Tank_Ivan", "Меч", "Йолнакрина", "/esoui/art/icons/gear_nord_1hsword_a.dds")
+            ZS:QueueGroupLootToast("Super_DD", "Кинжал", "Суль-Зан", "/esoui/art/icons/gear_argonian_dagger_a.dds")
+            d("|c00FFFF[ZoneSets Test]|r Залп из 8 предметов запущен в синее окно!")
+
+        -- Быстрое переключение групповых тостов
+        elseif cmd == "grouptoast" then
+            local arg = args[2] or ""
+            if arg == "off" or arg == "0" then
+                ZS.SavedVars.groupToast = false
+                ZS:UpdateGroupToastVisuals()
+                d("|c777777[ZoneSets]|r Групповые тосты: |cFF0000ВЫКЛЮЧЕНЫ|r")
+            elseif arg == "on" or arg == "1" then
+                ZS.SavedVars.groupToast = true
+                ZS:UpdateGroupToastVisuals()
+                d("|c00FFFF[ZoneSets]|r Групповые тосты: |c00FF00ВКЛЮЧЕНЫ|r")
+            else
+                local status = ZS.SavedVars.groupToast and "|c00FF00ВКЛЮЧЕНЫ|r" or "|cFF0000ВЫКЛЮЧЕНЫ|r"
+                d(string.format("|c00FFFF[ZoneSets]|r Статус групповых тостов: %s (используйте: /zs grouptoast on/off)", status))
+            end
+
 
         elseif cmd == "toast" then
             local arg = args[2] or ""
@@ -2063,7 +2023,7 @@ local function RegisterSlashCommands()
                 end
             end
 
-        -- Тестовая имитация раздачи НАСТОЯЩИХ сетов текущей зоны на английском
+        -- Тестовая имитация раздачи НАСТОЯЩИХ сетов текущей зоны
         elseif cmd == "testshare" or cmd == "sharetest" then
             local zoneId, zoneName = ZS:GetCurrentZoneInfo()
             local zoneSets = ZS:GetZoneSets(zoneId, zoneName)
@@ -2073,52 +2033,24 @@ local function RegisterSlashCommands()
                 return
             end
 
-            -- Слоты на английском для максимальной компактности
-            local slotNamesEN = {
-                [EQUIP_TYPE_HEAD] = "Helm", [EQUIP_TYPE_CHEST] = "Chest", [EQUIP_TYPE_LEGS] = "Legs",
-                [EQUIP_TYPE_SHOULDERS] = "Shoulders", [EQUIP_TYPE_FEET] = "Boots", [EQUIP_TYPE_HAND] = "Gloves",
-                [EQUIP_TYPE_WAIST] = "Belt", [EQUIP_TYPE_RING] = "Ring", [EQUIP_TYPE_NECK] = "Necklace",
-            }
-            local weaponNamesEN = {
-                [WEAPONTYPE_DAGGER] = "Dagger", [WEAPONTYPE_SWORD] = "1H Sword", [WEAPONTYPE_TWO_HANDED_SWORD] = "2H Sword",
-                [WEAPONTYPE_AXE] = "1H Axe", [WEAPONTYPE_TWO_HANDED_AXE] = "2H Axe", [WEAPONTYPE_HAMMER] = "1H Mace",
-                [WEAPONTYPE_TWO_HANDED_HAMMER] = "2H Mace", [WEAPONTYPE_BOW] = "Bow", [WEAPONTYPE_FIRE_STAFF] = "Inferno Staff",
-                [WEAPONTYPE_FROST_STAFF] = "Ice Staff", [WEAPONTYPE_LIGHTNING_STAFF] = "Lightning Staff",
-                [WEAPONTYPE_HEALING_STAFF] = "Resto Staff", [WEAPONTYPE_SHIELD] = "Shield",
-            }
-
             local realLinks = {}
             local countSimulator = { 2, 1, 3, 1, 2, 1, 1, 2, 1, 2, 1, 1 }
             local itemIndex = 1
 
             for _, setInfo in ipairs(zoneSets) do
-                local rawSetName = setInfo.rawName or GetItemSetName(setInfo.id) or ""
-                -- Достаем чистое английское название из скобок (Viper's Sting), если RuESO показывает оба языка
-                local enSetName = string.match(rawSetName, "%((.-)%)") 
-                    or (RuESO and RuESO.Settings and RuESO.Settings.Data and RuESO.Settings.Data.Sets and RuESO.Settings.Data.Sets[setInfo.id])
-                    or rawSetName
-
                 if setInfo.itemSetData and setInfo.itemSetData.PieceIterator then
                     local pieceCount = 0
                     for _, pieceData in setInfo.itemSetData:PieceIterator() do
-                        if pieceData and pieceCount < 3 then -- берем по 2-3 вещи из каждого сета зоны
+                        if pieceData and pieceCount < 3 then
                             local pieceId = pieceData:GetId()
                             local realLink = GetItemSetCollectionPieceItemLink(pieceId, LINK_STYLE_BRACKETS)
 
                             if realLink and realLink ~= "" then
-                                local equipType = GetItemLinkEquipType(realLink)
-                                local weaponType = GetItemLinkWeaponType(realLink)
-                                local enSlot = weaponNamesEN[weaponType] or slotNamesEN[equipType] or "Piece"
-
-                                -- Делаем красивую компактную английскую ссылку
-                                local compactName = string.format("%s - %s", enSetName, enSlot)
-                                local formattedLink = string.gsub(realLink, "|h.-|h", string.format("|h[%s]|h", compactName))
-
                                 local simulatedCount = countSimulator[itemIndex] or 1
                                 if simulatedCount > 1 then
-                                    table.insert(realLinks, string.format("%s×%d", formattedLink, simulatedCount))
+                                    table.insert(realLinks, string.format("%s×%d", realLink, simulatedCount))
                                 else
-                                    table.insert(realLinks, formattedLink)
+                                    table.insert(realLinks, realLink)
                                 end
 
                                 pieceCount = pieceCount + 1
@@ -2136,7 +2068,7 @@ local function RegisterSlashCommands()
                 currentIdx = 1,
             }
             ZS:LoadNextChatChunk()
-            d(string.format("|c00FF00[ZoneSets Test]|r Сгенерировано %d НАСТОЯЩИХ сетовых предметов на английском (всего %d строк в чате). Нажмите Enter!", #realLinks, #messages))
+            d(string.format("|c00FF00[ZoneSets Test]|r Сгенерировано %d сетовых предметов (всего %d сообщений в чате). Нажмите Enter!", #realLinks, #messages))
         -- Тестовая имитация запроса вещи по ссылке
         elseif cmd == "fake" or cmd == "req" or cmd == "testreq" then
             local rawQuery = string.match(extra, "^%S+%s+(.*)$") or ""
@@ -2187,6 +2119,7 @@ local function OnAddOnLoaded(event, addonName)
     ZS.CurrentTab = "zone"
     ZS:UpdateTabVisuals()
     ZS:UpdateAutoBindVisuals()
+    ZS:UpdateGroupToastVisuals()
     
     
     

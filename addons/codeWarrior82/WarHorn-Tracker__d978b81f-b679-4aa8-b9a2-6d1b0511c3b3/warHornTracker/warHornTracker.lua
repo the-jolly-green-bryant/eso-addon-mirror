@@ -10,6 +10,7 @@ warHornTracker = {}
 
 warHornTracker.defaults = {
     trackWh = true,
+	playSound = true,
     yAxisText = 700,
     xAxisText = 780,
 }
@@ -109,6 +110,7 @@ local function effectReport( _,  changeType,  _,  _,  unitTag, beginTime, endTim
         timeRemaining = endTime - GetFrameTimeSeconds()
         abilityTmp = abilityId
         warhornActive()
+		if playSound then PlaySound(SOUNDS.DUEL_START) end
 	end
 
     --double war horn		
@@ -249,6 +251,18 @@ local function createOptions()
                 setAnchorIcon(warHornTracker.savedVariables.xAxisText, warHornTracker.savedVariables.yAxisText)
             end,
             default = warHornTracker.defaults.yAxisText,
+        },
+		{
+            type = "checkbox",
+            name = "Notification Sound",
+            tooltip = "Plays a sound when you are notified that War Horn is active.",
+            getFunc = function()
+                return warHornTracker.savedVariables.playSound
+            end,
+            setFunc = function(value)
+                warHornTracker.savedVariables.playSound = value
+            end,
+            default = warHornTracker.defaults.playSound,
         },
         {
             type = "divider",

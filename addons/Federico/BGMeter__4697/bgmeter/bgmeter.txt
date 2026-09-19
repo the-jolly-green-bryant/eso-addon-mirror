@@ -1,8 +1,8 @@
 ## Title: BGmeter
 ## Description: Post-battle Battleground analytics -- full scoreboard (every player's dmg/heal/K/D/A/medals) plus your AP/XP/veterancy haul, with match history.
 ## Author: Federico Vergelli
-## Version: 0.2.0
-## AddOnVersion: 9
+## Version: 0.4.0
+## AddOnVersion: 11
 ## APIVersion: 101051 101050
 ## SavedVariables: BGMeterSavedVars
 
@@ -35,6 +35,8 @@ core/capture.lua
 core/history.lua
 core/faces.lua
 core/ledger.lua
+core/storage.lua
+core/geo.lua
 core/standing.lua
 core/awards.lua
 core/records.lua
@@ -60,10 +62,16 @@ ui/win_battle.lua
 ui/win_chart.lua
 ui/win_haul.lua
 ui/win_shell.lua
+ui/win_map.lua
 ui/drawer.lua
 ui/win_faces.lua
 ui/win_arenas.lua
 ui/win_marks.lua
+ui/win_about.lua
+ui/win_saved.lua
+ui/win_dev.lua
+ui/win_panel.lua
+ui/win_queue.lua
 ui/win_menu.lua
 
 bgmeter.lua

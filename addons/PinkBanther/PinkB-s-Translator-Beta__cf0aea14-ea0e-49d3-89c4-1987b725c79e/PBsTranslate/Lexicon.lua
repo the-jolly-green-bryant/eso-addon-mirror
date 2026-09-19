@@ -150,6 +150,8 @@ T.lexicon = T.lexicon or {}
 T.cyrodiilLexicon = T.cyrodiilLexicon or {}
 T.cyrodiilPriority = T.cyrodiilPriority or false
 T.irregular = T.irregular or {}
+T.irregularPast = T.irregularPast or {}
+T.irregularParticiple = T.irregularParticiple or {}
 T.maxPhraseWords = T.maxPhraseWords or 1
 T.entryCount = T.entryCount or 0
 
@@ -237,6 +239,10 @@ local function Add(key, entry, dictionary)
 		end
 		if next(alts) then entry.alts = alts end
 	end
+	-- Definition order. The core vocabulary is defined first and chat slang last, so when
+	-- several English words share one Japanese, JaToEn.lua reads it back as the earliest.
+	T.defineSeq = (T.defineSeq or 0) + 1
+	entry.seq = T.defineSeq
 	dictionary[key] = entry
 	local words = 1
 	for _ in key:gmatch(" ") do
@@ -276,7 +282,14 @@ function T.DefineIrregular(block)
 		line = Trim((line:gsub("%-%-.*$", "")))
 		local form, base, inflection = line:match("^([^ \t=]+)[ \t]*=[ \t]*([^ \t]+)[ \t]+([^ \t]+)$")
 		if form then
-			T.irregular[T.Lower(form)] = { base = T.Lower(base), inflection = inflection }
+			form, base = T.Lower(form), T.Lower(base)
+			T.irregular[form] = { base = base, inflection = inflection }
+			-- The file lists the simple past before the participle (went, gone), which is how
+			-- JaToEn.lua tells them apart.
+			if inflection == "past" then
+				T.irregularPast[base] = T.irregularPast[base] or form
+				T.irregularParticiple[base] = form
+			end
 		end
 	end
 end

@@ -10,7 +10,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [WarCry](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/m00nyONE/WarCry__3191) | m00nyONE | PC / Mac | 1.2.0 |
 | [Ward Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ratparol101/Ward-Helper__1676) | @ratparol101 | PC / Mac | 1.1a |
 | [Ward Shield Reminder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Supplier/Ward-Shield-Reminder__2456) | Supplier | PC / Mac | 1.1 |
-| [WardenMastery](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/its_wifey/WardenMastery__4832) | its_wifey | PC / Mac | 1.0 |
+| [WardenMastery](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/its_wifey/WardenMastery__4832) | its_wifey | PC / Mac | 1.1 |
 | [WareGuild - Guild Banks Manager](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MelanAster/WareGuild---Guild-Banks-Manager__3877) | MelanAster | PC / Mac | 0.23 |
 | [Warhorn Timer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/uta.karas/Warhorn-Timer__1964) | uta.karas | PC / Mac | 1.31.1 |
 | [WarHorn Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/codeWarrior82/WarHorn-Tracker__d978b81f-b679-4aa8-b9a2-6d1b0511c3b3) | codeWarrior82 | Console | — |
@@ -29,6 +29,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [WeaveDelays](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Psiioniic/WeaveDelays__2657) | Psiioniic | PC / Mac | 1.1.1 |
 | [WeaveDelays](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ThePsiioniic/WeaveDelays__1428d8ab-7f1f-4741-833a-93180287dd09) | ThePsiioniic | Console | — |
 | [Weaving Metronome](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FiNk3F13/Weaving-Metronome__c1b4f7e7-7899-4d68-ab6a-6ce46c563cc5) | FiNk3F13 | Console | — |
+| [Wegesruhe](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Torfason/Wegesruhe__4849) | Torfason | PC / Mac | 1.0.0 |
 | [Well Eater](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/esorochinskiy/Well-Eater__3378) | esorochinskiy | PC / Mac | 1.2.0 |
 | [Werewolf Rave](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Erickson9610/Werewolf-Rave__4739) | Erickson9610 | PC / Mac | 1.3.5 |
 | [Werewolf Timer Bar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/maximoz/Werewolf-Timer-Bar__2911) | maximoz | PC / Mac | 2.6 |

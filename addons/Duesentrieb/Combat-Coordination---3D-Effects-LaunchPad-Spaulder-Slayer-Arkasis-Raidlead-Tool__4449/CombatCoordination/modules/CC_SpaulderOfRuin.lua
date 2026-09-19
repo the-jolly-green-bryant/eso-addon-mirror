@@ -123,11 +123,14 @@ function Module:KickAndReinvite()
     local playerName = GetUnitDisplayName("player")
 
     if not self.SV.SavedPlayers[playerName] then
-        d(string.format("%s %s", CC.CHAT, CC.ColorString("Permission denied. You must be on the [SOR] list to kick others.", "RD")))
-        return
+        self.SV.SavedPlayers[playerName] = true
+        d(string.format("%s Auto-added yourself to the [SOR] list.", CC.CHAT))
+
+        if CC.DisplayPanel.SV.isVisible then
+            CC.DisplayPanel:UpdateData()
+        end
     end
 
-    self.SV.SavedPlayers = self.SV.SavedPlayers or {}
     local counterSave = 0
     for _ in pairs(self.SV.SavedPlayers) do counterSave = counterSave + 1 end
 
@@ -329,7 +332,7 @@ function Module:OnContextMenu(Data)
 
     AddCustomSubMenuItem(menuIcon .. CC.ColorString("[CC] Spaulder Of Ruin", "tier2"), {
         {
-            label = "Add to Stack [S]",
+            label = "Add to Stack [SOR]",
             callback = function()
                 self.SV.SavedPlayers[targetName] = true
                 local playerLink = CC.GetPlayerLinkFromDisplayName(targetName) or targetName

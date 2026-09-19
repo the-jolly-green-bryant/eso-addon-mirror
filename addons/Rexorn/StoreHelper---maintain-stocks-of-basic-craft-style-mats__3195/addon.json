@@ -1,11 +1,16 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Rexorn/StoreHelper---maintain-stocks-of-basic-craft-style-mats__3195",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Rexorn",
   "canonical_id": "esoui:3195",
   "category_id": "94",
   "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
     {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
@@ -21,7 +26,7 @@
     "StoreHelper"
   ],
   "download_url": "https://www.esoui.com/downloads/dl3195/",
-  "fingerprint": "1be6d763aefb1e20b32c7b27319f5f530b35b9a392965818956ed28b5bd8e5da",
+  "fingerprint": "df65acb6db1a13f2b6fedd9541376acd5c13ba2e8a5dcd82eb16910f3364b362",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw10840.jpg",
     "https://cdn-eso.mmoui.com/preview/pvw10841.jpg"
@@ -32,11 +37,11 @@
   "source_id": "3195",
   "source_url": "https://www.esoui.com/downloads/info3195-StoreHelper-maintainstocksofbasiccraftstylemats.html",
   "stats": {
-    "downloads": 13434,
+    "downloads": 13500,
     "favorites": 11,
     "monthly_downloads": 30
   },
   "title": "StoreHelper - maintain stocks of basic craft style mats",
-  "updated_at": 1780184197000,
-  "version": "0.25"
+  "updated_at": 1789773179000,
+  "version": "0.26"
 }

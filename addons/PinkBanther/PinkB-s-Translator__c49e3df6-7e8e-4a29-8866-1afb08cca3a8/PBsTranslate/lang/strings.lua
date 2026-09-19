@@ -14,9 +14,18 @@ local strings = {
 
 	-- ---- Chat -------------------------------------------------------------------------
 	SI_PBSTR_LINE_PREFIX = "[JP]",
+	SI_PBSTR_LINE_PREFIX_EN = "[EN]",
 
 	-- ---- Settings panel ---------------------------------------------------------------
 	SI_PBSTR_EXPLANATION = "Adds a Japanese line under English chat. The translation is done inside the add-on with its own dictionary -- add-ons cannot reach the internet -- so it is a rough, word-order-level rendering, not a polished translation.",
+
+	SI_PBSTR_DIRECTION = "Translation direction",
+	SI_PBSTR_DIRECTION_TOOLTIP = "English to Japanese adds a Japanese line under English chat. Japanese to English adds an English line under Japanese chat; it reads the English to Japanese dictionary backwards and is most accurate on short lines. /jp and /en work the same either way.",
+	SI_PBSTR_DIRECTION_TO_JA = "English to Japanese",
+	SI_PBSTR_DIRECTION_TO_EN = "Japanese to English",
+	SI_PBSTR_STATUS_DIRECTION = "Direction: %s",
+	SI_PBSTR_HELP_DIRECTION = "/pbtr mode en2ja | ja2en -- translation direction",
+	SI_PBSTR_ERROR_DIRECTION = "use /pbtr mode en2ja (English to Japanese) or /pbtr mode ja2en (Japanese to English)",
 
 	SI_PBSTR_ENABLED = "Translate chat",
 	SI_PBSTR_ENABLED_TOOLTIP = "The master switch.",

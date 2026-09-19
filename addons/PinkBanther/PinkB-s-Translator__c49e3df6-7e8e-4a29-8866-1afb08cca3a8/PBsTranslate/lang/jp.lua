@@ -14,9 +14,18 @@ local strings = {
 
 	-- ---- チャット ----------------------------------------------------------------------
 	SI_PBSTR_LINE_PREFIX = "[訳]",
+	SI_PBSTR_LINE_PREFIX_EN = "[英訳]",
 
 	-- ---- 設定パネル --------------------------------------------------------------------
 	SI_PBSTR_EXPLANATION = "英語のチャットの下に日本語訳を1行表示します。アドオンはインターネットに接続できないため、翻訳はアドオン内蔵の辞書と文法規則で行います。語順を入れ替えた直訳調の訳で、自然な翻訳ではありません。",
+
+	SI_PBSTR_DIRECTION = "翻訳の方向",
+	SI_PBSTR_DIRECTION_TOOLTIP = "英語→日本語は、英語の発言の下に日本語訳を表示します。日本語→英語は、日本語の発言の下に英訳を表示します。日本語→英語は英語→日本語の辞書を逆引きして訳す直訳で、短い発言ほど正確です。/jp と /en はどちらの設定でも同じように使えます。",
+	SI_PBSTR_DIRECTION_TO_JA = "英語→日本語",
+	SI_PBSTR_DIRECTION_TO_EN = "日本語→英語",
+	SI_PBSTR_STATUS_DIRECTION = "翻訳の方向: %s",
+	SI_PBSTR_HELP_DIRECTION = "/pbtr mode en2ja | ja2en -- 翻訳の方向（英語→日本語／日本語→英語）",
+	SI_PBSTR_ERROR_DIRECTION = "/pbtr mode en2ja（英語→日本語）か /pbtr mode ja2en（日本語→英語）を指定してください",
 
 	SI_PBSTR_ENABLED = "チャットを翻訳する",
 	SI_PBSTR_ENABLED_TOOLTIP = "全体スイッチです。",

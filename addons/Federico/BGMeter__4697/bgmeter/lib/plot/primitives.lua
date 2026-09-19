@@ -50,6 +50,29 @@ function P.frame(parent, name)
     return c
 end
 
+function P.hairline_box(parent, color)
+    local box = {}
+    local col = color or { 1, 1, 1, 0.16 }
+    local top = P.rect(parent, col)
+    top:SetAnchor(TOPLEFT, parent, TOPLEFT, 0, 0)
+    top:SetAnchor(TOPRIGHT, parent, TOPRIGHT, 0, 0)
+    top:SetHeight(1)
+    local bottom = P.rect(parent, col)
+    bottom:SetAnchor(BOTTOMLEFT, parent, BOTTOMLEFT, 0, 0)
+    bottom:SetAnchor(BOTTOMRIGHT, parent, BOTTOMRIGHT, 0, 0)
+    bottom:SetHeight(1)
+    local left = P.rect(parent, col)
+    left:SetAnchor(TOPLEFT, parent, TOPLEFT, 0, 0)
+    left:SetAnchor(BOTTOMLEFT, parent, BOTTOMLEFT, 0, 0)
+    left:SetWidth(1)
+    local right = P.rect(parent, col)
+    right:SetAnchor(TOPRIGHT, parent, TOPRIGHT, 0, 0)
+    right:SetAnchor(BOTTOMRIGHT, parent, BOTTOMRIGHT, 0, 0)
+    right:SetWidth(1)
+    box.top, box.bottom, box.left, box.right = top, bottom, left, right
+    return box
+end
+
 function P.button(parent, normal, pressed, over, name)
     local b = ui().create_control(name or uniq("BGMeterBtn"), parent, CT_BUTTON)
     b:SetNormalTexture(normal)

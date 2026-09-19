@@ -87,12 +87,18 @@ function Match.column_max(m, key)
     return max
 end
 
+function Match.played_ms(m)
+    if m.playedMs and m.playedMs > 0 then return m.playedMs end
+    return m.durationMs or 0
+end
+
 function Match.derive(m)
     m.durationMs = (m.endMs and m.startMs) and math.max(0, m.endMs - m.startMs) or m.durationMs
     local h = m.haul
     local F = BGMeter.Format
-    h.apPerMin = math.floor(F.per_minute(h.apGained, m.durationMs) + 0.5)
-    h.xpPerMin = math.floor(F.per_minute(h.xpGained, m.durationMs) + 0.5)
+    local played = Match.played_ms(m)
+    h.apPerMin = math.floor(F.per_minute(h.apGained, played) + 0.5)
+    h.xpPerMin = math.floor(F.per_minute(h.xpGained, played) + 0.5)
     local lr = Match.local_row(m)
     local kills = lr and lr.kills or 0
     h.apPerKill = (kills > 0) and math.floor(h.apGained / kills + 0.5) or 0
@@ -301,8 +307,9 @@ function Match.relic_lanes(m, tspan)
     end
     local function close(lane, t1)
         if lane.cur and lane.cur ~= 0 and t1 > lane.t0 then
-            lane.segs[#lane.segs + 1] = { t0 = lane.t0, t1 = t1, own = lane.cur }
+            lane.segs[#lane.segs + 1] = { t0 = lane.t0, t1 = t1, own = lane.cur, who = lane.who }
         end
+        lane.who = nil
     end
     for i = 1, #rl.t do
         local lane = lanes[rl.o[i]]
@@ -312,6 +319,7 @@ function Match.relic_lanes(m, tspan)
             if evl == "flag_taken" then
                 close(lane, t)
                 lane.cur, lane.t0 = rl.hold[i] or 0, t
+                lane.who = rl.who and rl.who[i] or nil
                 if not lane.home or lane.home == 0 then
                     lane.ticks[#lane.ticks + 1] = { t = t, own = rl.hold[i] or 0, kind = "take",
                                                     who = rl.who and rl.who[i] or nil }
@@ -322,6 +330,8 @@ function Match.relic_lanes(m, tspan)
             elseif evl == "captured" then
                 close(lane, t)
                 lane.cur = 0
+                local last = lane.segs[#lane.segs]
+                if last and rl.who and rl.who[i] and last.t1 == t then last.who = rl.who[i] end
                 lane.ticks[#lane.ticks + 1] = { t = t, own = rl.last[i] or 0, kind = "cap",
                                                 who = rl.who and rl.who[i] or nil }
             elseif evl == "flag_returned" or evl == "flag_timer_return" then
@@ -338,6 +348,13 @@ function Match.relic_lanes(m, tspan)
         lane.cur = nil
     end
     return lanes
+end
+
+function Match.local_name(m)
+    local lr = Match.local_row(m)
+    local nm = lr and (lr.displayName or lr.charName)
+    if not nm then return nil end
+    return (nm:gsub("%^.*$", ""))
 end
 
 local CHUNK = 1500
@@ -374,17 +391,202 @@ end
 
 function Match.pack_timeline(m)
     local tl = m and m.timeline
-    if not tl or not tl.p or not tl.t then return 0 end
-    local n, packed = #tl.t, 0
-    for _, rec in pairs(tl.p) do
-        if type(rec.d) == "table" then
-            rec.s = Match.pack_series(rec.d, n)
-            rec.d = nil
-            packed = packed + 1
+    if not tl then return 0 end
+    local packed = 0
+    if tl.p and tl.t then
+        local n = #tl.t
+        for _, rec in pairs(tl.p) do
+            if type(rec.d) == "table" then
+                rec.s = Match.pack_series(rec.d, n)
+                rec.d = nil
+                packed = packed + 1
+            end
+            rec.h = nil
         end
-        rec.h = nil
+    end
+    if tl.pt and tl.pos then
+        local n = #tl.pt
+        for _, rec in pairs(tl.pos) do
+            if type(rec.x) == "table" and type(rec.x[1]) ~= "string" then
+                rec.x = Match.pack_series(rec.x, n)
+                rec.y = Match.pack_series(rec.y, n)
+                packed = packed + 1
+            end
+        end
+        for _, pin in ipairs(tl.pin or {}) do
+            if type(pin.x) == "table" and type(pin.x[1]) ~= "string" then
+                pin.x = Match.pack_series(pin.x, n)
+                pin.y = Match.pack_series(pin.y, n)
+                pin.ty = Match.pack_series(pin.ty, n)
+                packed = packed + 1
+            end
+        end
+        tl.pinIdx = nil
+    end
+    if tl.mt and type(tl.mx) == "table" and type(tl.mx[1]) ~= "string" then
+        local n = #tl.mt
+        tl.mx = Match.pack_series(tl.mx, n)
+        tl.my = Match.pack_series(tl.my, n)
+        tl.mt = Match.pack_series(tl.mt, n)
+        packed = packed + 1
     end
     return packed
+end
+
+function Match.geo_index_of(times, n, t)
+    local idx = 1
+    for i = 1, n do
+        if (times[i] or 0) <= t then idx = i else break end
+    end
+    return idx
+end
+
+function Match.geo_spline(xs, ys, n, sub)
+    sub = sub or 3
+    local ox, oy = {}, {}
+    local function at(i) i = math.max(1, math.min(n, i)); return xs[i] or 0, ys[i] or 0 end
+    for i = 1, n - 1 do
+        local x0, y0 = at(i - 1)
+        local x1, y1 = at(i)
+        local x2, y2 = at(i + 1)
+        local x3, y3 = at(i + 2)
+        for k = 0, sub - 1 do
+            local u = k / sub
+            local u2, u3 = u * u, u * u * u
+            ox[#ox + 1] = 0.5 * ((2 * x1) + (-x0 + x2) * u + (2 * x0 - 5 * x1 + 4 * x2 - x3) * u2 + (-x0 + 3 * x1 - 3 * x2 + x3) * u3)
+            oy[#oy + 1] = 0.5 * ((2 * y1) + (-y0 + y2) * u + (2 * y0 - 5 * y1 + 4 * y2 - y3) * u2 + (-y0 + 3 * y1 - 3 * y2 + y3) * u3)
+        end
+    end
+    local xl, yl = at(n)
+    ox[#ox + 1], oy[#oy + 1] = xl, yl
+    return ox, oy
+end
+
+function Match.geo(m)
+    local tl = m and m.timeline
+    if not tl or not tl.pt or #tl.pt < 2 or not tl.pos then return nil end
+    local n = #tl.pt
+    local team, mine = {}, Match.local_name(m)
+    for _, r in ipairs(m.battle or {}) do
+        local nm = r.displayName or r.charName
+        if nm then team[(nm:gsub("%^.*$", ""))] = r.team end
+    end
+    local pos, teammates = {}, 0
+    for nm, rec in pairs(tl.pos) do
+        pos[nm] = { x = Match.unpack_series(rec.x, n), y = Match.unpack_series(rec.y, n) }
+        if not team[nm] then team[nm] = m.localTeam end
+        if nm ~= mine then teammates = teammates + 1 end
+    end
+    local pins = {}
+    for i, pin in ipairs(tl.pin or {}) do
+        pins[i] = { name = pin.name, kind = pin.kind, keepId = pin.keepId, objectiveId = pin.objectiveId,
+                    x = Match.unpack_series(pin.x, n), y = Match.unpack_series(pin.y, n), ty = Match.unpack_series(pin.ty, n) }
+    end
+    local stepMs = (n > 1) and math.floor((tl.pt[n] - tl.pt[1]) / (n - 1)) or 0
+    local me = nil
+    if tl.mt and tl.mx and tl.my then
+        local mt = Match.unpack_series(tl.mt)
+        local mn = #mt
+        if mn >= 2 then
+            me = { n = mn, t = mt, x = Match.unpack_series(tl.mx, mn), y = Match.unpack_series(tl.my, mn) }
+        end
+    end
+    local startT = 0
+    if m.playedMs and m.durationMs and m.durationMs > m.playedMs then startT = m.durationMs - m.playedMs end
+    return { n = n, t = tl.pt, pos = pos, pins = pins, team = team, mine = mine, teammates = teammates, stepMs = stepMs, me = me, startT = startT }
+end
+
+function Match.geo_index(geo, t)
+    if not geo then return 1 end
+    local idx = 1
+    for i = 1, geo.n do
+        if (geo.t[i] or 0) <= t then idx = i else break end
+    end
+    return idx
+end
+
+local function heat_blur(grid, bins, passes)
+    local src = grid
+    for _ = 1, passes or 1 do
+        local out = {}
+        for by = 1, bins do
+            for bx = 1, bins do
+                local acc, wsum = 0, 0
+                for dy = -1, 1 do
+                    local yy = by + dy
+                    if yy >= 1 and yy <= bins then
+                        local wy = (dy == 0) and 2 or 1
+                        for dx = -1, 1 do
+                            local xx = bx + dx
+                            if xx >= 1 and xx <= bins then
+                                local w = wy * ((dx == 0) and 2 or 1)
+                                local v = src[(yy - 1) * bins + xx]
+                                if v then acc = acc + v * w end
+                                wsum = wsum + w
+                            end
+                        end
+                    end
+                end
+                if acc > 0 then out[(by - 1) * bins + bx] = acc / wsum end
+            end
+        end
+        src = out
+    end
+    return src
+end
+
+local function heat_finish(grid, bins, passes, pct)
+    local blurred = heat_blur(grid, bins, passes)
+    local vals, max = {}, 0
+    for _, v in pairs(blurred) do
+        vals[#vals + 1] = v
+        if v > max then max = v end
+    end
+    if max <= 0 then return nil end
+    table.sort(vals)
+    local cap = vals[math.max(1, math.floor(#vals * (pct or 0.95)))] or max
+    if cap <= 0 then cap = max end
+    return { grid = blurred, max = max, cap = cap, bins = bins }
+end
+
+local function heat_add(grid, bins, x, y, w)
+    local bx = math.min(bins, math.floor(x / 1000 * bins) + 1)
+    local by = math.min(bins, math.floor(y / 1000 * bins) + 1)
+    local k = (by - 1) * bins + bx
+    grid[k] = (grid[k] or 0) + (w or 1)
+end
+
+function Match.geo_heat(geo, m, bins)
+    if not geo then return nil end
+    bins = bins or 32
+    local grid, any = {}, false
+    for nm, s in pairs(geo.pos) do
+        if geo.team[nm] == m.localTeam or nm == geo.mine then
+            for i = 1, geo.n do
+                local x, y = s.x[i], s.y[i]
+                if x and y and (x > 0 or y > 0) and (geo.t[i] or 0) >= (geo.startT or 0) then
+                    heat_add(grid, bins, x, y, 1)
+                    any = true
+                end
+            end
+        end
+    end
+    if not any then return nil end
+    return heat_finish(grid, bins, 1, 0.95)
+end
+
+function Match.geo_heat_deaths(geo, m, bins)
+    if not m or not m.killfeed then return nil end
+    bins = bins or 32
+    local grid, any = {}, false
+    for _, k in ipairs(m.killfeed) do
+        if k.x and k.y and k.kind then
+            heat_add(grid, bins, k.x, k.y, 1)
+            any = true
+        end
+    end
+    if not any then return nil end
+    return heat_finish(grid, bins, 3, 1.0)
 end
 
 function Match.damage_race(m)
@@ -404,7 +606,7 @@ function Match.damage_race(m)
     local decoded = {}
     for nm, rec in pairs(tl.p) do
         decoded[nm] = rec.d or Match.unpack_series(rec.s, n)
-        local team = team_of[nm]
+        local team = team_of[nm] or rec.tm
         if team then
             if not seen[team] then seen[team] = true; teams[#teams + 1] = team; series[team] = {} end
             local row = series[team]
@@ -485,6 +687,7 @@ function Match.lead_stats(tl)
     local leader = nil
     local maxLead = { team = nil, lead = 0, t = 0 }
     for i = 1, #tl.t do
+        if i > 1 and tl.r and tl.r[i] ~= tl.r[i - 1] then leader = nil end
         local best, second, bestTeam = 0, 0, nil
         for s = 1, 3 do
             local team = teams[s]
@@ -508,6 +711,54 @@ function Match.lead_stats(tl)
     if not maxLead.team then return nil end
     return { changes = changes, maxTeam = maxLead.team, maxLead = maxLead.lead,
              maxAt = maxLead.t, finalLeader = leader }
+end
+
+function Match.round_marks(tl)
+    if not tl or not tl.t or not tl.r or #tl.t < 2 then return nil end
+    local marks = {}
+    for i = 2, #tl.t do
+        if tl.r[i] ~= tl.r[i - 1] then
+            marks[#marks + 1] = { i = i, t = tl.t[i], r = tl.r[i] }
+        end
+    end
+    if #marks == 0 then return nil end
+    return marks
+end
+
+function Match.smooth3(arr, n)
+    n = n or #arr
+    local out = {}
+    for i = 1, n do
+        local a = arr[math.max(1, i - 1)] or 0
+        local b = arr[i] or 0
+        local c = arr[math.min(n, i + 1)] or 0
+        out[i] = (a + 2 * b + c) / 4
+    end
+    return out
+end
+
+function Match.kill_pressure(killfeed, tspan, binMs)
+    if not killfeed or #killfeed == 0 or not tspan or tspan <= 0 then return nil end
+    binMs = binMs or 60000
+    local bins = math.max(1, math.ceil(tspan / binMs))
+    local counts, teams, seen, maxv, total = {}, {}, {}, 0, 0
+    for _, k in ipairs(killfeed) do
+        local team = k.kt
+        if team then
+            local b = math.floor(math.max(0, math.min(k.t or 0, tspan - 1)) / binMs) + 1
+            if not seen[team] then
+                seen[team] = true
+                teams[#teams + 1] = team
+                counts[team] = {}
+            end
+            counts[team][b] = (counts[team][b] or 0) + 1
+            if counts[team][b] > maxv then maxv = counts[team][b] end
+            total = total + 1
+        end
+    end
+    if #teams == 0 or maxv == 0 then return nil end
+    table.sort(teams)
+    return { bins = bins, binMs = binMs, teams = teams, counts = counts, max = maxv, total = total }
 end
 
 function Match.bloodiest_minute(killfeed, windowMs)

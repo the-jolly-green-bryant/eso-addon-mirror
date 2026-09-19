@@ -967,14 +967,6 @@ local function ReportCameraUIModeActive()
 	return type(IsGameCameraUIModeActive)=="function" and IsGameCameraUIModeActive() or false
 end
 
-local function ReportCameraDebug(label,before,after)
-	local logger=rawget(_G,"d")
-	if type(logger)~="function" then return end
-	logger(label)
-	logger("CameraUI before = "..tostring(before))
-	logger("CameraUI after = "..tostring(after))
-end
-
 local function AcquireReportCameraUIMode()
 	local before=ReportCameraUIModeActive()
 	if not before then
@@ -983,16 +975,13 @@ local function AcquireReportCameraUIMode()
 	else
 		reportEnabledCameraUIMode=false
 	end
-	ReportCameraDebug("REPORT OPEN",before,ReportCameraUIModeActive())
 end
 
 function BUI.Stats.ReleaseReportCameraUIMode()
-	local before=ReportCameraUIModeActive()
 	if reportEnabledCameraUIMode then
 		SetGameCameraUIMode(false)
 		reportEnabledCameraUIMode=false
 	end
-	ReportCameraDebug("REPORT CLOSE",before,ReportCameraUIModeActive())
 end
 
 function BUI.Stats.Toggle(redraw)

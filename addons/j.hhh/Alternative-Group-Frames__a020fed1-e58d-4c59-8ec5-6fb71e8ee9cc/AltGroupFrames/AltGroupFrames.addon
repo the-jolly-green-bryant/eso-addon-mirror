@@ -1,0 +1,22 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+;
+; Console adaptation based on Alternative Group Frames by BulDeZir and Glande-Pas.
+; Modified 2026-06-21 and released under GNU GPL v3.0 or later.
+
+## APIVersion: 101049 101050
+## Title: Alternative Group Frames (Console)
+## Description: Compact role-aware group frames adapted for gamepad and console play.
+## Author: BulDeZir, Glande-Pas
+## Version: 1.4.1
+## AddOnVersion: 30
+## SavedVariables: AltGroupFramesSavedVariables
+## DependsOn: LibAddonMenu-2.0
+
+AltGroupFrames.lua
+AltGroupFramesSettings.lua
+AltGroupFramesBuffs.lua
+AltGroupFrames.xml

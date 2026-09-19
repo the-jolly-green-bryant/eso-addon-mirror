@@ -1,0 +1,38 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/GrimGrin/GrimSuite__4848",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "GrimGrin",
+  "canonical_id": "esoui:4848",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    }
+  ],
+  "content_id": "esoui:4848",
+  "deleted": false,
+  "directories": [
+    "GrimSuite"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4848/",
+  "fingerprint": "ac39a24c798fb9eb3e651d6d43e053de561d6a4b32de08f00bbc7ee58132e344",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17421.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4848",
+  "source_url": "https://www.esoui.com/downloads/info4848-GrimSuite.html",
+  "stats": {
+    "downloads": 22,
+    "favorites": 0,
+    "monthly_downloads": 9
+  },
+  "title": "GrimSuite",
+  "updated_at": 1789730508000,
+  "version": "1.1.0"
+}

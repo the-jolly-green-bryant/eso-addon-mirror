@@ -3,9 +3,14 @@ local addon, T, S = PBS_TRANSLATE, PBsTranslate, PBsTranslateShare
 if not addon or not S then return end
 local UI = { hooked = {} }
 addon.sharing = UI
--- Development ID only. Reserve an ID/name at https://wiki.esoui.com/LibGroupBroadcast_IDs
--- before public distribution, then replace this constant on BOTH peers.
-UI.PROTOCOL_ID = 510
+-- Registered at https://wiki.esoui.com/LibGroupBroadcast_IDs (460-469 are PinkBanther's block).
+-- Both peers must use the same id and name, so never change them for a released version.
+UI.PROTOCOL_ID = 462
+UI.PROTOCOL_NAME = "PBsTranslateDictionary"
+-- A share is started from the interaction wheel, /pbshare or the settings panel. The social
+-- menus are not hooked. On the wheel, only AddMenuEntry is post-hooked: a hook on
+-- ShowPlayerInteractMenu raised a private-function error on console (1.1.2-dev), while the
+-- AddMenuEntry hook ran without trouble on a PS5 (1.1.9-dev).
 local jp = not GetCVar or GetCVar("language.2") == "jp"
 local function L(ja,en) return jp and ja or en end
 local TITLE = L("辞書内容を共有", "Share dictionary")
@@ -66,9 +71,9 @@ function UI:InitTransport()
     if not lib or not lib.RegisterHandler or not lib.CreateStringField then return false end
     self.transportAttempted=true
     local ok, result=pcall(function()
-        local handler=lib:RegisterHandler("PBsTranslateDictionarySharing")
+        local handler=lib:RegisterHandler(addon.name)
         handler:SetDisplayName(TITLE)
-        local p=handler:DeclareProtocol(self.PROTOCOL_ID,"PBsTranslateDictionaryV1")
+        local p=handler:DeclareProtocol(self.PROTOCOL_ID,self.PROTOCOL_NAME)
         p:SetDisplayName(TITLE)
         p:AddField(lib.CreateNumericField("magic",{numBits=32}))
         p:AddField(lib.CreateNumericField("target",{numBits=32}))
@@ -95,7 +100,7 @@ function UI:Start(peer)
     if IsUnitInCombat and IsUnitInCombat("player") then Say(errors.combat);return end
     if not self:CanSend() then
         if self.transportError and self.transportError:find("already exists",1,true) then
-            Say(L("他のアドオンと通信IDが重複しているため、辞書共有を利用できません。検証版の通信IDを確認してください。", "Dictionary sharing is unavailable due to a protocol ID collision. Check the development protocol ID."))
+            Say(string.format(L("通信ID %d を別のアドオンが使っているため、辞書共有を利用できません。", "Dictionary sharing is unavailable: another add-on uses protocol ID %d."),self.PROTOCOL_ID))
         else Say(errors.transport) end
         return
     end
@@ -222,6 +227,27 @@ function UI:Status()
     elseif self.session.review then self:Review()
     else Say(L("共有待機中。/pbshare @名前 で共有、review で受信内容、restore で復元。","Ready. /pbshare @name to share; review to inspect; restore to restore a backup.")) end
 end
+-- Online group members other than you, for the panel's recipient list.
+function UI:GroupMembers()
+    local members={}
+    if not GetGroupSize then return members end
+    for i=1,GetGroupSize() do
+        local tag=GetGroupUnitTagByIndex(i)
+        local display=tag and GetUnitDisplayName(tag)
+        if display and display~="" and Name(display)~=Name(GetDisplayName()) and (not IsUnitOnline or IsUnitOnline(tag)) then
+            members[#members+1]=display
+        end
+    end
+    table.sort(members)
+    return members
+end
+-- Never empty: the library selects an entry by name, so an empty group gets a placeholder.
+function UI:MemberItems()
+    local items={}
+    for _,display in ipairs(self:GroupMembers()) do items[#items+1]={name=display,data=display} end
+    if #items==0 then items[1]={name=L("（グループに相手がいません）","(nobody else in your group)"),data=nil} end
+    return items
+end
 function UI:InitInteractMenu()
     local object=PLAYER_TO_PLAYER
     if not ZO_PostHook or not object or self.hooked[object]
@@ -250,38 +276,6 @@ function UI:InitInteractMenu()
     end)
     self.hooked[object]=true
 end
-
-function UI:InitMenus()
-    self:InitInteractMenu()
-    if not ZO_PostHook then return end
-    -- Hook concrete objects: ESO's multiple inheritance can copy base methods.
-    for _,name in ipairs({"CHAT_MENU_GAMEPAD","GROUP_LIST_GAMEPAD","ZO_FRIENDS_LIST_GAMEPAD","GUILD_ROSTER_GAMEPAD"}) do
-        local object=_G[name]
-        if object and not self.hooked[object] and type(object.PopulateOptionsList)=="function" then
-            ZO_PostHook(object,"PopulateOptionsList",function(owner,list)
-                local peer=owner.socialData and owner.socialData.displayName
-                if type(peer)=="string" and peer~="" and Name(peer)~=Name(GetDisplayName()) then
-                    local entry=owner:BuildOptionEntry(nil,TITLE,nil,function() self:Start(peer) end)
-                    owner:AddOption(list,entry)
-                end
-            end)
-            self.hooked[object]=true
-        end
-    end
-    local lib=LibCustomMenu
-    if lib and not self.keyboardMenu and type(AddCustomMenuItem)=="function" then
-        local function Add(peer)
-            if type(peer)=="string" and peer~="" and Name(peer)~=Name(GetDisplayName()) then
-                AddCustomMenuItem(TITLE,function() Later(function() self:Start(peer) end) end)
-            end
-        end
-        if lib.RegisterPlayerContextMenu then lib:RegisterPlayerContextMenu(function(playerName,rawName) Add(playerName or rawName) end,lib.CATEGORY_LATE) end
-        for _,method in ipairs({"RegisterFriendsListContextMenu","RegisterGuildRosterContextMenu","RegisterGroupListContextMenu"}) do
-            if lib[method] then lib[method](lib,function(data) Add(data.displayName) end,lib.CATEGORY_LATE) end
-        end
-        self.keyboardMenu=true
-    end
-end
 function UI:InitSettings()
     local settings,lib=addon.settingsControls,LibHarvensAddonSettings
     if not settings or not lib then return end
@@ -293,6 +287,23 @@ function UI:InitSettings()
             if not value and self.session.active and self.session.active.direction=="receive" then self.session:Cancel() end
         end})
     local function Button(label,fn) settings:AddSetting({type=lib.ST_BUTTON,label=label,buttonText=label,clickHandler=fn}) end
+    if lib.ST_DROPDOWN then
+        -- Items is a function so the list follows the group each time the panel refreshes.
+        settings:AddSetting({type=lib.ST_DROPDOWN,label=L("共有する相手","Share with"),
+            tooltip=L("同じグループのオンラインの相手から選びます。","Pick an online member of your group."),
+            items=function() return self:MemberItems() end,ignoreDefault=true,
+            getFunction=function()
+                local items=self:MemberItems()
+                for _,item in ipairs(items) do if item.data==self.target then return item.name end end
+                self.target=items[1].data
+                return items[1].name
+            end,
+            setFunction=function(_,_,item) self.target=item and item.data or nil end})
+        Button(L("選んだ相手に辞書を共有","Share dictionary with selected member"),function()
+            if not self.target then Say(errors.group) else self:Start(self.target) end
+            addon:RefreshPanel()
+        end)
+    end
     settings:AddSetting({type=lib.ST_LABEL,label=function() return self.lastMessage or L("共有待機中", "Ready to share") end})
     Button(L("受信した辞書を確認","Review received dictionary"),function() self:Review() end)
     Button(L("転送状況を確認","Transfer status"),function() self:Status() end)
@@ -308,7 +319,7 @@ function addon:InitSharing()
             return ok and sent
         end,
         notify=function(event,state) UI:Notify(event,state) end})
-    UI:InitDialog();UI:InitTransport();UI:InitMenus();UI:InitSettings()
+    UI:InitDialog();UI:InitTransport();UI:InitInteractMenu();UI:InitSettings()
     SLASH_COMMANDS["/pbshare"]=function(text)
         text=T.Trim(text or "")
         if text=="review" then UI:Review()
@@ -319,5 +330,5 @@ function addon:InitSharing()
         elseif text=="" or text=="status" then UI:Status()
         else UI:Start(text) end
     end
-    EVENT_MANAGER:RegisterForEvent(addon.name.."Sharing",EVENT_PLAYER_ACTIVATED,function() UI:InitMenus() end)
+    EVENT_MANAGER:RegisterForEvent(addon.name.."Sharing",EVENT_PLAYER_ACTIVATED,function() UI:InitInteractMenu() end)
 end

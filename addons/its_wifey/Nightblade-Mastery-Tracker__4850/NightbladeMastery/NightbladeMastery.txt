@@ -1,0 +1,10 @@
+## Title: Nightblade Mastery Tracker
+## Description: Tracks reliably detectable Nightblade Class Mastery effects with selected-only HUD icons, proc feedback, timers, and individual positioning.
+## Author: WifeyRytic
+## Version: 1.0
+## AddOnVersion: 100
+## APIVersion: 101050 101051
+## SavedVariables: NightbladeMasterySavedVariables
+## OptionalDependsOn: LibAddonMenu-2.0
+
+NightbladeMastery.lua

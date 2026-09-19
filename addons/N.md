@@ -17,7 +17,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Navigator - Fast Travel & Search](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SirNightstorm/Navigator---Fast-Travel-Search__4026) | SirNightstorm | PC / Mac | 1.3.0 |
 | [Near's Script Tooltips](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/notnear/Near-s-Script-Tooltips__3895) | notnear | PC / Mac | 1.0.1 |
 | [Neat Experience Info](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/qhil/Neat-Experience-Info__1581) | qhil | PC / Mac | 1.15.1 |
-| [NecroCat](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Soul_Hagans/NecroCat__4174) | Soul_Hagans | PC / Mac | 2.0.6 |
+| [NecroCat](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Soul_Hagans/NecroCat__4174) | Soul_Hagans | PC / Mac | 2.0.8 |
 | [NecroCatIcons  (OdySupportIcons)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Soul_Hagans/NecroCatIcons-OdySupportIcons__4835) | Soul_Hagans | PC / Mac | 1.5.3 |
 | [NecromancerTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PersistentMemory/NecromancerTracker__2795) | PersistentMemory | PC / Mac | 1.3.3.1 |
 | [Ned's Group Manager](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ned919x/Ned-s-Group-Manager__4f86b7c8-8fb6-432c-a1b9-2004263244ab) | Ned919x | Console | — |
@@ -43,6 +43,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [NGear-dev](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/unacntble/NGear-dev__842f6e57-44cf-436d-b2fb-b38615f20346) | unacntble | Console | — |
 | [Night Market Faction Score Hider](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ZareShadows/Night-Market-Faction-Score-Hider__4558) | ZareShadows | PC / Mac | 1.0.1 |
 | [Night Market Keys](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/romilly/Night-Market-Keys__4575) | romilly | PC / Mac | 1.0.4 |
+| [Nightblade Mastery Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/its_wifey/Nightblade-Mastery-Tracker__4850) | its_wifey | PC / Mac | 1.0 |
 | [Nika Brave GuildHall](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Verling/Nika-Brave-GuildHall__3064) | Verling | PC / Mac | 1.0.6 |
 | [Nine Resourcez - Track 3 keeps and 9 resources quests](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Toirealach/Nine-Resourcez---Track-3-keeps-and-9-resources-quests__3391) | Toirealach | PC / Mac | 1.5.5a |
 | [Nirn Icons](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/KingBloodWings/Nirn-Icons__3621) | KingBloodWings | PC / Mac | 1.0.5 |

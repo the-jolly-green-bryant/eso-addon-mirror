@@ -15,7 +15,7 @@ local g_savedQuestPins = {}
 local g_savedLibMapPins = {}
 local g_currentPinZoneId = 0
 local g_bgObjectivePins = {}
-local g_activeMapPing = nil
+
 
 local g_currentPinMapTile = ""
 local g_isPlayerActivated = false
@@ -94,7 +94,6 @@ function pins.Reset()
         pin:SetHidden(true)
     end
     ZO_ClearTable(g_activePins)
-    ZO_ClearTable(g_savedLibMapPins)
     g_pinIndex = 0
 end
 
@@ -176,29 +175,6 @@ function pins.UpdateRotation(playerX, playerY, cosHeading, sinHeading, container
             pin:SetAnchor(CENTER, NecroCat_MapContainer, CENTER, rx, ry)
         end
     end
-end
-
--- Функция отображения боевого пинга (Shift + ЛКМ)
-function pins.ShowMapPing(normX, normY)
-    if not normX or not normY or normX <= 0 or normY <= 0 then return end
-
-    if not NecroCat_Minimap_MapPingCtrl then
-        local p = CreateControl("NecroCat_Minimap_MapPingCtrl", NecroCat_MapContainer, CT_TEXTURE)
-        p:SetTexture("EsoUI/Art/MapPins/UI_Worldmap_pin_customDestination.dds") -- Яркий контрастный ромб
-        p:SetDimensions(30, 30)
-        p:SetColor(1, 0.05, 0.05, 1) -- Насыщенный ярко-красный цвет
-        p:SetDrawTier(DT_HIGH)
-        p:SetDrawLayer(DL_OVERLAY)
-        p:SetDrawLevel(35)
-        NecroCat_Minimap_MapPingCtrl = p
-    end
-
-    g_activeMapPing = {
-        x = normX,
-        y = normY,
-        endTime = GetFrameTimeSeconds() + 6.0,
-    }
-    NecroCat_Minimap_MapPingCtrl:SetHidden(false)
 end
 
 -- =========================================================================
@@ -339,7 +315,8 @@ function pins.RefreshCompanion()
     if HasActiveCompanion and HasActiveCompanion() then
         local x, y, _, isInCurrentMap = GetMapPlayerPosition("companion")
         if isInCurrentMap and x > 0 and y > 0 then
-            local companionName = GetCompanionName(GetActiveCompanionDefId())
+            local rawName = GetCompanionName(GetActiveCompanionDefId())
+            local companionName = rawName and zo_strformat("<<1>>", rawName) or ""
             pins.CreatePin("EsoUI/Art/MapPins/UI-WorldMapCompanionPip.dds", x, y, companionName, 20)
         end
     end
@@ -731,31 +708,6 @@ function pins.UpdateGroupPinsRealtime()
     else
         for _, p in pairs(g_bgObjectivePins) do p:SetHidden(true) end
     end
-
-    -- 3. Живое отображение статического пинга (Shift + ЛКМ)
-    if NecroCat_Minimap_MapPingCtrl and g_activeMapPing then
-        local now = GetFrameTimeSeconds()
-        if now < g_activeMapPing.endTime then
-            local px = g_activeMapPing.x * containerSize
-            local py = g_activeMapPing.y * containerSize
-
-            NecroCat_Minimap_MapPingCtrl:SetDimensions(32, 32)
-            NecroCat_Minimap_MapPingCtrl:SetAlpha(1.0)
-
-            NecroCat_Minimap_MapPingCtrl:ClearAnchors()
-            if doesRotate then
-                local ix = px - playerX
-                local iy = py - playerY
-                NecroCat_Minimap_MapPingCtrl:SetAnchor(CENTER, NecroCat_MapContainer, CENTER, (cosH * ix) - (sinH * iy), (sinH * ix) + (cosH * iy))
-            else
-                NecroCat_Minimap_MapPingCtrl:SetAnchor(CENTER, NecroCat_MapContainer, TOPLEFT, px, py)
-            end
-            NecroCat_Minimap_MapPingCtrl:SetHidden(false)
-        else
-            NecroCat_Minimap_MapPingCtrl:SetHidden(true)
-            g_activeMapPing = nil
-        end
-    end
 end
 
 -- =========================================================================
@@ -925,9 +877,6 @@ local function HandleCustomPinCreation(pinType, pinTag, xLoc, yLoc)
     if not (minimap.settings and minimap.settings.enabled) then return end
     if not xLoc or not yLoc or xLoc <= 0 or yLoc <= 0 or xLoc >= 1 or yLoc >= 1 then return end
 
-    -- Пока открыта большая карта — миникарта вообще не должна перехватывать чужие метки!
-    if WORLD_MAP_SCENE and WORLD_MAP_SCENE:IsShowing() then return end
-
     -- Если просматривается чужая карта — игнорируем чужие метки
     if DoesCurrentMapMatchMapForPlayerLocation and not DoesCurrentMapMatchMapForPlayerLocation() then
         return
@@ -1030,19 +979,16 @@ end
 
 EVENT_MANAGER:RegisterForUpdate("NecroCat_Minimap_GroupUpdate", 100, pins.UpdateGroupPinsRealtime)
 
--- Перехват личного клика Shift + ЛКМ
-ZO_PreHook("PingMap", function(pinType, mapType, x, y)
-    if x and y and x > 0 and y > 0 and pins.ShowMapPing then
-        pins.ShowMapPing(x, y)
-    end
-end)
-
--- Перехват пинга от согруппников по сети
-EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_MapPing", EVENT_MAP_PING, function(eventCode, pingEventType, pingType, pingTag, offsetX, offsetY)
-    if offsetX and offsetY and offsetX > 0 and offsetY > 0 and pins.ShowMapPing then
-        pins.ShowMapPing(offsetX, offsetY)
-    end
-end)
+-- Авто-восстановление меток миникарты при закрытии большой карты мира (M)
+if WORLD_MAP_SCENE then
+    WORLD_MAP_SCENE:RegisterCallback("StateChange", function(oldState, newState)
+        if newState == SCENE_HIDDEN then
+            if pins.RefreshAll then
+                pins.RefreshAll()
+            end
+        end
+    end)
+end
 
 EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_KeepAttack", EVENT_KEEP_UNDER_ATTACK_CHANGED, function()
     if pins.RefreshCyrodiil then pins.RefreshCyrodiil() end

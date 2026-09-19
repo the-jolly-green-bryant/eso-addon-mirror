@@ -5,7 +5,7 @@
 SatuveXboxUI = SatuveXboxUI or {}
 SatuveXboxUI.name = "SatuveXboxUI"
 SatuveXboxUI.displayName = "Satuve Xbox UI"
-SatuveXboxUI.version = "1.9.16"
+SatuveXboxUI.version = "1.9.26"
 SatuveXboxUI.actionBarGap = 35
 
 -- Compatibility aliases for clients that no longer expose the legacy
@@ -46,7 +46,7 @@ if type(GetClassIcon) ~= "function" then
 end
 
 -- The Xbox-server PC client is used with mouse and keyboard. Keep keyboard UI
--- preferred and expose a small diagnostic command without changing combat logic.
+-- preferred and expose a small status command without changing combat logic.
 function SatuveXboxUI.IsKeyboardClient()
     return not IsInGamepadPreferredMode()
 end

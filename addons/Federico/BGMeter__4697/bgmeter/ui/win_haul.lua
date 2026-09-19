@@ -24,6 +24,8 @@ local SHARE_MIN_FREE = 60
 local EFF_BOTTOM = 369
 local STAND_H = 90
 local SHARE_KEYS = { "dmg", "heal", "kills", "taken", "obj", "medals" }
+local RINGS_H = SHARE_ROW_GAP + 2 * (SHARE_SIZE + SHARE_ROW_GAP)
+local MINI_GAP = 10
 local flag_col_spec, caps_count = U.flag_col_spec, U.caps_count
 local Donut = BGMeter.Plot.donut
 local SHARE_TRACK = { 0.50, 0.50, 0.56, 0.28 }
@@ -417,7 +419,13 @@ function SEC.haul(m, animate)
     set_text(p.medalMore, (#ids > #p.medalIcons) and ("+" .. (#ids - #p.medalIcons)) or "")
 
     set_text(p.eff, string.format("%s AP/min  ·  %s AP/kill", F.commas(h.apPerMin), F.commas(h.apPerKill)))
-    SEC.haul_share(m, lr)
+    local rings = SEC.haul_share(m, lr)
+    if BGMeter.UI.map then
+        local contH = (W.cur_h or L.window_h) - L.header_h - L.footer_h
+        local top = EFF_BOTTOM + (rings and RINGS_H or 0) + MINI_GAP
+        local avail = contH - STAND_H - top - MINI_GAP
+        BGMeter.UI.map.mini_update(m, p.container, 16, top, avail)
+    end
 
     local standControls = { p.sep, p.standHeading, p.standRank, p.standSub }
     local casual = (m.competitive == false)

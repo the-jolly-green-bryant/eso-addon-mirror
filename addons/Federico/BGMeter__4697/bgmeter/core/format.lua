@@ -6,8 +6,9 @@ local F = {}
 
 function F.abbrev(n)
     n = n or 0
+    if n < 0 then return "-" .. F.abbrev(-n) end
     if n < 1000 then
-        return tostring(n)
+        return tostring(math.floor(n + 0.5))
     elseif n < 1000000 then
         local k = n / 1000
         if k < 10 then return string.format("%.1fk", k) end
@@ -18,14 +19,42 @@ function F.abbrev(n)
 end
 
 function F.commas(n)
-    local s = tostring(math.floor((n or 0) + 0.5))
+    n = math.floor((n or 0) + 0.5)
+    local sign = ""
+    if n < 0 then sign, n = "-", -n end
+    local s = tostring(n)
     local out, count = "", 0
     for i = #s, 1, -1 do
         out = s:sub(i, i) .. out
         count = count + 1
         if count % 3 == 0 and i > 1 then out = "," .. out end
     end
-    return out
+    return sign .. out
+end
+
+function F.bytes(n)
+    n = n or 0
+    if n < 1024 then return string.format("%d B", math.floor(n + 0.5)) end
+    if n < 1024 * 1024 then return string.format("%d KB", math.floor(n / 1024 + 0.5)) end
+    return string.format("%.1f MB", n / (1024 * 1024))
+end
+
+function F.hexc(c)
+    return string.format("%02x%02x%02x",
+        math.floor(c[1] * 255 + 0.5), math.floor(c[2] * 255 + 0.5), math.floor(c[3] * 255 + 0.5))
+end
+
+function F.ago(ts, now)
+    if not ts or ts <= 0 then return nil end
+    if now == nil then
+        local A = BGMeter.zenimax.api
+        now = (type(A.get_timestamp) == "function") and A.get_timestamp() or nil
+    end
+    if not now or now <= ts then return nil end
+    local s = now - ts
+    if s < 3600 then return math.floor(s / 60) .. " min ago" end
+    if s < 86400 then return math.floor(s / 3600) .. " h ago" end
+    return math.floor(s / 86400) .. " d ago"
 end
 
 function F.duration(ms)

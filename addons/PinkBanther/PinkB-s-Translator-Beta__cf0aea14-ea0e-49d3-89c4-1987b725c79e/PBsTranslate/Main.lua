@@ -108,6 +108,8 @@ addon.Print = Print
 -- translateZone    zone chat, which on a busy megaserver is most of the traffic
 -- minKnownPercent  how much of a line has to be dictionary words before it is translated
 -- userWords        [english] = "japanese" or "pos:japanese", added with /pbtr add
+-- direction        "en2ja": English chat gets a Japanese line; "ja2en": Japanese chat gets
+--                  an English line (the smaller, callout-sized JaToEn dictionary)
 -- ---------------------------------------------------------------------------------------
 
 local DEFAULTS = {
@@ -119,6 +121,7 @@ local DEFAULTS = {
 	minKnownPercent = 0,
 	color = "9FD8FF",
 	userWords = {},
+	direction = "en2ja",
 }
 
 addon.DEFAULTS = DEFAULTS
@@ -204,10 +207,52 @@ local function ContainsNonASCII(text)
 	return false
 end
 
--- Returns the Japanese line, or nil and the reason it was not produced.
+function addon:Direction()
+	return self.sv and self.sv.direction == "ja2en" and "ja2en" or "en2ja"
+end
+
+local function HasASCIILetter(text)
+	return type(text) == "string" and text:find("[A-Za-z]") ~= nil
+end
+
+-- Japanese chat, into English. The same gates as the other way round: something read, the
+-- known-word threshold, valid UTF-8, and an English letter in the result.
+function addon:TranslateJaLine(text)
+	if not ContainsNonASCII(text) then
+		return nil, "no Japanese"
+	end
+	local ok, english, unknown, known = pcall(T.TranslateJaToEn, text)
+	if not ok then
+		self.stats.errors = self.stats.errors + 1
+		self.lastError = tostring(english)
+		return nil, "error"
+	end
+	known = known or 0
+	local total = known + #(unknown or {})
+	if known == 0 or total == 0 then
+		return nil, "no known words"
+	end
+	local percent = known * 100 / total
+	if percent < (self.sv and self.sv.minKnownPercent or DEFAULTS.minKnownPercent) then
+		return nil, string.format("%d%% known", math.floor(percent))
+	end
+	if not T.IsValidUTF8(english) then
+		return nil, "invalid text"
+	end
+	if not HasASCIILetter(english) then
+		return nil, "nothing to translate"
+	end
+	return english, nil, { known = known, unknown = #unknown }
+end
+
+-- Returns the translated line in the chosen direction, or nil and the reason it was not
+-- produced.
 function addon:TranslateLine(text)
 	if type(text) ~= "string" or text == "" then
 		return nil, "empty"
+	end
+	if self:Direction() == "ja2en" then
+		return self:TranslateJaLine(text)
 	end
 	if not text:find("[A-Za-z]") then
 		return nil, "no letters"
@@ -266,8 +311,19 @@ function addon:SetTranslationRGB(r, g, b)
 	self.sv.color = string.format("%02X%02X%02X", Byte(r), Byte(g), Byte(b))
 end
 
-function addon:FormatTranslation(ja)
-	return string.format("|c%s%s %s|r", self:GetTranslationColor(), GetString(SI_PBSTR_LINE_PREFIX), ja)
+-- The prefix says which way the line went. direction defaults to the chat setting; /jp,
+-- which always goes into Japanese, passes "en2ja".
+function addon:FormatTranslation(text, direction)
+	local prefix = (direction or self:Direction()) == "ja2en" and SI_PBSTR_LINE_PREFIX_EN or SI_PBSTR_LINE_PREFIX
+	return string.format("|c%s%s %s|r", self:GetTranslationColor(), GetString(prefix), text)
+end
+
+function addon:SetDirection(direction)
+	self.sv.direction = direction == "ja2en" and "ja2en" or "en2ja"
+end
+
+function addon:DirectionLabel()
+	return GetString(self:Direction() == "ja2en" and SI_PBSTR_DIRECTION_TO_EN or SI_PBSTR_DIRECTION_TO_JA)
 end
 
 local MAX_RECENT = 5
@@ -620,6 +676,7 @@ function addon:PrintStatus()
 	end
 	Print(GetString(SI_PBSTR_STATUS_TARGETS), OnOff(sv.translateOwn), OnOff(sv.translateOthers),
 		OnOff(sv.translateZone), sv.minKnownPercent)
+	Print(GetString(SI_PBSTR_STATUS_DIRECTION), self:DirectionLabel())
 	Print(GetString(SI_PBSTR_STATUS_ONLY), OnOff(sv.translationOnly))
 	local userCount = 0
 	for _ in pairs(sv.userWords) do
@@ -639,6 +696,7 @@ function addon:PrintHelp()
 		SI_PBSTR_HELP_TRANSLATE,
 		SI_PBSTR_HELP_STATUS,
 		SI_PBSTR_HELP_MASTER,
+		SI_PBSTR_HELP_DIRECTION,
 		SI_PBSTR_HELP_OWN,
 		SI_PBSTR_HELP_OTHERS,
 		SI_PBSTR_HELP_ZONE,
@@ -682,7 +740,7 @@ function addon:TranslateCommand(argumentString)
 		Print(GetString(SI_PBSTR_STATUS_LAST_ERROR), self.lastError)
 		return
 	end
-	Say(self:FormatTranslation(ja ~= "" and ja or "-"))
+	Say(self:FormatTranslation(ja ~= "" and ja or "-", "en2ja"))
 	Say(string.format(GetString(SI_PBSTR_REPLY_KNOWN), stats.known, stats.known + stats.unknown))
 end
 
@@ -735,6 +793,20 @@ function addon:HandleCommand(argumentString)
 		self.sv[key] = value
 		self:RefreshPanel()
 		self:PrintStatus()
+		return
+	end
+	if command == "mode" or command == "direction" then
+		local value = T.Lower(rest)
+		local direction = (value == "en2ja" or value == "ja") and "en2ja" or ((value == "ja2en" or value == "en") and "ja2en" or nil)
+		if rest ~= "" and not direction then
+			Print(GetString(SI_PBSTR_ERROR_DIRECTION))
+			return
+		end
+		if direction then
+			self:SetDirection(direction)
+			self:RefreshPanel()
+		end
+		Print(GetString(SI_PBSTR_STATUS_DIRECTION), self:DirectionLabel())
 		return
 	end
 	if command == "only" then

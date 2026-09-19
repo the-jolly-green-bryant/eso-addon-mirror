@@ -30,7 +30,33 @@ local TX = {
     prev   = { n = "EsoUI/Art/Buttons/large_leftArrow_up.dds",  p = "EsoUI/Art/Buttons/large_leftArrow_down.dds",  o = "EsoUI/Art/Buttons/large_leftArrow_over.dds" },
     nextb  = { n = "EsoUI/Art/Buttons/large_rightArrow_up.dds", p = "EsoUI/Art/Buttons/large_rightArrow_down.dds", o = "EsoUI/Art/Buttons/large_rightArrow_over.dds" },
     satchel = { n = "EsoUI/Art/Help/help_tabIcon_itemAssistance_up.dds", p = "EsoUI/Art/Help/help_tabIcon_itemAssistance_down.dds", o = "EsoUI/Art/Help/help_tabIcon_itemAssistance_over.dds" },
+    vet    = { n = "EsoUI/Art/Campaign/campaign_tabIcon_veterancy_up.dds", p = "EsoUI/Art/Campaign/campaign_tabIcon_veterancy_down.dds", o = "EsoUI/Art/Campaign/campaign_tabIcon_veterancy_over.dds" },
+    board  = { n = "EsoUI/Art/Battlegrounds/battlegrounds_tabIcon_battlegrounds_up.dds", p = "EsoUI/Art/Battlegrounds/battlegrounds_tabIcon_battlegrounds_down.dds", o = "EsoUI/Art/Battlegrounds/battlegrounds_tabIcon_battlegrounds_over.dds" },
+    about  = { n = "EsoUI/Art/Help/help_tabIcon_overview_up.dds", p = "EsoUI/Art/Help/help_tabIcon_overview_down.dds", o = "EsoUI/Art/Help/help_tabIcon_overview_over.dds" },
+    saved  = { n = "EsoUI/Art/Inventory/inventory_tabIcon_container_up.dds", p = "EsoUI/Art/Inventory/inventory_tabIcon_container_down.dds", o = "EsoUI/Art/Inventory/inventory_tabIcon_container_over.dds" },
+    lock   = { n = "EsoUI/Art/Miscellaneous/locked_up.dds", p = "EsoUI/Art/Miscellaneous/locked_down.dds", o = "EsoUI/Art/Miscellaneous/locked_over.dds" },
+    unlock = { n = "EsoUI/Art/Miscellaneous/unlocked_up.dds", p = "EsoUI/Art/Miscellaneous/unlocked_down.dds", o = "EsoUI/Art/Miscellaneous/unlocked_over.dds" },
+    map    = { n = "EsoUI/Art/MainMenu/menuBar_map_up.dds", p = "EsoUI/Art/MainMenu/menuBar_map_down.dds", o = "EsoUI/Art/MainMenu/menuBar_map_over.dds" },
 }
+
+local MODE_SHORT = {
+    deathmatch = "DM", domination = "DOM", crazy_king = "CK",
+    king_of_the_hill = "KOTH", capture_the_flag = "CTF", murderball = "BALL",
+}
+
+local function mode_tag(m)
+    local gt = C.GAME_TYPE_LABEL[m.gameType]
+    local tag = MODE_SHORT[gt] or "?"
+    if m.teamSize then tag = tag .. "  " .. m.teamSize .. "v" .. m.teamSize end
+    return tag
+end
+
+local function result_color(res)
+    if res == "WIN" then return K.COLOR.heal end
+    if res == "LOSS" then return K.COLOR.accent end
+    if res == "TIE" then return K.COLOR.gold end
+    return K.COLOR.text_dim
+end
 
 local MAP_ART = {
     ["temple"]            = "esoui/art/loadingscreens/loadscreen_battleground_temple_01.dds",
@@ -136,6 +162,7 @@ function W.tip_static(control, text) W.tips[control] = text; W.tip_dynamic(contr
 
 local function mk_button(parent, tx, size, onclick, tipText)
     local b = P.button(parent, tx.n, tx.p, tx.o)
+    b._tex_normal = tx.n
     b:SetDimensions(size, size)
     b:SetHandler("OnClicked", function() onclick() end)
     if tipText then
@@ -256,10 +283,7 @@ local function hit_proxy(target)
     return h
 end
 
-local function hexc(c)
-    return string.format("%02x%02x%02x",
-        math.floor(c[1] * 255 + 0.5), math.floor(c[2] * 255 + 0.5), math.floor(c[3] * 255 + 0.5))
-end
+local hexc = F.hexc
 
 local function neutral_color()
     return { 0.55, 0.55, 0.60 }
@@ -343,9 +367,11 @@ local function apply_map_art(m)
                 try_next()
             end
         else
+            W.map_art_path = cands[idx]
             BGMeter.Log.debug("map art resolved: %s", cands[idx])
         end
     end
+    W.map_art_path = nil
     try_next()
 end
 
@@ -377,6 +403,8 @@ U.hexc = hexc
 U.neutral_color = neutral_color
 U.flag_pin = flag_pin
 U.apply_map_art = apply_map_art
+U.mode_tag = mode_tag
+U.result_color = result_color
 
 W._sections = SEC
 BGMeter.UI.window = W

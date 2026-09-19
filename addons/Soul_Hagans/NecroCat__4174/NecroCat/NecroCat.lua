@@ -15,6 +15,7 @@ ZO_CreateStringId("SI_BINDING_NAME_NECROCAT_FOLLOW_SEND", "Отправить с
 ZO_CreateStringId("SI_BINDING_NAME_NECROCAT_FOLLOW_YES", "Follow: Телепортироваться (Принять)")
 ZO_CreateStringId("SI_BINDING_NAME_NECROCAT_FOLLOW_NO", "Follow: Отмена")
 ZO_CreateStringId("SI_BINDING_NAME_NECROCAT_SELF_WHISPER", "Шепот самому себе (Заметка)")
+ZO_CreateStringId("SI_BINDING_NAME_NECROCAT_KICK_RANDOMS", "Кикнуть чужих (не из Избранных)")
 
 ---------------------------------------------------------
 -- 1. ФУНКЦИИ ДЕЙСТВИЙ (МАУНТ, ЧАТ, ТЕЛЕПОРТ)
@@ -93,6 +94,17 @@ function NC.OnActivityFinderStatusUpdate(eventCode, status)
     end
 end
 
+-- Автоприем входа в Сиродил и Имперский город (PvP кампания / затягивание группой)
+function NC.OnCampaignQueueStateChange(eventCode, id, isGroup, state)
+    if not NC.savedVars or not NC.savedVars.autoAcceptPvPQueue then return end
+
+    if state == CAMPAIGN_QUEUE_REQUEST_STATE_CONFIRMING then
+        ConfirmCampaignEntry(id, isGroup, true)
+        local campName = (GetCampaignName and GetCampaignName(id)) or "Кампания"
+        d(string.format("|c66f2ff[NecroCat]|r Вход в |c00FF00%s|r принят автоматически!", campName))
+    end
+end
+
 -- Автоматический отзыв и возврат небоевых питомцев в триалах
 function NC.CheckTrialPets()
     if not NC.savedVars or not NC.savedVars.dismissPetsInTrials then return end
@@ -137,7 +149,62 @@ function NC.CheckTrialPets()
     end
 end
 
+-- Умная проверка статуса игрока (ручной выбор имеет высший приоритет над списком друзей)
+function NC.IsPlayerFavorite(displayName, charName)
+    local sv = NC.savedVars
+    if not sv then return false end
 
+    local favs = sv.favoritePlayers or {}
+
+    -- 1. Высший приоритет: ручной выбор (true = добавлен, false = исключен вручную)
+    if displayName and favs[displayName] ~= nil then
+        return favs[displayName]
+    end
+    if charName and favs[charName] ~= nil then
+        return favs[charName]
+    end
+
+    -- 2. Если включена настройка "Считать друзей избранными"
+    if sv.treatFriendsAsFavorites and displayName and IsFriend and IsFriend(displayName) then
+        return true
+    end
+
+    return false
+end
+
+-- Исключение из группы всех игроков, которых нет в списке избранных
+function NC.KickNonFavorites()
+    if not IsUnitGrouped("player") then
+        d("|cFF5555[NecroCat]|r Вы не находитесь в группе.")
+        return
+    end
+
+    if not IsUnitGroupLeader("player") then
+        d("|cFF5555[NecroCat]|r Вы должны быть лидером группы, чтобы исключать участников!")
+        return
+    end
+
+    local kickedCount = 0
+
+    for i = 1, GetGroupSize() do
+        local unitTag = GetGroupUnitTagByIndex(i)
+        if unitTag and not AreUnitsEqual("player", unitTag) then
+            local displayName = GetUnitDisplayName(unitTag)
+            local charName = GetUnitName(unitTag)
+
+            if not NC.IsPlayerFavorite(displayName, charName) then
+                GroupKick(unitTag)
+                kickedCount = kickedCount + 1
+                local kickedName = (displayName and displayName ~= "") and displayName or (charName or unitTag)
+                d(string.format("|c66f2ff[NecroCat]|r Исключен из группы: |cFF5555%s|r", kickedName))
+            end
+        end
+    end
+
+    if kickedCount == 0 then
+        d("|c66f2ff[NecroCat]|r В группе нет посторонних игроков (все участники в списке избранных).")
+    end
+end
 
 -- Поиск всех неизвестных рецептов, чертежей мебели, мотивов и страниц стилей
 function NC.GetUnknownKnowledgeItems()
@@ -468,6 +535,20 @@ local function SuppressDialog(dialogName, dialogData)
             end
             return true
         end
+    end
+
+    -- 4. Авто-подтверждение входа и очереди в PvP (Сиродил / Имперка)
+    if NC.savedVars.autoAcceptPvPQueue and dialogName == "PTP_TIMED_RESPONSE_PROMPT" then
+        local dialogInfo = ESO_Dialogs and ESO_Dialogs[dialogName]
+        local btn1 = dialogInfo and dialogInfo.buttons and dialogInfo.buttons[1]
+        if btn1 and btn1.callback then
+            zo_callLater(function()
+                btn1.callback(ZO_Dialog1, dialogData)
+            end, 20)
+        elseif dialogData and type(dialogData.callback) == "function" then
+            dialogData.callback()
+        end
+        return true
     end
 end
 
@@ -1523,6 +1604,523 @@ function NC.TestPlayerDebuff()
 end
 
 ---------------------------------------------------------
+-- МОДУЛЬ: ДЕБАФФЫ НА ЦЕЛИ (ВРАГЕ)
+---------------------------------------------------------
+
+NC.TargetDebuffControls = {}
+
+function NC.UpdateTargetDebuffsUI()
+    if not NC.TargetDebuffsFrame or not NC.TargetDebuffsFragment then return end
+    local sv = NC.savedVars
+    if not sv then return end
+
+    local unlocked = sv.targetDebuffsUnlocked
+    local size = sv.targetDebuffsSize or 36
+    local isVertical = (sv.targetDebuffsOrientation == 1)
+    local numSlots = 5
+    local spacing = 4
+    local slotHeight = size + 14
+
+    NC.TargetDebuffsFrame:SetMovable(unlocked)
+    NC.TargetDebuffsFrame:SetMouseEnabled(unlocked)
+    NC.TargetDebuffsPreview:SetHidden(not unlocked)
+
+    if isVertical then
+        local totalHeight = (slotHeight * numSlots) + (spacing * (numSlots - 1))
+        NC.TargetDebuffsFrame:SetDimensions(size, totalHeight)
+    else
+        local totalWidth = (size * numSlots) + (spacing * (numSlots - 1))
+        NC.TargetDebuffsFrame:SetDimensions(totalWidth, slotHeight)
+    end
+
+    if sv.targetDebuffsEnabled then
+        HUD_SCENE:AddFragment(NC.TargetDebuffsFragment)
+        HUD_UI_SCENE:AddFragment(NC.TargetDebuffsFragment)
+    else
+        HUD_SCENE:RemoveFragment(NC.TargetDebuffsFragment)
+        HUD_UI_SCENE:RemoveFragment(NC.TargetDebuffsFragment)
+        NC.TargetDebuffsFrame:SetHidden(true)
+        return
+    end
+
+    NC.UpdateTargetDebuffs()
+end
+
+local function GetOrCreateTargetDebuffControl(index)
+    if NC.TargetDebuffControls[index] then
+        return NC.TargetDebuffControls[index]
+    end
+
+    local size = NC.savedVars.targetDebuffsSize or 36
+    local parent = NC.TargetDebuffsFrame
+
+    local ctrl = WINDOW_MANAGER:CreateControl("NecroCat_TargetDebuff" .. index, parent, CT_CONTROL)
+    ctrl:SetDimensions(size, size + 14)
+
+    local icon = WINDOW_MANAGER:CreateControl("$(parent)Icon", ctrl, CT_TEXTURE)
+    icon:SetAnchor(TOPLEFT, ctrl, TOPLEFT, 0, 0)
+    icon:SetDimensions(size, size)
+    icon:SetDrawLayer(DL_CONTROLS)
+
+    local labelBg = WINDOW_MANAGER:CreateControl("$(parent)LabelBg", ctrl, CT_BACKDROP)
+    labelBg:SetAnchor(TOPLEFT, icon, BOTTOMLEFT, 0, 0)
+    labelBg:SetAnchor(BOTTOMRIGHT, ctrl, BOTTOMRIGHT, 0, 0)
+    labelBg:SetCenterColor(0, 0, 0, 0.75)
+    labelBg:SetEdgeColor(0, 0, 0, 0)
+    labelBg:SetDrawLayer(DL_OVERLAY)
+    labelBg:SetDrawLevel(1)
+
+    local label = WINDOW_MANAGER:CreateControl("$(parent)Label", ctrl, CT_LABEL)
+    label:SetAnchor(CENTER, labelBg, CENTER, 0, 0)
+    label:SetFont("ZoFontWinH5")
+    label:SetColor(1, 0.4, 0.4, 1)
+    label:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    label:SetDrawLayer(DL_OVERLAY)
+    label:SetDrawLevel(2)
+
+    local stackLabel = WINDOW_MANAGER:CreateControl("$(parent)Stack", ctrl, CT_LABEL)
+    stackLabel:SetAnchor(TOPRIGHT, icon, TOPRIGHT, -1, 1)
+    stackLabel:SetFont("ZoFontGameSmall")
+    stackLabel:SetColor(1, 0.9, 0.2, 1)
+    stackLabel:SetDrawLayer(DL_OVERLAY)
+    stackLabel:SetDrawLevel(3)
+    stackLabel:SetHidden(true)
+
+    local debuffData = {
+        control    = ctrl,
+        icon       = icon,
+        label      = label,
+        labelBg    = labelBg,
+        stackLabel = stackLabel,
+    }
+
+    ctrl:SetHandler("OnMouseEnter", function(self)
+        if ShowBuffTooltip then ShowBuffTooltip(self, debuffData.data) end
+    end)
+    ctrl:SetHandler("OnMouseExit", function()
+        ClearTooltip(InformationTooltip)
+    end)
+
+    NC.TargetDebuffControls[index] = debuffData
+    return debuffData
+end
+
+function NC.UpdateTargetDebuffs()
+    if not NC.TargetDebuffsFrame or not NC.savedVars or not NC.savedVars.targetDebuffsEnabled then return end
+
+    local activeDebuffs = {}
+    local isUnlocked = NC.savedVars.targetDebuffsUnlocked
+
+    -- В режиме настройки показываем 5 образцовых дебаффов цели
+    if isUnlocked then
+        activeDebuffs = {
+            { icon = "EsoUI/Art/Icons/ability_debuff_major_breach.dds", remain = 18.0, stackCount = 0, isPermanent = false },
+            { icon = "EsoUI/Art/Icons/ability_debuff_minor_vulnerability.dds", remain = 12.5, stackCount = 0, isPermanent = false },
+            { icon = "EsoUI/Art/Icons/ability_debuff_major_defile.dds", remain = 7.0, stackCount = 0, isPermanent = false },
+            { icon = "EsoUI/Art/Icons/ability_debuff_offbalance.dds", remain = 4.2, stackCount = 0, isPermanent = false },
+            { icon = "EsoUI/Art/Icons/ability_debuff_stun.dds", remain = 2.1, stackCount = 0, isPermanent = false },
+        }
+    else
+        if not DoesUnitExist("reticleover") or IsUnitDead("reticleover") then
+            for i = 1, #NC.TargetDebuffControls do
+                NC.TargetDebuffControls[i].control:SetHidden(true)
+            end
+            return
+        end
+
+        local numBuffs = GetNumBuffs("reticleover")
+        local now = GetFrameTimeSeconds()
+
+        for i = 1, numBuffs do
+            local buffName, timeStarted, timeEnding, buffSlot, stackCount, iconFilename, buffType, effectType, abilityType, statusEffectType, abilityId, canClickOff, castByPlayer = GetUnitBuffInfo("reticleover", i)
+
+            if effectType == BUFF_EFFECT_TYPE_DEBUFF and iconFilename and iconFilename ~= "" then
+                local passesPlayerFilter = not NC.savedVars.targetDebuffsOnlyPlayer or castByPlayer
+                if passesPlayerFilter then
+                    local isPermanent = (timeEnding == 0) or (timeEnding <= timeStarted)
+                    local remain = isPermanent and 0 or (timeEnding - now)
+
+                    table.insert(activeDebuffs, {
+                        name        = buffName,
+                        icon        = iconFilename,
+                        remain      = remain,
+                        isPermanent = isPermanent,
+                        stackCount  = stackCount or 0,
+                        timeStarted = timeStarted or 0,
+                        slot        = buffSlot or 0,
+                        abilityId   = abilityId or 0,
+                    })
+                end
+            end
+        end
+    end
+
+    -- Сортировка дебаффов цели: по времени получения
+    table.sort(activeDebuffs, function(a, b)
+        if a.isPermanent ~= b.isPermanent then
+            return not a.isPermanent
+        end
+        local timeA = a.timeStarted or 0
+        local timeB = b.timeStarted or 0
+        if timeA ~= timeB then
+            return timeA < timeB
+        end
+        return (a.slot or 0) < (b.slot or 0)
+    end)
+
+    local size = NC.savedVars.targetDebuffsSize or 36
+    local isVertical = (NC.savedVars.targetDebuffsOrientation == 1)
+    local growthMode = NC.savedVars.targetDebuffsGrowth or 1
+    local spacing = 4
+
+    local isReverse = false
+    if growthMode == 2 then
+        isReverse = false
+    elseif growthMode == 3 then
+        isReverse = true
+    else
+        local cx, cy = NC.TargetDebuffsFrame:GetCenter()
+        local sw, sh = GuiRoot:GetDimensions()
+        if isVertical then
+            isReverse = (cy and cy > (sh / 2))
+        else
+            isReverse = (cx and cx > (sw / 2))
+        end
+    end
+
+    for i, debuff in ipairs(activeDebuffs) do
+        local ctrlData = GetOrCreateTargetDebuffControl(i)
+        ctrlData.data = debuff
+        ctrlData.control:SetMouseEnabled(not isUnlocked)
+        ctrlData.control:SetDimensions(size, size + 14)
+        ctrlData.icon:SetDimensions(size, size)
+        ctrlData.control:ClearAnchors()
+
+        if i == 1 then
+            if isVertical then
+                if isReverse then
+                    ctrlData.control:SetAnchor(BOTTOM, NC.TargetDebuffsFrame, BOTTOM, 0, 0)
+                else
+                    ctrlData.control:SetAnchor(TOP, NC.TargetDebuffsFrame, TOP, 0, 0)
+                end
+            else
+                if isReverse then
+                    ctrlData.control:SetAnchor(RIGHT, NC.TargetDebuffsFrame, RIGHT, 0, 0)
+                else
+                    ctrlData.control:SetAnchor(LEFT, NC.TargetDebuffsFrame, LEFT, 0, 0)
+                end
+            end
+        else
+            local prevCtrl = NC.TargetDebuffControls[i - 1].control
+            if isVertical then
+                if isReverse then
+                    ctrlData.control:SetAnchor(BOTTOM, prevCtrl, TOP, 0, -spacing)
+                else
+                    ctrlData.control:SetAnchor(TOP, prevCtrl, BOTTOM, 0, spacing)
+                end
+            else
+                if isReverse then
+                    ctrlData.control:SetAnchor(RIGHT, prevCtrl, LEFT, -spacing, 0)
+                else
+                    ctrlData.control:SetAnchor(LEFT, prevCtrl, RIGHT, spacing, 0)
+                end
+            end
+        end
+
+        ctrlData.icon:SetTexture(debuff.icon)
+
+        if debuff.isPermanent then
+            ctrlData.label:SetText("")
+            ctrlData.label:SetHidden(true)
+            ctrlData.labelBg:SetHidden(true)
+        else
+            local s = debuff.remain
+            local timeStr = ""
+            if s <= 0 then
+                timeStr = ""
+            elseif s >= 60 then
+                local mins = math.floor(s / 60)
+                local secs = math.floor(s % 60)
+                timeStr = string.format("%d:%02d", mins, secs)
+            elseif s >= 5 then
+                timeStr = string.format("%d", math.ceil(s))
+            else
+                timeStr = string.format("%.1f", s)
+            end
+
+            ctrlData.label:SetText(timeStr)
+            ctrlData.label:SetHidden(false)
+            ctrlData.labelBg:SetHidden(false)
+        end
+
+        if debuff.stackCount > 1 then
+            ctrlData.stackLabel:SetText(tostring(debuff.stackCount))
+            ctrlData.stackLabel:SetHidden(false)
+        else
+            ctrlData.stackLabel:SetHidden(true)
+        end
+
+        ctrlData.control:SetHidden(false)
+    end
+
+    for i = #activeDebuffs + 1, #NC.TargetDebuffControls do
+        NC.TargetDebuffControls[i].control:SetHidden(true)
+    end
+end
+
+function NC.CreateTargetDebuffsUI()
+    if NC.TargetDebuffsFrame then return end
+
+    local size = NC.savedVars.targetDebuffsSize or 36
+
+    local frame = WINDOW_MANAGER:CreateTopLevelWindow("NecroCat_TargetDebuffsFrame")
+    frame:SetDimensions(size, size)
+    frame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, NC.savedVars.targetDebuffsLeft or 500, NC.savedVars.targetDebuffsTop or 220)
+    frame:SetMovable(NC.savedVars.targetDebuffsUnlocked)
+    frame:SetMouseEnabled(NC.savedVars.targetDebuffsUnlocked)
+    frame:SetClampedToScreen(true)
+    frame:SetHidden(true)
+
+    -- Полупрозрачная оранжево-красная направляющая для настройки положения
+    local preview = WINDOW_MANAGER:CreateControl("$(parent)Preview", frame, CT_BACKDROP)
+    preview:SetAnchorFill(frame)
+    preview:SetCenterColor(0.4, 0.1, 0, 0.4)
+    preview:SetEdgeColor(1, 0.4, 0.1, 0.85)
+    preview:SetDrawLayer(DL_BACKGROUND)
+    preview:SetHidden(not NC.savedVars.targetDebuffsUnlocked)
+
+    frame:SetHandler("OnMoveStop", function(self)
+        self:ClearAnchors()
+        self:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, self:GetLeft(), self:GetTop())
+        NC.savedVars.targetDebuffsLeft = self:GetLeft()
+        NC.savedVars.targetDebuffsTop = self:GetTop()
+    end)
+
+    NC.TargetDebuffsFrame    = frame
+    NC.TargetDebuffsPreview  = preview
+    NC.TargetDebuffsFragment = ZO_SimpleSceneFragment:New(frame)
+
+    NC.UpdateTargetDebuffsUI()
+end
+
+---------------------------------------------------------
+-- МОДУЛЬ: НАПОМИНАНИЕ О ЕДЕ И ВОЕННОМ ТОРТЕ
+---------------------------------------------------------
+
+-- Надежная проверка физического нахождения в PvP-зонах (Сиродил и Имперский город)
+local function IsInTortePvPZone()
+    if GetCurrentZoneHouseId and GetCurrentZoneHouseId() ~= 0 then return false end
+
+    local inCyro = (IsPlayerInAvAWorld and IsPlayerInAvAWorld()) and (not IsInImperialCity or not IsInImperialCity())
+    local inIC = (IsInImperialCity and IsInImperialCity()) or (IsInImperialCitySewers and IsInImperialCitySewers())
+
+    return inCyro or inIC
+end
+
+-- Надежная проверка физического нахождения в боевых локациях для Еды
+local function IsInFoodCombatZone()
+    -- 1. В любых домах и гильдхоллах ID дома всегда больше 0 — наглухо блокируем
+    if GetCurrentZoneHouseId and GetCurrentZoneHouseId() > 0 then 
+        return false 
+    end
+
+    -- 2. Физические боевые локации (только когда ты стоишь в них прямо сейчас)
+    local isDungeon = IsUnitInDungeon and IsUnitInDungeon("player")
+    local isRaid = IsRaidInProgress and IsRaidInProgress()
+    local isBG = IsActiveWorldBattleground and IsActiveWorldBattleground()
+    local isPvP = (IsPlayerInAvAWorld and IsPlayerInAvAWorld()) or (IsInImperialCity and IsInImperialCity())
+
+    local zoneId = GetZoneId and GetZoneId(GetUnitZoneIndex("player"))
+    local isTrialOrArena = (zoneId and NC.TrialZoneIds and NC.TrialZoneIds[zoneId] == true)
+
+    return isDungeon or isRaid or isBG or isPvP or isTrialOrArena
+end
+
+-- Сканирование наличия активных баффов еды и военного торта
+local function CheckFoodAndTorteBuffs()
+    local hasFood = false
+    local hasTorte = false
+    local numBuffs = GetNumBuffs("player")
+    local now = GetFrameTimeSeconds()
+
+    for i = 1, numBuffs do
+        local buffName, timeStarted, timeEnding, buffSlot, stackCount, iconFilename, buffType, effectType, abilityType, statusEffectType, abilityId = GetUnitBuffInfo("player", i)
+
+        if effectType == BUFF_EFFECT_TYPE_BUFF and iconFilename and iconFilename ~= "" then
+            local isPermanent = (timeEnding == 0) or (timeEnding <= timeStarted)
+            local totalDuration = isPermanent and 0 or (timeEnding - timeStarted)
+            local remain = isPermanent and 0 or (timeEnding - now)
+            local cleanName = buffName and zo_strlower(zo_strformat("<<1>>", buffName)) or ""
+
+            -- 1. Торт (War Torte: Коловианский, Расплавленный, Бело-золотой)
+            if string.find(cleanName, "военных навык") 
+               or string.find(cleanName, "war skill")
+               or string.find(cleanName, "alliance war")
+               or string.find(cleanName, "torte") 
+               or string.find(cleanName, "торт")
+               or abilityId == 147590 or abilityId == 147591 or abilityId == 147592
+               or (iconFilename and string.find(iconFilename, "torte")) then
+                if isPermanent or remain > 60 then
+                    hasTorte = true
+                end
+
+            -- 2. Настоящая еда (от 20 минут, исключая свитки и торты)
+            elseif not isPermanent and totalDuration >= 1200 and remain > 90 then
+                if not string.find(cleanName, "scroll") 
+                   and not string.find(cleanName, "свиток")
+                   and not string.find(cleanName, "амбрози")
+                   and not string.find(cleanName, "ambrosia")
+                   and not string.find(cleanName, "военных навык")
+                   and not string.find(cleanName, "war skill") then
+                    hasFood = true
+                end
+            end
+        end
+    end
+
+    return hasFood, hasTorte
+end
+
+function NC.UpdateFoodReminderUI()
+    if not NC.FoodReminderFrame or not NC.FoodReminderFragment then return end
+    local sv = NC.savedVars
+    if not sv then return end
+
+    local canMove = sv.foodReminderUnlocked or sv.foodReminderPreview
+    NC.FoodReminderFrame:SetMovable(canMove)
+    NC.FoodReminderFrame:SetMouseEnabled(canMove)
+
+    if sv.foodReminderEnabled then
+        HUD_SCENE:AddFragment(NC.FoodReminderFragment)
+        HUD_UI_SCENE:AddFragment(NC.FoodReminderFragment)
+    else
+        HUD_SCENE:RemoveFragment(NC.FoodReminderFragment)
+        HUD_UI_SCENE:RemoveFragment(NC.FoodReminderFragment)
+        NC.FoodReminderFrame:SetHidden(true)
+        return
+    end
+
+    NC.UpdateFoodReminder()
+end
+
+function NC.UpdateFoodReminder()
+    if not NC.FoodReminderFrame or not NC.savedVars or not NC.savedVars.foodReminderEnabled then return end
+
+    local sv = NC.savedVars
+    local size = sv.foodReminderSize or 48
+
+    -- 1. РЕЖИМ ТЕСТОВОГО ПРЕВЬЮ: показываем зеленую рамку и ОБЕ иконки
+    if sv.foodReminderPreview then
+        if NC.FoodReminderPreview then NC.FoodReminderPreview:SetHidden(false) end
+
+        NC.FoodReminderFoodIcon:SetDimensions(size, size)
+        NC.FoodReminderFoodIcon:ClearAnchors()
+        NC.FoodReminderFoodIcon:SetAnchor(LEFT, NC.FoodReminderFrame, LEFT, 0, 0)
+        NC.FoodReminderFoodIcon:SetHidden(false)
+
+        NC.FoodReminderTorteIcon:SetDimensions(size, size)
+        NC.FoodReminderTorteIcon:ClearAnchors()
+        NC.FoodReminderTorteIcon:SetAnchor(LEFT, NC.FoodReminderFoodIcon, RIGHT, 8, 0)
+        NC.FoodReminderTorteIcon:SetHidden(false)
+
+        NC.FoodReminderFrame:SetDimensions((size * 2) + 8, size)
+        NC.FoodReminderFrame:SetHidden(false)
+        return
+    end
+
+    -- 2. БОЕВОЙ РЕЖИМ: зеленая рамка ВСЕГДА наглухо скрыта!
+    if NC.FoodReminderPreview then NC.FoodReminderPreview:SetHidden(true) end
+
+    local inFoodZone = IsInFoodCombatZone()
+    local inTorteZone = IsInTortePvPZone()
+
+    if not inFoodZone and not inTorteZone then
+        NC.FoodReminderFrame:SetHidden(true)
+        return
+    end
+
+    local hasFood, hasTorte = CheckFoodAndTorteBuffs()
+    local needFoodAlert = inFoodZone and not hasFood
+    local needTorteAlert = inTorteZone and not hasTorte
+
+    NC.FoodReminderFoodIcon:SetDimensions(size, size)
+    NC.FoodReminderTorteIcon:SetDimensions(size, size)
+
+    NC.FoodReminderFoodIcon:SetHidden(not needFoodAlert)
+    NC.FoodReminderTorteIcon:SetHidden(not needTorteAlert)
+
+    if not needFoodAlert and not needTorteAlert then
+        NC.FoodReminderFrame:SetHidden(true)
+    else
+        if needFoodAlert and needTorteAlert then
+            NC.FoodReminderFoodIcon:ClearAnchors()
+            NC.FoodReminderFoodIcon:SetAnchor(LEFT, NC.FoodReminderFrame, LEFT, 0, 0)
+            NC.FoodReminderTorteIcon:ClearAnchors()
+            NC.FoodReminderTorteIcon:SetAnchor(LEFT, NC.FoodReminderFoodIcon, RIGHT, 8, 0)
+            NC.FoodReminderFrame:SetDimensions((size * 2) + 8, size)
+        elseif needFoodAlert then
+            NC.FoodReminderFoodIcon:ClearAnchors()
+            NC.FoodReminderFoodIcon:SetAnchor(CENTER, NC.FoodReminderFrame, CENTER, 0, 0)
+            NC.FoodReminderFrame:SetDimensions(size, size)
+        elseif needTorteAlert then
+            NC.FoodReminderTorteIcon:ClearAnchors()
+            NC.FoodReminderTorteIcon:SetAnchor(CENTER, NC.FoodReminderFrame, CENTER, 0, 0)
+            NC.FoodReminderFrame:SetDimensions(size, size)
+        end
+        NC.FoodReminderFrame:SetHidden(false)
+    end
+end
+
+function NC.CreateFoodReminderUI()
+    if NC.FoodReminderFrame then return end
+
+    local size = NC.savedVars.foodReminderSize or 48
+
+    local frame = WINDOW_MANAGER:CreateTopLevelWindow("NecroCat_FoodReminderFrame")
+    frame:SetDimensions((size * 2) + 8, size)
+    frame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, NC.savedVars.foodReminderLeft or 600, NC.savedVars.foodReminderTop or 350)
+    frame:SetMovable(NC.savedVars.foodReminderUnlocked or NC.savedVars.foodReminderPreview)
+    frame:SetMouseEnabled(NC.savedVars.foodReminderUnlocked or NC.savedVars.foodReminderPreview)
+    frame:SetClampedToScreen(true)
+    frame:SetHidden(true)
+
+    -- Зеленая подложка (видна ТОЛЬКО при тестовом превью)
+    local preview = WINDOW_MANAGER:CreateControl("$(parent)Preview", frame, CT_BACKDROP)
+    preview:SetAnchorFill(frame)
+    preview:SetCenterColor(0, 0.3, 0.1, 0.4)
+    preview:SetEdgeColor(0.2, 1, 0.4, 0.85)
+    preview:SetDrawLayer(DL_BACKGROUND)
+    preview:SetHidden(true)
+
+    local foodIcon = WINDOW_MANAGER:CreateControl("$(parent)Food", frame, CT_TEXTURE)
+    foodIcon:SetDimensions(size, size)
+    foodIcon:SetAnchor(LEFT, frame, LEFT, 0, 0)
+    foodIcon:SetTexture("NecroCat/imgs/food.dds")
+    foodIcon:SetDrawLayer(DL_CONTROLS)
+
+    local torteIcon = WINDOW_MANAGER:CreateControl("$(parent)Torte", frame, CT_TEXTURE)
+    torteIcon:SetDimensions(size, size)
+    torteIcon:SetAnchor(LEFT, foodIcon, RIGHT, 8, 0)
+    torteIcon:SetTexture("NecroCat/imgs/torte.dds")
+    torteIcon:SetDrawLayer(DL_CONTROLS)
+
+    frame:SetHandler("OnMoveStop", function(self)
+        self:ClearAnchors()
+        self:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, self:GetLeft(), self:GetTop())
+        NC.savedVars.foodReminderLeft = self:GetLeft()
+        NC.savedVars.foodReminderTop = self:GetTop()
+    end)
+
+    NC.FoodReminderFrame     = frame
+    NC.FoodReminderPreview   = preview
+    NC.FoodReminderFoodIcon  = foodIcon
+    NC.FoodReminderTorteIcon = torteIcon
+    NC.FoodReminderFragment  = ZO_SimpleSceneFragment:New(frame)
+
+    NC.UpdateFoodReminderUI()
+end
+
+---------------------------------------------------------
 -- МОДУЛЬ: СПИДРАН И РЕЙДОВЫЙ ТАЙМЕР
 ---------------------------------------------------------
 
@@ -1579,49 +2177,17 @@ function NC.UpdateSpeedrunHudUI()
     NC.UpdateSpeedrunHud()
 end
 
-local function SafeFormatTimer(seconds)
-    if not seconds or seconds < 0 then seconds = 0 end
-    local s = math.floor(seconds)
-    local hours = math.floor(s / 3600)
-    local mins = math.floor((s % 3600) / 60)
-    local secs = math.floor(s % 60)
-    if hours > 0 then
-        return string.format("%d:%02d:%02d", hours, mins, secs)
-    else
-        return string.format("%02d:%02d", mins, secs)
-    end
-end
-
-local function SafeFormatScore(num)
-    if not num or num <= 0 then return "0" end
-    local formatted = tostring(math.floor(num))
-    while true do  
-        local k
-        formatted, k = string.gsub(formatted, "^(-?%d+)(%d%d%d)", '%1,%2')
-        if k == 0 then break end
-    end
-    return formatted
-end
-
 function NC.UpdateSpeedrunHud()
     if not NC.SpeedrunFrame or not NC.savedVars or not NC.savedVars.speedrunHudEnabled then return end
 
     local sv = NC.savedVars
     local isUnlocked = sv.speedrunHudUnlocked
+    local ICON_TIME = "|t20:20:esoui/art/miscellaneous/timer_32.dds|t"
 
-    local ICON_TIME  = "|t20:20:esoui/art/miscellaneous/timer_32.dds|t"
-    local ICON_VIT   = "|t20:20:esoui/art/trials/vitalitydepletion.dds|t"
-    local ICON_SCORE = "|t20:20:esoui/art/trials/trialpoints_veryhigh.dds|t"
-
-    -- Режим настройки: показываем полный тестовый виджет
+    -- Режим настройки: показываем аккуратный тестовый виджет
     if isUnlocked then
         NC.SpeedrunFrame:SetHidden(false)
         NC.SpeedrunTimerLabel:SetText(string.format("%s |c66f2ff14:25|r |cAAAAAA/ 30:00|r", ICON_TIME))
-        NC.SpeedrunVitalityLabel:SetText(string.format("%s |c00FF0036/36|r", ICON_VIT))
-        NC.SpeedrunVitalityLabel:SetHidden(false)
-        NC.SpeedrunScoreLabel:SetText(string.format("%s |cFFD700125,400|r", ICON_SCORE))
-        NC.SpeedrunScoreLabel:SetHidden(false)
-        NC.SpeedrunFrame:SetDimensions(310, 28)
         return
     end
 
@@ -1630,12 +2196,6 @@ function NC.UpdateSpeedrunHud()
     local isRaid = (IsRaidInProgress and IsRaidInProgress()) or (GetRaidDuration and GetRaidDuration() > 0)
 
     if not isInDungeon and not isRaid then
-        NC.SpeedrunFrame:SetHidden(true)
-        return
-    end
-
-    -- Прячем таймер в меню Esc / настройках (если не включен режим перемещения)
-    if not isUnlocked and not (HUD_SCENE:IsShowing() or HUD_UI_SCENE:IsShowing()) then
         NC.SpeedrunFrame:SetHidden(true)
         return
     end
@@ -1652,27 +2212,19 @@ function NC.UpdateSpeedrunHud()
 
     local targetTime = NC.GetCurrentSpeedrunTarget and NC.GetCurrentSpeedrunTarget()
     local elapsed = 0
-    local hasRaidStats = false
-    local score = 0
-    local currentRevives, maxRevives = 0, 0
 
     if isRaid then
         elapsed = (GetRaidDuration and GetRaidDuration() or 0) / 1000 -- игра отдает миллисекунды
-        score = GetRaidScore and GetRaidScore() or 0
-        if GetRaidReviveCounters then
-            currentRevives, maxRevives = GetRaidReviveCounters()
-            hasRaidStats = (maxRevives and maxRevives > 0)
-        end
     elseif isInDungeon and sv.dungeonStartTimeStamp and sv.dungeonStartTimeStamp > 0 then
         elapsed = GetTimeStamp() - sv.dungeonStartTimeStamp
     end
 
     -- Формируем строку времени
-    local timeStr = SafeFormatTimer(elapsed)
+    local timeStr = NC.FormatRaidTimer(elapsed)
     local isOvertime = targetTime and (elapsed > targetTime)
 
     if targetTime then
-        local targetStr = SafeFormatTimer(targetTime)
+        local targetStr = NC.FormatRaidTimer(targetTime)
         if isOvertime then
             NC.SpeedrunTimerLabel:SetText(string.format("%s |cFF3333%s|r |c888888/ %s|r", ICON_TIME, timeStr, targetStr))
         else
@@ -1682,45 +2234,6 @@ function NC.UpdateSpeedrunHud()
         NC.SpeedrunTimerLabel:SetText(string.format("%s |c66f2ff%s|r", ICON_TIME, timeStr))
     end
 
-    local zoneIndex = GetUnitZoneIndex("player")
-    local zoneId = GetZoneId(zoneIndex)
-    -- Строгая проверка: Триал только если он ЕСТЬ в реестре триалов NC.TrialZoneIds
-    local isTrialZone = (zoneId and NC.TrialZoneIds and NC.TrialZoneIds[zoneId] == true)
-
-    -- Определяем базовые жизни по зоне: Краглорн = 24, БРП = 15, DLC-триалы = 36
-    local defaultMaxRevives = 36
-    if zoneId == 636 or zoneId == 638 or zoneId == 639 then
-        defaultMaxRevives = 24
-    elseif zoneId == 1082 then
-        defaultMaxRevives = 15
-    end
-
-    -- Если мы в Триале или на Арене — показываем панель с Жизнями и Очками
-    if isRaid or isTrialZone or hasRaidStats then
-        local effectiveMax = (maxRevives and maxRevives > 0) and maxRevives or defaultMaxRevives
-        local effectiveCur = (maxRevives and maxRevives > 0) and currentRevives or defaultMaxRevives
-        local vitColor = "|c00FF00"
-
-        if effectiveCur < effectiveMax then
-            vitColor = (effectiveCur <= (effectiveMax * 0.3)) and "|cFF3333" or "|cFFFF22"
-        end
-
-        local effectiveScore = (score and score > 0) and score or (effectiveCur * 1000)
-
-        NC.SpeedrunVitalityLabel:SetText(string.format("%s %s%d/%d|r", ICON_VIT, vitColor, effectiveCur, effectiveMax))
-        NC.SpeedrunVitalityLabel:SetHidden(false)
-
-        NC.SpeedrunScoreLabel:SetText(string.format("%s |cFFFFFF%s|r", ICON_SCORE, SafeFormatScore(effectiveScore)))
-        NC.SpeedrunScoreLabel:SetHidden(false)
-
-        NC.SpeedrunFrame:SetDimensions(310, 28)
-    else
-        -- В 4-man данжах плотный чистый таймер без жизней и очков
-        NC.SpeedrunVitalityLabel:SetHidden(true)
-        NC.SpeedrunScoreLabel:SetHidden(true)
-        NC.SpeedrunFrame:SetDimensions(155, 28)
-    end
-
     NC.SpeedrunFrame:SetHidden(false)
 end
 
@@ -1728,7 +2241,7 @@ function NC.CreateSpeedrunHudUI()
     if NC.SpeedrunFrame then return end
 
     local frame = WINDOW_MANAGER:CreateTopLevelWindow("NecroCat_SpeedrunFrame")
-    frame:SetDimensions(290, 28)
+    frame:SetDimensions(165, 28)
     frame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, NC.savedVars.speedrunHudLeft or 500, NC.savedVars.speedrunHudTop or 80)
     frame:SetMovable(NC.savedVars.speedrunHudUnlocked)
     frame:SetMouseEnabled(NC.savedVars.speedrunHudUnlocked)
@@ -1741,20 +2254,10 @@ function NC.CreateSpeedrunHudUI()
     bg:SetCenterColor(0, 0, 0, 0.55)
     bg:SetEdgeColor(0, 0, 0, 0)
 
-    -- Таймер слева
+    -- Таймер по центру аккуратной плашки
     local timerLabel = WINDOW_MANAGER:CreateControl("$(parent)Timer", frame, CT_LABEL)
-    timerLabel:SetAnchor(LEFT, frame, LEFT, 10, 0)
+    timerLabel:SetAnchor(CENTER, frame, CENTER, 0, 0)
     timerLabel:SetFont("ZoFontWinH4")
-
-    -- Жизни цепочкой строго через 16px после таймера
-    local vitLabel = WINDOW_MANAGER:CreateControl("$(parent)Vitality", frame, CT_LABEL)
-    vitLabel:SetAnchor(LEFT, timerLabel, RIGHT, 16, 0)
-    vitLabel:SetFont("ZoFontWinH4")
-
-    -- Очки цепочкой строго через 16px после жизней
-    local scoreLabel = WINDOW_MANAGER:CreateControl("$(parent)Score", frame, CT_LABEL)
-    scoreLabel:SetAnchor(LEFT, vitLabel, RIGHT, 16, 0)
-    scoreLabel:SetFont("ZoFontWinH4")
 
     frame:SetHandler("OnMoveStop", function(self)
         self:ClearAnchors()
@@ -1763,11 +2266,9 @@ function NC.CreateSpeedrunHudUI()
         NC.savedVars.speedrunHudTop = self:GetTop()
     end)
 
-    NC.SpeedrunFrame         = frame
-    NC.SpeedrunTimerLabel    = timerLabel
-    NC.SpeedrunVitalityLabel = vitLabel
-    NC.SpeedrunScoreLabel    = scoreLabel
-    NC.SpeedrunFragment      = ZO_SimpleSceneFragment:New(frame)
+    NC.SpeedrunFrame      = frame
+    NC.SpeedrunTimerLabel = timerLabel
+    NC.SpeedrunFragment   = ZO_SimpleSceneFragment:New(frame)
 
     NC.UpdateSpeedrunHudUI()
 end
@@ -2246,32 +2747,58 @@ function NC.CreateDifficultyUI()
     NC.DifficultyLabel = label
 end
 
--- Создание переключателя "Автоприем" в меню группы (P)
+-- Создание переключателя "Автоприем" и кнопки "Кик чужих" в меню группы (P)
 function NC.CreateGroupMenuAutoAcceptUI()
     local parent = ZO_SearchingForGroupStatus and ZO_SearchingForGroupStatus:GetParent() or ZO_GroupMenu_Keyboard_TopLevel
     if not parent then return end
 
     local check = CreateControlFromVirtual("NecroCat_AutoAcceptDungeonCheck", parent, "ZO_CheckButton")
-    if not check then return end
+    if check then
+        check:ClearAnchors()
+        if ZO_SearchingForGroupStatus then
+            check:SetAnchor(BOTTOMLEFT, ZO_SearchingForGroupStatus, TOPLEFT, 0, -25)
+        else
+            check:SetAnchor(BOTTOMLEFT, parent, BOTTOMLEFT, 20, -90)
+        end
 
-    check:ClearAnchors()
-    if ZO_SearchingForGroupStatus then
-        check:SetAnchor(BOTTOMLEFT, ZO_SearchingForGroupStatus, TOPLEFT, 0, -25)
-    else
-        check:SetAnchor(BOTTOMLEFT, parent, BOTTOMLEFT, 20, -90)
+        check:SetDrawTier(DT_HIGH)
+        check:SetHidden(not NC.savedVars.showAutoAcceptButton)
+
+        ZO_CheckButton_SetLabelText(check, "|c66f2ffАвтоприем|r")
+        ZO_CheckButton_SetCheckState(check, NC.savedVars.autoAcceptDungeon)
+
+        ZO_CheckButton_SetToggleFunction(check, function(control, isChecked)
+            NC.savedVars.autoAcceptDungeon = isChecked
+        end)
+
+        NC.AutoAcceptDungeonCheck = check
     end
 
-    check:SetDrawTier(DT_HIGH)
-    check:SetHidden(not NC.savedVars.showAutoAcceptButton)
+    -- Кнопка быстрой очистки группы от рандомов
+    local kickBtn = CreateControlFromVirtual("NecroCat_KickRandomsBtn", parent, "ZO_DefaultButton")
+    if kickBtn then
+        kickBtn:SetDimensions(130, 26)
+        if check then
+            kickBtn:SetAnchor(LEFT, check, RIGHT, 110, 0)
+        else
+            kickBtn:SetAnchor(BOTTOMLEFT, parent, BOTTOMLEFT, 150, -90)
+        end
+        kickBtn:SetText("|cFF5555Кик чужих|r")
+        kickBtn:SetDrawTier(DT_HIGH)
 
-    ZO_CheckButton_SetLabelText(check, "|c66f2ffАвтоприем|r")
-    ZO_CheckButton_SetCheckState(check, NC.savedVars.autoAcceptDungeon)
+        kickBtn:SetHandler("OnClicked", function()
+            NC.KickNonFavorites()
+        end)
 
-    ZO_CheckButton_SetToggleFunction(check, function(control, isChecked)
-        NC.savedVars.autoAcceptDungeon = isChecked
-    end)
+        kickBtn:SetHandler("OnMouseEnter", function(self)
+            InitializeTooltip(InformationTooltip, self, TOP, 0, 5)
+            InformationTooltip:AddLine("|c66f2ffNecroCat: Очистка группы|r", "ZoFontWinH4")
+            InformationTooltip:AddLine("Исключить из группы всех игроков, кроме добавленных в |c00FF00Избранное|r.", "ZoFontGameSmall")
+        end)
+        kickBtn:SetHandler("OnMouseExit", function() ClearTooltip(InformationTooltip) end)
 
-    NC.AutoAcceptDungeonCheck = check
+        NC.KickRandomsBtn = kickBtn
+    end
 end
 
 -- [NEW MODULE] Плавающая иконка изучения рецептов (Инвентарь и Банки)
@@ -2519,6 +3046,13 @@ local function InitializeMenu()
                 },
 
                 { type = "header", name = "Автоматизация группы" },
+                {
+                    type = "checkbox",
+                    name = "Считать всех друзей избранными",
+                    tooltip = "Если включено, все друзья из списка по умолчанию защищены от кика. При этом вы всё равно можете исключить конкретного друга вручную через ПКМ по его нику.",
+                    getFunc = function() return NC.savedVars.treatFriendsAsFavorites end,
+                    setFunc = function(v) NC.savedVars.treatFriendsAsFavorites = v end,
+                },
                 {
                     type = "checkbox",
                     name = "Кнопка 'Автоприем' в меню группы",
@@ -2857,7 +3391,7 @@ local function InitializeMenu()
                     tooltip = "Отключает диалог подтверждения при бесплатном перемещении через дорожное святилище (сразу начинает телепорт)",
                     getFunc = function() return NC.savedVars.fastTravelConfirm end,
                     setFunc = function(v) NC.savedVars.fastTravelConfirm = v end,
-                },          
+                },
                 {
                     type = "checkbox",
                     name = "Прятать небоевых питомцев в триалах",
@@ -2866,6 +3400,14 @@ local function InitializeMenu()
                         NC.savedVars.dismissPetsInTrials = v 
                         if v and NC.CheckTrialPets then NC.CheckTrialPets() end
                     end,
+                },
+                { type = "header", name = "Кампании" },
+                {
+                    type = "checkbox",
+                    name = "Автоприем очередей Сиродила / Имперки",
+                    tooltip = "Автоматически подтверждает вход в кампанию (при готовности очереди или когда лидер группы затягивает в кампанию) и отключает диалог подтверждения.",
+                    getFunc = function() return NC.savedVars.autoAcceptPvPQueue end,
+                    setFunc = function(v) NC.savedVars.autoAcceptPvPQueue = v end,
                 },
                 { type = "header", name = "Изучение рецептов и стилей" },
                 {
@@ -3339,6 +3881,140 @@ local function InitializeMenu()
                         end
                     end,
                 },
+
+                { type = "header", name = "Панель дебаффов на цели (Враге)" },
+                {
+                    type = "checkbox",
+                    name = "Включить панель",
+                    getFunc = function() return NC.savedVars.targetDebuffsEnabled end,
+                    setFunc = function(v) 
+                        NC.savedVars.targetDebuffsEnabled = v 
+                        if NC.UpdateTargetDebuffsUI then NC.UpdateTargetDebuffsUI() end
+                    end,
+                },
+                {
+                    type = "checkbox",
+                    name = "Разблокировать для перемещения",
+                    tooltip = "Показывает полупрозрачную оранжевую направляющую, которую можно перетащить мышкой (например, под полоску здоровья босса)",
+                    getFunc = function() return NC.savedVars.targetDebuffsUnlocked end,
+                    setFunc = function(v) 
+                        NC.savedVars.targetDebuffsUnlocked = v 
+                        if NC.UpdateTargetDebuffsUI then NC.UpdateTargetDebuffsUI() end
+                    end,
+                },
+                {
+                    type = "checkbox",
+                    name = "Показывать только мои дебаффы",
+                    tooltip = "Если включено, панель будет отображать только те дебаффы, которые наложили лично вы. Если выключено — отображаются вообще все дебаффы группы на боссе.",
+                    getFunc = function() return NC.savedVars.targetDebuffsOnlyPlayer end,
+                    setFunc = function(v) 
+                        NC.savedVars.targetDebuffsOnlyPlayer = v 
+                        if NC.UpdateTargetDebuffs then NC.UpdateTargetDebuffs() end
+                    end,
+                },
+                {
+                    type = "dropdown",
+                    name = "Ориентация панели",
+                    choices = { "Вертикально", "Горизонтально" },
+                    choicesValues = { 1, 2 },
+                    getFunc = function() return NC.savedVars.targetDebuffsOrientation or 2 end,
+                    setFunc = function(v) 
+                        NC.savedVars.targetDebuffsOrientation = v 
+                        if NC.UpdateTargetDebuffsUI then NC.UpdateTargetDebuffsUI() end
+                    end,
+                },
+                {
+                    type = "dropdown",
+                    name = "Направление роста",
+                    tooltip = "Выберите, в какую сторону будут выстраиваться новые дебаффы",
+                    choices = { 
+                        "Авто (по краю экрана)", 
+                        "Прямой (Вправо / Вниз)", 
+                        "Обратный (Влево / Вверх)" 
+                    },
+                    choicesValues = { 1, 2, 3 },
+                    getFunc = function() return NC.savedVars.targetDebuffsGrowth or 1 end,
+                    setFunc = function(v) 
+                        NC.savedVars.targetDebuffsGrowth = v 
+                        if NC.UpdateTargetDebuffs then NC.UpdateTargetDebuffs() end
+                    end,
+                },
+                {
+                    type = "slider",
+                    name = "Размер иконок (px)",
+                    min = 20, max = 64, step = 2,
+                    getFunc = function() return NC.savedVars.targetDebuffsSize or 36 end,
+                    setFunc = function(v) 
+                        NC.savedVars.targetDebuffsSize = v 
+                        if NC.UpdateTargetDebuffsUI then NC.UpdateTargetDebuffsUI() end
+                    end,
+                },
+                {
+                    type = "button",
+                    name = "Сбросить позицию дебаффов цели",
+                    func = function()
+                        NC.savedVars.targetDebuffsLeft = 500
+                        NC.savedVars.targetDebuffsTop  = 220
+                        if NC.TargetDebuffsFrame then
+                            NC.TargetDebuffsFrame:ClearAnchors()
+                            NC.TargetDebuffsFrame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 500, 220)
+                        end
+                    end,
+                },
+
+                { type = "header", name = "Напоминание о еде и военном торте" },
+                {
+                    type = "checkbox",
+                    name = "Включить напоминание",
+                    tooltip = "Отображает плавающую иконку еды в боевых зонах (данжи, триалы, арены), если нет баффа еды, и иконку военного торта в Сиродиле/ИГ, если нет бонуса к AP.",
+                    getFunc = function() return NC.savedVars.foodReminderEnabled end,
+                    setFunc = function(v) 
+                        NC.savedVars.foodReminderEnabled = v 
+                        if NC.UpdateFoodReminderUI then NC.UpdateFoodReminderUI() end
+                    end,
+                },
+                {
+                    type = "checkbox",
+                    name = "Разрешить перемещение (Открепить)",
+                    tooltip = "Позволяет зажимать ЛКМ и перетаскивать настоящие иконки еды/торта прямо на лету, когда они появляются на экране. При отключении иконки закрепляются и мышка свободно кликает сквозь них.",
+                    getFunc = function() return NC.savedVars.foodReminderUnlocked end,
+                    setFunc = function(v) 
+                        NC.savedVars.foodReminderUnlocked = v 
+                        if NC.UpdateFoodReminderUI then NC.UpdateFoodReminderUI() end
+                    end,
+                },
+                {
+                    type = "checkbox",
+                    name = "Показать тестовое превью",
+                    tooltip = "Временно выводит обе иконки (еду и торт) на экран для предварительной настройки положения и подбора размера.",
+                    getFunc = function() return NC.savedVars.foodReminderPreview end,
+                    setFunc = function(v) 
+                        NC.savedVars.foodReminderPreview = v 
+                        if NC.UpdateFoodReminder then NC.UpdateFoodReminder() end
+                    end,
+                },
+                {
+                    type = "slider",
+                    name = "Размер иконок (px)",
+                    min = 24, max = 80, step = 2,
+                    getFunc = function() return NC.savedVars.foodReminderSize or 48 end,
+                    setFunc = function(v) 
+                        NC.savedVars.foodReminderSize = v 
+                        if NC.UpdateFoodReminderUI then NC.UpdateFoodReminderUI() end
+                    end,
+                },
+                {
+                    type = "button",
+                    name = "Сбросить позицию напоминания",
+                    func = function()
+                        NC.savedVars.foodReminderLeft = 600
+                        NC.savedVars.foodReminderTop  = 350
+                        if NC.FoodReminderFrame then
+                            NC.FoodReminderFrame:ClearAnchors()
+                            NC.FoodReminderFrame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 600, 350)
+                        end
+                    end,
+                },
             },
         },
 
@@ -3506,19 +4182,43 @@ local function AddNecroMenuEntries(data)
     -- =========================================================
     -- ВЫЕЗЖАЮЩАЯ ВКЛАДКА 1: "NecroCat" (Друзья, слежка, настройки)
     -- =========================================================
-    if not NecroCat.savedVars.trackedPlayers then NecroCat.savedVars.trackedPlayers = {} end
-    local isTracked = NecroCat.savedVars.trackedPlayers[displayName]
+    if not NC.savedVars.trackedPlayers then NC.savedVars.trackedPlayers = {} end
+    if not NC.savedVars.favoritePlayers then NC.savedVars.favoritePlayers = {} end
+    local isTracked = NC.savedVars.trackedPlayers[displayName]
+    local isFavorite = NC.IsPlayerFavorite(displayName)
 
     local necroCatSubMenu = {
         {
             label = isTracked and "|cFF5555Disable Tracking|r" or "|c55FF55Enable Tracking|r",
             callback = function()
                 if isTracked then
-                    NecroCat.savedVars.trackedPlayers[displayName] = nil
+                    NC.savedVars.trackedPlayers[displayName] = nil
                     d(string.format("[NecroCat] Отслеживание %s отключено.", displayName))
                 else
-                    NecroCat.savedVars.trackedPlayers[displayName] = true
+                    NC.savedVars.trackedPlayers[displayName] = true
                     d(string.format("[NecroCat] Отслеживание %s включено.", displayName))
+                end
+            end
+        },
+        {
+            label = isFavorite and "|cFF5555Убрать из избранных|r" or "|c55FF55В избранные (WhiteList)|r",
+            callback = function()
+                if isFavorite then
+                    -- Если это друг и включен авто-статус друзей — ставим жесткую блокировку (false)
+                    if NC.savedVars.treatFriendsAsFavorites and IsFriend and IsFriend(displayName) then
+                        NC.savedVars.favoritePlayers[displayName] = false
+                    else
+                        NC.savedVars.favoritePlayers[displayName] = nil
+                    end
+                    d(string.format("|c66f2ff[NecroCat]|r %s убран из списка избранных.", displayName))
+                else
+                    -- Если был заблокированным другом — снимаем метку (nil), иначе добавляем в белый список (true)
+                    if NC.savedVars.favoritePlayers[displayName] == false then
+                        NC.savedVars.favoritePlayers[displayName] = nil
+                    else
+                        NC.savedVars.favoritePlayers[displayName] = true
+                    end
+                    d(string.format("|c66f2ff[NecroCat]|r %s добавлен в список избранных!", displayName))
                 end
             end
         },
@@ -3868,6 +4568,8 @@ function NC.OnAddOnLoaded(eventCode, addOnName)
         hideAddFriend       = false,
         hideTributeInvite   = false,
         trackedPlayers           = {},
+        favoritePlayers          = {},
+        treatFriendsAsFavorites  = true,
         friendNotificationLeft   = 500,
         friendNotificationTop    = 200,
         friendNotificationLocked = true,
@@ -3883,7 +4585,8 @@ function NC.OnAddOnLoaded(eventCode, addOnName)
         guildBankTop = 300,
         customGuildOrder = {},
         guildBankDefaultGuildId = 0,
-        autoAcceptDungeon = false,
+        autoAcceptDungeon    = false,
+        autoAcceptPvPQueue   = false,
         showAutoAcceptButton = false,
         autoConvertToRaid    = false,
         suppressJumpToLeader = false,
@@ -3959,6 +4662,24 @@ function NC.OnAddOnLoaded(eventCode, addOnName)
         playerDebuffsLeft        = 500,
         playerDebuffsTop         = 550,
         playerDebuffsUnlocked    = false,
+
+        -- Модуль: Дебаффы на цели (враге)
+        targetDebuffsEnabled     = false,
+        targetDebuffsOnlyPlayer  = false,
+        targetDebuffsOrientation = 2, -- 1: Вертикально, 2: Горизонтально
+        targetDebuffsGrowth      = 1, -- 1: Авто, 2: Прямой (Вправо/Вниз), 3: Обратный (Влево/Вверх)
+        targetDebuffsSize        = 36,
+        targetDebuffsLeft        = 500,
+        targetDebuffsTop         = 220,
+        targetDebuffsUnlocked    = false,
+
+        -- Модуль: Напоминание о еде и военном торте
+        foodReminderEnabled      = false,
+        foodReminderSize         = 48,
+        foodReminderLeft         = 600,
+        foodReminderTop          = 350,
+        foodReminderUnlocked     = false,
+        foodReminderPreview      = false,
 
         -- Модуль: Спидран и Рейдовый таймер
         speedrunHudEnabled       = false,
@@ -4058,6 +4779,8 @@ function NC.OnAddOnLoaded(eventCode, addOnName)
     NC.CreateLongBuffsUI()
     NC.CreateShortBuffsUI()
     NC.CreatePlayerDebuffsUI()
+    NC.CreateTargetDebuffsUI()
+    NC.CreateFoodReminderUI()
     NC.CreateSpeedrunHudUI()
 
     -- Отслеживание событий триала
@@ -4142,9 +4865,21 @@ function NC.OnAddOnLoaded(eventCode, addOnName)
             if NC.UpdateLongBuffs then NC.UpdateLongBuffs() end
             if NC.UpdateShortBuffs then NC.UpdateShortBuffs() end
             if NC.UpdatePlayerDebuffs then NC.UpdatePlayerDebuffs() end
+            if NC.UpdateFoodReminder then NC.UpdateFoodReminder() end
         end
     end)
     EVENT_MANAGER:AddFilterForEvent(NC.name .. "_BuffsChanged", EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG, "player")
+
+    -- Отслеживание наведения прицела и дебаффов на цели
+    EVENT_MANAGER:RegisterForEvent(NC.name .. "_TargetChanged", EVENT_RETICLE_TARGET_CHANGED, function()
+        if NC.UpdateTargetDebuffs then NC.UpdateTargetDebuffs() end
+    end)
+    EVENT_MANAGER:RegisterForEvent(NC.name .. "_TargetBuffsChanged", EVENT_EFFECT_CHANGED, function(eventCode, changeType, effectSlot, effectName, unitTag)
+        if unitTag == "reticleover" and NC.UpdateTargetDebuffs then
+            NC.UpdateTargetDebuffs()
+        end
+    end)
+    EVENT_MANAGER:AddFilterForEvent(NC.name .. "_TargetBuffsChanged", EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG, "reticleover")
 
     -- Быстрый таймер обновления боевых секунд и спидрана (раз в 100 мс)
     EVENT_MANAGER:RegisterForUpdate(NC.name .. "_BuffsTimer", 100, function()
@@ -4160,8 +4895,14 @@ function NC.OnAddOnLoaded(eventCode, addOnName)
         if sv.playerDebuffsEnabled and not sv.playerDebuffsUnlocked and NC.UpdatePlayerDebuffs then
             NC.UpdatePlayerDebuffs()
         end
+        if sv.targetDebuffsEnabled and not sv.targetDebuffsUnlocked and NC.UpdateTargetDebuffs then
+            NC.UpdateTargetDebuffs()
+        end
         if sv.speedrunHudEnabled and not sv.speedrunHudUnlocked and NC.UpdateSpeedrunHud then
             NC.UpdateSpeedrunHud()
+        end
+        if sv.foodReminderEnabled and not sv.foodReminderPreview and NC.UpdateFoodReminder then
+            NC.UpdateFoodReminder()
         end
     end)
 
@@ -4206,11 +4947,13 @@ function NC.OnAddOnLoaded(eventCode, addOnName)
 
     EVENT_MANAGER:RegisterForEvent(NC.name, EVENT_CHAT_MESSAGE_CHANNEL, NC.OnChatMessage)
     EVENT_MANAGER:RegisterForEvent(NC.name, EVENT_ACTIVITY_FINDER_STATUS_UPDATE, NC.OnActivityFinderStatusUpdate)
+    EVENT_MANAGER:RegisterForEvent(NC.name, EVENT_CAMPAIGN_QUEUE_STATE_CHANGED, NC.OnCampaignQueueStateChange)
     EVENT_MANAGER:RegisterForEvent(NC.name, EVENT_PLAYER_ACTIVATED, function()
         NC.CheckTrialPets()
         NC.UpdateAggroMarker()
         NC.CheckZoneChangeForChestCounter()
         NC.CheckAllWornGear()
+        if NC.UpdateFoodReminder then NC.UpdateFoodReminder() end
 
         -- Авто-проверка логов боя при входе/выходе из зон
         if NC.CheckAutoEncounterLog then
@@ -4874,6 +5617,8 @@ end
 
 SLASH_COMMANDS["/necrocat"] = function() NC.OpenSettings() end
 SLASH_COMMANDS["/nc"]       = function() NC.OpenSettings() end
+SLASH_COMMANDS["/kickrandoms"] = function() NC.KickNonFavorites() end
+SLASH_COMMANDS["/nckick"]       = function() NC.KickNonFavorites() end
 -- =========================================================
 -- СПРАВОЧНАЯ КОМАНДА NECROCAT
 -- =========================================================

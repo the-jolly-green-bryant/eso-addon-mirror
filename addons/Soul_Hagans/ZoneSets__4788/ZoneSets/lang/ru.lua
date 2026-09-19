@@ -41,8 +41,12 @@ SafeAddString(ZONESETS_TRADE_PUT_REQUESTED, "Запрошенное (%d)", 1)
 SafeAddString(ZONESETS_TRADE_DUMP_EXTRA, "Лишний лут (%d)", 1)
 SafeAddString(ZONESETS_TRADE_NO_ITEMS, "Нет подходящих вещей для обмена", 1)
 SafeAddString(ZONESETS_TRADE_FILLED_MSG, "|c39DB92[ZoneSets]|r Добавлено в обмен: %d предметов", 1)
-ZO_CreateStringId("ZONESETS_AUTO_BIND_ON", "Авто: ВКЛ")
-ZO_CreateStringId("ZONESETS_AUTO_BIND_OFF", "Авто: ВЫКЛ")
+ZO_CreateStringId("ZONESETS_AUTO_BIND_ON", "Автопривязка: ВКЛ")
+ZO_CreateStringId("ZONESETS_AUTO_BIND_OFF", "Автопривязка: ВЫКЛ")
+ZO_CreateStringId("ZONESETS_GROUP_TOAST_ON", "Группа: ВКЛ")
+ZO_CreateStringId("ZONESETS_GROUP_TOAST_OFF", "Группа: ВЫКЛ")
+ZO_CreateStringId("ZONESETS_NEEDED_IN_COLL", "Нужно в коллекцию")
+ZO_CreateStringId("ZONESETS_GROUP_LOOTED_COUNT", "Выбил нужных вещей: %d шт.")
 
 
 -- Горячая клавиша

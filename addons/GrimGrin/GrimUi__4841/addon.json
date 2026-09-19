@@ -1,9 +1,8 @@
 {
-  "archive_error": "ESOUI returned an empty response",
+  "archive_format": "zip",
   "archive_path": "addons/GrimGrin/GrimUi__4841",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archive_status": "unavailable",
-  "archived": false,
+  "archived": true,
   "author": "GrimGrin",
   "canonical_id": "esoui:4841",
   "category_id": "17",
@@ -19,7 +18,7 @@
     "GrimUI"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4841/",
-  "fingerprint": "3a020244c09a5cd15151d459260efa800fce922259ece0b048872f3ddf878fa0",
+  "fingerprint": "ea779b8bc566a13b2f58b9122f293c77815e1fa0841759f47222b9b424bf803e",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw17401.png",
     "https://cdn-eso.mmoui.com/preview/pvw17395.png",
@@ -31,11 +30,11 @@
   "source_id": "4841",
   "source_url": "https://www.esoui.com/downloads/info4841-GrimUi.html",
   "stats": {
-    "downloads": 8,
-    "favorites": 1,
-    "monthly_downloads": 5
+    "downloads": 20,
+    "favorites": 2,
+    "monthly_downloads": 16
   },
   "title": "GrimUi",
-  "updated_at": 1789622853000,
-  "version": "2.0"
+  "updated_at": 1789732579000,
+  "version": "2.1"
 }

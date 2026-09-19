@@ -190,9 +190,9 @@ local function Frame_Player_UI()	--UI init
 	health.bar1		=BUI.UI.Backdrop("BUI_PlayerFrame_HealthBar1",		health.bar,	{0,h2},		{LEFT,RIGHT,0,0},			{ch[1],ch[2],ch[3],.3}, {0,0,0,0}, nil, false)
 	health.bar2		=BUI.UI.Backdrop("BUI_PlayerFrame_HealthBar2",		health.bar,	{0,h2},		{RIGHT,LEFT,0,0},			{ch[1],ch[2],ch[3],.3}, {0,0,0,0}, nil, false)
 	health.bar1:SetHidden(true) health.bar2:SetHidden(true)
-	health.current	=BUI.UI.Label("BUI_PlayerFrame_HealthCurrent",		health,	{w*2/3,h},		{CENTER,CENTER,0,0},		BUI.UI.Font(BUI.Vars.FrameFont1,fs,true), nil, {1,1}, 'Health', false)
+	health.current	=BUI.UI.Label("BUI_PlayerFrame_HealthCurrent",		health,	{w*2/3,h},		{CENTER,CENTER,0,0},		BUI.UI.Font(BUI.Vars.FrameFont1,fs,true), nil, {1,1}, '', false)
 	health.current:SetDrawLayer(3)
-	health.pct		=BUI.UI.Label("BUI_PlayerFrame_HealthPct",		health,	{w*1/3,h},		{RIGHT,RIGHT,-12-b1,0},		BUI.UI.Font(BUI.Vars.FrameFont2,fs,true), nil, {2,1}, 'Pct%', not BUI.Vars.FramePercents)
+	health.pct		=BUI.UI.Label("BUI_PlayerFrame_HealthPct",		health,	{w*1/3,h},		{RIGHT,RIGHT,-12-b1,0},		BUI.UI.Font(BUI.Vars.FrameFont2,fs,true), nil, {2,1}, '', not BUI.Vars.FramePercents)
 	health.pct:SetDrawLayer(3)
 	health.hot		=BUI.UI.Texture("BUI_PlayerFrame_HealthHoT",		health,	{h*3/2,h*3/4},	{LEFT,CENTER,6+b1,0},		'/SatuveXboxUI/textures/regen_sm.dds', true)
 	health.hot:SetDrawLayer(3)
@@ -209,8 +209,8 @@ local function Frame_Player_UI()	--UI init
 	magicka.bar:SetDrawLayer(1) magicka.bar:SetGradientColors(cm1[1],cm1[2],cm1[3],cm1[4],cm[1],cm[2],cm[3],cm[4])
 	magicka.bar1	=BUI.UI.Backdrop("BUI_PlayerFrame_MagickaBar1",		magicka.bar,{0,h},		{RIGHT,LEFT,0,0},			{cm[1],cm[2],cm[3],.3}, {0,0,0,0}, nil, false)
 	magicka.bar1:SetHidden(true)
-	magicka.current	=BUI.UI.Label("BUI_PlayerFrame_MagickaCurrent",		magicka,	{w*2/3,h},		{CENTER,CENTER,0,0},		BUI.UI.Font(BUI.Vars.FrameFont1,fs,true), nil, {1,1}, 'Magicka', false)
-	magicka.pct		=BUI.UI.Label("BUI_PlayerFrame_MagickaPct",		magicka,	{w*1/3,h},		{RIGHT,RIGHT,-12-b1,0},		BUI.UI.Font(BUI.Vars.FrameFont2,fs,true), nil, {2,1}, 'Pct%', not BUI.Vars.FramePercents)
+	magicka.current	=BUI.UI.Label("BUI_PlayerFrame_MagickaCurrent",		magicka,	{w*2/3,h},		{CENTER,CENTER,0,0},		BUI.UI.Font(BUI.Vars.FrameFont1,fs,true), nil, {1,1}, '', false)
+	magicka.pct		=BUI.UI.Label("BUI_PlayerFrame_MagickaPct",		magicka,	{w*1/3,h},		{RIGHT,RIGHT,-12-b1,0},		BUI.UI.Font(BUI.Vars.FrameFont2,fs,true), nil, {2,1}, '', not BUI.Vars.FramePercents)
 	player.magicka	=magicka
 
 	--Stamina Bar
@@ -222,8 +222,8 @@ local function Frame_Player_UI()	--UI init
 	stamina.bar:SetDrawLayer(1) stamina.bar:SetGradientColors(cs[1],cs[2],cs[3],cs[4],cs1[1],cs1[2],cs1[3],cs1[4])
 	stamina.bar1	=BUI.UI.Backdrop("BUI_PlayerFrame_StaminaBar1",		stamina.bar,{0,h},		{LEFT,RIGHT,0,0},			{cs[1],cs[2],cs[3],.3}, {0,0,0,0}, nil, false)
 	stamina.bar1:SetHidden(true)
-	stamina.current	=BUI.UI.Label("BUI_PlayerFrame_StaminaCurrent",		stamina,	{w*2/3,h},		{CENTER,CENTER,0,0},		BUI.UI.Font(BUI.Vars.FrameFont1,fs,true), nil, {1,1}, 'Stamina', false)
-	stamina.pct		=BUI.UI.Label("BUI_PlayerFrame_StaminaPct",		stamina,	{w*1/3,h},		{RIGHT,RIGHT,-12-b1,0},		BUI.UI.Font(BUI.Vars.FrameFont2,fs,true), nil, {2,1}, 'Pct%', not BUI.Vars.FramePercents)
+	stamina.current	=BUI.UI.Label("BUI_PlayerFrame_StaminaCurrent",		stamina,	{w*2/3,h},		{CENTER,CENTER,0,0},		BUI.UI.Font(BUI.Vars.FrameFont1,fs,true), nil, {1,1}, '', false)
+	stamina.pct		=BUI.UI.Label("BUI_PlayerFrame_StaminaPct",		stamina,	{w*1/3,h},		{RIGHT,RIGHT,-12-b1,0},		BUI.UI.Font(BUI.Vars.FrameFont2,fs,true), nil, {2,1}, '', not BUI.Vars.FramePercents)
 	player.stamina	=stamina
 
 	--Shield Bar
@@ -349,6 +349,8 @@ local function Frame_Target_UI()	--UI init
 		if label.SetDrawLevel then label:SetDrawLevel(100) end
 		if label.SetFont then label:SetFont(BUI.UI.Font(BUI.Vars.FrameFont1,targetValueFontSize,true,true)) end
 	end
+	-- Keep only the target's numeric health value readable on the gamepad UI.
+	health.current:SetFont(BUI.UI.Font(BUI.Vars.FrameFont1,26,true,true))
 	health.hot		=BUI.UI.Texture("BUI_TargetFrame_HealthHoT",health.bg,{w/6,w/12},{LEFT,CENTER,6,0},'/SatuveXboxUI/textures/regen_sm.dds',true)
 	health.dot		=BUI.UI.Texture("BUI_TargetFrame_HealthDoT",health.bg,{w/6,w/12},{RIGHT,CENTER,0,0},'/SatuveXboxUI/textures/regen_sm.dds',true) health.dot:SetTextureRotation(math.pi)
 	target.health=health
@@ -517,13 +519,21 @@ function BUI.Frames.Raid_UI(s)	--UI init
 	syn_count=BUI.Vars.GroupSynergyCount+(ult and 1 or 0)-1
 	local indent=math.max((ult and hs or 0)+(syn and hs*(syn_count+1) or 0),(BUI.Vars.GroupElection and hs or 0))
 	--Create the group frame container
-	local raid		=BUI.UI.Control("BUI_RaidFrame",			SatuveUI,	{w*(24/col),(h+(comp and 0 or fs+3))*col},	BUI.Vars.BUI_RaidFrame,	false)
+	local savedRaidAnchor=BUI.Vars.BUI_RaidFrame
+	local canonicalRaidAnchor=type(savedRaidAnchor)=="table"
+		and savedRaidAnchor[1]==TOPLEFT and savedRaidAnchor[2]==TOPLEFT
+		and type(savedRaidAnchor[3])=="number" and type(savedRaidAnchor[4])=="number"
+	local raid		=BUI.UI.Control("BUI_RaidFrame",			SatuveUI,	{w*(24/col),(h+(comp and 0 or fs+3))*col},	savedRaidAnchor,	false)
+	if canonicalRaidAnchor then
+		raid:ClearAnchors()
+		raid:SetAnchor(TOPLEFT,GuiRoot,TOPLEFT,savedRaidAnchor[3],savedRaidAnchor[4])
+	end
 	raid.backdrop	=BUI.UI.Backdrop("BUI_RaidFrame_Bg",		raid,		"inherit",		{CENTER,CENTER,0,0},	{0,0,0,0.4}, {0,0,0,1}, nil, true)
 	raid.label		=BUI.UI.Label(	"BUI_RaidFrame_Label",		raid.backdrop,		"inherit",		{CENTER,CENTER,0,0},	BUI.UI.Font("standard",20,true), nil, {1,1}, BUI.Loc("GF_Label"), false)
 	raid:SetAlpha(BUI.Vars.FrameOpacityOut/100)
 	raid:SetDrawTier(DT_HIGH)
 	raid:SetMovable(true)
-	raid:SetHandler("OnMouseUp", function(self) BUI.Menu:SaveAnchor(self) end)
+	raid:SetHandler("OnMouseUp", function(self) BUI.Menu.SaveRaidFrameAnchor(self) end)
 	raid.scale=s
 	--Iterate over 24 possible raid members
 	local anchor	={TOPLEFT,TOPLEFT,0,0,raid}
@@ -1070,9 +1080,11 @@ function BUI.Frames:SetupPlayer()
 		BUI.Frames:SetupAltBar()
 	end
 	--Repopulate attributes
-	BUI.Player:UpdateAttribute('player', POWERTYPE_HEALTH, nil)
-	BUI.Player:UpdateAttribute('player', POWERTYPE_MAGICKA, nil)
-	BUI.Player:UpdateAttribute('player', POWERTYPE_STAMINA, nil)
+	-- Force the existing runtime updater to populate newly-created controls even
+	-- if its cached resource values are unchanged.
+	BUI.Player:UpdateAttribute('player', POWERTYPE_HEALTH, nil, nil, nil, true)
+	BUI.Player:UpdateAttribute('player', POWERTYPE_MAGICKA, nil, nil, nil, true)
+	BUI.Player:UpdateAttribute('player', POWERTYPE_STAMINA, nil, nil, nil, true)
 	--Repopulate shield
 	BUI.Player:UpdateShield('player', nil, nil)
 	--Repopulate trauma

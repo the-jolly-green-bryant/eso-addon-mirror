@@ -5,6 +5,7 @@ local Faces = {}
 
 local CAP = 1500
 local MIN_FAMILIAR = 2
+Faces.CAP = CAP
 
 local function sv()
     return BGMeter.zenimax.savedvars.get()
@@ -139,22 +140,10 @@ function Faces.forget()
     return n
 end
 
-local function ago(ts)
-    local A = BGMeter.zenimax.api
-    local now = (type(A.get_timestamp) == "function") and A.get_timestamp() or nil
-    if not ts or ts <= 0 or not now or now <= ts then return nil end
-    local s = now - ts
-    if s < 3600 then return math.floor(s / 60) .. " min ago" end
-    if s < 86400 then return math.floor(s / 3600) .. " h ago" end
-    return math.floor(s / 86400) .. " d ago"
-end
+local function ago(ts) return BGMeter.Format.ago(ts) end
 
-local function hexc(c)
-    return string.format("%02x%02x%02x", math.floor(c[1] * 255 + 0.5), math.floor(c[2] * 255 + 0.5), math.floor(c[3] * 255 + 0.5))
-end
-
-local function good(v) return "|c" .. hexc(BGMeter.Constants.COLOR.face_with) .. tostring(v) .. "|r" end
-local function bad(v) return "|c" .. hexc(BGMeter.Constants.COLOR.face_vs) .. tostring(v) .. "|r" end
+local function good(v) return "|c" .. BGMeter.Format.hexc(BGMeter.Constants.COLOR.face_with) .. tostring(v) .. "|r" end
+local function bad(v) return "|c" .. BGMeter.Format.hexc(BGMeter.Constants.COLOR.face_vs) .. tostring(v) .. "|r" end
 
 function Faces.describe(e)
     local t = Faces.total(e)

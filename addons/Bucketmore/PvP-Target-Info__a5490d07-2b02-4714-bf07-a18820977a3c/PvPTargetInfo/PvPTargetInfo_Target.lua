@@ -451,51 +451,6 @@ local function IsValidEnemyTarget()
 end
 
 --------------------------------------------------------------------------
--- ①' 敵プレイヤーのみ表示フィルタ(v1.4.37で復活、表示専用)
---
--- 「①②の対象を敵プレイヤーのみに限定する」設定(PTI.sv.targetEnemyOnly、
--- 既定OFF)は、v1.4.36で一度撤去したが、シロディールで味方プレイヤーを
--- ターゲットしても①②が反応してしまう不満は依然として残っているため、
--- 実装方式を変えて復活させた。
---
--- v1.4.36までの実装は、この判定をIsValidEnemyTarget()自体に混ぜ込み、
--- RescanCurrentTargetEffects/OnReticleEffectChangedという「検知・キャッシュ
--- 構築そのもの」のゲートに直結させていた。GetUnitReactionはバトルグラウンド
--- (対戦相手も内部的には同じアライアンス扱いになる)や、ターゲット直後の
--- 一瞬の同期遅延で不正確な値を返すことがあり、これが初期スキャンの時点で
--- falseと評価されるとtargetEffectsが二度と作られず、「検知ロジックは
--- 正常なのにBUFFが一切出ない」という実機不具合につながっていた
--- (v1.4.36削除時の実機検証で確認済み)。
---
--- v1.4.37では、GetUnitReactionによる敵味方判定を検知パイプラインから
--- 完全に切り離し、OnUpdate内の「表示直前」だけで使う独立フィルタとした。
--- RescanCurrentTargetEffects/OnReticleEffectChangedは一切呼び出さず、
--- targetEffectsキャッシュの構築・BUFF/DEBUFFの分類・優先順位判定
--- (EvaluateEffect/UpsertTargetEffect/GetCategoryRank等)には何の影響も
--- 与えない。OnUpdateは0.1秒ごとに走るため、GetUnitReactionが一時的に
--- 不正確な値を返しても、次のティックで正しい値に戻り次第自動的に
--- 表示へ復帰する(検知データ自体は最初から失われていないため)。
--- GetUnitReactionは1回のAPI呼び出しのみで、ループや追加のメモリ確保は
--- 発生しないため、0.1秒間隔で呼んでも負荷・メモリ使用量への影響はない。
---
--- 引数なしでreticleoverの存在自体をDoesUnitExistで確認してから呼ぶことで、
--- ユニットが存在しない状態でのGetUnitReaction呼び出し(想定外の戻り値)を
--- あらかじめ避けている。
-local function PassesEnemyOnlyDisplayFilter()
-    if not PTI.sv.targetEnemyOnly then
-        return true
-    end
-    if not DoesUnitExist("reticleover") then
-        return false
-    end
-    local reaction = GetUnitReaction("reticleover")
-    if reaction == nil then
-        return false
-    end
-    return reaction == UNIT_REACTION_HOSTILE
-end
-
---------------------------------------------------------------------------
 -- ② 効果キャッシュ(修正改定6)
 --
 -- targetEffects[abilityId] = { kind=, name=, stackCount=, endTime=, categoryRank= }
@@ -824,15 +779,9 @@ local function OnUpdate()
 
     local now = GetGameTimeSeconds()
     -- ①プレイヤー判定: NPC・モンスター・衛兵・オブジェクトはここで弾かれる
-    -- (検知・キャッシュ構築側と完全に同じ判定、v1.4.37でも変更なし)
     local hasTarget = IsValidEnemyTarget()
 
-    -- v1.4.37で追加: 「敵プレイヤーのみ表示」は、あくまで①②の表示可否だけを
-    -- 決める独立フィルタ。hasTarget(検知パイプライン用の判定)そのものは
-    -- 書き換えず、表示用の変数(displayTarget)だけに反映する。
-    local displayTarget = hasTarget and PassesEnemyOnlyDisplayFilter()
-
-    if displayTarget then
+    if hasTarget then
         lastTargetSeenTime = now
 
         -- v1.4.3で修正: キャラクター名ではなく、オンラインID(@表示名)を表示する。
@@ -850,8 +799,8 @@ local function OnUpdate()
     end
 
     local holdSec = PTI.sv.holdDuration or 1.0
-    local withinHold = (not displayTarget) and lastTargetSeenTime and ((now - lastTargetSeenTime) <= holdSec)
-    local shouldKeepShowing = displayTarget or withinHold
+    local withinHold = (not hasTarget) and lastTargetSeenTime and ((now - lastTargetSeenTime) <= holdSec)
+    local shouldKeepShowing = hasTarget or withinHold
 
     if not shouldKeepShowing then
         -- 保持時間も過ぎたので、次にターゲットし直したときに古い情報が

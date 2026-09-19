@@ -466,6 +466,8 @@ local function on_slash(args)
         Log.say("perf counters reset")
     elseif args:find("^gcprobe") == 1 and BGMeter.Diag and BGMeter.Diag.on then
         BGMeter.Diag.gcprobe(tonumber(args:match("(%d+)")))
+    elseif args:find("^geo") == 1 and BGMeter.Geo then
+        BGMeter.Geo.command(args:match("^geo%s*(.*)$"))
     elseif args:find("^sound") == 1 then
         BGMeter.Sound.audition(args:match("^sound%s*(.*)$"))
     elseif args:find("^csa") == 1 then
@@ -473,7 +475,7 @@ local function on_slash(args)
     elseif args == "trophy" then
         BGMeter.UI.menu.demo_trophy()
     else
-        Log.say("dev: show, hide, toggle, last, demo, demo2, ap, dump, clear, debug, layers, mock <dm/dom/ck/ball/relic>, vet, vet claim, vetmock <below/r34/cap/h1/h2/h3/off>, perf, gcprobe [sec], sound [name], csa [rank], trophy")
+        Log.say("dev: show, hide, toggle, last, demo, demo2, ap, dump, clear, debug, layers, mock <dm/dom/ck/ball/relic>, vet, vet claim, vetmock <below/r34/cap/h1/h2/h3/off>, perf, gcprobe [sec], sound [name], csa [rank], trophy, geo [on/off/dump/clear/mark]")
     end
 end
 
@@ -490,6 +492,7 @@ local function on_addon_loaded()
     if K.dev_tools() and BGMeter.Diag then BGMeter.Diag.install() end
 
     BGMeter.Pipeline.acquisition.init()
+    if BGMeter.Geo then BGMeter.Geo.init() end
     BGMeter.Ava.init()
     BGMeter.UI.window.init()
     BGMeter.UI.menu.init()

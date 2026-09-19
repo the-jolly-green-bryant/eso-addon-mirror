@@ -53,6 +53,24 @@ function addon:InitSettings()
 		setFunction = function(value) self:SetTranslationOnly(value) end,
 	})
 
+	if LibHarvensAddonSettings.ST_DROPDOWN then
+		local directions = {
+			{ name = GetString(SI_PBSTR_DIRECTION_TO_JA), data = "en2ja" },
+			{ name = GetString(SI_PBSTR_DIRECTION_TO_EN), data = "ja2en" },
+		}
+		settings:AddSetting({
+			type = LibHarvensAddonSettings.ST_DROPDOWN,
+			label = GetString(SI_PBSTR_DIRECTION),
+			tooltip = GetString(SI_PBSTR_DIRECTION_TOOLTIP),
+			items = directions,
+			default = directions[1].name,
+			getFunction = function() return self:DirectionLabel() end,
+			setFunction = function(_, _, item)
+				self:SetDirection(item and item.data)
+			end,
+		})
+	end
+
 	Checkbox("enabled", SI_PBSTR_ENABLED, SI_PBSTR_ENABLED_TOOLTIP)
 	Checkbox("translateOwn", SI_PBSTR_OWN, SI_PBSTR_OWN_TOOLTIP)
 	Checkbox("translateOthers", SI_PBSTR_OTHERS, SI_PBSTR_OTHERS_TOOLTIP)

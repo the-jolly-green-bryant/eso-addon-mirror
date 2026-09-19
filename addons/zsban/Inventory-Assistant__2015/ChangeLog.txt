@@ -1,3 +1,13 @@
+[u][b]1.19.260917-beta:[/b][/u]
+[list]
+ [*] performance improvements: current-character inventory updates now process only changed worn/backpack slots using a runtime bag and slot index
+ [*] bugfix: deferred lock and unlock actions now verify the requested state before being removed from the queue
+ [*] bugfix: character snapshots are no longer rescanned during deactivation when inventory data may be unavailable
+ [*] bugfix: row actions now require releasing the mouse button inside the row
+ [*] bugfix: leaving the selected guild now clears its guild-bank snapshot and disables guild-bank scanning
+ [*] bugfix: search terms now match independently regardless of their order in the item or set name
+[/list]
+
 [u][b]1.18.260916-beta:[/b][/u]
 [list]
  [*] API update for Update 50 and Update 51

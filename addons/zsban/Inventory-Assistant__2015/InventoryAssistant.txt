@@ -1,7 +1,7 @@
 ﻿## Title: Inventory Assistant
 ## Author: zsban
-## Version: 1.18.260916-beta
-## AddonVersion: 260916
+## Version: 1.19.260917-beta
+## AddonVersion: 260917
 ## APIVersion: 101050 101051
 ## SavedVariables: InventoryAssistantSettings
 ## DependsOn: LibEventHandler>=1313 LibAsync>=30104 LibCustomMenu>=730 LibAddonMenu-2.0>=43

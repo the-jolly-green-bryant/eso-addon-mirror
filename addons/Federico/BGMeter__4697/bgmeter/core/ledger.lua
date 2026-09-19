@@ -152,6 +152,19 @@ function Ledger.streak()
     return L and L.streak or 0
 end
 
+function Ledger.totals()
+    local out = { n = 0, w = 0, l = 0, t = 0 }
+    local L = root()
+    if not L then return out end
+    for _, e in pairs(L.modes) do
+        out.n = out.n + (e.n or 0)
+        out.w = out.w + (e.w or 0)
+        out.l = out.l + (e.l or 0)
+        out.t = out.t + (e.t or 0)
+    end
+    return out
+end
+
 function Ledger.find_match(at)
     if not at or at <= 0 then return nil end
     local H = BGMeter.History

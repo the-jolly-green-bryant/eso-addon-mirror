@@ -181,9 +181,16 @@ end
 function Module:GetPlayerIconByRole(selectedRole)
     local fontSize = self.FONT_SIZE_MEDIUM
 
-    if selectedRole == LFG_ROLE_TANK then return string.format("|t%s:%s:/esoui/art/lfg/lfg_icon_tank.dds|t", fontSize, fontSize) end
-    if selectedRole == LFG_ROLE_HEAL then return string.format("|t%s:%s:/esoui/art/lfg/lfg_icon_healer.dds|t", fontSize, fontSize) end
-    if selectedRole == LFG_ROLE_DPS then return string.format("|t%s:%s:/esoui/art/lfg/lfg_icon_dps.dds|t", fontSize, fontSize) end
+    if selectedRole == LFG_ROLE_TANK then return string.format("|t%s:%s:/esoui/art/lfg/lfg_tank_down.dds|t", fontSize, fontSize) end
+    if selectedRole == LFG_ROLE_HEAL then return string.format("|t%s:%s:/esoui/art/lfg/lfg_healer_down.dds|t", fontSize, fontSize) end
+    if selectedRole == LFG_ROLE_DPS then return string.format("|t%s:%s:/esoui/art/lfg/lfg_dps_down.dds|t", fontSize, fontSize) end
+
+    -- if selectedRole == LFG_ROLE_TANK then return string.format("|t%s:%s:/esoui/art/lfg/lfg_icon_tank.dds|t", fontSize, fontSize) end
+    -- if selectedRole == LFG_ROLE_HEAL then return string.format("|t%s:%s:/esoui/art/lfg/lfg_icon_healer.dds|t", fontSize, fontSize) end
+    -- if selectedRole == LFG_ROLE_DPS then return string.format("|t%s:%s:/esoui/art/lfg/lfg_icon_dps.dds|t", fontSize, fontSize) end
+
+    -- "esoui/art/buttons/accept_up.dds"
+    -- "esoui/art/buttons/decline_up.dds"
 
     return ""
 end
@@ -1076,9 +1083,10 @@ function Module:UpdateData()
         PlayerData.isOnline = true
         PlayerData.selectedRole = GetSelectedLFGRole()
         PlayerData.isAddonUser = true
-        PlayerData.pingMs = GetLatency()
-        PlayerData.distance = 0
+        if not IsUnitGrouped("player") then PlayerData.pingMs = GetLatency()
+        else PlayerData.pingMs = PlayerData.pingMs or GetLatency() end
         PlayerData.isRaidlead = IsUnitGroupLeader("player")
+        PlayerData.distance = 0
 
         if CC.ArkasisAssistant and CC.ArkasisAssistant.SV then
             PlayerData.ArkasisAssistant = PlayerData.ArkasisAssistant or {}
@@ -1124,7 +1132,7 @@ function Module:UpdateData()
                 local roleIcon = self:GetPlayerIconByRole(GroupMember.selectedRole)
                 local pingMs = GroupMember.pingMs or 0
                 local isRaidlead = GroupMember.isRaidlead and " |cFFDF00RL|r" or ""
-                --local isRaidlead = GroupMember.isRaidlead and string.format(" |t%s:%s:/esoui/art/compass/groupleader.dds|t", self.FONT_SIZE_MEDIUM, self.FONT_SIZE_MEDIUM) or ""
+                -- local isRaidlead = GroupMember.isRaidlead and string.format(" |t%s:%s:/esoui/art/compass/groupleader.dds|t", self.FONT_SIZE_MEDIUM, self.FONT_SIZE_MEDIUM) or ""
 
                 -- ZONE CHECK
                 local arkasisZoneId = GroupMember.ArkasisAssistant and GroupMember.ArkasisAssistant.zoneId or 0
@@ -1150,12 +1158,6 @@ function Module:UpdateData()
                             arkasisLetter = "3"
                             arkasisColorHex = CC.ArkasisAssistant.SV.enableGameAoeFriendlyColor and CC.GetHexColorFromArray(CC.GetGameAoeFriendlyColor()) or CC.GetHexColorFromArray(CC.ArkasisAssistant.SV.Color)
                         end
-
-                        -- local isArkasisEquipped = GroupMember.ArkasisAssistant.isEquipped or 0
-                        -- if isArkasisEquipped ~= 0 then
-                        --     arkasisLetter = arkasisLetter .. " [" .. CC.ArkasisAssistant:GetSetNameFromStatusId(isArkasisEquipped) .. "]"
-                        -- end
-
                         stringArkasis = string.format("%s%s|r", arkasisColorHex, arkasisLetter)
                     end
 
@@ -1173,12 +1175,6 @@ function Module:UpdateData()
                             slayerLetter = "R"
                             slayerColorHex = CC.GetHexColorFromArray(CC.SlayerAssistant.SV.ColorRight)
                         end
-
-                        -- local isSlayerEquipped = GroupMember.SlayerAssistant.isEquipped or 0
-                        -- if isSlayerEquipped ~= 0 then
-                        --     slayerLetter = slayerLetter .. " [" .. CC.SlayerAssistant:GetSetNameFromStatusId(isSlayerEquipped) .. "]"
-                        -- end
-
                         stringSlayer = string.format("%s%s|r", slayerColorHex, slayerLetter)
                     end
 
@@ -1494,7 +1490,15 @@ function Module:UpdateData()
             local shortName = self:GetShortName(Player.displayName, self.maxLengthDisplayName)
             local roleIcon = self:GetPlayerIconByRole(Player.selectedRole)
             local savedStr = isSaved and " |cFF9F3F[SOR]|r" or ""
-            local distanceStr = Player.distance == 9999 and "N/A" or string.format("%.1fm", Player.distance)
+            local distanceStr = ""
+
+            if Player.distance >= 9999 then
+                distanceStr = "N/A"
+            elseif Player.distance >= 10 then
+                distanceStr = string.format("%dm", Player.distance)
+            else
+                distanceStr = string.format("%.1fm", Player.distance)
+            end
 
             if hasBuff and isSaved then
                 shortName = CC.GetHexColorFromArray(self.GN_NORMAL) .. shortName .. "|r"

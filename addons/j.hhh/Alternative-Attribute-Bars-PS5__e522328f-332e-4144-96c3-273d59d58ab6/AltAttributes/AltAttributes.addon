@@ -8,8 +8,8 @@
 ## Title: Alternative Attribute Bars
 ## Description: Fully customizable Console/Gamepad attribute bars with independent positioning, native/custom colors, selectable full ESO Basegame or Alternative Attribute Bars frame style and live exact resource values.
 ## Author: |c943810BulDeZir|r, j.hhh
-## Version: 2.9-console-value-y
-## AddOnVersion: 290
+## Version: 2.10-console-abbrev-brackets
+## AddOnVersion: 2100
 ## SavedVariables: AltAttributesSavedVariables
 ## OptionalDependsOn: LibAddonMenu-2.0 LibGamepad LibHarvensAddonSettings LibVotans Azurah
 

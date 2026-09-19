@@ -1169,7 +1169,7 @@ function Settings.Initialize(args)
                 {
                     type = "checkbox",
                     name = GetString(MSAL_AUTOBIND),
-                    tooltip = GetString(MSAL_AUTOBIND_TOOLTIP_CONSOLE),
+                    tooltip = GetString(MSAL_AUTOBIND_TOOLTIP),
                     getFunc = function()
                         return db.autoBind
                     end,

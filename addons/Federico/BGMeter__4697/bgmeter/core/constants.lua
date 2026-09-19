@@ -7,7 +7,7 @@ local K = {}
 K.ADDON_NAME = "bgmeter"
 K.TITLE      = "BGmeter"
 K.LOGO       = "bgmeter/assets/launcher.dds"
-K.VERSION    = "0.2.0"
+K.VERSION    = "0.4.0"
 K.SAVED_VARS = "BGMeterSavedVars"
 K.SLASH      = "/bgmeter"
 
@@ -47,9 +47,9 @@ K.TEAM_ART = {
 
 K.LAYOUT = {
     window_w   = 760,
-    window_h   = 620,
+    window_h   = 800,
     min_w      = 700,
-    min_h      = 600,
+    min_h      = 780,
     max_w      = 1240,
     max_h      = 980,
     row_h      = 28,
@@ -67,6 +67,11 @@ K.LAYOUT = {
     ribbon_top = 20,
     pin_size   = 32,
     occ_h      = 48,
+    race_h     = 48,
+    kills_h    = 44,
+    map_h      = 560,
+    map_w      = 760,
+    map_min    = 280,
 }
 
 K.ALPHA = {
@@ -74,6 +79,10 @@ K.ALPHA = {
     score_art    = 0.22,
     footer_band  = 0.60,
     chart_bg     = 0.04,
+    chart_edge   = 0.14,
+    chart_grid   = 0.07,
+    race_halo    = 0.18,
+    race_fill    = 0.12,
     banner_glow  = 0.45,
     bar_fill     = 0.20,
     team_strip   = 0.85,

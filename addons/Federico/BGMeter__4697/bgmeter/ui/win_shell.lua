@@ -59,6 +59,8 @@ local SETTINGS_SECTIONS = {
         { kind = "toggle", key = "show_standing",  label = "Standing / session panel" },
         { kind = "toggle", key = "show_awards",    label = "MVP / column leaders" },
         { kind = "toggle", key = "show_timeline",  label = "Match timeline chart" },
+        { kind = "toggle", key = "show_race",      label = "Damage race strip" },
+        { kind = "toggle", key = "show_kills",     label = "Kill pressure strip" },
         { kind = "toggle", key = "show_faces",     label = "Familiar faces" },
         { kind = "slider", key = "opacity",        label = "Background opacity",
           min = 0.60, max = 1.0, step = 0.01 },
@@ -360,17 +362,7 @@ function W.render(animate)
         set_text(W.header.subtitle, "finish a battleground, or try  /bgmeter demo")
         set_text(W.header.counter, "0 / 0")
         W.battle.row_pool:release_all()
-        W.battle.dot_pool:release_all()
-        W.battle.skull_pool:release_all()
-        W.battle.chart:SetHidden(true)
-        W.battle.ribbon_pool:release_all()
-        W.battle.pin_pool:release_all()
-        W.battle.tick_hit_pool:release_all()
-        W.battle.ribbon:SetHidden(true)
-        W.battle.occ_pool:release_all()
-        W.battle.occ:SetHidden(true)
-        W.battle.mom_pool:release_all()
-        W.battle.mom:SetHidden(true)
+        SEC.clear_chart(W.battle)
         SEC.duels(nil)
         set_text(W.detail, "")
         return
@@ -381,6 +373,7 @@ function W.render(animate)
     SEC.duels(m)
     SEC.haul(m, animate)
     W.render_detail(m)
+    if BGMeter.UI.map then BGMeter.UI.map.on_report_render() end
 end
 
 function W.render_detail(m)
@@ -390,8 +383,9 @@ function W.render_detail(m)
         local prefix = ic and (F.icon(ic, 16) .. " ") or ""
         local taken = (r.taken and r.taken > 0) and string.format("  ·  %s taken", F.abbrev(r.taken)) or ""
         local eff = ""
-        if m and m.durationMs and m.durationMs > 0 then
-            local dpm = math.floor((r.damage or 0) / math.max(1, m.durationMs / 60000))
+        local played = m and BGMeter.Match.played_ms(m) or 0
+        if played > 0 then
+            local dpm = math.floor((r.damage or 0) / math.max(1, played / 60000))
             eff = string.format("  ·  %s dpm", F.abbrev(dpm))
             if r.kills and r.kills > 0 then
                 eff = eff .. string.format("  ·  %s per kill", F.abbrev(math.floor((r.damage or 0) / r.kills)))
@@ -527,6 +521,9 @@ local function apply_visibility()
     if not want then
         W._chart_hover_stop()
         hide_medal_card()
+        if BGMeter.UI.map then BGMeter.UI.map.on_report_hidden() end
+    elseif was_hidden and BGMeter.UI.map then
+        BGMeter.UI.map.on_report_shown()
     end
 end
 
@@ -596,6 +593,7 @@ local function after_hide(was_visible)
     W._persist_hidden(true)
     W._chart_hover_stop()
     hide_medal_card()
+    if BGMeter.UI.map then BGMeter.UI.map.on_report_hidden() end
     if was_visible then
         Sound.play("close")
         if BGMeter.UI.menu and BGMeter.UI.menu.on_report_closed then

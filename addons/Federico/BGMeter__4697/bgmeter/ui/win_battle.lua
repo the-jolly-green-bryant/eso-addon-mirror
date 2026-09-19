@@ -104,20 +104,47 @@ local function build_battle(win)
     b.row_pool = BGMeter.Plot.pool.new(function() return W._make_row(b.container) end,
         function(row) row.container:SetHidden(true) end)
 
-    b.chart = BGMeter.zenimax.ui.create_control(nil, b.container, CT_CONTROL)
-    b.chart:SetAnchor(BOTTOMLEFT, b.container, BOTTOMLEFT, 0, 0)
-    b.chart:SetAnchor(BOTTOMRIGHT, b.container, BOTTOMRIGHT, 0, 0)
-    b.chart:SetHeight(L.chart_h)
-    b.chart:SetHidden(true)
+    local edge = K.COLOR.text_dim
+    local function strip(key, title, tip, h, title_y)
+        local c = BGMeter.zenimax.ui.create_control(nil, b.container, CT_CONTROL)
+        c:SetAnchor(BOTTOMLEFT, b.container, BOTTOMLEFT, 0, 0)
+        c:SetAnchor(BOTTOMRIGHT, b.container, BOTTOMRIGHT, 0, 0)
+        c:SetHeight(h or 0)
+        c:SetHidden(true)
+        c:SetMouseEnabled(true)
+        c:SetHandler("OnMouseEnter", function() W._chart_hover_start() end)
+        c:SetHandler("OnMouseExit", function() W._chart_hover_stop() end)
+        b[key] = c
+        b[key .. "Bg"] = P.rect(c, { 1, 1, 1, K.ALPHA.chart_bg })
+        b[key .. "Bg"]:SetAnchorFill(c)
+        b[key .. "Box"] = P.hairline_box(c, { edge[1], edge[2], edge[3], K.ALPHA.chart_edge })
+        local lbl = P.label(c, S.FONT.small, K.COLOR.text_dim)
+        lbl:SetText(title)
+        lbl:SetAnchor(TOPLEFT, c, TOPLEFT, 4, title_y or 2)
+        b[key .. "Title"] = lbl
+        if tip then W.tip_static(lbl, tip) else W.tip_dynamic(lbl) end
+        return c
+    end
+    local function rect_pool(parent)
+        return BGMeter.Plot.pool.new(
+            function() return P.rect(parent, { 1, 1, 1, 1 }) end,
+            function(r) r:SetHidden(true); r:ClearAnchors() end)
+    end
 
-    b.chartBg = P.rect(b.chart, { 1, 1, 1, K.ALPHA.chart_bg })
-    b.chartBg:SetAnchorFill(b.chart)
+    strip("chart", "MATCH TIMELINE",
+        "Team score over time.\nGold skull = your kill  ·  red skull = your death  ·  team-color ticks = other kills\nGold band = bloodiest minute  ·  thin marks along the bottom = minutes  ·  dashed line = new round",
+        L.chart_h)
 
-    b.chartTitle = P.label(b.chart, S.FONT.small, K.COLOR.text_dim)
-    b.chartTitle:SetText("MATCH TIMELINE")
-    b.chartTitle:SetAnchor(TOPLEFT, b.chart, TOPLEFT, 4, 2)
-    W.tip_static(b.chartTitle,
-        "Team score over time.\nGold skull = your kill  ·  red skull = your death  ·  team-color ticks = other kills\nGold band = bloodiest minute of the match")
+    b.chartLegend = P.label(b.chart, S.FONT.small, K.COLOR.text)
+    b.chartLegend:SetAnchor(LEFT, b.chartTitle, RIGHT, 10, 0)
+    b.chartLegend:SetHeight(14)
+
+    b.chartMax = P.label(b.chart, S.FONT.small, K.COLOR.text_dim)
+    b.chartMax:SetAnchor(TOPRIGHT, b.chart, TOPRIGHT, -4, 2)
+    b.chartMax:SetDimensions(60, 14)
+    b.chartMax:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+
+    b.mark_labels = {}
 
     b.dot_pool = BGMeter.Plot.pool.new(
         function()
@@ -153,28 +180,10 @@ local function build_battle(win)
     b.cursor:SetDimensions(1, L.chart_h - 4)
     b.cursor:SetHidden(true)
 
-    b.chart:SetMouseEnabled(true)
-    b.chart:SetHandler("OnMouseEnter", function() W._chart_hover_start() end)
-    b.chart:SetHandler("OnMouseExit", function() W._chart_hover_stop() end)
+    strip("ribbon", "FLAG CONTROL",
+        "Who held each flag over time (lane color = owning team).\nFlag pin = captured  ·  shield = attack defended\nIn Chaosball and Capture the Relic your own runs are gold.\nHover any pin for the details")
 
-    b.ribbon = BGMeter.zenimax.ui.create_control(nil, b.container, CT_CONTROL)
-    b.ribbon:SetAnchor(BOTTOMLEFT, b.container, BOTTOMLEFT, 0, 0)
-    b.ribbon:SetAnchor(BOTTOMRIGHT, b.container, BOTTOMRIGHT, 0, 0)
-    b.ribbon:SetHeight(0)
-    b.ribbon:SetHidden(true)
-
-    b.ribbonBg = P.rect(b.ribbon, { 1, 1, 1, K.ALPHA.chart_bg })
-    b.ribbonBg:SetAnchorFill(b.ribbon)
-
-    b.ribbonTitle = P.label(b.ribbon, S.FONT.small, K.COLOR.text_dim)
-    b.ribbonTitle:SetText("FLAG CONTROL")
-    b.ribbonTitle:SetAnchor(TOPLEFT, b.ribbon, TOPLEFT, 4, 2)
-    W.tip_static(b.ribbonTitle,
-        "Who held each flag over time (lane color = owning team).\nFlag pin = captured  ·  shield = attack defended\nHover any pin for the details")
-
-    b.ribbon_pool = BGMeter.Plot.pool.new(
-        function() return P.rect(b.ribbon, { 1, 1, 1, 1 }) end,
-        function(r) r:SetHidden(true); r:ClearAnchors() end)
+    b.ribbon_pool = rect_pool(b.ribbon)
 
     b.ribbon_letters = {}
     b.lane_pins = {}
@@ -183,31 +192,7 @@ local function build_battle(win)
         function() return P.icon(b.ribbon, "") end,
         function(ic) ic:SetHidden(true); ic:ClearAnchors() end)
 
-    b.tick_hit_pool = BGMeter.Plot.pool.new(
-        function()
-            local h = BGMeter.zenimax.ui.create_control(nil, b.ribbon, CT_CONTROL)
-            W.tip_dynamic(h)
-            return h
-        end,
-        function(h) h:SetHidden(true); h:ClearAnchors(); W.tips[h] = nil end)
-
-    b.ribbon:SetMouseEnabled(true)
-    b.ribbon:SetHandler("OnMouseEnter", function() W._chart_hover_start() end)
-    b.ribbon:SetHandler("OnMouseExit", function() W._chart_hover_stop() end)
-
-    b.occ = BGMeter.zenimax.ui.create_control(nil, b.container, CT_CONTROL)
-    b.occ:SetAnchor(BOTTOMLEFT, b.container, BOTTOMLEFT, 0, 0)
-    b.occ:SetAnchor(BOTTOMRIGHT, b.container, BOTTOMRIGHT, 0, 0)
-    b.occ:SetHeight(0)
-    b.occ:SetHidden(true)
-
-    b.occBg = P.rect(b.occ, { 1, 1, 1, K.ALPHA.chart_bg })
-    b.occBg:SetAnchorFill(b.occ)
-
-    b.occTitle = P.label(b.occ, S.FONT.small, K.COLOR.text_dim)
-    b.occTitle:SetText("FLAG OCCUPATION")
-    b.occTitle:SetAnchor(TOPLEFT, b.occ, TOPLEFT, 4, 2)
-    W.tip_static(b.occTitle,
+    strip("occ", "FLAG OCCUPATION",
         "Share of total flag-hold time per team.\nBelow: captures, successful defenses, average hold per team, first capture")
 
     b.occLegend = P.label(b.occ, S.FONT.small, K.COLOR.text)
@@ -223,52 +208,39 @@ local function build_battle(win)
     b.occStats:SetAnchor(TOPRIGHT, b.occ, TOPRIGHT, -4, 32)
     one_line(b.occStats)
 
-    b.occ_pool = BGMeter.Plot.pool.new(
-        function() return P.rect(b.occ, { 1, 1, 1, 1 }) end,
-        function(r) r:SetHidden(true); r:ClearAnchors() end)
+    b.occ_pool = rect_pool(b.occ)
 
-    b.race = BGMeter.zenimax.ui.create_control(nil, b.container, CT_CONTROL)
-    b.race:SetAnchor(BOTTOMLEFT, b.container, BOTTOMLEFT, 0, 0)
-    b.race:SetAnchor(BOTTOMRIGHT, b.container, BOTTOMRIGHT, 0, 0)
-    b.race:SetHeight(0)
-    b.race:SetHidden(true)
-    b.raceBg = P.rect(b.race, { 1, 1, 1, K.ALPHA.chart_bg })
-    b.raceBg:SetAnchorFill(b.race)
-    b.raceTitle = P.label(b.race, S.FONT.small, K.COLOR.text_dim)
-    b.raceTitle:SetText("DAMAGE RACE")
-    b.raceTitle:SetAnchor(TOPLEFT, b.race, TOPLEFT, 4, 2)
-    W.tip_dynamic(b.raceTitle)
-    b.race:SetMouseEnabled(true)
-    b.race:SetHandler("OnMouseEnter", function() W._chart_hover_start() end)
-    b.race:SetHandler("OnMouseExit", function() W._chart_hover_stop() end)
+    strip("race", "DAMAGE RACE", nil)
+    b.race_pool = rect_pool(b.race)
+    b.race_line_pool = b.lines_ok and BGMeter.Plot.pool.new(
+        function() return P.line(b.race, { 1, 1, 1, 1 }, 2) end,
+        function(ln) ln:SetHidden(true); ln:ClearAnchors() end) or nil
 
-    b.mom = BGMeter.zenimax.ui.create_control(nil, b.container, CT_CONTROL)
-    b.mom:SetAnchor(BOTTOMLEFT, b.container, BOTTOMLEFT, 0, 0)
-    b.mom:SetAnchor(BOTTOMRIGHT, b.container, BOTTOMRIGHT, 0, 0)
-    b.mom:SetHeight(0)
-    b.mom:SetHidden(true)
-
-    b.momBg = P.rect(b.mom, { 1, 1, 1, K.ALPHA.chart_bg })
-    b.momBg:SetAnchorFill(b.mom)
-
-    b.momTitle = P.label(b.mom, S.FONT.small, K.COLOR.text_dim)
-    b.momTitle:SetText("MOMENTUM")
-    b.momTitle:SetAnchor(TOPLEFT, b.mom, TOPLEFT, 4, 0)
-    W.tip_static(b.momTitle,
-        "Who was leading, and by how much.\nColor = leading team  ·  brighter = bigger lead")
+    strip("mom", "MOMENTUM",
+        "Who was leading, and by how much.\nColor = leading team  ·  brighter = bigger lead", 0, 0)
 
     b.momStats = P.label(b.mom, S.FONT.small, K.COLOR.text_dim)
     b.momStats:SetAnchor(TOPLEFT, b.mom, TOPLEFT, 4, 30)
     b.momStats:SetAnchor(TOPRIGHT, b.mom, TOPRIGHT, -4, 30)
     one_line(b.momStats)
 
-    b.mom_pool = BGMeter.Plot.pool.new(
-        function() return P.rect(b.mom, { 1, 1, 1, 1 }) end,
-        function(r) r:SetHidden(true); r:ClearAnchors() end)
+    b.mom_pool = rect_pool(b.mom)
 
-    b.mom:SetMouseEnabled(true)
-    b.mom:SetHandler("OnMouseEnter", function() W._chart_hover_start() end)
-    b.mom:SetHandler("OnMouseExit", function() W._chart_hover_stop() end)
+    strip("kills", "KILL PRESSURE",
+        "Kills per minute, one bar per team.\nTwo teams: one team grows up, the other down from the middle line.\nHover a minute for the count.")
+    b.killsLegend = P.label(b.kills, S.FONT.small, K.COLOR.text)
+    b.killsLegend:SetAnchor(TOPRIGHT, b.kills, TOPRIGHT, -4, 2)
+    b.killsLegend:SetHeight(14)
+    b.killsLegend:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+    b.kills_pool = rect_pool(b.kills)
+
+    b.hit_pool = BGMeter.Plot.pool.new(
+        function()
+            local h = BGMeter.zenimax.ui.create_control(nil, b.container, CT_CONTROL)
+            W.tip_dynamic(h)
+            return h
+        end,
+        function(h) h:SetHidden(true); h:ClearAnchors(); W.tips[h] = nil end)
 
     return b
 end

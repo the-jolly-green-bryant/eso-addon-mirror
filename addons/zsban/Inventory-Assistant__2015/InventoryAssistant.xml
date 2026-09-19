@@ -59,6 +59,7 @@
 			</OnMouseExit>
       <OnMouseUp>
         ClearMenu ( )
+        if not upInside then return end
         if button == MOUSE_BUTTON_INDEX_RIGHT then
           local currentCharId = zo_strformat( "&lt;&lt;1&gt;&gt;", GetCurrentCharacterId ( ) )
           local canLockNow = self.data.item.charId and self.data.item.charId == currentCharId
@@ -160,7 +161,7 @@
                 if FCOIS.settingsVars.settings.isIconEnabled[ marker ] then
                   AddCustomMenuItem ( string.format ( "FCOIS: %s", menuText1 ), function () 
                     FCOIS.markedItems[ marker ][ fcoisItemId ] = 1
-                    FCOIS.FilterBasics ( false )
+                    FCOIS.FilterBasics ( --[[onlyPlayer]] false )
                     d ( string.format ( "%s  |c666666(%s)|r  %s", item.link, item.traitTypeName, actionText1 ) )
                   end )
                 end
@@ -168,7 +169,7 @@
                 AddCustomMenuItem ( string.format ( "FCOIS: %s", menuText2 ), function () 
                   FCOIS.markedItems[ marker ][ item.itemId ] = nil
                   FCOIS.markedItems[ marker ][ item.uniqueId ] = nil
-                  FCOIS.FilterBasics ( false )
+                  FCOIS.FilterBasics ( --[[onlyPlayer]] false )
                   d ( string.format ( "%s  |c666666(%s)|r  %s", item.link, item.traitTypeName, actionText2 ) ) 
                 end )
               end
@@ -182,7 +183,7 @@
                   submenuitem.label = menuText1
                   submenuitem.callback = function ( ) 
                     FCOIS.markedItems[ marker ][ fcoisItemId ] = 1
-                    FCOIS.FilterBasics ( false )
+                    FCOIS.FilterBasics ( --[[onlyPlayer]] false )
                     d ( string.format ( "%s  |c666666(%s)|r  %s", item.link, item.traitTypeName, actionText1 ) )
                   end
                 end
@@ -191,7 +192,7 @@
                 submenuitem.callback = function ( ) 
                   FCOIS.markedItems[ marker ][ item.itemId ] = nil
                   FCOIS.markedItems[ marker ][ item.uniqueId ] = nil
-                  FCOIS.FilterBasics ( false )
+                  FCOIS.FilterBasics ( --[[onlyPlayer]] false )
                   d ( string.format ( "%s  |c666666(%s)|r  %s", item.link, item.traitTypeName, actionText2 ) ) 
                 end
               end
@@ -235,7 +236,7 @@
                   FCOIS.markedItems[ FCOIS_CON_ICON_DECONSTRUCTION ][ fcoisItemId ] = 1
                   FCOIS.markedItems[ FCOIS_CON_ICON_SELL ][ fcoisItemId ] = nil
                   FCOIS.markedItems[ FCOIS_CON_ICON_SELL_AT_GUILDSTORE ][ fcoisItemId ] = nil
-                  FCOIS.FilterBasics ( false )
+                  FCOIS.FilterBasics ( --[[onlyPlayer]] false )
                   d ( string.format( "%s  |c666666(%s)|r  marked for deconstruction", self.data.item.link, self.data.item.traitTypeName ) )
                 end )
               end
@@ -243,7 +244,7 @@
               AddCustomMenuItem ( "FCOIS: Unmark for Deconstruction", function () 
                 FCOIS.markedItems[ FCOIS_CON_ICON_DECONSTRUCTION ][ self.data.item.itemId ] = nil
                 FCOIS.markedItems[ FCOIS_CON_ICON_DECONSTRUCTION ][ self.data.item.uniqueId ] = nil
-                FCOIS.FilterBasics ( false )
+                FCOIS.FilterBasics ( --[[onlyPlayer]] false )
                 d ( string.format( "%s  |c666666(%s)|r  unmarked for deconstruction", self.data.item.link, self.data.item.traitTypeName ) ) 
               end )
             end
@@ -253,7 +254,7 @@
                   FCOIS.markedItems[ FCOIS_CON_ICON_DECONSTRUCTION ][ fcoisItemId ] = nil
                   FCOIS.markedItems[ FCOIS_CON_ICON_SELL ][ fcoisItemId ] = nil
                   FCOIS.markedItems[ FCOIS_CON_ICON_SELL_AT_GUILDSTORE ][ fcoisItemId ] = 1
-                  FCOIS.FilterBasics ( false )
+                  FCOIS.FilterBasics ( --[[onlyPlayer]] false )
                   d ( string.format( "%s  |c666666(%s)|r  marked for selling at guild store", self.data.item.link, self.data.item.traitTypeName ) )
                 end )
               end
@@ -261,7 +262,7 @@
               AddCustomMenuItem ( "FCOIS: Unmark for Sell at Guild Store", function () 
                 FCOIS.markedItems[ FCOIS_CON_ICON_SELL_AT_GUILDSTORE ][ self.data.item.itemId ] = nil
                 FCOIS.markedItems[ FCOIS_CON_ICON_SELL_AT_GUILDSTORE ][ self.data.item.uniqueId ] = nil
-                FCOIS.FilterBasics ( false )
+                FCOIS.FilterBasics ( --[[onlyPlayer]] false )
                 d ( string.format( "%s  |c666666(%s)|r  unmarked for selling at guild store", self.data.item.link, self.data.item.traitTypeName ) )
               end )
             end
@@ -271,7 +272,7 @@
                   FCOIS.markedItems[ FCOIS_CON_ICON_DECONSTRUCTION ][ fcoisItemId ] = nil
                   FCOIS.markedItems[ FCOIS_CON_ICON_SELL ][ fcoisItemId ] = 1
                   FCOIS.markedItems[ FCOIS_CON_ICON_SELL_AT_GUILDSTORE ][ fcoisItemId ] = nil
-                  FCOIS.FilterBasics ( false )
+                  FCOIS.FilterBasics ( --[[onlyPlayer]] false )
                   d ( string.format( "%s  |c666666(%s)|r  marked for selling to merchant", self.data.item.link, self.data.item.traitTypeName ) )
                 end )
               end
@@ -279,7 +280,7 @@
               AddCustomMenuItem ( "FCOIS: Unmark for Sell to Merchant", function () 
                 FCOIS.markedItems[ FCOIS_CON_ICON_SELL ][ self.data.item.itemId ] = nil
                 FCOIS.markedItems[ FCOIS_CON_ICON_SELL ][ self.data.item.uniqueId ] = nil
-                FCOIS.FilterBasics ( false )
+                FCOIS.FilterBasics ( --[[onlyPlayer]] false )
                 d ( string.format( "%s  |c666666(%s)|r  unmarked for selling to merchant", self.data.item.link, self.data.item.traitTypeName ) )
               end )
             end
@@ -362,28 +363,28 @@
                       local checkbox = IA_INVENTORY_ASSISTANT.onlyUncollected and "|t16:16:esoui/art/buttons/checkbox_checked.dds|t" or "|t16:16:esoui/art/buttons/checkbox_unchecked.dds|t"
                       AddCustomMenuItem ( checkbox .. " Show only uncollected set items", function () 
                         IA_INVENTORY_ASSISTANT.onlyUncollected = not IA_INVENTORY_ASSISTANT.onlyUncollected
-                        IA_INVENTORY_ASSISTANT:Refresh ( false )
+                        IA_INVENTORY_ASSISTANT:Refresh ( --[[reload]] false, --[[preserveScrollPosition]] false )
                       end )
                       local checkbox = IA_INVENTORY_ASSISTANT.onlyDuplicates and "|t16:16:esoui/art/buttons/checkbox_checked.dds|t" or "|t16:16:esoui/art/buttons/checkbox_unchecked.dds|t"
                       AddCustomMenuItem ( checkbox .. " Show only duplicates", function () 
                         IA_INVENTORY_ASSISTANT.onlyDuplicates = not IA_INVENTORY_ASSISTANT.onlyDuplicates
-                        IA_INVENTORY_ASSISTANT:Refresh ( false )
+                        IA_INVENTORY_ASSISTANT:Refresh ( --[[reload]] false, --[[preserveScrollPosition]] false )
                       end )
                       if FCOIS then
                         local checkbox = IA_INVENTORY_ASSISTANT.onlyMarkedItems and "|t16:16:esoui/art/buttons/checkbox_checked.dds|t" or "|t16:16:esoui/art/buttons/checkbox_unchecked.dds|t"
                         AddCustomMenuItem ( checkbox .. " Show only marked items", function () 
                           IA_INVENTORY_ASSISTANT.onlyMarkedItems = not IA_INVENTORY_ASSISTANT.onlyMarkedItems
-                          IA_INVENTORY_ASSISTANT:Refresh ( false )
+                          IA_INVENTORY_ASSISTANT:Refresh ( --[[reload]] false, --[[preserveScrollPosition]] false )
                         end )
                         local checkbox = IA_INVENTORY_ASSISTANT.showFCOISGearSetMarkers and "|t16:16:esoui/art/buttons/checkbox_checked.dds|t" or "|t16:16:esoui/art/buttons/checkbox_unchecked.dds|t"
                         AddCustomMenuItem ( checkbox .. " Show FCOIS gear set marker icons", function () 
                           IA_INVENTORY_ASSISTANT.showFCOISGearSetMarkers = not IA_INVENTORY_ASSISTANT.showFCOISGearSetMarkers
-                          IA_INVENTORY_ASSISTANT:Refresh ( false )
+                          IA_INVENTORY_ASSISTANT:Refresh ( --[[reload]] false, --[[preserveScrollPosition]] false )
                         end )
                         local checkbox = IA_INVENTORY_ASSISTANT.showFCOISDynamicMarkers and "|t16:16:esoui/art/buttons/checkbox_checked.dds|t" or "|t16:16:esoui/art/buttons/checkbox_unchecked.dds|t"
                         AddCustomMenuItem ( checkbox .. " Show FCOIS dynamic marker icons", function () 
                           IA_INVENTORY_ASSISTANT.showFCOISDynamicMarkers = not IA_INVENTORY_ASSISTANT.showFCOISDynamicMarkers
-                          IA_INVENTORY_ASSISTANT:Refresh ( false )
+                          IA_INVENTORY_ASSISTANT:Refresh ( --[[reload]] false, --[[preserveScrollPosition]] false )
                         end )
                       end
                       AddCustomMenuItem( "-" )
@@ -393,7 +394,7 @@
                         if IA_INVENTORY_ASSISTANT.onlyCP160 then
                           IA_INVENTORY_ASSISTANT.onlyNonCP160 = false
                         end
-                        IA_INVENTORY_ASSISTANT:Refresh ( false )
+                        IA_INVENTORY_ASSISTANT:Refresh ( --[[reload]] false, --[[preserveScrollPosition]] false )
                       end )
                       local checkbox = IA_INVENTORY_ASSISTANT.onlyNonCP160 and "|t16:16:esoui/art/buttons/checkbox_checked.dds|t" or "|t16:16:esoui/art/buttons/checkbox_unchecked.dds|t"
                       AddCustomMenuItem ( checkbox .. " Show only non CP160 items", function () 
@@ -401,49 +402,49 @@
                         if IA_INVENTORY_ASSISTANT.onlyNonCP160 then
                           IA_INVENTORY_ASSISTANT.onlyCP160 = false
                         end
-                        IA_INVENTORY_ASSISTANT:Refresh ( false )
+                        IA_INVENTORY_ASSISTANT:Refresh ( --[[reload]] false, --[[preserveScrollPosition]] false )
                       end )
                       AddCustomMenuItem( "-" )
                       local checkbox = IA_INVENTORY_ASSISTANT.onlyLoots and "|t16:16:esoui/art/buttons/checkbox_checked.dds|t" or "|t16:16:esoui/art/buttons/checkbox_unchecked.dds|t"
                       AddCustomMenuItem ( checkbox .. " Show only loots", function () 
                         IA_INVENTORY_ASSISTANT.onlyLoots = not IA_INVENTORY_ASSISTANT.onlyLoots
-                        IA_INVENTORY_ASSISTANT:Refresh ( false )
+                        IA_INVENTORY_ASSISTANT:Refresh ( --[[reload]] false, --[[preserveScrollPosition]] false )
                       end )
                       local checkbox = IA_INVENTORY_ASSISTANT.groupLoots and "|t16:16:esoui/art/buttons/checkbox_checked.dds|t" or "|t16:16:esoui/art/buttons/checkbox_unchecked.dds|t"
                       AddCustomMenuItem ( checkbox .. " Show group loots", function () 
                         IA_INVENTORY_ASSISTANT.groupLoots = not IA_INVENTORY_ASSISTANT.groupLoots
-                        IA_INVENTORY_ASSISTANT:Refresh ( true )
+                        IA_INVENTORY_ASSISTANT:Refresh ( --[[reload]] true, --[[preserveScrollPosition]] false )
                       end )
                       AddCustomMenuItem( "-" )
                       local checkbox = IA_INVENTORY_ASSISTANT.showCrafted and "|t16:16:esoui/art/buttons/checkbox_checked.dds|t" or "|t16:16:esoui/art/buttons/checkbox_unchecked.dds|t"
                       AddCustomMenuItem ( checkbox .. " Show crafted sets", function () 
                         IA_INVENTORY_ASSISTANT.showCrafted = not IA_INVENTORY_ASSISTANT.showCrafted
-                        IA_INVENTORY_ASSISTANT:Refresh ( false )
+                        IA_INVENTORY_ASSISTANT:Refresh ( --[[reload]] false, --[[preserveScrollPosition]] false )
                       end )
                       local checkbox = IA_INVENTORY_ASSISTANT.showBuyable and "|t16:16:esoui/art/buttons/checkbox_checked.dds|t" or "|t16:16:esoui/art/buttons/checkbox_unchecked.dds|t"
                       AddCustomMenuItem ( checkbox .. " Show tradeable sets", function () 
                         IA_INVENTORY_ASSISTANT.showBuyable = not IA_INVENTORY_ASSISTANT.showBuyable
-                        IA_INVENTORY_ASSISTANT:Refresh ( false )
+                        IA_INVENTORY_ASSISTANT:Refresh ( --[[reload]] false, --[[preserveScrollPosition]] false )
                       end )
                       local checkbox = IA_INVENTORY_ASSISTANT.showBound and "|t16:16:esoui/art/buttons/checkbox_checked.dds|t" or "|t16:16:esoui/art/buttons/checkbox_unchecked.dds|t"
                       AddCustomMenuItem ( checkbox .. " Show bound sets", function () 
                         IA_INVENTORY_ASSISTANT.showBound = not IA_INVENTORY_ASSISTANT.showBound
-                        IA_INVENTORY_ASSISTANT:Refresh ( false )
+                        IA_INVENTORY_ASSISTANT:Refresh ( --[[reload]] false, --[[preserveScrollPosition]] false )
                       end )
                       local checkbox = IA_INVENTORY_ASSISTANT.showMonsterSets and "|t16:16:esoui/art/buttons/checkbox_checked.dds|t" or "|t16:16:esoui/art/buttons/checkbox_unchecked.dds|t"
                       AddCustomMenuItem ( checkbox .. " Show monster sets", function () 
                         IA_INVENTORY_ASSISTANT.showMonsterSets = not IA_INVENTORY_ASSISTANT.showMonsterSets
-                        IA_INVENTORY_ASSISTANT:Refresh ( false )
+                        IA_INVENTORY_ASSISTANT:Refresh ( --[[reload]] false, --[[preserveScrollPosition]] false )
                       end )
                       local checkbox = IA_INVENTORY_ASSISTANT.showNonSetItems and "|t16:16:esoui/art/buttons/checkbox_checked.dds|t" or "|t16:16:esoui/art/buttons/checkbox_unchecked.dds|t"
                       AddCustomMenuItem ( checkbox .. " Show other items", function () 
                         IA_INVENTORY_ASSISTANT.showNonSetItems = not IA_INVENTORY_ASSISTANT.showNonSetItems
-                        IA_INVENTORY_ASSISTANT:Refresh ( false )
+                        IA_INVENTORY_ASSISTANT:Refresh ( --[[reload]] false, --[[preserveScrollPosition]] false )
                       end )
                       AddCustomMenuItem ( "-" )
                       AddCustomMenuItem ( "|u16:0:: Clear group loots|u", function () 
                         IA_INVENTORY_ASSISTANT.settings.inventories [ "grouploot" ] = { }
-                        IA_INVENTORY_ASSISTANT:Refresh ( true )
+                        IA_INVENTORY_ASSISTANT:Refresh ( --[[reload]] true, --[[preserveScrollPosition]] false )
                       end )
                       AddCustomMenuItem ( "|u16:0:: Reset filters|u", function () 
                         IA_INVENTORY_ASSISTANT.onlyDuplicates = IA_INVENTORY_ASSISTANT.settings.onlyDuplicates
@@ -463,13 +464,13 @@
                         IA_INVENTORY_ASSISTANT.onlyCP160 = false
                         IA_INVENTORY_ASSISTANT.onlyNonCP160 = false
                         IA_INVENTORY_ASSISTANT.searchbox:SetText ( "" )
-                        IA_INVENTORY_ASSISTANT:Refresh ( true )
+                        IA_INVENTORY_ASSISTANT:Refresh ( --[[reload]] true, --[[preserveScrollPosition]] false )
                       end )
                       AddCustomMenuItem ( "|u16:0:: Settings|u", function () 
                         LibAddonMenu2:OpenToPanel(IA_INVENTORY_ASSISTANT.settingsPanel)
                       end )
                       AddCustomMenuItem ( "|u16:0:: Rescan|u", function () 
-                        IA_INVENTORY_ASSISTANT:Refresh ( true )
+                        IA_INVENTORY_ASSISTANT:Refresh ( --[[reload]] true, --[[preserveScrollPosition]] false )
                       end )
                       ShowMenu ( self )
                     end

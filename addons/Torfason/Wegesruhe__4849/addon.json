@@ -1,0 +1,44 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/Torfason/Wegesruhe__4849",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Torfason",
+  "canonical_id": "esoui:4849",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4849",
+  "deleted": false,
+  "directories": [
+    "Wegesruhe"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4849/",
+  "fingerprint": "ee5bc2a9b938d2519f9a479998cb7d3802f6c6ed71f8e61b1cf3826e1215e763",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17422.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17425.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17426.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4849",
+  "source_url": "https://www.esoui.com/downloads/info4849-Wegesruhe.html",
+  "stats": {
+    "downloads": 6,
+    "favorites": 1,
+    "monthly_downloads": 2
+  },
+  "title": "Wegesruhe",
+  "updated_at": 1789750272000,
+  "version": "1.0.0"
+}
