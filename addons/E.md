@@ -58,6 +58,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [ESO Arabic](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lofand/ESO-Arabic__3e5cdaca-d941-4fff-873b-7fd31d726a80) | Lofand | Console | — |
 | [ESO Arabic](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lofand/ESO-Arabic__a46a8bd0-fa70-4d6a-817e-5f69d01e04ec) | Lofand | Console | — |
 | [ESO Assistant by ESO-hub.com](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ESO-Hub/ESO-Assistant-by-ESO-hub.com__3b053cc9-5963-4eb9-96b7-de3d29a5fa8b) | ESO-Hub | Console | — |
+| [ESO Build Tracker - Prototype](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ItsCraniBaby1/ESO-Build-Tracker---Prototype__23c4dbd3-8273-4fc3-8416-f6c79eeb76ab) | ItsCraniBaby1 | Console | — |
 | [ESO Calendar Reborn: RP Edition](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Priapia/ESO-Calendar-Reborn-RP-Edition__1685) | Priapia | PC / Mac | 1.0 |
 | [ESO Combat Lock](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/solaegis/ESO-Combat-Lock__4754) | solaegis | PC / Mac | 1.2.0 |
 | [ESO Emoji](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kitkathy1994/ESO-Emoji__3376) | kitkathy1994 | PC / Mac | 0.4.2 |

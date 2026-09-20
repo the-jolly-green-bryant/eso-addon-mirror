@@ -42,9 +42,9 @@ closes itself the moment you enter combat. The interface is Japanese and needs a
 
 ■ 開き方
 
-　　通常　　　メインメニューの「ヘルプ」と「オプション」のあいだ
+　　メニュー　メインメニューの「ヘルプ」と「オプション」のあいだ
 　　　　　　　→「ゲームセンターPX」→「タムリエル de テトリス」
-　　20G　　　 同じメニューの「タムリエル de テトリス（20G）」
+　　　　　　　→「タムリエル de テトリス（ノーマル）」または「（20G）」
 　　対戦　　　相手を選んでインタラクトメニュー →「タムリエル de テトリス」
 　　コマンド　/pbt　（/pbt 20g で20G）
 
@@ -145,9 +145,9 @@ behind it were drawn for this add-on.
 
 ■ Opening it
 
-　　Standard　 main menu, between Help and Options
+　　Menu　　　 main menu, between Help and Options
 　　　　　　　 -> Game Centre PX -> Tamriel de Tetris
-　　20G　　　　the 20G entry in the same menu
+　　　　　　　 -> the normal (ノーマル) or 20G entry
 　　Duel　　　 target a player -> interact menu -> Tamriel de Tetris
 　　Command　　/pbt　(/pbt 20g for 20G)
 

@@ -1,0 +1,22 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="SXUI Beacon Pet">
+            <Action name="SXUI_BEACON_SETTINGS">
+                <Up>SXUI_BeaconMoveMode:Show(SXUI_BeaconPet)</Up>
+            </Action>
+        </Category>
+    </Layer>
+    <Layer name="SXUIBeaconPetPanel" allowFallthrough="false">
+        <Category>
+            <Action name="SXUI_BEACON_PLACE" hideAction="true" rebindable="false" inheritsBindFrom="UI_SHORTCUT_PRIMARY">
+                <Up>SXUI_BeaconMoveMode:Accept()</Up>
+            </Action>
+            <Action name="SXUI_BEACON_CANCEL" hideAction="true" rebindable="false" inheritsBindFrom="UI_SHORTCUT_NEGATIVE">
+                <Up>SXUI_BeaconMoveMode:Close(false)</Up>
+            </Action>
+            <Action name="SXUI_BEACON_EXIT" hideAction="true" rebindable="false" inheritsBindFrom="UI_SHORTCUT_EXIT">
+                <Up>SXUI_BeaconMoveMode:Close(false)</Up>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

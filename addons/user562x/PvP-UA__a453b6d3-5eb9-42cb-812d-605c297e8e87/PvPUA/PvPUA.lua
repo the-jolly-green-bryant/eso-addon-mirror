@@ -93,7 +93,7 @@ PvPUA.constants.userIcons = {
     ["@bella nekro"]     = { texture = "PvPUA/Textures/icon_bellamask.dds" },
 }
 
-PvPUA.defaults = { posX = 100, posY = 450, timerColor = { r = 1, g = 1, b = 1, a = 1 }, enableAPChat = true, consolidateAPChat = false, consolidateRepairDelay = 5, consolidateCombatDelay = 10, alertsEnabled = false, alertLifespan = 10, font = "EsoUI/Common/Fonts/FTN57.otf", backdropStyle = "Alliance", backdropColor = { r = 0, g = 0, b = 0, a = 1 }, listSize = "Default", uiScale = 1.0, barMode = "AP", iconShowSelf = true, iconShowOthers = true, showMilegates = true, showBridges = true, showTowns = true, showResources = true, showScrollCarriers = true, showVolendrungRow = true, showListInMenus = false, showListWhileSieging = false, showListWhileDead = true, showListDeadRepair = false, listCap = 0 }
+PvPUA.defaults = { posX = 100, posY = 450, timerColor = { r = 1, g = 1, b = 1, a = 1 }, enableAPChat = true, consolidateAPChat = false, consolidateRepairDelay = 5, consolidateCombatDelay = 10, alertsEnabled = false, alertLifespan = 10, font = "EsoUI/Common/Fonts/FTN57.otf", backdropStyle = "Alliance", backdropColor = { r = 0, g = 0, b = 0, a = 1 }, listSize = "Default", uiScale = 1.0, barMode = "AP", iconShowSelf = true, iconShowOthers = true, iconShowGroupFrames = true, showMilegates = true, showBridges = true, showTowns = true, showResources = true, showScrollCarriers = true, showVolendrungRow = true, showListInMenus = false, showListWhileSieging = false, showListWhileDead = true, showListDeadRepair = false, listCap = 0 }
 
 PvPUA.capChoices = {
     { name = "All", value = 0  },
@@ -368,6 +368,87 @@ function PI.StopPolling()
     for _, marker in pairs(PI.markers) do
         marker:disable()
     end
+end
+
+--------------------------------------------------
+-- Group Frame Icons
+--------------------------------------------------
+PI.groupFrameIconSize = "200%"
+
+local function PIGetGroupFrameIcon(unitTag)
+    local sv = PvPUA.savedVariables
+    if not sv or type(unitTag) ~= "string" then return nil end
+    if not sv.iconShowGroupFrames then return nil end
+    if not string.match(unitTag, "^group%d+$") then return nil end
+
+    local displayName = GetUnitDisplayName(unitTag)
+    if not displayName or displayName == "" then return nil end
+
+    local info = PvPUA.constants.userIcons[string.lower(displayName)]
+    if type(info) == "string" then info = { texture = info } end
+    if not info or not info.texture then return nil end
+
+    if AreUnitsEqual(unitTag, "player") then
+        if not sv.iconShowSelf then return nil end
+    elseif not sv.iconShowOthers then
+        return nil
+    end
+
+    return zo_iconFormat(info.texture, PI.groupFrameIconSize, PI.groupFrameIconSize)
+end
+
+local function PIWidenRaidName(frame)
+    if frame.style ~= "ZO_RaidUnitFrame" or not frame.frame then return end
+    local label = frame.nameLabel
+    if not label or not PIGetGroupFrameIcon(frame.unitTag) then return end
+
+    for index = 0, 1 do
+        local valid, point, relativeTo, relativePoint, offsetX, offsetY = label:GetAnchor(index)
+        if valid and point ~= RIGHT then
+            label:ClearAnchors()
+            label:SetAnchor(point, relativeTo, relativePoint, offsetX, offsetY)
+            label:SetAnchor(RIGHT, frame.frame, RIGHT, -2, 0, ANCHOR_CONSTRAINS_X)
+            return
+        end
+    end
+end
+
+function PI.RefreshGroupFrameIcons()
+    if UNIT_FRAMES and UNIT_FRAMES.UpdateNames then
+        pcall(UNIT_FRAMES.UpdateNames, UNIT_FRAMES)
+    end
+end
+
+function PI.ScheduleGroupRefresh()
+    EVENT_MANAGER:UnregisterForUpdate("PvPUA_GroupIconRefresh")
+    EVENT_MANAGER:RegisterForUpdate("PvPUA_GroupIconRefresh", 250, function()
+        EVENT_MANAGER:UnregisterForUpdate("PvPUA_GroupIconRefresh")
+        PI.RefreshGroupFrameIcons()
+    end)
+end
+
+function PI.InitGroupFrameIcons()
+    if PI.groupFrameHooked then return end
+    if not (ZO_PostHook and ZO_UnitFrameObject and ZO_UnitFrameObject.UpdateName) then return end
+
+    ZO_PostHook(ZO_UnitFrameObject, "UpdateName", function(frame)
+        pcall(function()
+            local label = frame.nameLabel
+            if not label then return end
+            local icon = PIGetGroupFrameIcon(frame.unitTag)
+            if icon then
+                label:SetText(label:GetText() .. " " .. icon)
+                PIWidenRaidName(frame)
+            end
+        end)
+    end)
+    ZO_PostHook(ZO_UnitFrameObject, "SetTextIndented", function(frame)
+        pcall(PIWidenRaidName, frame)
+    end)
+    PI.groupFrameHooked = true
+
+    EVENT_MANAGER:RegisterForEvent(PvPUA.name .. "_GroupIconsUpdate", EVENT_GROUP_UPDATE, PI.ScheduleGroupRefresh)
+    EVENT_MANAGER:RegisterForEvent(PvPUA.name .. "_GroupIconsJoined", EVENT_GROUP_MEMBER_JOINED, PI.ScheduleGroupRefresh)
 end
 
 --------------------------------------------------
@@ -3276,6 +3357,7 @@ end
 
 function PvPUA:OnPlayerActivated()
     PI.StartPolling()
+    PI.ScheduleGroupRefresh()
     self:RefreshQueueSoon()
 
     self:ZoneCheck()
@@ -5723,13 +5805,15 @@ function PvPUA:CreateSettings()
           choices = {
               { name = "Self",   value = "self", tooltip = "Exclusive to certain players." },
               { name = "Others", value = "others" },
+              { name = "Group Frames", value = "groupFrames" },
           },
-          default = { "self", "others" },
+          default = { "self", "others", "groupFrames" },
           getFunc = function()
               local sv = PvPUA.savedVariables
               local sel = {}
               if sv.iconShowSelf then sel[#sel + 1] = "self" end
               if sv.iconShowOthers then sel[#sel + 1] = "others" end
+              if sv.iconShowGroupFrames then sel[#sel + 1] = "groupFrames" end
               return sel
           end,
           setFunc = function(values)
@@ -5739,6 +5823,8 @@ function PvPUA:CreateSettings()
               end
               PvPUA.savedVariables.iconShowSelf = on.self == true
               PvPUA.savedVariables.iconShowOthers = on.others == true
+              PvPUA.savedVariables.iconShowGroupFrames = on.groupFrames == true
+              PI.RefreshGroupFrameIcons()
           end },
           } },
     })
@@ -5962,6 +6048,7 @@ local function OnAddonLoaded(event, addonName)
     end
 
     pcall(PI.Init)
+    pcall(PI.InitGroupFrameIcons)
 
     EVENT_MANAGER:RegisterForEvent(PvPUA.name, EVENT_PLAYER_ACTIVATED,
         function() PvPUA:OnPlayerActivated() end)

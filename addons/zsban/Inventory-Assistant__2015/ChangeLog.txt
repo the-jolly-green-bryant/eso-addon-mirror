@@ -1,3 +1,9 @@
+[u][b]1.20.260919-beta:[/b][/u]
+[list]
+ [*] bugfix: resizing the window now refreshes newly visible list rows automatically
+ [*] beta: added a loot history that is similar to the game's built-in version but more cusomizable
+[/list]
+
 [u][b]1.19.260917-beta:[/b][/u]
 [list]
  [*] performance improvements: current-character inventory updates now process only changed worn/backpack slots using a runtime bag and slot index

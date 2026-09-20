@@ -30,7 +30,7 @@
     "NecroCat"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4174/",
-  "fingerprint": "a64d587e6496b9dedb73e207b99edb1bb0a8af29a67a3741e7defe5c7b6dcb60",
+  "fingerprint": "dcbcef50834b60117685d250fafd7a97e9e8979ba863404d36240e4727509599",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16393.png"
   ],
@@ -40,11 +40,11 @@
   "source_id": "4174",
   "source_url": "https://www.esoui.com/downloads/info4174-NecroCat.html",
   "stats": {
-    "downloads": 1114,
+    "downloads": 1120,
     "favorites": 1,
-    "monthly_downloads": 93
+    "monthly_downloads": 98
   },
   "title": "NecroCat",
-  "updated_at": 1789767676000,
-  "version": "2.0.8"
+  "updated_at": 1789815465000,
+  "version": "2.0.9"
 }

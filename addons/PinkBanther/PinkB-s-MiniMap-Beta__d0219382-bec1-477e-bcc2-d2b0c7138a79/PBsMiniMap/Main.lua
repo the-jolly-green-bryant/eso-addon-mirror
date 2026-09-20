@@ -1,15 +1,16 @@
 ﻿-- PB's MiniMap
 -- Author: PinkBanther
 --
--- Based on "Votan's Minimap" by votan (https://www.esoui.com/downloads/info1399-VotansMinimap.html),
--- with thanks. The original idea -- reuse the game's own world map as a minimap rather than
--- drawing a second one -- is votan's, and much of the map handling here still comes from it.
+-- Inspired by "Votan's Minimap" by votan (https://www.esoui.com/downloads/info1399-VotansMinimap.html),
+-- with thanks. The idea -- reuse the game's own world map as a minimap rather than drawing a
+-- second one -- is votan's. This add-on started from that code and has since been rewritten;
+-- a few small pieces still trace back to it.
 --
--- This version is reworked for console (PS5/Xbox Series), where all add-ons share a 100MB
--- memory pool. The original's InitMiniMap layer exhausts that pool as soon as the standard
--- map is zoomed out to all of Tamriel, so the default configuration here (init level 2) skips
--- it entirely and instead parks the game's own map window on the HUD at a chosen size and
--- position, handing it straight back when the full map is opened.
+-- Written for console (PS5/Xbox Series), where all add-ons share a 100MB memory pool. The
+-- original's InitMiniMap layer exhausts that pool as soon as the standard map is zoomed out to
+-- all of Tamriel; that layer is not part of this add-on. Instead the game's own map window is
+-- parked on the HUD at a chosen size and position, and handed straight back when the full map
+-- is opened.
 
 if PBS_MINIMAP then
 	return
@@ -567,6 +568,206 @@ end
 -- drives the same scenes this add-on listens to. Polling the same answer the diagnostics print
 -- means dormancy can never silently fail to engage.
 local dormant = false
+-- Centre again if the full map's layout moves under us right after it opened.
+--
+-- The gamepad map sizes itself from the controls around it: the tooltip panel's left edge,
+-- the info panel's right edge, the keybind strip's height. The first time the map scene is
+-- shown after a UI reload, those are not all in their final place when the centring runs, and
+-- the game lays the map out again a moment later. The centring works in pixels, so the view
+-- was left where the old layout put the player: off-centre on the first opening, correct on
+-- every one after.
+--
+-- Which of those controls is late has not been measured, so this does not depend on it. For
+-- a second after the map opens, if the scroll's size or the zoom range the game would compute
+-- has changed since the centring, the showing step runs again. Neither changes when the
+-- player pans or zooms, so this never fights the player; a map the player picked themselves
+-- is still left alone by OnWorldMapShowing. At most three repeats, and only while dormant.
+local function MapLayoutSignature(panZoom)
+	local w, h = 0, 0
+	if ZO_WorldMapScroll then
+		w, h = ZO_WorldMapScroll:GetDimensions()
+	end
+	local maxZoom = 0
+	if panZoom and panZoom.ComputeMaxZoom then
+		maxZoom = panZoom:ComputeMaxZoom() or 0
+	end
+	return zo_round(w or 0), zo_round(h or 0), maxZoom
+end
+
+-- Drop the gamepad map's sticky pin before centring.
+--
+-- With the stick at rest, the gamepad map pans to whichever pin sits nearest the reticle, and
+-- that choice is made every frame from where the view was on the frame before. When the
+-- centring lands late -- held back until the map finishes initialising, which the first
+-- opening after a UI reload does -- the pin chosen on the frame before it landed is one near
+-- the old, off-centre view. The very next frame the map pans to it, and once a pan is under way
+-- it runs to the end: measured, the view centred at 201ms and slid back off the player over
+-- the next second and a half. Clearing it here means nothing stale is left to pan to; the map
+-- picks a new one around the player on its next frame, exactly as it does on a normal opening.
+local function ClearStickyPin(panZoom)
+	local sticky = ZO_WorldMap_GetStickyPin and ZO_WorldMap_GetStickyPin()
+	if sticky and sticky.ClearStickyPin and panZoom then
+		sticky:ClearStickyPin(panZoom)
+	end
+end
+
+function addon:RunMapShowingStep()
+	local panZoom = self.panZoom
+	if not panZoom then
+		return
+	end
+	if panZoom.SetCurrentNormalizedZoomInternal and panZoom.GetCurrentNormalizedZoom then
+		panZoom:SetCurrentNormalizedZoomInternal(panZoom:GetCurrentNormalizedZoom())
+	end
+	if panZoom.SetMapZoomMinMax and panZoom.ComputeMinZoom and panZoom.ComputeMaxZoom then
+		panZoom:SetMapZoomMinMax(panZoom:ComputeMinZoom(), panZoom:ComputeMaxZoom())
+	end
+	ClearStickyPin(panZoom)
+	if panZoom.ClearTargetOffset then
+		panZoom:ClearTargetOffset()
+	end
+	if panZoom.OnWorldMapShowing then
+		panZoom:OnWorldMapShowing()
+	elseif ZO_WorldMap_JumpToPlayer then
+		ZO_WorldMap_JumpToPlayer()
+	end
+end
+
+-- Recording how the full map settles after it opens.
+--
+-- The first wayshrine map after a UI reload does not come up centred, and two fixes built on
+-- reasoning about it have not changed that. This measures it instead. From the moment the
+-- add-on stands down for a map it records, every frame for three seconds, where the player
+-- marker sits relative to the middle of the view and everything the centring depends on --
+-- only when something changes, so a settled map adds no lines. The first opening after a load
+-- is kept as well as the latest, so a failing opening and a working one can be read side by
+-- side. It costs nothing outside those three seconds, and the settings button prints it.
+local function DescribeMapView(addon)
+	local panZoom = addon.panZoom
+	local sw, sh, scx, scy = 0, 0, 0, 0
+	if ZO_WorldMapScroll then
+		sw, sh = ZO_WorldMapScroll:GetDimensions()
+		scx, scy = ZO_WorldMapScroll:GetCenter()
+	end
+	local ox, oy = 0, 0
+	if ZO_WorldMapContainer and ZO_WorldMapContainer.GetAnchor then
+		local _, _, _, _, ax, ay = ZO_WorldMapContainer:GetAnchor(0)
+		ox, oy = ax or 0, ay or 0
+	end
+	local pin = addon.pinManager and addon.pinManager:GetPlayerPin()
+	local control = pin and pin:GetControl()
+	local pinText = "pin=missing"
+	if control then
+		local px, py = control:GetCenter()
+		pinText = string.format("pin=%d,%d%s", zo_round((px or 0) - (scx or 0)), zo_round((py or 0) - (scy or 0)),
+			control:IsHidden() and "(hidden)" or "")
+	end
+	local sticky = ZO_WorldMap_GetStickyPin and ZO_WorldMap_GetStickyPin()
+	return string.format("scroll=%dx%d z=%.2f rng=%.2f-%.2f ofs=%d,%d %s tgt=%s init=%s jump=%s sticky=%s re=%d",
+		zo_round(sw or 0), zo_round(sh or 0),
+		panZoom and panZoom.currentNormalizedZoom or -1,
+		panZoom and panZoom.minZoom or -1, panZoom and panZoom.maxZoom or -1,
+		zo_round(ox), zo_round(oy), pinText,
+		panZoom and panZoom.HasTargetOffset and panZoom:HasTargetOffset() and "Y" or "n",
+		panZoom and panZoom.pendingInitializeMap and "Y" or "n",
+		panZoom and panZoom.pendingJumpToPin and "Y" or "n",
+		sticky and sticky.GetStickyPin and sticky:GetStickyPin() and "Y" or "n",
+		addon.lateRecentres or 0)
+end
+
+function addon:BeginMapOpenTrace(header, before)
+	local now = GetFrameTimeMilliseconds()
+	local trace = {startMs = now, untilMs = now + 3000, lines = {header, "before: " .. before}}
+	self.mapOpenTrace = trace
+	if not self.firstMapOpenTrace then
+		self.firstMapOpenTrace = trace
+	end
+	self.lastMapOpenTrace = trace
+	EVENT_MANAGER:RegisterForUpdate(self.name .. "MapOpenTrace", 0, function()
+		self:SampleMapOpenTrace()
+	end)
+	self:SampleMapOpenTrace()
+end
+
+function addon:SampleMapOpenTrace()
+	local trace = self.mapOpenTrace
+	local now = GetFrameTimeMilliseconds()
+	if not trace or now > trace.untilMs or #trace.lines >= 40 then
+		self.mapOpenTrace = nil
+		EVENT_MANAGER:UnregisterForUpdate(self.name .. "MapOpenTrace")
+		return
+	end
+	local body = DescribeMapView(self)
+	if body ~= trace.lastBody then
+		trace.lastBody = body
+		trace.lines[#trace.lines + 1] = string.format("t=%d %s", now - trace.startMs, body)
+	end
+end
+
+function addon:PrintMapOpenTrace()
+	local first, last = self.firstMapOpenTrace, self.lastMapOpenTrace
+	if not first then
+		d(GetString(SI_PBSMINIMAP_MAP_OPEN_TRACE_EMPTY))
+		return
+	end
+	d(string.format("[PBsMiniMap] v%s first opening after load:", tostring(self.version)))
+	for i = 1, #first.lines do
+		d("  " .. first.lines[i])
+	end
+	if last and last ~= first then
+		d("[PBsMiniMap] latest opening:")
+		for i = 1, #last.lines do
+			d("  " .. last.lines[i])
+		end
+	end
+end
+
+-- Watched every frame rather than on the 50ms timer: once a stale sticky pan has started it
+-- runs to the end, so catching the moment a few frames late already shows as a slide. The
+-- window is two seconds because the centring can be held back for a while on the first
+-- opening after a reload; nothing in it reacts to the player's own input.
+function addon:ArmLateRecentre()
+	self.lateRecentreUntil = GetFrameTimeMilliseconds() + 2000
+	self.lateRecentres = 0
+	self.lateRecentreW, self.lateRecentreH, self.lateRecentreMax = MapLayoutSignature(self.panZoom)
+	-- A centring asked for while the map is still initialising is held back and applied later
+	-- by the game; that later moment is one to centre again at (see ClearStickyPin).
+	self.lateRecentreHeldBack = self.panZoom and self.panZoom.pendingInitializeMap and true or false
+	EVENT_MANAGER:RegisterForUpdate(self.name .. "LateRecentre", 0, function()
+		self:UpdateLateRecentre()
+	end)
+end
+
+function addon:StopLateRecentre()
+	self.lateRecentreUntil = nil
+	EVENT_MANAGER:UnregisterForUpdate(self.name .. "LateRecentre")
+end
+
+function addon:UpdateLateRecentre()
+	local untilMs = self.lateRecentreUntil
+	if not untilMs then
+		return
+	end
+	if not self.dormant or GetFrameTimeMilliseconds() > untilMs or (self.lateRecentres or 0) >= 3 then
+		self:StopLateRecentre()
+		return
+	end
+	local panZoom = self.panZoom
+	local landed = self.lateRecentreHeldBack and not (panZoom and panZoom.pendingInitializeMap)
+	local w, h, maxZoom = MapLayoutSignature(panZoom)
+	local moved = w ~= self.lateRecentreW or h ~= self.lateRecentreH or zo_abs(maxZoom - (self.lateRecentreMax or 0)) >= 0.001
+	if not landed and not moved then
+		return
+	end
+	if landed then
+		self.lateRecentreHeldBack = false
+	end
+	self.lateRecentres = (self.lateRecentres or 0) + 1
+	self:RunMapShowingStep()
+	-- The step lays the map out itself, so measure after it, not before.
+	self.lateRecentreW, self.lateRecentreH, self.lateRecentreMax = MapLayoutSignature(self.panZoom)
+end
+
 function addon:SetDormant(value)
 	if dormant == value then
 		return
@@ -581,6 +782,7 @@ function addon:SetDormant(value)
 		self:RestoreLitePlayerPinDrawLevel()
 		-- The standard map owns the window now, so nothing of ours is waiting to settle.
 		self.settleTicks = 0
+		self:StopLateRecentre()
 
 		-- Stop everything we own: swap our hooks back out, then detach the minimap itself so the
 		-- game owns the World Map outright. The memory watch deliberately keeps running.
@@ -627,68 +829,84 @@ function addon:SetDormant(value)
 		-- not run once since it was added. A view the game opens for itself is still excluded:
 		-- the antiquity map sits in a scene of its own, where IsWorldMapInFront reads false,
 		-- and the wayshrine map is a special mode.
-		local playerOpenedIt = IsWorldMapInFront()
-			and not (WORLD_MAP_MANAGER and WORLD_MAP_MANAGER.inSpecialMode)
+		-- Which views get the step the game would have run when the map came up.
+		--
+		-- The game lays the full map out, zooms and centres it from WORLD_MAP_FRAGMENT's SHOWING
+		-- state. The minimap keeps that fragment on the HUD, so opening the map never makes it
+		-- start showing and none of that runs; what follows stands in for it.
+		--
+		-- That is right for the map the player opens, and for the two travel maps, which the
+		-- game opens with PushSpecialMode followed by ZO_WorldMap_ShowWorldMap and then relies
+		-- on that same showing step to centre -- leaving them out is why the wayshrine map came
+		-- up away from the player. It is wrong for a view that sets itself up afterwards: the
+		-- antiquity map zooms and places its own view (and sits in a scene of its own, where
+		-- IsWorldMapInFront reads false), so it and any other special mode are left alone.
+		local inSpecialMode = WORLD_MAP_MANAGER and WORLD_MAP_MANAGER.inSpecialMode
+		local mapMode = WORLD_MAP_MANAGER and WORLD_MAP_MANAGER.GetMode and WORLD_MAP_MANAGER:GetMode()
+		local travelMap = inSpecialMode and mapMode ~= nil
+			and (mapMode == MAP_MODE_FAST_TRAVEL or mapMode == MAP_MODE_KEEP_TRAVEL)
+		local playerFacing = IsWorldMapInFront() and (not inSpecialMode or travelMap)
+
+		local traceBefore = DescribeMapView(self)
+		local traceHeader = string.format("mode=%s special=%s front=%s elsewhere=%s facing=%s chose=%s",
+			tostring(mapMode), inSpecialMode and "Y" or "n", IsWorldMapInFront() and "Y" or "n",
+			IsWorldMapShownElsewhere() and "Y" or "n", playerFacing and "Y" or "n",
+			ZO_WorldMap_DidPlayerChooseCurrentMap and ZO_WorldMap_DidPlayerChooseCurrentMap() and "Y" or "n")
 
 		local panZoom = self.panZoom
 		if panZoom then
-			if playerOpenedIt then
+			if playerFacing then
+				-- The game never installs a custom zoom range itself; one left here is ours or
+				-- another add-on's, and it sits above the range recomputed below.
 				if ZO_WorldMap_ClearCustomZoomLevels then
 					ZO_WorldMap_ClearCustomZoomLevels()
 				elseif panZoom.ClearCustomZoomMimMax then
 					panZoom:ClearCustomZoomMimMax()
 				end
+
+				-- Lay the map out at its real size first; everything after reads it.
+				--
+				-- Standing down writes back the layout captured at login, which is not the one
+				-- the map needs now. SetCurrentNormalizedZoomInternal at the current zoom is the
+				-- game's own route to SetMapWindowSize, which sizes the window and scroll the way
+				-- the full map wants them (on gamepad it uses the gamepad dimensions and ignores
+				-- what is passed).
+				--
+				-- Two things read that size. ComputeMaxZoom divides by ZO_WorldMapScroll's height,
+				-- so the range below came out wrong from the stale scroll -- and a maximum of 1
+				-- equals the minimum, which the gamepad map treats as "cannot zoom" and answers a
+				-- zoom press by navigating to the next map level instead: the level changing by
+				-- itself on the wayshrine map. And JumpToPin multiplies by the scroll's width to
+				-- place the player, so a stale scroll put the player off-centre.
+				if panZoom.SetCurrentNormalizedZoomInternal and panZoom.GetCurrentNormalizedZoom then
+					panZoom:SetCurrentNormalizedZoomInternal(panZoom:GetCurrentNormalizedZoom())
+				end
 			end
+
+			-- Give the zoom range back, recomputed the way InitializeMap does it. Kept for every
+			-- view: our narrow range has to go regardless, and a custom range sits above it.
 			if panZoom.SetMapZoomMinMax and panZoom.ComputeMinZoom and panZoom.ComputeMaxZoom then
 				panZoom:SetMapZoomMinMax(panZoom:ComputeMinZoom(), panZoom:ComputeMaxZoom())
 			end
 
-			-- And put the view back on the player.
-			--
-			-- The offset is left wherever the minimap had it, which is centred on the player
-			-- but at the minimap's zoom, and often outside the map edge -- the minimap runs
-			-- with SetAllowPanPastMapEdge on so the player can stay centred at a border. Handed
-			-- to the full map at its own zoom that lands somewhere arbitrary, so the map opens
-			-- looking at the wrong place.
-			--
-			-- InitializeMap clears the pending offset before it recomputes; do the same, then
-			-- move to the player through the game's own helper rather than computing an offset
-			-- here, for the reasons in ReclampLiteMapView.
-			if playerOpenedIt then
+			-- Then centre exactly the way the game does when the map is shown: the player's own
+			-- map, at the current zoom, and nothing at all if the player picked a different map
+			-- themselves. The pending offset is cleared first, as InitializeMap does.
+			if playerFacing then
+				ClearStickyPin(panZoom)
 				if panZoom.ClearTargetOffset then
 					panZoom:ClearTargetOffset()
 				end
-
-				-- Lay the map out at its real size before asking where the player is on it.
-				--
-				-- JumpToPin works out the offset first and applies the zoom second, and the
-				-- offset is the normalized distance multiplied by ZO_WorldMapScroll:GetWidth()
-				-- at that moment. Right after the minimap layout is handed back, the scroll is
-				-- still minimap-sized, so the offset came out a fraction of what it should be and
-				-- the full map opened well away from the player. The zoom step that follows does
-				-- re-lay the map out, but only after the offset has already been computed.
-				--
-				-- SetCurrentNormalizedZoomInternal at the current zoom is the game's own route to
-				-- SetMapWindowSize, which sizes the window and scroll the way the full map wants
-				-- them (on gamepad it uses the gamepad dimensions and ignores what is passed).
-				if panZoom.SetCurrentNormalizedZoomInternal and panZoom.GetCurrentNormalizedZoom then
-					panZoom:SetCurrentNormalizedZoomInternal(panZoom:GetCurrentNormalizedZoom())
-				end
-
-				-- Then centre exactly the way the game does when the map is shown.
-				--
-				-- The game centres from WORLD_MAP_FRAGMENT's SHOWING state. The minimap keeps that
-				-- fragment on the HUD, so opening the map never makes it "start showing" and that
-				-- step never runs; this stands in for it. It keeps the current zoom, where
-				-- ZO_WorldMap_JumpToPlayer forced the map to maximum zoom, and it leaves the view
-				-- alone if the player picked a different map themselves.
 				if panZoom.OnWorldMapShowing then
 					panZoom:OnWorldMapShowing()
 				elseif ZO_WorldMap_JumpToPlayer then
 					ZO_WorldMap_JumpToPlayer()
 				end
+				-- And watch for the layout moving underneath it (see ArmLateRecentre).
+				self:ArmLateRecentre()
 			end
 		end
+		self:BeginMapOpenTrace(traceHeader, traceBefore)
 		if self.ApplyLiteAlpha then
 			self:ApplyLiteAlpha()
 		end
@@ -794,6 +1012,27 @@ function addon:SetDormant(value)
 			ZO_WorldMap_ClearCustomZoomLevels()
 		elseif self.panZoom and self.panZoom.ClearCustomZoomMimMax then
 			self.panZoom:ClearCustomZoomMimMax()
+		end
+
+		-- Do what the game does when the map window hides, when there is something to undo.
+		--
+		-- The game remembers that the player picked a map themselves -- navigated to another
+		-- level, showed a quest or a keep on the map, scried an antiquity -- and while that is
+		-- set, opening the map leaves the view where it was instead of centring on the player.
+		-- The one place it is cleared is ZO_WorldMap_OnHide, the map window's OnHide handler:
+		-- closing the full map hides the window, and the next opening starts from the player.
+		--
+		-- This add-on keeps that window on the HUD, so closing the full map no longer hides it.
+		-- The flag stayed set until the player happened to open a menu -- which does hide the
+		-- window -- and until then every opening skipped the centring. Hence "now and then".
+		--
+		-- So run the game's own handler at the point the window would have hidden. Only when
+		-- the flag is actually set: the handler also ends the travel interactions and closes
+		-- out a dig-site reveal, which is what the game does on every close, but there is no
+		-- reason to do any of it when nothing needs undoing. Called before the special mode is
+		-- popped below, because the handler decides what to close by the current mode.
+		if ZO_WorldMap_OnHide and ZO_WorldMap_DidPlayerChooseCurrentMap and ZO_WorldMap_DidPlayerChooseCurrentMap() then
+			ZO_WorldMap_OnHide()
 		end
 
 		-- Close out a fast-travel session properly.

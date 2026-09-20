@@ -75,6 +75,10 @@ function ProfileFacade:CreateFromCurrent(name)
     return QuickslotProfiles:CreateFromCurrent(name)
 end
 
+function ProfileFacade:OverwriteProfileFromCurrent(profileId)
+    return QuickslotProfiles:OverwriteProfileFromCurrent(profileId)
+end
+
 function ProfileFacade:DeleteProfile(profileId)
     return QuickslotProfiles:DeleteProfile(profileId)
 end

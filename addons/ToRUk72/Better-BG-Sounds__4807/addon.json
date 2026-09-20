@@ -22,7 +22,7 @@
     "BetterBGSounds"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4807/",
-  "fingerprint": "42d95a897474efb3b99b09491094ce130f63998ee64b9c4019046f7c28d1187b",
+  "fingerprint": "b51f248335b6b8cd5a921756670c01304283c0397f16b49aa544cf035c9954f2",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw17246.png"
   ],
@@ -32,11 +32,11 @@
   "source_id": "4807",
   "source_url": "https://www.esoui.com/downloads/info4807-BetterBGSounds.html",
   "stats": {
-    "downloads": 37,
+    "downloads": 54,
     "favorites": 0,
-    "monthly_downloads": 37
+    "monthly_downloads": 54
   },
   "title": "Better BG Sounds",
-  "updated_at": 1788859824000,
-  "version": "1.2"
+  "updated_at": 1789800495000,
+  "version": "2.0"
 }

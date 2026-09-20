@@ -71,6 +71,18 @@ local function NormalizeProfileShape(profile)
     return profile
 end
 
+local function CaptureCurrentProfileSlots()
+    local snapshot, snapshotErr = QuickslotSnapshot:CaptureCurrent()
+    if type(snapshot) ~= "table" then
+        return nil, snapshotErr or "quickslot_snapshot_failed"
+    end
+
+    return {
+        slotCount = snapshot.slotCount,
+        slots = QuickslotSnapshot:BuildProfileSlotsFromSnapshot(snapshot),
+    }
+end
+
 local function CollectSortedStringKeys(entries)
     local keys = {}
 
@@ -264,9 +276,9 @@ function QuickslotProfiles:CreateFromCurrent(name, characterKey)
         return nil, "character_id_unavailable"
     end
 
-    local snapshot, snapshotErr = QuickslotSnapshot:CaptureCurrent()
-    if type(snapshot) ~= "table" then
-        return nil, snapshotErr or "quickslot_snapshot_failed"
+    local currentSlots, snapshotErr = CaptureCurrentProfileSlots()
+    if currentSlots == nil then
+        return nil, snapshotErr
     end
 
     local bucket = self:GetCharacterBucket(characterKey, false)
@@ -282,13 +294,38 @@ function QuickslotProfiles:CreateFromCurrent(name, characterKey)
         ownerCharacterId = characterKey,
         createdAt = now,
         updatedAt = now,
-        slotCount = snapshot.slotCount,
-        slots = QuickslotSnapshot:BuildProfileSlotsFromSnapshot(snapshot),
+        slotCount = currentSlots.slotCount,
+        slots = currentSlots.slots,
     }
 
     bucket.profiles[profileId] = NormalizeProfileShape(profile)
     bucket.profileOrder[#bucket.profileOrder + 1] = profileId
     return Util:DeepCopy(bucket.profiles[profileId])
+end
+
+function QuickslotProfiles:OverwriteProfileFromCurrent(profileId, characterKey)
+    local existingBucket = self:GetCharacterBucket(characterKey, true)
+    if type(existingBucket) ~= "table"
+        or type(existingBucket.profiles) ~= "table"
+        or type(existingBucket.profiles[profileId]) ~= "table" then
+        return nil, "quickslot_profile_not_found"
+    end
+
+    local currentSlots, snapshotErr = CaptureCurrentProfileSlots()
+    if currentSlots == nil then
+        return nil, snapshotErr
+    end
+
+    local bucket = self:GetCharacterBucket(characterKey, false)
+    local profile = type(bucket) == "table" and type(bucket.profiles) == "table" and bucket.profiles[profileId] or nil
+    if type(profile) ~= "table" then
+        return nil, "quickslot_profile_not_found"
+    end
+
+    profile.slots = currentSlots.slots
+    profile.slotCount = currentSlots.slotCount
+    profile.updatedAt = type(GetTimeStamp) == "function" and GetTimeStamp() or profile.updatedAt
+    return Util:DeepCopy(profile)
 end
 
 function QuickslotProfiles:GetProfileList(characterKey)

@@ -2,7 +2,7 @@ local RG = _G["RoseGuilds"] or {}
 _G["RoseGuilds"] = RG
 RG.name = "RoseGuilds"
 RG.Author = "Kay.Cee"
-RG.version = "07.14.26"
+RG.version = "09.19.26"
 
 -- Don't load on NA
 if GetWorldName() == "NA Megaserver" then return end

@@ -736,6 +736,36 @@ local EFFECT_ROWS = 8
 -- Kept clear of the very point, so nothing touches the frame's line.
 local EFFECT_TIP_INSET = 1
 
+-- How far the effect stops short of each end of the status bar, on top of everything else.
+--
+-- The client's own layout leaves no room for a spill: the status bar's flat end sits exactly on the
+-- inner edge of the 6-wide flat frame piece, and its pointed end 9 pixels inside a 16-wide arrow.
+-- But the fill's own art may carry transparent margin at an end, so what the player sees ends
+-- before the control does -- and an effect drawn to the control's edge then stands past the fill
+-- (FINDINGS 63). How much, only a PS5 can say, so it is a setting measured there rather than a
+-- number guessed here: "/pbhud plain margin <left> <right>".
+addon.MAX_END_MARGIN = 8
+
+function addon:EndMargins()
+	local account = self:Account()
+	local margins = account.endMargin
+	if type(margins) ~= "table" then
+		margins = { left = 0, right = 0 }
+		account.endMargin = margins
+	end
+	return Clamp(margins.left or 0, 0, self.MAX_END_MARGIN), Clamp(margins.right or 0, 0, self.MAX_END_MARGIN)
+end
+
+function addon:SetEndMargins(left, right)
+	local account = self:Account()
+	if type(account.endMargin) ~= "table" then
+		account.endMargin = {}
+	end
+	account.endMargin.left = Clamp(Round(left or 0), 0, self.MAX_END_MARGIN)
+	account.endMargin.right = Clamp(Round(right or 0), 0, self.MAX_END_MARGIN)
+	return true
+end
+
 local LIQUID_CURRENTS = 5
 local LIQUID_BUBBLES = 4
 -- How quickly a slosh settles, and how much a change in the amount stirs it.
@@ -794,6 +824,7 @@ function plain:LiquidBounds(bar, entry, native, fraction, into)
 	-- own ends, which are pointed only where they face away from the middle of the screen.
 	t.pointedLeft = (bar.pointedLeft ~= false) and not isRightHalf
 	t.pointedRight = (bar.pointedRight ~= false) and (isRightHalf or not halves)
+	t.marginLeft, t.marginRight = addon:EndMargins()
 	t.reverse = entry.reverse and true or false
 	t.fraction = fraction
 	t.filled = filled
@@ -811,8 +842,8 @@ end
 -- end as well.
 local function Limits(bounds, y0, y1, fill)
 	local d = math.max(math.abs(y0 - bounds.middle), math.abs(y1 - bounds.middle))
-	local left = bounds.pointedLeft and d + EFFECT_TIP_INSET or 0
-	local right = bounds.pointedRight and bounds.width - d - EFFECT_TIP_INSET or bounds.width
+	local left = (bounds.pointedLeft and d + EFFECT_TIP_INSET or 0) + bounds.marginLeft
+	local right = (bounds.pointedRight and bounds.width - d - EFFECT_TIP_INSET or bounds.width) - bounds.marginRight
 	if fill then
 		if bounds.reverse then
 			left = math.max(left, bounds.edge + d)
@@ -922,9 +953,13 @@ function Painter:Put(x0, y0, x1, y1, r, g, b, level, role, tag)
 	end
 	texture.pbsLiquidRole = role
 	texture.pbsTag = tag
+	-- Placed by both corners, not by one corner and a size. The screen snaps each anchored edge to
+	-- a pixel; with a size, the right and bottom edges were the snapped left edge plus a separately
+	-- snapped width, which can land a pixel beyond where they should -- only ever to the right,
+	-- which is where the PS5 showed the effect spilling past the ends (1.27.6, FINDINGS 62).
 	texture:ClearAnchors()
 	texture:SetAnchor(TOPLEFT, self.root, TOPLEFT, x0, y0)
-	texture:SetDimensions(x1 - x0, y1 - y0)
+	texture:SetAnchor(BOTTOMRIGHT, self.root, TOPLEFT, x1, y1)
 	-- The colour goes on the vertices, so a texture used for something else last frame keeps none
 	-- of it. Without per-corner colours, the average.
 	if VERTEX_TL and type(texture.SetVertexColors) == "function" then
@@ -1419,6 +1454,35 @@ function plain:PrintStatus()
 			Round(log.shownAfter or 0), log.updates or 0, log.byFailsafe and ", by the failsafe" or "", log.count or 0)
 	end
 	Line("  held back now=%s  follows the bars' own fragment=%s", tostring(self.holding == true), tostring(addon.plainFollowsBars == true))
+	local marginLeft, marginRight = addon:EndMargins()
+	Line("  end margins: left %d right %d  (%s plain margin <left> <right>)", marginLeft, marginRight, addon.slash)
+	-- Where the game's own pieces really are, so a spill past an end can be measured rather than
+	-- guessed at: everything is given as an offset from the container's own edges.
+	for _, bar in ipairs(self.bars) do
+		local container = Control(bar.container)
+		if container then
+			local left, _, width = addon:ScreenRect(container)
+			if left then
+				local right = left + width
+				Line("|cFF69B4  %s|r container %d wide", bar.key, Round(width))
+				local function Place(what, control)
+					if not control then
+						return
+					end
+					local pieceLeft, _, pieceWidth = addon:ScreenRect(control)
+					if pieceLeft then
+						Line("      %s: %.1f in from the left, %.1f in from the right, %d wide", what,
+							pieceLeft - left, right - (pieceLeft + pieceWidth), Round(pieceWidth))
+					end
+				end
+				for _, entry in ipairs(bar.controls) do
+					Place("fill", Control(entry.name))
+				end
+				Place("FrameLeft", Control(bar.container .. "FrameLeft"))
+				Place("FrameRight", Control(bar.container .. "FrameRight"))
+			end
+		end
+	end
 	if addon:BarStyle() == "standard" then
 		Line("  the style is Standard, so nothing is drawn. Set it in the settings panel, or")
 		Line("  |cFFFFFF%s style plain|r", addon.slash)

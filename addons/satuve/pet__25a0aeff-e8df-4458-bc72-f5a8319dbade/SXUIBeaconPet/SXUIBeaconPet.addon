@@ -1,0 +1,22 @@
+## Title: SXUI Beacon Pet
+## Author: Satuve
+## Version: 0.7.5
+## AddOnVersion: 705
+## APIVersion: 101050 101051
+## Description: Animated magical companion pet for the ESO HUD.
+## SavedVariables: SXUI_BEACON_VARS
+## OptionalDependsOn: LibAddonMenu-2.0
+
+SXUI_PetStateMachine.lua
+SXUI_CosmeticOrbs.lua
+SXUI_AnimationController.lua
+SXUI_PetWalking.lua
+SXUI_FlameTint.lua
+SXUI_OrbDataPulse.lua
+SXUI_BeaconRenderer.lua
+SXUI_BeaconSettings.lua
+SXUI_BeaconMoveMode.lua
+SXUI_BeaconVisibility.lua
+SXUI_BeaconLAM.lua
+SXUIBeaconPet.lua
+Bindings.xml

@@ -1,0 +1,166 @@
+SXUI Beacon Pet
+
+0.7.5 - Expanded reference-sheet personality animation
+- Add explicit Idle_Default, Idle_Blink, Idle_Look, Idle_Happy, Idle_Sleepy,
+  Wave, HappyBounce, Walk_Left and Walk_Right pose clips.
+- Adapt the supplied eight-pose RGB sheets as timing/pose references using the
+  existing layered pet artwork; do not ship the black-background composites.
+- Add deterministic eight-phase clip indexing and smooth looping walk cycles.
+- Rotate blink, look, wave, happy and sleepy states on restrained seeded timers.
+- Keep the ruby crystal, 32 Orbs, rune-star data system, flame renderer, saved
+  position, controller/menu behavior and all Companion files unchanged.
+
+0.7.4 - Blue rune-star data glow
+- Replace the small center-point bit display with four soft blue rune-star overlays.
+- Keep the normal rune visible; energize its inner strokes and a broad four-ray star for BIT 1.
+- Gently pulse active energy from 78% to 100% over 1200 ms without dropping the logical state.
+- Fade for 80 ms at 500 ms and 40 ms at 250 ms; switch immediately at 100 ms or below.
+- Preserve all 32 independent bits, patterns, 20-500-ms intervals and default 250 ms.
+- Leave stopped appearance, pet, flame, movement, personality, Orb layout/colors/rings and Companion unchanged.
+
+0.6.1 - Orb visibility correction only
+- Replace malformed Orb DDS containers with legacy RGBA8 DDS, pixel-identical to
+  0.6.0 and using the same file format as the working body/flame/ruby.
+- Give the existing fixed halo a 532 x 370 child container and explicitly disable
+  child rectangle clipping on it and the original pet root.
+- Add /beacon orbs debugshow: force all 32 original slots to state_0, bypassing
+  protocol rendering until a normal mode is selected or UI reloads.
+- Add on-demand /beacon orbs debugstatus with control/texture-load/visibility info.
+- Preserve slot positions, protocol, snapshot timing, flame, personality, moves,
+  controller and scene visibility. No Companion changes or new Companion release.
+- Xbox visibility still requires testing on the console; local tests are not ESO.
+
+0.6.0
+- Replace production carriers with 32 fixed four-state Orbs and 500-ms snapshots.
+- Add version/type/sequence/payload/CRC16 framing, position/context pairs, map/zone
+  identity transactions, framed TEST packets and raw calibration patterns.
+- Remove production flame data scheduling and omit experimental Hex flame assets.
+- Preserve the original 16 visual flame frames, shape, position and 40-ms timing.
+- Add rare smooth cosmetic blue/green tint using a separate random clock.
+- Retain optional HP developer tests, move/controller code and HUD visibility.
+- Pair with the separate LUNA 0.6.0 Windows Orb-voting decoder release.
+
+0.5.1
+- Restore the existing 16-frame visual flame loop; remove the Hex renderer override.
+- Run visual flame independently of the Demo Animations personality preference.
+- Keep flame at 40 ms (25 FPS) and personality/orb movement at 50 ms (20 FPS).
+- Add idempotent visual start/stop functions and explicit post-show lifecycle refresh.
+- Pause on hide and resume the same animation clocks without a hidden-time catch-up.
+- Remove the second flame renderer call from the data timer.
+- Keep all artwork, HP/rune encoder, protocol mappings, locator, move/input and companion unchanged.
+- This visual-only flame release does not emit Flame Hex position packets.
+
+0.5.0
+- Production runes carry framed map/zone identity; HP is an optional test only.
+- Add normal ESO position sampling with explicit invalid-map-context handling.
+- Add 16 Flame Hex classes with four actual subframes per class, 25 visual FPS.
+- Send versioned position/sequence/context/CRC packets at 6.25 symbols per second.
+- Preserve ruby, rune art, personality, movement controls, settings and visibility.
+- Add transient position test mode and optional live HP test controls.
+- Pair with LUNA ESO Companion 0.5.0: local maps, marker interpolation and signal loss.
+- No terrain-map scraping, game input, process access or new encounter channels.
+
+0.4.1
+- Show only in normal hud/hudui scenes and the active Beacon Pet placement scene.
+- Hide on menu transitions and player deactivation; resume on returning to HUD.
+- Use scene/player callbacks without any visibility polling timer.
+- Preserve saved position/scale, animation objects and health/rune data on hide.
+- Restore a complete stored rune display after an interrupted transition.
+- Keep all artwork, data encoding and the Windows Companion 0.4.0 unchanged.
+
+0.4.0
+- Freeze 0.3.3 pet design, personality, size, movement controls and rune artwork.
+- Add a fixed ruby heart locator, independent of animation and data.
+- Read real player health from GetUnitPower and filtered player power events.
+- Encode a fixed most-significant-first byte in the four existing rune orbs.
+- Coalesce updates at 1000 ms with synchronized 500 ms glyph-only fades.
+- Add explicit, non-persisted carrier test mode and separate live operation.
+- Keep health transmission active when personality demo animation is off.
+- New Windows companion locates the ruby, estimates scale and decodes relative orbs.
+
+0.3.3
+- Add optional LibAddonMenu-2.0 settings with a 0.50-2.00 size slider.
+- Add Use Recommended Size without resetting saved position.
+- Increase fresh-install default scale from 0.675 to 0.95 (about 41%).
+- Replace the six-form flame set with 16 new drawn forms, still at 25 Hz.
+- Add four breathing body frames, two eye states, three yawn-mouth drawings,
+  and two hand drawings per side. Preserve personality timing and orb runes.
+- Enlarge Move Mode title/instructions/help to 36/30/24 with a darker backdrop.
+- Preserve native keybind routing, position persistence and backend modules.
+- Keep the corrected SXUIBeaconPet.txt manifest and one-folder ZIP structure.
+
+0.3.2
+- Replace direct directional-input polling with native keybind-strip callbacks.
+- Temporary D-Pad / A / B group with position snapshot, save, cancel and cleanup.
+- Remove custom action-layer activation; Bindings.xml is unchanged.
+- Independent 40 ms flame updates, ordered forms and continuous movement.
+- Existing blink/yawn/arm behavior and original textures retained.
+- Default scale grows from 0.5 to 0.675; existing saved scale/position preserved.
+- Keep the four elliptical orb paths in clear side margins around the pet.
+- Stop both visual timers whenever the pet is effectively hidden.
+
+0.3.1
+- Correct ESO manifest filename to SXUIBeaconPet.txt.
+- Standalone ZIP rooted directly at SXUIBeaconPet/.
+- Include existing backend files without activating them.
+- All runtime Lua, bindings and textures unchanged from 0.3.0.
+
+0.3.0
+- Visual companion rebuild with separate body, head, arms, eyes and mouth.
+- Idle, blink, double blink, look left/right, wave, fidget and multi-stage yawn.
+- Six flame silhouettes plus independently moving inner and side flames.
+- Four orbiting spirits with depth and one softly changing central glyph each.
+- Removed visible data markers and all live-data control from this release.
+- Added standalone settings and a scoped controller Move Pet mode.
+- Preserved account-wide saved position, lock, scale and enable preference.
+- Xbox-oriented .addon manifest; visual-only standalone archive.
+
+0.2.0
+- Four arcane orbs replace the surrounding glow points.
+- Each orb has four directional runes, with one active at a time.
+- Fixed rune positions and gently rotating ornamental rims.
+- Internal flame, eye, chest and belly light layers remain active.
+- Mouse dragging with /beacon unlock and /beacon lock; saved position.
+- Compact square layout, requiring LUNA ESO Companion 0.2.0.
+- Existing packet format and checksums preserved.
+
+0.1.1
+- New compact pixel-style flame spirit with a shaded body and a simple face.
+- Separate flame, eyes, rune, glow and ember animation layers.
+- Smaller default size and saved position/scale controls.
+- Fresh installs show the pet automatically in live mode.
+- Standard standalone ESO addon folder and manifest.
+- LUNA ESO Companion is distributed separately.
+
+0.1.0
+- Initial visible pet and companion communication implementation.
+0.7.0 - Four-Orb personality companion
+- Removed all production/diagnostic data modules and 32-Orb artwork from the release.
+- Restored four original cosmetic orbs, their orbit/bob/depth and fading rune changes.
+- Added bounded horizontal personality walking, random idle decisions and 200 ms turns.
+- Kept saved base separate from local walking offset; paused walking during placement.
+- Preserved original flame frames, sequence, 40 ms clock and rare blue/green tints.
+- Preserved controller/move code; menu visibility still pauses/resumes the pet.
+- Added walking On/Off and Low/Normal/High frequency; removed transport UI options.
+- Companion and previous release archives unchanged. Live Xbox verification pending.
+0.7.1 - Add 28 cosmetic orbs only
+- Original four orbs unchanged; 28 additional orbs reuse their shell/rune artwork.
+- Organic upper semicircle, subtle related shades, small local float/pulse motion.
+- No change to pet/flame, personality/walking, position/scale/track, move/menu or data systems.
+- Version/count labels updated. Prior releases and Companion unchanged.
+0.7.2 - Addon-only Orb center-light tests
+- Added one fixed warm radial center-light control to each of the 32 existing Orbs.
+- Logical 0/1 use alpha 0.12/0.62; stopped mode hides the added layers completely.
+- Added independent SetOrbBit API and all-0/all-1/alternate/inverse/wave/random/counter patterns.
+- Added 20-500 ms logical interval, 10-ms steps, 250-ms default, slash commands and test settings.
+- Center timer pauses with existing menu visibility; controls are created only once.
+- No gameplay payload, Companion, EXE, decoder, capture or map changes.
+- Body, flame, personality, walking, Orb layout/motion, position, scale and controller code unchanged.
+0.7.3 - Rune-center visibility fix only
+- Opened an exact 22%-of-Orb fully transparent center in all four rune styles.
+- Added a soft alpha edge to 24.5%; rune pixels outside remain byte/pixel equivalent to 0.7.2.
+- Split each Orb into non-overlapping background/body and top outer-ring layers.
+- Explicit order: Orb body -> DataCore -> Rune -> outer ring; all 32 share the same clean ROI.
+- DataCore size/alpha, pulse controller, patterns, timing and commands unchanged.
+- Orb positions/colors/motion, pet/flame/personality/walking/move/menu behavior unchanged.
+- Addon only; Companion, decoder, capture, EXE and all previous ZIPs unchanged.

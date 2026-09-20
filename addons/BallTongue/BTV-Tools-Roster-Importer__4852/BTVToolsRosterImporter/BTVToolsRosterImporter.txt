@@ -1,0 +1,33 @@
+## Title: BTV Tools Roster Importer
+## Author: BallTongue
+## Version: 0.2.0
+## AddOnVersion: 200
+## APIVersion: 101048
+## Description: Paste a roster export from BTVTools.com to get a full Wizard's Wardrobe setup ready to go. Automatically match items from your bags to the setup and get a list of items needed to be crafted, fetched, reconstructed or farmed, do them by hand or enable auto-craft to let the addon create the items needed for you.
+## DependsOn: WizardsWardrobe>=1232 IIfA LibAddonMenu-2.0 LibSets
+## OptionalDependsOn: LibLazyCrafting
+## SavedVariables: BTVToolsVars
+
+## Wizard's Wardrobe is where the setups live, IIfA is how "you own this, it is just on
+## another character" gets answered, LibAddonMenu draws the settings panel (#463), and
+## LibSets knows whether a set is crafted and where it drops, for the Missing gear step
+## (#479). All four are required, none is optional. LibLazyCrafting is optional: only the
+## plan's auto-craft queue needs it (#482); without it the craft rows say so.
+
+## BTVToolsVars holds the settings and the import record (#463, #467): which import is in
+## progress, on which page, plus a rolling history of done ones.
+
+## Version is the release, AddOnVersion is that same number encoded (0.1.0 -> 10, 1.2.3 ->
+## 10203). Both move together on every release. The payload version is a third number that
+## lives in the code, not here, and moves only when the payload format itself moves (#395).
+
+## The WW floor is the version its internals were read against. DependsOn cannot express an
+## upper bound, so a newer WW that moved them loads us happily; BTV.Import checks the paths
+## it reaches for by hand and refuses by name instead of failing somewhere deep (#395).
+
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+## All rights reserved.
+
+BTVTools.lua
+BTVToolsWindow.lua

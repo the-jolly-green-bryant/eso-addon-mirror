@@ -13,6 +13,7 @@ BetterBGSounds.name = "BetterBGSounds"
 
 -- Variável global para controlar o tempo do último som tocado
 local lastKillTime = 0
+local justKilled = {}
 
 --------------------------------------------------
 -- Configurações padrões do addon
@@ -59,29 +60,37 @@ function BetterBGSounds.OnCombatEvent(eventCode, result, isError, abilityName, a
             
             -- Limpeza de formatação para checagem cirúrgica de nomes
             local cleanSourceName = zo_strformat("<<1>>", sourceName)
+            local cleanTargetName = zo_strformat("<<1>>", targetName)
             local myCleanName = zo_strformat("<<1>>", GetUnitName("player"))
             
-            -- O golpe final precisa ser obrigatoriamente SEU
-            if cleanSourceName == myCleanName then
-                -- O alvo precisa ser um jogador (BG ou Cyrodiil)
-                if targetType == COMBAT_UNIT_TYPE_PLAYER or targetType == COMBAT_UNIT_TYPE_OTHER then
-                    
-                    local currentTime = GetFrameTimeMilliseconds()
-                    
-                    -- TRAVA GERAL: Só toca o som se já tiver passado mais de 300ms desde o ÚLTIMO som tocado pelo addon
+            -- Replica as condições relevantes do Kill Counter para KB:
+            -- fonte = jogador ou pet do jogador, alvo = OUTRO.
+            if (sourceType == COMBAT_UNIT_TYPE_PLAYER or sourceType == COMBAT_UNIT_TYPE_PLAYER_PET)
+                and targetType == COMBAT_UNIT_TYPE_OTHER
+                and cleanSourceName == myCleanName
+                and abilityName ~= "" then
+
+                local currentTime = GetFrameTimeMilliseconds()
+
+                -- A mesma memória por alvo usada pelo Kill Counter: não reconhece
+                -- o mesmo alvo como um novo KB durante 2 segundos.
+                if not justKilled[cleanTargetName] or (currentTime - justKilled[cleanTargetName]) > 2000 then
+                    justKilled[cleanTargetName] = currentTime
+
+                    -- TRAVA DE ÁUDIO: continua global e independente da detecção de KB.
+                    -- Impede vários sons em uma janela de 300ms (ex.: 1 hit mata vários).
                     if (currentTime - lastKillTime) > 300 then
-                        lastKillTime = currentTime -- Atualiza o cronômetro global do addon
-                        
+                        lastKillTime = currentTime
+
                         local soundKey = BetterBGSounds.savedVariables.selectedKillSound
                         local soundConstant = SOUNDS[soundKey]
-                        
+
                         if soundConstant then
                             for i = 1, (BetterBGSounds.savedVariables.killBoost or 1) do
                                 originalPlaySound(soundConstant)
                             end
                         end
                     end
-                    
                 end
             end
             
@@ -119,7 +128,7 @@ function BetterBGSounds.InitializeSettingsMenu()
         name = "Better BG Sounds",
         displayName = "|c00E600Better BG Sounds|r",
         author = "@ToRUk72",
-        version = "1.2",
+        version = "2.0",
         registerForRefresh = true
     }
     

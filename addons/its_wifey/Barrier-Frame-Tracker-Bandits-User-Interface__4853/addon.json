@@ -1,0 +1,39 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/its_wifey/Barrier-Frame-Tracker-Bandits-User-Interface__4853",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "its_wifey",
+  "canonical_id": "esoui:4853",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    }
+  ],
+  "content_id": "esoui:4853",
+  "deleted": false,
+  "directories": [
+    "BarrierFrameTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4853/",
+  "fingerprint": "086526abff57d8a681706b102b9e0627def31d77f54249d814612cb2bcd42a4e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17445.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17444.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4853",
+  "source_url": "https://www.esoui.com/downloads/info4853-BarrierFrameTrackerBanditsUserInterface.html",
+  "stats": {
+    "downloads": 8,
+    "favorites": 0,
+    "monthly_downloads": 7
+  },
+  "title": "Barrier Frame Tracker (Bandits User Interface)",
+  "updated_at": 1789869600000,
+  "version": "1.0.1"
+}

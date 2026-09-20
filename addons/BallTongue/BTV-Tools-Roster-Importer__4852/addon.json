@@ -1,0 +1,46 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/BallTongue/BTV-Tools-Roster-Importer__4852",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "BallTongue_",
+  "canonical_id": "esoui:4852",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4852",
+  "deleted": false,
+  "directories": [
+    "BTVToolsRosterImporter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4852/",
+  "fingerprint": "36b67f19216510ed1f72a5212f0ba5d390111c2ecba31d713b03bc9228eb7131",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17434.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17435.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17440.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17433.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17436.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17437.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17438.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17441.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17439.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4852",
+  "source_url": "https://www.esoui.com/downloads/info4852-BTVToolsRosterImporter.html",
+  "stats": {
+    "downloads": 11,
+    "favorites": 1,
+    "monthly_downloads": 10
+  },
+  "title": "BTV Tools Roster Importer",
+  "updated_at": 1789815750000,
+  "version": "0.2.0"
+}

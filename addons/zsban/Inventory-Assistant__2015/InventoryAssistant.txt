@@ -1,7 +1,7 @@
 ﻿## Title: Inventory Assistant
 ## Author: zsban
-## Version: 1.19.260917-beta
-## AddonVersion: 260917
+## Version: 1.20.260919-beta
+## AddonVersion: 260919
 ## APIVersion: 101050 101051
 ## SavedVariables: InventoryAssistantSettings
 ## DependsOn: LibEventHandler>=1313 LibAsync>=30104 LibCustomMenu>=730 LibAddonMenu-2.0>=43
@@ -11,6 +11,8 @@ locales/en.lua
 
 IA_MultiIcon.lua
 IA_MultiIcon.xml
+IA_LootHistory.lua
+IA_LootHistory.xml
 InventoryAssistant.lua
 InventoryAssistantList.lua
 InventoryAssistant.xml

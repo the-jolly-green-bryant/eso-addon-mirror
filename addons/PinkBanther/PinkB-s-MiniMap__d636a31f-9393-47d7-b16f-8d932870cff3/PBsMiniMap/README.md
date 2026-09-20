@@ -6,9 +6,10 @@ Instead of drawing a second map, it parks the game's own World Map on the HUD at
 position you choose, and hands it straight back when you open the full map.
 
 - **Author:** PinkBanther
-- **Based on:** [Votan's Minimap](https://www.esoui.com/downloads/info1399-VotansMinimap.html)
+- **Inspired by:** [Votan's Minimap](https://www.esoui.com/downloads/info1399-VotansMinimap.html)
   by **votan**, with thanks. The core idea — reuse the built-in world map rather than draw a
-  new one — is votan's, and much of the map handling here still comes from that add-on.
+  new one — is votan's. This add-on started from that code and has since been rewritten for
+  console; a few small pieces still trace back to it.
 
 ## Why this exists
 
@@ -92,9 +93,10 @@ AddOn Uploader. The name shown in the in-game browser comes from the uploader en
 
 ## Licence / attribution
 
-This is a derivative of votan's work, redistributed with credit. If you intend to publish it
-anywhere public, please contact votan first — the ESOUI community asks that derivatives of an
-existing add-on are cleared with the original author.
+This add-on began as a derivative of votan's work and has since been rewritten; the idea, and
+a few small pieces of code, still come from it, and it is credited accordingly. If you intend
+to publish it anywhere public, please contact votan first — the ESOUI community asks that work
+derived from an existing add-on is cleared with the original author.
 
 ---
 

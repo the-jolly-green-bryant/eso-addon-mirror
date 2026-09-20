@@ -6,7 +6,7 @@ PBT=PBT or {}
 -- BUILD must equal ## AddOnVersion in both manifests; package.py refuses to build otherwise.
 -- It rides on the wire so that two players on different versions are told so, instead of each
 -- silently discarding the other's packets as unreadable.
-local T={ID=460,BUILD=11500};T.__index=T;PBT.Transport=T
+local T={ID=460,BUILD=11600};T.__index=T;PBT.Transport=T
 -- Development ID, distinct from PBsJanken's 511. Reserve before public release.
 -- attack, height and terminal ride in one word rather than three narrow fields of their own.
 function T.Pack(packet) return (packet.attack or 0)*128+(packet.height or 0)*4+(packet.terminal or 0) end

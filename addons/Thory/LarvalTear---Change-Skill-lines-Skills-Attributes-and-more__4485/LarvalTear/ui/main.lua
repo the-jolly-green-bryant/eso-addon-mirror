@@ -1067,6 +1067,7 @@ function LTM_UI:SetMainTab(tabId)
     self.activeMainTab = normalizedTabId
     self.openActionMenuCardId = nil
     self.openPageActionMenu = false
+    LTM_UI_QUICK_SETTINGS:HideQuickSlotSettingsMenu()
     self:RefreshActionMenuDismissLayer()
     self:HideDialog()
     self:ApplyMainTabVisibility()
@@ -3553,6 +3554,7 @@ function LTM_UI:HideMainWindow()
 
     self.openActionMenuCardId = nil
     self.openPageActionMenu = false
+    LTM_UI_QUICK_SETTINGS:HideQuickSlotSettingsMenu()
     self:CancelCurrentEffectRefreshDebounce()
     self:RefreshActionMenuDismissLayer()
     self:HideDialog()

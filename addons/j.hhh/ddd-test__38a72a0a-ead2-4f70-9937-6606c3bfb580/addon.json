@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/j.hhh/ddd-test__38a72a0a-ead2-4f70-9937-6606c3bfb580",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "j.hhh",
+  "canonical_id": "bethesda:38a72a0a-ead2-4f70-9937-6606c3bfb580",
+  "content_id": "38a72a0a-ead2-4f70-9937-6606c3bfb580",
+  "deleted": false,
+  "fingerprint": "45e07fbb20e5b11c9ca9b440be49084a719cf68a970620f42e07d86855cdf35c",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "38a72a0a-ead2-4f70-9937-6606c3bfb580",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/38a72a0a-ead2-4f70-9937-6606c3bfb580",
+  "title": "ddd test"
+}

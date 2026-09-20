@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/thisbeaurielle/House-Hotkey__4185",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "thisbeaurielle",
   "canonical_id": "esoui:4185",
   "category_id": "27",
@@ -25,7 +26,7 @@
     "HouseHotkey"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4185/",
-  "fingerprint": "f27e0a92c6ce65c8f62e802d6b7b6164f65d21a61b2199655599ccfb06389921",
+  "fingerprint": "3edd2d6226a321d1a3ca7fd737f2b488d8df2082a5252d827c36820e054168dc",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw14309.png",
     "https://cdn-eso.mmoui.com/preview/pvw14485.jpg"
@@ -36,11 +37,11 @@
   "source_id": "4185",
   "source_url": "https://www.esoui.com/downloads/info4185-HouseHotkey.html",
   "stats": {
-    "downloads": 1081,
+    "downloads": 1173,
     "favorites": 3,
-    "monthly_downloads": 41
+    "monthly_downloads": 57
   },
   "title": "House Hotkey",
-  "updated_at": 1779893846000,
-  "version": "1.8.1"
+  "updated_at": 1789856600000,
+  "version": "1.8.2"
 }

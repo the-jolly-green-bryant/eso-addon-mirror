@@ -279,6 +279,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [CrutchAlerts Extensions](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kyzeragon/CrutchAlerts-Extensions__4693) | Kyzeragon | PC / Mac | 0.3.0 |
 | [CrutchAlerts-KR](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ricci-Curvature/CrutchAlerts-KR__4517) | Ricci Curvature | PC / Mac | 1.0.0 |
 | [Crux Counter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/g4rr3t/Crux-Counter__3639) | g4rr3t | PC / Mac | 1.3.0 |
+| [Crux Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/j.hhh/Crux-Tracker__7c2543a8-c08b-4c48-b4bf-47d2463b616f) | j.hhh | Console | — |
 | [CruxTracker-2.0](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/akbosser/CruxTracker-2.0__aef7e9f0-ed11-4b67-99f7-c500cdc0b343) | akbosser | Console | — |
 | [Cruxweaver](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/helixanon/Cruxweaver__3781) | helixanon | PC / Mac | 1.0.2 |
 | [Crystal Fragments Proc](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Supplier/Crystal-Fragments-Proc__2441) | Supplier | PC / Mac | 1.5 |

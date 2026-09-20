@@ -1,0 +1,7 @@
+## Title: Buffoverhaul by JH
+## Description: Enhances ESO's native self buffs/debuffs and target debuffs with in-icon timers and radial duration display.
+## Author: j.hhh
+## Version: 0.2.2-console
+## APIVersion: 101050
+
+BuffoverhaulByJH.lua

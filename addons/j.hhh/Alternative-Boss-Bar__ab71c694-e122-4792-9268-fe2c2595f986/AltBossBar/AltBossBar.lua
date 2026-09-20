@@ -57,7 +57,7 @@ function ABB_BossBar:New(...)
     return bar
 end
 
-function ABB_BossBar:Initialize(bossTag, topLevelCtrl, previousBar)
+function ABB_BossBar:Initialize(bossTag, topLevelCtrl, previousBar, skipUnitEvents)
     self.unitTag = bossTag
     self.parent = topLevelCtrl
     self.control = CreateControlFromVirtual("ABB_Frame"..bossTag, topLevelCtrl, ABB_TEMPLATE_NAME)
@@ -97,19 +97,21 @@ function ABB_BossBar:Initialize(bossTag, topLevelCtrl, previousBar)
     self.mechanicText:SetText("")
 
 
-    local function PowerUpdateHandlerFunction(unitTag, powerPoolIndex, powerType, powerPool, powerPoolMax)
-        self:OnPowerUpdate(unitTag, powerPool, powerPoolMax, false)
-    end
-    local powerUpdateEventHandler = ZO_MostRecentPowerUpdateHandler:New("BossBar"..bossTag, PowerUpdateHandlerFunction)
-    powerUpdateEventHandler:AddFilterForEvent(REGISTER_FILTER_POWER_TYPE, POWERTYPE_HEALTH)
-    
-    if bossTag == "reticleover" then
-        powerUpdateEventHandler:AddFilterForEvent(REGISTER_FILTER_UNIT_TAG, bossTag)
-    else
-        powerUpdateEventHandler:AddFilterForEvent(REGISTER_FILTER_UNIT_TAG_PREFIX, "boss")
-    end
+    if not skipUnitEvents then
+        local function PowerUpdateHandlerFunction(unitTag, powerPoolIndex, powerType, powerPool, powerPoolMax)
+            self:OnPowerUpdate(unitTag, powerPool, powerPoolMax, false)
+        end
+        local powerUpdateEventHandler = ZO_MostRecentPowerUpdateHandler:New("BossBar"..bossTag, PowerUpdateHandlerFunction)
+        powerUpdateEventHandler:AddFilterForEvent(REGISTER_FILTER_POWER_TYPE, POWERTYPE_HEALTH)
+        
+        if bossTag == "reticleover" then
+            powerUpdateEventHandler:AddFilterForEvent(REGISTER_FILTER_UNIT_TAG, bossTag)
+        else
+            powerUpdateEventHandler:AddFilterForEvent(REGISTER_FILTER_UNIT_TAG_PREFIX, "boss")
+        end
 
-    self:RegisterUnit(bossTag)
+        self:RegisterUnit(bossTag)
+    end
     self.control:RegisterForEvent(EVENT_PLAYER_ACTIVATED, function() self:UpdateWidth() end)
     self.control:RegisterForEvent(EVENT_SCREEN_RESIZED, function() self:UpdateWidth() end)
     
@@ -348,12 +350,11 @@ function ABB_BossBar:ApplyStyle()
 end
 
 function ABB_BossBar:LockHealthFillGeometry()
-    -- FRAME / END CAPS ARE NOT MODIFIED.
+    -- HP FILL ONLY. FRAME / END CAPS ARE NOT MODIFIED.
     --
-    -- Use the ORIGINAL PC split StatusBars, but scale their geometry together
-    -- with the decorative end caps. The original left split is 18 px at 100%.
-    -- When the frame height is enlarged, its end-cap width is enlarged too,
-    -- therefore the covered HP split must grow by the same factor.
+    -- Keep the original Alternative Boss Bar horizontal geometry exactly:
+    -- LeftBgBar keeps its native XML width (18 px) and HealthBar begins there.
+    -- HEIGHT_SCALE affects only the vertical size of the two fill controls.
     if not self.healthControl or not self.healthBar or not self.healthLeftBgBar then return end
 
     local heightScale = SETTINGS.HEIGHT_SCALE or 1.0
@@ -361,7 +362,7 @@ function ABB_BossBar:LockHealthFillGeometry()
     if not n then return end
 
     local fillHeight = math.floor(n.barH * heightScale + 0.5)
-    local splitWidth = math.floor(n.leftBarW * heightScale + 0.5)
+    local splitWidth = math.floor(n.leftBarW + 0.5)
 
     self.healthLeftBgBar:SetHidden(false)
     self.healthLeftBgBar:SetAlpha(1)
@@ -464,14 +465,137 @@ function ABB_BossBar:FlashWarning()
     end
 end
 
-local function AttachTargetTo(control)
-    local targetFrame = UNIT_FRAMES:GetFrame("reticleover")
-    local targetControl = targetFrame.frame
-    targetControl:ClearAnchors()
-    targetControl:SetAnchor(TOP, control, BOTTOM, 0, 5)
+local function AttachTargetTo(anchorControl)
+    -- Keep ESO's target frame/debuff stack directly below the lowest visible
+    -- boss bar. When no boss bar is visible, restore it below the compass.
+    if not ZO_TargetUnitFramereticleover then return end
+
+    local targetFrame = ZO_TargetUnitFramereticleover
+    targetFrame:ClearAnchors()
+
+    if anchorControl and anchorControl ~= ZO_CompassFrame then
+        targetFrame:SetAnchor(TOP, anchorControl, BOTTOM, 0, 0)
+    else
+        targetFrame:SetAnchor(TOP, ZO_CompassFrame, BOTTOM, 0, 0)
+    end
+end
+
+-- Combined encounter presentation ported from the newer PC addon.
+local COMBINED_BOSS_NAMES = {
+    ["Shaper of Flesh"] = "Hall of Fleshcraft",
+    ["Former des Fleisches"] = "Halle des Fleischwerks",
+    ["moldeador de carne"] = "Salón de Manipulación de la Carne",
+    ["façonneur de chair"] = "Salle des sculptechairs",
+    ["肉の加工者"] = "肉細工の間",
+    ["Формирователь плоти"] = "Зал Преображения Плоти",
+    ["血肉塑形者"] = "血肉大厅",
+}
+local SHAPER_THRESHOLDS = {84,67,50,34,17}
+local SHAPER_MECHANICS = {
+    [84]="Portal Activated",[67]="Portal Activated",[50]="Portal Activated",
+    [34]="Portal Activated",[17]="Portal Activated",
+}
+
+local ABB_CombinedBossBar = ABB_BossBar:Subclass()
+function ABB_CombinedBossBar:New(bossTag, topLevelCtrl)
+    local bar=ZO_Object.New(self)
+    ABB_BossBar.Initialize(bar,bossTag,topLevelCtrl,nil,true)
+    bar.unitTags={}
+    bar.bossHealthsCurrent={}
+    bar.bossHealthsMax={}
+    for i=1,ABB_MAX_BOSSES do
+        local tag="boss"..i
+        bar.unitTags[#bar.unitTags+1]=tag
+        local function OnCombinedPowerUpdate(unitTag,powerPoolIndex,powerType,powerPool,powerPoolMax)
+            bar:OnCombinedPowerUpdate(unitTag,powerPool,powerPoolMax)
+        end
+        local h=ZO_MostRecentPowerUpdateHandler:New("ABBCombined"..tag,OnCombinedPowerUpdate)
+        h:AddFilterForEvent(REGISTER_FILTER_POWER_TYPE,POWERTYPE_HEALTH)
+        h:AddFilterForEvent(REGISTER_FILTER_UNIT_TAG,tag)
+    end
+    return bar
+end
+
+function ABB_CombinedBossBar:OnCombinedPowerUpdate(unitTag,health,maxHealth)
+    self.bossHealthsCurrent[unitTag]=health or 0
+    self.bossHealthsMax[unitTag]=maxHealth or 0
+    local total,totalMax=0,0
+    for _,v in pairs(self.bossHealthsCurrent) do total=total+v end
+    for _,v in pairs(self.bossHealthsMax) do totalMax=totalMax+v end
+    if totalMax<=0 then return end
+    ZO_StatusBar_SmoothTransition(self.healthBar,total,totalMax,false)
+    self.healthLeftBgBar:SetValue((total>0 and 1 or 0))
+    self:UpdateMechanicText(total,totalMax)
+    if total>0 then
+        self.healthText:SetText(ZO_AbbreviateAndLocalizeNumber(total,NUMBER_ABBREVIATION_PRECISION_TENTHS,false).." "..self:FormatPercent(total,totalMax))
+    else
+        self.healthText:SetText(zo_iconFormat("esoui/art/icons/mapkey/mapkey_groupboss.dds",ICONSIZE,ICONSIZE))
+    end
+end
+
+function ABB_CombinedBossBar:RefreshCombined(displayName,force)
+    if force then self:ApplyStyle() end
+    self.nameText:SetText(displayName)
+    self.bossPercentages=SHAPER_THRESHOLDS
+    self.bossMechanics=SHAPER_MECHANICS
+    self.shouldWarn=true
+    self.percentLinePool:ReleaseAllObjects()
+    local lt,lh,lm="boss1",0,0
+    for _,tag in ipairs(self.unitTags) do
+        local h,m=GetUnitPower(tag,POWERTYPE_HEALTH)
+        self.bossHealthsCurrent[tag]=h or 0
+        self.bossHealthsMax[tag]=m or 0
+        lt,lh,lm=tag,h or 0,m or 0
+    end
+    self:OnCombinedPowerUpdate(lt,lh,lm)
+    self:UpdateWidth()
+end
+
+
+local REEF_GUARDIAN_NAMES = {
+    ["Reef Guardian"] = true,
+    ["Riffwächter"] = true,
+    ["Gardien du récif"] = true,
+    ["Guardián del arrecife"] = true,
+}
+
+local function IsReefGuardianName(name)
+    if REEF_GUARDIAN_NAMES[name] then return true end
+    -- Language-safe fallback for clients/localizations not listed above.
+    local lowerName = zo_strlower(name or "")
+    return string.find(lowerName, "reef guardian", 1, true) ~= nil
+        or string.find(lowerName, "riffwächter", 1, true) ~= nil
+end
+
+local function FindBestLivingReefGuardian()
+    local bestTag, bestHealth = nil, -1
+    for i = 1, ABB_MAX_BOSSES do
+        local tag = "boss" .. i
+        if DoesUnitExist(tag) and IsReefGuardianName(GetUnitName(tag)) and not IsUnitDead(tag) then
+            local health, maxHealth = GetUnitPower(tag, POWERTYPE_HEALTH)
+            health = health or 0
+            maxHealth = maxHealth or 0
+            if maxHealth > 0 and health > 0 and health > bestHealth then
+                bestTag = tag
+                bestHealth = health
+            end
+        end
+    end
+    return bestTag
+end
+
+local function FindCombinedEncounter()
+    for i=1,ABB_MAX_BOSSES do
+        local tag="boss"..i
+        if DoesUnitExist(tag) then
+            local display=COMBINED_BOSS_NAMES[GetUnitName(tag)]
+            if display then return display end
+        end
+    end
 end
 
 local bossBars = {}
+local combinedBossBar
 
 local function InitBars(topLevelCtrl)
     local prevBossBar
@@ -485,6 +609,8 @@ local function InitBars(topLevelCtrl)
     if SETTINGS.INCLUDE_DUMMY then
         bossBars[ABB_MAX_BOSSES + 1] = ABB_BossBar:New("reticleover", topLevelCtrl)
     end
+    combinedBossBar = ABB_CombinedBossBar:New("bossCombined", topLevelCtrl)
+    combinedBossBar:Hide()
 end
 
 local function ScaleBossBars()
@@ -520,24 +646,69 @@ local function ScaleBossBars()
 end
 
 local function RefreshAllBosses(forceReset)
-    local abbContainer = GetControl("ABB_Container")
     local lastBossBar
+    local combinedName=FindCombinedEncounter()
 
-    ScaleBossBars()
-    for i = 1, ABB_MAX_BOSSES do
-
-        if DoesUnitExist(bossBars[i].unitTag) then
-            bossBars[i]:Refresh(forceReset)
-            bossBars[i]:Show()
-        else
-            bossBars[i]:Hide()
-            do break end
+    if combinedName and combinedBossBar then
+        for i=1,ABB_MAX_BOSSES do
+            if bossBars[i] then bossBars[i]:Hide() end
         end
-        lastBossBar = bossBars[i]
+        combinedBossBar:RefreshCombined(combinedName,forceReset)
+        combinedBossBar:Show()
+        lastBossBar=combinedBossBar
+    else
+        if combinedBossBar then combinedBossBar:Hide() end
+        ScaleBossBars()
+
+        local reefTag = FindBestLivingReefGuardian()
+        if reefTag then
+            -- Reef Guardian: show exactly one living guardian. Prefer the one
+            -- with the highest current HP so the bar does not jump needlessly.
+            for i=1,ABB_MAX_BOSSES do
+                if bossBars[i] then bossBars[i]:Hide() end
+            end
+
+            local selectedBar = nil
+            for i=1,ABB_MAX_BOSSES do
+                local bar = bossBars[i]
+                if bar and bar.unitTag == reefTag then
+                    selectedBar = bar
+                    break
+                end
+            end
+
+            -- Unit tags can be reordered by ESO; reuse the first bar if needed.
+            if not selectedBar and bossBars[1] then
+                selectedBar = bossBars[1]
+                selectedBar:RegisterUnit(reefTag)
+            end
+
+            if selectedBar then
+                selectedBar:Refresh(forceReset)
+                selectedBar:Show()
+                lastBossBar = selectedBar
+            end
+        else
+            for i=1,ABB_MAX_BOSSES do
+            local bar=bossBars[i]
+            if bar and DoesUnitExist(bar.unitTag) then
+                bar:Refresh(forceReset)
+                bar:Show()
+                lastBossBar=bar
+            elseif bar then
+                bar:Hide()
+                break
+            end
+            end
+        end
     end
-    
-    if lastBossBar ~= nil then
-        COMPASS_FRAME_FRAGMENT:SetHiddenForReason("ABBar", SETTINGS.REPLACE_COMPASS)
+
+    if lastBossBar then
+        local hideCompass = SETTINGS.REPLACE_COMPASS
+        if lastBossBar and lastBossBar.unitTag == "reticleover" and SETTINGS.INCLUDE_DUMMY then
+            hideCompass = true
+        end
+        COMPASS_FRAME_FRAGMENT:SetHiddenForReason("ABBar", hideCompass)
         AttachTargetTo(lastBossBar.control)
     else
         COMPASS_FRAME_FRAGMENT:SetHiddenForReason("ABBar")
@@ -553,6 +724,10 @@ local function RefreshExtraBar()
     if isDummy and DoesUnitExist(bar.unitTag) then
         bar:Refresh(forceReset)
         bar:Show()
+        if SETTINGS.INCLUDE_DUMMY then
+            COMPASS_FRAME_FRAGMENT:SetHiddenForReason("ABBar", true)
+            AttachTargetTo(bar.control)
+        end
     else
         bar:Hide()
     end

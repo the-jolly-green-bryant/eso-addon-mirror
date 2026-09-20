@@ -1,0 +1,9 @@
+## Title: Wifey's Barrier Frame Tracker
+## Description: Shows your Reviving Barrier on Bandits UI group frames.
+## Author: WifeyRytic
+## Version: 1.0
+## APIVersion: 101050
+## DependsOn: BanditsUserInterface LibAddonMenu-2.0
+## SavedVariables: BarrierFrameTrackerSavedVariables
+
+BarrierFrameTracker.lua

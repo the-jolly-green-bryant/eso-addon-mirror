@@ -1,0 +1,16 @@
+## Title: ESO Build Tracker - Prototype
+## Description: Gear, Skills, Stats and Builds tabs. Track named target builds against equipped gear and skill bars. Includes snapshots and controller controls.
+## Author: ESO Build Tracker contributors
+## Version: 0.2.1
+## AddOnVersion: 3
+## APIVersion: 101050
+## SavedVariables: ESOBuildTrackerSavedVariables
+
+Core.lua
+Capture.lua
+Report.lua
+Tracking.lua
+Browser.lua
+Editors.lua
+UI.lua
+Main.lua

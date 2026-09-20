@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/thisbeaurielle/LibDynamicMail__4379",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "thisbeaurielle",
   "canonical_id": "esoui:4379",
   "category_id": "53",
@@ -17,7 +18,7 @@
     "LibDynamicMail"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4379/",
-  "fingerprint": "ed756049bfdc99f8dddf26dc754d00080499dc7ea6e89fdaf3b65b834277ce02",
+  "fingerprint": "33d688e0bb6997e40575eb743ae971f5f4267eec48217b3b61e3a64cb8f833e1",
   "images": [],
   "platform": "pc",
   "published": true,
@@ -25,11 +26,11 @@
   "source_id": "4379",
   "source_url": "https://www.esoui.com/downloads/info4379-LibDynamicMail.html",
   "stats": {
-    "downloads": 3820,
+    "downloads": 4391,
     "favorites": 0,
-    "monthly_downloads": 363
+    "monthly_downloads": 274
   },
   "title": "LibDynamicMail",
-  "updated_at": 1776173640000,
-  "version": "0.2.3"
+  "updated_at": 1789856725000,
+  "version": "0.2.4"
 }

@@ -10,7 +10,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [PadMerchant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/mcdonnelldean/PadMerchant__1616) | mcdonnelldean | PC / Mac | 2.0 |
 | [PadUI Reload](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ckau/PadUI-Reload__1596) | Ckau | PC / Mac | 2.3.3 |
 | [PairsWellWithCheese](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/saranicole1980/PairsWellWithCheese__b57202fe-9b3a-4021-ad86-f2db8dfe0c5e) | saranicole1980 | Console | — |
-| [PairsWellWithCheese](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/thisbeaurielle/PairsWellWithCheese__4458) | thisbeaurielle | PC / Mac | 0.2.8 |
+| [PairsWellWithCheese](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/thisbeaurielle/PairsWellWithCheese__4458) | thisbeaurielle | PC / Mac | 0.2.9 |
 | [Palantir - with toggle button](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/manavortex/Palantir---with-toggle-button__925) | manavortex | PC / Mac | 1.0a |
 | [Pale Order Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Phinix/Pale-Order-Tracker__3370) | Phinix | PC / Mac | 1.0 |
 | [Pandalore's Coral Aerie Guide Companion](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/thepandalore/Pandalore-s-Coral-Aerie-Guide-Companion__4825) | thepandalore | PC / Mac | 1.1.0 |
@@ -62,6 +62,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Personal Dps Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shienar/Personal-Dps-Tracker__c9b85989-bab6-4000-a3fc-80ed49e25e87) | Shienar | Console | — |
 | [PersonalAssistant (Banking, Consume, Junk, Loot, Repair, Worker) \[Masteroshi430's branch\]](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/PersonalAssistant-Banking-Consume-Junk-Loot-Repair-Worker-Masteroshi430-s-branch__3512) | Masteroshi430 | PC / Mac | 2026.09.06 |
 | [Personality Designer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Atronyx/Personality-Designer__2695) | Atronyx | PC / Mac | 2.1.1 |
+| [pet](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/satuve/pet__25a0aeff-e8df-4458-bc72-f5a8319dbade) | satuve | Console | — |
 | [Pet Dead Alert](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/rockingdice/Pet-Dead-Alert__1825) | rockingdice | PC / Mac | 1.01 |
 | [Pet Dismiss](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/adriant1978/Pet-Dismiss__1314) | adriant1978 | PC / Mac | 1.3.1 |
 | [Pet Health](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Gamer_sa22/Pet-Health__d8639f08-8c9a-4f4c-af6d-5a86588cd787) | Gamer_sa22 | Console | — |
@@ -100,6 +101,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [PinkB's CyrodiilAlert(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-CyrodiilAlert-Beta__233a612c-6650-451b-80d8-b1862f95c90a) | PinkBanther | Console | — |
 | [PinkB's DiceExtension](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-DiceExtension__c8c74e10-f091-4e38-b894-20bb194c9b87) | PinkBanther | Console | — |
 | [PinkB's DiceExtension(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-DiceExtension-Beta__4e8c5fa9-767a-4036-87fe-ba872cd76529) | PinkBanther | Console | — |
+| [PinkB'S LDLStats](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-S-LDLStats__3ecaea11-d7db-4461-b3c5-c1687ee9d6a0) | PinkBanther | Console | — |
 | [PinkB's LibDebugLogger](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-LibDebugLogger__0b8ba311-219e-4207-ba00-2876c16ec5b5) | PinkBanther | Console | — |
 | [PinkB's LuaMemoryMonitor](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-LuaMemoryMonitor__f4878125-abb0-49bd-b8d3-ca06c9ad746a) | PinkBanther | Console | — |
 | [PinkB's LuaMemoryMonitor(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-LuaMemoryMonitor-Beta__ae47138d-8a74-4929-b2e2-acb03b38eb43) | PinkBanther | Console | — |

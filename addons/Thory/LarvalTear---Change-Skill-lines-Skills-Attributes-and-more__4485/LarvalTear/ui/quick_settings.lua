@@ -3420,6 +3420,17 @@ function QuickSettings:SaveCurrentQuickSlots()
     self:RefreshQuickSlots()
 end
 
+function QuickSettings:OverwriteQuickSlotProfile(profileId)
+    local profile, err = QuickslotProfileFacade:OverwriteProfileFromCurrent(profileId)
+    if type(profile) ~= "table" then
+        WriteChat(GetText("quick_settings.quick_slots.overwrite_failed", { reason = tostring(err) }))
+        return
+    end
+
+    WriteChat(GetText("quick_settings.quick_slots.overwritten", { profileName = profile.displayName or profile.name or profile.id }))
+    self:RefreshQuickSlots()
+end
+
 function QuickSettings:DeleteQuickSlotProfile(profileId)
     QuickslotProfileFacade:DeleteProfile(profileId)
     self:RefreshQuickSlots()
@@ -3592,6 +3603,52 @@ function QuickSettings:FetchQuickSlotProfile(profile)
     HandleQuickSlotFetchResult(self, ok == true, err, summary)
 end
 
+local function CreateQuickSlotSettingsMenuRow(menu, name, rowIndex, textKey, onClick)
+    local row = CreateBackdrop(menu, name, 0, 0, 0, 0, 0, 0, 0, 0)
+    row:ClearAnchors()
+    row:SetAnchor(TOPLEFT, menu, TOPLEFT, 4, 4 + ((rowIndex - 1) * QUICK_SLOT_SETTINGS_MENU_ROW_HEIGHT))
+    row:SetAnchor(TOPRIGHT, menu, TOPRIGHT, -4, 4 + ((rowIndex - 1) * QUICK_SLOT_SETTINGS_MENU_ROW_HEIGHT))
+    row:SetHeight(QUICK_SLOT_SETTINGS_MENU_ROW_HEIGHT)
+    row:SetMouseEnabled(true)
+    SetControlDrawOrder(row, DT_HIGH, DL_OVERLAY, 3)
+
+    local label = WINDOW_MANAGER:CreateControl("$(parent)Label", row, CT_LABEL)
+    label:ClearAnchors()
+    label:SetAnchor(LEFT, row, LEFT, 8, 0)
+    label:SetAnchor(RIGHT, row, RIGHT, -8, 0)
+    label:SetHeight(QUICK_SLOT_SETTINGS_MENU_ROW_HEIGHT)
+    label:SetFont("ZoFontGame")
+    label:SetColor(0.96, 0.97, 1.0, 1.0)
+    label:SetText(GetText(textKey))
+    label:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    label:SetMouseEnabled(false)
+    SetControlDrawOrder(label, DT_HIGH, DL_OVERLAY, 4)
+
+    row:SetHandler("OnMouseEnter", function()
+        row:SetCenterColor(0.14, 0.40, 0.70, 0.92)
+    end)
+    row:SetHandler("OnMouseExit", function()
+        row:SetCenterColor(0, 0, 0, 0)
+    end)
+    row:SetHandler("OnMouseUp", function(_, _, upInside)
+        if upInside then
+            onClick()
+        end
+    end)
+end
+
+local function ToggleQuickSlotSettingsMenu(card)
+    if QuickSettings.openQuickSlotSettingsCard == card then
+        QuickSettings:HideQuickSlotSettingsMenu()
+        return
+    end
+
+    Addon.UI:CloseActionMenus()
+    QuickSettings.openQuickSlotSettingsCard = card
+    card.settingsMenu:SetHidden(false)
+    Addon.UI:RefreshActionMenuDismissLayer()
+end
+
 CreateQuickSlotCard = function(self, parent, index)
     local namePrefix = "LTM_QSCard" .. tostring(index)
     local card = CreateBackdrop(parent, namePrefix, 0.08, 0.09, 0.10, 0.96, 0.28, 0.30, 0.34, 1.0)
@@ -3710,26 +3767,47 @@ CreateQuickSlotCard = function(self, parent, index)
     SetControlDrawOrder(fetchButton, DT_HIGH, DL_CONTROLS, 10)
     card.fetchButton = fetchButton
 
-    local renameButton = CreateIconButton(
+    local settingsButton = CreateIconButton(
         card,
-        namePrefix .. "Rename",
+        namePrefix .. "Settings",
         QUICK_SLOT_CARD_ICON_BUTTON_SIZE,
         "/esoui/art/buttons/edit",
-        GetText("common.rename"),
+        GetText("quick_settings.quick_slots.settings"),
         function()
             if type(card.profile) == "table" then
-                Addon.UI:ShowDialog("QUICKSLOT_RENAME_INPUT", {
-                    profileId = card.profile.id,
-                    profileName = card.profile.displayName or card.profile.name or card.profile.id,
-                    initialValue = card.profile.displayName or card.profile.name or card.profile.id,
-                })
+                ToggleQuickSlotSettingsMenu(card)
             end
         end
     )
-    renameButton:ClearAnchors()
-    renameButton:SetAnchor(TOPRIGHT, card, TOPRIGHT, -68, 4)
-    SetControlDrawOrder(renameButton, DT_HIGH, DL_CONTROLS, 10)
-    card.renameButton = renameButton
+    settingsButton:ClearAnchors()
+    settingsButton:SetAnchor(TOPRIGHT, card, TOPRIGHT, -68, 4)
+    SetControlDrawOrder(settingsButton, DT_HIGH, DL_CONTROLS, 10)
+    card.settingsButton = settingsButton
+
+    local menu = CreateBackdrop(Addon.UI.frontOverlayRoot, namePrefix .. "SettingsMenu", 0.10, 0.10, 0.12, 0.98, 0.48, 0.52, 0.58, 1.0)
+    menu:SetDimensions(180, (2 * QUICK_SLOT_SETTINGS_MENU_ROW_HEIGHT) + 8)
+    menu:ClearAnchors()
+    menu:SetAnchor(TOPRIGHT, settingsButton, BOTTOMRIGHT, 0, 4)
+    menu:SetHidden(true)
+    SetControlDrawOrder(menu, DT_HIGH, DL_OVERLAY, 2)
+    card.settingsMenu = menu
+
+    CreateQuickSlotSettingsMenuRow(menu, namePrefix .. "OverwriteRow", 1, "quick_settings.quick_slots.overwrite_card", function()
+        local profileId = card.profile and card.profile.id
+        QuickSettings:HideQuickSlotSettingsMenu()
+        QuickSettings:OverwriteQuickSlotProfile(profileId)
+    end)
+    CreateQuickSlotSettingsMenuRow(menu, namePrefix .. "RenameRow", 2, "quick_settings.quick_slots.rename_card", function()
+        local profile = card.profile
+        QuickSettings:HideQuickSlotSettingsMenu()
+        if type(profile) == "table" then
+            Addon.UI:ShowDialog("QUICKSLOT_RENAME_INPUT", {
+                profileId = profile.id,
+                profileName = profile.displayName or profile.name or profile.id,
+                initialValue = profile.displayName or profile.name or profile.id,
+            })
+        end
+    end)
 
     local deleteButton = CreateIconButton(
         card,

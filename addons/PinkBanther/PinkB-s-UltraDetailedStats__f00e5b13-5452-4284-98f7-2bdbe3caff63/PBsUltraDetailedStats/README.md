@@ -4,7 +4,7 @@ Puts your character's equipment, detailed statistics, Champion Points and skills
 in the gamepad UI of **The Elder Scrolls Online** on console (PS5 / Xbox Series X|S).
 
 - **Author:** PinkBanther
-- **Version:** 0.3.1 (API 101050)
+- **Version:** 0.3.2 (API 101050)
 - **Libraries:** none
 
 Open it from **ステータス超詳細** in the gamepad main menu, between **Character** and **Skills**.
@@ -108,6 +108,13 @@ goes through Bethesda's developer Uploader — build a candidate with `python3 t
 then follow the console development environment and the Uploader's instructions. Nothing here
 has been uploaded or published. See the
 [official console Uploader notes](https://help.elderscrollsonline.com/app/answers/detail/a_id/69621/).
+
+## 0.3.2: armour weight on the equipment rows
+
+Each armour row now starts its middle column with the armour weight — 軽装, 中装 or 重装, the
+game's own `SI_ARMORTYPE` string — before the trait and enchantment. Weapons and jewellery have
+no armour type and start with the trait. The column took 40 points from the item name, which
+still fits the longest set piece names.
 
 ## 0.3.1: L1/R1 crosses from equipment into the build
 

@@ -1,0 +1,45 @@
+{
+  "archive_error": "ESOUI returned an empty response",
+  "archive_path": "addons/Rytic/RyticTankTools__4854",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archive_status": "unavailable",
+  "archived": false,
+  "author": "Rytic",
+  "canonical_id": "esoui:4854",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4854",
+  "deleted": false,
+  "directories": [
+    "RyticTankTools"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4854/",
+  "fingerprint": "134b085acae7984a9a4d2c0b6761ca6b3bddac48a5685234c8e391c1f8cb69b0",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17449.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17450.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17451.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4854",
+  "source_url": "https://www.esoui.com/downloads/info4854-RyticTankTools.html",
+  "stats": {
+    "downloads": 2,
+    "favorites": 0,
+    "monthly_downloads": 0
+  },
+  "title": "RyticTankTools",
+  "updated_at": 1789880660000,
+  "version": "2.1.0"
+}

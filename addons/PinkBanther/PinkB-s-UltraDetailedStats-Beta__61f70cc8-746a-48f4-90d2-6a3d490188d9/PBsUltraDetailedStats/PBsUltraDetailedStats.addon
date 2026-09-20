@@ -1,8 +1,8 @@
-## Title: |cFF69B4PB'S ULTRA DETAILED STATS|r 0.3.1
+## Title: |cFF69B4PB'S ULTRA DETAILED STATS|r 0.3.2
 ## Author: |cFF69B4PinkBanther|r
 ## Description: キャラクターの装備・詳細ステータス・星座・CP・スキルを一画面に表示します。
-## Version: 0.3.1
-## AddOnVersion: 301
+## Version: 0.3.2
+## AddOnVersion: 302
 ## APIVersion: 101050
 
 Data.lua

@@ -1,8 +1,8 @@
 ## Title: Update 47 Tweaker
 ## Author: Murfiex
 ## Description: Tweak some UI changes introduced in Update 47.
-## APIVersion: 101049 101050
-## Version: 1.2.5
+## APIVersion: 101050 101051
+## Version: 1.2.6
 ## SavedVariables: Update47Tweaker_SavedVars
 ## DependsOn: LibHarvensAddonSettings
 

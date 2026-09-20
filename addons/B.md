@@ -44,6 +44,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Bard Class – Combat Stance](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/frooke/Bard-Class-Combat-Stance__4365) | frooke | PC / Mac | 1.2.1 |
 | [barny's CC Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/barny/barny-s-CC-Tracker__3971) | barny | PC / Mac | 1.1.3 |
 | [barny's CC Tracker - beta](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/barny/barny-s-CC-Tracker---beta__3988) | barny | PC / Mac | 1.1.3 - beta |
+| [Barrier Frame Tracker (Bandits User Interface)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/its_wifey/Barrier-Frame-Tracker-Bandits-User-Interface__4853) | its_wifey | PC / Mac | 1.0.1 |
 | [batmaans Reconstructed Filter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/batmaan/batmaans-Reconstructed-Filter__3541) | batmaan | PC / Mac | 1.0 |
 | [Batman's Home and Out](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Irniben/Batman-s-Home-and-Out__3503) | Irniben | PC / Mac | 1.0.0 |
 | [Battery Charger](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Estrela/Battery-Charger__2902) | Estrela | PC / Mac | 1.1 |
@@ -162,12 +163,13 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [BSCs-TauntCounter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BloodStainCHild/BSCs-TauntCounter__3695) | BloodStainCHild | PC / Mac | 1.0.0 |
 | [BSCs-UltiPoints](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BloodStainCHild/BSCs-UltiPoints__3198) | BloodStainCHild | PC / Mac | 2.2.3 |
 | [BSCs-WizardPlugin](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BloodStainCHild/BSCs-WizardPlugin__4645) | BloodStainCHild | PC / Mac | 1.0.2 |
+| [BTV Tools Roster Importer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BallTongue/BTV-Tools-Roster-Importer__4852) | BallTongue_ | PC / Mac | 0.2.0 |
 | [BuddysCombat](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/buddy7744/BuddysCombat__2263) | buddy7744 | PC / Mac | 7.0 |
 | [BuddysWritStatus (Only on German Clients)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/buddy7744/BuddysWritStatus-Only-on-German-Clients__2460) | buddy7744 | PC / Mac | 1.3.0 |
 | [Buff The Group (BTG)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/bitrock/Buff-The-Group-BTG__2759) | bitrock | PC / Mac | 3.5.0 |
 | [Buff Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/msetten/Buff-Tracker__0604268b-f390-4fac-aebe-67b9148c94f4) | msetten | Console | — |
 | [BuffDebuffBar+](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BLKx777/BuffDebuffBar__f47025d4-d5d3-4863-b0b0-1d9f57dd6c41) | BLKx777 | Console | — |
-| [buffoverhaul by Jh](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/j.hhh/buffoverhaul-by-Jh__3b05def8-1192-4bc3-8954-f69f9cf0977c) | j.hhh | Console | — |
+| [Buffoverhaul](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/j.hhh/Buffoverhaul__3b05def8-1192-4bc3-8954-f69f9cf0977c) | j.hhh | Console | — |
 | [BuffsAndDebuffs](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Graham/BuffsAndDebuffs__3333) | Graham | PC / Mac | 1.3Pre |
 | [BuffTimers](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/coolmodi/BuffTimers__1278) | coolmodi | PC / Mac | 1.4 |
 | [BuffTimers2](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/uta.karas/BuffTimers2__1986) | uta.karas | PC / Mac | 2.31.1 |

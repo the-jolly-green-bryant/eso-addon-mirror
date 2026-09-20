@@ -1,0 +1,12 @@
+## Title: |c7f7f7fDark|cada684UI|r HUD Edition
+## Version: 2.76-HUD
+## AddOnVersion: 277
+## Author: |cada684Jhenox|r, |cff9b15Sharlikran|r
+## APIVersion: 101050
+## SavedVariables: DarkUI_SavedVariables
+## ConsoleDependsOn: LibAddonMenu-2.0>=40
+
+i18n/en.lua
+i18n/$(language).lua
+DarkUI.lua
+DarkUISettings.lua

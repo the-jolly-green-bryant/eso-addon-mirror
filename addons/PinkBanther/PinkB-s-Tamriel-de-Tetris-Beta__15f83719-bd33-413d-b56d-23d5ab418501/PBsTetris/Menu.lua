@@ -18,17 +18,14 @@ function PBT.EnsureMenu(app)
   parent.subMenu={};table.insert(ZO_MENU_ENTRIES,index,parent)
  end
  parent.subMenu=parent.subMenu or {};parent.data.subMenu=parent.data.subMenu or {}
- for _,mode in ipairs({{'PBsTetrisSolo','タムリエル de テトリス',false},{'PBsTetris20G','タムリエル de テトリス（20G）',true}}) do
-  local found=false
-  for _,e in ipairs(parent.subMenu) do if e.id==mode[1] or e.data.name==mode[2] then found=true end end
-  if not found then
-   local force=mode[3]
-   local data={name=mode[2],icon=icon,activatedCallback=function() app:Solo(false,force) end}
-   table.insert(parent.data.subMenu,data);table.insert(parent.subMenu,entry(data,mode[1]))
-  end
- end
+ for _,e in ipairs(parent.subMenu) do if e.id=='PBsTetris' or e.data.name==PBT.ModeMenu.TITLE then return end end
+ -- One entry under Game Centre PX. Giving it a scene rather than a callback is what the menu
+ -- itself does for Options and the rest: selecting it pushes that scene over the sub-menu.
+ local data={name=PBT.ModeMenu.TITLE,icon=icon,customTemplate='ZO_GamepadMenuEntryTemplateWithArrow',scene=PBT.ModeMenu.SCENE}
+ table.insert(parent.data.subMenu,data);table.insert(parent.subMenu,entry(data,'PBsTetris'))
 end
 function PBT.HookMenus(app)
+ if not PBT.modeMenu and PBsTetrisModeMenu then PBT.modeMenu=PBT.ModeMenu:New(PBsTetrisModeMenu,app) end
  PBT.EnsureMenu(app)
  ZO_PreHook(MAIN_MENU_GAMEPAD,'RefreshMainList',function() PBT.EnsureMenu(app) end)
  ZO_PreHook(PLAYER_TO_PLAYER,'AddMenuEntry',function(menu,label)

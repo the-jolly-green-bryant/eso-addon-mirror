@@ -26,7 +26,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Immersive Mount Camera](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Dimedius/Immersive-Mount-Camera__1071) | Dimedius | PC / Mac | 1.0.1 |
 | [Immersive Overlays](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Anumaril/Immersive-Overlays__3838) | Anumaril | PC / Mac | 1.1 |
 | [Immersive Quests](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/OneSkyGod/Immersive-Quests__3538) | OneSkyGod | PC / Mac | 0.0058 |
-| [Immersives Reiten](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Torfason/Immersives-Reiten__4843) | Torfason | PC / Mac | 1.2.2 |
+| [Immersives Reiten](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Torfason/Immersives-Reiten__4843) | Torfason | PC / Mac | 1.2.3 |
 | [Imperial City Boss Timers](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ParanoidGaming/Imperial-City-Boss-Timers__6684c311-afc5-48de-8ced-f86edbe863f1) | ParanoidGaming | Console | — |
 | [Imperial City Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kawamonkey/Imperial-City-Helper__3306) | kawamonkey | PC / Mac | 1.1.1 |
 | [Imperial City Hunter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Drako-Ei/Imperial-City-Hunter__2320) | Drako-Ei | PC / Mac | 1.4 |
@@ -70,7 +70,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Instant Swap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/delstrega/Instant-Swap__2987) | delstrega | PC / Mac | 1.2 |
 | [InstaQ](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Synkronist/InstaQ__5da20bd4-9950-42b8-aca8-deadd5817210) | Synkronist | Console | — |
 | [Interrupt Narc](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/brossin13/Interrupt-Narc__fe232f99-8f31-4163-906d-48182e80a59d) | brossin13 | Console | — |
-| [Inventory Assistant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/zsban/Inventory-Assistant__2015) | zsban | PC / Mac | 1.19.260917-beta |
+| [Inventory Assistant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/zsban/Inventory-Assistant__2015) | zsban | PC / Mac | 1.20.260919-beta |
 | [Inventory Bank Sort](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/rlinosaur/Inventory-Bank-Sort__3344) | rlinosaur | PC / Mac | 1.2 |
 | [Inventory Extensions](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Panicida/Inventory-Extensions__2801) | Panicida | PC / Mac | 1.0.0 |
 | [Inventory Grid View](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DunkleMaterie/Inventory-Grid-View__2227) | DunkleMaterie | PC / Mac | 2.0.9.2c |

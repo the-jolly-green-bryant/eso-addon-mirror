@@ -85,7 +85,13 @@ function D.Equipment()
                 entry.itemName = clean(GetItemLinkName(link))
                 entry.quality = GetItemLinkDisplayQuality(link)
                 entry.level = cp > 0 and ("CP " .. cp) or ("Lv " .. GetItemLinkRequiredLevel(link))
-                entry.subline = (hasTrait and GetString("SI_ITEMTRAITTYPE", trait) or "") .. "   " .. clean(enchant)
+                -- Armour weight (軽装・中装・重装) first, then trait and enchantment. Weapons and
+                -- jewellery have no armour type and start with the trait.
+                local subline = {}
+                if armorType and armorType ~= (ARMORTYPE_NONE or 0) then subline[#subline + 1] = GetString("SI_ARMORTYPE", armorType) end
+                if hasTrait then subline[#subline + 1] = GetString("SI_ITEMTRAITTYPE", trait) end
+                if enchant and enchant ~= "" then subline[#subline + 1] = clean(enchant) end
+                entry.subline = table.concat(subline, "　")
                 entry.setText = hasSet and ("Set " .. (equipped + (perfected or 0)) .. "/" .. maxEquipped) or ""
             end
             rows[#rows].slotLabel = slot[2]

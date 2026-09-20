@@ -10,7 +10,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Lagerblick](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Torfason/Lagerblick__4844) | Torfason | PC / Mac | 0.1.10 |
 | [Landslide Tracker - Earthen Heart Passive](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Duesentrieb/Landslide-Tracker---Earthen-Heart-Passive__4470) | Duesentrieb | PC / Mac | 20260320-0002 |
 | [LanguageChanger for 1.5.5](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Hiiko/LanguageChanger-for-1.5.5__827) | Hiiko | PC / Mac | 0.1 |
-| [LarvalTear - Change Skill lines, Skills, Attributes, and more](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Thory/LarvalTear---Change-Skill-lines-Skills-Attributes-and-more__4485) | Thory | PC / Mac | 1.5.0.0 |
+| [LarvalTear - Change Skill lines, Skills, Attributes, and more](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Thory/LarvalTear---Change-Skill-lines-Skills-Attributes-and-more__4485) | Thory | PC / Mac | 1.5.0.1 |
 | [Latency Statistics](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tactitocalon/Latency-Statistics__1869) | Tactitocalon | PC / Mac | 1.0 |
 | [Lawful Necromancy](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/muh/Lawful-Necromancy__2388) | muh | PC / Mac | 1.1 |
 | [Lazarus](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/g0dpain/Lazarus__3123) | g0dpain | PC / Mac | 0.1.0 |
@@ -120,7 +120,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [LibDialog - Custom confirmation dialog with 2 buttons](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Baertram/LibDialog---Custom-confirmation-dialog-with-2-buttons__1931) | Baertram | PC / Mac | 1.27 |
 | [LibDungeonFinder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Jindra/LibDungeonFinder__4600) | Jindra | PC / Mac | 1.2.0 |
 | [LibDynamicMail](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/saranicole1980/LibDynamicMail__d98298fa-549a-4a02-ad04-7c3f0dc92445) | saranicole1980 | Console | — |
-| [LibDynamicMail](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/thisbeaurielle/LibDynamicMail__4379) | thisbeaurielle | PC / Mac | 0.2.3 |
+| [LibDynamicMail](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/thisbeaurielle/LibDynamicMail__4379) | thisbeaurielle | PC / Mac | 0.2.4 |
 | [LibEmote](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/akamatsu02/LibEmote__3715) | akamatsu02 | PC / Mac | 1.13 |
 | [LibEnchantingStation](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/votan/LibEnchantingStation__2437) | votan | PC / Mac | 2.3.5 |
 | [LibEventHandler](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Justinon/LibEventHandler__1452) | Justinon | PC / Mac | 1.3.13 |
@@ -271,7 +271,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [LibTextFilter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sirinsidiator/LibTextFilter__e2dbb014-9ae4-408e-9617-05161b5c9650) | sirinsidiator | Console | — |
 | [LibTextFilter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sirinsidiator/LibTextFilter__1311) | sirinsidiator | PC / Mac | 1.0.7 |
 | [LibTextFormat](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/saranicole1980/LibTextFormat__cec7b602-5dc0-4af0-a949-cd5483dc7329) | saranicole1980 | Console | — |
-| [LibTextFormat](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/thisbeaurielle/LibTextFormat__4380) | thisbeaurielle | PC / Mac | 0.1.8 |
+| [LibTextFormat](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/thisbeaurielle/LibTextFormat__4380) | thisbeaurielle | PC / Mac | 0.1.9 |
 | [LibTraitResearch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Delte/LibTraitResearch__deb4d4a9-52ea-4c0d-b446-dbcf31a7d437) | Delte | Console | — |
 | [LibTraitResearch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/olegbl/LibTraitResearch__3264) | olegbl | PC / Mac | 1.05 |
 | [LibTreasure](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Gamer1986PAN/LibTreasure__3227) | Gamer1986PAN | PC / Mac | 24 |

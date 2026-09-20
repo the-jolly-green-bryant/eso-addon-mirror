@@ -1,16 +1,16 @@
 {
-  "archive_path": "addons/j.hhh/buffoverhaul-by-Jh__3b05def8-1192-4bc3-8954-f69f9cf0977c",
+  "archive_path": "addons/j.hhh/Buffoverhaul__3b05def8-1192-4bc3-8954-f69f9cf0977c",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
   "archived": true,
   "author": "j.hhh",
   "canonical_id": "bethesda:3b05def8-1192-4bc3-8954-f69f9cf0977c",
   "content_id": "3b05def8-1192-4bc3-8954-f69f9cf0977c",
   "deleted": false,
-  "fingerprint": "ad6a28828cf53cdde878485d82f8c8ea162d2c207db32a1326a5e8791a9c92b9",
+  "fingerprint": "aa67135ac6e324ee4bbeb5826da2909724eb89e290cbf986285d0cfe2ea3df01",
   "platform": "console",
   "published": true,
   "source": "bethesda",
   "source_id": "3b05def8-1192-4bc3-8954-f69f9cf0977c",
   "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/3b05def8-1192-4bc3-8954-f69f9cf0977c",
-  "title": "buffoverhaul by Jh"
+  "title": "Buffoverhaul"
 }

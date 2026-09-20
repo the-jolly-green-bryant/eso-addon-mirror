@@ -3,7 +3,7 @@
 -----------------------------------------------------------------------------------------------------------------------------------
 IA_InventoryAssistant = ZO_Object:Subclass ( )
 IA_InventoryAssistant.name = "InventoryAssistant"
-IA_InventoryAssistant.version = "1.19.260917-beta"
+IA_InventoryAssistant.version = "1.20.260919-beta"
 -----------------------------------------------------------------------------------------------------------------------------------
 -- DEFAULT SETTINGS
 -----------------------------------------------------------------------------------------------------------------------------------
@@ -25,6 +25,13 @@ IA_InventoryAssistant.defaults = {
   onlyMarkedItems = false,
   onlyLoots = false,
   groupLoots = true,
+  lootHistoryEnabled = false,
+  lootHistoryLocked = false,
+  lootHistoryX = 1200.0,
+  lootHistoryY = 500.0,
+  lootHistoryMaxEntries = 6,
+  lootHistoryNewestOnTop = true,
+  lootHistoryRightAligned = false,
   showCrafted = true,
   showBuyable = true,
   showBound = true,
@@ -822,6 +829,11 @@ function IA_InventoryAssistant:Initialize ( control )
     
       self:InitializeSettingsMenu ( )
       self:InitializeWindow ( control )
+      if self.settings.lootHistoryEnabled then
+        self.lootHistory = IA_LootHistory:New ( IA_LOOT_HISTORY_CONTROL )
+        self.lootHistory:OnInitialized ( self.settings )
+        IA_LOOT_HISTORY_CONTROL:SetHidden ( false )
+      end
       self:InitializeHooks ( control )
       
       EH:RegisterForEvent ( self.name, EVENT_PLAYER_ACTIVATED, function ( ) self:Rescan ( ); self:Refresh ( --[[reload]] true, --[[preserveScrollPosition]] false ) end )
@@ -881,6 +893,7 @@ function IA_InventoryAssistant:InitializeWindow ( control )
   self.window:SetHandler ( "OnResizeStop", function ( )
       self.settings.inventoryAssistantWindowWidth = self.window:GetWidth ( )
       self.settings.inventoryAssistantWindowHeight = self.window:GetHeight ( )
+      ZO_ScrollList_Commit ( self.list.list )
     end )
 
 end
@@ -1180,6 +1193,71 @@ function IA_InventoryAssistant:InitializeSettingsMenu ( )
       if not self.window:IsControlHidden ( ) then
         self:Refresh ( --[[reload]] false, --[[preserveScrollPosition]] false )
       end
+    end,
+    width = "full",
+  } )
+  table.insert ( options, {
+    type = "header",
+    name = "Loot History (beta)",
+    width = "full",
+  } )
+  table.insert ( options, {
+    type = "checkbox",
+    name = "Enable loot history",
+    requiresReload = true,
+    default = true,
+    getFunc = function ( ) return self.settings.lootHistoryEnabled end,
+    setFunc = function ( value ) self.settings.lootHistoryEnabled = value end,
+    width = "full",
+  } )
+  table.insert ( options, {
+    type = "checkbox",
+    name = "Lock loot history window",
+    default = true,
+    getFunc = function ( ) return self.settings.lootHistoryLocked end,
+    setFunc = function ( value )
+      self.settings.lootHistoryLocked = value
+      self.lootHistory:SetLocked ( value )
+    end,
+    width = "full",
+  } )
+  table.insert ( options, {
+    type = "slider",
+    name = "Maximum loot history entries",
+    min = 1,
+    max = 10,
+    step = 1,
+    default = 6,
+    getFunc = function ( ) return self.settings.lootHistoryMaxEntries end,
+    setFunc = function ( value )
+      self.settings.lootHistoryMaxEntries = value
+      self.lootHistory:RebuildBuffers ( )
+    end,
+    width = "full",
+  } )
+  table.insert ( options, {
+    type = "dropdown",
+    name = "Loot history direction",
+    choices = { "Up", "Down" },
+    choicesValues = { true, false },
+    default = true,
+    getFunc = function ( ) return self.settings.lootHistoryNewestOnTop end,
+    setFunc = function ( value )
+      self.settings.lootHistoryNewestOnTop = value
+      self.lootHistory:SetDirection ( value )
+    end,
+    width = "full",
+  } )
+  table.insert ( options, {
+    type = "dropdown",
+    name = "Loot history alignment",
+    choices = { "Left", "Right" },
+    choicesValues = { false, true },
+    default = false,
+    getFunc = function ( ) return self.settings.lootHistoryRightAligned end,
+    setFunc = function ( value )
+      self.settings.lootHistoryRightAligned = value
+      self.lootHistory:SetAlignment ( value )
     end,
     width = "full",
   } )

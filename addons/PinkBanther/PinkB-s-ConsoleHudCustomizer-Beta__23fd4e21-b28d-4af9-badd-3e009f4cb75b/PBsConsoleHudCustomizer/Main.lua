@@ -1137,7 +1137,7 @@ local function Usage()
 	Line("  %s slots                  -- what is on each slot, and why", SLASH)
 	Line("  %s effects                -- the last effect events the game sent", SLASH)
 	Line("  %s trace [on|off|clear]  -- record what the game sends as an ability is cast", SLASH)
-	Line("  %s plain                  -- what the plain look is really doing", SLASH)
+	Line("  %s plain [margin <l> <r>] -- what the plain look is doing, and the end margins", SLASH)
 	Line("  %s backbar [on|off|empty|<scale>] -- the other weapon set's row", SLASH)
 	Line("  %s skillbar on|off        -- whether the skill bar is this add-on's to touch", SLASH)
 	Line("  %s on | off               -- switch every change on or off", SLASH)
@@ -1166,6 +1166,19 @@ local function OnSlash(argumentString)
 			addon.trace:Command(args[2])
 		end
 	elseif command == "plain" then
+		if (args[2] or ""):lower() == "margin" then
+			local left, right = tonumber(args[3]), tonumber(args[4])
+			if not left then
+				Line("usage: %s plain margin <left> <right>   (0-%d pixels, how far the effect stops short of each end)",
+					SLASH, addon.MAX_END_MARGIN)
+				return
+			end
+			addon:SetEndMargins(left, right or left)
+			addon:Refresh()
+			local now, also = addon:EndMargins()
+			Line("end margins: left %d right %d", now, also)
+			return
+		end
 		if addon.plain then
 			addon.plain:PrintStatus()
 		end

@@ -6,9 +6,9 @@
 
 ## Title: TraitCraft
 ## Author: @thisbeaurielle
-## Version: 2.4.2
-## APIVersion: 101049 101050
-## AddOnVersion: 242
+## Version: 2.4.3
+## APIVersion: 101050 101051
+## AddOnVersion: 243
 ## SavedVariables: TraitCraft_Vars
 ## DependsOn: LibHarvensAddonSettings>=20101
 ## OptionalDependsOn: LibLazyCrafting LibDynamicMail LibTextFormat

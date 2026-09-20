@@ -51,7 +51,13 @@ local function AcquirePin()
         pin:SetHandler("OnMouseEnter", function(self)
             if self.pinTooltipCreator then
                 InitializeTooltip(InformationTooltip, self, TOP, 0, -5)
-                pcall(self.pinTooltipCreator, self)
+                if type(self.pinTooltipCreator) == "function" then
+                    pcall(self.pinTooltipCreator, self)
+                elseif type(self.pinTooltipCreator) == "string" and self.pinTooltipCreator ~= "" then
+                    SetTooltipText(InformationTooltip, self.pinTooltipCreator)
+                elseif type(self.pinTooltipCreator) == "number" then
+                    SetTooltipText(InformationTooltip, GetString(self.pinTooltipCreator))
+                end
             elseif self.pinText and self.pinText ~= "" then
                 InitializeTooltip(InformationTooltip, self, TOP, 0, -5)
                 SetTooltipText(InformationTooltip, self.pinText)
@@ -108,16 +114,20 @@ function pins.CreatePin(iconTexture, normX, normY, text, size, tooltipCreator, p
     end
     if not iconTexture or type(iconTexture) ~= "string" or iconTexture == "" then return end
 
-    -- Защита от наложения: если в этой точке уже есть значок триала/святилища, не дублируем его
-    for _, activePin in ipairs(g_activePins) do
-        if activePin.normX and activePin.normY then
-            if math.abs(activePin.normX - normX) < 0.001 and math.abs(activePin.normY - normY) < 0.001 then
-                return activePin
+    local pin = nil
+    -- Защита от дубликатов: если в этой точке уже есть значок, переиспользуем и обновляем его
+    for _, existingPin in ipairs(g_activePins) do
+        if existingPin.normX and existingPin.normY then
+            if math.abs(existingPin.normX - normX) < 0.001 and math.abs(existingPin.normY - normY) < 0.001 then
+                pin = existingPin
+                break
             end
         end
     end
 
-    local pin = AcquirePin()
+    if not pin then
+        pin = AcquirePin()
+    end
     
     local userBaseSize = (minimap.settings and minimap.settings.pinSize) or 20
     local rawSize = size or 20
@@ -397,11 +407,8 @@ function pins.RefreshCyrodiil()
             local hasArtifact = GetKeepHasArtifact and GetKeepHasArtifact(keepId)
 
             if not isVault or hasArtifact then
-                local pinType, normX, normY = GetHistoricalKeepPinInfo(keepId, bgContext, 100.0)
-                if not pinType or pinType == MAP_PIN_TYPE_INVALID then
-                    pinType, normX, normY = GetKeepPinInfo(keepId, bgContext)
-                end
-
+                local pinType, normX, normY = GetKeepPinInfo(keepId, bgContext) -- Используем только актуальные данные
+                
                 if pinType and pinType ~= MAP_PIN_TYPE_INVALID and normX and normY and normX > 0 and normY > 0 and normX < 1 and normY < 1 then
                     local layout = ZO_MapPin and ZO_MapPin.PIN_DATA and ZO_MapPin.PIN_DATA[pinType]
                     local icon = layout and layout.texture
@@ -417,10 +424,7 @@ function pins.RefreshCyrodiil()
                             size = 24
                         end
 
-                        local keepAlliance = GetKeepAlliance(keepId, bgContext)
-                        if not keepAlliance or keepAlliance == ALLIANCE_NONE then
-                            keepAlliance = (GetHistoricalKeepAlliance and GetHistoricalKeepAlliance(keepId, 100.0)) or ALLIANCE_NONE
-                        end
+                        local keepAlliance = GetKeepAlliance(keepId, bgContext) -- Используем только актуальные данные
                         local allianceTint = (keepAlliance and keepAlliance ~= ALLIANCE_NONE) and GetAllianceColor(keepAlliance) or nil
 
                         pins.CreatePin(icon, normX, normY, keepName, size, nil, pinType, nil, allianceTint)
@@ -725,7 +729,7 @@ local function ClearQuestPins()
     end
 end
 
-function pins.RefreshQuests()
+function pins.RefreshQuests(isRetry)
     ClearQuestPins()
 
     local pinManager = ZO_WorldMap_GetPinManager and ZO_WorldMap_GetPinManager()
@@ -768,17 +772,15 @@ function pins.RefreshQuests()
         end
     end
 
-    -- САМОДИАГНОСТИКА: если в журнале есть квесты, а карта спит — будим и сразу дорисовываем!
+    -- САМОДИАГНОСТИКА: будим квесты один раз без бесконечной рекурсии
     local numJournalQuests = GetNumJournalQuests and GetNumJournalQuests() or 0
-    if count == 0 and numJournalQuests > 0 and not pins.isWakingUp and g_isPlayerActivated then
-        pins.isWakingUp = true
+    if count == 0 and numJournalQuests > 0 and not isRetry and g_isPlayerActivated then
         if ZO_WorldMap_RefreshQuestPins then
             pcall(ZO_WorldMap_RefreshQuestPins)
         end
         zo_callLater(function()
-            pins.isWakingUp = nil
             if pins.RefreshQuests then
-                pins.RefreshQuests()
+                pins.RefreshQuests(true)
             end
         end, 200)
     end
@@ -990,17 +992,19 @@ if WORLD_MAP_SCENE then
     end)
 end
 
-EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_KeepAttack", EVENT_KEEP_UNDER_ATTACK_CHANGED, function()
-    if pins.RefreshCyrodiil then pins.RefreshCyrodiil() end
-end)
+local function OnCyrodiilStateChanged()
+    EVENT_MANAGER:UnregisterForUpdate("NecroCat_Minimap_CyroDebounce")
+    EVENT_MANAGER:RegisterForUpdate("NecroCat_Minimap_CyroDebounce", 200, function()
+        EVENT_MANAGER:UnregisterForUpdate("NecroCat_Minimap_CyroDebounce")
+        if pins.RefreshCyrodiil then
+            pins.RefreshCyrodiil()
+        end
+    end)
+end
 
-EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_KeepOwner", EVENT_KEEP_ALLIANCE_OWNER_CHANGED, function()
-    if pins.RefreshCyrodiil then pins.RefreshCyrodiil() end
-end)
-
-EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_ForwardCamps", EVENT_FORWARD_CAMPS_UPDATED, function()
-    if pins.RefreshCyrodiil then pins.RefreshCyrodiil() end
-end)
+EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_KeepAttack", EVENT_KEEP_UNDER_ATTACK_CHANGED, OnCyrodiilStateChanged)
+EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_KeepOwner", EVENT_KEEP_ALLIANCE_OWNER_CHANGED, OnCyrodiilStateChanged)
+EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_ForwardCamps", EVENT_FORWARD_CAMPS_UPDATED, OnCyrodiilStateChanged)
 
 EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_BGObjectives", EVENT_OBJECTIVES_UPDATED, function()
     if pins.RefreshBattleground then pins.RefreshBattleground() end

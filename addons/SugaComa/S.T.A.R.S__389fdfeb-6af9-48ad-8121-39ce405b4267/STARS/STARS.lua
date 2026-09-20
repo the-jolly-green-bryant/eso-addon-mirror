@@ -1,7 +1,7 @@
-STARS = STARS or {}
+﻿STARS = STARS or {}
 local STARS = STARS
 STARS.name = "STARS"
-STARS.version = "0.6.17"
+STARS.version = "0.6.19"
 STARS.sv = nil
 
 STARS.UNDERWORLD_ABILITY_IDS = {
@@ -318,6 +318,7 @@ function STARS:ResetUnderworldStats()
 end
 
 function STARS:ResetPvpStats()
+    self:ResetKeepTracking()
     if not self.sv or not self.sv.stats then return end
     self.sv.stats.pvp = {
         kills = 0, deaths = 0, revives = 0,
@@ -913,7 +914,9 @@ function STARS:OnRewardTrackProgressGained(_, trackType)
 end
 
 function STARS:IsInCyrodiil()
-    return IsInCyrodiil and IsInCyrodiil() == true
+    return IsPlayerInAvAWorld and IsPlayerInAvAWorld() == true
+        and not (IsInImperialCity and IsInImperialCity())
+        and not (IsActiveWorldBattleground and IsActiveWorldBattleground())
 end
 
 function STARS:GetHomeCampaignId()
@@ -1222,12 +1225,42 @@ function STARS:OnCombatEvent(_, result, _, abilityName, _, _, sourceName, source
         end
     end
 
-    if not self:IsInCyrodiil() then return end
-    if result == ACTION_RESULT_KILLING_BLOW and playerSource and playerTarget then
-        self:IncrementPvp("kills", 1)
-    elseif (result == ACTION_RESULT_DIED or result == ACTION_RESULT_DIED_XP) and playerTarget and not playerSource then
-        self:IncrementPvp("deaths", 1)
-    end
+    -- Cyrodiil kills and deaths use their own authoritative events below.
+    -- COMBAT_UNIT_TYPE_PLAYER identifies the local player, not enemy players.
+end
+
+local function NormalizePvpDisplayName(displayName)
+    if type(displayName) ~= "string" then return "" end
+    return (displayName:gsub("^@", ""))
+end
+
+function STARS:OnPvpKillFeedDeath(_, killLocation, killerDisplayName, killerCharacterName, killerAlliance, killerRank,
+                                   victimDisplayName, victimCharacterName, victimAlliance, victimRank, isKillLocation)
+    if not self:IsEnabled() or not self:IsInCyrodiil() then return end
+    local playerName = NormalizePvpDisplayName(GetUnitDisplayName("player"))
+    local killerName = NormalizePvpDisplayName(killerDisplayName)
+    local victimName = NormalizePvpDisplayName(victimDisplayName)
+    if playerName == "" or killerName ~= playerName or victimName == "" or victimName == playerName then return end
+
+    -- Match the local/location pairing used by ESO chat and the reference
+    -- GroupKillFeed addon. Separate kills of the same victim remain countable.
+    self.pvpKillRecurrenceTracker = self.pvpKillRecurrenceTracker or ZO_RecurrenceTracker:New(5000, 5000)
+    local tracker = self.pvpKillRecurrenceTracker
+    local suffix = string.format("%s___%s", killerName, victimName)
+    local sourceKey = (isKillLocation and "B" or "L") .. suffix
+    local otherKey = (isKillLocation and "L" or "B") .. suffix
+    if tracker:RemoveValue(otherKey) ~= nil then return end
+    tracker:AddValue(sourceKey)
+
+    self:IncrementPvp("kills", 1)
+    Debug("Cyrodiil player kill credited")
+end
+
+function STARS:OnPlayerDead()
+    if not self:IsEnabled() or not self:IsInCyrodiil() or self.cyrodiilDeathRecorded then return end
+    self.cyrodiilDeathRecorded = true
+    self:IncrementPvp("deaths", 1)
+    Debug("Cyrodiil player death recorded")
 end
 
 function STARS:OnResurrectResult(_, _, reason)
@@ -1235,7 +1268,177 @@ function STARS:OnResurrectResult(_, _, reason)
     if reason == RESURRECT_RESULT_SUCCESS then self:IncrementPvp("revives", 1) end
 end
 
-function STARS:OnCurrencyUpdate(_, currencyType, currencyLocation, newAmount, oldAmount, reason)
+-- Keep totals need an observed local conflict, not just an AP tick. Runtime
+-- evidence is intentionally discarded across loading, campaigns and toggles.
+local KEEP_SETTLE_MS, KEEP_REWARD_GRACE_MS = 2000, 30000
+
+local function KeepLocationKey(name)
+    if type(name) ~= "string" or name == "" then return nil end
+    return zo_strformat("<<1>>", name):lower():match("^%s*(.-)%s*$")
+end
+
+function STARS:IsInCyrodiilOverworld()
+    return self:IsInCyrodiil() and IsInCyrodiil() == true
+end
+
+function STARS:ResetKeepTracking()
+    self.keepStates, self.keepLocationIds = {}, {}
+    self.keepCampaignId = nil
+    if self.keepTrackingSuspended or not self:IsEnabled() or not self:IsInCyrodiilOverworld() then return end
+    self.keepCampaignId = GetCurrentCampaignId()
+    for index = 1, GetNumKeeps() do
+        local keepId, context = GetKeepKeysByIndex(index)
+        if IsLocalBattlegroundContext(context) then
+            -- Include resources/towns in the name lookup so that a more
+            -- specific non-keep location cannot fall back to its parent keep.
+            local key = KeepLocationKey(GetKeepName(keepId))
+            if key then
+                local previous = self.keepLocationIds[key]
+                if previous ~= nil and previous ~= keepId then
+                    self.keepLocationIds[key] = false
+                else
+                    self.keepLocationIds[key] = keepId
+                end
+            end
+            if GetKeepType(keepId) == KEEPTYPE_KEEP then
+                self.keepStates[keepId] = {
+                    underAttack = GetKeepUnderAttack(keepId, BGQUERY_LOCAL),
+                    owner = GetKeepAlliance(keepId, BGQUERY_LOCAL),
+                }
+            end
+        end
+    end
+end
+
+function STARS:HasKeepTrackingContext()
+    if self.keepTrackingSuspended or not self:IsEnabled() or not self:IsInCyrodiilOverworld() then
+        self.keepStates, self.keepLocationIds, self.keepCampaignId = {}, {}, nil
+        return false
+    end
+    if self.keepCampaignId ~= GetCurrentCampaignId() then
+        self:ResetKeepTracking()
+    end
+    return self.keepCampaignId ~= nil and self.keepCampaignId ~= 0
+end
+
+function STARS:GetPlayerLocatedKeepId()
+    local location = self.keepLocationIds[KeepLocationKey(GetPlayerLocationName()) or ""]
+    local subzone = self.keepLocationIds[KeepLocationKey(GetPlayerActiveSubzoneName()) or ""]
+    if location == false or subzone == false then return nil end
+    if location and subzone and location ~= subzone then return nil end
+    local keepId = subzone or location
+    if keepId and GetKeepType(keepId) == KEEPTYPE_KEEP then return keepId end
+end
+
+function STARS:SampleKeepParticipation()
+    if not self:HasKeepTrackingContext() or not IsUnitInCombat("player") then return end
+    local keepId = self:GetPlayerLocatedKeepId()
+    local state = keepId and self.keepStates[keepId]
+    local conflict = state and state.conflict
+    if conflict and not conflict.endedMs and state.underAttack
+        and GetKeepUnderAttack(keepId, BGQUERY_LOCAL) then
+        if not conflict.participated then
+            conflict.participated = true
+            Debug("Keep combat observed: " .. tostring(keepId))
+        end
+    end
+end
+
+function STARS:TryRecordKeepConflict(keepId, state)
+    local conflict = state.conflict
+    if not conflict or not conflict.endedMs or conflict.counted or conflict.invalid then return end
+    local elapsed = FrameMs() - conflict.endedMs
+    if elapsed > KEEP_REWARD_GRACE_MS then state.conflict = nil; return end
+    if elapsed < KEEP_SETTLE_MS or not conflict.participated then return end
+    if conflict.alliance ~= GetUnitAlliance("player") or state.underAttack
+        or GetKeepUnderAttack(keepId, BGQUERY_LOCAL)
+        or state.owner ~= conflict.alliance
+        or GetKeepAlliance(keepId, BGQUERY_LOCAL) ~= state.owner then return end
+
+    local key
+    if conflict.captured and conflict.offensiveReward then
+        key = "keepsTaken"
+    elseif not conflict.ownerChanged and conflict.initialOwner == conflict.alliance
+        and conflict.defensiveReward then
+        key = "keepsDefended"
+    end
+    if key then
+        conflict.counted = true
+        self:IncrementPvpLifetime(key, 1)
+        self:IncrementCampaign(key, 1)
+        Debug("Keep conflict credited: " .. tostring(keepId) .. " " .. key)
+    end
+end
+
+function STARS:OnKeepUnderAttackChanged(_, keepId, context, underAttack)
+    if not IsLocalBattlegroundContext(context) or not self:HasKeepTrackingContext() then return end
+    local state = self.keepStates[keepId]
+    if not state or state.underAttack == underAttack then return end
+    state.underAttack = underAttack
+    if underAttack then
+        local owner = GetKeepAlliance(keepId, BGQUERY_LOCAL)
+        local alliance = GetUnitAlliance("player")
+        local previous = state.conflict
+        -- A delayed reward from a just-ended fight cannot be attributed safely
+        -- to an immediately restarted fight. Skip rewards during that overlap.
+        local rewardNotBefore = previous and previous.endedMs
+            and previous.endedMs + KEEP_REWARD_GRACE_MS or 0
+        state.owner = owner
+        state.conflict = {
+            initialOwner = owner, alliance = alliance, rewardNotBefore = rewardNotBefore,
+            invalid = not owner or owner == 0 or not alliance or alliance == 0,
+        }
+        Debug("Keep attack began: " .. tostring(keepId))
+        self:SampleKeepParticipation()
+    elseif state.conflict then
+        state.conflict.endedMs = FrameMs()
+        Debug("Keep attack ended: " .. tostring(keepId) .. "; local combat="
+            .. tostring(state.conflict.participated == true) .. "; location="
+            .. tostring(GetPlayerLocationName()) .. "; subzone=" .. tostring(GetPlayerActiveSubzoneName()))
+    end
+end
+
+function STARS:OnKeepOwnerChanged(_, keepId, context, owner, oldOwner)
+    if not IsLocalBattlegroundContext(context) or not self:HasKeepTrackingContext() then return end
+    local state = self.keepStates[keepId]
+    if not state or state.owner == owner then return end
+    local conflict = state.conflict
+    if conflict and not conflict.counted then
+        if state.owner ~= oldOwner then conflict.invalid = true end
+        conflict.ownerChanged = true
+        if oldOwner ~= conflict.alliance and owner == conflict.alliance then
+            conflict.captured = true
+        elseif conflict.captured and owner ~= conflict.alliance then
+            conflict.invalid = true
+        end
+    end
+    state.owner = owner
+end
+
+function STARS:OnKeepReward(reason, keepId)
+    if not self:HasKeepTrackingContext() or not keepId then return end
+    local state = self.keepStates[keepId]
+    local conflict = state and state.conflict
+    if not conflict or conflict.counted or conflict.invalid
+        or FrameMs() < conflict.rewardNotBefore then return end
+    if conflict.endedMs and FrameMs() - conflict.endedMs > KEEP_REWARD_GRACE_MS then return end
+    if reason == CURRENCY_CHANGE_REASON_OFFENSIVE_KEEP_REWARD then
+        conflict.offensiveReward = true
+    elseif reason == CURRENCY_CHANGE_REASON_DEFENSIVE_KEEP_REWARD then
+        conflict.defensiveReward = true
+    end
+    self:TryRecordKeepConflict(keepId, state)
+end
+
+function STARS:UpdateKeepTracking()
+    if not self:HasKeepTrackingContext() then return end
+    self:SampleKeepParticipation()
+    for keepId, state in pairs(self.keepStates) do
+        self:TryRecordKeepConflict(keepId, state)
+    end
+end
+
+function STARS:OnCurrencyUpdate(_, currencyType, currencyLocation, newAmount, oldAmount, reason, reasonSupplementaryInfo)
     if not self:IsEnabled() or currencyType ~= CURT_ALLIANCE_POINTS then return end
     if not self:IsInCyrodiil() then return end
     if reason == CURRENCY_CHANGE_REASON_PLAYER_INIT then return end
@@ -1245,20 +1448,7 @@ function STARS:OnCurrencyUpdate(_, currencyType, currencyLocation, newAmount, ol
     self:IncrementPvpLifetime("apEarned", delta)
     self:IncrementCampaign("apEarned", delta)
 
-    -- The currency reason is the same authoritative signal used for the
-    -- offensive/defensive keep reward announcement. Unlike the global keep
-    -- state events, it is only delivered when this player receives the reward.
-    if CURRENCY_CHANGE_REASON_OFFENSIVE_KEEP_REWARD
-        and reason == CURRENCY_CHANGE_REASON_OFFENSIVE_KEEP_REWARD then
-        self:IncrementPvpLifetime("keepsTaken", 1)
-        self:IncrementCampaign("keepsTaken", 1)
-        Debug("Offensive keep reward credited")
-    elseif CURRENCY_CHANGE_REASON_DEFENSIVE_KEEP_REWARD
-        and reason == CURRENCY_CHANGE_REASON_DEFENSIVE_KEEP_REWARD then
-        self:IncrementPvpLifetime("keepsDefended", 1)
-        self:IncrementCampaign("keepsDefended", 1)
-        Debug("Defensive keep reward credited")
-    end
+    self:OnKeepReward(reason, tonumber(reasonSupplementaryInfo))
 end
 
 function STARS:GetPrestigeTier()
@@ -1749,11 +1939,20 @@ function STARS:InitSettingsMenu()
 end
 
 local TRACKING_EVENTS = {
+    { "STARS_KeepAttack", EVENT_KEEP_UNDER_ATTACK_CHANGED },
+    { "STARS_KeepOwner", EVENT_KEEP_ALLIANCE_OWNER_CHANGED },
+    { "STARS_KeepCombat", EVENT_PLAYER_COMBAT_STATE },
+    { "STARS_KeepSubzone", EVENT_CURRENT_SUBZONE_LIST_CHANGED },
+    { "STARS_KeepInitialized", EVENT_KEEPS_INITIALIZED },
+    { "STARS_KeepCampaign", EVENT_CURRENT_CAMPAIGN_CHANGED },
+    { "STARS_KeepDeactivated", EVENT_PLAYER_DEACTIVATED },
     { "STARS_Experience", EVENT_EXPERIENCE_GAIN },
     { "STARS_PendingExperience", EVENT_PENDING_EXPERIENCE_REWARD_CACHED },
     { "STARS_CombatSource", EVENT_COMBAT_EVENT },
     { "STARS_CombatPet", EVENT_COMBAT_EVENT },
-    { "STARS_CombatTarget", EVENT_COMBAT_EVENT },
+    { "STARS_PvpKillFeed", EVENT_PVP_KILL_FEED_DEATH },
+    { "STARS_PlayerDead", EVENT_PLAYER_DEAD },
+    { "STARS_PlayerAlive", EVENT_PLAYER_ALIVE },
     { "STARS_Loot", EVENT_LOOT_RECEIVED },
     { "STARS_Achievement", EVENT_ACHIEVEMENT_AWARDED },
     { "STARS_Pickpocket", EVENT_JUSTICE_GOLD_PICKPOCKETED },
@@ -1772,6 +1971,8 @@ function STARS:UnregisterTrackingEvents()
     for _, registration in ipairs(TRACKING_EVENTS) do
         EVENT_MANAGER:UnregisterForEvent(registration[1], registration[2])
     end
+    EVENT_MANAGER:UnregisterForUpdate("STARS_KeepTracking")
+    self.keepStates, self.keepLocationIds, self.keepCampaignId = {}, {}, nil
     self.trackingEventsRegistered = false
 end
 
@@ -1785,8 +1986,10 @@ function STARS:RegisterTrackingEvents()
     EVENT_MANAGER:AddFilterForEvent("STARS_CombatSource", EVENT_COMBAT_EVENT, REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
     EVENT_MANAGER:RegisterForEvent("STARS_CombatPet", EVENT_COMBAT_EVENT, function(...) self:OnCombatEvent(...) end)
     EVENT_MANAGER:AddFilterForEvent("STARS_CombatPet", EVENT_COMBAT_EVENT, REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER_PET)
-    EVENT_MANAGER:RegisterForEvent("STARS_CombatTarget", EVENT_COMBAT_EVENT, function(...) self:OnCombatEvent(...) end)
-    EVENT_MANAGER:AddFilterForEvent("STARS_CombatTarget", EVENT_COMBAT_EVENT, REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
+    self.cyrodiilDeathRecorded = IsUnitDead("player")
+    EVENT_MANAGER:RegisterForEvent("STARS_PvpKillFeed", EVENT_PVP_KILL_FEED_DEATH, function(...) self:OnPvpKillFeedDeath(...) end)
+    EVENT_MANAGER:RegisterForEvent("STARS_PlayerDead", EVENT_PLAYER_DEAD, function() self:OnPlayerDead() end)
+    EVENT_MANAGER:RegisterForEvent("STARS_PlayerAlive", EVENT_PLAYER_ALIVE, function() self.cyrodiilDeathRecorded = false end)
 
     EVENT_MANAGER:RegisterForEvent("STARS_Loot", EVENT_LOOT_RECEIVED, function(...) self:OnLootReceived(...) end)
     EVENT_MANAGER:RegisterForEvent("STARS_Achievement", EVENT_ACHIEVEMENT_AWARDED, function() self:InvalidateChronicleCache() end)
@@ -1800,6 +2003,15 @@ function STARS:RegisterTrackingEvents()
     EVENT_MANAGER:RegisterForEvent("STARS_RewardSettings", EVENT_REWARD_TRACK_SETTINGS_UPDATE_RECEIVED, function() self:OnVeterancyUpdated() end)
     EVENT_MANAGER:RegisterForEvent("STARS_Holidays", EVENT_HOLIDAYS_CHANGED, function() self:OnVeterancyUpdated() end)
     EVENT_MANAGER:RegisterForEvent("STARS_Battleground", EVENT_BATTLEGROUND_STATE_CHANGED, function(...) self:OnBattlegroundStateChanged(...) end)
+    EVENT_MANAGER:RegisterForEvent("STARS_KeepAttack", EVENT_KEEP_UNDER_ATTACK_CHANGED, function(...) self:OnKeepUnderAttackChanged(...) end)
+    EVENT_MANAGER:RegisterForEvent("STARS_KeepOwner", EVENT_KEEP_ALLIANCE_OWNER_CHANGED, function(...) self:OnKeepOwnerChanged(...) end)
+    EVENT_MANAGER:RegisterForEvent("STARS_KeepCombat", EVENT_PLAYER_COMBAT_STATE, function() self:SampleKeepParticipation() end)
+    EVENT_MANAGER:RegisterForEvent("STARS_KeepSubzone", EVENT_CURRENT_SUBZONE_LIST_CHANGED, function() self:SampleKeepParticipation() end)
+    EVENT_MANAGER:RegisterForEvent("STARS_KeepInitialized", EVENT_KEEPS_INITIALIZED, function() self:ResetKeepTracking() end)
+    EVENT_MANAGER:RegisterForEvent("STARS_KeepCampaign", EVENT_CURRENT_CAMPAIGN_CHANGED, function() self:ResetKeepTracking() end)
+    EVENT_MANAGER:RegisterForEvent("STARS_KeepDeactivated", EVENT_PLAYER_DEACTIVATED, function() self.keepTrackingSuspended = true; self.keepStates, self.keepLocationIds, self.keepCampaignId = {}, {}, nil end)
+    self:ResetKeepTracking()
+    EVENT_MANAGER:RegisterForUpdate("STARS_KeepTracking", 1000, function() self:UpdateKeepTracking() end)
     self.trackingEventsRegistered = true
 end
 
@@ -1810,6 +2022,10 @@ end
 
 function STARS:RegisterEvents()
     EVENT_MANAGER:RegisterForEvent("STARS_PlayerActivated", EVENT_PLAYER_ACTIVATED, function()
+        self.keepTrackingSuspended = false
+        self:ResetKeepTracking()
+        -- Loading/reloading while dead is not a new death.
+        self.cyrodiilDeathRecorded = IsUnitDead("player")
         self:EnsureCampaign()
         self:EnsureVeterancySeason()
     end)

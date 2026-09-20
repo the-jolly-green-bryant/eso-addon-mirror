@@ -152,7 +152,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Roomba - Guildbank Stacker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/Roomba---Guildbank-Stacker__402) | Masteroshi430 | PC / Mac | 2026.08.15 |
 | [Root State](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Solaris-Lorica/Root-State__2593) | Solaris Lorica | PC / Mac | 0.1 |
 | [RootBreak](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Solaris-Lorica/RootBreak__2595) | Solaris Lorica | PC / Mac | 1 |
-| [Rose Guilds - Guildhalls](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kay.Cee/Rose-Guilds---Guildhalls__3345) | Kay.Cee | PC / Mac | 07.14.26 |
+| [Rose Guilds - Guildhalls](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kay.Cee/Rose-Guilds---Guildhalls__3345) | Kay.Cee | PC / Mac | 09.19.26 |
 | [Rotation Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/RipleyZepher/Rotation-Helper__183094f4-334c-48ea-abb9-14add7fbbbd7) | RipleyZepher | Console | — |
 | [Rotation Trainer v1](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/satuve/Rotation-Trainer-v1__dc853c4f-c4b9-4948-9774-c0093a25d836) | satuve | Console | — |
 | [Royal Guildhalls](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Klainor/Royal-Guildhalls__2494) | Klainor | PC / Mac | 1.1 |
@@ -171,3 +171,4 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Rulebased Inventory](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/TaxTalis/Rulebased-Inventory__2136) | TaxTalis | PC / Mac | 2.32 |
 | [RunesVoice](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Nols1000/RunesVoice__2173) | Nols1000 | PC / Mac | 0.1.0 |
 | [Rush of Agony Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/codeWarrior82/Rush-of-Agony-Tracker__03e3b721-0ccb-4e27-9f1c-ae0e6bf96be5) | codeWarrior82 | Console | — |
+| [RyticTankTools](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rytic/RyticTankTools__4854) | Rytic | PC / Mac | 2.1.0 |

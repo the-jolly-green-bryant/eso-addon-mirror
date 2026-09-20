@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/thisbeaurielle/TraitCraft__4207",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "thisbeaurielle",
   "canonical_id": "esoui:4207",
   "category_id": "40",
@@ -29,7 +30,7 @@
     "TraitCraft"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4207/",
-  "fingerprint": "048ff127fe9296dbda193c8c47a0251bb569f4d3db45f9ded95585bbdf9663fa",
+  "fingerprint": "7f4f71ff4ca7f756c1e8b5b91c684335e42d0578e9ed0422d0a232690f03e0d4",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw14487.png",
     "https://cdn-eso.mmoui.com/preview/pvw14486.png",
@@ -43,11 +44,11 @@
   "source_id": "4207",
   "source_url": "https://www.esoui.com/downloads/info4207-TraitCraft.html",
   "stats": {
-    "downloads": 1998,
+    "downloads": 2088,
     "favorites": 5,
-    "monthly_downloads": 48
+    "monthly_downloads": 45
   },
   "title": "TraitCraft",
-  "updated_at": 1776136890000,
-  "version": "2.4.2"
+  "updated_at": 1789857243000,
+  "version": "2.4.3"
 }

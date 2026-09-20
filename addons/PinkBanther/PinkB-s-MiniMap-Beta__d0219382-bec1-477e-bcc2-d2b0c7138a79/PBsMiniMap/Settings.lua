@@ -18,7 +18,7 @@ function addon:InitSettings()
 	settings.author = self.author
 	settings.version = self.version
 
-	-- Credit to the add-on this one is based on, kept out of the author field so that stays
+	-- Credit to the add-on that inspired this one, kept out of the author field so that stays
 	-- the actual author of this version.
 	local creditSetting =
 		settings:AddSetting(
@@ -450,6 +450,14 @@ function addon:InitSettings()
 		buttonText = GetString(SI_PBSMINIMAP_PIN_DIAGNOSTIC),
 		tooltip = GetString(SI_PBSMINIMAP_PIN_DIAGNOSTIC_TOOLTIP),
 		clickHandler = function() self:PrintLitePlayerPinDiagnostic() end,
+	})
+
+	settings:AddSetting({
+		type = LibHarvensAddonSettings.ST_BUTTON,
+		label = GetString(SI_PBSMINIMAP_MAP_OPEN_TRACE),
+		buttonText = GetString(SI_PBSMINIMAP_MAP_OPEN_TRACE),
+		tooltip = GetString(SI_PBSMINIMAP_MAP_OPEN_TRACE_TOOLTIP),
+		clickHandler = function() self:PrintMapOpenTrace() end,
 	})
 
 	-- Continuous verbose logging remains locked; the button above reports only the last HUD sample.
