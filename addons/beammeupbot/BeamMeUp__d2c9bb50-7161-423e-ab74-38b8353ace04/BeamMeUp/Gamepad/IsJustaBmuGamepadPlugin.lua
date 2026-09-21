@@ -73,13 +73,11 @@ function addonClass:Init()
     init_NOTIFICATIONTYPES()
     
     self:RegisterEvents()
-    if not BMU.savedVarsAcc.preferPerformance then
-      self.provider = self.AutoUnlockNotificationProvider:New(GAMEPAD_NOTIFICATIONS)
-      local provider = self.provider
+    self.provider = self.AutoUnlockNotificationProvider:New(GAMEPAD_NOTIFICATIONS)
+    local provider = self.provider
     
-      table.insert(GAMEPAD_NOTIFICATIONS.providers, provider)
-      GAMEPAD_NOTIFICATIONS:RefreshNotificationList()
-    end
+    table.insert(GAMEPAD_NOTIFICATIONS.providers, provider)
+    GAMEPAD_NOTIFICATIONS:RefreshNotificationList()
 end
 
 function addonClass:OnDeferredInitialize()

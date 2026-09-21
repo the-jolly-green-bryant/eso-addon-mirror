@@ -1,5 +1,11 @@
 local function report(message) if d then d('戦卓：'..message) end end
-function PBWT.Open(mode,difficulty)
+function PBWT.Open(mode,difficulty,variant)
+    if mode=='' then mode='menu' end
+    if mode=='menu' then
+        if PBWT.match and PBWT.match:Busy() then mode='online'
+        elseif PBWT.modeMenu then SCENE_MANAGER:Push(PBWT.ModeMenu.SCENE); return
+        else mode='solo' end
+    end
     if PBWT.Config.AI.DIFFICULTIES[mode] then difficulty=mode; mode='solo' end
     mode=(mode=='local' or mode=='online' or mode=='tutorial') and mode or 'solo'
     if PBWT.match and PBWT.match:Busy() then mode='online'; difficulty=nil end
@@ -8,7 +14,7 @@ function PBWT.Open(mode,difficulty)
     if PBWT.ui and PBWT.ui.transition.phase then
         report('画面切替後に /pbwt online で対戦画面を開けます'); return
     end
-    if not PBWT.ui then PBWT.ui=PBWT.UI.New(mode,difficulty) else PBWT.ui:SetMode(mode,difficulty) end
+    if not PBWT.ui then PBWT.ui=PBWT.UI.New(mode,difficulty,variant) else PBWT.ui:SetMode(mode,difficulty,variant) end
     if mode=='online' then PBWT.ui.network=PBWT.match; PBWT.ui.state=PBWT.match.state end
     PBWT.ui:Show()
 end
@@ -42,7 +48,7 @@ function PBWT.Challenge(peer)
     -- Distinct per invite, including after /reloadui; not a security token.
     PBWT.nonce=((PBWT.nonce or GetTimeStamp())+1)%4294967295
     local session=(GetTimeStamp()*1000+GetFrameTimeMilliseconds()+PBWT.nonce)%4294967295+1
-    ok,why=PBWT.match:Challenge(peer,session)
+    ok,why=PBWT.match:Challenge(peer,session,PBWT.ui and PBWT.ui.variant or 'light')
     if ok then PBWT.Open('online'); PBWT.WatchNetwork() else report(why) end
 end
 function PBWT.InitializeNetwork()
@@ -54,8 +60,11 @@ end
 local function OnLoaded(_,name)
     if name~='PBsWarTable' then return end
     EVENT_MANAGER:UnregisterForEvent('PBsWarTable',EVENT_ADD_ON_LOADED)
-    PBWT.Records.Initialize(); PBWT.Assets.Initialize(); PBWT.InitializeNetwork(); PBWT.HookMenu()
+    PBWT.Records.Initialize(); PBWT.Assets.Initialize(); PBWT.InitializeNetwork()
+    if not PBWT.modeMenu and PBsWarTableModeMenu then PBWT.modeMenu=PBWT.ModeMenu:New(PBsWarTableModeMenu) end
+    PBWT.HookMenu()
     SLASH_COMMANDS['/pbwt']=function(argument)
+        argument=argument and argument:match('^%s*(.-)%s*$') or ''
         if argument=='sync' then PBWT.match:StartSync()
         elseif argument=='debug' then report(PBWT.transport.error or ('ID508 / '..PBWT.match.phase..' / 行動 '..PBWT.match.seq))
         else PBWT.Open(argument) end

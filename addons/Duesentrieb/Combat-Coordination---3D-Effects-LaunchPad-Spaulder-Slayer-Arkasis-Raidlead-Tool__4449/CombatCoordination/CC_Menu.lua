@@ -263,15 +263,12 @@ function CC.CreateModuleSettings(self, menuName, iconPath)
     -- CAST PROTECTION CHECKBOX
     if self.Default.enableSkillBlocker ~= nil then
         table.insert(ModuleControls, { type = "header", name = CC.ColorString("PREVENT OVERLAPPING CASTS / BUFFS", "tier3") })
-        if not LibSkillBlocker then
-            table.insert(ModuleControls, { type = "description", text = CC.ColorString("Status:", "tier1") .. CC.ColorString(" LibSkillBlocker missing. Feature disabled.", "RD"), width = "full", })
-        else
-            table.insert(ModuleControls, { type = "description", text = CC.ColorString("Override:", "tier2") .. " Casting 3x within 1.5 second bypasses this protocol.", width = "full", })
-        end
+        table.insert(ModuleControls, { type = "description", text = CC.ColorString("Override:", "tier2") .. " Casting 3x within 1.5 second bypasses this protocol.", width = "full", })
+
         table.insert(ModuleControls, {
             type = "checkbox",
             name = "Enable Skill Blocker",
-            tooltip = "Blocks you from casting [" .. menuName .. "] while a previous cast is still active.\n\nThis also applies to group member casts received via LibGroupBroadcast (LGB).\n\nRequires: LibSkillBlocker",
+            tooltip = "Blocks you from casting [" .. menuName .. "] while a previous cast is still active.\n\nThis also applies to group member casts received via LibGroupBroadcast (LGB).",
             warning = "For educational purposes and testing only.",
             getFunc = function() return self.SV.enableSkillBlocker end,
             setFunc = function(value)
@@ -279,7 +276,7 @@ function CC.CreateModuleSettings(self, menuName, iconPath)
                 CC.SkillBlocker:UpdateEquippedSkills()
             end,
             default = self.Default.enableSkillBlocker,
-            disabled = function() return (not CC.SV.enableAddon or not LibSkillBlocker) end,
+            disabled = function() return not CC.SV.enableAddon end,
         })
     end
 
@@ -296,7 +293,6 @@ end
 function CC.CreateSettings()
     if not LAM2 then return end
 
-    --"/icons/logo_cc.dds"
     local panelIcon = string.format("|t%d:%d:%s/icons/logo_cc.dds|t", CC.SIZE_ICON_LAM_PANEL, CC.SIZE_ICON_LAM_PANEL, CC.NAME)
     local settingsIcon = string.format("|t%d:%d:esoui/art/icons/ability_scrying_05a.dds|t", CC.SIZE_ICON_LAM_SM, CC.SIZE_ICON_LAM_SM)
     local raidleadIcon = string.format("|t%d:%d:/esoui/art/icons/ability_dragonknight_032.dds|t", CC.SIZE_ICON_LAM_SM, CC.SIZE_ICON_LAM_SM)
@@ -582,7 +578,7 @@ function CC.CreateSettings()
                 },
                 {
                     type = "button",
-                    name = "SHOW STATUS",
+                    name = "SHOW ICON",
                     func = function()
                         CC.DisplayStatus:Show()
                         CC.DisplayStatus:PlayAnimation(2.0)

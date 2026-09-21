@@ -14,7 +14,8 @@ function F.Move(s,p)
     local C=PBWT.Config
     return C.PIECES[p.kind].move+(p.kind=='scout' and F.Is(s,p.owner,'dominion') and C.FACTION_BONUSES.DOMINION_SCOUT_MOVE or 0)
 end
-function F.Defense(s,p)
+function F.Defense(s,p,siege)
+    if siege then return 0 end -- 攻城は旗に由来する防御補正をすべて無効にする
     return p.kind=='soldier' and F.Is(s,p.owner,'covenant') and PBWT.Engine.Flag(s,p.x,p.y)~=nil and PBWT.Config.FACTION_BONUSES.COVENANT_FLAG_DEFENSE or 0
 end
 function F.Attack(s,p)

@@ -3,9 +3,10 @@ local E,W,N=PBWT.Engine,PBWT.Wire,PBWT.Config.NETWORK
 local K=W.K
 local M={}; M.__index=M; PBWT.Match=M
 function M.New(options)
-    return setmetatable({o=options,phase='idle',state=E.New(options.requireFactions),seq=0,log={}},M)
+    return setmetatable({o=options,variant=options.variant or 'light',
+        phase='idle',state=E.New(options.requireFactions,options.variant),seq=0,log={}},M)
 end
-function M:InitialState() return E.New(self.o.requireFactions) end
+function M:InitialState() return E.New(self.o.requireFactions,self.variant) end
 function M:Notify(message)
     if message then self.message=message end
     if self.o.changed then self.o.changed(self) end
@@ -25,10 +26,13 @@ function M:Reset(peer,session,seat,phase)
     self.lastHeard,self.lastPing,self.started=self.o.now(),self.o.now(),self.o.now()
     self.terminalAt=nil; self.syncEpoch=0; self.completedSyncEpoch=0
 end
-function M:Challenge(peer,session)
+function M:Challenge(peer,session,variant)
     if self:Busy() then return false,'すでに対局または申請中です' end
     if not W.Integer(session,4294967295) or session==0 then return false,'対局IDが不正です' end
-    self:Reset(peer,session,1,'inviting'); self:Reliable(K.INVITE)
+    self.variant=PBWT.Config.VARIANTS[variant] and variant or 'light'
+    self:Reset(peer,session,1,'inviting')
+    -- The challenger's board travels with the invite so both sides start the same game.
+    self:Reliable(K.INVITE,0,PBWT.Config.VARIANTS[self.variant].id)
     self:Notify('対戦申請中：'..peer); return true
 end
 function M:Accept()
@@ -118,7 +122,9 @@ function M:Receive(peer,p)
             -- Refuse without replacing the current peer/session, including crossed invites.
             self.o.send(peer,{kind=K.DECLINE,session=p.session,seq=0,cmd=0,hash=0}); return
         end
-        self:Reset(peer,p.session,2,'invited'); self:Notify(peer..' から対戦申請：決定で承諾、戻るで拒否'); return
+        self.variant=PBWT.Config.VariantKey(p.cmd)
+        self:Reset(peer,p.session,2,'invited')
+        self:Notify(peer..' から対戦申請（'..PBWT.Config.VARIANTS[self.variant].name..'）：決定で承諾、戻るで拒否'); return
     end
     if peer~=self.peer or p.session~=self.session or self.phase=='idle' or self.phase=='closed' then return end
     self.lastHeard=self.o.now()

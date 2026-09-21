@@ -2,7 +2,7 @@
 ESOBuildTracker = {
     name = "ESOBuildTracker",
     title = "ESO Build Tracker",
-    version = "0.2.1",
+    version = "0.3.0",
     schemaVersion = 1,
     referenceAPIVersion = 101050,
     maxSnapshots = 5,

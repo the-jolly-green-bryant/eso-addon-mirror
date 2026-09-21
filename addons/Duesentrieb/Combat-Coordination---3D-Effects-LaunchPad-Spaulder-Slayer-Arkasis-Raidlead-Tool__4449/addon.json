@@ -54,14 +54,15 @@
     "CombatCoordination"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4449/",
-  "fingerprint": "29f86a0509029dc8413695b3777ae35cf0894e56213ea55dc9232fb5589daf38",
+  "fingerprint": "01ab09c141b18f956021752a917ae7494d5937616ac7bd3fe02894b95ec78bd2",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16950.png",
     "https://cdn-eso.mmoui.com/preview/pvw16949.png",
     "https://cdn-eso.mmoui.com/preview/pvw16951.png",
     "https://cdn-eso.mmoui.com/preview/pvw16953.png",
     "https://cdn-eso.mmoui.com/preview/pvw17000.png",
-    "https://cdn-eso.mmoui.com/preview/pvw17361.png"
+    "https://cdn-eso.mmoui.com/preview/pvw17361.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17452.png"
   ],
   "platform": "pc",
   "published": true,
@@ -69,11 +70,11 @@
   "source_id": "4449",
   "source_url": "https://www.esoui.com/downloads/info4449-CombatCoordination-3DEffectsLaunchPadSpaulderSlayerArkasisRaidleadTools.html",
   "stats": {
-    "downloads": 878,
+    "downloads": 928,
     "favorites": 7,
-    "monthly_downloads": 292
+    "monthly_downloads": 320
   },
   "title": "Combat Coordination - 3D Effects, LaunchPad, Spaulder, Slayer, Arkasis, Raidlead Tools",
-  "updated_at": 1789723202000,
-  "version": "20260918-0009"
+  "updated_at": 1789913624000,
+  "version": "20260920-0010"
 }

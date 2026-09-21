@@ -45,6 +45,9 @@ local itemTypeChildrenSpecializedTypes = {
 for i = 1, EQUIPMENT_FILTER_TYPE_MAX_VALUE do
 	-- Equipment (armor and weapon) custom types
 	itemTypeChildrenSpecializedTypes["Equipment" .. i] = { "Intricate" .. i, "Research" .. i, "Companion" .. i }
+	if LibCharacterKnowledge then
+		table.insert(itemTypeChildrenSpecializedTypes["Equipment" .. i], 3, "ResearchOthers" .. i)
+	end
 end
 
 -- and for specializedItemTypes that has children ids

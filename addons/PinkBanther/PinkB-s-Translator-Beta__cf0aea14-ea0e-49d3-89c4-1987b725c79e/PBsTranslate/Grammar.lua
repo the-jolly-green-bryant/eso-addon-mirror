@@ -194,7 +194,7 @@ local CONJUNCTIONS = {
 	though = { kind = "sub", form = {}, after = "が、" },
 	["if"] = { kind = "sub", form = { conditional = true }, before = "もし", after = "、" },
 	-- "unless you hurry" -> 急がなかったら
-	unless = { kind = "sub", form = { conditional = true, negative = true }, after = "、" },
+	unless = { kind = "sub", form = { conditional = true }, invertNegation = true, after = "、" },
 	when = { kind = "sub", form = { plain = true }, after = "とき、" },
 	["while"] = { kind = "sub", form = { plain = true }, after = "間に、" },
 	["until"] = { kind = "sub", form = { plain = true }, after = "まで、" },
@@ -254,7 +254,7 @@ local function Tag(tokens)
 			local matched = false
 			-- Multi-word entries: "world boss", "thank you", "pick up". The first word may carry
 			-- an inflection ("picked up").
-			local maxWords = T.maxPhraseWords or 1
+			local maxWords = math.min(T.maxPhraseWords or 1, count - i + 1)
 			for length = maxWords, 2, -1 do
 				if i + length - 1 <= count then
 					local words, ok = {}, true
@@ -274,8 +274,8 @@ local function Tag(tokens)
 							local _, firstInflection, firstBase = T.Lookup(words[1])
 							if firstInflection and firstBase then
 								words[1] = firstBase
-								local candidate = T.Exact(table.concat(words, " "))
-								if candidate and candidate.pos == "v" then
+								local candidate = T.As(T.Exact(table.concat(words, " ")), "v")
+								if candidate then
 									entry, inflection = candidate, firstInflection
 									base = table.concat(words, " ")
 								end
@@ -396,8 +396,10 @@ local function Disambiguate(items)
 		if not T.userLexicon[item.w] then
 			if item.w == "no" and following and following.kind == "word" then
 				item.entry = { pos = "det", ja = "", negative = true }
-			elseif item.w == "nobody" or item.w == "no one" or item.w == "nothing" then
-				item.entry = { pos = "pn", ja = item.w ~= "nothing" and "誰も" or "何も", negative = true }
+			elseif item.w == "nobody" or item.w == "no one" or item.w == "nothing" or item.w == "none" then
+				item.entry = { pos = "pn", ja = item.w == "none" and "どれも" or item.w ~= "nothing" and "誰も" or "何も", negative = true }
+			elseif item.w == "neither" and following and T.As(following.entry, "n") then
+				item.entry = {pos = "det", ja = "どちらの", negative = true, neither = true}
 			elseif item.w == "enough" and following and T.As(following.entry, "n") then
 				item.entry = { pos = "det", ja = "十分な" }
 			elseif item.w == "more" and following and T.As(following.entry, "n") then
@@ -434,7 +436,10 @@ local function Disambiguate(items)
 			local perfectAux = items[auxIndex] and HAVE[items[auxIndex].w]
 			local atStart = not previous or previous.kind == "punct"
 				or (previous.kind == "word" and CONJUNCTIONS[previous.w])
-			if item.altInflection == "past" and previous and previous.entry and previous.entry.pos == "n"
+			if item.w == "still" and entry.alts.adv and following and following.entry
+				and (following.entry.pos == "v" or following.entry.pos == "a") then
+				wantPos = "adv"
+			elseif item.altInflection == "past" and previous and previous.entry and previous.entry.pos == "n"
 				and following and ARTICLES[following.w] then
 				wantPos = "v"
 			elseif perfectAux and (item.infl == "past" or item.altInflection == "past") and entry.alts.v then
@@ -792,6 +797,7 @@ function Clause:NounPhrase(i)
 			i = i + 1
 		elseif entry and entry.pos == "det" then
 			info.negative = info.negative or entry.negative
+			info.neither = info.neither or entry.neither
 			info.sufficient = info.sufficient or w == "enough" and not T.userLexicon.enough
 			self:Count(item)
 			parts[#parts + 1] = (w == "more" and info.negative) and "これ以上の" or entry.ja
@@ -953,7 +959,11 @@ function Clause:NounPhrase(i)
 	if info.ja ~= "" and self:W(i) == "of" and self:IsNounPhraseStart(i + 1) then
 		self:Count(items[i])
 		local owner, nextIndex = self:NounPhrase(i + 1)
-		info.ja = Join({ owner.ja, "の", info.ja })
+		if info.pronoun == "none" and (owner.pronoun == "us" or owner.pronoun == "you" or owner.pronoun == "them") then
+			info.ja = owner.ja .. "の誰も"
+		else
+			info.ja = Join({ owner.ja, "の", info.ja })
+		end
 		info.adjective = nil
 		i = nextIndex
 	end
@@ -998,6 +1008,7 @@ function Clause:NounPhrase(i)
 		end
 	end
 
+	if info.neither then info.ja = info.ja .. "も" end
 	return info, i
 end
 
@@ -1076,6 +1087,15 @@ function Clause:RelativeEnd(start)
 		if sawVerb and self.parsingInvertedSubject and not items[j + 1] and (self:Pos(j) == "a"
 			or (self:IsVerb(j) and not item.infl and IsStateVerb(item.entry))) then
 			break
+		end
+		-- An intransitive relative action can be followed by the main past verb:
+		-- "the healer who joined left". Keep "the player who turned left" directional.
+		local prev = items[j - 1]
+		if sawVerb and self.parsingSubject and not items[j + 1] and item.altInflection == "past"
+			and prev and (prev.base == "join" or prev.base == "arrive" or prev.base == "respond")
+			and not T.userLexicon[item.w] then
+			local v = T.As(item.entry, "v")
+			if v then item.entry, item.infl, item.base = v, item.altInflection, item.altBase; break end
 		end
 		if sawVerb and self.parsingSubject and self:IsVerb(j) and (item.infl == "past" or item.infl == "third")
 			and self:W(j - 1) ~= "to" then
@@ -1156,6 +1176,8 @@ function Clause:Auxiliary(i, form, state)
 			end
 			k = k + 1
 		end
+		if not state.modal and not experience and (w == "have" or w == "has") and self.items[k]
+			and self.items[k].infl == "past" and self:IsVerb(k) then state.presentPerfect = true end
 		if experience and self.items[k] and self.items[k].w == "been" then
 			-- "have you ever been to Japan" -> 日本に行ったことがありますか
 			self.items[k] = { kind = "word", w = "been:go", orig = "been", infl = "past", base = "go",
@@ -1188,6 +1210,7 @@ function Clause:Auxiliary(i, form, state)
 	elseif BE[w] then
 		self:Count(item)
 		state.be = true
+		if w == "being" then state.being = true end
 		form.past = form.past or BE[w].past
 		i = i + 1
 		if NEGATORS[self:W(i) or ""] then
@@ -1234,33 +1257,6 @@ function Clause:Translate(options)
 		self:Count(items[1]); self:Count(items[2])
 		self.question = options.questionMark
 		return "誰も残っていません" .. (options.questionMark and "か" or "")
-	end
-
-	-- Resource depletion reports, not spatial "out of the keep".
-	do
-		local j, owner, past, negative = 1, "", false, false
-		if SUBJECT_PRONOUNS[self:W(j) or ""] and self:Entry(j) and not T.userLexicon[self:W(j)] then
-			owner = self:Entry(j).ja .. "は"
-			j = j + 1
-			if BE[self:W(j) or ""] then past = BE[self:W(j)].past; j = j + 1 end
-		end
-		if self:W(j) == "not" then negative = true; j = j + 1 end
-		if not options.subordinate and self:W(j) == "out of" and not T.userLexicon["out of"] and self:IsNounPhraseStart(j + 1) then
-			local probeItems = {}
-			for k, item in ipairs(items) do
-				probeItems[k] = {}
-				for key, value in pairs(item) do probeItems[k][key] = value end
-			end
-			local probe = NewClause(probeItems)
-			local np, nextIndex = probe:NounPhrase(j + 1)
-			local resources = { ["マジカ"] = true, ["スタミナ"] = true, ["ポーション"] = true,
-				["魂石"] = true, ["ゴールド"] = true, ["お金"] = true, ["マナ"] = true }
-			if np.head and resources[np.head.ja] and not np.unknownHead and not items[nextIndex] then
-				for k = 1, #items do self:Count(items[k]) end
-				self.question = options.questionMark
-				return owner .. np.ja .. "が" .. T.Predicate({ja = "尽きている", class = "1"}, {past = past, negative = negative}) .. (options.questionMark and "か" or "")
-			end
-		end
 	end
 
 	-- Elliptical availability questions: require a question mark, a known noun and
@@ -1472,6 +1468,7 @@ function Clause:Translate(options)
 		elseif isBeHelper and item.infl == "past" then
 			if form.mode then form.aspect = "passive" end
 			form.mode = form.mode or "passive"
+			if state.being then form.passiveProgressive = true end
 			verbItem = item
 		elseif isBeHelper and item.infl == nil then
 			-- "I am tired" where tired is stored as the state verb 疲れている.
@@ -1537,7 +1534,7 @@ function Clause:Translate(options)
 			break
 		end
 		self:Count(items[i])
-		form.mode = chain
+		form.mode = chain == "try" and form.mode == "progressive" and "try_progressive" or chain
 		form.past = form.past or verbItem.infl == "past"
 		verbItem = items[i + 1]
 		self:Count(verbItem)
@@ -1905,6 +1902,12 @@ function Clause:Translate(options)
 		subject.ja = subject.ja .. "なし"
 	end
 
+	if state.presentPerfect and form.negative and not form.mode then
+		form.mode = "progressive"
+		form.past = false
+	end
+	if options.invertNegation then form.negative = not form.negative end
+
 	-- ---- assemble -------------------------------------------------------------------
 	local out = {}
 
@@ -2000,7 +2003,7 @@ function Clause:Translate(options)
 
 	if subject and subject.ja ~= "" and form.mode ~= "request" then
 		if hasPredicate then
-			local particle = (subject.negative and subject.pronoun) and "" or ((options.subordinate or INDEFINITE_PRONOUNS[subject.pronoun or ""]) and "が" or "は")
+			local particle = (subject.negative and (subject.pronoun or subject.neither)) and "" or ((options.subordinate or INDEFINITE_PRONOUNS[subject.pronoun or ""]) and "が" or "は")
 			if verbItem and verbItem.base == "have" and objects[1] and (objects[1].remaining or state.haveAnimate) and not T.userLexicon.have then particle = "には" end
 			if verbItem and verbItem.base == "need" and not subject.negative and not T.userLexicon.need then
 				if options.questionMark and INDEFINITE_PRONOUNS[subject.pronoun or ""] then
@@ -2082,7 +2085,7 @@ function Clause:Translate(options)
 			-- no verb: "bm roe inner 80 percent" is a list
 			out[#out] = out[#out] .. "、"
 		end
-		out[#out + 1] = objects[1].ja .. (verbItem and not (objects[1].negative and objects[1].pronoun) and objectParticle or "")
+		out[#out + 1] = objects[1].ja .. (verbItem and not (objects[1].negative and (objects[1].pronoun or objects[1].neither)) and objectParticle or "")
 	end
 
 	if extraVerbTe then
@@ -2148,9 +2151,11 @@ function Clause:Translate(options)
 	elseif out[#out] == "ください" or out[#out] == "もらえます" then
 		-- already said
 	elseif existential then
-		local exists = complement and IsAnimate(complement.head) and { ja = "いる", class = "1" } or { ja = "ある", class = "5" }
+		local animate = complement and (IsAnimate(complement.head) or ({someone=true,somebody=true,anyone=true,anybody=true,
+			nobody=true,["no one"]=true,everyone=true,everybody=true})[complement.pronoun or ""])
+		local exists = animate and { ja = "いる", class = "1" } or { ja = "ある", class = "5" }
 		if complement then
-			out[#out + 1] = complement.ja .. "が"
+			out[#out + 1] = complement.ja .. (complement.negative and complement.pronoun and "" or "が")
 		end
 		out[#out + 1] = T.Predicate(exists, form)
 	elseif isCopula then
@@ -2335,7 +2340,40 @@ local function SplitClauses(items)
 			current.items[#current.items + 1] = item
 		end
 	end
+	if T.Semantic then
+		local expanded = {}
+		for _, clause in ipairs(clauses) do
+			local boundary = (clause.conj == "if" or clause.conj == "unless" or clause.conj == "when")
+				and T.Semantic.FindBoundary(clause.items)
+			if boundary then
+				local condition, main = {}, {}
+				for i, item in ipairs(clause.items) do
+					local target = i < boundary and condition or main
+					target[#target + 1] = item
+				end
+				expanded[#expanded + 1] = {conj = clause.conj, items = condition}
+				expanded[#expanded + 1] = {items = main}
+			else expanded[#expanded + 1] = clause end
+		end
+		return expanded
+	end
 	return clauses
+end
+
+-- Structured readers never mutate the tokens or dictionary of another candidate.
+T.IsAnimateEntry = IsAnimate
+function T.ReadNominal(items, first, last)
+	local copy = {}
+	for i = first, last do
+		local item = {}
+		for k, v in pairs(items[i]) do if k ~= "counted" then item[k] = v end end
+		copy[#copy + 1] = item
+	end
+	if #copy == 0 then return nil end
+	local parser = NewClause(copy)
+	local np, nextIndex = parser:NounPhrase(1)
+	if nextIndex ~= #copy + 1 or np.ja == "" or np.unknownHead or parser.unknown > 0 then return nil end
+	return np
 end
 
 local function TranslateSegment(items, stats, questionMark)
@@ -2348,13 +2386,21 @@ local function TranslateSegment(items, stats, questionMark)
 			local conj = clause.conj and CONJUNCTIONS[clause.conj]
 			local parser = NewClause(clause.items)
 			local text
+			local options = conj and conj.kind == "sub" and { form = conj.form, subordinate = true, invertNegation = conj.invertNegation }
+				or { questionMark = questionMark }
+			local plan = T.Semantic and T.Semantic.Analyze(clause.items, options)
+			if plan then
+				text, parser.question = T.Semantic.Render(plan, options)
+				for _, item in ipairs(clause.items) do parser:Count(item) end
+				stats.structured = (stats.structured or 0) + 1
+			end
 			if conj and conj.kind == "sub" then
-				text = parser:Translate({ form = conj.form, subordinate = true })
+				text = text or parser:Translate({ form = conj.form, subordinate = true, invertNegation = conj.invertNegation })
 				if text ~= "" then
 					subordinate[#subordinate + 1] = (conj.before or "") .. text .. conj.after
 				end
 			else
-				text = parser:Translate({ questionMark = questionMark })
+				text = text or parser:Translate({ questionMark = questionMark })
 				if text ~= "" then
 					local joined = text
 					if conj and #main > 0 then
@@ -2386,8 +2432,14 @@ local END_MARK = { ["."] = "。", ["!"] = "！", ["?"] = "？" }
 
 -- Translate a whole chat line. Returns the Japanese text and { known, unknown }.
 function T.Translate(text)
+	T.ReclaimTemporaryMemory()
 	local stats = { known = 0, unknown = 0 }
-	local items = T.Tag(T.Tokenize(text))
+	if type(text) ~= "string" then return "", stats end
+	-- Chat input and analysis are bounded; never truncate names or link markup.
+	if #text > 4096 then return text, {known = 0, unknown = 1, limited = "bytes"} end
+	local tokens = T.Tokenize(text)
+	if #tokens > 256 then return text, {known = 0, unknown = 1, limited = "tokens"} end
+	local items = T.Tag(tokens)
 
 	-- Mark the first word of every sentence: capitalisation there says nothing about names.
 	local atStart = true
@@ -2471,5 +2523,6 @@ function T.Translate(text)
 		end
 		out = out .. sentence
 	end
+	T.ReclaimTemporaryMemory()
 	return out, stats
 end

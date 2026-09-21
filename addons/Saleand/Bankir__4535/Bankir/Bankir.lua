@@ -1,7 +1,7 @@
 Bankir = Bankir or {}
 
 local name = "Bankir"
-local version = "2.4"
+local version = "2.5"
 local author = "vexaiv"
 
 local function debugPrint(message)
@@ -15,6 +15,9 @@ local localCache
 local lastCacheUpdateData
 local requiredForQuests
 local reprocessNeeded
+
+local LCK = LibCharacterKnowledge
+local otherCharactersIds
 
 local function redefineItemTypes(itemLink)
 	local itemType, specializedItemType = GetItemLinkItemType(itemLink)
@@ -32,10 +35,17 @@ local function redefineItemTypes(itemLink)
 			or traitInfo == ITEM_TRAIT_TYPE_JEWELRY_INTRICATE
 			then
 				specializedItemType = "Intricate" .. equipFilterType
-			elseif CanItemLinkBeTraitResearched(itemLink) then
-				specializedItemType = "Research" .. equipFilterType
 			elseif GetItemLinkActorCategory(itemLink) == GAMEPLAY_ACTOR_CATEGORY_COMPANION then
 				specializedItemType = "Companion" .. equipFilterType
+			elseif CanItemLinkBeTraitResearched(itemLink) then
+				specializedItemType = "Research" .. equipFilterType
+			elseif LCK then
+				for _, charId in pairs(otherCharactersIds) do
+					if LCK.CanItemLinkBeTraitResearchedByCharacter(itemLink, nil, charId) then
+						specializedItemType = "ResearchOthers" .. equipFilterType
+						break
+					end
+				end
 			end
 		end
 	-- redefine the item id for unknown recipes/motifs
@@ -678,6 +688,20 @@ local function onAddOnLoaded(event, addonName)
 							bagRules.byItemId[61079] = nil
 						end
 					end
+				end
+			end
+		end
+	end
+	
+	if LCK then
+		otherCharactersIds = {}
+		local db = BankirSavedVariables.Default[GetDisplayName()]
+		if db then
+			local currentCharId = GetCurrentCharacterId()
+			for i = 1, GetNumCharacters() do
+				local _, _, _, _, _, _, charId = GetCharacterInfo(i)
+				if charId ~= currentCharId then
+					table.insert(otherCharactersIds, charId)
 				end
 			end
 		end

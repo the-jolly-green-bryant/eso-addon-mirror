@@ -115,6 +115,8 @@ local function getNameOfType(itemType, idTypeStr)
 				s = GetString(SI_ITEMTRAITTYPE20) -- "Intricate"
 			elseif name == "Research" then
 				s = GetString(SI_ITEMSELLINFORMATION3) -- "Can research"
+			elseif name == "ResearchOthers" then
+				s = GetString(SI_ITEMSELLINFORMATION3) .. GetString(BANKIR_MENU_OTHER_CHARACTERS) -- "Can research"
 			elseif name == "Companion" then
 				s = GetString(SI_ITEM_FORMAT_STR_COMPANION) -- "Companion Item"
 			elseif name == "RecipeUnknown" or name == "Unopened" then

@@ -78,6 +78,7 @@ end
 function S.New(state,player,difficulty)
     local job={advanced=true,state=E.Clone(state),player=player,difficulty=difficulty,
         profile=C.AI.DIFFICULTIES[difficulty],best=nil,bestScore=-math.huge,evaluated=0,done=false}
+    job.nodes=job.profile.nodes*(E.Rules(state).NODE_SCALE or 1)
     job.worker=coroutine.create(function() run(job) end)
     return job
 end
@@ -85,7 +86,7 @@ function S.Step(job,budget)
     if job.done then return true,job.best end
     local limit=math.max(1,math.floor(budget or job.profile.perTick))
     for _=1,limit do
-        if job.evaluated>=job.profile.nodes then
+        if job.evaluated>=job.nodes then
             job.done,job.stopReason,job.worker=true,'node_budget',nil; break
         end
         local ok,err=coroutine.resume(job.worker)

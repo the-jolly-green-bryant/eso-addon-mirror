@@ -31,18 +31,6 @@
       endTime除外処理・複数バフ枠マージ処理は撤去し、v1.4.16相当の
       シンプルな構成に戻した(表示名でのキーとID一致判定自体は
       安全側の保険として残す)。
-
-    v1.4.33で変更(表示条件のみ):
-      UI③の表示条件を「戦闘状態になったら表示」から「登録した
-      Condition/Procが実際に自分に付与されている間だけ表示、切れたら
-      即非表示」に変更した。検知方法(ScanActiveProcs)・重複防止・
-      AbilityId判定ロジックは一切変更していない。RefreshProcUIの最後で
-      今回のTickで実際に描画した行数(index)を見て、0件なら
-      PTI.UI.hiddenByEmptyProcを立ててからSetWindowVisibleを呼ぶことで、
-      パネル自体の表示/非表示に反映している(戦闘状態は見ない)。
-      あわせて、中身が0件の時に出していた「登録なし」の案内文は廃止した
-      (案内文があるとパネルが常に1行出てしまい、今回の「発動時だけ
-      表示」という目的と矛盾するため)。
 --]]
 
 PvPTargetInfo = PvPTargetInfo or {}
@@ -102,15 +90,12 @@ local function ScanActiveProcs()
             GetUnitBuffInfo("player", i)
 
         local matchedName = nil
-        local source = nil -- "manual"(手動登録Proc) または "auto"(自動検知デバフ)。色分け用。
 
         -- (a) 手動登録(AbilityId直接入力)分。念のため表示名一致も保険として残す。
         if type(abilityId) == "number" and knownProcs[abilityId] then
             matchedName = knownProcs[abilityId]
-            source = "manual"
         elseif type(buffName) == "string" and buffName ~= "" and knownProcNames[buffName] then
             matchedName = buffName
-            source = "manual"
         end
 
         -- (b) 自動検知: 敵のDEBUFF自動検知と同じ判定方法で、自分のデバフを検知する。
@@ -120,7 +105,6 @@ local function ScanActiveProcs()
             and PTI.Target and PTI.Target.IsAutoImportantDebuff
             and PTI.Target.IsAutoImportantDebuff(buffName, statusEffectType) then
             matchedName = buffName
-            source = "auto"
         end
 
         if matchedName then
@@ -128,11 +112,6 @@ local function ScanActiveProcs()
                 endTime = endTime,
                 stackCount = stackCount,
                 name = matchedName,
-                source = source,
-                -- v1.4.25で追加: 色分けは登録経路(手動/自動)ではなく、実際に
-                -- バフかデバフかで決める方が分かりやすいとの指摘のため、
-                -- effectType自体をここに保持しておく(下のRefreshProcUIで使用)。
-                isDebuff = (effectType == BUFF_EFFECT_TYPE_DEBUFF),
             }
         end
     end
@@ -153,12 +132,6 @@ local function DumpActiveBuffs()
 end
 PTI.Procs.DumpActiveBuffs = DumpActiveBuffs
 
--- v1.4.33で変更: UI③の表示条件を「戦闘状態になったら表示」から「登録した
--- 自分のCondition/Procが実際に自分へ付与されている間だけ表示」に変更した。
--- そのため、このTickで実際に描画する行が1件も無かった場合は
--- PTI.UI.hiddenByEmptyProcを立ててSetWindowVisibleに伝え、パネル自体を
--- 隠す(previewMode中は従来通りこの判定をバイパスして常に見える)。
--- 検知ロジック(ScanActiveProcs)自体は変更していない。
 local function RefreshProcUI()
     local now = GetGameTimeSeconds()
     local sv = PTI.sv.procUI
@@ -183,43 +156,38 @@ local function RefreshProcUI()
                 index = index + 1
                 local row = PTI.UI.AcquireRow("proc", index)
 
-                -- v1.4.35で変更: v1.4.26で撤去した色分けを、今回はUI①②と
-                -- 全く同じ仕組み(PTI.UI.GetImportantTier/BuildTierFont)で
-                -- 復活させた。isDebuffフィールドはv1.4.24時点からScanActiveProcs
-                -- 側に既にあり(検知ロジックには一切触れていない)、それを
-                -- そのままkeyとして使うだけ。残り時間による黄→橙→赤の
-                -- エスカレーション・緊急時の文字拡大/!!!マークもUI①②と共通の
-                -- ロジックを流用するため、判定基準・しきい値の二重管理は発生しない。
-                local key = data.isDebuff and "debuff" or "buff"
-                local remaining = (data.endTime and data.endTime > now) and (data.endTime - now) or nil
-                local displaySeconds = remaining and zo_ceil(remaining) or nil
-                local tier = PTI.UI.GetImportantTier(key, displaySeconds)
-                local font = PTI.UI.BuildTierFont(key, tier.sizeDelta, tier.outline)
-
-                local displayName = tier.prefix .. "● " .. (data.name or "Condition")
+                local displayName = "● " .. (data.name or "Condition")
                 if data.stackCount and data.stackCount > 1 then
                     displayName = string.format("%s %d", displayName, data.stackCount)
                 end
-
-                row.nameLabel:SetFont(font)
-                row.nameLabel:SetColor(tier.color[1], tier.color[2], tier.color[3], tier.color[4])
+                row.nameLabel:SetFont(PTI.UI.RowFont("proc"))
+                row.nameLabel:SetColor(1, 0.85, 0.2, 1)
                 row.nameLabel:SetText(displayName)
 
-                row.timeLabel:SetFont(font)
-                row.timeLabel:SetColor(tier.color[1], tier.color[2], tier.color[3], tier.color[4])
-                if displaySeconds then
-                    row.timeLabel:SetText(displaySeconds .. "秒")
+                row.timeLabel:SetFont(PTI.UI.RowFont("proc"))
+                row.timeLabel:SetColor(0.85, 0.92, 1.0, 1)
+                if data.endTime and data.endTime > now then
+                    row.timeLabel:SetText(string.format("%d秒", zo_ceil(data.endTime - now)))
                 else
                     row.timeLabel:SetText("")
                 end
             end
         end
+
+        -- v1.4.50で変更: 以前はここで「登録なし」の案内文をindex=1として
+        -- 表示していたが、要件変更により「Conditionが発動していない時は
+        -- UI③を勝手に表示しない」仕様になったため、案内文の表示自体を廃止。
+        -- indexが0のままなら下のhasContent判定でウィンドウごと隠れる。
     end
 
     PTI.UI.ReleaseUnusedRows("proc", index + 1)
-    -- v1.4.33で変更: 案内文表示は廃止した。実際に描画する行が0件なら
-    -- (previewMode中を除き)UI③自体を隠す。1件でもあれば表示する。
-    PTI.UI.hiddenByEmptyProc = (index == 0)
+
+    -- v1.4.50で変更: UI③(Condition)はUI①②(戦闘連動)とは完全に独立して、
+    -- 「実際に表示する行があるか(=Conditionが発動している、またはプレビュー中)」
+    -- だけを表示条件にする。ここではフラグを立てるだけで、実際の表示/非表示の
+    -- 判定(previewMode例外や全体enabled等との組み合わせ)はUI.lua側の
+    -- SetWindowVisibleに集約している。
+    PTI.UI.procHasContent = (index > 0)
     PTI.UI.SetWindowVisible("proc")
 end
 PTI.Procs.RefreshProcUI = RefreshProcUI

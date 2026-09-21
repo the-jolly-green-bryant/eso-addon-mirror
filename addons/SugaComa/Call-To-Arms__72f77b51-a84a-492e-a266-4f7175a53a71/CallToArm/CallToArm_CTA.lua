@@ -1,4 +1,4 @@
--- CallToArm_CTA.lua (CTA module)
+﻿-- CallToArm_CTA.lua (CTA module)
 -- Create or reuse the global namespace table (safe if reloaded)
 local CallToArm = _G.CallToArm or {}
 _G.CallToArm = CallToArm
@@ -21,7 +21,6 @@ CTA.Popup = CTA.Popup or {}
 
 local POPUP_WIDTH = 900
 local POPUP_HEIGHT = 180
-local POLL_INTERVAL_SECONDS = 60
 
 local function DebugCTA(msg)
     if CALLTOARM.SV and CALLTOARM.SV.debug then
@@ -30,30 +29,14 @@ local function DebugCTA(msg)
 end
 
 local function EnsureCampaignDataFeed(force)
-    local now = GetTimeStamp and GetTimeStamp() or 0
-    if not force and CTA._campaignDataRefreshAt ~= 0 and (now - CTA._campaignDataRefreshAt) < 60 then
-        return
-    end
+    local now = GetTimeStamp()
+    if not force and CTA._campaignDataRefreshAt ~= 0 and now - CTA._campaignDataRefreshAt < 60 then return end
     CTA._campaignDataRefreshAt = now
-
-    if RegisterForAssignedCampaignData then
+    if not CTA._assignedFeedRegistered then
         RegisterForAssignedCampaignData()
+        CTA._assignedFeedRegistered = true
     end
-    if RegisterForCampaignSelectionData then
-        RegisterForCampaignSelectionData()
-    end
-    if RequestCampaignSelectionData then
-        RequestCampaignSelectionData()
-    end
-    if RequestCampaignData then
-        RequestCampaignData()
-    end
-
-    if CAMPAIGN_BROWSER_MANAGER and CAMPAIGN_BROWSER_MANAGER.RebuildCampaignData then
-        pcall(function()
-            CAMPAIGN_BROWSER_MANAGER:RebuildCampaignData()
-        end)
-    end
+    QueryCampaignSelectionData()
 end
 
 local function GetAllianceIcon(alliance)
@@ -460,6 +443,9 @@ local function EnsureByGuild(gid)
 end
 
 local function GetRepresentedGuildId()
+    if CALLTOARM.Guild and CALLTOARM.Guild.IsLockActive and CALLTOARM.Guild.IsLockActive() then
+        return CALLTOARM.Guild.GetLockedGuildId()
+    end
     if not CALLTOARM.SV or not CALLTOARM.SV.cta then return 0 end
     local gid = tonumber(CALLTOARM.SV.cta.representedGuildId) or 0
     if gid == 0 and CALLTOARM.Guild and CALLTOARM.Guild.GetLockedGuildId then
@@ -487,7 +473,10 @@ local function GetGuildCtaSettings(gid)
 end
 
 local function IsEligibleForCTA(gid)
-    return gid ~= 0
+    for index = 1, GetNumGuilds() do
+        if GetGuildId(index) == gid then return true end
+    end
+    return false
 end
 
 local function GetZoneDisplayTypeSafe()
@@ -576,7 +565,7 @@ local function IsInInfiniteArchive()
 end
 
 local function ShouldSuppressForActivity(settings)
-    if not settings or not settings.doNotDisturb then
+    if not settings or not settings.doNotDisturb or settings.doNotDisturb.enabled == false then
         return false
     end
     local mode = settings.doNotDisturb.mode or "none"
@@ -601,16 +590,25 @@ local function ShouldSuppressForActivity(settings)
 end
 
 local function GetCampaignQueryType(campaignId)
-    if campaignId == GetAssignedCampaignId() then
-        return BGQUERY_ASSIGNED_CAMPAIGN
+    if not campaignId or campaignId == 0 then return nil end
+    if campaignId == GetAssignedCampaignId() then return BGQUERY_ASSIGNED_CAMPAIGN end
+    if IsPlayerInAvAWorld() and campaignId == GetCurrentCampaignId() then return BGQUERY_LOCAL end
+    return nil
+end
+
+local function HasKeepData(campaignId)
+    local context = GetCampaignQueryType(campaignId)
+    if not context then return false end
+    for i = 1, GetNumKeeps() do
+        local _, availableContext = GetKeepKeysByIndex(i)
+        if (context == BGQUERY_ASSIGNED_CAMPAIGN and IsAssignedBattlegroundContext(availableContext))
+            or (context == BGQUERY_LOCAL and IsLocalBattlegroundContext(availableContext)) then return true end
     end
-    return BGQUERY_LOCAL
+    return false
 end
 
 local function GetPopulationForCampaign(campaignId)
     if not campaignId or campaignId == 0 then return nil end
-
-    EnsureCampaignDataFeed(false)
 
     if GetNumSelectionCampaigns and GetSelectionCampaignId and GetSelectionCampaignPopulationData then
         for selectionIndex = 1, GetNumSelectionCampaigns() do
@@ -626,9 +624,6 @@ local function GetPopulationForCampaign(campaignId)
     end
 
     if CAMPAIGN_BROWSER_MANAGER and CAMPAIGN_BROWSER_MANAGER.GetCampaignDataList then
-        if CAMPAIGN_BROWSER_MANAGER.RebuildCampaignData then
-            CAMPAIGN_BROWSER_MANAGER:RebuildCampaignData()
-        end
         local list = CAMPAIGN_BROWSER_MANAGER:GetCampaignDataList() or {}
         for i = 1, #list do
             local data = list[i]
@@ -646,6 +641,7 @@ local function GetPopulationForCampaign(campaignId)
 end
 
 local function GetEmperorKeepsOwned(campaignId, alliance)
+    if not HasKeepData(campaignId) then return 0, 0 end
     if not GetCampaignRulesetId then return 0, 0 end
     local rulesetId = GetCampaignRulesetId(campaignId)
     if not rulesetId then return 0, 0 end
@@ -654,6 +650,14 @@ local function GetEmperorKeepsOwned(campaignId, alliance)
     local queryType = GetCampaignQueryType(campaignId)
     for i = 1, numKeeps do
         local keepId = GetCampaignRulesetImperialKeepId(rulesetId, alliance, i)
+        if not keepId or keepId == 0 then return 0, 0 end
+        local found = false
+        for index = 1, GetNumKeeps() do
+            local availableId, context = GetKeepKeysByIndex(index)
+            if availableId == keepId and ((queryType == BGQUERY_ASSIGNED_CAMPAIGN and IsAssignedBattlegroundContext(context))
+                or (queryType == BGQUERY_LOCAL and IsLocalBattlegroundContext(context))) then found = true; break end
+        end
+        if not found then return 0, 0 end
         if keepId and keepId ~= 0 then
             local keepAlliance = GetKeepAlliance(keepId, queryType)
             if keepAlliance == alliance then
@@ -836,7 +840,13 @@ local function QueryLeaderboardIfNeeded(campaignId, alliance)
         return
     end
     CTA._leaderboardQueryAt[key] = now
-    QueryCampaignLeaderboardData(campaignId, alliance)
+    -- This API requests an alliance, not an arbitrary campaign ID.
+    if campaignId ~= GetAssignedCampaignId() then return end
+    local ready = QueryCampaignLeaderboardData(alliance)
+    if ready == LEADERBOARD_DATA_READY and GetLeaderboardCampaignSequenceId(campaignId) == GetCampaignSequenceId(campaignId) then
+        CTA._leaderboardReady = CTA._leaderboardReady or {}
+        CTA._leaderboardReady[key] = now
+    end
 end
 
 local function CanFire(settings, alertKey)
@@ -893,6 +903,14 @@ end
 local function CheckEmperorPush(gid, settings, campaignId, guildAlliance)
     if settings.alerts.empPush ~= true then return false end
     if not CanFire(settings, "empPush") then return false end
+    if DoesCampaignHaveEmperor(campaignId) then
+        local emperorAlliance = GetCampaignEmperorInfo(campaignId)
+        if emperorAlliance == guildAlliance then return false end
+    end
+    local key = tostring(campaignId) .. ":" .. tostring(guildAlliance)
+    local received = CTA._leaderboardReady and CTA._leaderboardReady[key]
+    if not received or GetTimeStamp() - received > 120
+        or GetLeaderboardCampaignSequenceId(campaignId) ~= GetCampaignSequenceId(campaignId) then return false end
 
     if GetNumCampaignAllianceLeaderboardEntries then
         local num = GetNumCampaignAllianceLeaderboardEntries(campaignId, guildAlliance)
@@ -1391,7 +1409,7 @@ function CTA.RunPoll()
     local bypassCooldown = CTA._debugBypassCooldownOnce == true
     CTA._debugBypassCooldownOnce = false
     CTA._debugBypassCooldownActive = bypassCooldown
-    if not IsEligibleForCTA(gid) then return end
+    if not IsEligibleForCTA(gid) then CTA._debugBypassCooldownActive = false; return end
 
     local settings = GetGuildCtaSettings(gid)
     if not settings or settings.enabled ~= true then
@@ -1403,37 +1421,20 @@ function CTA.RunPoll()
     DebugCTA("CTA Poll: checking alerts.")
 
     local guildAlliance = GetGuildAlliance(gid)
-    if guildAlliance == 0 and CALLTOARM.Guild and CALLTOARM.Guild.GetSelectedGuildAlliance then
-        guildAlliance = tonumber(CALLTOARM.Guild.GetSelectedGuildAlliance()) or 0
-    end
     if guildAlliance == 0 then
         DebugCTA("CTA Poll: no guild alliance.")
         CTA._debugBypassCooldownActive = false
         return
     end
 
-    local campaignId = GetHomeCampaignId(gid)
-    if campaignId == 0 and CALLTOARM.Guild and CALLTOARM.Guild.GetLockedCampaignId then
-        local lockedCampaign = tonumber(CALLTOARM.Guild.GetLockedCampaignId()) or 0
-        if lockedCampaign ~= 0 then
-            CALLTOARM.Guild.SetHomeCampaignId(gid, lockedCampaign)
-            campaignId = lockedCampaign
-            DebugCTA("CTA Poll: using locked campaign id.")
-        end
-    end
-    if (campaignId == 0 or campaignId == nil) and GetAssignedCampaignId then
-        campaignId = GetAssignedCampaignId()
-        if campaignId and campaignId ~= 0 then
-            DebugCTA("CTA Poll: using assigned campaign id.")
-        end
-    end
+    local campaignId = CTA.ResolveCampaign(gid)
     if not campaignId or campaignId == 0 then
         DebugCTA("CTA Poll: no campaign id.")
         CTA._debugBypassCooldownActive = false
         return
     end
 
-    if not IsActivityAllowed(settings, campaignId) then
+    if ShouldSuppressForActivity(settings) or not IsActivityAllowed(settings, campaignId) then
         local displayType = GetZoneDisplayTypeSafe() or -1
         local inInstance = IsInInstance and IsInInstance() == true
         local inAvA = IsPlayerInAvAWorld and IsPlayerInAvAWorld() == true
@@ -1483,88 +1484,139 @@ function CTA.RunPoll()
     CTA._debugBypassCooldownActive = false
 end
 
-local function ShouldPollNow(settings)
-    local now = GetTimeStamp()
-    if CTA._nextPollAt == 0 then
-        CTA._nextPollAt = now
+-- Automatic checks and requested briefings share acquisition, not notification state.
+function CTA.ResolveCampaign(gid)
+    local guild = CALLTOARM.Guild
+    if guild and guild.IsLockActive and guild.IsLockActive() and guild.GetLockedGuildId() == gid then
+        return guild.GetLockedCampaignId()
     end
-    if now >= CTA._nextPollAt then
-        CTA._nextPollAt = now + POLL_INTERVAL_SECONDS
-        return true
+    local configured = GetHomeCampaignId(gid)
+    if configured and configured ~= 0 then return configured end
+    return GetAssignedCampaignId() or 0
+end
+
+local function BriefingLine(text)
+    local line = "|c88ccff[CallToArm]|r " .. text
+    if CHAT_SYSTEM and CHAT_SYSTEM.AddMessage then CHAT_SYSTEM:AddMessage(line) else d(line) end
+end
+
+local function ShowBriefing(job)
+    BriefingLine(GetGuildNameSafe(job.guildId) .. " â€” " .. (GetCampaignName(job.campaignId) or tostring(job.campaignId)))
+    BriefingLine("Client campaign snapshot; server data age is not exposed.")
+    if HasKeepData(job.campaignId) then
+        if DoesCampaignHaveEmperor(job.campaignId) then
+            local alliance, character, display = GetCampaignEmperorInfo(job.campaignId)
+            BriefingLine("Emperor: " .. ((display and display ~= "") and display or character or "Unknown") .. " â€” " .. GetAllianceNameShort(alliance))
+        else
+            BriefingLine("No current emperor reported.")
+        end
+        local counts = {}
+        for alliance = 1, NUM_ALLIANCES do
+            local owned, total = GetEmperorKeepsOwned(job.campaignId, alliance)
+            counts[#counts + 1] = GetAllianceNameShort(alliance) .. ": " .. (total > 0 and (owned .. "/" .. total) or "unavailable")
+        end
+        BriefingLine("Imperial keeps â€” " .. table.concat(counts, "; "))
+    else
+        BriefingLine("Emperor/keep details unavailable for this campaign. No other campaign's keeps have been substituted.")
     end
-    return false
+    local population = GetPopulationForCampaign(job.campaignId)
+    if population then
+        local labels = { [CAMPAIGN_POP_LOW]="low", [CAMPAIGN_POP_MEDIUM]="medium", [CAMPAIGN_POP_HIGH]="high", [CAMPAIGN_POP_FULL]="full" }
+        local parts = {}
+        for alliance = 1, NUM_ALLIANCES do
+            parts[#parts + 1] = GetAllianceNameShort(alliance) .. ": " .. (labels[population[alliance]] or "unavailable")
+        end
+        BriefingLine("Population â€” " .. table.concat(parts, "; "))
+    else
+        BriefingLine("Population information unavailable.")
+    end
+    local key = tostring(job.campaignId) .. ":" .. tostring(job.alliance)
+    local received = CTA._leaderboardReady and CTA._leaderboardReady[key]
+    if received and GetTimeStamp() - received <= 120 and GetLeaderboardCampaignSequenceId(job.campaignId) == GetCampaignSequenceId(job.campaignId)
+        and GetNumCampaignAllianceLeaderboardEntries(job.campaignId, job.alliance) > 0 then
+        local _, rank, name, _, _, display = GetCampaignAllianceLeaderboardEntryInfo(job.campaignId, job.alliance, 1)
+        local members = BuildGuildMemberLookup(job.guildId)
+        local candidate = (display and display ~= "") and display or name or "Unknown"
+        local member = members[Lower(display)] or members[Lower(name)]
+        BriefingLine("Alliance leader: " .. candidate .. " (rank " .. tostring(rank) .. (member and ", guild member)." or ")."))
+    else
+        BriefingLine("Alliance leaderboard not ready for this campaign.")
+    end
+end
+
+local function FinishRequest()
+    local job = CTA._pendingRequest
+    CTA._pendingRequest = nil
+    if not job then return end
+    if not IsEligibleForCTA(job.guildId) or GetRepresentedGuildId() ~= job.guildId
+        or CTA.ResolveCampaign(job.guildId) ~= job.campaignId then
+        if job.manual then BriefingLine("Briefing cancelled: guild or campaign selection changed. Run again for the new selection.") end
+        return
+    end
+    if job.manual then ShowBriefing(job) end
+    if job.automatic then CTA.RunPoll() end
+end
+
+local function StartRequest(manual)
+    local gid = GetRepresentedGuildId()
+    if not IsEligibleForCTA(gid) then
+        if manual then BriefingLine("Select a guild you belong to before requesting a briefing.") end
+        return
+    end
+    local campaignId = CTA.ResolveCampaign(gid)
+    local alliance = GetGuildAlliance(gid) or 0
+    if not campaignId or campaignId == 0 or alliance == 0 then
+        if manual then BriefingLine("Choose a campaign and a guild with an alliance before requesting a briefing.") end
+        return
+    end
+    if CTA._pendingRequest then
+        if manual then
+            CTA._pendingRequest.manual = true
+            BriefingLine("A campaign check is already pending; the briefing will follow shortly.")
+        end
+        return
+    end
+    CTA._pendingRequest = { guildId=gid, campaignId=campaignId, alliance=alliance, manual=manual, automatic=not manual }
+    if manual then BriefingLine("Requesting campaign informationâ€¦") end
+    EnsureCampaignDataFeed(false)
+    QueryLeaderboardIfNeeded(campaignId, alliance)
+    zo_callLater(FinishRequest, 5000)
+end
+
+function CTA.RunNow()
+    -- Explicit request bypasses automatic interruption filters and never marks alerts fired.
+    StartRequest(true)
 end
 
 local function OnUpdate()
     local gid = GetRepresentedGuildId()
-    if gid == 0 then return end
+    if not IsEligibleForCTA(gid) then return end
     local settings = GetGuildCtaSettings(gid)
-    if not settings or settings.enabled ~= true then return end
-
-    -- Warmup campaign data feed after relog / character swap
-    local now = GetTimeStamp and GetTimeStamp() or 0
-    if CTA._campaignWarmupAt == 0 or (now - CTA._campaignWarmupAt) >= 10 then
-        CTA._campaignWarmupAt = now
-        EnsureCampaignDataFeed(true)
-    end
-
-    if ShouldPollNow(settings) then
-        EnsureCampaignDataFeed(false)
-        CTA.RunPoll()
-    end
+    if not settings or not settings.enabled then return end
+    local now = GetTimeStamp()
+    if CTA._pendingRequest then return end
+    if now < CTA._nextPollAt then return end
+    CTA._nextPollAt = now + math.max(60, tonumber(settings.polling.intervalSeconds) or 1800)
+    local campaignId = CTA.ResolveCampaign(gid)
+    if ShouldSuppressForActivity(settings) or not IsActivityAllowed(settings, campaignId) then return end
+    StartRequest(false)
 end
 
 function CTA.Init()
     if CTA._initDone then return end
     CTA._initDone = true
-    EnsureCampaignDataFeed(true)
+    CTA._leaderboardReady = {}
     EM:RegisterForUpdate(CTA._updateHandle, 1000, OnUpdate)
-
-    if EVENT_PLAYER_ACTIVATED then
-        EM:RegisterForEvent("CALLTOARM_CTA_ACTIVATED", EVENT_PLAYER_ACTIVATED, function()
-            CTA._nextPollAt = 0
-            CTA._forcePopulationOnce = true
-            DebugCTA("CTA: player activated, forcing population check.")
-            CTA.RunPoll()
-        end)
-    end
-
-    if EVENT_KEEP_ALLIANCE_OWNER_CHANGED then
-        EM:RegisterForEvent("CALLTOARM_CTA_KEEP", EVENT_KEEP_ALLIANCE_OWNER_CHANGED, function()
-            CTA._nextPollAt = 0
-            CTA.RunPoll()
-        end)
-    end
-
-    if EVENT_CAMPAIGN_LEADERBOARD_DATA_RECEIVED then
-        EM:RegisterForEvent("CALLTOARM_CTA_LB", EVENT_CAMPAIGN_LEADERBOARD_DATA_RECEIVED, function(_, campaignId)
-            local gid = GetRepresentedGuildId()
-            if gid == 0 then return end
-            local home = GetHomeCampaignId(gid)
-            if home ~= 0 and home == campaignId then
-                CTA._nextPollAt = 0
-                CTA.RunPoll()
-            end
-        end)
-    end
-
-    if EVENT_CAMPAIGN_STATE_INITIALIZED then
-        EM:RegisterForEvent("CALLTOARM_CTA_STATE", EVENT_CAMPAIGN_STATE_INITIALIZED, function(_, campaignId)
-            local gid = GetRepresentedGuildId()
-            if gid == 0 then return end
-            local home = GetHomeCampaignId(gid)
-            if home ~= 0 and home == campaignId then
-                CTA._nextPollAt = 0
-                CTA.RunPoll()
-            end
-        end)
-    end
-
-    if EVENT_CAMPAIGN_SELECTION_DATA_CHANGED then
-        EM:RegisterForEvent("CALLTOARM_CTA_SELECTION_DATA", EVENT_CAMPAIGN_SELECTION_DATA_CHANGED, function()
-            CTA._nextPollAt = 0
-            CTA.RunPoll()
-        end)
-    end
+    EM:RegisterForEvent("CALLTOARM_CTA_LB", EVENT_CAMPAIGN_LEADERBOARD_DATA_RECEIVED, function(_, campaignId, alliance)
+        CTA._leaderboardReady[tostring(campaignId) .. ":" .. tostring(alliance)] = GetTimeStamp()
+    end)
+    -- Data callbacks populate caches but never bypass the user's check schedule.
+    EM:RegisterForEvent("CALLTOARM_CTA_ACTIVATED", EVENT_PLAYER_ACTIVATED, function()
+        local gid = GetRepresentedGuildId()
+        if IsEligibleForCTA(gid) then
+            local settings = GetGuildCtaSettings(gid)
+            CTA.UpdateHomeCampaignPresence(settings, IsPlayerInAvAWorld() and GetCurrentCampaignId() == CTA.ResolveCampaign(gid))
+        end
+    end)
+    SLASH_COMMANDS["/ctanow"] = CTA.RunNow
 end
-

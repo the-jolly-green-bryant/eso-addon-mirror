@@ -181,13 +181,13 @@ end
 function Module:GetPlayerIconByRole(selectedRole)
     local fontSize = self.FONT_SIZE_MEDIUM
 
-    if selectedRole == LFG_ROLE_TANK then return string.format("|t%s:%s:/esoui/art/lfg/lfg_tank_down.dds|t", fontSize, fontSize) end
-    if selectedRole == LFG_ROLE_HEAL then return string.format("|t%s:%s:/esoui/art/lfg/lfg_healer_down.dds|t", fontSize, fontSize) end
-    if selectedRole == LFG_ROLE_DPS then return string.format("|t%s:%s:/esoui/art/lfg/lfg_dps_down.dds|t", fontSize, fontSize) end
+    -- if selectedRole == LFG_ROLE_TANK then return string.format("|t%s:%s:/esoui/art/lfg/lfg_tank_down.dds|t", fontSize, fontSize) end
+    -- if selectedRole == LFG_ROLE_HEAL then return string.format("|t%s:%s:/esoui/art/lfg/lfg_healer_down.dds|t", fontSize, fontSize) end
+    -- if selectedRole == LFG_ROLE_DPS then return string.format("|t%s:%s:/esoui/art/lfg/lfg_dps_down.dds|t", fontSize, fontSize) end
 
-    -- if selectedRole == LFG_ROLE_TANK then return string.format("|t%s:%s:/esoui/art/lfg/lfg_icon_tank.dds|t", fontSize, fontSize) end
-    -- if selectedRole == LFG_ROLE_HEAL then return string.format("|t%s:%s:/esoui/art/lfg/lfg_icon_healer.dds|t", fontSize, fontSize) end
-    -- if selectedRole == LFG_ROLE_DPS then return string.format("|t%s:%s:/esoui/art/lfg/lfg_icon_dps.dds|t", fontSize, fontSize) end
+    if selectedRole == LFG_ROLE_TANK then return string.format("|t%s:%s:/esoui/art/lfg/lfg_icon_tank.dds|t", fontSize, fontSize) end
+    if selectedRole == LFG_ROLE_HEAL then return string.format("|t%s:%s:/esoui/art/lfg/lfg_icon_healer.dds|t", fontSize, fontSize) end
+    if selectedRole == LFG_ROLE_DPS then return string.format("|t%s:%s:/esoui/art/lfg/lfg_icon_dps.dds|t", fontSize, fontSize) end
 
     -- "esoui/art/buttons/accept_up.dds"
     -- "esoui/art/buttons/decline_up.dds"

@@ -115,6 +115,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Clan Cercone Addon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Josh-cr/Clan-Cercone-Addon__3735) | Josh-cr | PC / Mac | 4.4.0 |
 | [Clarity](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/muenchhausen/Clarity__2874) | muenchhausen | PC / Mac | 1.1.2 |
 | [Classic TES Combat Skills](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Thurderan/Classic-TES-Combat-Skills__4233) | Thurderan | PC / Mac | 3.0 |
+| [Clayladon's Friend Status](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Clayladon/Clayladon-s-Friend-Status__4855) | Clayladon | PC / Mac | 1.0.9 |
 | [Clean My Chat](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tyx/Clean-My-Chat__2544) | Tyx | PC / Mac | 1.2.0 |
 | [Cleaner HUD](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Amerlite/Cleaner-HUD__1678) | Amerlite | PC / Mac | 12 |
 | [CleanLeadsUI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/akbosser/CleanLeadsUI__2150f7ed-d4e8-426c-b6e0-2df807f1db92) | akbosser | Console | — |
@@ -149,7 +150,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Combat Alerts Extended](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DrSova/Combat-Alerts-Extended__3439) | DrSova | PC / Mac | 1.0.5 |
 | [Combat Auras (Ability Timers)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Darianopolis/Combat-Auras-Ability-Timers__2408) | Darianopolis | PC / Mac | v1.5.2 |
 | [Combat Cloud Updated](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/2Weak2Live/Combat-Cloud-Updated__2568) | 2Weak2Live | PC / Mac | 0.96 |
-| [Combat Coordination - 3D Effects, LaunchPad, Spaulder, Slayer, Arkasis, Raidlead Tools](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Duesentrieb/Combat-Coordination---3D-Effects-LaunchPad-Spaulder-Slayer-Arkasis-Raidlead-Tool__4449) | Duesentrieb | PC / Mac | 20260918-0009 |
+| [Combat Coordination - 3D Effects, LaunchPad, Spaulder, Slayer, Arkasis, Raidlead Tools](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Duesentrieb/Combat-Coordination---3D-Effects-LaunchPad-Spaulder-Slayer-Arkasis-Raidlead-Tool__4449) | Duesentrieb | PC / Mac | 20260920-0010 |
 | [Combat Crosshair](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Turbo1/Combat-Crosshair__2760) | Turbo1 | PC / Mac | 1.5 |
 | [Combat FPS Booster](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tetsurion/Combat-FPS-Booster__3daa21d2-07bf-4ab5-bd84-fc58fb9dbdc7) | Tetsurion | Console | — |
 | [Combat Indicator](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Crabby654/Combat-Indicator__1543) | Crabby654 | PC / Mac | 1.8.7 |

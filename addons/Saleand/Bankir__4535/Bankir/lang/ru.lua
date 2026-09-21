@@ -25,6 +25,7 @@ SafeAddString(BANKIR_MENU_MIN_ITEMS_TO_PULL, "Мин. предметов в су
 SafeAddString(BANKIR_MENU_MIN_ITEMS_DESC, "Минимальное количество предметов в сумке.\nЕсли у персонажа в сумке меньше, Bankir по возможности будет стараться взять недостающие предметы из банка", 1)
 SafeAddString(BANKIR_MENU_QUALITY_SELECT, "Мин. качество", 1)
 SafeAddString(BANKIR_MENU_QUALITY_SELECT_DESC, "Правило будет применяться к предметам с качеством равным или превышающим выбранное значение", 1)
-	
+SafeAddString(BANKIR_MENU_OTHER_CHARACTERS, " на других персонажах", 1)
+
 SafeAddString(BANKIR_CHAT_REQUIRED_FOR_QUESTS, "<<1>> x<<2>> требуется для квестов", 1)
 SafeAddString(BANKIR_CHAT_NO_FREE_SPACE, "Нет свободного места в <<1>> для <<2>>", 1)

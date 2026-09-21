@@ -2,7 +2,7 @@ GrimSuite = GrimSuite or {}
 local GS = GrimSuite
 
 GS.name = "GrimSuite"
-GS.version = "0.0.38Dev"
+GS.version = "1.2.1"
 
 GS.SV = {
     gcd = 1000,
@@ -32,8 +32,10 @@ local function Initialize()
     GS.ActionBar:Initialize()
 end
 
-EVENT_MANAGER:RegisterForEvent(GS.name .. "_Load", EVENT_ADD_ON_LOADED, function(_, addonName)
+local function OnAddOnLoaded(_, addonName)
     if addonName ~= GS.name then return end
     EVENT_MANAGER:UnregisterForEvent(GS.name .. "_Load")
     Initialize()
-end)
+end
+
+EVENT_MANAGER:RegisterForEvent(GS.name .. "_Load", EVENT_ADD_ON_LOADED, OnAddOnLoaded)

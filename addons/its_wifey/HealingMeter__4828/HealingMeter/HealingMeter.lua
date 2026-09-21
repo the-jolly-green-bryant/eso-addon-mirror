@@ -1,9 +1,10 @@
 local ADDON_NAME = "HealingMeter"
 local DISPLAY_NAME = "Healing Meter"
-local VERSION = "1.2"
+local VERSION = "1.3"
 
 local HM = {}
 local sv
+local charSV
 local wm = WINDOW_MANAGER
 
 local defaults = {
@@ -123,7 +124,7 @@ local function ApplyAppearance()
 end
 
 local function ShouldShow()
-    if not sv or not sv.enabled or not sv.showMeter then return false end
+    if not sv or not charSV or not charSV.enabled or not sv.showMeter then return false end
     if sv.unlocked then return true end
     if sv.hideOutOfCombat and not IsUnitInCombat("player") then return false end
     return true
@@ -290,7 +291,7 @@ local function OnCombatEvent(
 end
 
 local function OnCombatState(eventCode, inCombat)
-    if not sv.enabled then return end
+    if not charSV or not charSV.enabled then return end
 
     if inCombat then
         -- IMPORTANT: do not convert an already-running out-of-combat practice
@@ -314,7 +315,7 @@ local function OnCombatState(eventCode, inCombat)
 end
 
 local function OnUpdate()
-    if not sv or not sv.enabled then return end
+    if not sv or not charSV or not charSV.enabled then return end
 
     if stats.active and stats.practice then
         local now = GetFrameTimeSeconds()
@@ -425,9 +426,9 @@ local function CreateSettings()
             type = "checkbox",
             name = "Enable Healing Meter",
             tooltip = "Full kill switch. When off, Healing Meter stops tracking and hides the meter.",
-            getFunc = function() return sv.enabled end,
+            getFunc = function() return charSV.enabled end,
             setFunc = function(v)
-                sv.enabled = v
+                charSV.enabled = v
                 if v then
                     RegisterTracking()
                 else
@@ -436,7 +437,7 @@ local function CreateSettings()
                 end
                 RefreshVisibility()
             end,
-            default = defaults.enabled,
+            default = true,
             width = "full",
         },
         {
@@ -536,6 +537,16 @@ local function OnAddonLoaded(eventCode, addonName)
         defaults
     )
 
+    -- The master kill switch is intentionally character-specific. All visual
+    -- settings remain account-wide, so every character shares the same meter
+    -- appearance and position while remembering its own enabled/disabled state.
+    charSV = ZO_SavedVars:NewCharacterIdSettings(
+        "HealingMeterCharacterSavedVariables",
+        1,
+        nil,
+        { enabled = true }
+    )
+
     CreateUI()
     CreateSettings()
 
@@ -547,7 +558,7 @@ local function OnAddonLoaded(eventCode, addonName)
         HUD_UI_SCENE:AddFragment(HM.fragment)
     end
 
-    if sv.enabled then
+    if charSV.enabled then
         RegisterTracking()
     end
 

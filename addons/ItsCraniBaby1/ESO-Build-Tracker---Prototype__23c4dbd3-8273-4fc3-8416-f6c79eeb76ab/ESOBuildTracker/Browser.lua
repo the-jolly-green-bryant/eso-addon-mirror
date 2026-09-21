@@ -79,6 +79,9 @@ function A.TabRows()
             rows[#rows + 1] = row
         end
     else
+        rows[#rows + 1] = A.Row("Load Cranius PvP target", "Rallying Cry / Wretched Vitality / Bloodspawn", "Loads the gear and skill requirements from your XML. Existing targets and snapshots are preserved. Imported glyphs show Verify enchantment until you confirm their actual tooltip heading.", A.LoadCraniusTarget)
+        rows[#rows + 1] = A.Row("Still needed", "Show unmet gear and skill requirements", "Compares your viewed equipment and bars with the active target. Does not search inventory or bank.", A.ShowStillNeeded)
+        rows[#rows + 1] = A.Row("Export current setup", "QR pages for copying on your PC", "Captures live equipment, traits, enchantments, both skill bars and stats. Open ESO_Setup_Reader.html on your PC and add screenshots of every QR page to copy the full setup.", A.OpenExport)
         rows[#rows + 1] = A.Row("New build from this setup", "Copy viewed gear and skills as a starting target",
             "Create a named target from the setup shown at the top. Then edit individual requirements on the Gear and Skills tabs. Empty slots are initially untracked. Stats are set separately.", function() A.NewBuild(true) end)
         rows[#rows + 1] = A.Row("New blank build", "Track only the requirements you choose",

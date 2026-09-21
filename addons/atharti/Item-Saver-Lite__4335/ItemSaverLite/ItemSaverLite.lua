@@ -11,6 +11,7 @@ ISL.markerTextures = {}
 
 local defaultSV = {
 	savedItems = {},
+	savedUniqueItems = {},
 	markerTexture = "Padlock",
 	markerColor = "00ff00",
 	markerScale = 0.6,
@@ -66,11 +67,12 @@ local ANCHOR_OFFSETS = {
 	[CENTER] = { x = 0, y = 0 }
 }
 
-function ISL.SignItemInstanceId(itemInstanceId)
-	if itemInstanceId and itemInstanceId > 2147483647 then
-		return itemInstanceId - 4294967296
-	end
-	return itemInstanceId
+function ISL.IsUniqueItem(bagId, slotIndex)
+	local itemType = GetItemType(bagId, slotIndex)
+	return itemType == ITEMTYPE_POTION
+		or itemType == ITEMTYPE_POISON
+		or itemType == ITEMTYPE_ARMOR
+		or itemType == ITEMTYPE_WEAPON
 end
 
 function ISL.GetMarkerTextureArrays()
@@ -177,16 +179,33 @@ function ISL.SetupVendorFilter()
 end
 
 function ISL.ToggleItemSave(bagId, slotIndex)
-	local id = ISL.SignItemInstanceId(GetItemInstanceId(bagId, slotIndex))
+	if ISL.IsUniqueItem(bagId, slotIndex) then
+		local link = GetItemLink(bagId, slotIndex, LINK_STYLE_DEFAULT)
+		if link == "" then return false end
 
-	if ISL.IsItemSaved(bagId, slotIndex) then
-		ISL.SV.savedItems[id] = nil
+		local t = ISL.SV.savedUniqueItems
+		if t[link] then
+			t[link] = nil
+		else
+			t[link] = true
+		end
+
+		ISL.RefreshAll()
+		return t[link] == true
+	end
+
+	local itemId = GetItemId(bagId, slotIndex)
+	if itemId == 0 then return false end
+
+	local t = ISL.SV.savedItems
+	if t[itemId] then
+		t[itemId] = nil
 	else
-		ISL.SV.savedItems[id] = true
+		t[itemId] = true
 	end
 
 	ISL.RefreshAll()
-	return ISL.IsItemSaved(bagId, slotIndex)
+	return t[itemId] == true
 end
 
 function ISL.GetMarkerInfo(bagId, slotIndex)
@@ -198,15 +217,22 @@ function ISL.GetMarkerInfo(bagId, slotIndex)
 end
 
 function ISL.IsItemSaved(bagId, slotIndex)
-	local items = ISL.SV.savedItems
-	return items[ISL.SignItemInstanceId(GetItemInstanceId(bagId, slotIndex))] == true
+	if ISL.IsUniqueItem(bagId, slotIndex) then
+		local link = GetItemLink(bagId, slotIndex, LINK_STYLE_DEFAULT)
+		if link == "" then return false end
+		return ISL.SV.savedUniqueItems[link] == true
+	end
+
+	local itemId = GetItemId(bagId, slotIndex)
+	if itemId == 0 then return false end
+	return ISL.SV.savedItems[itemId] == true
 end
 
 function ISL.GetMarkerAnchor()
-    local constants = { TOPLEFT, TOP, TOPRIGHT, RIGHT, BOTTOMRIGHT, BOTTOM, BOTTOMLEFT, LEFT, CENTER }
-    return constants[ISL.SV.markerAnchor],
-           ISL.SV.offsetX,
-           ISL.SV.offsetY
+	local constants = { TOPLEFT, TOP, TOPRIGHT, RIGHT, BOTTOMRIGHT, BOTTOM, BOTTOMLEFT, LEFT, CENTER }
+	return constants[ISL.SV.markerAnchor],
+		   ISL.SV.offsetX,
+		   ISL.SV.offsetY
 end
 
 function ISL.InitializeHooks()
@@ -240,7 +266,7 @@ function ISL.OnAddonLoaded(eventCode, addonName)
 	if addonName ~= ISL.name then return end
 	EM:UnregisterForEvent(ISL.name, EVENT_ADD_ON_LOADED)
 
-	ISL.SV = ZO_SavedVars:NewAccountWide("ItemSaverLite_SV", 1, nil, defaultSV)
+	ISL.SV = ZO_SavedVars:NewAccountWide("ItemSaverLite_SV", 3, nil, defaultSV)
 
 	ISL.RegisterMarkers()
 	ISL.SetupVendorFilter()

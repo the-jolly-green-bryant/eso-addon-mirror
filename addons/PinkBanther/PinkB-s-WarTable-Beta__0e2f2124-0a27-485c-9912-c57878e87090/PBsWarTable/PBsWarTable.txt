@@ -1,8 +1,8 @@
 ## Title: PinkB's War Table
 ## Author: PinkBanther
 ## Description: 三旗の戦卓 ― 帝位と星霜 ― / The Three Banners War Table. Three COM levels, local play and group duels.
-## Version: 0.10.4
-## AddOnVersion: 1004
+## Version: 0.12.0
+## AddOnVersion: 1200
 ## APIVersion: 101050 101051
 ## SavedVariables: PBsWarTableSavedVariables
 ## OptionalDependsOn: LibGroupBroadcast
@@ -18,6 +18,7 @@ Cards/Stealth.lua
 Cards/Siege.lua
 Cards/Revive.lua
 Cards/Horn.lua
+Cards/Supply.lua
 SHA256.lua
 Wire.lua
 Match.lua
@@ -35,6 +36,8 @@ Assets.lua
 Transition.lua
 Movement.lua
 UI.lua
+ModeMenu.xml
+ModeMenu.lua
 Menu.lua
 Main.lua
 Bindings.xml
@@ -46,6 +49,7 @@ assets/stealth.dds
 assets/siege.dds
 assets/revive.dds
 assets/horn.dds
+assets/supply.dds
 assets/flag.dds
 assets/crest.dds
 assets/elder_scroll.dds

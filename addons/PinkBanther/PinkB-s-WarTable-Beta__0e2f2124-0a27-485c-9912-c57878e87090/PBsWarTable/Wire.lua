@@ -1,7 +1,7 @@
 local W={}; PBWT.Wire=W
 W.K={INVITE=1,ACCEPT=2,START=3,READY=4,REQUEST=5,COMMIT=6,ACK=7,SYNC=8,REPLAY=9,REPLAY_ACK=10,RESIGN=11,CLOSE=12,PING=13,PONG=14,DECLINE=15}
 local names={[1]='end_turn',[2]='move',[3]='attack',[4]='horn_move',[10]='resign',[11]='choose_faction',[12]='invoke_scroll',[13]='roll_dice',[14]='choose_right',[15]='choose_order'}
-local cards={[5]='charge',[6]='stealth',[7]='siege',[8]='revive',[9]='horn'}
+local cards={[5]='charge',[6]='stealth',[7]='siege',[8]='revive',[9]='horn',[16]='supply'}
 function W.Integer(n,max) return type(n)=='number' and n==math.floor(n) and n>=0 and n<=max end
 function W.Pack(c,actor)
     local code
@@ -16,19 +16,22 @@ function W.Pack(c,actor)
     elseif code==2 or code==4 or code==5 or code==8 then target=0
     elseif code==3 or code==7 then x,y=0,0
     else target,x,y=0,0,0 end
-    if not W.Integer(id,12) or not W.Integer(target,12) or not W.Integer(x,5) or not W.Integer(y,5) then return nil end
-    return actor*1048576+(((code*16+id)*16+target)*8+x)*8+y
+    local C=PBWT.Config
+    if not W.Integer(id,C.MAX_PIECES) or not W.Integer(target,C.MAX_PIECES)
+        or not W.Integer(x,C.MAX_BOARD) or not W.Integer(y,C.MAX_BOARD) then return nil end
+    return actor*8388608+(((code*32+id)*32+target)*16+x)*16+y
 end
 function W.Unpack(value)
-    if not W.Integer(value,3145727) then return end
-    local actor=math.floor(value/1048576); value=value%1048576
+    if not W.Integer(value,25165823) then return end
+    local actor=math.floor(value/8388608); value=value%8388608
     if actor~=1 and actor~=2 then return end
-    local y=value%8; value=math.floor(value/8)
-    local x=value%8; value=math.floor(value/8)
-    local target=value%16; value=math.floor(value/16)
-    local id=value%16; local code=math.floor(value/16)
+    local y=value%16; value=math.floor(value/16)
+    local x=value%16; value=math.floor(value/16)
+    local target=value%32; value=math.floor(value/32)
+    local id=value%32; local code=math.floor(value/32)
     if not names[code] and not cards[code] then return end
-    if id>12 or target>12 or x>5 or y>5 then return end
+    local C=PBWT.Config
+    if id>C.MAX_PIECES or target>C.MAX_PIECES or x>C.MAX_BOARD or y>C.MAX_BOARD then return end
     local c={type=names[code] or 'card',card=cards[code]}
     if code==13 then
         if id>6 or target+x+y~=0 then return end

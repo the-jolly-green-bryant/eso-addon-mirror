@@ -2,6 +2,7 @@ local t={
 name="FavOptions",
 savedVars=nil
 }
+local e=UI_SETTING_PRIMARY_PLAYER_NAME_CONSOLE or UI_SETTING_PRIMARY_PLAYER_NAME_GAMEPAD
 local f={
 chatsize=nil,
 chatcolors={
@@ -80,7 +81,7 @@ choices={
 },
 [SETTING_PANEL_INTERFACE]={
 [SETTING_TYPE_UI]={
-[UI_SETTING_PRIMARY_PLAYER_NAME_GAMEPAD]={OPTIONS_FINITE_LIST},
+[e]={OPTIONS_FINITE_LIST},
 [UI_SETTING_SHOW_RAID_LIVES]={OPTIONS_FINITE_LIST},
 [UI_SETTING_SHOW_HOUSE_TRACKER]={OPTIONS_CHECKBOX},
 [UI_SETTING_SHOW_QUEST_TRACKER]={OPTIONS_CHECKBOX},
@@ -196,49 +197,49 @@ choices={
 },
 },
 }
-local l=false
-local s="|t24:24:/esoui/art/menubar/gamepad/gp_playermenu_icon_character.dds|t "
-local h="|cff6666"
-local r="|c66ff66"
+local r=false
+local l="|t24:24:/esoui/art/menubar/gamepad/gp_playermenu_icon_character.dds|t "
+local s="|cff6666"
+local i="|c66ff66"
 local function o()
-if l then return end
-l=true
+if r then return end
+r=true
 local u=false
 for e=1,GAMEPAD_OPTIONS.optionsList:GetNumEntries()do
 local a=GAMEPAD_OPTIONS.optionsList:GetEntryData(e)
 local e=a.panel
-local c=a.system
-local l=a.settingId
+local r=a.system
+local c=a.settingId
 local e=t.savedVars.choices[e]
-local e=e and e[c]
-local t=e and e[l]
+local e=e and e[r]
+local t=e and e[c]
 if t then
-local o=a.text
-local i=a.gamepadTextOverride
-local n=a.consoleTextOverride
+local n=a.text
+local o=a.gamepadTextOverride
+local h=a.consoleTextOverride
 local e=""
-if n then e=n
-elseif i then e=i
+if h then e=h
 elseif o then e=o
+elseif n then e=n
 end
 local m=e
 if type(e)=="number"then e=GetString(e)end
+if e:find(l,1,true)then e=e:gsub(l,"")end
 if e:find(s,1,true)then e=e:gsub(s,"")end
-if e:find(h,1,true)then e=e:gsub(h,"")end
-if e:find(r,1,true)then e=e:gsub(r,"")end
+if e:find(i,1,true)then e=e:gsub(i,"")end
 if e:find("|r",1,true)then e=e:gsub("|r","")end
 if t[2]~=nil and t[1]~=OPTIONS_SLIDER then
-if t[2]==GetSetting(c,l)then
-e=r..e.."|r"
+if t[2]==GetSetting(r,c)then
+e=i..e.."|r"
 else
-e=h..e.."|r"
+e=s..e.."|r"
 end
 end
-e=s..e
+e=l..e
 if e~=m then
-if n then a.consoleTextOverride=e
-elseif i then a.gamepadTextOverride=e
-elseif o then a.text=e
+if h then a.consoleTextOverride=e
+elseif o then a.gamepadTextOverride=e
+elseif n then a.text=e
 end
 u=true
 end
@@ -247,51 +248,51 @@ end
 if u then
 zo_callLater(function()GAMEPAD_OPTIONS.optionsList:Commit()end,1)
 end
-l=false
+r=false
 end
 local e=false
-local i=nil
 local a=nil
+local i=nil
 local function s(n,t)
 if t==SCENE_SHOWING then
 if not e then
-i=ZO_HorizontalScrollList_Gamepad.MoveLeft
+a=ZO_HorizontalScrollList_Gamepad.MoveLeft
 ZO_HorizontalScrollList_Gamepad.MoveLeft=function(e)
-i(e)
+a(e)
 zo_callLater(o,50)
 end
-a=ZO_HorizontalScrollList_Gamepad.MoveRight
+i=ZO_HorizontalScrollList_Gamepad.MoveRight
 ZO_HorizontalScrollList_Gamepad.MoveRight=function(t)
-a(t)
+i(t)
 zo_callLater(o,50)
 end
 e=true
 end
 elseif t==SCENE_HIDING and e then
-ZO_HorizontalScrollList_Gamepad.MoveLeft=i
-ZO_HorizontalScrollList_Gamepad.MoveRight=a
+ZO_HorizontalScrollList_Gamepad.MoveLeft=a
+ZO_HorizontalScrollList_Gamepad.MoveRight=i
 e=false
 end
 end
 local function n()
-local i=false
+local a=false
 for e=1,GAMEPAD_OPTIONS.optionsList:GetNumEntries()do
 local e=GAMEPAD_OPTIONS.optionsList:GetEntryData(e)
 local n=e.panel
-local o=e.system
-local a=e.settingId
+local i=e.system
+local o=e.settingId
 local e=t.savedVars.choices[n]
+local e=e and e[i]
 local e=e and e[o]
-local e=e and e[a]
 if e then
-local t=GetSetting(o,a)
+local t=GetSetting(i,o)
 if e[2]~=t then
 e[2]=t
-i=true
+a=true
 end
 end
 end
-if i then
+if a then
 zo_callLater(o,10)
 end
 end
@@ -345,14 +346,14 @@ end)
 end
 local function a()
 for e,a in pairs(t.savedVars.chatcolors)do
-local i,a,o=GetChatCategoryColor(e)
-t.savedVars.chatcolors[e]={i,a,o}
+local o,i,a=GetChatCategoryColor(e)
+t.savedVars.chatcolors[e]={o,i,a}
 end
 t.savedVars.chatsize=GetGamepadChatFontSize()
 end
 local function n()
-for e,t in pairs(t.savedVars.chatcolors)do
-SetChatCategoryColor(e,unpack(t))
+for t,e in pairs(t.savedVars.chatcolors)do
+SetChatCategoryColor(t,unpack(e))
 end
 if t.savedVars.chatsize then
 SetGamepadChatFontSize(t.savedVars.chatsize)
@@ -384,8 +385,8 @@ ZO_PostHook("SetChatCategoryColor",function(o,i,a,e)
 t.savedVars.chatcolors[o]={i,a,e}
 end)
 ZO_PostHook("ResetChatCategoryColorToDefault",function(e)
-local a,o,i=GetChatCategoryColor(e)
-t.savedVars.chatcolors[e]={a,o,i}
+local i,o,a=GetChatCategoryColor(e)
+t.savedVars.chatcolors[e]={i,o,a}
 end)
 ZO_PostHook("SetGamepadChatFontSize",function(e)
 t.savedVars.chatsize=e
@@ -395,16 +396,16 @@ local e=GetGamepadChatFontSize()
 t.savedVars.chatsize=e
 end)
 local i=ZO_ChatMenu_Gamepad.AddMessage
-function ZO_ChatMenu_Gamepad:AddMessage(t,e,a,o,h,n,s)
-local l,u,r=GetChatCategoryColor(e)
-if l==0 and u==0 and r==0 then return end
-return i(self,t,e,a,o,h,n,s)
+function ZO_ChatMenu_Gamepad:AddMessage(a,e,o,t,n,h,s)
+local r,l,u=GetChatCategoryColor(e)
+if r==0 and l==0 and u==0 then return end
+return i(self,a,e,o,t,n,h,s)
 end
-local i=ZO_GamepadChatSystem.OnFormattedChatMessage
-function ZO_GamepadChatSystem:OnFormattedChatMessage(t,e,n,r,s,h,o)
-local a,u,l=GetChatCategoryColor(e)
-if a==0 and u==0 and l==0 then return end
-return i(self,t,e,n,r,s,h,o)
+local t=ZO_GamepadChatSystem.OnFormattedChatMessage
+function ZO_GamepadChatSystem:OnFormattedChatMessage(r,e,h,o,a,i,s)
+local n,u,l=GetChatCategoryColor(e)
+if n==0 and u==0 and l==0 then return end
+return t(self,r,e,h,o,a,i,s)
 end
 end
 EVENT_MANAGER:RegisterForEvent(t.name,EVENT_ADD_ON_LOADED,c)

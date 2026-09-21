@@ -111,18 +111,17 @@ function S.ShowStunAlert(msgText, soundName, color, duration)
 	StunAlert.label:SetText("|c" .. color .. msgText .. "|r")
 	StunAlert:SetHidden(false)
 
-	zo_callLater(function()
+	if duration then
+		zo_callLater(function()
 			S.HideAlert()
+			if S.SV.blurOnStun then
+				SetFullscreenEffect(FULLSCREEN_EFFECT_NONE)
+			end
+			if S.SV.hideGameUI then
+				ToggleShowIngameGui()
+			end
 		end, duration)
-
-	zo_callLater(function()
-		if S.SV.blurOnStun then
-			SetFullscreenEffect(FULLSCREEN_EFFECT_NONE)
-		end
-		if S.SV.hideGameUI then
-			ToggleShowIngameGui()
-		end
-	end, duration)
+	end
 end
 
 function S.HideAlert()
@@ -185,7 +184,7 @@ function S.SetStunState(_, stunned)
 				PlaySound(SOUNDS[S.SV.stunSound])
 			end
 
-			S.ShowStunAlert("STUNNED!", nil, S.SV.stunColor, 1000)
+			S.ShowStunAlert("STUNNED!", nil, S.SV.stunColor)
 		end
 	else
 		if stunnedMode then

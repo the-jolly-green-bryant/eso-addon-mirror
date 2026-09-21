@@ -16,7 +16,9 @@ local messages = {
     outside="盤外です", move_range="縦横の移動範囲内を選んでください", blocked="駒が移動を妨げています",
     no_action="通常行動は使用済みです。カードまたはターン終了を選んでください", enemy_required="敵駒を選んでください",
     attack_range="縦横に隣接する敵を選んでください", hidden="隠密中の斥候は攻撃できません",
-    siege_target="旗上の敵守護者を選んでください", no_horn_move="角笛の追加移動はありません",
+    siege_target="旗上の敵を選んでください", no_horn_move="角笛の追加移動はありません",
+    guardian_card_move="守護者は騎兵突撃・角笛では動かせません",
+    supply_target="補給で補給自身は選べません", supply_unused="まだ使用していない札は補給できません", supplied="札を1回分補給しました",
     choose_faction_required="先に陣営を選択してください", invalid_faction="陣営が不正です", faction_selected="陣営を確定しました",
     no_card_target="この駒には札の有効な対象がありません",
     card_spent="このカードは使用済みです", scout_required="自軍の斥候を選んでください",
@@ -41,6 +43,13 @@ local function border(control,w,h,color,level,thickness)
         control.pbwtBorder[#control.pbwtBorder+1]=line
     end
 end
+local function resizeBorder(control,w,h,thickness)
+    local t=thickness or 2
+    for i,r in ipairs({{0,0,w,t},{0,h-t,w,t},{0,t,t,h-2*t},{w-t,t,t,h-2*t}}) do
+        local line=control.pbwtBorder[i]
+        line:SetAnchor(TOPLEFT,control,TOPLEFT,r[1],r[2]); line:SetDimensions(r[3],r[4])
+    end
+end
 local function borderColor(control,color)
     control:SetEdgeColor(unpack(color))
     for _,line in ipairs(control.pbwtBorder) do line:SetCenterColor(unpack(color)) end
@@ -62,8 +71,9 @@ local function focusMarker(parent,w,h)
     frame:SetHidden(true)
     return frame,text
 end
-function UI.New(mode,difficulty)
-    local self=setmetatable({state=E.New(true),x=1,y=3,focus="board",cardIndex=1,sessions={}},UI)
+function UI.New(mode,difficulty,variant)
+    variant=C.VARIANTS[variant] and variant or "light"
+    local self=setmetatable({state=E.New(true,variant),variant=variant,x=1,y=3,focus="board",cardIndex=1,sessions={}},UI)
     self.mode=mode or "solo"
     if self.mode=='tutorial' then self.tutorial=PBWT.Tutorial.New();self.state=self.tutorial.state end
     self.difficulty=PBWT.AI.Difficulty(difficulty)
@@ -84,7 +94,8 @@ function UI.New(mode,difficulty)
     self.title=label(root,220,22,1000,52,"ZoFontGamepad42"); self.title:SetText(C.TITLE); self.title:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     local sub=label(root,360,72,720,30,"ZoFontGamepad22"); sub:SetText(C.SUBTITLE); sub:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     self.turn=label(root,400,115,640,44); self.turn:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-    self.players={label(root,30,155,320,110),label(root,1090,155,320,110)}
+    self.playerPanels={box(root,24,148,336,124),box(root,1084,148,336,124)}
+    self.players={label(self.playerPanels[1],26,18,246,96),label(self.playerPanels[2],26,18,246,96)}
     self.details=label(root,30,280,350,505)
     self.scrollPanel=box(root,30,600,350,188)
     self.scrollTitle=label(self.scrollPanel,82,12,258,50,"ZoFontGamepad22")
@@ -96,8 +107,8 @@ function UI.New(mode,difficulty)
         end
     end)
     self.cells={}
-    for y=1,C.SIZE do
-        for x=1,C.SIZE do
+    for y=1,C.MAX_BOARD do
+        for x=1,C.MAX_BOARD do
             local cell=box(root,420+(x-1)*120,190+(y-1)*120,110,110,(x+y)%2==0 and T.tile or T.tileAlt)
             border(cell,110,110,T.brass)
             local range=box(cell,6,6,98,98,{0.35,0.75,0.85,0.22}); border(range,98,98,T.cursor); range:SetHidden(true)
@@ -123,14 +134,14 @@ function UI.New(mode,difficulty)
             cell:SetHandler("OnMouseUp",function(_,button,inside)
                 if button==MOUSE_BUTTON_INDEX_LEFT and inside then self.x,self.y,self.focus=cx,cy,"board"; self:Confirm() end
             end)
-            self.cells[(y-1)*C.SIZE+x]={root=cell,range=range,rangeText=rangeText,icon=icon,name=name,namePanel=namePanel,flag=flag,flagPanel=flagPanel,effect=effect,effectPanel=effectPanel,selected=selected,cursor=cursor}
+            self.cells[(y-1)*C.MAX_BOARD+x]={root=cell,range=range,rangeText=rangeText,icon=icon,name=name,namePanel=namePanel,flag=flag,flagPanel=flagPanel,effect=effect,effectPanel=effectPanel,selected=selected,cursor=cursor,x=x,y=y}
         end
     end
     self.cardControls={}
     for i,id in ipairs(C.CARD_ORDER) do
-        local panel=box(root,1080,270+(i-1)*84,320,78)
-        local text=label(panel,12,12,295,40)
-        local marker,markerText=focusMarker(panel,320,78)
+        local panel=box(root,1080,270+(i-1)*72,320,68)
+        local text=label(panel,12,8,295,40)
+        local marker,markerText=focusMarker(panel,320,68)
         self.cardControls[i]={panel=panel,text=text,focusMarker=marker,focusText=markerText}
     end
     self.endPanel=box(root,1080,710,320,68)
@@ -178,6 +189,78 @@ function UI.New(mode,difficulty)
         end
     end)
     return self
+end
+-- One control set covers every board. Sizes and offsets scale from the 110px cell of the
+-- light board, and squares outside the current variant are hidden.
+function UI:Cell(x,y) return self.cells[(y-1)*C.MAX_BOARD+x] end
+function UI:LayoutBoard()
+    local size=E.Rules(self.state).SIZE
+    if self.boardSize==size then return end
+    self.boardSize=size
+    local pitch=math.floor(600/size)
+    local gap=math.max(4,math.floor(pitch*0.084+0.5))
+    local cellSize=pitch-gap
+    local originX,originY=420+math.floor((600-pitch*size)/2),190+math.floor((600-pitch*size)/2)
+    local k=cellSize/110
+    local function scale(v) return math.floor(v*k+0.5) end
+    for y=1,C.MAX_BOARD do for x=1,C.MAX_BOARD do
+        local cell=self:Cell(x,y)
+        local inside=x<=size and y<=size
+        cell.root:SetHidden(not inside)
+        if not inside then
+            -- Squares the smaller board does not use must not keep the other board's tablets.
+            cell.hasPiece=nil; cell.rangeKind=nil
+            cell.icon:SetHidden(true); cell.range:SetHidden(true)
+            cell.name:SetText(""); cell.flag:SetText(""); cell.effect:SetText("")
+            cell.namePanel:SetHidden(true); cell.flagPanel:SetHidden(true); cell.effectPanel:SetHidden(true)
+            cell.selected:SetHidden(true); cell.cursor:SetHidden(true)
+            if cell.flagIcon then cell.flagIcon:SetHidden(true) end
+        end
+        if inside then
+            cell.root:SetAnchor(TOPLEFT,self.content,TOPLEFT,originX+(x-1)*pitch,originY+(y-1)*pitch)
+            cell.root:SetDimensions(cellSize,cellSize)
+            resizeBorder(cell.root,cellSize,cellSize)
+            local inset=scale(6)
+            cell.range:SetAnchor(TOPLEFT,cell.root,TOPLEFT,inset,inset)
+            cell.range:SetDimensions(cellSize-inset*2,cellSize-inset*2)
+            resizeBorder(cell.range,cellSize-inset*2,cellSize-inset*2)
+            cell.rangeText:SetAnchor(TOPLEFT,cell.range,TOPLEFT,0,scale(32))
+            cell.rangeText:SetDimensions(cellSize-inset*2,scale(28))
+            cell.icon:SetAnchor(TOP,cell.root,TOP,0,scale(20)); cell.icon:SetDimensions(scale(68),scale(68))
+            cell.namePanel:SetAnchor(TOPLEFT,cell.root,TOPLEFT,scale(2),0)
+            cell.namePanel:SetDimensions(cellSize-scale(4),scale(22))
+            cell.name:SetAnchor(TOPLEFT,cell.root,TOPLEFT,scale(2),0)
+            cell.name:SetDimensions(cellSize-scale(4),scale(28))
+            cell.flagPanel:SetAnchor(TOPLEFT,cell.root,TOPLEFT,0,cellSize-scale(22))
+            cell.flagPanel:SetDimensions(cellSize,scale(22))
+            local textInset=cell.flagIcon and scale(24) or 0
+            cell.flag:SetAnchor(TOPLEFT,cell.root,TOPLEFT,textInset,cellSize-scale(28))
+            cell.flag:SetDimensions(cellSize-textInset,scale(28))
+            if cell.flagIcon then
+                cell.flagIcon:SetAnchor(TOPLEFT,cell.root,TOPLEFT,scale(5),cellSize-scale(20))
+                cell.flagIcon:SetDimensions(scale(18),scale(18))
+            end
+            cell.effectPanel:SetAnchor(TOPLEFT,cell.root,TOPLEFT,scale(3),scale(64))
+            cell.effectPanel:SetDimensions(cellSize-scale(6),scale(22))
+            cell.effect:SetAnchor(TOPLEFT,cell.root,TOPLEFT,0,scale(64))
+            cell.effect:SetDimensions(cellSize,scale(22))
+            cell.selected:SetAnchor(TOPLEFT,cell.root,TOPLEFT,scale(5),scale(5))
+            cell.selected:SetDimensions(cellSize-scale(10),cellSize-scale(10))
+            resizeBorder(cell.selected,cellSize-scale(10),cellSize-scale(10),4)
+            cell.cursor:SetAnchor(TOPLEFT,cell.root,TOPLEFT,-scale(3),-scale(3))
+            cell.cursor:SetDimensions(cellSize+scale(6),cellSize+scale(6))
+            resizeBorder(cell.cursor,cellSize+scale(6),cellSize+scale(6),5)
+        end
+    end end
+    self.boardGeom={originX=originX,originY=originY,pitch=pitch,cellSize=cellSize,
+        icon=scale(68),iconTop=scale(20),k=k}
+    local frame=pitch*size+12
+    self.boardFrame:SetAnchor(TOPLEFT,self.content,TOPLEFT,originX-12,originY-12)
+    self.boardFrame:SetDimensions(frame+12,frame+12)
+    if self.presentation and self.presentation.board then
+        self.presentation.board:SetDimensions(frame+12,frame+12)
+    end
+    self.x=math.min(self.x,size); self.y=math.min(self.y,size)
 end
 function UI:Show()
     if self.transition.phase then return end
@@ -253,15 +336,19 @@ function UI:TickComputer()
     end
 end
 function UI:ComputerName() return "COM"..C.AI.DIFFICULTIES[self.difficulty].name end
-function UI:SessionKey(mode,difficulty) return mode=="solo" and (mode..":"..difficulty) or mode end
-function UI:SetMode(mode,difficulty)
+function UI:SessionKey(mode,difficulty,variant)
+    variant=variant or self.variant
+    return (mode=="solo" and (mode..":"..difficulty) or mode)..":"..variant
+end
+function UI:SetMode(mode,difficulty,variant)
     difficulty=PBWT.AI.Difficulty(difficulty or self.difficulty)
-    if mode==self.mode and difficulty==self.difficulty then return end
+    variant=C.VARIANTS[variant] and variant or (mode=="tutorial" and "light" or self.variant)
+    if mode==self.mode and difficulty==self.difficulty and variant==self.variant then return end
     self:StopComputer();self.movement:Reset()
-    self.sessions[self:SessionKey(self.mode,self.difficulty)]={state=self.state,computer=self.computer,tutorial=self.tutorial}
-    local session=self.sessions[self:SessionKey(mode,difficulty)]
-    self.mode,self.difficulty=mode,difficulty
-    self.state=session and session.state or E.New(true)
+    self.sessions[self:SessionKey(self.mode,self.difficulty,self.variant)]={state=self.state,computer=self.computer,tutorial=self.tutorial}
+    local session=self.sessions[self:SessionKey(mode,difficulty,variant)]
+    self.mode,self.difficulty,self.variant=mode,difficulty,variant
+    self.state=session and session.state or E.New(true,variant)
     self.tutorial=mode=='tutorial' and (session and session.tutorial or PBWT.Tutorial.New()) or nil
     if self.tutorial then self.state=self.tutorial.state end
     self.computer=session and session.computer or (mode=="solo" and PBWT.Solo.New(self.state,difficulty,GetGameTimeMilliseconds) or nil)
@@ -271,11 +358,12 @@ function UI:SetMode(mode,difficulty)
     self:SyncComputer()
 end
 function UI:NewGame()
-    self:StopComputer();self.movement:Reset(); self.state=E.New(true)
+    self:StopComputer();self.movement:Reset(); self.state=E.New(true,self.variant)
     if self.mode=='tutorial' then self.tutorial=PBWT.Tutorial.New();self.state=self.tutorial.state end
     self.computer=self.mode=="solo" and PBWT.Solo.New(self.state,self.difficulty,GetGameTimeMilliseconds) or nil
     self.selected,self.card,self.focus,self.help=nil,nil,"board",false
     self.x,self.y=1,3; self.notice="新しい対局です"
+    self.boardSize=nil
     self:Refresh(); self:SyncComputer()
 end
 function UI:LoadTutorial(advance)
@@ -323,12 +411,12 @@ function UI:Navigate(direction)
     elseif self.focus=="end" then
         if direction=="left" then self.focus="board" end
         if direction=="up" then self.focus="cards" end
-    elseif direction=="right" and self.x==C.SIZE then self.focus="end"
+    elseif direction=="right" and self.x==E.Rules(self.state).SIZE then self.focus="end"
     elseif direction=="right" then self.x=self.x+1
     elseif direction=="left" and self.x==1 and not self.card then self.focus="scroll"; self.selected=nil
     elseif direction=="left" then self.x=math.max(1,self.x-1)
     elseif direction=="up" then self.y=math.max(1,self.y-1)
-    elseif direction=="down" then self.y=math.min(C.SIZE,self.y+1) end
+    elseif direction=="down" then self.y=math.min(E.Rules(self.state).SIZE,self.y+1) end
     self:Refresh()
 end
 function UI:Cycle(delta)
@@ -432,8 +520,14 @@ function UI:Confirm()
     if self.focus=="scroll" then self:Submit({type="invoke_scroll"}); return end
     if self.focus=="cards" then
         local id=C.CARD_ORDER[self.cardIndex]
+        if self.card and PBWT.Cards.definitions[self.card].targeting=="card" then
+            self:Submit({type="card",card=self.card,id=self.cardIndex}); return
+        end
         if not s.cards[s.player][id] then self.notice=messages.card_spent; self:Refresh(); return end
         self.card,self.selected,self.focus,self.help=id,nil,"board",false
+        if PBWT.Cards.definitions[id].targeting=="card" then
+            self.focus="cards"; self.notice="戻す使用済みの札を選んでください"; self:Refresh(); return
+        end
         if PBWT.Cards.definitions[id].targeting=="home" then
             for _,p in ipairs(s.pieces) do
                 if p.owner==s.player and p.kind=="soldier" and not p.alive then self.selected=p.id; break end
@@ -512,7 +606,7 @@ function UI:Refresh()
     -- The opaque screen always fills GuiRoot. Only the safe-area content scales.
     self.content:SetScale(math.min((GuiRoot:GetWidth()-2*layout.side)/layout.width,
         (GuiRoot:GetHeight()-layout.top-layout.bottom)/layout.height))
-    self.turn:SetText(string.format("手番 %d / %d  •  %s  •  通常行動 %d",s.turn,C.MAX_TURNS,self:IsComputerTurn() and "COM思考中" or "P"..s.player,s.actions))
+    self.turn:SetText(string.format("%s  •  手番 %d / %d  •  %s  •  通常行動 %d",E.Rules(s).short,s.turn,E.Rules(s).MAX_TURNS,self:IsComputerTurn() and "COM思考中" or "P"..s.player,s.actions))
     if s.scrollOwner~=0 and s.status=='playing' then
         self.turn:SetText('P'..s.scrollOwner..' 星霜開封中 • P'..(3-s.scrollOwner)..'の手番終了で決着')
     end
@@ -524,17 +618,19 @@ function UI:Refresh()
     end
     for player=1,2 do
         local flags,pieces=E.Counts(s,player)
-        self.players[player]:SetColor(unpack(T.Player(player,s)))
+        self.players[player]:SetColor(unpack(T.OnWood(T.Player(player,s))))
         local name=self.mode=="solo" and (player==1 and "あなた" or self:ComputerName()) or (player==s.player and "手番" or "待機")
         if self.mode=="online" and self.network then name=player==self.network.seat and "あなた" or "対戦相手" end
         local faction=PBWT.Factions.Get(s,player)
         if faction then name=name.." / "..faction.short end
         PBWT.Typography.Apply(self.players[player],"ZoFontGamepad22")
-        self.players[player]:SetText(string.format("P%d  %s\n%d / %d点\n旗 %d  •  駒 %d",player,name,s.score[player],C.WIN_SCORE,flags,pieces))
+        self.players[player]:SetText(string.format("P%d  %s\n%d / %d点%s\n旗 %d  •  駒 %d",player,name,s.score[player],E.WinScore(s,player),E.Komi(s,player)>0 and "（後攻）" or "",flags,pieces))
     end
     local rangePiece,rangeReference=self:MovementSource()
-    for y=1,C.SIZE do for x=1,C.SIZE do
-        local cell=self.cells[(y-1)*C.SIZE+x]
+    self:LayoutBoard()
+    local size,compact=E.Rules(s).SIZE,E.Rules(s).SIZE>5
+    for y=1,size do for x=1,size do
+        local cell=self:Cell(x,y)
         local kind=self:MovementAt(rangePiece,rangeReference,x,y)
         cell.rangeKind=kind; cell.range:SetHidden(not kind)
         if kind then
@@ -543,7 +639,8 @@ function UI:Refresh()
             borderColor(cell.range,color); cell.rangeText:SetColor(unpack(color)); cell.rangeText:SetText(style.text)
         end
         local p=E.At(s,x,y)
-        cell.name:SetText(p and ("P"..p.owner.." "..C.PIECES[p.kind].name) or "")
+        local pieceName=p and (compact and ("P"..p.owner..C.PIECES[p.kind].name:sub(1,3)) or ("P"..p.owner.." "..C.PIECES[p.kind].name)) or ""
+        cell.name:SetText(pieceName)
         cell.namePanel:SetHidden(not p)
         cell.hasPiece=p~=nil
         cell.icon:SetHidden(true)
@@ -556,7 +653,9 @@ function UI:Refresh()
         end
         local owner,index=E.Flag(s,x,y)
         cell.flagPanel:SetHidden(not index)
-        cell.flag:SetText(index and (C.FLAGS[index].points.."点 "..(owner==0 and "中立" or "P"..owner)) or "")
+        local keep=index and E.Rules(s).FLAGS[index]
+        if cell.flagIcon then cell.flagIcon:SetHidden(not keep or not PBWT.Assets.IsUsable(cell.flagIcon)) end
+        cell.flag:SetText(keep and ((keep.code or (keep.points.."点")).." "..(owner==0 and "中立" or "P"..owner)) or "")
         cell.flag:SetColor(unpack(owner and owner~=0 and T.Player(owner,s) or T.text))
         local eligible=self.card and self:CardTargetAt(x,y)
         local practice=self.mode=='tutorial' and self.tutorial:TargetAt(x,y)
@@ -599,39 +698,52 @@ function UI:Refresh()
     if self.showRecords then
         text=PBWT.Records.Text(self.recordIndex)
     elseif self.focus=="scroll" then
-        text="星霜の書 — 帝位の宣告\n\n開封には4点と通常行動を消費。\n相手の次の手番終了まで維持すれば勝利。\n読者は防御1。移動・隠密でも失敗。\n敵の旗進入でも即座に失敗。\n失敗時の返金・再使用なし。\n相手の10点到達が先なら敗北。\n\n"..(canOpen and "×：開封 / ○・右：戻る" or (messages[scrollWhy] or scrollWhy))
+        text="星霜の書 — 帝位の宣告\n\n開封には"..E.Rules(s).SCROLL.COST.."点と通常行動を消費。\n相手の次の手番終了まで維持すれば勝利。\n読者は防御1。移動・隠密でも失敗。\n敵の旗進入でも即座に失敗。\n失敗時の返金・再使用なし。\n相手の"..E.WinScore(s,3-s.player).."点到達が先なら敗北。\n\n"..(canOpen and "×：開封 / ○・右：戻る" or (messages[scrollWhy] or scrollWhy))
     elseif self.help then
-        text="1手番に1駒を移動か攻撃。\n攻撃≧防御で撃破。\n旗は手番終了時に制圧。\n支配旗から1 / 2 / 1点。\n10点先取。30手番で判定。\n\n星霜の書：左端から左で詳細。\n4点＋通常行動で開封、\n相手の次の手番を凌げば勝利。\n敵の旗進入か読者撃破で阻止。\n\n□で札、○で解除。右端から右で終了。"
+        local rules=E.Rules(s)
+        local points={} for _,f in ipairs(rules.FLAGS) do points[#points+1]=f.points end
+        text="1手番に1駒を移動か攻撃。\n攻撃≧防御で撃破。\n"..rules.name.."："..rules.SIZE.."×"..rules.SIZE.."、砦"..#rules.FLAGS.."。\n旗は手番終了時に制圧。\n支配旗から"..table.concat(points," / ").."点。\n"..(rules.EMPEROR and "全砦を支配すれば即・皇帝勝利。\n" or "").."先攻"..rules.WIN_SCORE.."点・後攻"..(rules.WIN_SCORE+rules.KOMI).."点で勝利。\n後攻は最初の手番だけ2回行動。\n"..rules.MAX_TURNS.."手番で判定（コミ込み）。\n\n星霜の書：左端から左で詳細。\n"..rules.SCROLL.COST.."点＋通常行動で開封、\n相手の次の手番を凌げば勝利。\n敵の旗進入か読者撃破で阻止。\n\n□で札、○で解除。右端から右で終了。"
     elseif self.card or self.focus=="cards" then
         local id=self.card or C.CARD_ORDER[self.cardIndex]
         text=PBWT.Cards.definitions[id].name.."\n\n"..PBWT.Cards.definitions[id].description
         if self.card then
             local targeting=PBWT.Cards.definitions[id].targeting
             local sourceStage=not self.selected and (targeting=="destination" or targeting=="enemy")
-            local prompt=sourceStage and "自軍駒を選択" or targeting=="home" and "復帰先の空きマスを選択" or targeting=="destination" and "移動先を選択" or targeting=="enemy" and "旗上の敵守護者を選択" or "対象の自軍駒を選択"
-            local valid,reason=self:CardTargetAt(self.x,self.y)
+            local prompt=sourceStage and "自軍駒を選択" or targeting=="home" and "復帰先の空きマスを選択" or targeting=="destination" and "移動先を選択" or targeting=="enemy" and "旗上の敵を選択" or targeting=="card" and "使用済みの札を選択" or "対象の自軍駒を選択"
+            local valid,reason
+            if targeting=="card" then valid,reason=PBWT.Cards.Preview(s,s.player,{type="card",card=self.card,id=self.cardIndex})
+            else valid,reason=self:CardTargetAt(self.x,self.y) end
             text=text.."\n\n"..prompt.."\n金枠・対象：選択可能\n\n"
             if sourceStage then text=text..(valid and "×：この駒を選択" or (messages[reason] or reason))
             elseif valid then
                 text=text.."予測："..(messages[reason] or reason)
                 if id=="siege" and p then
                     local attacker=E.Piece(s,self.selected)
-                    text=text..string.format("\n攻撃%d / 防御%d→%d",E.Attack(s,attacker),E.Defense(s,p),E.Defense(s,p,true))
+                    text=text..string.format("\n攻撃%d→%d / 防御%d→%d",E.Attack(s,attacker),E.Attack(s,attacker,true),E.Defense(s,p),E.Defense(s,p,true))
                 end
                 text=text.."\n×で実行・札を消費"
             else text=text..(messages[reason] or reason) end
         end
-    elseif p then
-        local spec=C.PIECES[p.kind]
-        text=string.format("P%d %s\n攻撃 %d / 防御 %d\n移動 縦横%dマス\n%s%s",p.owner,spec.name,E.Attack(s,p),E.Defense(s,p),E.MoveRange(s,p),p.hiddenUntil and "隠密中\n" or "",s.horn[p.id] and "角笛：追加1マス移動可\n" or "")
-        local faction=PBWT.Factions.Get(s,p.owner)
+    elseif p or E.Flag(s,self.x,self.y) then
+        local owner,index=E.Flag(s,self.x,self.y)
+        local keep=index and E.Rules(s).FLAGS[index]
+        local keepText=keep and ((keep.name or "旗").."（"..keep.points.."点・"..(owner==0 and "中立" or "P"..owner.."支配").."）\n") or ""
+        local spec=p and C.PIECES[p.kind]
+        text=keepText..(p and "" or (E.Rules(s).EMPEROR and "\n六砦すべてを支配すれば皇帝即位で勝利。" or "空の砦。駒を置いて手番を終えれば支配できます。"))
+        if p then text=string.format("P%d %s\n攻撃 %d / 防御 %d\n移動 縦横%dマス\n%s%s",p.owner,spec.name,E.Attack(s,p),E.Defense(s,p),E.MoveRange(s,p),p.hiddenUntil and "隠密中\n" or "",s.horn[p.id] and "角笛：追加1マス移動可\n" or "")
+        text=keepText..text end
+        local faction=p and PBWT.Factions.Get(s,p.owner)
         if faction then text=text.."\n"..faction.short.."："..faction.ability.."\n"..faction.description end
-        if self.selected and p.owner~=s.player then
+        if p and self.selected and p.owner~=s.player then
             local attacker=E.Piece(s,self.selected)
             local ok,why=E.CanAttack(s,attacker,p,false)
             text=text.."\n"..(ok and (E.Attack(s,attacker)>=E.Defense(s,p) and "攻撃予測：撃破" or "攻撃予測：防御を崩せない") or (messages[why] or why))
         end
-    else text="三つの旗を奪い合う戦卓。\n\n駒を選び、移動先か敵を決定してください。\n\n旗は空けても支配が続きます。\n\n△：ルールを表示" end
+    else
+        local rules=E.Rules(s)
+        text=(#rules.FLAGS==3 and "三つの旗" or "六つの砦").."を奪い合う戦卓。\n\n駒を選び、移動先か敵を決定してください。\n\n旗は空けても支配が続きます。\n"..
+            (rules.EMPEROR and "\n六砦すべてを支配すれば皇帝即位。\n" or "").."\n△：ルールを表示"
+    end
     if rangePiece and not self.help then
         text=text.."\n\n"..(rangeReference and "参考範囲（現在の行動可否は含まない）" or "青白：移動 / 金：角笛")
     end
@@ -640,7 +752,7 @@ function UI:Refresh()
     self.presentation:Refresh()
     self.factionUI:Refresh()
     if s.status=="finished" then
-        self.status:SetText((s.winner==0 and "引き分け" or "P"..s.winner.."の勝利").."  •  "..(s.reason=="elder_scroll" and "星霜の書による決着" or s.reason=="score" and "10点到達" or "30手番判定").."  •  ×で新規対局")
+        self.status:SetText((s.winner==0 and "引き分け" or "P"..s.winner.."の勝利").."  •  "..(s.reason=="elder_scroll" and "星霜の書による決着" or s.reason=="emperor" and "全砦制圧・皇帝即位" or s.reason=="score" and (s.winner and E.WinScore(s,s.winner) or E.Rules(s).WIN_SCORE).."点到達" or E.Rules(s).MAX_TURNS.."手番判定").."  •  ×で新規対局")
     else self.status:SetText(self.notice or "") end
     if self.mode=="online" and self.network then
         if self.network.phase=="closed" then self.status:SetText(self.network.message.."  •  ×で戻る")

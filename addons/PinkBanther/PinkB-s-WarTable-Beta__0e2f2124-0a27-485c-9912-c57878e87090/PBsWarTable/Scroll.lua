@@ -4,13 +4,19 @@ function R.Reader(s)
     return s.scrollOwner~=0 and PBWT.Engine.Piece(s,s.scrollReader) or nil
 end
 function R.Position(s,player)
-    local E,C=PBWT.Engine,PBWT.Config
-    local flag=C.FLAGS[C.SCROLL.CENTER_FLAG]
-    local p=E.At(s,flag.x,flag.y)
+    local E=PBWT.Engine
+    local rules=E.Rules(s); local scroll=rules.SCROLL
+    -- The reader stands on the seat of the empire: the centre keep on the light board,
+    -- the Imperial City itself on the standard one.
+    local p=E.At(s,scroll.SQUARE.x,scroll.SQUARE.y)
     if not p or p.owner~=player or p.hiddenUntil then return false,'scroll_reader' end
     local count=E.Counts(s,player)
-    if s.flags[C.SCROLL.CENTER_FLAG]~=player or count<C.SCROLL.FLAGS_REQUIRED then return false,'scroll_flags' end
-    for _,f in ipairs(C.FLAGS) do
+    if scroll.SQUARE_IS_FLAG then
+        local owner,index=E.Flag(s,scroll.SQUARE.x,scroll.SQUARE.y)
+        if owner~=player then return false,'scroll_flags' end
+    end
+    if count<scroll.FLAGS_REQUIRED then return false,'scroll_flags' end
+    for _,f in ipairs(rules.FLAGS) do
         local enemy=E.At(s,f.x,f.y)
         if enemy and enemy.owner~=player then return false,'scroll_contested' end
     end
@@ -21,14 +27,14 @@ function R.CanInvoke(s,player)
     local ok,why=E.Active(s,player); if not ok then return false,why end
     if s.scrollOwner~=0 then return false,'scroll_active' end
     if s.scrollUsed[player] then return false,'scroll_spent' end
-    if s.turn>=C.MAX_TURNS then return false,'scroll_too_late' end
+    if s.turn>=E.Rules(s).MAX_TURNS then return false,'scroll_too_late' end
     if s.actions<1 then return false,'no_action' end
-    if s.score[player]<C.SCROLL.COST then return false,'scroll_score' end
+    if s.score[player]<E.Rules(s).SCROLL.COST then return false,'scroll_score' end
     return R.Position(s,player)
 end
 function R.Invoke(s,player)
     local ok,p=R.CanInvoke(s,player); if not ok then return false,p end
-    s.score[player]=s.score[player]-PBWT.Config.SCROLL.COST
+    s.score[player]=s.score[player]-PBWT.Engine.Rules(s).SCROLL.COST
     s.actions=s.actions-1; s.scrollUsed[player]=true
     s.scrollOwner,s.scrollReader,s.scrollTurn=player,p.id,s.turn
     return true,'scroll_invoked'
@@ -56,5 +62,7 @@ function R.Text(s,player)
     if s.scrollOwner~=0 then
         return 'P'..s.scrollOwner..'が開封中：読者の防御1\n相手の手番終了で星霜勝利\n阻止：読者撃破 / 敵が旗へ進入'
     end
-    return '星霜の書：'..(s.scrollUsed[player] and '使用済み' or '未使用')..'\n4点＋通常行動で開封（各軍1回）\n中央含む2旗支配・中央に自軍札\n敵が旗にいないこと / 隠密不可'
+    local rules=PBWT.Engine.Rules(s); local scroll=rules.SCROLL
+    local seat=scroll.SQUARE_IS_FLAG and '中央旗' or '帝都(5,5)'
+    return '星霜の書：'..(s.scrollUsed[player] and '使用済み' or '未使用')..'\n'..scroll.COST..'点＋通常行動で開封（各軍1回）\n'..seat..'に自軍札・'..scroll.FLAGS_REQUIRED..'旗以上を支配\n敵が旗にいないこと / 隠密不可'
 end

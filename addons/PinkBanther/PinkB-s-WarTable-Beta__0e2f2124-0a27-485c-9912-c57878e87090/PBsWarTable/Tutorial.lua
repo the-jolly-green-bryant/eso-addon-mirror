@@ -1,6 +1,7 @@
 -- Isolated practice boards use the production engine. Lesson gates never mutate it.
 local T={};T.__index=T;PBWT.Tutorial=T
-local E=PBWT.Engine
+local E,C=PBWT.Engine,PBWT.Config
+local L=C.VARIANTS.light -- the tutorial always teaches the light board
 local function board(pieces)
  local s=E.New();s.factions={1,2}
  for _,p in ipairs(s.pieces) do p.alive=false end
@@ -14,14 +15,14 @@ T.lessons={
  {title='斥候と同盟能力',text='斥候を選び、右へ3マスの金枠に移動。\n通常の斥候は最大2マスですが、ドミニオンなら3マスです。\n直進だけで、曲がれず、木札を飛び越せません。',pieces={{4,2,2}},commands={{type='move',id=4,x=5,y=2}}},
  {title='兵士で攻撃',text='自軍兵士を×で選び、右隣の敵兵士に×。\n攻撃2≧防御2なので撃破できます。\n反撃やHPの蓄積はなく、撃破しても自動では進みません。',pieces={{1,2,2},{7,3,2}},commands={{type='attack',id=1,target=7}}},
  {title='守護者の防御',text='兵士で下隣の旗上守護者を攻撃してみましょう。\n攻撃2では防御4を突破できず、通常行動だけを消費します。\n旗外でも守護者の防御は3。カバナントの兵士は旗上で防御3です。',pieces={{1,3,2},{12,3,3}},commands={{type='attack',id=1,target=12}}},
- {title='騎兵突撃から攻撃',text='□でカード、騎兵突撃を×。自軍兵士→中央旗を選び、2マス追加移動します。\n続けて同じ兵士を選び、右隣の敵を攻撃。\n突撃は通常行動を使わず、移動と攻撃を組み合わせられます。',pieces={{2,1,3},{7,4,3}},commands={{type='card',card='charge',id=2,x=3,y=3},{type='attack',id=2,target=7}}},
+ {title='騎兵突撃から攻撃',text='□でカード、騎兵突撃を×。自軍兵士→中央旗を選び、2マス追加移動します。守護者は突撃できません。\n続けて同じ兵士を選び、右隣の敵を攻撃。\n突撃は通常行動を使わず、移動と攻撃を組み合わせられます。',pieces={{2,1,3},{7,4,3}},commands={{type='card',card='charge',id=2,x=3,y=3},{type='attack',id=2,target=7}}},
  {title='隠密',text='□→隠密を選び、金枠の斥候を指定。\n次の自分の手番開始まで攻撃対象になりません。位置は見えたまま、移動も旗制圧もできます。\n全カードは各軍1ゲームに各1回。',pieces={{4,2,3}},commands={{type='card',card='stealth',id=4}}},
- {title='パクトの支援と攻城',text='今回はあなたがパクト。味方守護者に隣接する兵士の攻撃は3です。\n□→攻城→兵士→下隣の敵守護者。\n旗の防御ボーナスが消え、防御3になり撃破。攻城は通常行動も消費します。',seed=function() local s=board({{1,3,2},{6,2,2},{12,3,3}});s.factions={3,2};return s end,commands={{type='card',card='siege',id=1,target=12}}},
+ {title='パクトの支援と攻城',text='今回はあなたがパクト。味方守護者に隣接する兵士の攻撃は3です。\n□→攻城→兵士→下隣の敵守護者。\n攻城は旗由来の防御補正を消し、攻撃を＋1します。攻撃4≧防御3で撃破。攻城は通常行動も消費します。',seed=function() local s=board({{1,3,2},{6,2,2},{12,3,3}});s.factions={3,2};return s end,commands={{type='card',card='siege',id=1,target=12}}},
  {title='蘇生',text='□→蘇生を選び、左上の金枠を指定。\n撃破された兵士1体が初期配置エリアの空きマスに復帰します。\n斥候・守護者は蘇生できません。通常行動は消費しません。',pieces={{6,2,2}},commands={{type='card',card='revive',id=1,x=1,y=1}}},
- {title='角笛',text='□→角笛→金枠の兵士を選択。\n隣接する味方それぞれに追加1マス移動を与えます。\n次に右隣の斥候を選び、下の中央旗へ移動。\n発動元は対象外。未使用分は手番終了で消えます。',pieces={{2,2,2},{4,3,2},{6,2,1}},commands={{type='card',card='horn',id=2},{type='horn_move',id=4,x=3,y=3}}},
+ {title='角笛',text='□→角笛→金枠の兵士を選択。\n隣接する味方の兵士・斥候それぞれに追加1マス移動を与えます。守護者は対象外です。\n次に右隣の斥候を選び、下の中央旗へ移動。\n発動元は対象外。未使用分は手番終了で消えます。',pieces={{2,2,2},{4,3,2},{6,2,1}},commands={{type='card',card='horn',id=2},{type='horn_move',id=4,x=3,y=3}}},
  {title='星霜の書で決着',text='中央含む2旗支配・中央に自軍札・敵の旗占有なしが開封条件。\n盤左端から左で星霜の書を選び、×。4点＋通常行動を支払います。\n次にターン終了。練習相手は今回はパスし、星霜勝利を体験できます。\n実戦では読者は防御1、阻止されれば費用は戻りません。',seed=function() local s=board({{6,3,3},{2,2,3},{10,5,2}});s.score={4,6};s.flags={1,1,0};return s end,commands={{type='invoke_scroll'},{type='end_turn'}},opponentPass=true},
  {title='相手の開封を阻止',text='今度は相手が星霜の書を開封中です。\n自軍兵士を右へ1マス、左旗へ進めて阻止しましょう。\n中立旗でも、どれかの旗へ敵が進入すれば開封は即失敗。読者撃破でも阻止できます。',seed=function() local s=board({{2,1,3},{12,3,3},{8,4,3}});s.player,s.turn=2,2;s.score={0,4};s.flags={0,2,2};assert(E.Apply(s,2,{type='invoke_scroll'}));assert(E.Apply(s,2,{type='end_turn'}));return s end,commands={{type='move',id=2,x=2,y=3}}},
- {title='10点で勝利',text='最後は通常の得点勝利です。ターン終了を選び、9点から10点にしましょう。\n最大30手番は両者合計。未決着なら得点→支配旗数→残存木札数で判定し、同じなら引き分け。\n相手が開封中でも、先に10点へ届けば得点勝利を優先します。',seed=function() local s=board({{2,2,3}});s.score[1]=9;s.flags[1]=1;return s end,commands={{type='end_turn'}}},
+ {title=L.WIN_SCORE..'点で勝利',text='最後は通常の得点勝利です。ターン終了を選び、'..(L.WIN_SCORE-1)..'点から'..L.WIN_SCORE..'点にしましょう。\n最大'..L.MAX_TURNS..'手番は両者合計。未決着なら得点→支配旗数→残存木札数で判定し、同じなら引き分け。\n相手が開封中でも、先に'..L.WIN_SCORE..'点へ届けば得点勝利を優先します。',seed=function() local s=board({{2,2,3}});s.score[1]=L.WIN_SCORE-1;s.flags[1]=1;return s end,commands={{type='end_turn'}}},
 }
 function T.New() local self=setmetatable({index=1},T);self:Load();return self end
 function T:Load()

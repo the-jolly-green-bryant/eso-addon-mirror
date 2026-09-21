@@ -78,10 +78,6 @@ local BMU_ZONE_CATEGORY_OVERLAND = BMU.ZONE_CATEGORY_OVERLAND
 local colorLegendary = ZO_ColorDef:New(teleporterVars.color.colLegendary)
 local guildHousesAtServer = teleporterVars.guildHouse[worldName]
 local BMUGuildsAtServer = teleporterVars.BMUGuilds[worldName]
-BMU.wayshrineCompletionCache = {}
-local BMU_wayshrineCompletionCache = BMU.wayshrineCompletionCache
-BMU.zoneWayshrineActivities = {}
-local BMU_zoneWayshrineActivities = BMU.zoneWayshrineActivities
 
 local BMU_indexListMain 					= BMU.indexListMain
 --local BMU_indexListCurrentZone 				= BMU.indexListCurrentZone
@@ -190,7 +186,7 @@ local BMU_isZoneOverlandZone, BMU_categorizeZone, BMU_showDialogSimple, BMU_prep
 	  BMU_findExactQuestLocation, BMU_sc_porting, BMU_getParentZoneId, BMU_clickOnTeleportToOwnHouseButton, BMU_clickOnTeleportToOwnHouseButton_2,
       BMU_tooltipTextEnter, BMU_clickOnTeleportToPTFHouseButton, BMU_clickOnOpenGuild, BMU_clickOnTeleportToDungeonButton, BMU_clickOnTeleportToPlayerButton,
 	  BMU_checkIfContextMenuIconShouldShow, BMU_clickOnPlayerName, BMU_clickOnHouseName, BMU_clickOnEmptyZoneName, BMU_throttle, BMU_calculateListHeight,
-      BMU_getHouseNameByHouseId, BMU_decideTryAgainPorting, BMU_updateStatistic, BMU_clickOnZoneName, BMU_retrieveCachedTable, BMU_buildWayshrineCache
+      BMU_getHouseNameByHouseId, BMU_decideTryAgainPorting, BMU_updateStatistic, BMU_clickOnZoneName
 -- -^- INS251229 Baertram END 0
 
 
@@ -305,13 +301,7 @@ end
 
 function BMU.reportAutoUnlockProgress(nextPlayerRecord)
     if BMU.IsNotKeyboard() then
-      if not addon.wayshrineLock then
-        if BMU.savedVarsAcc.preferPerformance then
-          BMU_proceedAutoUnlock()
-        else
-          addon.provider.progress = var_AUTOUNLOCK_PROGRESS_ACTIVE
-        end
-      end
+        addon.provider.progress = var_AUTOUNLOCK_PROGRESS_ACTIVE
     else
         BMU_showAutoUnlockProceedDialog = BMU_showAutoUnlockProceedDialog or BMU.showAutoUnlockProceedDialog
         BMU_showAutoUnlockProceedDialog(nextPlayerRecord)
@@ -348,7 +338,6 @@ function BMU:GetEventHandlers()
       [EVENT_DISCOVERY_EXPERIENCE] = function(eventCode, reason, level, previousExperience, currentExperience, championPoints)
           if BMU.uwData.isStarted then
             BMU.uwData.gainedXP = BMU.uwData.gainedXP + (currentExperience-previousExperience)
-            BMU.wayshrineCompletionCache = {}
           end
         end,
       [EVENT_JUMP_FAILED] = function(eventId, result)
@@ -426,17 +415,11 @@ function BMU.startAutoUnlock(zoneId, loopType, loopZoneList)
 	BMU_formatName = BMU_formatName or BMU.formatName
 	BMU_getZoneWayshrineCompletion = BMU_getZoneWayshrineCompletion or BMU.getZoneWayshrineCompletion
 	BMU_createTable = BMU_createTable or BMU.createTable
-	BMU_retrieveCachedTable = BMU_retrieveCachedTable or BMU.retrieveCachedTable
 
 	-- ensure unlock process is not already running
 	if not BMU.uwData or not BMU.uwData.isStarted then
 		local formattedZoneName = BMU_formatName(GetZoneNameById(zoneId), false)
-		local list 
-		if BMU.savedVarsAcc.preferPerformance then
-		  list = BMU_retrieveCachedTable({index=BMU_indexListZone, fZoneId=zoneId, noOwnHouses=true, dontDisplay=true})
-		else
-		  list = BMU_createTable({index=BMU_indexListZone, fZoneId=zoneId, noOwnHouses=true, dontDisplay=true})
-		end
+		local list = BMU_createTable({index=BMU_indexListZone, fZoneId=zoneId, noOwnHouses=true, dontDisplay=true})
 		-- check if list is empty
 		local firstRecord = list[1]
 		if #list == 0 or not firstRecord or firstRecord.displayName == "" then
@@ -465,10 +448,6 @@ function BMU.startAutoUnlock(zoneId, loopType, loopZoneList)
 			loopZoneList = loopZoneList, -- can be nil
 			gainedXP = 0
 		}
-		
-		if BMU_IsNotKeyboard() then
-		  addon.provider.progress = var_AUTOUNLOCK_PROGRESS_ACTIVE
-		end
 
 		-- unregiter existing event for furniture count
 		EM:UnregisterForEvent(appName, EVENT_PLAYER_ACTIVATED)
@@ -527,12 +506,7 @@ function BMU.proceedAutoUnlock()
 		end
 
 		-- get all travel options
-		local list
-		if BMU.savedVarsAcc.preferPerformance then
-		  list = BMU_retrieveCachedTable({index=BMU_indexListZone, fZoneId=BMU.uwData.zoneId, dontDisplay=true})
-		else
-		  list = BMU_createTable({index=BMU_indexListZone, fZoneId=BMU.uwData.zoneId, dontDisplay=true})
-		end
+		local list = BMU_createTable({index=BMU_indexListZone, fZoneId=BMU.uwData.zoneId, dontDisplay=true})
 
 		if #list ~= 0 or list[1].displayName ~= "" then
 			-- re-calculate total steps in case new players come available during process
@@ -745,7 +719,6 @@ end
 function BMU.startAutoUnlockLoopRandom(prevZoneId, loopType)
 	BMU_createTable = BMU_createTable or BMU.createTable
 	BMU_prepareAutoUnlock = BMU_prepareAutoUnlock or BMU.prepareAutoUnlock
-	BMU_retrieveCachedTable = BMU_retrieveCachedTable or BMU.retrieveCachedTable
 	local overlandZoneIds = {}
 	-- add all overlandZoneIds to a new table
 	for overlandZoneId, _ in pairs(BMU.overlandDelvesPublicDungeons) do
@@ -761,12 +734,7 @@ function BMU.startAutoUnlockLoopRandom(prevZoneId, loopType)
 	-- go over the zones and find one
 	for _, zoneId in ipairs(shuffled) do
 		if zoneId ~= prevZoneId then -- dont take the same zone twice in a row
-		  local list
-		  if BMU.savedVarsAcc.preferPerformance then
-		    list = BMU_retrieveCachedTable({index=BMU_indexListZone, fZoneId=zoneId, noOwnHouses=true, dontDisplay=true})
-		  else
-			  list = BMU_createTable({index=BMU_indexListZone, fZoneId=zoneId, noOwnHouses=true, dontDisplay=true})
-      end
+			local list = BMU_createTable({index=BMU_indexListZone, fZoneId=zoneId, noOwnHouses=true, dontDisplay=true})
 			-- check if list is empty
 			if #list > 0 and list[1] and list[1].displayName ~= "" then
 				local numWayshrines, numWayshrinesDiscovered = BMU.getZoneWayshrineCompletion(zoneId)
@@ -790,7 +758,6 @@ function BMU.startAutoUnlockLoopSorted(zoneRecordList, loopType)
 	BMU_getZoneWayshrineCompletion = BMU_getZoneWayshrineCompletion or BMU.getZoneWayshrineCompletion
 	BMU_startAutoUnlockLoopSorted = BMU_startAutoUnlockLoopSorted or BMU.startAutoUnlockLoopSorted
 	BMU_prepareAutoUnlock = BMU_prepareAutoUnlock or BMU.prepareAutoUnlock
-	BMU_retrieveCachedTable = BMU_retrieveCachedTable or BMU.retrieveCachedTable
 
 	if not zoneRecordList or #zoneRecordList == 0 then
 		local overlandZoneIds = {}
@@ -800,12 +767,7 @@ function BMU.startAutoUnlockLoopSorted(zoneRecordList, loopType)
 			-- consider only zones the user has access to (DLC)
 			if CanJumpToPlayerInZone(overlandZoneId) then
 				--table_insert(overlandZoneIds, overlandZoneId)
-        local resultList
-        if BMU.savedVarsAcc.preferPerformance then
-          resultList = BMU_retrieveCachedTable({index=BMU_indexListZone, fZoneId=overlandZoneId, noOwnHouses=true, dontDisplay=true})
-        else
-				  resultList = BMU_createTable({index=BMU_indexListZone, fZoneId=overlandZoneId, noOwnHouses=true, dontDisplay=true})
-        end
+				local resultList = BMU_createTable({index=BMU_indexListZone, fZoneId=overlandZoneId, noOwnHouses=true, dontDisplay=true})
 				if #resultList > 0 and resultList[1] and resultList[1].displayName ~= "" then
 					local numWayshrines, numWayshrinesDiscovered = BMU_getZoneWayshrineCompletion(overlandZoneId)
 					if numWayshrinesDiscovered < numWayshrines then
@@ -845,12 +807,7 @@ function BMU.startAutoUnlockLoopSorted(zoneRecordList, loopType)
 
 	-- at this moment: zoneRecordList was already given or was re-filled right now
 	for index, zoneRecord in pairs(zoneRecordList) do
-	  local resultList
-	  if BMU.savedVarsAcc.preferPerformance then
-      resultList = BMU_retrieveCachedTable({index=BMU_indexListZone, fZoneId=zoneRecord.zoneId, noOwnHouses=true, dontDisplay=true})
-    else
-		  resultList = BMU_createTable({index=BMU_indexListZone, fZoneId=zoneRecord.zoneId, noOwnHouses=true, dontDisplay=true})
-		end
+		local resultList = BMU_createTable({index=BMU_indexListZone, fZoneId=zoneRecord.zoneId, noOwnHouses=true, dontDisplay=true})
 		if #resultList > 0 and resultList[1] and resultList[1].displayName ~= "" then
 			table_remove(zoneRecordList, index)
 			zo_callLater(function()
@@ -1011,48 +968,6 @@ end
 BMU_showDialogAutoUnlock = BMU.showDialogAutoUnlock
 
 
-------------------------------------------------------------
--- Builds the cache to optimize wayshrine completion
-function BMU.buildWayshrineCache(zoneId)
-    BMU_getMapIndex = BMU_getMapIndex or BMU.getMapIndex
-    if BMU_zoneWayshrineActivities[zoneId] and next(BMU_zoneWayshrineActivities[zoneId]) then
-        return
-    end
-
-    BMU_zoneWayshrineActivities[zoneId] = {}
-
-    local mapIndex = BMU_getMapIndex(zoneId)
-    if mapIndex then
-        worldMapManager:SetMapByIndex(1)
-        worldMapManager:SetMapByIndex(mapIndex)
-    end
-
-    local countTotal = GetNumZoneActivitiesForZoneCompletionType(
-        zoneId,
-        ZONE_COMPLETION_TYPE_WAYSHRINES
-    )
-
-    for activityIndex = 1, countTotal do
-        local activityId = GetZoneActivityIdForZoneCompletionType(
-            zoneId,
-            ZONE_COMPLETION_TYPE_WAYSHRINES,
-            activityIndex
-        )
-
-        local _, _, _, isInCurrentMap =
-            GetNormalizedPositionForZoneStoryActivityId(
-                zoneId,
-                ZONE_COMPLETION_TYPE_WAYSHRINES,
-                activityId
-            )
-
-        BMU_zoneWayshrineActivities[zoneId][activityIndex] = {
-            activityId = activityId,
-            isInCurrentMap = isInCurrentMap,
-        }
-    end
-end
-BMU_buildWayshrineCache = BMU.buildWayshrineCache
 
 ------------------------------------------------------------
 
@@ -1080,22 +995,12 @@ function BMU.getZoneWayshrineCompletion(zoneId)
 
 	local numWayshrines = 0
 	local numWayshrinesDiscovered = 0
-	
-	if BMU.savedVarsAcc.preferPerformance then
-	  BMU_buildWayshrineCache(zoneId)
-	end
 	-- get total number of wayshrines
 	local countTotal = GetNumZoneActivitiesForZoneCompletionType(zoneId, ZONE_COMPLETION_TYPE_WAYSHRINES)
 	for activityIndex = 1, countTotal do
-	  local activityId
-	  local isInCurrentMap
-	  if BMU_zoneWayshrineActivities[zoneId] and BMU_zoneWayshrineActivities[zoneId][activityIndex] then
-	    isInCurrentMap = BMU_zoneWayshrineActivities[zoneId][activityIndex].isInCurrentMap
-	  else  
-	    activityId = GetZoneActivityIdForZoneCompletionType(zoneId, ZONE_COMPLETION_TYPE_WAYSHRINES, activityIndex)
-		  _, _, _, isInCurrentMap = GetNormalizedPositionForZoneStoryActivityId(zoneId, ZONE_COMPLETION_TYPE_WAYSHRINES, activityId)
-	  end
 		local isActivityComplete = IsZoneStoryActivityComplete(zoneId, ZONE_COMPLETION_TYPE_WAYSHRINES, activityIndex)
+		local activityId = GetZoneActivityIdForZoneCompletionType(zoneId, ZONE_COMPLETION_TYPE_WAYSHRINES, activityIndex)
+		local _, _, _, isInCurrentMap = GetNormalizedPositionForZoneStoryActivityId(zoneId, ZONE_COMPLETION_TYPE_WAYSHRINES, activityId)
 		if isInCurrentMap then
 			-- wayshrine of the current map
 			numWayshrines = numWayshrines + 1
@@ -1108,6 +1013,7 @@ function BMU.getZoneWayshrineCompletion(zoneId)
 	return numWayshrines, numWayshrinesDiscovered
 end
 BMU_getZoneWayshrineCompletion = BMU.getZoneWayshrineCompletion
+
 
 -- return true if the zone is a Overland zone / region
 function BMU.isZoneOverlandZone(zoneId)
@@ -2370,11 +2276,11 @@ function BMU.clickOnTeleportToDungeonButton_2(message)
 		-- port for costs
 		BMU_printToChat(GetString(SI_PROMPT_TITLE_FAST_TRAVEL_CONFIRM) .. ": " .. message.zoneName .. " (" .. zo_strformat(SI_MONEY_FORMAT, GetRecallCost()) .. ")", BMU.MSG_FT)
 		-- show additional animation
-		if BMU.savedVarsAcc.showTeleportAnimation then
+		if BMU_savedVarsAcc.showTeleportAnimation then
 			BMU_showTeleportAnimation()
 		end
 		FastTravelToNode(message.nodeIndex)
-		if BMU.savedVarsAcc.closeOnPorting then
+		if BMU_savedVarsAcc.closeOnPorting then
 			-- hide world map if open
 			SM:Hide("worldMap")
 			-- hide UI if open
@@ -2563,11 +2469,11 @@ function BMU.clickOnZoneName(button, record)
 
 			if normalizedX and normalizedZ then
 				-- Map Ping
-				if BMU.savedVarsAcc.useMapPing and BMU.LibMapPing then
+				if BMU_savedVarsAcc.useMapPing and BMU.LibMapPing then
 					PingMap(MAP_PIN_TYPE_RALLY_POINT, MAP_TYPE_LOCATION_CENTERED, normalizedX, normalizedZ)
 				end
 				-- Pan and Zoom
-				if BMU.savedVarsAcc.usePanAndZoom then
+				if BMU_savedVarsAcc.usePanAndZoom then
 					zo_callLater(function() ZO_WorldMap_PanToNormalizedPosition(normalizedX, normalizedZ) end, 200)
 				end
 			end
@@ -2758,7 +2664,7 @@ function BMU.clickOnZoneName(button, record)
 				local favName = ""
 				local zoneIdOfSavedFav = BMU_savedVarsServ.favoriteListZones[i]
 				if BMU_savedVarsServ.favoriteListZones[i] ~= nil then
-					favName = BMU_formatName(GetZoneNameById(zoneIdOfSavedFav), BMU.savedVarsAcc.formatZoneName)
+					favName = BMU_formatName(GetZoneNameById(zoneIdOfSavedFav), BMU_savedVarsAcc.formatZoneName)
 				end
 				local entry = {
 					label = tos(i) .. ": " .. favName,
@@ -2808,7 +2714,7 @@ function BMU.clickOnZoneName(button, record)
 		if not inDungeonTab and not inOwnHouseTab and not inQuestTab and not inItemsTab then
 			if BMU.savedVarsChar.sorting == 3 or BMU.savedVarsChar.sorting == 4 then
 				AddCustomScrollableMenuDivider()
-				AddCustomScrollableMenuEntry(BMU_SI_Get(SI_TELE_UI_RESET_COUNTER_ZONE), function() BMU.savedVarsAcc.portCounterPerZone[record.zoneId] = nil BMU_refreshListAuto() end)
+				AddCustomScrollableMenuEntry(BMU_SI_Get(SI_TELE_UI_RESET_COUNTER_ZONE), function() BMU_savedVarsAcc.portCounterPerZone[record.zoneId] = nil BMU_refreshListAuto() end)
 				AddCustomScrollableMenuDivider()
 			end
 		end
@@ -2825,7 +2731,7 @@ function BMU.clickOnZoneName(button, record)
 				BMU_sc_porting(zoneId)
 			end
 			-- close UI if enabled
-			if BMU.savedVarsAcc.closeOnPorting then
+			if BMU_savedVarsAcc.closeOnPorting then
 				-- hide world map if open
 				SM:Hide("worldMap")
 				-- hide UI if open
@@ -3533,7 +3439,7 @@ function BMU.portToOwnHouse(primary, houseId, jumpOutside, parentZoneName)
 	end
 
 	-- show additional animation
-	if BMU.savedVarsAcc.showTeleportAnimation then
+	if BMU_savedVarsAcc.showTeleportAnimation then
 		BMU_showTeleportAnimation()
 	end
 
@@ -3549,7 +3455,7 @@ function BMU.portToOwnHouse(primary, houseId, jumpOutside, parentZoneName)
 	RequestJumpToHouse(houseId, jumpOutside)
 
 	-- close UI if enabled
-	if BMU.savedVarsAcc.closeOnPorting then
+	if BMU_savedVarsAcc.closeOnPorting then
 		-- hide world map if open
 		SM:Hide("worldMap")
 		-- hide UI if open
@@ -3571,13 +3477,13 @@ function BMU.portToBMUGuildHouse()
 		local displayName = guildHousesAtServer[1]
 		local houseId = guildHousesAtServer[2]
 		-- show additional animation
-		if BMU.savedVarsAcc.showTeleportAnimation then
+		if BMU_savedVarsAcc.showTeleportAnimation then
 			BMU_showTeleportAnimation()
 		end
 		CancelCast()
 		JumpToSpecificHouse(displayName, houseId)
 		BMU_printToChat("Porting to BMU guild house (" .. displayName .. ")", BMU.MSG_FT)
-		if BMU.savedVarsAcc.closeOnPorting then
+		if BMU_savedVarsAcc.closeOnPorting then
 			-- hide world map if open
 			SM:Hide("worldMap")
 			-- hide UI if open
@@ -3657,19 +3563,13 @@ function BMU.decideTryAgainPorting(errorCode, zoneId, displayName, sourceIndex, 
 	BMU_createTable = BMU_createTable or BMU.createTable
 	BMU_PortalToPlayer = BMU_PortalToPlayer or BMU.PortalToPlayer
 	BMU_portToOwnHouse = BMU_portToOwnHouse or BMU.portToOwnHouse
-	BMU_retrieveCachedTable = BMU_retrieveCachedTable or BMU.retrieveCachedTable
 
 	-- don't try to port again when: other errors (e.g. solo zone); player is group member; player is favorite; search by player name
 	if (errorCode ~= SOCIAL_RESULT_NO_LOCATION and errorCode ~= SOCIAL_RESULT_CHARACTER_NOT_FOUND) or sourceIndex == BMU_SOURCE_INDEX_GROUP or BMU.isFavoritePlayer(displayName) or BMU.state == BMU_indexListSearchPlayer then
 		return -- do nothing
 	else
 		-- try to find another player in the zone
-		local result
-		if BMU.savedVarsAcc.preferPerformance then
-      result = BMU_retrieveCachedTable({index=BMU_indexListZoneHidden, fZoneId=oneId, dontDisplay=true})
-    else
-		  result = BMU_createTable({index=BMU_indexListZoneHidden, fZoneId=zoneId, dontDisplay=true})
-    end
+		local result = BMU_createTable({index=BMU_indexListZoneHidden, fZoneId=zoneId, dontDisplay=true})
 		for index, record in pairs(result) do
 			if record ~= nil then
 				local recordDisplayName = record.displayName

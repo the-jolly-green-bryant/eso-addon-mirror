@@ -72,6 +72,7 @@ function A.ShowDetail()
     A.ui.body:SetText(page and page.text or "")
     local total = #(A.detailPages or {})
     A.ui.detailCounter:SetText(total > 1 and ("Detail " .. (A.detailPageIndex or 1) .. "/" .. total .. "  -  LT / RT") or "")
+    A.RenderExportQR(row)
     if A.keybindsActive then KEYBIND_STRIP:UpdateKeybindButtonGroup(A.keybinds) end
 end
 
@@ -253,6 +254,7 @@ function A.BuildUI()
         { name = "Previous tab", keybind = "UI_SHORTCUT_LEFT_SHOULDER", callback = function() A.ShowTab(A.tabIndex - 1) end },
         { name = "Next tab", keybind = "UI_SHORTCUT_RIGHT_SHOULDER", callback = function() A.ShowTab(A.tabIndex + 1) end },
         { name = "Select", keybind = "UI_SHORTCUT_PRIMARY", callback = A.ActivateRow },
+        { name = "Previous row", keybind = "UI_SHORTCUT_SECONDARY", callback = function() A.MoveSelection(-1) end },
         { name = "Refresh live", keybind = "UI_SHORTCUT_TERTIARY", callback = A.RefreshLive },
         { name = "Previous detail", keybind = "UI_SHORTCUT_LEFT_TRIGGER", visible = HasLongDetail, callback = function() A.MoveDetail(-1) end },
         { name = "Next detail", keybind = "UI_SHORTCUT_RIGHT_TRIGGER", visible = HasLongDetail, callback = function() A.MoveDetail(1) end },

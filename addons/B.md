@@ -36,7 +36,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Banker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Nols1000/Banker__362) | Nols1000 | PC / Mac | 1.6 |
 | [Banker Shutup](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/mctaylor/Banker-Shutup__869) | mctaylor | PC / Mac | 3.5c |
 | [Banker Shutup Patch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/rkuhnjr/Banker-Shutup-Patch__839) | rkuhnjr | PC / Mac | 3.5b |
-| [Bankir](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Saleand/Bankir__4535) | Saleand | PC / Mac | 2.4 |
+| [Bankir](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Saleand/Bankir__4535) | Saleand | PC / Mac | 2.5 |
 | [BankManagerTESO](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/IgorSab/BankManagerTESO__4072) | IgorSab | PC / Mac | 1 |
 | [Banner Status](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Phamo1000/Banner-Status__608b7ab5-db64-423a-af5c-2438027f0eed) | Phamo1000 | Console | — |
 | [Bar Steward - Multi Toolbar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FlatBadger/Bar-Steward---Multi-Toolbar__3375) | FlatBadger | PC / Mac | 3.5.12 |
@@ -57,7 +57,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [BattlegroundHudMover](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ShadowMau/BattlegroundHudMover__2900) | ShadowMau | PC / Mac | 1.0.6 |
 | [BattleScrollBV](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/BattleScrollBV__242aa937-0c55-4d1f-b667-0716e81eb4e7) | SugaComa | Console | — |
 | [BeamMeUp](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/beammeupbot/BeamMeUp__d2c9bb50-7161-423e-ab74-38b8353ace04) | beammeupbot | Console | — |
-| [BeamMeUp - Teleporter (Fast Travel)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DeadSoon/BeamMeUp---Teleporter-Fast-Travel__2143) | @DeadSoon | PC / Mac | 4.0.4 |
+| [BeamMeUp - Teleporter (Fast Travel)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DeadSoon/BeamMeUp---Teleporter-Fast-Travel__2143) | @DeadSoon | PC / Mac | 4.0.5 |
 | [Bear Synergies](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Bjørn/Bear-Synergies__2519) | Bjørn | PC / Mac | 1.1.4 |
 | [BeggingTheGear](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/jellyalex978/BeggingTheGear__1546) | jellyalex978 | PC / Mac | 2.3.2 |
 | [Beltalowda - testing](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kickimanjaro/Beltalowda---testing__4395) | Kickimanjaro | PC / Mac | 0.5.4 |

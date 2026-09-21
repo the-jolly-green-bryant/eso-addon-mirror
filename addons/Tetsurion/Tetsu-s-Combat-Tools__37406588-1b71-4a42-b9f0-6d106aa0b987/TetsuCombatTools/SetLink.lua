@@ -29,6 +29,8 @@ local group
 local attached = false
 local holding = false
 local holdAt = 0
+local lastBuildAt = 0
+local hooked = {}
 
 local function L(key, fallback)
     local loc = T.L or {}
@@ -213,6 +215,51 @@ local function LocalNote(msg)
     end
 end
 
+local function InChatMenu()
+    local scene = SCENE_MANAGER and SCENE_MANAGER.GetCurrentScene and SCENE_MANAGER:GetCurrentScene()
+    if scene and scene.GetName then
+        local ok, name = pcall(function()
+            return scene:GetName()
+        end)
+        if ok and type(name) == "string" then
+            if name == "gamepadChatMenu" or name == "gamepad_text_chat" then
+                return true
+            end
+        end
+    end
+    if SCENE_MANAGER and SCENE_MANAGER.IsShowing then
+        local ok, showing = pcall(function()
+            return SCENE_MANAGER:IsShowing("gamepadChatMenu")
+        end)
+        if ok and showing then
+            return true
+        end
+    end
+    return false
+end
+
+local function InSettingsMenu()
+    if not SCENE_MANAGER then
+        return false
+    end
+    local names = {
+        "gamepad_addons",
+        "gamepadAddons",
+        "gamepad_options",
+        "gamepadOptions",
+        "harvensAddonSettings",
+    }
+    for i = 1, #names do
+        local ok, showing = pcall(function()
+            return SCENE_MANAGER:IsShowing(names[i])
+        end)
+        if ok and showing then
+            return true
+        end
+    end
+    return false
+end
+
 local function ChatSys()
     if ZO_GetChatSystem then
         local ok, sys = pcall(ZO_GetChatSystem)
@@ -239,50 +286,91 @@ local function ApplyGroupChannel()
     return ch
 end
 
-local function PutInChat(text)
-    local force = ForceGroup()
-    local channel = nil
-    if force then
-        channel = ApplyGroupChannel()
-    end
-
-    -- Always replace. Append turned leftovers into duplicate / broken links.
-    if CHAT_MENU_GAMEPAD and CHAT_MENU_GAMEPAD.textEdit and CHAT_MENU_GAMEPAD.textEdit.SetText then
-        local ok = pcall(function()
-            CHAT_MENU_GAMEPAD.textEdit:SetText(text)
-        end)
-        if ok then
-            return true
-        end
-    end
-    local sys = ChatSys()
-    if sys and sys.StartTextEntry then
-        local ok = pcall(function()
-            if force then
-                sys:StartTextEntry(text, channel or PartyChannel(), nil, true)
-            else
-                sys:StartTextEntry(text)
+local function TrySetEdit(text)
+    local menus = { CHAT_MENU_GAMEPAD, GAMEPAD_CHAT_SYSTEM, CHAT_SYSTEM }
+    for i = 1, #menus do
+        local menu = menus[i]
+        local edit = menu and menu.textEdit
+        if edit and edit.SetText then
+            local ok = pcall(function()
+                edit:SetText(text)
+            end)
+            if ok then
+                return true
             end
-        end)
-        if ok then
-            return true
         end
     end
     return false
 end
 
-function T.LinkBuild()
+-- Do not call StartTextEntry / StartChatInput / SubmitTextEntry.
+-- Those mark the box insecure; Square-Send then dies on private SendChatMessage.
+local function FillChat(text)
+    return TrySetEdit(text)
+end
+
+local function PutInChat(text, fromButton)
+    local force = ForceGroup()
+    local channel = force and PartyChannel() or nil
+    if force then
+        ApplyGroupChannel()
+    end
+
+    if fromButton then
+        local filled = FillChat(text)
+        if SCENE_MANAGER and SCENE_MANAGER.Show then
+            pcall(function()
+                SCENE_MANAGER:Show("gamepadChatMenu")
+            end)
+        end
+        if zo_callLater then
+            zo_callLater(function()
+                if force then ApplyGroupChannel() end
+                FillChat(text)
+            end, 150)
+        end
+        return filled
+    end
+
+    if InSettingsMenu() or not InChatMenu() then
+        return false
+    end
+    return FillChat(text)
+end
+
+function T.LinkBuild(fromButton)
     if not LinkOn() then
         return
     end
+    local now = GetFrameTimeMilliseconds()
+    if fromButton ~= true and lastBuildAt > 0 and now - lastBuildAt < 750 then
+        return
+    end
+    lastBuildAt = now
     local text, n = BuildText()
     if n == 0 or text == "" then
         LocalNote(L("LINK_EMPTY", "No sets to link."))
         return
     end
-    if not PutInChat(text) then
+    if not PutInChat(text, fromButton == true) then
         LocalNote(text)
     end
+end
+
+function T.LinkPreview()
+    if not LinkOn() then
+        return
+    end
+    local list = Collect()
+    if #list == 0 then
+        LocalNote(L("LINK_EMPTY", "No sets to link."))
+        return
+    end
+    local names = {}
+    for i = 1, #list do
+        names[#names + 1] = list[i].name or "?"
+    end
+    LocalNote(table.concat(names, " | "))
 end
 
 local function StopHold()
@@ -355,6 +443,10 @@ local function HookScene(scene)
     if not scene or not scene.RegisterCallback then
         return
     end
+    if hooked[scene] then
+        return
+    end
+    hooked[scene] = true
     scene:RegisterCallback("StateChange", function(_, newState)
         if newState == SCENE_SHOWING then
             if LinkOn() then

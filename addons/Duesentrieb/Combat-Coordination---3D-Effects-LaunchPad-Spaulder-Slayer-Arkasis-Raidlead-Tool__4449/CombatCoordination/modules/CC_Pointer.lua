@@ -42,9 +42,7 @@ local Module = {
 -- CUSTOM ENABLE
 ----------------------------------------------------------------------------------------------------
 function Module:CustomEnable()
-    -- YEAH YEAH I KNOW.. LIBCUSTOMMENU IS IN THE DEPENDENCIES. BUT I MIGHT CHANGE THAT.
     if LibCustomMenu then
-        -- GROUP LIST, PLAYER INTERACTION?, CHAT? TODO: ADD THESE EVENTUALLY
         LibCustomMenu:RegisterGroupListContextMenu(function(Data) self:OnContextMenu(Data) end, LibCustomMenu.CATEGORY_LATE)
     end
 end
@@ -241,17 +239,16 @@ end
 -- CONTEXT MENU (LIBCUSTOMMENU)
 ----------------------------------------------------------------------------------------------------
 function Module:OnContextMenu(Data)
-    -- YEAH YEAH I KNOW.. LIBCUSTOMMENU IS IN THE DEPENDENCIES. BUT I MIGHT CHANGE THAT.
-    if not LibCustomMenu or not Data or not Data.displayName then return end
-    if not IsUnitGrouped("player") then return end
+    if not LibCustomMenu then return end
+    if not Data or not Data.displayName then return end
 
     local unitTag = nil
     local targetName = Data.displayName
 
     for i = 1, GetGroupSize() do
-        local tag = GetGroupUnitTagByIndex(i)
-        if GetUnitDisplayName(tag) == targetName or GetRawUnitName(tag) == targetName then
-            unitTag = tag
+        local groupTag = GetGroupUnitTagByIndex(i)
+        if GetUnitDisplayName(groupTag) == targetName or GetRawUnitName(groupTag) == targetName then
+            unitTag = groupTag
             break
         end
     end

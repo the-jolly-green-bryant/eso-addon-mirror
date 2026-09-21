@@ -18,7 +18,8 @@ function Cards.SourceAt(s, player, card, x, y)
     if not p or p.owner~=player then return false, "own_piece_required" end
     -- A source is eligible only when at least one legal destination exists.
     local command = {type="card", card=card, id=p.id}
-    for cy=1,PBWT.Config.SIZE do for cx=1,PBWT.Config.SIZE do
+    local size=E.Rules(s).SIZE
+    for cy=1,size do for cx=1,size do
         local target = E.At(s, cx, cy)
         command.x, command.y, command.target = cx, cy, target and target.id
         if Cards.Preview(s, player, command) then return true end

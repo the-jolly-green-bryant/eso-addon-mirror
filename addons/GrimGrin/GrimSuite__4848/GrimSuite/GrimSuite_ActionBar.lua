@@ -3,7 +3,7 @@ GS.ActionBar = GS.ActionBar or {}
 local ActionBar = GS.ActionBar
 
 ---------------------------------------------------------------------
--- GrimSuite Action Bar v0.0.43Dev
+-- GrimSuite Action Bar v1.2.1
 --
 -- Static two-row action bar:
 --   * FRONT BAR is always the top row.
@@ -23,6 +23,7 @@ local MIN_SLOT = 3
 local MAX_SLOT = 7
 local ULT_SLOT = 8
 local SLOT_COUNT = 5
+local HOTBAR_CATEGORIES = { HOTBAR_CATEGORY_PRIMARY, HOTBAR_CATEGORY_BACKUP }
 local SLOT_SIZE = 65
 local POTION_SIZE = 70
 local SLOT_GAP = 3
@@ -30,11 +31,11 @@ local ROW_GAP = 3
 local ULT_GAP = 10
 
 local FRAME_EDGE = { 0.62, 0.62, 0.62, 0.88 }
-local FRAME_EDGE_ACTIVE = { 0.98, 0.82, 0.22, 1.00 }
+local FRAME_EDGE_ACTIVE = { 0.62, 0.62, 0.62, 0.88 }
 local FRAME_BG = { 0.008, 0.008, 0.008, 0.34 }
 local FRAME_BG_ACTIVE = { 0.035, 0.035, 0.035, 0.50 }
 local FRAME_EDGE_WIDTH = 2
-local FRAME_EDGE_WIDTH_ACTIVE = 3
+local FRAME_EDGE_WIDTH_ACTIVE = 2
 local INACTIVE_ALPHA = 0.72
 local ACTIVE_ICON_ALPHA = 1.0
 local UNUSABLE_ICON_ALPHA = 0.42
@@ -69,6 +70,16 @@ ActionBar.backbarDesaturation = 0.65
 ActionBar.showUltimate = true
 ActionBar.showQuickslot = true
 ActionBar.showWeaponSwap = true
+ActionBar.timerSize = 45
+ActionBar.stackSize = 45
+ActionBar.timerFont = "Univers 67"
+ActionBar.stackFont = "Univers 67"
+ActionBar.timerOutline = "thick-outline"
+ActionBar.stackOutline = "thick-outline"
+ActionBar.timerOffsetX = 0
+ActionBar.timerOffsetY = 0
+ActionBar.stackOffsetX = 0
+ActionBar.stackOffsetY = 0
 ActionBar.effectStacks = {}
 ActionBar.bannerActive = false
 ActionBar.initialized = false
@@ -77,9 +88,8 @@ ActionBar.backbarRoot = nil
 ActionBar.frontControls = {}
 ActionBar.backbarControls = {}
 
--- Optional LibAddonMenu configuration + saved layout position.
--- The action bar remains fully functional without LAM; the menu simply
--- exposes the position controls in the normal ESO AddOns settings panel.
+-- LibAddonMenu configuration + saved layout position.
+-- LibAddonMenu is a required dependency for GrimSuite's settings UI.
 local POSITION_SV_NAME = "GrimSuiteActionBarSavedVars"
 local POSITION_SV_VERSION = 1
 local POSITION_DEFAULTS = {
@@ -95,6 +105,16 @@ local POSITION_DEFAULTS = {
     showUltimate = true,
     showQuickslot = true,
     showWeaponSwap = true,
+    timerSize = 45,
+    stackSize = 45,
+    timerFont = "Univers 67",
+    stackFont = "Univers 67",
+    timerOutline = "thick-outline",
+    stackOutline = "thick-outline",
+    timerOffsetX = 0,
+    timerOffsetY = 0,
+    stackOffsetX = 0,
+    stackOffsetY = 0,
 }
 
 local positionSV = nil
@@ -141,6 +161,68 @@ local function GetTotalWidth()
     return GetRowWidth() + ULT_GAP + GetIconSize()
 end
 
+-- ESO's SetFont() expects the actual font resource path rather than the
+-- human-readable font name. Keep the names user-facing, but resolve them
+-- to ESO's built-in font resources before building the SetFont string.
+-- These resource paths are intentionally extensionless for current ESO font
+-- handling.
+local OVERLAY_FONT_PATHS = {
+    -- Use ESO font macros here rather than raw file paths. Since Update 41,
+    -- ESO's built-in fonts are rendered through the Slug system, and the
+    -- macros resolve to the correct current font resource.
+    ["Univers 57"] = "$(MEDIUM_FONT)",
+    ["Univers 67"] = "$(BOLD_FONT)",
+    ["ProseAntique"] = "$(ANTIQUE_FONT)",
+    ["Trajan Pro"] = "$(STONE_TABLET_FONT)",
+    ["Skyrim Handwritten"] = "$(HANDWRITTEN_FONT)",
+    ["Futura Condensed Light"] = "$(GAMEPAD_LIGHT_FONT)",
+    ["Futura Condensed"] = "$(GAMEPAD_MEDIUM_FONT)",
+    ["Futura Condensed Bold"] = "$(GAMEPAD_BOLD_FONT)",
+}
+
+
+local function BuildOverlayFont(fontName, size, outline)
+    fontName = tostring(fontName or "Univers 67")
+    local fontPath = OVERLAY_FONT_PATHS[fontName] or OVERLAY_FONT_PATHS["Univers 67"]
+    size = tonumber(size) or 45
+    outline = tostring(outline or "thick-outline")
+    return string.format("%s|%d|%s", fontPath, math.floor(size + 0.5), outline)
+end
+
+local function GetTimerFont()
+    return BuildOverlayFont(ActionBar.timerFont, ActionBar.timerSize, ActionBar.timerOutline)
+end
+
+local function GetStackFont()
+    return BuildOverlayFont(ActionBar.stackFont, ActionBar.stackSize, ActionBar.stackOutline)
+end
+
+local function ApplyOverlayTextStyles()
+    local timerFont = GetTimerFont()
+    local stackFont = GetStackFont()
+    local timerX = tonumber(ActionBar.timerOffsetX) or 0
+    local timerY = tonumber(ActionBar.timerOffsetY) or 0
+    local stackX = tonumber(ActionBar.stackOffsetX) or 0
+    local stackY = tonumber(ActionBar.stackOffsetY) or 0
+    local roots = { ActionBar.frontControls, ActionBar.backbarControls }
+    for _, controls in ipairs(roots) do
+        for _, data in pairs(controls) do
+            if data then
+                if data.timer then
+                    data.timer:SetFont(timerFont)
+                    data.timer:ClearAnchors()
+                    data.timer:SetAnchor(CENTER, data.frame, CENTER, timerX, timerY)
+                end
+                if data.stack then
+                    data.stack:SetFont(stackFont)
+                    data.stack:ClearAnchors()
+                    data.stack:SetAnchor(CENTER, data.frame, CENTER, stackX, stackY)
+                end
+            end
+        end
+    end
+end
+
 -- Native controls that visually belong to the action bar.  We keep their
 -- original screen positions as the reference and apply the same saved offset
 -- used by GrimSuite's custom bars.
@@ -149,8 +231,6 @@ local nativeLayoutBase = {
     weaponSwapLeft = nil,
     weaponSwapTop = nil,
     weaponSwapRight = nil,
-    potionLeft = nil,
-    potionTop = nil,
 }
 
 local function MakeFrame(name, parent)
@@ -188,15 +268,6 @@ local function HideNativeVisuals(button)
         -- visible behind the GrimSuite display.
         button.slot:SetAlpha(0)
     end
-end
-
-local function GetInactiveCategory(category)
-    if category == HOTBAR_CATEGORY_PRIMARY then
-        return HOTBAR_CATEGORY_BACKUP
-    elseif category == HOTBAR_CATEGORY_BACKUP then
-        return HOTBAR_CATEGORY_PRIMARY
-    end
-    return HOTBAR_CATEGORY_BACKUP
 end
 
 local function GetAbilityForSlot(slot, category)
@@ -282,8 +353,8 @@ local function CreateDisplayButton(root, x, key, prefix)
     glow:SetMouseEnabled(false)
 
     local timer = WM:CreateControl(base .. "Timer", frame, CT_LABEL)
-    timer:SetFont(TIMER_FONT)
-    timer:SetAnchor(CENTER, frame, CENTER, 0, 0)
+    timer:SetFont(GetTimerFont())
+    timer:SetAnchor(CENTER, frame, CENTER, tonumber(ActionBar.timerOffsetX) or 0, tonumber(ActionBar.timerOffsetY) or 0)
     timer:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     timer:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     timer:SetColor(unpack(TIMER_COLOR))
@@ -292,8 +363,8 @@ local function CreateDisplayButton(root, x, key, prefix)
     timer:SetMouseEnabled(false)
 
     local stack = WM:CreateControl(base .. "Stack", frame, CT_LABEL)
-    stack:SetFont(STACK_FONT)
-    stack:SetAnchor(CENTER, frame, CENTER, 0, 0)
+    stack:SetFont(GetStackFont())
+    stack:SetAnchor(CENTER, frame, CENTER, tonumber(ActionBar.stackOffsetX) or 0, tonumber(ActionBar.stackOffsetY) or 0)
     stack:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     stack:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     stack:SetColor(unpack(STACK_COLOR))
@@ -401,7 +472,7 @@ end
 function ActionBar:UpdateNativeVisualSuppression()
     -- Keep ESO's controls alive for keyboard/mouse/gamepad input, but remove
     -- their visible icon/background so they cannot appear as ghost bars.
-    for _, category in ipairs({ HOTBAR_CATEGORY_PRIMARY, HOTBAR_CATEGORY_BACKUP }) do
+    for _, category in ipairs(HOTBAR_CATEGORIES) do
         for i = MIN_SLOT, ULT_SLOT do
             local button = GetButton(i, category)
             if button then HideNativeVisuals(button) end
@@ -445,11 +516,6 @@ local function CaptureNativeLayoutBase()
     nativeLayoutBase.weaponSwapLeft = weaponSwap:GetLeft()
     nativeLayoutBase.weaponSwapTop = weaponSwap:GetTop()
     nativeLayoutBase.weaponSwapRight = weaponSwap:GetRight()
-
-    if potion then
-        nativeLayoutBase.potionLeft = potion:GetLeft()
-        nativeLayoutBase.potionTop = potion:GetTop()
-    end
 
     nativeLayoutBase.captured = true
     return true
@@ -580,32 +646,13 @@ local function ClearEffectDisplay(data)
     data.stack:SetText("")
 end
 
-local function GetSlotAbility(slot, category)
-    local id = GetSlotBoundId(slot, category)
-    if not id or id <= 0 then return 0 end
-
-    -- Scribed skills use craftedAbilityId values in the hotbar. Convert them
-    -- to the actual ability ID so stack tracking can match their effects.
-    if GetSlotType(slot, category) == ACTION_TYPE_CRAFTED_ABILITY then
-        local ok, realId = pcall(GetAbilityIdForCraftedAbilityId, id)
-        if ok and realId and realId > 0 then
-            id = realId
-        end
-    end
-
-    local ok, effective = pcall(GetEffectiveAbilityIdForAbilityOnHotbar, id, category)
-    if ok and effective and effective > 0 then
-        id = effective
-    end
-    return id
-end
-
 -- Small standalone stack map. These are the same stack-tracker relationships
 -- used by the FAB/CombatMetronome source we inspected, but kept deliberately
 -- local so GrimSuite does not depend on FAB.
 --
 -- key   = slotted ability
 -- value = player-effect ability that carries the actual stack count
+-- Shared Crux is handled separately so it can only appear on Fatecarver.
 local STACK_EFFECT_BY_ABILITY = {
     -- Molten Whip / Seething Fury
     [20805] = 122658,
@@ -629,31 +676,94 @@ local STACK_EFFECT_BY_ABILITY = {
     [125750] = 125749,
     -- Fetcher Infection
     [86027] = 91416,
-    -- Arcanist Crux-generating/using skills. The actual Crux effect is
-    -- 184220 and is displayed on the slotted Arcanist skill icon.
-    [182977] = 184220, [183006] = 184220, [183047] = 184220,
-    [183122] = 184220, [183165] = 184220, [183241] = 184220,
-    [183261] = 184220, [183430] = 184220, [183537] = 184220,
-    [183542] = 184220, [185794] = 184220, [185803] = 184220,
-    [185805] = 184220, [185823] = 184220, [185842] = 184220,
-    [185894] = 184220, [185901] = 184220, [185908] = 184220,
-    [186189] = 184220, [186191] = 184220, [186193] = 184220,
-    [186200] = 184220, [186207] = 184220, [186209] = 184220,
-    [186211] = 184220, [186220] = 184220, [186366] = 184220,
-    [186452] = 184220, [186477] = 184220, [186531] = 184220,
-    [188658] = 184220, [188780] = 184220, [188787] = 184220,
-    [193331] = 184220, [193397] = 184220, [193398] = 184220,
-    [194873] = 184220, [194875] = 184220, [198282] = 184220,
-    [198288] = 184220, [198292] = 184220, [198309] = 184220,
-    [198330] = 184220, [198537] = 184220, [198564] = 184220,
-    [198567] = 184220, [238169] = 184220, [238174] = 184220,
-    [238191] = 184220, [238238] = 184220, [238249] = 184220,
-    [238429] = 184220, [238447] = 184220, [238482] = 184220,
-    [238545] = 184220, [247126] = 184220,
+    -- Arcanist Crux is intentionally handled separately below.
+    -- Only Fatecarver and its morphs should display the Crux stack count.
+
 }
 
+local CRUX_EFFECT_ID = 184220
+
+-- Crux is a shared resource, not a stack counter that belongs on every
+-- Arcanist skill that generates or consumes it. GrimSuite only displays the
+-- Crux count on Fatecarver and its two morphs.
+local function IsFatecarverAbility(abilityId)
+    if not abilityId or abilityId <= 0 or not GetAbilityName then
+        return false
+    end
+
+    local ok, name = pcall(GetAbilityName, abilityId)
+    if not ok or not name then
+        return false
+    end
+
+    name = zo_strlower(tostring(name))
+    return string.find(name, "fatecarver", 1, true) ~= nil
+end
+
+local NIGHTBLADE_STACK_EFFECTS = {
+    [122585] = true, -- Grim Focus
+    [122586] = true, -- Merciless Resolve
+    [122587] = true, -- Relentless Focus
+}
+
+-- Necromancer Skull uses a player-effect row whose live stack count is
+-- reliable through GetUnitBuffInfo(), but the normal GrimSuite cache does not
+-- consistently retain the row. Track the live buff directly for the glow.
+local NECRO_SKULL_STACK_EFFECTS = {
+    [114131] = true, -- Flame Skull
+    [117638] = true, -- Ricochet Skull
+    [117625] = true, -- Venom Skull
+}
+
+local function IsNecroSkullAbility(abilityId)
+    return abilityId == 114108 or abilityId == 123683 or abilityId == 123685
+        or abilityId == 117637 or abilityId == 123718 or abilityId == 123719
+        or abilityId == 117624 or abilityId == 123699 or abilityId == 123704
+end
+
+local function GetLivePlayerStack(effectId, trackedEffects)
+    if not trackedEffects[effectId] then
+        return nil
+    end
+
+    -- GetUnitBuffInfo() is authoritative for the currently-present player
+    -- buff. Do NOT reject a positive stack count based on endTime here: ESO
+    -- can leave an effect row present for a short period around expiration,
+    -- and the diagnostic proved the row itself is carrying the correct stack.
+    for i = 1, GetNumBuffs("player") do
+        local _, _, _, _, stackCount, _, _, _, _, _, buffAbilityId = GetUnitBuffInfo("player", i)
+        if buffAbilityId == effectId then
+            local stacks = tonumber(stackCount) or 0
+            return stacks > 0 and stacks or nil
+        end
+    end
+
+    return nil
+end
+
 local function FindTrackedStack(abilityId)
-    local effectId = STACK_EFFECT_BY_ABILITY[abilityId] or abilityId
+    local effectId = STACK_EFFECT_BY_ABILITY[abilityId]
+    if not effectId and IsFatecarverAbility(abilityId) then
+        effectId = CRUX_EFFECT_ID
+    end
+    if not effectId then return nil end
+
+    -- Nightblade spectral-bow counters use the live player buff directly.
+    -- This intentionally bypasses the ActionBar cache for display; the cache
+    -- remains available for the existing tracking/glow machinery.
+    local liveStack = GetLivePlayerStack(effectId, NIGHTBLADE_STACK_EFFECTS)
+    if liveStack ~= nil then
+        return liveStack
+    end
+
+    -- Necromancer Skull has the same cache problem: ESO reports the live
+    -- stack correctly, but the normal ActionBar effect cache can remain nil.
+    -- Read the authoritative player buff directly for Skull only.
+    local liveSkullStack = GetLivePlayerStack(effectId, NECRO_SKULL_STACK_EFFECTS)
+    if liveSkullStack ~= nil then
+        return liveSkullStack
+    end
+
     local entry = ActionBar.effectStacks[effectId]
     if not entry then return nil end
     local now = GetGameTimeSeconds()
@@ -685,10 +795,11 @@ local BANNER_BEARER_EFFECTS = {
 
 local function ReconcileBannerState()
     local active = false
+    local now = GetGameTimeSeconds()
     for i = 1, GetNumBuffs("player") do
         local _, _, endTime, _, _, _, _, _, _, _, abilityId = GetUnitBuffInfo("player", i)
         if abilityId and BANNER_BEARER_EFFECTS[abilityId] then
-            if not endTime or endTime == 0 or endTime > GetGameTimeSeconds() then
+            if not endTime or endTime == 0 or endTime > now then
                 active = true
                 break
             end
@@ -703,7 +814,7 @@ local function IsSlotToggleActive(slot, category)
         return true
     end
 
-    local abilityId = GetSlotAbility(slot, category)
+    local abilityId = GetAbilityForSlot(slot, category)
     return ActionBar.bannerActive and BANNER_BEARER_EFFECTS[abilityId] == true
 end
 
@@ -718,13 +829,83 @@ local READY_PROC_STACKS = {
     [61919] = 5,
     -- Relentless Focus: spectral bow at 4 stacks
     [61927] = 4,
+    -- Skull's empowered third cast is ready after two qualifying casts.
+    [114108] = 2,
+    [123683] = 2,
+    [123685] = 2,
+    [117637] = 2,
+    [123718] = 2,
+    [123719] = 2,
+    [117624] = 2,
+    [123699] = 2,
+    [123704] = 2,
 }
 
+local function GetSlotEffectRemaining(slot, category)
+    if not GetActionSlotEffectDuration or not GetActionSlotEffectTimeRemaining then
+        return nil
+    end
+
+    local okDuration, durationMs = pcall(GetActionSlotEffectDuration, slot, category)
+    local okRemain, remainMs = pcall(GetActionSlotEffectTimeRemaining, slot, category)
+    if not okDuration or not okRemain then return nil end
+
+    durationMs = tonumber(durationMs) or 0
+    remainMs = tonumber(remainMs) or 0
+    if durationMs <= 0 or remainMs <= 0 then return nil end
+
+    local duration = durationMs / 1000
+    local remain = remainMs / 1000
+    if remain > math.max(duration, 0.1) + 0.25 then return nil end
+    return remain
+end
+
 local function IsStackProcReady(abilityId)
+    -- Fatecarver becomes ready to cast at 3 Crux. Crux is a shared resource,
+    -- so it is handled separately from the normal per-ability stack map.
+    if IsFatecarverAbility(abilityId) then
+        local stacks = FindTrackedStack(abilityId)
+        return stacks ~= nil and stacks >= 3
+    end
+
     local required = READY_PROC_STACKS[abilityId]
     if not required then return false end
     local stacks = FindTrackedStack(abilityId)
     return stacks ~= nil and stacks >= required
+end
+
+local function UpdateSlotGlow(data, slot, category, active, ultimateReady)
+    if not data or not data.glow then return end
+    local abilityId = GetAbilityForSlot(slot, category)
+    local procReady = abilityId > 0 and IsStackProcReady(abilityId)
+    local shouldGlow = (active and IsSlotToggleActive(slot, category)) or ultimateReady or procReady
+    data.glow:SetHidden(not shouldGlow)
+    if data.outerGlow then
+        data.outerGlow:SetHidden(not shouldGlow)
+    end
+    if shouldGlow then
+        data.glow:SetAlpha(ultimateReady and 1.0 or 0.95)
+        if data.outerGlow then
+            data.outerGlow:SetAlpha(ultimateReady and 0.75 or 0.58)
+        end
+    end
+end
+
+local function UpdateFatecarverGlowForBar(controls, category)
+    if not controls then return end
+
+    for slot = MIN_SLOT, MAX_SLOT do
+        local data = controls[slot]
+        if data and data.glow then
+            local abilityId = GetAbilityForSlot(slot, category)
+            if IsFatecarverAbility(abilityId) then
+                -- Unlike normal toggle/proc glows, this must also be refreshed
+                -- while the weapon bar is inactive so the Beam is visibly ready
+                -- on either bar as soon as 3 Crux are available.
+                UpdateSlotGlow(data, slot, category, false, false)
+            end
+        end
+    end
 end
 
 local function FlashPressed(data)
@@ -747,21 +928,16 @@ local function FlashPressed(data)
     end, 110)
 end
 
-local function UpdateSlotGlow(data, slot, category, active, ultimateReady)
-    if not data or not data.glow then return end
-    local abilityId = GetSlotAbility(slot, category)
-    local procReady = abilityId > 0 and IsStackProcReady(abilityId)
-    local shouldGlow = (active and IsSlotToggleActive(slot, category)) or ultimateReady or procReady
-    data.glow:SetHidden(not shouldGlow)
-    if data.outerGlow then
-        data.outerGlow:SetHidden(not shouldGlow)
-    end
-    if shouldGlow then
-        data.glow:SetAlpha(ultimateReady and 1.0 or 0.95)
-        if data.outerGlow then
-            data.outerGlow:SetAlpha(ultimateReady and 0.75 or 0.58)
-        end
-    end
+local function GetUltimateState(slot, category)
+    local okPower, power = pcall(GetUnitPower, "player", COMBAT_MECHANIC_FLAGS_ULTIMATE)
+    if not okPower then return nil end
+
+    local okCost, slotCost = pcall(GetSlotAbilityCost, slot, COMBAT_MECHANIC_FLAGS_ULTIMATE, category)
+    if not okCost then return nil end
+
+    local current = math.floor(tonumber(power) or 0)
+    local cost = math.floor(tonumber(slotCost) or 0)
+    return current, cost, cost > 0 and current >= cost
 end
 
 local function UpdateUltimateDisplay(data, slot, category, active)
@@ -769,16 +945,10 @@ local function UpdateUltimateDisplay(data, slot, category, active)
     data.ultValue:SetText("")
     if not active then return end
 
-    local okPower, current = pcall(GetUnitPower, "player", COMBAT_MECHANIC_FLAGS_ULTIMATE)
-    if not okPower then return end
-    current = math.floor(tonumber(current) or 0)
+    local current, cost, ready = GetUltimateState(slot, category)
+    if not current or not cost or cost <= 0 then return end
 
-    local okCost, cost = pcall(GetSlotAbilityCost, slot, COMBAT_MECHANIC_FLAGS_ULTIMATE, category)
-    if not okCost then return end
-    cost = math.floor(tonumber(cost) or 0)
-    if cost <= 0 then return end
-
-    if current >= cost then
+    if ready then
         data.ultValue:SetText(tostring(current))
         data.ultValue:SetColor(1.0, 0.86, 0.25, 1.0)
     else
@@ -791,40 +961,30 @@ local function UpdateSlotEffectDisplay(data, slot, category, active)
     ClearEffectDisplay(data)
     if not data then return end
 
-    local abilityId = GetSlotAbility(slot, category)
+    local abilityId = GetAbilityForSlot(slot, category)
     if abilityId <= 0 then return end
 
     -- Stack/proc abilities use their stack counter instead of an effect timer.
+    -- Fatecarver is the one special case for the shared Crux effect.
     -- Showing the action-slot effect duration here makes instant abilities such
     -- as Bound Armaments / Skull procs visually fight with the stack number.
-    local suppressTimer = STACK_EFFECT_BY_ABILITY[abilityId] ~= nil
+    local suppressTimer = STACK_EFFECT_BY_ABILITY[abilityId] ~= nil or IsFatecarverAbility(abilityId)
 
     -- ESO exposes the exact action-slot effect duration and remaining time.
     -- This is the compact equivalent of the useful part of FAB's timer path.
-    if not suppressTimer and GetActionSlotEffectDuration and GetActionSlotEffectTimeRemaining then
-        local okDuration, durationMs = pcall(GetActionSlotEffectDuration, slot, category)
-        local okRemain, remainMs = pcall(GetActionSlotEffectTimeRemaining, slot, category)
-        if okDuration and okRemain then
-            durationMs = tonumber(durationMs) or 0
-            remainMs = tonumber(remainMs) or 0
-            if durationMs > 0 and remainMs > 0 then
-                local duration = durationMs / 1000
-                local remain = remainMs / 1000
-                -- Ignore obviously bogus ESO values, matching FAB's intent of
-                -- accepting only sane action-slot effect windows.
-                if remain > 0 and remain <= math.max(duration, 0.1) + 0.25 then
-                    if remain <= 5 then
-                        data.timer:SetText(string.format("%.1f", remain))
-                    else
-                        data.timer:SetText(string.format("%d", math.ceil(remain)))
-                    end
-                    data.timer:SetColor(unpack(TIMER_COLOR))
-                end
+    if not suppressTimer then
+        local remain = GetSlotEffectRemaining(slot, category)
+        if remain then
+            if remain <= 5 then
+                data.timer:SetText(string.format("%.1f", remain))
+            else
+                data.timer:SetText(string.format("%d", math.ceil(remain)))
             end
+            data.timer:SetColor(unpack(TIMER_COLOR))
         end
     end
 
-    if ActionBar.showStackCount then
+    if ActionBar.showStackCount and not IsNecroSkullAbility(abilityId) then
         local stacks = FindTrackedStack(abilityId)
         if stacks and stacks > 0 then
             data.stack:SetText(tostring(stacks))
@@ -833,31 +993,131 @@ local function UpdateSlotEffectDisplay(data, slot, category, active)
     end
 end
 
+-- Ultimate timers are special: GrimSuite only renders one ultimate slot,
+-- but an active ultimate effect can have been cast from either weapon bar.
+-- Prefer the current bar's ultimate timer; if it has none, fall back to the
+-- other bar so an active back-bar ultimate (e.g. Goliath) remains visible
+-- after swapping to the front bar. This matches FAB+'s intended behavior.
+local function UpdateUltimateTimerDisplay()
+    local activeCategory = GetActiveHotbarCategory()
+    local activeData = nil
+    local activeTimer = nil
+
+    if activeCategory == HOTBAR_CATEGORY_PRIMARY then
+        activeData = ActionBar.frontControls[ULT_SLOT]
+        activeTimer = ActionBar.backbarControls[ULT_SLOT]
+    elseif activeCategory == HOTBAR_CATEGORY_BACKUP then
+        activeData = ActionBar.backbarControls[ULT_SLOT]
+        activeTimer = ActionBar.frontControls[ULT_SLOT]
+    else
+        return
+    end
+
+    if not activeData or not activeData.timer then return end
+
+    activeData.timer:SetText("")
+    if activeTimer and activeTimer.timer then
+        activeTimer.timer:SetText("")
+    end
+
+    -- Prefer an active effect on the currently selected ultimate. If there
+    -- isn't one, show the still-active ultimate from the other weapon bar.
+    local remain = GetSlotEffectRemaining(ULT_SLOT, activeCategory)
+    if not remain then
+        local otherCategory = activeCategory == HOTBAR_CATEGORY_PRIMARY
+            and HOTBAR_CATEGORY_BACKUP or HOTBAR_CATEGORY_PRIMARY
+        remain = GetSlotEffectRemaining(ULT_SLOT, otherCategory)
+    end
+
+    if remain then
+        if remain <= 5 then
+            activeData.timer:SetText(string.format("%.1f", remain))
+        else
+            activeData.timer:SetText(string.format("%d", math.ceil(remain)))
+        end
+        activeData.timer:SetColor(unpack(TIMER_COLOR))
+    end
+end
+
 local function UpdateEffectDisplays()
     if not ActionBar.initialized then return end
-    UpdateSlotEffectDisplay(ActionBar.frontControls[3], 3, HOTBAR_CATEGORY_PRIMARY, false)
-    UpdateSlotEffectDisplay(ActionBar.frontControls[4], 4, HOTBAR_CATEGORY_PRIMARY, false)
-    UpdateSlotEffectDisplay(ActionBar.frontControls[5], 5, HOTBAR_CATEGORY_PRIMARY, false)
-    UpdateSlotEffectDisplay(ActionBar.frontControls[6], 6, HOTBAR_CATEGORY_PRIMARY, false)
-    UpdateSlotEffectDisplay(ActionBar.frontControls[7], 7, HOTBAR_CATEGORY_PRIMARY, false)
-    UpdateSlotEffectDisplay(ActionBar.frontControls[8], 8, HOTBAR_CATEGORY_PRIMARY, false)
-    UpdateSlotEffectDisplay(ActionBar.backbarControls[3], 3, HOTBAR_CATEGORY_BACKUP, false)
-    UpdateSlotEffectDisplay(ActionBar.backbarControls[4], 4, HOTBAR_CATEGORY_BACKUP, false)
-    UpdateSlotEffectDisplay(ActionBar.backbarControls[5], 5, HOTBAR_CATEGORY_BACKUP, false)
-    UpdateSlotEffectDisplay(ActionBar.backbarControls[6], 6, HOTBAR_CATEGORY_BACKUP, false)
-    UpdateSlotEffectDisplay(ActionBar.backbarControls[7], 7, HOTBAR_CATEGORY_BACKUP, false)
-    UpdateSlotEffectDisplay(ActionBar.backbarControls[8], 8, HOTBAR_CATEGORY_BACKUP, false)
+
+    for _, category in ipairs(HOTBAR_CATEGORIES) do
+        local controls = category == HOTBAR_CATEGORY_PRIMARY
+            and ActionBar.frontControls or ActionBar.backbarControls
+        for slot = MIN_SLOT, MAX_SLOT do
+            UpdateSlotEffectDisplay(controls[slot], slot, category, false)
+        end
+
+        local ult = controls[ULT_SLOT]
+        if ult and ult.timer then
+            ult.timer:SetText("")
+        end
+    end
+
+    -- Ultimate is a shared visual slot in GrimSuite. Its timer may come from
+    -- either weapon bar, so render it only after checking both categories.
+    UpdateUltimateTimerDisplay()
+end
+
+local function UpdateActiveBarGlows()
+    local activeCategory = GetActiveHotbarCategory()
+    if activeCategory ~= HOTBAR_CATEGORY_PRIMARY and activeCategory ~= HOTBAR_CATEGORY_BACKUP then
+        return
+    end
+
+    local controls = activeCategory == HOTBAR_CATEGORY_PRIMARY
+        and ActionBar.frontControls or ActionBar.backbarControls
+    local _, _, ultimateReady = GetUltimateState(ULT_SLOT, activeCategory)
+    ultimateReady = ultimateReady == true
+
+    for slot = MIN_SLOT, ULT_SLOT do
+        local data = controls[slot]
+        if data then
+            if slot == ULT_SLOT then
+                UpdateUltimateDisplay(data, ULT_SLOT, activeCategory, true)
+            end
+            UpdateSlotGlow(data, slot, activeCategory, true, slot == ULT_SLOT and ultimateReady)
+        end
+    end
+
+    -- Crux is shared between bars. Keep Fatecarver synchronized on the inactive
+    -- bar as well.
+    UpdateFatecarverGlowForBar(ActionBar.frontControls, HOTBAR_CATEGORY_PRIMARY)
+    UpdateFatecarverGlowForBar(ActionBar.backbarControls, HOTBAR_CATEGORY_BACKUP)
 end
 
 local function TrackPlayerEffect(eventCode, change, effectSlot, effectName, unitTag, beginTime, endTime, stackCount, iconName, buffType, effectType, abilityType, statusEffectType, unitName, unitId, abilityId, sourceType)
     if unitTag ~= "player" then return end
     if not abilityId or abilityId <= 0 then return end
 
+    -- Crux is a shared player effect. Track it directly by its effect ID,
+    -- rather than requiring Crux itself to be the slotted ability.
+    if abilityId == CRUX_EFFECT_ID then
+        local now = GetGameTimeSeconds()
+        if change == EFFECT_RESULT_FADED or (endTime and endTime > 0 and endTime <= now) then
+            ActionBar.effectStacks[CRUX_EFFECT_ID] = nil
+            return
+        end
+
+        local stacks = tonumber(stackCount) or 0
+        if stacks > 0 then
+            ActionBar.effectStacks[CRUX_EFFECT_ID] = {
+                stack = stacks,
+                beginTime = beginTime or now,
+                endTime = endTime or 0,
+            }
+        elseif change == EFFECT_RESULT_UPDATED or change == EFFECT_RESULT_GAINED then
+            ActionBar.effectStacks[CRUX_EFFECT_ID] = nil
+        end
+        return
+    end
+
     local matched = false
     local trackedEffectId = nil
-    for _, category in ipairs({ HOTBAR_CATEGORY_PRIMARY, HOTBAR_CATEGORY_BACKUP }) do
+    for _, category in ipairs(HOTBAR_CATEGORIES) do
         for slot = MIN_SLOT, ULT_SLOT do
-            local slottedAbility = GetSlotAbility(slot, category)
+            local slottedAbility = GetAbilityForSlot(slot, category)
             if slottedAbility > 0 then
                 local effectId = STACK_EFFECT_BY_ABILITY[slottedAbility] or slottedAbility
                 if abilityId == slottedAbility or abilityId == effectId then
@@ -896,11 +1156,14 @@ local function ReconcilePlayerStacks()
     local now = GetGameTimeSeconds()
     local seen = {}
     for i = 1, GetNumBuffs("player") do
-        local _, beginTime, endTime, buffSlot, stackCount, _, _, _, _, _, buffAbilityId, _, castByPlayer = GetUnitBuffInfo("player", i)
-        if buffAbilityId and buffAbilityId > 0 and stackCount and stackCount > 0 then
-            for _, category in ipairs({ HOTBAR_CATEGORY_PRIMARY, HOTBAR_CATEGORY_BACKUP }) do
+        local _, beginTime, endTime, _, stackCount, _, _, _, _, _, buffAbilityId = GetUnitBuffInfo("player", i)
+        if buffAbilityId == CRUX_EFFECT_ID and stackCount and stackCount > 0 then
+            seen[CRUX_EFFECT_ID] = true
+            ActionBar.effectStacks[CRUX_EFFECT_ID] = { stack = tonumber(stackCount) or 0, beginTime = beginTime or now, endTime = endTime or 0 }
+        elseif buffAbilityId and buffAbilityId > 0 and stackCount and stackCount > 0 then
+            for _, category in ipairs(HOTBAR_CATEGORIES) do
                 for slot = MIN_SLOT, ULT_SLOT do
-                    local slottedAbility = GetSlotAbility(slot, category)
+                    local slottedAbility = GetAbilityForSlot(slot, category)
                     if slottedAbility > 0 then
                         local mappedEffect = STACK_EFFECT_BY_ABILITY[slottedAbility]
                         if buffAbilityId == slottedAbility or buffAbilityId == mappedEffect then
@@ -968,15 +1231,12 @@ function ActionBar:UpdateRow(controls, category, active)
     ult.frame:SetHidden(not (ActionBar.showFrames and ActionBar.showUltimate and active and ultId > 0))
 
     UpdateUltimateDisplay(ult, ULT_SLOT, category, active)
-    local currentUlt = 0
-    local costUlt = 0
+    local ultimateReady = false
     if active then
-        local okPower, power = pcall(GetUnitPower, "player", COMBAT_MECHANIC_FLAGS_ULTIMATE)
-        local okCost, cost = pcall(GetSlotAbilityCost, ULT_SLOT, COMBAT_MECHANIC_FLAGS_ULTIMATE, category)
-        if okPower then currentUlt = tonumber(power) or 0 end
-        if okCost then costUlt = tonumber(cost) or 0 end
+        local _, _, ready = GetUltimateState(ULT_SLOT, category)
+        ultimateReady = ready == true
     end
-    UpdateSlotGlow(ult, ULT_SLOT, category, active, active and costUlt > 0 and currentUlt >= costUlt)
+    UpdateSlotGlow(ult, ULT_SLOT, category, active, ultimateReady)
 end
 
 local function SetDragEnabled(enabled)
@@ -1056,6 +1316,22 @@ InstallDragHandlers = function()
     EM:RegisterForUpdate(GS.name .. "_AB_Drag", 16, UpdateActionBarDrag)
 end
 
+local function LayoutDisplayButton(data, parent, x, size)
+    if not data or not data.frame then return end
+
+    data.frame:SetDimensions(size, size)
+    data.frame:ClearAnchors()
+    data.frame:SetAnchor(TOPLEFT, parent, TOPLEFT, x, 0)
+
+    data.icon:ClearAnchors()
+    data.icon:SetAnchor(TOPLEFT, data.frame, TOPLEFT, 2, 2)
+    data.icon:SetAnchor(BOTTOMRIGHT, data.frame, BOTTOMRIGHT, -2, -2)
+
+    data.pressed:ClearAnchors()
+    data.pressed:SetAnchor(TOPLEFT, data.frame, TOPLEFT, 2, 2)
+    data.pressed:SetAnchor(BOTTOMRIGHT, data.frame, BOTTOMRIGHT, -2, -2)
+end
+
 local function ApplyGABCustomization()
     if not ActionBar.initialized then return end
 
@@ -1078,34 +1354,19 @@ local function ApplyGABCustomization()
             local data = controls[i]
             if data and data.frame then
                 local x = (i - MIN_SLOT) * (size + gap)
-                data.frame:SetDimensions(size, size)
-                data.frame:ClearAnchors()
-                data.frame:SetAnchor(TOPLEFT, data.frame:GetParent(), TOPLEFT, x, 0)
-                data.icon:ClearAnchors()
-                data.icon:SetAnchor(TOPLEFT, data.frame, TOPLEFT, 2, 2)
-                data.icon:SetAnchor(BOTTOMRIGHT, data.frame, BOTTOMRIGHT, -2, -2)
-                data.pressed:ClearAnchors()
-                data.pressed:SetAnchor(TOPLEFT, data.frame, TOPLEFT, 2, 2)
-                data.pressed:SetAnchor(BOTTOMRIGHT, data.frame, BOTTOMRIGHT, -2, -2)
+                LayoutDisplayButton(data, data.frame:GetParent(), x, size)
             end
         end
 
         local ult = controls[ULT_SLOT]
         if ult and ult.frame then
-            ult.frame:SetDimensions(size, size)
-            ult.frame:ClearAnchors()
-            ult.frame:SetAnchor(TOPLEFT, ult.frame:GetParent(), TOPLEFT, rowWidth + ULT_GAP, 0)
-            ult.icon:ClearAnchors()
-            ult.icon:SetAnchor(TOPLEFT, ult.frame, TOPLEFT, 2, 2)
-            ult.icon:SetAnchor(BOTTOMRIGHT, ult.frame, BOTTOMRIGHT, -2, -2)
-            ult.pressed:ClearAnchors()
-            ult.pressed:SetAnchor(TOPLEFT, ult.frame, TOPLEFT, 2, 2)
-            ult.pressed:SetAnchor(BOTTOMRIGHT, ult.frame, BOTTOMRIGHT, -2, -2)
+            LayoutDisplayButton(ult, ult.frame:GetParent(), rowWidth + ULT_GAP, size)
         end
     end
 
     resizeControls(ActionBar.frontControls)
     resizeControls(ActionBar.backbarControls)
+    ApplyOverlayTextStyles()
     ActionBar:AnchorRows()
 
     local weaponSwap, potion = GetNativeActionBarControls()
@@ -1147,34 +1408,31 @@ local function ResetPosition()
     ActionBar:AnchorRows()
 end
 
-local function ResetGABCustomization()
-    ActionBar.iconSize = POSITION_DEFAULTS.iconSize
-    ActionBar.slotGap = POSITION_DEFAULTS.slotGap
-    ActionBar.rowGap = POSITION_DEFAULTS.rowGap
-    ActionBar.overallScale = POSITION_DEFAULTS.overallScale
-    ActionBar.backbarOpacity = POSITION_DEFAULTS.backbarOpacity
-    ActionBar.backbarDesaturation = POSITION_DEFAULTS.backbarDesaturation
-    ActionBar.showUltimate = POSITION_DEFAULTS.showUltimate
-    ActionBar.showQuickslot = POSITION_DEFAULTS.showQuickslot
-    ActionBar.showWeaponSwap = POSITION_DEFAULTS.showWeaponSwap
+local GAB_SETTING_KEYS = {
+    "iconSize", "slotGap", "rowGap", "overallScale",
+    "backbarOpacity", "backbarDesaturation",
+    "showUltimate", "showQuickslot", "showWeaponSwap",
+    "timerSize", "stackSize", "timerFont", "stackFont",
+    "timerOutline", "stackOutline",
+    "timerOffsetX", "timerOffsetY", "stackOffsetX", "stackOffsetY",
+}
 
+local function SaveGABSetting(key, value)
+    ActionBar[key] = value
     if positionSV then
-        positionSV.iconSize = ActionBar.iconSize
-        positionSV.slotGap = ActionBar.slotGap
-        positionSV.rowGap = ActionBar.rowGap
-        positionSV.overallScale = ActionBar.overallScale
-        positionSV.backbarOpacity = ActionBar.backbarOpacity
-        positionSV.backbarDesaturation = ActionBar.backbarDesaturation
-        positionSV.showUltimate = ActionBar.showUltimate
-        positionSV.showQuickslot = ActionBar.showQuickslot
-        positionSV.showWeaponSwap = ActionBar.showWeaponSwap
+        positionSV[key] = value
+    end
+end
+
+local function ResetGABCustomization()
+    for _, key in ipairs(GAB_SETTING_KEYS) do
+        SaveGABSetting(key, POSITION_DEFAULTS[key])
     end
     ApplyGABCustomization()
 end
 
 local function RegisterLibAddonMenu()
     LAM = LibAddonMenu2
-    if not LAM then return end
 
     -- Saved vars are normally initialized during ActionBar:Initialize(), so
     -- position persistence does not depend on LibAddonMenu's load order.
@@ -1187,8 +1445,8 @@ local function RegisterLibAddonMenu()
         type = "panel",
         name = "GrimSuite Action Bar",
         displayName = "GrimSuite Action Bar",
-        author = "GrimGrin",
-        version = "0.0.43Dev",
+        author = "@GrimGrin94",
+        version = GS.version,
         registerForRefresh = true,
         registerForDefaults = true,
     }
@@ -1209,8 +1467,7 @@ local function RegisterLibAddonMenu()
             min = 40, max = 100, step = 1,
             getFunc = function() return GetIconSize() end,
             setFunc = function(value)
-                ActionBar.iconSize = tonumber(value) or POSITION_DEFAULTS.iconSize
-                if positionSV then positionSV.iconSize = ActionBar.iconSize end
+                SaveGABSetting("iconSize", tonumber(value) or POSITION_DEFAULTS.iconSize)
                 ApplyGABCustomization()
             end,
             default = POSITION_DEFAULTS.iconSize,
@@ -1222,8 +1479,7 @@ local function RegisterLibAddonMenu()
             min = 0, max = 20, step = 1,
             getFunc = function() return GetSlotGap() end,
             setFunc = function(value)
-                ActionBar.slotGap = tonumber(value) or POSITION_DEFAULTS.slotGap
-                if positionSV then positionSV.slotGap = ActionBar.slotGap end
+                SaveGABSetting("slotGap", tonumber(value) or POSITION_DEFAULTS.slotGap)
                 ApplyGABCustomization()
             end,
             default = POSITION_DEFAULTS.slotGap,
@@ -1235,8 +1491,7 @@ local function RegisterLibAddonMenu()
             min = 0, max = 20, step = 1,
             getFunc = function() return GetRowGap() end,
             setFunc = function(value)
-                ActionBar.rowGap = tonumber(value) or POSITION_DEFAULTS.rowGap
-                if positionSV then positionSV.rowGap = ActionBar.rowGap end
+                SaveGABSetting("rowGap", tonumber(value) or POSITION_DEFAULTS.rowGap)
                 ApplyGABCustomization()
             end,
             default = POSITION_DEFAULTS.rowGap,
@@ -1248,8 +1503,7 @@ local function RegisterLibAddonMenu()
             min = 0.50, max = 1.50, step = 0.05,
             getFunc = function() return GetOverallScale() end,
             setFunc = function(value)
-                ActionBar.overallScale = tonumber(value) or POSITION_DEFAULTS.overallScale
-                if positionSV then positionSV.overallScale = ActionBar.overallScale end
+                SaveGABSetting("overallScale", tonumber(value) or POSITION_DEFAULTS.overallScale)
                 ApplyGABCustomization()
             end,
             default = POSITION_DEFAULTS.overallScale,
@@ -1261,8 +1515,7 @@ local function RegisterLibAddonMenu()
             min = 0, max = 1, step = 0.05,
             getFunc = function() return GetBackbarOpacity() end,
             setFunc = function(value)
-                ActionBar.backbarOpacity = tonumber(value) or POSITION_DEFAULTS.backbarOpacity
-                if positionSV then positionSV.backbarOpacity = ActionBar.backbarOpacity end
+                SaveGABSetting("backbarOpacity", tonumber(value) or POSITION_DEFAULTS.backbarOpacity)
                 ActionBar:Refresh()
             end,
             default = POSITION_DEFAULTS.backbarOpacity,
@@ -1274,11 +1527,134 @@ local function RegisterLibAddonMenu()
             min = 0, max = 1, step = 0.05,
             getFunc = function() return GetBackbarDesaturation() end,
             setFunc = function(value)
-                ActionBar.backbarDesaturation = tonumber(value) or POSITION_DEFAULTS.backbarDesaturation
-                if positionSV then positionSV.backbarDesaturation = ActionBar.backbarDesaturation end
+                SaveGABSetting("backbarDesaturation", tonumber(value) or POSITION_DEFAULTS.backbarDesaturation)
                 ActionBar:Refresh()
             end,
             default = POSITION_DEFAULTS.backbarDesaturation,
+        },
+        {
+            type = "header",
+            name = "Timer & Stack Text",
+        },
+        {
+            type = "slider",
+            name = "Timer Horizontal Position",
+            tooltip = "Moves timer text left or right relative to the center of its icon.",
+            min = -20, max = 20, step = 1,
+            getFunc = function() return tonumber(ActionBar.timerOffsetX) or POSITION_DEFAULTS.timerOffsetX end,
+            setFunc = function(value)
+                SaveGABSetting("timerOffsetX", tonumber(value) or POSITION_DEFAULTS.timerOffsetX)
+                ApplyOverlayTextStyles()
+            end,
+            default = POSITION_DEFAULTS.timerOffsetX,
+        },
+        {
+            type = "slider",
+            name = "Timer Vertical Position",
+            tooltip = "Moves timer text up or down relative to the center of its icon.",
+            min = -20, max = 20, step = 1,
+            getFunc = function() return tonumber(ActionBar.timerOffsetY) or POSITION_DEFAULTS.timerOffsetY end,
+            setFunc = function(value)
+                SaveGABSetting("timerOffsetY", tonumber(value) or POSITION_DEFAULTS.timerOffsetY)
+                ApplyOverlayTextStyles()
+            end,
+            default = POSITION_DEFAULTS.timerOffsetY,
+        },
+        {
+            type = "slider",
+            name = "Timer Size",
+            tooltip = "Changes the size of cooldown/effect timer text on skill and ultimate slots.",
+            min = 10, max = 80, step = 1,
+            getFunc = function() return tonumber(ActionBar.timerSize) or POSITION_DEFAULTS.timerSize end,
+            setFunc = function(value)
+                SaveGABSetting("timerSize", tonumber(value) or POSITION_DEFAULTS.timerSize)
+                ApplyOverlayTextStyles()
+            end,
+            default = POSITION_DEFAULTS.timerSize,
+        },
+        {
+            type = "dropdown",
+            name = "Timer Font",
+            tooltip = "Font used for cooldown/effect timer text.",
+            choices = { "Univers 67", "Univers 57", "ProseAntique", "Trajan Pro", "Skyrim Handwritten", "Futura Condensed Light", "Futura Condensed", "Futura Condensed Bold" },
+            getFunc = function() return ActionBar.timerFont end,
+            setFunc = function(value)
+                SaveGABSetting("timerFont", tostring(value))
+                ApplyOverlayTextStyles()
+            end,
+            default = POSITION_DEFAULTS.timerFont,
+        },
+        {
+            type = "dropdown",
+            name = "Timer Outline",
+            tooltip = "Outline style used for cooldown/effect timer text.",
+            choices = { "none", "outline", "thick-outline", "soft-shadow-thick-outline", "shadow" },
+            getFunc = function() return ActionBar.timerOutline end,
+            setFunc = function(value)
+                SaveGABSetting("timerOutline", tostring(value))
+                ApplyOverlayTextStyles()
+            end,
+            default = POSITION_DEFAULTS.timerOutline,
+        },
+        {
+            type = "slider",
+            name = "Stack Horizontal Position",
+            tooltip = "Moves stack-count text left or right relative to the center of its icon.",
+            min = -20, max = 20, step = 1,
+            getFunc = function() return tonumber(ActionBar.stackOffsetX) or POSITION_DEFAULTS.stackOffsetX end,
+            setFunc = function(value)
+                SaveGABSetting("stackOffsetX", tonumber(value) or POSITION_DEFAULTS.stackOffsetX)
+                ApplyOverlayTextStyles()
+            end,
+            default = POSITION_DEFAULTS.stackOffsetX,
+        },
+        {
+            type = "slider",
+            name = "Stack Vertical Position",
+            tooltip = "Moves stack-count text up or down relative to the center of its icon.",
+            min = -20, max = 20, step = 1,
+            getFunc = function() return tonumber(ActionBar.stackOffsetY) or POSITION_DEFAULTS.stackOffsetY end,
+            setFunc = function(value)
+                SaveGABSetting("stackOffsetY", tonumber(value) or POSITION_DEFAULTS.stackOffsetY)
+                ApplyOverlayTextStyles()
+            end,
+            default = POSITION_DEFAULTS.stackOffsetY,
+        },
+        {
+            type = "slider",
+            name = "Stack Size",
+            tooltip = "Changes the size of stack-count text on skill slots.",
+            min = 10, max = 80, step = 1,
+            getFunc = function() return tonumber(ActionBar.stackSize) or POSITION_DEFAULTS.stackSize end,
+            setFunc = function(value)
+                SaveGABSetting("stackSize", tonumber(value) or POSITION_DEFAULTS.stackSize)
+                ApplyOverlayTextStyles()
+            end,
+            default = POSITION_DEFAULTS.stackSize,
+        },
+        {
+            type = "dropdown",
+            name = "Stack Font",
+            tooltip = "Font used for stack-count text.",
+            choices = { "Univers 67", "Univers 57", "ProseAntique", "Trajan Pro", "Skyrim Handwritten", "Futura Condensed Light", "Futura Condensed", "Futura Condensed Bold" },
+            getFunc = function() return ActionBar.stackFont end,
+            setFunc = function(value)
+                SaveGABSetting("stackFont", tostring(value))
+                ApplyOverlayTextStyles()
+            end,
+            default = POSITION_DEFAULTS.stackFont,
+        },
+        {
+            type = "dropdown",
+            name = "Stack Outline",
+            tooltip = "Outline style used for stack-count text.",
+            choices = { "none", "outline", "thick-outline", "soft-shadow-thick-outline", "shadow" },
+            getFunc = function() return ActionBar.stackOutline end,
+            setFunc = function(value)
+                SaveGABSetting("stackOutline", tostring(value))
+                ApplyOverlayTextStyles()
+            end,
+            default = POSITION_DEFAULTS.stackOutline,
         },
         {
             type = "checkbox",
@@ -1286,8 +1662,7 @@ local function RegisterLibAddonMenu()
             tooltip = "Show the active ultimate icon.",
             getFunc = function() return ActionBar.showUltimate == true end,
             setFunc = function(value)
-                ActionBar.showUltimate = value == true
-                if positionSV then positionSV.showUltimate = ActionBar.showUltimate end
+                SaveGABSetting("showUltimate", value == true)
                 ActionBar:Refresh()
             end,
             default = POSITION_DEFAULTS.showUltimate,
@@ -1298,8 +1673,7 @@ local function RegisterLibAddonMenu()
             tooltip = "Show the ESO quickslot/potion control beside GAB.",
             getFunc = function() return ActionBar.showQuickslot == true end,
             setFunc = function(value)
-                ActionBar.showQuickslot = value == true
-                if positionSV then positionSV.showQuickslot = ActionBar.showQuickslot end
+                SaveGABSetting("showQuickslot", value == true)
                 ActionBar:AnchorRows()
             end,
             default = POSITION_DEFAULTS.showQuickslot,
@@ -1310,8 +1684,7 @@ local function RegisterLibAddonMenu()
             tooltip = "Show the ESO weapon-swap indicator beside GAB.",
             getFunc = function() return ActionBar.showWeaponSwap == true end,
             setFunc = function(value)
-                ActionBar.showWeaponSwap = value == true
-                if positionSV then positionSV.showWeaponSwap = ActionBar.showWeaponSwap end
+                SaveGABSetting("showWeaponSwap", value == true)
                 ActionBar:AnchorRows()
             end,
             default = POSITION_DEFAULTS.showWeaponSwap,
@@ -1419,22 +1792,19 @@ function ActionBar:Initialize()
     self.showUltimate = positionSV.showUltimate ~= false
     self.showQuickslot = positionSV.showQuickslot ~= false
     self.showWeaponSwap = positionSV.showWeaponSwap ~= false
+    self.timerSize = tonumber(positionSV.timerSize) or POSITION_DEFAULTS.timerSize
+    self.stackSize = tonumber(positionSV.stackSize) or POSITION_DEFAULTS.stackSize
+    self.timerFont = tostring(positionSV.timerFont or POSITION_DEFAULTS.timerFont)
+    self.stackFont = tostring(positionSV.stackFont or POSITION_DEFAULTS.stackFont)
+    self.timerOutline = tostring(positionSV.timerOutline or POSITION_DEFAULTS.timerOutline)
+    self.stackOutline = tostring(positionSV.stackOutline or POSITION_DEFAULTS.stackOutline)
+    self.timerOffsetX = tonumber(positionSV.timerOffsetX) or POSITION_DEFAULTS.timerOffsetX
+    self.timerOffsetY = tonumber(positionSV.timerOffsetY) or POSITION_DEFAULTS.timerOffsetY
+    self.stackOffsetX = tonumber(positionSV.stackOffsetX) or POSITION_DEFAULTS.stackOffsetX
+    self.stackOffsetY = tonumber(positionSV.stackOffsetY) or POSITION_DEFAULTS.stackOffsetY
 
-    if LibAddonMenu2 then
-        RegisterLibAddonMenu()
-        SetDragEnabled(self.positionUnlocked)
-    else
-        EM:RegisterForEvent(GS.name .. "_AB_LAM", EVENT_ADD_ON_LOADED, function(_, addonName)
-            if addonName ~= "LibAddonMenu-2.0" then return end
-            RegisterLibAddonMenu()
-            SetDragEnabled(self.positionUnlocked)
-            nativeLayoutBase.captured = false
-            zo_callLater(function()
-                self:AnchorRows()
-            end, 100)
-            EM:UnregisterForEvent(GS.name .. "_AB_LAM", EVENT_ADD_ON_LOADED)
-        end)
-    end
+    RegisterLibAddonMenu()
+    SetDragEnabled(self.positionUnlocked)
 
     EM:RegisterForEvent(GS.name .. "_AB_PlayerActivated", EVENT_PLAYER_ACTIVATED, function()
         -- Let ESO finish establishing the native action-bar layout, then
@@ -1461,32 +1831,50 @@ function ActionBar:Initialize()
         end)
     end
 
-    -- Weapon-pair changes only track the swap.  FAB does not repaint the
-    -- custom bar from EVENT_ACTIVE_WEAPON_PAIR_CHANGED; the authoritative
-    -- visual update comes from EVENT_ACTION_SLOTS_ACTIVE_HOTBAR_UPDATED.
-    EM:RegisterForEvent(GS.name .. "_AB_WeaponSwap", EVENT_ACTIVE_WEAPON_PAIR_CHANGED, function()
-        -- Intentionally no Refresh() here.
-    end)
-
-    -- This is the authoritative active-hotbar event used by FAB.  At this
-    -- point ESO has told us which weapon bar is active, so paint the two rows
-    -- immediately.  Do not force UpdateUsable() during this transition.
-    EM:RegisterForEvent(GS.name .. "_AB_HotbarUpdated", EVENT_ACTION_SLOTS_ACTIVE_HOTBAR_UPDATED, function(_, didActiveHotbarChange, _, activeHotbarCategory)
-        if not didActiveHotbarChange then return end
+    -- This is the authoritative action-slot update event used by ESO/FAB.
+    -- IMPORTANT: the first boolean only tells us whether the ACTIVE hotbar
+    -- changed. The second boolean tells us whether the ability assignments
+    -- changed. Wizard-style setup/loadout swaps can change both bars while
+    -- keeping the same weapon/gear setup, so didActiveHotbarChange can be
+    -- false even though every skill icon needs to be repainted.
+    EM:RegisterForEvent(GS.name .. "_AB_HotbarUpdated", EVENT_ACTION_SLOTS_ACTIVE_HOTBAR_UPDATED, function(_, didActiveHotbarChange, shouldUpdateAbilityAssignments, activeHotbarCategory)
+        if not didActiveHotbarChange and not shouldUpdateAbilityAssignments then
+            return
+        end
         if activeHotbarCategory ~= HOTBAR_CATEGORY_PRIMARY and activeHotbarCategory ~= HOTBAR_CATEGORY_BACKUP then
             return
         end
 
-        -- First pass deliberately paints the newly-active row as usable.
-        -- EVENT_HOTBAR_SLOT_STATE_UPDATED will correct individual slots once
-        -- ESO publishes their real state. This prevents the old bar's stale
-        -- unusable flags from flashing onto the newly-active bar.
-        self:CreateRows()
-        self:AnchorRows()
-        self:UpdateRow(self.frontControls, HOTBAR_CATEGORY_PRIMARY, activeHotbarCategory == HOTBAR_CATEGORY_PRIMARY)
-        self:UpdateRow(self.backbarControls, HOTBAR_CATEGORY_BACKUP, activeHotbarCategory == HOTBAR_CATEGORY_BACKUP)
-        self:UpdateNativeVisualSuppression()
+        -- Let ESO finish publishing the new slot assignments before we read
+        -- them. This is particularly important when a setup changes skills
+        -- without changing the active weapon pair.
+        zo_callLater(function()
+            if not self.initialized then return end
+            local currentCategory = GetActiveHotbarCategory()
+            if currentCategory ~= HOTBAR_CATEGORY_PRIMARY and currentCategory ~= HOTBAR_CATEGORY_BACKUP then
+                return
+            end
+
+            self:CreateRows()
+            self:AnchorRows()
+            self:UpdateRow(self.frontControls, HOTBAR_CATEGORY_PRIMARY, currentCategory == HOTBAR_CATEGORY_PRIMARY)
+            self:UpdateRow(self.backbarControls, HOTBAR_CATEGORY_BACKUP, currentCategory == HOTBAR_CATEGORY_BACKUP)
+            self:UpdateNativeVisualSuppression()
+        end, 0)
     end)
+
+    -- Some setup/loadout systems can update both hotbars without changing the
+    -- active-hotbar state. This event is the explicit all-bars assignment
+    -- notification, so use it as a lightweight repaint fallback.
+    if EVENT_ACTION_SLOTS_ALL_HOTBARS_UPDATED then
+        EM:RegisterForEvent(GS.name .. "_AB_AllHotbarsUpdated", EVENT_ACTION_SLOTS_ALL_HOTBARS_UPDATED, function()
+            zo_callLater(function()
+                if self.initialized then
+                    self:Refresh()
+                end
+            end, 0)
+        end)
+    end
 
     -- ESO reports the actual skill activation here.  Flash only the
     -- corresponding GrimSuite button on the currently active bar.
@@ -1545,38 +1933,7 @@ function ActionBar:Initialize()
             ReconcilePlayerStacks()
             ReconcileBannerState()
             UpdateEffectDisplays()
-            local activeCategory = GetActiveHotbarCategory()
-            if activeCategory == HOTBAR_CATEGORY_PRIMARY then
-                for i = MIN_SLOT, ULT_SLOT do
-                    local data = self.frontControls[i]
-                    if data then
-                        local currentUlt, costUlt = 0, 0
-                        if i == ULT_SLOT then
-                            local okPower, power = pcall(GetUnitPower, "player", COMBAT_MECHANIC_FLAGS_ULTIMATE)
-                            local okCost, cost = pcall(GetSlotAbilityCost, ULT_SLOT, COMBAT_MECHANIC_FLAGS_ULTIMATE, HOTBAR_CATEGORY_PRIMARY)
-                            if okPower then currentUlt = tonumber(power) or 0 end
-                            if okCost then costUlt = tonumber(cost) or 0 end
-                            UpdateUltimateDisplay(data, ULT_SLOT, HOTBAR_CATEGORY_PRIMARY, true)
-                        end
-                        UpdateSlotGlow(data, i, HOTBAR_CATEGORY_PRIMARY, true, i == ULT_SLOT and costUlt > 0 and currentUlt >= costUlt)
-                    end
-                end
-            elseif activeCategory == HOTBAR_CATEGORY_BACKUP then
-                for i = MIN_SLOT, ULT_SLOT do
-                    local data = self.backbarControls[i]
-                    if data then
-                        local currentUlt, costUlt = 0, 0
-                        if i == ULT_SLOT then
-                            local okPower, power = pcall(GetUnitPower, "player", COMBAT_MECHANIC_FLAGS_ULTIMATE)
-                            local okCost, cost = pcall(GetSlotAbilityCost, ULT_SLOT, COMBAT_MECHANIC_FLAGS_ULTIMATE, HOTBAR_CATEGORY_BACKUP)
-                            if okPower then currentUlt = tonumber(power) or 0 end
-                            if okCost then costUlt = tonumber(cost) or 0 end
-                            UpdateUltimateDisplay(data, ULT_SLOT, HOTBAR_CATEGORY_BACKUP, true)
-                        end
-                        UpdateSlotGlow(data, i, HOTBAR_CATEGORY_BACKUP, true, i == ULT_SLOT and costUlt > 0 and currentUlt >= costUlt)
-                    end
-                end
-            end
+            UpdateActiveBarGlows()
         end
     end)
 

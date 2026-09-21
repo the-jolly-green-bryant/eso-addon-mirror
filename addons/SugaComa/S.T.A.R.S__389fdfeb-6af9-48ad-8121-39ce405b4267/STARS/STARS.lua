@@ -1,7 +1,7 @@
 ﻿STARS = STARS or {}
 local STARS = STARS
 STARS.name = "STARS"
-STARS.version = "0.6.19"
+STARS.version = "0.6.21"
 STARS.sv = nil
 
 STARS.UNDERWORLD_ABILITY_IDS = {
@@ -318,7 +318,6 @@ function STARS:ResetUnderworldStats()
 end
 
 function STARS:ResetPvpStats()
-    self:ResetKeepTracking()
     if not self.sv or not self.sv.stats then return end
     self.sv.stats.pvp = {
         kills = 0, deaths = 0, revives = 0,
@@ -1268,174 +1267,34 @@ function STARS:OnResurrectResult(_, _, reason)
     if reason == RESURRECT_RESULT_SUCCESS then self:IncrementPvp("revives", 1) end
 end
 
--- Keep totals need an observed local conflict, not just an AP tick. Runtime
--- evidence is intentionally discarded across loading, campaigns and toggles.
-local KEEP_SETTLE_MS, KEEP_REWARD_GRACE_MS = 2000, 30000
-
-local function KeepLocationKey(name)
-    if type(name) ~= "string" or name == "" then return nil end
-    return zo_strformat("<<1>>", name):lower():match("^%s*(.-)%s*$")
-end
-
-function STARS:IsInCyrodiilOverworld()
-    return self:IsInCyrodiil() and IsInCyrodiil() == true
-end
-
-function STARS:ResetKeepTracking()
-    self.keepStates, self.keepLocationIds = {}, {}
-    self.keepCampaignId = nil
-    if self.keepTrackingSuspended or not self:IsEnabled() or not self:IsInCyrodiilOverworld() then return end
-    self.keepCampaignId = GetCurrentCampaignId()
-    for index = 1, GetNumKeeps() do
-        local keepId, context = GetKeepKeysByIndex(index)
-        if IsLocalBattlegroundContext(context) then
-            -- Include resources/towns in the name lookup so that a more
-            -- specific non-keep location cannot fall back to its parent keep.
-            local key = KeepLocationKey(GetKeepName(keepId))
-            if key then
-                local previous = self.keepLocationIds[key]
-                if previous ~= nil and previous ~= keepId then
-                    self.keepLocationIds[key] = false
-                else
-                    self.keepLocationIds[key] = keepId
-                end
-            end
-            if GetKeepType(keepId) == KEEPTYPE_KEEP then
-                self.keepStates[keepId] = {
-                    underAttack = GetKeepUnderAttack(keepId, BGQUERY_LOCAL),
-                    owner = GetKeepAlliance(keepId, BGQUERY_LOCAL),
-                }
-            end
-        end
-    end
-end
-
-function STARS:HasKeepTrackingContext()
-    if self.keepTrackingSuspended or not self:IsEnabled() or not self:IsInCyrodiilOverworld() then
-        self.keepStates, self.keepLocationIds, self.keepCampaignId = {}, {}, nil
-        return false
-    end
-    if self.keepCampaignId ~= GetCurrentCampaignId() then
-        self:ResetKeepTracking()
-    end
-    return self.keepCampaignId ~= nil and self.keepCampaignId ~= 0
-end
-
-function STARS:GetPlayerLocatedKeepId()
-    local location = self.keepLocationIds[KeepLocationKey(GetPlayerLocationName()) or ""]
-    local subzone = self.keepLocationIds[KeepLocationKey(GetPlayerActiveSubzoneName()) or ""]
-    if location == false or subzone == false then return nil end
-    if location and subzone and location ~= subzone then return nil end
-    local keepId = subzone or location
-    if keepId and GetKeepType(keepId) == KEEPTYPE_KEEP then return keepId end
-end
-
-function STARS:SampleKeepParticipation()
-    if not self:HasKeepTrackingContext() or not IsUnitInCombat("player") then return end
-    local keepId = self:GetPlayerLocatedKeepId()
-    local state = keepId and self.keepStates[keepId]
-    local conflict = state and state.conflict
-    if conflict and not conflict.endedMs and state.underAttack
-        and GetKeepUnderAttack(keepId, BGQUERY_LOCAL) then
-        if not conflict.participated then
-            conflict.participated = true
-            Debug("Keep combat observed: " .. tostring(keepId))
-        end
-    end
-end
-
-function STARS:TryRecordKeepConflict(keepId, state)
-    local conflict = state.conflict
-    if not conflict or not conflict.endedMs or conflict.counted or conflict.invalid then return end
-    local elapsed = FrameMs() - conflict.endedMs
-    if elapsed > KEEP_REWARD_GRACE_MS then state.conflict = nil; return end
-    if elapsed < KEEP_SETTLE_MS or not conflict.participated then return end
-    if conflict.alliance ~= GetUnitAlliance("player") or state.underAttack
-        or GetKeepUnderAttack(keepId, BGQUERY_LOCAL)
-        or state.owner ~= conflict.alliance
-        or GetKeepAlliance(keepId, BGQUERY_LOCAL) ~= state.owner then return end
-
+-- Count the same keep-tick notification that supplies ESO's loot-history toast.
+function STARS:OnKeepTickNotification(keepId, reason)
+    if self.keepTrackingSuspended or not self:IsEnabled()
+        or not self:IsInCyrodiil() or not IsInCyrodiil() then return end
     local key
-    if conflict.captured and conflict.offensiveReward then
-        key = "keepsTaken"
-    elseif not conflict.ownerChanged and conflict.initialOwner == conflict.alliance
-        and conflict.defensiveReward then
-        key = "keepsDefended"
+    if reason == CURRENCY_CHANGE_REASON_OFFENSIVE_KEEP_REWARD then key = "keepsTaken"
+    elseif reason == CURRENCY_CHANGE_REASON_DEFENSIVE_KEEP_REWARD then key = "keepsDefended"
+    else return end
+    if type(keepId) ~= "number" or keepId <= 0
+        or GetKeepType(keepId) ~= KEEPTYPE_KEEP
+        or GetKeepResourceType(keepId) ~= RESOURCETYPE_NONE then
+        Debug("Keep tick ignored: objective=" .. tostring(keepId) .. " is not a keep")
+        return
     end
-    if key then
-        conflict.counted = true
-        self:IncrementPvpLifetime(key, 1)
-        self:IncrementCampaign(key, 1)
-        Debug("Keep conflict credited: " .. tostring(keepId) .. " " .. key)
-    end
+    self:IncrementPvpLifetime(key, 1)
+    self:IncrementCampaign(key, 1)
+    Debug("Keep tick credited: " .. tostring(keepId) .. " " .. GetKeepName(keepId) .. " " .. key)
+    self:RefreshJournal()
 end
 
-function STARS:OnKeepUnderAttackChanged(_, keepId, context, underAttack)
-    if not IsLocalBattlegroundContext(context) or not self:HasKeepTrackingContext() then return end
-    local state = self.keepStates[keepId]
-    if not state or state.underAttack == underAttack then return end
-    state.underAttack = underAttack
-    if underAttack then
-        local owner = GetKeepAlliance(keepId, BGQUERY_LOCAL)
-        local alliance = GetUnitAlliance("player")
-        local previous = state.conflict
-        -- A delayed reward from a just-ended fight cannot be attributed safely
-        -- to an immediately restarted fight. Skip rewards during that overlap.
-        local rewardNotBefore = previous and previous.endedMs
-            and previous.endedMs + KEEP_REWARD_GRACE_MS or 0
-        state.owner = owner
-        state.conflict = {
-            initialOwner = owner, alliance = alliance, rewardNotBefore = rewardNotBefore,
-            invalid = not owner or owner == 0 or not alliance or alliance == 0,
-        }
-        Debug("Keep attack began: " .. tostring(keepId))
-        self:SampleKeepParticipation()
-    elseif state.conflict then
-        state.conflict.endedMs = FrameMs()
-        Debug("Keep attack ended: " .. tostring(keepId) .. "; local combat="
-            .. tostring(state.conflict.participated == true) .. "; location="
-            .. tostring(GetPlayerLocationName()) .. "; subzone=" .. tostring(GetPlayerActiveSubzoneName()))
-    end
-end
-
-function STARS:OnKeepOwnerChanged(_, keepId, context, owner, oldOwner)
-    if not IsLocalBattlegroundContext(context) or not self:HasKeepTrackingContext() then return end
-    local state = self.keepStates[keepId]
-    if not state or state.owner == owner then return end
-    local conflict = state.conflict
-    if conflict and not conflict.counted then
-        if state.owner ~= oldOwner then conflict.invalid = true end
-        conflict.ownerChanged = true
-        if oldOwner ~= conflict.alliance and owner == conflict.alliance then
-            conflict.captured = true
-        elseif conflict.captured and owner ~= conflict.alliance then
-            conflict.invalid = true
+function STARS:InstallKeepTickHook()
+    if self.keepTickHookInstalled then return end
+    SecurePostHook(ZO_LootHistory_Shared, "OnKeepTickAwarded", function(history, keepId, reason)
+        if history:CanShowItemsInHistory() then
+            self:OnKeepTickNotification(keepId, reason)
         end
-    end
-    state.owner = owner
-end
-
-function STARS:OnKeepReward(reason, keepId)
-    if not self:HasKeepTrackingContext() or not keepId then return end
-    local state = self.keepStates[keepId]
-    local conflict = state and state.conflict
-    if not conflict or conflict.counted or conflict.invalid
-        or FrameMs() < conflict.rewardNotBefore then return end
-    if conflict.endedMs and FrameMs() - conflict.endedMs > KEEP_REWARD_GRACE_MS then return end
-    if reason == CURRENCY_CHANGE_REASON_OFFENSIVE_KEEP_REWARD then
-        conflict.offensiveReward = true
-    elseif reason == CURRENCY_CHANGE_REASON_DEFENSIVE_KEEP_REWARD then
-        conflict.defensiveReward = true
-    end
-    self:TryRecordKeepConflict(keepId, state)
-end
-
-function STARS:UpdateKeepTracking()
-    if not self:HasKeepTrackingContext() then return end
-    self:SampleKeepParticipation()
-    for keepId, state in pairs(self.keepStates) do
-        self:TryRecordKeepConflict(keepId, state)
-    end
+    end)
+    self.keepTickHookInstalled = true
 end
 
 function STARS:OnCurrencyUpdate(_, currencyType, currencyLocation, newAmount, oldAmount, reason, reasonSupplementaryInfo)
@@ -1448,7 +1307,6 @@ function STARS:OnCurrencyUpdate(_, currencyType, currencyLocation, newAmount, ol
     self:IncrementPvpLifetime("apEarned", delta)
     self:IncrementCampaign("apEarned", delta)
 
-    self:OnKeepReward(reason, tonumber(reasonSupplementaryInfo))
 end
 
 function STARS:GetPrestigeTier()
@@ -1939,12 +1797,6 @@ function STARS:InitSettingsMenu()
 end
 
 local TRACKING_EVENTS = {
-    { "STARS_KeepAttack", EVENT_KEEP_UNDER_ATTACK_CHANGED },
-    { "STARS_KeepOwner", EVENT_KEEP_ALLIANCE_OWNER_CHANGED },
-    { "STARS_KeepCombat", EVENT_PLAYER_COMBAT_STATE },
-    { "STARS_KeepSubzone", EVENT_CURRENT_SUBZONE_LIST_CHANGED },
-    { "STARS_KeepInitialized", EVENT_KEEPS_INITIALIZED },
-    { "STARS_KeepCampaign", EVENT_CURRENT_CAMPAIGN_CHANGED },
     { "STARS_KeepDeactivated", EVENT_PLAYER_DEACTIVATED },
     { "STARS_Experience", EVENT_EXPERIENCE_GAIN },
     { "STARS_PendingExperience", EVENT_PENDING_EXPERIENCE_REWARD_CACHED },
@@ -1971,8 +1823,6 @@ function STARS:UnregisterTrackingEvents()
     for _, registration in ipairs(TRACKING_EVENTS) do
         EVENT_MANAGER:UnregisterForEvent(registration[1], registration[2])
     end
-    EVENT_MANAGER:UnregisterForUpdate("STARS_KeepTracking")
-    self.keepStates, self.keepLocationIds, self.keepCampaignId = {}, {}, nil
     self.trackingEventsRegistered = false
 end
 
@@ -2003,15 +1853,8 @@ function STARS:RegisterTrackingEvents()
     EVENT_MANAGER:RegisterForEvent("STARS_RewardSettings", EVENT_REWARD_TRACK_SETTINGS_UPDATE_RECEIVED, function() self:OnVeterancyUpdated() end)
     EVENT_MANAGER:RegisterForEvent("STARS_Holidays", EVENT_HOLIDAYS_CHANGED, function() self:OnVeterancyUpdated() end)
     EVENT_MANAGER:RegisterForEvent("STARS_Battleground", EVENT_BATTLEGROUND_STATE_CHANGED, function(...) self:OnBattlegroundStateChanged(...) end)
-    EVENT_MANAGER:RegisterForEvent("STARS_KeepAttack", EVENT_KEEP_UNDER_ATTACK_CHANGED, function(...) self:OnKeepUnderAttackChanged(...) end)
-    EVENT_MANAGER:RegisterForEvent("STARS_KeepOwner", EVENT_KEEP_ALLIANCE_OWNER_CHANGED, function(...) self:OnKeepOwnerChanged(...) end)
-    EVENT_MANAGER:RegisterForEvent("STARS_KeepCombat", EVENT_PLAYER_COMBAT_STATE, function() self:SampleKeepParticipation() end)
-    EVENT_MANAGER:RegisterForEvent("STARS_KeepSubzone", EVENT_CURRENT_SUBZONE_LIST_CHANGED, function() self:SampleKeepParticipation() end)
-    EVENT_MANAGER:RegisterForEvent("STARS_KeepInitialized", EVENT_KEEPS_INITIALIZED, function() self:ResetKeepTracking() end)
-    EVENT_MANAGER:RegisterForEvent("STARS_KeepCampaign", EVENT_CURRENT_CAMPAIGN_CHANGED, function() self:ResetKeepTracking() end)
-    EVENT_MANAGER:RegisterForEvent("STARS_KeepDeactivated", EVENT_PLAYER_DEACTIVATED, function() self.keepTrackingSuspended = true; self.keepStates, self.keepLocationIds, self.keepCampaignId = {}, {}, nil end)
-    self:ResetKeepTracking()
-    EVENT_MANAGER:RegisterForUpdate("STARS_KeepTracking", 1000, function() self:UpdateKeepTracking() end)
+    self:InstallKeepTickHook()
+    EVENT_MANAGER:RegisterForEvent("STARS_KeepDeactivated", EVENT_PLAYER_DEACTIVATED, function() self.keepTrackingSuspended = true end)
     self.trackingEventsRegistered = true
 end
 
@@ -2023,7 +1866,6 @@ end
 function STARS:RegisterEvents()
     EVENT_MANAGER:RegisterForEvent("STARS_PlayerActivated", EVENT_PLAYER_ACTIVATED, function()
         self.keepTrackingSuspended = false
-        self:ResetKeepTracking()
         -- Loading/reloading while dead is not a new death.
         self.cyrodiilDeathRecorded = IsUnitDead("player")
         self:EnsureCampaign()

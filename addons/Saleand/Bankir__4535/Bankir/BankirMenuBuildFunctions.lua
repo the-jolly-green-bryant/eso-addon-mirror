@@ -384,7 +384,7 @@ local function makeDropdownAndSlider(id, idTypeStr)
 		name = GetString(BANKIR_MENU_MAX_STACKS_TO_PUSH),
 		tooltip = GetString(BANKIR_MENU_MAX_STACKS_DESC),
 		min = 0,
-		max = 200,
+		max = 50,
 		step = 1,
 		width = "full",
 		getFunc = function()
@@ -399,7 +399,7 @@ local function makeDropdownAndSlider(id, idTypeStr)
 		name = GetString(BANKIR_MENU_MIN_ITEMS_TO_PULL),
 		tooltip = GetString(BANKIR_MENU_MIN_ITEMS_DESC),
 		min = 0,
-		max = 100,
+		max = 50,
 		step = 1,
 		width = "full",
 		getFunc = function()

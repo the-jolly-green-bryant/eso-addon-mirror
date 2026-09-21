@@ -1,0 +1,40 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/Clayladon/Clayladon-s-Friend-Status__4855",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Clayladon",
+  "canonical_id": "esoui:4855",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4855",
+  "deleted": false,
+  "directories": [
+    "ClayladonsFriendStatus"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4855/",
+  "fingerprint": "380e58310df7e2cebfe94c2febf8dd1aee1b2b38b47c65ff19dca65e89525ecb",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4855",
+  "source_url": "https://www.esoui.com/downloads/info4855-ClayladonsFriendStatus.html",
+  "stats": {
+    "downloads": 6,
+    "favorites": 0,
+    "monthly_downloads": 0
+  },
+  "title": "Clayladon's Friend Status",
+  "updated_at": 1789940343000,
+  "version": "1.0.9"
+}

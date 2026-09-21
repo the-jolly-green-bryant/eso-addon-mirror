@@ -1,6 +1,6 @@
 TruePvPRatio = {
     name = "TruePvPRatio",
-    version = "2.6",
+    version = "2.7",
     savedVars = nil,
     uiCreated = false,
     wasInPremadeGroup = false,
@@ -30,7 +30,6 @@ local CLASS_STYLES = {
 }
 
 local recentEvents = {}
-local resolvedAllianceCache = {}
 
 local function GetRatio(k, d)
     if d == 0 then return (k > 0) and k or 0 end
@@ -75,6 +74,7 @@ local function UpdatePremadeGroupStatus()
     end
 end
 
+-- CORRECTION DU BUG DES DUELS : On renvoie "OTHER" au lieu de "CYR" si on n'est pas en zone PvP.
 local function GetCurrentPvPZone()
     if IsActiveWorldBattleground() then
         return "BG"
@@ -87,24 +87,10 @@ local function GetCurrentPvPZone()
         return "IC"
     end
     
-    return "CYR"
+    return "OTHER"
 end
 
-local function OnReticleTargetChanged()
-    if not DoesUnitExist("reticleover") or not IsUnitPlayer("reticleover") then return end
-    
-    local rawName = GetUnitName("reticleover")
-    if not rawName or rawName == "" then return end
-    
-    local charName = zo_strformat("<<1>>", rawName)
-    local alliance = GetUnitAlliance("reticleover")
-    
-    if alliance == ALLIANCE_ALDMERI_DOMINION or alliance == ALLIANCE_EBONHEART_PACT or alliance == ALLIANCE_DAGGERFALL_COVENANT then
-        resolvedAllianceCache[charName] = alliance
-    end
-end
-
-local function AddKill(zone, enemyAlliance, enemyCharName)
+local function AddKill(zone, enemyAlliance)
     local charName = zo_strformat("<<1>>", GetUnitName("player"))
     local sv = TruePvPRatio.savedVars
     local charData = sv and sv.characters and sv.characters[charName]
@@ -112,44 +98,34 @@ local function AddKill(zone, enemyAlliance, enemyCharName)
 
     sv.global.kills = sv.global.kills + 1
     
-    local realAlliance = nil
+    -- On ajoute aux compteurs d'Alliances UNIQUEMENT en monde ouvert pour éviter le bug des BG
     if zone == "CYR" or zone == "IC" then
-        realAlliance = enemyAlliance
-    elseif zone == "BG" then
-        realAlliance = resolvedAllianceCache[enemyCharName]
+        if sv.global.alliances[enemyAlliance] then
+            sv.global.alliances[enemyAlliance].kills = sv.global.alliances[enemyAlliance].kills + 1
+        end
     end
 
-    if realAlliance and sv.global.alliances[realAlliance] then
-        sv.global.alliances[realAlliance].kills = sv.global.alliances[realAlliance].kills + 1
-    end
-
+    -- Stats Globales Personnage + Streak
     charData.kills = charData.kills + 1
     charData.currentKillStreak = (charData.currentKillStreak or 0) + 1
     if charData.currentKillStreak > (charData.maxKillStreak or 0) then charData.maxKillStreak = charData.currentKillStreak end
     if charData.currentKillStreak > (sv.global.maxKillStreak or 0) then sv.global.maxKillStreak = charData.currentKillStreak end
 
+    -- Stats par modes (Plus de streak ici)
     if zone == "CYR" then
         charData.cyrodiil.kills = charData.cyrodiil.kills + 1
-        charData.cyrodiil.currentStreak = (charData.cyrodiil.currentStreak or 0) + 1
-        if charData.cyrodiil.currentStreak > (charData.cyrodiil.maxStreak or 0) then charData.cyrodiil.maxStreak = charData.cyrodiil.currentStreak end
     elseif zone == "IC" then
         charData.ic.kills = charData.ic.kills + 1
-        charData.ic.currentStreak = (charData.ic.currentStreak or 0) + 1
-        if charData.ic.currentStreak > (charData.ic.maxStreak or 0) then charData.ic.maxStreak = charData.ic.currentStreak end
     elseif zone == "BG" then
         if TruePvPRatio.wasInPremadeGroup then
             charData.bgGroup.kills = charData.bgGroup.kills + 1
-            charData.bgGroup.currentStreak = (charData.bgGroup.currentStreak or 0) + 1
-            if charData.bgGroup.currentStreak > (charData.bgGroup.maxStreak or 0) then charData.bgGroup.maxStreak = charData.bgGroup.currentStreak end
         else
             charData.bgSolo.kills = charData.bgSolo.kills + 1
-            charData.bgSolo.currentStreak = (charData.bgSolo.currentStreak or 0) + 1
-            if charData.bgSolo.currentStreak > (charData.bgSolo.maxStreak or 0) then charData.bgSolo.maxStreak = charData.bgSolo.currentStreak end
         end
     end
 end
 
-local function AddDeath(zone, enemyAlliance, enemyCharName)
+local function AddDeath(zone, enemyAlliance)
     local charName = zo_strformat("<<1>>", GetUnitName("player"))
     local sv = TruePvPRatio.savedVars
     local charData = sv and sv.characters and sv.characters[charName]
@@ -157,38 +133,37 @@ local function AddDeath(zone, enemyAlliance, enemyCharName)
 
     sv.global.deaths = sv.global.deaths + 1
     
-    local realAlliance = nil
+    -- Alliances
     if zone == "CYR" or zone == "IC" then
-        realAlliance = enemyAlliance
-    elseif zone == "BG" then
-        realAlliance = resolvedAllianceCache[enemyCharName]
+        if sv.global.alliances[enemyAlliance] then
+            sv.global.alliances[enemyAlliance].deaths = sv.global.alliances[enemyAlliance].deaths + 1
+        end
     end
 
-    if realAlliance and sv.global.alliances[realAlliance] then
-        sv.global.alliances[realAlliance].deaths = sv.global.alliances[realAlliance].deaths + 1
-    end
-
+    -- Stats Globales Personnage + Réinitialisation Streak
     charData.deaths = charData.deaths + 1
     charData.currentKillStreak = 0
 
+    -- Stats par modes
     if zone == "CYR" then
         charData.cyrodiil.deaths = charData.cyrodiil.deaths + 1
-        charData.cyrodiil.currentStreak = 0
     elseif zone == "IC" then
         charData.ic.deaths = charData.ic.deaths + 1
-        charData.ic.currentStreak = 0
     elseif zone == "BG" then
         if TruePvPRatio.wasInPremadeGroup then
             charData.bgGroup.deaths = charData.bgGroup.deaths + 1
-            charData.bgGroup.currentStreak = 0
         else
             charData.bgSolo.deaths = charData.bgSolo.deaths + 1
-            charData.bgSolo.currentStreak = 0
         end
     end
 end
 
 local function OnPvPKillFeedDeath(eventCode, killLocation, killerDisplayName, killerCharName, killerAlliance, killerRank, victimDisplayName, victimCharName, victimAlliance, victimRank)
+    local zone = GetCurrentPvPZone()
+    
+    -- Si la zone est "OTHER" (ex: Un duel en ville), on ignore complètement l'événement !
+    if zone == "OTHER" then return end
+
     local myAccount = GetUnitDisplayName("player")
     local myCharName = zo_strformat("<<1>>", GetUnitName("player"))
     
@@ -209,12 +184,10 @@ local function OnPvPKillFeedDeath(eventCode, killLocation, killerDisplayName, ki
     end
     recentEvents[eventSignature] = currentTime
 
-    local zone = GetCurrentPvPZone()
-
     if isKiller then
-        AddKill(zone, victimAlliance, victimFormatted)
+        AddKill(zone, victimAlliance)
     elseif isVictim then
-        AddDeath(zone, killerAlliance, killerFormatted)
+        AddDeath(zone, killerAlliance)
     end
 end
 
@@ -243,7 +216,7 @@ function TruePvPRatio:BuildUI()
     self.globalLabel = WINDOW_MANAGER:CreateControl("TruePvPRatio_UI_Global", tlw, CT_LABEL)
     self.globalLabel:SetFont("ZoFontGamepad34")
     self.globalLabel:SetAnchor(TOPLEFT, tlw, TOPLEFT, 40, 90)
-    self.globalLabel:SetColor(1, 0.8, 0, 1) 
+    self.globalLabel:SetColor(1, 0.8, 0, 1) -- #FFCC00 (Or)
 
     -- Tableau des Alliances (Haut Droite)
     local rightPanelX = -60
@@ -252,7 +225,7 @@ function TruePvPRatio:BuildUI()
     local allianceTitle = WINDOW_MANAGER:CreateControl("TruePvPRatio_UI_Alliances_Title", tlw, CT_LABEL)
     allianceTitle:SetFont("ZoFontGamepad34")
     allianceTitle:SetAnchor(TOPRIGHT, tlw, TOPRIGHT, rightPanelX, startY)
-    allianceTitle:SetText("Cyrodiil / IC\nKills/Deaths")
+    allianceTitle:SetText("Cyrodiil & IC\nKills/Deaths")
     allianceTitle:SetColor(0.7, 0.7, 0.7, 1)
     
     self.adLabel = WINDOW_MANAGER:CreateControl("TruePvPRatio_UI_AD", tlw, CT_LABEL)
@@ -290,9 +263,7 @@ function TruePvPRatio:BuildUI()
     CreateHeader("TruePvPRatio_H5", "BG (Solo)", 940, 220, TEXT_ALIGN_CENTER)
     CreateHeader("TruePvPRatio_H6", "BG (Grp)", 1160, 220, TEXT_ALIGN_CENTER)
 
-    -- ==========================================
-    -- CREATION DE LA ZONE DE DEFILEMENT (SCROLL)
-    -- ==========================================
+    -- ZONE DE DEFILEMENT (SCROLL)
     self.scrollContainer = WINDOW_MANAGER:CreateControl("TruePvPRatio_UI_Scroll", tlw, CT_SCROLL)
     self.scrollContainer:SetAnchor(TOPLEFT, tlw, TOPLEFT, 0, 330)
     self.scrollContainer:SetAnchor(BOTTOMRIGHT, tlw, BOTTOMRIGHT, 0, -20)
@@ -302,7 +273,6 @@ function TruePvPRatio:BuildUI()
     self.scrollChild:SetAnchor(TOPLEFT)
     self.scrollChild:SetWidth(GuiRoot:GetWidth())
 
-    -- Défilement Manette (Joystick Droit)
     tlw:SetHandler("OnUpdate", function()
         if not tlw:IsHidden() and IsInGamepadPreferredMode() then
             local y = DIRECTIONAL_INPUT:GetY(ZO_DI_RIGHT_STICK)
@@ -321,7 +291,6 @@ function TruePvPRatio:BuildUI()
         end
     end)
 
-    -- Défilement Clavier/Souris (Molette)
     self.scrollContainer:SetHandler("OnMouseWheel", function(_, delta)
         local currentScroll = self.scrollContainer:GetVerticalScroll()
         local newScroll = currentScroll - (delta * 60)
@@ -394,7 +363,6 @@ function TruePvPRatio:UpdateUI()
         row.bgGrp:SetHidden(true)
     end
 
-    -- Limite de sécurité max à 20 (Le maximum absolu du jeu)
     local numDisplayed = 0
 
     for i, charInfo in ipairs(sortedChars) do
@@ -402,7 +370,7 @@ function TruePvPRatio:UpdateUI()
         numDisplayed = numDisplayed + 1
 
         local row = self.charRows[i]
-        local yOffset = (i - 1) * 75 -- Maintenant c'est relatif au parent ScrollChild
+        local yOffset = (i - 1) * 75
 
         if not row then
             row = {}
@@ -447,15 +415,21 @@ function TruePvPRatio:UpdateUI()
 
         row.name:SetText(classPrefix .. "|c" .. nameColor .. charInfo.name .. "|r")
 
-        local function FormatCell(k, deaths, streak)
-            return string.format("|cFFFFFFK %d / D %d|r\n|cAAAAAARatio %s | Streak %d|r", k, deaths, FormatRatio(k, deaths), streak or 0)
+        -- Fonction pour la case "Global" avec les couleurs dorées et la streak
+        local function FormatGlobalCell(k, deaths, streak)
+            return string.format("|cFFCC00K %d / D %d|r\n|cFFCC00Ratio %s | Streak %d|r", k, deaths, FormatRatio(k, deaths), streak or 0)
         end
 
-        row.global:SetText(FormatCell(d.kills, d.deaths, d.maxKillStreak))
-        row.cyr:SetText(FormatCell(d.cyrodiil.kills, d.cyrodiil.deaths, d.cyrodiil.maxStreak))
-        row.ic:SetText(FormatCell(d.ic.kills, d.ic.deaths, d.ic.maxStreak))
-        row.bgSolo:SetText(FormatCell(d.bgSolo.kills, d.bgSolo.deaths, d.bgSolo.maxStreak))
-        row.bgGrp:SetText(FormatCell(d.bgGroup.kills, d.bgGroup.deaths, d.bgGroup.maxStreak))
+        -- Fonction pour les modes spécifiques (Blanc et Gris, sans streak)
+        local function FormatModeCell(k, deaths)
+            return string.format("|cFFFFFFK %d / D %d|r\n|cAAAAAARatio %s|r", k, deaths, FormatRatio(k, deaths))
+        end
+
+        row.global:SetText(FormatGlobalCell(d.kills, d.deaths, d.maxKillStreak))
+        row.cyr:SetText(FormatModeCell(d.cyrodiil.kills, d.cyrodiil.deaths))
+        row.ic:SetText(FormatModeCell(d.ic.kills, d.ic.deaths))
+        row.bgSolo:SetText(FormatModeCell(d.bgSolo.kills, d.bgSolo.deaths))
+        row.bgGrp:SetText(FormatModeCell(d.bgGroup.kills, d.bgGroup.deaths))
 
         row.name:SetHidden(false)
         row.global:SetHidden(false)
@@ -465,7 +439,6 @@ function TruePvPRatio:UpdateUI()
         row.bgGrp:SetHidden(false)
     end
 
-    -- Mise à jour de la hauteur totale du conteneur de scroll pour la manette/molette
     self.scrollChild:SetHeight(numDisplayed * 75)
 end
 
@@ -520,25 +493,15 @@ function TruePvPRatio:Initialize()
         self.savedVars.global.maxKillStreak = 0
     end
 
+    -- Initialisation des tableaux si manquants (Les streaks spécifiques ne sont plus utilisées mais on initialise pour éviter les erreurs)
     for cName, cData in pairs(self.savedVars.characters) do
         cData.maxKillStreak = cData.maxKillStreak or 0
         cData.currentKillStreak = cData.currentKillStreak or 0
         
         if not cData.cyrodiil then cData.cyrodiil = {kills = 0, deaths = 0} end
-        cData.cyrodiil.maxStreak = cData.cyrodiil.maxStreak or 0
-        cData.cyrodiil.currentStreak = cData.cyrodiil.currentStreak or 0
-        
         if not cData.ic then cData.ic = {kills = 0, deaths = 0} end
-        cData.ic.maxStreak = cData.ic.maxStreak or 0
-        cData.ic.currentStreak = cData.ic.currentStreak or 0
-        
         if not cData.bgSolo then cData.bgSolo = {kills = 0, deaths = 0} end
-        cData.bgSolo.maxStreak = cData.bgSolo.maxStreak or 0
-        cData.bgSolo.currentStreak = cData.bgSolo.currentStreak or 0
-        
         if not cData.bgGroup then cData.bgGroup = {kills = 0, deaths = 0} end
-        cData.bgGroup.maxStreak = cData.bgGroup.maxStreak or 0
-        cData.bgGroup.currentStreak = cData.bgGroup.currentStreak or 0
     end
 
     local charName = zo_strformat("<<1>>", GetUnitName("player"))
@@ -548,10 +511,10 @@ function TruePvPRatio:Initialize()
     if not self.savedVars.characters[charName] then
         self.savedVars.characters[charName] = {
             kills = 0, deaths = 0, maxKillStreak = 0, currentKillStreak = 0,
-            cyrodiil = {kills = 0, deaths = 0, maxStreak = 0, currentStreak = 0},
-            ic = {kills = 0, deaths = 0, maxStreak = 0, currentStreak = 0},
-            bgSolo = {kills = 0, deaths = 0, maxStreak = 0, currentStreak = 0},
-            bgGroup = {kills = 0, deaths = 0, maxStreak = 0, currentStreak = 0},
+            cyrodiil = {kills = 0, deaths = 0},
+            ic = {kills = 0, deaths = 0},
+            bgSolo = {kills = 0, deaths = 0},
+            bgGroup = {kills = 0, deaths = 0},
             classId = currentClassId,
             alliance = currentAlliance,
         }
@@ -561,7 +524,6 @@ function TruePvPRatio:Initialize()
     end
 
     EVENT_MANAGER:RegisterForEvent(self.name, EVENT_PVP_KILL_FEED_DEATH, OnPvPKillFeedDeath)
-    EVENT_MANAGER:RegisterForEvent(self.name, EVENT_RETICLE_TARGET_CHANGED, OnReticleTargetChanged)
     EVENT_MANAGER:RegisterForEvent(self.name, EVENT_GROUP_UPDATE, UpdatePremadeGroupStatus)
     EVENT_MANAGER:RegisterForEvent(self.name, EVENT_GROUP_MEMBER_JOINED, UpdatePremadeGroupStatus)
     EVENT_MANAGER:RegisterForEvent(self.name, EVENT_GROUP_MEMBER_LEFT, UpdatePremadeGroupStatus)

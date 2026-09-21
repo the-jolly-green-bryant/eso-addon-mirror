@@ -712,3 +712,8 @@ unlike=と違って
 concerning=に関して
 regarding=に関して
 ]])
+
+D("pn", [[
+none=どれも
+others=他の人たち
+]])

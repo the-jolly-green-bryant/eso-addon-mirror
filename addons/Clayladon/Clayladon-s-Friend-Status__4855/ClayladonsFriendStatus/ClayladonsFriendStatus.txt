@@ -1,0 +1,9 @@
+## Title: Clayladon's Friend Status
+## APIVersion: 101050
+## Version: 1.0.9
+## Author: Clayladon
+## Description: Displays online status and in-game locations for friends and watchlisted guildmates.
+## SavedVariables: ClayladonsFriendStatusVariables
+## DependsOn: LibAddonMenu-2.0
+
+ClayladonsFriendStatus.lua

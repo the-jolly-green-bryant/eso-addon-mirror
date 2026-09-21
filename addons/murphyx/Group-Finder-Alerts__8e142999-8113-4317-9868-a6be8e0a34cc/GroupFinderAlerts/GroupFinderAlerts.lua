@@ -79,6 +79,7 @@ d(t..m..w)
 end
 local function l()
 if not o then return end
+if IsActiveWorldBattleground()then return end
 if HasGroupListingForUserType(GROUP_FINDER_GROUP_LISTING_USER_TYPE_CREATED_GROUP_LISTING)then
 u()
 return

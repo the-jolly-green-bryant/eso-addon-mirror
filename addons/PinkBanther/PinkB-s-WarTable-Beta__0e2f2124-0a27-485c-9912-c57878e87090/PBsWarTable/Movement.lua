@@ -15,7 +15,7 @@ function M:Restore()
  local ui=self.ui
  if self.id then
   local p=PBWT.Engine.Piece(ui.state,self.id)
-  if p and p.alive then local c=ui.cells[(p.y-1)*5+p.x];c.icon:SetHidden(not PBWT.Assets.IsUsable(c.icon)) end
+  if p and p.alive then local c=ui:Cell(p.x,p.y);c.icon:SetHidden(not PBWT.Assets.IsUsable(c.icon)) end
  end
 end
 function M:Stop()
@@ -26,7 +26,7 @@ function M:Reset() self:Stop();self.turn=nil;for _,v in pairs(self.positions) do
 function M:HideDestination()
  if self.active then
   local p=PBWT.Engine.Piece(self.ui.state,self.id)
-  if p and p.alive then self.ui.cells[(p.y-1)*5+p.x].icon:SetHidden(true) end
+  if p and p.alive then self.ui:Cell(p.x,p.y).icon:SetHidden(true) end
  end
 end
 function M:Observe()
@@ -48,7 +48,7 @@ function M:Observe()
  elseif count>0 then
   self:Stop()
   if count==1 and self.turn==s.turn then
-   local cell=ui.cells[(moved.y-1)*5+moved.x]
+   local cell=ui:Cell(moved.x,moved.y)
    if PBWT.Assets.IsUsable(cell.icon) then
     self.sprite.pbwtKind=cell.icon.pbwtKind;self.sprite:SetTexture(PBWT.Assets.Path(cell.icon.pbwtKind,cell.icon.pbwtRoot))
     if PBWT.Assets.IsUsable(self.sprite) then
@@ -71,11 +71,13 @@ function M:Tick(now)
  local t=math.max(0,math.min(1,(now-self.started)/DURATION))
  local travel=ease(math.max(0,math.min(1,(t-0.22)/0.56)))
  local lift=t<0.22 and ease(t/0.22) or t>0.78 and 1-ease((t-0.78)/0.22) or 1
- local x=441+((self.x1-1)+(self.x2-self.x1)*travel)*120
- local y=210+((self.y1-1)+(self.y2-self.y1)*travel)*120
- local size=68+10*lift
- self.sprite:SetDimensions(size,size);self.sprite:SetAnchor(TOPLEFT,self.ui.content,TOPLEFT,x-(size-68)/2,y-20*lift-(size-68)/2)
- self.shadow:SetDimensions(62+12*lift,62+12*lift);self.shadow:SetAnchor(TOPLEFT,self.ui.content,TOPLEFT,x+4+3*lift,y+6+5*lift)
+ local g=self.ui.boardGeom or {originX=420,originY=190,pitch=120,cellSize=110,icon=68,iconTop=20,k=1}
+ local k=g.k
+ local x=g.originX+(g.cellSize-g.icon)/2+((self.x1-1)+(self.x2-self.x1)*travel)*g.pitch
+ local y=g.originY+g.iconTop+((self.y1-1)+(self.y2-self.y1)*travel)*g.pitch
+ local size=g.icon+10*k*lift
+ self.sprite:SetDimensions(size,size);self.sprite:SetAnchor(TOPLEFT,self.ui.content,TOPLEFT,x-(size-g.icon)/2,y-20*k*lift-(size-g.icon)/2)
+ self.shadow:SetDimensions(g.icon-6+12*k*lift,g.icon-6+12*k*lift);self.shadow:SetAnchor(TOPLEFT,self.ui.content,TOPLEFT,x+4*k+3*k*lift,y+6*k+5*k*lift)
  self.shadow:SetCenterColor(0,0,0,0.30-0.10*lift)
  self:HideDestination()
  if t>=1 then self:Stop();self.ui:SyncComputer() end

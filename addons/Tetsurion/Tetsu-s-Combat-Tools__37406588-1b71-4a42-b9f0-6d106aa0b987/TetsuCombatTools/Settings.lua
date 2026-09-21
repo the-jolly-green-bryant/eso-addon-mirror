@@ -176,7 +176,7 @@ function T.RegisterSettings()
         allowDefaults = true,
     })
     if not settings then return end
-    settings.version = "1.5.2"
+    settings.version = "1.5.6"
     settings.author = "Tetsurion"
 
     settings:AddSetting({
@@ -1133,7 +1133,6 @@ function T.RegisterSettings()
         type = LibHarven.ST_LABEL,
         label = L("LINK_HELP", "Hold R3 in the full Text Chat menu."),
         tooltip = L("LINK_HELP_TT", ""),
-        canSelect = true,
         disable = LinkOff,
     })
 
@@ -1145,7 +1144,7 @@ function T.RegisterSettings()
             buttonText = L("LINK_TEST_BTN", "Link sets"),
             disable = LinkOff,
             clickHandler = function()
-                if T.LinkBuild then T.LinkBuild() end
+                if T.LinkBuild then T.LinkBuild(true) end
             end,
         })
     end

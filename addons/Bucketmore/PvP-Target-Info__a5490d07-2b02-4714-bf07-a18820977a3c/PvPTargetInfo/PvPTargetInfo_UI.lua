@@ -62,13 +62,6 @@ local TITLE_COLORS = {
 }
 
 PTI.UI.windows = PTI.UI.windows or {}
--- v1.4.33で追加: UI③(Condition)は「実際に発動中のCondition/Procが
--- 1件もない」状態がデフォルト。Procs.luaの最初のTickが動く前(ロード直後の
--- 一瞬)や、万一Procsモジュールの初期化に失敗した場合でも空のパネルが
--- 一瞬でも見えてしまわないよう、安全側の初期値としてtrueにしておく。
-if PTI.UI.hiddenByEmptyProc == nil then
-    PTI.UI.hiddenByEmptyProc = true
-end
 
 local function SVFor(key)
     return PTI.sv[SV_KEY[key]]
@@ -324,37 +317,43 @@ end
 
 -- key のウィンドウを、全体の有効設定・そのウィンドウ自身の有効設定・
 -- 現在のシーン(メニュー/マップが開いているか)だけで表示/非表示にする。
--- UI①(buff)・UI②(debuff)は中身(登録済みバフの有無等)を一切条件にしない
--- — 空の時はTarget.lua側がヒント行を表示するため、パネル自体は常に
--- 見える(ユーザーが位置を見失わないようにするため)。
--- UI③(proc/Condition)だけは例外で、v1.4.33よりhiddenByEmptyProc
--- (下記参照)によって中身の有無を表示条件にしている。
+-- 中身(登録済みバフの有無等)は一切条件にしない — 空の時はTarget.lua側が
+-- ヒント行を表示するため、パネル自体は常に見える
+-- (ユーザーが位置を見失わないようにするため)。
 --
 -- v1.4.9で修正: sv.previewMode(位置調整用のプレビュー表示)がONの間だけは、
 -- メニュー/マップが開いていても隠さない例外にした。これにより「設定画面を
 -- 開いたまま位置を微調整したい」という用途はプレビューONの時に限って
 -- 引き続き可能にしつつ、通常プレイ中(プレビューOFF)はメニュー/マップを
 -- 開いたら確実にパネルが隠れるようにしている。
+--
+-- v1.4.50で追加: UI①(buff)・UI②(debuff)は「戦闘開始で表示/戦闘終了で
+-- 非表示」を新たな表示条件として追加した(PTI.UI.hiddenByCombat。
+-- OnCombatStateChangedがEVENT_PLAYER_COMBAT_STATEで更新する)。
+-- UI③(proc/Condition)はこの戦闘条件と完全に無関係で、代わりに
+-- PTI.UI.procHasContent(Procs.lua側が「実際に表示する行があるか」を
+-- 毎ティック更新するフラグ)だけで表示/非表示を決める。検知ロジックや
+-- BUFF/DEBUFF自体の判定には一切関与しない、純粋な表示ゲートのみの追加。
+-- previewMode中はどちらの新条件も無視し(位置調整のため)、従来通り表示する。
 function PTI.UI.SetWindowVisible(key)
     local entry = PTI.UI.windows[key]
     local sv = SVFor(key)
     if not entry or not sv then return end
 
     local hiddenByScene = PTI.UI.hiddenByScene and not PTI.sv.previewMode
-    -- v1.4.32で追加: 非戦闘中はUI①②を非表示にする設定(既存の
-    -- hiddenBySceneと同じ仕組みで、検知ロジックには一切触れない)。
-    -- v1.4.33で修正: UI③(Condition)は戦闘中かどうかを表示条件にしない
-    -- (Condition自身の「今バフが実際に付与されているか」だけで判定する
-    -- ため)、この設定の対象から外す。
-    local hiddenByCombat = (key ~= "proc") and PTI.UI.hiddenByCombat and not PTI.sv.previewMode
-    -- v1.4.33で追加: UI③専用。登録したCondition/Procが実際に自分へ
-    -- 付与されている時だけ表示するため、Procs.lua側が「今表示すべき
-    -- 中身が1件もない」と判断した場合にこのフラグを立ててもらう。
-    -- previewMode中は従来の他フラグと同様にバイパスする(設定画面での
-    -- 位置調整用サンプル表示を優先するため)。
-    local hiddenByNoActiveCondition = (key == "proc") and PTI.UI.hiddenByEmptyProc and not PTI.sv.previewMode
+
+    local hiddenByCombat = false
+    if key == "buff" or key == "debuff" then
+        hiddenByCombat = PTI.UI.hiddenByCombat and not PTI.sv.previewMode
+    end
+
+    local hiddenByEmptyProc = false
+    if key == "proc" then
+        hiddenByEmptyProc = (not PTI.sv.previewMode) and not PTI.UI.procHasContent
+    end
+
     local shouldShow = PTI.sv.enabled and not hiddenByScene and not hiddenByCombat
-        and not hiddenByNoActiveCondition and sv.enabled ~= false
+        and not hiddenByEmptyProc and sv.enabled ~= false
     entry.window:SetHidden(not shouldShow)
 end
 
@@ -362,6 +361,15 @@ function PTI.UI.RefreshVisibility()
     for key in pairs(PTI.UI.windows) do
         PTI.UI.SetWindowVisible(key)
     end
+end
+
+-- v1.4.50で追加: EVENT_PLAYER_COMBAT_STATEのハンドラ。ESO本体が戦闘に
+-- 入った/抜けた瞬間にだけ1回発火する標準イベントで、常時ポーリングは
+-- 発生しない(PS5/CS向けの軽量方針に合致)。UI①②の表示だけを切り替え、
+-- 検知ロジック・UI③には一切触れない。
+function PTI.UI.OnCombatStateChanged(_, inCombat)
+    PTI.UI.hiddenByCombat = not inCombat
+    PTI.UI.RefreshVisibility()
 end
 
 function PTI.UI.Initialize()
@@ -373,7 +381,18 @@ function PTI.UI.Initialize()
     PTI.UI.RefreshRowLayout("buff")
     PTI.UI.RefreshRowLayout("debuff")
     PTI.UI.RefreshRowLayout("proc")
+
+    -- v1.4.50で追加: UI①②(戦闘連動)・UI③(Condition発動連動)の初期状態。
+    -- リロードUI等で既に戦闘中の場合に備え、IsUnitInCombatで初期値を
+    -- 正しく設定してからRefreshVisibility()する(以後はイベント駆動)。
+    -- procHasContentはProcs.lua側の最初のTickが来るまではfalse(=非表示)
+    -- としておく(「発動していない時は勝手に表示しない」という仕様通り)。
+    PTI.UI.hiddenByCombat = not IsUnitInCombat("player")
+    PTI.UI.procHasContent = false
+
     PTI.UI.RefreshVisibility()
+
+    EVENT_MANAGER:RegisterForEvent(PTI.name .. "UICombat", EVENT_PLAYER_COMBAT_STATE, PTI.UI.OnCombatStateChanged)
 
     -- v1.4.9で修正: 以前は「ワールドマップを開いた時だけ」自動的に隠す
     -- 作りだったため、インベントリ・キャラクターシート・クラフト・

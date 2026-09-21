@@ -18,19 +18,13 @@ function PBWT.EnsureMenu()
         parent.subMenu={}; table.insert(ZO_MENU_ENTRIES,index,parent)
     end
     parent.subMenu=parent.subMenu or {}; parent.data.subMenu=parent.data.subMenu or {}
-    for _,mode in ipairs({{id="PBsWarTableSolo",mode="beginner",label="COM初級"},
-        {id="PBsWarTableIntermediate",mode="intermediate",label="COM中級"},
-        {id="PBsWarTableAdvanced",mode="advanced",label="COM上級"},
-        {id="PBsWarTableLocal",mode="local",label="ローカル検証"},
-        {id="PBsWarTableTutorial",mode="tutorial",label="チュートリアル"}}) do
-        local found=false
-        for _,e in ipairs(parent.subMenu) do if e.id==mode.id then found=true; break end end
-        if not found then
-            local chosen=mode.mode
-            local data={name=PBWT.Config.TITLE.."（"..mode.label.."）",icon=icon,activatedCallback=function() PBWT.Open(chosen) end}
-            table.insert(parent.data.subMenu,data); table.insert(parent.subMenu,entry(data,mode.id))
-        end
-    end
+    -- The gamepad main menu renders exactly two levels (category and sub list), so the
+    -- modes live one step further in, on the add-on's own mode screen.
+    for _,e in ipairs(parent.subMenu) do if e.id=="PBsWarTable" or e.data.name==PBWT.Config.TITLE then return end end
+    -- Giving it a scene rather than a callback is what the menu does for Options and the rest:
+    -- selecting it pushes that scene over the sub-menu, and Back returns here.
+    local data={name=PBWT.Config.TITLE,icon=icon,customTemplate="ZO_GamepadMenuEntryTemplateWithArrow",scene=PBWT.ModeMenu.SCENE}
+    table.insert(parent.data.subMenu,data); table.insert(parent.subMenu,entry(data,"PBsWarTable"))
 end
 function PBWT.HookMenu()
     PBWT.EnsureMenu()

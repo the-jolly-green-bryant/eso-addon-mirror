@@ -1,4 +1,4 @@
--- CallToArm_UI.lua (LHAS main menu)
+﻿-- CallToArm_UI.lua (LHAS main menu)
 local CallToArm = _G.CallToArm or {}
 _G.CallToArm = CallToArm
 CallToArm.UI = CallToArm.UI or {}
@@ -369,6 +369,29 @@ local function CreateMainMenu()
     })
 
     settings:AddSetting({ type = LHAS.ST_SECTION, label = "CTA" })
+    settings:AddSetting({
+        type = LHAS.ST_BUTTON,
+        label = "Campaign Briefing — Run Now",
+        tooltip = "Requests a briefing for your represented guild's campaign. Does not change automatic alerts, activity filters or lock-in.",
+        buttonText = "Run Now",
+        clickHandler = function() CallToArm.CTA.RunNow() end,
+    })
+    settings:AddSetting({
+        type = LHAS.ST_DROPDOWN,
+        label = "Automatic Campaign Check Interval",
+        tooltip = "Time between automatic checks. Population reminder interval is separate.",
+        items = { {name="15 minutes",data=900}, {name="30 minutes",data=1800}, {name="60 minutes",data=3600} },
+        getFunction = function()
+            local cta = GetScopeCtaSettings()
+            return tostring(math.floor((cta and cta.polling.intervalSeconds or 1800) / 60)) .. " minutes"
+        end,
+        setFunction = function(_, _, item)
+            local cta = GetScopeCtaSettings()
+            if cta and item then cta.polling.intervalSeconds = item.data; CallToArm.CTA._nextPollAt = GetTimeStamp() + item.data end
+        end,
+        disable = function() return not IsConfiguredForSettings() end,
+    })
+
     settings:AddSetting({
         type = LHAS.ST_CHECKBOX,
         label = "Enable CTA Alerts",

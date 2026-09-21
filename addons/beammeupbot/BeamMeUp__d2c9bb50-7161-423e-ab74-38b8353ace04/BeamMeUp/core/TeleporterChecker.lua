@@ -111,7 +111,6 @@ local BMU_isFavoriteZone 					= BMU.isFavoriteZone
 local BMU_isFavoritePlayer 					= BMU.isFavoritePlayer
 local BMU_updateRelatedItemsCounterPanel 	= BMU.updateRelatedItemsCounterPanel
 local BMU_IsNotKeyboard = BMU.IsNotKeyboard
-local BMU_getGuildMembersCached = BMU.getGuildMembersCached
 
 ----variables (defined inline in code below, upon first usage, as they are still nil at this line)
 local BMU_LibZoneGivenZoneData
@@ -225,27 +224,6 @@ function BMU.getCurrentZoneId()
 	return currentZoneId
 end
 BMU_getCurrentZoneId = BMU.getCurrentZoneId
-
-local tableTTL = 5000
-local portalPlayers_Cache = {}
---Caching for main teleport table 
-local function IsCacheValid()
-  if portalPlayers_Cache.timestamp == nil then return false end
-  local delta = GetGameTimeMilliseconds() - portalPlayers_Cache.timestamp
-  return delta < tableTTL
-end
-
-function BMU.resetCache()
-  portalPlayers_Cache = {}
-end
-
-function BMU.retrieveCachedTable(args)
-    if IsCacheValid() and portalPlayers_Cache.players and #portalPlayers_Cache.players > 1 then
-      return portalPlayers_Cache.players
-    end
-    portalPlayers_Cache = { players = BMU.createTable(args), timestamp = GetGameTimeMilliseconds() }
-    return portalPlayers_Cache.players
-end
 
 
 -- index: choose scenario / filter action -> see globals
@@ -380,51 +358,39 @@ function BMU.createTable(args)
 		-- gathering information
         local e = {}
         e.displayName, e.Note, e.status, e.secsSinceLogoff = GetFriendInfo(j)
+        e.hasCharacter, e.characterName, e.zoneName, e.classType, e.alliance, e.level, e.championRank, e.zoneId = GetFriendCharacterInfo(j)
 
 		-- first big layer of filtering, second layer is placed in seperate function
         -- consider only: other players ; online users (state 1,2,3) ; valid zone names ; valid player names
-		if e.displayName ~= GetDisplayName() and e.status ~= PLAYER_STATUS_OFFLINE and e.zoneName ~= nil and e.zoneName ~= "" and e.displayName ~= "" and not consideredPlayers[e.displayName] then
-      e.hasCharacter, e.characterName, e.zoneName, e.classType, e.alliance, e.level, e.championRank, e.zoneId = GetFriendCharacterInfo(j)
+		if e.displayName ~= GetDisplayName() and e.status ~= PLAYER_STATUS_OFFLINE and e.zoneName ~= nil and e.zoneName ~= "" and e.zoneId ~= nil and e.zoneId ~= 0 and e.displayName ~= "" and not consideredPlayers[e.displayName] then
+
 			-- save displayName
-			if e.zoneId ~= nil and e.zoneId ~= 0 then
-			
-        consideredPlayers[e.displayName] = true
-        -- do some formating stuff
-        e = BMU_addInfo_1(e, currentZoneId, playersZoneId, BMU_SOURCE_INDEX_FRIEND)
-  
-        -- second big filter level
-        if BMU_filterAndDecide(index, e, inputString, currentZoneId, fZoneId, filterSourceIndex) then
-          -- add bunch of information to the record
-          e = BMU_addInfo_2(e)
-          -- insert into table
-          table_insert(TeleportAllPlayersTable, e)
-        end
-      end
+			consideredPlayers[e.displayName] = true
+			-- do some formating stuff
+			e = BMU_addInfo_1(e, currentZoneId, playersZoneId, BMU_SOURCE_INDEX_FRIEND)
+
+			-- second big filter level
+			if BMU_filterAndDecide(index, e, inputString, currentZoneId, fZoneId, filterSourceIndex) then
+				-- add bunch of information to the record
+				e = BMU_addInfo_2(e)
+				-- insert into table
+				table_insert(TeleportAllPlayersTable, e)
+			end
 		end
 	end
 
 
 	-- 3. go over all Guild members
     for i = 1, TeleTotalGuilds do
-        local guildId = GetGuildId(i)
-        local totalGuildMembers = GetNumGuildMembers(guildId)
-        local members
-        
-        if BMU_savedVarsAcc.preferPerformance then
-          members = BMU_getGuildMembersCached(guildId, i)
-          totalGuildMembers = #members
-        end
+        local totalGuildMembers = GetNumGuildMembers(GetGuildId(i))
 
         for j = 1, totalGuildMembers do
 			-- gathering information
             local e = {}
-            if BMU_savedVarsAcc.preferPerformance and members and next(members) then
-              e = members[j]
-            else
-              e.displayName, e.Note, e.GuildMemberRankIndex, e.status, e.secsSinceLogoff = GetGuildMemberInfo(guildId, j)
-              e.hasCharacter, e.characterName, e.zoneName, e.classType, e.alliance, e.level, e.championRank, e.zoneId = GetGuildMemberCharacterInfo(guildId, j)
-              e.guildIndex = i
-            end
+            e.displayName, e.Note, e.GuildMemberRankIndex, e.status, e.secsSinceLogoff = GetGuildMemberInfo(GetGuildId(i), j)
+            e.hasCharacter, e.characterName, e.zoneName, e.classType, e.alliance, e.level, e.championRank, e.zoneId = GetGuildMemberCharacterInfo(GetGuildId(i), j)
+			e.guildIndex = i
+
 			-- first big layer of filtering, second layer is placed in seperate function
             -- consider only: other players ; online users (state 1,2,3) ; valid zone names ; valid player names
 			if e.displayName ~= GetDisplayName() and e.status ~= 4 and e.zoneName ~= nil and e.zoneName ~= "" and e.zoneId ~= nil and e.zoneId ~= 0 and e.displayName ~= "" and not consideredPlayers[e.displayName] then
@@ -1357,6 +1323,7 @@ function BMU.getLowestNumber(tab)
 	return low
 end
 
+
 -- checks if "only one entry per zone" is enabled
 -- increments counter according to case
 -- returns if the record can be used
@@ -2160,9 +2127,6 @@ BMU_createNoResultsInfo = BMU.createNoResultsInfo  --INS251229 Baertram
 
 -- removes an existing entry (already added zoneId) from table (TeleportAllPlayersTable) if it is not a player favorite or group member
 function BMU.removeExistingEntry(zoneId)
-  if zoneEntryMap and zoneEntryMap[zoneId] then
-    zoneEntryMap[zoneId] = nil
-  end
 	for index, record in pairs(TeleportAllPlayersTable) do
 		if record.zoneId == zoneId and not BMU_isFavoritePlayer(record.displayName) and record.sourceIndexLeading ~= BMU_SOURCE_INDEX_GROUP then
 			table_remove(TeleportAllPlayersTable, index)
@@ -2172,19 +2136,15 @@ end
 BMU_removeExistingEntry = BMU.removeExistingEntry  					--INS251229 Baertram
 
 
-local zoneEntryMap = {}
+
 -- returns the record from table (TeleportAllPlayersTable) located at given zoneId
 function BMU.getExistingEntry(zoneId)
-  if BMU.savedVarsAcc.preferPerformance and zoneEntryMap[zoneId] ~= nil then
-    return zoneEntryMap[zoneId]
-  end
-  for index, record in pairs(TeleportAllPlayersTable) do
-    if record.zoneId == zoneId then
-      zoneEntryMap[record.zoneId] = record
-      return record
-    end
-  end
-  d("[BMU]NOT FOUND, zoneId: " .. tos(zoneId))
+	for index, record in pairs(TeleportAllPlayersTable) do
+		if record.zoneId == zoneId then
+			return record
+		end
+	end
+	d("[BMU]NOT FOUND, zoneId: " .. tos(zoneId))
 end
 BMU_getExistingEntry = BMU.getExistingEntry							--INS251229 Baertram
 

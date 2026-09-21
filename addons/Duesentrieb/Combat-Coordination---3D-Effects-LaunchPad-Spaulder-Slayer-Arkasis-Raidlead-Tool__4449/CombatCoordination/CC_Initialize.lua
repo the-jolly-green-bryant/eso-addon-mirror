@@ -24,6 +24,9 @@ function CC.Enable()
 
     EVENT_MANAGER:RegisterForUpdate(CC.NAME .. "Events_UpdateGroupDataLoop", 1000, function() CC.Events:UpdateGroupDataLoop() end)
 
+    -- DEBUG ONLY
+    -- EVENT_MANAGER:RegisterForEvent("CC_EVENT_COMBAT_EVENT", EVENT_COMBAT_EVENT, function(...) CC.Events:OnCombatEvent(...) end)
+
     -- COMBAT EVENT
     for abilityId, _ in pairs(CC.Events.SkillModules) do
         local name = CC.NAME .. "EVENT_COMBAT_EVENT" .. tostring(abilityId)
@@ -224,17 +227,13 @@ SLASH_COMMANDS["/cc_preview"] = CC.TogglePreview
 -- LIBCHATMENUBUTTON
 ----------------------------------------------------------------------------------------------------
 function CC.CreateChatButton()
-    -- YEAH YEAH I KNOW.. IT'S IN THE DEPENDENCIES. BUT I MIGHT CHANGE THAT.
     if not LibChatMenuButton or CC.ChatButton then return end
 
     local icon = CC.NAME .. "/icons/logo_cc_border.dds"
     local tooltip = "Combat Coordination Info Panel"
 
-    -- REGISTER BUTTOON
-    CC.ChatButton = LibChatMenuButton.addChatButton(
-        CC.NAME .. "ChatMenuButton", icon, tooltip,
-        function() CC.DisplayPanel:Toggle() end
-    )
+    -- REGISTER BUTTON
+    CC.ChatButton = LibChatMenuButton.addChatButton(CC.NAME .. "ChatMenuButton", icon, tooltip, function() CC.DisplayPanel:Toggle() end)
 end
 
 ----------------------------------------------------------------------------------------------------

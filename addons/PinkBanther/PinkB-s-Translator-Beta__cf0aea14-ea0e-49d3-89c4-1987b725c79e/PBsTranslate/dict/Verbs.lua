@@ -1521,3 +1521,13 @@ yapping=しゃべりすぎる/1
 D("v", [[
 get out of=出る/1/から
 ]])
+
+-- Phrasal actions keep their particles together under inflection and negation.
+D("v", [[
+split up=分散する/s
+knock down=転倒させる/1
+stun=スタンさせる/1
+silence=沈黙させる/1
+root=動きを封じる/1
+immobilize=動きを封じる/1
+]])

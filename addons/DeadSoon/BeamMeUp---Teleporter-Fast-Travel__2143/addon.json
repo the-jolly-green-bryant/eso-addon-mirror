@@ -1,18 +1,19 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/DeadSoon/BeamMeUp---Teleporter-Fast-Travel__2143",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "@DeadSoon",
   "canonical_id": "esoui:2143",
   "category_id": "24",
   "compatibility": [
     {
-      "name": "Season Zero Pt.2",
-      "version": "12.0.0"
+      "name": "Season One",
+      "version": "12.1.0"
     },
     {
-      "name": "Season Zero",
-      "version": "11.3.0"
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
     }
   ],
   "content_id": "esoui:2143",
@@ -21,7 +22,7 @@
     "BeamMeUp"
   ],
   "download_url": "https://www.esoui.com/downloads/dl2143/",
-  "fingerprint": "4aa1acb5077416e54c10d439347c1d1232dfb8681288e97302c3d979ad6150e8",
+  "fingerprint": "95af0fb4685b4ebd6b9524c6516f2d430e95b04cc7ad72c665aaaa70c175a98e",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw10590.png",
     "https://cdn-eso.mmoui.com/preview/pvw10581.png",
@@ -40,11 +41,11 @@
   "source_id": "2143",
   "source_url": "https://www.esoui.com/downloads/info2143-BeamMeUp-TeleporterFastTravel.html",
   "stats": {
-    "downloads": 2786187,
-    "favorites": 750,
-    "monthly_downloads": 8161
+    "downloads": 2799100,
+    "favorites": 753,
+    "monthly_downloads": 7141
   },
   "title": "BeamMeUp - Teleporter (Fast Travel)",
-  "updated_at": 1779050847000,
-  "version": "4.0.4"
+  "updated_at": 1789928830000,
+  "version": "4.0.5"
 }

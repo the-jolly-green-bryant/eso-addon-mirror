@@ -269,9 +269,9 @@ function Module:GroupLeaderLoop()
     if isTimeToReturn then
         local targetTag = nil
         for i = 1, GetGroupSize() do
-            local tag = "group" .. i
-            if GetUnitDisplayName(tag) == self.originalLeaderName then
-                targetTag = tag
+            local groupTag = "group" .. i
+            if GetUnitDisplayName(groupTag) == self.originalLeaderName then
+                targetTag = groupTag
                 break
             end
         end
@@ -308,16 +308,17 @@ end
 -- CONTEXT MENU (LIBCUSTOMMENU)
 ----------------------------------------------------------------------------------------------------
 function Module:OnContextMenu(Data)
-    if not LibCustomMenu or not Data or not Data.displayName then return end
-    if not CC.IsRaidlead() and IsUnitGrouped("player") then return end
+    if not LibCustomMenu then return end
+    if not Data or not Data.displayName then return end
+    if not CC.IsRaidlead() then return end
 
     local unitTag = nil
     local targetName = Data.displayName
 
     for i = 1, GetGroupSize() do
-        local tag = GetGroupUnitTagByIndex(i)
-        if GetUnitDisplayName(tag) == targetName or GetRawUnitName(tag) == targetName then
-            unitTag = tag
+        local groupTag = GetGroupUnitTagByIndex(i)
+        if GetUnitDisplayName(groupTag) == targetName or GetRawUnitName(groupTag) == targetName then
+            unitTag = groupTag
             break
         end
     end
@@ -356,6 +357,10 @@ end
 -- ENABLE / DISABLE
 ----------------------------------------------------------------------------------------------------
 function Module:CustomEnable()
+    if LibCustomMenu then
+        LibCustomMenu:RegisterGroupListContextMenu(function(Data) self:OnContextMenu(Data) end, LibCustomMenu.CATEGORY_LATE)
+    end
+
     for abilityName, AbilityIds in pairs(self.Skills) do
         for _, abilityId in ipairs(AbilityIds) do
             EVENT_MANAGER:UnregisterForEvent(CC.NAME .. "EVENT_COMBAT_EVENT" .. tostring(abilityId), EVENT_COMBAT_EVENT)
@@ -364,11 +369,6 @@ function Module:CustomEnable()
             EVENT_MANAGER:RegisterForEvent(eventName, EVENT_COMBAT_EVENT, function(...) self:HandleCombatEvent(...) end)
             EVENT_MANAGER:AddFilterForEvent(eventName, EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, abilityId, REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
         end
-    end
-
-    -- YEAH YEAH I KNOW.. LIBCUSTOMMENU IS IN THE DEPENDENCIES. BUT I MIGHT CHANGE THAT.
-    if LibCustomMenu then
-        LibCustomMenu:RegisterGroupListContextMenu(function(Data) self:OnContextMenu(Data) end, LibCustomMenu.CATEGORY_LATE)
     end
 
     -- MANUAL SYNC ON LOAD

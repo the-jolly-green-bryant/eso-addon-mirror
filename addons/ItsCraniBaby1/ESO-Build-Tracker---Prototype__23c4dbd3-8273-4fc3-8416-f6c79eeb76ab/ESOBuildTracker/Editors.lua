@@ -176,7 +176,11 @@ function A.EditGear(key)
     A.OpenMenu("Gear target", function()
         local item = A.FindItem(A.GetViewedSnapshot(), key)
         local goal = build.gear[key]
-        local function Field(field, value) EnsureGear(build, key)[field] = value end
+        local function Field(field, value)
+            local target = EnsureGear(build, key)
+            target[field] = value
+            if field == "enchantName" then target.enchantGlyph = nil end
+        end
         local rows = {
             A.Row("Use viewed item as target", item and item.slotLabel or key, "Copy the viewed item's set, trait, enchantment type, quality and item type. Later changes to live gear will not change this target.", function()
                 if item and item.status == "equipped" then build.gear[key] = A.GearGoal(item); A.Notify("Copied item requirements."); A.RebuildPages()
@@ -197,7 +201,7 @@ function A.EditGear(key)
             A.Row("Minimum quality", goal and goal.quality ~= nil and A.EnumName("SI_ITEMQUALITY", goal.quality) or "Any", "This quality or better counts as a match.", function()
                 A.Choose("Minimum quality", EnumChoices("SI_ITEMQUALITY", { "ITEM_FUNCTIONAL_QUALITY_NORMAL", "ITEM_FUNCTIONAL_QUALITY_MAGIC", "ITEM_FUNCTIONAL_QUALITY_ARCANE", "ITEM_FUNCTIONAL_QUALITY_ARTIFACT", "ITEM_FUNCTIONAL_QUALITY_LEGENDARY" }), function(value) Field("quality", value) end)
             end),
-            A.Row("Enchantment type", goal and goal.enchantName or "Any", "Matches the enchantment heading from the item tooltip. Numeric enchantment strength is not checked in this version.", function()
+            A.Row("Enchantment type", goal and (goal.enchantGlyph or goal.enchantName) or "Any", "For imported glyphs, verify the desired glyph on an item, then use its heading. Matches the enchantment heading from the item tooltip. Numeric enchantment strength is not checked in this version.", function()
                 local options = {
                     A.Row("Any enchantment", "Do not check", "Ignore enchantment type.", function() Field("enchantName", nil); A.Back() end),
                     A.Row("No enchantment", "Require none", "Require an empty enchantment heading.", function() Field("enchantName", ""); A.Back() end),

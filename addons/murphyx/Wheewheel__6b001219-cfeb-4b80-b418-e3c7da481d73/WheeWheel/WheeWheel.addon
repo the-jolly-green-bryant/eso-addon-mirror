@@ -1,8 +1,8 @@
 ## Title: WheeWheel
 ## Author: Murfiex
-## APIVersion: 101049 101050
+## APIVersion: 101050 101051
 ## Description: Wheeeee...
-## Version: 0.0.4
+## Version: 0.0.5
 ## SavedVariables: WheeWheel_SavedVars
 ## DependsOn: LibHarvensAddonSettings
 

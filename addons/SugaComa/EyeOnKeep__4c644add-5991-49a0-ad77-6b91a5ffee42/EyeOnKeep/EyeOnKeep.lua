@@ -1,22 +1,17 @@
---------------------------------------------------------------
--- EyeOnKeep.lua — v1.6.1-test1
+﻿--------------------------------------------------------------
+-- EyeOnKeep.lua — v1.7.2-test1
 -- Author: SugaComa (Rik Sprint)
 -- RESOURCES NOW FILTER BY HOME TERRITORY (same as keeps/outposts/towns)
 --------------------------------------------------------------
 local ADDON_NAME = "EyeOnKeep"
 EyeOnKeep = EyeOnKeep or {}
-EyeOnKeep.version = "1.7.1-test1"
+EyeOnKeep.version = "1.7.2-test1"
 local EM = EVENT_MANAGER
 local EOK_SV_VERSION = 44
 local EOK_SV = nil
 local _inited = false
 local muted = false
 local BG_CONTEXT = BGQUERY_LOCAL
-
--- DUAL Polling: Resources FAST (10s) | Keeps SLOW (45s)
-local RESOURCE_POLL_MS = 10000
-local KEEP_POLL_MS = 45000
-local MSG_COOLDOWN_MS = 45000
 
 -- SavedVars defaults
 local DEFAULTS = {
@@ -65,11 +60,6 @@ local chat = EyeOnKeep.Chat
 --------------------------------------------------------------
 -- Keep Types
 --------------------------------------------------------------
-local KEEP_TYPE_KEEP = 1
-local KEEP_TYPE_OUTPOST = 5
-local KEEP_TYPE_TOWN = 6
-local KEEP_TYPE_RESOURCE = 8
-
 --------------------------------------------------------------
 -- Canonicalize helper
 --------------------------------------------------------------
@@ -129,7 +119,7 @@ end
 -- Helpers
 --------------------------------------------------------------
 local function nowMs() 
-return GetFrameTimeMilliseconds() or (os.time()*1000) 
+return GetFrameTimeMilliseconds() 
 end
 local function SafeColor(a) 
 return (FACTION[a] and FACTION[a].color) or "|cFFFFFF" 
@@ -148,8 +138,7 @@ local function getKeepType(keepId)
 end
 
 --------------------------------------------------------------
--- Improved Objective Type Detection
--- Adds fallback for farms / mines / lumbermills by name
+-- Objective classification uses API constants; display names do not determine type.
 --------------------------------------------------------------
 local function getObjectiveType(name, keepId)
     if not keepId or keepId <= 0 or not name or name == "?" then
@@ -159,27 +148,10 @@ local function getObjectiveType(name, keepId)
     local key = canon(name)
     local kt = getKeepType(keepId)
 
-    -- Primary detection via keep type ID
-    if kt == KEEP_TYPE_RESOURCE then
-        return "resource"
-    end
-    if HOME_KEEPS[key] then
-        return "keep"
-    end
-    if OUTPOSTS[key] then
-        return "outpost"
-    end
-    if TOWNS[key] then
-        return "town"
-    end
-
-    -- 🔧 Fallback: detect by name if API misreports type
-    if key:find("Farm", 1, true)
-        or key:find("Mine", 1, true)
-        or key:find("Lumber", 1, true)
-        or key:find("Mill", 1, true) then
-        return "resource"
-    end
+    if kt == KEEPTYPE_RESOURCE then return "resource" end
+    if kt == KEEPTYPE_KEEP then return "keep" end
+    if kt == KEEPTYPE_OUTPOST then return "outpost" end
+    if kt == KEEPTYPE_TOWN then return "town" end
 
     return "other"
 end
@@ -196,10 +168,6 @@ local function resolveTerritory(name, keepId)
     if parent then
         local pk = canon(parent)
         return HOME_KEEPS[pk] or OUTPOSTS[pk] or TOWNS[pk] or ALLIANCE_NONE
-    end
-    if type(GetKeepAlliance) == "function" then
-        local owner = GetKeepAlliance(keepId, BG_CONTEXT)
-        if owner and owner ~= ALLIANCE_NONE then return owner end
     end
     return ALLIANCE_NONE
 end
@@ -367,10 +335,10 @@ local function sayUnderAttack(name, owner, territory, otype, myAlliance)
 			msg = string.format("%s%s|r under attack at %s%s|r",
 				colorM, abbrM, INFO_COLOR, abbrK)
 		elseif owner ~= myAlliance and territory == myAlliance then
-			msg = string.format("%s%s|r losing %s%s|r (our land)",
+			msg = string.format("%s%s|r under attack at %s%s|r (our land)",
 				colorO, abbrO, INFO_COLOR, abbrK)
 		else
-			msg = string.format("%s%s|r losing %s%s|r",
+			msg = string.format("%s%s|r under attack at %s%s|r",
 				colorO, abbrO, INFO_COLOR, abbrK)
 		end
 				
@@ -390,9 +358,9 @@ local function sayUnderAttack(name, owner, territory, otype, myAlliance)
         elseif owner == myAlliance and territory == myAlliance then
             msg = "%Kn is under attack — defend %Km lands!"
         elseif owner ~= myAlliance and territory == myAlliance then
-            msg = "Enemy hold at %Kn is faltering — recapture it now!"
+            msg = "The enemy hold on %Kn is under attack — an opportunity to reclaim our lands!"
         elseif owner == myAlliance and territory ~= myAlliance then
-            msg = "We’re losing %Kt ground — defend %Kn!"
+            msg = "Our territory at %Kn is under attack — hold our position!"
         else
             msg = "Territorial dispute at %Kn — %Ko forces engaged."
         end
@@ -445,8 +413,8 @@ local function sayResolution(name, oldOwnerAtStart, ownerNow, territory, otype, 
 
         if otype == "resource" then
             msg = (ownerNow == myAlliance)
-                and "Supply restored at %Kn — %Ko hold the line."
-                or "%Ko have reclaimed %Kn — supply rerouted."
+                and "%Ko now control %Kn , secureing the supply line."
+                or "%Ko now control %Kn — the supply line has changed hands."
         elseif ownerNow == oldOwnerAtStart then
             msg = "%Ko forces have held %Kn — the line stands."
         elseif ownerNow == territory then
@@ -469,128 +437,206 @@ end
 --------------------------------------------------------------
 -- State Machine
 --------------------------------------------------------------
-local STATE = {}
-local function readState(keepId)
-    local name = (type(GetKeepName) == "function") and GetKeepName(keepId, BG_CONTEXT) or "?"
-    local owner = (type(GetKeepAlliance) == "function") and GetKeepAlliance(keepId, BG_CONTEXT) or ALLIANCE_NONE
-    local under = (type(GetKeepUnderAttack) == "function") and GetKeepUnderAttack(keepId, BG_CONTEXT) or false
-    local otype = getObjectiveType(name, keepId)
-    local territory = resolveTerritory(name, keepId)
-    return name, owner, under, territory, otype
+-- Siege intelligence uses current ownership; homeland is only a wording/filter input.
+local STATE, OBJECTIVES, RESOURCE_PARENTS = {}, {}, {}
+local activeCampaign, scanNumber = nil, 0
+local trackingSuspended = false
+local function InCyrodiil()
+    return IsInCyrodiil() and not IsInImperialCity() and not IsActiveWorldBattleground()
 end
 
-local function handleUpdate(keepId, myAlliance)
-    local name, owner, under, territory, otype = readState(keepId)
-    if name == "?" then return end
-
-    local tNow = nowMs()
-    local st = STATE[keepId] or {
-        owner=owner, under=under, territory=territory, otype=otype,
-        battleOwner=nil, lastUnderAlert=0, lastMsgAt=0
-    }
-    STATE[keepId] = st
-
-    local underCdOk = (tNow - (st.lastUnderAlert or 0) >= MSG_COOLDOWN_MS)
-    local sayCdOk = (tNow - (st.lastMsgAt or 0) >= MSG_COOLDOWN_MS)
-
-    if under and not st.under then
-        st.battleOwner = owner
-        if underCdOk then
-            sayUnderAttack(name, owner, territory, otype, myAlliance)
-            st.lastUnderAlert = tNow
-            st.lastMsgAt = tNow
-        end
-    elseif under and st.under then
-        if underCdOk then
-            sayUnderAttack(name, owner, territory, otype, myAlliance)
-            st.lastUnderAlert = tNow
-            st.lastMsgAt = tNow
-        end
-    elseif not under and st.under then
-        if sayCdOk then
-            local oldOwnerAtStart = st.battleOwner or st.owner
-            sayResolution(name, oldOwnerAtStart, owner, territory, otype, myAlliance)
-            st.lastMsgAt = tNow
-        end
-        st.battleOwner = nil
-    end
-
-    st.owner = owner
-    st.under = under
-    st.territory = territory
-    st.otype = otype
-end
-
-
--- Detect fast resource state updates
-local function OnKeepResourceUpdate(_, keepId, bgContext)
-    if muted or bgContext ~= BG_CONTEXT then return end
-    local myAlliance = GetUnitAlliance("player") or ALLIANCE_NONE
-    handleUpdate(keepId, myAlliance)
-end
-
-
---------------------------------------------------------------
--- Events & Polling
---------------------------------------------------------------
-local function OnKeepUnderAttackChanged(_, keepId, bgContext)
-    if muted or bgContext ~= BG_CONTEXT then return end
-    local myAlliance = GetUnitAlliance("player") or ALLIANCE_NONE
-    handleUpdate(keepId, myAlliance)
-end
-local function OnKeepOwnerChanged(_, keepId, bgContext)
-    if muted or bgContext ~= BG_CONTEXT then return end
-    local myAlliance = GetUnitAlliance("player") or ALLIANCE_NONE
-    handleUpdate(keepId, myAlliance)
-end
-
-		--------------------------------------------------------------
-		-- EARLY WARNING: Triggered the moment the flag is touched
-		--------------------------------------------------------------
-local function OnObjectiveControlState(_, keepId, objectiveId, battlegroundContext, objectiveControlEvent, objectiveControlState, objectiveOwnerAlliance)
-    if muted or battlegroundContext ~= BG_CONTEXT then return end
-    local name = GetKeepName(keepId, battlegroundContext)
-    if not name or name == "?" then return end
-
-    -- only act on known resource types
-    if getObjectiveType(name, keepId) ~= "resource" then return end
-
-    local myAlliance = GetUnitAlliance("player") or ALLIANCE_NONE
-
-    -- early alert if flag changes control state (player steps on flag)
-    if objectiveControlEvent == OBJECTIVE_CONTROL_EVENT_STATE_CHANGED then
-        sayUnderAttack(name, objectiveOwnerAlliance, resolveTerritory(name, keepId), "resource", myAlliance)
-    end
-end
-	
-
-local function PollResources()
-    if muted then zo_callLater(PollResources, RESOURCE_POLL_MS); return end
-    local total = GetNumKeeps() or 0
-    local myAlliance = GetUnitAlliance("player") or ALLIANCE_NONE
-    for keepId = 1, total do
-        local name = GetKeepName(keepId, BG_CONTEXT)
-        if name and name ~= "?" and getObjectiveType(name, keepId) == "resource" then
-            handleUpdate(keepId, myAlliance)
-        end
-    end
-    zo_callLater(PollResources, RESOURCE_POLL_MS)
-end
-
-local function PollKeepsOT()
-    if muted then zo_callLater(PollKeepsOT, KEEP_POLL_MS); return end
-    local total = GetNumKeeps() or 0
-    local myAlliance = GetUnitAlliance("player") or ALLIANCE_NONE
-    for keepId = 1, total do
-        local name = GetKeepName(keepId, BG_CONTEXT)
-        if name and name ~= "?" then
-            local otype = getObjectiveType(name, keepId)
-            if otype ~= "resource" then
-                handleUpdate(keepId, myAlliance)
+local function BuildObjectiveIndex()
+    OBJECTIVES, RESOURCE_PARENTS = {}, {}
+    local seen = {}
+    for index = 1, GetNumKeeps() do
+        local id, context = GetKeepKeysByIndex(index)
+        if IsLocalBattlegroundContext(context) and not seen[id] then
+            seen[id] = true
+            local name = GetKeepName(id)
+            local kind = getObjectiveType(name, id)
+            if kind ~= "other" then OBJECTIVES[#OBJECTIVES + 1] = id end
+            if kind == "keep" then
+                for _, resourceType in ipairs({ RESOURCETYPE_FOOD, RESOURCETYPE_ORE, RESOURCETYPE_WOOD }) do
+                    local resourceId = GetResourceKeepForKeep(id, resourceType)
+                    if resourceId and resourceId > 0 then RESOURCE_PARENTS[resourceId] = id end
+                end
             end
         end
     end
-    zo_callLater(PollKeepsOT, KEEP_POLL_MS)
+end
+
+local function ReadState(id)
+    local name = GetKeepName(id)
+    if not name or name == "" then return end
+    local kind = getObjectiveType(name, id)
+    if kind == "other" then return end
+    local parent = RESOURCE_PARENTS[id]
+    local territory = resolveTerritory(parent and GetKeepName(parent) or name, parent or id)
+    return name, GetKeepAlliance(id, BG_CONTEXT), GetKeepUnderAttack(id, BG_CONTEXT), territory, kind
+end
+
+local function NewState(owner, under)
+    return { owner = owner, under = under, siege = {}, announcedSiege = {},
+        lastSiegeAt = -math.huge, flagThreats = {} }
+end
+
+local function SaySiege(name, owner, territory, kind, counts)
+    if not matrixAllows(kind, territory) then return end
+    local forces = {}
+    for alliance = 1, NUM_ALLIANCES do
+        if counts[alliance] and counts[alliance] > 0 then
+            forces[#forces + 1] = tostring(counts[alliance]) .. " " .. SafeColor(alliance)
+                .. (STYLE == "immersive" and SafeName(alliance) or FACTION[alliance].tag) .. "|r|cFFFFFF"
+        end
+    end
+    local report = table.concat(forces, ", ") .. " siege reported."
+    if STYLE == "quick" then
+        chat(INFO_COLOR .. getAbbr(name, kind) .. "|r " .. report)
+    elseif STYLE == "compact" then
+        chat(INFO_COLOR .. name .. "|r — " .. report)
+    else
+        local playerAlliance = GetUnitAlliance("player")
+        local place = INFO_COLOR .. name .. "|r|cFFFFFF"
+        local orders
+        if owner == playerAlliance and territory == playerAlliance then
+            orders = "Enemy siege at " .. place .. " — defend our lands!"
+        elseif owner == playerAlliance and territory ~= ALLIANCE_NONE then
+            orders = "Enemy siege at " .. place .. " — hold our territory!"
+        elseif owner == playerAlliance then
+            orders = "Enemy siege at " .. place .. " — hold this keep!"
+        elseif territory == playerAlliance then
+            orders = "The enemy hold on " .. place .. " is under siege — an opportunity to reclaim our lands!"
+        else
+            orders = SafeName(owner) .. "-held " .. place .. " is under siege — enemy forces are engaged."
+        end
+        chat(orders .. " " .. report)
+    end
+end
+
+local function CheckSiege(id, st, name, owner, territory, kind)
+    if kind ~= "keep" then return end
+    local counts, freshFaction, growth = {}, false, false
+    if not FACTION[owner] or owner == ALLIANCE_NONE then
+        st.siege, st.announcedSiege = {}, {}
+        return
+    end
+    for alliance = 1, NUM_ALLIANCES do
+        if alliance ~= owner then
+            local count = GetNumSieges(id, BG_CONTEXT, alliance) or 0
+            if count > 0 then
+                counts[alliance] = count
+                if not st.siege[alliance] then freshFaction = true end
+                if count >= (st.announcedSiege[alliance] or count) + 2 then growth = true end
+            else
+                st.announcedSiege[alliance] = nil
+            end
+        end
+    end
+    local now = nowMs()
+    if freshFaction or (growth and now - st.lastSiegeAt >= 10000) then
+        SaySiege(name, owner, territory, kind, counts)
+        st.announcedSiege = {}
+        for alliance, count in pairs(counts) do st.announcedSiege[alliance] = count end
+        st.lastSiegeAt = now
+    end
+    st.siege = counts
+end
+
+local function HandleUpdate(id, ownerOverride, oldOwner, attackOverride)
+    if not InCyrodiil() then return end
+    local name, owner, under, territory, kind = ReadState(id)
+    if not name then return end
+    if ownerOverride ~= nil then owner = ownerOverride end
+    if attackOverride ~= nil then under = attackOverride end
+    local st = STATE[id]
+    if not st then
+        st = NewState(oldOwner or owner, false)
+        STATE[id] = st
+    end
+    local playerAlliance = GetUnitAlliance("player")
+    local changedOwner = owner ~= st.owner
+    if changedOwner then
+        if owner == ALLIANCE_NONE then
+            if matrixAllows(kind, territory) then chat(INFO_COLOR .. name .. "|r — control is disputed.") end
+        else
+            sayResolution(name, st.owner, owner, territory, kind, playerAlliance)
+        end
+        st.siege, st.announcedSiege, st.flagThreats = {}, {}, {}
+    end
+    if under and not st.under and not changedOwner then
+        sayUnderAttack(name, owner, territory, kind, playerAlliance)
+    elseif not under and st.under and not changedOwner then
+        if matrixAllows(kind, territory) then
+            chat(INFO_COLOR .. name .. "|r — defences hold; " .. SafeName(owner) .. " retain control.")
+        end
+    end
+    st.owner, st.under = owner, under
+    CheckSiege(id, st, name, owner, territory, kind)
+end
+
+local function ResetTracking()
+    STATE, activeCampaign, scanNumber = {}, GetCurrentCampaignId(), 0
+    BuildObjectiveIndex()
+    -- Snapshot existing owners without inventing captures. Siege is checked on the next scan.
+    for _, id in ipairs(OBJECTIVES) do
+        local name, owner, under = ReadState(id)
+        if name then STATE[id] = NewState(owner, under) end
+    end
+end
+
+local function EnsureContext()
+    if trackingSuspended or not InCyrodiil() then return false end
+    if activeCampaign ~= GetCurrentCampaignId() then ResetTracking() end
+    return true
+end
+
+local function OnKeepUnderAttackChanged(_, id, context, under)
+    if IsLocalBattlegroundContext(context) and EnsureContext() then HandleUpdate(id, nil, nil, under) end
+end
+local function OnKeepOwnerChanged(_, id, context, owner, oldOwner)
+    if IsLocalBattlegroundContext(context) and EnsureContext() then HandleUpdate(id, owner, oldOwner) end
+end
+local function OnKeepResourceUpdate(_, id)
+    if EnsureContext() then HandleUpdate(id) end
+end
+local function OnObjectiveControlState(_, id, objectiveId, context, objectiveName, objectiveType, controlEvent, controlState)
+    if not IsLocalBattlegroundContext(context) or not EnsureContext() then return end
+    local name, owner, under, territory, kind = ReadState(id)
+    if not name or (kind ~= "resource" and kind ~= "town") then return end
+    local st = STATE[id] or NewState(owner, under)
+    STATE[id] = st
+    if controlEvent == OBJECTIVE_CONTROL_EVENT_ASSAULTED or controlEvent == OBJECTIVE_CONTROL_EVENT_UNDER_ATTACK then
+        local alreadyThreatened = next(st.flagThreats) ~= nil
+        st.flagThreats[objectiveId] = true
+        if not alreadyThreatened and not st.under then
+            sayUnderAttack(name, owner, territory, kind, GetUnitAlliance("player"))
+        end
+    elseif controlEvent == OBJECTIVE_CONTROL_EVENT_CAPTURED or controlEvent == OBJECTIVE_CONTROL_EVENT_RECAPTURED
+        or controlEvent == OBJECTIVE_CONTROL_EVENT_FULLY_HELD or controlEvent == OBJECTIVE_CONTROL_EVENT_DEACTIVATED then
+        st.flagThreats[objectiveId] = nil
+    end
+    -- Objective capture is not necessarily whole-town ownership. The owner event handles that.
+end
+
+local function Scan()
+    if not EnsureContext() then return end
+    scanNumber = scanNumber + 1
+    for _, id in ipairs(OBJECTIVES) do
+        if GetKeepType(id) == KEEPTYPE_KEEP or scanNumber % 5 == 0 then HandleUpdate(id) end
+    end
+end
+local function ActivateTracking()
+    trackingSuspended = false
+    EM:UnregisterForUpdate(ADDON_NAME .. "_Scan")
+    STATE, activeCampaign = {}, nil
+    if not InCyrodiil() then return end
+    ResetTracking()
+    EM:RegisterForUpdate(ADDON_NAME .. "_Scan", 2000, Scan)
+end
+local function DeactivateTracking()
+    trackingSuspended = true
+    EM:UnregisterForUpdate(ADDON_NAME .. "_Scan")
+    STATE, activeCampaign = {}, nil
 end
 
 
@@ -687,12 +733,16 @@ local function EyeOnKeep_Init()
 
     
     --------------------------------------------------------------
-    -- Start Polling + Load Modules (delayed)
+    -- Zone-scoped event tracking and two-second siege scan
     --------------------------------------------------------------
-    zo_callLater(function()
-        PollResources()
-        PollKeepsOT()
-    end, 2000)
+    EM:RegisterForEvent(ADDON_NAME.."_Activated", EVENT_PLAYER_ACTIVATED, ActivateTracking)
+    EM:RegisterForEvent(ADDON_NAME.."_Deactivated", EVENT_PLAYER_DEACTIVATED, DeactivateTracking)
+    EM:RegisterForEvent(ADDON_NAME.."_Campaign", EVENT_CURRENT_CAMPAIGN_CHANGED, ActivateTracking)
+    EM:RegisterForEvent(ADDON_NAME.."_KeepsReady", EVENT_KEEPS_INITIALIZED, ActivateTracking)
+    EM:RegisterForEvent(ADDON_NAME.."_KeepReady", EVENT_KEEP_INITIALIZED, function()
+        if InCyrodiil() then BuildObjectiveIndex() end
+    end)
+    ActivateTracking()
 
     --------------------------------------------------------------
     -- Settings Menu

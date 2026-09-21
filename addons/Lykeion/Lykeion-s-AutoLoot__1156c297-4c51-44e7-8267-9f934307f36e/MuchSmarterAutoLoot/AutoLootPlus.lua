@@ -1,7 +1,7 @@
 MuchSmarterAutoLoot = MuchSmarterAutoLoot or {}
 local MSAL = MuchSmarterAutoLoot
-MSAL.version = "8.3.1"
-MSAL.addonVersion = 80301
+MSAL.version = "8.3.2"
+MSAL.addonVersion = 80302
 MSAL.author = "Lykeion"
 
 local MSAL_NEVER_3RD_PARTY_WARNING = "msal_never_3rd_party_warning"
@@ -895,6 +895,9 @@ local function OnInventoryUpdate(_, bagId, slotId, _, _, _, _)
     local isQuest = false -- unavailable
     local itemType, specializedItemType = GetItemLinkItemType(link)
 
+    local onWhite = itemOnList(link, WLIST_TOKEN)
+    local onWhiteJunk = itemOnList(link, WLIST_JUNK_TOKEN)
+    local keepIntact = onWhite and not onWhiteJunk
 
     -- Writ reward container handoff
     if not IsLootActive() and isContainer and IsCraftingWritRewardContainer(name) then
@@ -906,7 +909,7 @@ local function OnInventoryUpdate(_, bagId, slotId, _, _, _, _)
         end
     end
 
-    if itemOnList(link, WLIST_JUNK_TOKEN) then
+    if onWhiteJunk then
         if CanItemBeMarkedAsJunk(bagId, slotId) then
             SetItemIsJunk(bagId, slotId, true)
         end
@@ -1092,8 +1095,9 @@ local function OnInventoryUpdate(_, bagId, slotId, _, _, _, _)
         MSAL.startInterruptionListener(slotId)
     end
 
-    if (db.filters.treasures == "loot and junk" and isTreasure) or (db.filters.ornate == "loot and junk" and isOrnate) or
-        (db.filters.trash == "loot and junk" and isTrash) then
+    if not keepIntact and
+        ((db.filters.treasures == "loot and junk" and isTreasure) or (db.filters.ornate == "loot and junk" and isOrnate) or
+            (db.filters.trash == "loot and junk" and isTrash)) then
         SetItemIsJunk(bagId, slotId, true)
         -- if quality >= db.printDisposeThreshold then
         --     ChatboxLog(GetString(SI_ITEM_ACTION_MARK_AS_JUNK) .. GetString(MSAL_SPACE) .. link)
@@ -3126,7 +3130,6 @@ if ZO_IsConsoleOrGameCoreUI() then
 
     RegisterCategoryInjection(GAMEPAD_INVENTORY)
 
-    -- Gamepad item sets book options dialog: add a blacklist action next to "Link in Chat".
     local gamepadSetPieceActionsRegistered = false
     local function RegisterGamepadSetPieceActions()
         if gamepadSetPieceActionsRegistered then
@@ -3140,13 +3143,22 @@ if ZO_IsConsoleOrGameCoreUI() then
         table.insert(dialog.parametricList, {
             template = "ZO_GamepadFullWidthLeftLabelEntryTemplate",
             templateData = {
+                -- Already blacklisted pieces keep the entry, shown greyed out as "Blacklisted Already"
                 text = GetString(MSAL_CONTEXT_ADD_BLACKLIST),
-                setup = ZO_SharedGamepadEntry_OnSetup,
+                setup = function(control, data, selected, reselected, ...)
+                    local pieceData = dialog.data and dialog.data.selectedItemSetCollectionPieceData
+                    local link = pieceData and pieceData:GetItemLink()
+                    local blacklisted = link ~= nil and link ~= "" and itemOnList(link, BLIST_TOKEN)
+                    data.text = blacklisted and GetString(MSAL_CONTEXT_ALREADY_BLACKLISTED)
+                        or GetString(MSAL_CONTEXT_ADD_BLACKLIST)
+                    data.enabled = not blacklisted
+                    ZO_SharedGamepadEntry_OnSetup(control, data, selected, reselected, ...)
+                end,
                 callback = function(dialog)
                     local pieceData = dialog.data and dialog.data.selectedItemSetCollectionPieceData
                     if pieceData then
                         local link = pieceData:GetItemLink()
-                        if link and link ~= "" then
+                        if link and link ~= "" and not itemOnList(link, BLIST_TOKEN) then
                             MSAL.ContextAddToList(link, BLIST_TOKEN)
                         end
                     end
@@ -3161,7 +3173,7 @@ if ZO_IsConsoleOrGameCoreUI() then
                         return false
                     end
                     local link = pieceData:GetItemLink()
-                    return link ~= nil and link ~= "" and not itemOnList(link, BLIST_TOKEN)
+                    return link ~= nil and link ~= ""
                 end,
             },
         })
@@ -3198,41 +3210,40 @@ local function OnPlayerActivated()
                 end, GetLatency() + 100)
             end
         else
-            -- Kept in the account-wide table on purpose: switching the account-wide
-            -- setting swaps `db`, and the notice must not come back when it does.
-            if dbAccount.latestMajorUpdateVersion ~= "8.0.0" then
-                dbAccount.latestMajorUpdateVersion = "8.0.0"
-                if not ZO_IsConsoleOrGameCoreUI() then
-                    ZO_Dialogs_RegisterCustomDialog("MSAL_MAJOR_UPDATE", {
-                        title = {
-                            text = "|c2e5c8cL|r|c385f86y|r|c416281k|r|c4b657be|r|c546976i|r|c5d6c70o|r|c676f6bn|r|c707265'|r|c7a7560s|r |c83785aA|r|c8c7b55u|r|c967e4ft|r|c9f814ao|r|ca88544L|r|cb2883fo|r|cbb8b39o|r|cc58e34t|r|cce912e+|r"
-                        },
-                        mainText = {
-                            text = GetString(MSAL_UPDATE_IMFORM) .. GetString(MSAL_UPDATE_IMFORM_PC_EXTRA)
-                        },
-                        buttons = {
-                            {
-                                text = GetString(SI_GUILD_HISTORY_SHOW_MORE),
-                                callback = function()
-                                    OpenSettingsPanel()
-                                end
-                            },
-                            {
-                                text = SI_DIALOG_CANCEL
-                            }
-                        }
-                    })
-                    EVENT_MANAGER:RegisterForUpdate("MSAL_UPDATE_DIALOG", 1000, function()
-                        if not ZO_Dialogs_IsShowingDialog() then
-                            ZO_Dialogs_ShowDialog("MSAL_MAJOR_UPDATE")
-                            EVENT_MANAGER:UnregisterForUpdate("MSAL_UPDATE_DIALOG")
-                        end
-                    end)
-                else
+            if dbAccount.latestMajorUpdateVersion ~= "8.3.0" then
+                dbAccount.latestMajorUpdateVersion = "8.3.0"
+                if ZO_IsConsoleOrGameCoreUI() then
                     zo_callLater(function()
-                        ChatboxPrint(chatboxPrefix .. GetString(MSAL_UPDATE_IMFORM))
+                        ChatboxPrint(chatboxPrefix .. GetString(MSAL_UPDATE_IMFORM_CONSOLE))
                     end, GetLatency() + 100)
                 end
+                -- if not ZO_IsConsoleOrGameCoreUI() then
+                --     ZO_Dialogs_RegisterCustomDialog("MSAL_MAJOR_UPDATE", {
+                --         title = {
+                --             text = "|c2e5c8cL|r|c385f86y|r|c416281k|r|c4b657be|r|c546976i|r|c5d6c70o|r|c676f6bn|r|c707265'|r|c7a7560s|r |c83785aA|r|c8c7b55u|r|c967e4ft|r|c9f814ao|r|ca88544L|r|cb2883fo|r|cbb8b39o|r|cc58e34t|r|cce912e+|r"
+                --         },
+                --         mainText = {
+                --             text = GetString(MSAL_UPDATE_IMFORM) .. GetString(MSAL_UPDATE_IMFORM_PC)
+                --         },
+                --         buttons = {
+                --             {
+                --                 text = GetString(SI_GUILD_HISTORY_SHOW_MORE),
+                --                 callback = function()
+                --                     OpenSettingsPanel()
+                --                 end
+                --             },
+                --             {
+                --                 text = SI_DIALOG_CANCEL
+                --             }
+                --         }
+                --     })
+                --     EVENT_MANAGER:RegisterForUpdate("MSAL_UPDATE_DIALOG", 1000, function()
+                --         if not ZO_Dialogs_IsShowingDialog() then
+                --             ZO_Dialogs_ShowDialog("MSAL_MAJOR_UPDATE")
+                --             EVENT_MANAGER:UnregisterForUpdate("MSAL_UPDATE_DIALOG")
+                --         end
+                --     end)
+                
             else
                 if db.loginReminder == true
                 and db.lastStartup ~= os.date("%Y%m%d")

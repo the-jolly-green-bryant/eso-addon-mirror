@@ -45,248 +45,6 @@
       - 自動検知キーワードや手動登録リストを設定画面/コマンドで変更した
         際に、現在のターゲットへ即座に再反映されるようにした。
 
-    v1.4.43で対応:
-      - 「①②の対象を敵プレイヤーのみに限定する」機能(targetEnemyOnly)を
-        完全撤去。v1.4.37〜v1.4.42にかけてGetUnitReaction系→IsUnitHostile→
-        AreUnitsCurrentlyAllied→BG専用分岐と実装を重ねたが、機能自体を
-        使わない方針となったため、設定項目・チャットコマンド(/pti enemyonly)・
-        判定関数(PassesEnemyOnlyDisplayFilter)・OnUpdate内のdisplayTarget
-        分岐・関連デバッグログを削除し、OnUpdateはv1.4.36以前と同じ
-        hasTargetのみで①②の表示可否を判定する形に戻した。IsValidEnemyTarget
-        (DoesUnitExist+IsUnitPlayerによるNPC除外)、BUFF/DEBUFFの検知・
-        キャッシュ・分類・優先順位・UI①②③の配置やCondition/Procは無変更。
-
-    v1.4.42で対応:
-      - 「①②の対象を敵プレイヤーのみに限定する」の敵味方判定に、
-        バトルグラウンド(BG)専用の分岐を追加。BG実機動画の実測で、
-        明確な敵プレイヤーに対してもAreUnitsCurrentlyAllied("player",
-        "reticleover")がtrue(味方)を返すことを確認した。ESOのBGは
-        参加時にランダム割り当てられる専用陣営(BATTLEGROUND_ALLIANCE_
-        FIRE_DRAKES/PIT_DAEMONS/STORM_LORDS)を持ち、通常の所属アライアンス
-        (AD/EP/DC)とは別物。AreUnitsCurrentlyAllied/GetUnitAlliance/
-        GetUnitReactionはいずれも元々の所属アライアンスしか見ないため、
-        BG内でたまたま元アライアンスが同じ相手だと敵チームでも味方と
-        誤判定されていた。IsActiveWorldBattleground()でBG中と判定した
-        場合のみ、GetUnitBattlegroundAlliance("player")と
-        GetUnitBattlegroundAlliance("reticleover")の一致比較に切り替え、
-        それ以外のゾーン(シロディール等)では従来通りAreUnitsCurrentlyAllied
-        を使う。どちらもESOUI Wikiの公開UnitTag関数一覧で実在を確認済み。
-        変更はPassesEnemyOnlyDisplayFilter()内のみで、IsUnitPlayer/
-        DoesUnitExistによる対象確認、検知・キャッシュ・BUFF/DEBUFF分類・
-        UI描画・Condition/Procには一切手を加えていない。
-
-    v1.4.41で対応:
-      - 「①②の対象を敵プレイヤーのみに限定する」の敵味方判定を、
-        GetUnitReaction系の比較(v1.4.37==HOSTILE/v1.4.39~=NEUTRAL/
-        v1.4.40==NEUTRAL)から AreUnitsCurrentlyAllied("player","reticleover")
-        に変更。GetUnitReactionを使う実装はいずれも実機で「敵BUFFが出ない」
-        「味方BUFFが出る」等、意図と食い違う結果になることが確認されたため、
-        プレイヤー対プレイヤーの純粋な所属関係を直接返すAreUnitsCurrentlyAllied
-        に切り替えた(ESOUI Wikiの公開UnitTag関数一覧で実在を確認済み)。
-        味方ならfalse、味方でなければtrueを返す単純な方式。IsUnitPlayer/
-        DoesUnitExistによる対象確認は維持し、IsUnitHostileのような未確認
-        関数は使用していない。変更はPassesEnemyOnlyDisplayFilter()内の
-        判定1箇所のみで、検知・キャッシュ・BUFF/DEBUFF分類・UI描画・
-        Condition/Procには一切手を加えていない。
-
-    v1.4.40で対応:
-      - 「①②の対象を敵プレイヤーのみに限定する」の敵味方判定を、
-        GetUnitReaction(reticleover) ~= UNIT_REACTION_NEUTRAL から
-        == UNIT_REACTION_NEUTRAL に変更(比較演算子の向きのみ反転)。
-        v1.4.39は実機で「敵BUFFが表示されず、味方BUFFがなぜか表示される」
-        という意図と逆の結果になることが確認された。ESOのプレイヤー対
-        プレイヤーのreticleoverでは、味方がFRIENDLY(中立ではない)、
-        まだ交戦していない敵がNEUTRAL(中立)という、NPCを想定した一般的な
-        感覚とは逆の値になっているためと考えられる。GetUnitReaction/
-        UNIT_REACTION_NEUTRALというAPI・定数自体は変更せず、
-        PassesEnemyOnlyDisplayFilter()内の比較演算子1文字のみの変更。
-        検知・キャッシュ・BUFF/DEBUFF分類・UI描画・Condition/Procには
-        一切手を加えていない。
-
-    v1.4.39で対応:
-      - 「①②の対象を敵プレイヤーのみに限定する」の敵味方判定を、
-        IsUnitHostile(reticleover) から
-        GetUnitReaction(reticleover) ~= UNIT_REACTION_NEUTRAL に変更。
-        v1.4.38のIsUnitHostileは、実機でv1.4.37と全く同じ「ONの間BUFFが
-        最後まで一切表示されない」症状をシロディール・バトルグラウンド両方で
-        再現したため中止。実在するESOのPvPアドオン実装例を確認したところ、
-        reticleoverの敵対判定にはUNIT_REACTION_HOSTILEとの厳密一致ではなく
-        UNIT_REACTION_NEUTRALでないことを見る方式が使われており、また
-        IsUnitHostileという単体関数はESOの公開APIには見当たらなかった
-        (存在しない関数呼び出しによるエラーでOnUpdateの残り処理が
-        毎回止まっていた可能性が高いと判断)。変更は
-        PassesEnemyOnlyDisplayFilter()内の判定1箇所のみで、IsUnitAttackable
-        等は追加せず、検知・キャッシュ・BUFF/DEBUFF分類・UI描画・
-        Condition/Procには一切手を加えていない。
-
-    v1.4.38で対応:
-      - 「①②の対象を敵プレイヤーのみに限定する」の敵味方判定方法を、
-        GetUnitReaction(reticleover)==UNIT_REACTION_HOSTILE から
-        IsUnitHostile(reticleover) に変更。v1.4.37の実装(検知パイプラインから
-        分離した表示専用フィルタ)のまま、比較式のみを差し替えた。
-        GetUnitReactionを使う実装は、置き場所を変えても(旧v1.4.26のゲート型/
-        新v1.4.37の表示専用型のどちらでも)シロディール・バトルグラウンド両方で
-        明確な敵プレイヤーに対してもUNIT_REACTION_HOSTILEを返さないケースが
-        実機検証で再現したため、原因は実装箇所ではなく比較式自体と特定。
-        IsUnitHostileはアライアンス関係の敵対判定に特化したAPIで、
-        戻り値も素直なbooleanになる。変更は
-        PvPTargetInfo_Target.luaのPassesEnemyOnlyDisplayFilter()内の
-        判定1箇所のみで、検知・キャッシュ・BUFF/DEBUFF分類・UI描画・
-        Condition/Procには一切手を加えていない。
-
-    v1.4.37で対応:
-      - v1.4.36で撤去した「①②の対象を敵プレイヤーのみに限定する」設定を、
-        実装方式を変えて復活。旧実装はGetUnitReactionによる敵味方判定を
-        IsValidEnemyTarget()に混ぜ込み、RescanCurrentTargetEffects/
-        OnReticleEffectChangedという検知・キャッシュ構築のゲートに直結させて
-        いたため、GetUnitReactionがバトルグラウンドの同盟色仕様やターゲット
-        直後の同期遅延で不正確な値を返すと、targetEffectsが作られず
-        「検知は正常なのにBUFFが一切出ない」不具合につながっていた
-        (v1.4.36削除時の実機検証で確認)。
-      - 新実装ではGetUnitReactionによる判定を検知パイプラインから完全に
-        分離し、PvPTargetInfo_Target.lua新設のPassesEnemyOnlyDisplayFilter()
-        経由でOnUpdate内の表示直前(0.1秒毎)だけに限定して使うようにした。
-        RescanCurrentTargetEffects/OnReticleEffectChangedのゲートには一切
-        手を加えておらず、BUFF/DEBUFFの検知・分類・優先順位判定
-        (EvaluateEffect/UpsertTargetEffect/GetCategoryRank等)、Condition/
-        Proc(PvPTargetInfo_Procs.lua)には無関係。GetUnitReactionが一時的に
-        不正確でも次のティックで表示が自動的に復帰し、検知データ自体が
-        失われることはない。
-
-    v1.4.36で対応:
-      - 「①②の対象を敵プレイヤーのみに限定する」設定(v1.4.26で追加)を撤去。
-        従来通り、reticleoverがプレイヤーであれば敵味方を問わず①②が
-        反応する仕様(既定OFF相当の挙動)に戻した。設定画面のチェックボックス、
-        チャットコマンド /pti enemyonly、PTI.sv.targetEnemyOnly、および
-        PvPTargetInfo_Target.lua内のGetUnitReaction判定を削除。
-
-    v1.4.35で対応:
-      - Condition欄(UI③)の色分けを復活。v1.4.24/25で試して「ややこしい」と
-        撤去した色分け(v1.4.26)とは異なり、今回はUI①(BUFF)・UI②(DEBUFF)と
-        完全に同じ仕組み(PTI.UI.GetImportantTier/BuildTierFont、
-        BASE_COLORSの緑/赤、残り5秒以下での黄→橙→赤エスカレーション、
-        緊急時の文字拡大・!!!マーク)をそのまま流用した。
-      - 判定に使うisDebuffフィールドはv1.4.24時点からScanActiveProcs側に
-        既に存在しており(ScanActiveProcs/検知ロジックには一切手を
-        加えていない)、それをそのままUI①②と同じkey("buff"/"debuff")として
-        渡しているだけ。色・しきい値の基準をConditionだけ別に持つことは
-        しておらず、UI①②の基準を変更すれば自動的にConditionにも反映される。
-      - 変更はPvPTargetInfo_Procs.luaのRefreshProcUI内の表示部分のみ。
-        設定画面のプレビュー表示(previewMode)は実際のバフ/デバフ種別を
-        持たないため、従来通り固定色のまま。
-
-    v1.4.34で対応:
-      - 集団戦(BG/シロディール)で敵BUFF/DEBUFFの表示が遅れる/出ない
-        ことがある件の追加対策。既存の150ms保険スキャン(v1.4.31)に加え、
-        400ms後にもう1段だけ保険スキャンを追加した(PvPTargetInfo_Target.lua
-        のOnReticleTargetChanged)。混雑時にサーバー側の効果同期が
-        150msでも間に合わなかった場合を、400ms時点でもう一度だけ拾う
-        ことが目的。
-      - 150ms版と全く同じ構造で、同じtargetGenerationの世代チェックを
-        そのまま使う。ターゲットが既に切り替わっていれば
-        (myGeneration ~= targetGenerationなら)何もせず即returnする点も
-        150ms版と同一。単発のzo_callLaterを1本追加しただけで、ループや
-        常時ポーリングの追加は一切していない(既存のUPDATE_INTERVAL_MSの
-        100msポーリングにも触れていない)。
-      - コールバックはpcallで保護し、エラー時は既存の150ms版と同様に
-        チャットへエラーメッセージのみ出す(処理は止めない)。
-      - 検知ロジック(RescanCurrentTargetEffects/OnReticleEffectChanged/
-        EvaluateEffect/IsAutoImportant等)・BUFF/DEBUFF分類・カテゴリ
-        優先順位・UI描画・手動登録機能は一切変更していない。
-
-    v1.4.33で対応:
-      - UI③(Condition)の表示条件を変更。従来は「戦闘状態になったら
-        表示」だったが、これを「登録した自分のCondition/Proc(手動登録
-        AbilityId、または自分へのデバフ自動検知)が実際に自分へ付与されて
-        いる間だけ表示」に変更した。付与されている間は残り時間を表示し、
-        効果が切れれば次のTick(200ms、既存のScanActiveProcsのまま変更なし)
-        でパネルごと非表示になる。戦闘中かどうかはUI③の表示条件から
-        除外したため、v1.4.32のcombatOnly設定はUI①②のみに適用される
-        (UI③はcombatOnlyの設定値に関わらず、Condition発動状況だけで
-        自動的に表示/非表示が決まる)。検知ロジック(ScanActiveProcs)・
-        登録機能・UI①②③のレイアウトや設定項目・敵BUFF/DEBUFF検知は
-        変更していない。
-
-    v1.4.32で対応:
-      - BG/シロディールの混雑時にBUFF取得・表示が遅くなる件を調査。
-        GetNumBuffs/GetUnitBuffInfo/初期スキャン/EVENT_EFFECT_CHANGED/
-        150ms遅延スキャン/Seed/UI更新頻度を確認したが、いずれもv1.4.23と
-        処理内容は同一で、重複処理も無い。最も疑わしいのは検知コードでは
-        なくデバッグ表示(pipelineTrace)そのもので、③④⑤ログは重要度に
-        関わらず効果の出入りのたびに必ずd()でチャット出力しており、
-        ⑥UI描画ログと違って重複抑制が無いため、集団戦で効果の出入りが
-        増えるほどd()呼び出しが増える(実機での比較テストでは/pti debug
-        offの状態で行うことを推奨)。
-      - 追加要望として、非戦闘中はUI①②③を非表示にし、戦闘開始時のみ
-        表示する機能を追加(/pti combatonly on||off、既定ON)。既存の
-        hiddenBySceneと同じ仕組みで表示可否のみを制御しており、
-        targetEffects/EvaluateEffect等の検知ロジックには一切触れていない。
-        非戦闘中はBuildEntryArrays/RenderEntriesまで丸ごとスキップする
-        ため、非戦闘中の負荷軽減にもなる(検知イベント自体は表示に関係なく
-        バックグラウンドで動き続ける)。
-
-    v1.4.31で対応:
-      - 実機検証の結果、原因は「敵のみ表示」設定でも判定ロジックでもなく、
-        ターゲット取得の瞬間、ESO側の効果データ(GetUnitBuffInfo)がまだ
-        完全に同期されておらず、初期スキャンがBUFFを0件のまま読んでしまう
-        タイミング問題と判明(カーソルを一度外して再度合わせると表示され
-        ることから特定)。
-      - OnReticleTargetChangedで従来通りの即時スキャンに加えて、150ms後に
-        保険のスキャンを1回だけ追加(zo_callLaterによる単発タイマー、
-        ループ・毎フレーム処理なし)。ターゲット変更のたびに世代番号を
-        進め、遅延スキャンが発火する時点で対象が既に変わっていれば
-        (世代番号が一致しなければ)何もせず捨てるため、古い対象の
-        データで上書きすることはない。
-      - zo_callLaterはコールバック内でエラーが起きるとタイマーが解除
-        されず暴走する既知の仕様があるため、保険スキャンの呼び出しは
-        pcallで保護した。
-      - 検知・判定(EvaluateEffect/IsAutoImportant等)・UI描画ロジックは
-        一切変更していない。
-
-    v1.4.30で対応:
-      - 「敵BUFFだけ表示されなくなった(DEBUFFは正常)」との報告を受けて
-        v1.4.23(正常動作)とv1.4.29(不具合あり)を全ファイル diff で比較。
-        BUFF/DEBUFFの検知・表示ロジック自体(IsAutoImportant、
-        EvaluateEffect、UpsertTargetEffect、RescanCurrentTargetEffects、
-        OnReticleEffectChanged)は両バージョンで完全に同一で、実際に
-        ESO APIのモックを使って動作を再現するテストでも差異が出なかった
-        (BUFF_CATEGORY_ORDERの分類変更は表示順にのみ影響し、表示可否とは
-        無関係)。
-      - 唯一のリスク箇所として、v1.4.27/28で追加したクラスリワーク対応の
-        自動登録処理(SeedReworkWatchEntries)がPTI.Target.Initialize()の
-        先頭で無防備に呼ばれており、万一ここでエラーが起きると
-        EVENT_EFFECT_CHANGED等の登録自体が丸ごと行われなくなる作りに
-        なっていた。pcallで保護し、エラーが起きても①②の初期化が
-        必ず続行されるように修正(ただし通常のテストではここでの
-        エラーは再現できておらず、根本原因の断定には至っていない)。
-      - 実機でしか判断できない可能性(ESO側のバフ可視性・端末側の
-        アドオン更新不具合等)が残るため、直らない場合は実際に消えている
-        BUFFについて /pti debug ON の状態でのログ、または /pti learn target
-        のログを確認してほしい。
-
-    v1.4.26で対応:
-      - シロディールで味方プレイヤーをターゲットしても①②(敵の重要バフ/
-        デバフ)が反応してしまう不具合を修正。従来のIsValidEnemyTarget
-        (PvPTargetInfo_Target.lua)は「プレイヤーであること」しか見ておらず、
-        敵味方を判定していなかった。設定でON/OFFを切り替えられるように
-        した(「①②の対象を敵プレイヤーのみに限定する」、既定OFF=従来通り)。
-        ONにするとGetUnitReactionで敵対(UNIT_REACTION_HOSTILE)と判定された
-        相手だけを対象にする。チャットコマンド /pti enemyonly on||off
-        (引数省略で現在値を表示)でも切替可能。
-        GetUnitReactionは1回のAPI呼び出しのみで、新規ループや追加の
-        メモリ確保は発生しないため、負荷・メモリ使用量への影響はない。
-      - Condition欄の色分け(v1.4.24/25)は「ややこしい」との指摘のため撤去し、
-        v1.4.23までの単色(黄色)表示に戻した。
-
-    v1.4.25で修正: Condition欄の色分け基準を「登録経路(手動/自動)」から
-      「実際の効果種別(バフ/デバフ)」に変更した。バフ=黄色、デバフ=明るい
-      赤(DEBUFFパネルと同系色)。手動登録した効果が実際はデバフだった
-      場合でも黄色のままだったのが紛らわしいとの指摘に対応した。
-
-    v1.4.24で対応: Condition欄で、手動登録したProc(黄色)と自動検知した
-      自分へのデバフ(明るい赤、DEBUFFパネルと同系色)を色分けして見分け
-      やすくした(PvPTargetInfo_Procs.luaのScanActiveProcs/RefreshProcUI)。
-
     v1.4.23で対応(根本原因の修正 + 新機能。v1.4.16を土台に立て直し):
       - 【重要・根本原因】v1.4.16〜v1.4.22で繰り返し不具合報告が続いた
         真の原因が判明。PvPTargetInfo_Procs.luaがGetUnitBuffInfoの戻り値を
@@ -544,7 +302,7 @@ PvPTargetInfo = PvPTargetInfo or {}
 local PTI = PvPTargetInfo
 
 PTI.name = "PvPTargetInfo"
-PTI.version = "1.4.43"
+PTI.version = "1.4.50"
 
 local SV_VERSION = 2
 
@@ -553,10 +311,6 @@ local defaults = {
     enabled = true,
     previewMode = false, -- ONの間は3パネルにサンプルデータを表示する(設定画面の手動プレビュー)
     holdDuration = 1.0, -- ターゲット解除後にパネルを保持する秒数
-
-    -- v1.4.32で追加: 非戦闘中はUI①②③を非表示にし、戦闘開始時のみ表示する。
-    -- 検知ロジック自体には影響しない、表示可否のみの設定。
-    combatOnly = true,
 
     -- 重要バフ/デバフの自動検知(修正改定3)。既定でON。
     -- v1.4.11で英語/日本語の個別トグルを試したが、意味がないとのことで
@@ -619,14 +373,6 @@ local defaults = {
     -- 個別にenabledをfalseにすることで、登録は残したまま一時的に非表示にできる。
     watchedBuffs = {},
     watchedDebuffs = {},
-
-    -- v1.4.27で追加: クラス/ウェアウルフのリワークで登場した、Major/Minorを
-    -- 名乗らない(＝自動検知に引っかからない)重要な新効果を、初回起動時
-    -- だけ自動で手動登録リストに追加するための版数。PTI.Target.lua側で
-    -- 「seedVersionが現在の値未満なら追加してから値を更新する」処理を行う。
-    -- 一度追加した後にユーザーが手動で削除した場合は、以後seedVersionが
-    -- 更新済みのため再追加されない(ユーザーの選択を尊重する)。
-    seedVersion = 0,
 
     procConfig = {
         idsText = "", -- AbilityIdをカンマ区切りで並べた形式("id,id,...")。名前はGetAbilityNameで自動取得する
@@ -703,7 +449,6 @@ local function PrintHelp()
     d("  /pti watch buff||debuff on||off <id>                    - 登録済み項目の表示ON/OFF切替(削除はしない)")
     d("  /pti watch buff||debuff list||clear                     - 重要リストの確認/全削除")
     d("  /pti auto on||off                                      - 重要バフ/デバフの自動検知を切替(既定ON)")
-    d("  /pti combatonly on||off                                - 非戦闘中は①②を非表示にする(既定ON、省略で現在値表示。③は常にCondition発動状況で自動判定)")
     d("  /pti preview on||off                                   - プレビュー表示(サンプルデータ)を切替")
     d("  /pti show || hide                                      - アドオン全体の表示切替")
 end
@@ -992,25 +737,6 @@ local function OnSlashCommand(args)
             d("|c55CCFF[PvPTargetInfo]|r 自動検知: OFF (登録した効果のみ表示します)")
         else
             d("|c55CCFF[PvPTargetInfo]|r 例: /pti auto on||off")
-        end
-    elseif cmd == "combatonly" then
-        -- v1.4.32で追加: 非戦闘中はUI①②を非表示にし、戦闘開始時のみ
-        -- 表示する。検知ロジックには影響しない、表示可否のみの設定。
-        -- v1.4.33で修正: UI③(Condition)は戦闘中かどうかを表示条件に
-        -- しないよう変更したため、この設定の対象からは外れている
-        -- (③は常にCondition発動状況だけで自動的に表示/非表示が決まる)。
-        local sub = rest:lower()
-        if sub == "on" then
-            PTI.sv.combatOnly = true
-            if PTI.UI and PTI.UI.RefreshVisibility then PTI.UI.RefreshVisibility() end
-            d("|c55CCFF[PvPTargetInfo]|r 戦闘中のみ表示: ON (非戦闘中は①②を隠します。③はCondition発動状況で自動判定)")
-        elseif sub == "off" then
-            PTI.sv.combatOnly = false
-            if PTI.UI and PTI.UI.RefreshVisibility then PTI.UI.RefreshVisibility() end
-            d("|c55CCFF[PvPTargetInfo]|r 戦闘中のみ表示: OFF (非戦闘中も①②を常に表示します。③はCondition発動状況で自動判定)")
-        else
-            d(string.format("|c55CCFF[PvPTargetInfo]|r 現在: %s (①②のみに適用。例: /pti combatonly on||off)",
-                PTI.sv.combatOnly and "ON" or "OFF"))
         end
     elseif cmd == "preview" then
         local sub = rest:lower()

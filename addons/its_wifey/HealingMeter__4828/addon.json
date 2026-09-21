@@ -18,7 +18,7 @@
     "HealingMeter"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4828/",
-  "fingerprint": "7210be3eaacb21f092ddd8edf197ba2ed2d6e215a41488d4d7d94303ddf3e135",
+  "fingerprint": "f17838c998f29cfa1b305665f15d30152100475451bc82d9f3b093087e0377ae",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw17349.png",
     "https://cdn-eso.mmoui.com/preview/pvw17348.png"
@@ -29,11 +29,11 @@
   "source_id": "4828",
   "source_url": "https://www.esoui.com/downloads/info4828-HealingMeter.html",
   "stats": {
-    "downloads": 30,
+    "downloads": 89,
     "favorites": 0,
-    "monthly_downloads": 27
+    "monthly_downloads": 85
   },
   "title": "HealingMeter",
-  "updated_at": 1789528748000,
-  "version": "1.2"
+  "updated_at": 1789917613000,
+  "version": "1.3"
 }

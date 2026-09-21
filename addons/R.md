@@ -171,4 +171,4 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Rulebased Inventory](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/TaxTalis/Rulebased-Inventory__2136) | TaxTalis | PC / Mac | 2.32 |
 | [RunesVoice](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Nols1000/RunesVoice__2173) | Nols1000 | PC / Mac | 0.1.0 |
 | [Rush of Agony Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/codeWarrior82/Rush-of-Agony-Tracker__03e3b721-0ccb-4e27-9f1c-ae0e6bf96be5) | codeWarrior82 | Console | — |
-| [RyticTankTools](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rytic/RyticTankTools__4854) | Rytic | PC / Mac | 2.1.0 |
+| [RyticTankandRaidTools](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rytic/RyticTankandRaidTools__4854) | Rytic | PC / Mac | 1.1 |

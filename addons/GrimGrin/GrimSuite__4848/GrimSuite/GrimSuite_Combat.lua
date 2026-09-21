@@ -1,6 +1,8 @@
 local GS = GrimSuite
 GS.Combat = GS.Combat or {}
 local Combat = GS.Combat
+local WM = WINDOW_MANAGER
+local EM = EVENT_MANAGER
 
 ---------------------------------------------------------------------
 -- GrimSuite Combat
@@ -44,7 +46,7 @@ Combat.weave = {
 }
 
 local function MakeBackdrop(name, parent)
-    local c = WINDOW_MANAGER:CreateControl(name, parent, CT_BACKDROP)
+    local c = WM:CreateControl(name, parent, CT_BACKDROP)
     c:SetCenterColor(1, 1, 1, 1)
     c:SetEdgeColor(1, 1, 1, 0)
     return c
@@ -53,10 +55,6 @@ end
 local function SetCleanBorder(control, r, g, b, a)
     if not control then return end
     control:SetEdgeColor(r or BORDER[1], g or BORDER[2], b or BORDER[3], a or BORDER[4])
-end
-
-local function SetHidden(c, hidden)
-    if c then c:SetHidden(hidden) end
 end
 
 ---------------------------------------------------------------------
@@ -113,6 +111,26 @@ local function MakeMouseTransparent(control)
     if control and control.SetMouseEnabled then
         control:SetMouseEnabled(false)
     end
+end
+
+local function SetLayoutUnlocked(enabled)
+    Combat.layoutUnlocked = enabled == true
+
+    EnableMouseDrag(Combat.gcdFrame, Combat.layoutUnlocked)
+    EnableMouseDrag(Combat.weaveFrame, Combat.layoutUnlocked)
+    EnableAttributeDrag(GetControl("GrimSuiteAttributes"), Combat.layoutUnlocked)
+
+    if Combat.weaveAverageFrame then
+        Combat.weaveAverageFrame:SetMouseEnabled(Combat.layoutUnlocked)
+        Combat.weaveAverageFrame:SetMovable(Combat.layoutUnlocked)
+        Combat.weaveAverageFrame:SetHidden(not Combat.layoutUnlocked)
+    end
+end
+
+local function HideNativeAttributeBars()
+    ZO_PlayerAttributeHealth:SetHidden(true)
+    ZO_PlayerAttributeMagicka:SetHidden(true)
+    ZO_PlayerAttributeStamina:SetHidden(true)
 end
 
 -- ESO can rebuild/reconfigure HUD controls when scenes change (entering a
@@ -411,10 +429,6 @@ function GSAttributeHealthBar:UpdateResourceNumbers(health, maxHealth, shield)
     end
 end
 
-function GSAttributeHealthBar:ApplyStyle()
-    GSAttributeBar.ApplyStyle(self)
-end
-
 function GSAttributeHealthBar:SetHeight(value)
     GSAttributeBar.SetHeight(self, value)
     if self.shieldBar then
@@ -432,9 +446,7 @@ function Combat:CreateAttributes()
 
     -- Hide the game's own resource bars. The GrimSuite copies are
     -- deliberately independent from ZO_ActionBar1.
-    ZO_PlayerAttributeHealth:SetHidden(true)
-    ZO_PlayerAttributeMagicka:SetHidden(true)
-    ZO_PlayerAttributeStamina:SetHidden(true)
+    HideNativeAttributeBars()
 
     local height = IsInGamepadPreferredMode() and 96 or 32
     local width = 360
@@ -504,7 +516,7 @@ function Combat:CreateAttributes()
         end
     )
 
-    EVENT_MANAGER:RegisterForEvent(
+    EM:RegisterForEvent(
         GS.name .. "_AttributesActivated",
         EVENT_PLAYER_ACTIVATED,
         function()
@@ -547,7 +559,7 @@ end
 ---------------------------------------------------------------------
 
 function Combat:CreateGCD()
-    local frame = WINDOW_MANAGER:CreateTopLevelWindow("GrimSuiteGCD")
+    local frame = WM:CreateTopLevelWindow("GrimSuiteGCD")
     frame:SetDimensions(GS.Saved.gcdWidth, GS.Saved.gcdHeight)
     frame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, GS.Saved.gcdX, GS.Saved.gcdY)
     frame:SetHandler("OnMoveStop", function(c)
@@ -588,7 +600,7 @@ function Combat:CreateGCD()
     ping:SetCenterColor(0.82, 0.07, 0.07, 0.95)
     ping:SetEdgeColor(1.00, 0.30, 0.30, 0.25)
 
-    local label = WINDOW_MANAGER:CreateControl("GrimSuiteGCD_Time", frame, CT_LABEL)
+    local label = WM:CreateControl("GrimSuiteGCD_Time", frame, CT_LABEL)
     label:SetFont(SMALL_FONT)
     label:SetAnchor(CENTER, frame, CENTER, 0, 0)
     label:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
@@ -699,7 +711,7 @@ local function DelayColor(delay)
 end
 
 function Combat:CreateWeaveBar()
-    local frame = WINDOW_MANAGER:CreateTopLevelWindow("GrimSuiteWeave")
+    local frame = WM:CreateTopLevelWindow("GrimSuiteWeave")
     frame:SetDimensions(GS.Saved.weaveWidth, GS.Saved.weaveHeight)
     frame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, GS.Saved.weaveX, GS.Saved.weaveY)
     frame:SetHandler("OnMoveStop", function(c)
@@ -708,7 +720,7 @@ function Combat:CreateWeaveBar()
     end)
     -- Keep the average as its own top-level window so it can be dragged
     -- independently without the weave bar underneath intercepting the mouse.
-    local averageFrame = WINDOW_MANAGER:CreateTopLevelWindow("GrimSuiteWeave_Avg")
+    local averageFrame = WM:CreateTopLevelWindow("GrimSuiteWeave_Avg")
     averageFrame:SetDimensions(110, 22)
     averageFrame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT,
         GS.Saved.weaveX + GS.Saved.weaveAverageX,
@@ -732,7 +744,7 @@ function Combat:CreateWeaveBar()
     -- draggable hitbox.  Keeping them separate avoids calling label-only
     -- methods on a top-level window.
     -- Average is intentionally text-only: no backdrop or border.
-    local label = WINDOW_MANAGER:CreateControl("GrimSuiteWeave_AvgLabel", averageFrame, CT_LABEL)
+    local label = WM:CreateControl("GrimSuiteWeave_AvgLabel", averageFrame, CT_LABEL)
     label:SetAnchorFill(averageFrame)
     label:SetFont(SMALL_FONT)
     label:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
@@ -862,11 +874,7 @@ end
 
 function Combat:OnCombatState(_, inCombat)
     self.inCombat = inCombat == true
-    if not self.inCombat then
-        self:UpdateWeave()
-    else
-        self:UpdateWeave()
-    end
+    self:UpdateWeave()
 end
 
 function Combat:OnSlotUsed(_, slotId)
@@ -976,13 +984,13 @@ function Combat:ApplyLayout()
         self.gcdFrame:SetDimensions(GS.Saved.gcdWidth, GS.Saved.gcdHeight)
         self.gcdFrame:ClearAnchors()
         self.gcdFrame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, GS.Saved.gcdX, GS.Saved.gcdY)
-        if self.gcdFrame and self.gcdProgress then
+        if self.gcdProgress then
             self.gcdProgress:SetHeight(math.max(1, GS.Saved.gcdHeight - 4))
         end
         if self.gcdPing then
             self.gcdPing:SetHeight(math.max(1, GS.Saved.gcdHeight - 4))
         end
-        if self.gcdFrame and self.gcdBar then
+        if self.gcdBar then
             self.gcdBar:SetDimensions(math.max(1, GS.Saved.gcdWidth - 4), math.max(1, GS.Saved.gcdHeight - 4))
         end
     end
@@ -1038,20 +1046,13 @@ end
 
 function Combat:CreateSettings()
     local LAM = LibAddonMenu2
-    if not LAM and LibStub then
-        LAM = LibStub("LibAddonMenu-2.0", true)
-    end
-    if not LAM then
-        d("GrimSuite: LibAddonMenu-2.0 not available; settings unavailable.")
-        return
-    end
 
     local panelName = "GrimSuiteSettings"
     LAM:RegisterAddonPanel(panelName, {
         type = "panel",
         name = "GrimSuite",
         displayName = "GrimSuite",
-        author = "GrimGrin",
+        author = "@GrimGrin94",
         version = GS.version,
         registerForRefresh = true,
         registerForDefaults = true,
@@ -1060,7 +1061,7 @@ function Combat:CreateSettings()
     LAM:RegisterOptionControls(panelName, {
         { type="header", name="UI Layout", width="full" },
         { type="description", text="Unlock the bars to drag them with your mouse. Lock them again when finished.", width="full" },
-        { type="checkbox", name="Unlock UI For Mouse Dragging", getFunc=function() return self.layoutUnlocked end, setFunc=function(v) self.layoutUnlocked=v == true; EnableMouseDrag(self.gcdFrame, self.layoutUnlocked); EnableMouseDrag(self.weaveFrame, self.layoutUnlocked); EnableAttributeDrag(GetControl("GrimSuiteAttributes"), self.layoutUnlocked); if self.weaveAverageFrame then self.weaveAverageFrame:SetMouseEnabled(self.layoutUnlocked); self.weaveAverageFrame:SetMovable(self.layoutUnlocked) end; self:ApplyLayout() end, default=false },
+        { type="checkbox", name="Unlock UI For Mouse Dragging", getFunc=function() return self.layoutUnlocked end, setFunc=function(v) SetLayoutUnlocked(v); self:ApplyLayout() end, default=false },
 
         { type="header", name="Player Attribute Bars", width="full" },
         { type="description", text="Move the Health, Magicka, and Stamina pyramid independently of the action bar.", width="full" },
@@ -1107,7 +1108,7 @@ function Combat:Initialize()
     self:CreateWeaveBar()
     self:CreateSettings()
 
-    EVENT_MANAGER:RegisterForEvent(GS.name .. "_CombatState", EVENT_PLAYER_COMBAT_STATE, function(...)
+    EM:RegisterForEvent(GS.name .. "_CombatState", EVENT_PLAYER_COMBAT_STATE, function(...)
         self:OnCombatState(...)
     end)
 
@@ -1155,7 +1156,7 @@ function Combat:Initialize()
 
     -- Player activation is also a native UI rebuild point.  Repair after ESO
     -- has finished constructing the HUD rather than relying on /reloadui.
-    EVENT_MANAGER:RegisterForEvent(GS.name .. "_CombatActivated", EVENT_PLAYER_ACTIVATED, function()
+    EM:RegisterForEvent(GS.name .. "_CombatActivated", EVENT_PLAYER_ACTIVATED, function()
         zo_callLater(function()
             if self.initialized then
                 self:ApplyLayout()
@@ -1163,21 +1164,21 @@ function Combat:Initialize()
         end, 100)
     end)
 
-    EVENT_MANAGER:RegisterForEvent(GS.name .. "_SlotUsed", EVENT_ACTION_SLOT_ABILITY_USED, function(...)
+    EM:RegisterForEvent(GS.name .. "_SlotUsed", EVENT_ACTION_SLOT_ABILITY_USED, function(...)
         self:OnSlotUsed(...)
     end)
 
-    EVENT_MANAGER:RegisterForEvent(GS.name .. "_CombatEvent", EVENT_COMBAT_EVENT, function(...)
+    EM:RegisterForEvent(GS.name .. "_CombatEvent", EVENT_COMBAT_EVENT, function(...)
         self:OnCombatEvent(...)
     end)
-    EVENT_MANAGER:AddFilterForEvent(
+    EM:AddFilterForEvent(
         GS.name .. "_CombatEvent",
         EVENT_COMBAT_EVENT,
         REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE,
         COMBAT_UNIT_TYPE_PLAYER
     )
 
-    EVENT_MANAGER:RegisterForUpdate(GS.name .. "_Update", 1000 / 60, function()
+    EM:RegisterForUpdate(GS.name .. "_Update", 1000 / 60, function()
         self:Update()
     end)
 
@@ -1190,15 +1191,7 @@ function Combat:Initialize()
             GS.Saved.showWeave = not GS.Saved.showWeave
             d("GrimSuite WeaveDelays: " .. tostring(GS.Saved.showWeave))
         elseif cmd == "attrs" then
-            self.layoutUnlocked = not self.layoutUnlocked
-            EnableMouseDrag(self.gcdFrame, self.layoutUnlocked)
-            EnableMouseDrag(self.weaveFrame, self.layoutUnlocked)
-            EnableAttributeDrag(GetControl("GrimSuiteAttributes"), self.layoutUnlocked)
-            if self.weaveAverageFrame then
-                self.weaveAverageFrame:SetMouseEnabled(self.layoutUnlocked)
-                self.weaveAverageFrame:SetMovable(self.layoutUnlocked)
-                self.weaveAverageFrame:SetHidden(not self.layoutUnlocked)
-            end
+            SetLayoutUnlocked(not self.layoutUnlocked)
             d("GrimSuite UI dragging: " .. tostring(self.layoutUnlocked))
         elseif cmd == "reset" then
             self.weave.actions = {}
@@ -1220,5 +1213,5 @@ function Combat:Initialize()
     end
 
     self:Update()
-    d("GrimSuite Combat 0.0.24Dev loaded: GCD + skill delay + static LA status + layout menu")
+    d("GrimSuite Combat " .. GS.version .. " loaded: GCD + skill delay + static LA status + layout menu")
 end

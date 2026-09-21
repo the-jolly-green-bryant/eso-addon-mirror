@@ -16,3 +16,8 @@ function PBWT.Theme.Id(player,state)
     return state and PBWT.Factions.order[state.factions[player]] or PBWT.Theme.players[player]
 end
 function PBWT.Theme.Player(player,state) return PBWT.Theme.themes[PBWT.Theme.Id(player,state)].color end
+-- Faction colours are tuned for the board; on the dark score plaque they are lifted
+-- toward the parchment tone so the red pact text stays as legible as the gold one.
+function PBWT.Theme.OnWood(color)
+    return { color[1]*0.62+0.38, color[2]*0.62+0.38, color[3]*0.62+0.38, color[4] or 1 }
+end

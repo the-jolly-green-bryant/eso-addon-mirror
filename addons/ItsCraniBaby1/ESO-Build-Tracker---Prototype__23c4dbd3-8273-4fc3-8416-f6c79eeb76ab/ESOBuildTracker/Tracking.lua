@@ -97,6 +97,9 @@ function A.CompareGear(item, goal)
     Check("Weapon type", item.weaponType, goal.weaponType)
     Check("CP requirement", item.requiredCP, goal.requiredCP, true)
     Check("Level requirement", item.requiredLevel, goal.requiredLevel, true)
+    if goal.enchantGlyph and goal.enchantName == nil then
+        unknown = true; issues[#issues + 1] = "Verify enchantment: " .. goal.enchantGlyph
+    end
     if goal.enchantName ~= nil then
         Check("Enchantment type", item.enchantReadComplete and A.Normalize(item.enchantName) or nil, A.Normalize(goal.enchantName))
     end
@@ -125,6 +128,7 @@ function A.CompareSkill(skill, goal)
         end
     else
         matches = A.Normalize(skill.name) == A.Normalize(goal.name)
+            or goal.alternateName and A.Normalize(skill.name) == A.Normalize(goal.alternateName)
     end
     if not matches then return Result("Needs changes", { "Target skill: " .. (goal.name or "Unavailable") }) end
     for index, script in pairs(goal.scripts or {}) do
@@ -177,6 +181,7 @@ function A.GearGoalText(goal)
     if goal.quality ~= nil then lines[#lines + 1] = "Quality: at least " .. A.EnumName("SI_ITEMQUALITY", goal.quality) end
     if goal.armorType then lines[#lines + 1] = "Weight: " .. A.EnumName("SI_ARMORTYPE", goal.armorType) end
     if goal.weaponType then lines[#lines + 1] = "Weapon: " .. A.EnumName("SI_WEAPONTYPE", goal.weaponType) end
+    if goal.enchantGlyph then lines[#lines + 1] = "Glyph target: " .. goal.enchantGlyph .. " (confirm actual heading in Enchantment type)" end
     if goal.enchantName ~= nil then lines[#lines + 1] = "Enchantment type: " .. (goal.enchantName == "" and "None" or goal.enchantName) end
     if goal.requiredCP and goal.requiredCP > 0 then lines[#lines + 1] = "Minimum CP requirement: " .. goal.requiredCP end
     if goal.requiredLevel and goal.requiredLevel > 0 then lines[#lines + 1] = "Minimum level requirement: " .. goal.requiredLevel end

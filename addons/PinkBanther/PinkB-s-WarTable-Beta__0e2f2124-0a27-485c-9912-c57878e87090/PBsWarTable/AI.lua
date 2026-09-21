@@ -24,14 +24,14 @@ function AI.Candidates(s, player)
             if p.alive then
                 if s.actions>0 then movement(p,"move",E.MoveRange(s,p)) end
                 if s.horn[p.id] then movement(p,"horn_move",C.HORN_DISTANCE) end
-                if s.cards[player].charge then movement(p,"card",C.CHARGE_DISTANCE,"charge") end
+                if s.cards[player].charge and E.CardMovable(p) then movement(p,"card",C.CHARGE_DISTANCE,"charge") end
                 if s.cards[player].stealth and p.kind=="scout" and not p.hiddenUntil then
                     list[#list+1]={type="card",card="stealth",id=p.id}
                 end
                 local hasNeighbor=false
                 for _,other in ipairs(s.pieces) do
                     if other.alive and distance(p,other)==1 then
-                        if other.owner==player then hasNeighbor=true
+                        if other.owner==player then hasNeighbor=hasNeighbor or E.CardMovable(other)
                         elseif s.actions>0 and E.CanAttack(s,p,other,false) then
                             list[#list+1]={type="attack",id=p.id,target=other.id}
                             if s.cards[player].siege and E.CanAttack(s,p,other,true) then
@@ -42,11 +42,17 @@ function AI.Candidates(s, player)
                 end
                 if hasNeighbor and s.cards[player].horn then list[#list+1]={type="card",card="horn",id=p.id} end
             elseif p.kind=="soldier" and s.cards[player].revive then
-                for _,home in ipairs(C.START) do
-                    local x=player==1 and home.x or C.SIZE+1-home.x
+                local rules=E.Rules(s)
+                for _,home in ipairs(rules.START) do
+                    local x=player==1 and home.x or rules.SIZE+1-home.x
                     if not E.At(s,x,home.y) then list[#list+1]={type="card",card="revive",id=p.id,x=x,y=home.y} end
                 end
             end
+        end
+    end
+    if s.cards[player].supply then
+        for index,name in ipairs(C.CARD_ORDER) do
+            if name~="supply" and not s.cards[player][name] then list[#list+1]={type="card",card="supply",id=index} end
         end
     end
     return list
@@ -54,14 +60,14 @@ end
 
 local function position(s,p,x,y)
     local best=0
-    for i,f in ipairs(C.FLAGS) do
+    for i,f in ipairs(E.Rules(s).FLAGS) do
         local occupant=E.At(s,f.x,f.y)
         -- Do not send weak units toward an invulnerable enemy guardian.
         local reachable=not occupant or occupant.id==p.id or
             (occupant.owner~=p.owner and not occupant.hiddenUntil and E.Attack(s,p)>=E.Defense(s,occupant))
         if reachable then
             local d=math.abs(x-f.x)+math.abs(y-f.y)
-            local value=math.max(0,C.SIZE*2-d)*C.AI.APPROACH_WEIGHT
+            local value=math.max(0,E.Rules(s).SIZE*2-d)*C.AI.APPROACH_WEIGHT
             if x==f.x and y==f.y then value=value+f.points*C.AI.OCCUPY_WEIGHT end
             -- Uncontrolled flags receive extra attention, including the 2-point center.
             if s.flags[i]~=p.owner then value=value+f.points*2 end
@@ -76,10 +82,10 @@ function AI.Evaluate(s,player)
         if s.winner==0 then return 0 end
         return s.winner==player and W.WIN_VALUE or -W.WIN_VALUE
     end
-    local score=(s.score[player]-s.score[3-player])*W.SCORE_WEIGHT
+    local score=(E.Standing(s,player)-E.Standing(s,3-player))*W.SCORE_WEIGHT
     if s.scrollOwner~=0 then score=score+(s.scrollOwner==player and 1 or -1)*C.SCROLL.THREAT_WEIGHT end
     for i,owner in ipairs(s.flags) do
-        if owner~=0 then score=score+(owner==player and 1 or -1)*C.FLAGS[i].points*W.FLAG_WEIGHT end
+        if owner~=0 then score=score+(owner==player and 1 or -1)*E.Rules(s).FLAGS[i].points*W.FLAG_WEIGHT end
     end
     for _,p in ipairs(s.pieces) do
         if p.alive then
@@ -112,7 +118,7 @@ local function hornPotential(s,player)
                 if E.CanMove(s,p,x,y,C.HORN_DISTANCE) then
                     local improvement=position(s,p,x,y)-position(s,p,p.x,p.y)
                     local owner,index=E.Flag(s,x,y)
-                    if index and owner~=player then improvement=improvement+C.FLAGS[index].points*C.AI.SCORE_WEIGHT end
+                    if index and owner~=player then improvement=improvement+E.Rules(s).FLAGS[index].points*C.AI.SCORE_WEIGHT end
                     gain=math.max(gain,improvement)
                 end
             end

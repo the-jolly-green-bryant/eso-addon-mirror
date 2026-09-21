@@ -37,7 +37,6 @@ local Module = {
 -- CUSTOM ENABLE
 ----------------------------------------------------------------------------------------------------
 function Module:CustomEnable()
-    -- YEAH YEAH I KNOW.. LIBCUSTOMMENU IS IN THE DEPENDENCIES. BUT I MIGHT CHANGE THAT.
     if LibCustomMenu then
         LibCustomMenu:RegisterGroupListContextMenu(function(Data) self:OnContextMenu(Data) end, LibCustomMenu.CATEGORY_LATE)
     end
@@ -162,9 +161,9 @@ function Module:ToggleCurrentTarget()
         local foundTag = nil
 
         for i = 1, GetGroupSize() do
-            local tag = GetGroupUnitTagByIndex(i)
-            if AreUnitsEqual("reticleover", tag) then
-                foundTag = tag
+            local groupTag = GetGroupUnitTagByIndex(i)
+            if AreUnitsEqual("reticleover", groupTag) then
+                foundTag = groupTag
                 break
             end
         end
@@ -204,17 +203,16 @@ end
 -- CONTEXT MENU (LIBCUSTOMMENU) RETURN IF NO LibCustomMenu
 ----------------------------------------------------------------------------------------------------
 function Module:OnContextMenu(Data)
-    -- YEAH YEAH I KNOW.. LIBCUSTOMMENU IS IN THE DEPENDENCIES. BUT I MIGHT CHANGE THAT.
-    if not LibCustomMenu or not Data or not Data.displayName then return end
-    if not IsUnitGrouped("player") then return end
+    if not LibCustomMenu then return end
+    if not Data or not Data.displayName then return end
 
     local unitTag = nil
     local targetName = Data.displayName
 
         for i = 1, GetGroupSize() do
-        local tag = GetGroupUnitTagByIndex(i)
-        if GetUnitDisplayName(tag) == targetName or GetRawUnitName(tag) == targetName then
-            unitTag = tag
+        local groupTag = GetGroupUnitTagByIndex(i)
+        if GetUnitDisplayName(groupTag) == targetName or GetRawUnitName(groupTag) == targetName then
+            unitTag = groupTag
                 break
             end
         end

@@ -12,25 +12,39 @@ function P.New(ui)
     self.board=texture(ui.boardFrame,'board_material',0,0,612,612)
     self.crest=texture(ui.content,'crest',110,26,112,112)
     self.scroll=texture(ui.scrollPanel,'elder_scroll',10,8,64,64)
+    -- Wooden plaques keep the score legible against the painted war room.
+    self.plaques={}
+    for player=1,2 do
+        self.plaques[player]=texture(ui.playerPanels[player],'button_material',0,0,336,124)
+    end
     self.marks={}
     for player,kind in ipairs({'alliance_dominion','alliance_covenant'}) do
-        local mark=texture(ui.content,kind,player==1 and 309 or 1355,156,44,44)
-        mark:SetColor(unpack(PBWT.Theme.Player(player))); self.marks[player]=mark
+        -- The crest rides on the plaque, clear of the three score lines.
+        local mark=texture(ui.playerPanels[player],kind,278,40,44,44)
+        mark:SetColor(unpack(PBWT.Theme.OnWood(PBWT.Theme.Player(player)))); self.marks[player]=mark
     end
     -- A single continuous map underlay avoids 25 visibly repeated patches.
-    -- Native cell edges remain the exact 5x5 grid.
+    -- Native cell edges remain the exact grid of the board in play.
     for i,id in ipairs(PBWT.Config.CARD_ORDER) do
         local row=ui.cardControls[i]
-        row.material=texture(row.panel,'card_material',0,0,320,78)
-        row.artIcon=texture(row.panel,id,19,17,44,44)
-        row.text:SetAnchor(TOPLEFT,row.panel,TOPLEFT,72,25); row.text:SetDimensions(236,40); PBWT.Typography.Apply(row.text,'ZoFontGamepad22',true)
+        row.material=texture(row.panel,'card_material',0,0,320,68)
+        row.artIcon=texture(row.panel,id,19,12,44,44)
+        row.text:SetAnchor(TOPLEFT,row.panel,TOPLEFT,72,16); row.text:SetDimensions(236,36); PBWT.Typography.Apply(row.text,'ZoFontGamepad22',true)
     end
     self.button=texture(ui.endPanel,'button_material',0,0,320,68)
-    for _,f in ipairs(PBWT.Config.FLAGS) do
-        local cell=ui.cells[(f.y-1)*5+f.x]
-        local icon=texture(cell.root,'flag',5,90,18,18); icon:SetDrawLayer(DL_TEXT)
-        icon.pbwtFlag=f
-        cell.flag:SetAnchor(TOPLEFT,cell.root,TOPLEFT,24,89); cell.flag:SetDimensions(84,21)
+    -- Every square that is a keep on any board gets its banner once; the layout pass
+    -- positions them for the board in play and hides the ones that variant does not use.
+    local seen={}
+    for _,key in ipairs(PBWT.Config.VARIANT_ORDER) do
+        for _,f in ipairs(PBWT.Config.VARIANTS[key].FLAGS) do
+            local id=f.y*100+f.x
+            if not seen[id] then
+                seen[id]=true
+                local cell=ui:Cell(f.x,f.y)
+                local icon=texture(cell.root,'flag',5,90,18,18); icon:SetDrawLayer(DL_TEXT)
+                icon.pbwtFlag=f; cell.flagIcon=icon
+            end
+        end
     end
     self.result=WINDOW_MANAGER:CreateControl(nil,ui.content,CT_BACKDROP)
     self.result:SetAnchor(TOPLEFT,ui.content,TOPLEFT,442,408); self.result:SetDimensions(566,126)
@@ -86,7 +100,7 @@ function P:Refresh()
             mark.pbwtArt=kind
             if full then PBWT.Assets.Apply(mark,kind,true) end
         end
-        mark:SetColor(unpack(PBWT.Theme.Player(player,state)))
+        mark:SetColor(unpack(PBWT.Theme.OnWood(PBWT.Theme.Player(player,state))))
     end
     if self.full~=full then
         self.full=full
@@ -100,8 +114,10 @@ function P:Refresh()
         for _,t in ipairs(self.textures) do
             if PBWT.Assets.IsUsable(t) then t.pbwtDone=true; t:SetHidden(false) end
             if t.pbwtFlag then
+                -- Squares that are keeps on the other board carry no banner here.
                 local owner=PBWT.Engine.Flag(state,t.pbwtFlag.x,t.pbwtFlag.y)
-                t:SetColor(unpack(owner~=0 and PBWT.Theme.Player(owner,state) or PBWT.Theme.brass))
+                if not owner then t:SetHidden(true)
+                else t:SetColor(unpack(owner~=0 and PBWT.Theme.Player(owner,state) or PBWT.Theme.brass)) end
             end
         end
     end

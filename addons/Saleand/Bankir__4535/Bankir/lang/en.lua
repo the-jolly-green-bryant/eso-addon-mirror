@@ -26,6 +26,7 @@ local strings = {
 	BANKIR_MENU_MIN_ITEMS_DESC = "Minimal number of items to keep at character's inventory.\nIf character has less, Bankir will try to get them from bank, when available",
 	BANKIR_MENU_QUALITY_SELECT = "Min quality",
 	BANKIR_MENU_QUALITY_SELECT_DESC = "The rule will apply to items with quality equal to or higher than the selected level",
+	BANKIR_MENU_OTHER_CHARACTERS = " on other characters",
 	
 	BANKIR_CHAT_REQUIRED_FOR_QUESTS = "<<1>> x<<2>> required for quests",
 	BANKIR_CHAT_NO_FREE_SPACE = "No free space left in <<1>> for <<2>>.",
