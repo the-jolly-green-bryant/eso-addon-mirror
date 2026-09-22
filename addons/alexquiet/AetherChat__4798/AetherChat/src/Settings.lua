@@ -7,6 +7,13 @@ local AetherChat = AetherChat
 AetherChat.Settings = {}
 local Settings = AetherChat.Settings
 
+local function L(key, ...)
+    if AetherChat.L then
+        return AetherChat.L(key, ...)
+    end
+    return key
+end
+
 local DEFAULTS = {
     version = 2,
     language = 'auto',
@@ -15,6 +22,9 @@ local DEFAULTS = {
     backdropAlpha = 95,
     sidebarCollapsed = false,
     autoHideOnGameMenu = true,
+    autoHideOnIdle = false,
+    autoHideDelay = 20,
+    autoShowBehavior = 'switch',
     chatFontSize = 16,
     soundOnWhisper = true,
     whisperSound = 'champion',
@@ -57,7 +67,122 @@ local DEFAULTS = {
     gamepadCancelOnCombat = true,
     gamepadUseKeyboardChat = true,
     processedSalesMails = {},  -- persisted across sessions to avoid double-fire
+    playerNameFormat = 'account', -- 'account', 'character', 'both'
+    partyRolesEnabled = true,
+    partyClassColorEnabled = true,
+    quickResponseSendMode = 'insert', -- 'insert' or 'send'
+    quickResponses = {},
+    hiddenChannels = {},
+    priorityChannels = { ['party'] = true, ['whisper'] = true },
 }
+
+function Settings.GetQuickResponse(index)
+    local responses = Settings.Get('quickResponses', {})
+    if responses and responses[index] and responses[index] ~= "" then
+        return responses[index]
+    end
+    return L('DEFAULT_QUICK_MSG_' .. tostring(index))
+end
+
+function Settings.SetQuickResponse(index, text)
+    local responses = Settings.Get('quickResponses', {}) or {}
+    responses[index] = text
+    Settings.Set('quickResponses', responses)
+end
+
+function Settings.ResetQuickResponses()
+    Settings.Set('quickResponses', {})
+    if CHAT_SYSTEM and CHAT_SYSTEM.AddMessage then
+        CHAT_SYSTEM:AddMessage(L('RESET_QUICK_SUCCESS'))
+    end
+end
+
+function Settings.IsChannelHidden(channelId)
+    local hidden = Settings.Get('hiddenChannels', {})
+    return (hidden and hidden[channelId] == true)
+end
+
+function Settings.SetChannelHidden(channelId, isHidden)
+    local hidden = Settings.Get('hiddenChannels', {}) or {}
+    hidden[channelId] = isHidden and true or false
+    Settings.Set('hiddenChannels', hidden)
+    if isHidden and AetherChat.Messenger and AetherChat.Messenger.GetActiveChannel and AetherChat.Messenger.GetActiveChannel() == channelId then
+        local fixed = (AetherChat.Messenger.GetFixedChannels and AetherChat.Messenger.GetFixedChannels()) or {}
+        local fallback = (fixed[1] and fixed[1].id) or 'zone'
+        if fallback == channelId then fallback = (fixed[2] and fixed[2].id) or 'guild1' end
+        AetherChat.Messenger.SelectChannel(fallback, true, false)
+    end
+    if AetherChat.Messenger and AetherChat.Messenger.RefreshChannelList then
+        AetherChat.Messenger.RefreshChannelList()
+    end
+    if AetherChat.Messenger and AetherChat.Messenger.RefreshCompactTabs then
+        AetherChat.Messenger.RefreshCompactTabs()
+    end
+end
+
+function Settings.ResetDefaultChannels()
+    Settings.Set('hiddenChannels', {})
+    if AetherChat.Messenger and AetherChat.Messenger.RefreshChannelList then
+        AetherChat.Messenger.RefreshChannelList()
+    end
+    if AetherChat.Messenger and AetherChat.Messenger.RefreshCompactTabs then
+        AetherChat.Messenger.RefreshCompactTabs()
+    end
+    if CHAT_SYSTEM and CHAT_SYSTEM.AddMessage then
+        CHAT_SYSTEM:AddMessage(L('RESET_CHANNELS_SUCCESS'))
+    end
+end
+
+function Settings.IsChannelPriority(channelId)
+    local priorities = Settings.Get('priorityChannels', nil)
+    if not priorities then
+        priorities = { ['party'] = true, ['whisper'] = true }
+    end
+    if channelId and channelId:sub(1, 3) == 'dm:' then
+        if priorities[channelId] ~= nil then
+            return priorities[channelId] == true
+        end
+        return priorities['whisper'] ~= false
+    end
+    if priorities[channelId] ~= nil then
+        return priorities[channelId] == true
+    end
+    return false
+end
+
+function Settings.SetChannelPriority(channelId, isPriority)
+    local priorities = Settings.Get('priorityChannels', nil)
+    local newPriorities = {}
+    if priorities then
+        for k, v in pairs(priorities) do newPriorities[k] = v end
+    else
+        newPriorities = { ['party'] = true, ['whisper'] = true }
+    end
+    newPriorities[channelId] = isPriority and true or false
+    if channelId == 'whisper' then
+        newPriorities['whisper'] = isPriority and true or false
+    end
+    Settings.Set('priorityChannels', newPriorities)
+    if AetherChat.Messenger and AetherChat.Messenger.RefreshChannelList then
+        AetherChat.Messenger.RefreshChannelList()
+    end
+    if AetherChat.Messenger and AetherChat.Messenger.RefreshCompactTabs then
+        AetherChat.Messenger.RefreshCompactTabs()
+    end
+end
+
+function Settings.ResetChannelPriorities()
+    Settings.Set('priorityChannels', { ['party'] = true, ['whisper'] = true })
+    if AetherChat.Messenger and AetherChat.Messenger.RefreshChannelList then
+        AetherChat.Messenger.RefreshChannelList()
+    end
+    if AetherChat.Messenger and AetherChat.Messenger.RefreshCompactTabs then
+        AetherChat.Messenger.RefreshCompactTabs()
+    end
+    if CHAT_SYSTEM and CHAT_SYSTEM.AddMessage then
+        CHAT_SYSTEM:AddMessage(L('RESET_PRIORITIES_SUCCESS'))
+    end
+end
 
 function AetherChat.SendInGameDonation()
     if SCENE_MANAGER then
@@ -162,7 +287,7 @@ function Settings.RegisterLAM()
         name = "AetherChat",
         displayName = "|cE5B558AETHER|r|cFFFFFFCHAT|r",
         author = "|cE5B558@AlexQuiet|r",
-        version = "1.3.0",
+        version = "1.4.1",
         registerForRefresh = true,
         registerForDefaults = true,
     }
@@ -721,6 +846,36 @@ function Settings.RegisterLAM()
             end,
             default = false,
         },
+        -- ===================== STEALTH MODE / AUTO-HIDE =====================
+        {
+            type = "header",
+            name = L('SET_AUTOHIDE_HEADER'),
+        },
+        {
+            type = "checkbox",
+            name = L('SET_AUTOHIDE_IDLE'),
+            tooltip = L('SET_AUTOHIDE_IDLE_TT'),
+            getFunc = function() return Settings.Get('autoHideOnIdle', false) end,
+            setFunc = function(value)
+                Settings.Set('autoHideOnIdle', value)
+                if AetherChat.Messenger and AetherChat.Messenger.RecordInteraction then
+                    AetherChat.Messenger.RecordInteraction()
+                end
+            end,
+            default = false,
+        },
+        {
+            type = "slider",
+            name = L('SET_AUTOHIDE_DELAY'),
+            tooltip = L('SET_AUTOHIDE_DELAY_TT'),
+            min = 5,
+            max = 60,
+            step = 5,
+            getFunc = function() return Settings.Get('autoHideDelay', 20) end,
+            setFunc = function(value) Settings.Set('autoHideDelay', value) end,
+            disabled = function() return not Settings.Get('autoHideOnIdle', false) end,
+            default = 20,
+        },
         -- ===================== GAMEPAD / MANETTE =====================
         {
             type = "header",
@@ -767,6 +922,201 @@ function Settings.RegisterLAM()
                 end
             end,
             default = true,
+        },
+
+        -- ===================== PLAYER NAMES, ROLES & CLASSES =====================
+        {
+            type = "header",
+            name = L('SET_PLAYER_NAME_HEADER'),
+        },
+        {
+            type = "dropdown",
+            name = L('SET_PLAYER_NAME_FORMAT'),
+            tooltip = L('SET_PLAYER_NAME_FORMAT_TT'),
+            choices = {
+                L('NAME_FORMAT_ACCOUNT'),
+                L('NAME_FORMAT_CHARACTER'),
+                L('NAME_FORMAT_BOTH'),
+            },
+            choicesValues = {
+                'account',
+                'character',
+                'both',
+            },
+            getFunc = function() return Settings.Get('playerNameFormat', 'account') end,
+            setFunc = function(value)
+                Settings.Set('playerNameFormat', value)
+                if AetherChat.Messenger and AetherChat.Messenger.RefreshActiveChannel then
+                    AetherChat.Messenger.RefreshActiveChannel()
+                end
+            end,
+            default = 'account',
+        },
+        {
+            type = "checkbox",
+            name = L('SET_PARTY_ROLES'),
+            tooltip = L('SET_PARTY_ROLES_TT'),
+            getFunc = function() return Settings.Get('partyRolesEnabled', true) end,
+            setFunc = function(value)
+                Settings.Set('partyRolesEnabled', value)
+                if AetherChat.Messenger and AetherChat.Messenger.RefreshActiveChannel then
+                    AetherChat.Messenger.RefreshActiveChannel()
+                end
+            end,
+            default = true,
+        },
+        {
+            type = "checkbox",
+            name = L('SET_PARTY_CLASS_COLOR'),
+            tooltip = L('SET_PARTY_CLASS_COLOR_TT'),
+            getFunc = function() return Settings.Get('partyClassColorEnabled', true) end,
+            setFunc = function(value)
+                Settings.Set('partyClassColorEnabled', value)
+                if AetherChat.Messenger and AetherChat.Messenger.RefreshActiveChannel then
+                    AetherChat.Messenger.RefreshActiveChannel()
+                end
+            end,
+            default = true,
+        },
+
+        -- ===================== QUICK RESPONSES & MACROS =====================
+        {
+            type = "header",
+            name = L('SET_QUICK_RESPONSES_HEADER'),
+        },
+        {
+            type = "dropdown",
+            name = L('SET_QUICK_SEND_MODE'),
+            tooltip = L('SET_QUICK_SEND_MODE_TT'),
+            choices = {
+                L('QUICK_MODE_INSERT'),
+                L('QUICK_MODE_SEND'),
+            },
+            choicesValues = {
+                'insert',
+                'send',
+            },
+            getFunc = function() return Settings.Get('quickResponseSendMode', 'insert') end,
+            setFunc = function(value) Settings.Set('quickResponseSendMode', value) end,
+            default = 'insert',
+        },
+        {
+            type = "editbox",
+            name = string.format(L('SET_QUICK_MSG_PREFIX'), 1),
+            getFunc = function() return Settings.GetQuickResponse(1) end,
+            setFunc = function(val) Settings.SetQuickResponse(1, val) end,
+            isMultiline = false,
+            isExtraWide = true,
+            default = L('DEFAULT_QUICK_MSG_1'),
+        },
+        {
+            type = "editbox",
+            name = string.format(L('SET_QUICK_MSG_PREFIX'), 2),
+            getFunc = function() return Settings.GetQuickResponse(2) end,
+            setFunc = function(val) Settings.SetQuickResponse(2, val) end,
+            isMultiline = false,
+            isExtraWide = true,
+            default = L('DEFAULT_QUICK_MSG_2'),
+        },
+        {
+            type = "editbox",
+            name = string.format(L('SET_QUICK_MSG_PREFIX'), 3),
+            getFunc = function() return Settings.GetQuickResponse(3) end,
+            setFunc = function(val) Settings.SetQuickResponse(3, val) end,
+            isMultiline = false,
+            isExtraWide = true,
+            default = L('DEFAULT_QUICK_MSG_3'),
+        },
+        {
+            type = "editbox",
+            name = string.format(L('SET_QUICK_MSG_PREFIX'), 4),
+            getFunc = function() return Settings.GetQuickResponse(4) end,
+            setFunc = function(val) Settings.SetQuickResponse(4, val) end,
+            isMultiline = false,
+            isExtraWide = true,
+            default = L('DEFAULT_QUICK_MSG_4'),
+        },
+        {
+            type = "editbox",
+            name = string.format(L('SET_QUICK_MSG_PREFIX'), 5),
+            getFunc = function() return Settings.GetQuickResponse(5) end,
+            setFunc = function(val) Settings.SetQuickResponse(5, val) end,
+            isMultiline = false,
+            isExtraWide = true,
+            default = L('DEFAULT_QUICK_MSG_5'),
+        },
+        {
+            type = "editbox",
+            name = string.format(L('SET_QUICK_MSG_PREFIX'), 6),
+            getFunc = function() return Settings.GetQuickResponse(6) end,
+            setFunc = function(val) Settings.SetQuickResponse(6, val) end,
+            isMultiline = false,
+            isExtraWide = true,
+            default = L('DEFAULT_QUICK_MSG_6'),
+        },
+        {
+            type = "button",
+            name = L('SET_RESET_QUICK_RESPONSES'),
+            tooltip = L('SET_RESET_QUICK_RESPONSES_TT'),
+            func = function()
+                Settings.ResetQuickResponses()
+            end,
+            width = "full",
+        },
+
+        -- ===================== DEFAULT CHANNELS & VISIBILITY =====================
+        {
+            type = "header",
+            name = L('SET_DEFAULT_CHANNELS_HEADER'),
+        },
+        {
+            type = "checkbox",
+            name = string.format(L('SET_CHANNEL_VISIBLE_PREFIX'), L('CH_ZONE')),
+            getFunc = function() return not Settings.IsChannelHidden('zone') end,
+            setFunc = function(val) Settings.SetChannelHidden('zone', not val) end,
+            default = true,
+            width = "half",
+        },
+        {
+            type = "checkbox",
+            name = string.format(L('SET_CHANNEL_VISIBLE_PREFIX'), L('CH_LOOT')),
+            getFunc = function() return not Settings.IsChannelHidden('loot') end,
+            setFunc = function(val) Settings.SetChannelHidden('loot', not val) end,
+            default = true,
+            width = "half",
+        },
+        {
+            type = "checkbox",
+            name = string.format(L('SET_CHANNEL_VISIBLE_PREFIX'), L('CH_GENERAL')),
+            getFunc = function() return not Settings.IsChannelHidden('general') end,
+            setFunc = function(val) Settings.SetChannelHidden('general', not val) end,
+            default = true,
+            width = "half",
+        },
+        {
+            type = "checkbox",
+            name = string.format(L('SET_CHANNEL_VISIBLE_PREFIX'), L('CH_PARTY')),
+            getFunc = function() return not Settings.IsChannelHidden('party') end,
+            setFunc = function(val) Settings.SetChannelHidden('party', not val) end,
+            default = true,
+            width = "half",
+        },
+        {
+            type = "checkbox",
+            name = string.format(L('SET_CHANNEL_VISIBLE_PREFIX'), L('CH_SYSTEM')),
+            getFunc = function() return not Settings.IsChannelHidden('system') end,
+            setFunc = function(val) Settings.SetChannelHidden('system', not val) end,
+            default = true,
+            width = "half",
+        },
+        {
+            type = "button",
+            name = L('SET_RESET_DEFAULT_CHANNELS'),
+            tooltip = L('SET_RESET_DEFAULT_CHANNELS_TT'),
+            func = function()
+                Settings.ResetDefaultChannels()
+            end,
+            width = "full",
         },
 
         {

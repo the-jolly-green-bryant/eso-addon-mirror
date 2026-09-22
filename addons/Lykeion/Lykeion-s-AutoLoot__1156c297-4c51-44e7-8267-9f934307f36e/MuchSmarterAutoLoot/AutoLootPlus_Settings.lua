@@ -2366,7 +2366,7 @@ function Settings.Initialize(args)
                 {
                     type = "checkbox",
                     name = GetString(MSAL_CONTEXT_MENU),
-                    tooltip = GetString(MSAL_CONTEXT_MENU_TOOLTIP_CONSOLE),
+                    tooltip = GetString(MSAL_CONTEXT_MENU_TOOLTIP_CONSOLE) .. GetString(MSAL_RELOAD_REQUIRED),
                     getFunc = function()
                         return db.contextMenuEnabled
                     end,
@@ -2480,7 +2480,7 @@ function Settings.Initialize(args)
         local contextJunkingCheckbox = {
             type = "checkbox",
             name = GetString(MSAL_CONTEXT_MENU_JUNKING),
-            tooltip = GetString(MSAL_CONTEXT_MENU_JUNKING_TOOLTIP),
+            tooltip = GetString(MSAL_CONTEXT_MENU_JUNKING_TOOLTIP) .. GetString(MSAL_RELOAD_REQUIRED),
             getFunc = function()
                 return db.contextJunkingEnabled
             end,

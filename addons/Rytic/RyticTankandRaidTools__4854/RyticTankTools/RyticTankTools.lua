@@ -1,7 +1,13 @@
 RyticTank = RyticTank or {}
 local RyticTank = RyticTank
+
+-- Cache core ESO globals/functions used during addon initialization.
+local EM = EVENT_MANAGER
+local ZO_SavedVars = ZO_SavedVars
+local ZO_DeepTableCopy = ZO_DeepTableCopy
+local GetWorldName = GetWorldName
 RyticTank.name = "RyticTankTools"
-RyticTank.version = "1.1"
+RyticTank.version = "2.0.3"
 
 RyticTank.defaults = {
     sets = {
@@ -49,7 +55,7 @@ RyticTank.defaults = {
 
 local function OnLoaded(_, addonName)
     if addonName ~= RyticTank.name then return end
-    EVENT_MANAGER:UnregisterForEvent("RyticTankToolsLoaded", EVENT_ADD_ON_LOADED)
+    EM:UnregisterForEvent("RyticTankToolsLoaded", EVENT_ADD_ON_LOADED)
 
     RyticTank.saved = ZO_SavedVars:NewAccountWide(
         "RyticTankSavedVariables", 1, GetWorldName(), RyticTank.defaults
@@ -121,4 +127,4 @@ local function OnLoaded(_, addonName)
     end
 end
 
-EVENT_MANAGER:RegisterForEvent("RyticTankToolsLoaded", EVENT_ADD_ON_LOADED, OnLoaded)
+EM:RegisterForEvent("RyticTankToolsLoaded", EVENT_ADD_ON_LOADED, OnLoaded)

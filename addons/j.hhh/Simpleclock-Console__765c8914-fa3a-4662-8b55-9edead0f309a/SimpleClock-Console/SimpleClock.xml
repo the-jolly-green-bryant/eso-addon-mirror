@@ -1,0 +1,18 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="SimpleClock" hidden="false">
+			<Dimensions x="80" y="30"/>
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="0" offsetY="10"/>
+			<Controls>
+				<!-- Soft vignette background matching the reference HUD clock.
+				     The DDS contains transparency on all four edges. -->
+				<Texture name="$(parent)Background" textureFile="SimpleClock-Console/textures/clock_fade.dds" level="0">
+					<AnchorFill/>
+				</Texture>
+				<Label name="$(parent)Label" font="" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+					<AnchorFill/>
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

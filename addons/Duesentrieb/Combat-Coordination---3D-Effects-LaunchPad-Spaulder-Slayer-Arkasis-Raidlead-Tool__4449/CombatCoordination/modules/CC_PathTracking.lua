@@ -7,7 +7,7 @@ local Module = {
     name      = "PathTracking",
     menuName  = "PATH TRACKING",
     iconPath  = "/esoui/art/icons/ability_smith_002.dds",
-    menuLayer = 0,
+    menuLayer = 2,
 
     TextureChoices = CC.CHEVRON_CHOICES,
     TextureValues  = CC.CHEVRON_VALUES,
@@ -20,6 +20,7 @@ local Module = {
     isUpdateLoop = false,
 
     Default = {
+        enableModule = true,
         enableDrawSelf = true,
         enableDrawGroup = true,
         enableGameAoeFriendlyColor = false,
@@ -301,8 +302,31 @@ function Module:GetMenuOptions()
 
     return {
         type = "submenu",
-        name = string.format("%s %s", menuIcon, CC.ColorString(self.menuName, "tier2")),
+        name = function()
+            local stringEnable = self.SV.enableModule and "" or CC.ColorString("[OFF] ", "RD")
+            return string.format("%s %s%s", menuIcon, stringEnable, CC.ColorString(self.menuName, "tier2"))
+        end,
         controls = {
+            -- ENABLE / DISABLE MODULE
+            { type = "header", name = CC.ColorString("ENABLE / DISABLE MODULE", "tier3") },
+            {
+                type = "checkbox",
+                name = CC.ColorString("Enable Module", "GN"),
+                getFunc = function() return self.SV.enableModule end,
+                setFunc = function(value)
+                    self.SV.enableModule = value
+                    if value then
+                        if self.CustomEnable then self:CustomEnable() end
+                    else
+                        if self.CustomDisable then self:CustomDisable() end
+                    end
+                end,
+                default = self.Default.enableModule,
+                disabled = function() return not CC.SV.enableAddon end,
+                requiresReload = true,
+            },
+            { type = "divider" },
+
             {
                 type = "description",
                 text = CC.ColorString("Note:", "tier2") .. " Define a " .. CC.ColorString("[Keybind]", "tier3") .. " to track your current target.\n" ..
@@ -318,7 +342,7 @@ function Module:GetMenuOptions()
                 getFunc = function() return self.unitTag end,
                 setFunc = function(value) self.unitTag = value end,
                 reference = "CC_PathTracker_Dropdown_GroupMember",
-                disabled = function() return not CC.SV.enableAddon or (not self.SV.enableDrawSelf and not self.SV.enableDrawGroup) end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or (not self.SV.enableDrawSelf and not self.SV.enableDrawGroup) end,
             },
             {
                 type = "button",
@@ -351,7 +375,7 @@ function Module:GetMenuOptions()
                     end
                 end,
                 width = "half",
-                disabled = function() return not CC.SV.enableAddon or (not self.SV.enableDrawSelf and not self.SV.enableDrawGroup) end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or (not self.SV.enableDrawSelf and not self.SV.enableDrawGroup) end,
             },
             {
                 type = "slider",
@@ -360,7 +384,7 @@ function Module:GetMenuOptions()
                 getFunc = function() return self.SV.durationMs / 1000 end,
                 setFunc = function(value) self.SV.durationMs = value * 1000 end,
                 default = self.Default.durationMs / 1000,
-                disabled = function() return not CC.SV.enableAddon or (not self.SV.enableDrawSelf and not self.SV.enableDrawGroup) end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or (not self.SV.enableDrawSelf and not self.SV.enableDrawGroup) end,
             },
             {
                 type = "button",
@@ -369,7 +393,7 @@ function Module:GetMenuOptions()
                     if self.unitTag then self:AddTrack(self.unitTag, nil) end
                 end,
                 width = "half",
-                disabled = function() return not CC.SV.enableAddon or (not self.SV.enableDrawSelf and not self.SV.enableDrawGroup) end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or (not self.SV.enableDrawSelf and not self.SV.enableDrawGroup) end,
             },
             {
                 type = "button",
@@ -378,7 +402,7 @@ function Module:GetMenuOptions()
                     ZO_ClearTable(self.ActiveTracks)
                 end,
                 width = "half",
-                disabled = function() return not CC.SV.enableAddon or (not self.SV.enableDrawSelf and not self.SV.enableDrawGroup) end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or (not self.SV.enableDrawSelf and not self.SV.enableDrawGroup) end,
             },
             { type = "header", name = CC.ColorString("VISUALS", "tier3") },
             {
@@ -390,7 +414,7 @@ function Module:GetMenuOptions()
                     self.SV.width = value * 100
                 end,
                 default = self.Default.width / 100,
-                disabled = function() return not CC.SV.enableAddon or (not self.SV.enableDrawSelf and not self.SV.enableDrawGroup) end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or (not self.SV.enableDrawSelf and not self.SV.enableDrawGroup) end,
             },
             {
                 type = "slider",
@@ -401,7 +425,7 @@ function Module:GetMenuOptions()
                     self.SV.height = value * 100
                 end,
                 default = self.Default.height / 100,
-                disabled = function() return not CC.SV.enableAddon or (not self.SV.enableDrawSelf and not self.SV.enableDrawGroup) end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or (not self.SV.enableDrawSelf and not self.SV.enableDrawGroup) end,
             },
             {
                 type = "dropdown",
@@ -417,7 +441,7 @@ function Module:GetMenuOptions()
                     end
                 end,
                 default = self.Default.texture,
-                disabled = function() return not CC.SV.enableAddon or (not self.SV.enableDrawSelf and not self.SV.enableDrawGroup) end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or (not self.SV.enableDrawSelf and not self.SV.enableDrawGroup) end,
             },
             {
                 type = "checkbox",
@@ -425,7 +449,7 @@ function Module:GetMenuOptions()
                 getFunc = function() return self.SV.enableGameAoeFriendlyColor end,
                 setFunc = function(value) self.SV.enableGameAoeFriendlyColor = value end,
                 default = self.Default.enableGameAoeFriendlyColor,
-                disabled = function() return not CC.SV.enableAddon or (not self.SV.enableDrawSelf and not self.SV.enableDrawGroup) end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or (not self.SV.enableDrawSelf and not self.SV.enableDrawGroup) end,
             },
             {
                 type = "colorpicker",
@@ -437,7 +461,7 @@ function Module:GetMenuOptions()
                     if Preview then Preview:SetColor(r, g, b, a) end
                 end,
                 default = CC.GetRgbaFromArray(self.Default.ColorStart),
-                disabled = function() return not CC.SV.enableAddon or self.SV.enableGameAoeFriendlyColor end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or self.SV.enableGameAoeFriendlyColor end,
             },
             {
                 type = "colorpicker",
@@ -445,7 +469,7 @@ function Module:GetMenuOptions()
                 getFunc = function() return unpack(self.SV.ColorEnd) end,
                 setFunc = function(r, g, b, a) self.SV.ColorEnd = {r, g, b, a} end,
                 default = CC.GetRgbaFromArray(self.Default.ColorEnd),
-                disabled = function() return not CC.SV.enableAddon or self.SV.enableGameAoeFriendlyColor end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or self.SV.enableGameAoeFriendlyColor end,
             },
             {
                 type = "custom",

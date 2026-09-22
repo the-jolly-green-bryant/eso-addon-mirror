@@ -1,0 +1,62 @@
+Universal Assistant Free Use License
+Copyright (c) 2026 @The.Invis
+
+The author permits anyone to use, examine, copy, modify, and share the
+original Universal Assistant code at no cost, under these conditions:
+
+1. Keep this license and the original author's credit with every copy of
+   the source code. Do not present the original work as your own.
+
+2. If you share a changed version, identify it as a modification and name
+   its maintainer. Do not imply that the original author made, approved,
+   or supports your changes.
+
+3. The original addon and modified versions must remain free for everyone
+   to obtain and use. Do not sell them, charge for access or features,
+   place them behind a subscription, or include them in a paid product.
+   Voluntary donations are allowed only when they do not affect access
+   or functionality.
+
+The author has tested the original addon in the author's own game setup.
+That testing is not a promise that the addon will be free of errors or
+remain compatible with future game updates or other addons. The software
+is supplied in its present condition, without a warranty. To the extent
+permitted by law, the author is not responsible for losses caused by its
+use or by changes made by others.
+
+This license covers only material for which the author has the right to
+grant permission. Game assets and separately installed libraries remain
+subject to their respective owners' terms.
+
+-----------------------------------------------------------------------
+
+Ліцензія безоплатного використання Universal Assistant
+Авторське право (c) 2026 @The.Invis
+
+Автор дозволяє кожному безоплатно використовувати, вивчати, копіювати,
+змінювати та поширювати оригінальний код Universal Assistant за таких умов:
+
+1. Разом із кожною копією вихідного коду необхідно зберігати цю ліцензію
+   та зазначення оригінального автора. Не можна видавати оригінальну
+   роботу за власну.
+
+2. Якщо ви поширюєте змінену версію, чітко позначте її як модифікацію
+   та вкажіть, хто відповідає за її підтримку. Не створюйте враження,
+   що оригінальний автор вніс, схвалив або підтримує ваші зміни.
+
+3. Оригінальний аддон і змінені версії мають залишатися безоплатними
+   для отримання та використання всіма охочими. Їх не можна продавати,
+   стягувати плату за доступ чи функції, надавати лише за підпискою
+   або включати до платного продукту. Добровільні пожертви дозволені
+   лише тоді, коли вони не впливають на доступ і функціональність.
+
+Автор перевірив оригінальний аддон у власній конфігурації гри. Така
+перевірка не є обіцянкою, що аддон не містить помилок або залишатиметься
+сумісним із майбутніми оновленнями гри чи іншими аддонами. Програму
+надано в її поточному стані без гарантій. У межах, дозволених законом,
+автор не відповідає за втрати, спричинені її використанням або змінами,
+внесеними іншими особами.
+
+Ця ліцензія поширюється лише на матеріали, щодо яких автор має право
+надавати дозвіл. Ігрові ресурси й бібліотеки, встановлені окремо,
+залишаються під дією умов відповідних правовласників.

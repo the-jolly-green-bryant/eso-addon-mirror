@@ -8,6 +8,10 @@
   "category_id": "159",
   "compatibility": [
     {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
       "name": "Season Zero Pt.2",
       "version": "12.0.0"
     }
@@ -18,7 +22,7 @@
     "WerewolfTimerBar"
   ],
   "download_url": "https://www.esoui.com/downloads/dl3814/",
-  "fingerprint": "0285a8359c0c6d85a6f355d3c5cc757258e36656e14937b3fdd99080f003881c",
+  "fingerprint": "8078ead5894a1d164fd4df1ae5f1cbde8072452a154c17d04898f440d6c475fc",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16588.png",
     "https://cdn-eso.mmoui.com/preview/pvw16589.png",
@@ -31,11 +35,11 @@
   "source_id": "3814",
   "source_url": "https://www.esoui.com/downloads/info3814-WerewolfTimerBarUpdated.html",
   "stats": {
-    "downloads": 7896,
+    "downloads": 8679,
     "favorites": 10,
-    "monthly_downloads": 463
+    "monthly_downloads": 248
   },
   "title": "Werewolf Timer Bar Updated",
-  "updated_at": 1786402755000,
-  "version": "3.05"
+  "updated_at": 1790046568000,
+  "version": "3.07"
 }

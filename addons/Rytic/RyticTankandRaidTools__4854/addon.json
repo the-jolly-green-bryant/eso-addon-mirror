@@ -22,7 +22,7 @@
     "RyticTankTools"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4854/",
-  "fingerprint": "cf54811af4097651de4b35b59bc31961684e005170ce1304d01d01c334039705",
+  "fingerprint": "32ab17d7e6ae01cb4c00d80453a8fcf975483fc23e2271080b638ed014708955",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw17449.png",
     "https://cdn-eso.mmoui.com/preview/pvw17450.png",
@@ -34,11 +34,11 @@
   "source_id": "4854",
   "source_url": "https://www.esoui.com/downloads/info4854-RyticTankandRaidTools.html",
   "stats": {
-    "downloads": 20,
-    "favorites": 0,
-    "monthly_downloads": 12
+    "downloads": 37,
+    "favorites": 1,
+    "monthly_downloads": 33
   },
   "title": "RyticTankandRaidTools",
-  "updated_at": 1789948433000,
-  "version": "1.1"
+  "updated_at": 1790046940000,
+  "version": "2.0.3"
 }

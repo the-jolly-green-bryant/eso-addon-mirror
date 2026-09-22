@@ -1,11 +1,25 @@
 ------------------------------------------------------------
--- RYTIC RAID LEAD v0.1
+-- RYTIC RAID LEAD v0.2 - local-reference optimization
 -- Ready Check + Pull Timer buttons for RyticTankTools.
 ------------------------------------------------------------
 RyticTank = RyticTank or {}
+local RyticTank=RyticTank
 RyticTank.RaidLead = RyticTank.RaidLead or {}
 local R=RyticTank.RaidLead
 local EM,WM=EVENT_MANAGER,WINDOW_MANAGER
+
+-- Cache API/standard-library references used by ready-check and pull-timer paths.
+local GetFrameTimeSeconds=GetFrameTimeSeconds
+local IsUnitGrouped=IsUnitGrouped
+local IsUnitGroupLeader=IsUnitGroupLeader
+local GetGroupSize=GetGroupSize
+local BeginGroupElection=BeginGroupElection
+local PlaySound=PlaySound
+local tonumber=tonumber
+local tostring=tostring
+local math_max=math.max
+local math_min=math.min
+local math_floor=math.floor
 local PULL_EVENT="RyticRaidLeadPull"
 
 local function defaults()
@@ -33,8 +47,15 @@ end
 function R.ReadyCheck()
     if not IsUnitGrouped("player") then d("|cFFAA00Rytic: You are not grouped.|r"); return end
     if not IsUnitGroupLeader("player") then d("|cFFAA00Rytic: Ready Check button is for the group leader.|r"); return end
-    -- ReadyCheck source supplied by user confirms election type 2 is ESO's ready check.
-    BeginGroupElection(2,"Ready Check")
+
+    -- Prefer ESO's own ready-check helper so Rytic follows the same native
+    -- election path used by the base UI and by addons observing ready checks.
+    if ZO_SendReadyCheck then
+        ZO_SendReadyCheck()
+    else
+        -- Compatibility fallback for API revisions where the helper is unavailable.
+        BeginGroupElection(2,"Ready Check")
+    end
 end
 
 function R.CancelPull()
@@ -45,7 +66,7 @@ end
 
 function R.StartPull(seconds, skipExternal)
     seconds=tonumber(seconds) or defaults().pullSeconds or 5
-    seconds=math.max(3,math.min(60,math.floor(seconds)))
+    seconds=math_max(3,math_min(60,math_floor(seconds)))
 
     if not IsUnitGrouped("player") or not IsUnitGroupLeader("player") then
         d("|cFFAA00Rytic: Pull Timer requires group lead.|r"); return
@@ -66,7 +87,7 @@ function R.StartPull(seconds, skipExternal)
 
     EM:RegisterForUpdate(PULL_EVENT,100,function()
         if not R.pullEnd then return end
-        local remain=math.max(0,math.ceil(R.pullEnd-GetFrameTimeSeconds()))
+        local remain=math_max(0,math.ceil(R.pullEnd-GetFrameTimeSeconds()))
 
         if R.pullText then
             R.pullText:SetText(remain>0 and ("|c49BFFF"..remain.."|r") or "|c55FF55PULL!|r")
@@ -189,7 +210,7 @@ function R.PullSlash(arg)
     end
 
     local seconds=tonumber(arg) or defaults().pullSeconds or 5
-    seconds=math.max(3,math.min(60,math.floor(seconds)))
+    seconds=math_max(3,math_min(60,math_floor(seconds)))
 
     if externalPullCommand then
         externalPullCommand(tostring(seconds))

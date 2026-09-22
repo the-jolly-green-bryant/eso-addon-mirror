@@ -1,4 +1,4 @@
-﻿-- CallToArm_CTA.lua (CTA module)
+-- CallToArm_CTA.lua (CTA module)
 -- Create or reuse the global namespace table (safe if reloaded)
 local CallToArm = _G.CallToArm or {}
 _G.CallToArm = CallToArm
@@ -68,15 +68,6 @@ local function GetAllianceRGB(alliance)
     return 1, 1, 1
 end
 
-local function GetAllianceNameShort(alliance)
-    local name = GetAllianceName and GetAllianceName(alliance) or ""
-    if name == "" then return "Alliance" end
-    if name == "Aldmeri Dominion" then return "Dominion" end
-    if name == "Daggerfall Covenant" then return "Covenant" end
-    if name == "Ebonheart Pact" then return "Pact" end
-    return name
-end
-
 local function Clamp01(value)
     local v = tonumber(value) or 0
     if v < 0 then return 0 end
@@ -89,6 +80,29 @@ local function RGBToHex(r, g, b)
     local gg = math.floor(Clamp01(g) * 255 + 0.5)
     local bb = math.floor(Clamp01(b) * 255 + 0.5)
     return string.format("%02X%02X%02X", rr, gg, bb)
+end
+
+local function GetAllianceNameShort(alliance)
+    local name = GetAllianceName and GetAllianceName(alliance) or ""
+    if name == "" then return "Alliance" end
+    if name == "Aldmeri Dominion" then name = "Dominion"
+    elseif name == "Daggerfall Covenant" then name = "Covenant"
+    elseif name == "Ebonheart Pact" then name = "Pact" end
+    local r, g, b = GetAllianceRGB(alliance)
+    return "|c" .. RGBToHex(r, g, b) .. name .. "|r"
+end
+
+-- Normalize old saved message punctuation at display time, without rewriting preferences.
+local function CleanMessagePunctuation(text)
+    text = tostring(text or "")
+    text = text:gsub(" %- ", ", ")
+    text = text:gsub("\226\128\148", ":")
+    text = text:gsub("\195\162\226\130\172\226\128\157", ":")
+    text = text:gsub("\226\128\147", ":")
+    text = text:gsub("\195\162\226\130\172\226\128\156", ":")
+    text = text:gsub("\226\128\166", ".")
+    text = text:gsub("\195\162\226\130\172\194\166", ".")
+    return text
 end
 
 local function BuildTextureTag(path, size)
@@ -395,10 +409,10 @@ local function EnsureByGuild(gid)
             cta.display._migratedFancy = true
         end
         cta.templates = cta.templates or {
-            empPush = "{Guild} needs you - {ListedPlayer} is pushing for Emperorship!",
-            dethrone = "{Guild} Emperor {EmpPlayer} needs you - protect the throne!",
-            warBegins = "{Guild}, {GuildAlliance} calls you to Cyrodiil - war begins!",
-            warRages = "{GuildAlliance} is at war - {Guild} mount up!",
+            empPush = "{Guild} needs you, {ListedPlayer} is pushing for Emperorship!",
+            dethrone = "{Guild} Emperor {EmpPlayer} needs you, protect the throne!",
+            warBegins = "{Guild}, {GuildAlliance} calls you to Cyrodiil, war begins!",
+            warRages = "{GuildAlliance} is at war, {Guild} mount up!",
             population1 = "{Guild} The enemy begins to march",
             population2 = "{Guild} borders may be compromised",
             population3 = "{Guild} War begins, prepare for battle",
@@ -669,7 +683,7 @@ local function GetEmperorKeepsOwned(campaignId, alliance)
 end
 
 local function ExpandTemplate(template, replacements)
-    local text = tostring(template or "")
+    local text = CleanMessagePunctuation(template)
     for key, value in pairs(replacements or {}) do
         text = text:gsub("{" .. key .. "}", tostring(value or ""))
     end
@@ -1099,82 +1113,82 @@ local POPULATION_MESSAGES = {
     [0] = {
         neutral = {
             "{GuildAlliance} holds advantage in Cyrodiil",
-            "{GuildAlliance} stable — no reinforcements needed",
-            "War balanced — veterans hold the line",
+            "{GuildAlliance} stable: no reinforcements needed",
+            "War balanced: veterans hold the line",
         },
         congrats = {
-            "{GuildAlliance} stands strong — well fought",
+            "{GuildAlliance} stands strong: well fought",
             "Banners fly high across Cyrodiil",
         },
         winddown = {
-            "Fighting fades — day ends in {GuildAlliance} favour",
+            "Fighting fades: day ends in {GuildAlliance} favour",
         },
     },
     [1] = {
         neutral = {
             "Enemy patrols increase on {GuildAlliance} borders",
-            "Skirmishes flare — vigilance advised",
+            "Skirmishes flare: vigilance advised",
         },
         improving = {
-            "{GuildAlliance} steadies front — borders hold",
+            "{GuildAlliance} steadies front: borders hold",
         },
         worsening = {
-            "Enemy pressure grows — border aid needed",
+            "Enemy pressure grows: border aid needed",
         },
     },
     [2] = {
         neutral = {
-            "{GuildAlliance} outnumbered — warriors needed",
-            "Ruby Throne contested — {GuildAlliance} calls",
+            "{GuildAlliance} outnumbered: warriors needed",
+            "Ruby Throne contested: {GuildAlliance} calls",
         },
         improving = {
-            "Tide turns — join now, press advantage",
+            "Tide turns: join now, press advantage",
             "Fresh blades could aid {GuildAlliance}",
         },
         worsening = {
-            "Enemy numbers swell — reinforcements needed",
-            "Cyrodiil calls — {GuildAlliance} may falter",
+            "Enemy numbers swell: reinforcements needed",
+            "Cyrodiil calls: {GuildAlliance} may falter",
         },
     },
     [3] = {
         neutral = {
-            "Enemy surge — {GuildAlliance} falls back",
+            "Enemy surge: {GuildAlliance} falls back",
             "{GuildAlliance} heavily outnumbered",
         },
         improving = {
-            "Line bends, not broken — join now",
-            "{GuildAlliance} rallies — your strength matters",
+            "Line bends, not broken: join now",
+            "{GuildAlliance} rallies: your strength matters",
         },
         worsening = {
-            "Keeps threatened — {GuildAlliance} losing ground",
-            "War nears decision — fighters urgently needed",
+            "Keeps threatened: {GuildAlliance} losing ground",
+            "War nears decision: fighters urgently needed",
         },
     },
     [4] = {
         neutral = {
-            "Defeat near — {GuildAlliance} needs you now",
-            "Enemy banners dominate — final stand nears",
+            "Defeat near: {GuildAlliance} needs you now",
+            "Enemy banners dominate: final stand nears",
         },
         improving = {
-            "Hope remains — warriors must answer call",
-            "{GuildAlliance} still fights — stand now",
+            "Hope remains: warriors must answer call",
+            "{GuildAlliance} still fights: stand now",
         },
         worsening = {
-            "War nearly lost — decisive action needed",
-            "Hour of duty — answer call or yield field",
+            "War nearly lost: decisive action needed",
+            "Hour of duty: answer call or yield field",
         },
     },
     [5] = {
         win = {
-            "War winds down — {GuildAlliance} claims night",
-            "Victory holds — last banners fly",
+            "War winds down: {GuildAlliance} claims night",
+            "Victory holds: last banners fly",
         },
         loss = {
-            "War fades — {GuildAlliance} withdraws",
-            "Fallen honoured — day ends in defeat",
+            "War fades: {GuildAlliance} withdraws",
+            "Fallen honoured: day ends in defeat",
         },
         reflective = {
-            "Dead rest where they fell — remember them",
+            "Dead rest where they fell: remember them",
             "Cyrodiil grows quiet once more",
         },
     },
@@ -1501,12 +1515,12 @@ local function BriefingLine(text)
 end
 
 local function ShowBriefing(job)
-    BriefingLine(GetGuildNameSafe(job.guildId) .. " â€” " .. (GetCampaignName(job.campaignId) or tostring(job.campaignId)))
+    BriefingLine(GetGuildNameSafe(job.guildId) .. ": " .. (GetCampaignName(job.campaignId) or tostring(job.campaignId)))
     BriefingLine("Client campaign snapshot; server data age is not exposed.")
     if HasKeepData(job.campaignId) then
         if DoesCampaignHaveEmperor(job.campaignId) then
             local alliance, character, display = GetCampaignEmperorInfo(job.campaignId)
-            BriefingLine("Emperor: " .. ((display and display ~= "") and display or character or "Unknown") .. " â€” " .. GetAllianceNameShort(alliance))
+            BriefingLine("Emperor: " .. ((display and display ~= "") and display or character or "Unknown") .. ": " .. GetAllianceNameShort(alliance))
         else
             BriefingLine("No current emperor reported.")
         end
@@ -1515,7 +1529,7 @@ local function ShowBriefing(job)
             local owned, total = GetEmperorKeepsOwned(job.campaignId, alliance)
             counts[#counts + 1] = GetAllianceNameShort(alliance) .. ": " .. (total > 0 and (owned .. "/" .. total) or "unavailable")
         end
-        BriefingLine("Imperial keeps â€” " .. table.concat(counts, "; "))
+        BriefingLine("Imperial keeps: " .. table.concat(counts, "; "))
     else
         BriefingLine("Emperor/keep details unavailable for this campaign. No other campaign's keeps have been substituted.")
     end
@@ -1526,7 +1540,7 @@ local function ShowBriefing(job)
         for alliance = 1, NUM_ALLIANCES do
             parts[#parts + 1] = GetAllianceNameShort(alliance) .. ": " .. (labels[population[alliance]] or "unavailable")
         end
-        BriefingLine("Population â€” " .. table.concat(parts, "; "))
+        BriefingLine("Population: " .. table.concat(parts, "; "))
     else
         BriefingLine("Population information unavailable.")
     end
@@ -1573,11 +1587,13 @@ local function StartRequest(manual)
         if manual then
             CTA._pendingRequest.manual = true
             BriefingLine("A campaign check is already pending; the briefing will follow shortly.")
+        elseif CTA._pendingRequest.guildId == gid and CTA._pendingRequest.campaignId == campaignId then
+            CTA._pendingRequest.automatic = true
         end
         return
     end
     CTA._pendingRequest = { guildId=gid, campaignId=campaignId, alliance=alliance, manual=manual, automatic=not manual }
-    if manual then BriefingLine("Requesting campaign informationâ€¦") end
+    if manual then BriefingLine("Requesting campaign information.") end
     EnsureCampaignDataFeed(false)
     QueryLeaderboardIfNeeded(campaignId, alliance)
     zo_callLater(FinishRequest, 5000)
@@ -1615,8 +1631,16 @@ function CTA.Init()
         local gid = GetRepresentedGuildId()
         if IsEligibleForCTA(gid) then
             local settings = GetGuildCtaSettings(gid)
-            CTA.UpdateHomeCampaignPresence(settings, IsPlayerInAvAWorld() and GetCurrentCampaignId() == CTA.ResolveCampaign(gid))
+            local campaignId = CTA.ResolveCampaign(gid)
+            CTA.UpdateHomeCampaignPresence(settings, IsPlayerInAvAWorld() and GetCurrentCampaignId() == campaignId)
+            -- Zone entry is an extra check, not a reset of the periodic schedule.
+            -- RunPoll rechecks filters at delivery and retains each alert's cooldown.
+            if settings.enabled and not ShouldSuppressForActivity(settings)
+                and IsActivityAllowed(settings, campaignId) then
+                StartRequest(false)
+            end
         end
     end)
     SLASH_COMMANDS["/ctanow"] = CTA.RunNow
 end
+

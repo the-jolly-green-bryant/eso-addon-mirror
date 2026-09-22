@@ -7,7 +7,7 @@ local Module = {
     name      = "AssaultCaltrops",
     menuName  = "ASSAULT CALTROPS",
     iconPath  = "/esoui/art/icons/ability_ava_001_a.dds",
-    menuLayer = 2,
+    menuLayer = 3,
 
     TextureChoices = CC.CIRCLE_CHOICES,
     TextureValues  = CC.CIRCLE_VALUES,
@@ -32,6 +32,7 @@ local Module = {
         },
     },
     Default = {
+        enableModule = true,
         timerModeSelf = 0,
         timerModeGroup = 0,
         enableDrawSelf = false,

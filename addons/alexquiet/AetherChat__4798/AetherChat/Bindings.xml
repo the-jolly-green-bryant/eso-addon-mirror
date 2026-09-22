@@ -1,6 +1,6 @@
 <Bindings>
     <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
-        <Category name="AETHERCHAT">
+        <Category name="SI_BINDINGS_CATEGORY_AETHERCHAT">
             <Action name="AETHERCHAT_TOGGLE">
                 <Down>AetherChat.Messenger.Toggle()</Down>
             </Action>
@@ -18,6 +18,13 @@
             </Action>
             <Action name="AETHERCHAT_FOCUS_CHAT">
                 <Down>AetherChat.Messenger.FocusChatInput()</Down>
+            </Action>
+            <Action name="AETHERCHAT_QUICK_CHAT">
+                <Down>AetherChat.Messenger.OnQuickChatDown()</Down>
+                <Up>AetherChat.Messenger.OnQuickChatUp()</Up>
+            </Action>
+            <Action name="AETHERCHAT_SHARE_BUILD">
+                <Down>AetherChat.Messenger.ShareEquippedBuild()</Down>
             </Action>
         </Category>
     </Layer>

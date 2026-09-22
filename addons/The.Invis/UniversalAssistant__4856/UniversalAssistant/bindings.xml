@@ -1,0 +1,11 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="SI_UA_ADDON_NAME">
+            <Action name="UA_DECONSTRUCT">
+                <Down>
+                    UAssistant.Deconstruct.Run()
+                </Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

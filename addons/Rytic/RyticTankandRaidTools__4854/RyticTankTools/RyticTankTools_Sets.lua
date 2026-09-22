@@ -1,5 +1,5 @@
 ------------------------------------------------------------
--- RYTICTANK SETS v7 - COMPACT HORIZONTAL ICON STYLE
+-- RYTICTANK SETS v7.2 - FRAGMENT-SAFE + LOCAL-REFERENCE OPTIMIZATION
 --
 -- ALL currently equipped sets are shown horizontally.
 -- Each set:
@@ -15,19 +15,31 @@
 -- for the RyticTank LibAddonMenu settings panel.
 ------------------------------------------------------------
 
+local RyticTank = RyticTank
+
 RyticTank.Sets = {}
-RyticTank.Sets.items = {}
-RyticTank.Sets.equipped = {}
-RyticTank.Sets.cooldownEnd = {}
-RyticTank.Sets.activeUntil = {}
-RyticTank.Sets.registeredAbilityIds = {}
+local Sets = RyticTank.Sets
+Sets.items = {}
+Sets.equipped = {}
+Sets.cooldownEnd = {}
+Sets.activeUntil = {}
+Sets.registeredAbilityIds = {}
+
+-- Cache hot ESO globals/functions used repeatedly by this module.
+local EM = EVENT_MANAGER
+local WM = WINDOW_MANAGER
+local GetGameTimeMilliseconds = GetGameTimeMilliseconds
+local GetFrameTimeSeconds = GetFrameTimeSeconds
+local IsUnitInCombat = IsUnitInCombat
+local GetUnitPower = GetUnitPower
+local IsUnitDead = IsUnitDead
 
 local TRACKED = {
     {name="Frozen Watcher",        short="FW",     dynamic="frozenwatcher"},
     {name="Pearlescent Ward",      short="PEARL", dynamic="pearl"},
     {name="Lucent Echoes",         short="LUCENT", dynamic="lucent"},
     {name="Puncturing Remedy",     short="PR", needed=2,  setId=0, abilityId=100575, cooldown=5, activeDuration=true},
-    {name="Roar of Alkosh",       short="ALK", setId=0, abilityId=76667, cooldown=10, activeDuration=true},
+    {name="Roar of Alkosh",       short="ALK", setId=0, abilityId=76667, cooldown=10, activeDuration=true, alkoshDebuff=true},
     {name="Stonehulk Dominion",   short="SH",  setId=827, abilityId=106754, cooldown=15},
     {name="Claw of Yolnahkriin",short="YOLN",abilityId=121878,cooldown=15,yoln=true,activeDuration=true},
     {name="Turning Tide",         short="TT",  setId=622, abilityId=167350, cooldown=15},
@@ -880,7 +892,7 @@ local function Abbreviate(name)
     return string.upper(s)
 end
 
-function RyticTank.Sets.Scan()
+function Sets.Scan()
     local sets={}
     local activePair=GetActiveWeaponPairInfo()
 
@@ -935,11 +947,11 @@ function RyticTank.Sets.Scan()
         end
     end
 
-    RyticTank.Sets.equipped=sets
+    Sets.equipped=sets
 end
 
 local function CreateItem(parent)
-    local wm=WINDOW_MANAGER
+    local wm=WM
     local c=wm:CreateControl(nil,parent,CT_CONTROL)
 
     local icon=wm:CreateControl(nil,c,CT_TEXTURE)
@@ -1014,15 +1026,26 @@ local function LayoutItem(c)
 end
 
 local function EnsureHUD()
-    if RyticTank.Sets.window then return end
-    local wm=WINDOW_MANAGER
+    if Sets.window then return end
+    local wm=WM
     local w=wm:CreateTopLevelWindow("RyticTankSetHUD")
-    RyticTank.Sets.window=w
+    Sets.window=w
     -- ESOUI HUD fragment: automatically hide this HUD when menus open.
     local hudFragment=ZO_HUDFadeSceneFragment:New(w,nil,0)
     HUD_SCENE:AddFragment(hudFragment)
     HUD_UI_SCENE:AddFragment(hudFragment)
-    RyticTank.Sets.hudFragment=hudFragment
+    Sets.hudFragment=hudFragment
+
+    Sets.fragmentVisible=false
+    hudFragment:RegisterCallback("StateChange",function(oldState,newState)
+        local visible=(newState==SCENE_FRAGMENT_SHOWING or newState==SCENE_FRAGMENT_SHOWN)
+        Sets.fragmentVisible=visible
+        if not visible then
+            w:SetHidden(true)
+        elseif Sets.Update then
+            Sets.Update()
+        end
+    end)
     w:SetClampedToScreen(true)
     w:ClearAnchors()
     w:SetAnchor(TOPLEFT,GuiRoot,TOPLEFT,
@@ -1033,42 +1056,42 @@ local function EnsureHUD()
         RyticTank.saved.sets.position.y=w:GetTop()
     end)
 
-    RyticTank.Sets.ApplyLock()
+    Sets.ApplyLock()
 end
 
-function RyticTank.Sets.ApplyLock()
-    if not RyticTank.Sets.window then return end
+function Sets.ApplyLock()
+    if not Sets.window then return end
     local movable=not RyticTank.saved.sets.locked
-    RyticTank.Sets.window:SetMovable(movable)
-    RyticTank.Sets.window:SetMouseEnabled(movable)
+    Sets.window:SetMovable(movable)
+    Sets.window:SetMouseEnabled(movable)
 end
 
-function RyticTank.Sets.Rebuild()
-    EnsureSettings(); EnsureHUD(); RyticTank.Sets.Scan()
-    for _,c in ipairs(RyticTank.Sets.items) do c:SetHidden(true) end
+function Sets.Rebuild()
+    EnsureSettings(); EnsureHUD(); Sets.Scan()
+    for _,c in ipairs(Sets.items) do c:SetHidden(true) end
     local names={}
-    for name,_ in pairs(RyticTank.Sets.equipped) do table.insert(names,name) end
+    for name,_ in pairs(Sets.equipped) do table.insert(names,name) end
     table.sort(names)
     local x,y,maxW,maxH=0,0,1,1
     local gap=zo_clamp(tonumber(RyticTank.saved.sets.spacing) or 8,0,30)
     local vertical=RyticTank.saved.sets.orientation=="VERTICAL"
     for i,name in ipairs(names) do
-        local e=RyticTank.Sets.equipped[name]
-        local c=RyticTank.Sets.items[i]
-        if not c then c=CreateItem(RyticTank.Sets.window); RyticTank.Sets.items[i]=c end
+        local e=Sets.equipped[name]
+        local c=Sets.items[i]
+        if not c then c=CreateItem(Sets.window); Sets.items[i]=c end
         local width,height=LayoutItem(c)
-        c:ClearAnchors(); c:SetAnchor(TOPLEFT,RyticTank.Sets.window,TOPLEFT,x,y)
+        c:ClearAnchors(); c:SetAnchor(TOPLEFT,Sets.window,TOPLEFT,x,y)
         c:SetHidden(false); c.data=e; c.icon:SetTexture(e.icon)
         c.name:SetText(RyticTank.saved.sets.abbreviateNames and e.short or ((e.tracked and e.tracked.displayName) or e.name))
         c.pieces:SetText("["..tostring(e.pieces).."]")
         if vertical then y=y+height+gap; maxW=math.max(maxW,width)
         else x=x+width+gap; maxH=math.max(maxH,height) end
     end
-    if vertical then RyticTank.Sets.window:SetDimensions(maxW,math.max(1,y-gap))
-    else RyticTank.Sets.window:SetDimensions(math.max(1,x-gap),maxH) end
-    RyticTank.Sets.Update()
-    if RyticTank.Sets.trackingRegistered and RyticTank.Sets.RefreshTracking then
-        RyticTank.Sets.RefreshTracking()
+    if vertical then Sets.window:SetDimensions(maxW,math.max(1,y-gap))
+    else Sets.window:SetDimensions(math.max(1,x-gap),maxH) end
+    Sets.Update()
+    if Sets.trackingRegistered and Sets.RefreshTracking then
+        Sets.RefreshTracking()
     end
 end
 
@@ -1116,21 +1139,25 @@ local function Dynamic(c,d)
             SetStatus(c,"K",0.1,1,0.15)
         end
     elseif d.dynamic=="lucent" then
-        local hp=GetUnitPower("player",POWERTYPE_HEALTH) or 0
-        local maxhp=GetUnitPowerMax("player",POWERTYPE_HEALTH) or 0
+        -- ESO GetUnitPower supplies current/max values; avoid nonexistent GetUnitPowerMax.
+        local hp,maxhp,effectiveMax=GetUnitPower("player",POWERTYPE_HEALTH)
+        -- GetUnitPower already returns numbers; avoid calling tonumber here.
+        -- This also prevents the scene-update crash seen when tonumber resolved nil.
+        hp=hp or 0
+        maxhp=effectiveMax or maxhp or 0
         local pct=maxhp>0 and (hp/maxhp)*100 or 100
         if pct>50 then c.pieces:SetText("[5] +11% CRIT")
         else c.pieces:SetText("[5] 20% DR") end
     elseif d.dynamic=="pearl" then
-        local total=GetGroupSize and GetGroupSize() or 0
+        local total=(type(GetGroupSize)=="function") and (GetGroupSize() or 0) or 0
         if total<=0 then total=1 end
         local alive=0
         if total==1 then
             alive=IsUnitDead("player") and 0 or 1
         else
             for i=1,total do
-                local tag=GetGroupUnitTagByIndex and GetGroupUnitTagByIndex(i) or nil
-                if tag and DoesUnitExist(tag) and not IsUnitDead(tag) then alive=alive+1 end
+                local tag=(type(GetGroupUnitTagByIndex)=="function") and GetGroupUnitTagByIndex(i) or nil
+                if tag and (type(DoesUnitExist)~="function" or DoesUnitExist(tag)) and not IsUnitDead(tag) then alive=alive+1 end
             end
         end
         -- Pearlescent Ward scales to 180 W/S Damage at 12 alive and 66% PvE DR at 12 dead.
@@ -1161,12 +1188,17 @@ local function Normal(c)
     SetStatus(c,"",1,1,1)
 end
 
-function RyticTank.Sets.Update()
-    local w=RyticTank.Sets.window
+function Sets.Update()
+    local w=Sets.window
     if not w then return end
     local s=RyticTank.saved.sets
 
     if not s.enabled then w:SetHidden(true) return end
+
+    if not Sets.fragmentVisible then
+        w:SetHidden(true)
+        return
+    end
 
     if s.preview then
         w:SetHidden(false)
@@ -1178,21 +1210,26 @@ function RyticTank.Sets.Update()
     end
 
     local now=GetGameTimeMilliseconds()
-    for _,c in ipairs(RyticTank.Sets.items) do
+    for _,c in ipairs(Sets.items) do
         if not c:IsHidden() and c.data then
             local d=c.data.tracked
             if d then
                 if d.cloakTimer then
-                    local remain=((RyticTank.Sets.activeUntil[d.name] or 0)-now)/1000
+                    local remain=((Sets.activeUntil[d.name] or 0)-now)/1000
                     if remain>0 then Active(c,remain) else Ready(c) end
                 elseif d.dynamic then
                     local needed=d.needed or 5
                     if (c.data.pieces or 0)>=needed then Dynamic(c,d) else Normal(c) end
+                elseif d.alkoshDebuff then
+                    -- Alkosh is driven by the actual Roar of Alkosh target debuff (76667).
+                    -- Every confirmed application/refresh supplies a fresh effect end time.
+                    local remain=((Sets.activeUntil[d.name] or 0)-now)/1000
+                    if remain>0 then Active(c,remain) else Ready(c) end
                 elseif d.activeWindow then
-                    local remain=((RyticTank.Sets.activeUntil[d.name] or 0)-now)/1000
+                    local remain=((Sets.activeUntil[d.name] or 0)-now)/1000
                     if remain>0 then Active(c,remain) else Ready(c) end
                 else
-                    local remain=((RyticTank.Sets.cooldownEnd[d.name] or 0)-now)/1000
+                    local remain=((Sets.cooldownEnd[d.name] or 0)-now)/1000
                     if remain>0 then Cooldown(c,remain) else Ready(c) end
                 end
             else
@@ -1203,7 +1240,7 @@ function RyticTank.Sets.Update()
 end
 
 local function IsEquipped(d)
-    for _,e in pairs(RyticTank.Sets.equipped) do
+    for _,e in pairs(Sets.equipped) do
         if e.tracked==d then return true end
     end
     return false
@@ -1213,12 +1250,12 @@ local function StartCooldown(d)
     if not d or d.dynamic or not IsEquipped(d) then return end
     local now=GetGameTimeMilliseconds()
     if d.activeWindow then
-        RyticTank.Sets.activeUntil[d.name]=now+d.activeWindow*1000
+        Sets.activeUntil[d.name]=now+d.activeWindow*1000
         return
     end
     if not d.cooldown then return end
-    if (RyticTank.Sets.cooldownEnd[d.name] or 0)>now then return end
-    RyticTank.Sets.cooldownEnd[d.name]=now+d.cooldown*1000
+    if (Sets.cooldownEnd[d.name] or 0)>now then return end
+    Sets.cooldownEnd[d.name]=now+d.cooldown*1000
 end
 
 local function SupportNameEvent(eventCode,changeType,effectSlot,effectName,unitTag,
@@ -1227,7 +1264,7 @@ local function SupportNameEvent(eventCode,changeType,effectSlot,effectName,unitT
     if changeType~=EFFECT_RESULT_GAINED and changeType~=EFFECT_RESULT_UPDATED then return end
     local lower=zo_strlower(effectName or "")
     if lower=="" then return end
-    for _,d in ipairs(RyticTank.Sets.activeSupportDefs or {}) do
+    for _,d in ipairs(Sets.activeSupportDefs or {}) do
         for _,pattern in ipairs(d.supportName) do
             if string.find(lower,pattern,1,true) then
                 StartCooldown(d)
@@ -1240,14 +1277,40 @@ end
 local function CombatEvent(eventCode,result,isError,abilityName,abilityGraphic,
     abilityActionSlotType,sourceName,sourceType,targetName,targetType,hitValue,
     powerType,damageType,log,sourceUnitId,targetUnitId,abilityId,overflow)
-    StartCooldown(byAbility[abilityId])
+    local d=byAbility[abilityId]
+    -- Alkosh's combat/damage packets are not the timer source. 76667's
+    -- EVENT_EFFECT_CHANGED application is authoritative and can refresh early.
+    if d and d.alkoshDebuff then return end
+    StartCooldown(d)
 end
 
 local function EffectChanged(eventCode,changeType,effectSlot,effectName,unitTag,
     beginTime,endTime,stackCount,iconName,buffType,effectType,abilityType,
     statusEffectType,unitName,unitId,abilityId,sourceType)
+    local d=byAbility[abilityId]
+    if not d then return end
+
+    if d.alkoshDebuff then
+        if not IsEquipped(d) then return end
+        if changeType==EFFECT_RESULT_GAINED or changeType==EFFECT_RESULT_UPDATED then
+            -- ESO effect times use frame-time seconds; convert the reported end time
+            -- into the millisecond clock used by the Sets UI. This means every real
+            -- Alkosh reapplication resets the display from ESO's actual debuff timer.
+            local remain=(endTime or 0)-GetFrameTimeSeconds()
+            if remain<=0 then
+                remain=((endTime or 0)-(beginTime or 0))
+            end
+            if remain>0 then
+                Sets.activeUntil[d.name]=GetGameTimeMilliseconds()+(remain*1000)
+            end
+        elseif changeType==EFFECT_RESULT_FADED then
+            Sets.activeUntil[d.name]=0
+        end
+        return
+    end
+
     if changeType==EFFECT_RESULT_GAINED or changeType==EFFECT_RESULT_UPDATED then
-        StartCooldown(byAbility[abilityId])
+        StartCooldown(d)
     end
 end
 
@@ -1260,12 +1323,12 @@ local function CloakEffectChanged(eventCode,changeType,effectSlot,effectName,uni
     local lower=zo_strlower(effectName or "")
     if lower~="quick cloak" and lower~="deadly cloak" and lower~="blade cloak" then return end
     local nowMs=GetGameTimeMilliseconds()
-    for _,d in ipairs(RyticTank.Sets.activeCloakDefs or {}) do
+    for _,d in ipairs(Sets.activeCloakDefs or {}) do
         if changeType==EFFECT_RESULT_GAINED or changeType==EFFECT_RESULT_UPDATED then
             local remain=math.max(0,(tonumber(endTime) or 0)-GetFrameTimeSeconds())
-            RyticTank.Sets.activeUntil[d.name]=nowMs+(remain*1000)
+            Sets.activeUntil[d.name]=nowMs+(remain*1000)
         elseif changeType==EFFECT_RESULT_FADED then
-            RyticTank.Sets.activeUntil[d.name]=0
+            Sets.activeUntil[d.name]=0
         end
     end
 end
@@ -1277,7 +1340,7 @@ local function NamedProcCombatEvent(eventCode,result,isError,abilityName,ability
     powerType,damageType,log,sourceUnitId,targetUnitId,abilityId,overflow)
     local lower=zo_strlower(abilityName or "")
     if lower=="" then return end
-    for _,d in ipairs(RyticTank.Sets.activeNamedDefs or {}) do
+    for _,d in ipairs(Sets.activeNamedDefs or {}) do
         for _,pattern in ipairs(d.combatName) do
             if string.find(lower,pattern,1,true) then
                 StartCooldown(d)
@@ -1288,32 +1351,32 @@ local function NamedProcCombatEvent(eventCode,result,isError,abilityName,ability
 end
 
 local function InventoryChanged()
-    zo_callLater(RyticTank.Sets.Rebuild,100)
+    zo_callLater(Sets.Rebuild,100)
 end
 
 -- Settings hooks
-function RyticTank.Sets.SetOrientation(v)
+function Sets.SetOrientation(v)
     EnsureSettings()
     RyticTank.saved.sets.orientation=(v=="VERTICAL") and "VERTICAL" or "HORIZONTAL"
-    RyticTank.Sets.Rebuild()
+    Sets.Rebuild()
 end
 
-function RyticTank.Sets.SetIconSize(v)
+function Sets.SetIconSize(v)
     EnsureSettings()
     RyticTank.saved.sets.iconSize=zo_clamp(tonumber(v) or 36,24,64)
-    RyticTank.Sets.Rebuild()
+    Sets.Rebuild()
 end
 
-function RyticTank.Sets.SetSpacing(v)
+function Sets.SetSpacing(v)
     EnsureSettings()
     RyticTank.saved.sets.spacing=zo_clamp(tonumber(v) or 8,0,30)
-    RyticTank.Sets.Rebuild()
+    Sets.Rebuild()
 end
 
-function RyticTank.Sets.SetAbbreviate(v)
+function Sets.SetAbbreviate(v)
     EnsureSettings()
     RyticTank.saved.sets.abbreviateNames=v and true or false
-    RyticTank.Sets.Rebuild()
+    Sets.Rebuild()
 end
 
 local function WeaponPairChanged(_, activeWeaponPair, locked)
@@ -1321,8 +1384,8 @@ local function WeaponPairChanged(_, activeWeaponPair, locked)
     -- Rebuild after the swap settles so numEquipped reflects the active bar.
     zo_callLater(function()
         if not RyticTank.saved.sets.enabled then return end
-        RyticTank.Sets.Scan()
-        RyticTank.Sets.Rebuild()
+        Sets.Scan()
+        Sets.Rebuild()
     end, 100)
 end
 
@@ -1330,21 +1393,21 @@ local function UnregisterEquippedTracking()
     -- Only proc/effect listeners are cycled here. Inventory, weapon-pair and the
     -- lightweight HUD update remain registered while the Set HUD is enabled so
     -- an equipment change can immediately rebuild this list.
-    for abilityId,_ in pairs(RyticTank.Sets.registeredAbilityIds or {}) do
-        EVENT_MANAGER:UnregisterForEvent("RyticTankSetsCombat"..tostring(abilityId),EVENT_COMBAT_EVENT)
-        EVENT_MANAGER:UnregisterForEvent("RyticTankSetsEffect"..tostring(abilityId),EVENT_EFFECT_CHANGED)
+    for abilityId,_ in pairs(Sets.registeredAbilityIds or {}) do
+        EM:UnregisterForEvent("RyticTankSetsCombat"..tostring(abilityId),EVENT_COMBAT_EVENT)
+        EM:UnregisterForEvent("RyticTankSetsEffect"..tostring(abilityId),EVENT_EFFECT_CHANGED)
     end
-    RyticTank.Sets.registeredAbilityIds={}
-    RyticTank.Sets.activeSupportDefs={}
-    RyticTank.Sets.activeCloakDefs={}
-    RyticTank.Sets.activeNamedDefs={}
-    EVENT_MANAGER:UnregisterForEvent("RyticTankSetsSupportEffects",EVENT_EFFECT_CHANGED)
-    EVENT_MANAGER:UnregisterForEvent("RyticTankSetsCloakEffects",EVENT_EFFECT_CHANGED)
-    EVENT_MANAGER:UnregisterForEvent("RyticTankSetsNamedProcs",EVENT_COMBAT_EVENT)
+    Sets.registeredAbilityIds={}
+    Sets.activeSupportDefs={}
+    Sets.activeCloakDefs={}
+    Sets.activeNamedDefs={}
+    EM:UnregisterForEvent("RyticTankSetsSupportEffects",EVENT_EFFECT_CHANGED)
+    EM:UnregisterForEvent("RyticTankSetsCloakEffects",EVENT_EFFECT_CHANGED)
+    EM:UnregisterForEvent("RyticTankSetsNamedProcs",EVENT_COMBAT_EVENT)
 end
 
 local function RegisterEquippedTracking()
-    if not RyticTank.Sets.trackingRegistered then return end
+    if not Sets.trackingRegistered then return end
     UnregisterEquippedTracking()
 
     local neededAbilities={}
@@ -1354,13 +1417,13 @@ local function RegisterEquippedTracking()
 
     -- Hot-event callbacks must never walk the full set catalog. Build tiny
     -- equipped-only lists whenever gear/bar state changes.
-    RyticTank.Sets.activeSupportDefs={}
-    RyticTank.Sets.activeCloakDefs={}
-    RyticTank.Sets.activeNamedDefs={}
+    Sets.activeSupportDefs={}
+    Sets.activeCloakDefs={}
+    Sets.activeNamedDefs={}
 
     -- IMPORTANT: TRACKED can grow to hundreds of known sets. We only inspect
     -- the few sets actually equipped here and register listeners for those.
-    for _,e in pairs(RyticTank.Sets.equipped) do
+    for _,e in pairs(Sets.equipped) do
         local d=e.tracked
         if d then
             if d.abilityId then neededAbilities[d.abilityId]=d end
@@ -1369,23 +1432,23 @@ local function RegisterEquippedTracking()
             end
             if d.supportName then
                 needSupport=true
-                table.insert(RyticTank.Sets.activeSupportDefs,d)
+                table.insert(Sets.activeSupportDefs,d)
             end
             if d.cloakTimer then
                 needCloak=true
-                table.insert(RyticTank.Sets.activeCloakDefs,d)
+                table.insert(Sets.activeCloakDefs,d)
             end
             if d.combatName then
                 needNamed=true
-                table.insert(RyticTank.Sets.activeNamedDefs,d)
+                table.insert(Sets.activeNamedDefs,d)
             end
         end
     end
 
     for abilityId,d in pairs(neededAbilities) do
         local combatName="RyticTankSetsCombat"..tostring(abilityId)
-        EVENT_MANAGER:RegisterForEvent(combatName,EVENT_COMBAT_EVENT,CombatEvent)
-        EVENT_MANAGER:AddFilterForEvent(
+        EM:RegisterForEvent(combatName,EVENT_COMBAT_EVENT,CombatEvent)
+        EM:AddFilterForEvent(
             combatName,EVENT_COMBAT_EVENT,
             REGISTER_FILTER_ABILITY_ID,abilityId,
             REGISTER_FILTER_IS_ERROR,false
@@ -1393,99 +1456,99 @@ local function RegisterEquippedTracking()
 
         if not d.combatOnly then
             local effectName="RyticTankSetsEffect"..tostring(abilityId)
-            EVENT_MANAGER:RegisterForEvent(effectName,EVENT_EFFECT_CHANGED,EffectChanged)
-            EVENT_MANAGER:AddFilterForEvent(
+            EM:RegisterForEvent(effectName,EVENT_EFFECT_CHANGED,EffectChanged)
+            EM:AddFilterForEvent(
                 effectName,EVENT_EFFECT_CHANGED,
                 REGISTER_FILTER_ABILITY_ID,abilityId
             )
         end
-        RyticTank.Sets.registeredAbilityIds[abilityId]=true
+        Sets.registeredAbilityIds[abilityId]=true
     end
 
     if needSupport then
-        EVENT_MANAGER:RegisterForEvent("RyticTankSetsSupportEffects",EVENT_EFFECT_CHANGED,SupportNameEvent)
-        EVENT_MANAGER:AddFilterForEvent(
+        EM:RegisterForEvent("RyticTankSetsSupportEffects",EVENT_EFFECT_CHANGED,SupportNameEvent)
+        EM:AddFilterForEvent(
             "RyticTankSetsSupportEffects",EVENT_EFFECT_CHANGED,
             REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE,COMBAT_UNIT_TYPE_PLAYER
         )
     end
 
     if needCloak then
-        EVENT_MANAGER:RegisterForEvent("RyticTankSetsCloakEffects",EVENT_EFFECT_CHANGED,CloakEffectChanged)
-        EVENT_MANAGER:AddFilterForEvent(
+        EM:RegisterForEvent("RyticTankSetsCloakEffects",EVENT_EFFECT_CHANGED,CloakEffectChanged)
+        EM:AddFilterForEvent(
             "RyticTankSetsCloakEffects",EVENT_EFFECT_CHANGED,
             REGISTER_FILTER_UNIT_TAG,"player"
         )
     end
 
     if needNamed then
-        EVENT_MANAGER:RegisterForEvent("RyticTankSetsNamedProcs",EVENT_COMBAT_EVENT,NamedProcCombatEvent)
-        EVENT_MANAGER:AddFilterForEvent(
+        EM:RegisterForEvent("RyticTankSetsNamedProcs",EVENT_COMBAT_EVENT,NamedProcCombatEvent)
+        EM:AddFilterForEvent(
             "RyticTankSetsNamedProcs",EVENT_COMBAT_EVENT,
             REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE,COMBAT_UNIT_TYPE_PLAYER
         )
-        EVENT_MANAGER:AddFilterForEvent(
+        EM:AddFilterForEvent(
             "RyticTankSetsNamedProcs",EVENT_COMBAT_EVENT,
             REGISTER_FILTER_IS_ERROR,false
         )
     end
 end
 
-function RyticTank.Sets.RefreshTracking()
-    if not RyticTank.Sets.trackingRegistered then return end
+function Sets.RefreshTracking()
+    if not Sets.trackingRegistered then return end
     RegisterEquippedTracking()
 end
 
-function RyticTank.Sets.RegisterTracking()
-    if RyticTank.Sets.trackingRegistered then
-        RyticTank.Sets.RefreshTracking()
+function Sets.RegisterTracking()
+    if Sets.trackingRegistered then
+        Sets.RefreshTracking()
         return
     end
 
     -- Base listeners are the only always-on listeners while the Set HUD is
     -- enabled. Proc/effect listeners are registered ONLY for equipped sets.
-    EVENT_MANAGER:RegisterForEvent("RyticTankSetsInventory",EVENT_INVENTORY_SINGLE_SLOT_UPDATE,InventoryChanged)
-    EVENT_MANAGER:AddFilterForEvent(
+    EM:RegisterForEvent("RyticTankSetsInventory",EVENT_INVENTORY_SINGLE_SLOT_UPDATE,InventoryChanged)
+    EM:AddFilterForEvent(
         "RyticTankSetsInventory",EVENT_INVENTORY_SINGLE_SLOT_UPDATE,
         REGISTER_FILTER_BAG_ID,BAG_WORN
     )
 
-    EVENT_MANAGER:RegisterForEvent(
+    EM:RegisterForEvent(
         "RyticTankSetsWeaponPair",
         EVENT_ACTIVE_WEAPON_PAIR_CHANGED,
         WeaponPairChanged
     )
 
-    EVENT_MANAGER:RegisterForUpdate("RyticTankSetsTimer",100,RyticTank.Sets.Update)
-    RyticTank.Sets.trackingRegistered=true
+    EM:RegisterForUpdate("RyticTankSetsTimer",100,Sets.Update)
+    Sets.trackingRegistered=true
     RegisterEquippedTracking()
 end
 
-function RyticTank.Sets.UnregisterTracking()
-    if not RyticTank.Sets.trackingRegistered then return end
+function Sets.UnregisterTracking()
+    if not Sets.trackingRegistered then return end
     UnregisterEquippedTracking()
-    EVENT_MANAGER:UnregisterForEvent("RyticTankSetsInventory",EVENT_INVENTORY_SINGLE_SLOT_UPDATE)
-    EVENT_MANAGER:UnregisterForEvent("RyticTankSetsWeaponPair",EVENT_ACTIVE_WEAPON_PAIR_CHANGED)
-    EVENT_MANAGER:UnregisterForUpdate("RyticTankSetsTimer")
-    RyticTank.Sets.trackingRegistered=false
+    EM:UnregisterForEvent("RyticTankSetsInventory",EVENT_INVENTORY_SINGLE_SLOT_UPDATE)
+    EM:UnregisterForEvent("RyticTankSetsWeaponPair",EVENT_ACTIVE_WEAPON_PAIR_CHANGED)
+    EM:UnregisterForUpdate("RyticTankSetsTimer")
+    Sets.trackingRegistered=false
 end
 
-function RyticTank.Sets.SetEnabled(enabled)
+function Sets.SetEnabled(enabled)
     EnsureSettings()
     RyticTank.saved.sets.enabled=enabled and true or false
 
     if RyticTank.saved.sets.enabled then
-        RyticTank.Sets.RegisterTracking()
-        RyticTank.Sets.Scan()
-        RyticTank.Sets.Rebuild()
-        RyticTank.Sets.Update()
+        Sets.RegisterTracking()
+        Sets.Scan()
+        Sets.Rebuild()
+        Sets.Update()
     else
-        RyticTank.Sets.UnregisterTracking()
-        if RyticTank.Sets.window then RyticTank.Sets.window:SetHidden(true) end
+        Sets.UnregisterTracking()
+        if Sets.window then Sets.window:SetHidden(true) end
     end
 end
 
-function RyticTank.Sets.Initialize()
+function Sets.Initialize()
     if not RyticTank.saved.sets then
         RyticTank.saved.sets=ZO_DeepTableCopy(RyticTank.defaults.sets)
     end
@@ -1495,21 +1558,21 @@ function RyticTank.Sets.Initialize()
 
     EnsureSettings()
     EnsureHUD()
-    RyticTank.Sets.Rebuild()
+    Sets.Rebuild()
 
     if RyticTank.saved.sets.enabled then
-        RyticTank.Sets.RegisterTracking()
+        Sets.RegisterTracking()
     else
-        RyticTank.Sets.UnregisterTracking()
-        if RyticTank.Sets.window then RyticTank.Sets.window:SetHidden(true) end
+        Sets.UnregisterTracking()
+        if Sets.window then Sets.window:SetHidden(true) end
     end
 
     SLASH_COMMANDS["/setmove"]=function()
-        local hud=RyticTank.Sets.window
+        local hud=Sets.window
         if not hud then return end
-        RyticTank.Sets.editMode=not RyticTank.Sets.editMode
+        Sets.editMode=not Sets.editMode
         hud:SetMovable(true); hud:SetMouseEnabled(true); hud:SetHidden(false)
-        if RyticTank.Sets.editMode then
+        if Sets.editMode then
             hud:SetHandler("OnMouseDown",function(_,button)
                 if button==MOUSE_BUTTON_INDEX_LEFT then hud:StartMoving() end
             end)

@@ -1,23 +1,25 @@
 <GuiXml>
   <Controls>
+    <!-- Виртуальный шаблон тайлов карты -->
     <Texture name="NecroCat_MapTile" pixelRoundingEnabled="false" virtual="true">
-      <Dimensions x="230" y="230" />
+      <Dimensions x="256" y="256" />
     </Texture>
-    <Texture name="NecroCat_FrameMunge" textureFile="EsoUI/Art/Tooltips/munge_overlay.dds" addressMode="WRAP" layer="OVERLAY" virtual="true"/>
-    
+
+    <!-- Главное окно миникарты -->
     <TopLevelControl name="NecroCat_Minimap_MainWindow" tier="LOW" clampedToScreen="true" mouseEnabled="true" hidden="true">
       <Dimensions x="250" y="250" />
-      
+      <Anchor point="TOPRIGHT" relativeTo="GuiRoot" relativePoint="TOPRIGHT" offsetX="-30" offsetY="80" />
+
       <Controls>
         <Control name="$(parent)_Map">
           <AnchorFill />
           <Controls>
-            <!-- 1. Фоновая подложка под картой (закрывает дыры на краях мира) -->
+            <!-- 1. Фоновая подложка под картой (закрывает пустоты за краями) -->
             <Texture name="$(parent)_Background" layer="0" textureFile="NecroCat/imgs/map_bg.dds">
               <AnchorFill />
             </Texture>
 
-            <!-- 2. Скролл с плитками карты -->
+            <!-- 2. Скролл-контейнер для тайлов и меток -->
             <Scroll name="$(parent)_Scroll" layer="1">
               <AnchorFill />
               <Controls>
@@ -27,14 +29,14 @@
                 </Control>
               </Controls>
             </Scroll>
-            
-            <!-- 3. Стрелочка игрока -->
+
+            <!-- 3. Центральная стрелочка игрока -->
             <Texture name="$(parent)_PlayerPin" textureFile="EsoUI/Art/MapPins/UI-WorldMapPlayerPip.dds" layer="OVERLAY" tier="HIGH">
               <Dimensions x="32" y="32" />
               <Anchor point="CENTER" relativeTo="$(parent)_Scroll" relativePoint="CENTER" />
             </Texture>
 
-            <!-- 4. Золотая рамка -->
+            <!-- 4. Рамка миникарты -->
             <Backdrop name="$(parent)_Frame" tier="MEDIUM" layer="OVERLAY">
               <Edge file="EsoUI/Art/WorldMap/worldmap_frame_edge.dds" edgeFileWidth="128" edgeFileHeight="16" />
               <Insets left="16" top="16" right="-16" bottom="-16" />
@@ -45,17 +47,14 @@
             </Backdrop>
           </Controls>
         </Control>
-        
-        <Label name="NecroCat_Location_Name" font="ZoFontGameBold" color="FFFFFF" layer="OVERLAY" horizontalAlignment="CENTER" wrapMode="ELLIPSIS" maxLineCount="1">
+
+        <!-- Название локации сверху -->
+        <Label name="NecroCat_Location_Name" font="ZoFontGameBold" color="FFFFFF" layer="OVERLAY" tier="HIGH" horizontalAlignment="CENTER" wrapMode="ELLIPSIS" maxLineCount="1">
           <Anchor point="BOTTOMLEFT" relativeTo="NecroCat_Minimap_MainWindow" relativePoint="TOPLEFT" offsetX="4" offsetY="-4" />
           <Anchor point="BOTTOMRIGHT" relativeTo="NecroCat_Minimap_MainWindow" relativePoint="TOPRIGHT" offsetX="-4" offsetY="-4" />
         </Label>
-        
-        <!-- Координаты скрыты -->
-        <Label name="NecroCat_Coords" hidden="true">
-        </Label>
 
-        <!-- Индикатор ветеранки внутри карты в правом нижнем углу -->
+        <!-- Индикатор Ветеранского подземелья -->
         <Label name="NecroCat_Difficulty" font="ZoFontGameBold" color="FF5555" layer="OVERLAY" tier="HIGH" horizontalAlignment="RIGHT">
           <Anchor point="BOTTOMRIGHT" relativeTo="NecroCat_Minimap_MainWindow" relativePoint="BOTTOMRIGHT" offsetX="-6" offsetY="-6" />
         </Label>

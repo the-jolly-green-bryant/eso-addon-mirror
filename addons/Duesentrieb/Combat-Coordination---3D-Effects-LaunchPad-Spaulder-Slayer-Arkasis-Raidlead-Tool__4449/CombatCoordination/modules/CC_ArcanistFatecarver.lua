@@ -7,7 +7,7 @@ local Module = {
     name      = "ArcanistFatecarver",
     menuName  = "ARCANIST FATECARVER",
     iconPath  = "/esoui/art/icons/ability_arcanist_015.dds",
-    menuLayer = 2,
+    menuLayer = 3,
 
     currentEffectId = nil,
     currentLabelId = nil,
@@ -34,6 +34,7 @@ local Module = {
     },
 
     Default = {
+        enableModule = true,
         enableDrawSelf = false,
         enableGameAoeFriendlyColor = false,
         ColorSelf = { 0.75, 1, 0.25, 0.5 },

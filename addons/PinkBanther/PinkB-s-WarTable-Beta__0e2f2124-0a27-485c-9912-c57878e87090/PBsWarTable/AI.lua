@@ -84,8 +84,16 @@ function AI.Evaluate(s,player)
     end
     local score=(E.Standing(s,player)-E.Standing(s,3-player))*W.SCORE_WEIGHT
     if s.scrollOwner~=0 then score=score+(s.scrollOwner==player and 1 or -1)*C.SCROLL.THREAT_WEIGHT end
+    local rules=E.Rules(s)
     for i,owner in ipairs(s.flags) do
-        if owner~=0 then score=score+(owner==player and 1 or -1)*E.Rules(s).FLAGS[i].points*W.FLAG_WEIGHT end
+        if owner~=0 then score=score+(owner==player and 1 or -1)*rules.FLAGS[i].points*W.FLAG_WEIGHT end
+    end
+    if rules.EMPEROR then
+        -- Keeps are worth more together than apart: the last one crowns an emperor, so the
+        -- pull grows with the square of how many a side holds, and denying the enemy counts too.
+        local mine,theirs=E.Counts(s,player),E.Counts(s,3-player)
+        local total=#rules.FLAGS
+        score=score+W.EMPEROR_WEIGHT*(mine*mine-theirs*theirs)/total
     end
     for _,p in ipairs(s.pieces) do
         if p.alive then
@@ -129,9 +137,72 @@ local function hornPotential(s,player)
 end
 AI.HornPotential=hornPotential
 function AI.Difficulty(id) return C.AI.DIFFICULTIES[id] and id or "beginner" end
+-- A crown is a win this very turn, and it can need several actions and cards in one turn --
+-- more than the beam ever looks at. When the side to move is already one or two keeps short,
+-- sweep the turn exhaustively (bounded) and take the sequence that ends holding every keep.
+-- Only the orders that can change who holds a keep matter for a coronation: entering a keep,
+-- taking one from its defender, or handing out the horn steps that reach one. Reviving a
+-- soldier at home or hiding a scout never completes the ring, and leaving them in would bury
+-- the answer under thousands of irrelevant branches.
+local function crownCandidates(state,player)
+    local keeps={}
+    for _,f in ipairs(E.Rules(state).FLAGS) do keeps[f.y*100+f.x]=true end
+    local list={}
+    for _,c in ipairs(AI.Candidates(state,player)) do
+        local relevant=false
+        if c.type=="move" or c.type=="horn_move" or (c.type=="card" and c.card=="charge") then
+            relevant=keeps[(c.y or 0)*100+(c.x or 0)]==true
+        elseif c.type=="attack" or (c.type=="card" and c.card=="siege") then
+            local target=E.Piece(state,c.target)
+            relevant=target~=nil and keeps[target.y*100+target.x]==true
+        elseif c.type=="card" and c.card=="horn" then
+            relevant=true
+        end
+        if relevant then list[#list+1]=c end
+    end
+    return list
+end
+function AI.CrownPlan(s,player)
+    local rules=E.Rules(s)
+    if not rules.EMPEROR then return nil end
+    local total=#rules.FLAGS
+    if E.Counts(s,player)<total-2 then return nil end
+    -- Breadth first, so the shortest coronation is found before the budget runs out.
+    local budget,seen=C.AI.CROWN_NODES,{}
+    local frontier,head={{state=E.Clone(s)}},1
+    while head<=#frontier do
+        local node=frontier[head]; head=head+1
+        local ending=E.Clone(node.state); E.Apply(ending,player,{type="end_turn"})
+        if ending.status=="finished" and ending.winner==player and ending.reason=="emperor" and node.first then
+            return node.first
+        end
+        if (node.depth or 0)<C.AI.CROWN_DEPTH then
+            for _,command in ipairs(crownCandidates(node.state,player)) do
+                if command.type~="end_turn" then
+                    budget=budget-1
+                    if budget<=0 then return nil end
+                    local step=E.Clone(node.state)
+                    if E.Apply(step,player,command) then
+                        local key=E.Serialize(step)
+                        if not seen[key] then
+                            seen[key]=true
+                            frontier[#frontier+1]={state=step,first=node.first or command,depth=(node.depth or 0)+1}
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return nil
+end
 function AI.NewSearch(s,player,difficulty)
     if not E.Active(s,player) then return nil end
     difficulty=AI.Difficulty(difficulty)
+    local crown=AI.CrownPlan(s,player)
+    if crown then
+        return {state=E.Clone(s),player=player,crown=true,candidates={crown},index=2,
+            best=crown,bestScore=C.AI.WIN_VALUE,evaluated=1,done=true}
+    end
     if difficulty~="beginner" then return PBWT.Search.New(s,player,difficulty) end
     return {state=E.Clone(s),player=player,candidates=AI.Candidates(s,player),index=1,
         best=nil,bestScore=-math.huge,evaluated=0,done=false}

@@ -1,12 +1,20 @@
 ------------------------------------------------------------
--- RYTICTANK TANKSTATS v3
+-- RYTICTANK TANKSTATS v3.1 - local-reference optimization
 -- Tank-focused combat report. Command: /tankstats
 -- Original implementation; architecture informed by live testing.
 ------------------------------------------------------------
 RyticTank = RyticTank or {}
+local RyticTank = RyticTank
 RyticTank.Stats = RyticTank.Stats or {}
 local S=RyticTank.Stats
 local EM,WM=EVENT_MANAGER,WINDOW_MANAGER
+
+-- Cache frequently used globals/functions while preserving all Stats behavior.
+local GetGameTimeMilliseconds=GetGameTimeMilliseconds
+local GetAdvancedStatValue=GetAdvancedStatValue
+local tonumber=tonumber
+local tostring=tostring
+local string_format=string.format
 
 local function statsEnabled()
     return not RyticTank.saved or not RyticTank.saved.stats or RyticTank.saved.stats.enabled ~= false
@@ -486,13 +494,13 @@ local function debuffLines(f,bossOnly,maxrows,offset)
     local last=math.min(#a,offset+maxrows)
     for i=offset+1,last do
         local v=a[i]
-        out[#out+1]=string.format("%-32s %6.1f%%  x%-3d",cap(v.name,32),math.min(100,pct(v.seconds,d)),v.count)
+        out[#out+1]=string_format("%-32s %6.1f%%  x%-3d",cap(v.name,32),math.min(100,pct(v.seconds,d)),v.count)
     end
     if #out==0 then
         return bossOnly and "|c777777No boss debuffs observed.|r" or "|c777777No enemy debuffs observed.|r"
     end
     if #a>maxrows then
-        out[#out+1]=string.format("|c777777Rows %d-%d of %d — mouse wheel to scroll|r",
+        out[#out+1]=string_format("|c777777Rows %d-%d of %d — mouse wheel to scroll|r",
             offset+1,last,#a)
     end
     return table.concat(out,"\n")
@@ -562,9 +570,9 @@ local function optimizationLines(f,list,isDebuff)
         end
         local up=math.min(100,pct(seconds,duration))
         if seconds<=0 then
-            out[#out+1]=string.format("|cFF8A00%-24s MISSING|r",watch.name)
+            out[#out+1]=string_format("|cFF8A00%-24s MISSING|r",watch.name)
         elseif up<(watch.target or 0) then
-            out[#out+1]=string.format("|cFF8A00%-24s LOW %5.1f%%  (target %d%%)|r",watch.name,up,watch.target)
+            out[#out+1]=string_format("|cFF8A00%-24s LOW %5.1f%%  (target %d%%)|r",watch.name,up,watch.target)
         end
     end
     if #out==0 then return "|c55FF88No watched optimization gaps detected.|r" end
@@ -696,7 +704,7 @@ local function linesBuckets(t,total,maxrows)
     local a,out=sorted(t),{}
     for i=1,math.min(maxrows,#a) do
         local v=a[i]
-        out[#out+1]=string.format("%-22s  %9s  %5.1f%%",cap(v.name,22),fmt(v.amount),pct(v.amount,total))
+        out[#out+1]=string_format("%-22s  %9s  %5.1f%%",cap(v.name,22),fmt(v.amount),pct(v.amount,total))
     end
     return #out>0 and table.concat(out,"\n") or "|c777777No data recorded.|r"
 end
@@ -707,7 +715,7 @@ local function splitBucketColumns(tbl,total,maxrows)
         local v=a[i]
         names[#names+1]=cap(v.name,22)
         vals[#vals+1]=fmt(v.amount)
-        pcts[#pcts+1]=string.format("%.1f%%",pct(v.amount,total))
+        pcts[#pcts+1]=string_format("%.1f%%",pct(v.amount,total))
     end
     if #names==0 then names[1]="No data recorded." end
     return table.concat(names,"\n"),table.concat(vals,"\n"),table.concat(pcts,"\n")
@@ -733,7 +741,7 @@ local function buffLines(f,maxrows)
     local out={}
     for i=1,(maxrows and math.min(maxrows,#a) or #a) do
         local b=a[i]
-        out[#out+1]=string.format("%-23s %6.1f%%  x%d",cap(b.name,23),pct(b.seconds,d),b.count or 0)
+        out[#out+1]=string_format("%-23s %6.1f%%  x%d",cap(b.name,23),pct(b.seconds,d),b.count or 0)
     end
     return #out>0 and table.concat(out,"\n") or "|c777777No buff data recorded.|r"
 end
@@ -748,7 +756,7 @@ local function splitBuffDetailColumns(f)
     for i=1,#a do
         local b=a[i]
         names[#names+1]=cap(b.name,52)
-        uptimes[#uptimes+1]=string.format("%.1f%%",pct(b.seconds,d))
+        uptimes[#uptimes+1]=string_format("%.1f%%",pct(b.seconds,d))
         counts[#counts+1]="x"..tostring(b.count or 0)
     end
     if #names==0 then names[1]="No buff data recorded." end
@@ -764,7 +772,7 @@ local function splitBuffColumns(f,maxrows)
     for i=1,math.min(maxrows,#a) do
         local b=a[i]
         names[#names+1]=cap(b.name,23)
-        vals[#vals+1]=string.format("%.1f%%",pct(b.seconds,d))
+        vals[#vals+1]=string_format("%.1f%%",pct(b.seconds,d))
         counts[#counts+1]="x"..tostring(b.count or 0)
     end
     if #names==0 then names[1]="No buff data recorded." end
@@ -859,7 +867,7 @@ local function deathBlowLines(f)
     for i,v in ipairs(hits) do
         local status=v.blocked and "|c55CCFFBLOCKED|r" or "|cFF6666HIT|r"
         local death=(f.died and i==#hits) and "  |cFF3333DEATH|r" or ""
-        out[#out+1]=string.format("%d. %-24s %9s   %s%s",i,cap(v.name,24),fmt(v.amount),status,death)
+        out[#out+1]=string_format("%d. %-24s %9s   %s%s",i,cap(v.name,24),fmt(v.amount),status,death)
         out[#out+1]="   |c888888"..cap(v.enemy,46).."|r"
     end
     if not f.died then
@@ -1029,9 +1037,17 @@ function S.CreateWindow()
     local h1=makeColumnLabel(bp,16,45,650,26,"ZoFontGameBold",TEXT_ALIGN_LEFT); h1:SetText("|cFFFFFFBuff / Effect|r")
     local h2=makeColumnLabel(bp,680,45,180,26,"ZoFontGameBold",TEXT_ALIGN_RIGHT); h2:SetText("|cFFFFFFUptime|r")
     local h3=makeColumnLabel(bp,890,45,180,26,"ZoFontGameBold",TEXT_ALIGN_RIGHT); h3:SetText("|cFFFFFFApplications|r")
-    local scroll=WM:CreateControlFromVirtual(nil,bp,"ZO_ScrollContainer")
+    -- Do not instantiate ZO_ScrollContainer from a virtual template here.
+    -- Its internally named "Scroll" child can collide with another virtual
+    -- scroll container created during UI initialization.  This page only needs
+    -- wheel scrolling for its dynamically generated buff rows, so use a plain
+    -- page-owned control as the clipping/scroll host instead.
+    local scroll=WM:CreateControl(nil,bp,CT_CONTROL)
     scroll:SetAnchor(TOPLEFT,bp,TOPLEFT,8,72); scroll:SetAnchor(BOTTOMRIGHT,bp,BOTTOMRIGHT,-8,-8)
-    local child=scroll:GetNamedChild("ScrollChild"); child:SetWidth(1095); child:SetHeight(560)
+    scroll:SetMouseEnabled(true)
+    local child=WM:CreateControl(nil,scroll,CT_CONTROL)
+    child:SetAnchor(TOPLEFT,scroll,TOPLEFT,0,0); child:SetWidth(1095); child:SetHeight(560)
+    S.buffDetailScroll=scroll
     S.buffDetailChild=child
     S.buffDetailRows={}
     S.buffDetail=nil
@@ -1084,7 +1100,7 @@ local function missLines(f)
                "They are NOT automatically classified as blockable mechanics.|r",""}
     for i=1,math.min(18,#a) do
         local v=a[i]
-        out[#out+1]=string.format("|cFFAA66%-28s|r  %9s   x%-3d  largest %s",
+        out[#out+1]=string_format("|cFFAA66%-28s|r  %9s   x%-3d  largest %s",
             cap(v.name,28),fmt(v.amount),v.count,fmt(v.largest))
         out[#out+1]="  |c888888"..cap(v.enemy,55).."|r"
         if (v.prevented or 0)>0 then
@@ -1156,7 +1172,7 @@ local function RenderBuffRowsClean(f)
             row:SetAnchor(TOPLEFT,child,TOPLEFT,0,0)
         end
         row.name:SetText(data.name)
-        row.uptime:SetText(string.format("%.1f%%",math.min(100,pct(data.seconds,data.duration))))
+        row.uptime:SetText(string_format("%.1f%%",math.min(100,pct(data.seconds,data.duration))))
         row.count:SetText("x"..tostring(data.count))
         row:SetHidden(false)
         previous=row
@@ -1193,31 +1209,31 @@ function S.Refresh()
     if f==S.current then state="|c55FF88CURRENT FIGHT|r"
     elseif S.viewFight then
         local sv=statsSV()
-        state=string.format("|cFFD36ASAVED FIGHT %d/%d|r",S.viewSavedIndex or 0,sv and #sv.savedFights or 0)
+        state=string_format("|cFFD36ASAVED FIGHT %d/%d|r",S.viewSavedIndex or 0,sv and #sv.savedFights or 0)
     end
-    S.header:SetText(f and string.format("%s   |cFFFFFFActive: %.1fs|r",state,d) or "|cAAAAAAWAITING FOR COMBAT|r")
+    S.header:SetText(f and string_format("%s   |cFFFFFFActive: %.1fs|r",state,d) or "|cAAAAAAWAITING FOR COMBAT|r")
 
     local function statRow(label,value,alreadyFormatted)
         local shown=alreadyFormatted and tostring(value) or fmt(value)
-        return string.format("%-18s %10s",label,shown)
+        return string_format("%-18s %10s",label,shown)
     end
     local function rangeRow(label,key)
         local r=f and f.statRanges and f.statRanges[key]
-        if not r then return string.format("%-18s %10s  %10s",label,"--","--") end
-        return string.format("%-18s %10s  %10s",label,fmt(r.low),fmt(r.high))
+        if not r then return string_format("%-18s %10s  %10s",label,"--","--") end
+        return string_format("%-18s %10s  %10s",label,fmt(r.low),fmt(r.high))
     end
 
     local defenseText=
-        string.format("|c49BFFF%-10s|r %8s / %-8s (%3.0f%%)","Health",fmt(h),fmt(hm),pct(h,hm)).."\n"..
-        string.format("|c55FF88%-10s|r %8s / %-8s (%3.0f%%)","Stamina",fmt(st),fmt(stm),pct(st,stm)).."\n"..
-        string.format("|cB56CFF%-10s|r %8s / %-8s (%3.0f%%)","Magicka",fmt(m),fmt(mm),pct(m,mm)).."\n\n"..
+        string_format("|c49BFFF%-10s|r %8s / %-8s (%3.0f%%)","Health",fmt(h),fmt(hm),pct(h,hm)).."\n"..
+        string_format("|c55FF88%-10s|r %8s / %-8s (%3.0f%%)","Stamina",fmt(st),fmt(stm),pct(st,stm)).."\n"..
+        string_format("|cB56CFF%-10s|r %8s / %-8s (%3.0f%%)","Magicka",fmt(m),fmt(mm),pct(m,mm)).."\n\n"..
         statRow("Physical Resist",phys).."\n"..
         statRow("Spell Resist",spell).."\n"..
-        statRow("Block Mitigation",string.format("%.1f%%",blockMit),true).."\n"..
+        statRow("Block Mitigation",string_format("%.1f%%",blockMit),true).."\n"..
         statRow("Block Cost",blockCost).."\n"..
-        string.format("%-18s %10s","Blocking Now",(isBlocking() and "|c55FF88YES|r" or "|cFF6666NO|r"))..
+        string_format("%-18s %10s","Blocking Now",(isBlocking() and "|c55FF88YES|r" or "|cFF6666NO|r"))..
         (f and ("\n\n|cFFD36AFIGHT MIN / MAX|r\n"..
-        string.format("%-18s %10s  %10s","STAT","MIN","MAX").."\n"..
+        string_format("%-18s %10s  %10s","STAT","MIN","MAX").."\n"..
         rangeRow("Physical Resist","physicalResistance").."\n"..
         rangeRow("Spell Resist","spellResistance").."\n"..
         rangeRow("Block Cost","blockCost").."\n"..
@@ -1238,13 +1254,13 @@ function S.Refresh()
         fmt(st).." / "..fmt(stm),
         fmt(m).." / "..fmt(mm),
         "",
-        fmt(phys),fmt(spell),string.format("%.1f%%",blockMit),fmt(blockCost),
+        fmt(phys),fmt(spell),string_format("%.1f%%",blockMit),fmt(blockCost),
         (isBlocking() and "|c55FF88YES|r" or "|cFF6666NO|r")
     }
     local dx={
-        string.format("%.0f%%",pct(h,hm)),
-        string.format("%.0f%%",pct(st,stm)),
-        string.format("%.0f%%",pct(m,mm)),
+        string_format("%.0f%%",pct(h,hm)),
+        string_format("%.0f%%",pct(st,stm)),
+        string_format("%.0f%%",pct(m,mm)),
         "","","","","",""
     }
 
@@ -1300,7 +1316,7 @@ function S.Refresh()
         "|cFFFFFFHits Taken|r              "..fmt(f.hits).."\n"..
         "|cFFFFFFBlocked Hits|r            "..fmt(f.blockedHits).."\n"..
         "|cFFFFFFUnblocked Hits|r          "..fmt(f.unblockedHits).."\n"..
-        "|c55CCFFBlock Uptime|r            "..string.format("%.1f%%",pct(bs,d)).."\n"..
+        "|c55CCFFBlock Uptime|r            "..string_format("%.1f%%",pct(bs,d)).."\n"..
         "|c55FF88Healing Received|r        "..fmt(f.healing).."\n\n"..
         "|c888888Exact pre-mitigation damage is not guessed.|r"
     S.damageNames:SetText(table.concat({
@@ -1309,29 +1325,29 @@ function S.Refresh()
     },"\n"))
     S.damageVals:SetText(table.concat({
         fmt(f.damage),fmt(f.blockedDamage),fmt(f.shieldedDamage),fmt(f.largest),fmt(avg),fmt(f.hits),
-        fmt(f.blockedHits),fmt(f.unblockedHits),string.format("%.1f%%",pct(bs,d)),fmt(f.healing)
+        fmt(f.blockedHits),fmt(f.unblockedHits),string_format("%.1f%%",pct(bs,d)),fmt(f.healing)
     },"\n"))
 
     local classified=(f.directDamage or 0)+(f.dotDamage or 0)+(f.aoeDamage or 0)+(f.otherDamage or 0)
     S.profile:SetText(
         "|cFFFFFFTOTAL OBSERVED DAMAGE|r   "..fmt(f.damage).."\n\n"..
-        "|cFFAA55Direct / non-DoT|r        "..fmt(f.directDamage).."   "..string.format("%.1f%%",pct(f.directDamage,f.damage)).."\n"..
-        "|cB56CFFDoT|r                     "..fmt(f.dotDamage).."   "..string.format("%.1f%%",pct(f.dotDamage,f.damage)).."\n"..
-        "|cFF7777AoE classified|r          "..fmt(f.aoeDamage).."   "..string.format("%.1f%%",pct(f.aoeDamage,f.damage)).."\n"..
-        "|cAAAAAAOther / unknown|r         "..fmt(f.otherDamage).."   "..string.format("%.1f%%",pct(f.otherDamage,f.damage)).."\n\n"..
-        "|c49BFFFBlocked-hit damage|r      "..fmt(f.blockedDamage).."   "..string.format("%.1f%%",pct(f.blockedDamage,f.damage)).."\n"..
-        "|c66CCFFShielded damage|r         "..fmt(f.shieldedDamage).."   "..string.format("%.1f%%",pct(f.shieldedDamage,f.damage)).."\n"..
-        "|c55CCFFBlock uptime|r            "..string.format("%.1f%%",pct(bs,d)).."\n\n"..
+        "|cFFAA55Direct / non-DoT|r        "..fmt(f.directDamage).."   "..string_format("%.1f%%",pct(f.directDamage,f.damage)).."\n"..
+        "|cB56CFFDoT|r                     "..fmt(f.dotDamage).."   "..string_format("%.1f%%",pct(f.dotDamage,f.damage)).."\n"..
+        "|cFF7777AoE classified|r          "..fmt(f.aoeDamage).."   "..string_format("%.1f%%",pct(f.aoeDamage,f.damage)).."\n"..
+        "|cAAAAAAOther / unknown|r         "..fmt(f.otherDamage).."   "..string_format("%.1f%%",pct(f.otherDamage,f.damage)).."\n\n"..
+        "|c49BFFFBlocked-hit damage|r      "..fmt(f.blockedDamage).."   "..string_format("%.1f%%",pct(f.blockedDamage,f.damage)).."\n"..
+        "|c66CCFFShielded damage|r         "..fmt(f.shieldedDamage).."   "..string_format("%.1f%%",pct(f.shieldedDamage,f.damage)).."\n"..
+        "|c55CCFFBlock uptime|r            "..string_format("%.1f%%",pct(bs,d)).."\n\n"..
         "|c888888DoT classification is event-result based.\nAoE/direct classification will be refined as we validate ESO event metadata.|r"
     )
     S.damageDetail:SetText(linesBuckets(f.abilities,f.damage,11))
     if S.deathRecap then S.deathRecap:SetText(deathBlowLines(f)) end
     S.missSummary:SetText(
-        "|cFFFFFFFight time|r        "..string.format("%.1fs",d).."\n"..
+        "|cFFFFFFFight time|r        "..string_format("%.1fs",d).."\n"..
         "|cFFFFFFTotal hits|r        "..fmt(f.hits).."\n"..
-        "|c55CCFFBlocked hits|r      "..fmt(f.blockedHits).."  ("..string.format("%.1f%%",pct(f.blockedHits,f.hits))..")\n"..
-        "|cFF7777Unblocked hits|r    "..fmt(f.unblockedHits).."  ("..string.format("%.1f%%",pct(f.unblockedHits,f.hits))..")\n"..
-        "|c55CCFFBlock uptime|r      "..string.format("%.1f%%",pct(bs,d)).."\n\n"..
+        "|c55CCFFBlocked hits|r      "..fmt(f.blockedHits).."  ("..string_format("%.1f%%",pct(f.blockedHits,f.hits))..")\n"..
+        "|cFF7777Unblocked hits|r    "..fmt(f.unblockedHits).."  ("..string_format("%.1f%%",pct(f.unblockedHits,f.hits))..")\n"..
+        "|c55CCFFBlock uptime|r      "..string_format("%.1f%%",pct(bs,d)).."\n\n"..
         "|cFFAA66Potential missed-block damage|r  "..fmt(f.potentialMissDamage or 0).."\n"..
         "|c55FF88Potentially preventable|r        "..fmt(f.potentialPrevented or 0).."\n"..
         "|cAAAAAAEst. damage if blocked|r        "..fmt(f.potentialBlockedDamage or 0).."\n\n"..
@@ -1342,9 +1358,9 @@ function S.Refresh()
     local function rate(v) return d>0 and (v or 0)/d or 0 end
     S.resourceDetail:SetText(
         "|cFFFFFFFIGHT LOWS|r\n"..
-        "Health:  "..string.format("%.0f%%",f.lowH).."\n"..
-        "Stamina: "..string.format("%.0f%%",f.lowS).."\n"..
-        "Magicka: "..string.format("%.0f%%",f.lowM).."\n\n"..
+        "Health:  "..string_format("%.0f%%",f.lowH).."\n"..
+        "Stamina: "..string_format("%.0f%%",f.lowS).."\n"..
+        "Magicka: "..string_format("%.0f%%",f.lowM).."\n\n"..
         "|cFFD36ARECOVERY STAT LOW / HIGH|r\n"..
         "Health:  "..rangeText(f,"healthRecovery").."\n"..
         "Stamina: "..rangeText(f,"staminaRecovery").."\n"..

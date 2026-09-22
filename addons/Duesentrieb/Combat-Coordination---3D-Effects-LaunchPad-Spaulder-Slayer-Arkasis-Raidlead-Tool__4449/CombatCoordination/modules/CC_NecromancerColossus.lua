@@ -8,7 +8,7 @@ local Module = {
     name      = "NecromancerColossus",
     menuName  = "NECROMANCER COLOSSUS",
     iconPath  = "/esoui/art/icons/ability_necromancer_006_a.dds",
-    menuLayer = 1,
+    menuLayer = 3,
 
     TextureChoices = CC.CIRCLE_CHOICES,
     TextureValues  = CC.CIRCLE_VALUES,
@@ -45,6 +45,7 @@ local Module = {
         },
     },
     Default = {
+        enableModule = true,
         timerModeSelf = 1,
         timerModeGroup = 0,
         enableDrawSelf = true,

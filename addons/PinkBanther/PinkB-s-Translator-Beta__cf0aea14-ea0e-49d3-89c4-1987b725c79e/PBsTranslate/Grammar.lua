@@ -2001,7 +2001,25 @@ function Clause:Translate(options)
 		end
 	end
 
-	if subject and subject.ja ~= "" and form.mode ~= "request" then
+	-- Omit only an unmodified first-person speaker in a complete standalone
+	-- statement. Keep questions, conditions, contrasts and custom pronouns explicit.
+	local speakerEmphasis, speakerAlso = false, false
+	if subject and subject.pronoun == "i" then
+		for _, item in ipairs(items) do
+			if item.w == "only" or item.w == "too" or item.w == "also" or item.w == "alone" or item.w == "myself" then speakerEmphasis = true end
+		end
+		if subject.ja == "私" and #objects == 0 and not options.subordinate and not T.userLexicon.i and not T.userLexicon.too and not T.userLexicon.also then
+			for _, list in ipairs({adverbs, state.preAdverbs or {}}) do
+				for i = #list, 1, -1 do
+					if list[i] == "も" then table.remove(list, i); speakerAlso = true end
+				end
+			end
+		end
+	end
+	local omitSpeaker = subject and subject.pronoun == "i" and subject.ja == "私"
+		and not speakerEmphasis and hasPredicate and not question and not options.subordinate and not options.questionMark and not options.keepSubject
+		and not options.plain and self.unknown == 0 and not T.userLexicon.i
+	if subject and subject.ja ~= "" and form.mode ~= "request" and not omitSpeaker then
 		if hasPredicate then
 			local particle = (subject.negative and (subject.pronoun or subject.neither)) and "" or ((options.subordinate or INDEFINITE_PRONOUNS[subject.pronoun or ""]) and "が" or "は")
 			if verbItem and verbItem.base == "have" and objects[1] and (objects[1].remaining or state.haveAnimate) and not T.userLexicon.have then particle = "には" end
@@ -2012,6 +2030,7 @@ function Clause:Translate(options)
 					particle = "に"
 				end
 			end
+			if speakerAlso then particle = "も" end
 			out[#out + 1] = subject.ja .. particle
 		else
 			-- No verb at all: "nice sword", "2 dps lf healer". Say the words, not a sentence.
@@ -2376,7 +2395,7 @@ function T.ReadNominal(items, first, last)
 	return np
 end
 
-local function TranslateSegment(items, stats, questionMark)
+local function TranslateSegment(items, stats, questionMark, keepSubject)
 	local clauses = SplitClauses(items)
 	local subordinate, main = {}, {}
 	local mainQuestion = false
@@ -2387,7 +2406,7 @@ local function TranslateSegment(items, stats, questionMark)
 			local parser = NewClause(clause.items)
 			local text
 			local options = conj and conj.kind == "sub" and { form = conj.form, subordinate = true, invertNegation = conj.invertNegation }
-				or { questionMark = questionMark }
+				or { questionMark = questionMark, keepSubject = keepSubject or #clauses > 1 }
 			local plan = T.Semantic and T.Semantic.Analyze(clause.items, options)
 			if plan then
 				text, parser.question = T.Semantic.Render(plan, options)
@@ -2400,7 +2419,7 @@ local function TranslateSegment(items, stats, questionMark)
 					subordinate[#subordinate + 1] = (conj.before or "") .. text .. conj.after
 				end
 			else
-				text = text or parser:Translate({ questionMark = questionMark })
+				text = text or parser:Translate({ questionMark = questionMark, keepSubject = keepSubject or #clauses > 1 })
 				if text ~= "" then
 					local joined = text
 					if conj and #main > 0 then
@@ -2468,7 +2487,7 @@ function T.Translate(text)
 			local parts = {}
 			local question = false
 			for _, run in ipairs(segments) do
-				local ja, isQuestion = TranslateSegment(run, stats, mark == "?")
+				local ja, isQuestion = TranslateSegment(run, stats, mark == "?", #segments > 1)
 				if ja ~= "" then
 					parts[#parts + 1] = ja
 				end

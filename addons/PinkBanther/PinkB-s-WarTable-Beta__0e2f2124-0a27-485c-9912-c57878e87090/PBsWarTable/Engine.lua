@@ -22,7 +22,7 @@ end
 function E.New(setup, variant)
     variant = C.VARIANTS[variant] and variant or "light"
     local rules = C.VARIANTS[variant]
-    local s = { version = 5, variant = variant, factions = {0,0}, scrollUsed={false,false}, scrollOwner=0, scrollReader=0, scrollTurn=0, turn = 1, player = 1, actions = C.ACTIONS_PER_TURN,
+    local s = { version = 5, variant = variant, factions = {0,0}, scrollUsed={false,false}, scrollOwner=0, scrollReader=0, scrollTurn=0, turn = 1, player = 1, actions = rules.ACTIONS or C.ACTIONS_PER_TURN,
         score = { 0, 0 }, flags = {}, pieces = {}, cards = { {}, {} }, horn = {}, status = setup and "setup" or "playing" }
     s.opening=setup and "roll" or "done";s.dice={0,0};s.rollRound=1;s.rollWinner=0;s.factionChooser=0;s.orderChooser=0;s.firstPlayer=setup and 0 or 1
     for i = 1, #rules.FLAGS do s.flags[i] = 0 end
@@ -100,11 +100,14 @@ end
 function E.ResolveAttack(s, attacker, target, siege)
     s.actions = s.actions - 1
     if E.Attack(s,attacker,siege) >= E.Defense(s, target, siege) then
+        local x, y = target.x, target.y
         target.alive, target.hiddenUntil = false, nil
         s.horn[target.id] = nil
-        -- No advance into the defeated unit's square, and no retaliation.
+        -- The attack was a move onto that square, so the winner ends the combat standing there.
+        attacker.x, attacker.y = x, y
         return "defeated"
     end
+    -- A repelled attacker never entered the square and stays where it was.
     return "repelled"
 end
 function E.Counts(s, player)
@@ -161,7 +164,7 @@ function E.EndTurn(s)
         s.status, s.winner, s.reason = "finished", E.Tiebreak(s), "turn_limit"
     else
         s.turn, s.player = s.turn + 1, 3 - player
-        s.actions = s.turn == 2 and rules.SECOND_TURN_ACTIONS or C.ACTIONS_PER_TURN
+        s.actions = s.turn == 2 and rules.SECOND_TURN_ACTIONS or (rules.ACTIONS or C.ACTIONS_PER_TURN)
         for _, p in ipairs(s.pieces) do
             if p.hiddenUntil and s.turn >= p.hiddenUntil then p.hiddenUntil = nil end
         end
@@ -184,6 +187,13 @@ local function applyCommand(s, player, command)
     if not p then return false, err end
     if command.type == "move" or command.type == "horn_move" then
         local bonus = command.type == "horn_move"
+        local occupant = E.At(s, command.x, command.y)
+        if occupant and occupant.owner ~= player and not bonus then
+            -- Ordering a normal move onto an enemy square is what starts a combat.
+            ok, err = E.CanAttack(s, p, occupant, false)
+            if not ok then return false, err end
+            return true, E.ResolveAttack(s, p, occupant, false)
+        end
         if bonus and not s.horn[p.id] then return false, "no_horn_move" end
         if not bonus and s.actions < 1 then return false, "no_action" end
         ok, err = E.CanMove(s, p, command.x, command.y, bonus and C.HORN_DISTANCE or E.MoveRange(s,p))

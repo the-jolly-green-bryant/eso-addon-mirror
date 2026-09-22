@@ -48,6 +48,28 @@ function CC.CreateModuleSettings(self, menuName, iconPath)
         iconString = string.format("|t%d:%d:%s|t ", CC.SIZE_ICON_LAM_SM, CC.SIZE_ICON_LAM_SM, path)
     end
 
+    -- ENABLE MODULE
+    if self.Default.enableModule ~= nil then
+        table.insert(ModuleControls, { type = "header", name = CC.ColorString("ENABLE / DISABLE MODULE", "tier3") })
+        table.insert(ModuleControls, {
+            type = "checkbox",
+            name = CC.ColorString("Enable Module", "GN"),
+            getFunc = function() return self.SV.enableModule end,
+            setFunc = function(value)
+                self.SV.enableModule = value
+                if value then
+                    if self.CustomEnable then self:CustomEnable() end
+                else
+                    if self.CustomDisable then self:CustomDisable() end
+                end
+            end,
+            default = self.Default.enableModule,
+            disabled = function() return not CC.SV.enableAddon end,
+            requiresReload = true,
+        })
+        table.insert(ModuleControls, { type = "divider" })
+    end
+
     table.insert(ModuleControls, {
         type = "description",
         text = "Timers, visuals and the skillblocker operate independently.\nNone of them require the others to function.",
@@ -65,7 +87,7 @@ function CC.CreateModuleSettings(self, menuName, iconPath)
             getFunc = function() return self.SV.timerModeSelf end,
             setFunc = function(value) self.SV.timerModeSelf = value end,
             default = self.Default.timerModeSelf,
-            disabled = function() return not CC.SV.enableAddon end,
+            disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
         })
     end
 
@@ -78,7 +100,7 @@ function CC.CreateModuleSettings(self, menuName, iconPath)
             getFunc = function() return self.SV.timerModeGroup end,
             setFunc = function(value) self.SV.timerModeGroup = value end,
             default = self.Default.timerModeGroup,
-            disabled = function() return not CC.SV.enableAddon end,
+            disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
         })
     end
 
@@ -91,7 +113,7 @@ function CC.CreateModuleSettings(self, menuName, iconPath)
             getFunc = function() return self.SV.enableDrawSelf end,
             setFunc = function(value) self.SV.enableDrawSelf = value end,
             default = self.Default.enableDrawSelf,
-            disabled = function() return not CC.SV.enableAddon end,
+            disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
         })
     end
 
@@ -102,7 +124,7 @@ function CC.CreateModuleSettings(self, menuName, iconPath)
             getFunc = function() return self.SV.enableDrawGroup end,
             setFunc = function(value) self.SV.enableDrawGroup = value end,
             default = self.Default.enableDrawGroup,
-            disabled = function() return not CC.SV.enableAddon end,
+            disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
         })
     end
 
@@ -122,7 +144,7 @@ function CC.CreateModuleSettings(self, menuName, iconPath)
             getFunc = function() return self.SV.enableGameAoeFriendlyColor end,
             setFunc = function(value) self.SV.enableGameAoeFriendlyColor = value end,
             default = self.Default.enableGameAoeFriendlyColor,
-            disabled = function() return not self.SV.enableDrawSelf and (not hasDrawGroup or not self.SV.enableDrawGroup) end,
+            disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not self.SV.enableDrawSelf and (not hasDrawGroup or not self.SV.enableDrawGroup) end,
         })
     end
 
@@ -141,7 +163,7 @@ function CC.CreateModuleSettings(self, menuName, iconPath)
                 end
             end,
             default = CC.GetRgbaFromArray(self.Default.ColorSelf),
-            disabled = function() return self.SV.enableGameAoeFriendlyColor or (not self.SV.enableDrawSelf and (not hasDrawGroup or not self.SV.enableDrawGroup)) end,
+            disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or self.SV.enableGameAoeFriendlyColor or (not self.SV.enableDrawSelf and (not hasDrawGroup or not self.SV.enableDrawGroup)) end,
         })
     end
 
@@ -152,7 +174,7 @@ function CC.CreateModuleSettings(self, menuName, iconPath)
             getFunc = function() return unpack(self.SV.ColorGroup) end,
             setFunc = function(r, g, b, a) self.SV.ColorGroup = {r, g, b, a} end,
             default = CC.GetRgbaFromArray(self.Default.ColorGroup),
-            disabled = function() return self.SV.enableGameAoeFriendlyColor or (not self.SV.enableDrawSelf and (not hasDrawGroup or not self.SV.enableDrawGroup)) end,
+            disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or self.SV.enableGameAoeFriendlyColor or (not self.SV.enableDrawSelf and (not hasDrawGroup or not self.SV.enableDrawGroup)) end,
         })
     end
 
@@ -184,7 +206,7 @@ function CC.CreateModuleSettings(self, menuName, iconPath)
                 end
             end,
             default = self.Default.texture,
-            disabled = function() return not self.SV.enableDrawSelf and (not hasDrawGroup or not self.SV.enableDrawGroup) end,
+            disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not self.SV.enableDrawSelf and (not hasDrawGroup or not self.SV.enableDrawGroup) end,
         })
     end
 
@@ -219,7 +241,7 @@ function CC.CreateModuleSettings(self, menuName, iconPath)
             getFunc = function() return self.SV.enableNotification end,
             setFunc = function(value) self.SV.enableNotification = value end,
             default = self.Default.enableNotification,
-            disabled = function() return not CC.SV.enableAddon end,
+            disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
         })
 
         if self.Default.soundNotification ~= nil then
@@ -236,7 +258,7 @@ function CC.CreateModuleSettings(self, menuName, iconPath)
                     end
                 end,
                 default = self.Default.soundNotification,
-                disabled = function() return not CC.SV.enableAddon end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             })
         end
 
@@ -253,7 +275,7 @@ function CC.CreateModuleSettings(self, menuName, iconPath)
                     end
                 end,
                 default = self.Default.volumeNotification,
-                disabled = function() return not CC.SV.enableAddon end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             })
         end
 
@@ -276,13 +298,17 @@ function CC.CreateModuleSettings(self, menuName, iconPath)
                 CC.SkillBlocker:UpdateEquippedSkills()
             end,
             default = self.Default.enableSkillBlocker,
-            disabled = function() return not CC.SV.enableAddon end,
+            disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
         })
     end
 
     return {
         type = "submenu",
-        name = string.format("%s%s%s", iconString, CC.ColorString(menuName, "tier2"), stringLGB),
+        -- name als Funktion berechnet das [OFF] zur Laufzeit dynamisch neu
+        name = function()
+            local stringEnable = self.SV.enableModule and "" or CC.ColorString("[OFF] ", "RD")
+            return string.format("%s%s%s%s", iconString, stringEnable, CC.ColorString(menuName, "tier2"), stringLGB)
+        end,
         controls = ModuleControls,
     }
 end
@@ -295,7 +321,6 @@ function CC.CreateSettings()
 
     local panelIcon = string.format("|t%d:%d:%s/icons/logo_cc.dds|t", CC.SIZE_ICON_LAM_PANEL, CC.SIZE_ICON_LAM_PANEL, CC.NAME)
     local settingsIcon = string.format("|t%d:%d:esoui/art/icons/ability_scrying_05a.dds|t", CC.SIZE_ICON_LAM_SM, CC.SIZE_ICON_LAM_SM)
-    local raidleadIcon = string.format("|t%d:%d:/esoui/art/icons/ability_dragonknight_032.dds|t", CC.SIZE_ICON_LAM_SM, CC.SIZE_ICON_LAM_SM)
     local panelName = "Combat Coordination " .. panelIcon
     if GetUnitDisplayName("player") == CC.AUTHOR then panelName = "[Dev] " .. panelName end
 
@@ -319,9 +344,23 @@ function CC.CreateSettings()
             getFunc = function() return CC.SV.enableAddon end,
             setFunc = function(value)
                 CC.SV.enableAddon = value
-                if value then CC.Enable() else CC.Disable() end
+                if value then
+                    CC.Enable()
+                    CC.DisplayPanel:Show()
+                    CC.DisplayStatus:Show()
+                else
+                    CC.Disable()
+                end
             end,
             default = CC.Default.enableAddon,
+        },
+
+        { type = "divider" },
+
+        {
+            type = "description",
+            text = "Modules tagged with " .. CC.ColorString("[LGB]", "GN") .. " share data via LibGroupBroadcast.",
+            width = "full"
         },
 
         {
@@ -454,18 +493,6 @@ function CC.CreateSettings()
                     default = 100,
                     disabled = function() return not CC.SV.enableAddon end,
                 },
-                -- {
-                --     type = "slider",
-                --     name = "Panel Width",
-                --     min = 275, max = 325, step = 1,
-                --     getFunc = function() return CC.DisplayPanel.SV.panelWidth end,
-                --     setFunc = function(value)
-                --         CC.DisplayPanel.SV.panelWidth = value
-                --         CC.DisplayPanel:UpdateDimensions()
-                --     end,
-                --     default = CC.DisplayPanel.Default.panelWidth,
-                --     disabled = function() return not CC.SV.enableAddon end,
-                -- },
                 {
                     type = "slider",
                     name = "Panel Alpha",
@@ -607,191 +634,6 @@ function CC.CreateSettings()
                 },
             },
         },
-
-        ----------------------------------------------------------------------------------------------------
-        -- RAIDLEAD SWITCH
-        ----------------------------------------------------------------------------------------------------
-        {
-            type = "submenu",
-            name = raidleadIcon .. " " .. CC.ColorString("RAIDLEAD ASSIGNMENT & TOOLS", "tier2"),
-            controls = {
-                ----------------------------------------------------------------------------------------------------
-                -- RAIDLEAD ASSIGNMENT
-                ----------------------------------------------------------------------------------------------------
-                { type = "header", name = CC.ColorString("ENABLE RAIDLEAD TOOLS", "GN") },
-                {
-                    type = "description",
-                    text = CC.ColorString("Unlocks timers, tools and assignment protocols.", "GN"),
-                    width = "full",
-                },
-                {
-                    type = "checkbox",
-                    name = "[Step 1/2] Enable Raidlead",
-                    getFunc = function() return CC.SV.isRaidleadIntent end,
-                    setFunc = function(value)
-                        CC.SV.isRaidleadIntent = value
-                        if not value then
-                            CC.SV.isRaidlead = false
-                            if CC.DisplayPanel.SV.isVisible then
-                                CC.DisplayPanel:UpdateDimensions()
-                            end
-                        end
-                    end,
-                    width = "half",
-                    disabled = function() return not CC.SV.enableAddon end,
-                },
-                {
-                    type = "checkbox",
-                    name = "[Step 2/2] Confirm Raidlead",
-                    warning = "Activation grants permission to broadcast targeted assignments and control group timers.",
-                    getFunc = function() return CC.SV.isRaidlead end,
-                    setFunc = function(value)
-                        CC.SV.isRaidlead = value
-                        if CC.DisplayPanel.SV.isVisible then
-                            CC.DisplayPanel:UpdateDimensions()
-                        end
-                    end,
-                    width = "half",
-                    disabled = function() return not CC.SV.isRaidleadIntent or not CC.SV.enableAddon end,
-                },
-
-                ----------------------------------------------------------------------------------------------------
-                -- TOOLS & ASSIGNMENTS
-                ----------------------------------------------------------------------------------------------------
-                {
-                    type = "description",
-                    text = CC.ColorString("Note:", "tier2") .. " The following tools can also be accessed via the Panel: " .. CC.ColorString("[/cc_panel]", "tier3"),
-                    width = "full",
-                },
-                ----------------------------------------------------------------------------------------------------
-                -- BREAK TIMER
-                ----------------------------------------------------------------------------------------------------
-                { type = "header", name = CC.ColorString("BREAK TIMER ", "tier3") .. CC.ColorString("[LGB]", "GN") },
-                {
-                    type = "slider",
-                    name = "Break Duration [Minutes]",
-                    min = 1, max = 30, step = 1,
-                    getFunc = function() return CC.RaidleadTools.SV.breakMinutes end,
-                    setFunc = function(value) CC.RaidleadTools.SV.breakMinutes = value end,
-                    default = CC.RaidleadTools.Default.breakMinutes,
-                    disabled = function() return not CC.SV.enableAddon or not CC.IsRaidlead() end,
-                },
-                {
-                    type = "button",
-                    name = "START BREAK",
-                    func = function()
-                        CC.RaidleadTools:RequestBreak(CC.RaidleadTools.SV.breakMinutes)
-                    end,
-                    width = "half",
-                    disabled = function() return not CC.SV.enableAddon or not CC.IsRaidlead() end,
-                },
-                {
-                    type = "button",
-                    name = "STOP BREAK",
-                    func = function()
-                        CC.RaidleadTools:RequestBreak(0)
-                    end,
-                    width = "half",
-                    disabled = function() return not CC.SV.enableAddon or not CC.IsRaidlead() end,
-                },
-                ----------------------------------------------------------------------------------------------------
-                -- PULL TIMER
-                ----------------------------------------------------------------------------------------------------
-                { type = "header", name = CC.ColorString("PULL TIMER ", "tier3") .. CC.ColorString("[LGB]", "GN") },
-                {
-                    type = "slider",
-                    name = "Pull Duration [Seconds]",
-                    min = 1, max = 15, step = 1,
-                    getFunc = function() return CC.RaidleadTools.SV.pullSeconds end,
-                    setFunc = function(value) CC.RaidleadTools.SV.pullSeconds = value end,
-                    default = CC.RaidleadTools.Default.pullSeconds,
-                    disabled = function() return not CC.SV.enableAddon or not CC.IsRaidlead() end,
-                },
-                {
-                    type = "button",
-                    name = "START PULL",
-                    func = function()
-                        CC.RaidleadTools:RequestPull(CC.RaidleadTools.SV.pullSeconds)
-                    end,
-                    width = "half",
-                    disabled = function() return not CC.SV.enableAddon or not CC.IsRaidlead() end,
-                },
-                {
-                    type = "button",
-                    name = "STOP PULL",
-                    func = function()
-                        CC.RaidleadTools:RequestPull(0)
-                    end,
-                    width = "half",
-                    disabled = function() return not CC.SV.enableAddon or not CC.IsRaidlead() end,
-                },
-                ----------------------------------------------------------------------------------------------------
-                -- TRIGGER NOTIFICATIONS
-                ----------------------------------------------------------------------------------------------------
-                { type = "header", name = CC.ColorString("TRIGGER NOTIFICATIONS ", "tier3") .. CC.ColorString("[LGB]", "GN") },
-                {
-                    type = "button",
-                    name = "WIPE PLEASE",
-                    tooltip = "Broadcasts wipe request to group members.",
-                    func = function() CC.RaidleadTools:RequestWipe() end,
-                    width = "half",
-                    disabled = function() return not CC.SV.enableAddon or not CC.IsRaidlead() end,
-                },
-                {
-                    type = "button",
-                    name = "PORT IN PLEASE",
-                    tooltip = "Broadcasts port-in request to group members.",
-                    func = function() CC.RaidleadTools:RequestPortIn() end,
-                    width = "half",
-                    disabled = function() return not CC.SV.enableAddon or not CC.IsRaidlead() end,
-                },
-                ----------------------------------------------------------------------------------------------------
-                -- OPEN DIALOG
-                ----------------------------------------------------------------------------------------------------
-                { type = "header", name = CC.ColorString("OPEN DIALOG ", "tier3") .. CC.ColorString("[LGB]", "GN") },
-                {
-                    type = "button",
-                    name = "GROUP P-T-E",
-                    tooltip = "Broadcasts exit instance request to group members.",
-                    func = function() CC.RaidleadTools:RequestExitInstance() end,
-                    width = "half",
-                    disabled = function() return not CC.SV.enableAddon or not CC.IsRaidlead() end,
-                },
-                {
-                    type = "button",
-                    name = "PORT TO LEAD",
-                    tooltip = "Broadcasts leader port request to group members.",
-                    func = function() CC.RaidleadTools:RequestPortToLeader() end,
-                    width = "half",
-                    disabled = function() return not CC.SV.enableAddon or not CC.IsRaidlead() end,
-                },
-                {
-                    type = "button",
-                    name = "READYCHECK",
-                    tooltip = "Initiates a group ready check.",
-                    func = function() SLASH_COMMANDS["/readycheck"]() end,
-                    width = "half",
-                    disabled = function() return not CC.SV.enableAddon or not CC.IsRaidlead() end,
-                },
-                {
-                    type = "button",
-                    name = "START VOTE",
-                    tooltip = "Initiates a group vote.",
-                    func = function() CC.RaidleadTools:SendVoteRequest() end,
-                    width = "half",
-                    disabled = function() return not CC.SV.enableAddon or not CC.IsRaidlead() end,
-                },
-            },
-        },
-
-        {
-			type = "header", name = CC.ColorString("ADDON MODULES", "tier1")
-		},
-        {
-            type = "description",
-            text = "Modules tagged with " .. CC.ColorString("[LGB]", "GN") .. " share data via LibGroupBroadcast.",
-            width = "full"
-        },
     }
 
     local function AddModuleMenu(ModuleMenu)
@@ -803,18 +645,35 @@ function CC.CreateSettings()
     ----------------------------------------------------------------------------------------------------
     -- START MODULES
     ----------------------------------------------------------------------------------------------------
-    for i = 0, 2 do
-        local layerHasModules = false
-        for _, Module in ipairs(CC.Modules) do
-            local layer = Module.menuLayer or 1
+    local LayerHeaders = {
+        [0] = "MAIN",
+        [1] = "GROUP & UTILITY",
+        [2] = "SHAPES & POINTER",
+        [3] = "SKILLS & BUFFS",
+    }
 
+    for i = 0, 3 do
+        local layerModules = {}
+
+        -- COLLECT
+        for _, Module in ipairs(CC.Modules) do
+            local layer = Module.menuLayer or 0
             if layer == i and Module.GetMenuOptions then
-                AddModuleMenu(Module:GetMenuOptions())
-                layerHasModules = true
+                table.insert(layerModules, Module)
             end
         end
-        if layerHasModules and i < 2 then
-            table.insert(OptionsData, { type = "divider" })
+
+        -- HEADER.. INSERT MODULES
+        if #layerModules > 0 then
+
+            if i > 0 then
+                table.insert(OptionsData, { type = "description", text = "", width = "full" })
+                table.insert(OptionsData, { type = "header", name = CC.ColorString(LayerHeaders[i], "tier1") })
+            end
+
+            for _, Module in ipairs(layerModules) do
+                AddModuleMenu(Module:GetMenuOptions())
+            end
         end
     end
 

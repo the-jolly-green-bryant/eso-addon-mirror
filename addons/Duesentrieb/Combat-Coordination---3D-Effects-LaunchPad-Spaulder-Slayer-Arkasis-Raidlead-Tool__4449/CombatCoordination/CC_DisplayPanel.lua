@@ -363,13 +363,14 @@ function Module:CreatePanel()
 
     -- BUILD CONTS
     self:BuildAddonUsersContainer()
-    self:BuildArkasisAssistantContainer()
-    self:BuildDrawShapeContainer()
-    self:BuildLaunchPadContainer()
-    self:BuildPointerContainer()
     self:BuildRaidleadToolsContainer()
-    self:BuildSlayerAssistantContainer()
-    self:BuildSpaulderOfRuinContainer()
+
+    if CC.ArkasisAssistant and CC.ArkasisAssistant.SV.enableModule then self:BuildArkasisAssistantContainer() end
+    if CC.DrawShape and CC.DrawShape.SV.enableModule then self:BuildDrawShapeContainer() end
+    if CC.LaunchPad and CC.LaunchPad.SV.enableModule then self:BuildLaunchPadContainer() end
+    if CC.Pointer and CC.Pointer.SV.enableModule then self:BuildPointerContainer() end
+    if CC.SlayerAssistant and CC.SlayerAssistant.SV.enableModule then self:BuildSlayerAssistantContainer() end
+    if CC.SpaulderOfRuin and CC.SpaulderOfRuin.SV.enableModule then self:BuildSpaulderOfRuinContainer() end
 
     -- THX ExoY FOR TEACHING ME THIS
     self.Fragment = ZO_HUDFadeSceneFragment:New(self.Parent)
@@ -1106,423 +1107,439 @@ function Module:UpdateData()
     ----------------------------------------------------------------------------------------------------
     -- ADDON USERS DATA
     ----------------------------------------------------------------------------------------------------
-    local countAddonUsers = 0
-    self.activeAddonUserLabels = 0
+    if self.ContainerAddonUsers then
+        local countAddonUsers = 0
+        self.activeAddonUserLabels = 0
 
-    if self.SV.isOpenAddonUsers then
-        ZO_ClearTable(self.AddonUserSortBuffer)
+        if self.SV.isOpenAddonUsers then
+            ZO_ClearTable(self.AddonUserSortBuffer)
 
-        for displayName, GroupMember in pairs(CC.GroupData) do
-            if GroupMember.isAddonUser then
-                    table.insert(self.AddonUserSortBuffer, {
+            for displayName, GroupMember in pairs(CC.GroupData) do
+                if GroupMember.isAddonUser then
+                        table.insert(self.AddonUserSortBuffer, {
+                            displayName = displayName,
+                            GroupMember = GroupMember
+                        })
+                    end
+                end
+
+                table.sort(self.AddonUserSortBuffer, function(A, B) return A.displayName < B.displayName end)
+
+                for _, Data in ipairs(self.AddonUserSortBuffer) do
+                    local GroupMember = Data.GroupMember
+                    countAddonUsers = countAddonUsers + 1
+                    self.activeAddonUserLabels = self.activeAddonUserLabels + 1
+                    local Label = self:GetOrCreateLabel(self.AddonUserLabels, "AddonUserLabels", self.activeAddonUserLabels, self.ContainerAddonUsers.Content, TEXT_ALIGN_LEFT)
+
+                    local roleIcon = self:GetPlayerIconByRole(GroupMember.selectedRole)
+                    local pingMs = GroupMember.pingMs or 0
+                    local isRaidlead = GroupMember.isRaidlead and " |cFFDF00RL|r" or ""
+                    -- local isRaidlead = GroupMember.isRaidlead and string.format(" |t%s:%s:/esoui/art/compass/groupleader.dds|t", self.FONT_SIZE_MEDIUM, self.FONT_SIZE_MEDIUM) or ""
+
+                    -- ZONE CHECK
+                    local arkasisZoneId = GroupMember.ArkasisAssistant and GroupMember.ArkasisAssistant.zoneId or 0
+                    local slayerZoneId = GroupMember.SlayerAssistant and GroupMember.SlayerAssistant.zoneId or 0
+
+                    local extraInfo = ""
+
+                    if arkasisZoneId == currentZoneId or slayerZoneId == currentZoneId then
+                        -- ARKASIS SAME ZONE OR ?
+                        local stringArkasis = "|c7F7F7F?|r"
+                        if arkasisZoneId == currentZoneId then
+                            local arkasisSideId = GroupMember.ArkasisAssistant and GroupMember.ArkasisAssistant.sideId or CC.ArkasisAssistant.SIDE_NONE
+                            local arkasisLetter = "?"
+                            local arkasisColorHex = CC.GetHexColorFromArray(CC.ArkasisAssistant.SV.ColorNone) or "|cBFBFBF"
+
+                            if arkasisSideId == CC.ArkasisAssistant.SIDE_1 then
+                                arkasisLetter = "1"
+                                arkasisColorHex = CC.ArkasisAssistant.SV.enableGameAoeFriendlyColor and CC.GetHexColorFromArray(CC.GetGameAoeFriendlyColor()) or CC.GetHexColorFromArray(CC.ArkasisAssistant.SV.Color)
+                            elseif arkasisSideId == CC.ArkasisAssistant.SIDE_2 then
+                                arkasisLetter = "2"
+                                arkasisColorHex = CC.ArkasisAssistant.SV.enableGameAoeFriendlyColor and CC.GetHexColorFromArray(CC.GetGameAoeFriendlyColor()) or CC.GetHexColorFromArray(CC.ArkasisAssistant.SV.Color)
+                            elseif arkasisSideId == CC.ArkasisAssistant.SIDE_3 then
+                                arkasisLetter = "3"
+                                arkasisColorHex = CC.ArkasisAssistant.SV.enableGameAoeFriendlyColor and CC.GetHexColorFromArray(CC.GetGameAoeFriendlyColor()) or CC.GetHexColorFromArray(CC.ArkasisAssistant.SV.Color)
+                            end
+                            stringArkasis = string.format("%s%s|r", arkasisColorHex, arkasisLetter)
+                        end
+
+                        -- SLAYER SAME ZONE OR ?
+                        local stringSlayer = "|c7F7F7F?|r"
+                        if slayerZoneId == currentZoneId then
+                            local slayerSideId = GroupMember.SlayerAssistant and GroupMember.SlayerAssistant.sideId or CC.SlayerAssistant.SIDE_NONE
+                            local slayerColorHex = CC.GetHexColorFromArray(CC.SlayerAssistant.SV.ColorNone) or "|cBFBFBF"
+                            local slayerLetter = "?"
+
+                            if slayerSideId == CC.SlayerAssistant.SIDE_LEFT then
+                                slayerLetter = "L"
+                                slayerColorHex = CC.GetHexColorFromArray(CC.SlayerAssistant.SV.ColorLeft)
+                            elseif slayerSideId == CC.SlayerAssistant.SIDE_RIGHT then
+                                slayerLetter = "R"
+                                slayerColorHex = CC.GetHexColorFromArray(CC.SlayerAssistant.SV.ColorRight)
+                            end
+                            stringSlayer = string.format("%s%s|r", slayerColorHex, slayerLetter)
+                        end
+
+                        extraInfo = string.format(" - %s / %s", stringSlayer, stringArkasis)
+                    end
+
+                local shortName = self:GetShortName(Data.displayName, self.maxLengthDisplayName)
+                Label:SetText(string.format("%s |cFFFFFF%s|r%s (%d ms)%s", roleIcon, shortName, isRaidlead, pingMs, extraInfo))
+            end
+        else
+            for _, GroupMember in pairs(CC.GroupData) do
+                if GroupMember.isAddonUser then
+                    countAddonUsers = countAddonUsers + 1
+                end
+            end
+        end
+
+        if self.SV.isOpenAddonUsers and countAddonUsers == 0 then
+            self.activeAddonUserLabels = 1
+            local Label = self:GetOrCreateLabel(self.AddonUserLabels, "AddonUserLabels", self.activeAddonUserLabels, self.ContainerAddonUsers.Content, TEXT_ALIGN_LEFT)
+            Label:SetText("No addon users found.")
+        end
+
+        self:HideUnusedLabels(self.AddonUserLabels, self.activeAddonUserLabels)
+
+        local AddonUsersIcon = { iconPath = CC.NAME .. "/icons/logo_cc.dds" }
+        local expectedSize = math.max(1, GetGroupSize())
+        self.ContainerAddonUsers.Title:SetText(self:GetTitleWithIcon(AddonUsersIcon, string.format("ADDON USERS: |cFFFFFF%d/%d|r", countAddonUsers, expectedSize)))
+    end
+
+    ----------------------------------------------------------------------------------------------------
+    -- ARKASIS ASSISTANT
+    ----------------------------------------------------------------------------------------------------
+    if self.ContainerArkasisAssistant then
+        self.activeArkasisUserLabels = 0
+        local arkasisZoneName = CC.ArkasisAssistant:GetZoneNameFromZoneId(currentZoneId)
+        local arkasisSideId = CC.ArkasisAssistant:GetSideIdFromZoneId(currentZoneId)
+        local arkasisSideName = CC.ArkasisAssistant:GetSideNameFromSideId(arkasisSideId)
+        self.ArkasisAssistantPositionLabel:SetText(string.format("Current zone: |cFFFFFF[%s]|r\nYour saved stack: %s", arkasisZoneName, arkasisSideName))
+
+        local ColorNormal = CC.ArkasisAssistant.SV.enableGameAoeFriendlyColor and CC.GetGameAoeFriendlyColor() or CC.ArkasisAssistant.SV.Color or {1, 0.875, 0, 1}
+        self.ArkasisAssistantButtonSet1:SetCustomColors(ColorNormal)
+        self.ArkasisAssistantButtonSet2:SetCustomColors(ColorNormal)
+        self.ArkasisAssistantButtonSet3:SetCustomColors(ColorNormal)
+
+        if self.SV.isOpenArkasisAssistant then
+            ZO_ClearTable(self.ArkasisSortBuffer)
+
+            for displayName, GroupMember in pairs(CC.GroupData) do
+                if GroupMember.ArkasisAssistant and GroupMember.ArkasisAssistant.sideId == arkasisSideId and arkasisSideId ~= 0 and GroupMember.ArkasisAssistant.zoneId == currentZoneId then
+                    table.insert(self.ArkasisSortBuffer, {
                         displayName = displayName,
                         GroupMember = GroupMember
                     })
                 end
             end
 
-            table.sort(self.AddonUserSortBuffer, function(A, B) return A.displayName < B.displayName end)
+            table.sort(self.ArkasisSortBuffer, function(A, B) return A.displayName < B.displayName end)
 
-            for _, Data in ipairs(self.AddonUserSortBuffer) do
+            for _, Data in ipairs(self.ArkasisSortBuffer) do
+                self.activeArkasisUserLabels = self.activeArkasisUserLabels + 1
+                local Label = self:GetOrCreateLabel(self.ArkasisUserLabels, "ArkasisUserLabels", self.activeArkasisUserLabels, self.ContainerArkasisAssistant.Content, TEXT_ALIGN_LEFT)
+
                 local GroupMember = Data.GroupMember
-                countAddonUsers = countAddonUsers + 1
-                self.activeAddonUserLabels = self.activeAddonUserLabels + 1
-                local Label = self:GetOrCreateLabel(self.AddonUserLabels, "AddonUserLabels", self.activeAddonUserLabels, self.ContainerAddonUsers.Content, TEXT_ALIGN_LEFT)
-
                 local roleIcon = self:GetPlayerIconByRole(GroupMember.selectedRole)
-                local pingMs = GroupMember.pingMs or 0
-                local isRaidlead = GroupMember.isRaidlead and " |cFFDF00RL|r" or ""
-                -- local isRaidlead = GroupMember.isRaidlead and string.format(" |t%s:%s:/esoui/art/compass/groupleader.dds|t", self.FONT_SIZE_MEDIUM, self.FONT_SIZE_MEDIUM) or ""
+                local isEquipped = GroupMember.ArkasisAssistant.isEquipped or 0
+                local shortName = self:GetShortName(Data.displayName, self.maxLengthDisplayName)
+                local sideName = CC.ArkasisAssistant:GetSideNameFromSideId(GroupMember.ArkasisAssistant.sideId)
 
-                -- ZONE CHECK
-                local arkasisZoneId = GroupMember.ArkasisAssistant and GroupMember.ArkasisAssistant.zoneId or 0
-                local slayerZoneId = GroupMember.SlayerAssistant and GroupMember.SlayerAssistant.zoneId or 0
-
-                local extraInfo = ""
-
-                if arkasisZoneId == currentZoneId or slayerZoneId == currentZoneId then
-                    -- ARKASIS SAME ZONE OR ?
-                    local stringArkasis = "|c7F7F7F?|r"
-                    if arkasisZoneId == currentZoneId then
-                        local arkasisSideId = GroupMember.ArkasisAssistant and GroupMember.ArkasisAssistant.sideId or CC.ArkasisAssistant.SIDE_NONE
-                        local arkasisLetter = "?"
-                        local arkasisColorHex = CC.GetHexColorFromArray(CC.ArkasisAssistant.SV.ColorNone) or "|cBFBFBF"
-
-                        if arkasisSideId == CC.ArkasisAssistant.SIDE_1 then
-                            arkasisLetter = "1"
-                            arkasisColorHex = CC.ArkasisAssistant.SV.enableGameAoeFriendlyColor and CC.GetHexColorFromArray(CC.GetGameAoeFriendlyColor()) or CC.GetHexColorFromArray(CC.ArkasisAssistant.SV.Color)
-                        elseif arkasisSideId == CC.ArkasisAssistant.SIDE_2 then
-                            arkasisLetter = "2"
-                            arkasisColorHex = CC.ArkasisAssistant.SV.enableGameAoeFriendlyColor and CC.GetHexColorFromArray(CC.GetGameAoeFriendlyColor()) or CC.GetHexColorFromArray(CC.ArkasisAssistant.SV.Color)
-                        elseif arkasisSideId == CC.ArkasisAssistant.SIDE_3 then
-                            arkasisLetter = "3"
-                            arkasisColorHex = CC.ArkasisAssistant.SV.enableGameAoeFriendlyColor and CC.GetHexColorFromArray(CC.GetGameAoeFriendlyColor()) or CC.GetHexColorFromArray(CC.ArkasisAssistant.SV.Color)
-                        end
-                        stringArkasis = string.format("%s%s|r", arkasisColorHex, arkasisLetter)
-                    end
-
-                    -- SLAYER SAME ZONE OR ?
-                    local stringSlayer = "|c7F7F7F?|r"
-                    if slayerZoneId == currentZoneId then
-                        local slayerSideId = GroupMember.SlayerAssistant and GroupMember.SlayerAssistant.sideId or CC.SlayerAssistant.SIDE_NONE
-                        local slayerColorHex = CC.GetHexColorFromArray(CC.SlayerAssistant.SV.ColorNone) or "|cBFBFBF"
-                        local slayerLetter = "?"
-
-                        if slayerSideId == CC.SlayerAssistant.SIDE_LEFT then
-                            slayerLetter = "L"
-                            slayerColorHex = CC.GetHexColorFromArray(CC.SlayerAssistant.SV.ColorLeft)
-                        elseif slayerSideId == CC.SlayerAssistant.SIDE_RIGHT then
-                            slayerLetter = "R"
-                            slayerColorHex = CC.GetHexColorFromArray(CC.SlayerAssistant.SV.ColorRight)
-                        end
-                        stringSlayer = string.format("%s%s|r", slayerColorHex, slayerLetter)
-                    end
-
-                    extraInfo = string.format(" - %s / %s", stringSlayer, stringArkasis)
+                local stringSet = ""
+                if isEquipped ~= 0 then
+                    local setName = CC.ArkasisAssistant:GetSetNameFromStatusId(isEquipped)
+                    stringSet = string.format(" - |cFFFFFF[%s]|r", setName)
                 end
 
-            local shortName = self:GetShortName(Data.displayName, self.maxLengthDisplayName)
-            Label:SetText(string.format("%s |cFFFFFF%s|r%s (%d ms)%s", roleIcon, shortName, isRaidlead, pingMs, extraInfo))
-        end
-    else
-        for _, GroupMember in pairs(CC.GroupData) do
-            if GroupMember.isAddonUser then
-                countAddonUsers = countAddonUsers + 1
+                Label:SetText(string.format("%s %s - %s%s", roleIcon, shortName, sideName, stringSet))
             end
-        end
-    end
 
-    if self.SV.isOpenAddonUsers and countAddonUsers == 0 then
-        self.activeAddonUserLabels = 1
-        local Label = self:GetOrCreateLabel(self.AddonUserLabels, "AddonUserLabels", self.activeAddonUserLabels, self.ContainerAddonUsers.Content, TEXT_ALIGN_LEFT)
-        Label:SetText("No addon users found.")
-    end
-
-    self:HideUnusedLabels(self.AddonUserLabels, self.activeAddonUserLabels)
-
-    local AddonUsersIcon = { iconPath = CC.NAME .. "/icons/logo_cc.dds" }
-    local expectedSize = math.max(1, GetGroupSize())
-    self.ContainerAddonUsers.Title:SetText(self:GetTitleWithIcon(AddonUsersIcon, string.format("ADDON USERS: |cFFFFFF%d/%d|r", countAddonUsers, expectedSize)))
-
-    ----------------------------------------------------------------------------------------------------
-    -- ARKASIS ASSISTANT
-    ----------------------------------------------------------------------------------------------------
-    self.activeArkasisUserLabels = 0
-    local arkasisZoneName = CC.ArkasisAssistant:GetZoneNameFromZoneId(currentZoneId)
-    local arkasisSideId = CC.ArkasisAssistant:GetSideIdFromZoneId(currentZoneId)
-    local arkasisSideName = CC.ArkasisAssistant:GetSideNameFromSideId(arkasisSideId)
-    self.ArkasisAssistantPositionLabel:SetText(string.format("Current zone: |cFFFFFF[%s]|r\nYour saved stack: %s", arkasisZoneName, arkasisSideName))
-
-    local ColorNormal = CC.ArkasisAssistant.SV.enableGameAoeFriendlyColor and CC.GetGameAoeFriendlyColor() or CC.ArkasisAssistant.SV.Color or {1, 0.875, 0, 1}
-    self.ArkasisAssistantButtonSet1:SetCustomColors(ColorNormal)
-    self.ArkasisAssistantButtonSet2:SetCustomColors(ColorNormal)
-    self.ArkasisAssistantButtonSet3:SetCustomColors(ColorNormal)
-
-    if self.SV.isOpenArkasisAssistant then
-        ZO_ClearTable(self.ArkasisSortBuffer)
-
-        for displayName, GroupMember in pairs(CC.GroupData) do
-            if GroupMember.ArkasisAssistant and GroupMember.ArkasisAssistant.sideId == arkasisSideId and arkasisSideId ~= 0 and GroupMember.ArkasisAssistant.zoneId == currentZoneId then
-                table.insert(self.ArkasisSortBuffer, {
-                    displayName = displayName,
-                    GroupMember = GroupMember
-                })
+            -- IS EMPTY
+            if self.activeArkasisUserLabels == 0 then
+                self.activeArkasisUserLabels = 1
+                local Label = self:GetOrCreateLabel(self.ArkasisUserLabels, "ArkasisUserLabels", self.activeArkasisUserLabels, self.ContainerArkasisAssistant.Content, TEXT_ALIGN_LEFT)
+                if arkasisSideId == 0 then
+                    Label:SetText("You are unassigned.")
+                else
+                    Label:SetText("No partners in your stack.")
+                end
             end
         end
 
-        table.sort(self.ArkasisSortBuffer, function(A, B) return A.displayName < B.displayName end)
+        self:HideUnusedLabels(self.ArkasisUserLabels, self.activeArkasisUserLabels)
+        self.ContainerArkasisAssistant.Title:SetText(self:GetTitleWithIcon(CC.ArkasisAssistant, "ARKASIS ASSISTANT"))
 
-        for _, Data in ipairs(self.ArkasisSortBuffer) do
-            self.activeArkasisUserLabels = self.activeArkasisUserLabels + 1
-            local Label = self:GetOrCreateLabel(self.ArkasisUserLabels, "ArkasisUserLabels", self.activeArkasisUserLabels, self.ContainerArkasisAssistant.Content, TEXT_ALIGN_LEFT)
-
-            local GroupMember = Data.GroupMember
-            local roleIcon = self:GetPlayerIconByRole(GroupMember.selectedRole)
-            local isEquipped = GroupMember.ArkasisAssistant.isEquipped or 0
-            local shortName = self:GetShortName(Data.displayName, self.maxLengthDisplayName)
-            local sideName = CC.ArkasisAssistant:GetSideNameFromSideId(GroupMember.ArkasisAssistant.sideId)
-
-            local stringSet = ""
-            if isEquipped ~= 0 then
-                local setName = CC.ArkasisAssistant:GetSetNameFromStatusId(isEquipped)
-                stringSet = string.format(" - |cFFFFFF[%s]|r", setName)
-            end
-
-            Label:SetText(string.format("%s %s - %s%s", roleIcon, shortName, sideName, stringSet))
+        if CC.DisplayNotification.arkasisEndTime > currentTime then
+            local remaining = math.ceil(CC.DisplayNotification.arkasisEndTime - currentTime)
+            self.ArkasisAssistantButtonToggle:SetText(string.format("ARKASIS %d Sec", remaining))
+            self.ArkasisAssistantButtonToggle:SetCustomColors(self.RD_NORMAL)
+        else
+            local configuredSecs = (CC.ArkasisAssistant.SV.durationMs / 1000) or 5
+            self.ArkasisAssistantButtonToggle:SetText(string.format("ARKASIS %d Sec", configuredSecs))
+            self.ArkasisAssistantButtonToggle:SetCustomColors(self.YL_NORMAL)
         end
-
-        -- IS EMPTY
-        if self.activeArkasisUserLabels == 0 then
-            self.activeArkasisUserLabels = 1
-            local Label = self:GetOrCreateLabel(self.ArkasisUserLabels, "ArkasisUserLabels", self.activeArkasisUserLabels, self.ContainerArkasisAssistant.Content, TEXT_ALIGN_LEFT)
-            if arkasisSideId == 0 then
-                Label:SetText("You are unassigned.")
-            else
-                Label:SetText("No partners in your stack.")
-            end
-        end
-    end
-
-    self:HideUnusedLabels(self.ArkasisUserLabels, self.activeArkasisUserLabels)
-    self.ContainerArkasisAssistant.Title:SetText(self:GetTitleWithIcon(CC.ArkasisAssistant, "ARKASIS ASSISTANT"))
-
-    if CC.DisplayNotification.arkasisEndTime > currentTime then
-        local remaining = math.ceil(CC.DisplayNotification.arkasisEndTime - currentTime)
-        self.ArkasisAssistantButtonToggle:SetText(string.format("ARKASIS %d Sec", remaining))
-        self.ArkasisAssistantButtonToggle:SetCustomColors(self.RD_NORMAL)
-    else
-        local configuredSecs = (CC.ArkasisAssistant.SV.durationMs / 1000) or 5
-        self.ArkasisAssistantButtonToggle:SetText(string.format("ARKASIS %d Sec", configuredSecs))
-        self.ArkasisAssistantButtonToggle:SetCustomColors(self.YL_NORMAL)
     end
 
     ----------------------------------------------------------------------------------------------------
     -- DRAW SHAPE
     ----------------------------------------------------------------------------------------------------
-    self.DrawShapeContainer.Title:SetText(self:GetTitleWithIcon(CC.DrawShape, "DRAW SHAPE"))
+    if self.DrawShapeContainer then
+        self.DrawShapeContainer.Title:SetText(self:GetTitleWithIcon(CC.DrawShape, "DRAW SHAPE"))
 
-    local isRectangle = (CC.DrawShape.SV.shapeType == LUT.DRAW_SHAPE.RECTANGLE)
-    self.DrawShapeLabelToggle:SetText(isRectangle and "Shape: Rectangle" or "Shape: Circle")
+        local isRectangle = (CC.DrawShape.SV.shapeType == LUT.DRAW_SHAPE.RECTANGLE)
+        self.DrawShapeLabelToggle:SetText(isRectangle and "Shape: Rectangle" or "Shape: Circle")
 
-    local labelX = isRectangle and "Width" or "Diameter"
-    self.DrawShapeLabelValueX:SetText(string.format("%s: %dm", labelX, CC.DrawShape.SV.width / 100))
-    self.DrawShapeLabelValueZ:SetText(string.format("Height: %dm", CC.DrawShape.SV.height / 100))
+        local labelX = isRectangle and "Width" or "Diameter"
+        self.DrawShapeLabelValueX:SetText(string.format("%s: %dm", labelX, CC.DrawShape.SV.width / 100))
+        self.DrawShapeLabelValueZ:SetText(string.format("Height: %dm", CC.DrawShape.SV.height / 100))
+    end
 
     ----------------------------------------------------------------------------------------------------
     -- LAUNCH PAD
     ----------------------------------------------------------------------------------------------------
-    self.ContainerLaunchPad.Title:SetText(self:GetTitleWithIcon(CC.LaunchPad, "LAUNCH PAD"))
+    if self.ContainerLaunchPad then
+        self.ContainerLaunchPad.Title:SetText(self:GetTitleWithIcon(CC.LaunchPad, "LAUNCH PAD"))
 
-    local activeTrigger = CC.LaunchPad.SV.activeTrigger
-    local TriggerData = CC.LaunchPad.TriggerData[activeTrigger]
-    local triggerName = TriggerData and TriggerData.name or "UNKNOWN"
+        local activeTrigger = CC.LaunchPad.SV.activeTrigger
+        local TriggerData = CC.LaunchPad.TriggerData[activeTrigger]
+        local triggerName = TriggerData and TriggerData.name or "UNKNOWN"
 
-    local triggerColor = TriggerData and TriggerData.Color or self.ESO_NORMAL
-    local r, g, b = triggerColor[1], triggerColor[2], triggerColor[3]
+        local triggerColor = TriggerData and TriggerData.Color or self.ESO_NORMAL
+        local r, g, b = triggerColor[1], triggerColor[2], triggerColor[3]
 
-    local currentCategory = CC.LaunchPad.menuSelectedCategory
-    if not currentCategory or currentCategory == "" then
-        currentCategory = TriggerData and TriggerData.category or "Other"
-        CC.LaunchPad.menuSelectedCategory = currentCategory
+        local currentCategory = CC.LaunchPad.menuSelectedCategory
+        if not currentCategory or currentCategory == "" then
+            currentCategory = TriggerData and TriggerData.category or "Other"
+            CC.LaunchPad.menuSelectedCategory = currentCategory
+        end
+
+        self.LaunchPadCatLabelToggle:SetText(currentCategory)
+        self.LaunchPadCatLabelToggle:SetColor(r, g, b, 1)
+
+        self.LaunchPadLabelToggle:SetText(triggerName)
+        self.LaunchPadLabelToggle:SetColor(r, g, b, 1)
     end
-
-    self.LaunchPadCatLabelToggle:SetText(currentCategory)
-    self.LaunchPadCatLabelToggle:SetColor(r, g, b, 1)
-
-    self.LaunchPadLabelToggle:SetText(triggerName)
-    self.LaunchPadLabelToggle:SetColor(r, g, b, 1)
 
     ----------------------------------------------------------------------------------------------------
     -- POINTER
     ----------------------------------------------------------------------------------------------------
-    self.PointerContainer.Title:SetText(self:GetTitleWithIcon(CC.Pointer, "3D POINTER"))
+    if self.PointerContainer then
+        self.PointerContainer.Title:SetText(self:GetTitleWithIcon(CC.Pointer, "3D POINTER"))
+    end
 
     ----------------------------------------------------------------------------------------------------
     -- RAIDLEAD TOOLS
     ----------------------------------------------------------------------------------------------------
-    self.ContainerRaidleadTools.Title:SetText(self:GetTitleWithIcon(CC.RaidleadTools, "RL TOOLS & TIMERS"))
+    if self.ContainerRaidleadTools then
+        self.ContainerRaidleadTools.Title:SetText(self:GetTitleWithIcon(CC.RaidleadTools, "RL TOOLS & TIMERS"))
 
-    -- UPDATE BUTTON BREAK TIMER
-    if CC.DisplayNotification.breakEndTime > currentTime then
-        local remaining = math.ceil(CC.DisplayNotification.breakEndTime - currentTime)
-        local breakMins = math.floor(remaining / 60)
-        local breakSecs = remaining % 60
-        local timeStr = (breakMins > 0) and string.format("%d:%02d", breakMins, breakSecs) or string.format("%d Sec", breakSecs)
-        self.BreakTimerButtonToggle:SetText(string.format("BREAK %s", timeStr))
-        self.BreakTimerButtonToggle:SetCustomColors(self.RD_NORMAL)
-    else
-        local configuredMins = CC.RaidleadTools.SV.breakMinutes
-        self.BreakTimerButtonToggle:SetText(string.format("BREAK %d Min", configuredMins))
-        self.BreakTimerButtonToggle:SetCustomColors(self.BL_NORMAL)
-    end
+        -- UPDATE BUTTON BREAK TIMER
+        if CC.DisplayNotification.breakEndTime > currentTime then
+            local remaining = math.ceil(CC.DisplayNotification.breakEndTime - currentTime)
+            local breakMins = math.floor(remaining / 60)
+            local breakSecs = remaining % 60
+            local timeStr = (breakMins > 0) and string.format("%d:%02d", breakMins, breakSecs) or string.format("%d Sec", breakSecs)
+            self.BreakTimerButtonToggle:SetText(string.format("BREAK %s", timeStr))
+            self.BreakTimerButtonToggle:SetCustomColors(self.RD_NORMAL)
+        else
+            local configuredMins = CC.RaidleadTools.SV.breakMinutes
+            self.BreakTimerButtonToggle:SetText(string.format("BREAK %d Min", configuredMins))
+            self.BreakTimerButtonToggle:SetCustomColors(self.BL_NORMAL)
+        end
 
-    -- UPDATE BUTTON PULL TIMER
-    if CC.DisplayNotification.pullEndTime > currentTime then
-        local remaining = math.ceil(CC.DisplayNotification.pullEndTime - currentTime)
-        self.PullTimerButtonToggle:SetText(string.format("PULL %d Sec", remaining))
-        self.PullTimerButtonToggle:SetCustomColors(self.RD_NORMAL)
-    else
-        local configuredSecs = CC.RaidleadTools.SV.pullSeconds
-        self.PullTimerButtonToggle:SetText(string.format("PULL %d Sec", configuredSecs))
-        self.PullTimerButtonToggle:SetCustomColors(self.GN_NORMAL)
-    end
+        -- UPDATE BUTTON PULL TIMER
+        if CC.DisplayNotification.pullEndTime > currentTime then
+            local remaining = math.ceil(CC.DisplayNotification.pullEndTime - currentTime)
+            self.PullTimerButtonToggle:SetText(string.format("PULL %d Sec", remaining))
+            self.PullTimerButtonToggle:SetCustomColors(self.RD_NORMAL)
+        else
+            local configuredSecs = CC.RaidleadTools.SV.pullSeconds
+            self.PullTimerButtonToggle:SetText(string.format("PULL %d Sec", configuredSecs))
+            self.PullTimerButtonToggle:SetCustomColors(self.GN_NORMAL)
+        end
 
-    -- UPDATE BUTTON VOTE START
-    local VoteData = CC.RaidleadTools.VoteData
-    if VoteData and VoteData.endTime > currentTime then
-        local stringYES = string.format("|c00FF00%d|r", VoteData.yes)
-        local stringNO = string.format("|cFF0000%d|r", VoteData.no)
-        local stringIDC = string.format("|cFFDF00%d|r", VoteData.idc)
-        self.ButtonVoteStart:SetText(string.format("STOP %s - %s - %s", stringYES, stringNO, stringIDC))
-        self.ButtonVoteStart:SetCustomColors(self.RD_NORMAL)
-    else
-        self.ButtonVoteStart:SetText("START VOTE")
-        self.ButtonVoteStart:SetCustomColors(nil, nil)
+        -- UPDATE BUTTON VOTE START
+        local VoteData = CC.RaidleadTools.VoteData
+        if VoteData and VoteData.endTime > currentTime then
+            local stringYES = string.format("|c00FF00%d|r", VoteData.yes)
+            local stringNO = string.format("|cFF0000%d|r", VoteData.no)
+            local stringIDC = string.format("|cFFDF00%d|r", VoteData.idc)
+            self.ButtonVoteStart:SetText(string.format("STOP %s - %s - %s", stringYES, stringNO, stringIDC))
+            self.ButtonVoteStart:SetCustomColors(self.RD_NORMAL)
+        else
+            self.ButtonVoteStart:SetText("START VOTE")
+            self.ButtonVoteStart:SetCustomColors(nil, nil)
+        end
     end
 
     ----------------------------------------------------------------------------------------------------
     -- SLAYER ASSISTANT
     ----------------------------------------------------------------------------------------------------
-    local countSlayerSetUsers = 0
-    self.activeSlayerSetUserLabels = 0
+    if self.ContainerSlayerAssistant then
+        local countSlayerSetUsers = 0
+        self.activeSlayerSetUserLabels = 0
 
-    local playerZoneName = CC.SlayerAssistant:GetZoneNameFromZoneId(currentZoneId)
-    local playerSideId = CC.SlayerAssistant:GetSideIdFromZoneId(currentZoneId)
-    local playerSideName = CC.SlayerAssistant:GetSideNameFromSideId(playerSideId)
-    self.SlayerAssistantPositionLabel:SetText(string.format("Current zone: |cFFFFFF[%s]|r\nYour saved position: %s", playerZoneName, playerSideName))
+        local playerZoneName = CC.SlayerAssistant:GetZoneNameFromZoneId(currentZoneId)
+        local playerSideId = CC.SlayerAssistant:GetSideIdFromZoneId(currentZoneId)
+        local playerSideName = CC.SlayerAssistant:GetSideNameFromSideId(playerSideId)
+        self.SlayerAssistantPositionLabel:SetText(string.format("Current zone: |cFFFFFF[%s]|r\nYour saved position: %s", playerZoneName, playerSideName))
 
-    local ColorLeft = CC.SlayerAssistant.SV.ColorLeft or {1, 0, 0, 1}
-    local ColorRight = CC.SlayerAssistant.SV.ColorRight or {0, 0.5, 1, 1}
-    self.SlayerAssistantButtonSetLeft:SetCustomColors(ColorLeft)
-    self.SlayerAssistantButtonSetRight:SetCustomColors(ColorRight)
-
-    for displayName, GroupMember in pairs(CC.GroupData) do
-        if GroupMember.SlayerAssistant and GroupMember.SlayerAssistant.isEquipped ~= CC.SlayerAssistant.SET_STATUS_NONE and GroupMember.SlayerAssistant.zoneId == currentZoneId then
-            countSlayerSetUsers = countSlayerSetUsers + 1
-        end
-    end
-
-    if self.SV.isOpenSlayerAssistant then
-        ZO_ClearTable(self.SlayerSortBuffer)
+        local ColorLeft = CC.SlayerAssistant.SV.ColorLeft or {1, 0, 0, 1}
+        local ColorRight = CC.SlayerAssistant.SV.ColorRight or {0, 0.5, 1, 1}
+        self.SlayerAssistantButtonSetLeft:SetCustomColors(ColorLeft)
+        self.SlayerAssistantButtonSetRight:SetCustomColors(ColorRight)
 
         for displayName, GroupMember in pairs(CC.GroupData) do
             if GroupMember.SlayerAssistant and GroupMember.SlayerAssistant.isEquipped ~= CC.SlayerAssistant.SET_STATUS_NONE and GroupMember.SlayerAssistant.zoneId == currentZoneId then
-                table.insert(self.SlayerSortBuffer, {
-                    displayName = displayName,
-                    GroupMember = GroupMember
-                })
+                countSlayerSetUsers = countSlayerSetUsers + 1
             end
         end
 
-        table.sort(self.SlayerSortBuffer, function(A, B) return A.displayName < B.displayName end)
+        if self.SV.isOpenSlayerAssistant then
+            ZO_ClearTable(self.SlayerSortBuffer)
 
-        for _, Data in ipairs(self.SlayerSortBuffer) do
-            self.activeSlayerSetUserLabels = self.activeSlayerSetUserLabels + 1
-            local Label = self:GetOrCreateLabel(self.SlayerSetUserLabels, "SlayerSetUserLabels", self.activeSlayerSetUserLabels, self.ContainerSlayerAssistant.Content, TEXT_ALIGN_LEFT)
-
-            local GroupMember = Data.GroupMember
-            local roleIcon = self:GetPlayerIconByRole(GroupMember.selectedRole)
-            local isEquipped = GroupMember.SlayerAssistant.isEquipped or CC.SlayerAssistant.SET_STATUS_NONE
-            local shortName = self:GetShortName(Data.displayName, self.maxLengthDisplayName)
-            local sideName = CC.SlayerAssistant:GetSideNameFromSideId(GroupMember.SlayerAssistant.sideId)
-
-            local stringSet = ""
-            if isEquipped ~= CC.SlayerAssistant.SET_STATUS_NONE then
-                local setName = CC.SlayerAssistant:GetSetNameFromStatusId(isEquipped)
-                stringSet = string.format(" - |cFFFFFF[%s]|r", setName)
+            for displayName, GroupMember in pairs(CC.GroupData) do
+                if GroupMember.SlayerAssistant and GroupMember.SlayerAssistant.isEquipped ~= CC.SlayerAssistant.SET_STATUS_NONE and GroupMember.SlayerAssistant.zoneId == currentZoneId then
+                    table.insert(self.SlayerSortBuffer, {
+                        displayName = displayName,
+                        GroupMember = GroupMember
+                    })
+                end
             end
 
-            Label:SetText(string.format("%s %s - %s%s", roleIcon, shortName, sideName, stringSet))
+            table.sort(self.SlayerSortBuffer, function(A, B) return A.displayName < B.displayName end)
+
+            for _, Data in ipairs(self.SlayerSortBuffer) do
+                self.activeSlayerSetUserLabels = self.activeSlayerSetUserLabels + 1
+                local Label = self:GetOrCreateLabel(self.SlayerSetUserLabels, "SlayerSetUserLabels", self.activeSlayerSetUserLabels, self.ContainerSlayerAssistant.Content, TEXT_ALIGN_LEFT)
+
+                local GroupMember = Data.GroupMember
+                local roleIcon = self:GetPlayerIconByRole(GroupMember.selectedRole)
+                local isEquipped = GroupMember.SlayerAssistant.isEquipped or CC.SlayerAssistant.SET_STATUS_NONE
+                local shortName = self:GetShortName(Data.displayName, self.maxLengthDisplayName)
+                local sideName = CC.SlayerAssistant:GetSideNameFromSideId(GroupMember.SlayerAssistant.sideId)
+
+                local stringSet = ""
+                if isEquipped ~= CC.SlayerAssistant.SET_STATUS_NONE then
+                    local setName = CC.SlayerAssistant:GetSetNameFromStatusId(isEquipped)
+                    stringSet = string.format(" - |cFFFFFF[%s]|r", setName)
+                end
+
+                Label:SetText(string.format("%s %s - %s%s", roleIcon, shortName, sideName, stringSet))
+            end
         end
-    end
 
-    self:HideUnusedLabels(self.SlayerSetUserLabels, self.activeSlayerSetUserLabels)
-    self.ContainerSlayerAssistant.Title:SetText(self:GetTitleWithIcon(CC.SlayerAssistant, "SLAYER ASSISTANT"))
+        self:HideUnusedLabels(self.SlayerSetUserLabels, self.activeSlayerSetUserLabels)
+        self.ContainerSlayerAssistant.Title:SetText(self:GetTitleWithIcon(CC.SlayerAssistant, "SLAYER ASSISTANT"))
 
-    -- BUTTON TEXT
-    if CC.DisplayNotification.slayerEndTime > currentTime then
-        local remaining = math.ceil(CC.DisplayNotification.slayerEndTime - currentTime)
-        self.SlayerAssistantButtonToggle:SetText(string.format("SLAYER %d Sec", remaining))
-        self.SlayerAssistantButtonToggle:SetCustomColors(self.RD_NORMAL)
-    else
-        local configuredSecs = (CC.SlayerAssistant.SV.durationMs / 1000) or 5
-        self.SlayerAssistantButtonToggle:SetText(string.format("SLAYER %d Sec", configuredSecs))
-        self.SlayerAssistantButtonToggle:SetCustomColors(self.GN_NORMAL)
+        -- BUTTON TEXT
+        if CC.DisplayNotification.slayerEndTime > currentTime then
+            local remaining = math.ceil(CC.DisplayNotification.slayerEndTime - currentTime)
+            self.SlayerAssistantButtonToggle:SetText(string.format("SLAYER %d Sec", remaining))
+            self.SlayerAssistantButtonToggle:SetCustomColors(self.RD_NORMAL)
+        else
+            local configuredSecs = (CC.SlayerAssistant.SV.durationMs / 1000) or 5
+            self.SlayerAssistantButtonToggle:SetText(string.format("SLAYER %d Sec", configuredSecs))
+            self.SlayerAssistantButtonToggle:SetCustomColors(self.GN_NORMAL)
+        end
     end
 
     ----------------------------------------------------------------------------------------------------
     -- SPAULDER OF RUIN
     ----------------------------------------------------------------------------------------------------
-    self.activeSpaulderUserLabels = 0
+    if self.ContainerSpaulderOfRuin then
+        self.activeSpaulderUserLabels = 0
 
-    if self.SV.isOpenSpaulderOfRuin then
-        ZO_ClearTable(self.SpaulderSortBuffer)
+        if self.SV.isOpenSpaulderOfRuin then
+            ZO_ClearTable(self.SpaulderSortBuffer)
 
-        for displayName, GroupMember in pairs(CC.GroupData) do
-            if GroupMember.isOnline then
-                table.insert(self.SpaulderSortBuffer, {
-                    displayName = displayName,
-                    unitTag = GroupMember.unitTag,
-                    selectedRole = GroupMember.selectedRole,
-                    distance = GroupMember.distance or 9999,
-                })
+            for displayName, GroupMember in pairs(CC.GroupData) do
+                if GroupMember.isOnline then
+                    table.insert(self.SpaulderSortBuffer, {
+                        displayName = displayName,
+                        unitTag = GroupMember.unitTag,
+                        selectedRole = GroupMember.selectedRole,
+                        distance = GroupMember.distance or 9999,
+                    })
+                end
             end
-        end
 
-        table.sort(self.SpaulderSortBuffer, function(A, B) return A.displayName < B.displayName end)
+            table.sort(self.SpaulderSortBuffer, function(A, B) return A.displayName < B.displayName end)
 
-        for _, Player in ipairs(self.SpaulderSortBuffer) do
-            self.activeSpaulderUserLabels = self.activeSpaulderUserLabels + 1
-            local Label = self:GetOrCreateLabel(self.SpaulderUserLabels, "SpaulderUserLabels", self.activeSpaulderUserLabels, self.ContainerSpaulderOfRuin.Content, TEXT_ALIGN_LEFT)
+            for _, Player in ipairs(self.SpaulderSortBuffer) do
+                self.activeSpaulderUserLabels = self.activeSpaulderUserLabels + 1
+                local Label = self:GetOrCreateLabel(self.SpaulderUserLabels, "SpaulderUserLabels", self.activeSpaulderUserLabels, self.ContainerSpaulderOfRuin.Content, TEXT_ALIGN_LEFT)
 
-            -- CLICK
-            if not Label.isInteractive then
-                Label:SetMouseEnabled(true)
-                Label:SetHandler("OnMouseEnter", function(Control)
-                    Control:SetColor(unpack(self.ESO_HIGHLIGHT))
-                    InitializeTooltip(InformationTooltip, Control, BOTTOM, 0, 0)
-                    SetTooltipText(InformationTooltip, "Click to toggle [SOR].")
-                end)
-                Label:SetHandler("OnMouseExit", function(Control)
-                    Control:SetColor(unpack(self.ESO_NORMAL))
-                    ClearTooltip(InformationTooltip)
-                end)
-                Label:SetHandler("OnMouseUp", function(Control, button, upInside)
-                    if upInside and Control.targetName then
-                        local SV = CC.SpaulderOfRuin.SV
+                -- CLICK
+                if not Label.isInteractive then
+                    Label:SetMouseEnabled(true)
+                    Label:SetHandler("OnMouseEnter", function(Control)
+                        Control:SetColor(unpack(self.ESO_HIGHLIGHT))
+                        InitializeTooltip(InformationTooltip, Control, BOTTOM, 0, 0)
+                        SetTooltipText(InformationTooltip, "Click to toggle [SOR].")
+                    end)
+                    Label:SetHandler("OnMouseExit", function(Control)
+                        Control:SetColor(unpack(self.ESO_NORMAL))
+                        ClearTooltip(InformationTooltip)
+                    end)
+                    Label:SetHandler("OnMouseUp", function(Control, button, upInside)
+                        if upInside and Control.targetName then
+                            local SV = CC.SpaulderOfRuin.SV
 
-                        if SV.SavedPlayers[Control.targetName] then
-                            SV.SavedPlayers[Control.targetName] = nil
-                        else
-                            SV.SavedPlayers[Control.targetName] = true
+                            if SV.SavedPlayers[Control.targetName] then
+                                SV.SavedPlayers[Control.targetName] = nil
+                            else
+                                SV.SavedPlayers[Control.targetName] = true
+                            end
+                            CC.DisplayPanel:UpdateData()
                         end
-                        CC.DisplayPanel:UpdateData()
-                    end
-                end)
-                Label.isInteractive = true
+                    end)
+                    Label.isInteractive = true
+                end
+
+                Label.targetName = Player.displayName
+
+                local hasBuff = CC.SpaulderOfRuin:HasAuraOfPride(Player.unitTag)
+                local isSaved = CC.SpaulderOfRuin.SV.SavedPlayers[Player.displayName] and true or false
+
+                local shortName = self:GetShortName(Player.displayName, self.maxLengthDisplayName)
+                local roleIcon = self:GetPlayerIconByRole(Player.selectedRole)
+                local savedStr = isSaved and " |cFF9F3F[SOR]|r" or ""
+                local distanceStr = ""
+
+                if Player.distance >= 9999 then
+                    distanceStr = "N/A"
+                elseif Player.distance >= 10 then
+                    distanceStr = string.format("%dm", Player.distance)
+                else
+                    distanceStr = string.format("%.1fm", Player.distance)
+                end
+
+                if hasBuff and isSaved then
+                    shortName = CC.GetHexColorFromArray(self.GN_NORMAL) .. shortName .. "|r"
+                elseif hasBuff and not isSaved then
+                    shortName = CC.GetHexColorFromArray(self.YL_NORMAL) .. shortName .. "|r"
+                elseif not hasBuff and isSaved then
+                    shortName = CC.GetHexColorFromArray(self.RD_NORMAL) .. shortName .. "|r"
+                end
+
+                Label:SetText(string.format("%s %s%s - %s", roleIcon, shortName, savedStr, distanceStr))
             end
 
-            Label.targetName = Player.displayName
-
-            local hasBuff = CC.SpaulderOfRuin:HasAuraOfPride(Player.unitTag)
-            local isSaved = CC.SpaulderOfRuin.SV.SavedPlayers[Player.displayName] and true or false
-
-            local shortName = self:GetShortName(Player.displayName, self.maxLengthDisplayName)
-            local roleIcon = self:GetPlayerIconByRole(Player.selectedRole)
-            local savedStr = isSaved and " |cFF9F3F[SOR]|r" or ""
-            local distanceStr = ""
-
-            if Player.distance >= 9999 then
-                distanceStr = "N/A"
-            elseif Player.distance >= 10 then
-                distanceStr = string.format("%dm", Player.distance)
-            else
-                distanceStr = string.format("%.1fm", Player.distance)
+            if self.activeSpaulderUserLabels == 0 then
+                self.activeSpaulderUserLabels = 1
+                local Label = self:GetOrCreateLabel(self.SpaulderUserLabels, "SpaulderUserLabels", 1, self.ContainerSpaulderOfRuin.Content, TEXT_ALIGN_LEFT)
+                Label.targetName = nil
+                Label:SetMouseEnabled(false)
+                Label:SetColor(unpack(self.ESO_MUTED))
+                Label:SetText("No players found.")
             end
-
-            if hasBuff and isSaved then
-                shortName = CC.GetHexColorFromArray(self.GN_NORMAL) .. shortName .. "|r"
-            elseif hasBuff and not isSaved then
-                shortName = CC.GetHexColorFromArray(self.YL_NORMAL) .. shortName .. "|r"
-            elseif not hasBuff and isSaved then
-                shortName = CC.GetHexColorFromArray(self.RD_NORMAL) .. shortName .. "|r"
-            end
-
-            Label:SetText(string.format("%s %s%s - %s", roleIcon, shortName, savedStr, distanceStr))
         end
 
-        if self.activeSpaulderUserLabels == 0 then
-            self.activeSpaulderUserLabels = 1
-            local Label = self:GetOrCreateLabel(self.SpaulderUserLabels, "SpaulderUserLabels", 1, self.ContainerSpaulderOfRuin.Content, TEXT_ALIGN_LEFT)
-            Label.targetName = nil
-            Label:SetMouseEnabled(false)
-            Label:SetColor(unpack(self.ESO_MUTED))
-            Label:SetText("No players found.")
-        end
+        self:HideUnusedLabels(self.SpaulderUserLabels, self.activeSpaulderUserLabels)
+        self.ContainerSpaulderOfRuin.Title:SetText(self:GetTitleWithIcon(CC.SpaulderOfRuin, "SPAULDER OF RUIN"))
     end
-
-    self:HideUnusedLabels(self.SpaulderUserLabels, self.activeSpaulderUserLabels)
-    self.ContainerSpaulderOfRuin.Title:SetText(self:GetTitleWithIcon(CC.SpaulderOfRuin, "SPAULDER OF RUIN"))
 
     -- CALC DIMENSIONS
     self:UpdateDimensions()
@@ -1560,28 +1577,28 @@ function Module:UpdateDimensions()
     self.MainTitle:SetFont(self.Font.Title)
 
     if self.SV.isMinimized then
-        self.ContainerAddonUsers.Control:SetHidden(true)
-        self.ContainerArkasisAssistant.Control:SetHidden(true)
-        self.DrawShapeContainer.Control:SetHidden(true)
-        self.ContainerLaunchPad.Control:SetHidden(true)
-        self.PointerContainer.Control:SetHidden(true)
+        if self.ContainerAddonUsers then self.ContainerAddonUsers.Control:SetHidden(true) end
+        if self.ContainerArkasisAssistant then self.ContainerArkasisAssistant.Control:SetHidden(true) end
+        if self.DrawShapeContainer then self.DrawShapeContainer.Control:SetHidden(true) end
+        if self.ContainerLaunchPad then self.ContainerLaunchPad.Control:SetHidden(true) end
+        if self.PointerContainer then self.PointerContainer.Control:SetHidden(true) end
         if self.ContainerRaidleadTools then self.ContainerRaidleadTools.Control:SetHidden(true) end
-        self.ContainerSlayerAssistant.Control:SetHidden(true)
-        self.ContainerSpaulderOfRuin.Control:SetHidden(true)
+        if self.ContainerSlayerAssistant then self.ContainerSlayerAssistant.Control:SetHidden(true) end
+        if self.ContainerSpaulderOfRuin then self.ContainerSpaulderOfRuin.Control:SetHidden(true) end
         self.LabelAuthor:SetHidden(true)
 
         self.Parent:SetWidth(self.SV.panelWidth)
         self.Parent:SetHeight(minimizedHeight)
         return
     else
-        self.ContainerAddonUsers.Control:SetHidden(false)
-        self.ContainerArkasisAssistant.Control:SetHidden(false)
-        self.DrawShapeContainer.Control:SetHidden(false)
-        self.ContainerLaunchPad.Control:SetHidden(false)
-        self.PointerContainer.Control:SetHidden(false)
+        if self.ContainerAddonUsers then self.ContainerAddonUsers.Control:SetHidden(false) end
+        if self.ContainerArkasisAssistant then self.ContainerArkasisAssistant.Control:SetHidden(false) end
+        if self.DrawShapeContainer then self.DrawShapeContainer.Control:SetHidden(false) end
+        if self.ContainerLaunchPad then self.ContainerLaunchPad.Control:SetHidden(false) end
+        if self.PointerContainer then self.PointerContainer.Control:SetHidden(false) end
         if self.ContainerRaidleadTools then self.ContainerRaidleadTools.Control:SetHidden(false) end
-        self.ContainerSlayerAssistant.Control:SetHidden(false)
-        self.ContainerSpaulderOfRuin.Control:SetHidden(false)
+        if self.ContainerSlayerAssistant then self.ContainerSlayerAssistant.Control:SetHidden(false) end
+        if self.ContainerSpaulderOfRuin then self.ContainerSpaulderOfRuin.Control:SetHidden(false) end
         self.LabelAuthor:SetHidden(false)
     end
 
@@ -1611,282 +1628,292 @@ function Module:UpdateDimensions()
     end
 
     -- ADDON USERS
-    ProcessContainer(self.ContainerAddonUsers, function(Content, width)
-        local innerY = Layout.paddingTop -- TEXT
+    if self.ContainerAddonUsers then
+        ProcessContainer(self.ContainerAddonUsers, function(Content, width)
+            local innerY = Layout.paddingTop
 
-        self.AddonUsersInfoLabel:SetDimensions(width - (2 * Layout.padding), 0)
-        self.AddonUsersInfoLabel:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
-        innerY = innerY + self.AddonUsersInfoLabel:GetTextHeight() + Layout.spacing
+            self.AddonUsersInfoLabel:SetDimensions(width - (2 * Layout.padding), 0)
+            self.AddonUsersInfoLabel:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
+            innerY = innerY + self.AddonUsersInfoLabel:GetTextHeight() + Layout.spacing
 
-        for i = 1, self.activeAddonUserLabels do
-            local Label = self.AddonUserLabels[i]
-            Label:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
-            innerY = innerY + Label:GetTextHeight()
-        end
-        innerY = innerY + Layout.spacing
-        self.ButtonPingRequest:SetDimensions(width - (2 * Layout.padding), Layout.heightElement)
-        self.ButtonPingRequest:SetAnchor(TOP, Content, TOP, 0, innerY)
-        return innerY + Layout.heightElement
-    end)
+            for i = 1, self.activeAddonUserLabels do
+                local Label = self.AddonUserLabels[i]
+                Label:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
+                innerY = innerY + Label:GetTextHeight()
+            end
+            innerY = innerY + Layout.spacing
+            self.ButtonPingRequest:SetDimensions(width - (2 * Layout.padding), Layout.heightElement)
+            self.ButtonPingRequest:SetAnchor(TOP, Content, TOP, 0, innerY)
+            return innerY + Layout.heightElement
+        end)
+    end
 
     -- ARKASIS ASSISTANT
-    ProcessContainer(self.ContainerArkasisAssistant, function(Content, width)
-        local innerY = Layout.paddingTop
-        local buttonHalf = (width - (2 * Layout.padding) - Layout.spacing) / 2
-        local buttonThird = (width - (2 * Layout.padding) - (2 * Layout.spacing)) / 3
-        local buttonFull = width - (2 * Layout.padding)
+    if self.ContainerArkasisAssistant then
+        ProcessContainer(self.ContainerArkasisAssistant, function(Content, width)
+            local innerY = Layout.paddingTop
+            local buttonHalf = (width - (2 * Layout.padding) - Layout.spacing) / 2
+            local buttonThird = (width - (2 * Layout.padding) - (2 * Layout.spacing)) / 3
+            local buttonFull = width - (2 * Layout.padding)
 
-        self.ArkasisAssistantPositionLabel:SetDimensions(width - (2 * Layout.padding), 0)
-        self.ArkasisAssistantPositionLabel:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
-        innerY = innerY + self.ArkasisAssistantPositionLabel:GetTextHeight() + Layout.spacing
+            self.ArkasisAssistantPositionLabel:SetDimensions(width - (2 * Layout.padding), 0)
+            self.ArkasisAssistantPositionLabel:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
+            innerY = innerY + self.ArkasisAssistantPositionLabel:GetTextHeight() + Layout.spacing
 
-        self.ArkasisAssistantButtonSet1:SetDimensions(buttonThird, Layout.heightElement)
-        self.ArkasisAssistantButtonSet1:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
-        self.ArkasisAssistantButtonSet2:SetDimensions(buttonThird, Layout.heightElement)
-        self.ArkasisAssistantButtonSet2:SetAnchor(TOPLEFT, self.ArkasisAssistantButtonSet1, TOPRIGHT, Layout.spacing, 0)
-        self.ArkasisAssistantButtonSet3:SetDimensions(buttonThird, Layout.heightElement)
-        self.ArkasisAssistantButtonSet3:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
-        innerY = innerY + Layout.heightElement + Layout.spacing
-
-        if isRaidlead then
-            self.ArkasisAssistantButtonAssign:SetHidden(false)
-            self.ArkasisAssistantButtonStatus:SetHidden(false)
-            self.ArkasisAssistantButtonAssign:SetDimensions(buttonHalf, Layout.heightElement)
-            self.ArkasisAssistantButtonAssign:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
-            self.ArkasisAssistantButtonStatus:SetDimensions(buttonHalf, Layout.heightElement)
-            self.ArkasisAssistantButtonStatus:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
+            self.ArkasisAssistantButtonSet1:SetDimensions(buttonThird, Layout.heightElement)
+            self.ArkasisAssistantButtonSet1:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
+            self.ArkasisAssistantButtonSet2:SetDimensions(buttonThird, Layout.heightElement)
+            self.ArkasisAssistantButtonSet2:SetAnchor(TOPLEFT, self.ArkasisAssistantButtonSet1, TOPRIGHT, Layout.spacing, 0)
+            self.ArkasisAssistantButtonSet3:SetDimensions(buttonThird, Layout.heightElement)
+            self.ArkasisAssistantButtonSet3:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
             innerY = innerY + Layout.heightElement + Layout.spacing
+
+            if isRaidlead then
+                self.ArkasisAssistantButtonAssign:SetHidden(false)
+                self.ArkasisAssistantButtonStatus:SetHidden(false)
+                self.ArkasisAssistantButtonAssign:SetDimensions(buttonHalf, Layout.heightElement)
+                self.ArkasisAssistantButtonAssign:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
+                self.ArkasisAssistantButtonStatus:SetDimensions(buttonHalf, Layout.heightElement)
+                self.ArkasisAssistantButtonStatus:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
+                innerY = innerY + Layout.heightElement + Layout.spacing
+
+                local widthArrowSingle = Layout.heightElement * 1.0
+                local widthArrowDouble = Layout.heightElement * 1.0
+                local widthToggle = width - (2 * Layout.padding) - (4 * Layout.spacing) - (2 * widthArrowSingle) - (2 * widthArrowDouble)
+
+                self.ArkasisAssistantButtonMinus5:SetHidden(false)
+                self.ArkasisAssistantButtonMinus1:SetHidden(false)
+                self.ArkasisAssistantButtonToggle:SetHidden(false)
+                self.ArkasisAssistantButtonPlus1:SetHidden(false)
+                self.ArkasisAssistantButtonPlus5:SetHidden(false)
+
+                self.ArkasisAssistantButtonMinus5:SetDimensions(widthArrowDouble, Layout.heightElement)
+                self.ArkasisAssistantButtonMinus5:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
+
+                self.ArkasisAssistantButtonMinus1:SetDimensions(widthArrowSingle, Layout.heightElement)
+                self.ArkasisAssistantButtonMinus1:SetAnchor(TOPLEFT, self.ArkasisAssistantButtonMinus5, TOPRIGHT, Layout.spacing, 0)
+
+                self.ArkasisAssistantButtonToggle:SetDimensions(widthToggle, Layout.heightElement)
+                self.ArkasisAssistantButtonToggle:SetAnchor(TOPLEFT, self.ArkasisAssistantButtonMinus1, TOPRIGHT, Layout.spacing, 0)
+
+                self.ArkasisAssistantButtonPlus1:SetDimensions(widthArrowSingle, Layout.heightElement)
+                self.ArkasisAssistantButtonPlus1:SetAnchor(TOPLEFT, self.ArkasisAssistantButtonToggle, TOPRIGHT, Layout.spacing, 0)
+
+                self.ArkasisAssistantButtonPlus5:SetDimensions(widthArrowDouble, Layout.heightElement)
+                self.ArkasisAssistantButtonPlus5:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
+
+                innerY = innerY + Layout.heightElement + Layout.spacing
+            else
+                self.ArkasisAssistantButtonAssign:SetHidden(true)
+                self.ArkasisAssistantButtonStatus:SetHidden(true)
+
+                self.ArkasisAssistantButtonMinus5:SetHidden(true)
+                self.ArkasisAssistantButtonMinus1:SetHidden(true)
+                self.ArkasisAssistantButtonToggle:SetHidden(true)
+                self.ArkasisAssistantButtonPlus1:SetHidden(true)
+                self.ArkasisAssistantButtonPlus5:SetHidden(true)
+            end
+
+            for i = 1, self.activeArkasisUserLabels do
+                local Label = self.ArkasisUserLabels[i]
+                Label:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
+                innerY = innerY + Label:GetTextHeight()
+            end
+
+            return innerY
+        end)
+    end
+
+    -- DRAW SHAPE
+    if self.DrawShapeContainer then
+        ProcessContainer(self.DrawShapeContainer, function(Content, width)
+            local innerY = Layout.paddingTop
+            local buttonHalf = (width - (2 * Layout.padding) - Layout.spacing) / 2
+
+            local widthArrowSingle = Layout.heightElement * 1.0
+            local widthArrowDouble = Layout.heightElement * 1.0
+            local widthCenterLabel = width - (2 * Layout.padding) - (4 * Layout.spacing) - (2 * widthArrowSingle) - (2 * widthArrowDouble)
+            local widthToggle = widthCenterLabel
+
+            local isRectangle = (CC.DrawShape.SV.shapeType == LUT.DRAW_SHAPE.RECTANGLE)
+
+            -- INFO
+            self.DrawShapeInfoLabel:SetDimensions(width - (2 * Layout.padding), 0)
+            self.DrawShapeInfoLabel:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
+            innerY = innerY + self.DrawShapeInfoLabel:GetTextHeight() + Layout.spacing
+
+            -- SHAPE TOGGLE
+            self.DrawShapeButtonFirst:SetDimensions(widthArrowDouble, Layout.heightElement)
+            self.DrawShapeButtonFirst:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
+
+            self.DrawShapeButtonPrev:SetDimensions(widthArrowSingle, Layout.heightElement)
+            self.DrawShapeButtonPrev:SetAnchor(TOPLEFT, self.DrawShapeButtonFirst, TOPRIGHT, Layout.spacing, 0)
+
+            self.DrawShapeLabelToggle:SetDimensions(widthToggle, Layout.heightElement)
+            self.DrawShapeLabelToggle:SetAnchor(TOPLEFT, self.DrawShapeButtonPrev, TOPRIGHT, Layout.spacing, 0)
+
+            self.DrawShapeButtonNext:SetDimensions(widthArrowSingle, Layout.heightElement)
+            self.DrawShapeButtonNext:SetAnchor(TOPLEFT, self.DrawShapeLabelToggle, TOPRIGHT, Layout.spacing, 0)
+
+            self.DrawShapeButtonLast:SetDimensions(widthArrowDouble, Layout.heightElement)
+            self.DrawShapeButtonLast:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
+
+            innerY = innerY + Layout.heightElement + Layout.spacing
+
+            -- ROW X (WIDTH / DIAMETER)
+            self.DrawShapeButtonMinus10X:SetDimensions(widthArrowDouble, Layout.heightElement)
+            self.DrawShapeButtonMinus10X:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
+
+            self.DrawShapeButtonMinus1X:SetDimensions(widthArrowSingle, Layout.heightElement)
+            self.DrawShapeButtonMinus1X:SetAnchor(TOPLEFT, self.DrawShapeButtonMinus10X, TOPRIGHT, Layout.spacing, 0)
+
+            self.DrawShapeLabelValueX:SetDimensions(widthCenterLabel, Layout.heightElement)
+            self.DrawShapeLabelValueX:SetAnchor(TOPLEFT, self.DrawShapeButtonMinus1X, TOPRIGHT, Layout.spacing, 0)
+
+            self.DrawShapeButtonPlus1X:SetDimensions(widthArrowSingle, Layout.heightElement)
+            self.DrawShapeButtonPlus1X:SetAnchor(TOPLEFT, self.DrawShapeLabelValueX, TOPRIGHT, Layout.spacing, 0)
+
+            self.DrawShapeButtonPlus10X:SetDimensions(widthArrowDouble, Layout.heightElement)
+            self.DrawShapeButtonPlus10X:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
+
+            innerY = innerY + Layout.heightElement + Layout.spacing
+
+            -- ROW Z (LENGTH) - RECTANGLE
+            if isRectangle then
+                self.DrawShapeButtonMinus10Z:SetHidden(false)
+                self.DrawShapeButtonMinus1Z:SetHidden(false)
+                self.DrawShapeLabelValueZ:SetHidden(false)
+                self.DrawShapeButtonPlus1Z:SetHidden(false)
+                self.DrawShapeButtonPlus10Z:SetHidden(false)
+
+                self.DrawShapeButtonMinus10Z:SetDimensions(widthArrowDouble, Layout.heightElement)
+                self.DrawShapeButtonMinus10Z:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
+
+                self.DrawShapeButtonMinus1Z:SetDimensions(widthArrowSingle, Layout.heightElement)
+                self.DrawShapeButtonMinus1Z:SetAnchor(TOPLEFT, self.DrawShapeButtonMinus10Z, TOPRIGHT, Layout.spacing, 0)
+
+                self.DrawShapeLabelValueZ:SetDimensions(widthCenterLabel, Layout.heightElement)
+                self.DrawShapeLabelValueZ:SetAnchor(TOPLEFT, self.DrawShapeButtonMinus1Z, TOPRIGHT, Layout.spacing, 0)
+
+                self.DrawShapeButtonPlus1Z:SetDimensions(widthArrowSingle, Layout.heightElement)
+                self.DrawShapeButtonPlus1Z:SetAnchor(TOPLEFT, self.DrawShapeLabelValueZ, TOPRIGHT, Layout.spacing, 0)
+
+                self.DrawShapeButtonPlus10Z:SetDimensions(widthArrowDouble, Layout.heightElement)
+                self.DrawShapeButtonPlus10Z:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
+
+                innerY = innerY + Layout.heightElement + Layout.spacing
+            else
+                self.DrawShapeButtonMinus10Z:SetHidden(true)
+                self.DrawShapeButtonMinus1Z:SetHidden(true)
+                self.DrawShapeLabelValueZ:SetHidden(true)
+                self.DrawShapeButtonPlus1Z:SetHidden(true)
+                self.DrawShapeButtonPlus10Z:SetHidden(true)
+            end
+
+            -- PLACE BUTTONS
+            self.DrawShapeButtonCursor:SetDimensions(buttonHalf, Layout.heightElement)
+            self.DrawShapeButtonCursor:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
+
+            self.DrawShapeButtonSelf:SetDimensions(buttonHalf, Layout.heightElement)
+            self.DrawShapeButtonSelf:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
+
+            return innerY + Layout.heightElement
+        end)
+    end
+
+    -- LAUNCH PAD
+    if self.ContainerLaunchPad then
+        ProcessContainer(self.ContainerLaunchPad, function(Content, width)
+            local innerY = Layout.paddingTop
+            local buttonHalf = (width - (2 * Layout.padding) - Layout.spacing) / 2
+            local buttonFull = width - (2 * Layout.padding)
 
             local widthArrowSingle = Layout.heightElement * 1.0
             local widthArrowDouble = Layout.heightElement * 1.0
             local widthToggle = width - (2 * Layout.padding) - (4 * Layout.spacing) - (2 * widthArrowSingle) - (2 * widthArrowDouble)
 
-            self.ArkasisAssistantButtonMinus5:SetHidden(false)
-            self.ArkasisAssistantButtonMinus1:SetHidden(false)
-            self.ArkasisAssistantButtonToggle:SetHidden(false)
-            self.ArkasisAssistantButtonPlus1:SetHidden(false)
-            self.ArkasisAssistantButtonPlus5:SetHidden(false)
+            -- INFO
+            self.LaunchPadInfoLabel:SetDimensions(width - (2 * Layout.padding), 0)
+            self.LaunchPadInfoLabel:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
+            innerY = innerY + self.LaunchPadInfoLabel:GetTextHeight() + Layout.spacing
 
-            self.ArkasisAssistantButtonMinus5:SetDimensions(widthArrowDouble, Layout.heightElement)
-            self.ArkasisAssistantButtonMinus5:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
+            -- CATEGORY TOGGLE
+            self.LaunchPadCatButtonFirst:SetDimensions(widthArrowDouble, Layout.heightElement)
+            self.LaunchPadCatButtonFirst:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
 
-            self.ArkasisAssistantButtonMinus1:SetDimensions(widthArrowSingle, Layout.heightElement)
-            self.ArkasisAssistantButtonMinus1:SetAnchor(TOPLEFT, self.ArkasisAssistantButtonMinus5, TOPRIGHT, Layout.spacing, 0)
+            self.LaunchPadCatButtonPrev:SetDimensions(widthArrowSingle, Layout.heightElement)
+            self.LaunchPadCatButtonPrev:SetAnchor(TOPLEFT, self.LaunchPadCatButtonFirst, TOPRIGHT, Layout.spacing, 0)
 
-            self.ArkasisAssistantButtonToggle:SetDimensions(widthToggle, Layout.heightElement)
-            self.ArkasisAssistantButtonToggle:SetAnchor(TOPLEFT, self.ArkasisAssistantButtonMinus1, TOPRIGHT, Layout.spacing, 0)
+            self.LaunchPadCatLabelToggle:SetDimensions(widthToggle, Layout.heightElement)
+            self.LaunchPadCatLabelToggle:SetAnchor(TOPLEFT, self.LaunchPadCatButtonPrev, TOPRIGHT, Layout.spacing, 0)
 
-            self.ArkasisAssistantButtonPlus1:SetDimensions(widthArrowSingle, Layout.heightElement)
-            self.ArkasisAssistantButtonPlus1:SetAnchor(TOPLEFT, self.ArkasisAssistantButtonToggle, TOPRIGHT, Layout.spacing, 0)
+            self.LaunchPadCatButtonNext:SetDimensions(widthArrowSingle, Layout.heightElement)
+            self.LaunchPadCatButtonNext:SetAnchor(TOPLEFT, self.LaunchPadCatLabelToggle, TOPRIGHT, Layout.spacing, 0)
 
-            self.ArkasisAssistantButtonPlus5:SetDimensions(widthArrowDouble, Layout.heightElement)
-            self.ArkasisAssistantButtonPlus5:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
-
-            innerY = innerY + Layout.heightElement + Layout.spacing
-        else
-            self.ArkasisAssistantButtonAssign:SetHidden(true)
-            self.ArkasisAssistantButtonStatus:SetHidden(true)
-
-            self.ArkasisAssistantButtonMinus5:SetHidden(true)
-            self.ArkasisAssistantButtonMinus1:SetHidden(true)
-            self.ArkasisAssistantButtonToggle:SetHidden(true)
-            self.ArkasisAssistantButtonPlus1:SetHidden(true)
-            self.ArkasisAssistantButtonPlus5:SetHidden(true)
-        end
-
-        for i = 1, self.activeArkasisUserLabels do
-            local Label = self.ArkasisUserLabels[i]
-            Label:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
-            innerY = innerY + Label:GetTextHeight()
-        end
-
-        return innerY
-    end)
-
-    -- DRAW SHAPE
-    ProcessContainer(self.DrawShapeContainer, function(Content, width)
-        local innerY = Layout.paddingTop
-        local buttonHalf = (width - (2 * Layout.padding) - Layout.spacing) / 2
-
-        local widthArrowSingle = Layout.heightElement * 1.0
-        local widthArrowDouble = Layout.heightElement * 1.0
-        local widthCenterLabel = width - (2 * Layout.padding) - (4 * Layout.spacing) - (2 * widthArrowSingle) - (2 * widthArrowDouble)
-        local widthToggle = widthCenterLabel
-
-        local isRectangle = (CC.DrawShape.SV.shapeType == LUT.DRAW_SHAPE.RECTANGLE)
-
-        -- INFO
-        self.DrawShapeInfoLabel:SetDimensions(width - (2 * Layout.padding), 0)
-        self.DrawShapeInfoLabel:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
-        innerY = innerY + self.DrawShapeInfoLabel:GetTextHeight() + Layout.spacing
-
-        -- SHAPE TOGGLE
-        self.DrawShapeButtonFirst:SetDimensions(widthArrowDouble, Layout.heightElement)
-        self.DrawShapeButtonFirst:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
-
-        self.DrawShapeButtonPrev:SetDimensions(widthArrowSingle, Layout.heightElement)
-        self.DrawShapeButtonPrev:SetAnchor(TOPLEFT, self.DrawShapeButtonFirst, TOPRIGHT, Layout.spacing, 0)
-
-        self.DrawShapeLabelToggle:SetDimensions(widthToggle, Layout.heightElement)
-        self.DrawShapeLabelToggle:SetAnchor(TOPLEFT, self.DrawShapeButtonPrev, TOPRIGHT, Layout.spacing, 0)
-
-        self.DrawShapeButtonNext:SetDimensions(widthArrowSingle, Layout.heightElement)
-        self.DrawShapeButtonNext:SetAnchor(TOPLEFT, self.DrawShapeLabelToggle, TOPRIGHT, Layout.spacing, 0)
-
-        self.DrawShapeButtonLast:SetDimensions(widthArrowDouble, Layout.heightElement)
-        self.DrawShapeButtonLast:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
-
-        innerY = innerY + Layout.heightElement + Layout.spacing
-
-        -- ROW X (WIDTH / DIAMETER)
-        self.DrawShapeButtonMinus10X:SetDimensions(widthArrowDouble, Layout.heightElement)
-        self.DrawShapeButtonMinus10X:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
-
-        self.DrawShapeButtonMinus1X:SetDimensions(widthArrowSingle, Layout.heightElement)
-        self.DrawShapeButtonMinus1X:SetAnchor(TOPLEFT, self.DrawShapeButtonMinus10X, TOPRIGHT, Layout.spacing, 0)
-
-        self.DrawShapeLabelValueX:SetDimensions(widthCenterLabel, Layout.heightElement)
-        self.DrawShapeLabelValueX:SetAnchor(TOPLEFT, self.DrawShapeButtonMinus1X, TOPRIGHT, Layout.spacing, 0)
-
-        self.DrawShapeButtonPlus1X:SetDimensions(widthArrowSingle, Layout.heightElement)
-        self.DrawShapeButtonPlus1X:SetAnchor(TOPLEFT, self.DrawShapeLabelValueX, TOPRIGHT, Layout.spacing, 0)
-
-        self.DrawShapeButtonPlus10X:SetDimensions(widthArrowDouble, Layout.heightElement)
-        self.DrawShapeButtonPlus10X:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
-
-        innerY = innerY + Layout.heightElement + Layout.spacing
-
-        -- ROW Z (LENGTH) - RECTANGLE
-        if isRectangle then
-            self.DrawShapeButtonMinus10Z:SetHidden(false)
-            self.DrawShapeButtonMinus1Z:SetHidden(false)
-            self.DrawShapeLabelValueZ:SetHidden(false)
-            self.DrawShapeButtonPlus1Z:SetHidden(false)
-            self.DrawShapeButtonPlus10Z:SetHidden(false)
-
-            self.DrawShapeButtonMinus10Z:SetDimensions(widthArrowDouble, Layout.heightElement)
-            self.DrawShapeButtonMinus10Z:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
-
-            self.DrawShapeButtonMinus1Z:SetDimensions(widthArrowSingle, Layout.heightElement)
-            self.DrawShapeButtonMinus1Z:SetAnchor(TOPLEFT, self.DrawShapeButtonMinus10Z, TOPRIGHT, Layout.spacing, 0)
-
-            self.DrawShapeLabelValueZ:SetDimensions(widthCenterLabel, Layout.heightElement)
-            self.DrawShapeLabelValueZ:SetAnchor(TOPLEFT, self.DrawShapeButtonMinus1Z, TOPRIGHT, Layout.spacing, 0)
-
-            self.DrawShapeButtonPlus1Z:SetDimensions(widthArrowSingle, Layout.heightElement)
-            self.DrawShapeButtonPlus1Z:SetAnchor(TOPLEFT, self.DrawShapeLabelValueZ, TOPRIGHT, Layout.spacing, 0)
-
-            self.DrawShapeButtonPlus10Z:SetDimensions(widthArrowDouble, Layout.heightElement)
-            self.DrawShapeButtonPlus10Z:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
+            self.LaunchPadCatButtonLast:SetDimensions(widthArrowDouble, Layout.heightElement)
+            self.LaunchPadCatButtonLast:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
 
             innerY = innerY + Layout.heightElement + Layout.spacing
-        else
-            self.DrawShapeButtonMinus10Z:SetHidden(true)
-            self.DrawShapeButtonMinus1Z:SetHidden(true)
-            self.DrawShapeLabelValueZ:SetHidden(true)
-            self.DrawShapeButtonPlus1Z:SetHidden(true)
-            self.DrawShapeButtonPlus10Z:SetHidden(true)
-        end
 
-        -- PLACE BUTTONS
-        self.DrawShapeButtonCursor:SetDimensions(buttonHalf, Layout.heightElement)
-        self.DrawShapeButtonCursor:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
+            -- TRIGGER TOGGLE
+            self.LaunchPadButtonFirst:SetDimensions(widthArrowDouble, Layout.heightElement)
+            self.LaunchPadButtonFirst:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
 
-        self.DrawShapeButtonSelf:SetDimensions(buttonHalf, Layout.heightElement)
-        self.DrawShapeButtonSelf:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
+            self.LaunchPadButtonPrev:SetDimensions(widthArrowSingle, Layout.heightElement)
+            self.LaunchPadButtonPrev:SetAnchor(TOPLEFT, self.LaunchPadButtonFirst, TOPRIGHT, Layout.spacing, 0)
 
-        return innerY + Layout.heightElement
-    end)
+            self.LaunchPadLabelToggle:SetDimensions(widthToggle, Layout.heightElement)
+            self.LaunchPadLabelToggle:SetAnchor(TOPLEFT, self.LaunchPadButtonPrev, TOPRIGHT, Layout.spacing, 0)
 
-    -- LAUNCH PAD
-    ProcessContainer(self.ContainerLaunchPad, function(Content, width)
-        local innerY = Layout.paddingTop
-        local buttonHalf = (width - (2 * Layout.padding) - Layout.spacing) / 2
-        local buttonFull = width - (2 * Layout.padding)
+            self.LaunchPadButtonNext:SetDimensions(widthArrowSingle, Layout.heightElement)
+            self.LaunchPadButtonNext:SetAnchor(TOPLEFT, self.LaunchPadLabelToggle, TOPRIGHT, Layout.spacing, 0)
 
-        local widthArrowSingle = Layout.heightElement * 1.0
-        local widthArrowDouble = Layout.heightElement * 1.0
-        local widthToggle = width - (2 * Layout.padding) - (4 * Layout.spacing) - (2 * widthArrowSingle) - (2 * widthArrowDouble)
+            self.LaunchPadButtonLast:SetDimensions(widthArrowDouble, Layout.heightElement)
+            self.LaunchPadButtonLast:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
 
-        -- INFO
-        self.LaunchPadInfoLabel:SetDimensions(width - (2 * Layout.padding), 0)
-        self.LaunchPadInfoLabel:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
-        innerY = innerY + self.LaunchPadInfoLabel:GetTextHeight() + Layout.spacing
+            innerY = innerY + Layout.heightElement + Layout.spacing
 
-        -- CATEGORY TOGGLE
-        self.LaunchPadCatButtonFirst:SetDimensions(widthArrowDouble, Layout.heightElement)
-        self.LaunchPadCatButtonFirst:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
+            -- AT CURSOR / ON SELF
+            self.LaunchPadButtonCursor:SetDimensions(buttonHalf, Layout.heightElement)
+            self.LaunchPadButtonCursor:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
 
-        self.LaunchPadCatButtonPrev:SetDimensions(widthArrowSingle, Layout.heightElement)
-        self.LaunchPadCatButtonPrev:SetAnchor(TOPLEFT, self.LaunchPadCatButtonFirst, TOPRIGHT, Layout.spacing, 0)
+            self.LaunchPadButtonSelf:SetDimensions(buttonHalf, Layout.heightElement)
+            self.LaunchPadButtonSelf:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
+            innerY = innerY + Layout.heightElement + Layout.spacing
 
-        self.LaunchPadCatLabelToggle:SetDimensions(widthToggle, Layout.heightElement)
-        self.LaunchPadCatLabelToggle:SetAnchor(TOPLEFT, self.LaunchPadCatButtonPrev, TOPRIGHT, Layout.spacing, 0)
+            -- DELETE CLOSEST
+            self.LaunchPadButtonDeleteClosest:SetDimensions(buttonFull, Layout.heightElement)
+            self.LaunchPadButtonDeleteClosest:SetAnchor(TOP, Content, TOP, 0, innerY)
 
-        self.LaunchPadCatButtonNext:SetDimensions(widthArrowSingle, Layout.heightElement)
-        self.LaunchPadCatButtonNext:SetAnchor(TOPLEFT, self.LaunchPadCatLabelToggle, TOPRIGHT, Layout.spacing, 0)
-
-        self.LaunchPadCatButtonLast:SetDimensions(widthArrowDouble, Layout.heightElement)
-        self.LaunchPadCatButtonLast:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
-
-        innerY = innerY + Layout.heightElement + Layout.spacing
-
-        -- TRIGGER TOGGLE
-        self.LaunchPadButtonFirst:SetDimensions(widthArrowDouble, Layout.heightElement)
-        self.LaunchPadButtonFirst:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
-
-        self.LaunchPadButtonPrev:SetDimensions(widthArrowSingle, Layout.heightElement)
-        self.LaunchPadButtonPrev:SetAnchor(TOPLEFT, self.LaunchPadButtonFirst, TOPRIGHT, Layout.spacing, 0)
-
-        self.LaunchPadLabelToggle:SetDimensions(widthToggle, Layout.heightElement)
-        self.LaunchPadLabelToggle:SetAnchor(TOPLEFT, self.LaunchPadButtonPrev, TOPRIGHT, Layout.spacing, 0)
-
-        self.LaunchPadButtonNext:SetDimensions(widthArrowSingle, Layout.heightElement)
-        self.LaunchPadButtonNext:SetAnchor(TOPLEFT, self.LaunchPadLabelToggle, TOPRIGHT, Layout.spacing, 0)
-
-        self.LaunchPadButtonLast:SetDimensions(widthArrowDouble, Layout.heightElement)
-        self.LaunchPadButtonLast:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
-
-        innerY = innerY + Layout.heightElement + Layout.spacing
-
-        -- AT CURSOR / ON SELF
-        self.LaunchPadButtonCursor:SetDimensions(buttonHalf, Layout.heightElement)
-        self.LaunchPadButtonCursor:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
-
-        self.LaunchPadButtonSelf:SetDimensions(buttonHalf, Layout.heightElement)
-        self.LaunchPadButtonSelf:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
-        innerY = innerY + Layout.heightElement + Layout.spacing
-
-        -- DELETE CLOSEST
-        self.LaunchPadButtonDeleteClosest:SetDimensions(buttonFull, Layout.heightElement)
-        self.LaunchPadButtonDeleteClosest:SetAnchor(TOP, Content, TOP, 0, innerY)
-
-        return innerY + Layout.heightElement
-    end)
+            return innerY + Layout.heightElement
+        end)
+    end
 
     -- POINTER
-    ProcessContainer(self.PointerContainer, function(Content, width)
-        local innerY = Layout.paddingTop -- TEXT
+    if self.PointerContainer then
+        ProcessContainer(self.PointerContainer, function(Content, width)
+            local innerY = Layout.paddingTop
 
-        -- INFO
-        self.PointerInfoLabel:SetDimensions(width - (2 * Layout.padding), 0)
-        self.PointerInfoLabel:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
-        innerY = innerY + self.PointerInfoLabel:GetTextHeight() + Layout.spacing
+            -- INFO
+            self.PointerInfoLabel:SetDimensions(width - (2 * Layout.padding), 0)
+            self.PointerInfoLabel:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
+            innerY = innerY + self.PointerInfoLabel:GetTextHeight() + Layout.spacing
 
-        -- BUTTONS
-        local buttonHalf = (width - (2 * Layout.padding) - Layout.spacing) / 2
+            -- BUTTONS
+            local buttonHalf = (width - (2 * Layout.padding) - Layout.spacing) / 2
 
-        self.PointerButtonCursor:SetDimensions(buttonHalf, Layout.heightElement)
-        self.PointerButtonCursor:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
+            self.PointerButtonCursor:SetDimensions(buttonHalf, Layout.heightElement)
+            self.PointerButtonCursor:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
 
-        self.PointerButtonSelf:SetDimensions(buttonHalf, Layout.heightElement)
-        self.PointerButtonSelf:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
+            self.PointerButtonSelf:SetDimensions(buttonHalf, Layout.heightElement)
+            self.PointerButtonSelf:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
 
-        return innerY + Layout.heightElement
-    end)
+            return innerY + Layout.heightElement
+        end)
+    end
 
     -- RAIDLEAD TOOLS
-    if isRaidlead then
+    if isRaidlead and self.ContainerRaidleadTools then
         self.ContainerRaidleadTools.Control:SetHidden(false)
         ProcessContainer(self.ContainerRaidleadTools, function(Content, width)
             local innerY = Layout.paddingTop
@@ -1957,104 +1984,108 @@ function Module:UpdateDimensions()
     end
 
     -- SLAYER ASSSISTANT
-    ProcessContainer(self.ContainerSlayerAssistant, function(Content, width)
-        local innerY = Layout.paddingTop
-        local buttonHalf = (width - (2 * Layout.padding) - Layout.spacing) / 2
-        local buttonFull = width - (2 * Layout.padding)
+    if self.ContainerSlayerAssistant then
+        ProcessContainer(self.ContainerSlayerAssistant, function(Content, width)
+            local innerY = Layout.paddingTop
+            local buttonHalf = (width - (2 * Layout.padding) - Layout.spacing) / 2
+            local buttonFull = width - (2 * Layout.padding)
 
-        self.SlayerAssistantPositionLabel:SetDimensions(width - (2 * Layout.padding), 0)
-        self.SlayerAssistantPositionLabel:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
-        innerY = innerY + self.SlayerAssistantPositionLabel:GetTextHeight() + Layout.spacing
+            self.SlayerAssistantPositionLabel:SetDimensions(width - (2 * Layout.padding), 0)
+            self.SlayerAssistantPositionLabel:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
+            innerY = innerY + self.SlayerAssistantPositionLabel:GetTextHeight() + Layout.spacing
 
-        self.SlayerAssistantButtonSetLeft:SetDimensions(buttonHalf, Layout.heightElement)
-        self.SlayerAssistantButtonSetLeft:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
-        self.SlayerAssistantButtonSetRight:SetDimensions(buttonHalf, Layout.heightElement)
-        self.SlayerAssistantButtonSetRight:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
-        innerY = innerY + Layout.heightElement + Layout.spacing
-
-        if isRaidlead then
-            self.SlayerAssistantButtonAssign:SetHidden(false)
-            self.SlayerAssistantButtonStatus:SetHidden(false)
-            self.SlayerAssistantButtonAssign:SetDimensions(buttonHalf, Layout.heightElement)
-            self.SlayerAssistantButtonAssign:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
-            self.SlayerAssistantButtonStatus:SetDimensions(buttonHalf, Layout.heightElement)
-            self.SlayerAssistantButtonStatus:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
+            self.SlayerAssistantButtonSetLeft:SetDimensions(buttonHalf, Layout.heightElement)
+            self.SlayerAssistantButtonSetLeft:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
+            self.SlayerAssistantButtonSetRight:SetDimensions(buttonHalf, Layout.heightElement)
+            self.SlayerAssistantButtonSetRight:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
             innerY = innerY + Layout.heightElement + Layout.spacing
 
-            local widthArrowSingle = Layout.heightElement * 1.0
-            local widthArrowDouble = Layout.heightElement * 1.0
-            local widthToggle = width - (2 * Layout.padding) - (4 * Layout.spacing) - (2 * widthArrowSingle) - (2 * widthArrowDouble)
+            if isRaidlead then
+                self.SlayerAssistantButtonAssign:SetHidden(false)
+                self.SlayerAssistantButtonStatus:SetHidden(false)
+                self.SlayerAssistantButtonAssign:SetDimensions(buttonHalf, Layout.heightElement)
+                self.SlayerAssistantButtonAssign:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
+                self.SlayerAssistantButtonStatus:SetDimensions(buttonHalf, Layout.heightElement)
+                self.SlayerAssistantButtonStatus:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
+                innerY = innerY + Layout.heightElement + Layout.spacing
 
-            self.SlayerAssistantButtonMinus5:SetHidden(false)
-            self.SlayerAssistantButtonMinus1:SetHidden(false)
-            self.SlayerAssistantButtonToggle:SetHidden(false)
-            self.SlayerAssistantButtonPlus1:SetHidden(false)
-            self.SlayerAssistantButtonPlus5:SetHidden(false)
+                local widthArrowSingle = Layout.heightElement * 1.0
+                local widthArrowDouble = Layout.heightElement * 1.0
+                local widthToggle = width - (2 * Layout.padding) - (4 * Layout.spacing) - (2 * widthArrowSingle) - (2 * widthArrowDouble)
 
-            self.SlayerAssistantButtonMinus5:SetDimensions(widthArrowDouble, Layout.heightElement)
-            self.SlayerAssistantButtonMinus5:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
+                self.SlayerAssistantButtonMinus5:SetHidden(false)
+                self.SlayerAssistantButtonMinus1:SetHidden(false)
+                self.SlayerAssistantButtonToggle:SetHidden(false)
+                self.SlayerAssistantButtonPlus1:SetHidden(false)
+                self.SlayerAssistantButtonPlus5:SetHidden(false)
 
-            self.SlayerAssistantButtonMinus1:SetDimensions(widthArrowSingle, Layout.heightElement)
-            self.SlayerAssistantButtonMinus1:SetAnchor(TOPLEFT, self.SlayerAssistantButtonMinus5, TOPRIGHT, Layout.spacing, 0)
+                self.SlayerAssistantButtonMinus5:SetDimensions(widthArrowDouble, Layout.heightElement)
+                self.SlayerAssistantButtonMinus5:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
 
-            self.SlayerAssistantButtonToggle:SetDimensions(widthToggle, Layout.heightElement)
-            self.SlayerAssistantButtonToggle:SetAnchor(TOPLEFT, self.SlayerAssistantButtonMinus1, TOPRIGHT, Layout.spacing, 0)
+                self.SlayerAssistantButtonMinus1:SetDimensions(widthArrowSingle, Layout.heightElement)
+                self.SlayerAssistantButtonMinus1:SetAnchor(TOPLEFT, self.SlayerAssistantButtonMinus5, TOPRIGHT, Layout.spacing, 0)
 
-            self.SlayerAssistantButtonPlus1:SetDimensions(widthArrowSingle, Layout.heightElement)
-            self.SlayerAssistantButtonPlus1:SetAnchor(TOPLEFT, self.SlayerAssistantButtonToggle, TOPRIGHT, Layout.spacing, 0)
+                self.SlayerAssistantButtonToggle:SetDimensions(widthToggle, Layout.heightElement)
+                self.SlayerAssistantButtonToggle:SetAnchor(TOPLEFT, self.SlayerAssistantButtonMinus1, TOPRIGHT, Layout.spacing, 0)
 
-            self.SlayerAssistantButtonPlus5:SetDimensions(widthArrowDouble, Layout.heightElement)
-            self.SlayerAssistantButtonPlus5:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
+                self.SlayerAssistantButtonPlus1:SetDimensions(widthArrowSingle, Layout.heightElement)
+                self.SlayerAssistantButtonPlus1:SetAnchor(TOPLEFT, self.SlayerAssistantButtonToggle, TOPRIGHT, Layout.spacing, 0)
 
-            innerY = innerY + Layout.heightElement + Layout.spacing
-        else
-            self.SlayerAssistantButtonAssign:SetHidden(true)
-            self.SlayerAssistantButtonStatus:SetHidden(true)
+                self.SlayerAssistantButtonPlus5:SetDimensions(widthArrowDouble, Layout.heightElement)
+                self.SlayerAssistantButtonPlus5:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
 
-            self.SlayerAssistantButtonMinus5:SetHidden(true)
-            self.SlayerAssistantButtonMinus1:SetHidden(true)
-            self.SlayerAssistantButtonToggle:SetHidden(true)
-            self.SlayerAssistantButtonPlus1:SetHidden(true)
-            self.SlayerAssistantButtonPlus5:SetHidden(true)
-        end
+                innerY = innerY + Layout.heightElement + Layout.spacing
+            else
+                self.SlayerAssistantButtonAssign:SetHidden(true)
+                self.SlayerAssistantButtonStatus:SetHidden(true)
 
-        for i = 1, self.activeSlayerSetUserLabels do
-            local Label = self.SlayerSetUserLabels[i]
-            Label:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
-            innerY = innerY + Label:GetTextHeight()
-        end
+                self.SlayerAssistantButtonMinus5:SetHidden(true)
+                self.SlayerAssistantButtonMinus1:SetHidden(true)
+                self.SlayerAssistantButtonToggle:SetHidden(true)
+                self.SlayerAssistantButtonPlus1:SetHidden(true)
+                self.SlayerAssistantButtonPlus5:SetHidden(true)
+            end
 
-        return innerY
-    end)
+            for i = 1, self.activeSlayerSetUserLabels do
+                local Label = self.SlayerSetUserLabels[i]
+                Label:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
+                innerY = innerY + Label:GetTextHeight()
+            end
+
+            return innerY
+        end)
+    end
 
     -- SPAULDER OF RUIN
-    ProcessContainer(self.ContainerSpaulderOfRuin, function(Content, width)
-        local innerY = Layout.paddingTop
-        local buttonHalf = (width - (2 * Layout.padding) - Layout.spacing) / 2
+    if self.ContainerSpaulderOfRuin then
+        ProcessContainer(self.ContainerSpaulderOfRuin, function(Content, width)
+            local innerY = Layout.paddingTop
+            local buttonHalf = (width - (2 * Layout.padding) - Layout.spacing) / 2
 
-        -- INFO
-        self.SpaulderInfoLabel:SetDimensions(width - (2 * Layout.padding), 0)
-        self.SpaulderInfoLabel:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
-        innerY = innerY + self.SpaulderInfoLabel:GetTextHeight() + Layout.spacing
+            -- INFO
+            self.SpaulderInfoLabel:SetDimensions(width - (2 * Layout.padding), 0)
+            self.SpaulderInfoLabel:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
+            innerY = innerY + self.SpaulderInfoLabel:GetTextHeight() + Layout.spacing
 
-        -- LIST
-        for i = 1, self.activeSpaulderUserLabels do
-            local Label = self.SpaulderUserLabels[i]
-            Label:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
-            innerY = innerY + Label:GetTextHeight()
-        end
-        innerY = innerY + Layout.spacing
+            -- LIST
+            for i = 1, self.activeSpaulderUserLabels do
+                local Label = self.SpaulderUserLabels[i]
+                Label:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
+                innerY = innerY + Label:GetTextHeight()
+            end
+            innerY = innerY + Layout.spacing
 
-        -- BUTTONS
-        self.SpaulderButtonKick:SetDimensions(buttonHalf, Layout.heightElement)
-        self.SpaulderButtonKick:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
+            -- BUTTONS
+            self.SpaulderButtonKick:SetDimensions(buttonHalf, Layout.heightElement)
+            self.SpaulderButtonKick:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
 
-        self.SpaulderButtonReinvite:SetDimensions(buttonHalf, Layout.heightElement)
-        self.SpaulderButtonReinvite:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
-        innerY = innerY + Layout.heightElement + Layout.spacing
+            self.SpaulderButtonReinvite:SetDimensions(buttonHalf, Layout.heightElement)
+            self.SpaulderButtonReinvite:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
+            innerY = innerY + Layout.heightElement + Layout.spacing
 
-        return innerY
-    end)
+            return innerY
+        end)
+    end
 
     -- AUTHOR
     currentY = currentY - Layout.spacing + Layout.margin

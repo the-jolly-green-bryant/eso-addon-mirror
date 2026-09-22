@@ -1,6 +1,6 @@
 ## APIVersion: 101050
 ## Title: GrimSuite
-## AddOnVersion: 1.2.1
+## AddOnVersion: 1.2.2
 ## Author: @GrimGrin94
 ## Description: GrimSuite combat and action bar prototype: GCD metronome, skill delay history, customizable simplified FAB-style action bar, and AltAttributes-style player resource bars.
 ## SavedVariables: GrimSuiteSavedVars GrimSuiteActionBarSavedVars

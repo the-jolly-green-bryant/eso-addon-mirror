@@ -8,7 +8,7 @@ local Module = {
     name      = "DrawShape",
     menuName  = "DRAW SHAPE",
     iconPath  = "/esoui/art/icons/u26_ability_digging_03.dds",
-    menuLayer = 0,
+    menuLayer = 2,
 
     isAiming = false,
     previewEffectId = nil,
@@ -20,6 +20,7 @@ local Module = {
     },
 
     Default = {
+        enableModule = true,
         shapeType = LUT.CIRCLE,
         enablePrintChat = false,
 
@@ -422,8 +423,31 @@ function Module:GetMenuOptions()
 
     return {
         type = "submenu",
-        name = string.format("%s %s %s", menuIcon, CC.ColorString(self.menuName, "tier2"), CC.ColorString("[LGB]", "GN")),
+        name = function()
+            local stringEnable = self.SV.enableModule and "" or CC.ColorString("[OFF] ", "RD")
+            return string.format("%s %s%s %s", menuIcon, stringEnable, CC.ColorString(self.menuName, "tier2"), CC.ColorString("[LGB]", "GN"))
+        end,
         controls = {
+            -- ENABLE / DISABLE MODULE
+            { type = "header", name = CC.ColorString("ENABLE / DISABLE MODULE", "tier3") },
+            {
+                type = "checkbox",
+                name = CC.ColorString("Enable Module", "GN"),
+                getFunc = function() return self.SV.enableModule end,
+                setFunc = function(value)
+                    self.SV.enableModule = value
+                    if value then
+                        if self.CustomEnable then self:CustomEnable() end
+                    else
+                        if self.CustomDisable then self:CustomDisable() end
+                    end
+                end,
+                default = self.Default.enableModule,
+                disabled = function() return not CC.SV.enableAddon end,
+                requiresReload = true,
+            },
+            { type = "divider" },
+
             {
                 type = "description",
                 text = CC.ColorString("Command:", "tier2") .. " Use " .. CC.ColorString("[Keybind]", "tier3") .. " or " .. CC.ColorString("[/cc_drawshape]", "tier3") .. ".\nDraws and shares (synchronized) 3D shapes.",
@@ -440,7 +464,7 @@ function Module:GetMenuOptions()
                     end
                 end,
                 width = "half",
-                disabled = function() return not CC.SV.enableAddon end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
             {
                 type = "button",
@@ -449,7 +473,7 @@ function Module:GetMenuOptions()
                     self:PlaceOnSelf()
                 end,
                 width = "half",
-                disabled = function() return not CC.SV.enableAddon end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
             { type = "header", name = CC.ColorString("VISUALS", "tier3") },
             {
@@ -470,7 +494,7 @@ function Module:GetMenuOptions()
                     UpdatePreview()
                 end,
                 default = self.Default.shapeType,
-                disabled = function() return not CC.SV.enableAddon end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
             {
                 type = "description",
@@ -485,7 +509,7 @@ function Module:GetMenuOptions()
                 getFunc = function() return self.SV.width / 100 end,
                 setFunc = function(value) self.SV.width = value * 100 end,
                 default = self.Default.width / 100,
-                disabled = function() return not CC.SV.enableAddon end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
             {
                 type = "slider",
@@ -495,7 +519,7 @@ function Module:GetMenuOptions()
                 getFunc = function() return self.SV.height / 100 end,
                 setFunc = function(value) self.SV.height = value * 100 end,
                 default = self.Default.height / 100,
-                disabled = function() return not CC.SV.enableAddon or self.SV.shapeType == LUT.CIRCLE end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or self.SV.shapeType == LUT.CIRCLE end,
             },
             {
                 type = "colorpicker",
@@ -506,7 +530,7 @@ function Module:GetMenuOptions()
                     UpdatePreview()
                 end,
                 default = CC.GetRgbaFromArray(self.Default.Color),
-                disabled = function() return not CC.SV.enableAddon end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
             {
                 type = "dropdown",
@@ -532,7 +556,7 @@ function Module:GetMenuOptions()
                     UpdatePreview()
                 end,
                 reference = "CC_DrawShape_Dropdown_Texture",
-                disabled = function() return not CC.SV.enableAddon end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
             {
                 type = "custom",
@@ -560,7 +584,7 @@ function Module:GetMenuOptions()
                 getFunc = function() return self.SV.enablePrintChat end,
                 setFunc = function(value) self.SV.enablePrintChat = value end,
                 default = self.Default.enablePrintChat,
-                disabled = function() return not CC.SV.enableAddon end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
         },
     }

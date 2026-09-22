@@ -8,7 +8,7 @@ PBWT.Config = {
     SIEGE_ATTACK_BONUS = 1, CARD_MOVE_KINDS = { soldier = true, scout = true },
     SCROLL = { READER_DEFENSE=1, THREAT_WEIGHT=650 },
     -- Development ID: distinct from 509/510/511, not publicly reserved.
-    NETWORK = { DEVELOPMENT_ID = 508, VERSION = 1, BUILD = 1200,
+    NETWORK = { DEVELOPMENT_ID = 508, VERSION = 1, BUILD = 1600,
         RETRY = 6, TIMEOUT = 60, INVITE_TIMEOUT = 45, HEARTBEAT = 15, MAX_LOG = 390, SYNC_TIMEOUT = 300 },
     PIECES = {
         soldier = { name = "兵士", attack = 2, defense = 2, move = 1 },
@@ -23,7 +23,7 @@ PBWT.Config = {
     VARIANT_ORDER = { "light", "standard" },
     VARIANTS = {
         light = { id = 1, key = "light", name = "軽量版", short = "軽量",
-            SIZE = 5, WIN_SCORE = 20, MAX_TURNS = 30, EMPEROR = false, KOMI = 1, SECOND_TURN_ACTIONS = 2, NODE_SCALE = 1,
+            SIZE = 5, WIN_SCORE = 20, MAX_TURNS = 30, EMPEROR = false, KOMI = 1, ACTIONS = 1, SECOND_TURN_ACTIONS = 2, NODE_SCALE = 1,
             SCROLL = { COST = 4, FLAGS_REQUIRED = 2, SQUARE = { x = 3, y = 3 }, SQUARE_IS_FLAG = true },
             FLAGS = { { x = 2, y = 3, points = 1 }, { x = 3, y = 3, points = 2 }, { x = 4, y = 3, points = 1 } },
             START = {
@@ -34,16 +34,16 @@ PBWT.Config = {
         -- Cyrodiil's six emperor keeps, kept in their real ring around the Imperial City:
         -- Aleswell and Chalman north, Ash and Blue Road either side, Roebeck and Alessia south.
         standard = { id = 2, key = "standard", name = "スタンダード版", short = "標準",
-            SIZE = 9, WIN_SCORE = 60, MAX_TURNS = 40, EMPEROR = true, KOMI = 1, SECOND_TURN_ACTIONS = 3, NODE_SCALE = 3,
+            SIZE = 9, WIN_SCORE = 60, MAX_TURNS = 40, EMPEROR = true, KOMI = -1, ACTIONS = 2, SECOND_TURN_ACTIONS = 4, NODE_SCALE = 3,
             IMPERIAL = { x = 5, y = 5 },
             SCROLL = { COST = 10, FLAGS_REQUIRED = 3, SQUARE = { x = 5, y = 5 }, SQUARE_IS_FLAG = false },
             FLAGS = {
-                { x = 4, y = 3, points = 1, name = "アレスウェル", code = "ALE" },
-                { x = 6, y = 3, points = 1, name = "チャルマン", code = "CHA" },
-                { x = 3, y = 5, points = 1, name = "アッシュ", code = "ASH" },
-                { x = 7, y = 5, points = 1, name = "ブルーローズ", code = "BRK" },
-                { x = 4, y = 7, points = 1, name = "ローベック", code = "ROE" },
-                { x = 6, y = 7, points = 1, name = "アレッシア", code = "ALS" },
+                { x = 4, y = 3, points = 1, name = "アレスウェル" },
+                { x = 6, y = 3, points = 1, name = "チャルマン" },
+                { x = 3, y = 5, points = 1, name = "アッシュ" },
+                { x = 7, y = 5, points = 1, name = "ブルーロード" },
+                { x = 4, y = 7, points = 1, name = "ローベック" },
+                { x = 6, y = 7, points = 1, name = "アレッシア" },
             },
             START = {
                 { kind = "soldier", x = 1, y = 1 }, { kind = "soldier", x = 1, y = 5 },
@@ -59,7 +59,9 @@ PBWT.Config = {
         CANDIDATES_PER_TICK = 8, TICK_MS = 32, THINK_DELAY_MS = 450,
         SCORE_WEIGHT = 100, FLAG_WEIGHT = 18, OCCUPY_WEIGHT = 14,
         APPROACH_WEIGHT = 3, THREAT_WEIGHT = 0.8, CARD_RESERVE = 4,
-        HORN_POTENTIAL = 0.25, WIN_VALUE = 100000,
+        HORN_POTENTIAL = 0.25, WIN_VALUE = 100000, EMPEROR_WEIGHT = 60,
+        -- Bounded sweep for a same-turn coronation; only runs when one or two keeps short.
+        CROWN_NODES = 2500, CROWN_DEPTH = 4,
         PIECE_VALUE = { soldier = 10, scout = 8, guardian = 15 },
         SLICE_MS = 2, MAX_THINK_MS = 4000,
         DIFFICULTIES = {

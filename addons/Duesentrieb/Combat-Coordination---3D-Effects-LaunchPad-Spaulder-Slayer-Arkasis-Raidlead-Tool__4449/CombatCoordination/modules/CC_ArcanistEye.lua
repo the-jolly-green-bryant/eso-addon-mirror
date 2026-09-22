@@ -7,7 +7,7 @@ local Module = {
     name      = "ArcanistEye",
     menuName  = "ARCANIST EYE",
     iconPath  = "/esoui/art/icons/ability_arcanist_006_b.dds",
-    menuLayer = 2,
+    menuLayer = 3,
 
     TextureChoices = CC.CIRCLE_CHOICES,
     TextureValues  = CC.CIRCLE_VALUES,
@@ -27,6 +27,7 @@ local Module = {
         },
     },
     Default = {
+        enableModule = true,
         timerModeSelf = 0,
         timerModeGroup = 0,
         enableDrawSelf = true,

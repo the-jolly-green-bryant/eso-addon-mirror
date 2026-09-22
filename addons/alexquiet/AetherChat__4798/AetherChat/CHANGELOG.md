@@ -4,6 +4,66 @@ Toutes les modifications notables apportées à l'addon **AetherChat** sont cons
 
 ---
 
+## [1.3.3] - 2026-09-19
+
+### 🧩 Nouveautés & Intégrations
+- **Capsule Addons Tiers (`AddonDock`) :**
+  - Ajout d'une capsule d'en-tête intégrant automatiquement les icônes d'addons externes (*Script Tracker*, *AutoInvite*, *LibChatMenuButton*, etc.).
+  - Affichage et interaction préservés même lorsque le chat officiel est masqué.
+  - Masquage automatique de la capsule si aucun addon externe n'est présent.
+
+### ⚙️ Ajustements & Correctifs
+- **Compatibilité Addons HUD (AetherMeter, etc.) :**
+  - Suppression des interférences sur les clics de souris dans l'interface de jeu.
+  - Résolution du blocage des clics sur les options d'AetherMeter (DPS, HPS, etc.).
+- **Déverrouillage Caméra :**
+  - Déverrouillage permanent de la rotation de caméra à la souris en jeu.
+- **Anti-Doublons Dynamique :**
+  - Filtrage des messages doublons en groupe et donjons.
+  - Filtrage des répliques doublons de PNJ et quêtes scénarisées avec fenêtre de 10s et normalisation du texte.
+
+## [1.3.2] - 2026-09-15
+
+### 🛡️ Partage d'Équipement (« Share Build »)
+- Détection complète des 3 sets équipés (armure, bijoux, armes principales et secondaires).
+- Génération de vrais liens d'objets cliquables dans le chat avec affichage complet de la fiche d'objet et des bonus de set.
+
+### 💬 Roue de Réponses Rapides (« La Boule »)
+- Support complet de la souris : survol interactif et sélection au clic gauche sur les 6 sections.
+- Raccourcis clavier 1 à 6 pour envoyer une réponse instantanément.
+- Maintien fluide au stick directionnel pour manette.
+
+### ⌨️ Champ de Saisie & Navigation
+- Synchronisation instantanée du canal actif dans la boîte de saisie lors du clic sur un onglet.
+- Fermeture immédiate de la zone de saisie sur Entrée (si champ vide) ou Échap.
+- Rétablissement complet du clic gauche sur les onglets et options.
+
+### ⭐ Canaux Favoris / Prioritaires
+- Marquage d'un canal en Favori (étoile dorée ⭐) par clic droit.
+- Basculement automatique vers le canal favori lors de la réception d'un message, sans couper la saisie en cours.
+
+### 👥 Rôles de Groupe
+- Détection et affichage des rôles officiels LFG (Tank 🛡️, Soigneur ➕, DPS ⚔️) selon la sélection du joueur.
+
+## [1.3.1] - 2026-09-14
+
+### 🛡️ Rôles & Classes en Groupe (/party)
+- Affichage des icônes officielles de rôle devant le pseudo des membres du groupe.
+- Option de coloration du nom selon la classe du joueur.
+
+### 💬 Réponses Rapides
+- Bouton bulle de dialogue et raccourci dédié (`AETHERCHAT_QUICK_CHAT`).
+- 6 messages personnalisables dans les réglages.
+
+### 👁️ Gestion des Canaux par Défaut
+- Masquage contextuel par clic droit > *Masquer ce canal*.
+- Option de réinitialisation des canaux par défaut dans les réglages.
+
+### 🏷️ Format d'Affichage des Pseudos
+- Choix dans les réglages : `@Compte`, `Nom de Personnage`, ou `Nom de Personnage (@Compte)`.
+
+---
+
 ## [1.3.0] - 2026-09-09
 
 ### 🎮 Prise en Charge Manette Complète & Mode Hybride (Gamepad)
@@ -20,9 +80,17 @@ Toutes les modifications notables apportées à l'addon **AetherChat** sont cons
 ### 🚀 Mode Ultra-Compact & Ergonomie
 - **Disposition Ultra-Compacte Réinventée :**
   - Permutation instantanée entre Mode Standard (Messenger complet avec volet latéral) et Mode Ultra-Compact (bandeau d'onglets horizontaux minimaliste) via bouton dédié ou raccourci.
+  - **Boutons Amis & Courrier Intégrés en Mode Compact** : Accès direct à la liste des amis et à la boîte aux lettres avec pastilles dynamiques en temps réel (vert pour amis connectés, bleu pour courriers reçus).
   - Sauvegarde indépendante des dimensions et positions pour chaque mode.
   - Menu contextuel au clic droit sur l'onglet [Zone] pour le filtrage linguistique instantané (Tous, EN, FR, DE, RU, ES, JP, ZH).
   - Déplacement fluide par glisser-déposer de la fenêtre compacte.
+
+### 🤫 Mode Discret & Auto-Masquage Intelligent
+- **Disparition Automatique sur Inactivité & Réveil sur Message :**
+  - Option configurable dans les réglages : le chat disparaît après un temps d'inactivité (réglable de 5 à 60s, 20s par défaut) et réapparaît à la réception d'un message.
+  - Choix de comportement : basculer automatiquement vers le canal du message reçu ou se réafficher sur le canal actuel.
+  - **Protection Anti-Bordel (Mode Manuel)** : Dès que le joueur interagit (souris sur la fenêtre, clic ou ouverture du champ d'écriture), le canal reste verrouillé pour ne jamais perturber la lecture ou la saisie.
+  - **Exemption Permanente du Canal Loot** : L'onglet Butin ne se masque jamais automatiquement pour permettre un suivi continu des loots et récoltes.
 
 ### 📁 Canaux & Onglets Personnalisés (Custom Tabs)
 - **Créateur d'Onglets Personnalisés :**

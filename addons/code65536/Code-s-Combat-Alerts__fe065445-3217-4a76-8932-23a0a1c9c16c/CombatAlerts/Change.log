@@ -1,3 +1,9 @@
+Version 2.6.6 (2026/09/21)
+* Improved the reliability of the Cutthroat's Focus protection by adjusting the
+  exclusion window to account for the player's current latency
+* Fixed an issue that could sometimes lead to a doubled alert for Monstrous Claw
+  in Dreadsail Reef
+
 Version 2.6.5 (2026/09/11)
 * As requested, added a dodge timer for Seething Vile Leap in Ossein Cage if
   Ossein Cage Helper is not active
@@ -25,7 +31,7 @@ Version 2.6.1 (2026/08/26)
 Version 2.6.0 (2026/08/25)
 * Migrated Moon Hunter Keep and March of Sacrifices to the CCA2 framework and
   added support for their solo versions
-* Improved reliability of the Cutthroat's Focus protection
+* Improved the reliability of the Cutthroat's Focus protection
 * Fixed a recent bug with the distance-to-center measurements during the
   Falgravn encounter in Kyne's Aegis
 * Added an option to disable the marker for Drakeeh's spawn position in

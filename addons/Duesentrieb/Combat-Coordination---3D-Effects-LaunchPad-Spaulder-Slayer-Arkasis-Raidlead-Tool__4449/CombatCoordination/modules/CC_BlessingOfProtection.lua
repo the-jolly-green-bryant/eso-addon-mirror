@@ -7,7 +7,7 @@ local Module = {
     name      = "BlessingOfProtection",
     menuName  = "BLESSING OF PROTECTION",
     iconPath  = "/esoui/art/icons/ability_restorationstaff_003_b.dds",
-    menuLayer = 2,
+    menuLayer = 3,
 
     TextureChoices = CC.SQUARE_CHOICES,
     TextureValues  = CC.SQUARE_VALUES,
@@ -29,6 +29,7 @@ local Module = {
         },
     },
     Default = {
+        enableModule = true,
         timerModeSelf = 0,
         timerModeGroup = 0,
         enableDrawSelf = false,

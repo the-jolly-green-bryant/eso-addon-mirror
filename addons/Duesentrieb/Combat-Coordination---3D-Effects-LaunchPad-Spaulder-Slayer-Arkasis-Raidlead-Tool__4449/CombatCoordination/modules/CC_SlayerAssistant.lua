@@ -8,7 +8,7 @@ local Module = {
     name      = "SlayerAssistant",
     menuName  = "SLAYER ASSISTANT",
     iconPath  = "/esoui/art/icons/ability_buff_major_slayer.dds",
-    menuLayer = 0,
+    menuLayer = 1,
 
     GroupChoices = { GetUnitDisplayName("player") },
     GroupValues = { "player" },
@@ -47,6 +47,7 @@ local Module = {
     },
 
     Default = {
+        enableModule = true,
         visibilitySideSelf = 1, -- 1 = VISIBILITY_VISIBLE
         visibilitySideOther = 2, -- 2 = VISIBILITY_MUTED
 
@@ -750,8 +751,31 @@ function Module:GetMenuOptions()
 
     return {
         type = "submenu",
-        name = string.format("%s %s %s", menuIcon, CC.ColorString(self.menuName, "tier2"), CC.ColorString("[LGB]", "GN")),
+        name = function()
+            local stringEnable = self.SV.enableModule and "" or CC.ColorString("[OFF] ", "RD")
+            return string.format("%s %s%s %s", menuIcon, stringEnable, CC.ColorString(self.menuName, "tier2"), CC.ColorString("[LGB]", "GN"))
+        end,
         controls = {
+            -- ENABLE / DISABLE MODULE
+            { type = "header", name = CC.ColorString("ENABLE / DISABLE MODULE", "tier3") },
+            {
+                type = "checkbox",
+                name = CC.ColorString("Enable Module", "GN"),
+                getFunc = function() return self.SV.enableModule end,
+                setFunc = function(value)
+                    self.SV.enableModule = value
+                    if value then
+                        if self.CustomEnable then self:CustomEnable() end
+                    else
+                        if self.CustomDisable then self:CustomDisable() end
+                    end
+                end,
+                default = self.Default.enableModule,
+                disabled = function() return not CC.SV.enableAddon end,
+                requiresReload = true,
+            },
+            { type = "divider" },
+
             {
                 type = "description",
                 text = "Slayer Assistant for assigned positioning and stacking in trials.",
@@ -768,7 +792,7 @@ function Module:GetMenuOptions()
                 getFunc = function() return self.SV.enableAutoPrompt end,
                 setFunc = function(value) self.SV.enableAutoPrompt = value end,
                 default = self.Default.enableAutoPrompt,
-                disabled = function() return not CC.SV.enableAddon end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
             {
                 type = "dropdown",
@@ -784,7 +808,7 @@ function Module:GetMenuOptions()
                         CC_SlayerAssistant_Dropdown_SavedSide.label:SetText(CC_SlayerAssistant_Dropdown_SavedSide.data.name())
                     end
                 end,
-                disabled = function() return not CC.SV.enableAddon end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
             {
                 type = "dropdown",
@@ -803,7 +827,7 @@ function Module:GetMenuOptions()
                     self:AssignPlayerSide(value, zoneId)
                 end,
                 reference = "CC_SlayerAssistant_Dropdown_SavedSide",
-                disabled = function() return not CC.SV.enableAddon end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
 
             ----------------------------------------------------------------------------------------------------
@@ -818,7 +842,7 @@ function Module:GetMenuOptions()
                 getFunc = function() return self.SV.visibilitySideSelf end,
                 setFunc = function(value) self.SV.visibilitySideSelf = value end,
                 default = self.Default.visibilitySideSelf,
-                disabled = function() return not CC.SV.enableAddon end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
             {
                 type = "dropdown",
@@ -828,7 +852,7 @@ function Module:GetMenuOptions()
                 getFunc = function() return self.SV.visibilitySideOther end,
                 setFunc = function(value) self.SV.visibilitySideOther = value end,
                 default = self.Default.visibilitySideOther,
-                disabled = function() return not CC.SV.enableAddon end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
             {
                 type = "colorpicker",
@@ -839,7 +863,7 @@ function Module:GetMenuOptions()
                     self:UpdatePreview()
                 end,
                 default = CC.GetRgbaFromArray(self.Default.ColorLeft),
-                disabled = function() return not CC.SV.enableAddon end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
             {
                 type = "colorpicker",
@@ -850,7 +874,7 @@ function Module:GetMenuOptions()
                     self:UpdatePreview()
                 end,
                 default = CC.GetRgbaFromArray(self.Default.ColorRight),
-                disabled = function() return not CC.SV.enableAddon end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
             {
                 type = "dropdown",
@@ -864,7 +888,7 @@ function Module:GetMenuOptions()
                     self:UpdatePreview()
                 end,
                 default = self.Default.textureOutline,
-                disabled = function() return not CC.SV.enableAddon end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
             {
                 type = "custom",
@@ -903,7 +927,7 @@ function Module:GetMenuOptions()
                     end
                 end,
                 default = self.Default.soundNotification,
-                disabled = function() return not CC.SV.enableAddon end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
             {
                 type = "slider",
@@ -917,7 +941,7 @@ function Module:GetMenuOptions()
                     end
                 end,
                 default = self.Default.volumeNotification,
-                disabled = function() return not CC.SV.enableAddon end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
 
             ----------------------------------------------------------------------------------------------------
@@ -938,7 +962,7 @@ function Module:GetMenuOptions()
                     self.SV.durationMs = value * 1000
                 end,
                 default = self.Default.durationMs / 1000,
-                disabled = function() return not CC.SV.enableAddon or not CC.IsRaidlead() end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not CC.IsRaidlead() end,
             },
             {
                 type = "divider",
@@ -951,7 +975,7 @@ function Module:GetMenuOptions()
                 getFunc = function() return self.menuTargetUnitTag end,
                 setFunc = function(value) self.menuTargetUnitTag = value end,
                 reference = "CC_SlayerAssistant_Dropdown_GroupMember",
-                disabled = function() return not CC.SV.enableAddon or not CC.IsRaidlead() end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not CC.IsRaidlead() end,
             },
             {
                 type = "dropdown",
@@ -960,13 +984,13 @@ function Module:GetMenuOptions()
                 choicesValues = { self.SIDE_NONE, self.SIDE_LEFT, self.SIDE_RIGHT },
                 getFunc = function() return self.menuTargetSideId end,
                 setFunc = function(value) self.menuTargetSideId = value end,
-                disabled = function() return not CC.SV.enableAddon or not CC.IsRaidlead() end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not CC.IsRaidlead() end,
             },
             {
                 type = "description",
                 text = CC.ColorString("Please Note:", "tier2") .. " Forced assignments will refer to YOUR current zone.",
                 width = "full",
-                disabled = function() return not CC.SV.enableAddon or not CC.IsRaidlead() end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not CC.IsRaidlead() end,
             },
             {
                 type = "button",
@@ -999,7 +1023,7 @@ function Module:GetMenuOptions()
                     end
                 end,
                 width = "half",
-                disabled = function() return not CC.SV.enableAddon or not CC.IsRaidlead() end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not CC.IsRaidlead() end,
             },
             {
                 type = "button",
@@ -1010,7 +1034,7 @@ function Module:GetMenuOptions()
                     end
                 end,
                 width = "half",
-                disabled = function() return not CC.SV.enableAddon or not CC.IsRaidlead() end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not CC.IsRaidlead() end,
             },
             {
                 type = "divider",
@@ -1021,7 +1045,7 @@ function Module:GetMenuOptions()
                 getFunc = function() return self.SV.enableDebug end,
                 setFunc = function(value) self.SV.enableDebug = value end,
                 default = self.Default.enableDebug,
-                disabled = function() return not CC.SV.enableAddon end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
         },
     }

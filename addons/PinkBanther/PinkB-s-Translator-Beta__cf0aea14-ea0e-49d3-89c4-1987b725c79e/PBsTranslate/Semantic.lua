@@ -242,6 +242,21 @@ function S.FindBoundary(items)
  end
  return boundary
 end
+-- Quantity placement is generated from the parsed noun, never by replacing a
+-- finished sentence (which might contain a player's custom text or an item link).
+local COUNTERS = {
+ ['DPS']='人', ['DD']='人', ['ヒーラー']='人', ['タンク']='人', ['プレイヤー']='人', ['仲間']='人', ['敵']='人',
+ ['ポーション']='本', ['魂石']='個', ['破城槌']='台', ['バリスタ']='台', ['カタパルト']='台',
+}
+local function quantity(n)
+ local counter=n.head and COUNTERS[n.head.ja]
+ local count=n.countSuffix and n.countSuffix:match('^×(%d+)$')
+ if not counter or not count or n.ja:sub(-#n.countSuffix)~=n.countSuffix then return n.ja end
+ local noun=n.ja:sub(1,-#n.countSuffix-1)
+ local more=noun:sub(1,#'あと')=='あと'
+ if more then noun=noun:sub(#'あと'+1) end
+ return noun,count..counter,more
+end
 function S.Render(p,options)
  options=options or {};local form=clone(p.form)
  for k,v in pairs(options.form or {}) do
@@ -249,7 +264,10 @@ function S.Render(p,options)
  end
  if options.invertNegation then form.negative=not form.negative end
  local subject=p.subject and p.subject.ja or ''
+ local omitSpeaker=p.subject and (p.subject.pronoun=='i' or p.subject.pronoun=='we' and (p.kind=='need_entity' or p.kind=='recruitment'))
+  and not options.subordinate and not options.questionMark and not options.keepSubject
  local lead=subject~='' and (subject..(options.subordinate and 'が' or 'は')) or ''
+ if omitSpeaker and (p.kind=='depleted' or p.kind=='low' or p.kind=='need_entity') then lead='' end
  local body
  if p.kind=='depleted' or p.kind=='low' then
   local pred=p.kind=='depleted' and {ja='尽きている',class='1'} or {ja='少ない',class='i'}
@@ -259,8 +277,19 @@ function S.Render(p,options)
  elseif p.kind=='remaining' then
   lead=subject~='' and subject..'には' or ''
   local negative=p.entity.negative
-  body=lead..table.concat(p.times)..(p.location or '')..p.entity.ja..(p.only and 'だけ' or '')
-   ..(negative and p.entity.pronoun and '' or negative and not p.subject and 'は' or 'が')..T.Predicate({ja='残っている',class='1'},form)
+  local noun,count=quantity(p.entity)
+  if count and not negative then
+   if omitSpeaker then lead='' end
+   local pred={ja='残っている',class='1'}
+   local remaining=''
+   if not form.negative and not p.only and not options.subordinate and T.IsAnimateEntry(p.entity.head) then
+    pred={ja='いる',class='1'};remaining='あと'
+   end
+   body=lead..table.concat(p.times)..(p.location or '')..noun..'が'..remaining..count..(p.only and 'だけ' or '')..T.Predicate(pred,form)
+  else
+   body=lead..table.concat(p.times)..(p.location or '')..p.entity.ja..(p.only and 'だけ' or '')
+    ..(negative and p.entity.pronoun and '' or negative and not p.subject and 'は' or 'が')..T.Predicate({ja='残っている',class='1'},form)
+  end
  elseif p.kind=='structure' then
   local ja=p.combatant and (p.almost and '倒れそう' or '倒れている') or (p.almost and '破られそう' or '破られている')
   local pred={ja=ja,class=p.almost and 'na' or '1'}
@@ -268,12 +297,20 @@ function S.Render(p,options)
  elseif p.kind=='need_entity' then
   if options.subordinate and subject~='' then lead=subject..'に'
   elseif options.questionMark and p.subject and ({anyone=true,anybody=true,someone=true,somebody=true})[p.subject.pronoun] then lead=subject..'、' end
-  body=lead..table.concat(p.times)..(p.location or ''):gsub('に$', 'で')..p.entity.ja..'が'
-   ..T.Predicate({ja='必要',class='na'},form)
+  local noun,count,more=quantity(p.entity)
+  body=lead..table.concat(p.times)..(p.location or ''):gsub('に$', 'で')..noun..'が'
+   ..(count and ((more and 'あと' or '')..count) or '')..T.Predicate({ja='必要',class='na'},form)
  elseif p.kind=='recruitment' then
   local action=(p.object and p.object.ja..(p.verb.particle or 'を') or '')..(p.actionNegative and T.PlainPredicate(p.verb,{negative=true})..'ようにして' or T.TeForm(p.verb.ja,p.verb.class))
   body=lead..p.actor.ja..'に'..table.concat(p.times)..(p.location or ''):gsub('に$', 'で')..action..'もらう必要'..(form.negative and 'は' or 'が')
    ..T.Predicate({ja='ある',class='5'},form)
+  -- A present direct appeal from the speaker to "you" is a request in chat.
+  -- Keep past necessity, questions, third parties and negated necessity explicit.
+  if omitSpeaker and p.actor.pronoun=='you' and not form.negative and not form.past then
+   local action=(p.object and p.object.ja..(p.verb.particle or 'を') or '')
+    ..(p.actionNegative and T.PlainPredicate(p.verb,{negative=true})..'で' or T.TeForm(p.verb.ja,p.verb.class))
+   body=table.concat(p.times)..(p.location or ''):gsub('に$', 'で')..action..'ほしいです'
+  end
  end
  if p.kind=='ask_location' then
   local target=p.target

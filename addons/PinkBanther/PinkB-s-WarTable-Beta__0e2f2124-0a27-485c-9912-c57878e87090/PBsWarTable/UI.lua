@@ -19,6 +19,10 @@ local messages = {
     siege_target="旗上の敵を選んでください", no_horn_move="角笛の追加移動はありません",
     guardian_card_move="守護者は騎兵突撃・角笛では動かせません",
     supply_target="補給で補給自身は選べません", supply_unused="まだ使用していない札は補給できません", supplied="札を1回分補給しました",
+    revive_no_target="初期配置6マスに空きがなく、復帰させられません",
+    charge_no_target="突撃できる駒がありません", horn_no_target="隣接する味方がいる駒がありません",
+    siege_no_target="旗上の敵に隣接していません", stealth_no_target="動かせる斥候がいません",
+    supply_no_target="戻せる使用済みの札がありません",
     choose_faction_required="先に陣営を選択してください", invalid_faction="陣営が不正です", faction_selected="陣営を確定しました",
     no_card_target="この駒には札の有効な対象がありません",
     card_spent="このカードは使用済みです", scout_required="自軍の斥候を選んでください",
@@ -93,7 +97,7 @@ function UI.New(mode,difficulty,variant)
     self.boardFrame=box(root,408,178,612,612,T.wood); self.boardFrame:SetDrawLayer(DL_BACKGROUND)
     self.title=label(root,220,22,1000,52,"ZoFontGamepad42"); self.title:SetText(C.TITLE); self.title:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     local sub=label(root,360,72,720,30,"ZoFontGamepad22"); sub:SetText(C.SUBTITLE); sub:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-    self.turn=label(root,400,115,640,44); self.turn:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    self.turn=label(root,400,101,640,44); self.turn:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     self.playerPanels={box(root,24,148,336,124),box(root,1084,148,336,124)}
     self.players={label(self.playerPanels[1],26,18,246,96),label(self.playerPanels[2],26,18,246,96)}
     self.details=label(root,30,280,350,505)
@@ -147,9 +151,9 @@ function UI.New(mode,difficulty,variant)
     self.endPanel=box(root,1080,710,320,68)
     local endText=label(self.endPanel,12,22,296,32,"ZoFontGamepad22"); endText:SetHorizontalAlignment(TEXT_ALIGN_CENTER); endText:SetText("ターン終了 / 得点確定")
     self.endFocus,self.endFocusText=focusMarker(self.endPanel,320,68)
-    self.practiceLabel=label(root,408,156,612,22,"ZoFontGamepad18");self.practiceLabel:SetHorizontalAlignment(TEXT_ALIGN_CENTER);self.practiceLabel:SetHidden(true)
-    self.status=label(root,360,798,720,42,"ZoFontGamepad22"); self.status:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-    self.footer=label(root,30,844,1380,34,"ZoFontGamepad22")
+    self.practiceLabel=label(root,408,150,612,22,"ZoFontGamepad18");self.practiceLabel:SetHorizontalAlignment(TEXT_ALIGN_CENTER);self.practiceLabel:SetHidden(true)
+    self.status=label(root,360,808,720,42,"ZoFontGamepad22"); self.status:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    self.footer=label(root,30,854,1380,34,"ZoFontGamepad22")
     self.presentation=PBWT.Presentation.New(self)
     self.factionUI=PBWT.FactionUI.New(self)
     self.movement=PBWT.Movement.New(self)
@@ -178,12 +182,14 @@ function UI.New(mode,difficulty,variant)
             self.presentation:Reopen()
             self:Refresh(); KEYBIND_STRIP:AddKeybindButtonGroup(self.keybinds)
             DIRECTIONAL_INPUT:Activate(self,self.root)
+            PBWT.Audio.Music(true)
             self:SyncComputer()
         elseif state==SCENE_SHOWN then
             self.sceneShown=true; self:SyncComputer()
         elseif state==SCENE_HIDING then
             self.visible=false; self.sceneShown=false; self.heldDirection=nil; self.lastDirection=nil
             self:StopComputer(); self:StopAssetPolling(); self.transition:Cancel(); self.presentation:Stop()
+            PBWT.Audio.Music(false)
             self.movement:Reset()
             DIRECTIONAL_INPUT:Deactivate(self); KEYBIND_STRIP:RemoveKeybindButtonGroup(self.keybinds)
         end
@@ -231,12 +237,20 @@ function UI:LayoutBoard()
             cell.namePanel:SetDimensions(cellSize-scale(4),scale(22))
             cell.name:SetAnchor(TOPLEFT,cell.root,TOPLEFT,scale(2),0)
             cell.name:SetDimensions(cellSize-scale(4),scale(28))
-            cell.flagPanel:SetAnchor(TOPLEFT,cell.root,TOPLEFT,0,cellSize-scale(22))
-            cell.flagPanel:SetDimensions(cellSize,scale(22))
-            local textInset=cell.flagIcon and scale(24) or 0
-            cell.flag:SetAnchor(TOPLEFT,cell.root,TOPLEFT,textInset,cellSize-scale(28))
-            cell.flag:SetDimensions(cellSize-textInset,scale(28))
+            -- Full keep names are wider than a square on the 9x9 board, so their strip spans
+            -- the neighbouring columns; keeps sit two columns apart, so the strips never meet.
+            local wide=size>5
+            local nameWidth=wide and pitch*2 or cellSize
+            local nameLeft=(cellSize-nameWidth)/2
+            cell.flagPanel:SetAnchor(TOPLEFT,cell.root,TOPLEFT,nameLeft,cellSize-scale(22))
+            cell.flagPanel:SetDimensions(nameWidth,scale(22))
+            local textInset=(cell.flagIcon and not wide) and scale(24) or 0
+            local textPad=wide and 6 or 0 -- keeps the name clear of the strip's edges
+            cell.flag:SetAnchor(TOPLEFT,cell.root,TOPLEFT,nameLeft+textInset+textPad,cellSize-scale(28))
+            cell.flag:SetDimensions(nameWidth-textInset-textPad*2,scale(28))
             if cell.flagIcon then
+                -- The banner marker only fits beside the short labels of the light board.
+                cell.flagIcon:SetHidden(wide)
                 cell.flagIcon:SetAnchor(TOPLEFT,cell.root,TOPLEFT,scale(5),cellSize-scale(20))
                 cell.flagIcon:SetDimensions(scale(18),scale(18))
             end
@@ -254,11 +268,11 @@ function UI:LayoutBoard()
     end end
     self.boardGeom={originX=originX,originY=originY,pitch=pitch,cellSize=cellSize,
         icon=scale(68),iconTop=scale(20),k=k}
-    local frame=pitch*size+12
+    local frame=pitch*(size-1)+cellSize+22
     self.boardFrame:SetAnchor(TOPLEFT,self.content,TOPLEFT,originX-12,originY-12)
-    self.boardFrame:SetDimensions(frame+12,frame+12)
+    self.boardFrame:SetDimensions(frame,frame)
     if self.presentation and self.presentation.board then
-        self.presentation.board:SetDimensions(frame+12,frame+12)
+        self.presentation.board:SetDimensions(frame,frame)
     end
     self.x=math.min(self.x,size); self.y=math.min(self.y,size)
 end
@@ -534,7 +548,13 @@ function UI:Confirm()
             end
             if not self.selected then self.notice=messages.dead_soldier_required; self.card=nil; self:Refresh(); return end
         end
-        self.notice="札の対象を指定してください"; self:Refresh(); return
+        -- Opening a card with nowhere to use it looks broken, so say why and keep the card.
+        local targets=self:CardTargets()
+        if targets==0 then
+            self.notice=messages[self.card.."_no_target"] or messages.no_card_target
+            self.card,self.selected=nil,nil; self:Refresh(); return
+        end
+        self.notice=string.format("札の対象を指定してください（候補 %d）",targets); self:Refresh(); return
     end
     local p=E.At(s,self.x,self.y)
     if self.card then
@@ -559,6 +579,17 @@ function UI:Confirm()
         local useHorn=s.horn[self.selected] and math.abs(selected.x-self.x)+math.abs(selected.y-self.y)==1
         self:Submit({type=useHorn and "horn_move" or "move",id=self.selected,x=self.x,y=self.y})
     end
+end
+-- Counts the squares the open card could be used on, for the prompt and for refusing
+-- to enter a targeting mode that has nothing to point at.
+function UI:CardTargets()
+    if not self.card then return 0 end
+    local size=E.Rules(self.state).SIZE
+    local count=0
+    for y=1,size do for x=1,size do
+        if self:CardTargetAt(x,y) then count=count+1 end
+    end end
+    return count
 end
 -- Called only on input/state refresh; uses the same validators as actual play.
 function UI:CardTargetAt(x,y)
@@ -585,6 +616,12 @@ function UI:MovementAt(p,reference,x,y)
     if reference then
         if E.CanMove(s,p,x,y,E.MoveRange(s,p)) then return "reference" end
     else
+        local occupant=E.At(s,x,y)
+        if occupant and occupant.owner~=p.owner then
+            -- An attack is ordered by moving onto the defender, so it shows in the same range.
+            if E.CanAttack(s,p,occupant,false) then return "attack" end
+            return
+        end
         -- Match Confirm's priority: a one-square step spends the horn token first.
         if s.horn[p.id] and E.CanMove(s,p,x,y,C.HORN_DISTANCE) then return "horn" end
         if s.actions>0 and E.CanMove(s,p,x,y,E.MoveRange(s,p)) then return "move" end
@@ -593,6 +630,8 @@ end
 local rangeStyles={
     move={color={0.57,0.88,0.96,1},text="移動"},
     horn={color={0.98,0.79,0.35,1},text="角笛"},
+    attack={color={0.95,0.45,0.40,1},text="攻撃"},
+    card={color={0.94,0.85,0.55,1},text="対象"},
     reference={color={0.82,0.61,0.60,1},text="参考"},
 }
 function UI:Refresh()
@@ -624,7 +663,13 @@ function UI:Refresh()
         local faction=PBWT.Factions.Get(s,player)
         if faction then name=name.." / "..faction.short end
         PBWT.Typography.Apply(self.players[player],"ZoFontGamepad22")
-        self.players[player]:SetText(string.format("P%d  %s\n%d / %d点%s\n旗 %d  •  駒 %d",player,name,s.score[player],E.WinScore(s,player),E.Komi(s,player)>0 and "（後攻）" or "",flags,pieces))
+        local rules=E.Rules(s)
+        local crown=""
+        if rules.EMPEROR then
+            local short=#rules.FLAGS-flags
+            crown=short==0 and "  •  皇帝" or (short<=2 and ("  •  皇帝まで"..short) or "")
+        end
+        self.players[player]:SetText(string.format("P%d  %s\n%d / %d点%s\n旗 %d  •  駒 %d%s",player,name,s.score[player],E.WinScore(s,player),E.Komi(s,player)~=0 and "（後攻）" or "",flags,pieces,crown))
     end
     local rangePiece,rangeReference=self:MovementSource()
     self:LayoutBoard()
@@ -632,6 +677,7 @@ function UI:Refresh()
     for y=1,size do for x=1,size do
         local cell=self:Cell(x,y)
         local kind=self:MovementAt(rangePiece,rangeReference,x,y)
+        if self.card and self:CardTargetAt(x,y) then kind="card" end
         cell.rangeKind=kind; cell.range:SetHidden(not kind)
         if kind then
             local style=rangeStyles[kind]; local color=style.color
@@ -654,8 +700,9 @@ function UI:Refresh()
         local owner,index=E.Flag(s,x,y)
         cell.flagPanel:SetHidden(not index)
         local keep=index and E.Rules(s).FLAGS[index]
-        if cell.flagIcon then cell.flagIcon:SetHidden(not keep or not PBWT.Assets.IsUsable(cell.flagIcon)) end
-        cell.flag:SetText(keep and ((keep.code or (keep.points.."点")).." "..(owner==0 and "中立" or "P"..owner)) or "")
+        if cell.flagIcon then cell.flagIcon:SetHidden(compact or not keep or not PBWT.Assets.IsUsable(cell.flagIcon)) end
+        -- Wide board: the name alone, coloured by its holder. Light board: points and holder.
+        cell.flag:SetText(keep and (compact and keep.name or ((keep.points.."点").." "..(owner==0 and "中立" or "P"..owner))) or "")
         cell.flag:SetColor(unpack(owner and owner~=0 and T.Player(owner,s) or T.text))
         local eligible=self.card and self:CardTargetAt(x,y)
         local practice=self.mode=='tutorial' and self.tutorial:TargetAt(x,y)
@@ -702,7 +749,7 @@ function UI:Refresh()
     elseif self.help then
         local rules=E.Rules(s)
         local points={} for _,f in ipairs(rules.FLAGS) do points[#points+1]=f.points end
-        text="1手番に1駒を移動か攻撃。\n攻撃≧防御で撃破。\n"..rules.name.."："..rules.SIZE.."×"..rules.SIZE.."、砦"..#rules.FLAGS.."。\n旗は手番終了時に制圧。\n支配旗から"..table.concat(points," / ").."点。\n"..(rules.EMPEROR and "全砦を支配すれば即・皇帝勝利。\n" or "").."先攻"..rules.WIN_SCORE.."点・後攻"..(rules.WIN_SCORE+rules.KOMI).."点で勝利。\n後攻は最初の手番だけ2回行動。\n"..rules.MAX_TURNS.."手番で判定（コミ込み）。\n\n星霜の書：左端から左で詳細。\n"..rules.SCROLL.COST.."点＋通常行動で開封、\n相手の次の手番を凌げば勝利。\n敵の旗進入か読者撃破で阻止。\n\n□で札、○で解除。右端から右で終了。"
+        text="1手番に"..(rules.ACTIONS or 1).."回、1駒を移動か攻撃。\n敵マスへ移動すると戦闘、撃破で進入。\n"..rules.name.."："..rules.SIZE.."×"..rules.SIZE.."、砦"..#rules.FLAGS.."。\n旗は手番終了時に制圧。\n支配旗から"..table.concat(points," / ").."点。\n"..(rules.EMPEROR and "全砦を支配すれば即・皇帝勝利。\n" or "").."先攻"..rules.WIN_SCORE.."点・後攻"..(rules.WIN_SCORE+rules.KOMI).."点で勝利。\n後攻は最初の手番だけ"..rules.SECOND_TURN_ACTIONS.."回行動。\n"..rules.MAX_TURNS.."手番で判定（コミ込み）。\n\n星霜の書：左端から左で詳細。\n"..rules.SCROLL.COST.."点＋通常行動で開封、\n相手の次の手番を凌げば勝利。\n敵の旗進入か読者撃破で阻止。\n\n□で札、○で解除。右端から右で終了。"
     elseif self.card or self.focus=="cards" then
         local id=self.card or C.CARD_ORDER[self.cardIndex]
         text=PBWT.Cards.definitions[id].name.."\n\n"..PBWT.Cards.definitions[id].description

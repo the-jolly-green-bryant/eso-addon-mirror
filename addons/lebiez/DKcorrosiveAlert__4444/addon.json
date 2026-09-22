@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/lebiez/DKcorrosiveAlert__4444",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "lebiez",
   "canonical_id": "esoui:4444",
   "category_id": "96",
@@ -17,7 +18,7 @@
     "DKCorrosiveAlert"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4444/",
-  "fingerprint": "14269950ccad6479587208fa6aecd2bc6e30fd085032268876421498e7dcbbef",
+  "fingerprint": "b38ac11338d8a8ac8310fd82901baaae7ccbc27ed03894db1ebd08173a60c76b",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw15470.png"
   ],
@@ -27,11 +28,11 @@
   "source_id": "4444",
   "source_url": "https://www.esoui.com/downloads/info4444-DKcorrosiveAlert.html",
   "stats": {
-    "downloads": 3216,
+    "downloads": 3982,
     "favorites": 3,
-    "monthly_downloads": 458
+    "monthly_downloads": 281
   },
   "title": "DKcorrosiveAlert",
-  "updated_at": 1776263999000,
-  "version": "1.04"
+  "updated_at": 1790058184000,
+  "version": "1.05"
 }

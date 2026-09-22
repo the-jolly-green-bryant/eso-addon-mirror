@@ -254,8 +254,9 @@ function KD.InitializeCommands()
     SLASH_COMMANDS["/ids"] = ToggleLuiIds
 
     -- Porting to player
-    SLASH_COMMANDS["/wayshrine"] = function() KD.PortToPlayerInZone(KD.savedOptions.misc.wayshrineZoneId, true) end
-    SLASH_COMMANDS["/currentshrine"] = function() KD.PortToPlayerInZone(GetZoneId(GetUnitZoneIndex("player")), true) end
+    SLASH_COMMANDS["/wayshrine"] = KD.PortWayshrine
+    SLASH_COMMANDS["/currentshrine"] = KD.PortCurrentShrine
+    SLASH_COMMANDS["/guessshrine"] = KD.GuessPortZoneFromQuest
     SLASH_COMMANDS["/ktp"] = KD.PortToAny
     SLASH_COMMANDS["/ktpp"] = function(argString)
         if (argString == "") then

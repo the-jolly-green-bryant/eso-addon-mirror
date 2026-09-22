@@ -8,7 +8,7 @@ local Module = {
     name      = "RoarOfAlkosh",
     menuName  = "ROAR OF ALKOSH",
     iconPath  = "/esoui/art/icons/gear_dromathra_medium_head_a.dds",
-    menuLayer = 1,
+    menuLayer = 3,
 
     TextureChoices = CC.SQUARE_CHOICES,
     TextureValues  = CC.SQUARE_VALUES,
@@ -27,6 +27,7 @@ local Module = {
         },
     },
     Default = {
+        enableModule = true,
         timerModeSelf = 1,
         timerModeGroup = 0,
         enableDrawSelf = true,

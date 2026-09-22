@@ -6,6 +6,7 @@ function R.Initialize(saved)
     end
     saved.totals=saved.totals or {}; saved.history=saved.history or {}; saved.onlineKeys=saved.onlineKeys or {}
     saved.presentation=saved.presentation~='light' and 'full' or 'light'
+    if saved.music==nil then saved.music=true end
     R.saved=saved
 end
 function R.Data() if not R.saved then R.Initialize() end; return R.saved end
@@ -50,6 +51,7 @@ function R.Text(index)
     local online=data.totals.online or {wins=0,losses=0,draws=0}
     lines[#lines+1]=string.format('対人：%d勝 %d敗 %d分',online.wins,online.losses,online.draws)
     lines[#lines+1]='\n表示：'..(data.presentation=='light' and '軽量' or '演出あり')
+    lines[#lines+1]='BGM：'..(data.music==false and '切（/pbwt music で戻す）' or '戦術トリビュート')
     lines[#lines+1]='□：表示切替\nL3 / ○：戦卓へ戻る\n\nローカル検証・中断は集計外'
     index=math.max(1,math.min(index or 1,#data.history))
     local last=data.history[index]

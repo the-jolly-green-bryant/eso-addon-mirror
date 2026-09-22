@@ -1,0 +1,14 @@
+## Title: SimpleClock Console
+## Description: Customizable clock for ESO Console with LibAddonMenu and direct left-stick movement.
+## Author: @moshulu / Console port
+## Version: 0.0.4-console.3
+## APIVersion: 101051 101050
+## SavedVariables: SimpleClockVars
+## DependsOn: LibAddonMenu-2.0
+
+# Load language texts depending on the client's language.
+lang/en.lua
+lang/$(language).lua
+
+SimpleClock.lua
+SimpleClock.xml

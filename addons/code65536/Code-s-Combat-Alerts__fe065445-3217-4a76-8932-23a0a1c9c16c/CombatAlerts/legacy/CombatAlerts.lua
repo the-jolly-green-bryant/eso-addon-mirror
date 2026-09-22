@@ -181,7 +181,6 @@ function CombatAlerts.OnAddOnLoaded( )
 
 	SLASH_COMMANDS[CombatAlerts.slashCommand] = CombatAlerts.HandleSlashCommand
 
-	--EVENT_MANAGER:RegisterForEvent(CombatAlerts.name, EVENT_PLAYER_ACTIVATED, CombatAlerts.PlayerActivated)
 	EVENT_MANAGER:RegisterForEvent(CombatAlerts.name, EVENT_RAID_TRIAL_STARTED, CombatAlerts.OnRaidTrialStarted)
 	EVENT_MANAGER:RegisterForEvent(CombatAlerts.name, EVENT_RAID_TRIAL_COMPLETE, CombatAlerts.OnRaidTrialComplete)
 end
@@ -267,15 +266,25 @@ end
 function CombatAlerts.Initialize( )
 	if (not CombatAlerts.initialized) then
 		CombatAlerts.initialized = true
-
 		CombatAlerts.InitializeUI()
-		CombatAlerts.CheckLegacy()
+	end
+end
 
+local isLegacyEnabled = false
+function CombatAlerts.ToggleLegacy( enable )
+	if (enable and not isLegacyEnabled) then
+		isLegacyEnabled = true
+		EVENT_MANAGER:RegisterForEvent(CombatAlerts.name, EVENT_PLAYER_ACTIVATED, CombatAlerts.PlayerActivated)
+		CombatAlerts.PlayerActivated()
 		EVENT_MANAGER:RegisterForEvent(CombatAlerts.name, EVENT_PLAYER_COMBAT_STATE, CombatAlerts.PlayerCombatState)
-
 		if (IsUnitInCombat("player")) then
 			CombatAlerts.PlayerCombatState(nil, true)
 		end
+	elseif (not enable and isLegacyEnabled) then
+		isLegacyEnabled = false
+		EVENT_MANAGER:UnregisterForEvent(CombatAlerts.name, EVENT_PLAYER_ACTIVATED)
+		EVENT_MANAGER:UnregisterForEvent(CombatAlerts.name, EVENT_PLAYER_COMBAT_STATE)
+		CombatAlerts.StopListening()
 	end
 end
 
@@ -2168,15 +2177,6 @@ function CombatAlerts.Debug( message )
 	if (CombatAlerts.vars.debugEnabled) then
 		CHAT_ROUTER:AddSystemMessage(message)
 		table.insert(CombatAlerts.vars.debugLog, string.format("[%d / %d / %s] %s", GetTimeStamp(), GetGameTimeMilliseconds(), LocalizeString("<<C:1>>", GetZoneNameByIndex(GetUnitZoneIndex("player"))), message))
-	end
-end
-
-function CombatAlerts.CheckLegacy( )
-	if (PerfectRoll) then
-		zo_callLater(
-			function() EVENT_MANAGER:UnregisterForEvent(PerfectRoll.name, EVENT_PLAYER_COMBAT_STATE) end,
-			3000
-		)
 	end
 end
 

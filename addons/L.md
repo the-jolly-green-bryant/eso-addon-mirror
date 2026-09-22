@@ -91,7 +91,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [LibCombat](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Solinur/LibCombat__2528) | Solinur | PC / Mac | 89 |
 | [LibCombat2](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SolinurAddons/LibCombat2__96103ec3-3c4e-4865-be32-cc3b57df04d0) | SolinurAddons | Console | — |
 | [LibCombatAlerts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/LibCombatAlerts__756d3118-70ee-4ed7-a49e-5217da36e5fe) | code65536 | Console | — |
-| [LibCombatAlerts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/LibCombatAlerts__4225) | code65536 | PC / Mac | 0.8.4 |
+| [LibCombatAlerts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/LibCombatAlerts__4225) | code65536 | PC / Mac | 0.8.5 |
 | [LibCombatSkills](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/LibCombatSkills__4500daea-ed3f-4071-822c-24329a5831e3) | SugaComa | Console | — |
 | [LibConsoleDialogs](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/votan/LibConsoleDialogs__4106) | votan | PC / Mac | 1.0.4.2 |
 | [LibConsoleDialogs](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/votan73/LibConsoleDialogs__73752f6e-3ac5-4ecd-9bfe-b71c1b926c3b) | votan73 | Console | — |
@@ -373,7 +373,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [LWT Price Info (formerly Tamriel Trash Centre)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/drLemis/LWT-Price-Info-formerly-Tamriel-Trash-Centre__3724) | drLemis | PC / Mac | 2.1.0 |
 | [LycanMeter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/LycanMeter__529cf85a-e597-4945-86c4-654d2a32a7bc) | Masteroshi430 | Console | — |
 | [LycanMeter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/LycanMeter__3839) | Masteroshi430 | PC / Mac | 2026.07.09 |
-| [Lykeion's AutoLoot+](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lykeion/Lykeion-s-AutoLoot__3367) | Lykeion | PC / Mac | 8.3.2 |
+| [Lykeion's AutoLoot+](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lykeion/Lykeion-s-AutoLoot__3367) | Lykeion | PC / Mac | 8.3.4 |
 | [Lykeion's AutoLoot+](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lykeion/Lykeion-s-AutoLoot__1156c297-4c51-44e7-8267-9f934307f36e) | Lykeion+ | Console | — |
 | [Lykeion's Group Banisher](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lykeion/Lykeion-s-Group-Banisher__3967) | Lykeion | PC / Mac | 1.3 |
 | [Lykeion's Home Sweet Home - Dedicated keybinding jumping to Sugar Bowl Suite](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lykeion/Lykeion-s-Home-Sweet-Home---Dedicated-keybinding-jumping-to-Sugar-Bowl-Suite__3517) | Lykeion | PC / Mac | 1.0.2 |

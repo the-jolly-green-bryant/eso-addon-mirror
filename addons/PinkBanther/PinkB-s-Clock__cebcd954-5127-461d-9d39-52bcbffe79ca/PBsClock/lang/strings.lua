@@ -1,0 +1,17 @@
+PBS_CLOCK_STRINGS = {
+    real = "Local time", game = "Tamriel time", unavailable = "Time unavailable",
+    display = "Time to display", both = "Both", style = "Clock style",
+    digital = "Digital (text only)", analog = "Analog", enabled = "Show clock",
+    seconds = "Show seconds / second hand", hour24 = "24-hour digital time",
+    size = "Analog dial size", fontSize = "Text size", opacity = "Opacity (%)",
+    dialScale = "Analog dial scale (%; text size is independent)",
+    align = "Text alignment", left = "Left", center = "Center", right = "Right",
+    x = "Horizontal position (px)", y = "Vertical position (px)", reset = "Reset settings",
+    preview = "Preview while adjusting settings", previewButton = "Preview this clock",
+    showText = "Show time text below dial (including heading)",
+    color = "Text color", layer = "HUD display layer", back = "Behind HUD", normal = "Normal", front = "In front of HUD",
+    red = "Text red (%)", green = "Text green (%)", blue = "Text blue (%)",
+    resetButton = "Reset", source = "Game time source", global = "Tamriel (global)",
+    zone = "Current zone", note = "Local time uses your device clock. Game time comes from ESO; some zones have their own time of day. Each clock has independent position, size, text color and HUD layer. Editing a clock previews its style at its actual position, above the settings UI; closing settings restores normal HUD visibility and layer. Position is measured in pixels from the top-left of the screen.",
+    help = "/pbclock real | game | both | digital | analog | on | off | reset | status\n/pbclock scale 100 | font 24 | x 500 | y 100 | opacity 100 | seconds on/off | 24h on/off | source global/zone\n/pbclock real x 20 | game y 50 | real size 28 | game color ffd080 | real layer front\n/pbclock real scale 25 | game align left | real align center | game align right\n/pbclock real text off | game text on (analog only)",
+}

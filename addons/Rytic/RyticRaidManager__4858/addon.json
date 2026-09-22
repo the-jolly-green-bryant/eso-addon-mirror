@@ -1,0 +1,41 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/Rytic/RyticRaidManager__4858",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Rytic",
+  "canonical_id": "esoui:4858",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4858",
+  "deleted": false,
+  "directories": [
+    "RyticRaidMode"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4858/",
+  "fingerprint": "4f421e9593355c3b31fc88b30112cb7e706d56310b643da178f2c2837e800fbc",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17460.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17462.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17463.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17461.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4858",
+  "source_url": "https://www.esoui.com/downloads/info4858-RyticRaidManager.html",
+  "stats": {
+    "downloads": 7,
+    "favorites": 1,
+    "monthly_downloads": 2
+  },
+  "title": "RyticRaidManager",
+  "updated_at": 1790009938000,
+  "version": "0.3.1"
+}

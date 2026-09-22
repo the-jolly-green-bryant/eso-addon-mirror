@@ -61,7 +61,6 @@ local overlandZones = {
     [1160] = true, -- Western Skyrim
     [684] = true, -- Wrothgar
     [1146] = true, -- Tideholm
-    [1463] = true, -- The Scholarium
     [1559] = true, -- Night Market
 }
 
@@ -405,3 +404,151 @@ local function PortToAny(argString)
     PortToPlayerInZone()
 end
 KD.PortToAny = PortToAny
+
+
+---------------------------------------------------------------------
+-- Convenience / outside calling
+---------------------------------------------------------------------
+function KD.PortWayshrine()
+    PortToPlayerInZone(KD.savedOptions.misc.wayshrineZoneId, true)
+end
+
+function KD.PortCurrentShrine()
+    PortToPlayerInZone(GetZoneId(GetUnitZoneIndex("player")), true)
+end
+
+local namesToZoneId = {
+    ["Alik'r Desert"] = 104,
+        ["Sentinel"] = 104,
+    ["Apocrypha"] = 1413,
+    ["Artaeum"] = 1027,
+    ["Auridon"] = 381,
+        ["Skywatch"] = 381,
+        ["Vulkhel Guard"] = 381,
+    ["Bal Foyen"] = 281,
+    ["Bangkorai"] = 92,
+        ["Evermore"] = 92,
+    ["Betnikh"] = 535,
+    ["Blackreach"] = 1191,
+    ["Arkthzand Cavern"] = 1208,
+    ["Greymoor Caverns"] = 1161,
+    ["Blackwood"] = 1261,
+        ["Leyawiin"] = 1261,
+    ["Bleakrock Isle"] = 280,
+    ["Clockwork City"] = 980,
+    ["Brass Fortress"] = 981,
+    ["Coldharbour"] = 347,
+        ["Hollow City"] = 347,
+    ["Craglorn"] = 888,
+        ["Belkarth"] = 888,
+    ["Deshaan"] = 57,
+        ["Mournhold"] = 57,
+    ["Eastmarch"] = 101,
+        ["Windhelm"] = 101,
+    ["Eyevea"] = 267,
+    ["Scholarium"] = 1463,
+    ["Fargrave"] = 1282,
+    ["Shambles"] = 1283,
+    ["Galen"] = 1383,
+        ["Vastyr"] = 1383,
+        ["return to Juline Courcelles"] = 1383,
+    ["Glenumbra"] = 3,
+        ["Aldcroft"] = 3,
+        ["the Den"] = 3,
+        ["Thieves Den"] = 3,
+        ["return to Josseline Madier"] = 3,
+    ["Gold Coast"] = 823,
+    ["Grahtwood"] = 383,
+        ["Elden Root"] = 383,
+    ["Greenshade"] = 108,
+        ["Marbruk"] = 108,
+    ["Hew's Bane"] = 816,
+    ["High Isle"] = 1318,
+    ["Khenarthi's Roost"] = 537,
+    ["Malabal Tor"] = 58,
+        ["Baandari Trading Post"] = 58,
+    ["Murkmire"] = 726,
+    ["Northern Elsweyr"] = 1086,
+    ["Reaper's March"] = 382,
+        ["Rawl'kha"] = 382,
+    ["Rivenspire"] = 20,
+        ["Shornhelm"] = 20,
+    ["Shadowfen"] = 117,
+        ["Stormhold"] = 117,
+    ["Solstice"] = 1502,
+        ["Sunport"] = 1502,
+    ["Southern Elsweyr"] = 1133,
+        ["Senchal"] = 1133,
+    ["Stonefalls"] = 41,
+        ["Ebonheart"] = 41,
+    ["Stormhaven"] = 19,
+        ["Wayrest"] = 19,
+    ["Stros M'Kai"] = 534,
+    ["Summerset"] = 1011,
+        ["Alinor"] = 1011,
+    ["Telvanni Peninsula"] = 1414,
+        ["Necrom"] = 1414,
+    ["Deadlands"] = 1286,
+    ["he Reach"] = 1207,
+        ["Markarth"] = 1207,
+    ["Rift"] = 103,
+        ["Riften"] = 103,
+    ["Vvardenfell"] = 849,
+        ["Vivec City"] = 849,
+    ["West Weald"] = 1443,
+        ["Skingrad"] = 1443,
+    ["Western Skyrim"] = 1160,
+        ["Solitude"] = 1160,
+    ["Wrothgar"] = 684,
+        ["Orsinium"] = 684,
+    ["Tideholm"] = 1146,
+    ["Night Market"] = 1559,
+}
+
+function KD.GuessPortZoneFromQuest()
+    local focusedIndex = QUEST_JOURNAL_MANAGER:GetFocusedQuestIndex()
+    local questName = GetJournalQuestInfo(focusedIndex)
+    local questId = GetJournalQuestId(focusedIndex)
+
+    -- First try matching text, because location is... eh
+    KD:msg(zo_strformat("Quest |cFFFFFF<<1>>|r |cAAAAAA(Index: <<2>> ID: <<3>>) - trying journal text matching...", questName, focusedIndex, questId))
+    local journalText = GetJournalQuestStepInfo(focusedIndex, 1)
+    for zoneName, zoneId in pairs(namesToZoneId) do
+        if (string.find(journalText, zoneName)) then
+            local highlightedText = string.gsub(journalText, zoneName, "|cFFFF00" .. zoneName .. "|r|cAAAAAA")
+            KD:msg(zo_strformat("Trying to port to |cFFFF00<<1>>|r |cAAAAAAbecause: <<2>>", GetZoneNameById(zoneId), highlightedText))
+            PortToPlayerInZone(zoneId, true)
+            return
+        end
+    end
+    KD:msg("Unable to find a zone name to port to from quest journal text: " .. tostring(journalText))
+
+    -- Try the location the API gives, not sure kinda weird
+    local zoneName, objectiveName, zoneIndex = GetJournalQuestLocationInfo(focusedIndex)
+    if (zoneIndex) then
+        local zoneId = GetZoneId(zoneIndex)
+        if (overlandZones[zoneId]) then
+            KD:msg(zo_strformat("Quest |cFFFFFF<<1>>|r |cAAAAAA(Index: <<2>> ID: <<3>>) - Trying to port to |cFFFF00<<4>>|r |cAAAAAA(objective:|r |cFFFF00<<5>>|r|cAAAAAA) from  location info...", questName, focusedIndex, questId, GetZoneNameById(zoneId), objectiveName))
+            PortToPlayerInZone(zoneId, true)
+            return
+        end
+
+        -- Search upwards to see if any are port-able
+        local parentZoneId = zoneId
+        for _ = 1, 5 do
+            parentZoneId = GetParentZoneId(zoneId)
+            if (parentZoneId == zoneId) then
+                break
+            end
+            if (overlandZones[parentZoneId]) then
+                KD:msg(zo_strformat("Quest |cFFFFFF<<1>>|r |cAAAAAA(Index: <<2>> ID: <<3>>) - Trying to port to parent zone |cFFFF00<<4>>|r |cAAAAAA(objective:|r |cFFFF00<<5>>|r|cAAAAAA) from  location info <<6>>...", questName, focusedIndex, questId, GetZoneNameById(parentZoneId), objectiveName, GetZoneNameById(zoneId)))
+                PortToPlayerInZone(parentZoneId, true)
+                return
+            end
+        end
+
+        KD:msg(zo_strformat("Quest |cFFFFFF<<1>>|r |cAAAAAA(Index: <<2>> ID: <<3>>) - provided location is |cFFFF00<<4>>|r |cAAAAAA(objective:|r |cFFFF00<<5>>|r|cAAAAAA) but couldn't find a supported overland zone to port to", questName, focusedIndex, questId, GetZoneNameById(zoneId), objectiveName))
+    else
+        KD:msg(zo_strformat("Quest |cFFFFFF<<1>>|r |cAAAAAA(Index: <<2>> ID: <<3>>) - No provided location", questName, focusedIndex, questId))
+    end
+end

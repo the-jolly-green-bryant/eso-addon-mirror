@@ -18,11 +18,13 @@
     "GrimSuite"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4848/",
-  "fingerprint": "3a52fe9b4ea309c7c631b0aab10604b8eb2fc9229901f0120c773e6600369859",
+  "fingerprint": "722cf8a75912067adcb3224bac445a5b5f34ba0a5c238226e6710ec0ce21806b",
   "images": [
-    "https://cdn-eso.mmoui.com/preview/pvw17421.png",
-    "https://cdn-eso.mmoui.com/preview/pvw17448.png",
-    "https://cdn-eso.mmoui.com/preview/pvw17446.png"
+    "https://cdn-eso.mmoui.com/preview/pvw17472.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17473.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw17476.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17474.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17475.png"
   ],
   "platform": "pc",
   "published": true,
@@ -30,11 +32,11 @@
   "source_id": "4848",
   "source_url": "https://www.esoui.com/downloads/info4848-GrimSuite.html",
   "stats": {
-    "downloads": 89,
+    "downloads": 112,
     "favorites": 0,
-    "monthly_downloads": 81
+    "monthly_downloads": 99
   },
   "title": "GrimSuite",
-  "updated_at": 1789883743000,
-  "version": "1.2.1"
+  "updated_at": 1790031275000,
+  "version": "1.2.2"
 }

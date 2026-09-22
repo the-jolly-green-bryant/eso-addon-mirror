@@ -2,24 +2,25 @@ GrimSuite = GrimSuite or {}
 local GS = GrimSuite
 
 GS.name = "GrimSuite"
-GS.version = "1.2.1"
+GS.version = "1.2.2"
 
 GS.SV = {
     gcd = 1000,
     showGCD = true,
     showWeave = true,
-    gcdX = 780,
-    gcdY = 500,
-    gcdWidth = 360,
-    gcdHeight = 18,
-    weaveX = 780,
-    weaveY = 530,
-    weaveWidth = 360,
-    weaveHeight = 34,
-    weaveAverageX = 258,
-    weaveAverageY = 0,
+    showWeaveMs = true,
+    gcdX = 1115,
+    gcdY = 1176,
+    gcdWidth = 330,
+    gcdHeight = 30,
+    weaveX = 980,
+    weaveY = 1139,
+    weaveWidth = 600,
+    weaveHeight = 30,
+    weaveAverageX = 617,
+    weaveAverageY = 7,
     attributesX = 0,
-    attributesY = 0,
+    attributesY = 375,
 }
 
 local function LoadSavedVars()

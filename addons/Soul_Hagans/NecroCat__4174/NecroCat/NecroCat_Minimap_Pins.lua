@@ -8,40 +8,40 @@ local pins = minimap.Pins
 local g_pinPool = {}
 local g_activePins = {}
 local g_pinIndex = 0
+
 local g_groupPins = {}
-local g_campPins = {}
-local g_savedForwardCamps = {}
-local g_savedQuestPins = {}
-local g_savedLibMapPins = {}
-local g_currentPinZoneId = 0
 local g_bgObjectivePins = {}
+local g_customPinsList = {}
 
-
+local g_currentPinZoneId = 0
 local g_currentPinMapTile = ""
 local g_isPlayerActivated = false
 
+-- Выделенные контролы-одиночки для системных меток (никогда не двоятся)
+local g_waypointControl = nil
+local g_rallyControl = nil
+local g_pingControls = {}
+
 local function ClearOldZonePins()
-    local currentZone = GetCurrentZoneId and GetCurrentZoneId() or 0
+    local currentZone = select(1, GetUnitWorldPosition("player")) or 0
     local currentMapTile = GetMapTileTexture and GetMapTileTexture(1) or ""
 
     if g_currentPinZoneId ~= currentZone or (currentMapTile ~= "" and g_currentPinMapTile ~= currentMapTile) then
         g_currentPinZoneId = currentZone
         g_currentPinMapTile = currentMapTile
-        g_savedQuestPins = {}
-        g_savedLibMapPins = {}
-        g_savedForwardCamps = {}
+        g_customPinsList = {}
     end
 end
 
 -- =========================================================================
--- 1. ПУЛ ОБЪЕКТОВ
+-- 1. НЕУБИВАЕМЫЙ ПУЛ ОБЪЕКТОВ
 -- =========================================================================
 local function AcquirePin()
     g_pinIndex = g_pinIndex + 1
     local pin = g_pinPool[g_pinIndex]
     
     if not pin then
-        pin = CreateControl("NecroCat_MapPin_" .. g_pinIndex, NecroCat_MapContainer, CT_TEXTURE)
+        pin = CreateControl("NCMM_MapPin_" .. g_pinIndex, NecroCat_MapContainer, CT_TEXTURE)
         pin:SetDimensions(20, 20)
         pin:SetDrawTier(DT_MEDIUM)
         pin:SetDrawLayer(DL_OVERLAY)
@@ -89,9 +89,7 @@ function pins.Reset()
         pin.m_PinType = nil
         pin.m_PinTag = nil
         pin.isQuestPin = nil
-        if pin.dome then
-            pin.dome:SetHidden(true)
-        end
+        pin.isAreaPin = nil
     end
     for _, pin in pairs(g_bgObjectivePins) do
         pin:SetHidden(true)
@@ -104,9 +102,9 @@ function pins.Reset()
 end
 
 -- =========================================================================
--- 2. СОЗДАНИЕ И МАСШТАБИРОВАНИЕ МЕТОК
+-- 2. СОЗДАНИЕ И ВРАЩЕНИЕ МЕТОК
 -- =========================================================================
-function pins.CreatePin(iconTexture, normX, normY, text, size, tooltipCreator, pinType, pinTag, tint)
+function pins.CreatePin(iconTexture, normX, normY, text, size, tooltipCreator, pinType, pinTag, tint, drawLayer, drawLevel)
     if not normX or not normY or normX <= 0 or normY <= 0 or normX >= 1 or normY >= 1 then return end
     
     if type(iconTexture) == "table" then
@@ -115,12 +113,15 @@ function pins.CreatePin(iconTexture, normX, normY, text, size, tooltipCreator, p
     if not iconTexture or type(iconTexture) ~= "string" or iconTexture == "" then return end
 
     local pin = nil
-    -- Защита от дубликатов: если в этой точке уже есть значок, переиспользуем и обновляем его
-    for _, existingPin in ipairs(g_activePins) do
-        if existingPin.normX and existingPin.normY then
-            if math.abs(existingPin.normX - normX) < 0.001 and math.abs(existingPin.normY - normY) < 0.001 then
-                pin = existingPin
-                break
+    if pinType then
+        for _, existingPin in ipairs(g_activePins) do
+            if existingPin.normX and existingPin.normY and existingPin.m_PinType == pinType then
+                if math.abs(existingPin.normX - normX) < 0.0008 and math.abs(existingPin.normY - normY) < 0.0008 then
+                    if existingPin.isAreaPin == (string.find(tostring(iconTexture), "areaPin") ~= nil) then
+                        pin = existingPin
+                        break
+                    end
+                end
             end
         end
     end
@@ -133,11 +134,12 @@ function pins.CreatePin(iconTexture, normX, normY, text, size, tooltipCreator, p
     local rawSize = size or 20
     local finalPinSize
 
-    if string.find(tostring(iconTexture), "areaPin") then
+    if string.find(tostring(iconTexture), "areaPin") or string.find(tostring(iconTexture), "AreaPin") then
         finalPinSize = rawSize
+        pin.isAreaPin = true
     else
-        local baseSize = rawSize
-        finalPinSize = zo_round(baseSize * (userBaseSize / 20))
+        finalPinSize = zo_round(rawSize * (userBaseSize / 20))
+        pin.isAreaPin = false
     end
     
     pin:SetDimensions(finalPinSize, finalPinSize)
@@ -148,6 +150,9 @@ function pins.CreatePin(iconTexture, normX, normY, text, size, tooltipCreator, p
     pin.normY = normY
     pin.m_PinType = pinType
     pin.m_PinTag = pinTag
+
+    if drawLayer then pin:SetDrawLayer(drawLayer) else pin:SetDrawLayer(DL_OVERLAY) end
+    if drawLevel then pin:SetDrawLevel(drawLevel) else pin:SetDrawLevel(pin.isAreaPin and 1 or 2) end
 
     if tint then
         if type(tint) == "table" and tint.UnpackRGBA then
@@ -164,11 +169,28 @@ function pins.CreatePin(iconTexture, normX, normY, text, size, tooltipCreator, p
     end
 
     local containerSize = NecroCat_MapContainer:GetWidth()
-    local posX = normX * containerSize
-    local posY = normY * containerSize
+    local cfg = minimap.settings
+    local doesRotate = cfg and cfg.rotate
 
     pin:ClearAnchors()
-    pin:SetAnchor(CENTER, NecroCat_MapContainer, TOPLEFT, posX, posY)
+    if doesRotate then
+        local pNormX, pNormY = GetMapPlayerPosition("player")
+        local playerX = (pNormX or 0) * containerSize
+        local playerY = (pNormY or 0) * containerSize
+        local heading = GetPlayerCameraHeading() or 0
+        local cosH = math.cos(heading)
+        local sinH = math.sin(heading)
+
+        local ix = (normX * containerSize) - playerX
+        local iy = (normY * containerSize) - playerY
+        local rx = (cosH * ix) - (sinH * iy)
+        local ry = (sinH * ix) + (cosH * iy)
+        pin:SetAnchor(CENTER, NecroCat_MapContainer, CENTER, zo_round(rx), zo_round(ry))
+    else
+        local posX = normX * containerSize
+        local posY = normY * containerSize
+        pin:SetAnchor(CENTER, NecroCat_MapContainer, TOPLEFT, posX, posY)
+    end
     return pin
 end
 
@@ -182,16 +204,162 @@ function pins.UpdateRotation(playerX, playerY, cosHeading, sinHeading, container
             local ry = (sinHeading * ix) + (cosHeading * iy)
             
             pin:ClearAnchors()
-            pin:SetAnchor(CENTER, NecroCat_MapContainer, CENTER, rx, ry)
+            pin:SetAnchor(CENTER, NecroCat_MapContainer, CENTER, zo_round(rx), zo_round(ry))
+        end
+    end
+
+    if g_waypointControl and not g_waypointControl:IsHidden() and g_waypointControl.normX then
+        local ix = (g_waypointControl.normX * containerSize) - playerX
+        local iy = (g_waypointControl.normY * containerSize) - playerY
+        g_waypointControl:ClearAnchors()
+        g_waypointControl:SetAnchor(CENTER, NecroCat_MapContainer, CENTER, zo_round((cosHeading * ix) - (sinHeading * iy)), zo_round((sinHeading * ix) + (cosHeading * iy)))
+    end
+
+    if g_rallyControl and not g_rallyControl:IsHidden() and g_rallyControl.normX then
+        local ix = (g_rallyControl.normX * containerSize) - playerX
+        local iy = (g_rallyControl.normY * containerSize) - playerY
+        g_rallyControl:ClearAnchors()
+        g_rallyControl:SetAnchor(CENTER, NecroCat_MapContainer, CENTER, zo_round((cosHeading * ix) - (sinHeading * iy)), zo_round((sinHeading * ix) + (cosHeading * iy)))
+    end
+
+    for _, pingCtrl in pairs(g_pingControls) do
+        if pingCtrl and not pingCtrl:IsHidden() and pingCtrl.normX then
+            local ix = (pingCtrl.normX * containerSize) - playerX
+            local iy = (pingCtrl.normY * containerSize) - playerY
+            pingCtrl:ClearAnchors()
+            pingCtrl:SetAnchor(CENTER, NecroCat_MapContainer, CENTER, zo_round((cosHeading * ix) - (sinHeading * iy)), zo_round((sinHeading * ix) + (cosHeading * iy)))
         end
     end
 end
 
 -- =========================================================================
--- 3. СТАТИЧЕСКИЕ ИГРОВЫЕ МЕТКИ
+-- 3. СИСТЕМНЫЕ МЕТКИ (Путевые точки F, Ралли, Пинги — Синглтоны)
 -- =========================================================================
+function pins.RefreshWaypoints()
+    local containerSize = NecroCat_MapContainer:GetWidth()
+    local doesRotate = minimap.settings and minimap.settings.rotate
 
--- Дорожные святилища
+    local wpX, wpY = GetMapPlayerWaypoint()
+    if wpX and wpY and wpX > 0 and wpY > 0 and wpX < 1 and wpY < 1 then
+        if not g_waypointControl then
+            g_waypointControl = CreateControl("NCMM_WaypointPin", NecroCat_MapContainer, CT_TEXTURE)
+            g_waypointControl:SetDimensions(28, 28)
+            g_waypointControl:SetTexture("EsoUI/Art/MapPins/UI_Worldmap_pin_customDestination.dds")
+            g_waypointControl:SetDrawTier(DT_HIGH)
+            g_waypointControl:SetDrawLayer(DL_OVERLAY)
+            g_waypointControl:SetDrawLevel(25)
+            g_waypointControl:SetMouseEnabled(true)
+            g_waypointControl:SetHandler("OnMouseEnter", function(self)
+                InitializeTooltip(InformationTooltip, self, TOP, 0, -5)
+                SetTooltipText(InformationTooltip, "|c00ffffМетка назначения (F)|r")
+            end)
+            g_waypointControl:SetHandler("OnMouseExit", function() ClearTooltip(InformationTooltip) end)
+        end
+        g_waypointControl.normX = wpX
+        g_waypointControl.normY = wpY
+        g_waypointControl:SetHidden(false)
+        if not doesRotate then
+            g_waypointControl:ClearAnchors()
+            g_waypointControl:SetAnchor(CENTER, NecroCat_MapContainer, TOPLEFT, wpX * containerSize, wpY * containerSize)
+        end
+    else
+        if g_waypointControl then
+            g_waypointControl:SetHidden(true)
+            g_waypointControl.normX = nil
+            g_waypointControl.normY = nil
+        end
+    end
+
+    local rallyX, rallyY = GetMapRallyPoint()
+    if rallyX and rallyY and rallyX > 0 and rallyY > 0 and rallyX < 1 and rallyY < 1 then
+        if not g_rallyControl then
+            g_rallyControl = CreateControl("NCMM_RallyPin", NecroCat_MapContainer, CT_TEXTURE)
+            g_rallyControl:SetDimensions(30, 30)
+            g_rallyControl:SetTexture("EsoUI/Art/MapPins/MapRallyPoint.dds")
+            g_rallyControl:SetDrawTier(DT_HIGH)
+            g_rallyControl:SetDrawLayer(DL_OVERLAY)
+            g_rallyControl:SetDrawLevel(25)
+            g_rallyControl:SetMouseEnabled(true)
+            g_rallyControl:SetHandler("OnMouseEnter", function(self)
+                InitializeTooltip(InformationTooltip, self, TOP, 0, -5)
+                SetTooltipText(InformationTooltip, "|cff3333Точка сбора лидера (Rally)|r")
+            end)
+            g_rallyControl:SetHandler("OnMouseExit", function() ClearTooltip(InformationTooltip) end)
+        end
+        g_rallyControl.normX = rallyX
+        g_rallyControl.normY = rallyY
+        g_rallyControl:SetHidden(false)
+        if not doesRotate then
+            g_rallyControl:ClearAnchors()
+            g_rallyControl:SetAnchor(CENTER, NecroCat_MapContainer, TOPLEFT, rallyX * containerSize, rallyY * containerSize)
+        end
+    else
+        if g_rallyControl then
+            g_rallyControl:SetHidden(true)
+            g_rallyControl.normX = nil
+            g_rallyControl.normY = nil
+        end
+    end
+
+    local pingIcon = "EsoUI/Art/MapPins/MapPing.dds"
+    local function UpdateSinglePing(unitTag, isLeader, name)
+        local px, py = GetMapPing(unitTag)
+        local pingCtrl = g_pingControls[unitTag]
+        if px and py and px > 0 and py > 0 and px < 1 and py < 1 then
+            if not pingCtrl then
+                pingCtrl = CreateControl("NCMM_PingPin_" .. unitTag, NecroCat_MapContainer, CT_TEXTURE)
+                pingCtrl:SetDimensions(28, 28)
+                pingCtrl:SetTexture(pingIcon)
+                pingCtrl:SetDrawTier(DT_HIGH)
+                pingCtrl:SetDrawLayer(DL_OVERLAY)
+                pingCtrl:SetDrawLevel(25)
+                pingCtrl:SetMouseEnabled(true)
+                pingCtrl:SetHandler("OnMouseExit", function() ClearTooltip(InformationTooltip) end)
+                g_pingControls[unitTag] = pingCtrl
+            end
+            pingCtrl.normX = px
+            pingCtrl.normY = py
+            local text = isLeader and ("|cff3333Пинг лидера (" .. name .. ")|r") or ("|cffff00Пинг: " .. name .. "|r")
+            pingCtrl:SetHandler("OnMouseEnter", function(self)
+                InitializeTooltip(InformationTooltip, self, TOP, 0, -5)
+                SetTooltipText(InformationTooltip, text)
+            end)
+            pingCtrl:SetHidden(false)
+            if not doesRotate then
+                pingCtrl:ClearAnchors()
+                pingCtrl:SetAnchor(CENTER, NecroCat_MapContainer, TOPLEFT, px * containerSize, py * containerSize)
+            end
+        else
+            if pingCtrl then
+                pingCtrl:SetHidden(true)
+                pingCtrl.normX = nil
+                pingCtrl.normY = nil
+            end
+        end
+    end
+
+    if IsUnitGrouped("player") then
+        local groupSize = GetGroupSize()
+        for i = 1, groupSize do
+            local unitTag = GetGroupUnitTagByIndex(i)
+            if DoesUnitExist(unitTag) then
+                UpdateSinglePing(unitTag, IsUnitGroupLeader(unitTag), GetUnitName(unitTag))
+            end
+        end
+    else
+        UpdateSinglePing("player", false, "Карта")
+    end
+end
+
+EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_MapPingEvent", EVENT_MAP_PING, function(_, pingEventType, pinType, _, x, y)
+    if pins.RefreshWaypoints then
+        pins.RefreshWaypoints()
+    end
+end)
+
+-- =========================================================================
+-- 4. СТАТИЧЕСКИЕ ИГРОВЫЕ МЕТКИ
+-- =========================================================================
 function pins.RefreshWayshrines()
     if IsInAvAZone and IsInAvAZone() then return end
 
@@ -204,7 +372,6 @@ function pins.RefreshWayshrines()
     end
 end
 
--- Городские сервисы (Банки, Станки, Конюшни)
 function pins.RefreshLocations()
     if GetMapContentType() == MAP_CONTENT_DUNGEON or GetCurrentZoneHouseId() ~= 0 then return end
 
@@ -220,19 +387,15 @@ function pins.RefreshLocations()
     end
 end
 
--- Точки интереса (POI)
 function pins.RefreshPOIs()
-    -- В подземельях и домах уличные боссы и пещеры не нужны
-    if GetMapContentType() == MAP_CONTENT_DUNGEON or GetCurrentZoneHouseId() ~= 0 then 
-        return 
-    end
+    if GetMapContentType() == MAP_CONTENT_DUNGEON or GetCurrentZoneHouseId() ~= 0 then return end
 
     local zoneIndex = GetCurrentMapZoneIndex()
     if not zoneIndex or zoneIndex > 100000 then return end
 
     local numPOIs = GetNumPOIs(zoneIndex)
     for i = 1, numPOIs do
-        local xLoc, zLoc, poiPinType, icon, isShownInCurrentMap = GetPOIMapInfo(zoneIndex, i)
+        local xLoc, zLoc, poiPinType, icon = GetPOIMapInfo(zoneIndex, i)
         local poiType = GetPOIType(zoneIndex, i)
         local isDuplicate = (poiType == POI_TYPE_WAYSHRINE or poiType == POI_TYPE_HOUSE)
 
@@ -254,7 +417,6 @@ function pins.RefreshPOIs()
     end
 end
 
--- Осколки небес
 function pins.RefreshSkyshards()
     if GetCurrentZoneHouseId() ~= 0 then return end
 
@@ -263,7 +425,6 @@ function pins.RefreshSkyshards()
     local showCollected = false
 
     if lmp and lmp.IsEnabled then
-        -- Проверяем все числовые фильтры MapPins по их иконкам
         for pinType, _ in pairs(lmp.filters or {}) do
             local layout = ZO_MapPin and ZO_MapPin.PIN_DATA and ZO_MapPin.PIN_DATA[pinType]
             local icon = layout and (layout.texture or layout[1])
@@ -272,30 +433,22 @@ function pins.RefreshSkyshards()
 
             if string.find(pinTypeStr, "sky") or string.find(iconStr, "skyshard") then
                 if lmp:IsEnabled(pinType) then
-                    if string.find(iconStr, "complete") then
-                        showCollected = true
-                    else
-                        showUncollected = true
-                    end
+                    if string.find(iconStr, "complete") then showCollected = true else showUncollected = true end
                 end
             end
         end
     else
-        -- Если аддона MapPins нет вообще — показываем по умолчанию
         showUncollected = true
     end
 
-    -- Если фильтры выключены — мгновенно выходим и ничего не рисуем!
-    if not showUncollected and not showCollected then
-        return
-    end
+    if not showUncollected and not showCollected then return end
 
     local zoneIndex = GetCurrentMapZoneIndex()
     if not zoneIndex or zoneIndex > 100000 then return end
 
     local zoneId = GetZoneId(zoneIndex)
     if not zoneId or zoneId == 0 then
-        zoneId = GetCurrentZoneId()
+        zoneId = select(1, GetUnitWorldPosition("player")) or 0
     end
     if not zoneId or zoneId == 0 or not GetNumSkyshardsInZone then return end
 
@@ -305,7 +458,7 @@ function pins.RefreshSkyshards()
     for i = 1, numSkyshards do
         local skyshardId = GetZoneSkyshardId(zoneId, i)
         if skyshardId and skyshardId > 0 then
-            local normX, normY, isShownInCurrentMap = GetNormalizedPositionForSkyshardId(skyshardId)
+            local normX, normY = GetNormalizedPositionForSkyshardId(skyshardId)
             if normX and normY and normX > 0 and normY > 0 and normX < 1 and normY < 1 then
                 local status = GetSkyshardDiscoveryStatus(skyshardId)
                 local isAcquired = (status == SKYSHARD_DISCOVERY_STATUS_ACQUIRED)
@@ -320,77 +473,55 @@ function pins.RefreshSkyshards()
     end
 end
 
--- Спутник
-function pins.RefreshCompanion()
-    if HasActiveCompanion and HasActiveCompanion() then
-        local x, y, _, isInCurrentMap = GetMapPlayerPosition("companion")
-        if isInCurrentMap and x > 0 and y > 0 then
-            local rawName = GetCompanionName(GetActiveCompanionDefId())
-            local companionName = rawName and zo_strformat("<<1>>", rawName) or ""
-            pins.CreatePin("EsoUI/Art/MapPins/UI-WorldMapCompanionPip.dds", x, y, companionName, 20)
-        end
-    end
-end
+-- =========================================================================
+-- 5. КВЕСТЫ И ЗОНЫ ПОИСКА (Area Pins)
+-- =========================================================================
+function pins.RefreshQuests()
+    local pinManager = ZO_WorldMap_GetPinManager and ZO_WorldMap_GetPinManager()
+    if not pinManager or not pinManager.m_Active then return end
 
--- Метка игрока
-function pins.RefreshWaypoints()
-    -- 1. Личная синяя метка назначения (F)
-    local wpX, wpY = GetMapPlayerWaypoint()
-    if wpX and wpY and wpX > 0 and wpY > 0 and wpX < 1 and wpY < 1 then
-        local p = pins.CreatePin("EsoUI/Art/MapPins/UI_Worldmap_pin_customDestination.dds", wpX, wpY, "|c00ffffМетка назначения (F)|r", 28)
-        if p then
-            p:SetDrawTier(DT_HIGH)
-            p:SetDrawLayer(DL_OVERLAY)
-            p:SetDrawLevel(25)
-        end
-    end
+    local containerSize = NecroCat_MapContainer:GetWidth()
 
-    -- 2. Точка сбора лидера (Rally Point)
-    local rallyX, rallyY = GetMapRallyPoint()
-    if rallyX and rallyY and rallyX > 0 and rallyY > 0 and rallyX < 1 and rallyY < 1 then
-        local p = pins.CreatePin("EsoUI/Art/MapPins/MapRallyPoint.dds", rallyX, rallyY, "|cff3333Точка сбора лидера (Rally)|r", 30)
-        if p then
-            p:SetDrawTier(DT_HIGH)
-            p:SetDrawLayer(DL_OVERLAY)
-            p:SetDrawLevel(25)
-        end
-    end
+    for _, mapPin in pairs(pinManager.m_Active) do
+        if type(mapPin) == "table" and mapPin.IsQuest and mapPin:IsQuest() then
+            local x, y = mapPin:GetNormalizedPosition()
+            if not x or not y then
+                x = mapPin.normalizedX
+                y = mapPin.normalizedY
+            end
 
-    -- 3. Боевой пинг группы (Shift + ЛКМ)
-    local pingIcon = "EsoUI/Art/MapPins/MapPing.dds"
-    if IsUnitGrouped and IsUnitGrouped("player") then
-        local groupSize = GetGroupSize and GetGroupSize() or 0
-        for i = 1, groupSize do
-            local unitTag = GetGroupUnitTagByIndex(i)
-            if DoesUnitExist(unitTag) then
-                local px, py = GetMapPing(unitTag)
-                if px and py and px > 0 and py > 0 and px < 1 and py < 1 then
-                    local isLeader = IsUnitGroupLeader(unitTag)
-                    local name = GetUnitName(unitTag)
-                    local text = isLeader and ("|cff3333Пинг лидера (" .. name .. ")|r") or ("|cffff00Пинг: " .. name .. "|r")
-                    local p = pins.CreatePin(pingIcon, px, py, text, 30)
-                    if p then
-                        p:SetDrawTier(DT_HIGH)
-                        p:SetDrawLayer(DL_OVERLAY)
-                        p:SetDrawLevel(25)
+            if x and y and x > 0 and y > 0 and x < 1 and y < 1 then
+                local isAssisted = mapPin.IsAssisted and mapPin:IsAssisted()
+                local radius = (mapPin.GetAreaRadius and mapPin:GetAreaRadius()) or (mapPin.m_PinTag and mapPin.m_PinTag.radius) or 0
+                
+                local questName = ""
+                local qIndex = mapPin.GetQuestIndex and mapPin:GetQuestIndex()
+                if qIndex and qIndex > 0 then
+                    questName = GetJournalQuestName(qIndex)
+                end
+
+                if radius and radius > 0 then
+                    local areaDiameter = zo_round(radius * 2 * containerSize)
+                    local areaIcon = isAssisted and "EsoUI/Art/MapPins/map_assistedAreaPin.dds" or "EsoUI/Art/MapPins/map_areaPin.dds"
+                    local p = pins.CreatePin(areaIcon, x, y, questName ~= "" and ("|cffff66Зона задачи: " .. questName .. "|r") or nil, areaDiameter, nil, mapPin:GetPinType(), nil, nil, DL_BACKGROUND, 1)
+                    if p then p.isQuestPin = true end
+                else
+                    local icon = mapPin.GetQuestIcon and mapPin:GetQuestIcon()
+                    if not icon or icon == "" then
+                        icon = isAssisted and "EsoUI/Art/Compass/quest_assisted_icon.dds" or "EsoUI/Art/Compass/quest_icon.dds"
                     end
+
+                    local p = pins.CreatePin(icon, x, y, questName ~= "" and ("|cffff66" .. questName .. "|r") or nil, 24, nil, mapPin:GetPinType(), nil, nil, DL_OVERLAY, 22)
+                    if p then p.isQuestPin = true end
                 end
             end
         end
-    else
-        local px, py = GetMapPing("player")
-        if px and py and px > 0 and py > 0 and px < 1 and py < 1 then
-            local p = pins.CreatePin(pingIcon, px, py, "|cff3333Пинг на карте|r", 30)
-            if p then
-                p:SetDrawTier(DT_HIGH)
-                p:SetDrawLayer(DL_OVERLAY)
-                p:SetDrawLevel(25)
-            end
-        end
     end
 end
 
--- Осадные палатки
+-- =========================================================================
+-- 6. СИРОДИЛ И ПОЛЯ СРАЖЕНИЙ
+-- =========================================================================
 function pins.RefreshCyrodiil()
     local isAvA = (IsInAvAZone and IsInAvAZone()) or (GetMapContentType() == MAP_CONTENT_AVA)
     if not isAvA then return end
@@ -398,7 +529,7 @@ function pins.RefreshCyrodiil()
     local bgContext = BGQUERY_LOCAL
     local numKeeps = GetNumKeeps and GetNumKeeps() or 0
 
-    -- 1. Замки и Ресурсы
+    -- 1. Крепости и ресурсы
     for i = 1, numKeeps do
         local keepId = GetKeepKeysByIndex(i)
         if keepId and keepId > 0 then
@@ -407,7 +538,7 @@ function pins.RefreshCyrodiil()
             local hasArtifact = GetKeepHasArtifact and GetKeepHasArtifact(keepId)
 
             if not isVault or hasArtifact then
-                local pinType, normX, normY = GetKeepPinInfo(keepId, bgContext) -- Используем только актуальные данные
+                local pinType, normX, normY = GetKeepPinInfo(keepId, bgContext)
                 
                 if pinType and pinType ~= MAP_PIN_TYPE_INVALID and normX and normY and normX > 0 and normY > 0 and normX < 1 and normY < 1 then
                     local layout = ZO_MapPin and ZO_MapPin.PIN_DATA and ZO_MapPin.PIN_DATA[pinType]
@@ -419,29 +550,36 @@ function pins.RefreshCyrodiil()
 
                     if icon and icon ~= "" then
                         local keepType = GetKeepType and GetKeepType(keepId)
-                        local size = 28
-                        if keepType == KEEP_TYPE_RESOURCE then
-                            size = 24
+                        local isResource = (keepType == KEEP_TYPE_RESOURCE)
+                        local size = isResource and 22 or 28
+
+                        pins.CreatePin(icon, normX, normY, keepName, size, nil, pinType, keepId)
+
+                        local isUnderAttack = GetKeepUnderAttack and GetKeepUnderAttack(keepId, bgContext)
+                        if isUnderAttack then
+                            local burstSize = isResource and 24 or 30
+                            pins.CreatePin("EsoUI/Art/MapPins/AvA_attackBurst_32.dds", normX, normY, "|cff3333[В ОСАДЕ] " .. keepName .. "|r", burstSize, nil, pinType, keepId, nil, DL_OVERLAY, 15)
                         end
-
-                        local keepAlliance = GetKeepAlliance(keepId, bgContext) -- Используем только актуальные данные
-                        local allianceTint = (keepAlliance and keepAlliance ~= ALLIANCE_NONE) and GetAllianceColor(keepAlliance) or nil
-
-                        pins.CreatePin(icon, normX, normY, keepName, size, nil, pinType, nil, allianceTint)
                     end
                 end
             end
         end
     end
 
-    -- 2. Осадные палатки (НОВЫЙ БЛОК)
+    -- 2. Осадные палатки (Иконка + Белый купол зоны действия)
     local numForwardCamps = GetNumForwardCamps and GetNumForwardCamps(BGQUERY_LOCAL) or 0
     local playerAlliance = GetUnitAlliance("player")
     local campTint = GetAllianceColor(playerAlliance)
+    local containerSize = NecroCat_MapContainer:GetWidth()
 
     for i = 1, numForwardCamps do
-        local pinType, normX, normY = GetForwardCampPinInfo(BGQUERY_LOCAL, i)
+        local pinType, normX, normY, radius, usable = GetForwardCampPinInfo(BGQUERY_LOCAL, i)
         if pinType and normX and normY and normX > 0 and normY > 0 and normX < 1 and normY < 1 then
+            if usable and radius and radius > 0 then
+                local campDiameter = zo_round(radius * 2 * containerSize)
+                pins.CreatePin("EsoUI/Art/MapPins/map_areaPin.dds", normX, normY, "Зона действия лагеря", campDiameter, nil, pinType, nil, ZO_ColorDef:New(1, 1, 1, 0.85), DL_BACKGROUND, 1)
+            end
+
             local layout = ZO_MapPin and ZO_MapPin.PIN_DATA and ZO_MapPin.PIN_DATA[pinType]
             local campIcon = layout and layout.texture
             if type(campIcon) == "function" then
@@ -450,13 +588,12 @@ function pins.RefreshCyrodiil()
             end
 
             if campIcon and campIcon ~= "" then
-                pins.CreatePin(campIcon, normX, normY, "Полевой лагерь (Палатка)", 32, nil, pinType, nil, campTint)
+                pins.CreatePin(campIcon, normX, normY, "Полевой лагерь (Палатка)", 30, nil, pinType, nil, campTint, DL_OVERLAY, 15)
             end
         end
     end
 end
 
--- Поля Сражений
 function pins.RefreshBattleground()
     local isBG = (IsPlayerInBattleground and IsPlayerInBattleground()) 
         or (IsActiveWorldBattleground and IsActiveWorldBattleground()) 
@@ -474,9 +611,8 @@ function pins.RefreshBattleground()
             local isVisible = IsObjectiveObjectVisible(keepId, objectiveId, bgContext)
             
             if isEnabled and isVisible and IsLocalBattlegroundContext(bgContext) then
-                -- 1. Места предполагаемого появления и точки спавна (Spawn locations)
                 local spawnPinType, spawnX, spawnY = GetObjectiveSpawnPinInfo(keepId, objectiveId, bgContext)
-                if spawnPinType and spawnPinType ~= MAP_PIN_TYPE_INVALID and spawnX and spawnY and spawnX > 0 and spawnY > 0 and spawnX < 1 and spawnY < 1 then
+                if spawnPinType and spawnPinType ~= MAP_PIN_TYPE_INVALID and spawnX and spawnY and spawnX > 0 and spawnY > 0 then
                     local layout = ZO_MapPin and ZO_MapPin.PIN_DATA and ZO_MapPin.PIN_DATA[spawnPinType]
                     local icon = layout and layout.texture
                     if type(icon) == "function" then
@@ -484,18 +620,12 @@ function pins.RefreshBattleground()
                         if ok and type(res) == "string" then icon = res else icon = nil end
                     end
                     if icon and icon ~= "" then
-                        local tint = layout and layout.tint
-                        if type(tint) == "function" then
-                            local ok, res = pcall(tint, { m_PinType = spawnPinType })
-                            if ok then tint = res else tint = nil end
-                        end
-                        pins.CreatePin(icon, spawnX, spawnY, "Точка появления", 20, nil, spawnPinType, nil, tint)
+                        pins.CreatePin(icon, spawnX, spawnY, "Точка появления", 20, nil, spawnPinType)
                     end
                 end
 
-                -- 2. Базы и точки возврата реликвий (Return locations)
                 local returnPinType, returnX, returnY = GetObjectiveReturnPinInfo(keepId, objectiveId, bgContext)
-                if returnPinType and returnPinType ~= MAP_PIN_TYPE_INVALID and returnX and returnY and returnX > 0 and returnY > 0 and returnX < 1 and returnY < 1 then
+                if returnPinType and returnPinType ~= MAP_PIN_TYPE_INVALID and returnX and returnY and returnX > 0 and returnY > 0 then
                     local layout = ZO_MapPin and ZO_MapPin.PIN_DATA and ZO_MapPin.PIN_DATA[returnPinType]
                     local icon = layout and layout.texture
                     if type(icon) == "function" then
@@ -503,12 +633,7 @@ function pins.RefreshBattleground()
                         if ok and type(res) == "string" then icon = res else icon = nil end
                     end
                     if icon and icon ~= "" then
-                        local tint = layout and layout.tint
-                        if type(tint) == "function" then
-                            local ok, res = pcall(tint, { m_PinType = returnPinType })
-                            if ok then tint = res else tint = nil end
-                        end
-                        pins.CreatePin(icon, returnX, returnY, "База реликвии", 22, nil, returnPinType, nil, tint)
+                        pins.CreatePin(icon, returnX, returnY, "База реликвии", 22, nil, returnPinType)
                     end
                 end
             end
@@ -517,10 +642,9 @@ function pins.RefreshBattleground()
 end
 
 -- =========================================================================
--- 4. ЖИВОЙ ТРЕКЕР ГРУППЫ
+-- 7. ЖИВОЙ ТРЕКЕР ГРУППЫ И СПУТНИКОВ
 -- =========================================================================
 local function GetGroupMemberIcon(unitTag, isLeader)
-    -- 1. Высший приоритет — персональный значок OSI (если назначен)
     local osi = OSI or OdySupportIcons
     if osi then
         local displayName = GetUnitDisplayName(unitTag)
@@ -551,12 +675,10 @@ local function GetGroupMemberIcon(unitTag, isLeader)
         end
     end
 
-    -- 2. Если значка OSI нет, а игрок — лидер группы: рисуем корону
     if isLeader then
         return "EsoUI/Art/Compass/groupLeader.dds"
     end
 
-    -- 3. Стандартная точка сопартийца
     return "EsoUI/Art/MapPins/UI-WorldMapGroupPip.dds"
 end
 
@@ -577,66 +699,79 @@ function pins.UpdateGroupPinsRealtime()
     local cosH = math.cos(heading)
     local sinH = math.sin(heading)
 
-    -- 1. Сопартийцы (с крупной короной у лидера)
-    if IsUnitGrouped("player") then
-        for _, pin in pairs(g_groupPins) do
-            pin:SetHidden(true)
-        end
-
-        local groupSize = GetGroupSize()
-        for i = 1, groupSize do
-            local unitTag = GetGroupUnitTagByIndex(i)
-            if DoesUnitExist(unitTag) and not AreUnitsEqual("player", unitTag) then
-                local x, y, _, isInCurrentMap = GetMapPlayerPosition(unitTag)
-                local pin = g_groupPins[unitTag]
-                if not pin then
-                    pin = CreateControl("NecroCat_GroupPin_" .. unitTag, NecroCat_MapContainer, CT_TEXTURE)
-                    pin:SetDrawTier(DT_HIGH)
-                    pin:SetDrawLayer(DL_OVERLAY)
-                    pin:SetDrawLevel(5)
-                    pin:SetMouseEnabled(true)
-                    pin:SetHandler("OnMouseEnter", function(self)
-                        if self.pinText then
-                            InitializeTooltip(InformationTooltip, self, TOP, 0, -5)
-                            SetTooltipText(InformationTooltip, self.pinText)
-                        end
-                    end)
-                    pin:SetHandler("OnMouseExit", function() ClearTooltip(InformationTooltip) end)
-                    g_groupPins[unitTag] = pin
-                end
-
-                if isInCurrentMap and x > 0 and y > 0 then
-                    pin:SetHidden(false)
-                    local isLeader = IsUnitGroupLeader(unitTag)
-                    pin:SetTexture(GetGroupMemberIcon(unitTag, isLeader))
-                    pin.pinText = isLeader and ("|cffd700Лидер группы: " .. GetUnitName(unitTag) .. "|r") or GetUnitName(unitTag)
-                    
-                    local baseSize = (cfg and cfg.pinSize or 20)
-                    local pinSize = isLeader and (baseSize + 6) or (baseSize + 2)
-                    local drawLevel = isLeader and 12 or 5
-
-                    pin:SetDimensions(pinSize, pinSize)
-                    pin:SetDrawLevel(drawLevel)
-                    pin:ClearAnchors()
-                    if doesRotate then
-                        local ix = (x * containerSize) - playerX
-                        local iy = (y * containerSize) - playerY
-                        pin:SetAnchor(CENTER, NecroCat_MapContainer, CENTER, (cosH * ix) - (sinH * iy), (sinH * ix) + (cosH * iy))
-                    else
-                        pin:SetAnchor(CENTER, NecroCat_MapContainer, TOPLEFT, x * containerSize, y * containerSize)
-                    end
-                else
-                    pin:SetHidden(true)
-                end
-            else
-                if g_groupPins[unitTag] then g_groupPins[unitTag]:SetHidden(true) end
-            end
-        end
-    else
-        for _, pin in pairs(g_groupPins) do pin:SetHidden(true) end
+    -- 1. Живые Сопартийцы и Спутники
+    for _, pin in pairs(g_groupPins) do
+        pin:SetHidden(true)
     end
 
-    -- 2. Живое перемещение Реликвий, Флагов БГ, Древних Свитков и Молота Волендранга
+    local unitsToTrack = {}
+    if IsUnitGrouped("player") then
+        local groupSize = GetGroupSize()
+        for i = 1, groupSize do
+            local tag = GetGroupUnitTagByIndex(i)
+            if DoesUnitExist(tag) and not AreUnitsEqual("player", tag) then
+                table.insert(unitsToTrack, tag)
+            end
+        end
+    end
+
+    if HasActiveCompanion and HasActiveCompanion() and DoesUnitExist("companion") then
+        table.insert(unitsToTrack, "companion")
+    end
+
+    for _, unitTag in ipairs(unitsToTrack) do
+        local x, y, _, isInCurrentMap = GetMapPlayerPosition(unitTag)
+        local pin = g_groupPins[unitTag]
+        if not pin then
+            pin = CreateControl("NCMM_GroupPin_" .. unitTag, NecroCat_MapContainer, CT_TEXTURE)
+            pin:SetDrawTier(DT_HIGH)
+            pin:SetDrawLayer(DL_OVERLAY)
+            pin:SetDrawLevel(5)
+            pin:SetMouseEnabled(true)
+            pin:SetHandler("OnMouseEnter", function(self)
+                if self.pinText then
+                    InitializeTooltip(InformationTooltip, self, TOP, 0, -5)
+                    SetTooltipText(InformationTooltip, self.pinText)
+                end
+            end)
+            pin:SetHandler("OnMouseExit", function() ClearTooltip(InformationTooltip) end)
+            g_groupPins[unitTag] = pin
+        end
+
+        if isInCurrentMap and x > 0 and y > 0 then
+            pin:SetHidden(false)
+            local isCompanion = (unitTag == "companion")
+            local isLeader = not isCompanion and IsUnitGroupLeader(unitTag)
+
+            if isCompanion then
+                pin:SetTexture("EsoUI/Art/MapPins/UI-WorldMapCompanionPip.dds")
+                local rawName = GetCompanionName(GetActiveCompanionDefId())
+                pin.pinText = rawName and zo_strformat("|c66f2ffСпутник: <<1>>|r", rawName) or "Спутник"
+            else
+                pin:SetTexture(GetGroupMemberIcon(unitTag, isLeader))
+                pin.pinText = isLeader and ("|cffd700Лидер группы: " .. GetUnitName(unitTag) .. "|r") or GetUnitName(unitTag)
+            end
+            
+            local baseSize = (cfg and cfg.pinSize or 20)
+            local pinSize = isLeader and (baseSize + 6) or (baseSize + 2)
+            local drawLevel = isLeader and 12 or 5
+
+            pin:SetDimensions(pinSize, pinSize)
+            pin:SetDrawLevel(drawLevel)
+            pin:ClearAnchors()
+            if doesRotate then
+                local ix = (x * containerSize) - playerX
+                local iy = (y * containerSize) - playerY
+                pin:SetAnchor(CENTER, NecroCat_MapContainer, CENTER, zo_round((cosH * ix) - (sinH * iy)), zo_round((sinH * ix) + (cosH * iy)))
+            else
+                pin:SetAnchor(CENTER, NecroCat_MapContainer, TOPLEFT, x * containerSize, y * containerSize)
+            end
+        else
+            pin:SetHidden(true)
+        end
+    end
+
+    -- 2. Живые реликвии БГ и Свитки Сиродила
     local isBG = (GetMapContentType() == MAP_CONTENT_BATTLEGROUND) or (IsPlayerInBattleground and IsPlayerInBattleground())
     local isAvA = (IsInAvAZone and IsInAvAZone()) or (GetMapContentType() == MAP_CONTENT_AVA)
 
@@ -650,14 +785,13 @@ function pins.UpdateGroupPinsRealtime()
             if keepId and objectiveId and bgContext and isValidContext and IsObjectiveEnabled(keepId, objectiveId, bgContext) and IsObjectiveObjectVisible(keepId, objectiveId, bgContext) then
                 local pinType, curX, curY = GetObjectivePinInfo(keepId, objectiveId, bgContext)
                 
-                -- В Сиродиле живой трекер следит только за Свитками и Молотом, глуша флаги крепостей (128..220)
                 if isAvA and (type(pinType) == "number" and pinType >= 128 and pinType <= 220) then
                     pinType = MAP_PIN_TYPE_INVALID
                 end
 
                 if pinType and pinType ~= MAP_PIN_TYPE_INVALID and curX and curY and curX > 0 and curY > 0 and curX < 1 and curY < 1 then
                     if not pin then
-                        pin = CreateControl("NecroCat_BGObjPin_" .. i, NecroCat_MapContainer, CT_TEXTURE)
+                        pin = CreateControl("NCMM_BGObjPin_" .. i, NecroCat_MapContainer, CT_TEXTURE)
                         pin:SetDrawTier(DT_HIGH)
                         pin:SetDrawLayer(DL_OVERLAY)
                         pin:SetDrawLevel(30)
@@ -673,20 +807,6 @@ function pins.UpdateGroupPinsRealtime()
 
                     if icon and icon ~= "" then
                         pin:SetTexture(icon)
-                        local tint = layout and layout.tint
-                        if type(tint) == "function" then
-                            local ok, res = pcall(tint, { m_PinType = pinType, keepId = keepId, objectiveId = objectiveId })
-                            if ok then tint = res else tint = nil end
-                        end
-
-                        if tint and type(tint) == "table" and tint.UnpackRGBA then
-                            pin:SetColor(tint:UnpackRGBA())
-                        elseif tint and type(tint) == "table" and tint.r then
-                            pin:SetColor(tint.r, tint.g, tint.b, tint.a or 1)
-                        else
-                            pin:SetColor(1, 1, 1, 1)
-                        end
-
                         local size = isAvA and 32 or 38
                         pin:SetDimensions(size, size)
                         pin:ClearAnchors()
@@ -694,7 +814,7 @@ function pins.UpdateGroupPinsRealtime()
                         if doesRotate then
                             local ix = (curX * containerSize) - playerX
                             local iy = (curY * containerSize) - playerY
-                            pin:SetAnchor(CENTER, NecroCat_MapContainer, CENTER, (cosH * ix) - (sinH * iy), (sinH * ix) + (cosH * iy))
+                            pin:SetAnchor(CENTER, NecroCat_MapContainer, CENTER, zo_round((cosH * ix) - (sinH * iy)), zo_round((sinH * ix) + (cosH * iy)))
                         else
                             pin:SetAnchor(CENTER, NecroCat_MapContainer, TOPLEFT, curX * containerSize, curY * containerSize)
                         end
@@ -715,216 +835,25 @@ function pins.UpdateGroupPinsRealtime()
 end
 
 -- =========================================================================
--- 5. МОДУЛЬ КВЕСТОВ
--- =========================================================================
-local function ClearQuestPins()
-    for i = #g_activePins, 1, -1 do
-        local pin = g_activePins[i]
-        if pin and pin.isQuestPin then
-            pin:SetHidden(true)
-            pin:ClearAnchors()
-            pin.isQuestPin = nil
-            table.remove(g_activePins, i)
-        end
-    end
-end
-
-function pins.RefreshQuests(isRetry)
-    ClearQuestPins()
-
-    local pinManager = ZO_WorldMap_GetPinManager and ZO_WorldMap_GetPinManager()
-    if not pinManager or not pinManager.m_Active then return end
-
-    local count = 0
-    for _, mapPin in pairs(pinManager.m_Active) do
-        if type(mapPin) == "table" and mapPin.IsQuest and mapPin:IsQuest() then
-            count = count + 1
-            local x, y = mapPin:GetNormalizedPosition()
-            if not x or not y then
-                x = mapPin.normalizedX
-                y = mapPin.normalizedY
-            end
-
-            if x and y and x > 0 and y > 0 and x < 1 and y < 1 then
-                local icon = mapPin.GetQuestIcon and mapPin:GetQuestIcon()
-                if not icon or icon == "" then
-                    if mapPin.IsAssisted and mapPin:IsAssisted() then
-                        icon = "EsoUI/Art/Compass/quest_assisted_icon.dds"
-                    else
-                        icon = "EsoUI/Art/Compass/quest_icon.dds"
-                    end
-                end
-
-                local questName = ""
-                local qIndex = mapPin.GetQuestIndex and mapPin:GetQuestIndex()
-                if qIndex and qIndex > 0 then
-                    questName = GetJournalQuestName(qIndex)
-                end
-
-                local p = pins.CreatePin(icon, x, y, questName ~= "" and ("|cffff66" .. questName .. "|r") or nil, 24, nil, mapPin:GetPinType())
-                if p then
-                    p.isQuestPin = true
-                    p:SetDrawTier(DT_HIGH)
-                    p:SetDrawLayer(DL_OVERLAY)
-                    p:SetDrawLevel(22)
-                end
-            end
-        end
-    end
-
-    -- САМОДИАГНОСТИКА: будим квесты один раз без бесконечной рекурсии
-    local numJournalQuests = GetNumJournalQuests and GetNumJournalQuests() or 0
-    if count == 0 and numJournalQuests > 0 and not isRetry and g_isPlayerActivated then
-        if ZO_WorldMap_RefreshQuestPins then
-            pcall(ZO_WorldMap_RefreshQuestPins)
-        end
-        zo_callLater(function()
-            if pins.RefreshQuests then
-                pins.RefreshQuests(true)
-            end
-        end, 200)
-    end
-end
-
-EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_QuestZone", EVENT_ZONE_CHANGED, function()
-    ClearOldZonePins()
-end)
-
-EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_PinTeleport", EVENT_PLAYER_ACTIVATED, function()
-    g_isPlayerActivated = true
-    ClearOldZonePins()
-end)
-
-function pins.RefreshSavedLibMapPins()
-    local lmp = LibMapPins
-    local currentMapTile = GetMapTileTexture and GetMapTileTexture(1) or ""
-    if currentMapTile == "" then return end
-
-    for _, pData in pairs(g_savedLibMapPins) do
-        if pData.mapTile == currentMapTile then
-            local isEnabled = true
-            if pData.pinType and lmp and lmp.IsEnabled then
-                if lmp:IsEnabled(pData.pinType) == false then
-                    isEnabled = false
-                end
-            end
-            if isEnabled then
-                pins.CreatePin(pData.icon, pData.x, pData.y, pData.text, pData.size, pData.tooltip, pData.pinType, pData.pinTag, pData.tint)
-            end
-        end
-    end
-end
-
-local function OnQuestStateChanged()
-    if not g_isPlayerActivated then return end
-    EVENT_MANAGER:UnregisterForUpdate("NecroCat_Minimap_QuestDebounce")
-    EVENT_MANAGER:RegisterForUpdate("NecroCat_Minimap_QuestDebounce", 150, function()
-        EVENT_MANAGER:UnregisterForUpdate("NecroCat_Minimap_QuestDebounce")
-        if pins.RefreshQuests then
-            pins.RefreshQuests()
-        end
-    end)
-end
-
-if WORLD_MAP_QUEST_BREADCRUMBS then
-    WORLD_MAP_QUEST_BREADCRUMBS:RegisterCallback("QuestAvailable", OnQuestStateChanged)
-    WORLD_MAP_QUEST_BREADCRUMBS:RegisterCallback("QuestRemoved", OnQuestStateChanged)
-end
-
-if FOCUSED_QUEST_TRACKER then
-    FOCUSED_QUEST_TRACKER:RegisterCallback("QuestTrackerAssistStateChanged", OnQuestStateChanged)
-end
-
-EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_QuestAdv", EVENT_QUEST_ADVANCED, OnQuestStateChanged)
-EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_QuestCond", EVENT_QUEST_CONDITION_COUNTER_CHANGED, OnQuestStateChanged)
-EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_QuestComp", EVENT_QUEST_COMPLETE, OnQuestStateChanged)
-EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_QuestRem", EVENT_QUEST_REMOVED, OnQuestStateChanged)
-EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_QuestAdd", EVENT_QUEST_ADDED, OnQuestStateChanged)
-
-function pins.RefreshLibMapPins()
-    if GetCurrentZoneHouseId() ~= 0 then return end
-
-    local lmp = LibMapPins
-    if not lmp or not lmp.filters then return end
-
-    for pinType, _ in pairs(lmp.filters) do
-        if lmp.IsEnabled and lmp:IsEnabled(pinType) then
-            pcall(function()
-                if lmp.RefreshPins then lmp:RefreshPins(pinType) end
-            end)
-        end
-    end
-end
-
--- Полная перерисовка ВСЕХ статических меток миникарты
-function pins.RefreshAll()
-    pins.Reset()
-    if pins.RefreshWayshrines then pins.RefreshWayshrines() end
-    if pins.RefreshLocations then pins.RefreshLocations() end
-    if pins.RefreshPOIs then pins.RefreshPOIs() end
-    if pins.RefreshSkyshards then pins.RefreshSkyshards() end
-    if pins.RefreshQuests then pins.RefreshQuests() end
-    if pins.RefreshLibMapPins then pins.RefreshLibMapPins() end
-    if pins.RefreshSavedLibMapPins then pins.RefreshSavedLibMapPins() end
-    if pins.RefreshWaypoints then pins.RefreshWaypoints() end
-    if pins.RefreshCompanion then pins.RefreshCompanion() end
-    if pins.RefreshBattleground then pins.RefreshBattleground() end
-    if pins.RefreshCyrodiil then pins.RefreshCyrodiil() end
-end
-
--- =========================================================================
--- 6. ЕДИНЫЙ УМНЫЙ ПЕРЕХВАТЧИК МЕТОК (LibMapPins)
+-- 8. СТРИМИНГ СТОРОННИХ АДДОНОВ (MapPins, LibMapPins, QuestMap)
 -- =========================================================================
 local function HandleCustomPinCreation(pinType, pinTag, xLoc, yLoc)
     if not (minimap.settings and minimap.settings.enabled) then return end
     if not xLoc or not yLoc or xLoc <= 0 or yLoc <= 0 or xLoc >= 1 or yLoc >= 1 then return end
 
-    -- Если просматривается чужая карта — игнорируем чужие метки
     if DoesCurrentMapMatchMapForPlayerLocation and not DoesCurrentMapMatchMapForPlayerLocation() then
         return
     end
 
-    -- В инстансах (Архив, Данжи, Триалы, Дома) глушим внешние уличные метки QuestMap и уличные POI
-    local isInstance = (GetMapContentType and GetMapContentType() == MAP_CONTENT_DUNGEON)
-        or (GetCurrentZoneHouseId and GetCurrentZoneHouseId() ~= 0)
-        or (IsUnitInDungeon and IsUnitInDungeon("player"))
+    if ZO_MapPin and ZO_MapPin.IsQuestPinType and ZO_MapPin.IsQuestPinType(pinType) then return end
+    if pinType == MAP_PIN_TYPE_PLAYER_WAYPOINT or pinType == MAP_PIN_TYPE_RALLY_POINT or pinType == MAP_PIN_TYPE_PING then return end
+    if ZO_MapPin and ZO_MapPin.POI_PIN_TYPES and ZO_MapPin.POI_PIN_TYPES[pinType] then return end
+    if ZO_MapPin and ZO_MapPin.FAST_TRAVEL_WAYSHRINE_PIN_TYPES and ZO_MapPin.FAST_TRAVEL_WAYSHRINE_PIN_TYPES[pinType] then return end
+    if pinType == MAP_PIN_TYPE_LOCATION then return end
 
-    if isInstance then
-        local pinStr = string.lower(tostring(pinType))
-        if string.find(pinStr, "questmap") or string.find(pinStr, "poi") or pinType == 262 then
-            return
-        end
-    end
-
-    -- 1. Пропускаем стандартные квесты игры (их на 100% рисует RefreshQuests)
-    if ZO_MapPin and ZO_MapPin.IsQuestPinType and ZO_MapPin.IsQuestPinType(pinType) then
-        return
-    end
-
-    -- 2. Строго проверяем галочку в фильтрах карты игрока для LibMapPins
     local lmp = LibMapPins
-    if lmp and lmp.IsEnabled and pinType and lmp:IsEnabled(pinType) == false then
-        return
-    end
+    if lmp and lmp.IsEnabled and pinType and lmp:IsEnabled(pinType) == false then return end
 
-    -- 3. В подземельях и домах не пускаем уличные метки и скампов
-    local currentZone = GetCurrentZoneId and GetCurrentZoneId() or 0
-    local isDungeonOrHouse = (GetMapContentType() == MAP_CONTENT_DUNGEON or GetCurrentZoneHouseId() ~= 0)
-    local isIC = (currentZone == 584 or currentZone == 643 or (IsInImperialCity and IsInImperialCity()) or (IsInImperialCitySewers and IsInImperialCitySewers()))
-
-    if (pinType == 306 or pinType == 307 or (type(pinType) == "string" and string.find(pinType, "Scamp"))) and not isIC then
-        return
-    end
-
-    if isDungeonOrHouse and (pinType == 262 or (type(pinType) == "string" and (string.find(pinType, "POI") or string.find(pinType, "Battlefield")))) then
-        return
-    end
-
-    if pinType and (pinType == MAP_PIN_TYPE_FORWARD_CAMP_ALDMERI_DOMINION or pinType == MAP_PIN_TYPE_FORWARD_CAMP_EBONHEART_PACT or pinType == MAP_PIN_TYPE_FORWARD_CAMP_DAGGERFALL_COVENANT) then
-        return
-    end
-
-    -- 4. Получаем данные значка и рисуем (LibMapPins)
     local layout = nil
     if lmp and lmp.GetLayoutData then layout = lmp:GetLayoutData(pinType) end
     if not layout and ZO_MapPin and ZO_MapPin.PIN_DATA then layout = ZO_MapPin.PIN_DATA[pinType] end
@@ -945,18 +874,11 @@ local function HandleCustomPinCreation(pinType, pinTag, xLoc, yLoc)
                 if ok then tint = res else tint = nil end
             end
 
-            local currentMapTile = GetMapTileTexture and GetMapTileTexture(1) or ""
-            local pinKey = string.format("%s:%.4f:%.4f:%s", currentMapTile, xLoc, yLoc, tostring(pinType))
-            g_savedLibMapPins[pinKey] = {
-                mapTile = currentMapTile,
-                icon = icon,
-                x = xLoc,
-                y = yLoc,
-                size = size,
-                tooltip = tooltipCreator,
-                pinType = pinType,
-                pinTag = pinTag,
-                tint = tint
+            g_customPinsList[pinType] = g_customPinsList[pinType] or {}
+            local pinKey = string.format("%.4f:%.4f", xLoc, yLoc)
+            g_customPinsList[pinType][pinKey] = {
+                icon = icon, x = xLoc, y = yLoc, size = size,
+                tooltip = tooltipCreator, pinType = pinType, pinTag = pinTag, tint = tint
             }
 
             pins.CreatePin(icon, xLoc, yLoc, nil, size, tooltipCreator, pinType, pinTag, tint)
@@ -964,11 +886,20 @@ local function HandleCustomPinCreation(pinType, pinTag, xLoc, yLoc)
     end
 end
 
--- Включаем умные перехватчики для QuestMap (LibMapPins) и MapPins (PinManager)
 local pinManager = ZO_WorldMap_GetPinManager and ZO_WorldMap_GetPinManager()
 if pinManager then
     ZO_PostHook(pinManager, "CreatePin", function(self, pinType, pinTag, xLoc, yLoc)
         HandleCustomPinCreation(pinType, pinTag, xLoc, yLoc)
+    end)
+    ZO_PostHook(pinManager, "RefreshCustomPins", function(self, optionalPinType)
+        if optionalPinType then
+            g_customPinsList[optionalPinType] = {}
+        else
+            g_customPinsList = {}
+        end
+        if pins.RefreshSavedCustomPins then
+            pins.RefreshSavedCustomPins()
+        end
     end)
 end
 
@@ -978,34 +909,99 @@ if LibMapPins then
     end)
 end
 
+function pins.RefreshSavedCustomPins()
+    local lmp = LibMapPins
+    for pinType, pinDict in pairs(g_customPinsList) do
+        local isEnabled = true
+        if lmp and lmp.IsEnabled and lmp:IsEnabled(pinType) == false then
+            isEnabled = false
+        end
+        if isEnabled then
+            for _, pData in pairs(pinDict) do
+                pins.CreatePin(pData.icon, pData.x, pData.y, pData.text, pData.size, pData.tooltip, pData.pinType, pData.pinTag, pData.tint)
+            end
+        end
+    end
+end
+
+-- =========================================================================
+-- 9. ГЛАВНЫЙ СИНХРОНИЗАТОР
+-- =========================================================================
+function pins.RefreshAll()
+    pins.Reset()
+    if pins.RefreshWayshrines then pins.RefreshWayshrines() end
+    if pins.RefreshLocations then pins.RefreshLocations() end
+    if pins.RefreshPOIs then pins.RefreshPOIs() end
+    if pins.RefreshSkyshards then pins.RefreshSkyshards() end
+    if pins.RefreshQuests then pins.RefreshQuests() end
+    
+    local lmp = LibMapPins
+    if lmp and lmp.RefreshPins then
+        pcall(function() lmp:RefreshPins() end)
+    end
+
+    if pins.RefreshSavedCustomPins then pins.RefreshSavedCustomPins() end
+    if pins.RefreshWaypoints then pins.RefreshWaypoints() end
+    if pins.RefreshBattleground then pins.RefreshBattleground() end
+    if pins.RefreshCyrodiil then pins.RefreshCyrodiil() end
+end
 
 EVENT_MANAGER:RegisterForUpdate("NecroCat_Minimap_GroupUpdate", 100, pins.UpdateGroupPinsRealtime)
 
--- Авто-восстановление меток миникарты при закрытии большой карты мира (M)
-if WORLD_MAP_SCENE then
-    WORLD_MAP_SCENE:RegisterCallback("StateChange", function(oldState, newState)
-        if newState == SCENE_HIDDEN then
+EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_InventoryUpdate", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, function(_, bagId)
+    if bagId == BAG_BACKPACK then
+        EVENT_MANAGER:UnregisterForUpdate("NecroCat_Minimap_InvDebounce")
+        EVENT_MANAGER:RegisterForUpdate("NecroCat_Minimap_InvDebounce", 250, function()
+            EVENT_MANAGER:UnregisterForUpdate("NecroCat_Minimap_InvDebounce")
+            g_customPinsList = {}
             if pins.RefreshAll then
                 pins.RefreshAll()
             end
-        end
+            if minimap.UpdatePlayerPosition then
+                minimap.UpdatePlayerPosition(true)
+            end
+        end)
+    end
+end)
+EVENT_MANAGER:AddFilterForEvent("NecroCat_Minimap_InventoryUpdate", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, REGISTER_FILTER_BAG_ID, BAG_BACKPACK)
+
+local function OnQuestStateChanged()
+    if not g_isPlayerActivated then return end
+    EVENT_MANAGER:UnregisterForUpdate("NecroCat_Minimap_QuestDebounce")
+    EVENT_MANAGER:RegisterForUpdate("NecroCat_Minimap_QuestDebounce", 150, function()
+        EVENT_MANAGER:UnregisterForUpdate("NecroCat_Minimap_QuestDebounce")
+        if pins.RefreshAll then pins.RefreshAll() end
     end)
 end
 
-local function OnCyrodiilStateChanged()
-    EVENT_MANAGER:UnregisterForUpdate("NecroCat_Minimap_CyroDebounce")
-    EVENT_MANAGER:RegisterForUpdate("NecroCat_Minimap_CyroDebounce", 200, function()
-        EVENT_MANAGER:UnregisterForUpdate("NecroCat_Minimap_CyroDebounce")
-        if pins.RefreshCyrodiil then
-            pins.RefreshCyrodiil()
-        end
-    end)
+if WORLD_MAP_QUEST_BREADCRUMBS then
+    WORLD_MAP_QUEST_BREADCRUMBS:RegisterCallback("QuestAvailable", OnQuestStateChanged)
+    WORLD_MAP_QUEST_BREADCRUMBS:RegisterCallback("QuestRemoved", OnQuestStateChanged)
 end
 
-EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_KeepAttack", EVENT_KEEP_UNDER_ATTACK_CHANGED, OnCyrodiilStateChanged)
-EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_KeepOwner", EVENT_KEEP_ALLIANCE_OWNER_CHANGED, OnCyrodiilStateChanged)
-EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_ForwardCamps", EVENT_FORWARD_CAMPS_UPDATED, OnCyrodiilStateChanged)
+if FOCUSED_QUEST_TRACKER then
+    FOCUSED_QUEST_TRACKER:RegisterCallback("QuestTrackerAssistStateChanged", OnQuestStateChanged)
+end
 
+EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_QuestAdv", EVENT_QUEST_ADVANCED, OnQuestStateChanged)
+EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_QuestCond", EVENT_QUEST_CONDITION_COUNTER_CHANGED, OnQuestStateChanged)
+EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_QuestComp", EVENT_QUEST_COMPLETE, OnQuestStateChanged)
+EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_QuestRem", EVENT_QUEST_REMOVED, OnQuestStateChanged)
+EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_QuestAdd", EVENT_QUEST_ADDED, OnQuestStateChanged)
+
+EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_ForwardCamps", EVENT_FORWARD_CAMPS_UPDATED, function()
+    if pins.RefreshCyrodiil then
+        pins.RefreshCyrodiil()
+    end
+end)
+
+EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_PinTeleport", EVENT_PLAYER_ACTIVATED, function()
+    g_isPlayerActivated = true
+    ClearOldZonePins()
+    if pins.RefreshAll then pins.RefreshAll() end
+end)
+
+-- Мгновенное обновление флагов и реликвий на Полях Сражений
 EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_BGObjectives", EVENT_OBJECTIVES_UPDATED, function()
     if pins.RefreshBattleground then pins.RefreshBattleground() end
 end)
@@ -1013,15 +1009,3 @@ end)
 EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_BGControl", EVENT_OBJECTIVE_CONTROL_STATE, function()
     if pins.RefreshBattleground then pins.RefreshBattleground() end
 end)
-
-local function OnGroupCompositionChanged()
-    for _, pin in pairs(g_groupPins) do
-        pin:SetHidden(true)
-    end
-    if pins.UpdateGroupPinsRealtime then
-        pins.UpdateGroupPinsRealtime()
-    end
-end
-
-EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_GroupLeft", EVENT_GROUP_MEMBER_LEFT, OnGroupCompositionChanged)
-EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_GroupDisband", EVENT_GROUP_DISBANDED, OnGroupCompositionChanged)

@@ -1,20 +1,16 @@
 NecroCat = NecroCat or {}
-NecroCat.Minimap = {}
+NecroCat.Minimap = NecroCat.Minimap or {}
 
 local minimap = NecroCat.Minimap
 
 local defaultSettings = {
-    hideZoneAnnounce = true,
     enabled = true,
     locked = false,
-    rotate = false,
+    rotate = true,
     previewInMenu = false,
+    hideZoneAnnounce = true,
     width = 250,
     height = 250,
-    point = TOPRIGHT,
-    relativePoint = TOPRIGHT,
-    offsetX = -30,
-    offsetY = 80,
     pinSize = 20,
     playerPinSize = 32,
     opacity = 1.0,
@@ -45,6 +41,9 @@ local g_headingSin = 0
 local g_lastRefreshTime = 0
 local g_currentMapTexture = ""
 
+-- =========================================================================
+-- 1. УПРАВЛЕНИЕ ТАЙЛАМИ И ТЕКСТУРАМИ КАРТЫ
+-- =========================================================================
 local function ReleaseAllTiles()
     for _, tile in ipairs(g_TextureTiles) do
         tile:SetHidden(true)
@@ -54,7 +53,7 @@ end
 local function GetTile(i)
     local tile = g_TextureTiles[i]
     if not tile then
-        tile = CreateControlFromVirtual("NecroCat_MapContainer_Tile", NecroCat_MapContainer, "NecroCat_MapTile", i)
+        tile = CreateControlFromVirtual("NecroCat_Minimap_Tile", NecroCat_MapContainer, "NecroCat_MapTile", i)
         g_TextureTiles[i] = tile
     end
     tile:SetHidden(false)
@@ -64,24 +63,21 @@ end
 function minimap.GetCurrentZoneType()
     if GetCurrentZoneHouseId() ~= 0 then return "house" end
     
-    -- Проверка Полей Сражений (БГ)
     local isBG = (IsPlayerInBattleground and IsPlayerInBattleground()) 
         or (IsActiveWorldBattleground and IsActiveWorldBattleground()) 
         or (GetMapContentType() == MAP_CONTENT_BATTLEGROUND)
     if isBG then return "battleground" end
 
-    -- Проверка Имперского Города: Районы (ID 584) и Канализация (ID 643)
-    local zoneId = GetUnitWorldPosition("player")
-    if zoneId == 643 or (IsInImperialCitySewers and IsInImperialCitySewers()) then
+    local currentZone = select(1, GetUnitWorldPosition("player")) or 0
+    if currentZone == 643 or (IsInImperialCitySewers and IsInImperialCitySewers()) then
         return "imperial_sewers"
     end
-    if zoneId == 584 or (IsInImperialCity and IsInImperialCity()) then
+    if currentZone == 584 or (IsInImperialCity and IsInImperialCity()) then
         return "imperial_city"
     end
 
     if GetMapContentType() == MAP_CONTENT_DUNGEON then return "dungeon" end
 
-    -- Проверка Сиродила
     local isAvA = (IsInAvAZone and IsInAvAZone()) or (GetMapContentType() == MAP_CONTENT_AVA)
     if isAvA then
         if GetMapType() == MAPTYPE_SUBZONE then
@@ -99,9 +95,9 @@ local function GetCurrentZoom()
     local cfg = minimap.settings or defaultSettings
     local zoneType = minimap.GetCurrentZoneType()
     if type(cfg.zoom) ~= "table" then
-        cfg.zoom = { zone = 2.0, subzone = 4.5, dungeon = 3.5, house = 3.0, cyrodiil = 3.5, cyrodiil_subzone = 5.0, imperial_city = 5.0, imperial_sewers = 4.0, battleground = 3.5 }
+        cfg.zoom = ZO_ShallowTableCopy(defaultSettings.zoom)
     end
-    local zoomVal = cfg.zoom[zoneType] or (defaultSettings.zoom and defaultSettings.zoom[zoneType]) or 3.0
+    local zoomVal = cfg.zoom[zoneType] or defaultSettings.zoom[zoneType] or 3.0
     return zo_clamp(zoomVal, 1.0, 12.0), zoneType
 end
 
@@ -124,9 +120,11 @@ local function UpdateTilesOnRotate(playerX, playerY, heading)
     local tileHeight = g_containerSize / g_tileCountY
     local i = 1
     
-    for iY = 1, g_tileCountX do
-        for iX = 1, g_tileCountY do
+    for iY = 1, g_tileCountY do
+        for iX = 1, g_tileCountX do
             local tile = GetTile(i)
+            tile:SetDimensions(tileWidth, tileHeight)
+            tile:SetScale(1.006)
             tile:SetTextureRotation(-heading, 0.5, 0.5)
             tile:ClearAnchors()
             tile:SetAnchor(GetTileAnchor(iX, iY, tileWidth, tileHeight, playerX, playerY, true))
@@ -135,6 +133,9 @@ local function UpdateTilesOnRotate(playerX, playerY, heading)
     end
 end
 
+-- =========================================================================
+-- 2. ОБНОВЛЕНИЕ И ПОЗИЦИОНИРОВАНИЕ
+-- =========================================================================
 function minimap.RefreshMap(force)
     local now = GetGameTimeMilliseconds()
     if not force and (now - g_lastRefreshTime < 80) then return end
@@ -144,7 +145,6 @@ function minimap.RefreshMap(force)
     if not numX or not numY or numX == 0 or numY == 0 then return end
 
     g_currentMapTexture = GetMapTileTexture(1) or ""
-
     g_tileCountX = numX
     g_tileCountY = numY
 
@@ -165,10 +165,11 @@ function minimap.RefreshMap(force)
     local tileHeight = g_containerSize / g_tileCountY
 
     local i = 1
-    for iY = 1, g_tileCountX do
-        for iX = 1, g_tileCountY do
+    for iY = 1, g_tileCountY do
+        for iX = 1, g_tileCountX do
             local tile = GetTile(i)
             tile:SetDimensions(tileWidth, tileHeight)
+            tile:SetScale(1.0)
             tile:ClearAnchors()
             tile:SetAnchor(GetTileAnchor(iX, iY, tileWidth, tileHeight))
             tile:SetTexture(GetMapTileTexture(i))
@@ -177,11 +178,11 @@ function minimap.RefreshMap(force)
         end
     end
 
-    minimap.UpdatePlayerPosition(true)
-
     if minimap.Pins and minimap.Pins.RefreshAll then
         minimap.Pins.RefreshAll()
     end
+
+    minimap.UpdatePlayerPosition(true)
 end
 
 function minimap.UpdatePlayerPosition(forceUpdate)
@@ -244,20 +245,16 @@ function minimap.UpdatePlayerPosition(forceUpdate)
         end
     end
 
-    -- 1. Чистое название локации сверху
     local locName = GetUnitZone("player")
     if not locName or locName == "" then
-        locName = GetZoneNameById(GetCurrentZoneId())
+        local zoneId = select(1, GetUnitWorldPosition("player")) or 0
+        locName = GetZoneNameById(zoneId)
     end
     if not locName or locName == "" then
         locName = GetPlayerLocationName()
     end
-    if not locName or locName == "" then
-        locName = GetMapName and GetMapName() or ""
-    end
     NecroCat_Location_Name:SetText(locName and zo_strformat("<<C:1>>", locName) or "")
 
-    -- 3. Отдельный индикатор Ветеранки в правом нижнем углу
     local isDungeon = (GetMapContentType() == MAP_CONTENT_DUNGEON) 
         or (IsPlayerInGroupDungeon and IsPlayerInGroupDungeon()) 
         or (IsPlayerInRaid and IsPlayerInRaid())
@@ -270,9 +267,7 @@ function minimap.UpdatePlayerPosition(forceUpdate)
 end
 
 local function OnUpdate()
-    if NecroCat_Minimap_MainWindow:IsHidden() then 
-        return 
-    end
+    if NecroCat_Minimap_MainWindow:IsHidden() then return end
 
     local mapResult = SetMapToPlayerLocation()
     local currentTile = GetMapTileTexture(1)
@@ -285,15 +280,18 @@ local function OnUpdate()
     end
 end
 
-local function OnMouseDown(_eventCode, _button)
-    if _button == MOUSE_BUTTON_INDEX_LEFT and not (minimap.settings and minimap.settings.locked) then
+-- =========================================================================
+-- 3. ОБРАБОТЧИКИ МЫШИ И МАСШТАБИРОВАНИЕ
+-- =========================================================================
+local function OnMouseDown(_eventCode, button)
+    if button == MOUSE_BUTTON_INDEX_LEFT and not (minimap.settings and minimap.settings.locked) then
         NecroCat_Minimap_MainWindow:SetMovable(true)
         NecroCat_Minimap_MainWindow:StartMoving()
     end
 end
 
-local function OnMouseUp(_eventCode, _button)
-    if _button == MOUSE_BUTTON_INDEX_LEFT then
+local function OnMouseUp(_eventCode, button)
+    if button == MOUSE_BUTTON_INDEX_LEFT then
         NecroCat_Minimap_MainWindow:SetMovable(false)
         if minimap.settings and not minimap.settings.locked then
             minimap.settings.left = NecroCat_Minimap_MainWindow:GetLeft()
@@ -324,24 +322,12 @@ function minimap.ApplyLayout()
     else
         NecroCat_Minimap_MainWindow:SetAnchor(TOPRIGHT, GuiRoot, TOPRIGHT, -30, 80)
     end
-
-    -- Гарантированно выводим всплывающий лут, золото и опыт ПОВЕРХ миникарты
-    if ZO_LootHistoryControl_Keyboard then
-        ZO_LootHistoryControl_Keyboard:SetDrawTier(DT_MEDIUM)
-        ZO_LootHistoryControl_Keyboard:SetDrawLayer(DL_OVERLAY)
-    end
-    if ZO_LootHistoryControl_Gamepad then
-        ZO_LootHistoryControl_Gamepad:SetDrawTier(DT_MEDIUM)
-        ZO_LootHistoryControl_Gamepad:SetDrawLayer(DL_OVERLAY)
-    end
     
     local width = cfg.width or 250
     local height = cfg.height or 250
     NecroCat_Minimap_MainWindow:SetDimensions(width, height)
     NecroCat_Minimap_MainWindow_Map:SetDimensions(width, height)
-    
-    local opacity = cfg.opacity or 1.0
-    NecroCat_Minimap_MainWindow:SetAlpha(opacity)
+    NecroCat_Minimap_MainWindow:SetAlpha(cfg.opacity or 1.0)
 
     local arrowSize = cfg.playerPinSize or 32
     if NecroCat_Minimap_MainWindow_Map_PlayerPin then
@@ -349,6 +335,9 @@ function minimap.ApplyLayout()
     end
 end
 
+-- =========================================================================
+-- 4. СЦЕНЫ И ЗАПУСК ДВИЖКА
+-- =========================================================================
 local function SetupSceneFragments()
     if not g_sceneFragment then
         g_sceneFragment = ZO_SimpleSceneFragment:New(NecroCat_Minimap_MainWindow)
@@ -364,7 +353,6 @@ local function SetupSceneFragments()
             SIEGE_BAR_UI_SCENE:AddFragment(g_sceneFragment)
         end
 
-        -- Отображаем карту в меню Esc ТОЛЬКО если включен переключатель предпросмотра
         if gameMenuScene then
             if minimap.settings.previewInMenu then
                 gameMenuScene:AddFragment(g_sceneFragment)
@@ -432,10 +420,8 @@ end
 EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_Loaded", EVENT_ADD_ON_LOADED, OnAddOnLoaded)
 
 CALLBACK_MANAGER:RegisterCallback("OnWorldMapChanged", function(wasNavigateIn)
-    if minimap.settings and minimap.settings.enabled then
-        if wasNavigateIn == nil then
-            minimap.RefreshMap(true)						
-        end				
+    if minimap.settings and minimap.settings.enabled and wasNavigateIn == nil then
+        minimap.RefreshMap(true)
     end
 end)
 
@@ -452,38 +438,32 @@ if WORLD_MAP_SCENE then
     end)
 end
 
-if GAMEPAD_WORLD_MAP_SCENE then
-    GAMEPAD_WORLD_MAP_SCENE:RegisterCallback("StateChange", function(oldState, newState)
-        if newState == SCENE_HIDDEN and minimap.settings and minimap.settings.enabled then
-            zo_callLater(function()
-                SetMapToPlayerLocation()
-                minimap.RefreshMap()
-            end, 80)
-        end
-    end)
-end
-
 EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_Activated", EVENT_PLAYER_ACTIVATED, function()
-    if WORLD_MAP_QUEST_BREADCRUMBS and WORLD_MAP_QUEST_BREADCRUMBS.RefreshAllQuests then
-        WORLD_MAP_QUEST_BREADCRUMBS:RefreshAllQuests()
-    end
     if minimap.settings and minimap.settings.enabled then
         minimap.RefreshMap()
     end
 end)
 
 EVENT_MANAGER:RegisterForEvent("NecroCat_Minimap_ZoneChanged", EVENT_ZONE_CHANGED, function()
-    if WORLD_MAP_QUEST_BREADCRUMBS and WORLD_MAP_QUEST_BREADCRUMBS.RefreshAllQuests then
-        WORLD_MAP_QUEST_BREADCRUMBS:RefreshAllQuests()
-    end
     if minimap.settings and minimap.settings.enabled then
         minimap.RefreshMap()
     end
 end)
 
 -- =========================================================================
--- МЕНЮ НАСТРОЕК ДЛЯ LibAddonMenu (встраивается в меню NecroCat)
+-- 5. КОМАНДЫ ЧАТА И МЕНЮ НАСТРОЕК (Встроено в NecroCat)
 -- =========================================================================
+SLASH_COMMANDS["/ncrotate"] = function()
+    if not minimap.settings then return end
+    minimap.settings.rotate = not minimap.settings.rotate
+    minimap.RefreshMap()
+    if minimap.settings.rotate then
+        d("|c66f2ff[NecroCat]|r Вращение карты: |c00ff00Включено (Компас)|r")
+    else
+        d("|c66f2ff[NecroCat]|r Вращение карты: |cff0000Выключено (Север сверху)|r")
+    end
+end
+
 function minimap.GetMenuOptions()
     return {
         type = "submenu",
@@ -515,9 +495,7 @@ function minimap.GetMenuOptions()
                 tooltip = "Запрещает случайное перетаскивание карты мышкой во время игры",
                 getFunc = function() return minimap.settings and minimap.settings.locked end,
                 setFunc = function(val)
-                    if minimap.settings then
-                        minimap.settings.locked = val
-                    end
+                    if minimap.settings then minimap.settings.locked = val end
                 end,
                 default = defaultSettings.locked,
                 disabled = function() return not (minimap.settings and minimap.settings.enabled) end,
@@ -525,7 +503,7 @@ function minimap.GetMenuOptions()
             {
                 type = "checkbox",
                 name = "Режим предпросмотра (в меню)",
-                tooltip = "Временно показывает миникарту прямо в окне настроек, пока вы калибруете ползунки ширины, высоты и прозрачности",
+                tooltip = "Временно показывает миникарту прямо в окне настроек, пока вы калибруете ползунки",
                 getFunc = function() return minimap.settings and minimap.settings.previewInMenu end,
                 setFunc = function(val)
                     if minimap.settings then
@@ -543,7 +521,7 @@ function minimap.GetMenuOptions()
             {
                 type = "checkbox",
                 name = "Вращать карту (Режим компаса)",
-                tooltip = "Стрелочка всегда смотрит вперед, а карта плавно вращается вокруг игрока",
+                tooltip = "Стрелочка смотрит вперёд, а карта плавно вращается вокруг игрока",
                 getFunc = function() return minimap.settings and minimap.settings.rotate end,
                 setFunc = function(val)
                     if minimap.settings then
@@ -565,7 +543,7 @@ function minimap.GetMenuOptions()
                 default = true,
                 disabled = function() return not (minimap.settings and minimap.settings.enabled) end,
             },
-			{
+            {
                 type = "slider",
                 name = "Размер стрелочки игрока",
                 min = 16,
@@ -653,28 +631,11 @@ function minimap.GetMenuOptions()
     }
 end
 
-SLASH_COMMANDS["/ncmap"] = function()
-    minimap.Toggle()
-end
-
-SLASH_COMMANDS["/ncrotate"] = function()
-    if not minimap.settings then return end
-    minimap.settings.rotate = not minimap.settings.rotate
-    minimap.RefreshMap()
-    if minimap.settings.rotate then
-        d("|c66f2ff[NecroCat]|r Вращение карты: |c00ff00Включено (Режим компаса)|r")
-    else
-        d("|c66f2ff[NecroCat]|r Вращение карты: |cff0000Выключено (Север сверху)|r")
-    end
-end
-
 -- =========================================================================
--- ГЛУШИМ НАЗВАНИЯ РАЙОНОВ И ЗОН (Баннеры по центру и Алерты в углу экрана)
+-- 6. ГЛУШИМ НАЗВАНИЯ РАЙОНОВ И ЗОН (Баннеры по центру и Алерты)
 -- =========================================================================
 local function ShouldBlockLocationAlert(message)
-    if not (minimap.settings and minimap.settings.enabled and minimap.settings.hideZoneAnnounce) then
-        return false
-    end
+    if not (minimap.settings and minimap.settings.enabled and minimap.settings.hideZoneAnnounce) then return false end
     if message and type(message) == "string" and message ~= "" then
         local locName = GetPlayerLocationName()
         if locName and locName ~= "" and string.find(message, locName, 1, true) then
@@ -694,9 +655,7 @@ end)
 
 if CENTER_SCREEN_ANNOUNCE then
     local function ShouldBlockCSA(category)
-        if not (minimap.settings and minimap.settings.enabled and minimap.settings.hideZoneAnnounce) then
-            return false
-        end
+        if not (minimap.settings and minimap.settings.enabled and minimap.settings.hideZoneAnnounce) then return false end
         return category == CSA_CATEGORY_ZONE_DISPLAY 
             or category == CSA_CATEGORY_SUBZONE_DISPLAY 
             or category == CSA_CATEGORY_LARGE_TEXT 

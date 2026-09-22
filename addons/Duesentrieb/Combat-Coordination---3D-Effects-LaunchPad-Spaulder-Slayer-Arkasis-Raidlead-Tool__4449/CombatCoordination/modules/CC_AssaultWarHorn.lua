@@ -8,7 +8,7 @@ local Module = {
     name      = "AssaultWarHorn",
     menuName  = "ASSAULT WAR HORN",
     iconPath  = "/esoui/art/icons/ability_ava_003_a.dds",
-    menuLayer = 1,
+    menuLayer = 3,
 
     TextureChoices = CC.CIRCLE_CHOICES,
     TextureValues  = CC.CIRCLE_VALUES,
@@ -45,6 +45,7 @@ local Module = {
         },
     },
     Default = {
+        enableModule = true,
         timerModeSelf = 0,
         timerModeGroup = 0,
         enableDrawSelf = true,

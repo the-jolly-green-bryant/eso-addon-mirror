@@ -3,5 +3,6 @@
 ## Version: 3.01
 ## APIVersion: 101041
 ## DependsOn: LibAddonMenu-2.0>=40
+## SavedVariables: DKCorrosiveAlertSavedVariables
 
 DKCorrosiveAlert.lua

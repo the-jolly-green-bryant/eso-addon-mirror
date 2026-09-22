@@ -138,6 +138,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [SimpleChatLogger](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Coorbin/SimpleChatLogger__2799) | Coorbin | PC / Mac | 1.0 |
 | [SimpleClock](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/moshulu/SimpleClock__3559) | moshulu | PC / Mac | 0.0.4 |
 | [SimpleClock](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Sunoo/SimpleClock__1017) | Sunoo | PC / Mac | 1.2 |
+| [Simpleclock Console](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/j.hhh/Simpleclock-Console__765c8914-fa3a-4662-8b55-9edead0f309a) | j.hhh | Console | — |
 | [SimpleDailyCraft](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MelanAster/SimpleDailyCraft__3844) | MelanAster | PC / Mac | 0.93 |
 | [SimpleDPS Meter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/AndrewRossProjects/SimpleDPS-Meter__2849) | AndrewRossProjects | PC / Mac | 4.1.101042 |
 | [SimpleHelmetToggle](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DeanGrey/SimpleHelmetToggle__374) | DeanGrey | PC / Mac | 0.4d |

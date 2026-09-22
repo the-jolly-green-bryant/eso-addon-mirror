@@ -7,6 +7,13 @@ local AetherChat = AetherChat
 AetherChat.CustomTabs = {}
 local CustomTabs = AetherChat.CustomTabs
 
+local function L(key, ...)
+    if AetherChat.L then
+        return AetherChat.L(key, ...)
+    end
+    return key
+end
+
 local FILTER_KEYS = {
     -- Column 1
     say       = 'FiltSay',

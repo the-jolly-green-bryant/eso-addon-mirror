@@ -452,14 +452,6 @@ function addon:InitSettings()
 		clickHandler = function() self:PrintLitePlayerPinDiagnostic() end,
 	})
 
-	settings:AddSetting({
-		type = LibHarvensAddonSettings.ST_BUTTON,
-		label = GetString(SI_PBSMINIMAP_MAP_OPEN_TRACE),
-		buttonText = GetString(SI_PBSMINIMAP_MAP_OPEN_TRACE),
-		tooltip = GetString(SI_PBSMINIMAP_MAP_OPEN_TRACE_TOOLTIP),
-		clickHandler = function() self:PrintMapOpenTrace() end,
-	})
-
 	-- Continuous verbose logging remains locked; the button above reports only the last HUD sample.
 	settings:AddSetting(
 		{

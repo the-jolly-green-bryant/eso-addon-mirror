@@ -6,7 +6,7 @@
 [CENTER]
 [SIZE="6"][COLOR="Gold"][B]✦ AETHERCHAT ✦[/B][/COLOR][/SIZE]
 [SIZE="3"][COLOR="LightSteelBlue"][I]The Modern, Immersive Messenger & Complete Chat Suite for The Elder Scrolls Online[/I][/COLOR][/SIZE]
-[SIZE="2"][COLOR="PaleGreen"][B]Version 1.3.0 — Full Gamepad Support, Ultra-Compact Mode & Custom Tabs[/B][/COLOR][/SIZE]
+[SIZE="2"][COLOR="PaleGreen"][B]Version 1.4.0 — Group Roles & Class Colors, Quick Responses, Share Build & Default Channel Management[/B][/COLOR][/SIZE]
 [/CENTER]
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -27,7 +27,41 @@
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-[SIZE="4"][COLOR="Orange"][B]✨ NEW IN VERSION 1.3.0[/B][/COLOR][/SIZE]
+[SIZE="4"][COLOR="Orange"][B]✨ NEW IN VERSION 1.4.0[/B][/COLOR][/SIZE]
+
+[B]🛡️ Group Roles & Visual Class Colors in Party Chat (/party)[/B]
+[LIST]
+[*][B]Official Role Emblems:[/B] Displays official ESO role icons (🛡️ Tank, ➕ Healer, ⚔️ DPS) directly in front of group members' names in party chat.
+[*][B]Dynamic LFG & Manual Group Sync:[/B] Real-time detection from group finder assignments and manual party configurations.
+[*][B]Thematic Class Colors:[/B] Option in settings to colorize party member names according to their official class hex colors (Dragonknight, Sorcerer, Nightblade, Warden, Necromancer, Templar, Arcanist).
+[/LIST]
+
+[B]💬 Quick Responses Wheel / Menu (Gamepad & Dungeon Friendly)[/B]
+[LIST]
+[*][B]Dedicated Button & Keybinding:[/B] New speech bubble button next to text entry and keybind ([B]AETHERCHAT_QUICK_CHAT[/B]) in [I]Settings -> Controls -> AetherChat[/I].
+[*][B]Customizable Messages:[/B] Configure 6 quick phrases in settings (defaults: greetings, readiness check, thank you, wait a moment, etc.).
+[*][B]Flexible Dispatch Mode:[/B] Choose between inserting text into the edit box (for review or additions) or sending immediately with zero extra keystrokes.
+[/LIST]
+
+[B]👁️ Hide & Reset Default Channels[/B]
+[LIST]
+[*][B]Contextual Tab Hiding:[/B] Right-click any default channel ([B]Zone[/B], [B]Loot[/B], [B]Say[/B], [B]Party[/B], [B]System[/B]) and select [B]Hide this channel[/B] to tailor your workspace. Works in both Standard and Compact modes.
+[*][B]1-Click Restoration:[/B] New [B]Reset Default Channels[/B] button in [I]Settings -> Channels & Tabs[/I] to restore all pre-defined channels instantly without touching custom tabs.
+[/LIST]
+
+[B]🛡️ 1-Click Share Equipped Build (« Inspect / Share Build »)[/B]
+[LIST]
+[*][B]Gear Inspection & Instant Summary:[/B] New armor button and dedicated keybind ([B]AETHERCHAT_SHARE_BUILD[/B]) inspects equipped gear ([B]BAG_WORN[/B]) and pastes a formatted sets summary into chat (e.g., [I]Equipped Sets : Pillar of Nirn (5/5), Ansuul (5/5), Zaan (2/2)[/I]).
+[/LIST]
+
+[B]🏷️ Smart Player Names Formatting (@Account vs Character Name)[/B]
+[LIST]
+[*][B]Selectable Name Format:[/B] Option in settings to display names as [B]@AccountName[/B] (default), [B]Character Name[/B], or [B]Character Name (@AccountName)[/B] with native interactive clickable links preserved.
+[/LIST]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[SIZE="4"][COLOR="Orange"][B]✨ WHAT'S NEW IN VERSION 1.3.0[/B][/COLOR][/SIZE]
 
 [B]🎮 Full Gamepad & Controller Support[/B]
 [LIST]
@@ -43,9 +77,18 @@
 [LIST]
 [*][B]Minimalist Horizontal Tab Bar:[/B] Switch between Full Messenger mode (with expandable sidebar) and Ultra-Compact mode ([B]Zone[/B], [B]General[/B], [B]Group[/B], [B]System[/B], [B]Loot[/B], [B]Guilds ▾[/B], [B]Custom Tabs[/B]).
 [*][B]100% Reading Area:[/B] No lost horizontal space; fits cleanly in the bottom corner of your screen (down to 320x180 px).
+[*][B]Direct Friends & Mail Access:[/B] Direct access to friends list and mailbox from the compact header with real-time badges (green for online friends, blue for unread mail).
 [*][B]Independent Geometry Memory:[/B] Position and dimensions are saved independently for standard and compact modes.
 [*][B]Instant 1-Click Toggle:[/B] Seamlessly switch anytime with the header toggle button or via [B]/aethermode[/B] / [B]/acmode[/B].
 [*][B]Context Menus:[/B] Right-click [B]Zone[/B] to switch language filter; right-click [B]Loot[/B] to toggle Set Pieces Only filter.
+[/LIST]
+
+[B]🤫 Stealth Mode & Smart Inactivity Auto-Hide[/B]
+[LIST]
+[*][B]Auto-Hide on Idle:[/B] The chat window automatically disappears after an inactivity delay (configurable from 5s to 60s, default 20s) and reappears when an incoming message is received.
+[*][B]Channel Routing Choice:[/B] Choose whether the window simply lights up on your current tab or automatically switches to the incoming message's channel.
+[*][B]Manual Mode Lock (Anti-Disruption):[/B] Touching your mouse over the chat or opening chat input engages manual mode, keeping your current channel locked so incoming chatter never interrupts reading or typing.
+[*][B]Permanent Loot Channel Exemption:[/B] The Loot tab NEVER auto-hides and incoming chatter never forces you off the Loot channel, allowing uninterrupted drop tracking.
 [/LIST]
 
 [B]📁 Custom Tabs System[/B]
@@ -186,6 +229,40 @@
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+[SIZE="4"][COLOR="Orange"][B]✨ NOUVEAUTÉS VERSION 1.4.0[/B][/COLOR][/SIZE]
+
+[B]🛡️ Rôles & Couleurs de Classes Visuels dans le Chat de Groupe (/party)[/B]
+[LIST]
+[*][B]Icônes Officielles de Rôle :[/B] Affiche automatiquement les icônes officielles de rôle ESO (🛡️ Tank, ➕ Soigneur, ⚔️ DPS) devant les pseudos des membres du groupe dans le canal `/party`.
+[*][B]Détection Dynamique :[/B] Synchronisation en temps réel avec les rôles assignés par l'outil de recherche de groupe (LFG) et sélection manuelle.
+[*][B]Coloration Thématique par Classe :[/B] Option dans les réglages pour colorer le nom des membres du groupe selon leur couleur officielle de classe (Chevalier-dragon, Sorcier, Lame noire, Gardien, Nécromancien, Templier, Arcaniste).
+[/LIST]
+
+[B]💬 Menu & Raccourci de Réponses Rapides (Donjons & Manette)[/B]
+[LIST]
+[*][B]Bouton & Raccourci Dédié :[/B] Nouveau bouton bulle à droite du champ de saisie et raccourci assignable ([B]AETHERCHAT_QUICK_CHAT[/B]) dans [I]Commandes -> AetherChat[/I].
+[*][B]Messages Personnalisables :[/B] Configurez 6 phrases rapides dans les réglages (messages de politesse, prêt, attendez svp, etc.).
+[*][B]Mode d'Envoi au Choix :[/B] Choisissez entre l'insertion dans le champ de saisie (pour relecture ou complément) ou l'envoi direct instantané.
+[/LIST]
+
+[B]👁️ Masquage & Réinitialisation des Canaux par Défaut[/B]
+[LIST]
+[*][B]Masquage au Clic Droit :[/B] Faites un clic droit sur n'importe quel onglet par défaut ([B]Zone[/B], [B]Butin[/B], [B]Général[/B], [B]Groupe[/B], [B]Système[/B]) et choisissez [B]Masquer ce canal[/B] pour épurer votre interface. Fonctionne en mode Standard comme en mode Compact.
+[*][B]Restauration en 1 Clic :[/B] Nouveau bouton [B]Réinitialiser les canaux par défaut[/B] dans [I]Réglages -> Canaux & Onglets[/I] pour réafficher tous les canaux prédéfinis sans toucher à vos onglets personnalisés.
+[/LIST]
+
+[B]🛡️ Partage d'Équipement en 1-Clic (« Inspect / Share Build »)[/B]
+[LIST]
+[*][B]Inspection & Résumé Instantané :[/B] Nouveau bouton armure et raccourci dédié ([B]AETHERCHAT_SHARE_BUILD[/B]) inspectant les pièces équipées et préparant un résumé prêt à envoyer dans le chat (ex : [I]Sets équipés : Pilier de Nirn (5/5), Ansuul (5/5), Zaan (2/2)[/I]).
+[/LIST]
+
+[B]🏷️ Remplacement Intelligent des Pseudos (@Compte vs Nom de Personnage)[/B]
+[LIST]
+[*][B]Format au Choix :[/B] Option dans les réglages : [B]@NomDeCompte[/B] (par défaut), [B]Nom de Personnage[/B], ou [B]Nom de Personnage (@NomDeCompte)[/B] avec liens interactifs cliquables préservés.
+[/LIST]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 [SIZE="4"][COLOR="Orange"][B]✨ NOUVEAUTÉS VERSION 1.3.0[/B][/COLOR][/SIZE]
 
 [B]🎮 Prise en Charge Manette Complète & Mode Exclusif (Gamepad)[/B]
@@ -202,9 +279,18 @@
 [LIST]
 [*][B]Bandeau d'Onglets Horizontaux Minimaliste :[/B] Basculez d'un clic entre le mode Messenger complet (volet latéral) et le mode Ultra-Compact ([B]Zone[/B], [B]Général[/B], [B]Groupe[/B], [B]Système[/B], [B]Butin[/B], [B]Guildes ▾[/B], [B]Onglets Perso[/B]).
 [*][B]100% d'Espace de Lecture :[/B] Aucune perte d'espace latéral ; se loge discrètement dans le coin inférieur gauche (jusqu'à 320x180 px).
+[*][B]Accès Direct Amis & Courrier :[/B] Boutons dédiés intégrés dans l'en-tête compact avec pastilles dynamiques en temps réel (vert pour amis connectés, bleu pour courriers reçus).
 [*][B]Mémoire de Géométrie Indépendante :[/B] Dimensions et positions distinctes mémorisées pour chaque mode.
 [*][B]Bascule Instantanée 1-Clic :[/B] Bouton dédié dans l'en-tête ou commandes [B]/aethermode[/B] / [B]/acmode[/B].
 [*][B]Menus Contextuels Rapides :[/B] Clic droit sur [B]Zone[/B] pour filtrer la langue instantanément ; clic droit sur [B]Butin[/B] pour basculer le filtre "Sets uniquement".
+[/LIST]
+
+[B]🤫 Mode Discret & Auto-Masquage Intelligent[/B]
+[LIST]
+[*][B]Disparition Automatique sur Inactivité :[/B] Le chat se masque automatiquement après un délai d'inactivité (réglable de 5 à 60s, 20s par défaut) et réapparaît dès qu'un message est reçu.
+[*][B]Bascule de Canal au Choix :[/B] Choisissez si la fenêtre s'allume simplement sur l'onglet en cours ou bascule directement sur le canal du message reçu.
+[*][B]Protection Anti-Bordel (Mode Manuel) :[/B] Dès que vous survolez le chat à la souris ou commencez à écrire, le mode manuel s'enclenche et verrouille le canal pour ne jamais perturber votre lecture ou saisie.
+[*][B]Exemption Permanente du Canal Butin (Loot) :[/B] L'onglet Butin ne se masque jamais automatiquement et aucun message externe ne force la sortie du canal Loot, garantissant une surveillance continue de vos drops.
 [/LIST]
 
 [B]📁 Canaux & Onglets Personnalisés (Custom Tabs)[/B]

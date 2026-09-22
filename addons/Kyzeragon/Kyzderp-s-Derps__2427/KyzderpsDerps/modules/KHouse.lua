@@ -45,6 +45,7 @@ end
 -- Handles command
 -------------------------------------------------------------------------------
 local function PortToHouse(argString)
+    argString = argString or ""
     local args = {}
     local length = 0
     for word in argString:gmatch("%S+") do

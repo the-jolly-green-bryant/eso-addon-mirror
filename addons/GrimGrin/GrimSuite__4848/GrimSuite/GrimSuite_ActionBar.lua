@@ -64,7 +64,6 @@ ActionBar.showStackCount = true
 ActionBar.iconSize = 65
 ActionBar.slotGap = 3
 ActionBar.rowGap = 3
-ActionBar.overallScale = 1.0
 ActionBar.backbarOpacity = 0.72
 ActionBar.backbarDesaturation = 0.65
 ActionBar.showUltimate = true
@@ -93,13 +92,12 @@ ActionBar.backbarControls = {}
 local POSITION_SV_NAME = "GrimSuiteActionBarSavedVars"
 local POSITION_SV_VERSION = 1
 local POSITION_DEFAULTS = {
-    positionX = 0,
-    positionY = 0,
+    positionX = -38,
+    positionY = -109,
     unlocked = false,
     iconSize = 65,
     slotGap = 3,
     rowGap = 3,
-    overallScale = 1.0,
     backbarOpacity = 0.72,
     backbarDesaturation = 0.65,
     showUltimate = true,
@@ -137,10 +135,6 @@ end
 
 local function GetRowGap()
     return math.max(0, math.min(20, tonumber(ActionBar.rowGap) or 3))
-end
-
-local function GetOverallScale()
-    return math.max(0.50, math.min(1.50, tonumber(ActionBar.overallScale) or 1.0))
 end
 
 local function GetBackbarOpacity()
@@ -547,10 +541,10 @@ local function ApplyNativeLayoutOffset()
         -- Scale the real control rather than an unrelated action-bar child.
         -- SetScale() is absolute, so repeated Refresh()/AnchorRows() calls
         -- cannot compound the scaling.
-        local potionScale = (POTION_SIZE / SLOT_SIZE) * GetOverallScale()
+        local potionScale = POTION_SIZE / SLOT_SIZE
         potion:SetScale(potionScale)
 
-        weaponSwap:SetScale(GetOverallScale())
+        weaponSwap:SetScale(1)
         weaponSwap:SetHidden(not ActionBar.showWeaponSwap)
 
         -- Center the potion on the actual midpoint of the FULL TWO-ROW
@@ -603,8 +597,7 @@ function ActionBar:AnchorRows()
 
     -- The native weapon-swap control is now the physical position anchor.
     -- Do not apply positionX/positionY a second time here.
-    local scale = GetOverallScale()
-    local rowGap = GetRowGap() * scale
+    local rowGap = GetRowGap()
     self.frontRoot:SetAnchor(BOTTOMLEFT, weaponSwap, RIGHT, 0, -rowGap)
     self.backbarRoot:SetAnchor(TOPLEFT, weaponSwap, RIGHT, 0, 0)
 
@@ -612,9 +605,8 @@ function ActionBar:AnchorRows()
     -- combined two-row block.  Anchor both ult controls to the same stable
     -- weapon-swap reference so the position does not move when weapon bars
     -- are swapped.  Only the active ult is made visible in UpdateRow().
-    local scale = GetOverallScale()
-    local ultX = (GetRowWidth() + ULT_GAP) * scale
-    local ultY = -(GetIconSize() + GetRowGap()) * scale * 0.5
+    local ultX = GetRowWidth() + ULT_GAP
+    local ultY = -(GetIconSize() + GetRowGap()) * 0.5
 
     local frontUlt = self.frontControls[ULT_SLOT]
     if frontUlt and frontUlt.frame then
@@ -874,11 +866,37 @@ local function IsStackProcReady(abilityId)
     return stacks ~= nil and stacks >= required
 end
 
+-- Simmering Frenzy (often referred to as "Shimmering Frenzy") is a toggle
+-- whose active state should remain visible on the custom action bar even when
+-- the weapon bar containing it is inactive.  The other toggle glows remain
+-- active-bar-only so we do not change their existing behavior.
+local function IsSimmeringFrenzyAbility(abilityId)
+    if not abilityId or abilityId <= 0 or not GetAbilityName then
+        return false
+    end
+
+    local ok, name = pcall(GetAbilityName, abilityId)
+    if not ok or not name then
+        return false
+    end
+
+    name = zo_strlower(tostring(name))
+    return string.find(name, "simmering frenzy", 1, true) ~= nil
+        or string.find(name, "shimmering frenzy", 1, true) ~= nil
+end
+
 local function UpdateSlotGlow(data, slot, category, active, ultimateReady)
     if not data or not data.glow then return end
     local abilityId = GetAbilityForSlot(slot, category)
     local procReady = abilityId > 0 and IsStackProcReady(abilityId)
-    local shouldGlow = (active and IsSlotToggleActive(slot, category)) or ultimateReady or procReady
+    local persistentToggle = abilityId > 0
+        and IsSimmeringFrenzyAbility(abilityId)
+        and IsSlotToggleActive(slot, category)
+    local shouldGlow = (active and IsSlotToggleActive(slot, category))
+        or persistentToggle
+        or ultimateReady
+        or procReady
+
     data.glow:SetHidden(not shouldGlow)
     if data.outerGlow then
         data.outerGlow:SetHidden(not shouldGlow)
@@ -1085,6 +1103,23 @@ local function UpdateActiveBarGlows()
     -- bar as well.
     UpdateFatecarverGlowForBar(ActionBar.frontControls, HOTBAR_CATEGORY_PRIMARY)
     UpdateFatecarverGlowForBar(ActionBar.backbarControls, HOTBAR_CATEGORY_BACKUP)
+
+    -- Simmering/Shimmering Frenzy is a persistent toggle: keep its glow
+    -- synchronized even when the row containing it is inactive.
+    for _, entry in ipairs({
+        { controls = ActionBar.frontControls, category = HOTBAR_CATEGORY_PRIMARY },
+        { controls = ActionBar.backbarControls, category = HOTBAR_CATEGORY_BACKUP },
+    }) do
+        for slot = MIN_SLOT, MAX_SLOT do
+            local data = entry.controls[slot]
+            if data and data.glow then
+                local abilityId = GetAbilityForSlot(slot, entry.category)
+                if IsSimmeringFrenzyAbility(abilityId) then
+                    UpdateSlotGlow(data, slot, entry.category, false, false)
+                end
+            end
+        end
+    end
 end
 
 local function TrackPlayerEffect(eventCode, change, effectSlot, effectName, unitTag, beginTime, endTime, stackCount, iconName, buffType, effectType, abilityType, statusEffectType, unitName, unitId, abilityId, sourceType)
@@ -1337,7 +1372,6 @@ local function ApplyGABCustomization()
 
     local size = GetIconSize()
     local gap = GetSlotGap()
-    local scale = GetOverallScale()
     local rowWidth = GetRowWidth()
     local totalWidth = GetTotalWidth()
 
@@ -1345,7 +1379,7 @@ local function ApplyGABCustomization()
     for _, root in ipairs(roots) do
         if root then
             root:SetDimensions(totalWidth, size)
-            root:SetScale(scale)
+            root:SetScale(1)
         end
     end
 
@@ -1370,8 +1404,8 @@ local function ApplyGABCustomization()
     ActionBar:AnchorRows()
 
     local weaponSwap, potion = GetNativeActionBarControls()
-    if weaponSwap then weaponSwap:SetScale(scale) end
-    if potion then potion:SetScale((POTION_SIZE / SLOT_SIZE) * scale) end
+    if weaponSwap then weaponSwap:SetScale(1) end
+    if potion then potion:SetScale(POTION_SIZE / SLOT_SIZE) end
 
     ActionBar:Refresh()
 end
@@ -1409,7 +1443,7 @@ local function ResetPosition()
 end
 
 local GAB_SETTING_KEYS = {
-    "iconSize", "slotGap", "rowGap", "overallScale",
+    "iconSize", "slotGap", "rowGap",
     "backbarOpacity", "backbarDesaturation",
     "showUltimate", "showQuickslot", "showWeaponSwap",
     "timerSize", "stackSize", "timerFont", "stackFont",
@@ -1495,18 +1529,6 @@ local function RegisterLibAddonMenu()
                 ApplyGABCustomization()
             end,
             default = POSITION_DEFAULTS.rowGap,
-        },
-        {
-            type = "slider",
-            name = "Overall Scale",
-            tooltip = "Scales the complete GrimSuite action bar composition.",
-            min = 0.50, max = 1.50, step = 0.05,
-            getFunc = function() return GetOverallScale() end,
-            setFunc = function(value)
-                SaveGABSetting("overallScale", tonumber(value) or POSITION_DEFAULTS.overallScale)
-                ApplyGABCustomization()
-            end,
-            default = POSITION_DEFAULTS.overallScale,
         },
         {
             type = "slider",
@@ -1786,7 +1808,6 @@ function ActionBar:Initialize()
     self.iconSize = tonumber(positionSV.iconSize) or POSITION_DEFAULTS.iconSize
     self.slotGap = tonumber(positionSV.slotGap) or POSITION_DEFAULTS.slotGap
     self.rowGap = tonumber(positionSV.rowGap) or POSITION_DEFAULTS.rowGap
-    self.overallScale = tonumber(positionSV.overallScale) or POSITION_DEFAULTS.overallScale
     self.backbarOpacity = tonumber(positionSV.backbarOpacity) or POSITION_DEFAULTS.backbarOpacity
     self.backbarDesaturation = tonumber(positionSV.backbarDesaturation) or POSITION_DEFAULTS.backbarDesaturation
     self.showUltimate = positionSV.showUltimate ~= false

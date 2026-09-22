@@ -279,6 +279,18 @@
                     </Controls>
                 </Backdrop>
 
+                <!-- External Third-Party Addon Dock (Capsule Extensions) -->
+                <Control name="$(parent)AddonDock" hidden="true" mouseEnabled="true" tier="HIGH">
+                    <Dimensions x="28" y="24" />
+                    <Anchor point="RIGHT" relativeTo="$(parent)SearchBox" relativePoint="LEFT" offsetX="-8" offsetY="0" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" edgeColor="3A3A3A" centerColor="101216" alpha="0.75" mouseEnabled="false">
+                            <AnchorFill />
+                            <Edge edgeSize="1" />
+                        </Backdrop>
+                    </Controls>
+                </Control>
+
                 <!-- Ultra-Compact Header with Tab Strip -->
                 <Control name="$(parent)CompactHeader" hidden="true" mouseEnabled="true">
                     <Anchor point="TOPLEFT" offsetX="4" offsetY="4" />
@@ -311,9 +323,47 @@
                                       mouseOver="/esoui/art/buttons/switch_mouseOver.dds"
                                       disabled="/esoui/art/buttons/switch_disabled.dds" />
                         </Button>
-                        <Button name="$(parent)SearchBtn" mouseEnabled="true">
+                        <Button name="$(parent)FriendsBtn" mouseEnabled="true">
                             <Dimensions x="20" y="20" />
                             <Anchor point="RIGHT" relativeTo="$(parent)ModeBtn" relativePoint="LEFT" offsetX="-4" offsetY="0" />
+                            <Textures normal="/esoui/art/contacts/tabicon_friends_up.dds"
+                                      pressed="/esoui/art/contacts/tabicon_friends_down.dds"
+                                      mouseOver="/esoui/art/contacts/tabicon_friends_over.dds" />
+                            <Controls>
+                                <Backdrop name="$(parent)Badge" edgeColor="E5B558" centerColor="1B5E20" hidden="true" tier="HIGH">
+                                    <Dimensions x="14" y="14" />
+                                    <Anchor point="TOPRIGHT" offsetX="3" offsetY="-3" />
+                                    <Edge edgeSize="1" />
+                                    <Controls>
+                                        <Label name="$(parent)Count" font="ZoFontGameSmall" text="0" color="FFFFFF" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+                                            <AnchorFill />
+                                        </Label>
+                                    </Controls>
+                                </Backdrop>
+                            </Controls>
+                        </Button>
+                        <Button name="$(parent)MailBtn" mouseEnabled="true">
+                            <Dimensions x="20" y="20" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)FriendsBtn" relativePoint="LEFT" offsetX="-4" offsetY="0" />
+                            <Textures normal="/esoui/art/mainmenu/menubar_mail_up.dds"
+                                      pressed="/esoui/art/mainmenu/menubar_mail_down.dds"
+                                      mouseOver="/esoui/art/mainmenu/menubar_mail_over.dds" />
+                            <Controls>
+                                <Backdrop name="$(parent)Badge" edgeColor="E5B558" centerColor="0369A1" hidden="true" tier="HIGH">
+                                    <Dimensions x="14" y="14" />
+                                    <Anchor point="TOPRIGHT" offsetX="3" offsetY="-3" />
+                                    <Edge edgeSize="1" />
+                                    <Controls>
+                                        <Label name="$(parent)Count" font="ZoFontGameSmall" text="0" color="FFFFFF" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+                                            <AnchorFill />
+                                        </Label>
+                                    </Controls>
+                                </Backdrop>
+                            </Controls>
+                        </Button>
+                        <Button name="$(parent)SearchBtn" mouseEnabled="true">
+                            <Dimensions x="20" y="20" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)MailBtn" relativePoint="LEFT" offsetX="-4" offsetY="0" />
                             <Textures normal="/esoui/art/tradinghouse/tradinghouse_browse_tabicon_up.dds"
                                       pressed="/esoui/art/tradinghouse/tradinghouse_browse_tabicon_down.dds"
                                       mouseOver="/esoui/art/tradinghouse/tradinghouse_browse_tabicon_over.dds" />
@@ -488,6 +538,24 @@
                     <Anchor point="BOTTOMLEFT" offsetX="230" offsetY="-44" />
                     <Anchor point="BOTTOMRIGHT" offsetX="-8" offsetY="-44" />
                 </Texture>
+
+                <!-- Quick Chat Action Button (Speech Bubble) -->
+                <Button name="$(parent)QuickChatBtn" mouseEnabled="true" tier="HIGH">
+                    <Dimensions x="22" y="22" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-8" offsetY="-8" />
+                    <Textures normal="/esoui/art/chatwindow/chat_notification_echo.dds"
+                              pressed="/esoui/art/chatwindow/chat_notification_echo.dds"
+                              mouseOver="/esoui/art/chatwindow/chat_notification_echo.dds" />
+                </Button>
+
+                <!-- 1-Click Share Equipped Build Button (Armor Icon) -->
+                <Button name="$(parent)ShareBuildBtn" mouseEnabled="true" tier="HIGH">
+                    <Dimensions x="22" y="22" />
+                    <Anchor point="RIGHT" relativeTo="$(parent)QuickChatBtn" relativePoint="LEFT" offsetX="-4" offsetY="0" />
+                    <Textures normal="/esoui/art/inventory/inventory_tabicon_armor_up.dds"
+                              pressed="/esoui/art/inventory/inventory_tabicon_armor_down.dds"
+                              mouseOver="/esoui/art/inventory/inventory_tabicon_armor_over.dds" />
+                </Button>
 
                 <!-- ============================================================== -->
                 <!-- Edge Interactive Resize Handles with Luminous Glow             -->
@@ -956,6 +1024,180 @@
                 <Button name="$(parent)DeleteBtn" inherits="ZO_DefaultButton" text="Supprimer">
                     <Dimensions x="105" y="28" />
                     <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)CancelBtn" relativePoint="BOTTOMLEFT" offsetX="-8" offsetY="0" />
+                </Button>
+            </Controls>
+        </TopLevelControl>
+
+        <!-- Gamepad & Keyboard Quick Chat Radial Wheel (« La Boule ») -->
+        <TopLevelControl name="AetherChat_QuickChatWheel" mouseEnabled="true" clampedToScreen="true" hidden="true" tier="HIGH">
+            <Dimensions x="520" y="520" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
+            <Controls>
+                <!-- Central Disc Backdrop -->
+                <Backdrop name="$(parent)CenterBG" mouseEnabled="true" alpha="0.95" centerColor="0D0D0E" edgeColor="E5B558">
+                    <Dimensions x="174" y="174" />
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="0" />
+                    <Edge edgeSize="2" />
+                    <Controls>
+                        <Button name="$(parent)CloseBtn" inherits="ZO_CloseButton" mouseEnabled="true">
+                            <Anchor point="TOPRIGHT" offsetX="-4" offsetY="4" />
+                        </Button>
+                        <Texture name="$(parent)Icon" textureFile="/esoui/art/chatwindow/chat_notification_echo.dds">
+                            <Dimensions x="34" y="34" />
+                            <Anchor point="TOP" offsetX="0" offsetY="14" />
+                        </Texture>
+                        <Label name="$(parent)Title" font="ZoFontGameBold" text="Réponse Rapide" color="E5B558" horizontalAlignment="CENTER">
+                            <Dimensions x="160" y="18" />
+                            <Anchor point="TOP" relativeTo="$(parent)Icon" relativePoint="BOTTOM" offsetX="0" offsetY="2" />
+                        </Label>
+                        <Label name="$(parent)Preview" font="ZoFontGameSmall" text="Choisissez un message..." color="FFFFFF" horizontalAlignment="CENTER" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+                            <Dimensions x="160" y="54" />
+                            <Anchor point="TOP" relativeTo="$(parent)Title" relativePoint="BOTTOM" offsetX="0" offsetY="2" />
+                        </Label>
+                        <Label name="$(parent)Hint" font="ZoFontGameSmall" text="Relâchez pour valider" color="888888" horizontalAlignment="CENTER">
+                            <Dimensions x="160" y="16" />
+                            <Anchor point="BOTTOM" offsetX="0" offsetY="-8" />
+                        </Label>
+                    </Controls>
+                </Backdrop>
+
+                <!-- 6 Radial Slice Buttons -->
+                <!-- Slice 1 (12h - Haut) -->
+                <Button name="$(parent)Slice1" mouseEnabled="true">
+                    <Dimensions x="156" y="44" />
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="-155" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" mouseEnabled="false" alpha="0.90" centerColor="141416" edgeColor="3A3A3C">
+                            <AnchorFill />
+                            <Edge edgeSize="1" />
+                        </Backdrop>
+                        <Backdrop name="$(parent)SelBG" mouseEnabled="false" alpha="0.95" centerColor="443206" edgeColor="E5B558" hidden="true">
+                            <AnchorFill />
+                            <Edge edgeSize="2" />
+                        </Backdrop>
+                        <Label name="$(parent)Num" mouseEnabled="false" font="ZoFontGameBold" text="[1]" color="E5B558">
+                            <Anchor point="LEFT" offsetX="8" offsetY="0" />
+                        </Label>
+                        <Label name="$(parent)Label" mouseEnabled="false" font="ZoFontGameSmall" text="Message 1" color="FFFFFF" wrapMode="ELLIPSIS">
+                            <Dimensions x="116" y="34" />
+                            <Anchor point="LEFT" relativeTo="$(parent)Num" relativePoint="RIGHT" offsetX="6" offsetY="0" />
+                        </Label>
+                    </Controls>
+                </Button>
+
+                <!-- Slice 2 (2h - Haut-Droite) -->
+                <Button name="$(parent)Slice2" mouseEnabled="true">
+                    <Dimensions x="156" y="44" />
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="134" offsetY="-78" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" mouseEnabled="false" alpha="0.90" centerColor="141416" edgeColor="3A3A3C">
+                            <AnchorFill />
+                            <Edge edgeSize="1" />
+                        </Backdrop>
+                        <Backdrop name="$(parent)SelBG" mouseEnabled="false" alpha="0.95" centerColor="443206" edgeColor="E5B558" hidden="true">
+                            <AnchorFill />
+                            <Edge edgeSize="2" />
+                        </Backdrop>
+                        <Label name="$(parent)Num" mouseEnabled="false" font="ZoFontGameBold" text="[2]" color="E5B558">
+                            <Anchor point="LEFT" offsetX="8" offsetY="0" />
+                        </Label>
+                        <Label name="$(parent)Label" mouseEnabled="false" font="ZoFontGameSmall" text="Message 2" color="FFFFFF" wrapMode="ELLIPSIS">
+                            <Dimensions x="116" y="34" />
+                            <Anchor point="LEFT" relativeTo="$(parent)Num" relativePoint="RIGHT" offsetX="6" offsetY="0" />
+                        </Label>
+                    </Controls>
+                </Button>
+
+                <!-- Slice 3 (4h - Bas-Droite) -->
+                <Button name="$(parent)Slice3" mouseEnabled="true">
+                    <Dimensions x="156" y="44" />
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="134" offsetY="78" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" mouseEnabled="false" alpha="0.90" centerColor="141416" edgeColor="3A3A3C">
+                            <AnchorFill />
+                            <Edge edgeSize="1" />
+                        </Backdrop>
+                        <Backdrop name="$(parent)SelBG" mouseEnabled="false" alpha="0.95" centerColor="443206" edgeColor="E5B558" hidden="true">
+                            <AnchorFill />
+                            <Edge edgeSize="2" />
+                        </Backdrop>
+                        <Label name="$(parent)Num" mouseEnabled="false" font="ZoFontGameBold" text="[3]" color="E5B558">
+                            <Anchor point="LEFT" offsetX="8" offsetY="0" />
+                        </Label>
+                        <Label name="$(parent)Label" mouseEnabled="false" font="ZoFontGameSmall" text="Message 3" color="FFFFFF" wrapMode="ELLIPSIS">
+                            <Dimensions x="116" y="34" />
+                            <Anchor point="LEFT" relativeTo="$(parent)Num" relativePoint="RIGHT" offsetX="6" offsetY="0" />
+                        </Label>
+                    </Controls>
+                </Button>
+
+                <!-- Slice 4 (6h - Bas) -->
+                <Button name="$(parent)Slice4" mouseEnabled="true">
+                    <Dimensions x="156" y="44" />
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="155" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" mouseEnabled="false" alpha="0.90" centerColor="141416" edgeColor="3A3A3C">
+                            <AnchorFill />
+                            <Edge edgeSize="1" />
+                        </Backdrop>
+                        <Backdrop name="$(parent)SelBG" mouseEnabled="false" alpha="0.95" centerColor="443206" edgeColor="E5B558" hidden="true">
+                            <AnchorFill />
+                            <Edge edgeSize="2" />
+                        </Backdrop>
+                        <Label name="$(parent)Num" mouseEnabled="false" font="ZoFontGameBold" text="[4]" color="E5B558">
+                            <Anchor point="LEFT" offsetX="8" offsetY="0" />
+                        </Label>
+                        <Label name="$(parent)Label" mouseEnabled="false" font="ZoFontGameSmall" text="Message 4" color="FFFFFF" wrapMode="ELLIPSIS">
+                            <Dimensions x="116" y="34" />
+                            <Anchor point="LEFT" relativeTo="$(parent)Num" relativePoint="RIGHT" offsetX="6" offsetY="0" />
+                        </Label>
+                    </Controls>
+                </Button>
+
+                <!-- Slice 5 (8h - Bas-Gauche) -->
+                <Button name="$(parent)Slice5" mouseEnabled="true">
+                    <Dimensions x="156" y="44" />
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="-134" offsetY="78" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" mouseEnabled="false" alpha="0.90" centerColor="141416" edgeColor="3A3A3C">
+                            <AnchorFill />
+                            <Edge edgeSize="1" />
+                        </Backdrop>
+                        <Backdrop name="$(parent)SelBG" mouseEnabled="false" alpha="0.95" centerColor="443206" edgeColor="E5B558" hidden="true">
+                            <AnchorFill />
+                            <Edge edgeSize="2" />
+                        </Backdrop>
+                        <Label name="$(parent)Num" mouseEnabled="false" font="ZoFontGameBold" text="[5]" color="E5B558">
+                            <Anchor point="LEFT" offsetX="8" offsetY="0" />
+                        </Label>
+                        <Label name="$(parent)Label" mouseEnabled="false" font="ZoFontGameSmall" text="Message 5" color="FFFFFF" wrapMode="ELLIPSIS">
+                            <Dimensions x="116" y="34" />
+                            <Anchor point="LEFT" relativeTo="$(parent)Num" relativePoint="RIGHT" offsetX="6" offsetY="0" />
+                        </Label>
+                    </Controls>
+                </Button>
+
+                <!-- Slice 6 (10h - Haut-Gauche) -->
+                <Button name="$(parent)Slice6" mouseEnabled="true">
+                    <Dimensions x="156" y="44" />
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="-134" offsetY="-78" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" mouseEnabled="false" alpha="0.90" centerColor="141416" edgeColor="3A3A3C">
+                            <AnchorFill />
+                            <Edge edgeSize="1" />
+                        </Backdrop>
+                        <Backdrop name="$(parent)SelBG" mouseEnabled="false" alpha="0.95" centerColor="443206" edgeColor="E5B558" hidden="true">
+                            <AnchorFill />
+                            <Edge edgeSize="2" />
+                        </Backdrop>
+                        <Label name="$(parent)Num" mouseEnabled="false" font="ZoFontGameBold" text="[6]" color="E5B558">
+                            <Anchor point="LEFT" offsetX="8" offsetY="0" />
+                        </Label>
+                        <Label name="$(parent)Label" mouseEnabled="false" font="ZoFontGameSmall" text="Message 6" color="FFFFFF" wrapMode="ELLIPSIS">
+                            <Dimensions x="116" y="34" />
+                            <Anchor point="LEFT" relativeTo="$(parent)Num" relativePoint="RIGHT" offsetX="6" offsetY="0" />
+                        </Label>
+                    </Controls>
                 </Button>
             </Controls>
         </TopLevelControl>

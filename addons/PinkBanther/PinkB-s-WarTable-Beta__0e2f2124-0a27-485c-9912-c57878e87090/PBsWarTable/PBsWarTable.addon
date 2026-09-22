@@ -1,8 +1,8 @@
 ## Title: PinkB's War Table
 ## Author: PinkBanther
 ## Description: 三旗の戦卓 ― 帝位と星霜 ― / The Three Banners War Table. Three COM levels, local play and group duels.
-## Version: 0.12.0
-## AddOnVersion: 1200
+## Version: 0.16.0
+## AddOnVersion: 1600
 ## APIVersion: 101050 101051
 ## SavedVariables: PBsWarTableSavedVariables
 ## OptionalDependsOn: LibGroupBroadcast
@@ -26,6 +26,7 @@ Transport.lua
 AI.lua
 Search.lua
 Solo.lua
+Audio.lua
 Theme.lua
 Records.lua
 Tutorial.lua

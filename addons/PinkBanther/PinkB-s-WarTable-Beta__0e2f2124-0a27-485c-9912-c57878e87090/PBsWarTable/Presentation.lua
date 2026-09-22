@@ -116,7 +116,7 @@ function P:Refresh()
             if t.pbwtFlag then
                 -- Squares that are keeps on the other board carry no banner here.
                 local owner=PBWT.Engine.Flag(state,t.pbwtFlag.x,t.pbwtFlag.y)
-                if not owner then t:SetHidden(true)
+                if not owner or PBWT.Engine.Rules(state).SIZE>5 then t:SetHidden(true)
                 else t:SetColor(unpack(owner~=0 and PBWT.Theme.Player(owner,state) or PBWT.Theme.brass)) end
             end
         end

@@ -398,6 +398,10 @@ do
 		end
 		return false
 	end
+
+	function Public.IsNightbladeCutthroatPassiveActive( )
+		return (select(6, GetSkillAbilityInfo(GetSpecificSkillAbilityKeysByAbilityId(263606))))
+	end
 end
 
 

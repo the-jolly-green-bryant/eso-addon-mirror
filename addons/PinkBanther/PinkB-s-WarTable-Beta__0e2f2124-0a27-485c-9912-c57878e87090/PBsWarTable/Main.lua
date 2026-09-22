@@ -65,7 +65,11 @@ local function OnLoaded(_,name)
     PBWT.HookMenu()
     SLASH_COMMANDS['/pbwt']=function(argument)
         argument=argument and argument:match('^%s*(.-)%s*$') or ''
-        if argument=='sync' then PBWT.match:StartSync()
+        if argument=='music' then
+            local data=PBWT.Records.Data(); data.music=data.music==false
+            if not data.music then PBWT.Audio.ReleaseMusic() elseif PBWT.ui and PBWT.ui.visible then PBWT.Audio.Music(true) end
+            report('BGM：'..(data.music and '戦術トリビュート' or '切'))
+        elseif argument=='sync' then PBWT.match:StartSync()
         elseif argument=='debug' then report(PBWT.transport.error or ('ID508 / '..PBWT.match.phase..' / 行動 '..PBWT.match.seq))
         else PBWT.Open(argument) end
     end

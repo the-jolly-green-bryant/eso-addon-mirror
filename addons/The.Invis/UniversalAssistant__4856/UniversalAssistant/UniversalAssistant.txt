@@ -1,0 +1,65 @@
+## APIVersion: 101050
+## Title: Universal Assistant
+## Author: @The.Invis
+## Version: 1.0.0
+## AddOnVersion: 1
+## Description: Banking, merchant, deconstruction, repair, recharge, and research assistance after player-initiated interactions.
+## SavedVariables: UAssistantSavedVariables
+## DependsOn: LibAddonMenu-2.0>=43
+## OptionalDependsOn: LibUndauntedPledges
+
+UAssistant.lua
+lang/en.lua
+lang/ua.lua
+UAssistantFunctions.lua
+profiles/UAProfilesFunctions.lua
+UAssistantMenu.lua
+
+banking/lang/en.lua
+banking/lang/ua.lua
+banking/UABankingFunctions.lua
+banking/UABankingCurrenciesFunctions.lua
+banking/autoBanking/UABankingAutoBankingFunctions.lua
+banking/autoBanking/UABankingCraftingItemsFunctions.lua
+banking/autoBanking/UABankingStackPlacementFunctions.lua
+banking/autoBanking/UABankingPotionsFunctions.lua
+banking/autoBanking/UABankingFoodDrinksFunctions.lua
+banking/autoBanking/UABankingSpecialItemsFunctions.lua
+banking/autoBanking/UABankingPvPFunctions.lua
+banking/UABankingMenu.lua
+
+deconstruct/lang/en.lua
+deconstruct/lang/ua.lua
+deconstruct/UADeconstructFunctions.lua
+deconstruct/UADeconstructWeaponFunctions.lua
+deconstruct/UADeconstructClothingFunctions.lua
+deconstruct/UADeconstructJewelryFunctions.lua
+deconstruct/UADeconstructEnchantingFunctions.lua
+deconstruct/UADeconstructMenu.lua
+
+merchant/lang/en.lua
+merchant/lang/ua.lua
+merchant/UAMerchantFunctions.lua
+merchant/UAMerchantAutoPurchaseFunctions.lua
+merchant/UAMerchantWeaponFunctions.lua
+merchant/UAMerchantClothingFunctions.lua
+merchant/UAMerchantJewelryFunctions.lua
+merchant/UAMerchantEnchantingFunctions.lua
+merchant/UAMerchantConsumablesFunctions.lua
+merchant/UAMerchantResourcesFunctions.lua
+merchant/UAMerchantMaterialsFunctions.lua
+merchant/UAMerchantOtherFunctions.lua
+merchant/UAMerchantJunkFunctions.lua
+merchant/UAMerchantMenu.lua
+
+repairAndRecharge/lang/en.lua
+repairAndRecharge/lang/ua.lua
+repairAndRecharge/UARepairFunctions.lua
+repairAndRecharge/UAResearchFunctions.lua
+repairAndRecharge/UARepairMenu.lua
+
+undauntedPledges/lang/en.lua
+undauntedPledges/lang/ua.lua
+undauntedPledges/UAUndauntedPledgesFunctions.lua
+
+bindings.xml

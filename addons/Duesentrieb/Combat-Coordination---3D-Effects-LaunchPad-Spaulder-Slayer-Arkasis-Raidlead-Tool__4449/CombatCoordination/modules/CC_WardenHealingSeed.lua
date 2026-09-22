@@ -8,7 +8,7 @@ local Module = {
     name      = "WardenHealingSeed",
     menuName  = "WARDEN HEALING SEED",
     iconPath  = "/esoui/art/icons/ability_warden_007_b.dds",
-    menuLayer = 1,
+    menuLayer = 3,
 
     TextureChoices = CC.CIRCLE_CHOICES,
     TextureValues  = CC.CIRCLE_VALUES,
@@ -43,6 +43,7 @@ local Module = {
         ["Budding Seeds"] = { 85922, }, -- INSTANT BLOOM ID 85922
     },
     Default = {
+        enableModule = true,
         timerModeSelf = 0,
         timerModeGroup = 0,
         enableDrawSelf = true,

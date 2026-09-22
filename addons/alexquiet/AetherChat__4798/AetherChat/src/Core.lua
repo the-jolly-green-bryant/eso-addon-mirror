@@ -5,7 +5,7 @@ AetherChat = AetherChat or {}
 local AetherChat = AetherChat
 
 AetherChat.name = 'AetherChat'
-AetherChat.version = '1.3.0'
+AetherChat.version = '1.3.3'
 
 -- Keybinding Strings (Must be created before Bindings.xml is loaded by C++ engine)
 local L = AetherChat.L or function(k) return k end
@@ -16,6 +16,8 @@ ZO_CreateStringId("SI_BINDING_NAME_AETHERCHAT_NEXT_TAB", L('BINDING_NEXT_TAB'))
 ZO_CreateStringId("SI_BINDING_NAME_AETHERCHAT_PREV_TAB", L('BINDING_PREV_TAB'))
 ZO_CreateStringId("SI_BINDING_NAME_AETHERCHAT_NEXT_GUILD", L('BINDING_NEXT_GUILD'))
 ZO_CreateStringId("SI_BINDING_NAME_AETHERCHAT_FOCUS_CHAT", L('BINDING_FOCUS_CHAT'))
+ZO_CreateStringId("SI_BINDING_NAME_AETHERCHAT_QUICK_CHAT", L('BINDING_NAME_AETHERCHAT_QUICK_CHAT'))
+ZO_CreateStringId("SI_BINDING_NAME_AETHERCHAT_SHARE_BUILD", L('BINDING_NAME_AETHERCHAT_SHARE_BUILD'))
 
 -- Register Slash Commands
 SLASH_COMMANDS['/aetherc'] = function()

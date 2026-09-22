@@ -106,7 +106,8 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Display Leads - with Location Info - ZH PATCH](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FusRoDah/Display-Leads---with-Location-Info---ZH-PATCH__3898) | FusRoDah | PC / Mac | 10.0.2 |
 | [Divergent Tales](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ericstoesser/Divergent-Tales__4415) | ericstoesser | PC / Mac | 2.0.0 |
 | [Dizzy](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PurpleFinch/Dizzy__4021) | PurpleFinch | PC / Mac | 1.23 |
-| [DKcorrosiveAlert](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/lebiez/DKcorrosiveAlert__4444) | lebiez | PC / Mac | 1.04 |
+| [DK MASTERY TRACKER](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/its_wifey/DK-MASTERY-TRACKER__4857) | its_wifey | PC / Mac | 1.0.1 |
+| [DKcorrosiveAlert](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/lebiez/DKcorrosiveAlert__4444) | lebiez | PC / Mac | 1.05 |
 | [DLC Notice](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/GrilledSpamSteaks/DLC-Notice__3603) | GrilledSpamSteaks | PC / Mac | 1.6 |
 | [DLC Yes No](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Takadol/DLC-Yes-No__4451) | Takadol | PC / Mac | 2.4 |
 | [DLJ's EXP Scroll Reminder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/darkladyjupiter/DLJ-s-EXP-Scroll-Reminder__ee8ca2af-a359-45b8-98c7-8cb4edcd19d2) | darkladyjupiter | Console | — |

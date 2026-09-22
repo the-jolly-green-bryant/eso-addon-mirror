@@ -8,7 +8,7 @@ local Module = {
     name      = "LaunchPad",
     menuName  = "LAUNCH PAD",
     iconPath  = "/esoui/art/icons/ability_dragonknight_029.dds",
-    menuLayer = 0,
+    menuLayer = 2,
 
     isAiming = false,
     previewEffectId = nil,
@@ -160,7 +160,7 @@ local Module = {
     ActivePads = {},
 
     Default = {
-        enableLaunchPads = true,
+        enableModule = true,
         SavedPads = {},
         width = 300,
         height = 300,
@@ -280,7 +280,7 @@ function Module:LoadPadsForCurrentZone()
         self.SV.lastTrialZoneId = cleanZoneId
     end
 
-    if not self.SV.enableLaunchPads then return end
+    if not self.SV.enableModule then return end
     if not self.SV.SavedPads[zoneId] then return end
 
     for index, PadData in ipairs(self.SV.SavedPads[zoneId]) do
@@ -492,7 +492,7 @@ function Module:PlaceOnSelf()
 
     table.insert(self.SV.SavedPads[zoneId], newPad)
 
-    if not self.SV.enableLaunchPads then
+    if not self.SV.enableModule then
         d(string.format("%s LaunchPad saved (Hidden due to Masterswitch).", CC.CHAT))
     else
         self:Debug(string.format("%s LaunchPad placed on self.", CC.CHAT))
@@ -593,7 +593,7 @@ function Module:ConfirmPlacement()
 
     table.insert(self.SV.SavedPads[zoneId], newPad)
 
-    if not self.SV.enableLaunchPads then
+    if not self.SV.enableModule then
         d(string.format("%s LaunchPad saved (Hidden due to Masterswitch).", CC.CHAT))
     else
         self:Debug(string.format("%s LaunchPad placed.", CC.CHAT))
@@ -729,28 +729,35 @@ function Module:GetMenuOptions()
 
     return {
         type = "submenu",
-        name = string.format("%s %s", menuIcon, CC.ColorString(self.menuName, "tier2")),
+        name = function()
+            local stringEnable = self.SV.enableModule and "" or CC.ColorString("[OFF] ", "RD")
+            return string.format("%s %s%s", menuIcon, stringEnable, CC.ColorString(self.menuName, "tier2"))
+        end,
         controls = {
+            -- ENABLE / DISABLE MODULE
+            { type = "header", name = CC.ColorString("ENABLE / DISABLE MODULE", "tier3") },
+            {
+                type = "checkbox",
+                name = CC.ColorString("Enable Module", "GN"),
+                getFunc = function() return self.SV.enableModule end,
+                setFunc = function(value)
+                    self.SV.enableModule = value
+                    if value then
+                        if self.CustomEnable then self:CustomEnable() end
+                    else
+                        if self.CustomDisable then self:CustomDisable() end
+                    end
+                end,
+                default = self.Default.enableModule,
+                disabled = function() return not CC.SV.enableAddon end,
+                requiresReload = true,
+            },
+            { type = "divider" },
+
             {
                 type = "description",
                 text = "Place permanent trigger pads on the ground.\nStepping on a pad automatically triggers its assigned action or timer.\n\n" .. CC.ColorString("Note:", "tier2") .. " Group tools and timers require [CC] Raidlead status.\nPersonal actions, like Wizard's Wardrobe, work for everyone.",
                 width = "full",
-            },
-
-            {
-                type = "checkbox",
-                name = CC.ColorString("Enable / Show LaunchPads", "GN"),
-                getFunc = function() return self.SV.enableLaunchPads end,
-                setFunc = function(value)
-                    self.SV.enableLaunchPads = value
-                    if value then
-                        self:LoadPadsForCurrentZone()
-                    else
-                        self:ClearAllPads()
-                    end
-                end,
-                default = self.Default.enableLaunchPads,
-                disabled = function() return not CC.SV.enableAddon end,
             },
 
             { type = "header", name = CC.ColorString("PLACEMENT", "tier3") },
@@ -777,7 +784,7 @@ function Module:GetMenuOptions()
                         Preview:SetColor(unpack(Color))
                     end
                 end,
-                disabled = function() return not CC.SV.enableAddon end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
             {
                 type = "dropdown",
@@ -798,7 +805,7 @@ function Module:GetMenuOptions()
                 end,
                 reference = "CC_LaunchPad_Dropdown_Trigger",
                 default = self.Default.activeTrigger,
-                disabled = function() return not CC.SV.enableAddon end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
             {
                 type = "button",
@@ -810,7 +817,7 @@ function Module:GetMenuOptions()
                     end
                 end,
                 width = "half",
-                disabled = function() return not CC.SV.enableAddon end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
             {
                 type = "button",
@@ -819,7 +826,7 @@ function Module:GetMenuOptions()
                     self:PlaceOnSelf()
                 end,
                 width = "half",
-                disabled = function() return not CC.SV.enableAddon end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
             {
                 type = "button",
@@ -835,7 +842,7 @@ function Module:GetMenuOptions()
                     end
                 end,
                 width = "half",
-                disabled = function() return not CC.SV.enableAddon end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
             {
                 type = "button",
@@ -845,7 +852,7 @@ function Module:GetMenuOptions()
                     self:DeleteClosestPad()
                 end,
                 width = "half",
-                disabled = function() return not CC.SV.enableAddon end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
 
             { type = "header", name = CC.ColorString("SETTINGS NAMEPLATE", "tier3") },
@@ -859,7 +866,7 @@ function Module:GetMenuOptions()
                     self:LoadPadsForCurrentZone()
                 end,
                 default = self.Default.enableDrawName,
-                disabled = function() return not CC.SV.enableAddon end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
             {
                 type = "checkbox",
@@ -871,7 +878,7 @@ function Module:GetMenuOptions()
                     self:LoadPadsForCurrentZone()
                 end,
                 default = self.Default.useStaticLabelColor,
-                disabled = function() return not CC.SV.enableAddon or not self.SV.enableDrawName end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not self.SV.enableDrawName end,
             },
             {
                 type = "colorpicker",
@@ -882,7 +889,7 @@ function Module:GetMenuOptions()
                     self:LoadPadsForCurrentZone()
                 end,
                 default = CC.GetRgbaFromArray(self.Default.LabelColor),
-                disabled = function() return not CC.SV.enableAddon or not self.SV.enableDrawName or not self.SV.useStaticLabelColor end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not self.SV.enableDrawName or not self.SV.useStaticLabelColor end,
             },
             {
                 type = "slider",
@@ -892,7 +899,7 @@ function Module:GetMenuOptions()
                 getFunc = function() return self.SV.offsetTY / 100 end,
                 setFunc = function(value) self.SV.offsetTY = value * 100 end,
                 default = self.Default.offsetTY / 100,
-                disabled = function() return not CC.SV.enableAddon or not self.SV.enableDrawName end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not self.SV.enableDrawName end,
             },
             {
                 type = "slider",
@@ -904,7 +911,7 @@ function Module:GetMenuOptions()
                     self:LoadPadsForCurrentZone()
                 end,
                 default = self.Default.fontSize,
-                disabled = function() return not CC.SV.enableAddon or not self.SV.enableDrawName end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not self.SV.enableDrawName end,
             },
             {
                 type = "dropdown",
@@ -917,7 +924,7 @@ function Module:GetMenuOptions()
                     self:LoadPadsForCurrentZone()
                 end,
                 default = self.Default.fontStyle,
-                disabled = function() return not CC.SV.enableAddon or not self.SV.enableDrawName end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not self.SV.enableDrawName end,
             },
             {
                 type = "dropdown",
@@ -931,7 +938,7 @@ function Module:GetMenuOptions()
                     self:LoadPadsForCurrentZone()
                 end,
                 default = self.Default.fontWeight,
-                disabled = function() return not CC.SV.enableAddon or not self.SV.enableDrawName end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not self.SV.enableDrawName end,
             },
 
             { type = "header", name = CC.ColorString("VISUALS", "tier3") },
@@ -944,6 +951,7 @@ function Module:GetMenuOptions()
                     self.SV.visibilityDistance = value
                 end,
                 default = self.Default.visibilityDistance,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
             {
                 type = "slider",
@@ -955,6 +963,7 @@ function Module:GetMenuOptions()
                     self:LoadPadsForCurrentZone()
                 end,
                 default = self.Default.width / 100,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
             {
                 type = "slider",
@@ -966,6 +975,7 @@ function Module:GetMenuOptions()
                     self:LoadPadsForCurrentZone()
                 end,
                 default = self.Default.height / 100,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
             {
                 type = "dropdown",
@@ -982,6 +992,7 @@ function Module:GetMenuOptions()
                     end
                 end,
                 default = self.Default.texture,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
             {
                 type = "custom",

@@ -35,6 +35,7 @@ local Module = {
     },
 
     Default = {
+        enableModule = true,
         breakMinutes = 10,
         pullSeconds = 5,
         fontSize = 64,
@@ -502,6 +503,186 @@ function Module:CustomEnable()
             return true
         end)
     end
+end
+
+----------------------------------------------------------------------------------------------------
+-- LAM2 MENU SETTINGS
+----------------------------------------------------------------------------------------------------
+function Module:GetMenuOptions()
+    local menuIcon = string.format("|t%d:%d:%s|t", CC.SIZE_ICON_LAM_SM, CC.SIZE_ICON_LAM_SM, self.iconPath)
+
+    return {
+        type = "submenu",
+        name = string.format("%s %s", menuIcon, CC.ColorString(self.menuName, "tier2")),
+        controls = {
+            ----------------------------------------------------------------------------------------------------
+            -- RAIDLEAD ASSIGNMENT
+            ----------------------------------------------------------------------------------------------------
+            { type = "header", name = CC.ColorString("ENABLE RAIDLEAD TOOLS", "GN") },
+            {
+                type = "description",
+                text = "Unlocks timers, tools and assignment protocols.",
+                width = "full",
+            },
+            {
+                type = "checkbox",
+                name = CC.ColorString("[Step 1/2] ", "GN") .. "Enable Raidlead",
+                getFunc = function() return CC.SV.isRaidleadIntent end,
+                setFunc = function(value)
+                    CC.SV.isRaidleadIntent = value
+                    if not value then
+                        CC.SV.isRaidlead = false
+                        if CC.DisplayPanel.SV.isVisible then
+                            CC.DisplayPanel:UpdateDimensions()
+                        end
+                    end
+                end,
+                width = "half",
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
+            },
+            {
+                type = "checkbox",
+                name = CC.ColorString("[Step 2/2] ", "GN") .. "Confirm Raidlead",
+                warning = "Activation grants permission to broadcast targeted assignments and control group timers.",
+                getFunc = function() return CC.SV.isRaidlead end,
+                setFunc = function(value)
+                    CC.SV.isRaidlead = value
+                    if CC.DisplayPanel.SV.isVisible then
+                        CC.DisplayPanel:UpdateDimensions()
+                    end
+                end,
+                width = "half",
+                disabled = function() return not CC.SV.isRaidleadIntent or not CC.SV.enableAddon or not self.SV.enableModule end,
+            },
+
+            ----------------------------------------------------------------------------------------------------
+            -- TOOLS & ASSIGNMENTS
+            ----------------------------------------------------------------------------------------------------
+            {
+                type = "description",
+                text = CC.ColorString("Note:", "tier2") .. " The following tools can also be accessed via the Panel: " .. CC.ColorString("[/cc_panel]", "tier3"),
+                width = "full",
+            },
+            ----------------------------------------------------------------------------------------------------
+            -- BREAK TIMER
+            ----------------------------------------------------------------------------------------------------
+            { type = "header", name = CC.ColorString("BREAK TIMER ", "tier3") },
+            {
+                type = "slider",
+                name = "Break Duration [Minutes]",
+                min = 1, max = 30, step = 1,
+                getFunc = function() return self.SV.breakMinutes end,
+                setFunc = function(value) self.SV.breakMinutes = value end,
+                default = self.Default.breakMinutes,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not CC.IsRaidlead() end,
+            },
+            {
+                type = "button",
+                name = "START BREAK",
+                func = function()
+                    self:RequestBreak(self.SV.breakMinutes)
+                end,
+                width = "half",
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not CC.IsRaidlead() end,
+            },
+            {
+                type = "button",
+                name = "STOP BREAK",
+                func = function()
+                    self:RequestBreak(0)
+                end,
+                width = "half",
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not CC.IsRaidlead() end,
+            },
+            ----------------------------------------------------------------------------------------------------
+            -- PULL TIMER
+            ----------------------------------------------------------------------------------------------------
+            { type = "header", name = CC.ColorString("PULL TIMER ", "tier3") },
+            {
+                type = "slider",
+                name = "Pull Duration [Seconds]",
+                min = 1, max = 15, step = 1,
+                getFunc = function() return self.SV.pullSeconds end,
+                setFunc = function(value) self.SV.pullSeconds = value end,
+                default = self.Default.pullSeconds,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not CC.IsRaidlead() end,
+            },
+            {
+                type = "button",
+                name = "START PULL",
+                func = function()
+                    self:RequestPull(self.SV.pullSeconds)
+                end,
+                width = "half",
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not CC.IsRaidlead() end,
+            },
+            {
+                type = "button",
+                name = "STOP PULL",
+                func = function()
+                    self:RequestPull(0)
+                end,
+                width = "half",
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not CC.IsRaidlead() end,
+            },
+            ----------------------------------------------------------------------------------------------------
+            -- TRIGGER NOTIFICATIONS
+            ----------------------------------------------------------------------------------------------------
+            { type = "header", name = CC.ColorString("TRIGGER NOTIFICATIONS ", "tier3") },
+            {
+                type = "button",
+                name = "WIPE PLEASE",
+                tooltip = "Broadcasts wipe request to group members.",
+                func = function() self:RequestWipe() end,
+                width = "half",
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not CC.IsRaidlead() end,
+            },
+            {
+                type = "button",
+                name = "PORT IN PLEASE",
+                tooltip = "Broadcasts port-in request to group members.",
+                func = function() self:RequestPortIn() end,
+                width = "half",
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not CC.IsRaidlead() end,
+            },
+            ----------------------------------------------------------------------------------------------------
+            -- OPEN DIALOG
+            ----------------------------------------------------------------------------------------------------
+            { type = "header", name = CC.ColorString("OPEN DIALOG ", "tier3") },
+            {
+                type = "button",
+                name = "GROUP P-T-E",
+                tooltip = "Broadcasts exit instance request to group members.",
+                func = function() self:RequestExitInstance() end,
+                width = "half",
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not CC.IsRaidlead() end,
+            },
+            {
+                type = "button",
+                name = "PORT TO LEAD",
+                tooltip = "Broadcasts leader port request to group members.",
+                func = function() self:RequestPortToLeader() end,
+                width = "half",
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not CC.IsRaidlead() end,
+            },
+            {
+                type = "button",
+                name = "READYCHECK",
+                tooltip = "Initiates a group ready check.",
+                func = function() SLASH_COMMANDS["/readycheck"]() end,
+                width = "half",
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not CC.IsRaidlead() end,
+            },
+            {
+                type = "button",
+                name = "START VOTE",
+                tooltip = "Initiates a group vote.",
+                func = function() self:SendVoteRequest() end,
+                width = "half",
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not CC.IsRaidlead() end,
+            },
+        },
+    }
 end
 
 CC[Module.name] = Module

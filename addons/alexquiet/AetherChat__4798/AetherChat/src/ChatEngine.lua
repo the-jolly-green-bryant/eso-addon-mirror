@@ -7,10 +7,19 @@ local AetherChat = AetherChat
 AetherChat.ChatEngine = {}
 AetherChat.ItemLooters = AetherChat.ItemLooters or {}
 AetherChat.PlayerAccountMap = AetherChat.PlayerAccountMap or {}
+AetherChat.GroupRoleMap = AetherChat.GroupRoleMap or {}
+AetherChat.GroupClassMap = AetherChat.GroupClassMap or {}
 
 local ChatEngine = AetherChat.ChatEngine
 local History = AetherChat.History
 local SoundManager = AetherChat.SoundManager
+
+local function L(key, ...)
+    if AetherChat.L then
+        return AetherChat.L(key, ...)
+    end
+    return key
+end
 
 local CHANNEL_KEYS = {}
 
@@ -54,6 +63,38 @@ local function CleanName(rawName)
     return zo_strformat("<<1>>", rawName)
 end
 
+function AetherChat.ResolveUnitRole(unitTag)
+    if not unitTag or not DoesUnitExist(unitTag) then return 0 end
+
+    local isLocalPlayer = (unitTag == 'player') or (AreUnitsEqual and AreUnitsEqual(unitTag, 'player'))
+
+    -- 1. For local player, check Activity Finder / Dungeon Finder selected role first
+    if isLocalPlayer and GetSelectedLFGRole then
+        local lfgRole = GetSelectedLFGRole()
+        if lfgRole and lfgRole > 0 and (not LFG_ROLE_INVALID or lfgRole ~= LFG_ROLE_INVALID) then
+            return lfgRole
+        end
+    end
+
+    -- 2. Query official group member selected role from ESO API (Tank, Healer, Damage)
+    if GetGroupMemberSelectedRole then
+        local role = GetGroupMemberSelectedRole(unitTag)
+        if role and role > 0 and (not LFG_ROLE_INVALID or role ~= LFG_ROLE_INVALID) then
+            return role
+        end
+    end
+
+    -- 3. Fallback for local player if group query returned invalid or not yet set
+    if isLocalPlayer and GetSelectedLFGRole then
+        local lfgRole = GetSelectedLFGRole()
+        if lfgRole and lfgRole > 0 and (not LFG_ROLE_INVALID or lfgRole ~= LFG_ROLE_INVALID) then
+            return lfgRole
+        end
+    end
+
+    return 0
+end
+
 function AetherChat.UpdateGroupPlayerMap()
     -- 1. Scan group by index and direct group tags 1..24
     local groupSize = GetGroupSize() or 0
@@ -67,20 +108,35 @@ function AetherChat.UpdateGroupPlayerMap()
             local charName = CleanName(GetUnitName(unitTag))
             local rawCharName = GetRawUnitName(unitTag)
             local dispName = GetUnitDisplayName(unitTag)
+            local role = AetherChat.ResolveUnitRole(unitTag)
+            local classId = GetUnitClassId and GetUnitClassId(unitTag)
+
             if dispName and dispName ~= "" then
                 if dispName:sub(1, 1) ~= '@' then dispName = '@' .. dispName end
                 if charName and charName ~= "" then
                     AetherChat.PlayerAccountMap[charName:lower()] = dispName
                     AetherChat.PlayerAccountMap[charName:gsub("%^%a+", ""):lower()] = dispName
+                    if role and role > 0 then AetherChat.GroupRoleMap[charName:lower()] = role end
+                    if classId and classId > 0 then AetherChat.GroupClassMap[charName:lower()] = classId end
                 end
                 if rawCharName and rawCharName ~= "" then
                     local cleanRaw = CleanName(rawCharName)
                     AetherChat.PlayerAccountMap[rawCharName:lower()] = dispName
                     AetherChat.PlayerAccountMap[cleanRaw:lower()] = dispName
                     AetherChat.PlayerAccountMap[cleanRaw:gsub("%^%a+", ""):lower()] = dispName
+                    if role and role > 0 then AetherChat.GroupRoleMap[cleanRaw:lower()] = role end
+                    if classId and classId > 0 then AetherChat.GroupClassMap[cleanRaw:lower()] = classId end
                 end
                 AetherChat.PlayerAccountMap[dispName:lower()] = dispName
                 AetherChat.PlayerAccountMap[dispName:gsub("^@", ""):lower()] = dispName
+                if role and role > 0 then
+                    AetherChat.GroupRoleMap[dispName:lower()] = role
+                    AetherChat.GroupRoleMap[dispName:gsub("^@", ""):lower()] = role
+                end
+                if classId and classId > 0 then
+                    AetherChat.GroupClassMap[dispName:lower()] = classId
+                    AetherChat.GroupClassMap[dispName:gsub("^@", ""):lower()] = classId
+                end
             end
         end
     end
@@ -88,14 +144,27 @@ function AetherChat.UpdateGroupPlayerMap()
     -- 2. Add local player
     local myChar = CleanName(GetRawUnitName('player'))
     local myDisp = GetDisplayName()
+    local myRole = AetherChat.ResolveUnitRole('player')
+    local myClass = GetUnitClassId and GetUnitClassId('player')
+
     if myDisp and myDisp ~= "" then
         if myDisp:sub(1, 1) ~= '@' then myDisp = '@' .. myDisp end
         if myChar and myChar ~= "" then
             AetherChat.PlayerAccountMap[myChar:lower()] = myDisp
             AetherChat.PlayerAccountMap[myChar:gsub("%^%a+", ""):lower()] = myDisp
+            if myRole and myRole > 0 then AetherChat.GroupRoleMap[myChar:lower()] = myRole end
+            if myClass and myClass > 0 then AetherChat.GroupClassMap[myChar:lower()] = myClass end
         end
         AetherChat.PlayerAccountMap[myDisp:lower()] = myDisp
         AetherChat.PlayerAccountMap[myDisp:gsub("^@", ""):lower()] = myDisp
+        if myRole and myRole > 0 then
+            AetherChat.GroupRoleMap[myDisp:lower()] = myRole
+            AetherChat.GroupRoleMap[myDisp:gsub("^@", ""):lower()] = myRole
+        end
+        if myClass and myClass > 0 then
+            AetherChat.GroupClassMap[myDisp:lower()] = myClass
+            AetherChat.GroupClassMap[myDisp:gsub("^@", ""):lower()] = myClass
+        end
     end
 
     -- 3. Scan LootLog history table if available to populate account mappings
@@ -524,7 +593,6 @@ local function FireGuildStoreSaleAlert(mailIdStr, attachedMoney, soldItem)
                         and AetherChat.Settings.Get('notifySales', true)
     if notifySales == false then return end
 
-    local L = AetherChat.L
     local goldFormatted = ZO_Currency_FormatPlatform(CURT_MONEY, attachedMoney, ZO_CURRENCY_FORMAT_AMOUNT_ICON)
 
     local msgText = ""
@@ -767,9 +835,21 @@ function ChatEngine.Initialize()
     EVENT_MANAGER:RegisterForEvent('AetherChat_Engine', EVENT_CHAT_MESSAGE_CHANNEL, ChatEngine.OnChatMessage)
     EVENT_MANAGER:RegisterForEvent('AetherChat_Loot', EVENT_LOOT_RECEIVED, ChatEngine.OnLootReceived)
 
-    -- Track group changes to map character names -> @AccountName
+    -- Track group changes to map character names -> @AccountName and roles
     EVENT_MANAGER:RegisterForEvent('AetherChat_GroupJoin', EVENT_GROUP_MEMBER_JOINED, AetherChat.UpdateGroupPlayerMap)
     EVENT_MANAGER:RegisterForEvent('AetherChat_GroupLeft', EVENT_GROUP_MEMBER_LEFT, AetherChat.UpdateGroupPlayerMap)
+    if EVENT_GROUP_MEMBER_ROLE_CHANGED then
+        EVENT_MANAGER:RegisterForEvent('AetherChat_GroupRole', EVENT_GROUP_MEMBER_ROLE_CHANGED, AetherChat.UpdateGroupPlayerMap)
+    end
+    if EVENT_GROUP_MEMBER_ROLES_CHANGED then
+        EVENT_MANAGER:RegisterForEvent('AetherChat_GroupRoles', EVENT_GROUP_MEMBER_ROLES_CHANGED, AetherChat.UpdateGroupPlayerMap)
+    end
+    if EVENT_GROUP_UPDATE then
+        EVENT_MANAGER:RegisterForEvent('AetherChat_GroupUpdate', EVENT_GROUP_UPDATE, AetherChat.UpdateGroupPlayerMap)
+    end
+    if EVENT_ACTIVITY_FINDER_STATUS_UPDATE then
+        EVENT_MANAGER:RegisterForEvent('AetherChat_LFGUpdate', EVENT_ACTIVITY_FINDER_STATUS_UPDATE, AetherChat.UpdateGroupPlayerMap)
+    end
     EVENT_MANAGER:RegisterForEvent('AetherChat_PlayerAct', EVENT_PLAYER_ACTIVATED, function()
         AetherChat.UpdateGroupPlayerMap()
         ChatEngine.CheckGuildStoreSales()
@@ -1034,7 +1114,25 @@ function ChatEngine.OnChatMessage(eventCode, channelType, fromName, text, isCust
     -- ========= KEYWORD SOUND ALERT CHECK =========
     local _, keywordMatched = ChatEngine.ApplyKeywordHighlight(msgText)
 
-    History.AddMessage(channelKey, author, msgText, timeStr, 0, isSelf, isWhisper, zoneLang, channelKey)
+    -- ========= PARTY ROLE RESOLUTION =========
+    local msgRole = 0
+    if channelKey == 'party' or channelType == CHAT_CHANNEL_PARTY then
+        local dKey = fromDisplayName and fromDisplayName:lower()
+        local cKey = fromName and CleanName(fromName):lower()
+        if not (dKey and AetherChat.GroupRoleMap and AetherChat.GroupRoleMap[dKey]) and
+           not (cKey and AetherChat.GroupRoleMap and AetherChat.GroupRoleMap[cKey]) then
+            AetherChat.UpdateGroupPlayerMap()
+        end
+        msgRole = (dKey and AetherChat.GroupRoleMap and AetherChat.GroupRoleMap[dKey])
+               or (cKey and AetherChat.GroupRoleMap and AetherChat.GroupRoleMap[cKey])
+               or (isSelf and AetherChat.ResolveUnitRole('player'))
+               or 0
+    end
+
+    local added = History.AddMessage(channelKey, author, msgText, timeStr, msgRole, isSelf, isWhisper, zoneLang, channelKey, fromName, fromDisplayName)
+    if added == false then
+        return
+    end
 
     -- Play keyword alert sound if matched (only for messages from others)
     if keywordMatched and not isSelf then
@@ -1050,7 +1148,7 @@ function ChatEngine.OnChatMessage(eventCode, channelType, fromName, text, isCust
     end
 
     if AetherChat.Messenger and AetherChat.Messenger.OnMessageReceived then
-        AetherChat.Messenger.OnMessageReceived(channelKey, author, msgText, isSelf, isWhisper, zoneLang, channelKey)
+        AetherChat.Messenger.OnMessageReceived(channelKey, author, msgText, isSelf, isWhisper, zoneLang, channelKey, fromName, fromDisplayName, msgRole)
     end
 
     -- Route to Custom Tabs configured by player
@@ -1058,9 +1156,9 @@ function ChatEngine.OnChatMessage(eventCode, channelType, fromName, text, isCust
         local customTabs = AetherChat.CustomTabs.GetTabs()
         for tabId, tabData in pairs(customTabs) do
             if AetherChat.CustomTabs.MatchesMessage(tabData, channelType, channelKey, zoneLang) then
-                History.AddMessage(tabId, author, msgText, timeStr, 0, isSelf, isWhisper, zoneLang, channelKey)
+                History.AddMessage(tabId, author, msgText, timeStr, msgRole, isSelf, isWhisper, zoneLang, channelKey, fromName, fromDisplayName)
                 if AetherChat.Messenger and AetherChat.Messenger.OnMessageReceived then
-                    AetherChat.Messenger.OnMessageReceived(tabId, author, msgText, isSelf, isWhisper, zoneLang, channelKey)
+                    AetherChat.Messenger.OnMessageReceived(tabId, author, msgText, isSelf, isWhisper, zoneLang, channelKey, fromName, fromDisplayName, msgRole)
                 end
             end
         end
@@ -1100,4 +1198,85 @@ function ChatEngine.SendMessage(text, channelKey)
     end
 
     SoundManager.PlayMessageSent()
+end
+
+function AetherChat.GetEquippedSetsSummary()
+    local checkedSlots = {}
+    local slotList = {}
+    local function addSlot(s)
+        if s and not checkedSlots[s] then
+            checkedSlots[s] = true
+            table.insert(slotList, s)
+        end
+    end
+
+    -- Explicit list of all official ESO armor, jewelry and weapon equipment slots
+    addSlot(EQUIP_SLOT_HEAD)
+    addSlot(EQUIP_SLOT_NECK)
+    addSlot(EQUIP_SLOT_CHEST)
+    addSlot(EQUIP_SLOT_SHOULDERS)
+    addSlot(EQUIP_SLOT_HAND)
+    addSlot(EQUIP_SLOT_WAIST)
+    addSlot(EQUIP_SLOT_LEGS)
+    addSlot(EQUIP_SLOT_FEET)
+    addSlot(EQUIP_SLOT_RING1)
+    addSlot(EQUIP_SLOT_RING2)
+    addSlot(EQUIP_SLOT_MAIN_HAND)
+    addSlot(EQUIP_SLOT_OFF_HAND)
+    addSlot(EQUIP_SLOT_BACKUP_MAIN)
+    addSlot(EQUIP_SLOT_BACKUP_OFF)
+
+    -- Full scan of BAG_WORN to guarantee zero missing slots
+    local maxBagSlots = (GetBagSize and GetBagSize(BAG_WORN)) or 32
+    for s = 0, maxBagSlots do
+        addSlot(s)
+    end
+
+    local detectedSets = {}
+    local setOrder = {}
+
+    for _, slotId in ipairs(slotList) do
+        local link = GetItemLink(BAG_WORN, slotId)
+        if link and link ~= "" then
+            local hasSet, setName, numBonuses, numEquipped, maxEquipped, setId = GetItemLinkSetInfo(link, true)
+            if hasSet and setId and setId > 0 then
+                local cleanSetName = zo_strformat("<<1>>", setName)
+                if not detectedSets[setId] then
+                    detectedSets[setId] = {
+                        name = cleanSetName,
+                        equipped = numEquipped or 1,
+                        max = maxEquipped or 5,
+                        sampleLink = link,
+                        slotCount = 1,
+                    }
+                    table.insert(setOrder, setId)
+                else
+                    detectedSets[setId].slotCount = (detectedSets[setId].slotCount or 1) + 1
+                    if numEquipped and numEquipped > (detectedSets[setId].equipped or 0) then
+                        detectedSets[setId].equipped = numEquipped
+                    end
+                    if not detectedSets[setId].sampleLink or detectedSets[setId].sampleLink == "" then
+                        detectedSets[setId].sampleLink = link
+                    end
+                end
+            end
+        end
+    end
+
+    if #setOrder == 0 then
+        return L('BUILD_SHARE_EMPTY')
+    end
+
+    local parts = {}
+    for _, setId in ipairs(setOrder) do
+        local info = detectedSets[setId]
+        if info then
+            local count = math.max(info.equipped or 1, info.slotCount or 1)
+            local maxCount = info.max or 5
+            local itemOrName = (info.sampleLink and info.sampleLink ~= "") and info.sampleLink or info.name
+            table.insert(parts, string.format("%s (%d/%d)", itemOrName, count, maxCount))
+        end
+    end
+
+    return string.format("%s %s", L('BUILD_SHARE_PREFIX'), table.concat(parts, ", "))
 end

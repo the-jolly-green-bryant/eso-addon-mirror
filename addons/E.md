@@ -14,6 +14,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [EasyGrassToggle](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/carpenteer/EasyGrassToggle__1631) | carpenteer | PC / Mac | 1.0.8 |
 | [EasyHelmetToggle](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/carpenteer/EasyHelmetToggle__1627) | carpenteer | PC / Mac | 1.0.4 |
 | [EasyLootAssistant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/gdfou/EasyLootAssistant__2609) | gdfou | PC / Mac | 1.5 |
+| [EasyMark](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Th3rtythr33/EasyMark__2efc3a91-8534-4f0c-964e-56389bb3aa9b) | Th3rtythr33 | Console | — |
 | [EasyMurderToggle](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/carpenteer/EasyMurderToggle__1626) | carpenteer | PC / Mac | 1.0.8 |
 | [EasyThief](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Weper/EasyThief__2004) | Weper | PC / Mac | 0.9.4 |
 | [EasyTravel](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sirinsidiator/EasyTravel__1454) | sirinsidiator | PC / Mac | 1.9.7 |

@@ -78,7 +78,23 @@ function History.CleanAllDuplicates()
     end
 end
 
-function History.AddMessage(channelKey, author, messageText, timestamp, role, isSelf, isWhisper, zoneLang, originalChannel)
+local function NormalizeTextForComparison(str)
+    if not str or str == '' then return '' end
+    local s = str:gsub("|c%x%x%x%x%x%x", ""):gsub("|r", "")
+    s = s:gsub("%[[^%]]+%]%s*", "")
+    s = s:gsub("[\r\n]+", " "):gsub("%s+", " "):gsub("^%s+", ""):gsub("%s+$", "")
+    return s:lower()
+end
+
+local function NormalizeAuthorForComparison(auth)
+    if not auth or auth == '' then return '' end
+    local a = auth:gsub("|c%x%x%x%x%x%x", ""):gsub("|r", "")
+    a = a:gsub("%^%w+", "")
+    a = a:gsub("^@", ""):gsub("^%s+", ""):gsub("%s+$", "")
+    return a:lower()
+end
+
+function History.AddMessage(channelKey, author, messageText, timestamp, role, isSelf, isWhisper, zoneLang, originalChannel, fromName, fromDisplayName)
     -- Check if history persistence is explicitly disabled (defaults to true if nil)
     local shouldPersist = true
     if AetherChat.Settings and AetherChat.Settings.Get then
@@ -86,9 +102,9 @@ function History.AddMessage(channelKey, author, messageText, timestamp, role, is
     elseif AetherChat.savedVars and AetherChat.savedVars.persistHistory ~= nil then
         shouldPersist = AetherChat.savedVars.persistHistory
     end
-    if shouldPersist == false then return end
+    if shouldPersist == false then return true end
 
-    if not AetherChat.savedVars then return end
+    if not AetherChat.savedVars then return true end
     if not AetherChat.savedVars.history then
         AetherChat.savedVars.history = {}
     end
@@ -103,13 +119,27 @@ function History.AddMessage(channelKey, author, messageText, timestamp, role, is
     local nowStamp = GetTimeStamp()
     local text = messageText or ''
 
-    -- Deduplication check on recent messages in this channel
+    -- Robust deduplication check on recent messages in this channel
     if #list > 0 then
-        for idx = #list, math.max(1, #list - 5), -1 do
+        local normNew = NormalizeTextForComparison(text)
+        local normAuthor = NormalizeAuthorForComparison(author or fromDisplayName or fromName)
+        local maxScan = math.max(1, #list - 8)
+
+        for idx = #list, maxScan, -1 do
             local prev = list[idx]
-            if prev and prev.text == text then
-                if prev.timestamp and math.abs(nowStamp - prev.timestamp) < 3 then
-                    return -- Duplicate received within 3 seconds, reject
+            if prev then
+                local normPrev = NormalizeTextForComparison(prev.text)
+                if (prev.text == text) or (normNew ~= '' and normPrev == normNew) then
+                    local prevAuthor = NormalizeAuthorForComparison(prev.author or prev.fromDisplayName or prev.fromName)
+                    local sameAuthor = (normAuthor == prevAuthor) or (normAuthor == '') or (prevAuthor == '')
+                    if sameAuthor and prev.timestamp then
+                        -- For long messages (> 15 chars, dialogues, quest lines), use 10s window
+                        -- For short phrases ("ok", "gg", "+"), keep 3s window so players can repeat
+                        local maxDelta = (#normNew > 15) and 10 or 3
+                        if math.abs(nowStamp - prev.timestamp) <= maxDelta then
+                            return false -- Duplicate received, reject
+                        end
+                    end
                 end
             end
         end
@@ -119,6 +149,8 @@ function History.AddMessage(channelKey, author, messageText, timestamp, role, is
     local srcChannel = originalChannel or channelKey
     local entry = {
         author = author or 'Inconnu',
+        fromName = fromName,
+        fromDisplayName = fromDisplayName,
         text = text,
         time = timeStr,
         role = role or 0,
@@ -135,6 +167,8 @@ function History.AddMessage(channelKey, author, messageText, timestamp, role, is
     while #list > maxCount do
         table.remove(list, 1)
     end
+
+    return true
 end
 
 function History.GetMessagesForCustomTab(tabId)

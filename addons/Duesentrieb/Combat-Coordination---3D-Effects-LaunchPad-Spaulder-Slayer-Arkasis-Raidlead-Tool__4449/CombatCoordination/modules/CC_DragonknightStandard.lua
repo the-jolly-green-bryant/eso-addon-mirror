@@ -8,7 +8,7 @@ local Module = {
     name      = "DragonknightStandard",
     menuName  = "DRAGONKNIGHT STANDARD",
     iconPath  = "/esoui/art/icons/ability_dragonknight_006_b.dds",
-    menuLayer = 1,
+    menuLayer = 3,
 
     TextureChoices = CC.CIRCLE_CHOICES,
     TextureValues  = CC.CIRCLE_VALUES,
@@ -41,6 +41,7 @@ local Module = {
         },
     },
     Default = {
+        enableModule = true,
         timerModeSelf = 1,
         timerModeGroup = 0,
         enableDrawSelf = true,

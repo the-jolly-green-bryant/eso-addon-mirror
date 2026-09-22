@@ -1,14 +1,17 @@
 ------------------------------------------------------------
--- RYTICTANK SETTINGS v8
+-- RYTICTANK SETTINGS v8.1 - local-reference optimization
 -- LibAddonMenu-2.0 controls, including merged Set HUD controls.
 ------------------------------------------------------------
 
+local RyticTank = RyticTank
+
 RyticTank.Settings = RyticTank.Settings or {}
+local Settings = RyticTank.Settings
 
 local function ONOFF(v) return v and "ON" or "OFF" end
 local function BOOL(v) return v == "ON" end
 
-function RyticTank.Settings.Initialize()
+function Settings.Initialize()
     -- Settings must be able to register before the feature modules initialize.
     RyticTank.saved = RyticTank.saved or {}
     RyticTank.saved.sets = RyticTank.saved.sets or {

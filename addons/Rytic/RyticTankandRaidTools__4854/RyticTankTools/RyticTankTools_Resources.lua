@@ -1,5 +1,5 @@
 ------------------------------------------------------------
--- RYTICTANK RESOURCE HUD v2
+-- RYTICTANK RESOURCE HUD v2.1 - local-reference optimization
 -- Event-driven resource tracking
 --
 -- Health:   bottom -> top (one continuous bar)
@@ -8,7 +8,20 @@
 -- Magicka:  center -> bottom
 ------------------------------------------------------------
 
+local RyticTank = RyticTank
+
 RyticTank.Resources = {}
+local Resources = RyticTank.Resources
+
+-- Cache frequently used ESO globals/functions for resource update paths.
+local EM = EVENT_MANAGER
+local WM = WINDOW_MANAGER
+local GetUnitPower = GetUnitPower
+local tonumber = tonumber
+local tostring = tostring
+local math_floor = math.floor
+local string_upper = string.upper
+local string_sub = string.sub
 
 local TEX = "RyticTankTools/textures/"
 
@@ -28,7 +41,7 @@ local THEME_TEXTURES = {
 }
 
 local function NormalizeTheme(v)
-    v=string.upper(tostring(v or "REGULAR"))
+    v=string_upper(tostring(v or "REGULAR"))
     if v~="MALE" and v~="FEMALE" then v="REGULAR" end
     return v
 end
@@ -50,7 +63,7 @@ local function Clamp01(v)
     return v
 end
 
-function RyticTank.Resources.GetPercent(powerType)
+function Resources.GetPercent(powerType)
     -- ESO exposes current and maximum power from GetUnitPower.
     -- GetUnitPowerMax is not a valid function in this client/API.
     local current, maximum = GetUnitPower("player", powerType)
@@ -61,12 +74,12 @@ function RyticTank.Resources.GetPercent(powerType)
 end
 
 local function CommaNumber(value)
-    local n = math.floor(tonumber(value) or 0)
+    local n = math_floor(tonumber(value) or 0)
     local s = tostring(n)
     local sign = ""
-    if string.sub(s, 1, 1) == "-" then
+    if string_sub(s, 1, 1) == "-" then
         sign = "-"
-        s = string.sub(s, 2)
+        s = string_sub(s, 2)
     end
     while true do
         local changed
@@ -82,7 +95,7 @@ local function ResourceText(powerType, pct)
 end
 
 local function MakeTexture(parent, path)
-    local c = WINDOW_MANAGER:CreateControl(nil, parent, CT_TEXTURE)
+    local c = WM:CreateControl(nil, parent, CT_TEXTURE)
     c:SetTexture(path)
     return c
 end
@@ -123,20 +136,20 @@ local function CropBottomSegment(control, startPct, endPct, width, fullHeight)
     control:SetDimensions(width, h)
     control:SetTextureCoords(0, 1, 1 - b, 1 - a)
     control:ClearAnchors()
-    control:SetAnchor(BOTTOM, RyticTank.Resources.healthBack, BOTTOM, 0, -(fullHeight * a))
+    control:SetAnchor(BOTTOM, Resources.healthBack, BOTTOM, 0, -(fullHeight * a))
     control:SetHidden(false)
 end
 
-function RyticTank.Resources.CreateHUD()
-    local wm = WINDOW_MANAGER
+function Resources.CreateHUD()
+    local wm = WM
 
     local hud = wm:CreateTopLevelWindow("RyticTankResourceHUD")
-    RyticTank.Resources.window = hud
+    Resources.window = hud
     -- ESOUI HUD fragment: automatically hide this HUD when menus open.
     local hudFragment = ZO_HUDFadeSceneFragment:New(hud, nil, 0)
     HUD_SCENE:AddFragment(hudFragment)
     HUD_UI_SCENE:AddFragment(hudFragment)
-    RyticTank.Resources.hudFragment = hudFragment
+    Resources.hudFragment = hudFragment
     hud:SetDimensions(620, 560)
     hud:ClearAnchors()
     hud:SetAnchor(
@@ -147,7 +160,7 @@ function RyticTank.Resources.CreateHUD()
     hud:SetClampedToScreen(true)
 
     -- Robust edit mode. This does not depend on LibAddonMenu refreshing the lock state.
-    RyticTank.Resources.editMode = false
+    Resources.editMode = false
     hud:SetMouseEnabled(true)
     hud:SetMovable(true)
 
@@ -160,12 +173,12 @@ function RyticTank.Resources.CreateHUD()
     end
 
     hud:SetHandler("OnMouseDown", function(_, button)
-        if button == MOUSE_BUTTON_INDEX_LEFT and RyticTank.Resources.editMode then
+        if button == MOUSE_BUTTON_INDEX_LEFT and Resources.editMode then
             hud:StartMoving()
         end
     end)
     hud:SetHandler("OnMouseUp", function(_, button)
-        if button == MOUSE_BUTTON_INDEX_LEFT and RyticTank.Resources.editMode then
+        if button == MOUSE_BUTTON_INDEX_LEFT and Resources.editMode then
             hud:StopMovingOrResizing()
             SaveHUDPosition()
         end
@@ -177,14 +190,14 @@ function RyticTank.Resources.CreateHUD()
     healthBack:SetDimensions(ARC_W, ARC_H)
     healthBack:SetAnchor(CENTER, hud, CENTER, -220, 0)
     healthBack:SetColor(0.03,0.03,0.035,0.78)
-    RyticTank.Resources.healthBack = healthBack
+    Resources.healthBack = healthBack
 
     -- HEALTH FILL: bottom -> top
     local health = MakeTexture(hud, TEX.."health_arc.dds")
     health:SetDimensions(ARC_W, ARC_H)
     health:SetAnchor(BOTTOM, healthBack, BOTTOM, 0, 0)
     SetColor(health, HEALTH)
-    RyticTank.Resources.healthBar = health
+    Resources.healthBar = health
 
     -- DAMAGE SHIELD OVERLAY.
     -- Hyperioxes method: shield is its own max-health-scaled bar layered over health.
@@ -194,7 +207,7 @@ function RyticTank.Resources.CreateHUD()
     shield:SetColor(SHIELD[1],SHIELD[2],SHIELD[3],0.60)
     shield:SetDrawLayer(DL_OVERLAY)
     shield:SetHidden(true)
-    RyticTank.Resources.shieldBar = shield
+    Resources.shieldBar = shield
 
     -- HEALTH 50% MARKER
     local hpMarker = wm:CreateControl(nil, hud, CT_BACKDROP)
@@ -202,35 +215,35 @@ function RyticTank.Resources.CreateHUD()
     hpMarker:SetAnchor(CENTER, healthBack, CENTER, 12, 0)
     hpMarker:SetCenterColor(0.95,0.95,0.95,0.9)
     hpMarker:SetEdgeColor(0,0,0,0.9)
-    RyticTank.Resources.healthMarker = hpMarker
+    Resources.healthMarker = hpMarker
 
     -- STAMINA BACKGROUND: upper right half
     local stamBack = MakeTexture(hud, TEX.."stamina_arc.dds")
     stamBack:SetDimensions(ARC_W, HALF_H)
     stamBack:SetAnchor(BOTTOM, hud, CENTER, 220, 0)
     stamBack:SetColor(0.03,0.03,0.035,0.78)
-    RyticTank.Resources.staminaBack = stamBack
+    Resources.staminaBack = stamBack
 
     -- STAMINA FILL: center -> top
     local stamina = MakeTexture(hud, TEX.."stamina_arc.dds")
     stamina:SetDimensions(ARC_W, HALF_H)
     stamina:SetAnchor(BOTTOM, stamBack, BOTTOM, 0, 0)
     SetColor(stamina, STAM)
-    RyticTank.Resources.staminaBar = stamina
+    Resources.staminaBar = stamina
 
     -- MAGICKA BACKGROUND: lower right half
     local magBack = MakeTexture(hud, TEX.."magicka_arc.dds")
     magBack:SetDimensions(ARC_W, HALF_H)
     magBack:SetAnchor(TOP, hud, CENTER, 220, 0)
     magBack:SetColor(0.03,0.03,0.035,0.78)
-    RyticTank.Resources.magickaBack = magBack
+    Resources.magickaBack = magBack
 
     -- MAGICKA FILL: center -> bottom
     local magicka = MakeTexture(hud, TEX.."magicka_arc.dds")
     magicka:SetDimensions(ARC_W, HALF_H)
     magicka:SetAnchor(TOP, magBack, TOP, 0, 0)
     SetColor(magicka, MAG)
-    RyticTank.Resources.magickaBar = magicka
+    Resources.magickaBar = magicka
 
     -- RIGHT CENTER JOIN MARKER
     local join = wm:CreateControl(nil, hud, CT_BACKDROP)
@@ -245,21 +258,21 @@ function RyticTank.Resources.CreateHUD()
     hpText:SetDimensions(180,28)
     hpText:SetAnchor(CENTER,hud,CENTER,-125,0)
     hpText:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
-    RyticTank.Resources.healthText=hpText
+    Resources.healthText=hpText
 
     local stamText = wm:CreateControl(nil,hud,CT_LABEL)
     stamText:SetFont("ZoFontGameBold")
     stamText:SetDimensions(180,28)
     stamText:SetAnchor(CENTER,hud,CENTER,145,-60)
     stamText:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
-    RyticTank.Resources.staminaText=stamText
+    Resources.staminaText=stamText
 
     local magText = wm:CreateControl(nil,hud,CT_LABEL)
     magText:SetFont("ZoFontGameBold")
     magText:SetDimensions(180,28)
     magText:SetAnchor(CENTER,hud,CENTER,145,60)
     magText:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
-    RyticTank.Resources.magickaText=magText
+    Resources.magickaText=magText
 
     local potion = wm:CreateControl(nil,hud,CT_LABEL)
     potion:SetFont("ZoFontWinH3")
@@ -267,7 +280,7 @@ function RyticTank.Resources.CreateHUD()
     potion:SetAnchor(CENTER,hud,CENTER,0,95)
     potion:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     potion:SetText("")
-    RyticTank.Resources.potionText=potion
+    Resources.potionText=potion
 
     hud:SetHandler("OnMoveStop",function()
         local left,top=hud:GetLeft(),hud:GetTop()
@@ -298,26 +311,26 @@ function RyticTank.Resources.CreateHUD()
         t:SetHidden(true)
         corners[i]=t
     end
-    RyticTank.Resources.themeCorners=corners
+    Resources.themeCorners=corners
 
-    RyticTank.Resources.ApplyLock()
-    RyticTank.Resources.ApplyTheme()
+    Resources.ApplyLock()
+    Resources.ApplyTheme()
 end
 
-function RyticTank.Resources.SetEditMode(enabled)
-    local hud=RyticTank.Resources.window
+function Resources.SetEditMode(enabled)
+    local hud=Resources.window
     if not hud then return end
 
     enabled = enabled and true or false
-    RyticTank.Resources.editMode = enabled
+    Resources.editMode = enabled
     RyticTank.saved.resources.locked = not enabled
 
     hud:SetMovable(enabled)
     hud:SetMouseEnabled(enabled)
 
     -- Full-HUD drag catcher so curved textures/labels cannot swallow the drag.
-    if not RyticTank.Resources.moveOverlay then
-        local overlay=WINDOW_MANAGER:CreateControl(nil,hud,CT_BACKDROP)
+    if not Resources.moveOverlay then
+        local overlay=WM:CreateControl(nil,hud,CT_BACKDROP)
         overlay:SetAnchorFill(hud)
         overlay:SetCenterColor(0,0,0,0.06)
         overlay:SetEdgeColor(0.72,0.18,1,0.90)
@@ -327,13 +340,13 @@ function RyticTank.Resources.SetEditMode(enabled)
         overlay:SetMouseEnabled(true)
 
         overlay:SetHandler("OnMouseDown",function(_,button)
-            if button==MOUSE_BUTTON_INDEX_LEFT and RyticTank.Resources.editMode then
+            if button==MOUSE_BUTTON_INDEX_LEFT and Resources.editMode then
                 hud:StartMoving()
             end
         end)
 
         overlay:SetHandler("OnMouseUp",function(_,button)
-            if button==MOUSE_BUTTON_INDEX_LEFT and RyticTank.Resources.editMode then
+            if button==MOUSE_BUTTON_INDEX_LEFT and Resources.editMode then
                 hud:StopMovingOrResizing()
                 local left,top=hud:GetLeft(),hud:GetTop()
                 if left and top then
@@ -343,22 +356,22 @@ function RyticTank.Resources.SetEditMode(enabled)
             end
         end)
 
-        RyticTank.Resources.moveOverlay=overlay
+        Resources.moveOverlay=overlay
     end
 
-    if not RyticTank.Resources.moveLabel then
-        local label=WINDOW_MANAGER:CreateControl(nil,hud,CT_LABEL)
+    if not Resources.moveLabel then
+        local label=WM:CreateControl(nil,hud,CT_LABEL)
         label:SetFont("ZoFontWinH2")
         label:SetAnchor(TOP,hud,TOP,0,10)
         label:SetText("|cB82EFFRSS HUD UNLOCKED - DRAG ANYWHERE|r")
         label:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
         label:SetDrawLayer(DL_OVERLAY)
         label:SetDrawTier(DT_HIGH)
-        RyticTank.Resources.moveLabel=label
+        Resources.moveLabel=label
     end
 
-    RyticTank.Resources.moveOverlay:SetHidden(not enabled)
-    RyticTank.Resources.moveLabel:SetHidden(not enabled)
+    Resources.moveOverlay:SetHidden(not enabled)
+    Resources.moveLabel:SetHidden(not enabled)
 
     if enabled then
         -- Edit mode must override hide-out-of-combat.
@@ -366,17 +379,17 @@ function RyticTank.Resources.SetEditMode(enabled)
     end
 end
 
-function RyticTank.Resources.ApplyLock()
+function Resources.ApplyLock()
     local locked=RyticTank.saved.resources.locked
     if locked == nil then
         locked = true
         RyticTank.saved.resources.locked = true
     end
-    RyticTank.Resources.SetEditMode(not locked)
+    Resources.SetEditMode(not locked)
 end
 
-function RyticTank.Resources.ResetPosition()
-    local hud=RyticTank.Resources.window
+function Resources.ResetPosition()
+    local hud=Resources.window
     if not hud then return end
 
     -- Known visible default location.
@@ -388,8 +401,8 @@ function RyticTank.Resources.ResetPosition()
     hud:SetHidden(false)
 end
 
-function RyticTank.Resources.ApplyTheme()
-    local corners=RyticTank.Resources.themeCorners
+function Resources.ApplyTheme()
+    local corners=Resources.themeCorners
     if not corners then return end
 
     local theme=NormalizeTheme(RyticTank.saved.resources.theme)
@@ -411,21 +424,21 @@ function RyticTank.Resources.ApplyTheme()
 end
 
 -- Apply the saved Resource HUD scale to the entire curved RSS window.
-function RyticTank.Resources.ApplyScale()
-    local hud = RyticTank.Resources.window
+function Resources.ApplyScale()
+    local hud = Resources.window
     if not hud then return end
     local scale = tonumber(RyticTank.saved.resources.scale) or 1.0
     hud:SetScale(scale)
 end
 
 local function UpdateVisibility()
-    local hud=RyticTank.Resources.window
+    local hud=Resources.window
     if not hud then return false end
 
     local s=RyticTank.saved.resources
 
     -- Never hide the HUD while the user is positioning it.
-    if RyticTank.Resources.editMode then
+    if Resources.editMode then
         hud:SetHidden(false)
         return true
     end
@@ -449,8 +462,8 @@ end
 
 local function SetTrackedShield(value)
     value=math.max(0,tonumber(value) or 0)
-    RyticTank.Resources.currentShield=value
-    RyticTank.Resources.shieldTracked=true
+    Resources.currentShield=value
+    Resources.shieldTracked=true
 end
 
 local function OnShieldVisual(eventCode,unitTag,unitAttributeVisual,statType,attributeType,powerType,v1,v2,v3,v4)
@@ -461,7 +474,7 @@ local function OnShieldVisual(eventCode,unitTag,unitAttributeVisual,statType,att
         return
     end
 
-    local current=math.max(0,tonumber(RyticTank.Resources.currentShield) or 0)
+    local current=math.max(0,tonumber(Resources.currentShield) or 0)
 
     if eventCode==EVENT_UNIT_ATTRIBUTE_VISUAL_ADDED then
         current=current+math.max(0,tonumber(v1) or 0)
@@ -473,11 +486,11 @@ local function OnShieldVisual(eventCode,unitTag,unitAttributeVisual,statType,att
     end
 
     SetTrackedShield(current)
-    RyticTank.Resources.UpdateShield()
+    Resources.UpdateShield()
 end
 
-function RyticTank.Resources.UpdateShield()
-    local bar=RyticTank.Resources.shieldBar
+function Resources.UpdateShield()
+    local bar=Resources.shieldBar
     if not bar then return end
 
     local currentHealth,maxHealth=GetUnitPower("player",POWERTYPE_HEALTH)
@@ -485,8 +498,8 @@ function RyticTank.Resources.UpdateShield()
     maxHealth=tonumber(maxHealth) or 0
 
     local shield
-    if RyticTank.Resources.shieldTracked then
-        shield=math.max(0,tonumber(RyticTank.Resources.currentShield) or 0)
+    if Resources.shieldTracked then
+        shield=math.max(0,tonumber(Resources.currentShield) or 0)
     elseif GetUnitAttributeVisualizerEffectInfo then
         shield=GetUnitAttributeVisualizerEffectInfo(
             "player",
@@ -515,63 +528,63 @@ function RyticTank.Resources.UpdateShield()
     bar:SetColor(SHIELD[1],SHIELD[2],SHIELD[3],0.88)
 end
 
-function RyticTank.Resources.UpdateHealth(pct)
-    if not RyticTank.Resources.healthBar then return end
+function Resources.UpdateHealth(pct)
+    if not Resources.healthBar then return end
     local s=RyticTank.saved.resources
 
-    RyticTank.Resources.healthBar:ClearAnchors()
-    RyticTank.Resources.healthBar:SetAnchor(
-        BOTTOM,RyticTank.Resources.healthBack,BOTTOM,0,0)
-    CropBottomUp(RyticTank.Resources.healthBar,pct,ARC_W,ARC_H)
+    Resources.healthBar:ClearAnchors()
+    Resources.healthBar:SetAnchor(
+        BOTTOM,Resources.healthBack,BOTTOM,0,0)
+    CropBottomUp(Resources.healthBar,pct,ARC_W,ARC_H)
 
     local threshold = tonumber(s.potionHealthThreshold) or tonumber(s.potionThreshold) or tonumber(s.warningHealth) or 30
-    if pct <= threshold then SetColor(RyticTank.Resources.healthBar,WARN)
-    else SetColor(RyticTank.Resources.healthBar,HEALTH) end
+    if pct <= threshold then SetColor(Resources.healthBar,WARN)
+    else SetColor(Resources.healthBar,HEALTH) end
 
-    RyticTank.Resources.UpdateShield()
+    Resources.UpdateShield()
     local current=GetUnitPower("player",POWERTYPE_HEALTH) or 0
-    local shield=math.max(0,tonumber(RyticTank.Resources.currentShield) or 0)
+    local shield=math.max(0,tonumber(Resources.currentShield) or 0)
     if shield>0 then
-        RyticTank.Resources.healthText:SetText(
+        Resources.healthText:SetText(
             string.format("%s +%s (%.0f%%)",CommaNumber(current),CommaNumber(shield),pct or 0))
     else
-        RyticTank.Resources.healthText:SetText(ResourceText(POWERTYPE_HEALTH,pct))
+        Resources.healthText:SetText(ResourceText(POWERTYPE_HEALTH,pct))
     end
 end
 
-function RyticTank.Resources.UpdateStamina(pct)
-    if not RyticTank.Resources.staminaBar then return end
+function Resources.UpdateStamina(pct)
+    if not Resources.staminaBar then return end
     local s=RyticTank.saved.resources
 
-    RyticTank.Resources.staminaBar:ClearAnchors()
-    RyticTank.Resources.staminaBar:SetAnchor(
-        BOTTOM,RyticTank.Resources.staminaBack,BOTTOM,0,0)
-    CropBottomUp(RyticTank.Resources.staminaBar,pct,ARC_W,HALF_H)
+    Resources.staminaBar:ClearAnchors()
+    Resources.staminaBar:SetAnchor(
+        BOTTOM,Resources.staminaBack,BOTTOM,0,0)
+    CropBottomUp(Resources.staminaBar,pct,ARC_W,HALF_H)
 
     local threshold = tonumber(s.potionResourceThreshold) or tonumber(s.potionThreshold) or tonumber(s.warningStamina) or 30
-    if pct <= threshold then SetColor(RyticTank.Resources.staminaBar,WARN)
-    else SetColor(RyticTank.Resources.staminaBar,STAM) end
+    if pct <= threshold then SetColor(Resources.staminaBar,WARN)
+    else SetColor(Resources.staminaBar,STAM) end
 
-    RyticTank.Resources.staminaText:SetText(ResourceText(POWERTYPE_STAMINA, pct))
+    Resources.staminaText:SetText(ResourceText(POWERTYPE_STAMINA, pct))
 end
 
-function RyticTank.Resources.UpdateMagicka(pct)
-    if not RyticTank.Resources.magickaBar then return end
+function Resources.UpdateMagicka(pct)
+    if not Resources.magickaBar then return end
     local s=RyticTank.saved.resources
 
-    RyticTank.Resources.magickaBar:ClearAnchors()
-    RyticTank.Resources.magickaBar:SetAnchor(
-        TOP,RyticTank.Resources.magickaBack,TOP,0,0)
-    CropTopDown(RyticTank.Resources.magickaBar,pct,ARC_W,HALF_H)
+    Resources.magickaBar:ClearAnchors()
+    Resources.magickaBar:SetAnchor(
+        TOP,Resources.magickaBack,TOP,0,0)
+    CropTopDown(Resources.magickaBar,pct,ARC_W,HALF_H)
 
     local threshold = tonumber(s.potionResourceThreshold) or tonumber(s.potionThreshold) or tonumber(s.warningMagicka) or 30
-    if pct <= threshold then SetColor(RyticTank.Resources.magickaBar,WARN)
-    else SetColor(RyticTank.Resources.magickaBar,MAG) end
+    if pct <= threshold then SetColor(Resources.magickaBar,WARN)
+    else SetColor(Resources.magickaBar,MAG) end
 
-    RyticTank.Resources.magickaText:SetText(ResourceText(POWERTYPE_MAGICKA, pct))
+    Resources.magickaText:SetText(ResourceText(POWERTYPE_MAGICKA, pct))
 end
 
-function RyticTank.Resources.GetPotionCooldown()
+function Resources.GetPotionCooldown()
     if not GetCurrentQuickslot or not GetSlotCooldownInfo then return 0,true end
     local quickslot=GetCurrentQuickslot()
     if not quickslot then return 0,true end
@@ -580,18 +593,18 @@ function RyticTank.Resources.GetPotionCooldown()
     return remaining or 0,isUsable
 end
 
-function RyticTank.Resources.UpdatePotion()
-    if not RyticTank.Resources.potionText then return end
+function Resources.UpdatePotion()
+    if not Resources.potionText then return end
     local s=RyticTank.saved.resources
     local combat=IsUnitInCombat("player")
 
-    RyticTank.Resources.potionText:SetText("")
+    Resources.potionText:SetText("")
     if not s.potionAlert then return end
     if s.potionCombatOnly and not combat then return end
 
-    local hp=RyticTank.Resources.GetPercent(POWERTYPE_HEALTH)
-    local stam=RyticTank.Resources.GetPercent(POWERTYPE_STAMINA)
-    local mag=RyticTank.Resources.GetPercent(POWERTYPE_MAGICKA)
+    local hp=Resources.GetPercent(POWERTYPE_HEALTH)
+    local stam=Resources.GetPercent(POWERTYPE_STAMINA)
+    local mag=Resources.GetPercent(POWERTYPE_MAGICKA)
 
     local healthThreshold = tonumber(s.potionHealthThreshold) or tonumber(s.potionThreshold) or 30
     local resourceThreshold = tonumber(s.potionResourceThreshold) or tonumber(s.potionThreshold) or 30
@@ -603,11 +616,11 @@ function RyticTank.Resources.UpdatePotion()
 
     if not trigger then return end
 
-    local cooldown,usable=RyticTank.Resources.GetPotionCooldown()
+    local cooldown,usable=Resources.GetPotionCooldown()
     if cooldown <= 0 and usable ~= false then
-        RyticTank.Resources.potionText:SetText("|cFF3300TRI-POT|r")
+        Resources.potionText:SetText("|cFF3300TRI-POT|r")
     elseif not s.potionReadyOnly then
-        RyticTank.Resources.potionText:SetText(
+        Resources.potionText:SetText(
             string.format("|cFFAA00POTION %.1fs|r",cooldown/1000))
     end
 end
@@ -654,40 +667,40 @@ local function EnsureArcTextures()
     end
 end
 
-function RyticTank.Resources.RefreshAll()
+function Resources.RefreshAll()
     if not UpdateVisibility() then return end
     EnsureArcTextures()
-    RyticTank.Resources.ApplyTheme()
-    RyticTank.Resources.UpdateHealth(
-        RyticTank.Resources.GetPercent(POWERTYPE_HEALTH))
-    RyticTank.Resources.UpdateStamina(
-        RyticTank.Resources.GetPercent(POWERTYPE_STAMINA))
-    RyticTank.Resources.UpdateMagicka(
-        RyticTank.Resources.GetPercent(POWERTYPE_MAGICKA))
-    RyticTank.Resources.UpdateShield()
-    RyticTank.Resources.UpdatePotion()
+    Resources.ApplyTheme()
+    Resources.UpdateHealth(
+        Resources.GetPercent(POWERTYPE_HEALTH))
+    Resources.UpdateStamina(
+        Resources.GetPercent(POWERTYPE_STAMINA))
+    Resources.UpdateMagicka(
+        Resources.GetPercent(POWERTYPE_MAGICKA))
+    Resources.UpdateShield()
+    Resources.UpdatePotion()
 end
 
 -- Kept for compatibility with the current RyticTank.lua update loop.
-function RyticTank.Resources.Update()
+function Resources.Update()
     UpdateVisibility()
-    RyticTank.Resources.UpdatePotion()
-    RyticTank.Resources.UpdateShield()
+    Resources.UpdatePotion()
+    Resources.UpdateShield()
 
     -- Shield expiration does not necessarily fire a health power update.
     -- Refresh the HP label here so +Shield disappears immediately.
-    if RyticTank.Resources.healthText then
+    if Resources.healthText then
         local current,maxHealth=GetUnitPower("player",POWERTYPE_HEALTH)
         current=tonumber(current) or 0
         maxHealth=tonumber(maxHealth) or 0
         local pct=(maxHealth>0) and ((current/maxHealth)*100) or 0
-        local shield=math.max(0,tonumber(RyticTank.Resources.currentShield) or 0)
+        local shield=math.max(0,tonumber(Resources.currentShield) or 0)
 
         if shield>0 then
-            RyticTank.Resources.healthText:SetText(
+            Resources.healthText:SetText(
                 string.format("%s +%s (%.0f%%)",CommaNumber(current),CommaNumber(shield),pct))
         else
-            RyticTank.Resources.healthText:SetText(ResourceText(POWERTYPE_HEALTH,pct))
+            Resources.healthText:SetText(ResourceText(POWERTYPE_HEALTH,pct))
         end
     end
 end
@@ -703,22 +716,22 @@ local function OnPowerUpdate(
     local pct=(powerValue/maxValue)*100
 
     if powerType == POWERTYPE_HEALTH then
-        RyticTank.Resources.UpdateHealth(pct)
+        Resources.UpdateHealth(pct)
     elseif powerType == POWERTYPE_STAMINA then
-        RyticTank.Resources.UpdateStamina(pct)
+        Resources.UpdateStamina(pct)
     elseif powerType == POWERTYPE_MAGICKA then
-        RyticTank.Resources.UpdateMagicka(pct)
+        Resources.UpdateMagicka(pct)
     end
 
-    RyticTank.Resources.UpdatePotion()
-    RyticTank.Resources.UpdateShield()
+    Resources.UpdatePotion()
+    Resources.UpdateShield()
 end
 
 local function OnCombatState()
-    RyticTank.Resources.RefreshAll()
+    Resources.RefreshAll()
 end
 
-function RyticTank.Resources.Initialize()
+function Resources.Initialize()
     if not RyticTank.saved.resources then
         RyticTank.saved.resources=ZO_DeepTableCopy(RyticTank.defaults.resources)
     end
@@ -729,20 +742,20 @@ function RyticTank.Resources.Initialize()
         RyticTank.saved.resources.theme="REGULAR"
     end
 
-    RyticTank.Resources.CreateHUD()
-    RyticTank.Resources.ApplyScale()
-    RyticTank.Resources.ApplyLock()
+    Resources.CreateHUD()
+    Resources.ApplyScale()
+    Resources.ApplyLock()
 
     SLASH_COMMANDS["/rssrepair"] = function()
         EnsureArcTextures()
-        RyticTank.Resources.ApplyTheme()
-        RyticTank.Resources.RefreshAll()
+        Resources.ApplyTheme()
+        Resources.RefreshAll()
         d("|c00FF00RyticTankTools RSS textures refreshed.|r")
     end
 
     SLASH_COMMANDS["/rssmove"] = function()
-        local nextState = not RyticTank.Resources.editMode
-        RyticTank.Resources.SetEditMode(nextState)
+        local nextState = not Resources.editMode
+        Resources.SetEditMode(nextState)
         if nextState then
             d("|cB82EFFRyticTank Resource HUD MOVE MODE ON - drag anywhere in the HUD. Type /rssmove again when finished.|r")
         else
@@ -750,19 +763,19 @@ function RyticTank.Resources.Initialize()
         end
     end
 
-    EVENT_MANAGER:RegisterForEvent(
+    EM:RegisterForEvent(
         "RyticTankResourcePower",
         EVENT_POWER_UPDATE,
         OnPowerUpdate
     )
-    EVENT_MANAGER:AddFilterForEvent(
+    EM:AddFilterForEvent(
         "RyticTankResourcePower",
         EVENT_POWER_UPDATE,
         REGISTER_FILTER_UNIT_TAG,
         "player"
     )
 
-    EVENT_MANAGER:RegisterForEvent(
+    EM:RegisterForEvent(
         "RyticTankResourceCombat",
         EVENT_PLAYER_COMBAT_STATE,
         OnCombatState
@@ -772,10 +785,10 @@ function RyticTank.Resources.Initialize()
     -- This prevents a stale GetUnitAttributeVisualizerEffectInfo value from
     -- leaving +Shield text behind after the shield has actually expired.
     if EVENT_UNIT_ATTRIBUTE_VISUAL_ADDED then
-        EVENT_MANAGER:RegisterForEvent("RyticTankShieldAdded",EVENT_UNIT_ATTRIBUTE_VISUAL_ADDED,OnShieldVisual)
-        EVENT_MANAGER:RegisterForEvent("RyticTankShieldUpdated",EVENT_UNIT_ATTRIBUTE_VISUAL_UPDATED,OnShieldVisual)
-        EVENT_MANAGER:RegisterForEvent("RyticTankShieldRemoved",EVENT_UNIT_ATTRIBUTE_VISUAL_REMOVED,OnShieldVisual)
+        EM:RegisterForEvent("RyticTankShieldAdded",EVENT_UNIT_ATTRIBUTE_VISUAL_ADDED,OnShieldVisual)
+        EM:RegisterForEvent("RyticTankShieldUpdated",EVENT_UNIT_ATTRIBUTE_VISUAL_UPDATED,OnShieldVisual)
+        EM:RegisterForEvent("RyticTankShieldRemoved",EVENT_UNIT_ATTRIBUTE_VISUAL_REMOVED,OnShieldVisual)
     end
 
-    RyticTank.Resources.RefreshAll()
+    Resources.RefreshAll()
 end

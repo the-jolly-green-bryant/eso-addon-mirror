@@ -27,6 +27,7 @@ local Module = {
     OverrideTime = {},
 
     Default = {
+        enableModule = true,
         enablePermanentBlocker = true,
         enablePermanentOverride = false,
         permanentBlockList = "",
@@ -398,8 +399,31 @@ function Module:GetMenuOptions()
 
     return {
         type = "submenu",
-        name = string.format("%s %s", menuIcon, CC.ColorString(self.menuName, "tier2")),
+        name = function()
+            local stringEnable = self.SV.enableModule and "" or CC.ColorString("[OFF] ", "RD")
+            return string.format("%s %s%s", menuIcon, stringEnable, CC.ColorString(self.menuName, "tier2"))
+        end,
         controls = {
+            -- -- ENABLE / DISABLE MODULE
+            -- { type = "header", name = CC.ColorString("ENABLE / DISABLE MODULE", "tier3") },
+            -- {
+            --     type = "checkbox",
+            --     name = CC.ColorString("Enable Module", "GN"),
+            --     getFunc = function() return self.SV.enableModule end,
+            --     setFunc = function(value)
+            --         self.SV.enableModule = value
+            --         if value then
+            --             if self.CustomEnable then self:CustomEnable() end
+            --         else
+            --             if self.CustomDisable then self:CustomDisable() end
+            --         end
+            --     end,
+            --     default = self.Default.enableModule,
+            --     disabled = function() return not CC.SV.enableAddon end,
+            --     requiresReload = true,
+            -- },
+            -- { type = "divider" },
+
             { type = "header", name = CC.ColorString("PERMANENT SKILL BLOCKING", "tier3") },
             {
                 type = "checkbox",
@@ -410,7 +434,7 @@ function Module:GetMenuOptions()
                     self:ParsePermanentBlockList()
                 end,
                 default = self.Default.enablePermanentBlocker,
-                disabled = function() return not CC.SV.enableAddon end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
             {
                 type = "checkbox",
@@ -419,7 +443,7 @@ function Module:GetMenuOptions()
                 getFunc = function() return self.SV.enablePermanentOverride end,
                 setFunc = function(value) self.SV.enablePermanentOverride = value end,
                 default = self.Default.enablePermanentOverride,
-                disabled = function() return not CC.SV.enableAddon or not self.SV.enablePermanentBlocker end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not self.SV.enablePermanentBlocker end,
             },
             {
                 type = "description",
@@ -435,7 +459,7 @@ function Module:GetMenuOptions()
                 type = "editbox",
                 name = "Permanent Blocked Skill IDs:",
                 isMultiline = true,
-		        isExtraWide = true,
+                isExtraWide = true,
                 width = "full",
                 getFunc = function() return self.SV.permanentBlockList end,
                 setFunc = function(value)
@@ -443,7 +467,7 @@ function Module:GetMenuOptions()
                     self:ParsePermanentBlockList()
                 end,
                 default = self.Default.permanentBlockList,
-                disabled = function() return not CC.SV.enableAddon or not self.SV.enablePermanentBlocker end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not self.SV.enablePermanentBlocker end,
             },
         },
     }

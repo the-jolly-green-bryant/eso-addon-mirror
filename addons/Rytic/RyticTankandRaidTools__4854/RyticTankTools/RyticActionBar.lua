@@ -1,15 +1,186 @@
 ------------------------------------------------------------
--- RYTIC ACTION BAR v0.7 - follow ESO native action bar lifecycle
+-- RYTIC ACTION BAR v1.0.2 - native death/interaction UI isolation
 -- Classic two-row action bar for RyticTankTools.
 ------------------------------------------------------------
 RyticTank = RyticTank or {}
+local RyticTank=RyticTank
 RyticTank.ActionBar = RyticTank.ActionBar or {}
 local A=RyticTank.ActionBar
 local EM,WM=EVENT_MANAGER,WINDOW_MANAGER
 
+-- Cache hot API/standard-library references used by action/GCD update paths.
+local GetFrameTimeSeconds=GetFrameTimeSeconds
+local GetSlotCooldownInfo=GetSlotCooldownInfo
+local GetAbilityCastInfo=GetAbilityCastInfo
+local math_max=math.max
+local math_min=math.min
+local pairs=pairs
+
 local FIRST,LAST=3,7
 local UPDATE_NAME="RyticActionBarUpdate"
 local function now() return GetFrameTimeSeconds() end
+
+local GCD_UPDATE_NAME="RyticActionBarGCDSweep"
+local DEFAULT_GCD_MS=1000
+local MIN_SWEEP_MS=100
+local MAX_CAST_SWEEP_MS=12000
+A.gcdStart=0
+A.gcdDuration=1.0
+A.gcdButton=nil
+A.gcdAbilityId=0
+A.gcdSlot=nil
+A.gcdBar=nil
+A.readyPulseButton=nil
+A.readyPulseStart=0
+local READY_PULSE_DURATION=0.22
+
+
+-- Native-style radial cooldown presentation.
+-- ESO/FAB users are accustomed to a dark radial cooldown wipe over the skill icon.
+-- Keep Rytic's brief gold completion flash as the only custom completion cue.
+local function setGCDProgress(btn,pct)
+    if not btn or not btn.gcdCooldown then return end
+    pct=math_max(0,math_min(1,pct or 0))
+    local remain=math_max(0,(A.gcdDuration or 1)*(1-pct))
+    btn.gcdCooldown:SetHidden(remain<=0)
+    if remain>0 then
+        -- Cooldown controls use milliseconds for the radial wipe.
+        btn.gcdCooldown:StartCooldown(remain*1000, A.gcdDuration*1000, CD_TYPE_RADIAL, CD_TIME_TYPE_TIME_UNTIL, false)
+    end
+end
+
+local function clearGCDSweep(btn)
+    if not btn then return end
+    btn.ryticGcdActive=false
+    if btn.gcdCooldown then
+        btn.gcdCooldown:ResetCooldown()
+        btn.gcdCooldown:SetHidden(true)
+    end
+    if btn.gcdReadyGlow then btn.gcdReadyGlow:SetHidden(true) end
+end
+
+local function startReadyPulse(btn)
+    if not btn or not btn.gcdReadyGlow then return end
+    A.readyPulseButton=btn
+    A.readyPulseStart=now()
+    btn.gcdReadyGlow:SetHidden(false)
+    btn.gcdReadyGlow:SetEdgeColor(1,.78,.08,1)
+end
+
+local function updateReadyPulse()
+    local btn=A.readyPulseButton
+    if not btn or not btn.gcdReadyGlow then return end
+    local elapsed=now()-A.readyPulseStart
+    if elapsed>=READY_PULSE_DURATION then
+        btn.gcdReadyGlow:SetHidden(true)
+        A.readyPulseButton=nil
+        return
+    end
+    local pct=elapsed/READY_PULSE_DURATION
+    local alpha=1-pct
+    btn.gcdReadyGlow:SetEdgeColor(1,.78,.08,alpha)
+end
+
+local function getSlotTimingMs(slot,bar,abilityId)
+    -- Prefer ESO's live slot cooldown. For the normal action lock this is the
+    -- same timing source players see on the native action bar.
+    if GetSlotCooldownInfo then
+        local remain,duration=GetSlotCooldownInfo(slot,bar)
+        remain=tonumber(remain) or 0
+        duration=tonumber(duration) or 0
+        if duration>=MIN_SWEEP_MS and duration<=MAX_CAST_SWEEP_MS and remain>0 then
+            return math_max(remain,duration)
+        end
+    end
+
+    -- Keep the existing cast/channel fallback for abilities where ESO does not
+    -- expose useful slot cooldown timing at the activation event.
+    if abilityId and abilityId~=0 and GetAbilityCastInfo then
+        local a,b,c,d,e=GetAbilityCastInfo(abilityId)
+        local vals={a,b,c,d,e}
+        local best=0
+        for _,v in ipairs(vals) do
+            if type(v)=="number" and v>=MIN_SWEEP_MS and v<=MAX_CAST_SWEEP_MS then
+                best=math_max(best,v)
+            end
+        end
+        if best>0 then return best end
+    end
+
+    return DEFAULT_GCD_MS
+end
+
+local function finishSweep()
+    if A.gcdButton then
+        A.gcdButton.ryticGcdActive=false
+        if A.gcdButton.gcdCooldown then
+            A.gcdButton.gcdCooldown:ResetCooldown()
+            A.gcdButton.gcdCooldown:SetHidden(true)
+        end
+        startReadyPulse(A.gcdButton)
+    end
+    EM:UnregisterForUpdate(GCD_UPDATE_NAME)
+end
+
+local function cancelSweep(leaveComplete)
+    EM:UnregisterForUpdate(GCD_UPDATE_NAME)
+    if A.gcdButton then
+        A.gcdButton.ryticGcdActive=false
+        if A.gcdButton.gcdCooldown then
+            A.gcdButton.gcdCooldown:ResetCooldown()
+            A.gcdButton.gcdCooldown:SetHidden(true)
+        end
+        if leaveComplete then startReadyPulse(A.gcdButton) end
+    end
+end
+
+local function beginGCDSweep(btn,slot,bar,abilityId)
+    if not btn then return end
+    if A.gcdButton then clearGCDSweep(A.gcdButton) end
+    if A.readyPulseButton and A.readyPulseButton~=A.gcdButton then
+        clearGCDSweep(A.readyPulseButton)
+    end
+    A.readyPulseButton=nil
+    clearGCDSweep(btn)
+    A.gcdButton=btn
+    A.gcdSlot=slot
+    A.gcdBar=bar
+    A.gcdAbilityId=abilityId or 0
+    A.gcdStart=now()
+    A.gcdDuration=math_max(MIN_SWEEP_MS,getSlotTimingMs(slot,bar,A.gcdAbilityId))/1000
+    btn.ryticGcdActive=true
+
+    -- Start one native-style radial wipe. We only poll ESO's live timing below
+    -- to finish/correct it; we do not redraw the radial every frame.
+    if btn.gcdCooldown then
+        btn.gcdCooldown:SetHidden(false)
+        btn.gcdCooldown:StartCooldown(A.gcdDuration*1000,A.gcdDuration*1000,CD_TYPE_RADIAL,CD_TIME_TYPE_TIME_UNTIL,false)
+    end
+
+    EM:UnregisterForUpdate(GCD_UPDATE_NAME)
+    EM:RegisterForUpdate(GCD_UPDATE_NAME,16,function()
+        local b=A.gcdButton
+        if not b or not A.root or A.root:IsHidden() then return end
+
+        if A.gcdSlot and A.gcdBar and GetSlotCooldownInfo then
+            local remain,duration=GetSlotCooldownInfo(A.gcdSlot,A.gcdBar)
+            remain=tonumber(remain) or 0
+            duration=tonumber(duration) or 0
+            if remain>0 and duration>=MIN_SWEEP_MS and duration<=MAX_CAST_SWEEP_MS then
+                local live=math_max(remain,duration)/1000
+                if live>0 and math.abs(live-A.gcdDuration)>.05 then
+                    A.gcdDuration=live
+                    A.gcdStart=now()
+                    if b.gcdCooldown then
+                        b.gcdCooldown:StartCooldown(live*1000,live*1000,CD_TYPE_RADIAL,CD_TIME_TYPE_TIME_UNTIL,false)
+                    end
+                end
+            end
+        end
+
+        if (now()-A.gcdStart)>=A.gcdDuration then finishSweep() end
+    end)
+end
 
 local function defaults()
     RyticTank.saved=RyticTank.saved or {}
@@ -46,7 +217,7 @@ local function majorResolveRemaining()
     for i=1,GetNumBuffs("player") do
         local name,startTime,endTime,_,_,_,_,_,_,_,abilityId=GetUnitBuffInfo("player",i)
         if abilityId==61694 or (name and zo_strformat("<<z:1>>",name):find("major resolve",1,true)) then
-            return math.max(0,(tonumber(endTime) or now)-now)
+            return math_max(0,(tonumber(endTime) or now)-now)
         end
     end
     return 0
@@ -54,14 +225,71 @@ end
 
 A.resolveSlots={}
 
-local function learnResolveSlot(slot,bar,id)
-    -- Disabled: timer matching can falsely classify unrelated DPS skills.
-    -- Resolve highlighting is only allowed for a slot already explicitly known
-    -- during this session; no guessing from coincident effect durations.
-    return
+local NIGHTBLADE_CLASS_ID=3
+local shadowAbilityCache={}
+
+local function isNightblade()
+    return GetUnitClassId and GetUnitClassId("player")==NIGHTBLADE_CLASS_ID
+end
+
+local function rebuildShadowAbilityCache()
+    shadowAbilityCache={}
+    if not isNightblade() then return end
+    if not GetNumSkillLines or not GetNumSkillAbilities or not GetSkillAbilityInfo then return end
+
+    local classType=SKILL_TYPE_CLASS or 1
+    for line=1,(GetNumSkillLines(classType) or 0) do
+        local lineName=GetSkillLineInfo and GetSkillLineInfo(classType,line) or ""
+        lineName=lineName and zo_strformat("<<z:1>>",lineName) or ""
+        if lineName:find("shadow",1,true) then
+            for abilityIndex=1,(GetNumSkillAbilities(classType,line) or 0) do
+                local _,_,_,isPassive,_,isPurchased,progressionIndex=
+                    GetSkillAbilityInfo(classType,line,abilityIndex)
+                if not isPassive and isPurchased and progressionIndex and GetAbilityProgressionAbilityId then
+                    for morph=0,2 do
+                        for rank=1,4 do
+                            local aid=GetAbilityProgressionAbilityId(progressionIndex,morph,rank)
+                            if aid and aid~=0 then shadowAbilityCache[aid]=true end
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+
+local function abilityIsNightbladeShadow(abilityId)
+    if not isNightblade() or not abilityId or abilityId==0 then return false end
+    if shadowAbilityCache[abilityId] then return true end
+
+    -- Correct ESO API chain:
+    -- abilityId -> progressionIndex -> skillType/skillLine/abilityIndex.
+    if GetAbilityProgressionXPInfoFromAbilityId and GetSkillAbilityIndicesFromProgressionIndex then
+        local hasProgression,progressionIndex=GetAbilityProgressionXPInfoFromAbilityId(abilityId)
+        if hasProgression and progressionIndex then
+            local skillType,skillLineIndex=GetSkillAbilityIndicesFromProgressionIndex(progressionIndex)
+            if skillType and skillLineIndex and skillType==(SKILL_TYPE_CLASS or 1) then
+                local lineName=GetSkillLineInfo(skillType,skillLineIndex)
+                lineName=lineName and zo_strformat("<<z:1>>",lineName) or ""
+                if lineName:find("shadow",1,true) then
+                    shadowAbilityCache[abilityId]=true
+                    return true
+                end
+            end
+        end
+    end
+    return false
+end
+
+local function learnResolveSlot(slot,bar,id) return end
+
+local function rememberResolveSource(slot,bar,id)
+    if not slot or not bar or not id or id==0 then return end
+    A.resolveSlots[tostring(bar)..":"..tostring(slot)]=id
 end
 
 local function slotIsResolveSource(slot,bar,id)
+    if isNightblade() then return abilityIsNightbladeShadow(id) end
     local key=tostring(bar)..":"..tostring(slot)
     return A.resolveSlots[key]==id
 end
@@ -94,6 +322,29 @@ local function makeSlot(parent,index)
     c.stack=makeText(c,"ZoFontGameBold",TOPRIGHT,c,TOPRIGHT,-3,2); c.stack:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
     c.key=makeText(c,"ZoFontGameSmall",BOTTOM,c,BOTTOM,0,-1); c.key:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     c.index=index
+    -- Native-style radial GCD overlay, matching ESO/FAB visual language.
+    c.gcdCooldown=WM:CreateControl(nil,c,CT_COOLDOWN)
+    c.gcdCooldown:SetAnchorFill(c)
+    c.gcdCooldown:SetDrawLayer(DL_OVERLAY)
+    c.gcdCooldown:SetDrawTier(DT_HIGH)
+    c.gcdCooldown:SetDrawLevel(20)
+    c.gcdCooldown:SetMouseEnabled(false)
+    -- Match ESO's ZO_ActionButton cooldown presentation:
+    -- ZO_DefaultCooldown radial at alpha 0.7.  Do NOT tint CT_COOLDOWN;
+    -- ESO greys the icon itself while the radial control supplies the rolling wipe.
+    c.gcdCooldown:SetAlpha(.70)
+    c.gcdCooldown:SetHidden(true)
+    c.gcdReadyGlow=WM:CreateControl(nil,c,CT_BACKDROP)
+    c.gcdReadyGlow:SetAnchor(TOPLEFT,c,TOPLEFT,-5,-5)
+    c.gcdReadyGlow:SetAnchor(BOTTOMRIGHT,c,BOTTOMRIGHT,5,5)
+    c.gcdReadyGlow:SetCenterColor(0,0,0,0)
+    c.gcdReadyGlow:SetEdgeTexture("",1,1,5,0)
+    c.gcdReadyGlow:SetDrawLayer(DL_OVERLAY)
+    c.gcdReadyGlow:SetDrawTier(DT_HIGH)
+    c.gcdReadyGlow:SetDrawLevel(30)
+    c.gcdReadyGlow:SetMouseEnabled(false)
+    c.gcdReadyGlow:SetHidden(true)
+    clearGCDSweep(c)
     return c
 end
 
@@ -126,77 +377,13 @@ local function setNativeBarHidden(hidden)
     rememberAndHide(ZO_ActionBar1Quickslot,hidden)
 end
 
--- Keep ESO's resurrection/death prompt away from the custom action bar.
--- The exact native control name varies by UI revision, so locate the visible
--- top-level death/revive UI by inspecting control names while the player is dead.
-local rezMoved={}
-local rezAlertBoxes={}
-
-local function ensureRezAlertBox(root)
-    if not root or rezAlertBoxes[root] then return end
-    local box=WM:CreateControl(nil,root,CT_BACKDROP)
-    box:SetAnchor(TOPLEFT,root,TOPLEFT,-14,-12)
-    box:SetAnchor(BOTTOMRIGHT,root,BOTTOMRIGHT,14,12)
-    box:SetCenterColor(0.12,0,0,0.16)
-    box:SetEdgeTexture("",1,1,5,0)
-    box:SetEdgeColor(1,0.02,0.02,1)
-    box:SetDrawLayer(DL_BACKGROUND)
-    box:SetDrawTier(DT_HIGH)
-    box:SetDrawLevel(1)
-    box:SetMouseEnabled(false)
-    rezAlertBoxes[root]=box
-end
-
-local function nameLooksLikeRez(name)
-    if not name or name=="" then return false end
-    local n=string.lower(name)
-    -- Death Recap is a separate ESO UI and must never be moved/covered.
-    if n:find("recap",1,true) then return false end
-    return n:find("resur",1,true)
-        or n:find("revive",1,true)
-        or n:find("death",1,true)
-end
-
-local function moveRezRoot(c)
-    if not c or c==A.root then return end
-    local root=c
-    -- Move the highest useful named parent so the whole prompt (Revive / key /
-    -- Here / Recap) travels together rather than moving one label.
-    for _=1,6 do
-        local p=root.GetParent and root:GetParent() or nil
-        if not p or p==GuiRoot then break end
-        local pn=p.GetName and p:GetName() or ""
-        if pn and pn~="" and nameLooksLikeRez(pn) then root=p else break end
-    end
-    if not rezMoved[root] then
-        rezMoved[root]=true
-    end
-    if root.SetDrawTier then root:SetDrawTier(DT_HIGH) end
-    if root.SetDrawLayer then root:SetDrawLayer(DL_OVERLAY) end
-    if root.SetDrawLevel then root:SetDrawLevel(100) end
-    if root.ClearAnchors and root.SetAnchor then
-        root:ClearAnchors()
-        root:SetAnchor(CENTER,GuiRoot,CENTER,0,35)
-    end
-    ensureRezAlertBox(root)
-end
-
-local function scanRezControls(c,depth)
-    if not c or depth>8 then return end
-    local name=c.GetName and c:GetName() or ""
-    if nameLooksLikeRez(name) and (not c.IsHidden or not c:IsHidden()) then
-        moveRezRoot(c)
-    end
-    if c.GetNumChildren and c.GetChild then
-        local n=c:GetNumChildren() or 0
-        for i=1,n do scanRezControls(c:GetChild(i),depth+1) end
-    end
-end
-
-local wasDead=false
-local function keepRezAboveBar()
-    -- Intentionally empty. ESO owns its native death/rez UI.
-end
+-- ESO owns resurrection, death recap, interaction prompts, synergy prompts,
+-- keybind prompts, and their anchors/draw order. Do not scan, move, re-anchor,
+-- re-parent, or decorate any of those native controls from the custom action bar.
+--
+-- The custom bar follows ESO's action-bar lifecycle through the HUD fragment and
+-- ZO_ActionBar1 effective-visibility hooks below. This keeps protected/native
+-- interaction UI independent from Rytic's visual replacement.
 
 
 local function alertPulse()
@@ -303,6 +490,102 @@ local function refreshQuickslot(btn)
     end
 end
 
+local OAKENSOUL_NAME="Oakensoul Ring"
+
+local function hasOakensoulEquipped()
+    for slot=EQUIP_SLOT_NECK,EQUIP_SLOT_RING2 do
+        local link=GetItemLink(BAG_WORN,slot)
+        if link and link~="" then
+            local hasSet,setName=GetItemLinkSetInfo(link,true)
+            if hasSet and setName==OAKENSOUL_NAME then return true end
+        end
+    end
+    return false
+end
+
+-- Active display hotbar can be a weapon bar or a temporary/transformation bar
+-- (Werewolf, Vampire transformation, and other ESO-provided active hotbars).
+local function getDisplayHotbar()
+    local active=GetActiveHotbarCategory()
+    if active==nil then return HOTBAR_CATEGORY_PRIMARY end
+    return active
+end
+
+local function isWeaponHotbar(bar)
+    return bar==HOTBAR_CATEGORY_PRIMARY or bar==HOTBAR_CATEGORY_BACKUP
+end
+
+local function applyBarMode()
+    if not A.root or not A.front or not A.back then return end
+    local oneBar=hasOakensoulEquipped()
+    A.oneBarMode=oneBar
+
+    local active=getDisplayHotbar()
+    -- Temporary/transformation bars render through the front visual row.
+    local activeGroup=(active==HOTBAR_CATEGORY_BACKUP) and A.back or A.front
+    local inactiveGroup=(active==HOTBAR_CATEGORY_BACKUP) and A.front or A.back
+
+    if oneBar then
+        -- Oakensoul: physically move the active five skills into one clean row.
+        -- Hide the unused weapon row completely so no stale backdrops/children
+        -- remain below the visible bar.
+        for i=FIRST,LAST do
+            local n=i-FIRST
+            local shown=activeGroup[i]
+            local hidden=inactiveGroup[i]
+
+            shown:ClearAnchors()
+            shown:SetAnchor(TOPLEFT,A.root,TOPLEFT,n*54,0)
+            shown:SetHidden(false)
+            shown:SetAlpha(1)
+
+            hidden:SetHidden(true)
+            hidden:SetAlpha(0)
+        end
+
+        A.root:SetDimensions(430,66)
+
+        if A.ult then
+            A.ult:ClearAnchors()
+            A.ult:SetAnchor(LEFT,activeGroup[LAST],RIGHT,18,0)
+            A.ult:SetHidden(false)
+        end
+        if A.quick then
+            A.quick:ClearAnchors()
+            A.quick:SetAnchor(RIGHT,activeGroup[FIRST],LEFT,-12,0)
+            A.quick:SetHidden(false)
+        end
+    else
+        -- Standard Rytic two-row layout. Restore both groups to their canonical
+        -- positions after Oakensoul is removed.
+        for i=FIRST,LAST do
+            local n=i-FIRST
+            A.front[i]:ClearAnchors()
+            A.front[i]:SetAnchor(TOPLEFT,A.root,TOPLEFT,n*54,0)
+            A.front[i]:SetHidden(false)
+            A.front[i]:SetAlpha(1)
+
+            A.back[i]:ClearAnchors()
+            A.back[i]:SetAnchor(TOPLEFT,A.root,TOPLEFT,n*54,56)
+            A.back[i]:SetHidden(false)
+            A.back[i]:SetAlpha(1)
+        end
+
+        A.root:SetDimensions(430,112)
+
+        if A.ult then
+            A.ult:ClearAnchors()
+            A.ult:SetAnchor(LEFT,A.front[LAST],RIGHT,18,28)
+            A.ult:SetHidden(false)
+        end
+        if A.quick then
+            A.quick:ClearAnchors()
+            A.quick:SetAnchor(RIGHT,A.front[FIRST],LEFT,-12,28)
+            A.quick:SetHidden(false)
+        end
+    end
+end
+
 function A.Create()
     if A.root then return end
     local sv=defaults()
@@ -399,6 +682,7 @@ function A.Create()
             ZO_ActionBar_OnActionButtonUp(9)
         end
     end)
+    applyBarMode()
     root:SetHidden(not sv.enabled)
     setNativeBarHidden(sv.enabled)
 end
@@ -414,8 +698,15 @@ local function updateButton(btn,slot,bar,isActive)
     btn.icon:SetTexture(icon or "")
     -- Dim the skills on the weapon bar that is NOT currently equipped.
     -- This affects only the icon, not the white/blue/red border state.
-    btn.icon:SetDesaturation(isActive and 0 or .72)
-    btn.icon:SetAlpha(isActive and 1 or .42)
+    -- ESO ActionButton.lua desaturates the icon while cooldown is shown.
+    -- Preserve Rytic's inactive-bar treatment when this button is not the active bar.
+    if btn.ryticGcdActive and isActive then
+        btn.icon:SetDesaturation(1)
+        btn.icon:SetAlpha(1)
+    else
+        btn.icon:SetDesaturation(isActive and 0 or .72)
+        btn.icon:SetAlpha(isActive and 1 or .42)
+    end
 
     local remain=0
     if GetActionSlotEffectTimeRemaining then
@@ -451,6 +742,7 @@ local function updateButton(btn,slot,bar,isActive)
 end
 
 function A.Update()
+    updateReadyPulse()
     if not defaults().enabled then
         setCustomBarVisible(false)
         setNativeBarHidden(false)
@@ -459,13 +751,56 @@ function A.Update()
 
     if not A.root or A.root:IsHidden() then return end
     setNativeBarHidden(true)
-    keepRezAboveBar()
-    local active=GetActiveHotbarCategory()
+    local active=getDisplayHotbar()
     local frontCat=HOTBAR_CATEGORY_PRIMARY
     local backCat=HOTBAR_CATEGORY_BACKUP
-    for i=FIRST,LAST do
-        updateButton(A.front[i],i,frontCat,active==frontCat)
-        updateButton(A.back[i],i,backCat,active==backCat)
+    local transformed=not isWeaponHotbar(active)
+
+    -- Werewolf/Vampire/temporary transformation hotbars replace the weapon-bar
+    -- display with ESO's currently active hotbar.  Use one visual row while the
+    -- transformation is active, then restore the normal/Oakensoul layout on exit.
+    if transformed or A.oneBarMode then
+        local activeGroup=(active==backCat) and A.back or A.front
+        local inactiveGroup=(active==backCat) and A.front or A.back
+
+        for i=FIRST,LAST do
+            local shown=activeGroup[i]
+            local hidden=inactiveGroup[i]
+            if shown then
+                local n=i-FIRST
+                shown:ClearAnchors()
+                shown:SetAnchor(TOPLEFT,A.root,TOPLEFT,n*54,0)
+                shown:SetHidden(false)
+                shown:SetAlpha(1)
+            end
+            if hidden then
+                hidden:SetHidden(true)
+                hidden:SetAlpha(0)
+            end
+        end
+        A.root:SetDimensions(430,66)
+
+        -- Match the normal one-bar/Oakensoul presentation: quickslot, five skills,
+        -- and ultimate all centered on the same horizontal line.
+        if A.quick then
+            A.quick:ClearAnchors()
+            A.quick:SetAnchor(RIGHT,activeGroup[FIRST],LEFT,-12,0)
+            A.quick:SetHidden(false)
+        end
+        if A.ult then
+            A.ult:ClearAnchors()
+            A.ult:SetAnchor(LEFT,activeGroup[LAST],RIGHT,18,0)
+            A.ult:SetHidden(false)
+        end
+
+        for i=FIRST,LAST do updateButton(activeGroup[i],i,active,true) end
+    else
+        -- Ensure the normal two weapon rows are restored after transformation.
+        applyBarMode()
+        for i=FIRST,LAST do
+            updateButton(A.front[i],i,frontCat,active==frontCat)
+            updateButton(A.back[i],i,backCat,active==backCat)
+        end
     end
 
     -- Ultimate follows the active weapon bar.
@@ -514,13 +849,24 @@ local function setCustomBarVisible(show)
         A.root:SetMouseEnabled(show)
         A.root:SetAlpha(show and 1 or 0)
     end
-    -- Defensive hide/show for child controls in case another UI handler changed
-    -- their visibility independently of the root.
-    local groups={A.front,A.back}
-    for _,g in ipairs(groups) do
-        if g then
-            for _,c in pairs(g) do
-                if c and c.SetHidden then c:SetHidden(not show) end
+    -- Defensive child visibility. In Oakensoul mode never resurrect the
+    -- intentionally hidden weapon row when ESO shows the action bar again.
+    if show and A.oneBarMode and A.front and A.back then
+        local active=GetActiveHotbarCategory()
+        local activeGroup=(active==HOTBAR_CATEGORY_BACKUP) and A.back or A.front
+        local inactiveGroup=(active==HOTBAR_CATEGORY_BACKUP) and A.front or A.back
+
+        for i=FIRST,LAST do
+            if activeGroup[i] and activeGroup[i].SetHidden then activeGroup[i]:SetHidden(false) end
+            if inactiveGroup[i] and inactiveGroup[i].SetHidden then inactiveGroup[i]:SetHidden(true) end
+        end
+    else
+        local groups={A.front,A.back}
+        for _,g in ipairs(groups) do
+            if g then
+                for _,c in pairs(g) do
+                    if c and c.SetHidden then c:SetHidden(not show) end
+                end
             end
         end
     end
@@ -560,17 +906,100 @@ local function registerRuntime()
             if A.quick then refreshQuickslot(A.quick) end
         end)
     end
+    if EVENT_ACTION_SLOT_ABILITY_USED then
+        EM:RegisterForEvent("RyticActionBarGCDAbilityUsed",EVENT_ACTION_SLOT_ABILITY_USED,function(_,slot)
+            slot=tonumber(slot)
+            if not slot or slot<FIRST or slot>LAST then return end
+            local active=getDisplayHotbar()
+            local abilityId=slotId(slot,active)
+
+            -- Remember the actual pressed button for a very short window. We do
+            -- not classify it unless ESO subsequently reports Major Resolve.
+            A.lastPressedSlot=slot
+            A.lastPressedBar=active
+            A.lastPressedAbilityId=abilityId
+            A.lastPressedAt=now()
+
+            local btn=(active==HOTBAR_CATEGORY_BACKUP) and A.back[slot] or A.front[slot]
+            if btn then beginGCDSweep(btn,slot,active,abilityId) end
+        end)
+    end
+
+    if EVENT_EFFECT_CHANGED then
+        EM:RegisterForEvent("RyticActionBarResolveEffect",EVENT_EFFECT_CHANGED,
+            function(_,changeType,_,effectName,_,_,_,_,_,_,_,_,_,_,_,abilityId)
+                local isResolve=(tonumber(abilityId)==MAJOR_RESOLVE_EFFECT_ID)
+                if not isResolve and effectName then
+                    isResolve=zo_strformat("<<z:1>>",effectName):find("major resolve",1,true)~=nil
+                end
+                if not isResolve then return end
+
+                -- Learn only from a gain/update immediately following our own
+                -- button press. No cooldown-duration guessing.
+                if not isNightblade()
+                    and changeType~=EFFECT_RESULT_FADED
+                    and A.lastPressedSlot and A.lastPressedAt
+                    and (now()-A.lastPressedAt)<=0.75 then
+                    rememberResolveSource(A.lastPressedSlot,A.lastPressedBar,A.lastPressedAbilityId)
+                end
+            end)
+        EM:AddFilterForEvent("RyticActionBarResolveEffect",EVENT_EFFECT_CHANGED,
+            REGISTER_FILTER_UNIT_TAG,"player")
+    end
+    if EVENT_COMBAT_EVENT then
+        EM:RegisterForEvent("RyticActionBarGCDCombat",EVENT_COMBAT_EVENT,function(_,result,isError,abilityName,abilityGraphic,abilityActionSlotType,sourceName,sourceType,targetName,targetType,hitValue,powerType,damageType,log,sourceUnitId,targetUnitId,abilityId)
+            if not A.gcdButton or not A.gcdAbilityId or A.gcdAbilityId==0 then return end
+            if tonumber(abilityId)~=tonumber(A.gcdAbilityId) then return end
+            if sourceType and COMBAT_UNIT_TYPE_PLAYER and sourceType~=COMBAT_UNIT_TYPE_PLAYER then return end
+
+            local cancelled =
+                (ACTION_RESULT_INTERRUPTED and result==ACTION_RESULT_INTERRUPTED) or
+                (ACTION_RESULT_FAILED and result==ACTION_RESULT_FAILED) or
+                (ACTION_RESULT_MISSING_EMPTY_SOUL_GEM and result==ACTION_RESULT_MISSING_EMPTY_SOUL_GEM) or
+                (ACTION_RESULT_CANT_SEE_TARGET and result==ACTION_RESULT_CANT_SEE_TARGET) or
+                (ACTION_RESULT_OUT_OF_RANGE and result==ACTION_RESULT_OUT_OF_RANGE) or
+                (ACTION_RESULT_BAD_TARGET and result==ACTION_RESULT_BAD_TARGET)
+
+            if cancelled then
+                -- A cancelled/channel-interrupted action is no longer timing.
+                -- Clear it rather than letting a stale multi-second sweep continue.
+                cancelSweep(false)
+            end
+        end)
+    end
+    if EVENT_INVENTORY_SINGLE_SLOT_UPDATE then
+        EM:RegisterForEvent("RyticActionBarOakensoul",EVENT_INVENTORY_SINGLE_SLOT_UPDATE,function(_,bagId)
+            if bagId==BAG_WORN then applyBarMode() end
+        end)
+    end
     if EVENT_HOTBAR_SLOT_UPDATED then
         EM:RegisterForEvent("RyticActionBarQuickslot",EVENT_HOTBAR_SLOT_UPDATED,function(_,slot,hotbarCategory)
             if hotbarCategory==HOTBAR_CATEGORY_QUICKSLOT_WHEEL and A.quick then refreshQuickslot(A.quick) end
+        end)
+    end
+    if EVENT_ACTION_SLOTS_ACTIVE_HOTBAR_UPDATED then
+        EM:RegisterForEvent("RyticActionBarActiveHotbar",EVENT_ACTION_SLOTS_ACTIVE_HOTBAR_UPDATED,function()
+            A.Update()
+        end)
+    end
+    if EVENT_ACTION_SLOTS_FULL_UPDATE then
+        EM:RegisterForEvent("RyticActionBarFullSlots",EVENT_ACTION_SLOTS_FULL_UPDATE,function()
+            A.Update()
         end)
     end
 end
 
 local function unregisterRuntime()
     EM:UnregisterForUpdate(UPDATE_NAME)
+    EM:UnregisterForUpdate(GCD_UPDATE_NAME)
+    if EVENT_ACTION_SLOT_ABILITY_USED then EM:UnregisterForEvent("RyticActionBarGCDAbilityUsed",EVENT_ACTION_SLOT_ABILITY_USED) end
+    if EVENT_COMBAT_EVENT then EM:UnregisterForEvent("RyticActionBarGCDCombat",EVENT_COMBAT_EVENT) end
+    if EVENT_EFFECT_CHANGED then EM:UnregisterForEvent("RyticActionBarResolveEffect",EVENT_EFFECT_CHANGED) end
+    if EVENT_INVENTORY_SINGLE_SLOT_UPDATE then EM:UnregisterForEvent("RyticActionBarOakensoul",EVENT_INVENTORY_SINGLE_SLOT_UPDATE) end
     EM:UnregisterForEvent("RyticActionBarActiveQuickslot",EVENT_ACTIVE_QUICKSLOT_CHANGED)
     EM:UnregisterForEvent("RyticActionBarQuickslot",EVENT_HOTBAR_SLOT_UPDATED)
+    if EVENT_ACTION_SLOTS_ACTIVE_HOTBAR_UPDATED then EM:UnregisterForEvent("RyticActionBarActiveHotbar",EVENT_ACTION_SLOTS_ACTIVE_HOTBAR_UPDATED) end
+    if EVENT_ACTION_SLOTS_FULL_UPDATE then EM:UnregisterForEvent("RyticActionBarFullSlots",EVENT_ACTION_SLOTS_FULL_UPDATE) end
 end
 
 function A.SetEnabled(enabled)
@@ -586,6 +1015,8 @@ function A.SetEnabled(enabled)
     else
         unregisterRuntime()
         wasDead=false
+        if A.gcdButton then clearGCDSweep(A.gcdButton) end
+        A.gcdButton=nil
         setCustomBarVisible(false)
         -- Restore the native ESO action bar and stop touching it while disabled.
         setNativeBarHidden(false)
@@ -598,6 +1029,7 @@ function A.Toggle()
 end
 
 function A.Initialize()
+    rebuildShadowAbilityCache()
     A.Create()
     SLASH_COMMANDS["/ryticbar"]=A.Toggle
 

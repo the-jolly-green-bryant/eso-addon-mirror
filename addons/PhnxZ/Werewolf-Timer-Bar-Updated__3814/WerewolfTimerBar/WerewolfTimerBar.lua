@@ -4,7 +4,7 @@
 WerewolfTimerBar = {}
 local WWTB = WerewolfTimerBar
 WWTB.Name = "WerewolfTimerBar"
-WWTB.Version = 3.05
+WWTB.Version = 3.07
 WWTB.Default = 
 	{
 		Unlock = false,
@@ -131,16 +131,16 @@ end
 --  Show/Hide Function --
 -------------------------------------------------------------------------------------------------
 function WerewolfTimerBar.ShowHide()
-	if IsWerewolf() then
+	if IsPlayerInWerewolfForm() then
 		-- If werewolf then show the bars --
 		if WWTB.SV.ShowTimer then
 			-- Get Ultimate value --
-			local current, _, _ = GetUnitPower('player', COMBAT_MECHANIC_FLAGS_ULTIMATE)
-			WerewolfTimerBarWindow_StatusBar:SetValue(current)
+			local currentPower, _, _ = GetUnitPower('player', COMBAT_MECHANIC_FLAGS_ULTIMATE)
+			WerewolfTimerBarWindow_StatusBar:SetValue(currentPower)
 			-- Set Ultimate Bar color --
-			if WWTB.SV.WarningColor and current <= WWTB.SV.CriticalLevel then
+			if WWTB.SV.WarningColor and currentPower <= WWTB.SV.CriticalLevel then
 				WerewolfTimerBarWindow_StatusBar:SetColor(unpack(WWTB.SV.CriticalBarColor))
-			elseif WWTB.SV.WarningColor and current <= WWTB.SV.WarningLevel then
+			elseif WWTB.SV.WarningColor and currentPower <= WWTB.SV.WarningLevel then
 				WerewolfTimerBarWindow_StatusBar:SetColor(unpack(WWTB.SV.WarningBarColor))
 			else
 				WerewolfTimerBarWindow_StatusBar:SetColor(unpack(WWTB.SV.BarColor))
@@ -185,7 +185,7 @@ function WerewolfTimerBar.UnlockUI(Control)
 	WerewolfTimerBarWindow:SetMovable(true)
 	WerewolfTimerBarWindow:SetTopmost(true)
 	WerewolfTimerBarWindow:SetHidden(false)
-	if not IsWerewolf() then
+	if not IsPlayerInWerewolfForm() then
 		-- If not werewolf, fill bars so they are visible --
 		WerewolfTimerBarWindow_StatusBar:SetValue(BarMax)
 		WerewolfTimerBarWindow_FuryBar:SetValue(FuryBarMax)
@@ -265,7 +265,7 @@ function WerewolfTimerBar.SetupUltimateBlock()
 		-- Player is in combat, or has permanet block enabled --
 		if IsUnitInCombat("player") or not WWTB.SV.BlockInCombatOnly then
 			-- Ultimate blocking set to true and is a werewolf --
-			if WWTB.SV.UltimateEnable and IsWerewolf() then
+			if WWTB.SV.UltimateEnable and IsPlayerInWerewolfForm() then
 				-- Get the slot number for the actionbar button pressed --
 				slotNum = tonumber(debug.traceback():match('keybind = "ACTION_BUTTON_(%d)')) or tonumber(debug.traceback():match('keybind = "GAMEPAD_ACTION_BUTTON_(%d)'))
 				-- Ultimate button pressed --
@@ -760,22 +760,34 @@ end
 -------------------------------------------------------------------------------------------------
 function WerewolfTimerBar.onPowerUpdate(eventCode, unitTag, powerIndex, powerType, powerValue, powerMax, powerEffectiveMax)
 	-- Update the bar on any changes --
-	if powerType == 8 and WWTB.SV.ShowTimer then
-		-- powerType 8 is Ultimate -
-		WerewolfTimerBarWindow_StatusBar:SetValue(powerValue)
+	local currentPower
+	local currentFury
+	-- powerType 8 is Ultimate -
+	if powerType == 8 then
+		currentPower = powerValue
+		currentFury, _, _ = GetUnitPower('player', POWERTYPE_WEREWOLF)
+	-- powerType 2 is Fury --
+	elseif powerType == 2 then
+		currentFury = powerValue
+		currentPower, _, _ = GetUnitPower('player', COMBAT_MECHANIC_FLAGS_ULTIMATE)
+	else
+		return
+	end
+	if WWTB.SV.ShowTimer then
+		WerewolfTimerBarWindow_StatusBar:SetValue(currentPower)
 		-- Set Ultimate bar color --
-		if WWTB.SV.WarningColor and powerValue <= WWTB.SV.CriticalLevel then
+		if WWTB.SV.WarningColor and currentPower <= WWTB.SV.CriticalLevel then
 			WerewolfTimerBarWindow_StatusBar:SetColor(unpack(WWTB.SV.CriticalBarColor))
-		elseif WWTB.SV.WarningColor and powerValue <= WWTB.SV.WarningLevel then
+		elseif WWTB.SV.WarningColor and currentPower <= WWTB.SV.WarningLevel then
 			WerewolfTimerBarWindow_StatusBar:SetColor(unpack(WWTB.SV.WarningBarColor))
 		else
 			WerewolfTimerBarWindow_StatusBar:SetColor(unpack(WWTB.SV.BarColor))
 		end
-	elseif powerType == 2 and WWTB.SV.ShowFury then
-		-- powerType 2 is Fury --
-		WerewolfTimerBarWindow_FuryBar:SetValue(powerValue)
+	end
+	if WWTB.SV.ShowFury then
+		WerewolfTimerBarWindow_FuryBar:SetValue(currentFury)
 		-- Set Fury bar color --
-		if powerValue == FuryBarMax then
+		if currentFury == FuryBarMax then
 			WerewolfTimerBarWindow_FuryBar:SetColor(unpack(WWTB.SV.FuryBarMaxColor))
 			WerewolfTimerBarWindow_FuryBarLabel:SetText(FuryMaxText)
 		else
@@ -786,7 +798,7 @@ function WerewolfTimerBar.onPowerUpdate(eventCode, unitTag, powerIndex, powerTyp
 end
 
 function WerewolfTimerBar.OnWerewolfStateChanged(eventCode, isWerewolf)
-	if isWerewolf then
+	if IsPlayerInWerewolfForm() then
 		-- Register events for werewolf updates --
 		if WWTB.SV.ShowTimer or WWTB.SV.ShowFury then
 			EVENT_MANAGER:RegisterForEvent(WWTB.Name_Upd, EVENT_POWER_UPDATE, WWTB.onPowerUpdate)
@@ -795,12 +807,12 @@ function WerewolfTimerBar.OnWerewolfStateChanged(eventCode, isWerewolf)
 		-- If werewolf then show the bar --
 		if WWTB.SV.ShowTimer then
 			-- Get Ultimate value --
-			local current, _, _ = GetUnitPower('player', COMBAT_MECHANIC_FLAGS_ULTIMATE)
-			WerewolfTimerBarWindow_StatusBar:SetValue(current)
+			local currentPower, _, _ = GetUnitPower('player', COMBAT_MECHANIC_FLAGS_ULTIMATE)
+			WerewolfTimerBarWindow_StatusBar:SetValue(currentPower)
 			-- Set Ultimate bar color --
-			if current <= WWTB.SV.CriticalLevel then
+			if currentPower <= WWTB.SV.CriticalLevel then
 				WerewolfTimerBarWindow_StatusBar:SetColor(unpack(WWTB.SV.CriticalBarColor))
-			elseif current <= WWTB.SV.WarningLevel then
+			elseif currentPower <= WWTB.SV.WarningLevel then
 				WerewolfTimerBarWindow_StatusBar:SetColor(unpack(WWTB.SV.WarningBarColor))
 			else
 				WerewolfTimerBarWindow_StatusBar:SetColor(unpack(WWTB.SV.BarColor))
@@ -857,6 +869,7 @@ function WerewolfTimerBar.OnPlayerActivated(eventCode, initial)
 	if initial then
 		WWTB.ShowHide()
 	end
+	WWTB.OnWerewolfStateChanged()
 end
 
 -------------------------------------------------------------------------------------------------

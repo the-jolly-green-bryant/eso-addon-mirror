@@ -61,6 +61,16 @@ function NC.MountRider()
     end
 end
 
+-- Автоматическое переключение режима спринта (по нажатию на маунте, по удержанию пешком)
+function NC.UpdateMountSprintToggle(isMounted)
+    if not NC.savedVars or not NC.savedVars.mountSprintToggle then return end
+    if isMounted then
+        SetSetting(13, 17, "1")
+    else
+        SetSetting(13, 17, "0")
+    end
+end
+
 function NC.OnChatMessage(eventCode, channelType, fromName, text, isCustomerService, fromDisplayName)
     if channelType ~= CHAT_CHANNEL_WHISPER or not NC.savedVars.whisperAlert then return end
 
@@ -2031,6 +2041,12 @@ function NC.UpdateFoodReminder()
     -- 2. БОЕВОЙ РЕЖИМ: зеленая рамка ВСЕГДА наглухо скрыта!
     if NC.FoodReminderPreview then NC.FoodReminderPreview:SetHidden(true) end
 
+    -- Если открыты меню, инвентарь, карта или диалог — напоминание скрыто
+    if not NC.FoodReminderFragment or not NC.FoodReminderFragment:IsShowing() then
+        NC.FoodReminderFrame:SetHidden(true)
+        return
+    end
+
     local inFoodZone = IsInFoodCombatZone()
     local inTorteZone = IsInTortePvPZone()
 
@@ -2118,6 +2134,560 @@ function NC.CreateFoodReminderUI()
     NC.FoodReminderFragment  = ZO_SimpleSceneFragment:New(frame)
 
     NC.UpdateFoodReminderUI()
+end
+
+---------------------------------------------------------
+-- МОДУЛЬ: ВЕТЕРАНСТВО (PVP РАНГ)
+---------------------------------------------------------
+
+function NC.UpdateVeterancyUI()
+    if not NC.VeterancyFrame or not NC.VeterancyFragment then return end
+    local sv = NC.savedVars
+    if not sv then return end
+
+    local unlocked = sv.veterancyUnlocked
+    local size = sv.veterancySize or 48
+    local showSub = (sv.veterancyShowSubText ~= false)
+
+    -- Если нижняя строчка скрыта — высота окна равна строго размеру значка
+    if showSub then
+        NC.VeterancyFrame:SetDimensions(size + 20, size + 16)
+    else
+        NC.VeterancyFrame:SetDimensions(size, size)
+    end
+
+    NC.VeterancyIcon:SetDimensions(size, size)
+    NC.VeterancyFrame:SetMovable(unlocked)
+    NC.VeterancyFrame:SetMouseEnabled(true)
+
+    -- Адаптивный шрифт цифры внутри значка
+    if size >= 56 then
+        NC.VeterancyLabel:SetFont("ZoFontWinH1")
+    elseif size >= 42 then
+        NC.VeterancyLabel:SetFont("ZoFontWinH2")
+    else
+        NC.VeterancyLabel:SetFont("ZoFontWinH4")
+    end
+
+    if sv.veterancyEnabled then
+        HUD_SCENE:AddFragment(NC.VeterancyFragment)
+        HUD_UI_SCENE:AddFragment(NC.VeterancyFragment)
+    else
+        HUD_SCENE:RemoveFragment(NC.VeterancyFragment)
+        HUD_UI_SCENE:RemoveFragment(NC.VeterancyFragment)
+        NC.VeterancyFrame:SetHidden(true)
+        return
+    end
+
+    NC.UpdateVeterancy()
+end
+
+function NC.UpdateVeterancy()
+    if not NC.VeterancyFrame or not NC.savedVars or not NC.savedVars.veterancyEnabled then return end
+
+    local sv = NC.savedVars
+    local showSub = (sv.veterancyShowSubText ~= false)
+
+    -- 1. Защитная проверка ZOS
+    local rank = nil
+    if GetUnitVeterancyRank then
+        rank = GetUnitVeterancyRank("player")
+    end
+
+    if not rank or rank <= 0 then
+        if not sv.veterancyUnlocked then
+            NC.VeterancyFrame:SetHidden(true)
+            return
+        else
+            rank = 1
+        end
+    end
+
+    -- 2. Прогресс ранга (%) с принудительным обновлением в реальном времени
+    local progressVal = 0
+    local rankObj = BATTLEGROUND_FINDER_KEYBOARD and BATTLEGROUND_FINDER_KEYBOARD.veterancyRankObject
+    if rankObj then
+        if rankObj.Refresh then rankObj:Refresh() end
+        if rankObj.statusBar and rankObj.statusBar.GetValue then
+            progressVal = rankObj.statusBar:GetValue() or 0
+        end
+    elseif ZO_BattlegroundFinder_KeyboardVeterancyRankXPBar and ZO_BattlegroundFinder_KeyboardVeterancyRankXPBar.GetValue then
+        progressVal = ZO_BattlegroundFinder_KeyboardVeterancyRankXPBar:GetValue() or 0
+    end
+    local pct = progressVal * 100
+
+    -- Сброс в 06:00 по МСК 
+    local todayDate = math.floor((GetTimeStamp() - 10800) / 86400)
+    if not sv.veterancyDailyDate or sv.veterancyDailyDate ~= todayDate or not sv.veterancyDailyStartRank or sv.veterancyDailyStartRank == 0 then
+        sv.veterancyDailyDate = todayDate
+        sv.veterancyDailyStartRank = rank
+    end
+    local ranksGainedToday = math.max(0, rank - sv.veterancyDailyStartRank)
+
+    -- 4. Вывод реальных живых данных (без фейковых заглушек)
+    NC.VeterancyLabel:SetText(tostring(rank))
+    NC.VeterancySubLabel:SetText(string.format("|c00FF00+%d|r |cAAAAAA(%.1f%%)|r", ranksGainedToday, pct))
+    NC.VeterancySubLabel:SetHidden(not showSub)
+    NC.VeterancyFrame:SetHidden(false)
+
+    -- 5. Данные для всплывающей подсказки
+    NC.VeterancyFrame.tooltipData = {
+        rank   = rank,
+        pct    = pct,
+        gained = ranksGainedToday,
+    }
+end
+
+function NC.CreateVeterancyUI()
+    if NC.VeterancyFrame then return end
+
+    local sv = NC.savedVars
+    local size = (sv and sv.veterancySize) or 48
+
+    local frame = WINDOW_MANAGER:CreateTopLevelWindow("NecroCat_VeterancyFrame")
+    frame:SetDimensions(size + 20, size + 16)
+    frame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, (sv and sv.veterancyLeft) or 500, (sv and sv.veterancyTop) or 400)
+    frame:SetMovable(sv and sv.veterancyUnlocked)
+    frame:SetMouseEnabled(true)
+    frame:SetClampedToScreen(true)
+    frame:SetHidden(true)
+
+    -- Крутой значок 100-го уровня
+    local icon = WINDOW_MANAGER:CreateControl("$(parent)Icon", frame, CT_TEXTURE)
+    icon:SetAnchor(TOP, frame, TOP, 0, 0)
+    icon:SetDimensions(size, size)
+    icon:SetTexture("EsoUI/Art/Vengeance/ranks/season00/s00_uniquerank_100.dds")
+    icon:SetDrawLayer(DL_CONTROLS)
+
+    -- Крупная цифра ранга по центру значка
+    local label = WINDOW_MANAGER:CreateControl("$(parent)Label", frame, CT_LABEL)
+    label:SetAnchor(CENTER, icon, CENTER, 0, 0)
+    label:SetFont("ZoFontWinH2")
+    label:SetColor(1, 1, 1, 1)
+    label:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    label:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    label:SetDrawLayer(DL_OVERLAY)
+    label:SetDrawLevel(2)
+
+    -- Нижняя строчка: +N (X.X%)
+    local subLabel = WINDOW_MANAGER:CreateControl("$(parent)SubLabel", frame, CT_LABEL)
+    subLabel:SetAnchor(TOP, icon, BOTTOM, 0, 1)
+    subLabel:SetFont("ZoFontGameSmall")
+    subLabel:SetColor(1, 1, 1, 1)
+    subLabel:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    subLabel:SetDrawLayer(DL_OVERLAY)
+    subLabel:SetDrawLevel(2)
+
+    frame:SetHandler("OnMoveStop", function(self)
+        self:ClearAnchors()
+        self:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, self:GetLeft(), self:GetTop())
+        if NC.savedVars then
+            NC.savedVars.veterancyLeft = self:GetLeft()
+            NC.savedVars.veterancyTop = self:GetTop()
+        end
+    end)
+
+    -- Подсказка при наведении мыши
+    frame:SetHandler("OnMouseEnter", function(self)
+        if NC.savedVars and NC.savedVars.veterancyUnlocked then return end
+        local d = self.tooltipData
+        if not d then return end
+
+        InitializeTooltip(InformationTooltip, self, TOP, 0, 5)
+        InformationTooltip:AddLine(string.format("|c66f2ffВетеранство (PvP): Ранг %d|r", d.rank), "ZoFontWinH4")
+        InformationTooltip:AddLine(string.format("Прогресс ранга: |c00FF00%.1f%%|r", d.pct), "ZoFontGame")
+        InformationTooltip:AddLine(string.format("Получено за сегодня: |c00FF00+%d|r", d.gained), "ZoFontGameSmall")
+    end)
+    frame:SetHandler("OnMouseExit", function() ClearTooltip(InformationTooltip) end)
+
+    NC.VeterancyFrame    = frame
+    NC.VeterancyIcon     = icon
+    NC.VeterancyLabel    = label
+    NC.VeterancySubLabel = subLabel
+    NC.VeterancyFragment = ZO_SimpleSceneFragment:New(frame)
+
+    NC.UpdateVeterancyUI()
+end
+
+---------------------------------------------------------
+-- МОДУЛЬ: СУТОЧНЫЙ ТРЕКЕР ВАЛЮТ И ОПЫТА
+---------------------------------------------------------
+
+NC.CurrencyEntries = {}
+
+local function GetTotalCurrency(curt)
+    local charAmt = GetCurrencyAmount(curt, CURRENCY_LOCATION_CHARACTER) or 0
+    local bankAmt = GetCurrencyAmount(curt, CURRENCY_LOCATION_BANK) or 0
+    return charAmt + bankAmt
+end
+
+local function FormatCurrencyNumber(amount)
+    if not amount then return "|cAAAAAA0|r" end
+    local isNeg = (amount < 0)
+    local raw = tostring(math.abs(amount))
+    local formatted = raw:reverse():gsub("(%d%d%d)", "%1,"):reverse():gsub("^,", "")
+
+    if isNeg then
+        return "|cFF4444-" .. formatted .. "|r"
+    elseif amount > 0 then
+        return "|c00FF00+" .. formatted .. "|r"
+    else
+        return "|cAAAAAA0|r"
+    end
+end
+
+local function IsInArchiveZone()
+    local zoneIndex = GetUnitZoneIndex("player")
+    local zoneId = GetZoneId(zoneIndex)
+    if zoneId == 1438 or zoneId == 1439 then return true end
+    local zoneName = string.lower(GetZoneNameById(zoneId) or "")
+    return string.find(zoneName, "архив") ~= nil or string.find(zoneName, "archive") ~= nil
+end
+
+local function IsInPvPTrackerZone()
+    local inCyro = IsPlayerInAvAWorld and IsPlayerInAvAWorld()
+    local inIC = (IsInImperialCity and IsInImperialCity()) or (IsInImperialCitySewers and IsInImperialCitySewers())
+    local inBG = IsActiveWorldBattleground and IsActiveWorldBattleground()
+    return inCyro or inIC or inBG
+end
+
+local function GetCurrentRawXP()
+    if GetUnitLevel("player") < 50 then
+        return GetUnitXP("player") or 0, GetUnitXPMax("player") or 1
+    else
+        local cpXP = GetPlayerChampionXP and GetPlayerChampionXP() or 0
+        local cpMax = (GetChampionXPInStrength and GetChampionXPInStrength()) or (GetUnitXPMax and GetUnitXPMax("player")) or 300000
+        return cpXP, cpMax
+    end
+end
+
+function NC.UpdateCurrencyTrackerUI()
+    if not NC.CurrencyTrackerFrame or not NC.CurrencyTrackerFragment then return end
+    local sv = NC.savedVars
+    if not sv then return end
+
+    NC.CurrencyTrackerFrame:SetMovable(sv.currencyTrackerUnlocked)
+    NC.CurrencyTrackerFrame:SetMouseEnabled(sv.currencyTrackerUnlocked)
+    if NC.CurrencyTrackerPreview then
+        NC.CurrencyTrackerPreview:SetHidden(not sv.currencyTrackerUnlocked)
+    end
+
+    if sv.currencyTrackerEnabled then
+        HUD_SCENE:AddFragment(NC.CurrencyTrackerFragment)
+        HUD_UI_SCENE:AddFragment(NC.CurrencyTrackerFragment)
+    else
+        HUD_SCENE:RemoveFragment(NC.CurrencyTrackerFragment)
+        HUD_UI_SCENE:RemoveFragment(NC.CurrencyTrackerFragment)
+        NC.CurrencyTrackerFrame:SetHidden(true)
+        return
+    end
+
+    NC.UpdateCurrencyTracker()
+end
+
+local function GetOrCreateCurrencyControl(index)
+    if NC.CurrencyEntries[index] then
+        return NC.CurrencyEntries[index]
+    end
+
+    local parent = NC.CurrencyTrackerFrame
+    local ctrl = WINDOW_MANAGER:CreateControl("NecroCat_CurItem" .. index, parent, CT_CONTROL)
+    ctrl:SetDimensions(80, 24)
+
+    local icon = WINDOW_MANAGER:CreateControl("$(parent)Icon", ctrl, CT_TEXTURE)
+    icon:SetDimensions(20, 20)
+    icon:SetAnchor(LEFT, ctrl, LEFT, 0, 0)
+    icon:SetDrawLayer(DL_CONTROLS)
+
+    local label = WINDOW_MANAGER:CreateControl("$(parent)Label", ctrl, CT_LABEL)
+    label:SetAnchor(LEFT, icon, RIGHT, 4, 0)
+    label:SetFont("ZoFontWinH5")
+    label:SetColor(1, 1, 1, 1)
+    label:SetDrawLayer(DL_OVERLAY)
+
+    local entryData = {
+        control = ctrl,
+        icon    = icon,
+        label   = label,
+    }
+
+    NC.CurrencyEntries[index] = entryData
+    return entryData
+end
+
+function NC.UpdateCurrencyTracker()
+    if not NC.CurrencyTrackerFrame or not NC.savedVars or not NC.savedVars.currencyTrackerEnabled then return end
+    if not NC.isPlayerActivated then return end -- Ждем полной прогрузки банка и персонажа от сервера!
+
+    local sv = NC.savedVars
+
+    -- Суточный сброс (Daily Reset) в 06:00 МСК (03:00 UTC)
+    local todayDate = math.floor((GetTimeStamp() - 10800) / 86400)
+    sv.currencyDailyStarts = sv.currencyDailyStarts or {}
+    if sv.currencyDailyDate ~= todayDate then
+        sv.currencyDailyDate = todayDate
+        sv.currencyDailyStarts = {}
+    end
+
+    local isContext = sv.currencyTrackerContextOnly
+    local inPvP = IsInPvPTrackerZone()
+    local inArchive = IsInArchiveZone()
+
+    local activeItems = {}
+
+    -- 1. Режим настройки (показываем пример с системными иконками)
+    if sv.currencyTrackerUnlocked then
+        activeItems = {
+            { icon = GetCurrencyKeyboardIcon(CURT_MONEY), delta = 17188 },
+            { icon = GetCurrencyKeyboardIcon(CURT_ALLIANCE_POINTS), delta = 123998 },
+            { icon = GetCurrencyKeyboardIcon(CURT_TELVAR_STONES), delta = -4000 },
+            { icon = GetCurrencyKeyboardIcon(CURT_TRADE_BARS or 9), delta = 300 },
+            { icon = GetCurrencyKeyboardIcon(CURT_ARCHIVAL_FORTUNES or 12), delta = 5999 },
+            { icon = "EsoUI/Art/Icons/icon_experience.dds", delta = 54200 },
+        }
+    else
+        -- 2. Реальный боевой расчет
+        local defs = {
+            { id = "gold",    curt = CURT_MONEY,                    opt = "currencyShowGold",    pvp = false, arc = false },
+            { id = "bars",    curt = CURT_TRADE_BARS or 9,          opt = "currencyShowBars",    pvp = false, arc = false },
+            { id = "ap",      curt = CURT_ALLIANCE_POINTS,          opt = "currencyShowAP",      pvp = true,  arc = false },
+            { id = "telvar",  curt = CURT_TELVAR_STONES,            opt = "currencyShowTelVar",  pvp = true,  arc = false },
+            { id = "archive", curt = CURT_ARCHIVAL_FORTUNES or 12,  opt = "currencyShowArchive", pvp = false, arc = true },
+        }
+
+        for _, d in ipairs(defs) do
+            if sv[d.opt] ~= false then
+                local passesZone = true
+                if isContext then
+                    if d.pvp and not inPvP then passesZone = false end
+                    if d.arc and not inArchive then passesZone = false end
+                end
+
+                if passesZone then
+                    local currentAmount = GetTotalCurrency(d.curt)
+                    if sv.currencyDailyStarts[d.id] == nil then
+                        sv.currencyDailyStarts[d.id] = currentAmount
+                    end
+                    local delta = currentAmount - (sv.currencyDailyStarts[d.id] or currentAmount)
+                    local curIcon = GetCurrencyKeyboardIcon(d.curt)
+                    table.insert(activeItems, { icon = curIcon, delta = delta })
+                end
+            end
+        end
+
+        -- Опыт за день (Накопительный безопасный расчет)
+        if sv.currencyShowXP ~= false then
+            local curXP, maxXP = GetCurrentRawXP()
+            sv.currencyDailyStarts["xp_earned"] = sv.currencyDailyStarts["xp_earned"] or 0
+
+            -- Первую точку отсчета просто запоминаем без начисления ложного опыта
+            if NC.lastKnownXP == nil then
+                NC.lastKnownXP = curXP
+                NC.lastKnownMaxXP = maxXP
+            else
+                if curXP > NC.lastKnownXP then
+                    local diff = curXP - NC.lastKnownXP
+                    sv.currencyDailyStarts["xp_earned"] = sv.currencyDailyStarts["xp_earned"] + diff
+                elseif curXP < NC.lastKnownXP then
+                    local lastMax = NC.lastKnownMaxXP or maxXP
+                    local diff = math.max(0, (lastMax - NC.lastKnownXP) + curXP)
+                    sv.currencyDailyStarts["xp_earned"] = sv.currencyDailyStarts["xp_earned"] + diff
+                end
+                NC.lastKnownXP = curXP
+                NC.lastKnownMaxXP = maxXP
+            end
+
+            local totalEarnedXP = sv.currencyDailyStarts["xp_earned"] or 0
+            table.insert(activeItems, { icon = "EsoUI/Art/Icons/icon_experience.dds", delta = totalEarnedXP })
+        end
+    end
+
+    -- Выстраивание в одну горизонтальную строчку
+    local currentX = 4
+    local spacing = 12
+
+    for i, item in ipairs(activeItems) do
+        local ctrlData = GetOrCreateCurrencyControl(i)
+        ctrlData.icon:SetTexture(item.icon)
+        ctrlData.label:SetText(FormatCurrencyNumber(item.delta))
+
+        local textWidth = ctrlData.label:GetTextWidth()
+        local itemWidth = 22 + textWidth + 4
+
+        ctrlData.control:SetDimensions(itemWidth, 24)
+        ctrlData.control:ClearAnchors()
+        ctrlData.control:SetAnchor(LEFT, NC.CurrencyTrackerFrame, LEFT, currentX, 0)
+        ctrlData.control:SetHidden(false)
+
+        currentX = currentX + itemWidth + spacing
+    end
+
+    -- Прячем неиспользуемые элементы
+    for i = #activeItems + 1, #NC.CurrencyEntries do
+        NC.CurrencyEntries[i].control:SetHidden(true)
+    end
+
+    local totalWidth = math.max(60, currentX - spacing + 4)
+    NC.CurrencyTrackerFrame:SetDimensions(totalWidth, 26)
+
+    -- Если мы не в режиме настройки и открыто полноэкранное меню — скрываем
+    if not sv.currencyTrackerUnlocked and NC.CurrencyTrackerFragment and not NC.CurrencyTrackerFragment:IsShowing() then
+        NC.CurrencyTrackerFrame:SetHidden(true)
+    else
+        NC.CurrencyTrackerFrame:SetHidden(#activeItems == 0)
+    end
+end
+
+function NC.CreateCurrencyTrackerUI()
+    if NC.CurrencyTrackerFrame then return end
+
+    local sv = NC.savedVars
+
+    local frame = WINDOW_MANAGER:CreateTopLevelWindow("NecroCat_CurrencyTrackerFrame")
+    frame:SetDimensions(120, 26)
+    frame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, (sv and sv.currencyTrackerLeft) or 500, (sv and sv.currencyTrackerTop) or 300)
+    frame:SetMovable(sv and sv.currencyTrackerUnlocked)
+    frame:SetMouseEnabled(sv and sv.currencyTrackerUnlocked)
+    frame:SetClampedToScreen(true)
+    frame:SetHidden(true)
+
+    -- Полупрозрачная подложка (видна при настройке)
+    local preview = WINDOW_MANAGER:CreateControl("$(parent)Preview", frame, CT_BACKDROP)
+    preview:SetAnchorFill(frame)
+    preview:SetCenterColor(0, 0, 0, 0.45)
+    preview:SetEdgeColor(0.2, 0.8, 1, 0.8)
+    preview:SetDrawLayer(DL_BACKGROUND)
+    preview:SetHidden(not (sv and sv.currencyTrackerUnlocked))
+
+    frame:SetHandler("OnMoveStop", function(self)
+        self:ClearAnchors()
+        self:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, self:GetLeft(), self:GetTop())
+        if NC.savedVars then
+            NC.savedVars.currencyTrackerLeft = self:GetLeft()
+            NC.savedVars.currencyTrackerTop = self:GetTop()
+        end
+    end)
+
+    NC.CurrencyTrackerFrame    = frame
+    NC.CurrencyTrackerPreview  = preview
+    NC.CurrencyTrackerFragment = ZO_SimpleSceneFragment:New(frame)
+
+    NC.UpdateCurrencyTrackerUI()
+end
+
+---------------------------------------------------------
+-- МОДУЛЬ: СПИДОМЕТР (ТЕКУЩАЯ СКОРОСТЬ)
+---------------------------------------------------------
+
+NC.lastSpeedX, NC.lastSpeedY, NC.lastSpeedZ, NC.lastSpeedTime = 0, 0, 0, 0
+
+function NC.UpdateSpeedometerUI()
+    if not NC.SpeedometerFrame or not NC.SpeedometerFragment then return end
+    local sv = NC.savedVars
+    if not sv then return end
+
+    local unlocked = sv.speedometerUnlocked
+    NC.SpeedometerFrame:SetMovable(unlocked)
+    NC.SpeedometerFrame:SetMouseEnabled(unlocked)
+    if NC.SpeedometerBG then NC.SpeedometerBG:SetHidden(not unlocked) end
+
+    if sv.speedometerEnabled then
+        HUD_SCENE:AddFragment(NC.SpeedometerFragment)
+        HUD_UI_SCENE:AddFragment(NC.SpeedometerFragment)
+    else
+        HUD_SCENE:RemoveFragment(NC.SpeedometerFragment)
+        HUD_UI_SCENE:RemoveFragment(NC.SpeedometerFragment)
+        NC.SpeedometerFrame:SetHidden(true)
+        return
+    end
+
+    NC.UpdateSpeedometer()
+end
+
+function NC.UpdateSpeedometer()
+    if not NC.SpeedometerFrame or not NC.savedVars or not NC.savedVars.speedometerEnabled then return end
+
+    local sv = NC.savedVars
+    local ICON_SPEED = "|t18:18:EsoUI/Art/Icons/ability_buff_major_expedition.dds|t"
+
+    -- В режиме настройки держим видимым для настройки
+    if sv.speedometerUnlocked then
+        NC.SpeedometerLabel:SetText(string.format("%s |c66f2ff1330|r", ICON_SPEED))
+        NC.SpeedometerFrame:SetHidden(false)
+        return
+    end
+
+    -- Если открыты меню, инвентарь, карта или диалог — спидометр спит и скрыт
+    if not NC.SpeedometerFragment or not NC.SpeedometerFragment:IsShowing() then
+        NC.SpeedometerFrame:SetHidden(true)
+        return
+    end
+
+    -- Проверка фильтра: показывать только на маунте
+    if sv.speedometerOnlyMounted and not IsMounted() then
+        NC.SpeedometerFrame:SetHidden(true)
+        return
+    end
+
+    -- Мы на боевом экране HUD и в седле -> включаем видимость!
+    NC.SpeedometerFrame:SetHidden(false)
+
+    local now = GetFrameTimeSeconds()
+    local _, x, y, z = GetUnitWorldPosition("player")
+
+    if NC.lastSpeedTime and NC.lastSpeedTime > 0 then
+        local dt = now - NC.lastSpeedTime
+        if dt >= 0.08 then
+            local dist = zo_distance3D(NC.lastSpeedX, NC.lastSpeedY, NC.lastSpeedZ, x, y, z)
+            local spd = zo_round(dist / dt)
+
+            if spd > 100 then
+                NC.SpeedometerLabel:SetText(string.format("%s |c66f2ff%d|r", ICON_SPEED, spd))
+            else
+                NC.SpeedometerLabel:SetText(string.format("%s |c8888880|r", ICON_SPEED))
+            end
+
+            NC.lastSpeedX, NC.lastSpeedY, NC.lastSpeedZ, NC.lastSpeedTime = x, y, z, now
+        end
+    else
+        NC.lastSpeedX, NC.lastSpeedY, NC.lastSpeedZ, NC.lastSpeedTime = x, y, z, now
+    end
+end
+
+function NC.CreateSpeedometerUI()
+    if NC.SpeedometerFrame then return end
+
+    local frame = WINDOW_MANAGER:CreateTopLevelWindow("NecroCat_SpeedometerFrame")
+    frame:SetDimensions(85, 26)
+    frame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, NC.savedVars.speedometerLeft or 500, NC.savedVars.speedometerTop or 450)
+    frame:SetMovable(NC.savedVars.speedometerUnlocked)
+    frame:SetMouseEnabled(NC.savedVars.speedometerUnlocked)
+    frame:SetClampedToScreen(true)
+    frame:SetHidden(true)
+
+    local bg = WINDOW_MANAGER:CreateControl("$(parent)BG", frame, CT_BACKDROP)
+    bg:SetAnchorFill(frame)
+    bg:SetCenterColor(0, 0, 0, 0.4)
+    bg:SetEdgeColor(0.2, 0.8, 1, 0.8)
+    bg:SetHidden(not NC.savedVars.speedometerUnlocked)
+
+    local label = WINDOW_MANAGER:CreateControl("$(parent)Label", frame, CT_LABEL)
+    label:SetAnchor(CENTER, frame, CENTER, 0, 0)
+    label:SetFont("ZoFontWinH4")
+
+    frame:SetHandler("OnMoveStop", function(self)
+        self:ClearAnchors()
+        self:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, self:GetLeft(), self:GetTop())
+        NC.savedVars.speedometerLeft = self:GetLeft()
+        NC.savedVars.speedometerTop = self:GetTop()
+    end)
+
+    NC.SpeedometerFrame    = frame
+    NC.SpeedometerBG       = bg
+    NC.SpeedometerLabel    = label
+    NC.SpeedometerFragment = ZO_SimpleSceneFragment:New(frame)
+
+    NC.UpdateSpeedometerUI()
 end
 
 ---------------------------------------------------------
@@ -2363,12 +2933,14 @@ function NC.UpdateChestCounterSize()
     if not NC.ChestCounterFrame then return end
 
     local size = NC.savedVars.chestSize or 36
-    NC.ChestCounterFrame:SetDimensions(size + 50, size)
+    NC.ChestCounterFrame:SetDimensions(size, size)
     NC.ChestCounterIcon:SetDimensions(size, size)
 
-    if size >= 44 then
+    if size >= 48 then
         NC.ChestCounterLabel:SetFont("ZoFontWinH1")
-    elseif size >= 32 then
+    elseif size >= 36 then
+        NC.ChestCounterLabel:SetFont("ZoFontWinH2")
+    elseif size >= 28 then
         NC.ChestCounterLabel:SetFont("ZoFontWinH4")
     else
         NC.ChestCounterLabel:SetFont("ZoFontGameBold")
@@ -2399,7 +2971,7 @@ function NC.CreateChestCounterUI()
     local size = NC.savedVars.chestSize or 36
 
     local frame = WINDOW_MANAGER:CreateTopLevelWindow("NecroCat_ChestFrame")
-    frame:SetDimensions(size + 50, size)
+    frame:SetDimensions(size, size)
     frame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, NC.savedVars.chestLeft or 500, NC.savedVars.chestTop or 300)
     frame:SetMovable(true)
     frame:SetMouseEnabled(true)
@@ -2408,14 +2980,18 @@ function NC.CreateChestCounterUI()
 
     -- Иконка сундука
     local icon = WINDOW_MANAGER:CreateControl("$(parent)Icon", frame, CT_TEXTURE)
-    icon:SetDimensions(size, size)
-    icon:SetAnchor(LEFT, frame, LEFT, 0, 0)
+    icon:SetAnchorFill(frame)
     icon:SetTexture("NecroCat/imgs/chest.dds")
+    icon:SetDrawLayer(DL_CONTROLS)
 
-    -- Текст счетчика справа
+    -- Текст счетчика строго по центру сундука
     local label = WINDOW_MANAGER:CreateControl("$(parent)Label", frame, CT_LABEL)
     label:SetColor(1, 1, 1, 1)
-    label:SetAnchor(LEFT, icon, RIGHT, 8, 0)
+    label:SetAnchor(CENTER, frame, CENTER, 0, 0)
+    label:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    label:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    label:SetDrawLayer(DL_OVERLAY)
+    label:SetDrawLevel(2)
     label:SetText(tostring(NC.savedVars.currentChestsCount or 0))
 
     -- Сохранение позиции при перемещении
@@ -3349,6 +3925,62 @@ local function InitializeMenu()
             name = "|c66f2ff5. Уведомления и Удобства|r",
             tooltip = "Оповещения о шепоте, входе друзей и автоматический телепорт через святилища",
             controls = {
+                { type = "header", name = "Управление спринтом" },
+                {
+                    type = "checkbox",
+                    name = "Спринт по нажатию на маунте",
+                    tooltip = "Автоматически включает режим «Спринт по нажатию» при посадке на маунта и возвращает «Спринт по удержанию» при спешивании.",
+                    getFunc = function() return NC.savedVars.mountSprintToggle end,
+                    setFunc = function(v) 
+                        NC.savedVars.mountSprintToggle = v 
+                        if NC.UpdateMountSprintToggle then 
+                            NC.UpdateMountSprintToggle(IsMounted()) 
+                        end
+                    end,
+                },
+                {
+                    type = "checkbox",
+                    name = "Отображать спидометр (Скорость)",
+                    tooltip = "Показывает компактный виджет с текущей скоростью передвижения в реальном времени.",
+                    getFunc = function() return NC.savedVars.speedometerEnabled end,
+                    setFunc = function(v) 
+                        NC.savedVars.speedometerEnabled = v 
+                        if NC.UpdateSpeedometerUI then NC.UpdateSpeedometerUI() end
+                    end,
+                },
+                {
+                    type = "checkbox",
+                    name = "Показывать только на маунте",
+                    tooltip = "Если включено, спидометр будет появляться только во время верховой езды и автоматически скрываться при спешивании.",
+                    disabled = function() return not NC.savedVars.speedometerEnabled end,
+                    getFunc = function() return NC.savedVars.speedometerOnlyMounted end,
+                    setFunc = function(v) 
+                        NC.savedVars.speedometerOnlyMounted = v 
+                        if NC.UpdateSpeedometer then NC.UpdateSpeedometer() end
+                    end,
+                },
+                {
+                    type = "checkbox",
+                    name = "Разблокировать спидометр для перемещения",
+                    tooltip = "Позволяет зажать ЛКМ и перетащить спидометр в любое удобное место на экране.",
+                    getFunc = function() return NC.savedVars.speedometerUnlocked end,
+                    setFunc = function(v) 
+                        NC.savedVars.speedometerUnlocked = v 
+                        if NC.UpdateSpeedometerUI then NC.UpdateSpeedometerUI() end
+                    end,
+                },
+                {
+                    type = "button",
+                    name = "Сбросить позицию спидометра",
+                    func = function()
+                        NC.savedVars.speedometerLeft = 500
+                        NC.savedVars.speedometerTop  = 450
+                        if NC.SpeedometerFrame then
+                            NC.SpeedometerFrame:ClearAnchors()
+                            NC.SpeedometerFrame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 500, 450)
+                        end
+                    end,
+                },
                 { type = "header", name = "Уведомления о личных сообщениях (шепот)" },
                 {
                     type = "checkbox",
@@ -3401,13 +4033,67 @@ local function InitializeMenu()
                         if v and NC.CheckTrialPets then NC.CheckTrialPets() end
                     end,
                 },
-                { type = "header", name = "Кампании" },
+                { type = "header", name = "Кампании и Ветеранство (PvP)" },
                 {
                     type = "checkbox",
                     name = "Автоприем очередей Сиродила / Имперки",
                     tooltip = "Автоматически подтверждает вход в кампанию (при готовности очереди или когда лидер группы затягивает в кампанию) и отключает диалог подтверждения.",
                     getFunc = function() return NC.savedVars.autoAcceptPvPQueue end,
                     setFunc = function(v) NC.savedVars.autoAcceptPvPQueue = v end,
+                },
+                {
+                    type = "checkbox",
+                    name = "Отображать значок Ветеранства",
+                    tooltip = "Отображает плавающую иконку с вашим текущим PvP рангом Ветеранства.",
+                    getFunc = function() return NC.savedVars.veterancyEnabled end,
+                    setFunc = function(v) 
+                        NC.savedVars.veterancyEnabled = v 
+                        if NC.UpdateVeterancyUI then NC.UpdateVeterancyUI() end
+                    end,
+                },
+                {
+                    type = "checkbox",
+                    name = "Показывать опыт и ранги за день",
+                    tooltip = "Отображает под значком мелкую строчку с полученными за сегодня рангами и процентом опыта (+N X.X%).",
+                    disabled = function() return not NC.savedVars.veterancyEnabled end,
+                    getFunc = function() return NC.savedVars.veterancyShowSubText ~= false end,
+                    setFunc = function(v) 
+                        NC.savedVars.veterancyShowSubText = v 
+                        if NC.UpdateVeterancyUI then NC.UpdateVeterancyUI() end
+                    end,
+                },
+                {
+                    type = "slider",
+                    name = "Размер значка",
+                    tooltip = "Размер иконки Ветеранства в пикселях",
+                    min = 24, max = 72, step = 2,
+                    getFunc = function() return NC.savedVars.veterancySize or 40 end,
+                    setFunc = function(v) 
+                        NC.savedVars.veterancySize = v 
+                        if NC.UpdateVeterancyUI then NC.UpdateVeterancyUI() end
+                    end,
+                },
+                {
+                    type = "checkbox",
+                    name = "Разблокировать для перемещения",
+                    tooltip = "Позволяет зажать ЛКМ и перетащить значок в любое удобное место экрана.",
+                    getFunc = function() return NC.savedVars.veterancyUnlocked end,
+                    setFunc = function(v) 
+                        NC.savedVars.veterancyUnlocked = v 
+                        if NC.UpdateVeterancyUI then NC.UpdateVeterancyUI() end
+                    end,
+                },
+                {
+                    type = "button",
+                    name = "Сбросить позицию значка",
+                    func = function()
+                        NC.savedVars.veterancyLeft = 500
+                        NC.savedVars.veterancyTop  = 400
+                        if NC.VeterancyFrame then
+                            NC.VeterancyFrame:ClearAnchors()
+                            NC.VeterancyFrame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 500, 400)
+                        end
+                    end,
                 },
                 { type = "header", name = "Изучение рецептов и стилей" },
                 {
@@ -3568,6 +4254,113 @@ local function InitializeMenu()
                         if NC.ChestCounterFrame then
                             NC.ChestCounterFrame:ClearAnchors()
                             NC.ChestCounterFrame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 500, 300)
+                        end
+                    end,
+                },
+
+                { type = "header", name = "Суточный трекер валют и опыта" },
+                {
+                    type = "checkbox",
+                    name = "Включить суточный трекер",
+                    tooltip = "Отображает компактную строку с суточным приростом/тратой валют и полученным опытом.",
+                    getFunc = function() return NC.savedVars.currencyTrackerEnabled end,
+                    setFunc = function(v) 
+                        NC.savedVars.currencyTrackerEnabled = v 
+                        if NC.UpdateCurrencyTrackerUI then NC.UpdateCurrencyTrackerUI() end
+                    end,
+                },
+                {
+                    type = "checkbox",
+                    name = "Разблокировать для перемещения",
+                    tooltip = "Позволяет зажать ЛКМ и перетащить строку валют в любое удобное место экрана.",
+                    disabled = function() return not NC.savedVars.currencyTrackerEnabled end,
+                    getFunc = function() return NC.savedVars.currencyTrackerUnlocked end,
+                    setFunc = function(v) 
+                        NC.savedVars.currencyTrackerUnlocked = v 
+                        if NC.UpdateCurrencyTrackerUI then NC.UpdateCurrencyTrackerUI() end
+                    end,
+                },
+                {
+                    type = "checkbox",
+                    name = "Скрывать неактуальные валюты вне зон",
+                    tooltip = "Если включено: AP и Тель-Вары видны только в Сиродиле/ИГ/БГ, а Осколки Архива — только в Бесконечном Архиве. Если выключено — все выбранные валюты отображаются везде.",
+                    disabled = function() return not NC.savedVars.currencyTrackerEnabled end,
+                    getFunc = function() return NC.savedVars.currencyTrackerContextOnly end,
+                    setFunc = function(v) 
+                        NC.savedVars.currencyTrackerContextOnly = v 
+                        if NC.UpdateCurrencyTracker then NC.UpdateCurrencyTracker() end
+                    end,
+                },
+                {
+                    type = "checkbox",
+                    name = "Золото (Gold)",
+                    disabled = function() return not NC.savedVars.currencyTrackerEnabled end,
+                    getFunc = function() return NC.savedVars.currencyShowGold ~= false end,
+                    setFunc = function(v) 
+                        NC.savedVars.currencyShowGold = v 
+                        if NC.UpdateCurrencyTracker then NC.UpdateCurrencyTracker() end
+                    end,
+                },
+                {
+                    type = "checkbox",
+                    name = "Золотые / Торговые слитки (Trade Bars)",
+                    disabled = function() return not NC.savedVars.currencyTrackerEnabled end,
+                    getFunc = function() return NC.savedVars.currencyShowBars ~= false end,
+                    setFunc = function(v) 
+                        NC.savedVars.currencyShowBars = v 
+                        if NC.UpdateCurrencyTracker then NC.UpdateCurrencyTracker() end
+                    end,
+                },
+                {
+                    type = "checkbox",
+                    name = "Очки Альянса (AP)",
+                    disabled = function() return not NC.savedVars.currencyTrackerEnabled end,
+                    getFunc = function() return NC.savedVars.currencyShowAP ~= false end,
+                    setFunc = function(v) 
+                        NC.savedVars.currencyShowAP = v 
+                        if NC.UpdateCurrencyTracker then NC.UpdateCurrencyTracker() end
+                    end,
+                },
+                {
+                    type = "checkbox",
+                    name = "Камни Тель-Вар (Tel Var)",
+                    disabled = function() return not NC.savedVars.currencyTrackerEnabled end,
+                    getFunc = function() return NC.savedVars.currencyShowTelVar ~= false end,
+                    setFunc = function(v) 
+                        NC.savedVars.currencyShowTelVar = v 
+                        if NC.UpdateCurrencyTracker then NC.UpdateCurrencyTracker() end
+                    end,
+                },
+                {
+                    type = "checkbox",
+                    name = "Осколки Архива (Archival Fortunes)",
+                    disabled = function() return not NC.savedVars.currencyTrackerEnabled end,
+                    getFunc = function() return NC.savedVars.currencyShowArchive ~= false end,
+                    setFunc = function(v) 
+                        NC.savedVars.currencyShowArchive = v 
+                        if NC.UpdateCurrencyTracker then NC.UpdateCurrencyTracker() end
+                    end,
+                },
+                {
+                    type = "checkbox",
+                    name = "Опыт за день (Daily XP)",
+                    disabled = function() return not NC.savedVars.currencyTrackerEnabled end,
+                    getFunc = function() return NC.savedVars.currencyShowXP ~= false end,
+                    setFunc = function(v) 
+                        NC.savedVars.currencyShowXP = v 
+                        if NC.UpdateCurrencyTracker then NC.UpdateCurrencyTracker() end
+                    end,
+                },
+                {
+                    type = "button",
+                    name = "Сбросить позицию строки",
+                    disabled = function() return not NC.savedVars.currencyTrackerEnabled end,
+                    func = function()
+                        NC.savedVars.currencyTrackerLeft = 500
+                        NC.savedVars.currencyTrackerTop  = 300
+                        if NC.CurrencyTrackerFrame then
+                            NC.CurrencyTrackerFrame:ClearAnchors()
+                            NC.CurrencyTrackerFrame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 500, 300)
                         end
                     end,
                 },
@@ -4693,6 +5486,38 @@ function NC.OnAddOnLoaded(eventCode, addOnName)
         -- Авто-запись логов боя (Encounter Log)
         autoEncounterLog         = false,
         autoEncounterLogVetOnly  = true,
+
+        -- Умный спринт на маунте
+        mountSprintToggle        = false,
+
+        -- Модуль: Спидометр
+        speedometerEnabled       = false,
+        speedometerOnlyMounted   = false,
+        speedometerLeft          = 500,
+        speedometerTop           = 450,
+        speedometerUnlocked      = false,
+
+        -- Модуль: Ветеранство (PvP ранг)
+        veterancyEnabled         = false,
+        veterancySize            = 40,
+        veterancyLeft            = 500,
+        veterancyTop             = 400,
+        veterancyUnlocked        = false,
+
+        -- Модуль: Суточный трекер валют и опыта
+        currencyTrackerEnabled      = false,
+        currencyTrackerLeft         = 500,
+        currencyTrackerTop          = 300,
+        currencyTrackerUnlocked      = false,
+        currencyTrackerContextOnly  = true,
+        currencyShowGold            = true,
+        currencyShowBars            = true,
+        currencyShowAP              = true,
+        currencyShowTelVar          = true,
+        currencyShowArchive         = true,
+        currencyShowXP              = true,
+        currencyDailyDate           = "",
+        currencyDailyStarts         = {},
     }, GetWorldName())
     
     
@@ -4782,6 +5607,9 @@ function NC.OnAddOnLoaded(eventCode, addOnName)
     NC.CreateTargetDebuffsUI()
     NC.CreateFoodReminderUI()
     NC.CreateSpeedrunHudUI()
+    NC.CreateSpeedometerUI()
+    NC.CreateVeterancyUI()
+    NC.CreateCurrencyTrackerUI()
 
     -- Отслеживание событий триала
     EVENT_MANAGER:RegisterForEvent(NC.name .. "_TrialStart", EVENT_RAID_TRIAL_STARTED, function()
@@ -4904,6 +5732,9 @@ function NC.OnAddOnLoaded(eventCode, addOnName)
         if sv.foodReminderEnabled and not sv.foodReminderPreview and NC.UpdateFoodReminder then
             NC.UpdateFoodReminder()
         end
+        if sv.speedometerEnabled and not sv.speedometerUnlocked and NC.UpdateSpeedometer then
+            NC.UpdateSpeedometer()
+        end
     end)
 
     EVENT_MANAGER:RegisterForEvent(NC.name .. "_LockpickSuccess", EVENT_LOCKPICK_SUCCESS, NC.OnLockpickSuccessForChestCounter)
@@ -4948,17 +5779,38 @@ function NC.OnAddOnLoaded(eventCode, addOnName)
     EVENT_MANAGER:RegisterForEvent(NC.name, EVENT_CHAT_MESSAGE_CHANNEL, NC.OnChatMessage)
     EVENT_MANAGER:RegisterForEvent(NC.name, EVENT_ACTIVITY_FINDER_STATUS_UPDATE, NC.OnActivityFinderStatusUpdate)
     EVENT_MANAGER:RegisterForEvent(NC.name, EVENT_CAMPAIGN_QUEUE_STATE_CHANGED, NC.OnCampaignQueueStateChange)
+    EVENT_MANAGER:RegisterForEvent(NC.name .. "_MountSprint", EVENT_MOUNTED_STATE_CHANGED, function(eventCode, mounted) 
+        NC.UpdateMountSprintToggle(mounted) 
+        if NC.UpdateSpeedometer then NC.UpdateSpeedometer() end
+    end)
     EVENT_MANAGER:RegisterForEvent(NC.name, EVENT_PLAYER_ACTIVATED, function()
+        NC.isPlayerActivated = true
         NC.CheckTrialPets()
         NC.UpdateAggroMarker()
         NC.CheckZoneChangeForChestCounter()
         NC.CheckAllWornGear()
         if NC.UpdateFoodReminder then NC.UpdateFoodReminder() end
+        if NC.UpdateMountSprintToggle then NC.UpdateMountSprintToggle(IsMounted()) end
+        if NC.UpdateVeterancy then NC.UpdateVeterancy() end
+        if NC.UpdateCurrencyTracker then NC.UpdateCurrencyTracker() end
 
         -- Авто-проверка логов боя при входе/выходе из зон
         if NC.CheckAutoEncounterLog then
             zo_callLater(NC.CheckAutoEncounterLog, 1500)
         end
+    end)
+
+    -- Автообновление ранга Ветеранства при получении очков Альянса (AP)
+    EVENT_MANAGER:RegisterForEvent(NC.name .. "_VeterancyAP", EVENT_ALLIANCE_POINT_UPDATE, function()
+        if NC.UpdateVeterancy then NC.UpdateVeterancy() end
+    end)
+
+    -- Автообновление суточного трекера при изменении баланса валют или опыта
+    EVENT_MANAGER:RegisterForEvent(NC.name .. "_CurUpdate", EVENT_CURRENCY_UPDATE, function()
+        if NC.UpdateCurrencyTracker then NC.UpdateCurrencyTracker() end
+    end)
+    EVENT_MANAGER:RegisterForEvent(NC.name .. "_XPUpdate", EVENT_EXPERIENCE_UPDATE, function()
+        if NC.UpdateCurrencyTracker then NC.UpdateCurrencyTracker() end
     end)
 
     -- Авто-проверка починки и зарядки при выходе из боя и после воскрешения

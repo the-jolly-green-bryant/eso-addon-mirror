@@ -371,7 +371,7 @@ local function CreateMainMenu()
     settings:AddSetting({ type = LHAS.ST_SECTION, label = "CTA" })
     settings:AddSetting({
         type = LHAS.ST_BUTTON,
-        label = "Campaign Briefing — Run Now",
+        label = "Campaign Briefing: Run Now",
         tooltip = "Requests a briefing for your represented guild's campaign. Does not change automatic alerts, activity filters or lock-in.",
         buttonText = "Run Now",
         clickHandler = function() CallToArm.CTA.RunNow() end,
@@ -639,6 +639,15 @@ local function CreateMainMenu()
             if UI.menu and UI.menu.RefreshSettings then UI.menu:RefreshSettings() end
         end,
         disable = function() return CallToArm.SV.debug ~= true end,
+    })
+    ----------------------------------------------------------
+    -- Signature
+    ----------------------------------------------------------
+    settings:AddSetting({
+        type = LHAS.ST_SECTION,
+        subMenu = false,
+        label = "|cFFD700Built on tea, toast and ADHD, tested live on PS5.|r\n" ..
+                "|cB427D3Su|c546D6Aga|c889764Co|cDA34CDma|r",
     })
 end
 --------------------------------------------------------------

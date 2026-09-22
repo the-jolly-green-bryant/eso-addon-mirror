@@ -8,7 +8,7 @@ local Module = {
     name      = "ArcanistGlyphic",
     menuName  = "ARCANIST GLYPHIC",
     iconPath  = "/esoui/art/icons/ability_arcanist_012.dds",
-    menuLayer = 1,
+    menuLayer = 3,
 
     TextureChoices = CC.CIRCLE_CHOICES,
     TextureValues  = CC.CIRCLE_VALUES,
@@ -43,6 +43,7 @@ local Module = {
         },
     },
     Default = {
+        enableModule = true,
         timerModeSelf = 2,
         timerModeGroup = 0,
         enableDrawSelf = true,

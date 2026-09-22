@@ -39,10 +39,15 @@ function M:Observe()
   local p=PBWT.Engine.Piece(s,self.id)
   if self.turn~=s.turn or not p or not p.alive then self:Stop() end
  end
- local moved,fromX,fromY,count=nil,nil,nil,0
+ local moved,fromX,fromY,count,lost=nil,nil,nil,0,false
  for _,p in ipairs(s.pieces) do
   local old=self.positions[p.id]
   if old and old.alive and p.alive and (old.x~=p.x or old.y~=p.y) then moved,fromX,fromY=p,old.x,old.y;count=count+1 end
+  if old and old.alive and not p.alive then lost=true end
+ end
+ -- Cues follow the board itself, so they also sound for the COM and for a remote opponent.
+ if self.positions[1] and ui.visible and not ui.transition.phase then
+  if lost then PBWT.Audio.Play('defeat') elseif count>0 then PBWT.Audio.Play('move') end
  end
  if not enabled then self:Stop()
  elseif count>0 then

@@ -1,0 +1,9 @@
+## Title: Rytic's Raid Manager
+## Description: Smart instance addon manager: core + class + role + trial helper + dependency-aware raid profiles.
+## Author: Rytic
+## Version: 0.3.1
+## AddOnVersion: 301
+## APIVersion: 101051
+## SavedVariables: RyticRaidModeSavedVariables
+
+RyticRaidMode.lua

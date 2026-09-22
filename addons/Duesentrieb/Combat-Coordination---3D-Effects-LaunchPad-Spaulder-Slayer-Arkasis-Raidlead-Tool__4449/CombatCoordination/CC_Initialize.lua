@@ -106,103 +106,107 @@ end
 function CC.EnableAllModules()
     for _, Module in ipairs(CC.Modules) do
 
-        -- DATABASE FROM MODULES (AND DATABASE.LUA OFC)
-        if Module.SkillData then
-            for abilityName, Data in pairs(Module.SkillData) do
-                if Module.Skills and Module.Skills[abilityName] then
-                    for _, abilityId in ipairs(Module.Skills[abilityName]) do
-                        Data.moduleName = Module.name
-                        Data.name = Data.name or abilityName
-                        CC.SkillData[abilityId] = Data
+        -- MODULE ENABLED
+        if Module.SV.enableModule then
+
+            -- DATABASE FROM MODULES (AND DATABASE.LUA OFC)
+            if Module.SkillData then
+                for abilityName, Data in pairs(Module.SkillData) do
+                    if Module.Skills and Module.Skills[abilityName] then
+                        for _, abilityId in ipairs(Module.Skills[abilityName]) do
+                            Data.moduleName = Module.name
+                            Data.name = Data.name or abilityName
+                            CC.SkillData[abilityId] = Data
+                        end
                     end
-                end
 
-                if Module.Buffs and Module.Buffs[abilityName] then
-                    for _, buffId in ipairs(Module.Buffs[abilityName]) do
-                        Data.moduleName = Module.name
-                        Data.name = Data.name or abilityName
-                        CC.SkillData[buffId] = Data
-                    end
-                end
-            end
-        end
-
-        -- SKILL BLOCKER
-        if Module.SkillBlocker then
-            for abilityName, buffList in pairs(Module.SkillBlocker) do
-
-                -- REG BLOCKER
-                local function RegisterBlocker(abilityId)
-                    CC.SkillBlocker.BlockableSkills[abilityId] = true
-                    if buffList then
-                        for _, buffId in ipairs(buffList) do
-                            CC.SkillBlocker.BlockableBuffs[buffId] = CC.SkillBlocker.BlockableBuffs[buffId] or {}
-                            CC.SkillBlocker.BlockableBuffs[buffId][abilityId] = true
+                    if Module.Buffs and Module.Buffs[abilityName] then
+                        for _, buffId in ipairs(Module.Buffs[abilityName]) do
+                            Data.moduleName = Module.name
+                            Data.name = Data.name or abilityName
+                            CC.SkillData[buffId] = Data
                         end
                     end
                 end
+            end
 
-                if Module.Skills and Module.Skills[abilityName] then
-                    for _, abilityId in ipairs(Module.Skills[abilityName]) do
-                        RegisterBlocker(abilityId)
+            -- SKILL BLOCKER
+            if Module.SkillBlocker then
+                for abilityName, buffList in pairs(Module.SkillBlocker) do
+
+                    -- REG BLOCKER
+                    local function RegisterBlocker(abilityId)
+                        CC.SkillBlocker.BlockableSkills[abilityId] = true
+                        if buffList then
+                            for _, buffId in ipairs(buffList) do
+                                CC.SkillBlocker.BlockableBuffs[buffId] = CC.SkillBlocker.BlockableBuffs[buffId] or {}
+                                CC.SkillBlocker.BlockableBuffs[buffId][abilityId] = true
+                            end
+                        end
                     end
-                elseif Module.Buffs and Module.Buffs[abilityName] then
-                    for _, abilityId in ipairs(Module.Buffs[abilityName]) do
-                        RegisterBlocker(abilityId)
+
+                    if Module.Skills and Module.Skills[abilityName] then
+                        for _, abilityId in ipairs(Module.Skills[abilityName]) do
+                            RegisterBlocker(abilityId)
+                        end
+                    elseif Module.Buffs and Module.Buffs[abilityName] then
+                        for _, abilityId in ipairs(Module.Buffs[abilityName]) do
+                            RegisterBlocker(abilityId)
+                        end
                     end
                 end
             end
-        end
 
-        -- CALLBACK FUNCTIONS FOR COMBAT EVENTS
-        if Module.Skills then
-            for _, abilityList in pairs(Module.Skills) do
-                for _, abilityId in ipairs(abilityList) do
-                    if Module.HandleCombatEvent then
-                        CC.Events.SkillModules[abilityId] = Module
+            -- CALLBACK FUNCTIONS FOR COMBAT EVENTS
+            if Module.Skills then
+                for _, abilityList in pairs(Module.Skills) do
+                    for _, abilityId in ipairs(abilityList) do
+                        if Module.HandleCombatEvent then
+                            CC.Events.SkillModules[abilityId] = Module
+                        end
                     end
                 end
             end
-        end
 
-        -- CALLBACK FUNCTIONS FOR EFFECT CHANGED
-        if Module.Buffs then
-            for _, buffList in pairs(Module.Buffs) do
-                for _, buffId in ipairs(buffList) do
-                    if Module.HandleEffectChanged then
-                        CC.Events.BuffModules[buffId] = Module
+            -- CALLBACK FUNCTIONS FOR EFFECT CHANGED
+            if Module.Buffs then
+                for _, buffList in pairs(Module.Buffs) do
+                    for _, buffId in ipairs(buffList) do
+                        if Module.HandleEffectChanged then
+                            CC.Events.BuffModules[buffId] = Module
+                        end
                     end
                 end
             end
-        end
 
-        -- BROADCAST LUT
-        if Module.Broadcast then
-            for broadcastName, broadcastId in pairs(Module.Broadcast) do
+            -- BROADCAST LUT
+            if Module.Broadcast then
+                for broadcastName, broadcastId in pairs(Module.Broadcast) do
 
-                -- REG IN BROADCAST
-                local function RegisterBroadcast(abilityId)
-                    CC.Broadcast.LutDataIn[broadcastId] = abilityId
-                    CC.Broadcast.LutDataOut[abilityId] = broadcastId
-                    if Module.HandleBroadcast then
-                        CC.Broadcast.Modules[abilityId] = Module
+                    -- REG IN BROADCAST
+                    local function RegisterBroadcast(abilityId)
+                        CC.Broadcast.LutDataIn[broadcastId] = abilityId
+                        CC.Broadcast.LutDataOut[abilityId] = broadcastId
+                        if Module.HandleBroadcast then
+                            CC.Broadcast.Modules[abilityId] = Module
+                        end
+                        if CC.SkillData[abilityId] then
+                            CC.SkillData[abilityId].broadcastId = broadcastId
+                        end
                     end
-                    if CC.SkillData[abilityId] then
-                        CC.SkillData[abilityId].broadcastId = broadcastId
-                    end
-                end
 
-                if Module.Skills and Module.Skills[broadcastName] then
-                    for _, abilityId in ipairs(Module.Skills[broadcastName]) do
-                        RegisterBroadcast(abilityId)
-                    end
-                elseif Module.Buffs and Module.Buffs[broadcastName] then
-                    for _, buffId in ipairs(Module.Buffs[broadcastName]) do
-                        RegisterBroadcast(buffId)
-                    end
-                else
-                    if Module.HandleBroadcast then
-                        CC.Broadcast.Modules[broadcastId] = Module
+                    if Module.Skills and Module.Skills[broadcastName] then
+                        for _, abilityId in ipairs(Module.Skills[broadcastName]) do
+                            RegisterBroadcast(abilityId)
+                        end
+                    elseif Module.Buffs and Module.Buffs[broadcastName] then
+                        for _, buffId in ipairs(Module.Buffs[broadcastName]) do
+                            RegisterBroadcast(buffId)
+                        end
+                    else
+                        if Module.HandleBroadcast then
+                            CC.Broadcast.Modules[broadcastId] = Module
+                        end
                     end
                 end
             end

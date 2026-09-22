@@ -1,10 +1,20 @@
 ------------------------------------------------------------
--- RYTICTANK BLOCK HUD v3
+-- RYTICTANK BLOCK HUD v3.2 - local-reference optimization
 -- Uses Hyper Tanking Tools' proven block-state pattern:
 -- keep widget visible, toggle indicator opacity from IsBlockActive().
 ------------------------------------------------------------
 
+local RyticTank = RyticTank
+
 RyticTank.Block = {}
+local Block = RyticTank.Block
+
+-- Cache hot globals/functions used by the 50 ms update path.
+local EM = EVENT_MANAGER
+local WM = WINDOW_MANAGER
+local IsBlockActive = IsBlockActive
+local GetAdvancedStatValue = GetAdvancedStatValue
+local string_format = string.format
 
 local function GetBlockStats()
     local blockCost = 0
@@ -20,16 +30,25 @@ local function GetBlockStats()
     return blockCost, blockMit
 end
 
-function RyticTank.Block.CreateHUD()
-    local wm = WINDOW_MANAGER
+function Block.CreateHUD()
+    local wm = WM
 
     local window = wm:CreateTopLevelWindow("RyticTankBlockHUD")
-    RyticTank.Block.window = window
+    Block.window = window
     -- ESOUI HUD fragment: automatically hide this HUD when menus open.
     local hudFragment = ZO_HUDFadeSceneFragment:New(window, nil, 0)
     HUD_SCENE:AddFragment(hudFragment)
     HUD_UI_SCENE:AddFragment(hudFragment)
-    RyticTank.Block.hudFragment = hudFragment
+    Block.hudFragment = hudFragment
+
+    -- Let ESO scene/fragment state own HUD visibility.  The 50 ms Block.Update
+    -- loop must never force this window back on top of MAP/MENU scenes.
+    Block.fragmentVisible = false
+    hudFragment:RegisterCallback("StateChange", function(oldState, newState)
+        local visible = (newState == SCENE_FRAGMENT_SHOWING or newState == SCENE_FRAGMENT_SHOWN)
+        Block.fragmentVisible = visible
+        window:SetHidden(not (visible and RyticTank.saved.block.enabled))
+    end)
     window:SetDimensions(430, 92)
     window:ClearAnchors()
     window:SetAnchor(
@@ -48,7 +67,7 @@ function RyticTank.Block.CreateHUD()
     state:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     state:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     state:SetText("BLOCK")
-    RyticTank.Block.state = state
+    Block.state = state
 
     local stats = wm:CreateControl(nil, window, CT_LABEL)
     stats:SetFont("ZoFontGameBold")
@@ -56,18 +75,18 @@ function RyticTank.Block.CreateHUD()
     stats:SetAnchor(LEFT, state, RIGHT, 10, 0)
     stats:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     stats:SetVerticalAlignment(TEXT_ALIGN_CENTER)
-    RyticTank.Block.stats = stats
+    Block.stats = stats
 
     window:SetHandler("OnMoveStop", function()
         RyticTank.saved.block.position.x = window:GetLeft()
         RyticTank.saved.block.position.y = window:GetTop()
     end)
 
-    RyticTank.Block.ApplyLock()
+    Block.ApplyLock()
 end
 
-function RyticTank.Block.ApplyLock()
-    local window = RyticTank.Block.window
+function Block.ApplyLock()
+    local window = Block.window
     if not window then return end
 
     local movable = not RyticTank.saved.block.locked
@@ -76,8 +95,8 @@ function RyticTank.Block.ApplyLock()
     window:SetScale(RyticTank.saved.block.scale or 1.0)
 end
 
-function RyticTank.Block.Update()
-    local window = RyticTank.Block.window
+function Block.Update()
+    local window = Block.window
     if not window then return end
 
     local s = RyticTank.saved.block
@@ -87,48 +106,52 @@ function RyticTank.Block.Update()
         return
     end
 
-    -- Keep the Block HUD visible whenever it is enabled.
-    -- IsBlockActive() changes only the visual state.
+    -- Scene/fragment state is authoritative.  Do not call SetHidden(false)
+    -- here: doing so every 50 ms overrides ESO hiding the HUD for the map/menu.
+    if not Block.fragmentVisible then
+        window:SetHidden(true)
+        return
+    end
     window:SetHidden(false)
 
     local blocking = IsBlockActive()
     local blockCost, blockMit = GetBlockStats()
 
     if blocking then
-        RyticTank.Block.state:SetText("BLOCKING")
+        Block.state:SetText("BLOCKING")
 
         -- Full mitigation: make BLOCKING bright green too.
         if blockMit >= 90 then
-            RyticTank.Block.state:SetColor(0.10, 1.00, 0.15, 1)
-            RyticTank.Block.stats:SetColor(0.10, 1.00, 0.15, 1)
+            Block.state:SetColor(0.10, 1.00, 0.15, 1)
+            Block.stats:SetColor(0.10, 1.00, 0.15, 1)
         else
-            RyticTank.Block.state:SetColor(1.00, 0.08, 0.08, 1)
-            RyticTank.Block.stats:SetColor(1.00, 0.55, 0.55, 1)
+            Block.state:SetColor(1.00, 0.08, 0.08, 1)
+            Block.stats:SetColor(1.00, 0.55, 0.55, 1)
         end
-        RyticTank.Block.state:SetAlpha(1.0)
+        Block.state:SetAlpha(1.0)
 
-        RyticTank.Block.stats:SetAlpha(1.0)
+        Block.stats:SetAlpha(1.0)
     else
         -- Mimic HTT: still present, but clearly inactive/faded.
-        RyticTank.Block.state:SetText("NOT BLOCKING")
-        RyticTank.Block.state:SetColor(0.55, 0.55, 0.55, 1)
-        RyticTank.Block.state:SetAlpha(0.20)
+        Block.state:SetText("NOT BLOCKING")
+        Block.state:SetColor(0.55, 0.55, 0.55, 1)
+        Block.state:SetAlpha(0.20)
 
         if blockMit >= 90 then
-            RyticTank.Block.stats:SetColor(0.10, 1.00, 0.15, 1)
-            RyticTank.Block.stats:SetAlpha(1.0)
+            Block.stats:SetColor(0.10, 1.00, 0.15, 1)
+            Block.stats:SetAlpha(1.0)
         else
-            RyticTank.Block.stats:SetColor(0.55, 0.55, 0.55, 1)
-            RyticTank.Block.stats:SetAlpha(0.35)
+            Block.stats:SetColor(0.55, 0.55, 0.55, 1)
+            Block.stats:SetAlpha(0.35)
         end
     end
 
-    RyticTank.Block.stats:SetText(
-        string.format("BLOCK MIT %.0f%%", blockMit)
+    Block.stats:SetText(
+        string_format("BLOCK MIT %.0f%%", blockMit)
     )
 end
 
-function RyticTank.Block.Initialize()
+function Block.Initialize()
     if not RyticTank.saved.block then
         RyticTank.saved.block = ZO_DeepTableCopy(RyticTank.defaults.block)
     end
@@ -137,14 +160,14 @@ function RyticTank.Block.Initialize()
         RyticTank.saved.block.position = { x = 800, y = 500 }
     end
 
-    RyticTank.Block.CreateHUD()
+    Block.CreateHUD()
 
     -- Match HTT's continuously refreshed combat UI behavior.
-    EVENT_MANAGER:RegisterForUpdate(
+    EM:RegisterForUpdate(
         "RyticTankBlockStateUpdate",
         50,
-        RyticTank.Block.Update
+        Block.Update
     )
 
-    RyticTank.Block.Update()
+    Block.Update()
 end

@@ -24,6 +24,169 @@ local isGuildsExpanded = false
 local resizeState = nil
 local compactTabs = {}
 local compactSelectedGuild = 'guild1'
+-- Stealth Mode / Auto-Hide & Anti-Bordel manual interaction tracking
+Messenger.isManualInteracting = false
+Messenger.lastInteractionTime = 0
+
+-- Ergonomic Smooth Animations (Fade In / Fade Out)
+Messenger.isFadingOut = false
+Messenger.isFadingIn = false
+local FADE_OUT_DURATION = 650 -- ms (smooth progressive dissolution)
+local FADE_IN_DURATION = 200  -- ms (sleek responsive entrance)
+
+function Messenger.CancelFade()
+    EVENT_MANAGER:UnregisterForUpdate('AetherChat_FadeAnim')
+    Messenger.isFadingOut = false
+    Messenger.isFadingIn = false
+    Messenger.isOpen = true
+    Messenger.lastInteractionTime = GetGameTimeMilliseconds()
+    if Messenger.window then
+        Messenger.window:SetAlpha(1.0)
+        Messenger.window:SetHidden(false)
+    end
+    if Messenger.fragment then
+        Messenger.fragment:Refresh()
+    end
+end
+
+function Messenger.StartFadeOut(durationMs, onComplete)
+    if not Messenger.isOpen or Messenger.isFadingOut then return end
+    if not Messenger.window or Messenger.window:IsHidden() then return end
+    if activeChannelKey == 'loot' then return end
+
+    local duration = durationMs or FADE_OUT_DURATION
+    local startTime = GetGameTimeMilliseconds()
+    local startAlpha = Messenger.window:GetAlpha() or 1.0
+    if startAlpha <= 0.05 then startAlpha = 1.0 end
+
+    Messenger.isFadingOut = true
+    Messenger.isFadingIn = false
+
+    EVENT_MANAGER:UnregisterForUpdate('AetherChat_FadeAnim')
+    EVENT_MANAGER:RegisterForUpdate('AetherChat_FadeAnim', 16, function()
+        local now = GetGameTimeMilliseconds()
+        local elapsed = now - startTime
+        local progress = elapsed / duration
+
+        if progress >= 1.0 then
+            EVENT_MANAGER:UnregisterForUpdate('AetherChat_FadeAnim')
+            Messenger.isFadingOut = false
+            Messenger.isFadingIn = false
+            Messenger.isOpen = false
+            Messenger.isManualInteracting = false
+
+            if Messenger.window then
+                Messenger.window:SetAlpha(0.0)
+                Messenger.window:SetHidden(true)
+            end
+            if Messenger.fragment then
+                Messenger.fragment:Refresh()
+            end
+            Messenger.OnFragmentHidden()
+
+            -- Safely restore full alpha while the window is completely hidden
+            if Messenger.window then
+                Messenger.window:SetAlpha(1.0)
+            end
+
+            if onComplete then
+                onComplete()
+            end
+        else
+            -- Smoothstep ease curve: whisper-soft start and velvet-smooth progressive finish
+            local t = math.max(0, math.min(1.0, progress))
+            local ease = 1.0 - (t * t * (3.0 - 2.0 * t))
+            local currentAlpha = math.max(0, math.min(1.0, startAlpha * ease))
+            if Messenger.window then
+                Messenger.window:SetAlpha(currentAlpha)
+            end
+        end
+    end)
+end
+
+function Messenger.StartFadeIn(durationMs)
+    if not Messenger.window then return end
+    Messenger.CancelFade()
+
+    local duration = durationMs or FADE_IN_DURATION
+    local startTime = GetGameTimeMilliseconds()
+
+    Messenger.isFadingIn = true
+    Messenger.isFadingOut = false
+    Messenger.isOpen = true
+    Messenger.lastInteractionTime = GetGameTimeMilliseconds()
+
+    Messenger.window:SetAlpha(0.0)
+    Messenger.window:SetHidden(false)
+    if Messenger.ScanAndDockExternalChatButtons then
+        Messenger.ScanAndDockExternalChatButtons()
+    end
+    if Messenger.fragment then
+        Messenger.fragment:Refresh()
+    else
+        Messenger.OnFragmentShowing()
+    end
+
+    EVENT_MANAGER:RegisterForUpdate('AetherChat_FadeAnim', 16, function()
+        local now = GetGameTimeMilliseconds()
+        local elapsed = now - startTime
+        local progress = elapsed / duration
+
+        if progress >= 1.0 then
+            EVENT_MANAGER:UnregisterForUpdate('AetherChat_FadeAnim')
+            Messenger.isFadingIn = false
+            if Messenger.window then
+                Messenger.window:SetAlpha(1.0)
+            end
+        else
+            -- Smoothstep curve for soft responsive entrance
+            local t = math.max(0, math.min(1.0, progress))
+            local ease = t * t * (3.0 - 2.0 * t)
+            local currentAlpha = math.max(0, math.min(1.0, ease))
+            if Messenger.window then
+                Messenger.window:SetAlpha(currentAlpha)
+            end
+        end
+    end)
+end
+
+function Messenger.RecordInteraction()
+    Messenger.lastInteractionTime = GetGameTimeMilliseconds()
+    Messenger.isManualInteracting = true
+    if Messenger.isFadingOut then
+        Messenger.CancelFade()
+    end
+end
+
+function Messenger.CheckIdleTimeout()
+    if not Settings.Get('autoHideOnIdle', false) then return end
+    if not Messenger.isOpen or Messenger.isFadingOut then return end
+    if activeChannelKey == 'loot' then return end
+
+    local isInputFocused = ZO_ChatWindowTextEntryEditBox and ZO_ChatWindowTextEntryEditBox:HasFocus()
+    local isMouseOver = false
+    if SCENE_MANAGER and SCENE_MANAGER.IsInUIMode and SCENE_MANAGER:IsInUIMode() and Messenger.window and not Messenger.window:IsHidden() then
+        isMouseOver = MouseIsOver(Messenger.window)
+    end
+
+    if isInputFocused or isMouseOver then
+        Messenger.lastInteractionTime = GetGameTimeMilliseconds()
+        Messenger.isManualInteracting = true
+        if Messenger.isFadingOut then
+            Messenger.CancelFade()
+        end
+        return
+    end
+
+    local delaySec = Settings.Get('autoHideDelay', 20) or 20
+    local delayMs = delaySec * 1000
+    local now = GetGameTimeMilliseconds()
+    if (now - (Messenger.lastInteractionTime or now)) >= delayMs then
+        Messenger.StartFadeOut(650)
+        Messenger.isManualInteracting = false
+    end
+end
+
 local function GetMinDimensions()
     if Settings and Settings.Get and Settings.Get('interfaceMode', 'standard') == 'compact' then
         return 320, 180
@@ -38,13 +201,63 @@ local function L(key, ...)
 end
 
 local function GetFixedChannels()
-    return {
+    local raw = {
         { id = 'loot',    name = L('CH_LOOT'),    prefix = '/p',    icon = '/esoui/art/inventory/inventory_tabicon_misc_up.dds' },
         { id = 'zone',    name = L('CH_ZONE'),    prefix = '/zone', icon = '/esoui/art/chatwindow/chat_notification_echo.dds' },
         { id = 'general', name = L('CH_GENERAL'), prefix = '/say',  icon = '/esoui/art/tradinghouse/tradinghouse_listings_tabicon_up.dds' },
         { id = 'party',   name = L('CH_PARTY'),   prefix = '/party',icon = '/esoui/art/compass/groupleader.dds' },
         { id = 'system',  name = L('CH_SYSTEM'),  prefix = '/zone', icon = '/esoui/art/chatwindow/chat_options_up.dds' },
     }
+    local filtered = {}
+    for _, ch in ipairs(raw) do
+        if not (Settings and Settings.IsChannelHidden and Settings.IsChannelHidden(ch.id)) then
+            table.insert(filtered, ch)
+        end
+    end
+    if #filtered == 0 then
+        table.insert(filtered, raw[2])
+    end
+    return filtered
+end
+Messenger.GetFixedChannels = GetFixedChannels
+
+local ESO_CLASS_COLORS = {
+    [1] = "E56417", -- Dragonknight / Chevalier-dragon
+    [2] = "3A92FF", -- Sorcerer / Sorcier
+    [3] = "DE2A33", -- Nightblade / Lame noire
+    [4] = "87D450", -- Warden / Gardien
+    [5] = "408C75", -- Necromancer / Nécromancien
+    [6] = "FFCF40", -- Templar / Templier
+    [117] = "22E874", -- Arcanist / Arcaniste
+}
+
+local function GetESOClassHex(classId)
+    if not classId or classId <= 0 then return nil end
+    if GetClassColor then
+        local col = GetClassColor(classId)
+        if col and col.ToHex then
+            return col:ToHex()
+        elseif type(col) == 'table' and col.r then
+            return string.format("%02X%02X%02X", math.floor(col.r * 255), math.floor(col.g * 255), math.floor(col.b * 255))
+        end
+    end
+    return ESO_CLASS_COLORS[classId]
+end
+
+local function GetRoleIcon(roleId)
+    if not roleId or roleId <= 0 or (LFG_ROLE_INVALID and roleId == LFG_ROLE_INVALID) then
+        return ""
+    end
+
+    if LFG_ROLE_TANK and roleId == LFG_ROLE_TANK then
+        return "|t16:16:/esoui/art/lfg/lfg_tank_down_64.dds|t "
+    elseif LFG_ROLE_HEAL and roleId == LFG_ROLE_HEAL then
+        return "|t16:16:/esoui/art/lfg/lfg_healer_down_64.dds|t "
+    elseif LFG_ROLE_DPS and roleId == LFG_ROLE_DPS then
+        return "|t16:16:/esoui/art/lfg/lfg_dps_down_64.dds|t "
+    end
+
+    return ""
 end
 
 local function FormatItemLinksInText(text)
@@ -167,8 +380,34 @@ function Messenger.Initialize()
     local closeBtn = Messenger.window:GetNamedChild('CloseBtn')
     if closeBtn then
         closeBtn:SetHandler('OnClicked', function()
-            Messenger.Hide()
+            Messenger.Hide(true)
         end)
+    end
+
+    -- Quick Chat Action Button
+    local quickChatBtn = Messenger.window:GetNamedChild('QuickChatBtn')
+    if quickChatBtn then
+        quickChatBtn:SetHandler('OnClicked', function()
+            Messenger.ToggleQuickChatWheel()
+        end)
+        quickChatBtn:SetHandler('OnMouseEnter', function(self)
+            InitializeTooltip(InformationTooltip, self, TOPRIGHT, 0, -5)
+            InformationTooltip:AddLine(L('TT_QUICK_CHAT_BTN'), "ZoFontGameBold", 1, 1, 1, TOPLEFT, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_LEFT)
+        end)
+        quickChatBtn:SetHandler('OnMouseExit', function(self) ClearTooltip(InformationTooltip) end)
+    end
+
+    -- 1-Click Share Equipped Build Button
+    local shareBuildBtn = Messenger.window:GetNamedChild('ShareBuildBtn')
+    if shareBuildBtn then
+        shareBuildBtn:SetHandler('OnClicked', function()
+            Messenger.ShareEquippedBuild()
+        end)
+        shareBuildBtn:SetHandler('OnMouseEnter', function(self)
+            InitializeTooltip(InformationTooltip, self, TOPRIGHT, 0, -5)
+            InformationTooltip:AddLine(L('TT_SHARE_BUILD_BTN'), "ZoFontGameBold", 1, 1, 1, TOPLEFT, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_LEFT)
+        end)
+        shareBuildBtn:SetHandler('OnMouseExit', function(self) ClearTooltip(InformationTooltip) end)
     end
 
     -- 2. Restore Saved Window & MinBar Positions
@@ -209,6 +448,13 @@ function Messenger.Initialize()
                     Settings.Set('windowPos', { x = left, y = top })
                 end
             end
+        end)
+
+        Messenger.window:SetHandler('OnMouseEnter', function()
+            Messenger.RecordInteraction()
+        end)
+        Messenger.window:SetHandler('OnMouseMove', function()
+            Messenger.RecordInteraction()
         end)
     end
 
@@ -557,18 +803,44 @@ function Messenger.Initialize()
                     end)
 
                     AddCustomMenuItem(L('MENU_LINK_CHAT'), function()
-                        if ZO_ChatWindowTextEntryEditBox then
-                            ZO_ChatWindowTextEntryEditBox:TakeFocus()
-                            local currentText = ZO_ChatWindowTextEntryEditBox:GetText()
-                            ZO_ChatWindowTextEntryEditBox:SetText(currentText .. targetLink)
+                        if not Messenger.isOpen or Messenger.isFadingOut then
+                            Messenger.CancelFade()
+                            Messenger.Show(true)
+                        end
+                        Messenger.DockNativeChatEntry()
+                        if CHAT_SYSTEM then
+                            if not CHAT_SYSTEM.isEnteringText then
+                                CHAT_SYSTEM:StartTextEntry(targetLink)
+                            else
+                                if ZO_ChatWindowTextEntryEditBox then
+                                    local currentText = ZO_ChatWindowTextEntryEditBox:GetText() or ""
+                                    ZO_ChatWindowTextEntryEditBox:SetText(currentText .. targetLink)
+                                end
+                            end
+                            if ZO_ChatWindowTextEntryEditBox then
+                                ZO_ChatWindowTextEntryEditBox:TakeFocus()
+                            end
                         end
                     end)
                 else
                     AddCustomMenuItem(L('MENU_LINK_CHAT'), function()
-                        if ZO_ChatWindowTextEntryEditBox then
-                            ZO_ChatWindowTextEntryEditBox:TakeFocus()
-                            local currentText = ZO_ChatWindowTextEntryEditBox:GetText()
-                            ZO_ChatWindowTextEntryEditBox:SetText(currentText .. targetLink)
+                        if not Messenger.isOpen or Messenger.isFadingOut then
+                            Messenger.CancelFade()
+                            Messenger.Show(true)
+                        end
+                        Messenger.DockNativeChatEntry()
+                        if CHAT_SYSTEM then
+                            if not CHAT_SYSTEM.isEnteringText then
+                                CHAT_SYSTEM:StartTextEntry(targetLink)
+                            else
+                                if ZO_ChatWindowTextEntryEditBox then
+                                    local currentText = ZO_ChatWindowTextEntryEditBox:GetText() or ""
+                                    ZO_ChatWindowTextEntryEditBox:SetText(currentText .. targetLink)
+                                end
+                            end
+                            if ZO_ChatWindowTextEntryEditBox then
+                                ZO_ChatWindowTextEntryEditBox:TakeFocus()
+                            end
                         end
                     end)
                 end
@@ -609,6 +881,11 @@ function Messenger.Initialize()
     -- Guild Member Status Events (Login/Logout for Selected Guilds)
     EVENT_MANAGER:RegisterForEvent('AetherChat_GuildStatus', EVENT_GUILD_MEMBER_PLAYER_STATUS_CHANGED, Messenger.OnGuildMemberPlayerStatusChanged)
 
+    -- Periodic Stealth Mode / Inactivity Auto-Hide Watcher (1000ms heartbeat)
+    EVENT_MANAGER:RegisterForUpdate('AetherChat_IdleTimer', 1000, function()
+        Messenger.CheckIdleTimeout()
+    end)
+
     -- Refresh Whispers, Channel list and Positions upon Zone Transitions & Loading Screen completion
     EVENT_MANAGER:RegisterForEvent('AetherChat_Messenger_PlayerAct', EVENT_PLAYER_ACTIVATED, function()
         local currentMode = Settings.Get('interfaceMode', 'standard')
@@ -634,9 +911,17 @@ function Messenger.Initialize()
         if Messenger.ApplyNativeGamepadChatHidden then
             Messenger.ApplyNativeGamepadChatHidden()
         end
+        if Messenger.ScanAndDockExternalChatButtons then
+            Messenger.ScanAndDockExternalChatButtons()
+            zo_callLater(Messenger.ScanAndDockExternalChatButtons, 1500)
+            zo_callLater(Messenger.ScanAndDockExternalChatButtons, 4000)
+        end
+        if LockCameraRotation then
+            LockCameraRotation(false)
+        end
     end)
 
-    -- Global mouse up for drag-and-drop channel order and edge resizing finalization
+    -- Global mouse up for drag-and-drop channel order and resizing
     EVENT_MANAGER:RegisterForEvent('AetherChat_GlobalMouseUp', EVENT_GLOBAL_MOUSE_UP, function()
         if dragState then
             dragState = nil
@@ -702,6 +987,9 @@ function Messenger.Initialize()
     Messenger.SetupHideHooks()
     if Settings.Get('hideOfficialChat', false) then
         Messenger.SetHideOfficialChat(true)
+    end
+    if Messenger.InitializeQuickChatWheel then
+        Messenger.InitializeQuickChatWheel()
     end
 end
 
@@ -1002,6 +1290,23 @@ function Messenger.UpdateMailBadge()
             end
         end
     end
+
+    -- 3. Compact Header Button Badge (Celestial Blue)
+    if Messenger.compactHeader then
+        local cMailBtn = Messenger.compactHeader:GetNamedChild('MailBtn')
+        if cMailBtn then
+            local badge = cMailBtn:GetNamedChild('Badge')
+            if badge then
+                if numUnread > 0 then
+                    badge:SetHidden(false)
+                    local countLabel = badge:GetNamedChild('Count')
+                    if countLabel then countLabel:SetText(tostring(numUnread)) end
+                else
+                    badge:SetHidden(true)
+                end
+            end
+        end
+    end
 end
 
 function Messenger.UpdateFriendsBadge()
@@ -1042,6 +1347,23 @@ function Messenger.UpdateFriendsBadge()
                 if countLabel then countLabel:SetText(tostring(onlineCount)) end
             else
                 minFriendsBadge:SetHidden(true)
+            end
+        end
+    end
+
+    -- 3. Compact Header Button Badge (Emerald Green)
+    if Messenger.compactHeader then
+        local cFriendsBtn = Messenger.compactHeader:GetNamedChild('FriendsBtn')
+        if cFriendsBtn then
+            local badge = cFriendsBtn:GetNamedChild('Badge')
+            if badge then
+                if onlineCount > 0 then
+                    badge:SetHidden(false)
+                    local countLabel = badge:GetNamedChild('Count')
+                    if countLabel then countLabel:SetText(tostring(onlineCount)) end
+                else
+                    badge:SetHidden(true)
+                end
             end
         end
     end
@@ -1302,6 +1624,61 @@ function Messenger.SetupHideHooks()
                 return true
             end
         end)
+
+        -- Automatically reveal AetherChat when the player begins typing (pressing Enter, hotkeys, or whisper links)
+        ZO_PreHook(CHAT_SYSTEM, "StartTextEntry", function(self, message, channel, target)
+            if not Messenger.isOpen or Messenger.isFadingOut then
+                Messenger.CancelFade()
+                Messenger.Show(false)
+            end
+            Messenger.RecordInteraction()
+            Messenger.DockNativeChatEntry()
+            if ZO_ChatWindowTextEntry then
+                ZO_ChatWindowTextEntry:SetHidden(false)
+            end
+        end)
+
+        if CHAT_SYSTEM.textEntry then
+            ZO_PreHook(CHAT_SYSTEM.textEntry, "OpenTextEntry", function(self, message, channel, target)
+                if not Messenger.isOpen or Messenger.isFadingOut then
+                    Messenger.CancelFade()
+                    Messenger.Show(false)
+                end
+                Messenger.RecordInteraction()
+                Messenger.DockNativeChatEntry()
+                if ZO_ChatWindowTextEntry then
+                    ZO_ChatWindowTextEntry:SetHidden(false)
+                end
+            end)
+        end
+    end
+
+    if ZO_ChatWindowTextEntryEditBox then
+        ZO_PreHookHandler(ZO_ChatWindowTextEntryEditBox, "OnFocusGained", function(self)
+            if not Messenger.isOpen or Messenger.isFadingOut then
+                Messenger.CancelFade()
+                Messenger.Show(false)
+            end
+            Messenger.RecordInteraction()
+            Messenger.DockNativeChatEntry()
+            if ZO_ChatWindowTextEntry then
+                ZO_ChatWindowTextEntry:SetHidden(false)
+            end
+        end)
+
+        ZO_PreHookHandler(ZO_ChatWindowTextEntryEditBox, "OnFocusLost", function(self)
+            zo_callLater(function()
+                local hasFocus = ZO_ChatWindowTextEntryEditBox and ZO_ChatWindowTextEntryEditBox:HasFocus()
+                if not hasFocus then
+                    if CHAT_SYSTEM and CHAT_SYSTEM.isEnteringText then
+                        CHAT_SYSTEM.isEnteringText = false
+                        if CHAT_SYSTEM.CloseTextEntry then
+                            CHAT_SYSTEM:CloseTextEntry(true)
+                        end
+                    end
+                end
+            end, 50)
+        end)
     end
 end
 
@@ -1329,17 +1706,17 @@ function Messenger.DockNativeChatEntry()
 
     local mode = Settings.Get('interfaceMode', 'standard')
     local leftOffset = 230
-    local rightOffset = -10
+    local rightOffset = -62
     local bottomOffset = -8
 
     if mode == 'compact' then
         leftOffset = 6
-        rightOffset = -6
+        rightOffset = -60
         bottomOffset = -6
     else
         local isCollapsed = Settings.Get('sidebarCollapsed', false)
         leftOffset = isCollapsed and 72 or 230
-        rightOffset = -10
+        rightOffset = -62
         bottomOffset = -8
     end
 
@@ -1366,6 +1743,127 @@ function Messenger.UndockNativeChatEntry()
             ZO_ChatWindowTextEntry:SetHidden(true)
         end
     end
+end
+
+local dockedExternalButtons = {}
+
+function Messenger.ScanAndDockExternalChatButtons()
+    if not Messenger.window then return end
+    local addonDock = Messenger.window:GetNamedChild('AddonDock')
+    if not addonDock then return end
+
+    local currentMode = Settings and Settings.Get and Settings.Get('interfaceMode', 'standard')
+    if currentMode == 'compact' then
+        addonDock:SetHidden(true)
+        return
+    end
+
+    local nativeIgnored = {
+        ["ZO_ChatWindowBg"] = true,
+        ["ZO_ChatWindowDivider"] = true,
+        ["ZO_ChatWindowWindowNotifications"] = true,
+        ["ZO_ChatWindowNotifications"] = true,
+        ["ZO_ChatWindowOptions"] = true,
+        ["ZO_ChatWindowMinimize"] = true,
+        ["ZO_ChatWindowMaximize"] = true,
+        ["ZO_ChatWindowTextEntry"] = true,
+        ["ZO_ChatWindowScrollBar"] = true,
+        ["ZO_ChatWindowBuffer"] = true,
+        ["ZO_ChatWindowMinBar"] = true,
+        ["ZO_ChatWindowScrollUp"] = true,
+        ["ZO_ChatWindowScrollDown"] = true,
+        ["ZO_ChatWindowScrollEnd"] = true,
+        ["ZO_ChatWindowResizeBottomRight"] = true,
+        ["ZO_ChatWindowMover"] = true,
+        ["ZO_ChatWindowMinBarBg"] = true,
+        ["ZO_ChatWindowMinBarMaximize"] = true,
+    }
+
+    local candidates = {}
+    local seen = {}
+
+    local function InspectParent(parentControl)
+        if not parentControl or not parentControl.GetNumChildren then return end
+        local num = parentControl:GetNumChildren() or 0
+        for i = 1, num do
+            local child = parentControl:GetChild(i)
+            if child and child.GetName then
+                local cName = child:GetName() or ""
+                if not seen[child] and not nativeIgnored[cName] and not cName:find("^AetherChat") and not cName:find("^ZO_") then
+                    local isBtn = (child:GetType() == CT_BUTTON) or (child.SetNormalTexture ~= nil) or (child.IsMouseEnabled and child:IsMouseEnabled())
+                    if isBtn then
+                        seen[child] = true
+                        table.insert(candidates, child)
+                    end
+                end
+            end
+        end
+    end
+
+    InspectParent(ZO_ChatWindow)
+    InspectParent(ZO_ChatWindowMinBar)
+    if CHAT_SYSTEM and CHAT_SYSTEM.control then
+        InspectParent(CHAT_SYSTEM.control)
+    end
+    if CHAT_SYSTEM and CHAT_SYSTEM.primaryContainer then
+        InspectParent(CHAT_SYSTEM.primaryContainer)
+    end
+
+    local knownGlobals = {
+        "AutoInviteBtn", "AutoInviteButton", "AutoInvite_Button", "AutoInviteUI",
+        "ScriptTrackerBtn", "ScriptTrackerButton", "ScriptTracker_Button",
+        "pChatOption", "pChatButton", "LFG_Button"
+    }
+    for _, gName in ipairs(knownGlobals) do
+        local gControl = _G[gName]
+        if gControl and not seen[gControl] and (gControl.GetType and (gControl:GetType() == CT_BUTTON or gControl:IsMouseEnabled())) then
+            seen[gControl] = true
+            table.insert(candidates, gControl)
+        end
+    end
+
+    local lcm = _G.LibChatMenuButton or (LibStub and LibStub("LibChatMenuButton", true))
+    if lcm and lcm.buttons and type(lcm.buttons) == 'table' then
+        for _, btn in pairs(lcm.buttons) do
+            if btn and not seen[btn] then
+                seen[btn] = true
+                table.insert(candidates, btn)
+            end
+        end
+    end
+
+    for _, btn in ipairs(dockedExternalButtons) do
+        if btn and not seen[btn] then
+            seen[btn] = true
+            table.insert(candidates, btn)
+        end
+    end
+
+    if #candidates == 0 then
+        addonDock:SetHidden(true)
+        return
+    end
+
+    dockedExternalButtons = candidates
+    local buttonSize = 22
+    local spacing = 4
+    local currentX = 4
+
+    for i, btn in ipairs(candidates) do
+        btn:SetParent(addonDock)
+        btn:ClearAnchors()
+        btn:SetAnchor(LEFT, addonDock, LEFT, currentX, 0)
+        btn:SetDimensions(buttonSize, buttonSize)
+        btn:SetHidden(false)
+        if btn.SetTier then
+            btn:SetTier(DT_HIGH)
+        end
+        currentX = currentX + buttonSize + spacing
+    end
+
+    local totalWidth = currentX + 2
+    addonDock:SetDimensions(totalWidth, 24)
+    addonDock:SetHidden(Messenger.window:IsHidden())
 end
 
 function Messenger.ApplyBackdropAlpha(alphaPercent)
@@ -1570,6 +2068,12 @@ function Messenger.SetupCompactTabBar()
     header:SetMouseEnabled(true)
     header:SetHandler('OnMouseDown', HandleHeaderMouseDown)
     header:SetHandler('OnMouseUp', HandleHeaderMouseUp)
+    header:SetHandler('OnMouseEnter', function()
+        Messenger.RecordInteraction()
+    end)
+    header:SetHandler('OnMouseMove', function()
+        Messenger.RecordInteraction()
+    end)
 
     local headerBG = header:GetNamedChild('BG')
     if headerBG then
@@ -1610,6 +2114,61 @@ function Messenger.SetupCompactTabBar()
         end)
         modeBtn:SetHandler('OnClicked', function()
             Messenger.ToggleInterfaceMode()
+        end)
+    end
+
+    local friendsBtn = header:GetNamedChild('FriendsBtn')
+    if friendsBtn then
+        friendsBtn:SetHandler('OnMouseEnter', function(self)
+            local numFriends = GetNumFriends() or 0
+            local onlineCount = 0
+            for i = 1, numFriends do
+                local _, _, status = GetFriendInfo(i)
+                if status ~= PLAYER_STATUS_OFFLINE then
+                    onlineCount = onlineCount + 1
+                end
+            end
+            InitializeTooltip(InformationTooltip, self, BOTTOM, 0, 5)
+            InformationTooltip:AddLine(L('TT_FRIENDS_BTN'), "ZoFontGameBold", 1, 1, 1, TOPLEFT, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_LEFT)
+            if onlineCount > 0 then
+                InformationTooltip:AddLine(string.format("|c57F287" .. L('TT_FRIENDS_ONLINE') .. "|r", onlineCount), "ZoFontGameSmall", 1, 1, 1, TOPLEFT, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_LEFT)
+            else
+                InformationTooltip:AddLine("|c888888" .. L('TT_FRIENDS_NONE') .. "|r", "ZoFontGameSmall", 0.8, 0.8, 0.8, TOPLEFT, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_LEFT)
+            end
+            InformationTooltip:AddLine("|c888888" .. L('TT_FRIENDS_BTN_SUB') .. "|r", "ZoFontGameSmall", 0.6, 0.6, 0.6, TOPLEFT, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_LEFT)
+        end)
+        friendsBtn:SetHandler('OnMouseExit', function(self)
+            ClearTooltip(InformationTooltip)
+        end)
+        friendsBtn:SetHandler('OnClicked', function(self)
+            Messenger.RecordInteraction()
+            Messenger.ShowOnlineFriendsMenu(self)
+        end)
+    end
+
+    local mailBtn = header:GetNamedChild('MailBtn')
+    if mailBtn then
+        mailBtn:SetHandler('OnMouseEnter', function(self)
+            local unread = GetNumUnreadMail() or 0
+            InitializeTooltip(InformationTooltip, self, BOTTOM, 0, 5)
+            InformationTooltip:AddLine(L('TT_MAIL_BTN'), "ZoFontGameBold", 1, 1, 1, TOPLEFT, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_LEFT)
+            if unread > 0 then
+                InformationTooltip:AddLine(string.format("|c57F287" .. L('TT_MAIL_UNREAD') .. "|r", unread), "ZoFontGameSmall", 1, 1, 1, TOPLEFT, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_LEFT)
+            else
+                InformationTooltip:AddLine("|c888888" .. L('TT_MAIL_NONE') .. "|r", "ZoFontGameSmall", 0.8, 0.8, 0.8, TOPLEFT, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_LEFT)
+            end
+            InformationTooltip:AddLine("|c888888" .. L('TT_MAIL_BTN_SUB') .. "|r", "ZoFontGameSmall", 0.6, 0.6, 0.6, TOPLEFT, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_LEFT)
+        end)
+        mailBtn:SetHandler('OnMouseExit', function(self)
+            ClearTooltip(InformationTooltip)
+        end)
+        mailBtn:SetHandler('OnClicked', function()
+            Messenger.RecordInteraction()
+            if SCENE_MANAGER then
+                SCENE_MANAGER:Toggle('mailInbox')
+            elseif MAIN_MENU_KEYBOARD then
+                MAIN_MENU_KEYBOARD:ToggleSceneGroup('mailSceneGroup')
+            end
         end)
     end
 
@@ -1675,13 +2234,22 @@ function Messenger.RefreshCompactTabs()
 
     local curX = 2
 
-    local tabsData = {
+    local rawTabs = {
         { id = 'zone', name = L('TAB_ZONE_SHORT'), icon = '/esoui/art/chatwindow/chat_notification_echo.dds', width = 50, tooltip = L('TT_TAB_ZONE') },
         { id = 'general', name = L('TAB_GENERAL_SHORT'), icon = '/esoui/art/tradinghouse/tradinghouse_listings_tabicon_up.dds', width = 48, tooltip = L('TT_TAB_GENERAL') },
         { id = 'party', name = L('TAB_PARTY_SHORT'), icon = '/esoui/art/compass/groupleader.dds', width = 46, tooltip = L('TT_TAB_PARTY') },
         { id = 'system', name = L('TAB_SYSTEM_SHORT'), icon = '/esoui/art/chatwindow/chat_options_up.dds', width = 46, tooltip = L('TT_TAB_SYSTEM') },
         { id = 'loot', name = L('TAB_LOOT_SHORT'), icon = '/esoui/art/inventory/inventory_tabicon_misc_up.dds', width = 48, tooltip = L('TT_TAB_LOOT') },
     }
+    local tabsData = {}
+    for _, t in ipairs(rawTabs) do
+        if not (Settings and Settings.IsChannelHidden and Settings.IsChannelHidden(t.id)) then
+            table.insert(tabsData, t)
+        end
+    end
+    if #tabsData == 0 then
+        table.insert(tabsData, rawTabs[1])
+    end
 
     local numGuilds = GetNumGuilds() or 0
     if numGuilds > 0 then
@@ -1702,7 +2270,7 @@ function Messenger.RefreshCompactTabs()
             id = 'guilds_dropdown',
             name = gLabel,
             icon = '/esoui/art/guild/tabicon_roster_up.dds',
-            width = 58,
+            width = 54,
             isSelected = gSelected,
             unread = totalGuildUnread,
             tooltip = L('TT_TAB_GUILDS'),
@@ -1836,45 +2404,86 @@ function Messenger.RefreshCompactTabs()
             if data.tooltip then
                 InformationTooltip:AddLine(data.tooltip, "ZoFontGameSmall", 0.8, 0.8, 0.8, TOPLEFT, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_LEFT)
             end
+            if Settings and Settings.IsChannelPriority and Settings.IsChannelPriority(data.id) then
+                InformationTooltip:AddLine("|cE5B558" .. L('SET_PRIORITY_CHANNELS_HEADER') .. "|r", "ZoFontGameSmall", 0.9, 0.8, 0.4, TOPLEFT, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_LEFT)
+            end
         end)
         btn:SetHandler('OnMouseExit', function(self) ClearTooltip(InformationTooltip) end)
+
+        local function AddPriorityMenuItem(channelId)
+            local isPrio = Settings and Settings.IsChannelPriority and Settings.IsChannelPriority(channelId)
+            local prioLabel = isPrio and L('TAB_MENU_REMOVE_PRIORITY') or L('TAB_MENU_SET_PRIORITY')
+            AddCustomMenuItem(prioLabel, function()
+                if Settings and Settings.SetChannelPriority then
+                    Settings.SetChannelPriority(channelId, not isPrio)
+                end
+            end)
+        end
 
         if data.isGuilds then
             btn:SetHandler('OnMouseUp', function(self, button, upInside)
                 if not upInside then return end
-                ClearMenu()
-                for i = 1, numGuilds do
-                    local gId = GetGuildId(i)
-                    if gId and gId > 0 then
-                        local gName = GetGuildName(gId) or (L('CH_GUILD_PREFIX') .. ' ' .. i)
-                        local uCount = unreadCounts['guild' .. i] or 0
-                        local itemText = string.format("[%d] %s", i, gName)
-                        if uCount > 0 then
-                            itemText = itemText .. string.format(" |cF23F43(%d)|r", uCount)
+                if button == MOUSE_BUTTON_INDEX_RIGHT then
+                    ClearMenu()
+                    for i = 1, numGuilds do
+                        local gId = GetGuildId(i)
+                        if gId and gId > 0 then
+                            local gName = GetGuildName(gId) or (L('CH_GUILD_PREFIX') .. ' ' .. i)
+                            local targetChannel = 'guild' .. i
+                            local isPrio = Settings and Settings.IsChannelPriority and Settings.IsChannelPriority(targetChannel)
+                            local icon = isPrio and "|t16:16:/esoui/art/miscellaneous/favorite_star.dds|t " or "|t16:16:/esoui/art/miscellaneous/favorite_star_inactive.dds|t "
+                            local actionText = isPrio and L('TAB_MENU_REMOVE_PRIORITY') or L('TAB_MENU_SET_PRIORITY')
+                            AddCustomMenuItem(string.format("%s[%d] %s - %s", icon, i, gName, actionText), function()
+                                if Settings and Settings.SetChannelPriority then
+                                    Settings.SetChannelPriority(targetChannel, not isPrio)
+                                end
+                            end)
                         end
-                        local targetChannel = 'guild' .. i
-                        AddCustomMenuItem(itemText, function()
-                            Messenger.SelectChannel(targetChannel, true, true)
-                            Messenger.RefreshCompactTabs()
-                        end)
                     end
+                    ShowMenu(self)
+                else
+                    ClearMenu()
+                    for i = 1, numGuilds do
+                        local gId = GetGuildId(i)
+                        if gId and gId > 0 then
+                            local gName = GetGuildName(gId) or (L('CH_GUILD_PREFIX') .. ' ' .. i)
+                            local uCount = unreadCounts['guild' .. i] or 0
+                            local isPrio = Settings and Settings.IsChannelPriority and Settings.IsChannelPriority('guild' .. i)
+                            local star = isPrio and "|t16:16:/esoui/art/miscellaneous/favorite_star.dds|t " or ""
+                            local itemText = string.format("%s[%d] %s", star, i, gName)
+                            if uCount > 0 then
+                                itemText = itemText .. string.format(" |cF23F43(%d)|r", uCount)
+                            end
+                            local targetChannel = 'guild' .. i
+                            AddCustomMenuItem(itemText, function()
+                                Messenger.SelectChannel(targetChannel, true, false)
+                                Messenger.RefreshCompactTabs()
+                            end)
+                        end
+                    end
+                    ShowMenu(self)
                 end
-                ShowMenu(self)
             end)
         elseif data.id == 'zone' then
             btn:SetHandler('OnMouseUp', function(self, button, upInside)
                 if not upInside then return end
                 if button == MOUSE_BUTTON_INDEX_RIGHT then
                     ClearMenu()
+                    AddPriorityMenuItem('zone')
                     AddCustomMenuItem(L('MENU_ZONE_ALL'), function() Messenger.SetZoneLang('all') end)
                     AddCustomMenuItem(L('MENU_ZONE_FR'), function() Messenger.SetZoneLang('fr') end)
                     AddCustomMenuItem(L('MENU_ZONE_EN'), function() Messenger.SetZoneLang('en') end)
                     AddCustomMenuItem(L('MENU_ZONE_DE'), function() Messenger.SetZoneLang('de') end)
                     AddCustomMenuItem(L('MENU_ZONE_ES'), function() Messenger.SetZoneLang('es') end)
                     AddCustomMenuItem(L('MENU_ZONE_GLOBAL'), function() Messenger.SetZoneLang('global') end)
+                    AddCustomMenuItem(L('TAB_MENU_HIDE_CHANNEL'), function()
+                        if Settings and Settings.SetChannelHidden then
+                            Settings.SetChannelHidden('zone', true)
+                        end
+                    end)
                     ShowMenu(self)
                 else
-                    Messenger.SelectChannel('zone', true, true)
+                    Messenger.SelectChannel('zone', true, false)
                     Messenger.RefreshCompactTabs()
                 end
             end)
@@ -1882,13 +2491,23 @@ function Messenger.RefreshCompactTabs()
             btn:SetHandler('OnMouseUp', function(self, button, upInside)
                 if not upInside then return end
                 if button == MOUSE_BUTTON_INDEX_RIGHT then
+                    ClearMenu()
+                    AddPriorityMenuItem('loot')
                     local curFilter = Settings.Get('filterSetsOnly', false)
-                    Settings.Set('filterSetsOnly', not curFilter)
-                    Messenger.LoadMessages('loot')
-                    local msg = not curFilter and L('CHAT_FILTER_SETS_ON') or L('CHAT_FILTER_SETS_OFF')
-                    d(msg)
+                    local filterLabel = curFilter and L('CHAT_FILTER_SETS_OFF') or L('CHAT_FILTER_SETS_ON')
+                    AddCustomMenuItem(filterLabel, function()
+                        Settings.Set('filterSetsOnly', not curFilter)
+                        Messenger.LoadMessages('loot')
+                        d(not curFilter and L('CHAT_FILTER_SETS_ON') or L('CHAT_FILTER_SETS_OFF'))
+                    end)
+                    AddCustomMenuItem(L('TAB_MENU_HIDE_CHANNEL'), function()
+                        if Settings and Settings.SetChannelHidden then
+                            Settings.SetChannelHidden('loot', true)
+                        end
+                    end)
+                    ShowMenu(self)
                 else
-                    Messenger.SelectChannel('loot', true, true)
+                    Messenger.SelectChannel('loot', true, false)
                     Messenger.RefreshCompactTabs()
                 end
             end)
@@ -1897,6 +2516,7 @@ function Messenger.RefreshCompactTabs()
                 if not upInside then return end
                 if button == MOUSE_BUTTON_INDEX_RIGHT then
                     ClearMenu()
+                    AddPriorityMenuItem(data.id)
                     AddCustomMenuItem(L('TAB_MENU_EDIT'), function()
                         if AetherChat.CustomTabs and AetherChat.CustomTabs.OpenTabOptions then
                             AetherChat.CustomTabs.OpenTabOptions(data.id)
@@ -1914,7 +2534,7 @@ function Messenger.RefreshCompactTabs()
                     end)
                     ShowMenu(self)
                 else
-                    Messenger.SelectChannel(data.id, true, true)
+                    Messenger.SelectChannel(data.id, true, false)
                     Messenger.RefreshCompactTabs()
                 end
             end)
@@ -1923,6 +2543,14 @@ function Messenger.RefreshCompactTabs()
                 if not upInside then return end
                 if button == MOUSE_BUTTON_INDEX_RIGHT then
                     ClearMenu()
+                    AddPriorityMenuItem(data.id)
+                    if not data.isWhisper and not data.isGuilds then
+                        AddCustomMenuItem(L('TAB_MENU_HIDE_CHANNEL'), function()
+                            if Settings and Settings.SetChannelHidden then
+                                Settings.SetChannelHidden(data.id, true)
+                            end
+                        end)
+                    end
                     AddCustomMenuItem(L('TAB_MENU_NEW'), function()
                         if AetherChat.CustomTabs and AetherChat.CustomTabs.OpenTabOptions then
                             AetherChat.CustomTabs.OpenTabOptions(nil)
@@ -1930,7 +2558,7 @@ function Messenger.RefreshCompactTabs()
                     end)
                     ShowMenu(self)
                 else
-                    Messenger.SelectChannel(data.id, true, true)
+                    Messenger.SelectChannel(data.id, true, false)
                     Messenger.RefreshCompactTabs()
                 end
             end)
@@ -1998,6 +2626,7 @@ function Messenger.RefreshCompactTabs()
 end
 
 function Messenger.ToggleInterfaceMode()
+    Messenger.RecordInteraction()
     local current = Settings.Get('interfaceMode', 'standard')
     local nextMode = (current == 'compact') and 'standard' or 'compact'
     Messenger.SetInterfaceMode(nextMode)
@@ -2066,6 +2695,7 @@ function Messenger.GetNavigableChannels()
 end
 
 function Messenger.CycleTab(delta)
+    Messenger.RecordInteraction()
     if not Messenger.isOpen then
         Messenger.Show()
         return
@@ -2111,6 +2741,7 @@ function Messenger.PrevTab()
 end
 
 function Messenger.NextGuild()
+    Messenger.RecordInteraction()
     local numGuilds = GetNumGuilds() or 0
     if numGuilds <= 1 then return end
 
@@ -2136,6 +2767,7 @@ function Messenger.NextGuild()
 end
 
 function Messenger.PrevGuild()
+    Messenger.RecordInteraction()
     local numGuilds = GetNumGuilds() or 0
     if numGuilds <= 1 then return end
 
@@ -2180,22 +2812,26 @@ function Messenger.ReleaseChatFocus()
         ZO_ChatWindowTextEntryEditBox:LoseFocus()
     end
 
-    if SCENE_MANAGER and SCENE_MANAGER.IsInUIMode and SCENE_MANAGER:IsInUIMode() then
-        if not (SCENE_MANAGER.IsLockedInUIMode and SCENE_MANAGER:IsLockedInUIMode()) then
+    if SCENE_MANAGER and (SCENE_MANAGER:GetCurrentSceneName() == 'hud' or SCENE_MANAGER:GetCurrentSceneName() == 'hudui') then
+        if SCENE_MANAGER:IsInUIMode() then
             SCENE_MANAGER:SetInUIMode(false)
         end
     end
-
-    if SetGameCameraUIMode and IsGameCameraUIModeActive and IsGameCameraUIModeActive() then
-        SetGameCameraUIMode(false)
+    if LockCameraRotation then
+        LockCameraRotation(false)
+    end
+    if RETICLE and RETICLE.RequestHidden then
+        RETICLE:RequestHidden(false)
     end
 
     EVENT_MANAGER:UnregisterForUpdate('AetherChat_GamepadMoveWatcher')
 end
 
 function Messenger.FocusChatInput()
-    if not Messenger.isOpen then
-        Messenger.Show()
+    Messenger.RecordInteraction()
+    if not Messenger.isOpen or Messenger.isFadingOut then
+        Messenger.CancelFade()
+        Messenger.Show(false)
     end
 
     -- Toggle behavior: if chat entry is already active, close it and resume gameplay immediately!
@@ -2210,10 +2846,11 @@ function Messenger.FocusChatInput()
         ZO_ChatWindowTextEntry:SetHidden(false)
     end
 
+    if CHAT_SYSTEM and CHAT_SYSTEM.StartTextEntry then
+        CHAT_SYSTEM:StartTextEntry()
+    end
     if ZO_ChatWindowTextEntryEditBox then
         ZO_ChatWindowTextEntryEditBox:TakeFocus()
-    elseif CHAT_SYSTEM and CHAT_SYSTEM.StartTextEntry then
-        CHAT_SYSTEM:StartTextEntry()
     end
 
     -- High-performance movement watcher: releases focus as soon as the player pushes the left stick or moves
@@ -2237,6 +2874,464 @@ function Messenger.FocusChatInput()
             end
         end
     end)
+end
+
+function Messenger.OpenQuickChatMenu(anchorControl)
+    Messenger.RecordInteraction()
+    local anchor = anchorControl or (Messenger.window and Messenger.window:GetNamedChild('QuickChatBtn'))
+    ClearMenu()
+    for i = 1, 6 do
+        local text = Settings.GetQuickResponse(i)
+        if text and text ~= "" then
+            AddCustomMenuItem(string.format("[%d] %s", i, text), function()
+                if not Messenger.isOpen or Messenger.isFadingOut then
+                    Messenger.CancelFade()
+                    Messenger.Show(true)
+                end
+                Messenger.DockNativeChatEntry()
+                if CHAT_SYSTEM and CHAT_SYSTEM.StartTextEntry then
+                    CHAT_SYSTEM:StartTextEntry(text)
+                end
+                if ZO_ChatWindowTextEntryEditBox then
+                    ZO_ChatWindowTextEntryEditBox:TakeFocus()
+                end
+            end)
+        end
+    end
+    if anchor then
+        ShowMenu(anchor)
+    else
+        ShowMenu()
+    end
+end
+
+local quickWheelControl = nil
+local selectedQuickWheelIndex = nil
+local quickWheelWasInUIMode = false
+local quickChatDownTime = 0
+Messenger.isQuickWheelActive = false
+Messenger.isQuickWheelHoldMode = false
+
+local quickWheelInputObject = {
+    UpdateDirectionalInput = function(self, deltaS)
+        if not Messenger.isQuickWheelActive then return end
+
+        local stickX, stickY = 0, 0
+        if DIRECTIONAL_INPUT and DIRECTIONAL_INPUT.GetXY then
+            local diLeft = ZO_DI_LEFT_STICK or 1
+            local diRight = ZO_DI_RIGHT_STICK or 2
+            local ok, gx, gy = pcall(function() return DIRECTIONAL_INPUT:GetXY(diLeft, diRight) end)
+            if ok and type(gx) == "number" and type(gy) == "number" then
+                stickX, stickY = gx, gy
+            end
+        end
+
+        Messenger.ApplyDirectionalSelection(stickX, stickY)
+    end,
+}
+
+function Messenger.ApplyDirectionalSelection(stickX, stickY)
+    local mag = math.sqrt(stickX * stickX + stickY * stickY)
+    if mag > 0.30 then
+        local rad = math.atan2(stickX, stickY)
+        local deg = math.deg(rad)
+        if deg < 0 then deg = deg + 360 end
+        local index = math.floor(((deg + 30) % 360) / 60) + 1
+        if index < 1 then index = 1 end
+        if index > 6 then index = 6 end
+        Messenger.UpdateQuickChatWheelSelection(index)
+    else
+        if Messenger.isQuickWheelHoldMode then
+            Messenger.UpdateQuickChatWheelSelection(nil)
+        else
+            local isGamepad = IsInGamepadPreferredMode and IsInGamepadPreferredMode()
+            if isGamepad then
+                Messenger.UpdateQuickChatWheelSelection(nil)
+            end
+        end
+    end
+end
+
+function Messenger.InitializeQuickChatWheel()
+    quickWheelControl = AetherChat_QuickChatWheel
+    if not quickWheelControl then return end
+
+    quickWheelControl:SetHidden(true)
+
+    local centerBG = quickWheelControl:GetNamedChild('CenterBG')
+    if centerBG then
+        local closeBtn = centerBG:GetNamedChild('CloseBtn')
+        if closeBtn then
+            closeBtn:SetHandler('OnClicked', function()
+                Messenger.CloseQuickChatWheel()
+            end)
+        end
+        centerBG:SetHandler('OnMouseUp', function(self, button, upInside)
+            if upInside then
+                Messenger.CloseQuickChatWheel()
+            end
+        end)
+    end
+
+    quickWheelControl:SetHandler('OnMouseUp', function(self, button, upInside)
+        if button == MOUSE_BUTTON_INDEX_LEFT then
+            if selectedQuickWheelIndex and selectedQuickWheelIndex >= 1 and selectedQuickWheelIndex <= 6 then
+                local idx = selectedQuickWheelIndex
+                Messenger.CloseQuickChatWheel()
+                Messenger.ExecuteQuickChatSelection(idx)
+            end
+        elseif button == MOUSE_BUTTON_INDEX_RIGHT then
+            Messenger.CloseQuickChatWheel()
+        end
+    end)
+
+    quickWheelControl:SetHandler('OnEffectivelyHidden', function()
+        if LockCameraRotation then
+            LockCameraRotation(false)
+        end
+        if RETICLE and RETICLE.RequestHidden then
+            RETICLE:RequestHidden(false)
+        end
+    end)
+
+    quickWheelControl:SetHandler('OnKeyDown', function(self, key)
+        if not Messenger.isQuickWheelActive then return end
+        if key == KEY_1 or key == KEY_NUMPAD1 then
+            Messenger.CloseQuickChatWheel()
+            Messenger.ExecuteQuickChatSelection(1)
+        elseif key == KEY_2 or key == KEY_NUMPAD2 then
+            Messenger.CloseQuickChatWheel()
+            Messenger.ExecuteQuickChatSelection(2)
+        elseif key == KEY_3 or key == KEY_NUMPAD3 then
+            Messenger.CloseQuickChatWheel()
+            Messenger.ExecuteQuickChatSelection(3)
+        elseif key == KEY_4 or key == KEY_NUMPAD4 then
+            Messenger.CloseQuickChatWheel()
+            Messenger.ExecuteQuickChatSelection(4)
+        elseif key == KEY_5 or key == KEY_NUMPAD5 then
+            Messenger.CloseQuickChatWheel()
+            Messenger.ExecuteQuickChatSelection(5)
+        elseif key == KEY_6 or key == KEY_NUMPAD6 then
+            Messenger.CloseQuickChatWheel()
+            Messenger.ExecuteQuickChatSelection(6)
+        elseif key == KEY_ESCAPE then
+            Messenger.CloseQuickChatWheel()
+        elseif key == KEY_ENTER or key == KEY_NUMPAD_ENTER then
+            if selectedQuickWheelIndex then
+                local idx = selectedQuickWheelIndex
+                Messenger.CloseQuickChatWheel()
+                Messenger.ExecuteQuickChatSelection(idx)
+            end
+        elseif key == KEY_GAMEPAD_DPAD_UP or key == KEY_UPARROW then
+            Messenger.UpdateQuickChatWheelSelection(1)
+        elseif key == KEY_GAMEPAD_DPAD_RIGHT then
+            Messenger.UpdateQuickChatWheelSelection(2)
+        elseif key == KEY_RIGHTARROW then
+            Messenger.UpdateQuickChatWheelSelection(3)
+        elseif key == KEY_GAMEPAD_DPAD_DOWN or key == KEY_DOWNARROW then
+            Messenger.UpdateQuickChatWheelSelection(4)
+        elseif key == KEY_GAMEPAD_DPAD_LEFT then
+            Messenger.UpdateQuickChatWheelSelection(5)
+        elseif key == KEY_LEFTARROW then
+            Messenger.UpdateQuickChatWheelSelection(6)
+        end
+    end)
+
+    if ZO_KeybindStrip_HandleKeybind then
+        ZO_PreHook("ZO_KeybindStrip_HandleKeybind", function(key)
+            if Messenger.isQuickWheelActive then
+                if key == "UI_SHORTCUT_NEGATIVE" or key == "UI_SHORTCUT_EXIT" then
+                    Messenger.CloseQuickChatWheel()
+                    return true
+                elseif key == "UI_SHORTCUT_PRIMARY" and not Messenger.isQuickWheelHoldMode then
+                    if selectedQuickWheelIndex then
+                        local idx = selectedQuickWheelIndex
+                        Messenger.CloseQuickChatWheel()
+                        Messenger.ExecuteQuickChatSelection(idx)
+                        return true
+                    end
+                end
+            end
+        end)
+    end
+
+    for i = 1, 6 do
+        local slice = quickWheelControl:GetNamedChild('Slice' .. i)
+        if slice then
+            slice:SetHandler('OnMouseEnter', function(self)
+                Messenger.UpdateQuickChatWheelSelection(i)
+            end)
+            slice:SetHandler('OnMouseExit', function(self)
+                if selectedQuickWheelIndex == i then
+                    Messenger.UpdateQuickChatWheelSelection(nil)
+                end
+            end)
+            slice:SetHandler('OnClicked', function(self)
+                Messenger.CloseQuickChatWheel()
+                Messenger.ExecuteQuickChatSelection(i)
+            end)
+            slice:SetHandler('OnMouseUp', function(self, button, upInside)
+                if upInside and button == MOUSE_BUTTON_INDEX_LEFT then
+                    Messenger.CloseQuickChatWheel()
+                    Messenger.ExecuteQuickChatSelection(i)
+                end
+            end)
+        end
+    end
+
+    quickWheelControl:SetHandler('OnUpdate', function(self)
+        if not Messenger.isQuickWheelActive then return end
+
+        local isGamepad = IsInGamepadPreferredMode and IsInGamepadPreferredMode()
+        if not isGamepad then
+            local mx, my = GetUIMousePosition()
+            local cx, cy = GuiRoot:GetWidth() / 2, GuiRoot:GetHeight() / 2
+            local dx, dy = mx - cx, my - cy
+            local dist = math.sqrt(dx * dx + dy * dy)
+            if dist > 80 then
+                local stickX = dx / dist
+                local stickY = -dy / dist
+                Messenger.ApplyDirectionalSelection(stickX, stickY)
+            elseif dist < 70 then
+                local hoveringSlice = false
+                for i = 1, 6 do
+                    local slice = quickWheelControl:GetNamedChild('Slice' .. i)
+                    if slice and MouseIsOver and MouseIsOver(slice) then
+                        hoveringSlice = true
+                        break
+                    end
+                end
+                if not hoveringSlice then
+                    Messenger.UpdateQuickChatWheelSelection(nil)
+                end
+            end
+        end
+    end)
+end
+
+function Messenger.UpdateQuickChatWheelSelection(targetIndex)
+    if selectedQuickWheelIndex == targetIndex then return end
+    selectedQuickWheelIndex = targetIndex
+
+    if not quickWheelControl then return end
+    local centerBG = quickWheelControl:GetNamedChild('CenterBG')
+    local centerPreview = centerBG and centerBG:GetNamedChild('Preview')
+
+    local theme = Theme and Theme.GetCurrentTheme and Theme.GetCurrentTheme()
+    local aR = (theme and theme.accentR) or 0.85
+    local aG = (theme and theme.accentG) or 0.69
+    local aB = (theme and theme.accentB) or 0.22
+
+    for i = 1, 6 do
+        local slice = quickWheelControl:GetNamedChild('Slice' .. i)
+        if slice then
+            local selBg = slice:GetNamedChild('SelBG')
+            local lbl = slice:GetNamedChild('Label')
+            local numLbl = slice:GetNamedChild('Num')
+
+            if i == targetIndex then
+                if selBg then
+                    selBg:SetHidden(false)
+                    selBg:SetCenterColor(aR * 0.4, aG * 0.4, aB * 0.4, 0.9)
+                    selBg:SetEdgeColor(aR, aG, aB, 1.0)
+                end
+                if lbl then lbl:SetColor(aR, aG, aB, 1.0) end
+                if numLbl then numLbl:SetColor(1, 1, 1, 1) end
+            else
+                if selBg then selBg:SetHidden(true) end
+                if lbl then lbl:SetColor(0.85, 0.85, 0.85, 0.9) end
+                if numLbl then numLbl:SetColor(aR, aG, aB, 0.8) end
+            end
+        end
+    end
+
+    if centerPreview then
+        if targetIndex then
+            local text = Settings.GetQuickResponse(targetIndex)
+            centerPreview:SetText(text or "")
+            centerPreview:SetColor(1, 1, 1, 1)
+        else
+            centerPreview:SetText(L('QUICK_WHEEL_CENTER_PROMPT'))
+            centerPreview:SetColor(0.7, 0.7, 0.7, 0.9)
+        end
+    end
+end
+
+function Messenger.ExecuteQuickChatSelection(index)
+    if not index or index < 1 or index > 6 then return end
+    local text = Settings.GetQuickResponse(index)
+    if not text or text == "" then return end
+
+    if not Messenger.isOpen or Messenger.isFadingOut then
+        Messenger.CancelFade()
+        Messenger.Show(true)
+    end
+    Messenger.DockNativeChatEntry()
+
+    if CHAT_SYSTEM and CHAT_SYSTEM.StartTextEntry then
+        CHAT_SYSTEM:StartTextEntry(text)
+    end
+    if ZO_ChatWindowTextEntryEditBox then
+        ZO_ChatWindowTextEntryEditBox:TakeFocus()
+    end
+    PlaySound(SOUNDS.DEFAULT_CLICK)
+end
+
+function Messenger.OpenQuickChatWheel(isHoldMode)
+    Messenger.RecordInteraction()
+    if not quickWheelControl then
+        quickWheelControl = AetherChat_QuickChatWheel
+    end
+    if not quickWheelControl then return end
+
+    Messenger.isQuickWheelHoldMode = (isHoldMode == true)
+    quickWheelWasInUIMode = (SCENE_MANAGER and SCENE_MANAGER.IsInUIMode and SCENE_MANAGER:IsInUIMode()) or false
+
+    for i = 1, 6 do
+        local slice = quickWheelControl:GetNamedChild('Slice' .. i)
+        if slice then
+            local lbl = slice:GetNamedChild('Label')
+            if lbl then
+                local fullText = Settings.GetQuickResponse(i) or ""
+                if string.len(fullText) > 22 then
+                    lbl:SetText(string.sub(fullText, 1, 20) .. "…")
+                else
+                    lbl:SetText(fullText)
+                end
+            end
+        end
+    end
+
+    local centerBG = quickWheelControl:GetNamedChild('CenterBG')
+    if centerBG then
+        local title = centerBG:GetNamedChild('Title')
+        if title then title:SetText(L('SET_QUICK_RESPONSES_HEADER') or "Réponses Rapides") end
+        local hint = centerBG:GetNamedChild('Hint')
+        if hint then
+            if Messenger.isQuickWheelHoldMode then
+                hint:SetText(L('QUICK_WHEEL_RELEASE_HINT'))
+            else
+                hint:SetText(L('QUICK_WHEEL_CLICK_HINT'))
+            end
+        end
+    end
+
+    Messenger.UpdateQuickChatWheelSelection(nil)
+    Messenger.isQuickWheelActive = true
+
+    -- Ensure UI Mode is active for keyboard & mouse interactivity
+    if SCENE_MANAGER and SCENE_MANAGER.SetInUIMode then
+        SCENE_MANAGER:SetInUIMode(true)
+    end
+
+    if RETICLE and RETICLE.RequestHidden then
+        RETICLE:RequestHidden(true)
+    end
+    if quickWheelControl then
+        if not quickWheelControl.IsControlHidden then
+            quickWheelControl.IsControlHidden = function(ctrl) return ctrl:IsHidden() end
+        end
+        if DIRECTIONAL_INPUT and DIRECTIONAL_INPUT.Activate then
+            pcall(function() DIRECTIONAL_INPUT:Activate(quickWheelInputObject, quickWheelControl) end)
+        end
+    end
+
+    quickWheelControl:SetHidden(false)
+end
+
+function Messenger.CloseQuickChatWheel()
+    if DIRECTIONAL_INPUT and DIRECTIONAL_INPUT.Deactivate then
+        pcall(function() DIRECTIONAL_INPUT:Deactivate(quickWheelInputObject) end)
+    end
+    if LockCameraRotation then
+        LockCameraRotation(false)
+    end
+    if RETICLE and RETICLE.RequestHidden then
+        RETICLE:RequestHidden(false)
+    end
+
+    if quickWheelControl then
+        quickWheelControl:SetHidden(true)
+    end
+    Messenger.isQuickWheelActive = false
+    Messenger.isQuickWheelHoldMode = false
+    Messenger.UpdateQuickChatWheelSelection(nil)
+
+    -- Restore UI mode only if not currently entering chat text
+    local isEnteringText = (CHAT_SYSTEM and CHAT_SYSTEM.isEnteringText)
+        or (ZO_ChatWindowTextEntryEditBox and ZO_ChatWindowTextEntryEditBox:HasFocus())
+
+    if not isEnteringText and SCENE_MANAGER and SCENE_MANAGER.SetInUIMode then
+        local isHud = (SCENE_MANAGER:GetCurrentSceneName() == 'hud' or SCENE_MANAGER:GetCurrentSceneName() == 'hudui')
+        if isHud or not quickWheelWasInUIMode then
+            SCENE_MANAGER:SetInUIMode(false)
+        end
+    end
+end
+
+function Messenger.ToggleQuickChatWheel()
+    if not quickWheelControl then
+        quickWheelControl = AetherChat_QuickChatWheel
+    end
+    if quickWheelControl and not quickWheelControl:IsHidden() and Messenger.isQuickWheelActive then
+        Messenger.CloseQuickChatWheel()
+    else
+        Messenger.OpenQuickChatWheel(false)
+    end
+end
+
+function Messenger.OnQuickChatDown()
+    quickChatDownTime = GetFrameTimeMilliseconds()
+    local isGamepad = IsInGamepadPreferredMode and IsInGamepadPreferredMode()
+    if isGamepad then
+        Messenger.OpenQuickChatWheel(true)
+    else
+        if Messenger.isQuickWheelActive then
+            Messenger.CloseQuickChatWheel()
+        else
+            Messenger.OpenQuickChatWheel(false)
+        end
+    end
+end
+
+function Messenger.OnQuickChatUp()
+    if not Messenger.isQuickWheelActive then return end
+    local isGamepad = IsInGamepadPreferredMode and IsInGamepadPreferredMode()
+    if isGamepad then
+        if not Messenger.isQuickWheelHoldMode then return end
+        local chosenIndex = selectedQuickWheelIndex
+        Messenger.CloseQuickChatWheel()
+
+        if chosenIndex and chosenIndex >= 1 and chosenIndex <= 6 then
+            Messenger.ExecuteQuickChatSelection(chosenIndex)
+        end
+    else
+        local elapsed = GetFrameTimeMilliseconds() - quickChatDownTime
+        if elapsed > 300 and selectedQuickWheelIndex then
+            local chosenIndex = selectedQuickWheelIndex
+            Messenger.CloseQuickChatWheel()
+            Messenger.ExecuteQuickChatSelection(chosenIndex)
+        end
+    end
+end
+
+function Messenger.ShareEquippedBuild()
+    Messenger.RecordInteraction()
+    if not AetherChat.GetEquippedSetsSummary then return end
+    local summary = AetherChat.GetEquippedSetsSummary()
+    if not summary or summary == "" then return end
+
+    if not Messenger.isOpen or Messenger.isFadingOut then
+        Messenger.CancelFade()
+        Messenger.Show(true)
+    end
+    Messenger.DockNativeChatEntry()
+    if CHAT_SYSTEM and CHAT_SYSTEM.StartTextEntry then
+        CHAT_SYSTEM:StartTextEntry(summary)
+    end
+    if ZO_ChatWindowTextEntryEditBox then
+        ZO_ChatWindowTextEntryEditBox:TakeFocus()
+    end
 end
 
 function Messenger.ApplyNativeGamepadChatHidden(hide)
@@ -2451,10 +3546,15 @@ function Messenger.SetInterfaceMode(mode, skipSaveCurrent)
     if activeChannelKey then
         Messenger.SelectChannel(activeChannelKey, true, false)
     end
+    Messenger.UpdateFriendsBadge()
+    Messenger.UpdateMailBadge()
 end
 
 function Messenger.OnFragmentShowing()
     Messenger.DockNativeChatEntry()
+    if Messenger.ScanAndDockExternalChatButtons then
+        Messenger.ScanAndDockExternalChatButtons()
+    end
 
     if activeChannelKey then
         unreadCounts[activeChannelKey] = 0
@@ -2465,11 +3565,18 @@ function Messenger.OnFragmentShowing()
     Messenger.UpdateMailBadge()
     Messenger.UpdateFriendsBadge()
     Messenger.SelectChannel(activeChannelKey or 'zone', true, false)
-    if ZO_ChatWindowTextEntryEditBox then
-        ZO_ChatWindowTextEntryEditBox:LoseFocus()
-    end
-    if CHAT_SYSTEM and CHAT_SYSTEM.CloseTextEntry then
-        CHAT_SYSTEM:CloseTextEntry(true)
+
+    local isEnteringText = (CHAT_SYSTEM and CHAT_SYSTEM.isEnteringText)
+        or (CHAT_SYSTEM and CHAT_SYSTEM.textEntry and CHAT_SYSTEM.textEntry.isEnteringText)
+        or (ZO_ChatWindowTextEntryEditBox and ZO_ChatWindowTextEntryEditBox:HasFocus())
+
+    if not isEnteringText then
+        if ZO_ChatWindowTextEntryEditBox then
+            ZO_ChatWindowTextEntryEditBox:LoseFocus()
+        end
+        if CHAT_SYSTEM and CHAT_SYSTEM.CloseTextEntry then
+            CHAT_SYSTEM:CloseTextEntry(true)
+        end
     end
 end
 
@@ -2504,28 +3611,49 @@ function Messenger.OnFragmentHidden()
     end
 end
 
-function Messenger.Show()
+function Messenger.Show(smooth)
+    if Messenger.ScanAndDockExternalChatButtons then
+        Messenger.ScanAndDockExternalChatButtons()
+    end
+
+    if smooth then
+        Messenger.StartFadeIn(250)
+        return
+    end
+
+    Messenger.CancelFade()
     Messenger.isOpen = true
+    Messenger.lastInteractionTime = GetGameTimeMilliseconds()
+    if Messenger.window then
+        Messenger.window:SetAlpha(1.0)
+        Messenger.window:SetHidden(false)
+    end
     if Messenger.fragment then
         Messenger.fragment:Refresh()
     else
         if Messenger.window then
-            Messenger.window:SetHidden(false)
             Messenger.OnFragmentShowing()
         end
     end
 end
 
-function Messenger.Hide()
+function Messenger.Hide(smooth)
+    if smooth then
+        Messenger.StartFadeOut(300)
+        return
+    end
+
+    Messenger.CancelFade()
     Messenger.isOpen = false
+    Messenger.isManualInteracting = false
+    if Messenger.window then
+        Messenger.window:SetHidden(true)
+        Messenger.window:SetAlpha(1.0)
+    end
     if Messenger.fragment then
         Messenger.fragment:Refresh()
-    else
-        if Messenger.window then
-            Messenger.window:SetHidden(true)
-            Messenger.OnFragmentHidden()
-        end
     end
+    Messenger.OnFragmentHidden()
 end
 
 function Messenger.Toggle()
@@ -2536,10 +3664,11 @@ function Messenger.Toggle()
         ZO_GamepadNotifications:SetHidden(true)
     end
 
-    if Messenger.isOpen then
-        Messenger.Hide()
+    if Messenger.isOpen and not Messenger.isFadingOut then
+        Messenger.Hide(true)
     else
-        Messenger.Show()
+        Messenger.RecordInteraction()
+        Messenger.Show(true)
     end
 end
 
@@ -2960,6 +4089,9 @@ function Messenger.RefreshChannelList()
 
             InitializeTooltip(InformationTooltip, self, RIGHT, 8, 0)
             InformationTooltip:AddLine("|cE5B558" .. item.name .. "|r", "ZoFontGameBold", 1, 1, 1, TOPLEFT, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_LEFT)
+            if Settings and Settings.IsChannelPriority and Settings.IsChannelPriority(item.id) then
+                InformationTooltip:AddLine("|cE5B558" .. L('SET_PRIORITY_CHANNELS_HEADER') .. "|r", "ZoFontGameSmall", 0.9, 0.8, 0.4, TOPLEFT, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_LEFT)
+            end
             if item.isGuildChild then
                 InformationTooltip:AddLine("|c888888" .. L('CHANNEL_GUILD') .. "|r", "ZoFontGameSmall", 0.8, 0.8, 0.8, TOPLEFT, MODIFY_TEXT_TYPE_NONE, TEXT_ALIGN_LEFT)
             end
@@ -3049,6 +4181,15 @@ function Messenger.RefreshChannelList()
                     end
                 elseif button == MOUSE_BUTTON_INDEX_RIGHT and upInside then
                     ClearMenu()
+                    if not item.isFolder then
+                        local isPrio = Settings and Settings.IsChannelPriority and Settings.IsChannelPriority(item.id)
+                        local prioLabel = isPrio and L('TAB_MENU_REMOVE_PRIORITY') or L('TAB_MENU_SET_PRIORITY')
+                        AddCustomMenuItem(prioLabel, function()
+                            if Settings and Settings.SetChannelPriority then
+                                Settings.SetChannelPriority(item.id, not isPrio)
+                            end
+                        end)
+                    end
                     if item.isCustomTab then
                         AddCustomMenuItem(L('TAB_MENU_EDIT'), function()
                             if AetherChat.CustomTabs and AetherChat.CustomTabs.OpenTabOptions then
@@ -3058,6 +4199,12 @@ function Messenger.RefreshChannelList()
                         AddCustomMenuItem(L('TAB_MENU_DELETE'), function()
                             if AetherChat.CustomTabs and AetherChat.CustomTabs.DeleteTab then
                                 AetherChat.CustomTabs.DeleteTab(item.id)
+                            end
+                        end)
+                    elseif not item.isWhisper and not item.isGuildChild and not item.isFolder then
+                        AddCustomMenuItem(L('TAB_MENU_HIDE_CHANNEL'), function()
+                            if Settings and Settings.SetChannelHidden then
+                                Settings.SetChannelHidden(item.id, true)
                             end
                         end)
                     end
@@ -3095,6 +4242,10 @@ end
 
 function Messenger.SelectChannel(channelKey, updateEditBox, takeFocus)
     if not Messenger.window or channelKey == 'guilds_folder' then return end
+
+    if updateEditBox then
+        Messenger.RecordInteraction()
+    end
 
     activeChannelKey = channelKey or 'zone'
     unreadCounts[activeChannelKey] = 0
@@ -3245,9 +4396,6 @@ function Messenger.SelectChannel(channelKey, updateEditBox, takeFocus)
             elseif CHAT_SYSTEM.textEntry and CHAT_SYSTEM.textEntry.SetChannel then
                 CHAT_SYSTEM.textEntry:SetChannel(targetChannel, targetContact)
             end
-            if ZO_ChatWindowTextEntryEditBox then
-                ZO_ChatWindowTextEntryEditBox:LoseFocus()
-            end
         end
     end
 end
@@ -3376,16 +4524,58 @@ function Messenger.RenderMessageToBuffer(buffer, msg)
     local isMe = msg.isSelf or (myAccount and authorName == myAccount) or authorName == "@Moi" or authorName == "You" or authorName == "@Me" or authorName == "Vous"
     local authorColor = (Theme and Theme.Hex and Theme.Hex.OTHER_ZONE) or 'C5C29E'
 
+    local charName = msg.fromName
+    local dispName = msg.fromDisplayName
+
     if isMe then
-        authorName = (myAccount and myAccount ~= '') and myAccount or '@Moi'
+        dispName = myAccount
+        charName = zo_strformat("<<1>>", GetUnitName('player'))
+    else
+        if not dispName and authorName and authorName:sub(1, 1) == '@' then
+            dispName = authorName
+        end
+        if not charName and authorName and authorName:sub(1, 1) ~= '@' then
+            charName = authorName
+        end
+        if not dispName and charName and AetherChat.PlayerAccountMap then
+            dispName = AetherChat.PlayerAccountMap[charName:lower()]
+        end
+    end
+
+    if charName and charName ~= '' then
+        charName = zo_strformat("<<1>>", charName)
+    end
+
+    local nameFormat = Settings.Get('playerNameFormat', 'account') or 'account'
+    local linkedAuthor = nil
+
+    if nameFormat == 'both' and charName and charName ~= '' and dispName and dispName ~= '' and charName ~= dispName then
+        local linkChar = ZO_LinkHandler_CreateCharacterLink(charName)
+        local linkDisp = ZO_LinkHandler_CreateDisplayNameLink(dispName)
+        linkedAuthor = string.format("%s (%s)", linkChar, linkDisp)
+    elseif nameFormat == 'character' and charName and charName ~= '' then
+        linkedAuthor = ZO_LinkHandler_CreateCharacterLink(charName)
+    elseif dispName and dispName ~= '' then
+        linkedAuthor = ZO_LinkHandler_CreateDisplayNameLink(dispName)
+    elseif authorName and authorName:sub(1, 1) == '@' then
+        linkedAuthor = ZO_LinkHandler_CreateDisplayNameLink(authorName)
+    elseif authorName and authorName ~= '' then
+        linkedAuthor = ZO_LinkHandler_CreateCharacterLink(authorName)
+    else
+        linkedAuthor = 'Inconnu'
+    end
+
+    local ch = msg.originalChannel or msg.channel or activeChannelKey
+    local isParty = (ch == 'party' or activeChannelKey == 'party')
+
+    if isMe then
         authorColor = (theme and (theme.selfHex or theme.accentHex)) or '38BDF8'
     else
-        local ch = msg.originalChannel or msg.channel or activeChannelKey
         if ch and ch:find('^guild') then
             authorColor = (Theme and Theme.Hex and Theme.Hex.OTHER_GUILD) or '8CD17D'
         elseif ch and ch:find('^officer') then
             authorColor = (Theme and Theme.Hex and Theme.Hex.OTHER_OFFICER) or '23A55A'
-        elseif ch == 'party' then
+        elseif isParty then
             authorColor = (Theme and Theme.Hex and Theme.Hex.OTHER_PARTY) or '80C0FF'
         elseif msg.isWhisper or (ch and ch:sub(1, 3) == 'dm:') then
             authorColor = (Theme and Theme.Hex and Theme.Hex.OTHER_WHISPER) or 'C084FC'
@@ -3398,17 +4588,50 @@ function Messenger.RenderMessageToBuffer(buffer, msg)
         end
     end
 
+    -- Class color in party
+    if isParty and Settings.Get('partyClassColorEnabled', true) and not isMe then
+        local classId = nil
+        if AetherChat.GroupClassMap then
+            if charName and AetherChat.GroupClassMap[charName:lower()] then
+                classId = AetherChat.GroupClassMap[charName:lower()]
+            elseif dispName and AetherChat.GroupClassMap[dispName:lower()] then
+                classId = AetherChat.GroupClassMap[dispName:lower()]
+            elseif authorName and AetherChat.GroupClassMap[authorName:lower()] then
+                classId = AetherChat.GroupClassMap[authorName:lower()]
+            end
+        end
+        if classId then
+            local cHex = GetESOClassHex(classId)
+            if cHex then
+                authorColor = cHex
+            end
+        end
+    end
+
     authorColor = tostring(authorColor or 'C5C29E')
 
-    local linkedAuthor = authorName or 'Inconnu'
-    if authorName and authorName:sub(1, 1) == '@' then
-        linkedAuthor = ZO_LinkHandler_CreateDisplayNameLink(authorName)
-    elseif authorName and authorName ~= '' then
-        linkedAuthor = ZO_LinkHandler_CreateCharacterLink(authorName)
+    -- Role icon in party
+    local roleIconTag = ""
+    if isParty and Settings.Get('partyRolesEnabled', true) then
+        local roleId = nil
+        if AetherChat.GroupRoleMap then
+            if charName and AetherChat.GroupRoleMap[charName:lower()] then
+                roleId = AetherChat.GroupRoleMap[charName:lower()]
+            elseif dispName and AetherChat.GroupRoleMap[dispName:lower()] then
+                roleId = AetherChat.GroupRoleMap[dispName:lower()]
+            elseif authorName and AetherChat.GroupRoleMap[authorName:lower()] then
+                roleId = AetherChat.GroupRoleMap[authorName:lower()]
+            end
+        end
+        if not roleId and msg.role and msg.role > 0 then
+            roleId = msg.role
+        end
+        if roleId then
+            roleIconTag = GetRoleIcon(roleId)
+        end
     end
-    linkedAuthor = tostring(linkedAuthor or authorName or 'Inconnu')
 
-    local authorTag = string.format('|c%s%s:|r', authorColor, linkedAuthor)
+    local authorTag = string.format('%s|c%s%s:|r', roleIconTag, authorColor, linkedAuthor)
 
     local channelTag = ""
     if activeChannelKey and activeChannelKey:find('^custom_') then
@@ -3466,10 +4689,99 @@ function Messenger.RefreshActiveChannel()
     end
 end
 
-function Messenger.OnMessageReceived(channelKey, author, text, isSelf, isWhisper, zoneLang, originalChannel)
+local function NormalizeTextForComparison(str)
+    if not str or str == '' then return '' end
+    local s = str:gsub("|c%x%x%x%x%x%x", ""):gsub("|r", "")
+    s = s:gsub("%[[^%]]+%]%s*", "")
+    s = s:gsub("[\r\n]+", " "):gsub("%s+", " "):gsub("^%s+", ""):gsub("%s+$", "")
+    return s:lower()
+end
+
+local function NormalizeAuthorForComparison(auth)
+    if not auth or auth == '' then return '' end
+    local a = auth:gsub("|c%x%x%x%x%x%x", ""):gsub("|r", "")
+    a = a:gsub("%^%w+", "")
+    a = a:gsub("^@", ""):gsub("^%s+", ""):gsub("%s+$", "")
+    return a:lower()
+end
+
+local recentLiveMessages = {}
+
+function Messenger.OnMessageReceived(channelKey, author, text, isSelf, isWhisper, zoneLang, originalChannel, fromName, fromDisplayName, role)
     if isWhisper and channelKey:sub(1, 3) == 'dm:' then
         local contact = channelKey:sub(4)
         Messenger.RegisterWhisperContact(contact)
+    end
+
+    if isSelf then
+        Messenger.RecordInteraction()
+    end
+
+    -- Live buffer dynamic duplicate protection (handles rapid events, dialogue re-triggers & colored text)
+    local nowMs = GetGameTimeMilliseconds()
+    local normNewText = NormalizeTextForComparison(text)
+    local normNewAuthor = NormalizeAuthorForComparison(author or fromDisplayName or fromName)
+
+    if normNewText ~= '' then
+        for i = #recentLiveMessages, 1, -1 do
+            local prev = recentLiveMessages[i]
+            if (nowMs - prev.timeMs) > 12000 then
+                table.remove(recentLiveMessages, i)
+            else
+                local normPrevText = prev.normText
+                if (prev.text == text) or (normPrevText == normNewText) then
+                    local sameAuthor = (normNewAuthor == prev.normAuthor) or (normNewAuthor == '') or (prev.normAuthor == '')
+                    if sameAuthor then
+                        local maxDeltaMs = (#normNewText > 15) and 10000 or 3000
+                        if (nowMs - prev.timeMs) <= maxDeltaMs then
+                            return -- Reject duplicate
+                        end
+                    end
+                end
+            end
+        end
+
+        table.insert(recentLiveMessages, {
+            channel = channelKey,
+            author = author,
+            normAuthor = normNewAuthor,
+            text = text,
+            normText = normNewText,
+            timeMs = nowMs,
+        })
+        while #recentLiveMessages > 20 do
+            table.remove(recentLiveMessages, 1)
+        end
+    end
+
+    -- Handle Stealth Mode / Auto-Hide & Auto-Show behavior
+    if Settings.Get('autoHideOnIdle', false) and not isSelf and channelKey ~= 'loot' and channelKey ~= 'system' then
+        if not Messenger.isOpen or Messenger.isFadingOut then
+            Messenger.Show(true)
+        end
+        Messenger.lastInteractionTime = GetGameTimeMilliseconds()
+    end
+
+    -- Priority Channel Auto-Switching:
+    -- If a channel is marked as priority (⭐ via right-click), auto-switch to it on incoming message,
+    -- unless the player is actively typing in the chat edit box or already viewing it (directly or in an active custom tab).
+    if not isSelf and channelKey ~= 'loot' and channelKey ~= 'system' then
+        local isPriority = Settings and Settings.IsChannelPriority and Settings.IsChannelPriority(channelKey)
+        if isPriority then
+            local isInputFocused = ZO_ChatWindowTextEntryEditBox and ZO_ChatWindowTextEntryEditBox:HasFocus()
+            local isAlreadyShowingInCustomTab = false
+            if activeChannelKey and activeChannelKey:find('^custom_') and AetherChat.CustomTabs and AetherChat.CustomTabs.GetTab then
+                local tabData = AetherChat.CustomTabs.GetTab(activeChannelKey)
+                if tabData and AetherChat.CustomTabs.MatchesMessage(tabData, nil, channelKey, nil) then
+                    isAlreadyShowingInCustomTab = true
+                end
+            end
+
+            if not isInputFocused and activeChannelKey ~= channelKey and not isAlreadyShowingInCustomTab then
+                Messenger.SelectChannel(channelKey, true, false)
+                return
+            end
+        end
     end
 
     local isCurrentlyViewing = (Messenger.window and not Messenger.window:IsHidden()) and (activeChannelKey == channelKey)
@@ -3492,8 +4804,11 @@ function Messenger.OnMessageReceived(channelKey, author, text, isSelf, isWhisper
             local timeStr = GetTimeString():sub(1, 5)
             Messenger.RenderMessageToBuffer(buffer, {
                 author = author,
+                fromName = fromName,
+                fromDisplayName = fromDisplayName,
                 text = text,
                 time = timeStr,
+                role = role,
                 isSelf = isSelf,
                 isWhisper = isWhisper,
                 zoneLang = zoneLang,

@@ -1,11 +1,11 @@
 ﻿--------------------------------------------------------------
--- EyeOnKeep.lua — v1.7.2-test1
+-- EyeOnKeep.lua — v1.2.0
 -- Author: SugaComa (Rik Sprint)
 -- RESOURCES NOW FILTER BY HOME TERRITORY (same as keeps/outposts/towns)
 --------------------------------------------------------------
 local ADDON_NAME = "EyeOnKeep"
 EyeOnKeep = EyeOnKeep or {}
-EyeOnKeep.version = "1.7.2-test1"
+EyeOnKeep.version = "1.2.0"
 local EM = EVENT_MANAGER
 local EOK_SV_VERSION = 44
 local EOK_SV = nil
@@ -29,10 +29,10 @@ local DEFAULTS = {
 -- Factions
 --------------------------------------------------------------
 local FACTION = {
-    [ALLIANCE_ALDMERI_DOMINION] = { tag="AD", name="Aldmeri Dominion", color="|cFFD700", monarch="Queen Ayrenn" },
-    [ALLIANCE_EBONHEART_PACT]     = { tag="EP", name="Ebonheart Pact",     color="|cFF2400", monarch="Jorunn the Skald-King" },
-    [ALLIANCE_DAGGERFALL_COVENANT]= { tag="DC", name="Daggerfall Covenant",color="|c4169E1", monarch="King Emeric" },
-    [ALLIANCE_NONE]               = { tag="--", name="In Conflict",        color="|cFFFFFF", monarch="No ruler" },
+    [ALLIANCE_ALDMERI_DOMINION] = { tag="AD", name="Dominion", color="|cFFD700", monarch="Queen Ayrenn" },
+    [ALLIANCE_EBONHEART_PACT]     = { tag="EP", name="Pact",     color="|cFF2400", monarch="Jorunn the Skald-King" },
+    [ALLIANCE_DAGGERFALL_COVENANT]= { tag="DC", name="Covenant",color="|c4169E1", monarch="King Emeric" },
+    [ALLIANCE_NONE]               = { tag="--", name="Conflict",        color="|cFFFFFF", monarch="No ruler" },
 }
 local INFO_COLOR = "|c00FFCC"
 local CHAT_TAG = "[EoK] "
@@ -127,6 +127,14 @@ end
 local function SafeName(a) 
 return (FACTION[a] and FACTION[a].name) or "Unknown" 
 end
+-- Display only: canonical names stay intact for territory, resource and abbreviation lookup.
+local function DisplayPlace(name)
+    return (name:gsub("^Castle ", ""):gsub("^Fort ", ""):gsub(" Keep$", ""):gsub(" Keep ", " "):gsub(" Outpost$", ""))
+end
+local function FactionText(alliance)
+    return SafeColor(alliance) .. SafeName(alliance) .. "|r|cFFFFFF"
+end
+
 local function SafeMonarch(a) 
 return (FACTION[a] and FACTION[a].monarch) or "Unknown Ruler" 
 end
@@ -179,7 +187,7 @@ local function FormatKeepMessage(template, keepName, owner, territory, myAllianc
     if not template then return "" end
 
     local parent = parentKeepForResource(keepName)
-    local n = INFO_COLOR .. keepName .. "|r|cFFFFFF"
+    local n = INFO_COLOR .. DisplayPlace(keepName) .. "|r|cFFFFFF"
     local p = INFO_COLOR .. (parent or keepName) .. "|r|cFFFFFF"
     local o = SafeColor(owner) .. SafeName(owner) .. "|r|cFFFFFF"
     local t = SafeColor(territory) .. SafeName(territory) .. "|r|cFFFFFF"
@@ -233,9 +241,9 @@ end
 --      Neutral/Conflict = |cFFFFFF
 --
 --  Example Templates:
---    "%Kn is under attack — defend %Km lands!"
+--    "%Kn is under attack: defend %Km lands!"
 --    "%Ko have captured %Kn in the name of %Kr."
---    "Disruption reported at %Kn — %Ko are defending."
+--    "Disruption reported at %Kn: %Ko are defending."
 --
 --  ⚙️ Expansion Ideas:
 --    %Kp = Parent keep (for resources)
@@ -314,126 +322,58 @@ local STYLE = "immersive"
 --------------------------------------------------------------
 -- UNDER ATTACK (Colour-aware for all styles)
 --------------------------------------------------------------
-local function sayUnderAttack(name, owner, territory, otype, myAlliance)
-    if not matrixAllows(otype, territory) then return end
-
-    local colorO = SafeColor(owner)
-    local colorM = SafeColor(myAlliance)
-    local abbrK = getAbbr(name, otype)
-    local abbrO = ABBR.alliance[owner] or "--"
-    local abbrM = ABBR.alliance[myAlliance] or "--"
-
-    local msg
-
-	if STYLE == "quick" then
-		-- BRK UA (cyan keep name, white tag)
-		msg = string.format("%s%s|r |cFFFFFFUA|r", INFO_COLOR, abbrK)
-
-		
-	elseif STYLE == "compact" then
-		if owner == myAlliance and territory == myAlliance then
-			msg = string.format("%s%s|r under attack at %s%s|r",
-				colorM, abbrM, INFO_COLOR, abbrK)
-		elseif owner ~= myAlliance and territory == myAlliance then
-			msg = string.format("%s%s|r under attack at %s%s|r (our land)",
-				colorO, abbrO, INFO_COLOR, abbrK)
-		else
-			msg = string.format("%s%s|r under attack at %s%s|r",
-				colorO, abbrO, INFO_COLOR, abbrK)
-		end
-				
-
-    else -- immersive
-        local K = INFO_COLOR .. name .. "|r"
-        local P = INFO_COLOR .. (parentKeepForResource(name) or name) .. "|r"
-        local O = colorO .. SafeName(owner) .. "|r"
-        local T = SafeColor(territory) .. SafeName(territory) .. "|r"
-        local M = colorM .. SafeName(myAlliance) .. "|r"
-        local R = colorO .. SafeMonarch(owner) .. "|r"
-
-        if otype == "resource" then
-            msg = (owner == myAlliance)
-                and "%Kn is under attack — defend the supply line!"
-                or "Disruption reported at %Kn — %Ko are defending."
-        elseif owner == myAlliance and territory == myAlliance then
-            msg = "%Kn is under attack — defend %Km lands!"
-        elseif owner ~= myAlliance and territory == myAlliance then
-            msg = "The enemy hold on %Kn is under attack — an opportunity to reclaim our lands!"
-        elseif owner == myAlliance and territory ~= myAlliance then
-            msg = "Our territory at %Kn is under attack — hold our position!"
-        else
-            msg = "Territorial dispute at %Kn — %Ko forces engaged."
-        end
-
-        msg = msg:gsub("%%Kn", K):gsub("%%Kp", P):gsub("%%Ko", O)
-                 :gsub("%%Kt", T):gsub("%%Km", M):gsub("%%Kr", R)
-    end
-
-    chat(msg)
+local function ChatPlace(name, kind)
+    return INFO_COLOR .. (STYLE == "quick" and getAbbr(name, kind) or DisplayPlace(name)) .. "|r|cFFFFFF"
 end
 
-
---------------------------------------------------------------
--- RESOLUTION (Colour-aware for all styles)
---------------------------------------------------------------
-local function sayResolution(name, oldOwnerAtStart, ownerNow, territory, otype, myAlliance)
-    if not matrixAllows(otype, territory) then return end
-
-    local colorO = SafeColor(ownerNow)
-    local colorM = SafeColor(myAlliance)
-    local abbrK = getAbbr(name, otype)
-    local abbrO = ABBR.alliance[ownerNow] or "--"
-    local abbrM = ABBR.alliance[myAlliance] or "--"
-
-    local msg
-
-    if STYLE == "quick" then
-        -- e.g. |cFFD700BRK|r CAP
-        local tag = (ownerNow == oldOwnerAtStart and "HELD")
-            or (ownerNow == myAlliance and "CAP")
-            or "LOST"
-        msg = string.format("%s%s|r |cFFFFFF%s|r", colorO, abbrK, tag)
-
-    elseif STYLE == "compact" then
-        if ownerNow == oldOwnerAtStart then
-            msg = string.format("%s%s|r held %s%s|r", colorO, abbrO, colorO, abbrK)
-        elseif ownerNow == myAlliance then
-            msg = string.format("%s%s|r captured %s%s|r", colorM, abbrM, colorM, abbrK)
-        else
-            msg = string.format("%s%s|r took %s%s|r", colorO, abbrO, colorO, abbrK)
-        end
-
-    else -- immersive
-        local K = INFO_COLOR .. name .. "|r"
-        local P = INFO_COLOR .. (parentKeepForResource(name) or name) .. "|r"
-        local O = colorO .. SafeName(ownerNow) .. "|r"
-        local T = SafeColor(territory) .. SafeName(territory) .. "|r"
-        local M = colorM .. SafeName(myAlliance) .. "|r"
-        local R = colorO .. SafeMonarch(ownerNow) .. "|r"
-
-        if otype == "resource" then
-            msg = (ownerNow == myAlliance)
-                and "%Ko now control %Kn , secureing the supply line."
-                or "%Ko now control %Kn — the supply line has changed hands."
-        elseif ownerNow == oldOwnerAtStart then
-            msg = "%Ko forces have held %Kn — the line stands."
-        elseif ownerNow == territory then
-            msg = "%Ko reclaim %Kn in the name of %Kr."
-        elseif ownerNow == myAlliance and territory ~= myAlliance then
-            msg = "Victory at %Kn — %Km have seized enemy ground!"
-        elseif territory == myAlliance and ownerNow ~= myAlliance then
-            msg = "We’ve lost %Kn — %Ko forces now occupy %Km lands!"
-        else
-            msg = "%Ko have captured %Kn."
-        end
-
-        msg = msg:gsub("%%Kn", K):gsub("%%Kp", P):gsub("%%Ko", O)
-                 :gsub("%%Kt", T):gsub("%%Km", M):gsub("%%Kr", R)
+local function sayUnderAttack(name, owner, territory, kind, myAlliance)
+    if not matrixAllows(kind, territory) then return end
+    local place, faction = ChatPlace(name, kind), FactionText(owner)
+    local message
+    if STYLE ~= "immersive" then
+        message = faction .. " under attack at " .. place .. "."
+    elseif kind == "resource" then
+        message = owner == myAlliance and ("Defend " .. place .. ", protect the supply line.")
+            or (faction .. " under attack at " .. place .. ".")
+    elseif kind == "town" then
+        message = owner == myAlliance and ("Defend " .. place .. ", hold the town.")
+            or (faction .. " under attack at " .. place .. ".")
+    elseif owner == myAlliance and territory == myAlliance then
+        message = "Defend " .. place .. ", our lands are under attack."
+    elseif owner == myAlliance then
+        message = "Hold " .. place .. ", our territory is under attack."
+    elseif territory == myAlliance then
+        message = "Reclaim " .. place .. ", the " .. faction .. " are under attack."
+    else
+        message = faction .. " under attack at " .. place .. "."
     end
-
-    chat(msg)
+    chat(message)
 end
 
+local function sayResolution(name, oldOwner, owner, territory, kind, myAlliance)
+    if not matrixAllows(kind, territory) then return end
+    local place, faction = ChatPlace(name, kind), FactionText(owner)
+    local message
+    if STYLE ~= "immersive" then
+        message = faction .. " take " .. place .. "."
+    elseif kind == "resource" then
+        message = faction .. " now control " .. place .. (owner == myAlliance
+            and ", securing the supply line." or ", changing the supply line.")
+    elseif owner == territory then
+        message = faction .. " reclaim " .. place .. "."
+    elseif owner == myAlliance then
+        message = faction .. " take " .. place .. ", our territory expands."
+    elseif territory == myAlliance then
+        message = place .. " lost, the " .. faction .. " now hold our lands."
+    elseif oldOwner == myAlliance then
+        message = place .. " lost, the " .. faction .. " take control."
+    else
+        message = faction .. " take " .. place .. "."
+    end
+    chat(message)
+end
+
+--------------------------------------------------------------
 --------------------------------------------------------------
 -- State Machine
 --------------------------------------------------------------
@@ -443,6 +383,23 @@ local activeCampaign, scanNumber = nil, 0
 local trackingSuspended = false
 local function InCyrodiil()
     return IsInCyrodiil() and not IsInImperialCity() and not IsActiveWorldBattleground()
+end
+
+-- Announce actual coronations, never infer them from six-keep ownership.
+local lastCoronationKey, lastCoronationAt = nil, 0
+local function OnCoronation(_, campaignId, characterName, alliance, displayName)
+    if trackingSuspended or not InCyrodiil() or campaignId ~= GetCurrentCampaignId()
+        or alliance ~= GetUnitAlliance("player") then return end
+    local name = characterName
+    if type(name) ~= "string" or name == "" then name = displayName end
+    if type(name) ~= "string" or name == "" then return end
+    local key = tostring(campaignId) .. ":" .. tostring(alliance) .. ":" .. name
+    local now = nowMs()
+    if key == lastCoronationKey and now - lastCoronationAt < 10000 then return end
+    lastCoronationKey, lastCoronationAt = key, now
+    if zo_strformat then name = zo_strformat("<<1>>", name) end
+    chat(SafeColor(alliance) .. name .. "|r|cFFFFFF crowned Emperor in the name of "
+        .. SafeColor(alliance) .. SafeMonarch(alliance) .. "|r|cFFFFFF!")
 end
 
 local function BuildObjectiveIndex()
@@ -482,34 +439,29 @@ end
 
 local function SaySiege(name, owner, territory, kind, counts)
     if not matrixAllows(kind, territory) then return end
+    local words = { "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
+        "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen", "twenty" }
     local forces = {}
     for alliance = 1, NUM_ALLIANCES do
         if counts[alliance] and counts[alliance] > 0 then
-            forces[#forces + 1] = tostring(counts[alliance]) .. " " .. SafeColor(alliance)
-                .. (STYLE == "immersive" and SafeName(alliance) or FACTION[alliance].tag) .. "|r|cFFFFFF"
+            local count = STYLE == "immersive" and words[counts[alliance]] or nil
+            local faction = STYLE == "immersive" and SafeName(alliance) or FACTION[alliance].tag
+            forces[#forces + 1] = (count or tostring(counts[alliance])) .. " " .. SafeColor(alliance) .. faction .. "|r|cFFFFFF"
         end
     end
-    local report = table.concat(forces, ", ") .. " siege reported."
+    local report = table.concat(forces, " and ") .. " siege attacking."
+    local place = INFO_COLOR .. DisplayPlace(name) .. "|r|cFFFFFF"
     if STYLE == "quick" then
-        chat(INFO_COLOR .. getAbbr(name, kind) .. "|r " .. report)
+        chat(INFO_COLOR .. getAbbr(name, kind) .. "|r: " .. report)
     elseif STYLE == "compact" then
-        chat(INFO_COLOR .. name .. "|r — " .. report)
+        chat(place .. ": " .. report)
+    elseif owner == GetUnitAlliance("player") then
+        local order = territory == GetUnitAlliance("player") and "Defend " or "Hold "
+        chat(order .. place .. ", " .. report)
+    elseif territory == GetUnitAlliance("player") then
+        chat("Reclaim " .. place .. ", " .. report)
     else
-        local playerAlliance = GetUnitAlliance("player")
-        local place = INFO_COLOR .. name .. "|r|cFFFFFF"
-        local orders
-        if owner == playerAlliance and territory == playerAlliance then
-            orders = "Enemy siege at " .. place .. " — defend our lands!"
-        elseif owner == playerAlliance and territory ~= ALLIANCE_NONE then
-            orders = "Enemy siege at " .. place .. " — hold our territory!"
-        elseif owner == playerAlliance then
-            orders = "Enemy siege at " .. place .. " — hold this keep!"
-        elseif territory == playerAlliance then
-            orders = "The enemy hold on " .. place .. " is under siege — an opportunity to reclaim our lands!"
-        else
-            orders = SafeName(owner) .. "-held " .. place .. " is under siege — enemy forces are engaged."
-        end
-        chat(orders .. " " .. report)
+        chat(FactionText(owner) .. " hold " .. place .. ", " .. report)
     end
 end
 
@@ -557,7 +509,7 @@ local function HandleUpdate(id, ownerOverride, oldOwner, attackOverride)
     local changedOwner = owner ~= st.owner
     if changedOwner then
         if owner == ALLIANCE_NONE then
-            if matrixAllows(kind, territory) then chat(INFO_COLOR .. name .. "|r — control is disputed.") end
+            if matrixAllows(kind, territory) then chat("Control of " .. ChatPlace(name, kind) .. " is disputed.") end
         else
             sayResolution(name, st.owner, owner, territory, kind, playerAlliance)
         end
@@ -567,7 +519,9 @@ local function HandleUpdate(id, ownerOverride, oldOwner, attackOverride)
         sayUnderAttack(name, owner, territory, kind, playerAlliance)
     elseif not under and st.under and not changedOwner then
         if matrixAllows(kind, territory) then
-            chat(INFO_COLOR .. name .. "|r — defences hold; " .. SafeName(owner) .. " retain control.")
+            local message = FactionText(owner) .. " hold " .. INFO_COLOR .. DisplayPlace(name) .. "|r"
+            if kind == "resource" then message = message .. ", securing the supply line." else message = message .. "." end
+            chat(message)
         end
     end
     st.owner, st.under = owner, under
@@ -646,7 +600,7 @@ end
 local function BuildSettingsMenu()
     local LHA = LibHarvensAddonSettings
     if not LHA then
-        chat("LibHarvensAddonSettings not found — settings panel disabled.", true)
+        chat("Settings unavailable, LibHarvensAddonSettings is missing.", true)
         return
     end
     if not EOK_SV.alertMatrix then
@@ -689,7 +643,7 @@ end
 
 SLASH_COMMANDS["/eyemute"] = function()
     muted = not muted
-    chat("Alerts are now " .. (muted and "|cFF4444muted|r" or "|c00FF00unmuted|r") .. ".", true)
+    chat("Alerts " .. (muted and "|cFF4444muted|r" or "|c00FF00resumed|r") .. ".", true)
 end
 
 --------------------------------------------------------------
@@ -715,7 +669,7 @@ local function EyeOnKeep_Init()
         if arg == "compact" or arg == "quick" or arg == "immersive" then
             STYLE = arg
             EOK_SV.messageStyle = STYLE
-            chat("Message style → |cFFFF00" .. arg:upper() .. "|r", true)
+            chat("Message style: |cFFFF00" .. arg:upper() .. "|r", true)
         else
             chat("Current: |cFFFF00" .. STYLE:upper() ..
                  "|r  |cFFFFFF/eokstyle immersive | compact | quick|r", true)
@@ -726,6 +680,7 @@ local function EyeOnKeep_Init()
     --------------------------------------------------------------
     -- Register Core Events
     --------------------------------------------------------------
+    EM:RegisterForEvent(ADDON_NAME.."_Coronation", EVENT_CORONATE_EMPEROR_NOTIFICATION, OnCoronation)
     EM:RegisterForEvent(ADDON_NAME.."_Attack", EVENT_KEEP_UNDER_ATTACK_CHANGED, OnKeepUnderAttackChanged)
     EM:RegisterForEvent(ADDON_NAME.."_Owner", EVENT_KEEP_ALLIANCE_OWNER_CHANGED, OnKeepOwnerChanged)
     EM:RegisterForEvent(ADDON_NAME.."_Objective", EVENT_OBJECTIVE_CONTROL_STATE, OnObjectiveControlState)
@@ -759,7 +714,7 @@ local function EyeOnKeep_Init()
         local id = GetCurrentCampaignId()
         if id and id > 0 then campaign = GetCampaignName(id) or campaign end
     end
-    chat(string.format("%sEyeOnKeep|r v%s — watching %s%s|r for the %s%s|r.",
+    chat(string.format("%sEyeOnKeep|r %s ready, watching %s%s|r for the %s%s|r.",
         FACTION[1].color, EyeOnKeep.version, INFO_COLOR, campaign, f.color, f.name))
 end
 

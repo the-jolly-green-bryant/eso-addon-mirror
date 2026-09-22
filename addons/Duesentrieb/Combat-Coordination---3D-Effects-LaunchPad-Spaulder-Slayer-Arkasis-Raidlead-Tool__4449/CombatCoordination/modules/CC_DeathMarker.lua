@@ -7,7 +7,7 @@ local Module = {
     name      = "DeathMarker",
     menuName  = "DEATH MARKER - REZ HELPER",
     iconPath  = "/esoui/art/icons/passive_necromancer_002.dds",
-    menuLayer = 0,
+    menuLayer = 2,
 
     ActiveMarkers = {},
     isLoopRunning = false,
@@ -17,6 +17,7 @@ local Module = {
     TextureValues  = CC.CHEVRON_VALUES,
 
     Default = {
+        enableModule = true,
         enableDrawName = true,
         enableDrawVisuals = true,
         offsetTY = 0,
@@ -276,8 +277,31 @@ function Module:GetMenuOptions()
 
     return {
         type = "submenu",
-        name = string.format("%s %s", menuIcon, CC.ColorString(self.menuName, "tier2")),
+        name = function()
+            local stringEnable = self.SV.enableModule and "" or CC.ColorString("[OFF] ", "RD")
+            return string.format("%s %s%s", menuIcon, stringEnable, CC.ColorString(self.menuName, "tier2"))
+        end,
         controls = {
+            -- ENABLE / DISABLE MODULE
+            { type = "header", name = CC.ColorString("ENABLE / DISABLE MODULE", "tier3") },
+            {
+                type = "checkbox",
+                name = CC.ColorString("Enable Module", "GN"),
+                getFunc = function() return self.SV.enableModule end,
+                setFunc = function(value)
+                    self.SV.enableModule = value
+                    if value then
+                        if self.CustomEnable then self:CustomEnable() end
+                    else
+                        if self.CustomDisable then self:CustomDisable() end
+                    end
+                end,
+                default = self.Default.enableModule,
+                disabled = function() return not CC.SV.enableAddon end,
+                requiresReload = true,
+            },
+            { type = "divider" },
+
             {
                 type = "description",
                 text = "Draws 3D marker on fallen (dead) group members.\nMarker auto-removes upon resurrection.",
@@ -296,7 +320,7 @@ function Module:GetMenuOptions()
                 getFunc = function() return self.SV.autoHideSec end,
                 setFunc = function(value) self.SV.autoHideSec = value end,
                 default = self.Default.autoHideSec,
-                disabled = function() return not CC.SV.enableAddon end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
 
             ----------------------------------------------------------------------------------------------------
@@ -318,7 +342,7 @@ function Module:GetMenuOptions()
                     if value then CC.DisplayNotification:TriggerCustom(timeSec, line1, line2) end
                 end,
                 default = self.Default.enableNotification,
-                disabled = function() return not CC.SV.enableAddon end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
             {
                 type = "dropdown",
@@ -333,7 +357,7 @@ function Module:GetMenuOptions()
                     end
                 end,
                 default = self.Default.soundNotification,
-                disabled = function() return not self.SV.enableNotification or not CC.SV.enableAddon end,
+                disabled = function() return not self.SV.enableNotification or not CC.SV.enableAddon or not self.SV.enableModule end,
             },
             {
                 type = "slider",
@@ -347,7 +371,7 @@ function Module:GetMenuOptions()
                     end
                 end,
                 default = self.Default.volumeNotification,
-                disabled = function() return not self.SV.enableNotification or not CC.SV.enableAddon end,
+                disabled = function() return not self.SV.enableNotification or not CC.SV.enableAddon or not self.SV.enableModule end,
             },
 
             ----------------------------------------------------------------------------------------------------
@@ -361,7 +385,7 @@ function Module:GetMenuOptions()
                 getFunc = function() return self.SV.enableDrawName end,
                 setFunc = function(value) self.SV.enableDrawName = value end,
                 default = self.Default.enableDrawName,
-                disabled = function() return not CC.SV.enableAddon end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
             {
                 type = "slider",
@@ -371,7 +395,7 @@ function Module:GetMenuOptions()
                 getFunc = function() return self.SV.fontSize end,
                 setFunc = function(value) self.SV.fontSize = value end,
                 default = self.Default.fontSize,
-                disabled = function() return not CC.SV.enableAddon or not self.SV.enableDrawName end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not self.SV.enableDrawName end,
             },
             {
                 type = "dropdown",
@@ -382,7 +406,7 @@ function Module:GetMenuOptions()
                 getFunc = function() return self.SV.fontStyle end,
                 setFunc = function(value) self.SV.fontStyle = value end,
                 default = self.Default.fontStyle,
-                disabled = function() return not CC.SV.enableAddon or not self.SV.enableDrawName end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not self.SV.enableDrawName end,
             },
             {
                 type = "dropdown",
@@ -393,7 +417,7 @@ function Module:GetMenuOptions()
                 getFunc = function() return self.SV.fontWeight end,
                 setFunc = function(value) self.SV.fontWeight = value end,
                 default = self.Default.fontWeight,
-                disabled = function() return not CC.SV.enableAddon or not self.SV.enableDrawName end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not self.SV.enableDrawName end,
             },
             {
                 type = "divider",
@@ -406,7 +430,7 @@ function Module:GetMenuOptions()
                 getFunc = function() return self.SV.offsetTY / 100 end,
                 setFunc = function(value) self.SV.offsetTY = value * 100 end,
                 default = self.Default.offsetTY / 100,
-                disabled = function() return not CC.SV.enableAddon or not self.SV.enableDrawName end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not self.SV.enableDrawName end,
             },
 
             ----------------------------------------------------------------------------------------------------
@@ -420,7 +444,7 @@ function Module:GetMenuOptions()
                 getFunc = function() return self.SV.enableDrawVisuals end,
                 setFunc = function(value) self.SV.enableDrawVisuals = value end,
                 default = self.Default.enableDrawVisuals,
-                disabled = function() return not CC.SV.enableAddon end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
             {
                 type = "colorpicker",
@@ -434,7 +458,7 @@ function Module:GetMenuOptions()
                     end
                 end,
                 default = CC.GetRgbaFromArray(self.Default.Color),
-                disabled = function() return not CC.SV.enableAddon end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
             {
                 type = "slider",
@@ -443,7 +467,7 @@ function Module:GetMenuOptions()
                 getFunc = function() return self.SV.width / 100 end,
                 setFunc = function(value) self.SV.width = value * 100 end,
                 default = self.Default.width / 100,
-                disabled = function() return not CC.SV.enableAddon or not self.SV.enableDrawVisuals end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not self.SV.enableDrawVisuals end,
             },
             {
                 type = "slider",
@@ -452,7 +476,7 @@ function Module:GetMenuOptions()
                 getFunc = function() return self.SV.height / 100 end,
                 setFunc = function(value) self.SV.height = value * 100 end,
                 default = self.Default.height / 100,
-                disabled = function() return not CC.SV.enableAddon or not self.SV.enableDrawVisuals end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not self.SV.enableDrawVisuals end,
             },
             {
                 type = "dropdown",
@@ -468,7 +492,7 @@ function Module:GetMenuOptions()
                     end
                 end,
                 default = self.Default.texture,
-                disabled = function() return not CC.SV.enableAddon or not self.SV.enableDrawVisuals end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not self.SV.enableDrawVisuals end,
             },
             {
                 type = "custom",

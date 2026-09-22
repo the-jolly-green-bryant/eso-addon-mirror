@@ -1,0 +1,39 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/MemphisKane991/Tamriel-Sky-Dial__4860",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "MemphisKane991",
+  "canonical_id": "esoui:4860",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4860",
+  "deleted": false,
+  "directories": [
+    "TamrielSkyDial"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4860/",
+  "fingerprint": "be187c20d26f247b699b7d7f326af90b16db5eb95cc23879626af890b65c662f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17469.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17470.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4860",
+  "source_url": "https://www.esoui.com/downloads/info4860-TamrielSkyDial.html",
+  "stats": {
+    "downloads": 4,
+    "favorites": 1,
+    "monthly_downloads": 2
+  },
+  "title": "Tamriel Sky Dial",
+  "updated_at": 1790023212000,
+  "version": "1.0"
+}

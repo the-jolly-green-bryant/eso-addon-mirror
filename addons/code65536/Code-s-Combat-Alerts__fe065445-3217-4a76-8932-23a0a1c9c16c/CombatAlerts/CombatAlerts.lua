@@ -3,7 +3,7 @@ local LCA = LibCombatAlerts
 CombatAlerts2 = {
 	ID = "CombatAlerts2",
 	NAME = "CombatAlerts",
-	EXPECTED_VERSION = 206050,
+	EXPECTED_VERSION = 206060,
 	URL = "https://www.esoui.com/downloads/info1855.html",
 
 	registeredModules = { },
@@ -11,7 +11,6 @@ CombatAlerts2 = {
 	devModule = nil,
 
 	loaded = false,
-	isLegacyActive = false,
 }
 local CA1 = CombatAlerts
 local CA2 = CombatAlerts2
@@ -70,12 +69,12 @@ function CA2.OnZoneChange( zoneId )
 
 	local modules = CA2.registeredZones[zoneId]
 	if (modules) then
-		CA2.ToggleLegacy(false)
+		CA1.ToggleLegacy(false)
 		CA2.currentModules = modules
 		CA2.LoadModulesForCurrentZone()
 	else
 		CA2.currentModules = NO_MODULES
-		CA2.ToggleLegacy(true)
+		CA1.ToggleLegacy(true)
 	end
 end
 
@@ -125,19 +124,6 @@ do
 	end
 end
 
-function CA2.ToggleLegacy( enable )
-	if (enable and not CA2.isLegacyActive) then
-		CA2.isLegacyActive = true
-		EVENT_MANAGER:RegisterForEvent(CA1.name, EVENT_PLAYER_ACTIVATED, CA1.PlayerActivated)
-		EVENT_MANAGER:RegisterForEvent(CA1.name, EVENT_PLAYER_COMBAT_STATE, CA1.PlayerCombatState)
-		CA1.PlayerActivated()
-	elseif (not enable and CA2.isLegacyActive) then
-		CA2.isLegacyActive = false
-		EVENT_MANAGER:UnregisterForEvent(CA1.name, EVENT_PLAYER_ACTIVATED)
-		EVENT_MANAGER:UnregisterForEvent(CA1.name, EVENT_PLAYER_COMBAT_STATE)
-	end
-end
-
 
 --------------------------------------------------------------------------------
 -- Chat messages
@@ -176,6 +162,14 @@ end
 --------------------------------------------------------------------------------
 
 function CA2.HandleLegacyAddOns( )
+	-- Perfect Roll
+	if (type(PerfectRoll) == "table") then
+		zo_callLater(
+			function() EVENT_MANAGER:UnregisterForEvent(PerfectRoll.name, EVENT_PLAYER_COMBAT_STATE) end,
+			3000
+		)
+	end
+
 	-- Purge Tracker
 	if (type(PurgeTrackerData) == "table" and PurgeTrackerData.zones) then
 		PurgeTrackerData.zones[725] = nil

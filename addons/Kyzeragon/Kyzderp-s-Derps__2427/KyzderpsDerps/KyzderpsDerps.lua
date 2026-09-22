@@ -4,7 +4,7 @@
 -----------------------------------------------------------
 KyzderpsDerps = {
     name = "KyzderpsDerps",
-    version = "1.53.0",
+    version = "1.54.0",
 }
 local KD = KyzderpsDerps
 
@@ -349,6 +349,46 @@ local function OnPlayerActivated(_, initial)
         else
             KyzderpsDerps:msg("You haven't unlocked " .. GetCollectibleLink(KyzderpsDerps.savedOptions.misc.loginCollectible, LINK_STYLE_BRACKETS))
         end
+    end
+
+    if (LibRadialMenu) then
+        local LRM = LibRadialMenu
+        LRM:RegisterAddon("KyzderpsDerps", "Kyzderp's Derps")
+        LRM:RegisterEntry(
+            "KyzderpsDerps",
+            "Use /wayshrine",
+            "/wayshrine",
+            "/esoui/art/icons/poi/poi_wayshrine_complete.dds",
+            KD.PortWayshrine,
+            "Ports to a player in your favorite zone. Change the zone in Kyzderp's Derps settings.")
+        LRM:RegisterEntry(
+            "KyzderpsDerps",
+            "Use /currentshrine",
+            "/currentshrine",
+            "/esoui/art/icons/poi/poi_wayshrine_incomplete.dds",
+            KD.PortCurrentShrine,
+            "Ports to a player in your current zone, with fallbacks to any other free ports.")
+        LRM:RegisterEntry(
+            "KyzderpsDerps",
+            "Use /guessshrine",
+            "/guessshrine",
+            "/esoui/art/compass/repeatablequest_icon_door_assisted.dds",
+            KD.GuessPortZoneFromQuest,
+            "Tries to find a zone name in the journal description of your focused quest, and then tries to port to a player in that zone, with fallbacks to any other free ports.")
+        LRM:RegisterEntry(
+            "KyzderpsDerps",
+            "Use /refreshsurvey",
+            "/refreshsurvey",
+            "/esoui/art/icons/quest_scroll_001.dds",
+            KD.Loot.RefreshSurvey,
+            "If you are in a group with someone who is in a dungeon or trial, you will port to the player and then immediately leave the instance. If there is no port available, you will preview a house you do not own, and then you need to manually leave the home.")
+        LRM:RegisterEntry(
+            "KyzderpsDerps",
+            "Use /khouse",
+            "/khouse",
+            "/esoui/art/icons/poi/poi_group_house_owned.dds",
+            function() KD.KHouse.PortToHouse("") end,
+            "If you are in a group with someone who is in a dungeon or trial, you will port to the player and then immediately leave the instance. If there is no port available, you will preview a house you do not own, and then you need to manually leave the home.")
     end
 end
 
