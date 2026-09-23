@@ -506,9 +506,6 @@ local function setupHudFragment()
         D.hudRoot:SetDimensions(1,1)
         D.hudRoot:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 0, 0)
         D.hudRoot:SetMouseEnabled(false)
-        for _, control in pairs(D.controls) do control:SetParent(D.hudRoot) end
-        if magmaBarWindow then magmaBarWindow:SetParent(D.hudRoot) end
-        if magmaCountdownWindow then magmaCountdownWindow:SetParent(D.hudRoot) end
     end
     D.hudFragment = ZO_SimpleSceneFragment:New(D.hudRoot)
     HUD_SCENE:AddFragment(D.hudFragment)

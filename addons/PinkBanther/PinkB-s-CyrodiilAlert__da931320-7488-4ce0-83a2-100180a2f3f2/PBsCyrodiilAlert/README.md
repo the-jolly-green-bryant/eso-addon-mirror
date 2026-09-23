@@ -155,6 +155,24 @@ carries the Daedric artifact: `EVENT_DAEDRIC_ARTIFACT_OBJECTIVE_STATE_CHANGED` c
 itself keeps it. The line appears only while the artifact is actually out, says *unclaimed* when
 nobody has it, and says so plainly when the one carrying it is you.
 
+**The artifact's clock.** Nothing in the API says when Volendrung will spawn, be revealed or
+leave, and the game's own announcements carry no times. So the add-on times the three
+announcements it can hear — *seeks a wielder*, *is revealed*, *returns to Oblivion* — and adds
+the community's observed figures (UESP, not ZeniMax: revealed 10–15 minutes after spawning, gone
+about 30 minutes after that, sooner after four or five changes of hands) as a forecast:
+
+```
+Volendrung: seeking a wielder (6:20 ago / revealed in about 4-9 min)
+Volendrung: Aldmeri Dominion (revealed 22:10 ago / gone in about 8 min)
+Volendrung: returned to Oblivion (1:04:30 ago)
+```
+
+Every forecast says *about*, and one that runs out says *any moment* rather than going negative.
+When to expect the *next* one cannot be said at all: four or five a day, at no fixed time. The
+clock only knows what it was there to see, so an artifact already out when you arrived reads
+*time unknown*. While you carry it yourself, the line shows what is left of the hunger meter —
+the one lifetime number the client does hand over.
+
 The holdings and scores are the campaign's own numbers — `GetTotalCampaignHoldings` and
 `GetCampaignAllianceScore`, the same three calls the client's scoreboard makes
 (`campaignscoring_shared.lua:44`). The **under attack** column is not: no API answers "how many
@@ -420,4 +438,4 @@ cannot be arranged on demand in a real campaign (a siege lasting past the repeat
 that flips while it is being hit) are played out in milliseconds. It also stubs the window
 manager, so what reaches the screen — which lines, in what colours, in what font, anchored
 where, and when they expire — and the campaign APIs, so the summary's numbers, ordering,
-colours and every way it degrades are checked too. 333 checks.
+colours and every way it degrades are checked too. 348 checks.

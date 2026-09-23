@@ -1,7 +1,7 @@
 GuildTraderActivity = {
 	name = "GTA",
 	author = "@sinnereso",
-	version = "2026.09.05",
+	version = "2026.09.22",
 	svName = "GTAVars",
 	svVersion = 1,
 }
@@ -246,7 +246,8 @@ GTACloseButton:SetHandler("OnMouseUp", function(self, button, upInside)
 		EVENT_MANAGER:UnregisterForEvent("GTA", EVENT_GUILD_MEMBER_RANK_CHANGED)
 		EVENT_MANAGER:UnregisterForEvent("GTA", EVENT_GUILD_MEMBER_NOTE_CHANGED)
 		GTAMain:SetHidden(true)
-		ZO_SceneManager_ToggleUIModeBinding()
+		--ZO_SceneManager_ToggleUIModeBinding()
+		SetGameCameraUIMode(false)
 	end
 end)
 ---------------------------------------------
@@ -734,6 +735,13 @@ local columnsForGuildList = {
 	Column('Notes',      20, 10,        NoteCell, '|t20:20:/esoui/art/contacts/social_note_up.dds|t',                    CenterAlignedCell, NOT_SORTABLE),
 }
 
+local function sendMailCallback(scene, oldState, newState)
+	if newState == SCENE_HIDDEN and (scene:GetName() == "mailSend" or scene:GetName() == "mailInbox") and SCENE_MANAGER:IsShowing("hud") then
+		GuildTraderActivity.Toggle(true)
+		SCENE_MANAGER:UnregisterCallback("SceneStateChanged", sendMailCallback)
+	end
+end
+
 local function postCreateCallback(ctrl)
 	--ctrl:SetHandler('OnMouseEnter', function(ctrl)
         --local rankIndex = ctrl.dataEntry.data[1]
@@ -778,6 +786,15 @@ local function postCreateCallback(ctrl)
 				AddMenuItem("Kick", function()
 					PlaySound("Click")
 					ZO_Dialogs_ShowDialog("GTARemoveFromGuild", SELECTED_USER_DISPLAY_NAME)
+				end)
+			end
+			if SELECTED_USER_DISPLAY_NAME ~= GetUnitDisplayName("player") then
+				AddMenuItem("Send Mail", function()
+					PlaySound("Click")
+					GTAMain:SetHidden(true)
+					MAIL_SEND:ComposeMailTo(SELECTED_USER_DISPLAY_NAME)
+					ZO_MailSend:BringWindowToTop()
+					SCENE_MANAGER:RegisterCallback("SceneStateChanged", sendMailCallback)
 				end)
 			end
 			if DoesPlayerHaveGuildPermission(SELECTED_GUILD_ID, GUILD_PERMISSION_NOTE_EDIT) then
@@ -1047,8 +1064,11 @@ function GuildTraderActivity.UpdateForGuildDataChange()
 	end
 end
 
-function GuildTraderActivity.Toggle()
-	if GTAMain:IsHidden() then
+function GuildTraderActivity.Toggle(mailCallback)
+	if mailCallback then
+		GTAMain:SetHidden(false)
+		SetGameCameraUIMode(true)
+	elseif GTAMain:IsHidden() then
 		GTASelectedGuildView:SetHidden(true)
 		GTAPersonalView:SetHidden(false)
 		GuildTraderActivity.Refresh()

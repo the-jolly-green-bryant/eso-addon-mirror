@@ -20,7 +20,7 @@ local Module = {
 
     Default = {
         enableAutoPromote = true,
-        enableDebugOnActionSlotAbilityUsed = false,
+        enableDebugAbilityUsed = false,
     },
     ---@type table|any
     SV = {},
@@ -334,14 +334,13 @@ end
 function Module:OnActionSlotAbilityUsed(eventCode, actionSlotIndex)
     local abilityId = GetSlotBoundId(actionSlotIndex) or 0
 
+    -- SCRIBING SUPPORT
+    if GetSlotType(actionSlotIndex) == ACTION_TYPE_CRAFTED_ABILITY then
+        abilityId = GetAbilityIdForCraftedAbilityId(abilityId)
+    end
+
     -- FILTER LIGHT AND HEAVY ATTACKS - WEAVING MESSES UP LASTCAST UNFORT.
     if CC.Blacklist[abilityId] then return end
-
-    if self.SV.enableDebugOnActionSlotAbilityUsed then
-        local abilityName = zo_strformat("<<1>>", GetAbilityName(abilityId))
-        -- FORMAT IN DATABASE FORMAT: [] = { name = "" },
-        d(CC.CHAT .. string.format(' [%s] = { name = "%s", type = ?, offsetPlayer = ?, maxRange = ?, width = ?, height = ?, durationSec = ? },', abilityId, abilityName))
-    end
 
     self:RefreshLastCast(abilityId)
 
@@ -580,8 +579,8 @@ end
 -- CASTS / ABILITYIDS
 ----------------------------------------------------------------------------------------------------
 function Module:ToggleDebugAbility()
-    self.SV.enableDebugOnActionSlotAbilityUsed = not self.SV.enableDebugOnActionSlotAbilityUsed
-    if self.SV.enableDebugOnActionSlotAbilityUsed then
+    self.SV.enableDebugAbilityUsed = not self.SV.enableDebugAbilityUsed
+    if self.SV.enableDebugAbilityUsed then
         d(CC.CHAT .. " |c00FF00Debug [Ability Used] enabled.|r")
     else
         d(CC.CHAT .. " |cFF0000Debug [Ability Used] disabled.|r")

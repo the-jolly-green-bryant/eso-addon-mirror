@@ -1,0 +1,17 @@
+<Bindings>
+ <Layer name="PBsWarTableInput" allowFallthrough="false">
+  <Category name="PBsWarTable">
+   <Action name="PBWT_LEFT" inheritsBindFrom="UI_SHORTCUT_INPUT_LEFT" hideAction="true" rebindable="false"><Down>if PBWT.ui then PBWT.ui:DirectionKey("left",true) end</Down><Up>if PBWT.ui then PBWT.ui:DirectionKey("left",false) end</Up></Action>
+   <Action name="PBWT_RIGHT" inheritsBindFrom="UI_SHORTCUT_INPUT_RIGHT" hideAction="true" rebindable="false"><Down>if PBWT.ui then PBWT.ui:DirectionKey("right",true) end</Down><Up>if PBWT.ui then PBWT.ui:DirectionKey("right",false) end</Up></Action>
+   <Action name="PBWT_UP" inheritsBindFrom="UI_SHORTCUT_INPUT_UP" hideAction="true" rebindable="false"><Down>if PBWT.ui then PBWT.ui:DirectionKey("up",true) end</Down><Up>if PBWT.ui then PBWT.ui:DirectionKey("up",false) end</Up></Action>
+   <Action name="PBWT_DOWN" inheritsBindFrom="UI_SHORTCUT_INPUT_DOWN" hideAction="true" rebindable="false"><Down>if PBWT.ui then PBWT.ui:DirectionKey("down",true) end</Down><Up>if PBWT.ui then PBWT.ui:DirectionKey("down",false) end</Up></Action>
+   <AllowAction name="UI_SHORTCUT_PRIMARY" />
+   <AllowAction name="UI_SHORTCUT_SECONDARY" />
+   <AllowAction name="UI_SHORTCUT_TERTIARY" />
+   <AllowAction name="UI_SHORTCUT_NEGATIVE" />
+   <AllowAction name="UI_SHORTCUT_LEFT_SHOULDER" />
+   <AllowAction name="UI_SHORTCUT_RIGHT_SHOULDER" />
+   <AllowAction name="UI_SHORTCUT_RIGHT_STICK" />
+  </Category>
+ </Layer>
+</Bindings>

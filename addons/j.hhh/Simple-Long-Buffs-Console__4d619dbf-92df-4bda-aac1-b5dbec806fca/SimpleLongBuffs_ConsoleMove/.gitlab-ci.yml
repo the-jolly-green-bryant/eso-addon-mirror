@@ -1,0 +1,20 @@
+stages:
+  - publish
+
+variables:
+  ESOUI_ADDON_ID: 3054
+  ESOUI_DIRNAME: SimpleLongBuffs
+  
+  ESOUI_ENDPOINT: https://api.esoui.com/addons/update
+  ESOUI_COMPATIBLE_IDS: 8.0.0
+  ESOUI_VERSION: 1.0.$CI_PIPELINE_IID
+
+  
+publish:
+  only:
+    - master
+  image: registry.gitlab.com/teso-addons/publish-docker-image
+  stage: publish
+  script:
+    - 'mkdir /tmp/${ESOUI_DIRNAME} && cp -r ./* /tmp/${ESOUI_DIRNAME} && cd /tmp && zip -r ${ESOUI_DIRNAME}.zip ./${ESOUI_DIRNAME} -x ".*"'
+    - 'curl --fail -s -L -H "x-api-token: ${ESOUI_TOKEN}" -F "id=${ESOUI_ADDON_ID}" -F "version=${ESOUI_VERSION}" -F "compatible=${ESOUI_COMPATIBLE_IDS}" -F "updatefile=@/tmp/${ESOUI_DIRNAME}.zip"  ${ESOUI_ENDPOINT}'

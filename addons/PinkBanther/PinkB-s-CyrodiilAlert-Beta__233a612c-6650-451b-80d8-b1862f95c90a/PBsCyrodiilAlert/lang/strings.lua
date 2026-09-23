@@ -130,6 +130,20 @@ local strings = {
 	SI_PBSCA_BOARD_ARTIFACT = "%s: %s",
 	SI_PBSCA_BOARD_ARTIFACT_LOOSE = "%s: unclaimed",
 	SI_PBSCA_BOARD_ARTIFACT_YOURS = "%s: you are carrying it",
+	-- The artifact's clock. Nothing in the API says when it will come or go, so these are the
+	-- add-on's own stopwatch against the three announcements, plus the community's observed
+	-- figures (UESP: revealed 10-15 min after spawning, gone about 30 min after that), which is
+	-- why every forecast says "about".
+	SI_PBSCA_ARTIFACT_SEEKING = "%s: seeking a wielder",
+	SI_PBSCA_ARTIFACT_GONE = "%s: returned to Oblivion",
+	SI_PBSCA_ARTIFACT_CLOCK_SEEKING = " (%s ago / revealed in about %s)",
+	SI_PBSCA_ARTIFACT_CLOCK_REVEALED = " (revealed %s ago / gone in about %s)",
+	SI_PBSCA_ARTIFACT_CLOCK_GONE = " (%s ago)",
+	SI_PBSCA_ARTIFACT_CLOCK_UNKNOWN = " (time unknown)",
+	SI_PBSCA_ARTIFACT_RANGE = "%d-%d min",
+	SI_PBSCA_ARTIFACT_ABOUT = "%d min",
+	SI_PBSCA_ARTIFACT_SOON = "any moment",
+	SI_PBSCA_ARTIFACT_ENERGY = " (energy %d%%)",
 	SI_PBSCA_STATUS_SCROLLS = "Elder Scroll events: %s",
 	SI_PBSCA_HELP_SCROLLS = "/pbalert scrolls on | off -- report Elder Scrolls being carried",
 

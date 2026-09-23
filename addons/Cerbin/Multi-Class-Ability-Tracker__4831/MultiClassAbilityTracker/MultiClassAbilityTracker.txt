@@ -1,11 +1,11 @@
 ## Title: Multi-Class Ability Tracker
 ## Author: CerbinTalYalas
-## Version: 0.1.0
+## Version: 0.1.1
 ## APIVersion: 101050
-## DependsOn: LibAddonMenu-2.0
-## SavedVariables: MCAT_SavedVars
+## DependsOn: LibAddonMenu-2.0>=43
+## SavedVariables: MultiClassAbilityTracker_SavedVars
 
-## Description: Unifies tracking for class-specific ability stacks (Arcanist Crux, NB Grim Focus, etc.)
+## Description: This addon was developed with substantial AI assistance; the generated code has not been independently deep-audited beyond in-game testing. Grim Focus and Crux tracking inspirations credited to g4rr3t. Ability-slot scanning approach credited to imPDA. Unifies tracking for class-specific ability stacks (Arcanist Crux, NB Grim Focus, Sorc Bound Armaments, DK Seething Fury)
 
 src/Utils.lua
 src/Abilities.lua

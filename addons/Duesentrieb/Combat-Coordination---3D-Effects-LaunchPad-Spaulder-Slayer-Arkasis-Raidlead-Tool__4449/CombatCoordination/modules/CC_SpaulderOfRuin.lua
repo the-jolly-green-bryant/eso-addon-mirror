@@ -12,6 +12,11 @@ local Module = {
 
     KickedPlayers = {},
 
+    GroupChoices = { GetUnitDisplayName("player") },
+    GroupValues = { "player" },
+    menuTargetUnitTag = "player",
+    menuTargetAction = true,
+
     Broadcast = {
         LUT.SPAULDER_REQUEST,
     },
@@ -29,11 +34,17 @@ local Module = {
     kickRequestTimeout = 0,
     pendingKick = false,
 
+    newProfileName = "",
+
     Default = {
         enableModule = true,
         enableWarning = true,
         warningOnlyInstance = false,
-        SavedPlayers = {},
+        activeProfile = "Default",
+        Profiles = {
+            ["Default"] = {},
+        },
+        hasAutoCreatedProfile = false,
     },
     ---@type table|any
     SV = {},
@@ -88,6 +99,88 @@ function Module:OnDeathStateChanged(eventCode, unitTag, isDead)
 end
 
 ----------------------------------------------------------------------------------------------------
+-- GET PROFILE LIST
+----------------------------------------------------------------------------------------------------
+function Module:GetProfileList()
+    if not self.SV.hasAutoCreatedProfile then
+        local displayName, groupName = GetUnitDisplayName("player"), nil
+
+        if displayName == "@Duesentrieb" then
+            groupName = "Worst Group Ever"
+        elseif displayName == "@NeuronixX" or displayName == "@Kwiebe-Kwibus" then
+            groupName = "Core Coordination"
+        elseif displayName == "@Isiiimode" then
+            groupName = "Unlucky"
+        end
+
+        if groupName then
+            if not self.SV.Profiles[groupName] then
+                self.SV.Profiles[groupName] = {}
+            end
+            self.SV.activeProfile = groupName
+            zo_callLater(function()
+                d(string.format("%s |c00FF00Welcome %s! Spaulder Profile: [%s]|r", CC.CHAT, displayName, groupName))
+            end, 5000)
+        end
+
+        self.SV.hasAutoCreatedProfile = true
+    end
+
+    local ProfileList = {}
+    for profileName, _ in pairs(self.SV.Profiles) do
+        table.insert(ProfileList, profileName)
+    end
+    table.sort(ProfileList)
+    return ProfileList
+end
+
+----------------------------------------------------------------------------------------------------
+-- CYCLE PROFILES (PANEL LEFT RIGHT BUTTONS)
+----------------------------------------------------------------------------------------------------
+function Module:CycleProfile(action)
+    local Profiles = self:GetProfileList()
+    local currentIndex = 1
+
+    for i, profileName in ipairs(Profiles) do
+        if profileName == self.SV.activeProfile then
+            currentIndex = i
+            break
+        end
+    end
+
+    if action == "FIRST" then
+        currentIndex = 1
+    elseif action == "LAST" then
+        currentIndex = #Profiles
+    else
+        currentIndex = currentIndex + action
+        if currentIndex > #Profiles then currentIndex = 1 end
+        if currentIndex < 1 then currentIndex = #Profiles end
+    end
+
+    self.SV.activeProfile = Profiles[currentIndex]
+
+    if CC_SpaulderOfRuin_ProfileDropdown then
+        CC_SpaulderOfRuin_ProfileDropdown:UpdateValue()
+    end
+    if CC.DisplayPanel.SV.isVisible then
+        CC.DisplayPanel:UpdateData()
+    end
+end
+
+----------------------------------------------------------------------------------------------------
+-- SAVE / UNSAVE
+----------------------------------------------------------------------------------------------------
+function Module:TogglePlayerInProfile(playerName, selectedRole)
+    local Profile = self.SV.Profiles[self.SV.activeProfile]
+    if Profile[playerName] == selectedRole then
+        Profile[playerName] = nil
+    else
+        Profile[playerName] = selectedRole
+    end
+end
+
+----------------------------------------------------------------------------------------------------
 -- COMBAT EVENT
 ----------------------------------------------------------------------------------------------------
 function Module:HandleCombatEvent(eventCode, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId, overflow)
@@ -122,10 +215,15 @@ end
 ----------------------------------------------------------------------------------------------------
 function Module:KickAndReinvite()
     local playerName = GetUnitDisplayName("player")
+    local Profile = self.SV.Profiles[self.SV.activeProfile]
 
-    if not self.SV.SavedPlayers[playerName] then
-        self.SV.SavedPlayers[playerName] = true
-        d(string.format("%s Auto-added yourself to the [SOR] list.", CC.CHAT))
+    local playerRole = GetSelectedLFGRole()
+    if not playerRole or playerRole == 0 then playerRole = LFG_ROLE_DPS end
+
+    -- ROLE CHECK
+    if not Profile[playerName] or Profile[playerName] ~= playerRole then
+        Profile[playerName] = playerRole
+        d(string.format("%s Auto-added yourself to [SOR] profile: %s.", CC.CHAT, self.SV.activeProfile))
 
         if CC.DisplayPanel.SV.isVisible then
             CC.DisplayPanel:UpdateData()
@@ -133,10 +231,10 @@ function Module:KickAndReinvite()
     end
 
     local counterSave = 0
-    for _ in pairs(self.SV.SavedPlayers) do counterSave = counterSave + 1 end
+    for _ in pairs(Profile) do counterSave = counterSave + 1 end
 
     if counterSave <= 1 then
-        d(string.format("%s You are the only [SOR] player.", CC.CHAT))
+        d(string.format("%s You are the only [SOR] player in this profile.", CC.CHAT))
         return
     end
 
@@ -168,15 +266,22 @@ end
 ----------------------------------------------------------------------------------------------------
 function Module:ExecuteKick()
     ZO_ClearTable(self.KickedPlayers)
+    local Profile = self.SV.Profiles[self.SV.activeProfile]
 
     local counterGroupKick = 0
     for i = 1, GetGroupSize() do
         local unitTag = "group" .. i
         local displayName = GetUnitDisplayName(unitTag)
-        if displayName and displayName ~= "" and not self.SV.SavedPlayers[displayName] and IsUnitOnline(unitTag) then
-            table.insert(self.KickedPlayers, displayName)
-            GroupKickByName(displayName)
-            counterGroupKick = counterGroupKick + 1
+        if displayName and displayName ~= "" and IsUnitOnline(unitTag) then
+            local currentRole = GetGroupMemberSelectedRole(unitTag) or LFG_ROLE_DPS
+            local savedRole = Profile[displayName]
+
+            -- KICK IF NOT SAVED OR SAVED AS DIFF ROLE
+            if not savedRole or savedRole ~= currentRole then
+                table.insert(self.KickedPlayers, displayName)
+                GroupKickByName(displayName)
+                counterGroupKick = counterGroupKick + 1
+            end
         end
     end
 
@@ -184,7 +289,7 @@ function Module:ExecuteKick()
         d(string.format("%s Kicked %d members.", CC.CHAT, counterGroupKick))
         zo_callLater(function() self:Reinvite() end, 1000)
     else
-        d(string.format("%s Nobody to kick based on saved list.", CC.CHAT))
+        d(string.format("%s Nobody to kick based on active profile.", CC.CHAT))
     end
 end
 
@@ -329,24 +434,28 @@ function Module:OnContextMenu(Data)
 
     if not unitTag then return end
 
+    local selectedRole = AreUnitsEqual(unitTag, "player") and GetSelectedLFGRole() or GetGroupMemberSelectedRole(unitTag)
+    if not selectedRole or selectedRole == 0 then selectedRole = LFG_ROLE_DPS end
+
+    local Profile = self.SV.Profiles[self.SV.activeProfile]
     local menuIcon = string.format("|t%d:%d:%s|t ", CC.SIZE_ICON_LCM, CC.SIZE_ICON_LCM, self.iconPath)
 
     AddCustomSubMenuItem(menuIcon .. CC.ColorString("[CC] Spaulder Of Ruin", "tier2"), {
         {
             label = "Add to Stack [SOR]",
             callback = function()
-                self.SV.SavedPlayers[targetName] = true
+                Profile[targetName] = selectedRole
                 local playerLink = CC.GetPlayerLinkFromDisplayName(targetName) or targetName
-                d(string.format("%s Added %s to Spaulder stack.", CC.CHAT, playerLink))
+                d(string.format("%s Added %s to Spaulder stack (%s).", CC.CHAT, playerLink, self.SV.activeProfile))
                 if CC.DisplayPanel.SV.isVisible then CC.DisplayPanel:UpdateData() end
             end,
         },
         {
             label = "Remove from Stack",
             callback = function()
-                self.SV.SavedPlayers[targetName] = nil
+                Profile[targetName] = nil
                 local playerLink = CC.GetPlayerLinkFromDisplayName(targetName) or targetName
-                d(string.format("%s Removed %s from Spaulder stack.", CC.CHAT, playerLink))
+                d(string.format("%s Removed %s from Spaulder stack (%s).", CC.CHAT, playerLink, self.SV.activeProfile))
                 if CC.DisplayPanel.SV.isVisible then CC.DisplayPanel:UpdateData() end
             end,
         }
@@ -357,6 +466,71 @@ end
 -- ENABLE / DISABLE
 ----------------------------------------------------------------------------------------------------
 function Module:CustomEnable()
+    -- MIGRATE OLD DATA
+    if self.SV.SavedPlayers then
+        for playerName, _ in pairs(self.SV.SavedPlayers) do
+            self.SV.Profiles["Default"][playerName] = LFG_ROLE_DPS
+        end
+        self.SV.SavedPlayers = nil
+    end
+
+--     -- NEURONIXX
+--     if not self.SV.hasAutoCreatedProfile then
+--         local displayName, groupName = GetUnitDisplayName("player"), nil
+
+--         if displayName == "@Duesentrieb" then
+--             groupName = "Worst Group Ever"
+--             if not self.SV.Profiles[groupName] then
+--                 self.SV.Profiles[groupName] = {}
+--                 self.SV.activeProfile = groupName
+--             end
+--         end
+--         if displayName == "@NeuronixX" then
+--             groupName = "Core Coordination"
+--             if not self.SV.Profiles[groupName] then
+--                 self.SV.Profiles[groupName] = {}
+--                 self.SV.activeProfile = groupName
+--             end
+--         end
+--         if displayName == "@Kwiebe-Kwibus" then
+--             groupName = "Core Coordination"
+--             if not self.SV.Profiles[groupName] then
+--                 self.SV.Profiles[groupName] = {}
+--                 self.SV.activeProfile = groupName
+--             end
+--         end
+--         if displayName == "@Isiiimode" then
+--             groupName = "Unlucky"
+--             if not self.SV.Profiles[groupName] then
+--                 self.SV.Profiles[groupName] = {}
+--                 self.SV.activeProfile = groupName
+--             end
+--         end
+
+--         if groupName then
+--             self.SV.Profiles[groupName] = {}
+--             self.SV.activeProfile = groupName
+
+--             zo_callLater(function()
+
+-- d("REFRESH CC_SpaulderOfRuin_ProfileDropdown")
+
+--                 if CC_SpaulderOfRuin_ProfileDropdown then
+-- d("CC_SpaulderOfRuin_ProfileDropdown:UpdateChoices(self:GetProfileList())")
+--                     CC_SpaulderOfRuin_ProfileDropdown:UpdateChoices(self:GetProfileList())
+--                     CC_SpaulderOfRuin_ProfileDropdown:UpdateValue()
+--                 end
+--             end, 5000)
+
+--             zo_callLater(function()
+--                 d(string.format("%s |c00FF00Welcome %s! Spaulder Profile: [%s]|r", CC.CHAT, displayName, groupName))
+--             end, 5000)
+--         end
+
+--         -- /script CombatCoordination.SpaulderOfRuin.SV.hasAutoCreatedProfile = false
+--         self.SV.hasAutoCreatedProfile = true
+--     end
+
     if LibCustomMenu then
         LibCustomMenu:RegisterGroupListContextMenu(function(Data) self:OnContextMenu(Data) end, LibCustomMenu.CATEGORY_LATE)
     end
@@ -417,7 +591,6 @@ function Module:GetMenuOptions()
                 requiresReload = true,
             },
             { type = "divider" },
-
             {
                 type = "description",
                 text = CC.ColorString("How to use the Spaulder Kick:", "tier2") .. "\n" ..
@@ -431,7 +604,178 @@ function Module:GetMenuOptions()
                 width = "full",
             },
 
+            { type = "header", name = CC.ColorString("MANUAL CONTROLS", "tier3") },
+            {
+                type = "button",
+                name = "KICK & INVITE",
+                func = function() self:KickAndReinvite() end,
+                width = "half",
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
+            },
+            {
+                type = "button",
+                name = "REINVITE",
+                func = function() self:Reinvite() end,
+                width = "half",
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
+            },
+
+            { type = "header", name = CC.ColorString("PROFILES", "tier3") },
+            {
+                type = "dropdown",
+                name = "Active Profile",
+                choices = self:GetProfileList(),
+                getFunc = function() return self.SV.activeProfile end,
+                setFunc = function(value)
+                    self.SV.activeProfile = value
+                    if CC.DisplayPanel.SV.isVisible then CC.DisplayPanel:UpdateData() end
+                end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
+                reference = "CC_SpaulderOfRuin_ProfileDropdown",
+            },
+            {
+                type = "editbox",
+                name = "New Profile Name",
+                getFunc = function() return self.newProfileName end,
+                setFunc = function(value) self.newProfileName = value end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
+            },
+            {
+                type = "button",
+                name = CC.ColorString("DELETE CURRENT", "RD"),
+                func = function()
+                    if self.SV.activeProfile ~= "Default" then
+                        self.SV.Profiles[self.SV.activeProfile] = nil
+                        self.SV.activeProfile = "Default"
+                        if CC_SpaulderOfRuin_ProfileDropdown then
+                            CC_SpaulderOfRuin_ProfileDropdown:UpdateChoices(self:GetProfileList())
+                            CC_SpaulderOfRuin_ProfileDropdown:UpdateValue()
+                        end
+                        if CC.DisplayPanel.SV.isVisible then CC.DisplayPanel:UpdateData() end
+                    else
+                        d(string.format("%s Cannot delete Default profile.", CC.CHAT))
+                    end
+                end,
+                width = "half",
+                disabled = function() return self.SV.activeProfile == "Default" or not CC.SV.enableAddon or not self.SV.enableModule end,
+            },
+            {
+                type = "button",
+                name = CC.ColorString("SAVE NEW PROFILE", "GN"),
+                func = function()
+                    local pName = self.newProfileName
+                    if pName and pName ~= "" then
+                        if not self.SV.Profiles[pName] then
+                            self.SV.Profiles[pName] = {}
+                        end
+                        self.SV.activeProfile = pName
+                        self.newProfileName = ""
+                        if CC_SpaulderOfRuin_ProfileDropdown then
+                            CC_SpaulderOfRuin_ProfileDropdown:UpdateChoices(self:GetProfileList())
+                            CC_SpaulderOfRuin_ProfileDropdown:UpdateValue()
+                        end
+                        if CC.DisplayPanel.SV.isVisible then CC.DisplayPanel:UpdateData() end
+                    end
+                end,
+                width = "half",
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
+            },
+
+            ----------------------------------------------------------------------------------------------------
+            -- TARGETED ASSIGNMENT
+            ----------------------------------------------------------------------------------------------------
+            { type = "header", name = CC.ColorString("SPAULDER ASSIGNMENT", "tier3") },
+            {
+                type = "description",
+                text = CC.ColorString("Tip:", "tier2") .. " Assign group members via CC panel or context menu.",
+                width = "full",
+            },
+            {
+                type = "dropdown",
+                name = "Choose Group Member",
+                choices = self.GroupChoices,
+                choicesValues = self.GroupValues,
+                getFunc = function() return self.menuTargetUnitTag end,
+                setFunc = function(value) self.menuTargetUnitTag = value end,
+                reference = "CC_SpaulderOfRuin_Dropdown_GroupMember",
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
+            },
+            {
+                type = "dropdown",
+                name = "Choose Action",
+                choices = { "Add to Profile", "Remove from Profile" },
+                choicesValues = { true, false },
+                getFunc = function() return self.menuTargetAction end,
+                setFunc = function(value) self.menuTargetAction = value end,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
+            },
+            {
+                type = "button",
+                name = "REFRESH LIST",
+                func = function()
+                    ZO_ClearTable(self.GroupChoices)
+                    ZO_ClearTable(self.GroupValues)
+
+                    table.insert(self.GroupChoices, GetUnitDisplayName("player"))
+                    table.insert(self.GroupValues, "player")
+
+                    if GetGroupSize() > 0 then
+                        for i = 1, GetGroupSize() do
+                            local unitTag = "group" .. i
+                            if not AreUnitsEqual("player", unitTag) then
+                                local displayName = GetUnitDisplayName(unitTag)
+                                if displayName and displayName ~= "" then
+                                    table.insert(self.GroupChoices, displayName)
+                                    table.insert(self.GroupValues, unitTag)
+                                end
+                            end
+                        end
+                    end
+
+                    self.menuTargetUnitTag = "player"
+
+                    if CC_SpaulderOfRuin_Dropdown_GroupMember then
+                        CC_SpaulderOfRuin_Dropdown_GroupMember:UpdateChoices(self.GroupChoices, self.GroupValues)
+                        CC_SpaulderOfRuin_Dropdown_GroupMember:UpdateValue()
+                    end
+                end,
+                width = "half",
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
+            },
+            {
+                type = "button",
+                name = "SAVE ACTION",
+                func = function()
+                    if self.menuTargetUnitTag then
+                        local displayName = GetUnitDisplayName(self.menuTargetUnitTag)
+                        if not displayName or displayName == "" then return end
+
+                        local Profile = self.SV.Profiles[self.SV.activeProfile]
+
+                        if self.menuTargetAction then
+                            local selectedRole = AreUnitsEqual(self.menuTargetUnitTag, "player") and GetSelectedLFGRole() or GetGroupMemberSelectedRole(self.menuTargetUnitTag)
+                            if not selectedRole or selectedRole == 0 then selectedRole = LFG_ROLE_DPS end
+
+                            Profile[displayName] = selectedRole
+                            d(string.format("%s Added %s to Spaulder stack (%s).", CC.CHAT, displayName, self.SV.activeProfile))
+                        else
+                            Profile[displayName] = nil
+                            d(string.format("%s Removed %s from Spaulder stack (%s).", CC.CHAT, displayName, self.SV.activeProfile))
+                        end
+
+                        if CC.DisplayPanel.SV.isVisible then CC.DisplayPanel:UpdateData() end
+                    end
+                end,
+                width = "half",
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
+            },
+
             { type = "header", name = CC.ColorString("SPAULDER WARNING", "tier3") },
+            {
+                type = "description",
+                text = "Displays a warning when wearing Spaulder without active aura.",
+                width = "full",
+            },
             {
                 type = "checkbox",
                 name = "Enable Inactive Warning",
@@ -455,21 +799,6 @@ function Module:GetMenuOptions()
                 end,
                 default = self.Default.warningOnlyInstance,
                 disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not self.SV.enableWarning end,
-            },
-            { type = "header", name = CC.ColorString("MANUAL CONTROLS", "tier3") },
-            {
-                type = "button",
-                name = "KICK & INVITE",
-                func = function() self:KickAndReinvite() end,
-                width = "half",
-                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
-            },
-            {
-                type = "button",
-                name = "REINVITE",
-                func = function() self:Reinvite() end,
-                width = "half",
-                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
         },
     }

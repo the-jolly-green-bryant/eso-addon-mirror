@@ -1,0 +1,41 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/its_wifey/Wifey-DPS-Positions__4861",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "its_wifey",
+  "canonical_id": "esoui:4861",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    }
+  ],
+  "content_id": "esoui:4861",
+  "deleted": false,
+  "directories": [
+    "WifeyDPSPositions"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4861/",
+  "fingerprint": "3360b7a1867dbdf7def361f786abc2760669db3dd627db5bd91ac1153cc2e4e6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17478.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17479.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17480.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17481.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4861",
+  "source_url": "https://www.esoui.com/downloads/info4861-WifeyDPSPositions.html",
+  "stats": {
+    "downloads": 12,
+    "favorites": 0,
+    "monthly_downloads": 10
+  },
+  "title": "Wifey DPS Positions",
+  "updated_at": 1790090039000,
+  "version": "1.0"
+}

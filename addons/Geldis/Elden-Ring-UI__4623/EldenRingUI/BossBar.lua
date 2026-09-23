@@ -34,16 +34,24 @@ local RefreshBars
 local function UpdateBarVisuals(index, powerValue, powerMax, isInvulnerable)
     local bar = ERUI_Container:GetNamedChild("Bar" .. index)
     if bar and powerMax > 0 then
+
+        -- if bar:IsHidden() and powerValue > 1 then
+            -- RefreshBars()
+            -- return
+        -- end
+
         ZO_StatusBar_SmoothTransition(bar, powerValue, powerMax)
         
         local percent = math.floor(powerValue * 100 / powerMax)
         bar:GetNamedChild("Percent"):SetText(percent .. "%")
+		bar:GetNamedChild("Percent"):SetColor(0.9, 0.9, 0.9, 0.9)
         bar:GetNamedChild("HealthValue"):SetText(FormatHealth(powerValue))
+		bar:GetNamedChild("HealthValue"):SetColor(0.9, 0.9, 0.9, 0.9)
         
         if isInvulnerable then
-            bar:SetColor(0.74, 0.73, 0.40, 1) 
+            bar:SetTexture("EldenRingUI/Textures/ERShieldBarBoss.dds")
         else
-            bar:SetColor(0.63, 0.10, 0.05, 1) 
+            bar:SetTexture("EldenRingUI/Textures/ERHealthBarBoss.dds")
         end
         
         if powerValue <= 0 then
@@ -104,16 +112,34 @@ local function GetOrCreateBar(index)
     if not bar then
         bar = CreateControlFromVirtual("$(parent)Bar" .. index, ERUI_Container, "ERUI_BarTemplate")
         bar:SetAnchor(BOTTOMLEFT, ERUI_Container, BOTTOMLEFT, 0, 0)
-        bar:SetTexture("EldenRingUI/Textures/grainy.dds")
+        
+        bar:SetTexture("EldenRingUI/Textures/ERHealthBarBoss.dds")
         
         local yellowLine = WINDOW_MANAGER:CreateControl(bar:GetName() .. "YellowLine", bar, CT_TEXTURE)
         yellowLine:SetTexture("EldenRingUI/Textures/lowline.dds") 
         yellowLine:SetAnchor(BOTTOMLEFT, bar, BOTTOMLEFT, 0, 0)
         yellowLine:SetAnchor(BOTTOMRIGHT, bar, BOTTOMRIGHT, 0, 0)
         yellowLine:SetHeight(12)
+		yellowLine:SetDrawTier(DT_MEDIUM)
         yellowLine:SetDrawLayer(DL_CONTROLS)
-        yellowLine:SetDrawLevel(2)
+        yellowLine:SetDrawLevel(3)
 
+        local barWidth = bar:GetWidth()
+        local texRight = barWidth / 2048
+        
+        yellowLine:SetTextureCoords(0, texRight, 0, 1)
+        
+        local backdrop = bar:GetNamedChild("Backdrop")
+        if backdrop and type(backdrop.SetTextureCoords) == "function" then
+            backdrop:SetTextureCoords(0, texRight, 0, 1)
+        end
+		
+		local icon = bar:GetNamedChild("Icon")
+        if icon then
+            icon:SetDrawLayer(DL_CONTROLS)
+            icon:SetDrawLevel(4)
+        end
+		
         local currentHPIcon = bar:GetNamedChild("CurrentHPIcon")
         if currentHPIcon then
             bar:SetHandler("OnUpdate", function(self)
@@ -121,9 +147,8 @@ local function GetOrCreateBar(index)
                 if max and max > 0 then
                     local currentVisualValue = self:GetValue()
                     local percent = currentVisualValue / max
-                    local barWidth = self:GetWidth()    
                     currentHPIcon:ClearAnchors()
-                    currentHPIcon:SetAnchor(CENTER, self, LEFT, barWidth * percent - 15, -2)
+                    currentHPIcon:SetAnchor(CENTER, self, LEFT, barWidth * percent - 13, -2)
                 end
             end)
         end
@@ -165,6 +190,7 @@ RefreshBars = function()
         if totalCur > 0 then
             bar:SetHidden(false)
             bar:GetNamedChild("BossName"):SetText(mutualName)
+			bar:GetNamedChild("BossName"):SetColor(0.9, 0.9, 0.9, 0.9)
             UpdateBarVisuals(1, totalCur, ERUI.currentMutualMax, allInvulnerable)
         else
             bar:SetHidden(true)
@@ -196,11 +222,12 @@ RefreshBars = function()
 
             if shouldShow then
                 bar:ClearAnchors()
-                bar:SetAnchor(BOTTOMLEFT, ERUI_Container, BOTTOMLEFT, 0, -(visibleCount * 40))
+                bar:SetAnchor(BOTTOMLEFT, ERUI_Container, BOTTOMLEFT, 0, -(visibleCount * 45))
                 visibleCount = visibleCount + 1
                 
                 bar:SetHidden(false)
                 bar:GetNamedChild("BossName"):SetText(bossName)
+				bar:GetNamedChild("BossName"):SetColor(0.9, 0.9, 0.9, 0.9)
                 UpdateBarVisuals(i, curHealth, maxHealth, IsBossInvulnerable(effectiveTag))
             else
                 bar:SetHidden(true)

@@ -1,11 +1,12 @@
 local ADDON_NAME = "EldenRingUI"
 local UI_Container = nil
 local IconPool = {}
+local TextPool = {}
 
 local SLOT_OFFSETS = {
     [1] = {x = 187, y = -225}, -- Top
-    [2] = {x = 281, y = -171}, -- Right 
-    [3] = {x = 187, y = -115}, -- Bottom
+    [2] = {x = 187, y = -115}, -- Bottom
+    [3] = {x = 281, y = -171}, -- Right
     [4] = {x = 92, y = -171},  -- Left
 }
 
@@ -14,7 +15,7 @@ local function CreateUI()
     local wm = GetWindowManager()
     UI_Container = wm:CreateTopLevelWindow("ERUI_SetTrackerControl")
     UI_Container:SetAnchor(BOTTOMLEFT, GuiRoot, BOTTOMLEFT, 0, 0)
-    UI_Container:SetDimensions(75, 75) -- 82
+    UI_Container:SetDimensions(75, 75)
     UI_Container:SetDrawLayer(DL_OVERLAY)
 
     local fragment = ZO_HUDFadeSceneFragment:New(UI_Container)
@@ -28,12 +29,35 @@ local function GetIconControl(index)
     local wm = GetWindowManager()
     if not IconPool[index] then
         local icon = wm:CreateControl("ERUI_SetTrackerIcon" .. index, UI_Container, CT_TEXTURE)
-        icon:SetDimensions(75, 75) -- 82
+        icon:SetDimensions(75, 75)
         local offset = SLOT_OFFSETS[index]
         icon:SetAnchor(CENTER, UI_Container, BOTTOMLEFT, offset.x, offset.y)
         IconPool[index] = icon
     end
     return IconPool[index]
+end
+
+local function GetTextControl(index)
+    if index ~= 1 and index ~= 2 then return nil end
+    local wm = GetWindowManager()
+    if not TextPool[index] then
+        local icon = GetIconControl(index)
+        local label = wm:CreateControl("ERUI_SetTrackerText" .. index, UI_Container, CT_LABEL)
+        label:SetFont("EldenRingUI/Fonts/EBGaramond-Medium.slug|22|soft-shadow-thick")
+        label:SetColor(0.9, 0.9, 0.9, 0.9)
+        label:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+
+        if index == 1 then
+            -- Текст сверху иконки для слота 1
+            label:SetAnchor(BOTTOMLEFT, icon, TOPLEFT, -2, -18)
+        else
+            -- Текст снизу иконки для слота 2
+            label:SetAnchor(TOPLEFT, icon, BOTTOMLEFT, -2, 18)
+        end
+
+        TextPool[index] = label
+    end
+    return TextPool[index]
 end
 
 local SetNameCache = {}
@@ -85,6 +109,7 @@ end
 local function UpdateUI()
     local counts = ScanGear()
     local displaySlots = {nil, nil, nil, nil}
+    local displayNames = {nil, nil, nil, nil}
     local overflow = {}
 
     for configName, count in pairs(counts) do
@@ -93,16 +118,18 @@ local function UpdateUI()
             local pref = data.preferredSlot
             if pref and pref >= 1 and pref <= 4 and not displaySlots[pref] then
                 displaySlots[pref] = data.icon
+                displayNames[pref] = configName
             else
-                table.insert(overflow, data.icon)
+                table.insert(overflow, { icon = data.icon, name = configName })
             end
         end
     end
 
-    for _, iconPath in ipairs(overflow) do
+    for _, item in ipairs(overflow) do
         for i = 1, 4 do
             if not displaySlots[i] then
-                displaySlots[i] = iconPath
+                displaySlots[i] = item.icon
+                displayNames[i] = item.name
                 break
             end
         end
@@ -115,6 +142,16 @@ local function UpdateUI()
             ctrl:SetHidden(false)
         else
             ctrl:SetHidden(true)
+        end
+
+        if i == 1 or i == 2 then
+            local textCtrl = GetTextControl(i)
+            if displaySlots[i] and displayNames[i] then
+                textCtrl:SetText(displayNames[i])
+                textCtrl:SetHidden(false)
+            else
+                textCtrl:SetHidden(true)
+            end
         end
     end
 end

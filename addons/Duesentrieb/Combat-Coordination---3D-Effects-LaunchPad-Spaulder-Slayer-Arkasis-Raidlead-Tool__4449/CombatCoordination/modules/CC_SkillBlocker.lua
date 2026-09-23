@@ -5,7 +5,7 @@ local CC = CombatCoordination
 ----------------------------------------------------------------------------------------------------
 local Module = {
     name      = "SkillBlocker",
-    menuName  = "SKILL BLOCKER",
+    menuName  = "SKILL BLOCKER & OVERRIDE",
     iconPath  = "/esoui/art/icons/ability_warrior_015.dds",
     menuLayer = 0,
 
@@ -25,12 +25,17 @@ local Module = {
     LastBlockTime = {},
     BlockCount = {},
     OverrideTime = {},
+    LastDebugTime = {},
 
     Default = {
         enableModule = true,
         enablePermanentBlocker = true,
         enablePermanentOverride = false,
         permanentBlockList = "",
+        enableDebug = false,
+
+        enableFlailBlocker = false,
+        enableFatecarverBlocker = false,
     },
     ---@type table|any
     SV = {},
@@ -79,11 +84,27 @@ function Module:ParsePermanentBlockList()
 end
 
 ----------------------------------------------------------------------------------------------------
+-- DEBUG
+----------------------------------------------------------------------------------------------------
+function Module:Debug(message)
+    if not message then return end
+    if not self.SV.enableDebug then return end
+    d("|cFF7F00[CC " .. self.name .. " Debug]|r " .. tostring(message))
+end
+
+----------------------------------------------------------------------------------------------------
 -- PRE HOOK
 ----------------------------------------------------------------------------------------------------
 function Module:RegisterPreHook()
     ZO_PreHook("ZO_ActionBar_CanUseActionSlots", function()
-        if ZO_IsTableEmpty(self.BlockedSkills) and ZO_IsTableEmpty(self.PermanentBlocked) then return false end
+        local isBlockerActive = false
+
+        if not ZO_IsTableEmpty(self.BlockedSkills) then isBlockerActive = true end
+        if not ZO_IsTableEmpty(self.PermanentBlocked) then isBlockerActive = true end
+        if self.SV.enableFlailBlocker then isBlockerActive = true end
+        if self.SV.enableFatecarverBlocker then isBlockerActive = true end
+
+        if not isBlockerActive and not CC.Events.SV.enableDebugAbilityUsed then return false end
 
         -- TRACEBACK
         local tracebackString = debug.traceback()
@@ -94,6 +115,79 @@ function Module:RegisterPreHook()
             local abilityId = self:GetAbilityIdFromSlotNum(slotNum)
 
             if abilityId then
+                if CC.Events.SV.enableDebugAbilityUsed then
+                    local currentTime = GetGameTimeMilliseconds()
+                    if currentTime - (self.LastDebugTime[abilityId] or 0) > 100 then
+                        local abilityName = zo_strformat("<<1>>", GetAbilityName(abilityId))
+                        d(string.format("|cFF7F00[CC Debug]|r Pressed: %s - ID: %s", abilityName, abilityId))
+                        self.LastDebugTime[abilityId] = currentTime
+                    end
+                end
+
+                -- ONLY DEBUG
+                if not isBlockerActive then return false end
+
+                -- CHECK FATECARVER (UNMORPHED, EXHAUSTING, PRAGMATIC)
+                -- BLOCK IF CRUX < 3
+                if self.SV.enableFatecarverBlocker and (abilityId == 193331 or abilityId == 193397 or abilityId == 193398) then
+                    local counterCrux = 0
+                    local numBuffs = GetNumBuffs("player")
+
+                    for i = 1, numBuffs do
+                        local _, _, _, _, stackCount, _, _, _, _, _, buffId = GetUnitBuffInfo("player", i)
+                        if buffId == 184220 then -- CRUX EFFECT ID
+                            counterCrux = stackCount or 0
+                            break
+                        end
+                    end
+
+                    if counterCrux < 3 then
+                        local currentTime = GetGameTimeMilliseconds()
+
+                        if currentTime - (self.LastBlockTime[abilityId] or 0) > 1000 then
+                            CC.DisplayIcon:TriggerAnimation(abilityId)
+                            if self.SV.enableDebug then self:Debug(zo_strformat("Blocked: <<1>>", GetAbilityName(abilityId))) end
+                            self.LastBlockTime[abilityId] = currentTime
+                        end
+
+                        ZO_ActionBar_OnActionButtonUp(slotNum)
+                        return true
+                    end
+                end
+
+                -- CHECK FLAIL (CEPHALIARCH'S FLAIL)
+                -- BLOCK IF CRUX >= 3 AND HEALTH > 50%
+                if self.SV.enableFlailBlocker and abilityId == 183006 then
+                    local counterCrux = 0
+                    local numBuffs = GetNumBuffs("player")
+
+                    for i = 1, numBuffs do
+                        local _, _, _, _, stackCount, _, _, _, _, _, buffId = GetUnitBuffInfo("player", i)
+                        if buffId == 184220 then -- CRUX EFFECT ID
+                            counterCrux = stackCount or 0
+                            break
+                        end
+                    end
+
+                    if counterCrux >= 3 then
+                        local currentHealth, maxHealth, _ = GetUnitPower("player", POWERTYPE_HEALTH)
+                        local percentHealth = (maxHealth > 0) and (currentHealth / maxHealth) or 1
+
+                        if percentHealth >= 0.5 then
+                            local currentTime = GetGameTimeMilliseconds()
+
+                            if currentTime - (self.LastBlockTime[abilityId] or 0) > 1000 then
+                                CC.DisplayIcon:TriggerAnimation(abilityId)
+                                if self.SV.enableDebug then self:Debug(zo_strformat("Blocked: <<1>>", GetAbilityName(abilityId))) end
+                                self.LastBlockTime[abilityId] = currentTime
+                            end
+
+                            ZO_ActionBar_OnActionButtonUp(slotNum)
+                            return true
+                        end
+                    end
+                end
+
                 -- CHECK PERMANENT BLOCK
                 if self.PermanentBlocked[abilityId] then
                     if self.SV.enablePermanentOverride then
@@ -110,6 +204,7 @@ function Module:RegisterPreHook()
 
                         if currentTime - (self.LastBlockTime[abilityId] or 0) > 1000 then
                             CC.DisplayIcon:TriggerAnimation(abilityId)
+                            if self.SV.enableDebug then self:Debug(zo_strformat("Blocked Permanent: <<1>>", GetAbilityName(abilityId))) end
                             self.LastBlockTime[abilityId] = currentTime
                         end
 
@@ -120,7 +215,7 @@ function Module:RegisterPreHook()
 
                 -- CHECK DYNAMIC BLOCK
                 if self.BlockedSkills[abilityId] then
-                local shouldBlock = self:CheckOverride(slotNum, abilityId)
+                    local shouldBlock = self:CheckOverride(slotNum, abilityId)
 
                     if shouldBlock then
                         ZO_ActionBar_OnActionButtonUp(slotNum)
@@ -323,9 +418,6 @@ function Module:HandleSkillBlocker()
 
     -- ADD NEW SKILL TO BLOCKER
     for abilityId, _ in pairs(self.ShouldBlock) do
-        if not self.BlockedSkills[abilityId] then
-            -- CC.DisplayIcon:TriggerAnimation(abilityId)
-        end
         self.BlockedSkills[abilityId] = currentTime + 2000
     end
 
@@ -376,9 +468,11 @@ function Module:CheckOverride(slotNum, abilityId)
         self.FirstBlockTime[abilityId] = currentTime
         self.BlockCount[abilityId] = 1
         CC.DisplayIcon:TriggerAnimation(abilityId)
+        if self.SV.enableDebug then self:Debug(zo_strformat("Blocked (Tap 1/3): <<1>>", GetAbilityName(abilityId))) end
         return true -- BLOCK
     elseif blockCount == 2 then
         self.BlockCount[abilityId] = 2
+        if self.SV.enableDebug then self:Debug(zo_strformat("Blocked (Tap 2/3): <<1>>", GetAbilityName(abilityId))) end
         return true -- BLOCK
     else
         self.OverrideTime[abilityId] = currentTime + 500
@@ -386,7 +480,7 @@ function Module:CheckOverride(slotNum, abilityId)
         self.FirstBlockTime[abilityId] = 0
         self.BlockCount[abilityId] = 0
 
-        CC.Debug("|c00FF00SkillBlocker override!|r")
+        if self.SV.enableDebug then self:Debug("|c00FF00Override! (Tap 3/3):|r " .. zo_strformat("<<1>>", GetAbilityName(abilityId))) end
         return false -- DONT BLOCK
     end
 end
@@ -404,26 +498,6 @@ function Module:GetMenuOptions()
             return string.format("%s %s%s", menuIcon, stringEnable, CC.ColorString(self.menuName, "tier2"))
         end,
         controls = {
-            -- -- ENABLE / DISABLE MODULE
-            -- { type = "header", name = CC.ColorString("ENABLE / DISABLE MODULE", "tier3") },
-            -- {
-            --     type = "checkbox",
-            --     name = CC.ColorString("Enable Module", "GN"),
-            --     getFunc = function() return self.SV.enableModule end,
-            --     setFunc = function(value)
-            --         self.SV.enableModule = value
-            --         if value then
-            --             if self.CustomEnable then self:CustomEnable() end
-            --         else
-            --             if self.CustomDisable then self:CustomDisable() end
-            --         end
-            --     end,
-            --     default = self.Default.enableModule,
-            --     disabled = function() return not CC.SV.enableAddon end,
-            --     requiresReload = true,
-            -- },
-            -- { type = "divider" },
-
             { type = "header", name = CC.ColorString("PERMANENT SKILL BLOCKING", "tier3") },
             {
                 type = "checkbox",
@@ -466,8 +540,44 @@ function Module:GetMenuOptions()
                     self.SV.permanentBlockList = value
                     self:ParsePermanentBlockList()
                 end,
-                default = self.Default.permanentBlockList,
                 disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule or not self.SV.enablePermanentBlocker end,
+            },
+            {
+                type = "checkbox",
+                name = CC.ColorString("[Print to Chat]", "GN") .. " Pressed Ability IDs",
+                tooltip = "Prints the name and ID of every pressed skill to the chat. Useful for finding the correct IDs for your permanent block list.",
+                getFunc = function() return CC.Events.SV.enableDebugAbilityUsed end,
+                setFunc = function(value) CC.Events.SV.enableDebugAbilityUsed = value end,
+                default = CC.Events.Default.enableDebugAbilityUsed,
+                disabled = function() return not CC.SV.enableAddon end,
+            },
+
+            { type = "divider" },
+            {
+                type = "checkbox",
+                name = "Block Cephaliarchs Flail (3 Crux, Health > 50%)",
+                getFunc = function() return self.SV.enableFlailBlocker end,
+                setFunc = function(value) self.SV.enableFlailBlocker = value end,
+                default = self.Default.enableFlailBlocker,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
+            },
+            {
+                type = "checkbox",
+                name = "Block Fatecarver (Crux Counter < 3)",
+                getFunc = function() return self.SV.enableFatecarverBlocker end,
+                setFunc = function(value) self.SV.enableFatecarverBlocker = value end,
+                default = self.Default.enableFatecarverBlocker,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
+            },
+
+            { type = "divider" },
+            {
+                type = "checkbox",
+                name = "Enable Debug",
+                getFunc = function() return self.SV.enableDebug end,
+                setFunc = function(value) self.SV.enableDebug = value end,
+                default = self.Default.enableDebug,
+                disabled = function() return not CC.SV.enableAddon or not self.SV.enableModule end,
             },
         },
     }

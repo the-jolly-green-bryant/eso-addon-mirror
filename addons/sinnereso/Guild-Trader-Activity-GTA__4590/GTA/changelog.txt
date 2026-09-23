@@ -1,5 +1,5 @@
-2026.09.05
-- Tweaked non sales guild filtering for current/previous weeks independently.
+2026.09.22
+- Added "Send Mail" to the right click context menu in guild details view.
 
 ** POSSIBLE FUTURE OPTIONS **
 

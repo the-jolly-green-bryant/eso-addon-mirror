@@ -1,0 +1,49 @@
+{
+  "archive_error": "ESOUI returned an empty response",
+  "archive_path": "addons/Torfason/Schlosswerk__4863",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archive_status": "unavailable",
+  "archived": false,
+  "author": "Torfason",
+  "canonical_id": "esoui:4863",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4863",
+  "deleted": false,
+  "directories": [
+    "Schlosswerk"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4863/",
+  "fingerprint": "a189c901c90969b6bb36b8130f0746c2d00b963d22bca8ab60983d1d7f04cfa5",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17490.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17491.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17492.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17493.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17494.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17495.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17496.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4863",
+  "source_url": "https://www.esoui.com/downloads/info4863-Schlosswerk.html",
+  "stats": {
+    "downloads": 0,
+    "favorites": 0,
+    "monthly_downloads": 0
+  },
+  "title": "Schlosswerk",
+  "updated_at": 1790150282000,
+  "version": "0.1.1"
+}

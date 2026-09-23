@@ -1,10 +1,13 @@
-MCAT_Tracker = {}
+MultiClassAbilityTracker = MultiClassAbilityTracker or {}
+local MCAT = MultiClassAbilityTracker
+MCAT.Tracker = {}
+local Tracker = MCAT.Tracker
 
 --#region[purple] Modules and locals
-local Utils = MCAT_Utils
+local Utils = MCAT.Utils
 local EM = EVENT_MANAGER
 
--- buffId -> mechanicKey, built in Initialize() once MCAT_Definitions is available
+-- buffId -> mechanicKey, built in Initialize() once MCAT.Definitions is available
 local BuffIdToMechanic = {}
 --#endregion
 
@@ -19,7 +22,7 @@ local function OnEffectChanged(eventCode, changeType, effectSlot, effectName, un
     if MCAT.State[mechanicKey].stacks == stacks then return end
     MCAT.State[mechanicKey].stacks = stacks
     Utils.LogDebug(mechanicKey .. " stacks: " .. tostring(stacks))
-    MCAT_Interface.Update()
+    MCAT.Interface.Update()
 end
 
 local function Resync()
@@ -31,7 +34,7 @@ local function Resync()
             Utils.LogDebug(mechanicKey .. " resynced: " .. tostring(stackCount))
         end
     end
-    MCAT_Interface.Update()
+    MCAT.Interface.Update()
 end
 
 -- namespace must be unique per buffId: EVENT_MANAGER keys registrations/filters by (namespace, eventCode),
@@ -41,8 +44,8 @@ local function RegisterEffectTracking()
         local namespace = MCAT.name .. "_Effect_" .. buffId
         EM:RegisterForEvent(namespace, EVENT_EFFECT_CHANGED, OnEffectChanged)
         EM:AddFilterForEvent(namespace, EVENT_EFFECT_CHANGED,
-            REGISTER_FILTER_ABILITY_ID, buffId,
-            REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
+            REGISTER_FILTER_UNIT_TAG, "player",
+            REGISTER_FILTER_ABILITY_ID, buffId)
     end
 end
 
@@ -70,7 +73,7 @@ end
 --#endregion
 
 --#region[pink] Debug
-function MCAT_Tracker.ScanBuffs()
+function Tracker.ScanBuffs()
     Utils.Log(string.format("Buff scan: %d active", GetNumBuffs("player")))
     for i = 1, GetNumBuffs("player") do
         local name, _, _, _, stackCount, _, _, _, _, _, abilityId = GetUnitBuffInfo("player", i)
@@ -80,7 +83,7 @@ end
 
 SLASH_COMMANDS["/mcat"] = function(extra)
     if extra == "scan" then
-        MCAT_Tracker.ScanBuffs()
+        Tracker.ScanBuffs()
     else
         Utils.Log("Usage: /mcat scan")
     end
@@ -88,10 +91,10 @@ end
 --#endregion
 
 --#region[yellow] Init
-function MCAT_Tracker.Initialize()
+function Tracker.Initialize()
     MCAT.State = {}
     MCAT.InCombat = false
-    for mechanicKey, def in pairs(MCAT_Definitions) do
+    for mechanicKey, def in pairs(MCAT.Definitions) do
         MCAT.State[mechanicKey] = { stacks = 0, visible = false }
         if def.buffId then
             BuffIdToMechanic[def.buffId] = mechanicKey

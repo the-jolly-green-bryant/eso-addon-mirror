@@ -129,6 +129,19 @@ local strings = {
 	SI_PBSCA_BOARD_ARTIFACT = "%s: %s",
 	SI_PBSCA_BOARD_ARTIFACT_LOOSE = "%s: 未所持",
 	SI_PBSCA_BOARD_ARTIFACT_YOURS = "%s: 自分が所持中",
+	-- 遺物の時計。出現・消滅の時刻を返すAPIは無いので、3つのアナウンスを受けた時刻による
+	-- アドオン自身のストップウォッチと、コミュニティの観察値（UESP: 出現から10〜15分で公開、
+	-- 公開から約30分で消滅）の組み合わせ。予測にはすべて「目安」と付ける。
+	SI_PBSCA_ARTIFACT_SEEKING = "%s: 使い手を探している",
+	SI_PBSCA_ARTIFACT_GONE = "%s: オブリビオンに戻った",
+	SI_PBSCA_ARTIFACT_CLOCK_SEEKING = "（%s経過 / 公開まで目安 %s）",
+	SI_PBSCA_ARTIFACT_CLOCK_REVEALED = "（公開から %s / 消滅まで目安 %s）",
+	SI_PBSCA_ARTIFACT_CLOCK_GONE = "（%s経過）",
+	SI_PBSCA_ARTIFACT_CLOCK_UNKNOWN = "（経過不明）",
+	SI_PBSCA_ARTIFACT_RANGE = "%d〜%d分",
+	SI_PBSCA_ARTIFACT_ABOUT = "約%d分",
+	SI_PBSCA_ARTIFACT_SOON = "まもなく",
+	SI_PBSCA_ARTIFACT_ENERGY = "（残り %d%%）",
 	SI_PBSCA_STATUS_SCROLLS = "巻物の通知: %s",
 	SI_PBSCA_HELP_SCROLLS = "/pbalert scrolls on | off -- 巻物の受け渡しを通知する",
 

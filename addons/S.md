@@ -30,6 +30,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [SBMI (Solstheim Bards Member Information)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ned_Washington/SBMI-Solstheim-Bards-Member-Information__2644) | Ned_Washington | PC / Mac | 0.1.2 |
 | [Scaffold](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Cardinal05/Scaffold__1919) | Cardinal05 | PC / Mac | 1.32 |
 | [ScapegoatIconPack - icon pack for OdySupport Icons](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/JimBoSS/ScapegoatIconPack---icon-pack-for-OdySupport-Icons__3800) | JimBoSS | PC / Mac | 0.25 |
+| [Schlosswerk](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Torfason/Schlosswerk__4863) | Torfason | PC / Mac | 0.1.1 |
 | [Scholar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/WidgetInteractive/Scholar__1670) | WidgetInteractive | PC / Mac | 1.7.0 |
 | [SCQ - Share contributable quests](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ek1/SCQ---Share-contributable-quests__2453) | Ek1 | PC / Mac | 1.3.200324 |
 | [Screen anti dimmer (energy safe disabler)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Marvellous-Chester/Screen-anti-dimmer-energy-safe-disabler__3894) | Marvellous Chester | PC / Mac | 1.0 |
@@ -128,6 +129,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Simple Keybind](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ShadowMau/Simple-Keybind__2556) | ShadowMau | PC / Mac | 0.1.0 |
 | [Simple Llothis Interrupt Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ownedbynico/Simple-Llothis-Interrupt-Helper__2626) | ownedbynico | PC / Mac | beta |
 | [Simple Long Buffs](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/buldezir/Simple-Long-Buffs__3054) | buldezir | PC / Mac | 1.0.5 |
+| [Simple Long Buffs Console](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/j.hhh/Simple-Long-Buffs-Console__4d619dbf-92df-4bda-aac1-b5dbec806fca) | j.hhh | Console | — |
 | [Simple Off Balance Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shienar/Simple-Off-Balance-Tracker__a2157cd5-8974-464f-b688-df9b184b6350) | Shienar | Console | — |
 | [Simple Skyshards](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Alianym/Simple-Skyshards__3501) | Alianym | PC / Mac | 1.06 |
 | [Simple Slash Command](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ShadowMau/Simple-Slash-Command__2554) | ShadowMau | PC / Mac | 0.1.2 |

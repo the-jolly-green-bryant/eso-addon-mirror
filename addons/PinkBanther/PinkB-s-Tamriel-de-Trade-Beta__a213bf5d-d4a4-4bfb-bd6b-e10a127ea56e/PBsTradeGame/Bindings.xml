@@ -1,0 +1,16 @@
+<Bindings>
+    <Layer name="PBTradeInput" allowFallthrough="false">
+        <Category name="PBTrade">
+            <Action name="PBTRADE_LEFT" inheritsBindFrom="UI_SHORTCUT_INPUT_LEFT" hideAction="true" rebindable="false"><Down>if PBTrade.ui then PBTrade.ui:DirectionKey("left",true) end</Down><Up>if PBTrade.ui then PBTrade.ui:DirectionKey("left",false) end</Up></Action>
+            <Action name="PBTRADE_RIGHT" inheritsBindFrom="UI_SHORTCUT_INPUT_RIGHT" hideAction="true" rebindable="false"><Down>if PBTrade.ui then PBTrade.ui:DirectionKey("right",true) end</Down><Up>if PBTrade.ui then PBTrade.ui:DirectionKey("right",false) end</Up></Action>
+            <Action name="PBTRADE_UP" inheritsBindFrom="UI_SHORTCUT_INPUT_UP" hideAction="true" rebindable="false"><Down>if PBTrade.ui then PBTrade.ui:DirectionKey("up",true) end</Down><Up>if PBTrade.ui then PBTrade.ui:DirectionKey("up",false) end</Up></Action>
+            <Action name="PBTRADE_DOWN" inheritsBindFrom="UI_SHORTCUT_INPUT_DOWN" hideAction="true" rebindable="false"><Down>if PBTrade.ui then PBTrade.ui:DirectionKey("down",true) end</Down><Up>if PBTrade.ui then PBTrade.ui:DirectionKey("down",false) end</Up></Action>
+            <AllowAction name="UI_SHORTCUT_PRIMARY"/>
+            <AllowAction name="UI_SHORTCUT_NEGATIVE"/>
+            <AllowAction name="UI_SHORTCUT_SECONDARY"/>
+            <AllowAction name="UI_SHORTCUT_TERTIARY"/>
+            <AllowAction name="UI_SHORTCUT_LEFT_SHOULDER"/>
+            <AllowAction name="UI_SHORTCUT_RIGHT_SHOULDER"/>
+        </Category>
+    </Layer>
+</Bindings>

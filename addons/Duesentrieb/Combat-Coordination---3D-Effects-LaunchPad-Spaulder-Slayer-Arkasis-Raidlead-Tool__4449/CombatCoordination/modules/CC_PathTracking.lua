@@ -330,8 +330,8 @@ function Module:GetMenuOptions()
             {
                 type = "description",
                 text = CC.ColorString("Note:", "tier2") .. " Define a " .. CC.ColorString("[Keybind]", "tier3") .. " to track your current target.\n" ..
-                       CC.ColorString("Tip:", "tier2") .. " You can also track group members directly via the group window by right-clicking their name and using the context menu.",
-                       width = "full",
+                    CC.ColorString("Tip:", "tier2") .. " Track group members via group window context menu.",
+                width = "full",
             },
             { type = "header", name = CC.ColorString("MANUAL TRACKING", "tier3") },
             {

@@ -695,9 +695,9 @@ function CC.CreateSettings()
             {
                 type = "checkbox",
                 name = "Enable: Used Abilities [/cc_debug_ability]",
-                getFunc = function() return CC.Events.SV.enableDebugOnActionSlotAbilityUsed end,
-                setFunc = function(value) CC.Events.SV.enableDebugOnActionSlotAbilityUsed = value end,
-                default = CC.Events.Default.enableDebugOnActionSlotAbilityUsed,
+                getFunc = function() return CC.Events.SV.enableDebugAbilityUsed end,
+                setFunc = function(value) CC.Events.SV.enableDebugAbilityUsed = value end,
+                default = CC.Events.Default.enableDebugAbilityUsed,
                 disabled = function() return not CC.SV.enableAddon end,
             },
             {

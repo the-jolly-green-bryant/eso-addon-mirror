@@ -1,4 +1,7 @@
-MCAT_Settings = {}
+MultiClassAbilityTracker = MultiClassAbilityTracker or {}
+local MCAT = MultiClassAbilityTracker
+MCAT.Settings = {}
+local Settings = MCAT.Settings
 
 --#region[purple] Modules and locals
 local MECHANIC_ORDER = { "GrimFocus", "BoundArmaments", "SeethingFury", "Crux" }
@@ -19,10 +22,10 @@ local DEFAULT_SPACING_UI = { min = 0, max = 50, offset = 0 }
 local defaults = {
     debug = false,
     mechanics = {
-        GrimFocus = { enabled = true, scale = 1.0, spacing = 20, color = MCAT_Definitions.GrimFocus.color },
-        BoundArmaments = { enabled = true, scale = 1.0, spacing = 0, color = MCAT_Definitions.BoundArmaments.color },
-        SeethingFury = { enabled = true, scale = 1.0, spacing = -40, color = MCAT_Definitions.SeethingFury.color },
-        Crux = { enabled = true, scale = 1.0, spacing = -10, color = MCAT_Definitions.Crux.color },
+        GrimFocus = { enabled = true, scale = 1.0, spacing = 20, color = MCAT.Definitions.GrimFocus.color },
+        BoundArmaments = { enabled = true, scale = 1.0, spacing = 0, color = MCAT.Definitions.BoundArmaments.color },
+        SeethingFury = { enabled = true, scale = 1.0, spacing = -40, color = MCAT.Definitions.SeethingFury.color },
+        Crux = { enabled = true, scale = 1.0, spacing = -10, color = MCAT.Definitions.Crux.color },
     },
 }
 
@@ -34,27 +37,27 @@ local metaVars -- always account-wide: holds the storage-mode choice itself, rea
 --#endregion
 
 --#region[teal] Accessors
-function MCAT_Settings.IsDebugEnabled()
+function Settings.IsDebugEnabled()
     return savedVars.debug
 end
 
-function MCAT_Settings.IsEnabled(mechanicKey)
+function Settings.IsEnabled(mechanicKey)
     return savedVars.mechanics[mechanicKey].enabled
 end
 
-function MCAT_Settings.GetScale(mechanicKey)
+function Settings.GetScale(mechanicKey)
     return savedVars.mechanics[mechanicKey].scale
 end
 
-function MCAT_Settings.GetSpacing(mechanicKey)
+function Settings.GetSpacing(mechanicKey)
     return savedVars.mechanics[mechanicKey].spacing
 end
 
-function MCAT_Settings.GetColor(mechanicKey)
+function Settings.GetColor(mechanicKey)
     return savedVars.mechanics[mechanicKey].color
 end
 
-function MCAT_Settings.IsUsingCharacterSettings()
+function Settings.IsUsingCharacterSettings()
     return metaVars.useCharacterSettings
 end
 --#endregion
@@ -72,9 +75,11 @@ end
 
 local function LoadMainSavedVars(useCharacterSettings)
     if useCharacterSettings then
-        return ZO_SavedVars:New("MCAT_SavedVars", 1, nil, defaults)
+        -- character IDs are already server-split (per-server ID ranges), unlike character names
+        return ZO_SavedVars:NewCharacterIdSettings("MultiClassAbilityTracker_SavedVars", 1, nil, defaults)
     end
-    return ZO_SavedVars:NewAccountWide("MCAT_SavedVars", 1, nil, defaults)
+    -- GetWorldName() splits this by megaserver, since @displayName is shared across NA/EU
+    return ZO_SavedVars:NewAccountWide("MultiClassAbilityTracker_SavedVars", 1, nil, defaults, GetWorldName())
 end
 
 local function SetUseCharacterSettings(value)
@@ -112,7 +117,7 @@ local function BuildOptionsTable()
             type = "checkbox",
             name = "Use Per-Character Settings",
             tooltip = "When enabled, this character keeps its own settings instead of sharing one account-wide configuration. Current settings carry over when you change this.",
-            getFunc = MCAT_Settings.IsUsingCharacterSettings,
+            getFunc = Settings.IsUsingCharacterSettings,
             setFunc = SetUseCharacterSettings,
             default = META_DEFAULTS.useCharacterSettings,
         },
@@ -124,7 +129,7 @@ local function BuildOptionsTable()
             type = "checkbox",
             name = "Debug Mode",
             tooltip = "Shows counters out of combat and prints debug messages to chat.",
-            getFunc = MCAT_Settings.IsDebugEnabled,
+            getFunc = Settings.IsDebugEnabled,
             setFunc = function(value)
                 savedVars.debug = value
                 MCAT.ActionBarUpdated()
@@ -134,14 +139,14 @@ local function BuildOptionsTable()
     }
 
     for _, mechanicKey in ipairs(MECHANIC_ORDER) do
-        local def = MCAT_Definitions[mechanicKey]
+        local def = MCAT.Definitions[mechanicKey]
         local mechanicDefaults = defaults.mechanics[mechanicKey]
 
         table.insert(optionsTable, { type = "header", name = def.label })
         table.insert(optionsTable, {
             type = "checkbox",
             name = "Enabled",
-            getFunc = function() return MCAT_Settings.IsEnabled(mechanicKey) end,
+            getFunc = function() return Settings.IsEnabled(mechanicKey) end,
             setFunc = function(value)
                 savedVars.mechanics[mechanicKey].enabled = value
                 MCAT.ActionBarUpdated()
@@ -151,13 +156,13 @@ local function BuildOptionsTable()
         table.insert(optionsTable, {
             type = "colorpicker",
             name = "Color",
-            getFunc = function() return MCAT_Utils.HexToRGB(MCAT_Settings.GetColor(mechanicKey)) end,
+            getFunc = function() return MCAT.Utils.HexToRGB(Settings.GetColor(mechanicKey)) end,
             setFunc = function(r, g, b)
-                savedVars.mechanics[mechanicKey].color = MCAT_Utils.RGBToHex(r, g, b)
-                MCAT_Interface.Update()
+                savedVars.mechanics[mechanicKey].color = MCAT.Utils.RGBToHex(r, g, b)
+                MCAT.Interface.Update()
             end,
             default = (function()
-                local r, g, b = MCAT_Utils.HexToRGB(mechanicDefaults.color)
+                local r, g, b = MCAT.Utils.HexToRGB(mechanicDefaults.color)
                 return { r = r, g = g, b = b }
             end)(),
         })
@@ -165,10 +170,10 @@ local function BuildOptionsTable()
             type = "slider",
             name = "Size",
             min = 0.4, max = 2.0, step = 0.05, decimals = 2,
-            getFunc = function() return MCAT_Settings.GetScale(mechanicKey) end,
+            getFunc = function() return Settings.GetScale(mechanicKey) end,
             setFunc = function(value)
                 savedVars.mechanics[mechanicKey].scale = value
-                MCAT_Interface.Update()
+                MCAT.Interface.Update()
             end,
             default = mechanicDefaults.scale,
         })
@@ -177,10 +182,10 @@ local function BuildOptionsTable()
             type = "slider",
             name = "Spacing",
             min = spacingUI.min, max = spacingUI.max, step = 1,
-            getFunc = function() return MCAT_Settings.GetSpacing(mechanicKey) - spacingUI.offset end,
+            getFunc = function() return Settings.GetSpacing(mechanicKey) - spacingUI.offset end,
             setFunc = function(value)
                 savedVars.mechanics[mechanicKey].spacing = value + spacingUI.offset
-                MCAT_Interface.Update()
+                MCAT.Interface.Update()
             end,
             default = mechanicDefaults.spacing - spacingUI.offset,
         })
@@ -204,8 +209,9 @@ end
 --#endregion
 
 --#region[green] Init
-function MCAT_Settings.Initialize()
-    metaVars = ZO_SavedVars:NewAccountWide("MCAT_SavedVars", 1, "Meta", META_DEFAULTS)
+function Settings.Initialize()
+    -- GetWorldName() splits this by megaserver, since @displayName is shared across NA/EU
+    metaVars = ZO_SavedVars:NewAccountWide("MultiClassAbilityTracker_SavedVars", 1, "Meta", META_DEFAULTS, GetWorldName())
     savedVars = LoadMainSavedVars(metaVars.useCharacterSettings)
     CreatePanel()
 end

@@ -882,7 +882,7 @@ function Module:GetMenuOptions()
             { type = "header", name = CC.ColorString("RAIDLEAD ONLY: (RE-) ASSIGN MEMBER", "tier3") },
             {
                 type = "description",
-                text = CC.ColorString("Tip:", "tier2") .. " You can also assign group members directly via the group window by right-clicking their name and using the context menu.",
+                text = CC.ColorString("Tip:", "tier2") .. " Assign group members via group window context menu.",
                 width = "full",
             },
             {

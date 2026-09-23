@@ -36,7 +36,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Caro's Pre-Crafter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Irniben/Caro-s-Pre-Crafter__3143) | Irniben | PC / Mac | 2.3.2 |
 | [Caro's Skill Point Saver (Respec Skill Lines, Champion Points, Gear, Quickslots, Appearances)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Irniben/Caro-s-Skill-Point-Saver-Respec-Skill-Lines-Champion-Points-Gear-Quickslots-Appe__2901) | Irniben | PC / Mac | 6.1.7 |
 | [Caro's Worn Sets](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Irniben/Caro-s-Worn-Sets__3478) | Irniben | PC / Mac | 1.1.4 |
-| [CASE - Character Addon Settings Editor](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/CASE---Character-Addon-Settings-Editor__4036) | atharti | PC / Mac | 6.7 |
+| [CASE - Character Addon Settings Editor](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/CASE---Character-Addon-Settings-Editor__4036) | atharti | PC / Mac | 6.8 |
 | [Cashier](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tarlac/Cashier__2040) | Tarlac | PC / Mac | 1.35 |
 | [Cast Skill IDs (CastIDs)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wendiga/Cast-Skill-IDs-CastIDs__4183) | Wendiga | PC / Mac | 1.1 |
 | [CasualClean](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Th3rtythr33/CasualClean__c75df85c-f9c0-4e54-a0f3-d5173e44a850) | Th3rtythr33 | Console | — |
@@ -150,7 +150,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Combat Alerts Extended](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DrSova/Combat-Alerts-Extended__3439) | DrSova | PC / Mac | 1.0.5 |
 | [Combat Auras (Ability Timers)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Darianopolis/Combat-Auras-Ability-Timers__2408) | Darianopolis | PC / Mac | v1.5.2 |
 | [Combat Cloud Updated](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/2Weak2Live/Combat-Cloud-Updated__2568) | 2Weak2Live | PC / Mac | 0.96 |
-| [Combat Coordination - 3D Effects, LaunchPad, Spaulder, Slayer, Arkasis, Raidlead Tools](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Duesentrieb/Combat-Coordination---3D-Effects-LaunchPad-Spaulder-Slayer-Arkasis-Raidlead-Tool__4449) | Duesentrieb | PC / Mac | 20260921-0011 |
+| [Combat Coordination - 3D Effects, LaunchPad, Spaulder, Slayer, Arkasis, Raidlead Tools](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Duesentrieb/Combat-Coordination---3D-Effects-LaunchPad-Spaulder-Slayer-Arkasis-Raidlead-Tool__4449) | Duesentrieb | PC / Mac | 20260922-0012 |
 | [Combat Crosshair](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Turbo1/Combat-Crosshair__2760) | Turbo1 | PC / Mac | 1.5 |
 | [Combat FPS Booster](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tetsurion/Combat-FPS-Booster__3daa21d2-07bf-4ab5-bd84-fc58fb9dbdc7) | Tetsurion | Console | — |
 | [Combat Indicator](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Crabby654/Combat-Indicator__1543) | Crabby654 | PC / Mac | 1.8.7 |

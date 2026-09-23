@@ -15,6 +15,8 @@ local trackedFoods = {
     [84709] = true,  -- Crunchy Spider Skewer
     [89971] = true,  -- Jewels of Misrule
     [72824] = true,  -- Smoked Bear Haunch
+	[107748] = true, -- Artaeum Picked Fish Bowl
+	[89957] = true,  -- Dubious Camoran Throne
 }
 
 function SimpleFoodTracker.UpdateFood()
@@ -31,7 +33,7 @@ function SimpleFoodTracker.UpdateFood()
     end
     
     SimpleFoodTrackerWindowLabel:SetText(currentFood)
-    SimpleFoodTrackerWindowLabel:SetAlpha(0.75)
+    SimpleFoodTrackerWindowLabel:SetColor(0.9, 0.9, 0.9, 0.9)
 end
 
 function SimpleFoodTracker.OnEffectChanged(eventCode, changeType, effectSlot, effectName, unitTag, beginTime, endTime, stackCount, iconName, buffType, effectType, abilityType, statusEffectType, unitName, unitId, abilityId, sourceType)
@@ -42,7 +44,7 @@ function SimpleFoodTracker.OnEffectChanged(eventCode, changeType, effectSlot, ef
         if changeType == EFFECT_RESULT_GAINED or changeType == EFFECT_RESULT_UPDATED then
             local currentFood = effectName:gsub("^%l", string.upper)
             SimpleFoodTrackerWindowLabel:SetText(currentFood)
-            SimpleFoodTrackerWindowLabel:SetAlpha(0.75)
+            SimpleFoodTrackerWindowLabel:SetColor(0.9, 0.9, 0.9, 0.9)
             
         elseif changeType == EFFECT_RESULT_FADED then
             SimpleFoodTracker.UpdateFood()

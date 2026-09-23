@@ -1,11 +1,10 @@
 local PLAYER_RESOURCES = {
-    [POWERTYPE_HEALTH] = { name = "Health", color = {0.63, 0.10, 0.05, 1}, width = 300 },
-    [POWERTYPE_MAGICKA] = { name = "Magicka", color = {0.08, 0.61, 0.67, 1}, width = 300 },
-    [POWERTYPE_STAMINA] = { name = "Stamina", color = {0.15, 0.47, 0.22, 1}, width = 300 },
+    [POWERTYPE_HEALTH]  = { name = "Health",  texture = "EldenRingUI/Textures/ERHealthBar.dds", width = 300, scaleFactor = 45 },
+    [POWERTYPE_MAGICKA] = { name = "Magicka", texture = "EldenRingUI/Textures/ERMagickaBar.dds", width = 300, scaleFactor = 75 },
+    [POWERTYPE_STAMINA] = { name = "Stamina", texture = "EldenRingUI/Textures/ERStaminaBar.dds", width = 300, scaleFactor = 75 },
 }
 
-local WIDTH_SCALE_FACTOR = 65 -- 55
-local SHIELD_BAR_COLOR = {0.85, 0.32, 0.18, 0.85} 
+local SHIELD_BAR_TEXTURE = "EldenRingUI/Textures/ERShieldBar.dds"
 
 local function FormatResource(value)
     if value >= 1000000 then
@@ -33,25 +32,91 @@ local function UpdatePlayerShieldVisuals()
 
     if shieldMax and shieldMax > 0 and shieldValue > 0 then
         local healthBarWidth = healthBar:GetWidth()
-        local calculatedShieldWidth = shieldMax / WIDTH_SCALE_FACTOR
-        local finalShieldWidth = math.min(calculatedShieldWidth, healthBarWidth)
+        local healthScaleFactor = PLAYER_RESOURCES[POWERTYPE_HEALTH].scaleFactor
+
+        local currentShieldWidth = shieldValue / healthScaleFactor
+        local finalShieldWidth = math.min(currentShieldWidth, healthBarWidth)
         
         shieldBar:SetWidth(finalShieldWidth)
+
+        local shieldTexRight = finalShieldWidth / 2048
+        shieldBar:SetTextureCoords(0, shieldTexRight, 0, 1)
+
         shieldBar:SetHidden(false)
-        
-        ZO_StatusBar_SmoothTransition(shieldBar, shieldValue, shieldMax)
     else
         shieldBar:SetHidden(true)
     end
 end
 
 local function UpdatePlayerPower(_, unitTag, _, powerType, powerValue, powerMax)
-    if unitTag ~= "player" or not PLAYER_RESOURCES[powerType] then return end
+    local resourceData = PLAYER_RESOURCES[powerType]
+    if unitTag ~= "player" or not resourceData then return end
     
-    local bar = PlayerResourceContainer:GetNamedChild(PLAYER_RESOURCES[powerType].name)
+    local bar = PlayerResourceContainer:GetNamedChild(resourceData.name)
     if bar and powerMax > 0 then
-        local newWidth = powerMax / WIDTH_SCALE_FACTOR
-        bar:SetWidth(newWidth)
+        
+        local newWidth = powerMax / resourceData.scaleFactor
+        
+        if resourceData.lastMax ~= powerMax then
+            bar:SetWidth(newWidth)
+            local texRight = newWidth / 2048
+
+            local yellowLine = bar:GetNamedChild("YellowLine")
+            if yellowLine then yellowLine:SetTextureCoords(0, texRight, 0, 1) end
+
+            local backdrop = bar:GetNamedChild("Backdrop")
+            if backdrop then backdrop:SetTextureCoords(0, texRight, 0, 1) end
+            
+            resourceData.lastMax = powerMax
+        end
+		
+        if not resourceData.lastValue then resourceData.lastValue = powerValue end
+        
+        local delayedBar = bar:GetNamedChild("DelayedBar")
+        if delayedBar then
+            if powerValue < resourceData.lastValue then
+                local dropPercent = (resourceData.lastValue - powerValue) / powerMax
+                
+                if dropPercent >= 0.05 then
+                    local barWidth = bar:GetWidth()
+                    local delayWidth = (resourceData.lastValue / powerMax) * barWidth
+                    delayedBar:SetWidth(delayWidth)
+                    delayedBar:SetTextureCoords(0, delayWidth / 2048, 0, 1)
+                    delayedBar:SetHidden(false)              
+                    delayedBar:SetHandler("OnUpdate", nil)
+                    delayedBar.lastTime = nil
+                    
+                    local timerName = "ERUI_Delay_" .. powerType
+                    EVENT_MANAGER:UnregisterForUpdate(timerName)
+                    EVENT_MANAGER:RegisterForUpdate(timerName, 1000, function()
+                        EVENT_MANAGER:UnregisterForUpdate(timerName)
+                        
+                        delayedBar:SetHandler("OnUpdate", function(self, time)
+                            local dt = self.lastTime and (time - self.lastTime) or 0
+                            self.lastTime = time
+                            if dt == 0 then return end
+                            
+                            local curVal = GetUnitPower("player", powerType)
+                            local targetW = (curVal / resourceData.lastMax) * barWidth
+                            local currentW = self:GetWidth()
+                            local shrinkSpeed = 300 
+                            local nextW = currentW - (shrinkSpeed * dt)
+                            
+                            if nextW <= targetW then
+                                self:SetHidden(true)
+                                self:SetHandler("OnUpdate", nil)
+                                self.lastTime = nil
+                            else
+                                self:SetWidth(nextW)
+                                self:SetTextureCoords(0, nextW / 2048, 0, 1)
+                            end
+                        end)
+                    end)
+                end
+            end
+        end
+
+        resourceData.lastValue = powerValue
 
         ZO_StatusBar_SmoothTransition(bar, powerValue, powerMax)
         bar:GetNamedChild("PercentLabel"):SetText(math.floor(powerValue * 100 / powerMax) .. "%")
@@ -64,18 +129,32 @@ local function UpdatePlayerPower(_, unitTag, _, powerType, powerValue, powerMax)
 end
 
 local function ApplyResourceStyle(bar)
-    bar:SetTexture("EldenRingUI/Textures/grainy.dds")
-    
+    bar:SetDrawTier(DT_MEDIUM)
     bar:SetDrawLayer(DL_CONTROLS)
-    bar:SetDrawLevel(1)
+    local backdrop = bar:GetNamedChild("Backdrop")
+    if backdrop then
+        backdrop:SetDrawTier(DT_LOW)
+        backdrop:SetDrawLayer(DL_BACKGROUND)
+        backdrop:SetDrawLevel(0)
+    end
     
+    local delayedBar = WINDOW_MANAGER:CreateControl(bar:GetName() .. "DelayedBar", bar, CT_TEXTURE)
+    delayedBar:SetTexture("EldenRingUI/Textures/DelayedBar.dds") 
+    delayedBar:SetAnchor(TOPLEFT, bar, TOPLEFT, 0, 0)
+    delayedBar:SetAnchor(BOTTOMLEFT, bar, BOTTOMLEFT, 0, 0)
+    delayedBar:SetDrawTier(DT_LOW)
+    delayedBar:SetDrawLayer(DL_BACKGROUND)
+    delayedBar:SetDrawLevel(1) 
+    delayedBar:SetHidden(true)
+
     local yellowLine = WINDOW_MANAGER:CreateControl(bar:GetName() .. "YellowLine", bar, CT_TEXTURE)
     yellowLine:SetTexture("EldenRingUI/Textures/lowline.dds")
     yellowLine:SetAnchor(BOTTOMLEFT, bar, BOTTOMLEFT, 0, 0)
     yellowLine:SetAnchor(BOTTOMRIGHT, bar, BOTTOMRIGHT, 0, 0)
     yellowLine:SetHeight(12)
+    yellowLine:SetDrawTier(DT_MEDIUM)
     yellowLine:SetDrawLayer(DL_CONTROLS)
-    yellowLine:SetDrawLevel(4) 
+    yellowLine:SetDrawLevel(3) 
 end
 
 local function OnPlayerVisualChanged(_, unitTag, unitAttributeVisual)
@@ -99,26 +178,26 @@ local function InitializePlayerModule()
         local yOffset = (pType == POWERTYPE_HEALTH) and 0 or (pType == POWERTYPE_MAGICKA and 18 or 36)
         bar:SetAnchor(TOPLEFT, PlayerResourceContainer, TOPLEFT, 0, yOffset)
         
-        bar:SetColor(unpack(data.color))
+        bar:SetTexture(data.texture)
         bar:GetNamedChild("NameLabel"):SetText(data.name)
         ApplyResourceStyle(bar)
 
         local icon = bar:GetNamedChild("Icon")
         if icon then
             icon:SetDrawLayer(DL_CONTROLS)
-            icon:SetDrawLevel(5)
+            icon:SetDrawLevel(4)
         end
 
-        local icon2 = bar:GetNamedChild("Icon2")
-        if icon2 then
-            icon2:SetDrawLayer(DL_CONTROLS)
-            icon2:SetDrawLevel(5)
-        end
+        -- local icon2 = bar:GetNamedChild("Icon2")
+        -- if icon2 then
+            -- icon2:SetDrawLayer(DL_CONTROLS)
+            -- icon2:SetDrawLevel(4)
+        -- end
 
-		local currentValueIcon = bar:GetNamedChild("CurrentValueIcon")
+        local currentValueIcon = bar:GetNamedChild("CurrentValueIcon")
         if currentValueIcon then
             currentValueIcon:SetDrawLayer(DL_CONTROLS)
-            currentValueIcon:SetDrawLevel(6) 
+            currentValueIcon:SetDrawLevel(2) 
 
             local lastPercent = -1 
             local lastWidth = -1 
@@ -131,9 +210,8 @@ local function InitializePlayerModule()
                     local barWidth = self:GetWidth()    
                     
                     if percent ~= lastPercent or barWidth ~= lastWidth then
-                        
                         currentValueIcon:ClearAnchors()
-                        currentValueIcon:SetAnchor(CENTER, self, LEFT, barWidth * percent - 15, -2)
+                        currentValueIcon:SetAnchor(CENTER, self, LEFT, barWidth * percent - 13, -1)
                         
                         lastPercent = percent
                         lastWidth = barWidth
@@ -142,19 +220,17 @@ local function InitializePlayerModule()
             end)
         end
         if pType == POWERTYPE_HEALTH then
-            local shieldBar = WINDOW_MANAGER:CreateControl("$(parent)ShieldOverlay", bar, CT_STATUSBAR)
-            shieldBar:SetMinMax(0, 1)
-            shieldBar:SetOrientation(ORIENTATION_HORIZONTAL)
-            shieldBar:SetTexture("EldenRingUI/Textures/grainy.dds")
-            shieldBar:SetColor(unpack(SHIELD_BAR_COLOR))
-            
-            shieldBar:SetAnchor(TOPLEFT, bar, TOPLEFT, 0, 0)
-            shieldBar:SetAnchor(BOTTOMLEFT, bar, BOTTOMLEFT, 0, 0)
-            shieldBar:SetDrawLayer(DL_CONTROLS)
-            shieldBar:SetDrawLevel(2) 
-            
-            shieldBar:SetHidden(true)
-        end
+			local shieldBar = WINDOW_MANAGER:CreateControl("$(parent)ShieldOverlay", bar, CT_TEXTURE)
+			
+			shieldBar:SetTexture(SHIELD_BAR_TEXTURE)
+			
+			shieldBar:SetAnchor(TOPLEFT, bar, TOPLEFT, 0, 0)
+			shieldBar:SetAnchor(BOTTOMLEFT, bar, BOTTOMLEFT, 0, 0)
+			shieldBar:SetDrawLayer(DL_CONTROLS)
+			shieldBar:SetDrawLevel(2) 
+			
+			shieldBar:SetHidden(true)
+		end
 
         local cur, max = GetUnitPower("player", pType)
         UpdatePlayerPower(nil, "player", nil, pType, cur, max)

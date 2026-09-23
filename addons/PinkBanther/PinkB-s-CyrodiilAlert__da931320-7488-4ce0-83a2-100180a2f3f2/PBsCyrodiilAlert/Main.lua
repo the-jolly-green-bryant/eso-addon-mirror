@@ -613,6 +613,11 @@ local function FormatElapsed(seconds)
 	if seconds < 0 then
 		seconds = 0
 	end
+	-- Hours once there are any: the artifact's "gone for" can run past an hour, and "134:10" is
+	-- a number to work out rather than read.
+	if seconds >= 3600 then
+		return string.format("%d:%02d:%02d", math.floor(seconds / 3600), math.floor(seconds / 60) % 60, seconds % 60)
+	end
 	return string.format("%d:%02d", math.floor(seconds / 60), seconds % 60)
 end
 
@@ -989,6 +994,122 @@ DeclareArtifactPin(MAP_PIN_TYPE_AVA_DAEDRIC_ARTIFACT_VOLENDRUNG_EBONHEART, ALLIA
 DeclareArtifactPin(MAP_PIN_TYPE_AVA_DAEDRIC_ARTIFACT_VOLENDRUNG_DAGGERFALL, ALLIANCE_DAGGERFALL_COVENANT)
 DeclareArtifactPin(MAP_PIN_TYPE_AVA_DAEDRIC_ARTIFACT_VOLENDRUNG_NEUTRAL, ALLIANCE_NONE)
 
+-- ---------------------------------------------------------------------------------------
+-- The artifact's clock
+--
+-- No function says when the artifact will spawn, when it will be revealed, or when it will
+-- leave; the game's own announcements carry no times either. So the add-on keeps its own
+-- stopwatch against the three announcements it can hear --
+--
+--     EVENT_DAEDRIC_ARTIFACT_OBJECTIVE_SPAWNED_BUT_NOT_REVEALED   "seeks a wielder"
+--     EVENT_DAEDRIC_ARTIFACT_OBJECTIVE_STATE_CHANGED, UNKNOWN -> known   "is revealed"
+--     EVENT_DAEDRIC_ARTIFACT_OBJECTIVE_STATE_CHANGED, known -> UNKNOWN   "returns to Oblivion"
+--
+-- -- the same transitions the client's own announcement handler reads
+-- (centerscreenannouncehandlers.lua:619), and adds the community's observed figures as a
+-- forecast. Those are UESP's, not ZeniMax's: revealed 10-15 minutes after spawning, gone about
+-- 30 minutes after being revealed -- or sooner, after four or five changes of hands. So every
+-- forecast says "about", and when a forecast runs out it says "any moment", not a negative.
+--
+-- The clock only knows what it was there to see. An artifact that was already out when the
+-- player arrived has no start, and the line says the time is unknown rather than guess one.
+-- ---------------------------------------------------------------------------------------
+
+local ARTIFACT_REVEAL_MIN, ARTIFACT_REVEAL_MAX = 10 * 60, 15 * 60
+local ARTIFACT_STAY = 30 * 60
+
+-- { phase = "seeking" | "revealed" | "gone", since = seconds, artifactId = n, campaignId = n }
+addon.artifactClock = nil
+
+function addon:StartArtifactClock(phase, artifactId)
+	self.artifactClock = {
+		phase = phase,
+		since = Now(),
+		artifactId = artifactId,
+		campaignId = GetCurrentCampaignId and GetCurrentCampaignId() or 0,
+	}
+	self.board:Refresh()
+end
+
+-- The clock, if it belongs to the campaign in front of us. A reading carried over from another
+-- campaign would be a precise-looking number about a different hammer.
+function addon:ArtifactClock()
+	local clock = self.artifactClock
+	if not clock then
+		return nil
+	end
+	local campaignId = GetCurrentCampaignId and GetCurrentCampaignId() or 0
+	if clock.campaignId ~= campaignId then
+		return nil
+	end
+	return clock
+end
+
+function addon:OnArtifactSpawned(artifactId)
+	self:StartArtifactClock("seeking", artifactId)
+end
+
+function addon:OnArtifactStateChanged(bgContext, controlState, artifactId, lastControlState)
+	if not IsThisCampaign(bgContext) or not OBJECTIVE_CONTROL_STATE_UNKNOWN then
+		return
+	end
+	if lastControlState == OBJECTIVE_CONTROL_STATE_UNKNOWN and controlState ~= OBJECTIVE_CONTROL_STATE_UNKNOWN then
+		self:StartArtifactClock("revealed", artifactId)
+	elseif lastControlState ~= OBJECTIVE_CONTROL_STATE_UNKNOWN and controlState == OBJECTIVE_CONTROL_STATE_UNKNOWN then
+		self:StartArtifactClock("gone", artifactId)
+	end
+end
+
+local function Minutes(seconds)
+	return math.ceil(seconds / 60)
+end
+
+-- "(6:20 ago / revealed in about 4-9 min)" and its two siblings.
+local function ArtifactClockText(clock, phase)
+	if not clock or clock.phase ~= phase then
+		return GetString(SI_PBSCA_ARTIFACT_CLOCK_UNKNOWN)
+	end
+	local elapsed = Now() - clock.since
+	if phase == "seeking" then
+		local soonest, latest = ARTIFACT_REVEAL_MIN - elapsed, ARTIFACT_REVEAL_MAX - elapsed
+		local forecast
+		if latest <= 0 then
+			forecast = GetString(SI_PBSCA_ARTIFACT_SOON)
+		else
+			forecast = Format(SI_PBSCA_ARTIFACT_RANGE, math.max(0, Minutes(soonest)), Minutes(latest))
+		end
+		return Format(SI_PBSCA_ARTIFACT_CLOCK_SEEKING, FormatElapsed(elapsed), forecast)
+	elseif phase == "revealed" then
+		local left = ARTIFACT_STAY - elapsed
+		local forecast = left <= 0 and GetString(SI_PBSCA_ARTIFACT_SOON) or Format(SI_PBSCA_ARTIFACT_ABOUT, Minutes(left))
+		return Format(SI_PBSCA_ARTIFACT_CLOCK_REVEALED, FormatElapsed(elapsed), forecast)
+	end
+	return Format(SI_PBSCA_ARTIFACT_CLOCK_GONE, FormatElapsed(elapsed))
+end
+
+local function ArtifactName(artifactId)
+	if artifactId and GetDaedricArtifactDisplayName then
+		local ok, name = pcall(GetDaedricArtifactDisplayName, artifactId)
+		if ok and name and name ~= "" then
+			return name
+		end
+	end
+	return GetString(SI_PBSCA_KIND_SCROLL)
+end
+
+-- What is left of the carrier's hunger meter, when the carrier is us -- the one number about the
+-- artifact's lifetime the client does hand over (huddaedricenergymeter.lua:312).
+local function ArtifactEnergyText()
+	if not (GetUnitPower and COMBAT_MECHANIC_FLAGS_DAEDRIC) then
+		return ""
+	end
+	local ok, current, maximum = pcall(GetUnitPower, "player", COMBAT_MECHANIC_FLAGS_DAEDRIC)
+	if ok and current and maximum and maximum > 0 then
+		return Format(SI_PBSCA_ARTIFACT_ENERGY, math.floor(current / maximum * 100 + 0.5))
+	end
+	return ""
+end
+
 -- Every Daedric artifact currently revealed in this campaign, or nil. An artifact that has not
 -- spawned reports OBJECTIVE_CONTROL_STATE_UNKNOWN and is left out: "not out yet" is not a state
 -- worth a line on a summary.
@@ -1051,16 +1172,34 @@ function addon:SituationLines()
 		lines[#lines + 1] = { text = text, colour = AllianceHex(row.alliance) }
 	end
 
-	for _, artifact in ipairs(self:Artifacts() or {}) do
+	-- The objectives are the truth about whether the artifact is out; the clock only says for how
+	-- long. So a revealed artifact is always listed, with its time when the clock saw the reveal
+	-- and "time unknown" when it did not, and the clock's other two phases are only listed when
+	-- nothing is out to contradict them.
+	local clock = self:ArtifactClock()
+	local artifacts = self:Artifacts()
+	for _, artifact in ipairs(artifacts or {}) do
 		local text
 		if artifact.mine then
-			text = Format(SI_PBSCA_BOARD_ARTIFACT_YOURS, artifact.name)
+			text = Format(SI_PBSCA_BOARD_ARTIFACT_YOURS, artifact.name) .. ArtifactEnergyText()
 		elseif artifact.alliance and artifact.alliance ~= ALLIANCE_NONE then
 			text = Format(SI_PBSCA_BOARD_ARTIFACT, artifact.name, AllianceName(artifact.alliance))
 		else
 			text = Format(SI_PBSCA_BOARD_ARTIFACT_LOOSE, artifact.name)
 		end
+		text = text .. ArtifactClockText(clock, "revealed")
 		lines[#lines + 1] = { text = text, colour = AllianceHex(artifact.alliance) }
+	end
+	if not artifacts and clock and clock.phase == "seeking" then
+		lines[#lines + 1] = {
+			text = Format(SI_PBSCA_ARTIFACT_SEEKING, ArtifactName(clock.artifactId)) .. ArtifactClockText(clock, "seeking"),
+			colour = "FFFFFF",
+		}
+	elseif not artifacts and clock and clock.phase == "gone" then
+		lines[#lines + 1] = {
+			text = Format(SI_PBSCA_ARTIFACT_GONE, ArtifactName(clock.artifactId)) .. ArtifactClockText(clock, "gone"),
+			colour = "B0B0B0",
+		}
 	end
 
 	if situation.emperor then
@@ -2273,6 +2412,21 @@ local function OnAddOnLoaded(_, name)
 	addon.sv = ZO_SavedVars:NewAccountWide("PBsCyrodiilAlert_Data", 1, nil, DEFAULTS)
 
 	addon:InitSlashCommand()
+
+	-- The artifact's three announcements, for its clock.
+	if EVENT_DAEDRIC_ARTIFACT_OBJECTIVE_SPAWNED_BUT_NOT_REVEALED then
+		em:RegisterForEvent(addon.name, EVENT_DAEDRIC_ARTIFACT_OBJECTIVE_SPAWNED_BUT_NOT_REVEALED,
+			function(_, artifactId)
+				addon:OnArtifactSpawned(artifactId)
+			end)
+	end
+	if EVENT_DAEDRIC_ARTIFACT_OBJECTIVE_STATE_CHANGED then
+		em:RegisterForEvent(addon.name, EVENT_DAEDRIC_ARTIFACT_OBJECTIVE_STATE_CHANGED,
+			function(_, keepId, objectiveId, bgContext, controlEvent, controlState, holderAlliance,
+				lastHolderAlliance, pinType, artifactId, lastControlState)
+				addon:OnArtifactStateChanged(bgContext, controlState, artifactId, lastControlState)
+			end)
+	end
 
 	-- The answer to a population query, whenever it arrives -- ours, or the one the campaign
 	-- browser makes when the player opens it.

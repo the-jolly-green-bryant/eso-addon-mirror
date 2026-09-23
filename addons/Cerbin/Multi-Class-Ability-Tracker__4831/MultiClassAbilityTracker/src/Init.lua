@@ -1,11 +1,12 @@
-MCAT = {}
+MultiClassAbilityTracker = MultiClassAbilityTracker or {}
+local MCAT = MultiClassAbilityTracker
 
 --#region[purple] Modules and locals
-local Abilities = MCAT_Abilities
-local Utils = MCAT_Utils
-local Settings = MCAT_Settings
-local Tracker = MCAT_Tracker
-local Interface = MCAT_Interface
+local Abilities = MCAT.Abilities
+local Utils = MCAT.Utils
+local Settings = MCAT.Settings
+local Tracker = MCAT.Tracker
+local Interface = MCAT.Interface
 local EM = EVENT_MANAGER
 --#endregion
 
@@ -17,10 +18,10 @@ MCAT.version = "0.1.0"
 MCAT.isInitialized = false
 
 -- Visible requires being slotted, enabled in settings, and (in combat or Debug Mode is
--- on) (MCAT.InCombat, set by MCAT_Tracker's EVENT_PLAYER_COMBAT_STATE handler) so a bar
+-- on) (MCAT.InCombat, set by MCAT.Tracker's EVENT_PLAYER_COMBAT_STATE handler) so a bar
 -- swap out of combat can't reveal a counter early; this is the one place that rule is computed.
 function MCAT.ActionBarUpdated()
-    for mechanicKey, def in pairs(MCAT_Definitions) do
+    for mechanicKey, def in pairs(MCAT.Definitions) do
         local slotted
         if def.skillMap then
             slotted = Abilities.IsAbilitySlotted(def.skillMap)
@@ -28,8 +29,8 @@ function MCAT.ActionBarUpdated()
             -- Crux has no skillMap (skill-line-wide, not tied to one hotbar-slotted skill id)
             slotted = Abilities.CruxGenerationKnown()
         end
-        local tracked = slotted and MCAT_Settings.IsEnabled(mechanicKey)
-        MCAT.State[mechanicKey].visible = tracked and (MCAT.InCombat or MCAT_Settings.IsDebugEnabled())
+        local tracked = slotted and Settings.IsEnabled(mechanicKey)
+        MCAT.State[mechanicKey].visible = tracked and (MCAT.InCombat or Settings.IsDebugEnabled())
         Utils.LogDebug(mechanicKey .. " would track in combat: " .. tostring(tracked))
     end
     Interface.Update()

@@ -1,7 +1,7 @@
 MuchSmarterAutoLoot = MuchSmarterAutoLoot or {}
 local MSAL = MuchSmarterAutoLoot
-MSAL.version = "8.3.2"
-MSAL.addonVersion = 80302
+MSAL.version = "8.3.4"
+MSAL.addonVersion = 80304
 MSAL.author = "Lykeion"
 
 local MSAL_NEVER_3RD_PARTY_WARNING = "msal_never_3rd_party_warning"
@@ -36,7 +36,8 @@ local isUnboxing = false
 local isBagContainer = false
 -- local isHarvesting = false
 local isUsingVanillaAutoLoot = false
-local isUnboxingCraftReward = false
+local isLALwaitingForUnboxingCraftReward = false
+local isWritsRewardContainerLooting = false
 local isProcessingLoot = false
 local lootActivityTimestamp = 0
 local chatlogSuffix = nil
@@ -700,6 +701,14 @@ local function LaunderAllStolen()
     end
 end
 
+local function scheduleWritsRewardLootEnd(timeout)
+    EVENT_MANAGER:UnregisterForUpdate("MSAL_WRITS_REWARD_LOOT_END")
+    EVENT_MANAGER:RegisterForUpdate("MSAL_WRITS_REWARD_LOOT_END", timeout, function()
+        EVENT_MANAGER:UnregisterForUpdate("MSAL_WRITS_REWARD_LOOT_END")
+        isWritsRewardContainerLooting = false
+    end)
+end
+
 ZO_Dialogs_RegisterCustomDialog("MSAL_SELL_ALL_STOLEN_JUNK", {
     title = {
         text = SI_SELL_ALL_JUNK_KEYBIND_TEXT
@@ -900,9 +909,13 @@ local function OnInventoryUpdate(_, bagId, slotId, _, _, _, _)
     local keepIntact = onWhite and not onWhiteJunk
 
     -- Writ reward container handoff
+    if isContainer and IsCraftingWritRewardContainer(name) and (WritCreater or SimpleDailyCraft) then
+        isWritsRewardContainerLooting = true
+        scheduleWritsRewardLootEnd(30000)
+    end
     if not IsLootActive() and isContainer and IsCraftingWritRewardContainer(name) then
         DebugLog("craft container detected")
-        isUnboxingCraftReward = true
+        isLALwaitingForUnboxingCraftReward = true
         if WritCreater or SimpleDailyCraft then
             local addonName = (WritCreater and "LWC") or (SimpleDailyCraft and "SDC")
             chatlogSuffix = zo_strformat(GetString(MSAL_WRIT_REWARD_HANDOFF), addonName)
@@ -976,10 +989,14 @@ local function OnInventoryUpdate(_, bagId, slotId, _, _, _, _)
 
     if not itemOnList(link, WLIST_JUNK_TOKEN) and
         not itemOnList(link, WLIST_TOKEN) and
-        not db.legacyMode and not IsLootActive() and
+        not db.legacyMode and (isWritsRewardContainerLooting or not IsLootActive()) and
         not isCrafted
         -- and GetItemCreatorName(bagId, slotId) == GetUnitName("player")
             then
+        local wouldNotLoot = isWritsRewardContainerLooting and itemOnList(link, BLIST_TOKEN)
+        -- if wouldNotLoot then
+        --     BufferItemReceivedLog(zo_strformat(GetString(MSAL_DELEGATED_LOOT_CONFLICT), link))
+        -- end
         local filterKey, _ = MSAL.FilterItem(link, false, nil)
         if filterKey then
             DebugLog("Non-loot item matched filter: " .. filterKey)
@@ -1038,7 +1055,7 @@ local function OnInventoryUpdate(_, bagId, slotId, _, _, _, _)
         else
             DebugLog("Non-loot item did not match any filter")
         end
-        if not filterKey then
+        if not filterKey and not wouldNotLoot then
             local disposerApplied = isGear and db.gearDisposer or db.unwantedItemsDisposer
             if disposerApplied == "destroy" then
                 if CanGemifyItem(bagId, slotId) then
@@ -1088,7 +1105,7 @@ local function OnInventoryUpdate(_, bagId, slotId, _, _, _, _)
     end
     if (isContainer and not isGeode and
         (db.autoUnboxContainer == "all" or (isBound and db.autoUnboxContainer == "bound")) and
-        (not isUnboxingCraftReward or (not WritCreater and not SimpleDailyCraft))) or
+        not isWritsRewardContainerLooting) or
         (isUnopened and db.autoUnboxUnopened) or (isFish and db.autoUnboxFish) or (isGeode and db.autoUnboxGeode) then
         DebugLog("unboxing listening started")
         table.insert(unboxingQueue, slotId)
@@ -1885,7 +1902,7 @@ function MSAL.checkInterruption(slotIndex)
     -- DebugLog("check")
     EVENT_MANAGER:UnregisterForUpdate("MSAL_UNBOXING_CHECK")
     local timeout
-    if isUnboxingCraftReward then
+    if isLALwaitingForUnboxingCraftReward then
         timeout = 2000
     else
         timeout = 0
@@ -2665,7 +2682,10 @@ end
 local function OnLootClosed()
     isAllCurtLooted = true
     isBagContainer = false
-    isUnboxingCraftReward = false
+    isLALwaitingForUnboxingCraftReward = false
+    if isWritsRewardContainerLooting then
+        scheduleWritsRewardLootEnd(GetLatency() * 2 + 1000)
+    end
     lootActivityTimestamp = GetGameTimeMilliseconds()
 end
 
@@ -2814,21 +2834,13 @@ local function ListAutoDeconItems()
                                 local filterKey, _ = MSAL.FilterItem(link, false, nil)
                                 DebugLog("filterKey for glyphs: " .. tostring(filterKey))
                                 if filterKey == "glyphs" then
-                                    -- autoDeconStation:ClearSelections()
-                                    autoDeconStation:ClearSelections()
+                                    autoDeconStation:RemoveItemFromCraft(BAG_BACKPACK, bagSlot)
                                     autoDeconStation:AddItemToCraft(BAG_BACKPACK, bagSlot)
                                     table.insert(deconLinks, link)
                                 end
                             end
                         end
                     end
-                end
-                if scanGlyphs and isUniDecon and
-                    (itemType == ITEMTYPE_GLYPH_ARMOR or itemType == ITEMTYPE_GLYPH_JEWELRY or itemType ==
-                        ITEMTYPE_GLYPH_WEAPON) then
-                    autoDeconStation:RemoveItemFromCraft(BAG_BACKPACK, bagSlot)
-                    autoDeconStation:AddItemToCraft(BAG_BACKPACK, bagSlot)
-                    table.insert(deconLinks, link)
                 end
             end
         end
@@ -3053,7 +3065,17 @@ if ZO_IsConsoleOrGameCoreUI() then
             end, "secondary")
         end)
     end
-    RegisterConsoleListActions()
+
+    -- a plain ZO_PreHook landing after this secure hook makes the TryUseItem insecure, and the protected UseItem is then nil on console
+    -- this is a temporary workaround until some solid solution like LibCustomMenu on PC is created for console
+    EVENT_MANAGER:RegisterForEvent("MSAL_CONSOLE_LIST_ACTIONS", EVENT_PLAYER_ACTIVATED, function()
+        EVENT_MANAGER:UnregisterForEvent("MSAL_CONSOLE_LIST_ACTIONS", EVENT_PLAYER_ACTIVATED)
+        zo_callLater(function()
+            if db.contextMenuEnabled or db.contextJunkingEnabled then
+                RegisterConsoleListActions()
+            end
+        end, 1000)
+    end)
 
     local JUNK_CATEGORY_ICON = "EsoUI/Art/Inventory/inventory_tabicon_junk_down.dds"
     local injectedCategoryLists = {}

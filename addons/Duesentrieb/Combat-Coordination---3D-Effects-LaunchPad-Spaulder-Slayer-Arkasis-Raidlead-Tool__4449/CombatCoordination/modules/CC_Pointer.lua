@@ -88,7 +88,7 @@ SLASH_COMMANDS["/cc_pointer"] = function() CC.Pointer:ToggleAimMode() end
 ----------------------------------------------------------------------------------------------------
 function Module:StartAiming()
     self.isAiming = true
-    -- d(string.format("%s Pointer (Right Click = Place | Hotkey/Menu = Cancel)", CC.CHAT))
+    d(string.format("%s Place Pointer (Block = Place | Hotkey/Menu = Cancel)", CC.CHAT))
 
     local Color = CC.GetColorFromGroupIndex("player")
     local width = self.SV.width

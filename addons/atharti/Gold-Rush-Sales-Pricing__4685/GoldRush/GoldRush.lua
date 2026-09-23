@@ -319,8 +319,17 @@ function GR.FormatPricePouch(price)
 end
 
 function GR.UpdateTooltip(tooltip, itemLink)
-	local normItemLink = GR.NormalizeItemLink(itemLink)
-	local avgPrice = normItemLink and GR.avgPriceCache[normItemLink]
+	if not itemLink then return end
+
+	local avgPrice
+
+	if GR.IsDummyItemLink(itemLink) then
+		avgPrice = GR.FindPriceByItemId(GR.GetItemIdFromLink(itemLink))
+	else
+		local normItemLink = GR.NormalizeItemLink(itemLink)
+		avgPrice = normItemLink and GR.avgPriceCache[normItemLink]
+	end
+
 	local hasPrice = avgPrice and avgPrice > 0
 
 	GR.tooltipControl:SetHidden(not hasPrice)
@@ -395,6 +404,30 @@ function GR.NormalizeItemLink(itemLink)
 	if prefix and suffix then
 		suffix = suffix:gsub("|h.*|h", "|h|h")
 		return prefix .. "0" .. suffix
+	end
+end
+
+function GR.IsDummyItemLink(itemLink)
+	if not itemLink then return false end
+	local itemId, rest = itemLink:match("|H%d:item:(%d+):(.+)|h|h")
+	if not itemId then return false end
+	return rest:match("^[0:]+$") ~= nil
+end
+
+function GR.GetItemIdFromLink(itemLink)
+	if not itemLink then return nil end
+	return itemLink:match("|H%d:item:(%d+):")
+end
+
+function GR.FindPriceByItemId(itemId)
+	if not itemId then return nil end
+
+	local pattern = "item:" .. itemId .. ":"
+
+	for normLink, price in pairs(GR.avgPriceCache) do
+		if normLink:find(pattern, 1, true) then
+			return price
+		end
 	end
 end
 

@@ -1,12 +1,14 @@
-## Title: PinkB's War Table
-## Author: PinkBanther
+## Title: |cFF69B4PB's WarTable|r 0.17.0
+## Author: |cFF69B4PinkBanther|r
 ## Description: 三旗の戦卓 ― 帝位と星霜 ― / The Three Banners War Table. Three COM levels, local play and group duels.
-## Version: 0.16.0
-## AddOnVersion: 1600
+## Version: 0.17.0
+## AddOnVersion: 1700
 ## APIVersion: 101050 101051
 ## SavedVariables: PBsWarTableSavedVariables
 ## OptionalDependsOn: LibGroupBroadcast
 
+Locale.lua
+Strings.lua
 Config.lua
 Factions.lua
 Opening.lua
@@ -71,3 +73,7 @@ assets/card_material.dds
 assets/button_material.dds
 
 ## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.
+
+assets/dice_body.dds
+
+assets/board_light.dds

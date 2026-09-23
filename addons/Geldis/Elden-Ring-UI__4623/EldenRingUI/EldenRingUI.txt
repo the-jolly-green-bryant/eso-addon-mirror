@@ -1,9 +1,12 @@
 ## Title: EldenRingUI
 ## Author: Geldis1306
 ## Description: Based ui
-## APIVersion: 101049 101050
-## Version: 1.3.9
+## APIVersion: 101049 101050 101051
+## Version: 2.0.0
 ## SavedVariables: ERUiVars
+
+Fonts\AGaramondPro-Regular.slug
+Fonts\AGaramondPro-Bold.slug
 
 HUD\BossBar.xml
 HUD\PlayerResources.xml

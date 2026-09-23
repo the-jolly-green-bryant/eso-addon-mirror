@@ -1,0 +1,13 @@
+## Title: Trackers by JH
+## Description: Bright Harbinger, Alkosh and Warmask trackers in one addon with one combined LibAddonMenu page.
+## Author: JH
+## Version: 1.0.3
+## AddOnVersion: 1030
+## APIVersion: 101050 101051
+## SavedVariables: AlkoshTrackerSV BrightHarbingerTrackerSavedVariables WarmasktrackerByJHData
+## DependsOn: LibAddonMenu-2.0
+
+TrackersByJH.lua
+BrightHarbingerTracker.lua
+AlkoshTracker.lua
+WarmasktrackerByJH.lua

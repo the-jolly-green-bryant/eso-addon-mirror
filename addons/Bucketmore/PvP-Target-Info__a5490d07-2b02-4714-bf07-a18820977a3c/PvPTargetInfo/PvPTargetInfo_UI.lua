@@ -317,8 +317,8 @@ end
 
 -- key のウィンドウを、全体の有効設定・そのウィンドウ自身の有効設定・
 -- 現在のシーン(メニュー/マップが開いているか)だけで表示/非表示にする。
--- 中身(登録済みバフの有無等)は一切条件にしない — 空の時はTarget.lua側が
--- ヒント行を表示するため、パネル自体は常に見える
+-- 中身(登録済みバフの有無等)は一切条件にしない — 空の時はTarget.lua/
+-- Procs.lua側がヒント行を表示するため、パネル自体は常に見える
 -- (ユーザーが位置を見失わないようにするため)。
 --
 -- v1.4.9で修正: sv.previewMode(位置調整用のプレビュー表示)がONの間だけは、
@@ -326,15 +326,12 @@ end
 -- 開いたまま位置を微調整したい」という用途はプレビューONの時に限って
 -- 引き続き可能にしつつ、通常プレイ中(プレビューOFF)はメニュー/マップを
 -- 開いたら確実にパネルが隠れるようにしている。
---
--- v1.4.50で追加: UI①(buff)・UI②(debuff)は「戦闘開始で表示/戦闘終了で
--- 非表示」を新たな表示条件として追加した(PTI.UI.hiddenByCombat。
--- OnCombatStateChangedがEVENT_PLAYER_COMBAT_STATEで更新する)。
--- UI③(proc/Condition)はこの戦闘条件と完全に無関係で、代わりに
--- PTI.UI.procHasContent(Procs.lua側が「実際に表示する行があるか」を
--- 毎ティック更新するフラグ)だけで表示/非表示を決める。検知ロジックや
--- BUFF/DEBUFF自体の判定には一切関与しない、純粋な表示ゲートのみの追加。
--- previewMode中はどちらの新条件も無視し(位置調整のため)、従来通り表示する。
+-- 戦闘時UI自動表示のゲート状態。UI①②(buff/debuff)のみが対象で、UI③(proc/
+-- Condition)は常にfalse扱い(このゲートの影響を受けない)。
+-- リロード直後はtrue(=戦闘ゲートにより非表示)。最初に戦闘状態へ入った
+-- 時点でfalseへ固定され、以後は戦闘終了時も再びtrueへは戻さない。
+PTI.UI.combatGateActive = { buff = true, debuff = true }
+
 function PTI.UI.SetWindowVisible(key)
     local entry = PTI.UI.windows[key]
     local sv = SVFor(key)
@@ -342,18 +339,15 @@ function PTI.UI.SetWindowVisible(key)
 
     local hiddenByScene = PTI.UI.hiddenByScene and not PTI.sv.previewMode
 
-    local hiddenByCombat = false
-    if key == "buff" or key == "debuff" then
-        hiddenByCombat = PTI.UI.hiddenByCombat and not PTI.sv.previewMode
+    -- 戦闘ゲート: combatAutoShowが有効な場合のみ、UI①②に適用する。
+    -- previewMode(位置調整プレビュー)中は常に表示できるよう、ゲートを無視する。
+    local hiddenByCombatGate = false
+    if PTI.sv.combatAutoShow and PTI.sv.combatAutoShow.enabled
+        and PTI.UI.combatGateActive[key] and not PTI.sv.previewMode then
+        hiddenByCombatGate = true
     end
 
-    local hiddenByEmptyProc = false
-    if key == "proc" then
-        hiddenByEmptyProc = (not PTI.sv.previewMode) and not PTI.UI.procHasContent
-    end
-
-    local shouldShow = PTI.sv.enabled and not hiddenByScene and not hiddenByCombat
-        and not hiddenByEmptyProc and sv.enabled ~= false
+    local shouldShow = PTI.sv.enabled and not hiddenByScene and sv.enabled ~= false and not hiddenByCombatGate
     entry.window:SetHidden(not shouldShow)
 end
 
@@ -361,15 +355,6 @@ function PTI.UI.RefreshVisibility()
     for key in pairs(PTI.UI.windows) do
         PTI.UI.SetWindowVisible(key)
     end
-end
-
--- v1.4.50で追加: EVENT_PLAYER_COMBAT_STATEのハンドラ。ESO本体が戦闘に
--- 入った/抜けた瞬間にだけ1回発火する標準イベントで、常時ポーリングは
--- 発生しない(PS5/CS向けの軽量方針に合致)。UI①②の表示だけを切り替え、
--- 検知ロジック・UI③には一切触れない。
-function PTI.UI.OnCombatStateChanged(_, inCombat)
-    PTI.UI.hiddenByCombat = not inCombat
-    PTI.UI.RefreshVisibility()
 end
 
 function PTI.UI.Initialize()
@@ -381,18 +366,7 @@ function PTI.UI.Initialize()
     PTI.UI.RefreshRowLayout("buff")
     PTI.UI.RefreshRowLayout("debuff")
     PTI.UI.RefreshRowLayout("proc")
-
-    -- v1.4.50で追加: UI①②(戦闘連動)・UI③(Condition発動連動)の初期状態。
-    -- リロードUI等で既に戦闘中の場合に備え、IsUnitInCombatで初期値を
-    -- 正しく設定してからRefreshVisibility()する(以後はイベント駆動)。
-    -- procHasContentはProcs.lua側の最初のTickが来るまではfalse(=非表示)
-    -- としておく(「発動していない時は勝手に表示しない」という仕様通り)。
-    PTI.UI.hiddenByCombat = not IsUnitInCombat("player")
-    PTI.UI.procHasContent = false
-
     PTI.UI.RefreshVisibility()
-
-    EVENT_MANAGER:RegisterForEvent(PTI.name .. "UICombat", EVENT_PLAYER_COMBAT_STATE, PTI.UI.OnCombatStateChanged)
 
     -- v1.4.9で修正: 以前は「ワールドマップを開いた時だけ」自動的に隠す
     -- 作りだったため、インベントリ・キャラクターシート・クラフト・
@@ -407,6 +381,18 @@ function PTI.UI.Initialize()
         local isGameplayScene = (sceneName == "hud" or sceneName == "hudui")
 
         PTI.UI.hiddenByScene = not isGameplayScene
+        PTI.UI.RefreshVisibility()
+    end)
+
+    -- 戦闘時UI自動表示: UI①②のみ対象。戦闘に入った時点でそのキャラクターの
+    -- 今回のセッション中は恒久的にゲートを解除する(戦闘終了時に再度隠す
+    -- 処理は行わない=既存仕様に従う)。検知・分類・表示内容には一切関与しない。
+    local combatEventName = PTI.name .. "CombatState"
+    EVENT_MANAGER:RegisterForEvent(combatEventName, EVENT_PLAYER_COMBAT_STATE, function(eventCode, inCombat)
+        if not inCombat then return end
+        if not (PTI.UI.combatGateActive.buff or PTI.UI.combatGateActive.debuff) then return end
+        PTI.UI.combatGateActive.buff = false
+        PTI.UI.combatGateActive.debuff = false
         PTI.UI.RefreshVisibility()
     end)
 end

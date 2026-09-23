@@ -1,7 +1,7 @@
-local COMPASS_WIDTH = 400    
+local COMPASS_WIDTH = 415    
 local COMPASS_HEIGHT = 4    
 local POS_X = 0            
-local POS_Y = 135          
+local POS_Y = 134          
 local TEXT_SCALE = 0       
 local ICON_SCALE = 0.85        
 local TEXT_OFFSET_Y = -15
@@ -46,7 +46,6 @@ ZO_CharacterWindowStatsScrollScrollChildStatEntry22:SetHidden(true)
 ZO_CharacterWindowStatsScrollScrollChildStatEntry24:SetHidden(true)
 ZO_CharacterWindowStatsScrollScrollChildZO_MundusStonesStatsEntry:SetHidden(true)
 ZO_CharacterWindowStatsScrollScrollChildZO_MundusStonesStatsEntryMundusIcon1:SetHidden(true)
-
 	
 RedirectTexture("esoui/art/actionbar/abilityframe64_up.dds", "EldenRingUI/Textures/abilityframe64_up.dds")
 RedirectTexture("esoui/art/actionbar/abilityframe64_down.dds", "EldenRingUI/Textures/abilityframe64_up.dds")
@@ -61,9 +60,11 @@ RedirectTexture("esoui/art/compass/area2frameanim_standard_center.dds", "EldenRi
 RedirectTexture("esoui/art/compass/area2frameanim_standard_endcap.dds", "EldenRingUI/Textures/empty.dds")
 RedirectTexture("esoui/art/mappins/hostile_pin.dds", "EldenRingUI/Textures/empty.dds")
 
-RedirectTexture("esoui/art/compass/compass.dds", "EldenRingUI/Textures/compass.dds")
-RedirectTexture("esoui/art/compass/compass_frame.dds", "EldenRingUI/Textures/compass.dds")
-RedirectTexture("esoui/art/compass/compass_waypoint.dds", "EldenRingUI/Textures/compass_waypoint.dds")
+RedirectTexture("esoui/art/compass/compass.dds", "EldenRingUI/Textures/empty.dds")
+RedirectTexture("esoui/art/compass/compass_frame.dds", "EldenRingUI/Textures/empty.dds")
+
+RedirectTexture("esoui/art/icons/consumable_potion_001_type_005.dds", "EldenRingUI/Textures/Icons/consumable_potion_001_type_005.dds")
+RedirectTexture("esoui/art/icons/consumable_potion_002_type_005.dds", "EldenRingUI/Textures/Icons/consumable_potion_002_type_005.dds")
 
 local function RunOneTimeSetup()
 
@@ -74,30 +75,47 @@ local function RunOneTimeSetup()
         local c = ZO_SynergyTopLevel:GetNamedChild('Container')
         if c then
             c:ClearAnchors()
-            c:SetAnchor(BOTTOM, GuiRoot, BOTTOM, 40, -260)
+            c:SetAnchor(BOTTOM, GuiRoot, BOTTOM, -20, -300)
+			c:SetAlpha(0.85)
 
             local a = c:GetNamedChild('Action')
             local x = c:GetNamedChild('Key')
             local i = c:GetNamedChild('Icon')
 
-            if a then a:SetHidden(true) end
+            if x then x:SetHidden(true) end
+            if a and i then
+                a:ClearAnchors()
+                a:SetAnchor(CENTER, c, CENTER, 27.5, 2)
+            end
 
             if i then
-                i:SetDimensions(60, 60)
+                i:SetDimensions(45, 45)
+                i:SetDrawLayer(DL_CONTROLS)
+                i:SetDrawLevel(1)
+                i:ClearAnchors()
+                i:SetAnchor(RIGHT, a, LEFT, -10, -2)
+                
+                local bg = c:GetNamedChild('CustomBackground')
+                if not bg then
+                    bg = WINDOW_MANAGER:CreateControl('$(parent)CustomBackground', c, CT_TEXTURE)
+                    bg:SetDimensions(512, 64) 
+                    bg:ClearAnchors()
+                    bg:SetAnchor(LEFT, i, LEFT, -85, 2)
+                    bg:SetTexture('EldenRingUI/Textures/SynergyBG.dds')
+                    bg:SetDrawLayer(DL_BACKGROUND)
+                    bg:SetDrawLevel(0) 
+                end
+
                 local e = i:GetNamedChild('Edge')
                 if not e then
                     e = WINDOW_MANAGER:CreateControl('$(parent)Edge', i, CT_TEXTURE)
-                    e:SetDimensions(60, 60)
+                    e:SetDimensions(45, 45)
                     e:ClearAnchors()
                     e:SetAnchor(TOPLEFT, i, TOPLEFT, 0, 0)
-                    e:SetTexture('EldenRingUI/Textures/abilityframe64_up_old.dds')
-                    e:SetDrawLayer(2)
+                    e:SetTexture('EldenRingUI/Textures/abilityframe64_up.dds')
+                    e:SetDrawLayer(DL_OVERLAY)
+                    e:SetDrawLevel(2)
                 end
-            end
-
-            if x and i then
-                x:ClearAnchors()
-                x:SetAnchor(TOPLEFT, i, TOPLEFT, -45, 12)
             end
         end
     end
@@ -143,4 +161,14 @@ frameFixer:SetHandler("OnUpdate", function()
     end
 end)
 
+local function HideQuickslotNumbers()
+    if QuickslotButtonCountText then
+        QuickslotButtonCountText:SetAlpha(0)
+    end
+    if QuickslotButtonStackCountText then
+        QuickslotButtonStackCountText:SetAlpha(0)
+    end
+end
+
+EVENT_MANAGER:RegisterForEvent("HideQuickslot_Event", EVENT_PLAYER_ACTIVATED, HideQuickslotNumbers)
 EVENT_MANAGER:RegisterForEvent("EldenRingUI_Compass", EVENT_PLAYER_ACTIVATED, RunOneTimeSetup)

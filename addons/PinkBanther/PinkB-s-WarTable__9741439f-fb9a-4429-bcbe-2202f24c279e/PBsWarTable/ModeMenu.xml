@@ -1,0 +1,8 @@
+<GuiXml>
+ <Controls>
+  <!-- The third menu level. The gamepad main menu itself renders only a category and its
+       sub-list, so the modes live on a screen of their own, built from the client's own
+       parametric list template and brought to life from ModeMenu.lua. -->
+  <TopLevelControl name="PBsWarTableModeMenu" inherits="ZO_Gamepad_ParametricList_Screen" />
+ </Controls>
+</GuiXml>

@@ -1,4 +1,7 @@
-MCAT_Interface = {}
+MultiClassAbilityTracker = MultiClassAbilityTracker or {}
+local MCAT = MultiClassAbilityTracker
+MCAT.Interface = {}
+local Interface = MCAT.Interface
 
 --#region[purple] Modules and locals
 local WM = WINDOW_MANAGER
@@ -23,7 +26,7 @@ local GHOST_R, GHOST_G, GHOST_B, GHOST_A = 1, 1, 1, 0.08
 -- otherwise sit at this barely-visible 8% ghost opacity; swap in a bright magenta instead.
 local DEBUG_GHOST_R, DEBUG_GHOST_G, DEBUG_GHOST_B, DEBUG_GHOST_A = 1, 0, 1, 0.65
 
--- mechanicKey -> container control; mechanicKey -> { pip controls, 1 per MCAT_Definitions[key].pips entry }
+-- mechanicKey -> container control; mechanicKey -> { pip controls, 1 per MCAT.Definitions[key].pips entry }
 local Containers = {}
 local Pips = {}
 
@@ -36,7 +39,7 @@ local TopLevel
 --#endregion
 
 --#region[teal] Color
-local HexToRGB = MCAT_Utils.HexToRGB
+local HexToRGB = MCAT.Utils.HexToRGB
 --#endregion
 
 --#region[orange] Lighting rules
@@ -66,17 +69,17 @@ end
 --#endregion
 
 --#region[yellow] Update
-function MCAT_Interface.Update()
+function Interface.Update()
     local ghostR, ghostG, ghostB, ghostA = GHOST_R, GHOST_G, GHOST_B, GHOST_A
-    if MCAT_Settings.IsDebugEnabled() then
+    if MCAT.Settings.IsDebugEnabled() then
         ghostR, ghostG, ghostB, ghostA = DEBUG_GHOST_R, DEBUG_GHOST_G, DEBUG_GHOST_B, DEBUG_GHOST_A
     end
-    for mechanicKey, def in pairs(MCAT_Definitions) do
+    for mechanicKey, def in pairs(MCAT.Definitions) do
         local state = MCAT.State[mechanicKey]
         local container = Containers[mechanicKey]
         container:SetHidden(not state.visible)
         if state.visible then
-            local scale, spacingPx = MCAT_Settings.GetScale(mechanicKey), MCAT_Settings.GetSpacing(mechanicKey)
+            local scale, spacingPx = MCAT.Settings.GetScale(mechanicKey), MCAT.Settings.GetSpacing(mechanicKey)
             local sizeR = R * BAND_SIZE[mechanicKey] * scale
             local placeR = R * BAND_POS[mechanicKey] * scale + spacingPx
 
@@ -88,7 +91,7 @@ function MCAT_Interface.Update()
                 pipSize = sizeR * PIP_SIZE_RATIO[mechanicKey]
             end
 
-            local baseR, baseG, baseB = HexToRGB(MCAT_Settings.GetColor(mechanicKey))
+            local baseR, baseG, baseB = HexToRGB(MCAT.Settings.GetColor(mechanicKey))
 
             for i, pipDef in ipairs(def.pips) do
                 local pip = Pips[mechanicKey][i]
@@ -134,15 +137,21 @@ end
 --#endregion
 
 --#region[green] Init
--- Must run before MCAT_Tracker.Initialize(): Tracker's initial Resync() call already
--- calls MCAT_Interface.Update(), which needs these controls to exist. Doesn't touch
+-- Must run before MCAT.Tracker.Initialize(): Tracker's initial Resync() call already
+-- calls MCAT.Interface.Update(), which needs these controls to exist. Doesn't touch
 -- MCAT.State itself, so it has no dependency on Tracker having run first.
-function MCAT_Interface.Initialize()
-    TopLevel = WM:CreateTopLevelWindow("MCAT_Interface_TopLevel")
-    TopLevel:SetHidden(false)
+function Interface.Initialize()
+    -- nil name: nothing looks these controls up by name, so skip ESO's global registration for them
+    TopLevel = WM:CreateTopLevelWindow(nil)
 
-    for mechanicKey, def in pairs(MCAT_Definitions) do
-        local container = WM:CreateControl("MCAT_Interface_Container_" .. mechanicKey, TopLevel, CT_CONTROL)
+    -- fragment (not SetHidden) governs TopLevel's visibility, so it hides itself
+    -- whenever a scene without it becomes active (e.g. the world map opening)
+    local fragment = ZO_HUDFadeSceneFragment:New(TopLevel)
+    SCENE_MANAGER:GetScene("hud"):AddFragment(fragment)
+    SCENE_MANAGER:GetScene("hudui"):AddFragment(fragment)
+
+    for mechanicKey, def in pairs(MCAT.Definitions) do
+        local container = WM:CreateControl(nil, TopLevel, CT_CONTROL)
         container:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
         container:SetDrawLevel(DRAW_LEVEL[mechanicKey])
         Containers[mechanicKey] = container
@@ -152,11 +161,11 @@ function MCAT_Interface.Initialize()
             local pip
             local texturePath = pipDef.texturePath or def.pipTexturePath
             if texturePath then
-                pip = WM:CreateControl("MCAT_Interface_Pip_" .. mechanicKey .. "_" .. i, container, CT_TEXTURE)
+                pip = WM:CreateControl(nil, container, CT_TEXTURE)
                 pip:SetTexture(texturePath)
                 pip:SetColor(GHOST_R, GHOST_G, GHOST_B, GHOST_A)
             else
-                pip = WM:CreateControl("MCAT_Interface_Pip_" .. mechanicKey .. "_" .. i, container, CT_BACKDROP)
+                pip = WM:CreateControl(nil, container, CT_BACKDROP)
                 pip:SetCenterColor(GHOST_R, GHOST_G, GHOST_B, GHOST_A)
             end
             Pips[mechanicKey][i] = pip

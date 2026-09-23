@@ -1050,8 +1050,41 @@ function Module:BuildSpaulderOfRuinContainer()
     self.SpaulderInfoLabel:SetText("|c00FF00Green:|r Selected [SOR] and buffed.\n" ..
                                    "|cFFFF00Yellow:|r Buffed but not selected.\n" ..
                                    "|cFF0000Red:|r Missing buff despite selected!\n" ..
+                                   "Profiles can be managed in the Addon Menu.\n" ..
                                    "Click players below to toggle [SOR].")
 
+    -- PROFILE CYCLE
+    self.SpaulderProfileButtonPrev  = self:CreateButton("CC_DisplayPanel_SpaulderProfileButtonPrev", Content, "<", function() CC.SpaulderOfRuin:CycleProfile(-1) end)
+
+    self.SpaulderProfileLabel = WINDOW_MANAGER:CreateControl("CC_DisplayPanel_SpaulderProfileLabel", Content, CT_LABEL)
+    self.SpaulderProfileLabel:SetFont(self.Font.Normal)
+    self.SpaulderProfileLabel:SetColor(unpack(self.ESO_NORMAL))
+    self.SpaulderProfileLabel:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    self.SpaulderProfileLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    self.SpaulderProfileLabel:SetMouseEnabled(true)
+
+    self.SpaulderProfileLabel:SetHandler("OnMouseEnter", function(Control)
+        Control:SetColor(unpack(self.ESO_HIGHLIGHT))
+        InitializeTooltip(InformationTooltip, Control, BOTTOM, 0, 0)
+        SetTooltipText(InformationTooltip, "Open Profile Settings")
+    end)
+    self.SpaulderProfileLabel:SetHandler("OnMouseExit", function(Control)
+        Control:SetColor(unpack(self.ESO_NORMAL))
+        ClearTooltip(InformationTooltip)
+    end)
+    self.SpaulderProfileLabel:SetHandler("OnMouseUp", function(Control, button, upInside)
+        if upInside and CC.Menu.PanelName and LibAddonMenu2 then
+            if not CC.Menu.PanelName:IsHidden() then
+                SCENE_MANAGER:ShowBaseScene()
+            else
+                LibAddonMenu2:OpenToPanel(CC.Menu.PanelName)
+            end
+        end
+    end)
+
+    self.SpaulderProfileButtonNext = self:CreateButton("CC_DisplayPanel_SpaulderProfileButtonNext", Content, ">", function() CC.SpaulderOfRuin:CycleProfile(1) end)
+
+    -- BUTTONS
     self.SpaulderButtonKick = self:CreateButton("CC_DisplayPanel_SpaulderButtonKick", Content, "KICK & INVITE", function()
         CC.SpaulderOfRuin:KickAndReinvite()
     end)
@@ -1450,22 +1483,37 @@ function Module:UpdateData()
     ----------------------------------------------------------------------------------------------------
     if self.ContainerSpaulderOfRuin then
         self.activeSpaulderUserLabels = 0
+        local activeProfile = CC.SpaulderOfRuin.SV.activeProfile
+
+        self.SpaulderProfileLabel:SetText("Profile: " .. activeProfile)
 
         if self.SV.isOpenSpaulderOfRuin then
             ZO_ClearTable(self.SpaulderSortBuffer)
 
             for displayName, GroupMember in pairs(CC.GroupData) do
                 if GroupMember.isOnline then
+                    local roleWeight = 3 -- DEFAULT TO DPS
+                    if GroupMember.selectedRole == LFG_ROLE_TANK then roleWeight = 1
+                    elseif GroupMember.selectedRole == LFG_ROLE_HEAL then roleWeight = 2 end
+
                     table.insert(self.SpaulderSortBuffer, {
                         displayName = displayName,
                         unitTag = GroupMember.unitTag,
                         selectedRole = GroupMember.selectedRole,
+                        roleWeight = roleWeight,
                         distance = GroupMember.distance or 9999,
                     })
                 end
             end
 
-            table.sort(self.SpaulderSortBuffer, function(A, B) return A.displayName < B.displayName end)
+            -- SORT BY ROLE.. THEN ALPHABET
+            table.sort(self.SpaulderSortBuffer, function(A, B) 
+                if A.roleWeight == B.roleWeight then
+                    return A.displayName < B.displayName
+                else
+                    return A.roleWeight < B.roleWeight
+                end
+            end)
 
             for _, Player in ipairs(self.SpaulderSortBuffer) do
                 self.activeSpaulderUserLabels = self.activeSpaulderUserLabels + 1
@@ -1485,13 +1533,7 @@ function Module:UpdateData()
                     end)
                     Label:SetHandler("OnMouseUp", function(Control, button, upInside)
                         if upInside and Control.targetName then
-                            local SV = CC.SpaulderOfRuin.SV
-
-                            if SV.SavedPlayers[Control.targetName] then
-                                SV.SavedPlayers[Control.targetName] = nil
-                            else
-                                SV.SavedPlayers[Control.targetName] = true
-                            end
+                            CC.SpaulderOfRuin:TogglePlayerInProfile(Control.targetName, Control.selectedRole)
                             CC.DisplayPanel:UpdateData()
                         end
                     end)
@@ -1499,9 +1541,11 @@ function Module:UpdateData()
                 end
 
                 Label.targetName = Player.displayName
+                Label.selectedRole = Player.selectedRole
 
                 local hasBuff = CC.SpaulderOfRuin:HasAuraOfPride(Player.unitTag)
-                local isSaved = CC.SpaulderOfRuin.SV.SavedPlayers[Player.displayName] and true or false
+                local savedRole = CC.SpaulderOfRuin.SV.Profiles[activeProfile][Player.displayName]
+                local isSaved = (savedRole == Player.selectedRole)
 
                 local shortName = self:GetShortName(Player.displayName, self.maxLengthDisplayName)
                 local roleIcon = self:GetPlayerIconByRole(Player.selectedRole)
@@ -2062,10 +2106,25 @@ function Module:UpdateDimensions()
             local innerY = Layout.paddingTop
             local buttonHalf = (width - (2 * Layout.padding) - Layout.spacing) / 2
 
+            local widthArrowSingle = Layout.heightElement * 1.0
+            local widthToggle = width - (2 * Layout.padding) - (2 * Layout.spacing) - (2 * widthArrowSingle)
+
             -- INFO
             self.SpaulderInfoLabel:SetDimensions(width - (2 * Layout.padding), 0)
             self.SpaulderInfoLabel:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
             innerY = innerY + self.SpaulderInfoLabel:GetTextHeight() + Layout.spacing
+
+            -- PROFILE TOGGLE
+            self.SpaulderProfileButtonPrev:SetDimensions(widthArrowSingle, Layout.heightElement)
+            self.SpaulderProfileButtonPrev:SetAnchor(TOPLEFT, Content, TOPLEFT, Layout.padding, innerY)
+
+            self.SpaulderProfileLabel:SetDimensions(widthToggle, Layout.heightElement)
+            self.SpaulderProfileLabel:SetAnchor(TOPLEFT, self.SpaulderProfileButtonPrev, TOPRIGHT, Layout.spacing, 0)
+
+            self.SpaulderProfileButtonNext:SetDimensions(widthArrowSingle, Layout.heightElement)
+            self.SpaulderProfileButtonNext:SetAnchor(TOPRIGHT, Content, TOPRIGHT, -Layout.padding, innerY)
+
+            innerY = innerY + Layout.heightElement + Layout.spacing
 
             -- LIST
             for i = 1, self.activeSpaulderUserLabels do

@@ -10,7 +10,6 @@ local defaultSV = {
 	gcMemoryLimitMB = 500,
 	showMemoryUI = false,
 	clearPVPAlerts = false,
-	disableCodesCrap = false,
 	memoryUI = {
 		x = 200,
 		y = 200,
@@ -101,24 +100,6 @@ function CASE.ClearPVPAlertsTables()
 		PVP_Alerts_Main_Table.SV.CP = {}
 		PVP_Alerts_Main_Table.SV.playersDB = {}
 	end
-end
-
--- ================================
--- Code's Trash
--- ================================
-function CASE.DisableACAC()
-	local BLOCKED_PANEL = "AntiClankerAddonConsortiumUpdateChecker"
-	local LAM = LibAddonMenu2
-	local origRegisterPanel = LAM.RegisterAddonPanel
-
-	LAM.RegisterAddonPanel = function(self, addonID, panelData)
-		if addonID == BLOCKED_PANEL then
-			return nil
-		end
-		return origRegisterPanel(self, addonID, panelData)
-	end
-
-	return true
 end
 
 -- ================================
@@ -312,17 +293,6 @@ function CASE.InitializeSettings()
 			default = false,
 			requiresReload = true,
 		},
-		{
-			type = "checkbox",
-			name = "Disable ACAC Update Checker",
-			tooltip = "Removes ACAC Update Checker added by Combat Alerts, Raidificator etc.",
-			getFunc = function() return CASE.SV.disableCodesCrap end,
-			setFunc = function(value)
-				CASE.SV.disableCodesCrap = value
-			end,
-			default = false,
-			requiresReload = true,
-		},
 	}
 
 	LAM:RegisterAddonPanel("CASE", panelData)
@@ -342,10 +312,6 @@ local function OnAddonLoaded(_, addonName)
 	CASE.InitializeSettings()
 	CASE.ToggleMemoryUI(CASE.SV.showMemoryUI)
 	CASE.UpdateGarbageCollector()
-
-	if CASE.SV.disableCodesCrap then
-		CASE.DisableACAC()
-	end
 
 	if CASE.SV.clearPVPAlerts then
 		EM:RegisterForEvent(CASE.name .. "_ClearPVPAlerts", EVENT_PLAYER_ACTIVATED, function()

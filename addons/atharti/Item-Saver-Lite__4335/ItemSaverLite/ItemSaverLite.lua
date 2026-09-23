@@ -73,6 +73,9 @@ function ISL.IsUniqueItem(bagId, slotIndex)
 		or itemType == ITEMTYPE_POISON
 		or itemType == ITEMTYPE_ARMOR
 		or itemType == ITEMTYPE_WEAPON
+		or itemType == ITEMTYPE_GLYPH_ARMOR
+		or itemType == ITEMTYPE_GLYPH_JEWELRY
+		or itemType == ITEMTYPE_GLYPH_WEAPON
 end
 
 function ISL.GetMarkerTextureArrays()

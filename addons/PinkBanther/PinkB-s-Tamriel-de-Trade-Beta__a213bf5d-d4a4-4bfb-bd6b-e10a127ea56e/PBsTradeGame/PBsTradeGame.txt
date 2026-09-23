@@ -1,0 +1,40 @@
+## Title: PinkB's Tamriel Trade Game
+## Author: PinkBanther
+## Description: タムリエル交易戦 — campaign trade and acquisition game. Phase 5.
+## Version: 0.5.7
+## AddOnVersion: 507
+## SavedVariables: PBsTradeGameSavedVariables
+## APIVersion: 101050 101051
+
+Config.lua
+Assets.lua
+Data.lua
+World.lua
+Tactics.lua
+Model.lua
+LiveCatalog.lua
+Engine.lua
+Coins.lua
+Audio.lua
+Controller.lua
+UI.lua
+Menu.lua
+Bindings.xml
+Main.lua
+
+assets/coin.dds
+assets/coin_plinth.dds
+assets/treasury.dds
+assets/crest.dds
+assets/atlas.dds
+assets/wood_frame.dds
+assets/band_glow.dds
+assets/band_tip_left.dds
+assets/band_tip_right.dds
+assets/chapter_1.dds
+assets/chapter_2.dds
+assets/chapter_3.dds
+assets/chapter_4.dds
+assets/chapter_5.dds
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.

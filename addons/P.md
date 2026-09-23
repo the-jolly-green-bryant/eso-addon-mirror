@@ -123,10 +123,12 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [PinkB's Tamriel de Janken(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-Tamriel-de-Janken-Beta__112c25bb-1103-4636-a4f6-5c6a280ff8e2) | PinkBanther | Console | — |
 | [PinkB's Tamriel de Tetris](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-Tamriel-de-Tetris__e8b21bff-aae1-4a24-b91b-8c49cd6acfd6) | PinkBanther | Console | — |
 | [PinkB's Tamriel de Tetris(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-Tamriel-de-Tetris-Beta__15f83719-bd33-413d-b56d-23d5ab418501) | PinkBanther | Console | — |
+| [PinkB's Tamriel de Trade(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-Tamriel-de-Trade-Beta__a213bf5d-d4a4-4bfb-bd6b-e10a127ea56e) | PinkBanther | Console | — |
 | [PinkB's Translator](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-Translator__c49e3df6-7e8e-4a29-8866-1afb08cca3a8) | PinkBanther | Console | — |
 | [PinkB's Translator(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-Translator-Beta__cf0aea14-ea0e-49d3-89c4-1987b725c79e) | PinkBanther | Console | — |
 | [PinkB's UltraDetailedStats](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-UltraDetailedStats__f00e5b13-5452-4284-98f7-2bdbe3caff63) | PinkBanther | Console | — |
 | [PinkB's UltraDetailedStats(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-UltraDetailedStats-Beta__61f70cc8-746a-48f4-90d2-6a3d490188d9) | PinkBanther | Console | — |
+| [PinkB's WarTable](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-WarTable__9741439f-fb9a-4429-bcbe-2202f24c279e) | PinkBanther | Console | — |
 | [PinkB's WarTable(Beta)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PinkBanther/PinkB-s-WarTable-Beta__0e2f2124-0a27-485c-9912-c57878e87090) | PinkBanther | Console | — |
 | [PinKiller](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni/PinKiller__190) | Shinni | PC / Mac | 2.5 |
 | [PinKiller](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni42/PinKiller__b141aa03-f456-45eb-b8b9-eee57c6d78d9) | Shinni42 | Console | — |

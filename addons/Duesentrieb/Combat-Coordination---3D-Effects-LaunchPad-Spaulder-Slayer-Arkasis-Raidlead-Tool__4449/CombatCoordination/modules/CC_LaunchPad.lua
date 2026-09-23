@@ -506,7 +506,7 @@ end
 ----------------------------------------------------------------------------------------------------
 function Module:StartAiming()
     self.isAiming = true
-    self:Debug("Place LaunchPad (Block = Place | Menu = Cancel)")
+    d(string.format("%s Place LaunchPad (Block = Place | Menu = Cancel)", CC.CHAT))
 
     self:DrawPreviewEffect()
     local wasBlocking = IsBlockActive()

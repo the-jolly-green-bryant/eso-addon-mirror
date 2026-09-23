@@ -169,8 +169,7 @@ SLASH_COMMANDS["/cc_drawshape"] = function() CC.DrawShape:ToggleAimMode() end
 ----------------------------------------------------------------------------------------------------
 function Module:StartAiming()
     self.isAiming = true
-    -- TODO: BETTER INSTRUCTIONS?
-    --d(string.format("%s Draw Shape (Block = Place | Menu = Cancel)", CC.CHAT))
+    d(string.format("%s Place Shape (Block = Place | Hotkey/Menu = Cancel)", CC.CHAT))
 
     local startX, startY, startZ = CC.GetAimTargetPosition()
     local isRectangle  = (self.SV.shapeType == LUT.RECTANGLE)

@@ -150,6 +150,18 @@ in a corner.
 ゲームがその情報をアドオンに渡しておらず、ゲーム自身も表示していないためです（巻物とは
 異なり、陣営までが限界です）。
 
+ヴォレルドルングには経過時間と目安も表示します。
+
+　ヴォレルドルング: 使い手を探している（6:20経過 / 公開まで目安 4〜9分）
+　ヴォレルドルング: アルドメリ・ドミニオン（公開から 22:10 / 消滅まで目安 約8分）
+　ヴォレルドルング: オブリビオンに戻った（1:04:30経過）
+
+ゲームは出現・消滅の時刻を公開しておらず、アナウンスにも時間は入っていません。そのため
+アナウンスを受けた時刻をアドオンが記録し、コミュニティの観察値（出現から10〜15分で公開、
+公開から約30分で消滅）を「目安」として添えています。公式の数値ではありません。次の出現時刻は
+不定なので予測しません。入場前から出ていた場合は「経過不明」になります。自分が所持している
+間は、飢餓メーターの残量も表示します。
+
 拠点数と得点はゲームのキャンペーン画面が使っているものと同じ数字です。得点は累計で、
 キャンペーンの勝敗を決めるスコアです（累計なので、いまの勢力より遅れて動きます）。
 「攻撃中」の列だけは対応するAPIが無いため、このアドオン自身の走査で数えています。
@@ -356,6 +368,13 @@ asked for only when missing and at most every five minutes, and reads "-" until 
 Volendrung is listed while it is out, with the alliance holding it -- unclaimed if nobody does,
 and said plainly if it is you. **The player carrying it cannot be named:** the game does not
 hand that to an add-on and does not show it itself. The scrolls are the exception, not the rule.
+
+Volendrung also gets a clock: how long since it spawned, was revealed or left, with a forecast
+from the community's observed figures (revealed 10-15 min after spawning, gone about 30 min
+later) marked "about". The game publishes no times and its announcements carry none, so these
+are the add-on's own stopwatch -- and "time unknown" if it was already out when you arrived. The
+next spawn is at no fixed time and is not forecast. While you carry it, the hunger meter's
+remainder is shown.
 
 Holdings and scores are the campaign's own numbers, the ones the game's campaign screen shows.
 The score is cumulative — it is what decides the campaign, so it lags the current situation.

@@ -1,11 +1,14 @@
-MCAT_Abilities = {}
+MultiClassAbilityTracker = MultiClassAbilityTracker or {}
+local MCAT = MultiClassAbilityTracker
+MCAT.Abilities = {}
+local Abilities = MCAT.Abilities
 
 -- TODO : Vengeance abilities
 
 -- #region [Teal] Generic
 local HOTBAR_CATEGORIES = { HOTBAR_CATEGORY_PRIMARY, HOTBAR_CATEGORY_BACKUP }
 
-function MCAT_Abilities.IsAbilitySlotted(skillIds)
+function Abilities.IsAbilitySlotted(skillIds)
     for _, hotbarCategory in ipairs(HOTBAR_CATEGORIES) do
         for i = 3, 8 do
             local actionType = GetSlotType(i, hotbarCategory)
@@ -29,7 +32,7 @@ end
 -- and clipped these shapes' fine detail.
 -- GrimFocus's first 4 are the diagonal group, last 4 the cardinal group —
 -- order is load-bearing for Interface's lighting logic, not just display order.
-MCAT_Definitions = {
+MCAT.Definitions = {
     GrimFocus = {
         label = "Grim Focus",
         color = "9D6FE0",
@@ -99,7 +102,7 @@ MCAT_Definitions = {
 -- #endregion
 
 -- #region[green] Arcanist
-function MCAT_Abilities.CruxGenerationKnown()
+function Abilities.CruxGenerationKnown()
     local ARCANIST_CLASS_ID = 117
     for skillLineIndex = GetNumSkillLines(SKILL_TYPE_CLASS), 1, -1 do
         if select(3, GetSkillLineDynamicInfo(SKILL_TYPE_CLASS, skillLineIndex)) then
@@ -110,37 +113,4 @@ function MCAT_Abilities.CruxGenerationKnown()
     end
     return false
 end
--- #endregion
-
-
--- #region[purple] REFS
-
--- FROM : imPDA
--- local function GetSkills()
---     local skills = {}
-
---     for category = HOTBAR_CATEGORY_PRIMARY, HOTBAR_CATEGORY_BACKUP do
---         skills[category] = {}
---         for slot = 3, 8 do
---             local slotBoundId = GetSlotBoundId(slot, category)
---             if GetSlotType(slot, category) == ACTION_TYPE_CRAFTED_ABILITY then
---                 local script1, script2, script3 = GetCraftedAbilityActiveScriptIds(slotBoundId)
---                 skills[category][slot] = {
---                     slotBoundId,
---                     script1,
---                     script2,
---                     script3,
---                 }
---             else
---                 skills[category][slot] = slotBoundId  -- or 0 if no skill in slot
---             end
---         end
---     end
-
---     return skills
--- end
-
--- FROM : code65536
--- > LibCombatAlerts Public.lua : DoesPlayerHaveAoePurgeSlotted
-
 -- #endregion
